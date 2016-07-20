@@ -173,12 +173,14 @@ if C.Unitframe.Enable == true then
 				TargetFrame:SetPoint("CENTER", TargetFrameAnchor, "CENTER", 51, 3)
 				TargetFrame.SetPoint = K.Noop
 				-- Tweak Name Background
+				TargetFrameNameBackground:SetPoint("TOP", 0, -21) -- Idk why we need to edit this.
 				TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 				-- Tweak Focus Frame
 				FocusFrame:ClearAllPoints()
 				FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
 				-- Tweak Name Background
+				FocusFrameNameBackground:SetPoint("TOP", 0, -21) -- Idk why we need to edit this.
 				FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 				for _, FrameScale in pairs({
@@ -277,6 +279,7 @@ if not InCombatLockdown() then
 		end)
 	end
 end
+
 -- Remove Portrait Damage Spam
 if C.Unitframe.CombatFeedback == true then
 	PlayerHitIndicator:SetText(nil)
