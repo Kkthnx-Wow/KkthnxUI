@@ -45,7 +45,6 @@
 	<Script file="Modules\Unitframes\EnhancedFrames.lua"/>
 	<Script file="Modules\Unitframes\HealthMinMax.lua"/>
 	<Script file="Modules\Unitframes\Layout.lua"/>
-	<Script file="Modules\Unitframes\PowerBar.lua"/>
 	<Script file="Modules\Unitframes\SmoothBars.lua"/>
 
 	<Script file="Modules\Misc\AFKSpin.lua"/>
@@ -122,8 +121,6 @@
 	<Script file="Modules\Chat\Sounds.lua"/>
 	<Script file="Modules\Chat\SpamageMeters.lua"/>
 	<Script file="Modules\Chat\TellTarget.lua"/>
-
-	<Script file="Modules\Class\Hunter.lua"/>
 
 	<Script file="Modules\DataText\Battleground.lua"/>
 	<Script file="Modules\DataText\Location.lua"/>

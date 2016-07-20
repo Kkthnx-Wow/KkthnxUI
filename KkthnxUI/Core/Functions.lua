@@ -96,55 +96,55 @@ K.RGBToHex = function(r, g, b)
 end
 
 K.CheckChat = function(warning)
-    local numParty, numRaid = GetNumPartyMembers(), GetNumRaidMembers()
-    if (numRaid > 0) then
-        if warning and (UnitIsPartyLeader("player")) or (UnitIsRaidOfficer("player")) then
-            return "RAID_WARNING"
-        else
-            return "RAID"
-        end
-        elseif (numParty > 0) then
-            return "PARTY"
-        end
-    return "SAY"
+	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
+		return "INSTANCE_CHAT"
+	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
+		if warning and (UnitIsGroupLeader("player") or UnitIsGroupAssistant("player") or IsEveryoneAssistant()) then
+			return "RAID_WARNING"
+		else
+			return "RAID"
+		end
+	elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
+		return "PARTY"
+	end
+	return "SAY"
 end
 
-local RoleUpdater = CreateFrame("Frame")
-local function CheckRole(self, event, unit)
-	if event == "UNIT_AURA" and unit ~= "player" then return end
-	if (K.Class == "PALADIN" and UnitBuff("player", GetSpellInfo(25780))) and GetCombatRatingBonus(CR_DEFENSE_SKILL) > 100 or
-	(K.Class == "WARRIOR" and GetBonusBarOffset() == 2) or
-	(K.Class == "DEATHKNIGHT" and UnitBuff("player", GetSpellInfo(48263))) or
-	(K.Class == "DRUID" and GetBonusBarOffset() == 3) then
-		K.Role = "Tank"
-	else
-		local playerint = select(2, UnitStat("player", 4))
-		local playeragi	= select(2, UnitStat("player", 2))
-		local base, posBuff, negBuff = UnitAttackPower("player")
-		local playerap = base + posBuff + negBuff
+local isCaster = {
+	DEATHKNIGHT = {nil, nil, nil},
+	DEMONHUNTER = {nil, nil},
+	DRUID = {true},
+	HUNTER = {nil, nil, nil},
+	MAGE = {true, true, true},
+	MONK = {nil, nil, nil},
+	PALADIN = {nil, nil, nil},
+	PRIEST = {nil, nil, true},
+	ROGUE = {nil, nil, nil},
+	SHAMAN = {true},
+	WARLOCK = {true, true, true},
+	WARRIOR = {nil, nil, nil}
+}
 
-		if ((playerap > playerint) or (playeragi > playerint)) and not (UnitBuff("player", GetSpellInfo(24858)) or UnitBuff("player", GetSpellInfo(65139))) then
-			K.Role = "Melee"
-		else
+local function CheckRole(self, event, unit)
+	local spec = GetSpecialization()
+	local role = spec and GetSpecializationRole(spec)
+
+	if role == "TANK" then
+		K.Role = "Tank"
+	elseif role == "HEALER" then
+		K.Role = "Healer"
+	elseif role == "DAMAGER" then
+		if isCaster[K.Class][spec] then
 			K.Role = "Caster"
+		else
+			K.Role = "Melee"
 		end
 	end
-	-- Unregister useless events
-	if event == "PLAYER_ENTERING_WORLD" then
-		if K.Class ~= "WARRIOR" and  K.Class ~= "DRUID" then
-			RoleUpdater:UnregisterEvent("UPDATE_BONUS_ACTIONBAR")	
-		end
-		RoleUpdater:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
-end	
+end
+local RoleUpdater = CreateFrame("Frame")
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("UNIT_AURA")
-RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
-RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
+RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
 RoleUpdater:SetScript("OnEvent", CheckRole)
-CheckRole()
 
 function K.ShortenString(string, numChars, dots)
 	local bytes = string:len()

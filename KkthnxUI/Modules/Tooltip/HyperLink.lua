@@ -11,7 +11,12 @@ local linktypes = {item = true, enchant = true, spell = true, quest = true, unit
 
 local function OnHyperlinkEnter(frame, link, ...)
 	local linktype = link:match("^([^:]+)")
-	if linktype and linktypes[linktype] then
+	if linktype and linktype == "battlepet" then
+		GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT", -3, 0)
+		GameTooltip:Show()
+		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link)
+		BattlePetToolTip_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed))
+	elseif linktype and linktypes[linktype] then
 		GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT", -3, 0)
 		GameTooltip:SetHyperlink(link)
 		GameTooltip:Show()
@@ -22,7 +27,9 @@ end
 
 local function OnHyperlinkLeave(frame, link, ...)
 	local linktype = link:match("^([^:]+)")
-	if linktype and linktypes[linktype] then
+	if linktype and linktype == "battlepet" then
+		BattlePetTooltip:Hide()
+	elseif linktype and linktypes[linktype] then
 		GameTooltip:Hide()
 	end
 

@@ -1,11 +1,11 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
+-- Locals and speed
 local _G = _G
-local next = next
-local pairs = pairs
-local UPDATE_DELAY = 0.1
+local UPDATE_DELAY = 0.15
 local ATTACK_BUTTON_FLASH_TIME = ATTACK_BUTTON_FLASH_TIME
+local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER
 local ActionButton_GetPagedID = ActionButton_GetPagedID
 local ActionButton_IsFlashing = ActionButton_IsFlashing
 local ActionHasRange = ActionHasRange
@@ -13,19 +13,76 @@ local IsActionInRange = IsActionInRange
 local IsUsableAction = IsUsableAction
 local HasAction = HasAction
 
---[[ The main thing ]]--
-local tullaRange = CreateFrame("Frame", "tullaRange", UIParent) tullaRange:Hide()
+local function timer_Create(parent, interval)
+	local updater = parent:CreateAnimationGroup()
+	updater:SetLooping("NONE")
+	updater:SetScript("OnFinished", function(self)
+		if parent:Update() then
+			parent:Start(interval)
+		end
+	end)
 
-function tullaRange:Load()
-	self:SetScript("OnUpdate", self.OnUpdate)
-	self:SetScript("OnHide", self.OnHide)
-	self:SetScript("OnEvent", self.OnEvent)
-	self.elapsed = 0
+	local a = updater:CreateAnimation("Animation")
+	a:SetOrder(1)
 
-	self:RegisterEvent("PLAYER_LOGIN")
+	parent.Start = function(self)
+		self:Stop()
+		a:SetDuration(interval)
+		updater:Play()
+		return self
+	end
+
+	parent.Stop = function(self)
+		if updater:IsPlaying() then
+			updater:Stop()
+		end
+		return self
+	end
+
+	parent.Active = function(self)
+		return updater:IsPlaying()
+	end
+
+	return parent
 end
 
---[[ Frame Events ]]--
+-- Holy Power detection
+local DIVINE_PURPOSE = GetSpellInfo(90174)
+local isHolyPowerAbility
+do
+	local HOLY_POWER_SPELLS = {
+		[85673] = GetSpellInfo(85673),		-- Word of Glory
+		[114163] = GetSpellInfo(114163),	-- Eternal Flame
+	}
+
+	isHolyPowerAbility = function(actionId)
+		local actionType, id = GetActionInfo(actionId)
+		if actionType == "macro" then
+			local macroSpell = GetMacroSpell(id)
+			if macroSpell then
+				for spellId, spellName in pairs(HOLY_POWER_SPELLS) do
+					if macroSpell == spellName then
+						return true
+					end
+				end
+			end
+		else
+			return HOLY_POWER_SPELLS[id]
+		end
+		return false
+	end
+end
+
+-- Main thing
+local tullaRange = timer_Create(CreateFrame("Frame", "tullaRange"), UPDATE_DELAY)
+
+function tullaRange:Load()
+	self:SetScript("OnEvent", self.OnEvent)
+	self:RegisterEvent("PLAYER_LOGIN")
+	self:RegisterEvent("PLAYER_LOGOUT")
+end
+
+-- Frame Events
 function tullaRange:OnEvent(event, ...)
 	local action = self[event]
 	if action then
@@ -33,19 +90,7 @@ function tullaRange:OnEvent(event, ...)
 	end
 end
 
-function tullaRange:OnUpdate(elapsed)
-	if self.elapsed < UPDATE_DELAY then
-		self.elapsed = self.elapsed + elapsed
-	else
-		self:Update()
-	end
-end
-
-function tullaRange:OnHide()
-	self.elapsed = 0
-end
-
---[[ Game Events ]]--
+-- Game Events
 function tullaRange:PLAYER_LOGIN()
 	if not TULLARANGE_COLORS then
 		self:LoadDefaults()
@@ -59,10 +104,9 @@ function tullaRange:PLAYER_LOGIN()
 	hooksecurefunc("ActionButton_Update", self.OnButtonUpdate)
 end
 
---[[ Actions ]]--
+-- Actions
 function tullaRange:Update()
-	self:UpdateButtons(self.elapsed)
-	self.elapsed = 0
+	return self:UpdateButtons(UPDATE_DELAY)
 end
 
 function tullaRange:ForceColorUpdate()
@@ -71,23 +115,24 @@ function tullaRange:ForceColorUpdate()
 	end
 end
 
-function tullaRange:UpdateShown()
+function tullaRange:UpdateActive()
 	if next(self.buttonsToUpdate) then
-		self:Show()
+		if not self:Active() then
+			self:Start()
+		end
 	else
-		self:Hide()
+		self:Stop()
 	end
 end
 
 function tullaRange:UpdateButtons(elapsed)
-	if not next(self.buttonsToUpdate) then
-		self:Hide()
-		return
+	if next(self.buttonsToUpdate) then
+		for button in pairs(self.buttonsToUpdate) do
+			self:UpdateButton(button, elapsed)
+		end
+		return true
 	end
-
-	for button in pairs(self.buttonsToUpdate) do
-		self:UpdateButton(button, elapsed)
-	end
+	return false
 end
 
 function tullaRange:UpdateButton(button, elapsed)
@@ -97,15 +142,15 @@ end
 
 function tullaRange:UpdateButtonStatus(button)
 	local action = ActionButton_GetPagedID(button)
-	if not(button:IsVisible() and action and HasAction(action) and ActionHasRange(action)) then
-		self.buttonsToUpdate[button] = nil
-	else
+	if button:IsVisible() and action and HasAction(action) and ActionHasRange(action) then
 		self.buttonsToUpdate[button] = true
+	else
+		self.buttonsToUpdate[button] = nil
 	end
-	self:UpdateShown()
+	self:UpdateActive()
 end
 
---[[ Button Hooking ]]--
+-- Button Hooking
 function tullaRange.RegisterButton(button)
 	button:HookScript("OnShow", tullaRange.OnButtonShow)
 	button:HookScript("OnHide", tullaRange.OnButtonHide)
@@ -131,24 +176,27 @@ function tullaRange.OnButtonUpdate(button)
 	tullaRange:UpdateButtonStatus(button)
 end
 
---[[ Range Coloring ]]--
+-- Range Coloring
 function tullaRange.UpdateButtonUsable(button)
 	local action = ActionButton_GetPagedID(button)
 	local isUsable, notEnoughMana = IsUsableAction(action)
 
-	--usable
+	-- Usable
 	if isUsable then
-		--but out of range
-		if IsActionInRange(action) == 0 then
-			tullaRange.SetButtonColor(button, "OOR")
-			--in range
+		-- Out of range
+		if IsActionInRange(action) == false then
+			tullaRange.SetButtonColor(button, "oor")
+		-- Holy Power
+		elseif K.Class == "PALADIN" and isHolyPowerAbility(action) and not (UnitPower("player", SPELL_POWER_HOLY_POWER) >= 3 or UnitBuff("player", DIVINE_PURPOSE)) then
+			tullaRange.SetButtonColor(button, "ooh")
+		-- In range
 		else
-			tullaRange.SetButtonColor(button, "NORMAL")
+			tullaRange.SetButtonColor(button, "normal")
 		end
-		--out of mana
+	-- Out of mana
 	elseif notEnoughMana then
-		tullaRange.SetButtonColor(button, "OOM")
-		--unusable
+		tullaRange.SetButtonColor(button, "oom")
+	-- Unusable
 	else
 		button.tullaRangeColor = "unusuable"
 	end
@@ -159,8 +207,7 @@ function tullaRange.SetButtonColor(button, colorType)
 		button.tullaRangeColor = colorType
 
 		local r, g, b = tullaRange:GetColor(colorType)
-
-		local icon = _G[button:GetName() .. "Icon"]
+		local icon = _G[button:GetName().."Icon"]
 		icon:SetVertexColor(r, g, b)
 	end
 end
@@ -176,7 +223,7 @@ function tullaRange.UpdateFlash(button, elapsed)
 			end
 			flashtime = ATTACK_BUTTON_FLASH_TIME - overtime
 
-			local flashTexture = _G[button:GetName() .. "Flash"]
+			local flashTexture = _G[button:GetName().."Flash"]
 			if flashTexture:IsShown() then
 				flashTexture:Hide()
 			else
@@ -188,30 +235,14 @@ function tullaRange.UpdateFlash(button, elapsed)
 	end
 end
 
---[[ Configuration ]]--
+-- Configuration
 function tullaRange:LoadDefaults()
 	TULLARANGE_COLORS = {
-		["OOR"] = C.ActionBar.OutOfRange,
-		["OOM"] = C.ActionBar.OutOfMana,
-		["NORMAL"] = {1.0, 1.0, 1.0},
-		["UNUSABLE"] = {0.2, 0.2, 0.2},
+		normal = {1, 1, 1},
+		oor = C.ActionBar.OutOfRange,
+		oom = C.ActionBar.OutOfMana,
+		ooh = {0.45, 0.45, 1}
 	}
-end
-
-function tullaRange:Reset()
-	self:LoadDefaults()
-	self.colors = TULLARANGE_COLORS
-
-	self:ForceColorUpdate()
-end
-
-function tullaRange:SetColor(index, r, g, b)
-	local color = self.colors[index]
-	color[1] = r
-	color[2] = g
-	color[3] = b
-
-	self:ForceColorUpdate()
 end
 
 function tullaRange:GetColor(index)
@@ -219,5 +250,5 @@ function tullaRange:GetColor(index)
 	return color[1], color[2], color[3]
 end
 
---[[ Load The Thing ]]--
+-- Load The Thing
 tullaRange:Load()

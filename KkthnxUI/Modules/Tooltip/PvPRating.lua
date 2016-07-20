@@ -19,9 +19,9 @@ local GetAchievementInfo = GetAchievementInfo
 local active = false
 local tooltip = _G["GameTooltip"]
 local statistic = {
-	370, -- Highest 2 man personal rating
-	595, -- Highest 3 man personal rating
-	596, -- Highest 5 man personal rating
+	370,	-- Highest 2 man personal rating
+	595,	-- Highest 3 man personal rating
+	596,	-- Highest 5 man personal rating
 }
 
 local gradient = function(val, low, high)
