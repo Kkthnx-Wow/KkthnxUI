@@ -1,0 +1,51 @@
+local K, C, L = select(2, ...):unpack()
+
+-- If you're saving frame positions, use "UIParent", not UIParent
+C["Position"] = {
+	["Achievements"] = {"TOP", "UIParent", "TOP", 0, -22},
+	["BGScore"] = {"BOTTOMLEFT", "ActionButton12", "BOTTOMRIGHT", 10, 0},
+	["Bag"] = {"RIGHT", "UIParent", "RIGHT", -140, -20},
+	["Bank"] = {"LEFT", "UIParent", "LEFT", 23, 150},
+	["BnetPopup"] = {"BOTTOMLEFT", "ChatFrame1", "TOPLEFT", 4, 54},
+	["BottomBars"] = {"BOTTOM", "UIParent", "BOTTOM", 0, 5},
+	["CaptureBar"] = {"TOP", "UIParent", "TOP", 0, -170},
+	["Chat"] = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 3, 5},
+	["GroupLoot"] = {"BOTTOM", "UIParent", "BOTTOM", -238, 700},
+	["Loot"] = {"TOPLEFT", "UIParent", "TOPLEFT", 245, -220},
+	["Minimap"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -7, -7},
+	["MinimapButtons"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -3, 2},
+	["PetHorizontal"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167},
+	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 2},
+	["PowerBar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 130},
+	["PulseCooldown"] = {"CENTER", "UIParent", "CENTER", 0, 0},
+	["Quest"] = {"TOPRIGHT", "UIParent", -210, -220},
+	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
+	["StanceBar"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167},
+	["StatsFrame"] = {"CENTER", "StatFrame", "CENTER", 0, 0},
+	["Ticket"] = {"TOPLEFT", "UIParent", "TOPLEFT", 0, -1},
+	["Tooltip"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -2, 2},
+	["UIError"] = {"TOP", "UIParent", "TOP", 0, -80},
+	["Vehicle"] = {"TOP", "Minimap", "BOTTOM", 0, -30},
+	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
+	-- UnitFrame positions
+	UnitFrames = {
+		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
+		["Focus"] = {"BOTTOM", "PlayerFrame", "TOP", 0, 60},
+		["Player"] = {"BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -9, 175},
+		["PlayerCastBar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175},
+		["Target"] = {"BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 9, 175},
+		["TargetCastBar"] = {"BOTTOM", "CastingBarFrame", "TOP", 0, 21},
+	},
+	-- Filger positions
+	Filger = {
+		["Cooldown"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 63, 17},
+		["PlayerBuffIcon"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 173},
+		["PlayerProcIcon"] = {"BOTTOMLEFT", "TargetFrame", "TOPLEFT", -2, 173},
+		["PvECC"] = {"TOPLEFT", "PlayerFrame", "BOTTOMLEFT", -2, -44},
+		["PvEDebuff"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 253},
+		["SpecialProcIcon"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 213},
+		["TargetBar"] = {"BOTTOMLEFT", "TargetFrame", "BOTTOMRIGHT", 9, -41},
+		["TargetBuffIcon"] = {"BOTTOMLEFT", "TargetFrame", "TOPLEFT", -2, 253},
+		["TargetDebuffIcon"] = {"BOTTOMLEFT", "TargetFrame", "TOPLEFT", -2, 213},
+	},
+}
