@@ -8,21 +8,12 @@ local unpack = unpack
 
 --	Skin addons icons on minimap
 local buttons = {
-	"Archy",
-	"GatherMatePin",
-	"GatherNote",
-	"HandyNotesPin",
-	"HelpOpenTicketButton",
-	"MiniMapBattlefieldFrame",
-	"MiniMapMailFrame",
+	"QueueStatusMinimapButton",
 	"MiniMapTrackingButton",
-	"MinimMap",
-	"QuestMapPOI",
-	"Spy_MapNoteList_mini",
-	"TimeManagerClockButton",
-	"WorldMapPOIFrame",
-	"ZGVMarker",
-	"poiWorldMapPOIFrame",
+	"MiniMapMailFrame",
+	"HelpOpenTicketButton",
+	"GatherMatePin",
+	"HandyNotesPin"
 }
 
 local function SkinButton(f)

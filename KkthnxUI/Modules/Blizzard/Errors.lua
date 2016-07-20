@@ -3,7 +3,7 @@ local K, C, L, _ = select(2, ...):unpack()
 -- Clear UIErrorsFrame(module from Kousei by Haste)
 if C.Error.White == true or C.Error.Black == true then
 	local frame = CreateFrame("Frame")
-	frame:SetScript("OnEvent", function(self, event, text)
+	frame:SetScript("OnEvent", function(self, event, _, text)
 		if C.Error.White == true and C.Error.Black == false then
 			if K.White_List[text] then
 				UIErrorsFrame:AddMessage(text, 1, 0 ,0)
