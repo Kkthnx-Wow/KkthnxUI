@@ -8,10 +8,10 @@ KkthnxUI is a modular, lightweight, all-in-one overhaul for the World of Warcraf
 * Also, make sure the game is closed when moving new files into the addon directory as it is unable to discover new files when it's already running.
 
 ### F.A.Q   
-* All questions, suggestions, and bugs can be directed to me in-game or in a issues report too [Issue Report](https://github.com/Kkthnx/KkthnxUI-3.3.5/issues/new)      
+* All questions, suggestions, and bugs can be directed to me in-game or in a issues report too [Issue Report](https://github.com/Kkthnx/KkthnxUI_Legion/issues/new)      
 * Once the UI reloads off the install, you can type **/settings** or **/settings all** if you prefer all the settings for addon profiles.   
 * You can type /moveui and move certain features of the UI. More to come later.    
-* If you find a bug, then properly make an [Issue Report](https://github.com/Kkthnx/KkthnxUI-3.3.5/issues/new).   
+* If you find a bug, then properly make an [Issue Report](https://github.com/Kkthnx/KkthnxUI_Legion/issues/new).   
 
 ### Donations   
 Donations are welcome, but not required to use the UI at all. Donations help me further my development and fuel my gaming! Donations will never be a requirement! If you would like to donate, you can do so here
