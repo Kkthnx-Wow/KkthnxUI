@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if IsAddOnLoaded("Carbonite") then return end
+if C.Minimap.Enable ~= true or IsAddOnLoaded("Carbonite") then return end
 
 local MinimapZone = CreateFrame("Frame", "MinimapZone", Minimap)
 MinimapZone:SetSize(0, 20)

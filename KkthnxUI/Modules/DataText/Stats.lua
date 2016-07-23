@@ -13,13 +13,21 @@ local IsAddOnLoaded = IsAddOnLoaded
 local GetFramerate = GetFramerate
 
 local StatFrame = CreateFrame("Frame", "StatFrame", Minimap)
-StatFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-StatFrame:CreateBackdrop()
-StatFrame:SetSize(0, 20)
-StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -24)
-StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
-StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
-StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -24)
+if C.Minimap.Enable == true then
+	StatFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	StatFrame:CreateBackdrop()
+	StatFrame:SetSize(0, 20)
+	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -24)
+	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
+	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
+	StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -24)
+else
+	StatFrame:SetSize(0, 20)
+	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, -34)
+	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
+	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
+	StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 0, -34)
+end
 
 local Stat = CreateFrame("Frame", "StatSystem", UIParent)
 Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -95,6 +103,7 @@ local function Update(self, t)
 		int = 10
 	end
 end
+
 -- Setup Tooltip
 Stat:SetScript("OnMouseDown", function () collectgarbage("collect") Update(Stat, 20) end)
 Stat:SetScript("OnEnter", function(self)

@@ -95,9 +95,8 @@ ClockFrame:Hide()
 ClockTime:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 ClockTime:SetShadowOffset(0, 0)
 TimeManagerClockButton:ClearAllPoints()
-TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -5)
+TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
 TimeManagerClockButton:SetScript("OnShow", nil)
-TimeManagerClockButton:Hide()
 TimeManagerClockButton:SetScript("OnClick", function(self, button)
 	if(button == "RightButton") then
 		if(self.alarmFiring) then
