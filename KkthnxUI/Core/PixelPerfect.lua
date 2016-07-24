@@ -66,5 +66,5 @@ end)
 
 -- Pixel perfect fonts function?
 if K.ScreenHeight <= 1200 then return end
-C.Media.Font_Size = C.Media.Font_Size * Mult
-C.Media.Combat_Font_Size = C.Media.Combat_Font_Size * Mult
+C.Media.Font_Size = C.Media.Font_Size * K.Mult
+C.Media.Combat_Font_Size = C.Media.Combat_Font_Size * K.Mult
