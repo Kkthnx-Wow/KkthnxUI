@@ -137,7 +137,6 @@ C["General"] = {
 	["ReplaceBlizzardFonts"] = true,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
-	["MultisampleCheck"] = false,
 	["WelcomeMessage"] = true,
 }
 -- Loot Options

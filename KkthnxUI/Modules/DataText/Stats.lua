@@ -141,8 +141,8 @@ end)
 -- Button Functionality
 Stat:SetScript("OnMouseDown", function(self, btn)
 	if (btn == "LeftButton") then
-		if not LFDQueueFrame then ToggleFrame(LFDParentFrame) end
-		ToggleFrame(LFDParentFrame)
+		if K.Level >= SHOW_LFD_LEVEL and not PVEFrame then PVEFrame_ToggleFrame() end
+		PVEFrame_ToggleFrame()
 	else
 		UpdateAddOnMemoryUsage()
 		local Before = gcinfo()

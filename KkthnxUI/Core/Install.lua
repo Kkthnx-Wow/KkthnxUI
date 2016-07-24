@@ -44,7 +44,7 @@ local function InstallUI()
 	SetCVar("buffDurations", 1)
 	SetCVar("cameraDistanceMaxFactor", 2)
 	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "classic", "chatStyle") -- https://goo.gl/3v6Mwj
+	SetCVar("chatStyle", "classic", "chatStyle")
 	SetCVar("colorblindMode", 0)
 	SetCVar("gameTip", 0)
 	SetCVar("lockActionBars", 1)
@@ -301,15 +301,6 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
 	else
-
-	-- Is this causing crashes?
-	if C.General.MultisampleCheck == true then
-	local Multisample = GetCVar("gxMultisample")
-	if Multisample ~= "1" then
-		SetCVar("gxMultisample", 1)
-		StaticPopup_Show("RESTART_GFX")
-	end
-end
 
 	-- Install default if we never ran KkthnxUI on this character
 	if not SavedOptionsPerChar.Install then

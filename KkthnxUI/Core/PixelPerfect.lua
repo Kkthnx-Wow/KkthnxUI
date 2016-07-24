@@ -35,12 +35,6 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	if (UseUIScale ~= "1") then
 		SetCVar("useUiScale", 1)
 	end
-	
-	-- Multisample need to be at 1 for pixel perfectness
-	if (C.General.MultisampleCheck) and (gxMultisample ~= "1") then
-		local gxMultisample = GetCVar("gxMultisample")
-		SetMultisampleFormat(1)
-	end
 
 	-- UIScale Security
 	if C.General.UIScale > 1.0 then C.General.UIScale = 1.0 end

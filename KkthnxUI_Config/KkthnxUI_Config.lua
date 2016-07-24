@@ -144,7 +144,6 @@ local function Local(o)
 	-- General Settings
 	if o == "UIConfigGeneral" then o = GENERAL_LABEL end
 	if o == "UIConfigGeneralAutoScale" then o = L_GUI_GENERAL_AUTOSCALE end
-	if o == "UIConfigGeneralMultisampleCheck" then o = L_GUI_GENERAL_MULTISAMPLE_CHECK end
 	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
 	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
