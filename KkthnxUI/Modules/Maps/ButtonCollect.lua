@@ -8,28 +8,12 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 
 -- Collect minimap buttons in one line
 local BlackList = {
-	["Minimap"] = true,
-	["MiniMapPing"] = true,
-	["MinimapToggleButton"] = true,
-	["MinimapZoneTextButton"] = true,
-	["MiniMapRecordingButton"] = true,
+	["QueueStatusMinimapButton"] = true,
 	["MiniMapTracking"] = true,
-	["MiniMapVoiceChatFrame"] = true,
-	["MiniMapWorldMapButton"] = true,
-	["MiniMapLFGFrame"] = true,
-	["MinimapZoomIn"] = true,
-	["MinimapZoomOut"] = true,
 	["MiniMapMailFrame"] = true,
-	["BattlefieldMinimap"] = true,
-	["MinimapBackdrop"] = true,
+	["HelpOpenTicketButton"] = true,
 	["GameTimeFrame"] = true,
 	["TimeManagerClockButton"] = true,
-	["FeedbackUIButton"] = true,
-	["HelpOpenTicketButton"] = true,
-	["MiniMapBattlefieldFrame"] = true,
-	["QueueStatusMinimapButton"] = true,
-	["ButtonCollectFrame"] = true,
-	["HandyNotesPin"] = true,
 }
 
 local buttons = {}

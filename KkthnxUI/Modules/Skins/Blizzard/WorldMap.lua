@@ -29,12 +29,9 @@ if not InCombatLockdown() then
 end
 
 local WorldMap_Coords = CreateFrame("Frame", "CoordsFrame", WorldMapFrame)
-local Font_Height = select(2, WorldMapQuestShowObjectivesText:GetFont())*1.1
 WorldMap_Coords:SetFrameLevel(90)
-WorldMap_Coords:FontString("PlayerText", C.Media.Font, Font_Height, C.Media.Font_Style)
-WorldMap_Coords:FontString("MouseText", C.Media.Font, Font_Height, C.Media.Font_Style)
-WorldMap_Coords.PlayerText:SetTextColor(WorldMapQuestShowObjectivesText:GetTextColor())
-WorldMap_Coords.MouseText:SetTextColor(WorldMapQuestShowObjectivesText:GetTextColor())
+WorldMap_Coords:FontString("PlayerText", C.Media.Font, 12 * 1.1, C.Media.Font_Style)
+WorldMap_Coords:FontString("MouseText", C.Media.Font, 12 * 1.1, C.Media.Font_Style)
 WorldMap_Coords.PlayerText:SetPoint("BOTTOMLEFT", WorldMapDetailFrame, "BOTTOMLEFT", 5, 5)
 WorldMap_Coords.PlayerText:SetText("Player: 0, 0")
 WorldMap_Coords.MouseText:SetPoint("BOTTOMLEFT", WorldMap_Coords.PlayerText, "TOPLEFT", 0, 5)
@@ -73,12 +70,4 @@ WorldMapFrame:HookScript("OnUpdate", function(self, elapsed)
 
 		int = 0
 	end
-end)
-
--- Dropdown on full map is scaled incorrectly
-WorldMapContinentDropDownButton:HookScript("OnClick", function() DropDownList1:SetScale(C.General.UIScale) end)
-WorldMapZoneDropDownButton:HookScript("OnClick", function(self)
-	DropDownList1:SetScale(C.General.UIScale)
-	DropDownList1:ClearAllPoints()
-	DropDownList1:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 2, -4)
 end)

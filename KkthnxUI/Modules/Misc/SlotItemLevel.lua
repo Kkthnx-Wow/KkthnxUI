@@ -97,8 +97,10 @@ local function UpdateButtonsText(frame)
 						ilevel = timewarped[tonumber(warped)] or ilevel
 						ilevel = timewarped_warforged[tonumber(warforged)] or ilevel
 						local upgrade = item:match(":(%d+)\124h%[")
-						if upgrades[upgrade] == nil then upgrades[upgrade] = 0 end
-						text:SetText("|cFFFFFF00"..ilevel + upgrades[upgrade])
+						-- Temp
+						--if upgrades[upgrade] == nil then upgrades[upgrade] = 0 end
+						--text:SetText("|cFFFFFF00"..ilevel + upgrades[upgrade])
+						text:SetText("|cFFFFFF00"..ilevel)
 					end
 				end
 			else
