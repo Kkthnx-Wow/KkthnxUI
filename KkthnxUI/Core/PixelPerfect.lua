@@ -2,8 +2,6 @@ local K, C, _ = select(2, ...):unpack()
 
 local format = string.format
 local match = string.match
-local select = select
-local tonumber = tonumber
 local min, max = math.min, math.max
 local CreateFrame = CreateFrame
 local GetCVar = GetCVar
@@ -57,8 +55,3 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
-
--- Pixel perfect fonts function?
-if K.ScreenHeight <= 1200 then return end
-C.Media.Font_Size = C.Media.Font_Size * K.Mult
-C.Media.Combat_Font_Size = C.Media.Combat_Font_Size * K.Mult
