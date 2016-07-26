@@ -26,7 +26,7 @@ SellGreyRepair:SetScript("OnEvent", function(self, event)
 		for slot = 1, GetContainerNumSlots(bag) do
 			local item = GetContainerItemLink(bag, slot)
 			if item then
-				local itemValue = select(11, GetItemInfo(item)) * GetItemCount(item)
+				local itemValue = select(10, GetItemInfo(item)) * GetItemCount(item)
 
 				if select(3, GetItemInfo(item)) == 0 then
 					ShowMerchantSellCursor(1)

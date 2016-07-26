@@ -17,7 +17,7 @@ hooksecurefunc("TargetFrame_CheckClassification", function (self, forceNormalTex
 	if forceNormalTexture then
 		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
 	elseif classification == "minus" then
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Minus")
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-Targeting-MinusFrame")
 		self.nameBackground:Hide()
 		self.manabar:Hide()
 		self.manabar.TextString:Hide()
