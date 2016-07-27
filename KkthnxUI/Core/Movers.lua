@@ -44,6 +44,8 @@ local placed = {
 	"StuffingFrameBags",
 	"StuffingFrameBank",
 	"alDamageMeterFrame",
+	"PlayerFrame",
+	"TargetFrame",
 }
 
 local SetPosition = function(mover)
@@ -103,6 +105,7 @@ local InitMove = function(msg)
 		for i, v in pairs(placed) do
 			if _G[v] then
 				_G[v]:SetUserPlaced(false)
+				print(placed)
 			end
 		end
 		ReloadUI()

@@ -181,8 +181,11 @@ if C.Unitframe.Enable == true then
 				TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 				-- Tweak Focus Frame
+				FocusFrame:SetMovable(true)
 				FocusFrame:ClearAllPoints()
 				FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
+				FocusFrame:SetUserPlaced(true)
+				FocusFrame:SetMovable(false)
 				-- Tweak Name Background
 				FocusFrameNameBackground:SetPoint("TOP", 0, -21) -- Idk why we need to edit this.
 				FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
@@ -196,15 +199,16 @@ if C.Unitframe.Enable == true then
 				end
 
 				-- Tweak Focus Frame
-				FocusFrameToT:SetScale(1.0)
-				FocusFrameToT:ClearAllPoints()
-				FocusFrameToT:SetPoint("TOP", FocusFrame, "BOTTOM", 34, 35)
+				-- This will taint.
+				--FocusFrameToT:SetScale(1.0)
+				--FocusFrameToT:ClearAllPoints()
+				--FocusFrameToT:SetPoint("TOP", FocusFrame, "BOTTOM", 34, 35)
 
 				-- Arena Frames Scaling
 				local function SetArenaFrames()
 					for i = 1, MAX_ARENA_ENEMIES do
 						_G["ArenaEnemyFrame"..i]:SetScale(C.Unitframe.Scale)
-						ArenaEnemyFrames:SetPoint(unpack(C.Position.UnitFrames.Arena))
+						--ArenaEnemyFrames:SetPoint(unpack(C.Position.UnitFrames.Arena))
 					end
 				end
 
@@ -221,7 +225,7 @@ if C.Unitframe.Enable == true then
 					end)
 				end
 
-				-- RuneFrame
+				--[[ RuneFrame
 				if K.Class == "DEATHKNIGHT" then
 					RuneFrame:ClearAllPoints()
 					RuneFrame:SetPoint("TOPLEFT", PlayerFrameManaBar, "BOTTOMLEFT", -1, -5)
@@ -229,7 +233,7 @@ if C.Unitframe.Enable == true then
 						_G["RuneButtonIndividual"..i]:SetScale(C.Unitframe.Scale)
 					end
 				end
-
+				]]--
 				-- ComboFrame
 				if K.Class == "ROGUE" or K.Class == "DRUID" then
 					for i = 1, 5 do

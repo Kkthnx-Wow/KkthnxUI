@@ -2,7 +2,7 @@
 ## Title: |cff2eb6ffKkthnxUI Config|r
 ## Notes: |cff2eb6ffKkthnxUI|r Config GUI
 ## Author: Tohveli, Josh "Kkthnx" Russell
-## Version: 5.0
+## Version: 4.08
 ## SavedVariables: GUIConfigAll, GUIConfigSettings
 ## SavedVariablesPerCharacter: GUIConfig
 ## RequiredDeps: KkthnxUI
