@@ -213,33 +213,6 @@ end
 
 local function StyleButton(button)
 
-	if button.SetHighlightTexture and not button.hover then
-		local hover = button:CreateTexture()
-		hover:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\Style_Border")
-		hover:SetTexCoord(0.5, 0.671875, 0, 0.6875)
-		hover:SetInside(button, -1, -1)
-		button.hover = hover
-		button:SetHighlightTexture(hover)
-	end
-
-	if button.SetPushedTexture and not button.pushed then
-		local pushed = button:CreateTexture()
-		pushed:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\Style_Border")
-		pushed:SetTexCoord(0.75, 0.921875, 0, 0.6875)
-		pushed:SetInside(button, -1, -1)
-		button.pushed = pushed
-		button:SetPushedTexture(pushed)
-	end
-
-	if button.SetCheckedTexture and not button.checked then
-		local checked = button:CreateTexture()
-		checked:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\Style_Border")
-		checked:SetTexCoord(0.5, 0.671875, 0, 0.6875)
-		checked:SetInside(button, -1, -1)
-		button.checked = checked
-		button:SetCheckedTexture(checked)
-	end
-
 	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
