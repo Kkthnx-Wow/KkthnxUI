@@ -1,6 +1,7 @@
 ![kkthnxui2](https://cloud.githubusercontent.com/assets/1692977/16305586/85f36c9e-3928-11e6-959c-145b7b7b2468.png)   
 
-KkthnxUI is a modular, lightweight, all-in-one overhaul for the World of Warcraft interface. It aims to streamline and clean up the interface, removing unnecessary frills and wasted space as well as fill in some of the holes left in the default UI.      
+KkthnxUI is a simplistic user interface that holds onto the information and functionality, while still keeping most of the good looks.
+It can be used for any class or role.      
 
 ### Installation      
 * Copy KkthnxUI & KkthnxUI_Config from the .zip to your World of Warcraft folder(WoW\Interface\AddOns\PLACE THEM HERE)
