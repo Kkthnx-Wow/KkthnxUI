@@ -11,6 +11,9 @@ local GetRegions = GetRegions
 for i, v in pairs({
 	-- UnitFrames
 	PlayerFrameTexture,
+	PlayerFrameAlternateManaBarBorder,
+	PlayerFrameAlternateManaBarRightBorder,
+	PlayerFrameAlternateManaBarLeftBorder,
 	TargetFrameTextureFrameTexture,
 	PetFrameTexture,
 	PartyMemberFrame1Texture,
