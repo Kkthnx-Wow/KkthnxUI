@@ -43,9 +43,9 @@ for i, v in pairs({
 	RuneButtonIndividual4BorderTexture,
 	RuneButtonIndividual5BorderTexture,
 	RuneButtonIndividual6BorderTexture,
-	CastingBarFrameBorder,
-	FocusFrameSpellBarBorder,
-	TargetFrameSpellBarBorder,
+	CastingBarFrame.Border,
+	FocusFrameSpellBar.Border,
+	TargetFrameSpellBar.Border,
 	-- MainMenuBar
 	SlidingActionBarTexture0,
 	SlidingActionBarTexture1,
