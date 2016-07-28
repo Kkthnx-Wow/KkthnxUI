@@ -1433,7 +1433,7 @@ SlashCmdList.SETTINGS = function(msg)
 		else
 			K.Print("Bartender4".."|cffffe02e"..L_INFO_NOT_INSTALLED.."|r")
 		end
-	elseif msg == "gird" then
+	elseif msg == "grid" then
 		if (select(4, GetAddOnInfo("Grid"))) then
 			UploadGrid()
 			ReloadUI()
