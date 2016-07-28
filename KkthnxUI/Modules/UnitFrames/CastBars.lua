@@ -32,10 +32,12 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 			UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
 
 			-- Move Cast Bar
+			CastingBarFrame:SetMovable(true)
 			CastingBarFrame:ClearAllPoints()
 			CastingBarFrame:SetScale(C.Unitframe.CastBarScale)
 			CastingBarFrame:SetPoint("CENTER", PlayerCastbarAnchor, "CENTER", 0, -3)
-			CastingBarFrame.SetPoint = K.Noop
+			CastingBarFrame:SetUserPlaced(true)
+			CastingBarFrame:SetMovable(false)
 
 			-- Style CastingBarFrame
 			CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
@@ -52,14 +54,14 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 
 			-- CastingBarFrame Icon
 			CastingBarFrame.Icon:Show()
-			CastingBarFrame.Icon:SetSize(20, 20)
 			CastingBarFrame.Icon:ClearAllPoints()
+			CastingBarFrame.Icon:SetSize(20, 20)
 			CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
 
 			-- Target Castbar
 			TargetFrameSpellBar:ClearAllPoints()
-			TargetFrameSpellBar:SetPoint("CENTER", TargetCastbarAnchor, "CENTER", 0, 0)
 			TargetFrameSpellBar:SetScale(C.Unitframe.CastBarScale)
+			TargetFrameSpellBar:SetPoint("CENTER", TargetCastbarAnchor, "CENTER", 0, 0)
 			TargetFrameSpellBar.SetPoint = K.Noop
 
 			-- Castbar Timer
@@ -72,7 +74,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 				CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
 			end
 			CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -12, 1)
-			CastingBarFrame.updateDelay = 0.1
+			CastingBarFrame.update = 0.1
 
 			TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
 			if C.Unitframe.Outline then
@@ -83,7 +85,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 				TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
 			end
 			TargetFrameSpellBar.timer:SetPoint("LEFT", TargetFrameSpellBar, "RIGHT", 8, 2)
-			TargetFrameSpellBar.updateDelay = 0.1
+			TargetFrameSpellBar.update = 0.1
 
 			self:UnregisterEvent("ADDON_LOADED")
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
@@ -92,23 +94,18 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 end)
 
 -- Displays the Casting Bar timer
-local function CastingBarFrame_OnUpdate_Hook(self, elapsed)
-	if(not self.timer) then
-		return
-	end
-	if(self.updateDelay) and (self.updateDelay < elapsed) then
-		if(self.casting) then
-			self.timer:SetText(format("%2.1f / %1.1f", max(self.maxValue - self.value, 0), self.maxValue))
-		elseif(self.channeling) then
-			self.timer:SetText(format("%.1f", max(self.value, 0)))
-		else
-			self.timer:SetText("")
-		end
-		self.updateDelay = 0.1
-	else
-		self.updateDelay = self.updateDelay - elapsed
-	end
-end
-
--- Add a function to be called after execution of a secure function. Allows one to "post-hook" a secure function without tainting the original.
-hooksecurefunc("CastingBarFrame_OnUpdate", CastingBarFrame_OnUpdate_Hook)
+CastingBarFrame:HookScript('OnUpdate', function(self, elapsed)
+    if not self.timer then return end
+    if self.update and self.update < elapsed then
+        if self.casting then
+            self.timer:SetText(format("%2.1f / %1.1f", max(self.maxValue - self.value, 0), self.maxValue))
+        elseif self.channeling then
+            self.timer:SetText(format("%.1f", max(self.value, 0)))
+        else
+            self.timer:SetText("")
+        end
+        self.update = 0.1
+    else
+        self.update = self.update - elapsed
+    end
+end)
