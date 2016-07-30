@@ -10,6 +10,19 @@ local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 
+local shorts = {
+	{ 1e10, 1e9, "%.0fB" }, -- 10b+ as 12B
+	{ 1e9, 1e9, "%.1fB" }, -- 1b+ as 8.3B
+	{ 1e7, 1e6, "%.0fM" }, -- 10m+ as 14M
+	{ 1e6, 1e6, "%.1fM" }, -- 1m+ as 7.4M
+	{ 1e5, 1e3, "%.0fK" }, -- 100k+ as 840K
+	{ 1e3, 1e3, "%.1fK" }, -- 1k+ as 2.5K
+	{ 0, 1, "%d" }, -- < 1k as 974
+}
+for i = 1, #shorts do
+	shorts[i][4] = shorts[i][3] .. " (%.0f%%)"
+end
+
 PlayerFrameTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
 hooksecurefunc("TargetFrame_CheckClassification", function (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit)
@@ -72,51 +85,30 @@ if not InCombatLockdown() then
 	end
 end
 
-hooksecurefunc("TextStatusBar_UpdateTextString", function(textStatusBar)
-	local textString = textStatusBar.TextString
-	if(textString) then
-		local value = textStatusBar:GetValue()
-		local valueMin, valueMax = textStatusBar:GetMinMaxValues()
+hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", function(statusBar, textString, value, valueMin, valueMax)
+	if value == 0 then
+		return textString:SetText("")
+	end
 
-		if ((tonumber(valueMax) ~= valueMax or valueMax > 0) and not (textStatusBar.pauseUpdates)) then
-			textStatusBar:Show()
-			if (value and valueMax > 0 and (GetCVarBool("statusTextPercentage") or textStatusBar.showPercentage) and not textStatusBar.showNumeric) then
-				if (value == 0 and textStatusBar.zeroText) then
-					textString:SetText(textStatusBar.zeroText)
-					textStatusBar.isZero = 1
-					textString:Show()
-					return
+	local style = GetCVar("statusTextDisplay")
+	if style == "PERCENT" then
+		return textString:SetFormattedText("%.0f%%", value / valueMax * 100)
+	end
+	for i = 1, #shorts do
+		local t = shorts[i]
+		if value >= t[1] then
+			if style == "BOTH" then
+				return textString:SetFormattedText(t[4], value / t[2], value / valueMax * 100)
+			else
+				if value < valueMax then
+					for j = 1, #shorts do
+						local v = shorts[j]
+						if valueMax >= v[1] then
+							return textString:SetFormattedText(t[3] .. " / " .. v[3], value / t[2], valueMax / v[2])
+						end
+					end
 				end
-				value = tostring(ceil((value / valueMax) * 100)) .. "%"
-				textString:SetText(K.ShortValue(textStatusBar:GetValue()).." - "..value.."")
-			elseif (value == 0 and textStatusBar.zeroText) then
-				textString:SetText(textStatusBar.zeroText)
-				textStatusBar.isZero = 1
-				textString:Show()
-				return
-			else
-				textStatusBar.isZero = nil
-				if (textStatusBar.capNumericDisplay) then
-					value = K.ShortValue(value)
-				end
-
-				textString:SetText(value)
-			end
-
-			if ((textStatusBar.cvar and GetCVar(textStatusBar.cvar) == "1" and textStatusBar.textLockable) or textStatusBar.forceShow) then
-				textString:Show()
-			elseif (textStatusBar.lockShow > 0 and (not textStatusBar.forceHideText)) then
-				textString:Show()
-			else
-				textString:Hide()
-			end
-		else
-			textString:Hide()
-			textString:SetText("")
-			if (not textStatusBar.alwaysShow) then
-				textStatusBar:Hide()
-			else
-				textStatusBar:SetValue(0)
+				return textString:SetFormattedText(t[3], value / t[2])
 			end
 		end
 	end
@@ -207,6 +199,23 @@ TargetFrameHealthBar.TextString.SetPoint = K.Noop
 PlayerFrameHealthBar.TextString:ClearAllPoints()
 PlayerFrameHealthBar.TextString:SetPoint("CENTER", PlayerFrame, "CENTER", 53, 12)
 PlayerFrameHealthBar.TextString.SetPoint = K.Noop
+
+PlayerFrameHealthBarTextRight:ClearAllPoints()
+PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrame, "RIGHT", -8, 12)
+PlayerFrameHealthBarTextRight.SetPoint = K.Noop
+
+PlayerFrameHealthBarTextLeft:ClearAllPoints()
+PlayerFrameHealthBarTextLeft:SetPoint("CENTER", PlayerFrame, "CENTER", 8, 12)
+PlayerFrameHealthBarTextLeft.SetPoint = K.Noop
+
+TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
+TargetFrameTextureFrameHealthBarTextRight:SetPoint("CENTER", TargetFrame, "CENTER", -13, 12)
+TargetFrameTextureFrameHealthBarTextRight.SetPoint = K.Noop
+
+TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
+TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrame, "LEFT", 7, 12)
+TargetFrameTextureFrameHealthBarTextLeft.SetPoint = K.Noop
+
 
 FocusFrameHealthBar.TextString:ClearAllPoints()
 FocusFrameHealthBar.TextString:SetPoint("CENTER", FocusFrame, "CENTER", -53, 12)

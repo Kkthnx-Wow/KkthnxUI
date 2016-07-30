@@ -11,6 +11,7 @@ K.MoverFrames = {
 	ActionBarAnchor,
 	BuffsAnchor,
 	COOLDOWN_Anchor,
+	ExtraButtonAnchor,
 	LootRollAnchor,
 	MinimapAnchor,
 	PVE_PVP_CC_Anchor,
@@ -20,7 +21,6 @@ K.MoverFrames = {
 	PetActionBarAnchor,
 	PlayerCastbarAnchor,
 	PlayerFrameAnchor,
-	PowerBarAnchor,
 	PulseCDAnchor,
 	RightActionBarAnchor,
 	SPECIAL_P_BUFF_ICON_Anchor,
@@ -41,6 +41,9 @@ local moving = false
 local movers = {}
 local placed = {
 	"Butsu",
+	"UIAltPowerBar",
+	"LootHistoryFrame",
+	"stArchaeologyFrame",
 	"StuffingFrameBags",
 	"StuffingFrameBank",
 	"alDamageMeterFrame",

@@ -10,6 +10,7 @@ C["Position"] = {
 	["BottomBars"] = {"BOTTOM", "UIParent", "BOTTOM", 0, 5},
 	["CaptureBar"] = {"TOP", "UIParent", "TOP", 0, -170},
 	["Chat"] = {"BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 3, 5},
+	["ExtraButton"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
 	["GroupLoot"] = {"BOTTOM", "UIParent", "BOTTOM", -238, 700},
 	["Loot"] = {"TOPLEFT", "UIParent", "TOPLEFT", 245, -220},
 	["Minimap"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -7, -7},

@@ -162,9 +162,9 @@ if C.Unitframe.Enable == true then
 				PlayerFrame:SetMovable(true)
 				PlayerFrame:ClearAllPoints()
 				PlayerFrame:SetPoint("CENTER", PlayerFrameAnchor, "CENTER", -51, 3)
-				--PlayerFrame.SetPoint = K.Noop
 				PlayerFrame:SetUserPlaced(true)
 				PlayerFrame:SetMovable(false)
+				PlayerFrame.SetPoint = K.Noop
 
 				-- Hide Pet Name.
 				PetName:Hide()
@@ -173,9 +173,9 @@ if C.Unitframe.Enable == true then
 				TargetFrame:SetMovable(true)
 				TargetFrame:ClearAllPoints()
 				TargetFrame:SetPoint("CENTER", TargetFrameAnchor, "CENTER", 51, 3)
-				--TargetFrame.SetPoint = K.Noop
 				TargetFrame:SetUserPlaced(true)
 				TargetFrame:SetMovable(false)
+				TargetFrame.SetPoint = K.Noop
 				-- Tweak Name Background
 				TargetFrameNameBackground:SetPoint("TOP", 0, -21) -- Idk why we need to edit this.
 				TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
