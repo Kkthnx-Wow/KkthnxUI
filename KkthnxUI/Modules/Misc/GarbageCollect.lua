@@ -12,11 +12,9 @@ function Garbage:OnEvent(event, unit)
 
 	if InCombatLockdown() and eventcount > 25000 or not InCombatLockdown() and eventcount > 10000 or event == "PLAYER_ENTERING_WORLD" then
 		collectgarbage("collect")
-
 		self:UnregisterEvent(event)
 	else
 		if (unit ~= "player") then return end
-
 		if UnitIsAFK(unit) then collectgarbage("collect") end
 	end
 end

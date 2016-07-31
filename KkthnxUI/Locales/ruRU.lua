@@ -153,6 +153,8 @@ L_MAP_FARMMODE = "|cff2eb6ffРежим фарма|r"
 L_MINIMAP_FARMMODE_ON = "|cffffe02eРежим фарма|r: |cFF008000Включен|r."
 L_MINIMAP_FARMMODE_OFF = "|cffffe02eРежим фарма|r: |cFFFF0000Выключен|r."
 -- Misc Localization
+L_MISC_BUY_STACK = "Alt-Click to buy a stack"
+L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
 L_MISC_UI_OUTDATED = "Ваша версия |cff2eb6ffKkthnxUI|r устарела. Вы можете скачать последнюю версию с www.github.com/Kkthnx"
 L_MISC_UNDRESS = "Снять"
 -- Popup Localization
