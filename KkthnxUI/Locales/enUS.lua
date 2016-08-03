@@ -64,6 +64,7 @@ L_CHAT_RAID = "R"
 L_CHAT_RAID_LEADER = "RL"
 L_CHAT_RAID_WARNING = "RW"
 L_CHAT_SAYS = "says"
+L_CHAT_TRADE = "Trade"
 L_CHAT_WHISPERS = "whispers"
 L_CHAT_YELLS = "yells"
 -- BigChat Localization

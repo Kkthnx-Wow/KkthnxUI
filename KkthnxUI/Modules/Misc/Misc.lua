@@ -28,6 +28,14 @@ hooksecurefunc(DurabilityFrame,"SetPoint", SetPosition)
 -- Move some frames (Shestak)
 TicketStatusFrame:ClearAllPoints()
 TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
+-- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
+hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
+	if anchor == UIParent then
+		TicketStatusFrame:ClearAllPoints()
+		TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
+	end
+end)
+
 
 MirrorTimer1:ClearAllPoints()
 MirrorTimer1:SetPoint("TOP", UIParent, 0, -96)
