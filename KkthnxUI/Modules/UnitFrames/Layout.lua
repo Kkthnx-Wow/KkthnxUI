@@ -39,7 +39,7 @@ if C.Unitframe.Enable == true then
 	Unitframes:RegisterEvent("ADDON_LOADED")
 	Unitframes:RegisterEvent("PLAYER_ENTERING_WORLD")
 	Unitframes:SetScript("OnEvent", function(self, event, addon)
-		if addon == "KkthnxUI" or event == "PLAYER_ENTERING_WORLD" then
+		if event == "ADDON_LOADED" or event == "PLAYER_ENTERING_WORLD" and addon == "KkthnxUI" then
 			if not InCombatLockdown() then
 				if C.Unitframe.ClassHealth ~= true then
 
@@ -57,7 +57,7 @@ if C.Unitframe.Enable == true then
 					hooksecurefunc("UnitFrame_Update", function(self, isParty)
 						if not self.name or not self:IsShown() then return end
 
-						local PET_COLOR = {r = 157/255, g = 197/255, b = 255/255}
+						local PET_COLOR = { r = 157/255, g = 197/255, b = 255/255 }
 						local unit, color = self.unit
 						if UnitPlayerControlled(unit) then
 							if UnitIsPlayer(unit) then
@@ -65,7 +65,7 @@ if C.Unitframe.Enable == true then
 							else
 								color = PET_COLOR
 							end
-						elseif UnitIsDeadOrGhost(unit) or UnitIsTapDenied(unit) and not UnitIsTapDenied(unit) then
+						elseif UnitIsDeadOrGhost(unit) then
 							color = GRAY_FONT_COLOR
 						else
 							color = CUSTOM_FACTION_BAR_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
@@ -151,6 +151,24 @@ if C.Unitframe.Enable == true then
 						LevelText:SetShadowOffset(K.Mult, -K.Mult)
 					end
 				end
+
+				-- PlayerFrame
+				hooksecurefunc("PlayerFrame_UpdateLevelTextAnchor", function(level)
+					if ( level >= 100 ) then
+						PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -16)
+					else
+						PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -16)
+					end
+				end)
+
+				-- TargetFrame
+				hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", function(self, targetLevel)
+					if ( targetLevel >= 100 ) then
+						self.levelText:SetPoint("CENTER", 62, -16)
+					else
+						self.levelText:SetPoint("CENTER", 62, -16)
+					end
+				end)
 
 				-- Tweak Party Frame
 				for i = 1, MAX_PARTY_MEMBERS do

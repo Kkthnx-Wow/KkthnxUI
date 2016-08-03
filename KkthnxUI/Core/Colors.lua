@@ -17,7 +17,7 @@ BETTER_FACTION_BAR_COLORS = {
 }
 
 -- Class Colors
-RAID_CLASS_COLORS = {
+BETTER_RAID_CLASS_COLORS = {
 	["HUNTER"] = {r = 255/255, g = 255/255, b = 255/255},
 	["WARLOCK"] = {r = 148/255, g = 130/255, b = 201/255},
 	["PRIEST"] = {r = 220/255, g = 235/255, b = 250/255},

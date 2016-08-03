@@ -821,7 +821,7 @@ do
 		subtitle:SetWidth(380)
 		subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 		subtitle:SetJustifyH("LEFT")
-		subtitle:SetText("UI Site: |cff2eb6ffhttps://kkthnx.github.io/KkthnxUI_Legion/|r\nGitHub: |cff2eb6ffhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff2eb6ffhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r\nPayPal.Me: |cff2eb6ffhttps://www.paypal.me/kkthnx|r")
+		subtitle:SetText("UI Site: |cff2eb6ffhttps://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff2eb6ffhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff2eb6ffhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
 
 		local title2 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title2:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
@@ -886,7 +886,7 @@ do
 		local Config = UIConfigMain
 		local Interface = GameMenuButtonUIOptions
 		local KeyBinds = GameMenuButtonKeybindings
-		
+
 		Menu:HookScript("OnShow", function(self)
 			local Height = Menu:GetHeight()
 			self:SetHeight(Height + 21)
