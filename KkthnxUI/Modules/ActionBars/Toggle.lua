@@ -339,8 +339,10 @@ for i = 1, 5 do
 		if i == 2 then
 			K:UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
 		elseif i == 3 or i == 4 then
-			ToggleBar[3]:FadeIn()
-			ToggleBar[4]:FadeIn()
+			K:UIFrameFadeIn(ToggleBar[3], 0.4, ToggleBar[3]:GetAlpha(), 1)
+			K:UIFrameFadeIn(ToggleBar[4], 0.4, ToggleBar[4]:GetAlpha(), 1)
+			--ToggleBar[3]:FadeIn()
+			--ToggleBar[4]:FadeIn()
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 		else
