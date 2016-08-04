@@ -6,6 +6,7 @@
 ## SavedVariables: GUIConfigAll, GUIConfigSettings
 ## SavedVariablesPerCharacter: GUIConfig
 ## RequiredDeps: KkthnxUI
+## X-WoWI-ID: 23677
 
 Locales\enUS.lua
 Locales\ruRU.lua
