@@ -48,7 +48,7 @@ SellGreyRepair:SetScript("OnEvent", function(self, event)
 		local cost, needed = GetRepairAllCost()
 		if needed then
 			local GuildWealth = CanGuildBankRepair() and GetGuildBankWithdrawMoney() > cost
-			if GuildWealth and GetNumPartyMembers() > 5 then
+			if GuildWealth and GetNumGroupMembers() > 5 then
 				RepairAllItems(1)
 				K.Print(format(L_REPAIR_BANK, K.FormatMoney(cost)))
 			elseif cost < GetMoney() then
