@@ -6,6 +6,9 @@
 ## SavedVariables: GUIConfigAll, GUIConfigSettings
 ## SavedVariablesPerCharacter: GUIConfig
 ## RequiredDeps: KkthnxUI
+## X-Curse-Packaged-Version: 5.04
+## X-Curse-Project-Name: KkthnxUI
+## X-Curse-Project-ID: kkthnxui
 ## X-WoWI-ID: 23677
 
 Locales\enUS.lua
