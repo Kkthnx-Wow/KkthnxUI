@@ -6,32 +6,33 @@ local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
+if C.ActionBar.PetBarHide then PetActionBarAnchor:Hide() return end
+
 -- Create bar
 local bar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTemplate")
-if C.ActionBar.PetBarHide then bar:SetScale(0.000001) bar:SetAlpha(0) PetActionBarAnchor:Hide() return end
 bar:SetAllPoints(PetActionBarAnchor)
 
-bar:RegisterEvent("PET_BAR_HIDE")
-bar:RegisterEvent("PET_BAR_UPDATE")
-bar:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
-bar:RegisterEvent("PET_BAR_UPDATE_USABLE")
-bar:RegisterEvent("PLAYER_CONTROL_GAINED")
-bar:RegisterEvent("PLAYER_CONTROL_LOST")
-bar:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED")
 bar:RegisterEvent("PLAYER_LOGIN")
-bar:RegisterEvent("UNIT_AURA")
-bar:RegisterEvent("UNIT_FLAGS")
+bar:RegisterEvent("PLAYER_CONTROL_LOST")
+bar:RegisterEvent("PLAYER_CONTROL_GAINED")
+bar:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED")
+bar:RegisterEvent("PET_BAR_UPDATE")
+bar:RegisterEvent("PET_BAR_UPDATE_USABLE")
+bar:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
+bar:RegisterEvent("PET_BAR_HIDE")
 bar:RegisterEvent("UNIT_PET")
+bar:RegisterEvent("UNIT_FLAGS")
+bar:RegisterEvent("UNIT_AURA")
 bar:SetScript("OnEvent", function(self, event, arg1)
 	if event == "PLAYER_LOGIN" then
-		PetActionBarFrame.showgrid = 1
-
-		local button
+		K.StylePet()
+		PetActionBar_ShowGrid = K.Noop
+		PetActionBar_HideGrid = K.Noop
+		PetActionBarFrame.showgrid = nil
 		for i = 1, 10 do
-			button = _G["PetActionButton"..i]
+			local button = _G["PetActionButton"..i]
 			button:ClearAllPoints()
 			button:SetParent(PetHolder)
-
 			button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 			if i == 1 then
 				if C.ActionBar.PetBarHorizontal == true then
@@ -49,15 +50,12 @@ bar:SetScript("OnEvent", function(self, event, arg1)
 			button:Show()
 			self:SetAttribute("addchild", button)
 		end
-		RegisterStateDriver(self, "visibility", "[pet,novehicleui,nobonusbar:5] show; hide")
+		RegisterStateDriver(self, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
 		hooksecurefunc("PetActionBar_Update", K.PetBarUpdate)
-	elseif event == "PET_BAR_UPDATE" or event == "UNIT_PET" and arg1 == "player"
-	or event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED" or event == "UNIT_FLAGS"
-	or arg1 == "pet" and (event == "UNIT_AURA") then
+	elseif event == "PET_BAR_UPDATE" or event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED"
+	or event == "UNIT_FLAGS" or (event == "UNIT_PET" and arg1 == "player") or (arg1 == "pet" and event == "UNIT_AURA") then
 		K.PetBarUpdate()
 	elseif event == "PET_BAR_UPDATE_COOLDOWN" then
 		PetActionBar_UpdateCooldowns()
-	else
-		K.StylePet()
 	end
 end)

@@ -88,12 +88,10 @@ K.PetBarUpdate = function(self, event)
 		if name then
 			if not C.ActionBar.ShowGrid then
 				petActionButton:SetAlpha(1)
-				petActionButton:Show()
 			end
 		else
 			if not C.ActionBar.ShowGrid then
 				petActionButton:SetAlpha(0)
-				petActionButton:Hide()
 			end
 		end
 

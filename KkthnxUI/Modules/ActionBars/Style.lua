@@ -12,64 +12,60 @@ local hooksecurefunc = hooksecurefunc
 
 local function StyleNormalButton(self)
 	local name = self:GetName()
-	if name:match("MultiCast") then return end
 	local button = self
 	local icon = _G[name.."Icon"]
 	local count = _G[name.."Count"]
 	local flash = _G[name.."Flash"]
 	local hotkey = _G[name.."HotKey"]
 	local border = _G[name.."Border"]
-	local macroName = _G[name.."Name"]
+	local btname = _G[name.."Name"]
 	local normal = _G[name.."NormalTexture"]
 	local float = _G[name.."FloatingBG"]
 
 	flash:SetTexture("")
 	button:SetNormalTexture("")
 
-	if (float) then
-		float:Kill()
+	if float then
+		float:Hide()
+		float = K.Noop
 	end
 
 	count:ClearAllPoints()
 	count:SetPoint("BOTTOMRIGHT", 0, 2)
 	count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 
-	hotkey:ClearAllPoints()
-	hotkey:SetPoint("TOPRIGHT", 0, -2)
-
-	if macroName then
+	if btname then
 		if C.ActionBar.Macro == true then
-			macroName:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			macroName:ClearAllPoints()
-			macroName:SetPoint("BOTTOM", 1, 1)
-			macroName:SetVertexColor(1, 0.82, 0, 1)
+			btname:ClearAllPoints()
+			btname:SetPoint("BOTTOM", 0, 0)
+			btname:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+			btname:SetWidth(C.ActionBar.ButtonSize - 1)
 		else
-			macroName:SetText("")
-			macroName:Kill()
+			btname:Kill()
 		end
 	end
 
-	if hotkey then
-		if C.ActionBar.Hotkey then
-			hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			hotkey.ClearAllPoints = K.Noop
-			hotkey.SetPoint = K.Noop
-		else
-			hotkey:SetText("")
-			hotkey:Kill()
-		end
+	if C.ActionBar.Hotkey == true then
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPRIGHT", 0, -2)
+		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		hotkey:SetWidth(C.ActionBar.ButtonSize - 1)
+		hotkey.ClearAllPoints = K.Noop
+		hotkey.SetPoint = K.Noop
+	else
+		hotkey:Kill()
 	end
 
 	if not button.isSkinned then
-		if self:GetHeight() ~= C.ActionBar.ButtonSize and not InCombatLockdown() then
+		if self:GetHeight() ~= C.ActionBar.ButtonSize and not InCombatLockdown() and not name:match("ExtraAction") then
 			self:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 		end
 		button:CreateBackdrop()
 		button.backdrop:SetOutside()
 
 		icon:SetTexCoord(unpack(K.TexCoords))
-		icon:SetInside()
-		icon:SetDrawLayer("BORDER", 7) -- ??
+		icon:SetPoint("TOPLEFT", button, 2, -2)
+		icon:SetPoint("BOTTOMRIGHT", button, -2, 2)
 
 		button.isSkinned = true
 	end
@@ -87,6 +83,10 @@ local function StyleNormalButton(self)
 		button:CreateBlizzShadow(5)
 	end
 
+	if normal and button:GetChecked() then
+		ActionButton_UpdateState(button)
+	end
+
 	if normal then
 		normal:ClearAllPoints()
 		normal:SetPoint("TOPLEFT")
@@ -96,11 +96,30 @@ end
 
 local function StyleSmallButton(normal, button, icon, name, pet)
 	local flash = _G[name.."Flash"]
-	button:SetNormalTexture("")
-	button.SetNormalTexture = K.Noop
+	local hotkey = _G[name.."HotKey"]
 
-	flash:SetColorTexture(204/255, 204/255, 204/255, 0.5)
-	flash:SetInside()
+	button:SetNormalTexture("")
+
+	hooksecurefunc(button, "SetNormalTexture", function(self, texture)
+		if texture and texture ~= "" then
+			self:SetNormalTexture("")
+		end
+	end)
+
+	flash:SetColorTexture(0.8, 0.8, 0.8, 0.5)
+	flash:SetPoint("TOPLEFT", button, 2, -2)
+	flash:SetPoint("BOTTOMRIGHT", button, -2, 2)
+
+	if C.ActionBar.HotKey == true then
+		hotkey:ClearAllPoints()
+		hotkey:SetPoint("TOPRIGHT", 0, 0)
+		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		hotkey:SetWidth(C.ActionBar.ButtonSize - 1)
+		hotkey.ClearAllPoints = K.Noop
+		hotkey.SetPoint = K.Noop
+	else
+		hotkey:Kill()
+	end
 
 	if not button.isSkinned then
 		button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
@@ -108,8 +127,9 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 		button.backdrop:SetOutside()
 
 		icon:SetTexCoord(unpack(K.TexCoords))
-		icon:SetInside()
-		icon:SetDrawLayer("BORDER", 7)
+		icon:ClearAllPoints()
+		icon:SetPoint("TOPLEFT", button, 2, -2)
+		icon:SetPoint("BOTTOMRIGHT", button, -2, 2)
 
 		if pet then
 			local autocast = _G[name.."AutoCastable"]
@@ -133,7 +153,8 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 
 	if normal then
 		normal:ClearAllPoints()
-		normal:SetOutside()
+		normal:SetPoint("TOPLEFT")
+		normal:SetPoint("BOTTOMRIGHT")
 	end
 end
 
@@ -206,45 +227,18 @@ local function UpdateHotkey(self, actionButtonType)
 	end
 end
 
--- Rescale cooldown spiral to fix texture
-local buttonNames = {
-	"ActionButton",
-	"MultiBarBottomLeftButton",
-	"MultiBarBottomRightButton",
-	"MultiBarLeftButton",
-	"MultiBarRightButton",
-	"StanceButton",
-	"PetActionButton",
-	"MultiCastActionButton"
-}
-
-for _, name in ipairs(buttonNames) do
-	for index = 1, 12 do
-		local buttonName = name..tostring(index)
-		local button = _G[buttonName]
-		local cooldown = _G[buttonName.."Cooldown"]
-
-		if (button == nil or cooldown == nil) then
-			break
-		end
-
-		cooldown:ClearAllPoints()
-		cooldown:SetInside()
-	end
-end
-
 do
 	for i = 1, 12 do
-		_G["ActionButton"..i]:StyleButton(true)
-		_G["MultiBarBottomLeftButton"..i]:StyleButton(true)
-		_G["MultiBarBottomRightButton"..i]:StyleButton(true)
-		_G["MultiBarLeftButton"..i]:StyleButton(true)
-		_G["MultiBarRightButton"..i]:StyleButton(true)
+		_G["ActionButton"..i]:StyleButton()
+		_G["MultiBarBottomLeftButton"..i]:StyleButton()
+		_G["MultiBarBottomRightButton"..i]:StyleButton()
+		_G["MultiBarLeftButton"..i]:StyleButton()
+		_G["MultiBarRightButton"..i]:StyleButton()
 	end
 
 	for i = 1, 10 do
-		_G["StanceButton"..i]:StyleButton(true)
-		_G["PetActionButton"..i]:StyleButton(true)
+		_G["StanceButton"..i]:StyleButton()
+		_G["PetActionButton"..i]:StyleButton()
 	end
 end
 

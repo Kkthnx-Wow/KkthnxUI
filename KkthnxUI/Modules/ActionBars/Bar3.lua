@@ -5,7 +5,7 @@ local _G = _G
 local CreateFrame = CreateFrame
 
 --	Setup MultiBarLeft as bar #3 by Tukz
-local bar = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
+local bar = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
 bar:SetAllPoints(RightActionBarAnchor)
 MultiBarLeft:SetParent(bar)
 
