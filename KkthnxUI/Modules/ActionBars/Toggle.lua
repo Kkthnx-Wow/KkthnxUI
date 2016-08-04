@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or C.ActionBar.ToggleMode ~= true then return end
 
 local _G = _G
@@ -341,8 +342,6 @@ for i = 1, 5 do
 		elseif i == 3 or i == 4 then
 			K:UIFrameFadeIn(ToggleBar[3], 0.4, ToggleBar[3]:GetAlpha(), 1)
 			K:UIFrameFadeIn(ToggleBar[4], 0.4, ToggleBar[4]:GetAlpha(), 1)
-			--ToggleBar[3]:FadeIn()
-			--ToggleBar[4]:FadeIn()
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 		else
@@ -355,8 +354,8 @@ for i = 1, 5 do
 			K:UIFrameFadeOut(ToggleBar[i], 1, ToggleBar[i]:GetAlpha(), 0)
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-			ToggleBar[3]:FadeOut()
-			ToggleBar[4]:FadeOut()
+			K:UIFrameFadeOut(ToggleBar[3], 1, ToggleBar[3]:GetAlpha(), 0)
+			K:UIFrameFadeOut(ToggleBar[4], 1, ToggleBar[4]:GetAlpha(), 0)
 			VehicleButtonAnchor:ClearAllPoints()
 			if SavedOptionsPerChar.SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
