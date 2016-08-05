@@ -9,6 +9,7 @@ local InCombatLockdown = InCombatLockdown
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
 local hooksecurefunc = hooksecurefunc
 
+--[[
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", UIParent)
 if C.ActionBar.StanceBarHorizontal == true then
 	ShiftHolder:SetPoint(unpack(C.Position.StanceBar))
@@ -23,11 +24,11 @@ else
 	ShiftHolder:SetWidth(C.ActionBar.ButtonSize)
 	ShiftHolder:SetHeight((C.ActionBar.ButtonSize * 7) + (C.ActionBar.ButtonSpace * 6))
 end
-
+]]--
 -- Hide bar
-if C.ActionBar.StancebarHide then ShiftHolder:Hide() return end
+if C.ActionBar.StanceBarHide then ShiftHolder:Hide() return end
 
--- Setup Shapeshift Bar by Tukz
+-- Create bar
 local bar = CreateFrame("Frame", "UIShapeShift", ShiftHolder, "SecureHandlerStateTemplate")
 bar:ClearAllPoints()
 bar:SetAllPoints(ShiftHolder)

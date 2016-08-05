@@ -258,9 +258,9 @@ C["Unitframe"] = {
 	["EnhancedFrames"] = false,
 	["GroupNumber"] = false,
 	["PvPIcon"] = true,
-	["LargeAuraSize"] = 26,
+	["LargeAuraSize"] = 20,
 	["Outline"] = false,
 	["PercentHealth"] = false,
 	["Scale"] = 1.2,
-	["SmallAuraSize"] = 22,
+	["SmallAuraSize"] = 16,
 }

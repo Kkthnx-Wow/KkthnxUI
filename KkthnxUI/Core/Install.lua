@@ -287,10 +287,8 @@ SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
 
 -- On login function
 local Install = CreateFrame("Frame")
-Install:RegisterEvent("PLAYER_ENTERING_WORLD")
 Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	if (addon ~= "KkthnxUI") then
 		return
 	end

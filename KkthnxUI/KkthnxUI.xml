@@ -70,9 +70,8 @@
 	<Script file="Modules\ActionBars\Bar3.lua"/>
 	<Script file="Modules\ActionBars\Bar4.lua"/>
 	<Script file="Modules\ActionBars\Bar5.lua"/>
-	<Script file="Modules\ActionBars\ShapeshiftBar.lua"/>
+	<Script file="Modules\ActionBars\StanceBar.lua"/>
 	<Script file="Modules\ActionBars\PetBar.lua"/>
-	<Script file="Modules\ActionBars\TotemBar.lua"/>
 	<Script file="Modules\ActionBars\Toggle.lua"/>
 	<Script file="Modules\ActionBars\Style.lua"/>
 	<Script file="Modules\ActionBars\Range.lua"/>
