@@ -30,8 +30,6 @@ local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 
 -- Simple Install
 local function InstallUI()
-	local ActionBars = C.ActionBar.Enable
-
 	SetCVar("RotateMinimap", 0)
 	SetCVar("ShowClassColorInNameplate", 1)
 	SetCVar("SpamFilter", 0)
@@ -60,10 +58,6 @@ local function InstallUI()
 	SetCVar("WhisperMode", "inline")
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("nameplateShowSelf", 0)
-
-	if (ActionBars) then
-		SetActionBarToggles(1, 1, 1, 1)
-	end
 
 	InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsControlsPanelAutoLootKeyDropDown:RefreshValue()
