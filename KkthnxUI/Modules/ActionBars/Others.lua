@@ -5,7 +5,6 @@ local _G = _G
 local GetCVarBool = GetCVarBool
 local SetCVar = SetCVar
 local CreateFrame = CreateFrame
-local NUM_ACTIONBAR_BUTTONS = NUM_ACTIONBAR_BUTTONS
 
 -- Show empty buttons
 local ShowGrid = CreateFrame("Frame")
@@ -40,10 +39,6 @@ ShowGrid:SetScript("OnEvent", function(self, event)
 		SetCVar("alwaysShowActionBars", 0)
 	end
 end)
-
-if not GetCVarBool("lockActionBars") then
-	SetCVar("lockActionBars", 1)
-end
 
 -- Vehicle button anchor
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)

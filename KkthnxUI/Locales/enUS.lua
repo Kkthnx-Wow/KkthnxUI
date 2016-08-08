@@ -1,10 +1,5 @@
 -- Localization for enUS & enGB clients
 
--- AdddonManager Localization
-L_ADDON_DISABLE_ALL = "Disable all"
-L_ADDON_ENABLE_ALL = "Enable all"
-L_ADDON_LIST = "|cff2eb6ffAddonList|r"
-L_ADDON_RELOAD = "Reload"
 -- Announce Localization
 L_ANNOUNCE_FP_CAST = "%s is casting %s."
 L_ANNOUNCE_FP_CLICK = "%s is casting %s. Click!"
@@ -24,25 +19,10 @@ L_REPAIR_BANK = "Guild bank repaired for %s."
 L_REPAIRED_FOR = "Repaired for %s."
 L_CANT_AFFORD_REPAIR = "Repairs were unaffordable."
 -- Bags Localization
-L_BAG_BAGS_BIDS = "Using bags: "
-L_BAG_BUY_BANKS_SLOT = "buy bank slot. (need to have bank open)"
-L_BAG_BUY_SLOTS = "Buy new slot with /bags purchase yes"
-L_BAG_COSTS = "Cost: %.2f gold"
-L_BAG_NOTHING_SORT = "Nothing to sort."
-L_BAG_NO_SLOTS = "can't buy any more slots!"
-L_BAG_OPEN_BANK = "You need to open your bank first."
-L_BAG_RIGHT_CLICK_CLOSE = "Right-click to open menu"
 L_BAG_SHOW_BAGS = "Show Bags"
-L_BAG_SORT = "sort your bags or your bank, if open."
-L_BAG_SORTING_BAGS = "Sorting finished."
-L_BAG_SORT_MENU = "Sort"
-L_BAG_SORT_SPECIAL = "Sort Special"
-L_BAG_SHOW_KEYRING = "Show Keyring"
-L_BAG_STACK = "fill up partial stacks in your bags or bank, if open."
-L_BAG_RIGHT_CLICK_SEARCH = "Right-click to search."
-L_BAG_STACK_END = "Restacking finished."
+L_BAG_RIGHT_CLICK_SEARCH = "Right-click to search"
 L_BAG_STACK_MENU = "Stack"
-L_BAG_STACK_SPECIAL = "Stack Special"
+L_BAG_RIGHT_CLICK_CLOSE = "Right-click to open menu"
 -- Bindings Localization
 L_BIND_BINDING = "Binding"
 L_BIND_CLEARED = "All keybindings cleared for"
@@ -70,10 +50,6 @@ L_CHAT_YELLS = "yells"
 -- BigChat Localization
 L_CHAT_BIGCHAT_OFF = "|cffffe02eBig Chat Mode|r: Off"
 L_CHAT_BIGCHAT_ON = "|cffffe02eBig Chat Mode|r: On"
--- Class Localization
-L_CLASS_HUNTER_CONTENT = "Your pet is content!"
-L_CLASS_HUNTER_HAPPY = "Your pet is happy!"
-L_CLASS_HUNTER_UNHAPPY = "Your pet is unhappy!"
 -- Datatext Localization
 L_DATATEXT_ALTERAC = "Alterac Valley"
 L_DATATEXT_ANCIENTS = "Strand of the Ancients"

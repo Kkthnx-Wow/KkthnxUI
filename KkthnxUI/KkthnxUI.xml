@@ -22,7 +22,7 @@
 	<Script file="Config\Filters\ChatSpam.lua"/>
 	<Script file="Config\Filters\Errors.lua"/>
 	<Script file="Config\Filters\FilgerSpells.lua"/>
-	<Script file="Config\Filters\Nameplates.lua"/>
+	<Script file="Config\Filters\Cooldowns.lua"/>
 	<Script file="Config\Filters\NeedItems.lua"/>
 
 	<Script file="Core\API.lua"/>

@@ -15,7 +15,6 @@ local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
 
 DurabilityFrame:SetFrameStrata("HIGH")
-
 local function SetPosition(self, _, parent)
 	if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
 		DurabilityFrame:ClearAllPoints()
@@ -35,7 +34,6 @@ hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
 		TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
 	end
 end)
-
 
 MirrorTimer1:ClearAllPoints()
 MirrorTimer1:SetPoint("TOP", UIParent, 0, -96)
@@ -89,14 +87,6 @@ hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	end
 end)
 
-local AchFilter = CreateFrame("Frame")
-AchFilter:RegisterEvent("ADDON_LOADED")
-AchFilter:SetScript("OnEvent", function(self, event, addon)
-	if addon == "Blizzard_AchievementUI" then
-		AchievementFrame_SetFilter(3)
-	end
-end)
-
 -- Force readycheck warning
 local ShowReadyCheckHook = function(self, initiator)
 	if initiator ~= "player" then
@@ -104,6 +94,28 @@ local ShowReadyCheckHook = function(self, initiator)
 	end
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
+
+-- Custom Lag Tolerance(by Elv22)
+if C.General.CustomLagTolerance == true then
+	InterfaceOptionsCombatPanelMaxSpellStartRecoveryOffset:Hide()
+	InterfaceOptionsCombatPanelReducedLagTolerance:Hide()
+
+	local customlag = CreateFrame("Frame")
+	local int = 5
+	local _, _, _, lag = GetNetStats()
+	local LatencyUpdate = function(self, elapsed)
+		int = int - elapsed
+		if int < 0 then
+			if GetCVar("reducedLagTolerance") ~= tostring(1) then SetCVar("reducedLagTolerance", tostring(1)) end
+			if lag ~= 0 and lag <= 400 then
+				SetCVar("maxSpellStartRecoveryOffset", tostring(lag))
+			end
+			int = 5
+		end
+	end
+	customlag:SetScript("OnUpdate", LatencyUpdate)
+	LatencyUpdate(customlag, 10)
+end
 
 -- Force other warning
 local ForceWarning = CreateFrame("Frame")
@@ -133,17 +145,6 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 	end
 end)
 
--- Enforce CVars.
-local ForceCVar = CreateFrame("Frame")
-ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ForceCVar:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
-			SetCVar("lockActionBars", 1)
-		end
-	end
-end)
-
 -- Auto select current event boss from LFD tool(EventBossAutoSelect by Nathanyel)
 local firstLFD
 LFDParentFrame:HookScript("OnShow", function()
@@ -165,7 +166,7 @@ if C.Misc.BGSpam == true then
 	local RaidBossEmoteFrame, spamDisabled = RaidBossEmoteFrame
 
 	local function DisableSpam()
-		if GetZoneText() == L_ZONE_ARATHIBASIN then
+		if GetZoneText() == L_ZONE_ARATHIBASIN or GetZoneText() == L_ZONE_GILNEAS then
 			RaidBossEmoteFrame:UnregisterEvent("RAID_BOSS_EMOTE")
 			spamDisabled = true
 		elseif spamDisabled then
@@ -209,5 +210,31 @@ strip:SetScript("OnEvent", function(self)
 		self:ClearAllPoints()
 		self:SetPoint("RIGHT", DressUpFrameResetButton, "LEFT", -2, 0)
 		self.model = DressUpModel
+	end
+end)
+
+-- Old achievements filter
+function AchievementFrame_GetCategoryNumAchievements_OldIncomplete(categoryID)
+	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID)
+	return numAchievements - numCompleted, 0, numCompleted
+end
+
+function old_nocomplete_filter_init()
+	AchievementFrameFilters = {
+		{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
+		{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
+		{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete},
+		{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE.." ("..ALL.." )", func = AchievementFrame_GetCategoryNumAchievements_OldIncomplete}
+	}
+end
+
+local filter = CreateFrame("Frame")
+filter:RegisterEvent("ADDON_LOADED")
+filter:SetScript("OnEvent", function(self, event, addon, ...)
+	if (addon == "Blizzard_AchievementUI") then
+		if AchievementFrame then
+			old_nocomplete_filter_init()
+			filter:UnregisterEvent("ADDON_LOADED")
+		end
 	end
 end)

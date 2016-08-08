@@ -169,25 +169,6 @@ C["Misc"] = {
 	["ItemLevel"] = false,
 	["SpeedyLoad"] = false,
 }
--- Nameplate Options
-C["Nameplate"] = {
-	["AdditionalHeight"] = 0,
-	["AdditionalWidth"] = 0,
-	["AuraSize"] = 20,
-	["BadColor"] = {199/255, 64/255, 64/255},
-	["ClassIcons"] = false,
-	["Combat"] = false,
-	["Enable"] = true,
-	["EnhanceThreat"] = false,
-	["GoodColor"] = {74/255, 173/255, 74/255},
-	["HealthValue"] = true,
-	["Height"] = 9,
-	["NameAbbreviate"] = true,
-	["NearColor"] = {217/255, 196/255, 92/255},
-	["CastBarName"] = true,
-	["Auras"] = false,
-	["Width"] = 120,
-}
 -- PowerBar Options
 C["PowerBar"] = {
 	["Enable"] = false,

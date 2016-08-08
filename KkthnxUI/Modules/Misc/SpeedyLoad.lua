@@ -3,7 +3,7 @@ if C.Misc.SpeedyLoad ~= true then return end
 
 -- Speedy Load disables certain events during loading screens to drastically improve loading times.
 local pairs, wipe, select, pcall, issecurevariable, hooksecurefunc, getmetatable =
-pairs, wipe, select, pcall, issecurevariable, hooksecurefunc, getmetatable
+	  pairs, wipe, select, pcall, issecurevariable, hooksecurefunc, getmetatable
 local GetFramesRegisteredForEvent = GetFramesRegisteredForEvent
 local enteredOnce, listenForUnreg
 
@@ -18,7 +18,9 @@ local events = {
 	CRITERIA_UPDATE = {},
 	RECEIVED_ACHIEVEMENT_LIST = {},
 	ACTIONBAR_SLOT_CHANGED = {},
+	SPELL_UPDATE_USABLE = {},
 	UPDATE_FACTION = {},
+	MAP_BAR_UPDATE = {},
 }
 
 local frameBlacklist = {
@@ -53,8 +55,6 @@ local t = {GetFramesRegisteredForEvent("PLAYER_ENTERING_WORLD")}
 for i, frame in ipairs(t) do
 	if canMod(frame) then
 		frame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		--print(canMod(frame))
-		--print(GetFramesRegisteredForEvent, frame)
 	end
 end
 
@@ -100,49 +100,49 @@ if PetStableFrame then
 end
 
 f:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		if not enteredOnce then
-			f:RegisterEvent("PLAYER_LEAVING_WORLD")
+		if event == "PLAYER_ENTERING_WORLD" then
+			if not enteredOnce then
+				f:RegisterEvent("PLAYER_LEAVING_WORLD")
 
-			hooksecurefunc(getmetatable(f).__index, "UnregisterEvent", function(frame, event)
-				if listenForUnreg then
-					local frames = events[event]
-					if frames then
+				hooksecurefunc(getmetatable(f).__index, "UnregisterEvent", function(frame, event)
+						if listenForUnreg then
+							local frames = events[event]
+							if frames then
+								frames[frame] = nil
+							end
+						end
+				end)
+				enteredOnce = 1
+			else
+				listenForUnreg = nil
+				for event, frames in pairs(events) do
+					for frame in pairs(frames) do
+						frame:RegisterEvent(event)
+						local OnEvent = occured[event] and frame:GetScript("OnEvent")
+						if OnEvent then
+							local arg1
+							if event == "ACTIONBAR_SLOT_CHANGED" then
+								arg1 = 0
+							end
+							local success, err = pcall(OnEvent, frame, event, arg1)
+							if not success then
+								geterrorhandler()(err, 1)
+							end
+						end
 						frames[frame] = nil
 					end
 				end
-			end)
-			enteredOnce = 1
-		else
-			listenForUnreg = nil
-			for event, frames in pairs(events) do
-				for frame in pairs(frames) do
-					frame:RegisterEvent(event)
-					local OnEvent = occured[event] and frame:GetScript("OnEvent")
-					if OnEvent then
-						local arg1
-						if event == "ACTIONBAR_SLOT_CHANGED" then
-							arg1 = 0
-						end
-						local success, err = pcall(OnEvent, frame, event, arg1)
-						if not success then
-							geterrorhandler()(err, 1)
-						end
-					end
-					frames[frame] = nil
-				end
+				wipe(occured)
 			end
+		elseif event == "PLAYER_LEAVING_WORLD" then
 			wipe(occured)
+			for event in pairs(events) do
+				unregister(event, GetFramesRegisteredForEvent(event))
+				f:RegisterEvent(event) -- must register on f >AFTER< unregistering everything (duh?)
+			end
+			listenForUnreg = 1
+		else
+			occured[event] = 1
+			f:UnregisterEvent(event)
 		end
-	elseif event == "PLAYER_LEAVING_WORLD" then
-		wipe(occured)
-		for event in pairs(events) do
-			unregister(event, GetFramesRegisteredForEvent(event))
-			f:RegisterEvent(event) -- must register on f >AFTER< unregistering everything (duh?)
-		end
-		listenForUnreg = 1
-	else
-		occured[event] = 1
-		f:UnregisterEvent(event)
-	end
 end)

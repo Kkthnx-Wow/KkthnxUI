@@ -8,8 +8,7 @@ local SetCVar = SetCVar
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, addon, ...)
-
-	if addon == "Blizzard_AchievementUI" then
+	if (addon == "Blizzard_AchievementUI") then
 		if C.Tooltip.Enable then
 			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
 		end
@@ -29,15 +28,8 @@ frame:SetScript("OnEvent", function(self, event, addon, ...)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
 
-	SetCVar("countdownForCooldowns", 0)
-	InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
-
 	if C.Chat.Enable then
-		--SetCVar("chatStyle", "im")
-	end
-
-	if C.Unitframe.Enable then
-		PartyMemberBackground:Kill()
+		SetCVar("chatStyle", "im")
 	end
 
 	if C.Minimap.Enable then

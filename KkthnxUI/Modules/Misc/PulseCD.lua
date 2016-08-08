@@ -9,7 +9,7 @@ local cooldowns, animating, watching = {}, {}, {}
 
 local anchor = CreateFrame("Frame", "PulseCDAnchor", UIParent)
 anchor:SetSize(C.PulseCD.Size, C.PulseCD.Size)
-anchor:SetPoint(unpack(C.Position.PulseCooldown))
+anchor:SetPoint(unpack(C.Position.PulseCD))
 
 local frame = CreateFrame("Frame", "PulseCDFrame", anchor)
 frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
@@ -19,8 +19,8 @@ frame:SetBackdrop({
 	edgeSize = 3 * K.NoScaleMult,
 	insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
 })
-frame:SetBackdropColor(0, 0, 0, 0)
 frame:SetBackdropBorderColor(0, 0, 0, 0.8)
+frame:SetBackdropColor(0, 0, 0, 0)
 frame:SetPoint("CENTER", anchor, "CENTER")
 
 local icon = frame:CreateTexture(nil, "ARTWORK")
@@ -52,7 +52,7 @@ local function OnUpdate(_, update)
 	if elapsed > 0.05 then
 		for i, v in pairs(watching) do
 			if GetTime() >= v[1] + 0.5 + threshold then
-				if K.pulse_ignored_spells[i] then
+				if K.PulseIgnoredSpells[i] then
 					watching[i] = nil
 				else
 					local start, duration, enabled, texture, isPet
@@ -116,33 +116,34 @@ local function OnUpdate(_, update)
 			end
 			frame:SetAlpha(alpha)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
-			frame:SetWidth(scale)
-			frame:SetHeight(scale)
-			frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-			frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+			frame:SetWidth(scale, scale)
+			--frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+			--frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+			frame:SetBackdropBorderColor(0, 0, 0, 0.8)
+			frame:SetBackdropColor(0, 0, 0, 0)
 		end
 	end
 end
 
 -- Event Handlers
 function frame:ADDON_LOADED(addon)
-	for _, v in pairs(K.pulse_ignored_spells) do
-		K.pulse_ignored_spells[v] = true
+	for _, v in pairs(K.PulseIgnoredSpells) do
+		K.PulseIgnoredSpells[v] = true
 	end
 	self:UnregisterEvent("ADDON_LOADED")
 end
 frame:RegisterEvent("ADDON_LOADED")
 
-function frame:UNIT_SPELLCAST_SUCCEEDED(unit, spell, rank)
+function frame:UNIT_SPELLCAST_SUCCEEDED(unit, spell, _, _, spellID)
 	if unit == "player" then
-		watching[spell] = {GetTime(), "spell", spell.."("..rank..")"}
+		watching[spell] = {GetTime(), "spell", spellID}
 		self:SetScript("OnUpdate", OnUpdate)
 	end
 end
 frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
 function frame:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local _, event, _, _, sourceFlags, _, _, _, spellID = ...
+	local _, eventType, _, _, _, sourceFlags, _, _, _, _, _, spellID = ...
 	if eventType == "SPELL_CAST_SUCCESS" then
 		if (bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PET) == COMBATLOG_OBJECT_TYPE_PET and bit.band(sourceFlags, COMBATLOG_OBJECT_AFFILIATION_MINE) == COMBATLOG_OBJECT_AFFILIATION_MINE) then
 			local name = GetSpellInfo(spellID)
@@ -202,3 +203,4 @@ SlashCmdList.PulseCD = function()
 	frame:SetScript("OnUpdate", OnUpdate)
 end
 SLASH_PulseCD1 = "/pulsecd"
+SLASH_PulseCD2 = "/згдыусв"

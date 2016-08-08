@@ -6,5 +6,4 @@ if C.Loot.AutoGreed ~= true then return end
 --	Take the number ID at the end of the URL, and add it to the list
 K.NeedLoot = {
 	33865,	-- Amani Hex Stick
-	68729,	-- Elementium Lockbox
 }

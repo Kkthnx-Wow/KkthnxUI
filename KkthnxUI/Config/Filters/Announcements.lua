@@ -106,10 +106,3 @@ if C.Announcements.Portals == true then
 		[120146] = true, -- Ancient Dalaran
 	}
 end
-
-if C.PulseCD.Enable == true then
-	K.pulse_ignored_spells = {
-		-- GetSpellInfo(6807), -- Maul
-		-- GetSpellInfo(35395), -- Crusader Strike
-	}
-end
