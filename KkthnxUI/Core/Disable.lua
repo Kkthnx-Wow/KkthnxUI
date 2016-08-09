@@ -61,7 +61,7 @@ if (select(4, GetAddOnInfo("QuestHelper"))) then -- This is a temp fix until I f
 end
 
 if (select(4, GetAddOnInfo("Mapster"))) then
-	C["map"].enable = false
+	C["Skins"].WorldMap = false
 end
 
 if (select(4, GetAddOnInfo("Dominos"))) or (select(4, GetAddOnInfo("Bartender4"))) or (select(4, GetAddOnInfo("RazerNaga"))) then
