@@ -117,10 +117,8 @@ local function OnUpdate(_, update)
 			frame:SetAlpha(alpha)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
 			frame:SetWidth(scale, scale)
-			--frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-			--frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 			frame:SetBackdropBorderColor(0, 0, 0, 0.8)
-			frame:SetBackdropColor(0, 0, 0, 0)
+			frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		end
 	end
 end
@@ -203,4 +201,3 @@ SlashCmdList.PulseCD = function()
 	frame:SetScript("OnUpdate", OnUpdate)
 end
 SLASH_PulseCD1 = "/pulsecd"
-SLASH_PulseCD2 = "/згдыусв"
