@@ -995,6 +995,14 @@ C["filger_spells"] = {
 			{spellID = 90361, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Posthaste
 			{spellID = 118922, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Cheetah 90%
+			{spellID = 186257, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Cheetah 30%
+			{spellID = 186258, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Trueshot
+			{spellID = 193526, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Turtle
+			{spellID = 186265, unitID = "player", caster = "player", filter = "BUFF"},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -1140,13 +1148,7 @@ C["filger_spells"] = {
 			-- Kill Command
 			{spellID = 34026, filter = "CD"},
 			-- Explosive Shot
-			--BETA {spellID = 53301, filter = "CD"},
-			-- Chimera Shot
-			{spellID = 53209, filter = "CD"},
-			-- Kill Shot
-			--BETA {spellID = 53351, filter = "CD"},
-			-- Glaive Toss
-			--BETA {spellID = 117050, filter = "CD"},
+			{spellID = 212431, filter = "CD"},
 			-- Barrage
 			{spellID = 120360, filter = "CD"},
 			-- Disengage
@@ -1167,8 +1169,6 @@ C["filger_spells"] = {
 			{spellID = 117526, filter = "CD"},
 			-- Master's Call
 			{spellID = 53271, filter = "CD"},
-			-- Powershot
-			--BETA {spellID = 109259, filter = "CD"},
 			-- Wyvern Sting
 			{spellID = 19386, filter = "CD"},
 			-- Intimidation
@@ -1177,8 +1177,6 @@ C["filger_spells"] = {
 			{spellID = 19574, filter = "CD"},
 			-- A Murder of Crows
 			{spellID = 131894, filter = "CD"},
-			-- Lynx Rush
-			--BETA {spellID = 120697, filter = "CD"},
 			-- Exhilaration
 			{spellID = 109304, filter = "CD"},
 			-- Rapid Fire
@@ -1187,6 +1185,18 @@ C["filger_spells"] = {
 			{spellID = 19263, filter = "CD"},
 			-- Spirit Mend (Pet)
 			{spellID = 90361, filter = "CD"},
+			-- Trueshot
+			{spellID = 193526, filter = "CD"},
+			-- Aspect of the Turtlew2
+			{spellID = 186265, filter = "CD"},
+			-- Aspect of the Cheetah
+			{spellID = 186257, filter = "CD"},
+			-- Bursting Shot
+			{spellID = 186387, filter = "CD"},
+			-- Sidewinders
+			{spellID = 214579, filter = "CD"},
+			-- Flare
+			{spellID = 1543, filter = "CD"},
 
 			-- Racial
 			-- Arcane Torrent (Blood Elf)
