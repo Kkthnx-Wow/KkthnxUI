@@ -10,19 +10,6 @@ local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 
-local shorts = {
-	{ 1e10, 1e9, "%.0fB" }, -- 10b+ as 12B
-	{ 1e9, 1e9, "%.1fB" }, -- 1b+ as 8.3B
-	{ 1e7, 1e6, "%.0fM" }, -- 10m+ as 14M
-	{ 1e6, 1e6, "%.1fM" }, -- 1m+ as 7.4M
-	{ 1e5, 1e3, "%.0fK" }, -- 100k+ as 840K
-	{ 1e3, 1e3, "%.1fK" }, -- 1k+ as 2.5K
-	{ 0, 1, "%d" }, -- < 1k as 974
-}
-for i = 1, #shorts do
-	shorts[i][4] = shorts[i][3] .. " (%.0f%%)"
-end
-
 PlayerFrameTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
 hooksecurefunc("TargetFrame_CheckClassification", function (self, forceNormalTexture)
 	local classification = UnitClassification(self.unit)
@@ -70,45 +57,60 @@ if not InCombatLockdown() then
 	end
 end
 
-if not InCombatLockdown() then
-	for i = 1, 4 do
-		local PartyFrame = "PartyMemberFrame"..i
-		for k = 1, 4 do
-			local PartyFrameDebuff = _G[PartyFrame..'Debuff'..k]
-			PartyFrameDebuff:ClearAllPoints()
-			if k == 1 then
-				PartyFrameDebuff:SetPoint("BOTTOM", _G[PartyFrame], -11, 0)
-			else
-				PartyFrameDebuff:SetPoint("LEFT", _G[PartyFrame.."Debuff"..k - 1], "RIGHT", 4, 0)
-			end
+hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", function(statusFrame, textString, value, valueMin, valueMax)
+	if(statusFrame.LeftText and statusFrame.RightText) then
+		statusFrame.LeftText:SetText("")
+		statusFrame.RightText:SetText("")
+		statusFrame.LeftText:Hide()
+		statusFrame.RightText:Hide()
+		textString:Show()
+	end
+
+	if ((tonumber(valueMax) ~= valueMax or valueMax > 0) and not (statusFrame.pauseUpdates)) then
+		local valueDisplay = value
+		local valueMaxDisplay = valueMax
+		if (statusFrame.capNumericDisplay) then
+			valueDisplay = K.ShortValue(value)
+			valueMaxDisplay = K.ShortValue(valueMax)
+		else
+			valueDisplay = BreakUpLargeNumbers(value)
+			valueMaxDisplay = BreakUpLargeNumbers(valueMax)
 		end
-	end
-end
 
-hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", function(statusBar, textString, value, valueMin, valueMax)
-	if value == 0 then
-		return textString:SetText("")
-	end
+		local textDisplay = GetCVar("statusTextDisplay")
+		if (value and valueMax > 0 and (textDisplay ~= "NUMERIC" or statusFrame.showPercentage) and not statusFrame.showNumeric) then
+			-- if (value == 0 and statusFrame.zeroText) then
+				-- textString:SetText(statusFrame.zeroText)
+				-- statusFrame.isZero = 1
+				-- textString:Show()
+				-- return
+			-- end
 
-	local style = GetCVar("statusTextDisplay")
-	if style == "PERCENT" then
-		return textString:SetFormattedText("%.0f%%", value / valueMax * 100)
-	end
-	for i = 1, #shorts do
-		local t = shorts[i]
-		if value >= t[1] then
-			if style == "BOTH" then
-				return textString:SetFormattedText(t[4], value / t[2], value / valueMax * 100)
+			local percent = math.ceil((value / valueMax) * 100) .. "%"
+			if (textDisplay == "BOTH" and not statusFrame.showPercentage) then
+				valueDisplay = valueDisplay .. " - " .. percent .. ""
+				textString:SetText(valueDisplay)
 			else
-				if value < valueMax then
-					for j = 1, #shorts do
-						local v = shorts[j]
-						if valueMax >= v[1] then
-							return textString:SetFormattedText(t[3] .. " / " .. v[3], value / t[2], valueMax / v[2])
-						end
-					end
+				valueDisplay = percent
+				if (statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable))) then
+					textString:SetText(statusFrame.prefix .. " " .. valueDisplay)
+				else
+					textString:SetText(valueDisplay)
 				end
-				return textString:SetFormattedText(t[3], value / t[2])
+			end
+		elseif (value == 0 and statusFrame.zeroText) then
+			-- textString:SetText(statusFrame.zeroText)
+			-- statusFrame.isZero = 1
+			-- textString:Show()
+			return
+		else
+			statusFrame.isZero = nil
+			if (statusFrame.prefix and (statusFrame.alwaysPrefix or not (statusFrame.cvar and GetCVar(statusFrame.cvar) == "1" and statusFrame.textLockable))) then
+				--textString:SetText(statusFrame.prefix.." "..valueDisplay.." - "..valueMaxDisplay)
+				textString:SetText(statusFrame.prefix.." "..valueDisplay)
+			else
+				--textString:SetText(valueDisplay.." - "..valueMaxDisplay)
+				textString:SetText(valueDisplay)
 			end
 		end
 	end
