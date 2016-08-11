@@ -1,3 +1,4 @@
+--[[
 local K, C, L, _ = select(2, ...):unpack()
 if C.Blizzard.MoveAchievements ~= true then return end
 
@@ -218,3 +219,4 @@ hooksecurefunc(GroupLootContainer, "SetPoint", function(self, point, anchorTo, a
 		fixAnchors()
 	end
 end)
+]]--

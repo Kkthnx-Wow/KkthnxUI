@@ -100,6 +100,7 @@ hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 		VehicleSeatIndicator:ClearAllPoints()
 		VehicleSeatIndicator:SetPoint("BOTTOM", VehicleAnchor, "BOTTOM", 0, 24)
 		VehicleSeatIndicator:SetFrameStrata("LOW")
+		VehicleSeatIndicator:SetScale(0.7)
 	end
 end)
 

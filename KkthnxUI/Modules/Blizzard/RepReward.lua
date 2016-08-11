@@ -1,6 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Blizzard.Reputations ~= true then return end
---[[
+
 local pairs = pairs
 local floor = math.floor
 local CreateFrame = CreateFrame
@@ -20,12 +20,19 @@ local timeSinceLastUpdate = 0
 function CalcBonusRep(factionName)
 	local bonusRep = 0
 	local buffs = {
-		-- setting the defaults to false so that you can start out assuming the player doesn't have the buff
-		["Spirit of Sharing"] = {faction = "all", bonusAmt = 0.1},
-		["Grim Visage"] = {faction = "all", bonusAmt = 0.1},
-		["Nazgrel's Fervor"] = {faction = "Thrallmar", bonusAmt = 0.10},
-		["Trollbane's Command"] = {faction = "Honor Hold", bonusAmt = 0.10},
-		["A'dal's Song of Battle"] = {faction = "Sha'tar", bonusAmt = 0.10},
+		-- SETTING THE DEFAULTS TO FALSE SO THAT YOU CAN START OUT ASSUMING THE PLAYER DOESN'T HAVE THE BUFF
+		["Spirit of Sharing"] = {faction="all", bonusAmt=0.1},
+        ["Grim Visage"] = {faction="all", bonusAmt=0.1},
+        ["Unburdened"] = {faction="all", bonusAmt=0.1},
+		["Banner of Cooperation"] = {faction="all", bonusAmt=0.05},
+		["Standard of Unity"] = {faction="all", bonusAmt=0.1},
+		["Battle Standard of Coordination"] = {faction="all", bonusAmt=0.15},
+		["Nazgrel's Fervor"] = {faction="Thrallmar", bonusAmt=0.10},
+		["Trollbane's Command"] = {faction="Honor Hold", bonusAmt=0.10},
+		["A'dal's Song of Battle"] = {faction="Sha'tar", bonusAmt=0.10},
+		["WHEE!"] = {faction="all", bonusAmt=0.10},
+		["Darkmoon Top Rat"] = {faction="all", bonusAmt=0.10},
+		["Berserker Rage"] = {faction="all", bonusAmt=1.0},
 	}
 
 	for buff, buffInfo in pairs(buffs) do
@@ -65,7 +72,7 @@ end
 function ShowReputations()
 	local stringRep
 	local numRewFactions = 0
-	if QuestLogFrame:IsVisible() or QuestLogDetailFrame:IsVisible() then
+	if QuestLogPopupDetailFrame:IsVisible() then
 		questIndex = GetQuestLogSelection()
 		questName = GetQuestLogTitle(questIndex)
 		numRewFactions = GetNumQuestLogRewardFactions()
@@ -180,26 +187,26 @@ else
 	table.insert(QUEST_TEMPLATE_LOG.elements, -5)
 end
 
-for i = #QUEST_TEMPLATE_DETAIL2.elements -2, 1, -3 do
-	if QUEST_TEMPLATE_DETAIL2.elements[i] == QuestInfo_ShowSpacer then
+for i = #QUEST_TEMPLATE_DETAIL.elements -2, 1, -3 do
+	if QUEST_TEMPLATE_DETAIL.elements[i] == QuestInfo_ShowSpacer then
 		posSpacer = i
 		break
 	end
 end
 if posSpacer > 0 then
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, posSpacer, Reputations_ShowTitle)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, posSpacer +1, 0)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, posSpacer +2, -10)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, posSpacer +3, Reputations_ShowDetail)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, posSpacer +4, 0)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, posSpacer +5, -5)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, posSpacer, Reputations_ShowTitle)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, posSpacer +1, 0)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, posSpacer +2, -10)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, posSpacer +3, Reputations_ShowDetail)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, posSpacer +4, 0)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, posSpacer +5, -5)
 else
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, Reputations_ShowTitle)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, 0)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, -10)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, Reputations_ShowDetail)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, 0)
-	table.insert(QUEST_TEMPLATE_DETAIL2.elements, -5)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, Reputations_ShowTitle)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, 0)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, -10)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, Reputations_ShowDetail)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, 0)
+	table.insert(QUEST_TEMPLATE_DETAIL.elements, -5)
 end
 
 for i = #QUEST_TEMPLATE_REWARD.elements -2, 1, -3 do
@@ -223,4 +230,3 @@ else
 	table.insert(QUEST_TEMPLATE_REWARD.elements, 0)
 	table.insert(QUEST_TEMPLATE_REWARD.elements, -5)
 end
-]]--
