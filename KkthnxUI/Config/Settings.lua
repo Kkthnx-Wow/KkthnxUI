@@ -83,12 +83,11 @@ C["Blizzard"] = {
 	["Durability"] = true,
 	["MoveAchievements"] = true,
 	["Reputations"] = true,
-	["CustomLagTolerance"] = false,
 }
 -- BUFFS & DEBUFFS OPTIONS
 C["Aura"] = {
 	["Enable"] = true,
-	["BuffSize"] = 32,
+	["BuffSize"] = 36,
 	["CastBy"] = false,
 	["ClassColorBorder"] = false,
 	["Timer"] = true,
@@ -134,8 +133,8 @@ C["Filger"] = {
 -- GENERAL OPTIONS
 C["General"] = {
 	["AutoScale"] = true,
-	["BubbleFontSize"] = 12,
 	["BubbleBackdrop"] = false,
+	["BubbleFontSize"] = 12,
 	["ReplaceBlizzardFonts"] = true,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
@@ -202,7 +201,6 @@ C["Skins"] = {
 	["Recount"] = false,
 	["Skada"] = false,
 	["WeakAuras"] = false,
-	["WorldMap"] = false,
 }
 -- TOOLTIP OPTIONS
 C["Tooltip"] = {

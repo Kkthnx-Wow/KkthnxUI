@@ -89,8 +89,6 @@ local function StyleNormalButton(self)
 
 	if normal then
 		normal:ClearAllPoints()
-		--normal:SetPoint("TOPLEFT")
-		--normal:SetPoint("BOTTOMRIGHT")
 		normal:SetOutside()
 	end
 end
@@ -154,8 +152,6 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 
 	if normal then
 		normal:ClearAllPoints()
-		--normal:SetPoint("TOPLEFT")
-		--normal:SetPoint("BOTTOMRIGHT")
 		normal:SetOutside()
 	end
 end

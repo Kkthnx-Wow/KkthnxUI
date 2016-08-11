@@ -25,7 +25,7 @@ local ALLOWED_GROUPS = {
 	["ActionBar"] = 2,
 	["Announcements"] = 3,
 	["Automation"] = 4,
-	["Bag"] = 5,
+	--["Bag"] = 5,
 	["Blizzard"] = 6,
 	["Aura"] = 7,
 	["Chat"] = 8,
@@ -150,7 +150,6 @@ local function Local(o)
 	if o == "UIConfigGeneralBubbleBackdrop" then o = L_GUI_GENERAL_CHATBUBBLE_NOBACKDROP end
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
-	if o == "UIConfiggeneralCustomLagTolerance" then o = L_GUI_GENERAL_LAG_TOLERANCE end
 	-- Loot Settings
 	if o == "UIConfigLoot" then o = LOOT end
 	if o == "UIConfigLootConfirmDisenchant" then o = L_GUI_LOOT_AUTODE end
@@ -195,7 +194,6 @@ local function Local(o)
 	if o == "UIConfigSkinsSkada" then o = L_GUI_SKINS_SKADA end
 	if o == "UIConfigSkinsSpy" then o = L_GUI_SKINS_SPY end
 	if o == "UIConfigSkinsWeakAuras" then o = L_GUI_SKINS_WEAKAURAS end
-	if o == "UIConfigSkinsWorldMap" then o = L_GUI_SKINS_WORLDMAP end
 	-- Tooltip Settings
 	if o == "UIConfigTooltip" then o = L_GUI_TOOLTIP end
 	if o == "UIConfigTooltipAchievements" then o = L_GUI_TOOLTIP_ACHIEVEMENTS end

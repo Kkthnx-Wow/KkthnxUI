@@ -34,7 +34,8 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 	if border then border:Hide() end
 
 	if i ~= 3 then
-		buff:SetTemplate("Default")
+		--buff:SetTemplate("Default")
+		buff:SetBackdrop(K.Border)
 		if C.Aura.ClassColorBorder == true then
 			buff:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 		end
@@ -51,7 +52,7 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 	duration:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 
 	_G["TempEnchant2"]:ClearAllPoints()
-	_G["TempEnchant2"]:SetPoint("RIGHT", _G["TempEnchant1"], "LEFT", -3, 0)
+	_G["TempEnchant2"]:SetPoint("RIGHT", _G["TempEnchant1"], "LEFT", 1, 0)
 end
 
 local function StyleBuffs(buttonName, index, debuff)
@@ -64,7 +65,8 @@ local function StyleBuffs(buttonName, index, debuff)
 	if border then border:Hide() end
 
 	if icon and not buff.isSkinned then
-		buff:SetTemplate("Default")
+		--buff:SetTemplate("Default")
+		buff:SetBackdrop(K.Border)
 		if C.Aura.ClassColorBorder == true then
 			buff:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 		end
@@ -83,7 +85,7 @@ local function StyleBuffs(buttonName, index, debuff)
 		count:SetPoint("BOTTOMRIGHT", 2, 0)
 		count:SetDrawLayer("ARTWORK")
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		
+
 		if not buff.shadow then
 			buff:CreateBlizzShadow(2)
 		end
@@ -132,14 +134,14 @@ local function UpdateBuffAnchors()
 		else
 			if numBuffs == 1 then
 				if mainhand and offhand and not UnitHasVehicleUI("player") then
-					buff:SetPoint("RIGHT", TempEnchant2, "LEFT", -3, 0)
+					buff:SetPoint("RIGHT", TempEnchant2, "LEFT", 1, 0)
 				elseif ((mainhand and not offhand) or (offhand and not mainhand)) and not UnitHasVehicleUI("player") then
-					buff:SetPoint("RIGHT", TempEnchant1, "LEFT", -3, 0)
+					buff:SetPoint("RIGHT", TempEnchant1, "LEFT", 1, 0)
 				else
 					buff:SetPoint("TOPRIGHT", BuffsAnchor, "TOPRIGHT", 0, 0)
 				end
 			else
-				buff:SetPoint("RIGHT", previousBuff, "LEFT", -3, 0)
+				buff:SetPoint("RIGHT", previousBuff, "LEFT", 1, 0)
 			end
 		end
 		previousBuff = buff

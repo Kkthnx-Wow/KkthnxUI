@@ -32,10 +32,14 @@ BETTER_RAID_CLASS_COLORS = {
 
 -- Custom Power Colors
 if C.Unitframe.BetterPowerColors == true then
+	_G.PowerBarColor["MANA"] = {r = 79/255, g = 115/255, b = 161/255}
 	_G.PowerBarColor["RAGE"] = {r = 199/255, g = 64/255, b = 64/255}
 	_G.PowerBarColor["FOCUS"] = {r = 181/255, g = 110/255, b = 69/255}
-	_G.PowerBarColor["MANA"] = {r = 79/255, g = 115/255, b = 161/255}
 	_G.PowerBarColor["ENERGY"] = {r = 166/255, g = 161/255, b = 89/255}
-	_G.PowerBarColor["RUNES"] = {r = 128/255, g = 128/255, b = 128/255}
 	_G.PowerBarColor["RUNIC_POWER"] = {r = 0/255, g = 209/255, b = 255/255}
+	_G.PowerBarColor["PAIN"] = {r = 225/255, g = 225/255, b = 225/255}
+	_G.PowerBarColor["FURY"] = {r = 227/255, g = 126/255, b = 39/255}
+	_G.PowerBarColor["LUNAR_POWER"] = {r = 230/255, g = 219/255, b = 31/255}
+	_G.PowerBarColor["INSANITY"] = {r = 140/255, g = 36/255, b = 176/255}
+	_G.PowerBarColor["MAELSTROM"] = {r = 0/255, g = 128/255, b = 255/255}
 end
