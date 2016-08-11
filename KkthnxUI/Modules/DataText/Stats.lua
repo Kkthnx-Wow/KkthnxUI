@@ -16,6 +16,9 @@ local StatFrame = CreateFrame("Frame", "StatFrame", Minimap)
 if C.Minimap.Enable == true then
 	StatFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	StatFrame:CreateBackdrop()
+	if C.Blizzard.DarkTextures == true then
+		StatFrame.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+	end
 	StatFrame:SetSize(0, 20)
 	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -24)
 	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)

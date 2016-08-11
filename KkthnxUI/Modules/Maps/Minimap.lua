@@ -166,7 +166,9 @@ function GetMinimapShape() return "SQUARE" end
 -- SET BORDER TEXTURE
 MinimapBackdrop:SetBackdrop(K.Backdrop)
 MinimapBackdrop:SetBackdropColor(0.05, 0.05, 0.05, 0.0)
-MinimapBackdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+if C.Blizzard.DarkTextures == true then
+	MinimapBackdrop:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+end
 MinimapBackdrop:SetOutside(Minimap, 4, 4)
 
 -- SET SQUARE MAP VIEW

@@ -78,6 +78,10 @@ local function StyleNormalButton(self)
 			button.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end
 	end
+	
+	if C.Blizzard.DarkTextures == true then
+		button.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+	end
 
 	if not button.shadow and button.isSkinned then
 		button:CreateBlizzShadow(5)
