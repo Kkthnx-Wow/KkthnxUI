@@ -1,6 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- Media Options
+-- MEDIA OPTIONS
 C["Media"] = {
 	["Backdrop_Color"] = {5/255, 5/255, 5/255, 0.8},
 	["Blank"] = [[Interface\AddOns\KkthnxUI\Media\Textures\Blank]],
@@ -21,7 +21,7 @@ C["Media"] = {
 	["Warning_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	["Whisp_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 }
--- ActionBar Options
+-- ACTIONBAR OPTIONS
 C["ActionBar"] = {
 	["BottomBars"] = 3,
 	["ButtonSize"] = 36,
@@ -42,7 +42,7 @@ C["ActionBar"] = {
 	["StanceBarHorizontal"] = true,
 	["ToggleMode"] = true,
 }
--- Announcements Options
+-- ANNOUNCEMENTS OPTIONS
 C["Announcements"] = {
 	["Bad_Gear"] = false,
 	["Feasts"] = false,
@@ -54,7 +54,7 @@ C["Announcements"] = {
 	["SpellsFromAll"] = false,
 	["Toys"] = false,
 }
--- Automation Options
+-- AUTOMATION OPTIONS
 C["Automation"] = {
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
@@ -65,7 +65,7 @@ C["Automation"] = {
 	["SellGreyRepair"] = false,
 	["TabBinder"] = false,
 }
--- Bag Options
+-- BAG OPTIONS
 C["Bag"] = {
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
@@ -74,7 +74,7 @@ C["Bag"] = {
 	["Enable"] = true,
 	["HideSoulBag"] = false,
 }
--- Blizzard Options
+-- BLIZZARD OPTIONS
 C["Blizzard"] = {
 	["Capturebar"] = true,
 	["ClassColor"] = true,
@@ -83,15 +83,17 @@ C["Blizzard"] = {
 	["Durability"] = true,
 	["MoveAchievements"] = true,
 	["Reputations"] = true,
+	["CustomLagTolerance"] = false,
 }
--- Buffs & Debuffs Options
+-- BUFFS & DEBUFFS OPTIONS
 C["Aura"] = {
 	["Enable"] = true,
 	["BuffSize"] = 32,
 	["CastBy"] = false,
 	["ClassColorBorder"] = false,
+	["Timer"] = true,
 }
--- Chat Options
+-- CHAT OPTIONS
 C["Chat"] = {
 	["CombatLog"] = true,
 	["DamageMeterSpam"] = false,
@@ -107,19 +109,19 @@ C["Chat"] = {
 	["WhispSound"] = true,
 	["Width"] = 400,
 }
--- Cooldown Options
+-- COOLDOWN OPTIONS
 C["Cooldown"] = {
 	["Enable"] = true,
 	["FontSize"] = 20,
 	["Threshold"] = 3,
 }
--- Error Options
+-- ERROR OPTIONS
 C["Error"] = {
 	["Black"] = true,
 	["White"] = false,
 	["Combat"] = false,
 }
--- Filger Options
+-- FILGER OPTIONS
 C["Filger"] = {
 	["BuffsSize"] = 37,
 	["CooldownSize"] = 30,
@@ -129,7 +131,7 @@ C["Filger"] = {
 	["ShowTooltip"] = false,
 	["TestMode"] = false,
 }
--- General Options
+-- GENERAL OPTIONS
 C["General"] = {
 	["AutoScale"] = true,
 	["BubbleFontSize"] = 12,
@@ -139,7 +141,7 @@ C["General"] = {
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
 }
--- Loot Options
+-- LOOT OPTIONS
 C["Loot"] = {
 	["ConfirmDisenchant"] = false,
 	["AutoGreed"] = false,
@@ -149,14 +151,14 @@ C["Loot"] = {
 	["GroupLoot"] = true,
 	["Width"] = 222,
 }
--- Minimap Options
+-- MINIMAP OPTIONS
 C["Minimap"] = {
 	["CollectButtons"] = true,
 	["Enable"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
 }
--- Miscellaneous Options
+-- MISCELLANEOUS OPTIONS
 C["Misc"] = {
 	["AFKCamera"] = false,
 	["AlreadyKnown"] = false,
@@ -164,12 +166,10 @@ C["Misc"] = {
 	["BGSpam"] = false,
 	["DurabilityWarninig"] = false,
 	["EnhancedMail"] = true,
-	["HatTrick"] = true,
 	["InviteKeyword"] = "inv",
 	["ItemLevel"] = false,
-	["SpeedyLoad"] = false,
 }
--- PowerBar Options
+-- POWERBAR OPTIONS
 C["PowerBar"] = {
 	["Enable"] = false,
 	["FontOutline"] = false,
@@ -183,7 +183,7 @@ C["PowerBar"] = {
 	["ValueAbbreviate"] = true,
 	["Width"] = 200,
 }
--- PulseCD Options
+-- PULSECD OPTIONS
 C["PulseCD"] = {
 	["Enable"] = false,
 	["Size"] = 75,
@@ -192,7 +192,7 @@ C["PulseCD"] = {
 	["HoldTime"] = 0,
 	["Threshold"] = 3,
 }
--- Skins Options
+-- SKINS OPTIONS
 C["Skins"] = {
 	["Spy"] = false,
 	["ChatBubble"] = true,
@@ -204,7 +204,7 @@ C["Skins"] = {
 	["WeakAuras"] = false,
 	["WorldMap"] = false,
 }
--- Tooltip Options
+-- TOOLTIP OPTIONS
 C["Tooltip"] = {
 	["Achievements"] = false,
 	["ArenaExperience"] = false,
@@ -225,7 +225,7 @@ C["Tooltip"] = {
 	["Title"] = true,
 	["WhoTargetting"] = false,
 }
--- Unitframe Options
+-- UNITFRAME OPTIONS
 C["Unitframe"] = {
 	["ComboFrame"] = false,
 	["SmoothBars"] = false,

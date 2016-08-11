@@ -21,22 +21,17 @@ local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
+local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
+PlayerAnchor:SetSize(146, 28)
+PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
+
+local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
+TargetAnchor:SetSize(146, 28)
+TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
+
 local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
 
 if C.Unitframe.Enable == true then
-
-	local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
-	if not InCombatLockdown() then
-		PlayerAnchor:SetSize(146, 28)
-		PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
-	end
-
-	local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
-	if not InCombatLockdown() then
-		TargetAnchor:SetSize(146, 28)
-		TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
-	end
-
 	Unitframes:RegisterEvent("ADDON_LOADED")
 	Unitframes:SetScript("OnEvent", function(self, event, addon)
 		if (addon ~= "KkthnxUI") then return end
@@ -82,7 +77,7 @@ if C.Unitframe.Enable == true then
 				end)
 			end
 
-			-- Unit Name
+			-- UNIT NAME
 			for _, FrameNames in pairs({
 				PlayerName,
 				TargetFrameTextureFrameName,
@@ -97,7 +92,7 @@ if C.Unitframe.Enable == true then
 				end
 			end
 
-			-- Unit HealthBarText
+			-- UNIT HEALTHBARTEXT
 			for _, FrameBarText in pairs({
 				PlayerFrameHealthBarText,
 				PlayerFrameManaBarText,
@@ -117,7 +112,7 @@ if C.Unitframe.Enable == true then
 				end
 			end
 
-			-- Party Unit HealthBarText
+			-- PARTY UNIT HEALTHBARTEXT
 			for _, PartyBarText in pairs({
 				PartyMemberFrame1HealthBarText,
 				PartyMemberFrame1ManaBarText,
@@ -137,7 +132,7 @@ if C.Unitframe.Enable == true then
 				end
 			end
 
-			-- Unit LevelText
+			-- UNIT LEVELTEXT
 			for _, LevelText in pairs({
 				PlayerLevelText,
 				TargetFrameTextureFrameLevelText,
@@ -161,7 +156,7 @@ if C.Unitframe.Enable == true then
 				end
 			end)
 
-			-- TargetFrame
+			-- TARGETFRAME
 			hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", function(self, targetLevel)
 				if ( targetLevel >= 100 ) then
 					self.levelText:SetPoint("CENTER", 62, -16)
@@ -170,13 +165,13 @@ if C.Unitframe.Enable == true then
 				end
 			end)
 
-			-- Tweak Party Frame
+			-- TWEAK PARTY FRAME
 			for i = 1, MAX_PARTY_MEMBERS do
 				_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
 			end
-			--PartyMemberBuffTooltip:Kill() -- I personally hate this shit.
+			PartyMemberBuffTooltip:Kill() -- I PERSONALLY HATE THIS SHIT.
 
-			-- Tweak Player Frame
+			-- TWEAK PLAYER FRAME
 			PlayerFrame:SetMovable(true)
 			PlayerFrame:ClearAllPoints()
 			PlayerFrame:SetPoint("CENTER", PlayerFrameAnchor, "CENTER", -51, 3)
@@ -184,28 +179,28 @@ if C.Unitframe.Enable == true then
 			PlayerFrame:SetMovable(false)
 			PlayerFrame.SetPoint = K.Noop
 
-			-- Hide Pet Name.
+			-- HIDE PET NAME
 			PetName:Hide()
 
-			-- Tweak Target Frame
+			-- TWEAK TARGET FRAME
 			TargetFrame:SetMovable(true)
 			TargetFrame:ClearAllPoints()
 			TargetFrame:SetPoint("CENTER", TargetFrameAnchor, "CENTER", 51, 3)
 			TargetFrame:SetUserPlaced(true)
 			TargetFrame:SetMovable(false)
 			TargetFrame.SetPoint = K.Noop
-			-- Tweak Name Background
-			TargetFrameNameBackground:SetPoint("TOP", 0, -21) -- Idk why we need to edit this.
+			-- TWEAK NAME BACKGROUND
+			TargetFrameNameBackground:SetPoint("TOP", 0, -21) -- IDK WHY WE NEED TO EDIT THIS.
 			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-			-- Tweak Focus Frame
+			-- TWEAK FOCUS FRAME
 			FocusFrame:SetMovable(true)
 			FocusFrame:ClearAllPoints()
 			FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
 			FocusFrame:SetUserPlaced(true)
 			FocusFrame:SetMovable(false)
-			-- Tweak Name Background
-			FocusFrameNameBackground:SetPoint("TOP", 0, -21) -- Idk why we need to edit this.
+			-- TWEAK NAME BACKGROUND
+			FocusFrameNameBackground:SetPoint("TOP", 0, -21) -- IDK WHY WE NEED TO EDIT THIS.
 			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 			for _, FrameScale in pairs({
@@ -216,13 +211,13 @@ if C.Unitframe.Enable == true then
 				FrameScale:SetScale(C.Unitframe.Scale)
 			end
 
-			-- Tweak Focus Frame
-			-- This will taint.
-			--FocusFrameToT:SetScale(1.0)
-			--FocusFrameToT:ClearAllPoints()
-			--FocusFrameToT:SetPoint("TOP", FocusFrame, "BOTTOM", 34, 35)
+			--[[ TWEAK FOCUS FRAME
+			FocusFrameToT:SetScale(1.0)
+			FocusFrameToT:ClearAllPoints()
+			FocusFrameToT:SetPoint("TOP", FocusFrame, "BOTTOM", 34, 35)
+			]]--
 
-			-- Arena Frames Scaling
+			-- ARENA FRAMES SCALING
 			local function SetArenaFrames()
 				for i = 1, MAX_ARENA_ENEMIES do
 					_G["ArenaEnemyFrame"..i]:SetScale(C.Unitframe.Scale)
@@ -243,16 +238,7 @@ if C.Unitframe.Enable == true then
 				end)
 			end
 
-			--[[ RuneFrame
-			if K.Class == "DEATHKNIGHT" then
-				RuneFrame:ClearAllPoints()
-				RuneFrame:SetPoint("TOPLEFT", PlayerFrameManaBar, "BOTTOMLEFT", -1, -5)
-				for i = 1, 6 do
-					_G["RuneButtonIndividual"..i]:SetScale(C.Unitframe.Scale)
-				end
-			end
-			]]--
-			-- ComboFrame
+			-- COMBOFRAME
 			if K.Class == "ROGUE" or K.Class == "DRUID" then
 				for i = 1, 5 do
 					_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
@@ -268,7 +254,7 @@ if C.Unitframe.Enable == true then
 	end)
 end
 
--- Class Icons
+-- CLASS ICONS
 if not InCombatLockdown() then
 	if C.Unitframe.ClassIcon == true then
 		hooksecurefunc("UnitFramePortrait_Update", function(self)
@@ -304,18 +290,18 @@ if not InCombatLockdown() then
 	end
 end
 
--- Remove Portrait Damage Spam
+-- REMOVE PORTRAIT DAMAGE SPAM
 if C.Unitframe.CombatFeedback == true then
 	PlayerHitIndicator:SetText(nil)
 	PlayerHitIndicator.SetText = K.Noop
 end
 
--- Remove Group Number Frame
+-- REMOVE GROUP NUMBER FRAME
 if C.Unitframe.GroupNumber == true then
 	PlayerFrameGroupIndicator.Show = K.Noop
 end
 
--- Remove PvPIcons
+-- REMOVE PVPICONS
 if C.Unitframe.PvPIcon == true then
 	PlayerPVPIcon:Kill()
 	TargetFrameTextureFramePVPIcon:Kill()

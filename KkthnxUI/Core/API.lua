@@ -1,6 +1,6 @@
-local K, C, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 
--- Application Programming Interface for KkthnxUI (API)
+-- APPLICATION PROGRAMMING INTERFACE FOR KKTHNXUI (API)
 local getmetatable = getmetatable
 local match = string.match
 local floor = math.floor
@@ -62,7 +62,7 @@ local function CreateBorder(f, size)
 	f.border = border
 end
 
--- Backdrop
+-- BACKDROP
 local function CreateBackdrop(f, t, size)
 	if not t then t = "Default" end
 	size = size or 2
@@ -80,7 +80,7 @@ local function CreateBackdrop(f, t, size)
 	f.backdrop = b
 end
 
--- Who doesn't like shadows! More shadows!
+-- WHO DOESN'T LIKE SHADOWS! MORE SHADOWS!
 local function CreatePixelShadow(f, size)
 	if f.shadow then return end
 	size = size or 2
@@ -143,7 +143,7 @@ local function SetTemplate(f, t)
 	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
 end
 
--- Create Panel
+-- CREATE PANEL
 local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	local r, g, b = K.Color.r, K.Color.g, K.Color.b
 	f:SetFrameLevel(1)
@@ -181,7 +181,7 @@ local function Kill(object)
     object:Hide()
 end
 
--- StripTextures
+-- STRIPTEXTURES
 local function StripTextures(Object, Kill, Text)
     for i = 1, Object:GetNumRegions() do
         local Region = select(i, Object:GetRegions())
@@ -200,7 +200,7 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0/255, 0/255, 0/255)
-	fs:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+	-- fs:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 
 	if not name then
 		parent.Text = fs
@@ -216,12 +216,11 @@ local function StyleButton(button)
 	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
-		cooldown:SetPoint("TOPLEFT", 1, -1)
-		cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
+		cooldown:SetInside()
 	end
 end
 
--- Merge KkthnxUI API with WoWs API
+-- MERGE KKTHNXUI API WITH WOWS API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
 	if not object.CreateOverlay then mt.CreateOverlay = CreateOverlay end

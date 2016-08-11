@@ -73,7 +73,7 @@ end
 InviteWhisper:RegisterEvent("CHAT_MSG_WHISPER")
 InviteWhisper:RegisterEvent("CHAT_MSG_BN_WHISPER")
 InviteWhisper:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
-	if ((not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and arg1:lower():match(C.Misc.InviteKeyword)) and SavedOptionsPerChar.AutoInvite == true and not QueueStatusMinimapButton:IsShown() then
+	if ((not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and arg1:lower():match(Keyword)) and SavedOptionsPerChar.AutoInvite == true and not QueueStatusMinimapButton:IsShown() then
 		if event == "CHAT_MSG_WHISPER" then
 			InviteUnit(arg2)
 		elseif event == "CHAT_MSG_BN_WHISPER" then
@@ -90,12 +90,12 @@ SlashCmdList["AUTOINVITE"] = function(msg)
 		K.Print("|cffffff00"..L_INVITE_DISABLE..".|r")
 	elseif msg == "" then
 		SavedOptionsPerChar.AutoInvite = true
-		K.Print("|cffffff00"..L_INVITE_ENABLE..C.Misc.InviteKeyword..".|r")
-		C.Misc.InviteKeyword = C.Misc.InviteKeyword
+		K.Print("|cffffff00"..L_INVITE_ENABLE..Keyword..".|r")
+		Keyword = Keyword
 	else
 		SavedOptionsPerChar.AutoInvite = true
 		K.Print("|cffffff00"..L_INVITE_ENABLE..msg..".|r")
-		C.Misc.InviteKeyword = msg
+		Keyword = msg
 	end
 end
 SLASH_AUTOINVITE1 = "/ainv"

@@ -4,7 +4,7 @@ if IsAddOnLoaded("OpenAll") or IsAddOnLoaded("Postal") or IsAddOnLoaded("TradeSk
 
 local format = string.format
 
--- Grab mail in 1 button(OpenAll by Kemayo)
+-- GRAB MAIL IN 1 BUTTON(OPENALL BY KEMAYO)
 local deletedelay, t = 0.5, 0
 local takingOnlyCash = false
 local button, button2, waitForMail, openAll, openAllCash, openMail, lastopened, stopOpening, onEvent, needsToWait, total_cash
@@ -94,7 +94,7 @@ local function makeButton(id, text, w, h, x, y)
 	return button
 end
 
-button = makeButton("OpenAllButton", ALL, 60, 25, -50, -407)
+button = makeButton("OpenAllButton", ALL, 70, 25, -65, -398)
 button:SetScript("OnClick", openAll)
 button:SetScript("OnEvent", onEvent)
 button:SetScript("OnEnter", function()
@@ -104,7 +104,7 @@ button:SetScript("OnEnter", function()
 end)
 button:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-button2 = makeButton("OpenAllButton2", MONEY, 60, 25, 32, -407)
+button2 = makeButton("OpenAllButton2", MONEY, 70, 25, 18, -398)
 button2:SetScript("OnClick", openAllCash)
 button2:SetScript("OnEnter", function()
 	if not total_cash then

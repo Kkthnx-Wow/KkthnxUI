@@ -1,5 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- I NEED TO CLEAN THIS FILE UP.
 local _G = _G
 local unpack = unpack
 local PlaySound, PlaySoundFile = PlaySound, PlaySoundFile
@@ -14,6 +15,17 @@ local GetLFGDungeonInfo = GetLFGDungeonInfo
 local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
 
+-- MOVE SOME FRAMES (SHESTAK)
+local THFrame = CreateFrame("Frame")
+THFrame:RegisterEvent("ADDON_LOADED")
+THFrame:SetScript("OnEvent", function(self, event, addon)
+	if addon == "Blizzard_TalkingHeadUI" then
+		TalkingHeadFrame.ignoreFramePositionManager = true
+		TalkingHeadFrame:ClearAllPoints()
+		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
+	end
+end)
+
 DurabilityFrame:SetFrameStrata("HIGH")
 local function SetPosition(self, _, parent)
 	if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
@@ -24,10 +36,9 @@ local function SetPosition(self, _, parent)
 end
 hooksecurefunc(DurabilityFrame,"SetPoint", SetPosition)
 
--- Move some frames (Shestak)
 TicketStatusFrame:ClearAllPoints()
 TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
--- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
+-- BLIZZARD REPOSITIONS THIS FRAME NOW IN UIPARENT_UPDATETOPFRAMEPOSITIONS
 hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
 	if anchor == UIParent then
 		TicketStatusFrame:ClearAllPoints()
@@ -74,10 +85,10 @@ hooksecurefunc("WorldStateAlwaysUpFrame_Update", function()
 	end
 end)
 
--- Vehicle Indicator
+-- VEHICLE INDICATOR
 local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)
 VehicleAnchor:SetPoint(unpack(C.Position.Vehicle))
-VehicleAnchor:SetSize(VehicleSeatIndicator:GetWidth(), VehicleSeatIndicator:GetHeight())
+VehicleAnchor:SetSize(130, 130)
 
 hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	if parent == "MinimapCluster" or parent == _G["MinimapCluster"] then
@@ -87,7 +98,7 @@ hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	end
 end)
 
--- Force readycheck warning
+-- FORCE READYCHECK WARNING
 local ShowReadyCheckHook = function(self, initiator)
 	if initiator ~= "player" then
 		PlaySound("ReadyCheck", "Master")
@@ -95,7 +106,7 @@ local ShowReadyCheckHook = function(self, initiator)
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
--- Custom Lag Tolerance(by Elv22)
+-- CUSTOM LAG TOLERANCE(BY ELV22)
 if C.General.CustomLagTolerance == true then
 	InterfaceOptionsCombatPanelMaxSpellStartRecoveryOffset:Hide()
 	InterfaceOptionsCombatPanelReducedLagTolerance:Hide()

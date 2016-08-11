@@ -1,28 +1,28 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- Per Class Config (overwrites general)
--- Class Type need to be UPPERCASE -- DRUID, MAGE ect ect...
+-- PER CLASS CONFIG (OVERWRITES GENERAL)
+-- CLASS TYPE NEED TO BE UPPERCASE -- DRUID, MAGE ECT ECT...
 if K.Class == "DRUID" then
 end
 
 if K.Role == "Tank" then
 end
 
--- Per Character Name Config (overwrite general and class)
--- Name need to be case sensitive
+-- PER CHARACTER NAME CONFIG (OVERWRITE GENERAL AND CLASS)
+-- NAME NEED TO BE CASE SENSITIVE
 if K.Name == "CharacterName" then
 end
 
--- Per Max Character Level Config (overwrite general, class and name)
+-- PER MAX CHARACTER LEVEL CONFIG (OVERWRITE GENERAL, CLASS AND NAME)
 if K.Level ~= MAX_PLAYER_LEVEL then
 end
 
--- Magicnachos Personal Config
-if (K.Name == "Magicnachos" or K.Name == "Bootyshorts") and (K.Realm == "Icecrown") then
+-- MAGICNACHOS PERSONAL CONFIG
+if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
 
 end
 
--- Kkthnx Personal Config
-if (K.Name == "Kkthnx" or K.Name == "Rollndots" or K.Name == "Safeword" or K.Name == "Broflex" or K.Name == "Broflexin") and (K.Realm == "Icecrown") then
+-- KKTHNX PERSONAL CONFIG
+if (K.Name == "Kkthnx") and (K.Realm == "Stormreaver") then
 
 end

@@ -6,20 +6,15 @@ local format = string.format
 local max = math.max
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
-local UIPARENT_MANAGED_FRAME_POSITIONS = UIPARENT_MANAGED_FRAME_POSITIONS
 
 -- Anchors
 local PlayerCastbarAnchor = CreateFrame("Frame", "PlayerCastbarAnchor", UIParent)
-if not InCombatLockdown() then
-	PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
-	PlayerCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.PlayerCastBar))
-end
+PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
+PlayerCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.PlayerCastBar))
 
 local TargetCastbarAnchor = CreateFrame("Frame", "TargetCastbarAnchor", UIParent)
-if not InCombatLockdown() then
-	TargetCastbarAnchor:SetSize(TargetFrameSpellBar:GetWidth() * C.Unitframe.CastBarScale, TargetFrameSpellBar:GetHeight() * 2)
-	TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
-end
+TargetCastbarAnchor:SetSize(TargetFrameSpellBar:GetWidth() * C.Unitframe.CastBarScale, TargetFrameSpellBar:GetHeight() * 2)
+TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 
 local CastBars = CreateFrame("Frame", nil, UIParent)
 
@@ -27,8 +22,6 @@ CastBars:RegisterEvent("ADDON_LOADED")
 CastBars:SetScript("OnEvent", function(self, event, addon)
 	if (addon ~= "KkthnxUI") then return end
 	if not InCombatLockdown() then
-
-		UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
 
 		-- Move Cast Bar
 		CastingBarFrame:SetMovable(true)

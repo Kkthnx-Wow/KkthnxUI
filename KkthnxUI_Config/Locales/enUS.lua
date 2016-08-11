@@ -107,6 +107,7 @@ L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS = "Replaces the default |cff00B4FFBlizzard 
 L_GUI_GENERAL_TRANSLATE_MESSAGE = "Popup to gain help for GUI translation."
 L_GUI_GENERAL_UISCALE = "UI Scale (if auto-scale is disabled)"
 L_GUI_GENERAL_WELCOME_MESSAGE = "Welcome message in chat."
+L_GUI_GENERAL_LAG_TOLERANCE = "Automatically update the Blizzard Custom Lag Tolerance option to your latency"
 -- Loot Localization
 L_GUI_LOOT_AUTODE = "Auto confirm disenchant"
 L_GUI_LOOT_AUTOGREED = "Enable auto-greed & disenchant for green items at max level"

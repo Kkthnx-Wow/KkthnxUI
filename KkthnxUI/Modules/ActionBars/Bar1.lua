@@ -7,7 +7,7 @@ local InCombatLockdown = InCombatLockdown
 local HasOverrideActionBar = HasOverrideActionBar
 local HasVehicleActionBar = HasVehicleActionBar
 
---	Setup Main Action Bar by Tukz
+-- SETUP MAIN ACTION BAR BY TUKZ
 local bar = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
 bar:SetAllPoints(ActionBarAnchor)
 
@@ -34,10 +34,12 @@ local function GetBar()
 	local condition = Page["DEFAULT"]
 	local class = K.Class
 	local page = Page[class]
+	local more = ""
 	if page then
 		condition = condition.." "..page
 	end
-	condition = condition.." 1"
+	condition = condition.." [form] 1; 1"
+
 	return condition
 end
 
@@ -63,6 +65,10 @@ bar:SetScript("OnEvent", function(self, event, ...)
 		]])
 
 		self:SetAttribute("_onstate-page", [[
+			if HasTempShapeshiftActionBar() then
+				newstate = GetTempShapeshiftBarIndex() or newstate
+			end
+
 			for i, button in ipairs(buttons) do
 				button:SetAttribute("actionpage", tonumber(newstate))
 			end

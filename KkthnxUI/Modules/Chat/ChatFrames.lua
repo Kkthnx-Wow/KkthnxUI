@@ -33,7 +33,7 @@ local function ShortChannel(channel)
 end
 
 local function AddMessage(frame, str, ...)
-	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
+	--if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
 		str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
 		str = str:gsub("CHANNEL:", "")
 		str = str:gsub("^(.-|h) "..L_CHAT_WHISPERS, "%1")
@@ -45,7 +45,7 @@ local function AddMessage(frame, str, ...)
 		str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
 
 		return origs[frame](frame, str, ...)
-	end
+	--end
 end
 
 FriendsMicroButton:Kill()
@@ -66,17 +66,17 @@ local function SetChatStyle(frame)
 	frame:SetTimeVisible(C.Chat.FadeTime)
 	frame:SetFading(true)
 
-	-- Move the chat edit box
+	-- MOVE THE CHAT EDIT BOX
 	editbox:ClearAllPoints()
 	editbox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", -4, 23)
 	editbox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 4, 23)
 
-	-- Hide textures
+	-- HIDE TEXTURES
 	for i = 1, #CHAT_FRAME_TEXTURES do
 		_G[framename..CHAT_FRAME_TEXTURES[i]]:SetTexture(nil)
 	end
 
-	-- Removes Default ChatFrame Tabs texture
+	-- REMOVES DEFAULT CHATFRAME TABS TEXTURE
 	_G[format("ChatFrame%sTabLeft", id)]:Kill()
 	_G[format("ChatFrame%sTabMiddle", id)]:Kill()
 	_G[format("ChatFrame%sTabRight", id)]:Kill()
@@ -105,41 +105,41 @@ local function SetChatStyle(frame)
 
 	_G[format("ChatFrame%sTabGlow", id)]:Kill()
 
-	-- Kill off editbox artwork
+	-- KILL OFF EDITBOX ARTWORK
 	local a, b, c = select(6, editbox:GetRegions()) a:Kill() b:Kill() c:Kill()
 
-	-- Kill bubble tex/glow
+	-- KILL BUBBLE TEX/GLOW
 	if tab.conversationIcon then tab.conversationIcon:Kill() end
 
-	-- Disable alt key usage
+	-- DISABLE ALT KEY USAGE
 	editbox:SetAltArrowKeyMode(false)
 
-	-- Hide editbox on login
+	-- HIDE EDITBOX ON LOGIN
 	editbox:Hide()
 
-	-- Script to hide editbox instead of fading editbox to 0.35 alpha via IM Style
+	-- SCRIPT TO HIDE EDITBOX INSTEAD OF FADING EDITBOX TO 0.35 ALPHA VIA IM STYLE
 	editbox:HookScript("OnEditFocusGained", function(self) self:Show() end)
 	editbox:HookScript("OnEditFocusLost", function(self) self:Hide() end)
 
 	local function OnTextChanged(self)
 		local text = self:GetText()
 
-		--if InCombatLockdown() then
-		local MIN_REPEAT_CHARACTERS = 5
-		if (len(text) > MIN_REPEAT_CHARACTERS) then
-			local repeatChar = true
-			for i=1, MIN_REPEAT_CHARACTERS, 1 do
-				if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i)) ) then
-					repeatChar = false
-					break
+		if InCombatLockdown() then
+			local MIN_REPEAT_CHARACTERS = 5
+			if (len(text) > MIN_REPEAT_CHARACTERS) then
+				local repeatChar = true
+				for i=1, MIN_REPEAT_CHARACTERS, 1 do
+					if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i)) ) then
+						repeatChar = false
+						break
+					end
+				end
+				if ( repeatChar ) then
+					self:Hide()
+					return
 				end
 			end
-			if ( repeatChar ) then
-				self:Hide()
-				return
-			end
 		end
-		--end
 
 		local new, found = gsub(text, "|Kf(%S+)|k(%S+)%s(%S+)|k", "%2 %3")
 		if found > 0 then
@@ -149,10 +149,10 @@ local function SetChatStyle(frame)
 	end
 	editbox:HookScript("OnTextChanged", OnTextChanged)
 
-	-- Hide edit box every time we click on a tab
+	-- HIDE EDIT BOX EVERY TIME WE CLICK ON A TAB
 	tab:HookScript("OnClick", function() editbox:Hide() end)
 
-	-- Create our own texture for edit box
+	-- CREATE OUR OWN TEXTURE FOR EDIT BOX
 	if C.Chat.TabsMouseover ~= true then
 		local EditBoxBackground = CreateFrame("Frame", "ChatEditBoxBackground", editbox)
 		EditBoxBackground:SetBackdrop(K.Backdrop)
@@ -168,7 +168,7 @@ local function SetChatStyle(frame)
 			EditBoxBackground:SetBackdropBorderColor(r, g, b)
 		end
 
-		-- Update border color according where we talk
+		-- UPDATE BORDER COLOR ACCORDING WHERE WE TALK
 		hooksecurefunc("ChatEdit_UpdateHeader", function()
 			local type = editbox:GetAttribute("chatType")
 			if type == "CHANNEL" then
@@ -198,21 +198,20 @@ local function SetChatStyle(frame)
 		CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("TOPLEFT", CombatLogQuickButtonFrame_Custom.backdrop, 4, -4)
 		CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("BOTTOMRIGHT", CombatLogQuickButtonFrame_Custom.backdrop, -4, 4)
 		CombatLogQuickButtonFrame_CustomProgressBar:SetStatusBarTexture(C.Media.Texture)
-		CombatLogQuickButtonFrame_CustomProgressBar:SetStatusBarTexture(C.Media.Texture)
 		CombatLogQuickButtonFrameButton1:SetPoint("BOTTOM", 0, 0)
 	end
 
 	frame.skinned = true
 end
 
--- Setup chatframes 1 to 10 on login
+-- SETUP CHATFRAMES 1 TO 10 ON LOGIN
 local function SetupChat(self)
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G[format("ChatFrame%s", i)]
 		SetChatStyle(frame)
 	end
 
-	-- Remember last channel
+	-- REMEMBER LAST CHANNEL
 	local var
 	if C.Chat.Sticky == true then
 		var = 1
@@ -256,7 +255,7 @@ local function SetupChatPosAndFont(self)
 			chat:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 		end
 
-		-- Force chat position
+		-- FORCE CHAT POSITION
 		if i == 1 then
 			chat:ClearAllPoints()
 			chat:SetSize(C.Chat.Width, C.Chat.Height)
@@ -274,7 +273,7 @@ local function SetupChatPosAndFont(self)
 		end
 	end
 
-	-- Reposition battle.net popup over chat #1
+	-- REPOSITION BATTLE.NET POPUP OVER CHAT #1
 	BNToastFrame:HookScript("OnShow", function(self)
 		self:ClearAllPoints()
 		self:SetPoint(unpack(C.Position.BnetPopup))
@@ -296,7 +295,7 @@ UIChat:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- Setup temp chat (BN, WHISPER) when needed
+-- SETUP TEMP CHAT (BN, WHISPER) WHEN NEEDED
 local function SetupTempChat()
 	local frame = FCF_GetCurrentChatFrame()
 	if frame.skinned then return end
@@ -304,16 +303,22 @@ local function SetupTempChat()
 end
 hooksecurefunc("FCF_OpenTemporaryWindow", SetupTempChat)
 
--- Remove player"s realm name
+-- DISABLE PET BATTLE TAB
+local old = FCFManager_GetNumDedicatedFrames
+function FCFManager_GetNumDedicatedFrames(...)
+	return select(1, ...) ~= "PET_BATTLE_COMBAT_LOG" and old(...) or 1
+end
+
+-- REMOVE PLAYER'S REALM NAME
 local function RemoveRealmName(self, event, msg, author, ...)
-	local realm = gsub(K.Realm, " ", "")
+	local realm = string.gsub(K.Realm, " ", "")
 	if msg:find("-" .. realm) then
 		return false, gsub(msg, "%-"..realm, ""), author, ...
 	end
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", RemoveRealmName)
 
--- Save slash command typo
+-- SAVE SLASH COMMAND TYPO
 local function TypoHistory_Posthook_AddMessage(chat, text)
 	if strfind(text, HELP_TEXT_SIMPLE) then
 		ChatEdit_AddHistory(chat.editBox)

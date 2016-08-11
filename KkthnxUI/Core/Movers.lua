@@ -46,8 +46,6 @@ local placed = {
 	"StuffingFrameBags",
 	"StuffingFrameBank",
 	"alDamageMeterFrame",
-	"PlayerFrame",
-	"TargetFrame",
 }
 
 local SetPosition = function(mover)
@@ -102,7 +100,7 @@ end
 
 local InitMove = function(msg)
 	if InCombatLockdown() then print("|cffffe02e"..ERR_NOT_IN_COMBAT.."|r") return end
-	if msg and (msg == "reset" or msg == "куыуе") then
+	if msg and (msg == "reset") then
 		SavedPositions = {}
 		for i, v in pairs(placed) do
 			if _G[v] then

@@ -60,7 +60,6 @@
 	<Script file="Modules\Misc\Mounts.lua"/>
 	<Script file="Modules\Misc\PulseCD.lua"/>
 	<Script file="Modules\Misc\SlotItemLevel.lua"/>
-	<Script file="Modules\Misc\SpeedyLoad.lua"/>
 
 	<Script file="Modules\ActionBars\Functions.lua"/>
 	<Script file="Modules\ActionBars\Bindings.lua"/>

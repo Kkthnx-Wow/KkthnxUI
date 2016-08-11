@@ -5,6 +5,19 @@ local collectgarbage = collectgarbage
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 
+local FixTooltip = CreateFrame("Frame")
+FixTooltip:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+FixTooltip:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
+FixTooltip:SetScript("OnEvent", function()
+	local done
+	GameTooltip:HookScript("OnTooltipCleared", function(self)
+		if not done and self:NumLines() == 0 then
+			self:Hide()
+			done = true
+		end
+	end)
+end)
+
 INTERFACE_ACTION_BLOCKED = ""
 
 -- Fix RemoveTalent() taint

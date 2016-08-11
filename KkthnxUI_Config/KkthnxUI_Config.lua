@@ -150,6 +150,7 @@ local function Local(o)
 	if o == "UIConfigGeneralBubbleBackdrop" then o = L_GUI_GENERAL_CHATBUBBLE_NOBACKDROP end
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
+	if o == "UIConfiggeneralCustomLagTolerance" then o = L_GUI_GENERAL_LAG_TOLERANCE end
 	-- Loot Settings
 	if o == "UIConfigLoot" then o = LOOT end
 	if o == "UIConfigLootConfirmDisenchant" then o = L_GUI_LOOT_AUTODE end

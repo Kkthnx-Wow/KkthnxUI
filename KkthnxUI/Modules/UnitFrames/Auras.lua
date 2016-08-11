@@ -6,15 +6,14 @@ local GetName = GetName
 local UnitIsFriend = UnitIsFriend
 local hooksecurefunc = hooksecurefunc
 
---TargetFrame.maxBuffs = 16
---TargetFrame.maxDebuffs = 16
---MAX_TARGET_BUFFS = 16
---MAX_TARGET_DEBUFFS = 16
---TargetFrame_UpdateAuras(TargetFrame)
+TargetFrame.maxBuffs = 16
+TargetFrame.maxDebuffs = 16
+MAX_TARGET_BUFFS = 16
+MAX_TARGET_DEBUFFS = 16
 
 -- AURAS
 local function TargetAuraColour(self)
-	-- buffs
+	-- BUFFS
 	for i = 1, MAX_TARGET_BUFFS do
 		local bframe = _G[self:GetName().."Buff"..i]
 		local bframecd = _G[self:GetName().."Buff"..i.."Cooldown"]
@@ -34,15 +33,14 @@ local function TargetAuraColour(self)
 		end
 	end
 
-	-- debuffs
+	-- DEBUFFS
 	for i = 1, MAX_TARGET_DEBUFFS do
 		local dframe = _G[self:GetName().."Debuff"..i]
 		local dframecd = _G[self:GetName().."Debuff"..i.."Cooldown"]
 		local dframecount = _G[self:GetName().."Debuff"..i.."Count"]
 		if dframe then
 			K.CreateBorder(dframe, 8)
-
-			-- border colour
+			-- BORDER COLOUR
 			local dname = UnitDebuff(self.unit, i)
 			local _, _, _, _, dtype = UnitDebuff(self.unit, i)
 			if dname then
@@ -54,23 +52,22 @@ local function TargetAuraColour(self)
 				dframe:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 			end
 
-			if dframecd then -- pet doesn"t show cd?
-			dframecd:ClearAllPoints()
-			dframecd:SetPoint("TOPLEFT", dframe, 1.5, -1.5)
-			dframecd:SetPoint("BOTTOMRIGHT", dframe, -1.5, 1.5)
+			if dframecd then -- PET DOESN'T SHOW CD?
+				dframecd:ClearAllPoints()
+				dframecd:SetPoint("TOPLEFT", dframe, 1.5, -1.5)
+				dframecd:SetPoint("BOTTOMRIGHT", dframe, -1.5, 1.5)
+			end
+			if dframecount then -- TOT DOESN'T SHOW STACKS
+				dframecount:ClearAllPoints()
+				dframecount:SetPoint("CENTER", dframe, "BOTTOM")
+				dframecount:SetJustifyH("CENTER")
+				dframecount:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+			end
 		end
-
-		if dframecount then -- ToT doesn"t show stacks
-		dframecount:ClearAllPoints()
-		dframecount:SetPoint("CENTER", dframe, "BOTTOM")
-		dframecount:SetJustifyH("CENTER")
-		dframecount:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 	end
 end
-end
-end
 
--- reposition
+-- REPOSITION
 local function TargetAuraPosit(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
 	local AURA_OFFSET_Y = C.Unitframe.AuraOffsetY
 	local LARGE_AURA_SIZE = C.Unitframe.LargeAuraSize
@@ -97,8 +94,8 @@ local function TargetAuraPosit(self, auraName, numAuras, numOppositeAuras, large
 		end
 
 		if rowWidth > maxRowWidth then
-			-- x & y
-			updateFunc(self, auraName, i, numOppositeAuras, firstBuffOnRow, size, offsetX + 2, offsetY + 2, mirrorAurasVertically)
+			-- X & Y
+			updateFunc(self, auraName, i, numOppositeAuras, firstBuffOnRow, size, offsetX + 0.5, offsetY + 2, mirrorAurasVertically)
 
 			rowWidth = size
 			self.auraRows = self.auraRows + 1
@@ -107,20 +104,20 @@ local function TargetAuraPosit(self, auraName, numAuras, numOppositeAuras, large
 
 			if self.auraRows > NUM_TOT_AURA_ROWS then maxRowWidth = AURA_ROW_WIDTH end
 		else
-			updateFunc(self, auraName, i, numOppositeAuras, i - 1, size, offsetX + 2, offsetY + 2, mirrorAurasVertically)
+			updateFunc(self, auraName, i, numOppositeAuras, i - 1, size, offsetX + 0.5, offsetY + 2, mirrorAurasVertically)
 		end
 	end
 end
 
--- debuff reposition
+-- DEBUFF REPOSITION
 local function TargetDebuffPosit(self, debuffName, index, numBuffs, anchorIndex, size, offsetX, offsetY, mirrorVertically)
 	local dbuff = _G[debuffName..index]
 	local isFriend = UnitIsFriend("player", self.unit)
 	local AURA_START_X = 3
 	local AURA_START_Y = 32
-	local AURA_OFFSET_Y = 3
+	local AURA_OFFSET_Y = C.Unitframe.AuraOffsetY
 
-	-- for mirroring vertically
+	-- FOR MIRRORING VERTICALLY
 	local point, relativePoint
 	local startY, auraOffsetY
 	if mirrorVertically then
@@ -141,10 +138,10 @@ local function TargetDebuffPosit(self, debuffName, index, numBuffs, anchorIndex,
 
 	if index == 1 then
 		if isFriend and numBuffs > 0 then
-			-- unit is friendly and there are buffs...debuffs start on bottom
+			-- UNIT IS FRIENDLY AND THERE ARE BUFFS...DEBUFFS START ON BOTTOM
 			dbuff:SetPoint(point.."LEFT", self.buffs, relativePoint.."LEFT", 0, -offsetY)
 		else
-			-- unit is not friendly or there are no buffs...debuffs start on top
+			-- UNIT IS NOT FRIENDLY OR THERE ARE NO BUFFS...DEBUFFS START ON TOP
 			dbuff:SetPoint(point.."LEFT", self, relativePoint.."LEFT", AURA_START_X, startY - 3)
 		end
 		self.debuffs:SetPoint(point.."LEFT", dbuff, point.."LEFT", 0, 0)
@@ -153,20 +150,19 @@ local function TargetDebuffPosit(self, debuffName, index, numBuffs, anchorIndex,
 			self.spellbarAnchor = dbuff
 		end
 	elseif anchorIndex ~= (index - 1) then
-		-- anchor index is not the previous index...must be a new row
+		-- ANCHOR INDEX IS NOT THE PREVIOUS INDEX...MUST BE A NEW ROW
 		dbuff:SetPoint(point.."LEFT", _G[debuffName..anchorIndex], relativePoint.."LEFT", 0, -offsetY)
 		self.debuffs:SetPoint(relativePoint.."LEFT", dbuff, relativePoint.."LEFT", 0, -auraOffsetY)
 		if isFriend or (not isFriend and numBuffs == 0) then
 			self.spellbarAnchor = dbuff
 		end
 	else
-		-- anchor index is the previous index
-		-- we tighten up the spacing between debuffs by -1px due to !bc
-		dbuff:SetPoint(point.."LEFT", _G[debuffName..(index - 1)], point.."RIGHT", offsetX - 1, 0)
+		-- ANCHOR INDEX IS THE PREVIOUS INDEX
+		dbuff:SetPoint(point.."LEFT", _G[debuffName..(index - 1)], point.."RIGHT", offsetX - 2, 0)
 	end
 end
 
--- ToT auras
+-- TOT AURAS
 for i = 1, 4 do
 	local tot = _G["TargetFrameToTDebuff"..i]
 	local totborder = _G["TargetFrameToTDebuff"..i.."Border"]
@@ -175,7 +171,7 @@ for i = 1, 4 do
 
 	totborder:Hide()
 
-	-- reposition
+	-- REPOSITION
 	tot:ClearAllPoints()
 	if i == 1 then
 		tot:SetPoint("LEFT", totparent, "RIGHT", 6, 9)
@@ -188,7 +184,7 @@ for i = 1, 4 do
 	end
 end
 
--- pet auras
+-- PET AURAS
 for i = 1, 4 do
 	local petf = _G["PetFrameDebuff"..i]
 	local petfborder = _G["PetFrameDebuff"..i.."Border"]
@@ -196,7 +192,7 @@ for i = 1, 4 do
 
 	petfborder:Hide()
 
-	-- reposition
+	-- REPOSITION
 	petf:ClearAllPoints()
 	if i == 1 then
 		petf:SetPoint("TOPLEFT", PetFrame, 48, -45)
@@ -205,7 +201,7 @@ for i = 1, 4 do
 	end
 end
 
--- party auras
+-- PARTY AURAS
 for i = 1, 4 do
 	local party = "PartyMemberFrame"..i
 	_G[party]:HookScript("OnEvent", function(self, event, unit)
@@ -232,76 +228,9 @@ for i = 1, 4 do
 	end)
 end
 
--- party tooltip
-for i = 1, MAX_PARTY_TOOLTIP_BUFFS do
-	local buff = _G["PartyMemberBuffTooltipBuff"..i]
-	if i == 9 then
-		buff:ClearAllPoints()
-		buff:SetPoint("TOP", "PartyMemberBuffTooltipBuff1", "BOTTOM", 0, -6)
-	elseif i ~= 1 then
-		buff:ClearAllPoints()
-		buff:SetPoint("LEFT", _G["PartyMemberBuffTooltipBuff"..i - 1], "RIGHT", 6, 0)
-	end
-end
-
-for i = 1, MAX_PARTY_TOOLTIP_DEBUFFS do
-	local debuff = _G["PartyMemberBuffTooltipDebuff"..i]
-	if i ~= 1 then
-		debuff:ClearAllPoints()
-		debuff:SetPoint("LEFT", _G["PartyMemberBuffTooltipDebuff"..i - 1], "RIGHT", 6, 0)
-	end
-end
-
-local function PartyTooltipAuras(self)
-	local numBuff, numDebuff = 0, 0
-	if not PartyMemberBuffTooltip.skinned then
-		K.CreateBorder(PartyMemberBuffTooltip, 12)
-		PartyMemberBuffTooltip:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-		PartyMemberBuffTooltip.skinned = true
-	end
-
-	for i = 1, MAX_PARTY_TOOLTIP_BUFFS do
-		local _, _, icon = UnitBuff(self.unit, i)
-		if icon then
-			local buff = _G["PartyMemberBuffTooltipBuff"..i]
-			if not buff.skinned then
-				K.CreateBorder(buff, 8)
-				buff:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-				buff.skinned = true
-			end
-			numBuff = numBuff + 1
-		end
-	end
-
-	PartyMemberBuffTooltipDebuff1:SetPoint("TOP", numBuff <= 8 and "PartyMemberBuffTooltipBuff1" or "PartyMemberBuffTooltipBuff9", "BOTTOM", 0, -5)
-
-	for i = 1, MAX_PARTY_TOOLTIP_DEBUFFS do
-		local _, _, icon, _, dtype = UnitDebuff(self.unit, i)
-		if icon then
-			local debuff = _G["PartyMemberBuffTooltipDebuff"..i]
-			local colour = DebuffTypeColor[dtype] or DebuffTypeColor.none
-			if not debuff.skinned then
-				K.CreateBorder(debuff, 8)
-				debuff:SetBackdropBorderColor(colour.r, colour.g, colour.b)
-				debuff.skinned = true
-			end
-			numDebuff = numDebuff + 1
-		end
-	end
-
-	-- resize tooltip
-	local rows = ceil(numBuff/8) + ceil(numDebuff/8)
-	local columns = min(8, max(numBuff, numDebuff))
-	if rows > 0 and columns > 0 then
-		PartyMemberBuffTooltip:SetWidth((columns*20) + 15)
-		PartyMemberBuffTooltip:SetHeight((rows*20) + 15)
-	end
-end
-
-	hooksecurefunc("TargetofTarget_Update", TargetAuraColour)
-    hooksecurefunc("RefreshDebuffs", TargetAuraColour)
-	hooksecurefunc("PetFrame_Update", TargetAuraColour)
-	hooksecurefunc("TargetFrame_UpdateAuras", TargetAuraColour)
-	hooksecurefunc("TargetFrame_UpdateAuraPositions", TargetAuraPosit)
-	hooksecurefunc("TargetFrame_UpdateDebuffAnchor", TargetDebuffPosit)
-    hooksecurefunc("PartyMemberBuffTooltip_Update", PartyTooltipAuras)
+hooksecurefunc("TargetofTarget_Update", TargetAuraColour)
+hooksecurefunc("RefreshDebuffs", TargetAuraColour)
+hooksecurefunc("PetFrame_Update", TargetAuraColour)
+hooksecurefunc("TargetFrame_UpdateAuras", TargetAuraColour)
+hooksecurefunc("TargetFrame_UpdateAuraPositions", TargetAuraPosit)
+hooksecurefunc("TargetFrame_UpdateDebuffAnchor", TargetDebuffPosit)
