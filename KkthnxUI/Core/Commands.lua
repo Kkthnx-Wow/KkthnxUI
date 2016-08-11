@@ -148,11 +148,11 @@ SLASH_CLEARCHAT2 = "/clearchat"
 -- Test Blizzard Alert Frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
 	PlaySound("LFG_Rewards")
-	if not AchievementFrame then
+	if (not AchievementFrame) then
 		AchievementFrame_LoadUI()
 	end
-	AchievementAlertFrame_ShowAlert(229)
-	AchievementAlertFrame_ShowAlert(1707)
+	AchievementFrame_SelectAchievement(229)
+	AchievementFrame_SelectAchievement(1707)
 end
 SLASH_TEST_ACHIEVEMENT1 = "/testa"
 

@@ -48,10 +48,10 @@ if not InCombatLockdown() then
 		_G["PartyMemberFrame"..i.."ManaBar"]:SetPoint("CENTER", 17, -2)
 
 		_G["PartyMemberFrame"..i.."HealthBarText"]:ClearAllPoints()
-		_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("LEFT", _G["PartyMemberFrame"..i], "RIGHT", -6, 10)
+		_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
 
 		_G["PartyMemberFrame"..i.."ManaBarText"]:ClearAllPoints()
-		_G["PartyMemberFrame"..i.."ManaBarText"]:SetPoint("LEFT", _G["PartyMemberFrame"..i], "RIGHT", -6, -2)
+		_G["PartyMemberFrame"..i.."ManaBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."ManaBar"], "CENTER", 0, 0)
 
 		_G["PartyMemberFrame"..i.."Flash"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\Party-Flash")
 	end
@@ -217,7 +217,6 @@ TargetFrameTextureFrameHealthBarTextRight.SetPoint = K.Noop
 TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
 TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrame, "LEFT", 7, 12)
 TargetFrameTextureFrameHealthBarTextLeft.SetPoint = K.Noop
-
 
 FocusFrameHealthBar.TextString:ClearAllPoints()
 FocusFrameHealthBar.TextString:SetPoint("CENTER", FocusFrame, "CENTER", -53, 12)

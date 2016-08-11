@@ -53,8 +53,13 @@ UIErrorsFrame:ClearAllPoints()
 UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
 UIErrorsFrame:SetFrameLevel(0)
 
+RaidBossEmoteFrame:ClearAllPoints()
+RaidBossEmoteFrame:SetPoint("TOP", UIParent, "TOP", 0, -200) 
+RaidBossEmoteFrame:SetScale(0.9)
+
 RaidWarningFrame:ClearAllPoints()
-RaidWarningFrame:SetPoint("TOP", UIParent, 0, -130)
+RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260) 
+RaidWarningFrame:SetScale(0.8)
 
 WorldStateAlwaysUpFrame:ClearAllPoints()
 WorldStateAlwaysUpFrame:SetPoint("TOP", UIParent, 0, -10)

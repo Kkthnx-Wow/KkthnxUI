@@ -4,10 +4,10 @@ if C.Blizzard.MoveAchievements ~= true then return end
 local unpack = unpack
 local CreateFrame, UIParent = CreateFrame, UIParent
 
---[[ Achievement frame
+-- Achievement frame
 local AchievementAnchor = CreateFrame("Frame", "AchievementAnchor", UIParent)
-AchievementAnchor:SetWidth(DungeonCompletionAlertFrame1:GetWidth() - 36)
-AchievementAnchor:SetHeight(DungeonCompletionAlertFrame1:GetHeight() - 4)
+AchievementAnchor:SetWidth(DungeonCompletionAlertFrame:GetWidth() - 36)
+AchievementAnchor:SetHeight(DungeonCompletionAlertFrame:GetHeight() - 4)
 AchievementAnchor:SetPoint(unpack(C.Position.Achievements))
 
 local POSITION, ANCHOR_POINT, YOFFSET, FIRST_YOFFSET = "BOTTOM", "TOP", -9
@@ -33,7 +33,7 @@ local function fixAnchors()
 	GroupLootContainer:ClearAllPoints()
 	GroupLootContainer:SetPoint(POSITION, AlertFrame, ANCHOR_POINT, 0, YOFFSET)
 end
-hooksecurefunc("AlertFrame_FixAnchors", fixAnchors)
+--hooksecurefunc("AlertFrame_FixAnchors", fixAnchors)
 
 local function AlertFrame_SetLootAnchors(alertAnchor)
 	if MissingLootFrame:IsShown() then
@@ -48,7 +48,7 @@ local function AlertFrame_SetLootAnchors(alertAnchor)
 		GroupLootContainer:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetLootAnchors", AlertFrame_SetLootAnchors)
+--hooksecurefunc("AlertFrame_SetLootAnchors", AlertFrame_SetLootAnchors)
 
 local function AlertFrame_SetStorePurchaseAnchors(alertAnchor)
 	local frame = StorePurchaseAlertFrame
@@ -57,7 +57,7 @@ local function AlertFrame_SetStorePurchaseAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetStorePurchaseAnchors", AlertFrame_SetStorePurchaseAnchors)
+--hooksecurefunc("AlertFrame_SetStorePurchaseAnchors", AlertFrame_SetStorePurchaseAnchors)
 
 local function AlertFrame_SetLootWonAnchors(alertAnchor)
 	for i = 1, #LOOT_WON_ALERT_FRAMES do
@@ -69,7 +69,7 @@ local function AlertFrame_SetLootWonAnchors(alertAnchor)
 		end
 	end
 end
-hooksecurefunc("AlertFrame_SetLootWonAnchors", AlertFrame_SetLootWonAnchors)
+--hooksecurefunc("AlertFrame_SetLootWonAnchors", AlertFrame_SetLootWonAnchors)
 
 local function AlertFrame_SetLootUpgradeFrameAnchors(alertAnchor)
 	for i = 1, #LOOT_UPGRADE_ALERT_FRAMES do
@@ -81,7 +81,7 @@ local function AlertFrame_SetLootUpgradeFrameAnchors(alertAnchor)
 		end
 	end
 end
-hooksecurefunc("AlertFrame_SetLootUpgradeFrameAnchors", AlertFrame_SetLootUpgradeFrameAnchors)
+--hooksecurefunc("AlertFrame_SetLootUpgradeFrameAnchors", AlertFrame_SetLootUpgradeFrameAnchors)
 
 local function AlertFrame_SetMoneyWonAnchors(alertAnchor)
 	for i = 1, #MONEY_WON_ALERT_FRAMES do
@@ -93,7 +93,7 @@ local function AlertFrame_SetMoneyWonAnchors(alertAnchor)
 		end
 	end
 end
-hooksecurefunc("AlertFrame_SetMoneyWonAnchors", AlertFrame_SetMoneyWonAnchors)
+--hooksecurefunc("AlertFrame_SetMoneyWonAnchors", AlertFrame_SetMoneyWonAnchors)
 
 local function AlertFrame_SetAchievementAnchors(alertAnchor)
 	if AchievementAlertFrame1 then
@@ -107,7 +107,7 @@ local function AlertFrame_SetAchievementAnchors(alertAnchor)
 		end
 	end
 end
-hooksecurefunc("AlertFrame_SetAchievementAnchors", AlertFrame_SetAchievementAnchors)
+--hooksecurefunc("AlertFrame_SetAchievementAnchors", AlertFrame_SetAchievementAnchors)
 
 local function AlertFrame_SetCriteriaAnchors(alertAnchor)
 	if CriteriaAlertFrame1 then
@@ -121,7 +121,7 @@ local function AlertFrame_SetCriteriaAnchors(alertAnchor)
 		end
 	end
 end
-hooksecurefunc("AlertFrame_SetCriteriaAnchors", AlertFrame_SetCriteriaAnchors)
+--hooksecurefunc("AlertFrame_SetCriteriaAnchors", AlertFrame_SetCriteriaAnchors)
 
 local function AlertFrame_SetChallengeModeAnchors(alertAnchor)
 	local frame = ChallengeModeAlertFrame1
@@ -130,7 +130,7 @@ local function AlertFrame_SetChallengeModeAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetChallengeModeAnchors", AlertFrame_SetChallengeModeAnchors)
+--hooksecurefunc("AlertFrame_SetChallengeModeAnchors", AlertFrame_SetChallengeModeAnchors)
 
 local function AlertFrame_SetDungeonCompletionAnchors(alertAnchor)
 	local frame = DungeonCompletionAlertFrame1
@@ -139,7 +139,7 @@ local function AlertFrame_SetDungeonCompletionAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetDungeonCompletionAnchors", AlertFrame_SetDungeonCompletionAnchors)
+--hooksecurefunc("AlertFrame_SetDungeonCompletionAnchors", AlertFrame_SetDungeonCompletionAnchors)
 
 local function AlertFrame_SetScenarioAnchors(alertAnchor)
 	local frame = ScenarioAlertFrame1
@@ -148,7 +148,7 @@ local function AlertFrame_SetScenarioAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetScenarioAnchors", AlertFrame_SetScenarioAnchors)
+--hooksecurefunc("AlertFrame_SetScenarioAnchors", AlertFrame_SetScenarioAnchors)
 
 local function AlertFrame_SetGuildChallengeAnchors(alertAnchor)
 	local frame = GuildChallengeAlertFrame
@@ -157,7 +157,7 @@ local function AlertFrame_SetGuildChallengeAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetGuildChallengeAnchors", AlertFrame_SetGuildChallengeAnchors)
+--hooksecurefunc("AlertFrame_SetGuildChallengeAnchors", AlertFrame_SetGuildChallengeAnchors)
 
 local function AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor)
 	local frame = DigsiteCompleteToastFrame
@@ -166,7 +166,7 @@ local function AlertFrame_SetDigsiteCompleteToastFrameAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetDigsiteCompleteToastFrameAnchors", AlertFrame_SetDigsiteCompleteToastFrameAnchors)
+--hooksecurefunc("AlertFrame_SetDigsiteCompleteToastFrameAnchors", AlertFrame_SetDigsiteCompleteToastFrameAnchors)
 
 local function AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor)
 	local frame = GarrisonBuildingAlertFrame
@@ -175,7 +175,7 @@ local function AlertFrame_SetGarrisonBuildingAlertFrameAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetGarrisonBuildingAlertFrameAnchors", AlertFrame_SetGarrisonBuildingAlertFrameAnchors)
+--hooksecurefunc("AlertFrame_SetGarrisonBuildingAlertFrameAnchors", AlertFrame_SetGarrisonBuildingAlertFrameAnchors)
 
 local function AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor)
 	local frame = GarrisonMissionAlertFrame
@@ -184,7 +184,7 @@ local function AlertFrame_SetGarrisonMissionAlertFrameAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetGarrisonMissionAlertFrameAnchors", AlertFrame_SetGarrisonMissionAlertFrameAnchors)
+--hooksecurefunc("AlertFrame_SetGarrisonMissionAlertFrameAnchors", AlertFrame_SetGarrisonMissionAlertFrameAnchors)
 
 local function AlertFrame_SetGarrisonShipMissionAlertFrameAnchors(alertAnchor)
 	local frame = GarrisonShipMissionAlertFrame
@@ -193,7 +193,7 @@ local function AlertFrame_SetGarrisonShipMissionAlertFrameAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetGarrisonShipMissionAlertFrameAnchors", AlertFrame_SetGarrisonShipMissionAlertFrameAnchors)
+--hooksecurefunc("AlertFrame_SetGarrisonShipMissionAlertFrameAnchors", AlertFrame_SetGarrisonShipMissionAlertFrameAnchors)
 
 local function AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor)
 	local frame = GarrisonFollowerAlertFrame
@@ -202,7 +202,7 @@ local function AlertFrame_SetGarrisonFollowerAlertFrameAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetGarrisonFollowerAlertFrameAnchors", AlertFrame_SetGarrisonFollowerAlertFrameAnchors)
+--hooksecurefunc("AlertFrame_SetGarrisonFollowerAlertFrameAnchors", AlertFrame_SetGarrisonFollowerAlertFrameAnchors)
 
 local function AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors(alertAnchor)
 	local frame = GarrisonShipFollowerAlertFrame
@@ -211,11 +211,10 @@ local function AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors(alertAnchor)
 		frame:SetPoint(POSITION, alertAnchor, ANCHOR_POINT, 0, YOFFSET)
 	end
 end
-hooksecurefunc("AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors", AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors)
+--hooksecurefunc("AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors", AlertFrame_SetGarrisonShipFollowerAlertFrameAnchors)
 
 hooksecurefunc(GroupLootContainer, "SetPoint", function(self, point, anchorTo, attachPoint, xOffset, yOffset)
 	if _G[anchorTo] == UIParent or _G[anchorTo] == AchievementAnchor then
 		fixAnchors()
 	end
 end)
-]]--

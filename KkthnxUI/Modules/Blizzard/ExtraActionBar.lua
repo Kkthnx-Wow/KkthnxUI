@@ -49,7 +49,7 @@ button:StripTextures()
 button:StyleButton()
 button:SetSize(53, 53)
 button:CreateBackdrop("Transparent")
-button.backdrop:SetAllPoints()
+button.backdrop:SetOutside()
 
 button.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 button.Icon:SetPoint("TOPLEFT", button, 2, -2)
