@@ -76,6 +76,9 @@ if C.Unitframe.Enable == true then
 					end
 				end)
 			end
+			
+			-- HIDE PET NAME
+			PetName:Hide()
 
 			-- UNIT NAME
 			for _, FrameNames in pairs({
@@ -166,56 +169,51 @@ if C.Unitframe.Enable == true then
 			end)
 
 			-- TWEAK PARTY FRAME
-			for i = 1, MAX_PARTY_MEMBERS do
-				_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
+			if(InCombatLockdown() == false) then
+				for i = 1, MAX_PARTY_MEMBERS do
+					_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
+				end
+				PartyMemberBuffTooltip:Kill() -- I PERSONALLY HATE THIS SHIT.
+
+				-- TWEAK PLAYER FRAME
+				PlayerFrame:SetMovable(true)
+				PlayerFrame:ClearAllPoints()
+				PlayerFrame:SetPoint("CENTER", PlayerFrameAnchor, "CENTER", -51, 3)
+				PlayerFrame:SetUserPlaced(true)
+				PlayerFrame:SetMovable(false)
+				PlayerFrame.SetPoint = K.Noop
+
+				-- TWEAK TARGET FRAME
+				TargetFrame:SetMovable(true)
+				TargetFrame:ClearAllPoints()
+				TargetFrame:SetPoint("CENTER", TargetFrameAnchor, "CENTER", 51, 3)
+				TargetFrame:SetUserPlaced(true)
+				TargetFrame:SetMovable(false)
+				TargetFrame.SetPoint = K.Noop
+				-- TWEAK NAME BACKGROUND
+				TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+				TargetFrameNameBackground:SetHeight(18)
+
+				-- TWEAK FOCUS FRAME
+				FocusFrame:SetMovable(true)
+				FocusFrame:ClearAllPoints()
+				FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
+				FocusFrame:SetUserPlaced(true)
+				FocusFrame:SetMovable(false)
+				-- BUFFS ONTOP.
+				TargetFrame.buffsOnTop = true
+				-- TWEAK NAME BACKGROUND
+				FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+				FocusFrameNameBackground:SetHeight(18)
+
+				for _, FrameScale in pairs({
+					PlayerFrame,
+					TargetFrame,
+					FocusFrame,
+				}) do
+					FrameScale:SetScale(C.Unitframe.Scale)
+				end
 			end
-			PartyMemberBuffTooltip:Kill() -- I PERSONALLY HATE THIS SHIT.
-
-			-- TWEAK PLAYER FRAME
-			PlayerFrame:SetMovable(true)
-			PlayerFrame:ClearAllPoints()
-			PlayerFrame:SetPoint("CENTER", PlayerFrameAnchor, "CENTER", -51, 3)
-			PlayerFrame:SetUserPlaced(true)
-			PlayerFrame:SetMovable(false)
-			PlayerFrame.SetPoint = K.Noop
-
-			-- HIDE PET NAME
-			PetName:Hide()
-
-			-- TWEAK TARGET FRAME
-			TargetFrame:SetMovable(true)
-			TargetFrame:ClearAllPoints()
-			TargetFrame:SetPoint("CENTER", TargetFrameAnchor, "CENTER", 51, 3)
-			TargetFrame:SetUserPlaced(true)
-			TargetFrame:SetMovable(false)
-			TargetFrame.SetPoint = K.Noop
-			-- TWEAK NAME BACKGROUND
-			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-			TargetFrameNameBackground:SetHeight(18)
-
-			-- TWEAK FOCUS FRAME
-			FocusFrame:SetMovable(true)
-			FocusFrame:ClearAllPoints()
-			FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
-			FocusFrame:SetUserPlaced(true)
-			FocusFrame:SetMovable(false)
-			-- TWEAK NAME BACKGROUND
-			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-			FocusFrameNameBackground:SetHeight(18)
-
-			for _, FrameScale in pairs({
-				PlayerFrame,
-				TargetFrame,
-				FocusFrame,
-			}) do
-				FrameScale:SetScale(C.Unitframe.Scale)
-			end
-
-			--[[ TWEAK FOCUS FRAME
-			FocusFrameToT:SetScale(1.0)
-			FocusFrameToT:ClearAllPoints()
-			FocusFrameToT:SetPoint("TOP", FocusFrame, "BOTTOM", 34, 35)
-			]]--
 
 			-- BOSS FRAMES
 			for i = 1, 5 do
@@ -226,12 +224,6 @@ if C.Unitframe.Enable == true then
 			for i = 2, 5 do
 				_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 			end
-
-			-- ARENA FRAMES
-			for i=1, 5 do
-				_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
-			end
-			ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 
 			-- COMBOFRAME
 			if K.Class == "ROGUE" or K.Class == "DRUID" then
