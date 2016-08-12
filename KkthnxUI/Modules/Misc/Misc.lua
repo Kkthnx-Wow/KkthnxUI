@@ -19,7 +19,7 @@ local GetNumRandomDungeons = GetNumRandomDungeons
 local THFrame = CreateFrame("Frame")
 THFrame:RegisterEvent("ADDON_LOADED")
 THFrame:SetScript("OnEvent", function(self, event, addon)
-	if addon == "Blizzard_TalkingHeadUI" then
+	if (addon == "Blizzard_TalkingHeadUI") then
 		TalkingHeadFrame.ignoreFramePositionManager = true
 		TalkingHeadFrame:ClearAllPoints()
 		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
@@ -61,6 +61,7 @@ RaidWarningFrame:ClearAllPoints()
 RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260) 
 RaidWarningFrame:SetScale(0.8)
 
+--[[
 WorldStateAlwaysUpFrame:ClearAllPoints()
 WorldStateAlwaysUpFrame:SetPoint("TOP", UIParent, 0, -10)
 
@@ -89,6 +90,7 @@ hooksecurefunc("WorldStateAlwaysUpFrame_Update", function()
 		dynamicIcon:SetPoint("LEFT", text, "RIGHT", 0, 0)
 	end
 end)
+]]--
 
 -- VEHICLE INDICATOR
 local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)

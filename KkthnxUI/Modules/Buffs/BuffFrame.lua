@@ -163,7 +163,7 @@ local function UpdateDebuffAnchors(buttonName, index)
 	if index == 1 then
 		debuff:SetPoint("TOPRIGHT", BuffsAnchor, -1, -126)
 	else
-		debuff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", -4, 0)
+		debuff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", -1, 0)
 	end
 end
 
