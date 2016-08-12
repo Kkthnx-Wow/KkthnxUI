@@ -62,11 +62,10 @@ for _, tt in pairs(tooltips) do
 
 		tt.GetBackdrop = function() return K.Backdrop end
 		tt.GetBackdropColor = function() return unpack(C.Media.Overlay_Color) end
+		tt.GetBackdropBorderColor = function() return unpack(C.Media.Border_Color) end
 		
 		if C.Blizzard.DarkTextures == true then
 			bg:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
-		else
-			tt.GetBackdropBorderColor = function() return unpack(C.Media.Border_Color) end
 		end
 	end
 end

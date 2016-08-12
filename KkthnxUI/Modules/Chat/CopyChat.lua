@@ -104,12 +104,8 @@ for i = 1, NUM_CHAT_WINDOWS do
 			Copy(cf)
 		end
 	end)
-	button:HookScript("OnEnter", function()
-		K:UIFrameFadeIn(button, 0.4, button:GetAlpha(), 1)
-	end)
-	button:HookScript("OnLeave", function()
-		K:UIFrameFadeOut(button, 1, button:GetAlpha(), 0)
-	end)
+	button:SetScript("OnEnter", function() button:FadeIn() end)
+	button:SetScript("OnLeave", function() button:FadeOut() end)
 
 	SlashCmdList.COPY_CHAT = function()
 		Copy(_G["ChatFrame1"])

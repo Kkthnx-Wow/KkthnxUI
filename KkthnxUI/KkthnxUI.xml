@@ -27,7 +27,6 @@
 
 	<Script file="Core\API.lua"/>
 	<Script file="Core\Functions.lua"/>
-	<Script file="Core\Animation.lua"/>
 	<Script file="Core\Install.lua"/>
 	<Script file="Core\Disable.lua"/>
 	<Script file="Core\Commands.lua"/>

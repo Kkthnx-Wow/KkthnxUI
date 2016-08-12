@@ -190,7 +190,6 @@ if C.Unitframe.Enable == true then
 			TargetFrame:SetMovable(false)
 			TargetFrame.SetPoint = K.Noop
 			-- TWEAK NAME BACKGROUND
-			TargetFrameNameBackground:SetPoint("TOP", 0, -21) -- IDK WHY WE NEED TO EDIT THIS.
 			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 			-- TWEAK FOCUS FRAME
@@ -200,7 +199,6 @@ if C.Unitframe.Enable == true then
 			FocusFrame:SetUserPlaced(true)
 			FocusFrame:SetMovable(false)
 			-- TWEAK NAME BACKGROUND
-			FocusFrameNameBackground:SetPoint("TOP", 0, -21) -- IDK WHY WE NEED TO EDIT THIS.
 			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 			for _, FrameScale in pairs({

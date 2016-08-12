@@ -220,6 +220,15 @@ local function StyleButton(button)
 	end
 end
 
+-- FADE IN/OUT FUNCTIONS
+local function FadeIn(f)
+	UIFrameFadeIn(f, 0.4, f:GetAlpha(), 1)
+end
+
+local function FadeOut(f)
+	UIFrameFadeOut(f, 0.8, f:GetAlpha(), 0)
+end
+
 -- MERGE KKTHNXUI API WITH WOWS API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
@@ -236,6 +245,8 @@ local function AddAPI(object)
 	if not object.FontString then mt.FontString = FontString end
 	if not object.Kill then mt.Kill = Kill end
 	if not object.StripTextures then mt.StripTextures = StripTextures end
+	if not object.FadeIn then mt.FadeIn = FadeIn end
+	if not object.FadeOut then mt.FadeOut = FadeOut end
 end
 
 local Handled = {["Frame"] = true}
@@ -246,7 +257,8 @@ AddAPI(Object:CreateFontString())
 
 Object = EnumerateFrames()
 while Object do
-	if not Handled[Object:GetObjectType()] then
+	--if not Handled[Object:GetObjectType()] then
+	if not Object:IsForbidden() and not Handled[Object:GetObjectType()] then
 		AddAPI(Object)
 		Handled[Object:GetObjectType()] = true
 	end

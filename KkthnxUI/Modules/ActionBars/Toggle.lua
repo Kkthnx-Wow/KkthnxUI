@@ -338,24 +338,24 @@ for i = 1, 5 do
 	ToggleBar[i]:SetScript("OnEnter", function()
 		if InCombatLockdown() then return end
 		if i == 2 then
-			K:UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
+			ToggleBar[i]:FadeIn()
 		elseif i == 3 or i == 4 then
-			K:UIFrameFadeIn(ToggleBar[3], 0.4, ToggleBar[3]:GetAlpha(), 1)
-			K:UIFrameFadeIn(ToggleBar[4], 0.4, ToggleBar[4]:GetAlpha(), 1)
+			ToggleBar[3]:FadeIn()
+			ToggleBar[4]:FadeIn()
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 		else
-			K:UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
+			ToggleBar[i]:FadeIn()
 		end
 	end)
 
 	ToggleBar[i]:SetScript("OnLeave", function()
 		if i == 2 then
-			K:UIFrameFadeOut(ToggleBar[i], 1, ToggleBar[i]:GetAlpha(), 0)
+			ToggleBar[i]:FadeOut()
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-			K:UIFrameFadeOut(ToggleBar[3], 1, ToggleBar[3]:GetAlpha(), 0)
-			K:UIFrameFadeOut(ToggleBar[4], 1, ToggleBar[4]:GetAlpha(), 0)
+			ToggleBar[3]:FadeOut()
+			ToggleBar[4]:FadeOut()
 			VehicleButtonAnchor:ClearAllPoints()
 			if SavedOptionsPerChar.SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
@@ -363,7 +363,7 @@ for i = 1, 5 do
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 			end
 		else
-			K:UIFrameFadeOut(ToggleBar[i], 1, ToggleBar[i]:GetAlpha(), 0)
+			ToggleBar[i]:FadeOut()
 		end
 	end)
 

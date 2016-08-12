@@ -6,7 +6,7 @@ local ipairs = ipairs
 local ceil = math.ceil
 local CreateFrame, UIParent = CreateFrame, UIParent
 
--- Collect minimap buttons in one line
+-- COLLECT MINIMAP BUTTONS IN ONE LINE
 local BlackList = {
 	["QueueStatusMinimapButton"] = true,
 	["MiniMapTracking"] = true,
@@ -36,12 +36,10 @@ local function PositionAndStyle()
 		buttons[i].SetPoint = K.Noop
 		buttons[i]:SetAlpha(0)
 		buttons[i]:HookScript("OnEnter", function()
-		if InCombatLockdown() then return end
-			K:UIFrameFadeIn(buttons[i], 0.4, buttons[i]:GetAlpha(), 1)
+			buttons[i]:FadeIn()
 		end)
 		buttons[i]:HookScript("OnLeave", function()
-		if InCombatLockdown() then return end
-			K:UIFrameFadeOut(buttons[i], 1, buttons[i]:GetAlpha(), 0)
+			buttons[i]:FadeOut()
 		end)
 	end
 end
