@@ -52,7 +52,7 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 	duration:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 
 	_G["TempEnchant2"]:ClearAllPoints()
-	_G["TempEnchant2"]:SetPoint("RIGHT", _G["TempEnchant1"], "LEFT", 1, 0)
+	_G["TempEnchant2"]:SetPoint("RIGHT", _G["TempEnchant1"], "LEFT", 0, 0)
 end
 
 local function StyleBuffs(buttonName, index, debuff)
@@ -134,14 +134,14 @@ local function UpdateBuffAnchors()
 		else
 			if numBuffs == 1 then
 				if mainhand and offhand and not UnitHasVehicleUI("player") then
-					buff:SetPoint("RIGHT", TempEnchant2, "LEFT", 1, 0)
+					buff:SetPoint("RIGHT", TempEnchant2, "LEFT", 0, 0)
 				elseif ((mainhand and not offhand) or (offhand and not mainhand)) and not UnitHasVehicleUI("player") then
-					buff:SetPoint("RIGHT", TempEnchant1, "LEFT", 1, 0)
+					buff:SetPoint("RIGHT", TempEnchant1, "LEFT", 0, 0)
 				else
 					buff:SetPoint("TOPRIGHT", BuffsAnchor, "TOPRIGHT", 0, 0)
 				end
 			else
-				buff:SetPoint("RIGHT", previousBuff, "LEFT", 1, 0)
+				buff:SetPoint("RIGHT", previousBuff, "LEFT", 0, 0)
 			end
 		end
 		previousBuff = buff
@@ -161,9 +161,9 @@ local function UpdateDebuffAnchors(buttonName, index)
 	debuff:SetBackdropBorderColor(color.r, color.g, color.b)
 	debuff:ClearAllPoints()
 	if index == 1 then
-		debuff:SetPoint("TOPRIGHT", BuffsAnchor, -1, -126)
+		debuff:SetPoint("TOPRIGHT", BuffsAnchor, 0, -126)
 	else
-		debuff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", -1, 0)
+		debuff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", 0, 0)
 	end
 end
 

@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.ActionBar.Enable ~= true or C.ActionBar.selfcast ~= true then return end
+if C.ActionBar.Enable ~= true or C.ActionBar.SelfCast ~= true then return end
 
 local _G = _G
 local ipairs = ipairs

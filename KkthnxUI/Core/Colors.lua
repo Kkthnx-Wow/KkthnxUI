@@ -1,8 +1,7 @@
 local K, C, _ = select(2, ...):unpack()
 
 local _G = _G
-local PowerBarColor = PowerBarColor
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local hooksecurefunc = hooksecurefunc
 
 -- Custom Faction Colors
 BETTER_FACTION_BAR_COLORS = {
@@ -30,7 +29,7 @@ BETTER_RAID_CLASS_COLORS = {
 	["DEATHKNIGHT"] = {r = 196/255, g = 30/255 , b = 59/255},
 }
 
--- Custom Power Colors
+--[[ Custom Power Colors
 if C.Unitframe.BetterPowerColors == true then
 	_G.PowerBarColor["MANA"] = {r = 79/255, g = 115/255, b = 161/255}
 	_G.PowerBarColor["RAGE"] = {r = 199/255, g = 64/255, b = 64/255}
@@ -42,4 +41,35 @@ if C.Unitframe.BetterPowerColors == true then
 	_G.PowerBarColor["LUNAR_POWER"] = {r = 230/255, g = 219/255, b = 31/255}
 	_G.PowerBarColor["INSANITY"] = {r = 140/255, g = 36/255, b = 176/255}
 	_G.PowerBarColor["MAELSTROM"] = {r = 0/255, g = 128/255, b = 255/255}
+end
+]]--
+
+if C.Unitframe.BetterPowerColors == true then
+	local function CustomPowerColor(manaBar)
+		local powerType = UnitPowerType(manaBar.unit)
+		
+		if (powerType == 0) then -- MANA
+			manaBar:SetStatusBarColor(79/255, 115/255, 161/255)
+		elseif (powerType == 1) then -- RAGE WARRIORS AND DRUID
+			manaBar:SetStatusBarColor(199/255, 64/255, 64/255)
+		elseif (powerType == 2) then -- FOCUS HUNTER
+			manaBar:SetStatusBarColor(181/255, 110/255, 69/255)
+		elseif (powerType == 3) then -- ENERGY ROGUE, MONK, AND DRUID
+			manaBar:SetStatusBarColor(166/255, 161/255, 89/255)
+		elseif (powerType == 6) then -- RUNIC POWER DEATH KNIGHT
+			manaBar:SetStatusBarColor(0/255, 209/255, 255/255)
+		elseif (powerType == 8) then -- ASTRAL POWER DRUID
+			manaBar:SetStatusBarColor(0/255, 219/255, 31/255)
+		elseif (powerType == 11) then -- MAELSTROM SHAMAN
+			manaBar:SetStatusBarColor(0/255, 128/255, 255/255)
+		elseif (powerType == 13) then -- INSANITY SHADOW PRIEST
+			manaBar:SetStatusBarColor(140/255, 36/255, 176/255)
+		elseif (powerType == 17) then -- VENGEANCE DEMON HUNTER
+			manaBar:SetStatusBarColor(227/255, 126/255, 39/255)
+		elseif (powerType == 18) then -- HAVOC DEMON HUNTER
+			manaBar:SetStatusBarColor(225/255, 225/255, 225/255)
+		end
+	end
+
+	hooksecurefunc("UnitFrameManaBar_UpdateType", CustomPowerColor)
 end

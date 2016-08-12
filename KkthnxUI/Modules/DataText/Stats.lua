@@ -57,13 +57,13 @@ local function formatMem(memory)
 	end
 end
 
--- Build Memorytable
+-- BUILD MEMORYTABLE
 local memoryTable = {}
 local function RebuildAddonList(self)
 	local addOnCount = GetNumAddOns()
 	if (addOnCount == #memoryTable) or self.tooltip == true then return end
 
-	-- Number of loaded addons changed, create new memoryTable for all addons
+	-- NUMBER OF LOADED ADDONS CHANGED, CREATE NEW MEMORYTABLE FOR ALL ADDONS
 	memoryTable = {}
 	for i = 1, addOnCount do
 		memoryTable[i] = { i, select(2, GetAddOnInfo(i)), 0, IsAddOnLoaded(i) }
@@ -71,11 +71,11 @@ local function RebuildAddonList(self)
 	self:SetAllPoints(Text)
 end
 
--- Update Memorytable
+-- UPDATE MEMORYTABLE
 local function UpdateMemory()
-	-- Update the memory usages of the addons
+	-- UPDATE THE MEMORY USAGES OF THE ADDONS
 	UpdateAddOnMemoryUsage()
-	-- Load memory usage in table
+	-- LOAD MEMORY USAGE IN TABLE
 	local addOnMem = 0
 	local totalMemory = 0
 	for i = 1, #memoryTable do
@@ -83,7 +83,7 @@ local function UpdateMemory()
 		memoryTable[i][3] = addOnMem
 		totalMemory = totalMemory + addOnMem
 	end
-	-- Sort the table to put the largest addon on top
+	-- SORT THE TABLE TO PUT THE LARGEST ADDON ON TOP
 	table.sort(memoryTable, function(a, b)
 		if a and b then
 			return a[3] > b[3]
@@ -93,7 +93,7 @@ local function UpdateMemory()
 	return totalMemory
 end
 
--- Build DataText
+-- BUILD DATATEXT
 local int = 10
 
 local function Update(self, t)

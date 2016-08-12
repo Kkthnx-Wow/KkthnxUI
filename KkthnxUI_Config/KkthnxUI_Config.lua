@@ -57,7 +57,7 @@ local function Local(o)
 	if o == "UIConfigActionBarPetBarHide" then o = L_GUI_ACTIONBAR_PETBAR_HIDE end
 	if o == "UIConfigActionBarPetBarHorizontal" then o = L_GUI_ACTIONBAR_PETBAR_HORIZONTAL end
 	if o == "UIConfigActionBarRightBars" then o = L_GUI_ACTIONBAR_RIGHTBARS end
-	if o == "UIConfigActionBarSelfcast" then o = L_GUI_ACTIONBAR_SELFCAST end
+	if o == "UIConfigActionBarSelfCast" then o = L_GUI_ACTIONBAR_SELFCAST end
 	if o == "UIConfigActionBarShowGrid" then o = L_GUI_ACTIONBAR_GRID end
 	if o == "UIConfigActionBarSplitBars" then o = L_GUI_ACTIONBAR_SPLIT_BARS end
 	if o == "UIConfigActionBarStanceBarHide" then o = L_GUI_ACTIONBAR_STANCEBAR_HIDE end

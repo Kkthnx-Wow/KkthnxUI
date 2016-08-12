@@ -48,6 +48,11 @@ local tooltips = {
 	StoryTooltip
 }
 
+local backdrop = {
+	bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14,
+	insets = {left = 3, right = 3, top = 3, bottom = 3}
+}
+
 for _, tt in pairs(tooltips) do
 	if not IsAddOnLoaded("Aurora") then
 		tt:SetBackdrop(nil)
@@ -60,10 +65,10 @@ for _, tt in pairs(tooltips) do
 		bg:SetFrameLevel(tt:GetFrameLevel() - 1)
 		bg:SetTemplate("Transparent")
 
-		tt.GetBackdrop = function() return K.Backdrop end
+		tt.GetBackdrop = function() return backdrop end
 		tt.GetBackdropColor = function() return unpack(C.Media.Overlay_Color) end
 		tt.GetBackdropBorderColor = function() return unpack(C.Media.Border_Color) end
-		
+
 		if C.Blizzard.DarkTextures == true then
 			bg:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
 		end
@@ -85,8 +90,8 @@ PVP_ENABLED = ""
 local HealthBar = GameTooltipStatusBar
 HealthBar:ClearAllPoints()
 HealthBar:SetHeight(6)
-HealthBar:SetPoint("BOTTOMLEFT", HealthBar:GetParent(), "TOPLEFT", 4, 1)
-HealthBar:SetPoint("BOTTOMRIGHT", HealthBar:GetParent(), "TOPRIGHT", -4, 1)
+HealthBar:SetPoint("BOTTOMLEFT", HealthBar:GetParent(), "TOPLEFT", 4, 2)
+HealthBar:SetPoint("BOTTOMRIGHT", HealthBar:GetParent(), "TOPRIGHT", -4, 2)
 HealthBar:SetStatusBarTexture(C.Media.Texture)
 
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
