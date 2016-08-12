@@ -242,7 +242,7 @@ if C.Unitframe.Enable == true then
 end
 
 -- CLASS ICONS
-if not InCombatLockdown() then
+if(InCombatLockdown() == false) then
 	if C.Unitframe.ClassIcon == true then
 		hooksecurefunc("UnitFramePortrait_Update", function(self)
 			if self.portrait then

@@ -39,7 +39,7 @@ L_GUI_AUTOMATION_DECLINEDUEL = "Auto decline all duels"
 L_GUI_AUTOMATION_LOGGING_COMBAT = "Auto enables combat log text file in raid instances"
 L_GUI_AUTOMATION_RESURRECTION = "Auto resurrection in battlegrounds"
 L_GUI_AUTOMATION_SCREENSHOT = "Take screenshot when player gets an achievement"
-L_GUI_AUTOMATION_SELLGREY_N_REPAIR = "Automatically sell all your gray items & repair your equipment"
+L_GUI_AUTOMATION_SELLGREY_N_REPAIR = "Automatically sell all your |cff808080gray|r items & repair your equipment"
 L_GUI_AUTOMATION_TAB_BINDER = "Auto change Tab key to only target enemy players"
 -- Bag Localization
 L_GUI_BAGS = "Bags"
