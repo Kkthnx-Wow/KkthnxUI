@@ -9,7 +9,7 @@ local K, C, L, _ = select(2, ...):unpack()
 
 local format = string.format
 
-if (K.Name == "Kkthnx" or K.Name == "Rollndots" or K.Name == "Safeword" or K.Name == "Broflex" or K.Name == "Broflexin") and (K.Realm == "Stormreaver") then
+if (K.Name == "Kkthnx") and (K.Realm == "Stormreaver") then
 	
 	local GetZonePVPInfo = GetZonePVPInfo
 	local GetSpellInfo = GetSpellInfo
