@@ -128,7 +128,7 @@ end
 local function SetTemplate(f, t)
 	GetTemplate(t)
 
-	f:SetBackdrop(K.Backdrop) -- We need to only set a background here.
+	f:SetBackdrop(K.Backdrop)
 
 	if t == "Transparent" then
 		backdropa = C.Media.Overlay_Color[4]

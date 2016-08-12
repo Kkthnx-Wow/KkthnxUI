@@ -191,6 +191,7 @@ if C.Unitframe.Enable == true then
 			TargetFrame.SetPoint = K.Noop
 			-- TWEAK NAME BACKGROUND
 			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+			TargetFrameNameBackground:SetHeight(18)
 
 			-- TWEAK FOCUS FRAME
 			FocusFrame:SetMovable(true)
@@ -200,6 +201,7 @@ if C.Unitframe.Enable == true then
 			FocusFrame:SetMovable(false)
 			-- TWEAK NAME BACKGROUND
 			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+			FocusFrameNameBackground:SetHeight(18)
 
 			for _, FrameScale in pairs({
 				PlayerFrame,
