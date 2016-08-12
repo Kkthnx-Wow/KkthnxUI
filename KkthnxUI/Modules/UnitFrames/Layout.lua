@@ -217,26 +217,21 @@ if C.Unitframe.Enable == true then
 			FocusFrameToT:SetPoint("TOP", FocusFrame, "BOTTOM", 34, 35)
 			]]--
 
-			-- ARENA FRAMES SCALING
-			local function SetArenaFrames()
-				for i = 1, MAX_ARENA_ENEMIES do
-					_G["ArenaEnemyFrame"..i]:SetScale(C.Unitframe.Scale)
-					--ArenaEnemyFrames:SetPoint(unpack(C.Position.UnitFrames.Arena))
-				end
+			-- BOSS FRAMES
+			for i = 1, 5 do
+				_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
+				_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
+				_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
+			end
+			for i = 2, 5 do
+				_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 			end
 
-			if IsAddOnLoaded("Blizzard_ArenaUI") then
-				SetArenaFrames()
-			else
-				local f = CreateFrame("Frame")
-				f:RegisterEvent("ADDON_LOADED")
-				f:SetScript("OnEvent", function(self, event, addon)
-					if addon == "Blizzard_ArenaUI" then
-						self:UnregisterEvent(event)
-						SetArenaFrames()
-					end
-				end)
+			-- ARENA FRAMES
+			for i=1, 5 do
+				_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
 			end
+			ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 
 			-- COMBOFRAME
 			if K.Class == "ROGUE" or K.Class == "DRUID" then

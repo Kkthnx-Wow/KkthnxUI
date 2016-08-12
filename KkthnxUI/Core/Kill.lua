@@ -43,8 +43,4 @@ frame:SetScript("OnEvent", function(self, event, addon, ...)
 		InterfaceOptionsActionBarsPanelRightTwo:Kill()
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
 	end
-
-	if C.Unitframe.EnhancedFrames then
-		SetCVar("fullSizeFocusFrame", 1)
-	end
 end)
