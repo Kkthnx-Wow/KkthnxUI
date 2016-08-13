@@ -69,10 +69,10 @@ C["Automation"] = {
 C["Bag"] = {
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
-	["ButtonSize"] = 34,
-	["ButtonSpace"] = 4,
+	["ButtonSize"] = 38,
+	["ButtonSpace"] = 0,
 	["Enable"] = true,
-	["HideSoulBag"] = false,
+	["ItemLevel"] = true,
 }
 -- BLIZZARD OPTIONS
 C["Blizzard"] = {

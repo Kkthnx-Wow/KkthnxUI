@@ -35,7 +35,7 @@ if C.Unitframe.Enable == true then
 	Unitframes:RegisterEvent("ADDON_LOADED")
 	Unitframes:SetScript("OnEvent", function(self, event, addon)
 		if (addon ~= "KkthnxUI") then return end
-		if not InCombatLockdown() then
+		if(InCombatLockdown() == false) then
 			if C.Unitframe.ClassHealth ~= true then
 
 				CUSTOM_FACTION_BAR_COLORS = {
@@ -76,7 +76,7 @@ if C.Unitframe.Enable == true then
 					end
 				end)
 			end
-			
+
 			-- HIDE PET NAME
 			PetName:Hide()
 
@@ -169,50 +169,54 @@ if C.Unitframe.Enable == true then
 			end)
 
 			-- TWEAK PARTY FRAME
-			if(InCombatLockdown() == false) then
-				for i = 1, MAX_PARTY_MEMBERS do
-					_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
-				end
-				PartyMemberBuffTooltip:Kill() -- I PERSONALLY HATE THIS SHIT.
+			for i = 1, MAX_PARTY_MEMBERS do
+				_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
+			end
+			PartyMemberBuffTooltip:Kill() -- I PERSONALLY HATE THIS SHIT.
 
-				-- TWEAK PLAYER FRAME
-				PlayerFrame:SetMovable(true)
-				PlayerFrame:ClearAllPoints()
+			-- TWEAK PLAYER FRAME
+			PlayerFrame:SetMovable(true)
+			PlayerFrame:ClearAllPoints()
+			if not PlayerFrame:IsUserPlaced() then
 				PlayerFrame:SetPoint("CENTER", PlayerFrameAnchor, "CENTER", -51, 3)
-				PlayerFrame:SetUserPlaced(true)
-				PlayerFrame:SetMovable(false)
-				PlayerFrame.SetPoint = K.Noop
+			end
+			PlayerFrame:SetUserPlaced(true)
+			PlayerFrame:SetMovable(false)
+			--PlayerFrame.SetPoint = K.Noop
 
-				-- TWEAK TARGET FRAME
-				TargetFrame:SetMovable(true)
-				TargetFrame:ClearAllPoints()
+			-- TWEAK TARGET FRAME
+			TargetFrame:SetMovable(true)
+			TargetFrame:ClearAllPoints()
+			if not TargetFrame:IsUserPlaced() then
 				TargetFrame:SetPoint("CENTER", TargetFrameAnchor, "CENTER", 51, 3)
-				TargetFrame:SetUserPlaced(true)
-				TargetFrame:SetMovable(false)
-				TargetFrame.SetPoint = K.Noop
-				-- TWEAK NAME BACKGROUND
-				TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-				TargetFrameNameBackground:SetHeight(18)
+			end
+			TargetFrame:SetUserPlaced(true)
+			TargetFrame:SetMovable(false)
+			--TargetFrame.SetPoint = K.Noop
+			
+			-- BUFFS ONTOP.
+			TargetFrame.buffsOnTop = true
 
-				-- TWEAK FOCUS FRAME
-				FocusFrame:SetMovable(true)
-				FocusFrame:ClearAllPoints()
-				FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
-				FocusFrame:SetUserPlaced(true)
-				FocusFrame:SetMovable(false)
-				-- BUFFS ONTOP.
-				TargetFrame.buffsOnTop = true
-				-- TWEAK NAME BACKGROUND
-				FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-				FocusFrameNameBackground:SetHeight(18)
+			-- TWEAK NAME BACKGROUND
+			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+			TargetFrameNameBackground:SetHeight(18)
 
-				for _, FrameScale in pairs({
-					PlayerFrame,
-					TargetFrame,
-					FocusFrame,
-				}) do
-					FrameScale:SetScale(C.Unitframe.Scale)
-				end
+			-- TWEAK FOCUS FRAME
+			FocusFrame:SetMovable(true)
+			FocusFrame:ClearAllPoints()
+			FocusFrame:SetPoint(unpack(C.Position.UnitFrames.Focus))
+			FocusFrame:SetUserPlaced(true)
+			FocusFrame:SetMovable(false)
+			-- TWEAK NAME BACKGROUND
+			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+			FocusFrameNameBackground:SetHeight(18)
+
+			for _, FrameScale in pairs({
+				PlayerFrame,
+				TargetFrame,
+				FocusFrame,
+			}) do
+				FrameScale:SetScale(C.Unitframe.Scale)
 			end
 
 			-- BOSS FRAMES
@@ -232,7 +236,9 @@ if C.Unitframe.Enable == true then
 				end
 
 				if C.Unitframe.ComboFrame == true then
-					ComboFrame:Kill()
+					ComboFrame:UnregisterAllEvents()
+					ComboFrame.Show = K.Dummy
+					ComboFrame:Hide()
 				end
 			end
 

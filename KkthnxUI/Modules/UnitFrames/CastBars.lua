@@ -7,6 +7,8 @@ local max = math.max
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
+UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
+
 -- Anchors
 local PlayerCastbarAnchor = CreateFrame("Frame", "PlayerCastbarAnchor", UIParent)
 PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
@@ -21,7 +23,7 @@ local CastBars = CreateFrame("Frame", nil, UIParent)
 CastBars:RegisterEvent("ADDON_LOADED")
 CastBars:SetScript("OnEvent", function(self, event, addon)
 	if (addon ~= "KkthnxUI") then return end
-	if not InCombatLockdown() then
+	if(InCombatLockdown() == false) then
 
 		-- Move Cast Bar
 		CastingBarFrame:SetMovable(true)
@@ -84,7 +86,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 end)
 
 -- Displays the Casting Bar timer
-local function CastingBarFrame_OnUpdate_Hook(self, elapsed)
+local function CastingBarFrame_OnUpdate(self, elapsed)
 	if(not self.timer) then
 		return
 	end
@@ -102,5 +104,5 @@ local function CastingBarFrame_OnUpdate_Hook(self, elapsed)
 	end
 end
 
-CastingBarFrame:HookScript("OnUpdate", CastingBarFrame_OnUpdate_Hook)
-TargetFrameSpellBar:HookScript("OnUpdate", CastingBarFrame_OnUpdate_Hook)
+CastingBarFrame:HookScript("OnUpdate", CastingBarFrame_OnUpdate)
+TargetFrameSpellBar:HookScript("OnUpdate", CastingBarFrame_OnUpdate)

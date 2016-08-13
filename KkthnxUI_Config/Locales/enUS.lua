@@ -43,8 +43,8 @@ L_GUI_AUTOMATION_SELLGREY_N_REPAIR = "Automatically sell all your |cff808080gray
 L_GUI_AUTOMATION_TAB_BINDER = "Auto change Tab key to only target enemy players"
 -- Bag Localization
 L_GUI_BAGS = "Bags"
-L_GUI_BAGS_HIDE_SOULBAG = "|cFF9482C9Warlock|r, hide the Soul Shard bag slots"
 L_GUI_BAGS_BAG = "Number of columns in main bag"
+L_GUI_BAGS_ILVL = "Show item level for weapons and armor"
 L_GUI_BAGS_BANK = "Number of columns in bank"
 L_GUI_BAGS_BUTTON_SIZE = "Buttons size"
 L_GUI_BAGS_BUTTON_SPACE = "Buttons space"

@@ -74,7 +74,8 @@ local function StyleBuffs(buttonName, index, debuff)
 		buff:SetSize(C.Aura.BuffSize, C.Aura.BuffSize)
 
 		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		icon:SetInside(buff, 3, 3) -- ??
+		icon:SetPoint("TOPLEFT", buff, 3, -3)
+		icon:SetPoint("BOTTOMRIGHT", buff, -3, 3)
 
 		duration:ClearAllPoints()
 		duration:SetPoint("CENTER", 2, 1)

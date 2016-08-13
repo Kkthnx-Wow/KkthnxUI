@@ -1,22 +1,16 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Skins.Recount ~= true or not IsAddOnLoaded("Recount") then return end
 
-local _G = _G
-local pairs = pairs
-local CreateFrame = CreateFrame
-
---	Recount skin
 local Recount = _G.Recount
 
 local function SkinFrame(frame)
 	frame.bgMain = CreateFrame("Frame", nil, frame)
-	frame.bgMain:CreateBackdrop(3)
 	if frame == Recount.MainWindow then
-		frame.Title:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, -12)
+		frame.bgMain:CreateBackdrop(3)
+		frame.Title:SetPoint("TOPLEFT", frame, "TOPLEFT", 3, -15)
 		frame.Title:SetFont(C.Media.Font, C.Media.Font_Size)
-		frame.Title:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 		frame.Title:SetShadowColor(0, 0, 0, 0)
-		frame.CloseButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -3, -8)
+		frame.CloseButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -3, -11)
 	end
 	frame.bgMain:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT")
 	frame.bgMain:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
@@ -40,7 +34,7 @@ local function SkinButton(frame, text)
 	frame:HookScript("OnLeave", function(self) self.text:SetTextColor(1, 1, 1) end)
 end
 
--- Override bar textures
+-- OVERRIDE BAR TEXTURES
 Recount.UpdateBarTextures = function(self)
 	for k, v in pairs(Recount.MainWindow.Rows) do
 		v.StatusBar:SetStatusBarTexture(C.Media.Texture)
@@ -63,14 +57,14 @@ Recount.UpdateBarTextures = function(self)
 end
 Recount.SetBarTextures = Recount.UpdateBarTextures
 
--- Fix bar textures as they're created
+-- FIX BAR TEXTURES AS THEY'RE CREATED
 Recount.SetupBar_ = Recount.SetupBar
 Recount.SetupBar = function(self, bar)
 	self:SetupBar_(bar)
 	bar.StatusBar:SetStatusBarTexture(C.Media.Texture)
 end
 
--- Skin frames when they're created
+-- SKIN FRAMES WHEN THEY'RE CREATED
 Recount.CreateFrame_ = Recount.CreateFrame
 Recount.CreateFrame = function(self, Name, Title, Height, Width, ShowFunc, HideFunc)
 	local frame = self:CreateFrame_(Name, Title, Height, Width, ShowFunc, HideFunc)
@@ -80,23 +74,13 @@ end
 
 -- Skin existing frames
 if Recount.MainWindow then SkinFrame(Recount.MainWindow) end
-if Recount.ConfigWindow then SkinFrame(Recount.ConfigWindow) end
-if Recount.GraphWindow then SkinFrame(Recount.GraphWindow) end
-if Recount.DetailWindow then SkinFrame(Recount.DetailWindow) end
-if Recount.ResetFrame then SkinFrame(Recount.ResetFrame) end
-if _G["Recount_Realtime_!RAID_DAMAGE"] then SkinFrame(_G["Recount_Realtime_!RAID_DAMAGE"].Window) end
-if _G["Recount_Realtime_!RAID_HEALING"] then SkinFrame(_G["Recount_Realtime_!RAID_HEALING"].Window) end
-if _G["Recount_Realtime_!RAID_HEALINGTAKEN"] then SkinFrame(_G["Recount_Realtime_!RAID_HEALINGTAKEN"].Window) end
-if _G["Recount_Realtime_!RAID_DAMAGETAKEN"] then SkinFrame(_G["Recount_Realtime_!RAID_DAMAGETAKEN"].Window) end
-if _G["Recount_Realtime_Bandwidth Available_AVAILABLE_BANDWIDTH"] then SkinFrame(_G["Recount_Realtime_Bandwidth Available_AVAILABLE_BANDWIDTH"].Window) end
-if _G["Recount_Realtime_FPS_FPS"] then SkinFrame(_G["Recount_Realtime_FPS_FPS"].Window) end
-if _G["Recount_Realtime_Latency_LAG"] then SkinFrame(_G["Recount_Realtime_Latency_LAG"].Window) end
-if _G["Recount_Realtime_Downstream Traffic_DOWN_TRAFFIC"] then SkinFrame(_G["Recount_Realtime_Downstream Traffic_DOWN_TRAFFIC"].Window) end
-if _G["Recount_Realtime_Upstream Traffic_UP_TRAFFIC"] then SkinFrame(_G["Recount_Realtime_Upstream Traffic_UP_TRAFFIC"].Window) end
 
 -- Update Textures
 Recount:UpdateBarTextures()
 Recount.MainWindow.ConfigButton:HookScript("OnClick", function(self) Recount:UpdateBarTextures() end)
+
+-- Reskin Dropdown
+Recount.MainWindow.FileButton:HookScript("OnClick", function(self) if LibDropdownFrame0 then LibDropdownFrame0:SetTemplate("Transparent") end end)
 
 -- Reskin Buttons
 SkinButton(Recount.MainWindow.CloseButton, "X")
@@ -115,16 +99,16 @@ if not RecountDB["profiles"][K.Name.." - "..GetRealmName()]["MainWindow"] then R
 
 RecountDB["profiles"][K.Name.." - "..K.Realm]["Locked"] = true
 RecountDB["profiles"][K.Name.." - "..K.Realm]["Scaling"] = 1
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["RowHeight"] = 15
+RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["RowHeight"] = 12
 RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["RowSpacing"] = 1
 RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["ShowScrollbar"] = false
 RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["HideTotalBar"] = true
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["x"] = 469.00
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["y"] = -460.00
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["w"] = 230.00
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["h"] = 120.00
+RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["x"] = 284
+RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["y"] = -281
+RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["w"] = 221
+--RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["Position"]["h"] = 158
 RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["BarText"]["NumFormat"] = 3
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindowWidth"] = 230.00
-RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindowHeight"] = 120.00
+RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindowWidth"] = 221
+--RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindowHeight"] = 158
 RecountDB["profiles"][K.Name.." - "..K.Realm]["ClampToScreen"] = true
-RecountDB["profiles"][K.Name.." - "..K.Realm]["Font"] = "KkUI Normal"
+RecountDB["profiles"][K.Name.." - "..K.Realm]["Font"] = "KkthnxUI_Normal"

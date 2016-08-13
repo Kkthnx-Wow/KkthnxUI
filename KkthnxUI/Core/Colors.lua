@@ -2,6 +2,7 @@ local K, C, _ = select(2, ...):unpack()
 
 local _G = _G
 local hooksecurefunc = hooksecurefunc
+local UnitPowerType = UnitPowerType
 
 -- Custom Faction Colors
 BETTER_FACTION_BAR_COLORS = {
@@ -46,6 +47,9 @@ end
 
 if C.Unitframe.BetterPowerColors == true then
 	local function CustomPowerColor(manaBar)
+		if (not manaBar) then
+			return
+		end
 		local powerType = UnitPowerType(manaBar.unit)
 		
 		if (powerType == 0) then -- MANA

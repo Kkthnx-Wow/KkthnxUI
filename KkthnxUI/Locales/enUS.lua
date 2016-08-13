@@ -1,6 +1,6 @@
 -- Localization for enUS & enGB clients
 
--- Announce Localization
+-- ANNOUNCE LOCALIZATION
 L_ANNOUNCE_FP_CAST = "%s is casting %s."
 L_ANNOUNCE_FP_CLICK = "%s is casting %s. Click!"
 L_ANNOUNCE_FP_PRE = "%s has prepared %s."

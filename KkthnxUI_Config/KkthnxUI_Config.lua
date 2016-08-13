@@ -25,7 +25,7 @@ local ALLOWED_GROUPS = {
 	["ActionBar"] = 2,
 	["Announcements"] = 3,
 	["Automation"] = 4,
-	--["Bag"] = 5,
+	["Bag"] = 5,
 	["Blizzard"] = 6,
 	["Aura"] = 7,
 	["Chat"] = 8,
@@ -86,10 +86,10 @@ local function Local(o)
 	if o == "UIConfigAutomationTabBinder" then o = L_GUI_AUTOMATION_TAB_BINDER end
 	-- Bag Settings
 	if o == "UIConfigBag" then o = L_GUI_BAGS end
-	if o == "UIConfigBagHideSoulBag" then o = L_GUI_BAGS_HIDE_SOULBAG end
 	if o == "UIConfigBagBagColumns" then o = L_GUI_BAGS_BAG end
 	if o == "UIConfigBagBankColumns" then o = L_GUI_BAGS_BANK end
 	if o == "UIConfigBagButtonSize" then o = L_GUI_BAGS_BUTTON_SIZE end
+	if o == "UIConfigBagItemLevel" then o = L_GUI_BAGS_ILVL end
 	if o == "UIConfigBagButtonSpace" then o = L_GUI_BAGS_BUTTON_SPACE end
 	if o == "UIConfigBagEnable" then o = L_GUI_BAGS_ENABLE end
 	-- Blizzard Settings

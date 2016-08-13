@@ -3,37 +3,7 @@ local K, C, L, _ = select(2, ...):unpack()
 -- THIS FILE IS FOR TESTING AND REMINDERS BULLSHIT :D
 -- [[ -*- NOTES -*- ]] --
 
--- [[ -*- COMBAT_LOG_EVENT_UNFILTERED -*- ]] --
--- timestamp, event, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellID = ...
--- timestamp, event, sourceGUID, sourceName, sourceFlags, destGUID, destName, destFlags, spellID, spellName = select (1, ...)
-
-local format = string.format
-
-if (K.Name == "Kkthnx") and (K.Realm == "Stormreaver") then
-	
-	local GetZonePVPInfo = GetZonePVPInfo
-	local GetSpellInfo = GetSpellInfo
-	local SendChatMessage = SendChatMessage
-	local UnitName = UnitName
-	local UnitClass = UnitClass
-	
-	--if C.Announcements.ArenaDrinking ~= true then return end
-	L_MISC_DRINKING = " is drinking."
-	
-	-- Announce enemy drinking in arena(by Duffed)
-	local frame = CreateFrame("Frame")
-	frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	frame:SetScript("OnEvent", function(self, event, ...)
-		if not (event == "UNIT_SPELLCAST_SUCCEEDED" and GetZonePVPInfo() == "arena") then return end
-		
-		local unit, _, _, _, spellID = ...
-		if UnitIsEnemy("player", unit) and (GetSpellInfo(spellID) == GetSpellInfo(118358) or GetSpellInfo(spellID) == GetSpellInfo(167152) or GetSpellInfo(spellID) == GetSpellInfo(167268)) then
-			SendChatMessage(UnitClass(unit).." "..UnitName(unit)..L_MISC_DRINKING, K.CheckChat(true))
-		end
-	end)
-end
-
--- ARTIFACTBAR FOR LEGION WIP (DUFFEDUI)
+-- ARTIFACTBAR LOCALIZATION
 L_ARTIFACTBAR_XPTITLE = "Artifact Experience"
 L_ARTIFACTBAR_CURRENTXP = "Current Experience: %s"
 L_ARTIFACTBAR_XP = "Experience: %s/%s (%d%%)"
@@ -49,12 +19,11 @@ Artifact_Backdrop:SetSize(BarWidth, BarHeight)
 Artifact_Backdrop:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -7, 178)
 Artifact_Backdrop:SetBackdropColor(C.Media.Backdrop_Color)
 Artifact_Backdrop:SetBackdropBorderColor(C.Media.Backdrop_Color)
-Artifact_Backdrop:CreateBackdrop("Transparent")
+--Artifact_Backdrop:CreateBackdrop("Transparent")
 Artifact_Backdrop:SetFrameStrata("LOW")
 
-local ArtifactBar = CreateFrame("StatusBar",  "XP_ArtifactBar", Artifact_Backdrop, "TextStatusBar")
-ArtifactBar:SetWidth(BarWidth)
-ArtifactBar:SetHeight(BarHeight)
+local ArtifactBar = CreateFrame("StatusBar", "XP_ArtifactBar", Artifact_Backdrop, "TextStatusBar")
+ArtifactBar:SetSize(BarWidth, BarHeight)
 ArtifactBar:SetPoint("TOP", Artifact_Backdrop, "TOP", 0, 0)
 ArtifactBar:SetStatusBarTexture(Texture)
 ArtifactBar:SetStatusBarColor(157/255, 138/255, 108/255)
