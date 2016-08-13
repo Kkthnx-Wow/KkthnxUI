@@ -763,7 +763,6 @@ function Stuffing:InitBags()
 		self:GetParent().detail:Show()
 		self:GetParent().gold:Show()
 		self:ClearFocus()
-		self:GetParent().gold:Show()
 		Stuffing:SearchReset()
 	end
 
