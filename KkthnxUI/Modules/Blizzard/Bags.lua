@@ -755,12 +755,14 @@ function Stuffing:InitBags()
 	editbox:SetAutoFocus(true)
 	editbox:SetHeight(32)
 	editbox:CreateBackdrop("Default")
-	editbox.backdrop:SetPoint("TOPLEFT", -2, 1)
-	editbox.backdrop:SetPoint("BOTTOMRIGHT", 2, -1)
+	editbox.backdrop:SetPoint("TOPLEFT", -4, 4)
+	editbox.backdrop:SetPoint("BOTTOMRIGHT", 4, -4)
 
 	local resetAndClear = function(self)
 		self:GetParent().detail:Show()
+		self:GetParent().gold:Show()
 		self:ClearFocus()
+		self:GetParent().gold:Show()
 		Stuffing:SearchReset()
 	end
 
@@ -785,6 +787,18 @@ function Stuffing:InitBags()
 	detail:SetJustifyH("LEFT")
 	detail:SetText("|cff9999ff"..SEARCH.."|r")
 	editbox:SetAllPoints(detail)
+	
+	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+	gold:SetJustifyH("RIGHT")
+	gold:SetPoint("RIGHT", f.b_close, "LEFT", -10, 0)
+
+	f:SetScript("OnEvent", function(self)
+		self.gold:SetText(K.FormatMoney(GetMoney()))
+	end)
+	f:RegisterEvent("PLAYER_MONEY")
+	f:RegisterEvent("PLAYER_LOGIN")
+	f:RegisterEvent("PLAYER_TRADE_MONEY")
+	f:RegisterEvent("TRADE_MONEY_CHANGED")
 
 	local button = CreateFrame("Button", nil, f)
 	button:EnableMouse(true)
@@ -793,6 +807,7 @@ function Stuffing:InitBags()
 	button:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			self:GetParent().detail:Hide()
+			self:GetParent().gold:Hide()
 			self:GetParent().editbox:Show()
 			self:GetParent().editbox:HighlightText()
 		else
@@ -800,6 +815,7 @@ function Stuffing:InitBags()
 				self:GetParent().editbox:Hide()
 				self:GetParent().editbox:ClearFocus()
 				self:GetParent().detail:Show()
+				self:GetParent().gold:Show()
 				Stuffing:SearchReset()
 			end
 		end
@@ -821,6 +837,7 @@ function Stuffing:InitBags()
 	f.editbox = editbox
 	f.detail = detail
 	f.button = button
+	f.gold = gold
 	self.frame = f
 	f:Hide()
 end
@@ -841,9 +858,12 @@ function Stuffing:Layout(isBank)
 		cols = C.Bag.BagColumns
 		f = self.frame
 
+		f.gold:SetText(K.FormatMoney(GetMoney(), C.Media.Font_Size))
 		f.editbox:SetFont(C.Media.Font, C.Media.Font_Size + 3)
 		f.detail:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		f.detail:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+		f.gold:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		f.gold:SetShadowOffset(0, 0)
 
 		f.detail:ClearAllPoints()
 		f.detail:SetPoint("TOPLEFT", f, 12, -8)
