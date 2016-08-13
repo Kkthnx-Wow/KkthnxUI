@@ -1,7 +1,8 @@
 local K, C, L = select(2, ...):unpack()
 
--- If you're saving frame positions, use "UIParent", not UIParent
+-- IF YOU'RE SAVING FRAME POSITIONS, USE "UIPARENT", NOT UIPARENT
 C["Position"] = {
+	["AltPowerBar"] = {"TOP", "UIParent", "TOP", 0, -100},
 	["Achievements"] = {"TOP", "UIParent", "TOP", 0, -22},
 	["BGScore"] = {"BOTTOMLEFT", "ActionButton12", "BOTTOMRIGHT", 10, 0},
 	["Bag"] = {"RIGHT", "UIParent", "RIGHT", -140, -20},

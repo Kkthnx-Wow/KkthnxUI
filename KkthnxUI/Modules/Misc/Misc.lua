@@ -14,11 +14,12 @@ local GetLFGDungeonRewards = GetLFGDungeonRewards
 local GetLFGDungeonInfo = GetLFGDungeonInfo
 local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
+local PlayerPowerBarAlt = PlayerPowerBarAlt
 
 -- MOVE SOME FRAMES (SHESTAK)
-local THFrame = CreateFrame("Frame")
-THFrame:RegisterEvent("ADDON_LOADED")
-THFrame:SetScript("OnEvent", function(self, event, addon)
+local HeadFrame = CreateFrame("Frame")
+HeadFrame:RegisterEvent("ADDON_LOADED")
+HeadFrame:SetScript("OnEvent", function(self, event, addon)
 	if (addon == "Blizzard_TalkingHeadUI") then
 		TalkingHeadFrame.ignoreFramePositionManager = true
 		TalkingHeadFrame:ClearAllPoints()
@@ -54,43 +55,12 @@ UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
 UIErrorsFrame:SetFrameLevel(0)
 
 RaidBossEmoteFrame:ClearAllPoints()
-RaidBossEmoteFrame:SetPoint("TOP", UIParent, "TOP", 0, -200) 
+RaidBossEmoteFrame:SetPoint("TOP", UIParent, "TOP", 0, -200)
 RaidBossEmoteFrame:SetScale(0.9)
 
 RaidWarningFrame:ClearAllPoints()
-RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260) 
+RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260)
 RaidWarningFrame:SetScale(0.8)
-
---[[
-WorldStateAlwaysUpFrame:ClearAllPoints()
-WorldStateAlwaysUpFrame:SetPoint("TOP", UIParent, 0, -10)
-
-hooksecurefunc("WorldStateAlwaysUpFrame_Update", function()
-	for i = 1, NUM_ALWAYS_UP_UI_FRAMES do
-		local frame = _G["AlwaysUpFrame"..i]
-
-		if frame == AlwaysUpFrame1 then
-			local _, _, _, _, y = frame:GetPoint()
-			frame:SetPoint("TOP", WorldStateAlwaysUpFrame, "TOP", 0, 0)
-		end
-
-		local text = _G["AlwaysUpFrame"..i.."Text"]
-		text:ClearAllPoints()
-		text:SetPoint("CENTER", frame, "CENTER", 0, 0)
-		text:SetJustifyH("CENTER")
-		text:SetFont(C.Media.Font, C.Media.Font_Size)
-		text:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
-
-		local icon = _G["AlwaysUpFrame"..i.."Icon"]
-		icon:ClearAllPoints()
-		icon:SetPoint("RIGHT", text, "LEFT", 12, -8)
-
-		local dynamicIcon = _G["AlwaysUpFrame"..i.."DynamicIconButton"]
-		dynamicIcon:ClearAllPoints()
-		dynamicIcon:SetPoint("LEFT", text, "RIGHT", 0, 0)
-	end
-end)
-]]--
 
 -- VEHICLE INDICATOR
 local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)

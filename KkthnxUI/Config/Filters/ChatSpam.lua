@@ -174,5 +174,11 @@ K.ChatSpamList = {
 	"y?o?ur? m[ou]th[ae]r",
 	"youtu%.?be",
 	"youtube",
-	"{.*}.*okogames.*{.*}",
+	"dving.ru",
+	"nigmаz.сom",
+	"rpgdealer.ru",
+	"project-razgrom.ru",
+	"[www.project-razgrom.ru]",
+	"m-m-o-c-e-o",
+	"mmoceo",
 }

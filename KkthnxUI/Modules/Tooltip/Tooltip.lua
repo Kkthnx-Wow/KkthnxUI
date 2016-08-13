@@ -47,7 +47,7 @@ local tooltips = {
 	QuestGuru_QuestWatchTooltip,
 	StoryTooltip
 }
-
+--[[
 local backdrop = {
 	bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14,
 	insets = {left = 3, right = 3, top = 3, bottom = 3}
@@ -72,6 +72,85 @@ for _, tt in pairs(tooltips) do
 		if C.Blizzard.DarkTextures == true then
 			bg:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
 		end
+	end
+end
+]]
+local function StyleTip(self)
+	--self:SetBackdrop(K.BorderBackdrop)
+	
+	self:HookScript("OnShow", function(self)
+		self:SetBackdropColor(5/255, 5/255, 5/255)
+		if C.Blizzard.DarkTextures == true then
+			self:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+		end
+	end)
+	
+	self:HookScript("OnHide", function(self)
+		self:SetBackdropColor(5/255, 5/255, 2/255)
+		if C.Blizzard.DarkTextures == true then
+			self:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+		end
+	end)
+	
+	self:HookScript("OnUpdate", function(self)
+		self:SetBackdropColor(5/255, 5/255, 5/255)
+		if C.Blizzard.DarkTextures == true then
+			self:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+		end
+	end)
+end
+
+for _, tooltips in pairs({
+	GameTooltip,
+	GameTooltip,
+	ItemRefTooltip,
+	ShoppingTooltip1,
+	ShoppingTooltip2,
+	ShoppingTooltip3,
+	WorldMapTooltip,
+	WorldMapCompareTooltip1,
+	WorldMapCompareTooltip2,
+	DropDownList1MenuBackdrop,
+	DropDownList2MenuBackdrop,
+	ItemRefShoppingTooltip1,
+	ItemRefShoppingTooltip2,
+	ChatMenu,
+	EmoteMenu,
+	LanguageMenu,
+	VoiceMacroMenu,
+	FriendsTooltip,
+	FloatingGarrisonFollowerTooltip,
+	AtlasLootTooltip,
+	QuestHelperTooltip,
+	QuestGuru_QuestWatchTooltip,
+	StoryTooltip,
+}) do
+	StyleTip(tooltips)
+end
+
+if (C.Tooltip.QualityBorder) then
+	for _, tooltips in pairs({
+		GameTooltip,
+		ItemRefTooltip,
+		
+		ShoppingTooltip1,
+		ShoppingTooltip2,
+		ShoppingTooltip3,
+	}) do
+		tooltips:HookScript("OnTooltipSetItem", function(self)
+			local name, item = self:GetItem()
+			if (item) then
+				local quality = select(3, GetItemInfo(item))
+				if (quality) then
+					local r, g, b = GetItemQualityColor(quality)
+					self:SetBackdropBorderColor(r, g, b)
+				end
+			end
+		end)
+		
+		tooltips:HookScript("OnTooltipCleared", function(self)
+			self:SetBackdropBorderColor(255/255, 255/255, 255/255)
+		end)
 	end
 end
 
@@ -269,7 +348,7 @@ local OnTooltipSetUnit = function(self)
 	if classification == "rareelite" then classification = " R+"
 	elseif classification == "rare" then classification = " R"
 	elseif classification == "elite" then classification = "+"
-	else classification = "" end
+else classification = "" end
 
 
 	if UnitPVPName(unit) and C.Tooltip.Title then
