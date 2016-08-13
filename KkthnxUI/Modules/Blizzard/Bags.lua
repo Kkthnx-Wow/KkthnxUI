@@ -511,6 +511,7 @@ function Stuffing:SlotNew(bag, slot)
 
 	ret.cooldown = _G[ret.frame:GetName().."Cooldown"]
 	ret.cooldown:Show()
+	ret.cooldown:SetInside(ret.frame, 4, 4)
 
 	self:SlotUpdate(ret)
 
