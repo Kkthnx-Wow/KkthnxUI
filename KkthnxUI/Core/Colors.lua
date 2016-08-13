@@ -47,11 +47,8 @@ end
 
 if C.Unitframe.BetterPowerColors == true then
 	local function CustomPowerColor(manaBar)
-		if (not manaBar) then
-			return
-		end
 		local powerType = UnitPowerType(manaBar.unit)
-		
+
 		if (powerType == 0) then -- MANA
 			manaBar:SetStatusBarColor(79/255, 115/255, 161/255)
 		elseif (powerType == 1) then -- RAGE WARRIORS AND DRUID
