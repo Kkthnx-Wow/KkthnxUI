@@ -58,7 +58,7 @@
 	<Script file="Modules\Misc\Merchant.lua"/>
 	<Script file="Modules\Misc\Misc.lua"/>
 	<Script file="Modules\Misc\Mounts.lua"/>
-	<Script file="Modules\Misc\MoveBlizzard.lua"/>
+	<Script file="Modules\Misc\MoveBlizzFrames.lua"/>
 	<Script file="Modules\Misc\PulseCD.lua"/>
 	<Script file="Modules\Misc\SlotItemLevel.lua"/>
 
