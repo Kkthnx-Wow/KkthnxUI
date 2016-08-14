@@ -472,18 +472,6 @@ function Plates:UpdateHealthText()
 		self.NewPlate.Health.Text:SetFormattedText("%d%%", Percent)
 	end
 
-	if self.isClass == true or self.isFriendly == true then
-		if Percent <= 50 and Percent >= 20 then
-			SetVirtualBorder(self.NewPlate.Health, 1, 1, 0)
-		elseif Percent < 20 then
-			SetVirtualBorder(self.NewPlate.Health, 1, 0, 0)
-		else
-			SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Border_Color))
-		end
-	elseif (self.isClass ~= true and self.isFriendly ~= true) and C.Nameplate.EnhanceThreat == true then
-		SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Border_Color))
-	end
-
 	if GetUnitName("target") and self.NewPlate:GetAlpha() == 1 then
 		self.NewPlate.Health:SetSize((C.Nameplate.Width + C.Nameplate.AdditionalWidth) * K.NoScaleMult, (C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult)
 		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -8-((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult))
