@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Core\Init.lua"/>
 
-	<Script file="locales\enUS.lua"/>
-	<Script file="locales\ruRU.lua"/>
+	<Script file="Locales\enUS.lua"/>
+	<Script file="Locales\ruRU.lua"/>
 
 	<Script file="Config\Settings.lua"/>
 	<Script file="Config\Positions.lua"/>
@@ -20,9 +20,10 @@
 
 	<Script file="Config\Filters\Announcements.lua"/>
 	<Script file="Config\Filters\ChatSpam.lua"/>
+	<Script file="Config\Filters\Cooldowns.lua"/>
 	<Script file="Config\Filters\Errors.lua"/>
 	<Script file="Config\Filters\FilgerSpells.lua"/>
-	<Script file="Config\Filters\Cooldowns.lua"/>
+	<Script file="Config\Filters\Nameplates.lua"/>
 	<Script file="Config\Filters\NeedItems.lua"/>
 
 	<Script file="Core\API.lua"/>
@@ -57,6 +58,7 @@
 	<Script file="Modules\Misc\Merchant.lua"/>
 	<Script file="Modules\Misc\Misc.lua"/>
 	<Script file="Modules\Misc\Mounts.lua"/>
+	<Script file="Modules\Misc\MoveBlizzard.lua"/>
 	<Script file="Modules\Misc\PulseCD.lua"/>
 	<Script file="Modules\Misc\SlotItemLevel.lua"/>
 
@@ -94,6 +96,7 @@
 
 	<Script file="Modules\Blizzard\Achievements.lua"/>
 	<Script file="Modules\Blizzard\Bags.lua"/>
+	<Script file="Modules\Blizzard\Nameplates.lua"/>
 	<Script file="Modules\Blizzard\CaptureBar.lua"/>
 	<Script file="Modules\Blizzard\ClassColor.lua"/>
 	<Script file="Modules\Blizzard\DarkTextures.lua"/>
