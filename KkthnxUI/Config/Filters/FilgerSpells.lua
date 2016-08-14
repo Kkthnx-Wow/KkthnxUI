@@ -995,9 +995,7 @@ C["filger_spells"] = {
 			{spellID = 90361, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Posthaste
 			{spellID = 118922, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Aspect of the Cheetah 90%
-			{spellID = 186257, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Aspect of the Cheetah 30%
+			-- Aspect of the Cheetah
 			{spellID = 186258, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Trueshot
 			{spellID = 193526, unitID = "player", caster = "player", filter = "BUFF"},
