@@ -1012,16 +1012,12 @@ C["filger_spells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
-			-- Steady Focus
-			--BETA {spellID = 177668, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Lock and Load
-			--BETA {spellID = 168980, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thrill of the Hunt
-			--BETA {spellID = 34720, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Frenzy
 			{spellID = 19615, unitID = "player", caster = "player", filter = "BUFF", absID = true},
 			-- Mend Pet
 			{spellID = 136, unitID = "pet", caster = "player", filter = "BUFF"},
+			-- Marking Targets
+			{spellID = 223138, unitID = "pet", caster = "player", filter = "BUFF"},
 
 			-- Trinkets
 			-- 1.0: Darkmoon Cards
@@ -1195,6 +1191,8 @@ C["filger_spells"] = {
 			{spellID = 214579, filter = "CD"},
 			-- Flare
 			{spellID = 1543, filter = "CD"},
+			-- Black Arrow
+			{spellID = 194599, filter = "CD"},
 
 			-- Racial
 			-- Arcane Torrent (Blood Elf)
