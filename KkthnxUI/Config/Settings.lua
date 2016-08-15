@@ -190,20 +190,6 @@ C["Nameplate"] = {
 	["Width"] = 120,
 	["HealerIcon"] = false,
 }
--- POWERBAR OPTIONS
-C["PowerBar"] = {
-	["Enable"] = false,
-	["FontOutline"] = false,
-	["Height"] = 4,
-	["DKRuneBar"] = false,
-	["Combo"] = true,
-	["Mana"] = true,
-	["Rage"] = true,
-	["Rune"] = true,
-	["RuneCooldown"] = true,
-	["ValueAbbreviate"] = true,
-	["Width"] = 200,
-}
 -- PULSECD OPTIONS
 C["PulseCD"] = {
 	["Enable"] = false,

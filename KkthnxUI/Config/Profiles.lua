@@ -48,7 +48,7 @@ if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
 end
 
 -- KKTHNX PERSONAL CONFIG
-if (K.Name == "Pervie" or K.Name == "Aceer") and (K.Realm == "Stormreaver") then
+if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx") and (K.Realm == "Stormreaver") then
 
 	C["ActionBar"]["BottomBars"] = 2
 	C["ActionBar"]["EquipBorder"] = true
@@ -94,6 +94,8 @@ if (K.Name == "Pervie" or K.Name == "Aceer") and (K.Realm == "Stormreaver") then
 	C["Nameplate"]["Auras"] = true
 	C["Nameplate"]["ClassIcons"] = true
 	C["Nameplate"]["NameAbbreviate"] = false
+	
+	C["PulseCD"]["Enable"] = true
 
 	C["Tooltip"]["ItemCount"] = true
 	C["Tooltip"]["ItemIcon"] = true

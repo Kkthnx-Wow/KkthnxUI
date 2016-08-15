@@ -1,7 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.PulseCD.Enable ~= true then return end
 
--- Based on Doom Cooldown Pulse(by Woffle of Dark Iron, editor Affli)
+local select = select
+local pairs = pairs
+local unpack = unpack
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+
+-- BASED ON DOOM COOLDOWN PULSE(BY WOFFLE OF DARK IRON, EDITOR AFFLI)
 local GetTime = GetTime
 local fadeInTime, fadeOutTime, maxAlpha, elapsed, runtimer = 0.5, 0.7, 1, 0, 0
 local animScale, iconSize, holdTime, threshold = C.PulseCD.AnimationScale, C.PulseCD.Size, C.PulseCD.HoldTime, C.PulseCD.Threshold
@@ -28,7 +33,7 @@ icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 icon:SetPoint("TOPLEFT", frame, "TOPLEFT", K.NoScaleMult * 2, -K.NoScaleMult * 2)
 icon:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -K.NoScaleMult * 2, K.NoScaleMult * 2)
 
--- Utility Functions
+-- UTILITY FUNCTIONS
 local function tcount(tab)
 	local n = 0
 	for _ in pairs(tab) do
@@ -46,27 +51,29 @@ local function GetPetActionIndexByName(name)
 	return nil
 end
 
--- Cooldown/Animation
+-- COOLDOWN/ANIMATION
 local function OnUpdate(_, update)
 	elapsed = elapsed + update
 	if elapsed > 0.05 then
 		for i, v in pairs(watching) do
 			if GetTime() >= v[1] + 0.5 + threshold then
-				if K.PulseIgnoredSpells[i] then
+				local start, duration, enabled, texture, isPet
+				if v[2] == "spell" then
+					name = GetSpellInfo(v[3])
+					texture = GetSpellTexture(v[3])
+					start, duration, enabled = GetSpellCooldown(v[3])
+				elseif v[2] == "item" then
+					name = GetItemInfo(i)
+					texture = v[3]
+					start, duration, enabled = GetItemCooldown(i)
+				elseif v[2] == "pet" then
+					name, _, texture = GetPetActionInfo(v[3])
+					start, duration, enabled = GetPetActionCooldown(v[3])
+					isPet = true
+				end
+				if K.PulseIgnoredSpells[name] then
 					watching[i] = nil
 				else
-					local start, duration, enabled, texture, isPet
-					if v[2] == "spell" then
-						texture = GetSpellTexture(v[3])
-						start, duration, enabled = GetSpellCooldown(v[3])
-					elseif v[2] == "item" then
-						texture = v[3]
-						start, duration, enabled = GetItemCooldown(i)
-					elseif v[2] == "pet" then
-						texture = select(3, GetPetActionInfo(v[3]))
-						start, duration, enabled = GetPetActionCooldown(v[3])
-						isPet = true
-					end
 					if enabled ~= 0 then
 						if duration and duration > threshold and texture then
 							cooldowns[i] = {start, duration, texture, isPet}
@@ -116,14 +123,15 @@ local function OnUpdate(_, update)
 			end
 			frame:SetAlpha(alpha)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
-			frame:SetWidth(scale, scale)
+			frame:SetWidth(scale)
+			frame:SetHeight(scale)
 			frame:SetBackdropBorderColor(0, 0, 0, 0.8)
 			frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		end
 	end
 end
 
--- Event Handlers
+-- EVENT HANDLERS
 function frame:ADDON_LOADED(addon)
 	for _, v in pairs(K.PulseIgnoredSpells) do
 		K.PulseIgnoredSpells[v] = true
@@ -134,7 +142,7 @@ frame:RegisterEvent("ADDON_LOADED")
 
 function frame:UNIT_SPELLCAST_SUCCEEDED(unit, spell, _, _, spellID)
 	if unit == "player" then
-		watching[spell] = {GetTime(), "spell", spellID}
+		watching[spellID] = {GetTime(), "spell", spellID}
 		self:SetScript("OnUpdate", OnUpdate)
 	end
 end
@@ -147,9 +155,9 @@ function frame:COMBAT_LOG_EVENT_UNFILTERED(...)
 			local name = GetSpellInfo(spellID)
 			local index = GetPetActionIndexByName(name)
 			if index and not select(7, GetPetActionInfo(index)) then
-				watching[name] = {GetTime(), "pet", index}
-			elseif not index and name then
-				watching[name] = {GetTime(), "spell", spellID}
+				watching[spellID] = {GetTime(), "pet", index}
+			elseif not index and spellID then
+				watching[spellID] = {GetTime(), "spell", spellID}
 			else
 				return
 			end

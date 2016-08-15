@@ -43,7 +43,7 @@ local ALLOWED_GROUPS = {
 }
 
 local function Local(o)
-	local K, L, _ = KkthnxUI:unpack()
+	local K, C, L, _ = KkthnxUI:unpack()
 	-- Actionbar Settings
 	if o == "UIConfigActionBar" then o = ACTIONBAR_LABEL end
 	if o == "UIConfigActionBarBottomBars" then o = L_GUI_ACTIONBAR_BOTTOMBARS end
@@ -376,7 +376,7 @@ end
 local VISIBLE_GROUP = nil
 local lastbutton = nil
 local function ShowGroup(group, button)
-	local K, _ = KkthnxUI:unpack()
+	local K, C, L, _ = KkthnxUI:unpack()
 
 	if lastbutton then
 		lastbutton:SetText(lastbutton:GetText().sub(lastbutton:GetText(), 11, -3))
@@ -443,7 +443,7 @@ function CreateUIConfig()
 	UIConfigMain:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
 	UIConfigMain:SetSize(780, 520)
 	UIConfigMain:SetBackdrop(K.Backdrop)
-	UIConfigMain:SetBackdropColor(unpack(C["Media"].Backdrop_Color))
+	UIConfigMain:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	UIConfigMain:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 	UIConfigMain:SetFrameStrata("DIALOG")
 	UIConfigMain:SetFrameLevel(20)
@@ -638,7 +638,7 @@ function CreateUIConfig()
 				editbox:SetPoint("TOPLEFT", 8, -(offset + 20))
 				editbox:SetText(value)
 				editbox:SetBackdrop(K.Backdrop)
-				editbox:SetBackdropColor(unpack(C["Media"].Backdrop_Color))
+				editbox:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 				local okbutton = CreateFrame("Button", nil, frame)
 				okbutton:SetHeight(editbox:GetHeight())
@@ -791,8 +791,8 @@ function CreateUIConfig()
 	local bgSkins = {TitleBox, TitleBoxVer, UIConfigBG, groupsBG}
 	for _, sb in pairs(bgSkins) do
 		sb:SetBackdrop(K.Backdrop)
-		sb:SetBackdropColor(unpack(C["Media"].Backdrop_Color))
-		sb:SetBackdropBorderColor(unpack(C["Media"].Border_Color))
+		sb:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		sb:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 	end
 
 	ShowGroup("General")
@@ -833,7 +833,7 @@ do
 	frame.name = "|cff2eb6ffKkthnxUI|r"
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
-		local K, _ = KkthnxUI:unpack()
+		local K, C, L, _ = KkthnxUI:unpack()
 		local title = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title:SetPoint("TOPLEFT", 16, -16)
 		title:SetText("Info:")
@@ -913,7 +913,7 @@ do
 			self:SetHeight(Height + 21)
 		end)
 
-		local button = CreateFrame("BUTTON", "GameMenuTukuiButtonOptions", Menu, "GameMenuButtonTemplate")
+		local button = CreateFrame("BUTTON", "GameMenuKkthnxUIButtonUIConfig", Menu, "GameMenuButtonTemplate")
 		button:SetSize(ContinueX, ContinueY)
 		button:SetPoint("TOP", Interface, "BOTTOM", 0, -1)
 		button:SetText("|cff2eb6ffKkthnxUI|r")
