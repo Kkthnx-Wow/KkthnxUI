@@ -2290,6 +2290,14 @@ C["filger_spells"] = {
 			{spellID = 5277, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Envenom
 			{spellID = 32645, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Shadow Dance
+			{spellID = 185313, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Symbols of Death
+			{spellID = 212283, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Shadow Blades
+			{spellID = 121471, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Alacrity
+			{spellID = 193539, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Master of Subtlety
 			{spellID = 31665, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Cloak of Shadows
@@ -2421,6 +2429,10 @@ C["filger_spells"] = {
 			{spellID = 91021, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Vendetta
 			{spellID = 79140, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Nightblade
+			{spellID = 195452, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Ghostly Strike
+			{spellID = 196937, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Deadly Poison
 			{spellID = 2818, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Crippling Poison
@@ -2466,6 +2478,8 @@ C["filger_spells"] = {
 			{spellID = 152150, filter = "CD"},
 			-- Sprint
 			{spellID = 2983, filter = "CD"},
+			-- Shadow Dance
+			{spellID = 185313, filter = "CD"},
 			-- Marked for Death
 			{spellID = 137619, filter = "CD"},
 			-- Killing Spree
@@ -3574,6 +3588,8 @@ C["filger_spells"] = {
 			{spellID = 1833, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Kidney Shot
 			{spellID = 408, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Between the Eyes
+			{spellID = 199804, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Gouge
 			{spellID = 1776, unitID = "player", caster = "all", filter = "DEBUFF"},
 
@@ -3952,6 +3968,8 @@ C["filger_spells"] = {
 			{spellID = 5277, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Combat Insight
 			{spellID = 74002, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Shadow Dance
+			{spellID = 185313, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Sap
 			{spellID = 6770, unitID = "target", caster = "all", filter = "DEBUFF"},
@@ -3961,6 +3979,8 @@ C["filger_spells"] = {
 			{spellID = 1833, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Kidney Shot
 			{spellID = 408, unitID = "target", caster = "all", filter = "DEBUFF"},
+			-- Between the Eyes
+			{spellID = 199804, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Garrote
 			{spellID = 1330, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Smoke Bomb

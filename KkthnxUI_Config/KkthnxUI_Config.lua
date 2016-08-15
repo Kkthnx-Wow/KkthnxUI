@@ -145,11 +145,12 @@ local function Local(o)
 	-- General Settings
 	if o == "UIConfigGeneral" then o = GENERAL_LABEL end
 	if o == "UIConfigGeneralAutoScale" then o = L_GUI_GENERAL_AUTOSCALE end
-	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
-	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
-	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
 	if o == "UIConfigGeneralBubbleBackdrop" then o = L_GUI_GENERAL_CHATBUBBLE_NOBACKDROP end
+	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
+	if o == "UIConfigGeneralCustomLagTolerance" then o = L_GUI_GENERAL_LAG_TOLERANCE end
+	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
+	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
 	-- Loot Settings
 	if o == "UIConfigLoot" then o = LOOT end

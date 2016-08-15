@@ -135,6 +135,7 @@ C["General"] = {
 	["AutoScale"] = true,
 	["BubbleBackdrop"] = false,
 	["BubbleFontSize"] = 12,
+	["CustomLagTolerance"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
