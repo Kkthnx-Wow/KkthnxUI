@@ -35,10 +35,11 @@ local ALLOWED_GROUPS = {
 	["Loot"] = 12,
 	["Minimap"] = 13,
 	["Misc"] = 14,
-	["PulseCD"] = 15,
-	["Skins"] = 16,
-	["Tooltip"] = 17,
-	["Unitframe"] = 18,
+	["Nameplate"] = 15,
+	["PulseCD"] = 16,
+	["Skins"] = 17,
+	["Tooltip"] = 18,
+	["Unitframe"] = 19,
 }
 
 local function Local(o)
@@ -65,7 +66,7 @@ local function Local(o)
 	if o == "UIConfigActionBarToggleMode" then o = L_GUI_ACTIONBAR_TOGGLE_MODE end
 	-- Announcement Settings
 	if o == "UIConfigAnnouncements" then o = L_GUI_ANNOUNCEMENTS end
-	if o == "UIConfigAnnouncementsBad_Gear" then o = L_GUI_ANNOUNCEMENTS_BAD_GEAR end
+	if o == "UIConfigAnnouncementsBadGear" then o = L_GUI_ANNOUNCEMENTS_BAD_GEAR end
 	if o == "UIConfigAnnouncementsFeasts" then o = L_GUI_ANNOUNCEMENTS_FEASTS end
 	if o == "UIConfigAnnouncementsInterrupt" then o = L_GUI_ANNOUNCEMENTS_INTERRUPT end
 	if o == "UIConfigAnnouncementsPortals" then o = L_GUI_ANNOUNCEMENTS_PORTALS end
@@ -144,11 +145,12 @@ local function Local(o)
 	-- General Settings
 	if o == "UIConfigGeneral" then o = GENERAL_LABEL end
 	if o == "UIConfigGeneralAutoScale" then o = L_GUI_GENERAL_AUTOSCALE end
-	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
-	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
-	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
 	if o == "UIConfigGeneralBubbleBackdrop" then o = L_GUI_GENERAL_CHATBUBBLE_NOBACKDROP end
+	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
+	if o == "UIConfigGeneralCustomLagTolerance" then o = L_GUI_GENERAL_LAG_TOLERANCE end
+	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
+	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
 	-- Loot Settings
 	if o == "UIConfigLoot" then o = LOOT end
@@ -173,9 +175,29 @@ local function Local(o)
 	if o == "UIConfigMiscBGSpam" then o = L_GUI_MISC_HIDE_BG_SPAM end
 	if o == "UIConfigMiscDurabilityWarninig" then o = L_GUI_MISC_DURABILITY_WARNINIG end
 	if o == "UIConfigMiscEnhancedMail" then o = L_GUI_MISC_ENCHANCED_MAIL end
+	if o == "UIConfigMiscMoveBlizzard" then o = L_GUI_MISC_MOVE_BLIZZARD end
 	if o == "UIConfigMiscInviteKeyword" then o = L_GUI_MISC_INVKEYWORD end
 	if o == "UIConfigMiscItemLevel" then o = L_GUI_MISC_ITEM_LEVEL end
-	if o == "UIConfigMiscSpeedyLoad" then o = L_GUI_MISC_SPEEDYLOAD end
+	-- Nameplates Settings
+	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
+	if o == "UIConfigNameplateAdditionalHeight" then o = L_GUI_NAMEPLATE_AD_HEIGHT end
+	if o == "UIConfigNameplateAdditionalWidth" then o = L_GUI_NAMEPLATE_AD_WIDTH end
+	if o == "UIConfigNameplateAuraSize" then o = L_GUI_NAMEPLATE_DEBUFFS_SIZE end
+	if o == "UIConfigNameplateBadColor" then o = L_GUI_NAMEPLATE_BAD_COLOR end
+	if o == "UIConfigNameplateClassIcons" then o = L_GUI_NAMEPLATE_CLASS_ICON end
+	if o == "UIConfigNameplateCombat" then o = L_GUI_NAMEPLATE_COMBAT end
+	if o == "UIConfigNameplateEnable" then o = L_GUI_NAMEPLATE_ENABLE end
+	if o == "UIConfigNameplateEnhanceThreat" then o = L_GUI_NAMEPLATE_THREAT end
+	if o == "UIConfigNameplateGoodColor" then o = L_GUI_NAMEPLATE_GOOD_COLOR end
+	if o == "UIConfigNameplateHealthValue" then o = L_GUI_NAMEPLATE_HEALTH end
+	if o == "UIConfigNameplateHeight" then o = L_GUI_NAMEPLATE_HEIGHT end
+	if o == "UIConfigNameplateNameAbbreviate" then o = L_GUI_NAMEPLATE_NAME_ABBREV end
+	if o == "UIConfigNameplateNearColor" then o = L_GUI_NAMEPLATE_NEAR_COLOR end
+	if o == "UIConfigNameplateCastBar" then o = L_GUI_NAMEPLATE_CASTBAR end
+	if o == "UIConfigNameplateCastBarName" then o = L_GUI_NAMEPLATE_CASTBAR_NAME end
+	if o == "UIConfigNameplateAuras" then o = L_GUI_NAMEPLATE_SHOW_DEBUFFS end
+	if o == "UIConfigNameplateWidth" then o = L_GUI_NAMEPLATE_WIDTH end
+	if o == "UIConfigNameplateHealerIcon" then o = L_GUI_NAMEPLATE_HEALER_ICON end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end
@@ -830,7 +852,7 @@ do
 		subtitle2:SetWidth(380)
 		subtitle2:SetPoint("TOPLEFT", title2, "BOTTOMLEFT", 0, -8)
 		subtitle2:SetJustifyH("LEFT")
-		subtitle2:SetText("ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, Crum, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, |ccfff7d0aGoldpaw|r, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, |cFFFF69B4Magicnachos|r, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, |cFFA335EEShroudy|r, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, |ccf1eff00Swiver|r, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord")
+		subtitle2:SetText("ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, Crum, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, |ccfff7d0aGoldpaw|r, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, |cFFFF69B4Magicnachos|r, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, |cFFA335EEShroudy|r, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, |ccf1eff00Swiver|r, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord")
 
 		local title3 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title3:SetPoint("TOPLEFT", subtitle2, "BOTTOMLEFT", 0, -16)

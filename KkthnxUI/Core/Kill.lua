@@ -4,10 +4,10 @@ local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local SetCVar = SetCVar
 
--- Kill all stuff on default UI that we don't need
+-- KILL ALL STUFF ON DEFAULT UI THAT WE DON'T NEED
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
-frame:SetScript("OnEvent", function(self, event, addon, ...)
+frame:SetScript("OnEvent", function(self, event, addon)
 	if (addon == "Blizzard_AchievementUI") then
 		if C.Tooltip.Enable then
 			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
@@ -28,6 +28,9 @@ frame:SetScript("OnEvent", function(self, event, addon, ...)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
 
+	SetCVar("countdownForCooldowns", 0)
+	InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
+
 	if C.Chat.Enable then
 		SetCVar("chatStyle", "im")
 	end
@@ -36,11 +39,20 @@ frame:SetScript("OnEvent", function(self, event, addon, ...)
 		InterfaceOptionsDisplayPanelRotateMinimap:Kill()
 	end
 
+	if C.Bag.Enable then
+		SetSortBagsRightToLeft(true)
+		SetInsertItemsLeftToRight(false)
+	end
+
 	if C.ActionBar.Enable then
 		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
 		InterfaceOptionsActionBarsPanelBottomRight:Kill()
 		InterfaceOptionsActionBarsPanelRight:Kill()
 		InterfaceOptionsActionBarsPanelRightTwo:Kill()
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
+	end
+
+	if C.Nameplate.Enable then
+		SetCVar("ShowClassColorInNameplate", 1)
 	end
 end)

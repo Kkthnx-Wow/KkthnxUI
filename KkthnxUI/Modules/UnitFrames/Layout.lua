@@ -4,6 +4,7 @@ local _G = _G
 local unpack = unpack
 local pairs = pairs
 local select = select
+local remove = table.remove
 local IsAddOnLoaded = IsAddOnLoaded
 local CreateFrame = CreateFrame
 local UIParent = UIParent
@@ -182,7 +183,7 @@ if C.Unitframe.Enable == true then
 			end
 			PlayerFrame:SetUserPlaced(true)
 			PlayerFrame:SetMovable(false)
-			--PlayerFrame.SetPoint = K.Noop
+			PlayerFrame.SetPoint = K.Noop
 
 			-- TWEAK TARGET FRAME
 			TargetFrame:SetMovable(true)
@@ -192,8 +193,8 @@ if C.Unitframe.Enable == true then
 			end
 			TargetFrame:SetUserPlaced(true)
 			TargetFrame:SetMovable(false)
-			--TargetFrame.SetPoint = K.Noop
-			
+			TargetFrame.SetPoint = K.Noop
+
 			-- BUFFS ONTOP.
 			TargetFrame.buffsOnTop = true
 
@@ -301,5 +302,14 @@ if C.Unitframe.PvPIcon == true then
 	FocusFrameTextureFramePVPIcon:Kill()
 	for i = 1, MAX_PARTY_MEMBERS do
 		_G["PartyMemberFrame"..i.."PVPIcon"]:Kill()
+	end
+end
+
+-- JUST BECAUSE I CAN
+for _, menu in pairs(UnitPopupMenus) do
+	for index = #menu, 1, -1 do
+		if menu[index] == "MOVE_PLAYER_FRAME" or menu[index] == "MOVE_TARGET_FRAME" or menu[index] == "MOVE_FOCUS_FRAME" then
+			remove(menu, index)
+		end
 	end
 end

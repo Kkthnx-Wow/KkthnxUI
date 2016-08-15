@@ -127,6 +127,25 @@ LFDParentFrame:HookScript("OnShow", function()
 	end
 end)
 
+-- CUSTOM LAG TOLERANCE(BY ELV22)
+if C.General.CustomLagTolerance == true then
+	local customlag = CreateFrame("Frame")
+	local int = 5
+	local _, _, _, lag = GetNetStats()
+	local LatencyUpdate = function(self, elapsed)
+		int = int - elapsed
+		if int < 0 then
+			if GetCVar("reducedLagTolerance") ~= tostring(1) then SetCVar("reducedLagTolerance", tostring(1)) end
+			if lag ~= 0 and lag <= 400 then
+				SetCVar("maxSpellStartRecoveryOffset", tostring(lag))
+			end
+			int = 5
+		end
+	end
+	customlag:SetScript("OnUpdate", LatencyUpdate)
+	LatencyUpdate(customlag, 10)
+end
+
 -- Remove Boss Emote spam during BG(ArathiBasin SpamFix by Partha)
 if C.Misc.BGSpam == true then
 	local Fixer = CreateFrame("Frame")

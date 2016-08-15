@@ -129,6 +129,11 @@ L_MISC_BUY_STACK = "Alt-Click to buy a stack"
 L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
 L_MISC_UI_OUTDATED = "Your version of |cff2eb6ffKkthnxUI|r is out of date. You can download the latest version from |cffffe02ewww.github.com/Kkthnx|r"
 L_MISC_UNDRESS = "Undress"
+-- Nameplate Talent Localization
+L_PLANNER_DRUID_4 = "Restoration"
+L_PLANNER_MONK_2 = "Mistweaver"
+L_PLANNER_PALADIN_1 = "Holy"
+L_PLANNER_PRIEST_1 = "Discipline"
 -- Popup Localization
 L_POPUP_ARMORY = "|cffffe02eArmory|r"
 L_POPUP_BOOSTUI = "|cffff0000WARNING:|r This will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"
