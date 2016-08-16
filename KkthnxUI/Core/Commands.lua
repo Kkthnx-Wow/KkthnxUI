@@ -64,7 +64,7 @@ function DisbandRaidGroup()
 		SendChatMessage(L_INFO_DISBAND, "RAID")
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
-			if online and name ~= T.name then
+			if online and name ~= K.Name then
 				UninviteUnit(name)
 			end
 		end
