@@ -48,8 +48,8 @@ L_CHAT_YELLS = "yells"
 L_CHAT_INSTANCE_LEADER = "IL"
 L_CHAT_INSTANCE = "I"
 -- BIGCHAT LOCALIZATION
-L_CHAT_BIGCHAT_OFF = "|cffffe02eBig Chat Mode|r: Off"
-L_CHAT_BIGCHAT_ON = "|cffffe02eBig Chat Mode|r: On"
+L_CHAT_BIGCHAT_OFF = "Big chat disabled"
+L_CHAT_BIGCHAT_ON = "Big chat enabled"
 -- DATATEXT LOCALIZATION
 L_DATATEXT_BASESASSAULTED = "Bases Assaulted:"
 L_DATATEXT_BASESDEFENDED = "Bases Defended:"
@@ -77,8 +77,8 @@ L_STANDING_REPUTATION = "Standing: "
 -- IN COMBAT LOCALIZATION
 L_ERR_NOT_IN_COMBAT = "You can't do that while in combat or while dead."
 -- AUTOINVITE LOCALIZATION
-L_INVITE_ENABLE = "|cffffe02eAutoinvite|r |cFF008000ON|r: "
-L_INVITE_DISABLE = "|cffffe02eAutoinvite|r |cFFFF0000OFF|r"
+L_INVITE_ENABLE = "Autoinvite enabled: "
+L_INVITE_DISABLE = "AutoInvite disabled"
 -- INFO LOCALIZATION
 L_INFO_DISBAND = "Disbanding group..."
 L_INFO_DUEL = "Declined duel request from "
@@ -111,12 +111,12 @@ L_MAIL_NEED = "Need a mailbox."
 L_MAIL_STOPPED = "Stopped, inventory is full."
 L_MAIL_UNIQUE = "Stopped. Found a unique duplicate item in a bag or the bank."
 -- FARMMODE MINIMAP
-L_MINIMAP_FARMMODE_ON = "|cffffe02eFarmmode is now|r |cFF008000enabled|r"
-L_MINIMAP_FARMMODE_OFF = "|cffffe02eFarmmode is now|r |cFFFF0000disabled|r"
+L_MINIMAP_FARMMODE_ON = "Farmmode enabled"
+L_MINIMAP_FARMMODE_OFF = "Farmmode disabled"
 -- MISC LOCALIZATION
 L_MISC_BUY_STACK = "Alt-Click to buy a stack"
 L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
-L_MISC_UI_OUTDATED = "Your version of |cff2eb6ffKkthnxUI|r is out of date. You can download the latest version from |cffffe02ewww.github.com/Kkthnx|r"
+L_MISC_UI_OUTDATED = "Your version of |cff2eb6ffKkthnxUI|r is out of date. You can download the latest version from www.github.com/kkthnx|r"
 L_MISC_UNDRESS = "Undress"
 -- NAMEPLATE TALENT LOCALIZATIOn
 L_PLANNER_DRUID_4 = "Restoration"
@@ -124,12 +124,11 @@ L_PLANNER_MONK_2 = "Mistweaver"
 L_PLANNER_PALADIN_1 = "Holy"
 L_PLANNER_PRIEST_1 = "Discipline"
 -- POPUP LOCALIZATION
-L_POPUP_ARMORY = "|cffffe02eArmory|r"
+L_POPUP_ARMORY = "Armory"
 L_POPUP_BOOSTUI = "|cffff0000WARNING:|r This will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"
 L_POPUP_INSTALLUI = "Thank you for choosing |cff2eb6ffKkthnxUI|r!|n|nAccept this installation dialog to apply settings."
 L_POPUP_RELOADUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff2eb6ffKkthnxUI|r.|n|nVisit me at |cff2eb6ffwww.github.com/kkthnx|r."
 L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff2eb6ffKkthnxUI|r?"
-L_POPUP_RESTART_GFX = "|cffff0000WARNING:|r The UI gxMultisample is wrong, so the graphics might appear fuzzy.|n|nFix this issue now?"
 L_POPUP_SETTINGS_ALL = "|cffff0000WARNING:|r This will apply all the supported addons settings and import them to go with |cff2eb6ffKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
 L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff2eb6ffDBM|r."
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
@@ -147,8 +146,8 @@ L_STATS_GLOBAL = "Global Latency:"
 L_STATS_HOME = "Home Latency:"
 L_STATS_INC = "Incoming:"
 L_STATS_OUT = "Outgoing:"
-L_STATS_SYSTEMLEFT = "|cff2eb6ffLeft Click: Open PvE-Frame|r"
-L_STATS_SYSTEMRIGHT = "|cff2eb6ffRight Click: Clean Memoryusage|r"
+L_STATS_SYSTEMLEFT = "Left Click: Open PvE-Frame"
+L_STATS_SYSTEMRIGHT = "Right Click: Clean Memory|r"
 -- TOOLTIP LOCALIZATION
 L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
 L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"
@@ -160,13 +159,13 @@ L_TOOLTIP_NO_TALENT = "No Talents"
 L_TOOLTIP_SPELL_ID = "Spell ID:"
 L_TOOLTIP_WHO_TARGET = "Targeted By"
 -- TOTAL MEMORY LOCALIZATION
-L_TOTALMEMORY_USAGE = "Total Memory Usage:"
+L_TOTALMEMORY_USAGE = "Total Memory:"
 -- WOWHEAD LINK LOCALIZATION
-L_WATCH_WOWHEAD_LINK = "|cffffe02eWowhead link|r"
+L_WATCH_WOWHEAD_LINK = "Wowhead Link"
 -- WELCOME LOCALIZATION
 L_WELCOME_LINE_1 = "Welcome to |cff2eb6ffKkthnxUI|r v"
 L_WELCOME_LINE_2_1 = ""
-L_WELCOME_LINE_2_2 = "Type /cfg to config interface, or visit https://github.com/Kkthnx"
+L_WELCOME_LINE_2_2 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r"
 -- SLASH COMMANDS LOCALIZATION
 L_SLASHCMD_HELP = {
     "Available slash commands:",

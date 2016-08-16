@@ -222,7 +222,7 @@ StaticPopupDialogs["INSTALL_UI"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
-	preferredIndex = 3
+	preferredIndex = 5
 }
 
 StaticPopupDialogs["RELOAD_UI"] = {
@@ -234,7 +234,7 @@ StaticPopupDialogs["RELOAD_UI"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
-	preferredIndex = 3
+	preferredIndex = 5
 }
 
 StaticPopupDialogs["DISABLE_UI"] = {
@@ -246,7 +246,7 @@ StaticPopupDialogs["DISABLE_UI"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 3
+	preferredIndex = 5
 }
 
 StaticPopupDialogs["RESET_UI"] = {
@@ -259,19 +259,7 @@ StaticPopupDialogs["RESET_UI"] = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 3
-}
-
-StaticPopupDialogs["RESTART_GFX"] = {
-	text = L_POPUP_RESTART_GFX,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function() RestartGx() end,
-	showAlert = true,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
+	preferredIndex = 5
 }
 
 SLASH_INSTALLUI1 = "/installui"

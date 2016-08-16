@@ -23,12 +23,12 @@ local debugprofilestart, debugprofilestop = debugprofilestart, debugprofilestop
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
 SLASH_RCSLASH1 = "/rc"
 
--- Help Frame.
+-- HELP FRAME.
 SlashCmdList.TICKET = function() ToggleHelpFrame() end
 SLASH_TICKET1 = "/gm"
 
 -- Fix The CombatLog.
-SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffff0000COMBATLOG HAS BEEN FIXED.|r") end
+SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffff0000Combatlog has been fixed.|r") end
 SLASH_CLEARCOMBAT1 = "/clearcombat"
 SLASH_CLEARCOMBAT2 = "/clfix"
 
@@ -106,9 +106,9 @@ function SlashCmdList.LUAERROR(msg)
 		ReloadUI()
 	elseif(msg == "off") then
 		SetCVar("scriptErrors", 0)
-		K.Print("Lua errors off.")
+		K.Print("|cffff0000Lua errors off.|r")
 	else
-		K.Print("/luaerror on - /luaerror off")
+		K.Print("|cffff0000/luaerror on - /luaerror off|r")
 	end
 end
 SLASH_LUAERROR1 = "/luaerror"
@@ -122,7 +122,7 @@ SlashCmdList.PARTYTORAID = function()
 			ConvertToRaid()
 		end
 	else
-		print("|cffffff00"..ERR_NOT_IN_GROUP.."|r")
+		print("|cffff0000"..ERR_NOT_IN_GROUP.."|r")
 	end
 end
 SLASH_PARTYTORAID1 = "/toraid"
@@ -147,7 +147,7 @@ SlashCmdList.SPEC = function(spec)
 			SetSpecialization(spec)
 		end
 	else
-		print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+		print("|cffff0000"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 	end
 end
 SLASH_SPEC1 = "/ss"
