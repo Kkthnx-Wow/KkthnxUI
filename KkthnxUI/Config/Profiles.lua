@@ -112,9 +112,9 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 end
 
 -- SWIVER PERSONAL CONFIG
-if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") then
+if (K.Name == "Swiverr" or K.Name == "Swiver" or K.Name == "swifer" or K.Name == "swiferdan" or K.Name == "swivers" or K.Name == "swav" or K.Name == "swivarr") and (K.Realm == "Stormreaver") then
 
-	C["Position"]["Quest"] = {"TOPLEFT", "UIParent", "TOPLEFT", 0, 0}
+	C["Position"]["Quest"] = {"TOPLEFT", "UIParent", "TOPLEFT", 21, -2}
 	C["Position"]["PetHorizontal"] = {"RIGHT", "UIParent", "RIGHT", -42.4661254882813, -0.600280225276947}
 	C["Position"]["RightBars"] = {"RIGHT", "UIParent", "RIGHT", -4.06657457351685, -0.399972349405289}
 	C["Position"]["StanceBar"] = {"RIGHT", "UIParent", "RIGHT", -84.1996459960938, -0.999915540218353}
