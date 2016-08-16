@@ -24,7 +24,7 @@ frame:SetBackdrop({
 	edgeSize = 3 * K.NoScaleMult,
 	insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
 })
-frame:SetBackdropBorderColor(0, 0, 0, 0.8)
+frame:SetBackdropBorderColor(0, 0, 0)
 frame:SetBackdropColor(0, 0, 0, 0)
 frame:SetPoint("CENTER", anchor, "CENTER")
 
@@ -125,7 +125,7 @@ local function OnUpdate(_, update)
 			local scale = iconSize + (iconSize * ((animScale - 1) * (runtimer / (fadeInTime + holdTime + fadeOutTime))))
 			frame:SetWidth(scale)
 			frame:SetHeight(scale)
-			frame:SetBackdropBorderColor(0, 0, 0, 0.8)
+			frame:SetBackdropBorderColor(0, 0, 0)
 			frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		end
 	end

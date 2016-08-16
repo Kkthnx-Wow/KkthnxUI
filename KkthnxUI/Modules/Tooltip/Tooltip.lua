@@ -77,26 +77,17 @@ end
 ]]
 local function StyleTip(self)
 	--self:SetBackdrop(K.BorderBackdrop)
-	
+
 	self:HookScript("OnShow", function(self)
 		self:SetBackdropColor(5/255, 5/255, 5/255)
-		if C.Blizzard.DarkTextures == true then
-			self:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
-		end
 	end)
-	
+
 	self:HookScript("OnHide", function(self)
 		self:SetBackdropColor(5/255, 5/255, 2/255)
-		if C.Blizzard.DarkTextures == true then
-			self:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
-		end
 	end)
-	
+
 	self:HookScript("OnUpdate", function(self)
 		self:SetBackdropColor(5/255, 5/255, 5/255)
-		if C.Blizzard.DarkTextures == true then
-			self:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
-		end
 	end)
 end
 
@@ -132,7 +123,7 @@ if (C.Tooltip.QualityBorder) then
 	for _, tooltips in pairs({
 		GameTooltip,
 		ItemRefTooltip,
-		
+
 		ShoppingTooltip1,
 		ShoppingTooltip2,
 		ShoppingTooltip3,
@@ -147,7 +138,7 @@ if (C.Tooltip.QualityBorder) then
 				end
 			end
 		end)
-		
+
 		tooltips:HookScript("OnTooltipCleared", function(self)
 			self:SetBackdropBorderColor(255/255, 255/255, 255/255)
 		end)
@@ -229,6 +220,9 @@ function GameTooltip_UnitColor(unit)
 		local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
 		if color then
 			r, g, b = color.r, color.g, color.b
+			GameTooltip:SetBackdropBorderColor(r, g, b)
+			HealthBarBG:SetBackdropBorderColor(r, g, b)
+			HealthBar:SetStatusBarColor(r, g, b)
 		else
 			r, g, b = 1, 1, 1
 		end
@@ -238,6 +232,9 @@ function GameTooltip_UnitColor(unit)
 		local reaction = BETTER_FACTION_BAR_COLORS[UnitReaction(unit, "player")]
 		if reaction then
 			r, g, b = reaction.r, reaction.g, reaction.b
+			GameTooltip:SetBackdropBorderColor(r, g, b)
+			HealthBarBG:SetBackdropBorderColor(r, g, b)
+			HealthBar:SetStatusBarColor(r, g, b)
 		else
 			r, g, b = 1, 1, 1
 		end
