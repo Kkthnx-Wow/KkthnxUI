@@ -94,7 +94,7 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Nameplate"]["Auras"] = true
 	C["Nameplate"]["ClassIcons"] = true
 	C["Nameplate"]["NameAbbreviate"] = false
-	
+
 	C["PulseCD"]["Enable"] = true
 
 	C["Tooltip"]["ItemCount"] = true
@@ -108,5 +108,31 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Unitframe"]["EnhancedFrames"] = true
 	C["Unitframe"]["PercentHealth"] = true
 	C["Unitframe"]["SmoothBars"] = true
+
+end
+
+-- SWIVER PERSONAL CONFIG
+if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") then
+
+	C["ActionBar"]["BottomBars"] = 2
+	C["ActionBar"]["RightBars"] = 1
+	C["ActionBar"]["StanceBarHorizontal"] = false
+	C["ActionBar"]["ToggleMode"] = false
+
+	C["Announcements"]["Interrupt"] = true
+	C["Announcements"]["SaySapped"] = true
+
+	C["Automation"]["DeclineDuel"] = true
+	C["Automation"]["Resurrection"] = true
+	C["Automation"]["SellGreyRepair"] = true
+	C["Automation"]["TabBinder"] = true
+
+	C["Chat"]["Outline"] = true,
+	C["Chat"]["TabsMouseover"] = false
+	C["Chat"]["TabsOutline"] = true
+
+	C["Loot"]["AutoGreed"] = true
+
+	C["Misc"]["ItemLevel"] = true
 
 end
