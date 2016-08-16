@@ -5,7 +5,7 @@ local IsAddOnLoaded = IsAddOnLoaded
 local ReloadUI = ReloadUI
 local wipe = table.wipe
 
-if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") then
+if (K.Name == "Swiverr" or K.Name == "Swiver" or K.Name == "Swifer" or K.Name == "Swiferdan" or K.Name == "Swivers" or K.Name == "Swav" or K.Name == "Swivarr") and (K.Realm == "Stormreaver") then
 	local UploadAzCastBar = function()
 		if AzCastBar_Profiles then wipe(AzCastBar_Profiles) end
 		AzCastBar_Profiles = {
@@ -139,7 +139,7 @@ if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") th
 			},
 		}
 	end
-	
+
 	local UploadSUF = function()
 		if ShadowedUFDB then wipe(ShadowedUFDB) end
 		ShadowedUFDB = {
@@ -5796,7 +5796,7 @@ if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") th
 	end
 end
 
-if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") then return end
+if (K.Name == "Swiverr" or K.Name == "Swiver" or K.Name == "Swifer" or K.Name == "Swiferdan" or K.Name == "Swivers" or K.Name == "Swav" or K.Name == "Swivarr") and (K.Realm == "Stormreaver") then return end
 
 local UploadGrid = function()
 	if GridDB then wipe(GridDB) end
