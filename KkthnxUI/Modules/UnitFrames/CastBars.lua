@@ -25,7 +25,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 	if (addon ~= "KkthnxUI") then return end
 	if(InCombatLockdown() == false) then
 
-		-- Move Cast Bar
+		-- MOVE CAST BAR
 		CastingBarFrame:SetMovable(true)
 		CastingBarFrame:ClearAllPoints()
 		CastingBarFrame:SetScale(C.Unitframe.CastBarScale)
@@ -46,19 +46,19 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
 		CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
 
-		-- CastingBarFrame Icon
+		-- CASTINGBARFRAME ICON
 		CastingBarFrame.Icon:Show()
 		CastingBarFrame.Icon:ClearAllPoints()
 		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
 		CastingBarFrame.Icon:SetSize(20, 20)
 
-		-- Target Castbar
+		-- TARGET CASTBAR
 		TargetFrameSpellBar:ClearAllPoints()
 		TargetFrameSpellBar:SetScale(C.Unitframe.CastBarScale)
 		TargetFrameSpellBar:SetPoint("CENTER", TargetCastbarAnchor, "CENTER", 0, 0)
 		TargetFrameSpellBar.SetPoint = K.Noop
 
-		-- Castbar Timer
+		-- CASTBAR TIMER
 		CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
 		if C.Unitframe.Outline then
 			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
@@ -85,7 +85,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- Displays the Casting Bar timer
+-- DISPLAYS THE CASTING BAR TIMER
 CastingBarFrame:HookScript("OnUpdate", function(self, elapsed)
     if not self.timer then return end
 

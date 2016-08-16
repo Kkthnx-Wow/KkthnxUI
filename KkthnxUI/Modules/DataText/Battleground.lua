@@ -8,14 +8,18 @@ local GetNumBattlefieldScores = GetNumBattlefieldScores
 local GetCurrentMapAreaID = GetCurrentMapAreaID
 local IsInInstance = IsInInstance
 
--- BGScore(by Elv22, edited by Tukz)
--- Map IDs
+-- MAP IDS
 local WSG = 443
+local TP = 626
 local AV = 401
 local SOTA = 512
 local IOC = 540
 local EOTS = 482
+local TBFG = 736
 local AB = 461
+local TOK = 856
+local SSM = 860
+local DG = 935
 
 local classcolor = ("|cff%.2x%.2x%.2x"):format(K.Color.r * 255, K.Color.g * 255, K.Color.b * 255)
 
@@ -25,7 +29,7 @@ bgframe:EnableMouse(true)
 bgframe:SetScript("OnEnter", function(self)
 	local numScores = GetNumBattlefieldScores()
 	for i = 1, numScores do
-		local name, _, _, deaths, _, _, _, _, _, _, damageDone, healingDone = GetBattlefieldScore(i)
+		local name, _, honorableKills, deaths, _, _, _, _, _, damageDone, healingDone = GetBattlefieldScore(i)
 		if name and name == K.Name then
 			local curmapid = GetCurrentMapAreaID()
 			SetMapToCurrentZone()
@@ -39,11 +43,11 @@ bgframe:SetScript("OnEnter", function(self)
 			GameTooltip:AddDoubleLine(DEATHS..":", deaths, 1, 1, 1)
 			GameTooltip:AddDoubleLine(DAMAGE..":", damageDone, 1, 1, 1)
 			GameTooltip:AddDoubleLine(SHOW_COMBAT_HEALING..":", healingDone, 1, 1, 1)
-			-- Add extra statistics depending on what BG you are
-			if curmapid == IOC or curmapid == AB then
+			-- ADD EXTRA STATISTICS DEPENDING ON WHAT BG YOU ARE
+			if curmapid == IOC or curmapid == TBFG or curmapid == AB then
 				GameTooltip:AddDoubleLine(L_DATATEXT_BASESASSAULTED, GetBattlefieldStatData(i, 1), 1, 1, 1)
 				GameTooltip:AddDoubleLine(L_DATATEXT_BASESDEFENDED, GetBattlefieldStatData(i, 2), 1, 1, 1)
-			elseif curmapid == WSG or curmapid then
+			elseif curmapid == WSG or curmapid == TP then
 				GameTooltip:AddDoubleLine(L_DATATEXT_FLAGSCAPTURED, GetBattlefieldStatData(i, 1), 1, 1, 1)
 				GameTooltip:AddDoubleLine(L_DATATEXT_FLAGSRETURNED, GetBattlefieldStatData(i, 2), 1, 1, 1)
 			elseif curmapid == EOTS then
@@ -56,15 +60,23 @@ bgframe:SetScript("OnEnter", function(self)
 			elseif curmapid == SOTA then
 				GameTooltip:AddDoubleLine(L_DATATEXT_DEMOLISHERSDESTROYED, GetBattlefieldStatData(i, 1), 1, 1, 1)
 				GameTooltip:AddDoubleLine(L_DATATEXT_GATESDESTROYED, GetBattlefieldStatData(i, 2), 1, 1, 1)
+			elseif curmapid == TOK then
+				GameTooltip:AddDoubleLine(L_DATATEXT_ORB_POSSESSIONS, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L_DATATEXT_VICTORY_POINTS, GetBattlefieldStatData(i, 2), 1, 1, 1)
+			elseif curmapid == SSM then
+				GameTooltip:AddDoubleLine(L_DATATEXT_CARTS_CONTROLLED, GetBattlefieldStatData(i, 1), 1, 1, 1)
+			elseif curmapid == DG then
+				GameTooltip:AddDoubleLine(L_DATATEXT_CARTS_CONTROLLED, GetBattlefieldStatData(i, 1), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L_DATATEXT_BASESASSAULTED, GetBattlefieldStatData(i, 3), 1, 1, 1)
+				GameTooltip:AddDoubleLine(L_DATATEXT_BASESDEFENDED, GetBattlefieldStatData(i, 4), 1, 1, 1)
 			end
 			GameTooltip:Show()
 		end
 	end
 end)
-
 bgframe:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 bgframe:SetScript("OnMouseUp", function(self, button)
-	if MiniMapBattlefieldFrame:IsShown() then
+	if QueueStatusMinimapButton:IsShown() then
 		if button == "RightButton" then
 			ToggleBattlefieldMinimap()
 		else
@@ -78,16 +90,19 @@ Stat:EnableMouse(true)
 
 local Text1 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
 Text1:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+Text1:SetShadowOffset(0, 0)
 Text1:SetPoint("LEFT", 5, 0)
 Text1:SetHeight(C.Media.Font_Size)
 
 local Text2 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
 Text2:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+Text2:SetShadowOffset(0, 0)
 Text2:SetPoint("LEFT", Text1, "RIGHT", 5, 0)
 Text2:SetHeight(C.Media.Font_Size)
 
 local Text3 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
 Text3:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+Text3:SetShadowOffset(0, 0)
 Text3:SetPoint("LEFT", Text2, "RIGHT", 5, 0)
 Text3:SetHeight(C.Media.Font_Size)
 
@@ -99,7 +114,7 @@ local function Update(self, t)
 		RequestBattlefieldScoreData()
 		local numScores = GetNumBattlefieldScores()
 		for i = 1, numScores do
-			local name, killingBlows, _, _, honorGained, _, _, _, _, _, damageDone, healingDone = GetBattlefieldScore(i)
+			local name, killingBlows, _, _, honorGained, _, _, _, _, damageDone, healingDone = GetBattlefieldScore(i)
 			if healingDone > damageDone then
 				dmgtxt = (classcolor..SHOW_COMBAT_HEALING.." :|r "..K.ShortValue(healingDone))
 			else
@@ -115,7 +130,7 @@ local function Update(self, t)
 	end
 end
 
--- Hide text when not in an bg
+-- HIDE TEXT WHEN NOT IN AN BG
 local function OnEvent(self, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		local _, instanceType = IsInInstance()

@@ -2,7 +2,7 @@ local K, C, L, _ = select(2, ...):unpack()
 
 local GetAddOnInfo = GetAddOnInfo
 
--- Prevent users config errors
+-- PREVENT USERS CONFIG ERRORS
 if C.ActionBar.RightBars > 3 then
 	C.ActionBar.RightBars = 3
 end
@@ -46,7 +46,7 @@ if C.Unitframe.Enable == false then
 	C.Filger.Enable = false
 end
 
--- Auto-overwrite script config is X addon is found
+-- AUTO-OVERWRITE SCRIPT CONFIG IS X ADDON IS FOUND
 if (select(4, GetAddOnInfo("SexyMap"))) or (select(4, GetAddOnInfo("wMinimap"))) then
 	C.Minimap.Enable = false
 end
@@ -56,7 +56,7 @@ if (select(4, GetAddOnInfo("Stuf"))) or (select(4, GetAddOnInfo("PitBull4"))) or
 	C.Unitframe.EnhancedFrames = false
 end
 
-if (select(4, GetAddOnInfo("QuestHelper"))) then -- This is a temp fix until I figure out what to blacklist from shitty questhelper.
+if (select(4, GetAddOnInfo("QuestHelper"))) then -- THIS IS A TEMP FIX UNTIL I FIGURE OUT WHAT TO BLACKLIST FROM SHITTY QUESTHELPER.
 	C.Skins.MinimapButtons = false
 end
 

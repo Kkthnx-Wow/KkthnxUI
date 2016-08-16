@@ -110,34 +110,3 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Unitframe"]["SmoothBars"] = true
 
 end
-
--- SWIVER PERSONAL CONFIG
-if (K.Name == "Swiverr" or K.Name == "Swiver" or K.Name == "Swifer" or K.Name == "Swiferdan" or K.Name == "Swivers" or K.Name == "Swav" or K.Name == "Swivarr") and (K.Realm == "Stormreaver") then
-
-	C["Position"]["Quest"] = {"TOPLEFT", "UIParent", "TOPLEFT", 21, -2}
-	C["Position"]["PetHorizontal"] = {"RIGHT", "UIParent", "RIGHT", -42.4661254882813, -0.600280225276947}
-	C["Position"]["RightBars"] = {"RIGHT", "UIParent", "RIGHT", -4.06657457351685, -0.399972349405289}
-	C["Position"]["StanceBar"] = {"RIGHT", "UIParent", "RIGHT", -84.1996459960938, -0.999915540218353}
-	C["Position"]["PlayerBuffs"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -160.599853515625, -2.99996113777161}
-
-	C["ActionBar"]["BottomBars"] = 2
-	C["ActionBar"]["RightBars"] = 1
-	C["ActionBar"]["StanceBarHorizontal"] = false
-
-	C["Announcements"]["Interrupt"] = true
-	C["Announcements"]["SaySapped"] = true
-
-	C["Automation"]["DeclineDuel"] = true
-	C["Automation"]["Resurrection"] = true
-	C["Automation"]["SellGreyRepair"] = true
-	C["Automation"]["TabBinder"] = true
-
-	C["Chat"]["Outline"] = true
-	C["Chat"]["TabsMouseover"] = false
-	C["Chat"]["TabsOutline"] = true
-
-	C["Loot"]["AutoGreed"] = true
-
-	C["Misc"]["ItemLevel"] = true
-
-end

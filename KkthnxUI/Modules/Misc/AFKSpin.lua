@@ -1,4 +1,4 @@
-local K, C, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 if C.Misc.AFKCamera ~= true then return end
 
 local CAMERA_SPEED = 0.035

@@ -19,7 +19,7 @@ local SetCVar = SetCVar
 local UpdateAddOnCPUUsage, GetAddOnCPUUsage = UpdateAddOnCPUUsage, GetAddOnCPUUsage
 local debugprofilestart, debugprofilestop = debugprofilestart, debugprofilestop
 
--- Ready Check
+-- READY CHECK
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
 SLASH_RCSLASH1 = "/rc"
 
@@ -28,23 +28,23 @@ SlashCmdList.TICKET = function() ToggleHelpFrame() end
 SLASH_TICKET1 = "/gm"
 
 -- Fix The CombatLog.
-SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffffe02eCombatLog has been cleared & fixed.|r") end
+SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffff0000COMBATLOG HAS BEEN FIXED.|r") end
 SLASH_CLEARCOMBAT1 = "/clearcombat"
 SLASH_CLEARCOMBAT2 = "/clfix"
 
--- Here we can restart wow's engine. Could be use for sound issues and more.
+-- HERE WE CAN RESTART WOW'S ENGINE. COULD BE USE FOR SOUND ISSUES AND MORE.
 SlashCmdList.GFXENGINE = function() RestartGx() end
 SLASH_GFXENGINE1 = "/restartgfx"
 SLASH_GFXENGINE2 = "/fixgfx"
 
--- Clear all quests in questlog
+-- CLEAR ALL QUESTS IN QUESTLOG
 SlashCmdList.CLEARQUESTS = function()
 	for i = 1, GetNumQuestLogEntries() do SelectQuestLogEntry(i) SetAbandonQuest() AbandonQuest() end
 end
 SLASH_CLEARQUESTS1 = "/clearquests"
 SLASH_CLEARQUESTS2 = "/clquests"
 
--- KkthnxUI Help Commands
+-- KKTHNXUI HELP COMMANDS
 SlashCmdList.UIHELP = function()
 	for i, v in ipairs(L_SLASHCMD_HELP) do print("|cffffe02e"..("%s"):format(tostring(v)).."|r") end
 end
@@ -53,32 +53,49 @@ SLASH_UIHELP2 = "/helpui"
 SLASH_UIHELP3 = "/kkthnxui"
 
 SLASH_SCALE1 = "/uiscale"
-SlashCmdList["SCALE"] = function() 
+SlashCmdList["SCALE"] = function()
 	SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 end
 
 -- Disband party or raid (by Monolit)
-SlashCmdList["GROUPDISBAND"] = function()
-	SendChatMessage(L_INFO_DISBAND, "RAID" or "PARTY")
+function DisbandRaidGroup()
+	if InCombatLockdown() then return end
 	if UnitInRaid("player") then
-		for i = 1, GetNumRaidMembers() do
+		SendChatMessage(L_INFO_DISBAND, "RAID")
+		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
-			if online and name ~= K.Name then
+			if online and name ~= T.name then
 				UninviteUnit(name)
 			end
 		end
 	else
+		SendChatMessage(L_INFO_DISBAND, "PARTY")
 		for i = MAX_PARTY_MEMBERS, 1, -1 do
-			if GetPartyMember(i) then
+			if GetNumGroupMembers(i) then
 				UninviteUnit(UnitName("party"..i))
 			end
 		end
 	end
 	LeaveParty()
 end
+
+StaticPopupDialogs.DISBAND_RAID = {
+	text = L_POPUP_DISBAND_RAID,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = DisbandRaidGroup,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = true,
+	preferredIndex = 5,
+}
+
+SlashCmdList.GROUPDISBAND = function()
+	StaticPopup_Show("DISBAND_RAID")
+end
 SLASH_GROUPDISBAND1 = "/rd"
 
--- Enable LUA error by command
+-- ENABLE LUA ERROR BY COMMAND
 function SlashCmdList.LUAERROR(msg)
 	msg = lower(msg)
 	if(msg == "on") then
@@ -96,20 +113,23 @@ function SlashCmdList.LUAERROR(msg)
 end
 SLASH_LUAERROR1 = "/luaerror"
 
--- Convert party to raid
+-- CONVERT PARTY TO RAID
 SlashCmdList.PARTYTORAID = function()
-	if GetNumPartyMembers() > 0 then
-		if UnitInParty("player") and IsGroupLeader() then
+	if GetNumGroupMembers() > 0 then
+		if UnitInRaid("player") and IsGroupLeader() then
+			ConvertToParty()
+		elseif UnitInParty("player") and IsGroupLeader() then
 			ConvertToRaid()
 		end
 	else
-		K.Print("|cffffe02e"..ERR_NOT_IN_GROUP.."|r")
+		print("|cffffff00"..ERR_NOT_IN_GROUP.."|r")
 	end
 end
 SLASH_PARTYTORAID1 = "/toraid"
-SLASH_PARTYTORAID2 = "/convert"
+SLASH_PARTYTORAID2 = "/toparty"
+SLASH_PARTYTORAID3 = "/convert"
 
--- Instance teleport
+-- INSTANCE TELEPORT
 SlashCmdList.INSTTELEPORT = function()
 	local inInstance = IsInInstance()
 	if inInstance then
@@ -120,19 +140,24 @@ SlashCmdList.INSTTELEPORT = function()
 end
 SLASH_INSTTELEPORT1 = "/teleport"
 
--- Spec switching(by Monolit)
-SlashCmdList["SPEC"] = function()
-	local spec = GetActiveTalentGroup()
-	if spec == 1 then SetActiveTalentGroup(2) elseif spec == 2 then SetActiveTalentGroup(1) end
+-- SPEC SWITCHING(BY MONOLIT)
+SlashCmdList.SPEC = function(spec)
+	if K.Level >= SHOW_TALENT_LEVEL then
+		if GetSpecialization() ~= tonumber(spec) then
+			SetSpecialization(spec)
+		end
+	else
+		print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+	end
 end
 SLASH_SPEC1 = "/ss"
 SLASH_SPEC2 = "/spec"
 
--- Deadly Boss Mods Testing.
+-- DEADLY BOSS MODS TESTING.
 SlashCmdList.DBMTEST = function() if (select(4, GetAddOnInfo("DBM-Core"))) then DBM:DemoMode() end end
 SLASH_DBMTEST1 = "/dbmtest"
 
--- Clear Chat
+-- CLEAR CHAT
 SlashCmdList.CLEARCHAT = function(cmd)
 	cmd = cmd and strtrim(strlower(cmd))
 	for i = 1, NUM_CHAT_WINDOWS do
@@ -145,7 +170,7 @@ end
 SLASH_CLEARCHAT1 = "/cc"
 SLASH_CLEARCHAT2 = "/clearchat"
 
--- Test Blizzard Alert Frames
+-- TEST BLIZZARD ALERT FRAMES
 SlashCmdList.TEST_ACHIEVEMENT = function()
 	PlaySound("LFG_Rewards")
 	if (not AchievementFrame) then
@@ -156,7 +181,7 @@ SlashCmdList.TEST_ACHIEVEMENT = function()
 end
 SLASH_TEST_ACHIEVEMENT1 = "/testa"
 
--- Grid on screen
+-- GRID ON SCREEN
 local grid
 SlashCmdList.GRIDONSCREEN = function()
 	if grid then
@@ -213,7 +238,7 @@ local function BoostUI()
 	StaticPopup_Show("BOOST_UI_RELOAD")
 end
 
--- Add a warning so we do not piss people off.
+-- ADD A WARNING SO WE DO NOT PISS PEOPLE OFF.
 StaticPopupDialogs.BOOST_UI = {
 	text = L_POPUP_BOOSTUI,
 	button1 = ACCEPT,
@@ -223,7 +248,7 @@ StaticPopupDialogs.BOOST_UI = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 3,
+	preferredIndex = 5,
 }
 
 SLASH_BOOSTUI1 = "/boost"
@@ -238,5 +263,5 @@ StaticPopupDialogs.BOOST_UI_RELOAD = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
-	preferredIndex = 3,
+	preferredIndex = 5,
 }

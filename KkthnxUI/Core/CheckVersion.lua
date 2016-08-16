@@ -7,7 +7,7 @@ local GetNumPartyMembers = GetNumPartyMembers
 local GetNumRaidMembers = GetNumRaidMembers
 local CreateFrame = CreateFrame
 
---	Check outdated UI version
+-- CHECK OUTDATED UI VERSION
 local check = function(self, event, prefix, message, channel, sender)
 	if event == "CHAT_MSG_ADDON" then
 		if prefix ~= "KkthnxUIVersion" or sender == K.Name then return end
@@ -35,7 +35,7 @@ frame:RegisterEvent("CHAT_MSG_ADDON")
 frame:SetScript("OnEvent", check)
 RegisterAddonMessagePrefix("KkthnxUIVersion")
 
--- Whisper UI version
+-- WHISPER UI VERSION
 local Whisper = CreateFrame("Frame")
 Whisper:RegisterEvent("CHAT_MSG_Whisper")
 Whisper:RegisterEvent("CHAT_MSG_BN_Whisper")
