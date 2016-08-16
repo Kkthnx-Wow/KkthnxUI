@@ -143,10 +143,10 @@ if C.Unitframe.Enable == true then
 				FocusFrameTextureFrameLevelText,
 			}) do
 				if C.Unitframe.Outline then
-					LevelText:SetFont(C.Media.Font, C.Media.Font_Size + 1, C.Media.Font_Style)
+					LevelText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 					LevelText:SetShadowOffset(0, -0)
 				else
-					LevelText:SetFont(C.Media.Font, C.Media.Font_Size + 1)
+					LevelText:SetFont(C.Media.Font, C.Media.Font_Size)
 					LevelText:SetShadowOffset(K.Mult, -K.Mult)
 				end
 			end
@@ -154,18 +154,18 @@ if C.Unitframe.Enable == true then
 			-- PlayerFrame
 			hooksecurefunc("PlayerFrame_UpdateLevelTextAnchor", function(level)
 				if ( level >= 100 ) then
-					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -61, -16)
+					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -17)
 				else
-					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -62, -16)
+					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -17)
 				end
 			end)
 
 			-- TARGETFRAME
 			hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", function(self, targetLevel)
 				if ( targetLevel >= 100 ) then
-					self.levelText:SetPoint("CENTER", 62, -16)
+					self.levelText:SetPoint("CENTER", 63, -17)
 				else
-					self.levelText:SetPoint("CENTER", 62, -16)
+					self.levelText:SetPoint("CENTER", 63, -17)
 				end
 			end)
 
@@ -194,9 +194,6 @@ if C.Unitframe.Enable == true then
 			TargetFrame:SetUserPlaced(true)
 			TargetFrame:SetMovable(false)
 			TargetFrame.SetPoint = K.Noop
-
-			-- BUFFS ONTOP.
-			TargetFrame.buffsOnTop = true
 
 			-- TWEAK NAME BACKGROUND
 			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
@@ -266,7 +263,7 @@ if(InCombatLockdown() == false) then
 		end)
 	end
 
-	-- Class Color Bars
+	-- CLASS COLOR BARS
 	if C.Unitframe.ClassHealth == true then
 		local function colorHealthBar(statusbar, unit)
 			local _, class, color
@@ -303,6 +300,27 @@ if C.Unitframe.PvPIcon == true then
 	for i = 1, MAX_PARTY_MEMBERS do
 		_G["PartyMemberFrame"..i.."PVPIcon"]:Kill()
 	end
+end
+
+-- STOP RED FLASH RESTING
+for _, Textures in ipairs({
+	"PlayerAttackGlow",
+	"PetAttackModeTexture",
+	"PlayerRestGlow",
+	"PlayerStatusGlow",
+	"PlayerStatusTexture",
+	"PlayerAttackBackground"
+
+}) do
+	hooksecurefunc("PlayerFrame_UpdateStatus", function()
+		if IsResting("player") then
+			local Texture = _G[Textures]
+			if Texture then
+				Texture:Kill()
+				Texture.Show = K.Noop
+			end
+		end
+	end)
 end
 
 -- JUST BECAUSE I CAN

@@ -118,8 +118,7 @@ end
 
 function Plates:CreateAuraIcon(self)
 	local button = CreateFrame("Frame", nil, self.Health)
-	button:SetWidth(C.Nameplate.AuraSize)
-	button:SetHeight(C.Nameplate.AuraSize)
+	button:SetSize(C.Nameplate.AuraSize, C.Nameplate.AuraSize * 16/25)
 
 	button.shadow = CreateFrame("Frame", nil, button)
 	button.shadow:SetFrameLevel(0)
@@ -132,7 +131,7 @@ function Plates:CreateAuraIcon(self)
 	button.shadow:SetPoint("TOPLEFT", button, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	button.shadow:SetPoint("BOTTOMRIGHT", button, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
 	button.shadow:SetBackdropColor(.05, .05, .05, .9)
-	button.shadow:SetBackdropBorderColor(0, 0, 0, 1)
+	button.shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
 	button.bord = button:CreateTexture(nil, "BORDER")
 	button.bord:SetColorTexture(unpack(C.Media.Border_Color))
@@ -228,11 +227,6 @@ function Plates:GetColor()
 		if RAID_CLASS_COLORS[class].r == Red and RAID_CLASS_COLORS[class].g == Green and RAID_CLASS_COLORS[class].b == AltBlue then
 			self.isClass = true
 			self.isFriendly = false
-			if C.Nameplate.ClassIcons == true then
-				texcoord = CLASS_BUTTONS[class]
-				self.NewPlate.class.Glow:Show()
-				self.NewPlate.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
-			end
 			Red, Green, Blue = RAID_CLASS_COLORS[class].r, RAID_CLASS_COLORS[class].g, RAID_CLASS_COLORS[class].b
 			return Red, Green, Blue
 		end
@@ -258,15 +252,6 @@ function Plates:GetColor()
 		self.isFriendly = true
 	else
 		self.isFriendly = false
-	end
-
-	if C.Nameplate.ClassIcons == true then
-		if self.isClass == true then
-			self.NewPlate.class.Glow:Show()
-		else
-			self.NewPlate.class.Glow:Hide()
-		end
-		self.NewPlate.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
 	end
 
 	return Red, Green, Blue
@@ -366,11 +351,7 @@ function Plates:OnShow()
 		self.NewPlate.level:SetText(Level)
 	end
 
-	if C.Nameplate.ClassIcons == true and self.isClass == true then
-		self.NewPlate.level:SetPoint("RIGHT", self.NewPlate.Name, "LEFT", -2, 0)
-	else
-		self.NewPlate.level:SetPoint("RIGHT", self.NewPlate.Health, "LEFT", -2, 0)
-	end
+	self.NewPlate.level:SetPoint("RIGHT", self.NewPlate.Health, "LEFT", -2, 0)
 
 	if C.Nameplate.HealerIcon == true then
 		local name = self.NewPlate.Name:GetText()
@@ -627,20 +608,6 @@ function Plates:Skin(obj)
 		end
 	end
 
-	if C.Nameplate.ClassIcons == true then
-		NewPlate.class = NewPlate.Health:CreateTexture(nil, "OVERLAY")
-		NewPlate.class:SetPoint("TOPRIGHT", NewPlate.Health, "TOPLEFT", -8, K.NoScaleMult * 2)
-		NewPlate.class:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
-		NewPlate.class:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 11, (C.Nameplate.Height * 2 * K.NoScaleMult) + 11)
-
-		NewPlate.class.Glow = CreateFrame("Frame", nil, NewPlate.Health)
-		NewPlate.class.Glow:SetTemplate("Transparent")
-		NewPlate.class.Glow:SetScale(K.NoScaleMult)
-		NewPlate.class.Glow:SetAllPoints(NewPlate.class)
-		NewPlate.class.Glow:SetFrameLevel(NewPlate.Health:GetFrameLevel() -1 > 0 and NewPlate.Health:GetFrameLevel() -1 or 0)
-		NewPlate.class.Glow:Hide()
-	end
-
 	if C.Nameplate.HealerIcon == true then
 		NewPlate.HPHeal = NewPlate.Health:CreateFontString(nil, "OVERLAY")
 		NewPlate.HPHeal:SetFont(C.Media.Font, 32, C.Media.Font_Style)
@@ -845,10 +812,9 @@ local function FormatTime(s)
 	return format("%d", math.fmod(s, minute))
 end
 
-local function CreateAuraIcon(parent) -- FIX THIS
+local function CreateAuraIcon(parent)
 	local button = CreateFrame("Frame", nil, parent)
-	button:SetWidth(C.Nameplate.AuraSize)
-	button:SetHeight(C.Nameplate.AuraSize)
+	button:SetSize(C.Nameplate.AuraSize, C.Nameplate.AuraSize * 16/25)
 
 	button.shadow = CreateFrame("Frame", nil, button)
 	button.shadow:SetFrameLevel(0)
@@ -861,7 +827,7 @@ local function CreateAuraIcon(parent) -- FIX THIS
 	button.shadow:SetPoint("TOPLEFT", button, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	button.shadow:SetPoint("BOTTOMRIGHT", button, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
 	button.shadow:SetBackdropColor(.05, .05, .05, .9)
-	button.shadow:SetBackdropBorderColor(0, 0, 0, 1)
+	button.shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
 	button.bord = button:CreateTexture(nil, "BORDER")
 	button.bord:SetColorTexture(unpack(C.Media.Border_Color))
@@ -1293,11 +1259,7 @@ local function UpdateName(unitFrame)
 			unitFrame.level:SetText(level)
 		end
 
-		if C.Nameplate.ClassIcons == true and UnitIsPlayer(unitFrame.displayedUnit) then
-			unitFrame.level:SetPoint("RIGHT", unitFrame.name, "LEFT", -2, 0)
-		else
-			unitFrame.level:SetPoint("RIGHT", unitFrame.healthBar, "LEFT", -2, 0)
-		end
+		unitFrame.level:SetPoint("RIGHT", unitFrame.healthBar, "LEFT", -2, 0)
 
 		unitFrame.level:SetTextColor(r, g, b)
 

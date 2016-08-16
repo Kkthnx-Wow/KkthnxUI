@@ -116,27 +116,11 @@ hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", function(statusFrame,
 	end
 end)
 
-for _, Textures in ipairs({
-	"PlayerAttackGlow",
-	"PetAttackModeTexture",
-	"PlayerRestGlow",
-	"PlayerStatusGlow",
-	"PlayerStatusTexture",
-	"PlayerAttackBackground"
-
-}) do
-	local Texture = _G[Textures]
-	if Texture then
-		Texture:Hide()
-		Texture.Show = K.Noop
-	end
-end
-
 FocusFrameToT:ClearAllPoints()
 FocusFrameToT:SetPoint("CENTER", FocusFrame, "CENTER", 60, -45)
 
 --Names
-PlayerName:Hide()
+PlayerName:SetWidth(0.01)
 
 TargetFrame.name:ClearAllPoints()
 TargetFrame.name:SetPoint("CENTER", TargetFrame, "CENTER", -50, 35)

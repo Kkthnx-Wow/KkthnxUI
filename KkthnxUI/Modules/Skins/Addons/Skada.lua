@@ -1,15 +1,17 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Skins.Skada ~= true then return end
 
--- Skada skin
+-- SKADA SKIN
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event)
 	if not IsAddOnLoaded("Skada") then return end
 
+	SkadaBarWindowSkada.borderFrame:Kill()
+
 	local barmod = Skada.displays["bar"]
 
-	-- Used to strip unecessary options from the in-game config
+	-- USED TO STRIP UNECESSARY OPTIONS FROM THE IN-GAME CONFIG
 	local function StripOptions(options)
 		options.baroptions.args.barspacing = nil
 		options.titleoptions.args.texture = nil
@@ -35,7 +37,7 @@ frame:SetScript("OnEvent", function(self, event)
 		end
 	end
 
-	-- Override settings from in-game GUI
+	-- OVERRIDE SETTINGS FROM IN-GAME GUI
 	barmod.ApplySettings_ = barmod.ApplySettings
 	barmod.ApplySettings = function(self, win)
 		barmod.ApplySettings_(self, win)
@@ -43,26 +45,26 @@ frame:SetScript("OnEvent", function(self, event)
 		local skada = win.bargroup
 
 		local titlefont = CreateFont("TitleFont"..win.db.name)
-		titlefont:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
-		titlefont:SetShadowColor(0, 0)
+		titlefont:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		titlefont:SetShadowColor(0, 0, 0, 0)
 
 		if win.db.enabletitle then
 			skada.button:SetNormalFontObject(titlefont)
 			skada.button:SetBackdrop(nil)
-			skada.button:GetFontString():SetPoint("TOPLEFT", skada.button, "TOPLEFT", 1, -1)
+			skada.button:GetFontString():SetPoint("TOPLEFT", skada.button, "TOPLEFT", 2, -2)
 			skada.button:SetHeight(19)
 
 			if not skada.button.backdrop then
-				skada.button:CreateBackdrop()
+				skada.button:CreateBackdrop("Transparent")
 				skada.button.backdrop:SetPoint("TOPLEFT", win.bargroup.button, "TOPLEFT", -4, 4)
-				skada.button.backdrop:SetPoint("BOTTOMRIGHT", win.bargroup.button, "BOTTOMRIGHT", 4, 0)
+				skada.button.backdrop:SetPoint("BOTTOMRIGHT", win.bargroup.button, "BOTTOMRIGHT", 4, 3)
 			end
 
 			skada.button.bg = skada.button:CreateTexture(nil, "BACKGROUND")
-			skada.button.bg:SetTexture(C.Media.Blank)
-			skada.button.bg:SetVertexColor(unpack(C.Media.Backdrop_Color))
+			skada.button.bg:SetTexture(C.Media.Texture)
+			skada.button.bg:SetVertexColor(unpack(C.Media.Border_Color))
 			skada.button.bg:SetPoint("TOPLEFT", win.bargroup.button, "TOPLEFT", 0, 0)
-			skada.button.bg:SetPoint("BOTTOMRIGHT", win.bargroup.button, "BOTTOMRIGHT", 0, 2)
+			skada.button.bg:SetPoint("BOTTOMRIGHT", win.bargroup.button, "BOTTOMRIGHT", 0, 7)
 		end
 
 		skada:SetTexture(C.Media.Texture)
@@ -75,10 +77,10 @@ frame:SetScript("OnEvent", function(self, event)
 			for i, v in pairs(win.bargroup:GetBars()) do
 				if not v.BarStyled then
 					if not v.backdrop then
-						v:CreateBackdrop()
+						v:CreateBackdrop("Transparent")
 					end
 
-					v:SetHeight(14)
+					v:SetHeight(12)
 
 					v.label:ClearAllPoints()
 					v.label.ClearAllPoints = K.Noop
@@ -103,7 +105,7 @@ frame:SetScript("OnEvent", function(self, event)
 					v.BarStyled = true
 				end
 				if v.icon and v.icon:IsShown() then
-					v.backdrop:SetPoint("TOPLEFT", -14, 2)
+					v.backdrop:SetPoint("TOPLEFT", -14, 4)
 					v.backdrop:SetPoint("BOTTOMRIGHT", 4, -4)
 				else
 					v.backdrop:SetPoint("TOPLEFT", -4, 4)
@@ -113,7 +115,15 @@ frame:SetScript("OnEvent", function(self, event)
 		end
 	end)
 
-	-- Update pre-existing displays
+	hooksecurefunc(Skada, "OpenReportWindow", function(self)
+		if not self.ReportWindow.frame.reskinned then
+			self.ReportWindow.frame:StripTextures()
+			self.ReportWindow.frame:SetTemplate("Transparent")
+			self.ReportWindow.frame.reskinned = true
+		end
+	end)
+
+	-- UPDATE PRE-EXISTING DISPLAYS
 	for _, window in ipairs(Skada:GetWindows()) do
 		window:UpdateDisplay()
 	end

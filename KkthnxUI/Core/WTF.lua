@@ -984,6 +984,7 @@ local UploadSkada = function()
 	SkadaDB = {
 		["profileKeys"] = {
 			["Kkthnx - Lordaeron"] = "Default",
+			["Pervie - Stormreaver"] = "Default",
 		},
 		["profiles"] = {
 			["Default"] = {
@@ -991,23 +992,27 @@ local UploadSkada = function()
 					{
 						["barheight"] = 14,
 						["barmax"] = 5,
-						["scale"] = 1,
 						["barslocked"] = true,
 						["background"] = {
-							["height"] = 132,
 							["color"] = {
 								["a"] = 0,
 							},
+							["height"] = 132,
 						},
+						["y"] = 0,
+						["mode"] = "DPS",
+						["point"] = "BOTTOMRIGHT",
 						["barwidth"] = 217,
 						["barspacing"] = 7,
-						["y"] = 119.0008345294831,
-						["x"] = -387.0000836375939,
+						["x"] = -340,
 						["title"] = {
+							["bordercolor"] = {
+								["a"] = 0,
+							},
+							["fontsize"] = 12,
+							["fontflags"] = "OUTLINE",
 							["height"] = 13,
 						},
-						["point"] = "BOTTOMRIGHT",
-						["enabletitle"] = false,
 					}, -- [1]
 				},
 				["showranks"] = false,

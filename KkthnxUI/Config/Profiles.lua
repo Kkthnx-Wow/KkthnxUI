@@ -48,7 +48,7 @@ if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
 end
 
 -- KKTHNX PERSONAL CONFIG
-if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx") and (K.Realm == "Stormreaver") then
+if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 
 	C["ActionBar"]["BottomBars"] = 2
 	C["ActionBar"]["EquipBorder"] = true

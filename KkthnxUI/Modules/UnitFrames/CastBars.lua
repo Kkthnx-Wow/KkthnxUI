@@ -49,8 +49,8 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		-- CastingBarFrame Icon
 		CastingBarFrame.Icon:Show()
 		CastingBarFrame.Icon:ClearAllPoints()
-		CastingBarFrame.Icon:SetSize(20, 20)
 		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
+		CastingBarFrame.Icon:SetSize(20, 20)
 
 		-- Target Castbar
 		TargetFrameSpellBar:ClearAllPoints()
@@ -67,7 +67,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2)
 			CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
 		end
-		CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -12, 1)
+		CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
 		CastingBarFrame.update = 0.1
 
 		TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
@@ -78,7 +78,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 			TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
 			TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
 		end
-		TargetFrameSpellBar.timer:SetPoint("LEFT", TargetFrameSpellBar, "RIGHT", 8, 2)
+		TargetFrameSpellBar.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -8, 0)
 		TargetFrameSpellBar.update = 0.1
 
 		self:UnregisterEvent("ADDON_LOADED")
@@ -86,23 +86,19 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 end)
 
 -- Displays the Casting Bar timer
-local function CastingBarFrame_OnUpdate(self, elapsed)
-	if(not self.timer) then
-		return
-	end
-	if(self.update) and (self.update < elapsed) then
-		if(self.casting) then
-			self.timer:SetText(format("%2.1f / %1.1f", max(self.maxValue - self.value, 0), self.maxValue))
-		elseif(self.channeling) then
-			self.timer:SetText(format("%.1f", max(self.value, 0)))
-		else
-			self.timer:SetText("")
-		end
-		self.update = 0.1
-	else
-		self.update = self.update - elapsed
-	end
-end
+CastingBarFrame:HookScript("OnUpdate", function(self, elapsed)
+    if not self.timer then return end
 
-CastingBarFrame:HookScript("OnUpdate", CastingBarFrame_OnUpdate)
-TargetFrameSpellBar:HookScript("OnUpdate", CastingBarFrame_OnUpdate)
+    if (self.update and self.update < elapsed) then
+        if (self.casting) then
+            self.timer:SetText(format("%.1f", max(self.maxValue - self.value, 0)))
+        elseif (self.channeling) then
+            self.timer:SetText(format("%.1f", max(self.value, 0)))
+        else
+            self.timer:SetText("")
+        end
+        self.update = 0.1
+    else
+        self.update = self.update - elapsed
+    end
+end)
