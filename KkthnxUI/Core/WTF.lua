@@ -5,6 +5,140 @@ local IsAddOnLoaded = IsAddOnLoaded
 local ReloadUI = ReloadUI
 local wipe = table.wipe
 
+local UploadAzCastBar = function()
+	if AzCastBar_Profiles then wipe(AzCastBar_Profiles) end
+	AzCastBar_Profiles = {
+		["Swiver"] = {
+			["Player"] = {
+				["mergeTrade"] = false,
+				["bottom"] = 87.5330123901367,
+				["showSpellTarget"] = false,
+				["showRank"] = false,
+				["width"] = 216,
+				["colSafezone"] = {
+					0.3, -- [1]
+					0.8, -- [2]
+					0.3, -- [3]
+					0.6, -- [4]
+				},
+				["colInterrupt"] = {
+					1, -- [1]
+					0.75, -- [2]
+					0.5, -- [3]
+				},
+				["colFailed"] = {
+					1, -- [1]
+					0.5, -- [2]
+					0.5, -- [3]
+				},
+				["safeZone"] = false,
+				["colNonInterruptable"] = {
+					0.78, -- [1]
+					0.82, -- [2]
+					0.86, -- [3]
+				},
+				["colNormal"] = {
+					0.4, -- [1]
+					0.6, -- [2]
+					0.8, -- [3]
+				},
+				["left"] = 773.400451660156,
+			},
+			["optionsLeft"] = 267.999603271484,
+			["Focus"] = {
+				["bottom"] = 281.000061035156,
+				["showRank"] = false,
+				["width"] = 100,
+				["colInterrupt"] = {
+					1, -- [1]
+					0.75, -- [2]
+					0.5, -- [3]
+				},
+				["colNormal"] = {
+					0.4, -- [1]
+					0.6, -- [2]
+					0.8, -- [3]
+				},
+				["iconAnchor"] = "NONE",
+				["colNonInterruptable"] = {
+					0.78, -- [1]
+					0.82, -- [2]
+					0.86, -- [3]
+				},
+				["left"] = 1199.93371582031,
+				["colFailed"] = {
+					1, -- [1]
+					0.5, -- [2]
+					0.5, -- [3]
+				},
+			},
+			["Target"] = {
+				["colNormal"] = {
+					0.4, -- [1]
+					0.6, -- [2]
+					0.8, -- [3]
+				},
+				["colInterrupt"] = {
+					1, -- [1]
+					0.75, -- [2]
+					0.5, -- [3]
+				},
+				["colFailed"] = {
+					1, -- [1]
+					0.5, -- [2]
+					0.5, -- [3]
+				},
+				["bottom"] = 115.666374206543,
+				["left"] = 773.400329589844,
+				["colNonInterruptable"] = {
+					0.78, -- [1]
+					0.82, -- [2]
+					0.86, -- [3]
+				},
+				["showRank"] = false,
+				["width"] = 216,
+			},
+			["optionsBottom"] = 321.19970703125,
+			["Pet"] = {
+				["colNormal"] = {
+					0.4, -- [1]
+					0.6, -- [2]
+					0.8, -- [3]
+				},
+				["colInterrupt"] = {
+					1, -- [1]
+					0.75, -- [2]
+					0.5, -- [3]
+				},
+				["colFailed"] = {
+					1, -- [1]
+					0.5, -- [2]
+					0.5, -- [3]
+				},
+				["bottom"] = 30.0660934448242,
+				["left"] = 1255.93383789063,
+				["colNonInterruptable"] = {
+					0.78, -- [1]
+					0.82, -- [2]
+					0.86, -- [3]
+				},
+				["showRank"] = false,
+				["width"] = 180,
+			},
+			["Mirror"] = {
+				["enabled"] = false,
+				["colNormal"] = {
+					0.4, -- [1]
+					0.6, -- [2]
+					0.8, -- [3]
+				},
+				["left"] = 751.000122070313,
+				["bottom"] = 851.133239746094,
+			},
+		},
+	}
+end
+
 local UploadSUF = function()
 	if ShadowedUFDB then wipe(ShadowedUFDB) end
 	ShadowedUFDB = {
@@ -7051,6 +7185,13 @@ SlashCmdList.SETTINGS = function(msg)
 		else
 			K.Print("ShadowedUnitFrames".."|cffffe02e"..L_INFO_NOT_INSTALLED)
 		end
+	elseif msg == "azcb" then
+		if (select(4, GetAddOnInfo("AzCastBar"))) then
+			UploadAzCastBar()
+			ReloadUI()
+		else
+			K.Print("ShadowedUnitFrames".."|cffffe02e"..L_INFO_NOT_INSTALLED)
+		end
 	elseif msg == "threatplates" then
 		if (select(4, GetAddOnInfo("TidyPlates_ThreatPlates"))) then
 			UploadThreatPlates()
@@ -7133,6 +7274,7 @@ SlashCmdList.SETTINGS = function(msg)
 	else
 		print("|cffffe02e"..L_INFO_SETTINGS_ALL.."|r")
 		print("|cffffe02e"..L_INFO_SETTINGS_SUF.."|r")
+		print("|cffffe02e"..L_INFO_SETTINGS_AZCB.."|r")
 		print("|cffffe02e"..L_INFO_SETTINGS_BT4.."|r")
 		print("|cffffe02e"..L_INFO_SETTINGS_BUTTONFACADE.."|r")
 		print("|cffffe02e"..L_INFO_SETTINGS_CHATCONSOLIDATE.."|r")
