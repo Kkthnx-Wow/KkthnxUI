@@ -18,7 +18,6 @@ C["Position"] = {
 	["MinimapButtons"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -4, 1},
 	["PetHorizontal"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167},
 	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 4},
-	["PowerBar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 130},
 	["PulseCD"] = {"CENTER", "UIParent", "CENTER", 0, 0},
 	["Quest"] = {"TOPRIGHT", "UIParent", -210, -220},
 	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
