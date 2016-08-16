@@ -127,7 +127,7 @@ if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") th
 	C["Automation"]["SellGreyRepair"] = true
 	C["Automation"]["TabBinder"] = true
 
-	C["Chat"]["Outline"] = true,
+	C["Chat"]["Outline"] = true
 	C["Chat"]["TabsMouseover"] = false
 	C["Chat"]["TabsOutline"] = true
 
