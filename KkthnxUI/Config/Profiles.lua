@@ -117,7 +117,6 @@ if (K.Name == "Swiverr" or K.Name == "Swiver") and (K.Realm == "Stormreaver") th
 	C["ActionBar"]["BottomBars"] = 2
 	C["ActionBar"]["RightBars"] = 1
 	C["ActionBar"]["StanceBarHorizontal"] = false
-	C["ActionBar"]["ToggleMode"] = false
 
 	C["Announcements"]["Interrupt"] = true
 	C["Announcements"]["SaySapped"] = true
