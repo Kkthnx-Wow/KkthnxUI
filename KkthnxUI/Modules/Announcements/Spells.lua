@@ -14,7 +14,8 @@ local UnitGUID = UnitGUID
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 frame:SetScript("OnEvent", function(self, _, ...)
-	local _, event, sourceGUID, sourceName, _, _, destName, _, spellID = ...
+	--local _, event, sourceGUID, sourceName, _, _, destName, _, spellID = ...
+	local _, event, _, sourceGUID, sourceName, _, _, _, destName, _, _, spellID = ...
 	local spells = K.AnnounceSpells
 	if not (inInstance and (instanceType == "raid" or instanceType == "party")) then return end
 

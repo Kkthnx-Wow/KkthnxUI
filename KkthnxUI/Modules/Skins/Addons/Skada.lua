@@ -7,8 +7,6 @@ frame:RegisterEvent("PLAYER_LOGIN")
 frame:SetScript("OnEvent", function(self, event)
 	if not IsAddOnLoaded("Skada") then return end
 
-	SkadaBarWindowSkada.borderFrame:Kill()
-
 	local barmod = Skada.displays["bar"]
 
 	-- USED TO STRIP UNECESSARY OPTIONS FROM THE IN-GAME CONFIG
@@ -70,6 +68,7 @@ frame:SetScript("OnEvent", function(self, event)
 		skada:SetTexture(C.Media.Texture)
 		skada:SetSpacing(7)
 		skada:SetBackdrop(nil)
+		skada.borderFrame:SetBackdrop(nil)
 	end
 
 	hooksecurefunc(Skada, "UpdateDisplay", function(self)

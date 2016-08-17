@@ -12,7 +12,7 @@ local MiniMapInstanceDifficulty = MiniMapInstanceDifficulty
 local North = _G["MinimapNorthTag"]
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
 
--- Minimap border
+-- MINIMAP BORDER
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
 MinimapAnchor:CreatePanel("ClassColor", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
 
@@ -61,7 +61,7 @@ MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 
 -- MAIL
 Mail:ClearAllPoints()
-Mail:SetPoint("TOPRIGHT", Minimap, 6, 10)
+Mail:SetPoint("TOPRIGHT", 12, 29)
 Mail:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 Mail:SetScale(1.2)
 MailBorder:Hide()
@@ -78,9 +78,9 @@ MiniMapInstanceDifficulty:SetParent(Minimap)
 MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 
 -- GUILD INSTANCE DIFFICULTY ICON
-GuildInstanceDifficulty:SetParent(Minimap)
 GuildInstanceDifficulty:ClearAllPoints()
-GuildInstanceDifficulty:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, 2)
+GuildInstanceDifficulty:SetParent(Minimap)
+GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 GuildInstanceDifficulty:SetScale(0.75)
 
 -- CHALLENGE MODE ICON
@@ -90,9 +90,7 @@ MiniMapChallengeMode:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -2)
 MiniMapChallengeMode:SetScale(0.75)
 
 -- INVITES ICON
-GameTimeCalendarInvitesTexture:ClearAllPoints()
-GameTimeCalendarInvitesTexture:SetParent(Minimap)
-GameTimeCalendarInvitesTexture:SetPoint("BOTTOM", 0, 5)
+GameTimeCalendarInvitesTexture:SetParent("Minimap")
 
 -- DEFAULT LFG ICON
 LFG_EYE_TEXTURES.raid = LFG_EYE_TEXTURES.default
@@ -128,11 +126,11 @@ HelpOpenTicketButton:SetSize(16, 16)
 
 -- ENABLE MOUSE SCROLLING
 Minimap:EnableMouseWheel(true)
-Minimap:SetScript("OnMouseWheel", function(self, d)
-	if d > 0 then
-		_G.MinimapZoomIn:Click()
-	elseif d < 0 then
-		_G.MinimapZoomOut:Click()
+Minimap:SetScript("OnMouseWheel", function(self, delta)
+	if (delta > 0) then
+		MinimapZoomIn:Click()
+	elseif (delta < 0) then
+		MinimapZoomOut:Click()
 	end
 end)
 
@@ -159,6 +157,23 @@ TimeManagerClockButton:SetScript("OnClick", function(self, button)
 		ToggleCalendar()
 	end
 end)
+
+SlashCmdList["CALENDAR"] = function()
+	ToggleCalendar()
+end
+SLASH_CALENDAR1 = "/cl"
+SLASH_CALENDAR2 = "/calendar"
+
+local Calendar = CreateFrame("Frame", nil, Minimap)
+GameTimeFrame:HookScript("OnShow", Calendar.Show)
+GameTimeFrame:SetScript("OnEvent", function(self, event, addon)
+end)
+
+if CalendarGetNumPendingInvites() ~= 0 then
+	ClockTime:SetTextColor(.67, .35, .35)
+else
+	ClockTime:SetTextColor(255/255, 255/255, 255/255)
+end
 
 -- FOR OTHERS MODS WITH A MINIMAP BUTTON, SET MINIMAP BUTTONS POSITION IN SQUARE MODE
 function GetMinimapShape() return "SQUARE" end

@@ -220,9 +220,6 @@ function GameTooltip_UnitColor(unit)
 		local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
 		if color then
 			r, g, b = color.r, color.g, color.b
-			GameTooltip:SetBackdropBorderColor(r, g, b)
-			HealthBarBG:SetBackdropBorderColor(r, g, b)
-			HealthBar:SetStatusBarColor(r, g, b)
 		else
 			r, g, b = 1, 1, 1
 		end
@@ -232,9 +229,6 @@ function GameTooltip_UnitColor(unit)
 		local reaction = BETTER_FACTION_BAR_COLORS[UnitReaction(unit, "player")]
 		if reaction then
 			r, g, b = reaction.r, reaction.g, reaction.b
-			GameTooltip:SetBackdropBorderColor(r, g, b)
-			HealthBarBG:SetBackdropBorderColor(r, g, b)
-			HealthBar:SetStatusBarColor(r, g, b)
 		else
 			r, g, b = 1, 1, 1
 		end
