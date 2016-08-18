@@ -27,7 +27,6 @@ end
 function EnhancedFrames:PLAYER_ENTERING_WORLD()
 
 	EnableEnhancedFrames()
-	--EnableEnhancedPartyFrames()
 end
 
 function EnableEnhancedFrames()

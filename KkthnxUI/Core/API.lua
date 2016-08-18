@@ -11,7 +11,13 @@ local borderr, borderg, borderb = unpack(C.Media.Border_Color)
 local backdropa = 0.8
 local bordera = 1
 
-K.Mult = 768 / match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
+local Mult = 768 / string.match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
+local Scale = function(x)
+	return Mult * math.floor(x / Mult + 0.5)
+end
+
+K.Scale = function(x) return Scale(x) end
+K.Mult = Mult
 K.NoScaleMult = K.Mult * C.General.UIScale
 
 local function SetOutside(obj, anchor, xOffset, yOffset)

@@ -1,4 +1,4 @@
-local K, C, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 
 local format = string.format
 local match = string.match
@@ -8,7 +8,7 @@ local GetCVar = GetCVar
 local SetCVar = SetCVar
 
 if (C.General.AutoScale) then
-    C.General.UIScale = min(2, max(0.64, 768 / match(K.Resolution, "%d+x(%d+)")))
+    C.General.UIScale = min(2, max(0.32, 768 / string.match(K.Resolution, "%d+x(%d+)")))
 end
 
 local function NeedReloadUI()
@@ -18,38 +18,34 @@ local function NeedReloadUI()
 	local NewRatio = x / y
 	local OldReso = K.Resolution
 	local NewReso = x.."x"..y
-	
+
 	if (OldRatio == NewRatio) and (OldReso ~= NewReso) then
 		ReloadUI()
 	end
 end
 
--- PixelPerfect Script for KkthnxUI.
+-- PIXELPERFECT SCRIPT FOR KKTHNXUI.
 local PixelPerfect = CreateFrame("Frame")
 PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
 PixelPerfect:SetScript("OnEvent", function(self, event)
-	-- Enable UIScale for KkthnxUI
+	-- ENABLE UISCALE FOR KKTHNXUI
 	local UseUIScale = GetCVar("useUiScale")
 	if (UseUIScale ~= "1") then
 		SetCVar("useUiScale", 1)
 	end
 
-	-- UIScale Security
-	if C.General.UIScale > 1.0 then C.General.UIScale = 1.0 end
-	if C.General.UIScale < 0.64 then C.General.UIScale = 0.64 end
-
-	-- Set our new UIScale now if it doesn"t match Blizzard saved UIScale.
+	-- SET OUR NEW UISCALE NOW IF IT DOESN"T MATCH BLIZZARD SAVED UISCALE.
 	if (format("%.2f", GetCVar("uiScale")) ~= format("%.2f", C.General.UIScale)) then
-		-- Set new UIScale
+		-- SET NEW UISCALE
 		SetCVar("uiScale", C.General.UIScale)
 	end
 
-	-- Allow 4K and WQHD Resolution to have an UIScale lower than 0.64, which is
-	-- the lowest value of UIParent scale by default
-	if C.General.UIScale < 0.64 then
+	-- ALLOW 4K AND WQHD RESOLUTION TO HAVE AN UISCALE LOWER THAN 0.64, WHICH IS
+	-- THE LOWEST VALUE OF UIPARENT SCALE BY DEFAULT
+	if (C.General.UIScale < 0.64) then
 		UIParent:SetScale(C.General.UIScale)
 	end
-	
+
 	VideoOptionsFrameOkay:HookScript("OnClick", NeedReloadUI)
 	VideoOptionsFrameApply:HookScript("OnClick", NeedReloadUI)
 
