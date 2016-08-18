@@ -1954,7 +1954,7 @@ C["filger_spells"] = {
 			-- Avenging Wrath
 			{spellID = 31884, filter = "CD"},
 			-- Ardent Defender
-			{spellID = 31850, filter = "CD"},
+			-- {spellID = 31850, filter = "CD"},
 			-- Blessing of Protection
 			{spellID = 1022, filter = "CD"},
 

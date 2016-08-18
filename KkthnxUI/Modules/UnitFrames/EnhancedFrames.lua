@@ -73,8 +73,7 @@ function EnhancedFrames_Style_PlayerFrame()
 		PlayerName:SetWidth(0.01)
 
 		PlayerFrameHealthBar.capNumericDisplay = true
-		PlayerFrameHealthBar:SetWidth(119)
-		PlayerFrameHealthBar:SetHeight(29)
+		PlayerFrameHealthBar:SetSize(119, 29)
 		PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
 		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
 	end
@@ -92,8 +91,7 @@ function EnhancedFrames_Style_TargetFrame(self)
 		self.deadText:SetPoint("CENTER", -50, 4)
 		self.Background:SetPoint("TOPLEFT", 7, -41)
 	else
-		self.name:ClearAllPoints()
-		self.name:SetPoint("CENTER", TargetFrame, "CENTER", -50, 35)
+		self.name:SetPoint("TOPLEFT", 16, -10)
 
 		self.healthbar:SetHeight(29)
 		self.healthbar:SetPoint("TOPLEFT", 7, -22)
