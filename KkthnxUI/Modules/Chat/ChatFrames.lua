@@ -255,6 +255,16 @@ local function SetupChatPosAndFont(self)
 			chat:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 		end
 
+		-- REPOSITION BATTLE.NET POPUP OVER CHAT #1
+		BNToastFrame:HookScript("OnShow", function(self)
+			self:ClearAllPoints()
+			self:SetPoint(unpack(C.Position.BnetPopup))
+		end)
+
+		if not self:IsMovable() then
+			return
+		end
+
 		-- FORCE CHAT POSITION
 		if i == 1 then
 			chat:ClearAllPoints()
@@ -272,12 +282,6 @@ local function SetupChatPosAndFont(self)
 			end
 		end
 	end
-
-	-- REPOSITION BATTLE.NET POPUP OVER CHAT #1
-	BNToastFrame:HookScript("OnShow", function(self)
-		self:ClearAllPoints()
-		self:SetPoint(unpack(C.Position.BnetPopup))
-	end)
 end
 
 local UIChat = CreateFrame("Frame")
