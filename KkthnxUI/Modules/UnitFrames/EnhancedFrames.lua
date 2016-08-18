@@ -2,16 +2,13 @@ local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.EnhancedFrames ~= true then return end
 
 local _G = _G
-local tostring = tostring
-local tonumber = tonumber
-local ceil = math.ceil
-local IsResting = IsResting
+
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
+local GetCVar = GetCVar
 local EnhancedFrames = CreateFrame("Frame")
-local EnhancedPartyFrames = CreateFrame("Frame")
 
 local shorts = {
 	{ 1e10, 1e9, "%.0fB" }, -- 10b+ as 12B
@@ -26,7 +23,7 @@ for i = 1, #shorts do
 	shorts[i][4] = shorts[i][3] .. " (%.0f%%)"
 end
 
--- Event listener to make sure we enable the addon at the right time
+-- EVENT LISTENER TO MAKE SURE WE ENABLE THE ADDON AT THE RIGHT TIME
 function EnhancedFrames:PLAYER_ENTERING_WORLD()
 
 	EnableEnhancedFrames()
@@ -50,7 +47,7 @@ function EnableEnhancedFrames()
 
 	-- BOSSFRAME HOOKS
 	hooksecurefunc("BossTargetFrame_OnLoad", EnhancedFrames_BossTargetFrame_Style)
-	
+
 	hooksecurefunc("PartyMemberFrame_ToPlayerArt", EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt)
 	hooksecurefunc("PartyMemberFrame_ToVehicleArt", EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt)
 
@@ -225,12 +222,12 @@ function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 end
 
 -- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
+-- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
 function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 	if not InCombatLockdown() then
-		PartyMemberFrame1VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		PartyMemberFrame2VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		PartyMemberFrame3VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		PartyMemberFrame4VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
+		for i = 1, 4 do
+			_G["PartyMemberFrame"..i.."VehicleTexture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
+		end
 	end
 end
 
@@ -241,64 +238,3 @@ function EnhancedFrames_StartUp(self)
 end
 
 EnhancedFrames_StartUp(EnhancedFrames)
---EnhancedPartyFrames_StartUp(EnhancedPartyFrames)
-
---[[
-----------------------------------------------------------------------
--- HERE TO START OUR PARTYFRAMES. WE SHOULD MERGE ALL THIS CODE LATER.
-----------------------------------------------------------------------
-
--- EVENT LISTENER TO MAKE SURE WE ENABLE THE ADDON AT THE RIGHT TIME
-function EnhancedPartyFrames:PLAYER_ENTERING_WORLD()
-	EnableEnhancedPartyFrames()
-end
-
--- HOOKING GAME FUNCTIONS AND SETTING THEM TO FIRE ADDON FUNCTION
-function EnableEnhancedPartyFrames()
-	hooksecurefunc("PartyMemberFrame_ToPlayerArt", EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt)
-	hooksecurefunc("PartyMemberFrame_ToVehicleArt", EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt)
-end
-
--- STYLE - PARTY MEMEBER FRAME STYLE CHANGES
-function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
-	if not InCombatLockdown() then
-		for i = 1, MAX_PARTY_MEMBERS do
-			_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
-
-			_G["PartyMemberFrame"..i.."Name"]:SetPoint("TOP", 0, 20)
-			_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, 10)
-
-			_G["PartyMemberFrame"..i.."Texture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrame")
-			_G["PartyMemberFrame"..i.."Texture"]:SetPoint("TOPLEFT", 0, 6)
-
-			_G["PartyMemberFrame"..i.."Flash"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrameFlash")
-			_G["PartyMemberFrame"..i.."Flash"]:SetPoint("TOPLEFT", 0, 6)
-
-			_G["PartyMemberFrame"..i.."HealthBar"]:SetPoint("TOPLEFT", 47, -3)
-			_G["PartyMemberFrame"..i.."HealthBar"]:SetHeight(17)
-
-			_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 46, -3)
-			_G["PartyMemberFrame"..i.."Background"]:SetSize(70, 24)
-			_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 47, -3)
-		end
-	end
-end
-
--- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
-function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
-	if not InCombatLockdown() then
-		PartyMemberFrame1VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		PartyMemberFrame2VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		PartyMemberFrame3VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		PartyMemberFrame4VehicleTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-	end
-end
-
--- BOOTSTRAP
-function EnhancedPartyFrames_StartUp(self)
-	self:SetScript("OnEvent", function(self, event) self[event](self) end)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-end
-
-EnhancedPartyFrames_StartUp(EnhancedPartyFrames)
-]]--

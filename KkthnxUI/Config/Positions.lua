@@ -3,7 +3,7 @@ local K, C, L = select(2, ...):unpack()
 -- IF YOU'RE SAVING FRAME POSITIONS, USE "UIPARENT", NOT UIPARENT
 C["Position"] = {
 	["AltPowerBar"] = {"TOP", "UIParent", "TOP", 0, -100},
-	["Achievements"] = {"TOP", "UIParent", "TOP", 0, -22},
+	["Alerts"] = {"TOP", "UIParent", "TOP", 0, -22},
 	["BGScore"] = {"BOTTOMLEFT", "ActionButton12", "BOTTOMRIGHT", 10, 0},
 	["Bag"] = {"RIGHT", "UIParent", "RIGHT", -140, -20},
 	["Bank"] = {"LEFT", "UIParent", "LEFT", 23, 150},
@@ -29,7 +29,7 @@ C["Position"] = {
 	["Vehicle"] = {"TOP", "Minimap", "BOTTOM", 0, -18},
 	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
 	["TalkingHead"] = {"TOP", "UIParent", "TOP", 0, -21},
-	-- UnitFrame positions
+	-- UNITFRAME POSITIONS
 	UnitFrames = {
 		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
 		["Focus"] = {"BOTTOM", "PlayerFrame", "TOP", 0, 60},
@@ -38,7 +38,7 @@ C["Position"] = {
 		["Target"] = {"BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 9, 175},
 		["TargetCastBar"] = {"BOTTOM", "CastingBarFrame", "TOP", 0, 21},
 	},
-	-- Filger positions
+	-- FILGER POSITIONS
 	Filger = {
 		["Cooldown"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 63, 17},
 		["PlayerBuffIcon"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 173},

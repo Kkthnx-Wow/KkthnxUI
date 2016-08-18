@@ -1,9 +1,7 @@
 local K, C, L, _ = select(2, ...):unpack()
 
 local _G = _G
-local collectgarbage = collectgarbage
 local CreateFrame = CreateFrame
-local InCombatLockdown = InCombatLockdown
 
 local FixTooltip = CreateFrame("Frame")
 FixTooltip:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
@@ -18,9 +16,23 @@ FixTooltip:SetScript("OnEvent", function()
 	end)
 end)
 
+local FixTooltipBags = CreateFrame("Frame")
+FixTooltipBags:RegisterEvent("BAG_UPDATE_DELAYED")
+FixTooltipBags:SetScript("OnEvent", function()
+	local done
+	if StuffingFrameBags and StuffingFrameBags:IsShown() then
+		GameTooltip:HookScript("OnTooltipCleared", function(self)
+			if not done and self:NumLines() == 0 then
+				self:Hide()
+				done = true
+			end
+		end)
+	end
+end)
+
 INTERFACE_ACTION_BLOCKED = ""
 
--- Fix RemoveTalent() taint
+-- FIX REMOVETALENT() TAINT
 FCF_StartAlertFlash = K.Noop
 
 WorldMapPlayerUpper:EnableMouse(false)
@@ -37,7 +49,7 @@ TaintFix:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 
--- Misclicks for some popups
+-- MISCLICKS FOR SOME POPUPS
 StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
 StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil

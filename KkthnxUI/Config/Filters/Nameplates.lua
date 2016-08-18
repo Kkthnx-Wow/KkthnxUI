@@ -1,11 +1,17 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Nameplate.Enable ~= true then return end
 
-----------------------------------------------------------------------------------------
--- The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
--- Example: Polymorph -> http://www.wowhead.com/spell=118
--- Take the number ID at the end of the URL, and add it to the list
-----------------------------------------------------------------------------------------
+local tostring = tostring
+local print = print
+
+local GetSpellInfo = GetSpellInfo
+
+--[[
+THE BEST WAY TO ADD OR DELETE SPELL IS TO GO AT WWW.WOWHEAD.COM, SEARCH FOR A SPELL.
+EXAMPLE: POLYMORPH -> http://www.wowhead.com/spell=118
+TAKE THE NUMBER ID AT THE END OF THE URL, AND ADD IT TO THE LIST
+]]--
+
 local function SpellName(id)
 	local name = GetSpellInfo(id)
 	if name then

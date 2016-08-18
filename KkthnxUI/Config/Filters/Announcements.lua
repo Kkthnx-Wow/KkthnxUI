@@ -1,108 +1,110 @@
-local K, C, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 
-----------------------------------------------------------------------------------------
---	The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
---	Example: Misdirection -> http://www.wowhead.com/spell=34477
---	Take the number ID at the end of the URL, and add it to the list
-----------------------------------------------------------------------------------------
+--[[
+	THE BEST WAY TO ADD OR DELETE SPELL IS TO GO AT WWW.WOWHEAD.COM, SEARCH FOR A SPELL.
+	EXAMPLE: MISDIRECTION -> http://www.wowhead.com/spell=34477
+	TAKE THE NUMBER ID AT THE END OF THE URL, AND ADD IT TO THE LIST
+]]--
+
 if C.Announcements.Spells == true then
 	K.AnnounceSpells = {
-		61999,	-- Raise Ally
-		20484,	-- Rebirth
-		20707,	-- Soulstone
-		31821,	-- Devotion Aura
-		633,	-- Lay on Hands
-		34477,	-- Misdirection
-		57934,	-- Tricks of the Trade
-		19801,	-- Tranquilizing Shot
-		2908,	-- Soothe
+		61999, -- RAISE ALLY
+		20484, -- REBIRTH
+		20707, -- SOULSTONE
+		31821, -- AURA MASTERY
+		633, -- LAY ON HANDS
+		34477, -- MISDIRECTION
+		57934, -- TRICKS OF THE TRADE
+		19801, -- TRANQUILIZING SHOT
+		2908, -- SOOTHE
+		7328, -- REDEMPTION
 	}
 end
 
 if C.Announcements.BadGear == true then
 	K.AnnounceBadGear = {
-		-- Head
+		-- HEAD
 		[1] = {
-			88710,	-- Nat's Hat
-			33820,	-- Weather-Beaten Fishing Hat
-			19972,	-- Lucky Fishing Hat
-			46349,	-- Chef's Hat
+			88710,	-- NAT'S HAT
+			33820,	-- WEATHER-BEATEN FISHING HAT
+			19972,	-- LUCKY FISHING HAT
+			46349,	-- CHEF'S HAT
 		},
-		-- Neck
+		-- NECK
 		[2] = {
-			32757,	-- Blessed Medallion of Karabor
+			32757,	-- BLESSED MEDALLION OF KARABOR
 		},
-		-- Feet
+		-- FEET
 		[8] = {
-			50287,	-- Boots of the Bay
-			19969,	-- Nat Pagle's Extreme Anglin' Boots
+			50287,	-- BOOTS OF THE BAY
+			19969,	-- NAT PAGLE'S EXTREME ANGLIN' BOOTS
 		},
-		-- Back
+		-- BACK
 		[15] = {
-			65360,	-- Cloak of Coordination (Alliance)
-			65274,	-- Cloak of Coordination (Horde)
+			65360,	-- CLOAK OF COORDINATION (ALLIANCE)
+			65274,	-- CLOAK OF COORDINATION (HORDE)
 		},
-		-- Main-Hand
+		-- MAIN-HAND
 		[16] = {
-			44050,	-- Mastercraft Kalu'ak Fishing Pole
-			19970,	-- Arcanite Fishing Pole
-			84660,	-- Pandaren Fishing Pole
-			84661,	-- Dragon Fishing Pole
-			45992,	-- Jeweled Fishing Pole
-			45991,	-- Bone Fishing Pole
-			116826,	-- Draenic Fishing Pole
-			116825,	-- Savage Fishing Pole
-			86559,	-- Frying Pan
+			44050,	-- MASTERCRAFT KALU'AK FISHING POLE
+			19970,	-- ARCANITE FISHING POLE
+			84660,	-- PANDAREN FISHING POLE
+			84661,	-- DRAGON FISHING POLE
+			45992,	-- JEWELED FISHING POLE
+			45991,	-- BONE FISHING POLE
+			116826,	-- DRAENIC FISHING POLE
+			116825,	-- SAVAGE FISHING POLE
+			86559,	-- FRYING PAN
 		},
-		-- Off-hand
+		-- OFF-HAND
 		[17] = {
-			86558,	-- Rolling Pin
+			86558,	-- ROLLING PIN
 		},
 	}
 end
 
 if C.Announcements.Toys == true then
 	K.AnnounceToys = {
-		[61031] = true, -- Toy Train Set
-		[49844] = true, -- Direbrew's Remote
+		[61031] = true, -- toy train set
+		[49844] = true, -- DIREBREW'S REMOTE
 	}
 end
 
 if C.Announcements.Feasts == true then
 	K.AnnounceBots = {
-		[22700] = true,	-- Field Repair Bot 74A
-		[44389] = true,	-- Field Repair Bot 110G
-		[54711] = true,	-- Scrapbot
-		[67826] = true,	-- Jeeves
-		[126459] = true, -- Blingtron 4000
-		[161414] = true, -- Blingtron 5000
+		[22700] = true,	-- FIELD REPAIR BOT 74A
+		[44389] = true,	-- FIELD REPAIR BOT 110G
+		[54711] = true,	-- SCRAPBOT
+		[67826] = true,	-- JEEVES
+		[126459] = true, -- BLINGTRON 4000
+		[161414] = true, -- BLINGTRON 5000
 	}
 end
 
 if C.Announcements.Portals == true then
 	K.AnnouncePortals = {
--- Alliance
-		[10059] = true,	-- Stormwind
-		[11416] = true,	-- Ironforge
-		[11419] = true,	-- Darnassus
-		[32266] = true,	-- Exodar
-		[49360] = true,	-- Theramore
-		[33691] = true,	-- Shattrath
-		[88345] = true,	-- Tol Barad
-		[132620] = true, -- Vale of Eternal Blossoms
-		[176246] = true, -- Stormshield
-		-- Horde
-		[11417] = true,	-- Orgrimmar
-		[11420] = true,	-- Thunder Bluff
-		[11418] = true,	-- Undercity
-		[32267] = true,	-- Silvermoon
-		[49361] = true,	-- Stonard
-		[35717] = true,	-- Shattrath
-		[88346] = true,	-- Tol Barad
-		[132626] = true, -- Vale of Eternal Blossoms
-		[176244] = true, -- Warspear
-		-- Alliance/Horde
-		[53142] = true, -- Dalaran
-		[120146] = true, -- Ancient Dalaran
+		-- ALLIANCE
+		[10059] = true,	-- STORMWIND
+		[11416] = true,	-- IRONFORGE
+		[11419] = true,	-- DARNASSUS
+		[32266] = true,	-- EXODAR
+		[49360] = true,	-- THERAMORE
+		[33691] = true,	-- SHATTRATH
+		[88345] = true,	-- TOL BARAD
+		[132620] = true, -- VALE OF ETERNAL Blossoms
+		[176246] = true, -- STORMSHIELD
+		-- HORDE
+		[11417] = true,	-- ORGRIMMAR
+		[11420] = true,	-- THUNDER BLUFF
+		[11418] = true,	-- UNDERCITY
+		[32267] = true,	-- SILVERMOON
+		[49361] = true,	-- STONARD
+		[35717] = true,	-- SHATTRATH
+		[88346] = true,	-- TOL BARAD
+		[132626] = true, -- VALE OF ETERNAL BLOSSOMS
+		[176244] = true, -- WARSPEAR
+		-- ALLIANCE/HORDE
+		[53142] = true, -- DALARAN
+		[120146] = true, -- ANCIENT DALARAN
 	}
 end

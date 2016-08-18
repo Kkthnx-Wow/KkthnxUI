@@ -49,10 +49,10 @@ K.Comma = function(num)
 	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
--- ShortValue
--- We show a different value for the Chinese client.
-if (Locale == "zhCN") then
-	K.ShortValue = function(value)
+-- SHORTVALUE
+-- WE SHOW A DIFFERENT VALUE FOR THE CHINESE CLIENT.
+K.ShortValue = function(value)
+	if (Locale == "zhCN") then
 		value = tonumber(value)
 		if not value then return "" end
 		if value >= 1e8 then
@@ -62,9 +62,7 @@ if (Locale == "zhCN") then
 		else
 			return floor(tostring(value))
 		end 
-	end
-else
-	K.ShortValue = function(value)
+	else
 		value = tonumber(value)
 		if not value then return "" end
 		if value >= 1e6 then

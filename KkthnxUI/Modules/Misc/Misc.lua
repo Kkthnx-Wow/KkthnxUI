@@ -6,15 +6,12 @@ local unpack = unpack
 local PlaySound, PlaySoundFile = PlaySound, PlaySoundFile
 local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
-local MAX_BATTLEFIELD_QUEUES = MAX_BATTLEFIELD_QUEUES
 local GetBattlefieldStatus = GetBattlefieldStatus
-local UnitIsAFK = UnitIsAFK
 local GetZoneText = GetZoneText
 local GetLFGDungeonRewards = GetLFGDungeonRewards
 local GetLFGDungeonInfo = GetLFGDungeonInfo
 local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
-local PlayerPowerBarAlt = PlayerPowerBarAlt
 
 -- MOVE SOME FRAMES (SHESTAK)
 local HeadFrame = CreateFrame("Frame")
@@ -84,7 +81,7 @@ local ShowReadyCheckHook = function(self, initiator)
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
--- Force other warning
+-- FORCE OTHER WARNING
 local ForceWarning = CreateFrame("Frame")
 ForceWarning:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 ForceWarning:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE")
@@ -112,7 +109,7 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 	end
 end)
 
--- Auto select current event boss from LFD tool(EventBossAutoSelect by Nathanyel)
+-- AUTO SELECT CURRENT EVENT BOSS FROM LFD TOOL(EVENTBOSSAUTOSELECT BY NATHANYEL)
 local firstLFD
 LFDParentFrame:HookScript("OnShow", function()
 	if not firstLFD then
@@ -146,7 +143,7 @@ if C.General.CustomLagTolerance == true then
 	LatencyUpdate(customlag, 10)
 end
 
--- Remove Boss Emote spam during BG(ArathiBasin SpamFix by Partha)
+-- REMOVE BOSS EMOTE SPAM DURING BG(ARATHIBASIN SPAMFIX BY PARTHA)
 if C.Misc.BGSpam == true then
 	local Fixer = CreateFrame("Frame")
 	local RaidBossEmoteFrame, spamDisabled = RaidBossEmoteFrame
@@ -166,7 +163,7 @@ if C.Misc.BGSpam == true then
 	Fixer:SetScript("OnEvent", DisableSpam)
 end
 
--- Undress button in auction dress-up frame(by Nefarion)
+-- UNDRESS BUTTON IN AUCTION DRESS-UP FRAME(BY NEFARION)
 local strip = CreateFrame("Button", "DressUpFrameUndressButton", DressUpFrame, "UIPanelButtonTemplate")
 strip:SetText(L_MISC_UNDRESS)
 strip:SetHeight(22)
@@ -199,7 +196,7 @@ strip:SetScript("OnEvent", function(self)
 	end
 end)
 
--- Old achievements filter
+-- OLD ACHIEVEMENTS FILTER
 function AchievementFrame_GetCategoryNumAchievements_OldIncomplete(categoryID)
 	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID)
 	return numAchievements - numCompleted, 0, numCompleted
@@ -217,7 +214,7 @@ end
 local filter = CreateFrame("Frame")
 filter:RegisterEvent("ADDON_LOADED")
 filter:SetScript("OnEvent", function(self, event, addon, ...)
-	if (addon == "Blizzard_AchievementUI") then
+	if addon == "Blizzard_AchievementUI" then
 		if AchievementFrame then
 			old_nocomplete_filter_init()
 			filter:UnregisterEvent("ADDON_LOADED")

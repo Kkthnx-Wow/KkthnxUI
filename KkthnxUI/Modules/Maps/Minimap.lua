@@ -141,6 +141,7 @@ end
 local ClockFrame, ClockTime = TimeManagerClockButton:GetRegions()
 ClockFrame:Hide()
 ClockTime:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+ClockTime:SetTextColor(255/255, 255/255, 255/255)
 ClockTime:SetShadowOffset(0, 0)
 TimeManagerClockButton:ClearAllPoints()
 TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
@@ -170,7 +171,7 @@ GameTimeFrame:SetScript("OnEvent", function(self, event, addon)
 end)
 
 if CalendarGetNumPendingInvites() ~= 0 then
-	ClockTime:SetTextColor(.67, .35, .35)
+	ClockTime:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
 else
 	ClockTime:SetTextColor(255/255, 255/255, 255/255)
 end

@@ -294,7 +294,7 @@ local NormalButton = function(text, parent)
 	return result
 end
 
-StaticPopupDialogs["PERCHAR"] = {
+StaticPopupDialogs.PERCHAR = {
 	text = L_GUI_PER_CHAR,
 	OnAccept = function()
 		if UIConfigAllCharacters:GetChecked() then
@@ -316,10 +316,10 @@ StaticPopupDialogs["PERCHAR"] = {
 	button2 = CANCEL,
 	timeout = 0,
 	whileDead = 1,
-	preferredIndex = 3,
+	preferredIndex = 5,
 }
 
-StaticPopupDialogs["RESET_PERCHAR"] = {
+StaticPopupDialogs.RESET_PERCHAR = {
 	text = L_GUI_RESET_CHAR,
 	OnAccept = function()
 		GUIConfig = GUIConfigSettings
@@ -330,10 +330,10 @@ StaticPopupDialogs["RESET_PERCHAR"] = {
 	button2 = CANCEL,
 	timeout = 0,
 	whileDead = 1,
-	preferredIndex = 3,
+	preferredIndex = 5,
 }
 
-StaticPopupDialogs["RESET_ALL"] = {
+StaticPopupDialogs.RESET_ALL = {
 	text = L_GUI_RESET_ALL,
 	OnAccept = function()
 		GUIConfigSettings = nil
@@ -345,7 +345,7 @@ StaticPopupDialogs["RESET_ALL"] = {
 	button2 = CANCEL,
 	timeout = 0,
 	whileDead = 1,
-	preferredIndex = 3,
+	preferredIndex = 5,
 }
 
 local function SetValue(group, option, value)
@@ -776,6 +776,10 @@ function CreateUIConfig()
 		button:SetScript("OnClick", function(self) StaticPopup_Show("PERCHAR") UIConfigCover:Show() end)
 		button:SetPoint("RIGHT", TitleBox, "RIGHT", -3, 0)
 		button:SetHitRectInsets(0, 0, 0, 0)
+		if IsAddOnLoaded("Aurora") then
+			local F = unpack(Aurora)
+			F.ReskinCheck(button)
+		end
 
 		local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		label:SetText(L_GUI_SET_SAVED_SETTTINGS)
@@ -813,6 +817,8 @@ do
 	SLASH_CONFIG1 = "/config"
 	SLASH_CONFIG2 = "/cfg"
 	SLASH_CONFIG3 = "/configui"
+	SLASH_CONFIG4 = "/kc"
+	SLASH_CONFIG5 = "/kkthnxui"
 
 	function SlashCmdList.RESETCONFIG()
 		if UIConfigMain and UIConfigMain:IsShown() then UIConfigCover:Show() end
@@ -885,16 +891,6 @@ do
 end
 
 do
-	SLASH_CONFIG1 = '/kc'
-	SLASH_CONFIG2 = '/kkthnxui'
-	function SlashCmdList.CONFIG(msg, editbox)
-		if not UIConfigMain or not UIConfigMain:IsShown() then
-			CreateUIConfig()
-		else
-			UIConfigMain:Hide()
-		end
-	end
-
 	-- Button in GameMenuButton frame
 	local UIConfigButton = CreateFrame("Frame")
 	UIConfigButton:RegisterEvent("PLAYER_LOGIN")
