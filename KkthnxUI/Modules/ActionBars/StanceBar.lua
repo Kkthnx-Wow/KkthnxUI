@@ -1,8 +1,11 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
+-- LUA API
 local _G = _G
 local unpack = unpack
+
+-- WOW API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local InCombatLockdown = InCombatLockdown

@@ -1,10 +1,11 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
+-- LUA API
 local _G = _G
 local pairs = pairs
 
---	Hide all Blizzard stuff that we don't need by Tukz
+--	HIDE ALL BLIZZARD STUFF THAT WE DON'T NEED BY TUKZ
 do
 	MainMenuBar:SetScale(0.00001)
 	MainMenuBar:EnableMouse(false)

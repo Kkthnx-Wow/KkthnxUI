@@ -1,11 +1,15 @@
 local K, C, _ = select(2, ...):unpack()
 if C.Unitframe.SmoothBars ~= true then return end
 
-local CreateFrame = CreateFrame
+-- LUA API
 local _G = _G
 local abs = math.abs
 local max = math.max
 local pairs, ipairs = pairs, ipairs
+
+-- WOW API
+local CreateFrame = CreateFrame
+local IsVisible = IsVisible
 
 local SmoothFrame = CreateFrame("Frame")
 Smoothing = {}

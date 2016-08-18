@@ -2,11 +2,15 @@ local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
 -- By Tukz
+
+-- LUA API
 local _G = _G
 local match = string.match
 local gsub = string.gsub
 local ipairs = ipairs
 local tostring = tostring
+
+-- WOW API
 local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
 local hooksecurefunc = hooksecurefunc
 

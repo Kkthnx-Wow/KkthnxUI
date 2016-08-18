@@ -1,9 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or IsAddOnLoaded("Quartz") then return end
 
+-- LUA API
 local unpack = unpack
 local format = string.format
 local max = math.max
+
+-- WOW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 

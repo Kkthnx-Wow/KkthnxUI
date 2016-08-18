@@ -1,23 +1,26 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.EnhancedFrames ~= true then return end
 
+-- LUA API
 local _G = _G
 
+-- WOW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local GetCVar = GetCVar
+local UnitClassification = UnitClassification
 local EnhancedFrames = CreateFrame("Frame")
 
 local shorts = {
-	{ 1e10, 1e9, "%.0fB" }, -- 10b+ as 12B
-	{ 1e9, 1e9, "%.1fB" }, -- 1b+ as 8.3B
-	{ 1e7, 1e6, "%.0fM" }, -- 10m+ as 14M
-	{ 1e6, 1e6, "%.1fM" }, -- 1m+ as 7.4M
-	{ 1e5, 1e3, "%.0fK" }, -- 100k+ as 840K
-	{ 1e3, 1e3, "%.1fK" }, -- 1k+ as 2.5K
-	{ 0, 1, "%d" }, -- < 1k as 974
+	{ 1e10, 1e9, "%.0fB" }, -- 10B+ AS 12B
+	{ 1e9, 1e9, "%.1fB" }, -- 1B+ AS 8.3B
+	{ 1e7, 1e6, "%.0fM" }, -- 10M+ AS 14M
+	{ 1e6, 1e6, "%.1fM" }, -- 1M+ AS 7.4M
+	{ 1e5, 1e3, "%.0fK" }, -- 100K+ AS 840K
+	{ 1e3, 1e3, "%.1fK" }, -- 1K+ AS 2.5K
+	{ 0, 1, "%d" }, -- < 1K AS 974
 }
 for i = 1, #shorts do
 	shorts[i][4] = shorts[i][3] .. " (%.0f%%)"
@@ -149,9 +152,9 @@ function EnhancedFrames_PlayerFrame_ToVehicleArt(self)
 end
 
 function EnhancedFrames_TargetFrame_Update(self)
-	-- Set back color of health bar
+	-- SET BACK COLOR OF HEALTH BAR
 	if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
-		-- Gray if npc is tapped by other player
+		-- GRAY IF NPC IS TAPPED BY OTHER PLAYER
 		self.healthbar:SetStatusBarColor(0.5, 0.5, 0.5)
 	end
 end
@@ -195,14 +198,13 @@ function EnhancedFrames_TargetFrame_CheckFaction(self)
 	EnhancedFrames_Style_TargetFrame(self)
 end
 
--- STYLE - PARTY MEMEBER FRAME STYLE CHANGES
+-- STYLE PARTY MEMEBER FRAME STYLE CHANGES
 function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 	if not InCombatLockdown() then
 		for i = 1, MAX_PARTY_MEMBERS do
 			_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
 
 			_G["PartyMemberFrame"..i.."Name"]:SetPoint("TOP", 0, 20)
-			_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, 10)
 
 			_G["PartyMemberFrame"..i.."Texture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrame")
 			_G["PartyMemberFrame"..i.."Texture"]:SetPoint("TOPLEFT", 0, 6)
@@ -216,11 +218,26 @@ function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 			_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 46, -3)
 			_G["PartyMemberFrame"..i.."Background"]:SetSize(70, 24)
 			_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 47, -3)
+
+			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetPoint("LEFT", _G["PartyMemberFrame"..i.."HealthBar"], "LEFT", 4, 0)
+			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetPoint("RIGHT", _G["PartyMemberFrame"..i.."HealthBar"], "RIGHT", -2, 0)
 		end
 	end
 end
 
--- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
+-- IDK WHAT I WANNA DO WITH THIS YET :D
+PlayerFrameHealthBarTextLeft:ClearAllPoints()
+PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
+
+PlayerFrameHealthBarTextRight:ClearAllPoints()
+PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, -3)
+
+TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
+TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, -3)
+
+TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
+TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
+
 -- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
 function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 	if not InCombatLockdown() then

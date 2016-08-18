@@ -2,6 +2,7 @@ local K, C, L, _ = select(2, ...):unpack()
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or C.ActionBar.ToggleMode ~= true then return end
 
+-- LUA API
 local _G = _G
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)

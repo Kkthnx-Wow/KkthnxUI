@@ -1,10 +1,13 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA WOW
 local _G = _G
 local unpack = unpack
 local pairs = pairs
 local select = select
 local remove = table.remove
+
+-- WOW API
 local IsAddOnLoaded = IsAddOnLoaded
 local CreateFrame = CreateFrame
 local UIParent = UIParent
@@ -98,6 +101,16 @@ if C.Unitframe.Enable == true then
 
 			-- UNIT HEALTHBARTEXT
 			for _, FrameBarText in pairs({
+				PlayerFrameHealthBarTextLeft,
+				PlayerFrameHealthBarTextRight,
+				TargetFrameTextureFrameHealthBarTextLeft,
+				TargetFrameTextureFrameHealthBarTextRight,
+				PlayerFrameManaBarTextLeft,
+				PlayerFrameManaBarTextRight,
+				TargetFrameTextureFrameManaBarTextLeft,
+				TargetFrameTextureFrameManaBarTextRight,
+				PartyMemberFrame1HealthBarTextRight,
+				PartyMemberFrame1HealthBarTextLeft,
 				PlayerFrameHealthBarText,
 				PlayerFrameManaBarText,
 				TargetFrameTextureFrameHealthBarText,
@@ -116,10 +129,65 @@ if C.Unitframe.Enable == true then
 				end
 			end
 
-			-- PARTY UNIT HEALTHBARTEXT
+
+			for i = 1, MAX_PARTY_MEMBERS do
+				if C.Unitframe.Outline then
+					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
+				else
+					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
+					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+				end
+			end
+
+			--[[ PARTY UNIT HEALTHBARTEXT
 			for _, PartyBarText in pairs({
 				PartyMemberFrame1HealthBarText,
 				PartyMemberFrame1ManaBarText,
+				PartyMemberFrame1HealthBarTextLeft,
+				PartyMemberFrame1ManaBarTextLeft,
+				PartyMemberFrame2HealthBarTextLeft,
+				PartyMemberFrame2ManaBarTextLeft,
+				PartyMemberFrame3HealthBarTextLeft,
+				PartyMemberFrame3ManaBarTextLeft,
+				PartyMemberFrame4HealthBarTextLeft,
+				PartyMemberFrame4ManaBarTextLeft,
 				PartyMemberFrame2HealthBarText,
 				PartyMemberFrame2ManaBarText,
 				PartyMemberFrame3HealthBarText,
@@ -135,6 +203,7 @@ if C.Unitframe.Enable == true then
 					PartyBarText:SetShadowOffset(K.Mult, -K.Mult)
 				end
 			end
+			]]--
 
 			-- UNIT LEVELTEXT
 			for _, LevelText in pairs({

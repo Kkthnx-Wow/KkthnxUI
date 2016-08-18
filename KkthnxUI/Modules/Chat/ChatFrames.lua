@@ -34,17 +34,17 @@ end
 
 local function AddMessage(frame, str, ...)
 	--if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
-		str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
-		str = str:gsub("CHANNEL:", "")
-		str = str:gsub("^(.-|h) "..L_CHAT_WHISPERS, "%1")
-		str = str:gsub("^(.-|h) "..L_CHAT_SAYS, "%1")
-		str = str:gsub("^(.-|h) "..L_CHAT_YELLS, "%1")
-		str = str:gsub("<"..AFK..">", "[|cffFF0000"..L_CHAT_AFK.."|r] ")
-		str = str:gsub("<"..DND..">", "[|cffE7E716"..L_CHAT_DND.."|r] ")
-		str = str:gsub("%[BN_CONVERSATION:", "%[1".."")
-		str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
+	str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
+	str = str:gsub("CHANNEL:", "")
+	str = str:gsub("^(.-|h) "..L_CHAT_WHISPERS, "%1")
+	str = str:gsub("^(.-|h) "..L_CHAT_SAYS, "%1")
+	str = str:gsub("^(.-|h) "..L_CHAT_YELLS, "%1")
+	str = str:gsub("<"..AFK..">", "[|cffFF0000"..L_CHAT_AFK.."|r] ")
+	str = str:gsub("<"..DND..">", "[|cffE7E716"..L_CHAT_DND.."|r] ")
+	str = str:gsub("%[BN_CONVERSATION:", "%[1".."")
+	str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
 
-		return origs[frame](frame, str, ...)
+	return origs[frame](frame, str, ...)
 	--end
 end
 
@@ -255,16 +255,6 @@ local function SetupChatPosAndFont(self)
 			chat:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 		end
 
-		-- REPOSITION BATTLE.NET POPUP OVER CHAT #1
-		BNToastFrame:HookScript("OnShow", function(self)
-			self:ClearAllPoints()
-			self:SetPoint(unpack(C.Position.BnetPopup))
-		end)
-
-		if not self:IsMovable() then
-			return
-		end
-
 		-- FORCE CHAT POSITION
 		if i == 1 then
 			chat:ClearAllPoints()
@@ -282,6 +272,11 @@ local function SetupChatPosAndFont(self)
 			end
 		end
 	end
+	-- Reposition battle.net popup over chat #1
+	BNToastFrame:HookScript("OnShow", function(self)
+		self:ClearAllPoints()
+		self:SetPoint(unpack(C.Position.BnetPopup))
+	end)
 end
 
 local UIChat = CreateFrame("Frame")

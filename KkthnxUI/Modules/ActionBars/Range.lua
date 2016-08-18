@@ -1,8 +1,13 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- Locals and speed
+-- LOCALS AND SPEED
+
+-- LUA API
 local _G = _G
+local pairs = pairs
+
+-- WOW API
 local UPDATE_DELAY = 0.15
 local ATTACK_BUTTON_FLASH_TIME = ATTACK_BUTTON_FLASH_TIME
 local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER

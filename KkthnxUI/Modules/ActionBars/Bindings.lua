@@ -1,10 +1,13 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or IsAddOnLoaded("ncHoverBind") == true then return end
 
+-- LUA API
 local _G = _G
 local pairs, unpack = pairs, unpack
 local tonumber = tonumber
 local find, upper = string.find, string.upper
+
+-- WOW API
 local IsAddOnLoaded = IsAddOnLoaded
 local IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown = IsAltKeyDown, IsControlKeyDown, IsShiftKeyDown
 local GetID, GetName = GetID, GetName

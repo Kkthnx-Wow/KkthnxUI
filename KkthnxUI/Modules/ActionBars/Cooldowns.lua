@@ -1,7 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
 if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or C.Cooldown.Enable ~= true then return end
 
--- Cooldown count(tullaCC by Tuller)
+-- COOLDOWN COUNT(TULLACC BY TULLER)
+
+-- LUA API
 local _G = _G
 local format = string.format
 local floor = math.floor
@@ -9,6 +11,8 @@ local min = math.min
 local find = string.find
 local pairs = pairs
 local getmetatable = getmetatable
+
+-- WOW API
 local CreateFrame = CreateFrame
 local GetTime = GetTime
 local GetActionCooldown = GetActionCooldown

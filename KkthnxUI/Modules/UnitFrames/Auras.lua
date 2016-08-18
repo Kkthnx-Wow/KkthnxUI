@@ -1,7 +1,10 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
+-- LUA API
 local _G = _G
+
+-- WOW API
 local GetName = GetName
 local UnitIsFriend = UnitIsFriend
 local hooksecurefunc = hooksecurefunc

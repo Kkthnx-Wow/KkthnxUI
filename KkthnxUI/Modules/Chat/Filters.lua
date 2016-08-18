@@ -1,9 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
+-- LUA API
 local lower = string.lower
 local match = string.match
 local pairs = pairs
+
+-- WOW API
 local IsResting = IsResting
 local UnitIsInMyGuild = UnitIsInMyGuild
 
@@ -44,10 +47,12 @@ if C.Chat.Filter == true then
 	ERR_CHAT_THROTTLED = ""
 end
 
--- Players spam filter(by Evl, Elv22 and Affli)
--- The ellipsis (which is what ... is called) only allows you to accept an undefined number of extra arguments
--- So local function blahblah(self, event, text, sender) is the same as local function blahblah(self, event, text, sender, ...)
--- If you pass on the arguments in that function, you need to pass the ... along, or it might break the functionality
+--[[ 
+	PLAYERS SPAM FILTER(BY EVL, ELV22 AND AFFLI)
+	THE ELLIPSIS (WHICH IS WHAT ... IS CALLED) ONLY ALLOWS YOU TO ACCEPT AN UNDEFINED NUMBER OF EXTRA ARGUMENTS
+	SO LOCAL FUNCTION BLAHBLAH(SELF, EVENT, TEXT, SENDER) IS THE SAME AS LOCAL FUNCTION BLAHBLAH(SELF, EVENT, TEXT, SENDER, ...)
+	IF YOU PASS ON THE ARGUMENTS IN THAT FUNCTION, YOU NEED TO PASS THE ... ALONG, OR IT MIGHT BREAK THE FUNCTIONALITY
+]]--
 if C.Chat.Spam == true then
 	-- Repeat spam filter
 	local lastMessage
