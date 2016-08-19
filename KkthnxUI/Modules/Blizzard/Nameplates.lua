@@ -491,9 +491,9 @@ function Plates:UpdateHealthText()
 	end
 
 	if GetUnitName("target") and self.NewPlate:GetAlpha() == 1 then
-		self.NewPlate.Health:SetSize((C.Nameplate.Width + C.nameplate.ad_width) * K.NoScaleMult, (C.Nameplate.Height + C.nameplate.ad_height) * K.NoScaleMult)
-		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -8-((C.Nameplate.Height + C.nameplate.ad_height) * K.NoScaleMult))
-		self.NewPlate.CastBar.Icon:SetSize(((C.Nameplate.Height + C.nameplate.ad_height) * 2 * K.NoScaleMult) + 8, ((C.Nameplate.Height + C.nameplate.ad_height) * 2 * K.NoScaleMult) + 8)
+		self.NewPlate.Health:SetSize((C.Nameplate.Width + C.Nameplate.AdditionalWidth) * K.NoScaleMult, (C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult)
+		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -8-((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult))
+		self.NewPlate.CastBar.Icon:SetSize(((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * 2 * K.NoScaleMult) + 8, ((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * 2 * K.NoScaleMult) + 8)
 		self.NewPlate.Health:SetFrameLevel(1)
 	else
 		self.NewPlate.Health:SetSize(C.Nameplate.Width * K.NoScaleMult, C.Nameplate.Height * K.NoScaleMult)
@@ -858,27 +858,37 @@ end
 
 local function CreateAuraIcon(parent)
 	local button = CreateFrame("Frame", nil, parent)
-	button:SetWidth(C.Nameplate.AuraSize)
-	button:SetHeight(C.Nameplate.AuraSize)
+	button:SetSize(C.Nameplate.AuraSize, C.Nameplate.AuraSize)
 
-	button.bg = button:CreateTexture(nil, "BACKGROUND")
-	button.bg:SetColorTexture(unpack(C.media.backdrop_color))
-	button.bg:SetAllPoints(button)
+	button.shadow = CreateFrame("Frame", nil, button)
+	button.shadow:SetFrameLevel(0)
+	button.shadow:SetBackdrop({
+		bgFile = C.Media.Blank,
+		edgeFile = C.Media.Glow,
+		edgeSize = 3 * K.NoScaleMult,
+		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
+	})
+	button.shadow:SetPoint("TOPLEFT", button, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
+	button.shadow:SetPoint("BOTTOMRIGHT", button, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
+	button.shadow:SetBackdropColor(.05, .05, .05, .9)
+	button.shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 
 	button.bord = button:CreateTexture(nil, "BORDER")
 	button.bord:SetColorTexture(unpack(C.Media.Border_Color))
 	button.bord:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult, -K.NoScaleMult)
 	button.bord:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult, K.NoScaleMult)
 
-	button.bg2 = button:CreateTexture(nil, "ARTWORK")
-	button.bg2:SetColorTexture(unpack(C.media.backdrop_color))
-	button.bg2:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult * 2, -K.NoScaleMult * 2)
-	button.bg2:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult * 2, K.NoScaleMult * 2)
-
 	button.icon = button:CreateTexture(nil, "OVERLAY")
 	button.icon:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult * 3, -K.NoScaleMult * 3)
 	button.icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult * 3, K.NoScaleMult * 3)
 	button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+	button.text = button:CreateFontString(nil, "OVERLAY")
+	button.text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, -3)
+	button.text:SetJustifyH("CENTER")
+	button.text:SetFont(C.Media.Font, C.Media.Font_Size * (C.Nameplate.AuraSize / 24), C.Media.Font_Style)
+	button.text:SetShadowColor(0/255, 0/255, 0/255, 1)
+	button.text:SetShadowOffset((0), -(0))
 
 	button.cd = CreateFrame("Cooldown", nil, button)
 	button.cd:SetAllPoints(button)
@@ -886,7 +896,7 @@ local function CreateAuraIcon(parent)
 
 	button.count = button:CreateFontString(nil, "OVERLAY")
 	button.count:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
-	button.count:SetShadowOffset(0, 0)
+	button.count:SetShadowOffset((0), -(0))
 	button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
 
 	return button
