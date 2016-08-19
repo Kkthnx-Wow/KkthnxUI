@@ -1,8 +1,11 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.SplitBars == true then return end
 
+-- LUA API
 local unpack = unpack
 local format = string.format
+
+-- WOW API
 local CreateFrame, UIParent = CreateFrame, UIParent
 local GetNumBattlefieldScores = GetNumBattlefieldScores
 local GetCurrentMapAreaID = GetCurrentMapAreaID

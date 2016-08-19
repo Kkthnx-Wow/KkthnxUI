@@ -1,12 +1,13 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local unpack = unpack
 local select = select
 local floor = math.floor
 local collectgarbage = collectgarbage
-local print = print
 local format = string.format
-local sort = table.sort
+
+-- WOW API
 local GetNumAddOns, GetAddOnInfo, GetAddOnMemoryUsage = GetNumAddOns, GetAddOnInfo, GetAddOnMemoryUsage
 local CreateFrame = CreateFrame
 local IsAddOnLoaded = IsAddOnLoaded
@@ -107,7 +108,7 @@ local function Update(self, t)
 	end
 end
 
--- Setup Tooltip
+-- SETUP TOOLTIP
 Stat:SetScript("OnMouseDown", function () collectgarbage("collect") Update(Stat, 20) end)
 Stat:SetScript("OnEnter", function(self)
 	if not InCombatLockdown() then

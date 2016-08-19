@@ -35,6 +35,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		CastingBarFrame:SetPoint("CENTER", PlayerCastbarAnchor, "CENTER", 0, -3)
 		CastingBarFrame:SetUserPlaced(true)
 		CastingBarFrame:SetMovable(false)
+		CastingBarFrame.SetPoint = K.Noop
 
 		-- Style CastingBarFrame
 		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")

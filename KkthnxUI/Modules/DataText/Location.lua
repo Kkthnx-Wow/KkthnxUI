@@ -1,6 +1,10 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Minimap.Enable ~= true or IsAddOnLoaded("Carbonite") then return end
 
+-- WOW API
+local GetZonePVPInfo = GetZonePVPInfo
+local CreateFrame = CreateFrame
+
 local MinimapZone = CreateFrame("Frame", "MinimapZone", Minimap)
 MinimapZone:SetSize(0, 20)
 MinimapZone:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, 2)
