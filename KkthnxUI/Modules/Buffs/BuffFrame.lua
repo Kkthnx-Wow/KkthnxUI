@@ -1,6 +1,17 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Aura.Enable ~= true then return end
 
+-- LUA API
+local _G = _G
+local format = string.format
+local floor = math.floor
+local unpack = unpack
+
+-- WOW API
+local UnitHasVehicleUI = UnitHasVehicleUI
+local hooksecurefunc = hooksecurefunc
+local CreateFrame = CreateFrame
+
 -- STYLE PLAYER BUFFS(BY TUKZ)
 local mainhand, _, _, offhand = GetWeaponEnchantInfo()
 local rowbuffs

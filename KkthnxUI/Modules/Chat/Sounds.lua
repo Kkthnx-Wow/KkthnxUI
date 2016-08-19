@@ -1,11 +1,14 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
 if C.Chat.Enable ~= true or C.Chat.WhispSound ~= true then return end
 
+-- LUA API
 local sub = string.sub
+
+-- WOW API
 local CreateFrame = CreateFrame
 local PlaySoundFile = PlaySoundFile
 
--- Play sound files system(by Tukz)
+-- PLAY SOUND FILES SYSTEM(BY TUKZ)
 local SoundSys = CreateFrame("Frame")
 SoundSys:RegisterEvent("CHAT_MSG_WHISPER")
 SoundSys:RegisterEvent("CHAT_MSG_BN_WHISPER")

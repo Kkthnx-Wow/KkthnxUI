@@ -1,11 +1,14 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
 local format = format
 local min, max = math.min, math.max
 local match = string.match
 local unpack, select = unpack, select
 local print = print
+
+-- WOW API
 local CreateFrame = CreateFrame
 local IsAddOnLoaded = IsAddOnLoaded
 local SetCVar = SetCVar
@@ -60,15 +63,8 @@ local function InstallUI()
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("nameplateShowSelf", 0)
 
-	InterfaceOptionsControlsPanelAutoLootKeyDropDown:SetValue("SHIFT")
-	InterfaceOptionsControlsPanelAutoLootKeyDropDown:RefreshValue()
-
-	InterfaceOptionsCombatPanelSelfCastKeyDropDown:SetValue("ALT")
-	InterfaceOptionsCombatPanelSelfCastKeyDropDown:RefreshValue()
-
-	if K.Name == "Kkthnx" or K.Name == "Rollndots" or K.Name == "Broflex" then
-		SetCVar("scriptErrors", 1)
-	end
+	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue('SHIFT')
+	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
 	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
@@ -80,7 +76,7 @@ local function InstallUI()
 	FCF_SetLocked(ChatFrame3, 1)
 	ChatFrame3:Show()
 
-	-- Setting chat frames
+	-- SETTING CHAT FRAMES
 	if C.Chat.Enable == true and not (select(4, GetAddOnInfo("Prat-3.0"))) or (select(4, GetAddOnInfo("Chatter"))) then
 		for i = 1, NUM_CHAT_WINDOWS do
 			local frame = _G[format("ChatFrame%s", i)]
@@ -89,23 +85,23 @@ local function InstallUI()
 
 			frame:SetSize(C.Chat.Width, C.Chat.Height)
 
-			-- Default width and height of chats
+			-- DEFAULT WIDTH AND HEIGHT OF CHATS
 			SetChatWindowSavedDimensions(chatFrameId, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
 
-			-- Move general chat to bottom left
+			-- MOVE GENERAL CHAT TO BOTTOM LEFT
 			if i == 1 then
 				frame:ClearAllPoints()
 				frame:SetPoint(unpack(C.Position.Chat))
 			end
 
-			-- Save new default position and dimension
+			-- SAVE NEW DEFAULT POSITION AND DIMENSION
 			FCF_SavePositionAndDimensions(frame)
 			FCF_StopDragging(frame)
 
-			-- Set default font size
+			-- SET DEFAULT FONT SIZE
 			FCF_SetChatWindowFontSize(nil, frame, 12)
 
-			-- Rename chat tabs.
+			-- RENAME CHAT TABS.
 			if i == 1 then
 				FCF_SetWindowName(frame, GENERAL)
 			elseif i == 2 then
@@ -162,7 +158,11 @@ local function InstallUI()
 		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_TRADE)
 		ChatFrame_AddChannel(ChatFrame3, L_CHAT_TRADE)
 
-		-- enable class color automatically on login and each character without doing /configure each time.
+		if K.Name == "Kkthnx" or K.Name == "Rollndots" or K.Name == "Broflex" then
+			SetCVar("scriptErrors", 1)
+		end
+
+		-- ENABLE CLASS COLOR AUTOMATICALLY ON LOGIN AND EACH CHARACTER WITHOUT DOING /CONFIGURE EACH TIME.
 		ToggleChatColorNamesByClassGroup(true, "SAY")
 		ToggleChatColorNamesByClassGroup(true, "EMOTE")
 		ToggleChatColorNamesByClassGroup(true, "YELL")
@@ -192,13 +192,13 @@ local function InstallUI()
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL10")
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL11")
 
-		-- Adjust Chat Colors
-		ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
-		ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
-		ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
+		-- ADJUST CHAT COLORS
+		ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- GENERAL
+		ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- TRADE
+		ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- LOCAL DEFENSE
 	end
 
-	-- Reset saved variables on char
+	-- RESET SAVED VARIABLES ON CHAR
 	SavedPositions = {}
 	SavedOptionsPerChar = {}
 
@@ -273,7 +273,7 @@ SlashCmdList.INSTALLUI = function() StaticPopup_Show("INSTALL_UI") end
 SLASH_CONFIGURE1 = "/resetui"
 SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
 
--- On login function
+-- ON LOGIN FUNCTION
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
@@ -281,7 +281,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		return
 	end
 
-	-- Create empty CVar if they don't exist
+	-- CREATE EMPTY CVAR IF THEY DON'T EXIST
 	if not SavedPositions then SavedPositions = {} end
 	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
 	if SavedOptionsPerChar.AutoInvite == nil then SavedOptionsPerChar.AutoInvite = false end
@@ -326,7 +326,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- Help translate
+-- HELP TRANSLATE
 if C.General.TranslateMessage == true then
 	if GetLocale() == "esES" or GetLocale() == "koKR" or GetLocale() == "esMX" or GetLocale() == "deDE" or GetLocale() == "frFR" or GetLocale() == "koKR" or GetLocale() == "zhCN" or GetLocale() == "zhTW" then
 		print("|cffffe02ePlease help us translate the text settings for |cff2eb6ffKkthnxUI|r. |cffffe02eYou can post a commit to|r |cff2eb6ffgithub.com/Kkthnx/KkthnxUI_Legion|r")

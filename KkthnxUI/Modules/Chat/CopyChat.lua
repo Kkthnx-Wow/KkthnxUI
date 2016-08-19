@@ -1,5 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
 local format = string.format
 local gsub = string.gsub
@@ -7,17 +8,18 @@ local pairs = pairs
 local unpack = unpack
 local find = string.find
 local select = select
+
+-- WOW API
 local tinsert = tinsert
 local CreateFrame, UIParent = CreateFrame, UIParent
 local ToggleFrame = ToggleFrame
 local GetSpellInfo = GetSpellInfo
 
--- Copy Chat
+-- COPY CHAT
 local lines = {}
 local frame = nil
 local editBox = nil
 local isf = nil
-local tex = select(3, GetSpellInfo(6310))
 local sizes = {
 	":14:14",
 	":15:15",
@@ -84,7 +86,8 @@ local function Copy(cf)
 	if frame:IsShown() then frame:Hide() return end
 	frame:Show()
 	editBox:SetText(text)
-	K.Delay(0.25, scrollDown)
+	--K.Delay(0.25, scrollDown)
+	C_Timer.After(0.25, scrollDown)
 end
 
 for i = 1, NUM_CHAT_WINDOWS do

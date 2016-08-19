@@ -1,11 +1,14 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
 local unpack, pairs, print = unpack, pairs, print
+
+-- WOW API
 local InCombatLockdown = InCombatLockdown
 local CreateFrame, UIParent = CreateFrame, UIParent
 
--- Movement Function(by Allez)
+-- MOVEMENT FUNCTION(BY ALLEZ)
 K.MoverFrames = {
 	AchievementAnchor,
 	ActionBarAnchor,

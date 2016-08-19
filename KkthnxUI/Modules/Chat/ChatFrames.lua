@@ -1,6 +1,7 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
+-- LUA API
 local _G = _G
 local gsub = string.gsub
 local upper = string.upper
@@ -11,6 +12,8 @@ local print = print
 local find = string.find
 local len = string.len
 local sub = string.sub
+
+-- WOW API
 local GetID, GetName = GetID, GetName
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc

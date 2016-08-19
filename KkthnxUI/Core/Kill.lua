@@ -1,5 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- WOW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local SetCVar = SetCVar

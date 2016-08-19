@@ -1,6 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
+
+-- WOW API
 local CreateFrame = CreateFrame
 
 local FixTooltip = CreateFrame("Frame")

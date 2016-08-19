@@ -7,6 +7,7 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local UnitIsTapDenied = UnitIsTapDenied
 local InCombatLockdown = InCombatLockdown
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local GetCVar = GetCVar
@@ -50,6 +51,7 @@ function EnableEnhancedFrames()
 	-- BOSSFRAME HOOKS
 	hooksecurefunc("BossTargetFrame_OnLoad", EnhancedFrames_BossTargetFrame_Style)
 
+	-- PARTYFRAME HOOKS
 	hooksecurefunc("PartyMemberFrame_ToPlayerArt", EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt)
 	hooksecurefunc("PartyMemberFrame_ToVehicleArt", EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt)
 

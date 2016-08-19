@@ -1,10 +1,13 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Aura.CastBy ~= true then return end
 
+-- LUA API
 local format = string.format
 local select = select
 local pairs = pairs
 local match = string.match
+
+-- WOW API
 local GetUnitName = GetUnitName
 local hooksecurefunc = hooksecurefunc
 local UnitClass = UnitClass

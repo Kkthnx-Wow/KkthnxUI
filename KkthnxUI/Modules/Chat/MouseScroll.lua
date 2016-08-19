@@ -1,6 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- Chat Scroll Module
+-- WOW API
+local IsShiftKeyDown = IsShiftKeyDown
+
+-- CHAT SCROLL MODULE
 local ScrollLines = 1
 function FloatingChatFrame_OnMouseScroll(self, delta)
 	if delta < 0 then

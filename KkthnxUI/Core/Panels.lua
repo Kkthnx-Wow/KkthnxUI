@@ -1,43 +1,46 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local unpack = unpack
 local _G = _G
+
+-- WOW API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 
---	Bottom bars anchor
-local bottombaranchor = CreateFrame("Frame", "ActionBarAnchor", UIParent)
-bottombaranchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.BottomBars))
-bottombaranchor:SetWidth((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
+--	BOTTOM BARS ANCHOR
+local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", UIParent)
+BottomBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.BottomBars))
+BottomBarAnchor:SetWidth((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
 if C.ActionBar.BottomBars == 2 then
-	bottombaranchor:SetHeight((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
+	BottomBarAnchor:SetHeight((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
 elseif C.ActionBar.BottomBars == 3 then
 	if C.ActionBar.SplitBars == true then
-		bottombaranchor:SetHeight((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
+		BottomBarAnchor:SetHeight((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
 	else
-		bottombaranchor:SetHeight((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2))
+		BottomBarAnchor:SetHeight((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2))
 	end
 else
-	bottombaranchor:SetHeight(C.ActionBar.ButtonSize)
+	BottomBarAnchor:SetHeight(C.ActionBar.ButtonSize)
 end
-bottombaranchor:SetFrameStrata("LOW")
+BottomBarAnchor:SetFrameStrata("LOW")
 
---	Right bars anchor
-local rightbaranchor = CreateFrame("Frame", "RightActionBarAnchor", UIParent)
-rightbaranchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.RightBars))
-rightbaranchor:SetHeight((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
+--	RIGHT BARS ANCHOR
+local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", UIParent)
+RightBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.RightBars))
+RightBarAnchor:SetHeight((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
 if C.ActionBar.RightBars == 1 then
-	rightbaranchor:SetWidth(C.ActionBar.ButtonSize)
+	RightBarAnchor:SetWidth(C.ActionBar.ButtonSize)
 elseif C.ActionBar.RightBars == 2 then
-	rightbaranchor:SetWidth((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
+	RightBarAnchor:SetWidth((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
 elseif C.ActionBar.RightBars == 3 then
-	rightbaranchor:SetWidth((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2))
+	RightBarAnchor:SetWidth((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2))
 else
-	rightbaranchor:Hide()
+	RightBarAnchor:Hide()
 end
-rightbaranchor:SetFrameStrata("LOW")
+RightBarAnchor:SetFrameStrata("LOW")
 
---	Split bar anchor
+--	SPLIT BAR ANCHOR
 if C.ActionBar.SplitBars == true then
 	local SplitBarLeft = CreateFrame("Frame", "SplitBarLeft", UIParent)
 	SplitBarLeft:CreatePanel("Invisible", (C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2), (C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace, "BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
@@ -48,30 +51,35 @@ if C.ActionBar.SplitBars == true then
 	SplitBarRight:SetFrameStrata("LOW")
 end
 
---	Pet bar anchor
+--	PET BAR ANCHOR
 local petbaranchor = CreateFrame("Frame", "PetActionBarAnchor", UIParent)
 if C.ActionBar.PetBarHorizontal == true then
 	petbaranchor:CreatePanel("Invisible", (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), (C.ActionBar.ButtonSize + C.ActionBar.ButtonSpace), unpack(C.Position.PetHorizontal))
 elseif C.ActionBar.RightBars > 0 then
-	petbaranchor:CreatePanel("Invisible", C.ActionBar.ButtonSize + 3, (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), "RIGHT", rightbaranchor, "LEFT", 0, 0)
+	petbaranchor:CreatePanel("Invisible", C.ActionBar.ButtonSize + 3, (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), "RIGHT", RightBarAnchor, "LEFT", 0, 0)
 else
 	petbaranchor:CreatePanel("Invisible", (C.ActionBar.ButtonSize + C.ActionBar.ButtonSpace), (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), unpack(C.Position.RightBars))
 end
 petbaranchor:SetFrameStrata("LOW")
-RegisterStateDriver(petbaranchor, "visibility", "[pet,novehicleui,nobonusbar:5] show; hide")
+RegisterStateDriver(petbaranchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
 
---	Stance bar anchor
-local ShiftHolder = CreateFrame("Frame", "ShiftHolder", UIParent)
-if C.ActionBar.StanceBarHorizontal == true then
-	ShiftHolder:SetPoint(unpack(C.Position.StanceBar))
-	ShiftHolder:SetWidth((C.ActionBar.ButtonSize * 7) + (C.ActionBar.ButtonSpace * 6))
-	ShiftHolder:SetHeight(C.ActionBar.ButtonSize)
-else
-	if (PetActionBarFrame:IsShown() or PetHolder) and C.ActionBar.PetBarHorizontal ~= true then
-		ShiftHolder:SetPoint("RIGHT", "PetHolder", "LEFT", -C.ActionBar.ButtonSpace, (C.ActionBar.ButtonSize / 2) + 1)
-	else
-		ShiftHolder:SetPoint("RIGHT", "RightActionBarAnchor", "LEFT", -C.ActionBar.ButtonSpace, (C.ActionBar.ButtonSize / 2) + 1)
+-- STANCE BAR ANCHOR
+local ShiftAnchor = CreateFrame("Frame", "ShapeShiftBarAnchor", UIParent)
+ShiftAnchor:RegisterEvent("PLAYER_LOGIN")
+ShiftAnchor:RegisterEvent("PLAYER_ENTERING_WORLD")
+ShiftAnchor:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
+ShiftAnchor:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
+	local Forms = GetNumShapeshiftForms()
+	if Forms > 0 then
+		if C.ActionBar.StanceBarHorizontal ~= true then
+			ShiftAnchor:SetWidth(C.ActionBar.ButtonSize + 3)
+			ShiftAnchor:SetHeight((C.ActionBar.ButtonSize * Forms) + ((C.ActionBar.ButtonSpace * Forms) - 3))
+			ShiftAnchor:SetPoint("TOPLEFT", _G["StanceButton1"], "TOPLEFT")
+		else
+			ShiftAnchor:SetWidth((C.ActionBar.ButtonSize * Forms) + ((C.ActionBar.ButtonSpace * Forms) - 3))
+			ShiftAnchor:SetHeight(C.ActionBar.ButtonSize)
+			ShiftAnchor:SetPoint("TOPLEFT", _G["StanceButton1"], "TOPLEFT")
+		end
 	end
-	ShiftHolder:SetWidth(C.ActionBar.ButtonSize)
-	ShiftHolder:SetHeight((C.ActionBar.ButtonSize * 7) + (C.ActionBar.ButtonSpace * 6))
-end
+end)

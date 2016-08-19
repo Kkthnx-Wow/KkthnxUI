@@ -1,11 +1,17 @@
 local K, C, L, _ = select(2, ...):unpack()
 
 -- APPLICATION PROGRAMMING INTERFACE FOR KKTHNXUI (API)
+
+-- LUA API
 local getmetatable = getmetatable
 local match = string.match
 local floor = math.floor
 local unpack, select = unpack, select
+
+-- WOW API
 local CreateFrame = CreateFrame
+local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
+
 local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
 local borderr, borderg, borderb = unpack(C.Media.Border_Color)
 local backdropa = 0.8

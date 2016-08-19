@@ -1,6 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.General.ReplaceBlizzardFonts ~= true then return end
 
+-- WOW API
 local GetChatWindowInfo = GetChatWindowInfo
 local Fonts = CreateFrame("Frame", nil, UIParent)
 
@@ -29,7 +30,7 @@ Fonts:SetScript("OnEvent", function(self, event, addon)
 	DAMAGE_TEXT_FONT = COMBAT
 	STANDARD_TEXT_FONT = NORMAL
 
-	-- Base fonts
+	-- BASE FONTS
 	SetFont(CombatTextFont,                     COMBAT, 200, "OUTLINE")
 	SetFont(FriendsFont_Large,					NORMAL, 12)
 	SetFont(FriendsFont_Normal,					NORMAL, 12)

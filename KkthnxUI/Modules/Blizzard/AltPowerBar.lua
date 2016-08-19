@@ -1,5 +1,10 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
+local unpack = unpack
+local select = select
+
+-- WOW API
 local PlayerPowerBarAlt = PlayerPowerBarAlt
 local UnitPowerMax = UnitPowerMax
 local UnitAlternatePowerInfo = UnitAlternatePowerInfo
@@ -42,12 +47,11 @@ PlayerPowerBarAlt:UnregisterEvent("PLAYER_ENTERING_WORLD")
 local bar = CreateFrame("Frame", "UIAltPowerBar", UIParent)
 bar:SetSize(221, 25)
 bar:SetPoint(unpack(C.Position.AltPowerBar))
---bar:SetTemplate("Default")
 bar:SetBackdrop(K.BorderBackdrop)
 bar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 bar:CreatePixelShadow(2)
 
--- Make moveable
+-- MAKE MOVEABLE
 bar:EnableMouse(true)
 bar:SetMovable(true)
 bar:SetUserPlaced(true)
@@ -64,7 +68,7 @@ bar:SetScript("OnMouseUp", function()
 	bar:StopMovingOrSizing()
 end)
 
--- Event handling
+-- EVENT HANDLING
 bar:RegisterEvent("UNIT_POWER")
 bar:RegisterEvent("UNIT_POWER_BAR_SHOW")
 bar:RegisterEvent("UNIT_POWER_BAR_HIDE")
@@ -78,7 +82,7 @@ bar:SetScript("OnEvent", function(self)
 	end
 end)
 
--- Tooltip
+-- TOOLTIP
 bar:SetScript("OnEnter", function(self)
 	local name = select(10, UnitAlternatePowerInfo("player"))
 	local tooltip = select(11, UnitAlternatePowerInfo("player"))
@@ -91,7 +95,7 @@ bar:SetScript("OnEnter", function(self)
 end)
 bar:SetScript("OnLeave", GameTooltip_Hide)
 
--- StatusBar
+-- STATUSBAR
 local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
 status:SetFrameLevel(bar:GetFrameLevel() + 1)
 status:SetStatusBarTexture(C.Media.Texture)
@@ -107,7 +111,7 @@ status.text = status:CreateFontString(nil, "OVERLAY")
 status.text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 status.text:SetPoint("CENTER", bar, "CENTER", 0, 0)
 
--- Update Function
+-- UPDATE FUNCTION
 local update = 1
 status:SetScript("OnUpdate", function(self, elapsed)
 	if not bar:IsShown() then return end
@@ -117,7 +121,6 @@ status:SetScript("OnUpdate", function(self, elapsed)
 		local power = UnitPower("player", ALTERNATE_POWER_INDEX)
 		local mpower = UnitPowerMax("player", ALTERNATE_POWER_INDEX)
 		local texture, r, g, b = UnitAlternatePowerTextureInfo("player", 2, 0)
-	--	texture = string.upper(texture)
 		if blizzColors[texture] then
 			r, g, b = blizzColors[texture].r, blizzColors[texture].g, blizzColors[texture].b
 		elseif not texture then

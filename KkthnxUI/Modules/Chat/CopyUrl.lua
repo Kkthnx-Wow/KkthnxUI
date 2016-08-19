@@ -1,11 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local pairs = pairs
 local match = string.match
 local gsub = string.gsub
 local sub = string.sub
 
--- Copy url from chat(module from Gibberish by p3lim)
+-- COPY URL FROM CHAT(MODULE FROM GIBBERISH BY P3LIM)
 local patterns = {
 	"(%d+%.%d+%.%d+%.%d+:?%d*)",
 	"(http://%S+)",

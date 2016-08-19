@@ -1,10 +1,11 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true or C.Tooltip.ItemCount ~= true then return end
 
+-- WOW API
 local GetItemCount = GetItemCount
 local CreateFrame = CreateFrame
 
---	Item count in tooltip(by Tukz)
+--	ITEM COUNT IN TOOLTIP(BY TUKZ)
 GameTooltip:HookScript("OnTooltipCleared", function(self) self.UIItemTooltip = nil end)
 GameTooltip:HookScript("OnTooltipSetItem", function(self)
 	if UIItemTooltip and not self.UIItemTooltip and UIItemTooltip.count then

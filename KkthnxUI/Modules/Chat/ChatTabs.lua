@@ -1,9 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
+
+-- WOW API
 local CreateFrame = CreateFrame
 
--- Based on Fane(by Haste)
+-- BASED ON FANE(BY HASTE)
 if C.Chat.TabsMouseover == true then
 	CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA = 0
 	CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA = 0
@@ -18,7 +21,7 @@ local Fane = CreateFrame("Frame")
 local updateFS = function(self, inc, ...)
 	local fstring = self:GetFontString()
 
-	-- Font and font style for chat
+	-- FONT AND FONT STYLE FOR CHAT
 	if C.Chat.TabsOutline == true then
 		fstring:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		fstring:SetShadowOffset(0, -0)
@@ -75,14 +78,14 @@ local faneifyTab = function(frame, sel)
 			frame:SetAlpha(1)
 
 			if i ~= 2 then
-				-- Might not be the best solution, but we avoid hooking into the UIFrameFade
-				-- system this way.
+				-- MIGHT NOT BE THE BEST SOLUTION, BUT WE AVOID HOOKING INTO THE UIFRAMEFADE
+				-- SYSTEM THIS WAY.
 				frame.SetAlpha = UIFrameFadeRemoveFrame
 			else
 				frame.SetAlpha = ChatFrame2_SetAlpha
 				frame.GetAlpha = ChatFrame2_GetAlpha
 
-				-- We do this here as people might be using AddonLoader together with Fane
+				-- WE DO THIS HERE AS PEOPLE MIGHT BE USING ADDONLOADER TOGETHER WITH FANE
 				if CombatLogQuickButtonFrame_Custom then
 					CombatLogQuickButtonFrame_Custom:SetAlpha(0.4)
 				end
@@ -92,7 +95,7 @@ local faneifyTab = function(frame, sel)
 		frame.Fane = true
 	end
 
-	-- We can't trust sel
+	-- WE CAN'T TRUST SEL
 	if i == SELECTED_CHAT_FRAME:GetID() then
 		updateFS(frame, nil, K.Color.r, K.Color.g, K.Color.b)
 	else
