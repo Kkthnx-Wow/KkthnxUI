@@ -251,6 +251,13 @@ local function LDD_Initialize()
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
+	
+	info = {}
+	info.text = L_LOOT_TO_INSTANCE
+	info.value = "instance_chat"
+	info.notCheckable = 1
+	info.func = LDD_OnClick
+	UIDropDownMenu_AddButton(info)
 
 	info = {}
 	info.text = L_LOOT_TO_SAY

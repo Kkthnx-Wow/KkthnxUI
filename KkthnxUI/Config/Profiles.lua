@@ -77,6 +77,7 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Chat"]["DamageMeterSpam"] = true
 	C["Chat"]["Spam"] = true
 
+	C["General"]["CustomLagTolerance"] = true
 	C["General"]["TranslateMessage"] = false
 	C["General"]["WelcomeMessage"] = false
 

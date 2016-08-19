@@ -5,7 +5,6 @@
 ## Version: 5.07
 ## DefaultState: Enabled
 ## OptionalDeps: KkthnxUI_Config, !Beautycase, Blizzard_DebugTools, CLCRet, DBM-Core, Recount, Skada, Spy, WeakAuras
-## SavedVariables: SavedOptions
 ## SavedVariablesPerCharacter: SavedOptionsPerChar, SavedPositions
 ## eMail: Kkthnxbye@live.com
 ## Website:

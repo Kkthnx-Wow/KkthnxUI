@@ -282,7 +282,6 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	-- Create empty CVar if they don't exist
-	if not SavedOptions then SavedOptions = {} end
 	if not SavedPositions then SavedPositions = {} end
 	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
 	if SavedOptionsPerChar.AutoInvite == nil then SavedOptionsPerChar.AutoInvite = false end
@@ -291,20 +290,36 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	if SavedOptionsPerChar.RightBars == nil then SavedOptionsPerChar.RightBars = C.ActionBar.RightBars end
 	if SavedOptionsPerChar.BottomBars == nil then SavedOptionsPerChar.BottomBars = C.ActionBar.BottomBars end
 
-	if K.ScreenWidth < 1200 then
+	if K.ScreenWidth < 1024 and GetCVar("gxMonitor") == "0" then
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
 	else
+		--[[
+		SetCVar("useUiScale", 1)
+		if C.General.UIScale > 1.28 then C.General.UIScale = 1.28 end
+		if C.General.UIScale < 0.64 then C.General.UIScale = 0.64 end
 
-	-- Install default if we never ran KkthnxUI on this character
-	if not SavedOptionsPerChar.Install then
-		StaticPopup_Show("INSTALL_UI")
+		-- SET OUR UISCALE
+		SetCVar("uiScale", C.General.UIScale)
+
+		-- HACK FOR 4K AND WQHD RESOLUTION
+		local CustomScale = min(2, max(0.32, 768 / string.match(T.resolution, "%d+x(%d+)")))
+		if C.General.AutoScale == true and CustomScale < 0.64 then
+			UIParent:SetScale(CustomScale)
+		elseif CustomScale < 0.64 then
+			UIParent:SetScale(C.General.UIScale)
+		end
+		]]--
+
+		-- INSTALL DEFAULT IF WE NEVER RAN KKTHNXUI ON THIS CHARACTER
+		if not SavedOptionsPerChar.Install then
+			StaticPopup_Show("INSTALL_UI")
+		end
+
+		self:UnregisterEvent("ADDON_LOADED")
 	end
 
-	self:UnregisterEvent("ADDON_LOADED")
-end
-
-	-- Welcome message
+	-- WELCOME MESSAGE
 	if C.General.WelcomeMessage == true then
 		print("|cffffe02e"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
 		print("|cffffe02e"..L_WELCOME_LINE_2_1.."|cffffe02e"..L_WELCOME_LINE_2_2.."|r")
