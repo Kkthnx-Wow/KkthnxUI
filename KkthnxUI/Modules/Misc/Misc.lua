@@ -24,16 +24,6 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
-DurabilityFrame:SetFrameStrata("HIGH")
-local function SetPosition(self, _, parent)
-	if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
-		DurabilityFrame:ClearAllPoints()
-		DurabilityFrame:SetPoint("RIGHT", Minimap, "RIGHT")
-		DurabilityFrame:SetScale(0.6)
-	end
-end
-hooksecurefunc(DurabilityFrame,"SetPoint", SetPosition)
-
 TicketStatusFrame:ClearAllPoints()
 TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
 -- BLIZZARD REPOSITIONS THIS FRAME NOW IN UIPARENT_UPDATETOPFRAMEPOSITIONS

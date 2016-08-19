@@ -60,11 +60,12 @@ MinimapBackdrop:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -2, 2)
 MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 
 -- MAIL
-Mail:ClearAllPoints()
-Mail:SetPoint("TOPRIGHT", 12, 29)
-Mail:SetFrameLevel(Minimap:GetFrameLevel() + 2)
-Mail:SetScale(1.2)
-MailBorder:Hide()
+MiniMapMailFrame:ClearAllPoints()
+MiniMapMailFrame:SetPoint("TOPRIGHT", Minimap, 4, 8)
+MiniMapMailFrame:SetScale(1.2)
+MiniMapMailFrame:SetFrameLevel(Minimap:GetFrameLevel() + 1)
+MiniMapMailFrame:SetFrameStrata(Minimap:GetFrameStrata())
+MiniMapMailBorder:Hide()
 MailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
 -- QUEUESTATUS ICON
@@ -113,7 +114,7 @@ end
 
 -- TICKET ICON
 HelpOpenTicketButton:SetParent(Minimap)
-HelpOpenTicketButton:CreateBackdrop()
+--HelpOpenTicketButton:CreateBackdrop()
 HelpOpenTicketButton:SetFrameLevel(4)
 HelpOpenTicketButton:ClearAllPoints()
 HelpOpenTicketButton:SetPoint("TOP", Minimap, "TOP", 0, -2)
