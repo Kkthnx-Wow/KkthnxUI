@@ -346,23 +346,23 @@ local UploadSkada = function()
 			["Default"] = {
 				["windows"] = {
 					{
-						["barslocked"] = true,
-						["barwidth"] = 217,
 						["barheight"] = 12,
-						["barspacing"] = 7,
+						["barslocked"] = true,
 						["background"] = {
 							["color"] = {
 								["a"] = 0,
 							},
-							["height"] = 132,
+							["height"] = 95.0000305175781,
 						},
+						["y"] = 0,
 						["point"] = "BOTTOMRIGHT",
-						["x"] = -247,
-						["y"] = 1,
+						["barwidth"] = 221,
+						["barspacing"] = 7,
+						["x"] = -340,
 						["title"] = {
 							["height"] = 12,
 						},
-					},
+					}, -- [1]
 				},
 				["icon"] = {
 					["hide"] = true,
