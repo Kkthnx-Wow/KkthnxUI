@@ -1,8 +1,11 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Error.White ~= true and C.Error.Black ~= true then return end
 
--- All errors on http://wowwiki.wikia.com/wiki/WoW_Constants/Errors
--- White list errors, that will not be hidden
+--[[
+	ALL ERRORS ON HTTP://WOWWIKI.WIKIA.COM/WIKI/WOW_CONSTANTS/ERRORS
+	WHITE LIST ERRORS, THAT WILL NOT BE HIDDEN
+]]--
+
 K.White_List = {
 	[ERR_INV_FULL] = true,
 	[ERR_QUEST_LOG_FULL] = true,
@@ -14,7 +17,7 @@ K.White_List = {
 	[ERR_LOOT_MASTER_UNIQUE_ITEM] = true,
 }
 
--- Black list errors, that will be hidden
+-- BLACK LIST ERRORS, THAT WILL BE HIDDEN
 K.Black_List = {
 	[SPELL_FAILED_NO_COMBO_POINTS] = true,
 	[SPELL_FAILED_TARGETS_DEAD] = true,

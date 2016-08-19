@@ -28,6 +28,7 @@ C["ActionBar"] = {
 	["ButtonSpace"] = 4,
 	["Enable"] = true,
 	["EquipBorder"] = false,
+	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
 	["OutOfMana"] = {128/255, 128/255, 255/255},

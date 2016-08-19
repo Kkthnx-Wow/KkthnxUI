@@ -1,15 +1,17 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Nameplate.Enable ~= true then return end
 
+-- LUA API
 local tostring = tostring
 local print = print
 
+-- WOW API
 local GetSpellInfo = GetSpellInfo
 
 --[[
-THE BEST WAY TO ADD OR DELETE SPELL IS TO GO AT WWW.WOWHEAD.COM, SEARCH FOR A SPELL.
-EXAMPLE: POLYMORPH -> http://www.wowhead.com/spell=118
-TAKE THE NUMBER ID AT THE END OF THE URL, AND ADD IT TO THE LIST
+	THE BEST WAY TO ADD OR DELETE SPELL IS TO GO AT WWW.WOWHEAD.COM, SEARCH FOR A SPELL.
+	EXAMPLE: POLYMORPH -> http://www.wowhead.com/spell=118
+	TAKE THE NUMBER ID AT THE END OF THE URL, AND ADD IT TO THE LIST
 ]]--
 
 local function SpellName(id)

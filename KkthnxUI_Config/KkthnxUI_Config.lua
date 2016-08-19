@@ -51,6 +51,7 @@ local function Local(o)
 	if o == "UIConfigActionBarButtonSpace" then o = L_GUI_ACTIONBAR_BUTTON_SPACE end
 	if o == "UIConfigActionBarEnable" then o = L_GUI_ACTIONBAR_ENABLE end
 	if o == "UIConfigActionBarEquipBorder" then o = L_GUI_ACTIONBAR_EQUIP_BORDER end
+	if o == "UIConfigActionBarHideHighlight" then o = L_GUI_ACTIONBAR_HIDE_HIGHLIGHT end
 	if o == "UIConfigActionBarHotkey" then o = L_GUI_ACTIONBAR_HOTKEY end
 	if o == "UIConfigActionBarMacro" then o = L_GUI_ACTIONBAR_MACRO end
 	if o == "UIConfigActionBarOutOfMana" then o = L_GUI_ACTIONBAR_OUT_OF_MANA end

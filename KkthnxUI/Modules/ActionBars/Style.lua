@@ -1,7 +1,7 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- By Tukz
+-- BY TUKZ
 
 -- LUA API
 local _G = _G
@@ -49,7 +49,7 @@ local function StyleNormalButton(self)
 		end
 	end
 
-	if C.ActionBar.Hotkey == true then
+	if C.ActionBar.HotKey == true then
 		hotkey:ClearAllPoints()
 		hotkey:SetPoint("TOPRIGHT", 0, -2)
 		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
@@ -82,7 +82,7 @@ local function StyleNormalButton(self)
 			button.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end
 	end
-	
+
 	if C.Blizzard.DarkTextures == true then
 		button.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
 	end
@@ -224,12 +224,57 @@ local function UpdateHotkey(self, actionButtonType)
 	text = gsub(text, KEY_INSERT, "Ins")
 	text = gsub(text, KEY_HOME, "Hm")
 	text = gsub(text, KEY_DELETE, "Del")
-	text = gsub(text, KEY_INSERT_MAC, "Hlp") -- mac
+	text = gsub(text, KEY_INSERT_MAC, "Hlp") -- MAC
 
 	if hotkey:GetText() == indicator then
 		hotkey:SetText("")
 	else
 		hotkey:SetText(text)
+	end
+end
+
+local buttons = 0
+local function SetupFlyoutButton()
+	for i = 1, buttons do
+		if _G["SpellFlyoutButton"..i] then
+			StyleNormalButton(_G["SpellFlyoutButton"..i])
+			_G["SpellFlyoutButton"..i]:StyleButton()
+
+			if _G["SpellFlyoutButton"..i]:GetChecked() then
+				_G["SpellFlyoutButton"..i]:SetChecked(false)
+			end
+		end
+	end
+end
+SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
+
+local function StyleFlyoutButton(self)
+	if self.FlyoutBorder then
+		self.FlyoutBorder:SetAlpha(0)
+	end
+	if self.FlyoutBorderShadow then
+		self.FlyoutBorderShadow:SetAlpha(0)
+	end
+
+	SpellFlyoutHorizontalBackground:SetAlpha(0)
+	SpellFlyoutVerticalBackground:SetAlpha(0)
+	SpellFlyoutBackgroundEnd:SetAlpha(0)
+
+	for i = 1, GetNumFlyouts() do
+		local x = GetFlyoutID(i)
+		local _, _, numSlots, isKnown = GetFlyoutInfo(x)
+		if isKnown then
+			if numSlots > buttons then
+			buttons = numSlots
+			end
+		end
+	end
+end
+
+local function HideHighlightButton(self)
+	if self.overlay then
+		self.overlay:Hide()
+		ActionButton_HideOverlayGlow(self)
 	end
 end
 
@@ -249,7 +294,11 @@ do
 end
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
-if C.ActionBar.Hotkey == true then
+hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
+if C.ActionBar.HotKey == true then
 	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...) if event == "PLAYER_ENTERING_WORLD" then ActionButton_UpdateHotkeys(self, self.buttonType) end end)
 	hooksecurefunc("ActionButton_UpdateHotkeys", UpdateHotkey)
+end
+if C.ActionBar.HideHightlight == true then
+	hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
 end

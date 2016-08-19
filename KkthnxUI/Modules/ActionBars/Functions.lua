@@ -4,7 +4,12 @@ if C.ActionBar.Enable ~= true then return end
 -- LUA API
 local _G = _G
 
---	Pet and shapeshift bars style function
+-- WOW API
+local GetNumShapeshiftForms = GetNumShapeshiftForms
+local GetShapeshiftFormInfo = GetShapeshiftFormInfo
+local PetHasActionBar = PetHasActionBar
+
+--	PET AND SHAPESHIFT BARS STYLE FUNCTION
 K.ShiftBarUpdate = function()
 	local numForms = GetNumShapeshiftForms()
 	local texture, name, isActive, isCastable

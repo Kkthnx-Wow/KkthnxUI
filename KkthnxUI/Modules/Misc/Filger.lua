@@ -1,12 +1,15 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or C.Filger.Enable ~= true then return end
 
+-- LUA API
 local _G = _G
 local pairs = pairs
 local unpack = unpack
 local format = string.format
 local time = time
 local print = print
+
+-- WOW API
 local UnitDebuff, UnitBuff = UnitDebuff, UnitBuff
 local GetParent = GetParent
 local GetItemInfo = GetItemInfo
@@ -41,7 +44,7 @@ COOLDOWN_Anchor:SetSize(C.Filger.CooldownSize, C.Filger.CooldownSize)
 T_DE_BUFF_BAR_Anchor:SetPoint(unpack(C.Position.Filger.TargetBar))
 T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
--- Filger(by Nils Ruesch, editors Affli/SinaC/Ildyria)
+-- FILGER(BY NILS RUESCH, EDITORS AFFLI/SINAC/ILDYRIA)
 local Filger = {}
 local MyUnits = {player = true, vehicle = true, pet = true}
 
