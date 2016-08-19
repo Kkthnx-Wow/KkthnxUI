@@ -432,8 +432,8 @@ function Stuffing:BagFrameSlotNew(p, slot)
 
 	ret.icon = _G[ret.frame:GetName().."IconTexture"]
 	ret.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-	ret.icon:SetPoint("TOPLEFT", ret.frame, 2, -2)
-	ret.icon:SetPoint("BOTTOMRIGHT", ret.frame, -2, 2)
+	ret.icon:SetPoint("TOPLEFT", ret.frame, 4, -4)
+	ret.icon:SetPoint("BOTTOMRIGHT", ret.frame, -4, 4)
 
 	return ret
 end
@@ -787,7 +787,7 @@ function Stuffing:InitBags()
 	detail:SetJustifyH("LEFT")
 	detail:SetText("|cff9999ff"..SEARCH.."|r")
 	editbox:SetAllPoints(detail)
-	
+
 	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	gold:SetJustifyH("RIGHT")
 	gold:SetPoint("RIGHT", f.b_close, "LEFT", -10, 0)
