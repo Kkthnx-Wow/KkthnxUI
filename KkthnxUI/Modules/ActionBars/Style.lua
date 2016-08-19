@@ -49,7 +49,7 @@ local function StyleNormalButton(self)
 		end
 	end
 
-	if C.ActionBar.HotKey == true then
+	if C.ActionBar.Hotkey == true then
 		hotkey:ClearAllPoints()
 		hotkey:SetPoint("TOPRIGHT", 0, -2)
 		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
@@ -117,7 +117,7 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 	flash:SetPoint("TOPLEFT", button, 2, -2)
 	flash:SetPoint("BOTTOMRIGHT", button, -2, 2)
 
-	if C.ActionBar.HotKey == true then
+	if C.ActionBar.Hotkey == true then
 		hotkey:ClearAllPoints()
 		hotkey:SetPoint("TOPRIGHT", 0, 0)
 		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
@@ -295,7 +295,7 @@ end
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
-if C.ActionBar.HotKey == true then
+if C.ActionBar.Hotkey == true then
 	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...) if event == "PLAYER_ENTERING_WORLD" then ActionButton_UpdateHotkeys(self, self.buttonType) end end)
 	hooksecurefunc("ActionButton_UpdateHotkeys", UpdateHotkey)
 end
