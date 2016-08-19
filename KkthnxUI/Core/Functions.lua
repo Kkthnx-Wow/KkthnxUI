@@ -61,7 +61,7 @@ K.ShortValue = function(value)
 			return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
 		else
 			return floor(tostring(value))
-		end 
+		end
 	else
 		value = tonumber(value)
 		if not value then return "" end
@@ -71,7 +71,7 @@ K.ShortValue = function(value)
 			return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
 		else
 			return floor(tostring(value))
-		end	
+		end
 	end
 end
 
@@ -144,7 +144,7 @@ RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
 RoleUpdater:SetScript("OnEvent", CheckRole)
 
-function K.ShortenString(string, numChars, dots)
+K.ShortenString = function(string, numChars, dots)
 	local bytes = string:len()
 	if(bytes <= numChars) then
 		return string
