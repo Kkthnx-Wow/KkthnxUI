@@ -51,7 +51,7 @@ if (select(4, GetAddOnInfo("SexyMap"))) or (select(4, GetAddOnInfo("wMinimap")))
 	C.Minimap.Enable = false
 end
 
-if (select(4, GetAddOnInfo("Stuf"))) or (select(4, GetAddOnInfo("PitBull4"))) or (select(4, GetAddOnInfo("ShadowedUnitFrames"))) then
+if (select(4, GetAddOnInfo("XPerl"))) or (select(4, GetAddOnInfo("Stuf"))) or (select(4, GetAddOnInfo("PitBull4"))) or (select(4, GetAddOnInfo("ShadowedUnitFrames"))) or (select(4, GetAddOnInfo("oUF_Abu"))) then
 	C.Unitframe.Enable = false
 	C.Unitframe.EnhancedFrames = false
 end
@@ -70,10 +70,6 @@ end
 
 if (select(4, GetAddOnInfo("KkthnxUI_OldBars"))) then
 	C.ActionBar.Enable = false
-end
-
-if (select(4, GetAddOnInfo("XPerl"))) or (select(4, GetAddOnInfo("Stuf"))) or (select(4, GetAddOnInfo("PitBull4"))) or (select(4, GetAddOnInfo("ShadowedUnitFrames"))) then
-	C.Unitframe.Enable = false
 end
 
 if (select(4, GetAddOnInfo("AdiBags"))) or (select(4, GetAddOnInfo("ArkInventory"))) or (select(4, GetAddOnInfo("cargBags_Nivaya"))) or (select(4, GetAddOnInfo("cargBags"))) or (select(4, GetAddOnInfo("Bagnon"))) or (select(4, GetAddOnInfo("Combuctor"))) or (select(4, GetAddOnInfo("TBag"))) or (select(4, GetAddOnInfo("BaudBag"))) then

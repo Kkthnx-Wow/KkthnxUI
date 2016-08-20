@@ -55,6 +55,13 @@ h:SetScript("OnEvent", function(h, event, ...)
 				frame.healthBar.bg:SetTexture(C.Media.Blank)
 				frame.healthBar.bg:SetAllPoints()
 			end
+			
+			-- CASTBAR BACKGROUND
+			if (not frame.castBar.bg) then
+				frame.castBar.bg = frame.castBar:CreateTexture(nil, "BACKGROUND", nil, -8)
+				frame.castBar.bg:SetTexture(C.Media.Blank)
+				frame.castBar.bg:SetAllPoints()
+			end
 
 			-- CAST BAR
 			frame.castBar:SetStatusBarTexture(C.Media.Texture)
@@ -66,41 +73,6 @@ h:SetScript("OnEvent", function(h, event, ...)
 			end
 		end)
 	end
-end)
-
--- NAME
-hooksecurefunc("CompactUnitFrame_UpdateName", function (frame)
-	-- SET THE TAG BASED ON UNITCLASSIFICATION, CAN RETURN "WORLDBOSS", "RARE", "RAREELITE", "ELITE", "NORMAL", "MINUS"
-	local tag
-	local level = UnitLevel(frame.unit)
-	local name = UnitName(frame.unit)
-	local hexColor
-
-	if level >= UnitLevel("player") +5 then
-		hexColor = GetHexColorFromRGB(1, 0, 0)
-	elseif level >= UnitLevel("player") +3 then
-		hexColor = "ff6600"
-	elseif level <= UnitLevel("player") -3 then
-		hexColor = GetHexColorFromRGB(0, 1, 0)
-	elseif level <= UnitLevel("player") -5 then
-		hexColor = GetHexColorFromRGB(0.5, 0.5, 0.5)
-	else
-		hexColor = GetHexColorFromRGB(1, 1, 0)
-	end
-
-	if UnitClassification(frame.unit) == "worldboss" or UnitLevel(frame.unit) == -1 then
-		level = "??"
-		hexColor = "ff6600"
-	elseif UnitClassification(frame.unit) == "rare" then
-		name = "*"..name.."*"
-	elseif UnitClassification(frame.unit) == "rareelite" then
-		name = "*"..name.."*"
-		level = "+"..level
-	elseif UnitClassification(frame.unit) == "elite" then
-		level = "+"..level
-	end
-	--SET THE NAMEPLATE NAME TO INCLUDE TAG(IF ANY), NAME AND LEVEL
-	frame.name:SetText("|cff"..hexColor.."("..level..")|r "..name)
 end)
 
 local function IsTank()
