@@ -35,11 +35,10 @@ local ALLOWED_GROUPS = {
 	["Loot"] = 12,
 	["Minimap"] = 13,
 	["Misc"] = 14,
-	["Nameplate"] = 15,
-	["PulseCD"] = 16,
-	["Skins"] = 17,
-	["Tooltip"] = 18,
-	["Unitframe"] = 19,
+	["PulseCD"] = 15,
+	["Skins"] = 16,
+	["Tooltip"] = 17,
+	["Unitframe"] = 18,
 }
 
 local function Local(o)
@@ -179,26 +178,6 @@ local function Local(o)
 	if o == "UIConfigMiscMoveBlizzard" then o = L_GUI_MISC_MOVE_BLIZZARD end
 	if o == "UIConfigMiscInviteKeyword" then o = L_GUI_MISC_INVKEYWORD end
 	if o == "UIConfigMiscItemLevel" then o = L_GUI_MISC_ITEM_LEVEL end
-	-- Nameplates Settings
-	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
-	if o == "UIConfigNameplateAdditionalHeight" then o = L_GUI_NAMEPLATE_AD_HEIGHT end
-	if o == "UIConfigNameplateAdditionalWidth" then o = L_GUI_NAMEPLATE_AD_WIDTH end
-	if o == "UIConfigNameplateAuraSize" then o = L_GUI_NAMEPLATE_DEBUFFS_SIZE end
-	if o == "UIConfigNameplateBadColor" then o = L_GUI_NAMEPLATE_BAD_COLOR end
-	if o == "UIConfigNameplateClassIcons" then o = L_GUI_NAMEPLATE_CLASS_ICON end
-	if o == "UIConfigNameplateCombat" then o = L_GUI_NAMEPLATE_COMBAT end
-	if o == "UIConfigNameplateEnable" then o = L_GUI_NAMEPLATE_ENABLE end
-	if o == "UIConfigNameplateEnhanceThreat" then o = L_GUI_NAMEPLATE_THREAT end
-	if o == "UIConfigNameplateGoodColor" then o = L_GUI_NAMEPLATE_GOOD_COLOR end
-	if o == "UIConfigNameplateHealthValue" then o = L_GUI_NAMEPLATE_HEALTH end
-	if o == "UIConfigNameplateHeight" then o = L_GUI_NAMEPLATE_HEIGHT end
-	if o == "UIConfigNameplateNameAbbreviate" then o = L_GUI_NAMEPLATE_NAME_ABBREV end
-	if o == "UIConfigNameplateNearColor" then o = L_GUI_NAMEPLATE_NEAR_COLOR end
-	if o == "UIConfigNameplateCastBar" then o = L_GUI_NAMEPLATE_CASTBAR end
-	if o == "UIConfigNameplateCastBarName" then o = L_GUI_NAMEPLATE_CASTBAR_NAME end
-	if o == "UIConfigNameplateAuras" then o = L_GUI_NAMEPLATE_SHOW_DEBUFFS end
-	if o == "UIConfigNameplateWidth" then o = L_GUI_NAMEPLATE_WIDTH end
-	if o == "UIConfigNameplateHealerIcon" then o = L_GUI_NAMEPLATE_HEALER_ICON end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end

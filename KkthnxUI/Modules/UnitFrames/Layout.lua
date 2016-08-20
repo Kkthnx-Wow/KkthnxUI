@@ -26,234 +26,244 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
 local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
-PlayerAnchor:SetSize(146, 28)
-PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
+if(InCombatLockdown() == false) then
+	PlayerAnchor:SetSize(146, 28)
+	PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
+end
 
 local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
-TargetAnchor:SetSize(146, 28)
-TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
+if(InCombatLockdown() == false) then
+	TargetAnchor:SetSize(146, 28)
+	TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
+end
 
 local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
 
-local function AdjustUnitFrames()
-	if(InCombatLockdown() == false) then
-		if C.Unitframe.ClassHealth ~= true then
+if C.Unitframe.Enable == true then
+	Unitframes:RegisterEvent("ADDON_LOADED")
+	Unitframes:SetScript("OnEvent", function(self, event, addon)
+		if (addon ~= "KkthnxUI") then return end
+		if(InCombatLockdown() == false) then
+			if C.Unitframe.ClassHealth ~= true then
 
-			CUSTOM_FACTION_BAR_COLORS = {
-				[1] = {r = 255/255, g = 0/255, b = 0/255},
-				[2] = {r = 255/255, g = 0/255, b = 0/255},
-				[3] = {r = 255/255, g = 255/255, b = 0/255},
-				[4] = {r = 255/255, g = 255/255, b = 0/255},
-				[5] = {r = 0/255, g = 255/255, b = 0/255},
-				[6] = {r = 0/255, g = 255/255, b = 0/255},
-				[7] = {r = 0/255, g = 255/255, b = 0/255},
-				[8] = {r = 0/255, g = 255/255, b = 0/255},
-			}
+				CUSTOM_FACTION_BAR_COLORS = {
+					[1] = {r = 255/255, g = 0/255, b = 0/255},
+					[2] = {r = 255/255, g = 0/255, b = 0/255},
+					[3] = {r = 255/255, g = 255/255, b = 0/255},
+					[4] = {r = 255/255, g = 255/255, b = 0/255},
+					[5] = {r = 0/255, g = 255/255, b = 0/255},
+					[6] = {r = 0/255, g = 255/255, b = 0/255},
+					[7] = {r = 0/255, g = 255/255, b = 0/255},
+					[8] = {r = 0/255, g = 255/255, b = 0/255},
+				}
 
-			hooksecurefunc("UnitFrame_Update", function(self, isParty)
-				if not self.name or not self:IsShown() then return end
+				hooksecurefunc("UnitFrame_Update", function(self, isParty)
+					if not self.name or not self:IsShown() then return end
 
-				local PET_COLOR = { r = 157/255, g = 197/255, b = 255/255 }
-				local unit, color = self.unit
-				if UnitPlayerControlled(unit) then
-					if UnitIsPlayer(unit) then
-						color = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
+					local PET_COLOR = { r = 157/255, g = 197/255, b = 255/255 }
+					local unit, color = self.unit
+					if UnitPlayerControlled(unit) then
+						if UnitIsPlayer(unit) then
+							color = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
+						else
+							color = PET_COLOR
+						end
+					elseif UnitIsDeadOrGhost(unit) then
+						color = GRAY_FONT_COLOR
 					else
-						color = PET_COLOR
+						color = CUSTOM_FACTION_BAR_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
 					end
-				elseif UnitIsDeadOrGhost(unit) then
-					color = GRAY_FONT_COLOR
+
+					if not color then
+						color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)["PRIEST"]
+					end
+
+					self.name:SetTextColor(color.r, color.g, color.b)
+					if isParty then
+						self.name:SetText(GetUnitName(self.overrideName or unit))
+					end
+				end)
+			end
+
+			-- HIDE PET NAME
+			PetName:Hide()
+
+			-- UNIT NAME
+			for _, FrameNames in pairs({
+				PlayerName,
+				TargetFrameTextureFrameName,
+				FocusFrameTextureFrameName,
+			}) do
+				if C.Unitframe.Outline then
+					FrameNames:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+					FrameNames:SetShadowOffset(0, -0)
 				else
-					color = CUSTOM_FACTION_BAR_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
+					FrameNames:SetFont(C.Media.Font, C.Media.Font_Size)
+					FrameNames:SetShadowOffset(K.Mult, -K.Mult)
 				end
+			end
 
-				if not color then
-					color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)["PRIEST"]
+			-- UNIT HEALTHBARTEXT
+			for _, FrameBarText in pairs({
+				PlayerFrameHealthBarTextLeft,
+				PlayerFrameHealthBarTextRight,
+				TargetFrameTextureFrameHealthBarTextLeft,
+				TargetFrameTextureFrameHealthBarTextRight,
+				PlayerFrameManaBarTextLeft,
+				PlayerFrameManaBarTextRight,
+				TargetFrameTextureFrameManaBarTextLeft,
+				TargetFrameTextureFrameManaBarTextRight,
+				PartyMemberFrame1HealthBarTextRight,
+				PartyMemberFrame1HealthBarTextLeft,
+				PlayerFrameHealthBarText,
+				PlayerFrameManaBarText,
+				TargetFrameTextureFrameHealthBarText,
+				TargetFrameTextureFrameManaBarText,
+				FocusFrameTextureFrameHealthBarText,
+				FocusFrameTextureFrameManaBarText,
+				PetFrameHealthBarText,
+				PetFrameManaBarText,
+			}) do
+				if C.Unitframe.Outline then
+					FrameBarText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+					FrameBarText:SetShadowOffset(0, -0)
+				else
+					FrameBarText:SetFont(C.Media.Font, C.Media.Font_Size)
+					FrameBarText:SetShadowOffset(K.Mult, -K.Mult)
 				end
+			end
 
-				self.name:SetTextColor(color.r, color.g, color.b)
-				if isParty then
-					self.name:SetText(GetUnitName(self.overrideName or unit))
+
+			for i = 1, MAX_PARTY_MEMBERS do
+				if C.Unitframe.Outline then
+					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
+
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
+				else
+					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
+					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+				end
+			end
+
+			-- UNIT LEVELTEXT
+			for _, LevelText in pairs({
+				PlayerLevelText,
+				TargetFrameTextureFrameLevelText,
+				FocusFrameTextureFrameLevelText,
+			}) do
+				if C.Unitframe.Outline then
+					LevelText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+					LevelText:SetShadowOffset(0, -0)
+				else
+					LevelText:SetFont(C.Media.Font, C.Media.Font_Size)
+					LevelText:SetShadowOffset(K.Mult, -K.Mult)
+				end
+			end
+
+			-- PlayerFrame
+			hooksecurefunc("PlayerFrame_UpdateLevelTextAnchor", function(level)
+				if ( level >= 100 ) then
+					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -17)
+				else
+					PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -17)
 				end
 			end)
-		end
 
-		-- HIDE PET NAME
-		PetName:Hide()
+			-- TARGETFRAME
+			hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", function(self, targetLevel)
+				if ( targetLevel >= 100 ) then
+					self.levelText:SetPoint("CENTER", 63, -17)
+				else
+					self.levelText:SetPoint("CENTER", 63, -17)
+				end
+			end)
 
-		-- UNIT NAME
-		for _, FrameNames in pairs({
-			PlayerName,
-			TargetFrameTextureFrameName,
-			FocusFrameTextureFrameName,
-		}) do
-			if C.Unitframe.Outline then
-				FrameNames:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-				FrameNames:SetShadowOffset(0, -0)
-			else
-				FrameNames:SetFont(C.Media.Font, C.Media.Font_Size)
-				FrameNames:SetShadowOffset(K.Mult, -K.Mult)
+			-- TWEAK PARTY FRAME
+			for i = 1, MAX_PARTY_MEMBERS do
+				_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
 			end
-		end
 
-		-- UNIT HEALTHBARTEXT
-		for _, FrameBarText in pairs({
-			PlayerFrameHealthBarTextLeft,
-			PlayerFrameHealthBarTextRight,
-			TargetFrameTextureFrameHealthBarTextLeft,
-			TargetFrameTextureFrameHealthBarTextRight,
-			PlayerFrameManaBarTextLeft,
-			PlayerFrameManaBarTextRight,
-			TargetFrameTextureFrameManaBarTextLeft,
-			TargetFrameTextureFrameManaBarTextRight,
-			PartyMemberFrame1HealthBarTextRight,
-			PartyMemberFrame1HealthBarTextLeft,
-			PlayerFrameHealthBarText,
-			PlayerFrameManaBarText,
-			TargetFrameTextureFrameHealthBarText,
-			TargetFrameTextureFrameManaBarText,
-			FocusFrameTextureFrameHealthBarText,
-			FocusFrameTextureFrameManaBarText,
-			PetFrameHealthBarText,
-			PetFrameManaBarText,
-		}) do
-			if C.Unitframe.Outline then
-				FrameBarText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-				FrameBarText:SetShadowOffset(0, -0)
-			else
-				FrameBarText:SetFont(C.Media.Font, C.Media.Font_Size)
-				FrameBarText:SetShadowOffset(K.Mult, -K.Mult)
-			end
-		end
+			-- TWEAK PLAYER FRAME
+			K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
 
+			-- TWEAK TARGET FRAME
+			K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
 
-		for i = 1, MAX_PARTY_MEMBERS do
-			if C.Unitframe.Outline then
-				_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
+			-- TWEAK NAME BACKGROUND
+			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
+			-- TWEAK FOCUS FRAME
+			K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 60, C.Unitframe.Scale)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
+			-- TWEAK NAME BACKGROUND
+			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
-
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
-
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
-
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
-			else
-				_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
-				_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
-
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
-
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
-
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
-
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
-
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
-
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
-			end
-		end
-
-		-- UNIT LEVELTEXT
-		for _, LevelText in pairs({
-			PlayerLevelText,
-			TargetFrameTextureFrameLevelText,
-			FocusFrameTextureFrameLevelText,
-		}) do
-			if C.Unitframe.Outline then
-				LevelText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-				LevelText:SetShadowOffset(0, -0)
-			else
-				LevelText:SetFont(C.Media.Font, C.Media.Font_Size)
-				LevelText:SetShadowOffset(K.Mult, -K.Mult)
-			end
-		end
-
-		-- PlayerFrame
-		hooksecurefunc("PlayerFrame_UpdateLevelTextAnchor", function(level)
-			if ( level >= 100 ) then
-				PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -17)
-			else
-				PlayerLevelText:SetPoint("CENTER", PlayerFrameTexture, "CENTER", -63, -17)
-			end
-		end)
-
-		-- TARGETFRAME
-		hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", function(self, targetLevel)
-			if ( targetLevel >= 100 ) then
-				self.levelText:SetPoint("CENTER", 63, -17)
-			else
-				self.levelText:SetPoint("CENTER", 63, -17)
-			end
-		end)
-
-		-- TWEAK PARTY FRAME
-		for i = 1, MAX_PARTY_MEMBERS do
-			_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
-		end
-
-		-- TWEAK PLAYER FRAME
-		K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
-
-		-- TWEAK TARGET FRAME
-		K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
-
-		-- TWEAK NAME BACKGROUND
-		TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-
-		-- TWEAK FOCUS FRAME
-		K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 60, C.Unitframe.Scale)
-
-		-- TWEAK NAME BACKGROUND
-		FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-
-		-- BOSS FRAMES
-		for i = 1, 5 do
-			_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
-			_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
-			_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
-		end
-		for i = 2, 5 do
-			_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
-		end
-
-		-- COMBOFRAME
-		if K.Class == "ROGUE" or K.Class == "DRUID" then
+			-- BOSS FRAMES
 			for i = 1, 5 do
-				_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
+				_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
+				_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
+				_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
+			end
+			for i = 2, 5 do
+				_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 			end
 
-			if C.Unitframe.ComboFrame == true then
-				ComboFrame:UnregisterAllEvents()
-				ComboFrame.Show = K.Noop
-				ComboFrame:Hide()
+			-- COMBOFRAME
+			if K.Class == "ROGUE" or K.Class == "DRUID" then
+				for i = 1, 5 do
+					_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
+				end
+
+				if C.Unitframe.ComboFrame == true then
+					ComboFrame:UnregisterAllEvents()
+					ComboFrame.Show = K.Noop
+					ComboFrame:Hide()
+				end
+				-- ARENA FRAMES
+				for i = 1, 5 do
+					_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
+				end
+				ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 			end
-			-- Arena Frames
-			for i = 1, 5 do
-				_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
-			end
-			ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 		end
-	end
+
+		self:UnregisterEvent("ADDON_LOADED")
+	end)
 end
 
 -- CLASS ICONS
@@ -289,19 +299,6 @@ if(InCombatLockdown() == false) then
 		hooksecurefunc("HealthBar_OnValueChanged", function(self)
 			colorHealthBar(self, self.unit)
 		end)
-	end
-end
-
-
-local function HandleEvents(self, event, ...)
-	if(event == "PLAYER_ENTERING_WORLD") then
-		AdjustUnitFrames()
-	end
-
-	if(event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
-		if(UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
-			AdjustUnitFrames()
-		end
 	end
 end
 
@@ -355,15 +352,3 @@ for _, menu in pairs(UnitPopupMenus) do
 		end
 	end
 end
-
--- SETS UP EVENT HANDLERS ETC
-local function Init()
-	Unitframes:SetScript("OnEvent", HandleEvents)
-	LoadAddOn("Blizzard_ArenaUI")
-
-	Unitframes:RegisterEvent("PLAYER_ENTERING_WORLD")
-	Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
-	Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
-end
-
-Init()

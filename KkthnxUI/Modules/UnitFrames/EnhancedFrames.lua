@@ -12,7 +12,6 @@ local InCombatLockdown = InCombatLockdown
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local GetCVar = GetCVar
 local UnitClassification = UnitClassification
-local EnhancedFrames = CreateFrame("Frame")
 
 local shorts = {
 	{ 1e10, 1e9, "%.0fB" }, -- 10B+ AS 12B
@@ -26,6 +25,8 @@ local shorts = {
 for i = 1, #shorts do
 	shorts[i][4] = shorts[i][3] .. " (%.0f%%)"
 end
+
+local EnhancedFrames = CreateFrame("Frame")
 
 -- EVENT LISTENER TO MAKE SURE WE ENABLE THE ADDON AT THE RIGHT TIME
 function EnhancedFrames:PLAYER_ENTERING_WORLD()
@@ -111,7 +112,7 @@ function EnhancedFrames_BossTargetFrame_Style(self)
 	EnhancedFrames_Style_TargetFrame(self)
 end
 
-function EnhancedFrames_UpdateTextStringWithValues(statusFrame, textString, value, valueMin, valueMax)
+function EnhancedFrames_UpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
 	if value == 0 then
 		return textString:SetText("")
 	end

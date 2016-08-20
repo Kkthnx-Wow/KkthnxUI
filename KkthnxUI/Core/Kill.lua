@@ -52,8 +52,4 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		InterfaceOptionsActionBarsPanelRightTwo:Kill()
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
 	end
-
-	if C.Nameplate.Enable then
-		SetCVar("ShowClassColorInNameplate", 1)
-	end
 end)

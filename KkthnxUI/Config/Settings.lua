@@ -171,26 +171,6 @@ C["Misc"] = {
 	["ItemLevel"] = false,
 	["MoveBlizzard"] = false,
 }
--- NAMEPLATE OPTIONS
-C["Nameplate"] = {
-	["AdditionalHeight"] = 0,
-	["AdditionalWidth"] = 0,
-	["AuraSize"] = 20,
-	["BadColor"] = {1, 0, 0},
-	["ClassIcons"] = false,
-	["Combat"] = false,
-	["Enable"] = true,
-	["EnhanceThreat"] = false,
-	["GoodColor"] = {0.2, 0.8, 0.2},
-	["HealthValue"] = true,
-	["Height"] = 9,
-	["NameAbbreviate"] = true,
-	["NearColor"] = {1, 1, 0},
-	["CastBarName"] = true,
-	["Auras"] = false,
-	["Width"] = 120,
-	["HealerIcon"] = false,
-}
 -- PULSECD OPTIONS
 C["PulseCD"] = {
 	["Enable"] = false,

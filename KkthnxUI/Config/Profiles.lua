@@ -92,10 +92,6 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Misc"]["ItemLevel"] = true
 	C["Misc"]["MoveBlizzard"] = true
 
-	C["Nameplate"]["Auras"] = true
-	C["Nameplate"]["ClassIcons"] = true
-	C["Nameplate"]["NameAbbreviate"] = false
-
 	C["PulseCD"]["Enable"] = true
 
 	C["Tooltip"]["ItemCount"] = true
