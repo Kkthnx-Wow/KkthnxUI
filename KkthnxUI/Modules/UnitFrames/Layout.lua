@@ -228,7 +228,7 @@ if C.Unitframe.Enable == true then
 			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 			-- TWEAK FOCUS FRAME
-			K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 60, C.Unitframe.Scale)
+			K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
 
 			-- TWEAK NAME BACKGROUND
 			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
