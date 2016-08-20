@@ -29,7 +29,7 @@ frame:SetBackdropColor(0, 0, 0, 0)
 frame:SetPoint("CENTER", anchor, "CENTER")
 
 local icon = frame:CreateTexture(nil, "ARTWORK")
-icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+icon:SetTexCoord(unpack(K.TexCoords))
 icon:SetPoint("TOPLEFT", frame, "TOPLEFT", K.NoScaleMult * 2, -K.NoScaleMult * 2)
 icon:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -K.NoScaleMult * 2, K.NoScaleMult * 2)
 

@@ -81,7 +81,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						end
 
 						if not icon1.styled then
-							icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+							icon1:SetTexCoord(unpack(K.TexCoords))
 							icon1:ClearAllPoints()
 							icon1:SetPoint("TOPLEFT", icon1.overlay, 2, -2)
 							icon1:SetPoint("BOTTOMRIGHT", icon1.overlay, -2, 2)
@@ -89,7 +89,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						end
 
 						if not icon2.styled then
-							icon2:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+							icon2:SetTexCoord(unpack(K.TexCoords))
 							icon2:ClearAllPoints()
 							icon2:SetPoint("TOPLEFT", icon2.overlay, 2, -2)
 							icon2:SetPoint("BOTTOMRIGHT", icon2.overlay, -2, 2)

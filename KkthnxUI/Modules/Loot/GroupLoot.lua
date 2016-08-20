@@ -326,7 +326,7 @@ SlashCmdList.TESTROLL = function()
 		local r, g, b = GetItemQualityColor(quality or 1)
 
 		f.button.icon:SetTexture(texture)
-		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		f.button.icon:SetTexCoord(unpack(K.TexCoords))
 
 		f.fsloot:SetText(GetItemInfo(item))
 		f.fsloot:SetVertexColor(r, g, b)

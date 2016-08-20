@@ -51,7 +51,7 @@ button:SetSize(53, 53)
 button:CreateBackdrop("Transparent")
 button.backdrop:SetOutside()
 
-button.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+button.Icon:SetTexCoord(unpack(K.TexCoords))
 button.Icon:SetPoint("TOPLEFT", button, 2, -2)
 button.Icon:SetPoint("BOTTOMRIGHT", button, -2, 2)
 

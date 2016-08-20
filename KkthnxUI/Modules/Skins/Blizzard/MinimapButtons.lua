@@ -42,7 +42,7 @@ local function SkinButton(f)
 				region:ClearAllPoints()
 				region:SetPoint("TOPLEFT", f, "TOPLEFT", 2, -2)
 				region:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -2, 2)
-				region:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				region:SetTexCoord(unpack(K.TexCoords))
 				region:SetDrawLayer("ARTWORK")
 				if f:GetName() == "PS_MinimapButton" then
 					region.SetPoint = K.Noop

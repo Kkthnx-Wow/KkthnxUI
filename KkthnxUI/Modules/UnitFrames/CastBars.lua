@@ -50,7 +50,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		-- TARGET CASTBAR
 		Target_Spellbar_AdjustPosition = K.Noop
 		TargetFrameSpellBar:SetParent(UIParent)
-		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale + 0.4)
+		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale + 0.3)
 		TargetFrameSpellBar:SetScript("OnShow", nil)
 
 		-- CASTBAR TIMER

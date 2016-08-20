@@ -46,7 +46,7 @@ h:SetScript("OnEvent", function(h, event, ...)
 		hooksecurefunc("DefaultCompactNamePlateFrameSetupInternal", function(frame, setupOptions, frameOptions, ...)
 			-- HEALTH BAR
 			frame.healthBar:SetStatusBarTexture(C.Media.Texture)
-			frame.name:SetFont(C.Media.Font, 9, C.Media.Font_Style)
+			frame.name:SetFont(C.Media.Font, 12 * K.NoScaleMult, C.Media.Font_Style)
 			frame.name:SetShadowOffset(0, -0)
 
 			-- HEALTHBAR BACKGROUND
@@ -59,8 +59,8 @@ h:SetScript("OnEvent", function(h, event, ...)
 			-- CAST BAR
 			frame.castBar:SetStatusBarTexture(C.Media.Texture)
 			if GetCVar("NamePlateVerticalScale") == "1" then
-				frame.castBar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-				frame.castBar.Icon:SetSize(17, 17)
+				frame.castBar.Icon:SetTexCoord(unpack(K.TexCoords))
+				frame.castBar.Icon:SetSize(15, 15)
 				frame.castBar.Icon:ClearAllPoints()
 				frame.castBar.Icon:SetPoint("BOTTOMRIGHT", frame.castBar, "BOTTOMLEFT", -2, 0)
 			end

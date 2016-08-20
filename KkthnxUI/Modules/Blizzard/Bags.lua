@@ -378,7 +378,7 @@ function CreateReagentContainer()
 			NumButtons = NumButtons + 1
 		end
 
-		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:SetPoint("TOPLEFT", 4, -4)
 		icon:SetPoint("BOTTOMRIGHT", -4, 4)
 
@@ -431,7 +431,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	ret.frame:SetCheckedTexture("")
 
 	ret.icon = _G[ret.frame:GetName().."IconTexture"]
-	ret.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	ret.icon:SetTexCoord(unpack(K.TexCoords))
 	ret.icon:SetPoint("TOPLEFT", ret.frame, 4, -4)
 	ret.icon:SetPoint("BOTTOMRIGHT", ret.frame, -4, 4)
 
@@ -484,7 +484,7 @@ function Stuffing:SlotNew(bag, slot)
 		ret.frame:SetNormalTexture(nil)
 
 		ret.icon = _G[ret.frame:GetName().."IconTexture"]
-		ret.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		ret.icon:SetTexCoord(unpack(K.TexCoords))
 		ret.icon:SetPoint("TOPLEFT", ret.frame, 4, -4)
 		ret.icon:SetPoint("BOTTOMRIGHT", ret.frame, -4, 4)
 

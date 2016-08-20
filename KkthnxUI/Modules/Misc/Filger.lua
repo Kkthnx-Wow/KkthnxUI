@@ -146,7 +146,7 @@ function Filger:DisplayActives()
 				bar.icon = bar:CreateTexture("$parentIcon", "BORDER")
 				bar.icon:SetPoint("TOPLEFT", 2, -2)
 				bar.icon:SetPoint("BOTTOMRIGHT", -2, 2)
-				bar.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				bar.icon:SetTexCoord(unpack(K.TexCoords))
 			end
 
 			if self.Mode == "ICON" then
