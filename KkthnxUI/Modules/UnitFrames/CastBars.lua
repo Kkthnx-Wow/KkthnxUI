@@ -10,7 +10,7 @@ local max = math.max
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
--- Anchors
+-- ANCHORS
 local PlayerCastbarAnchor = CreateFrame("Frame", "PlayerCastbarAnchor", UIParent)
 PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
 PlayerCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.PlayerCastBar))
@@ -25,27 +25,14 @@ local function AdjustCastBars()
 	if(InCombatLockdown() == false) then
 		-- MOVE CAST BAR
 		K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
-
-		-- STYLE CASTINGBARFRAME
-		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
-		CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
-
-		CastingBarFrame.Text:ClearAllPoints()
-		CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
-		CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
-		CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
-		CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
-		CastingBarFrame.Border:SetPoint("TOP", 0, 26)
-		CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
-		CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
-
-		-- CASTINGBARFRAME ICON
-		CastingBarFrame.Icon:Show()
-		CastingBarFrame.Icon:ClearAllPoints()
-		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
-		CastingBarFrame.Icon:SetSize(20, 20)
 	end
 end
+
+-- CASTINGBARFRAME ICON
+CastingBarFrame.Icon:Show()
+CastingBarFrame.Icon:ClearAllPoints()
+CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 10, 2)
+CastingBarFrame.Icon:SetSize(20, 20)
 
 -- TARGET CASTBAR
 K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
@@ -71,7 +58,7 @@ local function HandleEvents(self, event, ...)
 			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2)
 			CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
 		end
-		CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
+		CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 2)
 		CastingBarFrame.update = 0.1
 	end
 end
