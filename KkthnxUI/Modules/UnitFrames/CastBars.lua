@@ -10,8 +10,6 @@ local max = math.max
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
-UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
-
 -- Anchors
 local PlayerCastbarAnchor = CreateFrame("Frame", "PlayerCastbarAnchor", UIParent)
 PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
@@ -23,21 +21,12 @@ TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 
 local CastBars = CreateFrame("Frame", nil, UIParent)
 
-CastBars:RegisterEvent("ADDON_LOADED")
-CastBars:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then return end
+local function AdjustCastBars()
 	if(InCombatLockdown() == false) then
-
 		-- MOVE CAST BAR
-		CastingBarFrame:SetMovable(true)
-		CastingBarFrame:ClearAllPoints()
-		CastingBarFrame:SetScale(C.Unitframe.CastBarScale)
-		CastingBarFrame:SetPoint("CENTER", PlayerCastbarAnchor, "CENTER", 0, -3)
-		CastingBarFrame:SetUserPlaced(true)
-		CastingBarFrame:SetMovable(false)
-		CastingBarFrame.SetPoint = K.Noop
+		K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
-		-- Style CastingBarFrame
+		-- STYLE CASTINGBARFRAME
 		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
 		CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
 
@@ -55,14 +44,25 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		CastingBarFrame.Icon:ClearAllPoints()
 		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
 		CastingBarFrame.Icon:SetSize(20, 20)
+	end
+end
 
-		-- TARGET CASTBAR
-		TargetFrameSpellBar:ClearAllPoints()
-		TargetFrameSpellBar:SetScale(C.Unitframe.CastBarScale)
-		TargetFrameSpellBar:SetPoint("CENTER", TargetCastbarAnchor, "CENTER", 0, 0)
-		TargetFrameSpellBar.SetPoint = K.Noop
+-- TARGET CASTBAR
+K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
+TargetFrameSpellBar.SetPoint = K.Noop
 
-		-- CASTBAR TIMER
+local function HandleEvents(self, event, ...)
+	if(event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TALENT_UPDATE" or event == "ACTIVE_TALENT_GROUP_CHANGED") then
+		AdjustCastBars()
+	end
+
+	if(event == "UNIT_EXITED_VEHICLE") then
+		if(... == "player") then
+			AdjustCastBars()
+		end
+	end
+
+	if(event == "ADDON_LOADED" and ... == "KkthnxUI") then
 		CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
 		if C.Unitframe.Outline then
 			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
@@ -73,36 +73,46 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		end
 		CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
 		CastingBarFrame.update = 0.1
-
-		TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
-		if C.Unitframe.Outline then
-			TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			TargetFrameSpellBar.timer:SetShadowOffset(0, -0)
-		else
-			TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
-			TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
-		end
-		TargetFrameSpellBar.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -8, 0)
-		TargetFrameSpellBar.update = 0.1
-
-		self:UnregisterEvent("ADDON_LOADED")
 	end
-end)
+end
+
+local function Init()
+	CastBars:SetScript("OnEvent", HandleEvents)
+
+	-- REGISTER ALL EVENTS
+	CastBars:RegisterEvent("PLAYER_ENTERING_WORLD")
+	CastBars:RegisterEvent("PLAYER_TALENT_UPDATE")
+	CastBars:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	CastBars:RegisterEvent("UNIT_EXITED_VEHICLE")
+	CastBars:RegisterEvent("ADDON_LOADED")
+end
+
+-- REPOSITON STUFF AFTER THE BLIZZARD UI FUCKS WITH THEM
+local function MainMenuBar_UpdateExperienceBars_Hook(newLevel)
+	AdjustCastBars()
+end
+
+-- REPOSITON STUFF AFTER THE BLIZZARD UI FUCKS WITH THEM
+local function MainMenuBarVehicleLeaveButton_Update_Hook()
+	AdjustCastBars()
+end
 
 -- DISPLAYS THE CASTING BAR TIMER
 CastingBarFrame:HookScript("OnUpdate", function(self, elapsed)
-    if not self.timer then return end
+	if not self.timer then return end
 
-    if (self.update and self.update < elapsed) then
-        if (self.casting) then
-            self.timer:SetText(format("%.1f", max(self.maxValue - self.value, 0)))
-        elseif (self.channeling) then
-            self.timer:SetText(format("%.1f", max(self.value, 0)))
-        else
-            self.timer:SetText("")
-        end
-        self.update = 0.1
-    else
-        self.update = self.update - elapsed
-    end
+	if (self.update and self.update < elapsed) then
+		if (self.casting) then
+			self.timer:SetText(format("%.1f", max(self.maxValue - self.value, 0)))
+		elseif (self.channeling) then
+			self.timer:SetText(format("%.1f", max(self.value, 0)))
+		else
+			self.timer:SetText("")
+		end
+		self.update = 0.1
+	else
+		self.update = self.update - elapsed
+	end
 end)
+
+Init()

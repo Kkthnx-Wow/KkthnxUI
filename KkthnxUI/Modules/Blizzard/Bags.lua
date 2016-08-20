@@ -299,7 +299,7 @@ function CreateReagentContainer()
 	Deposit:ClearAllPoints()
 	Deposit:SetSize(170, 20)
 	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 3, 0)
---	Deposit:SkinButton()
+	--Deposit:SkinButton()
 	Deposit:FontString("text", C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 	Deposit.text:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 	Deposit.text:SetTextColor(1, 1, 1)
@@ -379,12 +379,12 @@ function CreateReagentContainer()
 		end
 
 		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		icon:SetPoint("TOPLEFT", 2, -2)
-		icon:SetPoint("BOTTOMRIGHT", -2, 2)
+		icon:SetPoint("TOPLEFT", 4, -4)
+		icon:SetPoint("BOTTOMRIGHT", -4, 4)
 
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		count:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
-		count:SetPoint("BOTTOMRIGHT", 1, 1)
+		count:SetPoint("BOTTOMRIGHT", -3, 3)
 
 		LastButton = button
 	end

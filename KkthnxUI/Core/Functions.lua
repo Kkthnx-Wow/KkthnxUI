@@ -93,6 +93,23 @@ K.RGBToHex = function(r, g, b)
     return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
+-- HELPER FUNCTION FOR MOVING A BLIZZARD FRAME THAT HAS A SETMOVEABLE FLAG
+K.ModifyFrame = function(frame, anchor, parent, posX, posY, scale)
+    frame:SetMovable(true)
+    frame:ClearAllPoints()
+    if(parent == nil) then frame:SetPoint(anchor, posX, posY) else frame:SetPoint(anchor, parent, posX, posY) end
+    if(scale ~= nil) then frame:SetScale(scale) end
+    frame:SetUserPlaced(true)
+    frame:SetMovable(false)
+end
+
+-- HELPER FUNCTION FOR MOVING A BLIZZARD FRAME THAT DOES NOT HAVE A SETMOVEABLE FLAG
+K.ModifyBasicFrame = function(frame, anchor, parent, posX, posY, scale)
+    frame:ClearAllPoints()
+    if(parent == nil) then frame:SetPoint(anchor, posX, posY) else frame:SetPoint(anchor, parent, posX, posY) end
+    if(scale ~= nil) then frame:SetScale(scale) end
+end
+
 K.CheckChat = function(warning)
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 		return "INSTANCE_CHAT"
