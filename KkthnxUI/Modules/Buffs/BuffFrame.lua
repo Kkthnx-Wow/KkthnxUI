@@ -54,7 +54,7 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 
 	buff:SetSize(C.Aura.BuffSize, C.Aura.BuffSize)
 
-	icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	icon:SetTexCoord(unpack(K.TexCoords))
 	icon:SetInside()
 
 	duration:ClearAllPoints()
