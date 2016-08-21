@@ -66,8 +66,8 @@ local function updateStatus()
 	ArtifactMouseFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
-local frame = CreateFrame("Frame", nil, UIParent)
-frame:RegisterEvent("ARTIFACT_XP_UPDATE")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:RegisterEvent("UNIT_INVENTORY_CHANGED")
-frame:SetScript("OnEvent", updateStatus)
+local ArtifactBarFrame = CreateFrame("Frame", nil, UIParent)
+ArtifactBarFrame:RegisterEvent("ARTIFACT_XP_UPDATE")
+ArtifactBarFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+ArtifactBarFrame:RegisterEvent("UNIT_INVENTORY_CHANGED")
+ArtifactBarFrame:SetScript("OnEvent", updateStatus)

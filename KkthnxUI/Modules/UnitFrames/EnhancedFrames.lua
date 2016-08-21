@@ -112,6 +112,15 @@ function EnhancedFrames_BossTargetFrame_Style(self)
 	EnhancedFrames_Style_TargetFrame(self)
 end
 
+--[[
+	MAKE SURE TO SET STATUS TEXT TO NUMERIC VALUES IN INTERFACE OPTIONS FOR THIS TO WORK
+	"PERCENT" and "NUMERIC"
+	GetCVarDefault("statusTextDisplay") -> "NUMERIC"
+	GetCVarDefault("statusText") -> "0"
+]]--
+
+-- FORCE NUMERIC FOR HEALTHBAR FIX
+SetCVar("statusTextDisplay", "NUMERIC")
 function EnhancedFrames_UpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
 	if value == 0 then
 		return textString:SetText("")
