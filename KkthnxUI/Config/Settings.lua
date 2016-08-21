@@ -171,6 +171,24 @@ C["Misc"] = {
 	["ItemLevel"] = false,
 	["MoveBlizzard"] = false,
 }
+-- NAMEPLATE OPTIONS
+C["Nameplate"] = {
+	["ShowHP"] = true,
+	["DontClamp"] = false,
+	["ShowCurHP"] = true,
+	["ShowPercHP"] = true,
+	["ShowFullHP"] = true,
+	["TankMode"] = false,
+	["UseOffTankColor"] = false,
+	["HideFriendly"] = false,
+	["ShowClassColors"] = true,
+	["AbrrevLongNames"] = true,
+	["ShowServerName"] = true,
+	["ShowLevel"] = true,
+	["ColorNameByThreat"] = true,
+	["OffTankColor"] = {0.60, 0.20, 1.0},
+}
+
 -- PULSECD OPTIONS
 C["PulseCD"] = {
 	["Enable"] = false,

@@ -8,7 +8,7 @@ local _G = _G
 local CreateFrame = CreateFrame
 
 --	Setup MultiBarBottomRight as bar #5 by Tukz
-local bar = CreateFrame("Frame", "Bar5Holder", UIParent)
+local bar = CreateFrame("Frame", "Bar5Holder", PetBattleFrameHider)
 if C.ActionBar.RightBars < 3 then
 	if C.ActionBar.SplitBars == true then
 		bar:SetAllPoints(SplitBarLeft)

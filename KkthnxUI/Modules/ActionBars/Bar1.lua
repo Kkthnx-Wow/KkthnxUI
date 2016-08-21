@@ -9,6 +9,7 @@ local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 local HasOverrideActionBar = HasOverrideActionBar
 local HasVehicleActionBar = HasVehicleActionBar
+local Druid, Rogue = "", ""
 
 -- SETUP MAIN ACTION BAR BY TUKZ
 local bar = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
@@ -28,11 +29,8 @@ for i = 1, 12 do
 end
 
 local Page = {
-	["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
-	["PRIEST"] = "[bonusbar:1] 7;",
-	["ROGUE"] = "[bonusbar:1] 7;",
-	["WARLOCK"] = "[stance:1] 10;",
-	["MONK"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
+	["DRUID"] = Druid,
+	["ROGUE"] = Rogue,
 	["DEFAULT"] = "[vehicleui:12] 12; [possessbar] 12; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
@@ -41,7 +39,9 @@ local function GetBar()
 	local class = K.Class
 	local page = Page[class]
 	if page then condition = condition .. " " .. page end
+
 	condition = condition .. " [form] 1; 1"
+
 	return condition
 end
 
@@ -61,13 +61,19 @@ bar:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		self:Execute([[
-			buttons = table.new()
-			for i = 1, 12 do table.insert(buttons, self:GetFrameRef("ActionButton" .. i)) end
+		buttons = table.new()
+		for i = 1, 12 do
+			table.insert(buttons, self:GetFrameRef("ActionButton"..i))
+		end
 		]])
 
 		self:SetAttribute("_onstate-page", [[
-			if HasTempShapeshiftActionBar() then newstate = GetTempShapeshiftBarIndex() or newstate end
-			for i, button in ipairs(buttons) do button:SetAttribute("actionpage", tonumber(newstate)) end
+		if HasTempShapeshiftActionBar() then
+			newstate = GetTempShapeshiftBarIndex() or newstate
+		end
+		for i, buttons in ipairs(buttons) do
+			buttons:SetAttribute("actionpage", tonumber(newstate))
+		end
 		]])
 
 		RegisterStateDriver(self, "page", GetBar())

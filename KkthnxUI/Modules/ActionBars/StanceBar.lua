@@ -12,7 +12,7 @@ local InCombatLockdown = InCombatLockdown
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
 local hooksecurefunc = hooksecurefunc
 
-local ShiftHolder = CreateFrame("Frame", "ShiftHolder", UIParent)
+local ShiftHolder = CreateFrame("Frame", "ShiftHolder", PetBattleFrameHider)
 if C.ActionBar.StanceBarHorizontal == true then
 	ShiftHolder:SetPoint(unpack(C.Position.StanceBar))
 	ShiftHolder:SetWidth((C.ActionBar.ButtonSize * 7) + (C.ActionBar.ButtonSpace * 6))

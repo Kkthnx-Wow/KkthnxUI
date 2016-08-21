@@ -503,7 +503,7 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 
 	for i = 1, #C["filger_spells"][K.Class], 1 do
 		local data = C["filger_spells"][K.Class][i]
-		local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, UIParent)
+		local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, PetBattleFrameHider)
 		frame.Id = i
 		frame.Name = data.Name
 		frame.Direction = data.Direction or "DOWN"

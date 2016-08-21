@@ -26,6 +26,12 @@ K.Scale = function(x) return Scale(x) end
 K.Mult = Mult
 K.NoScaleMult = K.Mult * C.General.UIScale
 
+local UIHider = CreateFrame("Frame", "KkthnxUIUIHider", UIParent)
+UIHider:Hide()
+
+local PetBattleHider = CreateFrame("Frame", "PetBattleFrameHider", UIParent, "SecureHandlerStateTemplate")
+RegisterStateDriver(PetBattleHider, "visibility", "[petbattle] hide; show")
+
 local function SetOutside(obj, anchor, xOffset, yOffset)
 	xOffset = xOffset or 2
 	yOffset = yOffset or 2
