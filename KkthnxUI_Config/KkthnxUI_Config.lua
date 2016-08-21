@@ -219,7 +219,7 @@ local function Local(o)
 	if o == "UIConfigTooltipWhoTargetting" then o = L_GUI_TOOLTIP_WHO_TARGETTING end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
-	if o == "UIConfigUnitframeComboFrame" then o = L_GUI_UNITFRAME_COMBOFRAME end
+	if o == "UIConfigUnitframeClassResources" then o = L_GUI_UNITFRAME_CLASSRESOURCES end
 	if o == "UIConfigUnitframeSmoothBars" then o = L_GUI_UNITFRAME_SMOOTH_BARS end
 	if o == "UIConfigUnitframeAuraOffsetY" then o = L_GUI_UNITFRAME_AURA_OFFSETY end
 	if o == "UIConfigUnitframeBetterPowerColors" then o = L_GUI_UNITFRAME_BETTER_POWER_COLOR end

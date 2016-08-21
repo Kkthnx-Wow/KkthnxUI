@@ -245,12 +245,6 @@ if C.Unitframe.Enable == true then
 			for i = 1, 5 do
 				_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
 			end
-
-			if C.Unitframe.ComboFrame == true then
-				ComboFrame:UnregisterAllEvents()
-				ComboFrame.Show = K.Noop
-				ComboFrame:Hide()
-			end
 			-- ARENA FRAMES
 			if (IsAddOnLoaded("Blizzard_ArenaUI")) then
 				for i = 1, 5 do
@@ -296,6 +290,21 @@ if (C.Unitframe.ClassHealth and not InCombatLockdown()) then
 	hooksecurefunc("HealthBar_OnValueChanged", function(self)
 		colorHealthBar(self, self.unit)
 	end)
+end
+
+-- HIDE CLASS RESOURCES OPTION
+-- WE ADD THIS SINCE WE CAN ALREADY PROVIDE THIS SINCE 7.0.3 PREPATCH
+if C.Unitframe.ClassResources == true then
+	for _, ClassResources in pairs({
+		WarlockPowerFrame,
+		PaladinPowerBarFrame,
+		ComboPointPlayerFrame,
+		RuneFrame,
+	}) do
+		ClassResources:UnregisterAllEvents()
+		ClassResources.Show = K.Noop
+		ClassResources:Hide()
+	end
 end
 
 -- REMOVE PORTRAIT DAMAGE SPAM

@@ -232,7 +232,7 @@ C["Tooltip"] = {
 }
 -- UNITFRAME OPTIONS
 C["Unitframe"] = {
-	["ComboFrame"] = false,
+	["ClassResources"] = false,
 	["SmoothBars"] = false,
 	["AuraOffsetY"] = 3,
 	["BetterPowerColors"] = false,
