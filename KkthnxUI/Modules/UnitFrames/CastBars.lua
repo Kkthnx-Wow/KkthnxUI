@@ -77,7 +77,7 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 	end
 	CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
 	CastingBarFrame.update = 0.1
-
+	--[[
 	TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
 	if C.Unitframe.Outline then
 		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
@@ -86,8 +86,9 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
 		TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
 	end
-	TargetFrameSpellBar.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -8, 0)
+	TargetFrameSpellBar.timer:SetPoint("LEFT", TargetFrameSpellBar, "RIGHT", 8, 0)
 	TargetFrameSpellBar.update = 0.1
+	]]--
 
 	self:UnregisterEvent("ADDON_LOADED")
 end)
