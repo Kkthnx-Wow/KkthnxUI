@@ -252,10 +252,12 @@ if C.Unitframe.Enable == true then
 				ComboFrame:Hide()
 			end
 			-- ARENA FRAMES
-			for i = 1, 5 do
-				_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
+			if (IsAddOnLoaded("Blizzard_ArenaUI")) then
+				for i = 1, 5 do
+					_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
+				end
+				ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 			end
-			ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 		end
 
 		self:UnregisterEvent("ADDON_LOADED")
