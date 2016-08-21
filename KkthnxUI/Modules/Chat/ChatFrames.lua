@@ -36,19 +36,19 @@ local function ShortChannel(channel)
 end
 
 local function AddMessage(frame, str, ...)
-	--if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
-	str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
-	str = str:gsub("CHANNEL:", "")
-	str = str:gsub("^(.-|h) "..L_CHAT_WHISPERS, "%1")
-	str = str:gsub("^(.-|h) "..L_CHAT_SAYS, "%1")
-	str = str:gsub("^(.-|h) "..L_CHAT_YELLS, "%1")
-	str = str:gsub("<"..AFK..">", "[|cffFF0000"..L_CHAT_AFK.."|r] ")
-	str = str:gsub("<"..DND..">", "[|cffE7E716"..L_CHAT_DND.."|r] ")
-	str = str:gsub("%[BN_CONVERSATION:", "%[1".."")
-	str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
-
-	return origs[frame](frame, str, ...)
-	--end
+	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
+		str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
+		str = str:gsub("CHANNEL:", "")
+		str = str:gsub("^(.-|h) "..L_CHAT_WHISPERS, "%1")
+		str = str:gsub("^(.-|h) "..L_CHAT_SAYS, "%1")
+		str = str:gsub("^(.-|h) "..L_CHAT_YELLS, "%1")
+		str = str:gsub("<"..AFK..">", "[|cffFF0000"..L_CHAT_AFK.."|r] ")
+		str = str:gsub("<"..DND..">", "[|cffE7E716"..L_CHAT_DND.."|r] ")
+		str = str:gsub("%[BN_CONVERSATION:", "%[1".."")
+		str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
+		
+		return origs[frame](frame, str, ...)
+	end
 end
 
 FriendsMicroButton:Kill()

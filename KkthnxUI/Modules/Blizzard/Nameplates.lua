@@ -1,9 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-local EliteTag = "+"
-local RareTag = "^"
-local BossTag = "*"
-
 SetCVar("namePlateMinScale", 1)
 SetCVar("namePlateMaxScale", 1)
 
@@ -53,13 +49,15 @@ h:SetScript("OnEvent", function(h, event, ...)
 			if (not frame.healthBar.bg) then
 				frame.healthBar.bg = frame.healthBar:CreateTexture(nil, "BACKGROUND", nil, -8)
 				frame.healthBar.bg:SetTexture(C.Media.Blank)
+				frame.healthBar.bg:SetColorTexture(5/255, 5/255, 5/255)
 				frame.healthBar.bg:SetAllPoints()
 			end
-			
+
 			-- CASTBAR BACKGROUND
 			if (not frame.castBar.bg) then
 				frame.castBar.bg = frame.castBar:CreateTexture(nil, "BACKGROUND", nil, -8)
 				frame.castBar.bg:SetTexture(C.Media.Blank)
+				frame.castBar.bg:SetColorTexture(5/255, 5/255, 5/255)
 				frame.castBar.bg:SetAllPoints()
 			end
 

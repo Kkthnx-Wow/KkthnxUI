@@ -23,59 +23,56 @@ local CastBars = CreateFrame("Frame", nil, UIParent)
 
 CastBars:RegisterEvent("ADDON_LOADED")
 CastBars:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then return end
-	if(InCombatLockdown() == false) then
 
-		K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
+	if (addon ~= "KkthnxUI") or InCombatLockdown() then return end
 
-		-- STYLE CASTINGBARFRAME
-		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
-		CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
+	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
-		CastingBarFrame.Text:ClearAllPoints()
-		CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
-		CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
-		CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
-		CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
-		CastingBarFrame.Border:SetPoint("TOP", 0, 26)
-		CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
-		CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
+	-- STYLE CASTINGBARFRAME
+	CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
+	CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
 
-		-- CASTINGBARFRAME ICON
-		CastingBarFrame.Icon:Show()
-		CastingBarFrame.Icon:ClearAllPoints()
-		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
-		CastingBarFrame.Icon:SetSize(20, 20)
+	CastingBarFrame.Text:ClearAllPoints()
+	CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
+	CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
+	CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
+	CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
+	CastingBarFrame.Border:SetPoint("TOP", 0, 26)
+	CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
+	CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
 
-		-- TARGET CASTBAR
-		Target_Spellbar_AdjustPosition = K.Noop
-		TargetFrameSpellBar:SetParent(UIParent)
-		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale + 0.3)
-		TargetFrameSpellBar:SetScript("OnShow", nil)
+	-- CASTINGBARFRAME ICON
+	CastingBarFrame.Icon:Show()
+	CastingBarFrame.Icon:ClearAllPoints()
+	CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
+	CastingBarFrame.Icon:SetSize(20, 20)
 
-		-- CASTBAR TIMER
-		CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
-		if C.Unitframe.Outline then
-			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
-			CastingBarFrame.timer:SetShadowOffset(0, -0)
-		else
-			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2)
-			CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
-		end
-		CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
-		CastingBarFrame.update = 0.1
+	-- TARGET CASTBAR
+	K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
+	TargetFrameSpellBar.SetPoint = K.Noop
 
-		TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
-		if C.Unitframe.Outline then
-			TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			TargetFrameSpellBar.timer:SetShadowOffset(0, -0)
-		else
-			TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
-			TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
-		end
-		TargetFrameSpellBar.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -8, 0)
-		TargetFrameSpellBar.update = 0.1
+	-- CASTBAR TIMER
+	CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
+	if C.Unitframe.Outline then
+		CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
+		CastingBarFrame.timer:SetShadowOffset(0, -0)
+	else
+		CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2)
+		CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
 	end
+	CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
+	CastingBarFrame.update = 0.1
+
+	TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
+	if C.Unitframe.Outline then
+		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		TargetFrameSpellBar.timer:SetShadowOffset(0, -0)
+	else
+		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
+		TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
+	end
+	TargetFrameSpellBar.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -8, 0)
+	TargetFrameSpellBar.update = 0.1
 
 	self:UnregisterEvent("ADDON_LOADED")
 end)
