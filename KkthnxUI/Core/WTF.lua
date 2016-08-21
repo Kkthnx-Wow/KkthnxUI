@@ -346,21 +346,27 @@ local UploadSkada = function()
 			["Default"] = {
 				["windows"] = {
 					{
-						["barheight"] = 12,
+						["barheight"] = 15,
 						["barslocked"] = true,
+						["y"] = 7,
+						["x"] = -332,
+						["point"] = "BOTTOMRIGHT",
+						["mode"] = "DPS",
+						["bartexture"] = "KkthnxUI_StatusBar",
+						["barwidth"] = 222,
+						["barspacing"] = 1,
 						["background"] = {
+							["height"] = 80,
 							["color"] = {
 								["a"] = 0,
 							},
-							["height"] = 95.0000305175781,
 						},
-						["y"] = 0,
-						["point"] = "BOTTOMRIGHT",
-						["barwidth"] = 221,
-						["barspacing"] = 7,
-						["x"] = -340,
+						["barfont"] = "KkthnxUI_Normal",
 						["title"] = {
-							["height"] = 12,
+							["font"] = "KkthnxUI_Normal",
+							["fontsize"] = 12,
+							["height"] = 14,
+							["texture"] = "KkthnxUI_StatusBar",
 						},
 					}, -- [1]
 				},
