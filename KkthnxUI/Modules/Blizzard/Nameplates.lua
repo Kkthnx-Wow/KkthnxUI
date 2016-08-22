@@ -1,5 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
-local enable = false
+
+local enable = {}
+
+if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
+	enable = true
+else
+	enable = false
+end
 
 if enable ~= true then return end
 
@@ -45,17 +52,17 @@ K.IsUsingLargerNamePlateStyle = function()
 	return namePlateVerticalScale > 1.0
 end
 
-K.SetManabarColors = function(frame,color)
-    if (frame.castBar.beautyBorder) then
+K.SetManabarColors = function(frame, color)
+    --if (frame.castBar.beautyBorder) then
         for i = 1, 8 do
-            frame.castBar.beautyBorder[i]:SetVertexColor(unpack(color))
+           parent.backdrop[i]:SetBackdropBorderColor(unpack(color))
         end
-     end
-    if (frame.castBar.Icon.beautyBorder) then
-        for i = 1, 8 do
-            frame.castBar.Icon.beautyBorder[i]:SetVertexColor(unpack(color))
-        end
-     end
+    -- end
+    --if (frame.castBar.Icon.beautyBorder) then
+    --    for i = 1, 8 do
+    --        frame.castBar.Icon.beautyBorder[i]:SetVertexColor(unpack(color))
+    --    end
+    -- end
 end
 
 K.FormatTime = function(s)
@@ -135,7 +142,7 @@ C_Timer.After(0.1, function()
 			SetCVar("nameplateOtherTopInset", -1, true)
 			SetCVar("nameplateOtherBottomInset", -1, true)
 		else
-			for _, v in pairs({"nameplateOtherTopInset", "nameplateOtherBottomInset"}) do SetCVar(v, GetCVarDefault(v),true) end
+			for _, v in pairs({"nameplateOtherTopInset", "nameplateOtherBottomInset"}) do SetCVar(v, GetCVarDefault(v), true) end
 		end
 	end
 end)
@@ -237,7 +244,6 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
 		end
 	end
 
-	--[[
 	-- EXECUTE RANGE COLORING
 	if (C.Nameplate.ShowExecuteRange and K.IsInExecuteRange(frame)) then
 		r, g, b = unpack(C.Nameplate.ExecuteColor)
@@ -254,7 +260,6 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
 
 		frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b
 	end
-	]]--
 end)
 
 -- UPDATE CASTBAR TIME
@@ -324,7 +329,7 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 
 	-- NAME
 	K.NameSize(frame)
-	
+
 	frame.healthBar.background:ClearAllPoints()
 	frame.healthBar.background:SetInside(0, 0)
 	frame.healthBar.border:SetAlpha(0)
@@ -337,7 +342,7 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 4.2)
 	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
 	frame.healthBar:Show()
-	
+
 	if (not frame.healthBar.shadow) then
 		CreateVirtualFrame(frame.healthBar)
     end
@@ -347,7 +352,7 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 
 	frame.castBar:SetHeight(8)
 	frame.castBar:SetStatusBarTexture(C.Media.Texture)
-	
+
 	if (not frame.castBar.shadow) then
 		CreateVirtualFrame(frame.castBar)
     end
@@ -380,18 +385,6 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	frame.castBar.Icon:SetPoint("BOTTOMLEFT", frame.castBar, "BOTTOMRIGHT", 4.9, 0)
 	frame.castBar.Icon:SetTexCoord(unpack(K.TexCoords))
 	frame.castBar.Icon:Show()
-
-	-- CASTBAR ICON SHADOW	
-	if (not frame.castBar.Icon.CreateVirtualFrame) then
-		frame.castBar.IconShadow = CreateFrame("Frame", nil, frame.castBar)
-		frame.castBar.IconShadow:SetSize(frame.castBar.Icon:GetSize())
-		frame.castBar.IconShadow:SetAllPoints(frame.castBar.Icon)
-		frame.castBar.IconShadow:SetFrameLevel(frame.castBar:GetFrameLevel() - 1 or 0)
-	end
-	
-	if (not frame.castBar.Icon.CreateVirtualFrame) then
-		CreateVirtualFrame(frame.castBar.IconShadow)
-    end
 
 	-- UPDATE CASTBAR
 	frame.castBar:SetScript("OnValueChanged", function(self, value)
