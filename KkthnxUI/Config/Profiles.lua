@@ -103,7 +103,7 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 
 	C["Unitframe"]["ClassIcon"] = true
 	C["Unitframe"]["EnhancedFrames"] = true
-	C["Unitframe"]["PercentHealth"] = true
+	C["Unitframe"]["ClassHealth"] = true
 	C["Unitframe"]["SmoothBars"] = true
 
 end

@@ -12,9 +12,28 @@ if enable ~= true then return end
 
 -- LUA API
 local _G = _G
-local len = string.len
+local ceil = math.ceil
+local floor = math.floor
+local format = string.format
 local gsub = string.gsub
+local len = string.len
+local match = string.match
+local next = next
+local pairs = pairs
 local select = select
+local tonumber = tonumber
+
+-- WOW API
+local GetCVar = GetCVar
+local GetCVarBool = GetCVarBool
+local GetCVarDefault = GetCVarDefault
+local UnitCastingInfo = UnitCastingInfo
+local UnitIsUnit = UnitIsUnit
+local UnitPlayerOrPetInParty = UnitPlayerOrPetInParty
+local UnitPlayerOrPetInRaid = UnitPlayerOrPetInRaid
+local hooksecurefunc = hooksecurefunc
+
+local borderColor = {0.40, 0.40, 0.40, 1}
 
 -- FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
 K.NameSize = function(frame)
@@ -25,7 +44,7 @@ K.NameSize = function(frame)
 end
 
 K.FrameIsNameplate = function(frame)
-	if (string.match(frame.displayedUnit,"nameplate") ~= "nameplate") then
+	if (match(frame.displayedUnit,"nameplate") ~= "nameplate") then
 		return false
 	else
 		return true
@@ -53,16 +72,11 @@ K.IsUsingLargerNamePlateStyle = function()
 end
 
 K.SetManabarColors = function(frame, color)
-    --if (frame.castBar.beautyBorder) then
-        for i = 1, 8 do
-           parent.backdrop[i]:SetBackdropBorderColor(unpack(color))
-        end
-    -- end
-    --if (frame.castBar.Icon.beautyBorder) then
-    --    for i = 1, 8 do
-    --        frame.castBar.Icon.beautyBorder[i]:SetVertexColor(unpack(color))
-    --    end
-    -- end
+	if (frame.healthBar.border) then
+		for i = 1, 8 do
+			frame.healthBar.border:SetVertexColor(unpack(color))
+		end
+	end
 end
 
 K.FormatTime = function(s)
@@ -83,32 +97,8 @@ K.FormatTime = function(s)
     return floor(s), s - floor(s)
 end
 
-local function CreateVirtualFrame(parent, point)
-	if point == nil then point = parent end
-
-	if point.backdrop then return end
-	parent.backdrop = CreateFrame("Frame", nil , parent)
-	parent.backdrop:SetAllPoints()
-	parent.backdrop:SetBackdrop({
-		bgFile = C.Media.Blank,
-		edgeFile = C.Media.Glow,
-		edgeSize = 3 * K.NoScaleMult,
-		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
-	})
-	parent.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
-	parent.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	parent.backdrop:SetBackdropColor(.05, .05, .05, 1)
-	parent.backdrop:SetBackdropBorderColor(0, 0, 0, 0.8)
-
-	if parent:GetFrameLevel() - 1 > 0 then
-		parent.backdrop:SetFrameLevel(parent:GetFrameLevel() - 1)
-	else
-		parent.backdrop:SetFrameLevel(0)
-	end
-end
-
 -- START NAMEPLATE CODE
-C_Timer.After(0.1, function()
+C_Timer.After(1, function()
 
 	-- SET DEFAULTCOMPACTNAMEPLATE OPTIONS
 	local groups = {
@@ -262,6 +252,21 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
 	end
 end)
 
+-- CHANGE BORDER COLOR ON TARGET
+hooksecurefunc("CompactUnitFrame_UpdateSelectionHighlight", function(frame)
+    local r,g,b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b
+
+    if (frame.healthBar.border) then
+        for i = 1, 8 do
+            if (UnitIsUnit(frame.displayedUnit, "target")) then
+               frame.healthBar.border:SetVertexColor(r, g, b, 1)
+            else
+                frame.healthBar.border:SetVertexColor(unpack(borderColor))
+            end
+        end
+    end
+end)
+
 -- UPDATE CASTBAR TIME
 local function UpdateCastbarTimer(frame)
 
@@ -293,7 +298,7 @@ local function UpdateCastbar(frame)
             notInterruptible = select(8, UnitChannelInfo(frame.displayedUnit))
         end
 
-        if (UnitCanAttack("player",frame.displayedUnit)) then
+        if (UnitCanAttack("player", frame.displayedUnit)) then
             if (notInterruptible) then
                 K.SetManabarColors(frame, red)
             else
@@ -330,10 +335,6 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	-- NAME
 	K.NameSize(frame)
 
-	frame.healthBar.background:ClearAllPoints()
-	frame.healthBar.background:SetInside(0, 0)
-	frame.healthBar.border:SetAlpha(0)
-
 	-- HEALTHBAR
 	frame.healthBar:SetHeight(8)
 	frame.healthBar:Hide()
@@ -343,19 +344,11 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
 	frame.healthBar:Show()
 
-	if (not frame.healthBar.shadow) then
-		CreateVirtualFrame(frame.healthBar)
-    end
-
 	-- CASTBAR
 	local castbarFont = select(1, frame.castBar.Text:GetFont())
 
 	frame.castBar:SetHeight(8)
 	frame.castBar:SetStatusBarTexture(C.Media.Texture)
-
-	if (not frame.castBar.shadow) then
-		CreateVirtualFrame(frame.castBar)
-    end
 
 	-- HIDE BORDER SHIELD
 	--frame.castBar.BorderShield:Hide()
@@ -385,6 +378,16 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	frame.castBar.Icon:SetPoint("BOTTOMLEFT", frame.castBar, "BOTTOMRIGHT", 4.9, 0)
 	frame.castBar.Icon:SetTexCoord(unpack(K.TexCoords))
 	frame.castBar.Icon:Show()
+
+	-- CASTBAR ICON BACKGROUND
+    if (not frame.castBar.Icon.Background) then
+        frame.castBar.Icon.Background = frame.castBar:CreateTexture("$parentIconBackground", "BACKGROUND")
+        frame.castBar.Icon.Background:SetTexCoord(unpack(K.TexCoords))
+        frame.castBar.Icon.Background:Hide()
+        frame.castBar.Icon.Background:ClearAllPoints()
+        frame.castBar.Icon.Background:SetAllPoints(frame.castBar.Icon)
+        frame.castBar.Icon.Background:Show()
+    end
 
 	-- UPDATE CASTBAR
 	frame.castBar:SetScript("OnValueChanged", function(self, value)
@@ -446,9 +449,9 @@ hooksecurefunc("CompactUnitFrame_UpdateName", function(frame)
 			local isTanking, threatStatus = UnitDetailedThreatSituation("player", frame.displayedUnit)
 			if (isTanking and threatStatus) then
 				if (threatStatus >= 3) then
-					frame.name:SetTextColor(0,1,0)
+					frame.name:SetTextColor(0, 1, 0)
 				elseif (threatStatus == 2) then
-					frame.name:SetTextColor(1,0.6,0.2)
+					frame.name:SetTextColor(1, 0.6, 0.2)
 				end
 			else
 				local target = frame.displayedUnit.."target"
