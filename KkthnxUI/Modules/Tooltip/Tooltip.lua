@@ -467,3 +467,28 @@ if C.Tooltip.HideButtons == true then
 	hooksecurefunc(GameTooltip, "SetPetAction", CombatHideActionButtonsTooltip)
 	hooksecurefunc(GameTooltip, "SetShapeshift", CombatHideActionButtonsTooltip)
 end
+
+-- FIX GAMETOOLTIPMONEYFRAME FONT SIZE
+local function FixFont(self)
+	for i = 1, 2 do
+		if _G["GameTooltipMoneyFrame"..i] then
+			_G["GameTooltipMoneyFrame"..i.."PrefixText"]:SetFontObject("GameTooltipText")
+			_G["GameTooltipMoneyFrame"..i.."SuffixText"]:SetFontObject("GameTooltipText")
+			_G["GameTooltipMoneyFrame"..i.."GoldButton"]:SetNormalFontObject("GameTooltipText")
+			_G["GameTooltipMoneyFrame"..i.."SilverButton"]:SetNormalFontObject("GameTooltipText")
+			_G["GameTooltipMoneyFrame"..i.."CopperButton"]:SetNormalFontObject("GameTooltipText")
+		end
+	end
+	for i = 1, 2 do
+		if _G["ItemRefTooltipMoneyFrame"..i] then
+			_G["ItemRefTooltipMoneyFrame"..i.."PrefixText"]:SetFontObject("GameTooltipText")
+			_G["ItemRefTooltipMoneyFrame"..i.."SuffixText"]:SetFontObject("GameTooltipText")
+			_G["ItemRefTooltipMoneyFrame"..i.."GoldButton"]:SetNormalFontObject("GameTooltipText")
+			_G["ItemRefTooltipMoneyFrame"..i.."SilverButton"]:SetNormalFontObject("GameTooltipText")
+			_G["ItemRefTooltipMoneyFrame"..i.."CopperButton"]:SetNormalFontObject("GameTooltipText")
+		end
+	end
+end
+
+GameTooltip:HookScript("OnTooltipSetItem", FixFont)
+ItemRefTooltip:HookScript("OnTooltipSetItem", FixFont)
