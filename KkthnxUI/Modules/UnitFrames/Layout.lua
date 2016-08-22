@@ -34,6 +34,10 @@ if C.Unitframe.Enable == true then
 	local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
 	TargetAnchor:SetSize(146, 28)
 	TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
+	
+	local BossAnchor = CreateFrame("Frame", "BossFrameAnchor", UIParent)
+	BossAnchor:SetSize(232, 100)
+	BossAnchor:SetPoint(unpack(C.Position.UnitFrames.Boss))
 
 	local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
 
@@ -235,7 +239,11 @@ if C.Unitframe.Enable == true then
 			_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
 			_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
 			_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
+			Boss1TargetFrame:SetPoint(unpack(C.Position.UnitFrames.Boss))
 		end
+		K.ModifyBasicFrame(Boss1TargetFrame, "CENTER", BossFrameAnchor, 0, 0, 1.0)
+		--Boss1TargetFrame:ClearAllPoints()
+		--Boss1TargetFrame:SetPoint(unpack(C.Position.UnitFrames.Boss))
 		for i = 2, 5 do
 			_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 		end
@@ -251,6 +259,7 @@ if C.Unitframe.Enable == true then
 					_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
 				end
 				ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
+				ArenaEnemyFrames:SetPoint(unpack(C.Position.UnitFrames.Player))
 			end
 		end
 

@@ -15,7 +15,11 @@ local function CaptureUpdate()
 
 		if(bar and bar:IsShown()) then
 			bar:ClearAllPoints()
-			bar:SetPoint(unpack(C.Position.CaptureBar))
+			if i == 1 then
+				bar:SetPoint(unpack(C.Position.CaptureBar))
+			else
+				bar:SetPoint("TOPLEFT", _G["WorldStateCaptureBar"..i-1], "BOTTOMLEFT", 0, -7)
+			end
 			if not bar.skinned then
 				local left = _G[barname.."LeftBar"]
 				local right = _G[barname.."RightBar"]
@@ -48,4 +52,23 @@ local function CaptureUpdate()
 		end
 	end
 end
-hooksecurefunc("WorldStateAlwaysUpFrame_Update", CaptureUpdate)
+hooksecurefunc("UIParent_ManageFramePositions", CaptureUpdate)
+
+-- BATTLEFIELD SCORE FRAME
+local function StateUpdate()
+	if not NUM_ALWAYS_UP_UI_FRAMES then return end
+	for i = 1, NUM_ALWAYS_UP_UI_FRAMES do
+		local f = _G["AlwaysUpFrame"..i]
+
+		if f then
+			f:ClearAllPoints()
+			f:SetFrameStrata("BACKGROUND")
+			if i == 1 then
+				f:SetPoint(unpack(C.Position.Attempt))
+			else
+				f:SetPoint("TOPLEFT", _G["AlwaysUpFrame"..i-1], "BOTTOMLEFT", 0, 0)
+			end
+		end
+	end
+end
+hooksecurefunc("WorldStateAlwaysUpFrame_Update", StateUpdate)

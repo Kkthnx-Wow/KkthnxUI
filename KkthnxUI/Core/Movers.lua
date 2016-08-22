@@ -25,6 +25,7 @@ K.MoverFrames = {
 	PetActionBarAnchor,
 	PlayerCastbarAnchor,
 	PlayerFrameAnchor,
+	BossFrameAnchor,
 	PulseCDAnchor,
 	RightActionBarAnchor,
 	SPECIAL_P_BUFF_ICON_Anchor,

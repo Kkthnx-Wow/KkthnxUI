@@ -2,8 +2,9 @@ local K, C, L = select(2, ...):unpack()
 
 -- IF YOU'RE SAVING FRAME POSITIONS, USE "UIPARENT", NOT UIPARENT
 C["Position"] = {
-	["AltPowerBar"] = {"TOP", "UIParent", "TOP", 0, -100},
 	["Alerts"] = {"TOP", "UIParent", "TOP", 0, -22},
+	["AltPowerBar"] = {"TOP", "UIParent", "TOP", 0, -100},
+	["Attempt"] = {"TOP", "UIParent", "TOP", -85, -25},
 	["BGScore"] = {"TOPLEFT", "UIParent", "TOPLEFT", -4, -4},
 	["Bag"] = {"RIGHT", "UIParent", "RIGHT", -140, -20},
 	["Bank"] = {"LEFT", "UIParent", "LEFT", 23, 150},
@@ -23,16 +24,17 @@ C["Position"] = {
 	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
 	["StanceBar"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167},
 	["StatsFrame"] = {"CENTER", "StatFrame", "CENTER", 0, 0},
+	["TalkingHead"] = {"TOP", "UIParent", "TOP", 0, -21},
 	["Ticket"] = {"TOPLEFT", "UIParent", "TOPLEFT", 0, -1},
 	["Tooltip"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -2, 2},
 	["UIError"] = {"TOP", "UIParent", "TOP", 0, -80},
 	["Vehicle"] = {"TOP", "Minimap", "BOTTOM", 0, -18},
 	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
-	["TalkingHead"] = {"TOP", "UIParent", "TOP", 0, -21},
 	-- UNITFRAME POSITIONS
 	UnitFrames = {
-		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
 		-- ["Focus"] = {"BOTTOM", "PlayerFrame", "TOP", 0, 200},
+		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
+		["Boss"] = {"RIGHT", "RightActionBarAnchor", "LEFT", 20, -70},
 		["Player"] = {"BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -9, 175},
 		["PlayerCastBar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175},
 		["Target"] = {"BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 9, 175},
