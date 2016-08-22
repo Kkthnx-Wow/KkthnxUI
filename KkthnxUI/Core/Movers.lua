@@ -33,7 +33,6 @@ K.MoverFrames = {
 	T_DEBUFF_ICON_Anchor,
 	T_DE_BUFF_BAR_Anchor,
 	TargetCastbarAnchor,
-	TargetCastbarAnchor,
 	TargetFrameAnchor,
 	TooltipAnchor,
 	VehicleAnchor,

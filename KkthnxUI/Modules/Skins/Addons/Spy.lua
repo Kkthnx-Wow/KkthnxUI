@@ -18,7 +18,7 @@ frame:SetScript("OnEvent", function(self, event)
 		Spy_MainWindow:SetTemplate("Transparent")
 		Spy_AlertWindow:SetTemplate("Transparent")
 		Spy_MainWindow:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-		Spy_AlertWindow:Point("TOP", UIParent, "TOP", 0, -130)
+		Spy_AlertWindow:SetPoint("TOP", UIParent, "TOP", 0, -130)
 	end
 
 	Skin_Spy()

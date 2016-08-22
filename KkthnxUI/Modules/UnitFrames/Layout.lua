@@ -25,20 +25,20 @@ local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
-local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
-PlayerAnchor:SetSize(146, 28)
-PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
-
-local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
-TargetAnchor:SetSize(146, 28)
-TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
-
-local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
-
 if C.Unitframe.Enable == true then
+
+	local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
+	PlayerAnchor:SetSize(146, 28)
+	PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
+
+	local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
+	TargetAnchor:SetSize(146, 28)
+	TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
+
+	local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
+
 	Unitframes:RegisterEvent("ADDON_LOADED")
 	Unitframes:SetScript("OnEvent", function(self, event, addon)
-
 		if (addon ~= "KkthnxUI") or InCombatLockdown() then return end
 
 		if C.Unitframe.ClassHealth ~= true then
@@ -350,6 +350,7 @@ for _, Textures in ipairs({
 end
 
 -- JUST BECAUSE I CAN
+if C.Misc.Armory == true then return end
 for _, menu in pairs(UnitPopupMenus) do
 	for index = #menu, 1, -1 do
 		if menu[index] == "MOVE_PLAYER_FRAME" or menu[index] == "MOVE_TARGET_FRAME" or menu[index] == "MOVE_FOCUS_FRAME" then

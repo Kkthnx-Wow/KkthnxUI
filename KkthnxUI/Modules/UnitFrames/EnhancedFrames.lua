@@ -238,17 +238,19 @@ function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 end
 
 -- IDK WHAT I WANNA DO WITH THIS YET :D
-PlayerFrameHealthBarTextLeft:ClearAllPoints()
-PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
+if not InCombatLockdown() then
+	PlayerFrameHealthBarTextLeft:ClearAllPoints()
+	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
 
-PlayerFrameHealthBarTextRight:ClearAllPoints()
-PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, -3)
+	PlayerFrameHealthBarTextRight:ClearAllPoints()
+	PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, -3)
 
-TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
-TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, -3)
+	TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
+	TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, -3)
 
-TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
-TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
+	TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
+	TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
+end
 
 -- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
 function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
