@@ -44,7 +44,7 @@ K.NameSize = function(frame)
 end
 
 K.FrameIsNameplate = function(frame)
-	if (match(frame.displayedUnit,"nameplate") ~= "nameplate") then
+	if (match(frame.displayedUnit, "nameplate") ~= "nameplate") then
 		return false
 	else
 		return true
