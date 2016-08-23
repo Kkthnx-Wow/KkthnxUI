@@ -1,4 +1,6 @@
--- GUI for KkthnxUI (by Fernir, Tukz and Tohveli, Shestak)
+-- GUI FOR KKTHNXUI (BY FERNIR, TUKZ AND TOHVELI, SHESTAK)
+local K, C, L, _
+
 local _G = _G
 local unpack = unpack
 local sub = string.sub
@@ -43,7 +45,7 @@ local ALLOWED_GROUPS = {
 }
 
 local function Local(o)
-	local K, C, L, _ = KkthnxUI:unpack()
+	K, C, L, _ = KkthnxUI:unpack()
 	-- Actionbar Settings
 	if o == "UIConfigActionBar" then o = ACTIONBAR_LABEL end
 	if o == "UIConfigActionBarBottomBars" then o = L_GUI_ACTIONBAR_BOTTOMBARS end
@@ -380,7 +382,7 @@ end
 local VISIBLE_GROUP = nil
 local lastbutton = nil
 local function ShowGroup(group, button)
-	local K, C, L, _ = KkthnxUI:unpack()
+	K, C, L, _ = KkthnxUI:unpack()
 
 	if lastbutton then
 		lastbutton:SetText(lastbutton:GetText().sub(lastbutton:GetText(), 11, -3))
@@ -434,7 +436,7 @@ end
 local loaded
 function CreateUIConfig()
 	if InCombatLockdown() and not loaded then Print("|cffffe02e"..ERR_NOT_IN_COMBAT.."|r") return end
-	local K, C, L, _ = KkthnxUI:unpack()
+	K, C, L, _ = KkthnxUI:unpack()
 
 	if UIConfigMain then
 		ShowGroup("General")
@@ -843,7 +845,7 @@ do
 	frame.name = "|cff2eb6ffKkthnxUI|r"
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
-		local K, C, L, _ = KkthnxUI:unpack()
+		K, C, L, _ = KkthnxUI:unpack()
 		local title = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title:SetPoint("TOPLEFT", 16, -16)
 		title:SetText("Info:")
