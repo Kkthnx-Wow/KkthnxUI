@@ -6,7 +6,7 @@ local select = select
 local CreateFrame = CreateFrame
 local IsAddOnLoaded = IsAddOnLoaded
 
---	WeakAuras skin
+-- WEAKAURAS SKIN
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -15,11 +15,11 @@ frame:SetScript("OnEvent", function(self, event)
 
 	local function Skin_WeakAuras(frame)
 		if not frame.border then
-			K.CreateBorder(frame, 10, 2.5)
+			K.CreateBorder(frame, 10, 2)
 		end
 
 		if frame.icon then
-			frame.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+			frame.icon:SetTexCoord(unpack(K.TexCoords))
 			frame.icon.SetTexCoord = K.Noop
 		end
 
@@ -30,14 +30,17 @@ frame:SetScript("OnEvent", function(self, event)
 
 		if frame.stacks then
 			frame.stacks:SetFont(C.Media.Font, select(2, frame.stacks:GetFont()), C.Media.Font_Style)
+			frame.stacks:SetShadowOffset(0, -0)
 		end
 
 		if frame.timer then
 			frame.timer:SetFont(C.Media.Font, select(2, frame.timer:GetFont()), C.Media.Font_Style)
+			frame.timer:SetShadowOffset(0, -0)
 		end
 
 		if frame.text then
 			frame.text:SetFont(C.Media.Font, select(2, frame.text:GetFont()), C.Media.Font_Style)
+			frame.text:SetShadowOffset(0, -0)
 		end
 	end
 
