@@ -33,6 +33,12 @@ local UnitPlayerOrPetInParty = UnitPlayerOrPetInParty
 local UnitPlayerOrPetInRaid = UnitPlayerOrPetInRaid
 local hooksecurefunc = hooksecurefunc
 
+local BACKDROP = {
+	bgFile = [[Interface/Buttons/WHITE8X8]],
+	tiled = false,
+	insets = {left = -1, right = -1, top = -1, bottom = -1}
+}
+
 -- FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
 K.NameSize = function(frame)
 	local font = select(1,frame.name:GetFont())
@@ -77,16 +83,16 @@ end
 
 K.FormatTime = function(s)
 	if s > 86400 then
-		-- Days
+		-- DAYS
 		return ceil(s/86400) .. "d", s%86400
 	elseif s >= 3600 then
-		-- Hours
+		-- HOURS
 		return ceil(s/3600) .. "h", s%3600
 	elseif s >= 60 then
-		-- Minutes
+		-- MINUTES
 		return ceil(s/60) .. "m", s%60
 	elseif s <= 10 then
-		-- Seconds
+		-- SECONDS
 		return format("%.1f", s)
 	end
 
@@ -388,20 +394,20 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 
 	-- CASTBAR ICON BACKGROUND
     if (not frame.castBar.Icon.Background) then
-        frame.castBar.Icon.Background = frame.castBar:CreateTexture("$parentIconBackground", "BACKGROUND")
-        frame.castBar.Icon.Background:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-        frame.castBar.Icon.Background:Hide()
-        frame.castBar.Icon.Background:ClearAllPoints()
-        frame.castBar.Icon.Background:SetAllPoints(frame.castBar.Icon)
-        frame.castBar.Icon.Background:Show()
+        frame.castBar.Icon.Background = CreateFrame('Frame', nil, frame.castBar)
+		frame.castBar.Icon.Background:SetAllPoints(frame.castBar.Icon)
+		frame.castBar.Icon.Background:SetFrameLevel(0)
     end
 
-	--[[ CASTBAR ICON BORDER
+	-- CASTBAR ICON BORDER
     if (not frame.castBar.Icon.border) then
-        frame.castBar.Icon.border = CreateFrame("Frame", nil, frame.castBar.Icon, "NamePlateFullBorderTemplate")
-		frame.castBar.Icon.border:SetVertexColor(0.2, 0.2, 0.2, 0.85)
+		 frame.castBar.Icon.Background:SetBackdrop(BACKDROP)
+		 frame.castBar.Icon.Background:SetBackdropColor(0.2, 0.2, 0.2, 0.85)
     end
-	]]--
+
+	frame.castBar.BorderShield:SetSize(16, 16)
+	frame.castBar.BorderShield:ClearAllPoints()
+	frame.castBar.BorderShield:SetPoint("CENTER", frame.castBar.Icon)
 
 	-- UPDATE CASTBAR
 	frame.castBar:SetScript("OnValueChanged", function(self, value)
