@@ -33,8 +33,6 @@ local UnitPlayerOrPetInParty = UnitPlayerOrPetInParty
 local UnitPlayerOrPetInRaid = UnitPlayerOrPetInRaid
 local hooksecurefunc = hooksecurefunc
 
-local borderColor = {0.40, 0.40, 0.40, 1}
-
 -- FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
 K.NameSize = function(frame)
 	local font = select(1,frame.name:GetFont())
@@ -73,28 +71,26 @@ end
 
 K.SetManabarColors = function(frame, color)
 	if (frame.healthBar.border) then
-		for i = 1, 8 do
-			frame.healthBar.border:SetVertexColor(unpack(color))
-		end
+		frame.castBar.border:SetVertexColor(unpack(color))
 	end
 end
 
 K.FormatTime = function(s)
-    if s > 86400 then
-        -- Days
-        return ceil(s/86400) .. "d", s%86400
-    elseif s >= 3600 then
-        -- Hours
-        return ceil(s/3600) .. "h", s%3600
-    elseif s >= 60 then
-        -- Minutes
-        return ceil(s/60) .. "m", s%60
-    elseif s <= 10 then
-        -- Seconds
-        return format("%.1f", s)
-    end
+	if s > 86400 then
+		-- Days
+		return ceil(s/86400) .. "d", s%86400
+	elseif s >= 3600 then
+		-- Hours
+		return ceil(s/3600) .. "h", s%3600
+	elseif s >= 60 then
+		-- Minutes
+		return ceil(s/60) .. "m", s%60
+	elseif s <= 10 then
+		-- Seconds
+		return format("%.1f", s)
+	end
 
-    return floor(s), s - floor(s)
+	return floor(s), s - floor(s)
 end
 
 -- START NAMEPLATE CODE
@@ -254,79 +250,88 @@ end)
 
 -- CHANGE BORDER COLOR ON TARGET
 hooksecurefunc("CompactUnitFrame_UpdateSelectionHighlight", function(frame)
-    local r,g,b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b
+	local r, g, b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b
 
-    if (frame.healthBar.border) then
-        for i = 1, 8 do
-            if (UnitIsUnit(frame.displayedUnit, "target")) then
-               frame.healthBar.border:SetVertexColor(r, g, b, 1)
-            else
-                frame.healthBar.border:SetVertexColor(unpack(borderColor))
-            end
-        end
-    end
+	if (frame.healthBar.Border) then
+		if (UnitIsUnit(frame.displayedUnit, "target")) then
+			frame.healthBar.Border:SetVertexColor(r, g, b, 1)
+		else
+			frame.healthBar.Border:SetVertexColor(unpack(C.Media.Backdrop_Color))
+		end
+	end
 end)
 
 -- UPDATE CASTBAR TIME
 local function UpdateCastbarTimer(frame)
 
-    if (frame.unit) then
-        if (frame.castBar.casting) then
-            local current = frame.castBar.maxValue - frame.castBar.value
-            if (current > 0.0) then
-                frame.castBar.CastTime:SetText(K.FormatTime(current))
-            end
-        else
-            if (frame.castBar.value > 0) then
-                frame.castBar.CastTime:SetText(K.FormatTime(frame.castBar.value))
-            end
-        end
-    end
+	if (frame.unit) then
+		if (frame.castBar.casting) then
+			local current = frame.castBar.maxValue - frame.castBar.value
+			if (current > 0.0) then
+				frame.castBar.CastTime:SetText(K.FormatTime(current))
+			end
+		else
+			if (frame.castBar.value > 0) then
+				frame.castBar.CastTime:SetText(K.FormatTime(frame.castBar.value))
+			end
+		end
+	end
 end
 
 local function UpdateCastbar(frame)
 
 	-- CASTBAR OVERLAY COLORING
-    local notInterruptible
-    local red = {.75, 0, 0, 1}
-    local green = {0, .75, 0, 1}
+	local notInterruptible
+	local red = {.75, 0, 0, 1}
+	local green = {0, .75, 0, 1}
 
-    if (frame.unit) then
-        if (frame.castBar.casting) then
-            notInterruptible = select(9, UnitCastingInfo(frame.displayedUnit))
-        else
-            notInterruptible = select(8, UnitChannelInfo(frame.displayedUnit))
-        end
+	if (frame.unit) then
+		if (frame.castBar.casting) then
+			notInterruptible = select(9, UnitCastingInfo(frame.displayedUnit))
+		else
+			notInterruptible = select(8, UnitChannelInfo(frame.displayedUnit))
+		end
 
-        if (UnitCanAttack("player", frame.displayedUnit)) then
-            if (notInterruptible) then
-                K.SetManabarColors(frame, red)
-            else
-                K.SetManabarColors(frame, green)
-            end
-        else
-            K.SetManabarColors(frame, borderColor)
-        end
-    end
+		if (UnitCanAttack("player", frame.displayedUnit)) then
+			if (notInterruptible) then
+				K.SetManabarColors(frame, red)
+			else
+				K.SetManabarColors(frame, green)
+			end
+		else
+			K.SetManabarColors(frame, unpack(C.Media.Backdrop_Color))
+		end
+	end
 
-	-- Backup Icon Background
-    if (frame.castBar.Icon.Background) then
-        local _,class = UnitClass(frame.displayedUnit)
-        if (not class) then
-            frame.castBar.Icon.Background:SetTexture("Interface\\Icons\\Ability_DualWield")
-        else
-            frame.castBar.Icon.Background:SetTexture("Interface\\Icons\\ClassIcon_"..class)
-        end
-    end
+	-- BACKUP ICON BACKGROUND
+	if (frame.castBar.Icon.Background) then
+		local _,class = UnitClass(frame.displayedUnit)
+		if (not class) then
+			frame.castBar.Icon.Background:SetTexture("Interface\\Icons\\Ability_DualWield")
+		else
+			frame.castBar.Icon.Background:SetTexture("Interface\\Icons\\ClassIcon_"..class)
+		end
+	end
 
-     -- Abbreviate Long Spell Names
-    if (not K.IsUsingLargerNamePlateStyle()) then
-        local spellName = frame.castBar.Text:GetText()
-        if (spellName ~= nil) then
-            spellName = (len(spellName) > 20) and gsub(spellName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or spellName
-            frame.castBar.Text:SetText(spellName)
-        end
-    end
+	-- ABBREVIATE LONG SPELL NAMES
+	if (not K.IsUsingLargerNamePlateStyle()) then
+		local spellName = frame.castBar.Text:GetText()
+		if (spellName ~= nil) then
+			spellName = (len(spellName) > 20) and gsub(spellName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or spellName
+			frame.castBar.Text:SetText(spellName)
+		end
+	end
+end
+
+local function UpdateCastbar(frame)
+	-- Abbreviate Long Spell Names
+	if (not K.IsUsingLargerNamePlateStyle()) then
+		local spellName = frame.castBar.Text:GetText()
+		if (spellName ~= nil) then
+			spellName = (len(spellName) > 20) and gsub(spellName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or spellName
+			frame.castBar.Text:SetText(spellName)
+		end
+	end
 end
 
 -- SETUP FRAMES
@@ -347,12 +352,14 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	-- CASTBAR
 	local castbarFont = select(1, frame.castBar.Text:GetFont())
 
+	-- ADD A BORDER TO THE CASTBAR LIKE THE HEALTHBAR HAS
+	if (not frame.castBar.border) then
+		frame.castBar.border = CreateFrame("Frame", nil, frame.castBar, "NamePlateFullBorderTemplate")
+		frame.castBar.border:SetVertexColor(0.2, 0.2, 0.2, 0.85) -- THIS IS THE DEFAULT COLOR BLIZZARD USES IN THEIR .XML
+	end
+
 	frame.castBar:SetHeight(8)
 	frame.castBar:SetStatusBarTexture(C.Media.Texture)
-
-	-- HIDE BORDER SHIELD
-	--frame.castBar.BorderShield:Hide()
-	--frame.castBar.BorderShield:ClearAllPoints()
 
 	-- SPELL NAME
 	frame.castBar.Text:Hide()
@@ -382,12 +389,19 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	-- CASTBAR ICON BACKGROUND
     if (not frame.castBar.Icon.Background) then
         frame.castBar.Icon.Background = frame.castBar:CreateTexture("$parentIconBackground", "BACKGROUND")
-        frame.castBar.Icon.Background:SetTexCoord(unpack(K.TexCoords))
+        frame.castBar.Icon.Background:SetTexCoord(0.1, 0.9, 0.1, 0.9)
         frame.castBar.Icon.Background:Hide()
         frame.castBar.Icon.Background:ClearAllPoints()
         frame.castBar.Icon.Background:SetAllPoints(frame.castBar.Icon)
         frame.castBar.Icon.Background:Show()
     end
+
+	--[[ CASTBAR ICON BORDER
+    if (not frame.castBar.Icon.border) then
+        frame.castBar.Icon.border = CreateFrame("Frame", nil, frame.castBar.Icon, "NamePlateFullBorderTemplate")
+		frame.castBar.Icon.border:SetVertexColor(0.2, 0.2, 0.2, 0.85)
+    end
+	]]--
 
 	-- UPDATE CASTBAR
 	frame.castBar:SetScript("OnValueChanged", function(self, value)
