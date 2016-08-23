@@ -35,10 +35,11 @@ local ALLOWED_GROUPS = {
 	["Loot"] = 12,
 	["Minimap"] = 13,
 	["Misc"] = 14,
-	["PulseCD"] = 15,
-	["Skins"] = 16,
-	["Tooltip"] = 17,
-	["Unitframe"] = 18,
+	["Nameplate"] = 15,
+	["PulseCD"] = 16,
+	["Skins"] = 17,
+	["Tooltip"] = 18,
+	["Unitframe"] = 19,
 }
 
 local function Local(o)
@@ -83,7 +84,6 @@ local function Local(o)
 	if o == "UIConfigAutomationLoggingCombat" then o = L_GUI_AUTOMATION_LOGGING_COMBAT end
 	if o == "UIConfigAutomationResurrection" then o = L_GUI_AUTOMATION_RESURRECTION end
 	if o == "UIConfigAutomationScreenShot" then o = L_GUI_AUTOMATION_SCREENSHOT end
-	if o == "UIConfigAutomationSellGreyRepair" then o = L_GUI_AUTOMATION_SELLGREY_N_REPAIR end
 	if o == "UIConfigAutomationTabBinder" then o = L_GUI_AUTOMATION_TAB_BINDER end
 	-- Bag Settings
 	if o == "UIConfigBag" then o = L_GUI_BAGS end
@@ -172,12 +172,36 @@ local function Local(o)
 	if o == "UIConfigMiscAFKCamera" then o = L_GUI_MISC_SPIN_CAMERA end
 	if o == "UIConfigMiscAlreadyKnown" then o = L_GUI_MISC_ALREADY_KNOWN end
 	if o == "UIConfigMiscArmory" then o = L_GUI_MISC_ARMORY_LINK end
+	if o == "UIConfigMiscAutoRepair" then o = L_GUI_MISC_AUTOREPAIR end
+	if o == "UIConfigMiscAutoSellGrays" then o = L_GUI_MISC_AUTOSELLGRAYS end
 	if o == "UIConfigMiscBGSpam" then o = L_GUI_MISC_HIDE_BG_SPAM end
 	if o == "UIConfigMiscDurabilityWarninig" then o = L_GUI_MISC_DURABILITY_WARNINIG end
 	if o == "UIConfigMiscEnhancedMail" then o = L_GUI_MISC_ENCHANCED_MAIL end
-	if o == "UIConfigMiscMoveBlizzard" then o = L_GUI_MISC_MOVE_BLIZZARD end
 	if o == "UIConfigMiscInviteKeyword" then o = L_GUI_MISC_INVKEYWORD end
 	if o == "UIConfigMiscItemLevel" then o = L_GUI_MISC_ITEM_LEVEL end
+	if o == "UIConfigMiscMoveBlizzard" then o = L_GUI_MISC_MOVE_BLIZZARD end
+	if o == "UIConfigMiscSellMisc" then o = L_GUI_MISC_SELLMISC end
+	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
+	-- Nameplate Settings
+	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
+	if o == "UIConfigNameplateAbrrevLongNames" then o = L_GUI_NAMEPLATE_ABRREVLONGNAMES end
+	if o == "UIConfigNameplateColorNameByThreat" then o = L_GUI_NAMEPLATE_COLORNAMEBYTHREAT end
+	if o == "UIConfigNameplateDontClamp" then o = L_GUI_NAMEPLATE_DONTCLAMP end
+	if o == "UIConfigNameplateExecuteColor" then o = L_GUI_NAMEPLATE_EXECUTECOLOR end
+	if o == "UIConfigNameplateExecuteValue" then o = L_GUI_NAMEPLATE_EXECUTEVALUE end
+	if o == "UIConfigNameplateHideFriendly" then o = L_GUI_NAMEPLATE_HIDEFRIENDLY end
+	if o == "UIConfigNameplateOffTankColor" then o = L_GUI_NAMEPLATE_OFFTANKCOLOR end
+	if o == "UIConfigNameplateShowCurHP" then o = L_GUI_NAMEPLATE_CURRENTHEALTH end
+	if o == "UIConfigNameplateShowEnemyClassColors" then o = L_GUI_NAMEPLATE_ENEMYCLASSCOLORS end
+	if o == "UIConfigNameplateShowExecuteRange" then o = L_GUI_NAMEPLATE_EXECUTERANGE end
+	if o == "UIConfigNameplateShowFriendlyClassColors" then o = L_GUI_NAMEPLATE_FRIENDLYCLASSCOLORS end
+	if o == "UIConfigNameplateShowFullHP" then o = L_GUI_NAMEPLATE_FULLHP end
+	if o == "UIConfigNameplateShowHP" then o = L_GUI_NAMEPLATE_HEALTH end
+	if o == "UIConfigNameplateShowLevel" then o = L_GUI_NAMEPLATE_LEVEL end
+	if o == "UIConfigNameplateShowPercHP" then o = L_GUI_NAMEPLATE_PERCENTHEALTH end
+	if o == "UIConfigNameplateShowServerName" then o = L_GUI_NAMEPLATE_SERVERNAME end
+	if o == "UIConfigNameplateTankMode" then o = L_GUI_NAMEPLATE_TANKMODE end
+	if o == "UIConfigNameplateUseOffTankColor" then o = L_GUI_NAMEPLATE_OFFTANKCOLOR end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end

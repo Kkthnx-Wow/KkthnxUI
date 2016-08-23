@@ -1,15 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-local enable = {}
-
-if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
-	enable = true
-else
-	enable = false
+-- NOT READY FOR THE PROS YET :O
+if not (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
+	do return end
 end
-
-if enable ~= true then return end
-
 -- LUA API
 local _G = _G
 local ceil = math.ceil
@@ -33,20 +27,32 @@ local UnitPlayerOrPetInParty = UnitPlayerOrPetInParty
 local UnitPlayerOrPetInRaid = UnitPlayerOrPetInRaid
 local hooksecurefunc = hooksecurefunc
 
-local BACKDROP = {
-	bgFile = [[Interface/Buttons/WHITE8X8]],
-	tiled = false,
-	insets = {left = -1, right = -1, top = -1, bottom = -1}
-}
+-- CREATE A FAKE BACKDROP FRAME USING TEXTURES
+local function CreateVirtualFrame(parent, point)
+	if point == nil then point = parent end
 
--- FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
-K.NameSize = function(frame)
-	local font = select(1,frame.name:GetFont())
-	local size = C.Media.Font_Size * K.NoScaleMult
-	frame.name:SetFont(font, size)
-	frame.name:SetShadowOffset(K.Mult, -K.Mult)
+	if point.backdrop then return end
+	parent.backdrop = CreateFrame("Frame", nil , parent)
+	parent.backdrop:SetAllPoints()
+	parent.backdrop:SetBackdrop({
+		bgFile = C.Media.Blank,
+		edgeFile = C.Media.Glow,
+		edgeSize = 3 * K.NoScaleMult,
+		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
+	})
+	parent.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
+	parent.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
+	parent.backdrop:SetBackdropColor(.05, .05, .05, .9)
+	parent.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
+
+	if parent:GetFrameLevel() - 1 > 0 then
+		parent.backdrop:SetFrameLevel(parent:GetFrameLevel() - 1)
+	else
+		parent.backdrop:SetFrameLevel(0)
+	end
 end
 
+-- FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
 K.FrameIsNameplate = function(frame)
 	if (match(frame.displayedUnit, "nameplate") ~= "nameplate") then
 		return false
@@ -76,8 +82,8 @@ K.IsUsingLargerNamePlateStyle = function()
 end
 
 K.SetManabarColors = function(frame, color)
-	if (frame.healthBar.border) then
-		frame.castBar.border:SetVertexColor(unpack(color))
+	if (frame.castBar.CastTime) then
+		frame.castBar.CastTime:SetTextColor(unpack(color))
 	end
 end
 
@@ -107,10 +113,9 @@ C_Timer.After(1, function()
 		"Friendly",
 		"Enemy",
 	}
-
+	--[[
 	local options = {
 		displaySelectionHighlight = true,
-		useClassColors = C.Nameplate.ShowClassColors,
 
 		tankBorderColor = CreateColor(unpack(C.Media.Backdrop_Color)),
 		selectedBorderColor = CreateColor(unpack(C.Media.Backdrop_Color)),
@@ -122,6 +127,9 @@ C_Timer.After(1, function()
 			_G["DefaultCompactNamePlate"..group.."FrameOptions"][key] = value
 		end
 	end
+	]]--
+	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = C.Nameplate.ShowFriendlyClassColors
+	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = C.Nameplate.ShowEnemyClassColors
 
 	-- SET CVARS
 	if not InCombatLockdown() then
@@ -202,7 +210,7 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
 		else
 			local localizedClass, englishClass = UnitClass(frame.unit)
 			local classColor = RAID_CLASS_COLORS[englishClass]
-			if (UnitIsPlayer(frame.unit) and classColor and C.Nameplate.ShowClassColors) then
+			if (UnitIsPlayer(frame.unit) and classColor and frame.optionTable.useClassColors) then
 				r, g, b = classColor.r, classColor.g, classColor.b
 			elseif (CompactUnitFrame_IsTapDenied(frame)) then
 				r, g, b = 0.1, 0.1, 0.1
@@ -254,19 +262,19 @@ hooksecurefunc("CompactUnitFrame_UpdateHealthColor", function(frame)
 	end
 end)
 
--- CHANGE BORDER COLOR ON TARGET
+--[[ CHANGE BORDER COLOR ON TARGET
 hooksecurefunc("CompactUnitFrame_UpdateSelectionHighlight", function(frame)
 	local r, g, b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b
 
-	if (frame.healthBar.Border) then
+	if (frame.healthBar.shadow) then
 		if (UnitIsUnit(frame.displayedUnit, "target")) then
-			frame.healthBar.Border:SetVertexColor(r, g, b, 1)
+			frame.healthBar.backdrop:SetBackdropBorderColor(r, g, b, 1)
 		else
-			frame.healthBar.Border:SetVertexColor(unpack(C.Media.Backdrop_Color))
+			frame.healthBar.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
 		end
 	end
 end)
-
+]]--
 -- UPDATE CASTBAR TIME
 local function UpdateCastbarTimer(frame)
 
@@ -330,7 +338,7 @@ local function UpdateCastbar(frame)
 end
 
 local function UpdateCastbar(frame)
-	-- Abbreviate Long Spell Names
+	-- ABBREVIATE LONG SPELL NAMES
 	if (not K.IsUsingLargerNamePlateStyle()) then
 		local spellName = frame.castBar.Text:GetText()
 		if (spellName ~= nil) then
@@ -344,7 +352,8 @@ end
 hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 
 	-- NAME
-	K.NameSize(frame)
+	frame.name:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult)
+	frame.name:SetShadowOffset(K.Mult, -K.Mult)
 
 	-- HEALTHBAR
 	frame.healthBar:SetHeight(8)
@@ -353,19 +362,29 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 	frame.healthBar:SetPoint("BOTTOMLEFT", frame.castBar, "TOPLEFT", 0, 4.2)
 	frame.healthBar:SetPoint("BOTTOMRIGHT", frame.castBar, "TOPRIGHT", 0, 4.2)
 	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
+	frame.healthBar.background:ClearAllPoints()
+	frame.healthBar.background:SetInside(0, 0)
+	frame.healthBar.border:SetAlpha(0)
 	frame.healthBar:Show()
+
+	-- HEALTHBAR BORDER
+    if (not frame.healthBar.shadow) then
+       CreateVirtualFrame(frame.healthBar)
+    end
 
 	-- CASTBAR
 	local castbarFont = select(1, frame.castBar.Text:GetFont())
 
-	-- ADD A BORDER TO THE CASTBAR LIKE THE HEALTHBAR HAS
-	if (not frame.castBar.border) then
-		frame.castBar.border = CreateFrame("Frame", nil, frame.castBar, "NamePlateFullBorderTemplate")
-		frame.castBar.border:SetVertexColor(0.2, 0.2, 0.2, 0.85) -- THIS IS THE DEFAULT COLOR BLIZZARD USES IN THEIR .XML
-	end
-
 	frame.castBar:SetHeight(8)
 	frame.castBar:SetStatusBarTexture(C.Media.Texture)
+	frame.castBar.background:ClearAllPoints()
+	frame.castBar.background:SetInside(0, 0)
+	if frame.castBar.border then frame.castBar.border:SetAlpha(0) end
+
+	-- ADD A BORDER TO THE CASTBAR LIKE THE HEALTHBAR HAS
+	if (not frame.castBar.shadow) then
+		CreateVirtualFrame(frame.castBar)
+	end
 
 	-- SPELL NAME
 	frame.castBar.Text:Hide()
@@ -394,15 +413,14 @@ hooksecurefunc("DefaultCompactNamePlateFrameSetup", function(frame, options)
 
 	-- CASTBAR ICON BACKGROUND
     if (not frame.castBar.Icon.Background) then
-        frame.castBar.Icon.Background = CreateFrame('Frame', nil, frame.castBar)
+        frame.castBar.Icon.Background = CreateFrame("Frame", nil, frame.castBar)
 		frame.castBar.Icon.Background:SetAllPoints(frame.castBar.Icon)
 		frame.castBar.Icon.Background:SetFrameLevel(0)
     end
 
 	-- CASTBAR ICON BORDER
     if (not frame.castBar.Icon.border) then
-		 frame.castBar.Icon.Background:SetBackdrop(BACKDROP)
-		 frame.castBar.Icon.Background:SetBackdropColor(0.2, 0.2, 0.2, 0.85)
+		 CreateVirtualFrame(frame.castBar.Icon.Background)
     end
 
 	frame.castBar.BorderShield:SetSize(16, 16)
@@ -465,7 +483,7 @@ hooksecurefunc("CompactUnitFrame_UpdateName", function(frame)
 		end
 
 		-- COLOR NAME TO THREAT STATUS
-		if (C.Nameplate.ColorNameByThreat) then
+		if (C.Nameplate.ColorNameByThreat and CompactUnitFrame_IsOnThreatListWithPlayer(frame.displayedUnit)) then
 			local isTanking, threatStatus = UnitDetailedThreatSituation("player", frame.displayedUnit)
 			if (isTanking and threatStatus) then
 				if (threatStatus >= 3) then
@@ -483,7 +501,7 @@ hooksecurefunc("CompactUnitFrame_UpdateName", function(frame)
 	end
 end)
 
--- BUFF FRAME OFFSETS
+--[[ BUFF FRAME OFFSETS
 hooksecurefunc(NamePlateBaseMixin,"ApplyOffsets", function(self)
 	local targetMode = GetCVarBool("nameplateShowSelf") and GetCVarBool("nameplateResourceOnTarget")
 
@@ -497,7 +515,7 @@ hooksecurefunc(NamePlateBaseMixin,"ApplyOffsets", function(self)
 end)
 
 -- UPDATE BUFF FRAME ANCHOR
-hooksecurefunc(NameplateBuffContainerMixin,"UpdateAnchor", function(self)
+hooksecurefunc(NameplateBuffContainerMixin, "UpdateAnchor", function(self)
 	local targetMode = GetCVarBool("nameplateShowSelf") and GetCVarBool("nameplateResourceOnTarget")
 	local isTarget = self:GetParent().unit and UnitIsUnit(self:GetParent().unit, "target")
 	local targetYOffset = isTarget and self:GetTargetYOffset() or 0.0
@@ -521,3 +539,4 @@ hooksecurefunc(NameplateBuffContainerMixin,"UpdateAnchor", function(self)
 		self:SetPoint("BOTTOM", self:GetParent().healthBar, "TOP", 0, 5)
 	end
 end)
+]]--

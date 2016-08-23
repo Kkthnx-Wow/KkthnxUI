@@ -1,12 +1,10 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Error.White ~= true and C.Error.Black ~= true then return end
 
---[[
-	ALL ERRORS ON HTTP://WOWWIKI.WIKIA.COM/WIKI/WOW_CONSTANTS/ERRORS
-	WHITE LIST ERRORS, THAT WILL NOT BE HIDDEN
-]]--
+-- All errors on http://wowwiki.wikia.com/wiki/wow_constants/errors
 
-K.White_List = {
+-- WHITE LIST ERRORS, THAT WILL NOT BE HIDDEN
+K.WhiteList = {
 	[ERR_INV_FULL] = true,
 	[ERR_QUEST_LOG_FULL] = true,
 	[ERR_ITEM_MAX_COUNT] = true,
@@ -18,7 +16,7 @@ K.White_List = {
 }
 
 -- BLACK LIST ERRORS, THAT WILL BE HIDDEN
-K.Black_List = {
+K.BlackList = {
 	[SPELL_FAILED_NO_COMBO_POINTS] = true,
 	[SPELL_FAILED_TARGETS_DEAD] = true,
 	[SPELL_FAILED_SPELL_IN_PROGRESS] = true,
@@ -73,4 +71,7 @@ K.Black_List = {
 	[OUT_OF_RAGE] = true,
 	[ERR_SPELL_OUT_OF_RANGE] = true,
 	[ERR_TOO_FAR_TO_INTERACT] = true,
+	[SPELL_FAILED_UNIT_NOT_INFRONT] = true,
+	[ERR_BADATTACKFACING] = true,
+	[SPELL_FAILED_TOO_CLOSE] = true,
 }

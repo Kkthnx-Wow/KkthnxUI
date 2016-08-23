@@ -63,7 +63,6 @@ C["Automation"] = {
 	["LoggingCombat"] = false,
 	["Resurrection"] = false,
 	["ScreenShot"] = false,
-	["SellGreyRepair"] = false,
 	["TabBinder"] = false,
 }
 -- BAG OPTIONS
@@ -164,12 +163,16 @@ C["Misc"] = {
 	["AFKCamera"] = false,
 	["AlreadyKnown"] = false,
 	["Armory"] = false,
+	["AutoRepair"] = true,
+	["AutoSellGrays"] = true,
 	["BGSpam"] = false,
 	["DurabilityWarninig"] = false,
 	["EnhancedMail"] = true,
 	["InviteKeyword"] = "inv",
 	["ItemLevel"] = false,
 	["MoveBlizzard"] = false,
+	["SellMisc"] = true,
+	["UseGuildRepair"] = false,
 }
 -- NAMEPLATE OPTIONS
 C["Nameplate"] = {
@@ -180,9 +183,10 @@ C["Nameplate"] = {
 	["ExecuteValue"] = 35,
 	["HideFriendly"] = false,
 	["OffTankColor"] = {0.60, 0.20, 1.0},
-	["ShowClassColors"] = true,
 	["ShowCurHP"] = true,
+	["ShowEnemyClassColors"] = true,
 	["ShowExecuteRange"] = false,
+	["ShowFriendlyClassColors"] = false,
 	["ShowFullHP"] = true,
 	["ShowHP"] = true,
 	["ShowLevel"] = true,

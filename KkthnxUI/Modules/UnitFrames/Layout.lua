@@ -239,9 +239,9 @@ if C.Unitframe.Enable == true then
 			_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
 			_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
 			_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
-			Boss1TargetFrame:SetPoint(unpack(C.Position.UnitFrames.Boss))
 		end
 		K.ModifyBasicFrame(Boss1TargetFrame, "CENTER", BossFrameAnchor, 0, 0, 1.0)
+
 		for i = 2, 5 do
 			_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 		end
@@ -256,8 +256,9 @@ if C.Unitframe.Enable == true then
 				for i = 1, 5 do
 					_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
 				end
+				ArenaEnemyFrames:SetParent(UIParent)
 				ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
-				K.ModifyBasicFrame(ArenaEnemyFrames, unpack(C.Position.UnitFrames.Arena), 1.0)
+				K.ModifyBasicFrame(ArenaEnemyFrames, unpack(C.Position.UnitFrames.Arena), C.Unitframe.Scale)
 			end
 			]]--
 		end

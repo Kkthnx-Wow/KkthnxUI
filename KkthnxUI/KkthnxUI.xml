@@ -23,7 +23,7 @@
 	<Script file="Config\Filters\Cooldowns.lua"/>
 	<Script file="Config\Filters\Errors.lua"/>
 	<Script file="Config\Filters\FilgerSpells.lua"/>
-	<Script file="Config\Filters\Nameplates.lua"/>
+	<Script file="Config\Filters\SellGreyRepair.lua"/>
 	<Script file="Config\Filters\NeedItems.lua"/>
 
 	<Script file="Core\API.lua"/>
@@ -59,6 +59,7 @@
 	<Script file="Modules\Misc\Misc.lua"/>
 	<Script file="Modules\Misc\Mounts.lua"/>
 	<Script file="Modules\Misc\PulseCD.lua"/>
+	<Script file="Modules\Misc\SellGreyRepair.lua"/>
 	<Script file="Modules\Misc\SlotItemLevel.lua"/>
 
 	<Script file="Modules\ActionBars\Functions.lua"/>
@@ -90,7 +91,6 @@
 	<Script file="Modules\Automation\DeclineDuel.lua"/>
 	<Script file="Modules\Automation\LoggingCombat.lua"/>
 	<Script file="Modules\Automation\Screenshots.lua"/>
-	<Script file="Modules\Automation\SellGreyRepair.lua"/>
 	<Script file="Modules\Automation\TabBinder.lua"/>
 
 	<Script file="Modules\Blizzard\Achievements.lua"/>

@@ -71,7 +71,6 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Automation"]["LoggingCombat"] = true
 	C["Automation"]["Resurrection"] = true
 	C["Automation"]["ScreenShot"] = true
-	C["Automation"]["SellGreyRepair"] = true
 	C["Automation"]["TabBinder"] = true
 
 	C["Chat"]["DamageMeterSpam"] = true
