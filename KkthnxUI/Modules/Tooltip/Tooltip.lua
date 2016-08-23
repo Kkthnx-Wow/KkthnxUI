@@ -52,7 +52,6 @@ local backdrop = {
 	bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14,
 	insets = {left = 3, right = 3, top = 3, bottom = 3}
 }
-
 for _, tt in pairs(tooltips) do
 	if not IsAddOnLoaded("Aurora") then
 		tt:SetBackdrop(nil)
@@ -64,11 +63,9 @@ for _, tt in pairs(tooltips) do
 		bg:SetPoint("BOTTOMRIGHT")
 		bg:SetFrameLevel(tt:GetFrameLevel() - 1)
 		bg:SetTemplate("Transparent")
-
 		tt.GetBackdrop = function() return backdrop end
 		tt.GetBackdropColor = function() return unpack(C.Media.Overlay_Color) end
 		tt.GetBackdropBorderColor = function() return unpack(C.Media.Border_Color) end
-
 		if C.Blizzard.DarkTextures == true then
 			bg:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
 		end
@@ -330,15 +327,15 @@ local OnTooltipSetUnit = function(self)
 
 	if level and level == -1 then
 		if classification == "worldboss" then
-			level = "|cffff0000|r"..ENCOUNTER_JOURNAL_ENCOUNTER
+			level = " |cffff0000|r"..ENCOUNTER_JOURNAL_ENCOUNTER
 		else
-			level = "|cffff0000??|r"
+			level = " |cffff0000??|r"
 		end
 	end
 
 	if classification == "rareelite" then classification = " R+"
 	elseif classification == "rare" then classification = " R"
-	elseif classification == "elite" then classification = "+"
+	elseif classification == "elite" then classification = " +"
 else classification = "" end
 
 
@@ -377,7 +374,7 @@ else classification = "" end
 		end
 
 		local n = GetGuildInfo(unit) and 3 or 2
-		-- thx TipTac for the fix above with color blind enabled
+		-- THX TIPTAC FOR THE FIX ABOVE WITH COLOR BLIND ENABLED
 		if GetCVar("colorblindMode") == "1" then n = n + 1 end
 		_G["GameTooltipTextLeft"..n]:SetFormattedText("|cff%02x%02x%02x%s|r %s", levelColor.r * 255, levelColor.g * 255, levelColor.b * 255, level, race or UNKNOWN)
 
@@ -434,10 +431,10 @@ end
 
 GameTooltip:HookScript("OnTooltipSetUnit", OnTooltipSetUnit)
 
--- Adds guild rank to tooltips(GuildRank by Meurtcriss)
+-- ADDS GUILD RANK TO TOOLTIPS(GUILDRANK BY MEURTCRISS)
 if C.Tooltip.Rank == true then
 	GameTooltip:HookScript("OnTooltipSetUnit", function(self, ...)
-		-- Get the unit
+		-- GET THE UNIT
 		local _, unit = self:GetUnit()
 		if not unit then
 			local mFocus = GetMouseFocus()
@@ -445,7 +442,7 @@ if C.Tooltip.Rank == true then
 				unit = mFocus.unit
 			end
 		end
-		-- Get and display guild rank
+		-- GET AND DISPLAY GUILD RANK
 		if UnitIsPlayer(unit) then
 			local guildName, guildRank = GetGuildInfo(unit)
 			if guildName then
@@ -455,7 +452,7 @@ if C.Tooltip.Rank == true then
 	end)
 end
 
--- Hide tooltips in combat for action bars, pet bar and stance bar
+-- HIDE TOOLTIPS IN COMBAT FOR ACTION BARS, PET BAR AND STANCE BAR
 if C.Tooltip.HideButtons == true then
 	local CombatHideActionButtonsTooltip = function(self)
 		if not IsShiftKeyDown() then

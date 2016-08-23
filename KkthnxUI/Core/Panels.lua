@@ -24,7 +24,6 @@ else
 	BottomBarAnchor:SetHeight(C.ActionBar.ButtonSize)
 end
 BottomBarAnchor:SetFrameStrata("LOW")
-RegisterStateDriver(BottomBarAnchor, "visibility", "[petbattle] hide; show")
 
 --	RIGHT BARS ANCHOR
 local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", PetBattleFrameHider)
@@ -40,19 +39,16 @@ else
 	RightBarAnchor:Hide()
 end
 RightBarAnchor:SetFrameStrata("LOW")
---RegisterStateDriver(RightBarAnchor, "visibility", "[vehicleui][petbattle][overridebar] hide; show")
 
 --	SPLIT BAR ANCHOR
 if C.ActionBar.SplitBars == true then
 	local SplitBarLeft = CreateFrame("Frame", "SplitBarLeft", PetBattleFrameHider)
 	SplitBarLeft:CreatePanel("Invisible", (C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2), (C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace, "BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 	SplitBarLeft:SetFrameStrata("LOW")
-	--RegisterStateDriver(SplitBarLeft, "visibility", "[petbattle] hide; show")
 
 	local SplitBarRight = CreateFrame("Frame", "SplitBarRight", PetBattleFrameHider)
 	SplitBarRight:CreatePanel("Invisible", (C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2), (C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace, "BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", C.ActionBar.ButtonSpace, 0)
 	SplitBarRight:SetFrameStrata("LOW")
-	--RegisterStateDriver(SplitBarRight, "visibility", "[petbattle] hide; show")
 end
 
 --	PET BAR ANCHOR
@@ -65,7 +61,7 @@ else
 	PetBarAnchor:CreatePanel("Invisible", (C.ActionBar.ButtonSize + C.ActionBar.ButtonSpace), (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), unpack(C.Position.RightBars))
 end
 PetBarAnchor:SetFrameStrata("LOW")
---RegisterStateDriver(PetBarAnchor, "visibility", "[pet,nopetbattle,novehicleui,nooverridebar,nobonusbar:5] show; hide")
+RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
 
 -- STANCE BAR ANCHOR
 local ShiftAnchor = CreateFrame("Frame", "ShapeShiftBarAnchor", PetBattleFrameHider)
@@ -87,4 +83,3 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end)
---RegisterStateDriver(ShiftAnchor, "visibility", "[vehicleui][petbattle] hide; show")

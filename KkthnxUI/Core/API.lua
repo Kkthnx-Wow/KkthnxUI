@@ -192,25 +192,25 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 end
 
 local function Kill(object)
-    if object.UnregisterAllEvents then
-        object:UnregisterAllEvents()
-    end
-    object.Show = K.Noop
-    object:Hide()
+	if object.UnregisterAllEvents then
+		object:UnregisterAllEvents()
+	end
+	object.Show = K.Noop
+	object:Hide()
 end
 
 -- STRIPTEXTURES
 local function StripTextures(Object, Kill, Text)
-    for i = 1, Object:GetNumRegions() do
-        local Region = select(i, Object:GetRegions())
-        if Region:GetObjectType() == "Texture" then
-            if Kill then
-                Region:Kill()
-            else
-                Region:SetTexture(nil)
-            end
-        end
-    end
+	for i = 1, Object:GetNumRegions() do
+		local Region = select(i, Object:GetRegions())
+		if Region:GetObjectType() == "Texture" then
+			if Kill then
+				Region:Kill()
+			else
+				Region:SetTexture(nil)
+			end
+		end
+	end
 end
 
 local function FontString(parent, name, fontName, fontHeight, fontStyle)
