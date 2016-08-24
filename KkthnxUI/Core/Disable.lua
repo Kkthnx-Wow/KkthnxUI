@@ -100,6 +100,10 @@ if (select(4, GetAddOnInfo("BadBoy"))) then
 	C.Chat.Spam = false
 end
 
+if (select(4, GetAddOnInfo("cInterrupt"))) then
+	C.Announcements.Interrupt = false
+end
+
 if (select(4, GetAddOnInfo("NiceBubbles"))) then
 	C.Skins.ChatBubble = false
 end

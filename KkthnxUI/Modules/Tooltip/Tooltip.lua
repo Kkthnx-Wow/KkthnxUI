@@ -90,7 +90,6 @@ end
 
 for _, tooltips in pairs({
 	GameTooltip,
-	GameTooltip,
 	ItemRefTooltip,
 	ShoppingTooltip1,
 	ShoppingTooltip2,
@@ -214,7 +213,7 @@ function GameTooltip_UnitColor(unit)
 
 	if UnitIsPlayer(unit) then
 		local _, class = UnitClass(unit)
-		local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
+		local color = RAID_CLASS_COLORS[class]
 		if color then
 			r, g, b = color.r, color.g, color.b
 		else
@@ -335,8 +334,8 @@ local OnTooltipSetUnit = function(self)
 
 	if classification == "rareelite" then classification = " R+"
 	elseif classification == "rare" then classification = " R"
-	elseif classification == "elite" then classification = " +"
-else classification = "" end
+	elseif classification == "elite" then classification = "+"
+	else classification = "" end
 
 
 	if UnitPVPName(unit) and C.Tooltip.Title then

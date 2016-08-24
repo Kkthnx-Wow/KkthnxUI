@@ -1,9 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- NOT READY FOR THE PROS YET :O
-if not (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
-	do return end
-end
 -- LUA API
 local _G = _G
 local ceil = math.ceil
@@ -52,7 +48,7 @@ local function CreateVirtualFrame(parent, point)
 	end
 end
 
--- FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
+-- NAMEPLATE FUNCTIONS. (MERGE THIS WITH KKTHNXUI FUNCTIONS LATER)
 K.FrameIsNameplate = function(frame)
 	if (match(frame.displayedUnit, "nameplate") ~= "nameplate") then
 		return false
@@ -87,6 +83,19 @@ K.SetManabarColors = function(frame, color)
 	end
 end
 
+K.IsInExecuteRange = function(frame)
+    local executeValue = C.Nameplate.ExecuteValue or 35
+    local health = UnitHealth(frame.displayedUnit)
+    local maxHealth = UnitHealthMax(frame.displayedUnit)
+    local perc = (health/maxHealth)*100
+
+    if (perc < executeValue and UnitCanAttack("player", frame.displayedUnit)) then
+        return true
+    end
+
+    return false
+end
+
 K.FormatTime = function(s)
 	if s > 86400 then
 		-- DAYS
@@ -113,7 +122,7 @@ C_Timer.After(1, function()
 		"Friendly",
 		"Enemy",
 	}
-	--[[
+
 	local options = {
 		displaySelectionHighlight = true,
 
@@ -127,7 +136,7 @@ C_Timer.After(1, function()
 			_G["DefaultCompactNamePlate"..group.."FrameOptions"][key] = value
 		end
 	end
-	]]--
+
 	DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = C.Nameplate.ShowFriendlyClassColors
 	DefaultCompactNamePlateEnemyFrameOptions.useClassColors = C.Nameplate.ShowEnemyClassColors
 
