@@ -186,24 +186,11 @@ local function Local(o)
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
 	-- Nameplate Settings
 	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
-	if o == "UIConfigNameplateAbrrevLongNames" then o = L_GUI_NAMEPLATE_ABRREVLONGNAMES end
-	if o == "UIConfigNameplateColorNameByThreat" then o = L_GUI_NAMEPLATE_COLORNAMEBYTHREAT end
-	if o == "UIConfigNameplateDontClamp" then o = L_GUI_NAMEPLATE_DONTCLAMP end
-	if o == "UIConfigNameplateExecuteColor" then o = L_GUI_NAMEPLATE_EXECUTECOLOR end
-	if o == "UIConfigNameplateExecuteValue" then o = L_GUI_NAMEPLATE_EXECUTEVALUE end
-	if o == "UIConfigNameplateHideFriendly" then o = L_GUI_NAMEPLATE_HIDEFRIENDLY end
-	if o == "UIConfigNameplateOffTankColor" then o = L_GUI_NAMEPLATE_OFFTANKCOLOR end
-	if o == "UIConfigNameplateShowCurHP" then o = L_GUI_NAMEPLATE_CURRENTHEALTH end
-	if o == "UIConfigNameplateShowEnemyClassColors" then o = L_GUI_NAMEPLATE_ENEMYCLASSCOLORS end
-	if o == "UIConfigNameplateShowExecuteRange" then o = L_GUI_NAMEPLATE_EXECUTERANGE end
-	if o == "UIConfigNameplateShowFriendlyClassColors" then o = L_GUI_NAMEPLATE_FRIENDLYCLASSCOLORS end
-	if o == "UIConfigNameplateShowFullHP" then o = L_GUI_NAMEPLATE_FULLHP end
-	if o == "UIConfigNameplateShowHP" then o = L_GUI_NAMEPLATE_HEALTH end
-	if o == "UIConfigNameplateShowLevel" then o = L_GUI_NAMEPLATE_LEVEL end
-	if o == "UIConfigNameplateShowPercHP" then o = L_GUI_NAMEPLATE_PERCENTHEALTH end
-	if o == "UIConfigNameplateShowServerName" then o = L_GUI_NAMEPLATE_SERVERNAME end
-	if o == "UIConfigNameplateTankMode" then o = L_GUI_NAMEPLATE_TANKMODE end
-	if o == "UIConfigNameplateUseOffTankColor" then o = L_GUI_NAMEPLATE_OFFTANKCOLOR end
+	if o == "UIConfigNameplateEnable" then o = UNIT_NAMEPLATES_ENABLE end
+	if o == "UIConfigNameplateWidth" then o = UNIT_NAMEPLATES_WIDTH end
+	if o == "UIConfigNameplateHeight" then o = UNIT_NAMEPLATES_HEIGHT end
+	if o == "UIConfigNameplateCastHeight" then o = UNIT_NAMEPLATES_CASTHEIGHT end
+	if o == "UIConfigNameplateRealm" then o = UNIT_NAMEPLATES_REALM end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end
@@ -229,20 +216,11 @@ local function Local(o)
 	if o == "UIConfigTooltipCursor" then o = L_GUI_TOOLTIP_CURSOR end
 	if o == "UIConfigTooltipEnable" then o = L_GUI_TOOLTIP_ENABLE end
 	if o == "UIConfigTooltipHealthValue" then o = L_GUI_TOOLTIP_HEALTH end
-	if o == "UIConfigTooltipHideCombat" then o = L_GUI_TOOLTIP_HIDE_COMBAT end
-	if o == "UIConfigTooltipHideButtons" then o = L_GUI_TOOLTIP_HIDE end
 	if o == "UIConfigTooltipInstanceLock" then o = L_GUI_TOOLTIP_INSTANCE_LOCK end
 	if o == "UIConfigTooltipItemCount" then o = L_GUI_TOOLTIP_ITEM_COUNT end
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
-	if o == "UIConfigTooltipQualityBorder" then o = L_GUI_TOOLTIP_QUALITY_BORDER end
-	if o == "UIConfigTooltipRaidIcon" then o = L_GUI_TOOLTIP_RAID_ICON end
-	if o == "UIConfigTooltipRank" then o = L_GUI_TOOLTIP_RANK end
-	if o == "UIConfigTooltipRealm" then o = L_GUI_TOOLTIP_REALM end
 	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
 	if o == "UIConfigTooltipTalents" then o = L_GUI_TOOLTIP_TALENTS end
-	if o == "UIConfigTooltipTarget" then o = L_GUI_TOOLTIP_TARGET end
-	if o == "UIConfigTooltipTitle" then o = L_GUI_TOOLTIP_TITLE end
-	if o == "UIConfigTooltipWhoTargetting" then o = L_GUI_TOOLTIP_WHO_TARGETTING end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeClassResources" then o = L_GUI_UNITFRAME_CLASSRESOURCES end

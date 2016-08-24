@@ -98,7 +98,7 @@ local function CreateBackdrop(f, t, size)
 	f.backdrop = b
 end
 
--- WHO DOESN'T LIKE SHADOWS! MORE SHADOWS!
+--[[ WHO DOESN'T LIKE SHADOWS! MORE SHADOWS!
 local function CreatePixelShadow(f, size)
 	if f.shadow then return end
 	size = size or 2
@@ -116,6 +116,29 @@ local function CreatePixelShadow(f, size)
 
 	f.shadow = shadow
 end
+--]]
+
+local function CreatePixelShadow(f, t, size)
+	if f.Shadow then return end
+	size = size or 3
+
+	local shadow = CreateFrame("Frame", nil, f)
+	shadow:SetFrameLevel(1)
+	shadow:SetFrameStrata(f:GetFrameStrata())
+	shadow:SetPoint("TOPLEFT", -size, size)
+	shadow:SetPoint("BOTTOMLEFT", -size, -size)
+	shadow:SetPoint("TOPRIGHT", size, size)
+	shadow:SetPoint("BOTTOMRIGHT", size, -size)
+
+	shadow:SetBackdrop( {
+		edgeFile = C.Media.Glow, edgeSize = K.Scale(3),
+		insets = {left = K.Scale(5), right = K.Scale(5), top = K.Scale(5), bottom = K.Scale(5)},
+	})
+
+	shadow:SetBackdropColor(C.Media.Backdrop_Color)
+	shadow:SetBackdropBorderColor(C.Media.Border_Color)
+	f.Shadow = shadow
+end
 
 local function CreateBlizzShadow(f, size)
 	if f.shadow then return end
@@ -123,9 +146,11 @@ local function CreateBlizzShadow(f, size)
 
 	borderr, borderg, borderb = 0/255, 0/255, 0/255
 
-	local shadow = f:CreateTexture(nil, "BACKGROUND", f)
-	shadow:SetParent(f)
-	shadow:SetOutside(f, size, size)
+	local shadow = f:CreateTexture(nil, "BACKGROUND")
+	shadow:SetPoint("TOPLEFT", -size, size)
+	shadow:SetPoint("BOTTOMLEFT", -size, -size)
+	shadow:SetPoint("TOPRIGHT", size, size)
+	shadow:SetPoint("BOTTOMRIGHT", size, -size)
 	shadow:SetTexture(C.Media.Border_Glow)
 	shadow:SetVertexColor(borderr, borderg, borderb, 0.8)
 
@@ -134,8 +159,8 @@ end
 
 local function GetTemplate(t)
 	if t == "ClassColor" then
-		local c = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS[K.Class]
-		borderr, borderg, borderb, bordera = c[1], c[2], c[3], c[4]
+		local Color = BETTER_RAID_CLASS_COLORS[K.Class]
+		borderr, borderg, borderb, bordera = Color[1], Color[2], Color[3], Color[4]
 		backdropr, backdropg, backdropb, backdropa = unpack(C.Media.Backdrop_Color)
 	else
 		borderr, borderg, borderb, bordera = unpack(C.Media.Border_Color)

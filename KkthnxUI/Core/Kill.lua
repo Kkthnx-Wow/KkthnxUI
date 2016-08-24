@@ -45,6 +45,10 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		SetInsertItemsLeftToRight(false)
 	end
 
+	if C.Nameplate.Enable then
+		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
+	end
+
 	if C.ActionBar.Enable then
 		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
 		InterfaceOptionsActionBarsPanelBottomRight:Kill()

@@ -21,7 +21,7 @@ K.BorderBackdrop = {bgFile = C.Media.Blank}
 K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
--- This frame everything in KkthnxUI should be anchored to for Eyefinity support.
+-- THIS FRAME EVERYTHING IN KKTHNXUI SHOULD BE ANCHORED TO FOR EYEFINITY SUPPORT.
 K.UIParent = CreateFrame("Frame", "KkthnxUIParent", UIParent)
 K.UIParent:SetFrameLevel(UIParent:GetFrameLevel())
 K.UIParent:SetPoint("CENTER", UIParent, "CENTER")
@@ -75,7 +75,7 @@ K.ShortValue = function(value)
 	end
 end
 
--- Rounding
+-- ROUNDING
 K.Round = function(number, decimals)
 	if (not decimals) then
 		decimals = 0
@@ -84,7 +84,7 @@ K.Round = function(number, decimals)
 	return format(format("%%.%df", decimals), number)
 end
 
--- RGBToHex Color
+-- RGBTOHEX COLOR
 K.RGBToHex = function(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0

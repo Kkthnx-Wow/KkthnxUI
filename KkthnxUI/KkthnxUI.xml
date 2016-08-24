@@ -62,6 +62,8 @@
 	<Script file="Modules\Misc\SellGreyRepair.lua"/>
 	<Script file="Modules\Misc\SlotItemLevel.lua"/>
 
+	<Script file="Modules\Nameplates\Nameplates.lua"/>
+
 	<Script file="Modules\ActionBars\Functions.lua"/>
 	<Script file="Modules\ActionBars\Bindings.lua"/>
 	<Script file="Modules\ActionBars\Hide.lua"/>

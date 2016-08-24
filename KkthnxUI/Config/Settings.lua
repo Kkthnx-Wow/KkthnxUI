@@ -174,26 +174,12 @@ C["Misc"] = {
 	["SellMisc"] = true,
 	["UseGuildRepair"] = false,
 }
--- NAMEPLATE OPTIONS
 C["Nameplate"] = {
-	["AbrrevLongNames"] = true,
-	["ColorNameByThreat"] = false,
-	["DontClamp"] = false,
-	["ExecuteColor"] = {0/255, 71/255, 126/255},
-	["ExecuteValue"] = 35,
-	["HideFriendly"] = false,
-	["OffTankColor"] = {0.60, 0.20, 1.0},
-	["ShowCurHP"] = true,
-	["ShowEnemyClassColors"] = true,
-	["ShowExecuteRange"] = false,
-	["ShowFriendlyClassColors"] = false,
-	["ShowFullHP"] = true,
-	["ShowHP"] = true,
-	["ShowLevel"] = true,
-	["ShowPercHP"] = true,
-	["ShowServerName"] = false,
-	["TankMode"] = false,
-	["UseOffTankColor"] = false,
+	["Enable"] = true,
+	["Width"] = 110,
+	["Height"] = 6,
+	["CastHeight"] = 4,
+	["Realm"] = false,
 }
 -- PULSECD OPTIONS
 C["PulseCD"] = {
@@ -222,19 +208,11 @@ C["Tooltip"] = {
 	["Cursor"] = false,
 	["Enable"] = true,
 	["HealthValue"] = true,
-	["HideButtons"] = false,
-	["HideCombat"] = false,
 	["InstanceLock"] = false,
 	["ItemCount"] = false,
 	["ItemIcon"] = false,
-	["QualityBorder"] = false,
-	["RaidIcon"] = false,
-	["Rank"] = false,
 	["SpellID"] = false,
 	["Talents"] = true,
-	["Target"] = true,
-	["Title"] = true,
-	["WhoTargetting"] = false,
 }
 -- UNITFRAME OPTIONS
 C["Unitframe"] = {

@@ -93,13 +93,6 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 
 	C["PulseCD"]["Enable"] = true
 
-	C["Tooltip"]["ItemCount"] = true
-	C["Tooltip"]["ItemIcon"] = true
-	C["Tooltip"]["QualityBorder"] = true
-	C["Tooltip"]["Rank"] = true
-	C["Tooltip"]["SpellID"] = true
-	C["Tooltip"]["WhoTargetting"] = true
-
 	C["Unitframe"]["ClassIcon"] = true
 	C["Unitframe"]["EnhancedFrames"] = true
 	C["Unitframe"]["ClassHealth"] = true

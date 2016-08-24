@@ -25,6 +25,8 @@ local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
+local PetColor = {r = 157/255, g = 197/255, b = 255/255}
+
 if C.Unitframe.Enable == true then
 
 	local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
@@ -47,32 +49,21 @@ if C.Unitframe.Enable == true then
 
 		if C.Unitframe.ClassHealth ~= true then
 
-			CUSTOM_FACTION_BAR_COLORS = {
-				[1] = {r = 255/255, g = 0/255, b = 0/255},
-				[2] = {r = 255/255, g = 0/255, b = 0/255},
-				[3] = {r = 255/255, g = 255/255, b = 0/255},
-				[4] = {r = 255/255, g = 255/255, b = 0/255},
-				[5] = {r = 0/255, g = 255/255, b = 0/255},
-				[6] = {r = 0/255, g = 255/255, b = 0/255},
-				[7] = {r = 0/255, g = 255/255, b = 0/255},
-				[8] = {r = 0/255, g = 255/255, b = 0/255},
-			}
-
 			hooksecurefunc("UnitFrame_Update", function(self, isParty)
 				if not self.name or not self:IsShown() then return end
 
-				local PET_COLOR = { r = 157/255, g = 197/255, b = 255/255 }
 				local unit, color = self.unit
 				if UnitPlayerControlled(unit) then
 					if UnitIsPlayer(unit) then
-						color = RAID_CLASS_COLORS[select(2, UnitClass(unit))]
+						local Class = select(2, UnitClass(unit))
+						color = RAID_CLASS_COLORS[Class]
 					else
-						color = PET_COLOR
+						color = PetColor
 					end
 				elseif UnitIsDeadOrGhost(unit) then
 					color = GRAY_FONT_COLOR
 				else
-					color = CUSTOM_FACTION_BAR_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
+					color = BETTER_REACTION_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
 				end
 
 				if not color then
