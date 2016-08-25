@@ -115,7 +115,7 @@ function Plates:GetClassification(unit)
 	elseif CreatureClassification == "rareelite" then
 		String = "[R+]"
 	elseif CreatureClassification == "worldboss" then
-		String = "[WB]"
+		String = "[B]"
 	end
 
 	return String
@@ -128,7 +128,7 @@ function Plates:SetName()
 		Text = self:GetText()
 	else
 		-- TAKEN FROM http://www.wowinterface.com/forums/showthread.php?t=48774
-		Text = gsub(self:GetText(), "%-[^|]+", " (*)")
+		Text = gsub(self:GetText(), "%-[^|]+", "")
 	end
 
 	if Text then

@@ -1,20 +1,23 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Announcements.BadGear ~= true then return end
 
+-- LUA API
 local format = string.format
 local pairs = pairs
 local select = select
+
+-- WOW API
 local CreateFrame = CreateFrame
 local GetInventoryItemID = GetInventoryItemID
 local GetItemInfo = GetItemInfo
 local IsInInstance = IsInInstance
 local PlaySound = PlaySound
 
--- Check bad gear in instance
+-- CHECK BAD GEAR IN INSTANCE
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 frame:SetScript("OnEvent", function(self, event)
-	if event ~= "ZONE_CHANGED_NEW_AREA" or not IsInInstance() then return end
+	if (event ~= "ZONE_CHANGED_NEW_AREA") or (not IsInInstance()) then return end
 	local item = {}
 	for i = 1, 17 do
 		if K.AnnounceBadGear[i] ~= nil then

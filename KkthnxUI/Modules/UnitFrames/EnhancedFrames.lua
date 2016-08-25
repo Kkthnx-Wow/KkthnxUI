@@ -13,7 +13,9 @@ local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local GetCVar = GetCVar
 local UnitClassification = UnitClassification
 
-local shorts = {
+local PartyMembers = GetNumGroupMembers()
+
+local Shorts = {
 	{ 1e10, 1e9, "%.0fB" }, -- 10B+ AS 12B
 	{ 1e9, 1e9, "%.1fB" }, -- 1B+ AS 8.3B
 	{ 1e7, 1e6, "%.0fM" }, -- 10M+ AS 14M
@@ -22,8 +24,8 @@ local shorts = {
 	{ 1e3, 1e3, "%.1fK" }, -- 1K+ AS 2.5K
 	{ 0, 1, "%d" }, -- < 1K AS 974
 }
-for i = 1, #shorts do
-	shorts[i][4] = shorts[i][3] .. " (%.0f%%)"
+for i = 1, #Shorts do
+	Shorts[i][4] = Shorts[i][3] .. " (%.0f%%)"
 end
 
 local EnhancedFrames = CreateFrame("Frame")
@@ -71,7 +73,7 @@ function EnableEnhancedFrames()
 end
 
 function EnhancedFrames_Style_PlayerFrame()
-	if not InCombatLockdown() then
+	if (not InCombatLockdown()) or (not UnitHasVehicleUI("player")) then
 		PlayerName:SetWidth(0.01)
 
 		PlayerFrameHealthBar.capNumericDisplay = true
@@ -130,15 +132,15 @@ function EnhancedFrames_UpdateTextStringWithValues(statusBar, textString, value,
 	if style == "PERCENT" then
 		return textString:SetFormattedText("%.0f%%", value / valueMax * 100)
 	end
-	for i = 1, #shorts do
-		local t = shorts[i]
+	for i = 1, #Shorts do
+		local t = Shorts[i]
 		if value >= t[1] then
 			if style == "BOTH" then
 				return textString:SetFormattedText(t[4], value / t[2], value / valueMax * 100)
 			else
 				if value < valueMax then
-					for j = 1, #shorts do
-						local v = shorts[j]
+					for j = 1, #Shorts do
+						local v = Shorts[j]
 						if valueMax >= v[1] then
 							return textString:SetFormattedText(t[3] .. " / " .. v[3], value / t[2], valueMax / v[2])
 						end
@@ -212,7 +214,7 @@ end
 
 -- STYLE PARTY MEMEBER FRAME STYLE CHANGES
 function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
-	if not InCombatLockdown() then
+	if (not InCombatLockdown() and PartyMembers > 0) then
 		for i = 1, MAX_PARTY_MEMBERS do
 			_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
 

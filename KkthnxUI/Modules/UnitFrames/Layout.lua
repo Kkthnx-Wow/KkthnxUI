@@ -20,11 +20,11 @@ local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local UnitIsEnemy = UnitIsEnemy
 local UnitIsTapDenied = UnitIsTapDenied
-local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
+local PartyMembers = GetNumGroupMembers()
 local PetColor = {r = 157/255, g = 197/255, b = 255/255}
 
 if C.Unitframe.Enable == true then
@@ -45,12 +45,12 @@ if C.Unitframe.Enable == true then
 
 	Unitframes:RegisterEvent("ADDON_LOADED")
 	Unitframes:SetScript("OnEvent", function(self, event, addon)
-		if (addon ~= "KkthnxUI") or InCombatLockdown() then return end
+		if (addon ~= "KkthnxUI") or (InCombatLockdown()) or (UnitHasVehicleUI("player")) then return end
 
 		if C.Unitframe.ClassHealth ~= true then
 
 			hooksecurefunc("UnitFrame_Update", function(self, isParty)
-				if not self.name or not self:IsShown() then return end
+				if (not self.name or not self:IsShown()) then return end
 
 				local unit, color = self.unit
 				if UnitPlayerControlled(unit) then
@@ -63,11 +63,11 @@ if C.Unitframe.Enable == true then
 				elseif UnitIsDeadOrGhost(unit) then
 					color = GRAY_FONT_COLOR
 				else
-					color = BETTER_REACTION_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
+					color = CUSTOM_FACTION_BAR_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
 				end
 
 				if not color then
-					color = (CUSTOM_CLASS_COLORS or BETTER_RAID_CLASS_COLORS)["PRIEST"]
+					color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)["PRIEST"]
 				end
 
 				self.name:SetTextColor(color.r, color.g, color.b)
@@ -127,48 +127,50 @@ if C.Unitframe.Enable == true then
 
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			if C.Unitframe.Outline then
-				_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
+			if (not InCombatLockdown() and PartyMembers > 0) then
+				if C.Unitframe.Outline then
+					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
-			else
-				_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
-				_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
+				else
+					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
+					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+					_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+				end
 			end
 		end
 
