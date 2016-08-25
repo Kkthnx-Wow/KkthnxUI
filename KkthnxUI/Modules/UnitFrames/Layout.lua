@@ -67,7 +67,7 @@ if C.Unitframe.Enable == true then
 				end
 
 				if not color then
-					color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)["PRIEST"]
+					color = (CUSTOM_CLASS_COLORS or BETTER_RAID_CLASS_COLORS)["PRIEST"]
 				end
 
 				self.name:SetTextColor(color.r, color.g, color.b)

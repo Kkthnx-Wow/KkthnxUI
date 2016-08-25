@@ -1,16 +1,19 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true or C.Tooltip.Achievements ~= true then return end
 
+-- LUA API
 local select = select
 local format = string.format
 local find = string.find
+
+-- WOW API
 local hooksecurefunc = hooksecurefunc
 local GetAchievementNumCriteria = GetAchievementNumCriteria
 local ACHIEVEMENT_EARNED_BY = ACHIEVEMENT_EARNED_BY
 local ACHIEVEMENT_NOT_COMPLETED_BY = ACHIEVEMENT_NOT_COMPLETED_BY
 local ACHIEVEMENT_COMPLETED_BY = ACHIEVEMENT_COMPLETED_BY
 
--- Your achievement status in tooltip(Enhanced Achievements by Syzgyn)
+-- YOUR ACHIEVEMENT STATUS IN TOOLTIP(ENHANCED ACHIEVEMENTS BY SYZGYN)
 local colors = {
 	["GREEN"] = {
 		["r"] = 0.25,
@@ -26,11 +29,11 @@ local colors = {
 
 local function SetHyperlink(tooltip, refString)
 	local output = {[0] = {}, [1] = {}}
-	if select(3, string.find(refString, "(%a-):")) ~= "achievement" then return end
+	if select(3, find(refString, "(%a-):")) ~= "achievement" then return end
 
-	local _, _, achievementID = string.find(refString, ":(%d+):")
+	local _, _, achievementID = find(refString, ":(%d+):")
 	local numCriteria = GetAchievementNumCriteria(achievementID)
-	local _, _, GUID = string.find(refString, ":%d+:(.-):")
+	local _, _, GUID = find(refString, ":%d+:(.-):")
 
 	if GUID == UnitGUID("player") then
 		tooltip:Show()
