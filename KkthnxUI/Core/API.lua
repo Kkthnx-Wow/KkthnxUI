@@ -98,27 +98,8 @@ local function CreateBackdrop(f, t, size)
 	f.backdrop = b
 end
 
---[[ WHO DOESN'T LIKE SHADOWS! MORE SHADOWS!
+-- WHO DOESN'T LIKE SHADOWS! MORE SHADOWS!
 local function CreatePixelShadow(f, size)
-	if f.shadow then return end
-	size = size or 2
-
-	borderr, borderg, borderb = 0/255, 0/255, 0/255
-	backdropr, backdropg, backdropb = 0/255, 0/255, 0/255
-
-	local shadow = CreateFrame("Frame", nil, f)
-	shadow:SetFrameLevel(1)
-	shadow:SetFrameStrata(f:GetFrameStrata())
-	shadow:SetOutside(f, size, size)
-	shadow:SetBackdrop(K.ShadowBackdrop)
-	shadow:SetBackdropColor(backdropr, backdropg, backdropb, 0)
-	shadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.8)
-
-	f.shadow = shadow
-end
---]]
-
-local function CreatePixelShadow(f, t, size)
 	if f.Shadow then return end
 	size = size or 3
 
