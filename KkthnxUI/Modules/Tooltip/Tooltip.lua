@@ -96,7 +96,7 @@ function Tooltip:GetColor(unit)
 
 		local Hex = K.RGBToHex(unpack(Color))
 
-		return Hex, Color.r, Color.g, Color.b
+		return Hex, Color[1], Color[2], Color[3]
 	end
 end
 
