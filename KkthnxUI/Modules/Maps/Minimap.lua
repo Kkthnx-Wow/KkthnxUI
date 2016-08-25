@@ -47,6 +47,9 @@ end
 Minimap:SetArchBlobRingScalar(0)
 Minimap:SetQuestBlobRingScalar(0)
 
+-- FIX GARRISON REPORT KEYBIND
+GarrisonLandingPageMinimapButton.IsShown = function() return true end
+
 -- PARENT MINIMAP INTO OUR FRAME
 Minimap:SetParent(MinimapAnchor)
 Minimap:ClearAllPoints()
