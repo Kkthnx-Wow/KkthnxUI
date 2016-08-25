@@ -49,6 +49,8 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 		buff:SetBackdrop(K.Border)
 		if C.Aura.ClassColorBorder == true then
 			buff:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+		elseif C.Blizzard.DarkTextures == true then
+			buff:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
 		end
 	end
 
@@ -80,6 +82,8 @@ local function StyleBuffs(buttonName, index, debuff)
 		buff:SetBackdrop(K.Border)
 		if C.Aura.ClassColorBorder == true then
 			buff:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+		elseif C.Blizzard.DarkTextures == true then
+			buff:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
 		end
 
 		buff:SetSize(C.Aura.BuffSize, C.Aura.BuffSize)
