@@ -13,6 +13,11 @@ It can be used for any class or role.
 * Once the UI reloads off the install, you can type **/settings** or **/settings all** if you prefer all the settings for addon profiles.   
 * You can type /moveui and move certain features of the UI. More to come later.    
 * If you find a bug, then properly make an [Issue Report](https://github.com/Kkthnx/KkthnxUI_Legion/issues/new).   
+   
+### Contact Me   
+* Curse Client: Kkthnx      
+* Battle.net: Kkthnx#1105   
+* Discord: https://discord.gg/jgu5MZv    
 
 ### Donations   
 Donations are welcome, but not required to use the UI at all. Donations help me further my development and fuel my gaming! Donations will never be a requirement! If you would like to donate, you can do so here
