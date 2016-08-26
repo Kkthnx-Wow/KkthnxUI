@@ -25,7 +25,7 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
 local PartyMembers = GetNumGroupMembers()
-local PetColor = {r = 157/255, g = 197/255, b = 255/255}
+local PetColor = {157/255, 197/255, 255/255}
 
 if C.Unitframe.Enable == true then
 
@@ -56,21 +56,21 @@ if C.Unitframe.Enable == true then
 				if UnitPlayerControlled(unit) then
 					if UnitIsPlayer(unit) then
 						local Class = select(2, UnitClass(unit))
-						color = RAID_CLASS_COLORS[Class]
+						color = BETTER_RAID_CLASS_COLORS[Class]
 					else
 						color = PetColor
 					end
 				elseif UnitIsDeadOrGhost(unit) then
 					color = GRAY_FONT_COLOR
 				else
-					color = CUSTOM_FACTION_BAR_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
+					color = BETTER_REACTION_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
 				end
 
 				if not color then
-					color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)["PRIEST"]
+					color = (CUSTOM_CLASS_COLORS or BETTER_RAID_CLASS_COLORS)["PRIEST"]
 				end
 
-				self.name:SetTextColor(color.r, color.g, color.b)
+				self.name:SetTextColor(color[1], color[2], color[3])
 				if isParty then
 					self.name:SetText(GetUnitName(self.overrideName or unit))
 				end

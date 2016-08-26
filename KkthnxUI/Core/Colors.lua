@@ -8,17 +8,6 @@ BETTER_DISCONNECTED_COLORS = {
 	0.1, 0.1, 0.1
 }
 
-CUSTOM_FACTION_BAR_COLORS = {
-	[1] = {r = 255/255, g = 0/255, b = 0/255},
-	[2] = {r = 255/255, g = 0/255, b = 0/255},
-	[3] = {r = 255/255, g = 255/255, b = 0/255},
-	[4] = {r = 255/255, g = 255/255, b = 0/255},
-	[5] = {r = 0/255, g = 255/255, b = 0/255},
-	[6] = {r = 0/255, g = 255/255, b = 0/255},
-	[7] = {r = 0/255, g = 255/255, b = 0/255},
-	[8] = {r = 0/255, g = 255/255, b = 0/255},
-}
-
 BETTER_REACTION_COLORS = {
 	[1] = {0.87, 0.37, 0.37}, -- Hated
 	[2] = {0.87, 0.37, 0.37}, -- Hostile
@@ -70,31 +59,14 @@ BETTER_POWERBAR_COLORS = {
 
 -- CUSTOM POWER COLORS
 if C.Unitframe.BetterPowerColors == true then
-	local function CustomPowerColor(manaBar)
-		local powerType = UnitPowerType(manaBar.unit)
-
-		if (powerType == 0) then -- MANA
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["MANA"]))
-		elseif (powerType == 1) then -- RAGE WARRIORS AND DRUID
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["RAGE"]))
-		elseif (powerType == 2) then -- FOCUS HUNTER
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["FOCUS"]))
-		elseif (powerType == 3) then -- ENERGY ROGUE, MONK, AND DRUID
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["ENERGY"]))
-		elseif (powerType == 6) then -- RUNIC POWER DEATH KNIGHT
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["RUNIC_POWER"]))
-		elseif (powerType == 8) then -- ASTRAL POWER DRUID
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["LUNAR_POWER"]))
-		elseif (powerType == 11) then -- MAELSTROM SHAMAN
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["MAELSTROM"]))
-		elseif (powerType == 13) then -- INSANITY SHADOW PRIEST
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["INSANITY"]))
-		elseif (powerType == 17) then -- VENGEANCE DEMON HUNTER
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["FURY"]))
-		elseif (powerType == 18) then -- HAVOC DEMON HUNTER
-			manaBar:SetStatusBarColor(unpack(BETTER_POWERBAR_COLORS["PAIN"]))
-		end
-	end
-
-	hooksecurefunc("UnitFrameManaBar_UpdateType", CustomPowerColor)
+	_G.PowerBarColor["MANA"] = {r = 0.31, g = 0.45, b = 0.63}
+	_G.PowerBarColor["RAGE"] = {r = 0.69, g = 0.31, b = 0.31}
+	_G.PowerBarColor["FOCUS"] = {r = 0.71, g = 0.43, b = 0.27}
+	_G.PowerBarColor["ENERGY"] = {r = 0.65, g = 0.63, b = 0.35}
+	_G.PowerBarColor["RUNIC_POWER"] = {r = 0.00, g = 0.82, b = 1.00}
+	_G.PowerBarColor["PAIN"] = {r = 1.00, g = 0.61, b = 0.00}
+	_G.PowerBarColor["FURY"] = {r = 0.78, g = 0.26, b = 0.99}
+	_G.PowerBarColor["LUNAR_POWER"] = {r = 0.93, g = 0.51, b = 0.93}
+	_G.PowerBarColor["INSANITY"] = {r = 0.40, g = 0.00, b = 0.80}
+	_G.PowerBarColor["MAELSTROM"] = {r = 0.00, g = 0.50, b = 1.00}
 end
