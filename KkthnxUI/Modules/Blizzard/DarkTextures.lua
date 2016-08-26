@@ -5,11 +5,16 @@ local pairs = pairs
 local select = select
 local unpack = unpack
 local CreateFrame = CreateFrame
-local GetRegions = GetRegions
- 
- -- COLORING FRAMES
+
+-- COLORING FRAMES
 for i, v in pairs({
-	-- UnitFrames
+	-- CLASS RESOURCES
+	select(5, WarlockPowerFrameShard1:GetRegions()),
+	select(5, WarlockPowerFrameShard2:GetRegions()),
+	select(5, WarlockPowerFrameShard3:GetRegions()),
+	select(5, WarlockPowerFrameShard4:GetRegions()),
+	select(5, WarlockPowerFrameShard5:GetRegions()),
+	-- UNITFRAMES
 	PlayerFrameTexture,
 	PlayerFrameAlternateManaBarBorder,
 	PlayerFrameAlternateManaBarRightBorder,
@@ -54,7 +59,7 @@ for i, v in pairs({
 	FocusFrameSpellBar.BorderShield,
 	TargetFrameSpellBar.Border,
 	TargetFrameSpellBar.BorderShield,
-	-- MainMenuBar
+	-- MAINMENUBAR
 	SlidingActionBarTexture0,
 	SlidingActionBarTexture1,
 	MainMenuBarTexture0,
@@ -77,14 +82,14 @@ for i, v in pairs({
 	ReputationXPBarTexture2,
 	ReputationXPBarTexture3,
 	MainMenuBarLeftEndCap,
-	MainMenuBarRightEndCap, 
+	MainMenuBarRightEndCap,
 	StanceBarLeft,
 	StanceBarMiddle,
 	StanceBarRight,
-	-- ArenaFrames
+	-- ARENAFRAMES
 	ArenaEnemyFrame1Texture,
 	ArenaEnemyFrame2Texture,
-	ArenaEnemyFrame3Texture, 
+	ArenaEnemyFrame3Texture,
 	ArenaEnemyFrame4Texture,
 	ArenaEnemyFrame5Texture,
 	ArenaEnemyFrame1SpecBorder,
@@ -95,7 +100,7 @@ for i, v in pairs({
 	ArenaEnemyFrame1PetFrameTexture,
 	ArenaEnemyFrame2PetFrameTexture,
 	ArenaEnemyFrame3PetFrameTexture,
-	ArenaEnemyFrame4PetFrameTexture, 
+	ArenaEnemyFrame4PetFrameTexture,
 	ArenaEnemyFrame5PetFrameTexture,
 	ArenaPrepFrame1Texture,
 	ArenaPrepFrame2Texture,
@@ -113,8 +118,7 @@ for i, v in pairs({
 	-- MINIMAP
 	MinimapBorder,
 	MinimapBorderTop,
-	MiniMapTrackingButtonBorder
-	
+	MiniMapTrackingButtonBorder,
 }) do
 	v:SetVertexColor(unpack(C.Blizzard.DarkTexturesColor))
 end
