@@ -261,6 +261,7 @@ if C.Unitframe.Enable == true then
 end
 
 -- CLASS ICONS
+--[[
 if (C.Unitframe.ClassIcon and not InCombatLockdown()) then
 	hooksecurefunc("UnitFramePortrait_Update", function(self)
 		if self.portrait then
@@ -276,7 +277,7 @@ if (C.Unitframe.ClassIcon and not InCombatLockdown()) then
 		end
 	end)
 end
-
+--]]
 -- CLASS COLOR BARS
 if (C.Unitframe.ClassHealth and not InCombatLockdown()) then
 	local function colorHealthBar(statusbar, unit)

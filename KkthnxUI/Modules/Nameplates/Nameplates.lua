@@ -161,13 +161,13 @@ function Plates:ColorHealth()
 		else
 			if UnitIsPlayer(self.unit) then
 				local Class = select(2, UnitClass(self.unit))
+
 				r, g, b = unpack(BETTER_RAID_CLASS_COLORS[Class])
 			else
 				if (UnitIsFriend("player", self.unit)) then
 					r, g, b = unpack(BETTER_REACTION_COLORS[5])
 				else
-					local Reaction = UnitReaction("player", self.unit)
-					r, g, b = unpack(BETTER_REACTION_COLORS[Reaction])
+					r, g, b = unpack(BETTER_REACTION_COLORS[1])
 				end
 			end
 		end
