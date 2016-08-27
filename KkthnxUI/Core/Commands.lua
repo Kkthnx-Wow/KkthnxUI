@@ -1,12 +1,15 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
 local format, lower = string.format, string.lower
 local ipairs = ipairs
+local ceil = math.ceil
+local floor = math.floor
 local print, tostring, select = print, tostring, select
 
+-- WOW API
 local EnableAddOn, DisableAllAddOns = EnableAddOn, DisableAllAddOns
-local FrameStackTooltip_Toggle = FrameStackTooltip_Toggle
 local GetAddOnInfo = GetAddOnInfo
 local GetMouseFocus = GetMouseFocus
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
@@ -14,10 +17,7 @@ local GetNumQuestLogEntries = GetNumQuestLogEntries
 local IsAddOnLoaded = IsAddOnLoaded
 local IsInInstance = IsInInstance
 local ReloadUI = ReloadUI
-local ResetCPUUsage = ResetCPUUsage
 local SetCVar = SetCVar
-local UpdateAddOnCPUUsage, GetAddOnCPUUsage = UpdateAddOnCPUUsage, GetAddOnCPUUsage
-local debugprofilestart, debugprofilestop = debugprofilestart, debugprofilestop
 
 -- READY CHECK
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
@@ -197,40 +197,86 @@ end
 SLASH_TEST_ACHIEVEMENT1 = "/testa"
 
 -- GRID ON SCREEN
-local grid
-SlashCmdList.GRIDONSCREEN = function()
-	if grid then
-		grid:Hide()
-		grid = nil
+local Grid
+local BoxSize = 32
+
+local function Grid_Show()
+	if not Grid then
+		GridCreate()
+	elseif Grid.BoxSize ~= BoxSize then
+		Grid:Hide()
+		GridCreate()
 	else
-		grid = CreateFrame("Frame", nil, UIParent)
-		grid:SetAllPoints(UIParent)
-		local width = K.ScreenWidth / 128
-		local height = K.ScreenHeight / 72
-		for i = 0, 128 do
-			local texture = grid:CreateTexture(nil, "BACKGROUND")
-			if i == 64 then
-				texture:SetColorTexture(46/255, 181/255, 255/255, 0.8)
-			else
-				texture:SetColorTexture(0/255, 0/255, 0/255, 0.8)
-			end
-			texture:SetPoint("TOPLEFT", grid, "TOPLEFT", i * width - 1, 0)
-			texture:SetPoint("BOTTOMRIGHT", grid, "BOTTOMLEFT", i * width, 0)
-		end
-		for i = 0, 72 do
-			local texture = grid:CreateTexture(nil, "BACKGROUND")
-			if i == 36 then
-				texture:SetColorTexture(46/255, 181/255, 255/255, 0.8)
-			else
-				texture:SetColorTexture(0/255, 0/255, 0/255, 0.8)
-			end
-			texture:SetPoint("TOPLEFT", grid, "TOPLEFT", 0, -i * height)
-			texture:SetPoint("BOTTOMRIGHT", grid, "TOPRIGHT", 0, -i * height - 1)
-		end
+		Grid:Show()
 	end
 end
-SLASH_GRIDONSCREEN1 = "/align"
-SLASH_GRIDONSCREEN2 = "/grid"
+
+local function GridHide()
+	if Grid then
+		Grid:Hide()
+	end
+end
+
+local isAligning = false
+SLASH_TOGGLEGRID1 = "/align"
+SlashCmdList["TOGGLEGRID"] = function(arg)
+	if isAligning then
+		GridHide()
+		isAligning = false
+	else
+		BoxSize = (ceil((tonumber(arg) or BoxSize) / 32) * 32)
+		if BoxSize > 256 then BoxSize = 256 end
+		Grid_Show()
+		isAligning = true
+	end
+end
+
+function GridCreate()
+	Grid = CreateFrame("Frame", nil, UIParent)
+	Grid.BoxSize = BoxSize
+	Grid:SetAllPoints(UIParent)
+
+	local Size = K.Scale(1)
+	local Width = K.ScreenWidth
+	local Ratio = Width / K.ScreenHeight
+	local Height = K.ScreenHeight * Ratio
+
+	local WStep = Width / BoxSize
+	local HStep = Height / BoxSize
+
+	for i = 0, BoxSize do
+		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
+		if i == BoxSize / 2 then
+			Tx:SetColorTexture(1, 0, 0, 0.9)
+		else
+			Tx:SetColorTexture(0, 0, 0, 0.9)
+		end
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", i * WStep - (Size / 2), 0)
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "BOTTOMLEFT", i * WStep + (Size / 2), 0)
+	end
+	Height = K.ScreenHeight
+
+	do
+		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
+		Tx:SetColorTexture(1, 0, 0, 0.9)
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2) + (Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 + Size / 2))
+	end
+
+	for i = 1, floor((Height / 2) / HStep) do
+		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
+		Tx:SetColorTexture(0, 0, 0, 0.9)
+
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2 + i * HStep) + (Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 + i * HStep + Size / 2))
+
+		Tx = Grid:CreateTexture(nil, "BACKGROUND")
+		Tx:SetColorTexture(0, 0, 0, 0.9)
+
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2 - i * HStep) + (Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2- i * HStep + Size / 2))
+	end
+end
 
 -- Reduce video settings to optimize performance
 local function BoostUI()
