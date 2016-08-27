@@ -208,9 +208,7 @@ function Plates:SetupPlate(options)
 	HealthBar:SetStatusBarTexture(Texture)
 	HealthBar.background:ClearAllPoints()
 	HealthBar.background:SetInside(0, 0)
-	HealthBar:CreatePixelShadow(2)
-	HealthBar:SetBackdrop(K.BorderBackdrop)
-	HealthBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	HealthBar:CreatePixelShadow()
 	HealthBar.border:SetAlpha(0)
 
 	-- CASTBAR
@@ -218,8 +216,6 @@ function Plates:SetupPlate(options)
 	CastBar.background:ClearAllPoints()
 	CastBar.background:SetInside(0, 0)
 	CastBar:CreatePixelShadow()
-	CastBar:SetBackdrop(K.BorderBackdrop)
-	CastBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 	if CastBar.border then
 		CastBar.border:SetAlpha(0)
@@ -233,8 +229,6 @@ function Plates:SetupPlate(options)
 	CastBar.IconBackdrop:SetBackdrop({bgFile = C.Media.Blank})
 	CastBar.IconBackdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	CastBar.IconBackdrop:CreatePixelShadow()
-	CastBar.IconBackdrop:SetBackdrop(K.BorderBackdrop)
-	CastBar.IconBackdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	CastBar.IconBackdrop:SetFrameLevel(CastBar:GetFrameLevel() - 1 or 0)
 
 	CastBar.Icon:SetParent(KkthnxUIUIHider)
@@ -244,9 +238,7 @@ function Plates:SetupPlate(options)
 	CastBar.IconTexture:SetParent(CastBar.IconBackdrop)
 	CastBar.IconTexture:SetAllPoints(CastBar.IconBackdrop)
 
-	CastBar.Text:SetFont(FontName, 9, "OUTLINE")
-	CastBar.Text:SetShadowColor(0, 0, 0)
-	CastBar.Text:SetShadowOffset(0, -0)
+	CastBar.Text:SetFont(FontName, 9, "")
 
 	CastBar.startCastColor.r, CastBar.startCastColor.g, CastBar.startCastColor.b = unpack(Plates.Options.CastBarColors.StartNormal)
 	CastBar.startChannelColor.r, CastBar.startChannelColor.g, CastBar.startChannelColor.b = unpack(Plates.Options.CastBarColors.StartChannel)
@@ -257,9 +249,7 @@ function Plates:SetupPlate(options)
 	CastBar:HookScript("OnShow", Plates.SetCastingIcon)
 
 	-- UNIT NAME
-	Name:SetFont(FontName, 9, "OUTLINE")
-	Name:SetShadowColor(0, 0, 0)
-	Name:SetShadowOffset(0, -0)
+	Name:SetFont(FontName, 9, "")
 	hooksecurefunc(Name, "Show", Plates.SetName)
 
 	-- WILL DO A BETTER VISUAL FOR THIS LATER
@@ -291,11 +281,9 @@ function Plates:Enable()
 		ClassNameplateManaBarFrame.Border:SetAlpha(0)
 		ClassNameplateManaBarFrame:SetStatusBarTexture(C.Media.Texture)
 		ClassNameplateManaBarFrame.ManaCostPredictionBar:SetTexture(C.Media.Texture)
-		--ClassNameplateManaBarFrame:SetBackdrop({bgFile = C.Media.Blank})
-		--ClassNameplateManaBarFrame:SetBackdropColor(.2, .2, .2)
-		ClassNameplateManaBarFrame:CreatePixelShadow()
-		ClassNameplateManaBarFrame:SetBackdrop(K.BorderBackdrop)
+		ClassNameplateManaBarFrame:SetBackdrop({bgFile = C.Media.Blank})
 		ClassNameplateManaBarFrame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		ClassNameplateManaBarFrame:CreatePixelShadow()
 	end
 
 	hooksecurefunc("DefaultCompactNamePlateFrameSetupInternal", self.SetupPlate)
