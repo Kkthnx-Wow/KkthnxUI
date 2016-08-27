@@ -122,14 +122,7 @@ function Plates:GetClassification(unit)
 end
 
 function Plates:SetName()
-	local Text
-
-	if C.Nameplate.Realm then
-		Text = self:GetText()
-	else
-		-- TAKEN FROM http://www.wowinterface.com/forums/showthread.php?t=48774
-		Text = gsub(self:GetText(), "%-[^|]+", "")
-	end
+	Text = self:GetText()
 
 	if Text then
 		local Unit = self:GetParent().unit
@@ -167,7 +160,9 @@ function Plates:ColorHealth()
 				if (UnitIsFriend("player", self.unit)) then
 					r, g, b = unpack(BETTER_REACTION_COLORS[5])
 				else
-					r, g, b = unpack(BETTER_REACTION_COLORS[1])
+					local Reaction = UnitReaction("player", self.unit)
+
+					r, g, b = unpack(BETTER_REACTION_COLORS[Reaction])
 				end
 			end
 		end
@@ -262,7 +257,7 @@ function Plates:SetupPlate(options)
 	CastBar:HookScript("OnShow", Plates.SetCastingIcon)
 
 	-- UNIT NAME
-	Name:SetFont(FontName, 9, "OUTLINE") -- IF WE ADD OUTLINE, IT CAUSE LAG? WTF?
+	Name:SetFont(FontName, 9, "OUTLINE")
 	Name:SetShadowColor(0, 0, 0)
 	Name:SetShadowOffset(0, -0)
 	hooksecurefunc(Name, "Show", Plates.SetName)

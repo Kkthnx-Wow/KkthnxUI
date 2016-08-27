@@ -179,7 +179,7 @@ C["Nameplate"] = {
 	["Width"] = 110,
 	["Height"] = 6,
 	["CastHeight"] = 4,
-	["Realm"] = false,
+	-- ["Realm"] = false,
 }
 -- PULSECD OPTIONS
 C["PulseCD"] = {

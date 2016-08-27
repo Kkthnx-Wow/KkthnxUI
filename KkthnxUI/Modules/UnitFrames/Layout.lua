@@ -28,7 +28,6 @@ local PartyMembers = GetNumGroupMembers()
 local PetColor = {157/255, 197/255, 255/255}
 
 if C.Unitframe.Enable == true then
-
 	local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
 	PlayerAnchor:SetSize(146, 28)
 	PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
@@ -37,18 +36,13 @@ if C.Unitframe.Enable == true then
 	TargetAnchor:SetSize(146, 28)
 	TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
 
-	local BossAnchor = CreateFrame("Frame", "BossFrameAnchor", UIParent)
-	BossAnchor:SetSize(232, 100)
-	BossAnchor:SetPoint(unpack(C.Position.UnitFrames.Boss))
-
 	local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
 
 	Unitframes:RegisterEvent("ADDON_LOADED")
 	Unitframes:SetScript("OnEvent", function(self, event, addon)
-		if (addon ~= "KkthnxUI") or (InCombatLockdown()) or (UnitHasVehicleUI("player")) then return end
+		if (addon ~= "KkthnxUI") or (InCombatLockdown()) then return end
 
 		if C.Unitframe.ClassHealth ~= true then
-
 			hooksecurefunc("UnitFrame_Update", function(self, isParty)
 				if (not self.name or not self:IsShown()) then return end
 
@@ -209,23 +203,29 @@ if C.Unitframe.Enable == true then
 
 		-- TWEAK PARTY FRAME
 		for i = 1, MAX_PARTY_MEMBERS do
-			_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
+			if (not InCombatLockdown() and PartyMembers > 0) then
+				_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
+			end
 		end
 
 		-- TWEAK PLAYER FRAME
-		K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
+		if (not InCombatLockdown() and not UnitHasVehicleUI("player")) then
+			K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
+		end
 
 		-- TWEAK TARGET FRAME
-		K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
+		if (not InCombatLockdown()) then
+			K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
 
-		-- TWEAK NAME BACKGROUND
-		TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+			-- TWEAK NAME BACKGROUND
+			TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-		-- TWEAK FOCUS FRAME
-		K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
+			-- TWEAK FOCUS FRAME
+			K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
 
-		-- TWEAK NAME BACKGROUND
-		FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+			-- TWEAK NAME BACKGROUND
+			FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+		end
 
 		-- BOSS FRAMES
 		for i = 1, 5 do
@@ -233,8 +233,6 @@ if C.Unitframe.Enable == true then
 			_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
 			_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
 		end
-		K.ModifyBasicFrame(Boss1TargetFrame, "CENTER", BossFrameAnchor, 0, 0, 1.0)
-
 		for i = 2, 5 do
 			_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 		end
@@ -327,7 +325,9 @@ if C.Unitframe.PvPIcon == true then
 	TargetFrameTextureFramePVPIcon:Kill()
 	FocusFrameTextureFramePVPIcon:Kill()
 	for i = 1, MAX_PARTY_MEMBERS do
-		_G["PartyMemberFrame"..i.."PVPIcon"]:Kill()
+		if (not InCombatLockdown() and PartyMembers > 0) then
+			_G["PartyMemberFrame"..i.."PVPIcon"]:Kill()
+		end
 	end
 end
 
@@ -342,7 +342,7 @@ for _, Textures in ipairs({
 
 }) do
 	hooksecurefunc("PlayerFrame_UpdateStatus", function()
-		if IsResting("player") then
+		if (not InCombatLockdown() and IsResting("player")) then
 			local Texture = _G[Textures]
 			if Texture then
 				Texture:Kill()
