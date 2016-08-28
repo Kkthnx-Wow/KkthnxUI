@@ -179,7 +179,7 @@ C["Nameplate"] = {
 	["Width"] = 110,
 	["Height"] = 6,
 	["CastHeight"] = 4,
-	["AbbreviateLongNames"] = true,
+	-- ["AbbreviateLongNames"] = true,
 	["ShowRealmName"] = false,
 }
 -- PULSECD OPTIONS

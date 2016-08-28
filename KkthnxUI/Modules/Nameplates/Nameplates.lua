@@ -1,6 +1,8 @@
 local K, C, L, _ = select(2, ...):unpack()
 
 local _G = _G
+local len = string.len
+local gsub = string.gsub
 local unpack = unpack
 local gsub = string.gsub
 
@@ -122,14 +124,14 @@ function Plates:GetClassification(unit)
 end
 
 function Plates:SetName()
-	local Text
+	local Text = self:GetText()
 	local NewName = GetUnitName(self:GetParent().unit, C.Nameplate.Realm) or UNKNOWN
 
-	if C.Nameplate.AbbreviateLongNames then
-		Text = gsub(self:GetText(), "%s?(.[\128-\191]*)%S+%s", "%1. ") or NewName
-	else
-		Text = self:GetText()
+	--[[ -- For the life of me I can not get C.Nameplate.AbbreviateLongNames and C.Nameplate.ShowRealmName to work together!
+	if (C.Nameplate.AbbreviateLongNames) then
+		NewName = (len(NewName) > 20) and gsub(NewName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or NewName
 	end
+	--]]
 
 	if Text then
 		local Unit = self:GetParent().unit
@@ -148,7 +150,7 @@ function Plates:SetName()
 			Level = Level
 		end
 
-		if C.Nameplate.ShowRealmName == true then
+		if (C.Nameplate.ShowRealmName) then
 			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. Text .."|r")
 		else
 			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. NewName .."|r")
