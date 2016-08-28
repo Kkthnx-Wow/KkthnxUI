@@ -43,4 +43,4 @@ XploitNT, jChirp, Magicnachos
 The MIT License (MIT)   
 Copyright (c) 2012 - 2016 Josh "Kkthnx" Russell   
    
-![wowscrnshot_081416_032801](https://cloud.githubusercontent.com/assets/1692977/17651462/52c18bc2-6235-11e6-9d03-9c3e165d4a45.jpg)
+![wowscrnshot_081416_032801](![wowscrnshot_082716_201517](https://cloud.githubusercontent.com/assets/1692977/18031163/e12b0548-6ca1-11e6-8189-abf3d80f71f9.jpg)
