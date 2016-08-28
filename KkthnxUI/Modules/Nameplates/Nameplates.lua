@@ -109,20 +109,27 @@ function Plates:GetClassification(unit)
 	local String = ""
 
 	if CreatureClassification == "elite" then
-		String = "[E]"
+		String = "E "
 	elseif CreatureClassification == "rare" then
-		String = "[R]"
+		String = "R "
 	elseif CreatureClassification == "rareelite" then
-		String = "[R+]"
+		String = "R+ "
 	elseif CreatureClassification == "worldboss" then
-		String = "[B]"
+		String = "B "
 	end
 
 	return String
 end
 
 function Plates:SetName()
-	Text = self:GetText()
+	local Text
+	local NewName = GetUnitName(self:GetParent().unit, C.Nameplate.Realm) or UNKNOWN
+
+	if C.Nameplate.LongNames then
+		Text = gsub(self:GetText(), "%s?(.[\128-\191]*)%S+%s", "%1. ") or NewName
+	else
+		Text = self:GetText()
+	end
 
 	if Text then
 		local Unit = self:GetParent().unit
@@ -138,10 +145,14 @@ function Plates:SetName()
 		if Level < 0 then
 			Level = ""
 		else
-			Level = "[".. Level.. "]"
+			Level = Level
 		end
 
-		self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. Text .."|r")
+		if C.Nameplate.Realm == true then
+			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. Text .."|r")
+		else
+			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. NewName .."|r")
+		end
 	end
 end
 

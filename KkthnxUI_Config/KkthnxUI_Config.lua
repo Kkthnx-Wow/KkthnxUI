@@ -186,11 +186,12 @@ local function Local(o)
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
 	-- Nameplate Settings
 	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
-	if o == "UIConfigNameplateEnable" then o = UNIT_NAMEPLATES_ENABLE end
-	if o == "UIConfigNameplateWidth" then o = UNIT_NAMEPLATES_WIDTH end
-	if o == "UIConfigNameplateHeight" then o = UNIT_NAMEPLATES_HEIGHT end
 	if o == "UIConfigNameplateCastHeight" then o = UNIT_NAMEPLATES_CASTHEIGHT end
-	if o == "UIConfigNameplateRealm" then o = UNIT_NAMEPLATES_REALM end
+	if o == "UIConfigNameplateEnable" then o = UNIT_NAMEPLATES_ENABLE end
+	if o == "UIConfigNameplateHeight" then o = UNIT_NAMEPLATES_HEIGHT end
+	if o == "UIConfigNameplateAbbreviateLongNames" then o = UNIT_NAMEPLATES_LONGNAMES end
+	if o == "UIConfigNameplateShowRealmName" then o = UNIT_NAMEPLATES_REALM end
+	if o == "UIConfigNameplateWidth" then o = UNIT_NAMEPLATES_WIDTH end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end

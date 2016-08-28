@@ -13,8 +13,6 @@ local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local GetCVar = GetCVar
 local UnitClassification = UnitClassification
 
-local PartyMembers = GetNumGroupMembers()
-
 local Shorts = {
 	{ 1e10, 1e9, "%.0fB" }, -- 10B+ AS 12B
 	{ 1e9, 1e9, "%.1fB" }, -- 1B+ AS 8.3B
@@ -45,11 +43,8 @@ function EnableEnhancedFrames()
 	hooksecurefunc("PlayerFrame_ToVehicleArt", EnhancedFrames_PlayerFrame_ToVehicleArt)
 
 	-- HOOK TARGETFRAME FUNCTIONS
-	-- hooksecurefunc("TargetFrame_CheckDead", EnhancedFrames_TargetFrame_Update)
-	-- hooksecurefunc("TargetFrame_Update", EnhancedFrames_TargetFrame_Update)
 	hooksecurefunc("TargetFrame_CheckFaction", EnhancedFrames_TargetFrame_CheckFaction)
 	hooksecurefunc("TargetFrame_CheckClassification", EnhancedFrames_Target_Classification)
-	-- hooksecurefunc("TargetofTarget_Update", EnhancedFrames_TargetFrame_Update)
 
 	-- BOSSFRAME HOOKS
 	hooksecurefunc("BossTargetFrame_OnLoad", EnhancedFrames_BossTargetFrame_Style)
@@ -164,15 +159,7 @@ function EnhancedFrames_PlayerFrame_ToVehicleArt(self)
 		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 3)
 	end
 end
---[[
-function EnhancedFrames_TargetFrame_Update(self)
-	-- SET BACK COLOR OF HEALTH BAR
-	if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
-		-- GRAY IF NPC IS TAPPED BY OTHER PLAYER
-		self.healthbar:SetStatusBarColor(0.5, 0.5, 0.5)
-	end
-end
-]]--
+
 function EnhancedFrames_Target_Classification(self, forceNormalTexture)
 	local texture
 	local classification = UnitClassification(self.unit)
@@ -214,7 +201,7 @@ end
 
 -- STYLE PARTY MEMEBER FRAME STYLE CHANGES
 function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
-	if (not InCombatLockdown() and PartyMembers > 0) then
+	if not InCombatLockdown() then
 		for i = 1, MAX_PARTY_MEMBERS do
 			_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
 

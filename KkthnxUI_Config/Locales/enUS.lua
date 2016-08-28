@@ -138,11 +138,12 @@ L_GUI_MISC_SELLMISC = "Automatically sells useless items that are not gray quali
 L_GUI_MISC_SPIN_CAMERA = "Spin camera while afk"
 L_GUI_MISC_USEGUILDREPAIR = "When using 'Auto Repair', use funds from the Guild bank"
 -- NamePlate Localization
-UNIT_NAMEPLATES_ENABLE = "Enable Nameplates"
-UNIT_NAMEPLATES_WIDTH = "Set the width of Nameplates"
-UNIT_NAMEPLATES_HEIGHT = "Set the height of Nameplates"
 UNIT_NAMEPLATES_CASTHEIGHT = "Set the height of the cast bar on Nameplates"
+UNIT_NAMEPLATES_ENABLE = "Enable Nameplates"
+UNIT_NAMEPLATES_HEIGHT = "Set the height of Nameplates"
+UNIT_NAMEPLATES_LONGNAMES = "Abbreviate long names on Nameplates"
 UNIT_NAMEPLATES_REALM = "Display player realm name on Nameplates"
+UNIT_NAMEPLATES_WIDTH = "Set the width of Nameplates"
 -- PulseCD Localization
 L_GUI_PULSECD = "Pulse Cooldowns"
 L_GUI_PULSECD_ENABLE = "Show cooldowns pulse"
