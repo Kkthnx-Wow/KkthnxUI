@@ -68,14 +68,12 @@ function EnableEnhancedFrames()
 end
 
 function EnhancedFrames_Style_PlayerFrame()
-	if (not InCombatLockdown()) or (not UnitHasVehicleUI("player")) then
-		PlayerName:SetWidth(0.01)
+	PlayerName:SetWidth(0.01)
 
-		PlayerFrameHealthBar.capNumericDisplay = true
-		PlayerFrameHealthBar:SetSize(119, 29)
-		PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
-		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
-	end
+	--PlayerFrameHealthBar.capNumericDisplay = true
+	PlayerFrameHealthBar:SetSize(119, 29)
+	PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
+	PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
 
 	PlayerFrameTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
 	PlayerStatusTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-Player-Status")
