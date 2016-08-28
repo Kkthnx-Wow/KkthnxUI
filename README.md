@@ -17,7 +17,11 @@ It can be used for any class or role.
 ### Contact Me   
 * Curse Client: Kkthnx      
 * Battle.net: Kkthnx#1105   
-* Discord: https://discord.gg/jgu5MZv    
+* Discord: https://discord.gg/jgu5MZv   
+   
+### Social Media
+* Facebook: [KkthnxUI](https://www.facebook.com/kkthnxui)   
+* Twitter: [KkthnxUI](https://twitter.com/KkthnxUI)
 
 ### Donations   
 Donations are welcome, but not required to use the UI at all. Donations help me further my development and fuel my gaming! Donations will never be a requirement! If you would like to donate, you can do so here
