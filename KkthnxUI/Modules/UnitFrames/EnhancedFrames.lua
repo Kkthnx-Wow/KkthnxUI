@@ -36,7 +36,7 @@ end
 
 function EnableEnhancedFrames()
 	-- GENERIC STATUS TEXT HOOK
-	hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", EnhancedFrames_UpdateTextStringWithValues)
+	hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", EnhancedFrames_TextStatusBarUpdateTextStringWithValues)
 
 	-- HOOK PLAYERFRAME FUNCTIONS
 	hooksecurefunc("PlayerFrame_ToPlayerArt", EnhancedFrames_PlayerFrame_ToPlayerArt)
@@ -68,12 +68,14 @@ function EnableEnhancedFrames()
 end
 
 function EnhancedFrames_Style_PlayerFrame()
-	PlayerName:SetWidth(0.01)
+	if (not InCombatLockdown() or not UnitHasVehicleUI("player")) then
+		PlayerName:SetWidth(0.01)
 
-	--PlayerFrameHealthBar.capNumericDisplay = true
-	PlayerFrameHealthBar:SetSize(119, 29)
-	PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
-	PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
+		--PlayerFrameHealthBar.capNumericDisplay = true
+		PlayerFrameHealthBar:SetSize(119, 29)
+		PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
+		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
+	end
 
 	PlayerFrameTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
 	PlayerStatusTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-Player-Status")
@@ -116,7 +118,7 @@ end
 
 -- FORCE NUMERIC FOR HEALTHBAR FIX
 SetCVar("statusTextDisplay", "NUMERIC")
-function EnhancedFrames_UpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
+function EnhancedFrames_TextStatusBarUpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
 	if value == 0 then
 		return textString:SetText("")
 	end
@@ -146,13 +148,13 @@ function EnhancedFrames_UpdateTextStringWithValues(statusBar, textString, value,
 end
 
 function EnhancedFrames_PlayerFrame_ToPlayerArt(self)
-	if not InCombatLockdown() then
+	if (not InCombatLockdown() or not UnitHasVehicleUI("player")) then
 		EnhancedFrames_Style_PlayerFrame()
 	end
 end
 
 function EnhancedFrames_PlayerFrame_ToVehicleArt(self)
-	if not InCombatLockdown() then
+	if (not InCombatLockdown() or not UnitHasVehicleUI("player")) then
 		PlayerFrameHealthBar:SetHeight(12)
 		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 3)
 	end
