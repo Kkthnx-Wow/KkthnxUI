@@ -103,13 +103,14 @@
 	<Script file="Modules\Blizzard\DarkTextures.lua"/>
 	<Script file="Modules\Blizzard\Durability.lua"/>
 	<Script file="Modules\Blizzard\Errors.lua"/>
-	<Script file="Modules\Blizzard\ExpBar.lua"/>
+	<Script file="Modules\Blizzard\Experience.lua"/>
 	<Script file="Modules\Blizzard\ExtraActionBar.lua"/>
 	<Script file="Modules\Blizzard\Fixes.lua"/>
 	<Script file="Modules\Blizzard\Fonts.lua"/>
 	<Script file="Modules\Blizzard\MoveBlizzFrames.lua"/>
 	<Script file="Modules\Blizzard\Nameplates.lua"/>
 	<Script file="Modules\Blizzard\RepReward.lua"/>
+	<Script file="Modules\Blizzard\Reputation.lua"/>
 
 	<Script file="Modules\Buffs\AuraSource.lua"/>
 	<Script file="Modules\Buffs\BuffFrame.lua"/>
