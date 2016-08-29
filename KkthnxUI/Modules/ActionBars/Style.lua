@@ -187,7 +187,7 @@ end
 local function UpdateHotkey(self, actionButtonType)
 	local hotkey = _G[self:GetName() .. "HotKey"]
 	local text = hotkey:GetText()
-	local indicator = _G["RANGE_INDICATOR"]
+	local Indicator = _G["RANGE_INDICATOR"]
 
 	if (not text) then
 		return
@@ -197,27 +197,27 @@ local function UpdateHotkey(self, actionButtonType)
 	text = gsub(text, "(a%-)", "A")
 	text = gsub(text, "(c%-)", "C")
 	text = gsub(text, KEY_MOUSEWHEELDOWN , "MDn")
-    text = gsub(text, KEY_MOUSEWHEELUP , "MUp")
+	text = gsub(text, KEY_MOUSEWHEELUP , "MUp")
 	text = gsub(text, KEY_BUTTON3, "M3")
 	text = gsub(text, KEY_BUTTON4, "M4")
 	text = gsub(text, KEY_BUTTON5, "M5")
 	text = gsub(text, KEY_MOUSEWHEELUP, "MU")
 	text = gsub(text, KEY_MOUSEWHEELDOWN, "MD")
 	text = gsub(text, KEY_NUMPAD0, "N0")
-    text = gsub(text, KEY_NUMPAD1, "N1")
-    text = gsub(text, KEY_NUMPAD2, "N2")
-    text = gsub(text, KEY_NUMPAD3, "N3")
-    text = gsub(text, KEY_NUMPAD4, "N4")
-    text = gsub(text, KEY_NUMPAD5, "N5")
-    text = gsub(text, KEY_NUMPAD6, "N6")
-    text = gsub(text, KEY_NUMPAD7, "N7")
-    text = gsub(text, KEY_NUMPAD8, "N8")
-    text = gsub(text, KEY_NUMPAD9, "N9")
-    text = gsub(text, KEY_NUMPADDECIMAL, "N.")
-    text = gsub(text, KEY_NUMPADDIVIDE, "N/")
-    text = gsub(text, KEY_NUMPADMINUS, "N-")
-    text = gsub(text, KEY_NUMPADMULTIPLY, "N*")
-    text = gsub(text, KEY_NUMPADPLUS, "N+")
+	text = gsub(text, KEY_NUMPAD1, "N1")
+	text = gsub(text, KEY_NUMPAD2, "N2")
+	text = gsub(text, KEY_NUMPAD3, "N3")
+	text = gsub(text, KEY_NUMPAD4, "N4")
+	text = gsub(text, KEY_NUMPAD5, "N5")
+	text = gsub(text, KEY_NUMPAD6, "N6")
+	text = gsub(text, KEY_NUMPAD7, "N7")
+	text = gsub(text, KEY_NUMPAD8, "N8")
+	text = gsub(text, KEY_NUMPAD9, "N9")
+	text = gsub(text, KEY_NUMPADDECIMAL, "N.")
+	text = gsub(text, KEY_NUMPADDIVIDE, "N/")
+	text = gsub(text, KEY_NUMPADMINUS, "N-")
+	text = gsub(text, KEY_NUMPADMULTIPLY, "N*")
+	text = gsub(text, KEY_NUMPADPLUS, "N+")
 	text = gsub(text, KEY_PAGEUP, "PU")
 	text = gsub(text, KEY_PAGEDOWN, "PD")
 	text = gsub(text, KEY_SPACE, "SpB")
@@ -226,7 +226,7 @@ local function UpdateHotkey(self, actionButtonType)
 	text = gsub(text, KEY_DELETE, "Del")
 	text = gsub(text, KEY_INSERT_MAC, "Hlp") -- MAC
 
-	if hotkey:GetText() == indicator then
+	if hotkey:GetText() == Indicator then
 		hotkey:SetText("")
 	else
 		hotkey:SetText(text)
@@ -265,7 +265,7 @@ local function StyleFlyoutButton(self)
 		local _, _, numSlots, isKnown = GetFlyoutInfo(x)
 		if isKnown then
 			if numSlots > buttons then
-			buttons = numSlots
+				buttons = numSlots
 			end
 		end
 	end

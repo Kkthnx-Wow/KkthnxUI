@@ -71,3 +71,29 @@ Frame:RegisterEvent("ARTIFACT_XP_UPDATE")
 Frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 Frame:RegisterEvent("UNIT_INVENTORY_CHANGED")
 Frame:SetScript("OnEvent", updateStatus)
+
+-- |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-| --
+-- |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-| --
+-- |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-| --
+-- |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-| --
+
+-- Auto Follow Feature?
+local Follow = CreateFrame("Frame")
+Follow:RegisterEvent("CHAT_MSG_WHISPER")
+Follow:SetScript("OnEvent", function(self, event, ...)
+	if (event == "CHAT_MSG_WHISPER") then
+		local message, sender = ...
+		local senderName = sender:gsub("%-.+", "")
+
+		if UnitIsInMyGuild(senderName) or UnitIsInFriendList(senderName) then
+
+			if message == "!follow" then
+				FollowUnit(senderName)
+				if (not IsMounted()) then
+					C_MountJournal.SummonByID(0)
+				end
+				SendChatMessage("Following you.", "WHISPER", nil, sender)
+			end
+		end
+	end
+end)

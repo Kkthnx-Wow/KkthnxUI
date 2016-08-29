@@ -300,8 +300,8 @@ for i = 1, 5 do
 			ToggleBar[i]:SetFrameLevel(SplitBarLeft:GetFrameLevel() + 1)
 		end
 	elseif i == 5 then
-		ToggleBar[i]:CreatePanel("CreateBorder", 19, 19, "BOTTOMRIGHT", Minimap, "BOTTOMLEFT", -4, -2)
-		ToggleBar[i]:SetBorderSize(10)
+		ToggleBar[i]:CreatePanel("CreateBackdrop", 19, 19, "BOTTOMRIGHT", Minimap, "BOTTOMLEFT", -4, -2)
+		--ToggleBar[i]:SetBorderSize(10)
 		ToggleBar[i].Text:SetPoint("CENTER", 0, 0)
 
 		ToggleBar[i]:SetScript("OnMouseDown", function()

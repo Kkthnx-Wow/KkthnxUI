@@ -12,6 +12,7 @@ local GetCurrentMapAreaID = GetCurrentMapAreaID
 local IsInInstance = IsInInstance
 
 -- MAP IDS
+-- http://wow.gamepedia.com/MapID
 local WSG = 443
 local TP = 626
 local AV = 401
@@ -23,6 +24,7 @@ local AB = 461
 local TOK = 856
 local SSM = 860
 local DG = 935
+local ASH = 978
 
 local classcolor = ("|cff%.2x%.2x%.2x"):format(K.Color.r * 255, K.Color.g * 255, K.Color.b * 255)
 
@@ -47,7 +49,7 @@ bgframe:SetScript("OnEnter", function(self)
 			GameTooltip:AddDoubleLine(DAMAGE..":", damageDone, 1, 1, 1)
 			GameTooltip:AddDoubleLine(SHOW_COMBAT_HEALING..":", healingDone, 1, 1, 1)
 			-- ADD EXTRA STATISTICS DEPENDING ON WHAT BG YOU ARE
-			if curmapid == IOC or curmapid == TBFG or curmapid == AB then
+			if curmapid == IOC or curmapid == TBFG or curmapid == AB or curmapid == ASH then
 				GameTooltip:AddDoubleLine(L_DATATEXT_BASESASSAULTED, GetBattlefieldStatData(i, 1), 1, 1, 1)
 				GameTooltip:AddDoubleLine(L_DATATEXT_BASESDEFENDED, GetBattlefieldStatData(i, 2), 1, 1, 1)
 			elseif curmapid == WSG or curmapid == TP then
@@ -77,6 +79,7 @@ bgframe:SetScript("OnEnter", function(self)
 		end
 	end
 end)
+
 bgframe:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 bgframe:SetScript("OnMouseUp", function(self, button)
 	if QueueStatusMinimapButton:IsShown() then
@@ -136,8 +139,8 @@ end
 -- HIDE TEXT WHEN NOT IN AN BG
 local function OnEvent(self, event)
 	if event == "PLAYER_ENTERING_WORLD" then
-		local _, instanceType = IsInInstance()
-		if instanceType == "pvp" then
+		local inInstance, instanceType = IsInInstance()
+		if inInstance and (instanceType == "pvp") then
 			bgframe:Show()
 		else
 			Text1:SetText("")
