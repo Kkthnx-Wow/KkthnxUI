@@ -121,7 +121,7 @@ if C.Unitframe.Enable == true then
 
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			if (not InCombatLockdown() and PartyMembers > 0) then
+			if (not InCombatLockdown()) and (PartyMembers > 0) then
 				if C.Unitframe.Outline then
 					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
 					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
