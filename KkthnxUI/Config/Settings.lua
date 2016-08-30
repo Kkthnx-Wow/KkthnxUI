@@ -120,6 +120,13 @@ C["Error"] = {
 	["White"] = false,
 	["Combat"] = false,
 }
+-- EXPERIENCE REPUTATION OPTIONS
+C["ExpRep"] = {
+	["ExpHeight"] = 8,
+	["ExpWidth"] = 150,
+	["RepHeight"] = 8,
+	["RepWidth"] = 150,
+}
 -- FILGER OPTIONS
 C["Filger"] = {
 	["BuffsSize"] = 37,

@@ -58,6 +58,12 @@ L_GUI_BLIZZARD_DARK_TEXTURES = "Darken some UI textures"
 L_GUI_BLIZZARD_DARK_TEXTURES_COLOR = "Change some UI texture colors."
 L_GUI_BLIZZARD_DURABILITY = "Display the durability % on character slot buttons"
 L_GUI_BLIZZARD_REPUTATIONS = "Display reputation rewards for quests"
+-- ExpRep Localization
+L_GUI_EXPREP = "Exp & Rep Bars"
+L_GUI_EXPREP_EXPHEIGHT = "Set the height of the experience bar"
+L_GUI_EXPREP_EXPWIDTH = "Set the width of the experience bar"
+L_GUI_EXPREP_REPHEIGHT = "Set the height of the reputation bar"
+L_GUI_EXPREP_REPWIDTH = "Set the width of the reputation bar"
 -- Buffs & Debuffs Localization
 L_GUI_AURA = "Buffs & Debuffs"
 L_GUI_AURA_ENABLE = "Enable Player Buffs/Debuffs"

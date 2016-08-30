@@ -29,19 +29,20 @@ local ALLOWED_GROUPS = {
 	["Automation"] = 4,
 	["Bag"] = 5,
 	["Blizzard"] = 6,
-	["Aura"] = 7,
-	["Chat"] = 8,
-	["Cooldown"] = 9,
-	["Error"] = 10,
-	["Filger"] = 11,
-	["Loot"] = 12,
-	["Minimap"] = 13,
-	["Misc"] = 14,
-	["Nameplate"] = 15,
-	["PulseCD"] = 16,
-	["Skins"] = 17,
-	["Tooltip"] = 18,
-	["Unitframe"] = 19,
+	["ExpRep"] = 7,
+	["Aura"] = 8,
+	["Chat"] = 9,
+	["Cooldown"] = 10,
+	["Error"] = 11,
+	["Filger"] = 12,
+	["Loot"] = 13,
+	["Minimap"] = 14,
+	["Misc"] = 15,
+	["Nameplate"] = 16,
+	["PulseCD"] = 17,
+	["Skins"] = 18,
+	["Tooltip"] = 19,
+	["Unitframe"] = 20,
 }
 
 local function Local(o)
@@ -104,6 +105,12 @@ local function Local(o)
 	if o == "UIConfigBlizzardDurability" then o = L_GUI_BLIZZARD_DURABILITY end
 	if o == "UIConfigBlizzardMoveAchievements" then o = L_GUI_BLIZZARD_ACHIEVEMENTS end
 	if o == "UIConfigBlizzardReputations" then o = L_GUI_BLIZZARD_REPUTATIONS end
+	-- ExpRep Settings
+	if o == "UIConfigExpRep" then o = L_GUI_EXPREP end
+	if o == "UIConfigExpRepExpHeight" then o = L_GUI_EXPREP_EXPHEIGHT end
+	if o == "UIConfigExpRepExpWidth" then o = L_GUI_EXPREP_EXPWIDTH end
+	if o == "UIConfigExpRepRepHeight" then o = L_GUI_EXPREP_REPHEIGHT end
+	if o == "UIConfigExpRepRepWidth" then o = L_GUI_EXPREP_REPWIDTH end
 	-- Auras Settings
 	if o == "UIConfigAura" then o = L_GUI_AURA end
 	if o == "UIConfigAuraCastBy" then o = L_GUI_AURA_CAST_BY end

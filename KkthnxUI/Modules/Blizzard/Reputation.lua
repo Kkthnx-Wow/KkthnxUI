@@ -1,10 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-C["Reputation"] = {
-	["Width"] = 150,
-	["Height"] = 8,
-}
-
 local Reputation = CreateFrame("Frame", nil, UIParent)
 local HideTooltip = GameTooltip_Hide
 local Bars = 20
@@ -13,7 +8,7 @@ local Colors = FACTION_BAR_COLORS
 Reputation.NumBars = 2
 
 local ReputationAnchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
-ReputationAnchor:SetSize(C.Reputation.Width, 18)
+ReputationAnchor:SetSize(C.ExpRep.RepWidth, 18)
 ReputationAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -32)
 ReputationAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -32)
 
@@ -68,7 +63,7 @@ function Reputation:Create()
 		RepBar:SetBackdrop(K.BorderBackdrop)
 		RepBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
-		RepBar:SetSize(C.Reputation.Width, C.Reputation.Height)
+		RepBar:SetSize(C.ExpRep.RepWidth, C.ExpRep.RepHeight)
 		RepBar:SetPoint("CENTER", ReputationAnchor, "CENTER", 0, 0)
 
 

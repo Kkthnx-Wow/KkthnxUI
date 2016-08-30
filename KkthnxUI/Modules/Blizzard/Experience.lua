@@ -1,11 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-C["Experience"] = {
-	["Width"] = 150,
-	["Height"] = 8,
-}
-
-
 local Experience = CreateFrame("Frame", nil, UIParent)
 local HideTooltip = GameTooltip_Hide
 local Bars = 20
@@ -17,7 +11,7 @@ Experience.AFColor = {229/255, 204/255, 127/255}
 Experience.HNColor = {222/255, 22/255, 22/255}
 
 local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
-ExperienceAnchor:SetSize(C.Experience.Width, 18)
+ExperienceAnchor:SetSize(C.ExpRep.ExpWidth, 18)
 ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -22)
 ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -22)
 
@@ -171,7 +165,7 @@ function Experience:Create()
 		RestedBar:SetBackdrop(K.BorderBackdrop)
 		RestedBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
-		XPBar:SetSize(C.Experience.Width, C.Experience.Height)
+		XPBar:SetSize(C.ExpRep.ExpWidth, C.ExpRep.ExpHeight)
 		XPBar:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
 
 		self["XPBar"..i] = XPBar
