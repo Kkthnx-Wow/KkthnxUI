@@ -209,4 +209,16 @@ function Experience:Enable()
 	end
 end
 
+function Experience:Disable()
+	for i = 1, self.NumBars do
+		if self["XPBar"..i]:IsShown() then
+			self["XPBar"..i]:Hide()
+		end
+
+		if self["RestedBar"..i]:IsShown() then
+			self["RestedBar"..i]:Hide()
+		end
+	end
+end
+
 Experience:Enable()

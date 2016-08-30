@@ -94,4 +94,12 @@ function Reputation:Enable()
 	end
 end
 
+function Reputation:Disable()
+	for i = 1, self.NumBars do
+		if self["RepBar"..i]:IsShown() then
+			self["RepBar"..i]:Hide()
+		end
+	end
+end
+
 Reputation:Enable()
