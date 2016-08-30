@@ -1,11 +1,21 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+C["Reputation"] = {
+	["Width"] = 150,
+	["Height"] = 8,
+}
+
 local Reputation = CreateFrame("Frame", nil, UIParent)
 local HideTooltip = GameTooltip_Hide
 local Bars = 20
 local Colors = FACTION_BAR_COLORS
 
 Reputation.NumBars = 2
+
+local ReputationAnchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
+ReputationAnchor:SetSize(C.Reputation.Width, 18)
+ReputationAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -32)
+ReputationAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -32)
 
 function Reputation:SetTooltip()
 	if (not GetWatchedFactionInfo()) then
@@ -51,17 +61,16 @@ function Reputation:Create()
 		RepBar:EnableMouse()
 		RepBar:SetFrameStrata("BACKGROUND")
 		RepBar:SetFrameLevel(3)
-		--RepBar:CreateBackdrop()
 		RepBar:SetScript("OnEnter", Reputation.SetTooltip)
 		RepBar:SetScript("OnLeave", HideTooltip)
 
-		RepBar:CreatePixelShadow(2)
+		RepBar:CreatePixelShadow()
 		RepBar:SetBackdrop(K.BorderBackdrop)
 		RepBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
-		RepBar:SetSize(Minimap:GetWidth() - 4, 8)
-		RepBar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -36)
-		RepBar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -36)
+		RepBar:SetSize(C.Reputation.Width, C.Reputation.Height)
+		RepBar:SetPoint("CENTER", ReputationAnchor, "CENTER", 0, 0)
+
 
 		self["RepBar"..i] = RepBar
 	end

@@ -1,5 +1,11 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+C["Experience"] = {
+	["Width"] = 150,
+	["Height"] = 8,
+}
+
+
 local Experience = CreateFrame("Frame", nil, UIParent)
 local HideTooltip = GameTooltip_Hide
 local Bars = 20
@@ -9,6 +15,11 @@ Experience.RestedColor = {75/255, 175/255, 76/255}
 Experience.XPColor = {0/255, 144/255, 255/255}
 Experience.AFColor = {229/255, 204/255, 127/255}
 Experience.HNColor = {222/255, 22/255, 22/255}
+
+local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
+ExperienceAnchor:SetSize(C.Experience.Width, 18)
+ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -22)
+ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -22)
 
 function Experience:SetTooltip()
 	local BarType = self.BarType
@@ -140,8 +151,8 @@ end
 
 function Experience:Create()
 	for i = 1, self.NumBars do
-		local XPBar = CreateFrame("StatusBar", nil, UIParent)
-		local RestedBar = CreateFrame("StatusBar", nil, UIParent)
+		local XPBar = CreateFrame("StatusBar", nil, ExperienceAnchor)
+		local RestedBar = CreateFrame("StatusBar", nil, ExperienceAnchor)
 
 		XPBar:SetStatusBarTexture(C.Media.Texture)
 		XPBar:EnableMouse()
@@ -156,13 +167,12 @@ function Experience:Create()
 		RestedBar:SetAllPoints(XPBar)
 		RestedBar:SetFrameLevel(XPBar:GetFrameLevel() - 1)
 
-		XPBar:CreatePixelShadow(2)
+		XPBar:CreatePixelShadow()
 		RestedBar:SetBackdrop(K.BorderBackdrop)
 		RestedBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
-		XPBar:SetSize(Minimap:GetWidth() - 4, 8)
-		XPBar:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -26)
-		XPBar:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -26)
+		XPBar:SetSize(C.Experience.Width, C.Experience.Height)
+		XPBar:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
 
 		self["XPBar"..i] = XPBar
 		self["RestedBar"..i] = RestedBar
