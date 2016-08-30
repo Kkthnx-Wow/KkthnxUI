@@ -162,9 +162,9 @@ function Experience:Create()
 		RestedBar:SetAllPoints(XPBar)
 		RestedBar:SetFrameLevel(XPBar:GetFrameLevel())
 
+		XPBar:SetBackdrop({bgFile = C.Media.Blank})
+		XPBar:SetBackdropColor(20/255, 20/255, 20/255, 0.8)
 		XPBar:CreatePixelShadow()
-		XPBar:SetBackdrop(K.BorderBackdrop)
-		XPBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 		XPBar:SetSize(C.ExpRep.ExpWidth, C.ExpRep.ExpHeight)
 		XPBar:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)

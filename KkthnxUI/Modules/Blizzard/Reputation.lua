@@ -60,13 +60,12 @@ function Reputation:Create()
 		RepBar:SetScript("OnEnter", Reputation.SetTooltip)
 		RepBar:SetScript("OnLeave", HideTooltip)
 
+		RepBar:SetBackdrop({bgFile = C.Media.Blank})
+		RepBar:SetBackdropColor(20/255, 20/255, 20/255, 0.8)
 		RepBar:CreatePixelShadow()
-		RepBar:SetBackdrop(K.BorderBackdrop)
-		RepBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 		RepBar:SetSize(C.ExpRep.RepWidth, C.ExpRep.RepHeight)
 		RepBar:SetPoint("CENTER", ReputationAnchor, "CENTER", 0, 0)
-
 
 		self["RepBar"..i] = RepBar
 	end
