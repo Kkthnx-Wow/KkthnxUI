@@ -282,7 +282,7 @@ function CreateReagentContainer()
 	Reagent:SetScript("OnMouseUp", Reagent.StopMovingOrSizing)
 
 	SwitchBankButton:SetSize(80, 20)
---	SwitchBankButton:SkinButton()
+	--	SwitchBankButton:SkinButton()
 	SwitchBankButton:SetPoint("TOPLEFT", 10, -4)
 	SwitchBankButton:FontString("text", C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 	SwitchBankButton.text:SetPoint("CENTER")
@@ -420,7 +420,18 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		end
 	else
 		ret.frame = CreateFrame("CheckButton", "StuffingFBag"..slot.."Slot", p, "BagSlotButtonTemplate")
-		ret.frame:StripTextures()
+
+		hooksecurefunc(ret.frame.IconBorder, "SetVertexColor", function(self, r, g, b)
+			if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
+				self:GetParent():SetBackdropBorderColor(r, g, b)
+			end
+			self:SetTexture("")
+		end)
+
+		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
+			self:GetParent():SetBackdropBorderColor(unpack(C.media.border_color))
+		end)
+
 		ret.slot = slot
 		table.insert(self.bagframe_buttons, ret)
 	end
@@ -654,7 +665,7 @@ function Stuffing:CreateBagFrame(w)
 		f.b_reagent:SetSize(105, 20)
 		f.b_reagent:SetPoint("TOPLEFT", 10, -4)
 		f.b_reagent:RegisterForClicks("AnyUp")
---		f.b_reagent:SkinButton()
+		--		f.b_reagent:SkinButton()
 		f.b_reagent:SetScript("OnClick", function()
 			BankFrame_ShowPanel(BANK_PANELS[2].name)
 			PlaySound("igBackPackOpen")
@@ -1248,7 +1259,7 @@ function Stuffing:SortOnUpdate(elapsed)
 
 	for bagIndex in pairs(BS_itemSwapGrid) do
 		for slotIndex in pairs(BS_itemSwapGrid[bagIndex]) do
-			local destinationBag  = BS_itemSwapGrid[bagIndex][slotIndex].destinationBag
+			local destinationBag = BS_itemSwapGrid[bagIndex][slotIndex].destinationBag
 			local destinationSlot = BS_itemSwapGrid[bagIndex][slotIndex].destinationSlot
 
 			local _, _, locked1 = GetContainerItemInfo(bagIndex, slotIndex)
@@ -1353,8 +1364,8 @@ function Stuffing:SortBags()
 				else
 					gridSlot = gridSlot - GetContainerNumSlots(bagSlotNumber)
 				end
-	        end
-	    end
+			end
+		end
 	end
 
 	self:SetScript("OnUpdate", Stuffing.SortOnUpdate)
@@ -1506,7 +1517,7 @@ function Stuffing.Menu(self, level)
 	UIDropDownMenu_AddButton(info, level)
 end
 
- -- Kill Blizzard functions
- LootWonAlertFrame_OnClick = K.Noop
- LootUpgradeFrame_OnClick = K.Noop
- StorePurchaseAlertFrame_OnClick = K.Noop
+-- Kill Blizzard functions
+LootWonAlertFrame_OnClick = K.Noop
+LootUpgradeFrame_OnClick = K.Noop
+StorePurchaseAlertFrame_OnClick = K.Noop

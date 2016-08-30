@@ -1,6 +1,14 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Experience.XP ~= true then return end
 
+-- LUA API
+local unpack = unpack
+local min, max = math.min, math.max
+
+-- WOW API
+local IsMaxLevel = IsMaxLevel
+local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL
+
 local barHeight, barWidth = C.Experience.XPHeight, C.Experience.XPWidth
 local barTex, flatTex = C.Media.Texture
 local color = RAID_CLASS_COLORS[K.Class]
@@ -128,10 +136,11 @@ local function updateStatus()
 		end
 		GameTooltip:Show()
 	end)
+
 	mouseFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
-local frame = CreateFrame("Frame",nil,UIParent)
+local frame = CreateFrame("Frame", nil, UIParent)
 frame:RegisterEvent("PLAYER_LEVEL_UP")
 frame:RegisterEvent("PLAYER_XP_UPDATE")
 frame:RegisterEvent("UPDATE_EXHAUSTION")

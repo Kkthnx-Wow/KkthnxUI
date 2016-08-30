@@ -1,6 +1,16 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Experience.Artifact ~= true then return end
 
+-- LUA API
+local unpack = unpack
+local min = math.min
+local format = string.format
+
+-- WOW API
+local CreateFrame = CreateFrame
+local UIParent = UIParent
+local HasArtifactEquipped = HasArtifactEquipped
+
 local ArtifactAnchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
 ArtifactAnchor:SetSize(C.Experience.ArtifactWidth, 18)
 ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -33)
