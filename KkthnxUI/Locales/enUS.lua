@@ -102,6 +102,7 @@ L_INVITE_DISABLE = "AutoInvite disabled"
 -- INFO LOCALIZATION
 L_INFO_DISBAND = "Disbanding group..."
 L_INFO_DUEL = "Declined duel request from "
+L_INFO_PET_DUEL = "Declined pet duel request from "
 L_INFO_ERRORS = "No error yet."
 L_INFO_INVITE = "Accepted invite from "
 L_INFO_SETTINGS_DBM = "Type /settings dbm, to apply the settings DBM."
@@ -137,7 +138,7 @@ L_MINIMAP_FARMMODE_OFF = "Farmmode disabled"
 -- MISC LOCALIZATION
 L_MISC_BUY_STACK = "Alt-Click to buy a stack"
 L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
-L_MISC_UI_OUTDATED = "Your version of |cff2eb6ffKkthnxUI|r is out of date. You can download the latest version from www.github.com/kkthnx|r"
+L_MISC_UI_OUTDATED = "Your version of |cff2eb6ffKkthnxUI|r is out of date. You can download the latest version from www.github.com/kkthnx"
 L_MISC_UNDRESS = "Undress"
 -- POPUP LOCALIZATION
 L_POPUP_ARMORY = "Armory"

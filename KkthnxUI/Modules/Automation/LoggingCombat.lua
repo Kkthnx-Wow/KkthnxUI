@@ -1,15 +1,16 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.Automation.LoggingCombat ~= true or K.Realm == "Blackrock [PvP only]" then return end
+if C.Automation.LoggingCombat ~= true then return end
 
+-- WOW API
 local IsInInstance = IsInInstance
 local CreateFrame = CreateFrame
 
--- Auto enables combat log text file in raid instances(EasyLogger by Sildor)
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:SetScript("OnEvent", function()
+-- AUTO ENABLES COMBAT LOG TEXT FILE IN RAID INSTANCES(EASYLOGGER BY SILDOR)
+local EasyLog = CreateFrame("Frame")
+EasyLog:RegisterEvent("PLAYER_ENTERING_WORLD")
+EasyLog:SetScript("OnEvent", function()
 	local _, instanceType = IsInInstance()
-	if instanceType and instanceType == "raid" then
+	if instanceType == "raid" and IsInRaid(LE_PARTY_CATEGORY_HOME) then
 		if not LoggingCombat() then
 			LoggingCombat(1)
 			K.Print("|cffffe02e"..COMBATLOGENABLED.."|r")

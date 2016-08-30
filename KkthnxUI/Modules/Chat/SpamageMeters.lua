@@ -1,41 +1,44 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
 if C.Chat.Enable ~= true or C.Chat.DamageMeterSpam ~= true then return end
 
+-- LUA API
 local ipairs = ipairs
 local match = string.match
 local time = time
 local format = string.format
 local tonumber = tonumber
+
+-- WOW API
 local strsplit = strsplit
 local UIParent = UIParent
 
--- Merge damage meter spam(SpamageMeters by Wrug and Cybey)
+-- MERGE DAMAGE METER SPAM(SPAMAGEMETERS BY WRUG AND CYBEY)
 local firstLines = {
-	"^Recount - (.*)$", 					-- Recount
-	"^Skada: (.*) for (.*):$",			-- Skada enUS
-	"^Skada: (.*) für (.*):$",			-- Skada deDE
-	"^Skada: (.*) pour (.*):$",			-- Skada frFR
-	"^Отчёт Skada: (.*), с (.*):$",	-- Skada ruRU
-	"^Skada: (.*) por (.*):$",			-- Skada esES/ptBR
-	"^Skada: (.*) per (.*):$",			-- Skada itIT
-	"^(.*) 의 Skada 보고 (.*):$",		-- Skada koKR
-	"^Skada报告(.*)的(.*):$",			-- Skada zhCN
-	"^Skada:(.*)來自(.*):$",				-- Skada zhTW
-	"^(.*) Done for (.*)$",				-- TinyDPS enUS
-	"^(.*) für (.*)$",						-- TinyDPS deDE
-	"데미지량 -(.*)$",						-- TinyDPS koKR
-	"힐량 -(.*)$",								-- TinyDPS koKR
-	"Урон:(.*)$",								-- TinyDPS ruRU
-	"Исцеление:(.*)$",					-- TinyDPS ruRU
-	"^# (.*) - (.*)$",						-- Numeration
-	"alDamageMeter : (.*)$",			-- alDamageMeter
-	"^Details! Report for (.*)$"			-- Details!
+	"^Recount - (.*)$", 									-- Recount
+	"^Skada: (.*) for (.*):$",								-- Skada enUS
+	"^Skada: (.*) für (.*):$",								-- Skada deDE
+	"^Skada: (.*) pour (.*):$",								-- Skada frFR
+	"^Отчёт Skada: (.*), с (.*):$",							-- Skada ruRU
+	"^Skada: (.*) por (.*):$",								-- Skada esES/ptBR
+	"^Skada: (.*) per (.*):$",								-- Skada itIT
+	"^(.*) 의 Skada 보고 (.*):$",							-- Skada koKR
+	"^Skada报告(.*)的(.*):$",								-- Skada zhCN
+	"^Skada:(.*)來自(.*):$",								-- Skada zhTW
+	"^(.*) Done for (.*)$",									-- TinyDPS enUS
+	"^(.*) für (.*)$",										-- TinyDPS deDE
+	"데미지량 -(.*)$",										-- TinyDPS koKR
+	"힐량 -(.*)$",											-- TinyDPS koKR
+	"Урон:(.*)$",											-- TinyDPS ruRU
+	"Исцеление:(.*)$",										-- TinyDPS ruRU
+	"^Numeration: (.*) - (.*)$",							-- Numeration
+	"alDamageMeter : (.*)$",								-- alDamageMeter
+	"^Details! Report for (.*)$"							-- Details!
 }
 
 local nextLines = {
-	"^(%d+)\. (.*)$",						-- Recount, Details! and Skada
-	"^(.*) (.*)$",								-- Additional Skada
-	"^[+-]%d+.%d",						-- Numeration deathlog details
+	"^(%d+)\. (.*)$",										-- Recount, Details! and Skada
+	"^(.*)   (.*)$",										-- Additional Skada
+	"^[+-]%d+.%d",											-- Numeration deathlog details
 	"^(%d+). (.*):(.*)(%d+)(.*)(%d+)%%(.*)%((%d+)%)$"		-- TinyDPS
 }
 
@@ -49,6 +52,8 @@ local events = {
 	"CHAT_MSG_PARTY_LEADER",
 	"CHAT_MSG_RAID",
 	"CHAT_MSG_RAID_LEADER",
+	"CHAT_MSG_INSTANCE_CHAT",
+	"CHAT_MSG_INSTANCE_CHAT_LEADER",
 	"CHAT_MSG_SAY",
 	"CHAT_MSG_WHISPER",
 	"CHAT_MSG_WHISPER_INFORM",

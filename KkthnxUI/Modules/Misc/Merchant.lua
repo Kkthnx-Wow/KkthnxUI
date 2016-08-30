@@ -1,12 +1,15 @@
-local K, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 
+-- LUA API
 local _G = _G
 local select = select
 local find = string.find
+
+-- WOW API
 local IsAltKeyDown = IsAltKeyDown
 local GetItemInfo = GetItemInfo
 
--- Alt+Click to buy a stack
+-- ALT+CLICK TO BUY A STACK
 hooksecurefunc("MerchantItemButton_OnModifiedClick", function(self, ...)
 	if IsAltKeyDown() then
 		local itemLink = GetMerchantItemLink(self:GetID())

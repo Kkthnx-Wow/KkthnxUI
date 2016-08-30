@@ -1,14 +1,18 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Automation.DeclineDuel ~= true then return end
 
+-- LUA API
 local format = string.format
+
+-- WOW API
 local CreateFrame = CreateFrame
 local SendChatMessage = SendChatMessage
 
--- Auto decline duel
+-- AUTO DECLINE DUEL
 local Disable = false
 local DeclineDuel = CreateFrame("Frame")
 DeclineDuel:RegisterEvent("DUEL_REQUESTED")
+DeclineDuel:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED")
 DeclineDuel:SetScript("OnEvent", function(self, event, name)
 	if Disable == true then return end
 	if event == "DUEL_REQUESTED" then
@@ -16,6 +20,11 @@ DeclineDuel:SetScript("OnEvent", function(self, event, name)
 		RaidNotice_AddMessage(RaidWarningFrame, L_INFO_DUEL.."|cffffe02e"..name..".", {r = 0.22, g = 0.62, b = 0.91}, 3)
 		K.Print(format("|cff2eb6ff"..L_INFO_DUEL.."|cffffe02e"..name.."."))
 		StaticPopup_Hide("DUEL_REQUESTED")
+	elseif event == "PET_BATTLE_PVP_DUEL_REQUESTED" then
+		C_PetBattles.CancelPVPDuel()
+		RaidNotice_AddMessage(RaidWarningFrame, L_INFO_PET_DUEL.."|cffffe02e"..name..".", {r = 0.22, g = 0.62, b = 0.91}, 3)
+		K.Print(format("|cffffff00"..L_INFO_PET_DUEL..name.."."))
+		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED")
 	end
 end)
 

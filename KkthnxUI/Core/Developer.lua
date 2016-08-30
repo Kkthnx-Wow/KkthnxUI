@@ -8,17 +8,17 @@ local GetMouseFocus = GetMouseFocus
 local FrameStackTooltip_Toggle = FrameStackTooltip_Toggle
 
 --[[
-	Command to grab frame information when mouseing over a frame
+	COMMAND TO GRAB FRAME INFORMATION WHEN MOUSEING OVER A FRAME
 
-	Frame Name
-	Width
-	Height
-	Strata
-	Level
-	X Offset
-	Y Offset
-	Point
-]]
+	FRAME NAME
+	WIDTH
+	HEIGHT
+	STRATA
+	LEVEL
+	X OFFSET
+	Y OFFSET
+	POINT
+--]]
 
 SLASH_FRAME1 = "/frame"
 SlashCmdList["FRAME"] = function(arg)
@@ -27,7 +27,7 @@ SlashCmdList["FRAME"] = function(arg)
 	else
 		arg = GetMouseFocus()
 	end
-	if arg ~= nil then FRAME = arg end --Set the global variable FRAME to = whatever we are mousing over to simplify messing with frames that have no name.
+	if arg ~= nil then FRAME = arg end -- SET THE GLOBAL VARIABLE FRAME TO = WHATEVER WE ARE MOUSING OVER TO SIMPLIFY MESSING WITH FRAMES THAT HAVE NO NAME.
 	if arg ~= nil and arg:GetName() ~= nil then
 		local point, relativeTo, relativePoint, xOfs, yOfs = arg:GetPoint()
 		ChatFrame1:AddMessage("|cffCC0000----------------------------")
@@ -82,6 +82,11 @@ SlashCmdList["FRAMELIST"] = function(msg)
 	end
 	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
+	if(CopyFrame:IsShown()) then
+		CopyFrame:Hide()
+	end
+
+	SlashCmdList.COPY_CHAT(ChatFrame1)
 	if(not isPreviouslyShown) then
 		FrameStackTooltip_Toggle()
 	end
@@ -98,21 +103,20 @@ local function TextureList(frame)
 	for i=1, frame:GetNumRegions() do
 		local region = select(i, frame:GetRegions())
 		if(region:GetObjectType() == "Texture") then
-			print(region:GetTexture(), region:GetName())
+			print(region:GetTexture(), region:GetName(), region:GetDrawLayer())
 		end
 	end
 end
-
 SLASH_TEXLIST1 = "/texlist"
 SlashCmdList["TEXLIST"] = TextureList
 
---	Frame Stack on Cyrillic
+-- FRAME STACK ON CYRILLIC
 SLASH_FSTACK1 = "/fs"
 SlashCmdList["FSTACK"] = function()
 	SlashCmdList.FRAMESTACK(0)
 end
 
--- Inform us of the patch info we play on.
+-- INFORM US OF THE PATCH INFO WE PLAY ON.
 SLASH_WOWVERSION1, SLASH_WOWVERSION2 = "/patch", "/version"
 SlashCmdList["WOWVERSION"] = function()
 	K.Print("Patch:", K.WoWPatch..", ".. "Build:", K.WoWBuild..", ".. "Released:", K.WoWPatchReleaseDate..", ".. "Interface:", K.TocVersion)
