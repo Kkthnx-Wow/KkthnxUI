@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.Experience.XP ~= true then return end
 
 local barHeight, barWidth = C.Experience.XPHeight, C.Experience.XPWidth
 local barTex, flatTex = C.Media.Texture
@@ -44,7 +45,7 @@ xpBar:SetWidth(barWidth)
 xpBar:SetHeight(GetWatchedFactionInfo() and (barHeight) or barHeight)
 xpBar:SetPoint("TOP", backdrop,"TOP", 0, 0)
 xpBar:SetStatusBarTexture(barTex)
-if C.Experience.ClassColorExp then xpBar:SetStatusBarColor(color.r, color.g, color.b) else xpBar:SetStatusBarColor(31/255, 41/255, 130/255) end
+if C.Experience.XPClassColor then xpBar:SetStatusBarColor(color.r, color.g, color.b) else xpBar:SetStatusBarColor(31/255, 41/255, 130/255) end
 
 local restedxpBar = CreateFrame("StatusBar", "Experience_restedxpBar", backdrop, "TextStatusBar")
 restedxpBar:SetHeight(GetWatchedFactionInfo() and (barHeight) or barHeight)

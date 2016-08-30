@@ -122,13 +122,13 @@ C["Error"] = {
 }
 -- EXPERIENCE / REPUTATION / ARTIFACT OPTIONS
 C["Experience"] = {
-	["XPEnable"] = true,
-	["ArtifactEnable"] = true,
+	["XP"] = true,
+	["Artifact"] = true,
 	["XPHeight"] = 8,
 	["XPWidth"] = 150,
 	["ArtifactHeight"] = 8,
 	["ArtifactWidth"] = 150,
-	["ClassColorExp"] = true,
+	["XPClassColor"] = true,
 }
 -- FILGER OPTIONS
 C["Filger"] = {

@@ -106,13 +106,14 @@ local function Local(o)
 	if o == "UIConfigBlizzardMoveAchievements" then o = L_GUI_BLIZZARD_ACHIEVEMENTS end
 	if o == "UIConfigBlizzardReputations" then o = L_GUI_BLIZZARD_REPUTATIONS end
 	-- ExpRep Settings
-	if o == "UIConfigExpRep" then o = L_GUI_EXPREP end
-	if o == "UIConfigExpRepExpEnable" then o = L_GUI_EXPREP_EXPENABLE end
-	if o == "UIConfigExpRepExpHeight" then o = L_GUI_EXPREP_EXPHEIGHT end
-	if o == "UIConfigExpRepExpWidth" then o = L_GUI_EXPREP_EXPWIDTH end
-	if o == "UIConfigExpRepRepEnable" then o = L_GUI_EXPREP_REPENABLE end
-	if o == "UIConfigExpRepRepHeight" then o = L_GUI_EXPREP_REPHEIGHT end
-	if o == "UIConfigExpRepRepWidth" then o = L_GUI_EXPREP_REPWIDTH end
+	if o == "UIConfigExperience" then o = L_GUI_EXPERIENCE end
+	if o == "UIConfigExperienceArtifact" then o = L_GUI_EXPERIENCE_ARTIFACT end
+	if o == "UIConfigExperienceArtifactHeight" then o = L_GUI_EXPERIENCE_ARTIFACTHEIGHT end
+	if o == "UIConfigExperienceArtifactWidth" then o = L_GUI_EXPERIENCE_ARTIFACTWIDTH end
+	if o == "UIConfigExperienceXP" then o = L_GUI_EXPERIENCE_XP end
+	if o == "UIConfigExperienceXPClassColor" then o = L_GUI_EXPERIENCE_XPCLASSCOLOR end
+	if o == "UIConfigExperienceXPHeight" then o = L_GUI_EXPERIENCE_XPHEIGHT end
+	if o == "UIConfigExperienceXPWidth" then o = L_GUI_EXPERIENCE_XPWIDTH end
 	-- Auras Settings
 	if o == "UIConfigAura" then o = L_GUI_AURA end
 	if o == "UIConfigAuraBuffSize" then o = L_GUI_AURA_PLAYER_BUFF_SIZE end

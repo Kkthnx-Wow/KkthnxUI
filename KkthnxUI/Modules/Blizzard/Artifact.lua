@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.Experience.Artifact ~= true then return end
 
 local ArtifactAnchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
 ArtifactAnchor:SetSize(C.Experience.ArtifactWidth, 18)
