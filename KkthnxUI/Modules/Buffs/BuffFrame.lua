@@ -208,8 +208,14 @@ end
 
 local function UpdateDebuffAnchors(buttonName, index)
 	_G[buttonName..index]:Show()
-	--local debuff = _G[buttonName..index]
+	local debuff = _G[buttonName..index]
 	StyleDeBuffs(buttonName, index)
+
+	if index == 1 then
+		debuff:SetPoint("TOPRIGHT", BuffsAnchor, 0, -126)
+	else
+		debuff:SetPoint("RIGHT", _G[buttonName..(index-1)], "LEFT", 0, 0)
+	end
 end
 
 hooksecurefunc("BuffFrame_UpdateAllBuffAnchors", UpdateBuffAnchors)
