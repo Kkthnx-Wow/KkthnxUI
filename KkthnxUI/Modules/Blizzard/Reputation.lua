@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.ExpRep.RepEnable ~= true then return end
 
 local Reputation = CreateFrame("Frame", nil, UIParent)
 local HideTooltip = GameTooltip_Hide
@@ -86,14 +87,6 @@ function Reputation:Enable()
 	for i = 1, self.NumBars do
 		if not self["RepBar"..i]:IsShown() then
 			self["RepBar"..i]:Show()
-		end
-	end
-end
-
-function Reputation:Disable()
-	for i = 1, self.NumBars do
-		if self["RepBar"..i]:IsShown() then
-			self["RepBar"..i]:Hide()
 		end
 	end
 end

@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.ExpRep.ExpEnable ~= true then return end
 
 local Experience = CreateFrame("Frame", nil, UIParent)
 local HideTooltip = GameTooltip_Hide
@@ -200,18 +201,6 @@ function Experience:Enable()
 
 		if not self["RestedBar"..i]:IsShown() then
 			self["RestedBar"..i]:Show()
-		end
-	end
-end
-
-function Experience:Disable()
-	for i = 1, self.NumBars do
-		if self["XPBar"..i]:IsShown() then
-			self["XPBar"..i]:Hide()
-		end
-
-		if self["RestedBar"..i]:IsShown() then
-			self["RestedBar"..i]:Hide()
 		end
 	end
 end

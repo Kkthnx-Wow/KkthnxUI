@@ -13,21 +13,15 @@ local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 
 -- STYLE PLAYER BUFFS(BY TUKZ)
-local mainhand, _, _, offhand = GetWeaponEnchantInfo()
-local rowbuffs
-if K.ScreenWidth <= 1440 then
-	rowbuffs = 12
-else
-	rowbuffs = 16
-end
+local rowbuffs = 16
 
 local GetFormattedTime = function(s)
 	if s >= 86400 then
-		return format("%dd", floor(s/86400 + 0.5))
+		return format("%dd", floor(s / 86400 + 0.5))
 	elseif s >= 3600 then
-		return format("%dh", floor(s/3600 + 0.5))
+		return format("%dh", floor(s / 3600 + 0.5))
 	elseif s >= 60 then
-		return format("%dm", floor(s/60 + 0.5))
+		return format("%dm", floor(s / 60 + 0.5))
 	end
 	return floor(s + 0.5)
 end
@@ -57,7 +51,9 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 	buff:SetSize(C.Aura.BuffSize, C.Aura.BuffSize)
 
 	icon:SetTexCoord(unpack(K.TexCoords))
-	icon:SetInside()
+	icon:SetPoint("TOPLEFT", buff, 4, -4)
+	icon:SetPoint("BOTTOMRIGHT", buff, -4, 4)
+	icon:SetDrawLayer("BORDER")
 
 	duration:ClearAllPoints()
 	duration:SetPoint("CENTER", 2, 1)
@@ -66,9 +62,16 @@ for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 
 	_G["TempEnchant2"]:ClearAllPoints()
 	_G["TempEnchant2"]:SetPoint("RIGHT", _G["TempEnchant1"], "LEFT", 0, 0)
+	
+	if icon then
+		icon:SetAlpha(1)
+		icon:SetTexture(icon)
+	else
+		icon:SetAlpha(0)
+	end
 end
 
-local function StyleBuffs(buttonName, index, debuff)
+local function StyleBuffs(buttonName, index)
 	local buff = _G[buttonName..index]
 	local icon = _G[buttonName..index.."Icon"]
 	local border = _G[buttonName..index.."Border"]
@@ -78,7 +81,6 @@ local function StyleBuffs(buttonName, index, debuff)
 	if border then border:Hide() end
 
 	if icon and not buff.isSkinned then
-		--buff:SetTemplate("Default")
 		buff:SetBackdrop(K.Border)
 		if C.Aura.ClassColorBorder == true then
 			buff:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
@@ -88,9 +90,10 @@ local function StyleBuffs(buttonName, index, debuff)
 
 		buff:SetSize(C.Aura.BuffSize, C.Aura.BuffSize)
 
-		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		icon:SetPoint("TOPLEFT", buff, 3, -3)
-		icon:SetPoint("BOTTOMRIGHT", buff, -3, 3)
+		icon:SetTexCoord(unpack(K.TexCoords))
+		icon:SetPoint("TOPLEFT", buff, 4, -4)
+		icon:SetPoint("BOTTOMRIGHT", buff, -4, 4)
+		icon:SetDrawLayer("BORDER")
 
 		duration:ClearAllPoints()
 		duration:SetPoint("CENTER", 2, 1)
@@ -101,7 +104,7 @@ local function StyleBuffs(buttonName, index, debuff)
 		count:SetPoint("BOTTOMRIGHT", 2, 0)
 		count:SetDrawLayer("ARTWORK")
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-
+		
 		if not buff.shadow then
 			buff:CreateBlizzShadow(2)
 		end

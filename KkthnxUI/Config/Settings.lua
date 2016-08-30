@@ -122,8 +122,10 @@ C["Error"] = {
 }
 -- EXPERIENCE REPUTATION OPTIONS
 C["ExpRep"] = {
+	["ExpEnable"] = true,
 	["ExpHeight"] = 8,
 	["ExpWidth"] = 150,
+	["RepEnable"] = true,
 	["RepHeight"] = 8,
 	["RepWidth"] = 150,
 }

@@ -107,8 +107,10 @@ local function Local(o)
 	if o == "UIConfigBlizzardReputations" then o = L_GUI_BLIZZARD_REPUTATIONS end
 	-- ExpRep Settings
 	if o == "UIConfigExpRep" then o = L_GUI_EXPREP end
+	if o == "UIConfigExpRepExpEnable" then o = L_GUI_EXPREP_EXPENABLE end
 	if o == "UIConfigExpRepExpHeight" then o = L_GUI_EXPREP_EXPHEIGHT end
 	if o == "UIConfigExpRepExpWidth" then o = L_GUI_EXPREP_EXPWIDTH end
+	if o == "UIConfigExpRepRepEnable" then o = L_GUI_EXPREP_REPENABLE end
 	if o == "UIConfigExpRepRepHeight" then o = L_GUI_EXPREP_REPHEIGHT end
 	if o == "UIConfigExpRepRepWidth" then o = L_GUI_EXPREP_REPWIDTH end
 	-- Auras Settings
