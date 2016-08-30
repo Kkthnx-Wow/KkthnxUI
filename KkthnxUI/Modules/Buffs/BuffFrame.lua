@@ -124,7 +124,7 @@ local function StyleDeBuffs(buttonName, index)
 	if icon and not buff.isSkinned then
 		buff:SetTemplate("Default")
 		buff:SetBackdropBorderColor(1 * 3/5, 0 * 3/5, 0 * 3/5)
-		buff:SetSize(C.Aura.BuffSize * 1.5, C.Aura.BuffSize * 1.5)
+		buff:SetSize(C.Aura.BuffSize * 1.1, C.Aura.BuffSize * 1.1)
 
 		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:SetPoint("TOPLEFT", buff, 4, -4)
@@ -134,13 +134,13 @@ local function StyleDeBuffs(buttonName, index)
 		duration:ClearAllPoints()
 		duration:SetPoint("CENTER", 2, 1)
 		duration:SetDrawLayer("ARTWORK")
-		duration:SetFont(C.Media.Font, C.Media.Font_Size * 2, C.Media.Font_Style)
+		duration:SetFont(C.Media.Font, C.Media.Font_Size * 1.1, C.Media.Font_Style)
 		duration:SetShadowOffset(0, -0)
 
 		count:ClearAllPoints()
 		count:SetPoint("BOTTOMRIGHT", 2, 0)
 		count:SetDrawLayer("ARTWORK")
-		count:SetFont(C.Media.Font, C.Media.Font_Size * 2, C.Media.Font_Style)
+		count:SetFont(C.Media.Font, C.Media.Font_Size * 1.1, C.Media.Font_Style)
 		count:SetShadowOffset(0, -0)
 
 		if not buff.shadow then
