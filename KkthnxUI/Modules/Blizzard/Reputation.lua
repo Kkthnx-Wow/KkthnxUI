@@ -10,8 +10,8 @@ Reputation.NumBars = 2
 
 local ReputationAnchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
 ReputationAnchor:SetSize(C.ExpRep.RepWidth, 18)
-ReputationAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -32)
-ReputationAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -32)
+ReputationAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -34)
+ReputationAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -34)
 
 function Reputation:SetTooltip()
 	if (not GetWatchedFactionInfo()) then
