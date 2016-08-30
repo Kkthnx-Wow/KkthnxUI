@@ -1,8 +1,13 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-local barHeight, barWidth = 8, 150
+local barHeight, barWidth = C.Experience.XPHeight, C.Experience.XPWidth
 local barTex, flatTex = C.Media.Texture
 local color = RAID_CLASS_COLORS[K.Class]
+
+local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
+ExperienceAnchor:SetSize(C.Experience.XPWidth, 18)
+ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -23)
+ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -23)
 
 local FactionInfo = {
 	[1] = {{170/255, 70/255, 70/255}, L_REPUTATION_HATED, "FFaa4646"},
@@ -23,8 +28,7 @@ end
 
 local backdrop = CreateFrame("Frame", "Experience_Backdrop", UIParent)
 backdrop:SetSize(barWidth, barHeight)
-backdrop:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -28)
-backdrop:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -28)
+backdrop:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
 backdrop:SetFrameStrata("LOW")
 backdrop:CreatePixelShadow()
 
@@ -40,8 +44,7 @@ xpBar:SetWidth(barWidth)
 xpBar:SetHeight(GetWatchedFactionInfo() and (barHeight) or barHeight)
 xpBar:SetPoint("TOP", backdrop,"TOP", 0, 0)
 xpBar:SetStatusBarTexture(barTex)
-xpBar:SetStatusBarColor(31/255, 41/255, 130/255)
---if C.Experience.ClassColor then xpBar:SetStatusBarColor(color.r, color.g, color.b) else xpBar:SetStatusBarColor(31/255, 41/255, 130/255) end
+if C.Experience.ClassColorExp then xpBar:SetStatusBarColor(color.r, color.g, color.b) else xpBar:SetStatusBarColor(31/255, 41/255, 130/255) end
 
 local restedxpBar = CreateFrame("StatusBar", "Experience_restedxpBar", backdrop, "TextStatusBar")
 restedxpBar:SetHeight(GetWatchedFactionInfo() and (barHeight) or barHeight)
@@ -50,17 +53,12 @@ restedxpBar:SetPoint("TOP", backdrop, "TOP", 0, 0)
 restedxpBar:SetStatusBarTexture(barTex)
 restedxpBar:Hide()
 
-local icon = xpBar:CreateTexture(nil, "OVERLAY")
-icon:SetSize(16, 16)
-icon:SetPoint("LEFT", xpBar, 3, 1)
-icon:SetTexture([=[Interface\CharacterFrame\UI-StateIcon]=])
-icon:SetTexCoord(0, .5, 0, .421875)
-
 local repBar = CreateFrame("StatusBar", "Experience_repBar", backdrop, "TextStatusBar")
 repBar:SetWidth(barWidth)
 repBar:SetHeight(IsMaxLevel() and barHeight - 0 or 0)
 repBar:SetPoint("BOTTOM", backdrop, "BOTTOM", 0, 0)
 repBar:SetStatusBarTexture(barTex)
+repBar:SetFrameLevel(xpBar:GetFrameLevel() + 1)
 
 local mouseFrame = CreateFrame("Frame", "Experience_mouseFrame", backdrop)
 mouseFrame:SetAllPoints(backdrop)
@@ -87,16 +85,14 @@ local function updateStatus()
 			restedxpBar:SetStatusBarColor(r, g, b, .40)
 			restedxpBar:SetMinMaxValues(min(0, XP), maxXP)
 			restedxpBar:SetValue(XP + restXP)
-			icon:Show()
 		else
 			restedxpBar:Hide()
-			icon:Hide()
 		end
 
 		if GetWatchedFactionInfo() then
 			xpBar:SetHeight(barHeight)
 			restedxpBar:SetHeight(barHeight)
-			repBar:SetHeight(2)
+			repBar:SetHeight(barHeight / 4)
 			repBar:Show()
 		else
 			xpBar:SetHeight(barHeight)

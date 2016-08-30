@@ -17,7 +17,7 @@ K.MoverFrames = {
 	ExtraButtonAnchor,
 	LootRollAnchor,
 	ExperienceAnchor,
-	ReputationAnchor,
+	ArtifactAnchor,
 	MinimapAnchor,
 	ObjectiveTrackerAnchor,
 	PVE_PVP_CC_Anchor,

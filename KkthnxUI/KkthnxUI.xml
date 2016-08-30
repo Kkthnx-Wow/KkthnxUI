@@ -98,6 +98,7 @@
 	<Script file="Modules\Blizzard\Achievements.lua"/>
 	<Script file="Modules\Blizzard\AltPowerBar.lua"/>
 	<Script file="Modules\Blizzard\Bags.lua"/>
+	<Script file="Modules\Blizzard\Artifact.lua"/>
 	<Script file="Modules\Blizzard\CaptureBar.lua"/>
 	<Script file="Modules\Blizzard\ClassColor.lua"/>
 	<Script file="Modules\Blizzard\DarkTextures.lua"/>

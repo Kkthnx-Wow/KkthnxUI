@@ -120,14 +120,15 @@ C["Error"] = {
 	["White"] = false,
 	["Combat"] = false,
 }
--- EXPERIENCE REPUTATION OPTIONS
-C["ExpRep"] = {
-	["ExpEnable"] = true,
-	["ExpHeight"] = 8,
-	["ExpWidth"] = 150,
-	["RepEnable"] = true,
-	["RepHeight"] = 8,
-	["RepWidth"] = 150,
+-- EXPERIENCE / REPUTATION / ARTIFACT OPTIONS
+C["Experience"] = {
+	["XPEnable"] = true,
+	["ArtifactEnable"] = true,
+	["XPHeight"] = 8,
+	["XPWidth"] = 150,
+	["ArtifactHeight"] = 8,
+	["ArtifactWidth"] = 150,
+	["ClassColorExp"] = true,
 }
 -- FILGER OPTIONS
 C["Filger"] = {
