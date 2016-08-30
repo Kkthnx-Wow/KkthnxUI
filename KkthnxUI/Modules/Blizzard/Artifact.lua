@@ -3,8 +3,8 @@ if C.Experience.Artifact ~= true then return end
 
 local ArtifactAnchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
 ArtifactAnchor:SetSize(C.Experience.ArtifactWidth, 18)
-ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -35)
-ArtifactAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -35)
+ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -33)
+ArtifactAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -33)
 
 local BarHeight, BarWidth = C.Experience.ArtifactHeight, C.Experience.ArtifactWidth
 local Texture = C.Media.Texture

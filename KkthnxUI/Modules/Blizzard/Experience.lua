@@ -7,8 +7,8 @@ local color = RAID_CLASS_COLORS[K.Class]
 
 local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 ExperienceAnchor:SetSize(C.Experience.XPWidth, 18)
-ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -23)
-ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -23)
+ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -22)
+ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -22)
 
 local FactionInfo = {
 	[1] = {{170/255, 70/255, 70/255}, L_REPUTATION_HATED, "FFaa4646"},

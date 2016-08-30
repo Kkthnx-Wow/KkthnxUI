@@ -2,11 +2,11 @@
 ## Title: |cff2eb6ffKkthnxUI Config|r
 ## Notes: |cff2eb6ffKkthnxUI|r Config GUI
 ## Author: Tohveli, Josh "Kkthnx" Russell
-## Version: 5.14
+## Version: 5.15
 ## SavedVariables: GUIConfigAll, GUIConfigSettings
 ## SavedVariablesPerCharacter: GUIConfig
 ## RequiredDeps: KkthnxUI
-## X-Curse-Packaged-Version: 5.14
+## X-Curse-Packaged-Version: 5.15
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Curse-Project-ID: kkthnxui
 ## X-WoWI-ID: 23677
