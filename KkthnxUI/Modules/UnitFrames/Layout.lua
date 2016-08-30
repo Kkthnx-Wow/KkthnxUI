@@ -24,7 +24,6 @@ local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 
-local PartyMembers = GetNumGroupMembers()
 local PetColor = {157/255, 197/255, 255/255}
 
 if C.Unitframe.Enable == true then
@@ -121,7 +120,7 @@ if C.Unitframe.Enable == true then
 
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			if (not InCombatLockdown()) and (PartyMembers > 0) then
+			if not InCombatLockdown() then
 				if C.Unitframe.Outline then
 					_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
 					_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
@@ -203,7 +202,7 @@ if C.Unitframe.Enable == true then
 
 		-- TWEAK PARTY FRAME
 		for i = 1, MAX_PARTY_MEMBERS do
-			if (not InCombatLockdown() and PartyMembers > 0) then
+			if not InCombatLockdown() then
 				_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
 			end
 		end
@@ -325,7 +324,7 @@ if C.Unitframe.PvPIcon == true then
 	TargetFrameTextureFramePVPIcon:Kill()
 	FocusFrameTextureFramePVPIcon:Kill()
 	for i = 1, MAX_PARTY_MEMBERS do
-		if (not InCombatLockdown() and PartyMembers > 0) then
+		if not InCombatLockdown() then
 			_G["PartyMemberFrame"..i.."PVPIcon"]:Kill()
 		end
 	end
