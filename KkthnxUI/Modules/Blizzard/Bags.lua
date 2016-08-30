@@ -429,7 +429,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		end)
 
 		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
-			self:GetParent():SetBackdropBorderColor(unpack(C.media.border_color))
+			self:GetParent():SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end)
 
 		ret.slot = slot
