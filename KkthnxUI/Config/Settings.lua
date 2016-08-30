@@ -128,7 +128,7 @@ C["Experience"] = {
 	["XPWidth"] = 150,
 	["ArtifactHeight"] = 8,
 	["ArtifactWidth"] = 150,
-	["XPClassColor"] = true,
+	["XPClassColor"] = false,
 }
 -- FILGER OPTIONS
 C["Filger"] = {
