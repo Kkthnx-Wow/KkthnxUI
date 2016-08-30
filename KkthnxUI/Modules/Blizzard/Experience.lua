@@ -147,11 +147,13 @@ end
 function Experience:Create()
 	for i = 1, self.NumBars do
 		local XPBar = CreateFrame("StatusBar", nil, UIParent)
+		local XPBarBG = CreateFrame("Frame", "StatusBarBG", XPBar)
 		local RestedBar = CreateFrame("StatusBar", nil, UIParent)
 
 		XPBar:SetStatusBarTexture(C.Media.Texture)
 		XPBar:EnableMouse()
 		XPBar:SetFrameStrata("BACKGROUND")
+		XPBar:CreatePixelShadow()
 		XPBar:SetFrameLevel(2)
 		XPBar:SetScript("OnEnter", Experience.SetTooltip)
 		XPBar:SetScript("OnLeave", HideTooltip)
@@ -162,9 +164,11 @@ function Experience:Create()
 		RestedBar:SetAllPoints(XPBar)
 		RestedBar:SetFrameLevel(XPBar:GetFrameLevel())
 
-		XPBar:SetBackdrop({bgFile = C.Media.Blank})
-		XPBar:SetBackdropColor(20/255, 20/255, 20/255, 0.8)
-		XPBar:CreatePixelShadow()
+		XPBarBG:SetFrameLevel(XPBar:GetFrameLevel() - 1)
+		XPBarBG:SetPoint("TOPLEFT", -1, 1)
+		XPBarBG:SetPoint("BOTTOMRIGHT", 1, -1)
+		XPBarBG:SetBackdrop(K.BorderBackdrop)
+		XPBarBG:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 		XPBar:SetSize(C.ExpRep.ExpWidth, C.ExpRep.ExpHeight)
 		XPBar:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)

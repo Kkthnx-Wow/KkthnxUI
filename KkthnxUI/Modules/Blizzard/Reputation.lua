@@ -52,17 +52,21 @@ end
 function Reputation:Create()
 	for i = 1, self.NumBars do
 		local RepBar = CreateFrame("StatusBar", nil, UIParent)
+		local RepBarBG = CreateFrame("Frame", "StatusBarBG", RepBar)
 
 		RepBar:SetStatusBarTexture(C.Media.Texture)
 		RepBar:EnableMouse()
 		RepBar:SetFrameStrata("BACKGROUND")
+		RepBar:CreatePixelShadow()
 		RepBar:SetFrameLevel(3)
 		RepBar:SetScript("OnEnter", Reputation.SetTooltip)
 		RepBar:SetScript("OnLeave", HideTooltip)
 
-		RepBar:SetBackdrop({bgFile = C.Media.Blank})
-		RepBar:SetBackdropColor(20/255, 20/255, 20/255, 0.8)
-		RepBar:CreatePixelShadow()
+		RepBarBG:SetFrameLevel(RepBar:GetFrameLevel() - 1)
+		RepBarBG:SetPoint("TOPLEFT", -1, 1)
+		RepBarBG:SetPoint("BOTTOMRIGHT", 1, -1)
+		RepBarBG:SetBackdrop(K.BorderBackdrop)
+		RepBarBG:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 		RepBar:SetSize(C.ExpRep.RepWidth, C.ExpRep.RepHeight)
 		RepBar:SetPoint("CENTER", ReputationAnchor, "CENTER", 0, 0)
