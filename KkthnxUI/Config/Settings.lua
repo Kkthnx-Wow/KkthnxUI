@@ -86,10 +86,10 @@ C["Blizzard"] = {
 }
 -- BUFFS & DEBUFFS OPTIONS
 C["Aura"] = {
-	["Enable"] = true,
 	["BuffSize"] = 36,
 	["CastBy"] = false,
 	["ClassColorBorder"] = false,
+	["Enable"] = true,
 	["Timer"] = true,
 }
 -- CHAT OPTIONS

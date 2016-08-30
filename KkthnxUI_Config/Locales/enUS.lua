@@ -68,10 +68,11 @@ L_GUI_EXPREP_REPHEIGHT = "Set the height of the Reputation bar"
 L_GUI_EXPREP_REPWIDTH = "Set the width of the Reputation bar"
 -- Buffs & Debuffs Localization
 L_GUI_AURA = "Buffs & Debuffs"
-L_GUI_AURA_ENABLE = "Enable Player Buffs/Debuffs"
-L_GUI_AURA_PLAYER_BUFF_SIZE = "Player buffs size"
 L_GUI_AURA_CAST_BY = "Show who cast a buff/debuff in its tooltip"
 L_GUI_AURA_CLASSCOLOR_BORDER = "Enable classcolor border for player buffs"
+L_GUI_AURA_ENABLE = "Enable Player Buffs/Debuffs"
+L_GUI_AURA_PLAYER_BUFF_SIZE = "Player buffs size"
+L_GUI_AURA_SHOW_TIMER = "Show timer on buff/debuffs"
 -- GUI Buttons Localization
 L_GUI_BUTTON_RESET = "Total Reset UI"
 -- Chat Localization

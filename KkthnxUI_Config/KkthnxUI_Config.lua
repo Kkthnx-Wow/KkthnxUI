@@ -115,10 +115,11 @@ local function Local(o)
 	if o == "UIConfigExpRepRepWidth" then o = L_GUI_EXPREP_REPWIDTH end
 	-- Auras Settings
 	if o == "UIConfigAura" then o = L_GUI_AURA end
+	if o == "UIConfigAuraBuffSize" then o = L_GUI_AURA_PLAYER_BUFF_SIZE end
 	if o == "UIConfigAuraCastBy" then o = L_GUI_AURA_CAST_BY end
 	if o == "UIConfigAuraClassColorBorder" then o = L_GUI_AURA_CLASSCOLOR_BORDER end
 	if o == "UIConfigAuraEnable" then o = L_GUI_AURA_ENABLE end
-	if o == "UIConfigAuraBuffSize" then o = L_GUI_AURA_PLAYER_BUFF_SIZE end
+	if o == "UIConfigAuraTimer" then o = L_GUI_AURA_SHOW_TIMER end
 	-- Chat Settings
 	if o == "UIConfigChat" then o = CHAT end
 	if o == "UIConfigChatCombatLog" then o = L_GUI_CHAT_CL_TAB end
