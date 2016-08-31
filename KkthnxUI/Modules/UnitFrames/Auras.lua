@@ -9,10 +9,10 @@ local GetName = GetName
 local UnitIsFriend = UnitIsFriend
 local hooksecurefunc = hooksecurefunc
 
-TargetFrame.maxBuffs = 16
-TargetFrame.maxDebuffs = 16
-MAX_TARGET_BUFFS = 16
-MAX_TARGET_DEBUFFS = 16
+--TargetFrame.maxBuffs = 16
+--TargetFrame.maxDebuffs = 16
+--MAX_TARGET_BUFFS = 16
+--MAX_TARGET_DEBUFFS = 16
 
 -- AURAS
 local function TargetAuraColour(self)

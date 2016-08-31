@@ -244,7 +244,7 @@ function Plates:SetupPlate(options)
 	CastBar.IconBackdrop:CreatePixelShadow()
 	CastBar.IconBackdrop:SetFrameLevel(CastBar:GetFrameLevel() - 1 or 0)
 
-	CastBar.Icon:SetParent(KkthnxUIUIHider)
+	CastBar.Icon:SetParent(UIFrameHider)
 
 	CastBar.IconTexture = CastBar:CreateTexture(nil, "OVERLAY")
 	CastBar.IconTexture:SetTexCoord(.08, .92, .08, .92)

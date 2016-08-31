@@ -13,7 +13,12 @@ local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 
 -- STYLE PLAYER BUFFS(BY TUKZ)
-local rowbuffs = 16
+local rowbuffs
+if K.ScreenWidth <= 1440 then
+	rowbuffs = 12
+else
+	rowbuffs = 16
+end
 
 local GetFormattedTime = function(s)
 	if s >= 86400 then

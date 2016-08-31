@@ -18,6 +18,9 @@ local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
 local Short = K.ShortValue
 local Texture = C.Media.Texture
 local Tooltip = CreateFrame("Frame")
+local ILevel, TalentSpec, LastUpdate = 0, "", 30
+local InspectDelay = 0.2
+local InspectFreq = 2
 
 Tooltip.ItemRefTooltip = ItemRefTooltip
 
@@ -162,6 +165,39 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
+		if (C.Tooltip.Talents and IsAltKeyDown()) then
+			local Talent = C.Tooltip.Talents
+
+			ILevel = "..."
+			TalentSpec = "..."
+
+			if (Unit ~= "player") then
+				Talent.CurrentGUID = UnitGUID(Unit)
+				Talent.CurrentUnit = Unit
+
+				for i, _ in pairs(Talent.Cache) do
+					local Cache = Talent.Cache[i]
+
+					if Cache.GUID == Talent.CurrentGUID then
+						ILevel = Cache.ItemLevel or "..."
+						TalentSpec = Cache.TalentSpec or "..."
+						LastUpdate = Cache.LastUpdate and abs(Cache.LastUpdate - floor(GetTime())) or 30
+					end
+				end
+
+				if (Unit and (CanInspect(Unit))) and (not (InspectFrame and InspectFrame:IsShown())) then
+					local LastInspectTime = GetTime() - Talent.LastInspectRequest
+
+					Talent.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
+
+					Talent:Show()
+				end
+			else
+				ILevel = Talent:GetItemLevel("player") or UNKNOWN
+				TalentSpec = Talent:GetTalentSpec() or NONE
+			end
+		end
+
 		if (UnitIsAFK(Unit)) then
 			self:AppendText((" %s"):format(CHAT_FLAG_AFK))
 		elseif UnitIsDND(Unit) then
@@ -205,6 +241,12 @@ function Tooltip:OnTooltipSetUnit()
 
 	if (C.Tooltip.HealthValue and Health and MaxHealth) then
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
+	end
+	
+	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
+		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
 	end
 
 	self.fadeOut = nil

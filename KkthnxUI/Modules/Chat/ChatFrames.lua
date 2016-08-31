@@ -46,7 +46,7 @@ local function AddMessage(frame, str, ...)
 		str = str:gsub("<"..DND..">", "[|cffE7E716"..L_CHAT_DND.."|r] ")
 		str = str:gsub("%[BN_CONVERSATION:", "%[1".."")
 		str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
-		
+
 		return origs[frame](frame, str, ...)
 	end
 end
