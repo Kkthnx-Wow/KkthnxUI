@@ -17,7 +17,7 @@ OHSkin:SetScript("OnEvent", function(self, event, addon)
 	OrderHallCommandBar.ClassIcon:SetSize(46, 20)
 	OrderHallCommandBar.CurrencyIcon:SetAtlas("legionmission-icon-currency", false)
 	OrderHallCommandBar.AreaName:ClearAllPoints()
-	OrderHallCommandBar.AreaName:SetPoint("RIGHT", OrderHallCommandBar, "RIGHT", -10, 0)
+	OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 10, 0)
 	OrderHallCommandBar.WorldMapButton:Hide() -- Why blizzard? So pointless..
 
 	self:UnregisterEvent("ADDON_LOADED")

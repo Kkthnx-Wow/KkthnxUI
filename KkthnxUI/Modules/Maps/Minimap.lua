@@ -117,7 +117,6 @@ end
 
 -- TICKET ICON
 HelpOpenTicketButton:SetParent(Minimap)
---HelpOpenTicketButton:CreateBackdrop()
 HelpOpenTicketButton:SetFrameLevel(4)
 HelpOpenTicketButton:ClearAllPoints()
 HelpOpenTicketButton:SetPoint("TOP", Minimap, "TOP", 0, -2)
@@ -196,11 +195,3 @@ Minimap:SetMaskTexture(C.Media.Blank)
 Minimap:SetArchBlobRingAlpha(0)
 Minimap:SetQuestBlobRingAlpha(0)
 MinimapBorder:Hide()
-
-function Minimap:OnMouseClick(button)
-	if (button == "RightButton") or (button == "MiddleButton") then
-		DropDown.Open(MicroMenu.Buttons, MicroMenu, "cursor", K.Scale(-160), 0, "MENU", 2)
-	else
-		Minimap_OnClick(self)
-	end
-end
