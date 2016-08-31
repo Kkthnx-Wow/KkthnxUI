@@ -64,41 +64,34 @@ MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 
 -- MAIL
 MiniMapMailFrame:ClearAllPoints()
-MiniMapMailFrame:SetPoint("TOPRIGHT", Minimap, 4, 8)
-MiniMapMailFrame:SetScale(1.2)
-MiniMapMailFrame:SetFrameLevel(Minimap:GetFrameLevel() + 1)
-MiniMapMailFrame:SetFrameStrata(Minimap:GetFrameStrata())
-MiniMapMailBorder:Hide()
-MailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
+MiniMapMailFrame:SetPoint("BOTTOMRIGHT", Minimap, 4, -4)
+MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
+MiniMapMailBorder:SetTexture("Interface\\Calendar\\EventNotificationGlow")
+MiniMapMailBorder:SetBlendMode("ADD")
+MiniMapMailBorder:ClearAllPoints()
+MiniMapMailBorder:SetPoint("CENTER", MiniMapMailFrame, 0, -1)
+MiniMapMailBorder:SetSize(27, 27)
+MiniMapMailBorder:SetAlpha(0.5)
 
 -- QUEUESTATUS ICON
 QueueStatusMinimapButton:SetParent(Minimap)
+QueueStatusMinimapButton:SetScale(1)
 QueueStatusMinimapButton:ClearAllPoints()
-QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", 0, 0)
-QueueStatusMinimapButtonBorder:Kill()
+QueueStatusMinimapButton:SetPoint("BOTTOMLEFT", Minimap, -4, -4)
+QueueStatusMinimapButtonBorder:Hide()
+QueueStatusMinimapButton:SetHighlightTexture (nil)
+QueueStatusMinimapButton:SetPushedTexture(nil)
 
+-- DUNGEON INFO
 MiniMapInstanceDifficulty:ClearAllPoints()
-MiniMapInstanceDifficulty:SetParent(Minimap)
-MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-
--- GUILD INSTANCE DIFFICULTY ICON
+MiniMapInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
+MiniMapInstanceDifficulty:SetScale(0.8)
 GuildInstanceDifficulty:ClearAllPoints()
-GuildInstanceDifficulty:SetParent(Minimap)
-GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-GuildInstanceDifficulty:SetScale(0.75)
-
--- CHALLENGE MODE ICON
-MiniMapChallengeMode:SetParent(Minimap)
+GuildInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
+GuildInstanceDifficulty:SetScale(0.7)
 MiniMapChallengeMode:ClearAllPoints()
-MiniMapChallengeMode:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -2)
-MiniMapChallengeMode:SetScale(0.75)
-
--- INVITES ICON
-GameTimeCalendarInvitesTexture:SetParent("Minimap")
-
--- DEFAULT LFG ICON
-LFG_EYE_TEXTURES.raid = LFG_EYE_TEXTURES.default
-LFG_EYE_TEXTURES.unknown = LFG_EYE_TEXTURES.default
+MiniMapChallengeMode:SetPoint("TOP", Minimap, "TOP", 0, -10)
+MiniMapChallengeMode:SetScale(0.6)
 
 -- FEEDBACK ICON
 if FeedbackUIButton then
@@ -119,7 +112,7 @@ end
 HelpOpenTicketButton:SetParent(Minimap)
 HelpOpenTicketButton:SetFrameLevel(4)
 HelpOpenTicketButton:ClearAllPoints()
-HelpOpenTicketButton:SetPoint("TOP", Minimap, "TOP", 0, -2)
+HelpOpenTicketButton:SetPoint("LEFT", StatFrame, "LEFT", 3, 0)
 HelpOpenTicketButton:SetHighlightTexture(nil)
 HelpOpenTicketButton:SetPushedTexture("Interface\\Icons\\inv_misc_note_03")
 HelpOpenTicketButton:SetNormalTexture("Interface\\Icons\\inv_misc_note_03")
@@ -127,57 +120,37 @@ HelpOpenTicketButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
 HelpOpenTicketButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
 HelpOpenTicketButton:SetSize(16, 16)
 
--- ENABLE MOUSE SCROLLING
-Minimap:EnableMouseWheel(true)
-Minimap:SetScript("OnMouseWheel", function(self, delta)
-	if (delta > 0) then
-		MinimapZoomIn:Click()
-	elseif (delta < 0) then
-		MinimapZoomOut:Click()
-	end
-end)
-
--- CLOCKFRAME
-if not IsAddOnLoaded("Blizzard_TimeManager") then
-	LoadAddOn("Blizzard_TimeManager")
-end
-local ClockFrame, ClockTime = TimeManagerClockButton:GetRegions()
-ClockFrame:Hide()
-ClockTime:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-ClockTime:SetTextColor(255/255, 255/255, 255/255)
-ClockTime:SetShadowOffset(0, 0)
+-- BLIZZARD_TIMEMANAGER
+LoadAddOn("Blizzard_TimeManager")
+TimeManagerClockButton:GetRegions():Hide()
 TimeManagerClockButton:ClearAllPoints()
-TimeManagerClockButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -6)
-TimeManagerClockButton:SetScript("OnShow", nil)
-TimeManagerClockButton:SetScript("OnClick", function(self, button)
-	if(button == "RightButton") then
-		if(self.alarmFiring) then
-			PlaySound("igMainMenuQuit")
-			TimeManager_TurnOffAlarm()
-		else
-			ToggleTimeManager()
-		end
-	else
-		ToggleCalendar()
-	end
-end)
+TimeManagerClockButton:SetPoint("BOTTOM", 0, -6)
+TimeManagerClockTicker:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+TimeManagerClockTicker:SetShadowOffset(0, -0)
 
-SlashCmdList["CALENDAR"] = function()
-	ToggleCalendar()
+-- GAMETIMEFRAME
+GameTimeFrame:SetParent(Minimap)
+--GameTimeFrame:SetScale(0.6)
+GameTimeFrame:ClearAllPoints()
+GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
+GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
+GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
+GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
+GameTimeFrame:SetPushedTexture(nil)
+GameTimeFrame:SetHighlightTexture (nil)
+local FontString = GameTimeFrame:GetFontString()
+FontString:ClearAllPoints()
+FontString:SetPoint("CENTER", 0, -5)
+FontString:SetFont(C.Media.Font, 20)
+FontString:SetTextColor(0.2, 0.2, 0.1, 0.9)
+
+-- ENABLE MOUSE SCROLLING
+Minimap:EnableMouseWheel()
+local function Zoom(self, direction)
+  if(direction > 0) then Minimap_ZoomIn()
+  else Minimap_ZoomOut() end
 end
-SLASH_CALENDAR1 = "/cl"
-SLASH_CALENDAR2 = "/calendar"
-
-local Calendar = CreateFrame("Frame", nil, Minimap)
-GameTimeFrame:HookScript("OnShow", Calendar.Show)
-GameTimeFrame:SetScript("OnEvent", function(self, event, addon)
-end)
-
-if CalendarGetNumPendingInvites() ~= 0 then
-	ClockTime:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
-else
-	ClockTime:SetTextColor(255/255, 255/255, 255/255)
-end
+Minimap:SetScript("OnMouseWheel", Zoom)
 
 -- FOR OTHERS MODS WITH A MINIMAP BUTTON, SET MINIMAP BUTTONS POSITION IN SQUARE MODE
 function GetMinimapShape() return "SQUARE" end
