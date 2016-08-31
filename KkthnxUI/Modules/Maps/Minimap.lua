@@ -26,7 +26,7 @@ local HiddenFrames = {
 	"MinimapNorthTag",
 	"MinimapZoneTextButton",
 	"MiniMapTracking",
-	"GameTimeFrame",
+	--"GameTimeFrame",
 	"MiniMapWorldMapButton",
 	"GarrisonLandingPageMinimapButton",
 	"VoiceChatTalkers",
@@ -130,7 +130,6 @@ TimeManagerClockTicker:SetShadowOffset(0, -0)
 
 -- GAMETIMEFRAME
 GameTimeFrame:SetParent(Minimap)
---GameTimeFrame:SetScale(0.6)
 GameTimeFrame:ClearAllPoints()
 GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
 GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
@@ -140,8 +139,8 @@ GameTimeFrame:SetPushedTexture(nil)
 GameTimeFrame:SetHighlightTexture (nil)
 local FontString = GameTimeFrame:GetFontString()
 FontString:ClearAllPoints()
-FontString:SetPoint("CENTER", 0, -5)
-FontString:SetFont(C.Media.Font, 20)
+FontString:SetPoint("CENTER", 0, -2)
+FontString:SetFont(C.Media.Font, 14)
 FontString:SetTextColor(0.2, 0.2, 0.1, 0.9)
 
 -- ENABLE MOUSE SCROLLING
