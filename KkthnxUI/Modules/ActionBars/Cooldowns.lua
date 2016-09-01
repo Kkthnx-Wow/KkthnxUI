@@ -1,27 +1,46 @@
 local K, C, L, _ = select(2, ...):unpack()
 if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or C.Cooldown.Enable ~= true then return end
 
--- COOLDOWN COUNT(TULLACC BY TULLER)
-
--- LUA API
-local _G = _G
-local format = string.format
 local floor = math.floor
 local min = math.min
-local find = string.find
-local pairs = pairs
-local getmetatable = getmetatable
+local tonumber = tonumber
 
--- WOW API
-local CreateFrame = CreateFrame
 local GetTime = GetTime
-local GetActionCooldown = GetActionCooldown
-local GetActionCharges = GetActionCharges
 
-local ICON_SIZE = 36
-local FONT_SIZE = C.Cooldown.FontSize
-local MIN_SCALE = 0.5
-local MIN_DURATION = 1.5
+OmniCC = true
+
+local IconSize = 36
+local Day, Hour, Minute = 86400, 3600, 60
+local Dayish, Hourish, Minuteish = 3600 * 23.5, 60 * 59.5, 59.5
+local HalfDayish, HalfHourish, HalfMinuteish = Day / 2 + 0.5, Hour / 2 + 0.5, Minute / 2 + 0.5
+
+Font = C.Media.Font
+FontSize = C.Cooldown.FontSize
+MinScale = 0.5
+MinDuration = 2.5
+
+local ExpiringDuration = C.Cooldown.Threshold
+local ExpiringFormat = K.RGBToHex(1, 0, 0) .. "%.1f|r"
+local SecondsFormat = K.RGBToHex(1, 1, 0) .. "%d|r"
+local MinutesFormat = K.RGBToHex(1, 1, 1) .. "%dm|r"
+local HoursFormat = K.RGBToHex(0.4, 1, 1) .. "%dh|r"
+local DaysFormat = K.RGBToHex(0.4, 0.4, 1) .. "%dh|r"
+
+local function getTimeText(s)
+	if s < Minuteish then
+		local Seconds = tonumber(K.Round(s))
+		if Seconds > ExpiringDuration then return SecondsFormat, Seconds, s - (Seconds - .51) else return ExpiringFormat, s, .051 end
+	elseif s < Hourish then
+		local Minutes = tonumber(K.Round(s/Minute))
+		return MinutesFormat, Minutes, Minutes > 1 and (s - (Minutes*Minute - HalfMinuteish)) or (s - Minuteish)
+	elseif s < Dayish then
+		local Hours = tonumber(K.Round(s/Hour))
+		return HoursFormat, Hours, Hours > 1 and (s - (Hours*Hour - HalfHourish)) or (s - Hourish)
+	else
+		local Days = tonumber(K.Round(s/Day))
+		return DaysFormat, Days,  Days > 1 and (s - (Days*Day - HalfDayish)) or (s - Dayish)
+	end
+end
 
 local function Timer_Stop(self)
 	self.enabled = nil
@@ -34,125 +53,101 @@ local function Timer_ForceUpdate(self)
 end
 
 local function Timer_OnSizeChanged(self, width, height)
-	local fontScale = floor(width +.5) / ICON_SIZE
-	local override = self:GetParent():GetParent().SizeOverride
-	if override then
-		fontScale = override / FONT_SIZE
-	end
+	local FontScale = K.Round(width) / IconSize
+	if FontScale == self.FontScale then return end
 
-	if fontScale == self.fontScale then
-		return
-	end
-
-	self.fontScale = fontScale
-	if fontScale < MIN_SCALE and not override then
+	self.FontScale = FontScale
+	if FontScale < MinScale then
 		self:Hide()
 	else
-		self.text:SetFont(C.Media.Font, fontScale * FONT_SIZE, C.Media.Font_Style)
-		if self.enabled then
-			Timer_ForceUpdate(self)
-		end
+		self.text:SetFont(Font, FontScale * FontSize, "OUTLINE")
+		self.text:SetShadowColor(0, 0, 0, .5)
+		self.text:SetShadowOffset(2, -2)
+		if self.enabled then Timer_ForceUpdate(self) end
 	end
 end
 
 local function Timer_OnUpdate(self, elapsed)
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
-		return
-	end
-
-	local remain = self.duration - (GetTime() - self.start)
-
-	if remain > 0.05 then
-		if (self.fontScale * self:GetEffectiveScale() / UIParent:GetScale()) < MIN_SCALE then
-			self.text:SetText("")
-			self.nextUpdate = 500
-		else
-			local timervalue, formatid
-			timervalue, formatid, self.nextUpdate = K.GetTimeInfo(remain, C.Cooldown.Threshold)
-			self.text:SetFormattedText(("%s%s|r"):format(K.TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
-		end
 	else
-		Timer_Stop(self)
+		local remain = self.duration - (GetTime() - self.start)
+		if tonumber(K.Round(remain)) > 0 then
+			if (self.FontScale * self:GetEffectiveScale() / UIParent:GetScale()) < MinScale then
+				self.text:SetText("")
+				self.nextUpdate  = 1
+			else
+				local formatStr, time, nextUpdate = getTimeText(remain)
+				self.text:SetFormattedText(formatStr, time)
+				self.nextUpdate = nextUpdate
+			end
+		else
+			Timer_Stop(self)
+		end
 	end
 end
 
 local function Timer_Create(self)
+	-- A FRAME TO WATCH FOR ONSIZECHANGED EVENTS
+	-- NEEDED SINCE ONSIZECHANGED HAS FUNNY TRIGGERING IF THE FRAME WITH THE HANDLER IS NOT SHOWN
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints(self)
 
-	local timer = CreateFrame("Frame", nil, scaler)
-	timer:Hide()
-	timer:SetAllPoints(scaler)
-	timer:SetScript("OnUpdate", Timer_OnUpdate)
+	local Timer = CreateFrame("Frame", nil, scaler); Timer:Hide()
+	Timer:SetAllPoints(scaler)
+	Timer:SetScript("OnUpdate", Timer_OnUpdate)
 
-	local text = timer:CreateFontString(nil, "OVERLAY")
-	text:SetPoint("CENTER", 1, 0)
-	text:SetJustifyH("CENTER")
-	timer.text = text
+	local Text = Timer:CreateFontString(nil, "OVERLAY")
+	Text:SetPoint("CENTER", 2, 0)
+	Text:SetJustifyH("CENTER")
+	Timer.text = Text
 
-	Timer_OnSizeChanged(timer, scaler:GetSize())
-	scaler:SetScript("OnSizeChanged", function(self, ...) Timer_OnSizeChanged(timer, ...) end)
+	Timer_OnSizeChanged(Timer, scaler:GetSize())
+	scaler:SetScript("OnSizeChanged", function(self, ...) Timer_OnSizeChanged(Timer, ...) end)
 
-	self.timer = timer
-	return timer
+	self.Timer = Timer
+	return Timer
 end
 
 local function Timer_Start(self, start, duration, charges, maxCharges)
-	local remainingCharges = charges or 0
+	if self.noOCC then return end
 
-	if self:GetName() and find(self:GetName(), "ChargeCooldown") then return end
-	if start > 0 and duration > MIN_DURATION and remainingCharges == 0 and (not self.noOCC) then
-		local timer = self.timer or Timer_Create(self)
-		timer.start = start
-		timer.duration = duration
-		timer.enabled = true
-		timer.nextUpdate = 0
-		if timer.fontScale >= MIN_SCALE then timer:Show() end
+	if start > 0 and duration > MinDuration then
+		local Timer = self.Timer or Timer_Create(self)
+		local Num = charges or 0
+		Timer.start = start
+		Timer.duration = duration
+		Timer.charges = Num
+		Timer.maxCharges = maxCharges
+		Timer.enabled = true
+		Timer.nextUpdate = 0
+		if Timer.FontScale >= MinScale and Timer.charges < 1 then Timer:Show() end
 	else
-		local timer = self.timer
-		if timer then
-			Timer_Stop(timer)
-		end
+		local Timer = self.Timer
+		if Timer then Timer_Stop(Timer) end
 	end
 end
-hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", Timer_Start)
 
-if not _G["ActionBarButtonEventsFrame"] then return end
+hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", Timer_Start)
 
 local active = {}
 local hooked = {}
 
-local function cooldown_OnShow(self)
-	active[self] = true
-end
+local function cooldown_OnShow(self) active[self] = true end
+local function cooldown_OnHide(self) active[self] = nil end
 
-local function cooldown_OnHide(self)
-	active[self] = nil
-end
-
-local function cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges)
-	local timer = self.timer
-	return not(timer and timer.start == start and timer.duration == duration and timer.charges == charges and timer.maxCharges == maxCharges)
-end
-
-local function cooldown_Update(self)
+K.UpdateActionButtonCooldown = function(self)
 	local button = self:GetParent()
-	local action = button.action
-	local start, duration, enable = GetActionCooldown(action)
-	local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action)
+	local start, duration, enable = GetActionCooldown(button.action)
+	local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(button.action)
 
-	if cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges) then
-		Timer_Start(self, start, duration, charges, maxCharges)
-	end
+	Timer_Start(self, start, duration, charges, maxCharges)
 end
 
 local EventWatcher = CreateFrame("Frame")
 EventWatcher:Hide()
 EventWatcher:SetScript("OnEvent", function(self, event)
-	for cooldown in pairs(active) do
-		cooldown_Update(cooldown)
-	end
+	for cooldown in pairs(active) do K.UpdateActionButtonCooldown(cooldown) end
 end)
 EventWatcher:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
 
@@ -166,9 +161,6 @@ local function actionButton_Register(frame)
 end
 
 if _G["ActionBarButtonEventsFrame"].frames then
-	for i, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do
-		actionButton_Register(frame)
-	end
+	for i, frame in pairs(_G["ActionBarButtonEventsFrame"].frames) do actionButton_Register(frame) end
 end
-
 hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", actionButton_Register)

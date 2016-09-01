@@ -190,62 +190,6 @@ K.ShortenString = function(string, numChars, dots)
 	end
 end
 
-K.RuneColor = {
-	[1] = {r = 0.7, g = 0.1, b = 0.1},
-	[2] = {r = 0.7, g = 0.1, b = 0.1},
-	[3] = {r = 0.4, g = 0.8, b = 0.2},
-	[4] = {r = 0.4, g = 0.8, b = 0.2},
-	[5] = {r = 0.0, g = 0.6, b = 0.8},
-	[6] = {r = 0.0, g = 0.6, b = 0.8},
-}
-
-K.ComboColor = {
-	[1] = {r = 1.0, g = 1.0, b = 1.0},
-	[2] = {r = 1.0, g = 1.0, b = 1.0},
-	[3] = {r = 1.0, g = 1.0, b = 1.0},
-	[4] = {r = 0.9, g = 0.7, b = 0.0},
-	[5] = {r = 1.0, g = 0.0, b = 0.0},
-}
-
-K.TimeColors = {
-	[0] = "|cffeeeeee",
-	[1] = "|cffeeeeee",
-	[2] = "|cffeeeeee",
-	[3] = "|cffeeeeee",
-	[4] = "|cfffe0000"
-}
-
-K.TimeFormats = {
-	[0] = {"%dd", "%dd"},
-	[1] = {"%dh", "%dh"},
-	[2] = {"%dm", "%dm"},
-	[3] = {"%ds", "%d"},
-	[4] = {"%.1fs", "%.1f"}
-}
-
-K.GetTimeInfo = function(s, threshhold)
-	local Day, Hour, Minute = 86400, 3600, 60
-	local Dayish, Hourish, Minuteish = 3600 * 23.5, 60 * 59.5, 59.5
-	local HalfDayish, HalfHourish, HalfMinuteish = Day / 2 + 0.5, Hour / 2 + 0.5, Minute / 2 + 0.5
-
-	if(s < Minute) then
-		if(s >= threshhold) then
-			return floor(s), 3, 0.51
-		else
-			return s, 4, 0.051
-		end
-	elseif(s < Hour) then
-		local Minutes = floor((s / Minute) + 0.5)
-		return ceil(s / Minute), 2, Minutes > 1 and (s - (Minutes * Minute - HalfMinuteish)) or (s - Minuteish)
-	elseif(s < Day) then
-		local Hours = floor((s / Hour) + 0.5)
-		return ceil(s / Hour), 1, Hours > 1 and (s - (Hours * Hour - HalfHourish)) or (s - Hourish)
-	else
-		local Days = floor((s / Day) + 0.5)
-		return ceil(s / Day), 0, Days > 1 and (s - (Days * Day - HalfDayish)) or (s - Dayish)
-	end
-end
-
 K.FormatMoney = function(value)
 	if value >= 1e4 then
 		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, strsub(value, -4) / 1e2, strsub(value, -2))
@@ -256,7 +200,7 @@ K.FormatMoney = function(value)
 	end
 end
 
--- Add time before calling a function
+-- ADD TIME BEFORE CALLING A FUNCTION
 local waitTable = {}
 local waitFrame
 K.Delay = function(delay, func, ...)

@@ -127,12 +127,6 @@ function Plates:SetName()
 	local Text = self:GetText()
 	local NewName = GetUnitName(self:GetParent().unit, C.Nameplate.Realm) or UNKNOWN
 
-	--[[ -- For the life of me I can not get C.Nameplate.AbbreviateLongNames and C.Nameplate.ShowRealmName to work together!
-	if (C.Nameplate.AbbreviateLongNames) then
-		NewName = (len(NewName) > 20) and gsub(NewName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or NewName
-	end
-	--]]
-
 	if Text then
 		local Unit = self:GetParent().unit
 		local Class = select(2, UnitClass(Unit))
@@ -251,7 +245,7 @@ function Plates:SetupPlate(options)
 	CastBar.IconTexture:SetParent(CastBar.IconBackdrop)
 	CastBar.IconTexture:SetAllPoints(CastBar.IconBackdrop)
 
-	CastBar.Text:SetFont(FontName, 9, "")
+	CastBar.Text:SetFont(FontName, FontSize* K.NoScaleMult, "")
 
 	CastBar.startCastColor.r, CastBar.startCastColor.g, CastBar.startCastColor.b = unpack(Plates.Options.CastBarColors.StartNormal)
 	CastBar.startChannelColor.r, CastBar.startChannelColor.g, CastBar.startChannelColor.b = unpack(Plates.Options.CastBarColors.StartChannel)
@@ -262,7 +256,7 @@ function Plates:SetupPlate(options)
 	CastBar:HookScript("OnShow", Plates.SetCastingIcon)
 
 	-- UNIT NAME
-	Name:SetFont(FontName, 9, "")
+	Name:SetFont(FontName, FontSize* K.NoScaleMult, "")
 	hooksecurefunc(Name, "Show", Plates.SetName)
 
 	-- WILL DO A BETTER VISUAL FOR THIS LATER
@@ -316,4 +310,6 @@ function Plates:Enable()
 	C_NamePlate.SetNamePlateOtherSize(C.Nameplate.Width, 45)
 end
 
-Plates:Enable()
+if (C.Nameplate.Enable) then
+	Plates:Enable()
+end
