@@ -13,26 +13,33 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
 
 		OrderHallCommandBar:HookScript("OnShow", function()
 			if not OrderHallCommandBar.styled then
-				OrderHallCommandBar:EnableMouse(false)
-				OrderHallCommandBar.Background:SetAtlas(nil)
+				OrderHallCommandBar:StripTextures()
+				OrderHallCommandBar:SetTemplate("Transparent")
+				OrderHallCommandBar:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 
 				OrderHallCommandBar:ClearAllPoints()
 				OrderHallCommandBar:SetPoint("TOP", UIParent, 0, 0)
 				OrderHallCommandBar:SetWidth(480)
+				OrderHallCommandBar:SetHeight(28)
 
+				OrderHallCommandBar.ClassIcon:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
 				OrderHallCommandBar.ClassIcon:SetSize(40, 20)
 				OrderHallCommandBar.ClassIcon:SetAlpha(1)
+				OrderHallCommandBar.ClassIcon:ClearAllPoints()
+				OrderHallCommandBar.ClassIcon:SetPoint("LEFT", OrderHallCommandBar, "LEFT", 2, 0)
 
 				OrderHallCommandBar.AreaName:ClearAllPoints()
-				OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.ClassIcon, "RIGHT", 5, 0)
+				OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.ClassIcon, "RIGHT", 5, 0.5)
 				OrderHallCommandBar.AreaName:SetFont(C.Media.Font, 12, "OUTLINE")
 				OrderHallCommandBar.AreaName:SetTextColor(1, 1, 1)
 				OrderHallCommandBar.AreaName:SetShadowOffset(0, 0)
 
+				OrderHallCommandBar.CurrencyIcon:SetAtlas("legionmission-icon-currency", false)
 				OrderHallCommandBar.CurrencyIcon:ClearAllPoints()
-				OrderHallCommandBar.CurrencyIcon:SetPoint("LEFT", OrderHallCommandBar.AreaName, "RIGHT", 5, 0)
+				OrderHallCommandBar.CurrencyIcon:SetPoint("LEFT", OrderHallCommandBar.AreaName, "RIGHT", 5, -0.5)
+				OrderHallCommandBar.CurrencyIcon:SetSize(26, 26)
 				OrderHallCommandBar.Currency:ClearAllPoints()
-				OrderHallCommandBar.Currency:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 5, 0)
+				OrderHallCommandBar.Currency:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 5, 0.5)
 				OrderHallCommandBar.Currency:SetFont(C.Media.Font, 12, "OUTLINE")
 				OrderHallCommandBar.Currency:SetTextColor(1, 1, 1)
 				OrderHallCommandBar.Currency:SetShadowOffset(0, 0)
@@ -49,7 +56,7 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
 				if child.Icon and child.Count and child.TroopPortraitCover then
 					child.TroopPortraitCover:Hide()
 
-					child.Icon:SetSize(40,20)
+					child.Icon:SetSize(40, 20)
 
 					child.Count:SetFont(C.Media.Font, 12, "OUTLINE")
 					child.Count:SetTextColor(1, 1, 1)
