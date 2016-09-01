@@ -141,15 +141,15 @@ local isCaster = {
 }
 
 local function CheckRole(self, event, unit)
-	local spec = GetSpecialization()
-	local role = spec and GetSpecializationRole(spec)
+	local Spec = GetSpecialization()
+	local Role = Spec and GetSpecializationRole(Spec)
 
-	if role == "TANK" then
+	if Role == "TANK" then
 		K.Role = "Tank"
-	elseif role == "HEALER" then
+	elseif Role == "HEALER" then
 		K.Role = "Healer"
-	elseif role == "DAMAGER" then
-		if isCaster[K.Class][spec] then
+	elseif Role == "DAMAGER" then
+		if isCaster[K.Class][Spec] then
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"
@@ -158,7 +158,11 @@ local function CheckRole(self, event, unit)
 end
 local RoleUpdater = CreateFrame("Frame")
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
+RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
+RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
+RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
+RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
 RoleUpdater:SetScript("OnEvent", CheckRole)
 
 K.ShortenString = function(string, numChars, dots)

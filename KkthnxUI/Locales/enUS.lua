@@ -149,6 +149,7 @@ L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff2eb6ffKkt
 L_POPUP_SETTINGS_ALL = "|cffff0000WARNING:|r This will apply all the supported addons settings and import them to go with |cff2eb6ffKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
 L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff2eb6ffDBM|r."
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
+L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND to restart your game. Do you want to proceed?"
 -- REPUTATION STANDING LOCALIZATION
 L_REPUTATION_EXALTED = "Exalted"
 L_REPUTATION_FRIENDLY = "Friendly"
