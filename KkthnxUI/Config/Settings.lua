@@ -111,7 +111,7 @@ C["Chat"] = {
 -- COOLDOWN OPTIONS
 C["Cooldown"] = {
 	["Enable"] = true,
-	["FontSize"] = 20,
+	["FontSize"] = 18,
 	["Threshold"] = 3,
 }
 -- ERROR OPTIONS
