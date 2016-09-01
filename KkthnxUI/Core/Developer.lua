@@ -82,7 +82,8 @@ SlashCmdList["FRAMELIST"] = function(msg)
 	end
 	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
-	if(CopyFrame:IsShown()) then
+
+	if CopyFrame then
 		CopyFrame:Hide()
 	end
 
