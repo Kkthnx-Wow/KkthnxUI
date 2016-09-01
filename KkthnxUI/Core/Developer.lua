@@ -36,21 +36,21 @@ SlashCmdList["FRAME"] = function(arg)
 			ChatFrame1:AddMessage("Parent: |cffFFD100"..arg:GetParent():GetName())
 		end
 
-		ChatFrame1:AddMessage("Width: |cffFFD100"..format("%.2f",arg:GetWidth()))
-		ChatFrame1:AddMessage("Height: |cffFFD100"..format("%.2f",arg:GetHeight()))
+		ChatFrame1:AddMessage("Width: |cffFFD100"..format("%.2f", arg:GetWidth()))
+		ChatFrame1:AddMessage("Height: |cffFFD100"..format("%.2f", arg:GetHeight()))
 		ChatFrame1:AddMessage("Strata: |cffFFD100"..arg:GetFrameStrata())
 		ChatFrame1:AddMessage("Level: |cffFFD100"..arg:GetFrameLevel())
 
 		if xOfs then
-			ChatFrame1:AddMessage("X: |cffFFD100"..format("%.2f",xOfs))
+			ChatFrame1:AddMessage("X: |cffFFD100"..format("%.2f", xOfs))
 		end
 		if yOfs then
-			ChatFrame1:AddMessage("Y: |cffFFD100"..format("%.2f",yOfs))
+			ChatFrame1:AddMessage("Y: |cffFFD100"..format("%.2f", yOfs))
 		end
 		if relativeTo and relativeTo:GetName() then
 			ChatFrame1:AddMessage("Point: |cffFFD100"..point.."|r anchored to "..relativeTo:GetName().."'s |cffFFD100"..relativePoint)
 		end
-		ChatFrame1:AddMessage("|cffCC0000----------------------------")
+		ChatFrame1:AddMessage("|cffCC0000----------------------------|r")
 	elseif arg == nil then
 		ChatFrame1:AddMessage("Invalid frame name")
 	else
