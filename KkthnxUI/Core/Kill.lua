@@ -15,6 +15,7 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		end
 	end
 
+	WorldMapFrameTutorialButton:Kill()
 	Advanced_UseUIScale:Kill()
 	Advanced_UIScaleSlider:Kill()
 	TutorialFrameAlertButton:Kill()

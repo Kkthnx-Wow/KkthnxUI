@@ -20,6 +20,7 @@ C["Position"] = {
 	["PetHorizontal"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167},
 	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 4},
 	["PulseCD"] = {"CENTER", "UIParent", "CENTER", 0, 0},
+	["WorldMap"] = {"CENTER", "UIParent", "CENTER", 0, 0},
 	["Quest"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -K.ScreenHeight / 5, -K.ScreenHeight / 4},
 	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
 	["StanceBar"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167},

@@ -145,6 +145,7 @@
 	<Script file="Modules\Maps\MiniMap.lua"/>
 	<Script file="Modules\Maps\MicroMenu.lua"/>
 	<Script file="Modules\Maps\Pinged.lua"/>
+	<Script file="Modules\Maps\WorldMap.lua"/>
 
 	<Script file="Modules\Quests\AutoCollapse.lua"/>
 	<Script file="Modules\Quests\QuestLog.lua"/>
