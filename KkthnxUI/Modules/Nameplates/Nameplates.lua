@@ -73,7 +73,7 @@ function Plates:RegisterOptions()
 		healthBarHeight = C.Nameplate.Height,
 		healthBarAlpha = 1,
 		castBarHeight = C.Nameplate.CastHeight,
-		castBarFontHeight = 9 * K.NoScaleMult,
+		castBarFontHeight = 12 * K.NoScaleMult,
 		useLargeNameFont = false,
 
 		castBarShieldWidth = 10,
@@ -87,7 +87,7 @@ function Plates:RegisterOptions()
 		healthBarHeight = C.Nameplate.Height,
 		healthBarAlpha = 1,
 		castBarHeight = C.Nameplate.CastHeight,
-		castBarFontHeight = 10 * K.NoScaleMult,
+		castBarFontHeight = 12 * K.NoScaleMult,
 		useLargeNameFont = false,
 
 		castBarShieldWidth = 10,

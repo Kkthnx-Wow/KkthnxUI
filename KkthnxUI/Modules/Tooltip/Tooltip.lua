@@ -359,7 +359,7 @@ function Tooltip:OnValueChanged()
 	end
 
 	if (Value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
-		self.Text:SetText(DEAD)
+		self.Text:SetText("|cffd94545"..DEAD.."|r")
 	else
 		self.Text:SetText(Short(Value) .. " / " .. Short(Max))
 	end
