@@ -1,6 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Misc.ItemLevel ~= true then return end
 
+-- ITEM LEVEL ON SLOT BUTTONS IN CHARACTER/INSPECTFRAME(BY TUKZ)
 local slots = {
 	"HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot",
 	"WristSlot", "MainHandSlot", "SecondaryHandSlot", "HandsSlot", "WaistSlot",
@@ -14,7 +15,7 @@ local upgrades = {
 	["466"] = 4, ["467"] = 8, ["469"] = 4, ["470"] = 8, ["471"] = 12, ["472"] = 16,
 	["477"] = 4, ["478"] = 8, ["480"] = 8, ["492"] = 4, ["493"] = 8, ["495"] = 4,
 	["496"] = 8, ["497"] = 12, ["498"] = 16, ["504"] = 12, ["505"] = 16, ["506"] = 20,
-	["507"] = 24, ["530"] = 5, ["531"] = 10
+	["507"] = 24, ["530"] = 5, ["531"] = 10, ["535"] = 15, ["536"] = 30, ["537"] = 45
 }
 
 local function BOALevel(level, id)
@@ -48,45 +49,6 @@ local timewarped = {
 	["692"] = 675, -- TIMEWARPED BADGE VENDORS
 	["656"] = 675, -- WARFORGED DUNGEON DROPS
 }
-
-local itemLevelCache = {}
-local itemLevelPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)")
-local tooltipLines = { -- THESE ARE THE LINES WE WISH TO SCAN
-	"KkthnxUI_ItemScanningTooltipTextLeft2",
-	"KkthnxUI_ItemScanningTooltipTextLeft3",
-	"KkthnxUI_ItemScanningTooltipTextLeft4",
-}
-local tooltip = CreateFrame("GameTooltip", "KkthnxUI_ItemScanningTooltip", UIParent, "GameTooltipTemplate")
-tooltip:SetOwner(UIParent, "ANCHOR_NONE")
-
--- SCAN TOOLTIP FOR ITEM LEVEL INFORMATION AND CACHE THE VALUE
-local function GetItemLevel(itemLink)
-	if not itemLink or not GetItemInfo(itemLink) then
-		return
-	end
-
-	if not itemLevelCache[itemLink] then
-		tooltip:ClearLines()
-		tooltip:SetHyperlink(itemLink)
-
-		local text, itemLevel
-		for index = 1, #tooltipLines do
-			text = _G[tooltipLines[index]]:GetText()
-
-			if text then
-				itemLevel = tonumber(string.match(text, itemLevelPattern))
-
-				if itemLevel then
-					itemLevelCache[itemLink] = itemLevel
-					return itemLevel
-				end
-			end
-		end
-		itemLevelCache[itemLink] = 0 --CACHE ITEMS THAT DON'T HAVE AN ITEM LEVEL SO WE DON'T LOOP OVER THEM AGAIN AND AGAIN
-	end
-
-	return itemLevelCache[itemLink]
-end
 
 local function CreateButtonsText(frame)
 	for _, slot in pairs(slots) do
@@ -136,8 +98,6 @@ local function UpdateButtonsText(frame)
 						if upgrades[uid] then
 							level = level + upgrades[uid]
 						end
-
-						level = GetItemLevel(itemLink)
 
 						text:SetText("|cFFFFFF00"..level)
 					end
