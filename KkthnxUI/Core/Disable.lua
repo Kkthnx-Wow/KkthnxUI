@@ -84,7 +84,7 @@ if (select(4, GetAddOnInfo("TidyPlates"))) or (select(4, GetAddOnInfo("Aloft")))
 	C.Nameplate.Enable = false
 end
 
-if (select(4, GetAddOnInfo("TipTac"))) or (select(4, GetAddOnInfo("FreebTip"))) or (select(4, GetAddOnInfo("bTooltip"))) or (select(4, GetAddOnInfo("PhoenixTooltip"))) or (select(4, GetAddOnInfo("Icetip"))) or (select(4, GetAddOnInfo("rTooltip"))) then
+if (select(4, GetAddOnInfo("TipTop"))) or (select(4, GetAddOnInfo("TipTac"))) or (select(4, GetAddOnInfo("FreebTip"))) or (select(4, GetAddOnInfo("bTooltip"))) or (select(4, GetAddOnInfo("PhoenixTooltip"))) or (select(4, GetAddOnInfo("Icetip"))) or (select(4, GetAddOnInfo("rTooltip"))) then
 	C.Tooltip.Enable = false
 end
 
