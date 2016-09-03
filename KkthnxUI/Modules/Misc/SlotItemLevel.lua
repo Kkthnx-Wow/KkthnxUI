@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 if C.Misc.ItemLevel ~= true then return end
 
 -- ITEM LEVEL ON SLOT BUTTONS IN CHARACTER/INSPECTFRAME(BY TUKZ)

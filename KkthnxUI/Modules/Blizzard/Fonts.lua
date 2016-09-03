@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 if C.General.ReplaceBlizzardFonts ~= true then return end
 
 local Fonts = CreateFrame("Frame", nil, UIParent)
@@ -34,7 +34,7 @@ function Fonts:ChangeWoWFonts()
 	DAMAGE_TEXT_FONT = COMBAT
 	STANDARD_TEXT_FONT = NORMAL
 
-	-- Base fonts
+	-- BASE FONTS
 	SetFont(CombatTextFont, COMBAT, 200, "OUTLINE") -- NUMBER HERE JUST INCREASE THE FONT QUALITY.
 	SetFont(FriendsFont_Large, NORMAL, 14)
 	SetFont(FriendsFont_Normal, NORMAL, 12)
