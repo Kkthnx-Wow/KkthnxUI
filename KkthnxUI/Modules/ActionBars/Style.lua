@@ -41,9 +41,10 @@ local function StyleNormalButton(self)
 	if btname then
 		if C.ActionBar.Macro == true then
 			btname:ClearAllPoints()
-			btname:SetPoint("BOTTOM", 0, 0)
-			btname:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			btname:SetWidth(C.ActionBar.ButtonSize - 1)
+			btname:SetPoint("BOTTOM", 0, 2)
+			btname:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
+			btname:SetWidth(C.ActionBar.ButtonSize)
+			btname:SetVertexColor(1, 0.82, 0, 1)
 		else
 			btname:Kill()
 		end
