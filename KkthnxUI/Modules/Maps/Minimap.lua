@@ -162,8 +162,8 @@ function GetMinimapShape() return "SQUARE" end
 MinimapBackdrop:SetBackdrop(K.Backdrop)
 MinimapBackdrop:SetBackdropColor(0.05, 0.05, 0.05, 0.0)
 MinimapBackdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-if C.Blizzard.DarkTextures == true then
-	MinimapBackdrop:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+if C.Blizzard.ColorTextures == true then
+	MinimapBackdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 MinimapBackdrop:SetOutside(Minimap, 4, 4)
 

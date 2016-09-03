@@ -100,8 +100,8 @@ local function Local(o)
 	if o == "UIConfigBlizzard" then o = L_GUI_BLIZZARD end
 	if o == "UIConfigBlizzardCapturebar" then o = L_GUI_BLIZZARD_CAPTUREBAR end
 	if o == "UIConfigBlizzardClassColor" then o = L_GUI_BLIZZARD_CLASS_COLOR end
-	if o == "UIConfigBlizzardDarkTextures" then o = L_GUI_BLIZZARD_DARK_TEXTURES end
-	if o == "UIConfigBlizzardDarkTexturesColor" then o = L_GUI_BLIZZARD_DARK_TEXTURES_COLOR end
+	if o == "UIConfigBlizzardColorTextures" then o = L_GUI_BLIZZARD_COLOR_TEXTURES end
+	if o == "UIConfigBlizzardTexturesColor" then o = L_GUI_BLIZZARD_TEXTURES_COLOR end
 	if o == "UIConfigBlizzardDurability" then o = L_GUI_BLIZZARD_DURABILITY end
 	if o == "UIConfigBlizzardMoveAchievements" then o = L_GUI_BLIZZARD_ACHIEVEMENTS end
 	if o == "UIConfigBlizzardReputations" then o = L_GUI_BLIZZARD_REPUTATIONS end
@@ -128,12 +128,12 @@ local function Local(o)
 	if o == "UIConfigChatEnable" then o = L_GUI_CHAT_ENABLE end
 	if o == "UIConfigChatFilter" then o = L_GUI_CHAT_SPAM end
 	if o == "UIConfigChatHeight" then o = L_GUI_CHAT_HEIGHT end
-	if o == "UIConfigChatFadeTime" then o = L_GUI_CHAT_FADE_TIME end
 	if o == "UIConfigChatOutline" then o = L_GUI_CHAT_OUTLINE end
 	if o == "UIConfigChatSpam" then o = L_GUI_CHAT_GOLD end
 	if o == "UIConfigChatSticky" then o = L_GUI_CHAT_STICKY end
 	if o == "UIConfigChatTabsMouseover" then o = L_GUI_CHAT_TABS_MOUSEOVER end
 	if o == "UIConfigChatTabsOutline" then o = L_GUI_CHAT_TABS_OUTLINE end
+	if o == "UIConfigChatTimeColor" then o = L_GUI_CHAT_TIMESTAMP end
 	if o == "UIConfigChatWhispSound" then o = L_GUI_CHAT_WHISP end
 	if o == "UIConfigChatWidth" then o = L_GUI_CHAT_WIDTH end
 	-- Cooldown Settings

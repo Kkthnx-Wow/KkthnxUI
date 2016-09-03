@@ -168,8 +168,8 @@ local function SetTemplate(f, t)
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
 	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
 
-	if C.Blizzard.DarkTextures == true then
-		f:SetBackdropBorderColor(unpack(C.Blizzard.DarkTexturesColor))
+	if C.Blizzard.ColorTextures == true then
+		f:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
 end
 

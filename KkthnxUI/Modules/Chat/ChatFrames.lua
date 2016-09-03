@@ -62,12 +62,11 @@ local function SetChatStyle(frame)
 	local tab = _G[framename.."Tab"]
 	local editbox = _G[framename.."EditBox"]
 
-	frame:SetFrameLevel(4)
+	frame:SetFrameLevel(5)
 
 	frame:SetClampRectInsets(0, 0, 0, 0)
 	frame:SetClampedToScreen(false)
-	frame:SetTimeVisible(C.Chat.FadeTime)
-	frame:SetFading(true)
+	frame:SetFading(false)
 
 	-- MOVE THE CHAT EDIT BOX
 	editbox:ClearAllPoints()
@@ -187,10 +186,8 @@ local function SetChatStyle(frame)
 		end)
 	end
 
-	if frame ~= _G["ChatFrame2"] then
-		origs[frame] = frame.AddMessage
-		frame.AddMessage = AddMessage
-	else
+	-- Rename combat log tab
+	if frame == _G["ChatFrame2"] then
 		CombatLogQuickButtonFrame_Custom:StripTextures()
 		CombatLogQuickButtonFrame_Custom:CreateBackdrop()
 		CombatLogQuickButtonFrame_Custom.backdrop:SetPoint("TOPLEFT", -2, -2)
@@ -202,6 +199,19 @@ local function SetChatStyle(frame)
 		CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("BOTTOMRIGHT", CombatLogQuickButtonFrame_Custom.backdrop, -4, 4)
 		CombatLogQuickButtonFrame_CustomProgressBar:SetStatusBarTexture(C.Media.Texture)
 		CombatLogQuickButtonFrameButton1:SetPoint("BOTTOM", 0, 0)
+	end
+
+	if frame ~= _G["ChatFrame2"] then
+		origs[frame] = frame.AddMessage
+		frame.AddMessage = AddMessage
+
+		-- Custom timestamps color
+		_G.TIMESTAMP_FORMAT_HHMM = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M]|r "
+		_G.TIMESTAMP_FORMAT_HHMMSS = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M:%S]|r "
+		_G.TIMESTAMP_FORMAT_HHMMSS_24HR = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%H:%M:%S]|r "
+		_G.TIMESTAMP_FORMAT_HHMMSS_AMPM = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M:%S %p]|r "
+		_G.TIMESTAMP_FORMAT_HHMM_24HR = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%H:%M]|r "
+		_G.TIMESTAMP_FORMAT_HHMM_AMPM = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M %p]|r "
 	end
 
 	frame.skinned = true
@@ -221,18 +231,11 @@ local function SetupChat(self)
 	else
 		var = 0
 	end
-	ChatTypeInfo.SAY.sticky = var
-	ChatTypeInfo.PARTY.sticky = var
-	ChatTypeInfo.PARTY_LEADER.sticky = var
-	ChatTypeInfo.GUILD.sticky = var
-	ChatTypeInfo.OFFICER.sticky = var
-	ChatTypeInfo.RAID.sticky = var
-	ChatTypeInfo.RAID_WARNING.sticky = var
-	ChatTypeInfo.INSTANCE_CHAT.sticky = var
-	ChatTypeInfo.INSTANCE_CHAT_LEADER.sticky = var
-	ChatTypeInfo.WHISPER.sticky = var
-	ChatTypeInfo.BN_WHISPER.sticky = var
-	ChatTypeInfo.CHANNEL.sticky = var
+	ChatTypeInfo.WHISPER.sticky = 1
+	ChatTypeInfo.BN_WHISPER.sticky = 1
+	ChatTypeInfo.OFFICER.sticky = 1
+	ChatTypeInfo.RAID_WARNING.sticky = 1
+	ChatTypeInfo.CHANNEL.sticky = 1
 end
 
 local function SetupChatPosAndFont(self)
@@ -259,11 +262,12 @@ local function SetupChatPosAndFont(self)
 		end
 
 		-- FORCE CHAT POSITION
-		if i == 1 then
-			chat:ClearAllPoints()
-			chat:SetSize(C.Chat.Width, C.Chat.Height)
-			chat:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+		if i == 1 then -- WE SHOULD ALLOW THE PLAYER TO POSITION THE CHAT AS THEY LIKE.
+			--chat:ClearAllPoints()
+			--chat:SetSize(C.Chat.Width, C.Chat.Height)
+			--chat:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 			FCF_SavePositionAndDimensions(chat)
+			DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 		elseif i == 2 then
 			if C.Chat.CombatLog ~= true then
 				FCF_DockFrame(chat)
@@ -279,6 +283,8 @@ local function SetupChatPosAndFont(self)
 	BNToastFrame:HookScript("OnShow", function(self)
 		self:ClearAllPoints()
 		self:SetPoint(unpack(C.Position.BnetPopup))
+		self:SetFrameStrata("Medium")
+		self:SetFrameLevel(20)
 	end)
 end
 
