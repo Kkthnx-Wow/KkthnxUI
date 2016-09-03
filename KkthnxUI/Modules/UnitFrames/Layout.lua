@@ -72,7 +72,9 @@ end)
 
 function Unitframes:PlaceFrames()
 	-- HIDE PET NAME
-	PetName:Hide()
+	PetName:Kill()
+	PetFrameHealthBarText:Kill()
+	PetFrameManaBarText:Kill()
 
 	-- UNIT NAME
 	for _, FrameNames in pairs({
@@ -107,8 +109,6 @@ function Unitframes:PlaceFrames()
 		TargetFrameTextureFrameManaBarText,
 		FocusFrameTextureFrameHealthBarText,
 		FocusFrameTextureFrameManaBarText,
-		PetFrameHealthBarText,
-		PetFrameManaBarText,
 	}) do
 		if C.Unitframe.Outline then
 			FrameBarText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
@@ -118,7 +118,6 @@ function Unitframes:PlaceFrames()
 			FrameBarText:SetShadowOffset(K.Mult, -K.Mult)
 		end
 	end
-
 
 	for i = 1, MAX_PARTY_MEMBERS do
 		if not InCombatLockdown() then

@@ -26,25 +26,6 @@ function CastBars:PlaceBars()
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
-	-- STYLE CASTINGBARFRAME
-	CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
-	CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
-
-	CastingBarFrame.Text:ClearAllPoints()
-	CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
-	CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
-	CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
-	CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
-	CastingBarFrame.Border:SetPoint("TOP", 0, 26)
-	CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
-	CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
-
-	-- CASTINGBARFRAME ICON
-	CastingBarFrame.Icon:Show()
-	CastingBarFrame.Icon:ClearAllPoints()
-	CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
-	CastingBarFrame.Icon:SetSize(20, 20)
-
 	-- TARGET CASTBAR
 	hooksecurefunc(TargetFrameSpellBar, "Show", function()
 		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
@@ -64,6 +45,25 @@ function CastBars:HandleEvents(event, ...)
 	end
 
 	if(event == "ADDON_LOADED" and ... == "KkthnxUI") then
+		-- STYLE CASTINGBARFRAME/DISPLAY ICON
+		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
+		CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
+
+		CastingBarFrame.Text:ClearAllPoints()
+		CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
+		CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
+		CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
+		CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
+		CastingBarFrame.Border:SetPoint("TOP", 0, 26)
+		CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
+		CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
+
+		CastingBarFrame.Icon:Show()
+		CastingBarFrame.Icon:ClearAllPoints()
+		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
+		CastingBarFrame.Icon:SetSize(20, 20)
+
+		-- CASTBAR TIMERS.
 		CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
 		if C.Unitframe.Outline then
 			CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
