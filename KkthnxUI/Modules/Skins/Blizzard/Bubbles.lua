@@ -27,7 +27,6 @@ local function skinbubble(frame)
 		frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		frame:SetClampedToScreen(false)
-		frame:SetFrameStrata("BACKGROUND")
 		frame.text:SetFont(C.Media.Font, C.General.BubbleFontSize)
 		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -1 * UIParent:GetScale())
 	else
@@ -35,8 +34,9 @@ local function skinbubble(frame)
 		frame.text:SetFont(C.Media.Font, C.General.BubbleFontSize)
 		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -1 * UIParent:GetScale())
 		frame:SetClampedToScreen(false)
-		frame:SetFrameStrata("BACKGROUND")
 	end
+
+	frame:SetFrameStrata("DIALOG")
 	frame.isBubblePowered = true
 
 	tinsert(bubbles, frame)

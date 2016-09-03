@@ -117,11 +117,6 @@ function Tooltip:OnTooltipSetUnit()
 		return
 	end
 
-	if (self:GetOwner() ~= UIParent and C.Tooltip.HideOnUnitFrames) then
-		self:Hide()
-		return
-	end
-
 	if (UnitIsUnit(Unit, "mouseover")) then
 		Unit = "mouseover"
 	end
@@ -165,8 +160,8 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
-		if (C.Tooltip.Talents and IsAltKeyDown()) then
-			local Talent = C.Tooltip.Talents
+		if (C.Tooltip.ShowSpec and IsAltKeyDown()) then
+			local Talent = K.Talent
 
 			ILevel = "..."
 			TalentSpec = "..."
@@ -242,8 +237,8 @@ function Tooltip:OnTooltipSetUnit()
 	if (C.Tooltip.HealthValue and Health and MaxHealth) then
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
 	end
-	
-	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
+
+	if (C.Tooltip.ShowSpec and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
 		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
@@ -323,7 +318,6 @@ end
 
 function Tooltip:Skin()
 	if (not self.IsSkinned) then
-		self:StripTextures()
 		self:SetTemplate()
 		self.IsSkinned = true
 	end

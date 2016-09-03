@@ -73,7 +73,7 @@ function Plates:RegisterOptions()
 		healthBarHeight = C.Nameplate.Height,
 		healthBarAlpha = 1,
 		castBarHeight = C.Nameplate.CastHeight,
-		castBarFontHeight = 9,
+		castBarFontHeight = 9 * K.NoScaleMult,
 		useLargeNameFont = false,
 
 		castBarShieldWidth = 10,
@@ -87,7 +87,7 @@ function Plates:RegisterOptions()
 		healthBarHeight = C.Nameplate.Height,
 		healthBarAlpha = 1,
 		castBarHeight = C.Nameplate.CastHeight,
-		castBarFontHeight = 10,
+		castBarFontHeight = 10 * K.NoScaleMult,
 		useLargeNameFont = false,
 
 		castBarShieldWidth = 10,
@@ -245,7 +245,7 @@ function Plates:SetupPlate(options)
 	CastBar.IconTexture:SetParent(CastBar.IconBackdrop)
 	CastBar.IconTexture:SetAllPoints(CastBar.IconBackdrop)
 
-	CastBar.Text:SetFont(FontName, FontSize* K.NoScaleMult, "")
+	CastBar.Text:SetFont(FontName, FontSize * K.NoScaleMult, "")
 
 	CastBar.startCastColor.r, CastBar.startCastColor.g, CastBar.startCastColor.b = unpack(Plates.Options.CastBarColors.StartNormal)
 	CastBar.startChannelColor.r, CastBar.startChannelColor.g, CastBar.startChannelColor.b = unpack(Plates.Options.CastBarColors.StartChannel)
@@ -256,7 +256,7 @@ function Plates:SetupPlate(options)
 	CastBar:HookScript("OnShow", Plates.SetCastingIcon)
 
 	-- UNIT NAME
-	Name:SetFont(FontName, FontSize* K.NoScaleMult, "")
+	Name:SetFont(FontName, FontSize * K.NoScaleMult, "")
 	hooksecurefunc(Name, "Show", Plates.SetName)
 
 	-- WILL DO A BETTER VISUAL FOR THIS LATER

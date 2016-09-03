@@ -1,7 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
-if IsAddOnLoaded("QuestHelper") then return end
+if select(4, GetAddOnInfo("DugisGuideViewerZ")) or select(4, GetAddOnInfo("QuestHelper")) then
+	return
+end
 
--- Move ObjectiveTrackerFrame
+-- MOVE OBJECTIVETRACKERFRAME
 local frame = CreateFrame("Frame", "ObjectiveTrackerAnchor", UIParent)
 frame:SetPoint(unpack(C.Position.Quest))
 frame:SetSize(224, 150)

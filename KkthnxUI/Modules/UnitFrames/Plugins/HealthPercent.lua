@@ -11,17 +11,17 @@ if C.Unitframe.ClassHealth == false and C.Unitframe.PercentHealth == true then
 		end
 		local r, g, b
 		local min, max = self:GetMinMaxValues()
-		
+
 		if ((value < min) or (value > max)) then
 			return
 		end
-		
+
 		if ((max - min) > 0) then
 			value = (value - min) / (max - min)
 		else
 			value = 0
 		end
-		
+
 		if(value > 0.5) then
 			r = (1.0 - value) * 2
 			g = 1.0

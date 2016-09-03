@@ -42,9 +42,13 @@
 	<Script file="Modules\Unitframes\Auras.lua"/>
 	<Script file="Modules\Unitframes\CastBars.lua"/>
 	<Script file="Modules\Unitframes\EnhancedFrames.lua"/>
-	<Script file="Modules\Unitframes\HealthMinMax.lua"/>
 	<Script file="Modules\Unitframes\Layout.lua"/>
-	<Script file="Modules\Unitframes\SmoothBars.lua"/>
+
+	<Script file="Modules\Unitframes\Plugins\ClassHealth.lua"/>
+	<Script file="Modules\Unitframes\Plugins\ClassIcons.lua"/>
+	<Script file="Modules\Unitframes\Plugins\Extras.lua"/>
+	<Script file="Modules\Unitframes\Plugins\HealthPercent.lua"/>
+	<Script file="Modules\Unitframes\Plugins\SmoothBars.lua"/>
 
 	<Script file="Modules\Misc\AFKSpin.lua"/>
 	<Script file="Modules\Misc\AlreadyKnown.lua"/>
@@ -153,13 +157,8 @@
 	<Script file="Modules\Tooltip\Achievement.lua"/>
 	<Script file="Modules\Tooltip\HyperLink.lua"/>
 	<Script file="Modules\Tooltip\InstanceLockCompare.lua"/>
-	<Script file="Modules\Tooltip\ItemCount.lua"/>
 	<Script file="Modules\Tooltip\ItemIcons.lua"/>
-	<Script file="Modules\Tooltip\ItemLevel.lua"/>
-	<Script file="Modules\Tooltip\MultiItemRef.lua"/>
 	<Script file="Modules\Tooltip\PvPRating.lua"/>
-	<Script file="Modules\Tooltip\RuFix.lua"/>
-	<Script file="Modules\Tooltip\SpellID.lua"/>
 	<Script file="Modules\Tooltip\Talents.lua"/>
 	<Script file="Modules\Tooltip\Tooltip.lua"/>
 

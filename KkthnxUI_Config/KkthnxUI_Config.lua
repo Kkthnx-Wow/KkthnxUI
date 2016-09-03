@@ -229,10 +229,8 @@ local function Local(o)
 	if o == "UIConfigTooltipEnable" then o = L_GUI_TOOLTIP_ENABLE end
 	if o == "UIConfigTooltipHealthValue" then o = L_GUI_TOOLTIP_HEALTH end
 	if o == "UIConfigTooltipInstanceLock" then o = L_GUI_TOOLTIP_INSTANCE_LOCK end
-	if o == "UIConfigTooltipItemCount" then o = L_GUI_TOOLTIP_ITEM_COUNT end
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
-	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
-	if o == "UIConfigTooltipTalents" then o = L_GUI_TOOLTIP_TALENTS end
+	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_TALENTS end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeClassResources" then o = L_GUI_UNITFRAME_CLASSRESOURCES end
