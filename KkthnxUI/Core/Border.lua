@@ -12,7 +12,7 @@ local CORNER_SIZE = 12
 local OFFSET_SIZE = 6
 local BORDER_LAYER = "OVERLAY"
 
-borderedObjects = {}
+K.borderedObjects = {}
 
 local sections = {"TOPLEFT", "TOP", "TOPRIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT", "LEFT", "RIGHT"}
 
@@ -144,7 +144,7 @@ function K.CreateBorder(self, size, offset, parent, layer)
 		self.SetBackdropBorderColor = SetBackdropBorderColor
 	end
 
-	tinsert(borderedObjects, self)
+	tinsert(K.borderedObjects, self)
 
 	self:SetBackdropBorderColor()
 	self:SetBorderParent(parent)
@@ -152,5 +152,4 @@ function K.CreateBorder(self, size, offset, parent, layer)
 
 	return true
 end
-
 _G.CreateBorder = K.CreateBorder
