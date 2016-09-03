@@ -231,11 +231,11 @@ local function SetupChat(self)
 	else
 		var = 0
 	end
-	ChatTypeInfo.WHISPER.sticky = 1
-	ChatTypeInfo.BN_WHISPER.sticky = 1
-	ChatTypeInfo.OFFICER.sticky = 1
-	ChatTypeInfo.RAID_WARNING.sticky = 1
-	ChatTypeInfo.CHANNEL.sticky = 1
+	ChatTypeInfo.WHISPER.sticky = var
+	ChatTypeInfo.BN_WHISPER.sticky = var
+	ChatTypeInfo.OFFICER.sticky = var
+	ChatTypeInfo.RAID_WARNING.sticky = var
+	ChatTypeInfo.CHANNEL.sticky = var
 end
 
 local function SetupChatPosAndFont(self)
