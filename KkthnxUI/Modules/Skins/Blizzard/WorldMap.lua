@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if (select(4, GetAddOnInfo("WorldQuestTracker"))) or (select(4, GetAddOnInfo("WorldQuestsList"))) then return end
 
 --local WorldMap = K:NewModule('WorldMap', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
