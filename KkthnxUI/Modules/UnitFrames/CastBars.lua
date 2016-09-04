@@ -25,12 +25,6 @@ function CastBars:PlaceBars()
 	if InCombatLockdown() then return end
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
-
-	-- TARGET CASTBAR
-	hooksecurefunc(TargetFrameSpellBar, "Show", function()
-		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
-		TargetFrameSpellBar.SetPoint = K.Noop
-	end)
 end
 
 function CastBars:HandleEvents(event, ...)
@@ -62,6 +56,9 @@ function CastBars:HandleEvents(event, ...)
 		CastingBarFrame.Icon:ClearAllPoints()
 		CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
 		CastingBarFrame.Icon:SetSize(20, 20)
+		
+		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
+		TargetFrameSpellBar.SetPoint = K.Noop
 
 		-- CASTBAR TIMERS.
 		CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
