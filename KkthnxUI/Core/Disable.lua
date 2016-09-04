@@ -68,8 +68,8 @@ if (select(4, GetAddOnInfo("Dominos"))) or (select(4, GetAddOnInfo("Bartender4")
 	C.ActionBar.Enable = false
 end
 
-if (select(4, GetAddOnInfo("KkthnxUI_OldBars"))) then
-	C.ActionBar.Enable = false
+if (select(4, GetAddOnInfo("WorldQuestTracker"))) or (select(4, GetAddOnInfo("WorldQuestsList"))) then
+	C.General.SmallWorldMap = false
 end
 
 if (select(4, GetAddOnInfo("AdiBags"))) or (select(4, GetAddOnInfo("ArkInventory"))) or (select(4, GetAddOnInfo("cargBags_Nivaya"))) or (select(4, GetAddOnInfo("cargBags"))) or (select(4, GetAddOnInfo("Bagnon"))) or (select(4, GetAddOnInfo("Combuctor"))) or (select(4, GetAddOnInfo("TBag"))) or (select(4, GetAddOnInfo("BaudBag"))) then

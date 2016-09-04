@@ -1,12 +1,10 @@
 local K, C, L, _ = select(2, ...):unpack()
-if (select(4, GetAddOnInfo("WorldQuestTracker"))) or (select(4, GetAddOnInfo("WorldQuestsList"))) then return end
+--if C.General.SmallWorldMap ~= then return end
 
 --local WorldMap = K:NewModule('WorldMap', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
 local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 K.WorldMap = WorldMap
-
-local smallerWorldMap = true
 
 --Cache global variables
 --Lua functions
@@ -72,7 +70,7 @@ end
 function WorldMap:Initialize()
 	-- setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) --blizzard taint fix
 
-	if(smallerWorldMap) then
+	if(C.General.SmallWorldMap) then
 		BlackoutWorld:SetTexture(nil)
 		self:SecureHook("WorldMap_ToggleSizeDown", "SetSmallWorldMap")
 		self:SecureHook("WorldMap_ToggleSizeUp", "SetLargeWorldMap")
