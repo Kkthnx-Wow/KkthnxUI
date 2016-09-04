@@ -1,65 +1,65 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- FONT REPLACEMENT
-WorldMapFrameAreaLabel:SetFont(C.Media.Font, 30)
-WorldMapFrameAreaLabel:SetShadowOffset(2, -2)
-WorldMapFrameAreaLabel:SetTextColor(0.9, 0.83, 0.64)
+local WorldMap = CreateFrame("Frame")
 
-WorldMapFrameAreaPetLevels:SetFont(C.Media.Font, 30)
-WorldMapFrameAreaPetLevels:SetShadowOffset(2, -2)
+function WorldMap:OnUpdate(elapsed)
+	WorldMap.Interval = WorldMap.Interval - elapsed
 
-WorldMapFrameAreaDescription:SetFont(C.Media.Font, 30)
-WorldMapFrameAreaDescription:SetShadowOffset(2, -2)
+	if WorldMap.Interval < 0 then
+			local InInstance, _ = IsInInstance()
+			local X, Y = GetPlayerMapPosition("player")
 
-MapQuestInfoRewardsFrame.XPFrame.Name:SetFont(C.Media.Font, 13)
+			X = math.floor(100 * X)
+			Y = math.floor(100 * Y)
 
--- CHANGE POSITION
-hooksecurefunc("WorldMap_ToggleSizeDown", function()
-	WorldMapFrame:ClearAllPoints()
-	WorldMapFrame:SetPoint(unpack(C.Position.WorldMap))
-end)
+			if X ~= 0 and Y ~= 0 then
+				WorldMap.Coords.PlayerText:SetText(PLAYER..":   "..X..", "..Y)
+			else
+				WorldMap.Coords.PlayerText:SetText(" ")
+			end
 
--- CREATING COORDINATE
-local coords = CreateFrame("Frame", "CoordsFrame", WorldMapFrame)
-coords:SetFrameLevel(90)
-coords.PlayerText = coords:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-coords.PlayerText:SetPoint("BOTTOMLEFT", WorldMapFrame.UIElementsFrame, "BOTTOMLEFT", 5, 5)
-coords.PlayerText:SetJustifyH("LEFT")
-coords.PlayerText:SetText(UnitName("player")..": 0,0")
+			local Scale = WorldMapDetailFrame:GetEffectiveScale()
+			local Width = WorldMapDetailFrame:GetWidth()
+			local Height = WorldMapDetailFrame:GetHeight()
+			local CenterX, CenterY = WorldMapDetailFrame:GetCenter()
 
-coords.MouseText = coords:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-coords.MouseText:SetJustifyH("LEFT")
-coords.MouseText:SetPoint("BOTTOMLEFT", coords.PlayerText, "TOPLEFT", 0, 5)
-coords.MouseText:SetText(L_MAP_CURSOR..": 0,0")
+			X, Y = GetCursorPosition()
 
-local int = 0
-WorldMapFrame:HookScript("OnUpdate", function(self, elapsed)
-	int = int + 1
-	if int >= 3 then
-		local x, y = GetPlayerMapPosition("player")
-		x = math.floor(100 * x)
-		y = math.floor(100 * y)
-		if x ~= 0 and y ~= 0 then
-			coords.PlayerText:SetText(UnitName("player")..": "..x..","..y)
-		else
-			coords.PlayerText:SetText(UnitName("player")..": ".."|cffff0000"..L_MAP_BOUNDS.."|r")
-		end
+			local AdjustedX = (X / Scale - (CenterX - (Width / 2))) / Width
+			local AdjustedY = (CenterY + (Height / 2 ) - Y / Scale) / Height
 
-		local scale = WorldMapDetailFrame:GetEffectiveScale()
-		local width = WorldMapDetailFrame:GetWidth()
-		local height = WorldMapDetailFrame:GetHeight()
-		local centerX, centerY = WorldMapDetailFrame:GetCenter()
-		local x, y = GetCursorPosition()
-		local adjustedX = (x / scale - (centerX - (width/2))) / width
-		local adjustedY = (centerY + (height/2) - y / scale) / height
+			if (AdjustedX >= 0  and AdjustedY >= 0 and AdjustedX <= 1 and AdjustedY <= 1) then
+				AdjustedX = math.floor(100 * AdjustedX)
+				AdjustedY = math.floor(100 * AdjustedY)
 
-		if adjustedX >= 0 and adjustedY >= 0 and adjustedX <= 1 and adjustedY <= 1 then
-			adjustedX = math.floor(100 * adjustedX)
-			adjustedY = math.floor(100 * adjustedY)
-			coords.MouseText:SetText(L_MAP_CURSOR..adjustedX..","..adjustedY)
-		else
-			coords.MouseText:SetText(L_MAP_CURSOR.."|cffff0000"..L_MAP_BOUNDS.."|r")
-		end
-		int = 0
+				WorldMap.Coords.MouseText:SetText(MOUSE_LABEL..":   "..AdjustedX..", "..AdjustedY)
+			else
+				WorldMap.Coords.MouseText:SetText(" ")
+			end
+
+		WorldMap.Interval = WorldMap.UpdateEveryXSeconds
 	end
-end)
+end
+
+function WorldMap:CreateCoords()
+	self.Coords = CreateFrame("Frame", nil, WorldMapFrame)
+
+	self.Coords:SetFrameLevel(90)
+	self.Coords:FontString("PlayerText", C.Media.Font, 12, "THINOUTLINE")
+	self.Coords:FontString("MouseText", C.Media.Font, 12, "THINOUTLINE")
+	self.Coords.PlayerText:SetTextColor(1, 1, 1)
+	self.Coords.MouseText:SetTextColor(1, 1, 1)
+	self.Coords.PlayerText:SetPoint("BOTTOMLEFT", WorldMapDetailFrame, "BOTTOMLEFT", 5, 5)
+	self.Coords.PlayerText:SetText("Player:   0, 0")
+	self.Coords.MouseText:SetPoint("BOTTOMLEFT", self.Coords.PlayerText, "TOPLEFT", 0, 5)
+	self.Coords.MouseText:SetText("Mouse:   0, 0")
+end
+
+function WorldMap:Enable()
+	WorldMap.Interval = 0.2
+	WorldMap.UpdateEveryXSeconds = WorldMap.Interval
+	WorldMap:CreateCoords()
+	WorldMapFrame:HookScript("OnUpdate", WorldMap.OnUpdate)
+end
+
+WorldMap:Enable()

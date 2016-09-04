@@ -1,95 +1,95 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-local _G = _G
+--local WorldMap = K:NewModule('WorldMap', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
+local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
-do
-	local WorldMapFrame = _G.WorldMapFrame
-	local InCombatLockdown = _G.InCombatLockdown
+K.WorldMap = WorldMap
 
-	local WorldMapBountyBoardMixin = _G.WorldMapBountyBoardMixin
-	function WorldMapFrame.UIElementsFrame.BountyBoard.GetDisplayLocation(self)
-		if InCombatLockdown() then
-			return
-		end
+local smallerWorldMap = true
 
-		return WorldMapBountyBoardMixin.GetDisplayLocation(self)
+--Cache global variables
+--Lua functions
+local find = string.find
+--WoW API / Variables
+local CreateFrame = CreateFrame
+local InCombatLockdown = InCombatLockdown
+local SetUIPanelAttribute = SetUIPanelAttribute
+local IsInInstance = IsInInstance
+local GetPlayerMapPosition = GetPlayerMapPosition
+local GetCursorPosition = GetCursorPosition
+local PLAYER = PLAYER
+local MOUSE_LABEL = MOUSE_LABEL
+local WORLDMAP_FULLMAP_SIZE = WORLDMAP_FULLMAP_SIZE
+local WORLDMAP_WINDOWED_SIZE = WORLDMAP_WINDOWED_SIZE
+
+function WorldMap:SetLargeWorldMap()
+	if InCombatLockdown() then return end
+
+	WorldMapFrame:SetParent(K.UIParent)
+	WorldMapFrame:EnableKeyboard(false)
+	WorldMapFrame:SetScale(1)
+	WorldMapFrame:EnableMouse(true)
+
+	if WorldMapFrame:GetAttribute("UIPanelLayout-area") ~= "center" then
+		SetUIPanelAttribute(WorldMapFrame, "area", "center");
 	end
 
-	local WorldMapActionButtonMixin = _G.WorldMapActionButtonMixin
-	function WorldMapFrame.UIElementsFrame.ActionButton.GetDisplayLocation(self, useAlternateLocation)
-		if InCombatLockdown() then
-			return
-		end
-
-		return WorldMapActionButtonMixin.GetDisplayLocation(self, useAlternateLocation)
+	if WorldMapFrame:GetAttribute("UIPanelLayout-allowOtherPanels") ~= true then
+		SetUIPanelAttribute(WorldMapFrame, "allowOtherPanels", true)
 	end
 
-	function WorldMapFrame.UIElementsFrame.ActionButton.Refresh(self)
-		if InCombatLockdown() then
-			return
-		end
+	WorldMapFrameSizeUpButton:Hide()
+	WorldMapFrameSizeDownButton:Show()
 
-		WorldMapActionButtonMixin.Refresh(self)
-	end
-end
-
-local function skin()
-	if not _G.WorldMapFrame.skinned then
-		_G.WorldMapFrame:SetUserPlaced(true)
-		local trackingBtn = _G.WorldMapFrame.UIElementsFrame.TrackingOptionsButton
-
-		-- BUTTONS
-		_G.WorldMapLevelDropDown:ClearAllPoints()
-		_G.WorldMapLevelDropDown:SetPoint("TOPLEFT", _G.WorldMapFrame.UIElementsFrame, -15, 3)
-		trackingBtn:ClearAllPoints()
-		trackingBtn:SetPoint("TOPRIGHT", _G.WorldMapFrame.UIElementsFrame, 3, 3)
-
-		_G.WorldMapFrame.skinned = true
-	end
-end
-
--- SIZE ADJUST
-local function SetLargeWorldMap()
-	if _G.InCombatLockdown() then return end
-
-	-- REPARENT
-	_G.WorldMapFrame:SetParent(_G.UIParent)
-	_G.WorldMapFrame:SetFrameStrata("HIGH")
-	_G.WorldMapFrame:EnableKeyboard(true)
-
-	-- REPOSITION
-	_G.WorldMapFrame:ClearAllPoints()
-	_G.WorldMapFrame:SetPoint(unpack(C.Position.WorldMap))
-	_G.SetUIPanelAttribute(_G.WorldMapFrame, "area", "center")
-	_G.SetUIPanelAttribute(_G.WorldMapFrame, "allowOtherPanels", true)
-	_G.WorldMapFrame:SetSize(1022, 766)
-end
-
-if _G.InCombatLockdown() then return end
-
-_G.BlackoutWorld:SetTexture(nil)
-
-_G.QuestMapFrame_Hide()
-if _G.GetCVar("questLogOpen") == 1 then
-	_G.QuestMapFrame_Show()
-end
-
-_G.hooksecurefunc("WorldMap_ToggleSizeUp", SetLargeWorldMap)
-
-if _G.WORLDMAP_SETTINGS.size == _G.WORLDMAP_FULLMAP_SIZE then
-	_G.WorldMap_ToggleSizeUp()
-elseif _G.WORLDMAP_SETTINGS.size == _G.WORLDMAP_WINDOWED_SIZE then
-	_G.WorldMap_ToggleSizeDown()
-end
-
-_G.DropDownList1:HookScript("OnShow", function(self)
-	if _G.DropDownList1:GetScale() ~= _G.UIParent:GetScale() then
-		_G.DropDownList1:SetScale(_G.UIParent:GetScale())
-	end
-end)
-
--- KEEP IT CENTERED
-hooksecurefunc("WorldMap_ToggleSizeDown", function()
 	WorldMapFrame:ClearAllPoints()
 	WorldMapFrame:SetPoint(unpack(C.Position.WorldMap))
-end)
+	WorldMapFrame:SetSize(1002, 668)
+end
+
+function WorldMap:SetSmallWorldMap()
+	if InCombatLockdown() then return; end
+
+	WorldMapFrameSizeUpButton:Show()
+	WorldMapFrameSizeDownButton:Hide()
+end
+
+function WorldMap:PLAYER_REGEN_ENABLED()
+	WorldMapFrameSizeDownButton:Enable()
+	WorldMapFrameSizeUpButton:Enable()
+end
+
+function WorldMap:PLAYER_REGEN_DISABLED()
+	WorldMapFrameSizeDownButton:Disable()
+	WorldMapFrameSizeUpButton:Disable()
+end
+
+function WorldMap:ResetDropDownListPosition(frame)
+	--DropDownList1:ClearAllPoints()
+	--DropDownList1:Point("TOPRIGHT", frame, "BOTTOMRIGHT", -17, -4)
+end
+
+function WorldMap:Initialize()
+	-- setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) --blizzard taint fix
+
+	if(smallerWorldMap) then
+		BlackoutWorld:SetTexture(nil)
+		self:SecureHook("WorldMap_ToggleSizeDown", "SetSmallWorldMap")
+		self:SecureHook("WorldMap_ToggleSizeUp", "SetLargeWorldMap")
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		self:RegisterEvent("PLAYER_REGEN_DISABLED")
+
+		if WORLDMAP_SETTINGS.size == WORLDMAP_FULLMAP_SIZE then
+			self:SetLargeWorldMap()
+		elseif WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE then
+			self:SetSmallWorldMap()
+		end
+	end
+
+	--Set alpha used when moving
+	--WORLD_MAP_MIN_ALPHA = C.Map.mapAlphaWhenMoving
+	--SetCVar("mapAnimMinAlpha", C.Map.mapAlphaWhenMoving)
+	--Enable/Disable map fading when moving
+	--SetCVar("mapFade", (C.Map.fadeMapWhenMoving == true and 1 or 0))
+end
+
+WorldMap:Initialize()
