@@ -71,6 +71,16 @@ local ShowReadyCheckHook = function(self, initiator)
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
+-- FORCE LOCKACTIONBARS CVAR
+local ForceCVar = CreateFrame("Frame")
+ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ForceCVar:RegisterEvent("CVAR_UPDATE")
+ForceCVar:SetScript("OnEvent", function(self, event)
+	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
+		SetCVar("lockActionBars", 1)
+	end
+end)
+
 -- FORCE OTHER WARNING
 local ForceWarning = CreateFrame("Frame")
 ForceWarning:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
