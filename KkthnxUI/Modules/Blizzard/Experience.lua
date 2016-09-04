@@ -69,6 +69,16 @@ repBar:SetPoint("BOTTOM", backdrop, "BOTTOM", 0, 0)
 repBar:SetStatusBarTexture(barTex)
 repBar:SetFrameLevel(xpBar:GetFrameLevel() + 1)
 
+-- HACKY WAY TO QUICKLY DISPLAY THE REPUTATION FRAME.
+ExperienceAnchor:SetScript("OnMouseDown", function(self, btn)
+	if (btn == "LeftButton") then
+		if ReputationFrame and ReputationFrame:IsShown() then ToggleCharacter("ReputationFrame")
+		else
+			ToggleCharacter("ReputationFrame")
+		end
+	end
+end)
+
 local mouseFrame = CreateFrame("Frame", "Experience_mouseFrame", backdrop)
 mouseFrame:SetAllPoints(backdrop)
 mouseFrame:EnableMouse(true)
@@ -134,6 +144,8 @@ local function updateStatus()
 			GameTooltip:AddLine(string.format(L_REPUTATION_REP, K.Comma(value - min), K.Comma(max - min), (value - min)/(max - min) * 100))
 			GameTooltip:AddLine(string.format(L_REPUTATION_REMAINGING, K.Comma(max - value)))
 		end
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(format(L_EXPERIENCE_BAR_LEFTCLICK), 46/255, 182/255, 255/255, .84, .75, .65)
 		GameTooltip:Show()
 	end)
 

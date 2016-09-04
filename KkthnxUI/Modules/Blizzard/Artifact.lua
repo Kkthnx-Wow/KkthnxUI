@@ -41,6 +41,16 @@ ArtifactBar:SetPoint("TOP", Artifact_Backdrop, "TOP", 0, 0)
 ArtifactBar:SetStatusBarTexture(Texture)
 ArtifactBar:SetStatusBarColor(157/255, 138/255, 108/255)
 
+-- HACKY WAY TO QUICKLY DISPLAY THE ARTIFACT FRAME.
+ArtifactAnchor:SetScript("OnMouseDown", function(self, btn)
+	if (btn == "LeftButton") then
+		if ArtifactFrame and ArtifactFrame:IsShown() then HideUIPanel(ArtifactFrame)
+		else
+			SocketInventoryItem(16)
+		end
+	end
+end)
+
 local ArtifactMouseFrame = CreateFrame("Frame", "Artifact_MouseFrame", Artifact_Backdrop)
 ArtifactMouseFrame:SetAllPoints(Artifact_Backdrop)
 ArtifactMouseFrame:EnableMouse(true)
@@ -71,6 +81,8 @@ local function updateStatus()
 			GameTooltip:AddLine(format(L_ARTIFACTBAR_XP, xp, xpForNextPoint, (xp / xpForNextPoint) * 100))
 			GameTooltip:AddLine(format(L_ARTIFACTBAR_XPREMAINING, xpForNextPoint - xp))
 			GameTooltip:AddLine(format(L_ARTIFACTBAR_TRAITS, numPointsAvailableToSpend))
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(format(L_ARTIFACTBAR_LEFTCLICK), 46/255, 182/255, 255/255, .84, .75, .65)
 		end
 
 		GameTooltip:Show()
