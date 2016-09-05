@@ -7,7 +7,11 @@ local tonumber = tonumber
 
 local GetTime = GetTime
 
-OmniCC = true
+if IsAddOnLoaded("BigDebuffs") then
+	OmniCC = false
+else
+	OmniCC = true
+end
 
 local IconSize = 36
 local Day, Hour, Minute = 86400, 3600, 60
