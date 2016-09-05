@@ -14,15 +14,11 @@ K.ShiftBarUpdate = function(...)
 	if InCombatLockdown() then return end
 	local NumForms = GetNumShapeshiftForms()
 	local Texture, Name, IsActive, IsCastable, Button, Icon, Cooldown, Start, Duration, Enable
-	local PetSize = C.ActionBar.ButtonSize
-	local Spacing = C.ActionBar.ButtonSpace
 
 	if NumForms == 0 then
-		Panels.StanceBar:SetAlpha(0)
+		ShiftHolder:SetAlpha(0)
 	else
-		Panels.StanceBar:SetAlpha(1)
-		Panels.StanceBar.Backdrop:SetSize((PetSize * NumForms) + (Spacing * (NumForms + 1)), PetSize + (Spacing * 2))
-		Panels.StanceBar.Backdrop:SetPoint("TOPLEFT", 0, 0)
+		ShiftHolder:SetAlpha(1)
 
 		for i = 1, NUM_STANCE_SLOTS do
 			local ButtonName = "StanceButton"..i
