@@ -9,11 +9,15 @@ local unpack = unpack
 -- WOW API
 local CreateFrame = CreateFrame
 
-K.CreatePopup["FIX_ACTIONBARS"] = {
-	Question = L_POPUP_FIX_ACTIONBARS,
-	Answer1 = ACCEPT,
-	Answer2 = CANCEL,
-	Function1 = ReloadUI,
+StaticPopupDialogs["FIX_ACTIONBARS"] = {
+	text = L_POPUP_FIX_ACTIONBARS,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = ReloadUI,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3
 }
 
 -- SHOW EMPTY BUTTONS
@@ -27,7 +31,7 @@ ShowGrid:SetScript("OnEvent", function(self, event)
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
 			SetActionBarToggles(1, 1, 1, 1)
-			K.ShowPopup("FIX_ACTIONBARS")
+			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
 

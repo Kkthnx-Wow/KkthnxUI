@@ -259,39 +259,6 @@ local function FadeOut(f)
 	UIFrameFadeOut(f, 0.8, f:GetAlpha(), 0)
 end
 
-local function SetModifiedBackdrop(self)
-	local Color = RAID_CLASS_COLORS[K.Class]
-	self:SetBackdropColor(Color.r * .15, Color.g * .15, Color.b * .15)
-	self:SetBackdropBorderColor(Color.r, Color.g, Color.b)
-end
-
-local function SetOriginalBackdrop(self) self:SetTemplate() end
-
-local function SkinButton(f, strip)
-	if f:GetName() then
-		local l = _G[f:GetName().."Left"]
-		local m = _G[f:GetName().."Middle"]
-		local r = _G[f:GetName().."Right"]
-
-		if l then l:SetAlpha(0) end
-		if m then m:SetAlpha(0) end
-		if r then r:SetAlpha(0) end
-	end
-
-	if f.Left then f.Left:SetAlpha(0) end
-	if f.Right then f.Right:SetAlpha(0) end	
-	if f.Middle then f.Middle:SetAlpha(0) end
-	if f.SetNormalTexture then f:SetNormalTexture("") end
-	if f.SetHighlightTexture then f:SetHighlightTexture("") end
-	if f.SetPushedTexture then f:SetPushedTexture("") end
-	if f.SetDisabledTexture then f:SetDisabledTexture("") end
-	if strip then StripTextures(f) end
-
-	SetTemplate(f, "Default")
-	f:HookScript("OnEnter", SetModifiedBackdrop)
-	f:HookScript("OnLeave", SetOriginalBackdrop)
-end
-
 -- MERGE KKTHNXUI API WITH WOWS API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
@@ -299,7 +266,6 @@ local function AddAPI(object)
 	if not object.CreateBorder then mt.CreateBorder = CreateBorder end
 	if not object.SetOutside then mt.SetOutside = SetOutside end
 	if not object.SetInside then mt.SetInside = SetInside end
-	if not object.SkinButton then mt.SkinButton = SkinButton end
 	if not object.CreateBackdrop then mt.CreateBackdrop = CreateBackdrop end
 	if not object.SetTemplate then mt.SetTemplate = SetTemplate end
 	if not object.CreatePanel then mt.CreatePanel = CreatePanel end
@@ -321,7 +287,6 @@ AddAPI(Object:CreateFontString())
 
 Object = EnumerateFrames()
 while Object do
-	--if not Handled[Object:GetObjectType()] then
 	if not Object:IsForbidden() and not Handled[Object:GetObjectType()] then
 		AddAPI(Object)
 		Handled[Object:GetObjectType()] = true

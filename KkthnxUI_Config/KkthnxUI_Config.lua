@@ -289,6 +289,60 @@ local NormalButton = function(text, parent)
 	return result
 end
 
+StaticPopupDialogs.PERCHAR = {
+	text = L_GUI_PER_CHAR,
+	OnAccept = function()
+		if UIConfigAllCharacters:GetChecked() then
+			GUIConfigAll[realm][name] = true
+		else
+			GUIConfigAll[realm][name] = false
+		end
+		ReloadUI()
+	end,
+	OnCancel = function()
+		UIConfigCover:Hide()
+		if UIConfigAllCharacters:GetChecked() then
+			UIConfigAllCharacters:SetChecked(false)
+		else
+			UIConfigAllCharacters:SetChecked(true)
+		end
+	end,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	timeout = 0,
+	whileDead = 1,
+	preferredIndex = 3
+}
+
+StaticPopupDialogs.RESET_PERCHAR = {
+	text = L_GUI_RESET_CHAR,
+	OnAccept = function()
+		GUIConfig = GUIConfigSettings
+		ReloadUI()
+	end,
+	OnCancel = function() if UIConfig and UIConfig:IsShown() then UIConfigCover:Hide() end end,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	timeout = 0,
+	whileDead = 1,
+	preferredIndex = 3
+}
+
+StaticPopupDialogs.RESET_ALL = {
+	text = L_GUI_RESET_ALL,
+	OnAccept = function()
+		GUIConfigSettings = nil
+		GUIConfig = nil
+		ReloadUI()
+	end,
+	OnCancel = function() UIConfigCover:Hide() end,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	timeout = 0,
+	whileDead = 1,
+	preferredIndex = 3
+}
+
 local function SetValue(group, option, value)
 	local mergesettings
 	if GUIConfig == GUIConfigSettings then
@@ -378,51 +432,6 @@ function CreateUIConfig()
 		UIConfigMain:Show()
 		return
 	end
-
-	K.CreatePopup["PERCHAR"] = {
-		Question = L_GUI_PER_CHAR,
-		Answer1 = ACCEPT,
-		Answer2 = CANCEL,
-		Function1 = function()
-			if UIConfigAllCharacters:GetChecked() then
-				GUIConfigAll[realm][name] = true
-			else
-				GUIConfigAll[realm][name] = false
-			end
-			ReloadUI()
-		end,
-		Function2 = function()
-			UIConfigCover:Hide()
-			if UIConfigAllCharacters:GetChecked() then
-				UIConfigAllCharacters:SetChecked(false)
-			else
-				UIConfigAllCharacters:SetChecked(true)
-			end
-		end,
-	}
-
-	K.CreatePopup["RESET_PERCHAR"] = {
-		Question = L_GUI_RESET_CHAR,
-		Answer1 = ACCEPT,
-		Answer2 = CANCEL,
-		Function1 = function()
-			GUIConfig = GUIConfigSettings
-			ReloadUI()
-		end,
-		Function2 = function() if UIConfig and UIConfig:IsShown() then UIConfigCover:Hide() end end,
-	}
-
-	K.CreatePopup["RESET_ALL"] = {
-		Question = L_GUI_RESET_ALL,
-		Answer1 = ACCEPT,
-		Answer2 = CANCEL,
-		Function1 = function()
-			GUIConfigSettings = nil
-			GUIConfig = nil
-			ReloadUI()
-		end,
-		Function2 = function() UIConfigCover:Hide() end,
-	}
 
 	-- Main Frame
 	local UIConfigMain = CreateFrame("Frame", "UIConfigMain", UIParent)
@@ -731,9 +740,9 @@ function CreateUIConfig()
 	reset:SetScript("OnClick", function(self)
 		UIConfigCover:Show()
 		if GUIConfigAll[realm][name] == true then
-			K.ShowPopup("RESET_PERCHAR")
+			StaticPopup_Show("RESET_PERCHAR")
 		else
-			K.ShowPopup("RESET_ALL")
+			StaticPopup_Show("RESET_ALL")
 		end
 	end)
 
@@ -749,7 +758,7 @@ function CreateUIConfig()
 	totalreset:SetWidth(120)
 	totalreset:SetPoint("TOPLEFT", groupsBG, "BOTTOMLEFT", 0, -15)
 	totalreset:SetScript("OnClick", function(self)
-		K.ShowPopup("RESET_UI")
+		StaticPopup_Show("RESET_UI")
 		GUIConfig = {}
 		if GUIConfigAll[realm][name] == true then
 			GUIConfigAll[realm][name] = {}
@@ -759,7 +768,7 @@ function CreateUIConfig()
 
 	if GUIConfigAll then
 		local button = CreateFrame("CheckButton", "UIConfigAllCharacters", TitleBox, "InterfaceOptionsCheckButtonTemplate")
-		button:SetScript("OnClick", function(self) K.ShowPopup("PERCHAR") UIConfigCover:Show() end)
+		button:SetScript("OnClick", function(self) StaticPopup_Show("PERCHAR") UIConfigCover:Show() end)
 		button:SetPoint("RIGHT", TitleBox, "RIGHT", -3, 0)
 		button:SetHitRectInsets(0, 0, 0, 0)
 		if IsAddOnLoaded("Aurora") then
@@ -810,9 +819,9 @@ do
 		if UIConfigMain and UIConfigMain:IsShown() then UIConfigCover:Show() end
 
 		if GUIConfigAll[realm][name] == true then
-			K.ShowPopup("RESET_PERCHAR")
+			StaticPopup_Show("RESET_PERCHAR")
 		else
-			K.ShowPopup("RESET_ALL")
+			StaticPopup_Show("RESET_ALL")
 		end
 	end
 	SLASH_RESETCONFIG1 = "/resetconfig"

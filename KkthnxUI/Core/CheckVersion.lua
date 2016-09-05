@@ -1,5 +1,23 @@
 local K, C, L, _ = select(2, ...):unpack()
 
+StaticPopupDialogs["UI_OUTDATED"] = {
+	text = L_POPUP_UIOUTDATED,
+	button1 = OKAY,
+	OnShow = function(self, ...)
+		self.editBox:SetFocus()
+		self.editBox:SetText("https://mods.curse.com/addons/wow/kkthnxui")
+		self.editBox:HighlightText()
+	end,
+	hasEditBox = true,
+	editBoxWidth = 325,
+	hideOnEscape = false,
+	timeout = 0,
+	whileDead = 1,
+	preferredIndex = 3,
+	EditBoxOnEnterPressed = function(self) self:GetParent():Hide() end,
+	EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
+}
+
 local KkthnxUIVersion = CreateFrame("Frame")
 local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
@@ -12,6 +30,7 @@ function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
 		end
 
 		if (tonumber(message) > Version) then -- WE RECIEVED A HIGHER VERSION, WE'RE OUTDATED. :(
+			StaticPopup_Show("UI_OUTDATED")
 			K.Print(L_MISC_UI_OUTDATED)
 			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end

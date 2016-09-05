@@ -210,7 +210,7 @@ local function InstallUI()
 	SavedOptionsPerChar.RightBars = C.ActionBar.RightBars
 	SavedOptionsPerChar.BottomBars = C.ActionBar.BottomBars
 
-	K.ShowPopup("RELOAD_UI")
+	StaticPopup_Show("RELOAD_UI")
 end
 
 local function DisableUI()
@@ -218,42 +218,61 @@ local function DisableUI()
 	ReloadUI()
 end
 
-K.CreatePopup["INSTALL_UI"] = {
-	Question = L_POPUP_INSTALLUI,
-	Answer1 = ACCEPT,
-	Answer2 = CANCEL,
-	Function1 = InstallUI,
-	Function2 = function() SavedOptionsPerChar.Install = false end,
+-- Install Popups
+StaticPopupDialogs["INSTALL_UI"] = {
+	text = L_POPUP_INSTALLUI,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = InstallUI,
+	OnCancel = function() SavedOptionsPerChar.Install = false end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3
 }
 
-K.CreatePopup["RELOAD_UI"] = {
-	Question = L_POPUP_RELOADUI,
-	Answer1 = ACCEPT,
-	Answer2 = CANCEL,
-	Function1 = function() ReloadUI() end,
-	Function2 = function() SavedOptionsPerChar.Install = false end,
+StaticPopupDialogs["RELOAD_UI"] = {
+	text = L_POPUP_RELOADUI,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function() ReloadUI() end,
+	OnCancel = function() SavedOptionsPerChar.Install = false end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3
 }
 
-K.CreatePopup["DISABLE_UI"] = {
-	Question = L_POPUP_DISABLEUI,
-	Answer1 = ACCEPT,
-	Answer2 = CANCEL,
-	Function1 = DisableUI,
+StaticPopupDialogs["DISABLE_UI"] = {
+	text = L_POPUP_DISABLEUI,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = DisableUI,
+	showAlert = true,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = true,
+	preferredIndex = 3
 }
 
-K.CreatePopup["RESET_UI"] = {
-	Question = L_POPUP_RESETUI,
-	Answer1 = ACCEPT,
-	Answer2 = CANCEL,
-	Function1 = InstallUI,
-	Function2 = function() SavedOptionsPerChar.Install = true end,
+StaticPopupDialogs["RESET_UI"] = {
+	text = L_POPUP_RESETUI,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = InstallUI,
+	OnCancel = function() SavedOptionsPerChar.Install = true end,
+	showAlert = true,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = true,
+	preferredIndex = 3
 }
 
 SLASH_INSTALLUI1 = "/installui"
-SlashCmdList.INSTALLUI = function() K.ShowPopup("INSTALL_UI") end
+SlashCmdList.INSTALLUI = function() StaticPopup_Show("INSTALL_UI") end
 
 SLASH_CONFIGURE1 = "/resetui"
-SlashCmdList.CONFIGURE = function() K.ShowPopup("RESET_UI") end
+SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
 
 -- ON LOGIN FUNCTION
 local Install = CreateFrame("Frame")
@@ -274,7 +293,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	if K.ScreenWidth < 1024 then
 		SetCVar("useUiScale", 0)
-		K.ShowPopup("DISABLE_UI")
+		StaticPopup_Show("DISABLE_UI")
 	else
 		--[[
 		SetCVar("useUiScale", 1)
@@ -295,7 +314,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 		-- INSTALL DEFAULT IF WE NEVER RAN KKTHNXUI ON THIS CHARACTER
 		if not SavedOptionsPerChar.Install then
-			K.ShowPopup("INSTALL_UI")
+			StaticPopup_Show("INSTALL_UI")
 		end
 
 		self:UnregisterEvent("ADDON_LOADED")
