@@ -127,6 +127,8 @@ local function Local(o)
 	if o == "UIConfigChatEnable" then o = L_GUI_CHAT_ENABLE end
 	if o == "UIConfigChatFilter" then o = L_GUI_CHAT_SPAM end
 	if o == "UIConfigChatHeight" then o = L_GUI_CHAT_HEIGHT end
+	if o == "UIConfigChatLinkBrackets" then o = L_GUI_CHAT_LINKBRACKETS end
+	if o == "UIConfigChatLinkColor" then o = L_GUI_CHAT_LINKCOLOR end
 	if o == "UIConfigChatOutline" then o = L_GUI_CHAT_OUTLINE end
 	if o == "UIConfigChatScrollByX" then o = L_GUI_CHAT_SCROLLBYX end
 	if o == "UIConfigChatSpam" then o = L_GUI_CHAT_GOLD end

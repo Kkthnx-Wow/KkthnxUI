@@ -1,4 +1,27 @@
+local K, C, _ = unpack(select(2, ...))
+
 local LSM = LibStub("LibSharedMedia-3.0")
+
+C["Media"] = {
+	["Backdrop_Color"] = {5/255, 5/255, 5/255, 0.8},
+	["Blank"] = [[Interface\AddOns\KkthnxUI\Media\Textures\Blank]],
+	["Blank_Font"] = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
+	["Blizz"] = [[Interface\Tooltips\UI-Tooltip-Border]],
+	["Border_Color"] = {192/255, 192/255, 192/255, 1},
+	["Border_Glow"] = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow.tga]],
+	["Combat_Font"] = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
+	["Combat_Font_Size"] = 16,
+	["Combat_Font_Size_Style"] = "OUTLINE" or "THINOUTLINE",
+	["Font"] = [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]],
+	["Font_Size"] = 12,
+	["Font_Style"] = "OUTLINE" or "THINOUTLINE",
+	["Glow"] = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
+	["Overlay_Color"] = {0/255, 0/255, 0/255, 0.8},
+	["Proc_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
+	["Texture"] = [[Interface\TargetingFrame\UI-StatusBar]],
+	["Warning_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
+	["Whisp_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
+}
 
 if LSM == nil then return end
 
