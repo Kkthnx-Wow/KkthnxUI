@@ -128,7 +128,7 @@ local function updateStatus()
 	end
 
 	mouseFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(mouseFrame, "ANCHOR_TOPLEFT", -2, 5)
+		GameTooltip:SetOwner(mouseFrame, "ANCHOR_BOTTOMLEFT", -2, 5)
 		GameTooltip:ClearLines()
 		if not IsMaxLevel() then
 			GameTooltip:AddLine(L_EXPERIENCE_BAR)
@@ -144,6 +144,27 @@ local function updateStatus()
 			GameTooltip:AddLine(string.format(L_REPUTATION_REP, K.Comma(value - min), K.Comma(max - min), (value - min)/(max - min) * 100))
 			GameTooltip:AddLine(string.format(L_REPUTATION_REMAINGING, K.Comma(max - value)))
 		end
+
+		if IsWatchingHonorAsXP() then
+			local current, max = UnitHonor("player"), UnitHonorMax("player")
+			local level, levelmax = UnitHonorLevel("player"), GetMaxPlayerHonorLevel()
+			local text
+			if CanPrestige() then
+				text = PVP_HONOR_PRESTIGE_AVAILABLE
+			elseif level == levelmax then
+				text = MAX_HONOR_LEVEL
+			else
+				text = current.."/"..max
+			end
+			GameTooltip:AddLine(" ")
+			if UnitPrestige("player") > 0 then
+				GameTooltip:AddLine(select(2, GetPrestigeInfo(UnitPrestige("player"))), .0, .6, 1)
+			else
+				GameTooltip:AddLine(PVP_PRESTIGE_RANK_UP_TITLE..LEVEL.."0", .0, .6, 1)
+			end
+			GameTooltip:AddDoubleLine(HONOR_POINTS..LEVEL..level, text, .6, .8, 1, 1, 1, 1)
+		end
+
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(format(L_EXPERIENCE_BAR_LEFTCLICK), 46/255, 182/255, 255/255, .84, .75, .65)
 		GameTooltip:Show()

@@ -5,7 +5,7 @@ local _G = _G
 local match = string.match
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 
---	Based on tekKompare(by Tekkub)
+-- BASED ON TEKKOMPARE(BY TEKKUB)
 local orig1, orig2, GameTooltip = {}, {}, GameTooltip
 local linktypes = {item = true, enchant = true, spell = true, quest = true, unit = true, talent = true, achievement = true, glyph = true, instancelock = true, currency = true}
 
@@ -33,7 +33,7 @@ local function OnHyperlinkLeave(frame, link, ...)
 		GameTooltip:Hide()
 	end
 
-	if orig1[frame] then return orig1[frame](frame, link, ...) end
+	if orig2[frame] then return orig2[frame](frame, ...) end
 end
 
 for i = 1, NUM_CHAT_WINDOWS do

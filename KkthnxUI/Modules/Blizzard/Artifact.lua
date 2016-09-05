@@ -71,7 +71,7 @@ local function updateStatus()
 	end
 
 	ArtifactMouseFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(ArtifactMouseFrame, "ANCHOR_TOPRIGHT", 2, 5)
+		GameTooltip:SetOwner(ArtifactMouseFrame, "ANCHOR_BOTTOMLEFT", -2, 5)
 		GameTooltip:ClearLines()
 		if HasArtBar then
 			local _, _, _, _, totalxp, pointsSpent, _, _, _, _, _, _ = C_ArtifactUI.GetEquippedArtifactInfo()
