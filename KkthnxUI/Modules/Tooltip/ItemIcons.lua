@@ -3,51 +3,56 @@ if C.Tooltip.Enable ~= true or C.Tooltip.ItemIcon ~= true then return end
 
 local _G = _G
 local select = select
-local pairs = pairs
+
 local GetName, GetItem = GetName, GetItem
 local GetItemIcon = GetItemIcon
 local GetSpellInfo = GetSpellInfo
 
--- Adds item icons to tooltips(Tipachu by Tuller)
-local function setTooltipIcon(self, icon)
-	local title = icon and _G[self:GetName().."TextLeft1"]
-	if title then
-		title:SetFormattedText("|T%s:20:20:0:0:64:64:5:59:5:59:%d|t %s", icon, 20, title:GetText())
+-- ADDS ITEM ICONS TO TOOLTIPS(TIPACHU BY TULLER)
+local function AddIcon(self, icon)
+
+	if icon then
+		local title = _G[self:GetName() .. "TextLeft1"]
+		if title and not title:GetText():find("|T" .. icon) then
+			title:SetFormattedText("|T%s:20:20:0:0:64:64:5:59:5:59:%d|t %s", icon, 20, title:GetText())
+		end
 	end
 end
 
-local function newTooltipHooker(method, func)
-	return function(tooltip)
-		local modified = false
+-- ICON FOR ITEMS
+local function hookItem(tip)
+	tip:HookScript("OnTooltipSetItem", function(self, ...)
 
-		tooltip:HookScript("OnTooltipCleared", function(self, ...)
-			modified = false
-		end)
-
-		tooltip:HookScript(method, function(self, ...)
-			if not modified then
-				modified = true
-				func(self, ...)
-			end
-		end)
-	end
+		local name, link = self:GetItem()
+		local icon = link and GetItemIcon(link)
+		AddIcon(self, icon)
+	end)
 end
+hookItem(_G["GameTooltip"])
+hookItem(_G["ItemRefTooltip"])
+hookItem(_G["ShoppingTooltip1"])
+hookItem(_G["ShoppingTooltip2"])
 
-local hookItem = newTooltipHooker("OnTooltipSetItem", function(self, ...)
-	local _, link = self:GetItem()
-	if link then
-		setTooltipIcon(self, GetItemIcon(link))
+-- ICON FOR SPELLS
+local function hookSpell(tip)
+	tip:HookScript("OnTooltipSetSpell", function(self, ...)
+
+		local _, _, id = self:GetSpell()
+		if id then
+			AddIcon(self, select(3, GetSpellInfo(id)))
+		end
+	end)
+end
+hookSpell(_G["GameTooltip"])
+hookSpell(_G["ItemRefTooltip"])
+
+-- ICON FOR ACHIEVEMENTS (ONLY GAMETOOLTIP)
+hooksecurefunc(GameTooltip, "SetHyperlink", function(self, link)
+
+	if type(link) ~= "string" then return end
+	local linkType, id = strmatch(link, "^([^:]+):(%d+)")
+	if linkType == "achievement" then
+		local id, name, _, accountCompleted, month, day, year, _, _, icon, _, isGuild, characterCompleted, whoCompleted = GetAchievementInfo(id)
+		AddIcon(self, icon)
 	end
 end)
-
-local hookSpell = newTooltipHooker("OnTooltipSetSpell", function(self, ...)
-	local _, _, id = self:GetSpell()
-	if id then
-		setTooltipIcon(self, select(3, GetSpellInfo(id)))
-	end
-end)
-
-for _, tooltip in pairs{GameTooltip, ItemRefTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2, ShoppingTooltip1, ShoppingTooltip2} do
-	hookItem(tooltip)
-	hookSpell(tooltip)
-end
