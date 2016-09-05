@@ -63,7 +63,6 @@ local function Local(o)
 	if o == "UIConfigActionBarPetBarHorizontal" then o = L_GUI_ACTIONBAR_PETBAR_HORIZONTAL end
 	if o == "UIConfigActionBarRightBars" then o = L_GUI_ACTIONBAR_RIGHTBARS end
 	if o == "UIConfigActionBarSelfCast" then o = L_GUI_ACTIONBAR_SELFCAST end
-	if o == "UIConfigActionBarShowGrid" then o = L_GUI_ACTIONBAR_GRID end
 	if o == "UIConfigActionBarSplitBars" then o = L_GUI_ACTIONBAR_SPLIT_BARS end
 	if o == "UIConfigActionBarStanceBarHide" then o = L_GUI_ACTIONBAR_STANCEBAR_HIDE end
 	if o == "UIConfigActionBarStanceBarHorizontal" then o = L_GUI_ACTIONBAR_STANCEBAR_HORIZONTAL end
@@ -129,6 +128,7 @@ local function Local(o)
 	if o == "UIConfigChatFilter" then o = L_GUI_CHAT_SPAM end
 	if o == "UIConfigChatHeight" then o = L_GUI_CHAT_HEIGHT end
 	if o == "UIConfigChatOutline" then o = L_GUI_CHAT_OUTLINE end
+	if o == "UIConfigChatScrollByX" then o = L_GUI_CHAT_SCROLLBYX end
 	if o == "UIConfigChatSpam" then o = L_GUI_CHAT_GOLD end
 	if o == "UIConfigChatSticky" then o = L_GUI_CHAT_STICKY end
 	if o == "UIConfigChatTabsMouseover" then o = L_GUI_CHAT_TABS_MOUSEOVER end

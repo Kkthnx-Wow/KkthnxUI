@@ -7,50 +7,69 @@ local format = string.format
 local unpack = unpack
 
 -- WOW API
-local GetCVarBool = GetCVarBool
-local SetCVar = SetCVar
 local CreateFrame = CreateFrame
 
--- Show empty buttons
+K.CreatePopup["FIX_ACTIONBARS"] = {
+	Question = L_POPUP_FIX_ACTIONBARS,
+	Answer1 = ACCEPT,
+	Answer2 = CANCEL,
+	Function1 = ReloadUI,
+}
+
+-- SHOW EMPTY BUTTONS
 local ShowGrid = CreateFrame("Frame")
 ShowGrid:RegisterEvent("PLAYER_ENTERING_WORLD")
 ShowGrid:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	SetActionBarToggles(1, 1, 1, 1, 0)
-	if C.ActionBar.ShowGrid == true then
-		SetCVar("alwaysShowActionBars", 1)
-		for i = 1, 12 do
-			local button = _G[format("ActionButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarRightButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
-
-			button = _G[format("MultiBarBottomRightButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
-
-			button = _G[format("MultiBarLeftButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
-
-			button = _G[format("MultiBarBottomLeftButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
+	local Installed = SavedOptionsPerChar.Install
+	if Installed then
+		local b1, b2, b3, b4 = GetActionBarToggles()
+		if (not b1 or not b2 or not b3 or not b4) then
+			SetActionBarToggles(1, 1, 1, 1)
+			K.ShowPopup("FIX_ACTIONBARS")
 		end
-	else
-		SetCVar("alwaysShowActionBars", 0)
+	end
+
+	for i = 1, 12 do
+		local button = _G[format("ActionButton%d", i)]
+		button:SetAttribute("showgrid", 1)
+		button:SetAttribute("statehidden", true)
+		button:Show()
+		ActionButton_ShowGrid(button)
+
+		button = _G[format("MultiBarRightButton%d", i)]
+		button:SetAttribute("showgrid", 1)
+		button:SetAttribute("statehidden", true)
+		button:Show()
+		ActionButton_ShowGrid(button)
+
+		button = _G[format("MultiBarBottomRightButton%d", i)]
+		button:SetAttribute("showgrid", 1)
+		button:SetAttribute("statehidden", true)
+		button:Show()
+		ActionButton_ShowGrid(button)
+
+		button = _G[format("MultiBarLeftButton%d", i)]
+		button:SetAttribute("showgrid", 1)
+		button:SetAttribute("statehidden", true)
+		button:Show()
+		ActionButton_ShowGrid(button)
+
+		button = _G[format("MultiBarBottomLeftButton%d", i)]
+		button:SetAttribute("showgrid", 1)
+		button:SetAttribute("statehidden", true)
+		button:Show()
+		ActionButton_ShowGrid(button)
 	end
 end)
 
--- Vehicle button anchor
+-- VEHICLE BUTTON ANCHOR
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 VehicleButtonAnchor:SetPoint(unpack(C.Position.VehicleBar))
 VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 
--- Vehicle button
+-- VEHICLE BUTTON
 local vehicle = CreateFrame("Button", "VehicleButton", UIParent)
 vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
@@ -96,7 +115,7 @@ hooksecurefunc("PossessBar_UpdateState", function()
 	end
 end)
 
--- Set tooltip
+-- SET TOOLTIP
 vehicle:SetScript("OnEnter", function(self)
 	if UnitOnTaxi("player") then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")

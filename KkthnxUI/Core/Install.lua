@@ -159,7 +159,7 @@ local function InstallUI()
 		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_TRADE)
 		ChatFrame_AddChannel(ChatFrame3, L_CHAT_TRADE)
 
-		if K.Name == "Kkthnx" or K.Name == "Rollndots" or K.Name == "Broflex" then
+		if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 			SetCVar("scriptErrors", 1)
 		end
 
@@ -223,7 +223,7 @@ K.CreatePopup["INSTALL_UI"] = {
 	Answer1 = ACCEPT,
 	Answer2 = CANCEL,
 	Function1 = InstallUI,
-	Function2 = function() SavedOptionsPerChar.Install = false end, 
+	Function2 = function() SavedOptionsPerChar.Install = false end,
 }
 
 K.CreatePopup["RELOAD_UI"] = {
@@ -263,7 +263,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		return
 	end
 
-	-- CREATE EMPTY CVAR IF THEY DON'T EXIST
+	-- CREATE AN EMPTY CVAR IF THEY DON'T EXIST
 	if not SavedPositions then SavedPositions = {} end
 	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
 	if SavedOptionsPerChar.AutoInvite == nil then SavedOptionsPerChar.AutoInvite = false end
@@ -272,7 +272,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	if SavedOptionsPerChar.RightBars == nil then SavedOptionsPerChar.RightBars = C.ActionBar.RightBars end
 	if SavedOptionsPerChar.BottomBars == nil then SavedOptionsPerChar.BottomBars = C.ActionBar.BottomBars end
 
-	if K.ScreenWidth < 1024 and GetCVar("gxMonitor") == "0" then
+	if K.ScreenWidth < 1024 then
 		SetCVar("useUiScale", 0)
 		K.ShowPopup("DISABLE_UI")
 	else
@@ -305,6 +305,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	if C.General.WelcomeMessage == true then
 		print("|cffffe02e"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
 		print("|cffffe02e"..L_WELCOME_LINE_2_1.."|cffffe02e"..L_WELCOME_LINE_2_2.."|r")
+		print("|cffffe02e"..L_WELCOME_LINE_2_3.."|cffffe02e"..L_WELCOME_LINE_2_4.."|r")
 	end
 end)
 

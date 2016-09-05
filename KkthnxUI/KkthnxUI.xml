@@ -10,12 +10,10 @@
 	<Script file="Config\Profiles.lua"/>
 
 	<Script file="Core\GUI.lua"/>
-	<Script file="Core\PixelPerfect.lua"/>
 
 	<Script file="Libs\LibStub\LibStub.lua"/>
 	<Script file="Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 	<Script file="Libs\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
-
 	<Script file="Libs\AceAddon-3.0\AceAddon-3.0.lua"/>
 	<Script file="Libs\AceEvent-3.0\AceEvent-3.0.lua"/>
 	<Script file="Libs\AceConsole-3.0\AceConsole-3.0.lua"/>
@@ -36,6 +34,7 @@
 	<Script file="Core\API.lua"/>
 	<Script file="Core\Functions.lua"/>
 	<Script file="Core\Popup.lua"/>
+	<Script file="Core\PixelPerfect.lua"/>
 	<Script file="Core\Install.lua"/>
 	<Script file="Core\Disable.lua"/>
 	<Script file="Core\Commands.lua"/>

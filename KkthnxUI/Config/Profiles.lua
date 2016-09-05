@@ -71,14 +71,15 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Automation"]["LoggingCombat"] = true
 	C["Automation"]["Resurrection"] = true
 	C["Automation"]["ScreenShot"] = true
-	C["Automation"]["TabBinder"] = true
+	C["Automation"]["TabBinder"] = false
 
 	C["Chat"]["DamageMeterSpam"] = true
 	C["Chat"]["Spam"] = true
 
 	C["General"]["CustomLagTolerance"] = true
 	C["General"]["TranslateMessage"] = false
-	C["General"]["WelcomeMessage"] = false
+	C["General"]["SmallWorldMap"] = true
+	C["General"]["WelcomeMessage"] = true
 
 	C["Loot"]["AutoGreed"] = true
 	C["Loot"]["ConfirmDisenchant"] = true
@@ -97,5 +98,5 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Unitframe"]["EnhancedFrames"] = true
 	C["Unitframe"]["ClassHealth"] = true
 	C["Unitframe"]["SmoothBars"] = true
-
+	C["Unitframe"]["BetterPowerColors"] = true
 end

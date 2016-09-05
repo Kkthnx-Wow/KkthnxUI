@@ -4,21 +4,20 @@ local K, C, L, _ = select(2, ...):unpack()
 local IsShiftKeyDown = IsShiftKeyDown
 
 -- CHAT SCROLL MODULE
-local ScrollLines = 1
 function FloatingChatFrame_OnMouseScroll(self, delta)
-	if delta < 0 then
+	if (delta < 0) then
 		if IsShiftKeyDown() then
 			self:ScrollToBottom()
 		else
-			for i = 1, ScrollLines do
+			for i = 1, (C.Chat.ScrollByX or 3) do
 				self:ScrollDown()
 			end
 		end
-	elseif delta > 0 then
+	elseif (delta > 0) then
 		if IsShiftKeyDown() then
 			self:ScrollToTop()
 		else
-			for i = 1, ScrollLines do
+			for i = 1, (C.Chat.ScrollByX or 3) do
 				self:ScrollUp()
 			end
 		end
