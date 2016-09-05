@@ -1,10 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Misc.AutoSellGrays and C.Misc.SellMisc ~= true then return end
 
-local Merchant = CreateFrame("Frame")
-local BlizzardMerchantClick = MerchantItemButton_OnModifiedClick
+local SellGreyRepair = CreateFrame("Frame")
 
-function Merchant:OnEvent()
+SellGreyRepair:SetScript("OnEvent", function()
 	if C.Misc.AutoSellGrays or C.Misc.SellMisc then
 		local Cost = 0
 
@@ -70,23 +69,5 @@ function Merchant:OnEvent()
 			end
 		end
 	end
-end
-
-function Merchant:MerchantClick(...)
-	if (IsAltKeyDown()) then
-		local MaxStack = select(8, GetItemInfo(GetMerchantItemLink(self:GetID())))
-
-		if (MaxStack and MaxStack > 1) then
-			BuyMerchantItem(self:GetID(), GetMerchantItemMaxStack(self:GetID()))
-		end
-	end
-
-	BlizzardMerchantClick(self, ...)
-end
-
-Merchant:RegisterEvent("MERCHANT_SHOW")
-Merchant:SetScript("OnEvent", Merchant.OnEvent)
-
-MerchantItemButton_OnModifiedClick = Merchant.MerchantClick
-
-Merchant = Merchant
+end)
+SellGreyRepair:RegisterEvent("MERCHANT_SHOW")
