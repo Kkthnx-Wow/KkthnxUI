@@ -138,12 +138,12 @@ L_MAIL_UNIQUE = "Stopped. Found a unique duplicate item in a bag or the bank."
 L_MAP_CURSOR = "Cursor: "
 L_MAP_BOUNDS = "Out of bounds!"
 -- FARMMODE MINIMAP
-L_MINIMAP_FARMMODE_ON = "Farmmode enabled"
-L_MINIMAP_FARMMODE_OFF = "Farmmode disabled"
+L_MINIMAP_FARMMODE_ON = "Farm mode enabled"
+L_MINIMAP_FARMMODE_OFF = "Farm mode disabled"
 -- MISC LOCALIZATION
 L_MISC_BUY_STACK = "Alt-Click to buy a stack"
 L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
-L_MISC_UI_OUTDATED = "Your version of |cff2eb6ffKkthnxUI|r is out of date. You can download the latest version from www.github.com/kkthnx"
+L_MISC_UI_OUTDATED = "KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!"
 L_MISC_UNDRESS = "Undress"
 -- POPUP LOCALIZATION
 L_POPUP_ARMORY = "Armory"
@@ -154,7 +154,7 @@ L_POPUP_FIX_ACTIONBARS = "There is something wrong with your action bars. Do you
 L_POPUP_INSTALLUI = "Thank you for choosing |cff2eb6ffKkthnxUI|r! |n|nAccept this installation dialog to apply settings."
 L_POPUP_RELOADUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff2eb6ffKkthnxUI|r. |n|nVisit me at |cff2eb6ffwww.github.com/kkthnx|r."
 L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff2eb6ffKkthnxUI|r?"
-L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND to restart your game. Do you want to proceed?"
+L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
 L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff2eb6ffKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
 L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff2eb6ffDBM|r."
 -- STATS LOCALIZATION
@@ -183,36 +183,36 @@ L_WELCOME_LINE_2_3 = ""
 L_WELCOME_LINE_2_4 = "Some of your questions can be answered by typing /uihelp"
 -- SLASH COMMANDS LOCALIZATION
 L_SLASHCMD_HELP = {
-	"",
+    "",
     "|cff2eb6ffAvailable slash commands:|r",
-	"--------------------------",
-	"/rl - Reload interface.",
-	"/rc - Activates a ready check.",
-	"/gm - Opens GM frame.",
-	"/rd - Disband party or raid.",
-	"/toraid - Convert to party or raid.",
-	"/teleport - Teleportation from random dungeon.",
-	"/spec, /ss - Switches between talent spec's.",
-	"/frame - Description is not ready.",
-	"/farmmode - Increase the size of the minimap.",
-	"/moveui - Allows the movement of interface elements.",
-	"/resetui - Resets general settings to default.",
-	"/resetconfig - Resets KkthnxUI_Config settings.",
-	"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-	"/pulsecd - Self cooldown pulse test.",
-	"/tt - Whisper target.",
-	"/ainv - Enables automatic invitation.",
-	"/cfg - Opens interface settings.",
-	"/patch - Display Wow patch info.",
-	"",
-	"|cff2eb6ffAvailable hidden features:|r",
-	"--------------------------",
-	"Right-click minimap for micromenu.",
-	"Middle mouse click minimap for tracking.",
-	"Left click experience bar opens rep frame.",
-	"Left click artifact bar opens artifact frame.",
-	"Hold alt and obtain player ilvl and spec in tooltip.",
-	"Hold shift to scroll instantly to end or start of chat.",
-	"Copy button to the bottom right side of chat.",
-	"Middle mouse click copy button to /roll.",
+    "--------------------------",
+    "/rl - Reload interface.",
+    "/rc - Activates a ready check.",
+    "/gm - Opens GM frame.",
+    "/rd - Disband party or raid.",
+    "/toraid - Convert to party or raid.",
+    "/teleport - Teleportation from random dungeon.",
+    "/spec, /ss - Switches between talent spec's.",
+    "/frame - Description is not ready.",
+    "/farmmode - Increase the size of the minimap.",
+    "/moveui - Allows the movement of interface elements.",
+    "/resetui - Resets general settings to default.",
+    "/resetconfig - Resets KkthnxUI_Config settings.",
+    "/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
+    "/pulsecd - Self cooldown pulse test.",
+    "/tt - Whisper target.",
+    "/ainv - Enables automatic invitation.",
+    "/cfg - Opens interface settings.",
+    "/patch - Display Wow patch info.",
+    "",
+    "|cff2eb6ffAvailable hidden features:|r",
+    "--------------------------",
+    "Right-click minimap for micromenu.",
+    "Middle mouse click minimap for tracking.",
+    "Left click experience bar opens rep frame.",
+    "Left click artifact bar opens artifact frame.",
+    "Hold alt and obtain player ilvl and spec in tooltip.",
+    "Hold shift to scroll instantly to end or start of chat.",
+    "Copy button to the bottom right side of chat.",
+    "Middle mouse click copy button to /roll.",
 }
