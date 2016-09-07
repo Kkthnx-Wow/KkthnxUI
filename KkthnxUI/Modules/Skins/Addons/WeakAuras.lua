@@ -14,8 +14,8 @@ frame:SetScript("OnEvent", function(self, event)
 	if not IsAddOnLoaded("WeakAuras") then return end
 
 	local function Skin_WeakAuras(frame)
-		if not frame.border then
-			K.CreateBorder(frame, 10, 2)
+		if not frame.backdrop then
+			frame:CreateBackdrop(size, 4)
 		end
 
 		if frame.icon then

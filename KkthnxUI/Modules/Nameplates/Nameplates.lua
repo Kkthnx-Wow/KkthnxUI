@@ -310,6 +310,8 @@ function Plates:Enable()
 	C_NamePlate.SetNamePlateOtherSize(C.Nameplate.Width, 45)
 end
 
-if (C.Nameplate.Enable) then
+Plates:RegisterEvent("PLAYER_ENTERING_WORLD")
+Plates:SetScript("OnEvent", function(self, event, ...)
 	Plates:Enable()
-end
+	Plates:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

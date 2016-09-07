@@ -378,6 +378,70 @@ local UploadSkada = function()
 	}
 end
 
+-- OUF_ABU SETTINGS
+local UploadAbu = function()
+	if oUFAbuSettings then table.wipe(oUFAbuSettings) end
+	oUFAbuSettings = {
+		["Default"] = {
+			["useAuraTimer"] = false,
+			["target"] = {
+				["debuffPos"] = "TOP",
+				["buffPos"] = "BOTTOM",
+				["style"] = "fat",
+				["position"] = "CENTER/242/-175",
+				["cbposition"] = "CENTER/0/-175",
+			},
+			["classPortraits"] = true,
+			["player"] = {
+				["style"] = "fat",
+				["cbposition"] = "CENTER/0/-206",
+				["position"] = "CENTER/-244/-175",
+			},
+			["arena"] = {
+				["position"] = "RIGHT/-274/148",
+			},
+			["TextNameColor"] = {
+				0.772549019607843, -- [1]
+				0.713725490196079, -- [2]
+				0.117647058823529, -- [3]
+			},
+			["party"] = {
+				["style"] = "fat",
+			},
+			["focus"] = {
+				["style"] = "fat",
+				["cbposition"] = "LEFT/441/-39",
+				["position"] = "LEFT/439/32",
+			},
+			["fontBigSize"] = 0.900000005960465,
+			["statusbar"] = "Interface\\TargetingFrame\\UI-StatusBar",
+			["pet"] = {
+				["cbshow"] = false,
+				["style"] = "fat",
+				["position"] = "BOTTOM/-240/200",
+			},
+			["fontBig"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf",
+			["fontNormalSize"] = 0.900000005960465,
+			["fontNormal"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf",
+			["focustarget"] = {
+				["style"] = "fat",
+			},
+			["frameColor"] = {
+				0.752941176470588, -- [1]
+				0.764705882352941, -- [2]
+				0.752941176470588, -- [3]
+			},
+			["borderType"] = "abu",
+			["boss"] = {
+				["position"] = "RIGHT/-274/166",
+			},
+			["targettarget"] = {
+				["style"] = "fat",
+			},
+		},
+	}
+end
+
 StaticPopupDialogs.SETTINGS_ALL = {
 	text = L_POPUP_SETTINGS_ALL,
 	button1 = ACCEPT,
@@ -386,12 +450,13 @@ StaticPopupDialogs.SETTINGS_ALL = {
 		if IsAddOnLoaded("DBM-Core") and C.Skins.DBM then K.UploadDBM() end
 		if IsAddOnLoaded("MikScrollingBattleText") then UploadMSBT() end
 		if IsAddOnLoaded("Skada") then UploadSkada() end
+		if IsAddOnLoaded("oUF_Abu") then UploadAbu() end
 		ReloadUI()
 	end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 5,
+	preferredIndex = 3,
 }
 
 SlashCmdList.SETTINGS = function(msg)
@@ -419,12 +484,20 @@ SlashCmdList.SETTINGS = function(msg)
 		else
 			print("|cffffff00Skada"..L_INFO_NOT_INSTALLED.."|r")
 		end
+	elseif msg == "abu" then
+		if IsAddOnLoaded("oUF_Abu") then
+			UploadAbu()
+			ReloadUI()
+		else
+			print("|cffffff00oUF_Abu"..L_INFO_NOT_INSTALLED.."|r")
+		end
 	elseif msg == "all" then
 		StaticPopup_Show("SETTINGS_ALL")
 	else
 		print("|cffffff00"..L_INFO_SETTINGS_DBM.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_MSBT.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_SKADA.."|r")
+		print("|cffffff00"..L_INFO_SETTINGS_ABU.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_ALL.."|r")
 	end
 end

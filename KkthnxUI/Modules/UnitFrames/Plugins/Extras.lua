@@ -28,6 +28,9 @@ end
 if C.Unitframe.CombatFeedback == true then
 	PlayerHitIndicator:SetText(nil)
 	PlayerHitIndicator.SetText = K.Noop
+	-- PET
+	PetHitIndicator:SetText(nil)
+	PetHitIndicator.SetText = K.Noop
 end
 
 -- REMOVE GROUP NUMBER FRAME

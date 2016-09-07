@@ -61,7 +61,8 @@ local function CreateOverlay(f, size)
 	size = size or 2
 
 	local overlay = f:CreateTexture(nil, "BORDER", f)
-	overlay:SetInside()
+	overlay:SetPoint("TOPLEFT", size, -size)
+	overlay:SetPoint("BOTTOMRIGHT", -size, size)
 	overlay:SetTexture(C.Media.Blank)
 	overlay:SetVertexColor(26/255, 26/255, 26/255, 1)
 	f.overlay = overlay
@@ -72,7 +73,8 @@ local function CreateBorder(f, size)
 	size = size or 2
 
 	local border = CreateFrame("Frame", nil, f)
-	border:SetOutside()
+	border:SetPoint("TOPLEFT", -size, size)
+	border:SetPoint("BOTTOMRIGHT", size, -size)
 	border:SetFrameLevel(f:GetFrameLevel() + 1)
 	border:SetBackdrop({
 		edgeFile = C.Media.Blizz, edgeSize = 14,
@@ -88,7 +90,8 @@ local function CreateBackdrop(f, t, size)
 	size = size or 2
 
 	local b = CreateFrame("Frame", nil, f)
-	b:SetOutside(f, size, size)
+	b:SetPoint("TOPLEFT", -size, size)
+	b:SetPoint("BOTTOMRIGHT", size, -size)
 	b:SetTemplate(t)
 
 	if f:GetFrameLevel() - 1 >= 0 then
@@ -154,7 +157,10 @@ end
 local function SetTemplate(f, t)
 	GetTemplate(t)
 
-	f:SetBackdrop(K.Backdrop)
+	f:SetBackdrop({
+		bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14,
+		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
+	})
 
 	if t == "Transparent" then
 		backdropa = C.Media.Overlay_Color[4]
@@ -230,7 +236,7 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0/255, 0/255, 0/255)
-	-- fs:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+	fs:SetShadowOffset(0, -0)
 
 	if not name then
 		parent.Text = fs

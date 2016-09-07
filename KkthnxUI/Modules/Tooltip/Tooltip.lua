@@ -404,4 +404,8 @@ function Tooltip:Enable()
 	end
 end
 
-Tooltip:Enable()
+Tooltip:RegisterEvent("PLAYER_ENTERING_WORLD")
+Tooltip:SetScript("OnEvent", function(self, event, ...)
+	Tooltip:Enable()
+	Tooltip:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

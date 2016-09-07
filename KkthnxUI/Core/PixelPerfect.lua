@@ -31,8 +31,9 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	else
 		local UseUIScale = GetCVar("useUiScale")
 
-		if (UseUIScale ~= "1") then
+		if (UseUIScale ~= "1") and (event == "PLAYER_LOGIN") then
 			SetCVar("useUiScale", 1)
+			WorldMapFrame.hasTaint = true
 		end
 
 		if (format("%.2f", GetCVar("uiScale")) ~= format("%.2f", C.General.UIScale)) then

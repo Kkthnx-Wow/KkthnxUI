@@ -5,19 +5,15 @@ local floor = math.floor
 local pairs, type = pairs, type
 local unpack = unpack
 
-local BORDER_TEXTURE = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border"
-local BORDER_SIZE = 12
-local TEXTURE_SIZE = 64
-local CORNER_SIZE = 12
-local OFFSET_SIZE = 6
-local BORDER_LAYER = "OVERLAY"
+local BORDER_TEXTURE = C.Media.Border
+local BORDER_TEXTURE_SHADOW = C.Media.Border_Shadow
+local BORDER_SIZE = 10
+local PADDING_SIZE = 1
 
-K.borderedObjects = {}
-
-local sections = {"TOPLEFT", "TOP", "TOPRIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT", "LEFT", "RIGHT"}
+local sections = { "TOPLEFT", "TOPRIGHT", "TOP", "BOTTOMLEFT", "BOTTOMRIGHT", "BOTTOM", "LEFT", "RIGHT" }
 
 local function SetBackdropBorderColor(self, r, g, b, a)
-	local t = self.BorderTextures
+	local t = self.borderTextures
 	if not t then return end
 
 	if not r or not g or not b or a == 0 then
@@ -29,127 +25,154 @@ local function SetBackdropBorderColor(self, r, g, b, a)
 	end
 end
 
-local function GetBorderColor(self)
-	return self.BorderTextures and self.BorderTextures.TOPLEFT:GetVertexColor()
+local function SetBorderColor(self, r, g, b, a)
+	local t = self.borderTextures
+	if t then
+		if not r or not g and not b then
+			r, g, b = 1, 1, 1
+		end
+		for _, tex in pairs (t) do
+			tex:SetVertexColor(r, g, b, a or 1)
+		end
+	end
 end
 
-local function SetBorderParent(self, parent)
-	local t = self.BorderTextures
-	if not t then return end
-	if not parent then
-		parent = type(self.overlay) == "Frame" and self.overlay or self
+local function SetBorderShadowColor(self, r, g, b, a)
+	local t = self.borderShadow
+	if t then
+		if not r or not g and not b then
+			r, g, b = 1, 1, 1
+		end
+
+		for _, tex in pairs (t) do
+			tex:SetVertexColor(r, g, b, a or 1)
+		end
 	end
-	for pos, tex in pairs(t) do
-		tex:SetParent(parent)
-	end
-	self:SetBorderSize(self:GetBorderSize())
 end
 
-local function GetBorderParent(self)
-	return self.BorderTextures and self.BorderTextures.TOPLEFT:GetParent()
+local function SetBorderTexture(self, texture)
+	local b = self.borderTextures
+	if b then
+		texture = BORDER_TEXTURE
+		for _, tex in pairs(b) do
+			tex:SetTexture(texture)
+		end
+	end
 end
 
-local function SetBorderSize(self, size, dL, dR, dT, dB)
-	local t = self.BorderTextures
-	if not t then return end
-
-	size = size or BORDER_SIZE
-	dL, dR, dT, dB = dL or t.LEFT.offset or 0, dR or t.RIGHT.offset or 0, dT or t.TOP.offset or 0, dB or t.BOTTOM.offset or 0
-
-	for pos, tex in pairs(t) do
-		tex:SetSize(size, size)
+local function SetBorderSize(self, size)
+	local b = self.borderTextures
+	local s = self.borderShadow
+	if b then
+		for _, tex in pairs(b) do
+			tex:SetSize(size, size)
+		end
 	end
-
-	local d = floor(size * (OFFSET_SIZE / CORNER_SIZE) + 0.5)
-	local parent = t.TOPLEFT:GetParent()
-
-	t.TOPLEFT:SetPoint("TOPLEFT", parent, -d - dL, d + dT)
-	t.TOPRIGHT:SetPoint("TOPRIGHT", parent, d + dR, d + dT)
-	t.BOTTOMLEFT:SetPoint("BOTTOMLEFT", parent, -d - dL, -d - dB)
-	t.BOTTOMRIGHT:SetPoint("BOTTOMRIGHT", parent, d + dR, -d - dB)
-
-	t.LEFT.offset, t.RIGHT.offset, t.TOP.offset, t.BOTTOM.offset = dL, dR, dT, dB
+	if s then
+		for _, tex in pairs(s) do
+			tex:SetSize(size, size)
+		end
+	end
 end
 
 local function GetBorderSize(self)
-	local t = self.BorderTextures
-	if not t then return end
-	return t.TOPLEFT:GetWidth(), t.LEFT.offset, t.RIGHT.offset, t.TOP.offset, t.BOTTOM.offset
+	if self.borderTextures then
+		local size = self.borderTextures.TOPRIGHT:GetSize()
+		return size
+	end
 end
 
-function K.CreateBorder(self, size, offset, parent, layer)
-	if type(self) ~= "table" or not self.CreateTexture or self.BorderTextures then return end
-
-	local t = {}
-
-	for i = 1, #sections do
-		local x = self:CreateTexture(nil, layer or BORDER_LAYER)
-		x:SetTexture(BORDER_TEXTURE)
-		t[sections[i]] = x
-	end
-
-	local ONETHIRD = CORNER_SIZE / TEXTURE_SIZE
-	local TWOTHIRDS = (TEXTURE_SIZE - CORNER_SIZE) / TEXTURE_SIZE
-
-	t.TOPLEFT:SetTexCoord(0, ONETHIRD, 0, ONETHIRD)
-	t.TOP:SetTexCoord(ONETHIRD, TWOTHIRDS, 0, ONETHIRD)
-	t.TOPRIGHT:SetTexCoord(TWOTHIRDS, 1, 0, ONETHIRD)
-	t.RIGHT:SetTexCoord(TWOTHIRDS, 1, ONETHIRD, TWOTHIRDS)
-	t.BOTTOMRIGHT:SetTexCoord(TWOTHIRDS, 1, TWOTHIRDS, 1)
-	t.BOTTOM:SetTexCoord(ONETHIRD, TWOTHIRDS, TWOTHIRDS, 1)
-	t.BOTTOMLEFT:SetTexCoord(0, ONETHIRD, TWOTHIRDS, 1)
-	t.LEFT:SetTexCoord(0, ONETHIRD, ONETHIRD, TWOTHIRDS)
-
-	t.TOP:SetPoint("TOPLEFT", t.TOPLEFT, "TOPRIGHT")
-	t.TOP:SetPoint("TOPRIGHT", t.TOPRIGHT, "TOPLEFT")
-
-	t.RIGHT:SetPoint("TOPRIGHT", t.TOPRIGHT, "BOTTOMRIGHT")
-	t.RIGHT:SetPoint("BOTTOMRIGHT", t.BOTTOMRIGHT, "TOPRIGHT")
-
-	t.BOTTOM:SetPoint("BOTTOMLEFT", t.BOTTOMLEFT, "BOTTOMRIGHT")
-	t.BOTTOM:SetPoint("BOTTOMRIGHT", t.BOTTOMRIGHT, "BOTTOMLEFT")
-
-	t.LEFT:SetPoint("TOPLEFT", t.TOPLEFT, "BOTTOMLEFT")
-	t.LEFT:SetPoint("BOTTOMLEFT", t.BOTTOMLEFT, "TOPLEFT")
-
-	self.BorderTextures = t
-
-	self.SetBackdropBorderColor  = SetBackdropBorderColor
-	self.SetBorderLayer  = SetBorderLayer
-	self.SetBorderParent = SetBorderParent
-	self.SetBorderSize   = SetBorderSize
-
-	self.GetBorderColor  = GetBorderColor
-	self.GetBorderLayer  = GetBorderLayer
-	self.GetBorderParent = GetBorderParent
-	self.GetBorderSize   = GetBorderSize
-
-	if self.GetBackdrop then
-		local backdrop = self:GetBackdrop()
-		if type(backdrop) == "table" then
-			if backdrop.edgeFile then
-				backdrop.edgeFile = nil
-			end
-			if backdrop.insets then
-				backdrop.insets.top = 0
-				backdrop.insets.right = 0
-				backdrop.insets.bottom = 0
-				backdrop.insets.left = 0
-			end
-			self:SetBackdrop(backdrop)
+local function SetBorderPadding(self, T, B, L, R)
+	local b = self.borderTextures
+	local s = self.borderShadow
+	if b and T then
+		if not R and not B and not B and not L then
+			R, B, L = T, T, T
 		end
+
+		b.TOPLEFT:SetPoint("TOPLEFT", self, -L, T)
+		b.TOPRIGHT:SetPoint("TOPRIGHT", self, R, T)
+		b.TOP:SetPoint("TOPLEFT", b.TOPLEFT, "TOPRIGHT")
+		b.TOP:SetPoint("TOPRIGHT", b.TOPRIGHT, "TOPLEFT")
+		b.BOTTOMLEFT:SetPoint("BOTTOMLEFT", self, -L, -B)
+		b.BOTTOMRIGHT:SetPoint("BOTTOMRIGHT", self, R, -B)
+		b.BOTTOM:SetPoint("BOTTOMLEFT", b.BOTTOMLEFT, "BOTTOMRIGHT")
+		b.BOTTOM:SetPoint("BOTTOMRIGHT", b.BOTTOMRIGHT, "BOTTOMLEFT")
+		b.LEFT:SetPoint("TOPLEFT", b.TOPLEFT, "BOTTOMLEFT")
+		b.LEFT:SetPoint("BOTTOMLEFT", b.BOTTOMLEFT, "TOPLEFT")
+		b.RIGHT:SetPoint("TOPRIGHT", b.TOPRIGHT, "BOTTOMRIGHT")
+		b.RIGHT:SetPoint("BOTTOMRIGHT", b.BOTTOMRIGHT, "TOPRIGHT")
+
+		local space = (self:GetBorderSize()) / 3.5
+
+		s.TOPLEFT:SetPoint("TOPLEFT", self, -(L+space), (T+space))
+		s.TOPRIGHT:SetPoint("TOPRIGHT", self, (R+space), (T+space))
+		s.TOP:SetPoint("TOPLEFT", s.TOPLEFT, "TOPRIGHT")
+		s.TOP:SetPoint("TOPRIGHT", s.TOPRIGHT, "TOPLEFT")
+		s.BOTTOMLEFT:SetPoint("BOTTOMLEFT", self, -(L+space), -(B+space))
+		s.BOTTOMRIGHT:SetPoint("BOTTOMRIGHT", self, (R+space), -(B+space))
+		s.BOTTOM:SetPoint("BOTTOMLEFT", s.BOTTOMLEFT, "BOTTOMRIGHT")
+		s.BOTTOM:SetPoint("BOTTOMRIGHT", s.BOTTOMRIGHT, "BOTTOMLEFT")
+		s.LEFT:SetPoint("TOPLEFT", s.TOPLEFT, "BOTTOMLEFT")
+		s.LEFT:SetPoint("BOTTOMLEFT", s.BOTTOMLEFT, "TOPLEFT")
+		s.RIGHT:SetPoint("TOPRIGHT", s.TOPRIGHT, "BOTTOMRIGHT")
+		s.RIGHT:SetPoint("BOTTOMRIGHT", s.BOTTOMRIGHT, "TOPRIGHT")
 	end
-
-	if self.SetBackdropBorderColor then
-		self.SetBackdropBorderColor = SetBackdropBorderColor
-	end
-
-	tinsert(K.borderedObjects, self)
-
-	self:SetBackdropBorderColor()
-	self:SetBorderParent(parent)
-	self:SetBorderSize(size, offset)
-
-	return true
 end
-_G.CreateBorder = K.CreateBorder
+
+function K.CreateBorder(self, size, padding, layer)
+	if type(self) ~= "table" or self.borderTextures then return end
+
+	if not (self.borderTextures) then
+		local b = {}
+		local s = {}
+
+		for i = 1, 8 do
+			local t = self:CreateTexture(nil, layer or "OVERLAY")
+			t:SetParent(self)
+			t:SetTexture(BORDER_TEXTURE)
+			t:SetVertexColor(1, 1, 1, 1)
+			b[sections[i]] = t
+		end
+
+		for i = 1, 8 do
+			local t = self:CreateTexture(nil, layer or "BORDER")
+			t:SetParent(self)
+			t:SetTexture(BORDER_TEXTURE_SHADOW)
+			t:SetVertexColor(0, 0, 0, 1)
+			s[sections[i]] = t
+		end
+
+		b.TOPLEFT:SetTexCoord(0, 1/3, 0, 1/3)
+		b.TOPRIGHT:SetTexCoord(2/3, 1, 0, 1/3)
+		b.TOP:SetTexCoord(1/3, 2/3, 0, 1/3)
+		b.BOTTOMLEFT:SetTexCoord(0, 1/3, 2/3, 1)
+		b.BOTTOMRIGHT:SetTexCoord(2/3, 1, 2/3, 1)
+		b.BOTTOM:SetTexCoord(1/3, 2/3, 2/3, 1)
+		b.LEFT:SetTexCoord(0, 1/3, 1/3, 2/3)
+		b.RIGHT:SetTexCoord(2/3, 1, 1/3, 2/3)
+
+		s.TOPLEFT:SetTexCoord(0, 1/3, 0, 1/3)
+		s.TOPRIGHT:SetTexCoord(2/3, 1, 0, 1/3)
+		s.TOP:SetTexCoord(1/3, 2/3, 0, 1/3)
+		s.BOTTOMLEFT:SetTexCoord(0, 1/3, 2/3, 1)
+		s.BOTTOMRIGHT:SetTexCoord(2/3, 1, 2/3, 1)
+		s.BOTTOM:SetTexCoord(1/3, 2/3, 2/3, 1)
+		s.LEFT:SetTexCoord(0, 1/3, 1/3, 2/3)
+		s.RIGHT:SetTexCoord(2/3, 1, 1/3, 2/3)
+
+		self.borderTextures = b
+		self.borderShadow = s
+
+		self.SetBackdropBorderColor = SetBackdropBorderColor
+		self.SetBorderColor = SetBorderColor
+		self.SetBorderShadowColor = SetBorderShadowColor
+		self.SetBorderTexture = SetBorderTexture
+		self.SetBorderSize = SetBorderSize
+		self.GetBorderSize = GetBorderSize
+		self.SetBorderPadding = SetBorderPadding
+
+		self:SetBorderSize(size or BORDER_SIZE)
+		self:SetBorderPadding(padding or PADDING_SIZE)
+	end
+end

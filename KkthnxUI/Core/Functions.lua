@@ -38,7 +38,7 @@ K.SetFontString = function(parent, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset((0), -(0))
+	fs:SetShadowOffset(0, -0)
 
 	return fs
 end
@@ -53,24 +53,22 @@ end
 -- WE SHOW A DIFFERENT VALUE FOR THE CHINESE CLIENT.
 K.ShortValue = function(value)
 	if (Locale == "zhCN") then
-		value = tonumber(value)
-		if not value then return "" end
-		if value >= 1e8 then
-			return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
-		elseif value >= 1e4 or value <= -1e3 then
-			return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
+		if abs(value) >= 1e8 then
+			return format("%.1fY", value / 1e8)
+		elseif abs(value) >= 1e4 then
+			return format("%.1fW", value / 1e4)
 		else
-			return floor(tostring(value))
+			return format("%d", value)
 		end
 	else
-		value = tonumber(value)
-		if not value then return "" end
-		if value >= 1e6 then
-			return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
-		elseif value >= 1e3 or value <= -1e3 then
-			return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+		if abs(value) >= 1e9 then
+			return format("%.1fG", value / 1e9)
+		elseif abs(value) >= 1e6 then
+			return format("%.1fM", value / 1e6)
+		elseif abs(value) >= 1e3 then
+			return format("%.1fk", value / 1e3)
 		else
-			return floor(tostring(value))
+			return format("%d", value)
 		end
 	end
 end

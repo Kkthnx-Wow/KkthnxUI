@@ -22,7 +22,7 @@ local function TargetAuraColour(self)
 		local bframecd = _G[self:GetName().."Buff"..i.."Cooldown"]
 		local bframecount = _G[self:GetName().."Buff"..i.."Count"]
 		if bframe then
-			K.CreateBorder(bframe, 8)
+			K.CreateBorder(bframe, 10, 1)
 
 			bframecd:ClearAllPoints()
 			bframecd:SetPoint("TOPLEFT", bframe, 1.5, -1.5)
@@ -42,7 +42,7 @@ local function TargetAuraColour(self)
 		local dframecd = _G[self:GetName().."Debuff"..i.."Cooldown"]
 		local dframecount = _G[self:GetName().."Debuff"..i.."Count"]
 		if dframe then
-			K.CreateBorder(dframe, 8)
+			K.CreateBorder(dframe, 10, 1)
 			-- BORDER COLOUR
 			local dname = UnitDebuff(self.unit, i)
 			local _, _, _, _, dtype = UnitDebuff(self.unit, i)
