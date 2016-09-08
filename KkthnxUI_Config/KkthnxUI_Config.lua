@@ -183,6 +183,7 @@ local function Local(o)
 	if o == "UIConfigMinimapEnable" then o = L_GUI_MINIMAP_ENABLEMINIMAP end
 	if o == "UIConfigMinimapPing" then o = L_GUI_MINIMAP_PING end
 	if o == "UIConfigMinimapSize" then o = L_GUI_MINIMAP_MINIMAPSIZE end
+	if o == "UIConfigMinimapInvert" then o = L_GUI_MINIMAP_MINIMAPINVERT end
 	-- Misc Settings
 	if o == "UIConfigMisc" then o = L_GUI_MISC end
 	if o == "UIConfigMiscAFKCamera" then o = L_GUI_MISC_SPIN_CAMERA end
