@@ -15,20 +15,20 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		end
 	end
 
-	for i = 1, MAX_BOSS_FRAMES do
-		local Boss = _G["Boss"..i.."TargetFrame"]
-		local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
-		local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
-
-		Boss:UnregisterAllEvents()
-		Boss.Show = K.Noop
-		Boss:Hide()
-
-		Health:UnregisterAllEvents()
-		Power:UnregisterAllEvents()
-	end
-
 	if (select(4, GetAddOnInfo("oUF"))) then
+		for i = 1, MAX_BOSS_FRAMES do
+			local Boss = _G["Boss"..i.."TargetFrame"]
+			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
+			local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
+
+			Boss:UnregisterAllEvents()
+			Boss.Show = K.Noop
+			Boss:Hide()
+
+			Health:UnregisterAllEvents()
+			Power:UnregisterAllEvents()
+		end
+
 		InterfaceOptionsFrameCategoriesButton11:SetScale(0.00001)
 		InterfaceOptionsFrameCategoriesButton11:SetAlpha(0)
 

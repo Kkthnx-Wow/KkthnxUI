@@ -379,9 +379,9 @@ local UploadSkada = function()
 end
 
 -- OUF_ABU SETTINGS
-local UploadAbu = function()
-	if oUFAbuSettings then table.wipe(oUFAbuSettings) end
-	oUFAbuSettings = {
+local UploadKkthnx = function()
+	if oUFKkthnxSettings then table.wipe(oUFKkthnxSettings) end
+	oUFKkthnxSettings = {
 		["Default"] = {
 			["useAuraTimer"] = false,
 			["target"] = {
@@ -431,7 +431,7 @@ local UploadAbu = function()
 				0.764705882352941, -- [2]
 				0.752941176470588, -- [3]
 			},
-			["borderType"] = "abu",
+			["borderType"] = "kkthnx",
 			["boss"] = {
 				["position"] = "RIGHT/-274/166",
 			},
@@ -484,9 +484,9 @@ SlashCmdList.SETTINGS = function(msg)
 		else
 			print("|cffffff00Skada"..L_INFO_NOT_INSTALLED.."|r")
 		end
-	elseif msg == "abu" then
-		if IsAddOnLoaded("oUF_Abu") then
-			UploadAbu()
+	elseif msg == "kkthnx" then
+		if IsAddOnLoaded("oUF_Kkthnx") then
+			UploadKkthnx()
 			ReloadUI()
 		else
 			print("|cffffff00oUF_Abu"..L_INFO_NOT_INSTALLED.."|r")
@@ -497,7 +497,7 @@ SlashCmdList.SETTINGS = function(msg)
 		print("|cffffff00"..L_INFO_SETTINGS_DBM.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_MSBT.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_SKADA.."|r")
-		print("|cffffff00"..L_INFO_SETTINGS_ABU.."|r")
+		print("|cffffff00"..L_INFO_SETTINGS_KKTHNX.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_ALL.."|r")
 	end
 end

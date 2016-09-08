@@ -17,17 +17,20 @@ MicroMenu.Buttons = {
 
 	{text = SPELLBOOK_ABILITIES_BUTTON,
 		func = function()
-			ToggleFrame(SpellBookFrame)
+			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
 		end,
 	notCheckable = true},
 
 	{text = TALENTS_BUTTON,
 		func = function()
-			if (not PlayerTalentFrame) then
+			if not PlayerTalentFrame then
 				TalentFrame_LoadUI()
 			end
 
-			ShowUIPanel(PlayerTalentFrame)
+			if not PlayerTalentFrame:IsShown() then
+				ShowUIPanel(PlayerTalentFrame)
+			else
+			HideUIPanel(PlayerTalentFrame) end
 		end,
 	notCheckable = true},
 
@@ -144,7 +147,33 @@ MicroMenu.Buttons = {
 			end
 		end,
 	notCheckable = true},
+
+	{text = MAINMENU_BUTTON,
+		func = function()
+			if (not GameMenuFrame:IsShown()) then
+				if (VideoOptionsFrame:IsShown()) then
+					VideoOptionsFrameCancel:Click()
+				elseif (AudioOptionsFrame:IsShown()) then
+					AudioOptionsFrameCancel:Click()
+				elseif (InterfaceOptionsFrame:IsShown()) then
+					InterfaceOptionsFrameCancel:Click()
+				end
+				CloseMenus()
+				CloseAllWindows()
+				PlaySound("igMainMenuOpen")
+				ShowUIPanel(GameMenuFrame)
+			else
+				PlaySound("igMainMenuQuit")
+				HideUIPanel(GameMenuFrame)
+				MainMenuMicroButton_SetNormal()
+			end
+		end,
+	notCheckable = true},
 }
+
+--if(C_StorePublic.IsEnabled()) then
+tinsert(MicroMenu.Buttons, {text = BLIZZARD_STORE, func = function() StoreMicroButton:Click() end, notCheckable = true})
+--end
 
 Minimap:SetScript("OnMouseUp", function(self, button)
 	local position = MinimapAnchor:GetPoint()
