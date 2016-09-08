@@ -149,6 +149,7 @@ C["Minimap"] = {
 	["Enable"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
+	["Invert"] = false,
 }
 -- MISCELLANEOUS OPTIONS
 C["Misc"] = {
