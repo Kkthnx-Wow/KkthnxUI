@@ -57,11 +57,11 @@ local timewarped = {
 
 local itemLevelPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)")
 local tooltipLines = {
-	"KkthnxUI_ItemScanningTooltipTextLeft2",
-	"KkthnxUI_ItemScanningTooltipTextLeft3",
-	"KkthnxUI_ItemScanningTooltipTextLeft4",
+	"KthnxUI_ItemScanningTooltipTextLeft2",
+	"KthnxUI_ItemScanningTooltipTextLeft3",
+	"KthnxUI_ItemScanningTooltipTextLeft4",
 }
-local tooltip = CreateFrame("GameTooltip", "KkthnxUI_ItemScanningTooltip", UIParent, "GameTooltipTemplate")
+local tooltip = CreateFrame("GameTooltip", "KthnxUI_ItemScanningTooltip", UIParent, "GameTooltipTemplate")
 tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 -- Scan tooltip for item level information
@@ -135,10 +135,13 @@ local function UpdateButtonsText(frame)
 							level = level + upgrades[uid]
 						end
 
-						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+):"))
+						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+).+"))
 						if numBonusIDs then
 							if numBonusIDs == 1 then
-								local bid1, levelLootedAt = strmatch(itemLink, ".+:%d+:512:%d*:%d+:(%d+):(%d+):")
+								local bid1, levelLootedAt = strmatch(itemLink, ".+:%d+:512:%d*:%d+:(%d+):(%d+).+")
+								if levelLootedAt == "110" then
+									levelLootedAt = levelLootedAt - 1
+								end
 								if legionUpgrades[bid1] == nil then
 									level = GetItemLevel(itemLink) or level
 									--print("|cffff0000WARNING: Unkhown item bonus ID: " .. bid1 .. ". Item: " .. itemLink)
@@ -149,7 +152,10 @@ local function UpdateButtonsText(frame)
 									level = legionUpgrades[bid1] + (levelLootedAt - 100) * 10
 								end
 							elseif numBonusIDs == 2 then
-								local bid1, bid2, levelLootedAt = strmatch(itemLink, ".+:%d+:512:%d*:%d+:(%d+):(%d+):(%d+):")
+								local bid1, bid2, levelLootedAt = strmatch(itemLink, ".+:%d+:512:%d*:%d+:(%d+):(%d+):(%d+).+")
+								if levelLootedAt == "110" then
+									levelLootedAt = levelLootedAt - 1
+								end
 								if legionUpgrades[bid1] == nil then
 									level = GetItemLevel(itemLink) or level
 									--print("|cffff0000WARNING: Unkhown item bonus ID: " .. bid1 .. ". Item: " .. itemLink)

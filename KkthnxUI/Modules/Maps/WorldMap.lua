@@ -62,4 +62,12 @@ function WorldMap:Enable()
 	WorldMapFrame:HookScript("OnUpdate", WorldMap.OnUpdate)
 end
 
-WorldMap:Enable()
+function WorldMap:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
+		WorldMap:Enable()
+	end
+end
+
+WorldMap:RegisterEvent("PLAYER_LOGIN")
+WorldMap:RegisterEvent("ADDON_LOADED")
+WorldMap:SetScript("OnEvent", WorldMap.OnEvent)

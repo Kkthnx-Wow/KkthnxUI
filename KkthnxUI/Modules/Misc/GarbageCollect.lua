@@ -27,10 +27,18 @@ function CollectGarbage:OnEvent(event, unit)
 end
 
 function CollectGarbage:Enable()
-	self:SetScript("OnEvent", CollectGarbage.OnEvent)
+	self:SetScript("OnEvent", self.OnEvent)
 end
 
 CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
 CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-CollectGarbage:Enable()
+function CollectGarbage:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
+		CollectGarbage:Enable()
+	end
+end
+
+CollectGarbage:RegisterEvent("PLAYER_LOGIN")
+CollectGarbage:RegisterEvent("ADDON_LOADED")
+CollectGarbage:SetScript("OnEvent", CollectGarbage.OnEvent)

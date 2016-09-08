@@ -3,6 +3,7 @@ local K, C, L, _ = select(2, ...):unpack()
 local pairs = pairs
 local select = select
 local unpack = unpack
+
 local CreateFrame = CreateFrame
 
 local ColorTextures = CreateFrame("Frame")
@@ -126,24 +127,12 @@ function ColorTextures:Style()
 	end
 end
 
-function ColorTextures:HandleEvents(event, ...)
-	if(event == "PLAYER_ENTERING_WORLD") then
-		ColorTextures:Style()
-	end
-
-	if(event == "ADDON_LOADED" and ... == "KkthnxUI") then
+function ColorTextures:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
 		ColorTextures:Style()
 	end
 end
 
-function ColorTextures:Enable()
-
-	ColorTextures:SetScript("OnEvent", ColorTextures.HandleEvents)
-
-	ColorTextures:RegisterEvent("PLAYER_ENTERING_WORLD")
-	ColorTextures:RegisterEvent("ADDON_LOADED")
-end
-
-if C.Blizzard.ColorTextures then
-	ColorTextures:Enable()
-end
+ColorTextures:RegisterEvent("PLAYER_LOGIN")
+ColorTextures:RegisterEvent("ADDON_LOADED")
+ColorTextures:SetScript("OnEvent", ColorTextures.OnEvent)

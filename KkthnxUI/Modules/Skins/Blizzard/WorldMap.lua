@@ -1,15 +1,12 @@
 local K, C, L, _ = select(2, ...):unpack()
---if C.General.SmallWorldMap ~= then return end
 
---local WorldMap = K:NewModule('WorldMap', 'AceHook-3.0', 'AceEvent-3.0', 'AceTimer-3.0')
+local Load = CreateFrame("Frame")
 local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
-K.WorldMap = WorldMap
-
---Cache global variables
---Lua functions
+-- LUA API
 local find = string.find
---WoW API / Variables
+
+-- WOW API
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 local SetUIPanelAttribute = SetUIPanelAttribute
@@ -63,12 +60,12 @@ function WorldMap:PLAYER_REGEN_DISABLED()
 end
 
 function WorldMap:ResetDropDownListPosition(frame)
-	--DropDownList1:ClearAllPoints()
-	--DropDownList1:Point("TOPRIGHT", frame, "BOTTOMRIGHT", -17, -4)
+	-- DropDownList1:ClearAllPoints()
+	-- DropDownList1:Point("TOPRIGHT", frame, "BOTTOMRIGHT", -17, -4)
 end
 
-function WorldMap:Initialize()
-	-- setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) --blizzard taint fix
+function WorldMap:Enable()
+	-- setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) -- BLIZZARD TAINT FIX
 
 	if(C.General.SmallWorldMap) then
 		BlackoutWorld:SetTexture(nil)
@@ -84,11 +81,20 @@ function WorldMap:Initialize()
 		end
 	end
 
-	--Set alpha used when moving
-	--WORLD_MAP_MIN_ALPHA = C.Map.mapAlphaWhenMoving
-	--SetCVar("mapAnimMinAlpha", C.Map.mapAlphaWhenMoving)
-	--Enable/Disable map fading when moving
-	--SetCVar("mapFade", (C.Map.fadeMapWhenMoving == true and 1 or 0))
+	-- SET ALPHA USED WHEN MOVING
+	-- WORLD_MAP_MIN_ALPHA = C.Map.AlphaWhenMoving
+	-- SetCVar("mapAnimMinAlpha", C.Map.AlphaWhenMoving)
+
+	-- ENABLE/DISABLE MAP FADING WHEN MOVING
+	-- SetCVar("mapFade", (C.Map.MapWhenMoving == true and 1 or 0))
 end
 
-WorldMap:Initialize()
+function Load:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
+		WorldMap:Enable()
+	end
+end
+
+Load:RegisterEvent("PLAYER_LOGIN")
+Load:RegisterEvent("ADDON_LOADED")
+Load:SetScript("OnEvent", Load.OnEvent)
