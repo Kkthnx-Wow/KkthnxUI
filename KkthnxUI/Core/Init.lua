@@ -1,4 +1,4 @@
--- Initiation / Engine of KkthnxUI
+-- INITIATION / ENGINE OF KKTHNXUI
 local AddOn, Engine = ...
 local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
 local Windowed = Display_DisplayModeDropDown:windowedmode()

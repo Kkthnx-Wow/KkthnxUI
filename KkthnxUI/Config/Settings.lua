@@ -106,9 +106,9 @@ C["Experience"] = {
 	["XP"] = true,
 	["Artifact"] = true,
 	["XPHeight"] = 8,
-	["XPWidth"] = 150,
+	["XPWidth"] = 142,
 	["ArtifactHeight"] = 8,
-	["ArtifactWidth"] = 150,
+	["ArtifactWidth"] = 142,
 	["XPClassColor"] = false,
 }
 -- FILGER OPTIONS
@@ -149,6 +149,7 @@ C["Minimap"] = {
 	["Enable"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
+	["Invert"] = false,
 }
 -- MISCELLANEOUS OPTIONS
 C["Misc"] = {

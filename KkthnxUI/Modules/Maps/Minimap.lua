@@ -11,10 +11,12 @@ local MailIcon = MiniMapMailIcon
 local MiniMapInstanceDifficulty = MiniMapInstanceDifficulty
 local North = _G["MinimapNorthTag"]
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
+local Movers = K["Movers"]
 
 -- MINIMAP BORDER
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
 MinimapAnchor:CreatePanel("ClassColor", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
+Movers:RegisterFrame(MinimapAnchor)
 
 local HiddenFrames = {
 	"MinimapCluster",
@@ -53,8 +55,8 @@ GarrisonLandingPageMinimapButton.IsShown = function() return true end
 -- PARENT MINIMAP INTO OUR FRAME
 Minimap:SetParent(MinimapAnchor)
 Minimap:ClearAllPoints()
-Minimap:SetPoint("TOPLEFT", MinimapAnchor, "TOPLEFT", 0, 0)
-Minimap:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", 0, 0)
+Minimap:SetPoint("TOPLEFT", MinimapAnchor, "TOPLEFT", 4, -4)
+Minimap:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -4, 4)
 Minimap:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 -- BACKDROP
 MinimapBackdrop:ClearAllPoints()

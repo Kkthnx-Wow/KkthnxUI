@@ -17,10 +17,17 @@ if C.Minimap.Enable == true then
 		StatFrame.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
 	StatFrame:SetSize(0, 20)
-	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -24)
+
+ 	if C.Minimap.Invert then
+		StatFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 24)
+		StatFrame:SetPoint("TOPRIGHT", Minimap, 2, 24)
+ 	else
+		StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -24)
+		StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -24)
+ 	end
+
 	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
 	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
-	StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -24)
 else
 	StatFrame:SetSize(0, 20)
 	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, -34)

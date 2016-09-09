@@ -11,6 +11,7 @@ local UIParent = UIParent
 local InCombatLockdown = InCombatLockdown
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
 local hooksecurefunc = hooksecurefunc
+local Movers = K["Movers"]
 
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", PetBattleFrameHider)
 if C.ActionBar.StanceBarHorizontal == true then
@@ -26,6 +27,7 @@ else
 	ShiftHolder:SetWidth(C.ActionBar.ButtonSize)
 	ShiftHolder:SetHeight((C.ActionBar.ButtonSize * 7) + (C.ActionBar.ButtonSpace * 6))
 end
+Movers:RegisterFrame(ShiftHolder)
 
 -- HIDE BAR
 if C.ActionBar.StanceBarHide then ShiftHolder:Hide() return end

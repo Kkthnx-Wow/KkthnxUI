@@ -16,33 +16,43 @@ local GetItemInfo = GetItemInfo
 local GetSpellInfo = GetSpellInfo
 local GetInventoryItemLink = GetInventoryItemLink
 local GetSpellCooldown = GetSpellCooldown
+local Movers = K["Movers"]
 
 P_BUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.PlayerBuffIcon))
 P_BUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(P_BUFF_ICON_Anchor)
 
 P_PROC_ICON_Anchor:SetPoint(unpack(C.Position.Filger.PlayerProcIcon))
 P_PROC_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(P_PROC_ICON_Anchor)
 
 SPECIAL_P_BUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.SpecialProcIcon))
 SPECIAL_P_BUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
 
 T_DEBUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.TargetDebuffIcon))
 T_DEBUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(P_PROC_ICON_Anchor)
 
 T_BUFF_Anchor:SetPoint(unpack(C.Position.Filger.TargetBuffIcon))
 T_BUFF_Anchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
+Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
 
 PVE_PVP_DEBUFF_Anchor:SetPoint(unpack(C.Position.Filger.PvEDebuff))
 PVE_PVP_DEBUFF_Anchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
+Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
 
 PVE_PVP_CC_Anchor:SetPoint(unpack(C.Position.Filger.PvECC))
 PVE_PVP_CC_Anchor:SetSize(221, 25)
+Movers:RegisterFrame(PVE_PVP_CC_Anchor)
 
 COOLDOWN_Anchor:SetPoint(unpack(C.Position.Filger.Cooldown))
 COOLDOWN_Anchor:SetSize(C.Filger.CooldownSize, C.Filger.CooldownSize)
+Movers:RegisterFrame(COOLDOWN_Anchor)
 
 T_DE_BUFF_BAR_Anchor:SetPoint(unpack(C.Position.Filger.TargetBar))
 T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
+Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
 
 -- FILGER(BY NILS RUESCH, EDITORS AFFLI/SINAC/ILDYRIA)
 local Filger = {}

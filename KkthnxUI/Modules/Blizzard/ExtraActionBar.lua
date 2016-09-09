@@ -4,6 +4,7 @@ if C.ActionBar.Enable ~= true then return end
 local unpack = unpack
 
 local hooksecurefunc = hooksecurefunc
+local Movers = K["Movers"]
 
 -- MAKE EXTRAACTIONBARFRAME MOVABLE (USE MACRO /click extraactionbutton1)
 local anchor = CreateFrame("Frame", "ExtraButtonAnchor", UIParent)
@@ -13,6 +14,7 @@ else
 	anchor:SetPoint(unpack(C.Position.ExtraButton))
 end
 anchor:SetSize(53, 53)
+Movers:RegisterFrame(anchor)
 
 ExtraActionBarFrame:SetParent(UIParent)
 ExtraActionBarFrame:ClearAllPoints()

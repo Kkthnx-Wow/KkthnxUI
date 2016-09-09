@@ -11,10 +11,13 @@ local GetTime = GetTime
 local fadeInTime, fadeOutTime, maxAlpha, elapsed, runtimer = 0.5, 0.7, 1, 0, 0
 local animScale, iconSize, holdTime, threshold = C.PulseCD.AnimationScale, C.PulseCD.Size, C.PulseCD.HoldTime, C.PulseCD.Threshold
 local cooldowns, animating, watching = {}, {}, {}
+local Movers = K["Movers"]
 
 local anchor = CreateFrame("Frame", "PulseCDAnchor", UIParent)
 anchor:SetSize(C.PulseCD.Size, C.PulseCD.Size)
 anchor:SetPoint(unpack(C.Position.PulseCD))
+Movers:RegisterFrame(anchor)
+
 
 local frame = CreateFrame("Frame", "PulseCDFrame", anchor)
 frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)

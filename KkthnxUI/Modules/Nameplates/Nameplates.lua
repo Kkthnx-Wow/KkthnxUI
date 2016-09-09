@@ -310,12 +310,11 @@ function Plates:Enable()
 	C_NamePlate.SetNamePlateOtherSize(C.Nameplate.Width, 45)
 end
 
-function Plates:OnEvent(event, addon)
+function Plates:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
 		Plates:Enable()
 	end
 end
 
 Plates:RegisterEvent("PLAYER_LOGIN")
-Plates:RegisterEvent("ADDON_LOADED")
 Plates:SetScript("OnEvent", Plates.OnEvent)

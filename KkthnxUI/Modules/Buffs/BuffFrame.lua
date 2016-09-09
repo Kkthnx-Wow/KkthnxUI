@@ -11,6 +11,7 @@ local unpack = unpack
 local UnitHasVehicleUI = UnitHasVehicleUI
 local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
+local Movers = K["Movers"]
 
 -- STYLE PLAYER BUFFS(BY TUKZ)
 local rowbuffs
@@ -34,6 +35,7 @@ end
 local BuffsAnchor = CreateFrame("Frame", "BuffsAnchor", UIParent)
 BuffsAnchor:SetPoint(unpack(C.Position.PlayerBuffs))
 BuffsAnchor:SetSize((15 * C.Aura.BuffSize) + 42, (C.Aura.BuffSize * 2) + 3)
+Movers:RegisterFrame(BuffsAnchor)
 
 for i = 1, NUM_TEMP_ENCHANT_FRAMES do
 	local buff = _G["TempEnchant"..i]

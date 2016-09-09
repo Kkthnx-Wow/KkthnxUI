@@ -12,11 +12,20 @@ local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL
 local barHeight, barWidth = C.Experience.XPHeight, C.Experience.XPWidth
 local barTex, flatTex = C.Media.Texture
 local color = RAID_CLASS_COLORS[K.Class]
+local Movers = K["Movers"]
 
 local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 ExperienceAnchor:SetSize(C.Experience.XPWidth, 18)
-ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -22)
-ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -22)
+
+if C.Minimap.Invert then
+	ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 42)
+	ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 1, 42)
+else
+	ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -22)
+	ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -22)
+end
+
+Movers:RegisterFrame(ExperienceAnchor)
 
 local FactionInfo = {
 	[1] = {{170/255, 70/255, 70/255}, L_REPUTATION_HATED, "FFaa4646"},

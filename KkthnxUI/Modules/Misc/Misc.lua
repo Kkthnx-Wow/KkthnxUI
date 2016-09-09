@@ -12,6 +12,7 @@ local GetLFGDungeonRewards = GetLFGDungeonRewards
 local GetLFGDungeonInfo = GetLFGDungeonInfo
 local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
+local Movers = K["Movers"]
 
 -- MOVE SOME FRAMES (SHESTAK)
 local HeadFrame = CreateFrame("Frame")
@@ -53,6 +54,7 @@ RaidWarningFrame:SetScale(0.8)
 local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)
 VehicleAnchor:SetPoint(unpack(C.Position.Vehicle))
 VehicleAnchor:SetSize(130, 130)
+Movers:RegisterFrame(VehicleAnchor)
 
 hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	if parent == "MinimapCluster" or parent == _G["MinimapCluster"] then

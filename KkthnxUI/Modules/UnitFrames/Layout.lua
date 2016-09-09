@@ -24,16 +24,19 @@ local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
+local Movers = K["Movers"]
 
 local PetColor = {157/255, 197/255, 255/255}
 
 local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
 PlayerAnchor:SetSize(146, 28)
 PlayerAnchor:SetPoint(unpack(C.Position.UnitFrames.Player))
+Movers:RegisterFrame(PlayerAnchor)
 
 local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
 TargetAnchor:SetSize(146, 28)
 TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
+Movers:RegisterFrame(TargetAnchor)
 
 local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
 

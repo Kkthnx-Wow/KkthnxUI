@@ -9,17 +9,20 @@ local max = math.max
 -- WOW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local Movers = K["Movers"]
+
+local CastBars = CreateFrame("Frame", nil, UIParent)
 
 -- ANCHORS
 local PlayerCastbarAnchor = CreateFrame("Frame", "PlayerCastbarAnchor", UIParent)
 PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
 PlayerCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.PlayerCastBar))
+Movers:RegisterFrame(PlayerCastbarAnchor)
 
 local TargetCastbarAnchor = CreateFrame("Frame", "TargetCastbarAnchor", UIParent)
 TargetCastbarAnchor:SetSize(TargetFrameSpellBar:GetWidth() * C.Unitframe.CastBarScale, TargetFrameSpellBar:GetHeight() * 2)
 TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
-
-local CastBars = CreateFrame("Frame", nil, UIParent)
+Movers:RegisterFrame(TargetCastbarAnchor)
 
 CastBars:RegisterEvent("ADDON_LOADED")
 CastBars:SetScript("OnEvent", function(self, event, addon)

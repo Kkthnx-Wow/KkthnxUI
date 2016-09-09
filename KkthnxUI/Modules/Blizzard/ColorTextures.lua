@@ -1,10 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.Blizzard.ColorTextures ~= true then return end
 
 local pairs = pairs
 local select = select
 local unpack = unpack
-
-local CreateFrame = CreateFrame
 
 local ColorTextures = CreateFrame("Frame")
 

@@ -8,6 +8,7 @@ local unpack = unpack
 
 -- WOW API
 local CreateFrame = CreateFrame
+local Movers = K["Movers"]
 
 StaticPopupDialogs["FIX_ACTIONBARS"] = {
 	text = L_POPUP_FIX_ACTIONBARS,
@@ -72,6 +73,7 @@ end)
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 VehicleButtonAnchor:SetPoint(unpack(C.Position.VehicleBar))
 VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+Movers:RegisterFrame(VehicleButtonAnchor)
 
 -- VEHICLE BUTTON
 local vehicle = CreateFrame("Button", "VehicleButton", UIParent)

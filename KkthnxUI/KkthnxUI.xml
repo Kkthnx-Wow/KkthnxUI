@@ -40,6 +40,7 @@
 	<Script file="Core\WTF.lua"/>
 	<Script file="Core\Kill.lua"/>
 	<Script file="Core\CheckVersion.lua"/>
+	<Script file="Core\Movers.lua"/>
 	<Script file="Core\Border.lua"/>
 	<Script file="Core\Developer.lua"/>
 	<Script file="Core\Panels.lua"/>
@@ -161,13 +162,11 @@
 	<Include file="Modules\Skins\Addons\LoadFrames.xml"/>
 	<Include file="Modules\Skins\Blizzard\LoadFrames.xml"/>
 
+	<Script file="Modules\Tooltip\Tooltip.lua"/>
 	<Script file="Modules\Tooltip\Achievement.lua"/>
 	<Script file="Modules\Tooltip\HyperLink.lua"/>
 	<Script file="Modules\Tooltip\InstanceLockCompare.lua"/>
 	<Script file="Modules\Tooltip\ItemIcons.lua"/>
 	<Script file="Modules\Tooltip\PvPRating.lua"/>
 	<Script file="Modules\Tooltip\Talents.lua"/>
-	<Script file="Modules\Tooltip\Tooltip.lua"/>
-
-	<Script file="Core\Movers.lua"/>
 </Ui>

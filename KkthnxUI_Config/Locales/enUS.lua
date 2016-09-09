@@ -135,6 +135,7 @@ L_GUI_MINIMAP_COLLECTBUTTONS = "Collect some minimap buttons in one line"
 L_GUI_MINIMAP_ENABLEMINIMAP = "Enable minimap & make it square"
 L_GUI_MINIMAP_MINIMAPSIZE = "Minimap size - Default is 150"
 L_GUI_MINIMAP_PING = "Displays a message when someone pings the minimap. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
+L_GUI_MINIMAP_MINIMAPINVERT = "Move stats and experience bars above minimap"
 -- Misc Localization
 L_GUI_MISC = "Miscellaneous"
 L_GUI_MISC_ALREADY_KNOWN = "Colorizes recipes, mounts & pets that are already known"

@@ -3,10 +3,14 @@ if select(4, GetAddOnInfo("DugisGuideViewerZ")) or select(4, GetAddOnInfo("Quest
 	return
 end
 
+local Movers = K["Movers"]
+
 -- MOVE OBJECTIVETRACKERFRAME
 local frame = CreateFrame("Frame", "ObjectiveTrackerAnchor", UIParent)
 frame:SetPoint(unpack(C.Position.Quest))
 frame:SetSize(224, 150)
+Movers:RegisterFrame(frame)
+
 
 ObjectiveTrackerFrame:ClearAllPoints()
 ObjectiveTrackerFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, 0)

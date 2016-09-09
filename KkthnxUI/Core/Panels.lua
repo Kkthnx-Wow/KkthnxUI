@@ -7,6 +7,7 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
+local Movers = K["Movers"]
 
 --	BOTTOM BARS ANCHOR
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", PetBattleFrameHider)
@@ -24,6 +25,7 @@ else
 	BottomBarAnchor:SetHeight(C.ActionBar.ButtonSize)
 end
 BottomBarAnchor:SetFrameStrata("LOW")
+Movers:RegisterFrame(BottomBarAnchor)
 
 --	RIGHT BARS ANCHOR
 local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", PetBattleFrameHider)
@@ -39,6 +41,7 @@ else
 	RightBarAnchor:Hide()
 end
 RightBarAnchor:SetFrameStrata("LOW")
+Movers:RegisterFrame(RightBarAnchor)
 
 --	SPLIT BAR ANCHOR
 if C.ActionBar.SplitBars == true then
@@ -62,6 +65,7 @@ else
 end
 PetBarAnchor:SetFrameStrata("LOW")
 RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
+Movers:RegisterFrame(PetBarAnchor)
 
 -- STANCE BAR ANCHOR
 local ShiftAnchor = CreateFrame("Frame", "ShapeShiftBarAnchor", PetBattleFrameHider)

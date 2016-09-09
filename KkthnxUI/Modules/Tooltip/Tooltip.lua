@@ -21,6 +21,7 @@ local Tooltip = CreateFrame("Frame")
 local ILevel, TalentSpec, LastUpdate = 0, "", 30
 local InspectDelay = 0.2
 local InspectFreq = 2
+local Move = K["Move"]
 
 Tooltip.ItemRefTooltip = ItemRefTooltip
 
@@ -49,6 +50,7 @@ local Classification = {
 }
 
 function Tooltip:CreateAnchor()
+	local Movers = K["Movers"]
 
 	local Anchor = CreateFrame("Frame", "TooltipAnchor", UIParent)
 	Anchor:SetSize(200, 36)
@@ -57,6 +59,10 @@ function Tooltip:CreateAnchor()
 	Anchor:SetClampedToScreen(true)
 	Anchor:SetPoint(unpack(C.Position.Tooltip))
 	Anchor:SetMovable(true)
+	
+	self.Anchor = Anchor
+
+	Movers:RegisterFrame(Anchor)
 end
 
 function Tooltip:SetTooltipDefaultAnchor(parent)
@@ -404,12 +410,11 @@ function Tooltip:Enable()
 	end
 end
 
-function Tooltip:OnEvent(event, addon)
+function Tooltip:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
 		Tooltip:Enable()
 	end
 end
 
 Tooltip:RegisterEvent("PLAYER_LOGIN")
-Tooltip:RegisterEvent("ADDON_LOADED")
 Tooltip:SetScript("OnEvent", Tooltip.OnEvent)
