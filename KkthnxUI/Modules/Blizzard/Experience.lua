@@ -24,8 +24,11 @@ else
 	ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -22)
 	ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -22)
 end
+<<<<<<< HEAD
 
 Movers:RegisterFrame(ExperienceAnchor)
+=======
+>>>>>>> origin/master
 
 local FactionInfo = {
 	[1] = {{170/255, 70/255, 70/255}, L_REPUTATION_HATED, "FFaa4646"},
