@@ -17,7 +17,7 @@ It can be used for any class or role.
 ### Contact Me   
 * Curse Client: Kkthnx      
 * Battle.net: Kkthnx#1105   
-* Discord: https://discord.gg/jgu5MZv   
+* Discord: https://discord.gg/xWRjj   
    
 ### Social Media
 * Facebook: [KkthnxUI](https://www.facebook.com/kkthnxui)   
