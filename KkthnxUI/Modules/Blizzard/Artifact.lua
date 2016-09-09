@@ -22,11 +22,7 @@ else
 	ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -33)
 	ArtifactAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -33)
 end
-<<<<<<< HEAD
-
 Movers:RegisterFrame(ArtifactAnchor)
-=======
->>>>>>> origin/master
 
 local BarHeight, BarWidth = C.Experience.ArtifactHeight, C.Experience.ArtifactWidth
 local Texture = C.Media.Texture
