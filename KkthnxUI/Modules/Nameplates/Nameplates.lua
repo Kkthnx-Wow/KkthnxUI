@@ -245,7 +245,7 @@ function Plates:SetupPlate(options)
 	CastBar.IconTexture:SetParent(CastBar.IconBackdrop)
 	CastBar.IconTexture:SetAllPoints(CastBar.IconBackdrop)
 
-	CastBar.Text:SetFont(FontName, FontSize * K.NoScaleMult, "")
+	CastBar.Text:SetFont(FontName, FontSize * K.NoScaleMult, "OUTLINE")
 
 	CastBar.startCastColor.r, CastBar.startCastColor.g, CastBar.startCastColor.b = unpack(Plates.Options.CastBarColors.StartNormal)
 	CastBar.startChannelColor.r, CastBar.startChannelColor.g, CastBar.startChannelColor.b = unpack(Plates.Options.CastBarColors.StartChannel)
@@ -257,6 +257,8 @@ function Plates:SetupPlate(options)
 
 	-- UNIT NAME
 	Name:SetFont(FontName, FontSize * K.NoScaleMult, "")
+	Name:SetShadowColor(0, 0, 0)
+	Name:SetShadowOffset(1.25, -1.25)
 	hooksecurefunc(Name, "Show", Plates.SetName)
 
 	-- WILL DO A BETTER VISUAL FOR THIS LATER
