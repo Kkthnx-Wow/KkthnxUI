@@ -15,7 +15,7 @@ local Texture = C.Media.Texture
 local function GetArtifact()
 	local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo()
 	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
-	
+
 	return xp, xpForNextPoint
 end
 
@@ -71,11 +71,16 @@ local function UpdateStatus(event, owner)
 	if (event == "UNIT_INVENTORY_CHANGED" and owner ~= "player") then
 		return
 	end
-	
+
 	local HasArtBar = HasArtifactEquipped()
 
 	if HasArtBar then
+		local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo()
+		local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
+
 		Backdrop:Show()
+		ArtifactBar:SetMinMaxValues(min(0, xp), xpForNextPoint)
+		ArtifactBar:SetValue(xp)
 	else
 		Backdrop:Hide()
 	end
@@ -84,6 +89,8 @@ local function UpdateStatus(event, owner)
 		GameTooltip:SetOwner(ArtifactMouseFrame, "ANCHOR_BOTTOMLEFT", -2, 5)
 		GameTooltip:ClearLines()
 		if HasArtBar then
+			local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo()
+			local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
 			local Current, Max
 			Current, Max = GetArtifact()
 
