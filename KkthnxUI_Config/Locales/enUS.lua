@@ -92,6 +92,11 @@ L_GUI_CHAT_TABS_OUTLINE = "Apply an outline to the chat tabs font"
 L_GUI_CHAT_TIMESTAMP = "Chat Timestamp coloring"
 L_GUI_CHAT_WHISP = "Sound when whisper"
 L_GUI_CHAT_WIDTH = "Width of the Chatframe"
+-- Stats Localization
+L_GUI_STATS = "Stats"
+L_GUI_STATS_BG = "Enable data text displaying battleground information"
+L_GUI_STATS_LOCATION = "Enable location data text on the minimap at the top"
+L_GUI_STATS_SYSTEM = "Enable system data text under the minimap displaying Fps & Ms"
 -- Cooldown Localization
 L_GUI_COOLDOWN = "Cooldown"
 L_GUI_COOLDOWN_ENABLE = "Enable UI cooldown module"

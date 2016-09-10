@@ -18,8 +18,8 @@ local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 ExperienceAnchor:SetSize(C.Experience.XPWidth, 18)
 
 if C.Minimap.Invert then
-	ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 44)
-	ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 1, 44)
+	ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 42)
+	ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 1, 42)
 else
 	ExperienceAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -24)
 	ExperienceAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -24)

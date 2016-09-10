@@ -64,8 +64,9 @@ C["Blizzard"] = {
 }
 -- STATS OPTIONS
 C["Stats"] = {
-	["StatFrame"] = true,
 	["Battleground"] = true,
+	["System"] = true,
+	["Location"] = true,
 }
 -- BUFFS & DEBUFFS OPTIONS
 C["Aura"] = {

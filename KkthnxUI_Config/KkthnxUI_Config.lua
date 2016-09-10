@@ -32,17 +32,18 @@ local ALLOWED_GROUPS = {
 	["Experience"] = 7,
 	["Aura"] = 8,
 	["Chat"] = 9,
-	["Cooldown"] = 10,
-	["Error"] = 11,
-	["Filger"] = 12,
-	["Loot"] = 13,
-	["Minimap"] = 14,
-	["Misc"] = 15,
-	["Nameplate"] = 16,
-	["PulseCD"] = 17,
-	["Skins"] = 18,
-	["Tooltip"] = 19,
-	["Unitframe"] = 20,
+	["Stats"] = 10,
+	["Cooldown"] = 11,
+	["Error"] = 12,
+	["Filger"] = 13,
+	["Loot"] = 14,
+	["Minimap"] = 15,
+	["Misc"] = 16,
+	["Nameplate"] = 17,
+	["PulseCD"] = 18,
+	["Skins"] = 19,
+	["Tooltip"] = 20,
+	["Unitframe"] = 21,
 }
 
 local function Local(o)
@@ -138,6 +139,11 @@ local function Local(o)
 	if o == "UIConfigChatTimeColor" then o = L_GUI_CHAT_TIMESTAMP end
 	if o == "UIConfigChatWhispSound" then o = L_GUI_CHAT_WHISP end
 	if o == "UIConfigChatWidth" then o = L_GUI_CHAT_WIDTH end
+	-- Stats Settings
+	if o == "UIConfigStats" then o = L_GUI_STATS end
+	if o == "UIConfigStatsBattleground" then o = L_GUI_STATS_BG end
+	if o == "UIConfigStatsLocation" then o = L_GUI_STATS_LOCATION end
+	if o == "UIConfigStatsSystem" then o = L_GUI_STATS_SYSTEM end
 	-- Cooldown Settings
 	if o == "UIConfigCooldown" then o = L_GUI_COOLDOWN end
 	if o == "UIConfigCooldownEnable" then o = L_GUI_COOLDOWN_ENABLE end

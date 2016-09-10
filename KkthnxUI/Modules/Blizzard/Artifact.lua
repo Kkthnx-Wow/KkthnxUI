@@ -23,8 +23,8 @@ local ArtifactAnchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
 ArtifactAnchor:SetSize(C.Experience.ArtifactWidth, 18)
 
 if C.Minimap.Invert then
-	ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 55)
-	ArtifactAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, 55)
+	ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 53)
+	ArtifactAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, 53)
 else
 	ArtifactAnchor:SetPoint("TOPLEFT", Minimap, "BOTTOMLEFT", -1, -35)
 	ArtifactAnchor:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 1, -35)

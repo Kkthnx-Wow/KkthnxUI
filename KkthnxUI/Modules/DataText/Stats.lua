@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.Stats.StatFrame ~= true then return end
+if C.Stats.System ~= true then return end
 
 local Stat = CreateFrame("Frame")
 Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -9,32 +9,34 @@ Stat:EnableMouse(true)
 Stat.tooltip = false
 local scolor1 = K.RGBToHex(.4, .4, .4)
 local scolor2 = K.RGBToHex(1, 1, 1)
+local Movers = K["Movers"]
 
-local StatFrame = CreateFrame("Frame", "StatFrame", Minimap)
+local StatAnchor = CreateFrame("Frame", "StatFrameAnchor", UIParent)
+StatAnchor:SetSize(Minimap:GetWidth() + 4, 22)
+if C.Minimap.Invert then
+	StatAnchor:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 26)
+	StatAnchor:SetPoint("TOPRIGHT", Minimap, 2, 26)
+else
+	StatAnchor:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -26)
+	StatAnchor:SetPoint("BOTTOMRIGHT", Minimap, 2, -26)
+end
+Movers:RegisterFrame(StatAnchor)
+
+local StatFrame = CreateFrame("Frame", "StatFrame", UIParent)
 if C.Minimap.Enable == true then
 	StatFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	StatFrame:CreateBackdrop()
 	if C.Blizzard.ColorTextures == true then
 		StatFrame.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
-	StatFrame:SetSize(0, 22)
+	StatFrame:SetSize(Minimap:GetWidth() + 4, 22)
 
- 	if C.Minimap.Invert then
-		StatFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 26)
-		StatFrame:SetPoint("TOPRIGHT", Minimap, 2, 28)
- 	else
-		StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -26)
-		StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -28)
- 	end
-
-	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
-	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
+	StatFrame:SetPoint("TOPLEFT", StatAnchor, "TOPLEFT", 0, 0)
+	StatFrame:SetPoint("TOPRIGHT", StatAnchor, 0, 0)
 else
-	StatFrame:SetSize(0, 22)
-	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, -36)
-	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
-	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
-	StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 0, -36)
+	StatFrame:SetSize(Minimap:GetWidth() + 4, 22)
+	StatFrame:SetPoint("BOTTOMLEFT", StatAnchor, "BOTTOMLEFT", 0, 0)
+	StatFrame:SetPoint("BOTTOMRIGHT", StatAnchor, 0, 0)
 end
 
 local Text = StatFrame:CreateFontString(nil, "OVERLAY")
@@ -122,16 +124,16 @@ Stat:SetScript("OnEnter", function(self)
 	end
 	GameTooltip:AddLine(" ")
 	if bandwidth ~= 0 then
-		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, string.format(bandwidthString, bandwidth),  46/255, 182/255, 255/255, .84, .75, .65)
-		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, string.format(percentageString, GetDownloadedPercentage() * 100),  46/255, 182/255, 255/255, .84, .75, .65)
+		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, string.format(bandwidthString, bandwidth), 46/255, 182/255, 255/255, .84, .75, .65)
+		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, string.format(percentageString, GetDownloadedPercentage() * 100), 46/255, 182/255, 255/255, .84, .75, .65)
 		GameTooltip:AddLine(" ")
 	end
-	GameTooltip:AddDoubleLine(L_STATS_HOME, latencyHome.." "..MILLISECONDS_ABBR,  46/255, 182/255, 255/255, .84, .75, .65)
-	GameTooltip:AddDoubleLine(L_STATS_WORLD, latencyWorld.." "..MILLISECONDS_ABBR,  46/255, 182/255, 255/255, .84, .75, .65)
-	GameTooltip:AddDoubleLine(L_STATS_GLOBAL, ms_combined.." "..MILLISECONDS_ABBR,  46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_HOME, latencyHome.." "..MILLISECONDS_ABBR, 46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_WORLD, latencyWorld.." "..MILLISECONDS_ABBR, 46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_GLOBAL, ms_combined.." "..MILLISECONDS_ABBR, 46/255, 182/255, 255/255, .84, .75, .65)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(L_STATS_INC, string.format("%.4f", bw_in) .. " kb/s",  46/255, 182/255, 255/255, .84, .75, .65)
-	GameTooltip:AddDoubleLine(L_STATS_OUT, string.format("%.4f", bw_out) .. " kb/s",  46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_INC, string.format("%.4f", bw_in) .. " kb/s", 46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_OUT, string.format("%.4f", bw_out) .. " kb/s", 46/255, 182/255, 255/255, .84, .75, .65)
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L_STATS_SYSTEMLEFT)

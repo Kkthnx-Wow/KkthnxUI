@@ -70,4 +70,5 @@ SellGreyRepair:SetScript("OnEvent", function()
 		end
 	end
 end)
+
 SellGreyRepair:RegisterEvent("MERCHANT_SHOW")

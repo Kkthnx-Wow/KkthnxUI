@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.Minimap.Enable ~= true or IsAddOnLoaded("Carbonite") then return end
+if C.Minimap.Enable ~= true or C.Stats.Location ~= true or IsAddOnLoaded("Carbonite") then return end
 
 -- WOW API
 local GetZonePVPInfo = GetZonePVPInfo
