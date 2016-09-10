@@ -1,5 +1,5 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
-if C.ActionBar.SplitBars == true then return end
+if C.Stats.Battleground ~= true then return end
 
 -- LUA API
 local unpack = unpack
