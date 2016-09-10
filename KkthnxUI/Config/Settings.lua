@@ -10,8 +10,8 @@ C["ActionBar"] = {
 	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
-	["OutOfMana"] = {128/255, 128/255, 255/255, 1},
-	["OutOfRange"] = {204/255, 26/255, 26/255, 1},
+	["OutOfMana"] = {0.1, 0.3, 1.0, 1},
+	["OutOfRange"] = {0.8, 0.1, 0.1, 1},
 	["PetBarHide"] = false,
 	["PetBarHorizontal"] = false,
 	["RightBars"] = 2,
@@ -61,6 +61,11 @@ C["Blizzard"] = {
 	["Durability"] = true,
 	["MoveAchievements"] = true,
 	["Reputations"] = true,
+}
+-- STATS OPTIONS
+C["Stats"] = {
+	["StatFrame"] = true,
+	["Battleground"] = true,
 }
 -- BUFFS & DEBUFFS OPTIONS
 C["Aura"] = {

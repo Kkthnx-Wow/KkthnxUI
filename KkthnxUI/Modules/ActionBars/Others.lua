@@ -7,6 +7,7 @@ local format = string.format
 local unpack = unpack
 
 -- WOW API
+local ActionBars = CreateFrame("Frame")
 local CreateFrame = CreateFrame
 local Movers = K["Movers"]
 
@@ -22,11 +23,7 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 }
 
 -- SHOW EMPTY BUTTONS
-local ShowGrid = CreateFrame("Frame")
-ShowGrid:RegisterEvent("PLAYER_ENTERING_WORLD")
-ShowGrid:SetScript("OnEvent", function(self, event)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
+function ActionBars:ShowGrid()
 	local Installed = SavedOptionsPerChar.Install
 	if Installed then
 		local b1, b2, b3, b4 = GetActionBarToggles()
@@ -35,39 +32,41 @@ ShowGrid:SetScript("OnEvent", function(self, event)
 			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
+	
+	for i = 1, NUM_ACTIONBAR_BUTTONS do
+		local Button
 
-	for i = 1, 12 do
-		local button = _G[format("ActionButton%d", i)]
-		button:SetAttribute("showgrid", 1)
-		button:SetAttribute("statehidden", true)
-		button:Show()
-		ActionButton_ShowGrid(button)
+		Button = _G[format("ActionButton%d", i)]
+		Button:SetAttribute("showgrid", 1)
+		Button:SetAttribute("statehidden", true)
+		Button:Show()
+		ActionButton_ShowGrid(Button)
 
-		button = _G[format("MultiBarRightButton%d", i)]
-		button:SetAttribute("showgrid", 1)
-		button:SetAttribute("statehidden", true)
-		button:Show()
-		ActionButton_ShowGrid(button)
+		Button = _G[format("MultiBarRightButton%d", i)]
+		Button:SetAttribute("showgrid", 1)
+		Button:SetAttribute("statehidden", true)
+		Button:Show()
+		ActionButton_ShowGrid(Button)
 
-		button = _G[format("MultiBarBottomRightButton%d", i)]
-		button:SetAttribute("showgrid", 1)
-		button:SetAttribute("statehidden", true)
-		button:Show()
-		ActionButton_ShowGrid(button)
+		Button = _G[format("MultiBarBottomRightButton%d", i)]
+		Button:SetAttribute("showgrid", 1)
+		Button:SetAttribute("statehidden", true)
+		Button:Show()
+		ActionButton_ShowGrid(Button)
 
-		button = _G[format("MultiBarLeftButton%d", i)]
-		button:SetAttribute("showgrid", 1)
-		button:SetAttribute("statehidden", true)
-		button:Show()
-		ActionButton_ShowGrid(button)
+		Button = _G[format("MultiBarLeftButton%d", i)]
+		Button:SetAttribute("showgrid", 1)
+		Button:SetAttribute("statehidden", true)
+		Button:Show()
+		ActionButton_ShowGrid(Button)
 
-		button = _G[format("MultiBarBottomLeftButton%d", i)]
-		button:SetAttribute("showgrid", 1)
-		button:SetAttribute("statehidden", true)
-		button:Show()
-		ActionButton_ShowGrid(button)
+		Button = _G[format("MultiBarBottomLeftButton%d", i)]
+		Button:SetAttribute("showgrid", 1)
+		Button:SetAttribute("statehidden", true)
+		Button:Show()
+		ActionButton_ShowGrid(Button)
 	end
-end)
+end
 
 -- VEHICLE BUTTON ANCHOR
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
@@ -135,3 +134,12 @@ vehicle:SetScript("OnEnter", function(self)
 	end
 end)
 vehicle:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+function ActionBars:OnEvent(event, ...)
+	if (event == "PLAYER_LOGIN") then
+		ActionBars:ShowGrid()
+	end
+end
+
+ActionBars:RegisterEvent("PLAYER_LOGIN")
+ActionBars:SetScript("OnEvent", ActionBars.OnEvent)

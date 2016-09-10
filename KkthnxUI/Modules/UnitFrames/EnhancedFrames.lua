@@ -216,6 +216,11 @@ function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 
 			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetPoint("LEFT", _G["PartyMemberFrame"..i.."HealthBar"], "LEFT", 4, 0)
 			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetPoint("RIGHT", _G["PartyMemberFrame"..i.."HealthBar"], "RIGHT", -2, 0)
+
+			_G["PartyMemberFrame"..i.."NotPresentIcon"]:ClearAllPoints()
+			_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetPoint("TOP", _G["PartyMemberFrame"..i.."Portrait"], "BOTTOM", 12, 13)
+			_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetFrameLevel(4)
+			_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetScale(0.60)
 		end
 	end
 end

@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.Stats.StatFrame ~= true then return end
 
 local Stat = CreateFrame("Frame")
 Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -16,24 +17,24 @@ if C.Minimap.Enable == true then
 	if C.Blizzard.ColorTextures == true then
 		StatFrame.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
-	StatFrame:SetSize(0, 20)
+	StatFrame:SetSize(0, 22)
 
  	if C.Minimap.Invert then
-		StatFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 24)
-		StatFrame:SetPoint("TOPRIGHT", Minimap, 2, 24)
+		StatFrame:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 26)
+		StatFrame:SetPoint("TOPRIGHT", Minimap, 2, 28)
  	else
-		StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -24)
-		StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -24)
+		StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", -2, -26)
+		StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 2, -28)
  	end
 
 	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
 	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
 else
-	StatFrame:SetSize(0, 20)
-	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, -34)
+	StatFrame:SetSize(0, 22)
+	StatFrame:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, -36)
 	StatFrame:SetFrameLevel(Minimap:GetFrameLevel() + 3)
 	StatFrame:SetFrameStrata(Minimap:GetFrameStrata())
-	StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 0, -34)
+	StatFrame:SetPoint("BOTTOMRIGHT", Minimap, 0, -36)
 end
 
 local Text = StatFrame:CreateFontString(nil, "OVERLAY")
@@ -84,7 +85,7 @@ local function UpdateMemory()
 end
 
 -- BUILD DATATEXT
-local int, int2 = 10, 2
+local int, int2 = 6, 5
 local function Update(self, t)
 	int = int - t
 	int2 = int2 - t

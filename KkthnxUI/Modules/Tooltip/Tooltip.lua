@@ -35,10 +35,10 @@ Tooltip.Tooltips = {
 	ShoppingTooltip1,
 	ShoppingTooltip2,
 	ShoppingTooltip3,
-	--WorldMapTooltip,
-	--WorldMapCompareTooltip1,
-	--WorldMapCompareTooltip2,
-	--WorldMapCompareTooltip3,
+	--WorldMapTooltip.BackdropFrame, -- This is currently throwing an error.
+	WorldMapCompareTooltip1,
+	WorldMapCompareTooltip2,
+	WorldMapCompareTooltip3,
 	ItemRefTooltip,
 }
 
@@ -258,7 +258,7 @@ function Tooltip:SetColor()
 	local Unit = (select(2, self:GetUnit())) or (GetMouseFocus and GetMouseFocus:GetAttribute("unit"))
 
 	if (not Unit) and (UnitExists("mouseover")) then
-		Unit = 'mouseover'
+		Unit = "mouseover"
 	end
 
 	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))

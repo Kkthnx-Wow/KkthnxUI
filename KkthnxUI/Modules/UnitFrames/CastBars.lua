@@ -24,10 +24,7 @@ TargetCastbarAnchor:SetSize(TargetFrameSpellBar:GetWidth() * C.Unitframe.CastBar
 TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 Movers:RegisterFrame(TargetCastbarAnchor)
 
-CastBars:RegisterEvent("ADDON_LOADED")
-CastBars:SetScript("OnEvent", function(self, event, addon)
-
-	if (addon ~= "KkthnxUI") or InCombatLockdown() then return end
+function CastBars:Setup()
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
@@ -91,12 +88,10 @@ CastBars:SetScript("OnEvent", function(self, event, addon)
 	end
 	TargetFrameSpellBar.timer:SetPoint("LEFT", TargetFrameSpellBar, "RIGHT", 8, 0)
 	TargetFrameSpellBar.update = 0.1
-
-	self:UnregisterEvent("ADDON_LOADED")
-end)
+end
 
 -- DISPLAYS THE CASTING BAR TIMER
-local function CastBarTimers(self, elapsed)
+function CastBars:Timers(elapsed)
 	if not self.timer then return end
 
 	if (self.update and self.update < elapsed) then
@@ -112,6 +107,16 @@ local function CastBarTimers(self, elapsed)
 		self.update = self.update - elapsed
 	end
 end
+CastingBarFrame:HookScript("OnUpdate", CastBars.Timers)
+TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
-CastingBarFrame:HookScript("OnUpdate", CastBarTimers)
-TargetFrameSpellBar:HookScript("OnUpdate", CastBarTimers)
+function CastBars:OnEvent(event, ...)
+	if (event == "PLAYER_LOGIN") then
+
+	if InCombatLockdown() then return end
+		CastBars:Setup()
+	end
+end
+
+CastBars:RegisterEvent("PLAYER_LOGIN")
+CastBars:SetScript("OnEvent", CastBars.OnEvent)
