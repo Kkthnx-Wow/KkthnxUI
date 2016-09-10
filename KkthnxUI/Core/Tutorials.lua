@@ -9,17 +9,16 @@ local HIDE = HIDE
 local Tutorial = CreateFrame("Frame", nil, UIParent)
 
 K.TutorialList = {
-	--[[ L_TUTORIAL_MESSAGE --]]
-	"For technical support visit https://github.com/Kkthnx.",
-	"You can toggle the microbar by using your right mouse button on the minimap.",
-	"You can set your keybinds quickly by typing /kb.",
-	"The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro to do this.",
-	"You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear.",
-	"If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing.",
-	"To setup which channels appear in which chat frame, right click the chat tab and go to settings.",
-	"You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position.",
-	"To move abilities on the actionbars by default hold shift + drag. You can change the modifier key from the actionbar options menu.",
-	"You can see someones average item level of their gear by holding alt and mousing over them. It should appear inside the tooltip."
+	L_TUTORIAL_MESSAGE_1,
+	L_TUTORIAL_MESSAGE_2,
+	L_TUTORIAL_MESSAGE_3,
+	L_TUTORIAL_MESSAGE_4,
+	L_TUTORIAL_MESSAGE_5,
+	L_TUTORIAL_MESSAGE_6,
+	L_TUTORIAL_MESSAGE_7,
+	L_TUTORIAL_MESSAGE_8,
+	L_TUTORIAL_MESSAGE_9,
+	L_TUTORIAL_MESSAGE_10,
 }
 
 function Tutorial:SetNextTutorial()
@@ -64,7 +63,7 @@ function Tutorial:SpawnTutorialFrame()
 	local title = header:CreateFontString("OVERLAY")
 	title:SetFont(C.Media.Font, 14, "OUTLINE")
 	title:SetPoint("CENTER", header, "CENTER")
-	title:SetText("|cff2eb6ffKkthnxUI|r")
+	title:SetText("|cff2eb6ffKkthnxUI|r" .." v".. K.Version)
 
 	local desc = f:CreateFontString("ARTWORK")
 	desc:SetFontObject("GameFontHighlight")

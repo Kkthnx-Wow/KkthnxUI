@@ -44,6 +44,7 @@
 	<Script file="Core\Border.lua"/>
 	<Script file="Core\Developer.lua"/>
 	<Script file="Core\Panels.lua"/>
+	<Script file="Core\Tutorials.lua"/>
 	<Script file="Core\Temp.lua"/>
 
 	<Script file="Modules\Unitframes\Auras.lua"/>

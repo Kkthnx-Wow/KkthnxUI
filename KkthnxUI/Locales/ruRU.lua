@@ -1,8 +1,4 @@
-local Locale = GetLocale()
-
-if (Locale ~= "ruRU") then
-	return
-end
+-- LOCALIZATION FOR ENUS & ENGB CLIENTS
 
 -- ANNOUNCE LOCALIZATION
 L_ANNOUNCE_FP_CAST = "%s is casting %s."
@@ -178,6 +174,17 @@ L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"
 L_TOOLTIP_ACH_STATUS = "Your Status:"
 -- TOTAL MEMORY LOCALIZATION
 L_TOTALMEMORY_USAGE = "Total Memory:"
+-- TUTORIAL LOCALIZATION
+L_TUTORIAL_MESSAGE_1 = "For technical support visit https://github.com/Kkthnx."
+L_TUTORIAL_MESSAGE_2 = "You can toggle the microbar by using your right mouse button on the minimap."
+L_TUTORIAL_MESSAGE_3 = "You can set your keybinds quickly by typing /kb."
+L_TUTORIAL_MESSAGE_4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro to do this."
+L_TUTORIAL_MESSAGE_5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear."
+L_TUTORIAL_MESSAGE_6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing."
+L_TUTORIAL_MESSAGE_7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings."
+L_TUTORIAL_MESSAGE_8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position."
+L_TUTORIAL_MESSAGE_9 = "To move abilities on the actionbars by default hold shift + drag. You can change the modifier key from the actionbar options menu."
+L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear by holding alt and mousing over them. It should appear inside the tooltip."
 -- WOWHEAD LINK LOCALIZATION
 L_WATCH_WOWHEAD_LINK = "Wowhead Link"
 -- WELCOME LOCALIZATION
