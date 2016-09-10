@@ -9,9 +9,9 @@ local min, max = math.min, math.max
 local IsMaxLevel = IsMaxLevel
 local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL
 
-local barHeight, barWidth = C.Experience.XPHeight, C.Experience.XPWidth
+local BarHeight, BarWidth = C.Experience.XPHeight, C.Experience.XPWidth
 local barTex, flatTex = C.Media.Texture
-local color = RAID_CLASS_COLORS[K.Class]
+local Colors = RAID_CLASS_COLORS[K.Class]
 local Movers = K["Movers"]
 
 local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
@@ -26,56 +26,51 @@ else
 end
 Movers:RegisterFrame(ExperienceAnchor)
 
-local FactionInfo = {
-	[1] = {{170/255, 70/255, 70/255}, L_REPUTATION_HATED, "FFaa4646"},
-	[2] = {{170/255, 70/255, 70/255}, L_REPUTATION_HOSTILE, "FFaa4646"},
-	[3] = {{170/255, 70/255, 70/255}, L_REPUTATION_UNFRIENDLY, "FFaa4646"},
-	[4] = {{200/255, 180/255, 100/255}, L_REPUTATION_NEUTRAL, "FFc8b464"},
-	[5] = {{75/255, 175/255, 75/255}, L_REPUTATION_FRIENDLY, "FF4baf4b"},
-	[6] = {{75/255, 175/255, 75/255}, L_REPUTATION_HONORED, "FF4baf4b"},
-	[7] = {{75/255, 175/255, 75/255}, L_REPUTATION_REVERED, "FF4baf4b"},
-	[8] = {{155/255, 255/255, 155/255}, L_REPUTATION_EXALTED,"FF9bff9b"},
-}
-
-function colorize(r) return FactionInfo[r][3] end
-
 local function IsMaxLevel()
 	if UnitLevel("player") == MAX_PLAYER_LEVEL then return true end
 end
 
-local backdrop = CreateFrame("Frame", "Experience_Backdrop", UIParent)
-backdrop:SetSize(barWidth, barHeight)
-backdrop:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
-backdrop:SetFrameStrata("LOW")
-backdrop:CreatePixelShadow()
+local function GetExperience()
+	return UnitXP("player"), UnitXPMax("player")
+end
 
-local backdropBG = CreateFrame("Frame", "Experience_BackdropBG", backdrop)
-backdropBG:SetFrameLevel(backdrop:GetFrameLevel() - 1)
-backdropBG:SetPoint("TOPLEFT", -1, 1)
-backdropBG:SetPoint("BOTTOMRIGHT", 1, -1)
-backdropBG:SetBackdrop(K.BorderBackdrop)
-backdropBG:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+local function GetHonor()
+	return UnitHonor("player"), UnitHonorMax("player")
+end
 
-local xpBar = CreateFrame("StatusBar", "Experience_xpBar", backdrop, "TextStatusBar")
-xpBar:SetWidth(barWidth)
-xpBar:SetHeight(GetWatchedFactionInfo() and (barHeight) or barHeight)
-xpBar:SetPoint("TOP", backdrop,"TOP", 0, 0)
-xpBar:SetStatusBarTexture(barTex)
-if C.Experience.XPClassColor then xpBar:SetStatusBarColor(color.r, color.g, color.b) else xpBar:SetStatusBarColor(31/255, 41/255, 130/255) end
+local Backdrop = CreateFrame("Frame", "Experience_Backdrop", UIParent)
+Backdrop:SetSize(BarWidth, BarHeight)
+Backdrop:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
+Backdrop:SetFrameStrata("LOW")
+Backdrop:CreatePixelShadow()
 
-local restedxpBar = CreateFrame("StatusBar", "Experience_restedxpBar", backdrop, "TextStatusBar")
-restedxpBar:SetHeight(GetWatchedFactionInfo() and (barHeight) or barHeight)
-restedxpBar:SetWidth(barWidth)
-restedxpBar:SetPoint("TOP", backdrop, "TOP", 0, 0)
-restedxpBar:SetStatusBarTexture(barTex)
-restedxpBar:Hide()
+local BackdropBG = CreateFrame("Frame", "Experience_BackdropBG", Backdrop)
+BackdropBG:SetFrameLevel(Backdrop:GetFrameLevel() - 1)
+BackdropBG:SetPoint("TOPLEFT", -1, 1)
+BackdropBG:SetPoint("BOTTOMRIGHT", 1, -1)
+BackdropBG:SetBackdrop(K.BorderBackdrop)
+BackdropBG:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
-local repBar = CreateFrame("StatusBar", "Experience_repBar", backdrop, "TextStatusBar")
-repBar:SetWidth(barWidth)
-repBar:SetHeight(IsMaxLevel() and barHeight - 0 or 0)
-repBar:SetPoint("BOTTOM", backdrop, "BOTTOM", 0, 0)
-repBar:SetStatusBarTexture(barTex)
-repBar:SetFrameLevel(xpBar:GetFrameLevel() + 1)
+local ExperienceBar = CreateFrame("StatusBar", "Experience_ExperienceBar", Backdrop, "TextStatusBar")
+ExperienceBar:SetWidth(BarWidth)
+ExperienceBar:SetHeight(GetWatchedFactionInfo() and (BarHeight) or BarHeight)
+ExperienceBar:SetPoint("TOP", Backdrop,"TOP", 0, 0)
+ExperienceBar:SetStatusBarTexture(barTex)
+if C.Experience.XPClassColor then ExperienceBar:SetStatusBarColor(Colors.r, Colors.g, Colors.b) else ExperienceBar:SetStatusBarColor(0/255, 144/255, 255/255) end
+
+local RestedXPBar = CreateFrame("StatusBar", "Experience_RestedXPBar", Backdrop, "TextStatusBar")
+RestedXPBar:SetHeight(GetWatchedFactionInfo() and (BarHeight) or BarHeight)
+RestedXPBar:SetWidth(BarWidth)
+RestedXPBar:SetPoint("TOP", Backdrop, "TOP", 0, 0)
+RestedXPBar:SetStatusBarTexture(barTex)
+RestedXPBar:Hide()
+
+local ReputationBar = CreateFrame("StatusBar", "Experience_ReputationBar", Backdrop, "TextStatusBar")
+ReputationBar:SetWidth(BarWidth)
+ReputationBar:SetHeight(IsMaxLevel() and BarHeight - 0 or 0)
+ReputationBar:SetPoint("BOTTOM", Backdrop, "BOTTOM", 0, 0)
+ReputationBar:SetStatusBarTexture(barTex)
+ReputationBar:SetFrameLevel(ExperienceBar:GetFrameLevel() - 1)
 
 -- HACKY WAY TO QUICKLY DISPLAY THE REPUTATION FRAME.
 ExperienceAnchor:SetScript("OnMouseDown", function(self, btn)
@@ -87,105 +82,107 @@ ExperienceAnchor:SetScript("OnMouseDown", function(self, btn)
 	end
 end)
 
-local mouseFrame = CreateFrame("Frame", "Experience_mouseFrame", backdrop)
-mouseFrame:SetAllPoints(backdrop)
-mouseFrame:EnableMouse(true)
-mouseFrame:SetFrameLevel(3)
+local MouseFrame = CreateFrame("Frame", "Experience_MouseFrame", Backdrop)
+MouseFrame:SetAllPoints(Backdrop)
+MouseFrame:EnableMouse(true)
+MouseFrame:SetFrameLevel(3)
 
-local function updateStatus()
-	local XP, maxXP, restXP = UnitXP("player"), UnitXPMax("player"), GetXPExhaustion()
-	if not maxXP or maxXP == 0 then return end
-	local percXP = math.floor((XP / maxXP) * 100)
+local function UpdateStatus(event, owner)
+	if (event == "UNIT_INVENTORY_CHANGED" and owner ~= "player") then
+		return
+	end
+
+	local Current, Max
+
+	local Rested = GetXPExhaustion()
+	local IsRested = GetRestState()
+	local Bars = 20
+	Current, Max = GetExperience()
 
 	if IsMaxLevel() then
-		xpBar:Hide()
-		restedxpBar:Hide()
-		repBar:SetHeight(barHeight)
-		if not GetWatchedFactionInfo() then backdrop:Hide() else backdrop:Show() end
+		ExperienceBar:Hide()
+		RestedXPBar:Hide()
+		ReputationBar:SetHeight(BarHeight)
+		if not GetWatchedFactionInfo() then Backdrop:Hide() else Backdrop:Show() end
 	else
-		xpBar:SetMinMaxValues(min(0, XP), maxXP)
-		xpBar:SetValue(XP)
+		ExperienceBar:SetMinMaxValues(0, Max)
+		ExperienceBar:SetValue(Current)
 
-		if restXP then
-			restedxpBar:Show()
-			local r, g, b = color.r, color.g, color.b
-			restedxpBar:SetStatusBarColor(r, g, b, .40)
-			restedxpBar:SetMinMaxValues(min(0, XP), maxXP)
-			restedxpBar:SetValue(XP + restXP)
+		if (IsRested == 1 and Rested) then
+			RestedXPBar:Show()
+			RestedXPBar:SetStatusBarColor(75/255, 175/255, 76/255, .40)
+			RestedXPBar:SetMinMaxValues(0, Max)
+			RestedXPBar:SetValue(Rested + Current)
 		else
-			restedxpBar:Hide()
+			RestedXPBar:Hide()
 		end
 
 		if GetWatchedFactionInfo() then
-			xpBar:SetHeight(barHeight)
-			restedxpBar:SetHeight(barHeight)
-			repBar:SetHeight(barHeight / 4)
-			repBar:Show()
+			ExperienceBar:SetHeight(BarHeight)
+			RestedXPBar:SetHeight(BarHeight)
+			ReputationBar:SetHeight(BarHeight / 4)
+			ReputationBar:Show()
 		else
-			xpBar:SetHeight(barHeight)
-			restedxpBar:SetHeight(barHeight)
-			repBar:Hide()
+			ExperienceBar:SetHeight(BarHeight)
+			RestedXPBar:SetHeight(BarHeight)
+			ReputationBar:Hide()
 		end
 	end
 
 	if GetWatchedFactionInfo() then
-		local name, rank, minRep, maxRep, value = GetWatchedFactionInfo()
-		repBar:SetMinMaxValues(minRep, maxRep)
-		repBar:SetValue(value)
-		repBar:SetStatusBarColor(unpack(FactionInfo[rank][1]))
+		local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
+		ReputationBar:SetMinMaxValues(Min, Max)
+		ReputationBar:SetValue(Value)
+		ReputationBar:SetStatusBarColor(FACTION_BAR_COLORS[ID].r, FACTION_BAR_COLORS[ID].g, FACTION_BAR_COLORS[ID].b)
 	end
 
-	mouseFrame:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(mouseFrame, "ANCHOR_BOTTOMLEFT", -2, 5)
+	if IsWatchingHonorAsXP() then
+		local Level = UnitHonorLevel("player")
+		local LevelMax = GetMaxPlayerHonorLevel()
+		local Prestige = UnitPrestige("player")
+
+		Current, Max = GetHonor()
+
+		if Max == 0 then
+			GameTooltip:AddLine(PVP_HONOR_PRESTIGE_AVAILABLE)
+			GameTooltip:AddLine(PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE)
+		else
+			GameTooltip:AddLine(string.format("|cffee2222"..HONOR..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+			GameTooltip:AddLine(string.format("|cffcccccc"..RANK..": %d / %d|r", Level, LevelMax))
+			GameTooltip:AddLine(string.format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
+		end
+	end
+
+	MouseFrame:SetScript("OnEnter", function()
+		GameTooltip:SetOwner(MouseFrame, "ANCHOR_BOTTOMLEFT", -2, 5)
 		GameTooltip:ClearLines()
 		if not IsMaxLevel() then
-			GameTooltip:AddLine(L_EXPERIENCE_BAR)
-			GameTooltip:AddLine(string.format(L_EXPERIENCE_XP, K.Comma(XP), K.Comma(maxXP), (XP / maxXP) * 100))
-			GameTooltip:AddLine(string.format(L_EXPERIENCE_XPREMAINING, K.Comma(maxXP - XP)))
-			if restXP then GameTooltip:AddLine(string.format(L_EXPERIENCE_XPRESTED, K.Comma(restXP), restXP / maxXP * 100)) end
+			GameTooltip:AddLine(string.format("|cff0090FF"..XP..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+			if (IsRested == 1 and Rested) then
+				GameTooltip:AddLine(string.format("|cff4BAF4C"..TUTORIAL_TITLE26..": +%d (%d%%)|r", Rested, Rested / Max * 100))
+			end
 		end
 		if GetWatchedFactionInfo() then
-			local name, rank, min, max, value = GetWatchedFactionInfo()
+			local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 			if not IsMaxLevel() then GameTooltip:AddLine(" ") end
-			GameTooltip:AddLine(string.format(L_REPUTATION_FCTITLE, name))
-			GameTooltip:AddLine(string.format(L_REPUTATION_STANDING..colorize(rank).. " %s|r", FactionInfo[rank][2]))
-			GameTooltip:AddLine(string.format(L_REPUTATION_REP, K.Comma(value - min), K.Comma(max - min), (value - min)/(max - min) * 100))
-			GameTooltip:AddLine(string.format(L_REPUTATION_REMAINGING, K.Comma(max - value)))
+			GameTooltip:AddLine(string.format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
+			GameTooltip:AddLine(string.format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / (Max - Min) * 100))
 		end
 
-		if IsWatchingHonorAsXP() then
-			local current, max = UnitHonor("player"), UnitHonorMax("player")
-			local level, levelmax = UnitHonorLevel("player"), GetMaxPlayerHonorLevel()
-			local text
-			if CanPrestige() then
-				text = PVP_HONOR_PRESTIGE_AVAILABLE
-			elseif level == levelmax then
-				text = MAX_HONOR_LEVEL
-			else
-				text = current.."/"..max
-			end
-			GameTooltip:AddLine(" ")
-			if UnitPrestige("player") > 0 then
-				GameTooltip:AddLine(select(2, GetPrestigeInfo(UnitPrestige("player"))), .0, .6, 1)
-			else
-				GameTooltip:AddLine(PVP_PRESTIGE_RANK_UP_TITLE..LEVEL.."0", .0, .6, 1)
-			end
-			GameTooltip:AddDoubleLine(HONOR_POINTS..LEVEL..level, text, .6, .8, 1, 1, 1, 1)
-		end
-
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(format(L_EXPERIENCE_BAR_LEFTCLICK), 46/255, 182/255, 255/255, .84, .75, .65)
 		GameTooltip:Show()
 	end)
 
-	mouseFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	MouseFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
 local frame = CreateFrame("Frame", nil, UIParent)
-frame:RegisterEvent("PLAYER_LEVEL_UP")
 frame:RegisterEvent("PLAYER_XP_UPDATE")
+frame:RegisterEvent("PLAYER_LEVEL_UP")
 frame:RegisterEvent("UPDATE_EXHAUSTION")
-frame:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE")
-frame:RegisterEvent("UPDATE_FACTION")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:SetScript("OnEvent", updateStatus)
+frame:RegisterEvent("PLAYER_UPDATE_RESTING")
+frame:RegisterEvent("UNIT_INVENTORY_CHANGED")
+frame:RegisterEvent("HONOR_XP_UPDATE")
+frame:RegisterEvent("HONOR_LEVEL_UPDATE")
+frame:RegisterEvent("HONOR_PRESTIGE_UPDATE")
+frame:SetScript("OnEvent", UpdateStatus)

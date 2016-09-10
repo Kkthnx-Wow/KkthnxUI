@@ -1,8 +1,8 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- REGISTER A FRAME WITH: MOVERS:REGISTERFRAME(FRAMENAME)
--- NOTE 1: REGISTERED FRAMES NEED A GLOBAL NAME
--- NOTE 2: DRAG VALUES IS SAVED IN SAVEDPOSITIONS SAVEDVARIABLESPERCHARACTER.
+-- REGISTER A FRAME WITH: Movers:RegisterFrame(FrameName)
+-- NOTE 1: REGISTERED FRAMES NEED A **GLOBAL NAME**
+-- NOTE 2: DRAG VALUES IS SAVED IN >> SAVEDPOSITIONS SAVEDVARIABLESPERCHARACTER <<
 
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -82,7 +82,7 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetAllPoints(self)
 	self.DragInfo:SetTemplate()
 	self.DragInfo:SetBackdropBorderColor(46/255, 182/255, 255/255, 1)
-	self.DragInfo:FontString("Text", C.Media.Font, 12)
+	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size * K.NoScaleMult)
 	self.DragInfo.Text:SetText(self:GetName())
 	self.DragInfo.Text:SetPoint("CENTER")
 	self.DragInfo.Text:SetTextColor(46/255, 182/255, 255/255, 1)

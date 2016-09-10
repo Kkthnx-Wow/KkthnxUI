@@ -28,12 +28,6 @@ end
 
 local EnhancedFrames = CreateFrame("Frame")
 
--- EVENT LISTENER TO MAKE SURE WE ENABLE THE ADDON AT THE RIGHT TIME
-function EnhancedFrames:PLAYER_ENTERING_WORLD()
-
-	EnableEnhancedFrames()
-end
-
 function EnableEnhancedFrames()
 	-- GENERIC STATUS TEXT HOOK
 	hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", EnhancedFrames_TextStatusBarUpdateTextStringWithValues)
@@ -250,10 +244,11 @@ function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 	end
 end
 
--- BOOTSTRAP
-function EnhancedFrames_StartUp(self)
-	self:SetScript("OnEvent", function(self, event) self[event](self) end)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+function EnhancedFrames:OnEvent(event, ...)
+	if (event == "PLAYER_LOGIN") then
+		EnableEnhancedFrames()
+	end
 end
 
-EnhancedFrames_StartUp(EnhancedFrames)
+EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
+EnhancedFrames:SetScript("OnEvent", EnhancedFrames.OnEvent)
