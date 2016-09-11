@@ -22,8 +22,8 @@ local MOUSE_LABEL = MOUSE_LABEL
 local WORLDMAP_FULLMAP_SIZE = WORLDMAP_FULLMAP_SIZE
 local WORLDMAP_WINDOWED_SIZE = WORLDMAP_WINDOWED_SIZE
 
-local WorldMapLoad = CreateFrame("Frame")
 local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local Loading = CreateFrame("Frame")
 
 local INVERTED_POINTS = {
 	["TOPLEFT"] = "BOTTOMLEFT",
@@ -167,11 +167,11 @@ function WorldMap:Enable()
 	SetCVar("mapFade", (C.WorldMap.FadeWhenMoving == true and 1 or 0))
 end
 
-function WorldMapLoad:OnEvent(event, ...)
+function Loading:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
 		WorldMap:Enable()
 	end
 end
 
-WorldMapLoad:RegisterEvent("PLAYER_LOGIN")
-WorldMapLoad:SetScript("OnEvent", WorldMapLoad.OnEvent)
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:SetScript("OnEvent", Loading.OnEvent)

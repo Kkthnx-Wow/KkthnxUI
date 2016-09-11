@@ -269,8 +269,7 @@ end
 
 function Unitframes:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
-			Unitframes:Setup()
-		end
+		Unitframes:Setup()
 	end
 end
 
