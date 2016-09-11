@@ -32,7 +32,7 @@ function ActionBars:ShowGrid()
 			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
-	
+
 	for i = 1, NUM_ACTIONBAR_BUTTONS do
 		local Button
 

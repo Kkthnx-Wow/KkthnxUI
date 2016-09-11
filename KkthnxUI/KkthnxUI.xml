@@ -28,7 +28,6 @@
 	<Script file="Config\Filters\Cooldowns.lua"/>
 	<Script file="Config\Filters\Errors.lua"/>
 	<Script file="Config\Filters\FilgerSpells.lua"/>
-	<Script file="Config\Filters\SellGreyRepair.lua"/>
 	<Script file="Config\Filters\NeedItems.lua"/>
 
 	<Script file="Core\API.lua"/>

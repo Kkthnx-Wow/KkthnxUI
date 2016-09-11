@@ -1,4 +1,10 @@
--- LOCALIZATION FOR ENUS & ENGB CLIENTS
+-- LOCALIZATION FOR RURU CLIENTS
+
+local Locale = GetLocale()
+
+if (Locale ~= "ruRU") then
+	return
+end
 
 -- ANNOUNCE LOCALIZATION
 L_ANNOUNCE_FP_CAST = "%s is casting %s."

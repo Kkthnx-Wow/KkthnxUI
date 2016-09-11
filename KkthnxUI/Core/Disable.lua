@@ -60,16 +60,12 @@ if (select(4, GetAddOnInfo("QuestHelper"))) then -- THIS IS A TEMP FIX UNTIL I F
 	C.Skins.MinimapButtons = false
 end
 
-if (select(4, GetAddOnInfo("Mapster"))) then
-	C["Skins"].WorldMap = false
-end
-
 if (select(4, GetAddOnInfo("Dominos"))) or (select(4, GetAddOnInfo("Bartender4"))) or (select(4, GetAddOnInfo("RazerNaga"))) then
 	C.ActionBar.Enable = false
 end
 
-if (select(4, GetAddOnInfo("WorldQuestTracker"))) or (select(4, GetAddOnInfo("WorldQuestsList"))) then
-	C.General.SmallWorldMap = false
+if (select(4, GetAddOnInfo("WorldQuestTracker"))) or (select(4, GetAddOnInfo("Mapster"))) or (select(4, GetAddOnInfo("WorldQuestsList"))) then
+	C.WorldMap.SmallWorldMap = false
 end
 
 if (select(4, GetAddOnInfo("AdiBags"))) or (select(4, GetAddOnInfo("ArkInventory"))) or (select(4, GetAddOnInfo("cargBags_Nivaya"))) or (select(4, GetAddOnInfo("cargBags"))) or (select(4, GetAddOnInfo("Bagnon"))) or (select(4, GetAddOnInfo("Combuctor"))) or (select(4, GetAddOnInfo("TBag"))) or (select(4, GetAddOnInfo("BaudBag"))) then

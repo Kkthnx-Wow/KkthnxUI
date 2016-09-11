@@ -30,5 +30,6 @@ local function OnEvent(self, event, unit)
 		end
 	end
 end
+
 PingFrame:RegisterEvent("MINIMAP_PING")
 PingFrame:SetScript("OnEvent", OnEvent)

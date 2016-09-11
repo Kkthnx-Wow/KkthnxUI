@@ -44,6 +44,7 @@ local ALLOWED_GROUPS = {
 	["Skins"] = 19,
 	["Tooltip"] = 20,
 	["Unitframe"] = 21,
+	["WorldMap"] = 22,
 }
 
 local function Local(o)
@@ -170,7 +171,6 @@ local function Local(o)
 	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
 	if o == "UIConfigGeneralCustomLagTolerance" then o = L_GUI_GENERAL_LAG_TOLERANCE end
 	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
-	if o == "UIConfigGeneralSmallWorldMap" then o = L_GUI_GENERAL_SMALL_WORLDMAP end
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
 	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
@@ -260,6 +260,12 @@ local function Local(o)
 	if o == "UIConfigUnitframePercentHealth" then o = L_GUI_UNITFRAME_PERCENT_HEALTH end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
 	if o == "UIConfigUnitframeSmallAuraSize" then o = L_GUI_UNITFRAME_SMALL_AURA end
+	-- WorldMap Settings
+	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
+	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end
+	if o == "UIConfigWorldMapCoordinates" then o = L_GUI_WORLDMAP_COORDS end
+	if o == "UIConfigWorldMapFadeWhenMoving" then o = L_GUI_WORLDMAP_FADE_WHENMOVING end
+	if o == "UIConfigWorldMapSmallWorldMap" then o = L_GUI_WORLDMAP_SMALL_WORLDMAP end
 
 	K.option = o
 end
@@ -502,15 +508,20 @@ function CreateUIConfig()
 	slider:SetSize(20, 400)
 	slider:SetThumbTexture("Interface\\Buttons\\UI-ScrollBar-Knob")
 	slider:SetOrientation("VERTICAL")
+	slider:CreateBackdrop(4)
+	local r, g, b, a = unpack(C.Media.Backdrop_Color)
+	slider:SetBackdropColor(r, g, b, 0.8)
 	slider:SetValueStep(20)
 	slider:SetScript("OnValueChanged", function(self, value) groups:SetVerticalScroll(value) end)
 
+	--[[
 	if not slider.bg then
 		slider.bg = CreateFrame("Frame", nil, slider)
 		slider.bg:SetPoint("TOPLEFT", slider:GetThumbTexture(), "TOPLEFT", 10, -7)
 		slider.bg:SetPoint("BOTTOMRIGHT", slider:GetThumbTexture(), "BOTTOMRIGHT", -7, 7)
 		slider:GetThumbTexture():SetAlpha(0)
 	end
+	--]]
 
 	local function sortMyTable(a, b)
 		return ALLOWED_GROUPS[a] < ALLOWED_GROUPS[b]

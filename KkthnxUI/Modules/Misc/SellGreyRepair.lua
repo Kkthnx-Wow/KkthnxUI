@@ -1,9 +1,25 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.Misc.AutoSellGrays and C.Misc.SellMisc ~= true then return end
 
-local SellGreyRepair = CreateFrame("Frame")
+local Merchant = CreateFrame("Frame")
+local Loading = CreateFrame("Frame")
 
-SellGreyRepair:SetScript("OnEvent", function()
+local BlizzardMerchantClick = MerchantItemButton_OnModifiedClick
+
+Merchant.MerchantFilter = {
+	[6289]  = true, -- Raw Longjaw Mud Snapper
+	[6291]  = true, -- Raw Brilliant Smallfish
+	[6308]  = true, -- Raw Bristle Whisker Catfish
+	[6309]  = true, -- 17 Pound Catfish
+	[6310]  = true, -- 19 Pound Catfish
+	[41808] = true, -- Bonescale Snapper
+	[42336] = true, -- Bloodstone Band
+	[42337] = true, -- Sun Rock Ring
+	[43244] = true, -- Crystal Citrine Necklace
+	[43571] = true, -- Sewer Carp
+	[43572] = true, -- Magic Eater
+}
+
+function Merchant:OnEvent()
 	if C.Misc.AutoSellGrays or C.Misc.SellMisc then
 		local Cost = 0
 
@@ -25,7 +41,7 @@ SellGreyRepair:SetScript("OnEvent", function()
 						Cost = Cost + Price
 					end
 
-					if C.Misc.SellMisc and K.MerchantFilter[ID] then
+					if C.Misc.SellMisc and self.MerchantFilter[ID] then
 						UseContainerItem(Bag, Slot)
 						PickupMerchantItem()
 						Cost = Cost + Price
@@ -69,6 +85,39 @@ SellGreyRepair:SetScript("OnEvent", function()
 			end
 		end
 	end
-end)
+end
 
-SellGreyRepair:RegisterEvent("MERCHANT_SHOW")
+function Merchant:MerchantClick(...)
+	if (IsAltKeyDown()) then
+		local MaxStack = select(8, GetItemInfo(GetMerchantItemLink(self:GetID())))
+
+		if (MaxStack and MaxStack > 1) then
+			BuyMerchantItem(self:GetID(), GetMerchantItemMaxStack(self:GetID()))
+		end
+	end
+
+	BlizzardMerchantClick(self, ...)
+end
+
+function Merchant:Enable()
+	self:RegisterEvent("MERCHANT_SHOW")
+	self:SetScript("OnEvent", self.OnEvent)
+
+	MerchantItemButton_OnModifiedClick = self.MerchantClick
+end
+
+function Merchant:Disable()
+	self:UnregisterEvent("MERCHANT_SHOW")
+	self:SetScript("OnEvent", nil)
+
+	MerchantItemButton_OnModifiedClick = BlizzardMerchantClick
+end
+
+function Loading:OnEvent(event, ...)
+	if (event == "PLAYER_LOGIN") then
+		Merchant:Enable()
+	end
+end
+
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:SetScript("OnEvent", Loading.OnEvent)

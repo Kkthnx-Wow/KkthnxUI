@@ -5,6 +5,7 @@ local UnitIsAFK = UnitIsAFK
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 local CollectGarbage = CreateFrame("Frame")
+local Loading = CreateFrame("Frame")
 
 local eventcount = 0
 function CollectGarbage:OnEvent(event, unit)
@@ -33,12 +34,11 @@ end
 CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
 CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-function CollectGarbage:OnEvent(event, addon)
+function Loading:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
 		CollectGarbage:Enable()
 	end
 end
 
-CollectGarbage:RegisterEvent("PLAYER_LOGIN")
-CollectGarbage:RegisterEvent("ADDON_LOADED")
-CollectGarbage:SetScript("OnEvent", CollectGarbage.OnEvent)
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:SetScript("OnEvent", Loading.OnEvent)

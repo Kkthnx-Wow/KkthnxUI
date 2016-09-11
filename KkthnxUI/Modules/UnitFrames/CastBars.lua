@@ -25,6 +25,7 @@ TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 Movers:RegisterFrame(TargetCastbarAnchor)
 
 function CastBars:Setup()
+	if InCombatLockdown() then return end
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 

@@ -41,6 +41,8 @@ TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
 Movers:RegisterFrame(TargetAnchor)
 
 function Unitframes:Setup()
+	if C.Unitframe.Enable ~= true or InCombatLockdown() then return end
+
 	if C.Unitframe.ClassHealth ~= true then
 		hooksecurefunc("UnitFrame_Update", function(self, isParty)
 			if (not self.name or not self:IsShown()) then return end
@@ -267,10 +269,6 @@ end
 
 function Unitframes:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
-
-		if C.Unitframe.Enable == true then
-
-		if InCombatLockdown() then return end
 			Unitframes:Setup()
 		end
 	end

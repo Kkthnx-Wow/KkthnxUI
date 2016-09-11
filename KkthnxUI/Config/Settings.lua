@@ -134,7 +134,6 @@ C["General"] = {
 	["BubbleFontSize"] = 12,
 	["CustomLagTolerance"] = false,
 	["ReplaceBlizzardFonts"] = true,
-	["SmallWorldMap"] = false,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
@@ -231,4 +230,11 @@ C["Unitframe"] = {
 	["PercentHealth"] = false,
 	["Scale"] = 1.2,
 	["SmallAuraSize"] = 16,
+}
+-- WORLDMAP OPTIONS
+C["WorldMap"] = {
+	["AlphaWhenMoving"] = 0.35,
+	["Coordinates"] = true,
+	["FadeWhenMoving"] = true,
+	["SmallWorldMap"] = true,
 }

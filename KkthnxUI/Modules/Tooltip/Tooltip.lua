@@ -59,7 +59,7 @@ function Tooltip:CreateAnchor()
 	Anchor:SetClampedToScreen(true)
 	Anchor:SetPoint(unpack(C.Position.Tooltip))
 	Anchor:SetMovable(true)
-	
+
 	self.Anchor = Anchor
 
 	Movers:RegisterFrame(Anchor)
