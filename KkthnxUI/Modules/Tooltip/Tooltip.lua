@@ -167,7 +167,7 @@ function Tooltip:OnTooltipSetUnit()
 
 	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
 		if (C.Tooltip.ShowSpec and IsAltKeyDown()) then
-			local Talent = K.Talent
+			local Talent = K.Tooltip.Talent
 
 			ILevel = "..."
 			TalentSpec = "..."
@@ -410,9 +410,11 @@ function Tooltip:Enable()
 	end
 end
 
+K["Tooltip"] = Tooltip
+
 function Tooltip:OnEvent(event, ...)
 	if (event == "PLAYER_LOGIN") then
-		Tooltip:Enable()
+		K["Tooltip"]:Enable()
 	end
 end
 

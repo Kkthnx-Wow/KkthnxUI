@@ -22,6 +22,8 @@ C["filger_spells"] = {
 			IconSize = C.Filger.BuffsSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
+			-- Bone Shield
+			{spellID = 195181, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Vampiric Blood
 			{spellID = 55233, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Icebound Fortitude

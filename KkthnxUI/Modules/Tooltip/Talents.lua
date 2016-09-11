@@ -1,6 +1,7 @@
 ﻿local K, C, L, _ = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true or C.Tooltip.ShowSpec ~= true then return end
 
+local Tooltip = K["Tooltip"]
 local Talent = CreateFrame("Frame")
 local format = string.format
 
@@ -146,4 +147,4 @@ Talent:SetScript("OnEvent", function(self, event, GUID)
 	self:UnregisterEvent("INSPECT_READY")
 end)
 
-K.Talent = Talent
+Tooltip.Talent = Talent

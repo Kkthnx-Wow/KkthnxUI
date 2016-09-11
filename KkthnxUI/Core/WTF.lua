@@ -379,42 +379,52 @@ local UploadSkada = function()
 end
 
 -- OUF_ABU SETTINGS
-local UploadKkthnx = function()
-	if oUFKkthnxSettings then table.wipe(oUFKkthnxSettings) end
-	oUFKkthnxSettings = {
+local UploadAbu = function()
+	if oUFAbuSettings then table.wipe(oUFAbuSettings) end
+	oUFAbuSettings = {
 		["Default"] = {
 			["useAuraTimer"] = false,
 			["target"] = {
 				["debuffPos"] = "TOP",
 				["buffPos"] = "BOTTOM",
 				["style"] = "fat",
-				["position"] = "CENTER/242/-175",
+				["position"] = "CENTER/294/-175",
 				["cbposition"] = "CENTER/0/-175",
 			},
 			["classPortraits"] = true,
 			["player"] = {
 				["style"] = "fat",
+				["position"] = "CENTER/-294/-175",
 				["cbposition"] = "CENTER/0/-206",
-				["position"] = "CENTER/-244/-175",
 			},
 			["arena"] = {
 				["position"] = "RIGHT/-274/148",
 			},
 			["TextNameColor"] = {
-				0.772549019607843, -- [1]
-				0.713725490196079, -- [2]
-				0.117647058823529, -- [3]
+				1.0, -- [1]
+				0.82, -- [2]
+				0.0, -- [3]
 			},
 			["party"] = {
 				["style"] = "fat",
 			},
 			["focus"] = {
 				["style"] = "fat",
-				["cbposition"] = "LEFT/441/-39",
 				["position"] = "LEFT/439/32",
+				["cbposition"] = "LEFT/441/-39",
 			},
 			["fontBigSize"] = 0.900000005960465,
-			["statusbar"] = "Interface\\TargetingFrame\\UI-StatusBar",
+			["classBar"] = {
+				[577] = {
+					["spellID"] = 0,
+					["r"] = 0,
+					["g"] = 0,
+					["b"] = 0,
+				},
+			},
+			["boss"] = {
+				["position"] = "RIGHT/-274/166",
+			},
 			["pet"] = {
 				["cbshow"] = false,
 				["style"] = "fat",
@@ -431,10 +441,8 @@ local UploadKkthnx = function()
 				0.764705882352941, -- [2]
 				0.752941176470588, -- [3]
 			},
-			["borderType"] = "kkthnx",
-			["boss"] = {
-				["position"] = "RIGHT/-274/166",
-			},
+			["borderType"] = "abu",
+			["statusbar"] = "Interface\\TargetingFrame\\UI-StatusBar",
 			["targettarget"] = {
 				["style"] = "fat",
 			},
@@ -484,9 +492,9 @@ SlashCmdList.SETTINGS = function(msg)
 		else
 			print("|cffffff00Skada"..L_INFO_NOT_INSTALLED.."|r")
 		end
-	elseif msg == "kkthnx" then
-		if IsAddOnLoaded("oUF_Kkthnx") then
-			UploadKkthnx()
+	elseif msg == "abu" then
+		if IsAddOnLoaded("oUF_Abu") then
+			UploadAbu()
 			ReloadUI()
 		else
 			print("|cffffff00oUF_Abu"..L_INFO_NOT_INSTALLED.."|r")
@@ -497,7 +505,7 @@ SlashCmdList.SETTINGS = function(msg)
 		print("|cffffff00"..L_INFO_SETTINGS_DBM.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_MSBT.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_SKADA.."|r")
-		print("|cffffff00"..L_INFO_SETTINGS_KKTHNX.."|r")
+		print("|cffffff00"..L_INFO_SETTINGS_Abu.."|r")
 		print("|cffffff00"..L_INFO_SETTINGS_ALL.."|r")
 	end
 end

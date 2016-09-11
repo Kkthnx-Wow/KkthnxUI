@@ -74,6 +74,7 @@
 	<Script file="Modules\Misc\SlotItemLevel.lua"/>
 
 	<Script file="Modules\Nameplates\Nameplates.lua"/>
+	<Script file="Modules\Nameplates\Options.lua"/>
 
 	<Script file="Modules\ActionBars\Functions.lua"/>
 	<Script file="Modules\ActionBars\Bindings.lua"/>
