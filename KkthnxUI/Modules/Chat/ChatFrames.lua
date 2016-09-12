@@ -51,8 +51,9 @@ local function AddMessage(frame, str, ...)
 	end
 end
 
-FriendsMicroButton:Kill()
+ChatConfigFrameDefaultButton:Kill()
 ChatFrameMenuButton:Kill()
+FriendsMicroButton:Kill()
 
 -- Set chat style
 local function SetChatStyle(frame)
@@ -130,13 +131,13 @@ local function SetChatStyle(frame)
 			local MIN_REPEAT_CHARACTERS = 5
 			if (len(text) > MIN_REPEAT_CHARACTERS) then
 				local repeatChar = true
-				for i=1, MIN_REPEAT_CHARACTERS, 1 do
+				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
 					if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i)) ) then
 						repeatChar = false
 						break
 					end
 				end
-				if ( repeatChar ) then
+				if (repeatChar) then
 					self:Hide()
 					return
 				end
@@ -220,8 +221,8 @@ end
 -- SETUP CHATFRAMES 1 TO 10 ON LOGIN
 local function SetupChat(self)
 	for i = 1, NUM_CHAT_WINDOWS do
-		local frame = _G[format("ChatFrame%s", i)]
-		SetChatStyle(frame)
+		local Frame = _G["ChatFrame"..i]
+		SetChatStyle(Frame)
 	end
 
 	-- REMEMBER LAST CHANNEL
@@ -240,37 +241,43 @@ end
 
 local function SetupChatPosAndFont(self)
 	for i = 1, NUM_CHAT_WINDOWS do
-		local chat = _G[format("ChatFrame%s", i)]
-		local id = chat:GetID()
-		local _, fontSize = FCF_GetChatWindowInfo(id)
+		local Frame = _G["ChatFrame"..i]
+		local ID = Frame:GetID()
+		local _, FontSize = FCF_GetChatWindowInfo(ID)
+
+		if (not C.Chat.LootFrame) then
+			if (FCF_GetChatWindowInfo(ID) == LOOT) then
+				FCF_Close(Frame)
+			end
+		end
 
 		-- Min. size for chat font
-		if fontSize < 12 then
-			FCF_SetChatWindowFontSize(nil, chat, 12)
+		if FontSize < 12 then
+			FCF_SetChatWindowFontSize(nil, Frame, 12)
 		else
-			FCF_SetChatWindowFontSize(nil, chat, fontSize)
+			FCF_SetChatWindowFontSize(nil, Frame, FontSize)
 		end
 
 		-- Font and font style for chat
 		if C.Chat.Outline == true then
-			chat:SetFont(C.Media.Font, fontSize, C.Media.Font_Style)
-			chat:SetShadowColor(0/255, 0/255, 0/255, 0.2)
+			Frame:SetFont(C.Media.Font, FontSize, C.Media.Font_Style)
+			Frame:SetShadowColor(0/255, 0/255, 0/255, 0.2)
 		else
-			chat:SetFont(C.Media.Font, fontSize)
-			chat:SetShadowColor(0/255, 0/255, 0/255, 1)
-			chat:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+			Frame:SetFont(C.Media.Font, FontSize)
+			Frame:SetShadowColor(0/255, 0/255, 0/255, 1)
+			Frame:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
 		end
 
 		-- FORCE CHAT POSITION
-		if i == 1 then -- WE SHOULD ALLOW THE PLAYER TO POSITION THE CHAT AS THEY LIKE.
-			--chat:ClearAllPoints()
-			--chat:SetSize(C.Chat.Width, C.Chat.Height)
-			--chat:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
-			FCF_SavePositionAndDimensions(chat)
-			DEFAULT_CHAT_FRAME:SetUserPlaced(true)
-		elseif i == 2 then
+		if (ID == 1) then
+			Frame:ClearAllPoints()
+			Frame:SetSize(C.Chat.Width, C.Chat.Height)
+			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+			FCF_RestorePositionAndDimensions(Frame)
+			FCF_SavePositionAndDimensions(Frame)
+		elseif (ID == 2) then
 			if C.Chat.CombatLog ~= true then
-				FCF_DockFrame(chat)
+				FCF_DockFrame(Frame)
 				ChatFrame2Tab:EnableMouse(false)
 				ChatFrame2Tab:SetText("")
 				ChatFrame2Tab.SetText = K.Noop

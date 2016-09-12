@@ -14,8 +14,9 @@ frame:SetScript("OnEvent", function(self, event)
 	if not IsAddOnLoaded("WeakAuras") then return end
 
 	local function Skin_WeakAuras(frame)
-		if not frame.backdrop then
-			frame:CreateBackdrop(size, 4)
+		if not frame.shadow then
+			-- WE JUST USE OUR PIXEL SHADOW HERE
+			frame:CreatePixelShadow()
 		end
 
 		if frame.icon then
@@ -25,7 +26,7 @@ frame:SetScript("OnEvent", function(self, event)
 
 		if frame.bar then
 			frame.bar.fg:SetTexture(C.Media.Texture)
-			frame.bar.bg:SetTexture(C.Media.Texture)
+			frame.bar.bg:SetTexture(C.Media.Blank)
 		end
 
 		if frame.stacks then

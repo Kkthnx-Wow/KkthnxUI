@@ -33,86 +33,99 @@ local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 
 -- Simple Install
 local function InstallUI()
-	SetCVar("RotateMinimap", 0)
-	SetCVar("ShowClassColorInNameplate", 1)
-	SetCVar("SpamFilter", 0)
-	SetCVar("UberTooltips", 1)
-	SetCVar("WhisperMode", "inline")
-	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("alwaysShowActionBars", 1)
-	SetCVar("autoDismount", 1)
-	SetCVar("autoOpenLootHistory", 0)
-	SetCVar("autoQuestProgress", 1)
-	SetCVar("autoQuestWatch", 1)
+	local ActionBars = C.ActionBar.Enable
+
+	-- CVars
+	SetCVar("countdownForCooldowns", 1)
 	SetCVar("buffDurations", 1)
-	SetCVar("cameraDistanceMaxFactor", 2.6)
+	SetCVar("scriptErrors", 1)
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("screenshotQuality", 8)
 	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "classic", "chatStyle")
-	SetCVar("colorblindMode", 0)
-	SetCVar("countdownForCooldowns", 0)
-	SetCVar("gameTip", 0)
-	SetCVar("lockActionBars", 1)
-	SetCVar("lootUnderMouse", 0)
-	SetCVar("maxfpsbk", 0)
-	SetCVar("nameplateShowSelf", 0)
-	SetCVar("removeChatDelay", 1)
-	SetCVar("screenshotQuality", 10)
-	SetCVar("scriptErrors", 0)
+	SetCVar("chatStyle", "im")
+	SetCVar("WholeChatWindowClickable", 0)
+	SetCVar("WhisperMode", "inline")
 	SetCVar("showTutorials", 0)
-	SetCVar("statusTextDisplay", "NONE")
-	SetCVar("taintLog", 0)
-	SetCVar("threatWarning", 3)
+	SetCVar("autoQuestWatch", 1)
+	SetCVar("autoQuestProgress", 1)
+	SetCVar("UberTooltips", 1)
+	SetCVar("removeChatDelay", 1)
+	SetCVar("showVKeyCastbar", 1)
+	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("alwaysShowActionBars", 1)
+	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("spamFilter", 0)
 	SetCVar("violenceLevel", 5)
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("nameplateShowSelf", 0)
+	SetCVar("NamePlateVerticalScale", 1)
+	SetCVar("NamePlateHorizontalScale", 1)
+
+	if (ActionBars) then
+		SetActionBarToggles(1, 1, 1, 1)
+	end
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
+	-- CREATE OUR CUSTOM CHATFRAMES
 	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
-
-	FCF_OpenNewWindow(LOOT)
-	FCF_DockFrame(ChatFrame3)
+	FCF_OpenNewWindow(GENERAL)
 	FCF_SetLocked(ChatFrame3, 1)
-	ChatFrame3:Show()
+	FCF_DockFrame(ChatFrame3)
+
+	if C.Chat.LootFrame then
+		FCF_OpenNewWindow(LOOT)
+		FCF_DockFrame(ChatFrame4)
+		ChatFrame4:Show()
+	end
 
 	-- SETTING CHAT FRAMES
 	if C.Chat.Enable == true and not (select(4, GetAddOnInfo("Prat-3.0"))) or (select(4, GetAddOnInfo("Chatter"))) then
 		for i = 1, NUM_CHAT_WINDOWS do
-			local frame = _G[format("ChatFrame%s", i)]
-			local chatFrameId = frame:GetID()
-			local chatName = FCF_GetChatWindowInfo(chatFrameId)
+			local Frame = _G["ChatFrame"..i]
+			local ID = Frame:GetID()
 
-			frame:SetSize(C.Chat.Width, C.Chat.Height)
+			Frame:SetSize(C.Chat.Width, C.Chat.Height)
 
 			-- DEFAULT WIDTH AND HEIGHT OF CHATS
-			SetChatWindowSavedDimensions(chatFrameId, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
+			SetChatWindowSavedDimensions(ID, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
 
 			-- MOVE GENERAL CHAT TO BOTTOM LEFT
-			if i == 1 then
-				frame:ClearAllPoints()
-				frame:SetPoint(unpack(C.Position.Chat))
+			if (ID == 1) then
+				Frame:ClearAllPoints()
+				Frame:SetPoint(unpack(C.Position.Chat))
 			end
 
 			-- SAVE NEW DEFAULT POSITION AND DIMENSION
-			FCF_SavePositionAndDimensions(frame)
-			FCF_StopDragging(frame)
+			FCF_SavePositionAndDimensions(Frame)
 
 			-- SET DEFAULT FONT SIZE
-			FCF_SetChatWindowFontSize(nil, frame, 12)
+			FCF_SetChatWindowFontSize(nil, Frame, 12)
 
-			-- RENAME CHAT TABS.
-			if i == 1 then
-				FCF_SetWindowName(frame, GENERAL)
-			elseif i == 2 then
-				FCF_SetWindowName(frame, GUILD_EVENT_LOG)
-			elseif i == 3 then
-				FCF_SetWindowName(frame, LOOT.." / "..TRADE)
+			if (ID == 1) then
+				FCF_SetWindowName(Frame, "G, S & W")
+			end
+
+			if (ID == 2) then
+				FCF_SetWindowName(Frame, "Log")
+			end
+
+			if (not Frame.isLocked) then
+				FCF_SetLocked(Frame, 1)
 			end
 		end
 
+		-- SET MORE CHAT GROUPS
 		ChatFrame_RemoveAllMessageGroups(ChatFrame1)
+		ChatFrame_RemoveChannel(ChatFrame1, TRADE)
+		ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
+		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOCALDEFENSE)
+		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_GUILDRECRUITMENT)
+		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOOKINGFORGROUP)
 		ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
 		ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
 		ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
@@ -123,7 +136,9 @@ local function InstallUI()
 		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
 		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
 		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
+		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_WHISPER")
 		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_EMOTE")
+		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_WHISPER")
 		ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
 		ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER")
 		ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
@@ -131,8 +146,6 @@ local function InstallUI()
 		ChatFrame_AddMessageGroup(ChatFrame1, "RAID_WARNING")
 		ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
 		ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BATTLEGROUND")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BATTLEGROUND_LEADER")
 		ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
 		ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
 		ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
@@ -144,20 +157,24 @@ local function InstallUI()
 		ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
 		ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
 		ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BN_INLINE_TOAST_ALERT")
 
+		-- SETUP THE SPAM CHAT FRAME
 		ChatFrame_RemoveAllMessageGroups(ChatFrame3)
-		ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_FACTION_CHANGE")
-		ChatFrame_AddMessageGroup(ChatFrame3, "SKILL")
-		ChatFrame_AddMessageGroup(ChatFrame3, "LOOT")
-		ChatFrame_AddMessageGroup(ChatFrame3, "MONEY")
-		ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_XP_GAIN")
-		ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_HONOR_GAIN")
-		ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_GUILD_XP_GAIN")
-		ChatFrame_AddMessageGroup(ChatFrame3, "CURRENCY")
-		ChatFrame_AddChannel(ChatFrame1, GENERAL)
-		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_TRADE)
-		ChatFrame_AddChannel(ChatFrame3, L_CHAT_TRADE)
+		ChatFrame_AddChannel(ChatFrame3, TRADE)
+		ChatFrame_AddChannel(ChatFrame3, GENERAL)
+		ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOCALDEFENSE)
+		ChatFrame_AddChannel(ChatFrame3, L_CHAT_GUILDRECRUITMENT)
+		ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOOKINGFORGROUP)
+
+		-- SETUP THE LOOT CHAT
+		if C.Chat.LootFrame then
+			ChatFrame_RemoveAllMessageGroups(ChatFrame4)
+			ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
+			ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
+			ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
+			ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
+			ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
+		end
 
 		if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 			SetCVar("scriptErrors", 1)
@@ -179,24 +196,13 @@ local function InstallUI()
 		ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
 		ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
 		ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND_LEADER")
-		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
-		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL1")
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL2")
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL3")
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL4")
 		ToggleChatColorNamesByClassGroup(true, "CHANNEL5")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL6")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL7")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL8")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL9")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL10")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL11")
-
-		-- ADJUST CHAT COLORS
-		ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- GENERAL
-		ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- TRADE
-		ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- LOCAL DEFENSE
+		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
+		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 	end
 
 	-- RESET SAVED VARIABLES ON CHAR
@@ -295,22 +301,6 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
 	else
-		--[[
-		SetCVar("useUiScale", 1)
-		if C.General.UIScale > 1.28 then C.General.UIScale = 1.28 end
-		if C.General.UIScale < 0.64 then C.General.UIScale = 0.64 end
-
-		-- SET OUR UISCALE
-		SetCVar("uiScale", C.General.UIScale)
-
-		-- HACK FOR 4K AND WQHD RESOLUTION
-		local CustomScale = min(2, max(0.32, 768 / string.match(T.resolution, "%d+x(%d+)")))
-		if C.General.AutoScale == true and CustomScale < 0.64 then
-			UIParent:SetScale(CustomScale)
-		elseif CustomScale < 0.64 then
-			UIParent:SetScale(C.General.UIScale)
-		end
-		]]--
 
 		-- INSTALL DEFAULT IF WE NEVER RAN KKTHNXUI ON THIS CHARACTER
 		if not SavedOptionsPerChar.Install then
