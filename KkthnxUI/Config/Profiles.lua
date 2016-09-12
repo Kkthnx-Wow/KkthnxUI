@@ -78,7 +78,6 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 
 	C["General"]["CustomLagTolerance"] = true
 	C["General"]["TranslateMessage"] = false
-	C["General"]["SmallWorldMap"] = true
 	C["General"]["WelcomeMessage"] = true
 
 	C["Loot"]["AutoGreed"] = true
