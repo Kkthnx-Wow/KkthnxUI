@@ -34,7 +34,7 @@ end
 CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
 CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
 
-function Loading:OnEvent(event, ...)
+function Loading:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		CollectGarbage:Enable()
 	end

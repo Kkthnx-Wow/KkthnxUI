@@ -157,7 +157,7 @@
 
 	<Script file="Modules\Quests\AutoCollapse.lua"/>
 	<Script file="Modules\Quests\QuestLog.lua"/>
-	<Script file="Modules\Quests\WatchFrame.lua"/>
+	<Script file="Modules\Quests\ObjectiveTracker.lua"/>
 	<Script file="Modules\Quests\WowheadLink.lua"/>
 
 	<Include file="Modules\Skins\Addons\LoadFrames.xml"/>

@@ -267,11 +267,19 @@ if C.Misc.Armory == true then
 	end
 end
 
-function Unitframes:OnEvent(event, ...)
+function Unitframes:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		Unitframes:Setup()
+
+		if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
+			if (UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
+				Unitframes:Setup()
+			end
+		end
 	end
 end
 
 Unitframes:RegisterEvent("PLAYER_LOGIN")
+Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
+Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
 Unitframes:SetScript("OnEvent", Unitframes.OnEvent)

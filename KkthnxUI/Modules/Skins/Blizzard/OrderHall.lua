@@ -3,6 +3,11 @@ local K, C, L, _ = select(2, ...):unpack()
 local OrderHallSkin = CreateFrame("Frame")
 OrderHallSkin:RegisterEvent("ADDON_LOADED")
 
+local function Abbrev(AreaName)
+	local NewAreaName = (string.len(AreaName) > 18) and string.gsub(AreaName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or AreaName
+	return K.ShortenString(NewAreaName, 18, false)
+end
+
 OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
 	if event == "ADDON_LOADED" and arg1 == "Blizzard_OrderHallUI" then
 		OrderHallSkin:RegisterEvent("DISPLAY_SIZE_CHANGED")
@@ -31,6 +36,7 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
 				OrderHallCommandBar.AreaName:ClearAllPoints()
 				OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.ClassIcon, "RIGHT", 5, 0.5)
 				OrderHallCommandBar.AreaName:SetFont(C.Media.Font, 12, "OUTLINE")
+				OrderHallCommandBar.AreaName:SetText(Abbrev(OrderHallCommandBar.AreaName:GetText()))
 				OrderHallCommandBar.AreaName:SetTextColor(1, 1, 1)
 				OrderHallCommandBar.AreaName:SetShadowOffset(0, 0)
 

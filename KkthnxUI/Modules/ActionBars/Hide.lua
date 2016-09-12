@@ -58,7 +58,7 @@ function ActionBars:DisableBlizzard()
 	end
 end
 
-function ActionBars:OnEvent(event, ...)
+function ActionBars:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		ActionBars:DisableBlizzard()
 	end

@@ -111,13 +111,19 @@ end
 CastingBarFrame:HookScript("OnUpdate", CastBars.Timers)
 TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
-function CastBars:OnEvent(event, ...)
+function CastBars:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
-
-	if InCombatLockdown() then return end
 		CastBars:Setup()
+
+		if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
+			if (UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
+				EnableEnhancedFrames()
+			end
+		end
 	end
 end
 
 CastBars:RegisterEvent("PLAYER_LOGIN")
+CastBars:RegisterEvent("UNIT_EXITED_VEHICLE")
+CastBars:RegisterEvent("UNIT_ENTERED_VEHICLE")
 CastBars:SetScript("OnEvent", CastBars.OnEvent)

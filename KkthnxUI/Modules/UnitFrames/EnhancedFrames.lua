@@ -69,6 +69,9 @@ function EnhancedFrames_Style_PlayerFrame()
 		PlayerFrameHealthBar:SetSize(119, 29)
 		PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
 		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
+		PlayerRestIcon:SetSize(20, 20)
+		PlayerRestIcon:ClearAllPoints()
+		PlayerRestIcon:SetPoint("CENTER", PlayerFrameTexture, "TOP", -14, -24)
 	end
 
 	PlayerFrameTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
@@ -84,7 +87,7 @@ function EnhancedFrames_Style_TargetFrame(self)
 		self.deadText:SetPoint("CENTER", -50, 4)
 		self.Background:SetPoint("TOPLEFT", 7, -41)
 	else
-		self.name:SetPoint("TOPLEFT", 16, -10)
+		self.name:SetPoint("TOPLEFT", 16, -8)
 
 		self.healthbar:SetHeight(29)
 		self.healthbar:SetPoint("TOPLEFT", 7, -22)
@@ -104,14 +107,14 @@ function EnhancedFrames_BossTargetFrame_Style(self)
 end
 
 --[[
-	MAKE SURE TO SET STATUS TEXT TO NUMERIC VALUES IN INTERFACE OPTIONS FOR THIS TO WORK
-	"PERCENT" and "NUMERIC"
-	GetCVarDefault("statusTextDisplay") -> "NUMERIC"
-	GetCVarDefault("statusText") -> "0"
+MAKE SURE TO SET STATUS TEXT TO NUMERIC VALUES IN INTERFACE OPTIONS FOR THIS TO WORK
+"PERCENT" and "NUMERIC"
+GetCVarDefault("statusTextDisplay") -> "NUMERIC"
+GetCVarDefault("statusText") -> "0"
 ]]--
 
 -- FORCE NUMERIC FOR HEALTHBAR FIX
-SetCVar("statusTextDisplay", "NUMERIC")
+SetCVar("statusTextDisplay", "NONE")
 function EnhancedFrames_TextStatusBarUpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
 	if value == 0 then
 		return textString:SetText("")
@@ -249,11 +252,19 @@ function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 	end
 end
 
-function EnhancedFrames:OnEvent(event, ...)
+function EnhancedFrames:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		EnableEnhancedFrames()
+
+		if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
+			if (UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
+				EnableEnhancedFrames()
+			end
+		end
 	end
 end
 
 EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
+EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
+EnhancedFrames:RegisterEvent("UNIT_ENTERED_VEHICLE")
 EnhancedFrames:SetScript("OnEvent", EnhancedFrames.OnEvent)

@@ -213,7 +213,7 @@ end
 
 K["NamePlates"] = Plates
 
-function Plates:OnEvent(event, ...)
+function Plates:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		K["NamePlates"]:Enable()
 	end

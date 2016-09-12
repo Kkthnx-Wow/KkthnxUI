@@ -135,7 +135,7 @@ vehicle:SetScript("OnEnter", function(self)
 end)
 vehicle:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-function ActionBars:OnEvent(event, ...)
+function ActionBars:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		ActionBars:ShowGrid()
 	end

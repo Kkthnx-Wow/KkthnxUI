@@ -412,7 +412,7 @@ end
 
 K["Tooltip"] = Tooltip
 
-function Tooltip:OnEvent(event, ...)
+function Tooltip:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		K["Tooltip"]:Enable()
 	end

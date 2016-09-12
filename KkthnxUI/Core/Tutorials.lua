@@ -112,7 +112,7 @@ function Tutorial:Tutorials(forceShow)
 	self:SetNextTutorial()
 end
 
-function Tutorial:OnEvent(event, ...)
+function Tutorial:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		Tutorial:Tutorials(forceShow)
 	end

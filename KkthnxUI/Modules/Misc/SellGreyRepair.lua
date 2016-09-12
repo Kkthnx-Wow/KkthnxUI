@@ -113,7 +113,7 @@ function Merchant:Disable()
 	MerchantItemButton_OnModifiedClick = BlizzardMerchantClick
 end
 
-function Loading:OnEvent(event, ...)
+function Loading:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		Merchant:Enable()
 	end
