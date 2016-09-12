@@ -19,6 +19,7 @@ SLASH_FARMMODE2 = "/fm"
 
 -- BUTTON FOR FARM-MODE
 local Farm = CreateFrame("Button", "FarmMode", UIParent)
+K.CreateBorder(Farm)
 Farm:SetBackdrop(K.BorderBackdrop)
 Farm:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 Farm:SetPoint("TOP", ToggleBar5, "BOTTOM", 0, -4)

@@ -19,6 +19,9 @@
 	<Script file="Libs\AceConsole-3.0\AceConsole-3.0.lua"/>
 	<Script file="Libs\AceTimer-3.0\AceTimer-3.0.lua"/>
 	<Script file="Libs\AceHook-3.0\AceHook-3.0.lua"/>
+	<Include file="Libs\DropDownMenu\UIDropDownMenuTemplates.xml"/>
+	<Script file="Libs\DropDownMenu\EasyMenu.lua"/>
+	<Script file="Libs\DropDownMenu\UIDropDownMenu.lua"/>
 
 	<Script file="Media\Media.lua"/>
 	<Script file="Core\Colors.lua"/>
@@ -60,6 +63,7 @@
 	<Script file="Modules\Misc\AFKSpin.lua"/>
 	<Script file="Modules\Misc\AlreadyKnown.lua"/>
 	<Script file="Modules\Misc\ArmoryLink.lua"/>
+	<Script file="Modules\Misc\DropDown.lua"/>
 	<Script file="Modules\Misc\Durability.lua"/>
 	<Script file="Modules\Misc\Filger.lua"/>
 	<Script file="Modules\Misc\GarbageCollect.lua"/>

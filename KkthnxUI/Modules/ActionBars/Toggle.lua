@@ -301,6 +301,7 @@ for i = 1, 5 do
 		end
 	elseif i == 5 then
 		ToggleBar[i]:CreatePanel("Invisible", 19, 19, "BOTTOMRIGHT", Minimap, "BOTTOMLEFT", -4, -2)
+		K.CreateBorder(ToggleBar[i])
 		ToggleBar[i]:SetBackdrop(K.BorderBackdrop)
 		ToggleBar[i]:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		ToggleBar[i].Text:SetPoint("CENTER", 0, 0)
