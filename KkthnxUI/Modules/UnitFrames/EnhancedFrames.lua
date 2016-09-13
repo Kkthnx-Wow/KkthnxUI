@@ -258,8 +258,8 @@ function EnhancedFrames:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		EnableEnhancedFrames()
 
-		if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
-			if (UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
+		if (event == "UNIT_EXITED_VEHICLE") then
+			if (not UnitControllingVehicle("player") or not UnitHasVehiclePlayerFrameUI("player")) then
 				EnableEnhancedFrames()
 			end
 		end
@@ -268,5 +268,4 @@ end
 
 EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
 EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
-EnhancedFrames:RegisterEvent("UNIT_ENTERED_VEHICLE")
 EnhancedFrames:SetScript("OnEvent", EnhancedFrames.OnEvent)
