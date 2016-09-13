@@ -37,23 +37,23 @@ local function GetBar()
 	local condition = Page["DEFAULT"]
 	local class = K.Class
 	local page = Page[class]
-	if page then condition = condition .. " " .. page end
-
-	condition = condition .. " [form] 1; 1"
-
+	if page then
+		condition = condition.." "..page
+	end
+	condition = condition.." 1"
 	return condition
 end
 
 bar:RegisterEvent("PLAYER_LOGIN")
 bar:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
-bar:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
+--bar:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 bar:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-bar:SetScript("OnEvent", function(self, event, ...)
-	if event == "PLAYER_LOGIN" then
-		local button
+bar:RegisterEvent("BAG_UPDATE")
+bar:SetScript("OnEvent", function(self, event, unit, ...)
+	if (event == "PLAYER_LOGIN" or event == "ACTIVE_TALENT_GROUP_CHANGED") then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
-			button = _G["ActionButton" .. i]
-			self:SetFrameRef("ActionButton" .. i, button)
+			local button = _G["ActionButton"..i]
+			self:SetFrameRef("ActionButton"..i, button)
 		end
 
 		self:Execute([[
@@ -70,11 +70,14 @@ bar:SetScript("OnEvent", function(self, event, ...)
 		]])
 
 		RegisterStateDriver(self, "page", GetBar())
-	elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
-		if HasVehicleActionBar() then
-			if not self.inVehicle then self.inVehicle = true end
-		else
-			if self.inVehicle then self.inVehicle = false end
+	--elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
+	elseif event == "UPDATE_VEHICLE_ACTIONBAR" then
+		--if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
+		if not InCombatLockdown() and (HasVehicleActionBar()) then
+			for i = 1, NUM_ACTIONBAR_BUTTONS do
+				local button = _G["ActionButton"..i]
+				ActionButton_Update(button)
+			end
 		end
 	else
 		MainMenuBar_OnEvent(self, event, ...)

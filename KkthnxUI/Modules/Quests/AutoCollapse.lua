@@ -5,7 +5,7 @@ local CreateFrame = CreateFrame
 local IsInInstance = IsInInstance
 local InCombatLockdown = InCombatLockdown
 
--- Auto collapse WatchFrame
+-- AUTO COLLAPSE WATCHFRAME
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)

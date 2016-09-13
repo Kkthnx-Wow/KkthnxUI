@@ -3,24 +3,6 @@ local K, C, L, _ = select(2, ...):unpack()
 local ObjectiveTracker = CreateFrame("Frame", "ObjectiveTracker", UIParent)
 local Noop = function() end
 
-function ObjectiveTracker:SetQuestItemButton(block)
-	local Button = block.itemButton
-
-	if (Button and not Button.IsSkinned) then
-		local Icon = Button.icon
-
-		Button:SetNormalTexture("")
-		Button:CreateBackdrop()
-		Button.backdrop:SetOutside(Button, 2, 2)
-		Button:StyleButton()
-
-		Icon:SetTexCoord(.1, .9, .1, .9)
-		Icon:SetInside()
-
-		Button.isSkinned = true
-	end
-end
-
 function ObjectiveTracker:UpdatePopup()
 	for i = 1, GetNumAutoQuestPopUps() do
 		local questID, popUpType = GetAutoQuestPopUp(i)
@@ -47,20 +29,7 @@ function ObjectiveTracker:SetTrackerPosition()
 end
 
 function ObjectiveTracker:AddHooks()
-	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", self.SetQuestItemButton) -- TAINTING?!?
 	hooksecurefunc(AUTO_QUEST_POPUP_TRACKER_MODULE, "Update", self.UpdatePopup)
-end
-
-function ObjectiveTracker:Minimize()
-	local Button = self
-	local Text = self.Text
-	local Value = Text:GetText()
-
-	if (Value and Value == "X") then
-		Text:SetText("V")
-	else
-		Text:SetText("X")
-	end
 end
 
 function ObjectiveTracker:Enable()
@@ -70,7 +39,6 @@ function ObjectiveTracker:Enable()
 
 	local Movers = K["Movers"]
 	local Frame = ObjectiveTrackerFrame
-	local Minimize = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	local ScenarioStageBlock = ScenarioStageBlock
 	local Data = SavedPositions
 	local Anchor1, Parent, Anchor2, X, Y = "TOPRIGHT", UIParent, "TOPRIGHT", -K.ScreenHeight / 5, -K.ScreenHeight / 4
@@ -98,15 +66,6 @@ function ObjectiveTracker:Enable()
 			Header:Show()
 		end
 	end
-
-	ScenarioStageBlock:StripTextures()
-	ScenarioStageBlock:SetHeight(50)
-
-	Minimize:StripTextures()
-	Minimize:FontString("Text", C.Media.Font, 12, "OUTLINE")
-	Minimize.Text:SetPoint("CENTER", Minimize)
-	Minimize.Text:SetText("X")
-	Minimize:HookScript("OnClick", ObjectiveTracker.Minimize)
 
 	Frame.ClearAllPoints = function() end
 	Frame.SetPoint = function() end
