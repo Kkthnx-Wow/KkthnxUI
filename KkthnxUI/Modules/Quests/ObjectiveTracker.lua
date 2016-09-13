@@ -11,10 +11,10 @@ function ObjectiveTracker:SetQuestItemButton(block)
 
 		Button:SetNormalTexture("")
 		Button:CreateBackdrop()
-		Button.Backdrop:SetOutside(Button, 0, 0)
+		Button.backdrop:SetOutside(Button, 2, 2)
 		Button:StyleButton()
 
-		Icon:SetTexCoord(.1,.9,.1,.9)
+		Icon:SetTexCoord(.1, .9, .1, .9)
 		Icon:SetInside()
 
 		Button.isSkinned = true
@@ -23,18 +23,18 @@ end
 
 function ObjectiveTracker:UpdatePopup()
 	for i = 1, GetNumAutoQuestPopUps() do
-		local questID, popUpType = GetAutoQuestPopUp(i);
-		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID));
+		local questID, popUpType = GetAutoQuestPopUp(i)
+		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID))
 
-		if ( questTitle and questTitle ~= "" ) then
+		if (questTitle and questTitle ~= "") then
 			local Block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetBlock(questID)
 			local ScrollChild = Block.ScrollChild
 
 			if not ScrollChild.IsSkinned then
 				ScrollChild:StripTextures()
 				ScrollChild:CreateBackdrop("Transparent")
-				ScrollChild.Backdrop:Point("TOPLEFT", ScrollChild, "TOPLEFT", 48, -2)
-				ScrollChild.Backdrop:Point("BOTTOMRIGHT", ScrollChild, "BOTTOMRIGHT", -1, 2)
+				ScrollChild.backdrop:SetPoint("TOPLEFT", ScrollChild, "TOPLEFT", 48, -2)
+				ScrollChild.backdrop:SetPoint("BOTTOMRIGHT", ScrollChild, "BOTTOMRIGHT", -1, 2)
 				ScrollChild.FlashFrame.IconFlash:Kill()
 				ScrollChild.IsSkinned = true
 			end
@@ -64,7 +64,6 @@ function ObjectiveTracker:Minimize()
 end
 
 function ObjectiveTracker:Enable()
-	-- http://git.tukui.org/Tukz/tukui/issues/80
 	if select(4, GetAddOnInfo("DugisGuideViewerZ")) then
 		return
 	end

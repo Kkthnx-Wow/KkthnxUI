@@ -18,17 +18,9 @@ anchor:SetSize(C.PulseCD.Size, C.PulseCD.Size)
 anchor:SetPoint(unpack(C.Position.PulseCD))
 Movers:RegisterFrame(anchor)
 
-
 local frame = CreateFrame("Frame", "PulseCDFrame", anchor)
 frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
-frame:SetBackdrop({
-	bgFile = C.Media.Blank,
-	edgeFile = C.Media.Glow,
-	edgeSize = 3 * K.NoScaleMult,
-	insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
-})
-frame:SetBackdropBorderColor(0, 0, 0)
-frame:SetBackdropColor(0, 0, 0, 0)
+K.CreateVirtualFrame(frame)
 frame:SetPoint("CENTER", anchor, "CENTER")
 
 local icon = frame:CreateTexture(nil, "ARTWORK")

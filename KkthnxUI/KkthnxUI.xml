@@ -53,7 +53,6 @@
 	<Script file="Modules\Unitframes\CastBars.lua"/>
 	<Script file="Modules\Unitframes\EnhancedFrames.lua"/>
 	<Script file="Modules\Unitframes\Layout.lua"/>
-
 	<Script file="Modules\Unitframes\Plugins\ClassHealth.lua"/>
 	<Script file="Modules\Unitframes\Plugins\ClassIcons.lua"/>
 	<Script file="Modules\Unitframes\Plugins\Extras.lua"/>
@@ -66,6 +65,7 @@
 	<Script file="Modules\Miscellaneous\DropDown.lua"/>
 	<Script file="Modules\Miscellaneous\Durability.lua"/>
 	<Script file="Modules\Miscellaneous\Filger.lua"/>
+	<Script file="Modules\Miscellaneous\LossControl.lua"/>
 	<Script file="Modules\Miscellaneous\GarbageCollect.lua"/>
 	<Script file="Modules\Miscellaneous\LFDQueueTimer.lua"/>
 	<Script file="Modules\Miscellaneous\Mail.lua"/>

@@ -21,7 +21,6 @@ C["Position"] = {
 	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 4},
 	["PulseCD"] = {"CENTER", "UIParent", "CENTER", 0, 0},
 	["WorldMap"] = {"CENTER", "UIParent", "CENTER", 0, 100},
-	["Quest"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -K.ScreenHeight / 5, -K.ScreenHeight / 4},
 	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
 	["StanceBar"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167},
 	["StatsFrame"] = {"CENTER", "StatFrame", "CENTER", 0, 0},
@@ -33,7 +32,6 @@ C["Position"] = {
 	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
 	-- UNITFRAME POSITIONS
 	UnitFrames = {
-		-- ["Focus"] = {"BOTTOM", "PlayerFrame", "TOP", 0, 200},
 		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
 		["Boss"] = {"RIGHT", "RightActionBarAnchor", "LEFT", 20, -70},
 		["Player"] = {"BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -9, 175},

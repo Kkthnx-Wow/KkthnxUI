@@ -49,8 +49,7 @@ K.Comma = function(num)
 	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
--- SHORTVALUE
--- WE SHOW A DIFFERENT VALUE FOR THE CHINESE CLIENT.
+-- SHORTVALUE, WE SHOW A DIFFERENT VALUE FOR THE CHINESE CLIENT.
 K.ShortValue = function(value)
 	if (Locale == "zhCN") then
 		if abs(value) >= 1e8 then
@@ -106,6 +105,26 @@ K.ModifyBasicFrame = function(frame, anchor, parent, posX, posY, scale)
 	frame:ClearAllPoints()
 	if(parent == nil) then frame:SetPoint(anchor, posX, posY) else frame:SetPoint(anchor, parent, posX, posY) end
 	if(scale ~= nil) then frame:SetScale(scale) end
+end
+
+-- CREATE A FAKE BACKDROP FRAME??
+K.CreateVirtualFrame = function(parent, point)
+	if point == nil then point = parent end
+
+	if point.backdrop then return end
+	parent.backdrop = CreateFrame("Frame", nil , parent)
+	parent.backdrop:SetAllPoints()
+	parent.backdrop:SetBackdrop(K.Backdrop)
+	parent.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
+	parent.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
+	parent.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	parent.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+
+	if parent:GetFrameLevel() - 1 > 0 then
+		parent.backdrop:SetFrameLevel(parent:GetFrameLevel() - 1)
+	else
+		parent.backdrop:SetFrameLevel(0)
+	end
 end
 
 K.CheckChat = function(warning)
