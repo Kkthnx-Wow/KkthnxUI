@@ -113,10 +113,11 @@
 
 	<Script file="Modules\Blizzard\Achievements.lua"/>
 	<Script file="Modules\Blizzard\AltPowerBar.lua"/>
-	<Script file="Modules\Blizzard\Bags.lua"/>
 	<Script file="Modules\Blizzard\Artifact.lua"/>
+	<Script file="Modules\Blizzard\Bags.lua"/>
 	<Script file="Modules\Blizzard\CaptureBar.lua"/>
 	<Script file="Modules\Blizzard\ClassColor.lua"/>
+	<Script file="Modules\Blizzard\ColorPicker.lua"/>
 	<Script file="Modules\Blizzard\ColorTextures.lua"/>
 	<Script file="Modules\Blizzard\Durability.lua"/>
 	<Script file="Modules\Blizzard\Errors.lua"/>
