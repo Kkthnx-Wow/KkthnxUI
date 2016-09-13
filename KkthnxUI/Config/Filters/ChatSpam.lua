@@ -68,7 +68,7 @@ K.ChatSpamList = {
 	"pussy",
 	"pvp ?mate",
 	"qq",
-	"qq%d+"
+	"qq%d+",
 	"ranking",
 	"rating",
 	"rbg",
@@ -76,7 +76,6 @@ K.ChatSpamList = {
 	"rocket chicken",
 	"s%A*k%A*y%A*p%Ae",
 	"s.?k.?p.?y.?e?",
-	"s.?k.?y.?p.?e?",
 	"season",
 	"self ?play",
 	"server",
@@ -96,5 +95,5 @@ K.ChatSpamList = {
 	"y?o?ur? m[ao]mm?a",
 	"y?o?ur? m[ou]th[ae]r",
 	"youtu%.?be",
-	"youtube",
+	"youtube"
 }
