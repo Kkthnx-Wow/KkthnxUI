@@ -1179,12 +1179,12 @@ C["filger_spells"] = {
 			{spellID = 12472, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Arcane Power
 			{spellID = 12042, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Combustion
+			{spellID = 190319, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Ice Barrier
 			{spellID = 11426, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Heating Up
 			{spellID = 48107, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Incanter's Flow
-			{spellID = 1463, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Ice Floes
 			{spellID = 108839, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Evanesce
@@ -1284,8 +1284,6 @@ C["filger_spells"] = {
 
 			-- Arcane Charge
 			{spellID = 36032, unitID = "player", caster = "player", filter = "DEBUFF"},
-			-- Ignite
-			{spellID = 12654, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Living Bomb
 			{spellID = 44457, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Nether Tempest
@@ -1339,6 +1337,8 @@ C["filger_spells"] = {
 			-- Self
 			-- Counterspell
 			{spellID = 2139, filter = "CD"},
+			-- Living Bomb
+			{spellID = 44457, filter = "CD"},
 			-- Blink
 			{spellID = 1953, filter = "CD"},
 			-- Blazing Speed
@@ -1351,8 +1351,6 @@ C["filger_spells"] = {
 			{spellID = 11426, filter = "CD"},
 			-- Temporal Shield
 			{spellID = 115610, filter = "CD"},
-			-- Incanter's Ward
-			{spellID = 1463, filter = "CD"},
 			-- Frost Bomb
 			{spellID = 112948, filter = "CD"},
 			-- Flamestrike
@@ -1365,6 +1363,8 @@ C["filger_spells"] = {
 			{spellID = 153595, filter = "CD"},
 			-- Ice Floes
 			{spellID = 108839, filter = "CD"},
+			-- Flame On
+			{spellID = 205029, filter = "CD"},
 			-- Frozen Orb
 			{spellID = 84714, filter = "CD"},
 			-- Arcane Power
@@ -1375,10 +1375,10 @@ C["filger_spells"] = {
 			{spellID = 12051, filter = "CD"},
 			-- Icy Veins
 			{spellID = 12472, filter = "CD"},
-			-- Prismatic Crystal
-			{spellID = 152087, filter = "CD"},
 			-- Mirror Image
 			{spellID = 55342, filter = "CD"},
+			-- Combustion
+			{spellID = 190319, filter = "CD"},
 			-- Cold Snap
 			{spellID = 11958, filter = "CD"},
 			-- Ice Block
@@ -2723,6 +2723,8 @@ C["filger_spells"] = {
 
 			-- Stormstrike
 			{spellID = 17364, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Flame Shock
+			{spellID = 188389, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Earthgrab
 			{spellID = 64695, unitID = "target", caster = "player", filter = "DEBUFF"},
 
@@ -3706,6 +3708,8 @@ C["filger_spells"] = {
 			{spellID = 3600, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Earthquake
 			{spellID = 77505, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Frost Shock
+			{spellID = 196840, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Thunderstorm
 			{spellID = 51490, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Cripple (Doomguard)

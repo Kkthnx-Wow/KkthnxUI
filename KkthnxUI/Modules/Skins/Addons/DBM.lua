@@ -7,16 +7,14 @@ local find = string.find
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
-local forcebosshealthclasscolor = false
-local croprwicons = true
-local rwiconsize = 12
 local backdrop = {
-	bgFile = C.Media.Texture,
+	bgFile = C.Media.Blank,
 	insets = {left = 0, right = 0, top = 0, bottom = 0},
 }
 
 local DBMSkin = CreateFrame("Frame")
 DBMSkin:RegisterEvent("PLAYER_LOGIN")
+DBMSkin:RegisterEvent("ADDON_LOADED")
 DBMSkin:SetScript("OnEvent", function(self, event, addon)
 	if IsAddOnLoaded("DBM-Core") then
 		local function SkinBars(self)
@@ -32,45 +30,47 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						local name = _G[frame:GetName().."BarName"]
 						local timer = _G[frame:GetName().."BarTimer"]
 
-						if (icon1.overlay) then
+						if icon1.overlay then
 							icon1.overlay = _G[icon1.overlay:GetName()]
 						else
 							icon1.overlay = CreateFrame("Frame", "$parentIcon1Overlay", tbar)
-							icon1.overlay:SetWidth(23)
-							icon1.overlay:SetHeight(23)
+							icon1.overlay:SetWidth(25)
+							icon1.overlay:SetHeight(25)
 							icon1.overlay:SetFrameStrata("BACKGROUND")
 							icon1.overlay:SetPoint("BOTTOMRIGHT", tbar, "BOTTOMLEFT", -5, -2)
-							icon1.overlay:CreateBackdrop(2)
+							--icon1.overlay:CreatePixelShadow(1)
+							K.CreateVirtualFrame(icon1.overlay)
 						end
 
-						if (icon2.overlay) then
+						if icon2.overlay then
 							icon2.overlay = _G[icon2.overlay:GetName()]
 						else
 							icon2.overlay = CreateFrame("Frame", "$parentIcon2Overlay", tbar)
-							icon2.overlay:SetWidth(23)
-							icon2.overlay:SetHeight(23)
+							icon2.overlay:SetWidth(25)
+							icon2.overlay:SetHeight(25)
 							icon2.overlay:SetFrameStrata("BACKGROUND")
 							icon2.overlay:SetPoint("BOTTOMLEFT", tbar, "BOTTOMRIGHT", 5, -2)
-							icon2.overlay:CreateBackdrop(2)
+							K.CreateVirtualFrame(icon2.overlay)
 						end
 
 						if bar.color then
-							tbar:SetStatusBarColor(0.1, 0.1, 0.1)
+							tbar:SetStatusBarColor(bar.color.r, bar.color.g, bar.color.b)
 							tbar:SetBackdrop(backdrop)
-							tbar:SetBackdropColor(0.1, 0.1, 0.1, 0.15)
+							tbar:SetBackdropColor(bar.color.r, bar.color.g, bar.color.b, 0.15)
 						else
-							tbar:SetStatusBarColor(0.1, 0.1, 0.1)
+							tbar:SetStatusBarColor(bar.owner.options.StartColorR, bar.owner.options.StartColorG, bar.owner.options.StartColorB)
 							tbar:SetBackdrop(backdrop)
-							tbar:SetBackdropColor(0.1, 0.1, 0.1, 0.15)
+							tbar:SetBackdropColor(bar.owner.options.StartColorR, bar.owner.options.StartColorG, bar.owner.options.StartColorB, 0.15)
 						end
 
 						if bar.enlarged then frame:SetWidth(bar.owner.options.HugeWidth) else frame:SetWidth(bar.owner.options.Width) end
 						if bar.enlarged then tbar:SetWidth(bar.owner.options.HugeWidth) else tbar:SetWidth(bar.owner.options.Width) end
 
-						frame:SetScale(1)
 						if not frame.styled then
-							frame:SetHeight(23)
-							frame:CreateBackdrop(2)
+							frame:SetScale(1)
+							frame:SetHeight(20)
+							--frame:CreatePixelShadow(1)
+							K.CreateVirtualFrame(frame)
 							frame.styled = true
 						end
 
@@ -81,7 +81,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						end
 
 						if not icon1.styled then
-							icon1:SetTexCoord(unpack(K.TexCoords))
+							icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 							icon1:ClearAllPoints()
 							icon1:SetPoint("TOPLEFT", icon1.overlay, 2, -2)
 							icon1:SetPoint("BOTTOMRIGHT", icon1.overlay, -2, 2)
@@ -89,7 +89,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						end
 
 						if not icon2.styled then
-							icon2:SetTexCoord(unpack(K.TexCoords))
+							icon2:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 							icon2:ClearAllPoints()
 							icon2:SetPoint("TOPLEFT", icon2.overlay, 2, -2)
 							icon2:SetPoint("BOTTOMRIGHT", icon2.overlay, -2, 2)
@@ -110,9 +110,10 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						if not name.styled then
 							name:ClearAllPoints()
 							name:SetPoint("LEFT", frame, "LEFT", 4, 0)
-							name:SetWidth(180)
+							name:SetWidth(165)
 							name:SetHeight(8)
-							name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+							name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+							name:SetShadowOffset(0, 0)
 							name:SetJustifyH("LEFT")
 							name.SetFont = K.Noop
 							name.styled = true
@@ -120,8 +121,9 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 
 						if not timer.styled then
 							timer:ClearAllPoints()
-							timer:SetPoint("RIGHT", frame, "RIGHT", -5, 0)
-							timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+							timer:SetPoint("RIGHT", frame, "RIGHT", -1, 0)
+							timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+							timer:SetShadowOffset(0, 0)
 							timer:SetJustifyH("RIGHT")
 							timer.SetFont = K.Noop
 							timer.styled = true
@@ -137,6 +139,24 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						bar.injected = true
 					end
 					bar:ApplyStyle()
+					bar.ApplyPosition = function()
+						if C.Unitframe.Enable ~= true or C.skins.DBMMove == true then return end
+						self.mainAnchor:ClearAllPoints()
+						if C.Unitframe.Enable == true then
+							if bar.owner.options.IconRight then
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -(138 + PlayerPortrait:GetWidth()), -69)
+							else
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -(110 + PlayerPortrait:GetWidth()), -69)
+							end
+						else
+							if bar.owner.options.IconRight then
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -131, -69)
+							else
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -103, -69)
+							end
+						end
+					end
+					bar:ApplyPosition()
 				end
 			end
 		end
@@ -146,8 +166,8 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 			if not anchor.styled then
 				local header = {anchor:GetRegions()}
 				if header[1]:IsObjectType("FontString") then
-					header[1]:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-					header[1]:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+					header[1]:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+					header[1]:SetShadowOffset(0, 0)
 					header[1]:SetTextColor(1, 1, 1, 1)
 					anchor.styled = true
 				end
@@ -166,19 +186,28 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				local timer = _G[bar:GetName().."BarTimer"]
 				local prev = _G[format("DBM_BossHealth_Bar_%d", count-1)]
 
-				if (count == 1) then
-					local _, anch, _ , _, _ = bar:GetPoint()
+				if count == 1 then
+					local _, anch = bar:GetPoint()
 					bar:ClearAllPoints()
-					bar:SetPoint("TOP", anch, "BOTTOM", 0, -3)
+					if DBM_AllSavedOptions["Default"].HealthFrameGrowUp then
+						bar:SetPoint("BOTTOM", anch, "TOP", 0, 3)
+					else
+						bar:SetPoint("TOP", anch, "BOTTOM", 0, -3)
+					end
 				else
 					bar:ClearAllPoints()
-					bar:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -3)
+					if DBM_AllSavedOptions["Default"].HealthFrameGrowUp then
+						bar:SetPoint("BOTTOMLEFT", prev, "TOPLEFT", 0, 3)
+					else
+						bar:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -3)
+					end
 				end
 
 				if not bar.styled then
 					bar:SetScale(1)
-					bar:SetHeight(19)
-					bar:CreateBackdrop(2)
+					bar:SetHeight(20)
+					--bar:SetTemplate("Default")
+					K.CreateVirtualFrame(bar)
 					background:SetNormalTexture(nil)
 					bar.styled = true
 				end
@@ -186,18 +215,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				if not progress.styled then
 					progress:SetStatusBarTexture(C.Media.Texture)
 					progress:SetBackdrop(backdrop)
-					progress:SetBackdropColor(r,g,b,1)
-					if forcebosshealthclasscolor then
-						local tslu = 0
-						progress:SetStatusBarColor(r,g,b,1)
-						progress:HookScript("OnUpdate", function(self, elapsed)
-							tslu = tslu+ elapsed
-							if tslu > 0.025 then
-								self:SetStatusBarColor(r,g,b,1)
-								tslu = 0
-							end
-						end)
-					end
+					progress:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
 					progress.styled = true
 				end
 				progress:ClearAllPoints()
@@ -207,17 +225,17 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				if not name.styled then
 					name:ClearAllPoints()
 					name:SetPoint("LEFT", bar, "LEFT", 4, 0)
-					name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-					name:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+					name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+					name:SetShadowOffset(0, 0)
 					name:SetJustifyH("LEFT")
 					name.styled = true
 				end
 
 				if not timer.styled then
 					timer:ClearAllPoints()
-					timer:SetPoint("RIGHT", bar, "RIGHT", -5, 0)
-					timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-					timer:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+					timer:SetPoint("RIGHT", bar, "RIGHT", -1, 0)
+					timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+					timer:SetShadowOffset(0, 0)
 					timer:SetJustifyH("RIGHT")
 					timer.styled = true
 				end
@@ -230,37 +248,31 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 		hooksecurefunc(DBM.BossHealth, "AddBoss", SkinBoss)
 		hooksecurefunc(DBM.BossHealth, "UpdateSettings", SkinBoss)
 
-		local firstRange = true
 		hooksecurefunc(DBM.RangeCheck, "Show", function()
-			if firstRange then
-				DBMRangeCheck:SetBackdrop(nil)
-				local bd = CreateFrame("Frame", nil, DBMRangeCheckRadar)
-				bd:SetPoint("TOPLEFT")
-				bd:SetPoint("BOTTOMRIGHT")
-				bd:SetFrameLevel(0)
-				bd:SetFrameStrata(DBMRangeCheckRadar:GetFrameStrata())
-				bd:SetBackdropColor(.05,.05,.05, .9)
-				bd:SetBackdrop(backdrop)
-				bd:SetBackdropColor(.08,.08,.08, .9)
-
-				firstRange = false
+			if DBMRangeCheck then
+				--DBMRangeCheck:SetTemplate("Transparent")
+			end
+			if DBMRangeCheckRadar then
+				--DBMRangeCheckRadar:SetTemplate("Transparent")
 			end
 		end)
 
-		if croprwicons then
-			local replace = string.gsub
-			local old = RaidNotice_AddMessage
-			RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
-				if textString:find(" |T") then
-					textString=replace(textString,"(:12:12)",":"..rwiconsize..":"..rwiconsize..":0:0:64:64:5:59:5:59")
-				end
-				return old(noticeFrame, textString, colorInfo)
+		hooksecurefunc(DBM.InfoFrame, "Show", function()
+			--DBMInfoFrame:SetTemplate("Transparent")
+		end)
+
+		local replace = string.gsub
+		local old = RaidNotice_AddMessage
+		RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
+			if textString:find(" |T") then
+				textString = replace(textString, "(:12:12)", ":13:13:0:0:64:64:5:59:5:59")
 			end
+			return old(noticeFrame, textString, colorInfo)
 		end
 	end
 end)
 
--- DBM settings(by ALZA and help from Affli)
+-- DBM SETTINGS(BY ALZA AND HELP FROM AFFLI)
 function K.UploadDBM()
 	if IsAddOnLoaded("DBM-Core") then
 		DBM_UseDualProfile = false
@@ -299,8 +311,8 @@ function K.UploadDBM()
 		DBT_AllPersistentOptions["Default"]["DBM"].Font = C.Media.Font
 		DBT_AllPersistentOptions["Default"]["DBM"].FontSize = C.Media.Font_Size
 		DBT_AllPersistentOptions["Default"]["DBM"].Width = 189
-		DBT_AllPersistentOptions["Default"]["DBM"].TimerX = -468.500244140625
-		DBT_AllPersistentOptions["Default"]["DBM"].TimerPoint = "CENTER"
+		DBT_AllPersistentOptions["Default"]["DBM"].TimerX = 143
+		DBT_AllPersistentOptions["Default"]["DBM"].TimerPoint = "BOTTOMLEFT"
 		DBT_AllPersistentOptions["Default"]["DBM"].FillUpBars = true
 		DBT_AllPersistentOptions["Default"]["DBM"].IconLeft = true
 		DBT_AllPersistentOptions["Default"]["DBM"].ExpandUpwards = true
@@ -309,9 +321,9 @@ function K.UploadDBM()
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeBarXOffset = 0
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeBarsEnabled = false
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeWidth = 189
-		DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerX = 6
+		DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerX = 7
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerPoint = "CENTER"
-		DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 10
+		DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 7
 
 		if C.ActionBar.BottomBars == 1 then
 			DBM_AllSavedOptions["Default"].HPFrameY = 126
@@ -329,7 +341,7 @@ function K.UploadDBM()
 			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 195
 			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -80
 		end
-		DBM_AllSavedOptions.InstalledBars = C.ActionBar.BottomBars
+		DBM_AllSavedOptions["Default"].InstalledBars = C.ActionBar.BottomBars
 	end
 end
 
@@ -341,17 +353,17 @@ StaticPopupDialogs.SETTINGS_DBM = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 5,
+	preferredIndex = 3,
 }
 
--- On logon function
+--	ON LOGON FUNCTION
 local OnLogon = CreateFrame("Frame")
 OnLogon:RegisterEvent("PLAYER_ENTERING_WORLD")
 OnLogon:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 	if IsAddOnLoaded("DBM-Core") then
-		if DBM_AllSavedOptions.InstalledBars ~= C.ActionBar.BottomBars  then
+		if DBM_AllSavedOptions["Default"].InstalledBars ~= C.ActionBar.BottomBars then
 			StaticPopup_Show("SETTINGS_DBM")
 		end
 	end

@@ -9,7 +9,7 @@ local GetCompanionInfo = GetCompanionInfo
 
 -- Universal Mount macro(by Monolit)
 -- /cancelform [noform:4]
--- /run Mountz("your_ground_mount","your_flying_mount")
+-- /run Mountz("GROUND MOUNT", "FLYING MOUNT", "WATER MOUNT")
 function Mountz(groundmount, flyingmount, underwatermount)
 	if not underwatermount then underwatermount = groundmount end
 	local flyablex, swimablex, vjswim, InVj, nofly

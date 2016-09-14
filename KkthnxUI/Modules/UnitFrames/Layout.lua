@@ -1,6 +1,8 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
+local CombatLock = false
+
 -- LUA WOW
 local _G = _G
 local unpack = unpack
@@ -41,7 +43,7 @@ TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
 Movers:RegisterFrame(TargetAnchor)
 
 function Unitframes:Setup()
-	if C.Unitframe.Enable ~= true or InCombatLockdown() then return end
+	if C.Unitframe.Enable ~= true then return end
 
 	if C.Unitframe.ClassHealth ~= true then
 		hooksecurefunc("UnitFrame_Update", function(self, isParty)
@@ -122,50 +124,48 @@ function Unitframes:Setup()
 
 
 	for i = 1, MAX_PARTY_MEMBERS do
-		if not InCombatLockdown() then
-			if C.Unitframe.Outline then
-				_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
+		if C.Unitframe.Outline then
+			_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
+			_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
+			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
+			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
+			_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
+			_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(0, -0)
 
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
-			else
-				_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
-				_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
+			_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3, C.Media.Font_Style)
+			_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(0, -0)
+		else
+			_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2)
+			_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
+			_G["PartyMemberFrame"..i.."HealthBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+			_G["PartyMemberFrame"..i.."HealthBarText"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
+			_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+			_G["PartyMemberFrame"..i.."ManaBarTextLeft"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
+			_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+			_G["PartyMemberFrame"..i.."ManaBarTextRight"]:SetShadowOffset(K.Mult, -K.Mult)
 
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
-				_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
-			end
+			_G["PartyMemberFrame"..i.."ManaBarText"]:SetFont(C.Media.Font, C.Media.Font_Size - 3)
+			_G["PartyMemberFrame"..i.."ManaBarText"]:SetShadowOffset(K.Mult, -K.Mult)
 		end
 	end
 
@@ -204,29 +204,23 @@ function Unitframes:Setup()
 
 	-- TWEAK PARTY FRAME
 	for i = 1, MAX_PARTY_MEMBERS do
-		if not InCombatLockdown() then
-			_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
-		end
+		_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
 	end
 
 	-- TWEAK PLAYER FRAME
-	if (not InCombatLockdown() and not UnitHasVehicleUI("player")) then
-		K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
-	end
+	K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
 
 	-- TWEAK TARGET FRAME
-	if (not InCombatLockdown()) then
-		K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
+	K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
 
-		-- TWEAK NAME BACKGROUND
-		TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+	-- TWEAK NAME BACKGROUND
+	TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-		-- TWEAK FOCUS FRAME
-		K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
+	-- TWEAK FOCUS FRAME
+	K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
 
-		-- TWEAK NAME BACKGROUND
-		FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
-	end
+	-- TWEAK NAME BACKGROUND
+	FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
 	-- BOSS FRAMES ???
 	for i = 1, 5 do
@@ -269,17 +263,37 @@ end
 
 function Unitframes:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
-		Unitframes:Setup()
+		if (CombatLock == false) then
+			Unitframes:Setup()
+			startTimer = true
+		end
+	end
 
-		if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
-			if (UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
+	if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
+		if (CombatLock == false) then
+			local isInVehicle = UnitControllingVehicle("player")
+			if (isInVehicle == true) then
+				Unitframes:Setup()
+			end
+
+			if (UnitHasVehiclePlayerFrameUI("player")) then
 				Unitframes:Setup()
 			end
 		end
+	end
+
+	if (event == "PLAYER_REGEN_DISABLED") then
+		CombatLock = true
+	end
+
+	if (event == "PLAYER_REGEN_ENABLED") then
+		CombatLock = false
 	end
 end
 
 Unitframes:RegisterEvent("PLAYER_LOGIN")
 Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
 Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
+Unitframes:RegisterEvent("PLAYER_REGEN_DISABLED")
+Unitframes:RegisterEvent("PLAYER_REGEN_ENABLED")
 Unitframes:SetScript("OnEvent", Unitframes.OnEvent)

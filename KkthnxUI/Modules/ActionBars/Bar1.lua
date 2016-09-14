@@ -83,8 +83,8 @@ ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
 			end
 		end
 	elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
-		-- if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
-		if not InCombatLockdown() and (HasVehicleActionBar()) then
+		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
+		--if not InCombatLockdown() and (HasVehicleActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
 				local Button = _G["ActionButton"..i]
 				ActionButton_Update(Button)

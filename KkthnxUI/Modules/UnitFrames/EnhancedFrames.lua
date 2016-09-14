@@ -1,6 +1,8 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.EnhancedFrames ~= true then return end
 
+local CombatLock = false
+
 -- LUA API
 local _G = _G
 
@@ -28,7 +30,7 @@ end
 
 local EnhancedFrames = CreateFrame("Frame")
 
-function EnableEnhancedFrames()
+function EnhancedFrames:Setup()
 	-- GENERIC STATUS TEXT HOOK
 	hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", EnhancedFrames_TextStatusBarUpdateTextStringWithValues)
 
@@ -62,19 +64,16 @@ function EnableEnhancedFrames()
 end
 
 function EnhancedFrames_Style_PlayerFrame()
-	if (not InCombatLockdown() or not UnitHasVehicleUI("player")) then
-		PlayerName:SetWidth(0.01)
+	PlayerName:SetWidth(0.01)
 
-		PlayerFrameHealthBar.capNumericDisplay = true
-		PlayerFrameHealthBar:SetSize(119, 29)
-		PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
-		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
+	PlayerFrameHealthBar.capNumericDisplay = true
+	PlayerFrameHealthBar:SetSize(119, 29)
+	PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
+	PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
 
-		PlayerRestIcon:ClearAllPoints()
-		PlayerRestIcon:SetPoint("CENTER", PlayerLevelText, -1, 1)
-		PlayerRestIcon:SetSize(31, 34)
-
-	end
+	PlayerRestIcon:ClearAllPoints()
+	PlayerRestIcon:SetPoint("CENTER", PlayerLevelText, -1, 1)
+	PlayerRestIcon:SetSize(31, 34)
 
 	PlayerFrameTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
 	PlayerStatusTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-Player-Status")
@@ -147,16 +146,12 @@ function EnhancedFrames_TextStatusBarUpdateTextStringWithValues(statusBar, textS
 end
 
 function EnhancedFrames_PlayerFrame_ToPlayerArt(self)
-	if (not InCombatLockdown() or not UnitHasVehicleUI("player")) then
-		EnhancedFrames_Style_PlayerFrame()
-	end
+	EnhancedFrames_Style_PlayerFrame()
 end
 
 function EnhancedFrames_PlayerFrame_ToVehicleArt(self)
-	if (not InCombatLockdown() or not UnitHasVehicleUI("player")) then
-		PlayerFrameHealthBar:SetHeight(12)
-		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 3)
-	end
+	PlayerFrameHealthBar:SetHeight(12)
+	PlayerFrameHealthBarText:SetPoint("CENTER", 50, 3)
 end
 
 function EnhancedFrames_Target_Classification(self, forceNormalTexture)
@@ -200,72 +195,87 @@ end
 
 -- STYLE PARTY MEMEBER FRAME STYLE CHANGES
 function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
-	if not InCombatLockdown() then
-		for i = 1, MAX_PARTY_MEMBERS do
-			_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
+	for i = 1, MAX_PARTY_MEMBERS do
+		_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
 
-			_G["PartyMemberFrame"..i.."Name"]:SetPoint("TOP", 0, 20)
+		_G["PartyMemberFrame"..i.."Name"]:SetPoint("TOP", 0, 20)
 
-			_G["PartyMemberFrame"..i.."Texture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrame")
-			_G["PartyMemberFrame"..i.."Texture"]:SetPoint("TOPLEFT", 0, 6)
+		_G["PartyMemberFrame"..i.."Texture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrame")
+		_G["PartyMemberFrame"..i.."Texture"]:SetPoint("TOPLEFT", 0, 6)
 
-			_G["PartyMemberFrame"..i.."Flash"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrameFlash")
-			_G["PartyMemberFrame"..i.."Flash"]:SetPoint("TOPLEFT", 0, 6)
+		_G["PartyMemberFrame"..i.."Flash"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrameFlash")
+		_G["PartyMemberFrame"..i.."Flash"]:SetPoint("TOPLEFT", 0, 6)
 
-			_G["PartyMemberFrame"..i.."HealthBar"]:SetPoint("TOPLEFT", 47, -3)
-			_G["PartyMemberFrame"..i.."HealthBar"]:SetHeight(17)
+		_G["PartyMemberFrame"..i.."HealthBar"]:SetPoint("TOPLEFT", 47, -3)
+		_G["PartyMemberFrame"..i.."HealthBar"]:SetHeight(17)
 
-			_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 46, -3)
-			_G["PartyMemberFrame"..i.."Background"]:SetSize(70, 24)
-			_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 47, -3)
+		_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 46, -3)
+		_G["PartyMemberFrame"..i.."Background"]:SetSize(70, 24)
+		_G["PartyMemberFrame"..i.."Background"]:SetPoint("TOPLEFT", 47, -3)
 
-			_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetPoint("LEFT", _G["PartyMemberFrame"..i.."HealthBar"], "LEFT", 4, 0)
-			_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetPoint("RIGHT", _G["PartyMemberFrame"..i.."HealthBar"], "RIGHT", -2, 0)
+		_G["PartyMemberFrame"..i.."HealthBarTextLeft"]:SetPoint("LEFT", _G["PartyMemberFrame"..i.."HealthBar"], "LEFT", 4, 0)
+		_G["PartyMemberFrame"..i.."HealthBarTextRight"]:SetPoint("RIGHT", _G["PartyMemberFrame"..i.."HealthBar"], "RIGHT", -2, 0)
 
-			_G["PartyMemberFrame"..i.."NotPresentIcon"]:ClearAllPoints()
-			_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetPoint("TOP", _G["PartyMemberFrame"..i.."Portrait"], "BOTTOM", 12, 13)
-			_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetFrameLevel(4)
-			_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetScale(0.60)
-		end
+		_G["PartyMemberFrame"..i.."NotPresentIcon"]:ClearAllPoints()
+		_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetPoint("TOP", _G["PartyMemberFrame"..i.."Portrait"], "BOTTOM", 12, 13)
+		_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetFrameLevel(4)
+		_G["PartyMemberFrame"..i.."NotPresentIcon"]:SetScale(0.60)
 	end
 end
 
 -- IDK WHAT I WANNA DO WITH THIS YET :D
-if not InCombatLockdown() then
-	PlayerFrameHealthBarTextLeft:ClearAllPoints()
-	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
+PlayerFrameHealthBarTextLeft:ClearAllPoints()
+PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
 
-	PlayerFrameHealthBarTextRight:ClearAllPoints()
-	PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, -3)
+PlayerFrameHealthBarTextRight:ClearAllPoints()
+PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, -3)
 
-	TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
-	TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, -3)
+TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
+TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, -3)
 
-	TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
-	TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
-end
+TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
+TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
 
 -- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
 function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
-	if not InCombatLockdown() then
-		for i = 1, 4 do
-			_G["PartyMemberFrame"..i.."VehicleTexture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
-		end
+	for i = 1, 4 do
+		_G["PartyMemberFrame"..i.."VehicleTexture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\VehiclePartyFrame")
 	end
 end
 
 function EnhancedFrames:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
-		EnableEnhancedFrames()
+		if (CombatLock == false) then
+			EnhancedFrames:Setup()
+			startTimer = true
+		end
+	end
 
-		if (event == "UNIT_EXITED_VEHICLE") then
-			if (not UnitControllingVehicle("player") or not UnitHasVehiclePlayerFrameUI("player")) then
-				EnableEnhancedFrames()
+	if (event == "UNIT_EXITED_VEHICLE") then
+		if (CombatLock == false) then
+			local isInVehicle = UnitControllingVehicle("player")
+			if (isInVehicle == false) then
+				EnhancedFrames:Setup()
+			end
+
+			if (not UnitHasVehiclePlayerFrameUI("player")) then
+				EnhancedFrames:Setup()
 			end
 		end
+	end
+
+	if (event == "PLAYER_REGEN_DISABLED") then
+		CombatLock = true
+	end
+
+	if (event == "PLAYER_REGEN_ENABLED") then
+		CombatLock = false
 	end
 end
 
 EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
 EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
+EnhancedFrames:RegisterEvent("UNIT_ENTERED_VEHICLE")
+EnhancedFrames:RegisterEvent("PLAYER_REGEN_DISABLED")
+EnhancedFrames:RegisterEvent("PLAYER_REGEN_ENABLED")
 EnhancedFrames:SetScript("OnEvent", EnhancedFrames.OnEvent)

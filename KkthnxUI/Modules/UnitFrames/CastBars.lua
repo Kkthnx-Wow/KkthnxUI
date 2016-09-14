@@ -1,6 +1,8 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or IsAddOnLoaded("Quartz") then return end
 
+local CombatLock = false
+
 -- LUA API
 local unpack = unpack
 local format = string.format
@@ -25,7 +27,6 @@ TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 Movers:RegisterFrame(TargetCastbarAnchor)
 
 function CastBars:Setup()
-	if InCombatLockdown() then return end
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
@@ -113,17 +114,37 @@ TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
 function CastBars:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
-		CastBars:Setup()
+		if (CombatLock == false) then
+			CastBars:Setup()
+			startTimer = true
+		end
+	end
 
-		if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
-			if (UnitControllingVehicle("player") or UnitHasVehiclePlayerFrameUI("player")) then
-				EnableEnhancedFrames()
+	if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
+		if (CombatLock == false) then
+			local isInVehicle = UnitControllingVehicle("player")
+			if (isInVehicle == true) then
+				CastBars:Setup()
+			end
+
+			if (UnitHasVehiclePlayerFrameUI("player")) then
+				CastBars:Setup()
 			end
 		end
+	end
+
+	if (event == "PLAYER_REGEN_DISABLED") then
+		CombatLock = true
+	end
+
+	if (event == "PLAYER_REGEN_ENABLED") then
+		CombatLock = false
 	end
 end
 
 CastBars:RegisterEvent("PLAYER_LOGIN")
 CastBars:RegisterEvent("UNIT_EXITED_VEHICLE")
 CastBars:RegisterEvent("UNIT_ENTERED_VEHICLE")
+CastBars:RegisterEvent("PLAYER_REGEN_DISABLED")
+CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
 CastBars:SetScript("OnEvent", CastBars.OnEvent)
