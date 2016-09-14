@@ -229,10 +229,6 @@ function Unitframes:Setup()
 	end
 
 	-- BOSS FRAMES ???
-	local Boss = {Boss1TargetFrame:GetPoint()}
-	Boss1TargetFrame:ClearAllPoints()
-	Boss1TargetFrame:SetPoint(Boss[1], Boss[2], Boss[3], Boss[4] - 150, Boss[5] - 150)
-
 	for i = 1, 5 do
 		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
 		_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
@@ -241,6 +237,9 @@ function Unitframes:Setup()
 	for i = 2, 5 do
 		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 	end
+	local Boss = {Boss1TargetFrame:GetPoint()}
+	Boss1TargetFrame:ClearAllPoints()
+	Boss1TargetFrame:SetPoint(Boss[1], Boss[2], Boss[3], Boss[4] - 150, Boss[5] - 150)
 
 	-- COMBOFRAME
 	if K.Class == "ROGUE" or K.Class == "DRUID" then
@@ -250,12 +249,9 @@ function Unitframes:Setup()
 		-- ARENA FRAMES
 		if (IsAddOnLoaded("Blizzard_ArenaUI")) then
 			for i = 1, 5 do
-				_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
-				_G["ArenaPrepFrame"..i]:Show()
+				_G["ArenaPrepFrame"..i]:SetScale(1.4)
 			end
-			--ArenaEnemyFrames:SetParent(UIParent)
-			ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
-			K.ModifyBasicFrame(ArenaEnemyFrames, unpack(C.Position.UnitFrames.Arena), C.Unitframe.Scale)
+			ArenaEnemyFrames:SetScale(1.4)
 		end
 	end
 end
