@@ -1,7 +1,7 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Error.White ~= true and C.Error.Black ~= true then return end
 
--- All errors on http://wowwiki.wikia.com/wiki/wow_constants/errors
+-- ALL ERRORS ON http://wowwiki.wikia.com/wiki/wow_constants/errors
 
 -- WHITE LIST ERRORS, THAT WILL NOT BE HIDDEN
 K.WhiteList = {
@@ -19,6 +19,7 @@ K.WhiteList = {
 K.BlackList = {
 	[ERR_ABILITY_COOLDOWN] = true,
 	[ERR_ATTACK_FLEEING] = true,
+	[ERR_ATTACK_MOUNTED] = true,
 	[ERR_BADATTACKFACING] = true,
 	[ERR_BADATTACKPOS] = true,
 	[ERR_GENERIC_NO_TARGET] = true,
@@ -39,6 +40,7 @@ K.BlackList = {
 	[ERR_OUT_OF_ENERGY] = true,
 	[ERR_OUT_OF_FOCUS] = true,
 	[ERR_OUT_OF_FURY] = true,
+	[ERR_OUT_OF_HEALTH] = true,
 	[ERR_OUT_OF_HOLY_POWER] = true,
 	[ERR_OUT_OF_LIGHT_FORCE] = true,
 	[ERR_OUT_OF_MANA] = true,
@@ -61,6 +63,7 @@ K.BlackList = {
 	[OUT_OF_RAGE] = true,
 	[SPELL_FAILED_AFFECTING_COMBAT] = true,
 	[SPELL_FAILED_AURA_BOUNCED] = true,
+	[SPELL_FAILED_BAD_IMPLICIT_TARGETS] = true,
 	[SPELL_FAILED_BAD_TARGETS] = true,
 	[SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW] = true,
 	[SPELL_FAILED_CASTER_AURASTATE] = true,

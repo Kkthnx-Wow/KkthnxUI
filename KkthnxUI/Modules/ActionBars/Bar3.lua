@@ -7,10 +7,10 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 
---	Setup MultiBarLeft as bar #3 by Tukz
-local bar = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
-bar:SetAllPoints(RightActionBarAnchor)
-MultiBarLeft:SetParent(bar)
+--	SETUP MULTIBARLEFT AS BAR #3 BY TUKZ
+local ActionBar3 = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
+ActionBar3:SetAllPoints(RightActionBarAnchor)
+MultiBarLeft:SetParent(ActionBar3)
 
 for i = 1, 12 do
 	local b = _G["MultiBarLeftButton"..i]
@@ -27,7 +27,7 @@ for i = 1, 12 do
 	end
 end
 
--- Hide bar
+-- HIDE BAR
 if C.ActionBar.RightBars < 2 then
-	bar:Hide()
+	ActionBar3:Hide()
 end

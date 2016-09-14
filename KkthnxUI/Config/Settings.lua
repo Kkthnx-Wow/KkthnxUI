@@ -7,6 +7,7 @@ C["ActionBar"] = {
 	["ButtonSpace"] = 4,
 	["Enable"] = true,
 	["EquipBorder"] = false,
+	["Grid"] = true,
 	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,

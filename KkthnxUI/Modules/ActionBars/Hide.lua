@@ -35,15 +35,18 @@ function ActionBars:DisableBlizzard()
 
 	for i = 1, 6 do
 		local Button = _G["OverrideActionBarButton"..i]
-
-		Button:UnregisterAllEvents()
-		Button:SetAttribute("statehidden", true)
-		Button:SetAttribute("showgrid", 1)
+		if Button then
+			Button:Hide()
+			Button:UnregisterAllEvents()
+			Button:SetAttribute("statehidden", true)
+		end
 	end
 
-	hooksecurefunc("TalentFrame_LoadUI", function()
+	if PlayerTalentFrame then
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function() PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED") end)
+	end
 
 	hooksecurefunc("ActionButton_OnEvent", function(self, event)
 		if (event == "PLAYER_ENTERING_WORLD") then

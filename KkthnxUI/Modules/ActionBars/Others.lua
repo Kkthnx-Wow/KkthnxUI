@@ -33,38 +33,31 @@ function ActionBars:ShowGrid()
 		end
 	end
 
-	for i = 1, NUM_ACTIONBAR_BUTTONS do
-		local Button
+	if C.ActionBar.Grid == true then
+		SetCVar("alwaysShowActionBars", 1)
+		for i = 1, 12 do
+			local button = _G[format("ActionButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-		Button = _G[format("ActionButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button:Show()
-		ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarRightButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-		Button = _G[format("MultiBarRightButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button:Show()
-		ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarBottomRightButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-		Button = _G[format("MultiBarBottomRightButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button:Show()
-		ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarLeftButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-		Button = _G[format("MultiBarLeftButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button:Show()
-		ActionButton_ShowGrid(Button)
-
-		Button = _G[format("MultiBarBottomLeftButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button:Show()
-		ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarBottomLeftButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
+		end
+	else
+		SetCVar("alwaysShowActionBars", 0)
 	end
 end
 
@@ -75,34 +68,34 @@ VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 Movers:RegisterFrame(VehicleButtonAnchor)
 
 -- VEHICLE BUTTON
-local vehicle = CreateFrame("Button", "VehicleButton", UIParent)
-vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
-vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
-vehicle:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
-vehicle:GetNormalTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
-vehicle:GetNormalTexture():ClearAllPoints()
-vehicle:GetNormalTexture():SetPoint("TOPLEFT", 2, -2)
-vehicle:GetNormalTexture():SetPoint("BOTTOMRIGHT", -2, 2)
-vehicle:CreateBackdrop(2)
-vehicle:StyleButton(true)
-vehicle:RegisterForClicks("AnyUp")
-vehicle:SetFrameLevel(3)
+local Vehicle = CreateFrame("Button", "VehicleButton", UIParent)
+Vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+Vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
+Vehicle:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
+Vehicle:GetNormalTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
+Vehicle:GetNormalTexture():ClearAllPoints()
+Vehicle:GetNormalTexture():SetPoint("TOPLEFT", 2, -2)
+Vehicle:GetNormalTexture():SetPoint("BOTTOMRIGHT", -2, 2)
+Vehicle:CreateBackdrop(2)
+Vehicle:StyleButton(true)
+Vehicle:RegisterForClicks("AnyUp")
+Vehicle:SetFrameLevel(3)
 
 hooksecurefunc("MainMenuBarVehicleLeaveButton_Update", function()
 	if CanExitVehicle() then
 		if UnitOnTaxi("player") then
-			vehicle:SetScript("OnClick", function(self)
+			Vehicle:SetScript("OnClick", function(self)
 				TaxiRequestEarlyLanding()
 				self:LockHighlight()
 			end)
 		else
-			vehicle:SetScript("OnClick", function(self)
+			Vehicle:SetScript("OnClick", function(self)
 				VehicleExit()
 			end)
 		end
-		vehicle:Show()
+		Vehicle:Show()
 	else
-		vehicle:Hide()
+		Vehicle:Hide()
 	end
 end)
 
@@ -110,18 +103,18 @@ hooksecurefunc("PossessBar_UpdateState", function()
 	for i = 1, NUM_POSSESS_SLOTS do
 		local _, name, enabled = GetPossessInfo(i)
 		if enabled then
-			vehicle:SetScript("OnClick", function()
+			Vehicle:SetScript("OnClick", function()
 				CancelUnitBuff("player", name)
 			end)
-			vehicle:Show()
+			Vehicle:Show()
 		else
-			vehicle:Hide()
+			Vehicle:Hide()
 		end
 	end
 end)
 
 -- SET TOOLTIP
-vehicle:SetScript("OnEnter", function(self)
+Vehicle:SetScript("OnEnter", function(self)
 	if UnitOnTaxi("player") then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(TAXI_CANCEL, 1, 1, 1)
@@ -133,7 +126,7 @@ vehicle:SetScript("OnEnter", function(self)
 		GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1, 1, 1, nil)
 	end
 end)
-vehicle:SetScript("OnLeave", function() GameTooltip:Hide() end)
+Vehicle:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 function ActionBars:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then

@@ -7,19 +7,19 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 
---	Setup MultiBarBottomRight as bar #5 by Tukz
-local bar = CreateFrame("Frame", "Bar5Holder", PetBattleFrameHider)
+--	SETUP MULTIBARBOTTOMRIGHT AS BAR #5 BY TUKZ
+local ActionBar5 = CreateFrame("Frame", "Bar5Holder", PetBattleFrameHider)
 if C.ActionBar.RightBars < 3 then
 	if C.ActionBar.SplitBars == true then
-		bar:SetAllPoints(SplitBarLeft)
+		ActionBar5:SetAllPoints(SplitBarLeft)
 	else
-		bar:SetAllPoints(ActionBarAnchor)
+		ActionBar5:SetAllPoints(ActionBarAnchor)
 	end
 else
-	bar:SetAllPoints(RightActionBarAnchor)
+	ActionBar5:SetAllPoints(RightActionBarAnchor)
 end
-MultiBarBottomRight:SetParent(bar)
-bar:SetFrameStrata("LOW")
+MultiBarBottomRight:SetParent(ActionBar5)
+ActionBar5:SetFrameStrata("LOW")
 
 for i = 1, 12 do
 	local b = _G["MultiBarBottomRightButton"..i]
@@ -54,7 +54,7 @@ for i = 1, 12 do
 	end
 end
 
--- Hide bar
+-- HIDE BAR
 if C.ActionBar.RightBars < 3 and C.ActionBar.BottomBars < 3 then
-	bar:Hide()
+	ActionBar5:Hide()
 end

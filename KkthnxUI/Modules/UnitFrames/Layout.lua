@@ -228,7 +228,11 @@ function Unitframes:Setup()
 		FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 	end
 
-	-- BOSS FRAMES
+	-- BOSS FRAMES ???
+	local Boss = {Boss1TargetFrame:GetPoint()}
+	Boss1TargetFrame:ClearAllPoints()
+	Boss1TargetFrame:SetPoint(Boss[1], Boss[2], Boss[3], Boss[4] - 150, Boss[5] - 150)
+
 	for i = 1, 5 do
 		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
 		_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
@@ -243,16 +247,16 @@ function Unitframes:Setup()
 		for i = 1, 5 do
 			_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
 		end
-		--[[ ARENA FRAMES -- This taints the shit out of the UI.
+		-- ARENA FRAMES
 		if (IsAddOnLoaded("Blizzard_ArenaUI")) then
 			for i = 1, 5 do
 				_G["ArenaPrepFrame"..i]:SetScale(C.Unitframe.Scale)
+				_G["ArenaPrepFrame"..i]:Show()
 			end
-			ArenaEnemyFrames:SetParent(UIParent)
+			--ArenaEnemyFrames:SetParent(UIParent)
 			ArenaEnemyFrames:SetScale(C.Unitframe.Scale)
 			K.ModifyBasicFrame(ArenaEnemyFrames, unpack(C.Position.UnitFrames.Arena), C.Unitframe.Scale)
 		end
-		]]--
 	end
 end
 

@@ -7,10 +7,10 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 
---	Setup MultiBarRight as bar #4 by Tukz
-local bar = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
-bar:SetAllPoints(RightActionBarAnchor)
-MultiBarRight:SetParent(bar)
+--	SETUP MULTIBARRIGHT AS BAR #4 BY TUKZ
+local ActionBar4 = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
+ActionBar4:SetAllPoints(RightActionBarAnchor)
+MultiBarRight:SetParent(ActionBar4)
 
 for i = 1, 12 do
 	local b = _G["MultiBarRightButton"..i]
@@ -23,7 +23,7 @@ for i = 1, 12 do
 	end
 end
 
--- Hide bar
+-- HIDE BAR
 if C.ActionBar.RightBars < 1 then
-	bar:Hide()
+	ActionBar4:Hide()
 end
