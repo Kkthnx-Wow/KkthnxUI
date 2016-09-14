@@ -275,7 +275,6 @@ end
 
 EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
 EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
-EnhancedFrames:RegisterEvent("UNIT_ENTERED_VEHICLE")
 EnhancedFrames:RegisterEvent("PLAYER_REGEN_DISABLED")
 EnhancedFrames:RegisterEvent("PLAYER_REGEN_ENABLED")
 EnhancedFrames:SetScript("OnEvent", EnhancedFrames.OnEvent)
