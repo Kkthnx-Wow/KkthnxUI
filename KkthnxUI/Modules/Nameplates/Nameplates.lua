@@ -161,11 +161,11 @@ function Plates:SetupPlate(options)
 	hooksecurefunc(Name, "Show", Plates.SetName)
 
 	-- WILL DO A BETTER VISUAL FOR THIS LATER
-	Highlight:Kill()
-	Shield:Kill()
-	Aggro:Kill()
-	Flash:Kill()
-	Spark:Kill()
+	--Highlight:Kill()
+	--Shield:Kill()
+	--Aggro:Kill()
+	--Flash:Kill()
+	--Spark:Kill()
 
 	self.IsEdited = true
 end

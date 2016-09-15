@@ -27,6 +27,9 @@ TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 Movers:RegisterFrame(TargetCastbarAnchor)
 
 function CastBars:Setup()
+	-- I am not unsure if we should use CastingBarFrame.SetPoint = K.Noop
+	CastingBarFrame.ignoreFramePositionManager = true -- ??
+	UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
@@ -113,7 +116,7 @@ CastingBarFrame:HookScript("OnUpdate", CastBars.Timers)
 TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
 function CastBars:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
+	if (event == "PLAYER_ENTERING_WORLD") then
 		if (CombatLock == false) then
 			CastBars:Setup()
 			startTimer = true
@@ -129,7 +132,7 @@ function CastBars:OnEvent(event)
 	end
 end
 
-CastBars:RegisterEvent("PLAYER_LOGIN")
+CastBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 CastBars:RegisterEvent("PLAYER_REGEN_DISABLED")
 CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
 CastBars:SetScript("OnEvent", CastBars.OnEvent)

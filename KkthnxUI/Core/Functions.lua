@@ -93,6 +93,7 @@ end
 -- HELPER FUNCTION FOR MOVING A BLIZZARD FRAME THAT HAS A SETMOVEABLE FLAG
 K.ModifyFrame = function(frame, anchor, parent, posX, posY, scale)
 	frame:SetMovable(true)
+	frame:SetUserPlaced(true)
 	frame:ClearAllPoints()
 	if(parent == nil) then frame:SetPoint(anchor, posX, posY) else frame:SetPoint(anchor, parent, posX, posY) end
 	if(scale ~= nil) then frame:SetScale(scale) end
