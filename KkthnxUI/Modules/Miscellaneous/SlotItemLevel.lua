@@ -20,7 +20,7 @@ local upgrades = {
 
 local legionUpgrades = {
 	["664"] = 689, ["767"] = 685, ["768"] = 693, ["1735"] = 705, ["1736"] = 699, ["1738"] = 709,
-	["1739"] = 703, ["1741"] = 713, ["1792"] = 699, ["1793"] = 703, ["1794"] = 695, ["1795"] = 700,
+	["1739"] = 703, ["1741"] = 713, ["1792"] = 699, ["1793"] = 703, ["1794"] = 695, ["1795"] = 700
 }
 
 local function BOALevel(level, id)
@@ -39,7 +39,7 @@ local function BOALevel(level, id)
 	elseif level > 67 then
 		level = 187 - (80 - level) * 4
 	elseif level > 57 then
-		level = 105 - (67 - level) * 2.9
+		level = 105 - (67 - level) * 2.88
 	elseif level > 5 then
 		level = level + 5
 	else
@@ -59,7 +59,7 @@ local itemLevelPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)")
 local tooltipLines = {
 	"KthnxUI_ItemScanningTooltipTextLeft2",
 	"KthnxUI_ItemScanningTooltipTextLeft3",
-	"KthnxUI_ItemScanningTooltipTextLeft4",
+	"KthnxUI_ItemScanningTooltipTextLeft4"
 }
 local tooltip = CreateFrame("GameTooltip", "KthnxUI_ItemScanningTooltip", UIParent, "GameTooltipTemplate")
 tooltip:SetOwner(UIParent, "ANCHOR_NONE")

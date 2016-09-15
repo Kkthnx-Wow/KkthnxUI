@@ -123,7 +123,7 @@ Stat:SetScript("OnEnter", function(self)
 		end
 	end
 	GameTooltip:AddLine(" ")
-	if bandwidth ~= 0 then
+	if (bandwidth ~= 0) then
 		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, string.format(bandwidthString, bandwidth), 46/255, 182/255, 255/255, .84, .75, .65)
 		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, string.format(percentageString, GetDownloadedPercentage() * 100), 46/255, 182/255, 255/255, .84, .75, .65)
 		GameTooltip:AddLine(" ")
@@ -150,6 +150,7 @@ Stat:SetScript("OnMouseDown", function(self, btn)
 		collectgarbage("collect")
 	end
 end)
+
 Stat:SetScript("OnLeave", function(self) self.tooltip = false GameTooltip:Hide() end)
 Stat:SetScript("OnUpdate", Update)
 Update(Stat, 10)
