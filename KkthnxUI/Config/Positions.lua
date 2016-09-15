@@ -33,7 +33,7 @@ C["Position"] = {
 	-- UNITFRAME POSITIONS
 	UnitFrames = {
 		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
-		["Boss"] = {"RIGHT", "RightActionBarAnchor", "LEFT", 20, -70},
+		["Boss"] = {"RIGHT", "RightActionBarAnchor", "LEFT", -100, 120},
 		["Player"] = {"BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -9, 175},
 		["PlayerCastBar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175},
 		["Target"] = {"BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 9, 175},

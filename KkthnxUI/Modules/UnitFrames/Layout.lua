@@ -1,8 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
-local CombatLock = false
-
 -- LUA WOW
 local _G = _G
 local unpack = unpack
@@ -27,6 +25,7 @@ local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 local Movers = K["Movers"]
+local CombatLock = false
 
 local PetColor = {157/255, 197/255, 255/255}
 
@@ -41,6 +40,11 @@ local TargetAnchor = CreateFrame("Frame", "TargetFrameAnchor", UIParent)
 TargetAnchor:SetSize(146, 28)
 TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
 Movers:RegisterFrame(TargetAnchor)
+
+local BossAnchor = CreateFrame("Frame", "BossFrameAnchor", UIParent)
+BossAnchor:SetSize(120, 40)
+BossAnchor:SetPoint(unpack(C.Position.UnitFrames.Boss))
+Movers:RegisterFrame(BossAnchor)
 
 function Unitframes:Setup()
 	if C.Unitframe.Enable ~= true then return end
@@ -202,11 +206,6 @@ function Unitframes:Setup()
 		end
 	end)
 
-	-- TWEAK PARTY FRAME
-	for i = 1, MAX_PARTY_MEMBERS do
-		_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
-	end
-
 	-- TWEAK PLAYER FRAME
 	K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
 
@@ -222,18 +221,23 @@ function Unitframes:Setup()
 	-- TWEAK NAME BACKGROUND
 	FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
+	-- TWEAK PARTY FRAME
+	for i = 1, MAX_PARTY_MEMBERS do
+		_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
+	end
+
 	-- BOSS FRAMES ???
-	for i = 1, 5 do
+	for i = 1, MAX_BOSS_FRAMES do
 		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
 		_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
 		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
+		_G["Boss"..i.."TargetFrame"]:ClearAllPoints()
+		_G["Boss"..i.."TargetFrame"]:SetPoint("CENTER", BossFrameAnchor, "CENTER", 50, -7)
 	end
-	for i = 2, 5 do
+	for i = 2, MAX_BOSS_FRAMES do
 		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
 	end
-	local Boss = {Boss1TargetFrame:GetPoint()}
-	Boss1TargetFrame:ClearAllPoints()
-	Boss1TargetFrame:SetPoint(Boss[1], Boss[2], Boss[3], Boss[4] - 150, Boss[5] - 150)
+	--]]
 
 	-- COMBOFRAME
 	if K.Class == "ROGUE" or K.Class == "DRUID" then

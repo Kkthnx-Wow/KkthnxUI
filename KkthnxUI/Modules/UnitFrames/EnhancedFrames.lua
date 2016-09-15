@@ -51,10 +51,7 @@ function EnhancedFrames:Setup()
 
 	-- SET UP SOME STYLINGS
 	EnhancedFrames_Style_PlayerFrame()
-	EnhancedFrames_BossTargetFrame_Style(Boss1TargetFrame)
-	EnhancedFrames_BossTargetFrame_Style(Boss2TargetFrame)
-	EnhancedFrames_BossTargetFrame_Style(Boss3TargetFrame)
-	EnhancedFrames_BossTargetFrame_Style(Boss4TargetFrame)
+	EnhancedFrames_BossTargetFrame_Style()
 	EnhancedFrames_Style_TargetFrame(TargetFrame)
 	EnhancedFrames_Style_TargetFrame(FocusFrame)
 
@@ -101,19 +98,18 @@ function EnhancedFrames_Style_TargetFrame(self)
 	self.healthbar:SetWidth(119)
 end
 
-function EnhancedFrames_BossTargetFrame_Style(self)
-	self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-UnitFrame-Boss")
-
-	EnhancedFrames_Style_TargetFrame(self)
+function EnhancedFrames_BossTargetFrame_Style()
+	for i = 1, MAX_BOSS_FRAMES do
+		_G["Boss"..i.."TargetFrameTextureFrameTexture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-UnitFrame-Boss")
+	end
 end
 
 --[[
-MAKE SURE TO SET STATUS TEXT TO NUMERIC VALUES IN INTERFACE OPTIONS FOR THIS TO WORK
-"PERCENT" and "NUMERIC"
-GetCVarDefault("statusTextDisplay") -> "NUMERIC"
-GetCVarDefault("statusText") -> "0"
+	MAKE SURE TO SET STATUS TEXT TO NUMERIC VALUES IN INTERFACE OPTIONS FOR THIS TO WORK
+	"PERCENT" and "NUMERIC"
+	GetCVarDefault("statusTextDisplay") -> "NUMERIC"
+	GetCVarDefault("statusText") -> "0"
 ]]--
-
 -- FORCE NUMERIC FOR HEALTHBAR FIX
 SetCVar("statusTextDisplay", "NONE")
 function EnhancedFrames_TextStatusBarUpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
