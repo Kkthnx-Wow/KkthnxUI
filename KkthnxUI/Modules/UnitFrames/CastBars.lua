@@ -120,19 +120,6 @@ function CastBars:OnEvent(event)
 		end
 	end
 
-	if (event == "UNIT_EXITED_VEHICLE") then
-		if (CombatLock == false) then
-			local isInVehicle = UnitControllingVehicle("player")
-			if (isInVehicle == false) then
-				CastBars:Setup()
-			end
-
-			if (not UnitHasVehiclePlayerFrameUI("player")) then
-				CastBars:Setup()
-			end
-		end
-	end
-
 	if (event == "PLAYER_REGEN_DISABLED") then
 		CombatLock = true
 	end
@@ -143,7 +130,6 @@ function CastBars:OnEvent(event)
 end
 
 CastBars:RegisterEvent("PLAYER_LOGIN")
-CastBars:RegisterEvent("UNIT_EXITED_VEHICLE")
 CastBars:RegisterEvent("PLAYER_REGEN_DISABLED")
 CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
 CastBars:SetScript("OnEvent", CastBars.OnEvent)
