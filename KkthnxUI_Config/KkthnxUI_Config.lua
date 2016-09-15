@@ -246,23 +246,24 @@ local function Local(o)
 	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_TALENTS end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
-	if o == "UIConfigUnitframeClassResources" then o = L_GUI_UNITFRAME_CLASSRESOURCES end
-	if o == "UIConfigUnitframeSmoothBars" then o = L_GUI_UNITFRAME_SMOOTH_BARS end
 	if o == "UIConfigUnitframeAuraOffsetY" then o = L_GUI_UNITFRAME_AURA_OFFSETY end
 	if o == "UIConfigUnitframeBetterPowerColors" then o = L_GUI_UNITFRAME_BETTER_POWER_COLOR end
 	if o == "UIConfigUnitframeCastBarScale" then o = L_GUI_UNITFRAME_CASTBAR_SCALE end
 	if o == "UIConfigUnitframeClassHealth" then o = L_GUI_UNITFRAME_CLASS_HEALTH end
 	if o == "UIConfigUnitframeClassIcon" then o = L_GUI_UNITFRAME_CLASS_ICON end
+	if o == "UIConfigUnitframeClassResources" then o = L_GUI_UNITFRAME_CLASSRESOURCES end
 	if o == "UIConfigUnitframeCombatFeedback" then o = L_GUI_UNITFRAME_COMBAT_FEEDBACK end
 	if o == "UIConfigUnitframeEnable" then o = L_GUI_UNITFRAME_ENABLE end
 	if o == "UIConfigUnitframeEnhancedFrames" then o = L_GUI_UNITFRAME_ENHANCED_UNITFRAMES end
+	if o == "UIConfigUnitframeFlatClassIcons" then o = L_GUI_UNITFRAME_FLAT_CLASSICONS end
 	if o == "UIConfigUnitframeGroupNumber" then o = L_GUI_UNITFRAME_GROUP_NUMBER end
-	if o == "UIConfigUnitframePvPIcon" then o = L_GUI_UNITFRAME_HIDE_PVPICON end
 	if o == "UIConfigUnitframeLargeAuraSize" then o = L_GUI_UNITFRAME_LARGE_AURA end
 	if o == "UIConfigUnitframeOutline" then o = L_GUI_UNITFRAME_OUTLINE end
 	if o == "UIConfigUnitframePercentHealth" then o = L_GUI_UNITFRAME_PERCENT_HEALTH end
+	if o == "UIConfigUnitframePvPIcon" then o = L_GUI_UNITFRAME_HIDE_PVPICON end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
 	if o == "UIConfigUnitframeSmallAuraSize" then o = L_GUI_UNITFRAME_SMALL_AURA end
+	if o == "UIConfigUnitframeSmoothBars" then o = L_GUI_UNITFRAME_SMOOTH_BARS end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end

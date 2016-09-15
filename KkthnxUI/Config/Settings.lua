@@ -216,23 +216,24 @@ C["Tooltip"] = {
 }
 -- UNITFRAME OPTIONS
 C["Unitframe"] = {
-	["ClassResources"] = false,
-	["SmoothBars"] = false,
 	["AuraOffsetY"] = 3,
 	["BetterPowerColors"] = false,
 	["CastBarScale"] = 1.2,
 	["ClassHealth"] = false,
 	["ClassIcon"] = false,
+	["ClassResources"] = false,
 	["CombatFeedback"] = false,
+	["FlatClassIcons"] = false,
 	["Enable"] = true,
 	["EnhancedFrames"] = false,
 	["GroupNumber"] = false,
-	["PvPIcon"] = true,
 	["LargeAuraSize"] = 20,
 	["Outline"] = false,
 	["PercentHealth"] = false,
+	["PvPIcon"] = true,
 	["Scale"] = 1.2,
 	["SmallAuraSize"] = 16,
+	["SmoothBars"] = false,
 }
 -- WORLDMAP OPTIONS
 C["WorldMap"] = {

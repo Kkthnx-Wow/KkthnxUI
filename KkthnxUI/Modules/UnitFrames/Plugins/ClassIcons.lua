@@ -7,7 +7,11 @@ hooksecurefunc("UnitFramePortrait_Update", function(self)
 		if UnitIsPlayer(self.unit) then
 			local t = CLASS_ICON_TCOORDS[select(2, UnitClass(self.unit))]
 			if t then
-				self.portrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
+				if C.Unitframe.FlatClassIcons then
+					self.portrait:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\DarkClassIcons")
+				else
+					self.portrait:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
+				end
 				self.portrait:SetTexCoord(unpack(t))
 			end
 		else
