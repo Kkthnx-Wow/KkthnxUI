@@ -85,7 +85,6 @@ C["Chat"] = {
 	["Filter"] = true,
 	["Height"] = 150,
 	["LinkBrackets"] = true,
-	["LootFrame"] = true,
 	["LinkColor"] = {0.08, 1, 0.36},
 	["Outline"] = false,
 	["ScrollByX"] = 3,

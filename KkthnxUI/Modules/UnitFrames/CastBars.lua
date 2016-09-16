@@ -116,7 +116,7 @@ CastingBarFrame:HookScript("OnUpdate", CastBars.Timers)
 TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
 function CastBars:OnEvent(event)
-	if (event == "PLAYER_ENTERING_WORLD") then
+	if (event == "PLAYER_LOGIN") then
 		if (CombatLock == false) then
 			CastBars:Setup()
 			startTimer = true
@@ -132,7 +132,7 @@ function CastBars:OnEvent(event)
 	end
 end
 
-CastBars:RegisterEvent("PLAYER_ENTERING_WORLD")
+CastBars:RegisterEvent("PLAYER_LOGIN")
 CastBars:RegisterEvent("PLAYER_REGEN_DISABLED")
 CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
 CastBars:SetScript("OnEvent", CastBars.OnEvent)

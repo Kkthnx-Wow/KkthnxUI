@@ -7,6 +7,7 @@
 	<Script file="Config\Settings.lua"/>
 	<Script file="Config\Positions.lua"/>
 	<Script file="Config\Fonts.lua"/>
+	<Script file="Config\AddonProfiles.lua"/>
 	<Script file="Config\Profiles.lua"/>
 
 	<Script file="Core\GUI.lua"/>
@@ -39,7 +40,6 @@
 	<Script file="Core\Install.lua"/>
 	<Script file="Core\Disable.lua"/>
 	<Script file="Core\Commands.lua"/>
-	<Script file="Core\WTF.lua"/>
 	<Script file="Core\Kill.lua"/>
 	<Script file="Core\CheckVersion.lua"/>
 	<Script file="Core\Movers.lua"/>

@@ -245,12 +245,6 @@ local function SetupChatPosAndFont(self)
 		local ID = Frame:GetID()
 		local _, FontSize = FCF_GetChatWindowInfo(ID)
 
-		if (not C.Chat.LootFrame) then
-			if (FCF_GetChatWindowInfo(ID) == LOOT) then
-				FCF_Close(Frame)
-			end
-		end
-
 		-- Min. size for chat font
 		if FontSize < 12 then
 			FCF_SetChatWindowFontSize(nil, Frame, 12)

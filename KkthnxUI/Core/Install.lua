@@ -76,12 +76,9 @@ local function InstallUI()
 	FCF_OpenNewWindow(GENERAL)
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
-
-	if C.Chat.LootFrame then
-		FCF_OpenNewWindow(LOOT)
-		FCF_DockFrame(ChatFrame4)
-		ChatFrame4:Show()
-	end
+	FCF_OpenNewWindow(LOOT)
+	FCF_DockFrame(ChatFrame4)
+	ChatFrame4:Show()
 
 	-- SETTING CHAT FRAMES
 	if C.Chat.Enable == true and not (select(4, GetAddOnInfo("Prat-3.0"))) or (select(4, GetAddOnInfo("Chatter"))) then
@@ -167,14 +164,12 @@ local function InstallUI()
 		ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOOKINGFORGROUP)
 
 		-- SETUP THE LOOT CHAT
-		if C.Chat.LootFrame then
-			ChatFrame_RemoveAllMessageGroups(ChatFrame4)
-			ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
-			ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
-			ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
-			ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
-			ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
-		end
+		ChatFrame_RemoveAllMessageGroups(ChatFrame4)
+		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
+		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
+		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
+		ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
+		ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
 
 		if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 			SetCVar("scriptErrors", 1)

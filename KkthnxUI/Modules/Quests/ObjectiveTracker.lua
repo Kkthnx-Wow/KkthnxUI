@@ -1,35 +1,9 @@
 local K, C, L, _ = select(2, ...):unpack()
 
 local ObjectiveTracker = CreateFrame("Frame", "ObjectiveTracker", UIParent)
-local Noop = function() end
-
-function ObjectiveTracker:UpdatePopup()
-	for i = 1, GetNumAutoQuestPopUps() do
-		local questID, popUpType = GetAutoQuestPopUp(i)
-		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, isDaily, _ = GetQuestLogTitle(GetQuestLogIndexByID(questID))
-
-		if (questTitle and questTitle ~= "") then
-			local Block = AUTO_QUEST_POPUP_TRACKER_MODULE:GetBlock(questID)
-			local ScrollChild = Block.ScrollChild
-
-			if not ScrollChild.IsSkinned then
-				ScrollChild:StripTextures()
-				ScrollChild:CreateBackdrop("Transparent")
-				ScrollChild.backdrop:SetPoint("TOPLEFT", ScrollChild, "TOPLEFT", 48, -2)
-				ScrollChild.backdrop:SetPoint("BOTTOMRIGHT", ScrollChild, "BOTTOMRIGHT", -1, 2)
-				ScrollChild.FlashFrame.IconFlash:Kill()
-				ScrollChild.IsSkinned = true
-			end
-		end
-	end
-end
 
 function ObjectiveTracker:SetTrackerPosition()
 	ObjectiveTrackerFrame:SetPoint("TOPRIGHT", ObjectiveTracker)
-end
-
-function ObjectiveTracker:AddHooks()
-	hooksecurefunc(AUTO_QUEST_POPUP_TRACKER_MODULE, "Update", self.UpdatePopup)
 end
 
 function ObjectiveTracker:Enable()
@@ -45,7 +19,6 @@ function ObjectiveTracker:Enable()
 
 	self:SetSize(235, 23)
 	self:SetPoint(Anchor1, Parent, Anchor2, X, Y)
-	self:AddHooks()
 	self.SetTrackerPosition(Frame)
 
 	Movers:RegisterFrame(self)
