@@ -11,7 +11,7 @@ local max = math.max
 -- WOW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local CastBars = CreateFrame("Frame", nil, UIParent)
 

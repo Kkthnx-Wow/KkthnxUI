@@ -9,7 +9,7 @@ local unpack = unpack
 -- WOW API
 local ActionBars = CreateFrame("Frame")
 local CreateFrame = CreateFrame
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 StaticPopupDialogs["FIX_ACTIONBARS"] = {
 	text = L_POPUP_FIX_ACTIONBARS,

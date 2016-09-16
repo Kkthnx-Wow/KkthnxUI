@@ -7,7 +7,7 @@ local ipairs = ipairs
 local next = next
 local CreateFrame, UIParent = CreateFrame, UIParent
 local hooksecurefunc = hooksecurefunc
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local AchievementAnchor = CreateFrame("Frame", "AchievementAnchor", UIParent)
 AchievementAnchor:SetSize(230, 50)

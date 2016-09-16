@@ -16,7 +16,7 @@ local GetItemInfo = GetItemInfo
 local GetSpellInfo = GetSpellInfo
 local GetInventoryItemLink = GetInventoryItemLink
 local GetSpellCooldown = GetSpellCooldown
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 P_BUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.PlayerBuffIcon))
 P_BUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)

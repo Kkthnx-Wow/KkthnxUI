@@ -1,150 +1,158 @@
-﻿local K, C, L, _ = select(2, ...):unpack()
+local K, C, L, _ = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true or C.Tooltip.ShowSpec ~= true then return end
 
-local Tooltip = K["Tooltip"]
-local Talent = CreateFrame("Frame")
-local format = string.format
+-- Target talents(TipTacTalents by Aezay)
 
-Talent.Cache = {}
-Talent.LastInspectRequest = 0
-Talent.SlotNames = {
-	"Head",
-	"Neck",
-	"Shoulder",
-	"Back",
-	"Chest",
-	"Wrist",
-	"Hands",
-	"Waist",
-	"Legs",
-	"Feet",
-	"Finger0",
-	"Finger1",
-	"Trinket0",
-	"Trinket1",
-	"MainHand",
-	"SecondaryHand"
-}
+-- Lua API
+local _G = _G
+local ipairs = ipairs
 
-function Talent:GetItemLevel(unit)
-	local Total, Item = 0, 0
+-- Wow API
+local CreateFrame = CreateFrame
+local isInspect = isInspect
+local GetText, GetMouseFocus, GetUnit = GetText, GetMouseFocus, GetUnit
+local UnitIsPlayer, UnitLevel, UnitName, UnitIsUnit = UnitIsPlayer, UnitLevel, UnitName, UnitIsUnit
+local CanInspect = CanInspect
+local GatherTalents = GatherTalents
+local InspectFrame = InspectFrame
 
-	for i = 1, #Talent.SlotNames do
-		local Slot = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Talent.SlotNames[i])))
+-- String constants
+local TALENTS_PREFIX = SPECIALIZATION..":|cff3eea23 "
 
-		if (Slot) then
-			local ILVL = select(4, GetItemInfo(Slot))
+-- Option constants
+local CACHE_SIZE = 30
+local INSPECT_DELAY = 0.2
+local INSPECT_FREQ = 2
 
-			if (ILVL) then
-				Item = Item + 1
-				Total = Total + ILVL
-			end
-		end
-	end
+-- Variables
+local TooltipTalents = CreateFrame("Frame", "TipTacTalents")
+local cache = {}
+local current = {}
 
-	if (Total < 1) then
-		return "..."
-	end
+-- Time of the last inspect reuqest. init this to zero, just to make sure. this is a global so other addons could use this variable as well
+lastInspectRequest = 0
 
-	return floor(Total / Item)
-end
+-- Allow these to be accessed externally from other addons
+TooltipTalents.cache = cache
+TooltipTalents.current = current
+TooltipTalents:Hide()
 
-function Talent:GetTalentSpec(unit)
-	local Spec
-
-	if not unit then
-		Spec = GetSpecialization()
+local function GatherTalents(mouseover)
+	if mouseover == 1 then
+		local id = GetInspectSpecialization("mouseover")
+		local currentSpecName = id and select(2, GetSpecializationInfoByID(id)) or L_TOOLTIP_LOADING
+		current.tree = currentSpecName
 	else
-		Spec = GetInspectSpecialization(unit)
+		local currentSpec = GetSpecialization()
+		local currentSpecName = currentSpec and select(2, GetSpecializationInfo(currentSpec)) or L_TOOLTIP_NO_TALENT
+		current.tree = currentSpecName
 	end
 
-	if(Spec and Spec > 0) then
-		if (unit) then
-			local Role = GetSpecializationRoleByID(Spec)
-
-			if (Role) then
-				local Name = select(2, GetSpecializationInfoByID(Spec))
-
-				return Name
+	-- Set the tips line output, for inspect, only update if the tip is still showing a unit
+	if mouseover == 0 then
+		GameTooltip:AddLine(TALENTS_PREFIX..current.tree)
+	elseif GameTooltip:GetUnit() then
+		for i = 2, GameTooltip:NumLines() do
+			if (_G["GameTooltipTextLeft"..i]:GetText() or ""):match("^"..TALENTS_PREFIX) then
+				_G["GameTooltipTextLeft"..i]:SetFormattedText("%s%s", TALENTS_PREFIX, current.tree)
+				break
 			end
-		else
-			local Name = select(2, GetSpecializationInfo(Spec))
-
-			return Name
 		end
 	end
-end
-
-Talent:SetScript("OnUpdate", function(self, elapsed)
-	if not (C.Tooltip.ShowSpec) then
-		self:Hide()
-		self:SetScript("OnUpdate", nil)
-	end
-
-	self.NextUpdate = (self.NextUpdate or 0) - elapsed
-
-	if (self.NextUpdate) <= 0 then
-		self:Hide()
-
-		local GUID = UnitGUID("mouseover")
-
-		if not GUID then
-			return
-		end
-
-		if (GUID == self.CurrentGUID) and (not (InspectFrame and InspectFrame:IsShown())) then
-			self.LastGUID = self.CurrentGUID
-			self.LastInspectRequest = GetTime()
-			self:RegisterEvent("INSPECT_READY")
-			NotifyInspect(self.CurrentUnit)
-		end
-	end
-end)
-
-Talent:SetScript("OnEvent", function(self, event, GUID)
-	if GUID ~= self.LastGUID or (InspectFrame and InspectFrame:IsShown()) then
-		self:UnregisterEvent("INSPECT_READY")
-
-		return
-	end
-
-	local ILVL = self:GetItemLevel("mouseover")
-	local TalentSpec = self:GetTalentSpec("mouseover")
-	local CurrentTime = GetTime()
-	local MatchFound
-
-	for i, Cache in ipairs(self.Cache) do
-		if Cache.GUID == GUID then
-			Cache.ItemLevel = ILVL
-			Cache.TalentSpec = TalentSpec
-			Cache.LastUpdate = floor(CurrentTime)
-
-			MatchFound = true
-
+	-- Organise Cache
+	local cacheSize = CACHE_SIZE
+	for i = #cache, 1, -1 do
+		if current.name == cache[i].name then
+			tremove(cache, i)
 			break
 		end
 	end
-
-	if (not MatchFound) then
-		local GUIDInfo = {
-			["GUID"] = GUID,
-			["ItemLevel"] = ILVL,
-			["TalentSpec"] = TalentSpec,
-			["LastUpdate"] = floor(CurrentTime)
-		}
-
-		self.Cache[#self.Cache + 1] = GUIDInfo
+	if #cache > cacheSize then
+		tremove(cache, 1)
 	end
-
-	if (#self.Cache > 50) then
-		table.remove(self.Cache, 1)
+	-- Cache the new entry
+	if cacheSize > 0 then
+		cache[#cache + 1] = CopyTable(current)
 	end
+end
 
-	GameTooltip:SetUnit("mouseover")
-
-	ClearInspectPlayer()
-
-	self:UnregisterEvent("INSPECT_READY")
+-- Event Handling
+-- OnEvent
+TooltipTalents:SetScript("OnEvent", function(self, event, guid)
+	self:UnregisterEvent(event)
+	if guid == current.guid then
+		GatherTalents(1)
+	end
 end)
 
-Tooltip.Talent = Talent
+-- OnUpdate
+TooltipTalents:SetScript("OnUpdate", function(self, elapsed)
+	self.nextUpdate = (self.nextUpdate - elapsed)
+	if self.nextUpdate <= 0 then
+		self:Hide()
+		-- Make sure the mouseover unit is still our unit
+		if UnitGUID("mouseover") == current.guid then
+			lastInspectRequest = GetTime()
+			self:RegisterEvent("INSPECT_READY")
+			-- Az: Fix the blizzard inspect copypasta code (Blizzard_InspectUI\InspectPaperDollFrame.lua @ line 23)
+			if InspectFrame then
+				InspectFrame.unit = "player"
+			end
+			NotifyInspect(current.unit)
+		end
+	end
+end)
+
+-- Hook: OnTooltipSetUnit
+GameTooltip:HookScript("OnTooltipSetUnit", function(self, ...)
+	-- Abort any delayed inspect in progress
+	TooltipTalents:Hide()
+	-- Get the unit / Check the UnitFrame unit if this tip is from a concated unit, such as "targettarget".
+	local _, unit = self:GetUnit()
+	if not unit then
+		local mFocus = GetMouseFocus()
+		if mFocus and mFocus.unit then
+			unit = mFocus.unit
+		end
+	end
+	-- No Unit or not a Player
+	if not unit or not UnitIsPlayer(unit) then
+		return
+	end
+	-- Only bother for players over level 9
+	local level = UnitLevel(unit)
+	if level > 9 or level == -1 then
+		-- Wipe Current Record
+		wipe(current)
+		current.unit = unit
+		current.name = UnitName(unit)
+		current.guid = UnitGUID(unit)
+		-- No need for inspection on the player
+		if UnitIsUnit(unit, "player") then
+			GatherTalents(0)
+			return
+		end
+		-- Show Cached Talents, If Available
+		local isInspectOpen = (InspectFrame and InspectFrame:IsShown()) or (Examiner and Examiner:IsShown())
+		local cacheLoaded = false
+		for _, entry in ipairs(cache) do
+			if current.name == entry.name and not isInspectOpen then
+				self:AddLine(TALENTS_PREFIX..entry.tree)
+				current.tree = entry.tree
+				cacheLoaded = true
+				break
+			end
+		end
+		-- Queue an inspect request
+		if CanInspect(unit) and not isInspectOpen then
+			local lastInspectTime = GetTime() - lastInspectRequest
+			TooltipTalents.nextUpdate = (lastInspectTime > INSPECT_FREQ) and INSPECT_DELAY or (INSPECT_FREQ - lastInspectTime + INSPECT_DELAY)
+			TooltipTalents:Show()
+			if not cacheLoaded then
+				self:AddLine(TALENTS_PREFIX..L_TOOLTIP_LOADING)
+			end
+		elseif isInspectOpen then
+			self:AddLine(TALENTS_PREFIX..L_TOOLTIP_INSPECT_OPEN)
+		end
+	end
+end)

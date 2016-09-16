@@ -11,7 +11,7 @@ local MailIcon = MiniMapMailIcon
 local MiniMapInstanceDifficulty = MiniMapInstanceDifficulty
 local North = _G["MinimapNorthTag"]
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 -- MINIMAP BORDER
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)

@@ -18,11 +18,6 @@ local upgrades = {
 	["507"] = 24, ["530"] = 5, ["531"] = 10, ["535"] = 15, ["536"] = 30, ["537"] = 45
 }
 
-local legionUpgrades = {
-	["664"] = 689, ["767"] = 685, ["768"] = 693, ["1735"] = 705, ["1736"] = 699, ["1738"] = 709,
-	["1739"] = 703, ["1741"] = 713, ["1792"] = 699, ["1793"] = 703, ["1794"] = 695, ["1795"] = 700
-}
-
 local function BOALevel(level, id)
 	if level > 97 then
 		if id == 133585 or id == 133595 or id == 133596 or id == 133597 or id == 133598 then
@@ -57,15 +52,15 @@ local timewarped = {
 
 local itemLevelPattern = gsub(ITEM_LEVEL, "%%d", "(%%d+)")
 local tooltipLines = {
-	"KthnxUI_ItemScanningTooltipTextLeft2",
-	"KthnxUI_ItemScanningTooltipTextLeft3",
-	"KthnxUI_ItemScanningTooltipTextLeft4"
+	"KkthnxUI_ItemScanningTooltipTextLeft2",
+	"KkthnxUI_ItemScanningTooltipTextLeft3",
+	"KkthnxUI_ItemScanningTooltipTextLeft4"
 }
-local tooltip = CreateFrame("GameTooltip", "KthnxUI_ItemScanningTooltip", UIParent, "GameTooltipTemplate")
+local tooltip = CreateFrame("GameTooltip", "KkthnxUI_ItemScanningTooltip", UIParent, "GameTooltipTemplate")
 tooltip:SetOwner(UIParent, "ANCHOR_NONE")
 
 -- Scan tooltip for item level information
-local function GetItemLevel(itemLink)
+local function GetItemLevelFromTooltip(itemLink)
 	if not itemLink or not GetItemInfo(itemLink) then
 		return
 	end
@@ -130,50 +125,22 @@ local function UpdateButtonsText(frame)
 							level = timewarped[tid]
 						end
 
-						local uid = strmatch(itemLink, ".+:(%d+)")
-						if upgrades[uid] then
-							level = level + upgrades[uid]
+						local upgradeTypeID = select(12, strsplit(":", itemLink))
+						if upgradeTypeID and upgradeTypeID ~= "" then
+							local uid = itemLink:match("[-:%d]+:([-%d]+)")
+							if upgrades[uid] then
+								level = level + upgrades[uid]
+							end
 						end
 
 						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+).+"))
 						if numBonusIDs then
-							if numBonusIDs == 1 then
-								local bid1, levelLootedAt = strmatch(itemLink, ".+:%d+:512:%d*:%d+:(%d+):(%d+).+")
-								if levelLootedAt == "110" then
-									levelLootedAt = levelLootedAt - 1
-								end
-								if legionUpgrades[bid1] == nil then
-									level = GetItemLevel(itemLink) or level
-									--print("|cffff0000WARNING: Unkhown item bonus ID: " .. bid1 .. ". Item: " .. itemLink)
-									--print(itemLink)
-									--local printable = gsub(itemLink, "\124", "\124\124");
-									--ChatFrame1:AddMessage("Itemlink: \"" .. printable .. "\"");
-								else
-									level = legionUpgrades[bid1] + (levelLootedAt - 100) * 10
-								end
-							elseif numBonusIDs == 2 then
-								local bid1, bid2, levelLootedAt = strmatch(itemLink, ".+:%d+:512:%d*:%d+:(%d+):(%d+):(%d+).+")
-								if levelLootedAt == "110" then
-									levelLootedAt = levelLootedAt - 1
-								end
-								if legionUpgrades[bid1] == nil then
-									level = GetItemLevel(itemLink) or level
-									--print("|cffff0000WARNING: Unkhown item bonus ID: " .. bid1 .. ". Item: " .. itemLink)
-								elseif legionUpgrades[bid2] == nil then
-									level = GetItemLevel(itemLink) or level
-									--print("|cffff0000WARNING: Unkhown item bonus ID: " .. bid2 .. ". Item: " .. itemLink)
-								else
-									if legionUpgrades[bid1] > legionUpgrades[bid2] then
-										level = legionUpgrades[bid1] + (levelLootedAt - 100) * 10
-									else
-										level = legionUpgrades[bid2] + (levelLootedAt - 100) * 10
-									end
-								end
+							if GetDetailedItemLevelInfo then
+								local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo(itemLink)
+								level = effectiveLevel or level
 							end
 						end
 
-						-- local artifact = tonumber(strmatch(itemLink, ".+:" .. ulvl .. ":%d+:(256):"))
-						-- if artifact then
 						if quality == 6 then
 							if id == 17 then
 								if frame == "Inspect" then
@@ -181,9 +148,9 @@ local function UpdateButtonsText(frame)
 								else
 									itemLink = GetInventoryItemLink("player", 16)
 								end
-								level = GetItemLevel(itemLink) or level
+								level = GetItemLevelFromTooltip(itemLink) or level
 							else
-								level = GetItemLevel(itemLink) or level
+								level = GetItemLevelFromTooltip(itemLink) or level
 							end
 						end
 

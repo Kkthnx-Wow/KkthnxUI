@@ -175,6 +175,9 @@ L_STATS_BANDWIDTH = "Bandwidth: "
 L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
 L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"
 L_TOOLTIP_ACH_STATUS = "Your Status:"
+L_TOOLTIP_INSPECT_OPEN = "Inspect Frame is open"
+L_TOOLTIP_LOADING = "Loading..."
+L_TOOLTIP_NO_TALENT = "No Talents"
 -- TOTAL MEMORY LOCALIZATION
 L_TOTALMEMORY_USAGE = "Total Memory:"
 -- TUTORIAL LOCALIZATION

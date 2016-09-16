@@ -7,7 +7,7 @@ local format = string.format
 
 -- WOW API
 local Bars = 20
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local BarHeight, BarWidth = C.Experience.ArtifactHeight, C.Experience.ArtifactWidth
 local Texture = C.Media.Texture

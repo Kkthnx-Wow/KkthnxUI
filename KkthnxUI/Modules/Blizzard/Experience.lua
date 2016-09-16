@@ -12,7 +12,7 @@ local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL
 local BarHeight, BarWidth = C.Experience.XPHeight, C.Experience.XPWidth
 local barTex, flatTex = C.Media.Texture
 local Colors = RAID_CLASS_COLORS[K.Class]
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local ExperienceAnchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 ExperienceAnchor:SetSize(C.Experience.XPWidth, 18)

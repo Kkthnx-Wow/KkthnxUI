@@ -11,7 +11,7 @@ local unpack = unpack
 local UnitHasVehicleUI = UnitHasVehicleUI
 local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 -- STYLE PLAYER BUFFS(BY TUKZ)
 local rowbuffs

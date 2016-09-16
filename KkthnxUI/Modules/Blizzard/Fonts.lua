@@ -1,31 +1,37 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.General.ReplaceBlizzardFonts ~= true then return end
 
-local Fonts = CreateFrame("Frame", nil, UIParent)
+local KkthnxUIFonts = CreateFrame("Frame", "KkthnxUIFonts", UIParent)
 
-function Fonts:SetFont(font, size, style, r, g, b, sr, sg, sb, sox, soy)
-	self:SetFont(font, size, style)
-
-	if sr and sg and sb then
-		self:SetShadowColor(sr, sg, sb)
-	end
-
-	if sox and soy then
-		self:SetShadowOffset(sox, soy)
-	end
-
-	if r and g and b then
-		self:SetTextColor(r, g, b)
-	elseif r then
-		self:SetAlpha(r)
-	end
+local SetFont = function(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
+	obj:SetFont(font, size, style)
+	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb) end
+	if sox and soy then obj:SetShadowOffset(sox, soy) end
+	if r and g and b then obj:SetTextColor(r, g, b)
+		elseif r then obj:SetAlpha(r) end
 end
 
-function Fonts:ChangeWoWFonts()
-	local SetFont = self.SetFont
+KkthnxUIFonts:RegisterEvent("ADDON_LOADED")
+KkthnxUIFonts:SetScript("OnEvent", function(self, event, addon)
+	if (addon ~= "KkthnxUI") then return end
+
 	local NORMAL = C.Media.Font
 	local COMBAT = C.Media.Combat_Font
 	local NUMBER = C.Media.Font
+
+	if (K.ScreenWidth > 3840) then
+		InterfaceOptionsCombatTextPanelTargetDamage:Hide()
+		InterfaceOptionsCombatTextPanelPeriodicDamage:Hide()
+		InterfaceOptionsCombatTextPanelPetDamage:Hide()
+		InterfaceOptionsCombatTextPanelHealing:Hide()
+		SetCVar("CombatLogPeriodicSpells", 0)
+		SetCVar("PetMeleeDamage", 0)
+		SetCVar("CombatDamage", 0)
+		SetCVar("CombatHealing", 0)
+
+		COMBAT = C.Media.Blank_Font
+		DAMAGE_TEXT_FONT = C.Media.Blank_Font
+	end
 
 	UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = 12
 	CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
@@ -72,7 +78,9 @@ function Fonts:ChangeWoWFonts()
 	SetFont(Tooltip_Med, NORMAL, 12)
 	SetFont(Tooltip_Small, NORMAL, 12)
 	SetFont(ZoneTextString, NORMAL, 32, "OUTLINE")
-end
 
--- NEW FONTS NEED TO BE SET AS SOON AS POSSIBLE ...
-Fonts:ChangeWoWFonts()
+	SetFont = nil
+	self:SetScript("OnEvent", nil)
+	self:UnregisterAllEvents()
+	self = nil
+end)

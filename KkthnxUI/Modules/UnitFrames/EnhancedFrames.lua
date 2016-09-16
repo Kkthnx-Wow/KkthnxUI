@@ -194,7 +194,7 @@ function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 	for i = 1, MAX_PARTY_MEMBERS do
 		_G["PartyMemberFrame"..i.."HealthBarText"]:SetPoint("CENTER", _G["PartyMemberFrame"..i.."HealthBar"], "CENTER", 0, 1)
 
-		_G["PartyMemberFrame"..i.."Name"]:SetPoint("TOP", 0, 20)
+		_G["PartyMemberFrame"..i.."Name"]:SetPoint("TOP", 0, 24)
 
 		_G["PartyMemberFrame"..i.."Texture"]:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\PartyFrame")
 		_G["PartyMemberFrame"..i.."Texture"]:SetPoint("TOPLEFT", 0, 6)

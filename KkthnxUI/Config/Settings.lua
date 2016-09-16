@@ -212,6 +212,7 @@ C["Tooltip"] = {
 	["InstanceLock"] = false,
 	["ItemIcon"] = false,
 	["ShowSpec"] = true,
+	["ItemLevel"] = true,
 }
 -- UNITFRAME OPTIONS
 C["Unitframe"] = {

@@ -207,8 +207,8 @@ SLASH_MOVING1 = "/moveui"
 SlashCmdList["MOVING"] = function()
 	if InCombatLockdown() then print(ERR_NOT_IN_COMBAT) return end
 
-	local Movers = K["Movers"]
+	local Movers = K.Movers
 	Movers:StartOrStopMoving()
 end
 
-K["Movers"] = Movers
+K.Movers = Movers

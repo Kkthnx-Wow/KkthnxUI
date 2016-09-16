@@ -11,7 +11,7 @@ function ObjectiveTracker:Enable()
 		return
 	end
 
-	local Movers = K["Movers"]
+	local Movers = K.Movers
 	local Frame = ObjectiveTrackerFrame
 	local ScenarioStageBlock = ScenarioStageBlock
 	local Data = SavedPositions

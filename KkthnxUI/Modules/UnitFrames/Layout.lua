@@ -24,7 +24,7 @@ local UnitIsTapDenied = UnitIsTapDenied
 local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
-local Movers = K["Movers"]
+local Movers = K.Movers
 local CombatLock = false
 
 local PetColor = {157/255, 197/255, 255/255}

@@ -37,7 +37,7 @@ end
 ActionBar1:RegisterEvent("PLAYER_LOGIN")
 ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
-ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
+-- ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 ActionBar1:RegisterEvent("BAG_UPDATE")
 ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
@@ -83,8 +83,8 @@ ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
 			end
 		end
 	elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
-		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
-		--if not InCombatLockdown() and (HasVehicleActionBar()) then
+		-- if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
+		if not InCombatLockdown() and (HasVehicleActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
 				local Button = _G["ActionButton"..i]
 				ActionButton_Update(Button)

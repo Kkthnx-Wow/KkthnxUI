@@ -242,6 +242,7 @@ local function Local(o)
 	if o == "UIConfigTooltipHealthValue" then o = L_GUI_TOOLTIP_HEALTH end
 	if o == "UIConfigTooltipInstanceLock" then o = L_GUI_TOOLTIP_INSTANCE_LOCK end
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
+	if o == "UIConfigTooltipItemLevel" then o = L_GUI_TOOLTIP_ITEMLEVEL end
 	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_TALENTS end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end

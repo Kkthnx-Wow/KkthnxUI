@@ -13,7 +13,7 @@ local pos = "TOP"
 local frames = {}
 local cancelled_rolls = {}
 local rolltypes = {"need", "greed", "disenchant", [0] = "pass"}
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local LootRollAnchor = CreateFrame("Frame", "LootRollAnchor", UIParent)
 LootRollAnchor:SetSize(313, 26)

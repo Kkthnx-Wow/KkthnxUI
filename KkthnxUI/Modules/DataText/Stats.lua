@@ -9,7 +9,7 @@ Stat:EnableMouse(true)
 Stat.tooltip = false
 local scolor1 = K.RGBToHex(.4, .4, .4)
 local scolor2 = K.RGBToHex(1, 1, 1)
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local StatAnchor = CreateFrame("Frame", "StatFrameAnchor", UIParent)
 StatAnchor:SetSize(Minimap:GetWidth() + 4, 22)

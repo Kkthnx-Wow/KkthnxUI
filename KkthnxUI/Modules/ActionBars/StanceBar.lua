@@ -11,7 +11,7 @@ local UIParent = UIParent
 local InCombatLockdown = InCombatLockdown
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
 local hooksecurefunc = hooksecurefunc
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", PetBattleFrameHider)
 if C.ActionBar.StanceBarHorizontal == true then

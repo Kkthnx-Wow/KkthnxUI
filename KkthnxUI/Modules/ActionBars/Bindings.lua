@@ -94,7 +94,8 @@ SlashCmdList.MOUSEOVERBIND = function()
 			elseif spellmacro == "MACRO" then
 				self.button.id = self.button:GetID()
 
-				if localmacros == 1 then self.button.id = self.button.id + 36 end
+				--if localmacros == 1 then self.button.id = self.button.id + 36 end
+				if localmacros == 1 then self.button.id = self.button.id + 120 end
 
 				self.button.name = GetMacroInfo(self.button.id)
 

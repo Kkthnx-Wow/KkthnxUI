@@ -143,6 +143,7 @@
 	<Script file="Modules\Chat\TellTarget.lua"/>
 
 	<Script file="Modules\DataText\Battleground.lua"/>
+	<Script file="Modules\DataText\CharacterStats.lua"/>
 	<Script file="Modules\DataText\Location.lua"/>
 	<Script file="Modules\DataText\Stats.lua"/>
 
@@ -168,11 +169,12 @@
 	<Include file="Modules\Skins\Addons\LoadFrames.xml"/>
 	<Include file="Modules\Skins\Blizzard\LoadFrames.xml"/>
 
-	<Script file="Modules\Tooltip\Tooltip.lua"/>
 	<Script file="Modules\Tooltip\Achievement.lua"/>
 	<Script file="Modules\Tooltip\HyperLink.lua"/>
 	<Script file="Modules\Tooltip\InstanceLockCompare.lua"/>
 	<Script file="Modules\Tooltip\ItemIcons.lua"/>
+	<Script file="Modules\Tooltip\ItemLevel.lua"/>
 	<Script file="Modules\Tooltip\PvPRating.lua"/>
 	<Script file="Modules\Tooltip\Talents.lua"/>
+	<Script file="Modules\Tooltip\Tooltip.lua"/>
 </Ui>

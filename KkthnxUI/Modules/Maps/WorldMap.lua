@@ -126,7 +126,7 @@ function WorldMap:ResetDropDownListPosition(frame)
 end
 
 function WorldMap:Enable()
-	setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) -- BLIZZARD TAINT FIX
+	-- setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) -- BLIZZARD TAINT FIX
 
 	if(C.WorldMap.Coordinates) then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)

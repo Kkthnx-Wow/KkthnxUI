@@ -7,7 +7,7 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
-local Movers = K["Movers"]
+local Movers = K.Movers
 
 --	BOTTOM BARS ANCHOR
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", PetBattleFrameHider)
