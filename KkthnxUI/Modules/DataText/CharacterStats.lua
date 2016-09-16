@@ -1,4 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
+if select(4, GetAddOnInfo("DejaCharacterStats")) then return end
 
 local format = string.format
 local floor = math.floor

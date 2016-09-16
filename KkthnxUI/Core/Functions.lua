@@ -310,9 +310,9 @@ GetDetailedItemLevelInfo = GetDetailedItemLevelInfo or function(item)
 	end
 
 	local itemString = string.match(link, "item[%-?%d:]+")
-	local itemStringParts = { strsplit(":", itemString) }
+	local itemStringParts = {strsplit(":", itemString)}
 
-	local numBonuses = tonumber(itemStringParts[14],10) or 0
+	local numBonuses = tonumber(itemStringParts[14], 10) or 0
 
 	if numBonuses == 0 then
 		return origLevel, nil, origLevel
@@ -322,7 +322,7 @@ GetDetailedItemLevelInfo = GetDetailedItemLevelInfo or function(item)
 	effectiveLevel = origLevel
 
 	for y = 1,numBonuses,1 do
-		local bonus = tonumber(itemStringParts[14+y],10) or 0
+		local bonus = tonumber(itemStringParts[14 + y],10) or 0
 
 		origLevel = origLevel - (bonusLevelBoost[bonus] or 0)
 		previewLevel = bonusPreviewLevel[bonus] or previewLevel
@@ -330,7 +330,7 @@ GetDetailedItemLevelInfo = GetDetailedItemLevelInfo or function(item)
 	end
 
 	if curve and itemStringParts[12] == "512" then
-		effectiveLevel = GetCurvePoint(curve, tonumber(itemStringParts[15+numBonuses],10)) or effectiveLevel
+		effectiveLevel = GetCurvePoint(curve, tonumber(itemStringParts[15 + numBonuses], 10)) or effectiveLevel
 	end
 
 	return effectiveLevel, previewLevel, origLevel
