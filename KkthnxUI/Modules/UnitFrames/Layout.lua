@@ -228,7 +228,7 @@ function Unitframes:Setup()
 
 	-- BOSS FRAMES ???
 	for i = 1, MAX_BOSS_FRAMES do
-		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
+		--_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
 		_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
 		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
 		_G["Boss"..i.."TargetFrame"]:ClearAllPoints()

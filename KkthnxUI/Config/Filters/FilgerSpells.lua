@@ -1195,8 +1195,6 @@ C["filger_spells"] = {
 			{spellID = 115610, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Rune of Power
 			{spellID = 116014, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Prismatic Crystal
-			{spellID = 152087, filter = "ICD", trigger = "NONE", duration = 12},
 			-- Mirror Image
 			{spellID = 55342, filter = "ICD", trigger = "NONE", duration = 40},
 		},
@@ -3784,7 +3782,7 @@ C["filger_spells"] = {
 
 			-- Demon Hunter
 			-- Metamorphosis
-			{spellID = 162264, unitID = "target", caster = "all", filter = "BUFF"},
+			{spellID = 162264, unitID = "target", caster = "all", filter = "BUFF", absID = true},
 			-- Spectral Sight
 			{spellID = 188501, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Netherwalk

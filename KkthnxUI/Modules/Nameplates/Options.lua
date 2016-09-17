@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
-local Plates = K["NamePlates"]
+local Plates = K.NamePlates
 
 function Plates:RegisterOptions()
 	Plates.Options = {}

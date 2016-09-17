@@ -211,11 +211,11 @@ function Plates:Enable()
 	C_NamePlate.SetNamePlateOtherSize(C.Nameplate.Width, 45)
 end
 
-K["NamePlates"] = Plates
+K.NamePlates = Plates
 
 function Plates:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
-		K["NamePlates"]:Enable()
+		K.NamePlates:Enable()
 	end
 end
 

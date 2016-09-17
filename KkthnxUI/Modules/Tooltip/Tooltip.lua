@@ -18,7 +18,6 @@ local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
 local Short = K.ShortValue
 local Texture = C.Media.Texture
 local Tooltip = CreateFrame("Frame")
-local Move = K["Move"]
 
 Tooltip.ItemRefTooltip = ItemRefTooltip
 

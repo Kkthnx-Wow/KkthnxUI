@@ -96,7 +96,7 @@ local function Update(self, t)
 		int = 10
 	end
 	if int2 < 0 then
-		Text:SetText(floor(GetFramerate())..K.RGBToHex(K.Color.r, K.Color.g, K.Color.b).." fps|r & "..select(3, GetNetStats())..K.RGBToHex(K.Color.r, K.Color.g, K.Color.b).." ms|r")
+		Text:SetText(floor(GetFramerate())..K.RGBToHex(K.Color.r, K.Color.g, K.Color.b).."fps|r - "..select(3, GetNetStats())..K.RGBToHex(K.Color.r, K.Color.g, K.Color.b).."ms|r")
 		int2 = 2
 	end
 end
