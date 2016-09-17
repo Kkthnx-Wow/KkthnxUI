@@ -17,6 +17,7 @@ local sub = string.sub
 local GetID, GetName = GetID, GetName
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local Movers = K.Movers
 local origs = {}
 
 local strings = {
@@ -280,14 +281,17 @@ local function SetupChatPosAndFont(self)
 			end
 		end
 	end
-	-- Reposition battle.net popup over chat #1
-	BNToastFrame:HookScript("OnShow", function(self)
-		self:ClearAllPoints()
-		self:SetPoint(unpack(C.Position.BnetPopup))
-		self:SetFrameStrata("Medium")
-		self:SetFrameLevel(20)
-	end)
 end
+
+local BNet = CreateFrame("Frame", "BNetMover", UIParent)
+BNet:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
+BNet:SetPoint(unpack(C.Position.BnetPopup))
+Movers:RegisterFrame(BNet)
+
+BNToastFrame:HookScript("OnShow", function(self)
+	self:ClearAllPoints()
+	self:SetPoint("TOPLEFT", BNetMover, "TOPLEFT", 3, -3)
+end)
 
 local UIChat = CreateFrame("Frame")
 UIChat:RegisterEvent("ADDON_LOADED")
