@@ -18,41 +18,43 @@ local GetInventoryItemLink = GetInventoryItemLink
 local GetSpellCooldown = GetSpellCooldown
 local Movers = K.Movers
 
-P_BUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.PlayerBuffIcon))
-P_BUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
-Movers:RegisterFrame(P_BUFF_ICON_Anchor)
+PBuffIconAnchor:SetPoint(unpack(C.Position.Filger.PlayerBuffIcon))
+PBuffIconAnchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(PBuffIconAnchor)
 
-P_PROC_ICON_Anchor:SetPoint(unpack(C.Position.Filger.PlayerProcIcon))
-P_PROC_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
-Movers:RegisterFrame(P_PROC_ICON_Anchor)
+PProcIconAnchor:SetPoint(unpack(C.Position.Filger.PlayerProcIcon))
+PProcIconAnchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(PProcIconAnchor)
 
-SPECIAL_P_BUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.SpecialProcIcon))
-SPECIAL_P_BUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
-Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
+SpecialPBuffIconAnchor:SetPoint(unpack(C.Position.Filger.SpecialProcIcon))
+SpecialPBuffIconAnchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(SpecialPBuffIconAnchor)
 
-T_DEBUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.TargetDebuffIcon))
-T_DEBUFF_ICON_Anchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
-Movers:RegisterFrame(P_PROC_ICON_Anchor)
+TDebuffIconAnchor:SetPoint(unpack(C.Position.Filger.TargetDebuffIcon))
+TDebuffIconAnchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
+Movers:RegisterFrame(PProcIconAnchor)
 
-T_BUFF_Anchor:SetPoint(unpack(C.Position.Filger.TargetBuffIcon))
-T_BUFF_Anchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
-Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
+TBuffAnchor:SetPoint(unpack(C.Position.Filger.TargetBuffIcon))
+TBuffAnchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
+Movers:RegisterFrame(TDebuffIconAnchor)
 
-PVE_PVP_DEBUFF_Anchor:SetPoint(unpack(C.Position.Filger.PvEDebuff))
-PVE_PVP_DEBUFF_Anchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
-Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
+PvEPvPDebuffAnchor:SetPoint(unpack(C.Position.Filger.PvEDebuff))
+PvEPvPDebuffAnchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
+Movers:RegisterFrame(PvEPvPDebuffAnchor)
 
-PVE_PVP_CC_Anchor:SetPoint(unpack(C.Position.Filger.PvECC))
-PVE_PVP_CC_Anchor:SetSize(221, 25)
-Movers:RegisterFrame(PVE_PVP_CC_Anchor)
+PvEPvPCCAnchor:SetPoint(unpack(C.Position.Filger.PvECC))
+PvEPvPCCAnchor:SetSize(221, 25)
+Movers:RegisterFrame(PvEPvPCCAnchor)
 
-COOLDOWN_Anchor:SetPoint(unpack(C.Position.Filger.Cooldown))
-COOLDOWN_Anchor:SetSize(C.Filger.CooldownSize, C.Filger.CooldownSize)
-Movers:RegisterFrame(COOLDOWN_Anchor)
+CooldownAnchor:SetPoint(unpack(C.Position.Filger.Cooldown))
+CooldownAnchor:SetSize(C.Filger.CooldownSize, C.Filger.CooldownSize)
+Movers:RegisterFrame(CooldownAnchor)
 
-T_DE_BUFF_BAR_Anchor:SetPoint(unpack(C.Position.Filger.TargetBar))
-T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
-Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
+TDEBuffBarAnchor:SetPoint(unpack(C.Position.Filger.TargetBar))
+TDEBuffBarAnchor:SetSize(218, 25)
+Movers:RegisterFrame(TDEBuffBarAnchor)
+
+SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
 
 -- FILGER(BY NILS RUESCH, EDITORS AFFLI/SINAC/ILDYRIA)
 local Filger = {}
@@ -257,7 +259,7 @@ function Filger:DisplayActives()
 	end
 
 	local activeCount = 1
-	local limit = (32 * 12)/self.IconSize
+	local limit = (C.ActionBar.ButtonSize * 12)/self.IconSize
 	for n in pairs(self.actives) do
 		self.sortedIndex[activeCount] = n
 		activeCount = activeCount + 1
@@ -318,8 +320,8 @@ function Filger:DisplayActives()
 			bar:SetScript("OnEnter", Filger.TooltipOnEnter)
 			bar:SetScript("OnLeave", Filger.TooltipOnLeave)
 		end
-		bar:SetWidth(self.IconSize or 37)
-		bar:SetHeight(self.IconSize or 37)
+		bar:SetWidth(self.IconSize or C.Filger.BuffsSize)
+		bar:SetHeight(self.IconSize or C.Filger.BuffsSize)
 		bar:SetAlpha(value.data.opacity or 1)
 		bar:Show()
 		index = index + 1
@@ -331,18 +333,20 @@ function Filger:DisplayActives()
 	end
 end
 
-function Filger:OnEvent(event, unit)
-	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_AURA" and (unit == "target" or unit == "player" or unit == "pet" or unit == "focus") then
+function Filger:OnEvent(event, unit, _, _, _, spellID)
+	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_AURA" and (unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
+		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
 
-		for i = 1, #C["filger_spells"][K.Class][id], 1 do
-			local data = C["filger_spells"][K.Class][id][i]
+		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
+			local data = C["FilgerSpells"][K.Class][id][i]
+			if C.Filger.DisableCD == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then return end
 			local found = false
 			local name, icon, count, duration, start, spid
 			spid = 0
 
-			if data.filter == "BUFF" then
+			if data.filter == "BUFF" and (not data.spec or data.spec == ptt) then
 				local caster, spn, expirationTime
 				spn, _, _ = GetSpellInfo(data.spellID)
 				if spn then
@@ -354,7 +358,7 @@ function Filger:OnEvent(event, unit)
 						end
 					end
 				end
-			elseif data.filter == "DEBUFF" then
+			elseif data.filter == "DEBUFF" and (not data.spec or data.spec == ptt) then
 				local caster, spn, expirationTime
 				spn, _, _ = GetSpellInfo(data.spellID)
 				if spn then
@@ -364,7 +368,7 @@ function Filger:OnEvent(event, unit)
 						found = true
 					end
 				end
-			elseif data.filter == "CD" then
+			elseif data.filter == "CD" and (not data.spec or data.spec == ptt) then
 				if data.spellID then
 					name, _, icon = GetSpellInfo(data.spellID)
 					if name then
@@ -386,7 +390,7 @@ function Filger:OnEvent(event, unit)
 				if name and (duration or 0) > 1.5 then
 					found = true
 				end
-			elseif data.filter == "ICD" then
+			elseif data.filter == "ICD" and (not data.spec or data.spec == ptt) then
 				if data.trigger == "BUFF" then
 					local spn
 					spn, _, icon = GetSpellInfo(data.spellID)
@@ -398,6 +402,11 @@ function Filger:OnEvent(event, unit)
 					spn, _, icon = GetSpellInfo(data.spellID)
 					if spn then
 						name, _, _, _, _, _, _, _, _, _, spid = Filger:UnitDebuff("player", data.spellID, spn, data.absID)
+					end
+				elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
+					if spellID == data.spellID then
+						name, _, icon = GetSpellInfo(data.spellID)
+						spid = data.spellID
 					end
 				end
 				if name then
@@ -416,7 +425,7 @@ function Filger:OnEvent(event, unit)
 				if not self.actives[i] then
 					self.actives[i] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid}
 					needUpdate = true
-					if K.Class == "DEATHKNIGHT" and self.actives[i].duration == 10 then
+					if K.Class == "DEATHKNIGHT" and self.actives[i].duration == 10 and data.filter == "CD" then
 						self.actives[i] = nil
 					end
 				else
@@ -429,6 +438,7 @@ function Filger:OnEvent(event, unit)
 				end
 			else
 				if data.filter ~= "ICD" and self.actives and self.actives[i] then
+					if event == "UNIT_SPELLCAST_SUCCEEDED" then return end
 					self.actives[i] = nil
 					needUpdate = true
 				end
@@ -441,17 +451,17 @@ function Filger:OnEvent(event, unit)
 	end
 end
 
-if C["filger_spells"] and C["filger_spells"]["ALL"] then
-	if not C["filger_spells"][K.Class] then
-		C["filger_spells"][K.Class] = {}
+if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
+	if not C["FilgerSpells"][K.Class] then
+		C["FilgerSpells"][K.Class] = {}
 	end
 
-	for i = 1, #C["filger_spells"]["ALL"], 1 do
+	for i = 1, #C["FilgerSpells"]["ALL"], 1 do
 		local merge = false
-		local spellListAll = C["filger_spells"]["ALL"][i]
+		local spellListAll = C["FilgerSpells"]["ALL"][i]
 		local spellListClass = nil
-		for j = 1, #C["filger_spells"][K.Class], 1 do
-			spellListClass = C["filger_spells"][K.Class][j]
+		for j = 1, #C["FilgerSpells"][K.Class], 1 do
+			spellListClass = C["FilgerSpells"][K.Class][j]
 			local mergeAll = spellListAll.Merge or false
 			local mergeClass = spellListClass.Merge or false
 			if spellListClass.Name == spellListAll.Name and (mergeAll or mergeClass) then
@@ -460,7 +470,7 @@ if C["filger_spells"] and C["filger_spells"]["ALL"] then
 			end
 		end
 		if not merge or not spellListClass then
-			table.insert(C["filger_spells"][K.Class], C["filger_spells"]["ALL"][i])
+			table.insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
 		else
 			for j = 1, #spellListAll, 1 do
 				table.insert(spellListClass, spellListAll[j])
@@ -469,17 +479,31 @@ if C["filger_spells"] and C["filger_spells"]["ALL"] then
 	end
 end
 
-if C["filger_spells"] and C["filger_spells"][K.Class] then
-	for index in pairs(C["filger_spells"]) do
+if K.CustomFilgerSpell then
+	for _, data in pairs(K.CustomFilgerSpell) do
+		for class, _ in pairs(C["FilgerSpells"]) do
+			if class == K.Class then
+				for i = 1, #C["FilgerSpells"][class], 1 do
+					if C["FilgerSpells"][class][i]["Name"] == data[1] then
+						table.insert(C["FilgerSpells"][class][i], data[2])
+					end
+				end
+			end
+		end
+	end
+end
+
+if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
+	for index in pairs(C["FilgerSpells"]) do
 		if index ~= K.Class then
-			C["filger_spells"][index] = nil
+			C["FilgerSpells"][index] = nil
 		end
 	end
 
 	local idx = {}
-	for i = 1, #C["filger_spells"][K.Class], 1 do
+	for i = 1, #C["FilgerSpells"][K.Class], 1 do
 		local jdx = {}
-		local data = C["filger_spells"][K.Class][i]
+		local data = C["FilgerSpells"][K.Class][i]
 
 		for j = 1, #data, 1 do
 			local spn
@@ -508,11 +532,11 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 	end
 
 	for _, v in ipairs(idx) do
-		table.remove(C["filger_spells"][K.Class], v)
+		table.remove(C["FilgerSpells"][K.Class], v)
 	end
 
-	for i = 1, #C["filger_spells"][K.Class], 1 do
-		local data = C["filger_spells"][K.Class][i]
+	for i = 1, #C["FilgerSpells"][K.Class], 1 do
+		local data = C["FilgerSpells"][K.Class][i]
 		local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, PetBattleFrameHider)
 		frame.Id = i
 		frame.Name = data.Name
@@ -521,15 +545,15 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 		frame.Mode = data.Mode or "ICON"
 		frame.Interval = data.Interval or 3
 		frame:SetAlpha(data.Alpha or 1)
-		frame.IconSize = data.IconSize or 37
+		frame.IconSize = data.IconSize or C.Filger.BuffsSize
 		frame.BarWidth = data.BarWidth or 186
 		frame.Position = data.Position or "CENTER"
 		frame:SetPoint(unpack(data.Position))
 
 		if C.Filger.TestMode then
 			frame.actives = {}
-			for j = 1, math.min(C.Filger.MaxTestIcon, #C["filger_spells"][K.Class][i]), 1 do
-				local data = C["filger_spells"][K.Class][i][j]
+			for j = 1, math.min(C.Filger.MaxTestIcon, #C["FilgerSpells"][K.Class][i]), 1 do
+				local data = C["FilgerSpells"][K.Class][i][j]
 				local name, icon
 				if data.spellID then
 					name, _, icon = GetSpellInfo(data.spellID)
@@ -543,10 +567,13 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 			end
 			Filger.DisplayActives(frame)
 		else
-			for j = 1, #C["filger_spells"][K.Class][i], 1 do
-				local data = C["filger_spells"][K.Class][i][j]
+			for j = 1, #C["FilgerSpells"][K.Class][i], 1 do
+				local data = C["FilgerSpells"][K.Class][i][j]
 				if data.filter == "CD" then
 					frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+					break
+				elseif data.trigger == "NONE" then
+					frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 					break
 				end
 			end

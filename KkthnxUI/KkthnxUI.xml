@@ -111,7 +111,7 @@
 	<Script file="Modules\Automation\Screenshots.lua"/>
 	<Script file="Modules\Automation\TabBinder.lua"/>
 
-	<Script file="Modules\Blizzard\Achievements.lua"/>
+	<Script file="Modules\Blizzard\AlertFrames.lua"/>
 	<Script file="Modules\Blizzard\AltPowerBar.lua"/>
 	<Script file="Modules\Blizzard\Artifact.lua"/>
 	<Script file="Modules\Blizzard\Bags.lua"/>
@@ -156,8 +156,9 @@
 
 	<Script file="Modules\Maps\ButtonCollect.lua"/>
 	<Script file="Modules\Maps\FarmMode.lua"/>
-	<Script file="Modules\Maps\MiniMap.lua"/>
+	<Script file="Modules\Maps\FogOfWar.lua"/>
 	<Script file="Modules\Maps\MicroMenu.lua"/>
+	<Script file="Modules\Maps\MiniMap.lua"/>
 	<Script file="Modules\Maps\Pinged.lua"/>
 	<Script file="Modules\Maps\WorldMap.lua"/>
 

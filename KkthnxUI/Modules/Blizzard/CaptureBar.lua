@@ -13,12 +13,12 @@ local function CaptureUpdate()
 		local barname = "WorldStateCaptureBar"..i
 		local bar = _G[barname]
 
-		if(bar and bar:IsShown()) then
+		if(bar and bar:IsVisible()) then
 			bar:ClearAllPoints()
 			if i == 1 then
 				bar:SetPoint(unpack(C.Position.CaptureBar))
 			else
-				bar:SetPoint("TOPLEFT", _G["WorldStateCaptureBar"..i-1], "BOTTOMLEFT", 0, -7)
+				bar:SetPoint("TOPLEFT", _G["WorldStateCaptureBar"..i - 1], "BOTTOMLEFT", 0, -7)
 			end
 			if not bar.skinned then
 				local left = _G[barname.."LeftBar"]

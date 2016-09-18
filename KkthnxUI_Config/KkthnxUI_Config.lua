@@ -165,6 +165,7 @@ local function Local(o)
 	if o == "UIConfigFilgerPvPSize" then o = L_GUI_FILGER_PVP_SIZE end
 	if o == "UIConfigFilgerShowTooltip" then o = L_GUI_FILGER_SHOW_TOOLTIP end
 	if o == "UIConfigFilgerTestMode" then o = L_GUI_FILGER_TEST_MODE end
+	if o == "UIConfigFilgerDisableCD" then o = L_GUI_FILGER_DISABLE_CD end
 	-- General Settings
 	if o == "UIConfigGeneral" then o = GENERAL_LABEL end
 	if o == "UIConfigGeneralAutoScale" then o = L_GUI_GENERAL_AUTOSCALE end
@@ -272,6 +273,7 @@ local function Local(o)
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end
 	if o == "UIConfigWorldMapCoordinates" then o = L_GUI_WORLDMAP_COORDS end
 	if o == "UIConfigWorldMapFadeWhenMoving" then o = L_GUI_WORLDMAP_FADE_WHENMOVING end
+	if o == "UIConfigWorldMapFogOfWar" then o = L_GUI_WORLDMAP_FOG_OF_WAR end
 	if o == "UIConfigWorldMapSmallWorldMap" then o = L_GUI_WORLDMAP_SMALL_WORLDMAP end
 
 	K.option = o

@@ -122,6 +122,7 @@ C["Experience"] = {
 C["Filger"] = {
 	["BuffsSize"] = 37,
 	["CooldownSize"] = 30,
+	["DisableCD"] = false,
 	["Enable"] = true,
 	["MaxTestIcon"] = 5,
 	["PvPSize"] = 60,
@@ -243,4 +244,5 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["SmallWorldMap"] = true,
+	["FogOfWar"] = false,
 }

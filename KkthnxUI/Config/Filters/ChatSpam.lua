@@ -52,6 +52,7 @@ K.ChatSpamList = {
 	"hippogryph hatchling",
 	"kiss",
 	"lf %ds",
+	"loot.*team.*leprest[o0]re",
 	"low mmr",
 	"mad ?bro",
 	"mottled drake",

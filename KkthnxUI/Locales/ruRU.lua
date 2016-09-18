@@ -86,7 +86,6 @@ L_DATATEXT_ORB_POSSESSIONS = "Orb Possessions:"
 L_DATATEXT_TOWERSASSAULTED = "Towers Assaulted:"
 L_DATATEXT_TOWERSDEFENDED = "Towers Defended:"
 L_DATATEXT_VICTORY_POINTS = "Victory Points:"
-L_DATATEXT_MEMORY_CLEANED = "|cffffe02eCleaned:|r "
 -- EXP/REP BAR LOCALIZATION
 L_EXPERIENCE_BAR = "Experience:"
 L_EXPERIENCE_BAR_LEFTCLICK = "Left click to display the Reputation Frame"
@@ -145,8 +144,7 @@ L_MAIL_NEED = "Need a mailbox."
 L_MAIL_STOPPED = "Stopped, inventory is full."
 L_MAIL_UNIQUE = "Stopped. Found a unique duplicate item in a bag or the bank."
 -- WORLD MAP LOCALIZATION
-L_MAP_CURSOR = "Cursor: "
-L_MAP_BOUNDS = "Out of bounds!"
+L_MAP_FOG = "Fog of War"
 -- FARMMODE MINIMAP
 L_MINIMAP_FARMMODE_ON = "Farm mode enabled"
 L_MINIMAP_FARMMODE_OFF = "Farm mode disabled"
@@ -181,6 +179,9 @@ L_STATS_BANDWIDTH = "Bandwidth: "
 L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
 L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"
 L_TOOLTIP_ACH_STATUS = "Your Status:"
+L_TOOLTIP_INSPECT_OPEN = "Inspect Frame is open"
+L_TOOLTIP_LOADING = "Loading..."
+L_TOOLTIP_NO_TALENT = "No Talents"
 -- TOTAL MEMORY LOCALIZATION
 L_TOTALMEMORY_USAGE = "Total Memory:"
 -- TUTORIAL LOCALIZATION
@@ -193,7 +194,7 @@ L_TUTORIAL_MESSAGE_6 = "If you are experiencing issues with KkthnxUI try disabli
 L_TUTORIAL_MESSAGE_7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings."
 L_TUTORIAL_MESSAGE_8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position."
 L_TUTORIAL_MESSAGE_9 = "To move abilities on the actionbars by default hold shift + drag. You can change the modifier key from the actionbar options menu."
-L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear by holding alt and mousing over them. It should appear inside the tooltip."
+L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
 -- WOWHEAD LINK LOCALIZATION
 L_WATCH_WOWHEAD_LINK = "Wowhead Link"
 -- WELCOME LOCALIZATION
