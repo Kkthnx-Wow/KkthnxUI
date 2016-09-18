@@ -30,7 +30,6 @@ local HiddenFrames = {
 	"MiniMapTracking",
 	--"GameTimeFrame",
 	"MiniMapWorldMapButton",
-	"GarrisonLandingPageMinimapButton",
 	"VoiceChatTalkers",
 }
 
@@ -83,6 +82,16 @@ QueueStatusMinimapButton:SetPoint("BOTTOMLEFT", Minimap, -4, -4)
 QueueStatusMinimapButtonBorder:Hide()
 QueueStatusMinimapButton:SetHighlightTexture (nil)
 QueueStatusMinimapButton:SetPushedTexture(nil)
+
+-- Garrison icon
+if C.Minimap.Garrison == true then
+	GarrisonLandingPageMinimapButton:ClearAllPoints()
+	GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
+	GarrisonLandingPageMinimapButton:SetSize(32, 32)
+else
+	GarrisonLandingPageMinimapButton:SetScale(0.0001)
+	GarrisonLandingPageMinimapButton:SetAlpha(0)
+end
 
 -- DUNGEON INFO
 MiniMapInstanceDifficulty:ClearAllPoints()

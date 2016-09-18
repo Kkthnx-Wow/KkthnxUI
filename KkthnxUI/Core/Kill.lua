@@ -68,6 +68,9 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
 	end
 
+	if C.Minimap.Garrison == true then
+		GarrisonLandingPageTutorialBox:Kill()
+	end
 	WorldMapFrameTutorialButton:Kill()
 	Advanced_UseUIScale:Kill()
 	Advanced_UIScaleSlider:Kill()

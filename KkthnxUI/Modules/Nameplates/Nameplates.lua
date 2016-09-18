@@ -39,7 +39,7 @@ function Plates:SetName()
 
 		if Level < 0 then Level = " |cffff0000??|r" else Level = Level end
 
-		if (C.Nameplate.ShowRealmName) then
+		if (C.Nameplate.Realm) then
 			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. Text .."|r")
 		else
 			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. NewName .."|r")

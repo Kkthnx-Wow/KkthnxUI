@@ -188,9 +188,10 @@ local function Local(o)
 	if o == "UIConfigMinimap" then o = L_GUI_MINIMAP end
 	if o == "UIConfigMinimapCollectButtons" then o = L_GUI_MINIMAP_COLLECTBUTTONS end
 	if o == "UIConfigMinimapEnable" then o = L_GUI_MINIMAP_ENABLEMINIMAP end
+	if o == "UIConfigMinimapGarrison" then o = L_GUI_MINIMAP_GARRISON end
+	if o == "UIConfigMinimapInvert" then o = L_GUI_MINIMAP_MINIMAPINVERT end
 	if o == "UIConfigMinimapPing" then o = L_GUI_MINIMAP_PING end
 	if o == "UIConfigMinimapSize" then o = L_GUI_MINIMAP_MINIMAPSIZE end
-	if o == "UIConfigMinimapInvert" then o = L_GUI_MINIMAP_MINIMAPINVERT end
 	-- Misc Settings
 	if o == "UIConfigMisc" then o = L_GUI_MISC end
 	if o == "UIConfigMiscAFKCamera" then o = L_GUI_MISC_SPIN_CAMERA end
@@ -209,11 +210,13 @@ local function Local(o)
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
 	-- Nameplate Settings
 	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
-	if o == "UIConfigNameplateCastHeight" then o = UNIT_NAMEPLATES_CASTHEIGHT end
-	if o == "UIConfigNameplateEnable" then o = UNIT_NAMEPLATES_ENABLE end
-	if o == "UIConfigNameplateHeight" then o = UNIT_NAMEPLATES_HEIGHT end
 	if o == "UIConfigNameplateAbbreviateLongNames" then o = UNIT_NAMEPLATES_LONGNAMES end
-	if o == "UIConfigNameplateShowRealmName" then o = UNIT_NAMEPLATES_REALM end
+	if o == "UIConfigNameplateCastHeight" then o = UNIT_NAMEPLATES_CASTHEIGHT end
+	if o == "UIConfigNameplateClassColor" then o = UNIT_NAMEPLATES_CLASSCOLOR end
+	if o == "UIConfigNameplateEnable" then o = UNIT_NAMEPLATES_ENABLE end
+	if o == "UIConfigNameplateEnhanceThreat" then o = UNIT_NAMEPLATES_ENHANCETHREAT end
+	if o == "UIConfigNameplateHeight" then o = UNIT_NAMEPLATES_HEIGHT end
+	if o == "UIConfigNameplateRealm" then o = UNIT_NAMEPLATES_REALM end
 	if o == "UIConfigNameplateWidth" then o = UNIT_NAMEPLATES_WIDTH end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end

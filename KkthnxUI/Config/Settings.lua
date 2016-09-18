@@ -153,9 +153,10 @@ C["Loot"] = {
 C["Minimap"] = {
 	["CollectButtons"] = true,
 	["Enable"] = true,
+	["Garrison"] = true,
+	["Invert"] = false,
 	["Ping"] = true,
 	["Size"] = 150,
-	["Invert"] = false,
 }
 -- MISCELLANEOUS OPTIONS
 C["Misc"] = {
@@ -175,12 +176,13 @@ C["Misc"] = {
 	["UseGuildRepair"] = false,
 }
 C["Nameplate"] = {
-	["Enable"] = true,
-	["Width"] = 110,
-	["Height"] = 6,
 	["CastHeight"] = 4,
-	-- ["AbbreviateLongNames"] = true,
-	["ShowRealmName"] = false,
+	["ClassColor"] = false,
+	["Enable"] = true,
+	["EnhanceThreat"] = false,
+	["Height"] = 6,
+	["Realm"] = false,
+	["Width"] = 110,
 }
 -- PULSECD OPTIONS
 C["PulseCD"] = {

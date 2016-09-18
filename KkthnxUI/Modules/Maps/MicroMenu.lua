@@ -17,6 +17,9 @@ MicroMenu.Buttons = {
 
 	{text = SPELLBOOK_ABILITIES_BUTTON,
 		func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
 			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
 		end,
 	notCheckable = true},
@@ -26,11 +29,15 @@ MicroMenu.Buttons = {
 			if not PlayerTalentFrame then
 				TalentFrame_LoadUI()
 			end
-
-			if not PlayerTalentFrame:IsShown() then
+			if K.Level >= SHOW_TALENT_LEVEL then
 				ShowUIPanel(PlayerTalentFrame)
 			else
-			HideUIPanel(PlayerTalentFrame) end
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL), 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+				end
+			end
 		end,
 	notCheckable = true},
 
@@ -48,22 +55,35 @@ MicroMenu.Buttons = {
 
 	{text = MOUNTS,
 		func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
 			ToggleCollectionsJournal(1)
 		end,
 	notCheckable = true},
 
 	{text = PETS,
 		func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
 			ToggleCollectionsJournal(2)
 		end,
 	notCheckable = true},
 
 	{text = TOY_BOX,
-		func = function() ToggleCollectionsJournal(3) end,
+		func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
+		ToggleCollectionsJournal(3) end,
 	notCheckable = true},
 
 	{text = HEIRLOOMS,
 		func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
 			ToggleCollectionsJournal(4)
 		end,
 	notCheckable = true},
@@ -74,9 +94,31 @@ MicroMenu.Buttons = {
 		end,
 	notCheckable = true},
 
-	{text = COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE.." / "..COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVP,
+	{text = PLAYER_V_PLAYER,
 		func = function()
-			PVEFrame_ToggleFrame()
+			if K.Level >= SHOW_PVP_LEVEL then
+				TogglePVPUI()
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL), 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
+				end
+			end
+		end,
+	notCheckable = true},
+
+	{text = COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE,
+		func = function()
+			if K.Level >= SHOW_LFD_LEVEL then
+				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL), 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
+				end
+			end
 		end,
 	notCheckable = true},
 
@@ -122,13 +164,29 @@ MicroMenu.Buttons = {
 
 	{text = ENCOUNTER_JOURNAL,
 		func = function()
-			ToggleEncounterJournal()
+			if C_AdventureJournal.CanBeShown() then
+				ToggleEncounterJournal()
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..FEATURE_NOT_YET_AVAILABLE.."|r")
+				end
+			end
 		end,
 	notCheckable = true},
 
 	{text = ORDER_HALL_LANDING_PAGE_TITLE,
 		func = function()
-			GarrisonLandingPageMinimapButton_OnClick()
+			if K.Level > 89 then
+				GarrisonLandingPageMinimapButton_OnClick()
+			end
+		end,
+	notCheckable = true},
+
+	{text = LOOT_ROLLS,
+		func = function()
+			ToggleFrame(LootHistoryFrame)
 		end,
 	notCheckable = true},
 
@@ -171,9 +229,9 @@ MicroMenu.Buttons = {
 	notCheckable = true},
 }
 
---if(C_StorePublic.IsEnabled()) then
-tinsert(MicroMenu.Buttons, {text = BLIZZARD_STORE, func = function() StoreMicroButton:Click() end, notCheckable = true})
---end
+if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
+	tinsert(MicroMenu.Buttons, {text = BLIZZARD_STORE, func = function() StoreMicroButton:Click() end, notCheckable = true})
+end
 
 Minimap:SetScript("OnMouseUp", function(self, button)
 	local position = MinimapAnchor:GetPoint()
