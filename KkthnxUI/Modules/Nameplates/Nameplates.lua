@@ -37,11 +37,7 @@ function Plates:SetName()
 		local NameHexColor = K.RGBToHex(NameColor[1], NameColor[2], NameColor[3])
 		local Elite = Plates:GetClassification(Unit)
 
-		if Level < 0 then
-			Level = ""
-		else
-			Level = Level
-		end
+		if Level < 0 then Level = " |cffff0000??|r" else Level = Level end
 
 		if (C.Nameplate.ShowRealmName) then
 			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. Text .."|r")
@@ -51,6 +47,7 @@ function Plates:SetName()
 	end
 end
 
+--[[
 function Plates:ColorHealth()
 	if (self:GetName() and string.find(self:GetName(), "NamePlate")) then
 		local r, g, b
@@ -74,6 +71,80 @@ function Plates:ColorHealth()
 		end
 
 		self.healthBar:SetStatusBarColor(r, g, b)
+	end
+end
+--]]
+
+function Plates:ColorHealth()
+	if (self:GetName() and string.find(self:GetName(), "NamePlate")) then
+        local r, g, b = self.healthBar:GetStatusBarColor()
+
+		self.isTapped = false
+
+		if r + b + b == 1.59 then -- tapped
+			r, g, b = .6, .6, .6
+			self.isFriendly = false
+			self.isTapped = true
+		elseif g + b == 0 then
+			r, g, b = .87, .37, .37 -- hostile
+			self.isFriendly = false
+		elseif r + b == 0 then
+			r, g, b = .31, .45, .63 -- player
+			self.isFriendly = true
+		elseif r + g > 1.95 then
+			r, g, b = .85, .77, .36 -- neutral
+			self.isFriendly = false
+		elseif r + g == 0 then
+			r, g, b = .29, .67, .30 -- good
+			self.isFriendly = true
+		else
+			self.isFriendly = false
+		end
+
+		if C.Nameplate.ClassColor then
+			if UnitIsPlayer(self.unit) then
+				local Class = select(2, UnitClass(self.unit))
+				r, g, b = unpack(BETTER_RAID_CLASS_COLORS[Class])
+			end
+		end
+		self.healthBar:SetStatusBarColor(r, g, b)
+    end
+
+	-- (3 = securely tanking, 2 = insecurely tanking, 1 = not tanking but higher threat than tank, 0 = not tanking and lower threat than tank)
+	local isTanking, threatStatus = UnitDetailedThreatSituation("player", self.displayedUnit)
+	if C.Nameplate.EnhanceThreat then
+		if K.Role == "Tank" then
+			if isTanking and threatStatus then
+				if (threatStatus and threatStatus == 3) then
+					self.healthBar.barTexture:SetVertexColor(.29,  .69, .3) -- good
+				elseif (threatStatus and threatStatus == 2) then
+					self.healthBar.barTexture:SetVertexColor(.86, .77, .36) -- transition
+				elseif (threatStatus and threatStatus == 1) then
+					self.healthBar.barTexture:SetVertexColor(.5, 0, .5) -- offtank
+				elseif (threatStatus and threatStatus == 0) then
+					self.healthBar.barTexture:SetVertexColor(.78, .25, .25) -- bad
+				end
+			end
+		else
+			if isTanking and threatStatus then
+				self.healthBar.barTexture:SetVertexColor(.78, .25, .25) -- bad
+				self:GetParent().playerHasAggro = true
+			else
+				if (threatStatus and threatStatus == 3) then
+					self.healthBar.barTexture:SetVertexColor(.78, .25, .25) -- bad
+					self:GetParent().playerHasAggro = true
+				elseif (threatStatus and threatStatus == 2) then
+					self.healthBar.barTexture:SetVertexColor(.86, .77, .36) -- transition
+					self:GetParent().playerHasAggro = true
+				elseif (threatStatus and threatStatus == 1) then
+					self.healthBar.barTexture:SetVertexColor(.5, 0, .5) -- transition
+					self:GetParent().playerHasAggro = false
+				elseif (threatStatus and threatStatus == 0) then
+					self.healthBar.barTexture:SetVertexColor(.29,  .69, .3) -- good
+					self:GetParent().playerHasAggro = false
+				end
+			end
+		end
 	end
 end
 
@@ -161,11 +232,11 @@ function Plates:SetupPlate(options)
 	hooksecurefunc(Name, "Show", Plates.SetName)
 
 	-- WILL DO A BETTER VISUAL FOR THIS LATER
-	--Highlight:Kill()
-	--Shield:Kill()
-	--Aggro:Kill()
-	--Flash:Kill()
-	--Spark:Kill()
+	Highlight:Kill()
+	Shield:Kill()
+	Aggro:Kill()
+	Flash:Kill()
+	Spark:Kill()
 
 	self.IsEdited = true
 end

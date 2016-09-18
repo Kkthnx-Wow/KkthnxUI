@@ -93,9 +93,15 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 
 	C["PulseCD"]["Enable"] = true
 
+	C["Skins"]["Skada"] = true
+
 	C["Unitframe"]["ClassIcon"] = true
 	C["Unitframe"]["EnhancedFrames"] = true
 	C["Unitframe"]["ClassHealth"] = true
 	C["Unitframe"]["SmoothBars"] = true
 	C["Unitframe"]["BetterPowerColors"] = true
+	C["Unitframe"]["CastBarScale"] = 1
+	C["Unitframe"]["Scale"] = 1
+	C["Unitframe"]["FlatClassIcons"] = true
+
 end

@@ -15,7 +15,7 @@ function ObjectiveTracker:Enable()
 	local Frame = ObjectiveTrackerFrame
 	local ScenarioStageBlock = ScenarioStageBlock
 	local Data = SavedPositions
-	local Anchor1, Parent, Anchor2, X, Y = "TOPRIGHT", UIParent, "TOPRIGHT", -K.ScreenHeight / 5, -K.ScreenHeight / 4
+	local Anchor1, Parent, Anchor2, X, Y = "TOPRIGHT", UIParent, "TOPRIGHT", -K.ScreenHeight / 8, -K.ScreenHeight / 4
 
 	self:SetSize(235, 23)
 	self:SetPoint(Anchor1, Parent, Anchor2, X, Y)
