@@ -205,6 +205,7 @@ local function InstallUI()
 	SavedOptionsPerChar = {}
 
 	SavedOptionsPerChar.Install = true
+	SavedOptionsPerChar.FogOfWar = false
 	SavedOptionsPerChar.AutoInvite = false
 	SavedOptionsPerChar.BarsLocked = false
 	SavedOptionsPerChar.SplitBars = true
@@ -286,6 +287,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	-- CREATE AN EMPTY CVAR IF THEY DON'T EXIST
 	if not SavedPositions then SavedPositions = {} end
 	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
+	if SavedOptionsPerChar.FogOfWar == nil then SavedOptionsPerChar.FogOfWar = false end
 	if SavedOptionsPerChar.AutoInvite == nil then SavedOptionsPerChar.AutoInvite = false end
 	if SavedOptionsPerChar.BarsLocked == nil then SavedOptionsPerChar.BarsLocked = false end
 	if SavedOptionsPerChar.SplitBars == nil then SavedOptionsPerChar.SplitBars = true end
