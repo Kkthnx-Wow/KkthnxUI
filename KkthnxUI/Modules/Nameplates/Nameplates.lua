@@ -47,34 +47,6 @@ function Plates:SetName()
 	end
 end
 
---[[
-function Plates:ColorHealth()
-	if (self:GetName() and string.find(self:GetName(), "NamePlate")) then
-		local r, g, b
-
-		if not UnitIsConnected(self.unit) then
-			r, g, b = unpack(BETTER_DISCONNECTED_COLORS)
-		else
-			if UnitIsPlayer(self.unit) then
-				local Class = select(2, UnitClass(self.unit))
-
-				r, g, b = unpack(BETTER_RAID_CLASS_COLORS[Class])
-			else
-				if (UnitIsFriend("player", self.unit)) then
-					r, g, b = unpack(BETTER_REACTION_COLORS[5])
-				else
-					local Reaction = UnitReaction("player", self.unit)
-
-					r, g, b = unpack(BETTER_REACTION_COLORS[Reaction])
-				end
-			end
-		end
-
-		self.healthBar:SetStatusBarColor(r, g, b)
-	end
-end
---]]
-
 function Plates:ColorHealth()
 	if (self:GetName() and string.find(self:GetName(), "NamePlate")) then
         local r, g, b = self.healthBar:GetStatusBarColor()
@@ -241,6 +213,11 @@ function Plates:SetupPlate(options)
 	self.IsEdited = true
 end
 
+function Plates:SetClassNameplateBar(frame)
+	self.ClassBar = frame
+	if frame then frame:SetScale(1.05) end
+end
+
 function Plates:Enable()
 	local Enabled = C.Nameplate.Enable
 
@@ -261,10 +238,14 @@ function Plates:Enable()
 		ClassNameplateManaBarFrame:SetStatusBarTexture(C.Media.Texture)
 		ClassNameplateManaBarFrame.ManaCostPredictionBar:SetTexture(C.Media.Texture)
 		ClassNameplateManaBarFrame:SetBackdrop({bgFile = C.Media.Blank})
-		ClassNameplateManaBarFrame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		ClassNameplateManaBarFrame:SetBackdropColor(.2, .2, .2)
 		ClassNameplateManaBarFrame:CreatePixelShadow()
 	end
 
+	self.ClassBar = NamePlateDriverFrame.nameplateBar
+	if self.ClassBar then self.ClassBar:SetScale(1.05) end
+
+	hooksecurefunc(NamePlateDriverFrame, "SetClassNameplateBar", self.SetClassNameplateBar)
 	hooksecurefunc("DefaultCompactNamePlateFrameSetupInternal", self.SetupPlate)
 	hooksecurefunc("CompactUnitFrame_UpdateHealthColor", self.ColorHealth)
 
@@ -288,6 +269,8 @@ function Plates:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		K.NamePlates:Enable()
 	end
+
+	Plates:UnregisterEvent("PLAYER_LOGIN")
 end
 
 Plates:RegisterEvent("PLAYER_LOGIN")

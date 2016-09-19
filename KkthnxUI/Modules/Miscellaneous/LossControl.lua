@@ -47,6 +47,8 @@ function LossControl:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		LossControl:Enable()
 	end
+
+	LossControl:UnregisterEvent("PLAYER_LOGIN")
 end
 
 LossControl:RegisterEvent("PLAYER_LOGIN")

@@ -318,6 +318,6 @@ end)
 -- HELP TRANSLATE
 if C.General.TranslateMessage == true then
 	if GetLocale() == "esES" or GetLocale() == "koKR" or GetLocale() == "ruRU" or GetLocale() == "esMX" or GetLocale() == "deDE" or GetLocale() == "frFR" or GetLocale() == "koKR" or GetLocale() == "zhCN" or GetLocale() == "zhTW" then
-		print("|cffffe02ePlease help us translate the text settings for |cff2eb6ffKkthnxUI|r. |cffffe02eYou can post a commit to|r |cff2eb6ffgithub.com/Kkthnx/KkthnxUI_Legion|r")
+		print("|cffffe02ePlease help us translate the text settings for |cff71d5ffKkthnxUI|r. |cffffe02eYou can post a commit to|r |cff71d5ffgithub.com/Kkthnx/KkthnxUI_Legion|r")
 	end
 end

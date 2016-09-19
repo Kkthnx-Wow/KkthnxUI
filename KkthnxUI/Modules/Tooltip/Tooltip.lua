@@ -62,10 +62,16 @@ end
 function Tooltip:SetTooltipDefaultAnchor(parent)
 	local Anchor = TooltipAnchor
 
-	if C.Tooltip.Cursor then self:SetAnchorType("ANCHOR_CURSOR", 0, 5) else self:SetOwner(Anchor) self:SetAnchorType("ANCHOR_TOPRIGHT", 0, -36) end
-	if (self:GetOwner() ~= UIParent and InCombatLockdown() and C.Tooltip.HideUF) then
-		self:Hide()
-		return
+	if (C.Tooltip.Cursor) then
+		if (parent ~= UIParent) then
+			self:SetOwner(Anchor)
+			self:SetAnchorType("ANCHOR_TOPRIGHT", 0, -36)
+		else
+			self:SetOwner(parent, "ANCHOR_CURSOR")
+		end
+	else
+		self:SetOwner(Anchor)
+		self:SetAnchorType("ANCHOR_TOPRIGHT", 0, -36)
 	end
 end
 
@@ -102,80 +108,94 @@ function Tooltip:OnTooltipSetUnit()
 	local GetMouseFocus = GetMouseFocus()
 	local Unit = (select(2, self:GetUnit())) or (GetMouseFocus and GetMouseFocus:GetAttribute("unit"))
 
-	if (not Unit) and (UnitExists("mouseover")) then Unit = "mouseover" end
-	if (not Unit) then self:Hide() return end
-	if (self:GetOwner() ~= UIParent and C.Tooltip.HideUF) then
+	if (not Unit) and (UnitExists("mouseover")) then
+		Unit = "mouseover"
+	end
+
+	if (not Unit) then
 		self:Hide()
 		return
 	end
-	if (UnitIsUnit(Unit, "mouseover")) then Unit = "mouseover" end
+
+	if (UnitIsUnit(Unit, "mouseover")) then
+		Unit = "mouseover"
+	end
 
 	local Line1 = GameTooltipTextLeft1
 	local Line2 = GameTooltipTextLeft2
 	local Race = UnitRace(Unit)
 	local Class = UnitClass(Unit)
 	local Level = UnitLevel(Unit)
-	local Guild = GetGuildInfo(Unit)
+	local Guild, GuildRankName, _, GuildRealm = GetGuildInfo(Unit)
 	local Name, Realm = UnitName(Unit)
 	local CreatureType = UnitCreatureType(Unit)
-	local Classification = UnitClassification(Unit)
+	local CreatureClassification = UnitClassification(Unit)
+	local Relationship = UnitRealmRelationship(Unit);
 	local Title = UnitPVPName(Unit)
-	local R, G, B = GetQuestDifficultyColor(Level).r, GetQuestDifficultyColor(Level).g, GetQuestDifficultyColor(Level).b
 	local Color = Tooltip:GetColor(Unit)
+	local R, G, B = GetQuestDifficultyColor(Level).r, GetQuestDifficultyColor(Level).g, GetQuestDifficultyColor(Level).b
 
-	if not Color then Color = "|CFFFFFFFF" end
-	if Title or Name then
-		if Realm then
-			Line1:SetFormattedText("%s%s%s", Color, (Title or Name), Realm and Realm ~= "" and " - ".. Realm .."|r" or "|r")
-		else
-			Line1:SetFormattedText("%s%s%s", Color, (Title or Name), "|r")
-		end
+	if (not Color) then
+		Color = "|CFFFFFFFF"
 	end
 
-	if UnitIsPlayer(Unit) then
-		if (UnitIsAFK(Unit)) then self:AppendText((" %s"):format(CHAT_FLAG_AFK)) elseif UnitIsDND(Unit) then  self:AppendText((" %s"):format(CHAT_FLAG_DND)) end
-
-		local Offset = 2
-		if Guild then
-			local guildName, guildRankName, guildRankIndex = GetGuildInfo(Unit)
-			Line2:SetFormattedText("%s [%s]", IsInGuild() and GetGuildInfo("player") == Guild and "|cff0090ff".. Guild .."|r" or "|cff00ff10".. Guild .."|r", "|cffFFD700"..guildRankName.."|r")
-			Offset = Offset + 1
+	if (UnitIsPlayer(Unit)) then
+		if Title then
+			Name = Title
 		end
 
-		for i = Offset, NumLines do
-			local Line = _G["GameTooltipTextLeft"..i]
-			if Line:GetText():find("^" .. LEVEL) then
-				if Race then
-					Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Race, Color, Class .."|r")
-				else
-					Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Color, Class .."|r")
-				end
-				break
-			end
-		end
-	else
-		for i = 2, NumLines do
-			local Line = _G["GameTooltipTextLeft"..i]
-			if Line:GetText():find("^" .. LEVEL) or (CreatureType and Line:GetText():find("^" .. CreatureType)) then
-				if Level == -1 and Classification == "elite" then Classification = "worldboss" end
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r%s %s", R * 255, G * 255, B * 255, Classification ~= "worldboss" and Level ~= 0 and Level or "", Classification[Classification] or "", CreatureType or "")
-				break
+		if(Realm and Realm ~= "") then
+			if IsShiftKeyDown() then
+				Name = Name.."-"..Realm
+			elseif(Relationship == LE_REALM_RELATION_COALESCED) then
+				Name = Name..FOREIGN_SERVER_LABEL
+			elseif(Relationship == LE_REALM_RELATION_VIRTUAL) then
+				Name = Name..INTERACTIVE_SERVER_LABEL
 			end
 		end
 	end
 
-	for i = 1, NumLines do
+	if Name then
+		Line1:SetFormattedText("%s%s%s", Color, Name, "|r")
+	end
+
+	if (UnitIsAFK(Unit)) then
+		self:AppendText((" %s"):format(CHAT_FLAG_AFK))
+	elseif UnitIsDND(Unit) then
+		self:AppendText((" %s"):format(CHAT_FLAG_DND))
+	end
+
+	local Offset = 2
+	if ((UnitIsPlayer(Unit) and Guild)) then
+		if(GuildRealm and IsShiftKeyDown()) then
+			Guild = Guild.."-"..GuildRealm
+		end
+
+		Line2:SetFormattedText("%s", IsInGuild() and GetGuildInfo("player") == Guild and "|cff0090ff".. Guild .."|r" or "|cff00ff10".. Guild .."|r")
+		Offset = Offset + 1
+	end
+
+	for i = Offset, NumLines do
 		local Line = _G["GameTooltipTextLeft"..i]
-		if Line:GetText() and Text == PVP_ENABLED then
-			_G["GameTooltipTextLeft"..i]:SetText()
+		if (Line:GetText():find("^" .. LEVEL)) then
+			if (UnitIsPlayer(Unit) and Race) then
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Race, Color, Class .."|r")
+			else
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
+			end
+
 			break
 		end
 	end
 
-	if (UnitExists(Unit .. "target") and Unit ~= "player") then
+	if (UnitExists(Unit .. "target")) then
 		local Hex, R, G, B = Tooltip:GetColor(Unit .. "target")
 
-		if (not R) and (not G) and (not B) then R, G, B = 1, 1, 1 end
+		if (not R) and (not G) and (not B) then
+			R, G, B = 1, 1, 1
+		end
+
+		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(UnitName(Unit .. "target"), R, G, B)
 	end
 
@@ -236,27 +256,31 @@ end
 
 function Tooltip:OnUpdate(elapsed)
 	local Owner = self:GetOwner()
-	if not Owner then return end
-	if Owner:IsForbidden() then return end
 
-	local Red, Green, Blue = self:GetBackdropColor()
+	if (not Owner) then
+		return
+	end
+
+	if (Owner:IsForbidden()) then
+		return
+	end
+
 	local Owner = self:GetOwner():GetName()
 	local Anchor = self:GetAnchorType()
 
-	if (Owner == "UIParent" and Anchor == "ANCHOR_CURSOR") and (Red ~= BackdropColor[1] or Green ~= BackdropColor[2] or Blue ~= BackdropColor[3]) then
-		BackdropColor[1] = Red
-		BackdropColor[2] = Green
-		BackdropColor[3] = Blue
+	-- THIS ENSURES THAT DEFAULT ANCHORED WORLD FRAME TIPS HAVE THE PROPER COLOR.
+	if (Owner == "UIParent" and Anchor == "ANCHOR_CURSOR") then
 		self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 	end
 end
 
 function Tooltip:Skin()
-	if not self.IsSkinned then
-		self:SetTemplate("Transparent")
+	if (not self.IsSkinned) then
+		self:SetTemplate()
 		self.IsSkinned = true
 	end
+
 	Tooltip.SetColor(self)
 end
 
@@ -343,6 +367,8 @@ function Tooltip:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		Tooltip:Enable()
 	end
+
+	Tooltip:UnregisterEvent("PLAYER_LOGIN")
 end
 
 Tooltip:RegisterEvent("PLAYER_LOGIN")

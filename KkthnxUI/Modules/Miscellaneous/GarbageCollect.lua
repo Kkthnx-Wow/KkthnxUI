@@ -38,6 +38,8 @@ function Loading:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		CollectGarbage:Enable()
 	end
+	
+	Loading:UnregisterEvent("PLAYER_LOGIN")
 end
 
 Loading:RegisterEvent("PLAYER_LOGIN")

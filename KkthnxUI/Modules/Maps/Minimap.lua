@@ -28,7 +28,6 @@ local HiddenFrames = {
 	"MinimapNorthTag",
 	"MinimapZoneTextButton",
 	"MiniMapTracking",
-	--"GameTimeFrame",
 	"MiniMapWorldMapButton",
 	"VoiceChatTalkers",
 }
@@ -141,22 +140,20 @@ TimeManagerClockTicker:SetShadowOffset(0, -0)
 
 -- GAMETIMEFRAME
 GameTimeFrame:SetParent(Minimap)
+GameTimeFrame:SetScale(0.6)
 GameTimeFrame:ClearAllPoints()
-GameTimeFrame:SetPoint("TOPRIGHT", Minimap, -4, -4)
+GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -2)
 GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
 GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
 GameTimeFrame:SetPushedTexture(nil)
 GameTimeFrame:SetHighlightTexture (nil)
-GameTimeFrame:SetAlpha(0)
--- HOVEROVER.
-GameTimeFrame:SetScript("OnEnter", function() GameTimeFrame:FadeIn() end)
-GameTimeFrame:SetScript("OnLeave", function() GameTimeFrame:FadeOut() end)
+
 local FontString = GameTimeFrame:GetFontString()
 FontString:ClearAllPoints()
-FontString:SetPoint("CENTER", 0, -2)
-FontString:SetFont(C.Media.Font, 14)
-FontString:SetTextColor(0.2, 0.2, 0.1, 0.9)
+FontString:SetPoint("CENTER", 0, -6)
+FontString:SetFont(C.Media.Font, 16)
+FontString:SetTextColor(unpack(C.Media.Backdrop_Color))
 
 -- ENABLE MOUSE SCROLLING
 Minimap:EnableMouseWheel()

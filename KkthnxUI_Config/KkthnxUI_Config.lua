@@ -19,7 +19,7 @@ if (Locale == "enGB") then
 end
 
 Print = function(...)
-	print("|cff2eb6ffKkthnxUI_Config|r:", ...)
+	print("|cff71d5ffKkthnxUI_Config|r:", ...)
 end
 
 local ALLOWED_GROUPS = {
@@ -475,7 +475,7 @@ function CreateUIConfig()
 
 	local TitleBoxVerText = TitleBoxVer:CreateFontString("UIConfigTitleVer", "OVERLAY", "GameFontNormal")
 	TitleBoxVerText:SetPoint("CENTER")
-	TitleBoxVerText:SetText("|cff2eb6ffKkthnxUI|r "..K.Version)
+	TitleBoxVerText:SetText("|cff71d5ffKkthnxUI|r "..K.Version)
 
 	-- Main Frame Title
 	local TitleBox = CreateFrame("Frame", "TitleBox", UIConfigMain)
@@ -860,7 +860,7 @@ do
 	local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 	frame:Hide()
 
-	frame.name = "|cff2eb6ffKkthnxUI|r"
+	frame.name = "|cff71d5ffKkthnxUI|r"
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
 		K, C, L, _ = KkthnxUI:unpack()
@@ -872,7 +872,7 @@ do
 		subtitle:SetWidth(380)
 		subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 		subtitle:SetJustifyH("LEFT")
-		subtitle:SetText("UI Site: |cff2eb6ffhttps://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff2eb6ffhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff2eb6ffhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
+		subtitle:SetText("UI Site: |cff71d5ffhttps://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff71d5ffhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff71d5ffhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
 
 		local title2 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title2:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
@@ -936,7 +936,7 @@ do
 		local button = CreateFrame("BUTTON", "GameMenuKkthnxUIButtonUIConfig", Menu, "GameMenuButtonTemplate")
 		button:SetSize(ContinueX, ContinueY)
 		button:SetPoint("TOP", Interface, "BOTTOM", 0, -1)
-		button:SetText("|cff2eb6ffKkthnxUI|r")
+		button:SetText("|cff71d5ffKkthnxUI|r")
 
 		button:SetScript("OnClick", function(self)
 			local Config = UIConfigMain

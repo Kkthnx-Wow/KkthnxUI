@@ -117,6 +117,8 @@ function Loading:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		Merchant:Enable()
 	end
+
+	Loading:UnregisterEvent("PLAYER_LOGIN")
 end
 
 Loading:RegisterEvent("PLAYER_LOGIN")

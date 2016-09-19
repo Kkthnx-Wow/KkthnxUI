@@ -61,6 +61,8 @@ function DropDown:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
 		DropDown:Enable()
 	end
+
+	DropDown:UnregisterEvent("PLAYER_LOGIN")
 end
 
 DropDown:RegisterEvent("PLAYER_LOGIN")

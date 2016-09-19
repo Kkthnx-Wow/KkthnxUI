@@ -8,12 +8,13 @@ local unpack = unpack
 
 --	Skin addons icons on minimap
 local buttons = {
-	"QueueStatusMinimapButton",
-	"MiniMapTrackingButton",
-	"MiniMapMailFrame",
-	"HelpOpenTicketButton",
+	"GameTimeFrame",
 	"GatherMatePin",
 	"HandyNotesPin",
+	"HelpOpenTicketButton",
+	"MiniMapMailFrame",
+	"MiniMapTrackingButton",
+	"QueueStatusMinimapButton",
 	"TimeManagerClockButton"
 }
 
