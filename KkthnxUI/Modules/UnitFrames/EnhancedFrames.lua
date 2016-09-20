@@ -240,7 +240,7 @@ function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 end
 
 function EnhancedFrames:OnEvent(event)
-	if (event == "PLAYER_ENTERING_WORLD") then
+	if (event == "PLAYER_LOGIN") then
 		if (CombatLock == false) then
 			EnhancedFrames:Setup()
 			startTimer = true
@@ -269,7 +269,7 @@ function EnhancedFrames:OnEvent(event)
 	end
 end
 
-EnhancedFrames:RegisterEvent("PLAYER_ENTERING_WORLD")
+EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
 EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
 EnhancedFrames:RegisterEvent("PLAYER_REGEN_DISABLED")
 EnhancedFrames:RegisterEvent("PLAYER_REGEN_ENABLED")

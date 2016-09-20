@@ -50,13 +50,10 @@ function AutoCollapse:CollapseObjective(event)
 end
 
 function AutoCollapse:OnEvent(event)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		 AutoCollapse:CollapseObjective()
-	end
-
-	AutoCollapse:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	AutoCollapse:CollapseObjective()
 end
 
 AutoCollapse:RegisterEvent("PLAYER_ENTERING_WORLD", "CollapseObjective")
 AutoCollapse:RegisterEvent("PLAYER_UPDATE_RESTING", "CollapseObjective")
+AutoCollapse:RegisterEvent("ZONE_CHANGED_NEW_AREA", "CollapseObjective")
 AutoCollapse:SetScript("OnEvent", AutoCollapse.OnEvent)
