@@ -2,58 +2,11 @@ local K, C, L, _ = select(2, ...):unpack()
 if C.Automation.AutoCollapse ~= true or IsAddOnLoaded("QuestHelper") == true then return end
 
 local AutoCollapse = CreateFrame("Frame")
-
-local watchFrame
-function AutoCollapse:CollapseObjective(event)
-	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED", "CollapseObjective") return end
-
-	if IsResting() then
-		if (not ObjectiveTrackerFrame.collapsed) then
-			ObjectiveTracker_Collapse()
-		end
-	else
-		local instance, instanceType = IsInInstance()
-		if instanceType == "pvp" then
-			if (not ObjectiveTrackerFrame.collapsed) then
-				ObjectiveTrackerFrame.userCollapsed = true
-				ObjectiveTracker_Collapse(watchFrame)
-				ObjectiveTrackerFrame:Show()
-			end
-		elseif instanceType == "arena" then
-			if (not ObjectiveTrackerFrame.collapsed) then
-				ObjectiveTrackerFrame.userCollapsed = true
-				ObjectiveTracker_Collapse(watchFrame)
-				ObjectiveTrackerFrame:Show()
-			end
-		elseif instanceType == "party" then
-			if (not ObjectiveTrackerFrame.collapsed) then
-				ObjectiveTrackerFrame.userCollapsed = true
-				ObjectiveTracker_Collapse(watchFrame)
-				ObjectiveTrackerFrame:Show()
-			end
-		elseif instanceType == "raid" then
-			if (not ObjectiveTrackerFrame.collapsed) then
-				ObjectiveTrackerFrame.userCollapsed = true
-				ObjectiveTracker_Collapse(watchFrame)
-				ObjectiveTrackerFrame:Show()
-			end
-		else
-			if ObjectiveTrackerFrame.collapsed then
-				ObjectiveTrackerFrame.userCollapsed = false
-				ObjectiveTracker_Expand(watchFrame)
-				ObjectiveTrackerFrame:Show()
-			end
-		end
+AutoCollapse:RegisterEvent("PLAYER_ENTERING_WORLD")
+AutoCollapse:SetScript("OnEvent", function(self, event)
+	if IsInInstance() then
+		ObjectiveTracker_Collapse()
+	elseif ObjectiveTrackerFrame.collapsed and not InCombatLockdown() then
+		ObjectiveTracker_Expand()
 	end
-
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-end
-
-function AutoCollapse:OnEvent(event)
-	AutoCollapse:CollapseObjective()
-end
-
-AutoCollapse:RegisterEvent("PLAYER_ENTERING_WORLD", "CollapseObjective")
-AutoCollapse:RegisterEvent("PLAYER_UPDATE_RESTING", "CollapseObjective")
-AutoCollapse:RegisterEvent("ZONE_CHANGED_NEW_AREA", "CollapseObjective")
-AutoCollapse:SetScript("OnEvent", AutoCollapse.OnEvent)
+end)

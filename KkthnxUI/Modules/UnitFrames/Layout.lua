@@ -41,11 +41,6 @@ TargetAnchor:SetSize(146, 28)
 TargetAnchor:SetPoint(unpack(C.Position.UnitFrames.Target))
 Movers:RegisterFrame(TargetAnchor)
 
-local BossAnchor = CreateFrame("Frame", "BossFrameAnchor", UIParent)
-BossAnchor:SetSize(120, 40)
-BossAnchor:SetPoint(unpack(C.Position.UnitFrames.Boss))
-Movers:RegisterFrame(BossAnchor)
-
 function Unitframes:Setup()
 	if C.Unitframe.Enable ~= true then return end
 
@@ -226,18 +221,15 @@ function Unitframes:Setup()
 		_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
 	end
 
-	-- BOSS FRAMES ???
-	for i = 1, MAX_BOSS_FRAMES do
-		--_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
-		_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
-		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
-		_G["Boss"..i.."TargetFrame"]:ClearAllPoints()
-		_G["Boss"..i.."TargetFrame"]:SetPoint("CENTER", BossFrameAnchor, "CENTER", 50, -7)
+	-- Boss Frames
+	for i = 1, MAX_BOSS_FRAMES do -- Scale Them
+		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent);
+		_G["Boss"..i.."TargetFrame"]:SetScale(0.95);
+		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND");
 	end
-	for i = 2, MAX_BOSS_FRAMES do
-		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15)
+	for i = 2, MAX_BOSS_FRAMES do -- Adjust Positions
+		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15);
 	end
-	--]]
 
 	-- COMBOFRAME
 	if K.Class == "ROGUE" or K.Class == "DRUID" then
@@ -246,7 +238,7 @@ function Unitframes:Setup()
 		end
 		-- ARENA FRAMES
 		if (IsAddOnLoaded("Blizzard_ArenaUI")) then
-			for i = 1, 5 do
+			for i = 1, MAX_ARENA_ENEMIES do
 				_G["ArenaPrepFrame"..i]:SetScale(1.4)
 			end
 			ArenaEnemyFrames:SetScale(1.4)
