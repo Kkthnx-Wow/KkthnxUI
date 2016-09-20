@@ -113,7 +113,7 @@ Stat:SetScript("OnEnter", function(self)
 	GameTooltip:SetOwner(self, anchor, xoff, yoff)
 	GameTooltip:ClearLines()
 	local totalMemory = UpdateMemory()
-	GameTooltip:AddDoubleLine(L_TOTALMEMORY_USAGE, formatMem(totalMemory), 46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_TOTALMEMORY_USAGE, formatMem(totalMemory))
 	GameTooltip:AddLine(" ")
 	for i = 1, #memoryTable do
 		if (memoryTable[i][4]) then
@@ -124,16 +124,16 @@ Stat:SetScript("OnEnter", function(self)
 	end
 	GameTooltip:AddLine(" ")
 	if (bandwidth ~= 0) then
-		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, string.format(bandwidthString, bandwidth), 46/255, 182/255, 255/255, .84, .75, .65)
-		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, string.format(percentageString, GetDownloadedPercentage() * 100), 46/255, 182/255, 255/255, .84, .75, .65)
+		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, string.format(bandwidthString, bandwidth))
+		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, string.format(percentageString, GetDownloadedPercentage() * 100))
 		GameTooltip:AddLine(" ")
 	end
-	GameTooltip:AddDoubleLine(L_STATS_HOME, latencyHome.." "..MILLISECONDS_ABBR, 46/255, 182/255, 255/255, .84, .75, .65)
-	GameTooltip:AddDoubleLine(L_STATS_WORLD, latencyWorld.." "..MILLISECONDS_ABBR, 46/255, 182/255, 255/255, .84, .75, .65)
-	GameTooltip:AddDoubleLine(L_STATS_GLOBAL, ms_combined.." "..MILLISECONDS_ABBR, 46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_HOME, latencyHome.." "..MILLISECONDS_ABBR)
+	GameTooltip:AddDoubleLine(L_STATS_WORLD, latencyWorld.." "..MILLISECONDS_ABBR)
+	GameTooltip:AddDoubleLine(L_STATS_GLOBAL, ms_combined.." "..MILLISECONDS_ABBR)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(L_STATS_INC, string.format("%.4f", bw_in) .. " kb/s", 46/255, 182/255, 255/255, .84, .75, .65)
-	GameTooltip:AddDoubleLine(L_STATS_OUT, string.format("%.4f", bw_out) .. " kb/s", 46/255, 182/255, 255/255, .84, .75, .65)
+	GameTooltip:AddDoubleLine(L_STATS_INC, string.format("%.4f", bw_in) .. " kb/s")
+	GameTooltip:AddDoubleLine(L_STATS_OUT, string.format("%.4f", bw_out) .. " kb/s")
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L_STATS_SYSTEMLEFT)

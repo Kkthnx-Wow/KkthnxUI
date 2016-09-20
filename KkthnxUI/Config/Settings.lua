@@ -94,7 +94,7 @@ C["Chat"] = {
 	["TabsOutline"] = false,
 	["TimeColor"] = {113/255, 213/255, 255/255},
 	["WhispSound"] = true,
-	["Width"] = 400,
+	["Width"] = 370,
 }
 -- COOLDOWN OPTIONS
 C["Cooldown"] = {

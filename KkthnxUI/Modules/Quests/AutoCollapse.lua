@@ -1,84 +1,62 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Automation.AutoCollapse ~= true or IsAddOnLoaded("QuestHelper") == true then return end
 
-C["ObjectiveTracker"] = {
-	["Enable"] = true,
-	["City"] = "COLLAPSED",
-	["PvP"] = "HIDDEN",
-	["Arena"] = "HIDDEN",
-	["Party"] = "COLLAPSED",
-	["Raid"] = "COLLAPSED",
-}
-
-
-local CreateFrame = CreateFrame
-local IsInInstance = IsInInstance
-local InCombatLockdown = InCombatLockdown
-
--- AUTO COLLAPSE WatchFrame
 local AutoCollapse = CreateFrame("Frame")
-local Loading = CreateFrame("Frame")
-local WatchFrame
 
-local StateDriver = {
-	["NONE"] = function(frame)
-		ObjectiveTrackerFrame.userCollapsed = false
-		ObjectiveTracker_Expand(WatchFrame)
-		ObjectiveTrackerFrame:Show()
-	end,
-	["COLLAPSED"] = function(frame)
-		ObjectiveTrackerFrame.userCollapsed = true
-		ObjectiveTracker_Collapse(WatchFrame)
-		ObjectiveTrackerFrame:Show()
-	end,
-	["HIDDEN"] = function(frame)
-		ObjectiveTrackerFrame:Hide()
-	end,
-}
-
-function AutoCollapse:ChangeState(event)
-	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED", "ChangeState") return end
+local watchFrame
+function AutoCollapse:CollapseObjective(event)
+	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED", "CollapseObjective") return end
 
 	if IsResting() then
-		StateDriver[C.ObjectiveTracker.City](WatchFrame)
+		if (not ObjectiveTrackerFrame.collapsed) then
+			ObjectiveTracker_Collapse()
+		end
 	else
 		local instance, instanceType = IsInInstance()
 		if instanceType == "pvp" then
-			StateDriver[C.ObjectiveTracker.PVP](WatchFrame)
+			if (not ObjectiveTrackerFrame.collapsed) then
+				ObjectiveTrackerFrame.userCollapsed = true
+				ObjectiveTracker_Collapse(watchFrame)
+				ObjectiveTrackerFrame:Show()
+			end
 		elseif instanceType == "arena" then
-			StateDriver[C.ObjectiveTracker.Arena](WatchFrame)
+			if (not ObjectiveTrackerFrame.collapsed) then
+				ObjectiveTrackerFrame.userCollapsed = true
+				ObjectiveTracker_Collapse(watchFrame)
+				ObjectiveTrackerFrame:Show()
+			end
 		elseif instanceType == "party" then
-			StateDriver[C.ObjectiveTracker.Party](WatchFrame)
+			if (not ObjectiveTrackerFrame.collapsed) then
+				ObjectiveTrackerFrame.userCollapsed = true
+				ObjectiveTracker_Collapse(watchFrame)
+				ObjectiveTrackerFrame:Show()
+			end
 		elseif instanceType == "raid" then
-			StateDriver[C.ObjectiveTracker.Raid](WatchFrame)
+			if (not ObjectiveTrackerFrame.collapsed) then
+				ObjectiveTrackerFrame.userCollapsed = true
+				ObjectiveTracker_Collapse(watchFrame)
+				ObjectiveTrackerFrame:Show()
+			end
 		else
-			StateDriver["NONE"](WatchFrame)
+			if ObjectiveTrackerFrame.collapsed then
+				ObjectiveTrackerFrame.userCollapsed = false
+				ObjectiveTracker_Expand(watchFrame)
+				ObjectiveTrackerFrame:Show()
+			end
 		end
 	end
 
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end
 
-function AutoCollapse:UpdateSettings()
-	if C.ObjectiveTracker.Enable then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ChangeState")
-		self:RegisterEvent("PLAYER_UPDATE_RESTING", "ChangeState")
-	else
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		self:UnregisterEvent("PLAYER_UPDATE_RESTING")
-	end
-end
-
-function AutoCollapse:Initialize()
-	WatchFrame = _G["WatchFrame"]
-	AutoCollapse:UpdateSettings()
-end
-
-function Loading:OnEvent(event)
+function AutoCollapse:OnEvent(event)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		AutoCollapse:Initialize()
+		 AutoCollapse:CollapseObjective()
 	end
+
+	AutoCollapse:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end
 
-Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+AutoCollapse:RegisterEvent("PLAYER_ENTERING_WORLD", "CollapseObjective")
+AutoCollapse:RegisterEvent("PLAYER_UPDATE_RESTING", "CollapseObjective")
+AutoCollapse:SetScript("OnEvent", AutoCollapse.OnEvent)

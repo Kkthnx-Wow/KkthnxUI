@@ -27,8 +27,6 @@ TargetCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.TargetCastBar))
 Movers:RegisterFrame(TargetCastbarAnchor)
 
 function CastBars:Setup()
-	-- I am not unsure if we should use CastingBarFrame.SetPoint = K.Noop
-	CastingBarFrame.ignoreFramePositionManager = true -- ??
 	UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
 
 	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
@@ -37,8 +35,6 @@ function CastBars:Setup()
 	CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
 	CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
 
-	CastingBarFrame.Text:ClearAllPoints()
-	CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
 	CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
 	CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
 	CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
@@ -46,15 +42,23 @@ function CastBars:Setup()
 	CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
 	CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
 
-	-- CASTINGBARFRAME ICON
+	CastingBarFrame.Text:ClearAllPoints()
+	CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
+
+	-- Icon
 	CastingBarFrame.Icon:Show()
 	CastingBarFrame.Icon:ClearAllPoints()
 	CastingBarFrame.Icon:SetPoint("LEFT", CastingBarFrame, "RIGHT", 8, 0)
 	CastingBarFrame.Icon:SetSize(20, 20)
 
-	-- TARGET CASTBAR
-	K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale)
-	TargetFrameSpellBar.SetPoint = K.Noop
+	-- Target
+	Target_Spellbar_AdjustPosition = K.Noop
+	TargetFrameSpellBar:SetParent(UIParent)
+	TargetFrameSpellBar:ClearAllPoints()
+	K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale * 1.3)
+	TargetFrameSpellBar:SetScript("OnShow", nil)
+
+	self:Lag()
 
 	-- CASTBAR TEXT
 	if C.Unitframe.Outline then
@@ -95,6 +99,29 @@ function CastBars:Setup()
 	TargetFrameSpellBar.update = 0.1
 end
 
+function CastBars:Lag()
+	local PlayerTimer, TargetTimer, LagMeter
+	LagMeter = CastingBarFrame:CreateTexture(nil, "BACKGROUND")
+	LagMeter:SetHeight(CastingBarFrame:GetHeight())
+	LagMeter:SetWidth(0)
+	LagMeter:SetPoint("RIGHT", CastingBarFrame, "RIGHT", 0, 0);
+	LagMeter:SetColorTexture(1, 0, 0, 1) --Red Color
+
+	hooksecurefunc(CastingBarFrame, "Show", function()
+		Down, Up, Lag = GetNetStats()
+		local CastingMin, CastingMax = CastingBarFrame:GetMinMaxValues()
+		local LagValue = (Lag / 1000) / (CastingMax - CastingMin)
+
+		if (LagValue < 0) then
+			LagValue = 0
+		elseif (LagValue > 1) then
+			LagValue = 1
+		end
+
+		LagMeter:SetWidth(CastingBarFrame:GetWidth() * LagValue)
+	end)
+end
+
 -- DISPLAYS THE CASTING BAR TIMER
 function CastBars:Timers(elapsed)
 	if not self.timer then return end
@@ -122,17 +149,7 @@ function CastBars:OnEvent(event)
 			startTimer = true
 		end
 	end
-
-	if (event == "PLAYER_REGEN_DISABLED") then
-		CombatLock = true
-	end
-
-	if (event == "PLAYER_REGEN_ENABLED") then
-		CombatLock = false
-	end
 end
 
 CastBars:RegisterEvent("PLAYER_LOGIN")
-CastBars:RegisterEvent("PLAYER_REGEN_DISABLED")
-CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
 CastBars:SetScript("OnEvent", CastBars.OnEvent)

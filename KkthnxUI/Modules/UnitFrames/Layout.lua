@@ -266,7 +266,7 @@ if C.Misc.Armory == true then
 end
 
 function Unitframes:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
+	if (event == "PLAYER_ENTERING_WORLD") then
 		if (CombatLock == false) then
 			Unitframes:Setup()
 			startTimer = true
@@ -295,7 +295,7 @@ function Unitframes:OnEvent(event)
 	end
 end
 
-Unitframes:RegisterEvent("PLAYER_LOGIN")
+Unitframes:RegisterEvent("PLAYER_ENTERING_WORLD")
 Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
 Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
 Unitframes:RegisterEvent("PLAYER_REGEN_DISABLED")
