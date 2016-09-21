@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Unreleased] - [v5.27] - 4:55:10 AM EDT Wednesday, September 21, 2016
 ### Added
 - Add resting to auto collapse?
+- Rewrote nameplates.
+- Added spellid and itemcount to tooltip.
+- General cleanup.
+- Fixed filger mover not registering.
+- Fixed world quest tooltip issue.
 
 ## [v5.26] - 3:22:03 PM EDT Tuesday, September 20, 2016
 ### Added
