@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - General cleanup.
 - Fixed filger mover not registering.
 - Fixed world quest tooltip issue.
+- New Nameplates debuff updated for DemonHunters
+- Chat spam list updated.
+- Adjusted spacing between castbar and health for nameplates.
 
 ## [v5.26] - 3:22:03 PM EDT Tuesday, September 20, 2016
 ### Added
