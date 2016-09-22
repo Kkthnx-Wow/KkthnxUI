@@ -90,7 +90,7 @@ L_GUI_COMBATTEXT_TRESHOLD = "Minimum damage to show in damage frame"
 -- ExpRep Localization
 L_GUI_EXPERIENCE = "XPRep & Artifact"
 L_GUI_EXPERIENCE_ARTIFACT = "Enable the Artifact bar."
-L_GUI_EXPERIENCE_ARTIFACTHEIGHT = "Change the width of the Artifact bar"
+L_GUI_EXPERIENCE_ARTIFACTHEIGHT = "Change the height of the Artifact bar"
 L_GUI_EXPERIENCE_ARTIFACTWIDTH = "Change the width of the Artifact bar"
 L_GUI_EXPERIENCE_XP = "Enable the Experience bar."
 L_GUI_EXPERIENCE_XPCLASSCOLOR = "Change the Experience bar color to classcolor"

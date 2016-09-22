@@ -107,7 +107,7 @@ function CastBars:Lag()
 	LagMeter = CastingBarFrame:CreateTexture(nil, "BACKGROUND")
 	LagMeter:SetHeight(CastingBarFrame:GetHeight())
 	LagMeter:SetWidth(0)
-	LagMeter:SetPoint("RIGHT", CastingBarFrame, "RIGHT", 0, 0);
+	LagMeter:SetPoint("RIGHT", CastingBarFrame, "RIGHT", 0, 0)
 	LagMeter:SetColorTexture(1, 0, 0, 1) --Red Color
 
 	hooksecurefunc(CastingBarFrame, "Show", function()
