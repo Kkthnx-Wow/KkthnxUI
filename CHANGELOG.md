@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed world quest tooltip issue.
 - General cleanup.
 - General combat checks for frames and castbars?
+- Install image complete added.
+- Localization updated.
 - Locals updated.
 - Media.lua updated
 - New Nameplates debuff updated for DemonHunters

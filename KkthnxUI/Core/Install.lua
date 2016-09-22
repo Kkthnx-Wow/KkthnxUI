@@ -212,6 +212,8 @@ local function InstallUI()
 	SavedOptionsPerChar.RightBars = C.ActionBar.RightBars
 	SavedOptionsPerChar.BottomBars = C.ActionBar.BottomBars
 
+	InstallStepComplete.message = L_INSTALL_COMPLETE
+	InstallStepComplete:Show()
 	StaticPopup_Show("RELOAD_UI")
 end
 
@@ -314,6 +316,52 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		print("|cffffe02e"..L_WELCOME_LINE_2_3.."|cffffe02e"..L_WELCOME_LINE_2_4.."|r")
 	end
 end)
+
+if not InstallStepComplete then
+	local imsg = CreateFrame("Frame", "InstallStepComplete", K.UIParent)
+	imsg:SetSize(418, 72)
+	imsg:SetPoint("TOP", 0, -120)
+	imsg:Hide()
+	imsg:SetScript('OnShow', function(self)
+		if self.message then
+			PlaySoundFile([[Sound\Interface\LevelUp.wav]])
+			self.text:SetText(self.message)
+			UIFrameFadeOut(self, 3.5, 1, 0)
+			K.Delay(4, function() self:Hide() end)
+			self.message = nil
+		else
+			self:Hide()
+		end
+	end)
+
+	imsg.firstShow = false
+
+	imsg.bg = imsg:CreateTexture(nil, 'BACKGROUND')
+	imsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	imsg.bg:SetPoint('BOTTOM')
+	imsg.bg:SetSize(326, 103)
+	imsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+	imsg.bg:SetVertexColor(1, 1, 1, 0.6)
+
+	imsg.lineTop = imsg:CreateTexture(nil, 'BACKGROUND')
+	imsg.lineTop:SetDrawLayer('BACKGROUND', 2)
+	imsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	imsg.lineTop:SetPoint("TOP")
+	imsg.lineTop:SetSize(418, 7)
+	imsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	imsg.lineBottom = imsg:CreateTexture(nil, 'BACKGROUND')
+	imsg.lineBottom:SetDrawLayer('BACKGROUND', 2)
+	imsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	imsg.lineBottom:SetPoint("BOTTOM")
+	imsg.lineBottom:SetSize(418, 7)
+	imsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	imsg.text = imsg:CreateFontString(nil, 'ARTWORK', 'GameFont_Gigantic')
+	imsg.text:SetPoint("BOTTOM", 0, 12)
+	imsg.text:SetTextColor(1, 0.82, 0)
+	imsg.text:SetJustifyH("CENTER")
+end
 
 -- HELP TRANSLATE
 if C.General.TranslateMessage == true then
