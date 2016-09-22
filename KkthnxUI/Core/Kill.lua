@@ -106,7 +106,7 @@ frame:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	if C.Nameplate.Enable then
-		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
+		SetCVar("ShowClassColorInNameplate", 1)
 	end
 
 	if C.ActionBar.Enable then

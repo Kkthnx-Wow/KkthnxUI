@@ -9,6 +9,12 @@ local ToggleDropDownMenu = ToggleDropDownMenu
 local MicroMenu = CreateFrame("Frame", "MicroButtonsDropDown", UIParent, "UIDropDownMenuTemplate")
 
 MicroMenu.Buttons = {
+	{text = ACHIEVEMENT_BUTTON,
+		func = function()
+			ToggleAchievementFrame()
+		end,
+	notCheckable = true},
+
 	{text = CHARACTER_BUTTON,
 		func = function()
 			ToggleCharacter("PaperDollFrame")
@@ -38,12 +44,6 @@ MicroMenu.Buttons = {
 					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 				end
 			end
-		end,
-	notCheckable = true},
-
-	{text = ACHIEVEMENT_BUTTON,
-		func = function()
-			ToggleAchievementFrame()
 		end,
 	notCheckable = true},
 

@@ -29,22 +29,23 @@ local ALLOWED_GROUPS = {
 	["Automation"] = 4,
 	["Bag"] = 5,
 	["Blizzard"] = 6,
-	["Experience"] = 7,
-	["Aura"] = 8,
-	["Chat"] = 9,
-	["Stats"] = 10,
-	["Cooldown"] = 11,
-	["Error"] = 12,
-	["Filger"] = 13,
-	["Loot"] = 14,
-	["Minimap"] = 15,
-	["Misc"] = 16,
-	["Nameplate"] = 17,
-	["PulseCD"] = 18,
-	["Skins"] = 19,
-	["Tooltip"] = 20,
-	["Unitframe"] = 21,
-	["WorldMap"] = 22,
+	["CombatText"] = 7,
+	["Experience"] = 8,
+	["Aura"] = 9,
+	["Chat"] = 10,
+	["Stats"] = 11,
+	["Cooldown"] = 12,
+	["Error"] = 13,
+	["Filger"] = 14,
+	["Loot"] = 15,
+	["Minimap"] = 16,
+	["Misc"] = 17,
+	["Nameplate"] = 18,
+	["PulseCD"] = 19,
+	["Skins"] = 20,
+	["Tooltip"] = 21,
+	["Unitframe"] = 22,
+	["WorldMap"] = 23,
 }
 
 local function Local(o)
@@ -107,6 +108,35 @@ local function Local(o)
 	if o == "UIConfigBlizzardDurability" then o = L_GUI_BLIZZARD_DURABILITY end
 	if o == "UIConfigBlizzardMoveAchievements" then o = L_GUI_BLIZZARD_ACHIEVEMENTS end
 	if o == "UIConfigBlizzardReputations" then o = L_GUI_BLIZZARD_REPUTATIONS end
+	-- CombatText Settings
+	if o == "UIConfigCombatText" then o = L_GUI_COMBATTEXT end
+	if o == "UIConfigCombatTextBlizzardHeadNumbers" then o = L_GUI_COMBATTEXT_BLIZZ_HEAD_NUMBERS end
+	if o == "UIConfigCombatTextCritPostfix" then o = L_GUI_COMBATTEXT_CRIT_POSTFIX end
+	if o == "UIConfigCombatTextCritPrefix" then o = L_GUI_COMBATTEXT_CRIT_PREFIX end
+	if o == "UIConfigCombatTextDamage" then o = L_GUI_COMBATTEXT_DAMAGE end
+	if o == "UIConfigCombatTextDamageColor" then o = L_GUI_COMBATTEXT_DAMAGE_COLOR end
+	if o == "UIConfigCombatTextDamageStyle" then o = L_GUI_COMBATTEXT_DAMAGE_STYLE end
+	if o == "UIConfigCombatTextDeathKnightRunes" then o = L_GUI_COMBATTEXT_DK_RUNES end
+	if o == "UIConfigCombatTextDirection" then o = L_GUI_COMBATTEXT_DIRECTION end
+	if o == "UIConfigCombatTextDispel" then o = L_GUI_COMBATTEXT_DISPEL end
+	if o == "UIConfigCombatTextDotDamage" then o = L_GUI_COMBATTEXT_DOT_DAMAGE end
+	if o == "UIConfigCombatTextEnable" then o = L_GUI_COMBATTEXT_ENABLE end
+	if o == "UIConfigCombatTextHealTreshold" then o = L_GUI_COMBATTEXT_HEAL_TRESHOLD end
+	if o == "UIConfigCombatTextHealing" then o = L_GUI_COMBATTEXT_HEALING end
+	if o == "UIConfigCombatTextIconSize" then o = L_GUI_COMBATTEXT_ICON_SIZE end
+	if o == "UIConfigCombatTextIcons" then o = L_GUI_COMBATTEXT_ICONS end
+	if o == "UIConfigCombatTextInterrupt" then o = L_GUI_COMBATTEXT_INTERRUPT end
+	if o == "UIConfigCombatTextKillingBlow" then o = L_GUI_COMBATTEXT_KILLINGBLOW end
+	if o == "UIConfigCombatTextMaxLines" then o = L_GUI_COMBATTEXT_MAX_LINES end
+	if o == "UIConfigCombatTextMergeAoeSpam" then o = L_GUI_COMBATTEXT_MERGE_AOE_SPAM end
+	if o == "UIConfigCombatTextMergeMelee" then o = L_GUI_COMBATTEXT_MERGE_MELEE end
+	if o == "UIConfigCombatTextPetDamage" then o = L_GUI_COMBATTEXT_PET_DAMAGE end
+	if o == "UIConfigCombatTextScrollable" then o = L_GUI_COMBATTEXT_SCROLLABLE end
+	if o == "UIConfigCombatTextShortNumbers" then o = L_GUI_COMBATTEXT_SHORT_NUMBERS end
+	if o == "UIConfigCombatTextShowHots" then o = L_GUI_COMBATTEXT_HOTS end
+	if o == "UIConfigCombatTextShowOverHealing" then o = L_GUI_COMBATTEXT_OVERHEALING end
+	if o == "UIConfigCombatTextTimeVisible" then o = L_GUI_COMBATTEXT_TIME_VISIBLE end
+	if o == "UIConfigCombatTextTreshold" then o = L_GUI_COMBATTEXT_TRESHOLD end
 	-- ExpRep Settings
 	if o == "UIConfigExperience" then o = L_GUI_EXPERIENCE end
 	if o == "UIConfigExperienceArtifact" then o = L_GUI_EXPERIENCE_ARTIFACT end
@@ -211,14 +241,24 @@ local function Local(o)
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
 	-- Nameplate Settings
 	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
-	if o == "UIConfigNameplateAbbreviateLongNames" then o = UNIT_NAMEPLATES_LONGNAMES end
-	if o == "UIConfigNameplateCastHeight" then o = UNIT_NAMEPLATES_CASTHEIGHT end
-	if o == "UIConfigNameplateClassColor" then o = UNIT_NAMEPLATES_CLASSCOLOR end
-	if o == "UIConfigNameplateEnable" then o = UNIT_NAMEPLATES_ENABLE end
-	if o == "UIConfigNameplateEnhanceThreat" then o = UNIT_NAMEPLATES_ENHANCETHREAT end
-	if o == "UIConfigNameplateHeight" then o = UNIT_NAMEPLATES_HEIGHT end
-	if o == "UIConfigNameplateRealm" then o = UNIT_NAMEPLATES_REALM end
-	if o == "UIConfigNameplateWidth" then o = UNIT_NAMEPLATES_WIDTH end
+	if o == "UIConfigNameplateAdditionalHeight" then o = L_GUI_NAMEPLATE_AD_HEIGHT end
+	if o == "UIConfigNameplateAdditionalWidth" then o = L_GUI_NAMEPLATE_AD_WIDTH end
+	if o == "UIConfigNameplateAurasSize" then o = L_GUI_NAMEPLATE_DEBUFFS_SIZE end
+	if o == "UIConfigNameplateBadColor" then o = L_GUI_NAMEPLATE_BAD_COLOR end
+	if o == "UIConfigNameplateCastbarName" then o = L_GUI_NAMEPLATE_CASTBAR_NAME end
+	if o == "UIConfigNameplateClassIcons" then o = L_GUI_NAMEPLATE_CLASS_ICON end
+	if o == "UIConfigNameplateCombat" then o = L_GUI_NAMEPLATE_COMBAT end
+	if o == "UIConfigNameplateEnable" then o = L_GUI_NAMEPLATE_ENABLE end
+	if o == "UIConfigNameplateEnhancedThreat" then o = L_GUI_NAMEPLATE_THREAT end
+	if o == "UIConfigNameplateGoodColor" then o = L_GUI_NAMEPLATE_GOOD_COLOR end
+	if o == "UIConfigNameplateHealerIcon" then o = L_GUI_NAMEPLATE_HEALER_ICON end
+	if o == "UIConfigNameplateHealthValue" then o = L_GUI_NAMEPLATE_HEALTH end
+	if o == "UIConfigNameplateHeight" then o = L_GUI_NAMEPLATE_HEIGHT end
+	if o == "UIConfigNameplateNameAbbreviate" then o = L_GUI_NAMEPLATE_NAME_ABBREV end
+	if o == "UIConfigNameplateNearColor" then o = L_GUI_NAMEPLATE_NEAR_COLOR end
+	if o == "UIConfigNameplateShowCastbar" then o = L_GUI_NAMEPLATE_CASTBAR end
+	if o == "UIConfigNameplateTrackAuras" then o = L_GUI_NAMEPLATE_SHOW_DEBUFFS end
+	if o == "UIConfigNameplateWidth" then o = L_GUI_NAMEPLATE_WIDTH end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end
@@ -245,9 +285,11 @@ local function Local(o)
 	if o == "UIConfigTooltipEnable" then o = L_GUI_TOOLTIP_ENABLE end
 	if o == "UIConfigTooltipHealthValue" then o = L_GUI_TOOLTIP_HEALTH end
 	if o == "UIConfigTooltipInstanceLock" then o = L_GUI_TOOLTIP_INSTANCE_LOCK end
+	if o == "UIConfigTooltipItemCount" then o = L_GUI_TOOLTIP_ITEM_COUNT end
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
 	if o == "UIConfigTooltipItemLevel" then o = L_GUI_TOOLTIP_ITEMLEVEL end
 	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_TALENTS end
+	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeAuraOffsetY" then o = L_GUI_UNITFRAME_AURA_OFFSETY end

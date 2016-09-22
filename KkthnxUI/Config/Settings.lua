@@ -96,6 +96,36 @@ C["Chat"] = {
 	["WhispSound"] = true,
 	["Width"] = 370,
 }
+-- COMBATTEXT OPTIONS
+C["CombatText"] = {
+	["Enable"] = true,
+	["BlizzardHeadNumbers"] = false,
+	["DamageStyle"] = true,
+	["Damage"] = true,
+	["Healing"] = true,
+	["ShowHots"] = true,
+	["ShowOverHealing"] = true,
+	["PetDamage"] = true,
+	["DotDamage"] = true,
+	["DamageColor"] = true,
+	["CritPrefix"] = "*",
+	["CritPostfix"] = "*",
+	["Icons"] = true,
+	["IconSize"] = 16,
+	["Treshold"] = 1,
+	["HealTreshold"] = 1,
+	["Scrollable"] = false,
+	["MaxLines"] = 15,
+	["TimeVisible"] = 3,
+	["DeathKnightRunes"] = true,
+	["KillingBlow"] = false,
+	["MergeAoeSpam"] = true,
+	["MergeMelee"] = true,
+	["Dispel"] = true,
+	["Interrupt"] = true,
+	["Direction"] = "bottom",
+	["ShortNumbers"] = true,
+}
 -- COOLDOWN OPTIONS
 C["Cooldown"] = {
 	["Enable"] = true,
@@ -177,13 +207,23 @@ C["Misc"] = {
 	["UseGuildRepair"] = false,
 }
 C["Nameplate"] = {
-	["CastHeight"] = 4,
-	["ClassColor"] = false,
 	["Enable"] = true,
-	["EnhanceThreat"] = false,
-	["Height"] = 6,
-	["Realm"] = false,
-	["Width"] = 110,
+	["Height"] = 9,
+	["Width"] = 120,
+	["AdditionalHeight"] = 0,
+	["AdditionalWidth"] = 0,
+	["Combat"] = false,
+	["HealthValue"] = true,
+	["CastbarName"] = false,
+	["EnhancedThreat"] = true,
+	["ClassIcons"] = false,
+	["NameAbbreviate"] = false,
+	["GoodColor"] = {0.2, 0.8, 0.2},
+	["NearColor"] = {1, 1, 0},
+	["BadColor"] = {1, 0, 0},
+	["TrackAuras"] = false,
+	["AurasSize"] = 18,
+	["HealerIcon"] = false,
 }
 -- PULSECD OPTIONS
 C["PulseCD"] = {
@@ -213,9 +253,11 @@ C["Tooltip"] = {
 	["Enable"] = true,
 	["HealthValue"] = true,
 	["InstanceLock"] = false,
+	["ItemCount"] = false,
 	["ItemIcon"] = false,
-	["ShowSpec"] = true,
 	["ItemLevel"] = true,
+	["ShowSpec"] = true,
+	["SpellID"] = false,
 }
 -- UNITFRAME OPTIONS
 C["Unitframe"] = {

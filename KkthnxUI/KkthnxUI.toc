@@ -4,7 +4,7 @@
 ## Author: Shestak, Josh "Kkthnx" Russell
 ## Version: 5.26
 ## DefaultState: Enabled
-## OptionalDeps: KkthnxUI_Config, !Beautycase, Blizzard_DebugTools, CLCRet, DBM-Core, Recount, Skada, Spy, WeakAuras
+## OptionalDeps: Blizzard_CombatText, KkthnxUI_Config, !Beautycase, Blizzard_DebugTools, CLCRet, DBM-Core, Recount, Skada, Spy, WeakAuras
 ## SavedVariablesPerCharacter: SavedOptionsPerChar, SavedPositions
 ## eMail: Kkthnxbye@live.com
 ## Website: https://github.com/Kkthnx

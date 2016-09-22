@@ -1,8 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or IsAddOnLoaded("Quartz") then return end
 
-local CombatLock = false
-
 -- LUA API
 local unpack = unpack
 local format = string.format
@@ -29,21 +27,23 @@ Movers:RegisterFrame(TargetCastbarAnchor)
 function CastBars:Setup()
 	UIPARENT_MANAGED_FRAME_POSITIONS["CastingBarFrame"] = nil
 
-	K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
+	if not InCombatLockdown() then
+		K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
-	-- STYLE CASTINGBARFRAME
-	CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
-	CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
+		-- STYLE CASTINGBARFRAME
+		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
+		CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
 
-	CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
-	CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
-	CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
-	CastingBarFrame.Border:SetPoint("TOP", 0, 26)
-	CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
-	CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
+		CastingBarFrame.Border:SetWidth(CastingBarFrame.Border:GetWidth() + 4)
+		CastingBarFrame.Flash:SetWidth(CastingBarFrame.Flash:GetWidth() + 4)
+		CastingBarFrame.BorderShield:SetWidth(CastingBarFrame.BorderShield:GetWidth() + 4)
+		CastingBarFrame.Border:SetPoint("TOP", 0, 26)
+		CastingBarFrame.Flash:SetPoint("TOP", 0, 26)
+		CastingBarFrame.BorderShield:SetPoint("TOP", 0, 26)
 
-	CastingBarFrame.Text:ClearAllPoints()
-	CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
+		CastingBarFrame.Text:ClearAllPoints()
+		CastingBarFrame.Text:SetPoint("CENTER", 0, 1)
+	end
 
 	-- Icon
 	CastingBarFrame.Icon:Show()
@@ -52,12 +52,15 @@ function CastBars:Setup()
 	CastingBarFrame.Icon:SetSize(20, 20)
 
 	-- Target
-	Target_Spellbar_AdjustPosition = K.Noop
-	TargetFrameSpellBar:SetParent(UIParent)
-	TargetFrameSpellBar:ClearAllPoints()
-	K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale * 1.3)
-	TargetFrameSpellBar:SetScript("OnShow", nil)
+	if not InCombatLockdown() then
+		Target_Spellbar_AdjustPosition = K.Noop
+		TargetFrameSpellBar:SetParent(UIParent)
+		TargetFrameSpellBar:ClearAllPoints()
+		K.ModifyBasicFrame(TargetFrameSpellBar, "CENTER", TargetCastbarAnchor, 0, 0, C.Unitframe.CastBarScale * 1.3)
+		TargetFrameSpellBar:SetScript("OnShow", nil)
+	end
 
+	-- Set out lag bar.
 	self:Lag()
 
 	-- CASTBAR TEXT
@@ -144,10 +147,7 @@ TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
 function CastBars:OnEvent(event)
 	if (event == "PLAYER_LOGIN") then
-		if (CombatLock == false) then
-			CastBars:Setup()
-			startTimer = true
-		end
+		CastBars:Setup()
 	end
 end
 

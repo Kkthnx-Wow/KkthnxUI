@@ -1,277 +1,1832 @@
 local K, C, L, _ = select(2, ...):unpack()
+if C.Nameplate.Enable ~= true then return end
 
-local _G = _G
-local unpack = unpack
+-- Based on rNamePlates(by zork, editor Tukz)
 local Plates = CreateFrame("Frame", nil, WorldFrame)
-local Noop = function() end
+local goodR, goodG, goodB = unpack(C.Nameplate.GoodColor)
+local badR, badG, badB = unpack(C.Nameplate.BadColor)
+local transitionR, transitionG, transitionB = unpack(C.Nameplate.NearColor)
 
-function Plates:GetClassification(unit)
-	local CreatureClassification = UnitClassification(unit)
-	local String = ""
-
-	if CreatureClassification == "elite" then
-		String = "E"
-	elseif CreatureClassification == "rare" then
-		String = "R"
-	elseif CreatureClassification == "rareelite" then
-		String = "R+"
-	elseif CreatureClassification == "worldboss" then
-		String = "B"
-	end
-
-	return String
+local NamePlates = CreateFrame("Frame", nil, UIParent)
+NamePlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+if C.Nameplate.TrackAuras == true then
+	NamePlates:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end
 
-function Plates:SetName()
-	local Text = self:GetText()
-	local NewName = GetUnitName(self:GetParent().unit, C.Nameplate.Realm) or UNKNOWN
+local healList, exClass = {}, {}
+local testing = false
 
-	if Text then
-		local Unit = self:GetParent().unit
-		local Class = select(2, UnitClass(Unit))
-		local Level = UnitLevel(Unit)
-		local LevelColor = GetQuestDifficultyColor(Level)
-		local LevelHexColor = K.RGBToHex(LevelColor.r, LevelColor.g, LevelColor.b)
-		local IsFriend = UnitIsFriend("player", Unit)
-		local NameColor = IsFriend and BETTER_REACTION_COLORS[5] or BETTER_REACTION_COLORS[1]
-		local NameHexColor = K.RGBToHex(NameColor[1], NameColor[2], NameColor[3])
-		local Elite = Plates:GetClassification(Unit)
+exClass.DEATHKNIGHT = true
+exClass.MAGE = true
+exClass.ROGUE = true
+exClass.WARLOCK = true
+exClass.WARRIOR = true
+if C.Nameplate.HealerIcon == true then
+	local t = CreateFrame("Frame")
+	t.factions = {
+		["Horde"] = 1,
+		["Alliance"] = 0,
+	}
+	t.healers = {
+		[L_PLANNER_DRUID_4] = true,
+		[L_PLANNER_MONK_2] = true,
+		[L_PLANNER_PALADIN_1] = true,
+		[L_PLANNER_PRIEST_1] = true,
+	}
 
-		if Level < 0 then Level = " |cffff0000??|r" else Level = Level end
-
-		if (C.Nameplate.Realm) then
-			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. Text .."|r")
-		else
-			self:SetText("|cffff0000".. Elite .."|r" .. LevelHexColor .. Level .."|r "..NameHexColor.. NewName .."|r")
-		end
-	end
-end
-
-function Plates:ColorHealth()
-	if (self:GetName() and string.find(self:GetName(), "NamePlate")) then
-        local r, g, b = self.healthBar:GetStatusBarColor()
-
-		self.isTapped = false
-
-		if r + b + b == 1.59 then -- tapped
-			r, g, b = .6, .6, .6
-			self.isFriendly = false
-			self.isTapped = true
-		elseif g + b == 0 then
-			r, g, b = .87, .37, .37 -- hostile
-			self.isFriendly = false
-		elseif r + b == 0 then
-			r, g, b = .31, .45, .63 -- player
-			self.isFriendly = true
-		elseif r + g > 1.95 then
-			r, g, b = .85, .77, .36 -- neutral
-			self.isFriendly = false
-		elseif r + g == 0 then
-			r, g, b = .29, .67, .30 -- good
-			self.isFriendly = true
-		else
-			self.isFriendly = false
-		end
-
-		if C.Nameplate.ClassColor then
-			if UnitIsPlayer(self.unit) then
-				local Class = select(2, UnitClass(self.unit))
-				r, g, b = unpack(BETTER_RAID_CLASS_COLORS[Class])
-			end
-		end
-		self.healthBar:SetStatusBarColor(r, g, b)
-    end
-
-	-- (3 = securely tanking, 2 = insecurely tanking, 1 = not tanking but higher threat than tank, 0 = not tanking and lower threat than tank)
-	local isTanking, threatStatus = UnitDetailedThreatSituation("player", self.displayedUnit)
-	if C.Nameplate.EnhanceThreat then
-		if K.Role == "Tank" then
-			if isTanking and threatStatus then
-				if (threatStatus and threatStatus == 3) then
-					self.healthBar.barTexture:SetVertexColor(.29,  .69, .3) -- good
-				elseif (threatStatus and threatStatus == 2) then
-					self.healthBar.barTexture:SetVertexColor(.86, .77, .36) -- transition
-				elseif (threatStatus and threatStatus == 1) then
-					self.healthBar.barTexture:SetVertexColor(.5, 0, .5) -- offtank
-				elseif (threatStatus and threatStatus == 0) then
-					self.healthBar.barTexture:SetVertexColor(.78, .25, .25) -- bad
+	local lastCheck = 20
+	local function CheckHealers(self, elapsed)
+		lastCheck = lastCheck + elapsed
+		if lastCheck > 25 then
+			lastCheck = 0
+			healList = {}
+			for i = 1, GetNumBattlefieldScores() do
+				local name, _, _, _, _, faction, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
+				name = name:match("(.+)%-.+") or name
+				if name and t.healers[talentSpec] and t.factions[UnitFactionGroup("player")] == faction then
+					healList[name] = talentSpec
 				end
 			end
-		else
-			if isTanking and threatStatus then
-				self.healthBar.barTexture:SetVertexColor(.78, .25, .25) -- bad
-				self:GetParent().playerHasAggro = true
+		end
+	end
+
+	local function CheckArenaHealers(self, elapsed)
+		lastCheck = lastCheck + elapsed
+		if lastCheck > 25 then
+			lastCheck = 0
+			healList = {}
+			for i = 1, 5 do
+				local specID = GetArenaOpponentSpec(i)
+				if specID and specID > 0 then
+					local name = UnitName(format("arena%d", i))
+					local _, talentSpec = GetSpecializationInfoByID(specID)
+					if name and t.healers[talentSpec] then
+						healList[name] = talentSpec
+					end
+				end
+			end
+		end
+	end
+
+	local function CheckLoc(self, event)
+		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_ENTERING_BATTLEGROUND" then
+			local _, instanceType = IsInInstance()
+			if instanceType == "pvp" then
+				t:SetScript("OnUpdate", CheckHealers)
+			elseif instanceType == "arena" then
+				t:SetScript("OnUpdate", CheckArenaHealers)
 			else
-				if (threatStatus and threatStatus == 3) then
-					self.healthBar.barTexture:SetVertexColor(.78, .25, .25) -- bad
-					self:GetParent().playerHasAggro = true
-				elseif (threatStatus and threatStatus == 2) then
-					self.healthBar.barTexture:SetVertexColor(.86, .77, .36) -- transition
-					self:GetParent().playerHasAggro = true
-				elseif (threatStatus and threatStatus == 1) then
-					self.healthBar.barTexture:SetVertexColor(.5, 0, .5) -- transition
-					self:GetParent().playerHasAggro = false
-				elseif (threatStatus and threatStatus == 0) then
-					self.healthBar.barTexture:SetVertexColor(.29,  .69, .3) -- good
-					self:GetParent().playerHasAggro = false
+				healList = {}
+				t:SetScript("OnUpdate", nil)
+			end
+		end
+	end
+
+	t:RegisterEvent("PLAYER_ENTERING_WORLD")
+	t:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
+	t:SetScript("OnEvent", CheckLoc)
+end
+
+local function Abbrev(name)
+	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	return K.ShortenString(newname, 18, false)
+end
+
+local function CreateVirtualFrame(frame, point)
+	if point == nil then point = frame end
+
+	if point.backdrop then return end
+	frame.backdrop = CreateFrame("Frame", nil , frame)
+	frame.backdrop:SetAllPoints()
+	frame.backdrop:SetBackdrop({
+		bgFile = C.Media.Blank,
+		edgeFile = C.Media.Glow,
+		edgeSize = 3 * K.NoScaleMult,
+		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
+	})
+	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
+	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
+	frame.backdrop:SetBackdropColor(.05, .05, .05, .9)
+	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
+
+	if frame:GetFrameLevel() - 1 > 0 then
+		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
+	else
+		frame.backdrop:SetFrameLevel(0)
+	end
+end
+
+local function SetVirtualBorder(frame, r, g, b)
+	frame.backdrop:SetBackdropBorderColor(r, g, b)
+end
+
+function Plates:CreateAuraIcon(self)
+	local button = CreateFrame("Frame", nil, self.Health)
+	button:SetSize(C.Nameplate.AurasSize, C.Nameplate.AurasSize * 16/25)
+
+	button.shadow = CreateFrame("Frame", nil, button)
+	button.shadow:SetFrameLevel(0)
+	button.shadow:SetBackdrop({
+		bgFile = C.Media.Blank,
+		edgeFile = C.Media.Glow,
+		edgeSize = 3 * K.NoScaleMult,
+		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
+	})
+	button.shadow:SetPoint("TOPLEFT", button, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
+	button.shadow:SetPoint("BOTTOMRIGHT", button, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
+	button.shadow:SetBackdropColor(.05, .05, .05, .9)
+	button.shadow:SetBackdropBorderColor(0, 0, 0, 1)
+
+	button.bord = button:CreateTexture(nil, "BORDER")
+	button.bord:SetTexture(0/255, 0/255, 0/255, 1)
+	button.bord:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult, -K.NoScaleMult)
+	button.bord:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult, K.NoScaleMult)
+
+	button.icon = button:CreateTexture(nil, "OVERLAY")
+	button.icon:SetAllPoints(button)
+	button.icon:SetTexCoord(.07, 1-.07, .23, 1-.23)
+
+	button.text = button:CreateFontString(nil, "OVERLAY")
+	button.text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, -3)
+	button.text:SetJustifyH("CENTER")
+	button.text:SetFont(C.Media.Font, C.Media.Font_Size * (C.Nameplate.AuraSize / 24), C.Media.Font_Style)
+	button.text:SetShadowColor(0/255, 0/255, 0/255, 1)
+	button.text:SetShadowOffset((0), -(0))
+
+	button.cd = CreateFrame("Cooldown", nil, button)
+	button.cd:SetAllPoints(button)
+	button.cd:SetReverse(true)
+
+	button.count = button:CreateFontString(nil, "OVERLAY")
+	button.count:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	button.count:SetShadowOffset(0, -0)
+	button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
+
+	return button
+end
+
+local function UpdateAuraIcon(button, unit, index, filter)
+	local _, _, icon, count, _, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
+
+	button.icon:SetTexture(icon)
+	button.cd:SetCooldown(expirationTime - duration, duration)
+	button.expirationTime = expirationTime
+	button.duration = duration
+	button.spellID = spellID
+	if count > 1 then
+		button.count:SetText(count)
+	else
+		button.count:SetText("")
+	end
+	button.cd:SetScript("OnUpdate", function(self)
+		if not button.cd.timer then
+			self:SetScript("OnUpdate", nil)
+			return
+		end
+		button.cd.timer.text:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		button.cd.timer.text:SetShadowOffset(0, -0)
+	end)
+	button:Show()
+end
+
+function Plates:OnAura(unit)
+	if not self:IsShown() then
+		return
+	end
+	if not C.Nameplate.TrackAuras or not self.NewPlate.icons or not self.NewPlate.unit then return end
+	local i = 1
+	for index = 1, 40 do
+		if i > C.Nameplate.Width / C.Nameplate.AurasSize then return end
+		local match
+		local name, _, _, _, _, duration, _, caster, _, _ = UnitAura(unit, index, "HARMFUL")
+
+		if K.DebuffWhiteList[name] and caster == "player" then match = true end
+
+		if duration and match == true then
+			if not self.NewPlate.icons[i] then self.NewPlate.icons[i] = Plates:CreateAuraIcon(self.NewPlate) end
+			local icon = self.NewPlate.icons[i]
+			if i == 1 then icon:SetPoint("RIGHT", self.NewPlate.icons, "RIGHT") end
+			if i ~= 1 and i <= C.Nameplate.Width / C.Nameplate.AurasSize then icon:SetPoint("RIGHT", self.NewPlate.icons[i-1], "LEFT", -2, 0) end
+			i = i + 1
+			UpdateAuraIcon(icon, unit, index, "HARMFUL")
+		end
+	end
+	for index = i, #self.NewPlate.icons do self.NewPlate.icons[index]:Hide() end
+end
+
+function Plates:GetColor()
+	local Red, Green, Blue = self.ArtContainer.HealthBar:GetStatusBarColor()
+	local texcoord = {0, 0, 0, 0}
+	self.isClass = false
+
+	for class, _ in pairs(RAID_CLASS_COLORS) do
+		Red, Green, Blue = floor(Red * 100 + 0.5) / 100, floor(Green * 100 + 0.5) / 100, floor(Blue * 100 + 0.5) / 100
+		local AltBlue = Blue
+
+		if class == "MONK" then
+			AltBlue = AltBlue - 0.01
+		end
+
+		if RAID_CLASS_COLORS[class].r == Red and RAID_CLASS_COLORS[class].g == Green and RAID_CLASS_COLORS[class].b == AltBlue then
+			self.isClass = true
+			self.isFriendly = false
+			if C.Nameplate.ClassIcons == true then
+				texcoord = CLASS_BUTTONS[class]
+				self.NewPlate.class.Glow:Show()
+				self.NewPlate.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
+			end
+			Red, Green, Blue = unpack(BETTER_RAID_CLASS_COLORS[class])
+			return Red, Green, Blue
+		end
+	end
+
+	self.isTapped = false
+
+	if (Red + Blue + Blue) == 1.59 then			-- Tapped
+		Red, Green, Blue = 0.6, 0.6, 0.6
+		self.isFriendly = false
+		self.isTapped = true
+	elseif Green + Blue == 0 then				-- Hostile
+		Red, Green, Blue = unpack(BETTER_REACTION_COLORS[1])
+		self.isFriendly = false
+	elseif Red + Blue == 0 then					-- Friendly NPC
+		Red, Green, Blue = unpack(BETTER_POWERBAR_COLORS["MANA"])
+		self.isFriendly = true
+	elseif Red + Green > 1.95 then				-- Neutral NPC
+		Red, Green, Blue = unpack(BETTER_REACTION_COLORS[4])
+		self.isFriendly = false
+	elseif Red + Green == 0 then				-- Friendly Player
+		Red, Green, Blue = unpack(BETTER_REACTION_COLORS[5])
+		self.isFriendly = true
+	else
+		self.isFriendly = false
+	end
+
+	if C.Nameplate.ClassIcons == true then
+		if self.isClass == true then
+			self.NewPlate.class.Glow:Show()
+		else
+			self.NewPlate.class.Glow:Hide()
+		end
+		self.NewPlate.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
+	end
+
+	return Red, Green, Blue
+end
+
+function Plates:UpdateCastBar()
+	local Red, Blue, Green = self.ArtContainer.CastBar:GetStatusBarColor()
+	local Minimum, Maximum = self.ArtContainer.CastBar:GetMinMaxValues()
+	local Current = self.ArtContainer.CastBar:GetValue()
+	local Shield = self.ArtContainer.CastBarFrameShield
+
+	if Shield:IsShown() then
+		self.NewPlate.CastBar:SetStatusBarColor(0.78, 0.25, 0.25)
+		self.NewPlate.CastBar.Background:SetColorTexture(0.78, 0.25, 0.25, 0.2)
+	else
+		self.NewPlate.CastBar:SetStatusBarColor(Red, Blue, Green)
+		self.NewPlate.CastBar.Background:SetColorTexture(0.75, 0.75, 0.25, 0.2)
+	end
+
+	self.NewPlate.CastBar:SetMinMaxValues(Minimum, Maximum)
+	self.NewPlate.CastBar:SetValue(Current)
+
+	local last = self.NewPlate.CastBar.last and self.NewPlate.CastBar.last or 0
+	local finish = (Current > last) and (Maximum - Current) or Current
+
+	self.NewPlate.CastBar.Time:SetFormattedText("%.1f ", finish)
+	self.NewPlate.CastBar.last = Current
+end
+
+function Plates:CastOnShow()
+	self.NewPlate.CastBar.Icon:SetTexture(self.ArtContainer.CastBarSpellIcon:GetTexture())
+	if C.Nameplate.CastbarName == true then
+		self.NewPlate.CastBar.Name:SetText(self.ArtContainer.CastBarText:GetText())
+	end
+	self.NewPlate.CastBar:Show()
+end
+
+function Plates:CastOnHide()
+	self.NewPlate.CastBar:Hide()
+end
+
+function Plates:OnShow()
+	self.NewPlate:Show()
+	Plates.UpdateHealth(self)
+
+	local object = {
+		self.ArtContainer.HealthBar,
+		self.ArtContainer.Border,
+		self.ArtContainer.Highlight,
+		self.ArtContainer.LevelText,
+		self.ArtContainer.EliteIcon,
+		self.ArtContainer.AggroWarningTexture,
+		self.ArtContainer.HighLevelIcon,
+		self.ArtContainer.CastBar,
+		self.ArtContainer.CastBarBorder,
+		self.ArtContainer.CastBarFrameShield,
+		self.ArtContainer.CastBarText,
+		self.ArtContainer.CastBarTextBG,
+		self.NameContainer.NameText
+	}
+
+	for _, object in pairs(object) do
+		objectType = object:GetObjectType()
+		if objectType == "Texture" then
+			object:SetTexture("")
+		elseif objectType == "FontString" then
+			object:SetWidth(0.001)
+		elseif objectType == "StatusBar" then
+			object:SetStatusBarTexture("")
+		end
+		if object ~= self.ArtContainer.HighLevelIcon and object ~= self.ArtContainer.EliteIcon then
+			object:Hide()
+		end
+	end
+
+	local Name = self.NameContainer.NameText:GetText() or "Unknown"
+	local Level = self.ArtContainer.LevelText:GetText() or ""
+	local Boss, Elite = self.ArtContainer.HighLevelIcon, self.ArtContainer.EliteIcon
+
+	self.NewPlate.level:SetTextColor(self.ArtContainer.LevelText:GetTextColor())
+	if Boss:IsShown() then
+		Level = "??"
+		self.NewPlate.level:SetTextColor(0.8, 0.05, 0)
+	elseif Elite:IsShown() then
+		Level = Level.."+"
+	end
+
+	if C.Nameplate.NameAbbreviate == true and C.Nameplate.TrackAuras ~= true then
+		self.NewPlate.Name:SetText(Abbrev(Name))
+	else
+		self.NewPlate.Name:SetText(Name)
+	end
+
+	if tonumber(Level) == K.Level and not Elite:IsShown() then
+		self.NewPlate.level:SetText("")
+	else
+		self.NewPlate.level:SetText(Level)
+	end
+
+	if C.Nameplate.ClassIcons == true and self.isClass == true then
+		self.NewPlate.level:SetPoint("RIGHT", self.NewPlate.Name, "LEFT", -2, 0)
+	else
+		self.NewPlate.level:SetPoint("RIGHT", self.NewPlate.Health, "LEFT", -2, 0)
+	end
+
+	if C.Nameplate.HealerIcon == true then
+		local name = self.NewPlate.Name:GetText()
+		name = gsub(name, "%s*"..((_G.FOREIGN_SERVER_LABEL:gsub("^%s", "")):gsub("[%*()]", "%%%1")).."$", "")
+		name = gsub(name, "%s*"..((_G.INTERACTIVE_SERVER_LABEL:gsub("^%s", "")):gsub("[%*()]", "%%%1")).."$", "")
+		if testing then
+			self.NewPlate.HPHeal:Show()
+		else
+			if healList[name] then
+				if exClass[healList[name]] then
+					self.NewPlate.HPHeal:Hide()
+				else
+					self.NewPlate.HPHeal:Show()
 				end
+			else
+				self.NewPlate.HPHeal:Hide()
 			end
 		end
 	end
 end
 
-function Plates:SetCastingIcon()
-	local Icon = self.Icon
-	local Texture = Icon:GetTexture()
-	local Backdrop = self.IconBackdrop
-	local IconTexture = self.IconTexture
+function Plates:OnHide()
+	if self.NewPlate.icons then
+		for _, icon in ipairs(self.NewPlate.icons) do
+			icon:Hide()
+		end
+	end
+end
 
-	if Texture then
-		Backdrop:SetAlpha(1)
-		IconTexture:SetTexture(Texture)
+function Plates:UpdateHealth()
+	self.NewPlate.Health:SetMinMaxValues(self.ArtContainer.HealthBar:GetMinMaxValues())
+	self.NewPlate.Health:SetValue(self.ArtContainer.HealthBar:GetValue() - 1) -- Blizzard bug fix
+	self.NewPlate.Health:SetValue(self.ArtContainer.HealthBar:GetValue())
+end
+
+function Plates:UpdateHealthColor()
+	if not self:IsShown() then
+		return
+	end
+
+	local Red, Green, Blue = Plates.GetColor(self)
+
+	self.NewPlate.Health:SetStatusBarColor(Red, Green, Blue)
+	self.NewPlate.Health.Background:SetColorTexture(red, Green, Blue, 0.2)
+	self.NewPlate.Name:SetTextColor(Red, Green, Blue)
+
+	if self.isClass or self.isTapped then return end
+
+	if C.Nameplate.EnhancedThreat ~= true then
+		if self.ArtContainer.AggroWarningTexture:IsShown() then
+			local _, val = self.ArtContainer.AggroWarningTexture:GetVertexColor()
+			if val > 0.7 then
+				SetVirtualBorder(self.NewPlate.Health, transitionR, transitionG, transitionB)
+			else
+				SetVirtualBorder(self.NewPlate.Health, badR, badG, badB)
+			end
+		else
+			SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
+		end
 	else
-		Backdrop:SetAlpha(0)
-		Icon:SetTexture(nil)
+		if not self.ArtContainer.AggroWarningTexture:IsShown() then
+			if InCombatLockdown() and self.isFriendly ~= true then
+				-- No Threat
+				if K.Role == "Tank" then
+					self.NewPlate.Health:SetStatusBarColor(badR, badG, badB)
+					self.NewPlate.Health.Background:SetColorTexture(badR, badG, badB, 0.2)
+				else
+					self.NewPlate.Health:SetStatusBarColor(goodR, goodG, goodB)
+					self.NewPlate.Health.Background:SetColorTexture(goodR, goodG, goodB, 0.2)
+				end
+			end
+		else
+			local r, g, b = self.ArtContainer.AggroWarningTexture:GetVertexColor()
+			if g + b == 0 then
+				-- Have Threat
+				if K.Role == "Tank" then
+					self.NewPlate.Health:SetStatusBarColor(goodR, goodG, goodB)
+					self.NewPlate.Health.Background:SetColorTexture(goodR, goodG, goodB, 0.2)
+				else
+					self.NewPlate.Health:SetStatusBarColor(badR, badG, badB)
+					self.NewPlate.Health.Background:SetColorTexture(badR, badG, badB, 0.2)
+				end
+			else
+				-- Losing/Gaining Threat
+				self.NewPlate.Health:SetStatusBarColor(transitionR, transitionG, transitionB)
+				self.NewPlate.Health.Background:SetColorTexture(transitionR, transitionG, transitionB, 0.2)
+			end
+		end
 	end
 end
 
-function Plates:SetupPlate(options)
-	if self.IsEdited then
-		return
+function Plates:UpdateHealthText()
+	local _, MaxHP = self.ArtContainer.HealthBar:GetMinMaxValues()
+	local CurrentHP = self.ArtContainer.HealthBar:GetValue()
+	local Percent = (CurrentHP / MaxHP) * 100
+
+	if C.Nameplate.HealthValue == true then
+		-- self.NewPlate.Health.Text:SetText(K.ShortValue(CurrentHP).." / "..K.ShortValue(MaxHP))
+		self.NewPlate.Health.Text:SetFormattedText("%d%%", Percent)
 	end
 
-	local HealthBar = self.healthBar
-	local Highlight = self.selectionHighlight
-	local Aggro = self.aggroHighlight
-	local CastBar = self.castBar
-	local CastBarIcon = self.castBar.Icon
-	local Shield = self.castBar.BorderShield
-	local Flash = self.castBar.Flash
-	local Spark = self.castBar.Spark
-	local Name = self.name
-	local Texture = C.Media.Texture
-	local Font = C.Media.Font
-	local FontName, FontSize, FontFlags = C.Media.Font, C.Media.Font_Size, C.Media.Font_Style
-
-	-- HEALTHBAR
-	HealthBar:SetStatusBarTexture(Texture)
-	HealthBar.background:ClearAllPoints()
-	HealthBar.background:SetInside(0, 0)
-	HealthBar:CreatePixelShadow()
-	HealthBar.border:SetAlpha(0)
-
-	-- CASTBAR
-	CastBar:SetStatusBarTexture(Texture)
-	CastBar.background:ClearAllPoints()
-	CastBar.background:SetInside(0, 0)
-	CastBar:CreatePixelShadow()
-
-	if CastBar.border then
-		CastBar.border:SetAlpha(0)
+	if self.isClass == true or self.isFriendly == true then
+		if Percent <= 50 and Percent >= 20 then
+			SetVirtualBorder(self.NewPlate.Health, 1, 1, 0)
+		elseif Percent < 20 then
+			SetVirtualBorder(self.NewPlate.Health, 1, 0, 0)
+		else
+			SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
+		end
+	elseif (self.isClass ~= true and self.isFriendly ~= true) and C.Nameplate.EnhancedThreat == true then
+		SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
 	end
 
-	CastBar.SetStatusBarTexture = function() end
+	if GetUnitName("target") and self.NewPlate:GetAlpha() == 1 then
+		self.NewPlate.Health:SetSize((C.Nameplate.Width + C.Nameplate.AdditionalWidth) * K.NoScaleMult, (C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult)
+		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -4 -((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult))  -- Revert this if needed?
+		self.NewPlate.CastBar.Icon:SetSize(((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * 2 * K.NoScaleMult) + 4, ((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * 2 * K.NoScaleMult) + 4)
+		self.NewPlate.Health:SetFrameLevel(1)
+	else
+		self.NewPlate.Health:SetSize(C.Nameplate.Width * K.NoScaleMult, C.Nameplate.Height * K.NoScaleMult)
+		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -4 -(C.Nameplate.Height * K.NoScaleMult)) -- Revert this if needed?
+		self.NewPlate.CastBar.Icon:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 4, (C.Nameplate.Height * 2 * K.NoScaleMult) + 4)
+		self.NewPlate.Health:SetFrameLevel(0)
+	end
 
-	CastBar.IconBackdrop = CreateFrame("Frame", nil, CastBar)
-	CastBar.IconBackdrop:SetSize(CastBar.Icon:GetSize())
-	CastBar.IconBackdrop:SetPoint("TOPRIGHT", HealthBar, "TOPLEFT", -4, 0)
-	CastBar.IconBackdrop:SetBackdrop({bgFile = C.Media.Blank})
-	CastBar.IconBackdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	CastBar.IconBackdrop:CreatePixelShadow()
-	CastBar.IconBackdrop:SetFrameLevel(CastBar:GetFrameLevel() - 1 or 0)
-
-	CastBar.Icon:SetParent(UIFrameHider)
-
-	CastBar.IconTexture = CastBar:CreateTexture(nil, "OVERLAY")
-	CastBar.IconTexture:SetTexCoord(.08, .92, .08, .92)
-	CastBar.IconTexture:SetParent(CastBar.IconBackdrop)
-	CastBar.IconTexture:SetAllPoints(CastBar.IconBackdrop)
-
-	CastBar.Text:SetFont(FontName, FontSize * K.NoScaleMult, "OUTLINE")
-
-	CastBar.startCastColor.r, CastBar.startCastColor.g, CastBar.startCastColor.b = unpack(Plates.Options.CastBarColors.StartNormal)
-	CastBar.startChannelColor.r, CastBar.startChannelColor.g, CastBar.startChannelColor.b = unpack(Plates.Options.CastBarColors.StartChannel)
-	CastBar.failedCastColor.r, CastBar.failedCastColor.g, CastBar.failedCastColor.b = unpack(Plates.Options.CastBarColors.Failed)
-	CastBar.nonInterruptibleColor.r, CastBar.nonInterruptibleColor.g, CastBar.nonInterruptibleColor.b = unpack(Plates.Options.CastBarColors.NonInterrupt)
-	CastBar.finishedCastColor.r, CastBar.finishedCastColor.g, CastBar.finishedCastColor.b = unpack(Plates.Options.CastBarColors.Success)
-
-	CastBar:HookScript("OnShow", Plates.SetCastingIcon)
-
-	-- UNIT NAME
-	Name:SetFont(FontName, FontSize * K.NoScaleMult, "")
-	Name:SetShadowColor(0, 0, 0)
-	Name:SetShadowOffset(1.25, -1.25)
-	hooksecurefunc(Name, "Show", Plates.SetName)
-
-	-- WILL DO A BETTER VISUAL FOR THIS LATER
-	Highlight:Kill()
-	Shield:Kill()
-	Aggro:Kill()
-	Flash:Kill()
-	Spark:Kill()
-
-	self.IsEdited = true
+	if UnitExists("target") and self.NewPlate:GetAlpha() == 1 and GetUnitName("target") == self.NewPlate.Name:GetText() then
+		self.NewPlate.guid = UnitGUID("target")
+		self.NewPlate.unit = "target"
+		Plates.OnAura(self, "target")
+	elseif self.ArtContainer.Highlight:IsShown() and UnitExists("mouseover") and GetUnitName("mouseover") == self.NewPlate.Name:GetText() then
+		self.NewPlate.guid = UnitGUID("mouseover")
+		self.NewPlate.unit = "mouseover"
+		Plates.OnAura(self, "mouseover")
+	else
+		self.NewPlate.unit = nil
+	end
 end
 
-function Plates:SetClassNameplateBar(frame)
-	self.ClassBar = frame
-	if frame then frame:SetScale(1.05) end
+local function NamePlateSizerOnSizeChanged(self, x, y)
+	local plate = self.__owner
+	if plate:IsShown() then
+		plate.NewPlate:Hide()
+		if K.PlateBlacklist[plate.NameContainer.NameText:GetText()] then return end
+		plate.NewPlate:SetPoint("CENTER", WorldFrame, "BOTTOMLEFT", x, y)
+		plate.NewPlate:Show()
+	end
 end
 
-function Plates:Enable()
-	local Enabled = C.Nameplate.Enable
-
-	if not Enabled then
-		return
-	end
-
-	self:RegisterOptions()
-
-	DefaultCompactNamePlateFriendlyFrameOptions = Plates.Options.Friendly
-	DefaultCompactNamePlateEnemyFrameOptions = Plates.Options.Enemy
-	DefaultCompactNamePlatePlayerFrameOptions = Plates.Options.Player
-	DefaultCompactNamePlateFrameSetUpOptions = Plates.Options.Size
-	DefaultCompactNamePlatePlayerFrameSetUpOptions = Plates.Options.PlayerSize
-
-	if ClassNameplateManaBarFrame then
-		ClassNameplateManaBarFrame.Border:SetAlpha(0)
-		ClassNameplateManaBarFrame:SetStatusBarTexture(C.Media.Texture)
-		ClassNameplateManaBarFrame.ManaCostPredictionBar:SetTexture(C.Media.Texture)
-		ClassNameplateManaBarFrame:SetBackdrop({bgFile = C.Media.Blank})
-		ClassNameplateManaBarFrame:SetBackdropColor(.2, .2, .2)
-		ClassNameplateManaBarFrame:CreatePixelShadow()
-	end
-
-	self.ClassBar = NamePlateDriverFrame.nameplateBar
-	if self.ClassBar then self.ClassBar:SetScale(1.05) end
-
-	hooksecurefunc(NamePlateDriverFrame, "SetClassNameplateBar", self.SetClassNameplateBar)
-	hooksecurefunc("DefaultCompactNamePlateFrameSetupInternal", self.SetupPlate)
-	hooksecurefunc("CompactUnitFrame_UpdateHealthColor", self.ColorHealth)
-
-	-- DISABLE BLIZZARD RESCALE
-	NamePlateDriverFrame.UpdateNamePlateOptions = Noop
-
-	-- MAKE SURE NAMEPLATES ARE ALWAYS SCALED AT 1
-	SetCVar("NamePlateVerticalScale", "1")
-	SetCVar("NamePlateHorizontalScale", "1")
-
-	-- HIDE THE OPTION TO RESCALE, BECAUSE WE WILL DO IT FROM SETTINGS.
-	InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
-
-	-- SET THE WIDTH OF NAMEPLATE
-	C_NamePlate.SetNamePlateOtherSize(C.Nameplate.Width, 45)
+local function NamePlateCreateSizer(self)
+	local sizer = CreateFrame("Frame", nil, self.NewPlate)
+	sizer.__owner = self
+	sizer:SetPoint("BOTTOMLEFT", WorldFrame)
+	sizer:SetPoint("TOPRIGHT", self, "CENTER")
+	sizer:SetScript("OnSizeChanged", NamePlateSizerOnSizeChanged)
 end
 
-K.NamePlates = Plates
+function Plates:Skin(obj)
+	local Plate = obj
 
-function Plates:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
-		K.NamePlates:Enable()
+	local HealthBar = Plate.ArtContainer.HealthBar
+	local Border = Plate.ArtContainer.Border
+	local Highlight = Plate.ArtContainer.Highlight
+	local LevelText = Plate.ArtContainer.LevelText
+	local RaidTargetIcon = Plate.ArtContainer.RaidTargetIcon
+	local Elite = Plate.ArtContainer.EliteIcon
+	local Threat = Plate.ArtContainer.AggroWarningTexture
+	local Boss = Plate.ArtContainer.HighLevelIcon
+	local CastBar = Plate.ArtContainer.CastBar
+	local CastBarBorder = Plate.ArtContainer.CastBarBorder
+	local CastBarSpellIcon = Plate.ArtContainer.CastBarSpellIcon
+	local CastBarFrameShield = Plate.ArtContainer.CastBarFrameShield
+	local CastBarText = Plate.ArtContainer.CastBarText
+	local CastBarTextBG = Plate.ArtContainer.CastBarTextBG
+
+	local Name = Plate.NameContainer.NameText
+
+	self.Container[Plate] = CreateFrame("Frame", nil, self)
+
+	local NewPlate = self.Container[Plate]
+	NewPlate:SetSize(C.Nameplate.Width * K.NoScaleMult, (C.Nameplate.Height * K.NoScaleMult) * 2 + 8)
+	NewPlate:SetFrameStrata("BACKGROUND")
+	NewPlate:SetFrameLevel(0)
+
+	NewPlate.Health = CreateFrame("StatusBar", nil, NewPlate)
+	NewPlate.Health:SetFrameStrata("BACKGROUND")
+	NewPlate.Health:SetFrameLevel(1)
+	NewPlate.Health:SetSize(C.Nameplate.Width * K.NoScaleMult, C.Nameplate.Height * K.NoScaleMult)
+	NewPlate.Health:SetStatusBarTexture(C.Media.Texture)
+	NewPlate.Health:SetPoint("BOTTOM", 0, 0)
+	CreateVirtualFrame(NewPlate.Health)
+
+	NewPlate.Health.Background = NewPlate.Health:CreateTexture(nil, "BORDER")
+	NewPlate.Health.Background:SetTexture(C.Media.Texture)
+	NewPlate.Health.Background:SetAllPoints()
+
+	if C.Nameplate.HealthValue == true then
+		NewPlate.Health.Text = NewPlate.Health:CreateFontString(nil, "OVERLAY")
+		NewPlate.Health.Text:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		NewPlate.Health.Text:SetShadowOffset(0, -0)
+		NewPlate.Health.Text:SetPoint("RIGHT", NewPlate.Health, "RIGHT", 0, 0)
+		NewPlate.Health.Text:SetTextColor(1, 1, 1)
 	end
 
-	Plates:UnregisterEvent("PLAYER_LOGIN")
+	NewPlate.Name = NewPlate.Health:CreateFontString(nil, "OVERLAY")
+	NewPlate.Name:SetPoint("BOTTOMLEFT", NewPlate.Health, "TOPLEFT", -3, 4)
+	NewPlate.Name:SetPoint("BOTTOMRIGHT", NewPlate.Health, "TOPRIGHT", 3, 4)
+	NewPlate.Name:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	NewPlate.Name:SetShadowOffset(0, -0)
+
+	NewPlate.level = NewPlate.Health:CreateFontString(nil, "OVERLAY")
+	NewPlate.level:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	NewPlate.level:SetShadowOffset(0, -0)
+	NewPlate.level:SetTextColor(1, 1, 1)
+	NewPlate.level:SetPoint("RIGHT", NewPlate.Health, "LEFT", -2, 0)
+
+	NewPlate.CastBar = CreateFrame("StatusBar", nil, NewPlate.Health)
+	NewPlate.CastBar:SetFrameStrata("BACKGROUND")
+	NewPlate.CastBar:SetFrameLevel(1)
+	NewPlate.CastBar:SetStatusBarTexture(C.Media.Texture)
+	NewPlate.CastBar:SetPoint("TOPRIGHT", NewPlate.Health, "BOTTOMRIGHT", 0, -4)
+	NewPlate.CastBar:SetPoint("BOTTOMLEFT", NewPlate.Health, "BOTTOMLEFT", 0, -4 -(C.Nameplate.Height * K.NoScaleMult))
+	NewPlate.CastBar:Hide()
+	CreateVirtualFrame(NewPlate.CastBar)
+
+	NewPlate.CastBar.Background = NewPlate.CastBar:CreateTexture(nil, "BORDER")
+	NewPlate.CastBar.Background:SetColorTexture(0.75, 0.75, 0.25, 0.2)
+	NewPlate.CastBar.Background:SetAllPoints()
+
+	NewPlate.hiddenFrame = CreateFrame("Frame", nil, NewPlate)
+	NewPlate.hiddenFrame:Hide()
+	CastBarSpellIcon:SetParent(NewPlate.hiddenFrame)
+	NewPlate.CastBar.Icon = NewPlate.CastBar:CreateTexture(nil, "OVERLAY")
+	NewPlate.CastBar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	NewPlate.CastBar.Icon:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 4, (C.Nameplate.Height * 2 * K.NoScaleMult) + 4)
+	NewPlate.CastBar.Icon:SetPoint("TOPLEFT", NewPlate.Health, "TOPRIGHT", 4, 0)
+	CreateVirtualFrame(NewPlate.CastBar, NewPlate.CastBar.Icon)
+
+	NewPlate.CastBar.Time = NewPlate.CastBar:CreateFontString(nil, "ARTWORK")
+	NewPlate.CastBar.Time:SetPoint("RIGHT", NewPlate.CastBar, "RIGHT", 3, 0)
+	NewPlate.CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	NewPlate.CastBar.Time:SetShadowOffset(0, -0)
+	NewPlate.CastBar.Time:SetTextColor(1, 1, 1)
+
+	if C.Nameplate.CastbarName == true then
+		NewPlate.CastBar.Name = NewPlate.CastBar:CreateFontString(nil, "OVERLAY")
+		NewPlate.CastBar.Name:SetPoint("LEFT", NewPlate.CastBar, "LEFT", 3, 0)
+		NewPlate.CastBar.Name:SetPoint("RIGHT", NewPlate.CastBar.Time, "LEFT", -1, 0)
+		NewPlate.CastBar.Name:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		NewPlate.CastBar.Name:SetShadowOffset(0, -0)
+		NewPlate.CastBar.Name:SetTextColor(1, 1, 1)
+		NewPlate.CastBar.Name:SetHeight(C.Media.Font_Size)
+		NewPlate.CastBar.Name:SetJustifyH("LEFT")
+	end
+
+	RaidTargetIcon:ClearAllPoints()
+	RaidTargetIcon:SetPoint("BOTTOM", NewPlate.Health, "TOP", 0, C.Nameplate.TrackAuras == true and 38 or 16)
+	RaidTargetIcon:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 8, (C.Nameplate.Height * 2 * K.NoScaleMult) + 8)
+
+	if C.Nameplate.TrackAuras == true then
+		if not NewPlate.icons then
+			NewPlate.icons = CreateFrame("Frame", nil, NewPlate.Health)
+			NewPlate.icons:SetPoint("BOTTOMRIGHT", NewPlate.Health, "TOPRIGHT", 0, C.Media.Font_Size + 7)
+			NewPlate.icons:SetWidth(20 + C.Nameplate.Width)
+			NewPlate.icons:SetHeight(C.Nameplate.AurasSize)
+			NewPlate.icons:SetFrameLevel(NewPlate.Health:GetFrameLevel() + 2)
+		end
+	end
+
+	if C.Nameplate.ClassIcons == true then
+		NewPlate.class = NewPlate.Health:CreateTexture(nil, "OVERLAY")
+		NewPlate.class:SetPoint("TOPRIGHT", NewPlate.Health, "TOPLEFT", -8, K.NoScaleMult * 2)
+		NewPlate.class:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+		NewPlate.class:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 11, (C.Nameplate.Height * 2 * K.NoScaleMult) + 11)
+
+		NewPlate.class.Glow = CreateFrame("Frame", nil, NewPlate.Health)
+		NewPlate.class.Glow:SetTemplate("Transparent")
+		NewPlate.class.Glow:SetScale(K.NoScaleMult)
+		NewPlate.class.Glow:SetAllPoints(NewPlate.class)
+		NewPlate.class.Glow:SetFrameLevel(NewPlate.Health:GetFrameLevel() -1 > 0 and NewPlate.Health:GetFrameLevel() -1 or 0)
+		NewPlate.class.Glow:Hide()
+	end
+
+	if C.Nameplate.HealerIcon == true then
+		NewPlate.HPHeal = NewPlate.Health:CreateFontString(nil, "OVERLAY")
+		NewPlate.HPHeal:SetFont(C.Media.Font, 32, C.Media.Font_Style)
+		NewPlate.HPHeal:SetText("|cFFD53333+|r")
+		if C.Nameplate.TrackAuras == true then
+			NewPlate.HPHeal:SetPoint("BOTTOM", NewPlate.Name, "TOP", 0, 13)
+		else
+			NewPlate.HPHeal:SetPoint("BOTTOM", NewPlate.Name, "TOP", 0, 0)
+		end
+	end
+
+	Plate.NewPlate = NewPlate
+
+	self.OnShow(Plate)
+	NamePlateCreateSizer(obj)
+	Plate:HookScript("OnShow", self.OnShow)
+	Plate:HookScript("OnHide", self.OnHide)
+	HealthBar:HookScript("OnValueChanged", function() self.UpdateHealth(Plate) end)
+	CastBar:HookScript("OnShow", function() self.CastOnShow(Plate) end)
+	CastBar:HookScript("OnHide", function() self.CastOnHide(Plate) end)
+	CastBar:HookScript("OnValueChanged", function() self.UpdateCastBar(Plate) end)
+
+	Plate.IsSkinned = true
 end
 
-Plates:RegisterEvent("PLAYER_LOGIN")
-Plates:SetScript("OnEvent", Plates.OnEvent)
+function Plates:Search(...)
+	local count = WorldFrame:GetNumChildren()
+	if count ~= numChildren then
+		numChildren = count
+		for index = 1, select("#", WorldFrame:GetChildren()) do
+			local frame = select(index, WorldFrame:GetChildren())
+			local name = frame:GetName()
+
+			if not frame.IsSkinned and (name and name:find("^NamePlate%d")) then
+				Plates:Skin(frame)
+			end
+		end
+	end
+end
+
+function Plates:Update()
+	for Plate, NewPlate in pairs(self.Container) do
+		if Plate:IsShown() then
+			if Plate:GetAlpha() == 1 then
+				NewPlate:SetAlpha(1)
+			else
+				NewPlate:SetAlpha(0.5)
+			end
+
+			self.UpdateHealthColor(Plate)
+			self.UpdateHealthText(Plate)
+		else
+			NewPlate:Hide()
+		end
+	end
+end
+
+function Plates:OnUpdate(elapsed)
+	self:Search()
+	self:Update()
+end
+
+-- function Plates:Enable()
+-- self:RegisterOptions()
+
+-- DefaultCompactNamePlateFriendlyFrameOptions = self.Options.Friendly
+-- DefaultCompactNamePlateEnemyFrameOptions = self.Options.Enemy
+-- DefaultCompactNamePlatePlayerFrameOptions = self.Options.Player
+-- DefaultCompactNamePlateFrameSetUpOptions = self.Options.Size
+-- DefaultCompactNamePlatePlayerFrameSetUpOptions = self.Options.PlayerSize
+
+-- SetCVar("namePlateMinScale", 1)
+-- SetCVar("namePlateMaxScale", 1)
+
+-- hooksecurefunc("DefaultCompactNamePlateFrameSetupInternal", self.SetupPlate)
+-- hooksecurefunc("CompactUnitFrame_UpdateHealthColor", self.ColorHealth)
+
+-- -- Make sure nameplates are always scaled at 1
+-- -- SetCVar("NamePlateVerticalScale", "1")
+-- -- SetCVar("NamePlateHorizontalScale", "1")
+
+-- -- C_NamePlate.SetNamePlateOtherSize(C.Nameplate.Width * K.NoScaleMult, 45)
+-- -- NamePlateDriverFrame:SetBaseNamePlateSize(C.Nameplate.Width * K.NoScaleMult, C.Nameplate.Height * K.NoScaleMult)
+
+-- NamePlateDriverFrame.UpdateNamePlateOptions = K.Noop
+-- InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
+-- end
+
+-- Plates:Enable()
+
+function Plates:MatchGUID(destGUID, spellID)
+	if not self.NewPlate.guid then return end
+
+	if self.NewPlate.guid == destGUID then
+		for _, icon in ipairs(self.NewPlate.icons) do
+			if icon.spellID == spellID then
+				icon:Hide()
+			end
+		end
+	end
+end
+
+function NamePlates:COMBAT_LOG_EVENT_UNFILTERED(_, event, ...)
+	-- if event == "SPELL_AURA_REMOVED" then
+	-- local _, sourceGUID, _, _, _, destGUID, _, _, _, spellID = ...
+
+	-- if sourceGUID == UnitGUID("player") or arg4 == UnitGUID("pet") then
+	-- for Plate, NewPlate in pairs(Plates.Container) do
+	-- if Plate:IsShown() then
+	-- Plates.MatchGUID(Plate, destGUID, spellID)
+	-- end
+	-- end
+	-- end
+	-- end
+end
+
+-- Only show nameplates when in combat
+if C.Nameplate.Combat == true then
+	NamePlates:RegisterEvent("PLAYER_REGEN_ENABLED")
+	NamePlates:RegisterEvent("PLAYER_REGEN_DISABLED")
+
+	function NamePlates:PLAYER_REGEN_ENABLED()
+		SetCVar("nameplateShowEnemies", 0)
+	end
+
+	function NamePlates:PLAYER_REGEN_DISABLED()
+		SetCVar("nameplateShowEnemies", 1)
+	end
+end
+
+NamePlates:RegisterEvent("PLAYER_ENTERING_WORLD")
+function NamePlates:PLAYER_ENTERING_WORLD()
+	if C.Nameplate.Combat == true then
+		if InCombatLockdown() then
+			SetCVar("nameplateShowEnemies", 1)
+		else
+			SetCVar("nameplateShowEnemies", 0)
+		end
+	end
+	if C.Nameplate.EnhancedThreat == true then
+		SetCVar("threatWarning", 3)
+	end
+end
+
+-------------------
+--[[ Config ]]--
+local WhiteList = {
+	--[11426] = true,
+	--[196741] = true,
+	--[147732] = true,
+	--BUFF
+
+	--DEBUFF
+	[119381] = true,
+	[115078] = true,
+	[25046] = true,
+}
+
+local BlackList = {
+	--[11426] = true,
+	--[196741] = true,
+}
+
+local Config = {
+	myfiltertype = "whitelist", -- show aura cast by player
+	otherfiltertype = "none", -- show aura cast by other
+	--"whitelist": show only list
+	--"blacklist": show only unlist
+	--"none": do not show anything
+
+	playerplate = true,
+	classresource_show = true,
+	classresource = "player", --"player", "target"
+}
+
+--[[ Functions ]]--
+colorspower = {}
+for power, color in next, PowerBarColor do
+	if (type(power) == "string") then
+		colorspower[power] = {color.r, color.g, color.b}
+	end
+end
+
+--[[ Auras ]]--
+local day, hour, minute = 86400, 3600, 60
+local function FormatTime(s)
+	if s >= day then
+		return format("%dd", floor(s/day + 0.5))
+	elseif s >= hour then
+		return format("%dh", floor(s/hour + 0.5))
+	elseif s >= minute then
+		return format("%dm", floor(s/minute + 0.5))
+	end
+
+	return format("%d", math.fmod(s, minute))
+end
+
+local function CreateAuraIcon(parent)
+	local button = CreateFrame("Frame", nil, parent)
+	button:SetSize(C.Nameplate.AurasSize, C.Nameplate.AurasSize * 16/25)
+
+	button.shadow = CreateFrame("Frame", nil, button)
+	button.shadow:SetFrameLevel(0)
+	button.shadow:SetBackdrop({
+		bgFile = C.Media.Blank,
+		edgeFile = C.Media.Glow,
+		edgeSize = 3 * K.NoScaleMult,
+		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
+	})
+	button.shadow:SetPoint("TOPLEFT", button, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
+	button.shadow:SetPoint("BOTTOMRIGHT", button, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
+	button.shadow:SetBackdropColor(.05, .05, .05, .9)
+	button.shadow:SetBackdropBorderColor(0, 0, 0, 1)
+
+	button.bord = button:CreateTexture(nil, "BORDER")
+	button.bord:SetTexture(0/255, 0/255, 0/255, 1)
+	button.bord:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult, -K.NoScaleMult)
+	button.bord:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult, K.NoScaleMult)
+
+	button.icon = button:CreateTexture(nil, "OVERLAY")
+	button.icon:SetAllPoints(button)
+	button.icon:SetTexCoord(.07, 1-.07, .23, 1-.23)
+
+	button.cd = CreateFrame("Cooldown", nil, button)
+	button.cd:SetAllPoints(button)
+	button.cd:SetReverse(true)
+
+	button.count = button:CreateFontString(nil, "OVERLAY")
+	button.count:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	button.count:SetShadowOffset(0, -0)
+	button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
+
+	return button
+end
+
+local function UpdateAuraIcon(button, unit, index, filter)
+	local name, _, icon, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
+
+	button.icon:SetTexture(icon)
+	button.expirationTime = expirationTime
+	button.duration = duration
+	button.spellID = spellID
+
+	button.cd:SetCooldown(expirationTime - duration, duration)
+
+	local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
+	button.bord:SetColorTexture(color.r, color.g, color.b)
+
+	if count and count > 1 then
+		button.count:SetText(count)
+	else
+		button.count:SetText("")
+	end
+
+	button.cd:SetScript("OnUpdate", function(self)
+		if not button.cd.timer then
+			self:SetScript("OnUpdate", nil)
+			return
+		end
+		button.cd.timer.text:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		button.cd.timer.text:SetShadowOffset(0, -0)
+	end)
+
+	button:Show()
+end
+
+local function AuraFilter(caster, spellname)
+	if caster == "player" then
+		if Config["myfiltertype"] == "none" then
+			return false
+		elseif Config["myfiltertype"] == "whitelist" and K.DebuffWhiteList[spellname] then
+			return true
+		elseif Config["myfiltertype"] == "blacklist" and not BlackList[spellname] then
+			return true
+		end
+	else
+		if Config["otherfiltertype"] == "none" then
+			return false
+		elseif Config["otherfiltertype"] == "whitelist" and K.DebuffWhiteList[spellname] then
+			return true
+		end
+	end
+end
+
+local function UpdateBuffs(unitFrame)
+	if not unitFrame.icons or not unitFrame.displayedUnit then return end
+	if not C.Nameplate.TrackAuras and UnitIsUnit(unitFrame.displayedUnit, "player") then return end
+	local unit = unitFrame.displayedUnit
+	local i = 1
+
+	-- for index = 1, 15 do
+	-- if i > C.Nameplate.Width / C.Nameplate.AurasSize then return end
+	-- local bname, _, _, _, _, bduration, _, bcaster, _, _, bspellid = UnitAura(unit, index, "HELPFUL")
+	-- local matchbuff = AuraFilter(bcaster, bname)
+
+	-- if bname and matchbuff then
+	-- if not unitFrame.icons[i] then
+	-- unitFrame.icons[i] = CreateAuraIcon(unitFrame)
+	-- end
+	-- UpdateAuraIcon(unitFrame.icons[i], unit, index, "HELPFUL")
+	-- if i ~= 1 then
+	-- -- unitFrame.icons[i]:SetPoint("LEFT", unitFrame.icons[i-1], "RIGHT", 4, 0)
+	-- unitFrame.icons[i]:SetPoint("RIGHT", unitFrame.icons[i-1], "LEFT", -2, 0)
+	-- end
+	-- i = i + 1
+	-- end
+	-- end
+
+	for index = 1, 40 do
+		if i > C.Nameplate.Width / C.Nameplate.AurasSize then return end
+		local dname, _, _, _, _, dduration, _, dcaster, _, _, dspellid = UnitAura(unit, index, "HARMFUL")
+		local matchdebuff = AuraFilter(dcaster, dname)
+
+		if dname and matchdebuff then
+			if not unitFrame.icons[i] then
+				unitFrame.icons[i] = CreateAuraIcon(unitFrame)
+			end
+			UpdateAuraIcon(unitFrame.icons[i], unit, index, "HARMFUL")
+			if i == 1 then
+				unitFrame.icons[i]:SetPoint("RIGHT", unitFrame.icons, "RIGHT")
+			elseif i ~= 1 then
+				unitFrame.icons[i]:SetPoint("RIGHT", unitFrame.icons[i-1], "LEFT", -2, 0)
+			end
+			i = i + 1
+		end
+	end
+
+	unitFrame.iconnumber = i - 1
+
+	-- if i > 1 then
+	-- unitFrame.icons[1]:SetPoint("LEFT", unitFrame.icons, "CENTER", -((C.Nameplate.AurasSize+4)*(unitFrame.iconnumber)-4)/2,0)
+	-- end
+	for index = i, #unitFrame.icons do unitFrame.icons[index]:Hide() end
+end
+
+--[[ Player Power ]]--
+-- if Config.playerplate then
+local PowerFrame = CreateFrame("Frame", "NamePlatePowerFrame")
+
+PowerFrame.powerBar = CreateFrame("StatusBar", nil, PowerFrame)
+PowerFrame.powerBar:SetHeight(3)
+PowerFrame.powerBar:SetStatusBarTexture(C.Media.Texture)
+PowerFrame.powerBar:SetMinMaxValues(0, 1)
+CreateVirtualFrame(PowerFrame.powerBar)
+
+PowerFrame:SetScript("OnEvent", function(self, event, unit)
+	if GetCVar("nameplateShowSelf") == 0 then return end
+	if event == "PLAYER_ENTERING_WORLD" or (event == "UNIT_POWER_FREQUENT" and unit == "player") then
+		local minPower, maxPower, _, powertype = UnitPower("player"), UnitPowerMax("player"), UnitPowerType("player")
+		local perc
+
+		if maxPower ~= 0 then
+			perc = minPower/maxPower
+		else
+			perc = 0
+		end
+
+		PowerFrame.powerBar:SetValue(perc)
+
+		local r, g, b = unpack(colorspower[powertype])
+
+		if r ~= PowerFrame.r or g ~= PowerFrame.g or b ~= PowerFrame.b then
+			PowerFrame.powerBar:SetStatusBarColor(r, g, b)
+			PowerFrame.r, PowerFrame.g, PowerFrame.b = r, g, b
+		end
+	elseif event == "NAME_PLATE_UNIT_ADDED" and UnitIsUnit(unit, "player") then
+		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player")
+		if namePlatePlayer then
+			PowerFrame:Show()
+			PowerFrame:SetParent(namePlatePlayer)
+			PowerFrame.powerBar:ClearAllPoints()
+			PowerFrame.powerBar:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMLEFT", 0, -3)
+			PowerFrame.powerBar:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, -3)
+		end
+	elseif event == "NAME_PLATE_UNIT_REMOVED" and UnitIsUnit(unit, "player") then
+		PowerFrame:Hide()
+	end
+end)
+PowerFrame:RegisterEvent("UNIT_POWER_FREQUENT")
+PowerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+PowerFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+PowerFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+-- end
+
+--[[ Class bar stuff ]]--
+-- if Config.classresource_show then
+local function multicheck(check, ...)
+	for i = 1, select("#", ...) do
+		if check == select(i, ...) then return true end
+	end
+	return false
+end
+
+local ClassPowerID, ClassPowerType, RequireSpec
+local classicon_colors = {	-- monk/paladin/preist
+	{.6, 0, .1},
+	{.9, .1, .2},
+	{1, .2, .3},
+	{1, .3, .4},
+	{1, .4, .5},
+	{1, .5, .6},
+}
+
+local cpoints_colors = {	-- combat points
+	{1, 0, 0},
+	{1, 1, 0},
+}
+
+if(K.Class == "MONK") then
+	ClassPowerID = SPELL_POWER_CHI
+	ClassPowerType = "CHI"
+	RequireSpec = SPEC_MONK_WINDWALKER
+elseif(K.Class == "PALADIN") then
+	ClassPowerID = SPELL_POWER_HOLY_POWER
+	ClassPowerType = "HOLY_POWER"
+	RequireSpec = SPEC_PALADIN_RETRIBUTION
+elseif(K.Class == "MAGE") then
+	ClassPowerID = SPELL_POWER_ARCANE_CHARGES
+	ClassPowerType = "ARCANE_CHARGES"
+	RequireSpec = SPEC_MAGE_ARCANE
+elseif(K.Class == "WARLOCK") then
+	ClassPowerID = SPELL_POWER_SOUL_SHARDS
+	ClassPowerType = "SOUL_SHARDS"
+elseif(K.Class == "ROGUE" or K.Class == "DRUID") then
+	ClassPowerID = SPELL_POWER_COMBO_POINTS
+	ClassPowerType = "COMBO_POINTS"
+end
+
+local Resourcebar = CreateFrame("Frame", "Plateresource", UIParent)
+Resourcebar:SetWidth(100)	--(10+3)*6 - 3
+Resourcebar:SetHeight(3)
+Resourcebar.maxbar = 6
+
+for i = 1, 6 do
+	Resourcebar[i] = CreateFrame("Frame", "Plateresource"..i, Resourcebar)
+	Resourcebar[i]:SetFrameLevel(1)
+	Resourcebar[i]:SetSize(13.5, 3)
+	CreateVirtualFrame(Resourcebar[i])
+	Resourcebar[i].tex = Resourcebar[i]:CreateTexture(nil, "OVERLAY")
+	Resourcebar[i].tex:SetAllPoints(Resourcebar[i])
+	if K.Class == "DEATHKNIGHT" then
+		Resourcebar[i].value = Resourcebar[i]:CreateFontString(nil, "OVERLAY")
+		Resourcebar[i].value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		Resourcebar[i].value:SetShadowOffset(0, -0)
+		Resourcebar[i].value:SetPoint("CENTER")
+		Resourcebar[i].tex:SetColorTexture(.7, .7, 1)
+	end
+
+	if i == 1 then
+		Resourcebar[i]:SetPoint("BOTTOMLEFT", Resourcebar, "BOTTOMLEFT")
+	else
+		Resourcebar[i]:SetPoint("LEFT", Resourcebar[i-1], "RIGHT", 2, 0)
+	end
+end
+
+Resourcebar:SetScript("OnEvent", function(self, event, unit, powerType)
+	if GetCVar("nameplateShowSelf") == 0 then return end
+	if event == "PLAYER_TALENT_UPDATE" then
+		if multicheck(K.Class, "WARLOCK", "PALADIN", "MONK", "MAGE", "ROGUE", "DRUID") and not RequireSpec or RequireSpec == GetSpecialization() then
+			self:RegisterEvent("UNIT_POWER_FREQUENT")
+			self:RegisterEvent("PLAYER_ENTERING_WORLD")
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+			self:RegisterEvent("PLAYER_TARGET_CHANGED")
+			self:RegisterEvent("RUNE_POWER_UPDATE")
+			self:Show()
+		else
+			self:UnregisterEvent("UNIT_POWER_FREQUENT")
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+			self:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
+			self:UnregisterEvent("NAME_PLATE_UNIT_REMOVED")
+			self:UnregisterEvent("PLAYER_TARGET_CHANGED")
+			self:UnregisterEvent("RUNE_POWER_UPDATE")
+			self:Hide()
+		end
+	elseif event == "PLAYER_ENTERING_WORLD" or (event == "UNIT_POWER_FREQUENT" and unit == "player" and powerType == ClassPowerType) then
+		if multicheck(K.Class, "WARLOCK", "PALADIN", "MONK", "MAGE", "ROGUE", "DRUID") then
+			local cur, max, oldMax
+
+			cur = UnitPower("player", ClassPowerID)
+			max = UnitPowerMax("player", ClassPowerID)
+
+			if multicheck(K.Class, "WARLOCK", "PALADIN", "MONK", "MAGE") then
+				for i = 1, max do
+					if(i <= cur) then
+						self[i]:Show()
+					else
+						self[i]:Hide()
+					end
+					if cur == max then
+						self[i].tex:SetColorTexture(unpack(classicon_colors[max]))
+					else
+						self[i].tex:SetColorTexture(unpack(classicon_colors[i]))
+					end
+				end
+
+				oldMax = self.maxbar
+				if(max ~= oldMax) then
+					if(max < oldMax) then
+						for i = max + 1, oldMax do
+							self[i]:Hide()
+						end
+					end
+					for i = 1, 6 do
+						self[i]:SetWidth(102/max-2)
+					end
+					self.maxbar = max
+				end
+			else
+				if max <= 6 then
+					for i = 1, max do
+						if(i <= cur) then
+							self[i]:Show()
+						else
+							self[i]:Hide()
+						end
+						self[i].tex:SetColorTexture(unpack(cpoints_colors[1]))
+					end
+				else
+					if cur <= 5 then
+						for i = 1, 5 do
+							if(i <= cur) then
+								self[i]:Show()
+							else
+								self[i]:Hide()
+							end
+							self[i].tex:SetColorTexture(unpack(cpoints_colors[1]))
+						end
+					else
+						for i = 1, 5 do
+							self[i]:Show()
+						end
+						for i = 1, cur - 5 do
+							self[i].tex:SetColorTexture(unpack(cpoints_colors[2]))
+						end
+						for i = cur - 4, 5 do
+							self[i].tex:SetColorTexture(unpack(cpoints_colors[1]))
+						end
+					end
+				end
+
+				oldMax = self.maxbar
+				if(max ~= oldMax) then
+					if max == 5 or max == 8 then
+						self[6]:Hide()
+						for i = 1, 6 do
+							self[i]:SetWidth(102/5-2)
+						end
+					else
+						for i = 1, 6 do
+							self[i]:SetWidth(102/max-2)
+							if i > max then
+								self[i]:Hide()
+							end
+						end
+					end
+					self.maxbar = max
+				end
+			end
+		end
+	elseif K.Class == "DEATHKNIGHT" and event == "RUNE_POWER_UPDATE" then
+		local rid = unit
+		local start, duration, runeReady = GetRuneCooldown(rid)
+		if runeReady then
+			self[rid]:SetAlpha(1)
+			self[rid].tex:SetColorTexture(.7, .7, 1)
+			self[rid]:SetScript("OnUpdate", nil)
+			self[rid].value:SetText("")
+		elseif start then
+			self[rid]:SetAlpha(.7)
+			self[rid].tex:SetColorTexture(.3, .3, .3)
+			self[rid].max = duration
+			self[rid].duration = GetTime() - start
+			self[rid]:SetScript("OnUpdate", function(self, elapsed)
+				self.duration = self.duration + elapsed
+				if self.duration >= self.max or self.duration <= 0 then
+					self.value:SetText("")
+				else
+					self.value:SetText(FormatTime(self.max - self.duration))
+				end
+			end)
+		end
+	elseif tonumber(GetCVar("nameplateResourceOnTarget")) == 0 then
+		if event == "NAME_PLATE_UNIT_ADDED" and UnitIsUnit(unit, "player") then
+			local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player")
+			if namePlatePlayer then
+				self:SetParent(namePlatePlayer)
+				self:ClearAllPoints()
+				self:Show()
+				self:SetPoint("TOPLEFT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMLEFT", 0, 15)
+				self:SetPoint("TOPRIGHT", namePlatePlayer.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 15)
+			end
+		elseif event == "NAME_PLATE_UNIT_REMOVED" and UnitIsUnit(unit, "player") then
+			self:Hide()
+		end
+	elseif tonumber(GetCVar("nameplateResourceOnTarget")) == 1 and (event == "PLAYER_TARGET_CHANGED" or event == "NAME_PLATE_UNIT_ADDED") then
+		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target")
+		if namePlateTarget and UnitCanAttack("player", namePlateTarget.UnitFrame.displayedUnit) then
+			self:SetParent(namePlateTarget)
+			self:ClearAllPoints()
+			self:SetPoint("TOPLEFT", namePlateTarget.UnitFrame.healthBar, "BOTTOMLEFT", 0, 25)
+			self:SetPoint("TOPRIGHT", namePlateTarget.UnitFrame.healthBar, "BOTTOMRIGHT", 0, 25)
+			self:Show()
+		else
+			self:Hide()
+		end
+	end
+end)
+
+Resourcebar:RegisterEvent("PLAYER_TALENT_UPDATE")
+-- end
+
+--[[ Unit frame ]]--
+local function UpdateName(unitFrame)
+	local name = GetUnitName(unitFrame.displayedUnit, false)
+	if name then
+		local level = UnitLevel(unitFrame.displayedUnit)
+		local classification = UnitClassification(unitFrame.displayedUnit)
+
+		local r, g, b
+		if level == -1 or not level then
+			level = "??"
+			r, g, b = 0.8, 0.05, 0
+		else
+			local color = GetQuestDifficultyColor(level)
+			r, g, b = color.r, color.g, color.b
+		end
+
+		if classification == "elite" or classification == "rareelite" then
+			level = level.."+"
+		end
+
+		if (tonumber(level) == K.Level and not classification == "elite") or UnitIsUnit(unitFrame.displayedUnit, "player") then
+			unitFrame.level:SetText("")
+		else
+			unitFrame.level:SetText(level)
+		end
+
+		if C.Nameplate.ClassIcons == true and UnitIsPlayer(unitFrame.displayedUnit) then
+			unitFrame.level:SetPoint("RIGHT", unitFrame.name, "LEFT", -2, 0)
+		else
+			unitFrame.level:SetPoint("RIGHT", unitFrame.healthBar, "LEFT", -2, 0)
+		end
+
+		unitFrame.level:SetTextColor(r, g, b)
+
+		if UnitIsUnit(unitFrame.displayedUnit, "player") then
+			unitFrame.name:SetText("")
+		else
+			if C.Nameplate.NameAbbreviate == true and C.Nameplate.TrackAuras ~= true then
+				unitFrame.name:SetText(Abbrev(name))
+			else
+				unitFrame.name:SetText(name)
+			end
+		end
+
+		if C.Nameplate.HealerIcon == true then
+			name = gsub(name, "%s*"..((_G.FOREIGN_SERVER_LABEL:gsub("^%s", "")):gsub("[%*()]", "%%%1")).."$", "")
+			name = gsub(name, "%s*"..((_G.INTERACTIVE_SERVER_LABEL:gsub("^%s", "")):gsub("[%*()]", "%%%1")).."$", "")
+			if testing then
+				unitFrame.HPHeal:Show()
+			else
+				if healList[name] then
+					if exClass[healList[name]] then
+						unitFrame.HPHeal:Hide()
+					else
+						unitFrame.HPHeal:Show()
+					end
+				else
+					unitFrame.HPHeal:Hide()
+				end
+			end
+		end
+
+		if UnitGUID("target") == nil then
+			unitFrame:SetAlpha(1)
+		else
+			if C_NamePlate.GetNamePlateForUnit("target") ~= nil then
+				unitFrame:SetAlpha(0.5)
+				C_NamePlate.GetNamePlateForUnit("target").UnitFrame:SetAlpha(1)
+				if C_NamePlate.GetNamePlateForUnit("player") ~= nil then
+					C_NamePlate.GetNamePlateForUnit("player").UnitFrame:SetAlpha(1)
+				end
+			else
+				unitFrame:SetAlpha(1)
+			end
+		end
+	end
+end
+
+local function UpdateHealth(unitFrame)
+	local unit = unitFrame.displayedUnit
+	local minHealth, maxHealth = UnitHealth(unit), UnitHealthMax(unit)
+	local perc = minHealth / maxHealth
+	local perc_text = string.format("%d%%", math.floor(perc * 100))
+
+	unitFrame.healthBar:SetValue(perc)
+
+	if C.Nameplate.HealthValue == true then
+		if UnitIsUnit("player", unitFrame.displayedUnit) then
+			unitFrame.healthBar.value:SetText("")
+		else
+			unitFrame.healthBar.value:SetText(K.ShortValue(minHealth).." - "..perc_text)
+		end
+	end
+
+	if UnitIsPlayer(unit) then
+		if perc <= 0.5 and perc >= 0.2 then
+			SetVirtualBorder(unitFrame.healthBar, 1, 1, 0)
+		elseif perc < 0.2 then
+			SetVirtualBorder(unitFrame.healthBar, 1, 0, 0)
+		else
+			SetVirtualBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
+		end
+	elseif not UnitIsPlayer(unit) and C.Nameplate.EnhancedThreat == true then
+		SetVirtualBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
+	end
+end
+
+local function IsOnThreatList(unit)
+	local _, threatStatus = UnitDetailedThreatSituation("player", unit)
+	if threatStatus == 3 then -- securely tanking, highest threat
+		if K.Role == "Tank" then
+			return unpack(C.Nameplate.GoodColor)
+		else
+			return unpack(C.Nameplate.BadColor)
+		end
+	elseif threatStatus == 2 then -- insecurely tanking, another unit have higher threat but not tanking
+		return unpack(C.Nameplate.NearColor)
+	elseif threatStatus == 1 then -- not tanking, higher threat than tank
+		return unpack(C.Nameplate.NearColor)
+	elseif threatStatus == 0 then -- not tanking, lower threat than tank
+		if K.Role == "Tank" then
+			return unpack(C.Nameplate.BadColor)
+		else
+			return unpack(C.Nameplate.GoodColor)
+		end
+	end
+end
+
+local function IsTapDenied(unitFrame)
+	return UnitIsTapDenied(unitFrame.unit) and not UnitPlayerControlled(unitFrame.unit)
+end
+
+local function UpdateHealthColor(unitFrame)
+	local unit = unitFrame.displayedUnit
+	local r, g, b
+	local threat
+
+	if not UnitIsConnected(unit) then
+		r, g, b = 0.7, 0.7, 0.7
+	else
+		local _, class = UnitClass(unit)
+		local classColor = BETTER_RAID_CLASS_COLORS[class]
+
+		if UnitIsUnit("player", unit) then
+			r, g, b = unpack(BETTER_RAID_CLASS_COLORS[class])
+		elseif UnitIsPlayer(unit) and classColor and UnitReaction(unit, "player") >= 5 then
+			r, g, b = unpack(BETTER_POWERBAR_COLORS["MANA"])
+		elseif UnitIsPlayer(unit) and classColor and UnitReaction(unit, "player") <= 4 then
+			r, g, b = unpack(BETTER_RAID_CLASS_COLORS[class])
+		elseif IsTapDenied(unitFrame) then
+			r, g, b = 0.6, 0.6, 0.6
+		else
+			if IsOnThreatList(unitFrame.displayedUnit) then
+				if C.Nameplate.EnhancedThreat ~= true then
+					SetVirtualBorder(unitFrame.healthBar, unpack(IsOnThreatList(unitFrame.displayedUnit)))
+				else
+					r, g, b = IsOnThreatList(unitFrame.displayedUnit)
+					threat = true
+				end
+			else
+				local reaction = BETTER_REACTION_COLORS[UnitReaction(unit, "player")]
+				if reaction then
+					r, g, b = reaction[1], reaction[2], reaction[3]
+				else
+					r, g, b = UnitSelectionColor(unit, true)
+				end
+			end
+		end
+	end
+
+	if (r ~= unitFrame.r or g ~= unitFrame.g or b ~= unitFrame.b) then
+		unitFrame.healthBar:SetStatusBarColor(r, g, b)
+		unitFrame.healthBar.Background:SetColorTexture(r, g, b, 0.2)
+		unitFrame.name:SetTextColor(r, g, b)
+		if threat then
+			local reaction = BETTER_REACTION_COLORS[UnitReaction(unit, "player")]
+			if reaction then
+				red, green, blue = reaction[1], reaction[2], reaction[3]
+			else
+				red, green, blue = UnitSelectionColor(unit, true)
+			end
+			unitFrame.name:SetTextColor(red, green, blue)
+		end
+		unitFrame.r, unitFrame.g, unitFrame.b = r, g, b
+	end
+end
+
+local function UpdateCastBar(unitFrame)
+	local castBar = unitFrame.castBar
+	castBar.startCastColor = CreateColor(1, 0.8, 0)
+	castBar.startChannelColor = CreateColor(1, 0.8, 0)
+	castBar.finishedCastColor = CreateColor(1, 0.8, 0)
+	castBar.failedCastColor = CreateColor(0.5, 0.2, 0.2)
+	castBar.nonInterruptibleColor = CreateColor(0.78, 0.25, 0.25)
+
+	CastingBarFrame_AddWidgetForFade(castBar, castBar.BorderShield)
+	if not UnitIsUnit("player", unitFrame.displayedUnit) then
+		CastingBarFrame_SetUnit(castBar, unitFrame.unit, false, false)
+	end
+end
+
+function NamePlates_UpdateCastBar(self)
+	local Minimum, Maximum = self:GetMinMaxValues()
+	local Current = self:GetValue()
+	local Shield = self.BorderShield
+
+	if Shield:IsShown() then
+		self:SetStatusBarColor(0.78, 0.25, 0.25)
+		self.Background:SetColorTexture(0.78, 0.25, 0.25, 0.2)
+	else
+		self:SetStatusBarColor(1, 0.8, 0)
+		self.Background:SetColorTexture(1, 0.8, 0, 0.2)
+	end
+
+	local last = self.last and self.last or 0
+	local finish = (Current > last) and (Maximum - Current) or Current
+
+	self.Time:SetFormattedText("%.1f ", finish)
+	self.last = Current
+end
+
+local function UpdateRaidTarget(unitFrame)
+	local icon = unitFrame.RaidTargetFrame.RaidTargetIcon
+	local index = GetRaidTargetIndex(unitFrame.displayedUnit)
+	if index then
+		if not UnitIsUnit(unitFrame.displayedUnit, "player") then
+			SetRaidTargetIconTexture(icon, index)
+			icon:Show()
+		end
+	else
+		icon:Hide()
+	end
+end
+
+local function UpdateNamePlateEvents(unitFrame)
+	-- These are events affected if unit is in a vehicle
+	local unit = unitFrame.unit
+	local displayedUnit
+	if unit ~= unitFrame.displayedUnit then
+		displayedUnit = unitFrame.displayedUnit
+	end
+	unitFrame:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", unit, displayedUnit)
+	unitFrame:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+	unitFrame:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit)
+end
+
+local function UpdateInVehicle(unitFrame)
+	if UnitHasVehicleUI(unitFrame.unit) then
+		if not unitFrame.inVehicle then
+			unitFrame.inVehicle = true
+			local prefix, id, suffix = string.match(unitFrame.unit, "([^%d]+)([%d]*)(.*)")
+			unitFrame.displayedUnit = prefix.."pet"..id..suffix
+			UpdateNamePlateEvents(unitFrame)
+		end
+	else
+		if unitFrame.inVehicle then
+			unitFrame.inVehicle = false
+			unitFrame.displayedUnit = unitFrame.unit
+			UpdateNamePlateEvents(unitFrame)
+		end
+	end
+end
+
+local function UpdateAll(unitFrame)
+	UpdateInVehicle(unitFrame)
+	if UnitExists(unitFrame.displayedUnit) then
+		UpdateName(unitFrame)
+		UpdateHealthColor(unitFrame)
+		UpdateHealth(unitFrame)
+		UpdateCastBar(unitFrame)
+		UpdateBuffs(unitFrame)
+		UpdateRaidTarget(unitFrame)
+
+		if UnitIsUnit("player", unitFrame.displayedUnit) then
+			unitFrame.castBar:UnregisterAllEvents()
+		end
+	end
+end
+
+local function NamePlate_OnEvent(self, event, ...)
+	local arg1, arg2, arg3, arg4 = ...
+	if event == "PLAYER_TARGET_CHANGED" then
+		UpdateName(self)
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		UpdateAll(self)
+	elseif arg1 == self.unit or arg1 == self.displayedUnit then
+		if event == "UNIT_HEALTH_FREQUENT" then
+			UpdateHealth(self)
+		elseif event == "UNIT_AURA" then
+			UpdateBuffs(self)
+		elseif event == "UNIT_THREAT_LIST_UPDATE" then
+			UpdateHealthColor(self)
+		elseif event == "UNIT_NAME_UPDATE" then
+			UpdateName(self)
+		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
+			UpdateAll(self)
+		end
+	end
+end
+
+local function RegisterNamePlateEvents(unitFrame)
+	unitFrame:RegisterEvent("UNIT_NAME_UPDATE")
+	unitFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	unitFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+	unitFrame:RegisterEvent("UNIT_PET")
+	unitFrame:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	unitFrame:RegisterEvent("UNIT_EXITED_VEHICLE")
+	UpdateNamePlateEvents(unitFrame)
+	unitFrame:SetScript("OnEvent", NamePlate_OnEvent)
+end
+
+local function UnregisterNamePlateEvents(unitFrame)
+	unitFrame:UnregisterAllEvents()
+	unitFrame:SetScript("OnEvent", nil)
+end
+
+local function SetUnit(unitFrame, unit)
+	unitFrame.unit = unit
+	unitFrame.displayedUnit = unit	 -- For vehicles
+	unitFrame.inVehicle = false
+	if unit then
+		RegisterNamePlateEvents(unitFrame)
+	else
+		UnregisterNamePlateEvents(unitFrame)
+	end
+end
+
+--[[ Driver frame ]]--
+local function HideBlizzard()
+	NamePlateDriverFrame:UnregisterAllEvents()
+	ClassNameplateManaBarFrame:Hide()
+
+	hooksecurefunc(NamePlateDriverFrame, "SetupClassNameplateBar", function()
+		NamePlateTargetResourceFrame:Hide()
+		NamePlatePlayerResourceFrame:Hide()
+	end)
+
+	SetCVar("namePlateMinScale", 1)
+	SetCVar("namePlateMaxScale", 1)
+	SetCVar("nameplateLargerScale", 1)
+	SetCVar("nameplateMaxAlpha", 1)
+	SetCVar("nameplateMinAlpha", 1)
+
+	local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger
+	function checkBox.setFunc(value)
+		if value == "1" then
+			SetCVar("NamePlateHorizontalScale", checkBox.largeHorizontalScale)
+			SetCVar("NamePlateVerticalScale", checkBox.largeVerticalScale)
+		else
+			SetCVar("NamePlateHorizontalScale", checkBox.normalHorizontalScale)
+			SetCVar("NamePlateVerticalScale", checkBox.normalVerticalScale)
+		end
+		NamePlates_UpdateNamePlateOptions()
+	end
+end
+
+local function OnUnitFactionChanged(unit)
+	-- This would make more sense as a unitFrame:RegisterUnitEvent
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
+	if namePlate then
+		UpdateName(namePlate.UnitFrame)
+		UpdateHealthColor(namePlate.UnitFrame)
+	end
+end
+
+local function OnRaidTargetUpdate()
+	for _, namePlate in pairs(C_NamePlate.GetNamePlates()) do
+		UpdateRaidTarget(namePlate.UnitFrame)
+	end
+end
+
+function NamePlates_UpdateNamePlateOptions()
+	-- Called at VARIABLES_LOADED and by "Larger Nameplates" interface options checkbox
+	local baseNamePlateWidth = C.Nameplate.Width * K.NoScaleMult
+	local baseNamePlateHeight = 45
+	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"))
+	C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
+	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
+
+	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
+		local unitFrame = namePlate.UnitFrame
+		UpdateAll(unitFrame)
+	end
+end
+
+local function OnNamePlateCreated(namePlate)
+	namePlate.UnitFrame = CreateFrame("Button", "$parentUnitFrame", namePlate)
+	namePlate.UnitFrame:SetAllPoints(namePlate)
+	namePlate.UnitFrame:SetFrameLevel(namePlate:GetFrameLevel())
+
+	namePlate.UnitFrame.healthBar = CreateFrame("StatusBar", nil, namePlate.UnitFrame)
+	namePlate.UnitFrame.healthBar:SetHeight(C.Nameplate.Height * K.NoScaleMult)
+	namePlate.UnitFrame.healthBar:SetPoint("LEFT", 0, 0)
+	namePlate.UnitFrame.healthBar:SetPoint("RIGHT", 0, 0)
+	namePlate.UnitFrame.healthBar:SetStatusBarTexture(C.Media.Texture)
+	namePlate.UnitFrame.healthBar:SetMinMaxValues(0, 1)
+	CreateVirtualFrame(namePlate.UnitFrame.healthBar)
+
+	namePlate.UnitFrame.healthBar.Background = namePlate.UnitFrame.healthBar:CreateTexture(nil, "BORDER")
+	namePlate.UnitFrame.healthBar.Background:SetTexture(C.Media.Texture)
+	namePlate.UnitFrame.healthBar.Background:SetAllPoints()
+
+	if C.Nameplate.HealthValue == true then
+		namePlate.UnitFrame.healthBar.value = namePlate.UnitFrame.healthBar:CreateFontString(nil, "OVERLAY")
+		namePlate.UnitFrame.healthBar.value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		namePlate.UnitFrame.healthBar.value:SetShadowOffset(0, -0)
+		namePlate.UnitFrame.healthBar.value:SetPoint("RIGHT", namePlate.UnitFrame.healthBar, "RIGHT", 0, 0)
+		namePlate.UnitFrame.healthBar.value:SetTextColor(1, 1, 1)
+	end
+
+	namePlate.UnitFrame.name = namePlate.UnitFrame:CreateFontString(nil, "OVERLAY")
+	namePlate.UnitFrame.name:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	namePlate.UnitFrame.name:SetShadowOffset(0, -0)
+	namePlate.UnitFrame.name:SetPoint("BOTTOMLEFT", namePlate.UnitFrame.healthBar, "TOPLEFT", -3, 4)
+	namePlate.UnitFrame.name:SetPoint("BOTTOMRIGHT", namePlate.UnitFrame.healthBar, "TOPRIGHT", 3, 4)
+	namePlate.UnitFrame.name:SetTextColor(1, 1, 1)
+
+	namePlate.UnitFrame.level = namePlate.UnitFrame.healthBar:CreateFontString(nil, "OVERLAY")
+	namePlate.UnitFrame.level:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	namePlate.UnitFrame.level:SetShadowOffset(0, -0)
+	namePlate.UnitFrame.level:SetTextColor(1, 1, 1)
+	namePlate.UnitFrame.level:SetPoint("RIGHT", namePlate.UnitFrame.healthBar, "LEFT", -2, 0)
+
+	namePlate.UnitFrame.castBar = CreateFrame("StatusBar", nil, namePlate.UnitFrame)
+	CreateVirtualFrame(namePlate.UnitFrame.castBar)
+	namePlate.UnitFrame.castBar:Hide()
+	namePlate.UnitFrame.castBar.iconWhenNoninterruptible = false
+	namePlate.UnitFrame.castBar:SetHeight(C.Nameplate.Height * K.NoScaleMult)
+	namePlate.UnitFrame.castBar:SetPoint("TOPRIGHT", namePlate.UnitFrame.healthBar, "BOTTOMRIGHT", 0, -4)
+	namePlate.UnitFrame.castBar:SetPoint("BOTTOMLEFT", namePlate.UnitFrame.healthBar, "BOTTOMLEFT", 0, -4 -(C.Nameplate.Height * K.NoScaleMult))
+	namePlate.UnitFrame.castBar:SetStatusBarTexture(C.Media.Texture)
+	namePlate.UnitFrame.castBar:SetStatusBarColor(1, 0.8, 0)
+
+	namePlate.UnitFrame.castBar.Background = namePlate.UnitFrame.castBar:CreateTexture(nil, "BORDER")
+	namePlate.UnitFrame.castBar.Background:SetColorTexture(1, 0.8, 0, 0.2)
+	namePlate.UnitFrame.castBar.Background:SetAllPoints()
+
+	namePlate.UnitFrame.castBar.Time = namePlate.UnitFrame.castBar:CreateFontString(nil, "ARTWORK")
+	namePlate.UnitFrame.castBar.Time:SetPoint("RIGHT", namePlate.UnitFrame.castBar, "RIGHT", 3, 0)
+	namePlate.UnitFrame.castBar.Time:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	namePlate.UnitFrame.castBar.Time:SetShadowOffset(0, -0)
+	namePlate.UnitFrame.castBar.Time:SetTextColor(1, 1, 1)
+
+	if C.Nameplate.CastbarName == true then
+		namePlate.UnitFrame.castBar.Text = namePlate.UnitFrame.castBar:CreateFontString(nil, "OVERLAY")
+		namePlate.UnitFrame.castBar.Text:SetPoint("LEFT", namePlate.UnitFrame.castBar, "LEFT", 3, 0)
+		namePlate.UnitFrame.castBar.Text:SetPoint("RIGHT", namePlate.UnitFrame.castBar, "RIGHT", -11, 0)
+		namePlate.UnitFrame.castBar.Text:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		namePlate.UnitFrame.castBar.Text:SetShadowOffset(0, -0)
+		namePlate.UnitFrame.castBar.Text:SetTextColor(1, 1, 1)
+		namePlate.UnitFrame.castBar.Text:SetHeight(C.Media.Font_Size)
+		namePlate.UnitFrame.castBar.Text:SetJustifyH("LEFT")
+	end
+
+	namePlate.UnitFrame.castBar.Icon = namePlate.UnitFrame.castBar:CreateTexture(nil, "OVERLAY", 1)
+	namePlate.UnitFrame.castBar.Icon:SetPoint("TOPLEFT", namePlate.UnitFrame.healthBar, "TOPRIGHT", 4, 0)
+	namePlate.UnitFrame.castBar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	namePlate.UnitFrame.castBar.Icon:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 4, (C.Nameplate.Height * 2 * K.NoScaleMult) + 4)
+	CreateVirtualFrame(namePlate.UnitFrame.castBar, namePlate.UnitFrame.castBar.Icon)
+
+	namePlate.UnitFrame.castBar.BorderShield = namePlate.UnitFrame.castBar:CreateTexture(nil, "OVERLAY", 1)
+	namePlate.UnitFrame.castBar.BorderShield:SetAtlas("nameplates-InterruptShield")
+	namePlate.UnitFrame.castBar.BorderShield:SetSize(15, 15)
+	namePlate.UnitFrame.castBar.BorderShield:SetPoint("LEFT", namePlate.UnitFrame.castBar, "LEFT", 5, -5)
+
+	namePlate.UnitFrame.castBar.Spark = namePlate.UnitFrame.castBar:CreateTexture(nil, "OVERLAY")
+	namePlate.UnitFrame.castBar.Spark:SetSize(30, 25)
+	namePlate.UnitFrame.castBar.Spark:SetTexture("")
+	namePlate.UnitFrame.castBar.Spark:SetBlendMode("ADD")
+	namePlate.UnitFrame.castBar.Spark:SetPoint("CENTER", 0, 3)
+
+	namePlate.UnitFrame.castBar.Flash = namePlate.UnitFrame.castBar:CreateTexture(nil, "OVERLAY")
+	namePlate.UnitFrame.castBar.Flash:SetAllPoints()
+	namePlate.UnitFrame.castBar.Flash:SetTexture("")
+	namePlate.UnitFrame.castBar.Flash:SetBlendMode("ADD")
+
+	CastingBarFrame_OnLoad(namePlate.UnitFrame.castBar, nil, false, true)
+	namePlate.UnitFrame.castBar:SetScript("OnEvent", CastingBarFrame_OnEvent)
+	namePlate.UnitFrame.castBar:SetScript("OnUpdate", CastingBarFrame_OnUpdate)
+	namePlate.UnitFrame.castBar:SetScript("OnShow", CastingBarFrame_OnShow)
+	namePlate.UnitFrame.castBar:SetScript("OnHide", function() namePlate.UnitFrame.castBar:Hide() end)
+	namePlate.UnitFrame.castBar:HookScript("OnValueChanged", function() NamePlates_UpdateCastBar(namePlate.UnitFrame.castBar) end)
+
+	namePlate.UnitFrame.RaidTargetFrame = CreateFrame("Frame", nil, namePlate.UnitFrame)
+	namePlate.UnitFrame.RaidTargetFrame:SetSize((C.Nameplate.Height * 2 * K.NoScaleMult) + 8, (C.Nameplate.Height * 2 * K.NoScaleMult) + 8)
+	namePlate.UnitFrame.RaidTargetFrame:SetPoint("BOTTOM", namePlate.UnitFrame.name, "TOP", 0, C.Nameplate.TrackAuras == true and 38 or 16)
+
+	namePlate.UnitFrame.RaidTargetFrame.RaidTargetIcon = namePlate.UnitFrame.RaidTargetFrame:CreateTexture(nil, "OVERLAY")
+	namePlate.UnitFrame.RaidTargetFrame.RaidTargetIcon:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]])
+	namePlate.UnitFrame.RaidTargetFrame.RaidTargetIcon:SetAllPoints()
+	namePlate.UnitFrame.RaidTargetFrame.RaidTargetIcon:Hide()
+
+	if C.Nameplate.TrackAuras == true then
+		namePlate.UnitFrame.icons = CreateFrame("Frame", nil, namePlate.UnitFrame)
+		namePlate.UnitFrame.icons:SetPoint("BOTTOMRIGHT", namePlate.UnitFrame.healthBar, "TOPRIGHT", 0, C.Media.Font_Size + 7)
+		namePlate.UnitFrame.icons:SetWidth(20 + C.Nameplate.Width)
+		namePlate.UnitFrame.icons:SetHeight(C.Nameplate.AurasSize)
+		namePlate.UnitFrame.icons:SetFrameLevel(namePlate.UnitFrame:GetFrameLevel() + 2)
+	end
+
+	if C.Nameplate.HealerIcon == true then
+		namePlate.UnitFrame.HPHeal = namePlate.UnitFrame.healthBar:CreateFontString(nil, "OVERLAY")
+		namePlate.UnitFrame.HPHeal:SetFont(C.Media.Font, 32, C.Media.Font_Style)
+		namePlate.UnitFrame.HPHeal:SetText("|cFFD53333+|r")
+		if C.Nameplate.TrackAuras == true then
+			namePlate.UnitFrame.HPHeal:SetPoint("BOTTOM", namePlate.UnitFrame.name, "TOP", 0, 13)
+		else
+			namePlate.UnitFrame.HPHeal:SetPoint("BOTTOM", namePlate.UnitFrame.name, "TOP", 0, 0)
+		end
+	end
+
+	namePlate.UnitFrame:EnableMouse(false)
+end
+
+local function OnNamePlateAdded(unit)
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
+	local unitFrame = namePlate.UnitFrame
+	SetUnit(unitFrame, unit)
+	UpdateAll(unitFrame)
+end
+
+local function OnNamePlateRemoved(unit)
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
+	SetUnit(namePlate.UnitFrame, nil)
+end
+
+local function NamePlates_OnEvent(self, event, ...)
+	if event == "VARIABLES_LOADED" then
+		HideBlizzard()
+		-- if Config.playerplate then
+		-- SetCVar("nameplateShowSelf", 1)
+		-- else
+		-- SetCVar("nameplateShowSelf", 0)
+		-- end
+
+		NamePlates_UpdateNamePlateOptions()
+	elseif event == "NAME_PLATE_CREATED" then
+		local namePlate = ...
+		OnNamePlateCreated(namePlate)
+	elseif event == "NAME_PLATE_UNIT_ADDED" then
+		local unit = ...
+		OnNamePlateAdded(unit)
+	elseif event == "NAME_PLATE_UNIT_REMOVED" then
+		local unit = ...
+		OnNamePlateRemoved(unit)
+	elseif event == "RAID_TARGET_UPDATE" then
+		OnRaidTargetUpdate()
+	elseif event == "DISPLAY_SIZE_CHANGED" then
+		NamePlates_UpdateNamePlateOptions()
+	elseif event == "UNIT_FACTION" then
+		OnUnitFactionChanged(...)
+	end
+end
+
+local NamePlatesFrame = CreateFrame("Frame", "NamePlatesFrame", UIParent)
+NamePlatesFrame:SetScript("OnEvent", NamePlates_OnEvent)
+NamePlatesFrame:RegisterEvent("VARIABLES_LOADED")
+NamePlatesFrame:RegisterEvent("NAME_PLATE_CREATED")
+NamePlatesFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+NamePlatesFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+NamePlatesFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
+NamePlatesFrame:RegisterEvent("RAID_TARGET_UPDATE")
+NamePlatesFrame:RegisterEvent("UNIT_FACTION")

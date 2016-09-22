@@ -32,11 +32,11 @@ Movers:RegisterFrame(SpecialPBuffIconAnchor)
 
 TDebuffIconAnchor:SetPoint(unpack(C.Position.Filger.TargetDebuffIcon))
 TDebuffIconAnchor:SetSize(C.Filger.BuffsSize, C.Filger.BuffsSize)
-Movers:RegisterFrame(PProcIconAnchor)
+Movers:RegisterFrame(TDebuffIconAnchor)
 
 TBuffAnchor:SetPoint(unpack(C.Position.Filger.TargetBuffIcon))
 TBuffAnchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)
-Movers:RegisterFrame(TDebuffIconAnchor)
+Movers:RegisterFrame(TBuffAnchor)
 
 PvEPvPDebuffAnchor:SetPoint(unpack(C.Position.Filger.PvEDebuff))
 PvEPvPDebuffAnchor:SetSize(C.Filger.PvPSize, C.Filger.PvPSize)

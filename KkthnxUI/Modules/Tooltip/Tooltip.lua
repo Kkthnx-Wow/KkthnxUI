@@ -29,7 +29,7 @@ Tooltip.Tooltips = {
 	ShoppingTooltip1,
 	ShoppingTooltip2,
 	ShoppingTooltip3,
-	--WorldMapTooltip.BackdropFrame, -- This is currently throwing an error.
+	-- WorldMapTooltip.BackdropFrame,
 	WorldMapCompareTooltip1,
 	WorldMapCompareTooltip2,
 	WorldMapCompareTooltip3,
@@ -284,18 +284,6 @@ function Tooltip:Skin()
 	Tooltip.SetColor(self)
 end
 
-function Tooltip:OnTooltipSetItem()
-	if IsShiftKeyDown() then
-		local Item, Link = self:GetItem()
-		local ItemCount = GetItemCount(Link)
-		local ID = "|cFFCA3C3CID|r "..Link:match(":(%w+)")
-		local Count = "|cFFCA3C3C"..TOTAL.."|r "..ItemCount
-
-		self:AddLine(" ")
-		self:AddDoubleLine(Link and Link ~= nil and ID, ItemCount and ItemCount > 1 and Count)
-	end
-end
-
 function Tooltip:OnValueChanged()
 	if (not C.Tooltip.HealthValue) then
 		return
@@ -337,10 +325,11 @@ function Tooltip:Enable()
 		if Tooltip == GameTooltip then
 			Tooltip:HookScript("OnUpdate", self.OnUpdate)
 			Tooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
-			Tooltip:HookScript("OnTooltipSetItem", self.OnTooltipSetItem)
 		end
 
 		Tooltip:HookScript("OnShow", self.Skin)
+		-- Do we really need this?
+		if Tooltip.BackdropFrame then Tooltip.BackdropFrame:Kill() end
 	end
 
 	HealthBar:SetScript("OnValueChanged", self.OnValueChanged)

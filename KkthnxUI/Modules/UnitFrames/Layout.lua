@@ -25,7 +25,6 @@ local UnitReaction = UnitReaction
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 local Movers = K.Movers
-local CombatLock = false
 
 local PetColor = {157/255, 197/255, 255/255}
 
@@ -124,6 +123,7 @@ function Unitframes:Setup()
 
 	for i = 1, MAX_PARTY_MEMBERS do
 		if C.Unitframe.Outline then
+		if InCombatLockdown() then return end
 			_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
 			_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
 
@@ -201,20 +201,22 @@ function Unitframes:Setup()
 		end
 	end)
 
-	-- TWEAK PLAYER FRAME
-	K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
+	if not InCombatLockdown() then
+		-- TWEAK PLAYER FRAME
+		K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
 
-	-- TWEAK TARGET FRAME
-	K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
+		-- TWEAK TARGET FRAME
+		K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
 
-	-- TWEAK NAME BACKGROUND
-	TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+		-- TWEAK NAME BACKGROUND
+		TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-	-- TWEAK FOCUS FRAME
-	K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
+		-- TWEAK FOCUS FRAME
+		K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
 
-	-- TWEAK NAME BACKGROUND
-	FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+		-- TWEAK NAME BACKGROUND
+		FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
+	end
 
 	-- TWEAK PARTY FRAME
 	for i = 1, MAX_PARTY_MEMBERS do
@@ -223,11 +225,13 @@ function Unitframes:Setup()
 
 	-- Boss Frames
 	for i = 1, MAX_BOSS_FRAMES do -- Scale Them
+	if InCombatLockdown() then return end
 		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent);
 		_G["Boss"..i.."TargetFrame"]:SetScale(0.95);
 		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND");
 	end
 	for i = 2, MAX_BOSS_FRAMES do -- Adjust Positions
+	if InCombatLockdown() then return end
 		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15);
 	end
 
@@ -258,38 +262,30 @@ if C.Misc.Armory == true then
 end
 
 function Unitframes:OnEvent(event)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		if (CombatLock == false) then
-			Unitframes:Setup()
-			startTimer = true
-		end
+	if (event == "PLAYER_LOGIN") then
+		Unitframes:Setup()
 	end
 
 	if (event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE") then
-		if (CombatLock == false) then
-			local isInVehicle = UnitControllingVehicle("player")
-			if (isInVehicle == true) then
-				Unitframes:Setup()
-			end
-
-			if (UnitHasVehiclePlayerFrameUI("player")) then
-				Unitframes:Setup()
-			end
+		local isInVehicle = UnitControllingVehicle("player")
+		if (isInVehicle == true) then
+			Unitframes:Setup()
+		elseif (isInVehicle == false) then
+			Unitframes:Setup() -- Should we check this just incase?
 		end
 	end
 
-	if (event == "PLAYER_REGEN_DISABLED") then
-		CombatLock = true
+	if (UnitHasVehiclePlayerFrameUI("player")) then
+		Unitframes:Setup()
 	end
 
 	if (event == "PLAYER_REGEN_ENABLED") then
-		CombatLock = false
+		Unitframes:Setup()
 	end
 end
 
-Unitframes:RegisterEvent("PLAYER_ENTERING_WORLD")
+Unitframes:RegisterEvent("PLAYER_LOGIN")
 Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
 Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
-Unitframes:RegisterEvent("PLAYER_REGEN_DISABLED")
 Unitframes:RegisterEvent("PLAYER_REGEN_ENABLED")
 Unitframes:SetScript("OnEvent", Unitframes.OnEvent)
