@@ -5,7 +5,6 @@ local _G = _G
 local match = string.match
 local ceil = math.ceil
 local fmod = math.fmod
-local IsAddOnLoaded = IsAddOnLoaded
 local CreateFrame = CreateFrame
 local IsAlreadyKnown = IsAlreadyKnown
 local GetItemInfo = GetItemInfo
@@ -16,7 +15,7 @@ local GetAuctionItemInfo = GetAuctionItemInfo
 local canUse = canUse
 local hooksecurefunc = hooksecurefunc
 
-if IsAddOnLoaded("RecipeKnown") or IsAddOnLoaded("AlreadyKnown") then return end
+if K.IsAddOnEnabled("RecipeKnown") or K.IsAddOnEnabled("AlreadyKnown") then return end
 local color = {r = 0.1, g = 1, b = 0.1}
 local knowns, lines = {}, {}
 local glyph = AUCTION_CATEGORY_GLYPHS
@@ -214,7 +213,7 @@ local function GuildRewards_Update()
 end
 
 local isBlizzard_GuildUILoaded
-if IsAddOnLoaded("Blizzard_GuildUI") then
+if K.IsAddOnEnabled("Blizzard_GuildUI") then
 	isBlizzard_GuildUILoaded = true
 	hooksecurefunc("GuildRewards_Update", GuildRewards_Update)
 	hooksecurefunc(GuildRewardsContainer, "update", GuildRewards_Update)
@@ -246,7 +245,7 @@ local function GuildBankFrame_Update()
 end
 
 local isBlizzard_GuildBankUILoaded
-if IsAddOnLoaded("Blizzard_GuildBankUI") then
+if K.IsAddOnEnabled("Blizzard_GuildBankUI") then
 	isBlizzard_GuildBankUILoaded = true
 	hooksecurefunc("GuildBankFrame_Update", GuildBankFrame_Update)
 end
@@ -307,7 +306,7 @@ local function AuctionFrameAuctions_Update()
 end
 
 local isBlizzard_AuctionUILoaded
-if IsAddOnLoaded("Blizzard_AuctionUI") then
+if K.IsAddOnEnabled("Blizzard_AuctionUI") then
 	isBlizzard_AuctionUILoaded = true
 	hooksecurefunc("AuctionFrameBrowse_Update", AuctionFrameBrowse_Update)
 	hooksecurefunc("AuctionFrameBid_Update", AuctionFrameBid_Update)
@@ -345,7 +344,7 @@ local function BlackMarketScrollFrame_Update()
 end
 
 local isBlizzard_BlackMarketUILoaded
-if IsAddOnLoaded("Blizzard_BlackMarketUI") then
+if K.IsAddOnEnabled("Blizzard_BlackMarketUI") then
 	isBlizzard_BlackMarketUILoaded = true
 	hooksecurefunc("BlackMarketFrame_UpdateHotItem", BlackMarketFrame_UpdateHotItem)
 	hooksecurefunc("BlackMarketScrollFrame_Update", BlackMarketScrollFrame_Update)

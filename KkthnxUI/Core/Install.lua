@@ -10,7 +10,6 @@ local print = print
 
 -- WOW API
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
 local SetCVar = SetCVar
 local ReloadUI = ReloadUI
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup
@@ -81,7 +80,7 @@ local function InstallUI()
 	ChatFrame4:Show()
 
 	-- SETTING CHAT FRAMES
-	if C.Chat.Enable == true and not (select(4, GetAddOnInfo("Prat-3.0"))) or (select(4, GetAddOnInfo("Chatter"))) then
+	if C.Chat.Enable == true and not K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
 		for i = 1, NUM_CHAT_WINDOWS do
 			local Frame = _G["ChatFrame"..i]
 			local ID = Frame:GetID()

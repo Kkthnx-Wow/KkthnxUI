@@ -2,7 +2,6 @@ local K, C, L, _ = select(2, ...):unpack()
 if C.Skins.Spy ~= true then return end
 
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")

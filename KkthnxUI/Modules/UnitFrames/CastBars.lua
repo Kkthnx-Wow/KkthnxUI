@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.Unitframe.Enable ~= true or IsAddOnLoaded("Quartz") then return end
+if C.Unitframe.Enable ~= true or K.IsAddOnEnabled("Quartz") then return end
 
 -- LUA API
 local unpack = unpack

@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if not IsAddOnLoaded("KkthnxUI_Config") then return end
+if not K.IsAddOnEnabled("KkthnxUI_Config") then return end
 
 local pairs = pairs
 

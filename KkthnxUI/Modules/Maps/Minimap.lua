@@ -4,7 +4,6 @@ if C.Minimap.Enable ~= true then return end
 local _G = _G
 local unpack = unpack
 local pairs = pairs
-local IsAddOnLoaded = IsAddOnLoaded
 local Mail = MiniMapMailFrame
 local MailBorder = MiniMapMailBorder
 local MailIcon = MiniMapMailIcon

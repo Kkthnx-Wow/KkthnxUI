@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if not IsAddOnLoaded("CLCRet") or C.Skins.CLCRet ~= true or K.Class ~= "PALADIN" then return end
+if not K.IsAddOnEnabled("CLCRet") or C.Skins.CLCRet ~= true or K.Class ~= "PALADIN" then return end
 
 -- CLCRet skin(by Elv22)
 if not LibStub then return end

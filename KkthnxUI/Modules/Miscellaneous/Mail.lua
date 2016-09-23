@@ -1,6 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Misc.EnhancedMail ~= true then return end
-if IsAddOnLoaded("OpenAll") or IsAddOnLoaded("Postal") or IsAddOnLoaded("TradeSkillMaster_Mailing") then return end
+if K.IsAddOnEnabled("OpenAll") or K.IsAddOnEnabled("Postal") or K.IsAddOnEnabled("TradeSkillMaster_Mailing") then return end
 
 local format = string.format
 

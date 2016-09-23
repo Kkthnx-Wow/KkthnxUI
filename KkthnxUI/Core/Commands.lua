@@ -14,7 +14,6 @@ local GetAddOnInfo = GetAddOnInfo
 local GetMouseFocus = GetMouseFocus
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
 local GetNumQuestLogEntries = GetNumQuestLogEntries
-local IsAddOnLoaded = IsAddOnLoaded
 local IsInInstance = IsInInstance
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar

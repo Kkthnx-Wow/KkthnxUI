@@ -9,7 +9,6 @@ local select = select
 local remove = table.remove
 
 -- WOW API
-local IsAddOnLoaded = IsAddOnLoaded
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local InCombatLockdown = InCombatLockdown
@@ -241,7 +240,7 @@ function Unitframes:Setup()
 			_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
 		end
 		-- ARENA FRAMES
-		if (IsAddOnLoaded("Blizzard_ArenaUI")) then
+		if K.IsAddOnEnabled("Blizzard_ArenaUI") then
 			for i = 1, MAX_ARENA_ENEMIES do
 				_G["ArenaPrepFrame"..i]:SetScale(1.4)
 			end

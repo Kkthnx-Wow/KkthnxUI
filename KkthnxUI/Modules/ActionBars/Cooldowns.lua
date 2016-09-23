@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or IsAddOnLoaded("CooldownCount") or C.Cooldown.Enable ~= true then return end
+if K.IsAddOnEnabled("OmniCC") or K.IsAddOnEnabled("ncCooldown") or K.IsAddOnEnabled("CooldownCount") or C.Cooldown.Enable ~= true then return end
 
 local floor = math.floor
 local min = math.min
@@ -7,7 +7,7 @@ local tonumber = tonumber
 
 local GetTime = GetTime
 
-if IsAddOnLoaded("BigDebuffs") then
+if K.IsAddOnEnabled("BigDebuffs") then
 	OmniCC = false
 else
 	OmniCC = true

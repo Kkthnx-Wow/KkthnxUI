@@ -3,7 +3,7 @@ local K, C, L, _ = select(2, ...):unpack()
 local WatchFrame
 local AutoCollapse = CreateFrame("Frame")
 
-if C.Automation.AutoCollapse ~= true or IsAddOnLoaded("QuestHelper") == true then
+if C.Automation.AutoCollapse ~= true or K.IsAddOnEnabled("QuestHelper") == true then
 	AutoCollapse:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	AutoCollapse:UnregisterEvent("PLAYER_UPDATE_RESTING")
 end

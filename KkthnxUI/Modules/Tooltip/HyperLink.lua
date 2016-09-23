@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if C.Chat.Enable ~= true or C.Tooltip.Enable ~= true or IsAddOnLoaded("tekKompare") then return end
+if C.Chat.Enable ~= true or C.Tooltip.Enable ~= true or K.IsAddOnEnabled("tekKompare") then return end
 
 local _G = _G
 local match = string.match

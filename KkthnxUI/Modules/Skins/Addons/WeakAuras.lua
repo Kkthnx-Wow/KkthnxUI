@@ -4,14 +4,13 @@ if C.Skins.WeakAuras ~= true then return end
 local pairs = pairs
 local select = select
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
 
 -- WEAKAURAS SKIN
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
-	if not IsAddOnLoaded("WeakAuras") then return end
+	if not K.IsAddOnEnabled("WeakAuras") then return end
 
 	local function Skin_WeakAuras(frame)
 		if not frame.shadow then
