@@ -1,4 +1,4 @@
--- INITIATION / ENGINE OF KKTHNXUI
+-- Initiation / Engine of KkthnxUI
 local AddOn, Engine = ...
 local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
 local Windowed = Display_DisplayModeDropDown:windowedmode()
@@ -31,6 +31,32 @@ Engine[1].ScreenWidth = tonumber(string.match(Engine[1].Resolution, "(%d+)x+%d")
 Engine[1].VersionNumber = tonumber(Engine[1].Version)
 Engine[1].WoWPatch, Engine[1].WoWBuild, Engine[1].WoWPatchReleaseDate, Engine[1].TocVersion = GetBuildInfo()
 
+-- Matching the pre-MoP return arguments of the Blizzard API call
+-- Credits to Goldpaw for this.
+Engine[1].GetAddOnInfo = function(index)
+	local name, title, notes, enabled, loadable, reason, security
+	if tonumber((select(2, GetBuildInfo()))) >= 19034 then
+		name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo(index)
+		enabled = not(GetAddOnEnableState(UnitName("player"), index) == 0) -- not a boolean, messed that one up! o.O
+	else
+		name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(index)
+	end
+	return name, title, notes, enabled, loadable, reason, security
+end
+
+-- Check if an addon is enabled	in the addon listing
+Engine[1].IsAddOnEnabled = function(addon_name)
+	local addon_name = strlower(addon_name)
+	for i = 1,GetNumAddOns() do
+		local name, title, notes, enabled, loadable, reason, security = Engine[1].GetAddOnInfo(i)
+		if strlower(name) == addon_name then
+			if enabled then
+				return true
+			end
+		end
+	end
+end
+
 SLASH_RELOADUI1, SLASH_RELOADUI2 = "/rl", "/reloadui"
 SlashCmdList["RELOADUI"] = ReloadUI
 
@@ -52,4 +78,4 @@ As well as K, _ = select(2, ...):unpack()
 This is going to depend on what you are going to be using in the file.
 
 We put an _ for taint prevention.
-]]
+--]]

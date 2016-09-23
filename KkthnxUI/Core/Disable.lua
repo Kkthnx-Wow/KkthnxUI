@@ -1,8 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 
-local GetAddOnInfo = GetAddOnInfo
-
--- PREVENT USERS CONFIG ERRORS
+-- Prevent users config errors
 if C.ActionBar.RightBars > 3 then
 	C.ActionBar.RightBars = 3
 end
@@ -46,68 +44,73 @@ if C.Unitframe.Enable == false then
 	C.Filger.Enable = false
 end
 
--- AUTO-OVERWRITE SCRIPT CONFIG IS X ADDON IS FOUND
-if (select(4, GetAddOnInfo("SexyMap"))) or (select(4, GetAddOnInfo("wMinimap"))) then
+-- Auto-overwrite script config is X addon is found
+-- Here we use our own function to check.
+if K.IsAddOnEnabled("SexyMap") or K.IsAddOnEnabled("bdMinimap") or K.IsAddOnEnabled("BasicMinimap") or K.IsAddOnEnabled("RicoMiniMap") or K.IsAddOnEnabled("Chinchilla") then
 	C.Minimap.Enable = false
 end
 
-if (select(4, GetAddOnInfo("XPerl"))) or (select(4, GetAddOnInfo("Stuf"))) or (select(4, GetAddOnInfo("PitBull4"))) or (select(4, GetAddOnInfo("ShadowedUnitFrames"))) or (select(4, GetAddOnInfo("oUF_Abu"))) then
+if K.IsAddOnEnabled("XPerl") or K.IsAddOnEnabled("Stuf") or K.IsAddOnEnabled("PitBull4") or K.IsAddOnEnabled("ShadowedUnitFrames") or K.IsAddOnEnabled("oUF_Abu") then
 	C.Unitframe.Enable = false
 	C.Unitframe.EnhancedFrames = false
 end
 
-if (select(4, GetAddOnInfo("QuestHelper"))) then -- THIS IS A TEMP FIX UNTIL I FIGURE OUT WHAT TO BLACKLIST FROM SHITTY QUESTHELPER.
-	C.Skins.MinimapButtons = false
-end
-
-if (select(4, GetAddOnInfo("Dominos"))) or (select(4, GetAddOnInfo("Bartender4"))) or (select(4, GetAddOnInfo("RazerNaga"))) then
+if K.IsAddOnEnabled("Dominos") or K.IsAddOnEnabled("Bartender4") or K.IsAddOnEnabled("RazerNaga")  or K.IsAddOnEnabled("daftMainBar") then
 	C.ActionBar.Enable = false
 end
 
-if (select(4, GetAddOnInfo("WorldQuestTracker"))) or (select(4, GetAddOnInfo("Mapster"))) or (select(4, GetAddOnInfo("WorldQuestsList"))) then
+if K.IsAddOnEnabled("WorldQuestTracker") or K.IsAddOnEnabled("Mapster") or K.IsAddOnEnabled("WorldQuestsList") then
 	C.WorldMap.SmallWorldMap = false
 end
 
-if (select(4, GetAddOnInfo("AdiBags"))) or (select(4, GetAddOnInfo("ArkInventory"))) or (select(4, GetAddOnInfo("cargBags_Nivaya"))) or (select(4, GetAddOnInfo("cargBags"))) or (select(4, GetAddOnInfo("Bagnon"))) or (select(4, GetAddOnInfo("Combuctor"))) or (select(4, GetAddOnInfo("TBag"))) or (select(4, GetAddOnInfo("BaudBag"))) then
+if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
 	C.Bag.Enable = false
 end
 
-if (select(4, GetAddOnInfo("Prat-3.0"))) or (select(4, GetAddOnInfo("Chatter"))) then
+if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
 	C.Chat.Enable = false
 end
 
-if (select(4, GetAddOnInfo("TidyPlates"))) or (select(4, GetAddOnInfo("Aloft"))) or (select(4, GetAddOnInfo("dNamePlates"))) or (select(4, GetAddOnInfo("caelNamePlates"))) then
+if K.IsAddOnEnabled("TidyPlates") or K.IsAddOnEnabled("Aloft") or K.IsAddOnEnabled("Kui_Nameplates") then
 	C.Nameplate.Enable = false
 end
 
-if (select(4, GetAddOnInfo("TipTop"))) or (select(4, GetAddOnInfo("TipTac"))) or (select(4, GetAddOnInfo("FreebTip"))) or (select(4, GetAddOnInfo("bTooltip"))) or (select(4, GetAddOnInfo("PhoenixTooltip"))) or (select(4, GetAddOnInfo("Icetip"))) or (select(4, GetAddOnInfo("rTooltip"))) then
+if K.IsAddOnEnabled("TipTop") or K.IsAddOnEnabled("TipTac") or K.IsAddOnEnabled("FreebTip") or K.IsAddOnEnabled("bTooltip") or K.IsAddOnEnabled("PhoenixTooltip") or K.IsAddOnEnabled("Icetip") or K.IsAddOnEnabled("rTooltip") then
 	C.Tooltip.Enable = false
 end
 
-if (select(4, GetAddOnInfo("TipTacTalents"))) then
+if K.IsAddOnEnabled("TipTacTalents") then
 	C.Tooltip.Talents = false
 end
 
-if (select(4, GetAddOnInfo("GnomishVendorShrinker"))) or (select(4, GetAddOnInfo("AlreadyKnown"))) then
+if K.IsAddOnEnabled("MikScrollingBattleText") or K.IsAddOnEnabled("Parrot") or K.IsAddOnEnabled("xCT") or K.IsAddOnEnabled("sct") then
+	C.CombatText.Enable = false
+end
+
+if K.IsAddOnEnabled("GnomishVendorShrinker") or K.IsAddOnEnabled("AlreadyKnown") then
 	C.Misc.AlreadyKnown = false
 end
 
-if (select(4, GetAddOnInfo("BadBoy"))) then
+if K.IsAddOnEnabled("BadBoy") then
 	C.Chat.Spam = false
 end
 
-if (select(4, GetAddOnInfo("cInterrupt"))) then
+if K.IsAddOnEnabled("cInterrupt") then
 	C.Announcements.Interrupt = false
 end
 
-if (select(4, GetAddOnInfo("NiceBubbles"))) then
+if K.IsAddOnEnabled("NiceBubbles") then
 	C.Skins.ChatBubble = false
 end
 
-if (select(4, GetAddOnInfo("ChatSounds"))) then
+if K.IsAddOnEnabled("ChatSounds") then
 	C.Chat.WhispSound = false
 end
 
-if (select(4, GetAddOnInfo("Doom_CooldownPulse"))) then
+if K.IsAddOnEnabled("ChatSounds") then
+	C.Chat.WhispSound = false
+end
+
+if K.IsAddOnEnabled("Doom_CooldownPulse") then
 	C.PulseCD.Enable = false
 end

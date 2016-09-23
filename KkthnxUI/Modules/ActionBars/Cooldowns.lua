@@ -1,5 +1,5 @@
 local K, C, L, _ = select(2, ...):unpack()
-if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or C.Cooldown.Enable ~= true then return end
+if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or IsAddOnLoaded("CooldownCount") or C.Cooldown.Enable ~= true then return end
 
 local floor = math.floor
 local min = math.min

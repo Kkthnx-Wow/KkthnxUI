@@ -4,16 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - [v5.27] - 4:55:10 AM EDT Wednesday, September 21, 2016
+## [Unreleased] - [v5.27] - 10:40:06 PM EDT Thursday, September 22, 2016
 ### Added
-- Add resting to auto collapse?
+- Add resting to auto collapse?.
 - Added Combattext module.
 - Added spellid and itemcount to tooltip.
 - Adjusted spacing between castbar and health for nameplates.
 - Attempt to fix castbar resizing issue.
-- Attempt to fix unitframes not clickable after vehicle :(
+- Attempt to fix unitframes not clickable after vehicle :(.
 - Blizzard_CombatText added as OptionalDeps.
 - Chat spam list updated.
+- Disable.lua rewrote for new functions.
 - Fixed filger mover not registering.
 - Fixed world quest tooltip issue.
 - General cleanup.
@@ -21,8 +22,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Install image complete added.
 - Localization updated.
 - Locals updated.
-- Media.lua updated
-- New Nameplates debuff updated for DemonHunters
+- Media.lua updated.
+- More addons added to Disable.lua.
+- New Nameplates debuff updated for DemonHunters.
+- New functions to check for other addons over mine. (Thanks to Goldpaw)
 - Pushed to github for backup.
 - Rewrote nameplates.
 - WIP micromenu list to be sorted.
