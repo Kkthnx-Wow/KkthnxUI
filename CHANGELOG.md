@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - [v5.27] - 10:40:06 PM EDT Thursday, September 22, 2016
+## [Unreleased] - [v5.28] - 10:40:06 PM EDT Thursday, September 22, 2016
+### Added
+
+## [v5.27] - 10:17:02 PM EDT Friday, September 23, 2016
 ### Added
 - Add resting to auto collapse?.
 - Added Combattext module.
@@ -27,8 +30,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - New Nameplates debuff updated for DemonHunters.
 - New functions to check for other addons over mine. (Thanks to Goldpaw)
 - Pushed to github for backup.
+- Raid auras added to filger.
 - Rewrote nameplates.
+- Updated Licenses.
 - WIP micromenu list to be sorted.
+
+### Changed
+- Changed how the castbars are handled with in combat.
+- Changed unitframes while in combat.
+
+### Fixed
+- Try to fix freezing issue reported. Untested. Im not even sure its my UI?
+
+### Removed
+- Removed some code for general cleanup.
 
 ## [v5.26] - 3:22:03 PM EDT Tuesday, September 20, 2016
 ### Added
