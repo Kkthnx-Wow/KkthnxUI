@@ -7,7 +7,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
-	if not (select(4, GetAddOnInfo("Spy"))) then return end
+	if not K.IsAddOnEnabled("Spy") then return end
 
 	local function Skin_Spy()
 		Spy_MainWindow:StripTextures()

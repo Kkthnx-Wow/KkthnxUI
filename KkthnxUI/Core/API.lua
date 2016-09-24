@@ -1,14 +1,14 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- APPLICATION PROGRAMMING INTERFACE FOR KKTHNXUI (API)
+-- Application Programming Interface for KkthnxUI (API)
 
--- LUA API
+-- Lua API
 local getmetatable = getmetatable
 local match = string.match
 local floor = math.floor
 local unpack, select = unpack, select
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
 
@@ -84,7 +84,7 @@ local function CreateBorder(f, size)
 	f.border = border
 end
 
--- BACKDROP
+-- Backdrop
 local function CreateBackdrop(f, t, size)
 	if not t then t = "Default" end
 	size = size or 2
@@ -103,7 +103,7 @@ local function CreateBackdrop(f, t, size)
 	f.backdrop = b
 end
 
--- WHO DOESN'T LIKE SHADOWS! MORE SHADOWS!
+-- Who doesn't like shadows! More shadows!
 local function CreatePixelShadow(f, size)
 	if f.Shadow then return end
 	size = size or 3
@@ -145,7 +145,7 @@ end
 
 local function GetTemplate(t)
 	if t == "ClassColor" then
-		local Color = BETTER_RAID_CLASS_COLORS[K.Class]
+		local Color = KkthnxUI_Raid_Class_Colors[K.Class]
 		borderr, borderg, borderb, bordera = Color[1], Color[2], Color[3], Color[4]
 		backdropr, backdropg, backdropb, backdropa = unpack(C.Media.Backdrop_Color)
 	else
@@ -179,7 +179,7 @@ local function SetTemplate(f, t)
 	end
 end
 
--- CREATE PANEL
+-- Create panel
 local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	local r, g, b = K.Color.r, K.Color.g, K.Color.b
 	f:SetFrameLevel(1)
@@ -217,7 +217,7 @@ local function Kill(object)
 	object:Hide()
 end
 
--- STRIPTEXTURES
+-- StripTextures
 local function StripTextures(Object, Kill, Text)
 	for i = 1, Object:GetNumRegions() do
 		local Region = select(i, Object:GetRegions())
@@ -256,7 +256,7 @@ local function StyleButton(button)
 	end
 end
 
--- FADE IN/OUT FUNCTIONS
+-- Fade in/out functions
 local function FadeIn(f)
 	UIFrameFadeIn(f, 0.4, f:GetAlpha(), 1)
 end
@@ -265,7 +265,7 @@ local function FadeOut(f)
 	UIFrameFadeOut(f, 0.8, f:GetAlpha(), 0)
 end
 
--- MERGE KKTHNXUI API WITH WOWS API
+-- Merge KkthnxUI API with Wows API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
 	if not object.CreateOverlay then mt.CreateOverlay = CreateOverlay end

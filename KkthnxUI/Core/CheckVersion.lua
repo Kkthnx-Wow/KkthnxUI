@@ -29,13 +29,13 @@ function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
 			return
 		end
 
-		if (tonumber(message) > Version) then -- WE RECIEVED A HIGHER VERSION, WE'RE OUTDATED. :(
+		if (tonumber(message) > Version) then -- We recieved a higher version, we're outdated. :(
 			StaticPopup_Show("UI_OUTDATED")
 			K.Print(L_MISC_UI_OUTDATED)
 			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end
 	else
-		-- TELL EVERYONE WHAT VERSION WE USE.
+		-- Tell everyone what version we use.
 		local Channel
 
 		if IsInRaid() then
@@ -46,7 +46,7 @@ function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
 			Channel = "GUILD"
 		end
 
-		if Channel then -- PUTTING A SMALL DELAY ON THE CALL JUST TO BE CERTAIN IT GOES OUT.
+		if Channel then -- Putting a small delay on the call just to be certain it goes out.
 			K.Delay(2, SendAddonMessage, "KkthnxUIVersion", Version, Channel)
 		end
 	end

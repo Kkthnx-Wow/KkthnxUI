@@ -67,7 +67,7 @@ local function InstallUI()
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
-	-- CREATE OUR CUSTOM CHATFRAMES
+	-- Create our custom chatframes
 	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
@@ -79,7 +79,7 @@ local function InstallUI()
 	FCF_DockFrame(ChatFrame4)
 	ChatFrame4:Show()
 
-	-- SETTING CHAT FRAMES
+	-- Setting chat frames
 	if C.Chat.Enable == true and not K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
 		for i = 1, NUM_CHAT_WINDOWS do
 			local Frame = _G["ChatFrame"..i]
@@ -87,19 +87,19 @@ local function InstallUI()
 
 			Frame:SetSize(C.Chat.Width, C.Chat.Height)
 
-			-- DEFAULT WIDTH AND HEIGHT OF CHATS
+			-- Default width and height of chats
 			SetChatWindowSavedDimensions(ID, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
 
-			-- MOVE GENERAL CHAT TO BOTTOM LEFT
+			-- Move General chat to bottom left
 			if (ID == 1) then
 				Frame:ClearAllPoints()
 				Frame:SetPoint(unpack(C.Position.Chat))
 			end
 
-			-- SAVE NEW DEFAULT POSITION AND DIMENSION
+			-- Save new default position and dimension
 			FCF_SavePositionAndDimensions(Frame)
 
-			-- SET DEFAULT FONT SIZE
+			-- Set default font size
 			FCF_SetChatWindowFontSize(nil, Frame, 12)
 
 			if (ID == 1) then
@@ -115,7 +115,7 @@ local function InstallUI()
 			end
 		end
 
-		-- SET MORE CHAT GROUPS
+		-- Set more chat groups
 		ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 		ChatFrame_RemoveChannel(ChatFrame1, TRADE)
 		ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
@@ -154,7 +154,7 @@ local function InstallUI()
 		ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
 		ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
 
-		-- SETUP THE SPAM CHAT FRAME
+		-- Setup the spam chat frame
 		ChatFrame_RemoveAllMessageGroups(ChatFrame3)
 		ChatFrame_AddChannel(ChatFrame3, TRADE)
 		ChatFrame_AddChannel(ChatFrame3, GENERAL)
@@ -162,7 +162,7 @@ local function InstallUI()
 		ChatFrame_AddChannel(ChatFrame3, L_CHAT_GUILDRECRUITMENT)
 		ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOOKINGFORGROUP)
 
-		-- SETUP THE LOOT CHAT
+		-- Setup the loot chat
 		ChatFrame_RemoveAllMessageGroups(ChatFrame4)
 		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
 		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
@@ -174,7 +174,7 @@ local function InstallUI()
 			SetCVar("scriptErrors", 1)
 		end
 
-		-- ENABLE CLASS COLOR AUTOMATICALLY ON LOGIN AND EACH CHARACTER WITHOUT DOING /CONFIGURE EACH TIME.
+		-- Enable class color automatically on login and each character without doing /configure each time.
 		ToggleChatColorNamesByClassGroup(true, "SAY")
 		ToggleChatColorNamesByClassGroup(true, "EMOTE")
 		ToggleChatColorNamesByClassGroup(true, "YELL")
@@ -199,7 +199,7 @@ local function InstallUI()
 		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 	end
 
-	-- RESET SAVED VARIABLES ON CHAR
+	-- Reset saved variables on char
 	SavedPositions = {}
 	SavedOptionsPerChar = {}
 
@@ -221,7 +221,7 @@ local function DisableUI()
 	ReloadUI()
 end
 
--- Install Popups
+-- Install popups
 StaticPopupDialogs["INSTALL_UI"] = {
 	text = L_POPUP_INSTALLUI,
 	button1 = ACCEPT,
@@ -277,7 +277,7 @@ SlashCmdList.INSTALLUI = function() StaticPopup_Show("INSTALL_UI") end
 SLASH_CONFIGURE1 = "/resetui"
 SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
 
--- ON LOGIN FUNCTION
+-- On login function
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
@@ -285,7 +285,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		return
 	end
 
-	-- CREATE AN EMPTY CVAR IF THEY DON'T EXIST
+	-- Create an empty cvar if they don't exist
 	if not SavedPositions then SavedPositions = {} end
 	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
 	if SavedOptionsPerChar.FogOfWar == nil then SavedOptionsPerChar.FogOfWar = false end
@@ -300,7 +300,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		StaticPopup_Show("DISABLE_UI")
 	else
 
-		-- INSTALL DEFAULT IF WE NEVER RAN KKTHNXUI ON THIS CHARACTER
+		-- Install default if we never ran kkthnxui on this character
 		if not SavedOptionsPerChar.Install then
 			StaticPopup_Show("INSTALL_UI")
 		end
@@ -308,7 +308,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 
-	-- WELCOME MESSAGE
+	-- Welcome message
 	if C.General.WelcomeMessage == true then
 		print("|cffffe02e"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
 		print("|cffffe02e"..L_WELCOME_LINE_2_1.."|cffffe02e"..L_WELCOME_LINE_2_2.."|r")
@@ -362,7 +362,7 @@ if not InstallStepComplete then
 	imsg.text:SetJustifyH("CENTER")
 end
 
--- HELP TRANSLATE
+-- Help translate
 if C.General.TranslateMessage == true then
 	if GetLocale() == "esES" or GetLocale() == "koKR" or GetLocale() == "ruRU" or GetLocale() == "esMX" or GetLocale() == "deDE" or GetLocale() == "frFR" or GetLocale() == "koKR" or GetLocale() == "zhCN" or GetLocale() == "zhTW" then
 		print("|cffffe02ePlease help us translate the text settings for |cff71d5ffKkthnxUI|r. |cffffe02eYou can post a commit to|r |cff71d5ffgithub.com/Kkthnx/KkthnxUI_Legion|r")

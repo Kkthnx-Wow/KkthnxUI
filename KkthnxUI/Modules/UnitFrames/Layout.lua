@@ -50,18 +50,18 @@ function Unitframes:Setup()
 			if UnitPlayerControlled(unit) then
 				if UnitIsPlayer(unit) then
 					local Class = select(2, UnitClass(unit))
-					color = BETTER_RAID_CLASS_COLORS[Class]
+					color = KkthnxUI_Raid_Class_Colors[Class]
 				else
 					color = PetColor
 				end
 			elseif UnitIsDeadOrGhost(unit) then
 				color = GRAY_FONT_COLOR
 			else
-				color = BETTER_REACTION_COLORS[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
+				color = KkthnxUI_Reaction_Colors[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
 			end
 
 			if not color then
-				color = (CUSTOM_CLASS_COLORS or BETTER_RAID_CLASS_COLORS)["PRIEST"]
+				color = (CUSTOM_CLASS_COLORS or KkthnxUI_Raid_Class_Colors)["PRIEST"]
 			end
 
 			self.name:SetTextColor(color[1], color[2], color[3])

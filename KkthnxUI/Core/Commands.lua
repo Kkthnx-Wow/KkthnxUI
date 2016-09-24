@@ -18,11 +18,11 @@ local IsInInstance = IsInInstance
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar
 
--- READY CHECK
+-- Ready check
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
 SLASH_RCSLASH1 = "/rc"
 
--- HELP FRAME.
+-- Help frame.
 SlashCmdList.TICKET = function() ToggleHelpFrame() end
 SLASH_TICKET1 = "/gm"
 
@@ -31,19 +31,19 @@ SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffff000
 SLASH_CLEARCOMBAT1 = "/clearcombat"
 SLASH_CLEARCOMBAT2 = "/clfix"
 
--- HERE WE CAN RESTART WOW'S ENGINE. COULD BE USE FOR SOUND ISSUES AND MORE.
+-- Here we can restart wow's engine. could be use for sound issues and more.
 SlashCmdList.GFXENGINE = function() RestartGx() end
 SLASH_GFXENGINE1 = "/restartgfx"
 SLASH_GFXENGINE2 = "/fixgfx"
 
--- CLEAR ALL QUESTS IN QUESTLOG
+-- Clear all quests in questlog
 SlashCmdList.CLEARQUESTS = function()
 	for i = 1, GetNumQuestLogEntries() do SelectQuestLogEntry(i) SetAbandonQuest() AbandonQuest() end
 end
 SLASH_CLEARQUESTS1 = "/clearquests"
 SLASH_CLEARQUESTS2 = "/clquests"
 
--- KKTHNXUI HELP COMMANDS
+-- KKTHNXUI help commands
 SlashCmdList.UIHELP = function()
 	for i, v in ipairs(L_SLASHCMD_HELP) do print("|cffffe02e"..("%s"):format(tostring(v)).."|r") end
 end
@@ -86,7 +86,7 @@ StaticPopupDialogs.DISBAND_RAID = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 5,
+	preferredIndex = 3,
 }
 
 SlashCmdList.GROUPDISBAND = function()
@@ -94,7 +94,7 @@ SlashCmdList.GROUPDISBAND = function()
 end
 SLASH_GROUPDISBAND1 = "/rd"
 
--- ENABLE LUA ERROR BY COMMAND
+-- Enable lua error by command
 function SlashCmdList.LUAERROR(msg)
 	msg = lower(msg)
 	if(msg == "on") then
@@ -112,7 +112,7 @@ function SlashCmdList.LUAERROR(msg)
 end
 SLASH_LUAERROR1 = "/luaerror"
 
--- CONVERT PARTY TO RAID
+-- Convert party to raid
 SlashCmdList.PARTYTORAID = function()
 	if GetNumGroupMembers() > 0 then
 		if UnitInRaid("player") and (UnitIsGroupLeader("player")) then
@@ -128,7 +128,7 @@ SLASH_PARTYTORAID1 = "/toraid"
 SLASH_PARTYTORAID2 = "/toparty"
 SLASH_PARTYTORAID3 = "/convert"
 
--- INSTANCE TELEPORT
+-- Instance teleport
 SlashCmdList.INSTTELEPORT = function()
 	local inInstance = IsInInstance()
 	if inInstance then
@@ -139,7 +139,7 @@ SlashCmdList.INSTTELEPORT = function()
 end
 SLASH_INSTTELEPORT1 = "/teleport"
 
--- SPEC SWITCHING(BY MONOLIT)
+-- Spec switching(by Monolit)
 SlashCmdList.SPEC = function(spec)
 	if K.Level >= SHOW_TALENT_LEVEL then
 		if GetSpecialization() ~= tonumber(spec) then
@@ -152,11 +152,11 @@ end
 SLASH_SPEC1 = "/ss"
 SLASH_SPEC2 = "/spec"
 
--- DEADLY BOSS MODS TESTING.
-SlashCmdList.DBMTEST = function() if (select(4, GetAddOnInfo("DBM-Core"))) then DBM:DemoMode() end end
+-- Deadly boss mods testing.
+SlashCmdList.DBMTEST = function() if K.IsAddOnEnabled("DBM-Core") then DBM:DemoMode() end end
 SLASH_DBMTEST1 = "/dbmtest"
 
--- CLEAR CHAT
+-- Clear chat
 SlashCmdList.CLEARCHAT = function(cmd)
 	cmd = cmd and strtrim(strlower(cmd))
 	for i = 1, NUM_CHAT_WINDOWS do
@@ -169,7 +169,7 @@ end
 SLASH_CLEARCHAT1 = "/cc"
 SLASH_CLEARCHAT2 = "/clearchat"
 
--- TEST BLIZZARD ALERT FRAMES
+-- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
 	PlaySound("LFG_Rewards")
 
@@ -195,7 +195,7 @@ SlashCmdList.TEST_ACHIEVEMENT = function()
 end
 SLASH_TEST_ACHIEVEMENT1 = "/testa"
 
--- GRID ON SCREEN
+-- Grid on screen
 local Grid
 local BoxSize = 32
 
@@ -298,7 +298,7 @@ local function BoostUI()
 	StaticPopup_Show("BOOST_UI_RELOAD")
 end
 
--- ADD A WARNING SO WE DO NOT PISS PEOPLE OFF.
+-- Add a warning so we do not piss people off.
 StaticPopupDialogs.BOOST_UI = {
 	text = L_POPUP_BOOSTUI,
 	button1 = ACCEPT,
@@ -308,7 +308,7 @@ StaticPopupDialogs.BOOST_UI = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
-	preferredIndex = 5,
+	preferredIndex = 3,
 }
 
 SLASH_BOOSTUI1 = "/boost"
@@ -323,5 +323,5 @@ StaticPopupDialogs.BOOST_UI_RELOAD = {
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
-	preferredIndex = 5,
+	preferredIndex = 3,
 }

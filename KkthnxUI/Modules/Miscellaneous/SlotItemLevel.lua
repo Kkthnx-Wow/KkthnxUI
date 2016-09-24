@@ -91,7 +91,7 @@ local function CreateButtonsText(frame)
 end
 
 local function UpdateButtonsText(frame)
-	if frame == "Inspect" and not InspectFrame:IsShown() then return end
+	-- if frame == "Inspect" and not InspectFrame:IsShown() then return end
 
 	for _, slot in pairs(slots) do
 		local id = GetInventorySlotInfo(slot)
@@ -99,13 +99,13 @@ local function UpdateButtonsText(frame)
 		local itemLink
 		local ulvl
 
-		if frame == "Inspect" then
-			itemLink = GetInventoryItemLink("target", id)
-			ulvl = UnitLevel("target")
-		else
+		-- if frame == "Inspect" then
+			-- itemLink = GetInventoryItemLink("target", id)
+			-- ulvl = UnitLevel("target")
+		-- else
 			itemLink = GetInventoryItemLink("player", id)
 			ulvl = UnitLevel("player")
-		end
+		-- end
 
 		if slot == "ShirtSlot" or slot == "TabardSlot" then
 			text:SetText("")
@@ -143,11 +143,11 @@ local function UpdateButtonsText(frame)
 
 						if quality == 6 then
 							if id == 17 then
-								if frame == "Inspect" then
-									itemLink = GetInventoryItemLink("target", 16)
-								else
+								-- if frame == "Inspect" then
+									-- itemLink = GetInventoryItemLink("target", 16)
+								-- else
 									itemLink = GetInventoryItemLink("player", 16)
-								end
+								-- end
 								level = GetItemLevelFromTooltip(itemLink) or level
 							else
 								level = GetItemLevelFromTooltip(itemLink) or level
@@ -181,7 +181,7 @@ OnEvent:SetScript("OnEvent", function(self, event)
 		UpdateButtonsText("Inspect")
 	end
 end)
-
+--[[
 local OnLoad = CreateFrame("Frame")
 OnLoad:RegisterEvent("ADDON_LOADED")
 OnLoad:SetScript("OnEvent", function(self, event, addon)
@@ -194,3 +194,4 @@ OnLoad:SetScript("OnEvent", function(self, event, addon)
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end)
+--]]

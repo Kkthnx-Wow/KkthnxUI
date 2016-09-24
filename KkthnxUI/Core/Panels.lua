@@ -1,15 +1,15 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- LUA API
+-- Lua API
 local unpack = unpack
 local _G = _G
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local Movers = K.Movers
 
---	BOTTOM BARS ANCHOR
+-- Bottom bars anchor
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", PetBattleFrameHider)
 BottomBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.BottomBars))
 BottomBarAnchor:SetWidth((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
@@ -27,7 +27,7 @@ end
 BottomBarAnchor:SetFrameStrata("LOW")
 Movers:RegisterFrame(BottomBarAnchor)
 
---	RIGHT BARS ANCHOR
+-- Right bars anchor
 local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", PetBattleFrameHider)
 RightBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.RightBars))
 RightBarAnchor:SetHeight((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
@@ -43,7 +43,7 @@ end
 RightBarAnchor:SetFrameStrata("LOW")
 Movers:RegisterFrame(RightBarAnchor)
 
---	SPLIT BAR ANCHOR
+-- Split bar anchor
 if C.ActionBar.SplitBars == true then
 	local SplitBarLeft = CreateFrame("Frame", "SplitBarLeft", PetBattleFrameHider)
 	SplitBarLeft:CreatePanel("Invisible", (C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2), (C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace, "BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
@@ -54,7 +54,7 @@ if C.ActionBar.SplitBars == true then
 	SplitBarRight:SetFrameStrata("LOW")
 end
 
---	PET BAR ANCHOR
+-- Pet bar anchor
 local PetBarAnchor = CreateFrame("Frame", "PetActionBarAnchor", PetBattleFrameHider)
 if C.ActionBar.PetBarHorizontal == true then
 	PetBarAnchor:CreatePanel("Invisible", (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), (C.ActionBar.ButtonSize + C.ActionBar.ButtonSpace), unpack(C.Position.PetHorizontal))
@@ -67,7 +67,7 @@ PetBarAnchor:SetFrameStrata("LOW")
 RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
 Movers:RegisterFrame(PetBarAnchor)
 
--- STANCE BAR ANCHOR
+-- Stance bar anchor
 local ShiftAnchor = CreateFrame("Frame", "ShapeShiftBarAnchor", PetBattleFrameHider)
 ShiftAnchor:RegisterEvent("PLAYER_LOGIN")
 ShiftAnchor:RegisterEvent("PLAYER_ENTERING_WORLD")

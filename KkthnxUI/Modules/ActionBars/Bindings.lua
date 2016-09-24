@@ -266,7 +266,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			timeout = 0,
 			whileDead = 1,
 			hideOnEscape = false,
-			preferredIndex = 5,
+			preferredIndex = 3,
 		}
 
 		-- Registering

@@ -235,7 +235,7 @@ function Plates:GetColor()
 				self.NewPlate.class.Glow:Show()
 				self.NewPlate.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
 			end
-			Red, Green, Blue = unpack(BETTER_RAID_CLASS_COLORS[class])
+			Red, Green, Blue = unpack(KkthnxUI_Raid_Class_Colors[class])
 			return Red, Green, Blue
 		end
 	end
@@ -247,16 +247,16 @@ function Plates:GetColor()
 		self.isFriendly = false
 		self.isTapped = true
 	elseif Green + Blue == 0 then				-- Hostile
-		Red, Green, Blue = unpack(BETTER_REACTION_COLORS[1])
+		Red, Green, Blue = unpack(KkthnxUI_Reaction_Colors[1])
 		self.isFriendly = false
 	elseif Red + Blue == 0 then					-- Friendly NPC
-		Red, Green, Blue = unpack(BETTER_POWERBAR_COLORS["MANA"])
+		Red, Green, Blue = unpack(KkthnxUI_Powerbar_Colors["MANA"])
 		self.isFriendly = true
 	elseif Red + Green > 1.95 then				-- Neutral NPC
-		Red, Green, Blue = unpack(BETTER_REACTION_COLORS[4])
+		Red, Green, Blue = unpack(KkthnxUI_Reaction_Colors[4])
 		self.isFriendly = false
 	elseif Red + Green == 0 then				-- Friendly Player
-		Red, Green, Blue = unpack(BETTER_REACTION_COLORS[5])
+		Red, Green, Blue = unpack(KkthnxUI_Reaction_Colors[5])
 		self.isFriendly = true
 	else
 		self.isFriendly = false
@@ -1408,14 +1408,14 @@ local function UpdateHealthColor(unitFrame)
 		r, g, b = 0.7, 0.7, 0.7
 	else
 		local _, class = UnitClass(unit)
-		local classColor = BETTER_RAID_CLASS_COLORS[class]
+		local classColor = KkthnxUI_Raid_Class_Colors[class]
 
 		if UnitIsUnit("player", unit) then
-			r, g, b = unpack(BETTER_RAID_CLASS_COLORS[class])
+			r, g, b = unpack(KkthnxUI_Raid_Class_Colors[class])
 		elseif UnitIsPlayer(unit) and classColor and UnitReaction(unit, "player") >= 5 then
-			r, g, b = unpack(BETTER_POWERBAR_COLORS["MANA"])
+			r, g, b = unpack(KkthnxUI_Powerbar_Colors["MANA"])
 		elseif UnitIsPlayer(unit) and classColor and UnitReaction(unit, "player") <= 4 then
-			r, g, b = unpack(BETTER_RAID_CLASS_COLORS[class])
+			r, g, b = unpack(KkthnxUI_Raid_Class_Colors[class])
 		elseif IsTapDenied(unitFrame) then
 			r, g, b = 0.6, 0.6, 0.6
 		else
@@ -1427,7 +1427,7 @@ local function UpdateHealthColor(unitFrame)
 					threat = true
 				end
 			else
-				local reaction = BETTER_REACTION_COLORS[UnitReaction(unit, "player")]
+				local reaction = KkthnxUI_Reaction_Colors[UnitReaction(unit, "player")]
 				if reaction then
 					r, g, b = reaction[1], reaction[2], reaction[3]
 				else
@@ -1442,7 +1442,7 @@ local function UpdateHealthColor(unitFrame)
 		unitFrame.healthBar.Background:SetColorTexture(r, g, b, 0.2)
 		unitFrame.name:SetTextColor(r, g, b)
 		if threat then
-			local reaction = BETTER_REACTION_COLORS[UnitReaction(unit, "player")]
+			local reaction = KkthnxUI_Reaction_Colors[UnitReaction(unit, "player")]
 			if reaction then
 				red, green, blue = reaction[1], reaction[2], reaction[3]
 			else

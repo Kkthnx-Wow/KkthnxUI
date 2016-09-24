@@ -7,7 +7,7 @@ function ObjectiveTracker:SetTrackerPosition()
 end
 
 function ObjectiveTracker:Enable()
-	if select(4, GetAddOnInfo("DugisGuideViewerZ")) then
+	if K.IsAddOnEnabled("DugisGuideViewerZ") then
 		return
 	end
 

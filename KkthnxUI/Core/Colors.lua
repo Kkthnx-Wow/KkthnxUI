@@ -2,23 +2,24 @@ local K, C, _ = select(2, ...):unpack()
 
 local _G = _G
 
-BETTER_DISCONNECTED_COLORS = {
+KkthnxUI_Disconnect_Colors = {
 	0.1, 0.1, 0.1
 }
 
-BETTER_REACTION_COLORS = {
-	[1] = {0.87, 0.37, 0.37}, -- HATED
-	[2] = {0.87, 0.37, 0.37}, -- HOSTILE
-	[3] = {0.87, 0.37, 0.37}, -- UNFRIENDLY
-	[4] = {0.85, 0.77, 0.36}, -- NEUTRAL
-	[5] = {0.29, 0.67, 0.30}, -- FRIENDLY
-	[6] = {0.29, 0.67, 0.30}, -- HONORED
-	[7] = {0.29, 0.67, 0.30}, -- REVERED
-	[8] = {0.29, 0.67, 0.30}, -- EXALTED
+-- Reaction Colors
+KkthnxUI_Reaction_Colors = {
+	[1] = {0.87, 0.37, 0.37}, -- Hated
+	[2] = {0.87, 0.37, 0.37}, -- Hostile
+	[3] = {0.87, 0.37, 0.37}, -- Unfriendly
+	[4] = {0.85, 0.77, 0.36}, -- Neutral
+	[5] = {0.29, 0.67, 0.30}, -- Friendly
+	[6] = {0.29, 0.67, 0.30}, -- Honored
+	[7] = {0.29, 0.67, 0.30}, -- Revered
+	[8] = {0.29, 0.67, 0.30}, -- Exalted
 }
 
--- CLASS COLORS
-BETTER_RAID_CLASS_COLORS = {
+-- Class Colors
+KkthnxUI_Raid_Class_Colors = {
 	["DEATHKNIGHT"] = {0.77, 0.12, 0.24},
 	["DRUID"]       = {1.00, 0.49, 0.03},
 	["HUNTER"]      = {0.67, 0.84, 0.45},
@@ -33,7 +34,8 @@ BETTER_RAID_CLASS_COLORS = {
 	["DEMONHUNTER"] = {0.64, 0.19, 0.79},
 }
 
-BETTER_POWERBAR_COLORS = {
+-- Powerbar Colors
+KkthnxUI_Powerbar_Colors = {
 	["MANA"]              = {0.31, 0.45, 0.63},
 	["INSANITY"]          = {0.40, 0.00, 0.80},
 	["MAELSTROM"]         = {0.00, 0.50, 1.00},

@@ -43,7 +43,7 @@ local Text = StatFrame:CreateFontString(nil, "OVERLAY")
 Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 Text:SetPoint(unpack(C.Position.StatsFrame))
 
--- FORMAT MEMORY
+-- Format Memory
 local bandwidthString = "%.2f Mbps"
 local percentageString = "%.2f%%"
 local kiloByteString = "%d kb"
@@ -59,7 +59,7 @@ local function formatMem(memory)
 	end
 end
 
--- BUILD MEMORYTABLE
+-- Build MemoryTable
 local memoryTable = {}
 local function RebuildAddonList(self)
 	local addOnCount = GetNumAddOns()
@@ -70,7 +70,7 @@ local function RebuildAddonList(self)
 	self:SetAllPoints(Text)
 end
 
--- UPDATE MEMORYTABLE
+-- Update MemoryTable
 local function UpdateMemory()
 	UpdateAddOnMemoryUsage()
 	local addOnMem = 0
@@ -86,7 +86,7 @@ local function UpdateMemory()
 	return totalMemory
 end
 
--- BUILD DATATEXT
+-- Build DataText
 local int, int2 = 6, 5
 local function Update(self, t)
 	int = int - t
@@ -101,7 +101,7 @@ local function Update(self, t)
 	end
 end
 
--- SETUP TOOLTIP
+-- Tooltip
 Stat:SetScript("OnEnter", function(self)
 	if InCombatLockdown() then return end
 
@@ -141,7 +141,7 @@ Stat:SetScript("OnEnter", function(self)
 	GameTooltip:Show()
 end)
 
--- BUTTON FUNCTIONALITY
+-- Button
 Stat:SetScript("OnMouseDown", function(self, btn)
 	if (btn == "LeftButton") then
 		if not PVEFrame then PVEFrame_ToggleFrame() end

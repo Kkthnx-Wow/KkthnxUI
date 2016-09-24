@@ -1,11 +1,11 @@
 local K, C, L, _ = select(2, ...):unpack()
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local SetCVar = SetCVar
 
--- KILL ALL STUFF ON DEFAULT UI THAT WE DON'T NEED
+-- Kill all stuff on default UI that we don't need
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, addon)
@@ -15,7 +15,7 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		end
 	end
 
-	if (select(4, GetAddOnInfo("oUF"))) then
+	if K.IsAddOnEnabled("oUF") then
 		for i = 1, MAX_BOSS_FRAMES do
 			local Boss = _G["Boss"..i.."TargetFrame"]
 			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
@@ -41,11 +41,11 @@ frame:SetScript("OnEvent", function(self, event, addon)
 		end
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			local PartyMember = _G["PartyMemberFrame" .. i]
-			local Health = _G["PartyMemberFrame" .. i .. "HealthBar"]
-			local Power = _G["PartyMemberFrame" .. i .. "ManaBar"]
-			local Pet = _G["PartyMemberFrame" .. i .."PetFrame"]
-			local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
+			local PartyMember = _G["PartyMemberFrame"..i]
+			local Health = _G["PartyMemberFrame"..i.."HealthBar"]
+			local Power = _G["PartyMemberFrame"..i.."ManaBar"]
+			local Pet = _G["PartyMemberFrame"..i.."PetFrame"]
+			local PetHealth = _G["PartyMemberFrame"..i.."PetFrame".."HealthBar"]
 
 			PartyMember:UnregisterAllEvents()
 			PartyMember:SetParent(UIFrameHider)

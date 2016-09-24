@@ -91,7 +91,7 @@ function Tooltip:GetColor(unit)
 		return "|c"..Color.colorStr, Color.r, Color.g, Color.b
 	else
 		local Reaction = UnitReaction(unit, "player")
-		local Color = BETTER_REACTION_COLORS[Reaction]
+		local Color = KkthnxUI_Reaction_Colors[Reaction]
 
 		if (not Color) then
 			return
@@ -224,14 +224,14 @@ function Tooltip:SetColor()
 
 	if Player and Friend then
 		local Class = select(2, UnitClass(Unit))
-		local Color = BETTER_RAID_CLASS_COLORS[Class]
+		local Color = KkthnxUI_Raid_Class_Colors[Class]
 
 		R, G, B = Color[1], Color[2], Color[3]
 		HealthBar:SetStatusBarColor(R, G, B)
 		HealthBar:SetBackdropBorderColor(R, G, B)
 		self:SetBackdropBorderColor(R, G, B)
 	elseif Reaction then
-		local Color = BETTER_REACTION_COLORS[Reaction]
+		local Color = KkthnxUI_Reaction_Colors[Reaction]
 
 		R, G, B = Color[1], Color[2], Color[3]
 		HealthBar:SetStatusBarColor(R, G, B)
@@ -247,7 +247,7 @@ function Tooltip:SetColor()
 		else
 			local Color = Colors
 
-			HealthBar:SetStatusBarColor(unpack(BETTER_REACTION_COLORS[5]))
+			HealthBar:SetStatusBarColor(unpack(KkthnxUI_Reaction_Colors[5]))
 			HealthBar:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 			self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end

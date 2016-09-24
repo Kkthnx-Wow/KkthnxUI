@@ -8,16 +8,16 @@ local GetMouseFocus = GetMouseFocus
 local FrameStackTooltip_Toggle = FrameStackTooltip_Toggle
 
 --[[
-	COMMAND TO GRAB FRAME INFORMATION WHEN MOUSEING OVER A FRAME
+	Command to grab frame information when mouseing over a frame
 
-	FRAME NAME
-	WIDTH
-	HEIGHT
-	STRATA
-	LEVEL
-	X OFFSET
-	Y OFFSET
-	POINT
+	Frame Name
+	Width
+	Height
+	Strata
+	Level
+	X Offset
+	Y Offset
+	Point
 --]]
 
 SLASH_FRAME1 = "/frame"
@@ -27,7 +27,7 @@ SlashCmdList["FRAME"] = function(arg)
 	else
 		arg = GetMouseFocus()
 	end
-	if arg ~= nil then FRAME = arg end -- SET THE GLOBAL VARIABLE FRAME TO = WHATEVER WE ARE MOUSING OVER TO SIMPLIFY MESSING WITH FRAMES THAT HAVE NO NAME.
+	if arg ~= nil then FRAME = arg end -- Set the global variable frame to = whatever we are mousing over to simplify messing with frames that have no name.
 	if arg ~= nil and arg:GetName() ~= nil then
 		local point, relativeTo, relativePoint, xOfs, yOfs = arg:GetPoint()
 		ChatFrame1:AddMessage("|cffCC0000----------------------------")
@@ -111,13 +111,13 @@ end
 SLASH_TEXLIST1 = "/texlist"
 SlashCmdList["TEXLIST"] = TextureList
 
--- FRAME STACK ON CYRILLIC
+-- Frame stack on cyrillic
 SLASH_FSTACK1 = "/fs"
 SlashCmdList["FSTACK"] = function()
 	SlashCmdList.FRAMESTACK(0)
 end
 
--- INFORM US OF THE PATCH INFO WE PLAY ON.
+-- Inform us of the patch info we play on.
 SLASH_WOWVERSION1, SLASH_WOWVERSION2 = "/patch", "/version"
 SlashCmdList["WOWVERSION"] = function()
 	K.Print("Patch:", K.WoWPatch..", ".. "Build:", K.WoWBuild..", ".. "Released:", K.WoWPatchReleaseDate..", ".. "Interface:", K.TocVersion)

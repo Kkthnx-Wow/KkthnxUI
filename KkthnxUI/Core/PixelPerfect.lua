@@ -18,7 +18,7 @@ StaticPopupDialogs["CLIENT_RESTART"] = {
 	preferredIndex = 3
 }
 
--- OPTIMIZE GRAPHIC AFTER WE ENTER WORLD
+-- Optimize graphic after we enter world
 local PixelPerfect = CreateFrame("Frame")
 PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
 PixelPerfect:SetScript("OnEvent", function(self, event)
@@ -40,8 +40,8 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 			SetCVar("uiScale", C.General.UIScale)
 		end
 
-		-- ALLOW 4K AND WQHD RESOLUTION TO HAVE AN UISCALE LOWER THAN 0.64, WHICH IS
-		-- THE LOWEST VALUE OF UIPARENT SCALE BY DEFAULT
+		-- Allow 4K and WQHD resolution to have an uiScale lower than 0.64, which is
+		-- The lowest value of UIParent scale by default
 		if (C.General.UIScale < 0.64) then
 			UIParent:SetScale(C.General.UIScale)
 		end
