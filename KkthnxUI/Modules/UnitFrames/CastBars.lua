@@ -76,25 +76,6 @@ function CastBars:Setup()
 	end
 end
 
-function CastBars:SetupInterrupt()
-	TargetFrameSpellBar.BorderShield:SetAlpha(0)
-	TargetFrameSpellBar:HookScript("OnShow", function(self, event, ...)
-		_, _, _, _, _, _, _, _, notInterruptible = UnitCastingInfo("target")
-
-		if notInterruptible then
-			TargetFrameSpellBar.Border:SetVertexColor(1, 0, 0, 1)
-			TargetFrameSpellBar.Icon:SetVertexColor(1, 0, 0, 1)
-		else
-			TargetFrameSpellBar.Border:SetVertexColor(1, 1, 1, 1)
-			TargetFrameSpellBar.Icon:SetVertexColor(1, 1, 1, 1)
-		end
-	end)
-
-	TargetFrameSpellBar:HookScript("OnHide", function(self, event, ...)
-		TargetFrameTextureFrameQuestIcon:Hide()
-	end)
-end
-
 function CastBars:SetupLag()
 	local PlayerTimer, TargetTimer, LagMeter
 	LagMeter = CastingBarFrame:CreateTexture(nil, "BACKGROUND")
@@ -170,16 +151,10 @@ function CastBars:SetupTimers()
 end
 
 CastBars:RegisterEvent("PLAYER_LOGIN")
-CastBars:RegisterEvent("UNIT_SPELLCAST_START")
-CastBars:RegisterEvent("UNIT_SPELLCAST_SENT")
 CastBars:SetScript("OnEvent", function(self, event, ...)
 	if (event == "PLAYER_LOGIN") then
 		CastBars:Setup()
 		CastBars:SetupTimers()
 		CastBars:SetupLag()
-	end
-
-	if (event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_SENT") then
-		CastBars:SetupInterrupt()
 	end
 end)
