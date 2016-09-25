@@ -10,9 +10,22 @@ local InCombatLockdown = InCombatLockdown
 local HasOverrideActionBar = HasOverrideActionBar
 local HasVehicleActionBar = HasVehicleActionBar
 
--- SETUP MAIN ACTION BAR BY TUKZ
+-- ActionBar(by Tukz)
 local ActionBar1 = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar1:SetAllPoints(ActionBarAnchor)
+
+for i = 1, 12 do
+	local button = _G["ActionButton"..i]
+	button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+	button:ClearAllPoints()
+	button:SetParent(Bar1Holder)
+	if i == 1 then
+		button:SetPoint("BOTTOMLEFT", Bar1Holder, 0, 0)
+	else
+		local previous = _G["ActionButton"..i-1]
+		button:SetPoint("LEFT", previous, "RIGHT", C.ActionBar.ButtonSpace, 0)
+	end
+end
 
 local Page = {
 	["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
@@ -21,73 +34,46 @@ local Page = {
 }
 
 local function GetBar()
-	local Condition = Page["DEFAULT"]
-	local Class = select(2, UnitClass("player"))
-	local Page = Page[Class]
-
-	if Page then
-		Condition = Condition .. " " .. Page
+	local condition = Page["DEFAULT"]
+	local class = K.Class
+	local page = Page[class]
+	if page then
+		condition = condition.." "..page
 	end
-
-	Condition = Condition .. " [form] 1; 1"
-
-	return Condition
+	condition = condition.." 1"
+	return condition
 end
 
 ActionBar1:RegisterEvent("PLAYER_LOGIN")
-ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
--- ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
+ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-ActionBar1:RegisterEvent("BAG_UPDATE")
-ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
-	if event == "PLAYER_LOGIN" or event == "ACTIVE_TALENT_GROUP_CHANGED" then
-		local Button
+ActionBar1:SetScript("OnEvent", function(self, event, ...)
+	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
-			local Button = _G["ActionButton"..i]
-			self:SetFrameRef("ActionButton"..i, Button)
+			local button = _G["ActionButton"..i]
+			self:SetFrameRef("ActionButton"..i, button)
 		end
 
 		self:Execute([[
-		Button = table.new()
+		buttons = table.new()
 		for i = 1, 12 do
-			table.insert(Button, self:GetFrameRef("ActionButton"..i))
+			table.insert(buttons, self:GetFrameRef("ActionButton"..i))
 		end
 		]])
 
 		self:SetAttribute("_onstate-page", [[
-		if HasTempShapeshiftActionBar() then
-			newstate = GetTempShapeshiftBarIndex() or newstate
-		end
-
-		for i, Button in ipairs(Button) do
-			Button:SetAttribute("actionpage", tonumber(newstate))
+		for i, button in ipairs(buttons) do
+			button:SetAttribute("actionpage", tonumber(newstate))
 		end
 		]])
 
 		RegisterStateDriver(self, "page", GetBar())
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		local Button
-		for i = 1, 12 do
-			local Button = _G["ActionButton"..i]
-			Button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
-			Button:ClearAllPoints()
-			Button:SetParent(Bar1Holder)
-			Button:SetFrameStrata("BACKGROUND")
-			Button:SetFrameLevel(15)
-			if i == 1 then
-				Button:SetPoint("BOTTOMLEFT", Bar1Holder, 0, 0)
-			else
-				local Previous = _G["ActionButton"..i-1]
-				Button:SetPoint("LEFT", Previous, "RIGHT", C.ActionBar.ButtonSpace, 0)
-			end
-		end
 	elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
-		-- if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
-		if not InCombatLockdown() and (HasVehicleActionBar()) then
+		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
-				local Button = _G["ActionButton"..i]
-				ActionButton_Update(Button)
+				local button = _G["ActionButton"..i]
+				ActionButton_Update(button)
 			end
 		end
 	else

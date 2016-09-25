@@ -155,6 +155,36 @@ end
 function EnhancedFrames_Target_Classification(self, forceNormalTexture)
 	local texture
 	local classification = UnitClassification(self.unit)
+	self.nameBackground:Hide()
+	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
+	if (forceNormalTexture) then
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
+	elseif (classification == "minus") then
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
+		forceNormalTexture = true
+	elseif (classification == "worldboss" or classification == "elite" ) then
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Elite")
+	elseif (classification == "rareelite" ) then
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Rare-Elite")
+	elseif (classification == "rare") then
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Rare")
+	else
+		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
+		forceNormalTexture = true
+	end
+	if (self.threatIndicator) then
+		if (classification == "minus") then
+			self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
+			self.threatIndicator:SetTexCoord(0, 0.9453125, 0, 0.181640625)
+			self.threatIndicator:SetWidth(242)
+			self.threatIndicator:SetHeight(93)
+			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0)
+		end
+	end
+
+	--[[
+	local texture
+	local classification = UnitClassification(self.unit)
 	if (classification == "worldboss" or classification == "elite") then
 		texture = "Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Elite"
 	elseif (classification == "rareelite") then
@@ -171,6 +201,7 @@ function EnhancedFrames_Target_Classification(self, forceNormalTexture)
 	end
 
 	self.nameBackground:Hide()
+	--]]
 end
 
 function EnhancedFrames_TargetFrame_CheckFaction(self)

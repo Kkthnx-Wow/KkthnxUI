@@ -26,15 +26,14 @@ SlashCmdList.MOUSEOVERBIND = function()
 		bind:EnableKeyboard(true)
 		bind:EnableMouseWheel(true)
 		bind.texture = bind:CreateTexture()
-		bind.texture:SetPoint("TOPLEFT", bind, 2, -2)
-		bind.texture:SetPoint("BOTTOMRIGHT", bind, -2, 2)
-		bind.texture:SetColorTexture(255/255, 255/255, 255/255, 0.3)
+		bind.texture:SetAllPoints(bind)
+		bind.texture:SetTexture(0, 0, 0, .25)
 		bind:Hide()
 
 		local elapsed = 0
 		GameTooltip:HookScript("OnUpdate", function(self, e)
 			elapsed = elapsed + e
-			if elapsed < 0.2 then return else elapsed = 0 end
+			if elapsed < .2 then return else elapsed = 0 end
 			if not self.comparing and IsModifiedClick("COMPAREITEMS") then
 				GameTooltip_ShowCompareItem(self)
 				self.comparing = true
@@ -93,7 +92,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 			elseif spellmacro == "MACRO" then
 				self.button.id = self.button:GetID()
 
-				--if localmacros == 1 then self.button.id = self.button.id + 36 end
 				if localmacros == 1 then self.button.id = self.button.id + 120 end
 
 				self.button.name = GetMacroInfo(self.button.id)
@@ -299,7 +297,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 		end
 
 		local function registermacro()
-			for i = 1, 36 do
+			for i = 1, 120 do
 				local b = _G["MacroButton"..i]
 				b:HookScript("OnEnter", function(self) bind:Update(self, "MACRO") end)
 			end

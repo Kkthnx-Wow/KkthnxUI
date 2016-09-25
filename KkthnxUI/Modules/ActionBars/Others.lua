@@ -22,7 +22,7 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 	preferredIndex = 3
 }
 
--- SHOW EMPTY BUTTONS
+-- Show empty buttons
 local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
@@ -65,13 +65,13 @@ ActionBars:SetScript("OnEvent", function(self, event)
 	end
 end)
 
--- VEHICLE BUTTON ANCHOR
+-- Vehicle button anchor
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 VehicleButtonAnchor:SetPoint(unpack(C.Position.VehicleBar))
 VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 Movers:RegisterFrame(VehicleButtonAnchor)
 
--- VEHICLE BUTTON
+-- Vehicle button
 local Vehicle = CreateFrame("Button", "VehicleButton", UIParent)
 Vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 Vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
@@ -117,7 +117,7 @@ hooksecurefunc("PossessBar_UpdateState", function()
 	end
 end)
 
--- SET TOOLTIP
+-- Set tooltip
 Vehicle:SetScript("OnEnter", function(self)
 	if UnitOnTaxi("player") then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
