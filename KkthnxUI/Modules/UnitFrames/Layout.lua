@@ -122,7 +122,7 @@ function Unitframes:Setup()
 
 	for i = 1, MAX_PARTY_MEMBERS do
 		if C.Unitframe.Outline then
-		if InCombatLockdown() then return end
+			if InCombatLockdown() then return end
 			_G["PartyMemberFrame"..i.."Name"]:SetFont(C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style)
 			_G["PartyMemberFrame"..i.."Name"]:SetShadowOffset(0, -0)
 
@@ -224,13 +224,13 @@ function Unitframes:Setup()
 
 	-- Boss Frames
 	for i = 1, MAX_BOSS_FRAMES do -- Scale Them
-	if InCombatLockdown() then return end
+		if InCombatLockdown() then return end
 		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent);
 		_G["Boss"..i.."TargetFrame"]:SetScale(0.95);
 		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND");
 	end
 	for i = 2, MAX_BOSS_FRAMES do -- Adjust Positions
-	if InCombatLockdown() then return end
+		if InCombatLockdown() then return end
 		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15);
 	end
 
@@ -260,12 +260,12 @@ if C.Misc.Armory == true then
 	end
 end
 
-Unitframes:RegisterEvent("PLAYER_ENTERING_WORLD")
+Unitframes:RegisterEvent("PLAYER_LOGIN")
 Unitframes:RegisterEvent("PLAYER_REGEN_ENABLED")
 Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
 Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
 Unitframes:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
+	if (event == "PLAYER_LOGIN") then
 		Unitframes:Setup()
 	end
 
@@ -285,6 +285,4 @@ Unitframes:SetScript("OnEvent", function(self, event, ...)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		Unitframes:Setup()
 	end
-
-	Unitframes:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)

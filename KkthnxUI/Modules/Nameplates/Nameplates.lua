@@ -488,7 +488,7 @@ function Plates:UpdateHealthText()
 
 	if GetUnitName("target") and self.NewPlate:GetAlpha() == 1 then
 		self.NewPlate.Health:SetSize((C.Nameplate.Width + C.Nameplate.AdditionalWidth) * K.NoScaleMult, (C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult)
-		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -4 -((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult))  -- Revert this if needed?
+		self.NewPlate.CastBar:SetPoint("BOTTOMLEFT", self.NewPlate.Health, "BOTTOMLEFT", 0, -4 -((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * K.NoScaleMult)) -- Revert this if needed?
 		self.NewPlate.CastBar.Icon:SetSize(((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * 2 * K.NoScaleMult) + 4, ((C.Nameplate.Height + C.Nameplate.AdditionalHeight) * 2 * K.NoScaleMult) + 4)
 		self.NewPlate.Health:SetFrameLevel(1)
 	else

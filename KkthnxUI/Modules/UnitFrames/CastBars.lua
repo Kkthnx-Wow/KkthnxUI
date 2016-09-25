@@ -1,19 +1,19 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or K.IsAddOnEnabled("Quartz") then return end
 
--- LUA API
+-- Lua API
 local unpack = unpack
 local format = string.format
 local max = math.max
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local Movers = K.Movers
 
 local CastBars = CreateFrame("Frame", nil, UIParent)
 
--- ANCHORS
+-- Anchors
 local PlayerCastbarAnchor = CreateFrame("Frame", "PlayerCastbarAnchor", UIParent)
 PlayerCastbarAnchor:SetSize(CastingBarFrame:GetWidth() * C.Unitframe.CastBarScale, CastingBarFrame:GetHeight() * 2)
 PlayerCastbarAnchor:SetPoint(unpack(C.Position.UnitFrames.PlayerCastBar))
@@ -60,10 +60,7 @@ function CastBars:Setup()
 		TargetFrameSpellBar:SetScript("OnShow", nil)
 	end
 
-	-- Set out lag bar.
-	self:Lag()
-
-	-- CASTBAR TEXT
+	-- Castbar text
 	if C.Unitframe.Outline then
 		CastingBarFrame.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		CastingBarFrame.Text:SetShadowOffset(0, -0)
@@ -77,34 +74,31 @@ function CastBars:Setup()
 		TargetFrameSpellBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 2)
 		TargetFrameSpellBar.Text:SetShadowOffset(K.Mult, -K.Mult)
 	end
-
-	-- CASTBAR TIMER
-	CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
-	if C.Unitframe.Outline then
-		CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
-		CastingBarFrame.timer:SetShadowOffset(0, -0)
-	else
-		CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2)
-		CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
-	end
-	CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
-	CastingBarFrame.update = 0.1
-
-	TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
-	if C.Unitframe.Outline then
-		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
-		TargetFrameSpellBar.timer:SetShadowOffset(0, -0)
-	else
-		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
-		TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
-	end
-	TargetFrameSpellBar.timer:SetPoint("LEFT", TargetFrameSpellBar, "RIGHT", 8, 0)
-	TargetFrameSpellBar.update = 0.1
 end
 
-function CastBars:Lag()
+function CastBars:SetupInterrupt()
+	TargetFrameSpellBar.BorderShield:SetAlpha(0)
+	TargetFrameSpellBar:HookScript("OnShow", function(self, event, ...)
+		_, _, _, _, _, _, _, _, notInterruptible = UnitCastingInfo("target")
+
+		if notInterruptible then
+			TargetFrameSpellBar.Border:SetVertexColor(1, 0, 0, 1)
+			TargetFrameSpellBar.Icon:SetVertexColor(1, 0, 0, 1)
+		else
+			TargetFrameSpellBar.Border:SetVertexColor(1, 1, 1, 1)
+			TargetFrameSpellBar.Icon:SetVertexColor(1, 1, 1, 1)
+		end
+	end)
+
+	TargetFrameSpellBar:HookScript("OnHide", function(self, event, ...)
+		TargetFrameTextureFrameQuestIcon:Hide()
+	end)
+end
+
+function CastBars:SetupLag()
 	local PlayerTimer, TargetTimer, LagMeter
 	LagMeter = CastingBarFrame:CreateTexture(nil, "BACKGROUND")
+	LagMeter:SetTexture(C.Media.Texture)
 	LagMeter:SetHeight(CastingBarFrame:GetHeight())
 	LagMeter:SetWidth(0)
 	LagMeter:SetPoint("RIGHT", CastingBarFrame, "RIGHT", 0, 0)
@@ -125,33 +119,67 @@ function CastBars:Lag()
 	end)
 end
 
--- DISPLAYS THE CASTING BAR TIMER
-function CastBars:Timers(elapsed)
-	if not self.timer then return end
-
-	if (self.update and self.update < elapsed) then
-		if (self.casting) then
-			self.timer:SetText(format("%.1f", max(self.maxValue - self.value, 0)))
-		elseif (self.channeling) then
-			self.timer:SetText(format("%.1f", max(self.value, 0)))
+function CastBars:SetupTimers()
+	CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
+	CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
+	CastingBarFrame.update = .1
+	CastingBarFrame:HookScript("OnUpdate", function(self, elapsed)
+		if self.update and self.update < elapsed then
+			if self.casting then
+				CastingBarFrame.timer:SetText(format("%.1f", max(self.maxValue - self.value, 0)))
+			elseif self.channeling then
+				CastingBarFrame.timer:SetText(format("%.1f", max(self.value, 0)))
+			end
+			self.update = .1
 		else
-			self.timer:SetText("")
+			self.update = self.update - elapsed
 		end
-		self.update = 0.1
+	end)
+
+	if C.Unitframe.Outline then
+		CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
+		CastingBarFrame.timer:SetShadowOffset(0, -0)
 	else
-		self.update = self.update - elapsed
+		CastingBarFrame.timer:SetFont(C.Media.Font, C.Media.Font_Size + 2)
+		CastingBarFrame.timer:SetShadowOffset(K.Mult, -K.Mult)
+	end
+
+	TargetFrameSpellBar.timer = TargetFrameSpellBar:CreateFontString(nil)
+	TargetFrameSpellBar.timer:SetPoint("LEFT", TargetFrameSpellBar, "RIGHT", 8, 0)
+	TargetFrameSpellBar.update = .1
+	TargetFrameSpellBar:HookScript("OnUpdate", function(self, elapsed)
+		if self.update and self.update < elapsed then
+			if self.casting then
+				TargetFrameSpellBar.timer:SetText(format("%.1f", max(self.maxValue - self.value, 0)))
+			elseif self.channeling then
+				TargetFrameSpellBar.timer:SetText(format("%.1f", max(self.value, 0)))
+			end
+			self.update = .1
+		else
+			self.update = self.update - elapsed
+		end
+	end)
+
+	if C.Unitframe.Outline then
+		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
+		TargetFrameSpellBar.timer:SetShadowOffset(0, -0)
+	else
+		TargetFrameSpellBar.timer:SetFont(C.Media.Font, C.Media.Font_Size)
+		TargetFrameSpellBar.timer:SetShadowOffset(K.Mult, -K.Mult)
 	end
 end
-CastingBarFrame:HookScript("OnUpdate", CastBars.Timers)
-TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
-CastBars:RegisterEvent("PLAYER_ENTERING_WORLD")
-CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
-CastBars:RegisterEvent("UNIT_EXITED_VEHICLE")
+CastBars:RegisterEvent("PLAYER_LOGIN")
+CastBars:RegisterEvent("UNIT_SPELLCAST_START")
+CastBars:RegisterEvent("UNIT_SPELLCAST_SENT")
 CastBars:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_ENTERING_WORLD") then
+	if (event == "PLAYER_LOGIN") then
 		CastBars:Setup()
+		CastBars:SetupTimers()
+		CastBars:SetupLag()
 	end
 
-	CastBars:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if (event == "UNIT_SPELLCAST_START" or event == "UNIT_SPELLCAST_SENT") then
+		CastBars:SetupInterrupt()
+	end
 end)

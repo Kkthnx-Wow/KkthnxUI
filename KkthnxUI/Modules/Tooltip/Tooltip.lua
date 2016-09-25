@@ -352,8 +352,9 @@ function Tooltip:Enable()
 	end
 end
 
-Tooltip:RegisterEvent("PLAYER_ENTERING_WORLD")
+Tooltip:RegisterEvent("PLAYER_LOGIN")
 Tooltip:SetScript("OnEvent", function(self, event, ...)
-	Tooltip:Enable()
-	Tooltip:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if (event == "PLAYER_LOGIN") then
+		Tooltip:Enable()
+	end
 end)
