@@ -1,7 +1,6 @@
 local K, C, L, _ = select(2, ...):unpack()
 
 local Merchant = CreateFrame("Frame")
-local Loading = CreateFrame("Frame")
 
 local BlizzardMerchantClick = MerchantItemButton_OnModifiedClick
 
@@ -87,18 +86,6 @@ function Merchant:OnEvent()
 	end
 end
 
-function Merchant:MerchantClick(...)
-	if (IsAltKeyDown()) then
-		local MaxStack = select(8, GetItemInfo(GetMerchantItemLink(self:GetID())))
-
-		if (MaxStack and MaxStack > 1) then
-			BuyMerchantItem(self:GetID(), GetMerchantItemMaxStack(self:GetID()))
-		end
-	end
-
-	BlizzardMerchantClick(self, ...)
-end
-
 function Merchant:Enable()
 	self:RegisterEvent("MERCHANT_SHOW")
 	self:SetScript("OnEvent", self.OnEvent)
@@ -106,20 +93,8 @@ function Merchant:Enable()
 	MerchantItemButton_OnModifiedClick = self.MerchantClick
 end
 
-function Merchant:Disable()
-	self:UnregisterEvent("MERCHANT_SHOW")
-	self:SetScript("OnEvent", nil)
-
-	MerchantItemButton_OnModifiedClick = BlizzardMerchantClick
-end
-
-function Loading:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
-		Merchant:Enable()
-	end
-
-	Loading:UnregisterEvent("PLAYER_LOGIN")
-end
-
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Merchant:RegisterEvent("PLAYER_ENTERING_WORLD")
+Merchant:SetScript("OnEvent", function(self, event, ...)
+	Merchant:Enable()
+	Merchant:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

@@ -269,9 +269,10 @@ local function Local(o)
 	if o == "UIConfigPulseCDThreshold" then o = L_GUI_PULSECD_THRESHOLD end
 	-- Skins Settings
 	if o == "UIConfigSkins" then o = L_GUI_SKINS end
-	if o == "UIConfigSkinsChatBubble" then o = L_GUI_SKINS_CHAT_BUBBLE end
 	if o == "UIConfigSkinsCLCRet" then o = L_GUI_SKINS_CLCR end
+	if o == "UIConfigSkinsChatBubble" then o = L_GUI_SKINS_CHAT_BUBBLE end
 	if o == "UIConfigSkinsDBM" then o = L_GUI_SKINS_DBM end
+	if o == "UIConfigSkinsDBMMove" then o = L_GUI_SKINS_DBM_MOVE end
 	if o == "UIConfigSkinsMinimapButtons" then o = L_GUI_SKINS_MINIMAP_BUTTONS end
 	if o == "UIConfigSkinsRecount" then o = L_GUI_SKINS_RECOUNT end
 	if o == "UIConfigSkinsSkada" then o = L_GUI_SKINS_SKADA end

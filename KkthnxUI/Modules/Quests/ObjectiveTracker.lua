@@ -44,13 +44,8 @@ function ObjectiveTracker:Enable()
 	Frame.SetPoint = function() end
 end
 
-function ObjectiveTracker:OnEvent(event)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		ObjectiveTracker:Enable()
-	end
-
-	ObjectiveTracker:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
-
 ObjectiveTracker:RegisterEvent("PLAYER_ENTERING_WORLD")
-ObjectiveTracker:SetScript("OnEvent", ObjectiveTracker.OnEvent)
+ObjectiveTracker:SetScript("OnEvent", function(self, event, ...)
+	ObjectiveTracker:Enable()
+	ObjectiveTracker:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

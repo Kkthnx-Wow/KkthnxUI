@@ -260,8 +260,12 @@ if C.Misc.Armory == true then
 	end
 end
 
-function Unitframes:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
+Unitframes:RegisterEvent("PLAYER_ENTERING_WORLD")
+Unitframes:RegisterEvent("PLAYER_REGEN_ENABLED")
+Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
+Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
+Unitframes:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
 		Unitframes:Setup()
 	end
 
@@ -281,10 +285,6 @@ function Unitframes:OnEvent(event)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		Unitframes:Setup()
 	end
-end
 
-Unitframes:RegisterEvent("PLAYER_LOGIN")
-Unitframes:RegisterEvent("UNIT_EXITED_VEHICLE")
-Unitframes:RegisterEvent("UNIT_ENTERED_VEHICLE")
-Unitframes:RegisterEvent("PLAYER_REGEN_ENABLED")
-Unitframes:SetScript("OnEvent", Unitframes.OnEvent)
+	Unitframes:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

@@ -167,11 +167,8 @@ function WorldMap:Enable()
 	SetCVar("mapFade", (C.WorldMap.FadeWhenMoving == true and 1 or 0))
 end
 
-function Loading:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
-		WorldMap:Enable()
-	end
-end
-
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
+Loading:SetScript("OnEvent", function(self, event, ...)
+	WorldMap:Enable()
+	Loading:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

@@ -57,13 +57,8 @@ function DropDown:Enable()
 	self.Open = Lib_EasyMenu or EasyMenu
 end
 
-function DropDown:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
-		DropDown:Enable()
-	end
-
-	DropDown:UnregisterEvent("PLAYER_LOGIN")
-end
-
-DropDown:RegisterEvent("PLAYER_LOGIN")
-DropDown:SetScript("OnEvent", DropDown.OnEvent)
+DropDown:RegisterEvent("PLAYER_ENTERING_WORLD")
+DropDown:SetScript("OnEvent", function(self, event, ...)
+	DropDown:Enable()
+	DropDown:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

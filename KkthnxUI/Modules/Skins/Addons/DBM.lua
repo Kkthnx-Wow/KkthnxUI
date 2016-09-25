@@ -38,8 +38,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							icon1.overlay:SetHeight(25)
 							icon1.overlay:SetFrameStrata("BACKGROUND")
 							icon1.overlay:SetPoint("BOTTOMRIGHT", tbar, "BOTTOMLEFT", -5, -2)
-							--icon1.overlay:CreatePixelShadow(1)
-							K.CreateVirtualFrame(icon1.overlay)
+							icon1.overlay:CreatePixelShadow(1)
 						end
 
 						if icon2.overlay then
@@ -50,7 +49,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							icon2.overlay:SetHeight(25)
 							icon2.overlay:SetFrameStrata("BACKGROUND")
 							icon2.overlay:SetPoint("BOTTOMLEFT", tbar, "BOTTOMRIGHT", 5, -2)
-							K.CreateVirtualFrame(icon2.overlay)
+							icon2.overlay:CreatePixelShadow(1)
 						end
 
 						if bar.color then
@@ -69,8 +68,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						if not frame.styled then
 							frame:SetScale(1)
 							frame:SetHeight(20)
-							--frame:CreatePixelShadow(1)
-							K.CreateVirtualFrame(frame)
+							frame:CreatePixelShadow(1)
 							frame.styled = true
 						end
 
@@ -112,7 +110,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							name:SetPoint("LEFT", frame, "LEFT", 4, 0)
 							name:SetWidth(165)
 							name:SetHeight(8)
-							name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+							name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 							name:SetShadowOffset(0, 0)
 							name:SetJustifyH("LEFT")
 							name.SetFont = K.Noop
@@ -122,7 +120,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						if not timer.styled then
 							timer:ClearAllPoints()
 							timer:SetPoint("RIGHT", frame, "RIGHT", -1, 0)
-							timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+							timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 							timer:SetShadowOffset(0, 0)
 							timer:SetJustifyH("RIGHT")
 							timer.SetFont = K.Noop
@@ -166,7 +164,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 			if not anchor.styled then
 				local header = {anchor:GetRegions()}
 				if header[1]:IsObjectType("FontString") then
-					header[1]:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+					header[1]:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 					header[1]:SetShadowOffset(0, 0)
 					header[1]:SetTextColor(1, 1, 1, 1)
 					anchor.styled = true
@@ -206,8 +204,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				if not bar.styled then
 					bar:SetScale(1)
 					bar:SetHeight(20)
-					--bar:SetTemplate("Default")
-					K.CreateVirtualFrame(bar)
+					bar:CreatePixelShadow()
 					background:SetNormalTexture(nil)
 					bar.styled = true
 				end
@@ -225,7 +222,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				if not name.styled then
 					name:ClearAllPoints()
 					name:SetPoint("LEFT", bar, "LEFT", 4, 0)
-					name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+					name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 					name:SetShadowOffset(0, 0)
 					name:SetJustifyH("LEFT")
 					name.styled = true
@@ -234,7 +231,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				if not timer.styled then
 					timer:ClearAllPoints()
 					timer:SetPoint("RIGHT", bar, "RIGHT", -1, 0)
-					timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_style)
+					timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 					timer:SetShadowOffset(0, 0)
 					timer:SetJustifyH("RIGHT")
 					timer.styled = true

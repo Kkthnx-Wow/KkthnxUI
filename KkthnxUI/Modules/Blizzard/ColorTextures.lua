@@ -126,12 +126,8 @@ function ColorTextures:Style()
 	end
 end
 
-function ColorTextures:OnEvent(event, addon)
-	if (event == "PLAYER_LOGIN") then
-		ColorTextures:Style()
-	end
-end
-
-ColorTextures:RegisterEvent("PLAYER_LOGIN")
-ColorTextures:RegisterEvent("ADDON_LOADED")
-ColorTextures:SetScript("OnEvent", ColorTextures.OnEvent)
+ColorTextures:RegisterEvent("PLAYER_ENTERING_WORLD")
+ColorTextures:SetScript("OnEvent", function(self, event, ...)
+	ColorTextures:Style()
+	ColorTextures:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

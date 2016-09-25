@@ -145,11 +145,13 @@ end
 CastingBarFrame:HookScript("OnUpdate", CastBars.Timers)
 TargetFrameSpellBar:HookScript("OnUpdate", CastBars.Timers)
 
-function CastBars:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
+CastBars:RegisterEvent("PLAYER_ENTERING_WORLD")
+CastBars:RegisterEvent("PLAYER_REGEN_ENABLED")
+CastBars:RegisterEvent("UNIT_EXITED_VEHICLE")
+CastBars:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_ENTERING_WORLD") then
 		CastBars:Setup()
 	end
-end
 
-CastBars:RegisterEvent("PLAYER_LOGIN")
-CastBars:SetScript("OnEvent", CastBars.OnEvent)
+	CastBars:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

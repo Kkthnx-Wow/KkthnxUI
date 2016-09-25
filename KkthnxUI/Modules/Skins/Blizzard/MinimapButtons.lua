@@ -37,12 +37,12 @@ local function SkinButton(f)
 		if (region:IsVisible() or region:IsShown()) and (region:GetObjectType() == "Texture") then
 			local tex = tostring(region:GetTexture())
 
-			if tex and (tex:find("Border") or tex:find("Background") or tex:find("AlphaMask")) then
+			-- if tex and (tex:find("Border") or tex:find("Background") or tex:find("AlphaMask")) then
+			if tex and (strfind(tex, 'Border') or strfind(tex, 'Background') or strfind(tex, 'AlphaMask') or strfind(tex, 'Highlight')) then
 				region:SetTexture(nil)
 			else
 				region:ClearAllPoints()
-				region:SetPoint("TOPLEFT", f, "TOPLEFT", 2, -2)
-				region:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -2, 2)
+				region:SetInside()
 				region:SetTexCoord(unpack(K.TexCoords))
 				region:SetDrawLayer("ARTWORK")
 				if f:GetName() == "PS_MinimapButton" then

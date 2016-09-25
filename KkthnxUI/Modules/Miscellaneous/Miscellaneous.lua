@@ -81,7 +81,7 @@ ForceCVar:SetScript("OnEvent", function(self, event)
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
 	end
-	
+
 	ForceCVar:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
 

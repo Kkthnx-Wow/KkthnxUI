@@ -112,11 +112,8 @@ function Tutorial:Tutorials(forceShow)
 	self:SetNextTutorial()
 end
 
-function Tutorial:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
-		Tutorial:Tutorials(forceShow)
-	end
-end
-
-Tutorial:RegisterEvent("PLAYER_LOGIN")
-Tutorial:SetScript("OnEvent", Tutorial.OnEvent)
+Tutorial:RegisterEvent("PLAYER_ENTERING_WORLD")
+Tutorial:SetScript("OnEvent", function(self, event, ...)
+	Tutorial:Tutorials(forceShow)
+	Tutorial:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

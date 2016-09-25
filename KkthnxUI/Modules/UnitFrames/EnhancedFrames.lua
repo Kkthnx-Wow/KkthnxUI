@@ -245,8 +245,11 @@ function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 	end
 end
 
-function EnhancedFrames:OnEvent(event)
-    if (event == "PLAYER_LOGIN") then
+EnhancedFrames:RegisterEvent("PLAYER_ENTERING_WORLD")
+EnhancedFrames:RegisterEvent("PLAYER_REGEN_ENABLED")
+EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
+EnhancedFrames:SetScript("OnEvent", function(self, event, ...)
+	 if (event == "PLAYER_ENTERING_WORLD") then
         EnhancedFrames:Setup()
     end
 
@@ -259,9 +262,6 @@ function EnhancedFrames:OnEvent(event)
 	if (event == "PLAYER_REGEN_ENABLED") then
 		 EnhancedFrames:Setup()
     end
-end
 
-EnhancedFrames:RegisterEvent("PLAYER_LOGIN")
-EnhancedFrames:RegisterEvent("PLAYER_REGEN_ENABLED")
-EnhancedFrames:RegisterEvent("UNIT_EXITED_VEHICLE")
-EnhancedFrames:SetScript("OnEvent", EnhancedFrames.OnEvent)
+	EnhancedFrames:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end)

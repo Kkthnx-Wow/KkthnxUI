@@ -23,7 +23,11 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 }
 
 -- SHOW EMPTY BUTTONS
-function ActionBars:ShowGrid()
+local ActionBars = CreateFrame("Frame")
+ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
+ActionBars:SetScript("OnEvent", function(self, event)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
 	local Installed = SavedOptionsPerChar.Install
 	if Installed then
 		local b1, b2, b3, b4 = GetActionBarToggles()
@@ -59,7 +63,7 @@ function ActionBars:ShowGrid()
 	else
 		SetCVar("alwaysShowActionBars", 0)
 	end
-end
+end)
 
 -- VEHICLE BUTTON ANCHOR
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
@@ -127,12 +131,3 @@ Vehicle:SetScript("OnEnter", function(self)
 	end
 end)
 Vehicle:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-function ActionBars:OnEvent(event)
-	if (event == "PLAYER_LOGIN") then
-		ActionBars:ShowGrid()
-	end
-end
-
-ActionBars:RegisterEvent("PLAYER_LOGIN")
-ActionBars:SetScript("OnEvent", ActionBars.OnEvent)

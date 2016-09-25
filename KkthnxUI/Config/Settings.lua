@@ -236,13 +236,14 @@ C["PulseCD"] = {
 }
 -- SKINS OPTIONS
 C["Skins"] = {
-	["Spy"] = false,
-	["ChatBubble"] = true,
 	["CLCRet"] = false,
+	["ChatBubble"] = true,
 	["DBM"] = false,
+	["DBMMove"] = false,
 	["MinimapButtons"] = true,
 	["Recount"] = false,
 	["Skada"] = false,
+	["Spy"] = false,
 	["WeakAuras"] = false,
 }
 -- TOOLTIP OPTIONS
