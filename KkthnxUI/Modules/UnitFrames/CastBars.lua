@@ -76,30 +76,6 @@ function CastBars:Setup()
 	end
 end
 
-function CastBars:SetupLag()
-	local PlayerTimer, TargetTimer, LagMeter
-	LagMeter = CastingBarFrame:CreateTexture(nil, "BACKGROUND")
-	LagMeter:SetTexture(C.Media.Texture)
-	LagMeter:SetHeight(CastingBarFrame:GetHeight())
-	LagMeter:SetWidth(0)
-	LagMeter:SetPoint("RIGHT", CastingBarFrame, "RIGHT", 0, 0)
-	LagMeter:SetColorTexture(1, 0, 0, 1) --Red Color
-
-	hooksecurefunc(CastingBarFrame, "Show", function()
-		Down, Up, Lag = GetNetStats()
-		local CastingMin, CastingMax = CastingBarFrame:GetMinMaxValues()
-		local LagValue = (Lag / 1000) / (CastingMax - CastingMin)
-
-		if (LagValue < 0) then
-			LagValue = 0
-		elseif (LagValue > 1) then
-			LagValue = 1
-		end
-
-		LagMeter:SetWidth(CastingBarFrame:GetWidth() * LagValue)
-	end)
-end
-
 function CastBars:SetupTimers()
 	CastingBarFrame.timer = CastingBarFrame:CreateFontString(nil)
 	CastingBarFrame.timer:SetPoint("RIGHT", CastingBarFrame, "LEFT", -10, 0)
@@ -155,6 +131,5 @@ CastBars:SetScript("OnEvent", function(self, event, ...)
 	if (event == "PLAYER_LOGIN") then
 		CastBars:Setup()
 		CastBars:SetupTimers()
-		CastBars:SetupLag()
 	end
 end)
