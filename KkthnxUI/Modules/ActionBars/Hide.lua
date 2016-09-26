@@ -22,12 +22,6 @@ local Frames = {
 }
 
 function KkthnxUIActionBars:DisableBlizzard()
-	if C.ActionBar.Grid == true then
-		SetCVar("alwaysShowActionBars", 1)
-	else
-		SetCVar("alwaysShowActionBars", 0)
-	end
-
 	for _, frame in pairs(Frames) do
 		frame:UnregisterAllEvents()
 		frame.ignoreFramePositionManager = true
@@ -44,14 +38,6 @@ function KkthnxUIActionBars:DisableBlizzard()
 
 	hooksecurefunc("TalentFrame_LoadUI", function()
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
-
-	hooksecurefunc("ActionButton_OnEvent", function(self, event)
-		if (event == "PLAYER_ENTERING_WORLD") then
-			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
-			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 	end)
 
 	MainMenuBar.slideOut.IsPlaying = function()
