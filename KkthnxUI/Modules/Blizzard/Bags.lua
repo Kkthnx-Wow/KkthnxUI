@@ -1115,18 +1115,18 @@ end
 function Stuffing:ADDON_LOADED(addon)
 	if addon ~= "KkthnxUI" then return nil end
 
+	-- Register Events for Updates
 	self:RegisterEvent("BAG_UPDATE")
-	self:RegisterEvent("ITEM_LOCK_CHANGED")
-	self:RegisterEvent("BANKFRAME_OPENED")
-	self:RegisterEvent("BANKFRAME_CLOSED")
-	self:RegisterEvent("GUILDBANKFRAME_OPENED")
-	self:RegisterEvent("GUILDBANKFRAME_CLOSED")
+	--self:RegisterEvent("ITEM_LOCK_CHANGED")
+	--self:RegisterEvent("BANKFRAME_OPENED")
+	--self:RegisterEvent("BANKFRAME_CLOSED")
+	--self:RegisterEvent("GUILDBANKFRAME_OPENED")
+	--self:RegisterEvent("GUILDBANKFRAME_CLOSED")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
+	--self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
-	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
-	--self:RegisterEvent("REAGENTBANK_UPDATE")
+	--self:RegisterEvent("BAG_UPDATE_COOLDOWN")
 
 	self:InitBags()
 
@@ -1149,8 +1149,8 @@ end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
 	Stuffing:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	ToggleBackpack()
-	ToggleBackpack()
+	ToggleAllBags()
+	ToggleAllBags()
 end
 
 function Stuffing:PLAYERBANKSLOTS_CHANGED(id)
