@@ -13,12 +13,12 @@ EasyLog:SetScript("OnEvent", function()
 	if instanceType == "raid" and IsInRaid(LE_PARTY_CATEGORY_HOME) then
 		if not LoggingCombat() then
 			LoggingCombat(1)
-			K.Print("|cffffe02e"..COMBATLOGENABLED.."|r")
+			K.Print("|cffffd100"..COMBATLOGENABLED.."|r")
 		end
 	else
 		if LoggingCombat() then
 			LoggingCombat(0)
-			K.Print("|cffffe02e"..COMBATLOGDISABLED.."|r")
+			K.Print("|cffffd100"..COMBATLOGDISABLED.."|r")
 		end
 	end
 end)

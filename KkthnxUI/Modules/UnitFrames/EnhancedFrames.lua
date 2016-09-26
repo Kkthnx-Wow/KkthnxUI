@@ -1,10 +1,10 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.EnhancedFrames ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local UnitIsTapDenied = UnitIsTapDenied
@@ -14,13 +14,13 @@ local GetCVar = GetCVar
 local UnitClassification = UnitClassification
 
 local Shorts = {
-	{1e10, 1e9, "%.0fB"}, -- 10B+ AS 12B
-	{1e9, 1e9, "%.1fB"}, -- 1B+ AS 8.3B
-	{1e7, 1e6, "%.0fM"}, -- 10M+ AS 14M
-	{1e6, 1e6, "%.1fM"}, -- 1M+ AS 7.4M
-	{1e5, 1e3, "%.0fK"}, -- 100K+ AS 840K
-	{1e3, 1e3, "%.1fK"}, -- 1K+ AS 2.5K
-	{0, 1, "%d" }, -- < 1K AS 974
+	{1e10, 1e9, "%.0fB"}, -- 10b+ as 12b
+	{1e9, 1e9, "%.1fB"}, -- 1b+ as 8.3b
+	{1e7, 1e6, "%.0fM"}, -- 10m+ as 14m
+	{1e6, 1e6, "%.1fM"}, -- 1m+ as 7.4m
+	{1e5, 1e3, "%.0fK"}, -- 100k+ as 840k
+	{1e3, 1e3, "%.1fK"}, -- 1k+ as 2.5k
+	{0, 1, "%d" }, -- < 1k as 974
 }
 for i = 1, #Shorts do
 	Shorts[i][4] = Shorts[i][3] .. " (%.0f%%)"
@@ -30,31 +30,31 @@ local EnhancedFrames = CreateFrame("Frame")
 
 function EnhancedFrames:Setup()
 	if InCombatLockdown() then return end
-	-- GENERIC STATUS TEXT HOOK
+	-- Generic status text hook
 	hooksecurefunc("TextStatusBar_UpdateTextStringWithValues", EnhancedFrames_TextStatusBarUpdateTextStringWithValues)
 
-	-- HOOK PLAYERFRAME FUNCTIONS
+	-- Hook playerframe functions
 	hooksecurefunc("PlayerFrame_ToPlayerArt", EnhancedFrames_PlayerFrame_ToPlayerArt)
 	hooksecurefunc("PlayerFrame_ToVehicleArt", EnhancedFrames_PlayerFrame_ToVehicleArt)
 
-	-- HOOK TARGETFRAME FUNCTIONS
+	-- Hook targetframe functions
 	hooksecurefunc("TargetFrame_CheckFaction", EnhancedFrames_TargetFrame_CheckFaction)
 	hooksecurefunc("TargetFrame_CheckClassification", EnhancedFrames_Target_Classification)
 
-	-- BOSSFRAME HOOKS
+	-- Bossframe hooks
 	hooksecurefunc("BossTargetFrame_OnLoad", EnhancedFrames_BossTargetFrame_Style)
 
-	-- PARTYFRAME HOOKS
+	-- Partyframe hooks
 	hooksecurefunc("PartyMemberFrame_ToPlayerArt", EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt)
 	hooksecurefunc("PartyMemberFrame_ToVehicleArt", EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt)
 
-	-- SET UP SOME STYLINGS
+	-- Set up some stylings
 	EnhancedFrames_Style_PlayerFrame()
 	EnhancedFrames_BossTargetFrame_Style()
 	EnhancedFrames_Style_TargetFrame(TargetFrame)
 	EnhancedFrames_Style_TargetFrame(FocusFrame)
 
-	-- UPDATE SOME VALUES
+	-- Update some values
 	TextStatusBar_UpdateTextString(PlayerFrame.healthbar)
 	TextStatusBar_UpdateTextString(PlayerFrame.manabar)
 end
@@ -225,6 +225,11 @@ end
 
 -- Idk what i wanna do with this yet :D
 if not InCombatLockdown() then
+	TargetFrameNumericalThreat:SetScale(0.9)
+	TargetFrameNumericalThreat:ClearAllPoints()
+	TargetFrameNumericalThreat:SetPoint("BOTTOM", PlayerFrame, "TOP", 75, -23)
+	TargetFrameNumericalThreat.SetPoint = K.Noop
+
 	PlayerFrameHealthBarTextLeft:ClearAllPoints()
 	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, 0)
 

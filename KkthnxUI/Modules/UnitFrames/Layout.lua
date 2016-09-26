@@ -25,8 +25,6 @@ local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 local UnitIsConnected = UnitIsConnected
 local Movers = K.Movers
 
-local PetColor = {157/255, 197/255, 255/255}
-
 local Unitframes = CreateFrame("Frame", "Unitframes", UIParent)
 
 local PlayerAnchor = CreateFrame("Frame", "PlayerFrameAnchor", UIParent)
@@ -52,10 +50,10 @@ function Unitframes:Setup()
 					local Class = select(2, UnitClass(unit))
 					color = KkthnxUI_Raid_Class_Colors[Class]
 				else
-					color = PetColor
+					color = KkthnxUI_Pet_Color
 				end
 			elseif UnitIsDeadOrGhost(unit) then
-				color = GRAY_FONT_COLOR
+				color = KkthnxUI_Dead_Color
 			else
 				color = KkthnxUI_Reaction_Colors[UnitIsEnemy(unit, "player") and 1 or UnitReaction(unit, "player") or 5]
 			end

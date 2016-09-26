@@ -170,14 +170,14 @@ L_PLANNER_PRIEST_1 = "Discipline"
 L_POPUP_ARMORY = "Armory"
 L_POPUP_BOOSTUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
-L_POPUP_UIOUTDATED = "Download |cff71d5ffKkthnxUI|r"
+L_POPUP_UIOUTDATED = "Download |cff4285f4KkthnxUI|r"
 L_POPUP_FIX_ACTIONBARS = "There is something wrong with your action bars. Do you want to reload the UI to fix it?"
-L_POPUP_INSTALLUI = "Thank you for choosing |cff71d5ffKkthnxUI|r! |n|nAccept this installation dialog to apply settings."
-L_POPUP_RELOADUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff71d5ffKkthnxUI|r. |n|nVisit me at |cff71d5ffwww.github.com/kkthnx|r."
-L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff71d5ffKkthnxUI|r?"
+L_POPUP_INSTALLUI = "Thank you for choosing |cff4285f4KkthnxUI|r! |n|nAccept this installation dialog to apply settings."
+L_POPUP_RELOADUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff4285f4KkthnxUI|r. |n|nVisit me at |cff4285f4www.github.com/kkthnx|r."
+L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff4285f4KkthnxUI|r?"
 L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
-L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff71d5ffKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
-L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff71d5ffDBM|r."
+L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff4285f4KkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
+L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff4285f4DBM|r."
 -- Stats Localization
 L_STATS_GLOBAL = "Global Latency:"
 L_STATS_WORLD = "World Latency:"
@@ -214,7 +214,7 @@ L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear b
 -- Wowhead Link Localization
 L_WATCH_WOWHEAD_LINK = "Wowhead Link"
 -- Welcome Localization
-L_WELCOME_LINE_1 = "Welcome to |cff71d5ffKkthnxUI|r v"
+L_WELCOME_LINE_1 = "Welcome to |cff4285f4KkthnxUI|r v"
 L_WELCOME_LINE_2_1 = ""
 L_WELCOME_LINE_2_2 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r"
 L_WELCOME_LINE_2_3 = ""
@@ -222,7 +222,7 @@ L_WELCOME_LINE_2_4 = "Some of your questions can be answered by typing /uihelp"
 -- Slash Commands Localization
 L_SLASHCMD_HELP = {
     "",
-    "|cff71d5ffAvailable slash commands:|r",
+    "|cff4285f4Available slash commands:|r",
     "--------------------------",
     "/rl - Reload interface.",
     "/rc - Activates a ready check.",
@@ -243,7 +243,7 @@ L_SLASHCMD_HELP = {
     "/cfg - Opens interface settings.",
     "/patch - Display Wow patch info.",
     "",
-    "|cff71d5ffAvailable hidden features:|r",
+    "|cff4285f4Available hidden features:|r",
     "--------------------------",
     "Right-click minimap for micromenu.",
     "Middle mouse click minimap for tracking.",

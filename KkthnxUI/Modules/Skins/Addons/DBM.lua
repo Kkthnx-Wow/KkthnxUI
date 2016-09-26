@@ -216,8 +216,8 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 					progress.styled = true
 				end
 				progress:ClearAllPoints()
-				progress:SetPoint("TOPLEFT", bar, "TOPLEFT", 2, -2)
-				progress:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -2, 2)
+				progress:SetPoint("TOPLEFT", bar, "TOPLEFT", 0, 0)
+				progress:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
 
 				if not name.styled then
 					name:ClearAllPoints()
@@ -240,23 +240,25 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 			end
 		end
 
-		hooksecurefunc(DBT, "CreateBar", SkinBars)
-		hooksecurefunc(DBM.BossHealth, "Show", SkinBossTitle)
-		hooksecurefunc(DBM.BossHealth, "AddBoss", SkinBoss)
-		hooksecurefunc(DBM.BossHealth, "UpdateSettings", SkinBoss)
+		if DBM then
+			hooksecurefunc(DBT, "CreateBar", SkinBars)
+			hooksecurefunc(DBM.BossHealth, "Show", SkinBossTitle)
+			hooksecurefunc(DBM.BossHealth, "AddBoss", SkinBoss)
+			hooksecurefunc(DBM.BossHealth, "UpdateSettings", SkinBoss)
 
-		hooksecurefunc(DBM.RangeCheck, "Show", function()
-			if DBMRangeCheck then
-				--DBMRangeCheck:SetTemplate("Transparent")
-			end
-			if DBMRangeCheckRadar then
-				--DBMRangeCheckRadar:SetTemplate("Transparent")
-			end
-		end)
+			hooksecurefunc(DBM.RangeCheck, "Show", function()
+				if DBMRangeCheck then
+					DBMRangeCheck:CreatePixelShadow()
+				end
+				if DBMRangeCheckRadar then
+					DBMRangeCheckRadar:CreatePixelShadow()
+				end
+			end)
 
-		hooksecurefunc(DBM.InfoFrame, "Show", function()
-			--DBMInfoFrame:SetTemplate("Transparent")
-		end)
+			hooksecurefunc(DBM.InfoFrame, "Show", function()
+				DBMInfoFrame:CreatePixelShadow()
+			end)
+		end
 
 		local replace = string.gsub
 		local old = RaidNotice_AddMessage
@@ -269,7 +271,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- DBM SETTINGS(BY ALZA AND HELP FROM AFFLI)
+-- DBM settings(by alza and help from affli)
 function K.UploadDBM()
 	if K.IsAddOnEnabled("DBM-Core") then
 		DBM_UseDualProfile = false
@@ -323,15 +325,15 @@ function K.UploadDBM()
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 7
 
 		if C.ActionBar.BottomBars == 1 then
-			DBM_AllSavedOptions["Default"].HPFrameY = 126
-			DBM_AllSavedOptions["Default"].RangeFrameY = 101
-			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 139
-			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -136
+			DBM_AllSavedOptions["Default"].HPFrameY = 182
+			DBM_AllSavedOptions["Default"].RangeFrameY = 157
+			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 195
+			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -80
 		elseif C.ActionBar.BottomBars == 2 then
-			DBM_AllSavedOptions["Default"].HPFrameY = 154
-			DBM_AllSavedOptions["Default"].RangeFrameY = 129
-			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 167
-			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -108
+			DBM_AllSavedOptions["Default"].HPFrameY = 182
+			DBM_AllSavedOptions["Default"].RangeFrameY = 157
+			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 195
+			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -80
 		elseif C.ActionBar.BottomBars == 3 then
 			DBM_AllSavedOptions["Default"].HPFrameY = 182
 			DBM_AllSavedOptions["Default"].RangeFrameY = 157

@@ -2,6 +2,14 @@ local K, C, _ = select(2, ...):unpack()
 
 local _G = _G
 
+KkthnxUI_Dead_Color = {
+	128/255, 128/255, 128/255
+}
+
+KkthnxUI_Pet_Color = {
+	157/255, 197/255, 255/255
+}
+
 KkthnxUI_Disconnect_Colors = {
 	0.1, 0.1, 0.1
 }

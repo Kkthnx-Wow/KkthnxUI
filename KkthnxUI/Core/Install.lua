@@ -285,7 +285,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		return
 	end
 
-	-- Create an empty cvar if they don't exist
+	-- Create an empty cvar if they don"t exist
 	if not SavedPositions then SavedPositions = {} end
 	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
 	if SavedOptionsPerChar.FogOfWar == nil then SavedOptionsPerChar.FogOfWar = false end
@@ -310,9 +310,9 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	-- Welcome message
 	if C.General.WelcomeMessage == true then
-		print("|cffffe02e"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
-		print("|cffffe02e"..L_WELCOME_LINE_2_1.."|cffffe02e"..L_WELCOME_LINE_2_2.."|r")
-		print("|cffffe02e"..L_WELCOME_LINE_2_3.."|cffffe02e"..L_WELCOME_LINE_2_4.."|r")
+		print("|cffffd100"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
+		print("|cffffd100"..L_WELCOME_LINE_2_1.."|cffffd100"..L_WELCOME_LINE_2_2.."|r")
+		print("|cffffd100"..L_WELCOME_LINE_2_3.."|cffffd100"..L_WELCOME_LINE_2_4.."|r")
 	end
 end)
 
@@ -321,7 +321,7 @@ if not InstallStepComplete then
 	imsg:SetSize(418, 72)
 	imsg:SetPoint("TOP", 0, -120)
 	imsg:Hide()
-	imsg:SetScript('OnShow', function(self)
+	imsg:SetScript("OnShow", function(self)
 		if self.message then
 			PlaySoundFile([[Sound\Interface\LevelUp.wav]])
 			self.text:SetText(self.message)
@@ -335,28 +335,28 @@ if not InstallStepComplete then
 
 	imsg.firstShow = false
 
-	imsg.bg = imsg:CreateTexture(nil, 'BACKGROUND')
+	imsg.bg = imsg:CreateTexture(nil, "BACKGROUND")
 	imsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	imsg.bg:SetPoint('BOTTOM')
+	imsg.bg:SetPoint("BOTTOM")
 	imsg.bg:SetSize(326, 103)
 	imsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
 	imsg.bg:SetVertexColor(1, 1, 1, 0.6)
 
-	imsg.lineTop = imsg:CreateTexture(nil, 'BACKGROUND')
-	imsg.lineTop:SetDrawLayer('BACKGROUND', 2)
+	imsg.lineTop = imsg:CreateTexture(nil, "BACKGROUND")
+	imsg.lineTop:SetDrawLayer("BACKGROUND", 2)
 	imsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
 	imsg.lineTop:SetPoint("TOP")
 	imsg.lineTop:SetSize(418, 7)
 	imsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	imsg.lineBottom = imsg:CreateTexture(nil, 'BACKGROUND')
-	imsg.lineBottom:SetDrawLayer('BACKGROUND', 2)
+	imsg.lineBottom = imsg:CreateTexture(nil, "BACKGROUND")
+	imsg.lineBottom:SetDrawLayer("BACKGROUND", 2)
 	imsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
 	imsg.lineBottom:SetPoint("BOTTOM")
 	imsg.lineBottom:SetSize(418, 7)
 	imsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	imsg.text = imsg:CreateFontString(nil, 'ARTWORK', 'GameFont_Gigantic')
+	imsg.text = imsg:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
 	imsg.text:SetPoint("BOTTOM", 0, 12)
 	imsg.text:SetTextColor(1, 0.82, 0)
 	imsg.text:SetJustifyH("CENTER")
@@ -365,6 +365,6 @@ end
 -- Help translate
 if C.General.TranslateMessage == true then
 	if GetLocale() == "esES" or GetLocale() == "koKR" or GetLocale() == "ruRU" or GetLocale() == "esMX" or GetLocale() == "deDE" or GetLocale() == "frFR" or GetLocale() == "koKR" or GetLocale() == "zhCN" or GetLocale() == "zhTW" then
-		print("|cffffe02ePlease help us translate the text settings for |cff71d5ffKkthnxUI|r. |cffffe02eYou can post a commit to|r |cff71d5ffgithub.com/Kkthnx/KkthnxUI_Legion|r")
+		print("|cffffd100Please help us translate the text settings for |cff4285f4KkthnxUI|r. |cffffd100You can post a commit to|r |cff4285f4github.com/Kkthnx/KkthnxUI_Legion|r")
 	end
 end

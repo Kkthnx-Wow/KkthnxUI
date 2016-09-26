@@ -1,6 +1,6 @@
 ## Interface: 70000
-## Title: |cff71d5ffKkthnxUI Config|r
-## Notes: |cff71d5ffKkthnxUI|r Config GUI
+## Title: |cff4285f4KkthnxUI Config|r
+## Notes: |cff4285f4KkthnxUI|r Config GUI
 ## Author: Tohveli, Josh "Kkthnx" Russell
 ## Version: 5.28
 ## SavedVariables: GUIConfigAll, GUIConfigSettings
