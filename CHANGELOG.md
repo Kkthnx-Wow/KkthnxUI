@@ -4,8 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - [v5.28] - 10:40:06 PM EDT Thursday, September 22, 2016
+## [Unreleased][v5.29] - 2:07:14 AM EDT Monday, September 26, 2016
 ### Added
+
+## [v5.28] - 2:07:14 AM EDT Monday, September 26, 2016
+### Added
+- Nothing new added in this build. Or maybe I just forgot what I have done? :|
+
+### Changed
+- AutoCollapse.lua changed to now only collapse in Instances.
+- Changed how blizzard frames are hidden.
+- Changed the TOC to v5.28 up from v5.27.
+- DBM skin updated. Using shadows for this one baby.
+- Improved MinimapButtons.lua script.
+- Updated ItemIcons.lua
+
+### Fixed
+- Attempted to revert code to resolve this ongoing freezing issue.
+- Check for the issue with action bars event changeD to PLAYER_ENTERING_WORLD from PLAYER_LOGIN. This fixes the repeated popup.
+- Fix an issue with action bar grid state not fully working once turned on or off.
+- Fixed DBM moving issue. I forgot to include the option for this in v5.27.
+- Fixed the display text being offset by 3 when it needed to be 0.
+- Garbage collect issue is now fixed. Titan Gods only knows how long this was broken for and why.
+- General code cleanup.
+
+### Removed
+- Removed / Reverted a lot of code from a week ago. Pretty pissed off about this. FeelsBadMan :'(.
+- Removed the lag bar. This was causing an OnHide issue with the player cast bar. (Could make a return ;))
+- Removed the smooth status bar script. This was way too buggy.
 
 ## [v5.27] - 10:17:02 PM EDT Friday, September 23, 2016
 ### Added
