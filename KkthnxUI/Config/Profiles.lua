@@ -2,15 +2,18 @@ local K, C, L, _ = select(2, ...):unpack()
 
 --[[
 
-IT'S IMPORTANT TO NOT OVERWRITE THE ORIGINAL TABLE. SO IF YOU WANT TO EDIT, FOR EXAMPLE,
-SOME OF THE UNITFRAMES DEFAULT SETTINGS, IT SHOULD BE DONE THIS WAY.
+It's important to not overwrite the original table. so if you want to edit, for example,
+some of the unitframes default settings, it should be done this way.
 
 C["Unitframe"]["EnhancedFrames"] = true
 C["Unitframe"]["PercentHealth"] = true
 C["Unitframe"]["ClassIcon"] = true
 C["Unitframe"]["SmoothBars"] = true
 
-PLEASE DO NOT EDIT SETTINGS THIS WAY
+---------------------------------------
+---------------------------------------
+
+Please do not edit settings this way
 
 C["UnitFrames"] = {
 	["EnhancedFrames"] = true,
@@ -19,10 +22,10 @@ C["UnitFrames"] = {
 	["SmoothBars"] = true,
 }
 
-]]--
+--]]
 
--- PER CLASS CONFIG (OVERWRITES GENERAL)
--- CLASS TYPE NEED TO BE UPPERCASE -- DRUID, MAGE ECT ECT...
+-- Per class config (overwrites general)
+-- Class type need to be uppercase -- druid, mage ect ect...
 if K.Class == "DRUID" then
 
 end
@@ -31,23 +34,23 @@ if K.Role == "Tank" then
 
 end
 
--- PER CHARACTER NAME CONFIG (OVERWRITE GENERAL AND CLASS)
--- NAME NEED TO BE CASE SENSITIVE
+-- Per character name config (overwrite general and class)
+-- Name needs to be case sensitive
 if K.Name == "CharacterName" then
 
 end
 
--- PER MAX CHARACTER LEVEL CONFIG (OVERWRITE GENERAL, CLASS AND NAME)
+-- Per max character level config (overwrite general, class and name)
 if K.Level ~= MAX_PLAYER_LEVEL then
 
 end
 
--- MAGICNACHOS PERSONAL CONFIG
+-- Magicnachos personal config
 if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
 
 end
 
--- KKTHNX PERSONAL CONFIG
+-- Kkthnx personal config
 if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 
 	C["ActionBar"]["BottomBars"] = 2
@@ -76,6 +79,8 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Chat"]["DamageMeterSpam"] = true
 	C["Chat"]["Spam"] = true
 
+	C["CombatText"]["KillingBlow"] = true
+
 	C["General"]["CustomLagTolerance"] = true
 	C["General"]["TranslateMessage"] = false
 	C["General"]["WelcomeMessage"] = true
@@ -87,21 +92,32 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Misc"]["AlreadyKnown"] = true
 	C["Misc"]["Armory"] = true
 	C["Misc"]["BGSpam"] = true
+	C["Misc"]["ColorPicker"] = true
 	C["Misc"]["DurabilityWarninig"] = true
 	C["Misc"]["ItemLevel"] = true
 	C["Misc"]["MoveBlizzard"] = true
+
+	C["Nameplate"]["CastbarName"] = true
+	C["Nameplate"]["TrackAuras"] = true
 
 	C["PulseCD"]["Enable"] = true
 
 	C["Skins"]["Skada"] = true
 
-	C["Unitframe"]["ClassIcon"] = true
-	C["Unitframe"]["EnhancedFrames"] = true
-	C["Unitframe"]["ClassHealth"] = true
-	C["Unitframe"]["SmoothBars"] = true
+	C["Tooltip"]["ItemCount"] = true
+	C["Tooltip"]["ItemIcon"] = true
+	C["Tooltip"]["SpellID"] = true
+
 	C["Unitframe"]["BetterPowerColors"] = true
 	C["Unitframe"]["CastBarScale"] = 1
-	C["Unitframe"]["Scale"] = 1
+	C["Unitframe"]["ClassHealth"] = true
+	C["Unitframe"]["ClassIcon"] = true
+	C["Unitframe"]["CombatFeedback"] = true
+	C["Unitframe"]["EnhancedFrames"] = true
 	C["Unitframe"]["FlatClassIcons"] = true
+	C["Unitframe"]["GroupNumber"] = true
+	C["Unitframe"]["Scale"] = 1
+
+	C["WorldMap"]["FogOfWar"] = true
 
 end

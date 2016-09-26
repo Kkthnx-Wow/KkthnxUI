@@ -1,8 +1,8 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Unitframe.ClassIcon ~= true then return end
 
--- CLASS ICONS
--- CREDITS TO GOSSIPGIRLXO FOR THE DARK FLATICONS.
+-- Class icons
+-- Credits to gossipgirlxo for the dark flaticons.
 hooksecurefunc("UnitFramePortrait_Update", function(self)
 	if self.portrait then
 		if UnitIsPlayer(self.unit) then

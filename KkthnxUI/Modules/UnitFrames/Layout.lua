@@ -71,10 +71,10 @@ function Unitframes:Setup()
 		end)
 	end
 
-	-- HIDE PET NAME
+	-- Hide pet name
 	PetName:Hide()
 
-	-- UNIT NAME
+	-- Unit name
 	for _, FrameNames in pairs({
 		PlayerName,
 		TargetFrameTextureFrameName,
@@ -89,7 +89,7 @@ function Unitframes:Setup()
 		end
 	end
 
-	-- UNIT HEALTHBARTEXT
+	-- Unit healthbartext
 	for _, FrameBarText in pairs({
 		PlayerFrameHealthBarTextLeft,
 		PlayerFrameHealthBarTextRight,
@@ -167,7 +167,7 @@ function Unitframes:Setup()
 		end
 	end
 
-	-- UNIT LEVELTEXT
+	-- Unit leveltext
 	for _, LevelText in pairs({
 		PlayerLevelText,
 		TargetFrameTextureFrameLevelText,
@@ -191,7 +191,7 @@ function Unitframes:Setup()
 		end
 	end)
 
-	-- TARGETFRAME
+	-- Targetframe
 	hooksecurefunc("TargetFrame_UpdateLevelTextAnchor", function(self, targetLevel)
 		if ( targetLevel >= 100 ) then
 			self.levelText:SetPoint("CENTER", 63, -17)
@@ -201,23 +201,23 @@ function Unitframes:Setup()
 	end)
 
 	if not InCombatLockdown() then
-		-- TWEAK PLAYER FRAME
+		-- Tweak player frame
 		K.ModifyFrame(PlayerFrame, "CENTER", PlayerFrameAnchor, -51, 3, C.Unitframe.Scale)
 
-		-- TWEAK TARGET FRAME
+		-- Tweak target frame
 		K.ModifyFrame(TargetFrame, "CENTER", TargetFrameAnchor, 51, 3, C.Unitframe.Scale)
 
-		-- TWEAK NAME BACKGROUND
+		-- Tweak name background
 		TargetFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 
-		-- TWEAK FOCUS FRAME
+		-- Tweak focus frame
 		K.ModifyFrame(FocusFrame, "TOP", PlayerFrame, 0, 200, C.Unitframe.Scale)
 
-		-- TWEAK NAME BACKGROUND
+		-- Tweak name background
 		FocusFrameNameBackground:SetColorTexture(0/255, 0/255, 0/255, 0.5)
 	end
 
-	-- TWEAK PARTY FRAME
+	-- Tweak party frame
 	for i = 1, MAX_PARTY_MEMBERS do
 		_G["PartyMemberFrame"..i]:SetScale(C.Unitframe.Scale)
 	end
@@ -225,21 +225,21 @@ function Unitframes:Setup()
 	-- Boss Frames
 	for i = 1, MAX_BOSS_FRAMES do -- Scale Them
 		if InCombatLockdown() then return end
-		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent);
-		_G["Boss"..i.."TargetFrame"]:SetScale(0.95);
-		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND");
+		_G["Boss"..i.."TargetFrame"]:SetParent(UIParent)
+		_G["Boss"..i.."TargetFrame"]:SetScale(0.95)
+		_G["Boss"..i.."TargetFrame"]:SetFrameStrata("BACKGROUND")
 	end
 	for i = 2, MAX_BOSS_FRAMES do -- Adjust Positions
 		if InCombatLockdown() then return end
 		_G["Boss"..i.."TargetFrame"]:SetPoint("TOPLEFT", _G["Boss"..(i-1).."TargetFrame"], "BOTTOMLEFT", 0, 15);
 	end
 
-	-- COMBOFRAME
+	-- Comboframe
 	if K.Class == "ROGUE" or K.Class == "DRUID" then
 		for i = 1, 5 do
 			_G["ComboPoint"..i]:SetScale(C.Unitframe.Scale)
 		end
-		-- ARENA FRAMES
+		-- Arena frames
 		if K.IsAddOnEnabled("Blizzard_ArenaUI") then
 			for i = 1, MAX_ARENA_ENEMIES do
 				_G["ArenaPrepFrame"..i]:SetScale(1.4)
@@ -249,7 +249,7 @@ function Unitframes:Setup()
 	end
 end
 
--- WE DO THIS BECAUSE WE ALREADY USE OUR OWN SYSTEM.
+-- We do this because we already use our own system.
 if C.Misc.Armory == true then
 	for _, menu in pairs(UnitPopupMenus) do
 		for index = #menu, 1, -1 do

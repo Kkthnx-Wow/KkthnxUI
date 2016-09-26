@@ -36,14 +36,14 @@ local function TargetAuraColour(self)
 		end
 	end
 
-	-- DEBUFFS
+	-- Debuffs
 	for i = 1, MAX_TARGET_DEBUFFS do
 		local dframe = _G[self:GetName().."Debuff"..i]
 		local dframecd = _G[self:GetName().."Debuff"..i.."Cooldown"]
 		local dframecount = _G[self:GetName().."Debuff"..i.."Count"]
 		if dframe then
 			K.CreateBorder(dframe, 10, 1)
-			-- BORDER COLOUR
+			-- Border colour
 			local dname = UnitDebuff(self.unit, i)
 			local _, _, _, _, dtype = UnitDebuff(self.unit, i)
 			if dname then
@@ -55,12 +55,12 @@ local function TargetAuraColour(self)
 				dframe:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 			end
 
-			if dframecd then -- PET DOESN'T SHOW CD?
+			if dframecd then -- Pet doesn't show cd?
 				dframecd:ClearAllPoints()
 				dframecd:SetPoint("TOPLEFT", dframe, 1.5, -1.5)
 				dframecd:SetPoint("BOTTOMRIGHT", dframe, -1.5, 1.5)
 			end
-			if dframecount then -- TOT DOESN'T SHOW STACKS
+			if dframecount then -- Tot doesn't show stacks
 				dframecount:ClearAllPoints()
 				dframecount:SetPoint("CENTER", dframe, "BOTTOM")
 				dframecount:SetJustifyH("CENTER")
@@ -70,7 +70,7 @@ local function TargetAuraColour(self)
 	end
 end
 
--- REPOSITION
+-- Reposition
 local function TargetAuraPosit(self, auraName, numAuras, numOppositeAuras, largeAuraList, updateFunc, maxRowWidth, offsetX, mirrorAurasVertically)
 	local AURA_OFFSET_Y = C.Unitframe.AuraOffsetY
 	local LARGE_AURA_SIZE = C.Unitframe.LargeAuraSize
@@ -97,7 +97,7 @@ local function TargetAuraPosit(self, auraName, numAuras, numOppositeAuras, large
 		end
 
 		if rowWidth > maxRowWidth then
-			-- X & Y
+			-- x & y
 			updateFunc(self, auraName, i, numOppositeAuras, firstBuffOnRow, size, offsetX + 1, offsetY + 2, mirrorAurasVertically)
 
 			rowWidth = size

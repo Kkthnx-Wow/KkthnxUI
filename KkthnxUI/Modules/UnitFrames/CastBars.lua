@@ -30,7 +30,7 @@ function CastBars:Setup()
 	if not InCombatLockdown() then
 		K.ModifyFrame(CastingBarFrame, "CENTER", PlayerCastbarAnchor, 0, -3, C.Unitframe.CastBarScale)
 
-		-- STYLE CASTINGBARFRAME
+		-- Style castingbarframe
 		CastingBarFrame.Border:SetTexture("Interface\\CastingBar\\UI-CastingBar-Border-Small")
 		CastingBarFrame.Flash:SetTexture("Interface\\CastingBar\\UI-CastingBar-Flash-Small")
 

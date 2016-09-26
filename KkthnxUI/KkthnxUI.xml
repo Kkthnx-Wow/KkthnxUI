@@ -59,7 +59,6 @@
 	<Script file="Modules\Unitframes\Plugins\ClassIcons.lua"/>
 	<Script file="Modules\Unitframes\Plugins\Extras.lua"/>
 	<Script file="Modules\Unitframes\Plugins\HealthPercent.lua"/>
-	<Script file="Modules\Unitframes\Plugins\SmoothBars.lua"/>
 
 	<Script file="Modules\Miscellaneous\AFKSpin.lua"/>
 	<Script file="Modules\Miscellaneous\AlreadyKnown.lua"/>

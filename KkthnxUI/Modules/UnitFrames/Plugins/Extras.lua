@@ -9,8 +9,8 @@ local IsResting = IsResting
 local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local InCombatLockdown = InCombatLockdown
 
--- HIDE CLASS RESOURCES OPTION
--- WE ADD THIS SINCE WE CAN ALREADY PROVIDE THIS SINCE 7.0.3 PREPATCH
+-- Hide class resources option
+-- We add this since we can already provide this since 7.0.3 prepatch
 if C.Unitframe.ClassResources == true then
 	for _, ClassResources in pairs({
 		WarlockPowerFrame,
@@ -24,21 +24,21 @@ if C.Unitframe.ClassResources == true then
 	end
 end
 
--- REMOVE PORTRAIT DAMAGE SPAM
+-- Remove portrait damage spam
 if C.Unitframe.CombatFeedback == true then
 	PlayerHitIndicator:SetText(nil)
 	PlayerHitIndicator.SetText = K.Noop
-	-- PET
+	-- Pet
 	PetHitIndicator:SetText(nil)
 	PetHitIndicator.SetText = K.Noop
 end
 
--- REMOVE GROUP NUMBER FRAME
+-- Remove group number frame
 if C.Unitframe.GroupNumber == true then
 	PlayerFrameGroupIndicator.Show = K.Noop
 end
 
--- REMOVE PVPICONS
+-- Remove pvpicons
 if C.Unitframe.PvPIcon == true then
 	PlayerPVPIcon:Kill()
 	TargetFrameTextureFramePVPIcon:Kill()
@@ -50,7 +50,7 @@ if C.Unitframe.PvPIcon == true then
 	end
 end
 
--- STOP RED FLASH RESTING
+-- Stop red flash resting
 for _, Textures in ipairs({
 	"PlayerAttackGlow",
 	"PetAttackModeTexture",

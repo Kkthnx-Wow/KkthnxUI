@@ -310,7 +310,6 @@ local function Local(o)
 	if o == "UIConfigUnitframePvPIcon" then o = L_GUI_UNITFRAME_HIDE_PVPICON end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
 	if o == "UIConfigUnitframeSmallAuraSize" then o = L_GUI_UNITFRAME_SMALL_AURA end
-	if o == "UIConfigUnitframeSmoothBars" then o = L_GUI_UNITFRAME_SMOOTH_BARS end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end

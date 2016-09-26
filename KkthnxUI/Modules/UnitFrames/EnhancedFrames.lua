@@ -107,12 +107,12 @@ function EnhancedFrames_BossTargetFrame_Style()
 end
 
 --[[
-	MAKE SURE TO SET STATUS TEXT TO NUMERIC VALUES IN INTERFACE OPTIONS FOR THIS TO WORK
-	"PERCENT" and "NUMERIC"
-	GetCVarDefault("statusTextDisplay") -> "NUMERIC"
+	Make sure to set status text to numeric values in interface options for this to work
+	"PERCENT" and "NUMERIC" or "NONE"
+	GetCVarDefault("statusTextDisplay") -> "NONE"
 	GetCVarDefault("statusText") -> "0"
 ]]--
--- FORCE NUMERIC FOR HEALTHBAR FIX
+-- Force numeric for healthbar fix
 SetCVar("statusTextDisplay", "NONE")
 function EnhancedFrames_TextStatusBarUpdateTextStringWithValues(statusBar, textString, value, valueMin, valueMax)
 	if value == 0 then
@@ -155,36 +155,6 @@ end
 function EnhancedFrames_Target_Classification(self, forceNormalTexture)
 	local texture
 	local classification = UnitClassification(self.unit)
-	self.nameBackground:Hide()
-	self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
-	if (forceNormalTexture) then
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
-	elseif (classification == "minus") then
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
-		forceNormalTexture = true
-	elseif (classification == "worldboss" or classification == "elite" ) then
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Elite")
-	elseif (classification == "rareelite" ) then
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Rare-Elite")
-	elseif (classification == "rare") then
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Rare")
-	else
-		self.borderTexture:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame")
-		forceNormalTexture = true
-	end
-	if (self.threatIndicator) then
-		if (classification == "minus") then
-			self.threatIndicator:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-Flash")
-			self.threatIndicator:SetTexCoord(0, 0.9453125, 0, 0.181640625)
-			self.threatIndicator:SetWidth(242)
-			self.threatIndicator:SetHeight(93)
-			self.threatIndicator:SetPoint("TOPLEFT", self, "TOPLEFT", -24, 0)
-		end
-	end
-
-	--[[
-	local texture
-	local classification = UnitClassification(self.unit)
 	if (classification == "worldboss" or classification == "elite") then
 		texture = "Interface\\Addons\\KkthnxUI\\Media\\Unitframes\\UI-TargetingFrame-Elite"
 	elseif (classification == "rareelite") then
@@ -201,7 +171,6 @@ function EnhancedFrames_Target_Classification(self, forceNormalTexture)
 	end
 
 	self.nameBackground:Hide()
-	--]]
 end
 
 function EnhancedFrames_TargetFrame_CheckFaction(self)
@@ -222,7 +191,7 @@ function EnhancedFrames_TargetFrame_CheckFaction(self)
 	EnhancedFrames_Style_TargetFrame(self)
 end
 
--- STYLE PARTY MEMEBER FRAME STYLE CHANGES
+-- Style party memeber frame style changes
 function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 	for i = 1, MAX_PARTY_MEMBERS do
 	if InCombatLockdown() then return end
@@ -253,7 +222,7 @@ function EnhancedPartyFrames_PartyMemberFrame_ToPlayerArt(self)
 	end
 end
 
--- IDK WHAT I WANNA DO WITH THIS YET :D
+-- Idk what i wanna do with this yet :D
 if not InCombatLockdown() then
 	PlayerFrameHealthBarTextLeft:ClearAllPoints()
 	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
@@ -268,7 +237,7 @@ if not InCombatLockdown() then
 	TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
 end
 
--- UPDATE SETTINGS SPECIFIC TO PARTY MEMBER UNIT FRAMES WHEN IN VEHICLES
+-- Update settings specific to party member unit frames when in vehicles
 function EnhancedPartyFrames_PartyMemberFrame_ToVehicleArt(self)
 	for i = 1, 4 do
 	if InCombatLockdown() then return end

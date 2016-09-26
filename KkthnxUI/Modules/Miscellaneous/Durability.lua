@@ -1,7 +1,7 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Misc.DurabilityWarninig ~= true then return end
 
-local Durability = CreateFrame("Frame")
+local Durability = CreateFrame("Frame", nil, UIParent)
 local TimerTracker = TimerTracker
 local DurabilityFrame = DurabilityFrame
 
@@ -13,13 +13,22 @@ function Durability:OnHide()
 	Durability.Warning:Hide()
 end
 
-Durability:FontString("Warning", C.Media.Font, 18, "THINOUTLINE")
-Durability.Warning:SetPoint("TOP", UIParent, "TOP", 0, -8)
-Durability.Warning:SetText(L_MISC_REPAIR)
-Durability.Warning:SetTextColor(1, 0, 0)
-Durability.Warning:Hide()
+function Durability:Enable()
+	self:FontString("Warning", C.Media.Font, 18, "THINOUTLINE")
+	self.Warning:SetPoint("TOP", UIParent, "TOP", 0, -8)
+	self.Warning:SetText(L_MISC_REPAIR)
+	self.Warning:SetTextColor(1, 0, 0)
+	self.Warning:Hide()
 
-DurabilityFrame:SetAlpha(0)
-DurabilityFrame:Hide()
-DurabilityFrame:HookScript("OnShow", Durability.OnShow)
-DurabilityFrame:HookScript("OnHide", Durability.OnHide)
+	DurabilityFrame:SetAlpha(0)
+	DurabilityFrame:Hide()
+	DurabilityFrame:HookScript("OnShow", self.OnShow)
+	DurabilityFrame:HookScript("OnHide", self.OnHide)
+end
+
+Durability:RegisterEvent("PLAYER_LOGIN")
+Durability:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_LOGIN") then
+		Durability:Enable()
+	end
+end)

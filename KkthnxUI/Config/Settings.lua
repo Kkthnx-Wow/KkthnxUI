@@ -279,7 +279,6 @@ C["Unitframe"] = {
 	["PvPIcon"] = true,
 	["Scale"] = 1.2,
 	["SmallAuraSize"] = 16,
-	["SmoothBars"] = false,
 }
 -- WORLDMAP OPTIONS
 C["WorldMap"] = {

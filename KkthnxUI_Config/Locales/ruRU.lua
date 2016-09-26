@@ -269,7 +269,6 @@ L_GUI_UNITFRAME_OUTLINE = "Add an outline to some of the unit frames text."
 L_GUI_UNITFRAME_PERCENT_HEALTH = "Healthbars change color based on Percent (Class colors have to be off)"
 L_GUI_UNITFRAME_SCALE = "Scale the Player, Target, Focus & Party frames"
 L_GUI_UNITFRAME_SMALL_AURA = "Small aura size on unit frames."
-L_GUI_UNITFRAME_SMOOTH_BARS = "Smoothly animates status bars on some standard frames"
 -- WorldMap Localization
 L_GUI_WORLDMAP = "WorldMap"
 L_GUI_WORLDMAP_ALPHA_WHENMOVING = "Alpha of the world map when you are moving."
