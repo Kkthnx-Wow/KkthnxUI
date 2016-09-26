@@ -30,7 +30,7 @@ K.UIParent:SetSize(UIParent:GetSize())
 K.TexCoords = {5/65, 59/64, 5/64, 59/64}
 
 K.Print = function(...)
-	print("|cff4285f4KkthnxUI|r:", ...)
+	print("|cff3c9bedKkthnxUI|r:", ...)
 end
 
 K.SetFontString = function(parent, fontName, fontHeight, fontStyle)

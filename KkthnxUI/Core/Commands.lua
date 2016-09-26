@@ -45,7 +45,7 @@ SLASH_CLEARQUESTS2 = "/clquests"
 
 -- KKTHNXUI help commands
 SlashCmdList.UIHELP = function()
-	for i, v in ipairs(L_SLASHCMD_HELP) do print("|cffffd100"..("%s"):format(tostring(v)).."|r") end
+	for i, v in ipairs(L_SLASHCMD_HELP) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
 end
 SLASH_UIHELP1 = "/uihelp"
 SLASH_UIHELP2 = "/helpui"

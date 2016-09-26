@@ -177,7 +177,7 @@ hooksecurefunc("WorldStateScoreFrame_Update", function()
 				local color
 				if inArena then
 					if faction == 1 then
-						color = "|cffffd100"
+						color = "|cffffff00"
 					else
 						color = "|cff19ff19"
 					end

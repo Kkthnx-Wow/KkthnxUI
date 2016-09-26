@@ -63,7 +63,7 @@ function Tutorial:SpawnTutorialFrame()
 	local title = header:CreateFontString("OVERLAY")
 	title:SetFont(C.Media.Font, 14, "OUTLINE")
 	title:SetPoint("CENTER", header, "CENTER")
-	title:SetText("|cff4285f4KkthnxUI|r" .." v".. K.Version)
+	title:SetText("|cff3c9bedKkthnxUI|r" .." v".. K.Version)
 
 	local desc = f:CreateFontString("ARTWORK")
 	desc:SetFontObject("GameFontHighlight")

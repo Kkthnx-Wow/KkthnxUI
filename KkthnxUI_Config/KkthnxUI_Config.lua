@@ -19,7 +19,7 @@ if (Locale == "enGB") then
 end
 
 Print = function(...)
-	print("|cff4285f4KkthnxUI_Config|r:", ...)
+	print("|cff3c9bedKkthnxUI_Config|r:", ...)
 end
 
 local ALLOWED_GROUPS = {
@@ -490,7 +490,7 @@ end
 
 local Loaded
 function CreateUIConfig()
-	if InCombatLockdown() and not Loaded then Print("|cffffd100"..ERR_NOT_IN_COMBAT.."|r") return end
+	if InCombatLockdown() and not Loaded then Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
 	K, C, L, _ = KkthnxUI:unpack()
 
 	if UIConfigMain then
@@ -517,7 +517,7 @@ function CreateUIConfig()
 
 	local TitleBoxVerText = TitleBoxVer:CreateFontString("UIConfigTitleVer", "OVERLAY", "GameFontNormal")
 	TitleBoxVerText:SetPoint("CENTER")
-	TitleBoxVerText:SetText("|cff4285f4KkthnxUI|r "..K.Version)
+	TitleBoxVerText:SetText("|cff3c9bedKkthnxUI|r "..K.Version)
 
 	-- Main Frame Title
 	local TitleBox = CreateFrame("Frame", "TitleBox", UIConfigMain)
@@ -902,7 +902,7 @@ do
 	local frame = CreateFrame("Frame", nil, InterfaceOptionsFramePanelContainer)
 	frame:Hide()
 
-	frame.name = "|cff4285f4KkthnxUI|r"
+	frame.name = "|cff3c9bedKkthnxUI|r"
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
 		K, C, L, _ = KkthnxUI:unpack()
@@ -914,7 +914,7 @@ do
 		subtitle:SetWidth(380)
 		subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 		subtitle:SetJustifyH("LEFT")
-		subtitle:SetText("UI Site: |cff4285f4https://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff4285f4https://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff4285f4https://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
+		subtitle:SetText("UI Site: |cff3c9bedhttps://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff3c9bedhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff3c9bedhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
 
 		local title2 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title2:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
@@ -978,7 +978,7 @@ do
 		local button = CreateFrame("BUTTON", "GameMenuKkthnxUIButtonUIConfig", Menu, "GameMenuButtonTemplate")
 		button:SetSize(ContinueX, ContinueY)
 		button:SetPoint("TOP", Interface, "BOTTOM", 0, -1)
-		button:SetText("|cff4285f4KkthnxUI|r")
+		button:SetText("|cff3c9bedKkthnxUI|r")
 
 		button:SetScript("OnClick", function(self)
 			local Config = UIConfigMain

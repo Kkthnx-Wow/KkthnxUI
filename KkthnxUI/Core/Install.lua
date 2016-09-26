@@ -310,9 +310,9 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	-- Welcome message
 	if C.General.WelcomeMessage == true then
-		print("|cffffd100"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
-		print("|cffffd100"..L_WELCOME_LINE_2_1.."|cffffd100"..L_WELCOME_LINE_2_2.."|r")
-		print("|cffffd100"..L_WELCOME_LINE_2_3.."|cffffd100"..L_WELCOME_LINE_2_4.."|r")
+		print("|cffffff00"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
+		print("|cffffff00"..L_WELCOME_LINE_2_1.."|cffffff00"..L_WELCOME_LINE_2_2.."|r")
+		print("|cffffff00"..L_WELCOME_LINE_2_3.."|cffffff00"..L_WELCOME_LINE_2_4.."|r")
 	end
 end)
 
@@ -365,6 +365,6 @@ end
 -- Help translate
 if C.General.TranslateMessage == true then
 	if GetLocale() == "esES" or GetLocale() == "koKR" or GetLocale() == "ruRU" or GetLocale() == "esMX" or GetLocale() == "deDE" or GetLocale() == "frFR" or GetLocale() == "koKR" or GetLocale() == "zhCN" or GetLocale() == "zhTW" then
-		print("|cffffd100Please help us translate the text settings for |cff4285f4KkthnxUI|r. |cffffd100You can post a commit to|r |cff4285f4github.com/Kkthnx/KkthnxUI_Legion|r")
+		print("|cffffff00Please help us translate the text settings for |cff3c9bedKkthnxUI|r. |cffffff00You can post a commit to|r |cff3c9bedgithub.com/Kkthnx/KkthnxUI_Legion|r")
 	end
 end
