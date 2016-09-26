@@ -225,16 +225,16 @@ end
 -- Idk what i wanna do with this yet :D
 if not InCombatLockdown() then
 	PlayerFrameHealthBarTextLeft:ClearAllPoints()
-	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, -3)
+	PlayerFrameHealthBarTextLeft:SetPoint("LEFT", PlayerFrameHealthBar, "LEFT", 4, 0)
 
 	PlayerFrameHealthBarTextRight:ClearAllPoints()
-	PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, -3)
+	PlayerFrameHealthBarTextRight:SetPoint("RIGHT", PlayerFrameHealthBar, "RIGHT", -2, 0)
 
 	TargetFrameTextureFrameHealthBarTextLeft:ClearAllPoints()
-	TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, -3)
+	TargetFrameTextureFrameHealthBarTextLeft:SetPoint("LEFT", TargetFrameHealthBar, "LEFT", 1, 0)
 
 	TargetFrameTextureFrameHealthBarTextRight:ClearAllPoints()
-	TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, -3)
+	TargetFrameTextureFrameHealthBarTextRight:SetPoint("RIGHT", TargetFrameHealthBar, "RIGHT", -2, 0)
 end
 
 -- Update settings specific to party member unit frames when in vehicles
