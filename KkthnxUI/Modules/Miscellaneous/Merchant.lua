@@ -5,11 +5,11 @@ local _G = _G
 local select = select
 local find = string.find
 
--- WOW API
+-- Wow API
 local IsAltKeyDown = IsAltKeyDown
 local GetItemInfo = GetItemInfo
 
--- ALT+CLICK TO BUY A STACK
+-- alt+click to buy a stack
 hooksecurefunc("MerchantItemButton_OnModifiedClick", function(self, ...)
 	if IsAltKeyDown() then
 		local itemLink = GetMerchantItemLink(self:GetID())

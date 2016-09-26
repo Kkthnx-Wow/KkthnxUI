@@ -66,7 +66,8 @@ function EnhancedFrames_Style_PlayerFrame()
 		PlayerFrameHealthBar.capNumericDisplay = true
 		PlayerFrameHealthBar:SetSize(119, 29)
 		PlayerFrameHealthBar:SetPoint("TOPLEFT", 106, -22)
-		PlayerFrameHealthBarText:SetPoint("CENTER", 50, 12)
+		PlayerFrameHealthBarText:ClearAllPoints()
+		PlayerFrameHealthBarText:SetPoint("CENTER", PlayerFrameHealthBar, "CENTER", 0, 0)
 
 		PlayerRestIcon:ClearAllPoints()
 		PlayerRestIcon:SetPoint("CENTER", PlayerLevelText, -1, 1)

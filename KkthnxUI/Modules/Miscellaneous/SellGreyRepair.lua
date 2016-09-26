@@ -2,8 +2,6 @@ local K, C, L, _ = select(2, ...):unpack()
 
 local Merchant = CreateFrame("Frame")
 
-local BlizzardMerchantClick = MerchantItemButton_OnModifiedClick
-
 Merchant.MerchantFilter = {
 	[6289]  = true, -- Raw Longjaw Mud Snapper
 	[6291]  = true, -- Raw Brilliant Smallfish
@@ -86,15 +84,7 @@ function Merchant:OnEvent()
 	end
 end
 
-function Merchant:Enable()
-	self:RegisterEvent("MERCHANT_SHOW")
-	self:SetScript("OnEvent", self.OnEvent)
-
-	MerchantItemButton_OnModifiedClick = self.MerchantClick
-end
-
 Merchant:RegisterEvent("PLAYER_ENTERING_WORLD")
-Merchant:SetScript("OnEvent", function(self, event, ...)
-	Merchant:Enable()
-	Merchant:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end)
+Merchant:RegisterEvent("MERCHANT_SHOW")
+Merchant:SetScript("OnEvent", Merchant.OnEvent)
+Merchant:UnregisterEvent("PLAYER_ENTERING_WORLD") -- ??
