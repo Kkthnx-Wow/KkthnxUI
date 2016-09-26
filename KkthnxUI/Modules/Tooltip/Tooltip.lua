@@ -62,16 +62,13 @@ end
 function Tooltip:SetTooltipDefaultAnchor(parent)
 	local Anchor = TooltipAnchor
 
-	if (C.Tooltip.Cursor) then
-		if (parent ~= UIParent) then
-			self:SetOwner(Anchor)
-			self:SetAnchorType("ANCHOR_TOPRIGHT", 0, -36)
-		else
-			self:SetOwner(parent, "ANCHOR_CURSOR")
-		end
+	if C.Tooltip.Cursor == true then
+		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT", 20, 20)
 	else
-		self:SetOwner(Anchor)
-		self:SetAnchorType("ANCHOR_TOPRIGHT", 0, -36)
+		self:SetOwner(parent, "ANCHOR_NONE")
+		self:ClearAllPoints()
+		self:SetPoint("BOTTOMRIGHT", Anchor, "BOTTOMRIGHT", 0, 0)
+		self.default = 1
 	end
 end
 

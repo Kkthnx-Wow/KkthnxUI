@@ -1,14 +1,19 @@
 local K, C, L, _ = select(2, ...):unpack()
 if C.Stats.System ~= true then return end
 
+local unpack = unpack
+local format = string.format
+local select = select
+local floor = math.floor
+local collectgarbage = collectgarbage
+
 local Stat = CreateFrame("Frame")
 Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
 Stat:SetFrameStrata("BACKGROUND")
 Stat:SetFrameLevel(3)
 Stat:EnableMouse(true)
 Stat.tooltip = false
-local scolor1 = K.RGBToHex(.4, .4, .4)
-local scolor2 = K.RGBToHex(1, 1, 1)
+local StatColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local Movers = K.Movers
 
 local StatAnchor = CreateFrame("Frame", "StatFrameAnchor", UIParent)
@@ -52,10 +57,10 @@ local function formatMem(memory)
 	local mult = 10^1
 	if memory > 999 then
 		local mem = ((memory / 1024) * mult) / mult
-		return string.format(megaByteString, mem)
+		return format(megaByteString, mem)
 	else
 		local mem = (memory * mult) / mult
-		return string.format(kiloByteString, mem)
+		return format(kiloByteString, mem)
 	end
 end
 
@@ -87,7 +92,7 @@ local function UpdateMemory()
 end
 
 -- Build DataText
-local int, int2 = 6, 5
+local int, int2 = 10, 2
 local function Update(self, t)
 	int = int - t
 	int2 = int2 - t
@@ -96,7 +101,7 @@ local function Update(self, t)
 		int = 10
 	end
 	if int2 < 0 then
-		Text:SetText(floor(GetFramerate())..K.RGBToHex(K.Color.r, K.Color.g, K.Color.b).."fps|r - "..select(3, GetNetStats())..K.RGBToHex(K.Color.r, K.Color.g, K.Color.b).."ms|r")
+		Text:SetText(floor(GetFramerate())..StatColor.." fps|r & "..select(3, GetNetStats())..StatColor.." ms|r")
 		int2 = 2
 	end
 end
@@ -124,16 +129,16 @@ Stat:SetScript("OnEnter", function(self)
 	end
 	GameTooltip:AddLine(" ")
 	if (bandwidth ~= 0) then
-		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, string.format(bandwidthString, bandwidth))
-		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, string.format(percentageString, GetDownloadedPercentage() * 100))
+		GameTooltip:AddDoubleLine(L_STATS_BANDWIDTH, format(bandwidthString, bandwidth))
+		GameTooltip:AddDoubleLine(L_STATS_DOWNLOAD, format(percentageString, GetDownloadedPercentage() * 100))
 		GameTooltip:AddLine(" ")
 	end
 	GameTooltip:AddDoubleLine(L_STATS_HOME, latencyHome.." "..MILLISECONDS_ABBR)
 	GameTooltip:AddDoubleLine(L_STATS_WORLD, latencyWorld.." "..MILLISECONDS_ABBR)
 	GameTooltip:AddDoubleLine(L_STATS_GLOBAL, ms_combined.." "..MILLISECONDS_ABBR)
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(L_STATS_INC, string.format("%.4f", bw_in) .. " kb/s")
-	GameTooltip:AddDoubleLine(L_STATS_OUT, string.format("%.4f", bw_out) .. " kb/s")
+	GameTooltip:AddDoubleLine(L_STATS_INC, format("%.4f", bw_in) .. " kb/s")
+	GameTooltip:AddDoubleLine(L_STATS_OUT, format("%.4f", bw_out) .. " kb/s")
 
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L_STATS_SYSTEMLEFT)
@@ -143,6 +148,9 @@ end)
 
 -- Button
 Stat:SetScript("OnMouseDown", function(self, btn)
+	if InCombatLockdown() then
+		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+	end
 	if (btn == "LeftButton") then
 		if not PVEFrame then PVEFrame_ToggleFrame() end
 		PVEFrame_ToggleFrame()
