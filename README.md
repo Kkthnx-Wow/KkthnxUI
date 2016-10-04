@@ -1,4 +1,4 @@
-![simplelogo](https://cloud.githubusercontent.com/assets/1692977/18849155/a01d2e08-83ff-11e6-92b6-018ecb464b65.png)  
+![kkthnxuilogo2](https://cloud.githubusercontent.com/assets/1692977/19082420/14dd3d3c-8a2c-11e6-818f-0f6a404678be.png)  
 
 KkthnxUI is a simplistic user interface that holds onto the information and functionality, while still keeping most of the good looks.
 It can be used for any class or role.      
