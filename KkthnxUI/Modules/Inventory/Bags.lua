@@ -1,4 +1,5 @@
 local K, C, L = select(2, ...):unpack()
+if C.Bags.Enable ~= true then return end
 
 local _G = _G
 local Noop = function() end

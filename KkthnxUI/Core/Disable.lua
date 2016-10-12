@@ -54,7 +54,7 @@ if IsAddOnLoaded("WorldQuestTracker") or IsAddOnLoaded("Mapster") or IsAddOnLoad
 end
 
 if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
-	C.Bag.Enable = false
+	C.Bags.Enable = false
 end
 
 if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
