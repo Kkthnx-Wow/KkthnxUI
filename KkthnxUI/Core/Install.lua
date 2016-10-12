@@ -77,7 +77,6 @@ local function InstallUI()
 	FCF_DockFrame(ChatFrame3)
 	FCF_OpenNewWindow(LOOT)
 	FCF_DockFrame(ChatFrame4)
-	ChatFrame4:Show()
 
 	-- Setting chat frames
 	if C.Chat.Enable == true and not IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then

@@ -194,16 +194,8 @@ local function SetChatStyle(frame)
 		frame.AddMessage = AddMessage
 	else
 		CombatLogQuickButtonFrame_Custom:StripTextures()
-		CombatLogQuickButtonFrame_Custom:CreateBackdrop()
-		CombatLogQuickButtonFrame_Custom.backdrop:SetPoint("TOPLEFT", -2, -2)
-		CombatLogQuickButtonFrame_Custom.backdrop:SetPoint("BOTTOMRIGHT", 2, -2)
-		CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(26, 28)
-		CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetPoint("TOPRIGHT", CombatLogQuickButtonFrame_Custom, "TOPRIGHT", 4, -1)
-		CombatLogQuickButtonFrame_CustomProgressBar:ClearAllPoints()
-		CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("TOPLEFT", CombatLogQuickButtonFrame_Custom.backdrop, 4, -4)
-		CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("BOTTOMRIGHT", CombatLogQuickButtonFrame_Custom.backdrop, -4, 4)
-		CombatLogQuickButtonFrame_CustomProgressBar:SetStatusBarTexture(C.Media.Texture)
-		CombatLogQuickButtonFrameButton1:SetPoint("BOTTOM", 0, 0)
+		CombatLogQuickButtonFrame_Custom:SetBackdrop(K.BorderBackdrop)
+		CombatLogQuickButtonFrame_Custom:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	end
 
 	frame.skinned = true
@@ -224,51 +216,6 @@ local function SetupChat(self)
 	ChatTypeInfo.RAID_WARNING.sticky = 1
 	ChatTypeInfo.CHANNEL.sticky = 1
 end
-
---[[
-local function SetupChatPosAndFont(self)
-	for i = 1, NUM_CHAT_WINDOWS do
-		local Frame = _G["ChatFrame"..i]
-		local ID = Frame:GetID()
-		local _, FontSize = FCF_GetChatWindowInfo(ID)
-
-		-- Min. size for chat font
-		if FontSize < 12 then
-			FCF_SetChatWindowFontSize(nil, Frame, 12)
-		else
-			FCF_SetChatWindowFontSize(nil, Frame, FontSize)
-		end
-
-		-- Font and font style for chat
-		if C.Chat.Outline == true then
-			Frame:SetFont(C.Media.Font, FontSize, C.Media.Font_Style)
-			Frame:SetShadowColor(0/255, 0/255, 0/255, 0.2)
-		else
-			Frame:SetFont(C.Media.Font, FontSize)
-			Frame:SetShadowColor(0/255, 0/255, 0/255, 1)
-			Frame:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
-		end
-
-		-- FORCE CHAT POSITION
-		if (ID == 1) then
-			Frame:ClearAllPoints()
-			Frame:SetSize(C.Chat.Width, C.Chat.Height)
-			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
-			FCF_RestorePositionAndDimensions(Frame)
-			FCF_SavePositionAndDimensions(Frame)
-		elseif (ID == 2) then
-			if C.Chat.CombatLog ~= true then
-				FCF_DockFrame(Frame)
-				ChatFrame2Tab:EnableMouse(false)
-				ChatFrame2Tab:SetText("")
-				ChatFrame2Tab.SetText = K.Noop
-				ChatFrame2Tab:SetWidth(0.001)
-				ChatFrame2Tab.SetWidth = K.Noop
-			end
-		end
-	end
-end
---]]
 
 K.SetDefaultChatPosition = function(frame)
 	if frame then
@@ -324,8 +271,9 @@ hooksecurefunc("FCF_OpenTemporaryWindow", SetupTempChat)
 
 -- Remove player's realm name
 local function RemoveRealmName(self, event, msg, author, ...)
-	local realmName = string.gsub(GetRealmName(), " ", "")
-
-	if msg:find("-" .. realmName) then return false, gsub(msg, "%-"..realmName, ""), author, ... end
+	local realm = string.gsub(K.Realm, " ", "")
+	if msg:find("-" .. realm) then
+		return false, gsub(msg, "%-"..realm, ""), author, ...
+	end
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", RemoveRealmName)
