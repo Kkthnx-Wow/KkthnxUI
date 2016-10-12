@@ -205,7 +205,7 @@ function Filger:DisplayActives()
 					bar.bg:SetPoint("TOPLEFT", -2, 2)
 					bar.bg:SetPoint("BOTTOMRIGHT", 2, -2)
 					bar.bg:SetFrameStrata("BACKGROUND")
-					bar.bg:SetTemplate("Default")
+					K.CreateVirtualFrame(bar.bg)
 				end
 
 				if bar.background then
@@ -555,7 +555,7 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 
 		if C.Filger.TestMode then
 			frame.actives = {}
-			for j = 1, math.min(C.filger.max_test_icon, #C["filger_spells"][K.Class][i]), 1 do
+			for j = 1, math.min(C.Filger.MaxTestIcon, #C["filger_spells"][K.Class][i]), 1 do
 				local data = C["filger_spells"][K.Class][i][j]
 				local name, icon
 				if data.spellID then
