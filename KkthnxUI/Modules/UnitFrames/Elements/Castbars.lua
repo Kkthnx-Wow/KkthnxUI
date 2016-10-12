@@ -106,7 +106,7 @@ local BasePos = {
 	arena = {"TOPRIGHT", "TOPLEFT", -30, -10},
 }
 
-function ns.CreateCastbars(self)
+function ns.CreateCastbars(self, unit)
 	local uconfig = ns.config[self.cUnit]
 	if not uconfig.cbshow then return end
 	local Movers = K.Movers
@@ -120,9 +120,9 @@ function ns.CreateCastbars(self)
 		local point, rpoint, x, y = unpack(BasePos[self.cUnit])
 		Castbar:SetPoint(point, self, rpoint, x + uconfig.cboffset[1], y + uconfig.cboffset[2])
 	else
-		if (self.cUnit == "player") then
+		if (unit == "player") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
-		elseif (self.cUnit == "target") then
+		elseif (unit == "target") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
 		end
 		Movers:RegisterFrame(Castbar)
@@ -132,11 +132,10 @@ function ns.CreateCastbars(self)
 	Castbar.Background:SetTexture(C.Media.Blank)
 	Castbar.Background:SetAllPoints(Castbar)
 
-	if (self.cUnit == "player") then
+	if (unit == "player") then
 		local SafeZone = Castbar:CreateTexture(nil, "BORDER")
 		SafeZone:SetTexture(C.Media.Texture)
 		SafeZone:SetVertexColor(unpack(C.Unitframe.CastbarSafeZoneColor))
-		-- table.insert(ns.statusbars, SafeZone)
 		Castbar.SafeZone = SafeZone
 
 		local Flash = CreateFrame("Frame", nil, Castbar)
