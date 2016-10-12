@@ -31,6 +31,10 @@ local function IsFramePositionedLeft(frame)
 end
 
 function ObjectiveTracker:Enable()
+	if select(4, GetAddOnInfo("DugisGuideViewerZ")) then
+		return
+	end
+
 	local Movers = K.Movers
 
 	Movers:RegisterFrame(ObjectiveFrameHolder)
@@ -56,5 +60,5 @@ function ObjectiveTracker:Enable()
 	hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition)
 end
 
-ObjectiveTracker:RegisterEvent("PLAYER_ENTERING_WORLD")
+ObjectiveTracker:RegisterEvent("PLAYER_LOGIN")
 ObjectiveTracker:SetScript("OnEvent", ObjectiveTracker.Enable)
