@@ -1,5 +1,5 @@
-local K, C, L, _ = select(2, ...):unpack()
-if K.IsAddOnEnabled("QuestHelper") then return end
+local K, C, L = select(2, ...):unpack()
+if IsAddOnLoaded("QuestHelper") then return end
 
 local format = string.format
 local IsControlKeyDown = IsControlKeyDown

@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Skins.WeakAuras ~= true then return end
 
 local pairs = pairs
@@ -10,12 +10,12 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
-	if not K.IsAddOnEnabled("WeakAuras") then return end
+	if not IsAddOnLoaded("WeakAuras") then return end
 
 	local function Skin_WeakAuras(frame)
 		if not frame.shadow then
-			-- WE JUST USE OUR PIXEL SHADOW HERE
-			frame:CreatePixelShadow()
+			-- We just use our pixel shadow here
+			K.CreateBorder(frame, nil, 3)
 		end
 
 		if frame.icon then

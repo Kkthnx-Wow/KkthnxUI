@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Announcements.Spells ~= true then return end
 
 -- LUA API
@@ -13,10 +13,10 @@ local GetSpellLink = GetSpellLink
 local SendChatMessage = SendChatMessage
 local UnitGUID = UnitGUID
 
--- ANNOUNCE SOME SPELLS
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-frame:SetScript("OnEvent", function(self, _, ...)
+-- Announce some spells
+local AnnounceSpells = CreateFrame("Frame")
+AnnounceSpells:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+AnnounceSpells:SetScript("OnEvent", function(self, _, ...)
 	local _, event, _, sourceGUID, sourceName, _, _, _, destName, _, _, spellID = ...
 	local spells = K.AnnounceSpells
 	local _, _, difficultyID = GetInstanceInfo()

@@ -1,4 +1,4 @@
-﻿local K, C, L, _ = select(2, ...):unpack()
+﻿local K, C, L = select(2, ...):unpack()
 if C.Stats.Battleground ~= true then return end
 
 -- LUA API
@@ -48,7 +48,7 @@ bgframe:SetScript("OnEnter", function(self)
 			GameTooltip:AddDoubleLine(DEATHS..":", deaths, 1, 1, 1)
 			GameTooltip:AddDoubleLine(DAMAGE..":", damageDone, 1, 1, 1)
 			GameTooltip:AddDoubleLine(SHOW_COMBAT_HEALING..":", healingDone, 1, 1, 1)
-			-- ADD EXTRA STATISTICS DEPENDING ON WHAT BG YOU ARE
+			-- Add extra statistics depending on what bg you are
 			if curmapid == IOC or curmapid == TBFG or curmapid == AB or curmapid == ASH then
 				GameTooltip:AddDoubleLine(L_DATATEXT_BASESASSAULTED, GetBattlefieldStatData(i, 1), 1, 1, 1)
 				GameTooltip:AddDoubleLine(L_DATATEXT_BASESDEFENDED, GetBattlefieldStatData(i, 2), 1, 1, 1)
@@ -136,7 +136,7 @@ local function Update(self, t)
 	end
 end
 
--- HIDE TEXT WHEN NOT IN AN BG
+-- Hide text when not in an bg
 local function OnEvent(self, event)
 	if event == "PLAYER_ENTERING_WORLD" then
 		local inInstance, instanceType = IsInInstance()

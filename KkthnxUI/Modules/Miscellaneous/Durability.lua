@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Misc.DurabilityWarninig ~= true then return end
 
 local Durability = CreateFrame("Frame", nil, UIParent)
@@ -14,7 +14,7 @@ function Durability:OnHide()
 end
 
 function Durability:Enable()
-	self:FontString("Warning", C.Media.Font, 18, "THINOUTLINE")
+	self:FontString("Warning", C.Media.Font, 18, "OUTLINE")
 	self.Warning:SetPoint("TOP", UIParent, "TOP", 0, -8)
 	self.Warning:SetText(L_MISC_REPAIR)
 	self.Warning:SetTextColor(1, 0, 0)
@@ -27,8 +27,4 @@ function Durability:Enable()
 end
 
 Durability:RegisterEvent("PLAYER_LOGIN")
-Durability:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_LOGIN") then
-		Durability:Enable()
-	end
-end)
+Durability:SetScript("OnEvent", Durability.Enable)

@@ -1,5 +1,5 @@
-local K, C, L, _ = select(2, ...):unpack()
-if K.IsAddOnEnabled("OmniCC") or K.IsAddOnEnabled("ncCooldown") or K.IsAddOnEnabled("CooldownCount") or C.Cooldown.Enable ~= true then return end
+local K, C, L = select(2, ...):unpack()
+if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or IsAddOnLoaded("CooldownCount") or C.Cooldown.Enable ~= true then return end
 
 local floor = math.floor
 local min = math.min
@@ -7,11 +7,7 @@ local tonumber = tonumber
 
 local GetTime = GetTime
 
-if K.IsAddOnEnabled("BigDebuffs") then
-	OmniCC = false
-else
-	OmniCC = true
-end
+OmniCC = true
 
 local IconSize = 36
 local Day, Hour, Minute = 86400, 3600, 60
@@ -64,7 +60,7 @@ local function Timer_OnSizeChanged(self, width, height)
 	if FontScale < MinScale then
 		self:Hide()
 	else
-		self.text:SetFont(Font, FontScale * FontSize, "OUTLINE")
+		self.text:SetFont(Font, FontScale * FontSize, C.Media.Font_Style)
 		self.text:SetShadowColor(0, 0, 0, .5)
 		self.text:SetShadowOffset(2, -2)
 		if self.enabled then Timer_ForceUpdate(self) end

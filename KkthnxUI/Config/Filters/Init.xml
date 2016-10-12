@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="Announcements.lua"/>
+	<Script file="ChatSpam.lua"/>
+	<Script file="Cooldowns.lua"/>
+	<Script file="FilgerSpells.lua"/>
+	<Script file="NeedItems.lua"/>
+</Ui>

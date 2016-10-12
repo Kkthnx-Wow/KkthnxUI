@@ -10,7 +10,7 @@ local BORDER_TEXTURE_SHADOW = C.Media.Border_Shadow
 local BORDER_SIZE = 10
 local PADDING_SIZE = 1
 
-local sections = { "TOPLEFT", "TOPRIGHT", "TOP", "BOTTOMLEFT", "BOTTOMRIGHT", "BOTTOM", "LEFT", "RIGHT" }
+local sections = {"TOPLEFT", "TOPRIGHT", "TOP", "BOTTOMLEFT", "BOTTOMRIGHT", "BOTTOM", "LEFT", "RIGHT"}
 
 local function SetBackdropBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
@@ -175,4 +175,39 @@ function K.CreateBorder(self, size, padding, layer)
 		self:SetBorderSize(size or BORDER_SIZE)
 		self:SetBorderPadding(padding or PADDING_SIZE)
 	end
+end
+
+-- Small bar ontop/below of frames
+function K.CreateOutsideBar(parent, onTop, r, g, b)
+	local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
+	local bar = K.CreateStatusBar(parent, "BORDER", nil, true)
+	bar:SetSize(98, 9)
+	bar:SetStatusBarColor(r or 1, g or 0, b or 0)
+	--bar:SetFrameLevel(10)
+
+	local point, anchor, point2, x, y, step
+	if onTop then
+		point, anchor, point2, x, y = "BOTTOM", parent.Health, "TOP", 0, 3
+		step = 2
+	else
+		point, anchor, point2, x, y = "TOP", parent.Power, "BOTTOM", 0, -2
+		step = -2
+	end
+	bar:SetPoint(point, anchor, point2, x, y)
+
+	local tex = bar:CreateTexture(nil, "ARTWORK")
+	tex:SetSize(104, 28)
+	if onTop then
+		tex:SetTexture(textPath.. "FrameBarTop")
+		tex:SetPoint("TOP", 0, 12)
+	else
+		tex:SetTexture(textPath.. "FrameBarBot")
+		tex:SetPoint("BOTTOM", 0, -10)
+	end
+
+	if C.Blizzard.ColorTextures == true then
+		tex:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+	end
+	bar.Texture = tex
+	return bar
 end

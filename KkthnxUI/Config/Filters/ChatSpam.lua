@@ -1,7 +1,8 @@
-﻿local K, C, L, _ = select(2, ...):unpack()
+﻿local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true or C.Chat.Spam ~= true then return end
 
 K.ChatSpamList = {
+	-- Any entry here will instantly block
 	"$%d+.+%d+g",
 	"%.c0m%f[%A]",
 	"%S+#%d+",
@@ -29,14 +30,17 @@ K.ChatSpamList = {
 	"account.?share", "accshare",
 	"an[au][ls]e?r?%f[%L]",
 	"anal",
+	"arena.*boost.*selfplay.*pro.*mythic",
 	"argument",
 	"aussie",
 	"australi",
 	"bacon",
+	"battlechest.*token.*add.*telegram",
 	"bewbs",
 	"bitch",
 	"boobs",
 	"boost",
+	"casino.*/w.*%d+.*roll",
 	"christian",
 	"chuck ?norris",
 	"conqu?e?s?t? cap",
@@ -56,6 +60,7 @@ K.ChatSpamList = {
 	"lootcloud.*paypal",
 	"low mmr",
 	"mad ?bro",
+	"mmolvl[%.,]c[0o]m.*skype",
 	"mottled drake",
 	"mudda",
 	"muslim",
@@ -63,6 +68,7 @@ K.ChatSpamList = {
 	"mythicstore[%.,]com.*skype",
 	"name change",
 	"nigg[ae]r?",
+	"normal.*justboost[%.,]ne",
 	"obama",
 	"partner",
 	"paypal",
@@ -91,6 +97,7 @@ K.ChatSpamList = {
 	"tits",
 	"transfer",
 	"twitch%.tv",
+	"wallgaming.*loot.*keystone",
 	"webcam",
 	"weekly cap",
 	"wins? mount",
@@ -99,13 +106,21 @@ K.ChatSpamList = {
 	"wts.*boost.*amazingprice.*gua?rantee.*only.*info",
 	"wts.*boost.*dungeon.*pvp.*emerald.*info",
 	"wts.*gear.*loot.*levell?ing.*info",
+	"wts.*le?ve?ll?i?ng.*dungeon.*pvp.*emerald.*info",
+	"wts.*lift.*dungeon.*pvp.*emerald.*info",
 	"wts.*mythic.*day.*glory.*more.*info",
+	"wts.*mythic.*levell?ing.*artifact.*info",
 	"wts.*power.*levell?ing.*loot.*info",
 	"wts.+guild",
+	"wtsemeraldnightmareheroicnormalboosting.*mythicdungeons?boost",
 	"wtsgold.*mount.*tar?bard.*acc",
 	"xbox",
 	"y?o?ur? m[ao]mm?a",
 	"y?o?ur? m[ou]th[ae]r",
 	"youtu%.?be",
 	"youtube",
+
+	-- Symbol & space removal
+	["[%*%-%(%)\"`'_%+#%%%^&;:~{} ]"]="",
+	["¨"]="", ["”"]="", ["“"]="", ["█"]="", ["▓"]="", ["▲"]="", ["◄"]="", ["►"]="", ["▼"]="", ["♥"]="", ["♫"]="", ["●"]="", ["■"]="", ["☼"]="", ["¤"]="", ["↑"]="",
 }

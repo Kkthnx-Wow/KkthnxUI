@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Skins.Spy ~= true then return end
 
 local CreateFrame = CreateFrame
@@ -7,7 +7,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
-	if not K.IsAddOnEnabled("Spy") then return end
+	if not IsAddOnLoaded("Spy") then return end
 
 	local function Skin_Spy()
 		Spy_MainWindow:StripTextures()

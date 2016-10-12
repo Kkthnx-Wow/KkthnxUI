@@ -1,8 +1,8 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- REGISTER A FRAME WITH: Movers:RegisterFrame(FrameName)
 -- NOTE 1: REGISTERED FRAMES NEED A **GLOBAL NAME**
--- NOTE 2: DRAG VALUES IS SAVED IN >> SAVEDPOSITIONS SAVEDVARIABLESPERCHARACTER <<
+-- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIData[GetRealmName()][UnitName("Player")] SAVEDVARIABLESPERCHARACTER <<
 
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -29,7 +29,7 @@ end
 function Movers:RestoreDefaults(button)
 	local FrameName = self.Parent:GetName()
 	local Data = Movers.Defaults[FrameName]
-	local SavedVariables = SavedPositions.Move
+	local SavedVariables = KkthnxUIData[GetRealmName()][UnitName("Player")].Move
 
 	if (button == "RightButton") and (Data) then
 		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
@@ -62,7 +62,7 @@ end
 function Movers:OnDragStop()
 	self:StopMovingOrSizing()
 
-	local Data = SavedPositions.Move
+	local Data = KkthnxUIData[GetRealmName()][UnitName("Player")].Move
 	local Anchor1, Parent, Anchor2, X, Y = self:GetPoint()
 	local FrameName = self.Parent:GetName()
 	local Frame = self.Parent
@@ -80,12 +80,12 @@ end
 function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
 	self.DragInfo:SetAllPoints(self)
-	self.DragInfo:SetTemplate()
-	self.DragInfo:SetBackdropBorderColor(46/255, 182/255, 255/255, 1)
-	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size * K.NoScaleMult)
+	self.DragInfo:SetBackdrop(K.BorderBackdrop)
+	self.DragInfo:SetBackdropColor(60/255, 155/255, 237/255, 0.3)
+	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 	self.DragInfo.Text:SetText(self:GetName())
 	self.DragInfo.Text:SetPoint("CENTER")
-	self.DragInfo.Text:SetTextColor(46/255, 182/255, 255/255, 1)
+	self.DragInfo.Text:SetTextColor(60/255, 186/255, 84/255, 1)
 	self.DragInfo:SetFrameLevel(100)
 	self.DragInfo:SetFrameStrata("HIGH")
 	self.DragInfo:SetMovable(true)
@@ -175,11 +175,11 @@ end
 
 Movers:SetScript("OnEvent", function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		if not SavedPositions.Move then
-			SavedPositions.Move = {}
+		if not KkthnxUIData[GetRealmName()][UnitName("Player")].Move then
+			KkthnxUIData[GetRealmName()][UnitName("Player")].Move = {}
 		end
 
-		local Data = SavedPositions.Move
+		local Data = KkthnxUIData[GetRealmName()][UnitName("Player")].Move
 
 		for Frame, Position in pairs(Data) do
 			local Frame = _G[Frame]

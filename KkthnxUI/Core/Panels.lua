@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- Lua API
 local unpack = unpack
@@ -87,3 +87,17 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end)
+
+-- Minimap Panels
+if Minimap and C.Minimap.Enable then
+	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
+	MinimapStats:SetTemplate()
+	MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
+	MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
+	MinimapStats:SetFrameStrata("LOW")
+	Movers:RegisterFrame(MinimapStats)
+
+	if C.Blizzard.ColorTextures == true then
+		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	end
+end

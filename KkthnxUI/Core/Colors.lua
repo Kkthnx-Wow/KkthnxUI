@@ -1,21 +1,26 @@
-local K, C, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
+local Framework = select(2, ...)
+local oUF = oUF or Framework.oUF
+local Class = select(2, UnitClass("player"))
 
-local _G = _G
-
-KkthnxUI_Dead_Color = {
-	128/255, 128/255, 128/255
+-- Colors
+oUF.colors.uninterruptible = {
+	1, 0.7, 0
+}
+oUF.colors.fallback = {
+	1, 1, 1
 }
 
-KkthnxUI_Pet_Color = {
-	157/255, 197/255, 255/255
-}
-
-KkthnxUI_Disconnect_Colors = {
+oUF.colors.disconnected = {
 	0.1, 0.1, 0.1
 }
 
--- Reaction Colors
-KkthnxUI_Reaction_Colors = {
+oUF.colors.runes = {
+	["READY"] = {0.31, 0.45, 0.63},
+	["CD"] = {0.7, 0.7, 0.7},
+}
+
+oUF.colors.reaction = {
 	[1] = {0.87, 0.37, 0.37}, -- Hated
 	[2] = {0.87, 0.37, 0.37}, -- Hostile
 	[3] = {0.87, 0.37, 0.37}, -- Unfriendly
@@ -26,24 +31,7 @@ KkthnxUI_Reaction_Colors = {
 	[8] = {0.29, 0.67, 0.30}, -- Exalted
 }
 
--- Class Colors
-KkthnxUI_Raid_Class_Colors = {
-	["DEATHKNIGHT"] = {0.77, 0.12, 0.24},
-	["DRUID"]       = {1.00, 0.49, 0.03},
-	["HUNTER"]      = {0.67, 0.84, 0.45},
-	["MAGE"]        = {0.41, 0.80, 1.00},
-	["PALADIN"]     = {0.96, 0.55, 0.73},
-	["PRIEST"]      = {0.83, 0.83, 0.83},
-	["ROGUE"]       = {1.00, 0.95, 0.32},
-	["SHAMAN"]      = {0.16, 0.31, 0.61},
-	["WARLOCK"]     = {0.58, 0.51, 0.79},
-	["WARRIOR"]     = {0.78, 0.61, 0.43},
-	["MONK"]        = {0.00, 1.00, 0.59},
-	["DEMONHUNTER"] = {0.64, 0.19, 0.79},
-}
-
--- Powerbar Colors
-KkthnxUI_Powerbar_Colors = {
+oUF.colors.power = {
 	["MANA"]              = {0.31, 0.45, 0.63},
 	["INSANITY"]          = {0.40, 0.00, 0.80},
 	["MAELSTROM"]         = {0.00, 0.50, 1.00},
@@ -65,16 +53,27 @@ KkthnxUI_Powerbar_Colors = {
 	["ALTPOWER"]          = {0.00, 1.00, 1.00},
 }
 
--- CUSTOM POWER COLORS
-if C.Unitframe.BetterPowerColors == true then
-	_G.PowerBarColor["MANA"] = {r = 0.31, g = 0.45, b = 0.63}
-	_G.PowerBarColor["RAGE"] = {r = 0.69, g = 0.31, b = 0.31}
-	_G.PowerBarColor["FOCUS"] = {r = 0.71, g = 0.43, b = 0.27}
-	_G.PowerBarColor["ENERGY"] = {r = 0.65, g = 0.63, b = 0.35}
-	_G.PowerBarColor["RUNIC_POWER"] = {r = 0.00, g = 0.82, b = 1.00}
-	_G.PowerBarColor["PAIN"] = {r = 1.00, g = 0.61, b = 0.00}
-	_G.PowerBarColor["FURY"] = {r = 0.78, g = 0.26, b = 0.99}
-	_G.PowerBarColor["LUNAR_POWER"] = {r = 0.93, g = 0.51, b = 0.93}
-	_G.PowerBarColor["INSANITY"] = {r = 0.40, g = 0.00, b = 0.80}
-	_G.PowerBarColor["MAELSTROM"] = {r = 0.00, g = 0.50, b = 1.00}
-end
+-- To change class colors use a custom class color addon like Class Colors
+oUF.colors.class = {
+	["DEATHKNIGHT"] = {0.77, 0.12, 0.24},
+	["DRUID"]       = {1.00, 0.49, 0.03},
+	["HUNTER"]      = {0.67, 0.84, 0.45},
+	["MAGE"]        = {0.41, 0.80, 1.00},
+	["PALADIN"]     = {0.96, 0.55, 0.73},
+	["PRIEST"]      = {0.83, 0.83, 0.83},
+	["ROGUE"]       = {1.00, 0.95, 0.32},
+	["SHAMAN"]      = {0.16, 0.31, 0.61},
+	["WARLOCK"]     = {0.58, 0.51, 0.79},
+	["WARRIOR"]     = {0.78, 0.61, 0.43},
+	["MONK"]        = {0.00, 1.00, 0.59},
+	["DEMONHUNTER"] = {0.64, 0.19, 0.79},
+}
+
+oUF.colors.totems = {
+	[1] = oUF.colors.class[Class], -- Totem 1
+	[2] = oUF.colors.class[Class], -- Totem 2
+	[3] = oUF.colors.class[Class], -- Totem 3
+	[4] = oUF.colors.class[Class], -- Totem 4
+}
+
+K.Colors = oUF.colors

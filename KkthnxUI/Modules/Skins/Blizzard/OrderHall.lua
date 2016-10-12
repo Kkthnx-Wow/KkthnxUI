@@ -1,11 +1,11 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 local OrderHallSkin = CreateFrame("Frame")
 OrderHallSkin:RegisterEvent("ADDON_LOADED")
 
 local function Abbrev(AreaName)
 	local NewAreaName = (string.len(AreaName) > 18) and string.gsub(AreaName, "%s?(.[\128-\191]*)%S+%s", "%1. ") or AreaName
-	return K.ShortenString(NewAreaName, 18, false)
+	return K.UTF8Sub(NewAreaName, 18, false)
 end
 
 OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
@@ -24,7 +24,7 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
 
 				OrderHallCommandBar:ClearAllPoints()
 				OrderHallCommandBar:SetPoint("TOP", UIParent, 0, 0)
-				OrderHallCommandBar:SetWidth(480)
+				OrderHallCommandBar:SetWidth(500)
 				OrderHallCommandBar:SetHeight(28)
 
 				OrderHallCommandBar.ClassIcon:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")

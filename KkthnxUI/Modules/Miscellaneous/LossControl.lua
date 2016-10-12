@@ -43,8 +43,5 @@ function LossControl:Enable()
 	self:AddHooks()
 end
 
-LossControl:RegisterEvent("PLAYER_ENTERING_WORLD")
-LossControl:SetScript("OnEvent", function(self, event, ...)
-	LossControl:Enable()
-	LossControl:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end)
+LossControl:RegisterEvent("PLAYER_LOGIN")
+LossControl:SetScript("OnEvent", LossControl.Enable)

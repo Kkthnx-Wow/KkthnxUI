@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or C.Filger.Enable ~= true then return end
 
 --[[
@@ -7,17 +7,17 @@ if C.Unitframe.Enable ~= true or C.Filger.Enable ~= true then return end
 	Take the number ID at the end of the URL, and add it to the list
 --]]
 
-PBuffIconAnchor = CreateFrame("Frame", "PBuffIconAnchor", UIParent)
-PProcIconAnchor = CreateFrame("Frame", "PProcIconAnchor", UIParent)
-SpecialPBuffIconAnchor = CreateFrame("Frame", "SpecialPBuffIconAnchor", UIParent)
-TDebuffIconAnchor = CreateFrame("Frame", "TDebuffIconAnchor", UIParent)
-TBuffAnchor = CreateFrame("Frame", "TBuffAnchor", UIParent)
-PvEPvPDebuffAnchor = CreateFrame("Frame", "PvEPvPDebuffAnchor", UIParent)
-PvEPvPCCAnchor = CreateFrame("Frame", "PvEPvPCCAnchor", UIParent)
-CooldownAnchor = CreateFrame("Frame", "CooldownAnchor", UIParent)
-TDEBuffBarAnchor = CreateFrame("Frame", "TDEBuffBarAnchor", UIParent)
+P_BUFF_ICON_Anchor = CreateFrame("Frame", "P_BUFF_ICON_Anchor", UIParent)
+P_PROC_ICON_Anchor = CreateFrame("Frame", "P_PROC_ICON_Anchor", UIParent)
+SPECIAL_P_BUFF_ICON_Anchor = CreateFrame("Frame", "SPECIAL_P_BUFF_ICON_Anchor", UIParent)
+T_DEBUFF_ICON_Anchor = CreateFrame("Frame", "T_DEBUFF_ICON_Anchor", UIParent)
+T_BUFF_Anchor = CreateFrame("Frame", "T_BUFF_Anchor", UIParent)
+PVE_PVP_DEBUFF_Anchor = CreateFrame("Frame", "PVE_PVP_DEBUFF_Anchor", UIParent)
+PVE_PVP_CC_Anchor = CreateFrame("Frame", "PVE_PVP_CC_Anchor", UIParent)
+COOLDOWN_Anchor = CreateFrame("Frame", "COOLDOWN_Anchor", UIParent)
+T_DE_BUFF_BAR_Anchor = CreateFrame("Frame", "T_DE_BUFF_BAR_Anchor", UIParent)
 
-C["FilgerSpells"] = {
+C["filger_spells"] = {
 	["DEATHKNIGHT"] = {
 		{
 			Name = "P_BUFF_ICON",
@@ -26,7 +26,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Bone Shield
 			{spellID = 195181, unitID = "player", caster = "player", filter = "BUFF"},
@@ -58,7 +58,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Scent of Blood
@@ -85,9 +85,9 @@ C["FilgerSpells"] = {
 			-- Strength
 			{spellID = 60229, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Brawler's Statue (Bonus Armor, Use)
+			-- Drunken Evasiveness (Bonus Armor, Use) [Brawler's Statue]
 			{spellID = 127967, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
@@ -160,7 +160,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", TDEBuffBarAnchor},
+			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Blood Plague
 			{spellID = 55078, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -178,7 +178,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Mind Freeze
@@ -289,7 +289,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Metamorphosis
 			{spellID = 187827, unitID = "player", caster = "player", filter = "BUFF"},
@@ -315,7 +315,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Soul Fragments
@@ -330,9 +330,9 @@ C["FilgerSpells"] = {
 			-- Agility
 			{spellID = 60233, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Brawler's Statue (Bonus Armor, Use)
+			-- Drunken Evasiveness (Bonus Armor, Use) [Brawler's Statue]
 			{spellID = 127967, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
@@ -397,7 +397,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Nemesis
 			{spellID = 206491, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -423,7 +423,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", TDEBuffBarAnchor},
+			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Darkness
 			{spellID = 209426, unitID = "target", caster = "player", filter = "BUFF"},
@@ -437,7 +437,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Imprison
 			{spellID = 217832, unitID = "focus", caster = "all", filter = "DEBUFF"},
@@ -449,7 +449,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Consume Magic
@@ -546,7 +546,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Incarnation: Chosen of Elune
 			{spellID = 102560, unitID = "player", caster = "player", filter = "BUFF"},
@@ -594,7 +594,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Bloodtalons
@@ -621,14 +621,14 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Brawler's Statue (Bonus Armor, Use)
+			-- Drunken Evasiveness (Bonus Armor, Use) [Brawler's Statue]
 			{spellID = 127967, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Mithril Wristwatch (Spell Power, Proc)
-			{spellID = 127924, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thousand-Year Pickled Egg (Haste, Proc)
-			{spellID = 127914, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Now is the time! (Spell Power, Proc) [Mithril Wristwatch]
+			{spellID = 127923, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Essence of Life (Haste, Proc) [Thousand-Year Pickled Egg]
+			{spellID = 127915, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -724,7 +724,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Moonfire
 			{spellID = 164812, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -756,7 +756,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", TDEBuffBarAnchor},
+			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Lifebloom
 			{spellID = 33763, unitID = "target", caster = "player", filter = "BUFF"},
@@ -778,7 +778,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Cyclone
 			{spellID = 33786, unitID = "focus", caster = "all", filter = "DEBUFF"},
@@ -792,7 +792,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Nature's Cure
@@ -891,7 +891,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Deterrence
 			{spellID = 19263, unitID = "player", caster = "player", filter = "BUFF"},
@@ -901,16 +901,22 @@ C["FilgerSpells"] = {
 			{spellID = 19574, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Beast Cleave
 			{spellID = 118455, unitID = "pet", caster = "player", filter = "BUFF"},
-			-- Focus Fire
-			--BETA {spellID = 82692, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Sniper Training
-			--BETA {spellID = 168811, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Trueshot
+			{spellID = 193526, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Turtle
+			{spellID = 186265, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Cheetah
+			{spellID = 186257, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Dire Beast
+			{spellID = 120694, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Camouflage
-			--BETA {spellID = 51755, unitID = "player", caster = "player", filter = "BUFF", absID = true},
+			{spellID = 199483, unitID = "player", caster = "player", filter = "BUFF", absID = true},
 			-- Spirit Mend
 			{spellID = 90361, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Posthaste
 			{spellID = 118922, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Volley
+			{spellID = 194386, unitID = "player", caster = "player", filter = "BUFF"},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -919,7 +925,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Steady Focus
@@ -938,7 +944,7 @@ C["FilgerSpells"] = {
 			-- Agility
 			{spellID = 60233, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
@@ -990,7 +996,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Black Arrow
 			--BETA {spellID = 3674, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -1018,6 +1024,8 @@ C["FilgerSpells"] = {
 			{spellID = 162543, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Frozen Ammo
 			{spellID = 162546, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- True Aim
+			{spellID = 199803, unitID = "target", caster = "player", filter = "DEBUFF"},
 		},
 		{
 			Name = "PVE/PVP_CC",
@@ -1028,7 +1036,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Wyvern Sting
 			{spellID = 19386, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -1040,7 +1048,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Concussive Shot
@@ -1153,7 +1161,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Ice Block
 			{spellID = 45438, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1169,6 +1177,8 @@ C["FilgerSpells"] = {
 			{spellID = 12042, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Combustion
 			{spellID = 190319, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Rune of Power
+			{spellID = 116014, filter = "ICD", trigger = "NONE", duration = 10},
 			-- Ice Barrier
 			{spellID = 11426, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Heating Up
@@ -1181,8 +1191,6 @@ C["FilgerSpells"] = {
 			{spellID = 110909, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Temporal Shield
 			{spellID = 115610, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Rune of Power
-			{spellID = 116014, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Mirror Image
 			{spellID = 55342, filter = "ICD", trigger = "NONE", duration = 40},
 		},
@@ -1193,7 +1201,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Fingers of Frost
@@ -1212,8 +1220,8 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Mithril Wristwatch (Spell Power, Proc)
-			{spellID = 127924, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Now is the time! (Spell Power, Proc) [Mithril Wristwatch]
+			{spellID = 127923, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1248,7 +1256,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Arcane Charge
 			{spellID = 36032, unitID = "player", caster = "player", filter = "DEBUFF"},
@@ -1292,7 +1300,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Polymorph
 			{spellID = 118, unitID = "focus", caster = "all", filter = "DEBUFF"},
@@ -1304,7 +1312,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Frostjaw
@@ -1425,7 +1433,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Guard
 			--BETA {spellID = 115295, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1459,7 +1467,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Elusive Brew
@@ -1492,12 +1500,12 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Brawler's Statue (Bonus Armor, Use)
+			-- Drunken Evasiveness (Bonus Armor, Use) [Brawler's Statue]
 			{spellID = 127967, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thousand-Year Pickled Egg (Haste, Proc)
-			{spellID = 127914, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Essence of Life (Haste, Proc) [Thousand-Year Pickled Egg]
+			{spellID = 127915, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1580,7 +1588,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Heavy Stagger
 			{spellID = 124273, unitID = "player", caster = "player", filter = "DEBUFF"},
@@ -1598,7 +1606,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Detox
@@ -1707,7 +1715,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Divine Shield
 			{spellID = 642, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1735,7 +1743,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Infusion of Light
@@ -1766,12 +1774,12 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Brawler's Statue (Bonus Armor, Use)
+			-- Drunken Evasiveness (Bonus Armor, Use) [Brawler's Statue]
 			{spellID = 127967, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thousand-Year Pickled Egg (Haste, Proc)
-			{spellID = 127914, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Essence of Life (Haste, Proc) [Thousand-Year Pickled Egg]
+			{spellID = 127915, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -1852,7 +1860,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Forbearance
 			{spellID = 25771, unitID = "player", caster = "all", filter = "DEBUFF"},
@@ -1876,7 +1884,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Cleanse
@@ -1969,7 +1977,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Dispersion
 			{spellID = 47585, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2005,7 +2013,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Divine Insight
@@ -2036,10 +2044,10 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Mithril Wristwatch (Spell Power, Proc)
-			{spellID = 127924, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thousand-Year Pickled Egg (Haste, Proc)
-			{spellID = 127914, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Now is the time! (Spell Power, Proc) [Mithril Wristwatch]
+			{spellID = 127923, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Essence of Life (Haste, Proc) [Thousand-Year Pickled Egg]
+			{spellID = 127915, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2083,7 +2091,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Void Tendrils
 			{spellID = 114404, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2105,7 +2113,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", TDEBuffBarAnchor},
+			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Renew
 			{spellID = 139, unitID = "target", caster = "player", filter = "BUFF"},
@@ -2133,7 +2141,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Shackle Undead
 			{spellID = 9484, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2147,7 +2155,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Purify
@@ -2274,7 +2282,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Slice and Dice
 			{spellID = 5171, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2326,7 +2334,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Anticipation
@@ -2362,7 +2370,7 @@ C["FilgerSpells"] = {
 			-- Agility
 			{spellID = 60233, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
@@ -2408,7 +2416,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Rupture
 			{spellID = 1943, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2442,7 +2450,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Blind
 			{spellID = 2094, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2456,7 +2464,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Stealth
@@ -2563,7 +2571,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Maelstorm Weapon
 			--BETA {spellID = 53817, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2597,7 +2605,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Lava Surge
@@ -2616,12 +2624,12 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Mithril Wristwatch (Spell Power, Proc)
-			{spellID = 127924, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thousand-Year Pickled Egg (Haste, Proc)
-			{spellID = 127914, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Now is the time! (Spell Power, Proc) [Mithril Wristwatch]
+			{spellID = 127923, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Essence of Life (Haste, Proc) [Thousand-Year Pickled Egg]
+			{spellID = 127915, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2690,7 +2698,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Stormstrike
 			{spellID = 17364, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2714,7 +2722,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", TDEBuffBarAnchor},
+			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Earth Shield
 			--BETA {spellID = 974, unitID = "target", caster = "player", filter = "BUFF"},
@@ -2730,7 +2738,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Hex
 			{spellID = 51514, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2742,7 +2750,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Cleanse Spirit
@@ -2829,7 +2837,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Dark Bargain
 			--BETA {spellID = 110913, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2869,7 +2877,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
 			-- Molten Core
@@ -2884,8 +2892,8 @@ C["FilgerSpells"] = {
 			-- Intellect
 			{spellID = 60234, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Mithril Wristwatch (Spell Power, Proc)
-			{spellID = 127924, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Now is the time! (Spell Power, Proc) [Mithril Wristwatch]
+			{spellID = 127923, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
 			{spellID = 181706, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2920,7 +2928,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Self
 			-- Enslave Demon
@@ -2939,7 +2947,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 186,
-			Position = {"LEFT", TDEBuffBarAnchor},
+			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Havoc
 			{spellID = 80240, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -2977,7 +2985,7 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = 25,
 			BarWidth = 189,
-			Position = {"LEFT", PvEPvPCCAnchor},
+			Position = {"LEFT", PVE_PVP_CC_Anchor},
 
 			-- Banish
 			{spellID = 710, unitID = "focus", caster = "player", filter = "DEBUFF"},
@@ -2991,7 +2999,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Devour Magic (Felhunter)
@@ -3068,7 +3076,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PBuffIconAnchor},
+			Position = {"TOP", P_BUFF_ICON_Anchor},
 
 			-- Shield Wall
 			{spellID = 871, unitID = "player", caster = "player", filter = "BUFF"},
@@ -3108,7 +3116,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", PProcIconAnchor},
+			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Sudden Death
 			{spellID = 52437, unitID = "player", caster = "player", filter = "BUFF"},
@@ -3134,9 +3142,9 @@ C["FilgerSpells"] = {
 			-- Strength
 			{spellID = 60229, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hallow's End
-			-- Brawler's Statue (Bonus Armor, Use)
+			-- Drunken Evasiveness (Bonus Armor, Use) [Brawler's Statue]
 			{spellID = 127967, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Coren's Cold Chromium (Attack Power, Proc)
+			-- Reflection of Torment (Attack Power, Proc) [Coren's Cold Chromium]
 			{spellID = 127928, unitID = "player", caster = "player", filter = "BUFF"},
 			-- PvP Trinkets
 			-- Savage Fortitude (Health, Use) [Battlemaster]
@@ -3207,7 +3215,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", TDebuffIconAnchor},
+			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Rend
 			{spellID = 772, unitID = "target", caster = "player", filter = "DEBUFF"},
@@ -3229,7 +3237,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.CooldownSize,
-			Position = {"TOP", CooldownAnchor},
+			Position = {"TOP", COOLDOWN_Anchor},
 
 			-- Self
 			-- Pummel
@@ -3328,7 +3336,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.BuffsSize,
-			Position = {"TOP", SpecialPBuffIconAnchor},
+			Position = {"TOP", SPECIAL_P_BUFF_ICON_Anchor},
 
 			-- Ashran
 			-- Ancient Artifact
@@ -3487,7 +3495,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.PvPSize,
-			Position = {"TOP", PvEPvPDebuffAnchor},
+			Position = {"TOP", PVE_PVP_DEBUFF_Anchor},
 
 			-- Crowd Controls
 			-- Death Knight
@@ -3745,10 +3753,6 @@ C["FilgerSpells"] = {
 			{spellID = 77606, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Shroud of Purgatory
 			{spellID = 116888, unitID = "player", caster = "player", filter = "DEBUFF"},
-			-- Aspect of the Cheetah
-			--BETA {spellID = 5118, unitID = "player", caster = "all", filter = "BUFF"},
-			-- Aspect of the Pack
-			--BETA {spellID = 13159, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Cauterize
 			{spellID = 87023, unitID = "player", caster = "player", filter = "DEBUFF"},
 			-- Touch of Karma
@@ -3832,7 +3836,7 @@ C["FilgerSpells"] = {
 			-- Corruption: Descent into Madness (buff before mind control)
 			{spellID = 208431, unitID = "player", caster = "all", filter = "DEBUFF"},
 
-  			-- Raids: Pandaria
+			-- Raids: Pandaria
 			-- Heart of Fear
 			-- Corrosive Resin (Wind Lord Mel'jarak)
 			{spellID = 122064, unitID = "player", caster = "all", filter = "DEBUFF"},
@@ -3870,7 +3874,7 @@ C["FilgerSpells"] = {
 			Interval = 3,
 			Alpha = 1,
 			IconSize = C.Filger.PvPSize,
-			Position = {"TOP", TBuffAnchor},
+			Position = {"TOP", T_BUFF_Anchor},
 
 			-- Death Knight
 			-- Anti-Magic Shell
@@ -3944,10 +3948,6 @@ C["FilgerSpells"] = {
 			{spellID = 339, unitID = "target", caster = "all", filter = "DEBUFF"},
 
 			-- Hunter
-			-- Aspect of the Cheetah
-			--BETA {spellID = 5118, unitID = "target", caster = "all", filter = "BUFF"},
-			-- Aspect of the Pack
-			--BETA {spellID = 13159, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Deterrence
 			{spellID = 19263, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Feign Death

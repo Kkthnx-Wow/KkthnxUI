@@ -1,54 +1,119 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Minimap.Enable ~= true or C.Stats.Location ~= true or IsAddOnLoaded("Carbonite") then return end
 
--- WOW API
-local GetZonePVPInfo = GetZonePVPInfo
-local CreateFrame = CreateFrame
+local Unknown = UNKNOWN
 
-local MinimapZone = CreateFrame("Frame", "MinimapZone", Minimap)
-MinimapZone:SetSize(0, 20)
-MinimapZone:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, 2)
-MinimapZone:SetFrameLevel(Minimap:GetFrameLevel() + 3)
-MinimapZone:SetFrameStrata(Minimap:GetFrameStrata())
-MinimapZone:SetPoint("TOPRIGHT", Minimap, -2, 2)
-MinimapZone:SetAlpha(0)
+local Stat = CreateFrame("Frame")
+Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
+Stat:SetFrameStrata("BACKGROUND")
+Stat:SetFrameLevel(3)
+Stat:EnableMouse(true)
 
-local MinimapZone_Text = MinimapZone:CreateFontString("MinimapZoneText", "Overlay")
-MinimapZone_Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-MinimapZone_Text:SetPoint("TOP", 0, -1)
-MinimapZone_Text:SetPoint("BOTTOM")
-MinimapZone_Text:SetHeight(12)
-MinimapZone_Text:SetWidth(MinimapZone:GetWidth() -6)
-MinimapZone_Text:SetAlpha(0)
+local Zone = Minimap:CreateFontString(nil, "OVERLAY")
+Zone:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+Zone:SetPoint("TOP", Minimap, "TOP", 0, -2)
 
-Minimap:SetScript("OnEnter",function()
-	MinimapZone:SetAlpha(1)
-	MinimapZone_Text:SetAlpha(1)
-end)
+local ZoneColors = {
+	["friendly"] = {0.1, 1.0, 0.1},
+	["sanctuary"] = {0.41, 0.8, 0.94},
+	["arena"] = {1.0, 0.1, 0.1},
+	["hostile"] = {1.0, 0.1, 0.1},
+	["contested"] = {1.0, 0.7, 0},
+	["combat"] = {1.0, 0.1, 0.1},
+	["else"] = {1.0, 0.9294, 0.7607}
+}
 
-Minimap:SetScript("OnLeave",function()
-	MinimapZone:SetAlpha(0)
-	MinimapZone_Text:SetAlpha(0)
-end)
+local Update = function(self)
+	local Text = GetMinimapZoneText()
+	local PVPType = GetZonePVPInfo()
+	local Color
 
-local Zone_Update = function()
-	local PvP = GetZonePVPInfo()
-	MinimapZone_Text:SetText(GetMinimapZoneText())
-	if PvP == "friendly" then
-		MinimapZone_Text:SetTextColor(0.1, 1.0, 0.1)
-	elseif PvP == "sanctuary" then
-		MinimapZone_Text:SetTextColor(0.41, 0.8, 0.94)
-	elseif PvP == "arena" or PvP == "hostile" then
-		MinimapZone_Text:SetTextColor(1.0, 0.1, 0.1)
-	elseif PvP == "contested" then
-		MinimapZone_Text:SetTextColor(1.0, 0.7, 0.0)
+	if ZoneColors[PVPType] then
+		Color = ZoneColors[PVPType]
 	else
-		MinimapZone_Text:SetTextColor(1.0, 1.0, 1.0)
+		Color = ZoneColors["else"]
 	end
+
+	if (Text:len() > 18) then
+		Text = strsub(Text, 1, 14) .. "..."
+	end
+
+	Zone:SetText(Text)
+	Zone:SetTextColor(Color[1], Color[2], Color[3])
+
+	self:SetAllPoints(Zone)
 end
 
-MinimapZone:RegisterEvent("PLAYER_ENTERING_WORLD")
-MinimapZone:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-MinimapZone:RegisterEvent("ZONE_CHANGED")
-MinimapZone:RegisterEvent("ZONE_CHANGED_INDOORS")
-MinimapZone:SetScript("OnEvent", Zone_Update)
+local OnEnter = function(self)
+	if InCombatLockdown() then
+		return
+	end
+	
+	GameTooltip:ClearLines()
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 5)
+
+	local Text = GetRealZoneText()
+	local PVPType, IsSubZonePvP, FactionName = GetZonePVPInfo()
+	local X, Y = GetPlayerMapPosition("player")
+	local XText, YText, Label, Location, Color
+
+	if ZoneColors[PVPType] then
+		Color = ZoneColors[PVPType]
+	else
+		Color = ZoneColors["else"]
+	end
+
+	X = floor(100 * X)
+	Y = floor(100 * Y)
+
+	if (X == 0 and Y == 0) then
+		GameTooltip:AddLine("0, 0")
+	else
+		if (X < 10) then
+			XText = "0"..X
+		else
+			XText = X
+		end
+
+		if (Y < 10) then
+			YText = "0"..Y
+		else
+			YText = Y
+		end
+	end
+
+	Location = format("%s |cffFFFFFF(%s, %s)|r", Text or Unknown, XText or 0, YText or 0)
+
+	GameTooltip:AddLine(LOCATION_COLON)
+
+	if (PVPType == "sanctuary") then
+		Label = SANCTUARY_TERRITORY
+	elseif (PVPType == "arena") then
+		Label = FREE_FOR_ALL_TERRITORY
+	elseif (PVPType == "friendly") then
+		Label = format(FACTION_CONTROLLED_TERRITORY, FactionName)
+	elseif (PVPType == "hostile") then
+		Label = format(FACTION_CONTROLLED_TERRITORY, FactionName)
+	elseif (PVPType == "contested") then
+		Label = CONTESTED_TERRITORY
+	elseif (PVPType == "combat") then
+		Label = COMBAT_ZONE
+	end
+
+	GameTooltip:AddDoubleLine(Location, Label, Color[1], Color[2], Color[3], Color[1], Color[2], Color[3])
+
+	GameTooltip:Show()
+end
+
+local OnLeave = function()
+	GameTooltip:Hide()
+end
+
+Stat:RegisterEvent("ZONE_CHANGED")
+Stat:RegisterEvent("ZONE_CHANGED_INDOORS")
+Stat:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
+Stat:SetScript("OnEvent", Update)
+Stat:SetScript("OnEnter", OnEnter)
+Stat:SetScript("OnLeave", OnLeave)
+Update(Stat)

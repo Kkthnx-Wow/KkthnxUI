@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 --[[
 
@@ -53,21 +53,18 @@ end
 -- Kkthnx personal config
 if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 
+	SetCVar("ActionButtonUseKeyDown", 1)
+
 	C["ActionBar"]["BottomBars"] = 2
 	C["ActionBar"]["EquipBorder"] = true
 	C["ActionBar"]["RightBars"] = 1
 	C["ActionBar"]["SelfCast"] = true
 
 	C["Announcements"]["BadGear"] = true
-	C["Announcements"]["Feasts"] = true
 	C["Announcements"]["Interrupt"] = true
-	C["Announcements"]["Portals"] = true
 	C["Announcements"]["SaySapped"] = true
 	C["Announcements"]["Spells"] = true
 	C["Announcements"]["SpellsFromAll"] = true
-	C["Announcements"]["Toys"] = true
-
-	C["Aura"]["CastBy"] = true
 
 	C["Automation"]["AutoInvite"] = true
 	C["Automation"]["DeclineDuel"] = true
@@ -78,8 +75,6 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 
 	C["Chat"]["DamageMeterSpam"] = true
 	C["Chat"]["Spam"] = true
-
-	C["CombatText"]["KillingBlow"] = true
 
 	C["General"]["CustomLagTolerance"] = true
 	C["General"]["TranslateMessage"] = false
@@ -94,11 +89,7 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Misc"]["BGSpam"] = true
 	C["Misc"]["ColorPicker"] = true
 	C["Misc"]["DurabilityWarninig"] = true
-	C["Misc"]["ItemLevel"] = true
 	C["Misc"]["MoveBlizzard"] = true
-
-	C["Nameplate"]["CastbarName"] = true
-	C["Nameplate"]["TrackAuras"] = true
 
 	C["PulseCD"]["Enable"] = true
 
@@ -108,16 +99,6 @@ if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == 
 	C["Tooltip"]["ItemIcon"] = true
 	C["Tooltip"]["SpellID"] = true
 
-	C["Unitframe"]["BetterPowerColors"] = true
-	C["Unitframe"]["CastBarScale"] = 1
-	C["Unitframe"]["ClassHealth"] = true
-	C["Unitframe"]["ClassIcon"] = true
-	C["Unitframe"]["CombatFeedback"] = true
-	C["Unitframe"]["EnhancedFrames"] = true
-	C["Unitframe"]["FlatClassIcons"] = true
-	C["Unitframe"]["GroupNumber"] = true
-	C["Unitframe"]["Scale"] = 1
-
-	C["WorldMap"]["FogOfWar"] = true
+	C["Unitframe"]["FlatClassPortraits"] = true
 
 end

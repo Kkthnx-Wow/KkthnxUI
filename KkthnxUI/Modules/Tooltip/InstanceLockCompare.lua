@@ -1,4 +1,4 @@
-﻿local K, C, L, _ = select(2, ...):unpack()
+﻿local K, C, L = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true or C.Tooltip.InstanceLock ~= true then return end
 
 local gsub = string.gsub

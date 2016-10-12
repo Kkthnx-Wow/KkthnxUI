@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- Application Programming Interface for KkthnxUI (API)
 
@@ -145,7 +145,7 @@ end
 
 local function GetTemplate(t)
 	if t == "ClassColor" then
-		local Color = KkthnxUI_Raid_Class_Colors[K.Class]
+		local Color = K.Colors.class[K.Class]
 		borderr, borderg, borderb, bordera = Color[1], Color[2], Color[3], Color[4]
 		backdropr, backdropg, backdropb, backdropa = unpack(C.Media.Backdrop_Color)
 	else
@@ -231,12 +231,13 @@ local function StripTextures(Object, Kill, Text)
 	end
 end
 
+-- Example --> Font:FontString("Text", C.Media.Font, 12)
 local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
-	fs:SetShadowColor(0/255, 0/255, 0/255)
-	fs:SetShadowOffset(0, -0)
+	fs:SetShadowColor(0, 0, 0)
+	fs:SetShadowOffset(K.Mult, -K.Mult)
 
 	if not name then
 		parent.Text = fs
@@ -248,12 +249,76 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 end
 
 local function StyleButton(button)
+	if button.SetHighlightTexture and not button.hover then
+		local hover = button:CreateTexture()
+		hover:SetColorTexture(1, 1, 1, 0.3)
+		hover:SetInside(button, 1, 1)
+		button.hover = hover
+		button:SetHighlightTexture(hover)
+	end
+
+	if button.SetPushedTexture and not button.pushed then
+		local pushed = button:CreateTexture()
+		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
+		pushed:SetInside(button, 1, 1)
+		button.pushed = pushed
+		button:SetPushedTexture(pushed)
+	end
+
+	if button.SetCheckedTexture and not button.checked then
+		local checked = button:CreateTexture()
+		checked:SetColorTexture(0, 1, 0, 0.3)
+		checked:SetInside(button, 1, 1)
+		button.checked = checked
+		button:SetCheckedTexture(checked)
+	end
 
 	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
 		cooldown:SetInside()
 	end
+end
+
+local function SkinButton(Frame, Strip)
+	if Frame:GetName() then
+		local Left = _G[Frame:GetName().."Left"]
+		local Middle = _G[Frame:GetName().."Middle"]
+		local Right = _G[Frame:GetName().."Right"]
+
+
+		if Left then Left:SetAlpha(0) end
+		if Middle then Middle:SetAlpha(0) end
+		if Right then Right:SetAlpha(0) end
+	end
+
+	if Frame.Left then Frame.Left:SetAlpha(0) end
+	if Frame.Right then Frame.Right:SetAlpha(0) end
+	if Frame.Middle then Frame.Middle:SetAlpha(0) end
+	if Frame.SetNormalTexture then Frame:SetNormalTexture("") end
+	if Frame.SetHighlightTexture then Frame:SetHighlightTexture("") end
+	if Frame.SetPushedTexture then Frame:SetPushedTexture("") end
+	if Frame.SetDisabledTexture then Frame:SetDisabledTexture("") end
+
+	if Strip then StripTextures(Frame) end
+
+	-- This is so hacky lmao. Using CreateBackdrop for the time being.
+	-- I need to make new textures for blizzard borders.
+	Frame:CreateBackdrop(size, 4)
+
+	Frame:HookScript("OnEnter", function(self)
+		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
+
+		Frame.backdrop:SetBackdropColor(Color.r * .15, Color.g * .15, Color.b * .15)
+		Frame.backdrop:SetBackdropBorderColor(Color.r, Color.g, Color.b)
+	end)
+
+	Frame:HookScript("OnLeave", function(self)
+		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
+
+		Frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+		Frame.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
+	end)
 end
 
 -- Fade in/out functions
@@ -280,6 +345,7 @@ local function AddAPI(object)
 	if not object.StyleButton then mt.StyleButton = StyleButton end
 	if not object.FontString then mt.FontString = FontString end
 	if not object.Kill then mt.Kill = Kill end
+	if not object.SkinButton then mt.SkinButton = SkinButton end
 	if not object.StripTextures then mt.StripTextures = StripTextures end
 	if not object.FadeIn then mt.FadeIn = FadeIn end
 	if not object.FadeOut then mt.FadeOut = FadeOut end

@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 local frame = CreateFrame("Frame", nil, LFGDungeonReadyDialog)
 frame:SetPoint("TOP", LFGDungeonReadyDialog, "BOTTOM", 0, -10)

@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
 -- BY TUKZ
@@ -44,7 +44,7 @@ local function StyleNormalButton(self)
 			btname:SetPoint("BOTTOM", 0, 2)
 			btname:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
 			btname:SetWidth(C.ActionBar.ButtonSize)
-			btname:SetVertexColor(1, 0.82, 0, 1)
+			btname:SetVertexColor(.9, .9, .9)
 		else
 			btname:Kill()
 		end

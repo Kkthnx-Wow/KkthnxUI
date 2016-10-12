@@ -1,6 +1,6 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
--- IF YOU'RE SAVING FRAME POSITIONS, USE "UIPARENT", NOT UIPARENT
+-- If you're saving frame positions, use "UIParent", not UIParent
 C["Position"] = {
 	["Alerts"] = {"TOP", "UIParent", "TOP", 0, -22},
 	["AltPowerBar"] = {"TOP", "UIParent", "TOP", 0, -100},
@@ -18,37 +18,42 @@ C["Position"] = {
 	["Minimap"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -4, -4},
 	["MinimapButtons"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -4, 1},
 	["PetHorizontal"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167},
-	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 4},
+	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 2},
 	["PulseCD"] = {"CENTER", "UIParent", "CENTER", 0, 0},
 	["WorldMap"] = {"CENTER", "UIParent", "CENTER", 0, 100},
 	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
 	["StanceBar"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167},
-	["StatsFrame"] = {"CENTER", "StatFrame", "CENTER", 0, 0},
+	["SystemDT"] = {"CENTER", "KkthnxUIMinimapStats", "CENTER", 0, 0.5},
 	["TalkingHead"] = {"TOP", "UIParent", "TOP", 0, -21},
 	["Ticket"] = {"TOPLEFT", "UIParent", "TOPLEFT", 0, -1},
 	["Tooltip"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -2, 2},
 	["UIError"] = {"TOP", "UIParent", "TOP", 0, -80},
 	["Vehicle"] = {"TOP", "Minimap", "BOTTOM", 0, -18},
 	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
-	-- UNITFRAME POSITIONS
+	-- Unitframe positions
 	UnitFrames = {
-		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -60, -70},
-		["Boss"] = {"RIGHT", "RightActionBarAnchor", "LEFT", -100, 120},
+		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -140, 140},
+		["Boss"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -140, 140},
+		["Focus"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPLEFT", -60, 30},
+		["FocusTarget"] = {"TOPLEFT", "oUF_KkthnxFocus", "BOTTOMRIGHT", -78, -16},
+		["Party"] = {"LEFT", "UIParent", "LEFT", 175, 125},
+		["Pet"] = {"TOPLEFT", "oUF_KkthnxPlayer", "BOTTOMLEFT", 0, -12},
 		["Player"] = {"BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -9, 175},
-		["PlayerCastBar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175},
+		["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175},
 		["Target"] = {"BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 9, 175},
-		["TargetCastBar"] = {"BOTTOM", "CastingBarFrame", "TOP", 0, 21},
+		["TargetCastbar"] = {"BOTTOM", "oUF_KkthnxPlayerCastbar", "TOP", 0, 7},
+		["TargetTarget"] = {"TOPLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", -78, -16},
 	},
-	-- FILGER POSITIONS
+	-- Filger positions
 	Filger = {
-		["Cooldown"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 63, 17},
-		["PlayerBuffIcon"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 173},
-		["PlayerProcIcon"] = {"BOTTOMLEFT", "TargetFrame", "TOPLEFT", -2, 173},
-		["PvECC"] = {"TOPLEFT", "PlayerFrame", "BOTTOMLEFT", -2, -44},
-		["PvEDebuff"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 253},
-		["SpecialProcIcon"] = {"BOTTOMRIGHT", "PlayerFrame", "TOPRIGHT", 2, 213},
-		["TargetBar"] = {"BOTTOMLEFT", "TargetFrame", "BOTTOMRIGHT", 9, -41},
-		["TargetBuffIcon"] = {"BOTTOMLEFT", "TargetFrame", "TOPLEFT", -2, 253},
-		["TargetDebuffIcon"] = {"BOTTOMLEFT", "TargetFrame", "TOPLEFT", -2, 213},
+		["Cooldown"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 63, 17},
+		["PlayerBuffIcon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 173},
+		["PlayerProcIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 173},
+		["PvECC"] = {"TOPLEFT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -2, -44},
+		["PvEDebuff"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 253},
+		["SpecialProcIcon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 213},
+		["TargetBar"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", 9, -41},
+		["TargetBuffIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 253},
+		["TargetDebuffIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 213},
 	},
 }

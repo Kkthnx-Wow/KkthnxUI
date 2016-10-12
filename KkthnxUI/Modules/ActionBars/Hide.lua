@@ -1,13 +1,9 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
 local KkthnxUIActionBars = CreateFrame("Frame")
 local _G = _G
-local format = format
-local Noop = function() end
-local NUM_ACTIONBAR_BUTTONS = NUM_ACTIONBAR_BUTTONS
-local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
-local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
+local pairs = pairs
 local MainMenuBar, MainMenuBarArtFrame = MainMenuBar, MainMenuBarArtFrame
 local OverrideActionBar = OverrideActionBar
 local PossessBarFrame = PossessBarFrame
@@ -46,8 +42,4 @@ function KkthnxUIActionBars:DisableBlizzard()
 end
 
 KkthnxUIActionBars:RegisterEvent("PLAYER_LOGIN")
-KkthnxUIActionBars:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_LOGIN") then
-		self:DisableBlizzard()
-	end
-end)
+KkthnxUIActionBars:SetScript("OnEvent", KkthnxUIActionBars.DisableBlizzard)

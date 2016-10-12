@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Minimap.Enable ~= true then return end
 
 local _G = _G
@@ -8,7 +8,6 @@ local Mail = MiniMapMailFrame
 local MailBorder = MiniMapMailBorder
 local MailIcon = MiniMapMailIcon
 local MiniMapInstanceDifficulty = MiniMapInstanceDifficulty
-local North = _G["MinimapNorthTag"]
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
 local Movers = K.Movers
 
@@ -17,6 +16,7 @@ local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
 MinimapAnchor:CreatePanel("ClassColor", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
 Movers:RegisterFrame(MinimapAnchor)
 
+local North = _G["MinimapNorthTag"]
 local HiddenFrames = {
 	"MinimapCluster",
 	"MinimapBorder",
@@ -41,6 +41,15 @@ for i, FrameName in pairs(HiddenFrames) do
 
 	North:SetTexture(nil)
 end
+
+-- Hide Game Time
+MinimapAnchor:RegisterEvent("PLAYER_LOGIN")
+MinimapAnchor:RegisterEvent("ADDON_LOADED")
+MinimapAnchor:SetScript("OnEvent", function(self, event, addon)
+	if addon == "Blizzard_TimeManager" then
+		TimeManagerClockButton:Kill()
+	end
+end)
 
 -- HIDE BLOB RING
 Minimap:SetArchBlobRingScalar(0)
@@ -86,6 +95,13 @@ if C.Minimap.Garrison == true then
 	GarrisonLandingPageMinimapButton:ClearAllPoints()
 	GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
 	GarrisonLandingPageMinimapButton:SetSize(32, 32)
+	GarrisonLandingPageMinimapButton:SetAlpha(0)
+	GarrisonLandingPageMinimapButton:HookScript("OnEnter", function()
+		GarrisonLandingPageMinimapButton:FadeIn()
+	end)
+	GarrisonLandingPageMinimapButton:HookScript("OnLeave", function()
+		GarrisonLandingPageMinimapButton:FadeOut()
+	end)
 else
 	GarrisonLandingPageMinimapButton:SetScale(0.0001)
 	GarrisonLandingPageMinimapButton:SetAlpha(0)
@@ -129,14 +145,6 @@ HelpOpenTicketButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
 HelpOpenTicketButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
 HelpOpenTicketButton:SetSize(16, 16)
 
--- BLIZZARD_TIMEMANAGER
-LoadAddOn("Blizzard_TimeManager")
-TimeManagerClockButton:GetRegions():Hide()
-TimeManagerClockButton:ClearAllPoints()
-TimeManagerClockButton:SetPoint("BOTTOM", 0, -6)
-TimeManagerClockTicker:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-TimeManagerClockTicker:SetShadowOffset(0, -0)
-
 -- GAMETIMEFRAME
 GameTimeFrame:SetParent(Minimap)
 GameTimeFrame:SetScale(0.6)
@@ -146,7 +154,14 @@ GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
 GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
 GameTimeFrame:SetPushedTexture(nil)
-GameTimeFrame:SetHighlightTexture (nil)
+GameTimeFrame:SetHighlightTexture(nil)
+GameTimeFrame:SetAlpha(0)
+GameTimeFrame:HookScript("OnEnter", function()
+	GameTimeFrame:FadeIn()
+end)
+GameTimeFrame:HookScript("OnLeave", function()
+	GameTimeFrame:FadeOut()
+end)
 
 local FontString = GameTimeFrame:GetFontString()
 FontString:ClearAllPoints()

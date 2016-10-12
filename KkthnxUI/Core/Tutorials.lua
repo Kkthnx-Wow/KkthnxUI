@@ -22,25 +22,25 @@ K.TutorialList = {
 }
 
 function Tutorial:SetNextTutorial()
-	SavedOptionsPerChar.currentTutorial = SavedOptionsPerChar.currentTutorial or 0
-	SavedOptionsPerChar.currentTutorial = SavedOptionsPerChar.currentTutorial + 1
+	KkthnxUIDataPerChar.currentTutorial = KkthnxUIDataPerChar.currentTutorial or 0
+	KkthnxUIDataPerChar.currentTutorial = KkthnxUIDataPerChar.currentTutorial + 1
 
-	if SavedOptionsPerChar.currentTutorial > #K.TutorialList then
-		SavedOptionsPerChar.currentTutorial = 1
+	if KkthnxUIDataPerChar.currentTutorial > #K.TutorialList then
+		KkthnxUIDataPerChar.currentTutorial = 1
 	end
 
-	TutorialWindow.desc:SetText(K.TutorialList[SavedOptionsPerChar.currentTutorial])
+	TutorialWindow.desc:SetText(K.TutorialList[KkthnxUIDataPerChar.currentTutorial])
 end
 
 function Tutorial:SetPrevTutorial()
-	SavedOptionsPerChar.currentTutorial = SavedOptionsPerChar.currentTutorial or 0
-	SavedOptionsPerChar.currentTutorial = SavedOptionsPerChar.currentTutorial - 1
+	KkthnxUIDataPerChar.currentTutorial = KkthnxUIDataPerChar.currentTutorial or 0
+	KkthnxUIDataPerChar.currentTutorial = KkthnxUIDataPerChar.currentTutorial - 1
 
-	if SavedOptionsPerChar.currentTutorial <= 0 then
-		SavedOptionsPerChar.currentTutorial = #K.TutorialList
+	if KkthnxUIDataPerChar.currentTutorial <= 0 then
+		KkthnxUIDataPerChar.currentTutorial = #K.TutorialList
 	end
 
-	TutorialWindow.desc:SetText(K.TutorialList[SavedOptionsPerChar.currentTutorial])
+	TutorialWindow.desc:SetText(K.TutorialList[KkthnxUIDataPerChar.currentTutorial])
 end
 
 function Tutorial:SpawnTutorialFrame()
@@ -76,9 +76,9 @@ function Tutorial:SpawnTutorialFrame()
 	f.disableButton = CreateFrame("CheckButton", f:GetName().."DisableButton", f, "OptionsCheckButtonTemplate")
 	_G[f.disableButton:GetName() .. "Text"]:SetText(DISABLE)
 	f.disableButton:SetPoint("BOTTOMLEFT", 2, 0)
-	f.disableButton:SetScript("OnShow", function(self) self:SetChecked(SavedOptionsPerChar.hideTutorial) end)
+	f.disableButton:SetScript("OnShow", function(self) self:SetChecked(KkthnxUIDataPerChar.hideTutorial) end)
 
-	f.disableButton:SetScript("OnClick", function(self) SavedOptionsPerChar.hideTutorial = self:GetChecked() end)
+	f.disableButton:SetScript("OnClick", function(self) KkthnxUIDataPerChar.hideTutorial = self:GetChecked() end)
 
 	f.hideButton = CreateFrame("Button", f:GetName().."HideButton", f, "OptionsButtonTemplate")
 	f.hideButton:SetPoint("BOTTOMRIGHT", -5, 5)
@@ -101,7 +101,7 @@ function Tutorial:SpawnTutorialFrame()
 end
 
 function Tutorial:Tutorials(forceShow)
-	if (not forceShow and SavedOptionsPerChar.hideTutorial) or (not forceShow and not SavedOptionsPerChar.Install) then return end
+	if (not forceShow and KkthnxUIDataPerChar.hideTutorial) or (not forceShow and not KkthnxUIData[GetRealmName()][UnitName("Player")].Install) then return end
 	local f = TutorialWindow
 	if not f then
 		f = Tutorial:SpawnTutorialFrame()

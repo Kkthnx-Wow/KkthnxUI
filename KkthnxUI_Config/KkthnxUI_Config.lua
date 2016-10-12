@@ -1,5 +1,5 @@
--- GUI FOR KKTHNXUI (BY FERNIR, TUKZ AND TOHVELI, SHESTAK)
-local K, C, L, _
+-- Gui for KkthnxUI (by fernir, tukz and tohveli, shestak)
+local K, C, L
 
 local _G = _G
 local unpack = unpack
@@ -27,29 +27,27 @@ local ALLOWED_GROUPS = {
 	["ActionBar"] = 2,
 	["Announcements"] = 3,
 	["Automation"] = 4,
-	["Bag"] = 5,
+	["Bags"] = 5,
 	["Blizzard"] = 6,
-	["CombatText"] = 7,
-	["Experience"] = 8,
-	["Aura"] = 9,
-	["Chat"] = 10,
-	["Stats"] = 11,
-	["Cooldown"] = 12,
-	["Error"] = 13,
-	["Filger"] = 14,
-	["Loot"] = 15,
-	["Minimap"] = 16,
-	["Misc"] = 17,
-	["Nameplate"] = 18,
-	["PulseCD"] = 19,
-	["Skins"] = 20,
-	["Tooltip"] = 21,
-	["Unitframe"] = 22,
-	["WorldMap"] = 23,
+	["DataBars"] = 7,
+	["Auras"] = 8,
+	["Chat"] = 9,
+	["Stats"] = 10,
+	["Cooldown"] = 11,
+	["Filger"] = 12,
+	["Loot"] = 13,
+	["Minimap"] = 14,
+	["Misc"] = 15,
+	-- ["NamePlates"] = 16,
+	["PulseCD"] = 17,
+	["Skins"] = 18,
+	["Tooltip"] = 19,
+	["Unitframe"] = 20,
+	["WorldMap"] = 21,
 }
 
 local function Local(o)
-	K, C, L, _ = KkthnxUI:unpack()
+	local K = KkthnxUI[1]
 	-- Actionbar Settings
 	if o == "UIConfigActionBar" then o = ACTIONBAR_LABEL end
 	if o == "UIConfigActionBarBottomBars" then o = L_GUI_ACTIONBAR_BOTTOMBARS end
@@ -74,9 +72,7 @@ local function Local(o)
 	-- Announcement Settings
 	if o == "UIConfigAnnouncements" then o = L_GUI_ANNOUNCEMENTS end
 	if o == "UIConfigAnnouncementsBadGear" then o = L_GUI_ANNOUNCEMENTS_BAD_GEAR end
-	if o == "UIConfigAnnouncementsFeasts" then o = L_GUI_ANNOUNCEMENTS_FEASTS end
 	if o == "UIConfigAnnouncementsInterrupt" then o = L_GUI_ANNOUNCEMENTS_INTERRUPT end
-	if o == "UIConfigAnnouncementsPortals" then o = L_GUI_ANNOUNCEMENTS_PORTALS end
 	if o == "UIConfigAnnouncementsPullCountdown" then o = L_GUI_ANNOUNCEMENTS_PULL_COUNTDOWN end
 	if o == "UIConfigAnnouncementsSaySapped" then o = L_GUI_ANNOUNCEMENTS_SAY_SAPPED end
 	if o == "UIConfigAnnouncementsSpells" then o = L_GUI_ANNOUNCEMENTS_SPELLS end
@@ -92,72 +88,43 @@ local function Local(o)
 	if o == "UIConfigAutomationScreenShot" then o = L_GUI_AUTOMATION_SCREENSHOT end
 	if o == "UIConfigAutomationTabBinder" then o = L_GUI_AUTOMATION_TAB_BINDER end
 	-- Bag Settings
-	if o == "UIConfigBag" then o = L_GUI_BAGS end
-	if o == "UIConfigBagBagColumns" then o = L_GUI_BAGS_BAG end
-	if o == "UIConfigBagBankColumns" then o = L_GUI_BAGS_BANK end
-	if o == "UIConfigBagButtonSize" then o = L_GUI_BAGS_BUTTON_SIZE end
-	if o == "UIConfigBagItemLevel" then o = L_GUI_BAGS_ILVL end
-	if o == "UIConfigBagButtonSpace" then o = L_GUI_BAGS_BUTTON_SPACE end
-	if o == "UIConfigBagEnable" then o = L_GUI_BAGS_ENABLE end
+	if o == "UIConfigBags" then o = L_GUI_BAGS end
+	if o == "UIConfigBagsBagFilter" then o = L_GUI_BAGS_BAG_FILTER end
+	if o == "UIConfigBagsButtonSize" then o = L_GUI_BAGS_BUTTON_SIZE end
+	if o == "UIConfigBagsEnable" then o = L_GUI_BAGS_ENABLE end
+	if o == "UIConfigBagsItemsPerRow" then o = L_GUI_BAGS_ITEMS_PER_ROW end
+	if o == "UIConfigBagsPulseNewItem" then o = L_GUI_BAGS_PULSE_NEW_ITEMS end
+	if o == "UIConfigBagsSpacing" then o = L_GUI_BAGS_SPACING end
 	-- Blizzard Settings
 	if o == "UIConfigBlizzard" then o = L_GUI_BLIZZARD end
-	if o == "UIConfigBlizzardCapturebar" then o = L_GUI_BLIZZARD_CAPTUREBAR end
 	if o == "UIConfigBlizzardClassColor" then o = L_GUI_BLIZZARD_CLASS_COLOR end
 	if o == "UIConfigBlizzardColorTextures" then o = L_GUI_BLIZZARD_COLOR_TEXTURES end
+	if o == "UIConfigBlizzardEasyDelete" then o = L_GUI_BLIZZARD_EASYDELETE end
+	if o == "UIConfigBlizzardReplaceBlizzardFonts" then o = L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS end
+	if o == "UIConfigBlizzardReputationGain" then o = L_GUI_BLIZZARD_REPUTATIONGAIN end
 	if o == "UIConfigBlizzardTexturesColor" then o = L_GUI_BLIZZARD_TEXTURES_COLOR end
-	if o == "UIConfigBlizzardDurability" then o = L_GUI_BLIZZARD_DURABILITY end
-	if o == "UIConfigBlizzardMoveAchievements" then o = L_GUI_BLIZZARD_ACHIEVEMENTS end
-	if o == "UIConfigBlizzardReputations" then o = L_GUI_BLIZZARD_REPUTATIONS end
-	-- CombatText Settings
-	if o == "UIConfigCombatText" then o = L_GUI_COMBATTEXT end
-	if o == "UIConfigCombatTextBlizzardHeadNumbers" then o = L_GUI_COMBATTEXT_BLIZZ_HEAD_NUMBERS end
-	if o == "UIConfigCombatTextCritPostfix" then o = L_GUI_COMBATTEXT_CRIT_POSTFIX end
-	if o == "UIConfigCombatTextCritPrefix" then o = L_GUI_COMBATTEXT_CRIT_PREFIX end
-	if o == "UIConfigCombatTextDamage" then o = L_GUI_COMBATTEXT_DAMAGE end
-	if o == "UIConfigCombatTextDamageColor" then o = L_GUI_COMBATTEXT_DAMAGE_COLOR end
-	if o == "UIConfigCombatTextDamageStyle" then o = L_GUI_COMBATTEXT_DAMAGE_STYLE end
-	if o == "UIConfigCombatTextDeathKnightRunes" then o = L_GUI_COMBATTEXT_DK_RUNES end
-	if o == "UIConfigCombatTextDirection" then o = L_GUI_COMBATTEXT_DIRECTION end
-	if o == "UIConfigCombatTextDispel" then o = L_GUI_COMBATTEXT_DISPEL end
-	if o == "UIConfigCombatTextDotDamage" then o = L_GUI_COMBATTEXT_DOT_DAMAGE end
-	if o == "UIConfigCombatTextEnable" then o = L_GUI_COMBATTEXT_ENABLE end
-	if o == "UIConfigCombatTextHealTreshold" then o = L_GUI_COMBATTEXT_HEAL_TRESHOLD end
-	if o == "UIConfigCombatTextHealing" then o = L_GUI_COMBATTEXT_HEALING end
-	if o == "UIConfigCombatTextIconSize" then o = L_GUI_COMBATTEXT_ICON_SIZE end
-	if o == "UIConfigCombatTextIcons" then o = L_GUI_COMBATTEXT_ICONS end
-	if o == "UIConfigCombatTextInterrupt" then o = L_GUI_COMBATTEXT_INTERRUPT end
-	if o == "UIConfigCombatTextKillingBlow" then o = L_GUI_COMBATTEXT_KILLINGBLOW end
-	if o == "UIConfigCombatTextMaxLines" then o = L_GUI_COMBATTEXT_MAX_LINES end
-	if o == "UIConfigCombatTextMergeAoeSpam" then o = L_GUI_COMBATTEXT_MERGE_AOE_SPAM end
-	if o == "UIConfigCombatTextMergeMelee" then o = L_GUI_COMBATTEXT_MERGE_MELEE end
-	if o == "UIConfigCombatTextPetDamage" then o = L_GUI_COMBATTEXT_PET_DAMAGE end
-	if o == "UIConfigCombatTextScrollable" then o = L_GUI_COMBATTEXT_SCROLLABLE end
-	if o == "UIConfigCombatTextShortNumbers" then o = L_GUI_COMBATTEXT_SHORT_NUMBERS end
-	if o == "UIConfigCombatTextShowHots" then o = L_GUI_COMBATTEXT_HOTS end
-	if o == "UIConfigCombatTextShowOverHealing" then o = L_GUI_COMBATTEXT_OVERHEALING end
-	if o == "UIConfigCombatTextTimeVisible" then o = L_GUI_COMBATTEXT_TIME_VISIBLE end
-	if o == "UIConfigCombatTextTreshold" then o = L_GUI_COMBATTEXT_TRESHOLD end
 	-- ExpRep Settings
-	if o == "UIConfigExperience" then o = L_GUI_EXPERIENCE end
-	if o == "UIConfigExperienceArtifact" then o = L_GUI_EXPERIENCE_ARTIFACT end
-	if o == "UIConfigExperienceArtifactHeight" then o = L_GUI_EXPERIENCE_ARTIFACTHEIGHT end
-	if o == "UIConfigExperienceArtifactWidth" then o = L_GUI_EXPERIENCE_ARTIFACTWIDTH end
-	if o == "UIConfigExperienceXP" then o = L_GUI_EXPERIENCE_XP end
-	if o == "UIConfigExperienceXPClassColor" then o = L_GUI_EXPERIENCE_XPCLASSCOLOR end
-	if o == "UIConfigExperienceXPHeight" then o = L_GUI_EXPERIENCE_XPHEIGHT end
-	if o == "UIConfigExperienceXPWidth" then o = L_GUI_EXPERIENCE_XPWIDTH end
+	if o == "UIConfigDataBars" then o = L_GUI_DATABARS end
+	if o == "UIConfigDataBarsArtifact" then o = L_GUI_DATABARS_ARTIFACT end
+	if o == "UIConfigDataBarsExperience" then o = L_GUI_DATABARS_EXPERIENCE end
+	if o == "UIConfigDataBarsExperienceClassColor" then o = L_GUI_DATABARS_EXPERIENCE_CLASSCOLOR end
+	if o == "UIConfigDataBarsHeight" then o = L_GUI_DATABARS_HEIGHT end
+	if o == "UIConfigDataBarsWidth" then o = L_GUI_DATABARS_WIDTH end
 	-- Auras Settings
-	if o == "UIConfigAura" then o = L_GUI_AURA end
-	if o == "UIConfigAuraBuffSize" then o = L_GUI_AURA_PLAYER_BUFF_SIZE end
-	if o == "UIConfigAuraCastBy" then o = L_GUI_AURA_CAST_BY end
-	if o == "UIConfigAuraClassColorBorder" then o = L_GUI_AURA_CLASSCOLOR_BORDER end
-	if o == "UIConfigAuraEnable" then o = L_GUI_AURA_ENABLE end
-	if o == "UIConfigAuraTimer" then o = L_GUI_AURA_SHOW_TIMER end
+	if o == "UIConfigAuras" then o = L_GUI_AURAS end
+	if o == "UIConfigAurasEnable" then o = L_GUI_AURAS_ENABLE end
+	if o == "UIConfigAurasConsolidate" then o = L_GUI_AURAS_CONSOLIDATE end
+	if o == "UIConfigAurasFlash" then o = L_GUI_AURAS_FLASH end
+	if o == "UIConfigAurasHideBuffs" then o = L_GUI_AURAS_HIDE_BUFFS end
+	if o == "UIConfigAurasHideDebuffs" then o = L_GUI_AURAS_HIDE_DEBUFFS end
+	if o == "UIConfigAurasAnimation" then o = L_GUI_AURAS_ANIMATION end
+	if o == "UIConfigAurasBuffsPerRow" then o = L_GUI_AURAS_BUFFS_PERROW end
+	if o == "UIConfigAurasCastBy" then o = L_GUI_AURAS_CASTBY end
 	-- Chat Settings
 	if o == "UIConfigChat" then o = CHAT end
-	if o == "UIConfigChatCombatLog" then o = L_GUI_CHAT_CL_TAB end
 	if o == "UIConfigChatDamageMeterSpam" then o = L_GUI_CHAT_DAMAGE_METER_SPAM end
 	if o == "UIConfigChatEnable" then o = L_GUI_CHAT_ENABLE end
+	if o == "UIConfigChatFading" then o = L_GUI_CHAT_FADING end
 	if o == "UIConfigChatFilter" then o = L_GUI_CHAT_SPAM end
 	if o == "UIConfigChatHeight" then o = L_GUI_CHAT_HEIGHT end
 	if o == "UIConfigChatLinkBrackets" then o = L_GUI_CHAT_LINKBRACKETS end
@@ -165,10 +132,8 @@ local function Local(o)
 	if o == "UIConfigChatOutline" then o = L_GUI_CHAT_OUTLINE end
 	if o == "UIConfigChatScrollByX" then o = L_GUI_CHAT_SCROLLBYX end
 	if o == "UIConfigChatSpam" then o = L_GUI_CHAT_GOLD end
-	if o == "UIConfigChatSticky" then o = L_GUI_CHAT_STICKY end
 	if o == "UIConfigChatTabsMouseover" then o = L_GUI_CHAT_TABS_MOUSEOVER end
 	if o == "UIConfigChatTabsOutline" then o = L_GUI_CHAT_TABS_OUTLINE end
-	if o == "UIConfigChatTimeColor" then o = L_GUI_CHAT_TIMESTAMP end
 	if o == "UIConfigChatWhispSound" then o = L_GUI_CHAT_WHISP end
 	if o == "UIConfigChatWidth" then o = L_GUI_CHAT_WIDTH end
 	-- Stats Settings
@@ -181,11 +146,6 @@ local function Local(o)
 	if o == "UIConfigCooldownEnable" then o = L_GUI_COOLDOWN_ENABLE end
 	if o == "UIConfigCooldownFontSize" then o = L_GUI_COOLDOWN_FONT_SIZE end
 	if o == "UIConfigCooldownThreshold" then o = L_GUI_COOLDOWN_THRESHOLD end
-	-- Error Settings
-	if o == "UIConfigError" then o = L_GUI_ERROR end
-	if o == "UIConfigErrorBlack" then o = L_GUI_ERROR_BLACK end
-	if o == "UIConfigErrorWhite" then o = L_GUI_ERROR_WHITE end
-	if o == "UIConfigErrorCombat" then o = L_GUI_ERROR_HIDE_COMBAT end
 	-- Filger
 	if o == "UIConfigFilger" then o = L_GUI_FILGER end
 	if o == "UIConfigFilgerBuffsSize" then o = L_GUI_FILGER_BUFFS_SIZE end
@@ -202,7 +162,6 @@ local function Local(o)
 	if o == "UIConfigGeneralBubbleBackdrop" then o = L_GUI_GENERAL_CHATBUBBLE_NOBACKDROP end
 	if o == "UIConfigGeneralBubbleFontSize" then o = L_GUI_GENERAL_CHATBUBBLE_FONTSIZE end
 	if o == "UIConfigGeneralCustomLagTolerance" then o = L_GUI_GENERAL_LAG_TOLERANCE end
-	if o == "UIConfigGeneralReplaceBlizzardFonts" then o = L_GUI_GENERAL_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
 	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
@@ -234,31 +193,14 @@ local function Local(o)
 	if o == "UIConfigMiscColorPicker" then o = L_GUI_MISC_COLOR_PICKER end
 	if o == "UIConfigMiscDurabilityWarninig" then o = L_GUI_MISC_DURABILITY_WARNINIG end
 	if o == "UIConfigMiscEnhancedMail" then o = L_GUI_MISC_ENCHANCED_MAIL end
+	if o == "UIConfigMiscErrors" then o = L_GUI_MISC_ERRORS end
 	if o == "UIConfigMiscInviteKeyword" then o = L_GUI_MISC_INVKEYWORD end
-	if o == "UIConfigMiscItemLevel" then o = L_GUI_MISC_ITEM_LEVEL end
+	if o == "UIConfigMiscSlotDurability" then o = L_GUI_MISC_SLOT_DURABILITY end
 	if o == "UIConfigMiscMoveBlizzard" then o = L_GUI_MISC_MOVE_BLIZZARD end
 	if o == "UIConfigMiscSellMisc" then o = L_GUI_MISC_SELLMISC end
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
 	-- Nameplate Settings
-	if o == "UIConfigNameplate" then o = UNIT_NAMEPLATES end
-	if o == "UIConfigNameplateAdditionalHeight" then o = L_GUI_NAMEPLATE_AD_HEIGHT end
-	if o == "UIConfigNameplateAdditionalWidth" then o = L_GUI_NAMEPLATE_AD_WIDTH end
-	if o == "UIConfigNameplateAurasSize" then o = L_GUI_NAMEPLATE_DEBUFFS_SIZE end
-	if o == "UIConfigNameplateBadColor" then o = L_GUI_NAMEPLATE_BAD_COLOR end
-	if o == "UIConfigNameplateCastbarName" then o = L_GUI_NAMEPLATE_CASTBAR_NAME end
-	if o == "UIConfigNameplateClassIcons" then o = L_GUI_NAMEPLATE_CLASS_ICON end
-	if o == "UIConfigNameplateCombat" then o = L_GUI_NAMEPLATE_COMBAT end
-	if o == "UIConfigNameplateEnable" then o = L_GUI_NAMEPLATE_ENABLE end
-	if o == "UIConfigNameplateEnhancedThreat" then o = L_GUI_NAMEPLATE_THREAT end
-	if o == "UIConfigNameplateGoodColor" then o = L_GUI_NAMEPLATE_GOOD_COLOR end
-	if o == "UIConfigNameplateHealerIcon" then o = L_GUI_NAMEPLATE_HEALER_ICON end
-	if o == "UIConfigNameplateHealthValue" then o = L_GUI_NAMEPLATE_HEALTH end
-	if o == "UIConfigNameplateHeight" then o = L_GUI_NAMEPLATE_HEIGHT end
-	if o == "UIConfigNameplateNameAbbreviate" then o = L_GUI_NAMEPLATE_NAME_ABBREV end
-	if o == "UIConfigNameplateNearColor" then o = L_GUI_NAMEPLATE_NEAR_COLOR end
-	if o == "UIConfigNameplateShowCastbar" then o = L_GUI_NAMEPLATE_CASTBAR end
-	if o == "UIConfigNameplateTrackAuras" then o = L_GUI_NAMEPLATE_SHOW_DEBUFFS end
-	if o == "UIConfigNameplateWidth" then o = L_GUI_NAMEPLATE_WIDTH end
+	if o == "UIConfigNamePlates" then o = UNIT_NAMEPLATES end
 	-- PulseCD Settings
 	if o == "UIConfigPulseCD" then o = L_GUI_PULSECD end
 	if o == "UIConfigPulseCDEnable" then o = L_GUI_PULSECD_ENABLE end
@@ -288,28 +230,34 @@ local function Local(o)
 	if o == "UIConfigTooltipInstanceLock" then o = L_GUI_TOOLTIP_INSTANCE_LOCK end
 	if o == "UIConfigTooltipItemCount" then o = L_GUI_TOOLTIP_ITEM_COUNT end
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
-	if o == "UIConfigTooltipItemLevel" then o = L_GUI_TOOLTIP_ITEMLEVEL end
-	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_TALENTS end
+	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_SHOWSPEC end
 	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
-	if o == "UIConfigUnitframeAuraOffsetY" then o = L_GUI_UNITFRAME_AURA_OFFSETY end
-	if o == "UIConfigUnitframeBetterPowerColors" then o = L_GUI_UNITFRAME_BETTER_POWER_COLOR end
-	if o == "UIConfigUnitframeCastBarScale" then o = L_GUI_UNITFRAME_CASTBAR_SCALE end
-	if o == "UIConfigUnitframeClassHealth" then o = L_GUI_UNITFRAME_CLASS_HEALTH end
-	if o == "UIConfigUnitframeClassIcon" then o = L_GUI_UNITFRAME_CLASS_ICON end
-	if o == "UIConfigUnitframeClassResources" then o = L_GUI_UNITFRAME_CLASSRESOURCES end
-	if o == "UIConfigUnitframeCombatFeedback" then o = L_GUI_UNITFRAME_COMBAT_FEEDBACK end
+	if o == "UIConfigUnitframeBuilderSpender" then o = L_GUI_UNITFRAME_BUILDERSPENDER end
+	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
+	if o == "UIConfigUnitframeCastbars" then o = L_GUI_UNITFRAME_CASTBARS end
+	if o == "UIConfigUnitframeClassColor" then o = L_GUI_UNITFRAME_CLASSCOLOR end
+	if o == "UIConfigUnitframeClassPortraits" then o = L_GUI_UNITFRAME_CLASSPORTRAITS end
+	if o == "UIConfigUnitframeClickThrough" then o = L_GUI_UNITFRAME_CLICKTHROUGH end
+	if o == "UIConfigUnitframeCombatText" then o = L_GUI_UNITFRAME_COMBAT_TEXT end
 	if o == "UIConfigUnitframeEnable" then o = L_GUI_UNITFRAME_ENABLE end
-	if o == "UIConfigUnitframeEnhancedFrames" then o = L_GUI_UNITFRAME_ENHANCED_UNITFRAMES end
-	if o == "UIConfigUnitframeFlatClassIcons" then o = L_GUI_UNITFRAME_FLAT_CLASSICONS end
-	if o == "UIConfigUnitframeGroupNumber" then o = L_GUI_UNITFRAME_GROUP_NUMBER end
-	if o == "UIConfigUnitframeLargeAuraSize" then o = L_GUI_UNITFRAME_LARGE_AURA end
-	if o == "UIConfigUnitframeOutline" then o = L_GUI_UNITFRAME_OUTLINE end
-	if o == "UIConfigUnitframePercentHealth" then o = L_GUI_UNITFRAME_PERCENT_HEALTH end
-	if o == "UIConfigUnitframePvPIcon" then o = L_GUI_UNITFRAME_HIDE_PVPICON end
+	if o == "UIConfigUnitframeFlatClassPortraits" then o = L_GUI_UNITFRAME_FLAT_CLASSPORTRAITS end
+	if o == "UIConfigUnitframeFocusButton" then o = L_GUI_UNITFRAME_FOCUS_BUTTON end
+	if o == "UIConfigUnitframeFocusModifier" then o = L_GUI_UNITFRAME_FOCUS_MODIFIER end
+	if o == "UIConfigUnitframeParty" then o = L_GUI_UNITFRAME_PARTY end
+	if o == "UIConfigUnitframePartyInRaid" then o = L_GUI_UNITFRAME_PARTYINRAID end
+	if o == "UIConfigUnitframePlayerDebuffsOnly" then o = L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY end
+	if o == "UIConfigUnitframePortraitTimer" then o = L_GUI_UNITFRAME_PORTRAITTIMER end
+	if o == "UIConfigUnitframePowerPredictionBar" then o = L_GUI_UNITFRAME_POWERPREDICTIONBAR end
+	if o == "UIConfigUnitframePowerUseAtlas" then o = L_GUI_UNITFRAME_POWERUSEATLAS end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
-	if o == "UIConfigUnitframeSmallAuraSize" then o = L_GUI_UNITFRAME_SMALL_AURA end
+	if o == "UIConfigUnitframeStyle" then o = L_GUI_UNITFRAME_STYLE end
+	if o == "UIConfigUnitframeTextHealthColor" then o = L_GUI_UNITFRAME_TEXTHEALTHCOLOR end
+	if o == "UIConfigUnitframeTextNameColor" then o = L_GUI_UNITFRAME_TEXTNAMECOLOR end
+	if o == "UIConfigUnitframeTextPowerColor" then o = L_GUI_UNITFRAME_TEXTPOWERCOLOR end
+	if o == "UIConfigUnitframeThreatGlow" then o = L_GUI_UNITFRAME_THREATGLOW end
+	if o == "UIConfigUnitframeThreatValue" then o = L_GUI_UNITFRAME_THREATVALUE end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end
@@ -358,19 +306,19 @@ end
 StaticPopupDialogs.PERCHAR = {
 	text = L_GUI_PER_CHAR,
 	OnAccept = function()
-		if UIConfigAllCharacters:GetChecked() then
-			GUIConfigAll[realm][name] = true
+		if KkthnxUIConfigAllCharacters:GetChecked() then
+			KkthnxUIConfigAll[realm][name] = true
 		else
-			GUIConfigAll[realm][name] = false
+			KkthnxUIConfigAll[realm][name] = false
 		end
 		ReloadUI()
 	end,
 	OnCancel = function()
 		UIConfigCover:Hide()
-		if UIConfigAllCharacters:GetChecked() then
-			UIConfigAllCharacters:SetChecked(false)
+		if KkthnxUIConfigAllCharacters:GetChecked() then
+			KkthnxUIConfigAllCharacters:SetChecked(false)
 		else
-			UIConfigAllCharacters:SetChecked(true)
+			KkthnxUIConfigAllCharacters:SetChecked(true)
 		end
 	end,
 	button1 = ACCEPT,
@@ -383,7 +331,7 @@ StaticPopupDialogs.PERCHAR = {
 StaticPopupDialogs.RESET_PERCHAR = {
 	text = L_GUI_RESET_CHAR,
 	OnAccept = function()
-		GUIConfig = GUIConfigSettings
+		KkthnxUIConfig = KkthnxUIConfigSettings
 		ReloadUI()
 	end,
 	OnCancel = function() if UIConfig and UIConfig:IsShown() then UIConfigCover:Hide() end end,
@@ -397,8 +345,8 @@ StaticPopupDialogs.RESET_PERCHAR = {
 StaticPopupDialogs.RESET_ALL = {
 	text = L_GUI_RESET_ALL,
 	OnAccept = function()
-		GUIConfigSettings = nil
-		GUIConfig = nil
+		KkthnxUIConfigSettings = nil
+		KkthnxUIConfig = nil
 		ReloadUI()
 	end,
 	OnCancel = function() UIConfigCover:Hide() end,
@@ -411,33 +359,33 @@ StaticPopupDialogs.RESET_ALL = {
 
 local function SetValue(group, option, value)
 	local mergesettings
-	if GUIConfig == GUIConfigSettings then
+	if KkthnxUIConfig == KkthnxUIConfigSettings then
 		mergesettings = true
 	else
 		mergesettings = false
 	end
 
-	if GUIConfigAll[realm][name] == true then
-		if not GUIConfig then GUIConfig = {} end
-		if not GUIConfig[group] then GUIConfig[group] = {} end
-		GUIConfig[group][option] = value
+	if KkthnxUIConfigAll[realm][name] == true then
+		if not KkthnxUIConfig then KkthnxUIConfig = {} end
+		if not KkthnxUIConfig[group] then KkthnxUIConfig[group] = {} end
+		KkthnxUIConfig[group][option] = value
 	else
 		if mergesettings == true then
-			if not GUIConfig then GUIConfig = {} end
-			if not GUIConfig[group] then GUIConfig[group] = {} end
-			GUIConfig[group][option] = value
+			if not KkthnxUIConfig then KkthnxUIConfig = {} end
+			if not KkthnxUIConfig[group] then KkthnxUIConfig[group] = {} end
+			KkthnxUIConfig[group][option] = value
 		end
 
-		if not GUIConfigSettings then GUIConfigSettings = {} end
-		if not GUIConfigSettings[group] then GUIConfigSettings[group] = {} end
-		GUIConfigSettings[group][option] = value
+		if not KkthnxUIConfigSettings then KkthnxUIConfigSettings = {} end
+		if not KkthnxUIConfigSettings[group] then KkthnxUIConfigSettings[group] = {} end
+		KkthnxUIConfigSettings[group][option] = value
 	end
 end
 
 local VISIBLE_GROUP = nil
 local lastbutton = nil
 local function ShowGroup(group, button)
-	K, C, L, _ = KkthnxUI:unpack()
+	local K = KkthnxUI[1]
 
 	if lastbutton then
 		lastbutton:SetText(lastbutton:GetText().sub(lastbutton:GetText(), 11, -3))
@@ -491,7 +439,8 @@ end
 local Loaded
 function CreateUIConfig()
 	if InCombatLockdown() and not Loaded then Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
-	K, C, L, _ = KkthnxUI:unpack()
+	local K = KkthnxUI[1]
+	local C = KkthnxUI[2]
 
 	if UIConfigMain then
 		ShowGroup("General")
@@ -810,7 +759,7 @@ function CreateUIConfig()
 	reset:SetPoint("TOPLEFT", UIConfig, "BOTTOMLEFT", -10, -25)
 	reset:SetScript("OnClick", function(self)
 		UIConfigCover:Show()
-		if GUIConfigAll[realm][name] == true then
+		if KkthnxUIConfigAll[realm][name] == true then
 			StaticPopup_Show("RESET_PERCHAR")
 		else
 			StaticPopup_Show("RESET_ALL")
@@ -830,15 +779,15 @@ function CreateUIConfig()
 	totalreset:SetPoint("TOPLEFT", groupsBG, "BOTTOMLEFT", 0, -15)
 	totalreset:SetScript("OnClick", function(self)
 		StaticPopup_Show("RESET_UI")
-		GUIConfig = {}
-		if GUIConfigAll[realm][name] == true then
-			GUIConfigAll[realm][name] = {}
+		KkthnxUIConfig = {}
+		if KkthnxUIConfigAll[realm][name] == true then
+			KkthnxUIConfigAll[realm][name] = {}
 		end
-		GUIConfigSettings = {}
+		KkthnxUIConfigSettings = {}
 	end)
 
-	if GUIConfigAll then
-		local button = CreateFrame("CheckButton", "UIConfigAllCharacters", TitleBox, "InterfaceOptionsCheckButtonTemplate")
+	if KkthnxUIConfigAll then
+		local button = CreateFrame("CheckButton", "KkthnxUIConfigAllCharacters", TitleBox, "InterfaceOptionsCheckButtonTemplate")
 		button:SetScript("OnClick", function(self) StaticPopup_Show("PERCHAR") UIConfigCover:Show() end)
 		button:SetPoint("RIGHT", TitleBox, "RIGHT", -3, 0)
 		button:SetHitRectInsets(0, 0, 0, 0)
@@ -851,7 +800,7 @@ function CreateUIConfig()
 		label:SetText(L_GUI_SET_SAVED_SETTTINGS)
 		label:SetPoint("RIGHT", button, "LEFT")
 
-		if GUIConfigAll[realm][name] == true then
+		if KkthnxUIConfigAll[realm][name] == true then
 			button:SetChecked(true)
 		else
 			button:SetChecked(false)
@@ -889,7 +838,7 @@ do
 	function SlashCmdList.RESETCONFIG()
 		if UIConfigMain and UIConfigMain:IsShown() then UIConfigCover:Show() end
 
-		if GUIConfigAll[realm][name] == true then
+		if KkthnxUIConfigAll[realm][name] == true then
 			StaticPopup_Show("RESET_PERCHAR")
 		else
 			StaticPopup_Show("RESET_ALL")
@@ -905,7 +854,7 @@ do
 	frame.name = "|cff3c9bedKkthnxUI|r"
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
-		K, C, L, _ = KkthnxUI:unpack()
+
 		local title = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title:SetPoint("TOPLEFT", 16, -16)
 		title:SetText("Info:")
@@ -956,6 +905,7 @@ do
 	InterfaceOptions_AddCategory(frame)
 end
 
+--[[
 do
 	-- Button in GameMenuButton frame
 	local UIConfigButton = CreateFrame("Frame")
@@ -983,7 +933,7 @@ do
 		button:SetScript("OnClick", function(self)
 			local Config = UIConfigMain
 			if Config and Config:IsShown() then
-				UIConfigMain:Hide()
+				Config:Hide()
 			else
 				CreateUIConfig()
 				HideUIPanel(Menu)
@@ -994,3 +944,56 @@ do
 		KeyBinds:SetPoint("TOP", button, "BOTTOM", 0, -1)
 	end)
 end
+--]]
+
+local GameMenu = CreateFrame("Frame")
+local Menu = GameMenuFrame
+local Header = GameMenuFrameHeader
+local Logout = GameMenuButtonLogout
+local Addons = GameMenuButtonAddons
+
+function GameMenu:AddHooks()
+	local Logout = GameMenuButtonLogout
+
+	Menu:SetHeight(Menu:GetHeight() + Logout:GetHeight())
+	local _, relTo, _, _, offY = Logout:GetPoint()
+	if relTo ~= GameMenu.KkthnxUI then
+		GameMenu.KkthnxUI:ClearAllPoints()
+		GameMenu.KkthnxUI:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
+		Logout:ClearAllPoints()
+		Logout:SetPoint("TOPLEFT", GameMenu.KkthnxUI, "BOTTOMLEFT", 0, offY)
+	end
+end
+
+function GameMenu:EnableKkthnxUIConfig()
+	local Logout = GameMenuButtonLogout
+
+	local KkthnxUI = CreateFrame("Button", nil, Menu, "GameMenuButtonTemplate")
+	KkthnxUI:SetSize(Logout:GetWidth(), Logout:GetHeight())
+	KkthnxUI:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
+	KkthnxUI:SetText("|cff3c9bedKkthnxUI|r")
+	KkthnxUI:SetScript("OnClick", function(self)
+		if UIConfigMain and UIConfigMain:IsShown() then
+			UIConfigMain:Hide()
+		else
+			CreateUIConfig()
+			HideUIPanel(Menu)
+		end
+	end)
+
+	hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', self.AddHooks)
+	self.KkthnxUI = KkthnxUI
+end
+
+function GameMenu:Enable()
+	if IsAddOnLoaded("KkthnxUI_Config") then
+		self:EnableKkthnxUIConfig()
+	end
+end
+
+GameMenu:RegisterEvent("PLAYER_LOGIN")
+GameMenu:SetScript("OnEvent", function(self, event, ...)
+	if (event == "PLAYER_LOGIN") then
+		GameMenu:Enable()
+	end
+end)

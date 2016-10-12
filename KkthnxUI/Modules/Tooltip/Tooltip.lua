@@ -1,4 +1,4 @@
-﻿local K, C, L, _ = select(2, ...):unpack()
+﻿local K, C, L = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true then return end
 
 -- LUA API
@@ -16,6 +16,9 @@ local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
 local Short = K.ShortValue
+local ILevel, TalentSpec, LastUpdate = 0, "", 30
+local InspectDelay = 0.2
+local InspectFreq = 2
 local Texture = C.Media.Texture
 local Tooltip = CreateFrame("Frame")
 
@@ -62,13 +65,11 @@ end
 function Tooltip:SetTooltipDefaultAnchor(parent)
 	local Anchor = TooltipAnchor
 
-	if C.Tooltip.Cursor == true then
-		self:SetOwner(parent, "ANCHOR_CURSOR_RIGHT", 20, 20)
-	else
-		self:SetOwner(parent, "ANCHOR_NONE")
-		self:ClearAllPoints()
-		self:SetPoint("BOTTOMRIGHT", Anchor, "BOTTOMRIGHT", 0, 0)
-		self.default = 1
+	self:SetOwner(Anchor)
+	if C.Tooltip.Cursor then self:SetAnchorType("ANCHOR_CURSOR", 0, 5) else self:SetAnchorType("ANCHOR_TOPRIGHT", 0, -36) end
+	if (self:GetOwner() ~= UIParent and InCombatLockdown() and C.Tooltip.HideCombat) then
+		self:Hide()
+		return
 	end
 end
 
@@ -88,7 +89,7 @@ function Tooltip:GetColor(unit)
 		return "|c"..Color.colorStr, Color.r, Color.g, Color.b
 	else
 		local Reaction = UnitReaction(unit, "player")
-		local Color = KkthnxUI_Reaction_Colors[Reaction]
+		local Color = K.Colors.reaction[Reaction]
 
 		if (not Color) then
 			return
@@ -156,10 +157,42 @@ function Tooltip:OnTooltipSetUnit()
 		Line1:SetFormattedText("%s%s%s", Color, Name, "|r")
 	end
 
-	if (UnitIsAFK(Unit)) then
-		self:AppendText((" %s"):format(CHAT_FLAG_AFK))
-	elseif UnitIsDND(Unit) then
-		self:AppendText((" %s"):format(CHAT_FLAG_DND))
+	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
+		if (C.Tooltip.ShowSpec and IsAltKeyDown()) then
+			local Talent = K.Tooltip.Talent
+
+			TalentSpec = "..."
+
+			if (Unit ~= "player") then
+				Talent.CurrentGUID = UnitGUID(Unit)
+				Talent.CurrentUnit = Unit
+
+				for i, _ in pairs(Talent.Cache) do
+					local Cache = Talent.Cache[i]
+
+					if Cache.GUID == Talent.CurrentGUID then
+						TalentSpec = Cache.TalentSpec or "..."
+						LastUpdate = Cache.LastUpdate and abs(Cache.LastUpdate - floor(GetTime())) or 30
+					end
+				end
+
+				if (Unit and (CanInspect(Unit))) and (not (InspectFrame and InspectFrame:IsShown())) then
+					local LastInspectTime = GetTime() - Talent.LastInspectRequest
+
+					Talent.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
+
+					Talent:Show()
+				end
+			else
+				TalentSpec = Talent:GetTalentSpec() or NONE
+			end
+		end
+
+		if (UnitIsAFK(Unit)) then
+			self:AppendText((" %s"):format(CHAT_FLAG_AFK))
+		elseif UnitIsDND(Unit) then
+			self:AppendText((" %s"):format(CHAT_FLAG_DND))
+		end
 	end
 
 	local Offset = 2
@@ -200,6 +233,11 @@ function Tooltip:OnTooltipSetUnit()
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
 	end
 
+	if (C.Tooltip.ShowSpec and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
+	end
+
 	self.fadeOut = nil
 end
 
@@ -221,14 +259,14 @@ function Tooltip:SetColor()
 
 	if Player and Friend then
 		local Class = select(2, UnitClass(Unit))
-		local Color = KkthnxUI_Raid_Class_Colors[Class]
+		local Color = K.Colors.class[Class]
 
 		R, G, B = Color[1], Color[2], Color[3]
 		HealthBar:SetStatusBarColor(R, G, B)
 		HealthBar:SetBackdropBorderColor(R, G, B)
 		self:SetBackdropBorderColor(R, G, B)
 	elseif Reaction then
-		local Color = KkthnxUI_Reaction_Colors[Reaction]
+		local Color = K.Colors.reaction[Reaction]
 
 		R, G, B = Color[1], Color[2], Color[3]
 		HealthBar:SetStatusBarColor(R, G, B)
@@ -244,7 +282,7 @@ function Tooltip:SetColor()
 		else
 			local Color = Colors
 
-			HealthBar:SetStatusBarColor(unpack(KkthnxUI_Reaction_Colors[5]))
+			HealthBar:SetStatusBarColor(unpack(K.Colors.reaction[5]))
 			HealthBar:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 			self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end
@@ -349,9 +387,6 @@ function Tooltip:Enable()
 	end
 end
 
+K.Tooltip = Tooltip
 Tooltip:RegisterEvent("PLAYER_LOGIN")
-Tooltip:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_LOGIN") then
-		Tooltip:Enable()
-	end
-end)
+Tooltip:SetScript("OnEvent", Tooltip.Enable)

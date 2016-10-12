@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- LUA API
 local _G = _G
@@ -153,7 +153,7 @@ SLASH_SPEC1 = "/ss"
 SLASH_SPEC2 = "/spec"
 
 -- Deadly boss mods testing.
-SlashCmdList.DBMTEST = function() if K.IsAddOnEnabled("DBM-Core") then DBM:DemoMode() end end
+SlashCmdList.DBMTEST = function() if IsAddOnLoaded("DBM-Core") then DBM:DemoMode() end end
 SLASH_DBMTEST1 = "/dbmtest"
 
 -- Clear chat

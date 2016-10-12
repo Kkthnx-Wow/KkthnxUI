@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- I NEED TO CLEAN THIS FILE UP.
 local _G = _G
@@ -14,7 +14,7 @@ local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
 local GetNumRandomDungeons = GetNumRandomDungeons
 local Movers = K.Movers
 
--- MOVE SOME FRAMES (SHESTAK)
+-- Move some frames (Shestak)
 local HeadFrame = CreateFrame("Frame")
 HeadFrame:RegisterEvent("ADDON_LOADED")
 HeadFrame:SetScript("OnEvent", function(self, event, addon)
@@ -27,16 +27,13 @@ end)
 
 TicketStatusFrame:ClearAllPoints()
 TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
--- BLIZZARD REPOSITIONS THIS FRAME NOW IN UIPARENT_UPDATETOPFRAMEPOSITIONS
+-- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
 hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
 	if anchor == UIParent then
 		TicketStatusFrame:ClearAllPoints()
 		TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
 	end
 end)
-
-MirrorTimer1:ClearAllPoints()
-MirrorTimer1:SetPoint("TOP", UIParent, 0, -96)
 
 UIErrorsFrame:ClearAllPoints()
 UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
@@ -50,7 +47,7 @@ RaidWarningFrame:ClearAllPoints()
 RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260)
 RaidWarningFrame:SetScale(0.8)
 
--- VEHICLE INDICATOR
+-- Vehicle indicator
 local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)
 VehicleAnchor:SetPoint(unpack(C.Position.Vehicle))
 VehicleAnchor:SetSize(130, 130)
@@ -65,7 +62,7 @@ hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	end
 end)
 
--- FORCE READYCHECK WARNING
+-- Force readycheck warning
 local ShowReadyCheckHook = function(self, initiator)
 	if initiator ~= "player" then
 		PlaySound("ReadyCheck", "Master")
@@ -73,7 +70,7 @@ local ShowReadyCheckHook = function(self, initiator)
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
--- FORCE LOCKACTIONBARS CVAR
+-- Force lockActionBars CVar
 local ForceCVar = CreateFrame("Frame")
 ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ForceCVar:RegisterEvent("CVAR_UPDATE")
@@ -85,7 +82,7 @@ ForceCVar:SetScript("OnEvent", function(self, event)
 	ForceCVar:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
 
--- FORCE OTHER WARNING
+-- Force other warning
 local ForceWarning = CreateFrame("Frame")
 ForceWarning:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 ForceWarning:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE")
@@ -113,7 +110,7 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 	end
 end)
 
--- AUTO SELECT CURRENT EVENT BOSS FROM LFD TOOL(EVENTBOSSAUTOSELECT BY NATHANYEL)
+-- Auto select current event boss from LFD tool(EventBossAutoSelect by Nathanyel)
 local firstLFD
 LFDParentFrame:HookScript("OnShow", function()
 	if not firstLFD then
@@ -128,7 +125,7 @@ LFDParentFrame:HookScript("OnShow", function()
 	end
 end)
 
--- CUSTOM LAG TOLERANCE(BY ELV22)
+-- Custom lag tolerance(By Elv22)
 if C.General.CustomLagTolerance == true then
 	local customlag = CreateFrame("Frame")
 	local int = 5
@@ -147,7 +144,7 @@ if C.General.CustomLagTolerance == true then
 	LatencyUpdate(customlag, 10)
 end
 
--- REMOVE BOSS EMOTE SPAM DURING BG(ARATHIBASIN SPAMFIX BY PARTHA)
+-- Remove boss emote spam during bg(ArathiBasin SpamFix by Partha)
 if C.Misc.BGSpam == true then
 	local Fixer = CreateFrame("Frame")
 	local RaidBossEmoteFrame, spamDisabled = RaidBossEmoteFrame
@@ -167,7 +164,7 @@ if C.Misc.BGSpam == true then
 	Fixer:SetScript("OnEvent", DisableSpam)
 end
 
--- UNDRESS BUTTON IN AUCTION DRESS-UP FRAME(BY NEFARION)
+-- Undress button in auction dress-up frame(by Nefarion)
 local strip = CreateFrame("Button", "DressUpFrameUndressButton", DressUpFrame, "UIPanelButtonTemplate")
 strip:SetText(L_MISC_UNDRESS)
 strip:SetHeight(22)

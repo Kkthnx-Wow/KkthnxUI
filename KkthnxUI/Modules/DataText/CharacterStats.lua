@@ -1,5 +1,5 @@
-local K, C, L, _ = select(2, ...):unpack()
-if K.IsAddOnEnabled("DejaCharacterStats") then return end
+local K, C, L = select(2, ...):unpack()
+if IsAddOnLoaded("DejaCharacterStats") then return end
 
 local format = string.format
 local floor = math.floor

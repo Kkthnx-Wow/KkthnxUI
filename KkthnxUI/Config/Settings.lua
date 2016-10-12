@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- ACTIONBAR OPTIONS
 C["ActionBar"] = {
@@ -25,14 +25,11 @@ C["ActionBar"] = {
 -- ANNOUNCEMENTS OPTIONS
 C["Announcements"] = {
 	["BadGear"] = false,
-	["Feasts"] = false,
 	["Interrupt"] = false,
-	["Portals"] = false,
 	["PullCountdown"] = true,
 	["SaySapped"] = false,
 	["Spells"] = false,
 	["SpellsFromAll"] = false,
-	["Toys"] = false,
 }
 -- AUTOMATION OPTIONS
 C["Automation"] = {
@@ -45,23 +42,22 @@ C["Automation"] = {
 	["TabBinder"] = false,
 }
 -- BAG OPTIONS
-C["Bag"] = {
-	["BagColumns"] = 10,
-	["BankColumns"] = 17,
-	["ButtonSize"] = 38,
-	["ButtonSpace"] = 0,
+C["Bags"] = {
 	["Enable"] = true,
-	["ItemLevel"] = true,
+	["ButtonSize"] = 32,
+	["Spacing"] = 4,
+	["ItemsPerRow"] = 11,
+	["PulseNewItem"] = true,
+	["BagFilter"] = false,
 }
 -- BLIZZARD OPTIONS
 C["Blizzard"] = {
-	["Capturebar"] = true,
 	["ClassColor"] = true,
 	["ColorTextures"] = false,
+	["EasyDelete"] = false,
+	["ReplaceBlizzardFonts"] = true,
+	["ReputationGain"] = false,
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b, 1},
-	["Durability"] = true,
-	["MoveAchievements"] = true,
-	["Reputations"] = true,
 }
 -- STATS OPTIONS
 C["Stats"] = {
@@ -70,18 +66,21 @@ C["Stats"] = {
 	["Location"] = true,
 }
 -- BUFFS & DEBUFFS OPTIONS
-C["Aura"] = {
-	["BuffSize"] = 36,
-	["CastBy"] = false,
-	["ClassColorBorder"] = false,
+C["Auras"] = {
 	["Enable"] = true,
-	["Timer"] = true,
+	["Consolidate"] = false,
+	["Flash"] = false,
+	["HideBuffs"] = false,
+	["HideDebuffs"] = false,
+	["Animation"] = false,
+	["BuffsPerRow"] = 12,
+	["CastBy"] = false,
 }
 -- CHAT OPTIONS
 C["Chat"] = {
-	["CombatLog"] = true,
 	["DamageMeterSpam"] = false,
 	["Enable"] = true,
+	["Fading"] = true,
 	["Filter"] = true,
 	["Height"] = 150,
 	["LinkBrackets"] = true,
@@ -89,42 +88,10 @@ C["Chat"] = {
 	["Outline"] = false,
 	["ScrollByX"] = 3,
 	["Spam"] = false,
-	["Sticky"] = true,
 	["TabsMouseover"] = true,
 	["TabsOutline"] = false,
-	["TimeColor"] = {255/255, 255/255, 0/255},
 	["WhispSound"] = true,
 	["Width"] = 370,
-}
--- COMBATTEXT OPTIONS
-C["CombatText"] = {
-	["Enable"] = true,
-	["BlizzardHeadNumbers"] = false,
-	["DamageStyle"] = true,
-	["Damage"] = true,
-	["Healing"] = true,
-	["ShowHots"] = true,
-	["ShowOverHealing"] = true,
-	["PetDamage"] = true,
-	["DotDamage"] = true,
-	["DamageColor"] = true,
-	["CritPrefix"] = "*",
-	["CritPostfix"] = "*",
-	["Icons"] = true,
-	["IconSize"] = 16,
-	["Treshold"] = 1,
-	["HealTreshold"] = 1,
-	["Scrollable"] = false,
-	["MaxLines"] = 15,
-	["TimeVisible"] = 3,
-	["DeathKnightRunes"] = true,
-	["KillingBlow"] = false,
-	["MergeAoeSpam"] = true,
-	["MergeMelee"] = true,
-	["Dispel"] = true,
-	["Interrupt"] = true,
-	["Direction"] = "bottom",
-	["ShortNumbers"] = true,
 }
 -- COOLDOWN OPTIONS
 C["Cooldown"] = {
@@ -132,27 +99,19 @@ C["Cooldown"] = {
 	["FontSize"] = 18,
 	["Threshold"] = 3,
 }
--- ERROR OPTIONS
-C["Error"] = {
-	["Black"] = true,
-	["White"] = false,
-	["Combat"] = false,
-}
--- EXPERIENCE / REPUTATION / ARTIFACT OPTIONS
-C["Experience"] = {
-	["XP"] = true,
+-- DataBars
+C["DataBars"] = {
+	["Experience"] = true,
 	["Artifact"] = true,
-	["XPHeight"] = 8,
-	["XPWidth"] = 142,
-	["ArtifactHeight"] = 8,
-	["ArtifactWidth"] = 142,
-	["XPClassColor"] = false,
+	-- ["Honor"] = true,
+	["Height"] = 8,
+	["Width"] = 142,
 }
 -- FILGER OPTIONS
 C["Filger"] = {
 	["BuffsSize"] = 37,
 	["CooldownSize"] = 30,
-	["DisableCD"] = false,
+	["DisableCD"] = true,
 	["Enable"] = true,
 	["MaxTestIcon"] = 5,
 	["PvPSize"] = 60,
@@ -165,7 +124,6 @@ C["General"] = {
 	["BubbleBackdrop"] = false,
 	["BubbleFontSize"] = 12,
 	["CustomLagTolerance"] = false,
-	["ReplaceBlizzardFonts"] = true,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
@@ -185,7 +143,6 @@ C["Minimap"] = {
 	["CollectButtons"] = true,
 	["Enable"] = true,
 	["Garrison"] = true,
-	["Invert"] = false,
 	["Ping"] = true,
 	["Size"] = 150,
 }
@@ -200,30 +157,14 @@ C["Misc"] = {
 	["DurabilityWarninig"] = false,
 	["EnhancedMail"] = true,
 	["InviteKeyword"] = "inv",
-	["ItemLevel"] = false,
+	["SlotDurability"] = false,
 	["ColorPicker"] = false,
 	["MoveBlizzard"] = false,
 	["SellMisc"] = true,
 	["UseGuildRepair"] = false,
+	["Errors"] = true,
 }
-C["Nameplate"] = {
-	["Enable"] = true,
-	["Height"] = 9,
-	["Width"] = 120,
-	["AdditionalHeight"] = 0,
-	["AdditionalWidth"] = 0,
-	["Combat"] = false,
-	["HealthValue"] = true,
-	["CastbarName"] = false,
-	["EnhancedThreat"] = true,
-	["ClassIcons"] = false,
-	["NameAbbreviate"] = false,
-	["GoodColor"] = {0.2, 0.8, 0.2},
-	["NearColor"] = {1, 1, 0},
-	["BadColor"] = {1, 0, 0},
-	["TrackAuras"] = false,
-	["AurasSize"] = 18,
-	["HealerIcon"] = false,
+C["NamePlates"] = {
 }
 -- PULSECD OPTIONS
 C["PulseCD"] = {
@@ -256,29 +197,35 @@ C["Tooltip"] = {
 	["InstanceLock"] = false,
 	["ItemCount"] = false,
 	["ItemIcon"] = false,
-	["ItemLevel"] = true,
 	["ShowSpec"] = true,
 	["SpellID"] = false,
 }
 -- UNITFRAME OPTIONS
 C["Unitframe"] = {
-	["AuraOffsetY"] = 3,
-	["BetterPowerColors"] = false,
-	["CastBarScale"] = 1.2,
-	["ClassHealth"] = false,
-	["ClassIcon"] = false,
-	["ClassResources"] = false,
-	["CombatFeedback"] = false,
-	["FlatClassIcons"] = false,
+	["BuilderSpender"] = true,
+	["CastbarSafeZoneColor"] = {.8, 0.4, 0, 1},
+	["Castbars"] = true,
+	["ClassColor"] = true,
+	["ClassPortraits"] = false,
+	["ClickThrough"] = false,
+	["CombatText"] = true,
 	["Enable"] = true,
-	["EnhancedFrames"] = false,
-	["GroupNumber"] = false,
-	["LargeAuraSize"] = 20,
-	["Outline"] = false,
-	["PercentHealth"] = false,
-	["PvPIcon"] = true,
-	["Scale"] = 1.2,
-	["SmallAuraSize"] = 16,
+	["FlatClassPortraits"] = false,
+	["FocusButton"] = "2",
+	["FocusModifier"] = "NONE",
+	["Party"] = true,
+	["PartyInRaid"] = false,
+	["PlayerDebuffsOnly"] = true,
+	["PortraitTimer"] = true,
+	["PowerPredictionBar"] = true,
+	["PowerUseAtlas"] = true,
+	["Scale"] = 1,
+	["Style"] = "fat",
+	["TextHealthColor"] = {.9, .9, .9},
+	["TextNameColor"] = {1, 0.82, 0, 1},
+	["TextPowerColor"] = {.9, .9, .9},
+	["ThreatGlow"] = true,
+	["ThreatValue"] = false,
 }
 -- WORLDMAP OPTIONS
 C["WorldMap"] = {

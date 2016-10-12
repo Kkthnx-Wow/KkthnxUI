@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- LUA API
 local _G = _G
@@ -35,30 +35,30 @@ local function InstallUI()
 	local ActionBars = C.ActionBar.Enable
 
 	-- CVars
-	SetCVar("countdownForCooldowns", 1)
-	SetCVar("buffDurations", 1)
-	SetCVar("scriptErrors", 1)
+	SetCVar("NamePlateHorizontalScale", 1)
+	SetCVar("NamePlateVerticalScale", 1)
 	SetCVar("ShowClassColorInNameplate", 1)
-	SetCVar("screenshotQuality", 8)
-	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "im")
-	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("WhisperMode", "inline")
-	SetCVar("showTutorials", 0)
-	SetCVar("autoQuestWatch", 1)
-	SetCVar("autoQuestProgress", 1)
 	SetCVar("UberTooltips", 1)
-	SetCVar("removeChatDelay", 1)
-	SetCVar("showVKeyCastbar", 1)
-	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("WhisperMode", "inline")
+	SetCVar("WholeChatWindowClickable", 0)
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("autoQuestProgress", 1)
+	SetCVar("autoQuestWatch", 1)
+	SetCVar("buffDurations", 1)
+	SetCVar("cameraDistanceMaxFactor", 2.6)
+	SetCVar("chatMouseScroll", 1)
+	SetCVar("chatStyle", "im")
+	SetCVar("countdownForCooldowns", 0)
+	SetCVar("nameplateShowSelf", 0)
+	SetCVar("removeChatDelay", 1)
+	SetCVar("screenshotQuality", 8)
+	SetCVar("scriptErrors", 1)
+	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("showTutorials", 0)
+	SetCVar("showVKeyCastbar", 1)
 	SetCVar("spamFilter", 0)
 	SetCVar("violenceLevel", 5)
-	SetCVar("ShowClassColorInNameplate", 1)
-	SetCVar("nameplateShowSelf", 0)
-	SetCVar("NamePlateVerticalScale", 1)
-	SetCVar("NamePlateHorizontalScale", 1)
 
 	if (ActionBars) then
 		SetActionBarToggles(1, 1, 1, 1)
@@ -80,39 +80,26 @@ local function InstallUI()
 	ChatFrame4:Show()
 
 	-- Setting chat frames
-	if C.Chat.Enable == true and not K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
+	if C.Chat.Enable == true and not IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
 		for i = 1, NUM_CHAT_WINDOWS do
 			local Frame = _G["ChatFrame"..i]
 			local ID = Frame:GetID()
-
+			-- Set our initial size
 			Frame:SetSize(C.Chat.Width, C.Chat.Height)
-
 			-- Default width and height of chats
 			SetChatWindowSavedDimensions(ID, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
-
 			-- Move General chat to bottom left
 			if (ID == 1) then
 				Frame:ClearAllPoints()
-				Frame:SetPoint(unpack(C.Position.Chat))
+				K.SetDefaultChatPosition(Frame)
 			end
-
 			-- Save new default position and dimension
 			FCF_SavePositionAndDimensions(Frame)
-
 			-- Set default font size
 			FCF_SetChatWindowFontSize(nil, Frame, 12)
-
-			if (ID == 1) then
-				FCF_SetWindowName(Frame, "G, S & W")
-			end
-
-			if (ID == 2) then
-				FCF_SetWindowName(Frame, "Log")
-			end
-
-			if (not Frame.isLocked) then
-				FCF_SetLocked(Frame, 1)
-			end
+			if (ID == 1) then FCF_SetWindowName(Frame, "G, S & W") end
+			if (ID == 2) then FCF_SetWindowName(Frame, "Log") end
+			if (not Frame.isLocked) then FCF_SetLocked(Frame, 1) end
 		end
 
 		-- Set more chat groups
@@ -199,20 +186,23 @@ local function InstallUI()
 		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 	end
 
-	-- Reset saved variables on char
-	SavedPositions = {}
-	SavedOptionsPerChar = {}
+	-- Reset saved variables.
+	KkthnxUIData[GetRealmName()][UnitName("Player")] = {}
 
-	SavedOptionsPerChar.Install = true
-	SavedOptionsPerChar.FogOfWar = false
-	SavedOptionsPerChar.AutoInvite = false
-	SavedOptionsPerChar.BarsLocked = false
-	SavedOptionsPerChar.SplitBars = true
-	SavedOptionsPerChar.RightBars = C.ActionBar.RightBars
-	SavedOptionsPerChar.BottomBars = C.ActionBar.BottomBars
+	KkthnxUIDataPerChar = {}
+
+	KkthnxUIData[GetRealmName()][UnitName("Player")].Install = true
+
+	KkthnxUIDataPerChar.FogOfWar = false
+	KkthnxUIDataPerChar.AutoInvite = false
+	KkthnxUIDataPerChar.BarsLocked = false
+	KkthnxUIDataPerChar.SplitBars = true
+	KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars
+	KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars
 
 	InstallStepComplete.message = L_INSTALL_COMPLETE
 	InstallStepComplete:Show()
+
 	StaticPopup_Show("RELOAD_UI")
 end
 
@@ -227,8 +217,9 @@ StaticPopupDialogs["INSTALL_UI"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = InstallUI,
-	OnCancel = function() SavedOptionsPerChar.Install = false end,
+	OnCancel = function() KkthnxUIData[GetRealmName()][UnitName("Player")].Install = false end,
 	timeout = 0,
+	showAlert = 1,
 	whileDead = 1,
 	hideOnEscape = false,
 	preferredIndex = 3
@@ -239,7 +230,7 @@ StaticPopupDialogs["RELOAD_UI"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() ReloadUI() end,
-	OnCancel = function() SavedOptionsPerChar.Install = false end,
+	OnCancel = function() KkthnxUIData[GetRealmName()][UnitName("Player")].Install = false end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
@@ -263,7 +254,7 @@ StaticPopupDialogs["RESET_UI"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = InstallUI,
-	OnCancel = function() SavedOptionsPerChar.Install = true end,
+	OnCancel = function() KkthnxUIData[GetRealmName()][UnitName("Player")].Install = true end,
 	showAlert = true,
 	timeout = 0,
 	whileDead = 1,
@@ -286,14 +277,28 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	-- Create an empty cvar if they don"t exist
-	if not SavedPositions then SavedPositions = {} end
-	if not SavedOptionsPerChar then SavedOptionsPerChar = {} end
-	if SavedOptionsPerChar.FogOfWar == nil then SavedOptionsPerChar.FogOfWar = false end
-	if SavedOptionsPerChar.AutoInvite == nil then SavedOptionsPerChar.AutoInvite = false end
-	if SavedOptionsPerChar.BarsLocked == nil then SavedOptionsPerChar.BarsLocked = false end
-	if SavedOptionsPerChar.SplitBars == nil then SavedOptionsPerChar.SplitBars = true end
-	if SavedOptionsPerChar.RightBars == nil then SavedOptionsPerChar.RightBars = C.ActionBar.RightBars end
-	if SavedOptionsPerChar.BottomBars == nil then SavedOptionsPerChar.BottomBars = C.ActionBar.BottomBars end
+	local Name = UnitName("Player")
+	local Realm = GetRealmName()
+
+	if (not KkthnxUIData) then
+		KkthnxUIData = {}
+	end
+
+	if (not KkthnxUIData[Realm]) then
+		KkthnxUIData[Realm] = {}
+	end
+
+	if (not KkthnxUIData[Realm][Name]) then
+		KkthnxUIData[Realm][Name] = {}
+	end
+
+	if not KkthnxUIDataPerChar then KkthnxUIDataPerChar = {} end
+	if KkthnxUIDataPerChar.FogOfWar == nil then KkthnxUIDataPerChar.FogOfWar = false end
+	if KkthnxUIDataPerChar.AutoInvite == nil then KkthnxUIDataPerChar.AutoInvite = false end
+	if KkthnxUIDataPerChar.BarsLocked == nil then KkthnxUIDataPerChar.BarsLocked = false end
+	if KkthnxUIDataPerChar.SplitBars == nil then KkthnxUIDataPerChar.SplitBars = true end
+	if KkthnxUIDataPerChar.RightBars == nil then KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars end
+	if KkthnxUIDataPerChar.BottomBars == nil then KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars end
 
 	if K.ScreenWidth < 1024 then
 		SetCVar("useUiScale", 0)
@@ -301,11 +306,9 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	else
 
 		-- Install default if we never ran kkthnxui on this character
-		if not SavedOptionsPerChar.Install then
+		if not KkthnxUIData[GetRealmName()][UnitName("Player")].Install then
 			StaticPopup_Show("INSTALL_UI")
 		end
-
-		self:UnregisterEvent("ADDON_LOADED")
 	end
 
 	-- Welcome message
@@ -314,6 +317,8 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		print("|cffffff00"..L_WELCOME_LINE_2_1.."|cffffff00"..L_WELCOME_LINE_2_2.."|r")
 		print("|cffffff00"..L_WELCOME_LINE_2_3.."|cffffff00"..L_WELCOME_LINE_2_4.."|r")
 	end
+
+	self:UnregisterEvent("ADDON_LOADED")
 end)
 
 if not InstallStepComplete then

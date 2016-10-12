@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Loot.AutoGreed ~= true or K.Level ~= MAX_PLAYER_LEVEL then return end
 
 local pairs = pairs

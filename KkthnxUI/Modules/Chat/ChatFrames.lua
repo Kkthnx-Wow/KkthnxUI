@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
 -- LUA API
@@ -14,6 +14,9 @@ local len = string.len
 local sub = string.sub
 
 -- WOW API
+local KkthnxUIChat = CreateFrame("Frame", "KkthnxUIChat")
+local tabalpha = 1
+local tabnoalpha = 0
 local GetID, GetName = GetID, GetName
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
@@ -21,40 +24,40 @@ local Movers = K.Movers
 local origs = {}
 
 local strings = {
+	INSTANCE_CHAT = L_CHAT_INSTANCE,
 	GUILD = L_CHAT_GUILD,
 	PARTY = L_CHAT_PARTY,
 	RAID = L_CHAT_RAID,
 	OFFICER = L_CHAT_OFFICER,
+	INSTANCE_CHAT_LEADER = L_CHAT_INSTANCE_LEADER,
 	PARTY_LEADER = L_CHAT_PARTY_LEADER,
 	RAID_LEADER = L_CHAT_RAID_LEADER,
-	INSTANCE_CHAT = L_CHAT_INSTANCE,
-	INSTANCE_CHAT_LEADER = L_CHAT_INSTANCE_LEADER,
-	PET_BATTLE_COMBAT_LOG = PET_BATTLE_COMBAT_LOG,
+	PET_BATTLE_COMBAT_LOG = L_CHAT_PET_BATTLE,
+
+	-- zhCN
+	Guild = L_CHAT_GUILD,
+	raid = L_CHAT_RAID,
+	Party = L_CHAT_PARTY,
 }
 
-local function ShortChannel(channel)
-	return format("|Hchannel:%s|h[%s]|h", channel, strings[channel:upper()] or channel:gsub("channel:", ""))
-end
+local function ShortChannel(channel) return string.format("|Hchannel:%s|h[%s]|h", channel, strings[channel] or channel:gsub("channel:", "")) end
 
 local function AddMessage(frame, str, ...)
-	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
-		str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
-		str = str:gsub("CHANNEL:", "")
-		str = str:gsub("^(.-|h) "..L_CHAT_WHISPERS, "%1")
-		str = str:gsub("^(.-|h) "..L_CHAT_SAYS, "%1")
-		str = str:gsub("^(.-|h) "..L_CHAT_YELLS, "%1")
-		str = str:gsub("<"..AFK..">", "[|cffFF0000"..L_CHAT_AFK.."|r] ")
-		str = str:gsub("<"..DND..">", "[|cffE7E716"..L_CHAT_DND.."|r] ")
-		str = str:gsub("%[BN_CONVERSATION:", "%[1".."")
-		str = str:gsub("^%["..RAID_WARNING.."%]", "["..L_CHAT_RAID_WARNING.."]")
-
-		return origs[frame](frame, str, ...)
-	end
+	str = str:gsub("|Hplayer:(.-)|h%[(.-)%]|h", "|Hplayer:%1|h%2|h")
+	str = str:gsub("|HBNplayer:(.-)|h%[(.-)%]|h", "|HBNplayer:%1|h%2|h")
+	str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
+	str = str:gsub("^To (.-|h)", "|cffad2424@|r%1")
+	str = str:gsub("^(.-|h) whispers", "%1")
+	str = str:gsub("^(.-|h) says", "%1")
+	str = str:gsub("^(.-|h) yells", "%1")
+	str = str:gsub("<" .. AFK .. ">", "|cffFF0000" .. L_CHAT_AFK .. "|r ")
+	str = str:gsub("<" .. DND .. ">", "|cffE7E716" .. L_CHAT_DND .."|r ")
+	str = str:gsub("^%["..RAID_WARNING.."%]", L_CHAT_RAID_WARNING)
+	return origs[frame](frame, str, ...)
 end
 
-ChatConfigFrameDefaultButton:Kill()
-ChatFrameMenuButton:Kill()
 FriendsMicroButton:Kill()
+ChatFrameMenuButton:Kill()
 
 -- Set chat style
 local function SetChatStyle(frame)
@@ -64,11 +67,9 @@ local function SetChatStyle(frame)
 	local tab = _G[framename.."Tab"]
 	local editbox = _G[framename.."EditBox"]
 
-	frame:SetFrameLevel(5)
-
 	frame:SetClampRectInsets(0, 0, 0, 0)
 	frame:SetClampedToScreen(false)
-	frame:SetFading(false)
+	frame:SetFading(C.Chat.Fading)
 
 	-- MOVE THE CHAT EDIT BOX
 	editbox:ClearAllPoints()
@@ -188,8 +189,10 @@ local function SetChatStyle(frame)
 		end)
 	end
 
-	-- Rename combat log tab
-	if frame == _G["ChatFrame2"] then
+	if frame ~= _G["ChatFrame2"] then
+		origs[frame] = frame.AddMessage
+		frame.AddMessage = AddMessage
+	else
 		CombatLogQuickButtonFrame_Custom:StripTextures()
 		CombatLogQuickButtonFrame_Custom:CreateBackdrop()
 		CombatLogQuickButtonFrame_Custom.backdrop:SetPoint("TOPLEFT", -2, -2)
@@ -203,43 +206,26 @@ local function SetChatStyle(frame)
 		CombatLogQuickButtonFrameButton1:SetPoint("BOTTOM", 0, 0)
 	end
 
-	if frame ~= _G["ChatFrame2"] then
-		origs[frame] = frame.AddMessage
-		frame.AddMessage = AddMessage
-
-		-- Custom timestamps color
-		_G.TIMESTAMP_FORMAT_HHMM = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M]|r "
-		_G.TIMESTAMP_FORMAT_HHMMSS = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M:%S]|r "
-		_G.TIMESTAMP_FORMAT_HHMMSS_24HR = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%H:%M:%S]|r "
-		_G.TIMESTAMP_FORMAT_HHMMSS_AMPM = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M:%S %p]|r "
-		_G.TIMESTAMP_FORMAT_HHMM_24HR = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%H:%M]|r "
-		_G.TIMESTAMP_FORMAT_HHMM_AMPM = K.RGBToHex(unpack(C.Chat.TimeColor)).."[%I:%M %p]|r "
-	end
-
 	frame.skinned = true
 end
 
--- SETUP CHATFRAMES 1 TO 10 ON LOGIN
+-- Setup chatframes 1 to 10 on login
 local function SetupChat(self)
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		SetChatStyle(Frame)
+		FCFTab_UpdateAlpha(Frame)
 	end
 
-	-- REMEMBER LAST CHANNEL
-	local var
-	if C.Chat.Sticky == true then
-		var = 1
-	else
-		var = 0
-	end
-	ChatTypeInfo.WHISPER.sticky = var
-	ChatTypeInfo.BN_WHISPER.sticky = var
-	ChatTypeInfo.OFFICER.sticky = var
-	ChatTypeInfo.RAID_WARNING.sticky = var
-	ChatTypeInfo.CHANNEL.sticky = var
+	-- Remember last channel
+	ChatTypeInfo.WHISPER.sticky = 1
+	ChatTypeInfo.BN_WHISPER.sticky = 1
+	ChatTypeInfo.OFFICER.sticky = 1
+	ChatTypeInfo.RAID_WARNING.sticky = 1
+	ChatTypeInfo.CHANNEL.sticky = 1
 end
 
+--[[
 local function SetupChatPosAndFont(self)
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
@@ -282,6 +268,25 @@ local function SetupChatPosAndFont(self)
 		end
 	end
 end
+--]]
+
+K.SetDefaultChatPosition = function(frame)
+	if frame then
+		local id = frame:GetID()
+		local name = FCF_GetChatWindowInfo(id)
+		local fontSize = select(2, frame:GetFont())
+
+		if fontSize < 12 then FCF_SetChatWindowFontSize(nil, frame, 12) else FCF_SetChatWindowFontSize(nil, frame, fontSize) end
+
+		if id == 1 then
+			frame:ClearAllPoints()
+			frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+		end
+
+		if not frame.isLocked then FCF_SetLocked(frame, 1) end
+	end
+end
+hooksecurefunc("FCF_RestorePositionAndDimensions", K.SetDefaultChatPosition)
 
 local BNet = CreateFrame("Frame", "BNetMover", UIParent)
 BNet:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
@@ -293,68 +298,34 @@ BNToastFrame:HookScript("OnShow", function(self)
 	self:SetPoint("TOPLEFT", BNetMover, "TOPLEFT", 3, -3)
 end)
 
-local UIChat = CreateFrame("Frame")
-UIChat:RegisterEvent("ADDON_LOADED")
-UIChat:RegisterEvent("PLAYER_ENTERING_WORLD")
-UIChat:SetScript("OnEvent", function(self, event, addon)
-	if event == "ADDON_LOADED" then
-		if addon == "Blizzard_CombatLog" then
-			self:UnregisterEvent("ADDON_LOADED")
-			SetupChat(self)
-		end
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		SetupChatPosAndFont(self)
+ChatConfigFrameDefaultButton:Kill()
+
+KkthnxUIChat:RegisterEvent("ADDON_LOADED")
+KkthnxUIChat:SetScript("OnEvent", function(self, event, addon)
+	if addon == "Blizzard_CombatLog" then
+		self:UnregisterEvent("ADDON_LOADED")
+		SetupChat(self)
 	end
 end)
 
--- SETUP TEMP CHAT (BN, WHISPER) WHEN NEEDED
+-- Setup temp chat (bn, whisper) when needed
 local function SetupTempChat()
 	local frame = FCF_GetCurrentChatFrame()
-	if frame.skinned then return end
+	if _G[frame:GetName().."Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG) then
+		FCF_Close(frame)
+		return
+	end
+
+	if frame.isSkinned then return end
+	frame.temp = true
 	SetChatStyle(frame)
 end
 hooksecurefunc("FCF_OpenTemporaryWindow", SetupTempChat)
 
--- DISABLE PET BATTLE TAB
-local old = FCFManager_GetNumDedicatedFrames
-function FCFManager_GetNumDedicatedFrames(...)
-	return select(1, ...) ~= "PET_BATTLE_COMBAT_LOG" and old(...) or 1
-end
-
--- REMOVE PLAYER'S REALM NAME
+-- Remove player's realm name
 local function RemoveRealmName(self, event, msg, author, ...)
-	local realm = string.gsub(K.Realm, " ", "")
-	if msg:find("-" .. realm) then
-		return false, gsub(msg, "%-"..realm, ""), author, ...
-	end
+	local realmName = string.gsub(GetRealmName(), " ", "")
+
+	if msg:find("-" .. realmName) then return false, gsub(msg, "%-"..realmName, ""), author, ... end
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", RemoveRealmName)
-
--- SAVE SLASH COMMAND TYPO
-local function TypoHistory_Posthook_AddMessage(chat, text)
-	if strfind(text, HELP_TEXT_SIMPLE) then
-		ChatEdit_AddHistory(chat.editBox)
-	end
-end
-
-for i = 1, NUM_CHAT_WINDOWS do
-	if i ~= 2 then
-		hooksecurefunc(_G["ChatFrame"..i], "AddMessage", TypoHistory_Posthook_AddMessage)
-	end
-end
-
--- Big Trade Chat
-local bigchat = false
-function SlashCmdList.BIGCHAT(msg, editbox)
-	if bigchat == false then
-		ChatFrame1:SetSize(400, 400)
-		bigchat = true
-		K.Print(L_CHAT_BIGCHAT_ON)
-	else
-		ChatFrame1:SetSize(400, 150)
-		bigchat = false
-		K.Print(L_CHAT_BIGCHAT_OFF)
-	end
-end
-SLASH_BIGCHAT1 = "/bigchat"

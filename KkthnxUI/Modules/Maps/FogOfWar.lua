@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.WorldMap.FogOfWar ~= true then return end
 
 -- Fog of war on World Map(module from LeatrixPlus by Leatrix)
@@ -148,14 +148,14 @@ frame.f:Show()
 -- Handle clicks
 frame:SetScript("OnClick", function()
 	if frame:GetChecked() == true then
-		SavedOptionsPerChar.FogOfWar = true
+		KkthnxUIDataPerChar.FogOfWar = true
 		if WorldMapFrame:IsShown() then
 			local futuremap = GetCurrentMapAreaID()
 			RefreshWorldMap()
 			SetMapByID(futuremap)
 		end
 	else
-		SavedOptionsPerChar.FogOfWar = false
+		KkthnxUIDataPerChar.FogOfWar = false
 		if texcount > 0 then
 			for i = 1, texcount do MapTex[i]:Hide() end
 			texcount = 0
@@ -168,13 +168,13 @@ end)
 
 -- Set checkbox state
 frame:SetScript("OnShow", function()
-	if SavedOptionsPerChar.FogOfWar == true then frame:SetChecked(true) else frame:SetChecked(false) end
+	if KkthnxUIDataPerChar.FogOfWar == true then frame:SetChecked(true) else frame:SetChecked(false) end
 end)
 
 -- Update map
 hooksecurefunc("WorldMapFrame_Update", function()
 	-- If map isn't shown, may as well not process anything
-	if not WorldMapFrame:IsShown() or SavedOptionsPerChar.FogOfWar == false then return end
+	if not WorldMapFrame:IsShown() or KkthnxUIDataPerChar.FogOfWar == false then return end
 
 	-- Hide textures from previous map
 	if texcount > 0 then

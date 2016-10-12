@@ -1,47 +1,19 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 
 -- Lua API
 local _G = _G
 
-INTERFACE_ACTION_BLOCKED = ""
-
--- Fix blank tooltip
-local FixTooltip = CreateFrame("Frame")
-FixTooltip:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-FixTooltip:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-FixTooltip:SetScript("OnEvent", function()
-	local done
-	GameTooltip:HookScript("OnTooltipCleared", function(self)
-		if not done and self:NumLines() == 0 then
-			self:Hide()
-			done = true
-		end
-	end)
-end)
-
-local FixTooltipBags = CreateFrame("Frame")
-FixTooltipBags:RegisterEvent("BAG_UPDATE_DELAYED")
-FixTooltipBags:SetScript("OnEvent", function()
-	local done
-	if StuffingFrameBags and StuffingFrameBags:IsShown() then
-		GameTooltip:HookScript("OnTooltipCleared", function(self)
-			if not done and self:NumLines() == 0 then
-				self:Hide()
-				done = true
-			end
-		end)
+-- Fix the scale on this.
+local ScriptErrors = CreateFrame("Frame")
+ScriptErrors:RegisterEvent("ADDON_LOADED")
+ScriptErrors:SetScript("OnEvent", function(self, addon)
+	if IsAddOnLoaded("Blizzard_DebugTools") or addon == "Blizzard_DebugTools" then
+		ScriptErrorsFrame:SetParent(K.UIParent)
 	end
 end)
 
--- Fix RemoveTalent() taint
-FCF_StartAlertFlash = K.Noop
-
 WorldMapPlayerUpper:EnableMouse(false)
 WorldMapPlayerLower:EnableMouse(false)
-
-if K.Client == "ruRU" then
-	_G["DeclensionFrame"]:SetFrameStrata("HIGH")
-end
 
 local TaintFix = CreateFrame("Frame")
 TaintFix:SetScript("OnUpdate", function(self, elapsed)

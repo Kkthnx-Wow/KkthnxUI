@@ -1,5 +1,5 @@
-local K, C, L, _ = select(2, ...):unpack()
-if C.Skins.Recount ~= true or not K.IsAddOnEnabled("Recount") then return end
+local K, C, L = select(2, ...):unpack()
+if C.Skins.Recount ~= true or not IsAddOnLoaded("Recount") then return end
 
 local Recount = _G.Recount
 

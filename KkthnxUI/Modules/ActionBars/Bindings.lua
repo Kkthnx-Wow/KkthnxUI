@@ -1,5 +1,5 @@
-local K, C, L, _ = select(2, ...):unpack()
-if C.ActionBar.Enable ~= true or K.IsAddOnEnabled("ncHoverBind") == true then return end
+local K, C, L = select(2, ...):unpack()
+if C.ActionBar.Enable ~= true or IsAddOnLoaded("ncHoverBind") == true then return end
 
 -- LUA API
 local _G = _G
@@ -305,7 +305,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			MacroFrameTab2:HookScript("OnMouseUp", function() localmacros = 1 end)
 		end
 
-		if not K.IsAddOnEnabled("Blizzard_MacroUI") then
+		if not IsAddOnLoaded("Blizzard_MacroUI") then
 			hooksecurefunc("LoadAddOn", function(addon)
 				if addon == "Blizzard_MacroUI" then
 					registermacro()
@@ -326,10 +326,10 @@ SLASH_MOUSEOVERBIND1 = "/bindkey"
 SLASH_MOUSEOVERBIND2 = "/hoverbind"
 SLASH_MOUSEOVERBIND3 = "/bk"
 
-if not K.IsAddOnEnabled("Bartender4") and not K.IsAddOnEnabled("Dominos") then
+if not IsAddOnLoaded("Bartender4") and not IsAddOnLoaded("Dominos") then
 	SLASH_MOUSEOVERBIND4 = "/kb"
 end
 
-if not K.IsAddOnEnabled("HealBot") then
+if not IsAddOnLoaded("HealBot") then
 	SLASH_MOUSEOVERBIND5 = "/hb"
 end
