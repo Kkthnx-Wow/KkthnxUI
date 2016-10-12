@@ -256,9 +256,9 @@ function Bags:CreateReagentContainer()
 	Unlock:SetAllPoints(Reagent)
 	Unlock:SetTemplate()
 
---	UnlockButton:SkinButton()
+	UnlockButton:SkinButton()
 
-	--Movers:RegisterFrame(Reagent)
+	-- Movers:RegisterFrame(Reagent)
 
 	self.Reagent = Reagent
 	-- Couldn't access these.

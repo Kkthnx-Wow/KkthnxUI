@@ -298,6 +298,8 @@ local NormalButton = function(text, parent)
 	if IsAddOnLoaded("Aurora") then
 		local F = unpack(Aurora)
 		F.Reskin(result)
+	else
+		result:SkinButton()
 	end
 
 	return result
@@ -656,7 +658,8 @@ function CreateUIConfig()
 				editbox:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 				local okbutton = CreateFrame("Button", nil, frame)
-				okbutton:SetHeight(editbox:GetHeight())
+				okbutton:SetHeight(editbox:GetHeight() - 8)
+				okbutton:SkinButton()
 				okbutton:SetPoint("LEFT", editbox, "RIGHT", 2, 0)
 
 				local oktext = okbutton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -756,7 +759,7 @@ function CreateUIConfig()
 	end
 
 	local reset = NormalButton(DEFAULT, UIConfigMain)
-	reset:SetPoint("TOPLEFT", UIConfig, "BOTTOMLEFT", -10, -25)
+	reset:SetPoint("TOPLEFT", UIConfig, "BOTTOMLEFT", -8, -25)
 	reset:SetScript("OnClick", function(self)
 		UIConfigCover:Show()
 		if KkthnxUIConfigAll[realm][name] == true then
@@ -771,12 +774,12 @@ function CreateUIConfig()
 	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
 
 	local load = NormalButton(APPLY, UIConfigMain)
-	load:SetPoint("RIGHT", close, "LEFT", -4, 0)
+	load:SetPoint("RIGHT", close, "LEFT", -8, 0)
 	load:SetScript("OnClick", function(self) ReloadUI() end)
 
 	local totalreset = NormalButton(L_GUI_BUTTON_RESET, UIConfigMain)
-	totalreset:SetWidth(120)
-	totalreset:SetPoint("TOPLEFT", groupsBG, "BOTTOMLEFT", 0, -15)
+	totalreset:SetWidth(174)
+	totalreset:SetPoint("TOPLEFT", groupsBG, "BOTTOMLEFT", 2, -15)
 	totalreset:SetScript("OnClick", function(self)
 		StaticPopup_Show("RESET_UI")
 		KkthnxUIConfig = {}
