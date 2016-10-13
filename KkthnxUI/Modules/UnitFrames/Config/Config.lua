@@ -174,7 +174,7 @@ ns.config = {
 
 	units = {
         ["raid"] = {
-            showSolo = true,
+            showSolo = false,
             showParty = false,
 
             nameLength = 5,
@@ -184,7 +184,7 @@ ns.config = {
             scale = 1,
 
             layout = {
-                frameSpacing = 4,
+                frameSpacing = 8,
 
                 initialAnchor = "TOPLEFT",
                 orientation = "HORIZONTAL",

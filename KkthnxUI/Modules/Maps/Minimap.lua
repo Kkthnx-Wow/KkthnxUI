@@ -109,7 +109,7 @@ end
 MiniMapInstanceDifficulty:ClearAllPoints()
 MiniMapInstanceDifficulty:SetParent(Minimap)
 MiniMapInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
-MiniMapInstanceDifficulty:SetScale(0.8)
+MiniMapInstanceDifficulty:SetScale(0.7)
 
 GuildInstanceDifficulty:ClearAllPoints()
 GuildInstanceDifficulty:SetParent(Minimap)

@@ -8,14 +8,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - First, pass on raid frames support (oUF based)
+- Added proper border to raidframes.
 
 ### Changed
 - Update oUF
 - Just some cleanup
+- Raid frames config changes
+- Toast position
+- Orderhall skin changed to reflect better position and settings.
 
 ### Fixed
 - Border fixes for Filger.
 - Fixed aura timers.
+- Border.lua border colors
+- Grammar updates
 
 ## [v6.01] - Wenseday, October 12, 2016
 
