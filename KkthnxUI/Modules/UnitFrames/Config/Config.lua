@@ -171,4 +171,48 @@ ns.config = {
 		cbheight = 22,
 		cbicon = "NONE",
 	},
+
+	units = {
+        ["raid"] = {
+            showSolo = true,
+            showParty = false,
+
+            nameLength = 4,
+
+            width = 42,
+            height = 40,
+            scale = 1,
+
+            layout = {
+                frameSpacing = 4,
+
+                initialAnchor = "TOPLEFT",
+                orientation = "HORIZONTAL",
+            },
+
+            smoothUpdates = true,
+            showThreatText = false,
+            showRolePrefix = false,
+            showNotHereTimer = true,
+            showMainTankIcon = true,
+            showResurrectText = true,
+            showMouseoverHighlight = true,
+
+            showMainTankFrames = false,
+
+            showTargetBorder = true,
+            targetBorderColor = {1, 1, 1},
+
+            iconSize = 22,
+            indicatorSize = 7,
+
+            horizontalHealthBars = false,
+            deficitThreshold = 0.95,
+
+            manabar = {
+                show = true,
+                horizontalOrientation = false,
+            },
+        },
+    },
 }

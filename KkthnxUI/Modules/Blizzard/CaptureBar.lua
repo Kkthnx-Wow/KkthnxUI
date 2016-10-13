@@ -13,9 +13,9 @@ function Capture:Update()
 				Bar:ClearAllPoints()
 
 				if (i == 1) then
-					Bar:Point("TOP", UIParent, "TOP", 0, -120)
+					Bar:SetPoint("TOP", UIParent, "TOP", 0, -120)
 				else
-					Bar:Point("TOPLEFT", _G["WorldStateCaptureBar" .. i - 1], "TOPLEFT", 0, -25)
+					Bar:SetPoint("TOPLEFT", _G["WorldStateCaptureBar" .. i - 1], "TOPLEFT", 0, -25)
 				end
 			end
 		end

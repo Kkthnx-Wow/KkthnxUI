@@ -4,6 +4,10 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 local oUF = ns.oUF
 
+local config = ns.config
+
+local timer = {}
+
 oUF.Tags.Events["kkthnx:additionalpower"] = "UNIT_POWER UNIT_DISPLAYPOWER UNIT_MAXPOWER"
 oUF.Tags.Methods["kkthnx:additionalpower"] = function(unit)
 	local min, max = UnitPower(unit, SPELL_POWER_MANA), UnitPowerMax(unit, SPELL_POWER_MANA)
@@ -54,4 +58,50 @@ oUF.Tags.Methods["kkthnx:name"] = function(unit, realUnit)
 	end
 
 	return format("|cff%02x%02x%02x%s|r", color[1]*255, color[2]*255, color[3]*255, unitName)
+end
+
+oUF.Tags.Events["status:raid"] = "PLAYER_FLAGS_CHANGED UNIT_CONNECTION"
+oUF.Tags.Methods["status:raid"] = function(unit)
+    local name = UnitName(unit) or UNKNOWN
+
+    if (UnitIsAFK(unit) or not UnitIsConnected(unit)) then
+        if (not timer[name]) then
+            timer[name] = GetTime()
+        end
+
+        local time = (GetTime() - timer[name])
+
+        return K.FormatTime(time)
+    elseif timer[name] then
+        timer[name] = nil
+    end
+end
+
+oUF.Tags.Events["role:raid"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED"
+if (not oUF.Tags["role:raid"]) then
+    oUF.Tags.Methods["role:raid"] = function(unit)
+        local role = UnitGroupRolesAssigned(unit)
+        if (role) then
+            if (role == "TANK") then
+                role = ">"
+            elseif (role == "HEALER") then
+                role = "+"
+            elseif (role == "DAMAGER") then
+                role = "-"
+            elseif (role == "NONE") then
+                role = ""
+            end
+
+            return role
+        else
+            return ""
+        end
+    end
+end
+
+oUF.Tags.Events["name:raid"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["name:raid"] = function(unit)
+    local name = UnitName(unit) or UNKNOWN
+
+    return K.UTF8Sub(name, config.units.raid.nameLength)
 end

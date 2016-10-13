@@ -9,6 +9,11 @@
 	<Script file="Unitframes\AuraFilter.lua"/>
 	<Script file="Unitframes\LayoutArena.lua"/>
 	<Script file="Unitframes\Layout.lua"/>
+	<!-- Raid -->
+	<Script file="Unitframes\Raid\Config.lua"/>
+	<Include file="Unitframes\Raid\oUF_KkthnxRaid.xml"/>
+	<Script file="Unitframes\Raid\Layout.lua"/>
+	<Script file="Unitframes\Raid\WorldMarkers.lua"/>
 	<!-- Miscellaneous -->
 	<Script file="Miscellaneous\AFKSpin.lua"/>
 	<Script file="Miscellaneous\AlreadyKnown.lua"/>

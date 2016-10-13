@@ -11,7 +11,7 @@ local MiniMapInstanceDifficulty = MiniMapInstanceDifficulty
 local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
 local Movers = K.Movers
 
--- MINIMAP BORDER
+-- Minimap border
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
 MinimapAnchor:CreatePanel("ClassColor", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
 Movers:RegisterFrame(MinimapAnchor)
@@ -51,26 +51,26 @@ MinimapAnchor:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- HIDE BLOB RING
+-- Hide blob ring
 Minimap:SetArchBlobRingScalar(0)
 Minimap:SetQuestBlobRingScalar(0)
 
--- FIX GARRISON REPORT KEYBIND
+-- Fix garrison report keybind
 GarrisonLandingPageMinimapButton.IsShown = function() return true end
 
--- PARENT MINIMAP INTO OUR FRAME
+-- Parent minimap into our frame
 Minimap:SetParent(MinimapAnchor)
 Minimap:ClearAllPoints()
 Minimap:SetPoint("TOPLEFT", MinimapAnchor, "TOPLEFT", 4, -4)
 Minimap:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -4, 4)
 Minimap:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
--- BACKDROP
+-- Backdrop
 MinimapBackdrop:ClearAllPoints()
 MinimapBackdrop:SetPoint("TOPLEFT", MinimapAnchor, "TOPLEFT", 2, -2)
 MinimapBackdrop:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -2, 2)
 MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 
--- MAIL
+-- Mail
 MiniMapMailFrame:ClearAllPoints()
 MiniMapMailFrame:SetPoint("BOTTOMRIGHT", Minimap, 4, -4)
 MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
@@ -81,14 +81,12 @@ MiniMapMailBorder:SetPoint("CENTER", MiniMapMailFrame, 0, -1)
 MiniMapMailBorder:SetSize(27, 27)
 MiniMapMailBorder:SetAlpha(0.5)
 
--- QUEUESTATUS ICON
+-- Queuestatus icon
 QueueStatusMinimapButton:SetParent(Minimap)
 QueueStatusMinimapButton:SetScale(1)
 QueueStatusMinimapButton:ClearAllPoints()
-QueueStatusMinimapButton:SetPoint("BOTTOMLEFT", Minimap, -4, -4)
-QueueStatusMinimapButtonBorder:Hide()
-QueueStatusMinimapButton:SetHighlightTexture (nil)
-QueueStatusMinimapButton:SetPushedTexture(nil)
+QueueStatusMinimapButton:SetPoint("BOTTOMLEFT", -4, -4)
+QueueStatusMinimapButtonBorder:Kill()
 
 -- Garrison icon
 if C.Minimap.Garrison == true then
@@ -107,25 +105,30 @@ else
 	GarrisonLandingPageMinimapButton:SetAlpha(0)
 end
 
--- DUNGEON INFO
+-- Dungeon info
 MiniMapInstanceDifficulty:ClearAllPoints()
+MiniMapInstanceDifficulty:SetParent(Minimap)
 MiniMapInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
 MiniMapInstanceDifficulty:SetScale(0.8)
+
 GuildInstanceDifficulty:ClearAllPoints()
+GuildInstanceDifficulty:SetParent(Minimap)
 GuildInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
 GuildInstanceDifficulty:SetScale(0.7)
+
 MiniMapChallengeMode:ClearAllPoints()
+MiniMapChallengeMode:SetParent(Minimap)
 MiniMapChallengeMode:SetPoint("TOP", Minimap, "TOP", 0, -10)
 MiniMapChallengeMode:SetScale(0.6)
 
--- FEEDBACK ICON
+-- Feedback icon
 if FeedbackUIButton then
 	FeedbackUIButton:ClearAllPoints()
 	FeedbackUIButton:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -20)
 	FeedbackUIButton:SetScale(0.8)
 end
 
--- STREAMING ICON
+-- Streaming icon
 if StreamingIcon then
 	StreamingIcon:ClearAllPoints()
 	StreamingIcon:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, -20)
@@ -133,19 +136,28 @@ if StreamingIcon then
 	StreamingIcon:SetFrameStrata("BACKGROUND")
 end
 
--- TICKET ICON
-HelpOpenTicketButton:SetParent(Minimap)
-HelpOpenTicketButton:SetFrameLevel(4)
-HelpOpenTicketButton:ClearAllPoints()
-HelpOpenTicketButton:SetPoint("LEFT", StatFrame, "LEFT", 3, 0)
-HelpOpenTicketButton:SetHighlightTexture(nil)
-HelpOpenTicketButton:SetPushedTexture("Interface\\Icons\\inv_misc_note_03")
-HelpOpenTicketButton:SetNormalTexture("Interface\\Icons\\inv_misc_note_03")
-HelpOpenTicketButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
-HelpOpenTicketButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
-HelpOpenTicketButton:SetSize(16, 16)
+Minimap.Ticket = CreateFrame("Frame", nil, Minimap)
+Minimap.Ticket:SetSize(Minimap:GetWidth() + 4, 24)
+Minimap.Ticket:SetFrameLevel(Minimap:GetFrameLevel() + 4)
+Minimap.Ticket:SetFrameStrata(Minimap:GetFrameStrata())
+Minimap.Ticket:SetPoint("BOTTOM", 0, -47)
+Minimap.Ticket:FontString("Text", C.Media.Font, 12)
+Minimap.Ticket.Text:SetPoint("CENTER")
+Minimap.Ticket.Text:SetText(HELP_TICKET_EDIT)
+Minimap.Ticket:SetAlpha(0)
 
--- GAMETIMEFRAME
+-- Ticket icon
+HelpOpenTicketButton:SetParent(Minimap.Ticket)
+HelpOpenTicketButton:SetFrameLevel(Minimap.Ticket:GetFrameLevel() + 1)
+HelpOpenTicketButton:SetFrameStrata(Minimap.Ticket:GetFrameStrata())
+HelpOpenTicketButton:ClearAllPoints()
+HelpOpenTicketButton:SetAllPoints()
+HelpOpenTicketButton:SetHighlightTexture(nil)
+HelpOpenTicketButton:SetAlpha(0)
+HelpOpenTicketButton:HookScript("OnShow", function(self) Minimap.Ticket:SetAlpha(1) end)
+HelpOpenTicketButton:HookScript("OnHide", function(self) Minimap.Ticket:SetAlpha(0) end)
+
+-- Gametime
 GameTimeFrame:SetParent(Minimap)
 GameTimeFrame:SetScale(0.6)
 GameTimeFrame:ClearAllPoints()
@@ -169,7 +181,7 @@ FontString:SetPoint("CENTER", 0, -6)
 FontString:SetFont(C.Media.Font, 16)
 FontString:SetTextColor(unpack(C.Media.Backdrop_Color))
 
--- ENABLE MOUSE SCROLLING
+-- Enable mouse scrolling
 Minimap:EnableMouseWheel()
 local function Zoom(self, direction)
   if(direction > 0) then Minimap_ZoomIn()
@@ -177,10 +189,10 @@ local function Zoom(self, direction)
 end
 Minimap:SetScript("OnMouseWheel", Zoom)
 
--- FOR OTHERS MODS WITH A MINIMAP BUTTON, SET MINIMAP BUTTONS POSITION IN SQUARE MODE
+-- For others mods with a minimap button, set minimap buttons position in square mode
 function GetMinimapShape() return "SQUARE" end
 
--- SET BORDER TEXTURE
+-- Set border texture
 MinimapBackdrop:SetBackdrop(K.Backdrop)
 MinimapBackdrop:SetBackdropColor(0.05, 0.05, 0.05, 0.0)
 MinimapBackdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
@@ -189,7 +201,7 @@ if C.Blizzard.ColorTextures == true then
 end
 MinimapBackdrop:SetOutside(Minimap, 4, 4)
 
--- SET SQUARE MAP VIEW
+-- SEt square map view
 Minimap:SetMaskTexture(C.Media.Blank)
 Minimap:SetArchBlobRingAlpha(0)
 Minimap:SetQuestBlobRingAlpha(0)

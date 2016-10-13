@@ -4,8 +4,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][v5.29] - 2:07:14 AM EDT Monday, September 26, 2016
+## [Unreleased][v6.02] - 7:12:06 AM EDT Thursday, October 13, 2016
+
 ### Added
+- First pass on raid frames support (oUF based)
+
+### Changed
+- Update oUF
+- Just some cleanup
+
+### Fixed
+- Border fixes for Filger.
+- Fixed aura timers.
+
+## [v6.01] - Wenseday, October 12, 2016
+
+### Fixed
+- ObjectiveTracker resetting
+- Fixed errors if Bagnon was loaded or any other bag for that matter.
+
+## [v6.00] - Wenseday, October 12, 2016
+
+- This changelog is gonna be short. So much was changed. Sorry.
+
+### Added
+- New bags
+- New namesplates
+- Protecion to some code from other addons
+- Movers for all unitframes.
+
+### Changed
+- General code format.
+- Database vairables
+- How things get saved
+- Unitframes style and code.
+
+### Fixed
+- Stutter when in combat on massive pulls.
+- Fixed missing textures.
+- Fixed most taints by baking in new oUF frames
+- Capturebar properly moves now.
+
+### Removed
+- Combattext
+- Old Nameplates
+- All itemlevel support unitl 7.1
 
 ## [v5.28] - 2:07:14 AM EDT Monday, September 26, 2016
 ### Added

@@ -15,12 +15,62 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		end
 	end
 
-	function PetFrame_Update() end
+	if C.Unitframe.Enable then
+		for i = 1, MAX_BOSS_FRAMES do
+			local Boss = _G["Boss"..i.."TargetFrame"]
+			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
+			local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
 
-	function PlayerFrame_AnimateOut() end
-	function PlayerFrame_AnimFinished() end
-	function PlayerFrame_ToPlayerArt() end
-	function PlayerFrame_ToVehicleArt() end
+			Boss:UnregisterAllEvents()
+			Boss.Show = K.Noop
+			Boss:Hide()
+
+			Health:UnregisterAllEvents()
+			Power:UnregisterAllEvents()
+		end
+
+		if C.Unitframe.Enable then
+			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
+			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
+
+			if CompactRaidFrameManager then
+				CompactRaidFrameManager:SetParent(UIFrameHider)
+			end
+
+			if CompactUnitFrameProfiles then
+				CompactUnitFrameProfiles:UnregisterAllEvents()
+			end
+
+			for i = 1, MAX_PARTY_MEMBERS do
+				local PartyMember = _G["PartyMemberFrame" .. i]
+				local Health = _G["PartyMemberFrame" .. i .. "HealthBar"]
+				local Power = _G["PartyMemberFrame" .. i .. "ManaBar"]
+				local Pet = _G["PartyMemberFrame" .. i .."PetFrame"]
+				local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
+
+				PartyMember:UnregisterAllEvents()
+				PartyMember:SetParent(UIFrameHider)
+				PartyMember:Hide()
+				Health:UnregisterAllEvents()
+				Power:UnregisterAllEvents()
+
+				Pet:UnregisterAllEvents()
+				Pet:SetParent(UIFrameHider)
+				PetHealth:UnregisterAllEvents()
+
+				HidePartyFrame()
+				ShowPartyFrame = K.Noop
+				HidePartyFrame = K.Noop
+			end
+		end
+
+		function PetFrame_Update() end
+
+		function PlayerFrame_AnimateOut() end
+		function PlayerFrame_AnimFinished() end
+		function PlayerFrame_ToPlayerArt() end
+		function PlayerFrame_ToVehicleArt() end
+	end
 
 
 	if C.Minimap.Garrison == true then

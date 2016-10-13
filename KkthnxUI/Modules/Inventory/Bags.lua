@@ -85,10 +85,6 @@ function Bags:SkinBagButton()
 	self:SetNormalTexture("")
 	self:SetPushedTexture("")
 	self:CreateBackdrop()
-	--self:SetBackdrop({
-	--  edgeFile = C.Media.Blank,
-	--  edgeSize = K.Mult,
-	--})
 	self.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 	self:StyleButton()
 
@@ -143,6 +139,10 @@ function Bags:HideBlizzard()
 end
 
 function Bags:CreateReagentContainer()
+	if select(4, GetAddOnInfo("TradeSkillMaster")) then
+		return
+	end
+
 	ReagentBankFrame:StripTextures()
 
 	local Reagent = CreateFrame("Frame", "KkthnxUIReagent", UIParent)
@@ -458,7 +458,6 @@ function Bags:CreateContainer(storagetype, ...)
 		Purchase.backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
 
 		BankBagsContainer:SetSize(Container:GetWidth(), BankSlotsFrame.Bag1:GetHeight() + ButtonSpacing + ButtonSpacing)
-		BankBagsContainer:SetTemplate()
 		BankBagsContainer:SetPoint("BOTTOMLEFT", SwitchReagentButton, "TOPLEFT", 0, 2)
 		BankBagsContainer:SetFrameLevel(Container:GetFrameLevel())
 		BankBagsContainer:SetFrameStrata(Container:GetFrameStrata())
@@ -474,7 +473,7 @@ function Bags:CreateContainer(storagetype, ...)
 			Bag.IconBorder:SetAlpha(0)
 			Bag.icon:SetTexCoord(unpack(K.TexCoords))
 			Bag.icon:SetInside()
-			-- Bag:SkinButton()
+			Bag:SkinButton()
 			Bag:ClearAllPoints()
 
 			if i == 1 then

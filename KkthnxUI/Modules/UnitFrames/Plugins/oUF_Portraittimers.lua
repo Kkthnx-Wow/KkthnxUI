@@ -30,22 +30,9 @@ end
 
 local GetTime = GetTime
 local floor, fmod = floor, math.fmod
-local day, hour, minute = 86400, 3600, 60
 
 local function ExactTime(time)
     return format("%.1f", time), (time * 100 - floor(time * 100))/100
-end
-
-local function FormatTime(s)
-    if (s >= day) then
-        return format('%dd', floor(s/day + 0.5))
-    elseif (s >= hour) then
-        return format('%dh', floor(s/hour + 0.5))
-    elseif (s >= minute) then
-        return format('%dm', floor(s/minute + 0.5))
-    end
-
-    return format('%d', fmod(s, minute))
 end
 
 local function AuraTimer(self, elapsed)
@@ -62,9 +49,9 @@ local function AuraTimer(self, elapsed)
         self.Remaining:SetText(nil)
     else
         if (timeLeft <= 5) then
-            self.Remaining:SetText('|cffff0000'..ExactTime(timeLeft)..'|r')
+            self.Remaining:SetText("|cffff0000"..ExactTime(timeLeft).."|r")
         else
-            self.Remaining:SetText(FormatTime(timeLeft))
+            self.Remaining:SetText(K.FormatTime(timeLeft))
         end
     end
 end
