@@ -95,7 +95,7 @@ function KkthnxUIAuras:UpdateAura(index)
 			ShouldConsolidate = false
 		end
 
-		if (ShouldConsolidate or C.Auras.Consolidate) then
+		if (ShouldConsolidate) then
 			self.Duration:Hide()
 		end
 
