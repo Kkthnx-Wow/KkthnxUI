@@ -177,7 +177,7 @@ ns.config = {
             showSolo = true,
             showParty = false,
 
-            nameLength = 4,
+            nameLength = 5,
 
             width = 42,
             height = 40,

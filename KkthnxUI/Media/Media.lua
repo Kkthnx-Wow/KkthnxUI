@@ -8,6 +8,7 @@ C["Media"] = {
 	["Blank_Font"] = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
 	["Blizz"] = [[Interface\Tooltips\UI-Tooltip-Border]],
 	["Border"] = [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]],
+	["Border_White"] = [[Interface\AddOns\KkthnxUI\Media\Border\2borderWhite.tga]],
 	["Border_Color"] = {192/255, 192/255, 192/255, 1},
 	["Border_Glow"] = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Glow.tga]],
 	["Border_Shadow"] = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Shadow.tga]],

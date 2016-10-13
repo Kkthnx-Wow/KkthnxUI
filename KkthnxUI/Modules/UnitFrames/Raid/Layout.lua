@@ -305,7 +305,11 @@ local function CreateRaidLayout(self, unit)
 		}
 	})
 
-	self:SetBackdropColor(0, 0, 0, 1)
+	K.CreateBorder(self, 10, 3)
+	self:SetBorderTexture("white")
+	self:SetBorderColor(0.38, 0.38, 0.38)
+
+	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -341,7 +345,7 @@ local function CreateRaidLayout(self, unit)
 	self.Name:SetPoint("BOTTOM", self.Health, "CENTER", 0, 3)
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size)
 	self.Name:SetShadowOffset(1, -1)
-	self.Name:SetTextColor(1, 1, 1)
+	self.Name:SetTextColor(1, 0.82, 0, 1)
 	self:Tag(self.Name, "[name:raid]")
 
 	-- Power bar
@@ -582,23 +586,23 @@ local function CreateRaidLayout(self, unit)
 
 	-- Playertarget border
 	if (config.units.raid.showTargetBorder) then
-		self.TargetBorder = self.Health:CreateTexture(nil, "OVERLAY", self)
-		self.TargetBorder:SetAllPoints(self.Health)
-		self.TargetBorder:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\Raid\\borderTarget")
-		self.TargetBorder:SetVertexColor(unpack(config.units.raid.targetBorderColor))
-		self.TargetBorder:Hide()
+		--self.TargetBorder = self.Health:CreateTexture(nil, "OVERLAY", self)
+		--self.TargetBorder:SetAllPoints(self.Health)
+		--self.TargetBorder:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\Raid\\borderTarget")
+		--self.TargetBorder:SetVertexColor(unpack(config.units.raid.targetBorderColor))
+		--self.TargetBorder:Hide()
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", function()
 			if (UnitIsUnit("target", self.unit)) then
-				self.TargetBorder:Show()
+				self:SetBorderColor(1, 1, 1)
 			else
-				self.TargetBorder:Hide()
+				self:SetBorderTexture("white")
+				self:SetBorderColor(0.38, 0.38, 0.38)
 			end
 		end)
 	end
 
 	-- Range check
-
 	self.Range = {
 		insideAlpha = 1,
 		outsideAlpha = 0.3,

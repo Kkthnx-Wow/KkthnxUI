@@ -1,4 +1,4 @@
-local K, C, _ = select(2, ...):unpack()
+local K, C = select(2, ...):unpack()
 
 local _G = _G
 local floor = math.floor
@@ -7,6 +7,7 @@ local unpack = unpack
 
 local BORDER_TEXTURE = C.Media.Border
 local BORDER_TEXTURE_SHADOW = C.Media.Border_Shadow
+local BORDER_TEXTURE_WHITE = C.Media.Border_White
 local BORDER_SIZE = 10
 local PADDING_SIZE = 1
 
@@ -17,7 +18,7 @@ local function SetBackdropBorderColor(self, r, g, b, a)
 	if not t then return end
 
 	if not r or not g or not b or a == 0 then
-		r, g, b = unpack(C.Media.Border_Color)
+		r, g, b = 1, 1, 1
 	end
 
 	for pos, tex in pairs(t) do
@@ -28,7 +29,7 @@ end
 local function SetBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if t then
-		if not r or not g and not b then
+		if not r or not g or not b or a == 0 then
 			r, g, b = 1, 1, 1
 		end
 		for _, tex in pairs (t) do
@@ -53,7 +54,11 @@ end
 local function SetBorderTexture(self, texture)
 	local b = self.borderTextures
 	if b then
-		texture = BORDER_TEXTURE
+		if texture == "white" then
+			texture = BORDER_TEXTURE_WHITE
+		elseif texture == "default" then
+			texture = BORDER_TEXTURE
+		end
 		for _, tex in pairs(b) do
 			tex:SetTexture(texture)
 		end
