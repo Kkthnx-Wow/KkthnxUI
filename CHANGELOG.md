@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][v6.02] - 7:12:06 AM EDT Thursday, October 13, 2016
 
 ### Added
-- First pass on raid frames support (oUF based)
+- First, pass on raid frames support (oUF based)
 
 ### Changed
 - Update oUF
@@ -29,13 +29,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - New bags
-- New namesplates
-- Protecion to some code from other addons
-- Movers for all unitframes.
+- New nameplates
+- Protection to some code from other addons
+- Movers for all unit frames.
 
 ### Changed
 - General code format.
-- Database vairables
+- Database variables
 - How things get saved
 - Unitframes style and code.
 
@@ -43,12 +43,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Stutter when in combat on massive pulls.
 - Fixed missing textures.
 - Fixed most taints by baking in new oUF frames
-- Capturebar properly moves now.
+- Capture bar properly moves now.
 
 ### Removed
-- Combattext
+- Combat text
 - Old Nameplates
-- All itemlevel support unitl 7.1
+- All item level support until 7.1
 
 ## [v5.28] - 2:07:14 AM EDT Monday, September 26, 2016
 ### Added
@@ -80,36 +80,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Add resting to auto collapse?.
 - Added Combattext module.
-- Added spellid and itemcount to tooltip.
-- Adjusted spacing between castbar and health for nameplates.
-- Attempt to fix castbar resizing issue.
-- Attempt to fix unitframes not clickable after vehicle :(.
+- Added spellid and item count to the tooltip.
+- The adjusted spacing between cast bar and health for nameplates.
+- Attempt to fix cast bar resizing issue.
+- Attempt to fix unit frames not clickable after vehicle :(.
 - Blizzard_CombatText added as OptionalDeps.
 - Chat spam list updated.
 - Disable.lua rewrote for new functions.
 - Fixed filger mover not registering.
 - Fixed world quest tooltip issue.
 - General cleanup.
-- General combat checks for frames and castbars?
+- General combat checks for frames and cast bars?
 - Install image complete added.
 - Localization updated.
 - Locals updated.
 - Media.lua updated.
-- More addons added to Disable.lua.
+- More add-ons added to Disable.lua.
 - New Nameplates debuff updated for DemonHunters.
 - New functions to check for other addons over mine. (Thanks to Goldpaw)
-- Pushed to github for backup.
+- Pushed to GitHub for backup.
 - Raid auras added to filger.
 - Rewrote nameplates.
 - Updated Licenses.
-- WIP micromenu list to be sorted.
+- WIP micro menu list to be sorted.
 
 ### Changed
-- Changed how the castbars are handled with in combat.
-- Changed unitframes while in combat.
+- Changed how the cast bars are handled within combat.
+- Changed unit frames while in combat.
 
 ### Fixed
-- Try to fix freezing issue reported. Untested. Im not even sure its my UI?
+- Try to fix the freezing issue reported. Untested. Am I not even sure it's my UI?
 
 ### Removed
 - Removed some code for general cleanup.
