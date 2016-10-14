@@ -247,9 +247,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 			if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
 				PetBarMouseOver(1)
 			end
-			if C.ExtraBar and C.ExtraBar.Enable == true and C.ExtraBar.Mouseover == true then
-				ExtraBarMouseOver(1)
-			end
 		end
 
 		function bind:Deactivate(save)
@@ -273,9 +270,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 			if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
 				PetBarMouseOver(0)
-			end
-			if C.ExtraBar and C.ExtraBar.Enable == true and C.ExtraBar.Mouseover == true then
-				ExtraBarMouseOver(0)
 			end
 		end
 
