@@ -31,13 +31,11 @@ local function IsFramePositionedLeft(frame)
 end
 
 function ObjectiveTracker:Enable()
-	if select(4, GetAddOnInfo("DugisGuideViewerZ")) then
-		return
-	end
-
 	local Movers = K.Movers
 
-	Movers:RegisterFrame(ObjectiveFrameHolder)
+	if not IsAddOnLoaded("DugisGuideViewerZ") then
+		Movers:RegisterFrame(ObjectiveFrameHolder)
+	end
 
 	ObjectiveTrackerFrame:ClearAllPoints()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")

@@ -4,24 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][v6.02] - 7:12:06 AM EDT Thursday, October 13, 2016
+## [Unreleased][v6.02] - 9:52:15 PM EDT Thursday, October 13, 2016
 
 ### Added
 - First, pass on raid frames support (oUF based)
-- Added proper border to raidframes.
+- Added proper border to raid frames.
 
 ### Changed
 - Update oUF
 - Just some cleanup
 - Raid frames config changes
 - Toast position
-- Orderhall skin changed to reflect better position and settings.
+- Orderhall skin changed to reflect the better position and settings.
 
 ### Fixed
 - Border fixes for Filger.
 - Fixed aura timers.
 - Border.lua border colors
 - Grammar updates
+- ObjectiveTracker mover not showing again after Dugi was disabled after being enabled.
 
 ## [v6.01] - Wenseday, October 12, 2016
 
