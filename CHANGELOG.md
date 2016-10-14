@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - First, pass on raid frames support (oUF based)
 - Added proper border to raid frames.
+- Suppport for mouseover actionbars (rightbars, pet, stance) and Vehicle indicator icon
 
 ### Changed
 - Update oUF
@@ -16,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Raid frames config changes
 - Toast position
 - Orderhall skin changed to reflect the better position and settings.
+- Vehicle indicator code into its own file.
 
 ### Fixed
 - Border fixes for Filger.

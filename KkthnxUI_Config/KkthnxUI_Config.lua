@@ -69,6 +69,9 @@ local function Local(o)
 	if o == "UIConfigActionBarStanceBarHide" then o = L_GUI_ACTIONBAR_STANCEBAR_HIDE end
 	if o == "UIConfigActionBarStanceBarHorizontal" then o = L_GUI_ACTIONBAR_STANCEBAR_HORIZONTAL end
 	if o == "UIConfigActionBarToggleMode" then o = L_GUI_ACTIONBAR_TOGGLE_MODE end
+	if o == "UIConfigActionBarPetBarMouseover" then o = L_GUI_ACTIONBAR_PETBAR_MOUSEOVER end
+	if o == "UIConfigActionBarRightBarsMouseover" then o = L_GUI_ACTIONBAR_RIGHTBARS_MOUSEOVER end
+	if o == "UIConfigActionBarStanceBarMouseover" then o = L_GUI_ACTIONBAR_STANCEBAR_MOUSEOVER end
 	-- Announcement Settings
 	if o == "UIConfigAnnouncements" then o = L_GUI_ANNOUNCEMENTS end
 	if o == "UIConfigAnnouncementsBadGear" then o = L_GUI_ANNOUNCEMENTS_BAD_GEAR end
@@ -99,6 +102,7 @@ local function Local(o)
 	if o == "UIConfigBlizzard" then o = L_GUI_BLIZZARD end
 	if o == "UIConfigBlizzardClassColor" then o = L_GUI_BLIZZARD_CLASS_COLOR end
 	if o == "UIConfigBlizzardColorTextures" then o = L_GUI_BLIZZARD_COLOR_TEXTURES end
+	if o == "UIConfigBlizzardVehicleMouseover" then o = L_GUI_BLIZZARD_VEHICLE_MOUSEOVER end
 	if o == "UIConfigBlizzardEasyDelete" then o = L_GUI_BLIZZARD_EASYDELETE end
 	if o == "UIConfigBlizzardReplaceBlizzardFonts" then o = L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigBlizzardReputationGain" then o = L_GUI_BLIZZARD_REPUTATIONGAIN end

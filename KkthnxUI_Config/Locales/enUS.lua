@@ -16,11 +16,14 @@ L_GUI_ACTIONBAR_OUT_OF_MANA = "Out of mana color"
 L_GUI_ACTIONBAR_OUT_OF_RANGE = "Out of range color"
 L_GUI_ACTIONBAR_PETBAR_HIDE = "Hide pet bar"
 L_GUI_ACTIONBAR_PETBAR_HORIZONTAL = "Enable horizontal pet bar"
+L_GUI_ACTIONBAR_PETBAR_MOUSEOVER = "Petbar on mouseover (only for horizontal petbar)"
 L_GUI_ACTIONBAR_RIGHTBARS = "Number of action bars on right (0, 1, 2 or 3)"
+L_GUI_ACTIONBAR_RIGHTBARS_MOUSEOVER = "Right bars on mouseover"
 L_GUI_ACTIONBAR_SELFCAST = "Always self-cast on right-click (regardless of current target)"
 L_GUI_ACTIONBAR_SPLIT_BARS = "Split the fifth bar on two bars on 6 buttons"
 L_GUI_ACTIONBAR_STANCEBAR_HIDE = "Hide stance bar"
 L_GUI_ACTIONBAR_STANCEBAR_HORIZONTAL = "Enable horizontal stance bar"
+L_GUI_ACTIONBAR_STANCEBAR_MOUSEOVER = "Stance bar on mouseover"
 L_GUI_ACTIONBAR_TOGGLE_MODE = "Enable toggle mode"..ToggleOffReminder
 -- Announcements Localization
 L_GUI_ANNOUNCEMENTS = "Announcements"
@@ -56,6 +59,7 @@ L_GUI_BLIZZARD_EASYDELETE = "Delete |CFF0080ffBlues|r/|CFFb048f8Epics|r without 
 L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS = "Replaces the default |cff00B4FFBlizzard fonts|r on various panels and frames from |cff3c9bedKkthnxUI|r."
 L_GUI_BLIZZARD_REPUTATIONGAIN = "Display a message which shows how much reputation you gained"
 L_GUI_BLIZZARD_TEXTURES_COLOR = "UI texture hue color. (Default is Classcolor)"
+L_GUI_BLIZZARD_VEHICLE_MOUSEOVER = "Vehicle frame on mouseover"
 -- DataBars Localization
 L_GUI_DATABARS = "DatatBars"
 L_GUI_DATABARS_ARTIFACT = "Enable the Artifact bar."

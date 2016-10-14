@@ -244,6 +244,13 @@ local function SetupFlyoutButton()
 			if _G["SpellFlyoutButton"..i]:GetChecked() then
 				_G["SpellFlyoutButton"..i]:SetChecked(false)
 			end
+
+			if C.ActionBar.RightBarsMouseover == true then
+				SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+				SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+				_G["SpellFlyoutButton"..i]:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+				_G["SpellFlyoutButton"..i]:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+			end
 		end
 	end
 end

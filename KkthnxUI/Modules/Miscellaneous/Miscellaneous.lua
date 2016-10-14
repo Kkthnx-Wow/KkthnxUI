@@ -47,21 +47,6 @@ RaidWarningFrame:ClearAllPoints()
 RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260)
 RaidWarningFrame:SetScale(0.8)
 
--- Vehicle indicator
-local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)
-VehicleAnchor:SetPoint(unpack(C.Position.Vehicle))
-VehicleAnchor:SetSize(130, 130)
-Movers:RegisterFrame(VehicleAnchor)
-
-hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
-	if parent == "MinimapCluster" or parent == _G["MinimapCluster"] then
-		VehicleSeatIndicator:ClearAllPoints()
-		VehicleSeatIndicator:SetPoint("BOTTOM", VehicleAnchor, "BOTTOM", 0, 24)
-		VehicleSeatIndicator:SetFrameStrata("LOW")
-		VehicleSeatIndicator:SetScale(0.7)
-	end
-end)
-
 -- Force readycheck warning
 local ShowReadyCheckHook = function(self, initiator)
 	if initiator ~= "player" then

@@ -70,14 +70,15 @@
 	<Script file="Blizzard\CaptureBar.lua"/>
 	<Script file="Blizzard\ClassColor.lua"/>
 	<Script file="Blizzard\ColorPicker.lua"/>
-	<Script file="Blizzard\EasyDelete.lua"/>
 	<Script file="Blizzard\ColorTextures.lua"/>
+	<Script file="Blizzard\EasyDelete.lua"/>
 	<Script file="Blizzard\Errors.lua"/>
 	<Script file="Blizzard\ExtraActionBar.lua"/>
 	<Script file="Blizzard\Fixes.lua"/>
 	<Script file="Blizzard\Fonts.lua"/>
 	<Script file="Blizzard\MoveBlizzFrames.lua"/>
 	<Script file="Blizzard\ReputationGain.lua"/>
+	<Script file="Blizzard\Vehicle.lua"/>
 	<!-- Auras -->
 	<Include file="Auras\Templates.xml"/>
 	<Script file="Auras\Core.lua"/>

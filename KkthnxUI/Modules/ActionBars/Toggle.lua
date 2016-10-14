@@ -341,7 +341,12 @@ for i = 1, 5 do
 	ToggleBar[i]:SetScript("OnEnter", function()
 		if InCombatLockdown() then return end
 		if i == 2 then
-			ToggleBar[i]:FadeIn()
+			if C.ActionBar.RightBarsMouseover == true then
+				ToggleBar[i]:SetAlpha(1)
+				RightBarMouseOver(1)
+			else
+				ToggleBar[i]:FadeIn()
+			end
 		elseif i == 3 or i == 4 then
 			ToggleBar[3]:FadeIn()
 			ToggleBar[4]:FadeIn()
@@ -354,7 +359,12 @@ for i = 1, 5 do
 
 	ToggleBar[i]:SetScript("OnLeave", function()
 		if i == 2 then
-			ToggleBar[i]:FadeOut()
+			if C.ActionBar.RightBarsMouseover == true then
+				ToggleBar[i]:SetAlpha(0)
+				RightBarMouseOver(0)
+			else
+				ToggleBar[i]:FadeOut()
+			end
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
 			ToggleBar[3]:FadeOut()

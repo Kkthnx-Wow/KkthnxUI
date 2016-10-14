@@ -238,21 +238,45 @@ SlashCmdList.MOUSEOVERBIND = function()
 		function bind:Activate()
 			self.enabled = true
 			self:RegisterEvent("PLAYER_REGEN_DISABLED")
+			if C.ActionBar.RightBarsMouseover == true then
+				RightBarMouseOver(1)
+			end
+			if C.ActionBar.StanceBarMouseover == true then
+				StanceBarMouseOver(1)
+			end
+			if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
+				PetBarMouseOver(1)
+			end
+			if C.ExtraBar and C.ExtraBar.Enable == true and C.ExtraBar.Mouseover == true then
+				ExtraBarMouseOver(1)
+			end
 		end
 
 		function bind:Deactivate(save)
 			local which = GetCurrentBindingSet()
 			if save then
 				SaveBindings(which)
-				K.Print("|cffffff00"..L_BIND_SAVED.."|r")
+				print("|cffffff00"..L_BIND_SAVED.."|r")
 			else
 				LoadBindings(which)
-				K.Print("|cffffff00"..L_BIND_DISCARD.."|r")
+				print("|cffffff00"..L_BIND_DISCARD.."|r")
 			end
 			self.enabled = false
 			self:HideFrame()
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			StaticPopup_Hide("KEYBIND_MODE")
+			if C.ActionBar.RightBarsMouseover == true then
+				RightBarMouseOver(0)
+			end
+			if C.ActionBar.StanceBarMouseover == true then
+				StanceBarMouseOver(0)
+			end
+			if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
+				PetBarMouseOver(0)
+			end
+			if C.ExtraBar and C.ExtraBar.Enable == true and C.ExtraBar.Mouseover == true then
+				ExtraBarMouseOver(0)
+			end
 		end
 
 		StaticPopupDialogs["KEYBIND_MODE"] = {

@@ -15,11 +15,14 @@ C["ActionBar"] = {
 	["OutOfRange"] = {204/255, 26/255, 26/255},
 	["PetBarHide"] = false,
 	["PetBarHorizontal"] = false,
+	["PetBarMouseover"] = false,
 	["RightBars"] = 2,
+	["RightBarsMouseover"] = true,
 	["SelfCast"] = false,
 	["SplitBars"] = false,
 	["StanceBarHide"] = false,
 	["StanceBarHorizontal"] = true,
+	["StanceBarMouseover"] = true,
 	["ToggleMode"] = true,
 }
 -- ANNOUNCEMENTS OPTIONS
@@ -58,6 +61,7 @@ C["Blizzard"] = {
 	["ReplaceBlizzardFonts"] = true,
 	["ReputationGain"] = false,
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b, 1},
+	["VehicleMouseover"] = false,
 }
 -- STATS OPTIONS
 C["Stats"] = {
@@ -154,15 +158,15 @@ C["Misc"] = {
 	["AutoRepair"] = true,
 	["AutoSellGrays"] = true,
 	["BGSpam"] = false,
+	["ColorPicker"] = false,
 	["DurabilityWarninig"] = false,
 	["EnhancedMail"] = true,
+	["Errors"] = true,
 	["InviteKeyword"] = "inv",
-	["SlotDurability"] = false,
-	["ColorPicker"] = false,
 	["MoveBlizzard"] = false,
 	["SellMisc"] = true,
+	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,
-	["Errors"] = true,
 }
 C["NamePlates"] = {
 }
