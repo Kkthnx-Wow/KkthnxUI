@@ -6,7 +6,7 @@
 ## DefaultState: Enabled
 ## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, DBM-Core, Recount, Skada, Spy, WeakAuras
 ## SavedVariables: KkthnxUIData
-## SavedVariablesPerCharacter: KkthnxUIDataPerChar
+## SavedVariablesPerCharacter: KkthnxUIDataPerChar, KkthnxUIPositions
 ## eMail: Kkthnxbye@live.com
 ## Website: https://github.com/Kkthnx
 ## X-oUF: oUFKkthnxUI

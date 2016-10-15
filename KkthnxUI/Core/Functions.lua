@@ -255,6 +255,7 @@ end
 -- Format seconds to min/hour/day
 K.FormatTime = function(s)
 	local Day, Hour, Minute = 86400, 3600, 60
+
 	if (s >= Day) then
 		return format("%dd", ceil(s / Day))
 	elseif (s >= Hour) then
@@ -264,6 +265,7 @@ K.FormatTime = function(s)
 	elseif (s >= Minute / 12) then
 		return floor(s)
 	end
+
 	return format("%.1f", s)
 end
 

@@ -43,7 +43,8 @@ local ALLOWED_GROUPS = {
 	["Skins"] = 18,
 	["Tooltip"] = 19,
 	["Unitframe"] = 20,
-	["WorldMap"] = 21,
+	["Raidframe"] = 21,
+	["WorldMap"] = 22,
 }
 
 local function Local(o)
@@ -262,6 +263,13 @@ local function Local(o)
 	if o == "UIConfigUnitframeTextPowerColor" then o = L_GUI_UNITFRAME_TEXTPOWERCOLOR end
 	if o == "UIConfigUnitframeThreatGlow" then o = L_GUI_UNITFRAME_THREATGLOW end
 	if o == "UIConfigUnitframeThreatValue" then o = L_GUI_UNITFRAME_THREATVALUE end
+	-- Raidframe Settings
+	if o == "UIConfigRaidframe" then o = L_GUI_RAIDFRAME end
+	if o == "UIConfigRaidframeTest1" then o = L_GUI_RAIDFRAME_1 end
+	if o == "UIConfigRaidframeTest2" then o = L_GUI_RAIDFRAME_2 end
+	if o == "UIConfigRaidframeTest3" then o = L_GUI_RAIDFRAME_3 end
+	if o == "UIConfigRaidframeTest4" then o = L_GUI_RAIDFRAME_4 end
+	if o == "UIConfigRaidframeTest5" then o = L_GUI_RAIDFRAME_5 end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end

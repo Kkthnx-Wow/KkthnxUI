@@ -103,5 +103,5 @@ oUF.Tags.Events["name:raid"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["name:raid"] = function(unit)
     local name = UnitName(unit) or UNKNOWN
 
-    return K.UTF8Sub(name, config.units.raid.nameLength)
+    return K.UTF8Sub(5)
 end

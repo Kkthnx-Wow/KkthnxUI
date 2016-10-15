@@ -37,62 +37,62 @@ end
 
 -- Auto-overwrite script config is X addon is found
 -- Here we use our own function to check.
-if IsAddOnLoaded("SexyMap") or IsAddOnLoaded("bdMinimap") or IsAddOnLoaded("BasicMinimap") or IsAddOnLoaded("RicoMiniMap") or IsAddOnLoaded("Chinchilla") then
+if K.IsAddOnEnabled("SexyMap") or K.IsAddOnEnabled("bdMinimap") or K.IsAddOnEnabled("BasicMinimap") or K.IsAddOnEnabled("RicoMiniMap") or K.IsAddOnEnabled("Chinchilla") then
 	C.Minimap.Enable = false
 end
 
-if IsAddOnLoaded("XPerl") or IsAddOnLoaded("Stuf") or IsAddOnLoaded("PitBull4") or IsAddOnLoaded("ShadowedUnitFrames") or IsAddOnLoaded("oUF_Abu") then
+if K.IsAddOnEnabled("XPerl") or K.IsAddOnEnabled("Stuf") or K.IsAddOnEnabled("PitBull4") or K.IsAddOnEnabled("ShadowedUnitFrames") or K.IsAddOnEnabled("oUF_Abu") then
 	C.Unitframe.Enable = false
 end
 
-if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga")  or IsAddOnLoaded("daftMainBar") then
+if K.IsAddOnEnabled("Dominos") or K.IsAddOnEnabled("Bartender4") or K.IsAddOnEnabled("RazerNaga")  or K.IsAddOnEnabled("daftMainBar") then
 	C.ActionBar.Enable = false
 end
 
-if IsAddOnLoaded("WorldQuestTracker") or IsAddOnLoaded("Mapster") or IsAddOnLoaded("WorldQuestsList") then
+if K.IsAddOnEnabled("WorldQuestTracker") or K.IsAddOnEnabled("Mapster") or K.IsAddOnEnabled("WorldQuestsList") then
 	C.WorldMap.SmallWorldMap = false
 end
 
-if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
+if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
 	C.Bags.Enable = false
 end
 
-if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
+if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
 	C.Chat.Enable = false
 end
 
-if IsAddOnLoaded("TidyPlates") or IsAddOnLoaded("Aloft") or IsAddOnLoaded("Kui_Nameplates") then
+if K.IsAddOnEnabled("TidyPlates") or K.IsAddOnEnabled("Aloft") or K.IsAddOnEnabled("Kui_Nameplates") then
 	C.NamePlates.Enable = false
 end
 
-if IsAddOnLoaded("TipTop") or IsAddOnLoaded("TipTac") or IsAddOnLoaded("FreebTip") or IsAddOnLoaded("bTooltip") or IsAddOnLoaded("PhoenixTooltip") or IsAddOnLoaded("Icetip") or IsAddOnLoaded("rTooltip") then
+if K.IsAddOnEnabled("TipTop") or K.IsAddOnEnabled("TipTac") or K.IsAddOnEnabled("FreebTip") or K.IsAddOnEnabled("bTooltip") or K.IsAddOnEnabled("PhoenixTooltip") or K.IsAddOnEnabled("Icetip") or K.IsAddOnEnabled("rTooltip") then
 	C.Tooltip.Enable = false
 end
 
-if IsAddOnLoaded("TipTacTalents") then
+if K.IsAddOnEnabled("TipTacTalents") then
 	C.Tooltip.Talents = false
 end
 
-if IsAddOnLoaded("GnomishVendorShrinker") or IsAddOnLoaded("AlreadyKnown") then
+if K.IsAddOnEnabled("GnomishVendorShrinker") or K.IsAddOnEnabled("AlreadyKnown") then
 	C.Misc.AlreadyKnown = false
 end
 
-if IsAddOnLoaded("BadBoy") then
+if K.IsAddOnEnabled("BadBoy") then
 	C.Chat.Spam = false
 end
 
-if IsAddOnLoaded("cInterrupt") then
+if K.IsAddOnEnabled("cInterrupt") then
 	C.Announcements.Interrupt = false
 end
 
-if IsAddOnLoaded("NiceBubbles") then
+if K.IsAddOnEnabled("NiceBubbles") then
 	C.Skins.ChatBubble = false
 end
 
-if IsAddOnLoaded("ChatSounds") then
+if K.IsAddOnEnabled("ChatSounds") then
 	C.Chat.WhispSound = false
 end
 
-if IsAddOnLoaded("Doom_CooldownPulse") then
+if K.IsAddOnEnabled("Doom_CooldownPulse") then
 	C.PulseCD.Enable = false
 end

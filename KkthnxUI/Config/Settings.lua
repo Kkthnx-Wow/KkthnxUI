@@ -231,6 +231,24 @@ C["Unitframe"] = {
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
 }
+-- RAIDFRAME OPTIONS
+C["Raidframe"] = {
+	["HorizontalHealthBars"] = false,
+	["ShowNotHereTimer"] = true,
+	["ShowMouseoverHighlight"] = true,
+	["ShowThreatText"] = false,
+	["ShowRolePrefix"] = false,
+	["ShowResurrectText"] = true,
+	["Height"] = 40,
+	["Width"] = 42,
+	["IconSize"] = 22,
+	["MaxUnitPerColumn"] = 8,
+	["Scale"] = 1,
+	["ManabarHorizontal"] = false,
+	["ManabarShow"] = true,
+	["IndicatorSize"] = 7,
+	["DeficitThreshold"] = .95,
+}
 -- WORLDMAP OPTIONS
 C["WorldMap"] = {
 	["AlphaWhenMoving"] = 0.35,

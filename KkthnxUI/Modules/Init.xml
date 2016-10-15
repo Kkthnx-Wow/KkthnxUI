@@ -2,7 +2,7 @@
 	<!-- Unitframes -->
 	<Script file="Unitframes\Init.lua"/>
 	<Script file="Unitframes\AuraList.lua"/>
-	<Include file="Unitframes\Plugins\Plugins.xml"/>
+	<Include file="Unitframes\oUF_Plugins\oUF_Plugins.xml"/>
 	<Script file="Unitframes\Config\Config.lua"/>
 	<Include file="Unitframes\Elements\Elements.xml"/>
 	<Script file="Unitframes\Functions.lua"/>

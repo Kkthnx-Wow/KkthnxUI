@@ -101,7 +101,7 @@ function Tutorial:SpawnTutorialFrame()
 end
 
 function Tutorial:Tutorials(forceShow)
-	if (not forceShow and KkthnxUIDataPerChar.hideTutorial) or (not forceShow and not KkthnxUIData[GetRealmName()][UnitName("Player")].Install) then return end
+	if (not forceShow and KkthnxUIDataPerChar.hideTutorial) or (not forceShow and not KkthnxUIDataPerChar.Install) then return end
 	local f = TutorialWindow
 	if not f then
 		f = Tutorial:SpawnTutorialFrame()

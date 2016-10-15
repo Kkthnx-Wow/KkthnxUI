@@ -188,4 +188,4 @@ for k, v in pairs(AuraList) do
 	end
 end
 
-ns.AuraList = AuraList
+K.AuraList = AuraList

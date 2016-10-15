@@ -31,6 +31,18 @@ local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 
 -- Simple Install
+
+local function InstallChat()
+	local Chat = K["Chat"]
+
+	if (not Chat) then
+		return
+	end
+
+	Chat:Install()
+	Chat:SetDefaultChatFramesPositions()
+end
+
 local function InstallUI()
 	local ActionBars = C.ActionBar.Enable
 
@@ -79,7 +91,7 @@ local function InstallUI()
 	FCF_DockFrame(ChatFrame4)
 
 	-- Setting chat frames
-	if C.Chat.Enable == true and not IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
+	if C.Chat.Enable then
 		for i = 1, NUM_CHAT_WINDOWS do
 			local Frame = _G["ChatFrame"..i]
 			local ID = Frame:GetID()
@@ -186,12 +198,11 @@ local function InstallUI()
 	end
 
 	-- Reset saved variables.
-	KkthnxUIData[GetRealmName()][UnitName("Player")] = {}
-
+	KkthnxUIData = {}
+	KkthnxUIPositions = {}
 	KkthnxUIDataPerChar = {}
 
-	KkthnxUIData[GetRealmName()][UnitName("Player")].Install = true
-
+	KkthnxUIDataPerChar.Install = true
 	KkthnxUIDataPerChar.FogOfWar = false
 	KkthnxUIDataPerChar.AutoInvite = false
 	KkthnxUIDataPerChar.BarsLocked = false
@@ -216,7 +227,7 @@ StaticPopupDialogs["INSTALL_UI"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = InstallUI,
-	OnCancel = function() KkthnxUIData[GetRealmName()][UnitName("Player")].Install = false end,
+	OnCancel = function() KkthnxUIDataPerChar.Install = false end,
 	timeout = 0,
 	showAlert = 1,
 	whileDead = 1,
@@ -229,7 +240,7 @@ StaticPopupDialogs["RELOAD_UI"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() ReloadUI() end,
-	OnCancel = function() KkthnxUIData[GetRealmName()][UnitName("Player")].Install = false end,
+	OnCancel = function() KkthnxUIDataPerChar.Install = false end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
@@ -253,7 +264,7 @@ StaticPopupDialogs["RESET_UI"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = InstallUI,
-	OnCancel = function() KkthnxUIData[GetRealmName()][UnitName("Player")].Install = true end,
+	OnCancel = function() KKkthnxUIDataPerChar.Install = true end,
 	showAlert = true,
 	timeout = 0,
 	whileDead = 1,
@@ -267,6 +278,9 @@ SlashCmdList.INSTALLUI = function() StaticPopup_Show("INSTALL_UI") end
 SLASH_CONFIGURE1 = "/resetui"
 SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
 
+SLASH_CONFIGURE1 = "/resetchat"
+SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
+
 -- On login function
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")
@@ -275,23 +289,12 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		return
 	end
 
-	-- Create an empty cvar if they don"t exist
-	local Name = UnitName("Player")
-	local Realm = GetRealmName()
+	-- Create empty CVar if they doesn't exist
+	if KkthnxUIData == nil then KkthnxUIData = {} end
+	if KkthnxUIPositions == nil then KkthnxUIPositions = {} end
+	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
+	if KkthnxUIDataPerChar.Move then KkthnxUIDataPerChar.Move = {} end
 
-	if (not KkthnxUIData) then
-		KkthnxUIData = {}
-	end
-
-	if (not KkthnxUIData[Realm]) then
-		KkthnxUIData[Realm] = {}
-	end
-
-	if (not KkthnxUIData[Realm][Name]) then
-		KkthnxUIData[Realm][Name] = {}
-	end
-
-	if not KkthnxUIDataPerChar then KkthnxUIDataPerChar = {} end
 	if KkthnxUIDataPerChar.FogOfWar == nil then KkthnxUIDataPerChar.FogOfWar = false end
 	if KkthnxUIDataPerChar.AutoInvite == nil then KkthnxUIDataPerChar.AutoInvite = false end
 	if KkthnxUIDataPerChar.BarsLocked == nil then KkthnxUIDataPerChar.BarsLocked = false end
@@ -305,7 +308,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	else
 
 		-- Install default if we never ran kkthnxui on this character
-		if not KkthnxUIData[GetRealmName()][UnitName("Player")].Install then
+		if not KkthnxUIDataPerChar.Install then
 			StaticPopup_Show("INSTALL_UI")
 		end
 	end

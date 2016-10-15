@@ -2,7 +2,7 @@ local K, C, L = select(2, ...):unpack()
 
 -- REGISTER A FRAME WITH: Movers:RegisterFrame(FrameName)
 -- NOTE 1: REGISTERED FRAMES NEED A **GLOBAL NAME**
--- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIData[GetRealmName()][UnitName("Player")] SAVEDVARIABLESPERCHARACTER <<
+-- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIPositions.Move SAVEDVARIABLESPERCHARACTER <<
 
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -29,7 +29,7 @@ end
 function Movers:RestoreDefaults(button)
 	local FrameName = self.Parent:GetName()
 	local Data = Movers.Defaults[FrameName]
-	local SavedVariables = KkthnxUIData[GetRealmName()][UnitName("Player")].Move
+	local SavedVariables = KkthnxUIPositions.Move
 
 	if (button == "RightButton") and (Data) then
 		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
@@ -62,7 +62,7 @@ end
 function Movers:OnDragStop()
 	self:StopMovingOrSizing()
 
-	local Data = KkthnxUIData[GetRealmName()][UnitName("Player")].Move
+	local Data = KkthnxUIPositions.Move
 	local Anchor1, Parent, Anchor2, X, Y = self:GetPoint()
 	local FrameName = self.Parent:GetName()
 	local Frame = self.Parent
@@ -175,11 +175,11 @@ end
 
 Movers:SetScript("OnEvent", function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		if not KkthnxUIData[GetRealmName()][UnitName("Player")].Move then
-			KkthnxUIData[GetRealmName()][UnitName("Player")].Move = {}
+		if not KkthnxUIPositions.Move then
+			KkthnxUIPositions.Move = {}
 		end
 
-		local Data = KkthnxUIData[GetRealmName()][UnitName("Player")].Move
+		local Data = KkthnxUIPositions.Move
 
 		for Frame, Position in pairs(Data) do
 			local Frame = _G[Frame]

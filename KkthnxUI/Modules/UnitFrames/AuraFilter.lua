@@ -33,7 +33,7 @@ local BaseAuras = {
 }
 
 do
-	local l = ns.AuraList
+	local l = K.AuraList
 	for _, list in pairs({l.Stun, l.CC, l.Silence, l.Taunt}) do
 		for i = 1, #list do
 			BaseAuras[list[i]] = 0

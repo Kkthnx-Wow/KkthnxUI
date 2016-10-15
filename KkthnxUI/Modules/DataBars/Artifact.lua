@@ -95,7 +95,7 @@ local function UpdateStatus(event, owner)
 end
 
 local Frame = CreateFrame("Frame", nil, UIParent)
-Frame:RegisterEvent("PLAYER_LOGIN")
+Frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 Frame:RegisterEvent("ARTIFACT_XP_UPDATE")
 Frame:RegisterEvent("UNIT_INVENTORY_CHANGED")
 Frame:SetScript("OnEvent", UpdateStatus)

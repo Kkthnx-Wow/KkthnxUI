@@ -28,7 +28,7 @@ ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-	local Installed = KkthnxUIData[GetRealmName()][UnitName("Player")].Install
+	local Installed = KkthnxUIDataPerChar.Install
 	if Installed then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then

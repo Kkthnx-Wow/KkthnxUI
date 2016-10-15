@@ -11,7 +11,7 @@ ns.defaultAuras = {
 }
 
 do
-	local l = ns.AuraList
+	local l = K.AuraList
 	for _, list in pairs({l.Immunity, l.CCImmunity, l.Defensive, l.Offensive, l.Helpful, l.Misc}) do
 		for i = 1, #list do
 			ns.defaultAuras.arena[list[i]] = true
@@ -171,48 +171,4 @@ ns.config = {
 		cbheight = 22,
 		cbicon = "NONE",
 	},
-
-	units = {
-        ["raid"] = {
-            showSolo = false,
-            showParty = false,
-
-            nameLength = 5,
-
-            width = 42,
-            height = 40,
-            scale = 1,
-
-            layout = {
-                frameSpacing = 8,
-
-                initialAnchor = "TOPLEFT",
-                orientation = "HORIZONTAL",
-            },
-
-            smoothUpdates = true,
-            showThreatText = false,
-            showRolePrefix = false,
-            showNotHereTimer = true,
-            showMainTankIcon = true,
-            showResurrectText = true,
-            showMouseoverHighlight = true,
-
-            showMainTankFrames = false,
-
-            showTargetBorder = true,
-            targetBorderColor = {1, 1, 1},
-
-            iconSize = 22,
-            indicatorSize = 7,
-
-            horizontalHealthBars = false,
-            deficitThreshold = 0.95,
-
-            manabar = {
-                show = true,
-                horizontalOrientation = false,
-            },
-        },
-    },
 }
