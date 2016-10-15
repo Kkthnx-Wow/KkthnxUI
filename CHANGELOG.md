@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - First, pass on raid frames support (oUF based)
 - Added proper border to raid frames.
 - Suppport for mouseover actionbars (rightbars, pet, stance) and Vehicle indicator icon
+- Started support for config for raid frames.
+- Added focus castbar and mover.
 
 ### Changed
 - Update oUF
@@ -18,6 +20,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Toast position
 - Orderhall skin changed to reflect the better position and settings.
 - Vehicle indicator code into its own file.
+- Adjusted how the raid frames are confied
+- Tons of clean up
+- Changed the Database again.
 
 ### Fixed
 - Border fixes for Filger.
@@ -25,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Border.lua border colors
 - Grammar updates
 - ObjectiveTracker mover not showing again after Dugi was disabled after being enabled.
+
 
 ## [v6.01] - Wenseday, October 12, 2016
 
