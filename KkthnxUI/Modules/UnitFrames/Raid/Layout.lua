@@ -253,7 +253,7 @@ local function GetHealthText(unit, cur, max)
 	if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) then
 		healthString = GetUnitStatus(unit)
 	else
-		if ((cur/max) <C.Raidframe.DeficitThreshold) then
+		if ((cur/max) < C.Raidframe.DeficitThreshold) then
 			healthString = format("|cff%02x%02x%02x%s|r", 0.9 * 255, 0 * 255, 0 * 255, DeficitValue(max-cur))
 		else
 			healthString = ""
@@ -401,7 +401,7 @@ local function CreateRaidLayout(self, unit)
 	end
 
 	local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
-	healAbsorbBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
+	healAbsorbBar:SetStatusBarTexture(C.Media.Blank)
 	healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 1)
 	healAbsorbBar.Smooth = true
 
@@ -418,7 +418,7 @@ local function CreateRaidLayout(self, unit)
 	end
 
 	local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
-	absorbBar:SetStatusBarTexture("Interface\\Buttons\\WHITE8x8")
+	absorbBar:SetStatusBarTexture(C.Media.Blank)
 	absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 1)
 	absorbBar.Smooth = true
 

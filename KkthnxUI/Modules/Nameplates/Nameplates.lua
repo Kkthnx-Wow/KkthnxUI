@@ -39,9 +39,9 @@ local ICON = {
 }
 
 local NAME_FADE_VALUE = .6
-local BAR_FADE_VALUE = .4
+local BAR_FADE_VALUE = .5
 
-local NameplatePowerBarColor = NameplatePowerBarColor or unpack(K.Colors.power["MANA"])
+local NameplatePowerBarColor = NameplatePowerBarColor or K.Colors.power["MANA"]
 
 -- helper functions
 local function IsTanking(unit)
@@ -216,7 +216,7 @@ end
 function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 	-- set bar color and textures for health bar
 	frame.healthBar.background:SetTexture(C.Media.Blank)
-	frame.healthBar.background:SetVertexColor(0, 0, 0, .5)
+	frame.healthBar.background:SetVertexColor(unpack(C.Media.Backdrop_Color))
 	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
 
 	-- remove default health bar border
@@ -233,7 +233,7 @@ function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions
 
 	-- and casting bar
 	frame.castBar.background:SetTexture(C.Media.Blank)
-	frame.castBar.background:SetVertexColor(0, 0, 0, .5)
+	frame.castBar.background:SetVertexColor(unpack(C.Media.Backdrop_Color))
 	frame.castBar:SetStatusBarTexture(C.Media.Texture)
 
 	-- create a border just like the one around the health bar
@@ -245,16 +245,6 @@ function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions
 	frame.castBar.Icon:SetSize(17, 17)
 	frame.castBar.Icon:ClearAllPoints()
 	frame.castBar.Icon:SetPoint("RIGHT", frame.castBar, "LEFT", -4, 3)
-
-	frame.castBar.IconBorder = frame.castBar:CreateTexture("$parentIconBorder", "OVERLAY", nil, 2)
-	--castBar.IconBorder:SetTexture(config.IconTextures.Normal)
-	--castBar.IconBorder:SetVertexColor(unpack(config.Colors.Border))
-	frame.castBar.IconBorder:SetPoint("TOPRIGHT", frame.castBar.Icon, 2, 2)
-	frame.castBar.IconBorder:SetPoint("BOTTOMLEFT", frame.castBar.Icon, -2, -2)
-
-	if (not frame.castBar.barBorder) then
-		frame.castBar.IconBorder.barBorder = self:CreateBorder(frame.castBar.IconBorder)
-	end
 
 	-- adjust cast bar shield
 	frame.castBar.BorderShield:SetSize(17, 17)

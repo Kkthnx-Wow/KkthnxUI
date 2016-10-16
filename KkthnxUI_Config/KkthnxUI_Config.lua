@@ -265,11 +265,21 @@ local function Local(o)
 	if o == "UIConfigUnitframeThreatValue" then o = L_GUI_UNITFRAME_THREATVALUE end
 	-- Raidframe Settings
 	if o == "UIConfigRaidframe" then o = L_GUI_RAIDFRAME end
-	if o == "UIConfigRaidframeTest1" then o = L_GUI_RAIDFRAME_1 end
-	if o == "UIConfigRaidframeTest2" then o = L_GUI_RAIDFRAME_2 end
-	if o == "UIConfigRaidframeTest3" then o = L_GUI_RAIDFRAME_3 end
-	if o == "UIConfigRaidframeTest4" then o = L_GUI_RAIDFRAME_4 end
-	if o == "UIConfigRaidframeTest5" then o = L_GUI_RAIDFRAME_5 end
+	if o == "UIConfigRaidframeDeficitThreshold" then o = L_GUI_RAIDFRAME_DEFICITTHRESHOLD end
+	if o == "UIConfigRaidframeHeight" then o = L_GUI_RAIDFRAME_HEIGHT end
+	if o == "UIConfigRaidframeHorizontalHealthBars" then o = L_GUI_RAIDFRAME_HORIZONTAL_HEALTHBARS end
+	if o == "UIConfigRaidframeIconSize" then o = L_GUI_RAIDFRAME_ICONSIZE end
+	if o == "UIConfigRaidframeIndicatorSize" then o = L_GUI_RAIDFRAME_INDICATORSIZE end
+	if o == "UIConfigRaidframeManabarHorizontal" then o = L_GUI_RAIDFRAME_MANABAR_HORIZONTAL end
+	if o == "UIConfigRaidframeManabarShow" then o = L_GUI_RAIDFRAME_MANABARSHOW end
+	if o == "UIConfigRaidframeMaxUnitPerColumn" then o = L_GUI_RAIDFRAME_MAXUNIT_PERCOLUMN end
+	if o == "UIConfigRaidframeScale" then o = L_GUI_RAIDFRAME_SCALE end
+	if o == "UIConfigRaidframeShowMouseoverHighlight" then o = L_GUI_RAIDFRAME_SHOWMOUSEOVER_HIGHLIGHT end
+	if o == "UIConfigRaidframeShowNotHereTimer" then o = L_GUI_RAIDFRAME_SHOW_NOTHERETIMER end
+	if o == "UIConfigRaidframeShowResurrectText" then o = L_GUI_RAIDFRAME_SHOWRESURRECT_TEXT end
+	if o == "UIConfigRaidframeShowRolePrefix" then o = L_GUI_RAIDFRAME_SHOWROLE_PREFIX end
+	if o == "UIConfigRaidframeShowThreatText" then o = L_GUI_RAIDFRAME_SHOWTHREATTEXT end
+	if o == "UIConfigRaidframeWidth" then o = L_GUI_RAIDFRAME_WIDTH end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end
