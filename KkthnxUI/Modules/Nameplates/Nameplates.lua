@@ -32,7 +32,6 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
 local UnitLevel = UnitLevel
 local SetCVar = SetCVar
-local wipe = wipe
 
 -- constants
 local CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
@@ -42,7 +41,7 @@ local ICON = {
 }
 
 local NAME_FADE_VALUE = .6
-local BAR_FADE_VALUE = .5
+local BAR_FADE_VALUE = .4
 
 -- helper functions
 local function Abbrev(name)
@@ -318,7 +317,7 @@ function KkthnxUIPlates:UpdateName(frame)
 
 			elseif (level == -1) then
 			-- set boss name text
-			frame.name:SetText(name.." (??)")
+			frame.name:SetText(Abbrev(name).." ??")
 
 			-- set boss name color
 			if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
