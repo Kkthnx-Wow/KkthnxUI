@@ -41,9 +41,12 @@ local ICON = {
 local NAME_FADE_VALUE = .6
 local BAR_FADE_VALUE = .5
 
-local NameplatePowerBarColor = NameplatePowerBarColor or K.Colors.power["MANA"]
-
 -- helper functions
+local function Abbrev(name)
+	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	return K.ShortenString(newname, 18, false)
+end
+
 local function IsTanking(unit)
 	return select(1, UnitDetailedThreatSituation("player", unit))
 end
@@ -77,10 +80,10 @@ local function GetBorderBackdrop(size)
 end
 
 local function AbbrClassification(classification)
-	return (classification == "elite") and "+" or
-	(classification == "minus") and "-" or
-	(classification == "rare") and "r" or
-	(classification == "rareelite") and "r+"
+  return (classification == "elite") and "E" or
+  (classification == "rare") and "R" or
+  (classification == "rareelite") and "R+" or
+  (classification == "worldboss") and "B"
 end
 
 -- main
@@ -115,33 +118,23 @@ end
 function KkthnxUIPlates:ConfigNamePlates()
 	if (not InCombatLockdown()) then
 
-		SetCVar("nameplateShowAll", 1)
-		SetCVar("nameplateMaxAlpha", 0.5)
-		SetCVar("nameplateShowEnemies", 1)
-		SetCVar("ShowClassColorInNameplate", 1)
-		SetCVar("nameplateOtherTopInset", 0.08)
-		SetCVar("nameplateOtherBottomInset", -1)
-		SetCVar("nameplateMinScale", 1)
-		SetCVar("namePlateMaxScale", 1)
-		SetCVar("nameplateMinScaleDistance", 10)
-		SetCVar("nameplateMaxDistance", 40)
-		SetCVar("NamePlateHorizontalScale", 1)
-		SetCVar("NamePlateVerticalScale", 1)
+		SetCVar("NamePlateVerticalScale", "1")
+		SetCVar("NamePlateHorizontalScale", "1")
 
 		-- enable class colors on friendly nameplates
 		DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true
 
 		-- set the selected border color on friendly nameplates
-		DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1)
-		DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1)
+		DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, .35)
+		DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(1, 1, 0, .6)
 		DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1)
 
 		-- disable the classification indicator on nameplates
 		DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false
 
 		-- set the selected border color on enemy nameplates
-		DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1)
-		DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1)
+		DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, .55)
+		DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(1, 1, 0, .6)
 		DefaultCompactNamePlateEnemyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1)
 
 		-- override any enabled cvar
@@ -291,13 +284,7 @@ function KkthnxUIPlates:UpdateName(frame)
 			local faction = UnitFactionGroup(frame.unit)
 
 			-- set unit player name
-			if (InCombat(frame.unit)) then
-				-- unit player in combat
-				frame.name:SetText((isPVP and faction) and ICON[faction].." "..name.." ("..level..") **" or name.." ("..level..") **")
-			else
-				-- unit player out of combat
-				frame.name:SetText((isPVP and faction) and ICON[faction].." "..name.." ("..level..")" or name.." ("..level..")")
-			end
+			frame.name:SetText((isPVP and faction) and ICON[faction].." "..Abbrev(name).." ("..level..")" or Abbrev(name).." ("..level..")")
 
 			-- set unit player name color
 			if (UnitIsEnemy("player", frame.unit)) then
@@ -312,11 +299,7 @@ function KkthnxUIPlates:UpdateName(frame)
 			end
 		elseif (level == -1) then
 			-- set boss name text
-			if (InCombat(frame.unit)) then
-				frame.name:SetText(name.." (??) **")
-			else
-				frame.name:SetText(name.." (??)")
-			end
+			frame.name:SetText(name.." (??)")
 
 			-- set boss name color
 			if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
@@ -328,11 +311,7 @@ function KkthnxUIPlates:UpdateName(frame)
 			end
 		else
 			-- set name text
-			if (InCombat(frame.unit)) then
-				frame.name:SetText(classificationAbbr and name.." ("..level..classificationAbbr..") **" or name.." ("..level..") **")
-			else
-				frame.name:SetText(classificationAbbr and name.." ("..level..classificationAbbr..")" or name.." ("..level..")")
-			end
+			frame.name:SetText(classificationAbbr and Abbrev(name).." ("..level..classificationAbbr..")" or Abbrev(name).." ("..level..")")
 
 			-- set name color
 			if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
@@ -372,7 +351,7 @@ function KkthnxUIPlates:UpdateName(frame)
 		end
 
 		local HideFriendly = true
-		if ( UnitIsFriend(frame.displayedUnit,"player") and not UnitCanAttack(frame.displayedUnit,"player") and HideFriendly ) then
+		if ( UnitIsFriend(frame.displayedUnit,"player") and not UnitCanAttack(frame.displayedUnit, "player") and HideFriendly) then
 			frame.healthBar:Hide()
 		else
 			frame.healthBar:Show()
