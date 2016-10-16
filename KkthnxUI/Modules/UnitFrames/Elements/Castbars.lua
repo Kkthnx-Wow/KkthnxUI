@@ -112,7 +112,7 @@ function ns.CreateCastbars(self, unit)
 	local Movers = K.Movers
 
 	local Castbar = K.CreateStatusBar(self, "BORDER", self:GetName().."Castbar")
-	Castbar:SetSize(uconfig.cbwidth, uconfig.cbheight)
+	--Castbar:SetSize(uconfig.cbwidth, uconfig.cbheight)
 	Castbar:SetFrameStrata("HIGH")
 	K.CreateBorder(Castbar, 11, 3)
 
@@ -122,13 +122,13 @@ function ns.CreateCastbars(self, unit)
 	else
 		if (unit == "player") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
-			-- Castbar:SetSize(C.Unitframe.PlayerCastbarWidth, C.Unitframe.PlayerCastbarHeight)
+			Castbar:SetSize(C.Unitframe.PlayerCastbarWidth, C.Unitframe.PlayerCastbarHeight)
 		elseif (unit == "target") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
-			-- Castbar:SetSize(C.Unitframe.TargetCastbarWidth, C.Unitframe.TargetCastbarHeight)
+			Castbar:SetSize(C.Unitframe.TargetCastbarWidth, C.Unitframe.TargetCastbarHeight)
 		elseif (unit == "focus") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.FocusCastbar))
-			-- Castbar:SetSize(C.Unitframe.FocusCastbarWidth, C.Unitframe.FocusCastbarHeight)
+			Castbar:SetSize(C.Unitframe.FocusCastbarWidth, C.Unitframe.FocusCastbarHeight)
 		end
 		Movers:RegisterFrame(Castbar)
 	end
@@ -159,7 +159,15 @@ function ns.CreateCastbars(self, unit)
 	end
 
 	local Spark = Castbar:CreateTexture(nil, "ARTWORK", nil, 1)
-	Spark:SetSize(15, (uconfig.cbheight * 2))
+	if (unit == "player") then
+		Spark:SetSize(15, (C.Unitframe.PlayerCastbarHeight * 1.2))
+	elseif (unit == "target") then
+		Spark:SetSize(15, (C.Unitframe.TargetCastbarHeight * 1.2))
+	elseif (unit == "focus") then
+	Spark:SetSize(15, (C.Unitframe.FocusCastbarHeight * 1.2))
+	else
+	Spark:SetSize(15, (uconfig.cbheight * 1.2))
+	end
 	Spark:SetBlendMode("ADD")
 	Castbar.Spark = Spark
 

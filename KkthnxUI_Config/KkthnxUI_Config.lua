@@ -240,8 +240,8 @@ local function Local(o)
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeBuilderSpender" then o = L_GUI_UNITFRAME_BUILDERSPENDER end
-	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
 	if o == "UIConfigUnitframeCastbars" then o = L_GUI_UNITFRAME_CASTBARS end
+	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
 	if o == "UIConfigUnitframeClassColor" then o = L_GUI_UNITFRAME_CLASSCOLOR end
 	if o == "UIConfigUnitframeClassPortraits" then o = L_GUI_UNITFRAME_CLASSPORTRAITS end
 	if o == "UIConfigUnitframeClickThrough" then o = L_GUI_UNITFRAME_CLICKTHROUGH end
@@ -249,15 +249,21 @@ local function Local(o)
 	if o == "UIConfigUnitframeEnable" then o = L_GUI_UNITFRAME_ENABLE end
 	if o == "UIConfigUnitframeFlatClassPortraits" then o = L_GUI_UNITFRAME_FLAT_CLASSPORTRAITS end
 	if o == "UIConfigUnitframeFocusButton" then o = L_GUI_UNITFRAME_FOCUS_BUTTON end
+	if o == "UIConfigUnitframeFocusCastbarHeight" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT end
+	if o == "UIConfigUnitframeFocusCastbarWidth" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH end
 	if o == "UIConfigUnitframeFocusModifier" then o = L_GUI_UNITFRAME_FOCUS_MODIFIER end
 	if o == "UIConfigUnitframeParty" then o = L_GUI_UNITFRAME_PARTY end
 	if o == "UIConfigUnitframePartyInRaid" then o = L_GUI_UNITFRAME_PARTYINRAID end
+	if o == "UIConfigUnitframePlayerCastbarHeight" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT end
+	if o == "UIConfigUnitframePlayerCastbarWidth" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH end
 	if o == "UIConfigUnitframePlayerDebuffsOnly" then o = L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY end
 	if o == "UIConfigUnitframePortraitTimer" then o = L_GUI_UNITFRAME_PORTRAITTIMER end
 	if o == "UIConfigUnitframePowerPredictionBar" then o = L_GUI_UNITFRAME_POWERPREDICTIONBAR end
 	if o == "UIConfigUnitframePowerUseAtlas" then o = L_GUI_UNITFRAME_POWERUSEATLAS end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
 	if o == "UIConfigUnitframeStyle" then o = L_GUI_UNITFRAME_STYLE end
+	if o == "UIConfigUnitframeTargetCastbarHeight" then o = L_GUI_UNITFRAME_TARGETCASTBAR_HEIGHT end
+	if o == "UIConfigUnitframeTargetCastbarWidth" then o = L_GUI_UNITFRAME_TARGETCASTBAR_WIDTH end
 	if o == "UIConfigUnitframeTextHealthColor" then o = L_GUI_UNITFRAME_TEXTHEALTHCOLOR end
 	if o == "UIConfigUnitframeTextNameColor" then o = L_GUI_UNITFRAME_TEXTNAMECOLOR end
 	if o == "UIConfigUnitframeTextPowerColor" then o = L_GUI_UNITFRAME_TEXTPOWERCOLOR end
