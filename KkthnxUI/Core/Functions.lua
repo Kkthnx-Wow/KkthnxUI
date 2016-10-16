@@ -17,37 +17,29 @@ local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff
 local tinsert, tremove = tinsert, tremove
 local Locale = GetLocale()
 
+K.Print = function(...)
+	print("|cff3c9bedKkthnxUI|r:", ...)
+end
+
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
 K.BorderBackdrop = {bgFile = C.Media.Blank}
 K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
-K.TestBackdrop = {
-	bgFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\backdrop",
-	edgeFile = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\backdrop_edge",
-	tile = false,
-	tileSize = 0,
-	inset = 4,
-	edgeSize = 4,
-	insets = {
-		left = 4,
-		right = 4,
-		top = 4,
-		bottom = 4,
-	},
-}
-
--- This frame everything in kkthnxui should be anchored to for eyefinity support.
+-- This frame everything in KkthnxUI should be anchored to for Eyefinity support.
 K.UIParent = CreateFrame("Frame", "KkthnxUIParent", UIParent)
 K.UIParent:SetFrameLevel(UIParent:GetFrameLevel())
 K.UIParent:SetPoint("CENTER", UIParent, "CENTER")
 K.UIParent:SetSize(UIParent:GetSize())
+K.UIParent.origHeight = K.UIParent:GetHeight()
 
-K.TexCoords = {5/65, 59/64, 5/64, 59/64}
+K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
+value = {r = 23/255, g = 132/255, b = 209/255}
+local ValueColor = K.RGBToHex(value.r, value.g, value.b)
 K.Print = function(...)
-	print("|cff3c9bedKkthnxUI|r:", ...)
+	print(ValueColor..K.UIName..":|r", ...)
 end
 
 K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
@@ -143,7 +135,7 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
--- Player's role check
+-- Player"s role check
 local isCaster = {
 	DEATHKNIGHT = {nil, nil, nil},
 	DEMONHUNTER = {nil, nil},
@@ -184,33 +176,31 @@ RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
 RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
 RoleUpdater:SetScript("OnEvent", CheckRole)
 
-K.UTF8Sub = function(self, i, dots)
-	if not self then return end
-
-	local Bytes = self:len()
-	if (Bytes <= i) then
-		return self
+K.ShortenString = function(string, numChars, dots)
+	local bytes = string:len()
+	if (bytes <= numChars) then
+		return string
 	else
-		local Len, Pos = 0, 1
-		while(Pos <= Bytes) do
-			Len = Len + 1
-			local c = self:byte(Pos)
+		local len, pos = 0, 1
+		while(pos <= bytes) do
+			len = len + 1
+			local c = string:byte(pos)
 			if (c > 0 and c <= 127) then
-				Pos = Pos + 1
+				pos = pos + 1
 			elseif (c >= 192 and c <= 223) then
-				Pos = Pos + 2
+				pos = pos + 2
 			elseif (c >= 224 and c <= 239) then
-				Pos = Pos + 3
+				pos = pos + 3
 			elseif (c >= 240 and c <= 247) then
-				Pos = Pos + 4
+				pos = pos + 4
 			end
-			if (Len == i) then break end
+			if (len == numChars) then break end
 		end
 
-		if (Len == i and Pos <= Bytes) then
-			return self:sub(1, Pos - 1)..(dots and "..." or "")
+		if (len == numChars and pos <= bytes) then
+			return string:sub(1, pos - 1)..(dots and "..." or "")
 		else
-			return self
+			return string
 		end
 	end
 end
@@ -252,7 +242,7 @@ K.ColorGradient = function(a, b, ...)
 	return R1 + (R2 - R1) * RelPercent, G1 + (G2 - G1) * RelPercent, B1 + (B2 - B1) * RelPercent
 end
 
--- Format seconds to min/hour/day
+-- Format seconds to min/ hour / day
 K.FormatTime = function(s)
 	local Day, Hour, Minute = 86400, 3600, 60
 

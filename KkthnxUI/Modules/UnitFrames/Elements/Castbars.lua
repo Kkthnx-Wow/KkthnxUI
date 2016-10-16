@@ -122,10 +122,13 @@ function ns.CreateCastbars(self, unit)
 	else
 		if (unit == "player") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
+			-- Castbar:SetSize(C.Unitframe.PlayerCastbarWidth, C.Unitframe.PlayerCastbarHeight)
 		elseif (unit == "target") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
+			-- Castbar:SetSize(C.Unitframe.TargetCastbarWidth, C.Unitframe.TargetCastbarHeight)
 		elseif (unit == "focus") then
 			Castbar:SetPoint(unpack(C.Position.UnitFrames.FocusCastbar))
+			-- Castbar:SetSize(C.Unitframe.FocusCastbarWidth, C.Unitframe.FocusCastbarHeight)
 		end
 		Movers:RegisterFrame(Castbar)
 	end

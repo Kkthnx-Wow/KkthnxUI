@@ -69,7 +69,7 @@ end
 local function GetBorderBackdrop(size)
 	return {
 		bgFile = nil,
-		edgeFile = C.Media.Blank,
+		edgeFile = C.Media.Glow,
 		tile = false,
 		edgeSize = size,
 		insets = { left = 0, right = 0, top = 0, bottom = 0 }
@@ -246,6 +246,16 @@ function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions
 	frame.castBar.Icon:ClearAllPoints()
 	frame.castBar.Icon:SetPoint("RIGHT", frame.castBar, "LEFT", -4, 3)
 
+	frame.castBar.IconBorder = frame.castBar:CreateTexture("$parentIconBorder", "OVERLAY", nil, 2)
+	--castBar.IconBorder:SetTexture(config.IconTextures.Normal)
+	--castBar.IconBorder:SetVertexColor(unpack(config.Colors.Border))
+	frame.castBar.IconBorder:SetPoint("TOPRIGHT", frame.castBar.Icon, 2, 2)
+	frame.castBar.IconBorder:SetPoint("BOTTOMLEFT", frame.castBar.Icon, -2, -2)
+
+	if (not frame.castBar.barBorder) then
+		frame.castBar.IconBorder.barBorder = self:CreateBorder(frame.castBar.IconBorder)
+	end
+
 	-- adjust cast bar shield
 	frame.castBar.BorderShield:SetSize(17, 17)
 	frame.castBar.BorderShield:ClearAllPoints()
@@ -407,12 +417,13 @@ function KkthnxUIPlates:CreateBorder(frame)
 
 		local texture = CreateFrame("Frame", nil, frame)
 		texture:SetBackdrop(backdrop)
+		texture:SetBackdropColor(unpack(C.Media.Backdrop_Color)) -- Unsure about this.
 		texture:SetPoint("TOPRIGHT", size, size)
 		texture:SetPoint("BOTTOMLEFT", -size, -size)
 		texture:SetFrameStrata("LOW")
 		texture:SetBackdropBorderColor(0, 0, 0, (1 / layers))
 
-		size = size - .5
+		size = size
 
 		textures[#textures + 1] = texture
 	end

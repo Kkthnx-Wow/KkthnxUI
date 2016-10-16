@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Border.lua border colors
 - Grammar updates
 - ObjectiveTracker mover not showing again after Dugi was disabled after being enabled.
+- Fixed name:raid tag for raid frames.
 
 
 ## [v6.01] - Wenseday, October 12, 2016

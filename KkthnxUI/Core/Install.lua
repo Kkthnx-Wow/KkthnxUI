@@ -31,18 +31,6 @@ local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 
 -- Simple Install
-
-local function InstallChat()
-	local Chat = K["Chat"]
-
-	if (not Chat) then
-		return
-	end
-
-	Chat:Install()
-	Chat:SetDefaultChatFramesPositions()
-end
-
 local function InstallUI()
 	local ActionBars = C.ActionBar.Enable
 
@@ -91,7 +79,7 @@ local function InstallUI()
 	FCF_DockFrame(ChatFrame4)
 
 	-- Setting chat frames
-	if C.Chat.Enable then
+	if C.Chat.Enable == true and not IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
 		for i = 1, NUM_CHAT_WINDOWS do
 			local Frame = _G["ChatFrame"..i]
 			local ID = Frame:GetID()
