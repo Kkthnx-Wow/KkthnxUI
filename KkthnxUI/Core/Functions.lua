@@ -36,8 +36,6 @@ K.UIParent.origHeight = K.UIParent:GetHeight()
 
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
-value = {r = 23/255, g = 132/255, b = 209/255}
-local ValueColor = K.RGBToHex(value.r, value.g, value.b)
 K.Print = function(...)
 	print(ValueColor..K.UIName..":|r", ...)
 end
