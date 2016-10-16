@@ -69,16 +69,6 @@ local function ApplyCastingBarAlpha(frame, alpha)
 	end
 end
 
-local function GetBorderBackdrop(size)
-	return {
-		bgFile = nil,
-		edgeFile = C.Media.Glow,
-		tile = false,
-		edgeSize = size,
-		insets = { left = 0, right = 0, top = 0, bottom = 0 }
-	}
-end
-
 local function AbbrClassification(classification)
   return (classification == "elite") and "E" or
   (classification == "rare") and "R" or
@@ -195,57 +185,49 @@ do
 				end
 			end
 		end)
-
-		-- hooksecurefunc(ClassNameplateBar, "TurnOn", function () print("to") end)
-		ClassNameplateManaBarFrame:HookScript("OnEvent", function (frame, event, ...)
-			if (event == "PLAYER_ENTERING_WORLD") then
-				frame:SetStatusBarTexture(C.Media.Texture, "BACKGROUND", 1)
-			end
-			frame:SetAlpha(1)
-		end)
 	end
 end
 
 function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions)
-	-- set bar color and textures for health bar
-	frame.healthBar.background:SetTexture(C.Media.Blank)
-	frame.healthBar.background:SetVertexColor(unpack(C.Media.Backdrop_Color))
-	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
-
 	-- remove default health bar border
-	frame.healthBar.border:Hide()
-	for _, texture in pairs(frame.healthBar.border.Textures) do
-		texture:SetTexture(nil)
-	end
-	wipe(frame.healthBar.border.Textures)
+	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
+	frame.healthBar.background:ClearAllPoints()
+	frame.healthBar.background:SetInside(0, 0)
+	frame.healthBar:CreatePixelShadow()
+	frame.healthBar.border:SetAlpha(0)
 
-	-- create a new border around the health bar
-	if (not frame.healthBar.barBorder) then
-		frame.healthBar.barBorder = self:CreateBorder(frame.healthBar)
-	end
-
-	-- and casting bar
-	frame.castBar.background:SetTexture(C.Media.Blank)
-	frame.castBar.background:SetVertexColor(unpack(C.Media.Backdrop_Color))
 	frame.castBar:SetStatusBarTexture(C.Media.Texture)
+	frame.castBar.background:ClearAllPoints()
+	frame.castBar.background:SetInside(0, 0)
+	frame.castBar:CreatePixelShadow()
 
-	-- create a border just like the one around the health bar
-	if (not frame.castBar.barBorder) then
-		frame.castBar.barBorder = self:CreateBorder(frame.castBar)
+	if frame.castBar.border then
+		frame.castBar.border:SetAlpha(0)
 	end
+
+	frame.castBar.SetStatusBarTexture = function() end
 
 	-- adjust cast bar icon size and position
-	frame.castBar.Icon:SetSize(17, 17)
+	frame.castBar.Icon:SetSize(18, 18)
 	frame.castBar.Icon:ClearAllPoints()
 	frame.castBar.Icon:SetPoint("RIGHT", frame.castBar, "LEFT", -4, 3)
 
 	-- adjust cast bar shield
-	frame.castBar.BorderShield:SetSize(17, 17)
+	--frame.castBar.BorderShield:SetSize(17, 17)
 	frame.castBar.BorderShield:ClearAllPoints()
 	frame.castBar.BorderShield:SetPoint("RIGHT", frame.castBar, "LEFT", -4, 3)
 
 	-- cut the default icon border embedded in icons
 	frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9)
+
+	if ClassNameplateManaBarFrame then
+		ClassNameplateManaBarFrame.Border:SetAlpha(0)
+		ClassNameplateManaBarFrame:SetStatusBarTexture(C.Media.Texture)
+		ClassNameplateManaBarFrame.ManaCostPredictionBar:SetTexture(C.Media.Texture)
+		ClassNameplateManaBarFrame:SetBackdrop({bgFile = C.Media.Blank})
+		ClassNameplateManaBarFrame:SetBackdropColor(.2, .2, .2)
+		ClassNameplateManaBarFrame:CreatePixelShadow()
+	end
 
 	-- when using small nameplates move the text below the casting bar
 	if (not setupOptions.useLargeNameFont) then
@@ -256,18 +238,27 @@ function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions
 end
 
 function KkthnxUIPlates:UpdateHealthColor(frame)
-	if (UnitExists(frame.displayedUnit) and IsTanking(frame.displayedUnit)) then
-		-- color of name plate of unit targeting us
-		local r, g, b = 1, .3, 1
-		if (CompactUnitFrame_IsTapDenied(frame)) then
-			r, g, b = r / 2, g / 2, b / 2
-		end
+	if (frame:GetName() and string.find(frame:GetName(), "NamePlate")) then
+        local r, g, b
 
-		if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
-			frame.healthBar:SetStatusBarColor(r, g, b)
-			frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b
-		end
-	end
+        if not UnitIsConnected(frame.unit) then
+            r, g, b = unpack(K.Colors.disconnected)
+        else
+            if UnitIsPlayer(frame.unit) then
+                local class = select(2, UnitClass(frame.unit))
+
+                r, g, b = unpack(K.Colors.class[class])
+            else
+                if (UnitIsFriend("player", frame.unit)) then
+                    r, g, b = unpack(K.Colors.reaction[5])
+                else
+                    r, g, b = unpack(K.Colors.reaction[1])
+                end
+            end
+        end
+
+        frame.healthBar:SetStatusBarColor(r, g, b)
+    end
 end
 
 function KkthnxUIPlates:UpdateName(frame)
@@ -369,31 +360,6 @@ function KkthnxUIPlates:ApplyAlpha(frame, alpha)
 			end
 		end
 	end
-end
-
-function KkthnxUIPlates:CreateBorder(frame)
-	local textures = {}
-
-	local layers = 3
-	local size = 2
-
-	for i = 1, layers do
-		local backdrop = GetBorderBackdrop(size)
-
-		local texture = CreateFrame("Frame", nil, frame)
-		texture:SetBackdrop(backdrop)
-		texture:SetBackdropColor(unpack(C.Media.Backdrop_Color)) -- Unsure about this.
-		texture:SetPoint("TOPRIGHT", size, size)
-		texture:SetPoint("BOTTOMLEFT", -size, -size)
-		texture:SetFrameStrata("LOW")
-		texture:SetBackdropBorderColor(0, 0, 0, (1 / layers))
-
-		size = size
-
-		textures[#textures + 1] = texture
-	end
-
-	return textures
 end
 
 -- call
