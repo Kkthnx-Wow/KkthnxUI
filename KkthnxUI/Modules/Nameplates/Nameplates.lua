@@ -3,6 +3,9 @@ if IsAddOnLoaded("TidyPlates") or IsAddOnLoaded("Aloft") or IsAddOnLoaded("Kui_N
 	return
 end
 
+-- Convert this over to KkthnxUI Config soon.
+local HideFriendly = true
+
 local KkthnxUIPlates = CreateFrame("Frame", nil, WorldFrame)
 
 local _G = _G
@@ -112,7 +115,7 @@ function KkthnxUIPlates:ConfigNamePlates()
 		SetCVar("NamePlateHorizontalScale", "1")
 
 		-- enable class colors on friendly nameplates
-		DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true
+		-- DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = false
 
 		-- set the selected border color on friendly nameplates
 		DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, .35)
@@ -188,6 +191,21 @@ do
 	end
 end
 
+function KkthnxUIPlates:SetCastingIcon()
+	local Icon = self.Icon
+	local Texture = Icon:GetTexture()
+	local Backdrop = self.IconBackdrop
+	local IconTexture = self.IconTexture
+	
+	if Texture then
+		Backdrop:SetAlpha(1)
+		IconTexture:SetTexture(Texture)
+	else
+		Backdrop:SetAlpha(0)
+		Icon:SetTexture(nil)		
+	end
+end
+
 function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 	-- remove default health bar border
 	frame.healthBar:SetStatusBarTexture(C.Media.Texture)
@@ -207,18 +225,30 @@ function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions
 
 	frame.castBar.SetStatusBarTexture = function() end
 
-	-- adjust cast bar icon size and position
-	frame.castBar.Icon:SetSize(18, 18)
-	frame.castBar.Icon:ClearAllPoints()
-	frame.castBar.Icon:SetPoint("RIGHT", frame.castBar, "LEFT", -4, 3)
+	frame.castBar.IconBackdrop = CreateFrame("Frame", nil, frame.castBar)
+	frame.castBar.IconBackdrop:SetSize(frame.castBar.Icon:GetSize() + 4, frame.castBar.Icon:GetSize() + 4)
+	frame.castBar.IconBackdrop:SetPoint("TOPRIGHT", frame.healthBar, "TOPLEFT", -4, 0)
+	frame.castBar.IconBackdrop:SetBackdrop({bgFile = C.Media.Blank})
+	frame.castBar.IconBackdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	frame.castBar.IconBackdrop:CreatePixelShadow()
+	frame.castBar.IconBackdrop:SetFrameLevel(frame.castBar:GetFrameLevel() - 1 or 0)
+	
+	frame.castBar.Icon:SetParent(UIFrameHider)
+	
+	frame.castBar.IconTexture = frame.castBar:CreateTexture(nil, "OVERLAY")
+	frame.castBar.IconTexture:SetTexCoord(.08, .92, .08, .92)
+	frame.castBar.IconTexture:SetParent(frame.castBar.IconBackdrop)
+	frame.castBar.IconTexture:SetAllPoints(frame.castBar.IconBackdrop)
 
-	-- adjust cast bar shield
-	--frame.castBar.BorderShield:SetSize(17, 17)
-	frame.castBar.BorderShield:ClearAllPoints()
-	frame.castBar.BorderShield:SetPoint("RIGHT", frame.castBar, "LEFT", -4, 3)
-
-	-- cut the default icon border embedded in icons
-	frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9)
+	--frame.castBar.Text:SetFont(C.Media.Font, 9, "OUTLINE")
+	
+	frame.castBar.startCastColor.r, frame.castBar.startCastColor.g, frame.castBar.startCastColor.b = unpack(K.Colors.power["ENERGY"])
+	frame.castBar.startChannelColor.r, frame.castBar.startChannelColor.g, frame.castBar.startChannelColor.b = unpack(K.Colors.power["MANA"])
+	frame.castBar.failedCastColor.r, frame.castBar.failedCastColor.g, frame.castBar.failedCastColor.b = 1.0, 0.0, 0.0
+	frame.castBar.nonInterruptibleColor.r, frame.castBar.nonInterruptibleColor.g, frame.castBar.nonInterruptibleColor.b = 0.7, 0.7, 0.7
+	frame.castBar.finishedCastColor.r, frame.castBar.finishedCastColor.g, frame.castBar.finishedCastColor.b = 0.0, 1.0, 0.0
+	
+	frame.castBar:HookScript("OnShow", KkthnxUIPlates.SetCastingIcon)
 
 	if ClassNameplateManaBarFrame then
 		ClassNameplateManaBarFrame.Border:SetAlpha(0)
@@ -235,6 +265,8 @@ function KkthnxUIPlates:SetupNamePlateInternal(frame, setupOptions, frameOptions
 		frame.castBar.Text:SetPoint("CENTER", frame.castBar, "CENTER", 0, -16)
 		frame.castBar.Text:SetFont(C.Media.Font, 12, "OUTLINE")
 	end
+
+	frame.IsEdited = true
 end
 
 function KkthnxUIPlates:UpdateHealthColor(frame)
@@ -337,7 +369,6 @@ function KkthnxUIPlates:UpdateName(frame)
 			end
 		end
 
-		local HideFriendly = true
 		if ( UnitIsFriend(frame.displayedUnit,"player") and not UnitCanAttack(frame.displayedUnit, "player") and HideFriendly) then
 			frame.healthBar:Hide()
 		else
