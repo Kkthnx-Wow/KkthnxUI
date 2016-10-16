@@ -140,7 +140,7 @@ function KkthnxUIPlates:ConfigNamePlates()
 		-- override any enabled cvar
 		C_Timer.After(.1, function ()
 			-- disable class colors on enemy nameplates
-			DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false
+			DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true
 		end)
 
 		-- always show names on nameplates
@@ -272,7 +272,14 @@ end
 
 function KkthnxUIPlates:UpdateName(frame)
 	if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
+		local unit = frame.displayedUnit
 		local level = UnitLevel(frame.unit)
+		local levelcolor = GetQuestDifficultyColor(level)
+		local levelhexcolor = K.RGBToHex(levelcolor.r, levelcolor.g, levelcolor.b)
+		local isfriend = UnitIsFriend("player", unit)
+		local namecolor = isfriend and K.Colors.reaction[5] or K.Colors.reaction[1]
+		local namehexcolor = K.RGBToHex(namecolor[1], namecolor[2], namecolor[3])
+
 		local name = GetUnitName(frame.unit, false)
 		local classification = UnitClassification(frame.unit)
 		local classificationAbbr = AbbrClassification(classification)
@@ -284,20 +291,9 @@ function KkthnxUIPlates:UpdateName(frame)
 			local faction = UnitFactionGroup(frame.unit)
 
 			-- set unit player name
-			frame.name:SetText((isPVP and faction) and ICON[faction].." "..Abbrev(name).." ("..level..")" or Abbrev(name).." ("..level..")")
+			frame.name:SetText((isPVP and faction) and ICON[faction].." "..namehexcolor ..Abbrev(name).." "..levelhexcolor..level.."" or namehexcolor.. Abbrev(name).." "..levelhexcolor..level.."")
 
-			-- set unit player name color
-			if (UnitIsEnemy("player", frame.unit)) then
-				local _, class = UnitClass(frame.unit)
-				local color = K.Colors.class[class]
-
-				-- color enemy players name with class color
-				frame.name:SetVertexColor(color[1], color[2], color[3])
-			else
-				-- color friendly players name white
-				frame.name:SetVertexColor(.9, .9, .9)
-			end
-		elseif (level == -1) then
+			elseif (level == -1) then
 			-- set boss name text
 			frame.name:SetText(name.." (??)")
 
@@ -311,7 +307,7 @@ function KkthnxUIPlates:UpdateName(frame)
 			end
 		else
 			-- set name text
-			frame.name:SetText(classificationAbbr and Abbrev(name).." ("..level..classificationAbbr..")" or Abbrev(name).." ("..level..")")
+			frame.name:SetText(classificationAbbr and namehexcolor.. Abbrev(name).." "..levelhexcolor..level..classificationAbbr.."" or namehexcolor.. Abbrev(name).." "..levelhexcolor..level.."")
 
 			-- set name color
 			if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
