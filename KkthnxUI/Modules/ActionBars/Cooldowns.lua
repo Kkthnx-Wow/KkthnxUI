@@ -110,18 +110,16 @@ local function Timer_Create(self)
 end
 
 local function Timer_Start(self, start, duration, charges, maxCharges)
-	if self.noOCC then return end
+	local remainingCharges = charges or 0
 
-	if start > 0 and duration > MinDuration then
+	if self:GetName() and string.find(self:GetName(), "ChargeCooldown") then return end
+	if start > 0 and duration > MinDuration and remainingCharges == 0 and (not self.noOCC) then
 		local Timer = self.Timer or Timer_Create(self)
-		local Num = charges or 0
 		Timer.start = start
 		Timer.duration = duration
-		Timer.charges = Num
-		Timer.maxCharges = maxCharges
 		Timer.enabled = true
 		Timer.nextUpdate = 0
-		if Timer.FontScale >= MinScale and Timer.charges < 1 then Timer:Show() end
+		if Timer.FontScale >= MinScale then Timer:Show() end
 	else
 		local Timer = self.Timer
 		if Timer then Timer_Stop(Timer) end

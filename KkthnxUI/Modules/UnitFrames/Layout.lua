@@ -991,7 +991,7 @@ end
 if (config.showArena) then
 	local arena = {}
 	for i = 1, 5 do
-		arena[i] = oUF:Spawn("arena"..i, "oUF_AbuArenaFrame"..i)
+		arena[i] = oUF:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)
 		if (i == 1) then
 			arena[i]:SetPoint(unpack(C.Position.UnitFrames.Arena))
 		else
