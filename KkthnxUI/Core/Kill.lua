@@ -34,7 +34,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
 
 			if CompactRaidFrameManager then
-				CompactRaidFrameManager:SetParent(UIFrameHider)
+				if not InCombatLockdown() then
+					CompactRaidFrameManager:SetParent(UIFrameHider)
+				end
 			end
 
 			if CompactUnitFrameProfiles then
@@ -82,9 +84,18 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	TalentMicroButtonAlert:Kill()
 	EJMicroButtonAlert:Kill()
 
+	if C.Unitframe.Enable then
+		InterfaceOptionsCombatPanelTargetOfTarget:Kill()
+		SetCVar("showPartyBackground", 0)
+	end
+
 	if C.Cooldown.Enable then
 		SetCVar("countdownForCooldowns", 0)
 		InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
+	end
+
+	if C.Nameplates.Enable then
+		SetCVar("ShowClassColorInNameplate", 1)
 	end
 
 	if C.Chat.Enable then

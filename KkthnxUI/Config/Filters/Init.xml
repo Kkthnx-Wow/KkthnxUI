@@ -3,5 +3,6 @@
 	<Script file="ChatSpam.lua"/>
 	<Script file="Cooldowns.lua"/>
 	<Script file="FilgerSpells.lua"/>
+	<Script file="Nameplates.lua"/>
 	<Script file="NeedItems.lua"/>
 </Ui>

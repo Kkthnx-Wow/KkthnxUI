@@ -592,16 +592,16 @@ local header = self:GetParent()
 self:SetWidth(header:GetAttribute("initial-width"))
 self:SetHeight(header:GetAttribute("initial-height"))
 ]],
-"showSolo", false, -- C.Raid.C.Raid.ShowSolo
-"showParty", false, -- C.Raid.ShowParty
+"showParty", true,
 "showRaid", true,
 "showPlayer", true,
+"showSolo", false,
 "point", "TOP",
 "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 "groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 "groupBy", "GROUP", -- C.Raid.GroupByValue
-"maxColumns", C.Raidframe.MaxUnitPerColumn,
-"unitsPerColumn", math.ceil(40/5),
+"maxColumns", math.ceil(40/5),
+"unitsPerColumn", C.Raidframe.MaxUnitPerColumn,
 "columnAnchorPoint", "LEFT",
 "initial-width", C.Raidframe.Width,
 "initial-height", C.Raidframe.Height,

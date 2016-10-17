@@ -108,17 +108,17 @@ end
 -- Dungeon info
 MiniMapInstanceDifficulty:ClearAllPoints()
 MiniMapInstanceDifficulty:SetParent(Minimap)
-MiniMapInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
+MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 MiniMapInstanceDifficulty:SetScale(0.7)
 
 GuildInstanceDifficulty:ClearAllPoints()
 GuildInstanceDifficulty:SetParent(Minimap)
-GuildInstanceDifficulty:SetPoint("TOP", Minimap, "TOP", 0, -4)
+GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 GuildInstanceDifficulty:SetScale(0.7)
 
 MiniMapChallengeMode:ClearAllPoints()
 MiniMapChallengeMode:SetParent(Minimap)
-MiniMapChallengeMode:SetPoint("TOP", Minimap, "TOP", 0, -10)
+MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 MiniMapChallengeMode:SetScale(0.6)
 
 -- Feedback icon

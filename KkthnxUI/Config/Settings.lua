@@ -168,7 +168,24 @@ C["Misc"] = {
 	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,
 }
-C["NamePlates"] = {
+C["Nameplates"] = {
+	["Enable"] = true,
+	["Height"] = 9,
+	["Width"] = 120,
+	["AdditionalHeight"] = 0,
+	["AdditionalWidth"] = 0,
+	["Combat"] = false,
+	["HealthValue"] = true,
+	["CastbarName"] = false,
+	["EnhancedThreat"] = true,
+	["ClassIcons"] = false,
+	["NameAbbreviate"] = false,
+	["GoodColor"] = {0.2, 0.8, 0.2},
+	["NearColor"] = {1, 1, 0},
+	["BadColor"] = {1, 0, 0},
+	["TrackAuras"] = false,
+	["AurasSize"] = 18,
+	["HealerIcon"] = false,
 }
 -- PULSECD OPTIONS
 C["PulseCD"] = {

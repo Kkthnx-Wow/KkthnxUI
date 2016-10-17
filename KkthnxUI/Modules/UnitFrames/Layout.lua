@@ -960,8 +960,12 @@ if (C.Unitframe.Party) then
 	]],
 	"initial-width", K.Scale(105),
 	"initial-height", K.Scale(30),
-	"showParty", true,
 	"showSolo", false,
+	"showParty", true,
+	"showRaid", false,
+	"groupFilter", "1,2,3,4,5,6,7,8",
+	"groupingOrder", "1,2,3,4,5,6,7,8",
+	"groupBy", "GROUP",
 	"showPlayer", C.Unitframe.ShowPlayer, -- Need to add this as an option.
 	"yOffset", K.Scale(-30)
 	)
