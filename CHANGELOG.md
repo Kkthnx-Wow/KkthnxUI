@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased][v6.02] - 9:52:15 PM EDT Thursday, October 13, 2016
+## [v6.02] - 6:14:28 PM EDT Monday, October 17, 2016
 
 ### Added
 - First, pass on raid frames support (oUF based)
@@ -23,15 +23,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Adjusted how the raid frames are confied
 - Tons of clean up
 - Changed the Database again.
+- Improved cooldown module.
+- Redid nameplates again. Reverted to an older version a lot of people liked.
+
+### Removed
+- Remove old nameplates
+- Remove code that is no longer being used.
+- Removed trailing whitespaces.
 
 ### Fixed
 - Border fixes for Filger.
 - Fixed aura timers.
 - Border.lua border colors
-- Grammar updates
+- Grammar
 - ObjectiveTracker mover not showing again after Dugi was disabled after being enabled.
 - Fixed name:raid tag for raid frames.
-
+- Fixed the DBM skin.
+- Fixed raid frame issue for maxunit
+- Cooldown charges
+- Try to fix CompactRaidFrameManager taint.
 
 ## [v6.01] - Wenseday, October 12, 2016
 
