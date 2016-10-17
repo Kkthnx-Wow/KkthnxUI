@@ -1,12 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 if C.Skins.DBM ~= true then return end
 
-local _G = _G
-local format = string.format
-local find = string.find
-local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
-
 local backdrop = {
 	bgFile = C.Media.Blank,
 	insets = {left = 0, right = 0, top = 0, bottom = 0},
@@ -67,7 +61,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 
 						if not frame.styled then
 							frame:SetScale(1)
-							frame:SetHeight(20)
+							frame:SetHeight(19)
 							frame:CreatePixelShadow(1)
 							frame.styled = true
 						end
@@ -110,20 +104,20 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							name:SetPoint("LEFT", frame, "LEFT", 4, 0)
 							name:SetWidth(165)
 							name:SetHeight(8)
-							name:SetFont(C.Media.Font, C.Media.Font_Size)
-							name:SetShadowOffset(1.25, -1.25)
+							name:SetFont(C.Media.Font, C.Media.Font_Size, "")
+							name:SetShadowOffset(K.Mult, -K.Mult)
 							name:SetJustifyH("LEFT")
-							name.SetFont = K.Noop
+							name.SetFont = K.Dummy
 							name.styled = true
 						end
 
 						if not timer.styled then
 							timer:ClearAllPoints()
 							timer:SetPoint("RIGHT", frame, "RIGHT", -1, 0)
-							timer:SetFont(C.Media.Font, C.Media.Font_Size)
-							timer:SetShadowOffset(1.25, -1.25)
+							timer:SetFont(C.Media.Font, C.Media.Font_Size, "")
+							timer:SetShadowOffset(K.Mult, -K.Mult)
 							timer:SetJustifyH("RIGHT")
-							timer.SetFont = K.Noop
+							timer.SetFont = K.Dummy
 							timer.styled = true
 						end
 
@@ -138,19 +132,19 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 					end
 					bar:ApplyStyle()
 					bar.ApplyPosition = function()
-						if C.Unitframe.Enable ~= true or C.Skins.DBMMove == true then return end
+						if C.Unitframe.Enable ~= true or C.Skins.DBMMoveable == true then return end
 						self.mainAnchor:ClearAllPoints()
 						if C.Unitframe.Enable == true then
 							if bar.owner.options.IconRight then
-								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -(138 + PlayerPortrait:GetWidth()), -69)
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -148, -20)
 							else
-								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -(110 + PlayerPortrait:GetWidth()), -69)
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -120, -20)
 							end
 						else
 							if bar.owner.options.IconRight then
-								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -131, -69)
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -131, -20)
 							else
-								self.mainAnchor:SetPoint("BOTTOMRIGHT", "PlayerFrame", "BOTTOMLEFT", -103, -69)
+								self.mainAnchor:SetPoint("BOTTOMRIGHT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -103, -20)
 							end
 						end
 					end
@@ -164,8 +158,8 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 			if not anchor.styled then
 				local header = {anchor:GetRegions()}
 				if header[1]:IsObjectType("FontString") then
-					header[1]:SetFont(C.Media.Font, C.Media.Font_Size)
-					header[1]:SetShadowOffset(1.25, -1.25)
+					header[1]:SetFont(C.Media.Font, C.Media.Font_Size, "")
+					header[1]:SetShadowOffset(K.Mult, -K.Mult)
 					header[1]:SetTextColor(1, 1, 1, 1)
 					anchor.styled = true
 				end
@@ -203,27 +197,27 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 
 				if not bar.styled then
 					bar:SetScale(1)
-					bar:SetHeight(20)
-					bar:CreatePixelShadow()
+					bar:SetHeight(19)
+					bar:SetTemplate("Default")
 					background:SetNormalTexture(nil)
 					bar.styled = true
 				end
 
 				if not progress.styled then
-					progress:SetStatusBarTexture(C.Media.Texture)
+					progress:SetStatusBarTexture(C.media.texture)
 					progress:SetBackdrop(backdrop)
 					progress:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
 					progress.styled = true
 				end
 				progress:ClearAllPoints()
-				progress:SetPoint("TOPLEFT", bar, "TOPLEFT", 0, 0)
-				progress:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
+				progress:SetPoint("TOPLEFT", bar, "TOPLEFT", 2, -2)
+				progress:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -2, 2)
 
 				if not name.styled then
 					name:ClearAllPoints()
 					name:SetPoint("LEFT", bar, "LEFT", 4, 0)
-					name:SetFont(C.Media.Font, C.Media.Font_Size)
-					name:SetShadowOffset(1.25, -1.25)
+					name:SetFont(C.Media.Font, C.Media.Font_Size, "")
+					name:SetShadowOffset(K.Mult, -K.Mult)
 					name:SetJustifyH("LEFT")
 					name.styled = true
 				end
@@ -231,15 +225,14 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				if not timer.styled then
 					timer:ClearAllPoints()
 					timer:SetPoint("RIGHT", bar, "RIGHT", -1, 0)
-					timer:SetFont(C.Media.Font, C.Media.Font_Size)
-					timer:SetShadowOffset(1.25, -1.25)
+					timer:SetFont(C.Media.Font, C.Media.Font_Size, "")
+					timer:SetShadowOffset(K.Mult, -K.Mult)
 					timer:SetJustifyH("RIGHT")
 					timer.styled = true
 				end
 				count = count + 1
 			end
 		end
-
 		if DBM then
 			hooksecurefunc(DBT, "CreateBar", SkinBars)
 			hooksecurefunc(DBM.BossHealth, "Show", SkinBossTitle)
@@ -248,18 +241,17 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 
 			hooksecurefunc(DBM.RangeCheck, "Show", function()
 				if DBMRangeCheck then
-					DBMRangeCheck:CreatePixelShadow()
+					-- DBMRangeCheck:SetTemplate("Transparent")
 				end
 				if DBMRangeCheckRadar then
-					DBMRangeCheckRadar:CreatePixelShadow()
+					-- DBMRangeCheckRadar:SetTemplate("Transparent")
 				end
 			end)
 
 			hooksecurefunc(DBM.InfoFrame, "Show", function()
-				DBMInfoFrame:CreatePixelShadow()
+				-- DBMInfoFrame:SetTemplate("Transparent")
 			end)
 		end
-
 		local replace = string.gsub
 		local old = RaidNotice_AddMessage
 		RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo)
@@ -271,7 +263,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- DBM settings(by alza and help from affli)
+-- DBM settings(by ALZA and help from Affli)
 function K.UploadDBM()
 	if IsAddOnLoaded("DBM-Core") then
 		DBM_UseDualProfile = false
@@ -306,7 +298,7 @@ function K.UploadDBM()
 		DBT_AllPersistentOptions["Default"]["DBM"].Scale = 1
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeScale = 1
 		DBT_AllPersistentOptions["Default"]["DBM"].BarXOffset = 0
-		DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 10
+		DBT_AllPersistentOptions["Default"]["DBM"].BarYOffset = 7
 		DBT_AllPersistentOptions["Default"]["DBM"].Font = C.Media.Font
 		DBT_AllPersistentOptions["Default"]["DBM"].FontSize = C.Media.Font_Size
 		DBT_AllPersistentOptions["Default"]["DBM"].Width = 189
@@ -325,15 +317,15 @@ function K.UploadDBM()
 		DBT_AllPersistentOptions["Default"]["DBM"].HugeBarYOffset = 7
 
 		if C.ActionBar.BottomBars == 1 then
-			DBM_AllSavedOptions["Default"].HPFrameY = 182
-			DBM_AllSavedOptions["Default"].RangeFrameY = 157
-			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 195
-			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -80
+			DBM_AllSavedOptions["Default"].HPFrameY = 126
+			DBM_AllSavedOptions["Default"].RangeFrameY = 101
+			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 139
+			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -136
 		elseif C.ActionBar.BottomBars == 2 then
-			DBM_AllSavedOptions["Default"].HPFrameY = 182
-			DBM_AllSavedOptions["Default"].RangeFrameY = 157
-			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 195
-			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -80
+			DBM_AllSavedOptions["Default"].HPFrameY = 154
+			DBM_AllSavedOptions["Default"].RangeFrameY = 129
+			DBT_AllPersistentOptions["Default"]["DBM"].TimerY = 167
+			DBT_AllPersistentOptions["Default"]["DBM"].HugeTimerY = -108
 		elseif C.ActionBar.BottomBars == 3 then
 			DBM_AllSavedOptions["Default"].HPFrameY = 182
 			DBM_AllSavedOptions["Default"].RangeFrameY = 157
@@ -355,7 +347,7 @@ StaticPopupDialogs.SETTINGS_DBM = {
 	preferredIndex = 3,
 }
 
---	ON LOGON FUNCTION
+-- On logon function
 local OnLogon = CreateFrame("Frame")
 OnLogon:RegisterEvent("PLAYER_ENTERING_WORLD")
 OnLogon:SetScript("OnEvent", function(self, event)
