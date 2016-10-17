@@ -4,13 +4,21 @@ if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or IsAddOnLoaded("Cool
 local format = string.format
 local floor = math.floor
 local min = math.min
+--Cache global variables
+--Lua functions
+local GetTime = GetTime
+--WoW API / Variables
+local CreateFrame = CreateFrame
+local hooksecurefunc = hooksecurefunc
 
-local MIN_SCALE = 0.5
+--Global variables that we don"t cache, list them here for the mikk"s Find Globals script
+-- GLOBALS: UIParent
+
 local ICON_SIZE = 36 --the normal size for an icon (don"t change this)
-local FONT_SIZE = 20 --the base font size to use at a scale of 1
+local FONT_SIZE = C.Cooldown.FontSize --the base font size to use at a scale of 1
 local MIN_SCALE = 0.5 --the minimum scale we want to show cooldown counts at, anything below this will be hidden
 local MIN_DURATION = 1.5 --the minimum duration to show cooldown text for
-local threshold = 3
+local threshold = C.Cooldown.Threshold
 
 local TimeColors = {
 	[0] = "|cfffefefe",
@@ -20,12 +28,12 @@ local TimeColors = {
 	[4] = "|cfffe0000",
 }
 
-K.TimeFormats = {
-	[0] = { "%dd", "%dd" },
-	[1] = { "%dh", "%dh" },
-	[2] = { "%dm", "%dm" },
-	[3] = { "%ds", "%d" },
-	[4] = { "%.1fs", "%.1f" },
+local TimeFormats = {
+	[0] = {"%dd", "%dd"},
+	[1] = {"%dh", "%dh"},
+	[2] = {"%dm", "%dm"},
+	[3] = {"%ds", "%d"},
+	[4] = {"%.1fs", "%.1f"},
 }
 
 local DAY, HOUR, MINUTE = 86400, 3600, 60 --used for calculating aura time text
@@ -52,89 +60,88 @@ local function GetTimeInfo(s, threshhold)
 	end
 end
 
-local function Cooldown_OnUpdate(cd, elapsed)
-	if cd.nextUpdate > 0 then
-		cd.nextUpdate = cd.nextUpdate - elapsed
-		return
-	end
-
-	local remain = cd.duration - (GetTime() - cd.start)
-
-	if remain > 0.05 then
-		if (cd.fontScale * cd:GetEffectiveScale() / UIParent:GetScale()) < MIN_SCALE then
-			cd.text:SetText("")
-			cd.nextUpdate = 500
-		else
-			local timervalue, formatid
-			timervalue, formatid, cd.nextUpdate = GetTimeInfo(remain, threshold)
-			cd.text:SetFormattedText(("%s%s|r"):format(TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
-		end
-	else
-		K:Cooldown_StopTimer(cd)
-	end
+local function Cooldown_Stop(self)
+	self.enabled = nil
+	self:Hide()
 end
 
-function K:Cooldown_OnSizeChanged(cd, width, height)
+local function Cooldown_ForceUpdate(self)
+	self.nextUpdate = 0
+	self:Show()
+end
+
+local function Cooldown_OnSizeChanged(self, width, height)
 	local fontScale = floor(width +.5) / ICON_SIZE
-	local override = cd:GetParent():GetParent().SizeOverride
+	local override = self:GetParent():GetParent().SizeOverride
 	if override then
 		fontScale = override / FONT_SIZE
 	end
 
-	if fontScale == cd.fontScale then
+	if fontScale == self.fontScale then
 		return
 	end
 
-	cd.fontScale = fontScale
+	self.fontScale = fontScale
 	if fontScale < MIN_SCALE and not override then
-		cd:Hide()
+		self:Hide()
 	else
-		cd:Show()
-		cd.text:SetFont(C.Media.Font, fontScale * FONT_SIZE, "OUTLINE")
-		if cd.enabled then
-			self:Cooldown_ForceUpdate(cd)
+		self:Show()
+		self.text:SetFont(C.Media.Font, fontScale * FONT_SIZE, "OUTLINE")
+		if self.enabled then
+			Cooldown_ForceUpdate(self)
 		end
 	end
 end
 
-function K:Cooldown_ForceUpdate(cd)
-	cd.nextUpdate = 0
-	cd:Show()
+local function Cooldown_OnUpdate(self, elapsed)
+	if self.nextUpdate > 0 then
+		self.nextUpdate = self.nextUpdate - elapsed
+		return
+	end
+
+	local remain = self.duration - (GetTime() - self.start)
+
+	if remain > 0.05 then
+		if (self.fontScale * self:GetEffectiveScale() / UIParent:GetScale()) < MIN_SCALE then
+			self.text:SetText("")
+			self.nextUpdate = 500
+		else
+			local timervalue, formatid
+			timervalue, formatid, self.nextUpdate = GetTimeInfo(remain, threshold)
+			self.text:SetFormattedText(("%s%s|r"):format(TimeColors[formatid], TimeFormats[formatid][2]), timervalue)
+		end
+	else
+		Cooldown_Stop(self)
+	end
 end
 
-function K:Cooldown_StopTimer(cd)
-	cd.enabled = nil
-	cd:Hide()
-end
-
-function K:CreateCooldownTimer(parent)
-	local scaler = CreateFrame("Frame", nil, parent)
+local function Cooldown_Create(self)
+	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints()
 
-	local timer = CreateFrame("Frame", nil, scaler); timer:Hide()
+	local timer = CreateFrame("Frame", nil, scaler) timer:Hide()
 	timer:SetAllPoints()
 	timer:SetScript("OnUpdate", Cooldown_OnUpdate)
 
 	local text = timer:CreateFontString(nil, "OVERLAY")
-	text:SetPoint("CENTER", 1, -1)
+	text:SetPoint("CENTER", 1, 1)
 	text:SetJustifyH("CENTER")
 	timer.text = text
 
-	self:Cooldown_OnSizeChanged(timer, parent:GetSize())
-	parent:SetScript("OnSizeChanged", function(_, ...) self:Cooldown_OnSizeChanged(timer, ...) end)
+	Cooldown_OnSizeChanged(timer, scaler:GetSize())
+	scaler:SetScript("OnSizeChanged", function(_, ...) Cooldown_OnSizeChanged(timer, ...) end)
 
-	parent.timer = timer
+	self.timer = timer
 	return timer
 end
 
-function K:OnSetCooldown(start, duration)
+local function Cooldown_Start(self, start, duration, charges, maxCharges)
 	if(self.noOCC) then return end
-	local button = self:GetParent()
 	local remainingCharges = charges or 0
 
 	if self:GetName() and string.find(self:GetName(), "ChargeCooldown") then return end
 	if start > 0 and duration > MIN_DURATION and remainingCharges == 0 and (not self.noOCC) then
-		local timer = self.timer or K:CreateCooldownTimer(self)
+		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
 		timer.duration = duration
 		timer.enabled = true
@@ -143,13 +150,12 @@ function K:OnSetCooldown(start, duration)
 	else
 		local timer = self.timer
 		if timer then
-			K:Cooldown_StopTimer(timer)
-			return
+			Cooldown_Stop(timer)
 		end
 	end
 end
 
-hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", K.OnSetCooldown)
+hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", Cooldown_Start)
 
 if not _G["ActionBarButtonEventsFrame"] then return end
 
@@ -176,7 +182,7 @@ local function cooldown_Update(self)
 	local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action)
 
 	if cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges) then
-		K:OnSetCooldown(start, duration, charges, maxCharges)
+		Cooldown_Start(self, start, duration, charges, maxCharges)
 	end
 end
 
