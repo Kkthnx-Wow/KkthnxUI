@@ -62,7 +62,7 @@ if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
 end
 
 if K.IsAddOnEnabled("TidyPlates") or K.IsAddOnEnabled("Aloft") or K.IsAddOnEnabled("Kui_Nameplates") then
-	C.NamePlates.Enable = false
+	C.Nameplates.Enable = false
 end
 
 if K.IsAddOnEnabled("TipTop") or K.IsAddOnEnabled("TipTac") or K.IsAddOnEnabled("FreebTip") or K.IsAddOnEnabled("bTooltip") or K.IsAddOnEnabled("PhoenixTooltip") or K.IsAddOnEnabled("Icetip") or K.IsAddOnEnabled("rTooltip") then
@@ -99,4 +99,9 @@ end
 
 if K.IsAddOnEnabled("Doom_CooldownPulse") then
 	C.PulseCD.Enable = false
+end
+
+if K.IsAddOnEnabled("MBB") or K.IsAddOnEnabled("MinimapButtonFrame") then
+	C.Skins.MinimapButtons = false
+	C.Minimap.CollectButtons = false
 end

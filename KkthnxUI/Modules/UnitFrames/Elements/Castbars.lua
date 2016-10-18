@@ -112,7 +112,6 @@ function ns.CreateCastbars(self, unit)
 	local Movers = K.Movers
 
 	local Castbar = K.CreateStatusBar(self, "BORDER", self:GetName().."Castbar")
-	--Castbar:SetSize(uconfig.cbwidth, uconfig.cbheight)
 	Castbar:SetFrameStrata("HIGH")
 	K.CreateBorder(Castbar, 11, 3)
 
@@ -276,7 +275,7 @@ function ns.UpdateCastbarColor(Castbar, unit)
 	else
 		Castbar:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
 	end
-	Castbar.Background:SetVertexColor(0.15, 0.15, 0.15, 0.8)
+	Castbar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
 
 	Castbar:SetBorderTexture(Texture)
 	Castbar:SetBorderColor(bR, bG, bB)
