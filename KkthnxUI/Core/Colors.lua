@@ -7,6 +7,7 @@ local Class = select(2, UnitClass("player"))
 oUF.colors.uninterruptible = {
 	1, 0.7, 0
 }
+
 oUF.colors.fallback = {
 	1, 1, 1
 }

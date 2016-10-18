@@ -266,26 +266,18 @@ function ns.PostChannelStart(Castbar, unit, name)
 end
 
 function ns.UpdateCastbarColor(Castbar, unit)
-	local color
 	local bR, bG, bB = K.GetPaintColor(0.2)
-	local text = "default"
+	local Texture = "default"
 
-	if UnitIsUnit(unit, "player") then
-		color = colors.class[select(2, UnitClass("player"))]
-	elseif Castbar.interrupt then
-		color = colors.uninterruptible
-		text = "white"
-		bR, bG, bB = 0.8, 0.7, 0.2
-	elseif UnitIsFriend(unit, "player") then
-		color = colors.reaction[5]
+	if (Castbar.interrupt and UnitCanAttack("player", unit)) then
+		Castbar:SetStatusBarColor(unpack(K.Colors.power["RAGE"]))
+		Texture = "white"
+		bR, bG, bB = unpack(K.Colors.reaction[4])
 	else
-		color = colors.reaction[1]
+		Castbar:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
 	end
+	Castbar.Background:SetVertexColor(0.15, 0.15, 0.15, 0.8)
 
-	Castbar:SetBorderTexture(text)
+	Castbar:SetBorderTexture(Texture)
 	Castbar:SetBorderColor(bR, bG, bB)
-
-	local r, g, b = color[1], color[2], color[3]
-	Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-	Castbar.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
 end
