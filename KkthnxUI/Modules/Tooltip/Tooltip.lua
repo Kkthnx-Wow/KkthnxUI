@@ -276,7 +276,7 @@ function Tooltip:SetColor()
 		local Link = select(2, self:GetItem())
 		local Quality = Link and select(3, GetItemInfo(Link))
 
-		if (Quality and Quality >= 2) then
+		if (Quality and Quality >= 2) and not K.IsAddOnEnabled("Pawn") then
 			R, G, B = GetItemQualityColor(Quality)
 			self:SetBackdropBorderColor(R, G, B)
 		else

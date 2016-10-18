@@ -69,6 +69,10 @@ if K.IsAddOnEnabled("TipTop") or K.IsAddOnEnabled("TipTac") or K.IsAddOnEnabled(
 	C.Tooltip.Enable = false
 end
 
+if K.IsAddOnEnabled("Pawn") then
+	C.Tooltip.ItemIcon = false
+end
+
 if K.IsAddOnEnabled("TipTacTalents") then
 	C.Tooltip.Talents = false
 end

@@ -132,7 +132,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 					end
 					bar:ApplyStyle()
 					bar.ApplyPosition = function()
-						if C.Unitframe.Enable ~= true or C.Skins.DBMMoveable == true then return end
+						if C.Unitframe.Enable ~= true or C.Skins.DBMMove == true then return end
 						self.mainAnchor:ClearAllPoints()
 						if C.Unitframe.Enable == true then
 							if bar.owner.options.IconRight then
