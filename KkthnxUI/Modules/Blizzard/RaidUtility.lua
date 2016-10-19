@@ -1,12 +1,16 @@
 local K, C, L = select(2, ...):unpack()
 --if C.Blizzard.RaidTools ~= true then return end
 
+local unpack = unpack
+local Movers = K.Movers
+
 -- Create main frame
 local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", oUF_PetBattleFrameHider)
 RaidUtilityPanel:CreatePanel("Transparent", 170, 144, unpack(C.Position.RaidUtility))
 if GetCVarBool("watchFrameWidth") then
 	RaidUtilityPanel:SetPoint(C.Position.RaidUtility[1], C.Position.RaidUtility[2], C.Position.RaidUtility[3], C.Position.RaidUtility[4] + 100, C.Position.RaidUtility[5])
 end
+Movers:RegisterFrame(RaidUtilityPanel)
 RaidUtilityPanel.toggled = false
 
 -- Check if We are Raid Leader or Raid Officer
@@ -106,7 +110,7 @@ if CompactRaidFrameManager then
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetWidth(RaidUtilityRoleButton:GetWidth() * 0.19)
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:StripTextures(true)
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SkinButton()
-	
+
 	-- Put other stuff back
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:ClearAllPoints()
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:SetPoint("BOTTOMLEFT", CompactRaidFrameManagerDisplayFrameLockedModeToggle, "TOPLEFT", 0, 1)
