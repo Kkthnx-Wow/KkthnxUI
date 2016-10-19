@@ -9,6 +9,7 @@ C["Unitframe"]["EnhancedFrames"] = true
 C["Unitframe"]["PercentHealth"] = true
 C["Unitframe"]["ClassIcon"] = true
 C["Unitframe"]["SmoothBars"] = true
+C["Position"]["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175}
 
 ---------------------------------------
 ---------------------------------------
@@ -22,10 +23,13 @@ C["UnitFrames"] = {
 	["SmoothBars"] = true,
 }
 
+C["Position"] = {
+	["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175}
+}
 --]]
 
 -- Per class config (overwrites general)
--- Class type need to be uppercase -- druid, mage ect ect...
+-- Class type need to be uppercase -- DRUID, MAGE ect ect...
 if K.Class == "DRUID" then
 
 end

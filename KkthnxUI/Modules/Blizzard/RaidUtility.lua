@@ -26,9 +26,10 @@ local function CreateButton(Name, Parent, Template, Width, Height, Point, Relati
 	local RaidUtilityButton = CreateFrame("Button", Name, Parent, Template)
 	RaidUtilityButton:SetWidth(Width)
 	RaidUtilityButton:SetHeight(Height + 2)
+	RaidUtilityButton:SetFrameLevel(3)
 	RaidUtilityButton:SetPoint(Point, RelativeTo, Point2, xOfs, yOfs)
-	RaidUtilityButton:EnableMouse(true)
-	RaidUtilityButton:StripTextures(true)
+	RaidUtilityPanel.toggled = false
+	RaidUtilityPanel:SetFrameStrata("HIGH")
 	RaidUtilityButton:SkinButton()
 	if Text then
 		RaidUtilityButton.Text = RaidUtilityButton:CreateFontString(nil, "OVERLAY")
@@ -43,15 +44,7 @@ end
 CreateButton("RaidUtilityShowButton", UIParent, "UIPanelButtonTemplate, SecureHandlerClickTemplate", RaidUtilityPanel:GetWidth(), 18, "TOP", RaidUtilityPanel, "TOP", 0, 0, RAID_CONTROL)
 RaidUtilityShowButton:SetFrameRef("RaidUtilityPanel", RaidUtilityPanel)
 RaidUtilityShowButton:SetAttribute("_onclick", [=[self:Hide(); self:GetFrameRef("RaidUtilityPanel"):Show();]=])
-RaidUtilityShowButton:SetScript("OnMouseUp", function(self, button)
-	if button == "RightButton" then
-		if CheckRaidStatus() then DoReadyCheck() end
-	elseif button == "MiddleButton" then
-		if CheckRaidStatus() then InitiateRolePoll() end
-	elseif button == "LeftButton" then
-		RaidUtilityPanel.toggled = true
-	end
-end)
+RaidUtilityShowButton:SetFrameStrata("HIGH")
 
 CreateButton("RaidUtilityCloseButton", RaidUtilityPanel, "UIPanelButtonTemplate, SecureHandlerClickTemplate", RaidUtilityPanel:GetWidth() - 8, 18, "TOP", RaidUtilityPanel, "BOTTOM", 0, -4, CLOSE)
 RaidUtilityCloseButton:SetFrameRef("RaidUtilityShowButton", RaidUtilityShowButton)
@@ -65,15 +58,19 @@ CreateButton("RaidUtilityConvertButton", RaidUtilityPanel, "UIPanelButtonTemplat
 RaidUtilityConvertButton:SetScript("OnMouseUp", function(self)
 	if UnitInRaid("player") then
 		ConvertToParty()
-		RaidUtilityConvertButton.t:SetText(CONVERT_TO_RAID)
+		RaidUtilityConvertButton:SetText(CONVERT_TO_RAID)
 	elseif UnitInParty("player") then
 		ConvertToRaid()
-		RaidUtilityConvertButton.t:SetText(CONVERT_TO_PARTY)
+		RaidUtilityConvertButton:SetText(CONVERT_TO_PARTY)
 	end
 end)
 
 CreateButton("RaidUtilityRoleButton", RaidUtilityPanel, "UIPanelButtonTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityConvertButton, "BOTTOM", 0, -8, ROLE_POLL)
-RaidUtilityRoleButton:SetScript("OnMouseUp", function(self) InitiateRolePoll() end)
+RaidUtilityRoleButton:SetScript("OnMouseUp", function()
+	if CheckRaidStatus() then
+		InitiateRolePoll()
+	end
+end)
 
 CreateButton("RaidUtilityMainTankButton", RaidUtilityPanel, "UIPanelButtonTemplate, SecureActionButtonTemplate", (RaidUtilityDisbandButton:GetWidth() / 2) - 4, 18, "TOPLEFT", RaidUtilityRoleButton, "BOTTOMLEFT", 0, -8, TANK)
 RaidUtilityMainTankButton:SetAttribute("type", "maintank")
@@ -86,7 +83,11 @@ RaidUtilityMainAssistButton:SetAttribute("unit", "target")
 RaidUtilityMainAssistButton:SetAttribute("action", "toggle")
 
 CreateButton("RaidUtilityReadyCheckButton", RaidUtilityPanel, "UIPanelButtonTemplate", RaidUtilityRoleButton:GetWidth() * 0.75, 18, "TOPLEFT", RaidUtilityMainTankButton, "BOTTOMLEFT", 0, -8, READY_CHECK)
-RaidUtilityReadyCheckButton:SetScript("OnMouseUp", function(self) DoReadyCheck() end)
+RaidUtilityReadyCheckButton:SetScript("OnMouseUp", function()
+	if CheckRaidStatus() then
+		DoReadyCheck()
+	end
+end)
 
 CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:ClearAllPoints()
 CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetPoint("TOPRIGHT", RaidUtilityMainAssistButton, "BOTTOMRIGHT", 0, -8)
@@ -125,6 +126,6 @@ local function ToggleRaidUtil(self, event)
 end
 
 local LeadershipCheck = CreateFrame("Frame")
-LeadershipCheck:RegisterEvent("PLAYER_ENTERING_WORLD")
-LeadershipCheck:RegisterEvent("GROUP_ROSTER_UPDATE")
+LeadershipCheck:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleRaidUtil")
+LeadershipCheck:RegisterEvent("GROUP_ROSTER_UPDATE", "ToggleRaidUtil")
 LeadershipCheck:SetScript("OnEvent", ToggleRaidUtil)
