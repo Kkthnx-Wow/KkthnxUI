@@ -20,7 +20,7 @@ C["Position"] = {
 	["PetHorizontal"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167},
 	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 2},
 	["PulseCD"] = {"CENTER", "UIParent", "CENTER", 0, 0},
-	["WorldMap"] = {"CENTER", "UIParent", "CENTER", 0, 100},
+	["RaidUtility"] = {"TOP", "UIParent", "TOP", -280, -4},	
 	["RightBars"] = {"BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330},
 	["StanceBar"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167},
 	["SystemDT"] = {"CENTER", "KkthnxUIMinimapStats", "CENTER", 0, 0.5},
@@ -30,6 +30,7 @@ C["Position"] = {
 	["UIError"] = {"TOP", "UIParent", "TOP", 0, -80},
 	["Vehicle"] = {"TOP", "Minimap", "BOTTOM", 0, -18},
 	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
+	["WorldMap"] = {"CENTER", "UIParent", "CENTER", 0, 100},
 	-- Unitframe positions
 	UnitFrames = {
 		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -140, 140},

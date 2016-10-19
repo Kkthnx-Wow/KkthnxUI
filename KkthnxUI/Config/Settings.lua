@@ -256,16 +256,18 @@ C["Unitframe"] = {
 }
 C["Partyframe"] = { -- Could add this as its own in the future.
 	["PartyInRaid"] = false,
-	["Party"] = true,
+	["Enable"] = true,
 	["Scale"] = 1,
 }
--- RAIDFRAME OPTIONS
+-- Raidframe Options
 C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
+	["Enable"] = true,
 	["Height"] = 40,
 	["HorizontalHealthBars"] = false,
 	["IconSize"] = 22,
 	["IndicatorSize"] = 7,
+	["MainTankFrames"] = true,
 	["ManabarHorizontal"] = false,
 	["ManabarShow"] = true,
 	["MaxUnitPerColumn"] = 8,

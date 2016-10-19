@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.Unitframe.Enable ~= true then return end
+if C.Raidframe.Enable ~= true then return end
 
 -- Credits to Neav, Renstrom, Grimsbain
 local _, ns = ...
@@ -614,27 +614,24 @@ raid:SetScale(C.Raidframe.Scale)
 raid:SetFrameStrata("LOW")
 Movers:RegisterFrame(raid)
 
---Main Tank/Assist Frames
---if C.Raidframe.MainTankFrames then
---	oUF:SetActiveStyle("oUF_Kkthnx_Raid_MT")
---
---	local tanks = oUF:SpawnHeader("oUF_Kkthnx_Raid_MT", nil, "solo, party,r aid",
---	"oUF-initialConfigFunction", [[
---		local header = self:GetParent()
---		self:SetWidth(header:GetAttribute("initial-width"))
---		self:SetHeight(header:GetAttribute("initial-height"))
---	]],
---	"showRaid", true,
---	"showParty", false,
---	"yOffset", -K.Scale(8),
---	"initial-width", K.Scale(42),
---	"initial-height", K.Scale(40),
---	"template", "oUF_KkthnxRaid_MT_Target_Template", -- Target
---	"sortMethod", "INDEX",
---	"groupFilter", "MAINTANK, MAINASSIST",)
---
---	tanks:SetPoint("TOPLEFT", tankFrames, "TOPLEFT")
---	tanks:SetScale(c1)
---	tanks:SetFrameStrata("LOW")
---	Movers:RegisterFrame(tanks)
---end
+-- Main Tank/Assist Frames
+if C.Raidframe.MainTankFrames then
+	oUF:SetActiveStyle("oUF_Kkthnx_Raid_MT")
+
+	local tanks = oUF:SpawnHeader("oUF_Kkthnx_Raid_MT", nil, "raid, party, solo",
+	"oUF-initialConfigFunction", ([[
+		self:SetWidth(%d)
+		self:SetHeight(%d)
+	]]):format(K.Scale(70), K.Scale(30)),
+	"showRaid", true,
+	"showParty", false,
+	"yOffset", -K.Scale(8),
+	"template", "oUF_KkthnxRaid_MT_Target_Template", -- Target
+	"sortMethod", "INDEX",
+	"groupFilter", "MAINTANK, MAINASSIST")
+
+	tanks:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+	tanks:SetScale(1)
+	tanks:SetFrameStrata("LOW")
+	Movers:RegisterFrame(tanks)
+end
