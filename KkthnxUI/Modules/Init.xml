@@ -2,16 +2,15 @@
 	<!-- Unitframes -->
 	<Script file="Unitframes\Init.lua"/>
 	<Script file="Unitframes\AuraList.lua"/>
-	<Include file="Unitframes\oUF_Plugins\oUF_Plugins.xml"/>
+	<Include file="Unitframes\Plugins\Plugins.xml"/>
 	<Script file="Unitframes\Config\Config.lua"/>
 	<Include file="Unitframes\Elements\Elements.xml"/>
 	<Script file="Unitframes\Functions.lua"/>
 	<Script file="Unitframes\AuraFilter.lua"/>
-	<Script file="Unitframes\LayoutArena.lua"/>
-	<Script file="Unitframes\Layout.lua"/>
-	<!-- Raid -->
-	<Include file="Unitframes\Raid\oUF_KkthnxRaid.xml"/>
-	<Script file="Unitframes\Raid\Layout.lua"/>
+	<Script file="Unitframes\Layouts\LayoutArena.lua"/>
+	<Script file="Unitframes\Layouts\Layout.lua"/>
+	<Include file="Unitframes\Layouts\oUF_KkthnxRaid.xml"/>
+	<Script file="Unitframes\Layouts\LayoutRaid.lua"/>
 	<!-- Miscellaneous -->
 	<Script file="Miscellaneous\AFKSpin.lua"/>
 	<Script file="Miscellaneous\AlreadyKnown.lua"/>
