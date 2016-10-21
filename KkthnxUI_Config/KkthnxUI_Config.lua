@@ -246,7 +246,6 @@ local function Local(o)
 	-- Tooltip Settings
 	if o == "UIConfigTooltip" then o = L_GUI_TOOLTIP end
 	if o == "UIConfigTooltipAchievements" then o = L_GUI_TOOLTIP_ACHIEVEMENTS end
-	if o == "UIConfigTooltipArenaExperience" then o = L_GUI_TOOLTIP_ARENA_EXPERIENCE end
 	if o == "UIConfigTooltipCursor" then o = L_GUI_TOOLTIP_CURSOR end
 	if o == "UIConfigTooltipEnable" then o = L_GUI_TOOLTIP_ENABLE end
 	if o == "UIConfigTooltipHealthValue" then o = L_GUI_TOOLTIP_HEALTH end
@@ -304,6 +303,8 @@ local function Local(o)
 	if o == "UIConfigRaidframeShowRolePrefix" then o = L_GUI_RAIDFRAME_SHOWROLE_PREFIX end
 	if o == "UIConfigRaidframeShowThreatText" then o = L_GUI_RAIDFRAME_SHOWTHREATTEXT end
 	if o == "UIConfigRaidframeWidth" then o = L_GUI_RAIDFRAME_WIDTH end
+	if o == "UIConfigRaidframeEnable" then o = L_GUI_RAIDFRAME_ENABLE end
+	if o == "UIConfigRaidframeMainTankFrames" then o = L_GUI_RAIDFRAME_MAINTANKFRAMES end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end
@@ -954,47 +955,6 @@ do
 	InterfaceOptions_AddCategory(frame)
 end
 
---[[
-do
-	-- Button in GameMenuButton frame
-	local UIConfigButton = CreateFrame("Frame")
-	UIConfigButton:RegisterEvent("PLAYER_LOGIN")
-	UIConfigButton:SetScript("OnEvent", function(self, event)
-
-		local Menu = GameMenuFrame
-		local Continue = GameMenuButtonContinue
-		local ContinueX = Continue:GetWidth()
-		local ContinueY = Continue:GetHeight()
-		local Config = UIConfigMain
-		local Interface = GameMenuButtonUIOptions
-		local KeyBinds = GameMenuButtonKeybindings
-
-		Menu:HookScript("OnShow", function(self)
-			local Height = Menu:GetHeight()
-			self:SetHeight(Height + 21)
-		end)
-
-		local button = CreateFrame("BUTTON", "GameMenuKkthnxUIButtonUIConfig", Menu, "GameMenuButtonTemplate")
-		button:SetSize(ContinueX, ContinueY)
-		button:SetPoint("TOP", Interface, "BOTTOM", 0, -1)
-		button:SetText("|cff3c9bedKkthnxUI|r")
-
-		button:SetScript("OnClick", function(self)
-			local Config = UIConfigMain
-			if Config and Config:IsShown() then
-				Config:Hide()
-			else
-				CreateUIConfig()
-				HideUIPanel(Menu)
-			end
-		end)
-
-		KeyBinds:ClearAllPoints()
-		KeyBinds:SetPoint("TOP", button, "BOTTOM", 0, -1)
-	end)
-end
---]]
-
 local GameMenu = CreateFrame("Frame")
 local Menu = GameMenuFrame
 local Header = GameMenuFrameHeader
@@ -1034,15 +994,6 @@ function GameMenu:EnableKkthnxUIConfig()
 	self.KkthnxUI = KkthnxUI
 end
 
-function GameMenu:Enable()
-	if IsAddOnLoaded("KkthnxUI_Config") then
-		self:EnableKkthnxUIConfig()
-	end
+if IsAddOnLoaded("KkthnxUI_Config") then
+	GameMenu:EnableKkthnxUIConfig()
 end
-
-GameMenu:RegisterEvent("PLAYER_LOGIN")
-GameMenu:SetScript("OnEvent", function(self, event, ...)
-	if (event == "PLAYER_LOGIN") then
-		GameMenu:Enable()
-	end
-end)

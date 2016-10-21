@@ -138,6 +138,5 @@
 	<Script file="Tooltip\ItemCount.lua"/>
 	<Script file="Tooltip\ItemIcons.lua"/>
 	<Script file="Tooltip\Specialization.lua"/>
-	<Script file="Tooltip\PvPRating.lua"/>
 	<Script file="Tooltip\SpellID.lua"/>
 </Ui>

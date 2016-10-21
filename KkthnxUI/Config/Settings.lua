@@ -170,7 +170,7 @@ C["Misc"] = {
 }
 C["Nameplates"] = {
 	["Enable"] = true,
-	["Height"] = 9,
+	["Height"] = 11,
 	["Width"] = 120,
 	["AdditionalHeight"] = 0,
 	["AdditionalWidth"] = 0,
@@ -179,11 +179,11 @@ C["Nameplates"] = {
 	["CastbarName"] = false,
 	["EnhancedThreat"] = true,
 	["ClassIcons"] = false,
-	["NameAbbreviate"] = false,
+	["NameAbbreviate"] = true,
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["NearColor"] = {1, 1, 0},
 	["BadColor"] = {1, 0, 0},
-	["TrackAuras"] = false,
+	["TrackAuras"] = true,
 	["AurasSize"] = 18,
 	["HealerIcon"] = false,
 }
@@ -211,7 +211,6 @@ C["Skins"] = {
 -- TOOLTIP OPTIONS
 C["Tooltip"] = {
 	["Achievements"] = false,
-	["ArenaExperience"] = false,
 	["Cursor"] = false,
 	["Enable"] = true,
 	["HealthValue"] = true,

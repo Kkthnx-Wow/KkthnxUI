@@ -17,10 +17,6 @@ local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff
 local tinsert, tremove = tinsert, tremove
 local Locale = GetLocale()
 
-K.Print = function(...)
-	print("|cff3c9bedKkthnxUI|r:", ...)
-end
-
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
 K.BorderBackdrop = {bgFile = C.Media.Blank}
@@ -37,7 +33,7 @@ K.UIParent.origHeight = K.UIParent:GetHeight()
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
 K.Print = function(...)
-	print(ValueColor..K.UIName..":|r", ...)
+	print("|cff3c9bedKkthnxUI|r:", ...)
 end
 
 K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)

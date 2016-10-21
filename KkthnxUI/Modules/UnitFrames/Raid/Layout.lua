@@ -292,7 +292,7 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-	-- self:SetBackdrop({bgFile = C.Media.Blank})
+	self:SetBackdrop({bgFile = C.Media.Blank})
 
 	K.CreateBorder(self, 10, 3)
 	self:SetBorderTexture("white")
@@ -375,12 +375,16 @@ local function CreateRaidLayout(self, unit)
 		myBar:SetOrientation("HORIZONTAL")
 		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		myBar:SetWidth(self:GetWidth())
+		--myBar:SetWidth(self:GetWidth())
+		myBar:SetWidth( C.Raidframe.Width)
+		myBar:SetHeight(C.Raidframe.Height)
 	else
 		myBar:SetOrientation("VERTICAL")
 		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
 		myBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		myBar:SetHeight(self:GetHeight())
+		--myBar:SetHeight(self:GetHeight())
+		myBar:SetWidth( C.Raidframe.Width)
+		myBar:SetHeight(C.Raidframe.Height)
 	end
 
 	local otherBar = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
@@ -392,12 +396,16 @@ local function CreateRaidLayout(self, unit)
 		otherBar:SetOrientation("HORIZONTAL")
 		otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
 		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
-		otherBar:SetWidth(self:GetWidth())
+		--otherBar:SetWidth(self:GetWidth())
+		otherBar:SetWidth(C.Raidframe.Width)
+		otherBar:SetHeight(C.Raidframe.Height)
 	else
 		otherBar:SetOrientation("VERTICAL")
 		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "TOPLEFT")
 		otherBar:SetPoint("BOTTOMRIGHT", myBar:GetStatusBarTexture(), "TOPRIGHT")
-		otherBar:SetHeight(self:GetHeight())
+		--otherBar:SetHeight(self:GetHeight())
+		otherBar:SetWidth(C.Raidframe.Width)
+		otherBar:SetHeight(C.Raidframe.Height)
 	end
 
 	local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
@@ -409,12 +417,16 @@ local function CreateRaidLayout(self, unit)
 		healAbsorbBar:SetOrientation("HORIZONTAL")
 		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		healAbsorbBar:SetWidth(self:GetWidth())
+		--healAbsorbBar:SetWidth(self:GetWidth())
+		healAbsorbBar:SetWidth(C.Raidframe.Width)
+		healAbsorbBar:SetHeight(C.Raidframe.Height)
 	else
 		healAbsorbBar:SetOrientation("VERTICAL")
 		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
 		healAbsorbBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		healAbsorbBar:SetHeight(self:GetHeight())
+		--healAbsorbBar:SetHeight(self:GetHeight())
+		healAbsorbBar:SetWidth(C.Raidframe.Width)
+		healAbsorbBar:SetHeight(C.Raidframe.Height)
 	end
 
 	local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
@@ -426,12 +438,16 @@ local function CreateRaidLayout(self, unit)
 		absorbBar:SetOrientation("HORIZONTAL")
 		absorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		absorbBar:SetWidth(self:GetWidth())
+		--absorbBar:SetWidth(self:GetWidth())
+		absorbBar:SetWidth(C.Raidframe.Width)
+		absorbBar:SetHeight(C.Raidframe.Height)
 	else
 		absorbBar:SetOrientation("VERTICAL")
 		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
 		absorbBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		absorbBar:SetHeight(self:GetHeight())
+		--absorbBar:SetHeight(self:GetHeight())
+		absorbBar:SetWidth(C.Raidframe.Width)
+		absorbBar:SetHeight(C.Raidframe.Height)
 	end
 
 	absorbBar.Overlay = absorbBar:CreateTexture("$parentOverlay", "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
@@ -442,7 +458,7 @@ local function CreateRaidLayout(self, unit)
 		otherBar = otherBar,
 		healAbsorbBar = healAbsorbBar,
 		absorbBar = absorbBar,
-		maxOverflow = 1.0,
+		maxOverflow = 1,
 		frequentUpdates = true
 	}
 
@@ -620,8 +636,8 @@ if C.Raidframe.MainTankFrames then
 
 	local tanks = oUF:SpawnHeader("oUF_Kkthnx_Raid_MT", nil, "raid, party, solo",
 	"oUF-initialConfigFunction", ([[
-		self:SetWidth(%d)
-		self:SetHeight(%d)
+	self:SetWidth(%d)
+	self:SetHeight(%d)
 	]]):format(K.Scale(70), K.Scale(30)),
 	"showRaid", true,
 	"showParty", false,
