@@ -1638,7 +1638,12 @@ function NamePlates_UpdateNamePlateOptions()
 	local baseNamePlateWidth = C.Nameplates.Width * K.NoScaleMult
 	local baseNamePlateHeight = 45
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"))
-	C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
+	if K.WoWPatch == ("7.0.3") then
+		C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
+	else
+		C_NamePlate.SetNamePlateFriendlySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
+		C_NamePlate.SetNamePlateEnemySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
+	end
 	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
 
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do

@@ -12,8 +12,10 @@ ScriptErrors:SetScript("OnEvent", function(self, addon)
 	end
 end)
 
-WorldMapPlayerUpper:EnableMouse(false)
-WorldMapPlayerLower:EnableMouse(false)
+if K.WoWPatch == ("7.0.3") then
+	WorldMapPlayerUpper:EnableMouse(false)
+	WorldMapPlayerLower:EnableMouse(false)
+end
 
 local TaintFix = CreateFrame("Frame")
 TaintFix:SetScript("OnUpdate", function(self, elapsed)
@@ -26,7 +28,9 @@ end)
 StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
 StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil
-StaticPopupDialogs.PARTY_INVITE_XREALM.hideOnEscape = nil
+if K.WoWPatch == ("7.0.3") then
+	StaticPopupDialogs.PARTY_INVITE_XREALM.hideOnEscape = nil
+end
 StaticPopupDialogs.CONFIRM_SUMMON.hideOnEscape = nil
 StaticPopupDialogs.ADDON_ACTION_FORBIDDEN.button1 = nil
 StaticPopupDialogs.TOO_MANY_LUA_ERRORS.button1 = nil

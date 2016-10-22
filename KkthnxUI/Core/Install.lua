@@ -46,7 +46,9 @@ local function InstallUI()
 	SetCVar("autoQuestProgress", 1)
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("buffDurations", 1)
-	SetCVar("cameraDistanceMaxFactor", 2.6)
+	if K.WoWPatch == ("7.0.3") then
+		SetCVar("cameraDistanceMaxFactor", 2.6)
+	end
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "im")
 	SetCVar("countdownForCooldowns", 0)

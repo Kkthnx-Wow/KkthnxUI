@@ -67,15 +67,13 @@ KkthnxUI = Engine
 
 This should be at the top of every file inside of the KkthnxUI AddOn.
 local K, C, L = select(2, ...):unpack()
-You can also do local K, C, _ = select(2, ...):unpack()
-As well as K, _ = select(2, ...):unpack()
+You can also do local K, C  = select(2, ...):unpack()
+As well as K = select(2, ...):unpack()
 This is going to depend on what you are going to be using in the file.
 
 This is how another addon imports the KkthnxUI engine.
-local K, C, L, _ = KkthnxUI:unpack()
-You can also do local K, C, _ = KkthnxUI:unpack()
-As well as K, _ = select(2, ...):unpack()
+local K, C, L = KkthnxUI:unpack()
+You can also do local K, C  = KkthnxUI:unpack()
+As well as K = select(2, ...):unpack()
 This is going to depend on what you are going to be using in the file.
-
-We put an _ for taint prevention.
 --]]

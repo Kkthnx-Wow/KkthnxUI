@@ -56,7 +56,9 @@ local function AddMessage(frame, str, ...)
 	return origs[frame](frame, str, ...)
 end
 
-FriendsMicroButton:Kill()
+if K.WoWPatch == ("7.0.3") then
+	FriendsMicroButton:Kill()
+end
 ChatFrameMenuButton:Kill()
 
 -- Set chat style
