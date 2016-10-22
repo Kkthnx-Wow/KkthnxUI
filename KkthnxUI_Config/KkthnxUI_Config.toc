@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: |cff3c9bedKkthnxUI|r Config GUI
 ## Author: Tohveli, Josh "Kkthnx" Russell

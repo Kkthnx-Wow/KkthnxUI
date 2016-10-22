@@ -57,7 +57,9 @@ local function AddMessage(frame, str, ...)
 end
 
 if K.WoWPatch == ("7.0.3") then
-	FriendsMicroButton:Kill()
+		FriendsMicroButton:Kill()
+	else
+		QuickJoinToastButton:Kill()
 end
 ChatFrameMenuButton:Kill()
 

@@ -1,4 +1,4 @@
-## Interface: 70000
+## Interface: 70100
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: |cffffff00By Josh "Kkthnx" Russell|r |n|n|cff34a853PayPal.Me|r|cffffffff:|r|n|cffffffffwww.paypal.me/kkthnx|r
 ## Author: Shestak, Josh "Kkthnx" Russell
