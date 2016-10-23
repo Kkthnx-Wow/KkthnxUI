@@ -994,6 +994,6 @@ function GameMenu:EnableKkthnxUIConfig()
 	self.KkthnxUI = KkthnxUI
 end
 
-if IsAddOnLoaded("KkthnxUI_Config") then
+if IsAddOnLoaded("KkthnxUI_Config") and not IsAddOnLoaded("ConsolePort") then
 	GameMenu:EnableKkthnxUIConfig()
 end

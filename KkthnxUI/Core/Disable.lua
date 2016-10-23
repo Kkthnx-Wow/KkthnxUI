@@ -45,7 +45,7 @@ if K.IsAddOnEnabled("XPerl") or K.IsAddOnEnabled("Stuf") or K.IsAddOnEnabled("Pi
 	C.Unitframe.Enable = false
 end
 
-if K.IsAddOnEnabled("Dominos") or K.IsAddOnEnabled("Bartender4") or K.IsAddOnEnabled("RazerNaga")  or K.IsAddOnEnabled("daftMainBar") then
+if K.IsAddOnEnabled("Dominos") or K.IsAddOnEnabled("Bartender4") or K.IsAddOnEnabled("RazerNaga")  or K.IsAddOnEnabled("daftMainBar") or K.IsAddOnEnabled("ConsolePortBar") then
 	C.ActionBar.Enable = false
 end
 
@@ -75,6 +75,11 @@ end
 
 if K.IsAddOnEnabled("TipTacTalents") then
 	C.Tooltip.Talents = false
+end
+
+if K.IsAddOnEnabled("ConsolePortBar") then
+	C.DataBars.Experience = false
+	C.DataBars.Artifact = false
 end
 
 if K.IsAddOnEnabled("GnomishVendorShrinker") or K.IsAddOnEnabled("AlreadyKnown") then
