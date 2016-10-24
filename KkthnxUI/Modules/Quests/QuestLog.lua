@@ -6,7 +6,7 @@ local hooksecurefunc = hooksecurefunc
 local IsAltKeyDown, IsControlKeyDown = IsAltKeyDown, IsControlKeyDown
 
 -- QUEST LEVEL(YQUESTLEVEL BY YLEAF)
-if K.WoWPatch == ("7.0.3") then
+if tonumber(K.WoWBuild) == 22810 then
 	hooksecurefunc("QuestLogQuests_Update", function()
 		for i, button in pairs(QuestMapFrame.QuestsFrame.Contents.Titles) do
 			if button:IsShown() then

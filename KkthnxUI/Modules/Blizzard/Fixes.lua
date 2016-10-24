@@ -12,7 +12,7 @@ ScriptErrors:SetScript("OnEvent", function(self, addon)
 	end
 end)
 
-if K.WoWPatch == ("7.0.3") then
+if tonumber(K.WoWBuild) == 22810 then
 	WorldMapPlayerUpper:EnableMouse(false)
 	WorldMapPlayerLower:EnableMouse(false)
 end
@@ -28,7 +28,7 @@ end)
 StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
 StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil
-if K.WoWPatch == ("7.0.3") then
+if tonumber(K.WoWBuild) == 22810 then
 	StaticPopupDialogs.PARTY_INVITE_XREALM.hideOnEscape = nil
 end
 StaticPopupDialogs.CONFIRM_SUMMON.hideOnEscape = nil

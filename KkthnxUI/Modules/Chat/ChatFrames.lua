@@ -56,7 +56,7 @@ local function AddMessage(frame, str, ...)
 	return origs[frame](frame, str, ...)
 end
 
-if K.WoWPatch == ("7.0.3") then
+if tonumber(K.WoWBuild) == 22810 then
 		FriendsMicroButton:Kill()
 	else
 		QuickJoinToastButton:Kill()

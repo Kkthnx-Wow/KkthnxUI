@@ -1638,7 +1638,7 @@ function NamePlates_UpdateNamePlateOptions()
 	local baseNamePlateWidth = C.Nameplates.Width * K.NoScaleMult
 	local baseNamePlateHeight = 45
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"))
-	if K.WoWPatch == ("7.0.3") then
+	if tonumber(K.WoWBuild) == 22810 then
 		C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
 	else
 		C_NamePlate.SetNamePlateFriendlySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
