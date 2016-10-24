@@ -602,7 +602,7 @@ local function CreateUnitLayout(self, unit)
 		self.Name.Bg:SetTexCoord(0.2, 0.8, 0.3, 0.85)
 		self.Name.Bg:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT")
 		self.Name.Bg:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT")
-		self.Name.Bg:SetTexture(textPath.. "nameBackground")
+		self.Name.Bg:SetTexture(C.Media.Texture)
 
 		-- Alt power bar
 		local altbar = _G["Boss"..unit:match("%d").."TargetFramePowerBarAlt"]
