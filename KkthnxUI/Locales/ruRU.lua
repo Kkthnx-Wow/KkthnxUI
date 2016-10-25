@@ -5,7 +5,7 @@ if (Locale ~= "ruRU") then
 	return
 end
 
--- Announce Localization
+--- Announce Localization
 L_ANNOUNCE_FP_USE = "%s used %s."
 L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
 L_ANNOUNCE_PC_ABORTED = "Pull ABORTED!"
@@ -135,6 +135,9 @@ L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff3c9bedKkt
 L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
 L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
 L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff3c9bedDBM|r."
+-- Raid Utility
+L_RAID_UTIL_DISBAND = "Disband Group"
+L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
 -- Tooltip Localization
 L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
 L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"

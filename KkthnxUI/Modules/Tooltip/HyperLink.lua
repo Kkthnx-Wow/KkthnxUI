@@ -1,47 +1,67 @@
 local K, C, L = select(2, ...):unpack()
-if C.Chat.Enable ~= true or C.Tooltip.Enable ~= true or IsAddOnLoaded("tekKompare") then return end
---[[
+
 local _G = _G
-local match = string.match
-local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 
--- BASED ON TEKKOMPARE(BY TEKKUB)
-local orig1, orig2, GameTooltip = {}, {}, GameTooltip
-local linktypes = {item = true, enchant = true, spell = true, quest = true, unit = true, talent = true, achievement = true, glyph = true, instancelock = true, currency = true}
+local ChatHyperLink = CreateFrame("Frame")
 
+local linktypes = {
+	['item'] = true,
+	['spell'] = true,
+	['unit'] = true,
+	['quest'] = true,
+	['enchant'] = true,
+	['achievement'] = true,
+	['instancelock'] = true,
+	['talent'] = true,
+	['glyph'] = true,
+	["currency"] = true,
+}
+
+local HyperlinkEntered
 local function OnHyperlinkEnter(frame, link, ...)
+	if InCombatLockdown() then return end
 	local linktype = link:match("^([^:]+)")
-	if linktype and linktype == "battlepet" then
-		GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT", -3, 0)
-		GameTooltip:Show()
-		local _, speciesID, level, breedQuality, maxHealth, power, speed = strsplit(":", link)
-		BattlePetToolTip_Show(tonumber(speciesID), tonumber(level), tonumber(breedQuality), tonumber(maxHealth), tonumber(power), tonumber(speed))
-	elseif linktype and linktypes[linktype] then
-		GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT", -3, 0)
+	if linktype and linktypes[linktype] then
+		ShowUIPanel(GameTooltip)
+		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
 		GameTooltip:SetHyperlink(link)
+		HyperlinkEntered = frame
 		GameTooltip:Show()
 	end
-
-	if orig1[frame] then return orig1[frame](frame, link, ...) end
 end
 
 local function OnHyperlinkLeave(frame, link, ...)
-	local linktype = link:match("^([^:]+)")
-	if linktype and linktype == "battlepet" then
-		BattlePetTooltip:Hide()
-	elseif linktype and linktypes[linktype] then
-		GameTooltip:Hide()
+	if HyperlinkEntered then
+		HideUIPanel(GameTooltip)
+		HyperlinkEntered = nil
 	end
-
-	if orig2[frame] then return orig2[frame](frame, ...) end
 end
 
-for i = 1, NUM_CHAT_WINDOWS do
-	local frame = _G["ChatFrame"..i]
-	orig1[frame] = frame:GetScript("OnHyperlinkEnter")
+for _, frameName in pairs(CHAT_FRAMES) do
+	local frame = _G[frameName]
 	frame:SetScript("OnHyperlinkEnter", OnHyperlinkEnter)
-
-	orig2[frame] = frame:GetScript("OnHyperlinkLeave")
 	frame:SetScript("OnHyperlinkLeave", OnHyperlinkLeave)
 end
---]]
+
+
+local function EnableHyperlink()
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName]
+		frame:SetScript("OnHyperlinkEnter", OnHyperlinkEnter)
+		frame:SetScript("OnHyperlinkLeave", OnHyperlinkLeave)
+	end
+end
+
+local function DisableHyperlink()
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName]
+		frame:SetScript("OnHyperlinkEnter", nil)
+		frame:SetScript("OnHyperlinkLeave", nil)
+	end
+end
+
+if C.Tooltip.HyperLink and C.Chat.Enable or C.Tooltip.Enable  or not IsAddOnLoaded("tekKompare") then
+	EnableHyperlink()
+else
+	DisableHyperlink()
+end

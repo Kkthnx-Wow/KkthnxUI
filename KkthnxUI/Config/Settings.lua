@@ -217,6 +217,7 @@ C["Tooltip"] = {
 	["Cursor"] = false,
 	["Enable"] = true,
 	["HealthValue"] = true,
+	["HyperLink"] = false,
 	["InstanceLock"] = false,
 	["ItemCount"] = false,
 	["ItemIcon"] = false,

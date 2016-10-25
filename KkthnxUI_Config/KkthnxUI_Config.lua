@@ -257,6 +257,7 @@ local function Local(o)
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
 	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_SHOWSPEC end
 	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
+	if o == "UIConfigTooltipHyperLink" then o = L_GUI_TOOLTIP_HYPERLINK end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeBuilderSpender" then o = L_GUI_UNITFRAME_BUILDERSPENDER end
