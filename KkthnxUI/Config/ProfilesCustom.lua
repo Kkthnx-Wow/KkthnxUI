@@ -50,11 +50,11 @@ if K.Level ~= MAX_PLAYER_LEVEL then
 end
 
 -- Magicnachos personal config
-if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
+if (K.Name == "CharacterName") and (K.Realm == "RealmName") then
 
 end
 
 -- Kkthnx personal config
-if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
+if (K.Name == "CharacterName" or K.Name == "CharacterName" or K.Name == "CharacterName" or K.Name == "CharacterName") and (K.Realm == "RealmName") then
 
 end
