@@ -304,7 +304,7 @@ local function SkinButton(Frame, Strip)
 
 	-- This is so hacky lmao. Using CreateBackdrop for the time being.
 	-- I need to make new textures for blizzard borders.
-	Frame:CreateBackdrop(size, 4)
+	Frame:CreateBackdrop("Default", 4)
 
 	Frame:HookScript("OnEnter", function(self)
 		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]

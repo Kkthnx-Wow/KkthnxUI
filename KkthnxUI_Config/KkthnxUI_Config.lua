@@ -32,7 +32,7 @@ local ALLOWED_GROUPS = {
 	["DataBars"] = 7,
 	["Auras"] = 8,
 	["Chat"] = 9,
-	["Stats"] = 10,
+	["DataText"] = 10,
 	["Cooldown"] = 11,
 	["Filger"] = 12,
 	["Loot"] = 13,
@@ -141,11 +141,14 @@ local function Local(o)
 	if o == "UIConfigChatTabsOutline" then o = L_GUI_CHAT_TABS_OUTLINE end
 	if o == "UIConfigChatWhispSound" then o = L_GUI_CHAT_WHISP end
 	if o == "UIConfigChatWidth" then o = L_GUI_CHAT_WIDTH end
-	-- Stats Settings
-	if o == "UIConfigStats" then o = L_GUI_STATS end
-	if o == "UIConfigStatsBattleground" then o = L_GUI_STATS_BG end
-	if o == "UIConfigStatsLocation" then o = L_GUI_STATS_LOCATION end
-	if o == "UIConfigStatsSystem" then o = L_GUI_STATS_SYSTEM end
+	-- DataText Settings
+	if o == "UIConfigDataText" then o = L_GUI_DATATEXT end	
+	if o == "UIConfigDataTextLocation" then o = L_GUI_DATATEXT_LOCATION end
+	if o == "UIConfigDataTextSystem" then o = L_GUI_DATATEXT_SYSTEM end
+	if o == "UIConfigDataTextTime" then o = L_GUI_DATATEXT_TIME end
+	if o == "UIConfigDataTextTime24Hr" then o = L_GUI_DATATEXT_TIME24HR end
+	if o == "UIConfigDataTextLocalTime" then o = L_GUI_DATATEXT_LOCALTIME end
+	if o == "UIConfigDataTextBattleground" then o = L_GUI_DATATEXT_BATTLEGROUND end
 	-- Cooldown Settings
 	if o == "UIConfigCooldown" then o = L_GUI_COOLDOWN end
 	if o == "UIConfigCooldownEnable" then o = L_GUI_COOLDOWN_ENABLE end

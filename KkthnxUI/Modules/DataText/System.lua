@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.Stats.System ~= true then return end
+if C.DataText.System ~= true then return end
 
 local format = format
 local int = 1
@@ -13,8 +13,6 @@ local percentageString = "%.2f%%"
 local SystemDT = CreateFrame("Frame")
 
 local MemoryColor = K.RGBToHex(1, 1, 1)
-local KilobyteString = "%d ".. MemoryColor .."kb".."|r"
-local MegabyteString = "%.2f ".. MemoryColor .."mb".."|r"
 local StatColor = K.RGBToHex(1, 1, 1)
 local StatClassColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local Movers = K.Movers
@@ -146,9 +144,30 @@ local ResetData = function(self, event)
 	wipe(MemoryTable)
 end
 
-SystemDT:SetScript("OnEvent", ResetData)
-SystemDT:SetScript("OnUpdate", Update)
-SystemDT:SetScript("OnEnter", OnEnter)
-SystemDT:SetScript("OnLeave", OnLeave)
-SystemDT:SetScript("OnMouseUp", OnMouseUp)
-Update(SystemDT, 10)
+function SystemDT:Enable()
+	KilobyteString = "%d ".. MemoryColor .."kb".."|r"
+	MegabyteString = "%.2f ".. MemoryColor .."mb".."|r"
+	self:RegisterEvent("ADDON_LOADED")
+	self:SetScript("OnEvent", ResetData)
+	self:SetScript("OnUpdate", Update)
+	self:SetScript("OnEnter", OnEnter)
+	self:SetScript("OnLeave", OnLeave)
+	self:SetScript("OnMouseUp", OnMouseUp)
+	Update(self, 10)
+end
+
+function SystemDT:Disable()
+	self.Text:SetText("")
+	self:UnregisterAllEvents()
+	self:SetScript("OnEvent", nil)
+	self:SetScript("OnUpdate", nil)
+	self:SetScript("OnEnter", nil)
+	self:SetScript("OnLeave", nil)
+	self:SetScript("OnMouseUp", nil)
+end
+
+if C.DataText.System then
+	SystemDT:Enable()
+else
+	SystemDT:Disable()
+end

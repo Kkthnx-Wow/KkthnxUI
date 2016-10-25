@@ -63,12 +63,6 @@ C["Blizzard"] = {
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b, 1},
 	["VehicleMouseover"] = false,
 }
--- STATS OPTIONS
-C["Stats"] = {
-	["Battleground"] = true,
-	["System"] = true,
-	["Location"] = true,
-}
 -- BUFFS & DEBUFFS OPTIONS
 C["Auras"] = {
 	["Enable"] = true,
@@ -110,6 +104,15 @@ C["DataBars"] = {
 	-- ["Honor"] = true,
 	["Height"] = 8,
 	["Width"] = 142,
+}
+-- Datatext
+C["DataText"] = {
+	["Location"] = true,
+	["System"] = true,
+	["Time"] = true,
+	["Time24Hr"] = false,
+	["LocalTime"] = true,
+	["Battleground"] = true,
 }
 -- FILGER OPTIONS
 C["Filger"] = {

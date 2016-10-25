@@ -1,11 +1,10 @@
 local K, C, L = select(2, ...):unpack()
-if C.Minimap.Enable ~= true or C.Stats.Location ~= true or IsAddOnLoaded("Carbonite") then return end
+if C.Minimap.Enable ~= true or C.DataText.Location ~= true or IsAddOnLoaded("Carbonite") then return end
 
 local Unknown = UNKNOWN
 
-local Stat = CreateFrame("Frame")
-Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
-Stat:SetFrameStrata("BACKGROUND")
+local Stat = CreateFrame("Frame", nil, UIParent)
+Stat:SetFrameStrata("MEDIUM")
 Stat:SetFrameLevel(3)
 Stat:EnableMouse(true)
 
@@ -35,12 +34,12 @@ local Update = function(self)
 	end
 
 	if (Text:len() > 18) then
-		Text = strsub(Text, 1, 14) .. "..."
+		Text = strsub(Text, 1, 12) .. "..."
 	end
 
 	Zone:SetText(Text)
 	Zone:SetTextColor(Color[1], Color[2], Color[3])
-
+	
 	self:SetAllPoints(Zone)
 end
 
@@ -48,9 +47,9 @@ local OnEnter = function(self)
 	if InCombatLockdown() then
 		return
 	end
-	
-	GameTooltip:ClearLines()
+
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 0, 5)
+	GameTooltip:ClearLines()
 
 	local Text = GetRealZoneText()
 	local PVPType, IsSubZonePvP, FactionName = GetZonePVPInfo()
@@ -109,11 +108,28 @@ local OnLeave = function()
 	GameTooltip:Hide()
 end
 
-Stat:RegisterEvent("ZONE_CHANGED")
-Stat:RegisterEvent("ZONE_CHANGED_INDOORS")
-Stat:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-Stat:RegisterEvent("PLAYER_ENTERING_WORLD")
-Stat:SetScript("OnEvent", Update)
-Stat:SetScript("OnEnter", OnEnter)
-Stat:SetScript("OnLeave", OnLeave)
-Update(Stat)
+
+function Stat:Enable()
+	self:RegisterEvent("ZONE_CHANGED")
+	self:RegisterEvent("ZONE_CHANGED_INDOORS")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:SetScript("OnEvent", Update)
+	self:SetScript("OnEnter", OnEnter)
+	self:SetScript("OnLeave", OnLeave)
+	Update(self)
+end
+
+function Stat:Disable()
+	self.Text:SetText("")
+	self:UnregisterAllEvents()
+	self:SetScript("OnUpdate", nil)
+	self:SetScript("OnEnter", nil)
+	self:SetScript("OnLeave", nil)
+end
+
+if C.DataText.Location then
+	Stat:Enable()
+else
+	Stat:Disable()
+end

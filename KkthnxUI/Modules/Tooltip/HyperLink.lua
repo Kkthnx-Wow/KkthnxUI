@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true or C.Tooltip.Enable ~= true or IsAddOnLoaded("tekKompare") then return end
-
+--[[
 local _G = _G
 local match = string.match
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
@@ -44,3 +44,4 @@ for i = 1, NUM_CHAT_WINDOWS do
 	orig2[frame] = frame:GetScript("OnHyperlinkLeave")
 	frame:SetScript("OnHyperlinkLeave", OnHyperlinkLeave)
 end
+--]]

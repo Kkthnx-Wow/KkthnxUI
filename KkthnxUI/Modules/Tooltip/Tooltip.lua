@@ -32,7 +32,6 @@ Tooltip.Tooltips = {
 	ShoppingTooltip1,
 	ShoppingTooltip2,
 	ShoppingTooltip3,
-	-- WorldMapTooltip.BackdropFrame,
 	WorldMapCompareTooltip1,
 	WorldMapCompareTooltip2,
 	WorldMapCompareTooltip3,
@@ -243,19 +242,17 @@ end
 
 function Tooltip:SetColor()
 	local GetMouseFocus = GetMouseFocus()
-	local Unit = (select(2, self:GetUnit())) or (GetMouseFocus and GetMouseFocus:GetAttribute("unit"))
+	local Unit = select(2, self:GetUnit()) or (GetMouseFocus and GetMouseFocus.GetAttribute and GetMouseFocus:GetAttribute("unit"))
 
-	if (not Unit) and (UnitExists("mouseover")) then
-		Unit = "mouseover"
-	end
-
-	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	if (not Unit) and (UnitExists("mouseover")) then Unit = "mouseover" end
 
 	local Reaction = Unit and UnitReaction(Unit, "player")
 	local Player = Unit and UnitIsPlayer(Unit)
 	local Friend = Unit and UnitIsFriend("player", Unit)
 	local R, G, B
+
+	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 
 	if Player and Friend then
 		local Class = select(2, UnitClass(Unit))
@@ -264,6 +261,7 @@ function Tooltip:SetColor()
 		R, G, B = Color[1], Color[2], Color[3]
 		HealthBar:SetStatusBarColor(R, G, B)
 		HealthBar:SetBackdropBorderColor(R, G, B)
+		self:SetTemplate()
 		self:SetBackdropBorderColor(R, G, B)
 	elseif Reaction then
 		local Color = K.Colors.reaction[Reaction]
@@ -271,6 +269,7 @@ function Tooltip:SetColor()
 		R, G, B = Color[1], Color[2], Color[3]
 		HealthBar:SetStatusBarColor(R, G, B)
 		HealthBar:SetBackdropBorderColor(R, G, B)
+		self:SetTemplate()
 		self:SetBackdropBorderColor(R, G, B)
 	else
 		local Link = select(2, self:GetItem())
@@ -278,6 +277,7 @@ function Tooltip:SetColor()
 
 		if (Quality and Quality >= 2) and not K.IsAddOnEnabled("Pawn") then
 			R, G, B = GetItemQualityColor(Quality)
+			self:SetTemplate()
 			self:SetBackdropBorderColor(R, G, B)
 		else
 			local Color = Colors
@@ -285,6 +285,7 @@ function Tooltip:SetColor()
 			HealthBar:SetStatusBarColor(unpack(K.Colors.reaction[5]))
 			HealthBar:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 			self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+			self:SetTemplate()
 		end
 	end
 end
@@ -303,7 +304,7 @@ function Tooltip:OnUpdate(elapsed)
 	local Owner = self:GetOwner():GetName()
 	local Anchor = self:GetAnchorType()
 
-	-- THIS ENSURES THAT DEFAULT ANCHORED WORLD FRAME TIPS HAVE THE PROPER COLOR.
+	-- This ensures that default anchored world frame tips have the proper color.
 	if (Owner == "UIParent" and Anchor == "ANCHOR_CURSOR") then
 		self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
@@ -363,8 +364,6 @@ function Tooltip:Enable()
 		end
 
 		Tooltip:HookScript("OnShow", self.Skin)
-		-- Do we really need this?
-		if Tooltip.BackdropFrame then Tooltip.BackdropFrame:Kill() end
 	end
 
 	HealthBar:SetScript("OnValueChanged", self.OnValueChanged)

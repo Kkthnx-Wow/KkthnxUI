@@ -1,8 +1,5 @@
 local K, C, L = select(2, ...):unpack()
 
-local Time24HrFormat = false
-local LocalTime = true
-
 local GetGameTime = GetGameTime
 local EuropeString = "%s%02d|r:%s%02d|r"
 local UKString = "%s%d|r:%s%02d|r %s%s|r"
@@ -45,8 +42,8 @@ local GetResetTime = function(seconds)
 end
 
 local GetFormattedTime = function()
-	local Use24Hour = Time24HrFormat
-	local UseLocalTime = LocalTime
+	local Use24Hour = C.DataText.Time24Hr
+	local UseLocalTime = C.DataText.LocalTime
 
 	local Hour, Minute, AmPm
 
@@ -170,9 +167,24 @@ local OnLeave = function()
 	GameTooltip:Hide()
 end
 
-TimeDataText:SetScript("OnUpdate", Update)
-TimeDataText:SetScript("OnMouseUp", GameTimeFrame_OnClick)
-TimeDataText:SetScript("OnEnter", OnEnter)
-TimeDataText:SetScript("OnLeave", OnLeave)
-Update(TimeDataText, 1)
-RequestRaidInfo()
+function TimeDataText:Enable()
+	self:SetScript("OnUpdate", Update)
+	self:SetScript("OnMouseUp", GameTimeFrame_OnClick)
+	self:SetScript("OnEnter", OnEnter)
+	self:SetScript("OnLeave", OnLeave)
+	Update(self, 1)
+	RequestRaidInfo()
+end
+
+function TimeDataText:Disable()
+	self.Text:SetText("")
+	self:SetScript("OnUpdate", nil)
+	self:SetScript("OnEnter", nil)
+	self:SetScript("OnLeave", nil)
+end
+
+if C.DataText.Time then
+	TimeDataText:Enable()
+else
+	TimeDataText:Disable()
+end

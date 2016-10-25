@@ -1,5 +1,5 @@
 ﻿local K, C, L = select(2, ...):unpack()
-if C.Stats.Battleground ~= true then return end
+if C.DataText.Battleground ~= true then return end
 
 -- LUA API
 local unpack = unpack
