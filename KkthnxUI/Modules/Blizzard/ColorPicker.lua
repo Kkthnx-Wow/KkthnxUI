@@ -7,10 +7,15 @@ local colorBuffer = {}
 local editingText
 
 local function UpdateAlphaText()
-	local a = OpacitySliderFrame:GetValue()
-	a = (1 - a) * 100
-	a = math.floor(a + 0.05)
-	ColorPPBoxA:SetText(string.format("%d", a))
+	local a = tbox:GetNumber()
+	if a > 100 then
+		a = 100
+		ColorPPBoxA:SetText(string.format("%d", a))
+	end
+	a = (100 - a)/100
+	editingText = true
+	OpacitySliderFrame:SetValue(a)
+	editingText = nil
 end
 
 local function UpdateAlpha(tbox)
@@ -151,9 +156,9 @@ load:SetScript("OnEvent", function(self, event)
 	b:SetScript("OnClick", function(self)
 
 		if IsShiftKeyDown() then
-		-- this is a hidden utility for providing the WoW 0 to 1 based color numbers
+			-- this is a hidden utility for providing the WoW 0 to 1 based color numbers
 			local r, g, b = ColorPickerFrame:GetColorRGB()
-			print("ColorPickerPlus decimal -- r = "..string.format("%.3f", r).."  g = "..string.format("%.3f", g).."  b = "..string.format("%.3f",b))
+			print("ColorPickerPlus decimal -- r = "..string.format("%.3f", r).." g = "..string.format("%.3f", g).." b = "..string.format("%.3f",b))
 			return
 		end
 
@@ -181,7 +186,7 @@ load:SetScript("OnEvent", function(self, event)
 	b:SetHeight("22")
 	b:SetScale(0.8)
 	b:SetPoint("TOPLEFT", "ColorPPCopy", "BOTTOMLEFT", 0, -7)
-	b:Disable()  -- enable when something has been copied
+	b:Disable() -- enable when something has been copied
 
 	-- Paste color on button click, updating frame components
 	b:SetScript("OnClick", function(self)
