@@ -128,8 +128,8 @@ local function Update(self, t)
 			end
 			if name and name == K.Name then
 				Text1:SetText(dmgtxt)
-				--Text2:SetText(classcolor..COMBAT_HONOR_GAIN.." :|r "..format("%d", honorGained)) -- Honor no longer exsits in Legion??
-				Text2:SetText(classcolor..KILLING_BLOWS.." :|r "..killingBlows)
+				Text2:SetText(classcolor..COMBAT_HONOR_GAIN.." :|r "..format("%d", honorGained)) -- Honor no longer exsits in Legion??
+				Text3:SetText(classcolor..KILLING_BLOWS.." :|r "..killingBlows)
 			end
 		end
 		int = 2

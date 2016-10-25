@@ -252,12 +252,12 @@ local function Local(o)
 	if o == "UIConfigTooltipCursor" then o = L_GUI_TOOLTIP_CURSOR end
 	if o == "UIConfigTooltipEnable" then o = L_GUI_TOOLTIP_ENABLE end
 	if o == "UIConfigTooltipHealthValue" then o = L_GUI_TOOLTIP_HEALTH end
+	if o == "UIConfigTooltipHyperLink" then o = L_GUI_TOOLTIP_HYPERLINK end
 	if o == "UIConfigTooltipInstanceLock" then o = L_GUI_TOOLTIP_INSTANCE_LOCK end
 	if o == "UIConfigTooltipItemCount" then o = L_GUI_TOOLTIP_ITEM_COUNT end
 	if o == "UIConfigTooltipItemIcon" then o = L_GUI_TOOLTIP_ICON end
 	if o == "UIConfigTooltipShowSpec" then o = L_GUI_TOOLTIP_SHOWSPEC end
 	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
-	if o == "UIConfigTooltipHyperLink" then o = L_GUI_TOOLTIP_HYPERLINK end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeBuilderSpender" then o = L_GUI_UNITFRAME_BUILDERSPENDER end

@@ -249,6 +249,11 @@ function KkthnxUIAuras:Skin()
 	self.Count = Count
 	--self:SetTemplate("Default")
 	self:CreateBorder() -- has to be a better way to create the blizzard border with SetTemplate.
+
+	if C.Blizzard.ColorTextures == true then
+		self.border:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	end
+
 	if not self.shadow then
 		self:CreateBlizzShadow(4)
 	end

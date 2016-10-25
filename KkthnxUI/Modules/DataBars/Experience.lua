@@ -30,6 +30,11 @@ Backdrop:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
 Backdrop:SetFrameStrata("LOW")
 K.CreateBorder(Backdrop, 10, 3)
 
+if C.Blizzard.ColorTextures == true then
+	Backdrop:SetBorderTexture("white")
+	Backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+end
+
 local BackdropBG = CreateFrame("Frame", "Experience_BackdropBG", Backdrop)
 BackdropBG:SetFrameLevel(Backdrop:GetFrameLevel() - 1)
 BackdropBG:SetPoint("TOPLEFT", -1, 1)
@@ -68,7 +73,7 @@ ExperienceAnchor:SetScript("OnMouseDown", function(self, btn)
 	end
 end)
 
-local MouseFrame = CreateFrame("Frame", "Experience_MouseFrame", Backdrop)
+local MouseFrame = CreateFrame("Frame", "Experience_MouseFrame", UIParent)
 MouseFrame:SetAllPoints(Backdrop)
 MouseFrame:EnableMouse(true)
 MouseFrame:SetFrameLevel(3)

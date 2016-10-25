@@ -28,6 +28,11 @@ Backdrop:SetBackdropColor(C.Media.Backdrop_Color)
 Backdrop:SetFrameStrata("LOW")
 K.CreateBorder(Backdrop, 10, 3)
 
+if C.Blizzard.ColorTextures == true then
+	Backdrop:SetBorderTexture("white")
+	Backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+end
+
 local BackdropBG = CreateFrame("Frame", "Artifact_BackdropBG", Backdrop)
 BackdropBG:SetFrameLevel(Backdrop:GetFrameLevel() - 1)
 BackdropBG:SetPoint("TOPLEFT", -1, 1)
@@ -51,7 +56,7 @@ ArtifactAnchor:SetScript("OnMouseDown", function(self, btn)
 	end
 end)
 
-local ArtifactMouseFrame = CreateFrame("Frame", "Artifact_MouseFrame", Backdrop)
+local ArtifactMouseFrame = CreateFrame("Frame", "Artifact_MouseFrame", UIParent)
 ArtifactMouseFrame:SetAllPoints(Backdrop)
 ArtifactMouseFrame:EnableMouse(true)
 ArtifactMouseFrame:SetFrameLevel(3)
@@ -90,8 +95,8 @@ local function UpdateStatus(event, owner)
 
 		GameTooltip:Show()
 	end)
-
-	ArtifactMouseFrame:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	
+	ArtifactMouseFrame:SetScript("OnLeave", GameTooltip_Hide)
 end
 
 local Frame = CreateFrame("Frame", nil, UIParent)
