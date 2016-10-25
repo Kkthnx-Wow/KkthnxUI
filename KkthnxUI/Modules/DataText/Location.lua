@@ -39,7 +39,7 @@ local Update = function(self)
 
 	Zone:SetText(Text)
 	Zone:SetTextColor(Color[1], Color[2], Color[3])
-	
+
 	self:SetAllPoints(Zone)
 end
 
@@ -53,15 +53,13 @@ local OnEnter = function(self)
 
 	local Text = GetRealZoneText()
 	local PVPType, IsSubZonePvP, FactionName = GetZonePVPInfo()
-	
-	if not GetPlayerMapPosition("player") then
- 		Zone:SetText(" ")
-
- 		return
- 	end
-	
 	local X, Y = GetPlayerMapPosition("player")
 	local XText, YText, Label, Location, Color
+
+	if not GetPlayerMapPosition("player") then
+		X = 0
+		Y = 0
+	end
 
 	if ZoneColors[PVPType] then
 		Color = ZoneColors[PVPType]
@@ -114,7 +112,6 @@ end
 local OnLeave = function()
 	GameTooltip:Hide()
 end
-
 
 function Stat:Enable()
 	self:RegisterEvent("ZONE_CHANGED")
