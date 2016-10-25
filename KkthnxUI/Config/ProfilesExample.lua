@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- ***   IMPORTANT!: If you want to use this file, which takes precedence over the GUI config options, rename it to, Profiles.lua   *** --
+-- *** IMPORTANT!: If you want to use this file, which takes precedence over the GUI config options, rename it to, Profiles.lua *** --
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local K, C, L = select(2, ...):unpack()
@@ -20,16 +20,17 @@ C["Position"]["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175}
 
 Please do not edit settings this way
 
-C["UnitFrames"] = {
-	["EnhancedFrames"] = true,
-	["PercentHealth"] = true,
-	["ClassIcon"] = true,
-	["SmoothBars"] = true,
-}
+	C["UnitFrames"] = {
+		["EnhancedFrames"] = true,
+		["PercentHealth"] = true,
+		["ClassIcon"] = true,
+		["SmoothBars"] = true,
+	}
 
-C["Position"] = {
-	["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175}
-}
+	C["Position"] = {
+		["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175}
+	}
+
 --]]
 
 -- Per class config (overwrites general)
@@ -53,12 +54,12 @@ if K.Level ~= MAX_PLAYER_LEVEL then
 
 end
 
--- Magicnachos personal config
-if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
+-- CharacterName personal config
+if (K.Name == "CharacterName") and (K.Realm == "RealmName") then
 
 end
 
--- Kkthnx personal config
-if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
+-- CharacterName personal config
+if (K.Name == "CharacterName" or K.Name == "CharacterName" or K.Name == "CharacterName" or K.Name == "CharacterName") and (K.Realm == "RealmName") then
 
 end
