@@ -1,3 +1,7 @@
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- ***   IMPORTANT!: If you want to use this file, which takes precedence over the GUI config options, rename it to, Profiles.lua   *** --
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 local K, C, L = select(2, ...):unpack()
 
 --[[
@@ -50,11 +54,11 @@ if K.Level ~= MAX_PLAYER_LEVEL then
 end
 
 -- Magicnachos personal config
-if (K.Name == "CharacterName") and (K.Realm == "RealmName") then
+if (K.Name == "Magicnachos") and (K.Realm == "Stormreaver") then
 
 end
 
 -- Kkthnx personal config
-if (K.Name == "CharacterName" or K.Name == "CharacterName" or K.Name == "CharacterName" or K.Name == "CharacterName") and (K.Realm == "RealmName") then
+if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
 
 end
