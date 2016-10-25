@@ -77,6 +77,14 @@ end
 
 function WorldMap:UpdateCoords()
 	if(not WorldMapFrame:IsShown()) then return end
+	
+	if not GetPlayerMapPosition("player") then
+ 		CoordsHolder.PlayerCoords:SetText(" ")
+ 		CoordsHolder.MouseCoords:SetText(" ")
+ 	
+ 		return
+ 	end
+	
 	local X, Y = GetPlayerMapPosition("player")
 	X = K.Round(100 * X, 2)
 	Y = K.Round(100 * Y, 2)

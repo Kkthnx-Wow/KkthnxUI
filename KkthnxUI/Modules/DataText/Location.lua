@@ -53,6 +53,13 @@ local OnEnter = function(self)
 
 	local Text = GetRealZoneText()
 	local PVPType, IsSubZonePvP, FactionName = GetZonePVPInfo()
+	
+	if not GetPlayerMapPosition("player") then
+ 		Zone:SetText(" ")
+
+ 		return
+ 	end
+	
 	local X, Y = GetPlayerMapPosition("player")
 	local XText, YText, Label, Location, Color
 
