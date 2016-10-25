@@ -76,7 +76,6 @@ end)
 local MouseFrame = CreateFrame("Frame", "Experience_MouseFrame", UIParent)
 MouseFrame:SetAllPoints(Backdrop)
 MouseFrame:EnableMouse(true)
-MouseFrame:SetFrameLevel(3)
 
 local function UpdateStatus(event, owner)
 	if (event == "UNIT_INVENTORY_CHANGED" and owner ~= "player") then

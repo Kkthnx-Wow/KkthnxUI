@@ -59,7 +59,6 @@ end)
 local ArtifactMouseFrame = CreateFrame("Frame", "Artifact_MouseFrame", UIParent)
 ArtifactMouseFrame:SetAllPoints(Backdrop)
 ArtifactMouseFrame:EnableMouse(true)
-ArtifactMouseFrame:SetFrameLevel(3)
 
 local function UpdateStatus(event, owner)
 	if (event == "UNIT_INVENTORY_CHANGED" and owner ~= "player") then

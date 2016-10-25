@@ -1,10 +1,13 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
+local Movers = K.Movers
+
 -- Move vehicle indicator
 local VehicleAnchor = CreateFrame("Frame", "VehicleAnchor", UIParent)
 VehicleAnchor:SetPoint(unpack(C.Position.Vehicle))
 VehicleAnchor:SetSize(130, 130)
+Movers:RegisterFrame(VehicleAnchor)
 
 hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	if parent == "MinimapCluster" or parent == _G["MinimapCluster"] then

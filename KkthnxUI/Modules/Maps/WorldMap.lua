@@ -77,20 +77,19 @@ end
 
 function WorldMap:UpdateCoords()
 	if(not WorldMapFrame:IsShown()) then return end
-	
-	if not GetPlayerMapPosition("player") then
- 		CoordsHolder.PlayerCoords:SetText(" ")
- 		CoordsHolder.MouseCoords:SetText(" ")
- 	
- 		return
- 	end
-	
+
 	local X, Y = GetPlayerMapPosition("player")
+
+	if not GetPlayerMapPosition("player") then
+		X = 0
+		Y = 0
+	end
+
 	X = K.Round(100 * X, 2)
 	Y = K.Round(100 * Y, 2)
 
 	if X ~= 0 and Y ~= 0 then
-		CoordsHolder.PlayerCoords:SetText(PLAYER..":   "..X..", "..Y)
+		CoordsHolder.PlayerCoords:SetText(PLAYER..": "..X..", "..Y)
 	else
 		CoordsHolder.PlayerCoords:SetText("")
 	end
@@ -103,10 +102,10 @@ function WorldMap:UpdateCoords()
 	local AdjustedX = (X / Scale - (CenterX - (Width/2))) / Width
 	local AdjustedY = (CenterY + (Height/2) - Y / Scale) / Height
 
-	if (AdjustedX >= 0  and AdjustedY >= 0 and AdjustedX <= 1 and AdjustedY <= 1) then
+	if (AdjustedX >= 0 and AdjustedY >= 0 and AdjustedX <= 1 and AdjustedY <= 1) then
 		AdjustedX = K.Round(100 * AdjustedX, 2)
 		AdjustedY = K.Round(100 * AdjustedY, 2)
-		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..":   "..AdjustedX..", "..AdjustedY)
+		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..": "..AdjustedX..", "..AdjustedY)
 	else
 		CoordsHolder.MouseCoords:SetText("")
 	end
@@ -146,8 +145,8 @@ function WorldMap:Enable()
 		CoordsHolder.MouseCoords:SetTextColor(1, 1 ,0)
 		CoordsHolder.PlayerCoords:SetFontObject(NumberFontNormal)
 		CoordsHolder.MouseCoords:SetFontObject(NumberFontNormal)
-		CoordsHolder.PlayerCoords:SetText(PLAYER..":   0, 0")
-		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..":   0, 0")
+		CoordsHolder.PlayerCoords:SetText(PLAYER..": 0, 0")
+		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..": 0, 0")
 
 		self:ScheduleRepeatingTimer("UpdateCoords", 0.05)
 		WorldMap:PositionCoords()

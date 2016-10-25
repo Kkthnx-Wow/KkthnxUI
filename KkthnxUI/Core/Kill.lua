@@ -16,6 +16,12 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	end
 	
 	if C.Unitframe.Enable then
+		InterfaceOptionsCombatPanelTargetOfTarget:Kill()
+		InterfaceOptionsCombatPanelTargetOfTarget:Kill()
+		
+		InterfaceOptionsDisplayPanelDisplayDropDown:Kill()
+		InterfaceOptionsDisplayPanelDisplayDropDown:Kill()
+	
 		function PetFrame_Update() end
 		function PlayerFrame_AnimateOut() end
 		function PlayerFrame_AnimFinished() end
@@ -29,6 +35,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	end
 	
 	if C.Raidframe.Enable then
+		InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
+		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
+		
 		if not InCombatLockdown() then
 			CompactRaidFrameManager:Kill()
 			CompactRaidFrameContainer:Kill()
