@@ -5,24 +5,22 @@ local pairs = pairs
 local hooksecurefunc = hooksecurefunc
 local IsAltKeyDown, IsControlKeyDown = IsAltKeyDown, IsControlKeyDown
 
--- QUEST LEVEL(YQUESTLEVEL BY YLEAF)
-if tonumber(K.WoWBuild) == 22810 then
-	hooksecurefunc("QuestLogQuests_Update", function()
-		for i, button in pairs(QuestMapFrame.QuestsFrame.Contents.Titles) do
-			if button:IsShown() then
-				local level = strmatch(GetQuestLink(button.questLogIndex), "quest:%d+:(%d+)")
-				if level then
-					local height = button.Text:GetHeight()
-					button.Text:SetFormattedText("[%d] %s", level, button.Text:GetText())
-					button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0)
-					button:SetHeight(button:GetHeight() - height + button.Text:GetHeight())
-				end
+--[[ Quest level(yquestlevel by yleaf)
+hooksecurefunc("QuestLogQuests_Update", function()
+	for i, button in pairs(QuestMapFrame.QuestsFrame.Contents.Titles) do
+		if button:IsShown() then
+			local level = strmatch(GetQuestLink(button.questLogIndex), "quest:%d+:(%d+)")
+			if level then
+				local height = button.Text:GetHeight()
+				button.Text:SetFormattedText("[%d] %s", level, button.Text:GetText())
+				button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0)
+				button:SetHeight(button:GetHeight() - height + button.Text:GetHeight())
 			end
 		end
-	end)
-end
-
--- CTRL+CLICK TO ABANDON A QUEST OR ALT+CLICK TO SHARE A QUEST(BY SUICIDAL KATT)
+	end
+end)
+--]]
+-- Ctrl+click to abandon a quest or alt+click to share a quest(by suicidal katt)
 hooksecurefunc("QuestMapLogTitleButton_OnClick", function(self)
 	local questLogIndex = GetQuestLogIndexByID(self.questID)
 	if IsControlKeyDown() then

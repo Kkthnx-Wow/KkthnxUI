@@ -71,6 +71,7 @@ local Enable = function(self)
 		threat.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Path)
+		self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Path)
 
 		if(threat:IsObjectType"Texture" and not threat:GetTexture()) then
 			threat:SetTexture[[Interface\Minimap\ObjectIcons]]
@@ -86,6 +87,7 @@ local Disable = function(self)
 	if(threat) then
 		threat:Hide()
 		self:UnregisterEvent("UNIT_THREAT_SITUATION_UPDATE", Path)
+		self:UnregisterEvent("UNIT_THREAT_LIST_UPDATE", Path)
 	end
 end
 

@@ -131,7 +131,7 @@ function Tooltip:OnTooltipSetUnit()
 	local Relationship = UnitRealmRelationship(Unit);
 	local Title = UnitPVPName(Unit)
 	local Color = Tooltip:GetColor(Unit)
-	local R, G, B = GetQuestDifficultyColor(Level).r, GetQuestDifficultyColor(Level).g, GetQuestDifficultyColor(Level).b
+	local R, G, B = GetCreatureDifficultyColor(Level).r, GetCreatureDifficultyColor(Level).g, GetCreatureDifficultyColor(Level).b
 
 	if (not Color) then
 		Color = "|CFFFFFFFF"

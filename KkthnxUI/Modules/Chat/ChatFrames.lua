@@ -56,11 +56,7 @@ local function AddMessage(frame, str, ...)
 	return origs[frame](frame, str, ...)
 end
 
-if tonumber(K.WoWBuild) == 22810 then
-		FriendsMicroButton:Kill()
-	else
-		QuickJoinToastButton:Kill()
-end
+QuickJoinToastButton:Kill()
 ChatFrameMenuButton:Kill()
 
 -- Set chat style

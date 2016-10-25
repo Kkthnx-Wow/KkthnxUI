@@ -34,7 +34,7 @@ local tagStrings = {
 	["difficulty"] = [[function(u)
 		if UnitCanAttack("player", u) then
 			local l = UnitLevel(u)
-			return Hex(GetCreatureDifficultyColor((l > 0) and l or 999))
+			return Hex(GetQuestDifficultyColor((l > 0) and l or 99))
 		end
 	end]],
 

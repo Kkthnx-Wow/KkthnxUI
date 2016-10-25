@@ -34,7 +34,7 @@ oUF.Tags.Methods["kkthnx:level"] = function(unit)
 		return "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:12:12:0:0|t" -- boss skull icon
 	end
 
-	local colorL = GetQuestDifficultyColor(level)
+	local colorL = GetCreatureDifficultyColor(level)
 	return format("|cff%02x%02x%02x%s|r", colorL.r * 255, colorL.g * 255, colorL.b * 255, level)
 end
 

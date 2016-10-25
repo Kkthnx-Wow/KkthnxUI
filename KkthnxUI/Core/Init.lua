@@ -30,6 +30,7 @@ Engine[1].ScreenHeight = tonumber(string.match(Engine[1].Resolution, "%d+x(%d+)"
 Engine[1].ScreenWidth = tonumber(string.match(Engine[1].Resolution, "(%d+)x+%d"))
 Engine[1].VersionNumber = tonumber(Engine[1].Version)
 Engine[1].WoWPatch, Engine[1].WoWBuild, Engine[1].WoWPatchReleaseDate, Engine[1].TocVersion = GetBuildInfo()
+Engine[1].WoWBuild = select(2, GetBuildInfo()); Engine[1].WoWBuild = tonumber(Engine[1].WoWBuild)
 
 -- Matching the pre-MoP return arguments of the Blizzard API call
 -- Credits to Goldpaw.

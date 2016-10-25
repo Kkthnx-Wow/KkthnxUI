@@ -610,9 +610,7 @@ function Plates:Skin(obj)
 	NewPlate.CastBar.Background:SetColorTexture(0.75, 0.75, 0.25, 0.2)
 	NewPlate.CastBar.Background:SetAllPoints()
 
-	NewPlate.hiddenFrame = CreateFrame("Frame", nil, NewPlate)
-	NewPlate.hiddenFrame:Hide()
-	CastBarSpellIcon:SetParent(NewPlate.hiddenFrame)
+	CastBarSpellIcon:SetParent(UIFrameHider)
 	NewPlate.CastBar.Icon = NewPlate.CastBar:CreateTexture(nil, "OVERLAY")
 	NewPlate.CastBar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	NewPlate.CastBar.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 4, (C.Nameplates.Height * 2 * K.NoScaleMult) + 4)
@@ -1273,7 +1271,7 @@ local function UpdateName(unitFrame)
 			level = "??"
 			r, g, b = 0.8, 0.05, 0
 		else
-			local color = GetQuestDifficultyColor(level)
+			local color = GetCreatureDifficultyColor(level)
 			r, g, b = color.r, color.g, color.b
 		end
 
@@ -1638,12 +1636,8 @@ function NamePlates_UpdateNamePlateOptions()
 	local baseNamePlateWidth = C.Nameplates.Width * K.NoScaleMult
 	local baseNamePlateHeight = 45
 	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"))
-	if tonumber(K.WoWBuild) == 22810 then
-		C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
-	else
-		C_NamePlate.SetNamePlateFriendlySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
-		C_NamePlate.SetNamePlateEnemySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
-	end
+	C_NamePlate.SetNamePlateFriendlySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
+	C_NamePlate.SetNamePlateEnemySize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
 	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
 
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
