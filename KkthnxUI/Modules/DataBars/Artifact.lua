@@ -46,8 +46,12 @@ ArtifactBar:SetPoint("TOP", Backdrop, "TOP", 0, 0)
 ArtifactBar:SetStatusBarTexture(C.Media.Texture)
 ArtifactBar:SetStatusBarColor(229/255, 204/255, 127/255)
 
--- Hacky way to quickly display the artifact frame.
-ArtifactAnchor:SetScript("OnMouseDown", function(self, btn)
+local ArtifactMouseFrame = CreateFrame("Frame", "Artifact_MouseFrame", UIParent)
+ArtifactMouseFrame:SetAllPoints(Backdrop)
+ArtifactMouseFrame:EnableMouse(true)
+ArtifactMouseFrame:SetFrameLevel(3)
+
+ArtifactMouseFrame:SetScript("OnMouseDown", function(self, btn)
 	if (btn == "LeftButton") then
 		if ArtifactFrame and ArtifactFrame:IsShown() then HideUIPanel(ArtifactFrame)
 		else
@@ -55,10 +59,6 @@ ArtifactAnchor:SetScript("OnMouseDown", function(self, btn)
 		end
 	end
 end)
-
-local ArtifactMouseFrame = CreateFrame("Frame", "Artifact_MouseFrame", UIParent)
-ArtifactMouseFrame:SetAllPoints(Backdrop)
-ArtifactMouseFrame:EnableMouse(true)
 
 local function UpdateStatus(event, owner)
 	if (event == "UNIT_INVENTORY_CHANGED" and owner ~= "player") then

@@ -63,8 +63,12 @@ ReputationBar:SetPoint("BOTTOM", Backdrop, "BOTTOM", 0, 0)
 ReputationBar:SetStatusBarTexture(C.Media.Texture)
 ReputationBar:SetFrameLevel(ExperienceBar:GetFrameLevel() - 1)
 
--- Hacky way to quickly display the reputation frame.
-ExperienceAnchor:SetScript("OnMouseDown", function(self, btn)
+local MouseFrame = CreateFrame("Frame", "Experience_MouseFrame", UIParent)
+MouseFrame:SetAllPoints(Backdrop)
+MouseFrame:EnableMouse(true)
+MouseFrame:SetFrameLevel(3)
+
+MouseFrame:SetScript("OnMouseDown", function(self, btn)
 	if (btn == "LeftButton") then
 		if ReputationFrame and ReputationFrame:IsShown() then ToggleCharacter("ReputationFrame")
 		else
@@ -72,10 +76,6 @@ ExperienceAnchor:SetScript("OnMouseDown", function(self, btn)
 		end
 	end
 end)
-
-local MouseFrame = CreateFrame("Frame", "Experience_MouseFrame", UIParent)
-MouseFrame:SetAllPoints(Backdrop)
-MouseFrame:EnableMouse(true)
 
 local function UpdateStatus(event, owner)
 	if (event == "UNIT_INVENTORY_CHANGED" and owner ~= "player") then
