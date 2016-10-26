@@ -5,11 +5,11 @@ local pairs = pairs
 local hooksecurefunc = hooksecurefunc
 local IsAltKeyDown, IsControlKeyDown = IsAltKeyDown, IsControlKeyDown
 
---[[ Quest level(yquestlevel by yleaf)
+-- Quest level(yquestlevel by yleaf)
 hooksecurefunc("QuestLogQuests_Update", function()
 	for i, button in pairs(QuestMapFrame.QuestsFrame.Contents.Titles) do
 		if button:IsShown() then
-			local level = strmatch(GetQuestLink(button.questLogIndex), "quest:%d+:(%d+)")
+			local level = strmatch(GetQuestLink(button.questID), "quest:%d+:(%d+)")
 			if level then
 				local height = button.Text:GetHeight()
 				button.Text:SetFormattedText("[%d] %s", level, button.Text:GetText())
@@ -19,7 +19,7 @@ hooksecurefunc("QuestLogQuests_Update", function()
 		end
 	end
 end)
---]]
+
 -- Ctrl+click to abandon a quest or alt+click to share a quest(by suicidal katt)
 hooksecurefunc("QuestMapLogTitleButton_OnClick", function(self)
 	local questLogIndex = GetQuestLogIndexByID(self.questID)

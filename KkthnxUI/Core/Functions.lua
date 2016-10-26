@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
-local format, find, gsub = string.format, string.find, string.gsub
+local format, find, gsub = format, string.find, string.gsub
 local match = string.match
 local floor, ceil = math.floor, math.ceil
 local print = print

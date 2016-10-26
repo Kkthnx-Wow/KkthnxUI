@@ -504,7 +504,7 @@ function CreateUIConfig()
 	-- Main Frame
 	local UIConfigMain = CreateFrame("Frame", "UIConfigMain", UIParent)
 	UIConfigMain:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 200)
-	UIConfigMain:SetSize(780, 520)
+	UIConfigMain:SetSize(780, 482)
 	UIConfigMain:SetBackdrop(K.Backdrop)
 	UIConfigMain:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	UIConfigMain:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
@@ -810,7 +810,7 @@ function CreateUIConfig()
 	end
 
 	local reset = NormalButton(DEFAULT, UIConfigMain)
-	reset:SetPoint("TOPLEFT", UIConfig, "BOTTOMLEFT", -8, -25)
+	reset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 126, 0)
 	reset:SetScript("OnClick", function(self)
 		UIConfigCover:Show()
 		if KkthnxUIConfigAll[realm][name] == true then
@@ -820,17 +820,8 @@ function CreateUIConfig()
 		end
 	end)
 
-	local close = NormalButton(CLOSE, UIConfigMain)
-	close:SetPoint("TOPRIGHT", UIConfig, "BOTTOMRIGHT", 10, -25)
-	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
-
-	local load = NormalButton(APPLY, UIConfigMain)
-	load:SetPoint("RIGHT", close, "LEFT", -8, 0)
-	load:SetScript("OnClick", function(self) ReloadUI() end)
-
 	local totalreset = NormalButton(L_GUI_BUTTON_RESET, UIConfigMain)
-	totalreset:SetWidth(174)
-	totalreset:SetPoint("TOPLEFT", groupsBG, "BOTTOMLEFT", 2, -15)
+	totalreset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 126, -31)
 	totalreset:SetScript("OnClick", function(self)
 		StaticPopup_Show("RESET_UI")
 		KkthnxUIConfig = {}
@@ -839,6 +830,14 @@ function CreateUIConfig()
 		end
 		KkthnxUIConfigSettings = {}
 	end)
+	
+	local load = NormalButton("|cff00FF00APPLY|r", UIConfigMain)
+	load:SetPoint("TOP", totalreset, "BOTTOM", 0, -30)
+	load:SetScript("OnClick", function(self) ReloadUI() end)
+	
+	local close = NormalButton("|cffFF0000CLOSE|r", UIConfigMain)
+	close:SetPoint("TOP", load, "BOTTOM", 0, -8)
+	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
 
 	if KkthnxUIConfigAll then
 		local button = CreateFrame("CheckButton", "KkthnxUIConfigAllCharacters", TitleBox, "InterfaceOptionsCheckButtonTemplate")
@@ -927,17 +926,17 @@ do
 		subtitle2:SetWidth(380)
 		subtitle2:SetPoint("TOPLEFT", title2, "BOTTOMLEFT", 0, -8)
 		subtitle2:SetJustifyH("LEFT")
-		subtitle2:SetText("ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, Crum, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, |ccfff7d0aGoldpaw|r, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, |cFFFF69B4Magicnachos|r, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, |cFFA335EEShroudy|r, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, |ccf1eff00Swiver|r, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord")
+		subtitle2:SetText("ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, Crum, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, Goldpaw, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, |cFFFF69B4Magicnachos|r, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Peatah, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord")
 
 		local title3 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title3:SetPoint("TOPLEFT", subtitle2, "BOTTOMLEFT", 0, -16)
-		title3:SetText("Translation:")
+		title3:SetText("Translation Needed:")
 
 		local subtitle3 = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 		subtitle3:SetWidth(380)
 		subtitle3:SetPoint("TOPLEFT", title3, "BOTTOMLEFT", 0, -8)
 		subtitle3:SetJustifyH("LEFT")
-		subtitle3:SetText("Bunny67, freesay")
+		subtitle3:SetText("|cff3c9bedKkthnxUI|r is looking for Russian translation. If you wanna translate for us, you can PM me or make pull requests on GitHub")
 
 		local title4 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title4:SetPoint("TOPLEFT", subtitle3, "BOTTOMLEFT", 0, -16)
