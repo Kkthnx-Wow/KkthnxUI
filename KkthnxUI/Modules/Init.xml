@@ -128,8 +128,8 @@
 	<Script file="Quests\ObjectiveTracker.lua"/>
 	<Script file="Quests\WowheadLink.lua"/>
 	<!-- Skins -->
-	<Include file="Skins\Addons\LoadFrames.xml"/>
-	<Include file="Skins\Blizzard\LoadFrames.xml"/>
+	<Include file="Skins\Addons\Init.xml"/>
+	<Include file="Skins\Blizzard\Init.xml"/>
 	<!-- Tooltip -->
 	<Script file="Tooltip\Tooltip.lua"/>
 	<Script file="Tooltip\Achievement.lua"/>

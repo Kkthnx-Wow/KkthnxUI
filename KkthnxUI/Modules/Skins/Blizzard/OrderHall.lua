@@ -1,15 +1,15 @@
 local K, C, L = select(2, ...):unpack()
 
-local OrderHallSkin = CreateFrame("Frame")
+local Skinning = CreateFrame("Frame")
 
-OrderHallSkin:RegisterEvent("ADDON_LOADED")
-OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
-	if event == "ADDON_LOADED" and arg1 == "Blizzard_OrderHallUI" then
-		OrderHallSkin:RegisterEvent("DISPLAY_SIZE_CHANGED")
-		OrderHallSkin:RegisterEvent("UI_SCALE_CHANGED")
-		OrderHallSkin:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED")
-		OrderHallSkin:RegisterEvent("GARRISON_FOLLOWER_ADDED")
-		OrderHallSkin:RegisterEvent("GARRISON_FOLLOWER_REMOVED")
+local unpack = unpack
+local function LoadSkin(self, event, addon)
+	if event == "ADDON_LOADED" and addon == "Blizzard_OrderHallUI" then
+		Skinning:RegisterEvent("DISPLAY_SIZE_CHANGED")
+		Skinning:RegisterEvent("UI_SCALE_CHANGED")
+		Skinning:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED")
+		Skinning:RegisterEvent("GARRISON_FOLLOWER_ADDED")
+		Skinning:RegisterEvent("GARRISON_FOLLOWER_REMOVED")
 
 		OrderHallCommandBar:HookScript("OnShow", function()
 			if not OrderHallCommandBar.styled then
@@ -59,4 +59,8 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, arg1)
 			end
 		end)
 	end
-end)
+end
+
+Skinning:RegisterEvent("PLAYER_LOGIN")
+Skinning:RegisterEvent("ADDON_LOADED")
+Skinning:SetScript("OnEvent", LoadSkin)
