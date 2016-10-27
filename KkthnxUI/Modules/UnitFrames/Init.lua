@@ -93,7 +93,7 @@ end
 
 function oUFKkthnx:MODIFIER_STATE_CHANGED(event, key, state)
 	if (IsControlKeyDown() and (key == "LALT" or key == "RALT")) or
-		(IsAltKeyDown() and (key == "LCTRL" or key == "RCTRL"))
+	(IsAltKeyDown() and (key == "LCTRL" or key == "RCTRL"))
 	then
 		local a, b
 		if state == 1 then

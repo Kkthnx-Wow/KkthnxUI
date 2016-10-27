@@ -184,16 +184,27 @@ SlashCmdList.TEST_ACHIEVEMENT = function()
 	MoneyWonAlertSystem:AddAlert(815)
 	NewRecipeLearnedAlertSystem:AddAlert(204)
 	GuildChallengeAlertSystem:AddAlert(3, 2, 5)
-	InvasionAlertSystem:AddAlert(1)
-	WorldQuestCompleteAlertSystem:AddAlert(112)
 	LegendaryItemAlertSystem:AddAlert("\124cffa335ee\124Hitem:18832:0:0:0:0:0:0:0:0:0:0\124h[Brutality Blade]\124h\124r")
 	StorePurchaseAlertSystem:AddAlert("\124cffa335ee\124Hitem:180545::::::::::\124h[Mystic Runesaber]\124h\124r", "", "", 214)
 	DigsiteCompleteAlertSystem:AddAlert(1)
-	GarrisonShipFollowerAlertSystem:AddAlert(592, "Ship", "Transport", "GarrBuilding_Barracks_1_H", 3, 2, 1)
-	GarrisonBuildingAlertSystem:AddAlert("Barracks")
-	GarrisonFollowerAlertSystem:AddAlert(204, "Ben Stone", 90, 3, false)
 end
 SLASH_TEST_ACHIEVEMENT1 = "/testa"
+
+-- Test Blizzard Extra Action Button
+SlashCmdList.TEST_EXTRABUTTON = function()
+	if ExtraActionBarFrame:IsShown() then
+		ExtraActionBarFrame:Hide()
+	else
+		ExtraActionBarFrame:Show()
+		ExtraActionBarFrame:SetAlpha(1)
+		ExtraActionButton1:Show()
+		ExtraActionButton1:SetAlpha(1)
+		ExtraActionButton1.icon:SetTexture("Interface\\Icons\\spell_deathknight_breathofsindragosa")
+		ExtraActionButton1.icon:Show()
+		ExtraActionButton1.icon:SetAlpha(1)
+	end
+end
+SLASH_TEST_EXTRABUTTON1 = "/teb"
 
 -- Grid on screen
 local Grid
@@ -217,8 +228,8 @@ local function GridHide()
 end
 
 local isAligning = false
-SLASH_TOGGLEGRID1 = "/align"
-SlashCmdList["TOGGLEGRID"] = function(arg)
+SLASH_TOGGLE_GRID1 = "/align"
+SlashCmdList.TOGGLE_GRID = function(arg)
 	if isAligning then
 		GridHide()
 		isAligning = false
@@ -276,6 +287,27 @@ function GridCreate()
 		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2- i * HStep + Size / 2))
 	end
 end
+
+SlashCmdList.TEST_UI = function(msg)
+if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+	if C.PulseCD.Enable == true then
+		SlashCmdList.PulseCD()
+	end
+	if C.Unitframe.Enable == true then
+		SlashCmdList.TEST_UF()
+	end
+	if C.Announcements.PullCountdown == true then
+		SlashCmdList.PULLCOUNTDOWN()
+	end
+	if C.Loot.GroupLoot == true then
+		SlashCmdList.TESTROLL()
+	end
+	SlashCmdList.DBMTEST()
+	SlashCmdList.TEST_EXTRABUTTON()
+	SlashCmdList.TEST_ACHIEVEMENT()
+	SlashCmdList.TOGGLE_GRID()
+end
+SLASH_TEST_UI1 = "/testui"
 
 -- Reduce video settings to optimize performance
 local function BoostUI()

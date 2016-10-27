@@ -145,21 +145,13 @@ function Plates:CreateAuraIcon(self)
 	button.shadow:SetBackdropColor(.05, .05, .05, .9)
 	button.shadow:SetBackdropBorderColor(0, 0, 0, 1)
 
-	button.bord = button:CreateTexture(nil, "BORDER")
-	button.bord:SetTexture(0/255, 0/255, 0/255, 1)
-	button.bord:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult, -K.NoScaleMult)
-	button.bord:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult, K.NoScaleMult)
+	button.bg = button:CreateTexture(nil, "BACKGROUND")
+	button.bg:SetColorTexture(unpack(C.Media.Backdrop_Color))
+	button.bg:SetAllPoints(button)
 
 	button.icon = button:CreateTexture(nil, "OVERLAY")
 	button.icon:SetAllPoints(button)
-	button.icon:SetTexCoord(.07, 1-.07, .23, 1-.23)
-
-	button.text = button:CreateFontString(nil, "OVERLAY")
-	button.text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, -3)
-	button.text:SetJustifyH("CENTER")
-	button.text:SetFont(C.Media.Font, C.Media.Font_Size * (C.Nameplates.AuraSize / 24), C.Media.Font_Style)
-	button.text:SetShadowColor(0, 0, 0, 0.9)
-	button.text:SetShadowOffset(0, 0)
+	button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 
 	button.cd = CreateFrame("Cooldown", nil, button)
 	button.cd:SetAllPoints(button)
@@ -364,8 +356,8 @@ function Plates:OnShow()
 		Level = Level.."+"
 	end
 
-	if C.Nameplates.NameAbbreviate == true then	
-	--if C.Nameplates.NameAbbreviate == true and C.Nameplates.TrackAuras ~= true then
+	if C.Nameplates.NameAbbreviate == true then
+		--if C.Nameplates.NameAbbreviate == true and C.Nameplates.TrackAuras ~= true then
 		self.NewPlate.Name:SetText(Abbrev(Name))
 	else
 		self.NewPlate.Name:SetText(Name)
@@ -861,14 +853,13 @@ local function CreateAuraIcon(parent)
 	button.shadow:SetBackdropColor(.05, .05, .05, .9)
 	button.shadow:SetBackdropBorderColor(0, 0, 0, 1)
 
-	button.bord = button:CreateTexture(nil, "BORDER")
-	button.bord:SetTexture(0/255, 0/255, 0/255, 1)
-	button.bord:SetPoint("TOPLEFT", button, "TOPLEFT", K.NoScaleMult, -K.NoScaleMult)
-	button.bord:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -K.NoScaleMult, K.NoScaleMult)
+	button.bg = button:CreateTexture(nil, "BACKGROUND")
+	button.bg:SetColorTexture(unpack(C.Media.Backdrop_Color))
+	button.bg:SetAllPoints(button)
 
 	button.icon = button:CreateTexture(nil, "OVERLAY")
 	button.icon:SetAllPoints(button)
-	button.icon:SetTexCoord(.07, 1-.07, .23, 1-.23)
+	button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 
 	button.cd = CreateFrame("Cooldown", nil, button)
 	button.cd:SetAllPoints(button)
@@ -893,7 +884,8 @@ local function UpdateAuraIcon(button, unit, index, filter)
 	button.cd:SetCooldown(expirationTime - duration, duration)
 
 	local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
-	button.bord:SetColorTexture(color.r, color.g, color.b)
+	--button.bord:SetColorTexture(color.r, color.g, color.b)
+	button.shadow:SetBackdropBorderColor(color.r, color.g, color.b)
 
 	if count and count > 1 then
 		button.count:SetText(count)
@@ -1297,7 +1289,7 @@ local function UpdateName(unitFrame)
 			unitFrame.name:SetText("")
 		else
 			if C.Nameplates.NameAbbreviate == true then
-			--if C.Nameplates.NameAbbreviate == true and C.Nameplates.TrackAuras ~= true then
+				--if C.Nameplates.NameAbbreviate == true and C.Nameplates.TrackAuras ~= true then
 				unitFrame.name:SetText(Abbrev(name))
 			else
 				unitFrame.name:SetText(name)

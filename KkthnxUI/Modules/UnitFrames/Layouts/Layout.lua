@@ -1039,3 +1039,48 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	text:SetPoint("CENTER", bar)
 	bar.text = text
 end
+
+-- Test the unitframes :D
+local moving = false
+SlashCmdList.TEST_UF = function(msg)
+	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+	if not moving then
+		for _, frames in pairs({"oUF_KkthnxTarget", "oUF_KkthnxTargetTarget", "oUF_KkthnxPet", "oUF_KkthnxFocus", "oUF_KkthnxFocusTarget"}) do
+			_G[frames].oldunit = _G[frames].unit
+			_G[frames]:SetAttribute("unit", "player")
+		end
+
+		if C.Unitframe.ShowArena == true then
+			for i = 1, 5 do
+				_G["oUF_KkthnxArenaFrame"..i].oldunit = _G["oUF_KkthnxArenaFrame"..i].unit
+				_G["oUF_KkthnxArenaFrame"..i]:SetAttribute("unit", "player")
+			end
+		end
+
+		if C.Unitframe.ShowBoss == true then
+			for i = 1, MAX_BOSS_FRAMES do
+				_G["oUF_KkthnxBossFrame"..i].oldunit = _G["oUF_KkthnxBossFrame"..i].unit
+				_G["oUF_KkthnxBossFrame"..i]:SetAttribute("unit", "player")
+			end
+		end
+		moving = true
+	else
+		for _, frames in pairs({"oUF_KkthnxTarget", "oUF_KkthnxTargetTarget", "oUF_KkthnxPet", "oUF_KkthnxFocus", "oUF_KkthnxFocusTarget"}) do
+			_G[frames]:SetAttribute("unit", _G[frames].oldunit)
+		end
+
+		if C.Unitframe.ShowArena == true then
+			for i = 1, 5 do
+				_G["oUF_KkthnxArenaFrame"..i]:SetAttribute("unit", _G["oUF_KkthnxArenaFrame"..i].oldunit)
+			end
+		end
+
+		if C.Unitframe.ShowBoss == true then
+			for i = 1, MAX_BOSS_FRAMES do
+				_G["oUF_KkthnxBossFrame"..i]:SetAttribute("unit", _G["oUF_KkthnxBossFrame"..i].oldunit)
+			end
+		end
+		moving = false
+	end
+end
+SLASH_TEST_UF1 = "/testuf"

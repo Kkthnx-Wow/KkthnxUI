@@ -56,12 +56,12 @@
    Health:SetPoint('TOP')
    Health:SetPoint('LEFT')
    Health:SetPoint('RIGHT')
-   
+
    -- Add a background
    local Background = Health:CreateTexture(nil, 'BACKGROUND')
    Background:SetAllPoints(Health)
    Background:SetTexture(1, 1, 1, .5)
-   
+
    -- Options
    Health.frequentUpdates = true
    Health.colorTapping = true
@@ -69,10 +69,10 @@
    Health.colorClass = true
    Health.colorReaction = true
    Health.colorHealth = true
-   
+
    -- Make the background darker.
    Background.multiplier = .5
-   
+
    -- Register it with oUF
    self.Health = Health
    self.Health.bg = Background
@@ -89,7 +89,7 @@ local oUF = ns.oUF
 oUF.colors.health = {49/255, 207/255, 37/255}
 
 local Update = function(self, event, unit)
-	if(self.unit ~= unit) then return end
+	if(not unit or self.unit ~= unit) then return end
 	local health = self.Health
 
 	if(health.PreUpdate) then health:PreUpdate(unit) end
