@@ -41,6 +41,7 @@ function WorldMap:SetLargeWorldMap()
 	WorldMapFrame:EnableKeyboard(false)
 	WorldMapFrame:SetScale(1)
 	WorldMapFrame:EnableMouse(true)
+	WorldMapTooltip:SetFrameStrata("TOOLTIP")
 
 	if WorldMapFrame:GetAttribute("UIPanelLayout-area") ~= "center" then
 		SetUIPanelAttribute(WorldMapFrame, "area", "center")
@@ -75,15 +76,25 @@ function WorldMap:PLAYER_REGEN_DISABLED()
 	WorldMapFrameSizeUpButton:Disable()
 end
 
+local inRestrictedArea = false
+function WorldMap:PLAYER_ENTERING_WORLD()
+	local x = GetPlayerMapPosition("player")
+	if not x then
+		inRestrictedArea = true
+		self:CancelTimer(self.CoordsTimer)
+		self.CoordsTimer = nil
+		CoordsHolder.playerCoords:SetText("")
+		CoordsHolder.mouseCoords:SetText("")
+	elseif not self.CoordsTimer then
+		inRestrictedArea = false
+		self.CoordsTimer = self:ScheduleRepeatingTimer('UpdateCoords', 0.05)
+	end
+end
+
 function WorldMap:UpdateCoords()
-	if(not WorldMapFrame:IsShown()) then return end
+	if (not WorldMapFrame:IsShown() or inRestrictedArea) then return end
 
 	local X, Y = GetPlayerMapPosition("player")
-
-	if not GetPlayerMapPosition("player") then
-		X = 0
-		Y = 0
-	end
 
 	X = K.Round(100 * X, 2)
 	Y = K.Round(100 * Y, 2)
@@ -112,7 +123,7 @@ function WorldMap:UpdateCoords()
 end
 
 function WorldMap:PositionCoords()
-	local DataBase = C.WorldMapCoordinates -- PLAN TO CHANGE ALL THIS AT A LATER TIME.
+	local DataBase = C.WorldMapCoordinates -- Plan to change all this at a later time.
 	local Position = DataBase.Position
 	local XOffset = DataBase.XOffset
 	local YOffset = DataBase.YOffset
@@ -127,14 +138,7 @@ function WorldMap:PositionCoords()
 	CoordsHolder.MouseCoords:SetPoint(Position, CoordsHolder.PlayerCoords, INVERTED_POINTS[Position], 0, Y)
 end
 
-function WorldMap:ResetDropDownListPosition(frame)
-	-- DropDownList1:ClearAllPoints()
-	-- DropDownList1:Point("TOPRIGHT", frame, "BOTTOMRIGHT", -17, -4)
-end
-
 function WorldMap:Enable()
-	-- setfenv(WorldMapFrame_OnShow, setmetatable({ UpdateMicroButtons = function() end }, { __index = _G })) -- BLIZZARD TAINT FIX
-
 	if(C.WorldMap.Coordinates) then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)
 		CoordsHolder:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() + 1)
@@ -145,11 +149,13 @@ function WorldMap:Enable()
 		CoordsHolder.MouseCoords:SetTextColor(1, 1 ,0)
 		CoordsHolder.PlayerCoords:SetFontObject(NumberFontNormal)
 		CoordsHolder.MouseCoords:SetFontObject(NumberFontNormal)
-		CoordsHolder.PlayerCoords:SetText(PLAYER..": 0, 0")
-		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..": 0, 0")
+		CoordsHolder.PlayerCoords:SetText(PLAYER..":   0, 0")
+		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..":   0, 0")
 
-		self:ScheduleRepeatingTimer("UpdateCoords", 0.05)
+		self.CoordsTimer = self:ScheduleRepeatingTimer('UpdateCoords', 0.05)
 		WorldMap:PositionCoords()
+		
+		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	end
 
 	if(C.WorldMap.SmallWorldMap) then
@@ -166,16 +172,15 @@ function WorldMap:Enable()
 		end
 	end
 
-	-- SET ALPHA USED WHEN MOVING
+	-- Set alpha used when moving
 	WORLD_MAP_MIN_ALPHA = C.WorldMap.AlphaWhenMoving
 	SetCVar("mapAnimMinAlpha", C.WorldMap.AlphaWhenMoving)
 
-	-- ENABLE/DISABLE MAP FADING WHEN MOVING
+	-- Enable/Disable map fading when moving
 	SetCVar("mapFade", (C.WorldMap.FadeWhenMoving == true and 1 or 0))
 end
 
-Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
+Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function(self, event, ...)
 	WorldMap:Enable()
-	Loading:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)

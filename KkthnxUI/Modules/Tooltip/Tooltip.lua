@@ -5,12 +5,14 @@ if C.Tooltip.Enable ~= true then return end
 local _G = _G
 local gsub, find, format = string.gsub, string.find, string.format
 local unpack = unpack
+local floor = math.floor
 
 -- WOW API
 local CHAT_FLAG_AFK = CHAT_FLAG_AFK
 local CHAT_FLAG_DND = CHAT_FLAG_DND
 local LEVEL = LEVEL
 local RaidColors = RAID_CLASS_COLORS
+local GetAverageItemLevel = GetAverageItemLevel
 
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
@@ -161,6 +163,7 @@ function Tooltip:OnTooltipSetUnit()
 		if (C.Tooltip.ShowSpec and IsAltKeyDown()) then
 			local Talent = K.Tooltip.Talent
 
+			ItemLevel = "..."
 			TalentSpec = "..."
 
 			if (Unit ~= "player") then
@@ -171,6 +174,7 @@ function Tooltip:OnTooltipSetUnit()
 					local Cache = Talent.Cache[i]
 
 					if Cache.GUID == Talent.CurrentGUID then
+						ItemLevel = Cache.ItemLevel or "..."
 						TalentSpec = Cache.TalentSpec or "..."
 						LastUpdate = Cache.LastUpdate and abs(Cache.LastUpdate - floor(GetTime())) or 30
 					end
@@ -184,6 +188,7 @@ function Tooltip:OnTooltipSetUnit()
 					Talent:Show()
 				end
 			else
+				ItemLevel = Talent:GetItemLevel("player") or UNKNOWN
 				TalentSpec = Talent:GetTalentSpec() or NONE
 			end
 		end
@@ -235,6 +240,7 @@ function Tooltip:OnTooltipSetUnit()
 
 	if (C.Tooltip.ShowSpec and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
 		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ItemLevel.."|r")
 		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
 	end
 
@@ -325,7 +331,7 @@ function Tooltip:OnValueChanged()
 	local unit = select(2, self:GetParent():GetUnit())
 	if(not unit) then
 		local GMF = GetMouseFocus()
-		if(GMF and GMF:GetAttribute("unit")) then
+		if(GMF and GMF.GetAttribute and GMF:GetAttribute("unit")) then
 			unit = GMF:GetAttribute("unit")
 		end
 	end

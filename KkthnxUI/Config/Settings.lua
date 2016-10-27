@@ -166,6 +166,7 @@ C["Misc"] = {
 	["EnhancedMail"] = true,
 	["Errors"] = true,
 	["InviteKeyword"] = "inv",
+	["ItemLevel"] = true,
 	["MoveBlizzard"] = false,
 	["SellMisc"] = true,
 	["SlotDurability"] = false,
