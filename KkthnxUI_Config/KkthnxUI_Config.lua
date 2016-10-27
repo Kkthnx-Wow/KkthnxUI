@@ -203,9 +203,10 @@ local function Local(o)
 	if o == "UIConfigMiscEnhancedMail" then o = L_GUI_MISC_ENCHANCED_MAIL end
 	if o == "UIConfigMiscErrors" then o = L_GUI_MISC_ERRORS end
 	if o == "UIConfigMiscInviteKeyword" then o = L_GUI_MISC_INVKEYWORD end
-	if o == "UIConfigMiscSlotDurability" then o = L_GUI_MISC_SLOT_DURABILITY end
+	if o == "UIConfigMiscItemLevel" then o = L_GUI_MISC_ITEMLEVEL end
 	if o == "UIConfigMiscMoveBlizzard" then o = L_GUI_MISC_MOVE_BLIZZARD end
 	if o == "UIConfigMiscSellMisc" then o = L_GUI_MISC_SELLMISC end
+	if o == "UIConfigMiscSlotDurability" then o = L_GUI_MISC_SLOT_DURABILITY end
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
 	-- Nameplate Settings
 	if o == "UIConfigNameplates" then o = UNIT_NAMEPLATES end

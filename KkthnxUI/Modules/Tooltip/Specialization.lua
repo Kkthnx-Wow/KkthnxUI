@@ -8,37 +8,66 @@ local format = string.format
 Talent.Cache = {}
 Talent.LastInspectRequest = 0
 Talent.SlotNames = {
-	"Head","Neck","Shoulder","Back","Chest","Wrist",
-	"Hands","Waist","Legs","Feet","Finger0","Finger1",
-	"Trinket0","Trinket1","MainHand","SecondaryHand"
+	"Head",
+	"Neck",
+	"Shoulder",
+	"Back",
+	"Chest",
+	"Wrist",
+	"Hands",
+	"Waist",
+	"Legs",
+	"Feet",
+	"Finger0",
+	"Finger1",
+	"Trinket0",
+	"Trinket1",
+	"MainHand",
+	"SecondaryHand"
 }
 
 function Talent:GetItemLevel(unit)
-	local total, item = 0, 0
-	local artifactEquipped = false
+	local Total, Item = 0, 0
+	local ArtefactEquiped = false
+	local TotalSlots = 16
+
 	for i = 1, #Talent.SlotNames do
-		local itemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Talent.SlotNames[i])))
-		if (itemLink ~= nil) then
-			local _, _, rarity, _, _, _, _, _, equipLoc = GetItemInfo(itemLink)
-			-- Check if we have an artifact equipped in main hand
-			if (equipLoc and equipLoc == "INVTYPE_WEAPONMAINHAND" and rarity and rarity == 6) then
-				artifactEquipped = true
+		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Talent.SlotNames[i])))
+
+		if (ItemLink ~= nil) then
+			local _, _, Rarity, _, _, _, _, _, EquipLoc = GetItemInfo(ItemLink)
+
+			--Check if we have an artifact equipped in main hand
+			if (EquipLoc and EquipLoc == "INVTYPE_WEAPONMAINHAND" and Rarity and Rarity == 6) then
+				ArtifactEquipped = true
 			end
-			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
-			if (not artifactEquipped or (artifactEquipped and equipLoc and equipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
-				local itemLevel
-				itemLevel = GetDetailedItemLevelInfo(itemLink)
-				if(itemLevel and itemLevel > 0) then
-					item = item + 1
-					total = total + itemLevel
+
+			--If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			if (not ArtifactEquipped or (ArtifactEquipped and EquipLoc and EquipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
+				local ItemLevel
+
+				ItemLevel = GetDetailedItemLevelInfo(ItemLink)
+
+				if(ItemLevel and ItemLevel > 0) then
+					Item = Item + 1
+					Total = Total + ItemLevel
+				end
+
+				-- Total slots depend if one/two handed weapon
+				if (i == 15) then
+					if (ArtifactEquipped or (EquipLoc and EquipLoc == "INVTYPE_2HWEAPON")) then
+						TotalSlots = 15
+					end
 				end
 			end
 		end
 	end
-	if(total < 1 or item < 15) then
+
+	if(Total < 1 or Item < TotalSlots) then
 		return
 	end
-	return floor(total / item)
+
+	return floor(Total / Item)
 end
 
 function Talent:GetTalentSpec(unit)
@@ -100,9 +129,8 @@ Talent:SetScript("OnEvent", function(self, event, GUID)
 		return
 	end
 
-	local unit = "mouseover"
-	local ItemLevel = self:GetItemLevel(unit)
-	local TalentSpec = self:GetTalentSpec(unit)
+	local ItemLevel = self:GetItemLevel("mouseover")
+	local TalentSpec = self:GetTalentSpec("mouseover")
 	local CurrentTime = GetTime()
 	local MatchFound
 

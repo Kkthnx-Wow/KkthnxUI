@@ -1,4 +1,5 @@
 local K, C, L = select(2, ...):unpack()
+if C.Auras.Enable ~= true then return end
 
 local KkthnxUIAuras = K.Auras
 local unpack = unpack
@@ -18,11 +19,8 @@ KkthnxUIAuras.ProxyIcon = "Interface\\Icons\\misc_arrowdown"
 function KkthnxUIAuras:DisableBlizzardAuras()
 	BuffFrame:Kill()
 	TemporaryEnchantFrame:Kill()
-	--ConsolidatedBuffs:ClearAllPoints()
-	--ConsolidatedBuffs:Kill()
 	InterfaceOptionsFrameCategoriesButton12:SetScale(0.00001)
 	InterfaceOptionsFrameCategoriesButton12:SetAlpha(0)
-	--SetCVar("consolidateBuffs", 0)
 end
 
 function KkthnxUIAuras:StartOrStopFlash(timeleft)

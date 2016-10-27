@@ -188,7 +188,12 @@ function Tooltip:OnTooltipSetUnit()
 					Talent:Show()
 				end
 			else
-				ItemLevel = Talent:GetItemLevel("player") or UNKNOWN
+				local Best, Current, PVP = GetAverageItemLevel()
+
+				ItemLevel = math.floor(Current) or UNKNOWN
+				MaxItemLevel = math.floor(Best) or UNKNOWN
+				PvPItemLevel = math.floor(PVP) or UNKNOWN
+
 				TalentSpec = Talent:GetTalentSpec() or NONE
 			end
 		end
@@ -240,10 +245,18 @@ function Tooltip:OnTooltipSetUnit()
 
 	if (C.Tooltip.ShowSpec and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ItemLevel.."|r")
+
+
+		if Unit == "player" then
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..CURRENTLY_EQUIPPED .."): |cff3eea23"..ItemLevel.."|r")
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..PVP.."): |cff3eea23"..PvPItemLevel.."|r")
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..MAXIMUM.."): |cff3eea23"..MaxItemLevel.."|r")
+		else
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ItemLevel.."|r")
+		end
+
 		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
 	end
-
 	self.fadeOut = nil
 end
 
@@ -252,7 +265,7 @@ function Tooltip:SetColor()
 	local Unit = select(2, self:GetUnit()) or (GetMouseFocus and GetMouseFocus.GetAttribute and GetMouseFocus:GetAttribute("unit"))
 
 	if (not Unit) and (UnitExists("mouseover")) then Unit = "mouseover" end
-	
+
 	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 

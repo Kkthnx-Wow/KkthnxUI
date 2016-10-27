@@ -1,7 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
 local Levels = UIDROPDOWNMENU_MAXLEVELS
-local Noop = function() end
 local UIDropDownMenu_CreateFrames = UIDropDownMenu_CreateFrames
 local DropDown = CreateFrame("Frame")
 
@@ -48,7 +47,7 @@ function DropDown:Enable()
 	for i = 1, getn(self.ChatMenus) do
 		Menu = _G[self.ChatMenus[i]]
 		Menu:SetTemplate()
-		Menu.SetBackdropColor = Noop
+		Menu.SetBackdropColor = K.Noop
 	end
 
 	hooksecurefunc("UIDropDownMenu_CreateFrames", self.Skin)
