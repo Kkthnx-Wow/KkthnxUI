@@ -221,7 +221,7 @@ end
 local function StripTextures(Object, Kill, Text)
 	for i = 1, Object:GetNumRegions() do
 		local Region = select(i, Object:GetRegions())
-		if Region:GetObjectType() == "Texture" then
+		if Region and Region:GetObjectType() == "Texture" then
 			if Kill then
 				Region:Kill()
 			else

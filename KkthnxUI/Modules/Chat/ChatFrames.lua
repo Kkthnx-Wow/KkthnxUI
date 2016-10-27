@@ -1,7 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
--- LUA API
+-- Lua api
 local _G = _G
 local gsub = string.gsub
 local upper = string.upper
@@ -13,10 +13,7 @@ local find = string.find
 local len = string.len
 local sub = string.sub
 
--- WOW API
-local KkthnxUIChat = CreateFrame("Frame", "KkthnxUIChat")
-local tabalpha = 1
-local tabnoalpha = 0
+-- Wow api
 local GetID, GetName = GetID, GetName
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
@@ -56,6 +53,7 @@ local function AddMessage(frame, str, ...)
 	return origs[frame](frame, str, ...)
 end
 
+ChatConfigFrameDefaultButton:Kill()
 QuickJoinToastButton:Kill()
 ChatFrameMenuButton:Kill()
 
@@ -67,21 +65,23 @@ local function SetChatStyle(frame)
 	local tab = _G[framename.."Tab"]
 	local editbox = _G[framename.."EditBox"]
 
+	frame:SetFrameLevel(5)
+
 	frame:SetClampRectInsets(0, 0, 0, 0)
 	frame:SetClampedToScreen(false)
-	frame:SetFading(C.Chat.Fading)
+	frame:SetFading(false)
 
-	-- MOVE THE CHAT EDIT BOX
+	-- Move the chat edit box
 	editbox:ClearAllPoints()
 	editbox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", -4, 23)
 	editbox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 4, 23)
 
-	-- HIDE TEXTURES
+	-- Hide textures
 	for i = 1, #CHAT_FRAME_TEXTURES do
 		_G[framename..CHAT_FRAME_TEXTURES[i]]:SetTexture(nil)
 	end
 
-	-- REMOVES DEFAULT CHATFRAME TABS TEXTURE
+	-- Removes default chatframe tabs texture
 	_G[format("ChatFrame%sTabLeft", id)]:Kill()
 	_G[format("ChatFrame%sTabMiddle", id)]:Kill()
 	_G[format("ChatFrame%sTabRight", id)]:Kill()
@@ -110,19 +110,19 @@ local function SetChatStyle(frame)
 
 	_G[format("ChatFrame%sTabGlow", id)]:Kill()
 
-	-- KILL OFF EDITBOX ARTWORK
+	-- Kill off editbox artwork
 	local a, b, c = select(6, editbox:GetRegions()) a:Kill() b:Kill() c:Kill()
 
-	-- KILL BUBBLE TEX/GLOW
+	-- Kill bubble tex/glow
 	if tab.conversationIcon then tab.conversationIcon:Kill() end
 
-	-- DISABLE ALT KEY USAGE
+	-- Disable alt key usage
 	editbox:SetAltArrowKeyMode(false)
 
-	-- HIDE EDITBOX ON LOGIN
+	-- Hide editbox on login
 	editbox:Hide()
 
-	-- SCRIPT TO HIDE EDITBOX INSTEAD OF FADING EDITBOX TO 0.35 ALPHA VIA IM STYLE
+	-- Script to hide editbox instead of fading editbox to 0.35 alpha via im style
 	editbox:HookScript("OnEditFocusGained", function(self) self:Show() end)
 	editbox:HookScript("OnEditFocusLost", function(self) self:Hide() end)
 
@@ -154,7 +154,7 @@ local function SetChatStyle(frame)
 	end
 	editbox:HookScript("OnTextChanged", OnTextChanged)
 
-	-- HIDE EDIT BOX EVERY TIME WE CLICK ON A TAB
+	-- Hide edit box every time we click on a tab
 	tab:HookScript("OnClick", function() editbox:Hide() end)
 
 	-- CREATE OUR OWN TEXTURE FOR EDIT BOX
@@ -164,7 +164,7 @@ local function SetChatStyle(frame)
 		EditBoxBackground:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		EditBoxBackground:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		EditBoxBackground:ClearAllPoints()
-		EditBoxBackground:SetPoint("TOPLEFT", editbox, "TOPLEFT", 7, -3)
+		EditBoxBackground:SetPoint("TOPLEFT", editbox, "TOPLEFT", 7, -2)
 		EditBoxBackground:SetPoint("BOTTOMRIGHT", editbox, "BOTTOMRIGHT", -7, 2)
 		EditBoxBackground:SetFrameStrata("LOW")
 		EditBoxBackground:SetFrameLevel(1)
@@ -173,7 +173,7 @@ local function SetChatStyle(frame)
 			EditBoxBackground:SetBackdropBorderColor(r, g, b)
 		end
 
-		-- UPDATE BORDER COLOR ACCORDING WHERE WE TALK
+		-- Update border color according where we talk
 		hooksecurefunc("ChatEdit_UpdateHeader", function()
 			local type = editbox:GetAttribute("chatType")
 			if type == "CHANNEL" then
@@ -206,7 +206,6 @@ local function SetupChat(self)
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		SetChatStyle(Frame)
-		FCFTab_UpdateAlpha(Frame)
 	end
 
 	-- Remember last channel
@@ -217,23 +216,40 @@ local function SetupChat(self)
 	ChatTypeInfo.CHANNEL.sticky = 1
 end
 
-K.SetDefaultChatPosition = function(frame)
-	if frame then
-		local id = frame:GetID()
-		local name = FCF_GetChatWindowInfo(id)
-		local fontSize = select(2, frame:GetFont())
+local function SetupChatPosAndFont(self)
+	for i = 1, NUM_CHAT_WINDOWS do
+		local Frame = _G["ChatFrame"..i]
+		local ID = Frame:GetID()
+		local _, FontSize = FCF_GetChatWindowInfo(ID)
 
-		if fontSize < 12 then FCF_SetChatWindowFontSize(nil, frame, 12) else FCF_SetChatWindowFontSize(nil, frame, fontSize) end
-
-		if id == 1 then
-			frame:ClearAllPoints()
-			frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+		-- Min. size for chat font
+		if FontSize < 12 then
+			FCF_SetChatWindowFontSize(nil, Frame, 12)
+		else
+			FCF_SetChatWindowFontSize(nil, Frame, FontSize)
 		end
 
-		if not frame.isLocked then FCF_SetLocked(frame, 1) end
+		-- Font and font style for chat
+		if C.Chat.Outline == true then
+			Frame:SetFont(C.Media.Font, FontSize, C.Media.Font_Style)
+			Frame:SetShadowOffset(0, 0)
+			Frame:SetShadowColor(0, 0, 0, 0.2)
+		else
+			Frame:SetFont(C.Media.Font, FontSize)
+			Frame:SetShadowOffset(1, -1)
+			Frame:SetShadowColor(0, 0, 0, 0.9)
+		end
+
+		-- Force chat position
+		if (ID == 1) then
+			Frame:ClearAllPoints()
+			Frame:SetSize(C.Chat.Width, C.Chat.Height)
+			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+			FCF_RestorePositionAndDimensions(Frame)
+			FCF_SavePositionAndDimensions(Frame)
+		end
 	end
 end
-hooksecurefunc("FCF_RestorePositionAndDimensions", K.SetDefaultChatPosition)
 
 local BNet = CreateFrame("Frame", "BNetMover", UIParent)
 BNet:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
@@ -245,29 +261,34 @@ BNToastFrame:HookScript("OnShow", function(self)
 	self:SetPoint("TOPLEFT", BNetMover, "TOPLEFT", 3, -3)
 end)
 
-ChatConfigFrameDefaultButton:Kill()
-
-KkthnxUIChat:RegisterEvent("ADDON_LOADED")
-KkthnxUIChat:SetScript("OnEvent", function(self, event, addon)
-	if addon == "Blizzard_CombatLog" then
-		self:UnregisterEvent("ADDON_LOADED")
-		SetupChat(self)
+local UIChat = CreateFrame("Frame")
+UIChat:RegisterEvent("ADDON_LOADED")
+UIChat:RegisterEvent("PLAYER_ENTERING_WORLD")
+UIChat:SetScript("OnEvent", function(self, event, addon)
+	if event == "ADDON_LOADED" then
+		if addon == "Blizzard_CombatLog" then
+			self:UnregisterEvent("ADDON_LOADED")
+			SetupChat(self)
+		end
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		SetupChatPosAndFont(self)
 	end
 end)
 
 -- Setup temp chat (bn, whisper) when needed
 local function SetupTempChat()
 	local frame = FCF_GetCurrentChatFrame()
-	if _G[frame:GetName().."Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG) then
-		FCF_Close(frame)
-		return
-	end
-
-	if frame.isSkinned then return end
-	frame.temp = true
+	if frame.skinned then return end
 	SetChatStyle(frame)
 end
 hooksecurefunc("FCF_OpenTemporaryWindow", SetupTempChat)
+
+-- Disable pet battle tab
+local old = FCFManager_GetNumDedicatedFrames
+function FCFManager_GetNumDedicatedFrames(...)
+	return select(1, ...) ~= "PET_BATTLE_COMBAT_LOG" and old(...) or 1
+end
 
 -- Remove player's realm name
 local function RemoveRealmName(self, event, msg, author, ...)
@@ -277,3 +298,31 @@ local function RemoveRealmName(self, event, msg, author, ...)
 	end
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", RemoveRealmName)
+
+-- Save slash command typo
+local function TypoHistory_Posthook_AddMessage(chat, text)
+	if strfind(text, HELP_TEXT_SIMPLE) then
+		ChatEdit_AddHistory(chat.editBox)
+	end
+end
+
+for i = 1, NUM_CHAT_WINDOWS do
+	if i ~= 2 then
+		hooksecurefunc(_G["ChatFrame"..i], "AddMessage", TypoHistory_Posthook_AddMessage)
+	end
+end
+
+-- Big Trade Chat
+local bigchat = false
+function SlashCmdList.BIGCHAT(msg, editbox)
+	if bigchat == false then
+		ChatFrame1:SetSize(400, 400)
+		bigchat = true
+		K.Print(L_CHAT_BIGCHAT_ON)
+	else
+		ChatFrame1:SetSize(400, 150)
+		bigchat = false
+		K.Print(L_CHAT_BIGCHAT_OFF)
+	end
+end
+SLASH_BIGCHAT1 = "/bigchat"

@@ -270,7 +270,7 @@ function ns.UpdateCastbarColor(Castbar, unit)
 	local text = "default"
 
 	if UnitIsUnit(unit, "player") then
-		color = colors.class[select(2,UnitClass("player"))]
+		color = colors.class[select(2, UnitClass("player"))]
 	elseif Castbar.interrupt then
 		color = colors.uninterruptible
 		text = "white"

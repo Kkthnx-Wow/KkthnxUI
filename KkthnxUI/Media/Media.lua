@@ -1,4 +1,4 @@
-local K, C, _ = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local LSM = LibStub("LibSharedMedia-3.0")
 

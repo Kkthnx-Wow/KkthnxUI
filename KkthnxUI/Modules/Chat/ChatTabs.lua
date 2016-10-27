@@ -6,7 +6,7 @@ local _G = _G
 -- WOW API
 local CreateFrame = CreateFrame
 
--- BASED ON FANE(BY HASTE)
+-- Based on fane(by haste)
 if C.Chat.TabsMouseover == true then
 	CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA = 0
 	CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA = 0

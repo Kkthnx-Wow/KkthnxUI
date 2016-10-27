@@ -1,4 +1,4 @@
-local K, C, L, _ = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Nameplates.Enable ~= true then return end
 
 -- Based on rNamePlates(by zork, editor Tukz)
@@ -158,8 +158,8 @@ function Plates:CreateAuraIcon(self)
 	button.text:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, -3)
 	button.text:SetJustifyH("CENTER")
 	button.text:SetFont(C.Media.Font, C.Media.Font_Size * (C.Nameplates.AuraSize / 24), C.Media.Font_Style)
-	button.text:SetShadowColor(0/255, 0/255, 0/255, 1)
-	button.text:SetShadowOffset((0), -(0))
+	button.text:SetShadowColor(0, 0, 0, 0.9)
+	button.text:SetShadowOffset(0, 0)
 
 	button.cd = CreateFrame("Cooldown", nil, button)
 	button.cd:SetAllPoints(button)

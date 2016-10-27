@@ -76,6 +76,7 @@ local function InstallUI()
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
 	FCF_OpenNewWindow(LOOT)
+	FCF_SetLocked(ChatFrame4, 1)
 	FCF_DockFrame(ChatFrame4)
 
 	-- Setting chat frames
@@ -83,22 +84,35 @@ local function InstallUI()
 		for i = 1, NUM_CHAT_WINDOWS do
 			local Frame = _G["ChatFrame"..i]
 			local ID = Frame:GetID()
-			-- Set our initial size
+
 			Frame:SetSize(C.Chat.Width, C.Chat.Height)
+
 			-- Default width and height of chats
 			SetChatWindowSavedDimensions(ID, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
-			-- Move General chat to bottom left
+
+			-- Move general chat to bottom left
 			if (ID == 1) then
 				Frame:ClearAllPoints()
-				K.SetDefaultChatPosition(Frame)
+				Frame:SetPoint(unpack(C.Position.Chat))
 			end
+
 			-- Save new default position and dimension
 			FCF_SavePositionAndDimensions(Frame)
+
 			-- Set default font size
 			FCF_SetChatWindowFontSize(nil, Frame, 12)
-			if (ID == 1) then FCF_SetWindowName(Frame, "G, S & W") end
-			if (ID == 2) then FCF_SetWindowName(Frame, "Log") end
-			if (not Frame.isLocked) then FCF_SetLocked(Frame, 1) end
+
+			if (ID == 1) then
+				FCF_SetWindowName(Frame, "G, S & W")
+			end
+
+			if (ID == 2) then
+				FCF_SetWindowName(Frame, "Log")
+			end
+
+			if (not Frame.isLocked) then
+				FCF_SetLocked(Frame, 1)
+			end
 		end
 
 		-- Set more chat groups

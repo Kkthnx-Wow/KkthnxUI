@@ -275,7 +275,9 @@ local function UpdatePlayerFrame(self, ...)
 		self.ThreatGlow:SetTexCoord(unpack(data.glo.c))
 	end
 
-	self.PvP:ClearAllPoints()
+	if (self.PvP) then
+		self.PvP:ClearAllPoints()
+	end
 
 	local inVehicle = UnitHasVehicleUI("player")
 
@@ -519,7 +521,7 @@ local function CreateUnitLayout(self, unit)
 		self.Level = self:CreateFontString(nil, "ARTWORK")
 		self.Level:SetFont(C.Media.Font, C.Media.Font_Size)
 		self.Level:SetShadowOffset(1, -1)
-		self.Level:SetPoint("CENTER", self.Texture, (self.cUnit == "player" and -63) or 63, -15.5)
+		self.Level:SetPoint("CENTER", self.Texture, (unit == "player" and -63) or 63, -15.5)
 		self:Tag(self.Level, "[kkthnx:level]")
 
 		-- PvP Icon
@@ -610,7 +612,6 @@ local function CreateUnitLayout(self, unit)
 		altbar:SetParent(self)
 		altbar:ClearAllPoints()
 		altbar:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 5)
-
 	else
 		-- Icons
 		self.RaidIcon:SetPoint("CENTER", self.Portrait, "TOP", 0, -1)
@@ -654,6 +655,7 @@ local function CreateUnitLayout(self, unit)
 
 		if (self.cUnit == "player" or self.IsPartyFrame) then
 			self.ReadyCheck = self:CreateTexture(nil, "OVERLAY")
+			self.ReadyCheck:SetPoint("TOPRIGHT", self.Portrait, -7, -7)
 			self.ReadyCheck:SetPoint("TOPRIGHT", self.Portrait, -7, -7)
 			self.ReadyCheck:SetPoint("BOTTOMLEFT", self.Portrait, 7, 7)
 			self.ReadyCheck.delayTime = 2
@@ -756,10 +758,13 @@ local function CreateUnitLayout(self, unit)
 		end
 
 		-- PvP Timer
-		self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-		self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 2, -24 )
-		self.PvPTimer.frequentUpdates = 0.5
-		self:Tag(self.PvPTimer, "[kkthnx:pvptimer]")
+		if (self.PvP) then
+			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+			self.PvPTimer:SetShadowOffset(1, -1)
+			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 2, -24 )
+			self.PvPTimer.frequentUpdates = 0.5
+			self:Tag(self.PvPTimer, "[kkthnx:pvptimer]")
+		end
 
 		-- Combat icon
 		self.Combat = self:CreateTexture(nil, "OVERLAY")
@@ -781,7 +786,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Focus & Target Frame
-	if (self.cUnit == "target" or self.cUnit == "focus") then
+	if (unit == 'target' or unit == 'focus') then
 		-- Questmob Icon
 		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
 		self.QuestIcon:SetSize(32, 32)
@@ -792,7 +797,7 @@ local function CreateUnitLayout(self, unit)
 		end)
 	end
 
-	if (self.cUnit == "player") then
+	if (unit == "player") then
 		if (C.Unitframe.ThreatValue) then
 			self.NumericalThreat = CreateFrame("Frame", nil, self)
 			self.NumericalThreat:SetSize(49, 18)
@@ -954,9 +959,9 @@ end
 if (C.Unitframe.Party) then
 	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Unitframe.PartyInRaid and "custom [@raid6,exists] hide;show") or "custom [group:party,nogroup:raid] show; hide",
 	"oUF-initialConfigFunction", [[
-		local header = self:GetParent()
-		self:SetWidth(header:GetAttribute("initial-width"))
-		self:SetHeight(header:GetAttribute("initial-height"))
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 	"initial-width", K.Scale(105),
 	"initial-height", K.Scale(30),
@@ -966,7 +971,7 @@ if (C.Unitframe.Party) then
 	"groupFilter", "1,2,3,4,5,6,7,8",
 	"groupingOrder", "1,2,3,4,5,6,7,8",
 	"groupBy", "GROUP",
-	"showPlayer", C.Unitframe.ShowPlayer, -- Need to add this as an option.
+	"showPlayer", true, -- Need to add this as an option.
 	"yOffset", K.Scale(-30)
 	)
 

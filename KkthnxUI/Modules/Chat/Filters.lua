@@ -48,10 +48,10 @@ if C.Chat.Filter == true then
 end
 
 --[[
-	PLAYERS SPAM FILTER(BY EVL, ELV22 AND AFFLI)
-	THE ELLIPSIS (WHICH IS WHAT ... IS CALLED) ONLY ALLOWS YOU TO ACCEPT AN UNDEFINED NUMBER OF EXTRA ARGUMENTS
-	SO LOCAL FUNCTION BLAHBLAH(SELF, EVENT, TEXT, SENDER) IS THE SAME AS LOCAL FUNCTION BLAHBLAH(SELF, EVENT, TEXT, SENDER, ...)
-	IF YOU PASS ON THE ARGUMENTS IN THAT FUNCTION, YOU NEED TO PASS THE ... ALONG, OR IT MIGHT BREAK THE FUNCTIONALITY
+	Players spam filter(by evl, elv22 and affli)
+	The ellipsis (which is what ... is called) only allows you to accept an undefined number of extra arguments
+	so local function blahblah(self, event, text, sender) is the same as local function blahblah(self, event, text, sender, ...)
+	if you pass on the arguments in that function, you need to pass the ... along, or it might break the functionality
 ]]--
 if C.Chat.Spam == true then
 	-- Repeat spam filter

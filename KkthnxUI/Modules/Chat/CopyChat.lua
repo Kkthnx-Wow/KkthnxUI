@@ -86,7 +86,6 @@ local function Copy(cf)
 	if frame:IsShown() then frame:Hide() return end
 	frame:Show()
 	editBox:SetText(text)
-	--K.Delay(0.25, scrollDown)
 	C_Timer.After(0.25, scrollDown)
 end
 

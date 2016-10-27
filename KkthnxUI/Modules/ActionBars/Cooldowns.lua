@@ -56,7 +56,7 @@ local function GetTimeInfo(s, threshhold)
 		return ceil(s / HOUR), 1, hours > 1 and (s - (hours*HOUR - HALFHOURISH)) or (s - HOURISH)
 	else
 		local days = floor((s/DAY)+.5)
-		return ceil(s / DAY), 0,  days > 1 and (s - (days*DAY - HALFDAYISH)) or (s - DAYISH)
+		return ceil(s / DAY), 0, days > 1 and (s - (days*DAY - HALFDAYISH)) or (s - DAYISH)
 	end
 end
 
@@ -137,10 +137,7 @@ end
 
 local function Cooldown_Start(self, start, duration, charges, maxCharges)
 	if(self.noOCC) then return end
-	local remainingCharges = charges or 0
-
-	if self:GetName() and string.find(self:GetName(), "ChargeCooldown") then return end
-	if start > 0 and duration > MIN_DURATION and remainingCharges == 0 and (not self.noOCC) then
+	if start > 0 and duration > MIN_DURATION then
 		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
 		timer.duration = duration
@@ -151,6 +148,7 @@ local function Cooldown_Start(self, start, duration, charges, maxCharges)
 		local timer = self.timer
 		if timer then
 			Cooldown_Stop(timer)
+			return
 		end
 	end
 end

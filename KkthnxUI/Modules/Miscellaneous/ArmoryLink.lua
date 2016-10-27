@@ -1,8 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Misc.Armory ~= true then return end
 
--- ADD ARMORY LINK IN UNITPOPUPMENUS AND LFG FINDER (IT BREAKS SET FOCUS)
-
+-- Add armory link in unitpopupmenus and lfg finder (it can break set focus)
 local realmLocal = string.lower(GetCVar("portal"))
 if realmLocal == "ru" then realmLocal = "eu" end
 
@@ -55,26 +54,26 @@ StaticPopupDialogs.LINK_COPY_DIALOG = {
 	preferredIndex = 3,
 }
 
--- CLEAN UP BLIZZARD SERVER NAME FOR ARMORY URL
+-- Clean up Blizzard server name for armory url
 local function sanitizeRealmName(name, server)
-	-- PARSE Name-RealmName
+	-- Parse Name-RealmName
 	if name:match"-" then
 		name, server = name:match"(.*)-(.*)"
 	end
 
-	-- FALLBACK ON OWN REALM IF SERVER DOESN'T EXIST
+	-- Fallback on own realm if server doesn't exist
 	if not server then
 		server = GetRealmName()
 		missing = true
 	end
 
 	if server:match"'" then
-		-- ARMORY URLs DONT NEED TO SPLIT '
+		-- Armory URLs dont need to split
 		server = server:gsub("'", "")
 	elseif missing == true then
-		-- DO NOTHING (GetRealmName() uses spaces)
+		-- Do nothing (GetRealmName() uses spaces)
 	else
-		-- SPLIT UPPERCASE SERVER NAMES (BleedingHollow needs to be Bleeding Hollow) 
+		-- Split uppercase server names (BleedingHollow needs to be Bleeding Hollow)
 		server1 = server:match"[A-Z][a-z]*"
 		server2 = server:match"[A-Z][a-z]*(.*)"
 
@@ -83,22 +82,22 @@ local function sanitizeRealmName(name, server)
 			server1 = server1:gsub("of", " Of")
 		end
 
-		-- COMBINE TWO PARTS OF SERVER NAME WITH SPACE
+		-- Combine two parts of server name with space
 		if server2 ~= "" then
 			server = server1 .. ' ' .. server2
 		else
-			server = server1 
+			server = server1
 		end
 	end
 
-	-- FORMAT FOR ARMORY URL
+	-- Format for armory URL
 	server = server:gsub("-", "")
 	server = server:gsub(" ", "-")
 
 	return name, server
 end
- 
--- SHOW THE DIALOG POPUP WITH ARMORY LINK
+
+-- Show the dialog popup with armory link
 local function showArmoryPopup(name, server)
 	local inputBox = StaticPopup_Show("LINK_COPY_DIALOG")
 	local missing = false
@@ -130,7 +129,7 @@ local function showArmoryPopup(name, server)
 	end
 end
 
--- DROPDOWN MENU LINK
+-- Dropdown menu link
 hooksecurefunc("UnitPopup_OnClick", function(self)
 	local dropdownFrame = UIDROPDOWNMENU_INIT_MENU
 	local name = dropdownFrame.name
@@ -147,7 +146,7 @@ tinsert(UnitPopupMenus["PARTY"], #UnitPopupMenus["PARTY"] - 1, "ARMORYLINK")
 tinsert(UnitPopupMenus["RAID"], #UnitPopupMenus["RAID"] - 1, "ARMORYLINK")
 tinsert(UnitPopupMenus["PLAYER"], #UnitPopupMenus["PLAYER"] - 1, "ARMORYLINK")
 
--- DELETE SOME LINES FROM UNIT DROPDOWN MENU (BROKE SOME LINE)
+-- Delete some lines from unit dropdown menu (broke some line)
 for _, menu in pairs(UnitPopupMenus) do
 	for index = #menu, 1, -1 do
 		if menu[index] == "SET_FOCUS" or menu[index] == "CLEAR_FOCUS" or menu[index] == "MOVE_PLAYER_FRAME" or menu[index] == "MOVE_TARGET_FRAME" or menu[index] == "LARGE_FOCUS" or menu[index] == "MOVE_FOCUS_FRAME" or (menu[index] == "PET_DISMISS" and K.Class == "HUNTER") then
@@ -156,26 +155,26 @@ for _, menu in pairs(UnitPopupMenus) do
 	end
 end
 
--- LFG LIST APPLICANTS
+-- LFG list applicants
 local LFG_LIST_APPLICANT_MEMBER_MENU = {
 	{
-		text = nil, --Player name goes here
+		text = nil, -- Player name goes here
 		isTitle = true,
 		notCheckable = true,
 	},
 	{
 		text = WHISPER,
-		func = function(_, name) ChatFrame_SendTell(name); end,
+		func = function(_, name) ChatFrame_SendTell(name) end,
 		notCheckable = true,
-		arg1 = nil, --Player name goes here
-		disabled = nil, --Disabled if we don't have a name yet
+		arg1 = nil, -- Player name goes here
+		disabled = nil, -- Disabled if we don't have a name yet
 	},
 	{
 		text = L_POPUP_ARMORY,
-		func = function(_, name) showArmoryPopup(name); end,
+		func = function(_, name) showArmoryPopup(name) end,
 		notCheckable = true,
-		arg1 = nil, --Player name goes here
-		disabled = nil, --Disabled if we don't have a name yet
+		arg1 = nil, -- Player name goes here
+		disabled = nil, -- Disabled if we don't have a name yet
 	},
 	{
 		text = LFG_LIST_REPORT_FOR,
@@ -185,74 +184,74 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 			{
 				text = LFG_LIST_BAD_PLAYER_NAME,
 				notCheckable = true,
-				func = function(_, id, memberIdx) C_LFGList.ReportApplicant(id, "badplayername", memberIdx); end,
-				arg1 = nil, --Applicant ID goes here
-				arg2 = nil, --Applicant Member index goes here
+				func = function(_, id, memberIdx) C_LFGList.ReportApplicant(id, "badplayername", memberIdx) end,
+				arg1 = nil, -- Applicant ID goes here
+				arg2 = nil, -- Applicant Member index goes here
 			},
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
 				notCheckable = true,
-				func = function(_, id) C_LFGList.ReportApplicant(id, "lfglistappcomment"); end,
-				arg1 = nil, --Applicant ID goes here
+				func = function(_, id) C_LFGList.ReportApplicant(id, "lfglistappcomment") end,
+				arg1 = nil, -- Applicant ID goes here
 			},
 		},
 	},
 	{
 		text = IGNORE_PLAYER,
 		notCheckable = true,
-		func = function(_, name, applicantID) AddIgnore(name); C_LFGList.DeclineApplicant(applicantID); end,
-		arg1 = nil, --Player name goes here
-		arg2 = nil, --Applicant ID goes here
-		disabled = nil, --Disabled if we don't have a name yet
+		func = function(_, name, applicantID) AddIgnore(name) C_LFGList.DeclineApplicant(applicantID) end,
+		arg1 = nil, -- Player name goes here
+		arg2 = nil, -- Applicant ID goes here
+		disabled = nil, -- Disabled if we don't have a name yet
 	},
 	{
 		text = CANCEL,
 		notCheckable = true,
 	},
-};
- 
+}
+
 function LFGListUtil_GetApplicantMemberMenu(applicantID, memberIdx)
-	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx);
-	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID);
-	LFG_LIST_APPLICANT_MEMBER_MENU[1].text = name or " ";
-	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name;
-	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name or (status ~= "applied" and status ~= "invited");
-	LFG_LIST_APPLICANT_MEMBER_MENU[3].arg1 = name;
-	LFG_LIST_APPLICANT_MEMBER_MENU[3].disabled = not name or (status ~= "applied" and status ~= "invited");
-	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[1].arg1 = applicantID;
-	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[1].arg2 = memberIdx;
-	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[2].arg1 = applicantID;
-	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[2].disabled = (comment == "");
-	LFG_LIST_APPLICANT_MEMBER_MENU[5].arg1 = name;
-	LFG_LIST_APPLICANT_MEMBER_MENU[5].arg2 = applicantID;
-	LFG_LIST_APPLICANT_MEMBER_MENU[5].disabled = not name;
-	return LFG_LIST_APPLICANT_MEMBER_MENU;
+	local name, class, localizedClass, level, itemLevel, tank, healer, damage, assignedRole = C_LFGList.GetApplicantMemberInfo(applicantID, memberIdx)
+	local id, status, pendingStatus, numMembers, isNew, comment = C_LFGList.GetApplicantInfo(applicantID)
+	LFG_LIST_APPLICANT_MEMBER_MENU[1].text = name or " "
+	LFG_LIST_APPLICANT_MEMBER_MENU[2].arg1 = name
+	LFG_LIST_APPLICANT_MEMBER_MENU[2].disabled = not name or (status ~= "applied" and status ~= "invited")
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].arg1 = name
+	LFG_LIST_APPLICANT_MEMBER_MENU[3].disabled = not name or (status ~= "applied" and status ~= "invited")
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[1].arg1 = applicantID
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[1].arg2 = memberIdx
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[2].arg1 = applicantID
+	LFG_LIST_APPLICANT_MEMBER_MENU[4].menuList[2].disabled = (comment == "")
+	LFG_LIST_APPLICANT_MEMBER_MENU[5].arg1 = name
+	LFG_LIST_APPLICANT_MEMBER_MENU[5].arg2 = applicantID
+	LFG_LIST_APPLICANT_MEMBER_MENU[5].disabled = not name
+	return LFG_LIST_APPLICANT_MEMBER_MENU
 end
 
--- LFG LIST SEARCH ENTRIES
+-- LFG list search entries
 local LFG_LIST_SEARCH_ENTRY_MENU = {
 	{
-		text = nil, --Group name goes here
+		text = nil, -- Group name goes here
 		isTitle = true,
 		notCheckable = true,
 	},
 	{
 		text = WHISPER_LEADER,
-		func = function(_, name) ChatFrame_SendTell(name); end,
+		func = function(_, name) ChatFrame_SendTell(name) end,
 		notCheckable = true,
-		arg1 = nil, --Leader name goes here
-		disabled = nil, --Disabled if we don't have a leader name yet or you haven't applied
+		arg1 = nil, -- Leader name goes here
+		disabled = nil, -- Disabled if we don't have a leader name yet or you haven't applied
 		tooltipWhileDisabled = 1,
 		tooltipOnButton = 1,
-		tooltipTitle = nil, --The title to display on mouseover
-		tooltipText = nil, --The text to display on mouseover
+		tooltipTitle = nil, -- The title to display on mouseover
+		tooltipText = nil, -- The text to display on mouseover
 	},
-		{
+	{
 		text = L_POPUP_ARMORY,
-				func = function(_, name) showArmoryPopup(name); end,
-				notCheckable = true,
-				arg1 = nil, --Player name goes here
-				disabled = nil, --Disabled if we don't have a name yet
+		func = function(_, name) showArmoryPopup(name) end,
+		notCheckable = true,
+		arg1 = nil, -- Player name goes here
+		disabled = nil, -- Disabled if we don't have a name yet
 	},
 	{
 		text = LFG_LIST_REPORT_GROUP_FOR,
@@ -261,30 +260,30 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		menuList = {
 			{
 				text = LFG_LIST_BAD_NAME,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistname"); end,
-				arg1 = nil, --Search result ID goes here
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistname") end,
+				arg1 = nil, -- Search result ID goes here
 				notCheckable = true,
 			},
 			{
 				text = LFG_LIST_BAD_DESCRIPTION,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistcomment"); end,
-				arg1 = nil, --Search reuslt ID goes here
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistcomment") end,
+				arg1 = nil, -- Search reuslt ID goes here
 				notCheckable = true,
-				disabled = nil, --Disabled if the description is just an empty string
+				disabled = nil, -- Disabled if the description is just an empty string
 			},
 			{
 				text = LFG_LIST_BAD_VOICE_CHAT_COMMENT,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistvoicechat"); end,
-				arg1 = nil, --Search reuslt ID goes here
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "lfglistvoicechat") end,
+				arg1 = nil, -- Search reuslt ID goes here
 				notCheckable = true,
-				disabled = nil, --Disabled if the description is just an empty string
+				disabled = nil, -- Disabled if the description is just an empty string
 			},
 			{
 				text = LFG_LIST_BAD_LEADER_NAME,
-				func = function(_, id) C_LFGList.ReportSearchResult(id, "badplayername"); end,
-				arg1 = nil, --Search reuslt ID goes here
+				func = function(_, id) C_LFGList.ReportSearchResult(id, "badplayername") end,
+				arg1 = nil, -- Search reuslt ID goes here
 				notCheckable = true,
-				disabled = nil, --Disabled if we don't have a name for the leader
+				disabled = nil, -- Disabled if we don't have a name for the leader
 			},
 		},
 	},
@@ -292,22 +291,22 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		text = CANCEL,
 		notCheckable = true,
 	},
-};
- 
+}
+
 function LFGListUtil_GetSearchEntryMenu(resultID)
-	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID);
-	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID);
-	LFG_LIST_SEARCH_ENTRY_MENU[1].text = name;
-	LFG_LIST_SEARCH_ENTRY_MENU[2].arg1 = leaderName;
-	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not leaderName;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].arg1 = leaderName;
-	LFG_LIST_SEARCH_ENTRY_MENU[3].disabled = not leaderName;
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[1].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[2].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[2].disabled = (comment == "");
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[3].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[3].disabled = (voiceChat == "");
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[4].arg1 = resultID;
-	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[4].disabled = not leaderName;
-	return LFG_LIST_SEARCH_ENTRY_MENU;
+	local id, activityID, name, comment, voiceChat, iLvl, honorLevel, age, numBNetFriends, numCharFriends, numGuildMates, isDelisted, leaderName, numMembers = C_LFGList.GetSearchResultInfo(resultID)
+	local _, appStatus, pendingStatus, appDuration = C_LFGList.GetApplicationInfo(resultID)
+	LFG_LIST_SEARCH_ENTRY_MENU[1].text = name
+	LFG_LIST_SEARCH_ENTRY_MENU[2].arg1 = leaderName
+	LFG_LIST_SEARCH_ENTRY_MENU[2].disabled = not leaderName
+	LFG_LIST_SEARCH_ENTRY_MENU[3].arg1 = leaderName
+	LFG_LIST_SEARCH_ENTRY_MENU[3].disabled = not leaderName
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[1].arg1 = resultID
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[2].arg1 = resultID
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[2].disabled = (comment == "")
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[3].arg1 = resultID
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[3].disabled = (voiceChat == "")
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[4].arg1 = resultID
+	LFG_LIST_SEARCH_ENTRY_MENU[4].menuList[4].disabled = not leaderName
+	return LFG_LIST_SEARCH_ENTRY_MENU
 end

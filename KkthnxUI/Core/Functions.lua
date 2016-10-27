@@ -40,8 +40,8 @@ K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH(justify or "CENTER")
-	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(K.Mult, -K.Mult)
+	fs:SetShadowColor(0, 0, 0, 1)
+	fs:SetShadowOffset(1, -1)
 
 	return fs
 end
@@ -129,18 +129,18 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
--- Player"s role check
+-- Player's role check
 local isCaster = {
 	DEATHKNIGHT = {nil, nil, nil},
 	DEMONHUNTER = {nil, nil},
-	DRUID = {true},
+	DRUID = {true},					-- Balance
 	HUNTER = {nil, nil, nil},
 	MAGE = {true, true, true},
 	MONK = {nil, nil, nil},
 	PALADIN = {nil, nil, nil},
-	PRIEST = {nil, nil, true},
+	PRIEST = {nil, nil, true},		-- Shadow
 	ROGUE = {nil, nil, nil},
-	SHAMAN = {true},
+	SHAMAN = {true},				-- Elemental
 	WARLOCK = {true, true, true},
 	WARRIOR = {nil, nil, nil}
 }
@@ -163,11 +163,7 @@ local function CheckRole(self, event, unit)
 end
 local RoleUpdater = CreateFrame("Frame")
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
-RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
-RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
-RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
 RoleUpdater:SetScript("OnEvent", CheckRole)
 
 K.ShortenString = function(string, numChars, dots)
@@ -256,10 +252,12 @@ end
 -- Add time before calling a function
 local TimerParent = CreateFrame("Frame")
 K.UnusedTimers = {}
+
 local TimerOnFinished = function(self)
 	self.Func(unpack(self.Args))
 	tinsert(K.UnusedTimers, self)
 end
+
 K.NewTimer = function()
 	local Parent = TimerParent:CreateAnimationGroup()
 	local Timer = Parent:CreateAnimation("Alpha")
@@ -267,6 +265,7 @@ K.NewTimer = function()
 	Timer.Parent = Parent
 	return Timer
 end
+
 K.Delay = function(delay, func, ...)
 	if (type(delay) ~= "number" or type(func) ~= "function") then
 		return
