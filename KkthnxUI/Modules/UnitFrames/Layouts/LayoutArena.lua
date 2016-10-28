@@ -71,7 +71,7 @@ function ns.createArenaLayout(self, unit)
 	self.Power.Value:SetPoint("CENTER", self.Power)
 
 	self:SetSize(167, 46)
-	self:SetScale(.8)
+	self:SetScale(1)
 
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true

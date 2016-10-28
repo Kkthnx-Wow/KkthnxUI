@@ -5,15 +5,15 @@ local _G = _G
 local ChatHyperLink = CreateFrame("Frame")
 
 local linktypes = {
-	['item'] = true,
-	['spell'] = true,
-	['unit'] = true,
-	['quest'] = true,
-	['enchant'] = true,
-	['achievement'] = true,
-	['instancelock'] = true,
-	['talent'] = true,
-	['glyph'] = true,
+	["item"] = true,
+	["spell"] = true,
+	["unit"] = true,
+	["quest"] = true,
+	["enchant"] = true,
+	["achievement"] = true,
+	["instancelock"] = true,
+	["talent"] = true,
+	["glyph"] = true,
 	["currency"] = true,
 }
 
