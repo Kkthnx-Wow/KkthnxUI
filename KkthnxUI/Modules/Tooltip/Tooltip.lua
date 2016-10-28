@@ -384,7 +384,7 @@ function Tooltip:Enable()
 
 	HealthBar:SetScript("OnValueChanged", self.OnValueChanged)
 	HealthBar:SetStatusBarTexture(Texture)
-	HealthBar:CreatePixelShadow()
+	HealthBar:CreateShadow()
 	HealthBar:ClearAllPoints()
 	HealthBar:SetPoint("BOTTOMLEFT", HealthBar:GetParent(), "TOPLEFT", 4, 2)
 	HealthBar:SetPoint("BOTTOMRIGHT", HealthBar:GetParent(), "TOPRIGHT", -4, 2)

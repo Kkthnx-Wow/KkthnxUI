@@ -4,20 +4,19 @@ if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or IsAddOnLoaded("Cool
 local format = string.format
 local floor = math.floor
 local min = math.min
---Cache global variables
---Lua functions
+local find = string.find
+
+--Lua API
 local GetTime = GetTime
---WoW API / Variables
+--WoW API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
-
---Global variables that we don"t cache, list them here for the mikk"s Find Globals script
--- GLOBALS: UIParent
 
 local ICON_SIZE = 36 --the normal size for an icon (don"t change this)
 local FONT_SIZE = C.Cooldown.FontSize --the base font size to use at a scale of 1
 local MIN_SCALE = 0.5 --the minimum scale we want to show cooldown counts at, anything below this will be hidden
 local MIN_DURATION = 1.5 --the minimum duration to show cooldown text for
+local NUM_CHARGES = 2 --the minimum duration to show cooldown text for
 local threshold = C.Cooldown.Threshold
 
 local TimeColors = {
@@ -136,8 +135,10 @@ local function Cooldown_Create(self)
 end
 
 local function Cooldown_Start(self, start, duration, charges, maxCharges)
-	if(self.noOCC) then return end
-	if start > 0 and duration > MIN_DURATION then
+	local remainingCharges = charges or 0
+
+	if self:GetName() and find(self:GetName(), "ChargeCooldown") then return end
+	if start > 0 and duration > MIN_DURATION and remainingCharges < NUM_CHARGES and (not self.noOCC) then
 		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
 		timer.duration = duration

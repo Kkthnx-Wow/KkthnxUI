@@ -104,7 +104,7 @@ local function CreateBackdrop(f, t, size)
 end
 
 -- Who doesn't like shadows! More shadows!
-local function CreatePixelShadow(f, size)
+local function CreateShadow(f, size)
 	if f.Shadow then return end
 	size = size or 3
 
@@ -340,7 +340,7 @@ local function AddAPI(object)
 	if not object.CreateBackdrop then mt.CreateBackdrop = CreateBackdrop end
 	if not object.SetTemplate then mt.SetTemplate = SetTemplate end
 	if not object.CreatePanel then mt.CreatePanel = CreatePanel end
-	if not object.CreatePixelShadow then mt.CreatePixelShadow = CreatePixelShadow end
+	if not object.CreateShadow then mt.CreateShadow = CreateShadow end
 	if not object.CreateBlizzShadow then mt.CreateBlizzShadow = CreateBlizzShadow end
 	if not object.StyleButton then mt.StyleButton = StyleButton end
 	if not object.FontString then mt.FontString = FontString end

@@ -883,7 +883,6 @@ local function UpdateAuraIcon(button, unit, index, filter)
 	button.cd:SetCooldown(expirationTime - duration, duration)
 
 	local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
-	--button.bord:SetColorTexture(color.r, color.g, color.b)
 	button.shadow:SetBackdropBorderColor(color.r, color.g, color.b)
 
 	if count and count > 1 then

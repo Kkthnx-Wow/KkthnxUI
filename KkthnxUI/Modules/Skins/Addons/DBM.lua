@@ -32,7 +32,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							icon1.overlay:SetHeight(25)
 							icon1.overlay:SetFrameStrata("BACKGROUND")
 							icon1.overlay:SetPoint("BOTTOMRIGHT", tbar, "BOTTOMLEFT", -5, -2)
-							icon1.overlay:CreatePixelShadow(1)
+							icon1.overlay:CreateShadow(1)
 						end
 
 						if icon2.overlay then
@@ -43,7 +43,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							icon2.overlay:SetHeight(25)
 							icon2.overlay:SetFrameStrata("BACKGROUND")
 							icon2.overlay:SetPoint("BOTTOMLEFT", tbar, "BOTTOMRIGHT", 5, -2)
-							icon2.overlay:CreatePixelShadow(1)
+							icon2.overlay:CreateShadow(1)
 						end
 
 						if bar.color then
@@ -62,7 +62,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 						if not frame.styled then
 							frame:SetScale(1)
 							frame:SetHeight(19)
-							frame:CreatePixelShadow(1)
+							frame:CreateShadow(1)
 							frame.styled = true
 						end
 
