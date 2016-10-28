@@ -23,7 +23,6 @@ local WORLDMAP_FULLMAP_SIZE = WORLDMAP_FULLMAP_SIZE
 local WORLDMAP_WINDOWED_SIZE = WORLDMAP_WINDOWED_SIZE
 
 local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
-local Loading = CreateFrame("Frame")
 
 local INVERTED_POINTS = {
 	["TOPLEFT"] = "BOTTOMLEFT",
@@ -42,6 +41,8 @@ function WorldMap:SetLargeWorldMap()
 	WorldMapFrame:SetScale(1)
 	WorldMapFrame:EnableMouse(true)
 	WorldMapTooltip:SetFrameStrata("TOOLTIP")
+	WorldMapCompareTooltip1:SetFrameStrata("TOOLTIP")
+ 	WorldMapCompareTooltip2:SetFrameStrata("TOOLTIP")
 
 	if WorldMapFrame:GetAttribute("UIPanelLayout-area") ~= "center" then
 		SetUIPanelAttribute(WorldMapFrame, "area", "center")
@@ -83,11 +84,11 @@ function WorldMap:PLAYER_ENTERING_WORLD()
 		inRestrictedArea = true
 		self:CancelTimer(self.CoordsTimer)
 		self.CoordsTimer = nil
-		CoordsHolder.playerCoords:SetText("")
-		CoordsHolder.mouseCoords:SetText("")
+		CoordsHolder.PlayerCoords:SetText("")
+		CoordsHolder.MouseCoords:SetText("")
 	elseif not self.CoordsTimer then
 		inRestrictedArea = false
-		self.CoordsTimer = self:ScheduleRepeatingTimer('UpdateCoords', 0.05)
+		self.CoordsTimer = self:ScheduleRepeatingTimer("UpdateCoords", 0.05)
 	end
 end
 
@@ -152,9 +153,9 @@ function WorldMap:Enable()
 		CoordsHolder.PlayerCoords:SetText(PLAYER..":   0, 0")
 		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..":   0, 0")
 
-		self.CoordsTimer = self:ScheduleRepeatingTimer('UpdateCoords', 0.05)
+		self.CoordsTimer = self:ScheduleRepeatingTimer("UpdateCoords", 0.05)
 		WorldMap:PositionCoords()
-		
+
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	end
 
@@ -180,6 +181,7 @@ function WorldMap:Enable()
 	SetCVar("mapFade", (C.WorldMap.FadeWhenMoving == true and 1 or 0))
 end
 
+local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function(self, event, ...)
 	WorldMap:Enable()
