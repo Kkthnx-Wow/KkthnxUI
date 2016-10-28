@@ -135,7 +135,7 @@ local function style(self,unit)
 
 	self.Name = self:CreateFontString(nil)
 	self.Name:SetFont(C.Media.Font, 14)
-	self.Name:SetShadowOffset(1, -1)
+	self.Name:SetShadowOffset(1, K.Scale(-3)) -- Temp
 	self.Name:SetPoint("BOTTOM", self, "TOP", 0, 6)
 	self:Tag(self.Name, "[kkthnx:name]")
 

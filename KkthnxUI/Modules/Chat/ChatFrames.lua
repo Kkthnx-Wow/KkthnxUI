@@ -236,7 +236,7 @@ local function SetupChatPosAndFont(self)
 			Frame:SetShadowColor(0, 0, 0, 0.2)
 		else
 			Frame:SetFont(C.Media.Font, FontSize)
-			Frame:SetShadowOffset(1, -1)
+			Frame:SetShadowOffset(1, K.Scale(-3)) -- Maybe blizzard will revert thier shit changes?
 			Frame:SetShadowColor(0, 0, 0, 0.9)
 		end
 

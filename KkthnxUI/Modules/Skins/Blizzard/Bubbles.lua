@@ -28,11 +28,11 @@ local function skinbubble(frame)
 		frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		frame:SetClampedToScreen(false)
 		frame.text:SetFont(C.Media.Font, C.General.BubbleFontSize)
-		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -1 * UIParent:GetScale())
+		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -K.Scale(-3) * UIParent:GetScale())
 	else
 		frame:SetBackdrop(nil)
 		frame.text:SetFont(C.Media.Font, C.General.BubbleFontSize)
-		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -1 * UIParent:GetScale())
+		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -K.Scale(-3) * UIParent:GetScale())
 		frame:SetClampedToScreen(false)
 	end
 

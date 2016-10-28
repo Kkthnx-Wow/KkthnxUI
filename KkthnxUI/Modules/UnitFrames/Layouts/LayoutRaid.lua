@@ -163,7 +163,7 @@ local function CreateIndicators(self, unit)
 			if (not icon.hideCount) then
 				local count = icon:CreateFontString(nil, "OVERLAY")
 				count:SetShadowColor(0, 0, 0)
-				count:SetShadowOffset(1, -1)
+				count:SetShadowOffset(K.Mult, -K.Scale(-3))
 				count:SetPoint(unpack(offsets[spell[2]].count))
 				count:SetFont(C.Media.Font, 13)
 				icon.count = count
@@ -324,13 +324,13 @@ local function CreateRaidLayout(self, unit)
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("TOP", self.Health, "CENTER", 0, 2)
 	self.Health.Value:SetFont(C.Media.Font, 11)
-	self.Health.Value:SetShadowOffset(1, -1)
+	self.Health.Value:SetShadowOffset(K.Mult, -K.Scale(-3))
 
 	-- Name text
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOM", self.Health, "CENTER", 0, 3)
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size)
-	self.Name:SetShadowOffset(1, -1)
+	self.Name:SetShadowOffset(K.Mult, -K.Scale(-3))
 	self.Name:SetTextColor(1, 0.82, 0, 1)
 	self:Tag(self.Name, "[name:raid]")
 
@@ -540,7 +540,7 @@ local function CreateRaidLayout(self, unit)
 		self.LFDRoleText = self.Health:CreateFontString(nil, "ARTWORK")
 		self.LFDRoleText:SetPoint("TOPLEFT", self.Health, 0, 4)
 		self.LFDRoleText:SetFont(C.Media.Font, 15)
-		self.LFDRoleText:SetShadowOffset(0.5, -0.5)
+		self.LFDRoleText:SetShadowOffset(K.Mult, -K.Scale(-3))
 		self.LFDRoleText:SetTextColor(1, 0, 1)
 		self:Tag(self.LFDRoleText, "[role:raid]")
 	end

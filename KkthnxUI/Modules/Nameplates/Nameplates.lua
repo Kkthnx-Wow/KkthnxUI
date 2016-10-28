@@ -357,7 +357,6 @@ function Plates:OnShow()
 	end
 
 	if C.Nameplates.NameAbbreviate == true then
-		--if C.Nameplates.NameAbbreviate == true and C.Nameplates.TrackAuras ~= true then
 		self.NewPlate.Name:SetText(Abbrev(Name))
 	else
 		self.NewPlate.Name:SetText(Name)
@@ -1289,7 +1288,6 @@ local function UpdateName(unitFrame)
 			unitFrame.name:SetText("")
 		else
 			if C.Nameplates.NameAbbreviate == true then
-				--if C.Nameplates.NameAbbreviate == true and C.Nameplates.TrackAuras ~= true then
 				unitFrame.name:SetText(Abbrev(name))
 			else
 				unitFrame.name:SetText(name)
@@ -1404,19 +1402,21 @@ local function UpdateHealthColor(unitFrame)
 		elseif IsTapDenied(unitFrame) then
 			r, g, b = 0.6, 0.6, 0.6
 		else
-			if IsOnThreatList(unitFrame.displayedUnit) then
-				if C.Nameplates.EnhancedThreat ~= true then
-					SetVirtualBorder(unitFrame.healthBar, unpack(IsOnThreatList(unitFrame.displayedUnit)))
-				else
-					r, g, b = IsOnThreatList(unitFrame.displayedUnit)
-					threat = true
-				end
+			if IsOnThreatList(unitFrame.displayedUnit) and C.Nameplates.EnhancedThreat == true then
+				r, g, b = IsOnThreatList(unitFrame.displayedUnit)
+				threat = true
 			else
 				local reaction = K.Colors.reaction[UnitReaction(unit, "player")]
 				if reaction then
 					r, g, b = reaction[1], reaction[2], reaction[3]
 				else
 					r, g, b = UnitSelectionColor(unit, true)
+				end
+				if IsOnThreatList(unitFrame.displayedUnit) then
+					local red, green, blue = IsOnThreatList(unitFrame.displayedUnit)
+					SetVirtualBorder(unitFrame.healthBar, red, green, blue)
+				else
+					SetVirtualBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
 				end
 			end
 		end
