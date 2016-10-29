@@ -976,7 +976,7 @@ if (C.Unitframe.Party) then
 	)
 
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))
-	Movers:SetScale(1)
+	party:SetScale(1)
 	Movers:RegisterFrame(party)
 end
 
