@@ -93,17 +93,24 @@ if C.Minimap.Garrison == true then
 	GarrisonLandingPageMinimapButton:ClearAllPoints()
 	GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
 	GarrisonLandingPageMinimapButton:SetSize(32, 32)
-	GarrisonLandingPageMinimapButton:SetAlpha(0)
-	GarrisonLandingPageMinimapButton:HookScript("OnEnter", function()
-		GarrisonLandingPageMinimapButton:FadeIn()
-	end)
-	GarrisonLandingPageMinimapButton:HookScript("OnLeave", function()
-		GarrisonLandingPageMinimapButton:FadeOut()
-	end)
 else
 	GarrisonLandingPageMinimapButton:SetScale(0.0001)
 	GarrisonLandingPageMinimapButton:SetAlpha(0)
 end
+
+local AutoHide = CreateFrame("Frame")
+AutoHide:RegisterEvent("PLAYER_ENTERING_WORLD")
+AutoHide:SetScript("OnEvent", function(self, event)
+	local InInstance, Type = IsInInstance()
+	if InInstance and (Type == "party" or Type == "pvp" or Type == "arena" or Type == "raid") and C.Minimap.Garrison == true then
+		GarrisonLandingPageMinimapButton:SetScale(0.0001)
+		GarrisonLandingPageMinimapButton:SetAlpha(0)
+	elseif (not InInstance) and (Type == "none") and (not InCombatLockdown()) then
+		GarrisonLandingPageMinimapButton:ClearAllPoints()
+		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
+		GarrisonLandingPageMinimapButton:SetSize(32, 32)
+	end
+end)
 
 -- Dungeon info
 MiniMapInstanceDifficulty:ClearAllPoints()
@@ -184,8 +191,8 @@ FontString:SetTextColor(unpack(C.Media.Backdrop_Color))
 -- Enable mouse scrolling
 Minimap:EnableMouseWheel()
 local function Zoom(self, direction)
-  if(direction > 0) then Minimap_ZoomIn()
-  else Minimap_ZoomOut() end
+	if(direction > 0) then Minimap_ZoomIn()
+else Minimap_ZoomOut() end
 end
 Minimap:SetScript("OnMouseWheel", Zoom)
 
@@ -201,7 +208,7 @@ if C.Blizzard.ColorTextures == true then
 end
 MinimapBackdrop:SetOutside(Minimap, 4, 4)
 
--- SEt square map view
+-- Set square map view
 Minimap:SetMaskTexture(C.Media.Blank)
 Minimap:SetArchBlobRingAlpha(0)
 Minimap:SetQuestBlobRingAlpha(0)

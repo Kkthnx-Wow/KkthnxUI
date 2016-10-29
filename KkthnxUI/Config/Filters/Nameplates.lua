@@ -34,6 +34,12 @@ K.DebuffWhiteList = {
 	[SpellName(108194)] = true, -- asphyxiate stun
 
 	-- Demon Hunter
+	-- Self
+	[SpellName(218256)] = true, -- empower wards
+	[SpellName(203819)] = true, -- demon spikes
+	[SpellName(187827)] = true, -- metamorphosis (vengeance)
+	[SpellName(212800)] = true, -- blur
+	[SpellName(196555)] = true, -- netherwalk
 	-- Harmful
 	[SpellName(207744)] = true, -- fiery brand
 	[SpellName(207771)] = true, -- fiery brand 2

@@ -249,34 +249,33 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 end
 
 local function StyleButton(button)
-	if button.SetHighlightTexture and not button.hover then
+	if button.SetHighlightTexture and not button.hover and not noHover then
 		local hover = button:CreateTexture()
 		hover:SetColorTexture(1, 1, 1, 0.3)
 		hover:SetInside(button, 1, 1)
 		button.hover = hover
 		button:SetHighlightTexture(hover)
 	end
-
-	if button.SetPushedTexture and not button.pushed then
+	if button.SetPushedTexture and not button.pushed and not noPushed then
 		local pushed = button:CreateTexture()
 		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
 		pushed:SetInside(button, 1, 1)
 		button.pushed = pushed
 		button:SetPushedTexture(pushed)
 	end
-
-	if button.SetCheckedTexture and not button.checked then
+	if button.SetCheckedTexture and not button.checked and not noChecked then
 		local checked = button:CreateTexture()
-		checked:SetColorTexture(0, 1, 0, 0.3)
+		checked:SetColorTexture(1, 1, 1, 0.3)
 		checked:SetInside(button, 1, 1)
 		button.checked = checked
 		button:SetCheckedTexture(checked)
 	end
-
 	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
 		cooldown:SetInside()
+		cooldown:SetDrawEdge(false)
+		cooldown:SetSwipeColor(0, 0, 0, 1)
 	end
 end
 

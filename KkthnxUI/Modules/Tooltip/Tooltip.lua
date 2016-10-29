@@ -262,9 +262,11 @@ end
 
 function Tooltip:SetColor()
 	local GetMouseFocus = GetMouseFocus()
-	local Unit = select(2, self:GetUnit()) or (GetMouseFocus and GetMouseFocus.GetAttribute and GetMouseFocus:GetAttribute("unit"))
 
-	if (not Unit) and (UnitExists("mouseover")) then Unit = "mouseover" end
+	local Unit = select(2, self:GetUnit()) or (GetMouseFocus and GetMouseFocus.GetAttribute and GetMouseFocus:GetAttribute("unit"))
+	if (not Unit) and (UnitExists("mouseover")) then
+		Unit = "mouseover"
+	end
 
 	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
@@ -297,7 +299,7 @@ function Tooltip:SetColor()
 			R, G, B = GetItemQualityColor(Quality)
 			self:SetBackdropBorderColor(R, G, B)
 		else
-			local Color = Colors
+			local Color = K.Colors
 
 			HealthBar:SetStatusBarColor(unpack(K.Colors.reaction[5]))
 			HealthBar:SetBackdropBorderColor(unpack(C.Media.Border_Color))

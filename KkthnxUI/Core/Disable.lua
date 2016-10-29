@@ -35,6 +35,10 @@ if C.Unitframe.FlatClassPortraits == true then
 	C.Unitframe.ClassPortraits = false
 end
 
+if C.Raidframe.Enable == false then
+	C.Raidframe.RaidAsParty = false
+end
+
 -- Auto-overwrite script config is X addon is found
 -- Here we use our own function to check.
 if K.IsAddOnEnabled("SexyMap") or K.IsAddOnEnabled("bdMinimap") or K.IsAddOnEnabled("BasicMinimap") or K.IsAddOnEnabled("RicoMiniMap") or K.IsAddOnEnabled("Chinchilla") then
