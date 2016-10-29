@@ -300,6 +300,10 @@ K.DebuffWhiteList = {
 	[SpellName(107079)] = true, -- quaking palm
 }
 
+K.DebuffBlackList = {
+	-- [SpellName(spellID)] = true,	-- Spell Name
+}
+
 K.PlateBlacklist = {
 	-- Army of the Dead
 	["Army of the Dead"] = true,

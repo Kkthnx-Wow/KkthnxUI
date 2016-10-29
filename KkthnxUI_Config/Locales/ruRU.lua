@@ -5,6 +5,7 @@ if (Locale ~= "ruRU") then
 	return
 end
 
+-- Localization for enUS & enGB clients
 local PerformanceSlight = "\n|cffFF0000Disabling this may slightly increase performance|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000Turn this off to manually input your bar numbers|r"
 
@@ -158,9 +159,10 @@ L_GUI_MISC_ENCHANCED_MAIL = "Adds a take all button to your mail frame."
 L_GUI_MISC_ERRORS = "Filters out messages from the UIErrorsFrame."
 L_GUI_MISC_HIDE_BG_SPAM = "Remove Boss Emote spam during BG"
 L_GUI_MISC_INVKEYWORD = "Short keyword for invite (/ainv)"
-L_GUI_MISC_SLOT_DURABILITY = "Durability on character slot buttons"
+L_GUI_MISC_ITEMLEVEL = "Item level on character slot buttons"
 L_GUI_MISC_MOVE_BLIZZARD = "Move some Blizzard frames"
 L_GUI_MISC_SELLMISC = "Automatically sells useless items that are not gray quality"
+L_GUI_MISC_SLOT_DURABILITY = "Durability on character slot buttons"
 L_GUI_MISC_SPIN_CAMERA = "Spin camera while AFK"
 L_GUI_MISC_USEGUILDREPAIR = "When using 'Auto Repair', use funds from the guild bank"
 -- NamePlate Localization
@@ -234,7 +236,7 @@ L_GUI_UNITFRAME_FOCUS_MODIFIER = "Focus modifier key 'shift-, ctrl- or alt-'"
 L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT = "Focus castbar Height"
 L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH = "Focus castbar width"
 L_GUI_UNITFRAME_PARTY = "Enable party frames."
-L_GUI_UNITFRAME_PARTYINRAID = "Display party frames in raid"
+-- L_GUI_UNITFRAME_PARTYINRAID = "Display party frames in raid"
 L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT = "Player castbar height"
 L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH = "Player castbar width"
 L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY = "Only color player debuffs"
@@ -266,6 +268,7 @@ L_GUI_RAIDFRAME_SHOWMOUSEOVER_HIGHLIGHT = "Show a highlight texture on mouseover
 L_GUI_RAIDFRAME_SHOWRESURRECT_TEXT = "Display resurrection text"
 L_GUI_RAIDFRAME_SHOWROLE_PREFIX = "Display role prefixes"
 L_GUI_RAIDFRAME_SHOWTHREATTEXT = "Show threat text"
+L_GUI_RAIDFRAME_RAIDASPARTY = "Use raid frames as party frames."
 L_GUI_RAIDFRAME_WIDTH = "Width of raid frames"
 L_GUI_RAIDFRAME_ENABLE = "Enable raid frames"
 L_GUI_RAIDFRAME_MAINTANKFRAMES = "Enable the use of main tank/assist frames in raid."

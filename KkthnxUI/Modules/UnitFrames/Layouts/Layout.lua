@@ -957,7 +957,7 @@ if (config.focustarget.enable) then
 end
 
 if (C.Unitframe.Party) then
-	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Unitframe.PartyInRaid and "custom [@raid6,exists] hide;show") or "custom [group:party,nogroup:raid] show; hide",
+	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Raidframe.RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [group:party,nogroup:raid] show; hide",
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
@@ -968,14 +968,15 @@ if (C.Unitframe.Party) then
 	"showSolo", false,
 	"showParty", true,
 	"showRaid", false,
-	"groupFilter", "1,2,3,4,5,6,7,8",
-	"groupingOrder", "1,2,3,4,5,6,7,8",
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
 	"showPlayer", true, -- Need to add this as an option.
 	"yOffset", K.Scale(-30)
 	)
 
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))
+	Movers:SetScale(1)
 	Movers:RegisterFrame(party)
 end
 

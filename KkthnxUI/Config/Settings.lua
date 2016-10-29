@@ -241,7 +241,7 @@ C["Unitframe"] = {
 	["FocusCastbarWidth"] = 180,
 	["FocusModifier"] = "NONE",
 	["Party"] = true,
-	["PartyInRaid"] = false,
+	-- ["PartyInRaid"] = false, -- So shit.
 	["PlayerCastbarHeight"] = 18,
 	["PlayerCastbarWidth"] = 200,
 	["PlayerDebuffsOnly"] = true,
@@ -283,6 +283,7 @@ C["Raidframe"] = {
 	["ShowResurrectText"] = true,
 	["ShowRolePrefix"] = false,
 	["ShowThreatText"] = false,
+	["RaidAsParty"] = true,
 	["Width"] = 42,
 }
 -- WORLDMAP OPTIONS

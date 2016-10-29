@@ -275,7 +275,7 @@ local function Local(o)
 	if o == "UIConfigUnitframeFocusCastbarWidth" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH end
 	if o == "UIConfigUnitframeFocusModifier" then o = L_GUI_UNITFRAME_FOCUS_MODIFIER end
 	if o == "UIConfigUnitframeParty" then o = L_GUI_UNITFRAME_PARTY end
-	if o == "UIConfigUnitframePartyInRaid" then o = L_GUI_UNITFRAME_PARTYINRAID end
+	-- if o == "UIConfigUnitframePartyInRaid" then o = L_GUI_UNITFRAME_PARTYINRAID end
 	if o == "UIConfigUnitframePlayerCastbarHeight" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT end
 	if o == "UIConfigUnitframePlayerCastbarWidth" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH end
 	if o == "UIConfigUnitframePlayerDebuffsOnly" then o = L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY end
@@ -294,13 +294,16 @@ local function Local(o)
 	-- Raidframe Settings
 	if o == "UIConfigRaidframe" then o = L_GUI_RAIDFRAME end
 	if o == "UIConfigRaidframeDeficitThreshold" then o = L_GUI_RAIDFRAME_DEFICITTHRESHOLD end
+	if o == "UIConfigRaidframeEnable" then o = L_GUI_RAIDFRAME_ENABLE end
 	if o == "UIConfigRaidframeHeight" then o = L_GUI_RAIDFRAME_HEIGHT end
 	if o == "UIConfigRaidframeHorizontalHealthBars" then o = L_GUI_RAIDFRAME_HORIZONTAL_HEALTHBARS end
 	if o == "UIConfigRaidframeIconSize" then o = L_GUI_RAIDFRAME_ICONSIZE end
 	if o == "UIConfigRaidframeIndicatorSize" then o = L_GUI_RAIDFRAME_INDICATORSIZE end
+	if o == "UIConfigRaidframeMainTankFrames" then o = L_GUI_RAIDFRAME_MAINTANKFRAMES end
 	if o == "UIConfigRaidframeManabarHorizontal" then o = L_GUI_RAIDFRAME_MANABAR_HORIZONTAL end
 	if o == "UIConfigRaidframeManabarShow" then o = L_GUI_RAIDFRAME_MANABARSHOW end
 	if o == "UIConfigRaidframeMaxUnitPerColumn" then o = L_GUI_RAIDFRAME_MAXUNIT_PERCOLUMN end
+	if o == "UIConfigRaidframeRaidAsParty" then o = L_GUI_RAIDFRAME_RAIDASPARTY end
 	if o == "UIConfigRaidframeScale" then o = L_GUI_RAIDFRAME_SCALE end
 	if o == "UIConfigRaidframeShowMouseoverHighlight" then o = L_GUI_RAIDFRAME_SHOWMOUSEOVER_HIGHLIGHT end
 	if o == "UIConfigRaidframeShowNotHereTimer" then o = L_GUI_RAIDFRAME_SHOW_NOTHERETIMER end
@@ -308,8 +311,6 @@ local function Local(o)
 	if o == "UIConfigRaidframeShowRolePrefix" then o = L_GUI_RAIDFRAME_SHOWROLE_PREFIX end
 	if o == "UIConfigRaidframeShowThreatText" then o = L_GUI_RAIDFRAME_SHOWTHREATTEXT end
 	if o == "UIConfigRaidframeWidth" then o = L_GUI_RAIDFRAME_WIDTH end
-	if o == "UIConfigRaidframeEnable" then o = L_GUI_RAIDFRAME_ENABLE end
-	if o == "UIConfigRaidframeMainTankFrames" then o = L_GUI_RAIDFRAME_MAINTANKFRAMES end
 	-- WorldMap Settings
 	if o == "UIConfigWorldMap" then o = L_GUI_WORLDMAP end
 	if o == "UIConfigWorldMapAlphaWhenMoving" then o = L_GUI_WORLDMAP_ALPHA_WHENMOVING end
