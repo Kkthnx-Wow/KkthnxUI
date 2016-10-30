@@ -312,22 +312,23 @@ SLASH_TEST_UI1 = "/testui"
 -- Reduce video settings to optimize performance
 local function BoostUI()
 
-	SetCVar("environmentDetail", 0.5)
-	SetCVar("extshadowquality", 0)
+	SetCVar("SSAO", 0)
+	SetCVar("ShadowTextureSize", 1024)
+	SetCVar("environmentDetail", 60)
 	SetCVar("farclip", 500)
-	SetCVar("ffx", 0)
 	SetCVar("groundeffectdensity", 16)
 	SetCVar("groundeffectdist", 1)
 	SetCVar("hwPCF", 1)
-	SetCVar("m2Faster", 1)
-	SetCVar("shadowLOD", 0)
+	SetCVar("hwPCF", 1)
+	SetCVar("reflectionMode", 0)
+	SetCVar("shadowMode", 0)
 	SetCVar("showfootprintparticles", 0)
-	SetCVar("showfootprints", 0)
 	SetCVar("skycloudlod", 1)
 	SetCVar("timingmethod", 1)
-	SetMultisampleFormat(1)
+	SetCVar("waterDetail", 0)
+	SetCVar("weatherDensity", 0)
 
-	StaticPopup_Show("BOOST_UI_RELOAD")
+	RestartGx()
 end
 
 -- Add a warning so we do not piss people off.
@@ -343,17 +344,6 @@ StaticPopupDialogs.BOOST_UI = {
 	preferredIndex = 3,
 }
 
-SLASH_BOOSTUI1 = "/boost"
+SLASH_BOOSTUI1 = "/boostfps"
 SLASH_BOOSTUI2 = "/boostui"
 SlashCmdList.BOOSTUI = function() StaticPopup_Show("BOOST_UI") end
-
-StaticPopupDialogs.BOOST_UI_RELOAD = {
-	text = L_POPUP_RELOADUI,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function() ReloadUI() end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3,
-}
