@@ -283,7 +283,7 @@ C["Raidframe"] = {
 	["ShowResurrectText"] = true,
 	["ShowRolePrefix"] = false,
 	["ShowThreatText"] = false,
-	["RaidAsParty"] = true,
+	["RaidAsParty"] = false,
 	["Width"] = 42,
 }
 -- WORLDMAP OPTIONS
