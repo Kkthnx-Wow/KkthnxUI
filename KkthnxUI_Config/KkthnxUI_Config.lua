@@ -29,7 +29,7 @@ local ALLOWED_GROUPS = {
 	["Automation"] = 4,
 	["Bags"] = 5,
 	["Blizzard"] = 6,
-	["DataBars"] = 7,
+	-- ["Plugins"] = 7,
 	["Auras"] = 8,
 	["Chat"] = 9,
 	["DataText"] = 10,
@@ -108,13 +108,8 @@ local function Local(o)
 	if o == "UIConfigBlizzardReplaceBlizzardFonts" then o = L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigBlizzardReputationGain" then o = L_GUI_BLIZZARD_REPUTATIONGAIN end
 	if o == "UIConfigBlizzardTexturesColor" then o = L_GUI_BLIZZARD_TEXTURES_COLOR end
-	-- ExpRep Settings
-	if o == "UIConfigDataBars" then o = L_GUI_DATABARS end
-	if o == "UIConfigDataBarsArtifact" then o = L_GUI_DATABARS_ARTIFACT end
-	if o == "UIConfigDataBarsExperience" then o = L_GUI_DATABARS_EXPERIENCE end
-	if o == "UIConfigDataBarsExperienceClassColor" then o = L_GUI_DATABARS_EXPERIENCE_CLASSCOLOR end
-	if o == "UIConfigDataBarsHeight" then o = L_GUI_DATABARS_HEIGHT end
-	if o == "UIConfigDataBarsWidth" then o = L_GUI_DATABARS_WIDTH end
+	-- Plugins Settings
+	-- if o == "UIConfigPlugins" then o = L_GUI_PLUGINS end
 	-- Auras Settings
 	if o == "UIConfigAuras" then o = L_GUI_AURAS end
 	if o == "UIConfigAurasEnable" then o = L_GUI_AURAS_ENABLE end
@@ -142,7 +137,7 @@ local function Local(o)
 	if o == "UIConfigChatWhispSound" then o = L_GUI_CHAT_WHISP end
 	if o == "UIConfigChatWidth" then o = L_GUI_CHAT_WIDTH end
 	-- DataText Settings
-	if o == "UIConfigDataText" then o = L_GUI_DATATEXT end	
+	if o == "UIConfigDataText" then o = L_GUI_DATATEXT end
 	if o == "UIConfigDataTextLocation" then o = L_GUI_DATATEXT_LOCATION end
 	if o == "UIConfigDataTextSystem" then o = L_GUI_DATATEXT_SYSTEM end
 	if o == "UIConfigDataTextTime" then o = L_GUI_DATATEXT_TIME end
@@ -832,11 +827,11 @@ function CreateUIConfig()
 		end
 		KkthnxUIConfigSettings = {}
 	end)
-	
+
 	local load = NormalButton("|cff00FF00APPLY|r", UIConfigMain)
 	load:SetPoint("TOP", totalreset, "BOTTOM", 0, -30)
 	load:SetScript("OnClick", function(self) ReloadUI() end)
-	
+
 	local close = NormalButton("|cffFF0000CLOSE|r", UIConfigMain)
 	close:SetPoint("TOP", load, "BOTTOM", 0, -8)
 	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)

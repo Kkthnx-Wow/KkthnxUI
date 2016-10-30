@@ -130,9 +130,13 @@ L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff3c9bedKkt
 L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
 L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
 L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff3c9bedDBM|r."
--- Raid Utility
+-- Raid Utility Localization
 L_RAID_UTIL_DISBAND = "Disband Group"
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
+-- Stats Localization
+L_STATS_CURRENT_XP = "Current/Max XP"
+L_STATS_REMAINING_XP = "Remaining XP"
+L_STATS_RESTED_XP = "Rested XP"
 -- Tooltip Localization
 L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
 L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"

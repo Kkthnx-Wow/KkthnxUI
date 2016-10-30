@@ -97,14 +97,10 @@ C["Cooldown"] = {
 	["FontSize"] = 18,
 	["Threshold"] = 3,
 }
--- DataBars
-C["DataBars"] = {
-	["Experience"] = true,
-	["Artifact"] = true,
-	-- ["Honor"] = true,
-	["Height"] = 8,
-	["Width"] = 142,
-}
+-- Plugins
+-- C["Plguins"] = {
+-- 	 ["Example"] = true,
+-- }
 -- Datatext
 C["DataText"] = {
 	["Location"] = true,
@@ -259,6 +255,10 @@ C["Unitframe"] = {
 	["TextPowerColor"] = {.9, .9, .9},
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
+	-- Plugins
+	["ArtifactBar"] = true,
+	["ExperienceBar"] = true,
+	["ReputationBar"] = true,
 }
 C["Partyframe"] = { -- Could add this as its own in the future.
 	["PartyInRaid"] = false,

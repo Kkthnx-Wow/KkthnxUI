@@ -60,13 +60,8 @@ L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS = "Replaces the default |cff00B4FFBlizzard
 L_GUI_BLIZZARD_REPUTATIONGAIN = "Display a message which shows how much reputation you gained"
 L_GUI_BLIZZARD_TEXTURES_COLOR = "UI texture hue color. (Default is Classcolor)"
 L_GUI_BLIZZARD_VEHICLE_MOUSEOVER = "Vehicle frame on mouseover"
--- DataBars Localization
-L_GUI_DATABARS = "Data Bars"
-L_GUI_DATABARS_ARTIFACT = "Enable the Artifact bar."
-L_GUI_DATABARS_EXPERIENCE = "Enable the Experience/Reputation bar."
-L_GUI_DATABARS_EXPERIENCE_CLASSCOLOR = "Experience bar color to classcolor"
-L_GUI_DATABARS_HEIGHT = "Height of the databars"
-L_GUI_DATABARS_WIDTH = "Width of the databars"
+-- Plugins Localization
+-- L_GUI_PLUGINS = "Plugins"
 -- Auras Localization
 L_GUI_AURAS = "Auras"
 L_GUI_AURAS_ANIMATION = "Show a 'pop in' animation on auras"..PerformanceSlight
