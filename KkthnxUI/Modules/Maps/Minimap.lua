@@ -101,15 +101,19 @@ end
 local AutoHide = CreateFrame("Frame")
 AutoHide:RegisterEvent("PLAYER_ENTERING_WORLD")
 AutoHide:SetScript("OnEvent", function(self, event)
+	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED", "AutoHide") return end
+
 	local InInstance, Type = IsInInstance()
 	if InInstance and (Type == "party" or Type == "pvp" or Type == "arena" or Type == "raid") and C.Minimap.Garrison == true then
 		GarrisonLandingPageMinimapButton:SetScale(0.0001)
 		GarrisonLandingPageMinimapButton:SetAlpha(0)
-	elseif (not InInstance) and (Type == "none") and (not InCombatLockdown()) then
+	elseif (not InInstance) and (Type == "none") then
 		GarrisonLandingPageMinimapButton:ClearAllPoints()
 		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
 		GarrisonLandingPageMinimapButton:SetSize(32, 32)
 	end
+
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end)
 
 -- Dungeon info

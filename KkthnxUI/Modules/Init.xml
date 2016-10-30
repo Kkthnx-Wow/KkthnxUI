@@ -94,9 +94,6 @@
 	<Script file="Chat\Sounds.lua"/>
 	<Script file="Chat\SpamageMeters.lua"/>
 	<Script file="Chat\TellTarget.lua"/>
-	<!-- DataBars -->
-	<Script file="DataBars\Artifact.lua"/>
-	<Script file="DataBars\Experience.lua"/>
 	<!-- DataText -->
 	<Script file="DataText\Battleground.lua"/>
 	<Script file="DataText\CharacterStats.lua"/>
