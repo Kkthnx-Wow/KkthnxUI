@@ -1062,7 +1062,7 @@ if (C.Unitframe.Party) then
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
 	"showPlayer", true, -- Need to add this as an option.
-	"yOffset", K.Scale(-30)
+	"yOffset", K.Scale(-32)
 	)
 
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))
