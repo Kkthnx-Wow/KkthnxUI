@@ -277,8 +277,8 @@ local function Local(o)
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
 	if o == "UIConfigUnitframeBuilderSpender" then o = L_GUI_UNITFRAME_BUILDERSPENDER end
-	if o == "UIConfigUnitframeCastbars" then o = L_GUI_UNITFRAME_CASTBARS end
 	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
+	if o == "UIConfigUnitframeCastbars" then o = L_GUI_UNITFRAME_CASTBARS end
 	if o == "UIConfigUnitframeClassColor" then o = L_GUI_UNITFRAME_CLASSCOLOR end
 	if o == "UIConfigUnitframeClassPortraits" then o = L_GUI_UNITFRAME_CLASSPORTRAITS end
 	if o == "UIConfigUnitframeClickThrough" then o = L_GUI_UNITFRAME_CLICKTHROUGH end
@@ -290,7 +290,6 @@ local function Local(o)
 	if o == "UIConfigUnitframeFocusCastbarWidth" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH end
 	if o == "UIConfigUnitframeFocusModifier" then o = L_GUI_UNITFRAME_FOCUS_MODIFIER end
 	if o == "UIConfigUnitframeParty" then o = L_GUI_UNITFRAME_PARTY end
-	-- if o == "UIConfigUnitframePartyInRaid" then o = L_GUI_UNITFRAME_PARTYINRAID end
 	if o == "UIConfigUnitframePlayerCastbarHeight" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT end
 	if o == "UIConfigUnitframePlayerCastbarWidth" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH end
 	if o == "UIConfigUnitframePlayerDebuffsOnly" then o = L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY end
@@ -298,6 +297,9 @@ local function Local(o)
 	if o == "UIConfigUnitframePowerPredictionBar" then o = L_GUI_UNITFRAME_POWERPREDICTIONBAR end
 	if o == "UIConfigUnitframePowerUseAtlas" then o = L_GUI_UNITFRAME_POWERUSEATLAS end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
+	if o == "UIConfigUnitframeShowArena" then o = L_GUI_UNITFRAME_SHOWARENA end
+	if o == "UIConfigUnitframeShowBoss" then o = L_GUI_UNITFRAME_SHOWBOSS end
+	if o == "UIConfigUnitframeShowPlayer" then o = L_GUI_UNITFRAME_SHOWPLAYER end
 	if o == "UIConfigUnitframeStyle" then o = L_GUI_UNITFRAME_STYLE end
 	if o == "UIConfigUnitframeTargetCastbarHeight" then o = L_GUI_UNITFRAME_TARGETCASTBAR_HEIGHT end
 	if o == "UIConfigUnitframeTargetCastbarWidth" then o = L_GUI_UNITFRAME_TARGETCASTBAR_WIDTH end

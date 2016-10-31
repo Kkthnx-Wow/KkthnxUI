@@ -28,15 +28,27 @@ if C.Blizzard.ColorTextures == true then
 end
 
 HonorBar:SetScript("OnMouseDown", function(self, button)
-    if (button == "LeftButton") then
-        if not PVPFrame then
-            LoadAddOn("Blizzard_PVPUI")
-        end
-        if PVPFrame and PVPFrame:IsShown() then TogglePVPUI()
-        else
-            TogglePVPUI()
-        end
-    end
+	if (button == "LeftButton") then
+		if not PVPFrame then
+			LoadAddOn("Blizzard_PVPUI")
+		end
+		if PVPFrame and PVPFrame:IsShown() then TogglePVPUI()
+		else
+			TogglePVPUI()
+		end
+	elseif(button == "RightButton") then
+
+		if(not IsAddOnLoaded("Blizzard_TalentUI")) then
+			LoadAddOn("Blizzard_TalentUI")
+		end
+
+		if not PlayerTalentFrame:IsShown() then
+			ShowUIPanel(PlayerTalentFrame)
+			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab" .. PVP_TALENTS_TAB])
+		else
+			HideUIPanel(PlayerTalentFrame)
+		end
+	end
 end)
 
 local function UpdateHonorBar()
@@ -62,8 +74,9 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(string.format("|cffcccccc"..RANK..": %d / %d|r", Level, LevelMax))
 		GameTooltip:AddLine(string.format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
 	end
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L_DATABARS_HONOR_CLICK)
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(L_DATABARS_HONOR_LEFTCLICK)
+	GameTooltip:AddLine(L_DATABARS_HONOR_RIGHTCLICK)
 
 	GameTooltip:Show()
 end)

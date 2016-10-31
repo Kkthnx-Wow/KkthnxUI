@@ -42,7 +42,8 @@ L_CHAT_PET_BATTLE = "Pet Battle"
 -- DataBars Localization
 L_DATABARS_ARTIFACT_CLICK = "Click: Opens the artifact overview"
 L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"
-L_DATABARS_HONOR_CLICK = "|cffccccccClick: Opens the honor frame|r"
+L_DATABARS_HONOR_LEFTCLICK = "|cffccccccLeft Click: Opens the honor frame|r"
+L_DATABARS_HONOR_RIGHTCLICK = "|cffccccccRight Click: Opens the honor talents frame|r"
 -- DataText Localization
 L_DATATEXT_BASESASSAULTED = "Bases Assaulted:"
 L_DATATEXT_BASESDEFENDED = "Bases Defended:"
