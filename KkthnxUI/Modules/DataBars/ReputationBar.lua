@@ -19,6 +19,11 @@ K.CreateBorder(ReputationBar, 10, 2.8)
 ReputationBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ReputationBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
+if C.Blizzard.ColorTextures == true then
+	ReputationBar:SetBorderTexture("white")
+	ReputationBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+end
+
 local function UpdateReputationBar()
     local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 

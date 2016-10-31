@@ -22,6 +22,11 @@ K.CreateBorder(HonorBar, 10, 3)
 HonorBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 HonorBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
+if C.Blizzard.ColorTextures == true then
+	HonorBar:SetBorderTexture("white")
+	HonorBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+end
+
 local function UpdateHonorBar()
     local Current, Max = UnitHonor("player"), UnitHonorMax("player")
     HonorBar:SetMinMaxValues(0, Max)

@@ -20,6 +20,11 @@ K.CreateBorder(ArtifactBar, 10, 3)
 ArtifactBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ArtifactBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
+if C.Blizzard.ColorTextures == true then
+	ArtifactBar:SetBorderTexture("white")
+	ArtifactBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+end
+
 local function GetArtifact()
 	local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo()
 	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)

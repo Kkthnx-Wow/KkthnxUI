@@ -29,6 +29,11 @@ ExperienceBarRested:SetStatusBarTexture(C.Media.Blank)
 ExperienceBarRested:SetStatusBarColor(unpack(C.DataBars.ExperienceRestedColor))
 ExperienceBarRested:SetAlpha(.5)
 
+if C.Blizzard.ColorTextures == true then
+	ExperienceBar:SetBorderTexture("white")
+	ExperienceBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+end
+
 local function UpdateExperienceBar()
     local Current, Max = UnitXP("player"), UnitXPMax("player")
     local Rested = GetXPExhaustion()
