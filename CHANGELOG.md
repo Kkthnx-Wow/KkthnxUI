@@ -60,7 +60,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Tooltip border bug
 - Various typos in code
 
-
 ## [v6.02] - 6:14:28 PM EDT Monday, October 17, 2016
 
 ### Added
