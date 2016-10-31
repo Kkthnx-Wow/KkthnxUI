@@ -8,13 +8,6 @@ L_ANNOUNCE_PC_GO = "GO!"
 L_ANNOUNCE_PC_MSG = "Pulling %s in %s.."
 L_ANNOUNCE_SAPPED = "Sapped"
 L_ANNOUNCE_SAPPED_BY = "Sapped by: "
--- Artifact Localization
-L_ARTIFACTBAR_CURRENTXP = "Current Experience: %s"
-L_ARTIFACTBAR_LEFTCLICK = "Left click to display the Artifact Frame"
-L_ARTIFACTBAR_TRAITS = "Traits avaiable: %s"
-L_ARTIFACTBAR_XP = "Experience: %s/%s (%d%%)"
-L_ARTIFACTBAR_XPREMAINING = "Remaining: %s"
-L_ARTIFACTBAR_XPTITLE = "Artifact Experience"
 -- Auras Localization
 L_AURAS_MOVEBUFFS = "Move Buffs"
 L_AURAS_MOVEDEBUFFS = "Move Debuffs"
@@ -22,11 +15,6 @@ L_AURAS_MOVEDEBUFFS = "Move Debuffs"
 L_MERCHANT_NOTENOUGHMONEY = "You don't have enough money to repair!"
 L_MERCHANT_REPAIRCOST = "Your items have been repaired for"
 L_MERCHANT_SOLDTRASH = "Your vendor trash has been sold and you earned"
--- Bags Localization
-L_BAG_SHOW_BAGS = "Show Bags"
-L_BAG_RIGHT_CLICK_SEARCH = "Right-click to search"
-L_BAG_STACK_MENU = "Stack"
-L_BAG_RIGHT_CLICK_CLOSE = "Right-click to open menu"
 -- Bindings Localization
 L_BIND_BINDING = "Binding"
 L_BIND_CLEARED = "All keybindings cleared for"
@@ -133,10 +121,6 @@ L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff3c9bedDBM|r."
 -- Raid Utility Localization
 L_RAID_UTIL_DISBAND = "Disband Group"
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
--- Stats Localization
-L_STATS_CURRENT_XP = "Current/Max XP"
-L_STATS_REMAINING_XP = "Remaining XP"
-L_STATS_RESTED_XP = "Rested XP"
 -- Tooltip Localization
 L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
 L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"

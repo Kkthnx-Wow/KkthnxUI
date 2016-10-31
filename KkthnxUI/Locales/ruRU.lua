@@ -5,7 +5,7 @@ if (Locale ~= "ruRU") then
 	return
 end
 
---- Announce Localization
+-- Announce Localization
 L_ANNOUNCE_FP_USE = "%s used %s."
 L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
 L_ANNOUNCE_PC_ABORTED = "Pull ABORTED!"
@@ -13,13 +13,6 @@ L_ANNOUNCE_PC_GO = "GO!"
 L_ANNOUNCE_PC_MSG = "Pulling %s in %s.."
 L_ANNOUNCE_SAPPED = "Sapped"
 L_ANNOUNCE_SAPPED_BY = "Sapped by: "
--- Artifact Localization
-L_ARTIFACTBAR_CURRENTXP = "Current Experience: %s"
-L_ARTIFACTBAR_LEFTCLICK = "Left click to display the Artifact Frame"
-L_ARTIFACTBAR_TRAITS = "Traits avaiable: %s"
-L_ARTIFACTBAR_XP = "Experience: %s/%s (%d%%)"
-L_ARTIFACTBAR_XPREMAINING = "Remaining: %s"
-L_ARTIFACTBAR_XPTITLE = "Artifact Experience"
 -- Auras Localization
 L_AURAS_MOVEBUFFS = "Move Buffs"
 L_AURAS_MOVEDEBUFFS = "Move Debuffs"
@@ -27,11 +20,6 @@ L_AURAS_MOVEDEBUFFS = "Move Debuffs"
 L_MERCHANT_NOTENOUGHMONEY = "You don't have enough money to repair!"
 L_MERCHANT_REPAIRCOST = "Your items have been repaired for"
 L_MERCHANT_SOLDTRASH = "Your vendor trash has been sold and you earned"
--- Bags Localization
-L_BAG_SHOW_BAGS = "Show Bags"
-L_BAG_RIGHT_CLICK_SEARCH = "Right-click to search"
-L_BAG_STACK_MENU = "Stack"
-L_BAG_RIGHT_CLICK_CLOSE = "Right-click to open menu"
 -- Bindings Localization
 L_BIND_BINDING = "Binding"
 L_BIND_CLEARED = "All keybindings cleared for"
@@ -135,7 +123,7 @@ L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff3c9bedKkt
 L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
 L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
 L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff3c9bedDBM|r."
--- Raid Utility
+-- Raid Utility Localization
 L_RAID_UTIL_DISBAND = "Disband Group"
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
 -- Tooltip Localization

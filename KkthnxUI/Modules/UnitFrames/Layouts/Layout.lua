@@ -828,96 +828,6 @@ local function CreateUnitLayout(self, unit)
 		end
 	end
 
-	-- Experience bar
-	if (unit == "player") then
-		if K.Level ~= MAX_PLAYER_LEVEL and C.Unitframe.ExperienceBar == true then
-			self.Experience = CreateFrame("StatusBar", self:GetName().."_Experience", self)
-			K.CreateBorder(self.Experience, 10, 3)
-			self.Experience:SetPoint("TOPLEFT", self, "TOPLEFT", -18, 16)
-			self.Experience:SetSize(8, 70)
-			self.Experience:SetOrientation("Vertical")
-			self.Experience:SetStatusBarTexture(C.Media.Texture)
-			self.Experience:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
-			self.Experience:SetAlpha(0)
-
-			self.Experience.bg = self.Experience:CreateTexture(nil, "BORDER")
-			self.Experience.bg:SetAllPoints()
-			self.Experience.bg:SetTexture(C.Media.Texture)
-			self.Experience.bg:SetVertexColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
-
-			self.Experience.Rested = CreateFrame("StatusBar", nil, self.Experience)
-			self.Experience.Rested:SetParent(self.Experience)
-			self.Experience.Rested:SetOrientation("Vertical")
-			self.Experience.Rested:SetAllPoints()
-			self.Experience.Rested:SetStatusBarTexture(C.Media.Texture)
-			self.Experience.Rested:SetStatusBarColor(0, 0.5, 1, 0.5)
-
-			self.Experience:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-			self.Experience:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
-			self.Experience.Tooltip = true
-		end
-
-		-- Reputation bar
-		if C.Unitframe.ReputationBar == true then
-			self.Reputation = CreateFrame("StatusBar", self:GetName().."_Reputation", self)
-			K.CreateBorder(self.Reputation, 10, 3)
-			if K.Level == MAX_PLAYER_LEVEL then
-				self.Reputation:SetPoint("TOPLEFT", self, "TOPLEFT", -18, 16)
-			else
-				self.Reputation:SetPoint("TOPLEFT", self, "TOPLEFT", -32, 16)
-			end
-			self.Reputation:SetSize(8, 70)
-			self.Reputation:SetOrientation("Vertical")
-			self.Reputation:SetStatusBarTexture(C.Media.Texture)
-			self.Reputation:SetAlpha(0)
-
-			self.Reputation.bg = self.Reputation:CreateTexture(nil, "BORDER")
-			self.Reputation.bg:SetAllPoints()
-			self.Reputation.bg:SetTexture(C.Media.Texture)
-
-			self.Reputation:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-			self.Reputation:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
-			self.Reputation.PostUpdate = K.UpdateReputationColor
-			self.Reputation.Tooltip = true
-		end
-
-		-- Artifact Power bar
-		if C.Unitframe.ArtifactBar == true then
-			self.ArtifactPower = CreateFrame("StatusBar", self:GetName().."_ArtifactPower", self)
-			K.CreateBorder(self.ArtifactPower, 10, 3)
-			self.ArtifactPower:EnableMouse(true)
-			if K.Level == MAX_PLAYER_LEVEL then
-				if C.Unitframe.ReputationBar == true then
-					self.ArtifactPower:SetPoint("TOPLEFT", self, "TOPLEFT", -31, 16)
-				else
-					self.ArtifactPower:SetPoint("TOPLEFT", self, "TOPLEFT", -18, 16)
-				end
-			else
-				if C.Unitframe.ReputationBar == true then
-					self.ArtifactPower:SetPoint("TOPLEFT", self, "TOPLEFT", -45, 16)
-				else
-					self.ArtifactPower:SetPoint("TOPLEFT", self, "TOPLEFT", -32, 16)
-				end
-			end
-			self.ArtifactPower:SetSize(8, 70)
-			self.ArtifactPower:SetOrientation("Vertical")
-			self.ArtifactPower:SetStatusBarTexture(C.Media.Texture)
-			self.ArtifactPower.offAlpha = 0
-
-			self.ArtifactPower.bg = self.ArtifactPower:CreateTexture(nil, "BORDER")
-			self.ArtifactPower.bg:SetAllPoints()
-			self.ArtifactPower.bg:SetTexture(C.Media.Texture)
-
-			--	self.ArtifactPower:HookScript("OnEnter", function(self) self.ArtifactPower.offAlpha = 1 end)
-			--	self.ArtifactPower:HookScript("OnLeave", function(self) self.ArtifactPower.offAlpha = 0 end)
-			self.ArtifactPower.PostUpdate = function(self, event, isShown)
-				self:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
-				self.bg:SetVertexColor(1, 0, 0, 0.2)
-			end
-			self.ArtifactPower.Tooltip = true
-		end
-	end
-
 	-- Auras
 	if (self.cUnit == "focus") or (self.cUnit == "target") then
 		local isFocus = self.cUnit == "focus"
@@ -1047,7 +957,7 @@ if (config.focustarget.enable) then
 end
 
 if (C.Unitframe.Party) then
-	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Raidframe.RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [group:party,nogroup:raid] show; hide",
+	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, "custom [@raid6, exists] hide; show",
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))

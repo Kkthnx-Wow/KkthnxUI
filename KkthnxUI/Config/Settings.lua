@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
--- ACTIONBAR OPTIONS
+-- Actionbar
 C["ActionBar"] = {
 	["BottomBars"] = 3,
 	["ButtonSize"] = 36,
@@ -25,7 +25,7 @@ C["ActionBar"] = {
 	["StanceBarMouseover"] = true,
 	["ToggleMode"] = true,
 }
--- ANNOUNCEMENTS OPTIONS
+-- Announcements
 C["Announcements"] = {
 	["BadGear"] = false,
 	["Interrupt"] = false,
@@ -34,7 +34,7 @@ C["Announcements"] = {
 	["Spells"] = false,
 	["SpellsFromAll"] = false,
 }
--- AUTOMATION OPTIONS
+-- Automation
 C["Automation"] = {
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
@@ -44,7 +44,7 @@ C["Automation"] = {
 	["ScreenShot"] = false,
 	["TabBinder"] = false,
 }
--- BAG OPTIONS
+-- Bag
 C["Bags"] = {
 	["Enable"] = true,
 	["ButtonSize"] = 32,
@@ -53,7 +53,7 @@ C["Bags"] = {
 	["PulseNewItem"] = true,
 	["BagFilter"] = false,
 }
--- BLIZZARD OPTIONS
+-- Blizzard
 C["Blizzard"] = {
 	["ClassColor"] = true,
 	["ColorTextures"] = false,
@@ -63,7 +63,7 @@ C["Blizzard"] = {
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b, 1},
 	["VehicleMouseover"] = false,
 }
--- BUFFS & DEBUFFS OPTIONS
+-- Buffs & Debuffs
 C["Auras"] = {
 	["Enable"] = true,
 	["Consolidate"] = false,
@@ -74,7 +74,7 @@ C["Auras"] = {
 	["BuffsPerRow"] = 12,
 	["CastBy"] = false,
 }
--- CHAT OPTIONS
+-- Chat
 C["Chat"] = {
 	["DamageMeterSpam"] = false,
 	["Enable"] = true,
@@ -91,16 +91,42 @@ C["Chat"] = {
 	["WhispSound"] = true,
 	["Width"] = 370,
 }
--- COOLDOWN OPTIONS
+-- Cooldown
 C["Cooldown"] = {
 	["Enable"] = true,
 	["FontSize"] = 18,
 	["Threshold"] = 3,
 }
+C["DataBars"] = {
+	-- Artifact
+	["ArtifactColor"] = {229/255, 204/255, 127/255},
+	["ArtifactEnable"] = true,
+	["ArtifactFade"] = false,
+	["ArtifactHeight"] = 8,
+	["ArtifactWidth"] = 142,
+	-- Experience
+	["ExperienceColor"] = {0/255, 144/255, 255/255},
+	["ExperienceEnable"] = true,
+	["ExperienceFade"] = false,
+	["ExperienceHeight"] = 8,
+	["ExperienceRestedColor"] = {75/255, 175/255, 76/255},
+	["ExperienceWidth"] = 142,
+	-- Honor
+	["HonorColor"] = {222/255, 22/255, 22/255},
+	["HonorEnable"] = true,
+	["HonorFade"] = false,
+	["HonorHeight"] = 8,
+	["HonorWidth"] = 142,
+	-- Reputation
+	["ReputationEnable"] = true,
+	["ReputationFade"] = false,
+	["ReputationHeight"] = 8,
+	["ReputationWidth"] = 142,
+}
 -- Plugins
--- C["Plguins"] = {
--- 	 ["Example"] = true,
--- }
+C["Plugins"] = {
+	["Example"] = true,
+}
 -- Datatext
 C["DataText"] = {
 	["Location"] = true,
@@ -110,7 +136,7 @@ C["DataText"] = {
 	["LocalTime"] = true,
 	["Battleground"] = true,
 }
--- FILGER OPTIONS
+-- Filger
 C["Filger"] = {
 	["BuffsSize"] = 37,
 	["CooldownSize"] = 30,
@@ -121,7 +147,7 @@ C["Filger"] = {
 	["ShowTooltip"] = false,
 	["TestMode"] = false,
 }
--- GENERAL OPTIONS
+-- General
 C["General"] = {
 	["AutoScale"] = true,
 	["BubbleBackdrop"] = false,
@@ -131,7 +157,7 @@ C["General"] = {
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
 }
--- LOOT OPTIONS
+-- Loot
 C["Loot"] = {
 	["ConfirmDisenchant"] = false,
 	["AutoGreed"] = false,
@@ -141,7 +167,7 @@ C["Loot"] = {
 	["GroupLoot"] = true,
 	["Width"] = 222,
 }
--- MINIMAP OPTIONS
+-- MINIMAP
 C["Minimap"] = {
 	["CollectButtons"] = true,
 	["Enable"] = true,
@@ -149,7 +175,7 @@ C["Minimap"] = {
 	["Ping"] = true,
 	["Size"] = 150,
 }
--- MISCELLANEOUS OPTIONS
+-- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
 	["AlreadyKnown"] = false,
@@ -168,6 +194,7 @@ C["Misc"] = {
 	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,
 }
+-- Nameplates
 C["Nameplates"] = {
 	["Enable"] = true,
 	["Height"] = 11,
@@ -187,7 +214,7 @@ C["Nameplates"] = {
 	["AurasSize"] = 18,
 	["HealerIcon"] = false,
 }
--- PULSECD OPTIONS
+-- PulseCD
 C["PulseCD"] = {
 	["Enable"] = false,
 	["Size"] = 75,
@@ -196,7 +223,7 @@ C["PulseCD"] = {
 	["HoldTime"] = 0,
 	["Threshold"] = 3,
 }
--- SKINS OPTIONS
+-- Skins
 C["Skins"] = {
 	["CLCRet"] = false,
 	["ChatBubble"] = true,
@@ -208,7 +235,7 @@ C["Skins"] = {
 	["Spy"] = false,
 	["WeakAuras"] = false,
 }
--- TOOLTIP OPTIONS
+-- Tooltip
 C["Tooltip"] = {
 	["Achievements"] = false,
 	["Cursor"] = false,
@@ -221,7 +248,7 @@ C["Tooltip"] = {
 	["ShowSpec"] = true,
 	["SpellID"] = false,
 }
--- UNITFRAME OPTIONS
+-- Unitframe
 C["Unitframe"] = {
 	["BuilderSpender"] = true,
 	["CastbarSafeZoneColor"] = {.8, 0.4, 0, 1},
@@ -265,7 +292,7 @@ C["Partyframe"] = { -- Could add this as its own in the future.
 	["Enable"] = true,
 	["Scale"] = 1,
 }
--- Raidframe Options
+-- Raidframe
 C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
@@ -286,7 +313,7 @@ C["Raidframe"] = {
 	["RaidAsParty"] = false,
 	["Width"] = 42,
 }
--- WORLDMAP OPTIONS
+-- Worldmap
 C["WorldMap"] = {
 	["AlphaWhenMoving"] = 0.35,
 	["Coordinates"] = true,

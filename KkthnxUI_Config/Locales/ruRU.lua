@@ -5,11 +5,10 @@ if (Locale ~= "ruRU") then
 	return
 end
 
--- Localization for enUS & enGB clients
 local PerformanceSlight = "\n|cffFF0000Disabling this may slightly increase performance|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000Turn this off to manually input your bar numbers|r"
 
--- Actionbar Localization
+-- Actionbar
 L_GUI_ACTIONBAR_BOTTOMBARS = "Number of bars on the bottom (1, 2 or 3)"
 L_GUI_ACTIONBAR_BUTTON_SIZE = "Buttons size"
 L_GUI_ACTIONBAR_BUTTON_SPACE = "Buttons space"
@@ -32,7 +31,7 @@ L_GUI_ACTIONBAR_STANCEBAR_HIDE = "Hide stance bar"
 L_GUI_ACTIONBAR_STANCEBAR_HORIZONTAL = "Enable horizontal stance bar"
 L_GUI_ACTIONBAR_STANCEBAR_MOUSEOVER = "Stance bar on mouseover"
 L_GUI_ACTIONBAR_TOGGLE_MODE = "Enable toggle mode"..ToggleOffReminder
--- Announcements Localization
+-- Announcements
 L_GUI_ANNOUNCEMENTS = "Announcements"
 L_GUI_ANNOUNCEMENTS_BAD_GEAR = "Check for bad gear in instances"
 L_GUI_ANNOUNCEMENTS_INTERRUPT = "Announce in party/raid when you interrupt others"
@@ -40,7 +39,7 @@ L_GUI_ANNOUNCEMENTS_PULL_COUNTDOWN = "Simple script to aid in creating a pull co
 L_GUI_ANNOUNCEMENTS_SAY_SAPPED = "Instantly says Sapped to alert those around you whenever |cFFFFF569Rogues|r sap you."
 L_GUI_ANNOUNCEMENTS_SPELLS = "Announce in party/raid when you cast some spells"
 L_GUI_ANNOUNCEMENTS_SPELLS_FROM_ALL = "Check spells cast from all members"
--- Automation Localization
+-- Automation
 L_GUI_AUTOMATION = "Automation"
 L_GUI_AUTOMATION_ACCEPTINVITE = "Auto accept invites (friends/guild) only"
 L_GUI_AUTOMATION_AUTOCOLLAPSE = "Auto collapse watchframe in instances"
@@ -50,7 +49,7 @@ L_GUI_AUTOMATION_LOGGING_COMBAT = "Auto enables combat log text file in raid ins
 L_GUI_AUTOMATION_RESURRECTION = "Auto resurrection in battlegrounds"
 L_GUI_AUTOMATION_SCREENSHOT = "Take screenshot when player gets an achievement"
 L_GUI_AUTOMATION_TAB_BINDER = "Auto change tab key to only target enemy players"
--- Bag Localization
+-- Bag
 L_GUI_BAGS = "Bags"
 L_GUI_BAGS_BAG_FILTER = "Automatically delete useless items from your bags when looted"
 L_GUI_BAGS_BUTTON_SIZE = "Set a size for bag slots"
@@ -58,7 +57,7 @@ L_GUI_BAGS_ENABLE = "Enable Bags"
 L_GUI_BAGS_ITEMS_PER_ROW = "Set how many slots are on each row of the bags"
 L_GUI_BAGS_PULSE_NEW_ITEMS = "New items in your bags will have a flash animation"
 L_GUI_BAGS_SPACING = "Set the spacing between bag slots"
--- Blizzard Localization
+-- Blizzard
 L_GUI_BLIZZARD = "Blizzard"
 L_GUI_BLIZZARD_CLASS_COLOR = "Colorize player names by their class in friend list, who list, guild list, etc.."
 L_GUI_BLIZZARD_COLOR_TEXTURES = "Change most UI texture hue colors."
@@ -67,14 +66,29 @@ L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS = "Replaces the default |cff00B4FFBlizzard
 L_GUI_BLIZZARD_REPUTATIONGAIN = "Display a message which shows how much reputation you gained"
 L_GUI_BLIZZARD_TEXTURES_COLOR = "UI texture hue color. (Default is Classcolor)"
 L_GUI_BLIZZARD_VEHICLE_MOUSEOVER = "Vehicle frame on mouseover"
--- DataBars Localization
-L_GUI_DATABARS = "Data Bars"
-L_GUI_DATABARS_ARTIFACT = "Enable the Artifact bar."
-L_GUI_DATABARS_EXPERIENCE = "Enable the Experience/Reputation bar."
-L_GUI_DATABARS_EXPERIENCE_CLASSCOLOR = "Experience bar color to classcolor"
-L_GUI_DATABARS_HEIGHT = "Height of the databars"
-L_GUI_DATABARS_WIDTH = "Width of the databars"
--- Auras Localization
+-- Plugins
+L_GUI_DATABARS = "DataBars"
+L_GUI_DATABARS_ARTIFACT_COLOR = "Artifact bar color"
+L_GUI_DATABARS_ARTIFACT_ENABLE = "Enable Artifact bar"
+L_GUI_DATABARS_ARTIFACT_FADE = "Fade Artifact bar"
+L_GUI_DATABARS_ARTIFACT_HEIGHT = "Artifact bar height"
+L_GUI_DATABARS_ARTIFACT_WIDTH = "Artifact bar width"
+L_GUI_DATABARS_EXPERIENCE_COLOR = "Experience bar color"
+L_GUI_DATABARS_EXPERIENCE_ENABLE = "Enable Experience bar"
+L_GUI_DATABARS_EXPERIENCE_FADE = "Fade Experience bar"
+L_GUI_DATABARS_EXPERIENCE_HEIGHT = "Experience bar height"
+L_GUI_DATABARS_EXPERIENCE_REST_COLOR = "Experience bar rest color"
+L_GUI_DATABARS_EXPERIENCE_WIDTH = "Experience bar width"
+L_GUI_DATABARS_HONOR_COLOR = "Honor bar color"
+L_GUI_DATABARS_HONOR_ENABLE = "Enable Honor bar"
+L_GUI_DATABARS_HONOR_FADE = "Fade Honor bar"
+L_GUI_DATABARS_HONOR_HEIGHT = "Honor bar height"
+L_GUI_DATABARS_HONOR_WIDTH = "Honor bar width"
+L_GUI_DATABARS_REPUTATION_ENABLE = "Enable Reputation bar"
+L_GUI_DATABARS_REPUTATION_FADE = "Fade Reputation bar"
+L_GUI_DATABARS_REPUTATION_HEIGHT = "Reputation bar height"
+L_GUI_DATABARS_REPUTATION_WIDTH = "Reputation bar width"
+-- Auras
 L_GUI_AURAS = "Auras"
 L_GUI_AURAS_ANIMATION = "Show a 'pop in' animation on auras"..PerformanceSlight
 L_GUI_AURAS_BUFFS_PERROW = "Set the number of buffs to show before creating a new row"
@@ -84,9 +98,9 @@ L_GUI_AURAS_ENABLE = "Enable Auras"
 L_GUI_AURAS_FLASH = "Flash auras when their duration is low"..PerformanceSlight
 L_GUI_AURAS_HIDE_BUFFS = "Disable buff display"
 L_GUI_AURAS_HIDE_DEBUFFS = "Disable debuff display"
--- GUI Buttons Localization
+-- GUI Buttons
 L_GUI_BUTTON_RESET = "Total UI Reset"
--- Chat Localization
+-- Chat
 L_GUI_CHAT_FADING = "Enable chat fading"
 L_GUI_CHAT_DAMAGE_METER_SPAM = "Merge damage meter spam in one line-link"
 L_GUI_CHAT_ENABLE = "Enable chat"
@@ -101,7 +115,7 @@ L_GUI_CHAT_TABS_MOUSEOVER = "Chat tabs on mouseover"
 L_GUI_CHAT_TABS_OUTLINE = "Apply an outline to the chat tabs font"
 L_GUI_CHAT_WHISP = "Play sound when receiving whispers"
 L_GUI_CHAT_WIDTH = "Width of the Chatframe"
--- DataText Localization
+-- DataText
 L_GUI_DATATEXT = "DataText"
 L_GUI_DATATEXT_BATTLEGROUND = "Enable data text displaying battleground information"
 L_GUI_DATATEXT_LOCALTIME = "Use local time in the Time data text, rather than realm time"
@@ -109,12 +123,12 @@ L_GUI_DATATEXT_LOCATION = "Enable location data text on the minimap at the top"
 L_GUI_DATATEXT_SYSTEM = "Enable system data text under the minimap displaying FPS & MS"
 L_GUI_DATATEXT_TIME = "Enable clock data text displaying time information at the bottom of the minimap"
 L_GUI_DATATEXT_TIME24HR = "Set the Time data text to 24 hour format"
--- Cooldown Localization
+-- Cooldown
 L_GUI_COOLDOWN = "Cooldown"
 L_GUI_COOLDOWN_ENABLE = "Enable UI cooldown module"
 L_GUI_COOLDOWN_FONT_SIZE = "Cooldown font size"
 L_GUI_COOLDOWN_THRESHOLD = "Cooldown threshold number"
--- Filger Localization
+-- Filger
 L_GUI_FILGER = "Filger"
 L_GUI_FILGER_BUFFS_SIZE = "Buffs size"
 L_GUI_FILGER_COOLDOWN_SIZE = "Cooldowns size"
@@ -124,7 +138,7 @@ L_GUI_FILGER_MAX_TEST_ICON = "The number of icons to the test"
 L_GUI_FILGER_PVP_SIZE = "PvP debuffs size"
 L_GUI_FILGER_SHOW_TOOLTIP = "Show tooltip"
 L_GUI_FILGER_TEST_MODE = "Test icon mode"
--- General Localization
+-- General
 L_GUI_GENERAL_AUTOSCALE = "Auto UI Scale"
 L_GUI_GENERAL_CHATBUBBLE_FONTSIZE = "Chat bubble font size"
 L_GUI_GENERAL_CHATBUBBLE_NOBACKDROP = "Remove the chat bubble backdrop."
@@ -132,7 +146,7 @@ L_GUI_GENERAL_LAG_TOLERANCE = "Automatically update the Blizzard Custom Lag Tole
 L_GUI_GENERAL_TRANSLATE_MESSAGE = "Popup to gain help for GUI translation."
 L_GUI_GENERAL_UISCALE = "UI Scale (if auto-scale is disabled)"
 L_GUI_GENERAL_WELCOME_MESSAGE = "Welcome message in chat."
--- Loot Localization
+-- Loot
 L_GUI_LOOT_AUTODE = "Auto confirm disenchant"
 L_GUI_LOOT_AUTOGREED = "Enable auto-greed & disenchant for green items at max level"
 L_GUI_LOOT_BETTER_LOOTFILTER = "Filter party & raid members loot messages, based on item rarity"
@@ -140,14 +154,14 @@ L_GUI_LOOT_ENABLE = "Enable loot frame"
 L_GUI_LOOT_ICON_SIZE = "Icon size"
 L_GUI_LOOT_ROLL_ENABLE = "Enable group loot frame"
 L_GUI_LOOT_WIDTH = "Loot frame width"
--- Minimap Localization
+-- Minimap
 L_GUI_MINIMAP = "Minimap"
 L_GUI_MINIMAP_COLLECTBUTTONS = "Collect some minimap buttons in one line"
 L_GUI_MINIMAP_ENABLEMINIMAP = "Enable minimap & make it square"
 L_GUI_MINIMAP_MINIMAPSIZE = "Minimap size - Default is 150"
 L_GUI_MINIMAP_GARRISON = "Garrison icon shown on minimap"
 L_GUI_MINIMAP_PING = "Displays a message when someone pings the minimap. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
--- Misc Localization
+-- Misc
 L_GUI_MISC = "Miscellaneous"
 L_GUI_MISC_ALREADY_KNOWN = "Colorizes recipes, mounts & pets that are already known"
 L_GUI_MISC_ARMORY_LINK = "Add Armory link in UnitPopupMenus (It can break UnitPopupMenus)"
@@ -165,7 +179,7 @@ L_GUI_MISC_SELLMISC = "Automatically sells useless items that are not gray quali
 L_GUI_MISC_SLOT_DURABILITY = "Durability on character slot buttons"
 L_GUI_MISC_SPIN_CAMERA = "Spin camera while AFK"
 L_GUI_MISC_USEGUILDREPAIR = "When using 'Auto Repair', use funds from the guild bank"
--- NamePlate Localization
+-- Nameplates
 L_GUI_NAMEPLATES_AD_HEIGHT = "Additional height for selected nameplate"
 L_GUI_NAMEPLATES_AD_WIDTH = "Additional width for selected nameplate"
 L_GUI_NAMEPLATES_BAD_COLOR = "Bad threat color, varies depending if your a tank or dps/heal"
@@ -184,7 +198,7 @@ L_GUI_NAMEPLATES_NEAR_COLOR = "Losing/Gaining threat color"
 L_GUI_NAMEPLATES_SHOW_DEBUFFS = "Show debuffs (from the list)"
 L_GUI_NAMEPLATES_THREAT = "Enable threat feature, automatically changes by your role"
 L_GUI_NAMEPLATES_WIDTH = "Nameplates width"
--- PulseCD Localization
+-- PulseCD
 L_GUI_PULSECD = "Pulse Cooldowns"
 L_GUI_PULSECD_ENABLE = "Show cooldowns pulse"
 L_GUI_PULSECD_SIZE = "Cooldowns pulse icon size"
@@ -192,12 +206,12 @@ L_GUI_PULSECD_SOUND = "Warning sound notification"
 L_GUI_PULSECD_ANIM_SCALE = "Animation scaling"
 L_GUI_PULSECD_HOLD_TIME = "Max opacity hold time"
 L_GUI_PULSECD_THRESHOLD = "Minimal threshold time"
--- Static Popup Localization
+-- Static Popups
 L_GUI_PER_CHAR = "Are you sure you want to change to or from 'Per Char Settings'?"
 L_GUI_RESET_ALL = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r."
 L_GUI_RESET_CHAR = "Are you sure you want to reset your character's settings for|r?"
 L_GUI_SET_SAVED_SETTTINGS = "Set settings Per-Character"
--- Skins Localization
+-- Skins
 L_GUI_SKINS = "AddOn Skins"
 L_GUI_SKINS_CHAT_BUBBLE = "Blizzard chat bubbles"
 L_GUI_SKINS_CLCR = "CLCRet"
@@ -208,7 +222,7 @@ L_GUI_SKINS_RECOUNT = "Recount"
 L_GUI_SKINS_SKADA = "Skada"
 L_GUI_SKINS_SPY = "Spy"
 L_GUI_SKINS_WEAKAURAS = "WeakAuras"
--- Tooltip Localization
+-- Tooltip
 L_GUI_TOOLTIP = "Tooltip"
 L_GUI_TOOLTIP_ACHIEVEMENTS = "Comparing achievements in tooltip"
 L_GUI_TOOLTIP_CURSOR = "Tooltip above cursor"
@@ -220,7 +234,7 @@ L_GUI_TOOLTIP_INSTANCE_LOCK = "Your instance lock status in tooltip"
 L_GUI_TOOLTIP_ITEM_COUNT = "Item count"
 L_GUI_TOOLTIP_SHOWSPEC = "Display player specialization tooltip"
 L_GUI_TOOLTIP_SPELL_ID = "Spell ID"
--- Unitframe Localization
+-- Unitframe
 L_GUI_UNITFRAME = "Unit Frames"
 L_GUI_UNITFRAME_BUILDERSPENDER = "Overlay the powerbar with feedback displaying gains/losses"
 L_GUI_UNITFRAME_CASTBARS = "Enable uniframe castbars"
@@ -236,7 +250,6 @@ L_GUI_UNITFRAME_FOCUS_MODIFIER = "Focus modifier key 'shift-, ctrl- or alt-'"
 L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT = "Focus castbar Height"
 L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH = "Focus castbar width"
 L_GUI_UNITFRAME_PARTY = "Enable party frames."
--- L_GUI_UNITFRAME_PARTYINRAID = "Display party frames in raid"
 L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT = "Player castbar height"
 L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH = "Player castbar width"
 L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY = "Only color player debuffs"
@@ -252,7 +265,7 @@ L_GUI_UNITFRAME_TEXTNAMECOLOR = "Name text color"
 L_GUI_UNITFRAME_TEXTPOWERCOLOR = "Power text color"
 L_GUI_UNITFRAME_THREATGLOW = "Threat glow around unitframes"
 L_GUI_UNITFRAME_THREATVALUE = "Visual threat text on the player frame"
--- Raidframe Localization
+-- Raidframe
 L_GUI_RAIDFRAME = "Raid Frames"
 L_GUI_RAIDFRAME_DEFICITTHRESHOLD = "Health deficit threshold"
 L_GUI_RAIDFRAME_HEIGHT = "Height of raid frames"
@@ -268,11 +281,10 @@ L_GUI_RAIDFRAME_SHOWMOUSEOVER_HIGHLIGHT = "Show a highlight texture on mouseover
 L_GUI_RAIDFRAME_SHOWRESURRECT_TEXT = "Display resurrection text"
 L_GUI_RAIDFRAME_SHOWROLE_PREFIX = "Display role prefixes"
 L_GUI_RAIDFRAME_SHOWTHREATTEXT = "Show threat text"
-L_GUI_RAIDFRAME_RAIDASPARTY = "Use raid frames as party frames."
 L_GUI_RAIDFRAME_WIDTH = "Width of raid frames"
 L_GUI_RAIDFRAME_ENABLE = "Enable raid frames"
 L_GUI_RAIDFRAME_MAINTANKFRAMES = "Enable the use of main tank/assist frames in raid."
--- WorldMap Localization
+-- WorldMap
 L_GUI_WORLDMAP = "World Map"
 L_GUI_WORLDMAP_ALPHA_WHENMOVING = "Alpha of the world map when you are moving."
 L_GUI_WORLDMAP_COORDS = "Put coordinates on the world map."

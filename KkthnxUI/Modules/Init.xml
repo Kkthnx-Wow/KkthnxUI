@@ -18,9 +18,9 @@
 	<Script file="Miscellaneous\DropDown.lua"/>
 	<Script file="Miscellaneous\Durability.lua"/>
 	<Script file="Miscellaneous\Filger.lua"/>
-	<Script file="Miscellaneous\LossControl.lua"/>
 	<Script file="Miscellaneous\GarbageCollect.lua"/>
 	<Script file="Miscellaneous\LFDQueueTimer.lua"/>
+	<Script file="Miscellaneous\LossControl.lua"/>
 	<Script file="Miscellaneous\Mail.lua"/>
 	<Script file="Miscellaneous\MassGuildKick.lua"/>
 	<Script file="Miscellaneous\Merchant.lua"/>
@@ -94,6 +94,11 @@
 	<Script file="Chat\Sounds.lua"/>
 	<Script file="Chat\SpamageMeters.lua"/>
 	<Script file="Chat\TellTarget.lua"/>
+	<!-- DataBars -->
+	<Script file="DataBars\ExperienceBar.lua"/>
+	<Script file="DataBars\HonorBar.lua"/>
+	<Script file="DataBars\ReputationBar.lua"/>
+	<Script file="DataBars\ArtifactBar.lua"/>
 	<!-- DataText -->
 	<Script file="DataText\Battleground.lua"/>
 	<Script file="DataText\CharacterStats.lua"/>

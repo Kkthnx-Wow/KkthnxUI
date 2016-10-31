@@ -32,7 +32,7 @@
    myBar:SetPoint('BOTTOM')
    myBar:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT')
    myBar:SetWidth(200)
-
+   
    local otherBar = CreateFrame('StatusBar', nil, self.Health)
    otherBar:SetPoint('TOP')
    otherBar:SetPoint('BOTTOM')
@@ -50,7 +50,7 @@
    healAbsorbBar:SetPoint('BOTTOM')
    healAbsorbBar:SetPoint('LEFT', self.Health:GetStatusBarTexture(), 'RIGHT')
    healAbsorbBar:SetWidth(200)
-
+   
    -- Register with oUF
    self.HealPrediction = {
       myBar = myBar,

@@ -6,6 +6,11 @@ local oUF = ns.oUF
 
 local config = ns.config
 
+local function Abbrev(name)
+	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	return K.ShortenString(newname, 18, false)
+end
+
 local timer = {}
 
 oUF.Tags.Events["kkthnx:additionalpower"] = "UNIT_POWER UNIT_DISPLAYPOWER UNIT_MAXPOWER"
@@ -45,7 +50,7 @@ oUF.Tags.Methods["kkthnx:name"] = function(unit, realUnit)
 	local _, class = UnitClass(realUnit or unit)
 
 	if not unitName then
-		local id = unit:match"arena(%d)$"
+		local id = unit:match("arena(%d)$")
 		if(id) then
 			unitName = "Arena "..id
 		end
@@ -57,7 +62,7 @@ oUF.Tags.Methods["kkthnx:name"] = function(unit, realUnit)
 		color = C.Unitframe.TextNameColor
 	end
 
-	return format("|cff%02x%02x%02x%s|r", color[1]*255, color[2]*255, color[3]*255, unitName)
+	return format("|cff%02x%02x%02x%s|r", color[1]*255, color[2]*255, color[3]*255, (Abbrev(unitName)))
 end
 
 oUF.Tags.Events["status:raid"] = "PLAYER_FLAGS_CHANGED UNIT_CONNECTION"

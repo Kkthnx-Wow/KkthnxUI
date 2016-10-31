@@ -29,7 +29,7 @@ local ALLOWED_GROUPS = {
 	["Automation"] = 4,
 	["Bags"] = 5,
 	["Blizzard"] = 6,
-	-- ["Plugins"] = 7,
+	["DataBars"] = 7,
 	["Auras"] = 8,
 	["Chat"] = 9,
 	["DataText"] = 10,
@@ -108,8 +108,28 @@ local function Local(o)
 	if o == "UIConfigBlizzardReplaceBlizzardFonts" then o = L_GUI_BLIZZARD_REPLACE_BLIZZARD_FONTS end
 	if o == "UIConfigBlizzardReputationGain" then o = L_GUI_BLIZZARD_REPUTATIONGAIN end
 	if o == "UIConfigBlizzardTexturesColor" then o = L_GUI_BLIZZARD_TEXTURES_COLOR end
-	-- Plugins Settings
-	-- if o == "UIConfigPlugins" then o = L_GUI_PLUGINS end
+	-- DataBar Settings
+	if o == "UIConfigDataBars" then o = L_GUI_DATABARS end
+	if o == "UIConfigDataBarsArtifactColor" then o = L_GUI_DATABARS_ARTIFACT_COLOR end
+	if o == "UIConfigDataBarsArtifactEnable" then o = L_GUI_DATABARS_ARTIFACT_ENABLE end
+	if o == "UIConfigDataBarsArtifactFade" then o = L_GUI_DATABARS_ARTIFACT_FADE end
+	if o == "UIConfigDataBarsArtifactHeight" then o = L_GUI_DATABARS_ARTIFACT_HEIGHT end
+	if o == "UIConfigDataBarsArtifactWidth" then o = L_GUI_DATABARS_ARTIFACT_WIDTH end
+	if o == "UIConfigDataBarsExperienceColor" then o = L_GUI_DATABARS_EXPERIENCE_COLOR end
+	if o == "UIConfigDataBarsExperienceEnable" then o = L_GUI_DATABARS_EXPERIENCE_ENABLE end
+	if o == "UIConfigDataBarsExperienceFade" then o = L_GUI_DATABARS_EXPERIENCE_FADE end
+	if o == "UIConfigDataBarsExperienceHeight" then o = L_GUI_DATABARS_EXPERIENCE_HEIGHT end
+	if o == "UIConfigDataBarsExperienceRestedColor" then o = L_GUI_DATABARS_EXPERIENCE_REST_COLOR end
+	if o == "UIConfigDataBarsExperienceWidth" then o = L_GUI_DATABARS_EXPERIENCE_WIDTH end
+	if o == "UIConfigDataBarsHonorColor" then o = L_GUI_DATABARS_HONOR_COLOR end
+	if o == "UIConfigDataBarsHonorEnable" then o = L_GUI_DATABARS_HONOR_ENABLE end
+	if o == "UIConfigDataBarsHonorFade" then o = L_GUI_DATABARS_HONOR_FADE end
+	if o == "UIConfigDataBarsHonorHeight" then o = L_GUI_DATABARS_HONOR_HEIGHT end
+	if o == "UIConfigDataBarsHonorWidth" then o = L_GUI_DATABARS_HONOR_WIDTH end
+	if o == "UIConfigDataBarsReputationEnable" then o = L_GUI_DATABARS_REPUTATION_ENABLE end
+	if o == "UIConfigDataBarsReputationFade" then o = L_GUI_DATABARS_REPUTATION_FADE end
+	if o == "UIConfigDataBarsReputationHeight" then o = L_GUI_DATABARS_REPUTATION_HEIGHT end
+	if o == "UIConfigDataBarsReputationWidth" then o = L_GUI_DATABARS_REPUTATION_WIDTH end
 	-- Auras Settings
 	if o == "UIConfigAuras" then o = L_GUI_AURAS end
 	if o == "UIConfigAurasEnable" then o = L_GUI_AURAS_ENABLE end
