@@ -71,6 +71,8 @@ end
 
 ArtifactBar:SetScript("OnEnter", function(self)
 	local HasArtifactEquip = HasArtifactEquipped()
+	local _, _, _, _, totalxp, pointsSpent, _, _, _, _, _, _ = C_ArtifactUI.GetEquippedArtifactInfo()
+	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalxp)
 
 	Current, Max = GetArtifact()
 
@@ -83,8 +85,11 @@ ArtifactBar:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 		GameTooltip:AddLine(string.format("|cffe6cc80"..ARTIFACT_POWER..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+		GameTooltip:AddLine(string.format(L_DATABARS_ARTIFACT_REMANING, xpForNextPoint - xp)) L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(PointsAvailableToSpend), nil, nil, nil, true)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(L_DATABARS_ARTIFACT_CLICK)
 
 		GameTooltip:Show()
 	end
