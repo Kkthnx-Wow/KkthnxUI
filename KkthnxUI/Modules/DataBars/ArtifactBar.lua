@@ -25,6 +25,28 @@ if C.Blizzard.ColorTextures == true then
 	ArtifactBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
+ArtifactBar:SetScript("OnMouseDown", function(self, button)
+	if (button == "LeftButton") then
+		local HasArtifactEquip = HasArtifactEquipped()
+
+		if not ArtifactFrame then
+			LoadAddOn("Blizzard_ArtifactUI")
+		end
+
+		if HasArtifactEquip then
+			local frame = ArtifactFrame
+			local activeID = C_ArtifactUI.GetArtifactInfo()
+			local equippedID = C_ArtifactUI.GetEquippedArtifactInfo()
+
+			if frame:IsShown() and activeID == equippedID then
+				HideUIPanel(frame)
+			else
+				SocketInventoryItem(16)
+			end
+		end
+	end
+end)
+
 local function GetArtifact()
 	local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop = C_ArtifactUI.GetEquippedArtifactInfo()
 	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)

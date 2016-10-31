@@ -24,6 +24,15 @@ if C.Blizzard.ColorTextures == true then
 	ReputationBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
+ReputationBar:SetScript("OnMouseDown", function(self, button)
+	if (button == "LeftButton") then
+		if ReputationFrame and ReputationFrame:IsShown() then ToggleCharacter("ReputationFrame")
+		else
+			ToggleCharacter("ReputationFrame")
+		end
+	end
+end)
+
 local function UpdateReputationBar()
     local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 

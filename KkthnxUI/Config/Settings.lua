@@ -282,10 +282,6 @@ C["Unitframe"] = {
 	["TextPowerColor"] = {.9, .9, .9},
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
-	-- Plugins
-	["ArtifactBar"] = true,
-	["ExperienceBar"] = true,
-	["ReputationBar"] = true,
 }
 C["Partyframe"] = { -- Could add this as its own in the future.
 	["PartyInRaid"] = false,

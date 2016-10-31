@@ -72,9 +72,10 @@ MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 
 -- Mail
 Mail:ClearAllPoints()
-Mail:SetPoint("TOPRIGHT", 4, 4)
+Mail:SetPoint("BOTTOM", 0, 4)
 Mail:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 MailBorder:Hide()
+Mail:SetScale(1.2)
 MailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
 -- Queuestatus icon

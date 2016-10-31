@@ -601,7 +601,7 @@ oUF:RegisterStyle("oUF_Kkthnx_Raid", CreateRaidLayout)
 oUF:RegisterStyle("oUF_Kkthnx_Raid_MT", CreateRaidLayout)
 oUF:SetActiveStyle("oUF_Kkthnx_Raid")
 
-local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Raidframe.Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
 "oUF-initialConfigFunction", [[
 local header = self:GetParent()
 self:SetWidth(header:GetAttribute("initial-width"))

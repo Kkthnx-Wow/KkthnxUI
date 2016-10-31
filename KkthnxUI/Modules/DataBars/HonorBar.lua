@@ -11,7 +11,7 @@ Anchor:SetSize(C.DataBars.HonorWidth, C.DataBars.HonorHeight)
 Anchor:SetPoint("TOP", KkthnxUIMinimapStats, "BOTTOM", 0, -4)
 Movers:RegisterFrame(Anchor)
 
-local HonorBar = CreateFrame("StatusBar",  nil, UIParent)
+local HonorBar = CreateFrame("StatusBar", nil, UIParent)
 HonorBar:SetOrientation("HORIZONTAL")
 HonorBar:SetSize(C.DataBars.HonorWidth, C.DataBars.HonorHeight)
 HonorBar:SetPoint("CENTER", HonorAnchor, "CENTER", 0, 0)
@@ -28,9 +28,9 @@ if C.Blizzard.ColorTextures == true then
 end
 
 local function UpdateHonorBar()
-    local Current, Max = UnitHonor("player"), UnitHonorMax("player")
-    HonorBar:SetMinMaxValues(0, Max)
-    HonorBar:SetValue(Current)
+	local Current, Max = UnitHonor("player"), UnitHonorMax("player")
+	HonorBar:SetMinMaxValues(0, Max)
+	HonorBar:SetValue(Current)
 end
 
 HonorBar:SetScript("OnEnter", function(self)
@@ -57,8 +57,8 @@ end)
 HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.HonorFade then
-    HonorBar:SetAlpha(0)
-    HonorBar:SetScript("OnEnter", function() HonorBar:FadeIn() end)
+	HonorBar:SetAlpha(0)
+	HonorBar:SetScript("OnEnter", function() HonorBar:FadeIn() end)
 	HonorBar:SetScript("OnLeave", function() HonorBar:FadeOut() end)
 end
 
