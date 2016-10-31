@@ -315,7 +315,7 @@ L_GUI_RAIDFRAME_MAINTANKFRAMES = "Aktiviere die Anzeige von Haupttank/assist Fen
 -- WorldMap Localization
 L_GUI_WORLDMAP = "Weltkarte"
 L_GUI_WORLDMAP_ALPHA_WHENMOVING = "Alphawert der Weltkarte wenn Du Dich bewegst."
-L_GUI_WORLDMAP_COORDS = "Zeige Koodinaten auf der Weltkarte an."
+L_GUI_WORLDMAP_COORDS = "Zeige Koordinaten auf der Weltkarte an."
 L_GUI_WORLDMAP_FADE_WHENMOVING = "Verblassen der Weltkarte wenn Du Dich bewegst."
 L_GUI_WORLDMAP_FOG_OF_WAR = "Entferne den Nebel des Krieges auf der Weltkarte."
 L_GUI_WORLDMAP_SMALL_WORLDMAP = "Kleine Weltkarte anzeigen."
