@@ -27,6 +27,18 @@ if C.Blizzard.ColorTextures == true then
 	HonorBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
+HonorBar:SetScript("OnMouseDown", function(self, button)
+    if (button == "LeftButton") then
+        if not PVPFrame then
+            LoadAddOn("Blizzard_PVPUI")
+        end
+        if PVPFrame and PVPFrame:IsShown() then TogglePVPUI()
+        else
+            TogglePVPUI()
+        end
+    end
+end)
+
 local function UpdateHonorBar()
 	local Current, Max = UnitHonor("player"), UnitHonorMax("player")
 	HonorBar:SetMinMaxValues(0, Max)
@@ -50,6 +62,8 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(string.format("|cffcccccc"..RANK..": %d / %d|r", Level, LevelMax))
 		GameTooltip:AddLine(string.format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
 	end
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(L_DATABARS_HONOR_CLICK)
 
 	GameTooltip:Show()
 end)
