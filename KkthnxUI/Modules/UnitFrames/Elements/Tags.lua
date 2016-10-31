@@ -32,15 +32,23 @@ oUF.Tags.Methods["kkthnx:pvptimer"] = function(unit)
 	return K.FormatTime(math.floor(pvpTime))
 end
 
-oUF.Tags.Methods["kkthnx:level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["kkthnx:level"] = function(unit)
-	local level = UnitLevel(unit)
-	if (level <= 0 or UnitIsCorpse(unit)) and (unit == "player" or unit == "target" or unit == "focus") then
-		return "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:12:12:0:0|t" -- boss skull icon
-	end
+    local r, g, b
+    local Level = UnitLevel(unit)
+    local Color = GetCreatureDifficultyColor(Level)
 
-	local colorL = GetCreatureDifficultyColor(level)
-	return format("|cff%02x%02x%02x%s|r", colorL.r * 255, colorL.g * 255, colorL.b * 255, level)
+    if (Level < 0) then
+        r, g, b = 1, 0, 0
+        Level = '??'
+    elseif (Level == 0) then
+        r, g, b = Color.r, Color.g, Color.b
+        Level = '?'
+    else
+        r, g, b = Color.r, Color.g, Color.b
+        Level = Level
+    end
+
+    return format("|cff%02x%02x%02x%s|r", r*255, g*255, b*255, Level)
 end
 
 oUF.Tags.Events["kkthnx:name"] = "UNIT_NAME_UPDATE"
