@@ -12,5 +12,6 @@
 ## X-WoWI-ID: 23677
 
 Locales\enUS.lua
+Locales\deDE.lua
 Locales\ruRU.lua
 KkthnxUI_Config.lua
