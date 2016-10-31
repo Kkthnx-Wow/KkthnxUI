@@ -249,12 +249,6 @@ K.FormatTime = function(s)
 	return format("%.1f", s)
 end
 
-K.UpdateReputationColor = function(self, event, unit, bar)
-	local name, id = GetWatchedFactionInfo()
-	bar:SetStatusBarColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b)
-	bar.bg:SetVertexColor(FACTION_BAR_COLORS[id].r, FACTION_BAR_COLORS[id].g, FACTION_BAR_COLORS[id].b, 0.2)
-end
-
 -- Add time before calling a function
 local TimerParent = CreateFrame("Frame")
 K.UnusedTimers = {}

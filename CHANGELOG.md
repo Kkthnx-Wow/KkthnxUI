@@ -4,6 +4,63 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v6.08] - 1:43:20 PM EDT Monday, October 31, 2016
+- Could be some undocumented changes that are not listed!
+
+### Added
+- 24-Hour time option
+- Add the armory link dialog to the LFG Finder (Thanks, peatah)
+- Credits
+- DataBars will now change border colors if the option gets enabled
+- Files added to git ignore
+- FilgerSpells added
+- GarrisonLandingPageMinimapButton will hide in instances now.
+- Global texture color for buffs border when option is enabled
+- Item level slots make a return
+- Locales
+- More config options for various UI elements.
+- ObjectiveTracker skinning
+- Option to show you in party
+- Protection added for various UI options
+- Raid tools
+- TestUI option /Test
+- Tooltip item level makes a return
+- Translation needed text.
+
+### Changed
+- Bank and Bags positions updated
+- ChatSpam list
+- Did some work on oUF nameplates (These are a work in progress)
+- HonorBar, ArtifactBar, ReputationBar, ExperienceBar
+- Profiles so people can make their own
+- Reworked the KkthnxUI_Config button locations
+- Reworked the minimap icons
+- StyleButton updated and improved
+- yOffset for party frames changed to -32 up from -30
+
+### Removed
+- Old API code
+- Old FilgerSpells removed
+- Old Functions code
+- Old code, files, and settings
+- Whitespaces in various files
+
+### Fixed
+- Adjusted ShadowOffset because Blizzard has to mess with things that are not broken.
+- BoostUI option now works as intended
+- Colorpicker alpha text working again
+- FrameStrata for world map tooltips
+- Hyperlinks
+- Install script
+- Minimap location in restricted areas
+- Nameplates auras shadow colors
+- Nameplates non-threat issue
+- Quest level
+- The World map in restricted areas
+- Tooltip border bug
+- Various typos in code
+
+
 ## [v6.02] - 6:14:28 PM EDT Monday, October 17, 2016
 
 ### Added
