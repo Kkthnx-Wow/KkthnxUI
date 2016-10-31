@@ -71,22 +71,19 @@ MinimapBackdrop:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -2, 2)
 MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 
 -- Mail
-MiniMapMailFrame:ClearAllPoints()
-MiniMapMailFrame:SetPoint("BOTTOMRIGHT", Minimap, 4, -4)
-MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
-MiniMapMailBorder:SetTexture("Interface\\Calendar\\EventNotificationGlow")
-MiniMapMailBorder:SetBlendMode("ADD")
-MiniMapMailBorder:ClearAllPoints()
-MiniMapMailBorder:SetPoint("CENTER", MiniMapMailFrame, 0, -1)
-MiniMapMailBorder:SetSize(27, 27)
-MiniMapMailBorder:SetAlpha(0.5)
+Mail:ClearAllPoints()
+Mail:SetPoint("TOPRIGHT", 4, 4)
+Mail:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+MailBorder:Hide()
+MailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
 -- Queuestatus icon
 QueueStatusMinimapButton:SetParent(Minimap)
-QueueStatusMinimapButton:SetScale(1)
 QueueStatusMinimapButton:ClearAllPoints()
-QueueStatusMinimapButton:SetPoint("BOTTOMLEFT", -4, -4)
+QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", 4, -4)
 QueueStatusMinimapButtonBorder:Kill()
+QueueStatusFrame:StripTextures()
+QueueStatusFrame:SetTemplate()
 
 -- Garrison icon
 if C.Minimap.Garrison == true then
@@ -98,39 +95,32 @@ else
 	GarrisonLandingPageMinimapButton:SetAlpha(0)
 end
 
-local AutoHide = CreateFrame("Frame")
-AutoHide:RegisterEvent("PLAYER_ENTERING_WORLD")
-AutoHide:SetScript("OnEvent", function(self, event)
-	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED", "AutoHide") return end
-
+local AutoHideLandingPage = CreateFrame("Frame")
+AutoHideLandingPage:RegisterEvent("PLAYER_ENTERING_WORLD")
+AutoHideLandingPage:SetScript("OnEvent", function(self, event)
 	local InInstance, Type = IsInInstance()
 	if InInstance and (Type == "party" or Type == "pvp" or Type == "arena" or Type == "raid") and C.Minimap.Garrison == true then
 		GarrisonLandingPageMinimapButton:SetScale(0.0001)
 		GarrisonLandingPageMinimapButton:SetAlpha(0)
-	elseif (not InInstance) and (Type == "none") then
+	else
 		GarrisonLandingPageMinimapButton:ClearAllPoints()
 		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
 		GarrisonLandingPageMinimapButton:SetSize(32, 32)
 	end
-
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end)
 
 -- Dungeon info
 MiniMapInstanceDifficulty:ClearAllPoints()
 MiniMapInstanceDifficulty:SetParent(Minimap)
 MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
-MiniMapInstanceDifficulty:SetScale(0.8)
 
 GuildInstanceDifficulty:ClearAllPoints()
 GuildInstanceDifficulty:SetParent(Minimap)
 GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
-GuildInstanceDifficulty:SetScale(0.8)
 
 MiniMapChallengeMode:ClearAllPoints()
 MiniMapChallengeMode:SetParent(Minimap)
 MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
-MiniMapChallengeMode:SetScale(0.6)
 
 -- Feedback icon
 if FeedbackUIButton then
