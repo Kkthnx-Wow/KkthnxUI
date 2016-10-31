@@ -601,6 +601,9 @@ oUF:RegisterStyle("oUF_Kkthnx_Raid", CreateRaidLayout)
 oUF:RegisterStyle("oUF_Kkthnx_Raid_MT", CreateRaidLayout)
 oUF:SetActiveStyle("oUF_Kkthnx_Raid")
 
+local ra = CreateFrame("Frame", "oUF_RaidAnchor", UIParent)
+ra:SetSize(K.Scale(C.Raidframe.Width +150), 15)
+
 local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
 "oUF-initialConfigFunction", [[
 local header = self:GetParent()
@@ -624,10 +627,12 @@ self:SetHeight(header:GetAttribute("initial-height"))
 "yOffset", -K.Scale(8),
 "xOffset", K.Scale(8))
 
-raid:SetPoint(unpack(C.Position.UnitFrames.Raid))
 raid:SetScale(C.Raidframe.Scale)
 raid:SetFrameStrata("LOW")
-Movers:RegisterFrame(raid)
+raid:SetParent(oUF_PetBattleFrameHider)
+raid:SetPoint("BOTTOMLEFT", ra, "BOTTOMLEFT", 0, 0)
+ra:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 6, -175)
+Movers:RegisterFrame(oUF_RaidAnchor)
 
 -- Main Tank/Assist Frames
 if C.Raidframe.MainTankFrames then
