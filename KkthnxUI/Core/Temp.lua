@@ -606,13 +606,13 @@ local function style(self,unit)
 	self.Name:SetShadowOffset(1, K.Scale(-3)) -- Temp
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -3, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 3, 4)
-	self:Tag(self.Name, "[kkthnx:name]")
+	self:Tag(self.Name, "[KkthnxUI:Name]")
 
 	self.Level = self:CreateFontString(nil)
 	self.Level:SetFont(C.Media.Font, 14)
 	self.Level:SetShadowOffset(1, K.Scale(-3)) -- Temp
 	self.Level:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
-	self:Tag(self.Level, "[kkthnx:level]")
+	self:Tag(self.Level, "[KkthnxUI:Level]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetStatusBarTexture(C.Media.Texture)

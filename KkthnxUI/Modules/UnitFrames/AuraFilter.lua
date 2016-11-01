@@ -1,10 +1,32 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
--- Credits to Phanx for this aura filter. (Phanx <addons@phanx.net>)
 local _, ns = ...
 local oUF = ns.oUF
 
+--[[
+Filters:
+
+General (both):	On Players:Show all
+"Blacklist" 0 = Show All (override default)
+1 = Show only mine
+2 = Hide on friendly
+3 = Hide all
+
+On NPC's: Show only mine
+0 = Show Always ( Even when not Mine )
+1 = Show only mine - no effect.
+2 = Hide on friendly
+3 = Hide Mine
+
+Arena (buff): true = whitelisted
+"Whitelist"
+
+Boss (debuff): 0 = Whitelisted
+"Whitelist" 1 = Only show own
+--]]
+
+-- Credits to Phanx for this aura filter. (Phanx <addons@phanx.net>)
 -- Default Aura Filter
 local BaseAuras = {
 	-- Useless
@@ -43,63 +65,8 @@ end
 
 local genFilter, arenaFilter, bossFilter = {}, {}, {}
 local auraFilters = {genFilter, arenaFilter, bossFilter}
-
---[[
-function oUFKkthnx:UpdateAuraLists()
-	--wipe em
-	for _,list in ipairs(auraFilters) do
-		wipe(list)
-	end
-	-- General Filter - These don"t show in the aura editor
-	for aura, filter in pairs(BaseAuras) do
-		genFilter[aura] = filter
-	end
-	for aura, filter in pairs(oUFKkthnx:GetAuraSettings()["general"]) do
-		genFilter[aura] = filter
-	end
-	--	Arena Filter
-	for aura, filter in pairs(oUFKkthnx:GetAuraSettings()["arena"]) do
-		arenaFilter[aura] = filter
-	end
-	-- Boss Filter
-	for aura, filter in pairs(oUFKkthnx:GetAuraSettings()["boss"]) do
-		bossFilter[aura] = filter
-	end
-
-	for _, obj in pairs(oUF.objects) do
-		if obj.Auras then
-			obj.Auras:ForceUpdate()
-		end
-		if obj.Buffs then
-			obj.Buffs:ForceUpdate()
-		end
-		if obj.Debuffs then
-			obj.Debuffs:ForceUpdate()
-		end
-	end
-end
-
-
-Filters:
-General (both):	On Players:Show all
-"Blacklist"			0	 = Show All (override default)
-1 	 = Show only mine
-2 	 = Hide on friendly
-3 	 = Hide all
-On NPC"s: Show only mine
-0	 = Show Always ( Even when not Mine )
-1 	 = Show only mine - no effect.
-2 	 = Hide on friendly
-3 	 = Hide Mine
-Arena (buff):	true = whitelisted
-"Whitelist"
-Boss (debuff):	0	 = Whitelisted
-"Whitelist"		1 	 = Only show own
---]]
-
 local UnitCanAttack, UnitPlayerControlled = UnitCanAttack, UnitPlayerControlled
-
-local isPlayer = { player = true, pet = true, vehicle = true }
+local isPlayer = {player = true, pet = true, vehicle = true}
 
 local filters = {
 	[0] = function(self, unit, caster) return true end,--
@@ -112,24 +79,19 @@ ns.CustomAuraFilters = {
 	pet = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return (caster and isPlayer[caster]) and (not genFilter[spellID] == 3)
 	end,
+
 	target = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = genFilter[spellID]
 		if v and filters[v] then -- In Filters
 			return filters[v](self, unit, caster)
 		elseif UnitPlayerControlled(unit) then -- Player
-			--[[
-			if UnitCanAttack("player", unit) then -- Hostile
-				return true
-			else -- Friendly
-				return (nameplateShowPersonal) or (canApplyAura)
-			end
-			--]]
 			return true
 		else -- NPC
 			-- Always show BUFFS, Show boss debuffs, aura cast by the unit, or auras cast by the player's vehicle.
 			return (iconFrame.filter == "HELPFUL") or (isBossDebuff) or nameplateShowAll or (isPlayer[caster]) or (caster == unit)
 		end
 	end,
+
 	party = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = genFilter[spellID]
 		if v and filters[v] then
@@ -140,9 +102,11 @@ ns.CustomAuraFilters = {
 			return true
 		end
 	end,
+
 	arena = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return arenaFilter[spellID]
 	end,
+
 	boss = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = bossFilter[spellID]
 		if v == 1 then

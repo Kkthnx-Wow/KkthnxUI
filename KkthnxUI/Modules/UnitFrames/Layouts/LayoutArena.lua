@@ -93,7 +93,7 @@ function ns.createArenaLayout(self, unit)
 	self.Name = K.SetFontString(self.Health, C.Media.Font, 14)
 	self.Name:SetSize(110, 10)
 	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-	self:Tag(self.Name, "[kkthnx:name]")
+	self:Tag(self.Name, "[KkthnxUI:Name]")
 
 	-- PvP Icon
 	self.PvP = self:CreateTexture(nil, "OVERLAY")
