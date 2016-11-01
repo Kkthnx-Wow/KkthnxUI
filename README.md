@@ -32,16 +32,16 @@ Donations are welcome, but not required to use the UI at all. Donations help me 
 * Steam Trade: [Kkthnx Steam Trade URL](https://steamcommunity.com/tradeoffer/new/?partner=21318157&token=hTlU3SPa)
 
 ### Credits   
-ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, Magicnachos, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, zp, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord   
+``` ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, Magicnachos, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, zp, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord ```   
 
 ### Translation   
-Bunny67, freesay  
+``` freesay(ruRU), Rav(deDE) ```  
 
 ### Supporters   
-XploitNT, jChirp, Magicnachos   
+``` XploitNT, jChirp, Magicnachos ```   
 
 ### License    
 The MIT License (MIT)   
 Copyright (c) 2012 - 2016 Josh "Kkthnx" Russell   
    
-![wowscrnshot_082716_201517](https://cloud.githubusercontent.com/assets/1692977/18031163/e12b0548-6ca1-11e6-8189-abf3d80f71f9.jpg)
+![wowscrnshot_103116_042408](https://cloud.githubusercontent.com/assets/1692977/19891951/d218946c-a018-11e6-8c63-a5e814147ef9.jpg)

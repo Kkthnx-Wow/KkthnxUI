@@ -23,11 +23,12 @@ K.CreateBorder(ExperienceBar, 10, 2.8)
 local ExperienceBarRested = CreateFrame("StatusBar", nil, UIParent)
 ExperienceBarRested:SetOrientation("HORIZONTAL")
 ExperienceBarRested:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
-ExperienceBarRested:SetParent(ExperienceBar)
-ExperienceBarRested:SetAllPoints(ExperienceBar)
-ExperienceBarRested:SetStatusBarTexture(C.Media.Blank)
+ExperienceBarRested:SetPoint("BOTTOM", ExperienceBar, "BOTTOM", 0, 0)
+ExperienceBarRested:SetStatusBarTexture(C.Media.Texture)
 ExperienceBarRested:SetStatusBarColor(unpack(C.DataBars.ExperienceRestedColor))
-ExperienceBarRested:SetAlpha(.5)
+
+ExperienceBarRested:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
+ExperienceBarRested:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 if C.Blizzard.ColorTextures == true then
 	ExperienceBar:SetBorderTexture("white")

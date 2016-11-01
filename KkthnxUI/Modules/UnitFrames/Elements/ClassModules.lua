@@ -72,7 +72,7 @@ function ns.classModule.alternatePowerBar(self)
 	self.AdditionalPower.Value = K.SetFontString(self.AdditionalPower, C.Media.Font, 13, nil, "CENTER")
 	self.AdditionalPower.Value:SetPoint("CENTER", self.AdditionalPower, 0, 0.5)
 	self.AdditionalPower.Value:Hide()
-	self:Tag(self.AdditionalPower.Value, "[kkthnx:additionalpower]")
+	self:Tag(self.AdditionalPower.Value, "[KkthnxUI:DruidMana]")
 end
 
 function ns.classModule.DEATHKNIGHT(self, config, uconfig)

@@ -1,194 +1,192 @@
 -- Localization For ruRU Clients
-local Locale = GetLocale()
-
-if (Locale ~= "ruRU") then
+if (GetLocale() ~= "ruRU") then
 	return
 end
 
 -- Announce Localization
-L_ANNOUNCE_FP_USE = "%s used %s."
-L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
-L_ANNOUNCE_PC_ABORTED = "Pull ABORTED!"
-L_ANNOUNCE_PC_GO = "GO!"
-L_ANNOUNCE_PC_MSG = "Pulling %s in %s.."
-L_ANNOUNCE_SAPPED = "Sapped"
-L_ANNOUNCE_SAPPED_BY = "Sapped by: "
+L_ANNOUNCE_FP_USE = "%s использует %s."
+L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
+L_ANNOUNCE_PC_ABORTED = "ОСТАНОВИТЬ АТАКУ!"
+L_ANNOUNCE_PC_GO = "Вперед!"
+L_ANNOUNCE_PC_MSG = "Атаковать %s через %s.."
+L_ANNOUNCE_SAPPED = "Ошеломление!"
+L_ANNOUNCE_SAPPED_BY = "Ошеломление от: "
 -- Auras Localization
-L_AURAS_MOVEBUFFS = "Move Buffs"
-L_AURAS_MOVEDEBUFFS = "Move Debuffs"
+L_AURAS_MOVEBUFFS = "Передвинуть Баффы"
+L_AURAS_MOVEDEBUFFS = "Передвинуть дебаффы"
 -- Merchant Localization
-L_MERCHANT_NOTENOUGHMONEY = "You don't have enough money to repair!"
-L_MERCHANT_REPAIRCOST = "Your items have been repaired for"
-L_MERCHANT_SOLDTRASH = "Your vendor trash has been sold and you earned"
+L_MERCHANT_NOTENOUGHMONEY = "У вас недостаточно денег для ремонта!"
+L_MERCHANT_REPAIRCOST = "Ваша экипировка была отремонтирована за"
+L_MERCHANT_SOLDTRASH = "Серые вещи были проданы. Вы заработали"
 -- Bindings Localization
-L_BIND_BINDING = "Binding"
-L_BIND_CLEARED = "All keybindings cleared for"
-L_BIND_DISCARD = "All newly set keybindings were discarded."
-L_BIND_INSTRUCT = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding."
-L_BIND_KEY = "Key"
-L_BIND_NO_SET = "No bindings set"
-L_BIND_SAVED = "All keybindings have been saved."
+L_BIND_BINDING = "Назначение клавиш"
+L_BIND_CLEARED = "Все назначения клавиш были очищены."
+L_BIND_DISCARD = "Все новые назначения клавиш были сброшены.."
+L_BIND_INSTRUCT = "Наведите указатель мыши на нужную кнопку, чтобы назначить привязку. Нажмите ESC или правую кнопку мыши, что бы очистить текущее назначение."
+L_BIND_KEY = "Клавиша"
+L_BIND_NO_SET = "Назначение не установлено"
+L_BIND_SAVED = "Все назначения клавиш были сохранены."
 -- Chat Localization
-L_CHAT_AFK = "AFK"
-L_CHAT_DND = "DND"
-L_CHAT_GUILD = "G"
-L_CHAT_GUILDRECRUITMENT = "GuildRecruitment"
-L_CHAT_INSTANCE = "I"
-L_CHAT_INSTANCE_LEADER = "IL"
-L_CHAT_LOCALDEFENSE = "LocalDefense"
-L_CHAT_LOOKINGFORGROUP = "LookingForGroup"
-L_CHAT_OFFICER = "O"
-L_CHAT_PARTY = "P"
-L_CHAT_PARTY_LEADER = "PL"
-L_CHAT_RAID = "R"
-L_CHAT_RAID_LEADER = "RL"
-L_CHAT_RAID_WARNING = "RW"
-L_CHAT_PET_BATTLE = "Pet Battle"
+L_CHAT_AFK = "АФК"
+L_CHAT_DND = "НБ"
+L_CHAT_GUILD = "Г"
+L_CHAT_GUILDRECRUITMENT = "Набор Гильдии"
+L_CHAT_INSTANCE = "П"
+L_CHAT_INSTANCE_LEADER = "ЛП"
+L_CHAT_LOCALDEFENSE = "Оборона"
+L_CHAT_LOOKINGFORGROUP = "Поиск Группы"
+L_CHAT_OFFICER = "О"
+L_CHAT_PARTY = "Г"
+L_CHAT_PARTY_LEADER = "ГЛ"
+L_CHAT_RAID = "Р"
+L_CHAT_RAID_LEADER = "РЛ"
+L_CHAT_RAID_WARNING = "ОР"
+L_CHAT_PET_BATTLE = "Битва Петомцев"
 -- DataBars Localization
-L_DATABARS_ARTIFACT_CLICK = "Click: Opens the artifact overview"
+L_DATABARS_ARTIFACT_CLICK = "Клик: Открывает обзор артефактов"
 L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"
-L_DATABARS_HONOR_LEFTCLICK = "|cffccccccLeft Click: Opens the honor frame|r"
-L_DATABARS_HONOR_RIGHTCLICK = "|cffccccccRight Click: Opens the honor talents frame|r"
+L_DATABARS_HONOR_LEFTCLICK = "|cffccccccЛевый Клик: Открывает окно чести|r"
+L_DATABARS_HONOR_RIGHTCLICK = "|cffccccccПравый Click: Открывает окно талантов чести|r"
 -- DataText Localization
-L_DATATEXT_BASESASSAULTED = "Bases Assaulted:"
-L_DATATEXT_BASESDEFENDED = "Bases Defended:"
+L_DATATEXT_BASESASSAULTED = "Баз атаковано:"
+L_DATATEXT_BASESDEFENDED = "Баз защищено:"
 L_DATATEXT_CARTS_CONTROLLED = "Carts Controlled:"
-L_DATATEXT_DEMOLISHERSDESTROYED = "Demolishers Destroyed:"
-L_DATATEXT_FLAGSCAPTURED = "Flags Captured:"
-L_DATATEXT_FLAGSRETURNED = "Flags Returned:"
-L_DATATEXT_GATESDESTROYED = "Gates Destroyed:"
-L_DATATEXT_GRAVEYARDSASSAULTED = "Graveyards Assaulted:"
-L_DATATEXT_GRAVEYARDSDEFENDED = "Graveyards Defended:"
+L_DATATEXT_DEMOLISHERSDESTROYED = "Разрушителей уничтожено:"
+L_DATATEXT_FLAGSCAPTURED = "Флагов захвачено:"
+L_DATATEXT_FLAGSRETURNED = "Флагов возвращено:"
+L_DATATEXT_GATESDESTROYED = "Ворот уничтожено:"
+L_DATATEXT_GRAVEYARDSASSAULTED = "Кладбищ атаковано:"
+L_DATATEXT_GRAVEYARDSDEFENDED = "Кладбищ защищено:"
 L_DATATEXT_ORB_POSSESSIONS = "Orb Possessions:"
-L_DATATEXT_TOWERSASSAULTED = "Towers Assaulted:"
-L_DATATEXT_TOWERSDEFENDED = "Towers Defended:"
-L_DATATEXT_VICTORY_POINTS = "Victory Points:"
-L_DATATEXT_TOTALMEMORY = "Total Memory Usage:"
-L_DATATEXT_DOWNLOAD = "Download: "
-L_DATATEXT_BANDWIDTH = "Bandwidth: "
-L_DATATEXT_FPS = "FPS"
-L_DATATEXT_MS = "MS"
+L_DATATEXT_TOWERSASSAULTED = "Башен атаковано:"
+L_DATATEXT_TOWERSDEFENDED = "Башен защищено:"
+L_DATATEXT_VICTORY_POINTS = "Очки победы:"
+L_DATATEXT_TOTALMEMORY = "Общее использование памяти:"
+L_DATATEXT_DOWNLOAD = "Загрузка: "
+L_DATATEXT_BANDWIDTH = "Шир.Канала: "
+L_DATATEXT_FPS = "ФПС"
+L_DATATEXT_MS = "МС"
 -- AutoInvite Localization
-L_INVITE_ENABLE = "Autoinvite enabled: "
-L_INVITE_DISABLE = "AutoInvite disabled"
+L_INVITE_ENABLE = "Автоприглашение включено: "
+L_INVITE_DISABLE = "Автоприклашение выключено"
 -- Info Localization
-L_INFO_DISBAND = "Disbanding group..."
-L_INFO_DUEL = "Declined duel request from "
-L_INFO_PET_DUEL = "Declined pet duel request from "
-L_INFO_INVITE = "Accepted invite from "
-L_INFO_SETTINGS_DBM = "Type /settings dbm, to apply the settings DBM."
-L_INFO_SETTINGS_MSBT = "Type /settings msbt, to apply the settings MSBT."
-L_INFO_SETTINGS_SKADA = "Type /settings skada, to apply the settings Skada."
-L_INFO_SETTINGS_Abu = "Type /settings abu, to apply the settings oUF_Abu."
-L_INFO_SETTINGS_ALL = "Type /settings all, to apply the settings for all modifications."
-L_INFO_NOT_INSTALLED = " is not installed."
-L_INFO_SKIN_DISABLED1 = "Skin for "
-L_INFO_SKIN_DISABLED2 = " is disabled."
+L_INFO_DISBAND = "Роспуск группы..."
+L_INFO_DUEL = "Дуэль отклонена от "
+L_INFO_PET_DUEL = "Дуэль петомцев отклонена от "
+L_INFO_INVITE = "Приглашение принято от "
+L_INFO_SETTINGS_DBM = "Введите /settings dbm, для применения настроек DBM."
+L_INFO_SETTINGS_MSBT = "Введите /settings msbt, для применения настроек MSBT."
+L_INFO_SETTINGS_SKADA = "Введите /settings skada, для применения настроект Skada."
+L_INFO_SETTINGS_Abu = "Введите /settings abu, для применения настроек oUF_Abu."
+L_INFO_SETTINGS_ALL = "Введите /settings all, для применения настроек ко всем модификациям."
+L_INFO_NOT_INSTALLED = " не установлено."
+L_INFO_SKIN_DISABLED1 = "Скин для "
+L_INFO_SKIN_DISABLED2 = " выключен."
 -- Install Message Localization
-L_INSTALL_COMPLETE = "Installation Complete"
+L_INSTALL_COMPLETE = "Установка Завершена"
 -- Loot Localization
-L_LOOT_ANNOUNCE = "Announce to"
+L_LOOT_ANNOUNCE = "Объявить"
 L_LOOT_CANNOT = "Cannot roll"
-L_LOOT_CHEST = ">> Loot from chest"
-L_LOOT_FISH = "Fishing loot"
-L_LOOT_MONSTER = ">> Loot from "
-L_LOOT_RANDOM = "Random Player"
-L_LOOT_SELF = "Self Loot"
-L_LOOT_TO_GUILD = " Guild"
-L_LOOT_TO_INSTANCE = " Instance"
-L_LOOT_TO_PARTY = " Party"
-L_LOOT_TO_RAID = " Raid"
-L_LOOT_TO_SAY = " Say"
+L_LOOT_CHEST = ">> Добыча из сундука"
+L_LOOT_FISH = "Добыча с рыбалки"
+L_LOOT_MONSTER = ">> Добыча из "
+L_LOOT_RANDOM = "Случайный игрок"
+L_LOOT_SELF = "Каждый сам за себя"
+L_LOOT_TO_GUILD = " Гильдии"
+L_LOOT_TO_INSTANCE = " Сценарию"
+L_LOOT_TO_PARTY = " Группе"
+L_LOOT_TO_RAID = " Рейду"
+L_LOOT_TO_SAY = " Сказать"
 -- Mail Localization
-L_MAIL_COMPLETE = "All done."
-L_MAIL_MESSAGES = "messages"
-L_MAIL_NEED = "Need a mailbox."
-L_MAIL_STOPPED = "Stopped, inventory is full."
-L_MAIL_UNIQUE = "Stopped. Found a unique duplicate item in a bag or the bank."
+L_MAIL_COMPLETE = "Сбор почты завершен."
+L_MAIL_MESSAGES = "сообщения"
+L_MAIL_NEED = "Нужен почтовый ящик."
+L_MAIL_STOPPED = "Остановлено. Сумки полны."
+L_MAIL_UNIQUE = "Остановлено. Найден дубликат предмета в сумках или банке."
 -- World Map Localization
-L_MAP_FOG = "Fog of War"
+L_MAP_FOG = "Туман Войны"
 -- FarmMode Minimap
-L_MINIMAP_FARMMODE_ON = "Farm mode enabled"
-L_MINIMAP_FARMMODE_OFF = "Farm mode disabled"
+L_MINIMAP_FARMMODE_ON = "|cffffe02eРежим фарма|r: |cFF008000Включен|r."
+L_MINIMAP_FARMMODE_OFF = "|cffffe02eРежим фарма|r: |cFFFF0000Выключен|r."
 -- Misc Localization
 L_MISC_COPPERSHORT = "|cffeda55fc|r"
 L_MISC_GOLDSHORT = "|cffffd700g|r"
-L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
+L_MISC_REPAIR = "Внимание! Вам необходимо отремонтировать экипировку!"
 L_MISC_SILVERSHORT = "|cffc7c7cfs|r"
-L_MISC_UI_OUTDATED = "KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!"
-L_MISC_UNDRESS = "Undress"
+L_MISC_UI_OUTDATED = "KkthnxUI устарел. Вы можете загрузить последнюю версию с сайта curse.com. Установите приложение Curse и получайте автоматические обновления KkthnxUI."
+L_MISC_UNDRESS = "Раздеть"
 -- Popup Localization
-L_POPUP_ARMORY = "Armory"
-L_POPUP_BOOSTUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"
-L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
-L_POPUP_FIX_ACTIONBARS = "There is something wrong with your action bars. Do you want to reload the UI to fix it?"
-L_POPUP_INSTALLUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings."
-L_POPUP_RELOADUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r."
-L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?"
-L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
-L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
-L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff3c9bedDBM|r."
+L_POPUP_ARMORY = "Армори"
+L_POPUP_BOOSTUI = "|cffff0000ВНИМАНИЕ:|r Это позволит оптимизировать производительность за счет снижения уровня графики. Применяйте только если у вас возникли проблемы с |cffff0000FPS|r!|r"
+L_POPUP_DISBAND_RAID = "Вы действительно хотите распустить группу?"
+L_POPUP_FIX_ACTIONBARS = "Что-то не так с вашими панелями команд. Хотите перезагрузить UI, чтобы исправить это?"
+L_POPUP_INSTALLUI = "Спасибо за выбор |cff3c9bedKkthnxUI|r! |n|nПодтвердите установку для применения настроек."
+L_POPUP_RELOADUI = "Установка завершена. Пожалуйста, нажмите кнопку 'Принять' для перезагрузки UI. Наслаждайтесь |cff2eb6ffKkthnxUI|r!|n|nПосетите мою страницу: |cff2eb6ffwww.github.com/kkthnx|r!"
+L_POPUP_RESETUI = "Вы уверены, что хотите сбросить все настройки |cff3c9bedKkthnxUI|r?"
+L_POPUP_RESOLUTIONCHANGED = "Мы обнаружили изменение разрешения в вашем клиенте World of Warcraft. Мы НАСТОЯТЕЛЬНО РЕКОМЕНДУЕМ перезагрузить игру. Хотите продолжить?"
+L_POPUP_SETTINGS_ALL = "|cffff0000ВНИМАНИЕ|r |n|nЭто применит настройки ко всем аддонам поддерживаемым |cff3c9bedKkthnxUI|r. Ничего не произойдет, если у вас нет ни одного поддерживаемого аддона."
+L_POPUP_SETTINGS_DBM = "Нам нужно изменить позицию баров |cff3c9bedDBM|r."
 -- Raid Utility Localization
-L_RAID_UTIL_DISBAND = "Disband Group"
-L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
+L_RAID_UTIL_DISBAND = "Распустить Группу"
+L_POPUP_DISBAND_RAID = "Вы действительно хотите распустить группу?"
 -- Tooltip Localization
-L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
-L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"
-L_TOOLTIP_ACH_STATUS = "Your Status:"
-L_TOOLTIP_ITEM_COUNT = "Item count:"
-L_TOOLTIP_ITEM_ID = "Item ID:"
-L_TOOLTIP_SPELL_ID = "Spell ID:"
+L_TOOLTIP_ACH_COMPLETE = "Ваш статуст: Завершено на "
+L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Незавершено"
+L_TOOLTIP_ACH_STATUS = "Ваш статус:"
+L_TOOLTIP_ITEM_COUNT = "Количество предметов:"
+L_TOOLTIP_ITEM_ID = "ID предмета:"
+L_TOOLTIP_SPELL_ID = "ID заклинания:"
 -- Tutorial Localization
-L_TUTORIAL_MESSAGE_1 = "For technical support visit https://github.com/Kkthnx."
-L_TUTORIAL_MESSAGE_2 = "You can toggle the microbar by using your right mouse button on the minimap."
-L_TUTORIAL_MESSAGE_3 = "You can set your keybinds quickly by typing /kb."
-L_TUTORIAL_MESSAGE_4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro to do this."
-L_TUTORIAL_MESSAGE_5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear."
-L_TUTORIAL_MESSAGE_6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing."
-L_TUTORIAL_MESSAGE_7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings."
-L_TUTORIAL_MESSAGE_8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position."
-L_TUTORIAL_MESSAGE_9 = "To move abilities on the actionbars by default hold shift + drag. You can change the modifier key from the actionbar options menu."
-L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
+L_TUTORIAL_MESSAGE_1 = "Для технической поддержки посетите https://github.com/Kkthnx."
+L_TUTORIAL_MESSAGE_2 = "Вы можете переключать микроменю правой клавишей мыши на миникарте."
+L_TUTORIAL_MESSAGE_3 = "Вы можете быстро назначить клавиши введя команду /kb."
+L_TUTORIAL_MESSAGE_4 = "Рамку фокуса можно установить введя команду /focus когда выбрана нужная цель. Рекомендуется использовать макрос ждя этого."
+L_TUTORIAL_MESSAGE_5 = "Вы можете получить доступ к копии чата, наведя указатель мыши в правый нижний угол чата и нажав на появившуюся там кнопку."
+L_TUTORIAL_MESSAGE_6 = "Если у вас возникли проблемы с KkthnxUI попробуйте отключить все аддоны, кроме KkthnxUI. Помните, KkthnxUI - аддон заменяющий весь интерфейс, вы не можете использовать одновременно два аддона, которые делают тоже самое."
+L_TUTORIAL_MESSAGE_7 = "Для установки отображения каналов чата, щелкните правой клавишей мыши по вкладке чата и перейдите в настройки."
+L_TUTORIAL_MESSAGE_8 = "Вы можете использовать команду /resetui для полного сброса позиций всех элементов. Вы так же можете ввести команду /moveui и сбросить позицию нужного элемента щелчком правой клавиши мыши по нему."
+L_TUTORIAL_MESSAGE_9 = "Для перемещения способностей на панелях команды удерживайте клавишу Shift. Вы моежете изменить клавишу-модификатор в настройках Панелей команд."
+L_TUTORIAL_MESSAGE_10 = "Вы можете включить отображение среднего уровня предметов на всплывающих подсказках в меню настроек."
 -- Wowhead Link Localization
-L_WATCH_WOWHEAD_LINK = "Wowhead Link"
+L_WATCH_WOWHEAD_LINK = "Ссылка Wowhead"
 -- Welcome Localization
-L_WELCOME_LINE_1 = "Welcome to |cff3c9bedKkthnxUI|r v"
+L_WELCOME_LINE_1 = "Добро пожаловать в |cff3c9bedKkthnxUI|r v"
 L_WELCOME_LINE_2_1 = ""
-L_WELCOME_LINE_2_2 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r"
+L_WELCOME_LINE_2_2 = "Введите /cfg для настройки интерфейса, или посетите www.github.com/kkthnx|r"
 L_WELCOME_LINE_2_3 = ""
-L_WELCOME_LINE_2_4 = "Some of your questions can be answered by typing /uihelp"
+L_WELCOME_LINE_2_4 = "Некоторые ваши вопросы могут быть решены путем ввода команды /uihelp"
 -- Slash Commands Localization
 L_SLASHCMD_HELP = {
     "",
-    "|cff3c9bedAvailable slash commands:|r",
+    "|cff3c9bedДоступные команды:|r",
     "--------------------------",
-    "/rl - Reload interface.",
-    "/rc - Activates a ready check.",
-    "/gm - Opens GM frame.",
-    "/rd - Disband party or raid.",
-    "/toraid - Convert to party or raid.",
-    "/teleport - Teleportation from random dungeon.",
-    "/spec, /ss - Switches between talent spec's.",
-    "/frame - Description is not ready.",
-    "/farmmode - Increase the size of the minimap.",
-    "/moveui - Allows the movement of interface elements.",
-    "/resetui - Resets general settings to default.",
-    "/resetconfig - Resets KkthnxUI_Config settings.",
-    "/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-    "/pulsecd - Self cooldown pulse test.",
-    "/tt - Whisper target.",
-    "/ainv - Enables automatic invitation.",
-    "/cfg - Opens interface settings.",
-    "/patch - Display Wow patch info.",
+    "/rl - Перезагрузка интерфейса.",
+    "/rc - Активировать проверку готовности.",
+    "/gm - Открыть окно ГМ.",
+    "/rd - Распустить группу или рейд.",
+    "/toraid - Конвертировать в группу или рейд.",
+    "/teleport - Телепортация из случайного подземелья.",
+    "/spec, /ss - Переключение между наборами талантов.",
+    "/frame - Информация об элементе под указателем мыши.",
+    "/farmmode - Увеличение размера миникарты.",
+    "/moveui - Перемещение всех элементов интерфейса.",
+    "/resetui - Сброс общих настроек по умолчанию.",
+    "/resetconfig - Сброс настроек KkthnxUI_Config.",
+    "/settings ADDON_NAME - Применение настроек для msbt, dbm, skada, или всех аддонов сразу.",
+    "/pulsecd - Тест опции отображения времени перезарядки.",
+    "/tt - Выбрать в цель приватного собеседника.",
+    "/ainv - Активаци автоматического приглашения.",
+    "/cfg - Открывает настройки интерфейса.",
+    "/patch - Выводит информацию о патче WOW.",
     "",
-    "|cff3c9bedAvailable hidden features:|r",
+    "|cff3c9bedДоступные скрытые функции:|r",
     "--------------------------",
-    "Right-click minimap for micromenu.",
-    "Middle mouse click minimap for tracking.",
-    "Left click experience bar opens rep frame.",
-    "Left click artifact bar opens artifact frame.",
-    "Hold alt and obtain player ilvl and spec in tooltip.",
-    "Hold shift to scroll instantly to end or start of chat.",
-    "Copy button to the bottom right side of chat.",
-    "Middle mouse click copy button to /roll.",
+    "Правый клик по миникарте открывает микроменю.",
+    "Средний клик по миникарте открывает меню выбора слежения.",
+    "Левый клик по полосе опыта открывает окно репутации.",
+    "Левый клик по полосе атифакта открывает окно артифакта.",
+    "Зажать Alt для получения среднего уровня вещей во всплывающей подсказке.",
+    "Зажать Shift для быстрой прокрутки в начало или конец чата.",
+    "Кнопка копии чата находится в правом нижнем углу окна чата.",
+    "Средний клик по кнопке копии чата выбрасывает /roll.",
 }

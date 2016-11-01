@@ -488,7 +488,7 @@ local function CreateUnitLayout(self, unit)
 	if data.nam then
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 		self.Name:SetShadowOffset(K.Mult, -K.Scale(-3))
-		self:Tag(self.Name, "[kkthnx:name]")
+		self:Tag(self.Name, "[KkthnxUI:Name]")
 	end
 
 	-- Portrait
@@ -522,7 +522,7 @@ local function CreateUnitLayout(self, unit)
 		self.Level:SetFont(C.Media.Font, C.Media.Font_Size)
 		self.Level:SetShadowOffset(K.Mult, -K.Scale(-3))
 		self.Level:SetPoint("CENTER", self.Texture, (unit == "player" and -63) or 63, -15.5)
-		self:Tag(self.Level, "[kkthnx:level]")
+		self:Tag(self.Level, "[KkthnxUI:Level]")
 
 		-- PvP Icon
 		self.PvP = self:CreateTexture(nil, "OVERLAY")
@@ -763,7 +763,7 @@ local function CreateUnitLayout(self, unit)
 			self.PvPTimer:SetShadowOffset(K.Mult, -K.Scale(-3))
 			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 2, -24 )
 			self.PvPTimer.frequentUpdates = 0.5
-			self:Tag(self.PvPTimer, "[kkthnx:pvptimer]")
+			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
 
 		-- Combat icon

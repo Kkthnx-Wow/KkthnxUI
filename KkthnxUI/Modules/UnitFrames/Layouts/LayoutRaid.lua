@@ -11,41 +11,42 @@ local Movers = K.Movers
 local indicatorList
 do
 	indicatorList = {
-		DRUID = {
-			{774, "BOTTOMRIGHT", {1, 0.2, 1}}, -- Rejuvenation
-			{155777, "RIGHT", {0.4, 0.9, 0.4}}, -- Rejuvenation (Germination)
-			{33763, "BOTTOM", {0.5, 1, 0.5}}, -- Lifebloom
-			{48438, "BOTTOMLEFT", {0.7, 1, 0}}, -- Wild Growth
-		},
-		MONK = {
-			{119611, 'BOTTOMRIGHT', {0, 1, 0}}, -- Renewing Mist
-			{124682, "BOTTOMLEFT", {0.15, 0.98, 0.64}}, -- Enveloping Mist
-			{116849, "TOPLEFT", {1, 1, 0}}, -- Life Cocoon
-			{115175, 'BOTTOMLEFT', {0.7, 0.8, 1}}, -- Soothing Mist
-		},
-		PALADIN = {
-			{53563, "BOTTOMRIGHT", {0, 1, 0}}, -- Beacon of Light
-			{156910, "BOTTOMRIGHT", {0, 1, 0}}, -- Beacon of Faith
-			{200025, "BOTTOMRIGHT", {0, 1, 0}}, -- Beacon of Virtue
-		},
 		PRIEST = {
-			{17, "BOTTOMRIGHT", {1, 1, 0}}, -- Power Word: Shield
-			{41635, "TOPRIGHT", {1, 0.6, 0.6}}, -- Prayer of Mending
-			{139, "BOTTOMLEFT", {0, 1, 0}}, -- Renew
-			{194384, "TOPLEFT", {1, 0, 0}}, -- Atonement
-			{47788, "TOPLEFT", {0, 1,0 }}, -- Guardian Spirit
+			{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
+			{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
+			{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
 		},
+
+		DRUID = {
+			{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
+			{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
+			{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
+			{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
+			{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
+		},
+
+		PALADIN = {
+			{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
+			{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
+			{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
+			{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
+			{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
+			{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
+		},
+
 		SHAMAN = {
 			{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
-			{204288, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Earth Shield (PvP Only)
 		},
-		WARLOCK = {
-			{20707, "BOTTOMRIGHT", {0.7, 0, 1}, true}, -- Soulstone
+
+		MONK = {
+			{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
+			{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
+			{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
+			{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
 		},
+
 		ALL = {
-			{23333, "TOPLEFT", {1, 0, 0}, true}, -- Warsong flag, Horde
-			{23335, "TOPLEFT", {0, 0, 1}, true}, -- Warsong flag, Alliance
-			{34976, "TOPLEFT", {1, 0, 1}, true}, -- Netherstorm Flag
+			{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
 		},
 	}
 end
@@ -181,22 +182,22 @@ local function UpdateThreat(self, _, unit)
 	end
 
 	local threatStatus = UnitThreatSituation(unit) or 0
-    if (threatStatus == 3) then
-        if (self.ThreatText) then
-            self.ThreatText:Show()
-        end
-    end
+	if (threatStatus == 3) then
+		if (self.ThreatText) then
+			self.ThreatText:Show()
+		end
+	end
 
-    if (threatStatus and threatStatus >= 2) then
-        local r, g, b = GetThreatStatusColor(threatStatus)
-        self.ThreatGlow:SetBackdropBorderColor(r, g, b, 1)
-    else
-        self.ThreatGlow:SetBackdropBorderColor(0, 0, 0, 0)
+	if (threatStatus and threatStatus >= 2) then
+		local r, g, b = GetThreatStatusColor(threatStatus)
+		self.ThreatGlow:SetBackdropBorderColor(r, g, b, 1)
+	else
+		self.ThreatGlow:SetBackdropBorderColor(0, 0, 0, 0)
 
-        if (self.ThreatText) then
-            self.ThreatText:Hide()
-        end
-    end
+		if (self.ThreatText) then
+			self.ThreatText:Hide()
+		end
+	end
 end
 
 local function UpdatePower(self, _, unit)
@@ -332,7 +333,7 @@ local function CreateRaidLayout(self, unit)
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size)
 	self.Name:SetShadowOffset(K.Mult, -K.Scale(-3))
 	self.Name:SetTextColor(1, 0.82, 0, 1)
-	self:Tag(self.Name, "[name:raid]")
+	self:Tag(self.Name, "[KkthnxUI:NameShort]")
 
 	-- Power bar
 	if (C.Raidframe.ManabarShow) then
@@ -470,7 +471,7 @@ local function CreateRaidLayout(self, unit)
 		self.NotHere:SetShadowOffset(0, 0)
 		self.NotHere:SetTextColor(0, 1, 0)
 		self.NotHere.frequentUpdates = 1
-		self:Tag(self.NotHere, "[status:raid]")
+		self:Tag(self.NotHere, "[KkthnxUI:RaidStatus]")
 	end
 
 	-- Mouseover darklight

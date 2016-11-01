@@ -1,29 +1,10 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
-local _, ns = ...
-
 local floor, format = floor, string.format
 
 local createAuraIcon
 do
-	--[[
-	local function Aura_OnClick(self)
-		if not (IsControlKeyDown() and IsAltKeyDown()) then return end
-		local id = self.spellID
-		if id then
-			local name = GetSpellInfo(id)
-			if oUFKkthnx:GetAuraSettings()[id] then
-				K.Print(format(L_UNITFRAME_AURAEXISTS, name, id))
-			else
-				K.Print(format(L_UNITFRAME_AURAADDED, name, id))
-				oUFKkthnx:GetAuraSettings()[id] = 0
-			end
-		end
-		oUFKkthnx:UpdateAuraLists()
-	end
-	--]]
-
 	local function UpdateTooltip(self)
 		GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
 	end
@@ -57,7 +38,7 @@ do
 		button.icon = icon
 
 		local overlay = button:CreateTexture(nil, "OVERLAY")
-		overlay:SetTexture(ns.config.textureBorderWhite)
+		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderWhite")
 		local X = 1.35
 		overlay:SetPoint("TOPRIGHT", button.icon, X, X)
 		overlay:SetPoint("BOTTOMLEFT", button.icon, -X, -X)
@@ -66,7 +47,7 @@ do
 		local shadow = button:CreateTexture(nil, "BACKGROUND")
 		shadow:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -4, 4)
 		shadow:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 4, -4)
-		shadow:SetTexture(ns.config.textureBorderShadow)
+		shadow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderShadow")
 		shadow:SetVertexColor(0, 0, 0, 1)
 		button.shadow = shadow
 
@@ -88,7 +69,7 @@ do
 		local stealable = button:CreateTexture(nil, "OVERLAY")
 		stealable:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -4, 4)
 		stealable:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 4, -4)
-		stealable:SetTexture(ns.config.textureBorderShadow)
+		stealable:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderShadow")
 		stealable:SetVertexColor(1, 190/255, 82/255)
 		stealable:SetDrawLayer("OVERLAY", 1)
 		stealable:SetBlendMode("ADD")
@@ -220,85 +201,6 @@ local function postUpdate(self, unit)
 	self:GetParent().Health:ForceUpdate()
 end
 
--- Large Icons Stuff WIP
---[[
-do
-	local function PreSetPosition(element, max)
-		if ( element.createdIcons > element.anchoredIcons ) then
-			return 1
-		end
-
-		local largeIconCount = 0
-		for i = 1, max do
-			if element.largeAuraList[i] then
-				largeIconCount = largeIconCount + 1
-			end
-		end
-
-		if largeIconCount ~= element.largeIconCount then
-			element.largeIconCount = largeIconCount
-			return 1
-		end
-		return false
-	end
-
-	local LARGE_ICON_SCALE = 1.2
-	local function SetPosition(element, from, to)
-		local small_size, large_size = element.size, element.size*LARGE_ICON_SCALE
-		local anchor = element.initialAnchor or "BOTTOMLEFT"
-		local direction_x = (element["growth-x"] == "LEFT" and -1) or 1
-		local direction_y = (element["growth-y"] == "DOWN" and -1) or 1
-
-		local size, row_contains_large_icon
-		local max_column_width = element:GetWidth()
-		local row_height, column_width = 0, 0
-
-		for i = from, to do
-			local button = element[i]
-
-			-- Bail out if the to range is out of scope.
-			if(not button) then break end
-
-			if (element.largeAuraList[i]) then
-				size = large_size
-				row_contains_large_icon = true
-			else
-				size = small_size
-			end
-
-			if ( column_width + size + element.spacing > max_column_width) then -- new row
-				column_width = 0
-				if (row_contains_large_icon) then
-					row_height = element.spacing + large_size
-				else
-					row_height = element.spacing + small_size
-				end
-				row_contains_large_icon = false
-			elseif (i > 1) then
-				column_width = column_width + size + element.spacing
-			end
-
-			button:ClearAllPoints()
-			button:_SetSize(size, size)
-			button:SetPoint(anchor, element, anchor, column_width * direction_x, row_height * direction_y)
-		end
-	end
-
-	local function PreUpdate(element)
-		for i = 1, element.createdIcons do
-			element.largeAuraList[i] = false
-		end
-	end
-
-	function ns.EnableLargeIcons(element)
-		element.largeAuraList = { } -- also used for checkin if large auras is enabled
-		element.SetPosition = SetPosition
-		element.PreSetPosition = PreSetPosition
-		element.PreUpdate = PreUpdate
-	end
-end
-]]--
-
 local GrowthTable = {
 	TOPLEFT = {"RIGHT", "DOWN"},
 	TOPRIGHT = {"LEFT", "DOWN"},
@@ -341,7 +243,7 @@ end
 
 function K.AddAuras(self, initialAnchor, size, gap, columns, rows)
 	local Auras = createElement(self, "Auras", initialAnchor, size, gap, columns, rows)
-	Auras.numDebuffs = math.floor(rows * columns/ 2)
+	Auras.numDebuffs = math.floor(rows * columns / 2)
 	Auras.numBuffs = math.floor(rows * columns / 2)
 
 	Auras.gap = true

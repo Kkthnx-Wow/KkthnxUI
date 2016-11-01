@@ -14,4 +14,6 @@
 Locales\enUS.lua
 Locales\deDE.lua
 Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua
 KkthnxUI_Config.lua
