@@ -529,6 +529,11 @@ function CreateUIConfig()
 	UIConfigMain:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 	UIConfigMain:SetFrameStrata("DIALOG")
 	UIConfigMain:SetFrameLevel(20)
+	UIConfigMain:EnableMouse(true)
+	UIConfigMain:SetScript("OnMouseDown", function() UIConfigMain:StartMoving() end)
+	UIConfigMain:SetScript("OnMouseUp", function() UIConfigMain:StopMovingOrSizing() end)
+	UIConfigMain:SetClampedToScreen(true)
+	UIConfigMain:SetMovable(true)
 	tinsert(UISpecialFrames, "UIConfigMain")
 
 	-- Version Title
