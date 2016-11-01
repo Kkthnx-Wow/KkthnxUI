@@ -1,7 +1,5 @@
--- Localization FOR deDE CLIENTS
-local Locale = GetLocale()
-
-if (Locale ~= "deDE") then
+-- Localization for deDE clients
+if (GetLocale() ~= "deDE") then
 	return
 end
 

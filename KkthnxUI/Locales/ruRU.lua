@@ -1,7 +1,5 @@
 -- Localization For ruRU Clients
-local Locale = GetLocale()
-
-if (Locale ~= "ruRU") then
+if (GetLocale() ~= "ruRU") then
 	return
 end
 
