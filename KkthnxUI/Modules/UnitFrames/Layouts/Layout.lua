@@ -519,7 +519,7 @@ local function CreateUnitLayout(self, unit)
 		self.Level = self:CreateFontString(nil, "ARTWORK")
 		self.Level:SetFont(C.Media.Font, C.Media.Font_Size)
 		self.Level:SetShadowOffset(K.Mult, -K.Scale(-3))
-		self.Level:SetPoint("CENTER", self.Texture, (unit == "player" and -63) or 63, -15.5)
+		self.Level:SetPoint("CENTER", self.Texture, (self.cUnit == "player" and -63) or 63, -15.5)
 		self:Tag(self.Level, "[KkthnxUI:Level]")
 
 		-- PvP Icon
@@ -530,47 +530,59 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetSize(50, 52)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
-		-- Special Bars
-		-- Incoming Heals
-		local incHeals = K.CreateStatusBar(self.Health)
-		incHeals:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		incHeals:SetPoint("BOTTOMRIGHT")
-		incHeals:SetFrameLevel(self:GetFrameLevel() - 1)
-		incHeals:SetStatusBarColor(0, 1, 0, 0.5)
-		incHeals:Hide()
+		-- Heal Prediction
+		local myBar = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
+		myBar:SetFrameLevel(self:GetFrameLevel() - 1)
+		myBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
+		myBar:SetStatusBarColor(0, 0.827, 0.765, 1)
+		myBar:SetOrientation("HORIZONTAL")
+		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
+		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+		myBar:SetWidth(self.Health:GetWidth())
+		myBar.Smooth = true
 
-		-- Absorbing Heals
-		local necroHeals = K.CreateStatusBar(self.Health, "OVERLAY")
-		necroHeals:SetFrameLevel(self:GetFrameLevel() - 1)
-		necroHeals:SetStatusBarColor(1, 0, 0, 0.3)
-		necroHeals:SetReverseFill(true)
-		necroHeals:SetPoint("TOPLEFT")
-		necroHeals:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+		local otherBar = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
+		otherBar:SetFrameLevel(self:GetFrameLevel() - 1)
+		otherBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
+		otherBar:SetStatusBarColor(0.0, 0.631, 0.557, 1)
+		otherBar:SetOrientation("HORIZONTAL")
+		otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
+		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
+		otherBar:SetWidth(self.Health:GetWidth())
+		otherBar.Smooth = true
+
+		local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
+		healAbsorbBar:SetReverseFill(true)
+		healAbsorbBar:SetFrameLevel(self:GetFrameLevel() - 1)
+		healAbsorbBar:SetStatusBarTexture(C.Media.Blank)
+		healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 1)
+		healAbsorbBar:SetOrientation("HORIZONTAL")
+		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
+		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+		healAbsorbBar:SetWidth(self.Health:GetWidth())
+		healAbsorbBar.Smooth = true
+
+		local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
+		absorbBar:SetFrameLevel(self:GetFrameLevel() - 1)
+		absorbBar:SetStatusBarTexture(C.Media.Blank)
+		absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 1)
+		absorbBar:SetOrientation("HORIZONTAL")
+		absorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
+		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+		absorbBar:SetWidth(self.Health:GetWidth())
+		absorbBar.Smooth = true
+
+		absorbBar.Overlay = absorbBar:CreateTexture("$parentOverlay", "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
+		absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
 
 		self.HealPrediction = {
-			incHeals = incHeals,
-			necroHeals = necroHeals,
-			Override = K.UpdateIncHeals,
+			myBar = myBar,
+			otherBar = otherBar,
+			healAbsorbBar = healAbsorbBar,
+			absorbBar = absorbBar,
+			maxOverflow = 1,
+			frequentUpdates = true
 		}
-
-		if (config.absorbBar) then
-			-- Absorb bar
-			local absorb = CreateFrame("StatusBar", nil, self.Health)
-			absorb:SetStatusBarTexture(config.absorbtexture, "OVERLAY")
-			absorb:SetFrameLevel(self:GetFrameLevel() - 1)
-			absorb:SetStatusBarColor(1, 1, 1, 1)
-			absorb:GetStatusBarTexture():SetBlendMode("ADD")
-			absorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT")
-			absorb:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 5)
-
-			local spark = absorb:CreateTexture(nil, "ARTWORK")
-			spark:SetTexture(config.absorbspark)
-			spark:SetBlendMode("ADD")
-			spark:SetPoint("BOTTOMLEFT", absorb:GetStatusBarTexture(),"BOTTOMRIGHT")
-			spark:SetSize(5, 5)
-			absorb.spark = spark
-			self.HealPrediction.TotalAbsorb = absorb
-		end
 
 		-- Combat CombatFeedbackText
 		if (C.Unitframe.CombatText) then
@@ -768,7 +780,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Focus & Target Frame
-	if (unit == "target" or unit == "focus") then
+	if (self.cUnit == "target" or self.cUnit == "focus") then
 		-- Questmob Icon
 		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
 		self.QuestIcon:SetSize(32, 32)
@@ -779,7 +791,7 @@ local function CreateUnitLayout(self, unit)
 		end)
 	end
 
-	if (unit == "player") then
+	if (self.cUnit == "player") then
 		if (C.Unitframe.ThreatValue) then
 			self.NumericalThreat = CreateFrame("Frame", nil, self)
 			self.NumericalThreat:SetSize(49, 18)
@@ -898,6 +910,7 @@ local function CreateUnitLayout(self, unit)
 			outsideAlpha = 0.8,
 		}
 	end
+
 	self.CFade = {
 		FadeInMin = .2,
 		FadeInMax = 1,

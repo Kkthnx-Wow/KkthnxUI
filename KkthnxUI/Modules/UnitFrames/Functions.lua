@@ -61,23 +61,23 @@ function K.MultiCheck(what, ...)
 	return false
 end
 
---local function UpdatePortraitColor(self, unit, cur, max)
---	if (not UnitIsConnected(unit)) then
---		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
---	elseif (UnitIsDead(unit)) then
---		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
---	elseif (UnitIsGhost(unit)) then
---		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
---	elseif (cur / max * 100 < 25) then
---		if (UnitIsPlayer(unit)) then
---			if (unit ~= "player") then
---				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
---			end
---		end
---	else
---		self.Portrait:SetVertexColor(1, 1, 1, 1)
---	end
---end
+local function UpdatePortraitColor(self, unit, cur, max)
+	if (not UnitIsConnected(unit)) then
+		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+	elseif (UnitIsDead(unit)) then
+		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+	elseif (UnitIsGhost(unit)) then
+		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+	elseif (cur / max * 100 < 25) then
+		if (UnitIsPlayer(unit)) then
+			if (unit ~= "player") then
+				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+			end
+		end
+	else
+		self.Portrait:SetVertexColor(1, 1, 1, 1)
+	end
+end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
 local function SetValueText(element, tag, cur, max, color, notMana)
@@ -123,9 +123,9 @@ do
 		local self = Health:GetParent()
 		local uconfig = ns.config[self.cUnit]
 
-		--if (self.Portrait) then
-		--	UpdatePortraitColor(self, unit, cur, max)
-		--end
+		if (self.Portrait) then
+			UpdatePortraitColor(self, unit, cur, max)
+		end
 
 		if (self.Name) and (self.Name.Bg) then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
@@ -162,13 +162,13 @@ end
 
 -- Extra health bars
 function K.UpdateIncHeals(self, event, unit)
-	if (self.unit ~= unit) then return end
+	if (unit) and (self.unit ~= unit) and (self.realUnit ~= unit) then return; end
 	local hp = self.HealPrediction
 	local curHP, maxHP = UnitHealth(unit), UnitHealthMax(unit)
-	local incHeal = UnitGetIncomingHeals(unit) or 0
+	local incHeal = (UnitGetIncomingHeals(unit) or 0) * 2
 	local healAbsorb = UnitGetTotalHealAbsorbs(unit) or 0
 
-	if ( healAbsorb > 0) then
+	if (healAbsorb > 0) then
 		hp.necroHeals:SetMinMaxValues(0, curHP)
 		hp.necroHeals:SetValue(math.min(healAbsorb, curHP))
 		hp.necroHeals:Show()
@@ -192,8 +192,8 @@ function K.UpdateIncHeals(self, event, unit)
 			hp.TotalAbsorb:Hide()
 		else
 			hp.TotalAbsorb:Show()
-			if not hp.TotalAbsorb.spark:IsShown() then
-				hp.TotalAbsorb.spark:Show()
+			if not hp.TotalAbsorb.Spark:IsShown() then
+				hp.TotalAbsorb.Spark:Show()
 			end
 		end
 	end

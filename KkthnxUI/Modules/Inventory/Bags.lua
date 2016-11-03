@@ -36,13 +36,13 @@ local BlizzardBank = {
 }
 
 local BagType = {
-	[8] = true,     -- Leatherworking Bag
-	[16] = true,    -- Inscription Bag
-	[32] = true,    -- Herb Bag
-	[64] = true,    -- Enchanting Bag
-	[128] = true,   -- Engineering Bag
-	[512] = true,   -- Gem Bag
-	[1024] = true,  -- Mining Bag
+	[8] = true, -- Leatherworking Bag
+	[16] = true, -- Inscription Bag
+	[32] = true, -- Herb Bag
+	[64] = true, -- Enchanting Bag
+	[128] = true, -- Engineering Bag
+	[512] = true, -- Gem Bag
+	[1024] = true, -- Mining Bag
 	[32768] = true, -- Fishing Bag
 }
 
@@ -273,16 +273,16 @@ function Bags:CreateContainer(storagetype, ...)
 	Container:SetPoint(...)
 	Container:SetFrameStrata("MEDIUM")
 	Container:SetFrameLevel(50)
-	--Container:RegisterForDrag("LeftButton","RightButton")
-	--Container:SetScript("OnDragStart", function(self) self:StartMoving() end)
-	--Container:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
+	Container:RegisterForDrag("LeftButton","RightButton")
+	Container:SetScript("OnDragStart", function(self) if IsShiftKeyDown() then self:StartMoving() end end)
+	Container:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
 	Container:Hide()
 	Container:SetTemplate()
-	--Container:SetClampedToScreen(true)
-	--Container:SetMovable(true)
-	--Container:SetUserPlaced(true)
+	Container:SetClampedToScreen(true)
+	Container:SetMovable(true)
+	Container:SetUserPlaced(true)
 	Container:EnableMouse(true)
-	--Container:RegisterForDrag("LeftButton","RightButton")
+	Container:RegisterForDrag("LeftButton", "RightButton")
 
 	if (storagetype == "Bag") then
 		local Sort = BagItemAutoSortButton
@@ -596,7 +596,7 @@ function Bags:SlotUpdate(id, button)
 				button.FadeOut = button.Animation:CreateAnimation("Alpha")
 				button.FadeOut:SetFromAlpha(1)
 				button.FadeOut:SetToAlpha(0)
-				button.FadeOut:SetDuration(0.40)
+				button.FadeOut:SetDuration(0.20)
 				button.FadeOut:SetSmoothing("IN_OUT")
 			end
 
@@ -814,14 +814,6 @@ function Bags:OpenAllBags()
 
 	if IsBagOpen(0) then
 		self.Bag:Show()
-
-		if not self.Bag.MoverAdded then
-			local Movers = K.Movers
-
-			Movers:RegisterFrame(self.Bag)
-
-			self.Bag.MoverAdded = true
-		end
 	end
 end
 
@@ -836,14 +828,6 @@ function Bags:OpenAllBankBags()
 
 				self:OpenBag(i, 1)
 			end
-		end
-
-		if not self.Bank.MoverAdded then
-			local Movers = K.Movers
-
-			--Movers:RegisterFrame(self.Bank)
-
-			self.Bank.MoverAdded = true
 		end
 	end
 end
@@ -867,7 +851,7 @@ function Bags:CloseAllBankBags()
 end
 
 function Bags:ToggleBags()
-	if (self.Bag:IsShown() and BankFrame:IsShown()) and (not self.Bank:IsShown())  and (not ReagentBankFrame:IsShown()) then
+	if (self.Bag:IsShown() and BankFrame:IsShown()) and (not self.Bank:IsShown()) and (not ReagentBankFrame:IsShown()) then
 		self:OpenAllBankBags()
 
 		return
