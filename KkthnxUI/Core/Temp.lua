@@ -468,7 +468,7 @@ K.NameplateBlacklist = {
 }
 
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
 
 local function CreateVirtualFrame(frame, point)
 	if point == nil then point = frame end

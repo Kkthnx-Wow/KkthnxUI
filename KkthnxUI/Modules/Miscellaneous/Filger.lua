@@ -161,7 +161,7 @@ function Filger:DisplayActives()
 			end
 
 			if self.Mode == "ICON" then
-				bar:CreateBlizzShadow(5)
+				bar:CreateBlizzShadow(6)
 				if bar.cooldown then
 					bar.cooldown = _G[bar.cooldown:GetName()]
 				else

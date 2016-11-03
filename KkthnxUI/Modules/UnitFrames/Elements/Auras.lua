@@ -38,16 +38,15 @@ do
 		button.icon = icon
 
 		local overlay = button:CreateTexture(nil, "OVERLAY")
-		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderWhite")
-		local X = 1.35
-		overlay:SetPoint("TOPRIGHT", button.icon, X, X)
-		overlay:SetPoint("BOTTOMLEFT", button.icon, -X, -X)
+		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite")
+		overlay:SetVertexColor(unpack(C.Media.Border_Color))
+		overlay:SetOutside(button.icon, 1.36, 1.36)
 		button.overlay = overlay
 
 		local shadow = button:CreateTexture(nil, "BACKGROUND")
-		shadow:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -4, 4)
-		shadow:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 4, -4)
-		shadow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderShadow")
+		shadow:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
+		shadow:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
+		shadow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
 		shadow:SetVertexColor(0, 0, 0, 1)
 		button.shadow = shadow
 
@@ -67,9 +66,9 @@ do
 		button.count = count
 
 		local stealable = button:CreateTexture(nil, "OVERLAY")
-		stealable:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -4, 4)
-		stealable:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 4, -4)
-		stealable:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderShadow")
+		stealable:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
+		stealable:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
+		stealable:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
 		stealable:SetVertexColor(1, 190/255, 82/255)
 		stealable:SetDrawLayer("OVERLAY", 1)
 		stealable:SetBlendMode("ADD")

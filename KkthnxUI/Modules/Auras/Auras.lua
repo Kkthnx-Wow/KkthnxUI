@@ -253,7 +253,7 @@ function KkthnxUIAuras:Skin()
 	end
 
 	if not self.shadow then
-		self:CreateBlizzShadow(4)
+		self:CreateBlizzShadow(5)
 	end
 end
 

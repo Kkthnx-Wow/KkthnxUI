@@ -18,7 +18,7 @@ local UnitSelectionColor = UnitSelectionColor
 local UnitPower, UnitPowerMax = UnitPower, UnitPowerMax
 
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
 local colors = K.Colors
 
 function K.UnitframeValue(self)
@@ -61,23 +61,23 @@ function K.MultiCheck(what, ...)
 	return false
 end
 
-local function UpdatePortraitColor(self, unit, cur, max)
-	if (not UnitIsConnected(unit)) then
-		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-	elseif (UnitIsDead(unit)) then
-		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-	elseif (UnitIsGhost(unit)) then
-		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-	elseif (cur / max * 100 < 25) then
-		if (UnitIsPlayer(unit)) then
-			if (unit ~= "player") then
-				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
-			end
-		end
-	else
-		self.Portrait:SetVertexColor(1, 1, 1, 1)
-	end
-end
+--local function UpdatePortraitColor(self, unit, cur, max)
+--	if (not UnitIsConnected(unit)) then
+--		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+--	elseif (UnitIsDead(unit)) then
+--		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+--	elseif (UnitIsGhost(unit)) then
+--		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+--	elseif (cur / max * 100 < 25) then
+--		if (UnitIsPlayer(unit)) then
+--			if (unit ~= "player") then
+--				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+--			end
+--		end
+--	else
+--		self.Portrait:SetVertexColor(1, 1, 1, 1)
+--	end
+--end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
 local function SetValueText(element, tag, cur, max, color, notMana)
@@ -123,9 +123,9 @@ do
 		local self = Health:GetParent()
 		local uconfig = ns.config[self.cUnit]
 
-		if (self.Portrait) then
-			UpdatePortraitColor(self, unit, cur, max)
-		end
+		--if (self.Portrait) then
+		--	UpdatePortraitColor(self, unit, cur, max)
+		--end
 
 		if (self.Name) and (self.Name.Bg) then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
@@ -360,4 +360,86 @@ function K.CreateStatusBar(parent, layer, name, AddBackdrop)
 	end
 
 	return bar
+end
+
+K.RaidBuffsTrackingPosition = {
+	TOPLEFT = {6, 1},
+	TOPRIGHT = {-6, 1},
+	BOTTOMLEFT = {6, 1},
+	BOTTOMRIGHT = {-6, 1},
+	LEFT = {6, 1},
+	RIGHT = {-6, 1},
+	TOP = {0, 0},
+	BOTTOM = {0, 0},
+}
+
+function K.CreateAuraWatchIcon(self, icon)
+	icon:SetBackdrop(K.TwoPixelBorder)
+	icon:CreateShadow()
+	icon.icon:SetPoint("TOPLEFT", 1, -1)
+	icon.icon:SetPoint("BOTTOMRIGHT", -1, 1)
+	icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	icon.icon:SetDrawLayer("ARTWORK")
+	if (icon.cd) then
+		icon.cd:SetHideCountdownNumbers(true)
+		icon.cd:SetReverse(true)
+	end
+	icon.overlay:SetTexture()
+end
+
+-- create the icon
+function K.CreateAuraWatch(self)
+	local Class = select(2, UnitClass("player"))
+	local Auras = CreateFrame("Frame", nil, self)
+	Auras:SetPoint("TOPLEFT", self.Health, 2, -2)
+	Auras:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
+	Auras.presentAlpha = 1
+	Auras.missingAlpha = 0
+	Auras.icons = {}
+	Auras.PostCreateIcon = K.CreateAuraWatchIcon
+	Auras.strictMatching = true
+
+	if (not C.Raidframe.AuraWatchTimers) then
+		Auras.hideCooldown = true
+	end
+
+	local buffs = {}
+	if (K.RaidBuffsTracking["ALL"]) then
+		for key, value in pairs(K.RaidBuffsTracking["ALL"]) do
+			tinsert(buffs, value)
+		end
+	end
+
+	if (K.RaidBuffsTracking[Class]) then
+		for key, value in pairs(K.RaidBuffsTracking[Class]) do
+			tinsert(buffs, value)
+		end
+	end
+
+	-- Cornerbuffs
+	if buffs then
+		for key, spell in pairs(buffs) do
+			local Icon = CreateFrame("Frame", nil, Auras)
+			Icon.spellID = spell[1]
+			Icon.anyUnit = spell[4]
+			Icon:SetWidth(6)
+			Icon:SetHeight(6)
+			Icon:SetPoint(spell[2], 0, 0)
+			local Texture = Icon:CreateTexture(nil, "OVERLAY")
+			Texture:SetAllPoints(Icon)
+			Texture:SetTexture(C.Media.Blank)
+			if (spell[3]) then
+				Texture:SetVertexColor(unpack(spell[3]))
+			else
+				Texture:SetVertexColor(0.8, 0.8, 0.8)
+			end
+			local Count = Icon:CreateFontString(nil, "OVERLAY")
+			Count:SetFont(C.Media.Font, 9, "THINOUTLINE")
+			Count:SetPoint("CENTER", unpack(K.RaidBuffsTrackingPosition[spell[2]]))
+			Icon.count = Count
+			Auras.icons[spell[1]] = Icon
+		end
+	end
+
+	self.AuraWatch = Auras
 end

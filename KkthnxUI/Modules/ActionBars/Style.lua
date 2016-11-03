@@ -89,7 +89,7 @@ local function StyleNormalButton(self)
 	end
 
 	if not button.shadow and button.isSkinned then
-		button:CreateBlizzShadow(5)
+		button:CreateBlizzShadow(6)
 	end
 
 	if normal and button:GetChecked() then
@@ -156,7 +156,7 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 	end
 
 	if not button.shadow then
-		button:CreateBlizzShadow(5)
+		button:CreateBlizzShadow(6)
 	end
 
 	if normal then

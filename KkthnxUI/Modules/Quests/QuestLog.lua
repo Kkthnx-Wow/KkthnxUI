@@ -7,18 +7,18 @@ local IsAltKeyDown, IsControlKeyDown = IsAltKeyDown, IsControlKeyDown
 
 -- Quest level(by fgprodigal)
 hooksecurefunc("QuestLogQuests_Update", function()
-	if ENABLE_COLORBLIND_MODE == "1" then return end
-
-	local numEntries, numQuests = GetNumQuestLogEntries()
-	local titleIndex = 1
-
-	for i = 1, numEntries do
-		local title, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID, startEvent, displayQuestID, isOnMap, hasLocalPOI, isTask, isStory = GetQuestLogTitle(i)
-		local titleButton = QuestLogQuests_GetTitleButton(titleIndex)
-		if title and (not isHeader) and titleButton.questID == questID then
-			titleButton.Text:SetText("[" .. level .. "] " .. title)
-			titleButton.Check:SetPoint("LEFT", titleButton.Text, titleButton.Text:GetWrappedWidth() + 2, 0)
-			titleIndex = titleIndex + 1
+	for i, button in pairs(QuestMapFrame.QuestsFrame.Contents.Titles) do
+		if button:IsShown() then
+			local link = GetQuestLink(button.questID)
+			if link then
+				local level = strmatch(link, "quest:%d+:(%d+)")
+				if level then
+					local height = button.Text:GetHeight()
+					button.Text:SetFormattedText("[%d] %s", level, button.Text:GetText())
+					button.Check:SetPoint("LEFT", button.Text, button.Text:GetWrappedWidth() + 2, 0)
+					button:SetHeight(button:GetHeight() - height + button.Text:GetHeight())
+				end
+			end
 		end
 	end
 end)

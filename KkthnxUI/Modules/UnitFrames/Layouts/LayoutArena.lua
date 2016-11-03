@@ -2,7 +2,7 @@ local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 
@@ -82,7 +82,6 @@ function ns.createArenaLayout(self, unit)
 	self.Health.PostUpdate = K.PostUpdateHealth
 	table.insert(self.mouseovers, self.Health)
 
-	self.Power.useAtlas = C.Unitframe.PowerUseAtlas
 	self.Power.colorPower = true
 
 	self.Power.Smooth = true

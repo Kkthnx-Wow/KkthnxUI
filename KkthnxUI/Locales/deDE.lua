@@ -3,6 +3,8 @@ if (GetLocale() ~= "deDE") then
 	return
 end
 
+-- AFKSpin Localization
+L_AFKSCREEN_NOGUILD = "Keine Gilde"
 -- Announce Localization
 L_ANNOUNCE_FP_USE = "%s benutzt %s."
 L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s's \124cff71d5ff\124HZauber:%d:0\124h[%s]\124h\124r!"

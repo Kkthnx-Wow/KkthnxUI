@@ -172,21 +172,22 @@ SLASH_CLEARCHAT2 = "/clearchat"
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
 	PlaySound("LFG_Rewards")
-
 	if not AchievementFrame then
 		AchievementFrame_LoadUI()
 	end
-
 	AchievementAlertSystem:AddAlert(112)
 	CriteriaAlertSystem:AddAlert(9023, "Doing great!")
+	GuildChallengeAlertSystem:AddAlert(3, 2, 5)
+	InvasionAlertSystem:AddAlert(678, "Legion", true, 1, 1)
+	GarrisonShipFollowerAlertSystem:AddAlert(592, "Ship", "Transport", "GarrBuilding_Barracks_1_H", 3, 2, 1)
+	GarrisonBuildingAlertSystem:AddAlert("Barracks")
+	LegendaryItemAlertSystem:AddAlert("\124cffa335ee\124Hitem:18832:0:0:0:0:0:0:0:0:0:0\124h[Brutality Blade]\124h\124r")
 	LootAlertSystem:AddAlert("\124cffa335ee\124Hitem:18832::::::::::\124h[Brutality Blade]\124h\124r", 1, 1, 100, 2, false, false, 0, false, false)
 	LootUpgradeAlertSystem:AddAlert("\124cffa335ee\124Hitem:18832::::::::::\124h[Brutality Blade]\124h\124r", 1, 1, 1, nil, nil, false)
 	MoneyWonAlertSystem:AddAlert(815)
-	NewRecipeLearnedAlertSystem:AddAlert(204)
-	GuildChallengeAlertSystem:AddAlert(3, 2, 5)
-	LegendaryItemAlertSystem:AddAlert("\124cffa335ee\124Hitem:18832:0:0:0:0:0:0:0:0:0:0\124h[Brutality Blade]\124h\124r")
 	StorePurchaseAlertSystem:AddAlert("\124cffa335ee\124Hitem:180545::::::::::\124h[Mystic Runesaber]\124h\124r", "", "", 214)
 	DigsiteCompleteAlertSystem:AddAlert(1)
+	NewRecipeLearnedAlertSystem:AddAlert(204)
 end
 SLASH_TEST_ACHIEVEMENT1 = "/testa"
 

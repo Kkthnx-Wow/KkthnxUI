@@ -90,7 +90,9 @@ QueueStatusFrame:SetTemplate()
 if C.Minimap.Garrison == true then
 	GarrisonLandingPageMinimapButton:ClearAllPoints()
 	GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
+	GarrisonLandingPageMinimapButton:SetScale(1)
 	GarrisonLandingPageMinimapButton:SetSize(32, 32)
+	GarrisonLandingPageMinimapButton:SetAlpha(1)
 else
 	GarrisonLandingPageMinimapButton:SetScale(0.0001)
 	GarrisonLandingPageMinimapButton:SetAlpha(0)
@@ -104,9 +106,7 @@ AutoHideLandingPage:SetScript("OnEvent", function(self, event)
 		GarrisonLandingPageMinimapButton:SetScale(0.0001)
 		GarrisonLandingPageMinimapButton:SetAlpha(0)
 	else
-		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
-		GarrisonLandingPageMinimapButton:SetSize(32, 32)
+		GarrisonLandingPageMinimapButton:SetAlpha(1)
 	end
 end)
 
@@ -114,14 +114,17 @@ end)
 MiniMapInstanceDifficulty:ClearAllPoints()
 MiniMapInstanceDifficulty:SetParent(Minimap)
 MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
+MiniMapInstanceDifficulty:SetScale(0.8)
 
 GuildInstanceDifficulty:ClearAllPoints()
 GuildInstanceDifficulty:SetParent(Minimap)
 GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
+GuildInstanceDifficulty:SetScale(0.8)
 
 MiniMapChallengeMode:ClearAllPoints()
 MiniMapChallengeMode:SetParent(Minimap)
 MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
+MiniMapChallengeMode:SetScale(0.8)
 
 -- Feedback icon
 if FeedbackUIButton then

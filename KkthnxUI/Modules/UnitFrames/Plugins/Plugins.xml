@@ -1,12 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="oUF_Auraorbs.lua"/>
 	<Script file="oUF_AuraWatch.lua"/>
-	<Script file="oUF_BuilderSpender.lua"/>
+	<Script file="oUF_RaidDebuffs.lua"/>
 	<Script file="oUF_CCastbar.lua"/>
 	<Script file="oUF_CombatFeedbackText.lua"/>
-	<Script file="oUF_Freebgrid_Auras.lua"/>
-	<Script file="oUF_Freebgrid_AurasList.lua"/>
-	<Script file="oUF_Freebgrid_AurasPriority.lua"/>
 	<Script file="oUF_Offline.lua"/>
 	<Script file="oUF_Portraittimers.lua"/>
 	<Script file="oUF_Smartthreat.lua"/>

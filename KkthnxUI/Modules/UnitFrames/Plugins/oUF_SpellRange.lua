@@ -14,7 +14,7 @@
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, 'Unable to locate oUF.')
+assert(oUF, "Unable to locate oUF.")
 
 local UpdateRate = 0.1
 
@@ -27,15 +27,15 @@ local ObjectRanges = {}
 local HelpName
 local HarmName
 
-local _, playerClass = UnitClass('player')
+local _, playerClass = UnitClass("player")
 
 -- Optional lists of low level baseline skills with greater than 28 yard range.
 -- First known spell in the appropriate class list gets used.
--- Note: Spells probably shouldn't have minimum ranges!
+-- Note: Spells probably shouldn"t have minimum ranges!
 
 local HelpIDs = ({
     -- DEATHKNIGHT = {},
-    DRUID = { 2782,88423 },     -- Remove Corruption, Nature's Cure (40yd) - Lvl 18
+    DRUID = { 2782,88423 },     -- Remove Corruption, Nature"s Cure (40yd) - Lvl 18
     -- HUNTER = {},
     -- MAGE = { },
     MONK = { 116694 },          -- Effuse (40yd) - Lvl 8
@@ -93,12 +93,12 @@ do
 	-- @return True if in casting range
     function IsInRange(unit)
         if (UnitIsConnected(unit)) then
-            if (UnitCanAssist('player', unit)) then
+            if (UnitCanAssist("player", unit)) then
                 if (HelpName and not UnitIsDead(unit)) then
                     return IsSpellInRange(HelpName, unit) == 1 and true or false
-                elseif (UnitOnTaxi('player')) then  -- UnitInRange always returns nil while on flightpaths
+                elseif (UnitOnTaxi("player")) then  -- UnitInRange always returns nil while on flightpaths
                     return false
-                elseif (UnitIsUnit(unit, 'player') or UnitIsUnit(unit, 'pet') or UnitPlayerOrPetInParty(unit) or UnitPlayerOrPetInRaid(unit)) then
+                elseif (UnitIsUnit(unit, "player") or UnitIsUnit(unit, "pet") or UnitPlayerOrPetInParty(unit) or UnitPlayerOrPetInRaid(unit)) then
                     local inRange, checkedRange = UnitInRange(unit)
                     if (checkedRange and not inRange) then
                         return false
@@ -106,7 +106,7 @@ do
                         return true
                     end
                 end
-            elseif (HarmName and not UnitIsDead(unit) and UnitCanAttack('player', unit)) then
+            elseif (HarmName and not UnitIsDead(unit) and UnitCanAttack("player", unit)) then
                 return IsSpellInRange(HarmName, unit) == 1 and true or false
             end
 
@@ -127,7 +127,7 @@ local function UpdateRange(self)
         if (SpellRange.Update) then
             SpellRange.Update(self, InRange)
         else
-            self:SetAlpha(SpellRange[InRange and 'insideAlpha' or 'outsideAlpha'])
+            self:SetAlpha(SpellRange[InRange and "insideAlpha" or "outsideAlpha"])
         end
     end
 end
@@ -175,18 +175,18 @@ do
 end
 
 
--- Called by oUF when the unit frame's unit changes or otherwise needs a complete update.
+-- Called by oUF when the unit frame"s unit changes or otherwise needs a complete update.
 -- @param Event  Reason for the update.  Can be a real event, nil, or a string defined by oUF.
 local function Update (self, Event, UnitID)
-    if (Event ~= 'OnTargetUpdate') then -- OnTargetUpdate is fired on a timer for *target units that don't have real events
+    if (Event ~= "OnTargetUpdate") then -- OnTargetUpdate is fired on a timer for *target units that don"t have real events
         ObjectRanges[self] = nil -- Force update to fire
         UpdateRange(self) -- Update range immediately
     end
 end
 
--- Forces range to be recalculated for this element's frame immediately.
+-- Forces range to be recalculated for this element"s frame immediately.
 local function ForceUpdate(self)
-    return Update(self.__owner, 'ForceUpdate', self.__owner.unit)
+    return Update(self.__owner, "ForceUpdate", self.__owner.unit)
 end
 
 -- Called by oUF for new unit frames to setup range checking.
@@ -194,24 +194,24 @@ end
 local function Enable(self, UnitID)
     local SpellRange = self.SpellRange
     if (SpellRange) then
-        assert(type( SpellRange ) == 'table', 'oUF layout addon using invalid SpellRange element.')
-        assert(type(SpellRange.Update) == 'function' or (tonumber(SpellRange.insideAlpha) and tonumber(SpellRange.outsideAlpha)), 'oUF layout addon omitted required SpellRange properties.')
+        assert(type( SpellRange ) == "table", "oUF layout addon using invalid SpellRange element.")
+        assert(type(SpellRange.Update) == "function" or (tonumber(SpellRange.insideAlpha) and tonumber(SpellRange.outsideAlpha)), "oUF layout addon omitted required SpellRange properties.")
 
         if (self.Range) then -- Disable default range checking
-            self:DisableElement('Range')
-            self.Range = nil -- Prevent range element from enabling, since enable order isn't stable
+            self:DisableElement("Range")
+            self.Range = nil -- Prevent range element from enabling, since enable order isn"t stable
         end
 
         SpellRange.__owner = self
         SpellRange.ForceUpdate = ForceUpdate
         if (not UpdateFrame) then
-            UpdateFrame = CreateFrame('Frame')
-            UpdateFrame:SetScript('OnUpdate', OnUpdate)
-            UpdateFrame:SetScript('OnEvent', OnSpellsChanged)
+            UpdateFrame = CreateFrame("Frame")
+            UpdateFrame:SetScript("OnUpdate", OnUpdate)
+            UpdateFrame:SetScript("OnEvent", OnSpellsChanged)
         end
         if (not next(Objects)) then -- First object
             UpdateFrame:Show()
-            UpdateFrame:RegisterEvent('SPELLS_CHANGED')
+            UpdateFrame:RegisterEvent("SPELLS_CHANGED")
             OnSpellsChanged() -- Recheck spells immediately
         end
 
@@ -227,8 +227,8 @@ local function Disable(self)
 
     if (not next(Objects))then -- Last object
         UpdateFrame:Hide()
-        UpdateFrame:UnregisterEvent('SPELLS_CHANGED')
+        UpdateFrame:UnregisterEvent("SPELLS_CHANGED")
     end
 end
 
-oUF:AddElement('SpellRange', Update, Enable, Disable)
+oUF:AddElement("SpellRange", Update, Enable, Disable)

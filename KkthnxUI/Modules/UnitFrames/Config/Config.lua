@@ -21,15 +21,9 @@ end
 
 -- Default Settings
 ns.config = {
-	largePlayerAuras = true,
-
-	showArena = true,
-	showBoss = true,
-
-	borderType = "kkthnx", -- beauty or kkthnx
-	textureBorder = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderNormal",
-	textureBorderWhite = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderWhite",
-	textureBorderShadow = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\2borderShadow",
+	textureBorder = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderNormal",
+	textureBorderWhite = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite",
+	textureBorderShadow = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow",
 
 	playerstyle = "normal",
 	customPlayerTexture = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\CUSTOMPLAYER-FRAME",

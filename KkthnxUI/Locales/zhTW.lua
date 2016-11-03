@@ -3,6 +3,8 @@ if (GetLocale() ~= "zhTW") then
 	return
 end
 
+-- AFKSpin Localization
+L_AFKSCREEN_NOGUILD = "No Guild"
 -- Announce Localization
 L_ANNOUNCE_FP_USE = "%s used %s."
 L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"

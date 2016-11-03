@@ -6,176 +6,6 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local Movers = K.Movers
 
--- oUF_AuraWatch
--- Class buffs {spell ID, position [, {r, g, b, a}][, anyUnit][, hideCount]}
-local indicatorList
-do
-	indicatorList = {
-		PRIEST = {
-			{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
-			{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
-			{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
-		},
-
-		DRUID = {
-			{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
-			{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
-			{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
-			{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-			{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
-		},
-
-		PALADIN = {
-			{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
-			{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
-			{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
-			{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
-			{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
-			{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
-		},
-
-		SHAMAN = {
-			{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
-		},
-
-		MONK = {
-			{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
-			{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
-			{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
-			{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
-		},
-
-		ALL = {
-			{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
-		},
-	}
-end
-
-local function AuraIcon(self, icon)
-	if (icon.cd) then
-		icon.cd:SetReverse(true)
-		icon.cd:SetDrawEdge(true)
-		icon.cd:SetAllPoints(icon.icon)
-		icon.cd:SetHideCountdownNumbers(true)
-	end
-end
-
-local offsets
-do
-	local space = 2
-
-	offsets = {
-		TOPLEFT = {
-			icon = {space, -space},
-			count = {"TOP", icon, "BOTTOM", 0, 0},
-		},
-
-		TOPRIGHT = {
-			icon = {-space, -space},
-			count = {"TOP", icon, "BOTTOM", 0, 0},
-		},
-
-		BOTTOMLEFT = {
-			icon = {space, space},
-			count = {"LEFT", icon, "RIGHT", 1, 0},
-		},
-
-		BOTTOMRIGHT = {
-			icon = {-space, space},
-			count = {"RIGHT", icon, "LEFT", -1, 0},
-		},
-
-		LEFT = {
-			icon = {space, 0},
-			count = {"LEFT", icon, "RIGHT", 1, 0},
-		},
-
-		RIGHT = {
-			icon = {-space, 0},
-			count = {"RIGHT", icon, "LEFT", -1, 0},
-		},
-
-		TOP = {
-			icon = {0, -space},
-			count = {"CENTER", icon, 0, 0},
-		},
-
-		BOTTOM = {
-			icon = {0, space},
-			count = {"CENTER", icon, 0, 0},
-		},
-	}
-end
-
-local function CreateIndicators(self, unit)
-
-	self.AuraWatch = CreateFrame("Frame", nil, self)
-
-	local Auras = {}
-	Auras.icons = {}
-	Auras.customIcons = true
-	Auras.presentAlpha = 1
-	Auras.missingAlpha = 0
-	Auras.PostCreateIcon = AuraIcon
-
-	local buffs = {}
-
-	if (indicatorList["ALL"]) then
-		for key, value in pairs(indicatorList["ALL"]) do
-			tinsert(buffs, value)
-		end
-	end
-
-	if (indicatorList[K.Class]) then
-		for key, value in pairs(indicatorList[K.Class]) do
-			tinsert(buffs, value)
-		end
-	end
-
-	if (buffs) then
-		for key, spell in pairs(buffs) do
-
-			local icon = CreateFrame("Frame", nil, self.AuraWatch)
-			icon:SetWidth(C.Raidframe.IndicatorSize)
-			icon:SetHeight(C.Raidframe.IndicatorSize)
-			icon:SetPoint(spell[2], self.Health, unpack(offsets[spell[2]].icon))
-
-			icon.spellID = spell[1]
-			icon.anyUnit = spell[4]
-			icon.hideCount = spell[5]
-
-			local cd = CreateFrame("Cooldown", nil, icon, "CooldownFrameTemplate")
-			cd:SetAllPoints(icon)
-			icon.cd = cd
-
-			-- Indicator
-			local tex = icon:CreateTexture(nil, "OVERLAY")
-			tex:SetAllPoints(icon)
-			tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\Raid\\borderIndicator")
-			icon.icon = tex
-
-			-- Color Overlay
-			if (spell[3]) then
-				icon.icon:SetVertexColor(unpack(spell[3]))
-			else
-				icon.icon:SetVertexColor(0.8, 0.8, 0.8)
-			end
-
-			if (not icon.hideCount) then
-				local count = icon:CreateFontString(nil, "OVERLAY")
-				count:SetShadowColor(0, 0, 0)
-				count:SetShadowOffset(K.Mult, -K.Scale(-3))
-				count:SetPoint(unpack(offsets[spell[2]].count))
-				count:SetFont(C.Media.Font, 13)
-				icon.count = count
-			end
-
-			Auras.icons[spell[1]] = icon
-		end
-	end
-	self.AuraWatch = Auras
-end
-
 local function UpdateThreat(self, _, unit)
 	if (self.unit ~= unit) then
 		return
@@ -254,7 +84,7 @@ local function GetHealthText(unit, cur, max)
 	if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) then
 		healthString = GetUnitStatus(unit)
 	else
-		if ((cur/max) < C.Raidframe.DeficitThreshold) then
+		if ((cur / max) < C.Raidframe.DeficitThreshold) then
 			healthString = format("|cff%02x%02x%02x%s|r", 0.9 * 255, 0 * 255, 0 * 255, DeficitValue(max-cur))
 		else
 			healthString = ""
@@ -313,13 +143,14 @@ local function CreateRaidLayout(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorDisconnected = true
 	self.Health.Smooth = true
+	self.Health.colorTapping = true
+	self.Health.colorReaction = true
 
 	-- Health background
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(C.Media.Blank)
-
-	self.Health.bg.multiplier = 0.3
+	self.Health.bg:SetColorTexture(.1, .1, .1)
 
 	-- Health text
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -357,111 +188,13 @@ local function CreateRaidLayout(self, unit)
 
 		self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.bg:SetAllPoints(self.Power)
-		self.Power.bg:SetColorTexture(1, 1, 1)
-
+		self.Power.bg:SetColorTexture(.6, .6, .6)
 		self.Power.bg.multiplier = 0.3
 
 		table.insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
 		UpdatePower(self, _, unit)
 	end
-
-	-- Heal prediction
-	local myBar = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
-	myBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
-	myBar:SetStatusBarColor(0, 0.827, 0.765, 1)
-	myBar.Smooth = true
-
-	if (C.Raidframe.HorizontalHealthBars) then
-		myBar:SetOrientation("HORIZONTAL")
-		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		myBar:SetWidth(self:GetWidth())
-		-- myBar:SetWidth( C.Raidframe.Width)
-		myBar:SetHeight(C.Raidframe.Height)
-	else
-		myBar:SetOrientation("VERTICAL")
-		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
-		myBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		myBar:SetHeight(self:GetHeight())
-		-- myBar:SetWidth( C.Raidframe.Width)
-		myBar:SetHeight(C.Raidframe.Height)
-	end
-
-	local otherBar = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
-	otherBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
-	otherBar:SetStatusBarColor(0.0, 0.631, 0.557, 1)
-	otherBar.Smooth = true
-
-	if (C.Raidframe.HorizontalHealthBars) then
-		otherBar:SetOrientation("HORIZONTAL")
-		otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
-		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
-		otherBar:SetWidth(self:GetWidth())
-		-- otherBar:SetWidth(C.Raidframe.Width)
-		otherBar:SetHeight(C.Raidframe.Height)
-	else
-		otherBar:SetOrientation("VERTICAL")
-		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "TOPLEFT")
-		otherBar:SetPoint("BOTTOMRIGHT", myBar:GetStatusBarTexture(), "TOPRIGHT")
-		otherBar:SetHeight(self:GetHeight())
-		-- otherBar:SetWidth(C.Raidframe.Width)
-		otherBar:SetHeight(C.Raidframe.Height)
-	end
-
-	local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
-	healAbsorbBar:SetStatusBarTexture(C.Media.Blank)
-	healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 1)
-	healAbsorbBar.Smooth = true
-
-	if (C.Raidframe.HorizontalHealthBars) then
-		healAbsorbBar:SetOrientation("HORIZONTAL")
-		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		healAbsorbBar:SetWidth(self:GetWidth())
-		-- healAbsorbBar:SetWidth(C.Raidframe.Width)
-		healAbsorbBar:SetHeight(C.Raidframe.Height)
-	else
-		healAbsorbBar:SetOrientation("VERTICAL")
-		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
-		healAbsorbBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		healAbsorbBar:SetHeight(self:GetHeight())
-		-- healAbsorbBar:SetWidth(C.Raidframe.Width)
-		healAbsorbBar:SetHeight(C.Raidframe.Height)
-	end
-
-	local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
-	absorbBar:SetStatusBarTexture(C.Media.Blank)
-	absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 1)
-	absorbBar.Smooth = true
-
-	if (C.Raidframe.HorizontalHealthBars) then
-		absorbBar:SetOrientation("HORIZONTAL")
-		absorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		absorbBar:SetWidth(self:GetWidth())
-		-- absorbBar:SetWidth(C.Raidframe.Width)
-		absorbBar:SetHeight(C.Raidframe.Height)
-	else
-		absorbBar:SetOrientation("VERTICAL")
-		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
-		absorbBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		absorbBar:SetHeight(self:GetHeight())
-		--absorbBar:SetWidth(C.Raidframe.Width)
-		absorbBar:SetHeight(C.Raidframe.Height)
-	end
-
-	absorbBar.Overlay = absorbBar:CreateTexture("$parentOverlay", "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
-	absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
-
-	self.HealPrediction = {
-		myBar = myBar,
-		otherBar = otherBar,
-		healAbsorbBar = healAbsorbBar,
-		absorbBar = absorbBar,
-		maxOverflow = 1,
-		frequentUpdates = true
-	}
 
 	-- Afk /offline timer, using frequentUpdates function from oUF tags
 	if (C.Raidframe.ShowNotHereTimer) then
@@ -528,13 +261,82 @@ local function CreateRaidLayout(self, unit)
 	self.ReadyCheck.delayTime = 2
 	self.ReadyCheck.fadeTime = 1
 
-	-- Debuff icons, using freebAuras from oUF_Freebgrid
-	self.FreebAuras = CreateFrame("Frame", nil, self)
-	self.FreebAuras:SetSize(C.Raidframe.IconSize, C.Raidframe.IconSize)
-	self.FreebAuras:SetPoint("CENTER", self.Health)
+	-- Retry this.
+	local HealBar = true -- Temp
+	if (HealBar) then
+		local FirstBar = CreateFrame("StatusBar", nil, self.Health)
+		local SecondBar = CreateFrame("StatusBar", nil, self.Health)
+		local ThirdBar = CreateFrame("StatusBar", nil, self.Health)
+		FirstBar:SetWidth(66)
+		FirstBar:SetHeight(28)
+		FirstBar:SetStatusBarTexture(C.Media.Texture)
+		FirstBar:SetStatusBarColor(0, 0.3, 0.15, 1)
+		FirstBar:SetMinMaxValues(0, 1)
+		SecondBar:SetWidth(66)
+		SecondBar:SetHeight(28)
+		SecondBar:SetStatusBarTexture(C.Media.Texture)
+		SecondBar:SetStatusBarColor(0, 0.3, 0, 1)
+		ThirdBar:SetWidth(66)
+		ThirdBar:SetHeight(28)
+		ThirdBar:SetStatusBarTexture(C.Media.Texture)
+		ThirdBar:SetStatusBarColor(0.3, 0.3, 0, 1)
 
-	-- Create indicators
-	CreateIndicators(self, unit)
+		if C.Raidframe.HorizontalHealthBars then
+			FirstBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT", 0, 0)
+			SecondBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT", 0, 0)
+			ThirdBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT", 0, 0)
+		else
+			FirstBar:SetOrientation("VERTICAL")
+			SecondBar:SetOrientation("VERTICAL")
+			ThirdBar:SetOrientation("VERTICAL")
+			FirstBar:SetPoint("BOTTOM", self.Health:GetStatusBarTexture(), "TOP", 0, 0)
+			SecondBar:SetPoint("BOTTOM", self.Health:GetStatusBarTexture(), "TOP", 0, 0)
+			ThirdBar:SetPoint("BOTTOM", self.Health:GetStatusBarTexture(), "TOP", 0, 0)
+		end
+
+		ThirdBar:SetFrameLevel(self.Health:GetFrameLevel())
+		SecondBar:SetFrameLevel(ThirdBar:GetFrameLevel() + 1)
+		FirstBar:SetFrameLevel(ThirdBar:GetFrameLevel() + 2)
+
+		self.HealPrediction = {
+			myBar = FirstBar,
+			otherBar = SecondBar,
+			absorbBar = ThirdBar,
+			maxOverflow = 1,
+		}
+	end
+
+	-- AuraWatch (corner and center icon)
+	if C.Raidframe.AuraWatch then
+		K.CreateAuraWatch(self)
+		local RaidDebuffs = CreateFrame("Frame", nil, self)
+		RaidDebuffs:SetHeight(22)
+		RaidDebuffs:SetWidth(22)
+		RaidDebuffs:SetPoint("CENTER", self.Health)
+		RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
+		RaidDebuffs:SetBackdrop(K.BorderBackdropTwo)
+		RaidDebuffs:SetBackdropColor(0, 0, 0)
+		RaidDebuffs:CreateShadow()
+		RaidDebuffs.icon = RaidDebuffs:CreateTexture(nil, "ARTWORK")
+		RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
+		RaidDebuffs.icon:SetInside(RaidDebuffs)
+		RaidDebuffs.cd = CreateFrame("Cooldown", nil, RaidDebuffs)
+		RaidDebuffs.cd:SetAllPoints(RaidDebuffs)
+		RaidDebuffs.cd:SetHideCountdownNumbers(true)
+		RaidDebuffs.ShowDispelableDebuff = true
+		RaidDebuffs.FilterDispelableDebuff = true
+		RaidDebuffs.MatchBySpellName = true
+		RaidDebuffs.ShowBossDebuff = true
+		RaidDebuffs.BossDebuffPriority = 5
+		RaidDebuffs.count = RaidDebuffs:CreateFontString(nil, "OVERLAY")
+		RaidDebuffs.count:SetFont(C.Media.Font, 12, "OUTLINE")
+		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
+		RaidDebuffs.count:SetTextColor(1, .9, 0)
+		RaidDebuffs.SetDebuffTypeColor = RaidDebuffs.SetBackdropBorderColor
+		RaidDebuffs.Debuffs = K.RaidDebuffsTracking
+
+		self.RaidDebuffs = RaidDebuffs
+	end
 
 	-- Role indicator
 	if (C.Raidframe.ShowRolePrefix) then
@@ -543,7 +345,7 @@ local function CreateRaidLayout(self, unit)
 		self.LFDRoleText:SetFont(C.Media.Font, 15)
 		self.LFDRoleText:SetShadowOffset(K.Mult, -K.Scale(-3))
 		self.LFDRoleText:SetTextColor(1, 0, 1)
-		self:Tag(self.LFDRoleText, "[role:raid]")
+		self:Tag(self.LFDRoleText, "[KkthnxUI:RaidRole]")
 	end
 
 	-- Ressurection icon....ehm text!
@@ -602,10 +404,8 @@ oUF:RegisterStyle("oUF_Kkthnx_Raid", CreateRaidLayout)
 oUF:RegisterStyle("oUF_Kkthnx_Raid_MT", CreateRaidLayout)
 oUF:SetActiveStyle("oUF_Kkthnx_Raid")
 
-local ra = CreateFrame("Frame", "oUF_RaidAnchor", UIParent)
-ra:SetSize(K.Scale(C.Raidframe.Width +150), 15)
-
-local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+-- local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Raidframe.RaidAsParty and "custom [group:party][group:raid] show; hide" or C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
 "oUF-initialConfigFunction", [[
 local header = self:GetParent()
 self:SetWidth(header:GetAttribute("initial-width"))
@@ -630,10 +430,9 @@ self:SetHeight(header:GetAttribute("initial-height"))
 
 raid:SetScale(C.Raidframe.Scale)
 raid:SetFrameStrata("LOW")
-raid:SetParent(oUF_PetBattleFrameHider)
-raid:SetPoint("BOTTOMLEFT", ra, "BOTTOMLEFT", 0, 0)
-ra:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 6, -175)
-Movers:RegisterFrame(oUF_RaidAnchor)
+raid:SetPoint(unpack(C.Position.UnitFrames.Raid))
+Movers:RegisterFrame(raid)
+raid:Show()
 
 -- Main Tank/Assist Frames
 if C.Raidframe.MainTankFrames then
@@ -655,4 +454,5 @@ if C.Raidframe.MainTankFrames then
 	tanks:SetScale(1)
 	tanks:SetFrameStrata("LOW")
 	Movers:RegisterFrame(tanks)
+	tanks:Show()
 end

@@ -3,6 +3,8 @@ if (GetLocale() ~= "ruRU") then
 	return
 end
 
+-- AFKSpin Localization
+L_AFKSCREEN_NOGUILD = "Нет гильдии"
 -- Announce Localization
 L_ANNOUNCE_FP_USE = "%s использует %s."
 L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"

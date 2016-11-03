@@ -5,4 +5,5 @@
 	<Script file="FilgerSpells.lua"/>
 	<Script file="Nameplates.lua"/>
 	<Script file="NeedItems.lua"/>
+	<Script file="RaidAuraWatch.lua"/>
 </Ui>

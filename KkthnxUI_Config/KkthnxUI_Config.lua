@@ -276,7 +276,6 @@ local function Local(o)
 	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
-	if o == "UIConfigUnitframeBuilderSpender" then o = L_GUI_UNITFRAME_BUILDERSPENDER end
 	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
 	if o == "UIConfigUnitframeCastbars" then o = L_GUI_UNITFRAME_CASTBARS end
 	if o == "UIConfigUnitframeClassColor" then o = L_GUI_UNITFRAME_CLASSCOLOR end
@@ -295,7 +294,6 @@ local function Local(o)
 	if o == "UIConfigUnitframePlayerDebuffsOnly" then o = L_GUI_UNITFRAME_PLAYERDEBUFFS_ONLY end
 	if o == "UIConfigUnitframePortraitTimer" then o = L_GUI_UNITFRAME_PORTRAITTIMER end
 	if o == "UIConfigUnitframePowerPredictionBar" then o = L_GUI_UNITFRAME_POWERPREDICTIONBAR end
-	if o == "UIConfigUnitframePowerUseAtlas" then o = L_GUI_UNITFRAME_POWERUSEATLAS end
 	if o == "UIConfigUnitframeScale" then o = L_GUI_UNITFRAME_SCALE end
 	if o == "UIConfigUnitframeShowArena" then o = L_GUI_UNITFRAME_SHOWARENA end
 	if o == "UIConfigUnitframeShowBoss" then o = L_GUI_UNITFRAME_SHOWBOSS end
@@ -310,6 +308,8 @@ local function Local(o)
 	if o == "UIConfigUnitframeThreatValue" then o = L_GUI_UNITFRAME_THREATVALUE end
 	-- Raidframe Settings
 	if o == "UIConfigRaidframe" then o = L_GUI_RAIDFRAME end
+	if o == "UIConfigRaidframeAuraWatch" then o = L_GUI_RAIDFRAME_AURAWATCH end
+	if o == "UIConfigRaidframeAuraWatchTimers" then o = L_GUI_RAIDFRAME_AURAWATCH_TIMERS end
 	if o == "UIConfigRaidframeDeficitThreshold" then o = L_GUI_RAIDFRAME_DEFICITTHRESHOLD end
 	if o == "UIConfigRaidframeEnable" then o = L_GUI_RAIDFRAME_ENABLE end
 	if o == "UIConfigRaidframeHeight" then o = L_GUI_RAIDFRAME_HEIGHT end

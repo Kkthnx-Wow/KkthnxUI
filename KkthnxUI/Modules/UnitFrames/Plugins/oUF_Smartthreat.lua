@@ -2,7 +2,7 @@ local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
 local parent, ns = ...
-local oUF = ns.oUF or _G.oUF
+local oUF = ns.oUF or oUF
 
 local _G = _G
 local GetThreatStatusColor = _G.GetThreatStatusColor

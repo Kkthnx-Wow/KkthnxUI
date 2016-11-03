@@ -25,6 +25,7 @@ C["ActionBar"] = {
 	["StanceBarMouseover"] = true,
 	["ToggleMode"] = true,
 }
+
 -- Announcements
 C["Announcements"] = {
 	["BadGear"] = false,
@@ -34,6 +35,7 @@ C["Announcements"] = {
 	["Spells"] = false,
 	["SpellsFromAll"] = false,
 }
+
 -- Automation
 C["Automation"] = {
 	["AutoCollapse"] = true,
@@ -44,6 +46,7 @@ C["Automation"] = {
 	["ScreenShot"] = false,
 	["TabBinder"] = false,
 }
+
 -- Bag
 C["Bags"] = {
 	["Enable"] = true,
@@ -53,6 +56,7 @@ C["Bags"] = {
 	["PulseNewItem"] = true,
 	["BagFilter"] = false,
 }
+
 -- Blizzard
 C["Blizzard"] = {
 	["ClassColor"] = true,
@@ -63,6 +67,7 @@ C["Blizzard"] = {
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b, 1},
 	["VehicleMouseover"] = false,
 }
+
 -- Buffs & Debuffs
 C["Auras"] = {
 	["Enable"] = true,
@@ -74,6 +79,7 @@ C["Auras"] = {
 	["BuffsPerRow"] = 12,
 	["CastBy"] = false,
 }
+
 -- Chat
 C["Chat"] = {
 	["DamageMeterSpam"] = false,
@@ -91,6 +97,7 @@ C["Chat"] = {
 	["WhispSound"] = true,
 	["Width"] = 370,
 }
+
 -- Cooldown
 C["Cooldown"] = {
 	["Enable"] = true,
@@ -123,10 +130,12 @@ C["DataBars"] = {
 	["ReputationHeight"] = 8,
 	["ReputationWidth"] = 142,
 }
+
 -- Plugins
 C["Plugins"] = {
 	["Example"] = true,
 }
+
 -- Datatext
 C["DataText"] = {
 	["Location"] = true,
@@ -136,6 +145,7 @@ C["DataText"] = {
 	["LocalTime"] = true,
 	["Battleground"] = true,
 }
+
 -- Filger
 C["Filger"] = {
 	["BuffsSize"] = 37,
@@ -147,6 +157,7 @@ C["Filger"] = {
 	["ShowTooltip"] = false,
 	["TestMode"] = false,
 }
+
 -- General
 C["General"] = {
 	["AutoScale"] = true,
@@ -157,6 +168,7 @@ C["General"] = {
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
 }
+
 -- Loot
 C["Loot"] = {
 	["ConfirmDisenchant"] = false,
@@ -167,7 +179,8 @@ C["Loot"] = {
 	["GroupLoot"] = true,
 	["Width"] = 222,
 }
--- MINIMAP
+
+-- Minimap
 C["Minimap"] = {
 	["CollectButtons"] = true,
 	["Enable"] = true,
@@ -175,6 +188,7 @@ C["Minimap"] = {
 	["Ping"] = true,
 	["Size"] = 150,
 }
+
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
@@ -194,6 +208,7 @@ C["Misc"] = {
 	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,
 }
+
 -- Nameplates
 C["Nameplates"] = {
 	["Enable"] = true,
@@ -214,6 +229,7 @@ C["Nameplates"] = {
 	["AurasSize"] = 18,
 	["HealerIcon"] = false,
 }
+
 -- PulseCD
 C["PulseCD"] = {
 	["Enable"] = false,
@@ -223,6 +239,7 @@ C["PulseCD"] = {
 	["HoldTime"] = 0,
 	["Threshold"] = 3,
 }
+
 -- Skins
 C["Skins"] = {
 	["CLCRet"] = false,
@@ -235,6 +252,7 @@ C["Skins"] = {
 	["Spy"] = false,
 	["WeakAuras"] = false,
 }
+
 -- Tooltip
 C["Tooltip"] = {
 	["Achievements"] = false,
@@ -248,9 +266,9 @@ C["Tooltip"] = {
 	["ShowSpec"] = true,
 	["SpellID"] = false,
 }
+
 -- Unitframe
 C["Unitframe"] = {
-	["BuilderSpender"] = true,
 	["CastbarSafeZoneColor"] = {.8, 0.4, 0, 1},
 	["Castbars"] = true,
 	["ClassColor"] = true,
@@ -269,7 +287,6 @@ C["Unitframe"] = {
 	["PlayerDebuffsOnly"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
-	["PowerUseAtlas"] = true,
 	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
@@ -283,11 +300,13 @@ C["Unitframe"] = {
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
 }
+
 C["Partyframe"] = { -- Could add this as its own in the future.
 	["PartyInRaid"] = false,
 	["Enable"] = true,
 	["Scale"] = 1,
 }
+
 -- Raidframe
 C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
@@ -306,9 +325,12 @@ C["Raidframe"] = {
 	["ShowResurrectText"] = true,
 	["ShowRolePrefix"] = false,
 	["ShowThreatText"] = false,
-	["RaidAsParty"] = false,
+	["RaidAsParty"] = true,
 	["Width"] = 42,
+	["AuraWatch"] = true,
+	["AuraWatchTimers"] = true,
 }
+
 -- Worldmap
 C["WorldMap"] = {
 	["AlphaWhenMoving"] = 0.35,

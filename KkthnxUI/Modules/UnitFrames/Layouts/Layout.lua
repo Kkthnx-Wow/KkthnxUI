@@ -3,7 +3,7 @@ if C.Unitframe.Enable ~= true then return end
 
 local _, ns = ...
 local config = ns.config
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 local pathFat = textPath.."Fat\\"
 local pathNormal = textPath.."Normal\\"
@@ -456,7 +456,7 @@ local function CreateUnitLayout(self, unit)
 	table.insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
 	self.Health.Smooth = true
-	self.Health.frequentUpdates = self.cUnit == "boss"
+	self.Health.frequentUpdates = true
 
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
@@ -475,9 +475,7 @@ local function CreateUnitLayout(self, unit)
 	self.Power.frequentUpdates = self.cUnit == "player" or self.cUnit == "boss"
 	self.Power.PostUpdate = K.PostUpdatePower
 	self.Power.Smooth = true
-
 	self.Power.colorPower = true
-	self.Power.useAtlas = C.Unitframe.PowerUseAtlas
 
 	-- Power Text
 	if (data.mpt) then
@@ -554,6 +552,7 @@ local function CreateUnitLayout(self, unit)
 			necroHeals = necroHeals,
 			Override = K.UpdateIncHeals,
 		}
+
 		if (config.absorbBar) then
 			-- Absorb bar
 			local absorb = CreateFrame("StatusBar", nil, self.Health)
@@ -705,23 +704,6 @@ local function CreateUnitLayout(self, unit)
 		-- Load Class Modules
 		if (ns.classModule[K.Class]) then
 			self.classPowerBar = ns.classModule[K.Class](self, config, uconfig)
-		end
-
-		-- builderspender (white overlay when gaining/losing power)
-		if (C.Unitframe.BuilderSpender) then
-			local FeedbackFrame = CreateFrame("Frame", nil, self.Power, "BuilderSpenderFrame")
-			FeedbackFrame:SetFrameLevel(self.Power:GetFrameLevel())
-			FeedbackFrame:SetAllPoints(self.Power)
-			FeedbackFrame:SetPoint("TOPLEFT", self.Power, "TOPLEFT", 0, -1)
-			FeedbackFrame.BarTexture:SetTexture()
-
-			local FullPowerFrame = CreateFrame("Frame", nil, self.Power, "FullResourcePulseFrame")
-			FullPowerFrame:SetAllPoints(self.Power)
-			self.BuilderSpender = {
-				FeedbackFrame = FeedbackFrame,
-				FullPowerFrame = FullPowerFrame,
-			}
-			self.Power.Smooth = false
 		end
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
@@ -957,7 +939,7 @@ if (config.focustarget.enable) then
 end
 
 if (C.Unitframe.Party) then
-	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, "custom [@raid6, exists] hide; show",
+	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Raidframe.RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
@@ -980,7 +962,7 @@ if (C.Unitframe.Party) then
 	Movers:RegisterFrame(party)
 end
 
-if (config.showBoss) then
+if (C.Unitframe.ShowBoss) then
 	local boss = {}
 	for i = 1, MAX_BOSS_FRAMES do
 		boss[i] = oUF:Spawn("boss"..i, "oUF_KkthnxBossFrame"..i)
@@ -994,7 +976,7 @@ if (config.showBoss) then
 	end
 end
 
-if (config.showArena) then
+if (C.Unitframe.ShowArena) then
 	local arena = {}
 	for i = 1, 5 do
 		arena[i] = oUF:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)

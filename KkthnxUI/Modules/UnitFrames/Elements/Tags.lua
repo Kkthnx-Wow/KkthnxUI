@@ -76,10 +76,7 @@ end
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	local IsLeader = UnitIsGroupLeader(unit)
-	local IsAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
-	local Assist, Lead = IsAssistant and "[A] " or "", IsLeader and "[L] " or ""
-	return K.ShortenString(Lead..Assist..Name, 10, false)
+	return K.ShortenString(Name, 5, false)
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
