@@ -21,10 +21,6 @@ end
 
 -- Default Settings
 ns.config = {
-	textureBorder = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderNormal",
-	textureBorderWhite = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite",
-	textureBorderShadow = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow",
-
 	playerstyle = "normal",
 	customPlayerTexture = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\CUSTOMPLAYER-FRAME",
 
@@ -81,10 +77,6 @@ ns.config = {
 	},
 
 	showComboPoints = true,
-
-	absorbBar = true,
-	absorbtexture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbTexture",
-	absorbspark = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbSpark",
 
 	player = {
 		HealthTag = "NUMERIC",

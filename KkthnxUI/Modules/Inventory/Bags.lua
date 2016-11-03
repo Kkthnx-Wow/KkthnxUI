@@ -596,7 +596,7 @@ function Bags:SlotUpdate(id, button)
 				button.FadeOut = button.Animation:CreateAnimation("Alpha")
 				button.FadeOut:SetFromAlpha(1)
 				button.FadeOut:SetToAlpha(0)
-				button.FadeOut:SetDuration(0.20)
+				button.FadeOut:SetDuration(0.40)
 				button.FadeOut:SetSmoothing("IN_OUT")
 			end
 

@@ -191,8 +191,8 @@ function K.UpdateIncHeals(self, event, unit)
 			hp.TotalAbsorb:Hide()
 		else
 			hp.TotalAbsorb:Show()
-			if not hp.TotalAbsorb.Spark:IsShown() then
-				hp.TotalAbsorb.Spark:Show()
+			if not hp.TotalAbsorb.spark:IsShown() then
+				hp.TotalAbsorb.spark:Show()
 			end
 		end
 	end

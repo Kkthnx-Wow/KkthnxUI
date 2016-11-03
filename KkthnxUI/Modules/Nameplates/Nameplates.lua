@@ -95,39 +95,6 @@ if C.Nameplates.HealerIcon == true then
 	t:SetScript("OnEvent", CheckLoc)
 end
 
-local function Abbrev(name)
-	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
-	return K.ShortenString(newname, 18, false)
-end
-
-local function CreateVirtualFrame(frame, point)
-	if point == nil then point = frame end
-
-	if point.backdrop then return end
-	frame.backdrop = CreateFrame("Frame", nil , frame)
-	frame.backdrop:SetAllPoints()
-	frame.backdrop:SetBackdrop({
-		bgFile = C.Media.Blank,
-		edgeFile = C.Media.Glow,
-		edgeSize = 3 * K.NoScaleMult,
-		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
-	})
-	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
-	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(.05, .05, .05, .9)
-	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
-
-	if frame:GetFrameLevel() - 1 > 0 then
-		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
-	else
-		frame.backdrop:SetFrameLevel(0)
-	end
-end
-
-local function SetVirtualBorder(frame, r, g, b)
-	frame.backdrop:SetBackdropBorderColor(r, g, b)
-end
-
 function Plates:CreateAuraIcon(self)
 	local button = CreateFrame("Frame", nil, self.Health)
 	button:SetSize(C.Nameplates.AurasSize, C.Nameplates.AurasSize * 16/25)
@@ -357,7 +324,7 @@ function Plates:OnShow()
 	end
 
 	if C.Nameplates.NameAbbreviate == true then
-		self.NewPlate.Name:SetText(Abbrev(Name))
+		self.NewPlate.Name:SetText(K.Abbreviate(Name))
 	else
 		self.NewPlate.Name:SetText(Name)
 	end
@@ -425,12 +392,12 @@ function Plates:UpdateHealthColor()
 		if self.ArtContainer.AggroWarningTexture:IsShown() then
 			local _, val = self.ArtContainer.AggroWarningTexture:GetVertexColor()
 			if val > 0.7 then
-				SetVirtualBorder(self.NewPlate.Health, transitionR, transitionG, transitionB)
+				K.SetShadowBorder(self.NewPlate.Health, transitionR, transitionG, transitionB)
 			else
-				SetVirtualBorder(self.NewPlate.Health, badR, badG, badB)
+				K.SetShadowBorder(self.NewPlate.Health, badR, badG, badB)
 			end
 		else
-			SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
+			K.SetShadowBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
 		end
 	else
 		if not self.ArtContainer.AggroWarningTexture:IsShown() then
@@ -476,14 +443,14 @@ function Plates:UpdateHealthText()
 
 	if self.isClass == true or self.isFriendly == true then
 		if Percent <= 50 and Percent >= 20 then
-			SetVirtualBorder(self.NewPlate.Health, 1, 1, 0)
+			K.SetShadowBorder(self.NewPlate.Health, 1, 1, 0)
 		elseif Percent < 20 then
-			SetVirtualBorder(self.NewPlate.Health, 1, 0, 0)
+			K.SetShadowBorder(self.NewPlate.Health, 1, 0, 0)
 		else
-			SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
+			K.SetShadowBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
 		end
 	elseif (self.isClass ~= true and self.isFriendly ~= true) and C.Nameplates.EnhancedThreat == true then
-		SetVirtualBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
+		K.SetShadowBorder(self.NewPlate.Health, unpack(C.Media.Nameplate_BorderColor))
 	end
 
 	if GetUnitName("target") and self.NewPlate:GetAlpha() == 1 then
@@ -562,7 +529,7 @@ function Plates:Skin(obj)
 	NewPlate.Health:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
 	NewPlate.Health:SetStatusBarTexture(C.Media.Texture)
 	NewPlate.Health:SetPoint("BOTTOM", 0, 0)
-	CreateVirtualFrame(NewPlate.Health)
+	K.CreateShadowFrame(NewPlate.Health)
 
 	NewPlate.Health.Background = NewPlate.Health:CreateTexture(nil, "BORDER")
 	NewPlate.Health.Background:SetTexture(C.Media.Texture)
@@ -595,7 +562,7 @@ function Plates:Skin(obj)
 	NewPlate.CastBar:SetPoint("TOPRIGHT", NewPlate.Health, "BOTTOMRIGHT", 0, -4)
 	NewPlate.CastBar:SetPoint("BOTTOMLEFT", NewPlate.Health, "BOTTOMLEFT", 0, -4 -(C.Nameplates.Height * K.NoScaleMult))
 	NewPlate.CastBar:Hide()
-	CreateVirtualFrame(NewPlate.CastBar)
+	K.CreateShadowFrame(NewPlate.CastBar)
 
 	NewPlate.CastBar.Background = NewPlate.CastBar:CreateTexture(nil, "BORDER")
 	NewPlate.CastBar.Background:SetColorTexture(0.75, 0.75, 0.25, 0.2)
@@ -606,7 +573,7 @@ function Plates:Skin(obj)
 	NewPlate.CastBar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	NewPlate.CastBar.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 4, (C.Nameplates.Height * 2 * K.NoScaleMult) + 4)
 	NewPlate.CastBar.Icon:SetPoint("TOPLEFT", NewPlate.Health, "TOPRIGHT", 4, 0)
-	CreateVirtualFrame(NewPlate.CastBar, NewPlate.CastBar.Icon)
+	K.CreateShadowFrame(NewPlate.CastBar, NewPlate.CastBar.Icon)
 
 	NewPlate.CastBar.Time = NewPlate.CastBar:CreateFontString(nil, "ARTWORK")
 	NewPlate.CastBar.Time:SetPoint("RIGHT", NewPlate.CastBar, "RIGHT", 3, 0)
@@ -980,7 +947,7 @@ PowerFrame.powerBar = CreateFrame("StatusBar", nil, PowerFrame)
 PowerFrame.powerBar:SetHeight(3)
 PowerFrame.powerBar:SetStatusBarTexture(C.Media.Texture)
 PowerFrame.powerBar:SetMinMaxValues(0, 1)
-CreateVirtualFrame(PowerFrame.powerBar)
+K.CreateShadowFrame(PowerFrame.powerBar)
 
 PowerFrame:SetScript("OnEvent", function(self, event, unit)
 	if GetCVar("nameplateShowSelf") == 0 then return end
@@ -1074,7 +1041,7 @@ for i = 1, 6 do
 	Resourcebar[i] = CreateFrame("Frame", "Plateresource"..i, Resourcebar)
 	Resourcebar[i]:SetFrameLevel(1)
 	Resourcebar[i]:SetSize(13.5, 3)
-	CreateVirtualFrame(Resourcebar[i])
+	K.CreateShadowFrame(Resourcebar[i])
 	Resourcebar[i].tex = Resourcebar[i]:CreateTexture(nil, "OVERLAY")
 	Resourcebar[i].tex:SetAllPoints(Resourcebar[i])
 	if K.Class == "DEATHKNIGHT" then
@@ -1287,7 +1254,7 @@ local function UpdateName(unitFrame)
 			unitFrame.name:SetText("")
 		else
 			if C.Nameplates.NameAbbreviate == true then
-				unitFrame.name:SetText(Abbrev(name))
+				unitFrame.name:SetText(K.Abbreviate(name))
 			else
 				unitFrame.name:SetText(name)
 			end
@@ -1345,14 +1312,14 @@ local function UpdateHealth(unitFrame)
 
 	if UnitIsPlayer(unit) then
 		if perc <= 0.5 and perc >= 0.2 then
-			SetVirtualBorder(unitFrame.healthBar, 1, 1, 0)
+			K.SetShadowBorder(unitFrame.healthBar, 1, 1, 0)
 		elseif perc < 0.2 then
-			SetVirtualBorder(unitFrame.healthBar, 1, 0, 0)
+			K.SetShadowBorder(unitFrame.healthBar, 1, 0, 0)
 		else
-			SetVirtualBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
+			K.SetShadowBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
 		end
 	elseif not UnitIsPlayer(unit) and C.Nameplates.EnhancedThreat == true then
-		SetVirtualBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
+		K.SetShadowBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
 	end
 end
 
@@ -1413,9 +1380,9 @@ local function UpdateHealthColor(unitFrame)
 				end
 				if IsOnThreatList(unitFrame.displayedUnit) then
 					local red, green, blue = IsOnThreatList(unitFrame.displayedUnit)
-					SetVirtualBorder(unitFrame.healthBar, red, green, blue)
+					K.SetShadowBorder(unitFrame.healthBar, red, green, blue)
 				else
-					SetVirtualBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
+					K.SetShadowBorder(unitFrame.healthBar, unpack(C.Media.Nameplate_BorderColor))
 				end
 			end
 		end
@@ -1648,7 +1615,7 @@ local function OnNamePlateCreated(namePlate)
 	namePlate.UnitFrame.healthBar:SetPoint("RIGHT", 0, 0)
 	namePlate.UnitFrame.healthBar:SetStatusBarTexture(C.Media.Texture)
 	namePlate.UnitFrame.healthBar:SetMinMaxValues(0, 1)
-	CreateVirtualFrame(namePlate.UnitFrame.healthBar)
+	K.CreateShadowFrame(namePlate.UnitFrame.healthBar)
 
 	namePlate.UnitFrame.healthBar.Background = namePlate.UnitFrame.healthBar:CreateTexture(nil, "BORDER")
 	namePlate.UnitFrame.healthBar.Background:SetTexture(C.Media.Texture)
@@ -1676,7 +1643,7 @@ local function OnNamePlateCreated(namePlate)
 	namePlate.UnitFrame.level:SetPoint("RIGHT", namePlate.UnitFrame.healthBar, "LEFT", -2, 0)
 
 	namePlate.UnitFrame.castBar = CreateFrame("StatusBar", nil, namePlate.UnitFrame)
-	CreateVirtualFrame(namePlate.UnitFrame.castBar)
+	K.CreateShadowFrame(namePlate.UnitFrame.castBar)
 	namePlate.UnitFrame.castBar:Hide()
 	namePlate.UnitFrame.castBar.iconWhenNoninterruptible = false
 	namePlate.UnitFrame.castBar:SetHeight(C.Nameplates.Height * K.NoScaleMult)
@@ -1710,7 +1677,7 @@ local function OnNamePlateCreated(namePlate)
 	namePlate.UnitFrame.castBar.Icon:SetPoint("TOPLEFT", namePlate.UnitFrame.healthBar, "TOPRIGHT", 4, 0)
 	namePlate.UnitFrame.castBar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	namePlate.UnitFrame.castBar.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 4, (C.Nameplates.Height * 2 * K.NoScaleMult) + 4)
-	CreateVirtualFrame(namePlate.UnitFrame.castBar, namePlate.UnitFrame.castBar.Icon)
+	K.CreateShadowFrame(namePlate.UnitFrame.castBar, namePlate.UnitFrame.castBar.Icon)
 
 	namePlate.UnitFrame.castBar.BorderShield = namePlate.UnitFrame.castBar:CreateTexture(nil, "OVERLAY", 1)
 	namePlate.UnitFrame.castBar.BorderShield:SetAtlas("nameplates-InterruptShield")

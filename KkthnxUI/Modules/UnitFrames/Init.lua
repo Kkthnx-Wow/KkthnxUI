@@ -31,10 +31,6 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 		SetOverrideBindingClick(Focuser, true, C.Unitframe.FocusModifier.."BUTTON"..C.Unitframe.FocusButton, "Focuser")
 	end
 
-	ns.config.textureBorder = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderNormal"
-	ns.config.textureBorderWhite = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite"
-	ns.config.textureBorderShadow = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow"
-
 	self:UnregisterEvent(event)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED") -- Showing auras
 

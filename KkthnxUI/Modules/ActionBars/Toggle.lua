@@ -311,8 +311,10 @@ for i = 1, 5 do
 
 			if KkthnxUIDataPerChar.BarsLocked == true then
 				KkthnxUIDataPerChar.BarsLocked = false
+				K.Print("|cffffff00ActionBars are now|r |cff008000UNLOCKED|r")
 			elseif KkthnxUIDataPerChar.BarsLocked == false then
 				KkthnxUIDataPerChar.BarsLocked = true
+				K.Print("|cffffff00ActionBars are now|r |cffff0000LOCKED|r")
 			end
 
 			LockCheck(i)

@@ -2,11 +2,6 @@ local K, C, L = select(2, ...):unpack()
 --[[
 if C.Nameplates.Enable ~= false then return end
 
-local function Abbrev(name)
-	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
-	return K.ShortenString(newname, 18, false)
-end
-
 local function SpellName(id)
 	local name = GetSpellInfo(id)
 	if name then
@@ -470,30 +465,6 @@ K.NameplateBlacklist = {
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
-local function CreateVirtualFrame(frame, point)
-	if point == nil then point = frame end
-
-	if point.backdrop then return end
-	frame.backdrop = CreateFrame("Frame", nil , frame)
-	frame.backdrop:SetAllPoints()
-	frame.backdrop:SetBackdrop({
-		bgFile = C.Media.Blank,
-		edgeFile = C.Media.Glow,
-		edgeSize = 5 * K.NoScaleMult,
-		insets = {top = 5 * K.NoScaleMult, left = 5 * K.NoScaleMult, bottom = 5 * K.NoScaleMult, right = 5 * K.NoScaleMult}
-	})
-	frame.backdrop:SetPoint("TOPLEFT", point, - 5 * K.NoScaleMult, 5 * K.NoScaleMult)
-	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 5 * K.NoScaleMult, - 5 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	frame.backdrop:SetBackdropBorderColor(unpack(C.Media.Nameplate_BorderColor))
-
-	if frame:GetFrameLevel() - 1 > 0 then
-		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
-	else
-		frame.backdrop:SetFrameLevel(0)
-	end
-end
-
 SetCVar("nameplateShowAll", 1)
 SetCVar("nameplateMaxAlpha", 0.5)
 SetCVar("nameplateMaxDistance", 50)
@@ -599,7 +570,7 @@ local function style(self,unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.colorHealth = true
-	CreateVirtualFrame(self.Health)
+	K.CreateShadowFrame(self.Health)
 
 	self.Name = self:CreateFontString(nil)
 	self.Name:SetFont(C.Media.Font, 14)
@@ -622,7 +593,7 @@ local function style(self,unit)
 	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 12)
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
-	CreateVirtualFrame(self.Power)
+	K.CreateShadowFrame(self.Power)
 
 	self.Health:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.Health:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -678,7 +649,7 @@ local function style(self,unit)
 	end
 
 	self.Auras.PostUpdateIcon = function(Auras, unit, button)
-		CreateVirtualFrame(button)
+		K.CreateShadowFrame(button)
 		button.cd:GetRegions():SetAlpha(0)
 		button:EnableMouse(false)
 		button.icon:SetTexCoord(0.08, 0.9, 0.08, 0.9)
@@ -691,7 +662,7 @@ local function style(self,unit)
 	self.Castbar:SetStatusBarColor(.1, .4, .7, 1)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
 	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -12)
-	CreateVirtualFrame(self.Castbar)
+	K.CreateShadowFrame(self.Castbar)
 
 	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 	self.Castbar.Text:SetFont(C.Media.Font, 11, "OUTLINE")
@@ -708,7 +679,7 @@ local function style(self,unit)
 	self.Castbar.bg:SetSize(self.Castbar.Icon:GetSize())
 	self.Castbar.bg:SetPoint("TOPLEFT", self.Castbar.Icon)
 	self.Castbar.bg:SetPoint("BOTTOMRIGHT", self.Castbar.Icon)
-	CreateVirtualFrame(self.Castbar.bg)
+	K.CreateShadowFrame(self.Castbar.bg)
 
 	self.Castbar.PostCastStart = function(self,unit, name, castid)
 		local interrupt = select(9, UnitCastingInfo(unit))
