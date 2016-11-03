@@ -31,4 +31,3 @@ function Lib_EasyMenu_Initialize( frame, level, menuList )
 		end
 	end
 end
-

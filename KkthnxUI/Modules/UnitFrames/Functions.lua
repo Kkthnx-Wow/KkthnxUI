@@ -131,7 +131,6 @@ do
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
-
 		if absent then
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value then

@@ -35,6 +35,89 @@ local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
 local DND = DND
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 
+local stats = {
+	60,		-- Total deaths
+	97,		-- Daily quests completed
+	98,		-- Quests completed
+	107,	-- Creatures killed
+	112,	-- Deaths from drowning
+	114,	-- Deaths from falling
+	319,	-- Duels won
+	320,	-- Duels lost
+	321,	-- Total raid and dungeon deaths
+	326,	-- Gold from quest rewards
+	328,	-- Total gold acquired
+	333,	-- Gold looted
+	334,	-- Most gold ever owned
+	338,	-- Vanity pets owned
+	339,	-- Mounts owned
+	342,	-- Epic items acquired
+	349,	-- Flight paths taken
+	377,	-- Most factions at Exalted
+	588,	-- Total Honorable Kills
+	837,	-- Arenas won
+	838,	-- Arenas played
+	839,	-- Battlegrounds played
+	840,	-- Battlegrounds won
+	919,	-- Gold earned from auctions
+	931,	-- Total factions encountered
+	932,	-- Total 5-player dungeons entered
+	933,	-- Total 10-player raids entered
+	934,	-- Total 25-player raids entered
+	1042,	-- Number of hugs
+	1045,	-- Total cheers
+	1047,	-- Total facepalms
+	1065,	-- Total waves
+	1066,	-- Total times LOL'd
+	1088,	-- Kael'thas Sunstrider kills (Tempest Keep)
+	1149,	-- Talent tree respecs
+	1197,	-- Total kills
+	1098,	-- Onyxia kills (Onyxia's Lair)
+	1198,	-- Total kills that grant experience or honor
+	1487,	-- Killing Blows
+	1491,	-- Battleground Killing Blows
+	1518,	-- Fish caught
+	1716,	-- Battleground with the most Killing Blows
+	4687,	-- Victories over the Lich King (Icecrown 25 player)
+	5692,	-- Rated battlegrounds played
+	5694,	-- Rated battlegrounds won
+	6167,	-- Deathwing kills (Dragon Soul)
+	7399,	-- Challenge mode dungeons completed
+	8278,	-- Pet Battles won at max level
+	8632,	-- Garrosh Hellscream (LFR Siege of Orgrimmar)
+	9430,	-- Draenor dungeons completed (final boss defeated)
+	9561,	-- Draenor raid boss defeated the most
+	9558,	-- Draenor raids completed (final boss defeated)
+	9430,	-- Draenor dungeons completed (final boss defeated)
+	9561,	-- Draenor raid boss defeated the most
+	9558,	-- Draenor raids completed (final boss defeated)
+	10060,	-- Garrison Followers recruited
+	10181,	-- Garrision Missions completed
+	10184,	-- Garrision Rare Missions completed
+}
+
+--Create Random Stats
+local function createStats()
+	local id = stats[random( #stats )]
+	local _, name = GetAchievementInfo(id)
+	local result = GetStatistic(id)
+	if result == "--" then result = NONE end
+	return format("%s: |cfff0ff00%s|r", name, result)
+end
+
+--Simple-Timer for Stats
+local showTime = 5
+local total = 0
+local function onUpdate(self, elapsed)
+	total = total + elapsed
+	if total >= showTime then
+		local createdStat = createStats()
+		self:AddMessage(createdStat)
+		UIFrameFadeIn(self, 1, 0, 1)
+		total = 0
+	end
+end
+
 local CAMERA_SPEED = 0.035
 local ignoreKeys = {
 	LALT = true,
@@ -77,10 +160,12 @@ function AFK:SetAFK(status)
 		self.AFKMode.bottom.model.idleDuration = 40
 		self.startTime = GetTime()
 		self.timer = self:ScheduleRepeatingTimer("UpdateTimer", 1)
+		self.AFKMode.statMsginfo:Show()
 		self.isAFK = true
 	elseif(self.isAFK) then
 		UIParent:Show()
 		self.AFKMode:Hide()
+		self.AFKMode.statMsginfo:Hide()
 		MoveViewLeftStop()
 		self:CancelTimer(self.timer)
 		self:CancelTimer(self.animTimer)
@@ -156,6 +241,7 @@ end
 
 function AFK:Initialize()
 	local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class]
+
 	self.AFKMode = CreateFrame("Frame", "KkthnxUIAFKFrame")
 	self.AFKMode:SetFrameLevel(1)
 	self.AFKMode:SetScale(UIParent:GetScale())
@@ -163,6 +249,7 @@ function AFK:Initialize()
 	self.AFKMode:Hide()
 	self.AFKMode:EnableKeyboard(true)
 	self.AFKMode:SetScript("OnKeyDown", OnKeyDown)
+
 	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.bottom:SetFrameLevel(0)
 	self.AFKMode.bottom:SetTemplate("Transparent")
@@ -171,8 +258,8 @@ function AFK:Initialize()
 	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (4 * 2))
 	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 9.6))
 	self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY")
-	self.AFKMode.bottom.logo:SetSize(512, 256)
-	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 60)
+	self.AFKMode.bottom.logo:SetSize(512 / 1.2, 256 / 1.2)
+	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 40)
 	self.AFKMode.bottom.logo:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Logo")
 	local factionGroup = UnitFactionGroup("player")
 
@@ -185,15 +272,56 @@ function AFK:Initialize()
 		nameOffsetX, nameOffsetY = 20, -5
 	end
 
+	-- Random stats frame
+	self.AFKMode.statMsg = CreateFrame("Frame", nil, self.AFKMode)
+	self.AFKMode.statMsg:SetSize(418, 72)
+	self.AFKMode.statMsg:SetPoint("CENTER", 0, 200)
+
+	self.AFKMode.statMsg.bg = self.AFKMode.statMsg:CreateTexture(nil, 'BACKGROUND')
+	self.AFKMode.statMsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	self.AFKMode.statMsg.bg:SetPoint('BOTTOM')
+	self.AFKMode.statMsg.bg:SetSize(326, 103)
+	self.AFKMode.statMsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+	self.AFKMode.statMsg.bg:SetVertexColor(1, 1, 1, 0.7)
+
+	self.AFKMode.statMsg.lineTop = self.AFKMode.statMsg:CreateTexture(nil, 'BACKGROUND')
+	self.AFKMode.statMsg.lineTop:SetDrawLayer('BACKGROUND', 2)
+	self.AFKMode.statMsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	self.AFKMode.statMsg.lineTop:SetPoint("TOP")
+	self.AFKMode.statMsg.lineTop:SetSize(418, 7)
+	self.AFKMode.statMsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	self.AFKMode.statMsg.lineBottom = self.AFKMode.statMsg:CreateTexture(nil, 'BACKGROUND')
+	self.AFKMode.statMsg.lineBottom:SetDrawLayer('BACKGROUND', 2)
+	self.AFKMode.statMsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	self.AFKMode.statMsg.lineBottom:SetPoint("BOTTOM")
+	self.AFKMode.statMsg.lineBottom:SetSize(418, 7)
+	self.AFKMode.statMsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	self.AFKMode.statMsginfo = CreateFrame("ScrollingMessageFrame", "self.AFKModestatMsg.info", self.AFKMode.statMsg)
+	self.AFKMode.statMsginfo:SetFont(C.Media.Font, 17, C.Media.Font_Style)
+	self.AFKMode.statMsginfo:SetPoint("CENTER", self.AFKMode.statMsg, "CENTER", 0, 0)
+	self.AFKMode.statMsginfo:SetSize(800, 24)
+	self.AFKMode.statMsginfo:AddMessage(format("|cffb3b3b3%s|r", "Random Stats"))
+	self.AFKMode.statMsginfo:SetFading(true)
+	self.AFKMode.statMsginfo:SetFadeDuration(1)
+	self.AFKMode.statMsginfo:SetTimeVisible(4)
+	self.AFKMode.statMsginfo:SetJustifyH("CENTER")
+	self.AFKMode.statMsginfo:SetTextColor(0.9, 0.9, 0.9)
+	self.AFKMode.statMsginfo:SetScript("OnUpdate", onUpdate)
+	self.AFKMode.statMsginfo:Hide()
+
 	self.AFKMode.bottom.faction = self.AFKMode.bottom:CreateTexture(nil, "OVERLAY")
 	self.AFKMode.bottom.faction:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", offsetX, offsetY)
 	self.AFKMode.bottom.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo")
 	self.AFKMode.bottom.faction:SetSize(size, size)
+
 	self.AFKMode.bottom.name = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.name:SetFont(C.Media.Font, 20)
 	self.AFKMode.bottom.name:SetFormattedText("%s-%s", K.Name, K.Realm)
 	self.AFKMode.bottom.name:SetPoint("TOPLEFT", self.AFKMode.bottom.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
 	self.AFKMode.bottom.name:SetTextColor(classColor.r, classColor.g, classColor.b)
+
 	self.AFKMode.bottom.guild = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.guild:SetFont(C.Media.Font, 20)
 	self.AFKMode.bottom.guild:SetText(L["No Guild"])
