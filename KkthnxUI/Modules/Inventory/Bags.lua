@@ -313,16 +313,11 @@ function Bags:CreateContainer(storagetype, ...)
 		Sort.ClearAllPoints = Noop
 		Sort.SetPoint = Noop
 
-		ToggleBagsContainer:SetHeight(20)
-		ToggleBagsContainer:SetWidth(20)
-		ToggleBagsContainer:SetPoint("TOPRIGHT", Container, "TOPRIGHT", -6, -6)
+		local ToggleBagsContainer = CreateFrame("Button", "BagsCloseButton", Container, "UIPanelCloseButton")
+		ToggleBagsContainer:SetSize(28, 28)
+		ToggleBagsContainer:SetPoint("TOPRIGHT", Container, "TOPRIGHT", -2, -2)
 		ToggleBagsContainer:SetParent(Container)
 		ToggleBagsContainer:EnableMouse(true)
-		ToggleBagsContainer.Text = ToggleBagsContainer:CreateFontString("button")
-		ToggleBagsContainer.Text:SetPoint("CENTER", ToggleBagsContainer, "CENTER")
-		ToggleBagsContainer.Text:SetFont(Font, 12, C.Media.Font_Style) -- Fix this.
-		ToggleBagsContainer.Text:SetText("X")
-		ToggleBagsContainer.Text:SetTextColor(.5, .5, .5)
 		ToggleBagsContainer:SetScript("OnMouseUp", function(self, button)
 			local Purchase = BankFramePurchaseInfo
 
@@ -336,7 +331,7 @@ function Bags:CreateContainer(storagetype, ...)
 					BagsContainer:Show()
 					BanksContainer:Show()
 					BanksContainer:ClearAllPoints()
-					ToggleBagsContainer.Text:SetTextColor(1, 1, 1)
+					--ToggleBagsContainer.Text:SetTextColor(1, 1, 1)
 
 					if Purchase:IsShown() then
 						BanksContainer:SetPoint("BOTTOMLEFT", Purchase, "TOPLEFT", 50, 2)
@@ -347,7 +342,7 @@ function Bags:CreateContainer(storagetype, ...)
 					ReplaceBags = 0
 					BagsContainer:Hide()
 					BanksContainer:Hide()
-					ToggleBagsContainer.Text:SetTextColor(.4, .4, .4)
+					-- ToggleBagsContainer.Text:SetTextColor(.4, .4, .4)
 				end
 			else
 				CloseAllBags()

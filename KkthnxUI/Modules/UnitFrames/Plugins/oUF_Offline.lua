@@ -1,8 +1,5 @@
-local K, C, L = select(2, ...):unpack()
-if C.Unitframe.Enable ~= true then return end
-
 local parent, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = ns.oUF or _G.oUF
 
 local Update = function(self, event, unit)
     if (unit ~= self.unit) then
@@ -36,6 +33,7 @@ local Enable = function(self)
         self:RegisterEvent("PARTY_MEMBER_DISABLE", Path)
         self:RegisterEvent("PARTY_MEMBER_ENABLE", Path)
         self:RegisterEvent("PLAYER_TARGET_CHANGED", Path)
+        self:RegisterEvent("UNIT_CONNECTION", Path)
 
         if (officon:IsObjectType("Texture") and not officon:GetTexture()) then
             officon:SetTexture("Interface\\CharacterFrame\\Disconnect-Icon")

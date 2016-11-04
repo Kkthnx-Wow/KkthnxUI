@@ -279,8 +279,11 @@ function Tooltip:SetColor()
 	if Player and Friend then
 		local Class = select(2, UnitClass(Unit))
 		local Color = K.Colors.class[Class]
-
-		R, G, B = Color[1], Color[2], Color[3]
+		if not Color then
+			R, G, B = unpack(C.Media.Border_Color)
+		else
+			R, G, B = Color[1], Color[2], Color[3]
+		end
 		HealthBar:SetStatusBarColor(R, G, B)
 		HealthBar:SetBackdropBorderColor(R, G, B)
 		self:SetBackdropBorderColor(R, G, B)
