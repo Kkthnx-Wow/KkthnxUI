@@ -237,7 +237,7 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(K.Mult, K.Scale(-3)) -- Temp
+	fs:SetShadowOffset(K.Mult,-K.Mult)
 
 	if not name then
 		parent.Text = fs

@@ -43,7 +43,7 @@ K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH(justify or "CENTER")
 	fs:SetShadowColor(0, 0, 0, 1)
-	fs:SetShadowOffset(1, K.Scale(-3)) -- Temp
+	fs:SetShadowOffset(K.Mult, -K.Mult) -- Temp
 
 	return fs
 end

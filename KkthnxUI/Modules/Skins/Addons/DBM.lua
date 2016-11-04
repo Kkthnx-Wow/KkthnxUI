@@ -105,7 +105,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							name:SetWidth(165)
 							name:SetHeight(8)
 							name:SetFont(C.Media.Font, C.Media.Font_Size, "")
-							name:SetShadowOffset(K.Mult, K.Scale(-3)) -- Temp
+							name:SetShadowOffset(K.Mult,-K.Mult)
 							name:SetJustifyH("LEFT")
 							name.SetFont = K.Dummy
 							name.styled = true
@@ -115,7 +115,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 							timer:ClearAllPoints()
 							timer:SetPoint("RIGHT", frame, "RIGHT", -1, 0)
 							timer:SetFont(C.Media.Font, C.Media.Font_Size, "")
-							timer:SetShadowOffset(K.Mult, K.Scale(-3)) -- Temp
+							timer:SetShadowOffset(K.Mult,-K.Mult)
 							timer:SetJustifyH("RIGHT")
 							timer.SetFont = K.Dummy
 							timer.styled = true
@@ -217,7 +217,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 					name:ClearAllPoints()
 					name:SetPoint("LEFT", bar, "LEFT", 4, 0)
 					name:SetFont(C.Media.Font, C.Media.Font_Size, "")
-					name:SetShadowOffset(K.Mult, K.Scale(-3)) -- Temp
+					name:SetShadowOffset(K.Mult,-K.Mult)
 					name:SetJustifyH("LEFT")
 					name.styled = true
 				end
@@ -226,7 +226,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 					timer:ClearAllPoints()
 					timer:SetPoint("RIGHT", bar, "RIGHT", -1, 0)
 					timer:SetFont(C.Media.Font, C.Media.Font_Size, "")
-					timer:SetShadowOffset(K.Mult, K.Scale(-3)) -- Temp
+					timer:SetShadowOffset(K.Mult,-K.Mult)
 					timer:SetJustifyH("RIGHT")
 					timer.styled = true
 				end

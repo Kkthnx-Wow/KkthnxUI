@@ -574,14 +574,14 @@ local function style(self,unit)
 
 	self.Name = self:CreateFontString(nil)
 	self.Name:SetFont(C.Media.Font, 14)
-	self.Name:SetShadowOffset(1, K.Scale(-3)) -- Temp
+	self.Name:SetShadowOffset(K.Mult, -K.Mult) -- Temp
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -3, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 3, 4)
 	self:Tag(self.Name, "[KkthnxUI:Name]")
 
 	self.Level = self:CreateFontString(nil)
 	self.Level:SetFont(C.Media.Font, 14)
-	self.Level:SetShadowOffset(1, K.Scale(-3)) -- Temp
+	self.Level:SetShadowOffset(K.Mult, -K.Mult) -- Temp
 	self.Level:SetPoint("LEFT", self.Health, "RIGHT", 6, 0)
 	self:Tag(self.Level, "[KkthnxUI:Level]")
 
