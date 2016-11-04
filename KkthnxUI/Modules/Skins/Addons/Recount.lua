@@ -49,10 +49,10 @@ Recount.UpdateBarTextures = function(self)
 		v.LeftText:ClearAllPoints()
 		v.LeftText:SetPoint("LEFT", v.StatusBar, "LEFT", 2, 0)
 		v.LeftText:SetFont(C.Media.Font, C.Media.Font_Size)
-		v.LeftText:SetShadowOffset(K.Mult, -K.Scale(-3)) -- Temp
+		v.LeftText:SetShadowOffset(K.Mult,-K.Mult) -- Temp
 
 		v.RightText:SetFont(C.Media.Font, C.Media.Font_Size)
-		v.RightText:SetShadowOffset(K.Mult, -K.Scale(-3)) -- Temp
+		v.RightText:SetShadowOffset(K.Mult,-K.Mult) -- Temp
 	end
 end
 Recount.SetBarTextures = Recount.UpdateBarTextures
