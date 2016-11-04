@@ -904,6 +904,10 @@ local function CreateUnitLayout(self, unit)
 	return self
 end
 
+local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
+	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
+end
+
 -- Spawn our frames.
 oUF:RegisterStyle("oUF_Kkthnx", CreateUnitLayout)
 oUF:SetActiveStyle("oUF_Kkthnx")
@@ -915,6 +919,7 @@ Movers:RegisterFrame(player)
 local pet = oUF:Spawn("pet", "oUF_KkthnxPet")
 pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
 Movers:RegisterFrame(pet)
+player:RegisterEvent("UNIT_PET", FixPetUpdate)
 
 local target = oUF:Spawn("target", "oUF_KkthnxTarget")
 target:SetPoint(unpack(C.Position.UnitFrames.Target))
