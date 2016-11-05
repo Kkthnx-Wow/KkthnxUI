@@ -6,7 +6,7 @@ local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ReputationWidth, C.DataBars.ReputationHeight)
-Anchor:SetPoint("TOP", KkthnxUIMinimapStats, "BOTTOM", 0, -19)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -48)
 Movers:RegisterFrame(Anchor)
 
 local ReputationBar = CreateFrame("StatusBar", nil, UIParent)

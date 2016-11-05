@@ -6,7 +6,7 @@ local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ArtifactWidth, C.DataBars.ArtifactHeight)
-Anchor:SetPoint("TOP", KkthnxUIMinimapStats, "BOTTOM", 0, -34)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -63)
 Movers:RegisterFrame(Anchor)
 
 local ArtifactBar = CreateFrame("StatusBar", nil, UIParent)

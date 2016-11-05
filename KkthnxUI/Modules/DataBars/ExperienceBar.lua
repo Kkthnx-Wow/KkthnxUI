@@ -1,14 +1,12 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataBars.ExperienceEnable ~= true then return end
-
-if K.Level == MAX_PLAYER_LEVEL then return end
+if C.DataBars.ExperienceEnable ~= true or K.Level == MAX_PLAYER_LEVEL then return end
 
 local Bars = 20
 local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
-Anchor:SetPoint("TOP", KkthnxUIMinimapStats, "BOTTOM", 0, -4)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -33)
 Movers:RegisterFrame(Anchor)
 
 local ExperienceBar = CreateFrame("StatusBar",  nil, UIParent)

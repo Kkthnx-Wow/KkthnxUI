@@ -190,7 +190,7 @@ FontString:SetTextColor(unpack(C.Media.Backdrop_Color))
 Minimap:EnableMouseWheel()
 local function Zoom(self, direction)
 	if(direction > 0) then Minimap_ZoomIn()
-else Minimap_ZoomOut() end
+	else Minimap_ZoomOut() end
 end
 Minimap:SetScript("OnMouseWheel", Zoom)
 

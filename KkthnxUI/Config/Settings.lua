@@ -167,6 +167,7 @@ C["General"] = {
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
+	["ShowConfigButton"] = true,
 }
 
 -- Loot
@@ -184,6 +185,7 @@ C["Loot"] = {
 C["Minimap"] = {
 	["CollectButtons"] = true,
 	["Enable"] = true,
+	["FadeButtons"] = true,
 	["Garrison"] = true,
 	["Ping"] = true,
 	["Size"] = 150,

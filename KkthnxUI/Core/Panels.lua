@@ -88,16 +88,126 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
+-- Spec
+local LeftClickMenu = { }
+LeftClickMenu[1] = { text = "Specializations", isTitle = true, notCheckable = true}
+
+local function ActiveTalents()
+	local Tree = GetSpecialization(false, false, GetActiveSpecGroup())
+	return Tree
+end
+
+local KkthnxUISpecSwap = CreateFrame("Frame", "KkthnxUISpecSwap", UIParent, "UIDropDownMenuTemplate")
+KkthnxUISpecSwap:SetTemplate()
+KkthnxUISpecSwap:RegisterEvent("PLAYER_LOGIN")
+KkthnxUISpecSwap:SetScript("OnEvent", function(...)
+	local specIndex
+	for specIndex = 1, GetNumSpecializations() do
+		LeftClickMenu[specIndex + 1] = {
+			text = tostring(select(2, GetSpecializationInfo(specIndex))),
+			notCheckable = true,
+			func = (function()
+				local getSpec = GetSpecialization()
+				if getSpec and getSpec == specIndex then
+					UIErrorsFrame:AddMessage("This Spec is already activ!", 1.0, 0.0, 0.0, 53, 5);
+					return
+				end
+				SetSpecialization(specIndex)
+			end)
+		}
+	end
+end)
+
 -- Minimap Panels
 if Minimap and C.Minimap.Enable then
 	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
 	MinimapStats:SetTemplate()
-	MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
-	MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
+	if C.General.ShowConfigButton == true then
+		MinimapStats:SetSize(((Minimap:GetWidth() -16)), 28)
+		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", -13, -2)
+	else
+		MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
+		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
+	end
 	MinimapStats:SetFrameStrata("LOW")
 	Movers:RegisterFrame(MinimapStats)
 
 	if C.Blizzard.ColorTextures == true then
 		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
+end
+
+-- ToggleButton Special
+if C.General.ShowConfigButton == true then
+	local ToggleButtonSpecial = CreateFrame( "Frame", "KkthnxToggleSpecialButton", oUF_PetBattleFrameHider)
+	ToggleButtonSpecial:SetPoint("LEFT", KkthnxUIMinimapStats, "RIGHT", 2, 0)
+	ToggleButtonSpecial:SetSize(20, 20)
+	ToggleButtonSpecial:SetFrameStrata("BACKGROUND")
+	ToggleButtonSpecial:SetFrameLevel(2)
+	ToggleButtonSpecial:SkinButton()
+	-- ToggleButtonSpecial:SetTemplate()
+
+	ToggleButtonSpecial["Text"] = K.SetFontString(ToggleButtonSpecial, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	ToggleButtonSpecial["Text"]:SetPoint("CENTER", ToggleButtonSpecial, "CENTER", 0, .5)
+	ToggleButtonSpecial["Text"]:SetText("|cff3c9bedK|r")
+	ToggleButtonSpecial["Text"]:SetShadowOffset(0, 0)
+
+	ToggleButtonSpecial:EnableMouse(true)
+	ToggleButtonSpecial:HookScript("OnMouseDown", function(self, btn)
+		if(InCombatLockdown()) then
+			K.Print(ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if (IsShiftKeyDown() and btn == "LeftButton") then
+			Lib_EasyMenu(LeftClickMenu, KkthnxUISpecSwap, "cursor", 0, 0, "MENU", 2)
+			return
+		end
+
+		if btn == "LeftButton" then
+			local Movers = K.Movers
+			Movers:StartOrStopMoving()
+		end
+
+		if btn == "RightButton" then
+			if not IsAddOnLoaded("Recount") then return end
+			if Recount_MainWindow:IsShown() then
+				Recount_MainWindow:Hide()
+			else
+				Recount_MainWindow:Show()
+			end
+		end
+
+		if (IsShiftKeyDown() and btn == "RightButton") then
+			if not IsAddOnLoaded("Skada") then return end
+
+			return
+		end
+
+		if btn == "MiddleButton" then
+			if UIConfigMain and UIConfigMain:IsShown() then
+				UIConfigMain:Hide()
+			else
+				CreateUIConfig()
+				HideUIPanel(Menu)
+			end
+		end
+	end)
+
+	ToggleButtonSpecial:HookScript("OnEnter", function(self)
+		local anchor, panel, xoff, yoff = "ANCHOR_BOTTOM", self:GetParent(), 0, 5
+		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine("Functions:")
+		GameTooltip:AddDoubleLine("Left click:"," Move UI Elements", 1, 1, 1)
+		GameTooltip:AddDoubleLine("Right click:"," Show/Hide Recount (if installed)", 1, 1, 1)
+		GameTooltip:AddDoubleLine("Shift + Right click:"," Show/Hide Skada (if installed)", 1, 1, 1)
+		GameTooltip:AddDoubleLine("Middle click:"," Show KkthnxUI Configmenu", 1, 1, 1)
+		GameTooltip:AddDoubleLine("Shift + Left click:"," Show KkthnxUI-Specmenu", 1, 1, 1)
+		GameTooltip:Show()
+	end)
+
+	ToggleButtonSpecial:HookScript("OnLeave", function(self)
+		GameTooltip:Hide()
+	end)
 end

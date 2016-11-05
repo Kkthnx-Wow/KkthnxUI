@@ -34,13 +34,11 @@ local function PositionAndStyle()
 		end
 		buttons[i].ClearAllPoints = K.Noop
 		buttons[i].SetPoint = K.Noop
-		buttons[i]:SetAlpha(0)
-		buttons[i]:HookScript("OnEnter", function()
-			buttons[i]:FadeIn()
-		end)
-		buttons[i]:HookScript("OnLeave", function()
-			buttons[i]:FadeOut()
-		end)
+		if C.Minimap.FadeButtons then
+			buttons[i]:SetAlpha(0)
+			buttons[i]:HookScript("OnEnter", function() buttons[i]:FadeIn() end)
+			buttons[i]:HookScript("OnLeave", function() buttons[i]:FadeOut() end)
+		end
 	end
 end
 

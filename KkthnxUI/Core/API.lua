@@ -309,14 +309,18 @@ local function SkinButton(Frame, Strip)
 		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
 		Frame.backdrop:SetBackdropColor(Color.r * .15, Color.g * .15, Color.b * .15, C.Media.Backdrop_Color[4])
-		Frame.backdrop:SetBackdropBorderColor(Color.r, Color.g, Color.b, C.Media.Border_Color[4])
+		if C.Blizzard.ColorTextures == false then
+			Frame.backdrop:SetBackdropBorderColor(Color.r, Color.g, Color.b, C.Media.Border_Color[4])
+		end
 	end)
 
 	Frame:HookScript("OnLeave", function(self)
 		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
 		Frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-		Frame.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], C.Media.Border_Color[4])
+		if C.Blizzard.ColorTextures == false then
+			Frame.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], C.Media.Border_Color[4])
+		end
 	end)
 end
 
