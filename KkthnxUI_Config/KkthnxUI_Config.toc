@@ -2,11 +2,11 @@
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: |cff3c9bedKkthnxUI|r Config GUI
 ## Author: Tohveli, Josh "Kkthnx" Russell
-## Version: 6.08
+## Version: 6.09
 ## SavedVariables: KkthnxUIConfigAll, KkthnxUIConfigSettings
 ## SavedVariablesPerCharacter: KkthnxUIConfig
 ## RequiredDeps: KkthnxUI
-## X-Curse-Packaged-Version: 6.08
+## X-Curse-Packaged-Version: 6.09
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Curse-Project-ID: kkthnxui
 ## X-WoWI-ID: 23677

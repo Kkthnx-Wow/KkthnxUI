@@ -2,7 +2,7 @@
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: |cffffff00By Josh "Kkthnx" Russell|r |n|n|cff34a853PayPal.Me|r|cffffffff:|r|n|cffffffffwww.paypal.me/kkthnx|r
 ## Author: Shestak, Josh "Kkthnx" Russell
-## Version: 6.08
+## Version: 6.09
 ## DefaultState: Enabled
 ## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, DBM-Core, Recount, Skada, Spy, WeakAuras
 ## SavedVariables: KkthnxUIData
@@ -10,7 +10,7 @@
 ## eMail: Kkthnxbye@live.com
 ## Website: https://github.com/Kkthnx
 ## X-oUF: oUFKkthnxUI
-## X-Curse-Packaged-Version: 6.08
+## X-Curse-Packaged-Version: 6.09
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Curse-Project-ID: kkthnxui
 ## X-WoWI-ID: 23677
