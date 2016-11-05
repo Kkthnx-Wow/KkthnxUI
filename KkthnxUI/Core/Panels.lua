@@ -170,18 +170,16 @@ if C.General.ShowConfigButton == true then
 		end
 
 		if btn == "RightButton" then
-			if not IsAddOnLoaded("Recount") then return end
-			if Recount_MainWindow:IsShown() then
-				Recount_MainWindow:Hide()
-			else
-				Recount_MainWindow:Show()
+			if IsAddOnLoaded("Recount") then
+				if Recount_MainWindow:IsShown() then
+					Recount_MainWindow:Hide()
+				else
+					Recount_MainWindow:Show()
+				end	
 			end
-		end
-
-		if (IsShiftKeyDown() and btn == "RightButton") then
-			if not IsAddOnLoaded("Skada") then return end
-
-			return
+			if IsAddOnLoaded("Skada") then
+				Skada:ToggleWindow()
+			end
 		end
 
 		if btn == "MiddleButton" then
@@ -198,14 +196,19 @@ if C.General.ShowConfigButton == true then
 		local anchor, panel, xoff, yoff = "ANCHOR_BOTTOM", self:GetParent(), 0, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
-		GameTooltip:AddLine("Functions:")
-		GameTooltip:AddDoubleLine("Left click:"," Move UI Elements", 1, 1, 1)
-		GameTooltip:AddDoubleLine("Right click:"," Show/Hide Recount (if installed)", 1, 1, 1)
-		GameTooltip:AddDoubleLine("Shift + Right click:"," Show/Hide Skada (if installed)", 1, 1, 1)
-		GameTooltip:AddDoubleLine("Middle click:"," Show KkthnxUI Configmenu", 1, 1, 1)
-		GameTooltip:AddDoubleLine("Shift + Left click:"," Show KkthnxUI-Specmenu", 1, 1, 1)
+		GameTooltip:AddLine(L_CONFIGBUTTON_FUNC)
+		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_LEFTCLICK, L_CONFIGBUTTON_MOVEUI, 1, 1, 1)
+		if IsAddOnLoaded("Recount") then 
+			GameTooltip:AddDoubleLine(L_CONFIGBUTTON_RIGHTCLICK, L_CONFIGBUTTON_RECOUNT, 1, 1, 1)
+		end
+		if IsAddOnLoaded("Skada") then 
+			GameTooltip:AddDoubleLine(L_CONFIGBUTTON_RIGHTCLICK, L_CONFIGBUTTON_SKADA, 1, 1, 1)
+		end
+		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_MIDDLECLICK, L_CONFIGBUTTON_CONFIG, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_SHIFTCLICK, L_CONFIGBUTTON_SPEC, 1, 1, 1)	
 		GameTooltip:Show()
-	end)
+		GameTooltip:SetTemplate()
+		end)
 
 	ToggleButtonSpecial:HookScript("OnLeave", function(self)
 		GameTooltip:Hide()
