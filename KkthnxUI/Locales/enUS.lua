@@ -52,6 +52,8 @@ L_CONFIGBUTTON_RECOUNT = "Show/Hide Recount Frame"
 L_CONFIGBUTTON_SKADA = "Show/Hide Skada Frame"
 L_CONFIGBUTTON_CONFIG = "Show KkthnxUI Configmenu"
 L_CONFIGBUTTON_SPEC = "Show KkthnxUI-Specmenu"
+L_CONFIGBUTTON_SPECMENU = "Specialization selection"
+L_CONFIGBUTTON_SPECERROR = "You are already have this spec activ!"
 -- DataBars Localization
 L_DATABARS_ARTIFACT_CLICK = "Click: Opens the artifact overview"
 L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"

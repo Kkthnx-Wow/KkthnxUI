@@ -90,7 +90,7 @@ end)
 
 -- Spec
 local LeftClickMenu = { }
-LeftClickMenu[1] = { text = "Specializations", isTitle = true, notCheckable = true}
+LeftClickMenu[1] = { text = L_CONFIGBUTTON_SPECMENU, isTitle = true, notCheckable = true}
 
 local function ActiveTalents()
 	local Tree = GetSpecialization(false, false, GetActiveSpecGroup())
@@ -109,7 +109,7 @@ KkthnxUISpecSwap:SetScript("OnEvent", function(...)
 			func = (function()
 				local getSpec = GetSpecialization()
 				if getSpec and getSpec == specIndex then
-					UIErrorsFrame:AddMessage("This Spec is already activ!", 1.0, 0.0, 0.0, 53, 5);
+					UIErrorsFrame:AddMessage(L_CONFIGBUTTON_SPECERROR, 1.0, 0.0, 0.0, 53, 5);
 					return
 				end
 				SetSpecialization(specIndex)

@@ -66,6 +66,8 @@ L_CONFIGBUTTON_RECOUNT = "Zeigt/Versteckt das Recount Fenster"
 L_CONFIGBUTTON_SKADA = "Zeigt/Versteckt das Skada Fenster"
 L_CONFIGBUTTON_CONFIG = "Öffnet das KkthnxUI Einstellungsmenü"
 L_CONFIGBUTTON_SPEC = "Öffnet das KkthnxUI Spezialisierungsmenü"
+L_CONFIGBUTTON_SPECMENU = "Spezialisierungsauswahl"
+L_CONFIGBUTTON_SPECERROR = "Diese Spezialisierung ist bereits aktiv!"
 
 -- DataBars Localization
 L_DATABARS_ARTIFACT_CLICK = "Klick: Öffnet die Artefaktübersicht"
