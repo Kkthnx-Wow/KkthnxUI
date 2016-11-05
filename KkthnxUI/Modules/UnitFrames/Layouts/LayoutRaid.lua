@@ -123,13 +123,9 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-	self:SetBackdrop({bgFile = C.Media.Blank})
-
 	K.CreateBorder(self, 10, 3)
 	self:SetBorderTexture("white")
 	self:SetBorderColor(0.38, 0.38, 0.38)
-
-	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -150,7 +146,7 @@ local function CreateRaidLayout(self, unit)
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints(self.Health)
 	self.Health.bg:SetTexture(C.Media.Blank)
-	self.Health.bg:SetColorTexture(.1, .1, .1)
+	self.Health.bg:SetColorTexture(unpack(C.Media.Backdrop_Color))
 
 	-- Health text
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -197,68 +193,73 @@ local function CreateRaidLayout(self, unit)
 	end
 
 	-- Heal prediction
+
 	local myBar = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
 	myBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
 	myBar:SetStatusBarColor(0, 0.827, 0.765, 1)
+	myBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		myBar:SetOrientation("HORIZONTAL")
 		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		myBar:SetWidth(C.Raidframe.Width - 2.5)
+		myBar:SetWidth(self:GetWidth())
 	else
 		myBar:SetOrientation("VERTICAL")
 		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
 		myBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		myBar:SetHeight(C.Raidframe.Height)
+		myBar:SetHeight(self:GetHeight())
 	end
 
 	local otherBar = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
 	otherBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
 	otherBar:SetStatusBarColor(0.0, 0.631, 0.557, 1)
+	otherBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		otherBar:SetOrientation("HORIZONTAL")
 		otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
 		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
-		otherBar:SetWidth(C.Raidframe.Width)
+		otherBar:SetWidth(self:GetWidth())
 	else
 		otherBar:SetOrientation("VERTICAL")
 		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "TOPLEFT")
 		otherBar:SetPoint("BOTTOMRIGHT", myBar:GetStatusBarTexture(), "TOPRIGHT")
-		otherBar:SetHeight(C.Raidframe.Height)
+		otherBar:SetHeight(self:GetHeight())
 	end
 
 	local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
 	healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
 	healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 1)
+	healAbsorbBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		healAbsorbBar:SetOrientation("HORIZONTAL")
 		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		healAbsorbBar:SetWidth(C.Raidframe.Width)
+		healAbsorbBar:SetWidth(self:GetWidth())
 	else
 		healAbsorbBar:SetOrientation("VERTICAL")
 		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
 		healAbsorbBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		healAbsorbBar:SetHeight(C.Raidframe.Height)
+		healAbsorbBar:SetHeight(self:GetHeight())
 	end
 
 	local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
 	absorbBar:SetStatusBarTexture(C.Media.Texture)
 	absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 1)
+	absorbBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		absorbBar:SetOrientation("HORIZONTAL")
 		absorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		absorbBar:SetWidth(C.Raidframe.Width)
+		absorbBar:SetWidth(self:GetWidth())
 	else
 		absorbBar:SetOrientation("VERTICAL")
 		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
 		absorbBar:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		absorbBar:SetHeight(C.Raidframe.Height)
+		absorbBar:SetHeight(self:GetHeight())
 	end
 
 	absorbBar.Overlay = absorbBar:CreateTexture("$parentOverlay", "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)

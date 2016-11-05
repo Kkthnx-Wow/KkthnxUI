@@ -53,24 +53,24 @@ player = {
 	glo = {w = 242, h = 92, x = 13, y = 0, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
 },
 target = {-- and focus
-	siz = {w = 175, h = 42},
-	tex = {w = 230, h = 100, x = 20, y = -7, t = pathNormal.."Target", c = {0.09375, 1, 0, 0.78125}},
-	hpb = {w = 118, h = 19, x = -50, y = 16,},
-	hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-	mpb = {w = 118, h = 20, x = 0, y = 0,},
-	mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-	nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
-	por = {w = 64, h = 64, x = 41, y = 6,},
-	glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
+siz = {w = 175, h = 42},
+tex = {w = 230, h = 100, x = 20, y = -7, t = pathNormal.."Target", c = {0.09375, 1, 0, 0.78125}},
+hpb = {w = 118, h = 19, x = -50, y = 16,},
+hpt = {x = 0, y = 1, j = "CENTER", s = 13},
+mpb = {w = 118, h = 20, x = 0, y = 0,},
+mpt = {x = 0, y = 0, j = "CENTER", s = 13},
+nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
+por = {w = 64, h = 64, x = 41, y = 6,},
+glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
 },
 targettarget = {-- and focus target
-	siz = {w = 85, h = 20},
-	tex = {w = 128, h = 64, x = 16, y = -10, t = pathNormal.."TargetOfTarget", c = {0, 1, 0, 1}},
-	hpb = {w = 43, h = 6, x = 2, y = 14,},
-	hpt = {x = -2, y = 0, j = "CENTER", s = 10},
-	mpb = {w = 37, h = 7, x = -1, y = 0,},
-	nam = {w = 65, h = 10, x = 11, y = -18, j = "LEFT", s = 12},
-	por = {w = 40, h = 40, x = -40, y = 10,},
+siz = {w = 85, h = 20},
+tex = {w = 128, h = 64, x = 16, y = -10, t = pathNormal.."TargetOfTarget", c = {0, 1, 0, 1}},
+hpb = {w = 43, h = 6, x = 2, y = 14,},
+hpt = {x = -2, y = 0, j = "CENTER", s = 10},
+mpb = {w = 37, h = 7, x = -1, y = 0,},
+nam = {w = 65, h = 10, x = 11, y = -18, j = "LEFT", s = 12},
+por = {w = 40, h = 40, x = -40, y = 10,},
 },
 pet = {
 	siz = {w = 110, h = 37},
@@ -518,49 +518,42 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
 		-- Heal Prediction
-		local myBar = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
-		myBar:SetFrameLevel(self:GetFrameLevel() - 1)
-		myBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
-		myBar:SetStatusBarColor(0, 0.827, 0.765, 1)
-		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		myBar:SetSize(data.hpb.w, data.hpb.h)
+		local incHeals = K.CreateStatusBar(self.Health)
+		incHeals:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
+		incHeals:SetPoint("BOTTOMRIGHT")
+		incHeals:SetFrameLevel(self:GetFrameLevel() - 1)
+		incHeals:SetStatusBarColor(0, 1, 0, 0.5)
+		incHeals:Hide()
 
-		local otherBar = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
-		otherBar:SetFrameLevel(self:GetFrameLevel() - 1)
-		otherBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
-		otherBar:SetStatusBarColor(0.0, 0.631, 0.557, 1)
-		otherBar:SetPoint("TOPLEFT", myBar:GetStatusBarTexture(), "TOPRIGHT")
-		otherBar:SetPoint("BOTTOMLEFT", myBar:GetStatusBarTexture(), "BOTTOMRIGHT")
-		otherBar:SetSize(data.hpb.w, data.hpb.h)
-
-		local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
-		healAbsorbBar:SetFrameLevel(self:GetFrameLevel() - 1)
-		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
-		healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 1)
-		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		healAbsorbBar:SetSize(data.hpb.w, data.hpb.h)
-
-		local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
-		absorbBar:SetFrameLevel(self:GetFrameLevel() - 1)
-		absorbBar:SetStatusBarTexture(C.Media.Texture)
-		absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 1)
-		absorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		absorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		absorbBar:SetSize(data.hpb.w, data.hpb.h)
-
-		absorbBar.Overlay = absorbBar:CreateTexture("$parentOverlay", "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
-		absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
+		-- Absorbing Heals
+		local necroHeals = K.CreateStatusBar(self.Health, "OVERLAY")
+		necroHeals:SetFrameLevel(self:GetFrameLevel() - 1)
+		necroHeals:SetStatusBarColor(1, 0, 0, 0.3)
+		necroHeals:SetReverseFill(true)
+		necroHeals:SetPoint("TOPLEFT")
+		necroHeals:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
 
 		self.HealPrediction = {
-			myBar = myBar,
-			otherBar = otherBar,
-			healAbsorbBar = healAbsorbBar,
-			absorbBar = absorbBar,
-			maxOverflow = 1.0,
-			frequentUpdates = true
+			incHeals = incHeals,
+			necroHeals = necroHeals,
+			Override = K.UpdateIncHeals,
 		}
+
+		local absorb = CreateFrame("StatusBar", nil, self.Health)
+		absorb:SetStatusBarTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbTexture", "OVERLAY")
+		absorb:SetFrameLevel(self:GetFrameLevel() - 1)
+		absorb:SetStatusBarColor(1, 1, 1, 1)
+		absorb:GetStatusBarTexture():SetBlendMode("ADD")
+		absorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT")
+		absorb:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 5)
+
+		local spark = absorb:CreateTexture(nil, "ARTWORK")
+		spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbSpark")
+		spark:SetBlendMode("ADD")
+		spark:SetPoint("BOTTOMLEFT", absorb:GetStatusBarTexture(),"BOTTOMRIGHT")
+		spark:SetSize(5, 5)
+		absorb.spark = spark
+		self.HealPrediction.TotalAbsorb = absorb
 
 		-- Combat CombatFeedbackText
 		if (C.Unitframe.CombatText) then
