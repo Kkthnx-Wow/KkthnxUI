@@ -123,9 +123,13 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
+	self:SetBackdrop({bgFile = C.Media.Blank})
+
 	K.CreateBorder(self, 10, 3)
 	self:SetBorderTexture("white")
 	self:SetBorderColor(0.38, 0.38, 0.38)
+
+	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -197,7 +201,6 @@ local function CreateRaidLayout(self, unit)
 	local myBar = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
 	myBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
 	myBar:SetStatusBarColor(0, 0.827, 0.765, 1)
-	myBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		myBar:SetOrientation("HORIZONTAL")
@@ -214,7 +217,6 @@ local function CreateRaidLayout(self, unit)
 	local otherBar = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
 	otherBar:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
 	otherBar:SetStatusBarColor(0.0, 0.631, 0.557, 1)
-	otherBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		otherBar:SetOrientation("HORIZONTAL")
@@ -231,7 +233,6 @@ local function CreateRaidLayout(self, unit)
 	local healAbsorbBar = CreateFrame("StatusBar", "$parentHealAbsorbBar", self)
 	healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
 	healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 1)
-	healAbsorbBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		healAbsorbBar:SetOrientation("HORIZONTAL")
@@ -248,7 +249,6 @@ local function CreateRaidLayout(self, unit)
 	local absorbBar = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
 	absorbBar:SetStatusBarTexture(C.Media.Texture)
 	absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 1)
-	absorbBar.Smooth = true
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		absorbBar:SetOrientation("HORIZONTAL")

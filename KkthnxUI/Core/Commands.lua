@@ -49,7 +49,6 @@ SlashCmdList.UIHELP = function()
 end
 SLASH_UIHELP1 = "/uihelp"
 SLASH_UIHELP2 = "/helpui"
-SLASH_UIHELP3 = "/kkthnxui"
 
 SLASH_SCALE1 = "/uiscale"
 SlashCmdList["SCALE"] = function()

@@ -1,5 +1,4 @@
 local K, C, L = select(2, ...):unpack()
-local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
 local _, ns = ...
