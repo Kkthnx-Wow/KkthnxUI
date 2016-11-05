@@ -20,7 +20,7 @@ Movers:RegisterFrame(anchor)
 
 local frame = CreateFrame("Frame", "PulseCDFrame", anchor)
 frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
-K.CreateBlizzardFrame(frame)
+-- K.CreateBlizzardFrame(frame) --
 frame:SetPoint("CENTER", anchor, "CENTER")
 
 local icon = frame:CreateTexture(nil, "ARTWORK")
