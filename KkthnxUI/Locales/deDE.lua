@@ -55,6 +55,20 @@ L_CHAT_RAID_LEADER = "RL"
 L_CHAT_RAID_WARNING = "RW"
 L_CHAT_PET_BATTLE = "Haustierkampf"
 
+-- Configbutton Localization
+L_CONFIGBUTTON_FUNC = "Buttonfunktionen:"
+L_CONFIGBUTTON_LEFTCLICK = "Linksklick:"
+L_CONFIGBUTTON_RIGHTCLICK = "Rechtsklick:"
+L_CONFIGBUTTON_MIDDLECLICK = "Mittlere Maustaste:"
+L_CONFIGBUTTON_SHIFTCLICK = "Shift + Linksklick:"
+L_CONFIGBUTTON_MOVEUI = "UI Elemente bewegen"
+L_CONFIGBUTTON_RECOUNT = "Zeigt/Versteckt das Recount Fenster"
+L_CONFIGBUTTON_SKADA = "Zeigt/Versteckt das Skada Fenster"
+L_CONFIGBUTTON_CONFIG = "Öffnet das KkthnxUI Einstellungsmenü"
+L_CONFIGBUTTON_SPEC = "Öffnet das KkthnxUI Spezialisierungsmenü"
+L_CONFIGBUTTON_SPECMENU = "Spezialisierungsauswahl"
+L_CONFIGBUTTON_SPECERROR = "Diese Spezialisierung ist bereits aktiv!"
+
 -- DataBars Localization
 L_DATABARS_ARTIFACT_CLICK = "Klick: Öffnet die Artefaktübersicht"
 L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Verbleibend: %s|r"
