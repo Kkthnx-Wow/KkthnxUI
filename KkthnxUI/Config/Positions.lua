@@ -31,6 +31,7 @@ C["Position"] = {
 	["Vehicle"] = {"TOP", "Minimap", "BOTTOM", 0, -18},
 	["VehicleBar"] = {"BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -3, 0},
 	["WorldMap"] = {"CENTER", "UIParent", "CENTER", 0, 100},
+	["ObjectiveTracker"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -160, -270},
 	-- Unitframe positions
 	UnitFrames = {
 		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -140, 140},
