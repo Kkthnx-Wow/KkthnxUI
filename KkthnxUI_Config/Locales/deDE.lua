@@ -199,7 +199,6 @@ L_GUI_MISC_SLOT_DURABILITY = "Zeige die Haltbarkeit auf Deinen Gegenständen in 
 L_GUI_MISC_SPIN_CAMERA = "Drehe die Kamera während Du AFK bist"
 L_GUI_MISC_USEGUILDREPAIR = "Bei Benutzung von 'Automatisches Reparieren', benutzte die Gildenbank"
 L_GUI_MISC_QUESTLEVEL = "Zeige die Questlevel am Questverfolgungsfenster an"
-L_GUI_MISC_COMBAT = "Zeige den Beginn und das Ende eines Kampfes per Text an"
 
 -- NamePlate Localization
 L_GUI_NAMEPLATES = "Namensplaketten"

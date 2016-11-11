@@ -4,10 +4,10 @@ local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
 
---Cache global variables
 --Lua functions
 local select = select
 local format, join = string.format, string.join
+
 --WoW API / Variables
 local EasyMenu = EasyMenu
 local GetActiveSpecGroup = GetActiveSpecGroup
@@ -25,7 +25,7 @@ local LOOT = LOOT
 local SELECT_LOOT_SPECIALIZATION = SELECT_LOOT_SPECIALIZATION
 local LOOT_SPECIALIZATION_DEFAULT = LOOT_SPECIALIZATION_DEFAULT
 
-local displayString = "";
+local displayString = ""
 local activeString = join("", "|cff00FF00" , ACTIVE_PETS, "|r")
 local inactiveString = join("", "|cffFF0000", FACTION_INACTIVE, "|r")
 local menuFrame = CreateFrame("Frame", "KkthnxUILootSpecializationDatatextClickMenu", UIParent, "UIDropDownMenuTemplate")
@@ -46,7 +46,7 @@ local specList = {
 }
 
 local function Update(self)
-	local specIndex = GetSpecialization();
+	local specIndex = GetSpecialization()
 	if not specIndex then
 		self.Text:SetText("N/A")
 		return
@@ -65,10 +65,10 @@ local function Update(self)
 
 	local specialization = GetLootSpecialization()
 	if specialization == 0 then
-		local specIndex = GetSpecialization();
+		local specIndex = GetSpecialization()
 
 		if specIndex then
-			local _, _, _, texture = GetSpecializationInfo(specIndex);
+			local _, _, _, texture = GetSpecializationInfo(specIndex)
 			if texture then
 				loot = format("|T%s:14:14:0:0:64:64:4:60:4:60|t", texture)
 			else
@@ -78,7 +78,7 @@ local function Update(self)
 			loot = "N/A"
 		end
 	else
-		local _, _, _, texture = GetSpecializationInfoByID(specialization);
+		local _, _, _, texture = GetSpecializationInfoByID(specialization)
 		if texture then
 			loot = format("|T%s:14:14:0:0:64:64:4:60:4:60|t", texture)
 		else
@@ -86,7 +86,7 @@ local function Update(self)
 		end
 	end
 
-	self.Text:SetFormattedText("%s: %s %s: %s", "Spez", talent, LOOT, loot) --Needs local
+	self.Text:SetFormattedText("%s: %s %s: %s", L_DATATEXT_LOOTSPEC_SPEC, talent, LOOT, loot) --Needs local
 end
 
 local OnEnter = function(self)
@@ -106,23 +106,23 @@ local OnEnter = function(self)
 	GameTooltip:AddLine(" ")
 	local specialization = GetLootSpecialization()
 	if specialization == 0 then
-		local specIndex = GetSpecialization();
+		local specIndex = GetSpecialization()
 
 		if specIndex then
-			local _, name = GetSpecializationInfo(specIndex);
+			local _, name = GetSpecializationInfo(specIndex)
 			GameTooltip:AddLine(format("|cffFFFFFF%s:|r %s", SELECT_LOOT_SPECIALIZATION, format(LOOT_SPECIALIZATION_DEFAULT, name)))
 		end
 	else
-		local specID, name = GetSpecializationInfoByID(specialization);
+		local specID, name = GetSpecializationInfoByID(specialization)
 		if specID then
 			GameTooltip:AddLine(format("|cffFFFFFF%s:|r %s", SELECT_LOOT_SPECIALIZATION, name))
 		end
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine("|cffFFFFFFLeft Click:|r Change Talent Specialization|r") --Needs local
-	GameTooltip:AddLine("|cffFFFFFFShift + Left Click:|r Show Talent Specialization UI|r") --Needs local
-	GameTooltip:AddLine("|cffFFFFFFRight Click:|r Change Loot Specialization|r") --Needs local
+	GameTooltip:AddLine(L_DATATEXT_LOOTSPEC_TALENT)
+	GameTooltip:AddLine(L_DATATEXT_LOOTSPEC_SHOW)
+	GameTooltip:AddLine(L_DATATEXT_LOOTSPEC_CHANGE)
 
 	GameTooltip:Show()
 end
@@ -144,12 +144,12 @@ local OnMouseDown = function(self, button)
 			end
 		else
 			for index = 1, 4 do
-				local id, name, _, texture = GetSpecializationInfo(index);
+				local id, name, _, texture = GetSpecializationInfo(index)
 				if ( id ) then
 					specList[index + 1].text = format("|T%s:14:14:0:0:64:64:4:60:4:60|t  %s", texture, name)
 					specList[index + 1].func = function()
 					if index and index == specIndex then
-					UIErrorsFrame:AddMessage(L_CONFIGBUTTON_SPECERROR, 1.0, 0.0, 0.0, 53, 5);
+					UIErrorsFrame:AddMessage(L_CONFIGBUTTON_SPECERROR, 1.0, 0.0, 0.0, 53, 5)
 					return
 					end
 					SetSpecialization(index) end
@@ -161,11 +161,11 @@ local OnMouseDown = function(self, button)
 		end
 	else
 		GameTooltip:Hide()
-		local _, specName = GetSpecializationInfo(specIndex);
+		local _, specName = GetSpecializationInfo(specIndex)
 		menuList[2].text = format(LOOT_SPECIALIZATION_DEFAULT, specName)
 
 		for index = 1, 4 do
-			local id, name = GetSpecializationInfo(index);
+			local id, name = GetSpecializationInfo(index)
 			if ( id ) then
 				menuList[index + 2].text = name
 				menuList[index + 2].func = function() SetLootSpecialization(id) end

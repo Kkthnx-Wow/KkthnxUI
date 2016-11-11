@@ -213,7 +213,6 @@ C["Misc"] = {
 	["SellMisc"] = true,
 	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,
-	["Combat"] = true,
 	["QuestLevel"] = true,
 }
 

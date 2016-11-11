@@ -184,7 +184,6 @@ L_GUI_MISC_SLOT_DURABILITY = "Показывать прочность предм
 L_GUI_MISC_SPIN_CAMERA = "Вращение камеры во время АФК"
 L_GUI_MISC_USEGUILDREPAIR = "Автоматический ремонт за счет банка гильдии"
 L_GUI_MISC_QUESTLEVEL = "Add questlevel to objectivetracker"
-L_GUI_MISC_COMBAT = "Show text for entering and leaving Combat"
 -- Nameplates
 L_GUI_NAMEPLATES_AD_HEIGHT = "Дополнительная высота для индикатора цели"
 L_GUI_NAMEPLATES_AD_WIDTH = "Дополнительная ширина для индикатора цели"

@@ -204,9 +204,11 @@ function KkthnxUIInstall:PositionSetup()
 	KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars
 	KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars
 
-	-- reset movable stuff into original positions
-	if KkthnxUIDataPerChar.Movers then KkthnxUIDataPerChar.Movers = {}
-	end
+	-- Default our DataTexts
+	if (K.DataTexts) then K.DataTexts:Reset() end
+
+	-- Reset movable stuff into original positions
+	if KkthnxUIDataPerChar.Movers then KkthnxUIDataPerChar.Movers = {} end
 end
 
 local KkthnxUIVersionFrame = CreateFrame("Button", "KkthnxUIVersionFrame", UIParent)

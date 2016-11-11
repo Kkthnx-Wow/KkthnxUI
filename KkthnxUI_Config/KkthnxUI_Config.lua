@@ -227,7 +227,6 @@ local function Local(o)
 	if o == "UIConfigMiscSellMisc" then o = L_GUI_MISC_SELLMISC end
 	if o == "UIConfigMiscSlotDurability" then o = L_GUI_MISC_SLOT_DURABILITY end
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
-	if o == "UIConfigMiscCombat" then o = L_GUI_MISC_COMBAT end
 	if o == "UIConfigMiscQuestLevel" then o = L_GUI_MISC_QUESTLEVEL end
 	-- Nameplate Settings
 	if o == "UIConfigNameplates" then o = L_GUI_NAMEPLATES end

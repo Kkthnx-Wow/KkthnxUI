@@ -51,7 +51,7 @@ local Update = function(self)
 
 	Used = Total - Free
 
-	self.Text:SetFormattedText("%s: %s/%s", NameColor .. BAGSLOTTEXT .. "|r", ValueColor .. Used, Total .. "|r")
+	self.Text:SetFormattedText("%s: %s/%s", NameColor .. L_DATATEXT_BAGS .. "|r", ValueColor .. Used, Total .. "|r")
 end
 
 local Enable = function(self)
@@ -80,4 +80,4 @@ local Disable = function(self)
 	self:SetScript("OnMouseDown", nil)
 end
 
-DataText:Register(L_DATATEXT_BAGSLOTS, Enable, Disable, Update)
+DataText:Register("Bags", Enable, Disable, Update)

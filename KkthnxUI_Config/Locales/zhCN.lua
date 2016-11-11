@@ -185,7 +185,6 @@ L_GUI_MISC_SLOT_DURABILITY = "Durability on character slot buttons"
 L_GUI_MISC_SPIN_CAMERA = "Spin camera while AFK"
 L_GUI_MISC_USEGUILDREPAIR = "When using 'Auto Repair', use funds from the guild bank"
 L_GUI_MISC_QUESTLEVEL = "Add questlevel to objectivetracker"
-L_GUI_MISC_COMBAT = "Show text for entering and leaving Combat"
 -- Nameplates
 L_GUI_NAMEPLATES_AD_HEIGHT = "Additional height for selected nameplate"
 L_GUI_NAMEPLATES_AD_WIDTH = "Additional width for selected nameplate"
