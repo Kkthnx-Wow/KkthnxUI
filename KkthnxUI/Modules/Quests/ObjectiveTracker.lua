@@ -20,7 +20,7 @@ local classcolor = ("|cff%.2x%.2x%.2x"):format(K.Color.r * 255, K.Color.g * 255,
 local ObjectiveFrameHolder = CreateFrame("Frame", "ObjectiveFrameHolder", K.UIParent)
 ObjectiveFrameHolder:SetWidth(130)
 ObjectiveFrameHolder:SetHeight(22)
-ObjectiveFrameHolder:SetPoint("TOPRIGHT", K.UIParent, "TOPRIGHT", -160, -270)
+ObjectiveFrameHolder:SetPoint(unpack(C.Position.ObjectiveTracker))
 
 function ObjectiveTracker:ObjectiveFrameHeight()
 	ObjectiveTrackerFrame:SetHeight(700) -- was 480
