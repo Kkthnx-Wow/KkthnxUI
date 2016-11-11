@@ -124,7 +124,7 @@ GuildInstanceDifficulty:SetScale(0.8)
 MiniMapChallengeMode:ClearAllPoints()
 MiniMapChallengeMode:SetParent(Minimap)
 MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
-MiniMapChallengeMode:SetScale(0.8)
+MiniMapChallengeMode:SetScale(0.6)
 
 -- Feedback icon
 if FeedbackUIButton then

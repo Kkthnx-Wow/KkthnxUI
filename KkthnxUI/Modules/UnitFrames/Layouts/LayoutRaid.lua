@@ -270,8 +270,8 @@ local function CreateRaidLayout(self, unit)
 		otherBar = otherBar,
 		healAbsorbBar = healAbsorbBar,
 		absorbBar = absorbBar,
-		maxOverflow = 1.0,
-		frequentUpdates = true
+		-- maxOverflow = 1.0,
+		-- frequentUpdates = true
 	}
 
 	-- Afk /offline timer, using frequentUpdates function from oUF tags
@@ -437,6 +437,7 @@ oUF:RegisterStyle("oUF_Kkthnx_Raid", CreateRaidLayout)
 oUF:RegisterStyle("oUF_Kkthnx_Raid_MT", CreateRaidLayout)
 oUF:SetActiveStyle("oUF_Kkthnx_Raid")
 
+if not C.Raidframe.UseHealLayout then
 -- local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
 local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Raidframe.RaidAsParty and "custom [group:party][group:raid] show; hide" or C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
 "oUF-initialConfigFunction", [[
@@ -466,6 +467,37 @@ raid:SetFrameStrata("LOW")
 raid:SetPoint(unpack(C.Position.UnitFrames.Raid))
 Movers:RegisterFrame(raid)
 raid:Show()
+
+else
+local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Raidframe.RaidAsParty and "custom [group:party][group:raid] show; hide" or C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+"oUF-initialConfigFunction", [[
+local header = self:GetParent()
+self:SetWidth(header:GetAttribute("initial-width"))
+self:SetHeight(header:GetAttribute("initial-height"))
+]],
+"showParty", true,
+"showRaid", true,
+"showPlayer", true,
+"showSolo", false,
+"point", "LEFT",
+"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+"groupBy", "GROUP", -- C.Raid.GroupByValue
+"maxColumns", 8,
+"unitsPerColumn", 5,
+"columnAnchorPoint", "BOTTOM",
+"initial-width", C.Raidframe.Width,
+"initial-height", C.Raidframe.Height,
+"columnSpacing", K.Scale(8),
+"yOffset", -K.Scale(8),
+"xOffset", K.Scale(8))
+
+raid:SetScale(C.Raidframe.Scale)
+raid:SetFrameStrata("LOW")
+raid:SetPoint(unpack(C.Position.UnitFrames.Raid))
+Movers:RegisterFrame(raid)
+raid:Show()
+end
 
 -- Main Tank/Assist Frames
 if C.Raidframe.MainTankFrames then

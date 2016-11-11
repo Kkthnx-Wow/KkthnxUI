@@ -7,6 +7,10 @@ local gsub = string.gsub
 local format = string.format
 local match = string.match
 local max = math.max
+local tinsert = tinsert
+local pairs = pairs
+local type = type
+local unpack = unpack
 
 local UnitIsGhost = UnitIsGhost
 local GetSpellInfo = GetSpellInfo

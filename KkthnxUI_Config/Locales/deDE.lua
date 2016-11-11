@@ -132,6 +132,7 @@ L_GUI_DATATEXT_LOCATION = "Aktivere die Positionsanzeige oben auf der Minimap"
 L_GUI_DATATEXT_SYSTEM = "Aktivere den Datatext unter der Minimap, der Dir Deine FPS & MS anzeigt"
 L_GUI_DATATEXT_TIME = "Aktiviere den Datatext auf der Minimap, der Dir die Uhrzeit anzeigt"
 L_GUI_DATATEXT_TIME24HR = "Stelle die Zeitanzeige in der MInimap auf das 24 Stunden Format um"
+L_GUI_DATATEXT_BOTTOMBAR = "Aktiviere eine Datatextleiste unter den Aktionsleisten"
 
 -- Cooldown Localization
 L_GUI_COOLDOWN = "Abklingzeiten"
@@ -159,6 +160,8 @@ L_GUI_GENERAL_SHOW_CONFIG_BUTTON = "Zeigt den Konfigurationsbutton an der Minima
 L_GUI_GENERAL_TRANSLATE_MESSAGE = "Popup anzeigen für Hilfe bei der UI Übersetzung."
 L_GUI_GENERAL_UISCALE = "UI Skalierung (Wenn automatische Skalierung deaktivert ist)"
 L_GUI_GENERAL_WELCOME_MESSAGE = "Willkommensnachricht im Chat anzeigen."
+L_GUI_GENERAL_QUESTSOUNDS = "Aktivert/Deaktiviert die QuestSounds."
+L_GUI_GENERAL_PATHFINDER = "Zeigt den perfekten Weg im Artefaktfenster an."
 
 -- Loot Localization
 L_GUI_LOOT_AUTODE = "Auto confirm disenchant"
@@ -185,7 +188,6 @@ L_GUI_MISC_ARMORY_LINK = "Zeige einen Link zur Armory an, wenn Du die Einstellun
 L_GUI_MISC_AUTOREPAIR = "Repariere automatisch Deine Ausrüstung beim Händler"
 L_GUI_MISC_AUTOSELLGRAYS = "Verkaufe automatisch graue Gegenstände beim Händler"
 L_GUI_MISC_COLOR_PICKER = "Verbesserte Farbauswahl"
-L_GUI_MISC_DURABILITY_WARNINIG = "Aktivere eine Warnungsanzeige wenn Deine Ausrüstung fast kaputt ist."
 L_GUI_MISC_ENCHANCED_MAIL = "Fügt einen 'Öffne Alles' Button deinem Briefkasten hinzu."
 L_GUI_MISC_ERRORS = "Filtert Nachrichten aus dem UIFehlerFenster raus."
 L_GUI_MISC_HIDE_BG_SPAM = "Lösche 'Boss Emote spam' während du auf dem Schlachtfeld bist"
@@ -196,6 +198,8 @@ L_GUI_MISC_SELLMISC = "Automatisches Verkaufen von unnützen Gegenständen die n
 L_GUI_MISC_SLOT_DURABILITY = "Zeige die Haltbarkeit auf Deinen Gegenständen in der Charakterübersicht an"
 L_GUI_MISC_SPIN_CAMERA = "Drehe die Kamera während Du AFK bist"
 L_GUI_MISC_USEGUILDREPAIR = "Bei Benutzung von 'Automatisches Reparieren', benutzte die Gildenbank"
+L_GUI_MISC_QUESTLEVEL = "Zeige die Questlevel am Questverfolgungsfenster an"
+L_GUI_MISC_COMBAT = "Zeige den Beginn und das Ende eines Kampfes per Text an"
 
 -- NamePlate Localization
 L_GUI_NAMEPLATES = "Namensplaketten"
@@ -272,6 +276,8 @@ L_GUI_UNITFRAME_FOCUS_BUTTON = "Fokus Maustaste '1 = mt1, 2 = mt2, 3 = mt3'"
 L_GUI_UNITFRAME_FOCUS_MODIFIER = "Fokus Modifizierungstaste 'shift-, strg- oder alt-'"
 L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT = "Höhe der Fokus Zauberleiste"
 L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH = "breite der Fokus Zauberleiste"
+L_GUI_UNITFRAME_ICONPLAYER = "Set player castbar icon 'LEFT OR RIGHT'"
+L_GUI_UNITFRAME_ICONTARGET = "Set target castbar icon 'LEFT OR RIGHT'"
 L_GUI_UNITFRAME_PARTY = "Aktiviere die Gruppenfenster."
 L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT = "Höhe der Spielerzauberleiste"
 L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH = "Breite der Spielerzauberleiste"
@@ -321,3 +327,7 @@ L_GUI_WORLDMAP_COORDS = "Zeige Koordinaten auf der Weltkarte an."
 L_GUI_WORLDMAP_FADE_WHENMOVING = "Verblassen der Weltkarte wenn Du Dich bewegst."
 L_GUI_WORLDMAP_FOG_OF_WAR = "Entferne den Nebel des Krieges auf der Weltkarte."
 L_GUI_WORLDMAP_SMALL_WORLDMAP = "Kleine Weltkarte anzeigen."
+
+-- Config Buttons
+L_GUI_CLOSE = "SCHLIEßEN"
+L_GUI_APPLY = "ÜBERNEHMEN"

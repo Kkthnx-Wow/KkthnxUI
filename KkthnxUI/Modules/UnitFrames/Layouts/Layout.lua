@@ -1,6 +1,17 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
+local _G = _G
+local pairs = pairs
+
+local CreateFrame = CreateFrame
+local UnitDetailedThreatSituation = UnitDetailedThreatSituation
+local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local InCombatLockdown = InCombatLockdown
+local UnitClassification = UnitClassification
+local UnitClass = UnitClass
+local UnitIsPlayer = UnitIsPlayer
+
 local _, ns = ...
 local config = ns.config
 local oUF = ns.oUF or oUF

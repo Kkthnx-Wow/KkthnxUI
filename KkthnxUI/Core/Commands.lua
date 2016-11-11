@@ -6,9 +6,13 @@ local format, lower = string.format, string.lower
 local ipairs = ipairs
 local ceil = math.ceil
 local floor = math.floor
+local DoReadyCheck = DoReadyCheck
+local CombatLogClearEntries = CombatLogClearEntries
 local print, tostring, select = print, tostring, select
-
--- WOW API
+local RestartGx = RestartGx
+local ToggleHelpFrame = ToggleHelpFrame
+local SelectQuestLogEntry = SelectQuestLogEntry
+local SetAbandonQuest = SetAbandonQuest
 local EnableAddOn, DisableAllAddOns = EnableAddOn, DisableAllAddOns
 local GetAddOnInfo = GetAddOnInfo
 local GetMouseFocus = GetMouseFocus
@@ -17,6 +21,11 @@ local GetNumQuestLogEntries = GetNumQuestLogEntries
 local IsInInstance = IsInInstance
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar
+local GetScreenResolutions = GetScreenResolutions
+local GetCurrentResolution = GetCurrentResolution
+local GetRaidRosterInfo = GetRaidRosterInfo
+local InCombatLockdown = InCombatLockdown
+local UnitInRaid = UnitInRaid
 
 -- Ready check
 SlashCmdList.RCSLASH = function() DoReadyCheck() end

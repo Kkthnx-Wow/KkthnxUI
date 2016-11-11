@@ -24,6 +24,7 @@ C["Media"] = {
 	["Texture"] = [[Interface\TargetingFrame\UI-StatusBar]],
 	["Warning_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	["Whisp_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
+	["Logo"] = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
 }
 
 if LSM == nil then return end

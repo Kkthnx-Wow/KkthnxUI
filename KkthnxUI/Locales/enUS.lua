@@ -76,8 +76,121 @@ L_DATATEXT_VICTORY_POINTS = "Victory Points:"
 L_DATATEXT_TOTALMEMORY = "Total Memory Usage:"
 L_DATATEXT_DOWNLOAD = "Download: "
 L_DATATEXT_BANDWIDTH = "Bandwidth: "
+L_DATATEXT_SYSTEM = "System Stats: "
+L_DATATEXT_MEMORY = "Memory"
+L_DATATEXT_TOTALMEMORYUSAGE = "Total Memory Usage"
 L_DATATEXT_FPS = "FPS"
 L_DATATEXT_MS = "MS"
+L_DATATEXT_AVOIDANCESHORT = "Avd: "
+L_DATATEXT_TOTALBAGSSLOTS = "Total Bag Slots"
+L_DATATEXT_TOTALUSEDBAGSSLOTS = "Used Bag Slots"
+L_DATATEXT_TOTALFREEBAGSSLOTS = "Free Bag Slots"
+L_DATATEXT_ARMERROR = "Could not get Call To Arms information."
+L_DATATEXT_NODUNGEONARM = "No dungeons are currently offering a Call To Arms."
+L_DATATEXT_COMBATTIME = "Combat/Arena Time"
+L_DATATEXT_COORDS = "Coords"
+L_DATATEXT_GOLDSERVER = "Server: "
+L_DATATEXT_GOLDTOTAL = "Total: "
+L_DATATEXT_GOLDEARNED = "Earned: "
+L_DATATEXT_GOLDDEFICIT = "Deficit: "
+L_DATATEXT_GOLDSPENT = "Spent: "
+L_DATATEXT_GOLDPROFIT = "Profit: "
+L_DATATEXT_GUILDNOGUILD = "No Guild"
+L_DATATEXT_MICROMENU = "MicroMenu"
+L_DATATEXT_ORDERHALL = "OrderHall"
+L_DATATEXT_NOORDERHALLWO = "Orderhall+"
+L_DATATEXT_NOORDERHALLUNLOCK = "You have not unlocked your OrderHall"
+L_DATATEXT_ORDERHALLREPORT = "Click: Open the OrderHall report"
+L_DATATEXT_BAGSLOTS = "Bags Slots"
+L_DATATEXT_SLOTS = {
+	[1] = {1, INVTYPE_HEAD, 1000},
+	[2] = {3, INVTYPE_SHOULDER, 1000},
+	[3] = {5, INVTYPE_ROBE, 1000},
+	[4] = {6, INVTYPE_WAIST, 1000},
+	[5] = {9, INVTYPE_WRIST, 1000},
+	[6] = {10, INVTYPE_HAND, 1000},
+	[7] = {7, INVTYPE_LEGS, 1000},
+	[8] = {8, INVTYPE_FEET, 1000},
+	[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
+	[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
+	[11] = {18, INVTYPE_RANGED, 1000}
+}
+-- headers
+L_INSTALL_HEADER_1 = "Welcome"
+L_INSTALL_HEADER_2 = "1. Essentials"
+L_INSTALL_HEADER_3 = "2. Unitframes"
+L_INSTALL_HEADER_4 = "3. Features"
+L_INSTALL_HEADER_5 = "4. Things you should know!"
+L_INSTALL_HEADER_6 = "5. Commands"
+L_INSTALL_HEADER_7 = "6. Finished"
+L_INSTALL_HEADER_8 = "1. Essential Settings"
+L_INSTALL_HEADER_9 = "2. Social"
+L_INSTALL_HEADER_10= "3. Frames"
+L_INSTALL_HEADER_11= "4. Success!"
+-- install
+L_INSTALL_INIT_LINE_1 = "Thank you for choosing KkthnxUI!"
+L_INSTALL_INIT_LINE_2 = "You will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings."
+L_INSTALL_INIT_LINE_3 = "You are also given the possibility to be shown a brief tutorial on some of the features of KkthnxUI."
+L_INSTALL_INIT_LINE_4 = "Press the 'Tutorial' button to be guided through this small introduction, or press 'Install' to skip this step."
+-- tutorial 1
+L_TUTORIAL_STEP_1_LINE_1 = "This quick tutorial will show you some of the features in KkthnxUI."
+L_TUTORIAL_STEP_1_LINE_2 = "First, the essentials that you should know before you can play with this UI."
+L_TUTORIAL_STEP_1_LINE_3 = "This installer is partially character-specific. While some of the settings that will be applied later on are account-wide, you need to run the install script for each new character running KkthnxUI. The script is auto shown on every new character you log in with KkthnxUI installed for the first time. Also, the options can be found in /KkthnxUI/Config/Settings.lua for `Power` users or by typing /KkthnxUI in the game for `Friendly` users."
+L_TUTORIAL_STEP_1_LINE_4 = "A power user is a user of a personal computer who has the ability to use advanced features (ex: Lua editing) which are beyond the abilities of normal users. A friendly user is a normal user and is not necessarily capable of programming. It's recommended for them to use our in-game configuration tool (/KkthnxUI) for settings they want to be changed in KkthnxUI."
+-- tutorial 2
+L_TUTORIAL_STEP_2_LINE_1 = "KkthnxUI includes an embedded version of oUF (oUFKkthnxUI) created by Haste. This handles all of the unit frames on the screen, the buffs and debuffs, and the class-specific elements."
+L_TUTORIAL_STEP_2_LINE_2 = "You can visit wowinterface.com and search for oUF for more information about this tool."
+L_TUTORIAL_STEP_2_LINE_3 = "To easily change the unitframes positions, just type /moveui."
+L_TUTORIAL_STEP_2_LINE_4 = ""
+-- tutorial 3
+L_TUTORIAL_STEP_3_LINE_1 = "KkthnxUI is a redesigned Blizzard UI. Nothing less, nothing more. Approxmently all features you see with Default UI is available though KkthnxUI. The only features not available through default UI are some automated features not really visible on screen, for example, auto selling grays when visiting a vendor or, auto sorting bags."
+L_TUTORIAL_STEP_3_LINE_2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is one of the most popular UI at the moment. It fits everyone's play style and is extremely editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons. Since 2012 a lot of users have started using KkthnxUI as a base for their own UI."
+L_TUTORIAL_STEP_3_LINE_3 = "Users may want to visit our extra mods section on our website or by visiting www.wowinterface.com to install additional features or mods."
+L_TUTORIAL_STEP_3_LINE_4 = ""
+-- tutorial 4
+L_TUTORIAL_STEP_4_LINE_1 = "To set how many bars you want, mouseover on left or right of bottom action bar background. Do the same on the right, via bottom. To copy text from the chat frame, click the button shown on mouseover in the right bottom corner of chat frames."
+L_TUTORIAL_STEP_4_LINE_2 = "You can left-click through 80% of data text to show various panels from Blizzard. Friend and Guild Datatext have right-clicked features as well."
+L_TUTORIAL_STEP_4_LINE_3 = "There are some dropdown menus available. Right-clicking on the [X] (Close) bag button will show bags. right-clicking the Minimap will show the micro menu."
+L_TUTORIAL_STEP_4_LINE_4 = ""
+-- tutorial 5
+L_TUTORIAL_STEP_5_LINE_1 = "Lastly, KkthnxUI includes useful slash commands. Below is a list."
+L_TUTORIAL_STEP_5_LINE_2 = "/moveui allow you to move lots of the frames anywhere on the screen. /rl reloads the UI."
+L_TUTORIAL_STEP_5_LINE_3 = "/tt lets you whisper your target. /rc initiates a ready check. /rd disbands a party or raid. /ainv enable auto invite by whisper to you. (/ainv off) to turn it off"
+L_TUTORIAL_STEP_5_LINE_4 = "/gm toggles the Help frame. /install or /tutorial loads this installer. "
+-- tutorial 6
+L_TUTORIAL_STEP_6_LINE_1 = "The tutorial is complete. You can choose to reconsult it at any time by typing /tutorial."
+L_TUTORIAL_STEP_6_LINE_2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs."
+L_TUTORIAL_STEP_6_LINE_3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!"
+L_TUTORIAL_STEP_6_LINE_4 = ""
+-- Install step 1
+L_INSTALL_STEP_1_LINE_1 = "These steps will apply the correct CVar settings for KkthnxUI."
+L_INSTALL_STEP_1_LINE_2 = "The first step applies the essential settings."
+L_INSTALL_STEP_1_LINE_3 = "This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings."
+L_INSTALL_STEP_1_LINE_4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step."
+-- Install step 2
+L_INSTALL_STEP_2_LINE_0 = "Another chat addon is found. We will ignore this step. Please press skip to continue installation."
+L_INSTALL_STEP_2_LINE_1 = "The second step applies the correct chat setup."
+L_INSTALL_STEP_2_LINE_2 = "If you are a new user, this step is recommended. If you are an existing user, you may want to skip this step."
+L_INSTALL_STEP_2_LINE_3 = "It is normal that your chat font will appear too big upon applying these settings. It will revert back to normal when you finish with the installation."
+L_INSTALL_STEP_2_LINE_4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step."
+-- Install step 3
+L_INSTALL_STEP_3_LINE_1 = "The third and final step applies for the default frame positions."
+L_INSTALL_STEP_3_LINE_2 = "This step is |cffff0000recommended|r for new users."
+L_INSTALL_STEP_3_LINE_3 = ""
+L_INSTALL_STEP_3_LINE_4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step."
+-- Install step 4
+L_INSTALL_STEP_4_LINE_1 = "Installation is complete."
+L_INSTALL_STEP_4_LINE_2 = "Please click the 'Finish' button to reload the UI."
+L_INSTALL_STEP_4_LINE_3 = ""
+L_INSTALL_STEP_4_LINE_4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r"
+-- buttons
+L_INSTALL_BUTTON_TUTORIAL = "Tutorial"
+L_INSTALL_BUTTON_INSTALL = "Install"
+L_INSTALL_BUTTON_NEXT = "Next"
+L_INSTALL_BUTTON_SKIP = "Skip"
+L_INSTALL_BUTTON_CONTINUE = "Continue"
+L_INSTALL_BUTTON_FINISH = "Finish"
+L_INSTALL_BUTTON_CLOSE = "Close"
 -- AutoInvite Localization
 L_INVITE_ENABLE = "Autoinvite enabled: "
 L_INVITE_DISABLE = "AutoInvite disabled"
@@ -127,6 +240,8 @@ L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as p
 L_MISC_SILVERSHORT = "|cffc7c7cfs|r"
 L_MISC_UI_OUTDATED = "KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!"
 L_MISC_UNDRESS = "Undress"
+L_MISC_ENTERCOMBAT = "+ Entering Combat"
+L_MISC_LEAVECOMBAT = "- Leaving Combat"
 -- Popup Localization
 L_POPUP_ARMORY = "Armory"
 L_POPUP_BOOSTUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"

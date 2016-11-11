@@ -11,7 +11,11 @@ local Movers = K.Movers
 
 -- Bottom bars anchor
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", PetBattleFrameHider)
-BottomBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.BottomBars))
+if C.DataText.BottomBar ~= true then
+	BottomBarAnchor:CreatePanel("Invisible", 1, 1, "BOTTOM", "UIParent", "BOTTOM", 0, 4)
+else
+	BottomBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.BottomBars))
+end
 BottomBarAnchor:SetWidth((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
 if C.ActionBar.BottomBars == 2 then
 	BottomBarAnchor:SetHeight((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
@@ -137,6 +141,39 @@ if Minimap and C.Minimap.Enable then
 	end
 end
 
+-- BottomBar DT
+if C.DataText.BottomBar then
+	local DataTextBottomBar = CreateFrame("Frame", "KkthnxUIDataTextBottomBar", UIParent)
+	DataTextBottomBar:SetSize(ActionBarAnchor:GetWidth() + 6, 28)
+	DataTextBottomBar:SetPoint("TOP", ActionBarAnchor, "BOTTOM", 0, -1)
+	DataTextBottomBar:SetTemplate()
+	DataTextBottomBar:SetFrameStrata("BACKGROUND")
+	DataTextBottomBar:SetFrameLevel(1)
+	Movers:RegisterFrame(DataTextBottomBar)
+end
+
+-- BottomSplitBarLeft DT
+if C.ActionBar.SplitBars and C.DataText.BottomBar then
+	local DataTextSplitBarLeft = CreateFrame("Frame", "KkthnxUIDataTextSplitBarLeft", UIParent)
+	DataTextSplitBarLeft:SetSize(((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2) +3), 28)
+	DataTextSplitBarLeft:SetPoint("RIGHT", KkthnxUIDataTextBottomBar, "LEFT", 0, 0)
+	DataTextSplitBarLeft:SetTemplate()
+	DataTextSplitBarLeft:SetFrameStrata("BACKGROUND")
+	DataTextSplitBarLeft:SetFrameLevel(1)
+	Movers:RegisterFrame(DataTextSplitBarLeft)
+end
+
+-- BottomSplitBarRight DT
+if C.ActionBar.SplitBars and C.DataText.BottomBar then
+	local DataTextSplitBarRight = CreateFrame("Frame", "KkthnxUIDataTextSplitBarRight", UIParent)
+	DataTextSplitBarRight:SetSize(((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2) +3), 28)
+	DataTextSplitBarRight:SetPoint("LEFT", KkthnxUIDataTextBottomBar, "RIGHT", 0, 0)
+	DataTextSplitBarRight:SetTemplate()
+	DataTextSplitBarRight:SetFrameStrata("BACKGROUND")
+	DataTextSplitBarRight:SetFrameLevel(1)
+	Movers:RegisterFrame(DataTextSplitBarRight)
+end
+
 -- ToggleButton Special
 if C.General.ShowConfigButton == true then
 	local ToggleButtonSpecial = CreateFrame( "Frame", "KkthnxToggleSpecialButton", oUF_PetBattleFrameHider)
@@ -145,7 +182,6 @@ if C.General.ShowConfigButton == true then
 	ToggleButtonSpecial:SetFrameStrata("BACKGROUND")
 	ToggleButtonSpecial:SetFrameLevel(2)
 	ToggleButtonSpecial:SkinButton()
-	-- ToggleButtonSpecial:SetTemplate()
 
 	ToggleButtonSpecial["Text"] = K.SetFontString(ToggleButtonSpecial, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 	ToggleButtonSpecial["Text"]:SetPoint("CENTER", ToggleButtonSpecial, "CENTER", 0, .5)
@@ -164,6 +200,11 @@ if C.General.ShowConfigButton == true then
 			return
 		end
 
+		if (IsShiftKeyDown() and btn == "RightButton") then
+			K.DataTexts:ToggleDataPositions()
+			return
+		end
+
 		if btn == "LeftButton" then
 			local Movers = K.Movers
 			Movers:StartOrStopMoving()
@@ -175,7 +216,7 @@ if C.General.ShowConfigButton == true then
 					Recount_MainWindow:Hide()
 				else
 					Recount_MainWindow:Show()
-				end	
+				end
 			end
 			if IsAddOnLoaded("Skada") then
 				Skada:ToggleWindow()
@@ -198,17 +239,18 @@ if C.General.ShowConfigButton == true then
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine(L_CONFIGBUTTON_FUNC)
 		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_LEFTCLICK, L_CONFIGBUTTON_MOVEUI, 1, 1, 1)
-		if IsAddOnLoaded("Recount") then 
+		if IsAddOnLoaded("Recount") then
 			GameTooltip:AddDoubleLine(L_CONFIGBUTTON_RIGHTCLICK, L_CONFIGBUTTON_RECOUNT, 1, 1, 1)
 		end
-		if IsAddOnLoaded("Skada") then 
+		if IsAddOnLoaded("Skada") then
 			GameTooltip:AddDoubleLine(L_CONFIGBUTTON_RIGHTCLICK, L_CONFIGBUTTON_SKADA, 1, 1, 1)
 		end
 		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_MIDDLECLICK, L_CONFIGBUTTON_CONFIG, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_SHIFTCLICK, L_CONFIGBUTTON_SPEC, 1, 1, 1)	
+		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_SHIFTCLICK, L_CONFIGBUTTON_SPEC, 1, 1, 1)
+		GameTooltip:AddDoubleLine("Shift + Right Click", "Toggle Datatext", 1, 1, 1)
 		GameTooltip:Show()
 		GameTooltip:SetTemplate()
-		end)
+	end)
 
 	ToggleButtonSpecial:HookScript("OnLeave", function(self)
 		GameTooltip:Hide()

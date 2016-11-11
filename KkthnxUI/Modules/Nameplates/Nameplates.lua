@@ -1242,7 +1242,7 @@ local function UpdateName(unitFrame)
 			unitFrame.level:SetText(level)
 		end
 
-		if C.Nameplates.ClassIcons == true and UnitIsPlayer(unitFrame.displayedUnit) then
+		if C.Nameplates.ClassIcons == true and UnitIsPlayer(unitFrame.displayedUnit) and UnitReaction(unitFrame.displayedUnit, 'player') <= 4 then
 			unitFrame.level:SetPoint("RIGHT", unitFrame.name, "LEFT", -2, 0)
 		else
 			unitFrame.level:SetPoint("RIGHT", unitFrame.healthBar, "LEFT", -2, 0)
@@ -1352,6 +1352,8 @@ local function UpdateHealthColor(unitFrame)
 	local unit = unitFrame.displayedUnit
 	local r, g, b
 	local threat
+	local texcoord = {0, 0, 0, 0}
+	unitFrame.isClass = false
 
 	if not UnitIsConnected(unit) then
 		r, g, b = 0.7, 0.7, 0.7
@@ -1365,6 +1367,12 @@ local function UpdateHealthColor(unitFrame)
 			r, g, b = unpack(K.Colors.power["MANA"])
 		elseif UnitIsPlayer(unit) and classColor and UnitReaction(unit, "player") <= 4 then
 			r, g, b = unpack(K.Colors.class[class])
+			if C.Nameplates.ClassIcons == true then
+				unitFrame.isClass = true
+				texcoord = CLASS_ICON_TCOORDS[class]
+				unitFrame.class.Glow:Show()
+				unitFrame.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
+			end
 		elseif IsTapDenied(unitFrame) then
 			r, g, b = 0.6, 0.6, 0.6
 		else
@@ -1402,6 +1410,16 @@ local function UpdateHealthColor(unitFrame)
 			unitFrame.name:SetTextColor(red, green, blue)
 		end
 		unitFrame.r, unitFrame.g, unitFrame.b = r, g, b
+	end
+
+
+	if C.Nameplates.ClassIcons == true then
+		if unitFrame.isClass == true then
+			unitFrame.class.Glow:Show()
+		else
+			unitFrame.class.Glow:Hide()
+		end
+		unitFrame.class:SetTexCoord(texcoord[1], texcoord[2], texcoord[3], texcoord[4])
 	end
 end
 
@@ -1717,6 +1735,28 @@ local function OnNamePlateCreated(namePlate)
 		namePlate.UnitFrame.icons:SetWidth(20 + C.Nameplates.Width)
 		namePlate.UnitFrame.icons:SetHeight(C.Nameplates.AurasSize)
 		namePlate.UnitFrame.icons:SetFrameLevel(namePlate.UnitFrame:GetFrameLevel() + 2)
+	end
+
+	if C.Nameplates.ClassIcons == true then
+		namePlate.UnitFrame.class = namePlate.UnitFrame.healthBar:CreateTexture(nil, "OVERLAY")
+		namePlate.UnitFrame.class:SetPoint("TOPRIGHT", namePlate.UnitFrame.healthBar, "TOPLEFT", -8, K.NoScaleMult * 2)
+		namePlate.UnitFrame.class:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+		namePlate.UnitFrame.class:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 11, (C.Nameplates.Height * 2 * K.NoScaleMult) + 11)
+		namePlate.UnitFrame.class.Glow = CreateFrame("Frame", nil, namePlate.UnitFrame.healthBar)
+		namePlate.UnitFrame.class.Glow:SetBackdrop({
+			bgFile = C.Media.Blank,
+			edgeFile = C.Media.Glow,
+			edgeSize = 3 * K.NoScaleMult,
+			insets = {
+				top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult
+			}
+		})
+		namePlate.UnitFrame.class.Glow:SetBackdropColor(.05, .05, .05, .9)
+		namePlate.UnitFrame.class.Glow:SetBackdropBorderColor(0, 0, 0, 1)
+		namePlate.UnitFrame.class.Glow:SetScale(K.NoScaleMult)
+		namePlate.UnitFrame.class.Glow:SetAllPoints(namePlate.UnitFrame.class)
+		namePlate.UnitFrame.class.Glow:SetFrameLevel(namePlate.UnitFrame.healthBar:GetFrameLevel() -1 > 0 and namePlate.UnitFrame.healthBar:GetFrameLevel() -1 or 0)
+		namePlate.UnitFrame.class.Glow:Hide()
 	end
 
 	if C.Nameplates.HealerIcon == true then

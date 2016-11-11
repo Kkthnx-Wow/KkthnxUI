@@ -22,6 +22,7 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 		TalkingHeadFrame.ignoreFramePositionManager = true
 		TalkingHeadFrame:ClearAllPoints()
 		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
+		TalkingHeadFrame:SetScale(.80)
 	end
 end)
 

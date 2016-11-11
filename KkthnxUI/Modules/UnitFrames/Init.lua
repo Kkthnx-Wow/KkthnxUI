@@ -4,6 +4,15 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
+local pairs = pairs
+local select = select
+local unpack = unpack
+
+local hooksecurefunc = hooksecurefunc
+local SetOverrideBindingClick = SetOverrideBindingClick
+local IsControlKeyDown = IsControlKeyDown
+local IsAltKeyDown = IsAltKeyDown
+
 -- Event handler
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
 oUFKkthnx:RegisterEvent("ADDON_LOADED")

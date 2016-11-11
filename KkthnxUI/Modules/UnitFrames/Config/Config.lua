@@ -84,7 +84,7 @@ ns.config = {
 		cbshow = true,
 		cbwidth = 200,
 		cbheight = 18,
-		cbicon = "NONE",
+		cbicon = C.Unitframe.IconPlayer, --"LEFT"
 	},
 
 	pet = {
@@ -106,7 +106,7 @@ ns.config = {
 		cbshow = true,
 		cbwidth = 200,
 		cbheight = 18,
-		cbicon = "NONE",
+		cbicon = C.Unitframe.IconTarget,
 	},
 
 	targettarget = {

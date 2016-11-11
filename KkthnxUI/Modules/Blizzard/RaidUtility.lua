@@ -42,7 +42,7 @@ local function CreateButton(name, parent, template, width, height, point, relati
 end
 
 -- Show button
-CreateButton("RaidUtilityShowButton", oUF_PetBattleFrameHider, "UIPanelButtonTemplate, SecureHandlerClickTemplate", RaidUtilityPanel:GetWidth() / 1.5, 18, "TOP", RaidUtilityPanel, "TOP", 0, 0, RAID_CONTROL)
+CreateButton("RaidUtilityShowButton", oUF_PetBattleFrameHider, "UIPanelButtonTemplate, SecureHandlerClickTemplate", RaidUtilityPanel:GetWidth() / 1.4, 18, "TOP", RaidUtilityPanel, "TOP", 0, 0, RAID_CONTROL)
 RaidUtilityShowButton:SetFrameRef("RaidUtilityPanel", RaidUtilityPanel)
 RaidUtilityShowButton:SetAttribute("_onclick", [=[self:Hide(); self:GetFrameRef("RaidUtilityPanel"):Show();]=])
 RaidUtilityShowButton:SetScript("OnMouseUp", function(self, button)

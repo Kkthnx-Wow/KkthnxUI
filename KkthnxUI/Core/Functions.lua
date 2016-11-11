@@ -290,35 +290,56 @@ K.FormatTime = function(s)
 	return format("%.1f", s)
 end
 
--- Add time before calling a function
-local TimerParent = CreateFrame("Frame")
-K.UnusedTimers = {}
-
-local TimerOnFinished = function(self)
-	self.Func(unpack(self.Args))
-	tinsert(K.UnusedTimers, self)
-end
-
-K.NewTimer = function()
-	local Parent = TimerParent:CreateAnimationGroup()
-	local Timer = Parent:CreateAnimation("Alpha")
-	Timer:SetScript("OnFinished", TimerOnFinished)
-	Timer.Parent = Parent
-	return Timer
-end
-
+--Add time before calling a function
+local waitTable = {}
+local waitFrame
 K.Delay = function(delay, func, ...)
-	if (type(delay) ~= "number" or type(func) ~= "function") then
-		return
+	if(type(delay) ~= "number" or type(func) ~= "function") then
+		return false
 	end
-	local Timer
-	if K.UnusedTimers[1] then
-		Timer = tremove(K.UnusedTimers, 1) -- Recycle a timer
+	if(waitFrame == nil) then
+		waitFrame = CreateFrame("Frame", "WaitFrame", K.UIParent)
+		waitFrame:SetScript("onUpdate", function (_, elapse)
+			local count = #waitTable
+			local i = 1
+			while(i <= count) do
+				local waitRecord = tremove(waitTable,i)
+				local d = tremove(waitRecord, 1)
+				local f = tremove(waitRecord, 1)
+				local p = tremove(waitRecord, 1)
+				if(d > elapse) then
+					tinsert(waitTable, i, {d-elapse, f, p})
+					i = i + 1
+				else
+					count = count - 1
+					f(unpack(p))
+				end
+			end
+		end)
+	end
+	tinsert(waitTable, {delay, func,{...}})
+	return true
+end
+
+--Currencys
+local GetCurrencyInfo = GetCurrencyInfo
+K.Currency = function(id, weekly, capped)
+	local name, amount, tex, week, weekmax, maxed, discovered = GetCurrencyInfo(id)
+
+	local r, g, b = 1, 1, 1
+	for i = 1, GetNumWatchedTokens() do
+		local _, _, _, itemID = GetBackpackCurrencyInfo(i)
+		if id == itemID then r, g, b = .77, .12, .23 end
+	end
+
+	if (amount == 0 and r == 1) then return end
+	if weekly then
+		if id == 390 then week = floor(math.abs(week) / 100) end
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, "Current: " .. amount .. " - " .. WEEKLY .. ": " .. week .. " / " .. weekmax, r, g, b, r, g, b) end
+	elseif capped  then
+		if id == 392 then maxed = 4000 end
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount .. " / " .. maxed, r, g, b, r, g, b) end
 	else
-		Timer = K.NewTimer() -- Or make a new one if needed
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount, r, g, b, r, g, b) end
 	end
-	Timer.Args = {...}
-	Timer.Func = func
-	Timer:SetDuration(delay)
-	Timer.Parent:Play()
 end

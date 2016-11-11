@@ -104,6 +104,8 @@ C["Cooldown"] = {
 	["FontSize"] = 18,
 	["Threshold"] = 3,
 }
+
+-- DataBars
 C["DataBars"] = {
 	-- Artifact
 	["ArtifactColor"] = {229/255, 204/255, 127/255},
@@ -144,6 +146,7 @@ C["DataText"] = {
 	["Time24Hr"] = false,
 	["LocalTime"] = true,
 	["Battleground"] = true,
+	["BottomBar"] = true,
 }
 
 -- Filger
@@ -168,6 +171,8 @@ C["General"] = {
 	["UIScale"] = 0.71,
 	["WelcomeMessage"] = true,
 	["ShowConfigButton"] = true,
+	["QuestSounds"] = true,
+	["PathFinder"] = true,
 }
 
 -- Loot
@@ -200,7 +205,6 @@ C["Misc"] = {
 	["AutoSellGrays"] = true,
 	["BGSpam"] = false,
 	["ColorPicker"] = false,
-	["DurabilityWarninig"] = false,
 	["EnhancedMail"] = true,
 	["Errors"] = true,
 	["InviteKeyword"] = "inv",
@@ -209,6 +213,8 @@ C["Misc"] = {
 	["SellMisc"] = true,
 	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,
+	["Combat"] = true,
+	["QuestLevel"] = true,
 }
 
 -- Nameplates
@@ -301,6 +307,8 @@ C["Unitframe"] = {
 	["TextPowerColor"] = {.9, .9, .9},
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
+	["IconPlayer"] = "NONE",
+	["IconTarget"] = "NONE",
 }
 
 C["Partyframe"] = { -- Could add this as its own in the future.
@@ -311,6 +319,8 @@ C["Partyframe"] = { -- Could add this as its own in the future.
 
 -- Raidframe
 C["Raidframe"] = {
+	["AuraWatch"] = true,
+	["AuraWatchTimers"] = true,
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Height"] = 40,
@@ -321,16 +331,15 @@ C["Raidframe"] = {
 	["ManabarHorizontal"] = false,
 	["ManabarShow"] = true,
 	["MaxUnitPerColumn"] = 8,
+	["RaidAsParty"] = false,
 	["Scale"] = 1,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
 	["ShowResurrectText"] = true,
 	["ShowRolePrefix"] = false,
 	["ShowThreatText"] = false,
-	["RaidAsParty"] = false,
+	["UseHealLayout"] = false,
 	["Width"] = 42,
-	["AuraWatch"] = true,
-	["AuraWatchTimers"] = true,
 }
 
 -- Worldmap

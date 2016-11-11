@@ -1,6 +1,14 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.ArtifactEnable ~= true then return end
 
+local min = math.min
+
+local HideUIPanel = HideUIPanel
+local SocketInventoryItem = SocketInventoryItem
+local LoadAddOn = LoadAddOn
+local HasArtifactEquipped = HasArtifactEquipped
+local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
+
 local Bars = 20
 local Movers = K.Movers
 
@@ -87,7 +95,7 @@ ArtifactBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(string.format("|cffe6cc80"..ARTIFACT_POWER..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
 		GameTooltip:AddLine(string.format(L_DATABARS_ARTIFACT_REMANING, xpForNextPoint - xp)) L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(PointsAvailableToSpend), nil, nil, nil, true)
+		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(numPointsAvailableToSpend), nil, nil, nil, true)
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(L_DATABARS_ARTIFACT_CLICK)
 

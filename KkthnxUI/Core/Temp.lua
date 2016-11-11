@@ -92,7 +92,7 @@ K.NameplatesWhitelist = {
 	-- Hunter
 	-- Harmful
 	[SpellName(3355)] = true, -- Freezing Trap
-	[SpellName(1130)] = true, -- hunter's arrow
+	[SpellName(1130)] = true, -- hunter"s arrow
 	[SpellName(118253)] = true, -- serpent sting
 	[SpellName(131894)] = true, -- murder by way of crow
 	[SpellName(13812)] = true, -- explosive trap
@@ -132,7 +132,7 @@ K.NameplatesWhitelist = {
 	[SpellName(120)] = true, -- cone of cold
 	[SpellName(122)] = true, -- frost nova
 	[SpellName(31589)] = true, -- slow
-	[SpellName(31661)] = true, -- dragon's breath
+	[SpellName(31661)] = true, -- dragon"s breath
 	[SpellName(82691)] = true, -- ring of frost
 	[SpellName(157997)] = true, -- ice nova
 	[SpellName(205708)] = true, -- chilled
@@ -176,7 +176,7 @@ K.NameplatesWhitelist = {
 	-- Control
 	[SpellName(853)] = true, -- hammer of justice
 	[SpellName(20066)] = true, -- repentance
-	[SpellName(31935)] = true, -- avenger's shield silence
+	[SpellName(31935)] = true, -- avenger"s shield silence
 	[SpellName(62124)] = true, -- reckoning taunt
 	[SpellName(105421)] = true, -- blinding light
 
@@ -337,7 +337,7 @@ K.NameplateSelfWhitelist = {
 	[SpellName(108839)] = true, -- ice floes
 	[SpellName(108843)] = true, -- blazing speed
 	[SpellName(116014)] = true, -- rune of power
-	[SpellName(116267)] = true, -- incanter's flow
+	[SpellName(116267)] = true, -- incanter"s flow
 	[SpellName(198924)] = true, -- quickening
 	[SpellName(205766)] = true, -- bone chilling
 	-- Helpful
@@ -439,7 +439,7 @@ K.NameplateSelfWhitelist = {
 	[SpellName(196725)] = true, -- refreshing jade wind
 	[SpellName(215479)] = true, -- ironskin brew
 	-- Helpful
-	[SpellName(116841)] = true, -- tiger's lust
+	[SpellName(116841)] = true, -- tiger"s lust
 	[SpellName(116844)] = true, -- ring of peace
 	[SpellName(116849)] = true, -- life cocoon
 	[SpellName(119611)] = true, -- renewing mist

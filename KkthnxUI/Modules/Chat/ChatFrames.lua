@@ -17,6 +17,7 @@ local sub = string.sub
 local GetID, GetName = GetID, GetName
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local GetChannelName = GetChannelName
 local Movers = K.Movers
 local origs = {}
 

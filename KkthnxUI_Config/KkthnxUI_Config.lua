@@ -164,6 +164,7 @@ local function Local(o)
 	if o == "UIConfigDataTextSystem" then o = L_GUI_DATATEXT_SYSTEM end
 	if o == "UIConfigDataTextTime" then o = L_GUI_DATATEXT_TIME end
 	if o == "UIConfigDataTextTime24Hr" then o = L_GUI_DATATEXT_TIME24HR end
+	if o == "UIConfigDataTextBottomBar" then o = L_GUI_DATATEXT_BOTTOMBAR end
 	-- Cooldown Settings
 	if o == "UIConfigCooldown" then o = L_GUI_COOLDOWN end
 	if o == "UIConfigCooldownEnable" then o = L_GUI_COOLDOWN_ENABLE end
@@ -189,6 +190,8 @@ local function Local(o)
 	if o == "UIConfigGeneralTranslateMessage" then o = L_GUI_GENERAL_TRANSLATE_MESSAGE end
 	if o == "UIConfigGeneralUIScale" then o = L_GUI_GENERAL_UISCALE end
 	if o == "UIConfigGeneralWelcomeMessage" then o = L_GUI_GENERAL_WELCOME_MESSAGE end
+	if o == "UIConfigGeneralQuestSounds" then o = L_GUI_GENERAL_QUESTSOUNDS end
+	if o == "UIConfigGeneralPathFinder" then o = L_GUI_GENERAL_PATHFINDER end
 	-- Loot Settings
 	if o == "UIConfigLoot" then o = LOOT end
 	if o == "UIConfigLootAutoGreed" then o = L_GUI_LOOT_AUTOGREED end
@@ -216,7 +219,6 @@ local function Local(o)
 	if o == "UIConfigMiscAutoSellGrays" then o = L_GUI_MISC_AUTOSELLGRAYS end
 	if o == "UIConfigMiscBGSpam" then o = L_GUI_MISC_HIDE_BG_SPAM end
 	if o == "UIConfigMiscColorPicker" then o = L_GUI_MISC_COLOR_PICKER end
-	if o == "UIConfigMiscDurabilityWarninig" then o = L_GUI_MISC_DURABILITY_WARNINIG end
 	if o == "UIConfigMiscEnhancedMail" then o = L_GUI_MISC_ENCHANCED_MAIL end
 	if o == "UIConfigMiscErrors" then o = L_GUI_MISC_ERRORS end
 	if o == "UIConfigMiscInviteKeyword" then o = L_GUI_MISC_INVKEYWORD end
@@ -225,8 +227,10 @@ local function Local(o)
 	if o == "UIConfigMiscSellMisc" then o = L_GUI_MISC_SELLMISC end
 	if o == "UIConfigMiscSlotDurability" then o = L_GUI_MISC_SLOT_DURABILITY end
 	if o == "UIConfigMiscUseGuildRepair" then o = L_GUI_MISC_USEGUILDREPAIR end
+	if o == "UIConfigMiscCombat" then o = L_GUI_MISC_COMBAT end
+	if o == "UIConfigMiscQuestLevel" then o = L_GUI_MISC_QUESTLEVEL end
 	-- Nameplate Settings
-	if o == "UIConfigNameplates" then o = UNIT_NAMEPLATES end
+	if o == "UIConfigNameplates" then o = L_GUI_NAMEPLATES end
 	if o == "UIConfigNameplatesAdditionalHeight" then o = L_GUI_NAMEPLATES_AD_HEIGHT end
 	if o == "UIConfigNameplatesAdditionalWidth" then o = L_GUI_NAMEPLATES_AD_WIDTH end
 	if o == "UIConfigNameplatesAurasSize" then o = L_GUI_NAMEPLATES_DEBUFFS_SIZE end
@@ -278,8 +282,8 @@ local function Local(o)
 	if o == "UIConfigTooltipSpellID" then o = L_GUI_TOOLTIP_SPELL_ID end
 	-- Unitframe Settings
 	if o == "UIConfigUnitframe" then o = L_GUI_UNITFRAME end
-	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
 	if o == "UIConfigUnitframeCastbars" then o = L_GUI_UNITFRAME_CASTBARS end
+	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
 	if o == "UIConfigUnitframeClassColor" then o = L_GUI_UNITFRAME_CLASSCOLOR end
 	if o == "UIConfigUnitframeClassPortraits" then o = L_GUI_UNITFRAME_CLASSPORTRAITS end
 	if o == "UIConfigUnitframeClickThrough" then o = L_GUI_UNITFRAME_CLICKTHROUGH end
@@ -290,6 +294,8 @@ local function Local(o)
 	if o == "UIConfigUnitframeFocusCastbarHeight" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT end
 	if o == "UIConfigUnitframeFocusCastbarWidth" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH end
 	if o == "UIConfigUnitframeFocusModifier" then o = L_GUI_UNITFRAME_FOCUS_MODIFIER end
+	if o == "UIConfigUnitframeIconPlayer" then o = L_GUI_UNITFRAME_ICONPLAYER end
+	if o == "UIConfigUnitframeIconTarget" then o = L_GUI_UNITFRAME_ICONTARGET end
 	if o == "UIConfigUnitframeParty" then o = L_GUI_UNITFRAME_PARTY end
 	if o == "UIConfigUnitframePlayerCastbarHeight" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_HEIGHT end
 	if o == "UIConfigUnitframePlayerCastbarWidth" then o = L_GUI_UNITFRAME_PLAYERCASTBAR_WIDTH end
@@ -405,7 +411,7 @@ StaticPopupDialogs.PERCHAR = {
 StaticPopupDialogs.RESET_PERCHAR = {
 	text = L_GUI_RESET_CHAR,
 	OnAccept = function()
-		KkthnxUIConfig = KkthnxUIConfigSettings
+		KkthnxUIConfigPrivate = KkthnxUIConfigPublic
 		ReloadUI()
 	end,
 	OnCancel = function() if UIConfig and UIConfig:IsShown() then UIConfigCover:Hide() end end,
@@ -419,8 +425,8 @@ StaticPopupDialogs.RESET_PERCHAR = {
 StaticPopupDialogs.RESET_ALL = {
 	text = L_GUI_RESET_ALL,
 	OnAccept = function()
-		KkthnxUIConfigSettings = nil
-		KkthnxUIConfig = nil
+		KkthnxUIConfigPublic = nil
+		KkthnxUIConfigPrivate = nil
 		ReloadUI()
 	end,
 	OnCancel = function() UIConfigCover:Hide() end,
@@ -433,26 +439,26 @@ StaticPopupDialogs.RESET_ALL = {
 
 local function SetValue(group, option, value)
 	local mergesettings
-	if KkthnxUIConfig == KkthnxUIConfigSettings then
+	if KkthnxUIConfigPrivate == KkthnxUIConfigPublic then
 		mergesettings = true
 	else
 		mergesettings = false
 	end
 
 	if KkthnxUIConfigAll[realm][name] == true then
-		if not KkthnxUIConfig then KkthnxUIConfig = {} end
-		if not KkthnxUIConfig[group] then KkthnxUIConfig[group] = {} end
-		KkthnxUIConfig[group][option] = value
+		if not KkthnxUIConfigPrivate then KkthnxUIConfigPrivate = {} end
+		if not KkthnxUIConfigPrivate[group] then KkthnxUIConfigPrivate[group] = {} end
+		KkthnxUIConfigPrivate[group][option] = value
 	else
 		if mergesettings == true then
-			if not KkthnxUIConfig then KkthnxUIConfig = {} end
-			if not KkthnxUIConfig[group] then KkthnxUIConfig[group] = {} end
-			KkthnxUIConfig[group][option] = value
+			if not KkthnxUIConfigPrivate then KkthnxUIConfigPrivate = {} end
+			if not KkthnxUIConfigPrivate[group] then KkthnxUIConfigPrivate[group] = {} end
+			KkthnxUIConfigPrivate[group][option] = value
 		end
 
-		if not KkthnxUIConfigSettings then KkthnxUIConfigSettings = {} end
-		if not KkthnxUIConfigSettings[group] then KkthnxUIConfigSettings[group] = {} end
-		KkthnxUIConfigSettings[group][option] = value
+		if not KkthnxUIConfigPublic then KkthnxUIConfigPublic = {} end
+		if not KkthnxUIConfigPublic[group] then KkthnxUIConfigPublic[group] = {} end
+		KkthnxUIConfigPublic[group][option] = value
 	end
 end
 
@@ -595,306 +601,306 @@ function CreateUIConfig()
 
 	--[[
 	if not slider.bg then
-	slider.bg = CreateFrame("Frame", nil, slider)
-	slider.bg:SetPoint("TOPLEFT", slider:GetThumbTexture(), "TOPLEFT", 10, -7)
-	slider.bg:SetPoint("BOTTOMRIGHT", slider:GetThumbTexture(), "BOTTOMRIGHT", -7, 7)
-	slider:GetThumbTexture():SetAlpha(0)
-end
---]]
+		slider.bg = CreateFrame("Frame", nil, slider)
+		slider.bg:SetPoint("TOPLEFT", slider:GetThumbTexture(), "TOPLEFT", 10, -7)
+		slider.bg:SetPoint("BOTTOMRIGHT", slider:GetThumbTexture(), "BOTTOMRIGHT", -7, 7)
+		slider:GetThumbTexture():SetAlpha(0)
+	end
+	--]]
 
-local function sortMyTable(a, b)
-	return ALLOWED_GROUPS[a] < ALLOWED_GROUPS[b]
-end
-local function pairsByKey(t, f)
-	local a = {}
-	for n in pairs(t) do table.insert(a, n) end
-	table.sort(a, sortMyTable)
-	local i = 0
-	local iter = function()
-		i = i + 1
-		if a[i] == nil then return nil
-		else return a[i], t[a[i]]
+	local function sortMyTable(a, b)
+		return ALLOWED_GROUPS[a] < ALLOWED_GROUPS[b]
+	end
+	local function pairsByKey(t, f)
+		local a = {}
+		for n in pairs(t) do table.insert(a, n) end
+		table.sort(a, sortMyTable)
+		local i = 0
+		local iter = function()
+			i = i + 1
+			if a[i] == nil then return nil
+			else return a[i], t[a[i]]
+			end
 		end
-	end
-	return iter
-end
-
-local GetOrderedIndex = function(t)
-	local OrderedIndex = {}
-
-	for key in pairs(t) do table.insert(OrderedIndex, key) end
-	table.sort(OrderedIndex)
-	return OrderedIndex
-end
-
-local OrderedNext = function(t, state)
-	local Key
-
-	if (state == nil) then
-		t.OrderedIndex = GetOrderedIndex(t)
-		Key = t.OrderedIndex[1]
-		return Key, t[Key]
+		return iter
 	end
 
-	Key = nil
-	for i = 1, #t.OrderedIndex do
-		if (t.OrderedIndex[i] == state) then Key = t.OrderedIndex[i + 1] end
+	local GetOrderedIndex = function(t)
+		local OrderedIndex = {}
+
+		for key in pairs(t) do table.insert(OrderedIndex, key) end
+		table.sort(OrderedIndex)
+		return OrderedIndex
 	end
 
-	if Key then return Key, t[Key] end
-	t.OrderedIndex = nil
-	return
-end
+	local OrderedNext = function(t, state)
+		local Key
 
-local PairsByKeys = function(t) return OrderedNext, t, nil end
-
-local child = CreateFrame("Frame", nil, groups)
-child:SetPoint("TOPLEFT")
-local offset = 5
-for i in pairsByKey(ALLOWED_GROUPS) do
-	local o = "UIConfig"..i
-	Local(o)
-	local button = NewButton(K.option, child)
-	button:SetSize(125, 16)
-	button:SetPoint("TOPLEFT", 5, -offset)
-	button:SetScript("OnClick", function(self) ShowGroup(i, button) self:SetText(format("|cff%02x%02x%02x%s|r", K.Color.r*255, K.Color.g*255, K.Color.b*255, K.option)) end)
-	offset = offset + 20
-end
-child:SetSize(125, offset)
-slider:SetMinMaxValues(0, (offset == 0 and 1 or offset - 12 * 33))
-slider:SetValue(1)
-groups:SetScrollChild(child)
-
-local x
-_G["UIConfigCategoryGroup"]:EnableMouseWheel(true)
-_G["UIConfigCategoryGroup"]:SetScript("OnMouseWheel", function(self, delta)
-	if _G["UIConfigCategorySlider"]:IsShown() then
-		if delta == -1 then
-			x = _G["UIConfigCategorySlider"]:GetValue()
-			_G["UIConfigCategorySlider"]:SetValue(x + 10)
-		elseif delta == 1 then
-			x = _G["UIConfigCategorySlider"]:GetValue()
-			_G["UIConfigCategorySlider"]:SetValue(x - 20)
+		if (state == nil) then
+			t.OrderedIndex = GetOrderedIndex(t)
+			Key = t.OrderedIndex[1]
+			return Key, t[Key]
 		end
+
+		Key = nil
+		for i = 1, #t.OrderedIndex do
+			if (t.OrderedIndex[i] == state) then Key = t.OrderedIndex[i + 1] end
+		end
+
+		if Key then return Key, t[Key] end
+		t.OrderedIndex = nil
+		return
 	end
-end)
 
-local group = CreateFrame("ScrollFrame", "UIConfigGroup", UIConfig)
-group:SetPoint("TOPLEFT", 0, 5)
-group:SetSize(520, 400)
+	local PairsByKeys = function(t) return OrderedNext, t, nil end
 
--- Options Scroll
-local slider = CreateFrame("Slider", "UIConfigGroupSlider", group)
-slider:SetPoint("TOPRIGHT", 0, 0)
-slider:SetSize(20, 400)
-slider:SetThumbTexture("Interface\\Buttons\\UI-ScrollBar-Knob")
-slider:SetOrientation("VERTICAL")
-slider:SetValueStep(20)
-slider:SetScript("OnValueChanged", function(self, value) group:SetVerticalScroll(value) end)
-
-for i in pairs(ALLOWED_GROUPS) do
-	local frame = CreateFrame("Frame", "UIConfig"..i, UIConfigGroup)
-	frame:SetPoint("TOPLEFT")
-	frame:SetWidth(225)
-
+	local child = CreateFrame("Frame", nil, groups)
+	child:SetPoint("TOPLEFT")
 	local offset = 5
+	for i in pairsByKey(ALLOWED_GROUPS) do
+		local o = "UIConfig"..i
+		Local(o)
+		local button = NewButton(K.option, child)
+		button:SetSize(125, 16)
+		button:SetPoint("TOPLEFT", 5, -offset)
+		button:SetScript("OnClick", function(self) ShowGroup(i, button) self:SetText(format("|cff%02x%02x%02x%s|r", K.Color.r*255, K.Color.g*255, K.Color.b*255, K.option)) end)
+		offset = offset + 20
+	end
+	child:SetSize(125, offset)
+	slider:SetMinMaxValues(0, (offset == 0 and 1 or offset - 12 * 33))
+	slider:SetValue(1)
+	groups:SetScrollChild(child)
 
-	if type(C[i]) ~= "table" then Error(i.." GroupName not found in config table.") return end
-	for j, value in PairsByKeys(C[i]) do
-		if type(value) == "boolean" then
-			local button = CreateFrame("CheckButton", "UIConfig"..i..j, frame, "InterfaceOptionsCheckButtonTemplate")
-			local o = "UIConfig"..i..j
-			Local(o)
-			_G["UIConfig"..i..j.."Text"]:SetText(K.option)
-			_G["UIConfig"..i..j.."Text"]:SetFontObject(GameFontHighlight)
-			_G["UIConfig"..i..j.."Text"]:SetWidth(460)
-			_G["UIConfig"..i..j.."Text"]:SetJustifyH("LEFT")
-			button:SetChecked(value)
-			button:SetScript("OnClick", function(self) SetValue(i, j, (self:GetChecked() and true or false)) end)
-			button:SetPoint("TOPLEFT", 5, -offset)
-			offset = offset + 25
-		elseif type(value) == "number" or type(value) == "string" then
-			local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-			local o = "UIConfig"..i..j
-			Local(o)
-			label:SetText(K.option)
-			label:SetSize(460, 20)
-			label:SetJustifyH("LEFT")
-			label:SetPoint("TOPLEFT", 5, -offset)
-
-			local editbox = CreateFrame("EditBox", nil, frame)
-			editbox:SetAutoFocus(false)
-			editbox:SetMultiLine(false)
-			editbox:SetSize(220, 22)
-			editbox:SetMaxLetters(255)
-			editbox:SetTextInsets(3, 0, 0, 0)
-			editbox:SetFontObject(GameFontHighlight)
-			editbox:SetPoint("TOPLEFT", 8, -(offset + 20))
-			editbox:SetText(value)
-			editbox:SetBackdrop(K.Backdrop)
-			editbox:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-
-			local okbutton = CreateFrame("Button", nil, frame)
-			okbutton:SetHeight(editbox:GetHeight() - 8)
-			okbutton:SkinButton()
-			okbutton:SetPoint("LEFT", editbox, "RIGHT", 2, 0)
-
-			local oktext = okbutton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-			oktext:SetText(OKAY)
-			oktext:SetPoint("CENTER", okbutton, "CENTER", -1, 0)
-			okbutton:SetWidth(oktext:GetWidth() + 5)
-			okbutton:Hide()
-
-			if type(value) == "number" then
-				editbox:SetScript("OnEscapePressed", function(self) okbutton:Hide() self:ClearFocus() self:SetText(value) end)
-				editbox:SetScript("OnChar", function(self) okbutton:Show() end)
-				editbox:SetScript("OnEnterPressed", function(self) okbutton:Hide() self:ClearFocus() SetValue(i, j, tonumber(self:GetText())) end)
-				okbutton:SetScript("OnMouseDown", function(self) editbox:ClearFocus() self:Hide() SetValue(i, j, tonumber(editbox:GetText())) end)
-			else
-				editbox:SetScript("OnEscapePressed", function(self) okbutton:Hide() self:ClearFocus() self:SetText(value) end)
-				editbox:SetScript("OnChar", function(self) okbutton:Show() end)
-				editbox:SetScript("OnEnterPressed", function(self) okbutton:Hide() self:ClearFocus() SetValue(i, j, tostring(self:GetText())) end)
-				okbutton:SetScript("OnMouseDown", function(self) editbox:ClearFocus() self:Hide() SetValue(i, j, tostring(editbox:GetText())) end)
+	local x
+	_G["UIConfigCategoryGroup"]:EnableMouseWheel(true)
+	_G["UIConfigCategoryGroup"]:SetScript("OnMouseWheel", function(self, delta)
+		if _G["UIConfigCategorySlider"]:IsShown() then
+			if delta == -1 then
+				x = _G["UIConfigCategorySlider"]:GetValue()
+				_G["UIConfigCategorySlider"]:SetValue(x + 10)
+			elseif delta == 1 then
+				x = _G["UIConfigCategorySlider"]:GetValue()
+				_G["UIConfigCategorySlider"]:SetValue(x - 20)
 			end
+		end
+	end)
 
-			offset = offset + 45
-		elseif type(value) == "table" then
-			local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-			local o = "UIConfig"..i..j
-			Local(o)
-			label:SetText(K.option)
-			label:SetSize(440, 20)
-			label:SetJustifyH("LEFT")
-			label:SetPoint("TOPLEFT", 5, -offset)
+	local group = CreateFrame("ScrollFrame", "UIConfigGroup", UIConfig)
+	group:SetPoint("TOPLEFT", 0, 5)
+	group:SetSize(520, 400)
 
-			colorbuttonname = (label:GetText().."ColorPicker")
+	-- Options Scroll
+	local slider = CreateFrame("Slider", "UIConfigGroupSlider", group)
+	slider:SetPoint("TOPRIGHT", 0, 0)
+	slider:SetSize(20, 400)
+	slider:SetThumbTexture("Interface\\Buttons\\UI-ScrollBar-Knob")
+	slider:SetOrientation("VERTICAL")
+	slider:SetValueStep(20)
+	slider:SetScript("OnValueChanged", function(self, value) group:SetVerticalScroll(value) end)
 
-			local colorbutton = CreateFrame("Button", colorbuttonname, frame)
-			colorbutton:SetHeight(20)
-			colorbutton:SetBackdrop(K.Backdrop)
-			colorbutton:SetBackdropBorderColor(unpack(value))
-			colorbutton:SetBackdropColor(value[1], value[2], value[3], 0.3)
-			colorbutton:SetPoint("LEFT", label, "RIGHT", 2, 0)
+	for i in pairs(ALLOWED_GROUPS) do
+		local frame = CreateFrame("Frame", "UIConfig"..i, UIConfigGroup)
+		frame:SetPoint("TOPLEFT")
+		frame:SetWidth(225)
 
-			local colortext = colorbutton:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-			colortext:SetText(COLOR)
-			colortext:SetPoint("CENTER")
-			colortext:SetJustifyH("CENTER")
-			colorbutton:SetWidth(colortext:GetWidth() + 5)
+		local offset = 5
 
-			local oldvalue = value
+		if type(C[i]) ~= "table" then Error(i.." GroupName not found in config table.") return end
+		for j, value in PairsByKeys(C[i]) do
+			if type(value) == "boolean" then
+				local button = CreateFrame("CheckButton", "UIConfig"..i..j, frame, "InterfaceOptionsCheckButtonTemplate")
+				local o = "UIConfig"..i..j
+				Local(o)
+				_G["UIConfig"..i..j.."Text"]:SetText(K.option)
+				_G["UIConfig"..i..j.."Text"]:SetFontObject(GameFontHighlight)
+				_G["UIConfig"..i..j.."Text"]:SetWidth(460)
+				_G["UIConfig"..i..j.."Text"]:SetJustifyH("LEFT")
+				button:SetChecked(value)
+				button:SetScript("OnClick", function(self) SetValue(i, j, (self:GetChecked() and true or false)) end)
+				button:SetPoint("TOPLEFT", 5, -offset)
+				offset = offset + 25
+			elseif type(value) == "number" or type(value) == "string" then
+				local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+				local o = "UIConfig"..i..j
+				Local(o)
+				label:SetText(K.option)
+				label:SetSize(460, 20)
+				label:SetJustifyH("LEFT")
+				label:SetPoint("TOPLEFT", 5, -offset)
 
-			local function round(number, decimal)
-				return (("%%.%df"):format(decimal)):format(number)
-			end
+				local editbox = CreateFrame("EditBox", nil, frame)
+				editbox:SetAutoFocus(false)
+				editbox:SetMultiLine(false)
+				editbox:SetSize(220, 22)
+				editbox:SetMaxLetters(255)
+				editbox:SetTextInsets(3, 0, 0, 0)
+				editbox:SetFontObject(GameFontHighlight)
+				editbox:SetPoint("TOPLEFT", 8, -(offset + 20))
+				editbox:SetText(value)
+				editbox:SetBackdrop(K.Backdrop)
+				editbox:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
-			colorbutton:SetScript("OnMouseDown", function(self)
-				if ColorPickerFrame:IsShown() then return end
-				local newR, newG, newB, newA
-				local fired = 0
+				local okbutton = CreateFrame("Button", nil, frame)
+				okbutton:SetHeight(editbox:GetHeight() - 8)
+				okbutton:SkinButton()
+				okbutton:SetPoint("LEFT", editbox, "RIGHT", 2, 0)
 
-				local r, g, b, a = self:GetBackdropBorderColor()
-				r, g, b, a = round(r, 2), round(g, 2), round(b, 2), round(a, 2)
-				local originalR, originalG, originalB, originalA = r, g, b, a
+				local oktext = okbutton:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+				oktext:SetText(OKAY)
+				oktext:SetPoint("CENTER", okbutton, "CENTER", -1, 0)
+				okbutton:SetWidth(oktext:GetWidth() + 5)
+				okbutton:Hide()
 
-				local function ShowColorPicker(r, g, b, a, changedCallback)
-					ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallback, changedCallback, changedCallback
-					ColorPickerFrame:SetColorRGB(r, g, b)
-					a = tonumber(a)
-					ColorPickerFrame.hasOpacity = (a ~= nil and a ~= 1)
-					ColorPickerFrame.opacity = a
-					ColorPickerFrame.previousValues = {originalR, originalG, originalB, originalA}
-					ColorPickerFrame:Hide()
-					ColorPickerFrame:Show()
+				if type(value) == "number" then
+					editbox:SetScript("OnEscapePressed", function(self) okbutton:Hide() self:ClearFocus() self:SetText(value) end)
+					editbox:SetScript("OnChar", function(self) okbutton:Show() end)
+					editbox:SetScript("OnEnterPressed", function(self) okbutton:Hide() self:ClearFocus() SetValue(i, j, tonumber(self:GetText())) end)
+					okbutton:SetScript("OnMouseDown", function(self) editbox:ClearFocus() self:Hide() SetValue(i, j, tonumber(editbox:GetText())) end)
+				else
+					editbox:SetScript("OnEscapePressed", function(self) okbutton:Hide() self:ClearFocus() self:SetText(value) end)
+					editbox:SetScript("OnChar", function(self) okbutton:Show() end)
+					editbox:SetScript("OnEnterPressed", function(self) okbutton:Hide() self:ClearFocus() SetValue(i, j, tostring(self:GetText())) end)
+					okbutton:SetScript("OnMouseDown", function(self) editbox:ClearFocus() self:Hide() SetValue(i, j, tostring(editbox:GetText())) end)
 				end
 
-				local function myColorCallback(restore)
-					fired = fired + 1
-					if restore ~= nil then
-						-- The user bailed, we extract the old color from the table created by ShowColorPicker
-						newR, newG, newB, newA = unpack(restore)
-					else
-						-- Something changed
-						newA, newR, newG, newB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
+				offset = offset + 45
+			elseif type(value) == "table" then
+				local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+				local o = "UIConfig"..i..j
+				Local(o)
+				label:SetText(K.option)
+				label:SetSize(440, 20)
+				label:SetJustifyH("LEFT")
+				label:SetPoint("TOPLEFT", 5, -offset)
+
+				colorbuttonname = (label:GetText().."ColorPicker")
+
+				local colorbutton = CreateFrame("Button", colorbuttonname, frame)
+				colorbutton:SetHeight(20)
+				colorbutton:SetBackdrop(K.Backdrop)
+				colorbutton:SetBackdropBorderColor(unpack(value))
+				colorbutton:SetBackdropColor(value[1], value[2], value[3], 0.3)
+				colorbutton:SetPoint("LEFT", label, "RIGHT", 2, 0)
+
+				local colortext = colorbutton:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+				colortext:SetText(COLOR)
+				colortext:SetPoint("CENTER")
+				colortext:SetJustifyH("CENTER")
+				colorbutton:SetWidth(colortext:GetWidth() + 5)
+
+				local oldvalue = value
+
+				local function round(number, decimal)
+					return (("%%.%df"):format(decimal)):format(number)
+				end
+
+				colorbutton:SetScript("OnMouseDown", function(self)
+					if ColorPickerFrame:IsShown() then return end
+					local newR, newG, newB, newA
+					local fired = 0
+
+					local r, g, b, a = self:GetBackdropBorderColor()
+					r, g, b, a = round(r, 2), round(g, 2), round(b, 2), round(a, 2)
+					local originalR, originalG, originalB, originalA = r, g, b, a
+
+					local function ShowColorPicker(r, g, b, a, changedCallback)
+						ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallback, changedCallback, changedCallback
+						ColorPickerFrame:SetColorRGB(r, g, b)
+						a = tonumber(a)
+						ColorPickerFrame.hasOpacity = (a ~= nil and a ~= 1)
+						ColorPickerFrame.opacity = a
+						ColorPickerFrame.previousValues = {originalR, originalG, originalB, originalA}
+						ColorPickerFrame:Hide()
+						ColorPickerFrame:Show()
 					end
 
-					value = {newR, newG, newB, newA}
-					SetValue(i, j, (value))
-					self:SetBackdropBorderColor(newR, newG, newB, newA)
-					self:SetBackdropColor(newR, newG, newB, 0.3)
-				end
+					local function myColorCallback(restore)
+						fired = fired + 1
+						if restore ~= nil then
+							-- The user bailed, we extract the old color from the table created by ShowColorPicker
+							newR, newG, newB, newA = unpack(restore)
+						else
+							-- Something changed
+							newA, newR, newG, newB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
+						end
 
-				ShowColorPicker(originalR, originalG, originalB, originalA, myColorCallback)
-			end)
+						value = {newR, newG, newB, newA}
+						SetValue(i, j, (value))
+						self:SetBackdropBorderColor(newR, newG, newB, newA)
+						self:SetBackdropColor(newR, newG, newB, 0.3)
+					end
 
-			offset = offset + 25
+					ShowColorPicker(originalR, originalG, originalB, originalA, myColorCallback)
+				end)
+
+				offset = offset + 25
+			end
+		end
+
+		frame:SetHeight(offset)
+		frame:Hide()
+	end
+
+	local reset = NormalButton(DEFAULT, UIConfigMain)
+	reset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 126, 0)
+	reset:SetScript("OnClick", function(self)
+		UIConfigCover:Show()
+		if KkthnxUIConfigAll[realm][name] == true then
+			StaticPopup_Show("RESET_PERCHAR")
+		else
+			StaticPopup_Show("RESET_ALL")
+		end
+	end)
+
+	local totalreset = NormalButton(L_GUI_BUTTON_RESET, UIConfigMain)
+	totalreset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 126, -31)
+	totalreset:SetScript("OnClick", function(self)
+		StaticPopup_Show("RESET_UI")
+		KkthnxUIConfigPrivate = {}
+		if KkthnxUIConfigAll[realm][name] == true then
+			KkthnxUIConfigAll[realm][name] = {}
+		end
+		KkthnxUIConfigPublic = {}
+	end)
+
+	local load = NormalButton("|cff00FF00" .. L_GUI_APPLY .. "|r", UIConfigMain)
+	load:SetPoint("TOP", totalreset, "BOTTOM", 0, -30)
+	load:SetScript("OnClick", function(self) ReloadUI() end)
+
+	local close = NormalButton("|cffFF0000" .. L_GUI_CLOSE .. "|r", UIConfigMain)
+	close:SetPoint("TOP", load, "BOTTOM", 0, -8)
+	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
+
+	if KkthnxUIConfigAll then
+		local button = CreateFrame("CheckButton", "KkthnxUIConfigAllCharacters", TitleBox, "InterfaceOptionsCheckButtonTemplate")
+		button:SetScript("OnClick", function(self) StaticPopup_Show("PERCHAR") UIConfigCover:Show() end)
+		button:SetPoint("RIGHT", TitleBox, "RIGHT", -3, 0)
+		button:SetHitRectInsets(0, 0, 0, 0)
+		if IsAddOnLoaded("Aurora") then
+			local F = unpack(Aurora)
+			F.ReskinCheck(button)
+		end
+
+		local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		label:SetText(L_GUI_SET_SAVED_SETTTINGS)
+		label:SetPoint("RIGHT", button, "LEFT")
+
+		if KkthnxUIConfigAll[realm][name] == true then
+			button:SetChecked(true)
+		else
+			button:SetChecked(false)
 		end
 	end
 
-	frame:SetHeight(offset)
-	frame:Hide()
-end
-
-local reset = NormalButton(DEFAULT, UIConfigMain)
-reset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 126, 0)
-reset:SetScript("OnClick", function(self)
-	UIConfigCover:Show()
-	if KkthnxUIConfigAll[realm][name] == true then
-		StaticPopup_Show("RESET_PERCHAR")
-	else
-		StaticPopup_Show("RESET_ALL")
-	end
-end)
-
-local totalreset = NormalButton(L_GUI_BUTTON_RESET, UIConfigMain)
-totalreset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 126, -31)
-totalreset:SetScript("OnClick", function(self)
-	StaticPopup_Show("RESET_UI")
-	KkthnxUIConfig = {}
-	if KkthnxUIConfigAll[realm][name] == true then
-		KkthnxUIConfigAll[realm][name] = {}
-	end
-	KkthnxUIConfigSettings = {}
-end)
-
-local load = NormalButton("|cff00FF00APPLY|r", UIConfigMain)
-load:SetPoint("TOP", totalreset, "BOTTOM", 0, -30)
-load:SetScript("OnClick", function(self) ReloadUI() end)
-
-local close = NormalButton("|cffFF0000CLOSE|r", UIConfigMain)
-close:SetPoint("TOP", load, "BOTTOM", 0, -8)
-close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
-
-if KkthnxUIConfigAll then
-	local button = CreateFrame("CheckButton", "KkthnxUIConfigAllCharacters", TitleBox, "InterfaceOptionsCheckButtonTemplate")
-	button:SetScript("OnClick", function(self) StaticPopup_Show("PERCHAR") UIConfigCover:Show() end)
-	button:SetPoint("RIGHT", TitleBox, "RIGHT", -3, 0)
-	button:SetHitRectInsets(0, 0, 0, 0)
-	if IsAddOnLoaded("Aurora") then
-		local F = unpack(Aurora)
-		F.ReskinCheck(button)
+	local bgSkins = {TitleBox, TitleBoxVer, UIConfigBG, groupsBG}
+	for _, sb in pairs(bgSkins) do
+		sb:SetBackdrop(K.Backdrop)
+		sb:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		sb:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 	end
 
-	local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	label:SetText(L_GUI_SET_SAVED_SETTTINGS)
-	label:SetPoint("RIGHT", button, "LEFT")
-
-	if KkthnxUIConfigAll[realm][name] == true then
-		button:SetChecked(true)
-	else
-		button:SetChecked(false)
-	end
-end
-
-local bgSkins = {TitleBox, TitleBoxVer, UIConfigBG, groupsBG}
-for _, sb in pairs(bgSkins) do
-	sb:SetBackdrop(K.Backdrop)
-	sb:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	sb:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-end
-
-ShowGroup("General")
-loaded = true
+	ShowGroup("General")
+	loaded = true
 end
 
 do
@@ -1019,7 +1025,7 @@ function GameMenu:EnableKkthnxUIConfig()
 		end
 	end)
 
-	hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', self.AddHooks)
+	hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.AddHooks)
 	self.KkthnxUI = KkthnxUI
 end
 

@@ -30,44 +30,10 @@ local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 
--- Simple Install
-local function InstallUI()
-	local ActionBars = C.ActionBar.Enable
+local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 
-	-- CVars
-	SetCVar("NamePlateHorizontalScale", 1)
-	SetCVar("NamePlateVerticalScale", 1)
-	SetCVar("ShowClassColorInNameplate", 1)
-	SetCVar("UberTooltips", 1)
-	SetCVar("WhisperMode", "inline")
-	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("alwaysShowActionBars", 1)
-	SetCVar("autoOpenLootHistory", 0)
-	SetCVar("autoQuestProgress", 1)
-	SetCVar("autoQuestWatch", 1)
-	SetCVar("buffDurations", 1)
-	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
-	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "im")
-	SetCVar("countdownForCooldowns", 0)
-	SetCVar("nameplateShowSelf", 0)
-	SetCVar("removeChatDelay", 1)
-	SetCVar("screenshotQuality", 8)
-	SetCVar("scriptErrors", 1)
-	SetCVar("showArenaEnemyFrames", 0)
-	SetCVar("showTutorials", 0)
-	SetCVar("showVKeyCastbar", 1)
-	SetCVar("spamFilter", 0)
-	SetCVar("violenceLevel", 5)
-
-	if (ActionBars) then
-		SetActionBarToggles(1, 1, 1, 1)
-	end
-
-	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
-	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
-
-	-- Create our custom chatframes
+function KkthnxUIInstall:ChatSetup()
+	-- Setting chat frames if using KkthnxUI chats.
 	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
@@ -198,13 +164,39 @@ local function InstallUI()
 		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
 		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 	end
+end
 
-	-- Reset saved variables.
-	KkthnxUIData = {}
-	KkthnxUIPositions = {}
+function KkthnxUIInstall:CVarSetup()
+	SetCVar("NamePlateHorizontalScale", 1)
+	SetCVar("NamePlateVerticalScale", 1)
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("UberTooltips", 1)
+	SetCVar("WhisperMode", "inline")
+	SetCVar("WholeChatWindowClickable", 0)
+	SetCVar("alwaysShowActionBars", 1)
+	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("autoQuestProgress", 1)
+	SetCVar("autoQuestWatch", 1)
+	SetCVar("buffDurations", 1)
+	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("chatMouseScroll", 1)
+	SetCVar("chatStyle", "im")
+	SetCVar("countdownForCooldowns", 0)
+	SetCVar("nameplateShowSelf", 0)
+	SetCVar("removeChatDelay", 1)
+	SetCVar("screenshotQuality", 8)
+	SetCVar("scriptErrors", 1)
+	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("showTutorials", 0)
+	SetCVar("showVKeyCastbar", 1)
+	SetCVar("spamFilter", 0)
+	SetCVar("violenceLevel", 5)
+end
+
+function KkthnxUIInstall:PositionSetup()
+	-- reset saved variables on char
 	KkthnxUIDataPerChar = {}
 
-	KkthnxUIDataPerChar.Install = true
 	KkthnxUIDataPerChar.FogOfWar = false
 	KkthnxUIDataPerChar.AutoInvite = false
 	KkthnxUIDataPerChar.BarsLocked = false
@@ -212,42 +204,338 @@ local function InstallUI()
 	KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars
 	KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars
 
-	InstallStepComplete.message = L_INSTALL_COMPLETE
-	InstallStepComplete:Show()
-
-	StaticPopup_Show("RELOAD_UI")
+	-- reset movable stuff into original positions
+	if KkthnxUIDataPerChar.Movers then KkthnxUIDataPerChar.Movers = {}
+	end
 end
 
-local function DisableUI()
-	DisableAddOn("KkthnxUI")
-	ReloadUI()
+local KkthnxUIVersionFrame = CreateFrame("Button", "KkthnxUIVersionFrame", UIParent)
+KkthnxUIVersionFrame:SetSize(300, 36)
+KkthnxUIVersionFrame:SetPoint("CENTER")
+KkthnxUIVersionFrame:SetTemplate("Default")
+KkthnxUIVersionFrame:FontString("Text", C.Media.Font, 12)
+KkthnxUIVersionFrame.Text:SetPoint("CENTER")
+KkthnxUIVersionFrame.Text:SetText("KkthnxUI ".. K.Version .." by Kkthnx|r")
+KkthnxUIVersionFrame:SetScript("OnClick", function()
+	KkthnxUIVersionFrame:Hide()
+end)
+KkthnxUIVersionFrame:Hide()
+
+local KkthnxUIInstallFrame = CreateFrame("Frame", "KkthnxUIInstallFrame", UIParent)
+KkthnxUIInstallFrame:SetSize(400, 400)
+KkthnxUIInstallFrame:SetPoint("CENTER")
+KkthnxUIInstallFrame:SetTemplate("Default")
+KkthnxUIInstallFrame:Hide()
+
+local StatusBar = CreateFrame("StatusBar", nil, KkthnxUIInstallFrame)
+StatusBar:SetStatusBarTexture(C.Media.Texture)
+StatusBar:SetPoint("BOTTOM", KkthnxUIInstallFrame, "BOTTOM", 0, 60)
+StatusBar:SetHeight(20)
+StatusBar:SetWidth(KkthnxUIInstallFrame:GetWidth()-44)
+StatusBar:SetFrameStrata("HIGH")
+StatusBar:SetFrameLevel(6)
+StatusBar:Hide()
+
+local StatusBarBorder = CreateFrame("Frame", nil, StatusBar)
+StatusBarBorder:SetTemplate("Default")
+StatusBarBorder:SetPoint("TOPLEFT", StatusBar, -4, 4)
+StatusBarBorder:SetPoint("BOTTOMRIGHT", StatusBar, 4, -4)
+StatusBarBorder:SetFrameStrata("HIGH")
+StatusBarBorder:SetFrameLevel(5)
+
+local Header = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
+Header:SetFont(C.Media.Font, 16, "THINOUTLINE")
+Header:SetPoint("TOP", KkthnxUIInstallFrame, "TOP", 0, -20)
+
+local TextOne = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
+TextOne:SetJustifyH("LEFT")
+TextOne:SetFont(C.Media.Font, 12)
+TextOne:SetWidth(KkthnxUIInstallFrame:GetWidth()-40)
+TextOne:SetPoint("TOPLEFT", KkthnxUIInstallFrame, "TOPLEFT", 20, -60)
+
+local TextTwo = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
+TextTwo:SetJustifyH("LEFT")
+TextTwo:SetFont(C.Media.Font, 12)
+TextTwo:SetWidth(KkthnxUIInstallFrame:GetWidth()-40)
+TextTwo:SetPoint("TOPLEFT", TextOne, "BOTTOMLEFT", 0, -20)
+
+local TextThree = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
+TextThree:SetJustifyH("LEFT")
+TextThree:SetFont(C.Media.Font, 12)
+TextThree:SetWidth(KkthnxUIInstallFrame:GetWidth()-40)
+TextThree:SetPoint("TOPLEFT", TextTwo, "BOTTOMLEFT", 0, -20)
+
+local TextFour = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
+TextFour:SetJustifyH("LEFT")
+TextFour:SetFont(C.Media.Font, 12)
+TextFour:SetWidth(KkthnxUIInstallFrame:GetWidth()-40)
+TextFour:SetPoint("TOPLEFT", TextThree, "BOTTOMLEFT", 0, -20)
+
+local StatusBarText = StatusBar:CreateFontString(nil, "OVERLAY")
+StatusBarText:SetFont(C.Media.Font, 13, "THINOUTLINE")
+StatusBarText:SetPoint("CENTER", StatusBar)
+
+local OptionOne = CreateFrame("Button", "KkthnxUIInstallOption1", KkthnxUIInstallFrame)
+OptionOne:SetPoint("BOTTOMLEFT", KkthnxUIInstallFrame, "BOTTOMLEFT", 22, 28)
+OptionOne:SetSize(128, 20)
+OptionOne:SkinButton()
+OptionOne:FontString("Text", C.Media.Font, 12)
+OptionOne.Text:SetPoint("CENTER")
+
+local OptionTwo = CreateFrame("Button", "KkthnxUIInstallOption2", KkthnxUIInstallFrame)
+OptionTwo:SetPoint("BOTTOMRIGHT", KkthnxUIInstallFrame, "BOTTOMRIGHT", -22, 28)
+OptionTwo:SetSize(128, 20)
+OptionTwo:SkinButton()
+OptionTwo:FontString("Text", C.Media.Font, 12)
+OptionTwo.Text:SetPoint("CENTER")
+
+local Close = CreateFrame("Button", "KkthnxUIInstallCloseButton", KkthnxUIInstallFrame, "UIPanelCloseButton")
+Close:SetPoint("TOPRIGHT", KkthnxUIInstallFrame, "TOPRIGHT")
+Close:SetScript("OnClick", function()
+	KkthnxUIInstallFrame:Hide()
+end)
+
+local StepFour = function()
+	KkthnxUIDataPerChar.Install = true
+	StatusBar:SetValue(4)
+	PlaySoundFile("Sound\\Interface\\LevelUp.wav")
+	Header:SetText(L_INSTALL_HEADER_11)
+	TextOne:SetText(L_INSTALL_STEP_4_LINE_1)
+	TextTwo:SetText(L_INSTALL_STEP_4_LINE_2)
+	TextThree:SetText(L_INSTALL_STEP_4_LINE_3)
+	TextFour:SetText(L_INSTALL_STEP_4_LINE_4)
+	StatusBarText:SetText("4/4")
+	OptionOne:Hide()
+	OptionTwo.Text:SetText(L_INSTALL_BUTTON_FINISH)
+	OptionTwo:SetScript("OnClick", function()
+		ReloadUI()
+	end)
 end
 
--- Install popups
-StaticPopupDialogs["INSTALL_UI"] = {
-	text = L_POPUP_INSTALLUI,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = InstallUI,
-	OnCancel = function() KkthnxUIDataPerChar.Install = false end,
-	timeout = 0,
-	showAlert = 1,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
+local StepThree = function()
+	if not OptionTwo:IsShown() then OptionTwo:Show() end
+	StatusBar:SetValue(3)
+	Header:SetText(L_INSTALL_HEADER_10)
+	TextOne:SetText(L_INSTALL_STEP_3_LINE_1)
+	TextTwo:SetText(L_INSTALL_STEP_3_LINE_2)
+	TextThree:SetText(L_INSTALL_STEP_3_LINE_3)
+	TextFour:SetText(L_INSTALL_STEP_3_LINE_4)
+	StatusBarText:SetText("3/4")
+	OptionOne:SetScript("OnClick", StepFour)
+	OptionTwo:SetScript("OnClick", function()
+		KkthnxUIInstall.PositionSetup()
+		StepFour()
+	end)
+end
 
-StaticPopupDialogs["RELOAD_UI"] = {
-	text = L_POPUP_RELOADUI,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function() ReloadUI() end,
-	OnCancel = function() KkthnxUIDataPerChar.Install = false end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
+local StepTwo = function()
+	StatusBar:SetValue(2)
+	Header:SetText(L_INSTALL_HEADER_9)
+	StatusBarText:SetText("2/4")
+	if IsAddOnLoaded("Prat") or IsAddOnLoaded("Chatter") then
+		TextOne:SetText(L_INSTALL_STEP_2_LINE_0)
+		TextTwo:SetText("")
+		TextThree:SetText("")
+		TextFour:SetText("")
+		OptionTwo:Hide()
+	else
+		TextOne:SetText(L_INSTALL_STEP_2_LINE_1)
+		TextTwo:SetText(L_INSTALL_STEP_2_LINE_2)
+		TextThree:SetText(L_INSTALL_STEP_2_LINE_3)
+		TextFour:SetText(L_INSTALL_STEP_2_LINE_4)
+		OptionTwo:SetScript("OnClick", function()
+			KkthnxUIInstall.ChatSetup()
+			StepThree()
+		end)
+	end
+	OptionOne:SetScript("OnClick", StepThree)
+end
+
+local StepOne = function()
+	Close:Hide()
+	StatusBar:SetMinMaxValues(0, 4)
+	StatusBar:Show()
+	StatusBar:SetValue(1)
+	StatusBar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
+	Header:SetText(L_INSTALL_HEADER_8)
+	TextOne:SetText(L_INSTALL_STEP_1_LINE_1)
+	TextTwo:SetText(L_INSTALL_STEP_1_LINE_2)
+	TextThree:SetText(L_INSTALL_STEP_1_LINE_3)
+	TextFour:SetText(L_INSTALL_STEP_1_LINE_4)
+	StatusBarText:SetText("1/4")
+
+	OptionOne:Show()
+
+	OptionOne.Text:SetText(L_INSTALL_BUTTON_SKIP)
+	OptionTwo.Text:SetText(L_INSTALL_BUTTON_CONTINUE)
+
+	OptionOne:SetScript("OnClick", StepTwo)
+	OptionTwo:SetScript("OnClick", function()
+		KkthnxUIInstall.CVarSetup()
+		StepTwo()
+	end)
+
+	-- this is really essential, whatever if skipped or not
+	if (ActionBars) then
+		SetActionBarToggles(1, 1, 1, 1)
+	end
+	SetCVar("alwaysShowActionBars", 1)
+end
+
+local TutorialSix = function()
+	StatusBar:SetValue(6)
+	Header:SetText(L_INSTALL_HEADER_7)
+	TextOne:SetText(L_TUTORIAL_STEP_6_LINE_1)
+	TextTwo:SetText(L_TUTORIAL_STEP_6_LINE_2)
+	TextThree:SetText(L_TUTORIAL_STEP_6_LINE_3)
+	TextFour:SetText(L_TUTORIAL_STEP_6_LINE_4)
+
+	StatusBarText:SetText("6/6")
+
+	OptionOne:Show()
+
+	OptionOne.Text:SetText(L_INSTALL_BUTTON_CLOSE)
+	OptionTwo.Text:SetText(L_INSTALL_BUTTON_INSTALL)
+
+	OptionOne:SetScript("OnClick", function()
+		KkthnxUIInstallFrame:Hide()
+	end)
+	OptionTwo:SetScript("OnClick", StepOne)
+end
+
+local TutorialFive = function()
+	StatusBar:SetValue(5)
+	Header:SetText(L_INSTALL_HEADER_6)
+	TextOne:SetText(L_TUTORIAL_STEP_5_LINE_1)
+	TextTwo:SetText(L_TUTORIAL_STEP_5_LINE_2)
+	TextThree:SetText(L_TUTORIAL_STEP_5_LINE_3)
+	TextFour:SetText(L_TUTORIAL_STEP_5_LINE_4)
+
+	StatusBarText:SetText("5/6")
+
+	OptionTwo:SetScript("OnClick", TutorialSix)
+end
+
+local TutorialFour = function()
+	StatusBar:SetValue(4)
+	Header:SetText(L_INSTALL_HEADER_5)
+	TextOne:SetText(L_TUTORIAL_STEP_4_LINE_1)
+	TextTwo:SetText(L_TUTORIAL_STEP_4_LINE_2)
+	TextThree:SetText(L_TUTORIAL_STEP_4_LINE_3)
+	TextFour:SetText(L_TUTORIAL_STEP_4_LINE_4)
+
+	StatusBarText:SetText("4/6")
+
+	OptionTwo:SetScript("OnClick", TutorialFive)
+end
+
+local TutorialThree = function()
+	StatusBar:SetValue(3)
+	Header:SetText(L_INSTALL_HEADER_4)
+	TextOne:SetText(L_TUTORIAL_STEP_3_LINE_1)
+	TextTwo:SetText(L_TUTORIAL_STEP_3_LINE_2)
+	TextThree:SetText(L_TUTORIAL_STEP_3_LINE_3)
+	TextFour:SetText(L_TUTORIAL_STEP_3_LINE_4)
+
+	StatusBarText:SetText("3/6")
+
+	OptionTwo:SetScript("OnClick", TutorialFour)
+end
+
+local TutorialTwo = function()
+	StatusBar:SetValue(2)
+	Header:SetText(L_INSTALL_HEADER_3)
+	TextOne:SetText(L_TUTORIAL_STEP_2_LINE_1)
+	TextTwo:SetText(L_TUTORIAL_STEP_2_LINE_2)
+	TextThree:SetText(L_TUTORIAL_STEP_2_LINE_3)
+	TextFour:SetText(L_TUTORIAL_STEP_2_LINE_4)
+
+	StatusBarText:SetText("2/6")
+
+	OptionTwo:SetScript("OnClick", TutorialThree)
+end
+
+local TutorialOne = function()
+	StatusBar:SetMinMaxValues(0, 6)
+	StatusBar:Show()
+	Close:Show()
+	StatusBar:SetValue(1)
+	StatusBar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
+	Header:SetText(L_INSTALL_HEADER_2)
+	TextOne:SetText(L_TUTORIAL_STEP_1_LINE_1)
+	TextTwo:SetText(L_TUTORIAL_STEP_1_LINE_2)
+	TextThree:SetText(L_TUTORIAL_STEP_1_LINE_3)
+	TextFour:SetText(L_TUTORIAL_STEP_1_LINE_4)
+	StatusBarText:SetText("1/6")
+	OptionOne:Hide()
+	OptionTwo.Text:SetText(L_INSTALL_BUTTON_NEXT)
+	OptionTwo:SetScript("OnClick", TutorialTwo)
+end
+
+-- this install KkthnxUI with default settings.
+function KkthnxUIInstall:Install()
+	KkthnxUIInstallFrame:Show()
+	StatusBar:Hide()
+	OptionOne:Show()
+	OptionTwo:Show()
+	Close:Show()
+	Header:SetText(L_INSTALL_HEADER_1)
+	TextOne:SetText(L_INSTALL_INIT_LINE_1)
+	TextTwo:SetText(L_INSTALL_INIT_LINE_2)
+	TextThree:SetText(L_INSTALL_INIT_LINE_3)
+	TextFour:SetText(L_INSTALL_INIT_LINE_4)
+
+	OptionOne.Text:SetText(L_INSTALL_BUTTON_TUTORIAL)
+	OptionTwo.Text:SetText(L_INSTALL_BUTTON_INSTALL)
+
+	OptionOne:SetScript("OnClick", TutorialOne)
+	OptionTwo:SetScript("OnClick", StepOne)
+end
+
+-- On login function
+local Install = CreateFrame("Frame")
+Install:RegisterEvent("ADDON_LOADED")
+Install:SetScript("OnEvent", function(self, event, addon)
+	if (addon ~= "KkthnxUI") then
+		return
+	end
+
+	-- create empty saved vars if they doesn't exist.
+	if (KkthnxUIData == nil) then KkthnxUIData = {} end
+	if (KkthnxUIDataPerChar == nil) then KkthnxUIDataPerChar = {} end
+
+	if K.ScreenWidth < 1024 then
+		SetCVar("useUiScale", 0)
+		StaticPopup_Show("DISABLE_UI")
+	else
+		-- install default if we never ran KkthnxUI on this character.
+		if not KkthnxUIDataPerChar.Install then
+			KkthnxUIInstall.Install()
+		end
+	end
+
+	-- Welcome message
+	if C.General.WelcomeMessage == true then
+		print("|cffffff00"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
+		print("|cffffff00"..L_WELCOME_LINE_2_1.."|cffffff00"..L_WELCOME_LINE_2_2.."|r")
+		print("|cffffff00"..L_WELCOME_LINE_2_3.."|cffffff00"..L_WELCOME_LINE_2_4.."|r")
+	end
+
+	self:UnregisterEvent("ADDON_LOADED")
+end)
+
+SLASH_TUTORIAL1 = "/uihelp"
+SLASH_TUTORIAL2 = "/tutorial"
+SlashCmdList.TUTORIAL = function() KkthnxUIInstallFrame:Show() TutorialOne() end
+
+SLASH_VERSION1 = "/version"
+SlashCmdList.VERSION = function() if KkthnxUIVersionFrame:IsShown() then KkthnxUIVersionFrame:Hide() else KkthnxUIVersionFrame:Show() end end
+
+SLASH_CONFIGURE1 = "/install"
+SlashCmdList.CONFIGURE = KkthnxUIInstall.Install
+
+SLASH_RESETUI1 = "/resetui"
+SlashCmdList.RESETUI = function() KkthnxUIInstallFrame:Show() StepOne() end
 
 StaticPopupDialogs["DISABLE_UI"] = {
 	text = L_POPUP_DISABLEUI,
@@ -265,111 +553,14 @@ StaticPopupDialogs["RESET_UI"] = {
 	text = L_POPUP_RESETUI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = InstallUI,
-	OnCancel = function() KKkthnxUIDataPerChar.Install = true end,
+	OnAccept = KkthnxUIInstall.Install,
+	OnCancel = function() KkthnxUIDataPerChar.Install = true end,
 	showAlert = true,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
 	preferredIndex = 3
 }
-
-SLASH_INSTALLUI1 = "/installui"
-SlashCmdList.INSTALLUI = function() StaticPopup_Show("INSTALL_UI") end
-
-SLASH_CONFIGURE1 = "/resetui"
-SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
-
-SLASH_CONFIGURE1 = "/resetchat"
-SlashCmdList.CONFIGURE = function() StaticPopup_Show("RESET_UI") end
-
--- On login function
-local Install = CreateFrame("Frame")
-Install:RegisterEvent("ADDON_LOADED")
-Install:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then
-		return
-	end
-
-	-- Create empty CVar if they doesn't exist
-	if KkthnxUIData == nil then KkthnxUIData = {} end
-	if KkthnxUIPositions == nil then KkthnxUIPositions = {} end
-	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
-	if KkthnxUIDataPerChar.Move then KkthnxUIDataPerChar.Move = {} end
-
-	if KkthnxUIDataPerChar.FogOfWar == nil then KkthnxUIDataPerChar.FogOfWar = false end
-	if KkthnxUIDataPerChar.AutoInvite == nil then KkthnxUIDataPerChar.AutoInvite = false end
-	if KkthnxUIDataPerChar.BarsLocked == nil then KkthnxUIDataPerChar.BarsLocked = false end
-	if KkthnxUIDataPerChar.SplitBars == nil then KkthnxUIDataPerChar.SplitBars = true end
-	if KkthnxUIDataPerChar.RightBars == nil then KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars end
-	if KkthnxUIDataPerChar.BottomBars == nil then KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars end
-
-	if K.ScreenWidth < 1024 then
-		SetCVar("useUiScale", 0)
-		StaticPopup_Show("DISABLE_UI")
-	else
-
-		-- Install default if we never ran kkthnxui on this character
-		if not KkthnxUIDataPerChar.Install then
-			StaticPopup_Show("INSTALL_UI")
-		end
-	end
-
-	-- Welcome message
-	if C.General.WelcomeMessage == true then
-		print("|cffffff00"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
-		print("|cffffff00"..L_WELCOME_LINE_2_1.."|cffffff00"..L_WELCOME_LINE_2_2.."|r")
-		print("|cffffff00"..L_WELCOME_LINE_2_3.."|cffffff00"..L_WELCOME_LINE_2_4.."|r")
-	end
-
-	self:UnregisterEvent("ADDON_LOADED")
-end)
-
-if not InstallStepComplete then
-	local imsg = CreateFrame("Frame", "InstallStepComplete", K.UIParent)
-	imsg:SetSize(418, 72)
-	imsg:SetPoint("TOP", 0, -120)
-	imsg:Hide()
-	imsg:SetScript("OnShow", function(self)
-		if self.message then
-			PlaySoundFile([[Sound\Interface\LevelUp.wav]])
-			self.text:SetText(self.message)
-			UIFrameFadeOut(self, 3.5, 1, 0)
-			K.Delay(4, function() self:Hide() end)
-			self.message = nil
-		else
-			self:Hide()
-		end
-	end)
-
-	imsg.firstShow = false
-
-	imsg.bg = imsg:CreateTexture(nil, "BACKGROUND")
-	imsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	imsg.bg:SetPoint("BOTTOM")
-	imsg.bg:SetSize(326, 103)
-	imsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
-	imsg.bg:SetVertexColor(1, 1, 1, 0.6)
-
-	imsg.lineTop = imsg:CreateTexture(nil, "BACKGROUND")
-	imsg.lineTop:SetDrawLayer("BACKGROUND", 2)
-	imsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	imsg.lineTop:SetPoint("TOP")
-	imsg.lineTop:SetSize(418, 7)
-	imsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
-
-	imsg.lineBottom = imsg:CreateTexture(nil, "BACKGROUND")
-	imsg.lineBottom:SetDrawLayer("BACKGROUND", 2)
-	imsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	imsg.lineBottom:SetPoint("BOTTOM")
-	imsg.lineBottom:SetSize(418, 7)
-	imsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
-
-	imsg.text = imsg:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
-	imsg.text:SetPoint("BOTTOM", 0, 12)
-	imsg.text:SetTextColor(1, 0.82, 0)
-	imsg.text:SetJustifyH("CENTER")
-end
 
 -- Help translate
 if C.General.TranslateMessage == true then

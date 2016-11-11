@@ -94,6 +94,39 @@ L_DATATEXT_DOWNLOAD = "Download: "
 L_DATATEXT_BANDWIDTH = "Bandbreite: "
 L_DATATEXT_FPS = "FPS"
 L_DATATEXT_MS = "MS"
+L_DATATEXT_AVOIDANCESHORT = "Verm: "
+L_DATATEXT_TOTALBAGSSLOTS = "Taschenplätze Gesamt:"
+L_DATATEXT_TOTALUSEDBAGSSLOTS = "Taschenplätze benutzt:"
+L_DATATEXT_TOTALFREEBAGSSLOTS = "Taschenplätze frei:"
+L_DATATEXT_ARMERROR = "Kann keine Daten für 'Ruf zu den Waffen' erhalten."
+L_DATATEXT_NODUNGEONARM = "Keine Instanz bietet derzeit eine 'Ruf zu den Waffen' Belohnung an."
+L_DATATEXT_COMBATTIME = "Kampf/Arena Zeit"
+L_DATATEXT_COORDS = "Coords"
+L_DATATEXT_GOLDSERVER = "Server: "
+L_DATATEXT_GOLDTOTAL = "Total: "
+L_DATATEXT_GOLDEARNED = "Verdient: "
+L_DATATEXT_GOLDDEFICIT = "Unterschied: "
+L_DATATEXT_GOLDSPENT = "Ausgegeben: "
+L_DATATEXT_GOLDPROFIT = "Gewinn: "
+L_DATATEXT_GUILDNOGUILD = "Keine Gilde"
+L_DATATEXT_MICROMENU = "Mikromenu"
+L_DATATEXT_ORDERHALL = "Ordenshalle"
+L_DATATEXT_NOORDERHALLWO = "Ordenshalle+"
+L_DATATEXT_NOORDERHALLUNLOCK = "Du hast Deine Ordenshalle noch nicht freigeschaltet, nun aber los!"
+L_DATATEXT_ORDERHALLREPORT = "Klick: Öffnet den Ordenshallenbericht"
+L_DATATEXT_SLOTS = {
+	[1] = {1, INVTYPE_HEAD, 1000},
+	[2] = {3, INVTYPE_SHOULDER, 1000},
+	[3] = {5, INVTYPE_ROBE, 1000},
+	[4] = {6, INVTYPE_WAIST, 1000},
+	[5] = {9, INVTYPE_WRIST, 1000},
+	[6] = {10, INVTYPE_HAND, 1000},
+	[7] = {7, INVTYPE_LEGS, 1000},
+	[8] = {8, INVTYPE_FEET, 1000},
+	[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
+	[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
+	[11] = {18, INVTYPE_RANGED, 1000}
+}
 
 -- AutoInvite Localization
 L_INVITE_ENABLE = "Automatische Einladungen aktiviert: "
@@ -151,6 +184,8 @@ L_MISC_REPAIR = "Warnung! Du musst Deine Ausrüstung so schnell wie möglich rep
 L_MISC_SILVERSHORT = "|cffc7c7cfs|r"
 L_MISC_UI_OUTDATED = "Achtung! Deine Version von KkthnxUI ist veraltet. Du kansnt die neueste Version von Curse.com downloaden. Benutzte die Curse App und lasse Deine KkthnxUI automatisch vom Client aktualisieren!"
 L_MISC_UNDRESS = "Ausziehen"
+L_MISC_ENTERCOMBAT = "+ Kampfbeginn"
+L_MISC_LEAVECOMBAT = "- Kampfende"
 
 -- Popup Localization
 L_POPUP_ARMORY = "Armory"
