@@ -35,7 +35,7 @@ K.UIParent.origHeight = K.UIParent:GetHeight()
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
 K.Print = function(...)
-	print("|cff3c9bedKkthnxUI|r:", ...)
+	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
 K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
@@ -291,34 +291,41 @@ K.FormatTime = function(s)
 end
 
 --Add time before calling a function
-local waitTable = {}
-local waitFrame
+local TimerParent = CreateFrame("Frame")
+K.UnusedTimers = {}
+
+local TimerOnFinished = function(self)
+	self.Func(unpack(self.Args))
+	tinsert(K.UnusedTimers, self)
+end
+
+K.NewTimer = function()
+	local Parent = TimerParent:CreateAnimationGroup()
+	local Timer = Parent:CreateAnimation("Alpha")
+
+	Timer:SetScript("OnFinished", TimerOnFinished)
+	Timer.Parent = Parent
+
+	return Timer
+end
+
 K.Delay = function(delay, func, ...)
-	if(type(delay) ~= "number" or type(func) ~= "function") then
-		return false
+	if (type(delay) ~= "number" or type(func) ~= "function") then
+		return
 	end
-	if(waitFrame == nil) then
-		waitFrame = CreateFrame("Frame", "WaitFrame", K.UIParent)
-		waitFrame:SetScript("onUpdate", function (_, elapse)
-			local count = #waitTable
-			local i = 1
-			while(i <= count) do
-				local waitRecord = tremove(waitTable,i)
-				local d = tremove(waitRecord, 1)
-				local f = tremove(waitRecord, 1)
-				local p = tremove(waitRecord, 1)
-				if(d > elapse) then
-					tinsert(waitTable, i, {d-elapse, f, p})
-					i = i + 1
-				else
-					count = count - 1
-					f(unpack(p))
-				end
-			end
-		end)
+
+	local Timer
+
+	if K.UnusedTimers[1] then
+		Timer = tremove(K.UnusedTimers, 1) -- Recycle a timer
+	else
+		Timer = K.NewTimer() -- Or make a new one if needed
 	end
-	tinsert(waitTable, {delay, func,{...}})
-	return true
+
+	Timer.Args = {...}
+	Timer.Func = func
+	Timer:SetDuration(delay)
+	Timer.Parent:Play()
 end
 
 --Currencys

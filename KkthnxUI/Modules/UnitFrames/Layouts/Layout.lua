@@ -242,12 +242,8 @@ end
 local function UpdatePlayerFrame(self, ...)
 	local data = GetData(self.cUnit)
 	local uconfig = ns.config[self.cUnit]
-	-- Frame Size
-	if not UnitAffectingCombat("player") then
-		self:SetSize(data.siz.w, data.siz.h)
-		self:SetScale(C.Unitframe.Scale or 1)
-		self:EnableMouse((not C.Unitframe.ClickThrough))
-	end
+
+	self:EnableMouse((not C.Unitframe.ClickThrough))
 
 	self.Texture:SetSize(data.tex.w, data.tex.h)
 	self.Texture:SetPoint("CENTER", self, data.tex.x, data.tex.y)
@@ -675,6 +671,8 @@ local function CreateUnitLayout(self, unit)
 
 	-- Player Frame
 	if (self.cUnit == "player") then
+		self:SetSize(data.siz.w, data.siz.h)
+		self:SetScale(C.Unitframe.Scale or 1)
 
 		-- Combo Points
 		ComboPointPlayerFrame:ClearAllPoints()

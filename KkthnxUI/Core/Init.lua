@@ -13,6 +13,7 @@ function Engine:unpack()
     return self[1], self[2], self[3], self[4]
 end
 
+Engine[1].UIName = "KkthnxUI"
 Engine[1].WindowedMode = Windowed
 Engine[1].FullscreenMode = Fullscreen
 Engine[1].Noop = function() return end

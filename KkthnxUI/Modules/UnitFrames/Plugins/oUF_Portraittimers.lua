@@ -4,66 +4,53 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
-local PortraitTimerDB = {}
-
-local GetTime, GetSpellInfo, UnitAura =
-GetTime, GetSpellInfo, UnitAura
+local GetTime = GetTime
 local floor, fmod = floor, math.fmod
-
 local day, hour, minute = 86400, 3600, 60
 
-do
-	local function add(list, filter)
-		for i = 1, #list do
-			PortraitTimerDB[list[i]] = true
-		end
-	end
-	add(K.AuraList.Immunity, "HELPFUL")
-	add(K.AuraList.Stun, "HARMFUL")
-	add(K.AuraList.CC, "HARMFUL")
-	add(K.AuraList.CCImmunity, "HELPFUL")
-	add(K.AuraList.Defensive, "HELPFUL")
-	add(K.AuraList.Offensive, "HELPFUL")
-	add(K.AuraList.Helpful, "HELPFUL")
-	add(K.AuraList.Silence, "HARMFUL")
-	add(K.AuraList.Misc, "HELPFUL")
-end
-
 local function ExactTime(time)
-    return format("%.1f", time), (time * 100 - floor(time * 100))/100
+	return format("%.1f", time), (time * 100 - floor(time * 100))/100
 end
 
 local function FormatTime(s)
-    if (s >= day) then
-        return format("%dd", floor(s/day + 0.5))
-    elseif (s >= hour) then
-        return format("%dh", floor(s/hour + 0.5))
-    elseif (s >= minute) then
-        return format("%dm", floor(s/minute + 0.5))
-    end
+	if (s >= day) then
+		return format("%dd", floor(s/day + 0.5))
+	elseif (s >= hour) then
+		return format("%dh", floor(s/hour + 0.5))
+	elseif (s >= minute) then
+		return format("%dm", floor(s/minute + 0.5))
+	end
 
-    return format("%d", fmod(s, minute))
+	return format("%d", fmod(s, minute))
 end
 
 local function AuraTimer(self, elapsed)
-    self.elapsed = (self.elapsed or 0) + elapsed
+	self.elapsed = (self.elapsed or 0) + elapsed
 
-    if (self.elapsed < 0.1) then
-        return
-    end
+	if (self.elapsed < 0.1) then
+		return
+	end
 
-    self.elapsed = 0
+	self.elapsed = 0
 
-    local timeLeft = self.expires - GetTime()
-    if (timeLeft <= 0) then
-        self.Remaining:SetText(nil)
-    else
-        if (timeLeft <= 5) then
-            self.Remaining:SetText("|cffff0000"..ExactTime(timeLeft).."|r")
-        else
-            self.Remaining:SetText(FormatTime(timeLeft))
-        end
-    end
+	local timeLeft = self.expires - GetTime()
+	if (timeLeft <= 0) then
+		self.Remaining:SetText(nil)
+	else
+		if (timeLeft <= 5) then
+			self.Remaining:SetText("|cffff0000"..ExactTime(timeLeft).."|r")
+		else
+			self.Remaining:SetText(FormatTime(timeLeft))
+		end
+	end
+end
+
+local function UpdateIcon(self, texture, duration, expires)
+	SetPortraitToTexture(self.Icon, texture)
+
+	self.expires = expires
+	self.duration = duration
+	self:SetScript("OnUpdate", AuraTimer)
 end
 
 local Update = function(self, event, unit)
@@ -72,47 +59,39 @@ local Update = function(self, event, unit)
 	end
 
 	local pt = self.PortraitTimer
-	local UnitDebuff, index = UnitDebuff, 0
-	while (true) do
-		index = index + 1
-		local name, _, texture, _, _, duration, expires, _, _, _, spellId = (UnitDebuff or UnitBuff)(unit, index)
-		if name then
-			if PortraitTimerDB[spellId] then
+	for _, spellID in ipairs(K.PortraitTimerDB) do
+		local spell = GetSpellInfo(spellID)
+		if (UnitBuff(unit, spell)) then
+			local name, _, texture, _, _, duration, expires = UnitBuff(unit, spell)
+			UpdateIcon(pt, texture, duration, expires)
 
-				if (pt.texture ~= texture) then
-					SetPortraitToTexture(pt.Icon, texture)
-					pt.texture = texture
-				end
+			pt:Show()
 
-				if (pt.expires ~= expires) or (pt.duration ~= duration) then
-					pt.expires = expires
-					pt.duration = duration
-					pt:SetScript("OnUpdate", AuraTimer)
-				end
-
-				pt:Show()
-
-				if (self.CombatFeedbackText) then
-					self.CombatFeedbackText.maxAlpha = 0
-				end
-
-				return
+			if (self.CombatFeedbackText) then
+				self.CombatFeedbackText.maxAlpha = 0
 			end
+
+			return
+		elseif (UnitDebuff(unit, spell)) then
+			local name, _, texture, _, _, duration, expires = UnitDebuff(unit, spell)
+			UpdateIcon(pt, texture, duration, expires)
+
+			pt:Show()
+
+			if (self.CombatFeedbackText) then
+				self.CombatFeedbackText.maxAlpha = 0
+			end
+
+			return
 		else
-			if UnitDebuff then
-				UnitDebuff = nil
-				index = 0
-			else
-				break;
+			if (pt:IsShown()) then
+				pt:Hide()
+			end
+
+			if (self.CombatFeedbackText) then
+				self.CombatFeedbackText.maxAlpha = 1
 			end
 		end
-	end
-	if (pt:IsShown()) then
-		pt:Hide()
-	end
-
-	if (self.CombatFeedbackText) then
-		self.CombatFeedbackText.maxAlpha = 1
 	end
 end
 
