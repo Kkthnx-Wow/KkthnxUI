@@ -921,10 +921,17 @@ function Bags:Enable()
 		return
 	end
 
-	SetSortBagsRightToLeft(false)
-	SetInsertItemsLeftToRight(true)
-	--InterfaceOptionsControlsPanelReverseCleanUpBags:Hide()
-	--InterfaceOptionsControlsPanelReverseNewLoot:Hide()
+	if C.Bags.SortRightToLeft == false then
+		SetSortBagsRightToLeft(false)
+	else
+		SetSortBagsRightToLeft(true)
+	end
+
+	if C.Bags.InsertLeftToRight == true then
+		SetInsertItemsLeftToRight(true)
+	else
+		SetInsertItemsLeftToRight(false)
+	end
 
 	Font = C.Media.Font
 	ButtonSize = C.Bags.ButtonSize

@@ -49,12 +49,14 @@ C["Automation"] = {
 
 -- Bag
 C["Bags"] = {
-	["Enable"] = true,
+	["BagFilter"] = false,
+	["SortRightToLeft"] = false,
 	["ButtonSize"] = 32,
-	["Spacing"] = 4,
+	["Enable"] = true,
+	["InsertLeftToRight"] = true,
 	["ItemsPerRow"] = 11,
 	["PulseNewItem"] = true,
-	["BagFilter"] = false,
+	["Spacing"] = 4,
 }
 
 -- Blizzard

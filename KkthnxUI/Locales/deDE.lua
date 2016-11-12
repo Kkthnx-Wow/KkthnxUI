@@ -1,3 +1,5 @@
+local K, C, L = select(2, ...):unpack()
+
 -- Localization for deDE clients
 if (GetLocale() ~= "deDE") then
 	return
@@ -273,3 +275,52 @@ L_SLASHCMD_HELP = {
     "Chatkopie aufrufen ->Rechtsunten im Chat auf das Symbol klicken.",
     "Mit der mittleren Maustaste auf das Chatkopie Symbol klicken um zu würfeln -> /roll.",
 }
+
+-- F.A.Q
+L_FAQ_BUTTON_01 = "General"
+L_FAQ_BUTTON_02 = "Action Bars"
+L_FAQ_BUTTON_03 = "Unit Frames"
+L_FAQ_BUTTON_04 = "Chat"
+L_FAQ_BUTTON_05 = "UI Commands"
+L_FAQ_BUTTON_06 = "Keybindings"
+L_FAQ_BUTTON_07 = "Minimap"
+L_FAQ_BUTTON_08 = "Bags"
+L_FAQ_BUTTON_09 = "Misc."
+L_FAQ_BUTTON_10 = "Bug Reports"
+L_FAQ_BUTTON_11 = "UI Update"
+L_FAQ_GENERALTITLE = "|cff3c9bedkkthnxUI - F.A.Q.|r"
+L_FAQ_GENERALTEXT1 = "Hello |cff3c9bed".. K.Name.."|r. Thank you that you have chose |cff3c9bedKkthnxUI "..K.Version.."|r.\n\nUse the menu on the left to learn more about the individual points about it.\n\nEnjoy the game and good loot!"
+L_FAQ_GENERALTEXT2 = ""
+L_FAQ_CONTENT1TITLE = "|cff3c9bedGeneral|r"
+L_FAQ_CONTENT1TEXT1 = ""
+L_FAQ_CONTENT1TEXT2 = ""
+L_FAQ_CONTENT2TITLE = "|cff3c9bedActionbars|r"
+L_FAQ_CONTENT2TEXT1 = ""
+L_FAQ_CONTENT2TEXT2 = ""
+L_FAQ_CONTENT3TITLE = "|cff3c9bedUnitframes|r"
+L_FAQ_CONTENT3TEXT1 = ""
+L_FAQ_CONTENT3TEXT2 = ""
+L_FAQ_CONTENT4TITLE = "|cff3c9bedChat|r"
+L_FAQ_CONTENT4TEXT1 = ""
+L_FAQ_CONTENT4TEXT2 = ""
+L_FAQ_CONTENT5TITLE = "|cff3c9bedUI Slashcommands|r"
+L_FAQ_CONTENT5TEXT1 = "The following chat commands are available to you:"
+L_FAQ_CONTENT5TEXT2 = "/rl - Reload interface./n/rc - Activates a ready check.\n/gm - Opens GM frame.\n/rd - Disband party or raid.\n/toraid - Convert to party or raid.\n/teleport - Teleportation from random dungeon.\n/spec, /ss - Switches between talent spec's.\n/frame - Description is not ready.\n/farmmode - Increase the size of the minimap.\n/moveui - Allows the movement of interface elements.\n/resetui - Resets general settings to default.\n/resetconfig - Resets KkthnxUI_Config settings.\n/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.\n/pulsecd - Self cooldown pulse test.\n/tt - Whisper target.\n/ainv - Enables automatic invitation.\n/cfg - Opens interface settings.\n/patch - Display Wow patch info."
+L_FAQ_CONTENT6TITLE = "|cff3c9bedKeybinding|r"
+L_FAQ_CONTENT6TEXT1 = ""
+L_FAQ_CONTENT6TEXT2 = ""
+L_FAQ_CONTENT7TITLE = "|cff3c9bedMinimap|r"
+L_FAQ_CONTENT7TEXT1 = ""
+L_FAQ_CONTENT7TEXT2 = ""
+L_FAQ_CONTENT8TITLE = "|cff3c9bedBags|r"
+L_FAQ_CONTENT8TEXT1 = ""
+L_FAQ_CONTENT8TEXT2 = ""
+L_FAQ_CONTENT9TITLE = "|cff3c9bedMisc.|r"
+L_FAQ_CONTENT9TEXT1 = ""
+L_FAQ_CONTENT9TEXT2 = ""
+L_FAQ_CONTENT10TITLE = "|cff3c9bedOMG Errors|r"
+L_FAQ_CONTENT10TEXT1 = ""
+L_FAQ_CONTENT10TEXT2 = ""
+L_FAQ_CONTENT11TITLE = "|cff3c9bedUpdating UI|r"
+L_FAQ_CONTENT11TEXT1 = ""
+L_FAQ_CONTENT11TEXT2 = ""

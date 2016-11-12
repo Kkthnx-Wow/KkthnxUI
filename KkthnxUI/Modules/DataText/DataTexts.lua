@@ -199,9 +199,9 @@ function DataTexts:ResetGold()
 	local Realm = GetRealmName()
 	local Name = UnitName("player")
 
-	KkthnxUIData["Gold"] = {}
-	KkthnxUIData["Gold"][Realm] = {}
-	KkthnxUIData["Gold"][Realm][Name] = GetMoney()
+	KkthnxUIData.Gold = {}
+	KkthnxUIData.Gold[Realm] = {}
+	KkthnxUIData.Gold[Realm][Name] = GetMoney()
 end
 
 function DataTexts:Save()

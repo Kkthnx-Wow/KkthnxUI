@@ -94,8 +94,10 @@ local function Local(o)
 	-- Bag Settings
 	if o == "UIConfigBags" then o = L_GUI_BAGS end
 	if o == "UIConfigBagsBagFilter" then o = L_GUI_BAGS_BAG_FILTER end
+	if o == "UIConfigBagsSortRightToLeft" then o = L_GUI_BAGS_SORT_RIGHTTOLEFT end
 	if o == "UIConfigBagsButtonSize" then o = L_GUI_BAGS_BUTTON_SIZE end
 	if o == "UIConfigBagsEnable" then o = L_GUI_BAGS_ENABLE end
+	if o == "UIConfigBagsInsertLeftToRight" then o = L_GUI_BAGS_INSERT_LEFTTORIGHT end
 	if o == "UIConfigBagsItemsPerRow" then o = L_GUI_BAGS_ITEMS_PER_ROW end
 	if o == "UIConfigBagsPulseNewItem" then o = L_GUI_BAGS_PULSE_NEW_ITEMS end
 	if o == "UIConfigBagsSpacing" then o = L_GUI_BAGS_SPACING end
@@ -427,6 +429,8 @@ StaticPopupDialogs.RESET_ALL = {
 		KkthnxUIConfigPublic = nil
 		KkthnxUIConfigPrivate = nil
 		ReloadUI()
+
+		KkthnxUIDataPerChar.Install = false
 	end,
 	OnCancel = function() UIConfigCover:Hide() end,
 	button1 = ACCEPT,

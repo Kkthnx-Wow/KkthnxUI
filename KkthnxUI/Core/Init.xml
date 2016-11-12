@@ -13,4 +13,5 @@
 	<Script file="Developer.lua"/>
 	<Script file="Panels.lua"/>
 	<Script file="Tutorials.lua"/>
+	<Script file="Faq.lua"/>
 </Ui>
