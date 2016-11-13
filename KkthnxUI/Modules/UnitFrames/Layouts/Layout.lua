@@ -3,6 +3,8 @@ if C.Unitframe.Enable ~= true then return end
 
 local _G = _G
 local pairs = pairs
+local unpack = unpack
+local select = select
 
 local CreateFrame = CreateFrame
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation

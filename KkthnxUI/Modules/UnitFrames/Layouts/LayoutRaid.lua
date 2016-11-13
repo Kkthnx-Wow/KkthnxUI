@@ -6,6 +6,8 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local Movers = K.Movers
 
+local unpack = unpack
+
 local function UpdateThreat(self, _, unit)
 	if (self.unit ~= unit) then
 		return
