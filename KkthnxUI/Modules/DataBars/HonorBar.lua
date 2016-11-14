@@ -85,8 +85,9 @@ HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.HonorFade then
 	HonorBar:SetAlpha(0)
-	HonorBar:SetScript("OnEnter", function() HonorBar:FadeIn() end)
-	HonorBar:SetScript("OnLeave", function() HonorBar:FadeOut() end)
+	HonorBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
+	HonorBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
+	HonorBar.Tooltip = true
 end
 
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")

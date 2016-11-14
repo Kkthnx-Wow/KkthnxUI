@@ -107,8 +107,9 @@ ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.ArtifactFade then
 	ArtifactBar:SetAlpha(0)
-	ArtifactBar:SetScript("OnEnter", function() ArtifactBar:FadeIn() end)
-	ArtifactBar:SetScript("OnLeave", function() ArtifactBar:FadeOut() end)
+	ArtifactBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
+	ArtifactBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
+	ArtifactBar.Tooltip = true
 end
 
 ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")

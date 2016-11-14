@@ -62,8 +62,9 @@ ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.ReputationFade then
 	ReputationBar:SetAlpha(0)
-	ReputationBar:SetScript("OnEnter", function() ReputationBar:FadeIn() end)
-	ReputationBar:SetScript("OnLeave", function() ReputationBar:FadeOut() end)
+	ReputationBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
+	ReputationBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
+	ReputationBar.Tooltip = true
 end
 
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
