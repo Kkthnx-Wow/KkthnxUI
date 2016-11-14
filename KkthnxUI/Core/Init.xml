@@ -5,12 +5,10 @@
 	<Script file="Functions.lua"/>
 	<Script file="Install.lua"/>
 	<Script file="Disable.lua"/>
-	<Script file="Commands.lua"/>
 	<Script file="Kill.lua"/>
 	<Script file="CheckVersion.lua"/>
 	<Script file="Movers.lua"/>
 	<Script file="Border.lua"/>
-	<Script file="Developer.lua"/>
 	<Script file="Panels.lua"/>
 	<Script file="Tutorials.lua"/>
 	<Script file="Faq.lua"/>

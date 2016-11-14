@@ -27,4 +27,7 @@ Core\Colors.lua
 Config\Filters\Init.xml
 Core\Init.xml
 Modules\Init.xml
+
+Core\Commands.lua
+Core\Developer
 Core\Temp.lua

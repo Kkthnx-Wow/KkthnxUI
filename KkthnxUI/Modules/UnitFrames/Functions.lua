@@ -163,45 +163,6 @@ do
 	end
 end
 
--- Extra health bars
-function K.UpdateIncHeals(self, event, unit)
-	if (unit) and (self.unit ~= unit) and (self.realUnit ~= unit) then return; end
-	local hp = self.HealPrediction
-	local curHP, maxHP = UnitHealth(unit), UnitHealthMax(unit)
-	local incHeal = (UnitGetIncomingHeals(unit) or 0) * 2
-	local healAbsorb = UnitGetTotalHealAbsorbs(unit) or 0
-
-	if (healAbsorb > 0) then
-		hp.necroHeals:SetMinMaxValues(0, curHP)
-		hp.necroHeals:SetValue(math.min(healAbsorb, curHP))
-		hp.necroHeals:Show()
-	else
-		hp.necroHeals:Hide()
-	end
-
-	if ((incHeal - healAbsorb) <= 0) or (curHP == maxHP) then
-		hp.incHeals:Hide()
-	else
-		hp.incHeals:SetMinMaxValues(0, maxHP - curHP)
-		hp.incHeals:SetValue(incHeal - healAbsorb)
-		hp.incHeals:Show()
-	end
-
-	if (hp.TotalAbsorb) then
-		local absorb = UnitGetTotalAbsorbs(unit) or 0
-		hp.TotalAbsorb:SetMinMaxValues(0, maxHP)
-		hp.TotalAbsorb:SetValue(math.min(absorb, maxHP))
-		if (absorb < (maxHP * 0.05)) then
-			hp.TotalAbsorb:Hide()
-		else
-			hp.TotalAbsorb:Show()
-			if not hp.TotalAbsorb.spark:IsShown() then
-				hp.TotalAbsorb.spark:Show()
-			end
-		end
-	end
-end
-
 -- Power Update
 do
 	local tagtable = {

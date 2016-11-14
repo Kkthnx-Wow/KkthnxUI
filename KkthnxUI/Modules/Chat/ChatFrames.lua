@@ -3,25 +3,28 @@ if C.Chat.Enable ~= true then return end
 
 -- Lua api
 local _G = _G
-local gsub = string.gsub
-local upper = string.upper
-local type = type
-local format = string.format
-local select = select
-local print = print
+local CreateFrame = CreateFrame
 local find = string.find
+local format = string.format
+local gsub = string.gsub
 local len = string.len
+local print = print
+local select = select
 local sub = string.sub
+local type = type
+local unpack = unpack
+local upper = string.upper
 
 -- Wow api
-local GetID, GetName = GetID, GetName
 local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
 local GetChannelName = GetChannelName
+local GetID, GetName = GetID, GetName
+local hooksecurefunc = hooksecurefunc
+
 local Movers = K.Movers
 local origs = {}
 
-local strings = {
+local RenameChannels = {
 	INSTANCE_CHAT = L_CHAT_INSTANCE,
 	GUILD = L_CHAT_GUILD,
 	PARTY = L_CHAT_PARTY,
@@ -30,28 +33,33 @@ local strings = {
 	INSTANCE_CHAT_LEADER = L_CHAT_INSTANCE_LEADER,
 	PARTY_LEADER = L_CHAT_PARTY_LEADER,
 	RAID_LEADER = L_CHAT_RAID_LEADER,
-	PET_BATTLE_COMBAT_LOG = L_CHAT_PET_BATTLE,
-
-	-- zhCN
 	Guild = L_CHAT_GUILD,
 	raid = L_CHAT_RAID,
 	Party = L_CHAT_PARTY,
 }
 
-local function ShortChannel(channel) return string.format("|Hchannel:%s|h[%s]|h", channel, strings[channel] or channel:gsub("channel:", "")) end
 
-local function AddMessage(frame, str, ...)
-	str = str:gsub("|Hplayer:(.-)|h%[(.-)%]|h", "|Hplayer:%1|h%2|h")
-	str = str:gsub("|HBNplayer:(.-)|h%[(.-)%]|h", "|HBNplayer:%1|h%2|h")
-	str = str:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannel)
-	str = str:gsub("^To (.-|h)", "|cffad2424@|r%1")
-	str = str:gsub("^(.-|h) whispers", "%1")
-	str = str:gsub("^(.-|h) says", "%1")
-	str = str:gsub("^(.-|h) yells", "%1")
-	str = str:gsub("<" .. AFK .. ">", "|cffFF0000" .. L_CHAT_AFK .. "|r ")
-	str = str:gsub("<" .. DND .. ">", "|cffE7E716" .. L_CHAT_DND .."|r ")
-	str = str:gsub("^%["..RAID_WARNING.."%]", L_CHAT_RAID_WARNING)
-	return origs[frame](frame, str, ...)
+local ShortChannels = function(Channel)
+	return format("|Hchannel:%s|h[%s]|h", Channel, RenameChannels[Channel] or Channel:gsub("channel:", ""))
+end
+
+local AddMessage = function(Frame, String, ...)
+	local MessageString
+
+	String = String:gsub("|Hplayer:(.-)|h%[(.-)%]|h", "|Hplayer:%1|h%2|h")
+	String = String:gsub("|HBNplayer:(.-)|h%[(.-)%]|h", "|HBNplayer:%1|h%2|h")
+	String = String:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannels)
+	String = String:gsub("^To (.-|h)", "|cffad2424@|r%1")
+	String = String:gsub("^(.-|h) whispers", "%1")
+	String = String:gsub("^(.-|h) says", "%1")
+	String = String:gsub("^(.-|h) yells", "%1")
+	String = String:gsub("<" .. AFK .. ">", L_CHAT_AFK)
+	String = String:gsub("<" .. DND .. ">", L_CHAT_DND)
+	String = String:gsub("^%[" .. RAID_WARNING .. "%]", L_CHAT_RAID_WARNING)
+
+	MessageString = origs[Frame](Frame, String, ...)
+
+	return MessageString
 end
 
 ChatConfigFrameDefaultButton:Kill()
@@ -65,8 +73,14 @@ local function SetChatStyle(frame)
 	local framename = frame:GetName()
 	local tab = _G[framename.."Tab"]
 	local editbox = _G[framename.."EditBox"]
-
-	frame:SetFrameLevel(5)
+	local textures = {
+		"TabLeft", "TabMiddle", "TabRight",
+		"TabSelectedLeft", "TabSelectedMiddle", "TabSelectedRight",
+		"TabHighlightLeft", "TabHighlightMiddle", "TabHighlightRight",
+		"ButtonFrameUpButton", "ButtonFrameDownButton", "ButtonFrameBottomButton",
+		"ButtonFrameMinimizeButton", "ButtonFrame", "EditBoxFocusLeft",
+		"EditBoxFocusMid", "EditBoxFocusRight", "EditBoxLeft", "EditBoxMid", "EditBoxRight"
+	}
 
 	frame:SetClampRectInsets(0, 0, 0, 0)
 	frame:SetClampedToScreen(false)
@@ -83,33 +97,9 @@ local function SetChatStyle(frame)
 	end
 
 	-- Removes default chatframe tabs texture
-	_G[format("ChatFrame%sTabLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabRight", id)]:Kill()
-
-	_G[format("ChatFrame%sTabSelectedLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedRight", id)]:Kill()
-
-	_G[format("ChatFrame%sTabHighlightLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabHighlightMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabHighlightRight", id)]:Kill()
-
-	_G[format("ChatFrame%sTabSelectedLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedRight", id)]:Kill()
-
-	_G[format("ChatFrame%sButtonFrameUpButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrameDownButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrameBottomButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrameMinimizeButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrame", id)]:Kill()
-
-	_G[format("ChatFrame%sEditBoxLeft", id)]:Kill()
-	_G[format("ChatFrame%sEditBoxMid", id)]:Kill()
-	_G[format("ChatFrame%sEditBoxRight", id)]:Kill()
-
-	_G[format("ChatFrame%sTabGlow", id)]:Kill()
+	for _, textures in pairs(textures) do
+		_G[format("ChatFrame%s" .. textures, id)]:Kill()
+	end
 
 	-- Kill off editbox artwork
 	local a, b, c = select(6, editbox:GetRegions()) a:Kill() b:Kill() c:Kill()
@@ -124,7 +114,6 @@ local function SetChatStyle(frame)
 	editbox:Hide()
 
 	-- Script to hide editbox instead of fading editbox to 0.35 alpha via im style
-	editbox:HookScript("OnEditFocusGained", function(self) self:Show() end)
 	editbox:HookScript("OnEditFocusLost", function(self) self:Hide() end)
 
 	local function OnTextChanged(self)
@@ -135,7 +124,7 @@ local function SetChatStyle(frame)
 			if (len(text) > MIN_REPEAT_CHARACTERS) then
 				local repeatChar = true
 				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-					if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i)) ) then
+					if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i))) then
 						repeatChar = false
 						break
 					end
@@ -210,10 +199,17 @@ local function SetupChat(self)
 	end
 
 	-- Remember last channel
+	ChatTypeInfo.SAY.sticky = 1
+	ChatTypeInfo.PARTY.sticky = 1
+	ChatTypeInfo.PARTY_LEADER.sticky = 1
+	ChatTypeInfo.GUILD.sticky = 1
+	ChatTypeInfo.OFFICER.sticky = 1
+	ChatTypeInfo.RAID.sticky = 1
+	ChatTypeInfo.RAID_WARNING.sticky = 1
+	ChatTypeInfo.INSTANCE_CHAT.sticky = 1
+	ChatTypeInfo.INSTANCE_CHAT_LEADER.sticky = 1
 	ChatTypeInfo.WHISPER.sticky = 1
 	ChatTypeInfo.BN_WHISPER.sticky = 1
-	ChatTypeInfo.OFFICER.sticky = 1
-	ChatTypeInfo.RAID_WARNING.sticky = 1
 	ChatTypeInfo.CHANNEL.sticky = 1
 end
 
@@ -291,7 +287,7 @@ function FCFManager_GetNumDedicatedFrames(...)
 	return select(1, ...) ~= "PET_BATTLE_COMBAT_LOG" and old(...) or 1
 end
 
--- Remove player's realm name
+-- Remove player"s realm name
 local function RemoveRealmName(self, event, msg, author, ...)
 	local realm = string.gsub(K.Realm, " ", "")
 	if msg:find("-" .. realm) then

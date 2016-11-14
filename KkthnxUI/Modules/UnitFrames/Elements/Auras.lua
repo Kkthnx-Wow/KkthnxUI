@@ -151,7 +151,6 @@ do
 
 	function postUpdateIcon( element, unit, button, index, offset )
 		local name, _, texture, count, dtype, duration, expirationTime, caster, canStealOrPurge, shouldConsolidate, spellID = UnitAura(unit, index, button.filter)
-		button:EnableMouse(not C.Unitframe.ClickThrough)
 		button.overlay:Show()
 		button.shadow:Show()
 

@@ -88,6 +88,7 @@ local function Local(o)
 	if o == "UIConfigAutomationAutoInvite" then o = L_GUI_AUTOMATION_ACCEPTINVITE end
 	if o == "UIConfigAutomationDeclineDuel" then o = L_GUI_AUTOMATION_DECLINEDUEL end
 	if o == "UIConfigAutomationLoggingCombat" then o = L_GUI_AUTOMATION_LOGGING_COMBAT end
+	if o == "UIConfigAutomationNoBanner" then o = L_GUI_AUTOMATION_NO_BANNER end
 	if o == "UIConfigAutomationResurrection" then o = L_GUI_AUTOMATION_RESURRECTION end
 	if o == "UIConfigAutomationScreenShot" then o = L_GUI_AUTOMATION_SCREENSHOT end
 	if o == "UIConfigAutomationTabBinder" then o = L_GUI_AUTOMATION_TAB_BINDER end
@@ -287,7 +288,6 @@ local function Local(o)
 	if o == "UIConfigUnitframeCastbarSafeZoneColor" then o = L_GUI_UNITFRAME_CASTBARSAFEZONECOLOR end
 	if o == "UIConfigUnitframeClassColor" then o = L_GUI_UNITFRAME_CLASSCOLOR end
 	if o == "UIConfigUnitframeClassPortraits" then o = L_GUI_UNITFRAME_CLASSPORTRAITS end
-	if o == "UIConfigUnitframeClickThrough" then o = L_GUI_UNITFRAME_CLICKTHROUGH end
 	if o == "UIConfigUnitframeCombatText" then o = L_GUI_UNITFRAME_COMBAT_TEXT end
 	if o == "UIConfigUnitframeEnable" then o = L_GUI_UNITFRAME_ENABLE end
 	if o == "UIConfigUnitframeFlatClassPortraits" then o = L_GUI_UNITFRAME_FLAT_CLASSPORTRAITS end

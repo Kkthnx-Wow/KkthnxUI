@@ -245,8 +245,6 @@ local function UpdatePlayerFrame(self, ...)
 	local data = GetData(self.cUnit)
 	local uconfig = ns.config[self.cUnit]
 
-	self:EnableMouse((not C.Unitframe.ClickThrough))
-
 	self.Texture:SetSize(data.tex.w, data.tex.h)
 	self.Texture:SetPoint("CENTER", self, data.tex.x, data.tex.y)
 	self.Texture:SetTexture(GetTargetTexture("player")) -- 1
@@ -350,7 +348,6 @@ local function UpdateUnitFrameLayout(frame)
 	-- Frame Size
 	frame:SetSize(data.siz.w, data.siz.h)
 	frame:SetScale(C.Unitframe.Scale or 1)
-	frame:EnableMouse((not C.Unitframe.ClickThrough) or (frame.IsPartyFrame))
 	-- Texture
 	frame.Texture:SetTexture(data.tex.t)
 	frame.Texture:SetSize(data.tex.w, data.tex.h)
@@ -527,43 +524,27 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetSize(50, 52)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
-		-- Heal Prediction
-		local incHeals = K.CreateStatusBar(self.Health)
-		incHeals:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		incHeals:SetPoint("BOTTOMRIGHT")
-		incHeals:SetFrameLevel(self:GetFrameLevel() - 1)
-		incHeals:SetStatusBarColor(0, 1, 0, 0.5)
-		incHeals:Hide()
+		local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
+		mhpb:SetTexture(C.Media.Texture)
+		mhpb:SetVertexColor(0, 0.827, 0.765, 1)
+		mhpb:SetWidth(self.Health:GetWidth())
 
-		-- Absorbing Heals
-		local necroHeals = K.CreateStatusBar(self.Health, "OVERLAY")
-		necroHeals:SetFrameLevel(self:GetFrameLevel() - 1)
-		necroHeals:SetStatusBarColor(1, 0, 0, 0.3)
-		necroHeals:SetReverseFill(true)
-		necroHeals:SetPoint("TOPLEFT")
-		necroHeals:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+		local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
+		ohpb:SetTexture(C.Media.Texture)
+		ohpb:SetVertexColor(0.0, 0.631, 0.557, 1)
+		ohpb:SetWidth(self.Health:GetWidth())
+
+		local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
+		ahpb:SetTexture("Interface\\RaidFrame\\Shield-Fill")
+		ahpb:SetWidth(self.Health:GetWidth())
 
 		self.HealPrediction = {
-			incHeals = incHeals,
-			necroHeals = necroHeals,
-			Override = K.UpdateIncHeals,
+			myBar = mhpb,
+			otherBar = ohpb,
+			absorbBar = ahpb,
+			maxOverflow = 1,
+			frequentUpdates = true
 		}
-
-		local absorb = CreateFrame("StatusBar", nil, self.Health)
-		absorb:SetStatusBarTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbTexture", "OVERLAY")
-		absorb:SetFrameLevel(self:GetFrameLevel() - 1)
-		absorb:SetStatusBarColor(1, 1, 1, 1)
-		absorb:GetStatusBarTexture():SetBlendMode("ADD")
-		absorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT")
-		absorb:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 5)
-
-		local spark = absorb:CreateTexture(nil, "ARTWORK")
-		spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbSpark")
-		spark:SetBlendMode("ADD")
-		spark:SetPoint("BOTTOMLEFT", absorb:GetStatusBarTexture(),"BOTTOMRIGHT")
-		spark:SetSize(5, 5)
-		absorb.spark = spark
-		self.HealPrediction.TotalAbsorb = absorb
 
 		-- Combat CombatFeedbackText
 		if (C.Unitframe.CombatText) then
