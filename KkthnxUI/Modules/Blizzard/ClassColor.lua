@@ -56,7 +56,7 @@ local function ColorGradient(perc, ...)
 	return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
 end
 
-local guildRankColor = setmetatable({}, {
+	local guildRankColor = setmetatable({}, {
 	__index = function(t, i)
 		if i then
 			local c = Hex(ColorGradient(i / GUILD_INDEX_MAX, unpack(SMOOTH)))
@@ -71,7 +71,7 @@ local guildRankColor = setmetatable({}, {
 })
 guildRankColor[0] = WHITE_HEX
 
-local diffColor = setmetatable({}, {
+	local diffColor = setmetatable({}, {
 	__index = function(t, i)
 		local c = i and GetQuestDifficultyColor(i)
 		t[i] = c and Hex(c) or t[0]
@@ -80,7 +80,7 @@ local diffColor = setmetatable({}, {
 })
 diffColor[0] = WHITE_HEX
 
-local classColor = setmetatable({}, {
+	local classColor = setmetatable({}, {
 	__index = function(t, i)
 		local c = i and RAID_CLASS_COLORS[BC[i] or i]
 		if c then
@@ -93,7 +93,7 @@ local classColor = setmetatable({}, {
 })
 
 local WHITE = {1, 1, 1}
-local classColorRaw = setmetatable({}, {
+	local classColorRaw = setmetatable({}, {
 	__index = function(t, i)
 		local c = i and RAID_CLASS_COLORS[BC[i] or i]
 		if not c then return WHITE end
@@ -329,5 +329,6 @@ local function friendsFrame()
 		end
 	end
 end
+
 hooksecurefunc(FriendsFrameFriendsScrollFrame, "update", friendsFrame)
 hooksecurefunc("FriendsFrame_UpdateFriends", friendsFrame)

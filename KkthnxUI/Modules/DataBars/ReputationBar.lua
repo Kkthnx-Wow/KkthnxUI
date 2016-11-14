@@ -1,6 +1,9 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.ReputationEnable ~= true then return end
 
+local GetWatchedFactionInfo = GetWatchedFactionInfo
+local ToggleCharacter = ToggleCharacter
+
 local Colors = FACTION_BAR_COLORS
 local Movers = K.Movers
 

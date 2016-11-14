@@ -1,7 +1,14 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataBars.HonorEnable ~= true then return end
+if C.DataBars.HonorEnable ~= true or K.Level ~= MAX_PLAYER_LEVEL then return end
 
-if K.Level ~= MAX_PLAYER_LEVEL then return end
+local UnitHonor = UnitHonor
+local UnitHonorMax = UnitHonorMax
+local UnitHonorLevel = UnitHonorLevel
+local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
+local UnitPrestige = UnitPrestige
+local TogglePVPUI = TogglePVPUI
+local LoadAddOn = LoadAddOn
+local IsAddOnLoaded = IsAddOnLoaded
 
 local Bars = 20
 local Movers = K.Movers

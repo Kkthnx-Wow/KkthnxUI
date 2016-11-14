@@ -38,7 +38,6 @@ local RenameChannels = {
 	Party = L_CHAT_PARTY,
 }
 
-
 local ShortChannels = function(Channel)
 	return format("|Hchannel:%s|h[%s]|h", Channel, RenameChannels[Channel] or Channel:gsub("channel:", ""))
 end

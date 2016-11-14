@@ -1,11 +1,18 @@
 local K, C, L = select(2, ...):unpack()
+if C.General.QuestSounds ~= true then return end
 
-if not C.General.QuestSounds then return end
+local pairs = pairs
+
+local GetNumQuestLeaderBoards = GetNumQuestLeaderBoards
+local GetQuestLogLeaderBoard = GetQuestLogLeaderBoard
+local GetQuestLogTitle = GetQuestLogTitle
+local GetQuestLink = GetQuestLink
+local PlaySoundFile = PlaySoundFile
 
 local sounds = {
   questComplete = "Sound\\Creature\\Peon\\PeonBuildingComplete1.ogg",
   objectiveComplete = "Sound\\Creature\\Peasant\\PeasantWhat3.ogg",
-  objectiveProgress = "Sound/creature/Peon/PeonWhat3.ogg"
+  objectiveProgress = "Sound\\creature\\Peon\\PeonWhat3.ogg"
 }
 
 local QuestSounds = CreateFrame("Frame")
@@ -23,7 +30,7 @@ local function countCompleteObjectives(index)
       n = n + 1
     end
   end
-  return n;
+  return n
 end
 
 function QuestSounds:setQuest(index)
@@ -51,10 +58,10 @@ function QuestSounds:checkQuest()
     local link = GetQuestLink(index)
     if id == self.questId then
       if id and id > 0 then
-        local objectivesComplete = countCompleteObjectives(index);
+        local objectivesComplete = countCompleteObjectives(index)
         if complete then
-          QuestSounds:Play(sounds.questComplete);
-        elseif objectivesComplete>self.completeCount then
+          QuestSounds:Play(sounds.questComplete)
+        elseif objectivesComplete > self.completeCount then
           QuestSounds:Play(sounds.objectiveComplete)
         end
       end
@@ -64,7 +71,7 @@ end
 
 function QuestSounds:init()
   self:SetScript("OnEvent", function(frame, event, ...)
-    local handler = events[event];
+    local handler = events[event]
     if handler then
       handler(frame, ...)
     end
@@ -75,13 +82,13 @@ function QuestSounds:init()
 end
 
 function QuestSounds:Play(sound)
-  if sound and sound~="" then
+  if sound and sound ~= "" then
     PlaySoundFile(sound)
   end
 end
 
 function events:UNIT_QUEST_LOG_CHANGED(unit)
-  if unit=="player" then
+  if unit == "player" then
     QuestSounds:checkQuest()
   end
 end
@@ -89,4 +96,6 @@ end
 function events:QUEST_WATCH_UPDATE(index)
   QuestSounds:setQuest(index)
 end
-QuestSounds:init()
+
+QuestSounds:RegisterEvent("PLAYER_LOGIN")
+QuestSounds:SetScript("OnEvent", QuestSounds.init)

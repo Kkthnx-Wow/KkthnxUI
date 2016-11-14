@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataBars.ArtifactEnable ~= true then return end
+if C.DataBars.ArtifactEnable ~= true or K.Level <= 99 then return end
 
 local min = math.min
 
