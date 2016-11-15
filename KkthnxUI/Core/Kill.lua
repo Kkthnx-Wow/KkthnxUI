@@ -17,9 +17,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 
 	if C.Unitframe.Enable then
 		for i = 1, MAX_BOSS_FRAMES do
-			local Boss = _G["Boss" .. i .. "TargetFrame"]
-			local Health = _G["Boss" .. i .. "TargetFrame" .. "HealthBar"]
-			local Power = _G["Boss" .. i .. "TargetFrame" .. "ManaBar"]
+			local Boss = _G["Boss"..i.."TargetFrame"]
+			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
+			local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
 
 			Boss:UnregisterAllEvents()
 			Boss.Show = K.Noop

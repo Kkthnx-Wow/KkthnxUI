@@ -312,6 +312,7 @@ K.RaidBuffsTracking = {
 	},
 	SHAMAN = {
 		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
+		{204288, "BOTTOMLEFT", {0.2, 0.7, 0.2}, true},-- Earth Shield
 	},
 	MONK = {
 		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
