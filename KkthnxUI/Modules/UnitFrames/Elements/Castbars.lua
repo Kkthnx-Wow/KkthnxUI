@@ -286,5 +286,6 @@ function ns.UpdateCastbarColor(Castbar, unit)
 
 	local r, g, b = color[1], color[2], color[3]
 	Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-	Castbar.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+	--Castbar.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+	Castbar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
 end

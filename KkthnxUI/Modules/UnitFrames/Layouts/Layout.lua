@@ -346,8 +346,10 @@ local function UpdateUnitFrameLayout(frame)
 	end
 
 	-- Frame Size
-	frame:SetSize(data.siz.w, data.siz.h)
-	frame:SetScale(C.Unitframe.Scale or 1)
+	if not InCombatLockdown() then
+		frame:SetSize(data.siz.w, data.siz.h)
+		frame:SetScale(C.Unitframe.Scale or 1)
+	end
 	-- Texture
 	frame.Texture:SetTexture(data.tex.t)
 	frame.Texture:SetSize(data.tex.w, data.tex.h)
@@ -415,15 +417,6 @@ local function CreateUnitLayout(self, unit)
 	self:HookScript("OnEnter", K.UnitFrame_OnEnter)
 	self:HookScript("OnLeave", K.UnitFrame_OnLeave)
 	self.mouseovers = {}
-
-	if (C.Unitframe.FocusButton ~= "NONE") then
-		if (self.cUnit == "focus") then
-			self:SetAttribute(C.Unitframe.FocusModifier.."type"..C.Unitframe.FocusButton, "macro")
-			self:SetAttribute("macrotext", "/clearfocus")
-		else
-			self:SetAttribute(C.Unitframe.FocusModifier.."type"..C.Unitframe.FocusButton, "focus")
-		end
-	end
 
 	if self.cUnit == "arena" then
 		return ns.createArenaLayout(self, unit)

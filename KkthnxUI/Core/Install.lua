@@ -45,124 +45,119 @@ function KkthnxUIInstall:ChatSetup()
 	FCF_SetLocked(ChatFrame4, 1)
 	FCF_DockFrame(ChatFrame4)
 
-	-- Setting chat frames
-	if C.Chat.Enable == true and not IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
-		for i = 1, NUM_CHAT_WINDOWS do
-			local Frame = _G["ChatFrame"..i]
-			local ID = Frame:GetID()
+	-- Set more chat groups
+	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
+	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
+	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOCALDEFENSE)
+	ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_GUILDRECRUITMENT)
+	ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOOKINGFORGROUP)
+	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
+	ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
+	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD")
+	ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD_ACHIEVEMENT")
+	ChatFrame_AddMessageGroup(ChatFrame1, "WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_EMOTE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
+	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
+	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_LEADER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_WARNING")
+	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
+	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
+	ChatFrame_AddMessageGroup(ChatFrame1, "SYSTEM")
+	ChatFrame_AddMessageGroup(ChatFrame1, "ERRORS")
+	ChatFrame_AddMessageGroup(ChatFrame1, "AFK")
+	ChatFrame_AddMessageGroup(ChatFrame1, "DND")
+	ChatFrame_AddMessageGroup(ChatFrame1, "IGNORED")
+	ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
 
-			Frame:SetSize(C.Chat.Width, C.Chat.Height)
+	-- Setup the spam chat frame
+	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	ChatFrame_AddChannel(ChatFrame3, TRADE)
+	ChatFrame_AddChannel(ChatFrame3, GENERAL)
+	ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOCALDEFENSE)
+	ChatFrame_AddChannel(ChatFrame3, L_CHAT_GUILDRECRUITMENT)
+	ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOOKINGFORGROUP)
 
-			-- Default width and height of chats
-			SetChatWindowSavedDimensions(ID, K.Scale(C.Chat.Width), K.Scale(C.Chat.Height))
+	-- Setup the loot chat
+	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
+	ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
+	ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
 
-			-- Move general chat to bottom left
-			if (ID == 1) then
-				Frame:ClearAllPoints()
-				Frame:SetPoint(unpack(C.Position.Chat))
-			end
+	if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
+		SetCVar("scriptErrors", 1)
+	end
 
-			-- Save new default position and dimension
-			FCF_SavePositionAndDimensions(Frame)
+	-- Enable class color automatically on login and each character without doing /configure each time.
+	ToggleChatColorNamesByClassGroup(true, "SAY")
+	ToggleChatColorNamesByClassGroup(true, "EMOTE")
+	ToggleChatColorNamesByClassGroup(true, "YELL")
+	ToggleChatColorNamesByClassGroup(true, "GUILD")
+	ToggleChatColorNamesByClassGroup(true, "OFFICER")
+	ToggleChatColorNamesByClassGroup(true, "GUILD_ACHIEVEMENT")
+	ToggleChatColorNamesByClassGroup(true, "ACHIEVEMENT")
+	ToggleChatColorNamesByClassGroup(true, "WHISPER")
+	ToggleChatColorNamesByClassGroup(true, "PARTY")
+	ToggleChatColorNamesByClassGroup(true, "PARTY_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "RAID")
+	ToggleChatColorNamesByClassGroup(true, "RAID_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
+	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
+	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL1")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL2")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL3")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL4")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL5")
+	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
+	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 
-			-- Set default font size
-			FCF_SetChatWindowFontSize(nil, Frame, 12)
+	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 
-			if (ID == 1) then
-				FCF_SetWindowName(Frame, "G, S & W")
-			end
+	for index = 1, NUM_CHAT_WINDOWS do
+		local ChatFrame = _G[format("ChatFrame%s", index)]
+		local ChatFrameID = ChatFrame:GetID()
+		local _, FontSize = FCF_GetChatWindowInfo(ChatFrameID)
 
-			if (ID == 2) then
-				FCF_SetWindowName(Frame, "Log")
-			end
+		FCF_SetChatWindowFontSize(nil, ChatFrame, FontSize)
 
-			if (not Frame.isLocked) then
-				FCF_SetLocked(Frame, 1)
-			end
+		ChatFrame:SetSize(C.Chat.Width, C.Chat.Height)
+
+		if (index == 1) then
+			ChatFrame:ClearAllPoints()
+			ChatFrame:SetPoint(unpack(C.Position.Chat))
+
+			FCF_SavePositionAndDimensions(ChatFrame)
 		end
 
-		-- Set more chat groups
-		ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-		ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-		ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
-		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOCALDEFENSE)
-		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_GUILDRECRUITMENT)
-		ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOOKINGFORGROUP)
-		ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
-		ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
-		ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
-		ChatFrame_AddMessageGroup(ChatFrame1, "GUILD")
-		ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "GUILD_ACHIEVEMENT")
-		ChatFrame_AddMessageGroup(ChatFrame1, "WHISPER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
-		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
-		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
-		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_WHISPER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_EMOTE")
-		ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_WHISPER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
-		ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
-		ChatFrame_AddMessageGroup(ChatFrame1, "RAID_LEADER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "RAID_WARNING")
-		ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
-		ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
-		ChatFrame_AddMessageGroup(ChatFrame1, "SYSTEM")
-		ChatFrame_AddMessageGroup(ChatFrame1, "ERRORS")
-		ChatFrame_AddMessageGroup(ChatFrame1, "AFK")
-		ChatFrame_AddMessageGroup(ChatFrame1, "DND")
-		ChatFrame_AddMessageGroup(ChatFrame1, "IGNORED")
-		ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
-		ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
+		FCF_SavePositionAndDimensions(ChatFrame)
+		FCF_StopDragging(ChatFrame)
 
-		-- Setup the spam chat frame
-		ChatFrame_RemoveAllMessageGroups(ChatFrame3)
-		ChatFrame_AddChannel(ChatFrame3, TRADE)
-		ChatFrame_AddChannel(ChatFrame3, GENERAL)
-		ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOCALDEFENSE)
-		ChatFrame_AddChannel(ChatFrame3, L_CHAT_GUILDRECRUITMENT)
-		ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOOKINGFORGROUP)
-
-		-- Setup the loot chat
-		ChatFrame_RemoveAllMessageGroups(ChatFrame4)
-		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
-		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
-		ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
-		ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
-		ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
-
-		if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
-			SetCVar("scriptErrors", 1)
+		if (index == 1) then
+			FCF_SetWindowName(ChatFrame, "G, S, W")
 		end
 
-		-- Enable class color automatically on login and each character without doing /configure each time.
-		ToggleChatColorNamesByClassGroup(true, "SAY")
-		ToggleChatColorNamesByClassGroup(true, "EMOTE")
-		ToggleChatColorNamesByClassGroup(true, "YELL")
-		ToggleChatColorNamesByClassGroup(true, "GUILD")
-		ToggleChatColorNamesByClassGroup(true, "OFFICER")
-		ToggleChatColorNamesByClassGroup(true, "GUILD_ACHIEVEMENT")
-		ToggleChatColorNamesByClassGroup(true, "ACHIEVEMENT")
-		ToggleChatColorNamesByClassGroup(true, "WHISPER")
-		ToggleChatColorNamesByClassGroup(true, "PARTY")
-		ToggleChatColorNamesByClassGroup(true, "PARTY_LEADER")
-		ToggleChatColorNamesByClassGroup(true, "RAID")
-		ToggleChatColorNamesByClassGroup(true, "RAID_LEADER")
-		ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
-		ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
-		ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND_LEADER")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL1")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL2")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL3")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL4")
-		ToggleChatColorNamesByClassGroup(true, "CHANNEL5")
-		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
-		ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
+		if (index == 2) then
+			FCF_SetWindowName(ChatFrame, "Log")
+		end
+
+		DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 	end
 end
 
@@ -194,7 +189,7 @@ function KkthnxUIInstall:CVarSetup()
 end
 
 function KkthnxUIInstall:PositionSetup()
-	-- reset saved variables on char
+	-- Reset saved variables on char
 	KkthnxUIDataPerChar = {}
 
 	KkthnxUIDataPerChar.FogOfWar = false
@@ -298,9 +293,11 @@ Close:SetScript("OnClick", function()
 end)
 
 local StepFour = function()
+	InstallationMessageFrame.Message = "Installation Complete"
+	InstallationMessageFrame:Show()
+
 	KkthnxUIDataPerChar.Install = true
 	StatusBar:SetValue(4)
-	PlaySoundFile("Sound\\Interface\\LevelUp.wav")
 	Header:SetText(L_INSTALL_HEADER_11)
 	TextOne:SetText(L_INSTALL_STEP_4_LINE_1)
 	TextTwo:SetText(L_INSTALL_STEP_4_LINE_2)
@@ -316,6 +313,10 @@ end
 
 local StepThree = function()
 	if not OptionTwo:IsShown() then OptionTwo:Show() end
+
+	InstallationMessageFrame.Message = "Installation ChatFrames"
+	InstallationMessageFrame:Show()
+
 	StatusBar:SetValue(3)
 	Header:SetText(L_INSTALL_HEADER_10)
 	TextOne:SetText(L_INSTALL_STEP_3_LINE_1)
@@ -331,6 +332,9 @@ local StepThree = function()
 end
 
 local StepTwo = function()
+	InstallationMessageFrame.Message = "Installation CVARs"
+	InstallationMessageFrame:Show()
+
 	StatusBar:SetValue(2)
 	Header:SetText(L_INSTALL_HEADER_9)
 	StatusBarText:SetText("2/4")
@@ -381,6 +385,7 @@ local StepOne = function()
 	if (ActionBars) then
 		SetActionBarToggles(1, 1, 1, 1)
 	end
+
 	SetCVar("alwaysShowActionBars", 1)
 end
 
@@ -494,6 +499,65 @@ function KkthnxUIInstall:Install()
 	OptionTwo:SetScript("OnClick", StepOne)
 end
 
+if (not InstallationMessageFrame) then
+	local InstallationMessageFrame = CreateFrame("Frame", "InstallationMessageFrame", UIParent)
+	InstallationMessageFrame:SetPoint("TOP", 0, -100)
+	InstallationMessageFrame:SetSize(418, 72)
+	InstallationMessageFrame:Hide()
+
+	InstallationMessageFrame:SetScript("OnShow", function(self)
+		if (self.Message) then
+			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
+			self.Text:SetText(self.Message)
+			UIFrameFadeOut(self, 1.5, 1, 0)
+
+			K.Delay(2, function()
+				self:Hide()
+			end)
+
+			self.Message = nil
+
+			if (InstallationMessageFrame.FirstShow == false) then
+				if (GetCVarBool("Sound_EnableMusic")) then
+					PlayMusic([[Sound\Music\ZoneMusic\DMF_L70ETC01.mp3]])
+				end
+
+				InstallationMessageFrame.FirstShow = true
+			end
+		else
+			self:Hide()
+		end
+	end)
+
+	InstallationMessageFrame.FirstShow = false
+
+	InstallationMessageFrame.Texture = InstallationMessageFrame:CreateTexture(nil, "BACKGROUND")
+	InstallationMessageFrame.Texture:SetPoint("BOTTOM")
+	InstallationMessageFrame.Texture:SetSize(326, 103)
+	InstallationMessageFrame.Texture:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	InstallationMessageFrame.Texture:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+	InstallationMessageFrame.Texture:SetVertexColor(1, 1, 1, 0.6)
+
+	InstallationMessageFrame.LineTop = InstallationMessageFrame:CreateTexture(nil, "BACKGROUND")
+	InstallationMessageFrame.LineTop:SetPoint("TOP")
+	InstallationMessageFrame.LineTop:SetSize(418, 7)
+	InstallationMessageFrame.LineTop:SetDrawLayer("BACKGROUND", 2)
+	InstallationMessageFrame.LineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	InstallationMessageFrame.LineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	InstallationMessageFrame.LineBottom = InstallationMessageFrame:CreateTexture(nil, "BACKGROUND")
+	InstallationMessageFrame.LineBottom:SetPoint("BOTTOM")
+	InstallationMessageFrame.LineBottom:SetSize(418, 7)
+	InstallationMessageFrame.LineBottom:SetDrawLayer("BACKGROUND", 2)
+	InstallationMessageFrame.LineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	InstallationMessageFrame.LineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+	InstallationMessageFrame.Text = InstallationMessageFrame:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
+	InstallationMessageFrame.Text:SetPoint("BOTTOM", 0, 12)
+	InstallationMessageFrame.Text:SetTextColor(1, 0.82, 0)
+	InstallationMessageFrame.Text:SetJustifyH("CENTER")
+end
+
 -- On login function
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")
@@ -502,7 +566,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		return
 	end
 
-	-- create empty saved vars if they doesn't exist.
+	-- create empty saved vars if they doesn"t exist.
 	if (KkthnxUIData == nil) then KkthnxUIData = {} end
 	if (KkthnxUIDataPerChar == nil) then KkthnxUIDataPerChar = {} end
 

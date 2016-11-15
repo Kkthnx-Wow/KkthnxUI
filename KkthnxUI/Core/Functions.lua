@@ -166,37 +166,62 @@ K.CheckChat = function(warning)
 end
 
 -- Player's role check
-local isCaster = {
+K.CheckRole = function()
+	local Role
+	local Tree = GetSpecialization()
+	local Class = K.Class
+
+	if((Class == "MONK" and Tree == 2) or (Class == "PRIEST" and (Tree == 1 or Tree == 2)) or (Class == "PALADIN" and Tree == 1) or (Class == "DRUID" and Tree == 4) or (Class == "SHAMAN" and Tree == 3)) then
+		Role = "Healer"
+	else
+		Role = "DPS"
+	end
+
+	return Role
+end
+
+-- Player"s Role and Specialization check
+K.CheckSpec = function(Specialization)
+	local ActiveSpecGroup = GetActiveSpecGroup()
+
+	if(ActiveSpecGroup and GetSpecialization(false, false, ActiveSpecGroup)) then
+		return Specialization == GetSpecialization(false, false, ActiveSpecGroup)
+	end
+end
+
+local IsCaster = {
 	DEATHKNIGHT = {nil, nil, nil},
 	DEMONHUNTER = {nil, nil},
-	DRUID = {true},					-- Balance
+	DRUID = {true},
 	HUNTER = {nil, nil, nil},
 	MAGE = {true, true, true},
 	MONK = {nil, nil, nil},
 	PALADIN = {nil, nil, nil},
-	PRIEST = {nil, nil, true},		-- Shadow
+	PRIEST = {nil, nil, true},
 	ROGUE = {nil, nil, nil},
-	SHAMAN = {true},				-- Elemental
+	SHAMAN = {true},
 	WARLOCK = {true, true, true},
 	WARRIOR = {nil, nil, nil}
 }
 
-local function CheckRole(self, event, unit)
-	local Spec = GetSpecialization()
-	local Role = Spec and GetSpecializationRole(Spec)
+local CheckRole = function(self, event, unit)
+	local Specialization = GetSpecialization()
+	local Role = Specialization and GetSpecializationRole(Specialization)
+	local MyClass = K.Class
 
-	if Role == "TANK" then
+	if(Role == "TANK") then
 		K.Role = "Tank"
-	elseif Role == "HEALER" then
+	elseif(Role == "HEALER") then
 		K.Role = "Healer"
-	elseif Role == "DAMAGER" then
-		if isCaster[K.Class][Spec] then
+	elseif(Role == "DAMAGER") then
+		if(IsCaster[MyClass][Specialization]) then
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"
 		end
 	end
 end
+
 local RoleUpdater = CreateFrame("Frame")
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")

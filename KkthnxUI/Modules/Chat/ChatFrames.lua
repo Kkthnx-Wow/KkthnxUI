@@ -193,8 +193,9 @@ end
 -- Setup chatframes 1 to 10 on login
 local function SetupChat(self)
 	for i = 1, NUM_CHAT_WINDOWS do
-		local Frame = _G["ChatFrame"..i]
-		SetChatStyle(Frame)
+		local ChatFrame = _G[format("ChatFrame%s", i)]
+		local ChatFrameID = ChatFrame:GetID()
+		SetChatStyle(ChatFrame)
 	end
 
 	-- Remember last channel
@@ -235,15 +236,6 @@ local function SetupChatPosAndFont(self)
 			Frame:SetShadowOffset(K.Mult, -K.Mult)
 			Frame:SetShadowColor(0, 0, 0, 0.9)
 		end
-
-		-- Force chat position
-		if (ID == 1) then
-			Frame:ClearAllPoints()
-			Frame:SetSize(C.Chat.Width, C.Chat.Height)
-			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
-			FCF_RestorePositionAndDimensions(Frame)
-			FCF_SavePositionAndDimensions(Frame)
-		end
 	end
 end
 
@@ -273,17 +265,21 @@ UIChat:SetScript("OnEvent", function(self, event, addon)
 end)
 
 -- Setup temp chat (bn, whisper) when needed
-local function SetupTempChat()
-	local frame = FCF_GetCurrentChatFrame()
-	if frame.skinned then return end
-	SetChatStyle(frame)
-end
-hooksecurefunc("FCF_OpenTemporaryWindow", SetupTempChat)
+local SetupTempChat = function()
+	local Frame = FCF_GetCurrentChatFrame()
 
--- Disable pet battle tab
-local old = FCFManager_GetNumDedicatedFrames
-function FCFManager_GetNumDedicatedFrames(...)
-	return select(1, ...) ~= "PET_BATTLE_COMBAT_LOG" and old(...) or 1
+	if (_G[Frame:GetName() .. "Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG)) then
+		FCF_Close(Frame)
+
+		return
+	end
+
+	if (Frame.IsSkinned) then
+		return
+	end
+
+	Frame.temp = true
+	SetChatStyle(Frame)
 end
 
 -- Remove player"s realm name

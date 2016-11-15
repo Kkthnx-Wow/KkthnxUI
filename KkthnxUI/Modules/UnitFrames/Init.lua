@@ -25,25 +25,10 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 		return
 	end
 
-	-- Focus Key
-	if (C.Unitframe.FocusButton ~= "NONE") then
-		--Blizzard raid frame
-		hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame, ...)
-			if frame then
-				frame:SetAttribute(C.Unitframe.FocusModifier.."type"..C.Unitframe.FocusButton, "focus")
-			end
-		end)
-		-- World Models
-		local foc = CreateFrame("CheckButton", "Focuser", UIParent, "SecureActionButtonTemplate")
-		foc:SetAttribute("type1", "macro")
-		foc:SetAttribute("macrotext", "/focus mouseover")
-		SetOverrideBindingClick(Focuser, true, C.Unitframe.FocusModifier.."BUTTON"..C.Unitframe.FocusButton, "Focuser")
-	end
-
 	self:UnregisterEvent(event)
 	self:RegisterEvent("MODIFIER_STATE_CHANGED") -- Showing auras
 
-	-- Skin the Countdown/BG timers:
+	-- Skin the Countdown/BG timers
 	self:RegisterEvent("START_TIMER")
 
 	self.ADDON_LOADED = nil

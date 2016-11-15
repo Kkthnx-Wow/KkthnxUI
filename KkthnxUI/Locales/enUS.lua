@@ -89,7 +89,7 @@ L_CHAT_PARTY = "P"
 L_CHAT_PARTY_LEADER = "P"
 L_CHAT_RAID = "R"
 L_CHAT_RAID_LEADER = "R"
-L_CHAT_RAID_WARNING = "RW"
+L_CHAT_RAID_WARNING = "W"
 L_CHAT_PET_BATTLE = "Pet Battle"
 -- Configbutton Localization
 L_CONFIGBUTTON_FUNC = "Buttonfunctions:"

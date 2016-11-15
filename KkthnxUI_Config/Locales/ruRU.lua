@@ -249,8 +249,6 @@ L_GUI_UNITFRAME_CLASSPORTRAITS = "Включить старые портреты
 L_GUI_UNITFRAME_COMBAT_TEXT = "Показывать текст боя"
 L_GUI_UNITFRAME_ENABLE = "Включить рамки юнитов"
 L_GUI_UNITFRAME_FLAT_CLASSPORTRAITS = "Включить новые портреты классов"
-L_GUI_UNITFRAME_FOCUS_BUTTON = "Клавиша мыши фокуса '1 = mb1, 2 = mb2, 3 = mb3'"
-L_GUI_UNITFRAME_FOCUS_MODIFIER = "Клавиша-модификатор фокуса 'shift-, ctrl- or alt-'"
 L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT = "Высота полосы заклинаний фокуса"
 L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH = "Ширина полосы заклинаний фокуса"
 L_GUI_UNITFRAME_ICONPLAYER = "Set player castbar icon 'LEFT OR RIGHT'"

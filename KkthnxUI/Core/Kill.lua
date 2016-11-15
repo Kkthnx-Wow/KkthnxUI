@@ -5,7 +5,7 @@ local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local SetCVar = SetCVar
 
--- Kill all stuff on default UI that we don't need
+-- Kill all stuff on default UI that we don"t need
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
 DisableBlizzard:SetScript("OnEvent", function(self, event)
@@ -16,36 +16,59 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	end
 
 	if C.Unitframe.Enable then
-		InterfaceOptionsCombatPanelTargetOfTarget:Kill()
-		InterfaceOptionsCombatPanelTargetOfTarget:Kill()
+		for i = 1, MAX_BOSS_FRAMES do
+			local Boss = _G["Boss" .. i .. "TargetFrame"]
+			local Health = _G["Boss" .. i .. "TargetFrame" .. "HealthBar"]
+			local Power = _G["Boss" .. i .. "TargetFrame" .. "ManaBar"]
 
-		InterfaceOptionsDisplayPanelDisplayDropDown:Kill()
-		InterfaceOptionsDisplayPanelDisplayDropDown:Kill()
+			Boss:UnregisterAllEvents()
+			Boss.Show = K.Noop
+			Boss:Hide()
 
-		function PetFrame_Update() end
-		function PlayerFrame_AnimateOut() end
-		function PlayerFrame_AnimFinished() end
-		function PlayerFrame_ToPlayerArt() end
-		function PlayerFrame_ToVehicleArt() end
-
-		ShowPartyFrame = K.Noop
-		HidePartyFrame = K.Noop
-
-		CompactUnitFrameProfiles_ApplyProfile = K.Noop
+			Health:UnregisterAllEvents()
+			Power:UnregisterAllEvents()
+		end
 	end
 
 	if C.Raidframe.Enable then
-		InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
-		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
-
-		if not InCombatLockdown() then
-			CompactRaidFrameManager:Kill()
-			CompactRaidFrameContainer:Kill()
+		if (not InCombatLockdown()) then
+			if ((LoadAddOn("Blizzard_CUFProfiles") or LoadAddOn("Blizzard_CompactRaidFrames"))) then
+				DisableAddOn("Blizzard_CUFProfiles")
+				DisableAddOn("Blizzard_CompactRaidFrames")
+			end
 		end
 
-		CompactRaidFrameManager_UpdateShown = K.Noop
-		CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
+		InterfaceOptionsFrameCategoriesButton11:SetScale(0.00001)
+		InterfaceOptionsFrameCategoriesButton11:SetAlpha(0)
+
+		if (CompactRaidFrameManager) then
+			CompactRaidFrameManager:SetParent(UIFrameHider)
+		end
+
+		if (CompactUnitFrameProfiles) then
+			CompactUnitFrameProfiles:UnregisterAllEvents()
+		end
+
+		for i = 1, MAX_PARTY_MEMBERS do
+			_G["PartyMemberFrame"..i]:UnregisterAllEvents()
+			_G["PartyMemberFrame"..i]:SetParent(UIFrameHider)
+			_G["PartyMemberFrame"..i]:Hide()
+			_G["PartyMemberFrame"..i.."HealthBar"]:UnregisterAllEvents()
+			_G["PartyMemberFrame"..i.."ManaBar"]:UnregisterAllEvents()
+			_G["PartyMemberFrame"..i.."PetFrame"]:UnregisterAllEvents()
+			_G["PartyMemberFrame"..i.."PetFrame"]:SetParent(UIFrameHider)
+			_G["PartyMemberFrame"..i.."PetFrame".."HealthBar"]:UnregisterAllEvents()
+
+			HidePartyFrame()
+			ShowPartyFrame = K.Noop
+			HidePartyFrame = K.Noop
+		end
 	end
+
+	InterfaceOptionsFrameCategoriesButton9:SetHeight(0.00001)
+	InterfaceOptionsFrameCategoriesButton9:SetAlpha(0)
+	InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
+	InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
 
 	if C.Minimap.Garrison == true then
 		GarrisonLandingPageTutorialBox:Kill()

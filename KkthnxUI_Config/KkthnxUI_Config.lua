@@ -291,10 +291,8 @@ local function Local(o)
 	if o == "UIConfigUnitframeCombatText" then o = L_GUI_UNITFRAME_COMBAT_TEXT end
 	if o == "UIConfigUnitframeEnable" then o = L_GUI_UNITFRAME_ENABLE end
 	if o == "UIConfigUnitframeFlatClassPortraits" then o = L_GUI_UNITFRAME_FLAT_CLASSPORTRAITS end
-	if o == "UIConfigUnitframeFocusButton" then o = L_GUI_UNITFRAME_FOCUS_BUTTON end
 	if o == "UIConfigUnitframeFocusCastbarHeight" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_HEIGHT end
 	if o == "UIConfigUnitframeFocusCastbarWidth" then o = L_GUI_UNITFRAME_FOCUSCASTBAR_WIDTH end
-	if o == "UIConfigUnitframeFocusModifier" then o = L_GUI_UNITFRAME_FOCUS_MODIFIER end
 	if o == "UIConfigUnitframeIconPlayer" then o = L_GUI_UNITFRAME_ICONPLAYER end
 	if o == "UIConfigUnitframeIconTarget" then o = L_GUI_UNITFRAME_ICONTARGET end
 	if o == "UIConfigUnitframeParty" then o = L_GUI_UNITFRAME_PARTY end
