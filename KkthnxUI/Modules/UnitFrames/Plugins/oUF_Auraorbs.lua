@@ -2,7 +2,7 @@ local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
 --[==================================[
-	
+
 	Widget
 
 	AuraOrbs - An array consisting of x UI widgets.
@@ -53,14 +53,14 @@ local Update = function(self, event, unit)
 
 	if stack == orbs.lastNumCount then return; end
 	orbs.lastNumStacks = stack;
-	
+
 	for i = 1, orbs.maxStacks do
 		local orb = orbs[i]
 		if i > stack then
 			if (orb.active) then
-				(orb.HideOrb or orb.Hide)(orb) 
+				(orb.HideOrb or orb.Hide)(orb)
 				orb.active = false
-			end 
+			end
 		elseif (not orb.active) then
 			(orb.ShowOrb or orb.Show)(orb)
 			orb.active = true

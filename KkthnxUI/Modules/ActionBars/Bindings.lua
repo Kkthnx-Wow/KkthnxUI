@@ -258,7 +258,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			local b = _G["SpellButton"..i]
 			b:HookScript("OnEnter", function(self) bind:Update(self, "SPELL") end)
 		end
-		
+
 		local function registermacro()
 			for i = 1, 36 do
 				local b = _G["MacroButton"..i]
@@ -267,7 +267,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			MacroFrameTab1:HookScript("OnMouseUp", function() localmacros = 0 end)
 			MacroFrameTab2:HookScript("OnMouseUp", function() localmacros = 1 end)
 		end
-		
+
 		if not IsAddOnLoaded("Blizzard_MacroUI") then
 			hooksecurefunc("LoadAddOn", function(addon)
 				if addon == "Blizzard_MacroUI" then registermacro() end

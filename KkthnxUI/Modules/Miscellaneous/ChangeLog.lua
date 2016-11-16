@@ -143,5 +143,6 @@ end
 ChangeLog:RegisterEvent("ADDON_LOADED")
 ChangeLog:RegisterEvent("PLAYER_ENTERING_WORLD")
 ChangeLog:SetScript("OnEvent", function(self, event, ...)
+if KkthnxUIData == nil then KkthnxUIData = {} end
 	ChangeLog:OnCheckVersion()
 end)

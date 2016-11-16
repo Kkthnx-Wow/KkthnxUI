@@ -30,6 +30,7 @@
 	<Script file="Miscellaneous\Miscellaneous.lua"/>
 	<Script file="Miscellaneous\Mounts.lua"/>
 	<Script file="Miscellaneous\PulseCD.lua"/>
+	<Script file="Miscellaneous\RaidCD.lua"/>
 	<Script file="Miscellaneous\SlotDurability.lua"/>
 	<Script file="Miscellaneous\SlotItemLevel.lua"/>
 	<Script file="Miscellaneous\ThreatBar.lua"/>

@@ -11,8 +11,8 @@ C["ActionBar"] = {
     ["HideHighlight"] = false,
     ["Hotkey"] = true,
     ["Macro"] = true,
-    ["OutOfMana"] = {25/255, 77/255, 255/255},
-    ["OutOfRange"] = {204/255, 26/255, 26/255},
+    ["OutOfMana"] = {25/255, 77/255, 255/255, 1},
+    ["OutOfRange"] = {204/255, 26/255, 26/255, 1},
     ["PetBarHide"] = false,
     ["PetBarHorizontal"] = false,
     ["PetBarMouseover"] = false,
@@ -67,7 +67,7 @@ C["Blizzard"] = {
     ["EasyDelete"] = false,
     ["ReplaceBlizzardFonts"] = true,
     ["ReputationGain"] = false,
-    ["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b, 1},
+    ["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b},
     ["VehicleMouseover"] = false,
 }
 
@@ -248,6 +248,19 @@ C["PulseCD"] = {
     ["AnimationScale"] = 1.5,
     ["HoldTime"] = 0,
     ["Threshold"] = 3,
+}
+
+C["RaidCD"] = {
+	["Enable"] = true,
+	["Height"] = 15,
+	["Width"] = 186,
+	["UpWards"] = false,
+	["Expiration"] = false,
+	["ShowSelf"] = true,
+	["ShowIcon"] = true,
+	["ShowInRaid"] = true,
+	["ShowInParty"] = true,
+	["ShowInArena"] = true,
 }
 
 -- Skins

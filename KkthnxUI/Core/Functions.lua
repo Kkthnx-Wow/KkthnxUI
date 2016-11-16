@@ -54,26 +54,25 @@ K.Comma = function(num)
 	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
--- Shortvalue, we show a different value for the chinese client.
 K.ShortValue = function(value)
-	if (Locale == "zhCN") then
-		if abs(value) >= 1e8 then
-			return format("%.1fY", value / 1e8)
-		elseif abs(value) >= 1e4 then
-			return format("%.1fW", value / 1e4)
-		else
-			return format("%d", value)
-		end
+	if value >= 1e11 then
+		return ("%.0fb"):format(value / 1e9)
+	elseif value >= 1e10 then
+		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e9 then
+		return ("%.2fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e8 then
+		return ("%.0fm"):format(value / 1e6)
+	elseif value >= 1e7 then
+		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e6 then
+		return ("%.2fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e5 then
+		return ("%.0fk"):format(value / 1e3)
+	elseif value >= 1e3 then
+		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
 	else
-		if abs(value) >= 1e9 then
-			return format("%.1fG", value / 1e9)
-		elseif abs(value) >= 1e6 then
-			return format("%.1fM", value / 1e6)
-		elseif abs(value) >= 1e3 then
-			return format("%.1fk", value / 1e3)
-		else
-			return format("%d", value)
-		end
+		return value
 	end
 end
 
@@ -166,30 +165,7 @@ K.CheckChat = function(warning)
 end
 
 -- Player's role check
-K.CheckRole = function()
-	local Role
-	local Tree = GetSpecialization()
-	local Class = K.Class
-
-	if((Class == "MONK" and Tree == 2) or (Class == "PRIEST" and (Tree == 1 or Tree == 2)) or (Class == "PALADIN" and Tree == 1) or (Class == "DRUID" and Tree == 4) or (Class == "SHAMAN" and Tree == 3)) then
-		Role = "Healer"
-	else
-		Role = "DPS"
-	end
-
-	return Role
-end
-
--- Player"s Role and Specialization check
-K.CheckSpec = function(Specialization)
-	local ActiveSpecGroup = GetActiveSpecGroup()
-
-	if(ActiveSpecGroup and GetSpecialization(false, false, ActiveSpecGroup)) then
-		return Specialization == GetSpecialization(false, false, ActiveSpecGroup)
-	end
-end
-
-local IsCaster = {
+local isCaster = {
 	DEATHKNIGHT = {nil, nil, nil},
 	DEMONHUNTER = {nil, nil},
 	DRUID = {true},
@@ -204,17 +180,16 @@ local IsCaster = {
 	WARRIOR = {nil, nil, nil}
 }
 
-local CheckRole = function(self, event, unit)
-	local Specialization = GetSpecialization()
-	local Role = Specialization and GetSpecializationRole(Specialization)
-	local MyClass = K.Class
+local function CheckRole(self, event, unit)
+	local Spec = GetSpecialization()
+	local Role = Spec and GetSpecializationRole(Spec)
 
-	if(Role == "TANK") then
+	if Role == "TANK" then
 		K.Role = "Tank"
-	elseif(Role == "HEALER") then
+	elseif Role == "HEALER" then
 		K.Role = "Healer"
-	elseif(Role == "DAMAGER") then
-		if(IsCaster[MyClass][Specialization]) then
+	elseif Role == "DAMAGER" then
+		if isCaster[K.Class][Spec] then
 			K.Role = "Caster"
 		else
 			K.Role = "Melee"

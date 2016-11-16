@@ -567,8 +567,8 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	-- create empty saved vars if they doesn"t exist.
-	if (KkthnxUIData == nil) then KkthnxUIData = {} end
-	if (KkthnxUIDataPerChar == nil) then KkthnxUIDataPerChar = {} end
+	if KkthnxUIData == nil then KkthnxUIData = {} end
+	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
 
 	if K.ScreenWidth < 1024 then
 		SetCVar("useUiScale", 0)

@@ -14,7 +14,7 @@ elseif C.ActionBar.SplitBars and C.DataText.BottomBar then
 	anchor:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton12", "BOTTOMRIGHT", 3, -28)
 elseif not C.ActionBar.SplitBars and C.DataText.BottomBar then
 	anchor:SetPoint("BOTTOMLEFT", "ActionButton12", "BOTTOMRIGHT", 3, -28)
-else	
+else
 	anchor:SetPoint(unpack(C.Position.ExtraButton))
 end
 anchor:SetSize(53, 53)
