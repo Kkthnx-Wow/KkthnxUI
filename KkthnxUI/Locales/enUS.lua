@@ -334,6 +334,7 @@ L_MISC_LEAVECOMBAT = "- Leaving Combat"
 
 -- Popup Localization
 L_POPUP_ARMORY = "Armory"
+L_POPUP_BLIZZARD_ADDONS = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled."
 L_POPUP_BOOSTUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"
 L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
 L_POPUP_FIX_ACTIONBARS = "There is something wrong with your action bars. Do you want to reload the UI to fix it?"

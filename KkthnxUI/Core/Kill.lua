@@ -31,13 +31,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	end
 
 	if C.Raidframe.Enable then
-		if (not InCombatLockdown()) then
-			if ((LoadAddOn("Blizzard_CUFProfiles") or LoadAddOn("Blizzard_CompactRaidFrames"))) then
-				DisableAddOn("Blizzard_CUFProfiles")
-				DisableAddOn("Blizzard_CompactRaidFrames")
-			end
-		end
-
 		InterfaceOptionsFrameCategoriesButton11:SetScale(0.00001)
 		InterfaceOptionsFrameCategoriesButton11:SetAlpha(0)
 

@@ -4,6 +4,18 @@ local K, C, L = select(2, ...):unpack()
 local unpack = unpack
 local Movers = K.Movers
 
+StaticPopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
+	text =  L_POPUP_BLIZZARD_ADDONS,
+	button1 = OKAY,
+	OnAccept = function() EnableAddOn("Blizzard_CompactRaidFrames") ReloadUI() end,
+	timeout = 0,
+	showAlert = true,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3
+}
+
 -- Create main frame
 local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", oUF_PetBattleFrameHider)
 RaidUtilityPanel:CreatePanel("Transparent", 170, 144, unpack(C.Position.RaidUtility))
@@ -123,6 +135,8 @@ if CompactRaidFrameManager then
 	local MarkTexture = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:CreateTexture(nil, "OVERLAY")
 	MarkTexture:SetTexture("Interface\\RaidFrame\\Raid-WorldPing")
 	MarkTexture:SetPoint("CENTER", 0, -1)
+else
+	StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 end
 
 -- Raid Control Panel

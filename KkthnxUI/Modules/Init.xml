@@ -16,7 +16,6 @@
 	<Script file="Miscellaneous\AlreadyKnown.lua"/>
 	<Script file="Miscellaneous\ArmoryLink.lua"/>
 	<Script file="Miscellaneous\ArtifactPathFinder.lua"/>
-	<Script file="Miscellaneous\ChangeLog.lua"/>
 	<Script file="Miscellaneous\DropDown.lua"/>
 	<Script file="Miscellaneous\Durability.lua"/>
 	<Script file="Miscellaneous\ExtraQuestButton.lua"/>
