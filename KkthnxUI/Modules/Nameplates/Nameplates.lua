@@ -403,7 +403,7 @@ function Plates:UpdateHealthColor()
 		if not self.ArtContainer.AggroWarningTexture:IsShown() then
 			if InCombatLockdown() and self.isFriendly ~= true then
 				-- No Threat
-				if K.Role == "Tank" then
+				if K.Role == "TANK" then
 					self.NewPlate.Health:SetStatusBarColor(badR, badG, badB)
 					self.NewPlate.Health.Background:SetColorTexture(badR, badG, badB, 0.2)
 				else
@@ -415,7 +415,7 @@ function Plates:UpdateHealthColor()
 			local r, g, b = self.ArtContainer.AggroWarningTexture:GetVertexColor()
 			if g + b == 0 then
 				-- Have Threat
-				if K.Role == "Tank" then
+				if K.Role == "TANK" then
 					self.NewPlate.Health:SetStatusBarColor(goodR, goodG, goodB)
 					self.NewPlate.Health.Background:SetColorTexture(goodR, goodG, goodB, 0.2)
 				else
@@ -1326,7 +1326,7 @@ end
 local function IsOnThreatList(unit)
 	local _, threatStatus = UnitDetailedThreatSituation("player", unit)
 	if threatStatus == 3 then -- securely tanking, highest threat
-		if K.Role == "Tank" then
+		if K.Role == "TANK" then
 			return unpack(C.Nameplates.GoodColor)
 		else
 			return unpack(C.Nameplates.BadColor)
@@ -1336,7 +1336,7 @@ local function IsOnThreatList(unit)
 	elseif threatStatus == 1 then -- not tanking, higher threat than tank
 		return unpack(C.Nameplates.NearColor)
 	elseif threatStatus == 0 then -- not tanking, lower threat than tank
-		if K.Role == "Tank" then
+		if K.Role == "TANK" then
 			return unpack(C.Nameplates.BadColor)
 		else
 			return unpack(C.Nameplates.GoodColor)

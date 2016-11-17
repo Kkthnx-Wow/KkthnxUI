@@ -35,12 +35,13 @@ C["Position"] = {
 --]]
 
 -- Per class config (overwrites general)
--- Class type need to be uppercase -- DRUID, MAGE ect ect...
+-- Class type needs to be uppercase -- DRUID, MAGE ect ect...
 if K.Class == "DRUID" then
 
 end
 
-if K.Role == "Tank" then
+-- Role type needs to be uppercase -- TANK, HEALER, CASTER, MELEE
+if K.Role == "TANK" then
 
 end
 

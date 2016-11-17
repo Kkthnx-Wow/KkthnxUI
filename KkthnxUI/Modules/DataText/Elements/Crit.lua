@@ -37,7 +37,7 @@ local OnEnter = function(self)
 	GameTooltip:AddLine(SPELL_CRIT_CHANCE)
 	GameTooltip:AddLine(" ")
 
-	if(K.Role == "Caster") then
+	if(K.Role == "CASTER") then
 		Text = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_CRIT_CHANCE) .. " " .. format("%.2f%%", GetSpellCritChance(1)) .. FONT_COLOR_CODE_CLOSE
 		Tooltip = format(CR_CRIT_SPELL_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_CRIT_SPELL)), GetCombatRatingBonus(CR_CRIT_SPELL))
 	else

@@ -13,6 +13,32 @@ function Engine:unpack()
     return self[1], self[2], self[3], self[4]
 end
 
+local CheckRole = function(self, event, unit)
+	local tank = "TANK"
+	local melee = "MELEE"
+	local caster = "CASTER"
+	local healer = "HEALER"
+
+	local Roles = {
+		DEATHKNIGHT = {tank, melee, melee},
+		DEMONHUNTER = {melee, tank},
+		DRUID = {caster, melee, tank, healer},
+		HUNTER = {melee, melee, melee},
+		MAGE = {caster, caster, caster},
+		MONK = {tank, healer, melee},
+		PALADIN = {healer, tank, melee},
+		PRIEST = {healer, caster, healer},
+		ROGUE = {melee, melee, melee},
+		SHAMAN = {caster, melee, healer},
+		WARLOCK = {caster, caster, caster},
+		WARRIOR = {melee, melee, tank}
+	}
+
+	local Specialization = GetSpecialization()
+	local Class = select(2, UnitClass("player"))
+	return Roles[Class][Specialization]
+end
+
 Engine[1].UIName = "KkthnxUI"
 Engine[1].WindowedMode = Windowed
 Engine[1].FullscreenMode = Fullscreen
@@ -20,6 +46,7 @@ Engine[1].Noop = function() return end
 Engine[1].Unit = UnitGUID("player")
 Engine[1].Name = UnitName("player")
 Engine[1].Class = select(2, UnitClass("player"))
+Engine[1].Role = CheckRole()
 Engine[1].Race = select(2, UnitRace("player"))
 Engine[1].Level = UnitLevel("player")
 Engine[1].Client = GetLocale()
@@ -45,6 +72,9 @@ Engine[1].GetAddOnInfo = function(index)
 	end
 	return name, title, notes, enabled, loadable, reason, security
 end
+
+-- Return the player's role
+Engine[1].CheckRole = CheckRole
 
 -- Check if an addon is enabled	in the addon listing
 Engine[1].IsAddOnEnabled = function(addon_name)
