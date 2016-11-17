@@ -11,20 +11,20 @@
 -- local MyAddon = LibStub("AceAddon-3.0"):NewAddon("MyAddon")
 --
 -- function MyAddon:OnInitialize()
---   -- do init tasks here, like loading the Saved Variables,
---   -- or setting up slash commands.
+-- -- do init tasks here, like loading the Saved Variables,
+-- -- or setting up slash commands.
 -- end
 --
 -- function MyAddon:OnEnable()
---   -- Do more initialization here, that really enables the use of your addon.
---   -- Register Events, Hook functions, Create Frames, Get information from
---   -- the game that wasn't available in OnInitialize
+-- -- Do more initialization here, that really enables the use of your addon.
+-- -- Register Events, Hook functions, Create Frames, Get information from
+-- -- the game that wasn't available in OnInitialize
 -- end
 --
 -- function MyAddon:OnDisable()
---   -- Unhook, Unregister Events, Hide frames that you created.
---   -- You would probably only use an OnDisable if you want to
---   -- build a "standby" mode, or be able to toggle modules on/off.
+-- -- Unhook, Unregister Events, Hide frames that you created.
+-- -- You would probably only use an OnDisable if you want to
+-- -- build a "standby" mode, or be able to toggle modules on/off.
 -- end
 -- @class file
 -- @name AceAddon-3.0.lua
@@ -54,7 +54,7 @@ local setmetatable, getmetatable, rawset, rawget = setmetatable, getmetatable, r
 -- GLOBALS: LibStub, IsLoggedIn, geterrorhandler
 
 --[[
-	 xpcall safecall implementation
+xpcall safecall implementation
 ]]
 local xpcall = xpcall
 
@@ -64,18 +64,18 @@ end
 
 local function CreateDispatcher(argCount)
 	local code = [[
-		local xpcall, eh = ...
-		local method, ARGS
-		local function call() return method(ARGS) end
+	local xpcall, eh = ...
+	local method, ARGS
+	local function call() return method(ARGS) end
 
-		local function dispatch(func, ...)
-			 method = func
-			 if not method then return end
-			 ARGS = ...
-			 return xpcall(call, eh)
-		end
+	local function dispatch(func, ...)
+		method = func
+		if not method then return end
+		ARGS = ...
+		return xpcall(call, eh)
+	end
 
-		return dispatch
+	return dispatch
 	]]
 
 	local ARGS = {}
@@ -84,10 +84,10 @@ local function CreateDispatcher(argCount)
 	return assert(loadstring(code, "safecall Dispatcher["..argCount.."]"))(xpcall, errorhandler)
 end
 
-local Dispatchers = setmetatable({}, {__index=function(self, argCount)
-	local dispatcher = CreateDispatcher(argCount)
-	rawset(self, argCount, dispatcher)
-	return dispatcher
+	local Dispatchers = setmetatable({}, {__index=function(self, argCount)
+		local dispatcher = CreateDispatcher(argCount)
+		rawset(self, argCount, dispatcher)
+		return dispatcher
 end})
 Dispatchers[0] = function(func)
 	return xpcall(func, errorhandler)
@@ -291,7 +291,7 @@ function NewModule(self, name, prototype, ...)
 	if type(prototype) == "table" then
 		local mt = getmetatable(module)
 		mt.__index = prototype
-		setmetatable(module, mt)  -- More of a Base class type feel.
+		setmetatable(module, mt) -- More of a Base class type feel.
 	end
 
 	safecall(self.OnModuleCreated, self, module) -- Was in Ace2 and I think it could be a cool thing to have handy.
@@ -451,7 +451,7 @@ end
 -- This should only be called before any enabling actually happend, e.g. in/before OnInitialize.
 -- @name //addon//:SetEnabledState
 -- @paramsig state
--- @param state the state of an addon or module  (enabled=true, disabled=false)
+-- @param state the state of an addon or module (enabled=true, disabled=false)
 function SetEnabledState(self, state)
 	self.enabledState = state
 end
@@ -463,7 +463,7 @@ end
 -- @usage
 -- -- Enable all modules
 -- for name, module in MyAddon:IterateModules() do
---    module:Enable()
+-- module:Enable()
 -- end
 local function IterateModules(self) return pairs(self.modules) end
 
@@ -477,7 +477,7 @@ local function IterateEmbeds(self) return pairs(AceAddon.embeds[self]) end
 -- @paramsig
 -- @usage
 -- if MyAddon:IsEnabled() then
---     MyAddon:Disable()
+-- MyAddon:Disable()
 -- end
 local function IsEnabled(self) return self.enabledState end
 local mixins = {
@@ -613,7 +613,7 @@ end
 -- @usage
 -- -- Print a list of all installed AceAddon's
 -- for name, addon in AceAddon:IterateAddons() do
---   print("Addon: " .. name)
+-- print("Addon: " .. name)
 -- end
 function AceAddon:IterateAddons() return pairs(self.addons) end
 
@@ -621,9 +621,9 @@ function AceAddon:IterateAddons() return pairs(self.addons) end
 -- @usage
 -- -- Print a list of all enabled addons
 -- for name, status in AceAddon:IterateAddonStatus() do
---   if status then
---     print("EnabledAddon: " .. name)
---   end
+-- if status then
+-- print("EnabledAddon: " .. name)
+-- end
 -- end
 function AceAddon:IterateAddonStatus() return pairs(self.statuses) end
 
@@ -635,7 +635,7 @@ function AceAddon:IterateModulesOfAddon(addon) return pairs(addon.modules) end
 -- Event Handling
 local function onEvent(this, event, arg1)
 	-- 2011-08-17 nevcairiel - ignore the load event of Blizzard_DebugTools, so a potential startup error isn't swallowed up
-	if (event == "ADDON_LOADED"  and arg1 ~= "Blizzard_DebugTools") or event == "PLAYER_LOGIN" then
+	if (event == "ADDON_LOADED" and arg1 ~= "Blizzard_DebugTools") or event == "PLAYER_LOGIN" then
 		-- if a addon loads another addon, recursion could happen here, so we need to validate the table on every iteration
 		while(#AceAddon.initializequeue > 0) do
 			local addon = tremove(AceAddon.initializequeue, 1)

@@ -315,7 +315,7 @@ end
 for spell in pairs(K.RaidSpells) do
 	local name = GetSpellInfo(spell)
 	if not name then
-		print("|cffff0000WARNING: spell ID ["..tostring(spell).."] no longer exists! Report this to Shestak.|r")
+		print("|cffff0000WARNING: spell ID ["..tostring(spell).."] no longer exists! Report this to Kkthnx.|r")
 	end
 end
 
@@ -332,4 +332,3 @@ SlashCmdList.RaidCD = function()
 	StartTimer(UnitName("player"), 108280)	-- Healing Tide Totem
 end
 SLASH_RaidCD1 = "/raidcd"
-SLASH_RaidCD2 = "/кфшвсв"

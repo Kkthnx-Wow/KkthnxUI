@@ -29,7 +29,6 @@ if C.RaidCD.Enable == true then
 		[108280] = 180,	-- Healing Tide Totem
 		[15286] = 180,	-- Vampiric Embrace
 		[108281] = 120,	-- Ancestral Guidance
-		--BETA [157535] = 90,	-- Breath of the Serpent
 		-- Defense
 		[62618] = 180,	-- Power Word: Barrier
 		[33206] = 180,	-- Pain Suppression
