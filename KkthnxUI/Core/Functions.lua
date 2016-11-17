@@ -352,7 +352,7 @@ K.Delay = function(delay, func, ...)
 	Timer.Parent:Play()
 end
 
---Currencys
+-- Currencys
 local GetCurrencyInfo = GetCurrencyInfo
 K.Currency = function(id, weekly, capped)
 	local name, amount, tex, week, weekmax, maxed, discovered = GetCurrencyInfo(id)

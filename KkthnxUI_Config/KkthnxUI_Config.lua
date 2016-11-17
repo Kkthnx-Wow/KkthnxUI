@@ -627,23 +627,14 @@ function CreateUIConfig()
 	-- Group Scroll
 	local slider = CreateFrame("Slider", "UIConfigCategorySlider", groups)
 	slider:SetPoint("TOPRIGHT", 0, 0)
-	slider:SetSize(20, 400)
+	slider:SetSize(24, 400)
 	slider:SetThumbTexture("Interface\\Buttons\\UI-ScrollBar-Knob")
 	slider:SetOrientation("VERTICAL")
 	slider:CreateBackdrop(4)
 	local r, g, b, a = unpack(C.Media.Backdrop_Color)
-	slider:SetBackdropColor(r, g, b, 0.8)
+	slider:SetBackdropColor(r, g, b, a)
 	slider:SetValueStep(20)
 	slider:SetScript("OnValueChanged", function(self, value) groups:SetVerticalScroll(value) end)
-
-	--[[
-	if not slider.bg then
-		slider.bg = CreateFrame("Frame", nil, slider)
-		slider.bg:SetPoint("TOPLEFT", slider:GetThumbTexture(), "TOPLEFT", 10, -7)
-		slider.bg:SetPoint("BOTTOMRIGHT", slider:GetThumbTexture(), "BOTTOMRIGHT", -7, 7)
-		slider:GetThumbTexture():SetAlpha(0)
-	end
-	--]]
 
 	local function sortMyTable(a, b)
 		return ALLOWED_GROUPS[a] < ALLOWED_GROUPS[b]
@@ -768,14 +759,15 @@ function CreateUIConfig()
 				local editbox = CreateFrame("EditBox", nil, frame)
 				editbox:SetAutoFocus(false)
 				editbox:SetMultiLine(false)
-				editbox:SetSize(220, 24)
+				editbox:SetSize(220, 28)
 				editbox:SetMaxLetters(255)
-				editbox:SetTextInsets(4, 0, 0, 0)
+				editbox:SetTextInsets(8, 0, 0, 0)
 				editbox:SetFontObject(GameFontHighlight)
 				editbox:SetPoint("TOPLEFT", 8, -(offset + 20))
 				editbox:SetText(value)
 				editbox:SetBackdrop(K.Backdrop)
-				editbox:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+				editbox:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+				editbox:SetBackdropColor(.05, .05, .05)
 
 				local okbutton = CreateFrame("Button", nil, frame)
 				okbutton:SetHeight(editbox:GetHeight() - 8)
@@ -813,7 +805,7 @@ function CreateUIConfig()
 				colorbuttonname = (label:GetText().."ColorPicker")
 
 				local colorbutton = CreateFrame("Button", colorbuttonname, frame)
-				colorbutton:SetHeight(20)
+				colorbutton:SetHeight(28)
 				colorbutton:SetBackdrop(K.Backdrop)
 				colorbutton:SetBackdropBorderColor(unpack(value))
 				colorbutton:SetBackdropColor(value[1], value[2], value[3], 0.3)
@@ -982,7 +974,7 @@ do
 		title:SetText("Info:")
 
 		local subtitle = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-		subtitle:SetWidth(380)
+		subtitle:SetWidth(580)
 		subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 		subtitle:SetJustifyH("LEFT")
 		subtitle:SetText("UI Site: |cff3c9bedhttps://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff3c9bedhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff3c9bedhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
@@ -992,7 +984,7 @@ do
 		title2:SetText("Credits:")
 
 		local subtitle2 = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-		subtitle2:SetWidth(380)
+		subtitle2:SetWidth(580)
 		subtitle2:SetPoint("TOPLEFT", title2, "BOTTOMLEFT", 0, -8)
 		subtitle2:SetJustifyH("LEFT")
 		subtitle2:SetText("ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, Crum, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, Goldpaw, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, |cFFFF69B4Magicnachos|r, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Peatah, Phanx, Rahanprout, Rav, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord")
@@ -1002,7 +994,7 @@ do
 		title3:SetText("Translation Needed:")
 
 		local subtitle3 = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-		subtitle3:SetWidth(380)
+		subtitle3:SetWidth(580)
 		subtitle3:SetPoint("TOPLEFT", title3, "BOTTOMLEFT", 0, -8)
 		subtitle3:SetJustifyH("LEFT")
 		subtitle3:SetText("|cff3c9bedKkthnxUI|r is looking for Russian translation. If you wanna translate for us, you can PM me or make pull requests on GitHub")
@@ -1012,7 +1004,7 @@ do
 		title4:SetText("Supporters")
 
 		local subtitle4 = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-		subtitle4:SetWidth(380)
+		subtitle4:SetWidth(580)
 		subtitle4:SetPoint("TOPLEFT", title4, "BOTTOMLEFT", 0, -8)
 		subtitle4:SetJustifyH("LEFT")
 		subtitle4:SetText("XploitNT, jChirp, |cFFFF69B4Magicnachos|r")

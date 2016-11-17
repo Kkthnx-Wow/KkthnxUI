@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="API.lua"/>
 	<Script file="PixelPerfect.lua"/>
-  <Script file="Animation.lua"/>
+  	<Script file="Animation.lua"/>
 	<Script file="Functions.lua"/>
 	<Script file="Install.lua"/>
 	<Script file="Disable.lua"/>
