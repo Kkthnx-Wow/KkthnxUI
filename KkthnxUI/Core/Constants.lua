@@ -3,6 +3,7 @@ local K, C, L = select(2, ...):unpack()
 local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
 local Windowed = Display_DisplayModeDropDown:windowedmode()
 local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
+local RoleUpdater = CreateFrame("Frame")
 
 local CheckRole = function(self, event, unit)
 	local Tank = "TANK"
@@ -77,5 +78,9 @@ K.IsAddOnEnabled = function(addon_name)
 	end
 end
 
-SLASH_RELOADUI = "/rl"
+RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
+RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
+RoleUpdater:SetScript("OnEvent", K.CheckRole)
+
+SLASH_RELOADUI1, SLASH_RELOADUI2 = "/rl", "/reloadui"
 SlashCmdList["RELOADUI"] = ReloadUI
