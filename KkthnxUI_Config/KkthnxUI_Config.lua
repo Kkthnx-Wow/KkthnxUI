@@ -965,6 +965,8 @@ do
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
 
+		local K = KkthnxUI[1]
+
 		local title = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title:SetPoint("TOPLEFT", 16, -16)
 		title:SetText("Info:")
