@@ -26,7 +26,7 @@ local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
 
 local OnEnter = function(self)
-	if(InCombatLockdown()) then
+	if (InCombatLockdown()) then
 		return
 	end
 
@@ -37,11 +37,11 @@ local OnEnter = function(self)
 	GameTooltip:AddLine(SPELL_CRIT_CHANCE)
 	GameTooltip:AddLine(" ")
 
-	if(K.Role == "CASTER") then
+	if (K.Role == "CASTER") then
 		Text = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, SPELL_CRIT_CHANCE) .. " " .. format("%.2f%%", GetSpellCritChance(1)) .. FONT_COLOR_CODE_CLOSE
 		Tooltip = format(CR_CRIT_SPELL_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_CRIT_SPELL)), GetCombatRatingBonus(CR_CRIT_SPELL))
 	else
-		if(K.Class == "HUNTER") then
+		if (K.Class == "HUNTER") then
 			Text = HIGHLIGHT_FONT_COLOR_CODE .. format(PAPERDOLLFRAME_TOOLTIP_FORMAT, RANGED_CRIT_CHANCE) .. " " .. format("%.2f%%", GetRangedCritChance()) .. FONT_COLOR_CODE_CLOSE
 			Tooltip = format(CR_CRIT_RANGED_TOOLTIP, BreakUpLargeNumbers(GetCombatRating(CR_CRIT_RANGED)), GetCombatRatingBonus(CR_CRIT_RANGED))
 		else
@@ -61,9 +61,9 @@ local Update = function(self)
 	local Ranged = GetRangedCritChance()
 	local Value
 
-	if(Spell > Melee) then
+	if (Spell > Melee) then
 		Value = Spell
-	elseif(K.Class == "HUNTER") then
+	elseif (K.Class == "HUNTER") then
 		Value = Ranged
 	else
 		Value = Melee
@@ -73,7 +73,7 @@ local Update = function(self)
 end
 
 local Enable = function(self)
-	if(not self.Text) then
+	if (not self.Text) then
 		local Text = self:CreateFontString(nil, "OVERLAY")
 		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
 
