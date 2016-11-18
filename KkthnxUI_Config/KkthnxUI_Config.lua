@@ -989,13 +989,13 @@ do
 
 		local title3 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title3:SetPoint("TOPLEFT", subtitle2, "BOTTOMLEFT", 0, -16)
-		title3:SetText("Translation Needed:")
+		title3:SetText("Chinese Translation Needed:")
 
 		local subtitle3 = self:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 		subtitle3:SetWidth(580)
 		subtitle3:SetPoint("TOPLEFT", title3, "BOTTOMLEFT", 0, -8)
 		subtitle3:SetJustifyH("LEFT")
-		subtitle3:SetText("|cff3c9bedKkthnxUI|r is looking for Russian translation. If you wanna translate for us, you can PM me or make pull requests on GitHub")
+		subtitle3:SetText("|cff3c9bedKkthnxUI|r is looking for Chinese (Simplified) and Chinese (Traditional) translation. If you wanna translate for us, you can PM me or make pull requests on GitHub")
 
 		local title4 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title4:SetPoint("TOPLEFT", subtitle3, "BOTTOMLEFT", 0, -16)
