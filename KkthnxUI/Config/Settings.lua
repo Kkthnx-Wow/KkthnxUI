@@ -174,8 +174,6 @@ C["General"] = {
     ["UIScale"] = 0.71,
     ["WelcomeMessage"] = true,
     ["ShowConfigButton"] = true,
-    ["QuestSounds"] = true,
-    ["PathFinder"] = true,
 }
 
 -- Loot
@@ -216,7 +214,6 @@ C["Misc"] = {
     ["SellMisc"] = true,
     ["SlotDurability"] = false,
     ["UseGuildRepair"] = false,
-    ["QuestLevel"] = true,
 }
 
 -- Nameplates
@@ -265,7 +262,6 @@ C["RaidCD"] = {
 
 -- Skins
 C["Skins"] = {
-    ["CLCRet"] = false,
     ["ChatBubble"] = true,
     ["DBM"] = false,
     ["DBMMove"] = false,
@@ -292,7 +288,7 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-    ["CastbarSafeZoneColor"] = {.8, 0.4, 0, 1},
+    ["CastbarSafeZoneColor"] = {.8, 0.4, 0},
     ["Castbars"] = true,
     ["ClassColor"] = true,
     ["ClassPortraits"] = false,
@@ -315,7 +311,7 @@ C["Unitframe"] = {
     ["TargetCastbarHeight"] = 18,
     ["TargetCastbarWidth"] = 200,
     ["TextHealthColor"] = {.9, .9, .9},
-    ["TextNameColor"] = {1, 0.82, 0, 1},
+    ["TextNameColor"] = {1, 0.82, 0},
     ["TextPowerColor"] = {.9, .9, .9},
     ["ThreatGlow"] = true,
     ["ThreatValue"] = false,

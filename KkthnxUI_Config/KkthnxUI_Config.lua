@@ -206,8 +206,6 @@ local function Local(Option)
 	if Option == "UIConfigGeneralTranslateMessage" then Option = L_GUI_GENERAL_TRANSLATE_MESSAGE end
 	if Option == "UIConfigGeneralUIScale" then Option = L_GUI_GENERAL_UISCALE end
 	if Option == "UIConfigGeneralWelcomeMessage" then Option = L_GUI_GENERAL_WELCOME_MESSAGE end
-	if Option == "UIConfigGeneralQuestSounds" then Option = L_GUI_GENERAL_QUESTSOUNDS end
-	if Option == "UIConfigGeneralPathFinder" then Option = L_GUI_GENERAL_PATHFINDER end
 
 	-- Loot Settings
 	if Option == "UIConfigLoot" then Option = LOOT end
@@ -246,7 +244,6 @@ local function Local(Option)
 	if Option == "UIConfigMiscSellMisc" then Option = L_GUI_MISC_SELLMISC end
 	if Option == "UIConfigMiscSlotDurability" then Option = L_GUI_MISC_SLOT_DURABILITY end
 	if Option == "UIConfigMiscUseGuildRepair" then Option = L_GUI_MISC_USEGUILDREPAIR end
-	if Option == "UIConfigMiscQuestLevel" then Option = L_GUI_MISC_QUESTLEVEL end
 
 	-- Nameplate Settings
 	if Option == "UIConfigNameplates" then Option = L_GUI_NAMEPLATES end
@@ -293,7 +290,6 @@ local function Local(Option)
 
 	-- Skins Settings
 	if Option == "UIConfigSkins" then Option = L_GUI_SKINS end
-	if Option == "UIConfigSkinsCLCRet" then Option = L_GUI_SKINS_CLCR end
 	if Option == "UIConfigSkinsChatBubble" then Option = L_GUI_SKINS_CHAT_BUBBLE end
 	if Option == "UIConfigSkinsDBM" then Option = L_GUI_SKINS_DBM end
 	if Option == "UIConfigSkinsDBMMove" then Option = L_GUI_SKINS_DBM_MOVE end

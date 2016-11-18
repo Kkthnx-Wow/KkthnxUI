@@ -149,8 +149,6 @@ L_GUI_GENERAL_SHOW_CONFIG_BUTTON = "Show configbutton on minimap"
 L_GUI_GENERAL_TRANSLATE_MESSAGE = "Оповещение о помощи перевода GUI."
 L_GUI_GENERAL_UISCALE = "Масштаб интерфейса (если автомасштабирование отключено)"
 L_GUI_GENERAL_WELCOME_MESSAGE = "Приветственное сообщение в чате"
-L_GUI_GENERAL_QUESTSOUNDS = "Enable/disable QuestSounds."
-L_GUI_GENERAL_PATHFINDER = "Show the perfect way in your artifact frame."
 -- Loot
 L_GUI_LOOT_AUTODE = "Автоматически нажимать РАСПЫЛИТЬ"
 L_GUI_LOOT_AUTOGREED = "Автоматически нажимать НУЖНО для зеленых предметов на максимальном уровне"
@@ -184,7 +182,6 @@ L_GUI_MISC_SELLMISC = "Автоматически продавать ненуж�
 L_GUI_MISC_SLOT_DURABILITY = "Показывать прочность предмета надетого на персонажа"
 L_GUI_MISC_SPIN_CAMERA = "Вращение камеры во время АФК"
 L_GUI_MISC_USEGUILDREPAIR = "Автоматический ремонт за счет банка гильдии"
-L_GUI_MISC_QUESTLEVEL = "Add questlevel to objectivetracker"
 -- Nameplates
 L_GUI_NAMEPLATES_AD_HEIGHT = "Дополнительная высота для индикатора цели"
 L_GUI_NAMEPLATES_AD_WIDTH = "Дополнительная ширина для индикатора цели"
@@ -220,7 +217,6 @@ L_GUI_SET_SAVED_SETTTINGS = "Настройки для этого персона
 -- Skins
 L_GUI_SKINS = "Скины Аддонов"
 L_GUI_SKINS_CHAT_BUBBLE = "Облачка сообщений Blizzard"
-L_GUI_SKINS_CLCR = "Включить скин CLCRet"
 L_GUI_SKINS_DBM = "Включить скин DeadlyBossMods"
 L_GUI_SKINS_DBM_MOVE = "Разрешить перемещение фреймов DBM"
 L_GUI_SKINS_MINIMAP_BUTTONS = "Включить скин Minimap buttons"

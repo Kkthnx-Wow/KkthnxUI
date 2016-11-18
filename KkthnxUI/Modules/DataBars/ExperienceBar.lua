@@ -18,7 +18,7 @@ ExperienceBar:SetStatusBarColor(unpack(C.DataBars.ExperienceColor))
 
 K.CreateBorder(ExperienceBar, 10, 2.8)
 
-local ExperienceBarRested = CreateFrame("StatusBar", nil, UIParent)
+local ExperienceBarRested = CreateFrame("StatusBar", nil, ExperienceBar)
 ExperienceBarRested:SetOrientation("HORIZONTAL")
 ExperienceBarRested:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
 ExperienceBarRested:SetPoint("BOTTOM", ExperienceBar, "BOTTOM", 0, 0)

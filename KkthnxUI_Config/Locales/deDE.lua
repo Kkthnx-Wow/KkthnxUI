@@ -161,8 +161,6 @@ L_GUI_GENERAL_SHOW_CONFIG_BUTTON = "Zeigt den Konfigurationsbutton an der Minima
 L_GUI_GENERAL_TRANSLATE_MESSAGE = "Popup anzeigen für Hilfe bei der UI Übersetzung."
 L_GUI_GENERAL_UISCALE = "UI Skalierung (Wenn automatische Skalierung deaktivert ist)"
 L_GUI_GENERAL_WELCOME_MESSAGE = "Willkommensnachricht im Chat anzeigen."
-L_GUI_GENERAL_QUESTSOUNDS = "Aktivert/Deaktiviert die QuestSounds."
-L_GUI_GENERAL_PATHFINDER = "Zeigt den perfekten Weg im Artefaktfenster an."
 
 -- Loot Localization
 L_GUI_LOOT_AUTODE = "Auto confirm disenchant"
@@ -199,7 +197,6 @@ L_GUI_MISC_SELLMISC = "Automatisches Verkaufen von unnützen Gegenständen die n
 L_GUI_MISC_SLOT_DURABILITY = "Zeige die Haltbarkeit auf Deinen Gegenständen in der Charakterübersicht an"
 L_GUI_MISC_SPIN_CAMERA = "Drehe die Kamera während Du AFK bist"
 L_GUI_MISC_USEGUILDREPAIR = "Bei Benutzung von 'Automatisches Reparieren', benutzte die Gildenbank"
-L_GUI_MISC_QUESTLEVEL = "Zeige die Questlevel am Questverfolgungsfenster an"
 
 -- NamePlate Localization
 L_GUI_NAMEPLATES = "Namensplaketten"
@@ -240,7 +237,6 @@ L_GUI_SET_SAVED_SETTTINGS = "Setze Einstellungen für jeden Charakter einzeln"
 -- Skins Localization
 L_GUI_SKINS = "AddOn Skins"
 L_GUI_SKINS_CHAT_BUBBLE = "Blizzard Sprachblasen"
-L_GUI_SKINS_CLCR = "CLCRet"
 L_GUI_SKINS_DBM = "DeadlyBossMods"
 L_GUI_SKINS_DBM_MOVE = "Erlaube das Bewegen der DBM Leisten"
 L_GUI_SKINS_MINIMAP_BUTTONS = "Minimap buttons"

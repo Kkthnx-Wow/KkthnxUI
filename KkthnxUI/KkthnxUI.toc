@@ -21,14 +21,9 @@ Core\Engine.lua
 Core\Constants.lua
 Locales\Init.xml
 Config\Init.xml
-Core\GUI.lua
+Config\Filters\Init.xml
 Libraries\Init.xml
 Media\Media.lua
-Core\Colors.lua
-Config\Filters\Init.xml
 Core\Init.xml
 Modules\Init.xml
-
 Core\Temp.lua
-Core\Commands.lua
-Core\Developer.lua

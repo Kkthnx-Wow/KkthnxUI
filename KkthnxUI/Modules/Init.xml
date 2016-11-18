@@ -15,10 +15,8 @@
 	<Script file="Miscellaneous\AFKSpin.lua"/>
 	<Script file="Miscellaneous\AlreadyKnown.lua"/>
 	<Script file="Miscellaneous\ArmoryLink.lua"/>
-	<Script file="Miscellaneous\ArtifactPathFinder.lua"/>
 	<Script file="Miscellaneous\DropDown.lua"/>
 	<Script file="Miscellaneous\Durability.lua"/>
-	<Script file="Miscellaneous\ExtraQuestButton.lua"/>
 	<Script file="Miscellaneous\Filger.lua"/>
 	<Script file="Miscellaneous\GarbageCollect.lua"/>
 	<Script file="Miscellaneous\LFDQueueTimer.lua"/>
@@ -134,8 +132,6 @@
 	<Script file="Quests\AutoCollapse.lua"/>
 	<Script file="Quests\ObjectiveTracker.lua"/>
 	<Script file="Quests\QuestLog.lua"/>
-	<Script file="Quests\QuestRewards.lua"/>
-	<Script file="Quests\QuestSounds.lua"/>
 	<Script file="Quests\WowheadLink.lua"/>
 	<!-- Skins -->
 	<Include file="Skins\Addons\Init.xml"/>
