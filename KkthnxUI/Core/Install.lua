@@ -200,7 +200,7 @@ function KkthnxUIInstall:PositionSetup()
 	KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars
 
 	-- Default our DataTexts
-	if (K.DataTexts) then K.DataTexts:Reset() end
+	if K.DataTexts then K.DataTexts:Reset() end
 
 	-- Reset movable stuff into original positions
 	if KkthnxUIDataPerChar.Movers then KkthnxUIDataPerChar.Movers = {} end
@@ -479,7 +479,7 @@ local TutorialOne = function()
 	OptionTwo:SetScript("OnClick", TutorialTwo)
 end
 
--- this install KkthnxUI with default settings.
+-- Install KkthnxUI with default settings.
 function KkthnxUIInstall:Install()
 	KkthnxUIInstallFrame:Show()
 	StatusBar:Hide()
@@ -562,15 +562,19 @@ end
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then
-		return
-	end
+	if (addon ~= "KkthnxUI") then return end
 
-	-- create empty saved vars if they doesn"t exist.
+	-- Create empty saved vars if they doesn't exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end
 	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
+	if KkthnxUIDataPerChar.FogOfWar == nil then KkthnxUIDataPerChar.FogOfWar = false end
+	if KkthnxUIDataPerChar.AutoInvite == nil then KkthnxUIDataPerChar.AutoInvite = false end
+	if KkthnxUIDataPerChar.BarsLocked == nil then KkthnxUIDataPerChar.BarsLocked = false end
+	if KkthnxUIDataPerChar.SplitBars == nil then KkthnxUIDataPerChar.SplitBars = true end
+	if KkthnxUIDataPerChar.RightBars == nil then KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars end
+	if KkthnxUIDataPerChar.BottomBars == nil then KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars end
 
-	if K.ScreenWidth < 1024 then
+	if K.ScreenWidth < 1200 then
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
 	else
@@ -590,14 +594,13 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	self:UnregisterEvent("ADDON_LOADED")
 end)
 
-SLASH_TUTORIAL1 = "/uihelp"
-SLASH_TUTORIAL2 = "/tutorial"
+SLASH_TUTORIAL1, SLASH_TUTORIAL2 = "/uihelp", "/tutorial"
 SlashCmdList.TUTORIAL = function() KkthnxUIInstallFrame:Show() TutorialOne() end
 
 SLASH_VERSION1 = "/version"
 SlashCmdList.VERSION = function() if KkthnxUIVersionFrame:IsShown() then KkthnxUIVersionFrame:Hide() else KkthnxUIVersionFrame:Show() end end
 
-SLASH_CONFIGURE1 = "/install"
+SLASH_CONFIGURE1, SLASH_CONFIGURE2 = "/install", "/installui"
 SlashCmdList.CONFIGURE = KkthnxUIInstall.Install
 
 SLASH_RESETUI1 = "/resetui"
@@ -630,7 +633,7 @@ StaticPopupDialogs["RESET_UI"] = {
 
 -- Help translate
 if C.General.TranslateMessage == true then
-	if GetLocale() == "esES" or GetLocale() == "koKR" or GetLocale() == "esMX" or GetLocale() == "frFR" or GetLocale() == "koKR" or GetLocale() == "zhCN" or GetLocale() == "zhTW" then
+	if GetLocale() == "zhCN" or GetLocale() == "zhTW" then
 		print("|cffffff00Please help us translate the text settings for |cff3c9bedKkthnxUI|r. |cffffff00You can post a commit to|r |cff3c9bedgithub.com/Kkthnx/KkthnxUI_Legion|r")
 	end
 end
