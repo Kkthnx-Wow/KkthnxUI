@@ -25,5 +25,5 @@ Config\Filters\Init.xml
 Libraries\Init.xml
 Media\Media.lua
 Core\Init.xml
-Modules\Init.xml
 Core\Temp.lua
+Modules\Init.xml
