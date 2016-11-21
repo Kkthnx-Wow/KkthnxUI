@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or IsAddOnLoaded("ncHoverBind") == true then return end
 
 local bind, localmacros = CreateFrame("Frame", "HoverBind", UIParent), 0

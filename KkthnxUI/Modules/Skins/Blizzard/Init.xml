@@ -1,7 +1,0 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="Bubbles.lua"/>
-	<Script file="MinimapButtons.lua"/>
-	<Script file="ObjectiveTracker.lua"/>
-	<Script file="OrderHall.lua"/>
-	<Script file="WorldMap.lua"/>
-</Ui>

@@ -540,7 +540,7 @@ local function CreateUnitLayout(self, unit)
 		}
 
 		-- Combat CombatFeedbackText
-		if (C.Unitframe.CombatText) then
+		if C.Unitframe.CombatText == true then
 			self.CombatFeedbackText = K.SetFontString(self, C.Media.Font, 18, C.Media.Font_Style, "CENTER")
 			self.CombatFeedbackText:SetPoint("CENTER", self.Portrait)
 		end
@@ -598,17 +598,17 @@ local function CreateUnitLayout(self, unit)
 		self.Leader:SetSize(16, 16)
 		if (self.cUnit == "target" or self.cUnit == "focus") then
 			self.Leader:SetPoint("TOPRIGHT", self.Portrait, -3, 2)
-		elseif (self.IsTargetFrame) then
+		elseif self.IsTargetFrame then
 			self.Leader:SetPoint("TOPLEFT", self.Portrait, -3, 4)
-		elseif (self.IsPartyFrame) then
+		elseif self.IsPartyFrame then
 			self.Leader:SetSize(14, 14)
 			self.Leader:SetPoint("CENTER", self.Portrait, "TOPLEFT", 1, -1)
 		end
 
-		if (not self.IsTargetFrame) then
+		if not self.IsTargetFrame then
 			self.PhaseIcon = self:CreateTexture(nil, "OVERLAY")
 			self.PhaseIcon:SetPoint("CENTER", self.Portrait, "BOTTOM")
-			if (self.IsMainFrame) then
+			if self.IsMainFrame then
 				self.PhaseIcon:SetSize(26, 26)
 			else
 				self.PhaseIcon:SetSize(18, 18)
@@ -632,9 +632,9 @@ local function CreateUnitLayout(self, unit)
 			self.LFDRole = self:CreateTexture(nil, "OVERLAY")
 			self.LFDRole:SetSize(20, 20)
 
-			if (self.cUnit == "player") then
+			if self.cUnit == "player" then
 				self.LFDRole:SetPoint("BOTTOMRIGHT", self.Portrait, -2, -3)
-			elseif (unit == "target") then
+			elseif unit == "target" then
 				self.LFDRole:SetPoint("TOPLEFT", self.Portrait, -10, -2)
 			else
 				self.LFDRole:SetPoint("BOTTOMLEFT", self.Portrait, -5, -5)
@@ -646,7 +646,7 @@ local function CreateUnitLayout(self, unit)
 	UpdateUnitFrameLayout(self)
 
 	-- Player Frame
-	if (self.cUnit == "player") then
+	if self.cUnit == "player" then
 		self:SetSize(data.siz.w, data.siz.h)
 		self:SetScale(C.Unitframe.Scale or 1)
 
@@ -661,22 +661,22 @@ local function CreateUnitLayout(self, unit)
 		end
 
 		-- Totems
-		if (config[K.Class].showTotems) then
+		if config[K.Class].showTotems then
 			ns.classModule.Totems(self, config, uconfig)
 		end
 
 		-- Alternate Mana Bar
-		if (config[K.Class].showAdditionalPower) then
+		if config[K.Class].showAdditionalPower then
 			ns.classModule.alternatePowerBar(self, config, uconfig)
 		end
 
 		-- Load Class Modules
-		if (ns.classModule[K.Class]) then
+		if ns.classModule[K.Class] then
 			self.classPowerBar = ns.classModule[K.Class](self, config, uconfig)
 		end
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
-		if (C.Unitframe.PowerPredictionBar) then
+		if C.Unitframe.PowerPredictionBar then
 			local mainBar, altBar
 			mainBar = CreateFrame("StatusBar", nil, self.Power)
 			mainBar:SetFrameLevel(self.Power:GetFrameLevel())
@@ -689,7 +689,7 @@ local function CreateUnitLayout(self, unit)
 			mainBar:SetWidth(self.Power:GetWidth())
 			mainBar:SetStatusBarColor(1, 1, 1, .3)
 
-			if (self.AdditionalPower) then
+			if self.AdditionalPower then
 				altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
 				altBar:SetFrameLevel(self.AdditionalPower:GetFrameLevel())
 				altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
@@ -715,6 +715,18 @@ local function CreateUnitLayout(self, unit)
 			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, -3)
 			self.PvPTimer.frequentUpdates = 0.5
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
+		end
+
+		-- GCD spark
+		if C.Unitframe.GCDBar == true then
+			self.GCD = CreateFrame("StatusBar", self:GetName().."_GCD", self)
+			self.GCD:SetHeight(K.Scale(6))
+			self.GCD:SetWidth(K.Scale(150))
+			self.GCD:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -K.Scale(4))
+			self.GCD:SetStatusBarTexture(C.Media.Texture)
+			self.GCD:SetStatusBarColor(0.9, 0.9, 0.9)
+
+			Movers:RegisterFrame(self.GCD)
 		end
 
 		-- Combat icon
@@ -747,7 +759,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	if (self.cUnit == "player") then
-		if (C.Unitframe.ThreatValue) then
+		if C.Unitframe.ThreatValue then
 			self.NumericalThreat = CreateFrame("Frame", nil, self)
 			self.NumericalThreat:SetSize(49, 18)
 			self.NumericalThreat:SetPoint("BOTTOM", self, "TOP", 0, 0)
@@ -935,7 +947,7 @@ if (C.Unitframe.Party) then
 	Movers:RegisterFrame(party)
 end
 
-if (C.Unitframe.ShowBoss) then
+if C.Unitframe.ShowBoss then
 	local boss = {}
 	for i = 1, MAX_BOSS_FRAMES do
 		boss[i] = oUF:Spawn("boss"..i, "oUF_KkthnxBossFrame"..i)
@@ -949,7 +961,7 @@ if (C.Unitframe.ShowBoss) then
 	end
 end
 
-if (C.Unitframe.ShowArena) then
+if C.Unitframe.ShowArena then
 	local arena = {}
 	for i = 1, 5 do
 		arena[i] = oUF:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)
@@ -967,7 +979,6 @@ end
 for i = 1, MIRRORTIMER_NUMTIMERS do
 	local bar = _G["MirrorTimer" .. i]
 	bar:SetParent(UIParent)
-	-- bar:SetScale(1)
 	bar:SetSize(220, 18)
 
 	K.CreateBorder(bar, 11, 3)

@@ -200,24 +200,46 @@ local function CreateRaidLayout(self, unit)
 	end
 
 	-- Heal prediction
-	local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
-	mhpb:SetTexture(C.Media.Texture)
-	mhpb:SetVertexColor(0, 0.827, 0.765, 1)
+	local mhpb = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
+	mhpb:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
+	mhpb:SetStatusBarColor(0, 0.827, 0.765, 1)
 
-	local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
-	ohpb:SetTexture(C.Media.Texture)
-	ohpb:SetVertexColor(0.0, 0.631, 0.557, 1)
+	local ohpb = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
+	ohpb:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
+	ohpb:SetStatusBarColor(0.0, 0.631, 0.557, 1)
 
-	local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
-	ahpb:SetTexture("Interface\\RaidFrame\\Shield-Fill")
+	local ahpb = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
+	ahpb:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Fill", "OVERLAY")
 
 	if (C.Raidframe.HorizontalHealthBars) then
+		mhpb:SetOrientation("HORIZONTAL")
+		mhpb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
+		mhpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
 		mhpb:SetWidth(self:GetWidth())
+
+		ohpb:SetOrientation("HORIZONTAL")
+		ohpb:SetPoint("TOPLEFT", mhpb:GetStatusBarTexture(), "TOPRIGHT")
+		ohpb:SetPoint("BOTTOMLEFT", mhpb:GetStatusBarTexture(), "BOTTOMRIGHT")
 		ohpb:SetWidth(self:GetWidth())
+
+		ahpb:SetOrientation("HORIZONTAL")
+		ahpb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
+    ahpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
 		ahpb:SetWidth(self:GetWidth())
 	else
+		mhpb:SetOrientation("VERTICAL")
+		mhpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
+		mhpb:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		mhpb:SetWidth(self:GetHeight())
+
+		ohpb:SetOrientation("VERTICAL")
+		ohpb:SetPoint("BOTTOMLEFT", mhpb:GetStatusBarTexture(), "TOPLEFT")
+		ohpb:SetPoint("BOTTOMRIGHT", mhpb:GetStatusBarTexture(), "TOPRIGHT")
 		ohpb:SetWidth(self:GetHeight())
+
+		ahpb:SetOrientation("VERTICAL")
+		ahpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
+    ahpb:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
 		ahpb:SetWidth(self:GetHeight())
 	end
 

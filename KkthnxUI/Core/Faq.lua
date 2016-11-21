@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C, L = select(2, ...):unpack()
 
 local FONT_TITLE = { C.Media.Font, 15, C.Media.Font_Style }
 local FONT_HEADLINE = { C.Media.Font, 14, C.Media.Font_Style }

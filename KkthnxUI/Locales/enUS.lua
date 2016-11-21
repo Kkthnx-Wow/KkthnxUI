@@ -1,8 +1,20 @@
 local K, C, L = select(2, ...):unpack()
--- Localization FOR ENUS & ENGB CLIENTS
+-- Localization for ENUS & ENGB Clients
+
+-- L.AFKScreen = {}
+-- L.AFKScreen.NoGuild = "No Guild"
 
 -- AFKSpin Localization
 L_AFKSCREEN_NOGUILD = "No Guild"
+
+-- L.Announce = {}
+-- L.Announce.FPUse = "%s used %s.",
+-- L.Announce.Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
+-- L.Announce.PCAborted = "Pull ABORTED!",
+-- L.Announce.PCGo = "GO!",
+-- L.Announce.PCMessage = "Pulling %s in %s..",
+-- L.Announce.Sapped = "Sapped",
+-- L.Announce.SappedBy = "Sapped by: ",
 
 -- Announce Localization
 L_ANNOUNCE_FP_USE = "%s used %s."
@@ -13,9 +25,63 @@ L_ANNOUNCE_PC_MSG = "Pulling %s in %s.."
 L_ANNOUNCE_SAPPED = "Sapped"
 L_ANNOUNCE_SAPPED_BY = "Sapped by: "
 
+-- L.Auras = {}
+-- L.Auras.MoveBuffs = "Move Buffs"
+-- L.Auras.MoveDebuffs = "Move Debuffs"
+
 -- Auras Localization
 L_AURAS_MOVEBUFFS = "Move Buffs"
 L_AURAS_MOVEDEBUFFS = "Move Debuffs"
+
+-- L.FAQ = {}
+-- L.FAQ.Button01 = "General"
+-- L.FAQ.Button02 = "Action Bars"
+-- L.FAQ.Button03 = "Unit Frames"
+-- L.FAQ.Button04 = "Chat"
+-- L.FAQ.Button05 = "UI Commands"
+-- L.FAQ.Button06 = "Keybindings"
+-- L.FAQ.Button07 = "Minimap"
+-- L.FAQ.Button08 = "Bags"
+-- L.FAQ.Button09 = "Misc"
+-- L.FAQ.Button10 = "Bug Reports"
+-- L.FAQ.Button11 = "UI Update"
+-- L.FAQ.Context10Text1 = ""
+-- L.FAQ.Context10Text2 = ""
+-- L.FAQ.Context10Title = "|cff3c9bedOMG Errors|r"
+-- L.FAQ.Context11Text1 = ""
+-- L.FAQ.Context11Text2 = ""
+-- L.FAQ.Context11Title = "|cff3c9bedUpdating UI|r"
+-- L.FAQ.Context1Text1 = ""
+-- L.FAQ.Context1Text2 = ""
+-- L.FAQ.Context1Title = "|cff3c9bedGeneral|r"
+-- L.FAQ.Context2Text1 = ""
+-- L.FAQ.Context2Text2 = ""
+-- L.FAQ.Context2Title = "|cff3c9bedActionbars|r"
+-- L.FAQ.Context3Text1 = ""
+-- L.FAQ.Context3Text2 = ""
+-- L.FAQ.Context3Title = "|cff3c9bedUnitframes|r"
+-- L.FAQ.Context4Text1 = ""
+-- L.FAQ.Context4Text2 = ""
+-- L.FAQ.Context4Title = "|cff3c9bedChat|r"
+-- L.FAQ.Context5Text1 = "The following chat commands are available to you:"
+-- L.FAQ.Context5Text2 = "/rl - Reload interface./n/rc - Activates a ready check.\n/gm - Opens GM frame.\n/rd - Disband party or raid.\n/toraid - Convert to party or raid.\n/teleport - Teleportation from random dungeon.\n/spec, /ss - Switches between talent spec's.\n/frame - Description is not ready.\n/farmmode - Increase the size of the minimap.\n/moveui - Allows the movement of interface elements.\n/resetui - Resets general settings to default.\n/resetconfig - Resets KkthnxUI_Config settings.\n/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.\n/pulsecd - Self cooldown pulse test.\n/tt - Whisper target.\n/ainv - Enables automatic invitation.\n/cfg - Opens interface settings.\n/patch - Display Wow patch info."
+-- L.FAQ.Context5Title = "|cff3c9bedUI Slashcommands|r"
+-- L.FAQ.Context6Text1 = ""
+-- L.FAQ.Context6Text2 = ""
+-- L.FAQ.Context6Title = "|cff3c9bedKeybinding|r"
+-- L.FAQ.Context7Text1 = ""
+-- L.FAQ.Context7Text2 = ""
+-- L.FAQ.Context7Title = "|cff3c9bedMinimap|r"
+-- L.FAQ.Context8Text1 = ""
+-- L.FAQ.Context8Text2 = ""
+-- L.FAQ.Context8Title = "|cff3c9bedBags|r"
+-- L.FAQ.Context9Text1 = ""
+-- L.FAQ.Context9Text2 = ""
+-- L.FAQ.Context9Title = "|cff3c9bedMisc|r"
+-- L.FAQ.GeneralTitle1 = "|cffffff00Welcome to |cff3c9bedKkthnxUI|r v"..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name).."|r \n\nUse the menu on the left to learn more about the individual points about the UI."
+-- L.FAQ.GeneralTitle2 = ""
+-- L.FAQ.GeneralTitle3 = "|cff3c9bedKkthnxUI - Frequently Asked Question(s).|r"
+
 
 -- F.A.Q
 L_FAQ_BUTTON_01 = "General"
@@ -370,8 +436,18 @@ L_TUTORIAL_MESSAGE_8 = "You can use the /resetui command to reset all of your mo
 L_TUTORIAL_MESSAGE_9 = "To move abilities on the action bars by default hold shift + drag. You can change the modifier key from the action bar options menu."
 L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
 
+-- L.WatchFrame = {}
+-- L.WatchFrame.WowheadLink = "Wowhead Link"
+
 -- Wowhead Link Localization
 L_WATCH_WOWHEAD_LINK = "Wowhead Link"
+
+-- L.Welcome = {}
+-- L.Welcome.Line1 = "Welcome to |cff3c9bedKkthnxUI|r v"
+-- L.Welcome.Line2 = ""
+-- L.Welcome.Line3 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r"
+-- L.Welcome.Line4 = ""
+-- L.Welcome.Line5 = "Some of your questions can be answered by typing /uihelp or /faq"
 
 -- Welcome Localization
 L_WELCOME_LINE_1 = "Welcome to |cff3c9bedKkthnxUI|r v"
@@ -379,6 +455,42 @@ L_WELCOME_LINE_2_1 = ""
 L_WELCOME_LINE_2_2 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r"
 L_WELCOME_LINE_2_3 = ""
 L_WELCOME_LINE_2_4 = "Some of your questions can be answered by typing /uihelp"
+
+-- L.SlashCommand = {}
+-- L.SlashCommand.Help = {
+-- 	"",
+-- 	"|cff3c9bedAvailable slash commands:|r",
+-- 	"--------------------------",
+-- 	"/rl - Reload interface.",
+-- 	"/rc - Activates a ready check.",
+-- 	"/gm - Opens GM frame.",
+-- 	"/rd - Disband party or raid.",
+-- 	"/toraid - Convert to party or raid.",
+-- 	"/teleport - Teleportation from random dungeon.",
+-- 	"/spec, /ss - Switches between talent spec's.",
+-- 	"/frame - Description is not ready.",
+-- 	"/farmmode - Increase the size of the minimap.",
+-- 	"/moveui - Allows the movement of interface elements.",
+-- 	"/resetui - Resets general settings to default.",
+-- 	"/resetconfig - Resets KkthnxUI_Config settings.",
+-- 	"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
+-- 	"/pulsecd - Self cooldown pulse test.",
+-- 	"/tt - Whisper target.",
+-- 	"/ainv - Enables automatic invitation.",
+-- 	"/cfg - Opens interface settings.",
+-- 	"/patch - Display Wow patch info.",
+-- 	"",
+-- 	"|cff3c9bedAvailable hidden features:|r",
+-- 	"--------------------------",
+-- 	"Right-click minimap for micromenu.",
+-- 	"Middle mouse click minimap for tracking.",
+-- 	"Left click experience bar opens rep frame.",
+-- 	"Left click artifact bar opens artifact frame.",
+-- 	"Hold alt and obtain player ilvl and spec in tooltip.",
+-- 	"Hold shift to scroll instantly to end or start of chat.",
+-- 	"Copy button to the bottom right side of chat.",
+-- 	"Middle mouse click copy button to /roll.",
+-- }
 
 -- Slash Commands Localization
 L_SLASHCMD_HELP = {

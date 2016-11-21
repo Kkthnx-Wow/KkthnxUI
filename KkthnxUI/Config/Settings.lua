@@ -346,7 +346,6 @@ C["Raidframe"] = {
     ["ShowResurrectText"] = true,
     ["ShowRolePrefix"] = false,
     ["ShowThreatText"] = false,
-    ["UseHealLayout"] = false,
     ["Width"] = 42,
 }
 
