@@ -99,7 +99,8 @@ function ns.CreateCastbars(self, unit)
 	local Movers = K.Movers
 
 	local Castbar = K.CreateStatusBar(self, "BORDER", self:GetName().."Castbar")
-	Castbar:SetFrameStrata("HIGH")
+	Castbar:SetFrameStrata(self:GetFrameStrata())
+	Castbar:SetFrameLevel(6)
 	K.CreateBorder(Castbar, 11, 3)
 
 	if (BasePos[self.cUnit]) then

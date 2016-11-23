@@ -338,7 +338,7 @@ C["Raidframe"] = {
     ["MainTankFrames"] = true,
     ["ManabarHorizontal"] = false,
     ["ManabarShow"] = true,
-    ["MaxUnitPerColumn"] = 8,
+    ["MaxUnitPerColumn"] = 10,
     ["RaidAsParty"] = false,
     ["Scale"] = 1,
     ["ShowMouseoverHighlight"] = true,
@@ -346,7 +346,7 @@ C["Raidframe"] = {
     ["ShowResurrectText"] = true,
     ["ShowRolePrefix"] = false,
     ["ShowThreatText"] = false,
-    ["Width"] = 42,
+    ["Width"] = 56,
 }
 
 -- Worldmap

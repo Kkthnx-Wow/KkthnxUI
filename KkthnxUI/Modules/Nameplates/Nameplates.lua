@@ -764,30 +764,19 @@ function NamePlates:PLAYER_ENTERING_WORLD()
 	end
 end
 
--------------------
---[[ Config ]]--
+-- Config
 local WhiteList = {
-	--[11426] = true,
-	--[196741] = true,
-	--[147732] = true,
-	--BUFF
 
-	--DEBUFF
-	[119381] = true,
-	[115078] = true,
 }
 
 local BlackList = {
-	--[11426] = true,
-	--[196741] = true,
+
 }
 
 local Config = {
 	myfiltertype = "whitelist", -- show aura cast by player
 	otherfiltertype = "none", -- show aura cast by other
-	--"whitelist": show only list
-	--"blacklist": show only unlist
-	--"none": do not show anything
+	-- "whitelist": show only list | "blacklist": show only unlist | "none": do not show anything
 
 	playerplate = true,
 	classresource_show = true,

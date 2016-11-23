@@ -1,6 +1,3 @@
-local K, C, L = select(2, ...):unpack()
-if C.Unitframe.Enable ~= true then return end
-
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
@@ -61,7 +58,6 @@ local function createUpdateFrame()
 	end)
 end
 
-
 local function combat(self, event, unit, eventType, flags, amount, dtype)
 	if unit ~= self.unit then return end
 	if unit == "vehicle" then return end
@@ -80,7 +76,7 @@ local function combat(self, event, unit, eventType, flags, amount, dtype)
 		if amount ~= 0 then
 			if flags == "CRITICAL" then
 				color = fColors and fColors.CRITICAL or colors.CRITICAL
-			elseif  flags == "CRUSHING" then
+			elseif flags == "CRUSHING" then
 				color = fColors and fColors.CRUSING or colors.CRUSHING
 			elseif flags == "GLANCING" then
 				color = fColors and fColors.GLANCING or colors.GLANCING

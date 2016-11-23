@@ -11,5 +11,5 @@ Interrupts:SetScript("OnEvent", function(self, _, ...)
 	local _, event, _, sourceGUID, _, _, _, _, destName, _, _, _, _, _, spellID, spellName = ...
 	if not (event == "SPELL_INTERRUPT" and (sourceGUID == UnitGUID("player") or sourceGUID == UnitGUID("pet"))) then return end
 
-	SendChatMessage(format(L_ANNOUNCE_INTERRUPTED, destName, spellID, spellName), K.CheckChat())
+	SendChatMessage(format(L.Announce.Interrupted, destName, spellID, spellName), K.CheckChat())
 end)

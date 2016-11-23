@@ -7,7 +7,7 @@ local SetCVar = SetCVar
 
 -- Kill all stuff on default UI that we don"t need
 local DisableBlizzard = CreateFrame("Frame")
-DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
+DisableBlizzard:RegisterEvent("ADDON_LOADED")
 DisableBlizzard:SetScript("OnEvent", function(self, event)
 	if addon == "Blizzard_AchievementUI" then
 		if C.Tooltip.Enable then
@@ -74,11 +74,26 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	if C.Minimap.Garrison == true then
 		GarrisonLandingPageTutorialBox:Kill()
 	end
-	HelpOpenTicketButtonTutorial:Kill()
-	HelpPlate:Kill()
-	HelpPlateTooltip:Kill()
-	TalentMicroButtonAlert:Kill()
-	EJMicroButtonAlert:Kill()
+
+	if not UnitAffectingCombat("player") then
+		Advanced_UIScaleSlider:Kill()
+		Advanced_UseUIScale:Kill()
+		BagHelpBox:Kill()
+		CollectionsMicroButtonAlert:Kill()
+		EJMicroButtonAlert:Kill()
+		HelpOpenTicketButtonTutorial:Kill()
+		HelpPlate:Kill()
+		HelpPlateTooltip:Kill()
+		PremadeGroupsPvETutorialAlert:Kill()
+		ReagentBankHelpBox:Kill()
+		SpellBookFrameTutorialButton:Kill()
+		TalentMicroButtonAlert:Kill()
+		TutorialFrameAlertButton:Kill()
+		WorldMapFrameTutorialButton:Kill()
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
+	end
 
 	if C.Unitframe.Enable then
 		InterfaceOptionsCombatPanelTargetOfTarget:Kill()

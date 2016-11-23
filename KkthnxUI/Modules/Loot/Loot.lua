@@ -161,10 +161,12 @@ do
 	Butsu.title = title
 end
 
-Butsu:SetScript("OnMouseDown", function(self)
-	if IsAltKeyDown() then
-		self:StartMoving()
-	end
+Butsu:SetScript("OnMouseDown", function(self, button)
+    if IsAltKeyDown() then
+        self:StartMoving()
+    elseif IsControlKeyDown() and button == "RightButton" then
+        self:SetPoint(unpack(C.Position.Loot))
+    end
 end)
 
 Butsu:SetScript("OnMouseUp", function(self)
@@ -203,9 +205,9 @@ local function Announce(chn)
 	local nums = GetNumLootItems()
 	if nums == 0 or (nums == 1 and GetLootSlotType(1) == LOOT_SLOT_MONEY) then return end
 	if UnitIsPlayer("target") or not UnitExists("target") then
-		SendChatMessage(">> "..L_LOOT_CHEST..":", chn)
+		SendChatMessage(">> "..LOOT..":", chn)
 	else
-		SendChatMessage(">> "..L_LOOT_MONSTER.." - '"..UnitName("target").."':", chn)
+		SendChatMessage(">> "..LOOT.." - '"..UnitName("target").."':", chn)
 	end
 	for i = 1, GetNumLootItems() do
 		if LootSlotHasItem(i) then
@@ -273,9 +275,15 @@ lb:SetWidth(14)
 lb:SetHeight(12)
 lb:ClearAllPoints()
 lb:SetPoint("BOTTOMRIGHT", Butsu, "TOPRIGHT", -21, -18)
-lb:SetFrameStrata("TOOLTIP")
+lb:SetFrameStrata("DIALOG")
 lb:RegisterForClicks("RightButtonUp", "LeftButtonUp")
-lb:SetScript("OnClick", OnLinkClick)
+lb:SetScript("OnClick", function(self, button)
+    if button == "RightButton" then
+        ToggleDropDownMenu(nil, nil, LDD, lb, 0, 0)
+    else
+        Announce(K.CheckChat())
+    end
+end)
 lb:Hide()
 UIDropDownMenu_Initialize(LDD, LDD_Initialize, "MENU")
 

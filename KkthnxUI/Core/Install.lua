@@ -128,6 +128,14 @@ function KkthnxUIInstall:ChatSetup()
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 
+	--Adjust Chat Colors
+	--General
+	ChangeChatColor("CHANNEL1", 0.764, 0.901, 0.909)
+	--Trade
+	ChangeChatColor("CHANNEL2", 0.909, 0.619, 0.474)
+	--Local Defense
+	ChangeChatColor("CHANNEL3", 0.909, 0.894, 0.474)
+
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 
 	for index = 1, NUM_CHAT_WINDOWS do

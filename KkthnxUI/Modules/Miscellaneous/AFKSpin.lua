@@ -149,7 +149,7 @@ function AFK:SetAFK(status)
 			local guildName, guildRankName = GetGuildInfo("player")
 			self.AFKMode.bottom.guild:SetFormattedText("%s-%s", guildName, guildRankName)
 		else
-			self.AFKMode.bottom.guild:SetText(L_AFKSCREEN_NOGUILD)
+			self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
 		end
 		self.AFKMode.bottom.model.curAnimation = "wave"
 		self.AFKMode.bottom.model.startTime = GetTime()
