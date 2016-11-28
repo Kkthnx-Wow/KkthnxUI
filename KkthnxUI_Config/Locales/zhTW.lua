@@ -1,4 +1,3 @@
-KkthnxUIConfigLocalization = {}
 -- Localization for zhTW
 
 local Locale = GetLocale()

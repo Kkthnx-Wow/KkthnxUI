@@ -1,4 +1,3 @@
-KkthnxUIConfigLocalization = {}
 -- Localization for ruRU
 
 local Locale = GetLocale()

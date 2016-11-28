@@ -1,4 +1,3 @@
-KkthnxUIConfigLocalization = {}
 -- Localization for deDE
 
 local Locale = GetLocale()
