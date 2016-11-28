@@ -1,8 +1,8 @@
+KkthnxUIConfigLocalization = {}
 -- Localization for enUS & enGB clients
+
 local PerformanceSlight = "\n|cffFF0000Disabling this may slightly increase performance|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000Turn this off to manually input your bar numbers|r"
-
-KkthnxUIConfigLocalization = {}
 
 -- Actionbar
 KkthnxUIConfigLocalization.ActionBarBottomBars = "Number of bars on the bottom (1, 2 or 3)"
@@ -247,6 +247,7 @@ KkthnxUIConfigLocalization.ConfigSetSavedSettings = "Set settings Per-Character"
 
 -- Skins
 KkthnxUIConfigLocalization.Skins = "AddOn Skins"
+KkthnxUIConfigLocalization.SkinsBigWigs = "BigWigs"
 KkthnxUIConfigLocalization.SkinsChatBubble = "Blizzard chat bubbles"
 KkthnxUIConfigLocalization.SkinsDBM = "DeadlyBossMods"
 KkthnxUIConfigLocalization.SkinsDBMMove = "Allow to move DBM bars"
@@ -280,6 +281,8 @@ KkthnxUIConfigLocalization.UnitframeEnable = "Enable unit frames"
 KkthnxUIConfigLocalization.UnitframeFlatClassPortraits = "Enable new class portraits"
 KkthnxUIConfigLocalization.UnitframeFocusCastbarHeight = "Focus castbar Height"
 KkthnxUIConfigLocalization.UnitframeFocusCastbarWidth = "Focus castbar width"
+KkthnxUIConfigLocalization.UnitframeIconPlayer = "Set player castbar icon 'LEFT OR RIGHT'"
+KkthnxUIConfigLocalization.UnitframeIconTarget = "Set target castbar icon 'LEFT OR RIGHT'"
 KkthnxUIConfigLocalization.UnitframeParty = "Enable party frames."
 KkthnxUIConfigLocalization.UnitframePlayerCastbarHeight = "Player castbar height"
 KkthnxUIConfigLocalization.UnitframePlayerCastbarWidth = "Player castbar width"
@@ -293,13 +296,12 @@ KkthnxUIConfigLocalization.UnitframeShowPlayer = "Show yourself in the party"
 KkthnxUIConfigLocalization.UnitframeStyle = "Style the uniframes look 'fat or normal'"
 KkthnxUIConfigLocalization.UnitframeTargetCastbarHeight = "Target castbar height"
 KkthnxUIConfigLocalization.UnitframeTargetCastbarWidth = "Target castbar width"
+KkthnxUIConfigLocalization.UnitframeTargetDebuffsTop = "Display Target debuffs ontop of the frame."
 KkthnxUIConfigLocalization.UnitframeTextHealthColor = "Health text color"
 KkthnxUIConfigLocalization.UnitframeTextNameColor = "Name text color"
 KkthnxUIConfigLocalization.UnitframeTextPowerColor = "Power text color"
 KkthnxUIConfigLocalization.UnitframeThreatGlow = "Threat glow around unitframes"
 KkthnxUIConfigLocalization.UnitframeThreatValue = "Visual threat text on the player frame"
-KkthnxUIConfigLocalization.UnitframeIconPlayer = "Set player castbar icon 'LEFT OR RIGHT'"
-KkthnxUIConfigLocalization.UnitframeIconTarget = "Set target castbar icon 'LEFT OR RIGHT'"
 
 -- Raidframe
 KkthnxUIConfigLocalization.Raidframe = "Raid Frames"

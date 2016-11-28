@@ -26,7 +26,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	end
 
 	if IsFishingLoot() then
-		self.title:SetText(L_LOOT_FISH)
+		self.title:SetText(L.Loot.Fish)
 	elseif not UnitIsFriend("player", "target") and UnitIsDead("target") then
 		self.title:SetText(UnitName("target"))
 	else
@@ -228,41 +228,41 @@ end
 local function LDD_Initialize()
 	local info = {}
 
-	info.text = L_LOOT_ANNOUNCE
+	info.text = L.Loot.Announce
 	info.notCheckable = true
 	info.isTitle = true
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L_LOOT_TO_RAID
+	info.text = L.Loot.ToRaid
 	info.value = "raid"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L_LOOT_TO_GUILD
+	info.text = L.Loot.ToGuild
 	info.value = "guild"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L_LOOT_TO_PARTY
+	info.text = L.Loot.ToParty
 	info.value = "party"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L_LOOT_TO_INSTANCE
+	info.text = L.Loot.ToInstance
 	info.value = "instance_chat"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L_LOOT_TO_SAY
+	info.text = L.Loot.ToSay
 	info.value = "say"
 	info.notCheckable = 1
 	info.func = LDD_OnClick

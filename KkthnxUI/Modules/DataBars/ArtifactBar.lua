@@ -93,11 +93,11 @@ ArtifactBar:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 		GameTooltip:AddLine(string.format("|cffe6cc80"..ARTIFACT_POWER..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
-		GameTooltip:AddLine(string.format("|cffe6cc80"..L_DATABARS_ARTIFACT_REMANING.."|r", xpForNextPoint - xp))
+		GameTooltip:AddLine(string.format("|cffe6cc80"..L.DataBars.ArtifactRemaining.."|r", xpForNextPoint - xp))
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(numPointsAvailableToSpend), nil, nil, nil, true)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L_DATABARS_ARTIFACT_CLICK)
+		GameTooltip:AddLine(L.DataBars.ArtifactClick)
 
 		GameTooltip:Show()
 	end

@@ -9,16 +9,16 @@ local HIDE = HIDE
 local Tutorial = CreateFrame("Frame", nil, UIParent)
 
 K.TutorialList = {
-	L_TUTORIAL_MESSAGE_1,
-	L_TUTORIAL_MESSAGE_2,
-	L_TUTORIAL_MESSAGE_3,
-	L_TUTORIAL_MESSAGE_4,
-	L_TUTORIAL_MESSAGE_5,
-	L_TUTORIAL_MESSAGE_6,
-	L_TUTORIAL_MESSAGE_7,
-	L_TUTORIAL_MESSAGE_8,
-	L_TUTORIAL_MESSAGE_9,
-	L_TUTORIAL_MESSAGE_10,
+	L.Tutorial.Message1,
+	L.Tutorial.Message2,
+	L.Tutorial.Message3,
+	L.Tutorial.Message4,
+	L.Tutorial.Message5,
+	L.Tutorial.Message6,
+	L.Tutorial.Message7,
+	L.Tutorial.Message8,
+	L.Tutorial.Message9,
+	L.Tutorial.Message10,
 }
 
 function Tutorial:SetNextTutorial()

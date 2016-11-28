@@ -92,7 +92,7 @@ end
 for i = 1, NUM_CHAT_WINDOWS do
 	local cf = _G[format("ChatFrame%d", i)]
 	local button = CreateFrame("Button", format("ButtonCF%d", i), cf)
-	button:SetPoint("BOTTOMRIGHT", 0, 4)
+	button:SetPoint("TOPRIGHT", 0, 0)
 	button:SetSize(16, 16)
 	button:SetNormalTexture("Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up")
 	button:SetAlpha(0)

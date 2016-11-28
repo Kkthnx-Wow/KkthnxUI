@@ -22,7 +22,7 @@ local OnEvent = function(self, event, prefix, message, channel, sender)
 		end
 
 		if (tostring(message) > Version) then
-			K.Print(L_MISC_UI_OUTDATED)
+			K.Print(L.Misc.UIOutdated)
 
 			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end

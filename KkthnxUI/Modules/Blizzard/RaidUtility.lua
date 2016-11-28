@@ -5,7 +5,7 @@ local unpack = unpack
 local Movers = K.Movers
 
 StaticPopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
-	text =  L_POPUP_BLIZZARD_ADDONS,
+	text =  L.Popup.BlizzardAddOns,
 	button1 = OKAY,
 	OnAccept = function() EnableAddOn("Blizzard_CompactRaidFrames") ReloadUI() end,
 	timeout = 0,
@@ -78,7 +78,7 @@ RaidUtilityCloseButton:SetAttribute("_onclick", [=[self:GetParent():Hide(); self
 RaidUtilityCloseButton:SetScript("OnMouseUp", function(self) RaidUtilityPanel.toggled = false end)
 
 -- Disband Group button
-CreateButton("RaidUtilityDisbandButton", RaidUtilityPanel, "UIPanelButtonTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -8, L_RAID_UTIL_DISBAND)
+CreateButton("RaidUtilityDisbandButton", RaidUtilityPanel, "UIPanelButtonTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -8, L.Raid.UtilityDisband)
 RaidUtilityDisbandButton:SetScript("OnMouseUp", function(self) StaticPopup_Show("DISBAND_RAID") RaidUtilityPanel.toggled = false end)
 
 -- Convert Group button

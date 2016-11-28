@@ -133,9 +133,9 @@ local OnEnter = function(self)
 	end
 
 	if (AllUnavailable) then
-		GameTooltip:AddLine(L_DATATEXT_ARMERROR)
+		GameTooltip:AddLine(L.DataText.ArmError)
 	elseif (NumCTA == 0) then
-		GameTooltip:AddLine(L_DATATEXT_NODUNGEONARM)
+		GameTooltip:AddLine(L.DataText.NoDungeonArm)
 	end
 
 	GameTooltip:Show()

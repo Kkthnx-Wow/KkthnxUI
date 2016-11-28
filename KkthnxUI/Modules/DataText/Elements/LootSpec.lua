@@ -29,6 +29,7 @@ local displayString = ""
 local activeString = join("", "|cff00FF00" , ACTIVE_PETS, "|r")
 local inactiveString = join("", "|cffFF0000", FACTION_INACTIVE, "|r")
 local menuFrame = CreateFrame("Frame", "KkthnxUILootSpecializationDatatextClickMenu", UIParent, "UIDropDownMenuTemplate")
+
 local menuList = {
 	{text = SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true},
 	{notCheckable = true, func = function() SetLootSpecialization(0) end},
@@ -86,7 +87,7 @@ local function Update(self)
 		end
 	end
 
-	self.Text:SetFormattedText("%s: %s %s: %s", L_DATATEXT_LOOTSPEC_SPEC, talent, LOOT, loot) --Needs local
+	self.Text:SetFormattedText("%s: %s %s: %s", L.DataText.LootSpecSpec, talent, LOOT, loot) --Needs local
 end
 
 local OnEnter = function(self)
@@ -120,9 +121,9 @@ local OnEnter = function(self)
 	end
 
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(L_DATATEXT_LOOTSPEC_TALENT)
-	GameTooltip:AddLine(L_DATATEXT_LOOTSPEC_SHOW)
-	GameTooltip:AddLine(L_DATATEXT_LOOTSPEC_CHANGE)
+	GameTooltip:AddLine(L.DataText.LootSpecTalent)
+	GameTooltip:AddLine(L.DataText.LootSpecShow)
+	GameTooltip:AddLine(L.DataText.LootSpecChange)
 
 	GameTooltip:Show()
 end
@@ -149,7 +150,7 @@ local OnMouseDown = function(self, button)
 					specList[index + 1].text = format("|T%s:14:14:0:0:64:64:4:60:4:60|t  %s", texture, name)
 					specList[index + 1].func = function()
 					if index and index == specIndex then
-					UIErrorsFrame:AddMessage(L_CONFIGBUTTON_SPECERROR, 1.0, 0.0, 0.0, 53, 5)
+					UIErrorsFrame:AddMessage(L.ConfigButton.SpecError, 1.0, 0.0, 0.0, 53, 5)
 					return
 					end
 					SetSpecialization(index) end

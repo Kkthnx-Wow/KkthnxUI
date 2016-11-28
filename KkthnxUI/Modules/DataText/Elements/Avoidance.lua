@@ -49,7 +49,7 @@ local Update = function(self)
 		Block = (GetBlockChance() + abs(LevelDifference * 0.2))
 		Avoidance = (Dodge + Parry + Block)
 
-		self.Text:SetText(NameColor .. L_DATATEXT_AVOIDANCESHORT .. "|r" .. ValueColor .. format("%.2f", Avoidance) .. "|r")
+		self.Text:SetText(NameColor .. L.DataText.AvoidAnceShort .. "|r" .. ValueColor .. format("%.2f", Avoidance) .. "|r")
 	end
 end
 

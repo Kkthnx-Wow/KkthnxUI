@@ -295,6 +295,10 @@ K.DebuffBlackList = {
 	-- [SpellName(spellID)] = true,	-- Spell Name
 }
 
+K.ArenaBuffList = {
+	-- [SpellName(spellID)] = true,	-- Spell Name
+}
+
 K.PlateBlacklist = {
 	-- Army of the Dead
 	["Army of the Dead"] = true,

@@ -47,9 +47,9 @@ local function SetHyperlink(tooltip, refString)
 		if year < 10 then year = "0"..year end
 
 		if K.Client == "ruRU" then
-			tooltip:AddLine(L_TOOLTIP_ACH_COMPLETE..day.."/"..month.."/"..year, 0, 1, 0)
+			tooltip:AddLine(L.Tooltip.AchievementComplete..day.."/"..month.."/"..year, 0, 1, 0)
 		else
-			tooltip:AddLine(L_TOOLTIP_ACH_COMPLETE..month.."/"..day.."/"..year, 0, 1, 0)
+			tooltip:AddLine(L.Tooltip.AchievementComplete..month.."/"..day.."/"..year, 0, 1, 0)
 		end
 
 		if earnedBy then
@@ -63,9 +63,9 @@ local function SetHyperlink(tooltip, refString)
 			end
 		end
 	elseif numCriteria == 0 then
-		tooltip:AddLine(L_TOOLTIP_ACH_INCOMPLETE)
+		tooltip:AddLine(L.Tooltip.AchievementIncomplete)
 	else
-		tooltip:AddLine(L_TOOLTIP_ACH_STATUS)
+		tooltip:AddLine(L.Tooltip.AchievementStatus)
 		for i = 1, numCriteria, 2 do
 			for a = 0, 1 do
 				output[a].text = nil

@@ -25,17 +25,17 @@ local Movers = K.Movers
 local origs = {}
 
 local RenameChannels = {
-	INSTANCE_CHAT = L_CHAT_INSTANCE,
-	GUILD = L_CHAT_GUILD,
-	PARTY = L_CHAT_PARTY,
-	RAID = L_CHAT_RAID,
-	OFFICER = L_CHAT_OFFICER,
-	INSTANCE_CHAT_LEADER = L_CHAT_INSTANCE_LEADER,
-	PARTY_LEADER = L_CHAT_PARTY_LEADER,
-	RAID_LEADER = L_CHAT_RAID_LEADER,
-	Guild = L_CHAT_GUILD,
-	raid = L_CHAT_RAID,
-	Party = L_CHAT_PARTY,
+	INSTANCE_CHAT = L.Chat.Instance,
+	GUILD = L.Chat.Guild,
+	PARTY = L.Chat.Party,
+	RAID = L.Chat.Raid,
+	OFFICER = L.Chat.Officer,
+	INSTANCE_CHAT_LEADER = L.Chat.InstanceLeader,
+	PARTY_LEADER = L.Chat.PartyLeader,
+	RAID_LEADER = L.Chat.RaidLeader,
+	Guild = L.Chat.Guild,
+	raid = L.Chat.Raid,
+	Party = L.Chat.Party,
 }
 
 local ShortChannels = function(Channel)
@@ -52,9 +52,9 @@ local AddMessage = function(Frame, String, ...)
 	String = String:gsub("^(.-|h) whispers", "%1")
 	String = String:gsub("^(.-|h) says", "%1")
 	String = String:gsub("^(.-|h) yells", "%1")
-	String = String:gsub("<" .. AFK .. ">", L_CHAT_AFK)
-	String = String:gsub("<" .. DND .. ">", L_CHAT_DND)
-	String = String:gsub("^%[" .. RAID_WARNING .. "%]", L_CHAT_RAID_WARNING)
+	String = String:gsub("<" .. AFK .. ">", L.Chat.AFK)
+	String = String:gsub("<" .. DND .. ">", L.Chat.DND)
+	String = String:gsub("^%[" .. RAID_WARNING .. "%]", L.Chat.RaidWarning)
 
 	MessageString = origs[Frame](Frame, String, ...)
 
@@ -310,11 +310,11 @@ function SlashCmdList.BIGCHAT(msg, editbox)
 	if bigchat == false then
 		ChatFrame1:SetSize(400, 400)
 		bigchat = true
-		K.Print(L_CHAT_BIGCHAT_ON)
+		K.Print(L.Chat.BIGCHAT_ON)
 	else
 		ChatFrame1:SetSize(400, 150)
 		bigchat = false
-		K.Print(L_CHAT_BIGCHAT_OFF)
+		K.Print(L.Chat.BIGCHAT_OFF)
 	end
 end
 SLASH_BIGCHAT1 = "/bigchat"

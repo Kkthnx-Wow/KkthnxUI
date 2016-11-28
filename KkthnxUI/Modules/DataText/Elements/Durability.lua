@@ -28,13 +28,13 @@ local OnEnter = function(self)
 	GameTooltip:AddLine(" ")
 
 	for i = 1, 11 do
-		if (L_DATATEXT_SLOTS[i][3] ~= 1000) then
+		if (L.DataText.Slots[i][3] ~= 1000) then
 			local Green, Red
 
-			Green = L_DATATEXT_SLOTS[i][3] * 2
+			Green = L.DataText.Slots[i][3] * 2
 			Red = 1 - Green
 
-			GameTooltip:AddDoubleLine(L_DATATEXT_SLOTS[i][2], floor(L_DATATEXT_SLOTS[i][3] * 100) .. "%", 1, 1, 1, Red + 1, Green, 0)
+			GameTooltip:AddDoubleLine(L.DataText.Slots[i][2], floor(L.DataText.Slots[i][3] * 100) .. "%", 1, 1, 1, Red + 1, Green, 0)
 		end
 	end
 
@@ -46,22 +46,22 @@ local OnEvent = function(self)
 	local Current, Max
 
 	for i = 1, 11 do
-		if (GetInventoryItemLink("player", L_DATATEXT_SLOTS[i][1]) ~= nil) then
-			Current, Max = GetInventoryItemDurability(L_DATATEXT_SLOTS[i][1])
+		if (GetInventoryItemLink("player", L.DataText.Slots[i][1]) ~= nil) then
+			Current, Max = GetInventoryItemDurability(L.DataText.Slots[i][1])
 
 			if (Current) then
-				L_DATATEXT_SLOTS[i][3] = Current / Max
+				L.DataText.Slots[i][3] = Current / Max
 				Total = Total + 1
 			end
 		end
 	end
 
-	sort(L_DATATEXT_SLOTS, function(a, b)
+	sort(L.DataText.Slots, function(a, b)
 		return a[3] < b[3]
 	end)
 
 	if (Total > 0) then
-		self.Text:SetFormattedText("%s: %s%%", NameColor .. ARMOR .. "|r", ValueColor .. floor(L_DATATEXT_SLOTS[1][3] * 100) .. "|r")
+		self.Text:SetFormattedText("%s: %s%%", NameColor .. ARMOR .. "|r", ValueColor .. floor(L.DataText.Slots[1][3] * 100) .. "|r")
 	else
 		self.Text:SetFormattedText("%s: %s%%", NameColor .. ARMOR .. "|r", ValueColor .. "100" .. "|r")
 	end

@@ -102,11 +102,13 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 
 	if C.Cooldown.Enable then
 		SetCVar("countdownForCooldowns", 0)
-		InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
+		InterfaceOptionsActionBarsPanelCountdownCooldowns:Hide()
 	end
 
 	if C.Nameplates.Enable then
 		SetCVar("ShowClassColorInNameplate", 1)
+		-- Hide the option to rescale, because we will do it from KkthnxUI settings.
+		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
 	end
 
 	if C.Chat.Enable then
@@ -114,7 +116,7 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	end
 
 	if C.Minimap.Enable then
-		InterfaceOptionsDisplayPanelRotateMinimap:Kill()
+		InterfaceOptionsDisplayPanelRotateMinimap:Hide()
 	end
 
 	if C.ActionBar.Enable then

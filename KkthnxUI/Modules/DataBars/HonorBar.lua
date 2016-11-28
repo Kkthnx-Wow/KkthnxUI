@@ -82,8 +82,8 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(string.format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(L_DATABARS_HONOR_LEFTCLICK)
-	GameTooltip:AddLine(L_DATABARS_HONOR_RIGHTCLICK)
+	GameTooltip:AddLine(L.DataBars.HonorLeftClick)
+	GameTooltip:AddLine(L.DataBars.HonorRightClick)
 
 	GameTooltip:Show()
 end)

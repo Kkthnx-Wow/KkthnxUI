@@ -7,7 +7,7 @@ if (C.General.AutoScale) then
 end
 
 StaticPopupDialogs["CLIENT_RESTART"] = {
-	text = L_POPUP_RESOLUTIONCHANGED,
+	text = L.Popup.ResolutionChanged,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self) RequireRestart = false ForceQuit() end,

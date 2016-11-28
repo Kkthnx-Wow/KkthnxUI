@@ -1,323 +1,436 @@
+local K, C, L = select(2, ...):unpack()
 -- Localization for zhTW clients
 if (GetLocale() ~= "zhTW") then
 	return
 end
 
--- AFKSpin Localization
-L_AFKSCREEN_NOGUILD = "No Guild"
--- Announce Localization
-L_ANNOUNCE_FP_USE = "%s used %s."
-L_ANNOUNCE_INTERRUPTED = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
-L_ANNOUNCE_PC_ABORTED = "Pull ABORTED!"
-L_ANNOUNCE_PC_GO = "GO!"
-L_ANNOUNCE_PC_MSG = "Pulling %s in %s.."
-L_ANNOUNCE_SAPPED = "Sapped"
-L_ANNOUNCE_SAPPED_BY = "Sapped by: "
--- Auras Localization
-L_AURAS_MOVEBUFFS = "Move Buffs"
-L_AURAS_MOVEDEBUFFS = "Move Debuffs"
--- Merchant Localization
-L_MERCHANT_NOTENOUGHMONEY = "You don't have enough money to repair!"
-L_MERCHANT_REPAIRCOST = "Your items have been repaired for"
-L_MERCHANT_SOLDTRASH = "Your vendor trash has been sold and you earned"
--- Bindings Localization
-L_BIND_BINDING = "Binding"
-L_BIND_CLEARED = "All keybindings cleared for"
-L_BIND_DISCARD = "All newly set keybindings were discarded."
-L_BIND_INSTRUCT = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding."
-L_BIND_KEY = "Key"
-L_BIND_NO_SET = "No bindings set"
-L_BIND_SAVED = "All keybindings have been saved."
--- Chat Localization
-L_CHAT_AFK = "AFK"
-L_CHAT_DND = "DND"
-L_CHAT_GUILD = "G"
-L_CHAT_GUILDRECRUITMENT = "GuildRecruitment"
-L_CHAT_INSTANCE = "I"
-L_CHAT_INSTANCE_LEADER = "IL"
-L_CHAT_LOCALDEFENSE = "LocalDefense"
-L_CHAT_LOOKINGFORGROUP = "LookingForGroup"
-L_CHAT_OFFICER = "O"
-L_CHAT_PARTY = "P"
-L_CHAT_PARTY_LEADER = "PL"
-L_CHAT_RAID = "R"
-L_CHAT_RAID_LEADER = "RL"
-L_CHAT_RAID_WARNING = "RW"
-L_CHAT_PET_BATTLE = "Pet Battle"
--- Configbutton Localization
-L_CONFIGBUTTON_FUNC = "Buttonfunctions:"
-L_CONFIGBUTTON_LEFTCLICK = "Left click:"
-L_CONFIGBUTTON_RIGHTCLICK = "Right click:"
-L_CONFIGBUTTON_MIDDLECLICK = "Middle click:"
-L_CONFIGBUTTON_SHIFTCLICK = "Shift + click:"
-L_CONFIGBUTTON_MOVEUI = "Move UI Elements"
-L_CONFIGBUTTON_RECOUNT = "Show/Hide Recount Frame"
-L_CONFIGBUTTON_SKADA = "Show/Hide Skada Frame"
-L_CONFIGBUTTON_CONFIG = "Show KkthnxUI Configmenu"
-L_CONFIGBUTTON_SPEC = "Show KkthnxUI-Specmenu"
-L_CONFIGBUTTON_SPECMENU = "Specialization selection"
-L_CONFIGBUTTON_SPECERROR = "You are already have this spec activ!"
--- DataBars Localization
-L_DATABARS_ARTIFACT_CLICK = "Click: Opens the artifact overview"
-L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"
-L_DATABARS_HONOR_LEFTCLICK = "|cffccccccLeft Click: Opens the honor frame|r"
-L_DATABARS_HONOR_RIGHTCLICK = "|cffccccccRight Click: Opens the honor talents frame|r"
--- DataText Localization
-L_DATATEXT_ARMERROR = "Could not get Call To Arms information."
-L_DATATEXT_AVOIDANCESHORT = "Avd: "
-L_DATATEXT_BAGS = "Bags"
-L_DATATEXT_BANDWIDTH = "Bandwidth: "
-L_DATATEXT_BASESASSAULTED = "Bases Assaulted:"
-L_DATATEXT_BASESDEFENDED = "Bases Defended:"
-L_DATATEXT_CARTS_CONTROLLED = "Carts Controlled:"
-L_DATATEXT_COMBATTIME = "Combat/Arena Time"
-L_DATATEXT_COORDS = "Coords"
-L_DATATEXT_DEMOLISHERSDESTROYED = "Demolishers Destroyed:"
-L_DATATEXT_DOWNLOAD = "Download: "
-L_DATATEXT_FLAGSCAPTURED = "Flags Captured:"
-L_DATATEXT_FLAGSRETURNED = "Flags Returned:"
-L_DATATEXT_FPS = "FPS"
-L_DATATEXT_GATESDESTROYED = "Gates Destroyed:"
-L_DATATEXT_GOLDDEFICIT = "Deficit: "
-L_DATATEXT_GOLDEARNED = "Earned: "
-L_DATATEXT_GOLDPROFIT = "Profit: "
-L_DATATEXT_GOLDSERVER = "Server: "
-L_DATATEXT_GOLDSPENT = "Spent: "
-L_DATATEXT_GOLDTOTAL = "Total: "
-L_DATATEXT_GRAVEYARDSASSAULTED = "Graveyards Assaulted:"
-L_DATATEXT_GRAVEYARDSDEFENDED = "Graveyards Defended:"
-L_DATATEXT_GUILDNOGUILD = "No Guild"
-L_DATATEXT_LOOTSPEC_CHANGE = "|cffFFFFFFRight Click:|r Change Loot Specialization|r"
-L_DATATEXT_LOOTSPEC_SHOW = "|cffFFFFFFShift + Left Click:|r Show Talent Specialization UI|r"
-L_DATATEXT_LOOTSPEC_SPEC = "Spec"
-L_DATATEXT_LOOTSPEC_TALENT = "|cffFFFFFFLeft Click:|r Change Talent Specialization|r"
-L_DATATEXT_MICROMENU = "MicroMenu"
-L_DATATEXT_MS = "MS"
-L_DATATEXT_NODUNGEONARM = "No dungeons are currently offering a Call To Arms."
-L_DATATEXT_NOORDERHALLUNLOCK = "You have not unlocked your OrderHall"
-L_DATATEXT_NOORDERHALLWO = "Orderhall+"
-L_DATATEXT_ORB_POSSESSIONS = "Orb Possessions:"
-L_DATATEXT_ORDERHALL = "OrderHall"
-L_DATATEXT_ORDERHALLREPORT = "Click: Open the OrderHall report"
-L_DATATEXT_TOTALBAGSSLOTS = "Total Bag Slots"
-L_DATATEXT_TOTALFREEBAGSSLOTS = "Free Bag Slots"
-L_DATATEXT_TOTALMEMORY = "Total Memory Usage:"
-L_DATATEXT_TOTALUSEDBAGSSLOTS = "Used Bag Slots"
-L_DATATEXT_TOWERSASSAULTED = "Towers Assaulted:"
-L_DATATEXT_TOWERSDEFENDED = "Towers Defended:"
-L_DATATEXT_VICTORY_POINTS = "Victory Points:"
-L_DATATEXT_SLOTS = {
-	[1] = {1, INVTYPE_HEAD, 1000},
-	[2] = {3, INVTYPE_SHOULDER, 1000},
-	[3] = {5, INVTYPE_ROBE, 1000},
-	[4] = {6, INVTYPE_WAIST, 1000},
-	[5] = {9, INVTYPE_WRIST, 1000},
-	[6] = {10, INVTYPE_HAND, 1000},
-	[7] = {7, INVTYPE_LEGS, 1000},
-	[8] = {8, INVTYPE_FEET, 1000},
-	[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
-	[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
-	[11] = {18, INVTYPE_RANGED, 1000}
+L.AFKScreen = {
+	NoGuild = "No Guild"
 }
+
+L.Announce = {
+	FPUse = "%s used %s.",
+	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
+	PCAborted = "Pull ABORTED!",
+	PCGo = "GO!",
+	PCMessage = "Pulling %s in %s..",
+	Sapped = "Sapped",
+	SappedBy = "Sapped by: "
+}
+
+L.Auras = {
+	MoveBuffs = "Move Buffs",
+	MoveDebuffs = "Move Debuffs",
+}
+
+L.FAQ = {
+	Button01 = "General",
+	Button02 = "Action Bars",
+	Button03 = "Unit Frames",
+	Button04 = "Chat",
+	Button05 = "UI Commands",
+	Button06 = "Keybindings",
+	Button07 = "Minimap",
+	Button08 = "Bags",
+	Button09 = "Misc",
+	Button10 = "Bug Reports",
+	Button11 = "UI Update",
+	Context10Text1 = "",
+	Context10Text2 = "",
+	Context10Title = "|cff3c9bedOMG Errors|r",
+	Context11Text1 = "",
+	Context11Text2 = "",
+	Context11Title = "|cff3c9bedUpdating UI|r",
+	Context1Text1 = "",
+	Context1Text2 = "",
+	Context1Title = "|cff3c9bedGeneral|r",
+	Context2Text1 = "",
+	Context2Text2 = "",
+	Context2Title = "|cff3c9bedActionbars|r",
+	Context3Text1 = "",
+	Context3Text2 = "",
+	Context3Title = "|cff3c9bedUnitframes|r",
+	Context4Text1 = "",
+	Context4Text2 = "",
+	Context4Title = "|cff3c9bedChat|r",
+	Context5Text1 = "The following chat commands are available to you:",
+	Context5Text2 = "/rl - Reload interface./n/rc - Activates a ready check.\n/gm - Opens GM frame.\n/rd - Disband party or raid.\n/toraid - Convert to party or raid.\n/teleport - Teleportation from random dungeon.\n/spec, /ss - Switches between talent spec's.\n/frame - Description is not ready.\n/farmmode - Increase the size of the minimap.\n/moveui - Allows the movement of interface elements.\n/resetui - Resets general settings to default.\n/resetconfig - Resets KkthnxUI_Config settings.\n/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.\n/pulsecd - Self cooldown pulse test.\n/tt - Whisper target.\n/ainv - Enables automatic invitation.\n/cfg - Opens interface settings.\n/patch - Display Wow patch info.",
+	Context5Title = "|cff3c9bedUI Slashcommands|r",
+	Context6Text1 = "",
+	Context6Text2 = "",
+	Context6Title = "|cff3c9bedKeybinding|r",
+	Context7Text1 = "",
+	Context7Text2 = "",
+	Context7Title = "|cff3c9bedMinimap|r",
+	Context8Text1 = "",
+	Context8Text2 = "",
+	Context8Title = "|cff3c9bedBags|r",
+	Context9Text1 = "",
+	Context9Text2 = "",
+	Context9Title = "|cff3c9bedMisc|r",
+	GeneralText1 = "|cffffff00Welcome to |cff3c9bedKkthnxUI|r v"..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name).."|r \n\nUse the menu on the left to learn more about the individual points about the UI.",
+	GeneralText2 = "",
+	GeneralTitle = "|cff3c9bedKkthnxUI - Frequently Asked Question(s).|r"
+}
+
+-- Merchant Localization
+L.Merchant = {
+	NotEnoughMoney = "You don't have enough money to repair!",
+	RepairCost = "Your items have been repaired for",
+	SoldTrash = "Your vendor trash has been sold and you earned"
+}
+
+-- Bindings Localization
+L.Bind = {
+	Binding = "Binding",
+	Cleared = "All keybindings cleared for",
+	Discard = "All newly set keybindings were discarded.",
+	Instruct = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
+	Key = "Key",
+	NoSet = "No bindings set",
+	Saved = "All keybindings have been saved."
+}
+
+-- Chat Localization
+L.Chat = {
+	AFK = "|cffff0000[AFK]|r",
+	DND = "|cffe7e716[DND]|r",
+	Guild = "G",
+	GuildRecruitment = "GuildRecruitment",
+	Instance = "I",
+	InstanceLeader = "IL",
+	LocalDefense = "LocalDefense",
+	LookingForGroup = "LookingForGroup",
+	Officer = "O",
+	Party = "P",
+	PartyLeader = "P",
+	Raid = "R",
+	RaidLeader = "R",
+	RaidWarning = "W",
+}
+
+-- Configbutton Localization
+L.ConfigButton = {
+	Functions = "Button functions:",
+	LeftClick = "Left click:",
+	RightClick = "Right click:",
+	MiddleClick = "Middle click:",
+	ShiftClick = "Shift + click:",
+	MoveUI = "Move UI elements",
+	Recount = "Show/Hide Recount",
+	Skada = "Show/Hide Skada",
+	Config = "Show config GUI",
+	Spec = "Show specialization menu",
+	SpecMenu = "Specialization selection",
+	SpecError = "You already have this specialization active!"
+}
+
+-- Cooldowns
+L.Cooldowns = {
+	Cooldowns = "CD: ",
+	CombatRes = "BattleRes",
+	CombatResRemainder = "Battle Resurrection: ",
+	NextTime = "Next time: "
+}
+
+-- DataBars Localization
+L.DataBars = {
+	ArtifactClick = "Click: Opens the artifact overview",
+	ArtifactRemaining = "|cffe6cc80Remaining: %s|r",
+	HonorLeftClick = "|cffccccccLeft Click: Opens the honor frame|r",
+	HonorRightClick = "|cffccccccRight Click: Opens the honor talents frame|r"
+}
+
+-- DataText Localization
+L.DataText = {
+	ArmError = "Could not get Call To Arms information.",
+	AvoidAnceShort = "Avd: ",
+	Bags = "Bags",
+	Bandwidth = "Bandwidth: ",
+	BasesAssaulted = "Bases Assaulted:",
+	BasesDefended = "Bases Defended:",
+	CartsControlled = "Carts Controlled:",
+	CombatTime = "Combat/Arena Time",
+	Coords = "Coords",
+	DemolishersDestroyed = "Demolishers Destroyed:",
+	Download = "Download: ",
+	FlagsCaptured = "Flags Captured:",
+	FlagsReturned = "Flags Returned:",
+	FPS = "FPS",
+	GatesDestroyed = "Gates Destroyed:",
+	GoldDeficit = "Deficit: ",
+	GoldEarned = "Earned: ",
+	GoldProfit = "Profit: ",
+	GoldServer = "Server: ",
+	GoldSpent = "Spent: ",
+	GoldTotal = "Total: ",
+	GraveyardsAssaulted = "Graveyards Assaulted:",
+	GraveyardsDefended = "Graveyards Defended:",
+	GuildNoGuild = "No Guild",
+	LootSpecChange = "|cffFFFFFFRight Click:|r Change Loot Specialization|r",
+	LootSpecShow = "|cffFFFFFFShift + Left Click:|r Show Talent Specialization UI|r",
+	LootSpecSpec = "Spec",
+	LootSpecTalent = "|cffFFFFFFLeft Click:|r Change Talent Specialization|r",
+	Memory = "Memory",
+	MicroMenu = "MicroMenu",
+	MS = "MS",
+	NoDungeonArm = "No dungeons are currently offering a Call To Arms.",
+	NoOrderHallUnlock = "You have not unlocked your OrderHall",
+	NoOrderHallWO = "Orderhall+",
+	OrbPossessions = "Orb Possessions:",
+	OrderHall = "OrderHall",
+	OrderHallReport = "Click: Open the OrderHall report",
+	System = "System Stats: ",
+	TotalBagSlots = "Total Bag Slots",
+	TotalFreeBagSlots = "Free Bag Slots",
+	TotalMemory = "Total Memory Usage:",
+	TotalMemoryUsage = "Total Memory Usage",
+	TotalUsedBagSlots = "Used Bag Slots",
+	TowersAssaulted = "Towers Assaulted:",
+	TowersDefended = "Towers Defended:",
+	VictoryPoints = "Victory Points:",
+	Slots = {
+		[1] = {1, INVTYPE_HEAD, 1000},
+		[2] = {3, INVTYPE_SHOULDER, 1000},
+		[3] = {5, INVTYPE_ROBE, 1000},
+		[4] = {6, INVTYPE_WAIST, 1000},
+		[5] = {9, INVTYPE_WRIST, 1000},
+		[6] = {10, INVTYPE_HAND, 1000},
+		[7] = {7, INVTYPE_LEGS, 1000},
+		[8] = {8, INVTYPE_FEET, 1000},
+		[9] = {16, INVTYPE_WEAPONMAINHAND, 1000},
+		[10] = {17, INVTYPE_WEAPONOFFHAND, 1000},
+		[11] = {18, INVTYPE_RANGED, 1000}
+	},
+}
+
 -- headers
-L_INSTALL_HEADER_1 = "Welcome"
-L_INSTALL_HEADER_2 = "1. Essentials"
-L_INSTALL_HEADER_3 = "2. Unitframes"
-L_INSTALL_HEADER_4 = "3. Features"
-L_INSTALL_HEADER_5 = "4. Things you should know!"
-L_INSTALL_HEADER_6 = "5. Commands"
-L_INSTALL_HEADER_7 = "6. Finished"
-L_INSTALL_HEADER_8 = "1. Essential Settings"
-L_INSTALL_HEADER_9 = "2. Social"
-L_INSTALL_HEADER_10= "3. Frames"
-L_INSTALL_HEADER_11= "4. Success!"
--- install
-L_INSTALL_INIT_LINE_1 = "Thank you for choosing KkthnxUI!"
-L_INSTALL_INIT_LINE_2 = "You will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings."
-L_INSTALL_INIT_LINE_3 = "You are also given the possibility to be shown a brief tutorial on some of the features of KkthnxUI."
-L_INSTALL_INIT_LINE_4 = "Press the 'Tutorial' button to be guided through this small introduction, or press 'Install' to skip this step."
+L.Install = {
+	Header1 = "Welcome",
+	Header2 = "1. Essentials",
+	Header3 = "2. Unitframes",
+	Header4 = "3. Features",
+	Header5 = "4. Things you should know!",
+	Header6 = "5. Commands",
+	Header7 = "6. Finished",
+	Header8 = "1. Essential Settings",
+	Header9 = "2. Social",
+	Header10 = "3. Frames",
+	Header11 = "4. Success!",
+	InitLine1 = "Thank you for choosing KkthnxUI!",
+	InitLine2 = "You will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings.",
+	InitLine3 = "You are also given the possibility to be shown a brief tutorial on some of the features of KkthnxUI.",
+	InitLine4 = "Press the 'Tutorial' button to be guided through this small introduction, or press 'Install' to skip this step.",
+	Step1Line1 = "These steps will apply the correct CVar settings for KkthnxUI.",
+	Step1Line2 = "The first step applies the essential settings.",
+	Step1Line3 = "This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings.",
+	Step1Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
+	Step2Line0 = "Another chat addon is found. We will ignore this step. Please press skip to continue installation.",
+	Step2Line1 = "The second step applies the correct chat setup.",
+	Step2Line2 = "If you are a new user, this step is recommended. If you are an existing user, you may want to skip this step.",
+	Step2Line3 = "It is normal that your chat font will appear too big upon applying these settings. It will revert back to normal when you finish with the installation.",
+	Step2Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
+	Step3Line1 = "The third and final step applies for the default frame positions.",
+	Step3Line2 = "This step is |cffff0000recommended|r for new users.",
+	Step3Line3 = "",
+	Step3Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
+	Step4Line1 = "Installation is complete.",
+	Step4Line2 = "Please click the 'Finish' button to reload the UI.",
+	Step4Line3 = "",
+	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r",
+	ButtonTutorial = "Tutorial",
+	ButtonInstall = "Install",
+	ButtonNext = "Next",
+	ButtonSkip = "Skip",
+	ButtonContinue = "Continue",
+	ButtonFinish = "Finish",
+	ButtonClose = "Close",
+	Complete = "Installation Complete"
+}
+
 -- tutorial 1
-L_TUTORIAL_STEP_1_LINE_1 = "This quick tutorial will show you some of the features in KkthnxUI."
-L_TUTORIAL_STEP_1_LINE_2 = "First, the essentials that you should know before you can play with this UI."
-L_TUTORIAL_STEP_1_LINE_3 = "This installer is partially character-specific. While some of the settings that will be applied later on are account-wide, you need to run the install script for each new character running KkthnxUI. The script is auto shown on every new character you log in with KkthnxUI installed for the first time. Also, the options can be found in /KkthnxUI/Config/Settings.lua for `Power` users or by typing /KkthnxUI in the game for `Friendly` users."
-L_TUTORIAL_STEP_1_LINE_4 = "A power user is a user of a personal computer who has the ability to use advanced features (ex: Lua editing) which are beyond the abilities of normal users. A friendly user is a normal user and is not necessarily capable of programming. It's recommended for them to use our in-game configuration tool (/KkthnxUI) for settings they want to be changed in KkthnxUI."
--- tutorial 2
-L_TUTORIAL_STEP_2_LINE_1 = "KkthnxUI includes an embedded version of oUF (oUFKkthnxUI) created by Haste. This handles all of the unit frames on the screen, the buffs and debuffs, and the class-specific elements."
-L_TUTORIAL_STEP_2_LINE_2 = "You can visit wowinterface.com and search for oUF for more information about this tool."
-L_TUTORIAL_STEP_2_LINE_3 = "To easily change the unitframes positions, just type /moveui."
-L_TUTORIAL_STEP_2_LINE_4 = ""
--- tutorial 3
-L_TUTORIAL_STEP_3_LINE_1 = "KkthnxUI is a redesigned Blizzard UI. Nothing less, nothing more. Approxmently all features you see with Default UI is available though KkthnxUI. The only features not available through default UI are some automated features not really visible on screen, for example, auto selling grays when visiting a vendor or, auto sorting bags."
-L_TUTORIAL_STEP_3_LINE_2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is one of the most popular UI at the moment. It fits everyone's play style and is extremely editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons. Since 2009 a lot of users have started using KkthnxUI as a base for their own UI. Take a look at the Edited Packages on our website!"
-L_TUTORIAL_STEP_3_LINE_3 = "Users may want to visit our extra mods section on our website or by visiting www.wowinterface.com to install additional features or mods."
-L_TUTORIAL_STEP_3_LINE_4 = ""
--- tutorial 4
-L_TUTORIAL_STEP_4_LINE_1 = "To set how many bars you want, mouseover on left or right of bottom action bar background. Do the same on the right, via top and bottom. To copy text from the chat frame, click the button shown on mouseover in the right corner of chat frames."
-L_TUTORIAL_STEP_4_LINE_2 = "You can left-click through 80% of data text to show various panels from Blizzard. Friend and Guild Datatext have right-clicked features as well."
-L_TUTORIAL_STEP_4_LINE_3 = "There are some dropdown menus available. Right-clicking on the [X] (Close) bag button will show a dropdown menu to show bags, sort items, show-keyring, etc. Middle-clicking thought Minimap will show the micro menu."
-L_TUTORIAL_STEP_4_LINE_4 = ""
--- tutorial 5
-L_TUTORIAL_STEP_5_LINE_1 = "Lastly, KkthnxUI includes useful slash commands. Below is a list."
-L_TUTORIAL_STEP_5_LINE_2 = "/moveui allow you to move lots of the frames anywhere on the screen. /rl reloads the UI."
-L_TUTORIAL_STEP_5_LINE_3 = "/tt lets you whisper your target. /rc initiates a ready check. /rd disbands a party or raid. /ainv enable auto invite by whisper to you. (/ainv off) to turn it off"
-L_TUTORIAL_STEP_5_LINE_4 = "/gm toggles the Help frame. /install or /tutorial loads this installer. "
--- tutorial 6
-L_TUTORIAL_STEP_6_LINE_1 = "The tutorial is complete. You can choose to reconsult it at any time by typing /tutorial."
-L_TUTORIAL_STEP_6_LINE_2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs."
-L_TUTORIAL_STEP_6_LINE_3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!"
-L_TUTORIAL_STEP_6_LINE_4 = ""
--- Install step 1
-L_INSTALL_STEP_1_LINE_1 = "These steps will apply the correct CVar settings for KkthnxUI."
-L_INSTALL_STEP_1_LINE_2 = "The first step applies the essential settings."
-L_INSTALL_STEP_1_LINE_3 = "This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings."
-L_INSTALL_STEP_1_LINE_4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step."
--- Install step 2
-L_INSTALL_STEP_2_LINE_0 = "Another chat addon is found. We will ignore this step. Please press skip to continue installation."
-L_INSTALL_STEP_2_LINE_1 = "The second step applies the correct chat setup."
-L_INSTALL_STEP_2_LINE_2 = "If you are a new user, this step is recommended. If you are an existing user, you may want to skip this step."
-L_INSTALL_STEP_2_LINE_3 = "It is normal that your chat font will appear too big upon applying these settings. It will revert back to normal when you finish with the installation."
-L_INSTALL_STEP_2_LINE_4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step."
--- Install step 3
-L_INSTALL_STEP_3_LINE_1 = "The third and final step applies for the default frame positions."
-L_INSTALL_STEP_3_LINE_2 = "This step is |cffff0000recommended|r for new users."
-L_INSTALL_STEP_3_LINE_3 = ""
-L_INSTALL_STEP_3_LINE_4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step."
--- Install step 4
-L_INSTALL_STEP_4_LINE_1 = "Installation is complete."
-L_INSTALL_STEP_4_LINE_2 = "Please click the 'Finish' button to reload the UI."
-L_INSTALL_STEP_4_LINE_3 = ""
-L_INSTALL_STEP_4_LINE_4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r"
--- buttons
-L_INSTALL_BUTTON_TUTORIAL = "Tutorial"
-L_INSTALL_BUTTON_INSTALL = "Install"
-L_INSTALL_BUTTON_NEXT = "Next"
-L_INSTALL_BUTTON_SKIP = "Skip"
-L_INSTALL_BUTTON_CONTINUE = "Continue"
-L_INSTALL_BUTTON_FINISH = "Finish"
-L_INSTALL_BUTTON_CLOSE = "Close"
+L.Tutorial = {
+	Step1Line1 = "This quick tutorial will show you some of the features in KkthnxUI.",
+	Step1Line2 = "First, the essentials that you should know before you can play with this UI.",
+	Step1Line3 = "This installer is partially character-specific. While some of the settings that will be applied later on are account-wide, you need to run the install script for each new character running KkthnxUI. The script is auto shown on every new character you log in with KkthnxUI installed for the first time. Also, the options can be found in /KkthnxUI/Config/Settings.lua for `Power` users or by typing /KkthnxUI in the game for `Friendly` users.",
+	Step1Line4 = "A power user is a user of a personal computer who has the ability to use advanced features (ex: Lua editing) which are beyond the abilities of normal users. A friendly user is a normal user and is not necessarily capable of programming. It's recommended for them to use our in-game configuration tool (/KkthnxUI) for settings they want to be changed in KkthnxUI.",
+	Step2Line1 = "KkthnxUI includes an embedded version of oUF (oUFKkthnxUI) created by Haste. This handles all of the unit frames on the screen, the buffs and debuffs, and the class-specific elements.",
+	Step2Line2 = "You can visit wowinterface.com and search for oUF for more information about this tool.",
+	Step2Line3 = "To easily change the unitframes positions, just type /moveui.",
+	Step2Line4 = "",
+	Step3Line1 = "KkthnxUI is a redesigned Blizzard UI. Nothing less, nothing more. Approxmently all features you see with Default UI is available though KkthnxUI. The only features not available through default UI are some automated features not really visible on screen, for example, auto selling grays when visiting a vendor or, auto sorting bags.",
+	Step3Line2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is one of the most popular UI at the moment. It fits everyone's play style and is extremely editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons. Since 2012 a lot of users have started using KkthnxUI as a base for their own UI.",
+	Step3Line3 = "Users may want to visit our extra mods section on our website or by visiting www.wowinterface.com to install additional features or mods.",
+	Step3Line4 = "",
+	Step4Line1 = "To set how many bars you want, mouseover on left or right of bottom action bar background. Do the same on the right, via bottom. To copy text from the chat frame, click the button shown on mouseover in the right bottom corner of chat frames.",
+	Step4Line2 = "You can left-click through 80% of data text to show various panels from Blizzard. Friend and Guild Datatext have right-clicked features as well.",
+	Step4Line3 = "There are some dropdown menus available. Right-clicking on the [X] (Close) bag button will show bags. right-clicking the Minimap will show the micro menu.",
+	Step4Line4 = "",
+	Step5Line1 = "Lastly, KkthnxUI includes useful slash commands. Below is a list.",
+	Step5Line2 = "/moveui allow you to move lots of the frames anywhere on the screen. /rl reloads the UI.",
+	Step5Line3 = "/tt lets you whisper your target. /rc initiates a ready check. /rd disbands a party or raid. /ainv enable auto invite by whisper to you. (/ainv off) to turn it off",
+	Step5Line4 = "/gm toggles the Help frame. /install or /tutorial loads this installer. ",
+	Step6Line1 = "The tutorial is complete. You can choose to reconsult it at any time by typing /tutorial.",
+	Step6Line2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs.",
+	Step6Line3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!",
+	Step6Line4 = "",
+	Message1 = "For technical support visit https://github.com/Kkthnx.",
+	Message2 = "You can toggle the microbar by using your right mouse button on the minimap.",
+	Message3 = "You can set your keybindings quickly by typing /kb.",
+	Message4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro do this.",
+	Message5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear.",
+	Message6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing.",
+	Message7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings.",
+	Message8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position.",
+	Message9 = "To move abilities on the action bars by default hold shift + drag. You can change the modifier key from the action bar options menu.",
+	Message10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
+}
+
 -- AutoInvite Localization
-L_INVITE_ENABLE = "Autoinvite enabled: "
-L_INVITE_DISABLE = "AutoInvite disabled"
+L.Invite = {
+	Enable = "Autoinvite enabled: ",
+	Disable = "AutoInvite disabled"
+}
+
 -- Info Localization
-L_INFO_DISBAND = "Disbanding group..."
-L_INFO_DUEL = "Declined duel request from "
-L_INFO_PET_DUEL = "Declined pet duel request from "
-L_INFO_INVITE = "Accepted invite from "
-L_INFO_SETTINGS_DBM = "Type /settings dbm, to apply the settings DBM."
-L_INFO_SETTINGS_MSBT = "Type /settings msbt, to apply the settings MSBT."
-L_INFO_SETTINGS_SKADA = "Type /settings skada, to apply the settings Skada."
-L_INFO_SETTINGS_Abu = "Type /settings abu, to apply the settings oUF_Abu."
-L_INFO_SETTINGS_ALL = "Type /settings all, to apply the settings for all modifications."
-L_INFO_NOT_INSTALLED = " is not installed."
-L_INFO_SKIN_DISABLED1 = "Skin for "
-L_INFO_SKIN_DISABLED2 = " is disabled."
--- Install Message Localization
-L_INSTALL_COMPLETE = "Installation Complete"
+L.Info = {
+	Disabnd = "Disbanding group...",
+	Duel = "Declined duel request from ",
+	PetDuel = "Declined pet duel request from ",
+	Invite = "Accepted invite from ",
+	SettingsDBM = "Type /settings dbm, to apply the settings DBM.",
+	SettingsMSBT = "Type /settings msbt, to apply the settings MSBT.",
+	SettingsSKADA = "Type /settings skada, to apply the settings Skada.",
+	SettingsAbu = "Type /settings abu, to apply the settings oUF_Abu.",
+	SettingsALL = "Type /settings all, to apply the settings for all modifications.",
+	NotInstalled = " is not installed.",
+	SkinDisabled1 = "Skin for ",
+	SkinDisabled2 = " is disabled."
+}
+
 -- Loot Localization
-L_LOOT_ANNOUNCE = "Announce to"
-L_LOOT_CANNOT = "Cannot roll"
-L_LOOT_CHEST = ">> Loot from chest"
-L_LOOT_FISH = "Fishing loot"
-L_LOOT_MONSTER = ">> Loot from "
-L_LOOT_RANDOM = "Random Player"
-L_LOOT_SELF = "Self Loot"
-L_LOOT_TO_GUILD = " Guild"
-L_LOOT_TO_INSTANCE = " Instance"
-L_LOOT_TO_PARTY = " Party"
-L_LOOT_TO_RAID = " Raid"
-L_LOOT_TO_SAY = " Say"
+L.Loot = {
+	Announce = "Announce to",
+	Cannot = "Cannot roll",
+	Chest = ">> Loot from chest",
+	Fish = "Fishing loot",
+	Monster = ">> Loot from ",
+	Random = "Random Player",
+	Self = "Self Loot",
+	ToGuild = " Guild",
+	ToInstance = " Instance",
+	ToParty = " Party",
+	ToRaid = " Raid",
+	ToSay = " Say"
+}
+
 -- Mail Localization
-L_MAIL_COMPLETE = "All done."
-L_MAIL_MESSAGES = "messages"
-L_MAIL_NEED = "Need a mailbox."
-L_MAIL_STOPPED = "Stopped, inventory is full."
-L_MAIL_UNIQUE = "Stopped. Found a unique duplicate item in a bag or the bank."
+L.Mail = {
+	Complete = "All done.",
+	Messages = "messages",
+	Need = "Need a mailbox.",
+	Stopped = "Stopped, inventory is full.",
+	Unique = "Stopped. Found a unique duplicate item in a bag or the bank."
+}
+
 -- World Map Localization
-L_MAP_FOG = "Fog of War"
+L.Map = {
+	Fog = "Fog of War"
+}
+
 -- FarmMode Minimap
-L_MINIMAP_FARMMODE_ON = "Farm mode enabled"
-L_MINIMAP_FARMMODE_OFF = "Farm mode disabled"
+L.Minimap = {
+	FarmModeOn = "Farm mode enabled",
+	FarmModeOff = "Farm mode disabled"
+}
+
 -- Misc Localization
-L_MISC_COPPERSHORT = "|cffeda55fc|r"
-L_MISC_GOLDSHORT = "|cffffd700g|r"
-L_MISC_REPAIR = "Warning! You need to do a repair of your equipment as soon as possible!"
-L_MISC_SILVERSHORT = "|cffc7c7cfs|r"
-L_MISC_UI_OUTDATED = "KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!"
-L_MISC_UNDRESS = "Undress"
-L_MISC_ENTERCOMBAT = "+ Entering Combat"
-L_MISC_LEAVECOMBAT = "- Leaving Combat"
--- Popup Localization
-L_POPUP_ARMORY = "Armory"
-L_POPUP_BOOSTUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r"
-L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
-L_POPUP_FIX_ACTIONBARS = "There is something wrong with your action bars. Do you want to reload the UI to fix it?"
-L_POPUP_INSTALLUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings."
-L_POPUP_RELOADUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r."
-L_POPUP_RESETUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?"
-L_POPUP_RESOLUTIONCHANGED = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?"
-L_POPUP_SETTINGS_ALL = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons."
-L_POPUP_SETTINGS_DBM = "We need to change the bar positions of |cff3c9bedDBM|r."
+L.Misc = {
+	CopperShort = "|cffeda55fc|r",
+	GoldShort = "|cffffd700g|r",
+	SilverShort = "|cffc7c7cfs|r",
+	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
+	Undress = "Undress"
+}
+
+L.Popup = {
+	Armory = "Armory",
+	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
+	BoostUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r",
+	DisableUI = "KkthnxUI might not work for this resolution, do you want to disable KkthnxUI? (Cancel if you want to try another resolution)",
+	DisbandRaid = "Are you sure you want to disband the group?",
+	FixActionbars = "There is something wrong with your action bars. Do you want to reload the UI to fix it?",
+	InstallUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings.",
+	ReloadUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r.",
+	ResetDataText = "Are you sure you want to reset all datatexts to default?",
+	ResetUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?",
+	ResolutionChanged = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?",
+	SettingsAll = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons.",
+	SettingsBW = "Need to change the position of elements BigWigs.",
+	SettingsDBM = "We need to change the bar positions of |cff3c9bedDBM|r.",
+}
+
 -- Raid Utility Localization
-L_RAID_UTIL_DISBAND = "Disband Group"
-L_POPUP_DISBAND_RAID = "Are you sure you want to disband the group?"
+L.Raid = {
+	UtilityDisband = "Disband Group",
+	DisbandRaid = "Are you sure you want to disband the group?"
+}
+
 -- Tooltip Localization
-L_TOOLTIP_ACH_COMPLETE = "Your Status: Completed on "
-L_TOOLTIP_ACH_INCOMPLETE = "Your Status: Incomplete"
-L_TOOLTIP_ACH_STATUS = "Your Status:"
-L_TOOLTIP_ITEM_COUNT = "Item count:"
-L_TOOLTIP_ITEM_ID = "Item ID:"
-L_TOOLTIP_SPELL_ID = "Spell ID:"
--- Tutorial Localization
-L_TUTORIAL_MESSAGE_1 = "For technical support visit https://github.com/Kkthnx."
-L_TUTORIAL_MESSAGE_2 = "You can toggle the microbar by using your right mouse button on the minimap."
-L_TUTORIAL_MESSAGE_3 = "You can set your keybinds quickly by typing /kb."
-L_TUTORIAL_MESSAGE_4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro to do this."
-L_TUTORIAL_MESSAGE_5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear."
-L_TUTORIAL_MESSAGE_6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing."
-L_TUTORIAL_MESSAGE_7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings."
-L_TUTORIAL_MESSAGE_8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position."
-L_TUTORIAL_MESSAGE_9 = "To move abilities on the actionbars by default hold shift + drag. You can change the modifier key from the actionbar options menu."
-L_TUTORIAL_MESSAGE_10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
--- Wowhead Link Localization
-L_WATCH_WOWHEAD_LINK = "Wowhead Link"
--- Welcome Localization
-L_WELCOME_LINE_1 = "Welcome to |cff3c9bedKkthnxUI|r v"
-L_WELCOME_LINE_2_1 = ""
-L_WELCOME_LINE_2_2 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r"
-L_WELCOME_LINE_2_3 = ""
-L_WELCOME_LINE_2_4 = "Some of your questions can be answered by typing /uihelp"
--- Slash Commands Localization
-L_SLASHCMD_HELP = {
-    "",
-    "|cff3c9bedAvailable slash commands:|r",
-    "--------------------------",
-    "/rl - Reload interface.",
-    "/rc - Activates a ready check.",
-    "/gm - Opens GM frame.",
-    "/rd - Disband party or raid.",
-    "/toraid - Convert to party or raid.",
-    "/teleport - Teleportation from random dungeon.",
-    "/spec, /ss - Switches between talent spec's.",
-    "/frame - Description is not ready.",
-    "/farmmode - Increase the size of the minimap.",
-    "/moveui - Allows the movement of interface elements.",
-    "/resetui - Resets general settings to default.",
-    "/resetconfig - Resets KkthnxUI_Config settings.",
-    "/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-    "/pulsecd - Self cooldown pulse test.",
-    "/tt - Whisper target.",
-    "/ainv - Enables automatic invitation.",
-    "/cfg - Opens interface settings.",
-    "/patch - Display Wow patch info.",
-    "",
-    "|cff3c9bedAvailable hidden features:|r",
-    "--------------------------",
-    "Right-click minimap for micromenu.",
-    "Middle mouse click minimap for tracking.",
-    "Left click experience bar opens rep frame.",
-    "Left click artifact bar opens artifact frame.",
-    "Hold alt and obtain player ilvl and spec in tooltip.",
-    "Hold shift to scroll instantly to end or start of chat.",
-    "Copy button to the bottom right side of chat.",
-    "Middle mouse click copy button to /roll.",
+L.Tooltip = {
+	AchievementComplete = "Your Status: Completed on ",
+	AchievementIncomplete = "Your Status: Incomplete",
+	AchievementStatus = "Your Status:",
+	ItemCount = "Item count:",
+	ItemID = "Item ID:",
+	SpellID = "Spell ID:"
+}
+
+L.WatchFrame = {
+	WowheadLink = "Wowhead Link"
+}
+
+L.Welcome = {
+	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
+	Line2 = "",
+	Line3 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r",
+	Line4 = "",
+	Line5 = "Some of your questions can be answered by typing /uihelp or /faq"
+}
+
+L.SlashCommand = {
+	Help = {
+	"",
+	"|cff3c9bedAvailable slash commands:|r",
+	"--------------------------",
+	"/rl - Reload interface.",
+	"/rc - Activates a ready check.",
+	"/gm - Opens GM frame.",
+	"/rd - Disband party or raid.",
+	"/toraid - Convert to party or raid.",
+	"/teleport - Teleportation from random dungeon.",
+	"/spec, /ss - Switches between talent spec's.",
+	"/frame - Description is not ready.",
+	"/farmmode - Increase the size of the minimap.",
+	"/moveui - Allows the movement of interface elements.",
+	"/resetui - Resets general settings to default.",
+	"/resetconfig - Resets KkthnxUI_Config settings.",
+	"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
+	"/pulsecd - Self cooldown pulse test.",
+	"/tt - Whisper target.",
+	"/ainv - Enables automatic invitation.",
+	"/cfg - Opens interface settings.",
+	"/patch - Display Wow patch info.",
+	"",
+	"|cff3c9bedAvailable hidden features:|r",
+	"--------------------------",
+	"Right-click minimap for micromenu.",
+	"Middle mouse click minimap for tracking.",
+	"Left click experience bar opens rep frame.",
+	"Left click artifact bar opens artifact frame.",
+	"Hold alt and obtain player ilvl and spec in tooltip.",
+	"Hold shift to scroll instantly to end or start of chat.",
+	"Copy button to the bottom right side of chat.",
+	"Middle mouse click copy button to /roll.",
+	}
 }

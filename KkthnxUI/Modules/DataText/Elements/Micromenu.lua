@@ -131,7 +131,7 @@ local function OnMouseDown()
 end
 
 local function Update(self)
-	self.Text:SetText(NameColor .. L_DATATEXT_MICROMENU .. "|r")
+	self.Text:SetText(NameColor .. L.DataText.MicroMenu .. "|r")
 end
 
 local function Enable(self)
@@ -152,4 +152,4 @@ local function Disable(self)
 	self:UnregisterAllEvents()
 end
 
-DataText:Register(L_DATATEXT_MICROMENU, Enable, Disable, Update)
+DataText:Register(L.DataText.MicroMenu, Enable, Disable, Update)

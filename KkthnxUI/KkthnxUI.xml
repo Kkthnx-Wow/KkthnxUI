@@ -213,6 +213,7 @@
 	<Script file="Modules\Miscellaneous\ThreatBar.lua"/>
 
 	<!-- Nameplates -->
+	<Script file="Modules\Nameplates\Tags.lua"/>
 	<Script file="Modules\Nameplates\Nameplates.lua"/>
 
 	<!-- Quests -->
@@ -222,7 +223,9 @@
 	<Script file="Modules\Quests\WowheadLink.lua"/>
 
 	<!-- Skins Addons -->
+	<Include file="Modules\Skins\Addons\BigWigs.lua"/>
 	<Include file="Modules\Skins\Addons\DBM.lua"/>
+	<Include file="Modules\Skins\Addons\Omen.lua"/>
 	<Include file="Modules\Skins\Addons\Recount.lua"/>
 	<Include file="Modules\Skins\Addons\Skada.lua"/>
 	<Include file="Modules\Skins\Addons\Spy.lua"/>

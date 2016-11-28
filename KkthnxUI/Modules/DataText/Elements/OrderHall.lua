@@ -10,37 +10,37 @@ local classcolor = ("|cff%.2x%.2x%.2x"):format(K.Color.r * 255, K.Color.g * 255,
 --[[Variables]]--
 local format = string.format
 local tsort = table.sort
-local GetMouseFocus = GetMouseFocus
-local C_GarrisonRequestLandingPageShipmentInfo = C_Garrison.RequestLandingPageShipmentInfo
+local C_Garrison_HasGarrison = C_Garrison.HasGarrison
 local C_GarrisonGetBuildings = C_Garrison.GetBuildings
-local C_GarrisonGetInProgressMissions = C_Garrison.GetInProgressMissions
-local C_GarrisonGetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
-local GARRISON_LANDING_SHIPMENT_COUNT = GARRISON_LANDING_SHIPMENT_COUNT
-local COMPLETE = COMPLETE
-local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
-local LE_FOLLOWER_TYPE_GARRISON_7_0 = LE_FOLLOWER_TYPE_GARRISON_7_0
-local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
 local C_GarrisonGetCompleteTalent = C_Garrison.GetCompleteTalent
 local C_GarrisonGetFollowerShipments = C_Garrison.GetFollowerShipments
 local C_GarrisonGetInProgressMissions = C_Garrison.GetInProgressMissions
+local C_GarrisonGetInProgressMissions = C_Garrison.GetInProgressMissions
+local C_GarrisonGetLandingPageShipmentInfo = C_Garrison.GetLandingPageShipmentInfo
 local C_GarrisonGetLandingPageShipmentInfoByContainerID = C_Garrison.GetLandingPageShipmentInfoByContainerID
 local C_GarrisonGetLooseShipments = C_Garrison.GetLooseShipments
 local C_GarrisonGetTalentTrees = C_Garrison.GetTalentTrees
 local C_GarrisonRequestLandingPageShipmentInfo = C_Garrison.RequestLandingPageShipmentInfo
-local C_Garrison_HasGarrison = C_Garrison.HasGarrison
-local GetCurrencyInfo = GetCurrencyInfo
-local GetMouseFocus = GetMouseFocus
-local HideUIPanel = HideUIPanel
-local ShowGarrisonLandingPage = ShowGarrisonLandingPage
-local UnitClass = UnitClass
+local C_GarrisonRequestLandingPageShipmentInfo = C_Garrison.RequestLandingPageShipmentInfo
 local CAPACITANCE_WORK_ORDERS = CAPACITANCE_WORK_ORDERS
+local COMPLETE = COMPLETE
 local COMPLETE = COMPLETE
 local FOLLOWERLIST_LABEL_TROOPS = FOLLOWERLIST_LABEL_TROOPS
 local GARRISON_LANDING_SHIPMENT_COUNT = GARRISON_LANDING_SHIPMENT_COUNT
+local GARRISON_LANDING_SHIPMENT_COUNT = GARRISON_LANDING_SHIPMENT_COUNT
 local GARRISON_TALENT_ORDER_ADVANCEMENT = GARRISON_TALENT_ORDER_ADVANCEMENT
+local GetCurrencyInfo = GetCurrencyInfo
+local GetMouseFocus = GetMouseFocus
+local GetMouseFocus = GetMouseFocus
+local HideUIPanel = HideUIPanel
+local LE_FOLLOWER_TYPE_GARRISON_6_0 = LE_FOLLOWER_TYPE_GARRISON_6_0
 local LE_FOLLOWER_TYPE_GARRISON_7_0 = LE_FOLLOWER_TYPE_GARRISON_7_0
+local LE_FOLLOWER_TYPE_GARRISON_7_0 = LE_FOLLOWER_TYPE_GARRISON_7_0
+local LE_FOLLOWER_TYPE_SHIPYARD_6_2 = LE_FOLLOWER_TYPE_SHIPYARD_6_2
 local LE_GARRISON_TYPE_7_0 = LE_GARRISON_TYPE_7_0
 local ORDER_HALL_MISSIONS = ORDER_HALL_MISSIONS
+local ShowGarrisonLandingPage = ShowGarrisonLandingPage
+local UnitClass = UnitClass
 
 local function sortFunction(a, b) return a.missionEndTime < b.missionEndTime end
 
@@ -64,7 +64,7 @@ local function Update(self, event)
 		end
 	end
 
-	if (CountInProgress > 0) then self.Text:SetText(format(L_DATATEXT_NOORDERHALLWO, CountCompleted, #Missions)) else self.Text:SetText(classcolor ..(L_DATATEXT_ORDERHALL)) end
+	if (CountInProgress > 0) then self.Text:SetText(format(L.DataText.NoOrderhallWO, CountCompleted, #Missions)) else self.Text:SetText(classcolor ..(L.DataText.OrderHall)) end
 	--self:SetAllPoints(Text)
 end
 
@@ -82,7 +82,7 @@ local OnEnter = function(self)
 	GameTooltip:ClearLines()
 
 	if not (C_Garrison_HasGarrison(LE_GARRISON_TYPE_7_0)) then
-		GameTooltip:AddLine(L_DATATEXT_NOORDERHALLUNLOCK)
+		GameTooltip:AddLine(L.DataText.NoOrderHallUnlock)
 		return
 	end
 
@@ -157,7 +157,7 @@ local OnEnter = function(self)
 	GameTooltip:AddLine(CURRENCY)
 	GameTooltip:AddDoubleLine(K.Currency (1220))
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddDoubleLine(L_DATATEXT_ORDERHALLREPORT)
+	GameTooltip:AddDoubleLine(L.DataText.ORDERHALLREPORT)
 	GameTooltip:Show()
 end
 
@@ -207,4 +207,4 @@ local function Disable(self)
 	self:SetScript("OnEvent", nil )
 end
 
-DataText:Register(L_DATATEXT_ORDERHALL, Enable, Disable, Update)
+DataText:Register(L.DataText.OrderHall, Enable, Disable, Update)

@@ -94,7 +94,7 @@ end)
 
 -- Spec
 local LeftClickMenu = { }
-LeftClickMenu[1] = { text = L_CONFIGBUTTON_SPECMENU, isTitle = true, notCheckable = true}
+LeftClickMenu[1] = { text = L.ConfigButton.SPECMENU, isTitle = true, notCheckable = true}
 
 local function ActiveTalents()
 	local Tree = GetSpecialization(false, false, GetActiveSpecGroup())
@@ -113,7 +113,7 @@ KkthnxUISpecSwap:SetScript("OnEvent", function(...)
 			func = (function()
 				local getSpec = GetSpecialization()
 				if getSpec and getSpec == specIndex then
-					UIErrorsFrame:AddMessage(L_CONFIGBUTTON_SPECERROR, 1.0, 0.0, 0.0, 53, 5);
+					UIErrorsFrame:AddMessage(L.ConfigButton.SPECERROR, 1.0, 0.0, 0.0, 53, 5);
 					return
 				end
 				SetSpecialization(specIndex)
@@ -237,17 +237,17 @@ if C.General.ShowConfigButton == true then
 		local anchor, panel, xoff, yoff = "ANCHOR_BOTTOM", self:GetParent(), 0, 5
 		GameTooltip:SetOwner(self, anchor, xoff, yoff)
 		GameTooltip:ClearLines()
-		GameTooltip:AddLine(L_CONFIGBUTTON_FUNC)
-		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_LEFTCLICK, L_CONFIGBUTTON_MOVEUI, 1, 1, 1)
+		GameTooltip:AddLine(L.ConfigButton.Functions)
+		GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, L.ConfigButton.MoveUI, 1, 1, 1)
 		if IsAddOnLoaded("Recount") then
-			GameTooltip:AddDoubleLine(L_CONFIGBUTTON_RIGHTCLICK, L_CONFIGBUTTON_RECOUNT, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Recount, 1, 1, 1)
 		end
 		if IsAddOnLoaded("Skada") then
-			GameTooltip:AddDoubleLine(L_CONFIGBUTTON_RIGHTCLICK, L_CONFIGBUTTON_SKADA, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Skada, 1, 1, 1)
 		end
-		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_MIDDLECLICK, L_CONFIGBUTTON_CONFIG, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L_CONFIGBUTTON_SHIFTCLICK, L_CONFIGBUTTON_SPEC, 1, 1, 1)
-		GameTooltip:AddDoubleLine("Shift + Right Click", "Toggle Datatext", 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Config, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClick, L.ConfigButton.Spec, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClick, "Toggle Datatext", 1, 1, 1)
 		GameTooltip:Show()
 		GameTooltip:SetTemplate()
 	end)

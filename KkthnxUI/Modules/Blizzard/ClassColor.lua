@@ -229,17 +229,17 @@ local function update()
 				local displayedName = classColor[classFileName]..name
 				if isMobile then
 					if isAway == 1 then
-						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-AwayMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffE7E716"..L_CHAT_AFK.."|r"
+						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-AwayMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffE7E716"..L.Chat.AFK.."|r"
 					elseif isAway == 2 then
-						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffff0000"..L_CHAT_DND.."|r"
+						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffff0000"..L.Chat.DND.."|r"
 					else
 						displayedName = ChatFrame_GetMobileEmbeddedTexture(0.3, 1, 0.3)..displayedName
 					end
 				else
 					if isAway == 1 then
-						displayedName = displayedName.." |cffE7E716"..L_CHAT_AFK.."|r"
+						displayedName = displayedName.." |cffE7E716"..L.Chat.AFK.."|r"
 					elseif isAway == 2 then
-						displayedName = displayedName.." |cffff0000"..L_CHAT_DND.."|r"
+						displayedName = displayedName.." |cffff0000"..L.Chat.DND.."|r"
 					else
 						displayedName = displayedName
 					end

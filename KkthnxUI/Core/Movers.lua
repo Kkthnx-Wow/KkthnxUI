@@ -42,7 +42,7 @@ function Movers:RestoreDefaults(button)
 		Frame.DragInfo:ClearAllPoints()
 		Frame.DragInfo:SetAllPoints(Frame)
 
-		-- DELETE SAVED VARIABLE
+		-- Delete Saved Variable
 		SavedVariables[FrameName] = nil
 	end
 end

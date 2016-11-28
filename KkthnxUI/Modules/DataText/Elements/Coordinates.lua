@@ -29,7 +29,7 @@ local OnUpdate = function(self, elapsed)
 		x = floor(100 * x, 1)
 		y = floor(100 * y, 1)
 
-		self.Text:SetFormattedText("%s: %s", L_DATATEXT_COORDS, ValueColor .. x .. ", " .. y .. "|r")
+		self.Text:SetFormattedText("%s: %s", L.DataText.Coords, ValueColor .. x .. ", " .. y .. "|r")
 		timeSinceUpdate = 0
 	end
 end
@@ -54,4 +54,4 @@ local Disable = function(self)
 	self:SetScript("OnUpdate", nil)
 end
 
-DataText:Register(L_DATATEXT_COORDS, Enable, Disable, OnUpdate)
+DataText:Register(L.DataText.Coords, Enable, Disable, OnUpdate)

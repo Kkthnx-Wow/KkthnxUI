@@ -27,9 +27,9 @@ local OnEnter = function(self)
 
 	Used = Total - Free
 
-	GameTooltip:AddDoubleLine(NameColor .. L_DATATEXT_TOTALBAGSSLOTS .. "|r", ValueColor .. Total .. "|r")
-	GameTooltip:AddDoubleLine(NameColor .. L_DATATEXT_TOTALUSEDBAGSSLOTS .. "|r", ValueColor .. Used .. "|r")
-	GameTooltip:AddDoubleLine(NameColor .. L_DATATEXT_TOTALFREEBAGSSLOTS .. "|r", ValueColor .. Free .. "|r")
+	GameTooltip:AddDoubleLine(NameColor .. L.DataText.TotalBagSlots .. "|r", ValueColor .. Total .. "|r")
+	GameTooltip:AddDoubleLine(NameColor .. L.DataText.TotalUsedBagSlots .. "|r", ValueColor .. Used .. "|r")
+	GameTooltip:AddDoubleLine(NameColor .. L.DataText.TotalFreeBagSlots .. "|r", ValueColor .. Free .. "|r")
 
 	GameTooltip:Show()
 end
@@ -51,7 +51,7 @@ local Update = function(self)
 
 	Used = Total - Free
 
-	self.Text:SetFormattedText("%s: %s/%s", NameColor .. L_DATATEXT_BAGS .. "|r", ValueColor .. Used, Total .. "|r")
+	self.Text:SetFormattedText("%s: %s/%s", NameColor .. L.DataText.Bags .. "|r", ValueColor .. Used, Total .. "|r")
 end
 
 local Enable = function(self)

@@ -20,17 +20,17 @@ local FormatMoney = function(money)
 	local Copper = mod(floor(abs(money)), 100)
 
 	if (Gold ~= 0) then
-		return format(ValueColor.."%s|r"..L_MISC_GOLDSHORT..ValueColor.." %s|r"..L_MISC_SILVERSHORT..ValueColor.." %s|r"..L_MISC_COPPERSHORT, Gold, Silver, Copper)
+		return format(ValueColor.."%s|r"..L.Misc.GoldShort..ValueColor.." %s|r"..L.Misc.SilverShort..ValueColor.." %s|r"..L.Misc.CopperShort, Gold, Silver, Copper)
 	elseif (Silver ~= 0) then
-		return format(ValueColor.."%s|r"..L_MISC_SILVERSHORT..ValueColor.." %s|r"..L_MISC_COPPERSHORT, Silver, Copper)
+		return format(ValueColor.."%s|r"..L.Misc.SilverShort..ValueColor.." %s|r"..L.Misc.CopperShort, Silver, Copper)
 	else
-		return format(ValueColor.."%s|r"..L_MISC_COPPERSHORT, Copper)
+		return format(ValueColor.."%s|r"..L.Misc.CopperShort, Copper)
 	end
 end
 
 local FormatTooltipMoney = function(money)
 	local Gold, Silver, Copper = abs(money / 10000), abs(mod(money / 100, 100)), abs(mod(money, 100))
-	local Money = format("%.2d"..L_MISC_GOLDSHORT.." %.2d"..L_MISC_SILVERSHORT.." %.2d"..L_MISC_COPPERSHORT, Gold, Silver, Copper)
+	local Money = format("%.2d"..L.Misc.GoldShort.." %.2d"..L.Misc.SilverShort.." %.2d"..L.Misc.CopperShort, Gold, Silver, Copper)
 
 	return Money
 end
@@ -41,13 +41,13 @@ local OnEnter = function(self)
 		GameTooltip:ClearLines()
 		GameTooltip:AddLine(GOLD)
 
-		GameTooltip:AddDoubleLine(L_DATATEXT_GOLDEARNED, FormatMoney(Profit), 1, 1, 1, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L_DATATEXT_GOLDSPENT, FormatMoney(Spent), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.DataText.GoldEarned, FormatMoney(Profit), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.DataText.GoldSpent, FormatMoney(Spent), 1, 1, 1, 1, 1, 1)
 
 		if (Profit < Spent) then
-			GameTooltip:AddDoubleLine(L_DATATEXT_GOLDDEFICIT, FormatMoney(Profit-Spent), 1, 0, 0, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.DataText.GoldDeficit, FormatMoney(Profit-Spent), 1, 0, 0, 1, 1, 1)
 		elseif ((Profit-Spent) > 0) then
-			GameTooltip:AddDoubleLine(L_DATATEXT_GOLDPROFIT, FormatMoney(Profit-Spent), 0, 1, 0, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.DataText.GoldProfit, FormatMoney(Profit-Spent), 0, 1, 0, 1, 1, 1)
 		end
 
 		GameTooltip:AddLine(" ")
@@ -61,8 +61,8 @@ local OnEnter = function(self)
 		end
 
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L_DATATEXT_GOLDSERVER)
-		GameTooltip:AddDoubleLine(L_DATATEXT_GOLDTOTAL, FormatTooltipMoney(TotalGold), 1, 1, 1, 1, 1, 1)
+		GameTooltip:AddLine(L.DataText.GOLDSERVER)
+		GameTooltip:AddDoubleLine(L.DataText.GoldTotal, FormatTooltipMoney(TotalGold), 1, 1, 1, 1, 1, 1)
 
 		for i = 1, GetNumWatchedTokens() do
 			local Name, Count, _, _, ItemID = GetBackpackCurrencyInfo(i)
@@ -115,8 +115,6 @@ local Update = function(self, event)
 	self.Text:SetText(FormatMoney(NewMoney))
 
 	KkthnxUIData["Gold"][MyRealm][MyName] = NewMoney
-
-	--self:SetAllPoints(GoldStat)
 end
 
 local OnMouseDown = function(self)

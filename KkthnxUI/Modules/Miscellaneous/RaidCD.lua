@@ -128,9 +128,9 @@ end
 local OnMouseDown = function(self, button)
 	if button == "LeftButton" then
 		if self.isResses then
-			SendChatMessage(sformat(L_COOLDOWNS_COMBATRESS_REMAINDER.."%d, "..L_COOLDOWNS_NEXTTIME.."%s.", currentNumResses, self.right:GetText()), K.CheckChat())
+			SendChatMessage(sformat(L.Cooldowns.CombatResRemainder.."%d, "..L.Cooldowns.NextTime.."%s.", currentNumResses, self.right:GetText()), K.CheckChat())
 		else
-			SendChatMessage(sformat(L_COOLDOWNS.."%s - %s: %s", self.name, GetSpellLink(self.spellId), self.right:GetText()), K.CheckChat())
+			SendChatMessage(sformat(L.Cooldowns.Cooldowns.."%s - %s: %s", self.name, GetSpellLink(self.spellId), self.right:GetText()), K.CheckChat())
 		end
 	elseif button == "RightButton" then
 		StopTimer(self)
@@ -273,7 +273,7 @@ local OnEvent = function(self, event, ...)
 			if not inBossCombat then
 				inBossCombat = true
 			end
-			StartTimer(L_COOLDOWNS_COMBATRESS, 20484)
+			StartTimer(L.Cooldowns.CombatRes, 20484)
 		elseif not charges and inBossCombat then
 			inBossCombat = nil
 			currentNumResses = 0

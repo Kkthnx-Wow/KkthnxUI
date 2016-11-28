@@ -93,7 +93,7 @@ local Update = function(self, second)
 			MS = "0"
 		end
 
-		self.Text:SetFormattedText("%s %s %s %s", ValueColor .. Rate .. "|r", NameColor .. L_DATATEXT_FPS .. "|r", "& " .. ValueColor .. MS .. "|r", NameColor .. L_DATATEXT_MS .. "|r")
+		self.Text:SetFormattedText("%s %s %s %s", ValueColor .. Rate .. "|r", NameColor .. L.DataText.FPS .. "|r", "& " .. ValueColor .. MS .. "|r", NameColor .. L.DataText.MS .. "|r")
 		int2 = 2
 
 		--self:SetAllPoints(Text)
@@ -110,7 +110,7 @@ local OnEnter = function(self)
 		local Bandwidth = GetAvailableBandwidth()
 
 		local TotalMemory = UpdateMemory()
-		GameTooltip:AddDoubleLine(L_DATATEXT_TOTALMEMORY, FormatMemory(TotalMemory), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
+		GameTooltip:AddDoubleLine(L.DataText.TotalMemory, FormatMemory(TotalMemory), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
 		GameTooltip:AddLine(" ")
 
 		for i = 1, #MemoryTable do
@@ -124,8 +124,8 @@ local OnEnter = function(self)
 
 		GameTooltip:AddLine(" ")
 		if (Bandwidth ~= 0) then
-			GameTooltip:AddDoubleLine(L_DATATEXT_BANDWIDTH , string.format(bandwidthString, Bandwidth),0.69, 0.31, 0.31,0.84, 0.75, 0.65)
-			GameTooltip:AddDoubleLine(L_DATATEXT_DOWNLOAD , string.format(percentageString, GetDownloadedPercentage() * 100), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
+			GameTooltip:AddDoubleLine(L.DataText.Bandwidth , string.format(bandwidthString, Bandwidth),0.69, 0.31, 0.31,0.84, 0.75, 0.65)
+			GameTooltip:AddDoubleLine(L.DataText.Download , string.format(percentageString, GetDownloadedPercentage() * 100), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
 			GameTooltip:AddLine(" ")
 		end
 

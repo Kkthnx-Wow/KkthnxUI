@@ -44,9 +44,9 @@ function Merchant:OnEvent()
 		end
 		if (Cost > 0) then
 			local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
-			DEFAULT_CHAT_FRAME:AddMessage(L_MERCHANT_SOLDTRASH.." |cffffffff"..Gold..L_MISC_GOLDSHORT.." |cffffffff"..Silver..L_MISC_SILVERSHORT.." |cffffffff"..Copper..L_MISC_COPPERSHORT..".", 0255, 255, 0)
+			DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.SoldTrash.." |cffffffff"..Gold..L.Misc.GoldShort.." |cffffffff"..Silver..L.Misc.SilverShort.." |cffffffff"..Copper..L.Misc.CopperShort..".", 0255, 255, 0)
 		end
-	end
+	end	
 	if (not IsShiftKeyDown()) then
 		if (CanMerchantRepair() and C.Misc.AutoRepair) then
 			local Cost, Possible = GetRepairAllCost()
@@ -63,9 +63,9 @@ function Merchant:OnEvent()
 					local Copper = Cost % 100
 					local Silver = math.floor((Cost % 10000) / 100)
 					local Gold = math.floor(Cost / 10000)
-					DEFAULT_CHAT_FRAME:AddMessage(L_MERCHANT_REPAIRCOST.." |cffffffff"..Gold..L_MISC_GOLDSHORT.." |cffffffff"..Silver..L_MISC_SILVERSHORT.." |cffffffff"..Copper..L_MISC_COPPERSHORT..".", 255, 255, 0)
+					DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.RepairCost.." |cffffffff"..Gold..L.Misc.GoldShort.." |cffffffff"..Silver..L.Misc.SilverShort.." |cffffffff"..Copper..L.Misc.CopperShort..".", 255, 255, 0)
 				else
-					DEFAULT_CHAT_FRAME:AddMessage(L_MERCHANT_NOTENOUGHMONEY, 255, 0, 0)
+					DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.NotEnoughMoney, 255, 0, 0)
 				end
 			end
 		end
@@ -88,5 +88,15 @@ function Merchant:Enable()
 	MerchantItemButton_OnModifiedClick = self.MerchantClick
 end
 
+function Merchant:Disable()
+	self:UnregisterEvent("MERCHANT_SHOW")
+	self:SetScript("OnEvent", nil)
+	MerchantItemButton_OnModifiedClick = BlizzardMerchantClick
+end
+
 Merchant:RegisterEvent("PLAYER_LOGIN")
-Merchant:SetScript("OnEvent", Merchant.Enable)
+if C.Misc.AutoSellGrays or C.Misc.SellMisc then
+	Merchant:SetScript("OnEvent", Merchant.Enable)
+else
+	Merchant:SetScript("OnEvent", Merchant.Disable)
+end

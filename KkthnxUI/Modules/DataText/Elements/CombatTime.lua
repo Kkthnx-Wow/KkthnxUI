@@ -75,4 +75,4 @@ local Disable = function(self)
 	self:SetScript("OnEvent", nil)
 end
 
-DataText:Register(L_DATATEXT_COMBATTIME, Enable, Disable, OnEvent)
+DataText:Register(L.DataText.CombatTime, Enable, Disable, OnEvent)

@@ -49,9 +49,9 @@ function KkthnxUIInstall:ChatSetup()
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
 	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOCALDEFENSE)
-	ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_GUILDRECRUITMENT)
-	ChatFrame_RemoveChannel(ChatFrame1, L_CHAT_LOOKINGFORGROUP)
+	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.LocalDefense)
+	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.GuildRecruitment)
+	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.LookingForGroup)
 	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
 	ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
 	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
@@ -88,9 +88,9 @@ function KkthnxUIInstall:ChatSetup()
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
 	ChatFrame_AddChannel(ChatFrame3, TRADE)
 	ChatFrame_AddChannel(ChatFrame3, GENERAL)
-	ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOCALDEFENSE)
-	ChatFrame_AddChannel(ChatFrame3, L_CHAT_GUILDRECRUITMENT)
-	ChatFrame_AddChannel(ChatFrame3, L_CHAT_LOOKINGFORGROUP)
+	ChatFrame_AddChannel(ChatFrame3, L.Chat.LocalDefense)
+	ChatFrame_AddChannel(ChatFrame3, L.Chat.GuildRecruitment)
+	ChatFrame_AddChannel(ChatFrame3, L.Chat.LookingForGroup)
 
 	-- Setup the loot chat
 	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
@@ -306,14 +306,14 @@ local StepFour = function()
 
 	KkthnxUIDataPerChar.Install = true
 	StatusBar:SetValue(4)
-	Header:SetText(L_INSTALL_HEADER_11)
-	TextOne:SetText(L_INSTALL_STEP_4_LINE_1)
-	TextTwo:SetText(L_INSTALL_STEP_4_LINE_2)
-	TextThree:SetText(L_INSTALL_STEP_4_LINE_3)
-	TextFour:SetText(L_INSTALL_STEP_4_LINE_4)
+	Header:SetText(L.Install.Header11)
+	TextOne:SetText(L.Install.Step4Line1)
+	TextTwo:SetText(L.Install.Step4Line2)
+	TextThree:SetText(L.Install.Step4Line3)
+	TextFour:SetText(L.Install.Step4Line4)
 	StatusBarText:SetText("4/4")
 	OptionOne:Hide()
-	OptionTwo.Text:SetText(L_INSTALL_BUTTON_FINISH)
+	OptionTwo.Text:SetText(L.Install.ButtonFinish)
 	OptionTwo:SetScript("OnClick", function()
 		ReloadUI()
 	end)
@@ -326,11 +326,11 @@ local StepThree = function()
 	InstallationMessageFrame:Show()
 
 	StatusBar:SetValue(3)
-	Header:SetText(L_INSTALL_HEADER_10)
-	TextOne:SetText(L_INSTALL_STEP_3_LINE_1)
-	TextTwo:SetText(L_INSTALL_STEP_3_LINE_2)
-	TextThree:SetText(L_INSTALL_STEP_3_LINE_3)
-	TextFour:SetText(L_INSTALL_STEP_3_LINE_4)
+	Header:SetText(L.Install.Header10)
+	TextOne:SetText(L.Install.Step3Line1)
+	TextTwo:SetText(L.Install.Step3Line2)
+	TextThree:SetText(L.Install.Step3Line3)
+	TextFour:SetText(L.Install.Step3Line4)
 	StatusBarText:SetText("3/4")
 	OptionOne:SetScript("OnClick", StepFour)
 	OptionTwo:SetScript("OnClick", function()
@@ -344,19 +344,19 @@ local StepTwo = function()
 	InstallationMessageFrame:Show()
 
 	StatusBar:SetValue(2)
-	Header:SetText(L_INSTALL_HEADER_9)
+	Header:SetText(L.Install.Header9)
 	StatusBarText:SetText("2/4")
 	if IsAddOnLoaded("Prat") or IsAddOnLoaded("Chatter") then
-		TextOne:SetText(L_INSTALL_STEP_2_LINE_0)
+		TextOne:SetText(L.Install.Step2Line0)
 		TextTwo:SetText("")
 		TextThree:SetText("")
 		TextFour:SetText("")
 		OptionTwo:Hide()
 	else
-		TextOne:SetText(L_INSTALL_STEP_2_LINE_1)
-		TextTwo:SetText(L_INSTALL_STEP_2_LINE_2)
-		TextThree:SetText(L_INSTALL_STEP_2_LINE_3)
-		TextFour:SetText(L_INSTALL_STEP_2_LINE_4)
+		TextOne:SetText(L.Install.Step2Line1)
+		TextTwo:SetText(L.Install.Step2Line2)
+		TextThree:SetText(L.Install.Step2Line3)
+		TextFour:SetText(L.Install.Step2Line4)
 		OptionTwo:SetScript("OnClick", function()
 			KkthnxUIInstall.ChatSetup()
 			StepThree()
@@ -371,17 +371,17 @@ local StepOne = function()
 	StatusBar:Show()
 	StatusBar:SetValue(1)
 	StatusBar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
-	Header:SetText(L_INSTALL_HEADER_8)
-	TextOne:SetText(L_INSTALL_STEP_1_LINE_1)
-	TextTwo:SetText(L_INSTALL_STEP_1_LINE_2)
-	TextThree:SetText(L_INSTALL_STEP_1_LINE_3)
-	TextFour:SetText(L_INSTALL_STEP_1_LINE_4)
+	Header:SetText(L.Install.Header8)
+	TextOne:SetText(L.Install.Step1Line1)
+	TextTwo:SetText(L.Install.Step1Line2)
+	TextThree:SetText(L.Install.Step1Line3)
+	TextFour:SetText(L.Install.Step1Line4)
 	StatusBarText:SetText("1/4")
 
 	OptionOne:Show()
 
-	OptionOne.Text:SetText(L_INSTALL_BUTTON_SKIP)
-	OptionTwo.Text:SetText(L_INSTALL_BUTTON_CONTINUE)
+	OptionOne.Text:SetText(L.Install.ButtonSkip)
+	OptionTwo.Text:SetText(L.Install.ButtonContinue)
 
 	OptionOne:SetScript("OnClick", StepTwo)
 	OptionTwo:SetScript("OnClick", function()
@@ -399,18 +399,18 @@ end
 
 local TutorialSix = function()
 	StatusBar:SetValue(6)
-	Header:SetText(L_INSTALL_HEADER_7)
-	TextOne:SetText(L_TUTORIAL_STEP_6_LINE_1)
-	TextTwo:SetText(L_TUTORIAL_STEP_6_LINE_2)
-	TextThree:SetText(L_TUTORIAL_STEP_6_LINE_3)
-	TextFour:SetText(L_TUTORIAL_STEP_6_LINE_4)
+	Header:SetText(L.Install.Header7)
+	TextOne:SetText(L.Tutorial.Step6Line1)
+	TextTwo:SetText(L.Tutorial.Step6Line2)
+	TextThree:SetText(L.Tutorial.Step6Line3)
+	TextFour:SetText(L.Tutorial.Step6Line4)
 
 	StatusBarText:SetText("6/6")
 
 	OptionOne:Show()
 
-	OptionOne.Text:SetText(L_INSTALL_BUTTON_CLOSE)
-	OptionTwo.Text:SetText(L_INSTALL_BUTTON_INSTALL)
+	OptionOne.Text:SetText(L.Install.ButtonClose)
+	OptionTwo.Text:SetText(L.Install.ButtonInstall)
 
 	OptionOne:SetScript("OnClick", function()
 		KkthnxUIInstallFrame:Hide()
@@ -420,11 +420,11 @@ end
 
 local TutorialFive = function()
 	StatusBar:SetValue(5)
-	Header:SetText(L_INSTALL_HEADER_6)
-	TextOne:SetText(L_TUTORIAL_STEP_5_LINE_1)
-	TextTwo:SetText(L_TUTORIAL_STEP_5_LINE_2)
-	TextThree:SetText(L_TUTORIAL_STEP_5_LINE_3)
-	TextFour:SetText(L_TUTORIAL_STEP_5_LINE_4)
+	Header:SetText(L.Install.Header6)
+	TextOne:SetText(L.Tutorial.Step5Line1)
+	TextTwo:SetText(L.Tutorial.Step5Line2)
+	TextThree:SetText(L.Tutorial.Step5Line3)
+	TextFour:SetText(L.Tutorial.Step5Line4)
 
 	StatusBarText:SetText("5/6")
 
@@ -433,11 +433,11 @@ end
 
 local TutorialFour = function()
 	StatusBar:SetValue(4)
-	Header:SetText(L_INSTALL_HEADER_5)
-	TextOne:SetText(L_TUTORIAL_STEP_4_LINE_1)
-	TextTwo:SetText(L_TUTORIAL_STEP_4_LINE_2)
-	TextThree:SetText(L_TUTORIAL_STEP_4_LINE_3)
-	TextFour:SetText(L_TUTORIAL_STEP_4_LINE_4)
+	Header:SetText(L.Install.Header5)
+	TextOne:SetText(L.Tutorial.Step4Line1)
+	TextTwo:SetText(L.Tutorial.Step4Line2)
+	TextThree:SetText(L.Tutorial.Step4Line3)
+	TextFour:SetText(L.Tutorial.Step4Line4)
 
 	StatusBarText:SetText("4/6")
 
@@ -446,11 +446,11 @@ end
 
 local TutorialThree = function()
 	StatusBar:SetValue(3)
-	Header:SetText(L_INSTALL_HEADER_4)
-	TextOne:SetText(L_TUTORIAL_STEP_3_LINE_1)
-	TextTwo:SetText(L_TUTORIAL_STEP_3_LINE_2)
-	TextThree:SetText(L_TUTORIAL_STEP_3_LINE_3)
-	TextFour:SetText(L_TUTORIAL_STEP_3_LINE_4)
+	Header:SetText(L.Install.Header4)
+	TextOne:SetText(L.Tutorial.Step3Line1)
+	TextTwo:SetText(L.Tutorial.Step3Line2)
+	TextThree:SetText(L.Tutorial.Step3Line3)
+	TextFour:SetText(L.Tutorial.Step3Line4)
 
 	StatusBarText:SetText("3/6")
 
@@ -459,11 +459,11 @@ end
 
 local TutorialTwo = function()
 	StatusBar:SetValue(2)
-	Header:SetText(L_INSTALL_HEADER_3)
-	TextOne:SetText(L_TUTORIAL_STEP_2_LINE_1)
-	TextTwo:SetText(L_TUTORIAL_STEP_2_LINE_2)
-	TextThree:SetText(L_TUTORIAL_STEP_2_LINE_3)
-	TextFour:SetText(L_TUTORIAL_STEP_2_LINE_4)
+	Header:SetText(L.Install.Header3)
+	TextOne:SetText(L.Tutorial.Step2Line1)
+	TextTwo:SetText(L.Tutorial.Step2Line2)
+	TextThree:SetText(L.Tutorial.Step2Line3)
+	TextFour:SetText(L.Tutorial.Step2Line4)
 
 	StatusBarText:SetText("2/6")
 
@@ -476,14 +476,14 @@ local TutorialOne = function()
 	Close:Show()
 	StatusBar:SetValue(1)
 	StatusBar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
-	Header:SetText(L_INSTALL_HEADER_2)
-	TextOne:SetText(L_TUTORIAL_STEP_1_LINE_1)
-	TextTwo:SetText(L_TUTORIAL_STEP_1_LINE_2)
-	TextThree:SetText(L_TUTORIAL_STEP_1_LINE_3)
-	TextFour:SetText(L_TUTORIAL_STEP_1_LINE_4)
+	Header:SetText(L.Install.Header2)
+	TextOne:SetText(L.Tutorial.Step1Line1)
+	TextTwo:SetText(L.Tutorial.Step1Line2)
+	TextThree:SetText(L.Tutorial.Step1Line3)
+	TextFour:SetText(L.Tutorial.Step1Line4)
 	StatusBarText:SetText("1/6")
 	OptionOne:Hide()
-	OptionTwo.Text:SetText(L_INSTALL_BUTTON_NEXT)
+	OptionTwo.Text:SetText(L.Install.ButtonNext)
 	OptionTwo:SetScript("OnClick", TutorialTwo)
 end
 
@@ -494,14 +494,14 @@ function KkthnxUIInstall:Install()
 	OptionOne:Show()
 	OptionTwo:Show()
 	Close:Show()
-	Header:SetText(L_INSTALL_HEADER_1)
-	TextOne:SetText(L_INSTALL_INIT_LINE_1)
-	TextTwo:SetText(L_INSTALL_INIT_LINE_2)
-	TextThree:SetText(L_INSTALL_INIT_LINE_3)
-	TextFour:SetText(L_INSTALL_INIT_LINE_4)
+	Header:SetText(L.Install.Header1)
+	TextOne:SetText(L.Install.InitLine1)
+	TextTwo:SetText(L.Install.InitLine2)
+	TextThree:SetText(L.Install.InitLine3)
+	TextFour:SetText(L.Install.InitLine4)
 
-	OptionOne.Text:SetText(L_INSTALL_BUTTON_TUTORIAL)
-	OptionTwo.Text:SetText(L_INSTALL_BUTTON_INSTALL)
+	OptionOne.Text:SetText(L.Install.ButtonTutorial)
+	OptionTwo.Text:SetText(L.Install.ButtonInstall)
 
 	OptionOne:SetScript("OnClick", TutorialOne)
 	OptionTwo:SetScript("OnClick", StepOne)
@@ -594,9 +594,9 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	-- Welcome message
 	if C.General.WelcomeMessage == true then
-		print("|cffffff00"..L_WELCOME_LINE_1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
-		print("|cffffff00"..L_WELCOME_LINE_2_1.."|cffffff00"..L_WELCOME_LINE_2_2.."|r")
-		print("|cffffff00"..L_WELCOME_LINE_2_3.."|cffffff00"..L_WELCOME_LINE_2_4.."|r")
+		print("|cffffff00"..L.Welcome.Line1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
+		print("|cffffff00"..L.Welcome.Line2.."|cffffff00"..L.Welcome.Line3.."|r")
+		print("|cffffff00"..L.Welcome.Line4.."|cffffff00"..L.Welcome.Line5.."|r")
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")
@@ -615,7 +615,7 @@ SLASH_RESETUI1 = "/resetui"
 SlashCmdList.RESETUI = function() KkthnxUIInstallFrame:Show() StepOne() end
 
 StaticPopupDialogs["DISABLE_UI"] = {
-	text = L_POPUP_DISABLEUI,
+	text = L.Popup.DisableUI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = DisableUI,
@@ -627,7 +627,7 @@ StaticPopupDialogs["DISABLE_UI"] = {
 }
 
 StaticPopupDialogs["RESET_UI"] = {
-	text = L_POPUP_RESETUI,
+	text = L.Popup.ResetUI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = KkthnxUIInstall.Install,

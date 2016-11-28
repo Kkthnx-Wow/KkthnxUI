@@ -66,18 +66,18 @@ local function OnEnter(self)
 
 	GameTooltip:SetOwner(self:GetTooltipAnchor())
 	GameTooltip:ClearLines()
-	GameTooltip:AddLine(L_DATATEXT_SYSTEM)
+	GameTooltip:AddLine(L.DataText.System)
 	GameTooltip:AddLine(" ")
 
 	local Bandwidth = GetAvailableBandwidth()
 	if(Bandwidth ~= 0) then
-		GameTooltip:AddDoubleLine(NameColor .. L_DATATEXT_BANDWIDTH .. "|r", format(ValueColor .. BandwidthString .. "|r", Bandwidth))
-		GameTooltip:AddDoubleLine(NameColor .. L_DATATEXT_BANDWIDTH .. "|r", format(ValueColor .. PercentageString .. "|r", GetDownloadedPercentage() * 100))
+		GameTooltip:AddDoubleLine(NameColor .. L.DataText.Bandwidth .. "|r", format(ValueColor .. BandwidthString .. "|r", Bandwidth))
+		GameTooltip:AddDoubleLine(NameColor .. L.DataText.Bandwidth .. "|r", format(ValueColor .. PercentageString .. "|r", GetDownloadedPercentage() * 100))
 		GameTooltip:AddLine(" ")
 	end
 
 	local TotalMemory = UpdateMemory()
-	GameTooltip:AddDoubleLine(L_DATATEXT_TOTALMEMORYUSAGE, FormatMemory(TotalMemory), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
+	GameTooltip:AddDoubleLine(L.DataText.TotalMemoryUsage, FormatMemory(TotalMemory), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
 	GameTooltip:AddLine("")
 
 	for i = 1, #MemoryTable do
@@ -132,4 +132,4 @@ local function Disable(self)
 	self:SetScript("OnMouseUp", nil)
 end
 
-DataText:Register(L_DATATEXT_MEMORY, Enable, Disable, Update)
+DataText:Register(L.DataText.Memory, Enable, Disable, Update)

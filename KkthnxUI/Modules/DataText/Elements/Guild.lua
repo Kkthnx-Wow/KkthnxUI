@@ -253,7 +253,7 @@ end
 
 local function Update(self)
 	if(not IsInGuild()) then
-		self.Text:SetText(NameColor .. L_DATATEXT_GUILDNOGUILD .. "|r")
+		self.Text:SetText(NameColor .. L.DataText.GuildNoGuild .. "|r")
 
 		return
 	end

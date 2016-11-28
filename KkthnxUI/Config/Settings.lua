@@ -233,7 +233,7 @@ C["Nameplates"] = {
     ["NearColor"] = {1, 1, 0},
     ["BadColor"] = {1, 0, 0},
     ["TrackAuras"] = true,
-    ["AurasSize"] = 18,
+    ["AurasSize"] = 26,
     ["HealerIcon"] = false,
 }
 
@@ -262,6 +262,7 @@ C["RaidCD"] = {
 
 -- Skins
 C["Skins"] = {
+    ["BigWigs"] = false,
     ["ChatBubble"] = true,
     ["DBM"] = false,
     ["DBMMove"] = false,
@@ -288,8 +289,8 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-    ["CastbarSafeZoneColor"] = {.8, 0.4, 0},
     ["Castbars"] = true,
+    ["CastbarSafeZoneColor"] = {.8, 0.4, 0},
     ["ClassColor"] = true,
     ["ClassPortraits"] = false,
     ["CombatText"] = true,
@@ -297,6 +298,8 @@ C["Unitframe"] = {
     ["FlatClassPortraits"] = false,
     ["FocusCastbarHeight"] = 20,
     ["FocusCastbarWidth"] = 180,
+    ["IconPlayer"] = "NONE",
+    ["IconTarget"] = "NONE",
     ["Party"] = true,
     ["PlayerCastbarHeight"] = 18,
     ["PlayerCastbarWidth"] = 200,
@@ -310,13 +313,12 @@ C["Unitframe"] = {
     ["Style"] = "fat",
     ["TargetCastbarHeight"] = 18,
     ["TargetCastbarWidth"] = 200,
+    ["TargetDebuffsTop"] = true,
     ["TextHealthColor"] = {.9, .9, .9},
     ["TextNameColor"] = {1, 0.82, 0},
     ["TextPowerColor"] = {.9, .9, .9},
     ["ThreatGlow"] = true,
     ["ThreatValue"] = false,
-    ["IconPlayer"] = "NONE",
-    ["IconTarget"] = "NONE",
 }
 
 C["Partyframe"] = { -- Could add this as its own in the future.
