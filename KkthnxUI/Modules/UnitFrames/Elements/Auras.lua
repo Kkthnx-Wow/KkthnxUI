@@ -1,159 +1,254 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
-local _, ns = ...
-local config = ns.Config
+local floor, format = floor, string.format
 
-local GetTime = GetTime
-local floor, fmod = floor, math.fmod
-local day, hour, minute = 86400, 3600, 60
-
-local function ExactTime(time)
-	return format("%.1f", time), (time * 100 - floor(time * 100))/100
-end
-
-local function IsMine(unit)
-	if (unit == "player" or unit == "vehicle" or unit == "pet") then
-		return true
-	else
-		return false
-	end
-end
-
-ns.UpdateAuraTimer = function(self, elapsed)
-	self.elapsed = (self.elapsed or 0) + elapsed
-	if (self.elapsed < 0.1) then
-		return
+local createAuraIcon
+do
+	local function UpdateTooltip(self)
+		GameTooltip:SetUnitAura(self:GetParent().__owner.unit, self:GetID(), self.filter)
 	end
 
-	self.elapsed = 0
+	local function Aura_OnEnter(self)
+		if(not self:IsVisible()) then return end
 
-	local timeLeft = self.expires - GetTime()
-	if (timeLeft <= 0) then
-		self.remaining:SetText(nil)
-	else
-		if (timeLeft <= 5 and IsMine(self.owner)) then
-			self.remaining:SetText("|cffff0000"..ExactTime(timeLeft).."|r")
-			if (not self.ignoreSize) then
-				self.remaining:SetFont(C.Media.Font, 12, "THINOUTLINE")
-			end
-		else
-			self.remaining:SetText(K.FormatTime(timeLeft))
-			if (not self.ignoreSize) then
-				self.remaining:SetFont(C.Media.Font, 10, "THINOUTLINE")
-			end
-		end
-	end
-end
-
-ns.PostUpdateIcon = function(icons, unit, icon, index, offset)
-	icon:SetAlpha(1)
-
-	if (icon.isStealable) then
-		if (icon.Shadow) then
-			icon.Shadow:SetVertexColor(1, 1, 0, 1)
-		end
-	else
-		if (icon.Shadow) then
-			icon.Shadow:SetVertexColor(0, 0, 0, 1)
-		end
+		GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+		UpdateTooltip(self)
 	end
 
-	local colorPlayerDebuffsOnly = true
-	if (colorPlayerDebuffsOnly) then
-		if (unit == "target") then
-			if (icon.isDebuff) then
-				if (not IsMine(icon.owner)) then
-					icon.overlay:SetVertexColor(0.45, 0.45, 0.45)
-					icon.icon:SetDesaturated(true)
-					-- icon:SetAlpha(0.55)
-				else
-					icon.icon:SetDesaturated(false)
-					icon:SetAlpha(1)
-				end
-			end
-		end
+	local function Aura_OnLeave()
+		GameTooltip:Hide()
 	end
 
-	if (icon.remaining) then
-		if (unit == "target" and icon.isDebuff and not IsMine(icon.owner) and (not UnitIsFriend("player", unit) and UnitCanAttack(unit, "player") and not UnitPlayerControlled(unit)) and not config.units.target.showAllTimers ) then
-			if (icon.remaining:IsShown()) then
-				icon.remaining:Hide()
-			end
-
-			icon:SetScript("OnUpdate", nil)
-		else
-			local _, _, _, _, _, duration, expirationTime = UnitAura(unit, index, icon.filter)
-			if (duration and duration > 0) then
-				if (not icon.remaining:IsShown()) then
-					icon.remaining:Show()
-				end
-			else
-				if (icon.remaining:IsShown()) then
-					icon.remaining:Hide()
-				end
-			end
-
-			icon.duration = duration
-			icon.expires = expirationTime
-			icon:SetScript("OnUpdate", ns.UpdateAuraTimer)
-		end
+	local function fixCooldownFlash(self, start, duration)
+		if (self.duration == duration) and (self.starttime == start) then return; end
+		self.starttime = start
+		self.duration = duration
+		self:_SetCooldown(start, duration)
 	end
-end
 
-ns.UpdateAuraIcons = function(auras, button)
-	if (not button.Shadow) then
-		local size = button:GetSize()
+	function createAuraIcon( element, index )
+		element.createdIcons = element.createdIcons + 1
 
-		button:SetFrameLevel(1)
+		local button = CreateFrame("Button", element:GetName()..index, element)
 
-		button.icon:SetTexCoord(.03, .97, .03, .97)
-		button.icon:SetAllPoints(button)
-		button.icon:SetSize(size, size)
+		local icon = button:CreateTexture(nil, "BACKGROUND")
+		icon:SetAllPoints(button)
+		icon:SetTexCoord(.03, .97, .03, .97)
+		button.icon = icon
 
 		local overlay = button:CreateTexture(nil, "OVERLAY")
-		button.overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite")
-		button.overlay:SetTexCoord(0, 1, 0, 1)
-		button.overlay:ClearAllPoints()
-		button.overlay:SetOutside(button, 1.36, 1.36)
+		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite")
+		overlay:SetVertexColor(unpack(C.Media.Border_Color))
+		overlay:SetOutside(button.icon, 1.36, 1.36)
+		button.overlay = overlay
 
-		button.count:SetFont(C.Media.Font, 11, "THINOUTLINE")
-		button.count:SetShadowOffset(0, 0)
-		button.count:ClearAllPoints()
-		button.count:SetPoint("BOTTOMRIGHT", button.icon, 2, 0)
+		local shadow = button:CreateTexture(nil, "BACKGROUND")
+		shadow:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
+		shadow:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
+		shadow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
+		shadow:SetVertexColor(0, 0, 0, 1)
+		button.shadow = shadow
 
-		if (C.Unitframe.DisableCooldown) then
-			button.cd:SetReverse()
-			button.cd:SetDrawEdge(true)
-			button.cd:ClearAllPoints()
-			button.cd:SetPoint("TOPRIGHT", button.icon, "TOPRIGHT", -1, -1)
-			button.cd:SetPoint("BOTTOMLEFT", button.icon, "BOTTOMLEFT", 1, 1)
-		else
-			auras.disableCooldown = true
-			-- button.cd.noOCC = true
+		local cd = CreateFrame("Cooldown", nil, button, "CooldownFrameTemplate")
+		cd:SetFrameLevel(button:GetFrameLevel())
+		cd:SetAllPoints(button)
+		cd:SetReverse(true)
+		cd:SetDrawEdge(true)
+		if (element.__owner.onUpdateFrequency) then -- Fix the blinking cooldown on "invalid" units
+			cd._SetCooldown = cd.SetCooldown
+			cd.SetCooldown = fixCooldownFlash
+		end
+		button.cd = cd
 
-			button.remaining = button:CreateFontString(nil, "OVERLAY")
-			button.remaining:SetFont(C.Media.Font, 8, "THINOUTLINE")
-			button.remaining:SetShadowOffset(0, 0)
-			button.remaining:SetPoint("TOP", button.icon, 0, 2)
+		local count = K.SetFontString(button, C.Media.Font, 11, C.Media.Font_Style, "RIGHT")
+		count:SetPoint("BOTTOMRIGHT", 2, 0)
+		button.count = count
+
+		local stealable = button:CreateTexture(nil, "OVERLAY")
+		stealable:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
+		stealable:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
+		stealable:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
+		stealable:SetVertexColor(1, 190/255, 82/255)
+		stealable:SetDrawLayer("OVERLAY", 1)
+		stealable:SetBlendMode("ADD")
+		button.stealable = stealable
+
+		if C.Unitframe.AuraTimer then
+			button.cd.noCooldownCount = true
+			if button.cd.SetHideCountdownNumbers then
+				button.cd:SetHideCountdownNumbers(true)
+			end
+			button.timer = K.SetFontString(button.cd, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
+			button.timer:SetPoint("CENTER", button, "TOP", 0, 0)
 		end
 
-		if (not button.Shadow) then
-			button.Shadow = button:CreateTexture(nil, "BACKGROUND")
-			button.Shadow:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
-			button.Shadow:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
-			button.Shadow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
-			button.Shadow:SetVertexColor(0, 0, 0, 1)
+		button:EnableMouse(true)
+		button:RegisterForClicks("LeftButtonUp")
+		button:SetScript("OnClick", Aura_OnClick)
+		button:SetScript("OnEnter", Aura_OnEnter)
+		button:SetScript("OnLeave", Aura_OnLeave)
+
+		if (element.largeAuraList) then -- i should really make a custom element by now THIS IS GETTING OUT OF HAND
+			button._SetSize = button.SetSize
+			button.SetSize = K.Noop
 		end
 
-		if (button.stealable) then
-			local stealable = button:CreateTexture(nil, "OVERLAY")
-			stealable:SetPoint("TOPLEFT", -5, 5)
-			stealable:SetPoint("BOTTOMRIGHT", 5, -5)
-		end
+		element[element.createdIcons] = button
+		return button
+	end
+end
 
-		button.overlay.Hide = function(self)
-			self:SetVertexColor(0.5, 0.5, 0.5, 1)
+-- Update icon
+local postUpdateIcon
+do
+	local MINUTE = 60
+	local function GetTimes(remaining)
+		if remaining < MINUTE then
+			if remaining < 3 then -- this 2.5 usually
+				return format("%.1f", remaining), 0.051
+			end
+			local mSecLeft = remaining % 1
+			return floor(remaining + .5), mSecLeft > .5 and mSecLeft - .49 or mSecLeft + 0.51
+
+		elseif remaining < 10*MINUTE then
+			local secLeft = remaining % MINUTE
+			if remaining < 90 then
+				return format("%dm", floor(remaining/MINUTE + 0.5)), secLeft + .51
+			end
+			return format("%dm", floor(remaining/MINUTE + 0.5)), secLeft > 30 and secLeft - 29 or secLeft + 31
+
+		else -- Hide timers longer than 10 minutes
+			return "", (remaining % MINUTE) + 31
 		end
 	end
+
+	local function UpdateAura( button, elapsed )
+		if not (button.timeLeft) then return; end
+		button.timeLeft = button.timeLeft - elapsed
+
+		if button.nextupdate > 0 then
+			button.nextupdate = button.nextupdate - elapsed
+			return;
+		end
+
+		if (button.timeLeft <= 0) then
+			button.timer:SetText("")
+			button:SetScript("OnUpdate", nil)
+			return;
+		end
+
+		local text
+		text, button.nextupdate = GetTimes(button.timeLeft)
+		button.timer:SetText(text)
+	end
+
+	local IS_PLAYER = {
+		player = true,
+		vehicle = true,
+		pet = true,
+	}
+
+	function postUpdateIcon( element, unit, button, index, offset )
+		local name, _, texture, count, dtype, duration, expirationTime, caster, canStealOrPurge, shouldConsolidate, spellID = UnitAura(unit, index, button.filter)
+		button:EnableMouse(not C.Unitframe.ClickThrough)
+		button.overlay:Show()
+		button.shadow:Show()
+
+		if (button.isDebuff) then
+			local color = DebuffTypeColor[dtype] or DebuffTypeColor["none"]
+			button.overlay:SetVertexColor(color.r, color.g, color.b)
+		else
+			local color = C.Media.Border_Color
+			button.overlay:SetVertexColor(color[1], color[2], color[3])
+		end
+
+		button.spellID = spellID
+
+		if C.Unitframe.PlayerDebuffsOnly and unit == "target" and button.isDebuff and not button.isPlayer then
+			button.icon:SetDesaturated(true)
+		else
+			button.icon:SetDesaturated(false)
+		end
+
+		if (button.cd.noCooldownCount) then
+			if (duration and duration > 0) then
+				if (not button.timer:IsShown()) then
+					button.timer:Show()
+				end
+				local text
+				button.timeLeft = expirationTime - GetTime()
+				text, button.nextupdate = GetTimes(button.timeLeft)
+				button.timer:SetText(text)
+				button:SetScript("OnUpdate", UpdateAura)
+			else
+				if (button.timer:IsShown()) then
+					button.timer:Hide()
+				end
+				button.timeLeft = 0
+				button:SetScript("OnUpdate", nil)
+			end
+		end
+
+		if (element.largeAuraList) then
+			element.largeAuraList[offset] = IS_PLAYER[button.owner]
+		end
+	end
+end
+
+local function postUpdate(self, unit)
+	self:GetParent().Health:ForceUpdate()
+end
+
+local GrowthTable = {
+	TOPLEFT = {"RIGHT", "DOWN"},
+	TOPRIGHT = {"LEFT", "DOWN"},
+	BOTTOMLEFT = {"RIGHT", "UP"},
+	BOTTOMRIGHT = {"LEFT", "UP"},
+}
+
+local function createElement(self, type, initialAnchor, size, gap, columns, rows)
+	local element = CreateFrame("Frame", self:GetName()..type, self)
+	element.showStealableBuffs = true
+	element.initialAnchor = initialAnchor
+	element["growth-x"] = GrowthTable[initialAnchor][1]
+	element["growth-y"] = GrowthTable[initialAnchor][2]
+	element.size = size
+	element.spacing = gap
+	element:SetWidth((size + gap) * columns)
+	element:SetHeight((size + gap) * rows)
+
+	element.CreateIcon = createAuraIcon
+	element.PostUpdateIcon = postUpdateIcon
+	element.PostUpdate = postUpdate
+	element.parent = self
+
+	return element
+end
+
+function K.AddBuffs(self, initialAnchor, size, gap, columns, rows)
+	local Buffs = createElement(self, "Buffs", initialAnchor, size, gap, columns, rows)
+	Buffs.num = columns * rows
+
+	return Buffs
+end
+
+function K.AddDebuffs(self, initialAnchor, size, gap, columns, rows)
+	local Debuffs = createElement(self, "Debuffs", initialAnchor, size, gap, columns, rows)
+	Debuffs.num = columns * rows
+
+	return Debuffs
+end
+
+function K.AddAuras(self, initialAnchor, size, gap, columns, rows)
+	local Auras = createElement(self, "Auras", initialAnchor, size, gap, columns, rows)
+	Auras.numDebuffs = math.floor(rows * columns / 2)
+	Auras.numBuffs = math.floor(rows * columns / 2)
+
+	Auras.gap = true
+	Auras.PostUpdateGapIcon = function(element, unit, icon, visibleBuffs)
+		icon.shadow:Hide()
+	end
+
+	return Auras
 end

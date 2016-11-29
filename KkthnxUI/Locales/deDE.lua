@@ -5,17 +5,17 @@ if (GetLocale() ~= "deDE") then
 end
 
 L.AFKScreen = {
-	NoGuild = "No Guild"
+	NoGuild = "Keine Gilde",
 }
 
 L.Announce = {
-	FPUse = "%s used %s.",
-	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
-	PCAborted = "Pull ABORTED!",
-	PCGo = "GO!",
-	PCMessage = "Pulling %s in %s..",
-	Sapped = "Sapped",
-	SappedBy = "Sapped by: "
+	FPUse = "% s uses% s.",
+	Interrupted = INTERRUPTED .. "% s's \ 124cff71d5ff \ 124HDelay:% d: 0 \ 124h [% s] \ 124h \ 124r!",
+	PCAborted = "Pull OFF!",
+	PCGo = "GO IT!",
+	PCMessage = "Pulle% s in% s ..",
+	Sapped = "Headnuts",
+	SappedBy = "Head from:",
 }
 
 L.Auras = {

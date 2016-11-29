@@ -1,7 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 if C.Misc.ItemLevel ~= true then return end
 
--- Item level on slot buttons in Character/InspectFrame(by Tukz)
 local slots = {
 	"HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot",
 	"WristSlot", "MainHandSlot", "SecondaryHandSlot", "HandsSlot", "WaistSlot",
@@ -9,58 +8,13 @@ local slots = {
 }
 
 local upgrades = {
-	[1] = 8,
-	[373] = 4,
-	[374] = 8,
-	[375] = 4,
-	[376] = 4,
-	[377] = 4,
-	[378] = 7,
-	[379] = 4,
-	[380] = 4,
-	[445] = 0,
-	[446] = 4,
-	[447] = 8,
-	[451] = 0,
-	[452] = 8,
-	[453] = 0,
-	[454] = 4,
-	[455] = 8,
-	[456] = 0,
-	[457] = 8,
-	[458] = 0,
-	[459] = 4,
-	[460] = 8,
-	[461] = 12,
-	[462] = 16,
-	[465] = 0,
-	[466] = 4,
-	[467] = 8,
-	[468] = 0,
-	[469] = 4,
-	[470] = 8,
-	[471] = 12,
-	[472] = 16,
-	[491] = 0,
-	[492] = 4,
-	[493] = 8,
-	[494] = 0,
-	[495] = 4,
-	[496] = 8,
-	[497] = 12,
-	[498] = 16,
-	[503] = 1,
-	[504] = 12,
-	[505] = 16,
-	[506] = 20,
-	[507] = 24,
-	[529] = 0,
-	[530] = 5,
-	[531] = 10,
-	[535] = 15,
-	[536] = 30,
-	[537] = 45,
-	[538] = 0,
+	["1"] = 8, ["373"] = 4, ["374"] = 8, ["375"] = 4, ["376"] = 4, ["377"] = 4,
+	["379"] = 4, ["380"] = 4, ["446"] = 4, ["447"] = 8, ["452"] = 8, ["454"] = 4,
+	["455"] = 8, ["457"] = 8, ["459"] = 4, ["460"] = 8, ["461"] = 12, ["462"] = 16,
+	["466"] = 4, ["467"] = 8, ["469"] = 4, ["470"] = 8, ["471"] = 12, ["472"] = 16,
+	["477"] = 4, ["478"] = 8, ["480"] = 8, ["492"] = 4, ["493"] = 8, ["495"] = 4,
+	["496"] = 8, ["497"] = 12, ["498"] = 16, ["504"] = 12, ["505"] = 16, ["506"] = 20,
+	["507"] = 24, ["530"] = 5, ["531"] = 10, ["535"] = 15, ["536"] = 30, ["537"] = 45
 }
 
 local function BOALevel(level, id)
@@ -90,9 +44,9 @@ local function BOALevel(level, id)
 end
 
 local timewarped = {
-	["615"] = 660,
-	["692"] = 675,
-	["656"] = 675,
+	["615"] = 660, -- Dungeon drops
+	["692"] = 675, -- Timewarped badge vendors
+	["656"] = 675, -- Warforged Dungeon drops
 }
 
 local function CreateButtonsText(frame)
@@ -147,7 +101,6 @@ local function UpdateButtonsText(frame)
 							end
 						end
 
-						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+).+"))
 						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+).+"))
 						if numBonusIDs or quality == 6 then
 							level = GetDetailedItemLevelInfo(itemLink) or level

@@ -119,17 +119,10 @@ function ns.createArenaLayout(self, unit)
 	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 	self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 
-	-- Auras
-	self.Buffs = CreateFrame("Frame", nil, self)
-	self.Buffs.size = 22
-	self.Buffs:SetHeight(self.Buffs.size * 3)
-	self.Buffs:SetWidth(self.Buffs.size * 4)
-	self.Buffs:SetPoint("TOPRIGHT", self.Power, "BOTTOMRIGHT", 2, -6)
-	self.Buffs.initialAnchor = "TOPRIGHT"
-	self.Buffs["growth-x"] = "LEFT"
-	self.Buffs["growth-y"] = "DOWN"
-	self.Buffs.num = 8
-	self.Buffs.spacing = 4.5
+  -- Auras
+	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)
+	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
+	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena
 
 	if (C.Unitframe.FilterArenaBuffs) then
 		self.Buffs.CustomFilter = FilterArenaBuffs

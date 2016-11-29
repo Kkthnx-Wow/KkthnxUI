@@ -26,6 +26,7 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 	end
 
 	self:UnregisterEvent(event)
+	self:RegisterEvent("MODIFIER_STATE_CHANGED")
 
 	-- Skin the Countdown/BG timers
 	self:RegisterEvent("START_TIMER")
@@ -67,6 +68,38 @@ function oUFKkthnx:START_TIMER(event)
 			local region = select(i, bar:GetRegions())
 			if (region and region:GetObjectType() == "FontString") then
 				region:SetFont(C.Media.Font, 13, C.Media.Font_Style)
+			end
+		end
+	end
+end
+
+-- View Auras
+function oUFKkthnx:MODIFIER_STATE_CHANGED(event, key, state)
+	if
+	(IsControlKeyDown() and (key == "LALT" or key == "RALT")) or
+	(IsAltKeyDown() and (key == "LCTRL" or key == "RCTRL"))
+	then
+		local a, b
+		if state == 1 then
+			a, b = "CustomFilter", "__CustomFilter"
+		else
+			a, b = "__CustomFilter", "CustomFilter"
+		end
+		for i = 1, #oUF.objects do
+			local object = oUF.objects[i]
+			if object.style == "oUF_Kkthnx" then
+				local buffs = object.Auras or object.Buffs
+				local debuffs = object.Debuffs
+				if buffs and buffs[a] then
+					buffs[b] = buffs[a]
+					buffs[a] = nil
+					buffs:ForceUpdate()
+				end
+				if debuffs and debuffs[a] then
+					debuffs[b] = debuffs[a]
+					debuffs[a] = nil
+					debuffs:ForceUpdate()
+				end
 			end
 		end
 	end

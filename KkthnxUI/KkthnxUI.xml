@@ -68,7 +68,7 @@
 
 	<!-- Unitframes Core -->
 	<Script file="Modules\Unitframes\Init.lua"/>
-	<Script file="Modules\Unitframes\AuraList.lua"/>
+	<Script file="Modules\Unitframes\Filters\AuraList.lua"/>
 
 	<!-- Unitframe Plugins -->
 	<Include file="Libraries\oUF_Plugins\Load_Plugins.xml"/>
@@ -77,7 +77,7 @@
 	<Script file="Modules\Unitframes\Config\Config.lua"/>
 	<Include file="Modules\Unitframes\Elements\Elements.xml"/>
 	<Script file="Modules\Unitframes\Functions.lua"/>
-	<Script file="Modules\Unitframes\AuraFilter.lua"/>
+	<Script file="Modules\Unitframes\Filters\AuraFilter.lua"/>
 
 	<!-- Unitframe Layouts -->
 	<Script file="Modules\Unitframes\Layouts\LayoutArena.lua"/>

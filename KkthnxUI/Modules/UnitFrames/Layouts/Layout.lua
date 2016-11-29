@@ -809,176 +809,84 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Auras
-	if (self.cUnit == "target") then
-		--if (C.Unitframe.disableTargetAura) then
-		if (C.Unitframe.TargetDebuffsTop) then
-			-- Debuffs
-			self.Debuffs = CreateFrame("Frame", nil, self)
-			self.Debuffs.gap = true
-			self.Debuffs.size = 20
-			self.Debuffs:SetHeight(self.Debuffs.size * 3)
-			self.Debuffs:SetWidth(self.Debuffs.size * 5)
-			self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 2, 24)
-			self.Debuffs.initialAnchor = "BOTTOMLEFT"
-			self.Debuffs["growth-x"] = "RIGHT"
-			self.Debuffs["growth-y"] = "UP"
-			self.Debuffs.num = 20
-			self.Debuffs.onlyShowPlayer = false
-			self.Debuffs.spacing = 4.5
+	if (self.cUnit == "focus") or (self.cUnit == "target") then
+		local isFocus = self.cUnit == "focus"
 
-			-- Buffs
-			self.Buffs = CreateFrame("Frame", nil, self)
-			self.Buffs.gap = true
-			self.Buffs.size = 20
-			self.Buffs:SetHeight(self.Buffs.size * 3)
-			self.Buffs:SetWidth(self.Buffs.size * 5)
-			self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -2, -6)
-			self.Buffs.initialAnchor = "TOPLEFT"
-			self.Buffs["growth-x"] = "RIGHT"
-			self.Buffs["growth-y"] = "DOWN"
-			self.Buffs.num = 20
-			self.Buffs.onlyShowPlayer = false
-			self.Buffs.spacing = 4.5
-			self.Buffs.showStealableBuffs = true
+		local function GetAuraData(mode)
+			local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY
+			if (mode == "TOP") then
+				if isFocus then
+					columns, rows = 3, 3
+				else
+					columns, rows = 6, 3
+				end
+				initialAnchor, relAnchor, offX, offY = "BOTTOMLEFT", "TOPLEFT", -2, 20
+			elseif (mode == "BOTTOM") then
+				if isFocus then
+					columns, rows = 3, 3
+				else
+					columns, rows = 4, 3
+				end
+				initialAnchor, relAnchor, offX, offY = "TOPLEFT", "BOTTOMLEFT", -2, -8
+			elseif (mode == "LEFT") then
+				if isFocus then
+					columns, rows = 5, 3
+				else
+					columns, rows = 8, 3
+				end
+				initialAnchor, relAnchor, offX, offY = "TOPRIGHT", "TOPLEFT", -8, -1.5
+			end
+			size = isFocus and 26 or 20
+			gap = 4.5
+			return size, gap, columns, rows, initialAnchor, relAnchor, offX, offY
+		end
+
+		if (uconfig.buffPos == uconfig.debuffPos) and (uconfig.debuffPos ~= "NONE") then
+			local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY = GetAuraData(uconfig.debuffPos)
+			self.Auras = K.AddAuras(self, initialAnchor, size, gap, columns, rows)
+			self.Auras:SetPoint(initialAnchor, self, relAnchor, offX, offY)
+			self.Auras.CustomFilter = ns.CustomAuraFilters.target
 		else
-			self.Auras = CreateFrame("Frame", nil, self)
-			self.Auras.gap = true
-			self.Auras.size = 20
-			self.Auras:SetHeight(self.Auras.size * 3)
-			self.Auras:SetWidth(self.Auras.size * 5)
-			self.Auras:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -2, -6)
-			self.Auras.initialAnchor = "TOPLEFT"
-			self.Auras["growth-x"] = "RIGHT"
-			self.Auras["growth-y"] = "DOWN"
-			self.Auras.numBuffs = 20
-			self.Auras.numDebuffs = 20
-			self.Auras.onlyShowPlayer = false
-			self.Auras.spacing = 4.5
-			self.Auras.showStealableBuffs = true
-
-			self.Auras.PostUpdateGapIcon = function(self, unit, icon, visibleBuffs)
-				icon:Hide()
+			if (uconfig.buffPos ~= "NONE") then
+				local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY = GetAuraData(uconfig.buffPos)
+				self.Buffs = K.AddBuffs(self, initialAnchor, size, gap, columns, rows)
+				self.Buffs:SetPoint(initialAnchor, self, relAnchor, offX, offY)
+				self.Buffs.CustomFilter = ns.CustomAuraFilters.target
+			end
+			if (uconfig.debuffPos ~= "NONE") then
+				local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY = GetAuraData(uconfig.debuffPos)
+				self.Debuffs = K.AddDebuffs(self, initialAnchor, size, gap, columns, rows)
+				self.Debuffs:SetPoint(initialAnchor, self, relAnchor, offX, offY)
+				self.Debuffs.CustomFilter = ns.CustomAuraFilters.target
 			end
 		end
-		--end
-	end
 
-	if (unit == "pet") then
-		--	if (not config.units[ns.cUnit(unit)].disableAura) then
-		self.Debuffs = CreateFrame("Frame", nil, self)
-		self.Debuffs.size = 20
-		self.Debuffs:SetWidth(self.Debuffs.size * 4)
-		self.Debuffs:SetHeight(self.Debuffs.size)
-		self.Debuffs.spacing = 4
+	elseif (self.IsTargetFrame and uconfig.enableAura) then
+		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 3, 2)
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 7, 10)
+		self.Debuffs.CustomFilter = ns.CustomAuraFilters.target
+
+	elseif (self.cUnit == "pet") then
+		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 6, 1)
 		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 1, -3)
-		self.Debuffs.initialAnchor = "TOPLEFT"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs["growth-y"] = "DOWN"
-		self.Debuffs.num = 9
-		--end
-	end
+		self.Debuffs.CustomFilter = ns.CustomAuraFilters.pet
 
-	if (unit == "focus") then
-		--if (not config.units[ns.cUnit(unit)].disableAura) then
-		if (C.Unitframe.FocusDebuffsOnly) then
-			self.Debuffs = CreateFrame("Frame", nil, self)
-			self.Debuffs.size = 26
-			self.Debuffs:SetHeight(self.Debuffs.size * 3)
-			self.Debuffs:SetWidth(self.Debuffs.size * 3)
-			self.Debuffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -2, -5)
-			self.Debuffs.initialAnchor = "TOPLEFT"
-			self.Debuffs["growth-x"] = "RIGHT"
-			self.Debuffs["growth-y"] = "DOWN"
-			self.Debuffs.num = 20
-			self.Debuffs.spacing = 4
-		else
-			self.Auras = CreateFrame("Frame", nil, self)
-			self.Auras.gap = true
-			self.Auras.size = 20
-			self.Auras:SetHeight(self.Auras.size * 3)
-			self.Auras:SetWidth(self.Auras.size * 5)
-			self.Auras:SetPoint("TOPLEFT", self, "BOTTOMLEFT", -2, -5)
-			self.Auras.initialAnchor = "TOPLEFT"
-			self.Auras["growth-x"] = "RIGHT"
-			self.Auras["growth-y"] = "DOWN"
-			self.Auras.numBuffs = 20
-			self.Auras.numDebuffs = 20
-			self.Auras.spacing = 4.5
-			self.Auras.showStealableBuffs = true
+	elseif (self.IsPartyFrame) then
+		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 4, 1)
+		self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 5, 1)
+		self.Debuffs.CustomFilter = ns.CustomAuraFilters.party
 
-			self.Auras.PostUpdateGapIcon = function(self, unit, icon, visibleBuffs)
-				icon:Hide()
-			end
-		end
-		--	end
-	end
+		self.Buffs = K.AddBuffs(self, "TOPLEFT", 20, 4, 4, 1)
+		self.Buffs:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 2, -11)
+		self.Buffs.CustomFilter = ns.CustomAuraFilters.party
 
-	if (self.IsTargetFrame) then
-		--if (not config.units[ns.cUnit(unit)].disableAura) then
-		self.Debuffs = CreateFrame("Frame", nil, self)
-		self.Debuffs:SetHeight(20)
-		self.Debuffs:SetWidth(20 * 3)
-		self.Debuffs.size = 20
-		self.Debuffs.spacing = 4
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 7, 0)
-		self.Debuffs.initialAnchor = "LEFT"
-		self.Debuffs["growth-y"] = "DOWN"
-		self.Debuffs["growth-x"] = "RIGHT"
-		self.Debuffs.num = 4
-		-- end
-	end
-
-	if (self.IsPartyFrame) then
-		if (C.Unitframe.DisablePartyAura) then
-			self.Debuffs = CreateFrame("Frame", nil, self)
-			self.Debuffs:SetFrameStrata("BACKGROUND")
-			self.Debuffs:SetHeight(20)
-			self.Debuffs:SetWidth(20 * 3)
-			self.Debuffs.size = 20
-			self.Debuffs.spacing = 4
-			self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 5, 1)
-			self.Debuffs.initialAnchor = "LEFT"
-			self.Debuffs["growth-y"] = "DOWN"
-			self.Debuffs["growth-x"] = "RIGHT"
-			self.Debuffs.num = 3
-		end
-	end
-
-	if (self.cUnit == "boss") then
-		self.Buffs = CreateFrame("Frame", nil, self)
-		self.Buffs.size = 30
-		self.Buffs:SetHeight(self.Buffs.size * 3)
-		self.Buffs:SetWidth(self.Buffs.size * 5)
+	elseif (self.cUnit == "boss") then
+		self.Buffs = K.AddBuffs(self, "TOPLEFT", 30, 4.5, 5, 1)
 		self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 3, -6)
-		self.Buffs.initialAnchor = "TOPLEFT"
-		self.Buffs["growth-x"] = "RIGHT"
-		self.Buffs["growth-y"] = "DOWN"
-		self.Buffs.numBuffs = 8
-		self.Buffs.spacing = 4.5
 
-		self.Buffs.customColor = {1, 0, 0}
-
-		self.Buffs.PostCreateIcon = ns.UpdateAuraIcons
-		self.Buffs.PostUpdateIcon = ns.PostUpdateIcon
-	end
-
-	if (self.Auras) then
-		self.Auras.PostCreateIcon = ns.UpdateAuraIcons
-		self.Auras.PostUpdateIcon = ns.PostUpdateIcon
-		self.Auras.showDebuffType = true
-		-- self.Auras.onlyShowPlayer = true
-	end
-
-	if (self.Buffs) then
-		self.Buffs.PostCreateIcon = ns.UpdateAuraIcons
-		self.Buffs.PostUpdateIcon = ns.PostUpdateIcon
-	end
-
-	if (self.Debuffs) then
-		self.Debuffs.PostCreateIcon = ns.UpdateAuraIcons
-		self.Debuffs.PostUpdateIcon = ns.PostUpdateIcon
-		self.Debuffs.showDebuffType = true
-		-- self.Debuffs.onlyShowPlayer = true
+		self.Debuffs = K.AddDebuffs(self, "TOPRIGHT", 30, 4.5, 7, 1)
+		self.Debuffs:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", -34, 18)
+		self.Debuffs.CustomFilter = ns.CustomAuraFilters.boss
 	end
 
 	-- Range Fader

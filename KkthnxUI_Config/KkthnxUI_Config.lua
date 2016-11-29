@@ -2,12 +2,12 @@
 local K, C, L
 
 local _G = _G
-local unpack = unpack
-local sub = string.sub
-local max = math.max
-local print = print
 local format = string.format
+local max = math.max
 local pairs, type = pairs, type
+local print = print
+local sub = string.sub
+local unpack = unpack
 
 local CreateFrame = CreateFrame
 local Locale = GetLocale()
