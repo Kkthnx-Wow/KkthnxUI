@@ -106,6 +106,7 @@ AutoHideLandingPage:SetScript("OnEvent", function(self, event)
 		GarrisonLandingPageMinimapButton:SetScale(0.0001)
 		GarrisonLandingPageMinimapButton:SetAlpha(0)
 	else
+		GarrisonLandingPageMinimapButton:SetScale(1)
 		GarrisonLandingPageMinimapButton:SetAlpha(1)
 	end
 end)
