@@ -3,7 +3,6 @@
 	<Script file="Armor.lua"/>
 	<Script file="Avoidance.lua"/>
 	<Script file="Bags.lua"/>
-	<Script file="BonusArmor.lua"/>
 	<Script file="CallToArms.lua"/>
 	<Script file="CombatTime.lua"/>
 	<Script file="Coordinates.lua"/>

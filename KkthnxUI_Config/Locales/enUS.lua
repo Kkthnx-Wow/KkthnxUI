@@ -93,7 +93,7 @@ KkthnxUIConfigLocalization.DataBarsReputationHeight = "Reputation bar height"
 KkthnxUIConfigLocalization.DataBarsReputationWidth = "Reputation bar width"
 
 -- Auras
-KkthnxUIConfigLocalization.AURAS = "Auras"
+KkthnxUIConfigLocalization.Auras = "Auras"
 KkthnxUIConfigLocalization.AurasAnimation = "Show a 'pop in' animation on auras"..PerformanceSlight
 KkthnxUIConfigLocalization.AurasBuffsPerRow = "Set the number of buffs to show before creating a new row"
 KkthnxUIConfigLocalization.AurasCastBy = "Show who cast an aura in its tooltip"
@@ -296,7 +296,6 @@ KkthnxUIConfigLocalization.UnitframeShowPlayer = "Show yourself in the party"
 KkthnxUIConfigLocalization.UnitframeStyle = "Style the uniframes look 'fat or normal'"
 KkthnxUIConfigLocalization.UnitframeTargetCastbarHeight = "Target castbar height"
 KkthnxUIConfigLocalization.UnitframeTargetCastbarWidth = "Target castbar width"
-KkthnxUIConfigLocalization.UnitframeTargetDebuffsTop = "Display Target debuffs ontop of the frame."
 KkthnxUIConfigLocalization.UnitframeTextHealthColor = "Health text color"
 KkthnxUIConfigLocalization.UnitframeTextNameColor = "Name text color"
 KkthnxUIConfigLocalization.UnitframeTextPowerColor = "Power text color"
