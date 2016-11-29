@@ -30,33 +30,24 @@ local UnitIsTapDenied = UnitIsTapDenied
 local _, ns = ...
 local oUF = ns.oUF
 
--- CVars
-SetCVar("namePlateMinScale", "1")
-SetCVar("namePlateMaxScale", "1")
-SetCVar("nameplateLargerScale", "1")
-SetCVar("nameplateMinAlpha", "1")
-SetCVar("nameplateMaxAlpha", "1")
-SetCVar("NamePlateVerticalScale", "1")
-SetCVar("NamePlateHorizontalScale", "1")
-
 -- Only show nameplates when in combat
-local NamePlates = CreateFrame("Frame", nil, UIParent)
-NamePlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+local KkthnxUIPlates = CreateFrame("Frame", nil, UIParent)
+KkthnxUIPlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 if C.Nameplates.Combat == true then
-	NamePlates:RegisterEvent("PLAYER_REGEN_ENABLED")
-	NamePlates:RegisterEvent("PLAYER_REGEN_DISABLED")
+	KkthnxUIPlates:RegisterEvent("PLAYER_REGEN_ENABLED")
+	KkthnxUIPlates:RegisterEvent("PLAYER_REGEN_DISABLED")
 
-	function NamePlates:PLAYER_REGEN_ENABLED()
+	function KkthnxUIPlates:PLAYER_REGEN_ENABLED()
 		SetCVar("nameplateShowEnemies", 0)
 	end
 
-	function NamePlates:PLAYER_REGEN_DISABLED()
+	function KkthnxUIPlates:PLAYER_REGEN_DISABLED()
 		SetCVar("nameplateShowEnemies", 1)
 	end
 end
 
-NamePlates:RegisterEvent("PLAYER_ENTERING_WORLD")
-function NamePlates:PLAYER_ENTERING_WORLD()
+KkthnxUIPlates:RegisterEvent("PLAYER_ENTERING_WORLD")
+function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	if C.Nameplates.Combat == true then
 		if InCombatLockdown() then
 			SetCVar("nameplateShowEnemies", 1)
@@ -67,6 +58,30 @@ function NamePlates:PLAYER_ENTERING_WORLD()
 	if C.Nameplates.EnhancedThreat == true then
 		SetCVar("threatWarning", 3)
 	end
+end
+
+KkthnxUIPlates:RegisterEvent("PLAYER_ENTERING_WORLD")
+function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
+	if C.Nameplates.Combat == true then
+		if InCombatLockdown() then
+			SetCVar("nameplateShowEnemies", 1)
+		else
+			SetCVar("nameplateShowEnemies", 0)
+		end
+	end
+	if C.Nameplates.EnhancedThreat == true then
+		SetCVar("threatWarning", 3)
+	end
+
+	SetCVar("namePlateMinScale", 1)
+	SetCVar("namePlateMaxScale", 1)
+	SetCVar("nameplateLargerScale", 1)
+	SetCVar("nameplateMinAlpha", 1)
+	SetCVar("nameplateMaxAlpha", 1)
+
+	SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
+	SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
+	SetCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}
@@ -303,6 +318,16 @@ local function UpdateName(self)
 	end
 end
 
+local function castColor(self, unit, name, castid)
+	if self.interrupt then
+		self:SetStatusBarColor(1.0 * 0.8, 0.7 * 0.8, 0 * 0.8)
+		self.bg:SetColorTexture(1.0 * 0.8, 0.7 * 0.8, 0 * 0.8, 0.2)
+	else
+		self:SetStatusBarColor(0.87, 0.37, 0.37)
+		self.bg:SetColorTexture(0.87, 0.37, 0.37, 0.2)
+	end
+end
+
 local function callback(event, nameplate, unit)
 	local unit = unit or "target"
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
@@ -379,8 +404,8 @@ local function style(self, unit)
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetStatusBarTexture(C.Media.Texture)
 	self.Power:ClearAllPoints()
-	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -6)
-	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -6-(C.Nameplates.Height * K.NoScaleMult / 2))
+	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
+	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult / 2))
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
 	K.CreateShadowFrame(self.Power)
@@ -415,8 +440,8 @@ local function style(self, unit)
 	self.Castbar:SetFrameLevel(3)
 	self.Castbar:SetStatusBarTexture(C.Media.Texture)
 	self.Castbar:SetStatusBarColor(1, 0.8, 0)
-	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
-	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -4-(C.Nameplates.Height * K.NoScaleMult))
+	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
+	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult))
 	K.CreateShadowFrame(self.Castbar)
 
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")
@@ -424,15 +449,10 @@ local function style(self, unit)
 	self.Castbar.bg:SetTexture(C.Media.Texture)
 	self.Castbar.bg:SetColorTexture(1, 0.8, 0, 0.2)
 
-	self.Castbar.PostCastStart = function(self, unit, name, castid)
-		if self.interrupt then
-			self:SetStatusBarColor(0.78, 0.25, 0.25)
-			self.bg:SetColorTexture(0.78, 0.25, 0.25, 0.2)
-		else
-			self:SetStatusBarColor(1, 0.8, 0)
-			self.bg:SetColorTexture(1, 0.8, 0, 0.2)
-		end
-	end
+	self.Castbar.PostCastStart = castColor
+	self.Castbar.PostChannelStart = castColor
+	self.Castbar.PostCastNotInterruptible = castColor
+	self.Castbar.PostCastInterruptible = castColor
 
 	-- Create Cast Time Text
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
@@ -460,7 +480,7 @@ local function style(self, unit)
 	self.Castbar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	self.Castbar.Icon:SetDrawLayer("ARTWORK")
 	self.Castbar.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
-	self.Castbar.Icon:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 8, 0)
+	self.Castbar.Icon:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 4, 0)
 	K.CreateShadowFrame(self.Castbar, self.Castbar.Icon)
 
 	-- Raid Icon
@@ -576,7 +596,10 @@ local function style(self, unit)
 	end)
 
 	self.Health.PostUpdate = function(self, unit, min, max)
-		local perc = min / max
+		local perc = 0
+		if max and max > 0 then
+			perc = min / max
+		end
 
 		if not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
 			local r, g, b
