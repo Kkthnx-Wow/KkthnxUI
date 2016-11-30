@@ -39,7 +39,6 @@ end
 function ns.classModule.Totems(self)
 	TotemFrame:ClearAllPoints()
 	TotemFrame:SetParent(self)
-	TotemFrame:SetScale(1 * 0.81)
 
 	for i = 1, MAX_TOTEMS do
 		local _, totemBorder = _G["TotemFrameTotem"..i]:GetChildren()
@@ -48,12 +47,16 @@ function ns.classModule.Totems(self)
 		end
 
 		_G["TotemFrameTotem"..i]:SetFrameStrata("LOW")
-		_G["TotemFrameTotem"..i.. "Duration"]:SetParent(totemBorder)
-		_G["TotemFrameTotem"..i.. "Duration"]:SetDrawLayer("OVERLAY")
-		_G["TotemFrameTotem"..i.. "Duration"]:ClearAllPoints()
-		_G["TotemFrameTotem"..i.. "Duration"]:SetPoint("BOTTOM", _G["TotemFrameTotem"..i], 0, 3)
-		_G["TotemFrameTotem"..i.. "Duration"]:SetFont(C.Media.Font, 10, "OUTLINE")
-		_G["TotemFrameTotem"..i.. "Duration"]:SetShadowOffset(0, 0)
+		if C.Cooldown.Enable then
+			_G["TotemFrameTotem"..i.. "Duration"]:SetParent(UIFrameHider)
+		else
+			_G["TotemFrameTotem"..i.. "Duration"]:SetParent(totemBorder)
+			_G["TotemFrameTotem"..i.. "Duration"]:SetDrawLayer("OVERLAY")
+			_G["TotemFrameTotem"..i.. "Duration"]:ClearAllPoints()
+			_G["TotemFrameTotem"..i.. "Duration"]:SetPoint("BOTTOM", _G["TotemFrameTotem"..i], 0, 3)
+			_G["TotemFrameTotem"..i.. "Duration"]:SetFont(C.Media.Font, 10, "OUTLINE")
+			_G["TotemFrameTotem"..i.. "Duration"]:SetShadowOffset(0, 0)
+		end
 	end
 
 	-- K.Noop these else we'll get a taint
@@ -107,7 +110,6 @@ function ns.classModule.MONK(self, config, uconfig)
 	if (config.MONK.showStagger) then
 		-- Stagger Bar for tank monk
 		MonkStaggerBar:SetParent(self)
-		MonkStaggerBar:SetScale(C.Unitframe.Scale * .81)
 		MonkStaggerBar_OnLoad(MonkStaggerBar)
 		MonkStaggerBar:ClearAllPoints()
 		MonkStaggerBar:SetPoint("TOP", self, "BOTTOM", 31, 0)
@@ -120,7 +122,6 @@ function ns.classModule.MONK(self, config, uconfig)
 	if (config.MONK.showChi) then
 		-- Monk combo points for Windwalker
 		MonkHarmonyBarFrame:SetParent(self)
-		MonkHarmonyBarFrame:SetScale(C.Unitframe.Scale * 0.81)
 		MonkHarmonyBarFrame:ClearAllPoints()
 		MonkHarmonyBarFrame:SetPoint("TOP", self, "BOTTOM", 31, 18)
 		if C.Blizzard.ColorTextures == true then
@@ -133,7 +134,6 @@ end
 function ns.classModule.PALADIN(self, config, uconfig)
 	if (config.PALADIN.showHolyPower) then
 		PaladinPowerBarFrame:SetParent(self)
-		PaladinPowerBarFrame:SetScale(C.Unitframe.Scale * 0.81)
 		PaladinPowerBarFrame:ClearAllPoints()
 		PaladinPowerBarFrame:SetPoint("TOP", self, "BOTTOM", 27, 4)
 		PaladinPowerBarFrame:SetFrameStrata("LOW")
