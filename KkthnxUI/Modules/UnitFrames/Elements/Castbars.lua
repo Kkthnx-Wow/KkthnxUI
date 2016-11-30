@@ -36,7 +36,6 @@ do
 		BaseTickDuration[GetSpellInfo(12051) or ""] = 2 -- Evocation
 	elseif K.Class == "MONK" then
 		BaseTickDuration[GetSpellInfo(117952) or ""] = 1 -- Crackling Jade Lightning
-		BaseTickDuration[GetSpellInfo(115175) or ""] = 1 -- Soothing Mist
 		BaseTickDuration[GetSpellInfo(113656) or ""] = 1 -- Fists of Fury
 		BaseTickDuration[GetSpellInfo(173330) or ""] = -1 -- Mana Tea (not modified by haste)
 	end
