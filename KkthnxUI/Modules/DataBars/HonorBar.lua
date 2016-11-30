@@ -15,7 +15,7 @@ local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "HonorAnchor", UIParent)
 Anchor:SetSize(C.DataBars.HonorWidth, C.DataBars.HonorHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -33)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -48)
 Movers:RegisterFrame(Anchor)
 
 local HonorBar = CreateFrame("StatusBar", nil, UIParent)
