@@ -566,6 +566,11 @@ if (not InstallationMessageFrame) then
 	InstallationMessageFrame.Text:SetJustifyH("CENTER")
 end
 
+local function DisableUI()
+	DisableAddOn("KkthnxUI")
+	ReloadUI()
+end
+
 -- On login function
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")

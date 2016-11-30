@@ -24,38 +24,28 @@ end
 
 local ALLOWED_GROUPS = {
 	["General"] = 1,
-	["ActionBar"] = 1,
-	["Announcements"] = 1,
-	["Auras"] = 1,
-	["Automation"] = 1,
-	["Bags"] = 1,
-	["Blizzard"] = 1,
-	["Chat"] = 1,
-	["Cooldown"] = 1,
-	["DataBars"] = 1,
-	["DataText"] = 1,
-	["Filger"] = 1,
-	["Loot"] = 1,
-	["Minimap"] = 1,
-	["Misc"] = 1,
-	["Nameplates"] = 1,
-	["PulseCD"] = 1,
-	["RaidCD"] = 1,
-	["Raidframe"] = 1,
-	["Skins"] = 1,
-	["Tooltip"] = 1,
-	["Unitframe"] = 1,
-	["WorldMap"] = 1,
-}
-
-if KkthnxUIEditedDefaultConfig then
-	for group, value in pairs(KkthnxUIEditedDefaultConfig) do
-		if group ~= "Media" and not ALLOWED_GROUPS[group] then ALLOWED_GROUPS[group] = 1 end
-	end
-end
-
-local TableFilter = {
-	["Filter"] = 1,
+	["ActionBar"] = 2,
+	["Announcements"] = 3,
+	["Auras"] = 4,
+	["Automation"] = 5,
+	["Bags"] = 6,
+	["Blizzard"] = 7,
+	["Chat"] = 8,
+	["Cooldown"] = 9,
+	["DataBars"] = 10,
+	["DataText"] = 11,
+	["Filger"] = 12,
+	["Loot"] = 13,
+	["Minimap"] = 14,
+	["Misc"] = 15,
+	["Nameplates"] = 16,
+	["PulseCD"] = 17,
+	["RaidCD"] = 18,
+	["Raidframe"] = 19,
+	["Skins"] = 20,
+	["Tooltip"] = 21,
+	["Unitframe"] = 22,
+	["WorldMap"] = 23,
 }
 
 local function Local(o)
@@ -472,7 +462,7 @@ function CreateUIConfig()
 				end
 
 				offset = offset + 45
-			elseif type(value) == "table" and not TableFilter[option] then
+			elseif type(value) == "table" then
 				local label = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 				local o = "UIConfig"..i..j
 				local translate = Local(i..j)

@@ -17,7 +17,6 @@
 	<Script file="Config\Profiles.lua"/>
 
 	<!-- GUI -->
-	<Script file="Core\CustomGUI.lua" />
 	<Script file="Core\GUI.lua"/>
 	<Script file="Core\PixelPerfect.lua"/>
 

@@ -14,8 +14,8 @@ local function UpdateFillBar(frame, previousTexture, bar, amount, maxHealth)
 		local barSize = (amount / maxHealth) * totalHeight
 		bar:SetHeight(barSize)
 	else
-		bar:SetPoint('TOPLEFT', previousTexture, 'TOPRIGHT', 0, 0)
-		bar:SetPoint('BOTTOMLEFT', previousTexture, 'BOTTOMRIGHT', 0, 0)
+		bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT", 0, 0)
+		bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT", 0, 0)
 
 		local barSize = (amount / maxHealth) * totalWidth
 		bar:SetWidth(barSize)
@@ -31,7 +31,7 @@ local function Update(self, event, unit)
 	local hp = self.HealPrediction
 	if(hp.PreUpdate) then hp:PreUpdate(unit) end
 
-	local myIncomingHeal = UnitGetIncomingHeals(unit, 'player') or 0
+	local myIncomingHeal = UnitGetIncomingHeals(unit, "player") or 0
 	local allIncomingHeal = UnitGetIncomingHeals(unit) or 0
 	local totalAbsorb = UnitGetTotalAbsorbs(unit) or 0
 
@@ -68,7 +68,7 @@ local function Path(self, ...)
 end
 
 local ForceUpdate = function(element)
-	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
+	return Path(element.__owner, "ForceUpdate", element.__owner.unit)
 end
 
 local function Enable(self)
@@ -77,43 +77,43 @@ local function Enable(self)
 		hp.__owner = self
 		hp.ForceUpdate = ForceUpdate
 
-		self:RegisterEvent('UNIT_HEAL_PREDICTION', Path)
-		self:RegisterEvent('UNIT_MAXHEALTH', Path)
+		self:RegisterEvent("UNIT_HEAL_PREDICTION", Path)
+		self:RegisterEvent("UNIT_MAXHEALTH", Path)
 		if(hp.frequentUpdates) then
-			self:RegisterEvent('UNIT_HEALTH_FREQUENT', Path)
+			self:RegisterEvent("UNIT_HEALTH_FREQUENT", Path)
 		else
-			self:RegisterEvent('UNIT_HEALTH', Path)
+			self:RegisterEvent("UNIT_HEALTH", Path)
 		end
-		self:RegisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
-		self:RegisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
+		self:RegisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", Path)
+		self:RegisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", Path)
 
 		if(not hp.maxOverflow) then
 			hp.maxOverflow = 1.05
 		end
 
 		if(hp.myBar) then
-			if(hp.myBar:IsObjectType'StatusBar' and not hp.myBar:GetStatusBarTexture()) then
+			if(hp.myBar:IsObjectType"StatusBar" and not hp.myBar:GetStatusBarTexture()) then
 				hp.myBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 			end
 
 			hp.myBar:Show()
 		end
 		if(hp.otherBar) then
-			if(hp.otherBar:IsObjectType'StatusBar' and not hp.otherBar:GetStatusBarTexture()) then
+			if(hp.otherBar:IsObjectType"StatusBar" and not hp.otherBar:GetStatusBarTexture()) then
 				hp.otherBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 			end
 
 			hp.otherBar:Show()
 		end
 		if(hp.absorbBar) then
-			if(hp.absorbBar:IsObjectType'StatusBar' and not hp.absorbBar:GetStatusBarTexture()) then
+			if(hp.absorbBar:IsObjectType"StatusBar" and not hp.absorbBar:GetStatusBarTexture()) then
 				hp.absorbBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 			end
 
 			hp.absorbBar:Show()
 		end
 		if(hp.healAbsorbBar) then
-			if(hp.healAbsorbBar:IsObjectType'StatusBar' and not hp.healAbsorbBar:GetStatusBarTexture()) then
+			if(hp.healAbsorbBar:IsObjectType"StatusBar" and not hp.healAbsorbBar:GetStatusBarTexture()) then
 				hp.healAbsorbBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])
 			end
 
@@ -140,13 +140,13 @@ local function Disable(self)
 			hp.healAbsorbBar:Hide()
 		end
 
-		self:UnregisterEvent('UNIT_HEAL_PREDICTION', Path)
-		self:UnregisterEvent('UNIT_MAXHEALTH', Path)
-		self:UnregisterEvent('UNIT_HEALTH', Path)
-		self:UnregisterEvent('UNIT_HEALTH_FREQUENT', Path)
-		self:UnregisterEvent('UNIT_ABSORB_AMOUNT_CHANGED', Path)
-		self:UnregisterEvent('UNIT_HEAL_ABSORB_AMOUNT_CHANGED', Path)
+		self:UnregisterEvent("UNIT_HEAL_PREDICTION", Path)
+		self:UnregisterEvent("UNIT_MAXHEALTH", Path)
+		self:UnregisterEvent("UNIT_HEALTH", Path)
+		self:UnregisterEvent("UNIT_HEALTH_FREQUENT", Path)
+		self:UnregisterEvent("UNIT_ABSORB_AMOUNT_CHANGED", Path)
+		self:UnregisterEvent("UNIT_HEAL_ABSORB_AMOUNT_CHANGED", Path)
 	end
 end
 
-oUF:AddElement('HealPrediction', Path, Enable, Disable)
+oUF:AddElement("HealPrediction", Path, Enable, Disable)

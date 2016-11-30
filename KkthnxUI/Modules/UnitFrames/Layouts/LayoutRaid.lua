@@ -201,16 +201,17 @@ local function CreateRaidLayout(self, unit)
 	end
 
 	-- Heal prediction
-	local mhpb = CreateFrame("StatusBar", "$parentMyHealPredictionBar", self)
-	mhpb:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
-	mhpb:SetStatusBarColor(0, 0.827, 0.765, 1)
+	local mhpb = CreateFrame("StatusBar", nil, self)
+	mhpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
+	mhpb:SetStatusBarColor(1, 1, 0, 0.6)
 
-	local ohpb = CreateFrame("StatusBar", "$parentOtherHealPredictionBar", self)
-	ohpb:SetStatusBarTexture(C.Media.Texture, "OVERLAY")
-	ohpb:SetStatusBarColor(0.0, 0.631, 0.557, 1)
+	local ohpb = CreateFrame("StatusBar", nil, self)
+	ohpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
+	ohpb:SetStatusBarColor(0, 1, 0.5, 0.6)
 
-	local ahpb = CreateFrame("StatusBar", "$parentTotalAbsorbBar", self)
-	ahpb:SetStatusBarTexture("Interface\\RaidFrame\\Shield-Fill", "OVERLAY")
+	local ahpb = CreateFrame("StatusBar", nil, self)
+	ahpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
+	ahpb:SetStatusBarColor(1, 1, 0, 0.6)
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		mhpb:SetOrientation("HORIZONTAL")
