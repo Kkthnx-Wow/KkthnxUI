@@ -13,8 +13,12 @@ local Bars = 20
 local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
+local AnchorY = -33
+if K.Level ~= MAX_PLAYER_LEVEL then
+	AnchorY = -48
+end
 Anchor:SetSize(C.DataBars.ArtifactWidth, C.DataBars.ArtifactHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -63)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 Movers:RegisterFrame(Anchor)
 
 local ArtifactBar = CreateFrame("StatusBar", nil, UIParent)

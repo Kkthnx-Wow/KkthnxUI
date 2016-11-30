@@ -190,7 +190,7 @@ if C.General.ShowConfigButton == true then
 
 	ToggleButtonSpecial:EnableMouse(true)
 	ToggleButtonSpecial:HookScript("OnMouseDown", function(self, btn)
-		if(InCombatLockdown()) then
+		if(InCombatLockdown() and not btn == "RightButton") then
 			K.Print(ERR_NOT_IN_COMBAT)
 			return
 		end
