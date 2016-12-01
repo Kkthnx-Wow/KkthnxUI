@@ -175,7 +175,7 @@ function hook(self, obj, method, handler, script, secure, raw, forceSecure, usag
 
 	if uid then
 		if actives[uid] then
-			-- Only two sane choices exist here.  We either a) error 100% of the time or b) always unhook and then hook
+			-- Only two sane choices exist here. We either a) error 100% of the time or b) always unhook and then hook
 			-- choice b would likely lead to odd debuging conditions or other mysteries so we're going with a.
 			error(format("Attempting to rehook already active hook %s.", method))
 		end
@@ -264,12 +264,12 @@ end
 -- MyAddon = LibStub("AceAddon-3.0"):NewAddon("HookDemo", "AceHook-3.0")
 --
 -- function MyAddon:OnEnable()
---   -- Hook ActionButton_UpdateHotkeys, overwriting the secure status
---   self:Hook("ActionButton_UpdateHotkeys", true)
+-- -- Hook ActionButton_UpdateHotkeys, overwriting the secure status
+-- self:Hook("ActionButton_UpdateHotkeys", true)
 -- end
 --
 -- function MyAddon:ActionButton_UpdateHotkeys(button, type)
---   print(button:GetName() .. " is updating its HotKey")
+-- print(button:GetName() .. " is updating its HotKey")
 -- end
 function AceHook:Hook(object, method, handler, hookSecure)
 	if type(object) == "string" then
@@ -299,16 +299,16 @@ end
 -- MyAddon = LibStub("AceAddon-3.0"):NewAddon("HookDemo", "AceHook-3.0")
 --
 -- function MyAddon:OnEnable()
---   -- Hook ActionButton_UpdateHotkeys, overwriting the secure status
---   self:RawHook("ActionButton_UpdateHotkeys", true)
+-- -- Hook ActionButton_UpdateHotkeys, overwriting the secure status
+-- self:RawHook("ActionButton_UpdateHotkeys", true)
 -- end
 --
 -- function MyAddon:ActionButton_UpdateHotkeys(button, type)
---   if button:GetName() == "MyButton" then
---     -- do stuff here
---   else
---     self.hooks.ActionButton_UpdateHotkeys(button, type)
---   end
+-- if button:GetName() == "MyButton" then
+-- -- do stuff here
+-- else
+-- self.hooks.ActionButton_UpdateHotkeys(button, type)
+-- end
 -- end
 function AceHook:RawHook(object, method, handler, hookSecure)
 	if type(object) == "string" then
@@ -319,7 +319,7 @@ function AceHook:RawHook(object, method, handler, hookSecure)
 		handler, hookSecure = nil, true
 	end
 
-	hook(self, object, method, handler, false, false, true, hookSecure or false,  "Usage: RawHook([object], method, [handler], [hookSecure])")
+	hook(self, object, method, handler, false, false, true, hookSecure or false, "Usage: RawHook([object], method, [handler], [hookSecure])")
 end
 
 --- SecureHook a function or a method on an object.
@@ -338,7 +338,7 @@ function AceHook:SecureHook(object, method, handler)
 		method, handler, object = object, method, nil
 	end
 
-	hook(self, object, method, handler, false, true, false, false,  "Usage: SecureHook([object], method, [handler])")
+	hook(self, object, method, handler, false, true, false, false, "Usage: SecureHook([object], method, [handler])")
 end
 
 --- Hook a script handler on a frame.
@@ -356,15 +356,15 @@ end
 -- MyAddon = LibStub("AceAddon-3.0"):NewAddon("HookDemo", "AceHook-3.0")
 --
 -- function MyAddon:OnEnable()
---   -- Hook the OnShow of FriendsFrame
---   self:HookScript(FriendsFrame, "OnShow", "FriendsFrameOnShow")
+-- -- Hook the OnShow of FriendsFrame
+-- self:HookScript(FriendsFrame, "OnShow", "FriendsFrameOnShow")
 -- end
 --
 -- function MyAddon:FriendsFrameOnShow(frame)
---   print("The FriendsFrame was shown!")
+-- print("The FriendsFrame was shown!")
 -- end
 function AceHook:HookScript(frame, script, handler)
-	hook(self, frame, script, handler, true, false, false, false,  "Usage: HookScript(object, method, [handler])")
+	hook(self, frame, script, handler, true, false, false, false, "Usage: HookScript(object, method, [handler])")
 end
 
 --- RawHook a script handler on a frame.
@@ -382,15 +382,15 @@ end
 -- MyAddon = LibStub("AceAddon-3.0"):NewAddon("HookDemo", "AceHook-3.0")
 --
 -- function MyAddon:OnEnable()
---   -- Hook the OnShow of FriendsFrame
---   self:RawHookScript(FriendsFrame, "OnShow", "FriendsFrameOnShow")
+-- -- Hook the OnShow of FriendsFrame
+-- self:RawHookScript(FriendsFrame, "OnShow", "FriendsFrameOnShow")
 -- end
 --
 -- function MyAddon:FriendsFrameOnShow(frame)
---   -- Call the original function
---   self.hooks[frame].OnShow(frame)
---   -- Do our processing
---   -- .. stuff
+-- -- Call the original function
+-- self.hooks[frame].OnShow(frame)
+-- -- Do our processing
+-- -- .. stuff
 -- end
 function AceHook:RawHookScript(frame, script, handler)
 	hook(self, frame, script, handler, true, false, true, false, "Usage: RawHookScript(object, method, [handler])")
@@ -449,7 +449,7 @@ function AceHook:Unhook(obj, method)
 		-- if the hook reference doesnt exist, then its a secure hook, just bail out and dont do any unhooking
 		if not self.hooks[obj] or not self.hooks[obj][method] then return true end
 
-		if scripts[uid] and obj:GetScript(method) == uid then  -- unhooks scripts
+		if scripts[uid] and obj:GetScript(method) == uid then -- unhooks scripts
 			obj:SetScript(method, self.hooks[obj][method] ~= donothing and self.hooks[obj][method] or nil)
 			scripts[uid] = nil
 		elseif obj and self.hooks[obj] and self.hooks[obj][method] and obj[method] == uid then -- unhooks methods

@@ -30,9 +30,9 @@ AnnounceSpells:SetScript("OnEvent", function(self, _, ...)
 		for i, spells in pairs(spells) do
 			if spellID == spells then
 				if destName == nil then
-					SendChatMessage(format(L_ANNOUNCE_FP_USE, sourceName, GetSpellLink(spellID)), K.CheckChat())
+					SendChatMessage(format(L.Announce.FPUse, sourceName, GetSpellLink(spellID)), K.CheckChat())
 				else
-					SendChatMessage(format(L_ANNOUNCE_FP_USE, sourceName, GetSpellLink(spellID).." -> "..destName), K.CheckChat())
+					SendChatMessage(format(L.Announce.FPUse, sourceName, GetSpellLink(spellID).." -> "..destName), K.CheckChat())
 				end
 			end
 		end
@@ -42,7 +42,7 @@ AnnounceSpells:SetScript("OnEvent", function(self, _, ...)
 		for i, spells in pairs(spells) do
 			if spellID == spells then
 				if destName == nil then
-					SendChatMessage(format(L_ANNOUNCE_FP_USE, sourceName, GetSpellLink(spellID)), K.CheckChat())
+					SendChatMessage(format(L.Announce.FPUse, sourceName, GetSpellLink(spellID)), K.CheckChat())
 				else
 					SendChatMessage(GetSpellLink(spellID).." -> "..destName, K.CheckChat())
 				end

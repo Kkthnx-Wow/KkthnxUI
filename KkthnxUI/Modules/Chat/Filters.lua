@@ -52,7 +52,8 @@ end
 	The ellipsis (which is what ... is called) only allows you to accept an undefined number of extra arguments
 	so local function blahblah(self, event, text, sender) is the same as local function blahblah(self, event, text, sender, ...)
 	if you pass on the arguments in that function, you need to pass the ... along, or it might break the functionality
-]]--
+--]]
+
 if C.Chat.Spam == true then
 	-- Repeat spam filter
 	local lastMessage

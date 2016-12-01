@@ -26,8 +26,8 @@ function openAllCash()
 end
 
 function openMail(index)
-	if not InboxFrame:IsVisible() then return stopOpening("|cffffff00"..L_MAIL_NEED) end
-	if index == 0 then MiniMapMailFrame:Hide() return stopOpening("|cffffff00"..L_MAIL_COMPLETE) end
+	if not InboxFrame:IsVisible() then return stopOpening("|cffffff00"..L.Mail.Need) end
+	if index == 0 then MiniMapMailFrame:Hide() return stopOpening("|cffffff00"..L.Mail.Complete) end
 	local _, _, _, _, money, COD, _, numItems = GetInboxHeaderInfo(index)
 	if money > 0 then
 		TakeInboxMoney(index)
@@ -43,7 +43,7 @@ function openMail(index)
 		t = 0
 		button:SetScript("OnUpdate", waitForMail)
 	else
-		stopOpening("|cffffff00"..L_MAIL_COMPLETE)
+		stopOpening("|cffffff00"..L.Mail.Complete)
 		MiniMapMailFrame:Hide()
 	end
 end
@@ -78,9 +78,9 @@ end
 function onEvent(frame, event, arg1, arg2, arg3, arg4)
 	if event == "UI_ERROR_MESSAGE" then
 		if arg1 == ERR_INV_FULL then
-			stopOpening("|cffffff00"..L_MAIL_STOPPED)
+			stopOpening("|cffffff00"..L.Mail.Stopped)
 		elseif arg1 == ERR_ITEM_MAX_COUNT then
-			stopOpening("|cffffff00"..L_MAIL_UNIQUE)
+			stopOpening("|cffffff00"..L.Mail.Unique)
 		end
 	end
 end
@@ -99,7 +99,7 @@ button:SetScript("OnClick", openAll)
 button:SetScript("OnEvent", onEvent)
 button:SetScript("OnEnter", function()
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
-	GameTooltip:AddLine(format("%d "..L_MAIL_MESSAGES, GetInboxNumItems()), 1, 1, 1)
+	GameTooltip:AddLine(format("%d "..L.Mail.Messages, GetInboxNumItems()), 1, 1, 1)
 	GameTooltip:Show()
 end)
 button:SetScript("OnLeave", function() GameTooltip:Hide() end)

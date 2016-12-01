@@ -8,12 +8,12 @@ local function addLine(self, id, isItem)
 		local line = _G[self:GetName().."TextLeft"..i]
 		if not line then break end
 		local text = line:GetText()
-		if text and (text:match(L_TOOLTIP_ITEM_ID) or text:match(L_TOOLTIP_SPELL_ID)) then return end
+		if text and (text:match(L.Tooltip.ItemID) or text:match(L.Tooltip.SpellID)) then return end
 	end
 	if isItem then
-		self:AddLine("|cffffffff"..L_TOOLTIP_ITEM_ID.." "..id)
+		self:AddLine("|cffffffff"..L.Tooltip.ItemID.." "..id)
 	else
-		self:AddLine("|cffffffff"..L_TOOLTIP_SPELL_ID.." "..id)
+		self:AddLine("|cffffffff"..L.Tooltip.SpellID.." "..id)
 	end
 	self:Show()
 end

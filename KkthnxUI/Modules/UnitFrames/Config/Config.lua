@@ -84,12 +84,10 @@ ns.config = {
 		cbshow = true,
 		cbwidth = 200,
 		cbheight = 18,
-		cbicon = "NONE",
+		cbicon = C.Unitframe.IconPlayer, --"LEFT"
 	},
 
 	pet = {
-		-- style = "fat",
-		-- scale = 1,
 		HealthTag = "MINIMAL",
 		PowerTag = "DISABLE",
 		cbshow = true,
@@ -106,7 +104,7 @@ ns.config = {
 		cbshow = true,
 		cbwidth = 200,
 		cbheight = 18,
-		cbicon = "NONE",
+		cbicon = C.Unitframe.IconTarget,
 	},
 
 	targettarget = {
@@ -138,7 +136,6 @@ ns.config = {
 	},
 
 	boss = {
-		-- scale = 1,
 		HealthTag = "PERCENT",
 		PowerTag = "PERCENT",
 		cbshow = true,

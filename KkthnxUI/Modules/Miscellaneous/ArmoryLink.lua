@@ -42,7 +42,7 @@ else
 end
 
 StaticPopupDialogs.LINK_COPY_DIALOG = {
-	text = L_POPUP_ARMORY,
+	text = L.Popup.Armory,
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = true,
@@ -140,7 +140,7 @@ hooksecurefunc("UnitPopup_OnClick", function(self)
 	end
 end)
 
-UnitPopupButtons["ARMORYLINK"] = {text = L_POPUP_ARMORY, dist = 0, func = UnitPopup_OnClick}
+UnitPopupButtons["ARMORYLINK"] = {text = L.Popup.Armory, dist = 0, func = UnitPopup_OnClick}
 tinsert(UnitPopupMenus["FRIEND"], #UnitPopupMenus["FRIEND"] - 1, "ARMORYLINK")
 tinsert(UnitPopupMenus["PARTY"], #UnitPopupMenus["PARTY"] - 1, "ARMORYLINK")
 tinsert(UnitPopupMenus["RAID"], #UnitPopupMenus["RAID"] - 1, "ARMORYLINK")
@@ -170,7 +170,7 @@ local LFG_LIST_APPLICANT_MEMBER_MENU = {
 		disabled = nil, -- Disabled if we don't have a name yet
 	},
 	{
-		text = L_POPUP_ARMORY,
+		text = L.Popup.Armory,
 		func = function(_, name) showArmoryPopup(name) end,
 		notCheckable = true,
 		arg1 = nil, -- Player name goes here
@@ -247,7 +247,7 @@ local LFG_LIST_SEARCH_ENTRY_MENU = {
 		tooltipText = nil, -- The text to display on mouseover
 	},
 	{
-		text = L_POPUP_ARMORY,
+		text = L.Popup.Armory,
 		func = function(_, name) showArmoryPopup(name) end,
 		notCheckable = true,
 		arg1 = nil, -- Player name goes here

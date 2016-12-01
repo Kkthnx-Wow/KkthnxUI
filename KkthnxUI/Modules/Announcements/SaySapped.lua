@@ -9,7 +9,7 @@ SaySapped:SetScript("OnEvent", function(self, _, ...)
 	if ((spellID == 6770)
 	and (destName == K.Name) and (event == "SPELL_AURA_APPLIED" or event == "SPELL_AURA_REFRESH"))
 	then
-		SendChatMessage(L_ANNOUNCE_SAPPED, "SAY")
-		K.Print(L_ANNOUNCE_SAPPED_BY..(sourceName or "(unknown)"))
+		SendChatMessage(L.Announce.Sapped, "SAY")
+		K.Print(L.Announce.SappedBy..(sourceName or "(unknown)"))
 	end
 end)

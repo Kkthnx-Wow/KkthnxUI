@@ -17,13 +17,13 @@ DeclineDuel:SetScript("OnEvent", function(self, event, name)
 	if Disable == true then return end
 	if event == "DUEL_REQUESTED" then
 		CancelDuel()
-		RaidNotice_AddMessage(RaidWarningFrame, L_INFO_DUEL.."|cffffff00"..name..".", {r = 0.22, g = 0.62, b = 0.91}, 3)
-		K.Print(format("|cff3c9bed"..L_INFO_DUEL.."|cffffff00"..name.."."))
+		RaidNotice_AddMessage(RaidWarningFrame, L.Info.Duel.."|cffffff00"..name..".", {r = 0.22, g = 0.62, b = 0.91}, 3)
+		K.Print(format("|cff3c9bed"..L.Info.Duel.."|cffffff00"..name.."."))
 		StaticPopup_Hide("DUEL_REQUESTED")
 	elseif event == "PET_BATTLE_PVP_DUEL_REQUESTED" then
 		C_PetBattles.CancelPVPDuel()
-		RaidNotice_AddMessage(RaidWarningFrame, L_INFO_PET_DUEL.."|cffffff00"..name..".", {r = 0.22, g = 0.62, b = 0.91}, 3)
-		K.Print(format("|cffffff00"..L_INFO_PET_DUEL..name.."."))
+		RaidNotice_AddMessage(RaidWarningFrame, L.Info.PetDuel.."|cffffff00"..name..".", {r = 0.22, g = 0.62, b = 0.91}, 3)
+		K.Print(format("|cffffff00"..L.Info.PetDuel..name.."."))
 		StaticPopup_Hide("PET_BATTLE_PVP_DUEL_REQUESTED")
 	end
 end)

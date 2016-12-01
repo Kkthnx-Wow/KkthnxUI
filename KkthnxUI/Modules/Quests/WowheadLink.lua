@@ -40,7 +40,7 @@ else
 end
 
 StaticPopupDialogs.WATCHFRAME_URL = {
-	text = L_WATCH_WOWHEAD_LINK,
+	text = L.WatchFrame.WowheadLink,
 	button1 = OKAY,
 	timeout = 0,
 	whileDead = true,
@@ -57,7 +57,7 @@ hooksecurefunc("QuestObjectiveTracker_OnOpenDropDown", function(self)
 	b = self.activeFrame
 	questID = b.id
 	info = UIDropDownMenu_CreateInfo()
-	info.text = L_WATCH_WOWHEAD_LINK
+	info.text = L.WatchFrame.WowheadLink
 	info.func = function(id)
 		local inputBox = StaticPopup_Show("WATCHFRAME_URL")
 		inputBox.editBox:SetText(linkQuest:format(questID))
@@ -73,7 +73,7 @@ hooksecurefunc("AchievementObjectiveTracker_OnOpenDropDown", function(self)
 	b = self.activeFrame
 	i = b.id
 	info = UIDropDownMenu_CreateInfo()
-	info.text = L_WATCH_WOWHEAD_LINK
+	info.text = L.WatchFrame.WowheadLink
 	info.func = function(_, i)
 		local inputBox = StaticPopup_Show("WATCHFRAME_URL")
 		inputBox.editBox:SetText(linkAchievement:format(i))

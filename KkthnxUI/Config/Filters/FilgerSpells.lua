@@ -413,6 +413,8 @@ C["filger_spells"] = {
 			{spellID = 207744, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Frailty
 			{spellID = 224509, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Bloodlet
+			{spellID = 207690, unitID = "target", caster = "player", filter = "DEBUFF"},
 		},
 		{
 			Name = "T_DE/BUFF_BAR",
@@ -701,6 +703,8 @@ C["filger_spells"] = {
 			{spellID = 215648, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Burning Intensity (Crit, Proc) [Infernal Writ]
 			{spellID = 215816, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Maddening Whispers (Damage, Proc) [Wriggling Sinew]
+ 			{spellID = 222046, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Healing
 			-- Constellations (Mastery, Haste, or Critical Strike, Proc) [Etraeus' Celestial Map]
 			{spellID = 225136, unitID = "player", caster = "player", filter = "BUFF"},
@@ -893,18 +897,18 @@ C["filger_spells"] = {
 			IconSize = C.Filger.BuffsSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
-			-- Deterrence
-			{spellID = 19263, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Rapid Fire
-			{spellID = 3045, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Turtle
+			{spellID = 186265, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Bestial Wrath
 			{spellID = 19574, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Beast Cleave
 			{spellID = 118455, unitID = "pet", caster = "player", filter = "BUFF"},
 			-- Trueshot
 			{spellID = 193526, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Aspect of the Turtle
-			{spellID = 186265, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Wild
+			{spellID = 193530, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Aspect of the Eagle
+			{spellID = 186289, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Aspect of the Cheetah
 			{spellID = 186257, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Dire Beast
@@ -929,11 +933,9 @@ C["filger_spells"] = {
 
 			-- Buffs
 			-- Steady Focus
-			--BETA {spellID = 177668, unitID = "player", caster = "player", filter = "BUFF"},
+			{spellID = 193533, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Lock and Load
-			--BETA {spellID = 168980, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Thrill of the Hunt
-			--BETA {spellID = 34720, unitID = "player", caster = "player", filter = "BUFF"},
+			{spellID = 194594, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Frenzy
 			{spellID = 19615, unitID = "player", caster = "player", filter = "BUFF", absID = true},
 			-- Mend Pet
@@ -999,7 +1001,7 @@ C["filger_spells"] = {
 			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
 			-- Black Arrow
-			--BETA {spellID = 3674, unitID = "target", caster = "player", filter = "DEBUFF"},
+			{spellID = 194599, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Explosive Shot
 			--BETA {spellID = 53301, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Serpent Sting
@@ -1099,10 +1101,8 @@ C["filger_spells"] = {
 			--BETA {spellID = 120697, filter = "CD"},
 			-- Exhilaration
 			{spellID = 109304, filter = "CD"},
-			-- Rapid Fire
-			{spellID = 3045, filter = "CD"},
-			-- Deterrence
-			{spellID = 19263, filter = "CD"},
+			-- Aspect of the Turtle
+			{spellID = 186265, filter = "CD"},
 			-- Spirit Mend (Pet)
 			{spellID = 90361, filter = "CD"},
 			-- Honorable Medallion
@@ -1244,6 +1244,8 @@ C["filger_spells"] = {
 			{spellID = 215648, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Burning Intensity (Crit, Proc) [Infernal Writ]
 			{spellID = 215816, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Maddening Whispers (Damage, Proc) [Wriggling Sinew]
+ 			{spellID = 222046, unitID = "player", caster = "player", filter = "BUFF"},
 
 			-- Enchants
 			-- Mark of the Claw (Crit and Haste)
@@ -1435,14 +1437,10 @@ C["filger_spells"] = {
 			IconSize = C.Filger.BuffsSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
-			-- Guard
-			--BETA {spellID = 115295, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Fortifying Brew
 			{spellID = 120954, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Elusive Brew
-			{spellID = 115308, unitID = "player", caster = "player", filter = "BUFF", absID = true},
-			-- Tigereye Brew
-			{spellID = 116740, unitID = "player", caster = "player", filter = "BUFF", absID = true},
+			-- Ironskin Brew
+			{spellID = 215479, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Touch of Karma
 			{spellID = 125174, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Diffuse Magic
@@ -1450,11 +1448,15 @@ C["filger_spells"] = {
 			-- Dampen Harm
 			{spellID = 122278, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Nimble Brew
-			--BETA {spellID = 137562, unitID = "player", caster = "player", filter = "BUFF"},
+			{spellID = 213664, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Serenity
 			{spellID = 152173, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Energizing Brew
-			{spellID = 115288, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Storm, Earth, and Fire
+			{spellID = 137639, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Mana Tea
+			{spellID = 197908, unitID = "player", caster = "player", filter = "BUFF"},
+			-- The Mists of Sheilun
+			{spellID = 199888, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Thunder Focus Tea
 			{spellID = 116680, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Momentum
@@ -1470,12 +1472,6 @@ C["filger_spells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
-			-- Elusive Brew
-			{spellID = 128939, unitID = "player", caster = "player", filter = "BUFF", absID = true, count = 12},
-			-- Mana Tea
-			--BETA {spellID = 115867, unitID = "player", caster = "player", filter = "BUFF", absID = true, count = 18},
-			-- Tigereye Brew
-			--BETA {spellID = 125195, unitID = "player", caster = "player", filter = "BUFF", absID = true, count = 10},
 			-- Tiger Power
 			--BETA {spellID = 125359, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Combo Breaker: Blackout Kick
@@ -1592,12 +1588,10 @@ C["filger_spells"] = {
 
 			-- Heavy Stagger
 			{spellID = 124273, unitID = "player", caster = "player", filter = "DEBUFF"},
-			-- Dizzying Haze
-			--BETA {spellID = 116330, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Keg Smash
+			{spellID = 121253, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Breath of Fire
 			{spellID = 123725, unitID = "target", caster = "player", filter = "DEBUFF"},
-			-- Rising Sun Kick
-			--BETA {spellID = 130320, unitID = "target", caster = "player", filter = "DEBUFF"},
 		},
 		{
 			Name = "COOLDOWN",
@@ -1630,7 +1624,7 @@ C["filger_spells"] = {
 			-- Chi Burst
 			{spellID = 123986, filter = "CD"},
 			-- Guard
-			--BETA {spellID = 115295, filter = "CD"},
+			{spellID = 202162, filter = "CD"},
 			-- Charging Ox Wave
 			--BETA {spellID = 119392, filter = "CD"},
 			-- Hurricane Strike
@@ -1643,7 +1637,7 @@ C["filger_spells"] = {
 			{spellID = 122278, filter = "CD"},
 			-- Flying Serpent Kick
 			{spellID = 101545, filter = "CD"},
-			-- Energizing Brew
+			-- Energizing Elixir
 			{spellID = 115288, filter = "CD"},
 			-- Diffuse Magic
 			{spellID = 122783, filter = "CD"},
@@ -1656,7 +1650,7 @@ C["filger_spells"] = {
 			-- Touch of Death
 			{spellID = 115080, filter = "CD"},
 			-- Nimble Brew
-			--BETA {spellID = 137562, filter = "CD"},
+			{spellID = 213664, filter = "CD"},
 			-- Life Cocoon
 			{spellID = 116849, filter = "CD"},
 			-- Invoke Xuen, the White Tiger
@@ -1925,6 +1919,8 @@ C["filger_spells"] = {
 			{spellID = 115750, filter = "CD"},
 			-- Holy Avenger
 			{spellID = 105809, filter = "CD"},
+			-- Holy Wrath
+  		{spellID = 210220, filter = "CD"},
 			-- Aura Mastery
 			{spellID = 31821, filter = "CD"},
 			-- Blessing of Sacrifice
@@ -2068,6 +2064,8 @@ C["filger_spells"] = {
 			{spellID = 215648, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Burning Intensity (Crit, Proc) [Infernal Writ]
 			{spellID = 215816, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Maddening Whispers (Damage, Proc) [Wriggling Sinew]
+ 			{spellID = 222046, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Healing
 			-- Constellations (Mastery, Haste, or Critical Strike, Proc) [Etraeus' Celestial Map]
 			{spellID = 225136, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2675,6 +2673,8 @@ C["filger_spells"] = {
 			{spellID = 215648, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Burning Intensity (Crit, Proc) [Infernal Writ]
 			{spellID = 215816, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Maddening Whispers (Damage, Proc) [Wriggling Sinew]
+ 			{spellID = 222046, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Healing
 			-- Constellations (Mastery, Haste, or Critical Strike, Proc) [Etraeus' Celestial Map]
 			{spellID = 225136, unitID = "player", caster = "player", filter = "BUFF"},
@@ -2723,7 +2723,7 @@ C["filger_spells"] = {
 			Position = {"LEFT", T_DE_BUFF_BAR_Anchor},
 
 			-- Earth Shield
-			--BETA {spellID = 974, unitID = "target", caster = "player", filter = "BUFF"},
+			{spellID = 204288, unitID = "target", caster = "player", filter = "BUFF"},
 			-- Riptide
 			{spellID = 61295, unitID = "target", caster = "player", filter = "BUFF"},
 		},
@@ -2914,6 +2914,8 @@ C["filger_spells"] = {
 			{spellID = 215648, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Burning Intensity (Crit, Proc) [Infernal Writ]
 			{spellID = 215816, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Maddening Whispers (Damage, Proc) [Wriggling Sinew]
+ 			{spellID = 222046, unitID = "player", caster = "player", filter = "BUFF"},
 
 			-- Enchants
 			-- Mark of the Claw (Crit and Haste)
@@ -3805,14 +3807,20 @@ C["filger_spells"] = {
 			-- Momentum (debuff)
 			{spellID = 198108, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Dragons of Nightmare
+			-- Mark of Ysondre
+			{spellID = 203102, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Mark of Taerar
+			{spellID = 203121, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Mark of Emeriss
+			{spellID = 203125, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Mark of Lethon
+			{spellID = 203124, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Nightmare Bloom (standing in, should be at least 1 player)
 			{spellID = 207681, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Defiled Vines (root, magic)
 			{spellID = 203770, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Volatile Infection (AoE dot)
 			{spellID = 203787, unitID = "player", caster = "all", filter = "DEBUFF"},
-			-- Shadow Burst (dot, stacks)
-			{spellID = 204044, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Cenarius
 			-- Creeping Nightmares (dot, stacks)
 			{spellID = 210279, unitID = "player", caster = "all", filter = "DEBUFF"},
@@ -3948,8 +3956,6 @@ C["filger_spells"] = {
 			{spellID = 339, unitID = "target", caster = "all", filter = "DEBUFF"},
 
 			-- Hunter
-			-- Deterrence
-			{spellID = 19263, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Feign Death
 			{spellID = 5384, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Posthaste
@@ -4006,7 +4012,7 @@ C["filger_spells"] = {
 			-- Dampen Harm
 			{spellID = 122278, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Nimble Brew
-			--BETA {spellID = 137562, unitID = "target", caster = "all", filter = "BUFF"},
+			{spellID = 213664, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Paralysis
 			{spellID = 115078, unitID = "target", caster = "all", filter = "DEBUFF"},
@@ -4113,10 +4119,6 @@ C["filger_spells"] = {
 			{spellID = 118345, unitID = "target", caster = "all", filter = "DEBUFF"},
 
 			-- Warlock
-			-- Blood Horror
-			--BETA {spellID = 111397, unitID = "target", caster = "all", filter = "BUFF"},
-			-- Dark Bargain
-			--BETA {spellID = 110913, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Soulstone
 			{spellID = 20707, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Unending Resolve
@@ -4170,8 +4172,6 @@ C["filger_spells"] = {
 			{spellID = 132169, unitID = "target", caster = "all", filter = "DEBUFF", absID = true},
 			-- Shockwave
 			{spellID = 132168, unitID = "target", caster = "all", filter = "DEBUFF"},
-			-- Gag Order
-			--BETA {spellID = 18498, unitID = "target", caster = "all", filter = "DEBUFF"},
 
 			-- Racial
 			-- Arcane Torrent

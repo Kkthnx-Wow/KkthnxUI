@@ -1,4 +1,4 @@
-﻿local K, C, L = select(2, ...):unpack()
+local K, C, L = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true then return end
 
 -- LUA API
@@ -279,14 +279,12 @@ function Tooltip:SetColor()
 	if Player and Friend then
 		local Class = select(2, UnitClass(Unit))
 		local Color = K.Colors.class[Class]
-		if not Color then
-			R, G, B = unpack(C.Media.Border_Color)
-		else
+		if Color then -- thanks to liquidbase for this fix.
 			R, G, B = Color[1], Color[2], Color[3]
+			HealthBar:SetStatusBarColor(R, G, B)
+			HealthBar:SetBackdropBorderColor(R, G, B)
+			self:SetBackdropBorderColor(R, G, B)
 		end
-		HealthBar:SetStatusBarColor(R, G, B)
-		HealthBar:SetBackdropBorderColor(R, G, B)
-		self:SetBackdropBorderColor(R, G, B)
 	elseif Reaction then
 		local Color = K.Colors.reaction[Reaction]
 

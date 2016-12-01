@@ -156,7 +156,7 @@ local function init()
 		info.textHeight = 12
 		info.value = randoms[math.random(1, #randoms)]
 		info.notCheckable = 1
-		info.text = L_LOOT_RANDOM
+		info.text = L.Loot.Random
 		info.func = MasterLoot_GiveLoot
 		info.icon = "Interface\\Buttons\\UI-GroupLoot-Coin-Up"
 		UIDropDownMenu_AddButton(info)
@@ -169,7 +169,7 @@ local function init()
 			info.textHeight = 12
 			info.value = i
 			info.notCheckable = 1
-			info.text = L_LOOT_SELF
+			info.text = L.Loot.Self
 			info.func = MasterLoot_GiveLoot
 			info.icon = "Interface\\GossipFrame\\VendorGossipIcon"
 			UIDropDownMenu_AddButton(info)

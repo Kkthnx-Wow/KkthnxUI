@@ -142,7 +142,7 @@ frame:SetPoint("LEFT", WorldMapTitleButton, "LEFT", 100, -1)
 
 frame.f = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 frame.f:SetPoint("LEFT", frame, "RIGHT", 0, 0)
-frame.f:SetText(L_MAP_FOG)
+frame.f:SetText(L.Map.Fog)
 frame.f:Show()
 
 -- Handle clicks

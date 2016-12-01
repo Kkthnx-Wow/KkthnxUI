@@ -4,6 +4,35 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 local config = ns.config
 local oUF = ns.oUF or oUF
+
+-- LUA API
+local _G = _G
+local pairs = pairs
+local print = print
+local select = select
+local tinsert = table.insert
+local unpack = unpack
+
+-- WOW API
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
+local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local GetThreatStatusColor = GetThreatStatusColor
+local InCombatLockdown = InCombatLockdown
+local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local UnitClass = UnitClass
+local UnitClassification = UnitClassification
+local UnitDetailedThreatSituation = UnitDetailedThreatSituation
+local UnitHasVehicleUI = UnitHasVehicleUI
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsUnit = UnitIsUnit
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
+-- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
+-- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
+-- GLOBALS: SetPortraitTexture, oUF_KkthnxPet,
+
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 local pathFat = textPath.."Fat\\"
 local pathNormal = textPath.."Normal\\"
@@ -19,90 +48,90 @@ local DataNormal = {
 		normal = pathNormal .. "Target",
 	},
 	vehicle = {-- w = width, h = height, x offset, y offset, t=texture, j = justify, s = size, c=Texture Coordinates, p = point
-	siz = {w = 175, h = 42}, -- size
-	tex = {w = 240, h = 121, x = 0, y = -8, t = "Interface\\Vehicles\\UI-Vehicle-Frame", c = {0, 1, 0, 1}}, --texture
-	hpb = {w = 108, h = 9, x = 30, y = 1,}, --Healthbar
-	hpt = {x = 0, y = 1, j = "CENTER", s = 13}, -- Healthtext
-	mpb = {w = 108, h = 9, x = 0, y = 0,}, -- Mana bar
-	mpt = {x = 0, y = 0, j = "CENTER", s = 13}, -- Mana bar text
-	nam = {w = 110, h = 10, x = 0, y = 22, j = "CENTER", s = 12}, -- Name text
-	por = {w = 56, h = 56, x = -64, y = 10,}, -- Portrait
-	glo = {w = 242, h = 92, x = 13, y = 0, t = "Interface\\Vehicles\\UI-VEHICLE-FRAME-FLASH", c = {0, 1, 0, 1}}, -- Glow texture
-},
-vehicleorganic = {
-	siz = {w = 175, h = 42},
-	tex = {w = 240, h = 121, x = 0, y = -8, t = "Interface\\Vehicles\\UI-Vehicle-Frame-Organic", c = {0, 1, 0, 1}},
-	hpb = {w = 108, h = 9, x = 30, y = 1,},
-	hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-	mpb = {w = 108, h = 9, x = 0, y = 0,},
-	mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-	nam = {w = 110, h = 10, x = 0, y = 22, j = "CENTER", s = 12},
-	por = {w = 56, h = 56, x = -64, y = 10,},
-	glo = {w = 242, h = 92, x = 13, y = 0, t = "Interface\\Vehicles\\UI-VEHICLE-FRAME-ORGANIC-FLASH", c = {0, 1, 0, 1}},
-},
-player = {
-	siz = {w = 175, h = 42},
-	tex = {w = 232, h = 100, x = -20, y = -7, t = pathNormal.."Target", c = {1, 0.09375, 0, 0.78125}},
-	hpb = {w = 118, h = 19, x = 50, y = 16,},
-	hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-	mpb = {w = 118, h = 20, x = 0, y = 0,},
-	mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-	nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
-	por = {w = 64, h = 64, x = -41, y = 6,},
-	glo = {w = 242, h = 92, x = 13, y = 0, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
-},
-target = {-- and focus
-siz = {w = 175, h = 42},
-tex = {w = 230, h = 100, x = 20, y = -7, t = pathNormal.."Target", c = {0.09375, 1, 0, 0.78125}},
-hpb = {w = 118, h = 19, x = -50, y = 16,},
-hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-mpb = {w = 118, h = 20, x = 0, y = 0,},
-mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
-por = {w = 64, h = 64, x = 41, y = 6,},
-glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
-},
-targettarget = {-- and focus target
-siz = {w = 85, h = 20},
-tex = {w = 128, h = 64, x = 16, y = -10, t = pathNormal.."TargetOfTarget", c = {0, 1, 0, 1}},
-hpb = {w = 43, h = 6, x = 2, y = 14,},
-hpt = {x = -2, y = 0, j = "CENTER", s = 10},
-mpb = {w = 37, h = 7, x = -1, y = 0,},
-nam = {w = 65, h = 10, x = 11, y = -18, j = "LEFT", s = 12},
-por = {w = 40, h = 40, x = -40, y = 10,},
-},
-pet = {
-	siz = {w = 110, h = 37},
-	tex = {w = 128, h = 64, x = 4, y = -10, t = pathNormal.."Pet", c = {0, 1, 0, 1}},
-	hpb = {w = 69, h = 8, x = 16, y = 7,},
-	hpt = {x = 1, y = 1, j = "CENTER", s = 10},
-	mpb = {w = 69, h = 8, x = 0, y = 0,},
-	mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-	--nam = {w = 110, h = 10, x = 20, y = 15, j = "LEFT", s = 14},
-	por = {w = 37, h = 37, x = -41, y = 10,},
-	glo = {w = 128, h = 64, x = -4, y = 12, t = pathNormal.."Party-Flash", c = {0, 1, 1, 0}},
-},
-party = {
-	siz = {w = 115, h = 35},
-	tex = {w = 128, h = 64, x = 2, y = -16, t = pathNormal.."Party", c = {0, 1, 0, 1}},
-	hpb = {w = 69, h = 7, x = 17, y = 17,},
-	hpt = {x = 1, y = 1, j = "CENTER", s = 10},
-	mpb = {w = 70, h = 7, x = 0, y = 0,},
-	mpt = {x = 0, y = -2, j = "CENTER", s = 12},
-	nam = {w = 110, h = 10, x = 0, y = 15, j = "CENTER", s = 12},
-	por = {w = 37, h = 37, x = -39, y = 7,},
-	glo = {w = 128, h = 63, x = -3, y = 4, t = pathNormal.."Party-Flash", c = {0, 1, 0, 1}},
-},
-boss = {
-	siz = {w = 132, h = 46},
-	tex = {w = 250, h = 129, x = 31, y = -24, t = pathNormal.."Boss", c = {0, 1, 0, 1}},
-	hpb = {w = 115, h = 9, x = -38, y = 17,},
-	hpt = {x = 0, y = 0, j = "CENTER", s = 13},
-	mpb = {w = 115, h = 8, x = 0, y = -3,},
-	mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-	nam = {w = 110, h = 10, x = 0, y = 16, j = "CENTER", s = 12},
-	glo = {w = 241, h = 100, x = -2, y = 3, t = pathNormal.."Boss-Flash", c = {0.0, 0.945, 0.0, 0.73125}},
-},
+		siz = {w = 175, h = 42}, -- size
+		tex = {w = 240, h = 121, x = 0, y = -8, t = "Interface\\Vehicles\\UI-Vehicle-Frame", c = {0, 1, 0, 1}}, --texture
+		hpb = {w = 108, h = 9, x = 30, y = 1,}, --Healthbar
+		hpt = {x = 0, y = 1, j = "CENTER", s = 13}, -- Healthtext
+		mpb = {w = 108, h = 9, x = 0, y = 0,}, -- Mana bar
+		mpt = {x = 0, y = 0, j = "CENTER", s = 13}, -- Mana bar text
+		nam = {w = 110, h = 10, x = 0, y = 22, j = "CENTER", s = 12}, -- Name text
+		por = {w = 56, h = 56, x = -64, y = 10,}, -- Portrait
+		glo = {w = 242, h = 92, x = 13, y = 0, t = "Interface\\Vehicles\\UI-VEHICLE-FRAME-FLASH", c = {0, 1, 0, 1}}, -- Glow texture
+	},
+	vehicleorganic = {
+		siz = {w = 175, h = 42},
+		tex = {w = 240, h = 121, x = 0, y = -8, t = "Interface\\Vehicles\\UI-Vehicle-Frame-Organic", c = {0, 1, 0, 1}},
+		hpb = {w = 108, h = 9, x = 30, y = 1,},
+		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
+		mpb = {w = 108, h = 9, x = 0, y = 0,},
+		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
+		nam = {w = 110, h = 10, x = 0, y = 22, j = "CENTER", s = 12},
+		por = {w = 56, h = 56, x = -64, y = 10,},
+		glo = {w = 242, h = 92, x = 13, y = 0, t = "Interface\\Vehicles\\UI-VEHICLE-FRAME-ORGANIC-FLASH", c = {0, 1, 0, 1}},
+	},
+	player = {
+		siz = {w = 175, h = 42},
+		tex = {w = 232, h = 100, x = -20, y = -7, t = pathNormal.."Target", c = {1, 0.09375, 0, 0.78125}},
+		hpb = {w = 118, h = 19, x = 50, y = 16,},
+		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
+		mpb = {w = 118, h = 20, x = 0, y = 0,},
+		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
+		nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
+		por = {w = 64, h = 64, x = -41, y = 6,},
+		glo = {w = 242, h = 92, x = 13, y = 0, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
+	},
+	target = {-- and focus
+		siz = {w = 175, h = 42},
+		tex = {w = 230, h = 100, x = 20, y = -7, t = pathNormal.."Target", c = {0.09375, 1, 0, 0.78125}},
+		hpb = {w = 118, h = 19, x = -50, y = 16,},
+		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
+		mpb = {w = 118, h = 20, x = 0, y = 0,},
+		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
+		nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
+		por = {w = 64, h = 64, x = 41, y = 6,},
+		glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
+	},
+	targettarget = {-- and focus target
+		siz = {w = 85, h = 20},
+		tex = {w = 128, h = 64, x = 16, y = -10, t = pathNormal.."TargetOfTarget", c = {0, 1, 0, 1}},
+		hpb = {w = 43, h = 6, x = 2, y = 14,},
+		hpt = {x = -2, y = 0, j = "CENTER", s = 10},
+		mpb = {w = 37, h = 7, x = -1, y = 0,},
+		nam = {w = 65, h = 10, x = 11, y = -18, j = "LEFT", s = 12},
+		por = {w = 40, h = 40, x = -40, y = 10,},
+	},
+	pet = {
+		siz = {w = 110, h = 37},
+		tex = {w = 128, h = 64, x = 4, y = -10, t = pathNormal.."Pet", c = {0, 1, 0, 1}},
+		hpb = {w = 69, h = 8, x = 16, y = 7,},
+		hpt = {x = 1, y = 1, j = "CENTER", s = 10},
+		mpb = {w = 69, h = 8, x = 0, y = 0,},
+		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
+		--nam = {w = 110, h = 10, x = 20, y = 15, j = "LEFT", s = 14},
+		por = {w = 37, h = 37, x = -41, y = 10,},
+		glo = {w = 128, h = 64, x = -4, y = 12, t = pathNormal.."Party-Flash", c = {0, 1, 1, 0}},
+	},
+	party = {
+		siz = {w = 115, h = 35},
+		tex = {w = 128, h = 64, x = 2, y = -16, t = pathNormal.."Party", c = {0, 1, 0, 1}},
+		hpb = {w = 69, h = 7, x = 17, y = 17,},
+		hpt = {x = 1, y = 1, j = "CENTER", s = 10},
+		mpb = {w = 70, h = 7, x = 0, y = 0,},
+		mpt = {x = 0, y = -2, j = "CENTER", s = 12},
+		nam = {w = 110, h = 10, x = 0, y = 15, j = "CENTER", s = 12},
+		por = {w = 37, h = 37, x = -39, y = 7,},
+		glo = {w = 128, h = 63, x = -3, y = 4, t = pathNormal.."Party-Flash", c = {0, 1, 0, 1}},
+	},
+	boss = {
+		siz = {w = 132, h = 46},
+		tex = {w = 250, h = 129, x = 31, y = -24, t = pathNormal.."Boss", c = {0, 1, 0, 1}},
+		hpb = {w = 115, h = 9, x = -38, y = 17,},
+		hpt = {x = 0, y = 0, j = "CENTER", s = 13},
+		mpb = {w = 115, h = 8, x = 0, y = -3,},
+		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
+		nam = {w = 110, h = 10, x = 0, y = 16, j = "CENTER", s = 12},
+		glo = {w = 241, h = 100, x = -2, y = 3, t = pathNormal.."Boss-Flash", c = {0.0, 0.945, 0.0, 0.73125}},
+	},
 }
 
 local DataFat = {
@@ -231,10 +260,6 @@ end
 local function UpdatePlayerFrame(self, ...)
 	local data = GetData(self.cUnit)
 	local uconfig = ns.config[self.cUnit]
-	-- Frame Size
-	self:SetSize(data.siz.w, data.siz.h)
-	self:SetScale(C.Unitframe.Scale or 1)
-	self:EnableMouse((not C.Unitframe.ClickThrough))
 
 	self.Texture:SetSize(data.tex.w, data.tex.h)
 	self.Texture:SetPoint("CENTER", self, data.tex.x, data.tex.y)
@@ -337,9 +362,10 @@ local function UpdateUnitFrameLayout(frame)
 	end
 
 	-- Frame Size
-	frame:SetSize(data.siz.w, data.siz.h)
-	frame:SetScale(C.Unitframe.Scale or 1)
-	frame:EnableMouse((not C.Unitframe.ClickThrough) or (frame.IsPartyFrame))
+	if not InCombatLockdown() then
+		frame:SetSize(data.siz.w, data.siz.h)
+		frame:SetScale(C.Unitframe.Scale or 1)
+	end
 	-- Texture
 	frame.Texture:SetTexture(data.tex.t)
 	frame.Texture:SetSize(data.tex.w, data.tex.h)
@@ -408,15 +434,6 @@ local function CreateUnitLayout(self, unit)
 	self:HookScript("OnLeave", K.UnitFrame_OnLeave)
 	self.mouseovers = {}
 
-	if (C.Unitframe.FocusButton ~= "NONE") then
-		if (self.cUnit == "focus") then
-			self:SetAttribute(C.Unitframe.FocusModifier.."type"..C.Unitframe.FocusButton, "macro")
-			self:SetAttribute("macrotext", "/clearfocus")
-		else
-			self:SetAttribute(C.Unitframe.FocusModifier.."type"..C.Unitframe.FocusButton, "focus")
-		end
-	end
-
 	if self.cUnit == "arena" then
 		return ns.createArenaLayout(self, unit)
 	end
@@ -439,7 +456,7 @@ local function CreateUnitLayout(self, unit)
 	-- Healthbar
 	self.Health = K.CreateStatusBar(self, nil, nil, true)
 	self.Health:SetFrameLevel(self:GetFrameLevel()-1)
-	table.insert(self.mouseovers, self.Health)
+	tinsert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
 	self.Health.Smooth = true
 	self.Health.frequentUpdates = true
@@ -457,7 +474,7 @@ local function CreateUnitLayout(self, unit)
 	-- Power bar
 	self.Power = K.CreateStatusBar(self, nil, nil, true)
 	self.Power:SetFrameLevel(self:GetFrameLevel()-1)
-	table.insert(self.mouseovers, self.Power)
+	tinsert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = self.cUnit == "player" or self.cUnit == "boss"
 	self.Power.PostUpdate = K.PostUpdatePower
 	self.Power.Smooth = true
@@ -516,49 +533,76 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetSize(50, 52)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
-		-- Heal Prediction
-		local incHeals = K.CreateStatusBar(self.Health)
-		incHeals:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		incHeals:SetPoint("BOTTOMRIGHT")
-		incHeals:SetFrameLevel(self:GetFrameLevel() - 1)
-		incHeals:SetStatusBarColor(0, 1, 0, 0.5)
-		incHeals:Hide()
+		local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
+		mhpb:SetTexture(C.Media.Texture)
+		mhpb:SetVertexColor(0, 1, 0.5, 0.6)
+		mhpb:SetWidth(self.Health:GetWidth())
 
-		-- Absorbing Heals
-		local necroHeals = K.CreateStatusBar(self.Health, "OVERLAY")
-		necroHeals:SetFrameLevel(self:GetFrameLevel() - 1)
-		necroHeals:SetStatusBarColor(1, 0, 0, 0.3)
-		necroHeals:SetReverseFill(true)
-		necroHeals:SetPoint("TOPLEFT")
-		necroHeals:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
+		local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
+		ohpb:SetTexture(C.Media.Texture)
+		ohpb:SetVertexColor(0, 1, 0, 0.6)
+		ohpb:SetWidth(self.Health:GetWidth())
+
+		local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
+		ahpb:SetTexture(C.Media.Texture)
+		ahpb:SetVertexColor(1, 1, 0, 0.6)
 
 		self.HealPrediction = {
-			incHeals = incHeals,
-			necroHeals = necroHeals,
-			Override = K.UpdateIncHeals,
+			myBar = mhpb,
+			otherBar = ohpb,
+			absorbBar = ahpb,
+			maxOverflow = 1,
+			frequentUpdates = true
 		}
 
-		local absorb = CreateFrame("StatusBar", nil, self.Health)
-		absorb:SetStatusBarTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbTexture", "OVERLAY")
-		absorb:SetFrameLevel(self:GetFrameLevel() - 1)
-		absorb:SetStatusBarColor(1, 1, 1, 1)
-		absorb:GetStatusBarTexture():SetBlendMode("ADD")
-		absorb:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT")
-		absorb:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, 5)
-
-		local spark = absorb:CreateTexture(nil, "ARTWORK")
-		spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\AbsorbSpark")
-		spark:SetBlendMode("ADD")
-		spark:SetPoint("BOTTOMLEFT", absorb:GetStatusBarTexture(),"BOTTOMRIGHT")
-		spark:SetSize(5, 5)
-		absorb.spark = spark
-		self.HealPrediction.TotalAbsorb = absorb
-
 		-- Combat CombatFeedbackText
-		if (C.Unitframe.CombatText) then
-			self.CombatFeedbackText = K.SetFontString(self, C.Media.Font, 18, C.Media.Font_Style, "CENTER")
-			self.CombatFeedbackText:SetPoint("CENTER", self.Portrait)
+		if C.Unitframe.CombatText == true then
+			local CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
+			CombatFeedbackText:SetFont(C.Media.Font, 16, "THINOUTLINE")
+			CombatFeedbackText:SetPoint("CENTER", self.Portrait)
+			CombatFeedbackText.colors = {
+				DAMAGE = {0.69, 0.31, 0.31},
+				CRUSHING = {0.69, 0.31, 0.31},
+				CRITICAL = {0.69, 0.31, 0.31},
+				GLANCING = {0.69, 0.31, 0.31},
+				STANDARD = {0.84, 0.75, 0.65},
+				IMMUNE = {0.84, 0.75, 0.65},
+				ABSORB = {0.84, 0.75, 0.65},
+				BLOCK = {0.84, 0.75, 0.65},
+				RESIST = {0.84, 0.75, 0.65},
+				MISS = {0.84, 0.75, 0.65},
+				HEAL = {0.33, 0.59, 0.33},
+				CRITHEAL = {0.33, 0.59, 0.33},
+				ENERGIZE = {0.31, 0.45, 0.63},
+				CRITENERGIZE = {0.31, 0.45, 0.63},
+			}
+
+			self.CombatFeedbackText = CombatFeedbackText
 		end
+	end
+
+	if (self.IsPartyFrame and C.Unitframe.Party == true) then
+		local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
+		mhpb:SetTexture(C.Media.Texture)
+		mhpb:SetVertexColor(0, 1, 0.5, 0.6)
+		mhpb:SetWidth(self.Health:GetWidth())
+
+		local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
+		ohpb:SetTexture(C.Media.Texture)
+		ohpb:SetVertexColor(0, 1, 0, 0.6)
+		ohpb:SetWidth(self.Health:GetWidth())
+
+		local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
+		ahpb:SetTexture(C.Media.Texture)
+		ahpb:SetVertexColor(1, 1, 0, 0.6)
+
+		self.HealPrediction = {
+			myBar = mhpb,
+			otherBar = ohpb,
+			absorbBar = ahpb,
+			maxOverflow = 1,
+			frequentUpdates = true
+		}
 	end
 
 	-- Portrait Timer
@@ -613,17 +657,17 @@ local function CreateUnitLayout(self, unit)
 		self.Leader:SetSize(16, 16)
 		if (self.cUnit == "target" or self.cUnit == "focus") then
 			self.Leader:SetPoint("TOPRIGHT", self.Portrait, -3, 2)
-		elseif (self.IsTargetFrame) then
+		elseif self.IsTargetFrame then
 			self.Leader:SetPoint("TOPLEFT", self.Portrait, -3, 4)
-		elseif (self.IsPartyFrame) then
+		elseif self.IsPartyFrame then
 			self.Leader:SetSize(14, 14)
 			self.Leader:SetPoint("CENTER", self.Portrait, "TOPLEFT", 1, -1)
 		end
 
-		if (not self.IsTargetFrame) then
+		if not self.IsTargetFrame then
 			self.PhaseIcon = self:CreateTexture(nil, "OVERLAY")
 			self.PhaseIcon:SetPoint("CENTER", self.Portrait, "BOTTOM")
-			if (self.IsMainFrame) then
+			if self.IsMainFrame then
 				self.PhaseIcon:SetSize(26, 26)
 			else
 				self.PhaseIcon:SetSize(18, 18)
@@ -647,9 +691,9 @@ local function CreateUnitLayout(self, unit)
 			self.LFDRole = self:CreateTexture(nil, "OVERLAY")
 			self.LFDRole:SetSize(20, 20)
 
-			if (self.cUnit == "player") then
+			if self.cUnit == "player" then
 				self.LFDRole:SetPoint("BOTTOMRIGHT", self.Portrait, -2, -3)
-			elseif (unit == "target") then
+			elseif unit == "target" then
 				self.LFDRole:SetPoint("TOPLEFT", self.Portrait, -10, -2)
 			else
 				self.LFDRole:SetPoint("BOTTOMLEFT", self.Portrait, -5, -5)
@@ -661,7 +705,9 @@ local function CreateUnitLayout(self, unit)
 	UpdateUnitFrameLayout(self)
 
 	-- Player Frame
-	if (self.cUnit == "player") then
+	if self.cUnit == "player" then
+		self:SetSize(data.siz.w, data.siz.h)
+		self:SetScale(C.Unitframe.Scale or 1)
 
 		-- Combo Points
 		ComboPointPlayerFrame:ClearAllPoints()
@@ -674,22 +720,22 @@ local function CreateUnitLayout(self, unit)
 		end
 
 		-- Totems
-		if (config[K.Class].showTotems) then
+		if config[K.Class].showTotems then
 			ns.classModule.Totems(self, config, uconfig)
 		end
 
 		-- Alternate Mana Bar
-		if (config[K.Class].showAdditionalPower) then
+		if config[K.Class].showAdditionalPower then
 			ns.classModule.alternatePowerBar(self, config, uconfig)
 		end
 
 		-- Load Class Modules
-		if (ns.classModule[K.Class]) then
+		if ns.classModule[K.Class] then
 			self.classPowerBar = ns.classModule[K.Class](self, config, uconfig)
 		end
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
-		if (C.Unitframe.PowerPredictionBar) then
+		if C.Unitframe.PowerPredictionBar then
 			local mainBar, altBar
 			mainBar = CreateFrame("StatusBar", nil, self.Power)
 			mainBar:SetFrameLevel(self.Power:GetFrameLevel())
@@ -702,7 +748,7 @@ local function CreateUnitLayout(self, unit)
 			mainBar:SetWidth(self.Power:GetWidth())
 			mainBar:SetStatusBarColor(1, 1, 1, .3)
 
-			if (self.AdditionalPower) then
+			if self.AdditionalPower then
 				altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
 				altBar:SetFrameLevel(self.AdditionalPower:GetFrameLevel())
 				altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
@@ -730,6 +776,18 @@ local function CreateUnitLayout(self, unit)
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
 
+		-- GCD spark
+		if C.Unitframe.GCDBar == true then
+			self.GCD = CreateFrame("StatusBar", self:GetName().."_GCD", self)
+			self.GCD:SetHeight(K.Scale(6))
+			self.GCD:SetWidth(K.Scale(150))
+			self.GCD:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -K.Scale(4))
+			self.GCD:SetStatusBarTexture(C.Media.Texture)
+			self.GCD:SetStatusBarColor(0.9, 0.9, 0.9)
+
+			Movers:RegisterFrame(self.GCD)
+		end
+
 		-- Combat icon
 		self.Combat = self:CreateTexture(nil, "OVERLAY")
 		self.Combat:SetPoint("CENTER", self.Level, 1, 0)
@@ -754,13 +812,13 @@ local function CreateUnitLayout(self, unit)
 		self.QuestIcon:SetSize(32, 32)
 		self.QuestIcon:SetPoint("CENTER", self.Health, "TOPRIGHT", 1, 10)
 
-		table.insert(self.__elements, function(self, _, unit)
+		tinsert(self.__elements, function(self, _, unit)
 			self.Texture:SetTexture(GetTargetTexture(self.cUnit, UnitClassification(unit)))
 		end)
 	end
 
 	if (self.cUnit == "player") then
-		if (C.Unitframe.ThreatValue) then
+		if C.Unitframe.ThreatValue then
 			self.NumericalThreat = CreateFrame("Frame", nil, self)
 			self.NumericalThreat:SetSize(49, 18)
 			self.NumericalThreat:SetPoint("BOTTOM", self, "TOP", 0, 0)
@@ -941,14 +999,14 @@ if (C.Unitframe.Party) then
 	"groupBy", "GROUP",
 	"showPlayer", C.Unitframe.ShowPlayer, -- Need to add this as an option.
 	"yOffset", K.Scale(-32)
-)
+	)
 
-party:SetPoint(unpack(C.Position.UnitFrames.Party))
-party:SetScale(1)
-Movers:RegisterFrame(party)
+	party:SetPoint(unpack(C.Position.UnitFrames.Party))
+	party:SetScale(1)
+	Movers:RegisterFrame(party)
 end
 
-if (C.Unitframe.ShowBoss) then
+if C.Unitframe.ShowBoss then
 	local boss = {}
 	for i = 1, MAX_BOSS_FRAMES do
 		boss[i] = oUF:Spawn("boss"..i, "oUF_KkthnxBossFrame"..i)
@@ -962,7 +1020,7 @@ if (C.Unitframe.ShowBoss) then
 	end
 end
 
-if (C.Unitframe.ShowArena) then
+if C.Unitframe.ShowArena then
 	local arena = {}
 	for i = 1, 5 do
 		arena[i] = oUF:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)
@@ -980,7 +1038,6 @@ end
 for i = 1, MIRRORTIMER_NUMTIMERS do
 	local bar = _G["MirrorTimer" .. i]
 	bar:SetParent(UIParent)
-	-- bar:SetScale(1)
 	bar:SetSize(220, 18)
 
 	K.CreateBorder(bar, 11, 3)

@@ -9,16 +9,16 @@ local HIDE = HIDE
 local Tutorial = CreateFrame("Frame", nil, UIParent)
 
 K.TutorialList = {
-	L_TUTORIAL_MESSAGE_1,
-	L_TUTORIAL_MESSAGE_2,
-	L_TUTORIAL_MESSAGE_3,
-	L_TUTORIAL_MESSAGE_4,
-	L_TUTORIAL_MESSAGE_5,
-	L_TUTORIAL_MESSAGE_6,
-	L_TUTORIAL_MESSAGE_7,
-	L_TUTORIAL_MESSAGE_8,
-	L_TUTORIAL_MESSAGE_9,
-	L_TUTORIAL_MESSAGE_10,
+	L.Tutorial.Message1,
+	L.Tutorial.Message2,
+	L.Tutorial.Message3,
+	L.Tutorial.Message4,
+	L.Tutorial.Message5,
+	L.Tutorial.Message6,
+	L.Tutorial.Message7,
+	L.Tutorial.Message8,
+	L.Tutorial.Message9,
+	L.Tutorial.Message10,
 }
 
 function Tutorial:SetNextTutorial()
@@ -77,23 +77,26 @@ function Tutorial:SpawnTutorialFrame()
 	_G[f.disableButton:GetName() .. "Text"]:SetText(DISABLE)
 	f.disableButton:SetPoint("BOTTOMLEFT", 2, 0)
 	f.disableButton:SetScript("OnShow", function(self) self:SetChecked(KkthnxUIDataPerChar.hideTutorial) end)
-
 	f.disableButton:SetScript("OnClick", function(self) KkthnxUIDataPerChar.hideTutorial = self:GetChecked() end)
 
 	f.hideButton = CreateFrame("Button", f:GetName().."HideButton", f, "OptionsButtonTemplate")
-	f.hideButton:SetPoint("BOTTOMRIGHT", -5, 5)
+	f.hideButton:SetPoint("BOTTOMRIGHT", -7, 7)
+	f.hideButton:SetSize(80, 19)
+	f.hideButton:SkinButton()
 	_G[f.hideButton:GetName() .. "Text"]:SetText(HIDE)
 	f.hideButton:SetScript("OnClick", function(self) StaticPopupSpecial_Hide(self:GetParent()) end)
 
 	f.nextButton = CreateFrame("Button", f:GetName().."NextButton", f, "OptionsButtonTemplate")
-	f.nextButton:SetPoint("RIGHT", f.hideButton, "LEFT", -4, 0)
-	f.nextButton:SetWidth(22)
+	f.nextButton:SetPoint("RIGHT", f.hideButton, "LEFT", -6, 0)
+	f.nextButton:SetSize(20, 19)
+	f.nextButton:SkinButton()
 	_G[f.nextButton:GetName() .. "Text"]:SetText(">")
 	f.nextButton:SetScript("OnClick", function(self) Tutorial:SetNextTutorial() end)
 
 	f.prevButton = CreateFrame("Button", f:GetName().."PrevButton", f, "OptionsButtonTemplate")
-	f.prevButton:SetPoint("RIGHT", f.nextButton, "LEFT", -4, 0)
-	f.prevButton:SetWidth(22)
+	f.prevButton:SetPoint("RIGHT", f.nextButton, "LEFT", -6, 0)
+	f.prevButton:SetSize(20, 19)
+	f.prevButton:SkinButton()
 	_G[f.prevButton:GetName() .. "Text"]:SetText("<")
 	f.prevButton:SetScript("OnClick", function(self) Tutorial:SetPrevTutorial() end)
 

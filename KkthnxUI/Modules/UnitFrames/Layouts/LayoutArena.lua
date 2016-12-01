@@ -6,6 +6,17 @@ local oUF = ns.oUF or oUF
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 
+local function FilterArenaBuffs(...)
+
+    local icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster = ...
+    local buffList = K.ArenaBuffList -- WIP
+
+    if (K.ArenaBuffList[name]) then
+        return true
+    end
+    return false
+end
+
 local function arenaPrep(self, event, ...)
 	if event ~= "ArenaPreparation" then return; end
 
@@ -108,10 +119,31 @@ function ns.createArenaLayout(self, unit)
 	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 	self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 
-	-- Auras
+  -- Auras
 	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena
+
+	if (C.Unitframe.FilterArenaBuffs) then
+		self.Buffs.CustomFilter = FilterArenaBuffs
+	end
+
+	self.Buffs.PostCreateIcon = ns.UpdateAuraIcons
+	self.Buffs.PostUpdateIcon = ns.PostUpdateIcon
+
+	self.Debuffs = CreateFrame("Frame", nil, self)
+	self.Debuffs.size = 22
+	self.Debuffs:SetHeight(self.Debuffs.size * 3)
+	self.Debuffs:SetWidth(self.Debuffs.size * 4)
+	self.Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, -6)
+	self.Debuffs.initialAnchor = "TOPLEFT"
+	self.Debuffs["growth-x"] = "RIGHT"
+	self.Debuffs["growth-y"] = "DOWN"
+	self.Debuffs.num = 8
+	self.Debuffs.spacing = 4.5
+
+	self.Debuffs.PostCreateIcon = ns.UpdateAuraIcons
+	self.Debuffs.PostUpdateIcon = ns.PostUpdateIcon
 
 	-- Castbars
 	if C.Unitframe.Castbars and uconfig.cbshow then
