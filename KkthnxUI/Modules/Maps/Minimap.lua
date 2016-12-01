@@ -106,7 +106,6 @@ AutoHideLandingPage:SetScript("OnEvent", function(self, event)
 		GarrisonLandingPageMinimapButton:SetScale(0.0001)
 		GarrisonLandingPageMinimapButton:SetAlpha(0)
 	else
-		GarrisonLandingPageMinimapButton:SetScale(1)
 		GarrisonLandingPageMinimapButton:SetAlpha(1)
 	end
 end)
@@ -114,18 +113,18 @@ end)
 -- Dungeon info
 MiniMapInstanceDifficulty:ClearAllPoints()
 MiniMapInstanceDifficulty:SetParent(Minimap)
-MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, -2)
+MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 MiniMapInstanceDifficulty:SetScale(0.8)
 
 GuildInstanceDifficulty:ClearAllPoints()
 GuildInstanceDifficulty:SetParent(Minimap)
-GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, -2)
+GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
 GuildInstanceDifficulty:SetScale(0.8)
 
 MiniMapChallengeMode:ClearAllPoints()
 MiniMapChallengeMode:SetParent(Minimap)
-MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, -2)
-MiniMapChallengeMode:SetScale(0.6)
+MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, -2)
+MiniMapChallengeMode:SetScale(0.8)
 
 -- Feedback icon
 if FeedbackUIButton then

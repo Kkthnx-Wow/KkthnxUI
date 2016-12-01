@@ -15,7 +15,7 @@ frame:SetScript("OnEvent", function(self, event)
 	local function Skin_WeakAuras(frame)
 		if not frame.shadow then
 			-- We just use our pixel shadow here
-			frame:CreateShadow()
+			K.CreateBorder(frame, nil, 3)
 		end
 
 		if frame.icon then

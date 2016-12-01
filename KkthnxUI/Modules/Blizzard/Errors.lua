@@ -28,4 +28,6 @@ function KkthnxUIError:Enable()
 end
 
 KkthnxUIError:RegisterEvent("PLAYER_LOGIN")
-KkthnxUIError:SetScript("OnEvent", KkthnxUIError.Enable)
+KkthnxUIError:SetScript("OnEvent", function(self, event, ...)
+	KkthnxUIError:Enable()
+end)

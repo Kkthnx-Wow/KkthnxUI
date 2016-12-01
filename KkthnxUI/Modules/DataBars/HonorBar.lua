@@ -1,21 +1,14 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataBars.HonorEnable ~= true or K.Level ~= MAX_PLAYER_LEVEL then return end
+if C.DataBars.HonorEnable ~= true then return end
 
-local UnitHonor = UnitHonor
-local UnitHonorMax = UnitHonorMax
-local UnitHonorLevel = UnitHonorLevel
-local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
-local UnitPrestige = UnitPrestige
-local TogglePVPUI = TogglePVPUI
-local LoadAddOn = LoadAddOn
-local IsAddOnLoaded = IsAddOnLoaded
+if K.Level ~= MAX_PLAYER_LEVEL then return end
 
 local Bars = 20
 local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "HonorAnchor", UIParent)
 Anchor:SetSize(C.DataBars.HonorWidth, C.DataBars.HonorHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -48)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -33)
 Movers:RegisterFrame(Anchor)
 
 local HonorBar = CreateFrame("StatusBar", nil, UIParent)
@@ -82,8 +75,8 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(string.format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(L.DataBars.HonorLeftClick)
-	GameTooltip:AddLine(L.DataBars.HonorRightClick)
+	GameTooltip:AddLine(L_DATABARS_HONOR_LEFTCLICK)
+	GameTooltip:AddLine(L_DATABARS_HONOR_RIGHTCLICK)
 
 	GameTooltip:Show()
 end)
@@ -92,9 +85,8 @@ HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.HonorFade then
 	HonorBar:SetAlpha(0)
-	HonorBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-	HonorBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
-	HonorBar.Tooltip = true
+	HonorBar:SetScript("OnEnter", function() HonorBar:FadeIn() end)
+	HonorBar:SetScript("OnLeave", function() HonorBar:FadeOut() end)
 end
 
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")

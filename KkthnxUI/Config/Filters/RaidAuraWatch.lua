@@ -260,32 +260,6 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(206221)] = 6, -- Empowered Bonds of Fel
 	[GetSpellInfo(208802)] = 6, -- Soul Corrosion
 	[GetSpellInfo(212686)] = 6, -- Flames of Sargeras
-
-	-- Trial of Valor (By Anzor)
-	-- Odyn
-	[GetSpellInfo(228030)] = 6, -- Expel Light (need aura)
-	[GetSpellInfo(227807)] = 6, -- Storm of Justice
-	[GetSpellInfo(228918)] = 6, -- Stormforged Spear
-	[GetSpellInfo(227490)] = 6, -- Branded
-	[GetSpellInfo(227491)] = 6, -- Branded
-	[GetSpellInfo(227498)] = 6, -- Branded
-	[GetSpellInfo(227499)] = 6, -- Branded
-	[GetSpellInfo(227500)] = 6, -- Branded
-	[GetSpellInfo(231297)] = 6, -- Runic Brand (Mythic Only)
-	-- Guarm
-	[GetSpellInfo(228228)] = 5, -- Flame Lick
-	[GetSpellInfo(228248)] = 7, -- Frost Lick
-	[GetSpellInfo(228253)] = 6, -- Shadow Lick
-	--[GetSpellInfo(228768)] = 6, -- Salty Spittle
-	--[GetSpellInfo(228758)] = 6, -- Fiery Phlegm
-	--[GetSpellInfo(228769)] = 6, -- Dark Discharge
-	-- Helya
-	[GetSpellInfo(228883)] = 6, -- Unholy Reckoning (Trash)
-	[GetSpellInfo(228054)] = 7, -- Taint of the Sea
-	[GetSpellInfo(229119)] = 6, -- Orb of Corruption
-	[GetSpellInfo(228058)] = 6, -- Orb of Corrosion
-	[GetSpellInfo(193367)] = 6, -- Fetid Rot
-	[GetSpellInfo(227982)] = 6, -- Bilewater Redox
 }
 
 -- Raid buffs (Squared aura tracking list)
@@ -312,7 +286,6 @@ K.RaidBuffsTracking = {
 	},
 	SHAMAN = {
 		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
-		{204288, "BOTTOMLEFT", {0.2, 0.7, 0.2}, true},-- Earth Shield
 	},
 	MONK = {
 		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist

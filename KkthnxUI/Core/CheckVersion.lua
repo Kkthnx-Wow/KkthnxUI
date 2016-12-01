@@ -1,70 +1,41 @@
 local K, C, L = select(2, ...):unpack()
 
-local select, tostring = select, tostring
-local gsub = string.gsub
-local CreateFrame = CreateFrame
-local SendAddonMessage = SendAddonMessage
-local UnitName = UnitName
-local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
-local SendChatMessage = SendChatMessage
-local BNSendWhisper = BNSendWhisper
-
+local KkthnxUIVersion = CreateFrame("Frame")
+local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
 MyName = gsub(MyName, "%s+", "")
 
-local Version = tostring(GetAddOnMetadata("KkthnxUI", "Version"))
-
-local OnEvent = function(self, event, prefix, message, channel, sender)
+function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
 	if (event == "CHAT_MSG_ADDON") then
-		if (prefix ~= "KkthnxUI") or (sender == MyName) then
+		if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
 			return
 		end
 
-		if (tostring(message) > Version) then
-			K.Print(L.Misc.UIOutdated)
-
+		if (tonumber(message) > Version) then -- We recieved a higher version, we're outdated. :(
+			K.Print(L_MISC_UI_OUTDATED)
 			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end
-	elseif (event == "GUILD_ROSTER_UPDATE") then
-		if (IsInGuild()) then
-			K.Delay(3, SendAddonMessage, "KkthnxUI", Version, "GUILD")
-		end
 	else
+		-- Tell everyone what version we use.
 		local Channel
 
-		if (IsInRaid()) then
+		if IsInRaid() then
 			Channel = (not IsInRaid(LE_PARTY_CATEGORY_HOME) and IsInRaid(LE_PARTY_CATEGORY_INSTANCE)) and "INSTANCE_CHAT" or "RAID"
-		elseif (IsInGroup()) then
+		elseif IsInGroup() then
 			Channel = (not IsInGroup(LE_PARTY_CATEGORY_HOME) and IsInGroup(LE_PARTY_CATEGORY_INSTANCE)) and "INSTANCE_CHAT" or "PARTY"
+		elseif IsInGuild() then
+			Channel = "GUILD"
 		end
 
-		if (Channel) then
-			K.Delay(3, SendAddonMessage, "KkthnxUI", Version, Channel)
-		end
-	end
-end
-
-local EventFrame = CreateFrame("Frame")
-EventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-EventFrame:RegisterEvent("GROUP_ROSTER_UPDATE")
-EventFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
-EventFrame:RegisterEvent("CHAT_MSG_ADDON")
-EventFrame:SetScript("OnEvent", OnEvent)
-
-RegisterAddonMessagePrefix("KkthnxUI")
-
-local OnWhisper = function(self, event, text, name, ...)
-	if (text:lower():match("ui_version")) then
-		if (event == "CHAT_MSG_WHISPER") then
-			SendChatMessage(K.UIName .. " " .. K.Version, "WHISPER", nil, name)
-		elseif (event == "CHAT_MSG_BN_WHISPER") then
-			BNSendWhisper(select(11, ...), K.UIName .. " " .. K.Version)
+		if Channel then -- Putting a small delay on the call just to be certain it goes out.
+			K.Delay(2, SendAddonMessage, "KkthnxUIVersion", Version, Channel)
 		end
 	end
 end
 
-local WhisperFrame = CreateFrame("Frame")
-WhisperFrame:RegisterEvent("CHAT_MSG_WHISPER")
-WhisperFrame:RegisterEvent("CHAT_MSG_BN_WHISPER")
-WhisperFrame:SetScript("OnEvent", OnWhisper)
+KkthnxUIVersion:RegisterEvent("PLAYER_ENTERING_WORLD")
+KkthnxUIVersion:RegisterEvent("GROUP_ROSTER_UPDATE")
+KkthnxUIVersion:RegisterEvent("CHAT_MSG_ADDON")
+KkthnxUIVersion:SetScript("OnEvent", KkthnxUIVersion.Check)
+
+RegisterAddonMessagePrefix("KkthnxUIVersion")

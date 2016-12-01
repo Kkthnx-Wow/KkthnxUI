@@ -26,7 +26,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	end
 
 	if IsFishingLoot() then
-		self.title:SetText(L.Loot.Fish)
+		self.title:SetText(L_LOOT_FISH)
 	elseif not UnitIsFriend("player", "target") and UnitIsDead("target") then
 		self.title:SetText(UnitName("target"))
 	else
@@ -161,12 +161,10 @@ do
 	Butsu.title = title
 end
 
-Butsu:SetScript("OnMouseDown", function(self, button)
-    if IsAltKeyDown() then
-        self:StartMoving()
-    elseif IsControlKeyDown() and button == "RightButton" then
-        self:SetPoint(unpack(C.Position.Loot))
-    end
+Butsu:SetScript("OnMouseDown", function(self)
+	if IsAltKeyDown() then
+		self:StartMoving()
+	end
 end)
 
 Butsu:SetScript("OnMouseUp", function(self)
@@ -205,9 +203,9 @@ local function Announce(chn)
 	local nums = GetNumLootItems()
 	if nums == 0 or (nums == 1 and GetLootSlotType(1) == LOOT_SLOT_MONEY) then return end
 	if UnitIsPlayer("target") or not UnitExists("target") then
-		SendChatMessage(">> "..LOOT..":", chn)
+		SendChatMessage(">> "..L_LOOT_CHEST..":", chn)
 	else
-		SendChatMessage(">> "..LOOT.." - '"..UnitName("target").."':", chn)
+		SendChatMessage(">> "..L_LOOT_MONSTER.." - '"..UnitName("target").."':", chn)
 	end
 	for i = 1, GetNumLootItems() do
 		if LootSlotHasItem(i) then
@@ -228,41 +226,41 @@ end
 local function LDD_Initialize()
 	local info = {}
 
-	info.text = L.Loot.Announce
+	info.text = L_LOOT_ANNOUNCE
 	info.notCheckable = true
 	info.isTitle = true
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L.Loot.ToRaid
+	info.text = L_LOOT_TO_RAID
 	info.value = "raid"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L.Loot.ToGuild
+	info.text = L_LOOT_TO_GUILD
 	info.value = "guild"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L.Loot.ToParty
+	info.text = L_LOOT_TO_PARTY
 	info.value = "party"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L.Loot.ToInstance
+	info.text = L_LOOT_TO_INSTANCE
 	info.value = "instance_chat"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
 	UIDropDownMenu_AddButton(info)
 
 	info = {}
-	info.text = L.Loot.ToSay
+	info.text = L_LOOT_TO_SAY
 	info.value = "say"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
@@ -275,15 +273,9 @@ lb:SetWidth(14)
 lb:SetHeight(12)
 lb:ClearAllPoints()
 lb:SetPoint("BOTTOMRIGHT", Butsu, "TOPRIGHT", -21, -18)
-lb:SetFrameStrata("DIALOG")
+lb:SetFrameStrata("TOOLTIP")
 lb:RegisterForClicks("RightButtonUp", "LeftButtonUp")
-lb:SetScript("OnClick", function(self, button)
-    if button == "RightButton" then
-        ToggleDropDownMenu(nil, nil, LDD, lb, 0, 0)
-    else
-        Announce(K.CheckChat())
-    end
-end)
+lb:SetScript("OnClick", OnLinkClick)
 lb:Hide()
 UIDropDownMenu_Initialize(LDD, LDD_Initialize, "MENU")
 

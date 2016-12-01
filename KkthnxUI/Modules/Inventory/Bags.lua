@@ -298,7 +298,6 @@ function Bags:CreateContainer(storagetype, ...)
 
 		Sort:SetSize(Container:GetWidth() - 8, 23)
 		Sort:ClearAllPoints()
-		Sort:SetParent(Container)
 		Sort:SetPoint("BOTTOMLEFT", Container, "TOPLEFT", 4, 2)
 		Sort:SetFrameLevel(Container:GetFrameLevel())
 		Sort:SetFrameStrata(Container:GetFrameStrata())
@@ -315,6 +314,7 @@ function Bags:CreateContainer(storagetype, ...)
 		Sort.SetPoint = Noop
 
 		local ToggleBagsContainer = CreateFrame("Button", "BagsCloseButton", Container, "UIPanelCloseButton")
+		ToggleBagsContainer:SetSize(28, 28)
 		ToggleBagsContainer:SetPoint("TOPRIGHT", Container, "TOPRIGHT", -2, -2)
 		ToggleBagsContainer:SetParent(Container)
 		ToggleBagsContainer:EnableMouse(true)
@@ -921,17 +921,10 @@ function Bags:Enable()
 		return
 	end
 
-	if C.Bags.SortRightToLeft == false then
-		SetSortBagsRightToLeft(false)
-	else
-		SetSortBagsRightToLeft(true)
-	end
-
-	if C.Bags.InsertLeftToRight == true then
-		SetInsertItemsLeftToRight(true)
-	else
-		SetInsertItemsLeftToRight(false)
-	end
+	SetSortBagsRightToLeft(false)
+	SetInsertItemsLeftToRight(true)
+	--InterfaceOptionsControlsPanelReverseCleanUpBags:Hide()
+	--InterfaceOptionsControlsPanelReverseNewLoot:Hide()
 
 	Font = C.Media.Font
 	ButtonSize = C.Bags.ButtonSize

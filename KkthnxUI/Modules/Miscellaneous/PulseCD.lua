@@ -130,7 +130,6 @@ end
 function frame:ADDON_LOADED(addon)
 	for _, v in pairs(K.PulseIgnoredSpells) do
 		K.PulseIgnoredSpells[v] = true
-		print(K.PulseIgnoredSpells)
 	end
 	self:UnregisterEvent("ADDON_LOADED")
 end

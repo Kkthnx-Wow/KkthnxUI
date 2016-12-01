@@ -4,15 +4,6 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
-local pairs = pairs
-local select = select
-local unpack = unpack
-
-local hooksecurefunc = hooksecurefunc
-local SetOverrideBindingClick = SetOverrideBindingClick
-local IsControlKeyDown = IsControlKeyDown
-local IsAltKeyDown = IsAltKeyDown
-
 -- Event handler
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
 oUFKkthnx:RegisterEvent("ADDON_LOADED")
@@ -25,10 +16,25 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 		return
 	end
 
-	self:UnregisterEvent(event)
-	self:RegisterEvent("MODIFIER_STATE_CHANGED")
+	-- Focus Key
+	if (C.Unitframe.FocusButton ~= "NONE") then
+		--Blizzard raid frame
+		hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame, ...)
+			if frame then
+				frame:SetAttribute(C.Unitframe.FocusModifier.."type"..C.Unitframe.FocusButton, "focus")
+			end
+		end)
+		-- World Models
+		local foc = CreateFrame("CheckButton", "Focuser", UIParent, "SecureActionButtonTemplate")
+		foc:SetAttribute("type1", "macro")
+		foc:SetAttribute("macrotext", "/focus mouseover")
+		SetOverrideBindingClick(Focuser, true, C.Unitframe.FocusModifier.."BUTTON"..C.Unitframe.FocusButton, "Focuser")
+	end
 
-	-- Skin the Countdown/BG timers
+	self:UnregisterEvent(event)
+	self:RegisterEvent("MODIFIER_STATE_CHANGED") -- Showing auras
+
+	-- Skin the Countdown/BG timers:
 	self:RegisterEvent("START_TIMER")
 
 	self.ADDON_LOADED = nil
@@ -73,10 +79,8 @@ function oUFKkthnx:START_TIMER(event)
 	end
 end
 
--- View Auras
 function oUFKkthnx:MODIFIER_STATE_CHANGED(event, key, state)
-	if
-	(IsControlKeyDown() and (key == "LALT" or key == "RALT")) or
+	if (IsControlKeyDown() and (key == "LALT" or key == "RALT")) or
 	(IsAltKeyDown() and (key == "LCTRL" or key == "RCTRL"))
 	then
 		local a, b
