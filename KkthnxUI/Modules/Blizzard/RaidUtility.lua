@@ -4,6 +4,18 @@ local K, C, L = select(2, ...):unpack()
 local unpack = unpack
 local Movers = K.Movers
 
+StaticPopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
+	text =  L.Popup.BlizzardAddOns,
+	button1 = OKAY,
+	OnAccept = function() EnableAddOn("Blizzard_CompactRaidFrames") ReloadUI() end,
+	timeout = 0,
+	showAlert = true,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3
+}
+
 -- Create main frame
 local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", oUF_PetBattleFrameHider)
 RaidUtilityPanel:CreatePanel("Transparent", 170, 144, unpack(C.Position.RaidUtility))
@@ -42,7 +54,7 @@ local function CreateButton(name, parent, template, width, height, point, relati
 end
 
 -- Show button
-CreateButton("RaidUtilityShowButton", oUF_PetBattleFrameHider, "UIPanelButtonTemplate, SecureHandlerClickTemplate", RaidUtilityPanel:GetWidth() / 1.5, 18, "TOP", RaidUtilityPanel, "TOP", 0, 0, RAID_CONTROL)
+CreateButton("RaidUtilityShowButton", oUF_PetBattleFrameHider, "UIPanelButtonTemplate, SecureHandlerClickTemplate", RaidUtilityPanel:GetWidth() / 1.4, 18, "TOP", RaidUtilityPanel, "TOP", 0, 0, RAID_CONTROL)
 RaidUtilityShowButton:SetFrameRef("RaidUtilityPanel", RaidUtilityPanel)
 RaidUtilityShowButton:SetAttribute("_onclick", [=[self:Hide(); self:GetFrameRef("RaidUtilityPanel"):Show();]=])
 RaidUtilityShowButton:SetScript("OnMouseUp", function(self, button)
@@ -66,7 +78,7 @@ RaidUtilityCloseButton:SetAttribute("_onclick", [=[self:GetParent():Hide(); self
 RaidUtilityCloseButton:SetScript("OnMouseUp", function(self) RaidUtilityPanel.toggled = false end)
 
 -- Disband Group button
-CreateButton("RaidUtilityDisbandButton", RaidUtilityPanel, "UIPanelButtonTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -8, L_RAID_UTIL_DISBAND)
+CreateButton("RaidUtilityDisbandButton", RaidUtilityPanel, "UIPanelButtonTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -8, L.Raid.UtilityDisband)
 RaidUtilityDisbandButton:SetScript("OnMouseUp", function(self) StaticPopup_Show("DISBAND_RAID") RaidUtilityPanel.toggled = false end)
 
 -- Convert Group button
@@ -123,6 +135,8 @@ if CompactRaidFrameManager then
 	local MarkTexture = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:CreateTexture(nil, "OVERLAY")
 	MarkTexture:SetTexture("Interface\\RaidFrame\\Raid-WorldPing")
 	MarkTexture:SetPoint("CENTER", 0, -1)
+else
+	StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 end
 
 -- Raid Control Panel

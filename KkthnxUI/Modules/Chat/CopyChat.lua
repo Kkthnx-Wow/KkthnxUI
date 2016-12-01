@@ -92,10 +92,12 @@ end
 for i = 1, NUM_CHAT_WINDOWS do
 	local cf = _G[format("ChatFrame%d", i)]
 	local button = CreateFrame("Button", format("ButtonCF%d", i), cf)
-	button:SetPoint("BOTTOMRIGHT", 0, -4)
+	button:SetPoint("TOPRIGHT", 0, 0)
 	button:SetSize(16, 16)
 	button:SetNormalTexture("Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up")
 	button:SetAlpha(0)
+	button:CreateBackdrop(size, 6)
+	button.backdrop:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 
 	button:SetScript("OnMouseUp", function(self, btn)
 		if btn == "RightButton" then

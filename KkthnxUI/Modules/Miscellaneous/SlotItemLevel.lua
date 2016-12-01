@@ -1,7 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 if C.Misc.ItemLevel ~= true then return end
 
--- Item level on slot buttons in Character/InspectFrame(by Tukz)
 local slots = {
 	"HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot",
 	"WristSlot", "MainHandSlot", "SecondaryHandSlot", "HandsSlot", "WaistSlot",
@@ -103,24 +102,8 @@ local function UpdateButtonsText(frame)
 						end
 
 						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+).+"))
-						if numBonusIDs then
-							if GetDetailedItemLevelInfo then
-								local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo(itemLink)
-								level = effectiveLevel or level
-							end
-						end
-
-						if quality == 6 then
-							if id == 17 then
-								if frame == "Inspect" then
-									itemLink = GetInventoryItemLink("target", 16)
-								else
-									itemLink = GetInventoryItemLink("player", 16)
-								end
-								level = GetDetailedItemLevelInfo(itemLink) or level
-							else
-								level = GetDetailedItemLevelInfo(itemLink) or level
-							end
+						if numBonusIDs or quality == 6 then
+							level = GetDetailedItemLevelInfo(itemLink) or level
 						end
 
 						text:SetText("|cFFFFFF00"..level)

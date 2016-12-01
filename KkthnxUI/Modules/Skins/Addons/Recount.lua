@@ -97,7 +97,7 @@ if not RecountDB["profiles"] then RecountDB["profiles"] = {} end
 if not RecountDB["profiles"][K.Name.." - "..GetRealmName()] then RecountDB["profiles"][K.Name.." - "..K.Realm] = {} end
 if not RecountDB["profiles"][K.Name.." - "..GetRealmName()]["MainWindow"] then RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"] = {} end
 
-RecountDB["profiles"][K.Name.." - "..K.Realm]["Locked"] = true
+RecountDB["profiles"][K.Name.." - "..K.Realm]["Locked"] = false
 RecountDB["profiles"][K.Name.." - "..K.Realm]["Scaling"] = 1
 RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["RowHeight"] = 12
 RecountDB["profiles"][K.Name.." - "..K.Realm]["MainWindow"]["RowSpacing"] = 1

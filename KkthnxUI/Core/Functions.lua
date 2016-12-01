@@ -35,7 +35,7 @@ K.UIParent.origHeight = K.UIParent:GetHeight()
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
 K.Print = function(...)
-	print("|cff3c9bedKkthnxUI|r:", ...)
+	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
 K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
@@ -54,26 +54,25 @@ K.Comma = function(num)
 	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
--- Shortvalue, we show a different value for the chinese client.
 K.ShortValue = function(value)
-	if (Locale == "zhCN") then
-		if abs(value) >= 1e8 then
-			return format("%.1fY", value / 1e8)
-		elseif abs(value) >= 1e4 then
-			return format("%.1fW", value / 1e4)
-		else
-			return format("%d", value)
-		end
+	if value >= 1e11 then
+		return ("%.0fb"):format(value / 1e9)
+	elseif value >= 1e10 then
+		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e9 then
+		return ("%.2fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e8 then
+		return ("%.0fm"):format(value / 1e6)
+	elseif value >= 1e7 then
+		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e6 then
+		return ("%.2fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e5 then
+		return ("%.0fk"):format(value / 1e3)
+	elseif value >= 1e3 then
+		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
 	else
-		if abs(value) >= 1e9 then
-			return format("%.1fG", value / 1e9)
-		elseif abs(value) >= 1e6 then
-			return format("%.1fM", value / 1e6)
-		elseif abs(value) >= 1e3 then
-			return format("%.1fk", value / 1e3)
-		else
-			return format("%d", value)
-		end
+		return value
 	end
 end
 
@@ -165,43 +164,6 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
--- Player's role check
-local isCaster = {
-	DEATHKNIGHT = {nil, nil, nil},
-	DEMONHUNTER = {nil, nil},
-	DRUID = {true},					-- Balance
-	HUNTER = {nil, nil, nil},
-	MAGE = {true, true, true},
-	MONK = {nil, nil, nil},
-	PALADIN = {nil, nil, nil},
-	PRIEST = {nil, nil, true},		-- Shadow
-	ROGUE = {nil, nil, nil},
-	SHAMAN = {true},				-- Elemental
-	WARLOCK = {true, true, true},
-	WARRIOR = {nil, nil, nil}
-}
-
-local function CheckRole(self, event, unit)
-	local Spec = GetSpecialization()
-	local Role = Spec and GetSpecializationRole(Spec)
-
-	if Role == "TANK" then
-		K.Role = "Tank"
-	elseif Role == "HEALER" then
-		K.Role = "Healer"
-	elseif Role == "DAMAGER" then
-		if isCaster[K.Class][Spec] then
-			K.Role = "Caster"
-		else
-			K.Role = "Melee"
-		end
-	end
-end
-local RoleUpdater = CreateFrame("Frame")
-RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
-RoleUpdater:SetScript("OnEvent", CheckRole)
-
 K.ShortenString = function(string, numChars, dots)
 	local bytes = string:len()
 	if (bytes <= numChars) then
@@ -290,7 +252,7 @@ K.FormatTime = function(s)
 	return format("%.1f", s)
 end
 
--- Add time before calling a function
+--Add time before calling a function
 local TimerParent = CreateFrame("Frame")
 K.UnusedTimers = {}
 
@@ -302,8 +264,10 @@ end
 K.NewTimer = function()
 	local Parent = TimerParent:CreateAnimationGroup()
 	local Timer = Parent:CreateAnimation("Alpha")
+
 	Timer:SetScript("OnFinished", TimerOnFinished)
 	Timer.Parent = Parent
+
 	return Timer
 end
 
@@ -311,14 +275,40 @@ K.Delay = function(delay, func, ...)
 	if (type(delay) ~= "number" or type(func) ~= "function") then
 		return
 	end
+
 	local Timer
+
 	if K.UnusedTimers[1] then
 		Timer = tremove(K.UnusedTimers, 1) -- Recycle a timer
 	else
 		Timer = K.NewTimer() -- Or make a new one if needed
 	end
+
 	Timer.Args = {...}
 	Timer.Func = func
 	Timer:SetDuration(delay)
 	Timer.Parent:Play()
+end
+
+-- Currencys
+local GetCurrencyInfo = GetCurrencyInfo
+K.Currency = function(id, weekly, capped)
+	local name, amount, tex, week, weekmax, maxed, discovered = GetCurrencyInfo(id)
+
+	local r, g, b = 1, 1, 1
+	for i = 1, GetNumWatchedTokens() do
+		local _, _, _, itemID = GetBackpackCurrencyInfo(i)
+		if id == itemID then r, g, b = .77, .12, .23 end
+	end
+
+	if (amount == 0 and r == 1) then return end
+	if weekly then
+		if id == 390 then week = floor(math.abs(week) / 100) end
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, "Current: " .. amount .. " - " .. WEEKLY .. ": " .. week .. " / " .. weekmax, r, g, b, r, g, b) end
+	elseif capped then
+		if id == 392 then maxed = 4000 end
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount .. " / " .. maxed, r, g, b, r, g, b) end
+	else
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount, r, g, b, r, g, b) end
+	end
 end

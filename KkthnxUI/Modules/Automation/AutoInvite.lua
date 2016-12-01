@@ -48,8 +48,8 @@ if C.Automation.AutoInvite == true then
 	AutoInvite:SetScript("OnEvent", function(self, event, name)
 		if QueueStatusMinimapButton:IsShown() or GetNumGroupMembers() > 0 then return end
 		if CheckFriend(name) then
-			RaidNotice_AddMessage(RaidWarningFrame, L_INFO_INVITE..name, {r = 0.41, g = 0.8, b = 0.94}, 3)
-			K.Print(format("|cffffff00"..L_INFO_INVITE..name..".|r"))
+			RaidNotice_AddMessage(RaidWarningFrame, L.Info.Invite..name, {r = 0.41, g = 0.8, b = 0.94}, 3)
+			K.Print(format("|cffffff00"..L.Info.Invite..name..".|r"))
 			AcceptGroup()
 			for i = 1, STATICPOPUP_NUMDIALOGS do
 				local frame = _G["StaticPopup"..i]
@@ -87,14 +87,14 @@ end)
 SlashCmdList["AUTOINVITE"] = function(msg)
 	if msg == "off" then
 		KkthnxUIDataPerChar.AutoInvite = false
-		K.Print("|cffffff00"..L_INVITE_DISABLE..".|r")
+		K.Print("|cffffff00"..L.Invite.Disable..".|r")
 	elseif msg == "" then
 		KkthnxUIDataPerChar.AutoInvite = true
-		K.Print("|cffffff00"..L_INVITE_ENABLE..Keyword..".|r")
+		K.Print("|cffffff00"..L.Invite.Enable..Keyword..".|r")
 		Keyword = Keyword
 	else
 		KkthnxUIDataPerChar.AutoInvite = true
-		K.Print("|cffffff00"..L_INVITE_ENABLE..msg..".|r")
+		K.Print("|cffffff00"..L.Invite.Enable..msg..".|r")
 		Keyword = msg
 	end
 end

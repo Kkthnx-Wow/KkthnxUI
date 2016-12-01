@@ -1,7 +1,7 @@
 local K, C, L = select(2, ...):unpack()
+
 local Framework = select(2, ...)
 local oUF = oUF or Framework.oUF
-local Class = select(2, UnitClass("player"))
 
 -- Colors
 oUF.colors.uninterruptible = {
@@ -71,10 +71,10 @@ oUF.colors.class = {
 }
 
 oUF.colors.totems = {
-	[1] = oUF.colors.class[Class], -- Totem 1
-	[2] = oUF.colors.class[Class], -- Totem 2
-	[3] = oUF.colors.class[Class], -- Totem 3
-	[4] = oUF.colors.class[Class], -- Totem 4
+	[1] = oUF.colors.class[K.Class], -- Totem 1
+	[2] = oUF.colors.class[K.Class], -- Totem 2
+	[3] = oUF.colors.class[K.Class], -- Totem 3
+	[4] = oUF.colors.class[K.Class], -- Totem 4
 }
 
 K.Colors = oUF.colors

@@ -27,6 +27,7 @@ oUF.Tags.Methods["KkthnxUI:PvPTimer"] = function(unit)
 	return K.FormatTime(math.floor(pvpTime))
 end
 
+oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
     local r, g, b
     local Level = UnitLevel(unit)

@@ -6,17 +6,26 @@ local format, lower = string.format, string.lower
 local ipairs = ipairs
 local ceil = math.ceil
 local floor = math.floor
-local print, tostring, select = print, tostring, select
-
--- WOW API
+local CombatLogClearEntries = CombatLogClearEntries
+local DoReadyCheck = DoReadyCheck
 local EnableAddOn, DisableAllAddOns = EnableAddOn, DisableAllAddOns
 local GetAddOnInfo = GetAddOnInfo
+local GetCurrentResolution = GetCurrentResolution
 local GetMouseFocus = GetMouseFocus
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
 local GetNumQuestLogEntries = GetNumQuestLogEntries
+local GetRaidRosterInfo = GetRaidRosterInfo
+local GetScreenResolutions = GetScreenResolutions
+local InCombatLockdown = InCombatLockdown
 local IsInInstance = IsInInstance
+local print, tostring, select = print, tostring, select
 local ReloadUI = ReloadUI
+local RestartGx = RestartGx
+local SelectQuestLogEntry = SelectQuestLogEntry
+local SetAbandonQuest = SetAbandonQuest
 local SetCVar = SetCVar
+local ToggleHelpFrame = ToggleHelpFrame
+local UnitInRaid = UnitInRaid
 
 -- Ready check
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
@@ -45,7 +54,7 @@ SLASH_CLEARQUESTS2 = "/clquests"
 
 -- KKTHNXUI help commands
 SlashCmdList.UIHELP = function()
-	for i, v in ipairs(L_SLASHCMD_HELP) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
+	for i, v in ipairs(L.SlashCommand.Help) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
 end
 SLASH_UIHELP1 = "/uihelp"
 SLASH_UIHELP2 = "/helpui"
@@ -59,7 +68,7 @@ end
 function DisbandRaidGroup()
 	if InCombatLockdown() then return end
 	if UnitInRaid("player") then
-		SendChatMessage(L_INFO_DISBAND, "RAID")
+		SendChatMessage(L.Info.Disabnd, "RAID")
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
 			if online and name ~= K.Name then
@@ -67,7 +76,7 @@ function DisbandRaidGroup()
 			end
 		end
 	else
-		SendChatMessage(L_INFO_DISBAND, "PARTY")
+		SendChatMessage(L.Info.Disband, "PARTY")
 		for i = MAX_PARTY_MEMBERS, 1, -1 do
 			if GetNumGroupMembers(i) then
 				UninviteUnit(UnitName("party"..i))
@@ -78,7 +87,7 @@ function DisbandRaidGroup()
 end
 
 StaticPopupDialogs.DISBAND_RAID = {
-	text = L_POPUP_DISBAND_RAID,
+	text = L.Popup.DisbandRaid,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = DisbandRaidGroup,
@@ -333,7 +342,7 @@ end
 
 -- Add a warning so we do not piss people off.
 StaticPopupDialogs.BOOST_UI = {
-	text = L_POPUP_BOOSTUI,
+	text = L.Popup.BoostUI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = BoostUI,

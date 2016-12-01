@@ -34,12 +34,6 @@ K.DebuffWhiteList = {
 	[SpellName(108194)] = true, -- asphyxiate stun
 
 	-- Demon Hunter
-	-- Self
-	[SpellName(218256)] = true, -- empower wards
-	[SpellName(203819)] = true, -- demon spikes
-	[SpellName(187827)] = true, -- metamorphosis (vengeance)
-	[SpellName(212800)] = true, -- blur
-	[SpellName(196555)] = true, -- netherwalk
 	-- Harmful
 	[SpellName(207744)] = true, -- fiery brand
 	[SpellName(207771)] = true, -- fiery brand 2
@@ -59,15 +53,6 @@ K.DebuffWhiteList = {
 	[SpellName(200166)] = true, -- metamorphosis stun
 	[SpellName(198813)] = true, -- vengeful retreat
 	[SpellName(217932)] = true, -- imprison
-	-- self
-	[SpellName(218256)] = true, -- empower wards
-    [SpellName(203819)] = true, -- demon spikes
-    [SpellName(187827)] = true, -- metamorphosis (vengeance)
-    [SpellName(212800)] = true, -- blur
-    [SpellName(196555)] = true, -- net
-    -- Helpful
-    [SpellName(209426)] = true, -- darkness
-    [SpellName(208628)] = true, -- darkness
 
 	-- Druid
 	-- Harmful
@@ -307,6 +292,10 @@ K.DebuffWhiteList = {
 }
 
 K.DebuffBlackList = {
+	-- [SpellName(spellID)] = true,	-- Spell Name
+}
+
+K.ArenaBuffList = {
 	-- [SpellName(spellID)] = true,	-- Spell Name
 }
 

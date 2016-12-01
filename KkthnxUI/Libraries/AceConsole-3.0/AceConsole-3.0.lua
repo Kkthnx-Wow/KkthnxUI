@@ -138,7 +138,7 @@ end
 -- Treats quoted strings and itemlinks as non-spaced.
 -- @param string The raw argument string
 -- @param numargs How many arguments to get (default 1)
--- @param startpos Where in the string to start scanning (default  1)
+-- @param startpos Where in the string to start scanning (default 1)
 -- @return Returns arg1, arg2, ..., nextposition\\
 -- Missing arguments will be returned as nils. 'nextposition' is returned as 1e9 at the end of the string.
 function AceConsole:GetArgs(str, numargs, startpos)
@@ -190,7 +190,7 @@ function AceConsole:GetArgs(str, numargs, startpos)
 				pos=strfind(str, "|h", pos+2)	-- second |h
 				if not pos then break end
 			elseif strsub(str,pos, pos+1) == "|T" then
-				-- It's a |T....|t  texture
+				-- It's a |T....|t texture
 				pos=strfind(str, "|t", pos+2)
 				if not pos then break end
 			end
