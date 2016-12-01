@@ -1,5 +1,4 @@
 local K, C, L = select(2, ...):unpack()
-if IsAddOnLoaded("DugisGuideViewerZ") then return end
 
 local ObjectiveTracker = CreateFrame("Frame", "ObjectiveTracker", UIParent)
 
@@ -34,7 +33,9 @@ end
 function ObjectiveTracker:Enable()
 	local Movers = K.Movers
 
-	Movers:RegisterFrame(ObjectiveFrameHolder)
+	if not IsAddOnLoaded("DugisGuideViewerZ") then
+		Movers:RegisterFrame(ObjectiveFrameHolder)
+	end
 
 	ObjectiveTrackerFrame:ClearAllPoints()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")

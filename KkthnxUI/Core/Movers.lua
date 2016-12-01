@@ -2,7 +2,7 @@ local K, C, L = select(2, ...):unpack()
 
 -- REGISTER A FRAME WITH: Movers:RegisterFrame(FrameName)
 -- NOTE 1: REGISTERED FRAMES NEED A **GLOBAL NAME**
--- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIDataPerChar.Movers SAVEDVARIABLESPERCHARACTER <<
+-- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIPositions.Move SAVEDVARIABLESPERCHARACTER <<
 
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -29,7 +29,7 @@ end
 function Movers:RestoreDefaults(button)
 	local FrameName = self.Parent:GetName()
 	local Data = Movers.Defaults[FrameName]
-	local SavedVariables = KkthnxUIDataPerChar.Movers
+	local SavedVariables = KkthnxUIPositions.Move
 
 	if (button == "RightButton") and (Data) then
 		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
@@ -42,7 +42,7 @@ function Movers:RestoreDefaults(button)
 		Frame.DragInfo:ClearAllPoints()
 		Frame.DragInfo:SetAllPoints(Frame)
 
-		-- Delete Saved Variable
+		-- DELETE SAVED VARIABLE
 		SavedVariables[FrameName] = nil
 	end
 end
@@ -62,7 +62,7 @@ end
 function Movers:OnDragStop()
 	self:StopMovingOrSizing()
 
-	local Data = KkthnxUIDataPerChar.Movers
+	local Data = KkthnxUIPositions.Move
 	local Anchor1, Parent, Anchor2, X, Y = self:GetPoint()
 	local FrameName = self.Parent:GetName()
 	local Frame = self.Parent
@@ -82,7 +82,7 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetAllPoints(self)
 	self.DragInfo:SetBackdrop(K.BorderBackdrop)
 	self.DragInfo:SetBackdropColor(60/255, 155/255, 237/255, 0.3)
-	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 	self.DragInfo.Text:SetText(self:GetName())
 	self.DragInfo.Text:SetPoint("CENTER")
 	self.DragInfo.Text:SetTextColor(60/255, 186/255, 84/255, 1)
@@ -90,7 +90,6 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetFrameStrata("HIGH")
 	self.DragInfo:SetMovable(true)
 	self.DragInfo:RegisterForDrag("LeftButton")
-	self.DragInfo:SetClampedToScreen(true)
 	self.DragInfo:Hide()
 	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
 
@@ -176,11 +175,11 @@ end
 
 Movers:SetScript("OnEvent", function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		if not KkthnxUIDataPerChar.Movers then
-			KkthnxUIDataPerChar.Movers = {}
+		if not KkthnxUIPositions.Move then
+			KkthnxUIPositions.Move = {}
 		end
 
-		local Data = KkthnxUIDataPerChar.Movers
+		local Data = KkthnxUIPositions.Move
 
 		for Frame, Position in pairs(Data) do
 			local Frame = _G[Frame]

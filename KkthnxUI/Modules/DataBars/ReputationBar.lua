@@ -1,15 +1,12 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.ReputationEnable ~= true then return end
 
-local GetWatchedFactionInfo = GetWatchedFactionInfo
-local ToggleCharacter = ToggleCharacter
-
 local Colors = FACTION_BAR_COLORS
 local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ReputationWidth, C.DataBars.ReputationHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -63)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -48)
 Movers:RegisterFrame(Anchor)
 
 local ReputationBar = CreateFrame("StatusBar", nil, UIParent)
@@ -65,9 +62,8 @@ ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.ReputationFade then
 	ReputationBar:SetAlpha(0)
-	ReputationBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-	ReputationBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
-	ReputationBar.Tooltip = true
+	ReputationBar:SetScript("OnEnter", function() ReputationBar:FadeIn() end)
+	ReputationBar:SetScript("OnLeave", function() ReputationBar:FadeOut() end)
 end
 
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")

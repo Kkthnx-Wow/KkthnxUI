@@ -56,7 +56,7 @@ local function ColorGradient(perc, ...)
 	return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
 end
 
-	local guildRankColor = setmetatable({}, {
+local guildRankColor = setmetatable({}, {
 	__index = function(t, i)
 		if i then
 			local c = Hex(ColorGradient(i / GUILD_INDEX_MAX, unpack(SMOOTH)))
@@ -71,7 +71,7 @@ end
 })
 guildRankColor[0] = WHITE_HEX
 
-	local diffColor = setmetatable({}, {
+local diffColor = setmetatable({}, {
 	__index = function(t, i)
 		local c = i and GetQuestDifficultyColor(i)
 		t[i] = c and Hex(c) or t[0]
@@ -80,7 +80,7 @@ guildRankColor[0] = WHITE_HEX
 })
 diffColor[0] = WHITE_HEX
 
-	local classColor = setmetatable({}, {
+local classColor = setmetatable({}, {
 	__index = function(t, i)
 		local c = i and RAID_CLASS_COLORS[BC[i] or i]
 		if c then
@@ -93,7 +93,7 @@ diffColor[0] = WHITE_HEX
 })
 
 local WHITE = {1, 1, 1}
-	local classColorRaw = setmetatable({}, {
+local classColorRaw = setmetatable({}, {
 	__index = function(t, i)
 		local c = i and RAID_CLASS_COLORS[BC[i] or i]
 		if not c then return WHITE end
@@ -229,17 +229,17 @@ local function update()
 				local displayedName = classColor[classFileName]..name
 				if isMobile then
 					if isAway == 1 then
-						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-AwayMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffE7E716"..L.Chat.AFK.."|r"
+						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-AwayMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffE7E716"..L_CHAT_AFK.."|r"
 					elseif isAway == 2 then
-						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffff0000"..L.Chat.DND.."|r"
+						displayedName = "|TInterface\\ChatFrame\\UI-ChatIcon-ArmoryChat-BusyMobile:14:14:0:0:16:16:0:16:0:16|t"..displayedName.." |cffff0000"..L_CHAT_DND.."|r"
 					else
 						displayedName = ChatFrame_GetMobileEmbeddedTexture(0.3, 1, 0.3)..displayedName
 					end
 				else
 					if isAway == 1 then
-						displayedName = displayedName.." |cffE7E716"..L.Chat.AFK.."|r"
+						displayedName = displayedName.." |cffE7E716"..L_CHAT_AFK.."|r"
 					elseif isAway == 2 then
-						displayedName = displayedName.." |cffff0000"..L.Chat.DND.."|r"
+						displayedName = displayedName.." |cffff0000"..L_CHAT_DND.."|r"
 					else
 						displayedName = displayedName
 					end
@@ -329,6 +329,5 @@ local function friendsFrame()
 		end
 	end
 end
-
 hooksecurefunc(FriendsFrameFriendsScrollFrame, "update", friendsFrame)
 hooksecurefunc("FriendsFrame_UpdateFriends", friendsFrame)

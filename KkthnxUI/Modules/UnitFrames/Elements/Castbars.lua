@@ -18,34 +18,48 @@ do
 	local GetSpellInfo, GetCombatRatingBonus = GetSpellInfo, GetCombatRatingBonus
 
 	-- Negative means not modified by haste
-	local BaseTickDuration = {}
+	local BaseTickDuration = { }
 	if K.Class == "WARLOCK" then
 		BaseTickDuration[GetSpellInfo(689) or ""] = 1 -- Drain Life
-		BaseTickDuration[GetSpellInfo(198590) or ""] = 1 -- Drain Soul
+		BaseTickDuration[GetSpellInfo(1120) or ""] = 2 -- Drain Soul
 		BaseTickDuration[GetSpellInfo(755) or ""] = 1 -- Health Funnel
+		BaseTickDuration[GetSpellInfo(5740) or ""] = 2 -- Rain of Fire
+		BaseTickDuration[GetSpellInfo(1949) or ""] = 1 -- Hellfire
+		BaseTickDuration[GetSpellInfo(103103) or ""] = 1 -- Malefic Grasp
+		BaseTickDuration[GetSpellInfo(108371) or ""] = 1 -- Harvest Life
 	elseif K.Class == "DRUID" then
 		BaseTickDuration[GetSpellInfo(740) or ""] = 2 -- Tranquility
+		BaseTickDuration[GetSpellInfo(16914) or ""] = 1 -- Hurricane
+		BaseTickDuration[GetSpellInfo(106996) or ""] = 1 -- Astral STORM
+		BaseTickDuration[GetSpellInfo(127663) or ""] = -1 -- Astral Communion
 	elseif K.Class == "PRIEST" then
+		local mind_flay_TickTime = 1
+		if IsSpellKnown(157223) then -- Enhanced Mind Flay
+			mind_flay_TickTime = 2/3
+		end
 		BaseTickDuration[GetSpellInfo(47540) or ""] = 1 -- Penance
-		BaseTickDuration[GetSpellInfo(193473) or ""] = 1 -- Mind Flay
+		BaseTickDuration[GetSpellInfo(15407) or ""] = mind_flay_TickTime -- Mind Flay
+		BaseTickDuration[GetSpellInfo(129197) or ""] = mind_flay_TickTime -- Mind Flay (Insanity)
 		BaseTickDuration[GetSpellInfo(48045) or ""] = 1 -- Mind Sear
+		BaseTickDuration[GetSpellInfo(179337) or ""] = 1 -- Searing Insanity
 		BaseTickDuration[GetSpellInfo(64843) or ""] = 2 -- Divine Hymn
-		BaseTickDuration[GetSpellInfo(179338) or ""] = 1 -- Searing Insanity
+		BaseTickDuration[GetSpellInfo(64901) or ""] = 2 -- Hymn of Hope
 	elseif K.Class == "MAGE" then
+		BaseTickDuration[GetSpellInfo(10) or ""] = 1 -- Blizzard
 		BaseTickDuration[GetSpellInfo(5143) or ""] = 0.4 -- Arcane Missiles
 		BaseTickDuration[GetSpellInfo(12051) or ""] = 2 -- Evocation
 	elseif K.Class == "MONK" then
 		BaseTickDuration[GetSpellInfo(117952) or ""] = 1 -- Crackling Jade Lightning
 		BaseTickDuration[GetSpellInfo(113656) or ""] = 1 -- Fists of Fury
-		BaseTickDuration[GetSpellInfo(173330) or ""] = -1 -- Mana Tea (not modified by haste)
+		BaseTickDuration[GetSpellInfo(115294) or ""] = -1 -- Mana Tea
 	end
 
 	function CastingBarFrameTicksSet(Castbar, unit, name, stop)
 		Castbar.ticks = Castbar.ticks or {}
 		local function CreateATick()
-			local spark = Castbar:CreateTexture(nil, "ARTWORK")
+			local spark = Castbar:CreateTexture(nil, "OVERLAY", nil, 1)
 			spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
-			spark:SetVertexColor(1, 1, 1, 0.75)
+			spark:SetVertexColor(1, 1, 1, 1)
 			spark:SetBlendMode("ADD")
 			spark:SetWidth(10)
 			table.insert(Castbar.ticks, spark)
@@ -98,8 +112,7 @@ function ns.CreateCastbars(self, unit)
 	local Movers = K.Movers
 
 	local Castbar = K.CreateStatusBar(self, "BORDER", self:GetName().."Castbar")
-	Castbar:SetFrameStrata(self:GetFrameStrata())
-	Castbar:SetFrameLevel(6)
+	Castbar:SetFrameStrata("HIGH")
 	K.CreateBorder(Castbar, 11, 3)
 
 	if (BasePos[self.cUnit]) then
@@ -150,9 +163,9 @@ function ns.CreateCastbars(self, unit)
 	elseif (unit == "target") then
 		Spark:SetSize(15, (C.Unitframe.TargetCastbarHeight * 1.2))
 	elseif (unit == "focus") then
-		Spark:SetSize(15, (C.Unitframe.FocusCastbarHeight * 1.2))
+	Spark:SetSize(15, (C.Unitframe.FocusCastbarHeight * 1.2))
 	else
-		Spark:SetSize(15, (uconfig.cbheight * 1.2))
+	Spark:SetSize(15, (uconfig.cbheight * 1.2))
 	end
 	Spark:SetBlendMode("ADD")
 	Castbar.Spark = Spark
@@ -273,6 +286,5 @@ function ns.UpdateCastbarColor(Castbar, unit)
 
 	local r, g, b = color[1], color[2], color[3]
 	Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-	--Castbar.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
-	Castbar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+	Castbar.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
 end

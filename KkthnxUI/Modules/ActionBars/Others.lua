@@ -12,7 +12,7 @@ local CreateFrame = CreateFrame
 local Movers = K.Movers
 
 StaticPopupDialogs["FIX_ACTIONBARS"] = {
-	text = L.Popup.FixActionbars,
+	text = L_POPUP_FIX_ACTIONBARS,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = ReloadUI,

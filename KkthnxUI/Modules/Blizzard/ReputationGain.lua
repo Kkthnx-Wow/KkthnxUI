@@ -27,7 +27,9 @@ local function ScanFaction()
 			factionVars[name].Standing = standingID
 			factionVars[name].Value = barValue
 		end
+
 	end
+
 end
 
 local function Report()

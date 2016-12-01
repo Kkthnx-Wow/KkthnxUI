@@ -1,24 +1,12 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataBars.ArtifactEnable ~= true or K.Level <= 99 then return end
-
-local min = math.min
-
-local HideUIPanel = HideUIPanel
-local SocketInventoryItem = SocketInventoryItem
-local LoadAddOn = LoadAddOn
-local HasArtifactEquipped = HasArtifactEquipped
-local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
+if C.DataBars.ArtifactEnable ~= true then return end
 
 local Bars = 20
 local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ArtifactAnchor", UIParent)
-local AnchorY = -33
-if K.Level ~= MAX_PLAYER_LEVEL then
-	AnchorY = -48
-end
 Anchor:SetSize(C.DataBars.ArtifactWidth, C.DataBars.ArtifactHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -63)
 Movers:RegisterFrame(Anchor)
 
 local ArtifactBar = CreateFrame("StatusBar", nil, UIParent)
@@ -97,11 +85,11 @@ ArtifactBar:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 		GameTooltip:AddLine(string.format("|cffe6cc80"..ARTIFACT_POWER..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
-		GameTooltip:AddLine(string.format("|cffe6cc80"..L.DataBars.ArtifactRemaining.."|r", xpForNextPoint - xp))
+		GameTooltip:AddLine(string.format(L_DATABARS_ARTIFACT_REMANING, xpForNextPoint - xp)) L_DATABARS_ARTIFACT_REMANING = "|cffe6cc80Remaining: %s|r"
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(numPointsAvailableToSpend), nil, nil, nil, true)
+		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(PointsAvailableToSpend), nil, nil, nil, true)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L.DataBars.ArtifactClick)
+		GameTooltip:AddLine(L_DATABARS_ARTIFACT_CLICK)
 
 		GameTooltip:Show()
 	end
@@ -111,9 +99,8 @@ ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.ArtifactFade then
 	ArtifactBar:SetAlpha(0)
-	ArtifactBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-	ArtifactBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
-	ArtifactBar.Tooltip = true
+	ArtifactBar:SetScript("OnEnter", function() ArtifactBar:FadeIn() end)
+	ArtifactBar:SetScript("OnLeave", function() ArtifactBar:FadeOut() end)
 end
 
 ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
