@@ -1,12 +1,31 @@
 local K, C, L = select(2, ...):unpack()
 if C.Raidframe.Enable ~= true then return end
 
+-- Lua API
+local format = string.format
+local tinsert = table.insert
+local unpack = unpack
+
+-- Wow API
+local GetThreatStatusColor = GetThreatStatusColor
+local UnitHasIncomingResurrection = UnitHasIncomingResurrection
+local UnitHasMana = UnitHasMana
+local UnitIsConnected = UnitIsConnected
+local UnitIsDead = UnitIsDead
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsGhost = UnitIsGhost
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsUnit = UnitIsUnit
+local UnitPowerType = UnitPowerType
+local UnitThreatSituation = UnitThreatSituation
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: DEAD, PLAYER_OFFLINE, CreateFrame, UnitFrame_OnEnter, UnitFrame_OnLeave
+
 -- Credits to Neav, Renstrom, Grimsbain
 local _, ns = ...
 local oUF = ns.oUF or oUF
 local Movers = K.Movers
-
-local unpack = unpack
 
 local function UpdateThreat(self, _, unit)
 	if (self.unit ~= unit) then
@@ -195,7 +214,7 @@ local function CreateRaidLayout(self, unit)
 		self.Power.bg:SetColorTexture(.6, .6, .6)
 		self.Power.bg.multiplier = 0.3
 
-		table.insert(self.__elements, UpdatePower)
+		tinsert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
 		UpdatePower(self, _, unit)
 	end
@@ -292,7 +311,7 @@ local function CreateRaidLayout(self, unit)
 		self.ThreatText:SetText("AGGRO")
 	end
 
-	table.insert(self.__elements, UpdateThreat)
+	tinsert(self.__elements, UpdateThreat)
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
 

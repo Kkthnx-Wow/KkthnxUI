@@ -4,14 +4,17 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
+-- Lua API
 local pairs = pairs
 local select = select
 local unpack = unpack
 
-local hooksecurefunc = hooksecurefunc
-local SetOverrideBindingClick = SetOverrideBindingClick
-local IsControlKeyDown = IsControlKeyDown
+-- Wow API
 local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: TimerTracker
 
 -- Event handler
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")

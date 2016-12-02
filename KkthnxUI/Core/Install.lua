@@ -34,13 +34,13 @@ local ReloadUI = ReloadUI
 local SetCVar = SetCVar
 local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 local UIFrameFadeOut = UIFrameFadeOut
+local StaticPopup_Show = StaticPopup_Show
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3
 -- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2
--- GLOBALS: StaticPopup_Show
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 

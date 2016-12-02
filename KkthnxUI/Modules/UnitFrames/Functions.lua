@@ -1,25 +1,33 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
-local select = select
-local tonumber = tonumber
-local gsub = string.gsub
+-- Lua API
+local abs = math.abs
 local format = string.format
-local match = string.match
-local max = math.max
-local tinsert = tinsert
+local min, max = math.min, math.max
 local pairs = pairs
+local select = select
+local tinsert = table.insert
 local type = type
 local unpack = unpack
 
-local UnitIsGhost = UnitIsGhost
+-- Wow API
+local CreateFrame = CreateFrame
 local GetSpellInfo = GetSpellInfo
+local UnitClass = UnitClass
+local UnitHealth = UnitHealth
+local UnitHealthMax = UnitHealthMax
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsGhost = UnitIsGhost
 local UnitIsPlayer = UnitIsPlayer
+local UnitPower = UnitPower
+local UnitPowerMax = UnitPowerMax
 local UnitSelectionColor = UnitSelectionColor
-local UnitPower, UnitPowerMax = UnitPower, UnitPowerMax
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PLAYER_OFFLINE, DEAD, UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -252,8 +260,8 @@ do
 			return l, l, l
 		end
 		h, s, l = h * 6, s, l
-		local c = (1 - math.abs(2 * l - 1)) * s
-		local x = (1 - math.abs(h % 2 - 1 )) * c
+		local c = (1 - abs(2 * l - 1)) * s
+		local x = (1 - abs(h % 2 - 1 )) * c
 		local m, r, g, b = (l - .5 * c), 0, 0, 0
 		if h < 1 	 then
 			r, g, b = c, x, 0
@@ -271,7 +279,7 @@ do
 	end
 
 	local function toHsl(r, g, b)
-		local min, max = math.min(r, g, b), math.max(r, g, b)
+		local min, max = min(r, g, b), max(r, g, b)
 		local h, s, l = 0, 0, (max + min) / 2
 		if max ~= min then
 			local d = max - min

@@ -1,7 +1,18 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true then return end
 
-local floor, format = floor, string.format
+-- Lua API
+local floor = math.floor
+local format = string.format
+local unpack = unpack
+
+-- Wow API
+local CreateFrame = CreateFrame
+local GetTime = GetTime
+local UnitAura = UnitAura
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, Aura_OnClick, DebuffTypeColor
 
 local createAuraIcon
 do
@@ -242,8 +253,8 @@ end
 
 function K.AddAuras(self, initialAnchor, size, gap, columns, rows)
 	local Auras = createElement(self, "Auras", initialAnchor, size, gap, columns, rows)
-	Auras.numDebuffs = math.floor(rows * columns / 2)
-	Auras.numBuffs = math.floor(rows * columns / 2)
+	Auras.numDebuffs = floor(rows * columns / 2)
+	Auras.numBuffs = floor(rows * columns / 2)
 
 	Auras.gap = true
 	Auras.PostUpdateGapIcon = function(element, unit, icon, visibleBuffs)
