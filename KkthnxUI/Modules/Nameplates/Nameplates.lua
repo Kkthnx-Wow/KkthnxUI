@@ -439,7 +439,7 @@ local function style(self, unit)
 	self.Castbar = CreateFrame("StatusBar", nil, self)
 	self.Castbar:SetFrameLevel(3)
 	self.Castbar:SetStatusBarTexture(C.Media.Texture)
-	self.Castbar:SetStatusBarColor(1, 0.8, 0)
+	self.Castbar:SetStatusBarColor(0.87, 0.37, 0.37)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult))
 	K.CreateShadowFrame(self.Castbar)
@@ -447,7 +447,7 @@ local function style(self, unit)
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")
 	self.Castbar.bg:SetAllPoints()
 	self.Castbar.bg:SetTexture(C.Media.Texture)
-	self.Castbar.bg:SetColorTexture(1, 0.8, 0, 0.2)
+	self.Castbar.bg:SetColorTexture(0.87, 0.37, 0.37, 0.2)
 
 	self.Castbar.PostCastStart = castColor
 	self.Castbar.PostChannelStart = castColor
