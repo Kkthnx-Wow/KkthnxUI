@@ -1,5 +1,22 @@
 local K, C, L = select(2, ...):unpack()
 
+-- Lua API
+local select = select
+local strlower = string.lower
+
+-- Wow API
+local GetAddOnEnableState = GetAddOnEnableState
+local GetAddOnInfo = GetAddOnInfo
+local GetBuildInfo = GetBuildInfo
+local GetNumAddOns = GetNumAddOns
+local GetSpecialization = GetSpecialization
+local tonumber = tonumber
+local UnitClass = UnitClass
+local UnitName = UnitName
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion
+
 local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
 local Windowed = Display_DisplayModeDropDown:windowedmode()
 local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()

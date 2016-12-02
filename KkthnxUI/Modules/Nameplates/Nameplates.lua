@@ -1,30 +1,38 @@
 local K, C, L = select(2, ...):unpack()
 if C.Nameplates.Enable ~= true then return end
 
-local format = string.format
-local floor = floor
+-- Lua API
+local floor = math.floor -- ??
+local format = string.format -- ??
+local huge = math.huge
+local tinsert = table.insert
 local unpack = unpack
 
-local UnitSelectionColor = UnitSelectionColor
+-- Wow API
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CreateFrame = CreateFrame
-local UnitClass = UnitClass
-local UnitReaction = UnitReaction
-local UnitExists = UnitExists
-local UnitIsUnit = UnitIsUnit
-local GetTime = GetTime
-local UnitIsPlayer = UnitIsPlayer
-local SetCVar = SetCVar
-local InCombatLockdown = InCombatLockdown
-local GetNumBattlefieldScores = GetNumBattlefieldScores
-local GetBattlefieldScore = GetBattlefieldScore
-local UnitFactionGroup = UnitFactionGroup
 local GetArenaOpponentSpec = GetArenaOpponentSpec
-local UnitName = UnitName
+local GetBattlefieldScore = GetBattlefieldScore
+local GetNumBattlefieldScores = GetNumBattlefieldScores
 local GetSpecializationInfoByID = GetSpecializationInfoByID
+local GetTime = GetTime
+local InCombatLockdown = InCombatLockdown
 local IsInInstance = IsInInstance
+local SetCVar = SetCVar
 local UnitAffectingCombat = UnitAffectingCombat
+local UnitClass = UnitClass
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation
+local UnitExists = UnitExists
+local UnitFactionGroup = UnitFactionGroup
+local UnitIsPlayer = UnitIsPlayer
 local UnitIsTapDenied = UnitIsTapDenied
+local UnitIsUnit = UnitIsUnit
+local UnitName = UnitName
+local UnitReaction = UnitReaction
+local UnitSelectionColor = UnitSelectionColor
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura
 
 -- oUF nameplates
 local _, ns = ...
@@ -579,7 +587,7 @@ local function style(self, unit)
 				icon:SetScript("OnUpdate", CreateAuraTimer)
 			else
 				icon.remaining:Hide()
-				icon.timeLeft = math.huge
+				icon.timeLeft = huge
 				icon:SetScript("OnUpdate", nil)
 			end
 			icon.first = true
@@ -631,10 +639,10 @@ local function style(self, unit)
 	end
 
 	-- Every event should be register with this
-	table.insert(self.__elements, UpdateName)
+	tinsert(self.__elements, UpdateName)
 	self:RegisterEvent("UNIT_NAME_UPDATE", UpdateName)
 
-	table.insert(self.__elements, UpdateTarget)
+	tinsert(self.__elements, UpdateTarget)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTarget)
 end
 

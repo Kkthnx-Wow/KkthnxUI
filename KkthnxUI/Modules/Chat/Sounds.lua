@@ -1,7 +1,7 @@
 ﻿local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true or C.Chat.WhispSound ~= true then return end
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local PlaySoundFile = PlaySoundFile
 

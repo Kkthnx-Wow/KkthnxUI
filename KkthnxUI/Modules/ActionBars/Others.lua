@@ -1,12 +1,12 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 local format = string.format
 local unpack = unpack
 
--- WOW API
+-- Wow API
 local ActionBars = CreateFrame("Frame")
 local CreateFrame = CreateFrame
 local Movers = K.Movers

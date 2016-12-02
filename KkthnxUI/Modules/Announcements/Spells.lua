@@ -1,12 +1,12 @@
 local K, C, L = select(2, ...):unpack()
 if C.Announcements.Spells ~= true then return end
 
--- LUA API
+-- Lua API
 local format = string.format
 local gsub = string.gsub
 local pairs = pairs
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local GetInstanceInfo = GetInstanceInfo
 local GetSpellLink = GetSpellLink

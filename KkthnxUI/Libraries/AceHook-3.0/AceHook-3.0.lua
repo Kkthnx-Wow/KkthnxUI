@@ -35,7 +35,7 @@ local pairs, next, type = pairs, next, type
 local format = string.format
 local assert, error = assert, error
 
--- WoW APIs
+-- Wow APIs
 local issecurevariable, hooksecurefunc = issecurevariable, hooksecurefunc
 local _G = _G
 

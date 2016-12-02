@@ -1,12 +1,12 @@
 local K, C, L = select(2, ...):unpack()
 if C.Minimap.Ping ~= true then return end
 
--- LUA API
+-- Lua API
 local format = string.format
 local select = select
 local time = time
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS

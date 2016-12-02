@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
--- LUA API
+-- Lua API
 local _G = _G
 local format = format
 local match = string.match
@@ -8,7 +8,7 @@ local min, max = math.min, math.max
 local print = print
 local unpack, select = unpack, select
 
--- WOW API
+-- Wow API
 local ChangeChatColor = ChangeChatColor
 local ChatFrame_AddChannel = ChatFrame_AddChannel
 local ChatFrame_AddMessageGroup = ChatFrame_AddMessageGroup

@@ -1,18 +1,63 @@
 local K, C, L = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
-local gsub, find, format = string.gsub, string.find, string.format
-local unpack = unpack
+local abs = math.abs
 local floor = math.floor
+local gsub, find, format = string.gsub, string.find, string.format
+local pairs = pairs
+local select = select
+local unpack = unpack
 
--- WOW API
+-- Wow API
+local CanInspect = CanInspect
 local CHAT_FLAG_AFK = CHAT_FLAG_AFK
 local CHAT_FLAG_DND = CHAT_FLAG_DND
+local CreateFrame = CreateFrame
+local FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL
+local GetAverageItemLevel = GetAverageItemLevel
+local GetCreatureDifficultyColor = GetCreatureDifficultyColor
+local GetGuildInfo = GetGuildInfo
+local GetItemInfo = GetItemInfo
+local GetItemQualityColor = GetItemQualityColor
+local GetMouseFocus = GetMouseFocus
+local GetTime = GetTime
+local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
+local INTERACTIVE_SERVER_LABEL = INTERACTIVE_SERVER_LABEL
+local IsAltKeyDown = IsAltKeyDown
+local IsInGuild = IsInGuild
+local IsShiftKeyDown =  IsShiftKeyDown
+local LE_REALM_RELATION_COALESCED = LE_REALM_RELATION_COALESCED
+local LE_REALM_RELATION_VIRTUAL = LE_REALM_RELATION_VIRTUAL
 local LEVEL = LEVEL
 local RaidColors = RAID_CLASS_COLORS
-local GetAverageItemLevel = GetAverageItemLevel
+local STAT_AVERAGE_ITEM_LEVEL = STAT_AVERAGE_ITEM_LEVEL
+local UIParent = UIParent
+local UnitClass = UnitClass
+local UnitClassification = UnitClassification
+local UnitCreatureType = UnitCreatureType
+local UnitExists = UnitExists
+local UnitGUID = UnitGUID
+local UnitHasVehicleUI = UnitHasVehicleUI
+local UnitIsAFK = UnitIsAFK
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsDND = UnitIsDND
+local UnitIsFriend = UnitIsFriend
+local UnitIsPlayer = UnitIsPlayer
+local UnitIsUnit = UnitIsUnit
+local UnitLevel = UnitLevel
+local UnitName = UnitName
+local UnitPVPName = UnitPVPName
+local UnitRace = UnitRace
+local UnitReaction = UnitReaction
+local UnitRealmRelationship = UnitRealmRelationship
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: TooltipAnchor, GameTooltipTextLeft1, GameTooltipTextLeft2, GameTooltip
+-- GLOBALS: MAXIMUM, NONE, UNKNOWN, ItemLevel, InspectFrame, MaxItemLevel, PvPItemLevel
+-- GLOBALS: Health, MaxHealth, CURRENTLY_EQUIPPED, PVP, SPECIALIZATION, DEAD
 
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
@@ -190,18 +235,18 @@ function Tooltip:OnTooltipSetUnit()
 			else
 				local Best, Current, PVP = GetAverageItemLevel()
 
-				ItemLevel = math.floor(Current) or UNKNOWN
-				MaxItemLevel = math.floor(Best) or UNKNOWN
-				PvPItemLevel = math.floor(PVP) or UNKNOWN
+				ItemLevel = floor(Current) or UNKNOWN
+				MaxItemLevel = floor(Best) or UNKNOWN
+				PvPItemLevel = floor(PVP) or UNKNOWN
 
 				TalentSpec = Talent:GetTalentSpec() or NONE
 			end
 		end
 
 		if (UnitIsAFK(Unit)) then
-			self:AppendText((" %s"):format(CHAT_FLAG_AFK))
+			self:AppendText((" %s"):format("|cffff0000".. CHAT_FLAG_AFK .."|r"))
 		elseif UnitIsDND(Unit) then
-			self:AppendText((" %s"):format(CHAT_FLAG_DND))
+			self:AppendText((" %s"):format("|cffe7e716".. CHAT_FLAG_DND .."|r"))
 		end
 	end
 

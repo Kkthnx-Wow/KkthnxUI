@@ -26,7 +26,7 @@ local activeTimers = AceTimer.activeTimers -- Upvalue our private data
 
 -- Lua APIs
 local type, unpack, next, error, select = type, unpack, next, error, select
--- WoW APIs
+-- Wow APIs
 local GetTime, C_TimerAfter = GetTime, C_Timer.After
 
 local function new(self, loop, func, delay, ...)

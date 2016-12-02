@@ -1,7 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Automation.ScreenShot ~= true then return end
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 
 -- TAKE SCREENSHOTS OF DEFINED EVENTS (SINARIS)

@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
--- LUA API
+-- Lua API
 local _G = _G
 local format, lower = string.format, string.lower
 local ipairs = ipairs

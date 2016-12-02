@@ -212,7 +212,7 @@ K.ShortenString = function(string, numChars, dots)
 end
 
 K.Abbreviate = function(name)
-	local newname = (len(name) > 18) and strsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	local newname = (len(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	return K.ShortenString(newname, 18, false)
 end
 

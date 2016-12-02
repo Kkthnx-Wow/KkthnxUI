@@ -1,10 +1,10 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 
 --	Setup multibarleft as bar #3 by tukz

@@ -1,7 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
--- Lua api
+-- Lua API
 local _G = _G
 local CreateFrame = CreateFrame
 local find = string.find
@@ -15,7 +15,7 @@ local type = type
 local unpack = unpack
 local upper = string.upper
 
--- Wow api
+-- Wow API
 local CreateFrame = CreateFrame
 local GetChannelName = GetChannelName
 local GetID, GetName = GetID, GetName

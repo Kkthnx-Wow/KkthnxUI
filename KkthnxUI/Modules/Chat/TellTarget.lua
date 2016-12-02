@@ -1,12 +1,12 @@
 ﻿local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 local len = string.len
 local sub = string.sub
 
--- WOW API
+-- Wow API
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local SendChatMessage = SendChatMessage
 local GetUnitName = GetUnitName

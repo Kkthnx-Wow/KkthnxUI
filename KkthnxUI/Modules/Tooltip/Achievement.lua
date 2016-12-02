@@ -1,12 +1,12 @@
 ﻿local K, C, L = select(2, ...):unpack()
 if C.Tooltip.Enable ~= true or C.Tooltip.Achievements ~= true then return end
 
--- LUA API
+-- Lua API
 local select = select
 local format = string.format
 local find = string.find
 
--- WOW API
+-- Wow API
 local hooksecurefunc = hooksecurefunc
 local GetAchievementNumCriteria = GetAchievementNumCriteria
 local ACHIEVEMENT_EARNED_BY = ACHIEVEMENT_EARNED_BY

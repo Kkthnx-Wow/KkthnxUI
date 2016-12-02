@@ -5,7 +5,7 @@ local _, ns = ...
 local config = ns.config
 local oUF = ns.oUF or oUF
 
--- LUA API
+-- Lua API
 local _G = _G
 local pairs = pairs
 local print = print
@@ -13,7 +13,7 @@ local select = select
 local tinsert = table.insert
 local unpack = unpack
 
--- WOW API
+-- Wow API
 local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CreateFrame = CreateFrame
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT

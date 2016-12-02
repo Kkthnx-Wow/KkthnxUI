@@ -3,14 +3,14 @@ if C.ActionBar.Enable ~= true then return end
 
 -- BY TUKZ
 
--- LUA API
+-- Lua API
 local _G = _G
 local match = string.match
 local gsub = string.gsub
 local ipairs = ipairs
 local tostring = tostring
 
--- WOW API
+-- Wow API
 local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
 local hooksecurefunc = hooksecurefunc
 

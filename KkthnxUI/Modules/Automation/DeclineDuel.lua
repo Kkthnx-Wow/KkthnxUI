@@ -1,10 +1,10 @@
 local K, C, L = select(2, ...):unpack()
 if C.Automation.DeclineDuel ~= true then return end
 
--- LUA API
+-- Lua API
 local format = string.format
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local SendChatMessage = SendChatMessage
 

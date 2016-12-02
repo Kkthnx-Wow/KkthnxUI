@@ -1,9 +1,9 @@
 local K, C, L = select(2, ...):unpack()
 
--- LUA API
+-- Lua API
 local _G = _G
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 
 -- Based on fane(by haste)

@@ -1,11 +1,11 @@
 ﻿local K, C, L = select(2, ...):unpack()
 if C.DataText.Battleground ~= true then return end
 
--- LUA API
+-- Lua API
 local unpack = unpack
 local format = string.format
 
--- WOW API
+-- Wow API
 local CreateFrame, UIParent = CreateFrame, UIParent
 local GetNumBattlefieldScores = GetNumBattlefieldScores
 local GetCurrentMapAreaID = GetCurrentMapAreaID

@@ -26,7 +26,7 @@ local type, pairs, error = type, pairs, error
 local format, strfind, strsub = string.format, string.find, string.sub
 local max = math.max
 
--- WoW APIs
+-- Wow APIs
 local _G = _G
 
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded

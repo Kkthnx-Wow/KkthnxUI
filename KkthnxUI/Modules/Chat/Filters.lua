@@ -1,12 +1,12 @@
 local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local lower = string.lower
 local match = string.match
 local pairs = pairs
 
--- WOW API
+-- Wow API
 local IsResting = IsResting
 local UnitIsInMyGuild = UnitIsInMyGuild
 

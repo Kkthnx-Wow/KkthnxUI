@@ -1,7 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Automation.LoggingCombat ~= true then return end
 
--- WOW API
+-- Wow API
 local IsInInstance = IsInInstance
 local CreateFrame = CreateFrame
 

@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 
--- LUA API
+-- Lua API
 local _G = _G
 local format = string.format
 local gsub = string.gsub
@@ -9,7 +9,7 @@ local unpack = unpack
 local find = string.find
 local select = select
 
--- WOW API
+-- Wow API
 local tinsert = tinsert
 local CreateFrame, UIParent = CreateFrame, UIParent
 local ToggleFrame = ToggleFrame

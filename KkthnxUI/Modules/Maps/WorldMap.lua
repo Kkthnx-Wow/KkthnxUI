@@ -7,10 +7,10 @@ C["WorldMapCoordinates"] = {
 	["YOffset"] = 0,
 }
 
--- LUA API
+-- Lua API
 local find = string.find
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 local SetUIPanelAttribute = SetUIPanelAttribute
