@@ -32,22 +32,37 @@ local FindURL = function(self, event, msg, ...)
 	if (Found > 0) then
 		return false, NewMsg, ...
 	end
+
+ 	NewMsg, Found = gsub(msg, "(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)(:%d+)%s?", PrintURL("%1.%2.%3.%4%5"))
+
+	if (Found > 0) then
+		return false, NewMsg, ...
+	end
+
+ 	NewMsg, Found = gsub(msg, "(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%s?", PrintURL("%1.%2.%3.%4"))
+
+	if (Found > 0) then
+		return false, NewMsg, ...
+	end
 end
 
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_BATTLEGROUND_LEADER", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", FindURL)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", FindURL)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_CONVERSATION", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_INLINE_TOAST_BROADCAST", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER_INFORM", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_BN_WHISPER", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT_LEADER", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_INSTANCE_CHAT", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_OFFICER", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY_LEADER", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_PARTY", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID_LEADER", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_RAID", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER_INFORM", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", FindURL)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", FindURL)
 
 local CurrentLink = nil
 local SetHyperlink = ItemRefTooltip.SetHyperlink

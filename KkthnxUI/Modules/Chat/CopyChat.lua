@@ -6,14 +6,16 @@ local format = string.format
 local gsub = string.gsub
 local pairs = pairs
 local unpack = unpack
-local find = string.find
-local select = select
+local strfind = string.find
 
 -- Wow API
-local tinsert = tinsert
+local tinsert = table.insert
 local CreateFrame, UIParent = CreateFrame, UIParent
 local ToggleFrame = ToggleFrame
 local GetSpellInfo = GetSpellInfo
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CopyScroll, C_Timer, RandomRoll, UISpecialFrames, ChatFontNormal, ChatMenu
 
 -- COPY CHAT
 local lines = {}
@@ -58,7 +60,7 @@ local function CreatCopyFrame()
 		local text = self:GetText()
 
 		for _, size in pairs(sizes) do
-			if find(text, size) and not find(text, size.."]") then
+			if strfind(text, size) and not strfind(text, size.."]") then
 				self:SetText(gsub(text, size, ":12:12"))
 			end
 		end
