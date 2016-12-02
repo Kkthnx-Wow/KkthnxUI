@@ -9,18 +9,18 @@ L.AFKScreen = {
 }
 
 L.Announce = {
-	FPUse = "% s uses% s.",
-	Interrupted = INTERRUPTED .. "% s's \ 124cff71d5ff \ 124HDelay:% d: 0 \ 124h [% s] \ 124h \ 124r!",
-	PCAborted = "Pull OFF!",
-	PCGo = "GO IT!",
-	PCMessage = "Pulle% s in% s ..",
-	Sapped = "Headnuts",
-	SappedBy = "Head from:",
+	FPUse = "%s benutzt %s.",
+	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124HZauber:%d:0\124h[%s]\124h\124r!",
+	PCAborted = "Pull ABGEBROCHEN!",
+	PCGo = "LOS GEHT'S!",
+	PCMessage = "Pulle %s in %s..",
+	Sapped = "Kopfnuss",
+	SappedBy = "Kopfnuss von: ",
 }
 
 L.Auras = {
-	MoveBuffs = "Move Buffs",
-	MoveDebuffs = "Move Debuffs",
+	MoveBuffs = "Bewege Buffs",
+	MoveDebuffs = "Bewege Debuffs",
 }
 
 L.FAQ = {
@@ -75,20 +75,20 @@ L.FAQ = {
 
 -- Merchant Localization
 L.Merchant = {
-	NotEnoughMoney = "You don't have enough money to repair!",
-	RepairCost = "Your items have been repaired for",
-	SoldTrash = "Your vendor trash has been sold and you earned"
+	NotEnoughMoney = "Du hast nicht genug Gold um Deine Ausrüstung zu reparieren!",
+	RepairCost = "Deine Ausrüstung wurde repariert. Die Kosten dafür betragen",
+	SoldTrash = "Dein Müll aus den Taschen wurde beim Händler verkauft und Du erhälst"
 }
 
 -- Bindings Localization
 L.Bind = {
-	Binding = "Binding",
-	Cleared = "All keybindings cleared for",
-	Discard = "All newly set keybindings were discarded.",
-	Instruct = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
-	Key = "Key",
-	NoSet = "No bindings set",
-	Saved = "All keybindings have been saved."
+	Binding = "Tastenbelegungen",
+	Cleared = "Alle Tastenbelegungen verworfen für",
+	Discard = "Alle neuen Tastenbelegungen wurden verworfen.",
+	Instruct = "Bewege die Maus über jeden beliebigen Aktionsbutton um ihn zu belegen. Drücke ESC, oder die rechte Maustaste, um die Belegung zu verwerfen.",
+	Key = "Taste",
+	NoSet = "Keine Tastenbelegungen gesetzt",
+	Saved = "Alle Tastenbelegungen wurden gespeichert."
 }
 
 -- Chat Localization
@@ -96,11 +96,11 @@ L.Chat = {
 	AFK = "|cffff0000[AFK]|r",
 	DND = "|cffe7e716[DND]|r",
 	Guild = "G",
-	GuildRecruitment = "GuildRecruitment",
+	GuildRecruitment = "GildenRekrutierung",
 	Instance = "I",
 	InstanceLeader = "IL",
-	LocalDefense = "LocalDefense",
-	LookingForGroup = "LookingForGroup",
+	LocalDefense = "LokaleVerteidigung",
+	LookingForGroup = "SucheNachGruppe",
 	Officer = "O",
 	Party = "P",
 	PartyLeader = "P",
@@ -111,18 +111,18 @@ L.Chat = {
 
 -- Configbutton Localization
 L.ConfigButton = {
-	Functions = "Button functions:",
-	LeftClick = "Left click:",
-	RightClick = "Right click:",
-	MiddleClick = "Middle click:",
-	ShiftClick = "Shift + click:",
-	MoveUI = "Move UI elements",
-	Recount = "Show/Hide Recount",
-	Skada = "Show/Hide Skada",
-	Config = "Show config GUI",
-	Spec = "Show specialization menu",
-	SpecMenu = "Specialization selection",
-	SpecError = "You already have this specialization active!"
+	Functions = "Buttonfunktionen",
+	LeftClick = "Linksklick:",
+	RightClick = "Rechtsklick:",
+	MiddleClick = "Mittlere Maustaste:",
+	ShiftClick = "Shift + Linksklick:",
+	MoveUI = "UI Elemente bewegen",
+	Recount = "Zeigt/Versteckt das Recount Fenster",
+	Skada = "Zeigt/Versteckt das Skada Fenster",
+	Config = "Öffnet das KkthnxUI Einstellungsmenü",
+	Spec = "Öffnet das KkthnxUI Spezialisierungsmenü",
+	SpecMenu = "Spezialisierungsauswahl",
+	SpecError = "Diese Spezialisierung ist bereits aktiv!"
 }
 
 -- Cooldowns
@@ -135,60 +135,60 @@ L.Cooldowns = {
 
 -- DataBars Localization
 L.DataBars = {
-	ArtifactClick = "Click: Opens the artifact overview",
-	ArtifactRemaining = "|cffe6cc80Remaining: %s|r",
-	HonorLeftClick = "|cffccccccLeft Click: Opens the honor frame|r",
-	HonorRightClick = "|cffccccccRight Click: Opens the honor talents frame|r"
+	ArtifactClick = "Klick: Öffnet die Artefaktübersicht",
+	ArtifactRemaining = "|cffe6cc80Verbleibend: %s|r",
+	HonorLeftClick = "|cffccccccLinksklick: Öffnet die Ehreübersicht|r",
+	HonorRightClick = "|cffccccccRechtsklick: Öffnet die Ehretalentübersicht|r"
 }
 
 -- DataText Localization
 L.DataText = {
-	ArmError = "Could not get Call To Arms information.",
-	AvoidAnceShort = "Avd: ",
+	ArmError = "Kann keine Daten für 'Ruf zu den Waffen' erhalten.",
+	AvoidAnceShort = "Verm: ",
 	Bags = "Bags",
-	Bandwidth = "Bandwidth: ",
-	BasesAssaulted = "Bases Assaulted:",
-	BasesDefended = "Bases Defended:",
-	CartsControlled = "Carts Controlled:",
-	CombatTime = "Combat/Arena Time",
+	Bandwidth = "Bandbreite: ",
+	BasesAssaulted = "Stützpunkte angegriffen:",
+	BasesDefended = "Stützpunkte verteidigt:",
+	CartsControlled = "Loren kontrolliert:",
+	CombatTime = "Kampf/Arena Zeit",
 	Coords = "Coords",
-	DemolishersDestroyed = "Demolishers Destroyed:",
+	DemolishersDestroyed = "Verwüster zerstört:",
 	Download = "Download: ",
-	FlagsCaptured = "Flags Captured:",
-	FlagsReturned = "Flags Returned:",
+	FlagsCaptured = "Flaggen eingenommen:",
+	FlagsReturned = "Flaggen zurückgebracht:",
 	FPS = "FPS",
-	GatesDestroyed = "Gates Destroyed:",
-	GoldDeficit = "Deficit: ",
-	GoldEarned = "Earned: ",
-	GoldProfit = "Profit: ",
+	GatesDestroyed = "Tore zerstört:",
+	GoldDeficit = "Unterschied: ",
+	GoldEarned = "Verdient: ",
+	GoldProfit = "Gewinn: ",
 	GoldServer = "Server: ",
-	GoldSpent = "Spent: ",
+	GoldSpent = "Ausgegeben: ",
 	GoldTotal = "Total: ",
-	GraveyardsAssaulted = "Graveyards Assaulted:",
-	GraveyardsDefended = "Graveyards Defended:",
-	GuildNoGuild = "No Guild",
+	GraveyardsAssaulted = "Friedhöfe angegriffen:",
+	GraveyardsDefended = "Friedhöfe verteidigt:",
+	GuildNoGuild = "Keine Gilde",
 	LootSpecChange = "|cffFFFFFFRight Click:|r Change Loot Specialization|r",
 	LootSpecShow = "|cffFFFFFFShift + Left Click:|r Show Talent Specialization UI|r",
 	LootSpecSpec = "Spec",
 	LootSpecTalent = "|cffFFFFFFLeft Click:|r Change Talent Specialization|r",
 	Memory = "Memory",
-	MicroMenu = "MicroMenu",
+	MicroMenu = "Mikromenu",
 	MS = "MS",
-	NoDungeonArm = "No dungeons are currently offering a Call To Arms.",
-	NoOrderHallUnlock = "You have not unlocked your OrderHall",
-	NoOrderHallWO = "Orderhall+",
-	OrbPossessions = "Orb Possessions:",
-	OrderHall = "OrderHall",
-	OrderHallReport = "Click: Open the OrderHall report",
+	NoDungeonArm = "Keine Instanz bietet derzeit eine 'Ruf zu den Waffen' Belohnung an.",
+	NoOrderHallUnlock = "Du hast Deine Ordenshalle noch nicht freigeschaltet, nun aber los!",
+	NoOrderHallWO = "Ordenshalle+",
+	OrbPossessions = "Kugel in besitz:",
+	OrderHall = "Ordenshalle",
+	OrderHallReport = "Klick: Öffnet den Ordenshallenbericht",
 	System = "System Stats: ",
-	TotalBagSlots = "Total Bag Slots",
-	TotalFreeBagSlots = "Free Bag Slots",
-	TotalMemory = "Total Memory Usage:",
+	TotalBagSlots = "Taschenplätze Gesamt:",
+	TotalFreeBagSlots = "Taschenplätze frei:",
+	TotalMemory = "Speichernutzung Übersicht:",
 	TotalMemoryUsage = "Total Memory Usage",
-	TotalUsedBagSlots = "Used Bag Slots",
-	TowersAssaulted = "Towers Assaulted:",
-	TowersDefended = "Towers Defended:",
-	VictoryPoints = "Victory Points:",
+	TotalUsedBagSlots = "Taschenplätze benutzt:",
+	TowersAssaulted = "Türme angegriffen:",
+	TowersDefended = "Türme verteidigt:",
+	VictoryPoints = "Siegpunkte:",
 	Slots = {
 		[1] = {1, INVTYPE_HEAD, 1000},
 		[2] = {3, INVTYPE_SHOULDER, 1000},
@@ -274,74 +274,74 @@ L.Tutorial = {
 	Step6Line2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs.",
 	Step6Line3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!",
 	Step6Line4 = "",
-	Message1 = "For technical support visit https://github.com/Kkthnx.",
-	Message2 = "You can toggle the microbar by using your right mouse button on the minimap.",
-	Message3 = "You can set your keybindings quickly by typing /kb.",
-	Message4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro do this.",
-	Message5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear.",
-	Message6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing.",
-	Message7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings.",
-	Message8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position.",
-	Message9 = "To move abilities on the action bars by default hold shift + drag. You can change the modifier key from the action bar options menu.",
-	Message10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
+	Message1 = "Für technische Hilfe besuche https://github.com/Kkthnx",
+	Message2 = "Um das Mikromenü aufzurufen klicke mit der rechten Maustaste auf die Minimap. Um das Menü zum Aufspüren von Materialien etc. aufzurufen klicke mit der mittleren Maustaste auf die Minimap.",
+	Message3 = "Um Deine Tastaturbelegung schnell zu ändern|ntippe in den Chat /kb.",
+	Message4 = "Um ein Fokusziel anzuzeigen tippe bei anvisierten Ziel /fokus in den Chat. Als Tipp rate ich Dir ein /makro dafür anzulegen.",
+	Message5 = "Um eine Chatkopie einzusehen fahre mit dem Mauszeiger über den unteren rechten Rand Deines Chat und klicke auf das erscheinende Symbol.",
+	Message6 = "Solltest Du plötzlich Fehlermeldungen erhalten, versuche zuerst alle Addons außer KkthnxUI in der Addonsübersicht zu deaktivieren. Damit schliesst Du Fehler aus, die von anderen Addons eventuell ausgelöst werden.",
+	Message7 = "Klicke mit der rechten Maustaste auf die einzelnen Chatreiter um etwaige Chateinstellungen vorzunehmen (z.B. Schriftgröße etc.).",
+	Message8 = "Mit dem Chatbefehl /resetui kannst Du alle Einstellungen zurücksetzen. Der Chatbefehl /moveui zeigt Dir alle verschiebbaren Elemente an, ein Rechtsklick auf diese Elemente setzt diese an ihren Ursprungsort zurück.",
+	Message9 = "Um Deine Fähigkeiten in den Aktionsleisten zu verschieben halte die Shifttaste und ziehe mit der Maus die Fähigkeiten an die gewünschte Position.",
+	Message10 = "Du kannst Dir das Itemlevel Deiner Mitspieler ansehen, wenn Du die Option aktivierst und bei gedrückter ALT Taste über den Mitspieler fährst."
 }
 
 -- AutoInvite Localization
 L.Invite = {
-	Enable = "Autoinvite enabled: ",
-	Disable = "AutoInvite disabled"
+	Enable = "Automatische Einladungen aktiviert: ",
+	Disable = "Automatische Einladungen deaktiviert"
 }
 
 -- Info Localization
 L.Info = {
-	Disabnd = "Disbanding group...",
-	Duel = "Declined duel request from ",
-	PetDuel = "Declined pet duel request from ",
-	Invite = "Accepted invite from ",
-	SettingsDBM = "Type /settings dbm, to apply the settings DBM.",
-	SettingsMSBT = "Type /settings msbt, to apply the settings MSBT.",
-	SettingsSKADA = "Type /settings skada, to apply the settings Skada.",
-	SettingsAbu = "Type /settings abu, to apply the settings oUF_Abu.",
-	SettingsALL = "Type /settings all, to apply the settings for all modifications.",
-	NotInstalled = " is not installed.",
-	SkinDisabled1 = "Skin for ",
-	SkinDisabled2 = " is disabled."
+	Disabnd = "Auflösung der Gruppe...",
+	Duel = "Duellaufforderung abgelehnt von ",
+	PetDuel = "Haustierkampfduell abgelehnt von ",
+	Invite = "Akzeptiere Einladung von ",
+	SettingsDbm = "Tippe /settings dbm, um die Einstellungen für DBM zu übernehmen.",
+	SettingsMsbt = "Tippe /settings msbt, um die Einstellungen für MSBT zu übernehmen.",
+	SettingsSkada = "Tippe /settings skada, um die Einstellungen für Skada zu übernehmen.",
+	SettingsAbu = "Tippe /settings abu, um die Einstellungen für oUF_Abu zu übernehmen.",
+	SettingsAll = "Tippe /settings all, um die Einstellungen für alle Modifikationen zu übernehmen.",
+	NotInstalled = " ist nicht installiert.",
+	SkinDisabled1 = "Skin für ",
+	SkinDisabled2 = " ist deaktviert."
 }
 
 -- Loot Localization
 L.Loot = {
-	Announce = "Announce to",
-	Cannot = "Cannot roll",
-	Chest = ">> Loot from chest",
-	Fish = "Fishing loot",
-	Monster = ">> Loot from ",
-	Random = "Random Player",
-	Self = "Self Loot",
-	ToGuild = " Guild",
-	ToInstance = " Instance",
-	ToParty = " Party",
-	ToRaid = " Raid",
-	ToSay = " Say"
+	Announce = "Ankündigung nach",
+	Cannot = "Kann nicht würfeln",
+	Chest = ">> Beute aus Kiste",
+	Fish = "Schräge Beute",
+	Monster = ">> Beute von ",
+	Random = "Zufälliger Spieler",
+	Self = "Eigene Beute",
+	ToGuild = " Gilde",
+	ToInstance = " Instanz",
+	ToParty = " Gruppe",
+	ToRaid = " Schlachtzug",
+	ToSay = " Sagen"
 }
 
 -- Mail Localization
 L.Mail = {
-	Complete = "All done.",
-	Messages = "messages",
-	Need = "Need a mailbox.",
-	Stopped = "Stopped, inventory is full.",
-	Unique = "Stopped. Found a unique duplicate item in a bag or the bank."
+	Complete = "Alles ausgeführt.",
+	Messages = "Nachrichten",
+	Need = "Benötigt einen Briefkasten.",
+	Stopped = "Abgebrochen, Taschen sind voll.",
+	Unique = "Abgebrochen. Ein doppelter, einzigartiger Gegenstand wurde in Deiner Tasche oder auf der bank gefunden."
 }
 
 -- World Map Localization
 L.Map = {
-	Fog = "Fog of War"
+	Fog = "Nebel des Krieges"
 }
 
 -- FarmMode Minimap
 L.Minimap = {
-	FarmModeOn = "Farm mode enabled",
-	FarmModeOff = "Farm mode disabled"
+	FarmModeOn = "Farm mode aktiviert",
+	FarmModeOff = "Farm mode deaktiviert"
 }
 
 -- Misc Localization
@@ -349,41 +349,41 @@ L.Misc = {
 	CopperShort = "|cffeda55fc|r",
 	GoldShort = "|cffffd700g|r",
 	SilverShort = "|cffc7c7cfs|r",
-	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
-	Undress = "Undress"
+	UIOutdated = "Achtung! Deine Version von KkthnxUI ist veraltet. Du kansnt die neueste Version von Curse.com downloaden. Benutzte die Curse App und lasse Deine KkthnxUI automatisch vom Client aktualisieren!",
+	Undress = "Ausziehen"
 }
 
 L.Popup = {
 	Armory = "Armory",
 	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
-	BoostUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r",
+	BoostUI = "|cffff0000WARNUNG|r |n|nDiese Einstellung optimiert Deine Performance indem die Grafikdetails runtergesetzt werden. Klicke nur auf Annehmen wenn Du massive |cffff0000FPS|r Probleme hast!|r",
 	DisableUI = "KkthnxUI might not work for this resolution, do you want to disable KkthnxUI? (Cancel if you want to try another resolution)",
-	DisbandRaid = "Are you sure you want to disband the group?",
-	FixActionbars = "There is something wrong with your action bars. Do you want to reload the UI to fix it?",
-	InstallUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings.",
-	ReloadUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r.",
+	DisbandRaid = "Bist Du sicher, dass Du den Schlachtzug auflösen willst?",
+	FixActionbars = "Etwas stimmt mit den Aktionsleisten nicht. Möchtest Du das UI neu laden um diesen Fehler zu beheben?",
+	InstallUI = "Danke das du |cff3c9bedKkthnxUI|r verwendest! |n|nSobald Du auf 'Annehmen' klickst, beginnen wir mit der Installation.",
+	ReloadUI = "Die Installation ist abgeschlossen. Bitte klick erneut auf 'Annehmen' um das UI neu zu laden.|n|nViel Spaß mit |cff3c9bedKkthnxUI|r. |n|nFür Updates der UI besuche meine Seite auf |cff3c9bedhttps://github.com/Kkthnx|r.",
 	ResetDataText = "Are you sure you want to reset all datatexts to default?",
-	ResetUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?",
-	ResolutionChanged = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?",
-	SettingsAll = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons.",
+	ResetUI = "Bist Du sicher, dass Du alle Einstellungen von |cff3c9bedKkthnxUI|r zurücksetzen willst?",
+	ResolutionChanged = "Deine Grafikauflösung wurde geändert und der Spieleclient muss neu gestartet werden. Möchtest Du das Spiel jetzt neu starten?",
+	SettingsAll = "|cffff0000WARNUNG|r |n|nWenn Du auf Annehmen klickst werden alle Einstellungen für die Addons übernommen, die von |cff3c9bedKkthnxUI|r unterstützt werden. Diese Einstellungen sind unwirksam, wenn keine unterstützten Addons installiert sind.",
 	SettingsBW = "Need to change the position of elements BigWigs.",
-	SettingsDBM = "We need to change the bar positions of |cff3c9bedDBM|r.",
+	SettingsDBM = "Wir müssen die Leistenpositionen von |cff3c9bedDBM|r ändern.",
 }
 
 -- Raid Utility Localization
 L.Raid = {
-	UtilityDisband = "Disband Group",
-	DisbandRaid = "Are you sure you want to disband the group?"
+	UtilityDisband = "Schlachtzug auflösen",
+	DisbandRaid = "Bist Du sicher, dass Du den Schlachtzug auflösen willst?"
 }
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "Your Status: Completed on ",
-	AchievementIncomplete = "Your Status: Incomplete",
-	AchievementStatus = "Your Status:",
-	ItemCount = "Item count:",
-	ItemID = "Item ID:",
-	SpellID = "Spell ID:"
+	AchievementComplete = "Dein Status: Abgeschlossen am ",
+	AchievementIncomplete = "Dein Status: Unvollständig",
+	AchievementStatus = "Dein Status:",
+	ItemCount = "Gegenstandsanzahl:",
+	ItemID = "Gegenstands-ID:",
+	SpellID = "Zauber-ID:"
 }
 
 L.WatchFrame = {
@@ -391,46 +391,46 @@ L.WatchFrame = {
 }
 
 L.Welcome = {
-	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
+	Line1 = "Willkommen bei |cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r",
+	Line3 = "Tippe /cfg in den Chat ein um Dein Interface einzurichten",
 	Line4 = "",
-	Line5 = "Some of your questions can be answered by typing /uihelp or /faq"
+	Line5 = "Einige Fragen werden Dir eventuell durch den Chatbefehl /uihelp beantwortet"
 }
 
 L.SlashCommand = {
 	Help = {
 	"",
-	"|cff3c9bedAvailable slash commands:|r",
+	"|cff3c9bedVerfügbare Charbefehle:|r",
 	"--------------------------",
-	"/rl - Reload interface.",
-	"/rc - Activates a ready check.",
-	"/gm - Opens GM frame.",
-	"/rd - Disband party or raid.",
-	"/toraid - Convert to party or raid.",
-	"/teleport - Teleportation from random dungeon.",
-	"/spec, /ss - Switches between talent spec's.",
-	"/frame - Description is not ready.",
-	"/farmmode - Increase the size of the minimap.",
-	"/moveui - Allows the movement of interface elements.",
-	"/resetui - Resets general settings to default.",
-	"/resetconfig - Resets KkthnxUI_Config settings.",
-	"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-	"/pulsecd - Self cooldown pulse test.",
-	"/tt - Whisper target.",
-	"/ainv - Enables automatic invitation.",
-	"/cfg - Opens interface settings.",
-	"/patch - Display Wow patch info.",
+	"/rl - Läd das Interface neu.",
+	"/rc - Aktivert den Readycheck.",
+	"/gm - Öffnet das GM Fenster.",
+	"/rd - Löst den Schlachtzug, oder die Party auf.",
+	"/toraid - Konvertiert die Gruppe in einen Schlachtzug.",
+	"/teleport - Teleportation aus einen zufälligen Dungeon.",
+	"/spec, /ss - Wechselt zwischen den Talentspezialisierungen.",
+	"/frame - Zeigt die Fenstereigeneschaften an.",
+	"/farmmode - Vergrössert den Minimapausschnitt.",
+	"/moveui - Erlaubt das Verschieben der Interface Elemente.",
+	"/resetui - Setzt die Einstellungen auf den Standartwert zurück.",
+	"/resetconfig - Setzt alle Einstellungen aus dem KkthnxUI_Config Menü auf den Standartwert zurück.",
+	"/settings ADDON_NAME - Übernimmt die Einstellungen für msbt, dbm, skada, oder allen Addons.",
+	"/pulsecd - Abklingzeit Pulsetest.",
+	"/tt - Ziel anflüstern.",
+	"/ainv - Aktiviert die automatischen Einladungen.",
+	"/cfg - Öffnet das Interface Einstellgsmenü.",
+	"/patch - Zeigt die Wow Patch Info.",
 	"",
-	"|cff3c9bedAvailable hidden features:|r",
+	"|cff3c9bedVerfügbare, versteckte Features:|r",
 	"--------------------------",
-	"Right-click minimap for micromenu.",
-	"Middle mouse click minimap for tracking.",
-	"Left click experience bar opens rep frame.",
-	"Left click artifact bar opens artifact frame.",
-	"Hold alt and obtain player ilvl and spec in tooltip.",
-	"Hold shift to scroll instantly to end or start of chat.",
-	"Copy button to the bottom right side of chat.",
-	"Middle mouse click copy button to /roll.",
+	"Rechtsklick auf die Minimap zeigt das Mikromenü.",
+	"Mit der mittleren Maustaste auf die Minimap klicken zeigt das Aufspührmenü.",
+	"Linksklick auf die Erfahrungsleiste öffnet das Ruffenster.",
+	"Linksklick auf die Artefaktleiste öffnet die Artefaktübersicht.",
+	"Halte ALT und fahre mit der Maus über einen Spieler um sein ilvl und Spez im Tooltip zu sehen.",
+	"Halte Shift um mit der Maus schnell ans Ende oder Anfang im Chat zu scrollen.",
+	"Chatkopie aufrufen ->Rechtsunten im Chat auf das Symbol klicken.",
+	"Mit der mittleren Maustaste auf das Chatkopie Symbol klicken um zu würfeln -> /roll.",
 	}
 }
