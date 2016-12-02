@@ -7,6 +7,11 @@ local format = format
 local GetMouseFocus = GetMouseFocus
 local FrameStackTooltip_Toggle = FrameStackTooltip_Toggle
 
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_FRAME1, SLASH_FRAMELIST1, SLASH_TEXLIST1, SLASH_FSTACK1, SLASH_WOWVERSION2
+-- GLOBALS: SLASH_WOWVERSION1, FRAME, ChatFrame1, FrameStackTooltip, UIParentLoadAddOn
+-- GLOBALS: CopyFrame, SlashCmdList
+
 --[[
 	Command to grab frame information when mouseing over a frame
 
@@ -95,11 +100,6 @@ end
 
 local function TextureList(frame)
 	frame = _G[frame] or FRAME
-	--[[for key, obj in pairs(frame) do
-		if type(obj) == "table" and obj.GetObjectType and obj:GetObjectType() == "Texture" then
-			print(key, obj:GetTexture())
-		end
-	end]]
 
 	for i=1, frame:GetNumRegions() do
 		local region = select(i, frame:GetRegions())

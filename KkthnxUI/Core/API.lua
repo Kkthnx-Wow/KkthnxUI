@@ -3,14 +3,20 @@ local K, C, L = select(2, ...):unpack()
 -- Application Programming Interface for KkthnxUI (API)
 
 -- Lua API
+local _G = _G
+local floor = math.floor
 local getmetatable = getmetatable
 local match = string.match
-local floor = math.floor
 local unpack, select = unpack, select
 
 -- Wow API
 local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
+local UIFrameFadeIn, UIFrameFadeOut = UIFrameFadeIn, UIFrameFadeOut
+local UnitClass = UnitClass
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: noHover, noPushed, noChecked
 
 local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
 local borderr, borderg, borderb = unpack(C.Media.Border_Color)
@@ -19,7 +25,7 @@ local bordera = 1
 
 local Mult = 768 / string.match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 local Scale = function(x)
-	return Mult * math.floor(x / Mult + 0.5)
+	return Mult * floor(x / Mult + 0.5)
 end
 
 K.Scale = function(x) return Scale(x) end

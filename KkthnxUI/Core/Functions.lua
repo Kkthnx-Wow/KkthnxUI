@@ -1,20 +1,38 @@
 local K, C, L = select(2, ...):unpack()
 
-local format, find, gsub = format, string.find, string.gsub
-local match = string.match
+-- Lua API
+local abs = math.abs
 local floor, ceil = math.floor, math.ceil
+local format, find, gsub = format, string.find, string.gsub
+local len = string.len
+local match = string.match
+local modf = math.modf
 local print = print
 local reverse = string.reverse
+local strsub = string.sub
+local tinsert, tremove = tinsert, tremove
 local tonumber, type = tonumber, type
 local unpack, select = unpack, select
-local modf = math.modf
-local len = string.len
+
+-- Wow API
 local CreateFrame = CreateFrame
+local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
 local GetCombatRatingBonus = GetCombatRatingBonus
-local GetSpellInfo = GetSpellInfo
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
+local GetNumWatchedTokens = GetNumWatchedTokens
+local GetSpellInfo = GetSpellInfo
+local IsEveryoneAssistant = IsEveryoneAssistant
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
+local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
+local UnitIsGroupAssistant = UnitIsGroupAssistant
+local UnitIsGroupLeader = UnitIsGroupLeader
 local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff
-local tinsert, tremove = tinsert, tremove
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, WEEKLY
+
 local Locale = GetLocale()
 
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
@@ -194,7 +212,7 @@ K.ShortenString = function(string, numChars, dots)
 end
 
 K.Abbreviate = function(name)
-	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	local newname = (len(name) > 18) and strsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	return K.ShortenString(newname, 18, false)
 end
 
@@ -303,7 +321,7 @@ K.Currency = function(id, weekly, capped)
 
 	if (amount == 0 and r == 1) then return end
 	if weekly then
-		if id == 390 then week = floor(math.abs(week) / 100) end
+		if id == 390 then week = floor(abs(week) / 100) end
 		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, "Current: " .. amount .. " - " .. WEEKLY .. ": " .. week .. " / " .. weekmax, r, g, b, r, g, b) end
 	elseif capped then
 		if id == 392 then maxed = 4000 end
