@@ -8,18 +8,22 @@ if (_LibAnim and _LibAnim >= Version) then
 end
 
 local cos = cos
-local sin = sin
-local pairs = pairs
 local floor = floor
-local tinsert = tinsert
-local tremove = tremove
+local pairs = pairs
+local sin = sin
 local strlower = strlower
+local tinsert = tinsert
+local tonumber = tonumber
+local tremove = tremove
 local Updater = CreateFrame("StatusBar")
 local Texture = Updater:CreateTexture()
 local Text = Updater:CreateFontString()
 local AnimTypes = {}
 local UpdateFuncs = {}
 local Callbacks = {["onplay"] = {}, ["onpause"] = {}, ["onresume"] = {}, ["onstop"] = {}, ["onreset"] = {}, ["onfinished"] = {}}
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CreateAnimationGroup
 
 -- Update all current animations
 local AnimationOnUpdate = function(self, elapsed)

@@ -1,14 +1,20 @@
 local K, C, L = select(2, ...):unpack()
 
-local select, tostring = select, tostring
-local gsub = string.gsub
-local CreateFrame = CreateFrame
-local SendAddonMessage = SendAddonMessage
-local UnitName = UnitName
+-- Lua API
+local select = select
+local tostring = tostring
+
+-- Wow API
+local IsInGroup = IsInGroup
+local IsInGuild = IsInGuild
+local IsInRaid = IsInRaid
 local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
+local SendAddonMessage = SendAddonMessage
 local SendChatMessage = SendChatMessage
-local BNSendWhisper = BNSendWhisper
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: BNSendWhisper
 
 local MyName = UnitName("player") .. "-" .. GetRealmName()
 MyName = gsub(MyName, "%s+", "")

@@ -1,8 +1,26 @@
 local K, C, L = select(2, ...):unpack()
 
--- REGISTER A FRAME WITH: Movers:RegisterFrame(FrameName)
--- NOTE 1: REGISTERED FRAMES NEED A **GLOBAL NAME**
--- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIDataPerChar.Movers SAVEDVARIABLESPERCHARACTER <<
+-- Register a frame with: Movers:RegisterFrame(FrameName)
+--[[
+Registered frames need a **GLOBAL Name**
+Drag values is saved in >> KkthnxUIDataPerChar.Movers SavedVariablesPerCharacter <<
+--]]
+
+-- Lua API
+local _G = _G
+local tinsert = table.insert
+
+-- Wow API
+local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local InCombatLockdown = InCombatLockdown
+local pairs = pairs
+local print = print
+local UIParent = UIParent
+local unpack = unpack
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_MOVING1, KkthnxUIDataPerChar
 
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")

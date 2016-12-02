@@ -1,9 +1,29 @@
 local K, C, L = select(2, ...):unpack()
 
+-- Lua API
+local _G = _G
+
 -- Wow API
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local SetCVar = SetCVar
+local SetCVarBitfield = SetCVarBitfield
+local UnitAffectingCombat = UnitAffectingCombat
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: addon, InterfaceOptionsFrameCategoriesButton10, PetFrame_Update, PlayerFrame_AnimateOut
+-- GLOBALS: PlayerFrame_AnimFinished, PlayerFrame_ToPlayerArt, PlayerFrame_ToVehicleArt, CompactRaidFrameManager
+-- GLOBALS: UIFrameHider, CompactUnitFrameProfiles, HidePartyFrame, ShowPartyFrame, GarrisonLandingPageTutorialBox
+-- GLOBALS: Advanced_UIScaleSlider, Advanced_UseUIScale, BagHelpBox, CollectionsMicroButtonAlert, EJMicroButtonAlert
+-- GLOBALS: HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip, PremadeGroupsPvETutorialAlert,  ReagentBankHelpBox
+-- GLOBALS: SpellBookFrameTutorialButton, TalentMicroButtonAlert, TutorialFrameAlertButton, WorldMapFrameTutorialButton
+-- GLOBALS: LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, LE_FRAME_TUTORIAL_PET_JOURNAL, LE_FRAME_TUTORIAL_GARRISON_BUILDING
+-- GLOBALS: InterfaceOptionsCombatPanelTargetOfTarget, InterfaceOptionsActionBarsPanelCountdownCooldowns
+-- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesMakeLarger, InterfaceOptionsDisplayPanelRotateMinimap
+-- GLOBALS: InterfaceOptionsActionBarsPanelBottomLeft, InterfaceOptionsActionBarsPanelBottomRight
+-- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo, InterfaceOptionsActionBarsPanelAlwaysShowActionBars
 
 -- Kill all stuff on default UI that we don"t need
 local DisableBlizzard = CreateFrame("Frame")
@@ -49,11 +69,11 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		end
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			local PartyMember = _G["PartyMemberFrame" .. i]
-			local Health = _G["PartyMemberFrame" .. i .. "HealthBar"]
-			local Power = _G["PartyMemberFrame" .. i .. "ManaBar"]
-			local Pet = _G["PartyMemberFrame" .. i .."PetFrame"]
-			local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
+			local PartyMember = _G["PartyMemberFrame"..i]
+			local Health = _G["PartyMemberFrame"..i.."HealthBar"]
+			local Power = _G["PartyMemberFrame"..i.."ManaBar"]
+			local Pet = _G["PartyMemberFrame"..i.."PetFrame"]
+			local PetHealth = _G["PartyMemberFrame"..i.."PetFrame".."HealthBar"]
 
 			PartyMember:UnregisterAllEvents()
 			PartyMember:SetParent(UIFrameHider)

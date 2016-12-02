@@ -19,11 +19,11 @@ local IsShiftKeyDown = IsShiftKeyDown
 local SetSpecialization = SetSpecialization
 local UIParent = UIParent
 
-local Movers = K.Movers
-
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIErrorsFrame, ERR_NOT_IN_COMBAT, Lib_EasyMenu, Recount_MainWindow
 -- GLOBALS: Skada, UIConfigMain, CreateUIConfig, HideUIPanel, Menu, GameTooltip
+
+local Movers = K.Movers
 
 -- Bottom bars anchor
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", PetBattleFrameHider)

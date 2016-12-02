@@ -1,10 +1,16 @@
 local K, C, L = select(2, ...):unpack()
 
+-- Lua API
 local _G = _G
 
+-- Wow API
 local CreateFrame = CreateFrame
-local DISABLE = DISABLE
-local HIDE = HIDE
+local StaticPopupSpecial_Hide = StaticPopupSpecial_Hide
+local StaticPopupSpecial_Show = StaticPopupSpecial_Show
+local UIParent = UIParent
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: KkthnxUIDataPerChar, TutorialWindow, DISABLE, HIDE, forceShow
 
 local Tutorial = CreateFrame("Frame", nil, UIParent)
 
