@@ -1,22 +1,23 @@
 local K, C, L = select(2, ...):unpack()
 if IsAddOnLoaded("OmniCC") or IsAddOnLoaded("ncCooldown") or IsAddOnLoaded("CooldownCount") or C.Cooldown.Enable ~= true then return end
 
-local format = string.format
+-- Lua API
+local ceil = math.ceil
 local floor = math.floor
-local min = math.min
-local find = string.find
+local pairs = pairs
+local strfind = string.find
 
---Lua API
+-- Wow API
 local GetTime = GetTime
---WoW API
-local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
 
-local ICON_SIZE = 36 --the normal size for an icon (don"t change this)
-local FONT_SIZE = C.Cooldown.FontSize --the base font size to use at a scale of 1
-local MIN_SCALE = 0.5 --the minimum scale we want to show cooldown counts at, anything below this will be hidden
-local MIN_DURATION = 1.5 --the minimum duration to show cooldown text for
-local NUM_CHARGES = 2 --the minimum duration to show cooldown text for
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: UIParent, CreateFrame, GetActionCooldown, GetActionCharges
+
+local ICON_SIZE = 36 -- the normal size for an icon (don"t change this)
+local FONT_SIZE = C.Cooldown.FontSize -- the base font size to use at a scale of 1
+local MIN_SCALE = 0.5 -- the minimum scale we want to show cooldown counts at, anything below this will be hidden
+local MIN_DURATION = 1.5 -- the minimum duration to show cooldown text for
+local NUM_CHARGES = 2 -- the minimum duration to show cooldown text for
 local threshold = C.Cooldown.Threshold
 
 local TimeColors = {
@@ -35,9 +36,9 @@ local TimeFormats = {
 	[4] = {"%.1fs", "%.1f"},
 }
 
-local DAY, HOUR, MINUTE = 86400, 3600, 60 --used for calculating aura time text
-local DAYISH, HOURISH, MINUTEISH = HOUR * 23.5, MINUTE * 59.5, 59.5 --used for caclculating aura time at transition points
-local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY/2 + 0.5, HOUR/2 + 0.5, MINUTE/2 + 0.5 --used for calculating next update times
+local DAY, HOUR, MINUTE = 86400, 3600, 60 -- used for calculating aura time text
+local DAYISH, HOURISH, MINUTEISH = HOUR * 23.5, MINUTE * 59.5, 59.5 -- used for caclculating aura time at transition points
+local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY/2 + 0.5, HOUR/2 + 0.5, MINUTE/2 + 0.5 -- used for calculating next update times
 
 -- will return the the value to display, the formatter id to use and calculates the next update for the Aura
 local function GetTimeInfo(s, threshhold)
@@ -137,7 +138,7 @@ end
 local function Cooldown_Start(self, start, duration, charges, maxCharges)
 	local remainingCharges = charges or 0
 
-	if self:GetName() and find(self:GetName(), "ChargeCooldown") then return end
+	if self:GetName() and strfind(self:GetName(), "ChargeCooldown") then return end
 	if start > 0 and duration > MIN_DURATION and remainingCharges < NUM_CHARGES and (not self.noOCC) then
 		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
