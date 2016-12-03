@@ -1,14 +1,17 @@
 local K, C, L = select(2, ...):unpack()
 if C.Minimap.Enable ~= true then return end
 
+-- Lua API
 local _G = _G
-local unpack = unpack
-local pairs = pairs
-local Mail = MiniMapMailFrame
-local MailBorder = MiniMapMailBorder
-local MailIcon = MiniMapMailIcon
-local MiniMapInstanceDifficulty = MiniMapInstanceDifficulty
-local PlaySound, CreateFrame, UIParent = PlaySound, CreateFrame, UIParent
+
+-- Wow API
+local GetMinimapShape = GetMinimapShape
+local IsInInstance = IsInInstance
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GarrisonLandingPageMinimapButton, Minimap, TimeManagerClockButton, GameTimeFrame
+-- GLOBALS: Minimap_ZoomIn, Minimap_ZoomOut
+
 local Movers = K.Movers
 
 -- Minimap border

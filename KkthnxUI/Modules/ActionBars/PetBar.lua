@@ -6,8 +6,13 @@ local _G = _G
 
 -- Wow API
 local hooksecurefunc = hooksecurefunc
-local CreateFrame = CreateFrame
-local UIParent = UIParent
+local PetActionBar_HideGrid = PetActionBar_HideGrid
+local PetActionBar_ShowGrid = PetActionBar_ShowGrid
+local PetActionBar_UpdateCooldowns = PetActionBar_UpdateCooldowns
+local RegisterStateDriver = RegisterStateDriver
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PetActionBarFrame, PetHolder, RightBarMouseOver, HoverBind, PetBarMouseOver
 
 if C.ActionBar.PetBarHide then PetActionBarAnchor:Hide() return end
 
