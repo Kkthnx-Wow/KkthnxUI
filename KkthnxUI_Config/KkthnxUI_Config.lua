@@ -50,7 +50,7 @@ local ALLOWED_GROUPS = {
 
 local function Local(o)
 	local string = o
-	for option, value in pairs(KkthnxUIConfigLocalization) do
+	for option, value in pairs(UIConfigLocal) do
 		if option == o then string = value end
 	end
 	return string
@@ -93,7 +93,7 @@ local NormalButton = function(text, parent)
 end
 
 StaticPopupDialogs.PERCHAR = {
-	text = KkthnxUIConfigLocalization.ConfigPerChar,
+	text = UIConfigLocal.ConfigPerChar,
 	OnAccept = function()
 		if KkthnxUIConfigAllCharacters:GetChecked() then
 			KkthnxUIConfigAll[realm][name] = true
@@ -118,7 +118,7 @@ StaticPopupDialogs.PERCHAR = {
 }
 
 StaticPopupDialogs.RESET_PERCHAR = {
-	text = KkthnxUIConfigLocalization.ConfigResetChar,
+	text = UIConfigLocal.ConfigResetChar,
 	OnAccept = function()
 		KkthnxUIConfigPrivate = KkthnxUIConfigPublic
 		ReloadUI()
@@ -132,7 +132,7 @@ StaticPopupDialogs.RESET_PERCHAR = {
 }
 
 StaticPopupDialogs.RESET_ALL = {
-	text = KkthnxUIConfigLocalization.ConfigResetAll,
+	text = UIConfigLocal.ConfigResetAll,
 	OnAccept = function()
 		KkthnxUIConfigPublic = nil
 		KkthnxUIConfigPrivate = nil
@@ -290,7 +290,7 @@ function CreateUIConfig()
 	UIConfigCover:SetPoint("BOTTOMRIGHT", 0, 0)
 	UIConfigCover:SetFrameLevel(UIConfigMain:GetFrameLevel() + 20)
 	UIConfigCover:EnableMouse(true)
-	UIConfigCover:SetScript("OnMouseDown", function(self) print(KkthnxUIConfigLocalization.MakeSelection) end)
+	UIConfigCover:SetScript("OnMouseDown", function(self) print(UIConfigLocal.MakeSelection) end)
 	UIConfigCover:Hide()
 
 	-- Group Scroll
@@ -550,7 +550,7 @@ function CreateUIConfig()
 		end
 	end)
 
-	local totalreset = NormalButton(KkthnxUIConfigLocalization.ConfigButtonReset, UIConfigMain)
+	local totalreset = NormalButton(UIConfigLocal.ConfigButtonReset, UIConfigMain)
 	totalreset:SetPoint("TOPRIGHT", UIConfigBG, "TOPRIGHT", 128, -31)
 	totalreset:SetScript("OnClick", function(self)
 		StaticPopup_Show("RESET_UI")
@@ -561,11 +561,11 @@ function CreateUIConfig()
 		KkthnxUIConfigPublic = {}
 	end)
 
-	local load = NormalButton("|cff00FF00" .. KkthnxUIConfigLocalization.ConfigApplyButton .. "|r", UIConfigMain)
+	local load = NormalButton("|cff00FF00" .. UIConfigLocal.ConfigApplyButton .. "|r", UIConfigMain)
 	load:SetPoint("TOP", totalreset, "BOTTOM", 0, -30)
 	load:SetScript("OnClick", function(self) ReloadUI() end)
 
-	local close = NormalButton("|cffFF0000" .. KkthnxUIConfigLocalization.ConfigCloseButton .. "|r", UIConfigMain)
+	local close = NormalButton("|cffFF0000" .. UIConfigLocal.ConfigCloseButton .. "|r", UIConfigMain)
 	close:SetPoint("TOP", load, "BOTTOM", 0, -8)
 	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
 
@@ -587,7 +587,7 @@ function CreateUIConfig()
 		end
 
 		local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		label:SetText(KkthnxUIConfigLocalization.ConfigSetSavedSettings)
+		label:SetText(UIConfigLocal.ConfigSetSavedSettings)
 		label:SetPoint("RIGHT", button, "LEFT")
 
 		if KkthnxUIConfigAll[realm][name] == true then
