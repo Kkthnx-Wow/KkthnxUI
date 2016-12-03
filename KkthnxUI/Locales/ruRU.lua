@@ -11,7 +11,7 @@ L.AFKScreen = {
 
 L.Announce = {
 	FPUse = "%s использует %s.",
-	Interrupted = INTERRUPTED.." %s \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
+	Interrupted = INTERRUPTED.." %s \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
 	PCAborted = "ОСТАНОВИТЬ АТАКУ!",
 	PCGo = "Вперед!",
 	PCMessage = "Атаковать %s через %s..",

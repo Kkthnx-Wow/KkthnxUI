@@ -41,7 +41,7 @@ local UnitFactionGroup = UnitFactionGroup
 local UnitIsAFK = UnitIsAFK
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: UIParent, PVEFrame, ElvUIAFKPlayerModel, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel
+-- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel
 
 local stats = {
 	60,		-- Total deaths

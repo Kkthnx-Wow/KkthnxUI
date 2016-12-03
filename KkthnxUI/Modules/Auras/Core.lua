@@ -1,6 +1,9 @@
 local K, C, L = select(2, ...):unpack()
 if C.Auras.Enable ~= true then return end
 
+-- Wow API
+local CreateFrame = CreateFrame
+
 local KkthnxUIAuras = CreateFrame("Frame")
 
 function KkthnxUIAuras:Enable()
