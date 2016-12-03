@@ -1,26 +1,27 @@
 local K, C, L = select(2, ...):unpack()
+
 -- Localization For ruRU Clients
 if (GetLocale() ~= "ruRU") then
 	return
 end
 
 L.AFKScreen = {
-	NoGuild = "No Guild"
+	NoGuild = "Нет гильдии"
 }
 
 L.Announce = {
-	FPUse = "%s used %s.",
-	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
-	PCAborted = "Pull ABORTED!",
-	PCGo = "GO!",
-	PCMessage = "Pulling %s in %s..",
-	Sapped = "Sapped",
-	SappedBy = "Sapped by: "
+	FPUse = "%s использует %s.",
+	Interrupted = INTERRUPTED.." %s \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
+	PCAborted = "ОСТАНОВИТЬ АТАКУ!",
+	PCGo = "Вперед!",
+	PCMessage = "Атаковать %s через %s..",
+	Sapped = "Ошеломление!",
+	SappedBy = "Ошеломление от: "
 }
 
 L.Auras = {
-	MoveBuffs = "Move Buffs",
-	MoveDebuffs = "Move Debuffs",
+	MoveBuffs = "Передвинуть Баффы",
+	MoveDebuffs = "Передвинуть дебаффы",
 }
 
 L.FAQ = {
@@ -75,54 +76,54 @@ L.FAQ = {
 
 -- Merchant Localization
 L.Merchant = {
-	NotEnoughMoney = "You don't have enough money to repair!",
-	RepairCost = "Your items have been repaired for",
-	SoldTrash = "Your vendor trash has been sold and you earned"
+	NotEnoughMoney = "У вас недостаточно денег для ремонта!",
+	RepairCost = "Ваша экипировка была отремонтирована за ",
+	SoldTrash = "Серые вещи были проданы. Вы заработали "
 }
 
 -- Bindings Localization
 L.Bind = {
-	Binding = "Binding",
-	Cleared = "All keybindings cleared for",
-	Discard = "All newly set keybindings were discarded.",
-	Instruct = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
-	Key = "Key",
-	NoSet = "No bindings set",
-	Saved = "All keybindings have been saved."
+	Binding = "Назначение клавиш",
+	Cleared = "Все назначения клавиш были очищены.",
+	Discard = "Все новые назначения клавиш были сброшены..",
+	Instruct = "Наведите указатель мыши на нужную кнопку, чтобы назначить привязку. Нажмите ESC или правую кнопку мыши, что бы очистить текущее назначение.",
+	Key = "Клавиша",
+	NoSet = "Назначение не установлено",
+	Saved = "се назначения клавиш были сохранены."
 }
 
 -- Chat Localization
 L.Chat = {
-	AFK = "|cffff0000[AFK]|r",
-	DND = "|cffe7e716[DND]|r",
-	Guild = "G",
-	GuildRecruitment = "GuildRecruitment",
-	Instance = "I",
-	InstanceLeader = "IL",
-	LocalDefense = "LocalDefense",
-	LookingForGroup = "LookingForGroup",
-	Officer = "O",
-	Party = "P",
-	PartyLeader = "P",
-	Raid = "R",
-	RaidLeader = "R",
-	RaidWarning = "W",
+	AFK = "|cffff0000[АФК]|r",
+	DND = "|cffe7e716[НБ]|r",
+	Guild = "Г",
+	GuildRecruitment = "Набор Гильдии",
+	Instance = "П",
+	InstanceLeader = "ЛП",
+	LocalDefense = "Оборона",
+	LookingForGroup = "Поиск Группы",
+	Officer = "О",
+	Party = "Г",
+	PartyLeader = "Г",
+	Raid = "Р",
+	RaidLeader = "Р",
+	RaidWarning = "ОР",
 }
 
 -- Configbutton Localization
 L.ConfigButton = {
-	Functions = "Button functions:",
-	LeftClick = "Left click:",
-	RightClick = "Right click:",
-	MiddleClick = "Middle click:",
-	ShiftClick = "Shift + click:",
-	MoveUI = "Move UI elements",
-	Recount = "Show/Hide Recount",
-	Skada = "Show/Hide Skada",
-	Config = "Show config GUI",
-	Spec = "Show specialization menu",
-	SpecMenu = "Specialization selection",
-	SpecError = "You already have this specialization active!"
+	Functions = "Buttonfunctions:",
+	LeftClick = "Левый клик:",
+	RightClick = "Правый клик:",
+	MiddleClick = "Клик колесом:",
+	ShiftClick = "Shift + клик:",
+	MoveUI = "Режим перемещения элементов",
+	Recount = "Показать/скрыть окно Recount",
+	Skada = "Показать/скрыть окно Skada",
+	Config = "Показать окно настроек KkthnxUI",
+	Spec = "Показать меню выбора специализаций",
+	SpecMenu = "Выбор специализации",
+	SpecError = "Эта специализация уже активна!"
 }
 
 -- Cooldowns
@@ -135,10 +136,10 @@ L.Cooldowns = {
 
 -- DataBars Localization
 L.DataBars = {
-	ArtifactClick = "Click: Opens the artifact overview",
-	ArtifactRemaining = "|cffe6cc80Remaining: %s|r",
-	HonorLeftClick = "|cffccccccLeft Click: Opens the honor frame|r",
-	HonorRightClick = "|cffccccccRight Click: Opens the honor talents frame|r"
+	ArtifactClick = "Клик: Открывает обзор артефактов",
+	ArtifactRemaining = "|cffe6cc80Осталось: %s|r",
+	HonorLeftClick = "|cffccccccЛевый Клик: Открывает окно чести|r",
+	HonorRightClick = "|cffccccccПравый Клик: Открывает окно талантов чести|r"
 }
 
 -- DataText Localization
@@ -146,26 +147,26 @@ L.DataText = {
 	ArmError = "Could not get Call To Arms information.",
 	AvoidAnceShort = "Avd: ",
 	Bags = "Bags",
-	Bandwidth = "Bandwidth: ",
-	BasesAssaulted = "Bases Assaulted:",
-	BasesDefended = "Bases Defended:",
+	Bandwidth = "Шир.Канала: ",
+	BasesAssaulted = "Баз атаковано:",
+	BasesDefended = "Баз защищено:",
 	CartsControlled = "Carts Controlled:",
 	CombatTime = "Combat/Arena Time",
 	Coords = "Coords",
-	DemolishersDestroyed = "Demolishers Destroyed:",
-	Download = "Download: ",
-	FlagsCaptured = "Flags Captured:",
-	FlagsReturned = "Flags Returned:",
-	FPS = "FPS",
-	GatesDestroyed = "Gates Destroyed:",
+	DemolishersDestroyed = "Разрушителей уничтожено:",
+	Download = "Загрузка: ",
+	FlagsCaptured = "Флагов захвачено:",
+	FlagsReturned = "Флагов возвращено:",
+	FPS = "ФПС",
+	GatesDestroyed = "Ворот уничтожено:",
 	GoldDeficit = "Deficit: ",
 	GoldEarned = "Earned: ",
 	GoldProfit = "Profit: ",
 	GoldServer = "Server: ",
 	GoldSpent = "Spent: ",
 	GoldTotal = "Total: ",
-	GraveyardsAssaulted = "Graveyards Assaulted:",
-	GraveyardsDefended = "Graveyards Defended:",
+	GraveyardsAssaulted = "Кладбищ атаковано:",
+	GraveyardsDefended = "Кладбищ защищено:",
 	GuildNoGuild = "No Guild",
 	LootSpecChange = "|cffFFFFFFRight Click:|r Change Loot Specialization|r",
 	LootSpecShow = "|cffFFFFFFShift + Left Click:|r Show Talent Specialization UI|r",
@@ -173,7 +174,7 @@ L.DataText = {
 	LootSpecTalent = "|cffFFFFFFLeft Click:|r Change Talent Specialization|r",
 	Memory = "Memory",
 	MicroMenu = "MicroMenu",
-	MS = "MS",
+	MS = "МС",
 	NoDungeonArm = "No dungeons are currently offering a Call To Arms.",
 	NoOrderHallUnlock = "You have not unlocked your OrderHall",
 	NoOrderHallWO = "Orderhall+",
@@ -183,12 +184,12 @@ L.DataText = {
 	System = "System Stats: ",
 	TotalBagSlots = "Total Bag Slots",
 	TotalFreeBagSlots = "Free Bag Slots",
-	TotalMemory = "Total Memory Usage:",
+	TotalMemory = "Общее использование памяти:",
 	TotalMemoryUsage = "Total Memory Usage",
 	TotalUsedBagSlots = "Used Bag Slots",
-	TowersAssaulted = "Towers Assaulted:",
-	TowersDefended = "Towers Defended:",
-	VictoryPoints = "Victory Points:",
+	TowersAssaulted = "Башен атаковано:",
+	TowersDefended = "Башен защищено:",
+	VictoryPoints = "Очки победы:",
 	Slots = {
 		[1] = {1, INVTYPE_HEAD, 1000},
 		[2] = {3, INVTYPE_SHOULDER, 1000},
@@ -245,7 +246,7 @@ L.Install = {
 	ButtonContinue = "Continue",
 	ButtonFinish = "Finish",
 	ButtonClose = "Close",
-	Complete = "Installation Complete"
+	Complete = "Установка Завершена"
 }
 
 -- tutorial 1
@@ -274,163 +275,163 @@ L.Tutorial = {
 	Step6Line2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs.",
 	Step6Line3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!",
 	Step6Line4 = "",
-	Message1 = "For technical support visit https://github.com/Kkthnx.",
-	Message2 = "You can toggle the microbar by using your right mouse button on the minimap.",
-	Message3 = "You can set your keybindings quickly by typing /kb.",
-	Message4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro do this.",
-	Message5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear.",
-	Message6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing.",
-	Message7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings.",
-	Message8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position.",
-	Message9 = "To move abilities on the action bars by default hold shift + drag. You can change the modifier key from the action bar options menu.",
-	Message10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
+	Message1 = "Для технической поддержки посетите https://github.com/Kkthnx.",
+	Message2 = "Вы можете переключать микроменю правой клавишей мыши на миникарте.",
+	Message3 = "Вы можете быстро назначить клавиши введя команду /kb.",
+	Message4 = "Рамку фокуса можно установить введя команду /focus когда выбрана нужная цель. Рекомендуется использовать макрос ждя этого.",
+	Message5 = "Вы можете получить доступ к копии чата, наведя указатель мыши в правый нижний угол чата и нажав на появившуюся там кнопку.",
+	Message6 = "Если у вас возникли проблемы с KkthnxUI попробуйте отключить все аддоны, кроме KkthnxUI. Помните, KkthnxUI - аддон заменяющий весь интерфейс, вы не можете использовать одновременно два аддона, которые делают тоже самое.",
+	Message7 = "Для установки отображения каналов чата, щелкните правой клавишей мыши по вкладке чата и перейдите в настройки.",
+	Message8 = "Вы можете использовать команду /resetui для полного сброса позиций всех элементов. Вы так же можете ввести команду /moveui и сбросить позицию нужного элемента щелчком правой клавиши мыши по нему.",
+	Message9 = "Для перемещения способностей на панелях команды удерживайте клавишу Shift. Вы моежете изменить клавишу-модификатор в настройках Панелей команд.",
+	Message10 = "Вы можете включить отображение среднего уровня предметов на всплывающих подсказках в меню настроек."
 }
 
 -- AutoInvite Localization
 L.Invite = {
-	Enable = "Autoinvite enabled: ",
-	Disable = "AutoInvite disabled"
+	Enable = "Автоприглашение включено: ",
+	Disable = "Автоприклашение выключено"
 }
 
 -- Info Localization
 L.Info = {
-	Disabnd = "Disbanding group...",
-	Duel = "Declined duel request from ",
-	PetDuel = "Declined pet duel request from ",
-	Invite = "Accepted invite from ",
-	SettingsDBM = "Type /settings dbm, to apply the settings DBM.",
-	SettingsMSBT = "Type /settings msbt, to apply the settings MSBT.",
-	SettingsSKADA = "Type /settings skada, to apply the settings Skada.",
-	SettingsAbu = "Type /settings abu, to apply the settings oUF_Abu.",
-	SettingsALL = "Type /settings all, to apply the settings for all modifications.",
-	NotInstalled = " is not installed.",
-	SkinDisabled1 = "Skin for ",
-	SkinDisabled2 = " is disabled."
+	Disabnd = "Роспуск группы...",
+	Duel = "DДуэль отклонена от ",
+	PetDuel = "Дуэль петомцев отклонена от ",
+	Invite = "Приглашение принято от ",
+	SettingsDbm = "Введите /settings dbm, для применения настроек DBM.",
+	SettingsMsbt = "Введите /settings msbt, для применения настроек MSBT.",
+	SettingsSkada = "Введите /settings skada, для применения настроект Skada.",
+	SettingsAbu = "Введите /settings abu, для применения настроек oUF_Abu.",
+	SettingsAll = "Введите /settings all, для применения настроек ко всем модификациям.",
+	NotInstalled = " не установлено.",
+	SkinDisabled1 = "Скин для ",
+	SkinDisabled2 = " выключен."
 }
 
 -- Loot Localization
 L.Loot = {
-	Announce = "Announce to",
+	Announce = "Объявить",
 	Cannot = "Cannot roll",
-	Chest = ">> Loot from chest",
-	Fish = "Fishing loot",
-	Monster = ">> Loot from ",
-	Random = "Random Player",
-	Self = "Self Loot",
-	ToGuild = " Guild",
-	ToInstance = " Instance",
-	ToParty = " Party",
-	ToRaid = " Raid",
-	ToSay = " Say"
+	Chest = ">> Добыча из сундука",
+	Fish = "Добыча с рыбалки",
+	Monster = ">> Добыча из ",
+	Random = "Случайный игрок",
+	Self = "Каждый сам за себя",
+	ToGuild = " Гильдии",
+	ToInstance = " Сценарию",
+	ToParty = " Группе",
+	ToRaid = " Рейду",
+	ToSay = " Сказать"
 }
 
 -- Mail Localization
 L.Mail = {
-	Complete = "All done.",
-	Messages = "messages",
-	Need = "Need a mailbox.",
-	Stopped = "Stopped, inventory is full.",
-	Unique = "Stopped. Found a unique duplicate item in a bag or the bank."
+	Complete = "Сбор почты завершен.",
+	Messages = "сообщения",
+	Need = "Нужен почтовый ящик.",
+	Stopped = "Остановлено. Сумки полны.",
+	Unique = "Остановлено. Найден дубликат предмета в сумках или банке."
 }
 
 -- World Map Localization
 L.Map = {
-	Fog = "Fog of War"
+	Fog = "Туман Войны"
 }
 
 -- FarmMode Minimap
 L.Minimap = {
-	FarmModeOn = "Farm mode enabled",
-	FarmModeOff = "Farm mode disabled"
+	FarmModeOn = "|cffffe02eРежим фарма|r: |cFF008000Включен|r.",
+	FarmModeOff = "|cffffe02eРежим фарма|r: |cFFFF0000Выключен|r."
 }
 
 -- Misc Localization
 L.Misc = {
-	CopperShort = "|cffeda55fc|r",
-	GoldShort = "|cffffd700g|r",
-	SilverShort = "|cffc7c7cfs|r",
-	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
-	Undress = "Undress"
+	CopperShort = "|cffeda55fм|r",
+	GoldShort = "|cffffd700з|r",
+	SilverShort = "|cffc7c7cfс|r",
+	UIOutdated = "KkthnxUI устарел. Вы можете загрузить последнюю версию с сайта curse.com. Установите приложение Curse и получайте автоматические обновления KkthnxUI.",
+	Undress = "Раздеть"
 }
 
 L.Popup = {
-	Armory = "Armory",
+	Armory = "Армори",
 	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
-	BoostUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r",
+	BoostUI = "|cffff0000ВНИМАНИЕ:|r Это позволит оптимизировать производительность за счет снижения уровня графики. Применяйте только если у вас возникли проблемы с |cffff0000FPS|r!|r",
 	DisableUI = "KkthnxUI might not work for this resolution, do you want to disable KkthnxUI? (Cancel if you want to try another resolution)",
-	DisbandRaid = "Are you sure you want to disband the group?",
-	FixActionbars = "There is something wrong with your action bars. Do you want to reload the UI to fix it?",
-	InstallUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings.",
-	ReloadUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r.",
+	DisbandRaid = "Вы действительно хотите распустить группу?",
+	FixActionbars = "Что-то не так с вашими панелями команд. Хотите перезагрузить UI, чтобы исправить это?",
+	InstallUI = "Спасибо за выбор |cff3c9bedKkthnxUI|r! |n|nПодтвердите установку для применения настроек.",
+	ReloadUI = "Установка завершена. Пожалуйста, нажмите кнопку 'Принять' для перезагрузки UI. Наслаждайтесь |cff2eb6ffKkthnxUI|r!|n|nПосетите мою страницу: |cff2eb6ffwww.github.com/kkthnx|r!",
 	ResetDataText = "Are you sure you want to reset all datatexts to default?",
-	ResetUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?",
-	ResolutionChanged = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?",
-	SettingsAll = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons.",
+	ResetUI = "Вы уверены, что хотите сбросить все настройки |cff3c9bedKkthnxUI|r?",
+	ResolutionChanged = "Мы обнаружили изменение разрешения в вашем клиенте World of Warcraft. Мы НАСТОЯТЕЛЬНО РЕКОМЕНДУЕМ перезагрузить игру. Хотите продолжить?",
+	SettingsAll = "|cffff0000ВНИМАНИЕ|r |n|nЭто применит настройки ко всем аддонам поддерживаемым |cff3c9bedKkthnxUI|r. Ничего не произойдет, если у вас нет ни одного поддерживаемого аддона.",
 	SettingsBW = "Need to change the position of elements BigWigs.",
-	SettingsDBM = "We need to change the bar positions of |cff3c9bedDBM|r.",
+	SettingsDBM = "Нам нужно изменить позицию баров |cff3c9bedDBM|r.",
 }
 
 -- Raid Utility Localization
 L.Raid = {
-	UtilityDisband = "Disband Group",
-	DisbandRaid = "Are you sure you want to disband the group?"
+	UtilityDisband = "Распустить Группу",
+	DisbandRaid = "Вы действительно хотите распустить группу?"
 }
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "Your Status: Completed on ",
-	AchievementIncomplete = "Your Status: Incomplete",
-	AchievementStatus = "Your Status:",
-	ItemCount = "Item count:",
-	ItemID = "Item ID:",
-	SpellID = "Spell ID:"
+	AchievementComplete = "Ваш статус: Завершено на ",
+	AchievementIncomplete = "Ваш статус: Незавершено",
+	AchievementStatus = "Ваш статус:",
+	ItemCount = "Количество предметов:",
+	ItemID = "ID предмета:",
+	SpellID = "ID заклинания:"
 }
 
 L.WatchFrame = {
-	WowheadLink = "Wowhead Link"
+	WowheadLink = "Ссылка Wowhead"
 }
 
 L.Welcome = {
-	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
+	Line1 = "Добро пожаловать в |cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r",
+	Line3 = "Введите /cfg для настройки интерфейса, или посетите www.github.com/kkthnx|r",
 	Line4 = "",
-	Line5 = "Some of your questions can be answered by typing /uihelp or /faq"
+	Line5 = "Некоторые ваши вопросы могут быть решены путем ввода команды /uihelp"
 }
 
 L.SlashCommand = {
 	Help = {
-	"",
-	"|cff3c9bedAvailable slash commands:|r",
-	"--------------------------",
-	"/rl - Reload interface.",
-	"/rc - Activates a ready check.",
-	"/gm - Opens GM frame.",
-	"/rd - Disband party or raid.",
-	"/toraid - Convert to party or raid.",
-	"/teleport - Teleportation from random dungeon.",
-	"/spec, /ss - Switches between talent spec's.",
-	"/frame - Description is not ready.",
-	"/farmmode - Increase the size of the minimap.",
-	"/moveui - Allows the movement of interface elements.",
-	"/resetui - Resets general settings to default.",
-	"/resetconfig - Resets KkthnxUI_Config settings.",
-	"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-	"/pulsecd - Self cooldown pulse test.",
-	"/tt - Whisper target.",
-	"/ainv - Enables automatic invitation.",
-	"/cfg - Opens interface settings.",
-	"/patch - Display Wow patch info.",
-	"",
-	"|cff3c9bedAvailable hidden features:|r",
-	"--------------------------",
-	"Right-click minimap for micromenu.",
-	"Middle mouse click minimap for tracking.",
-	"Left click experience bar opens rep frame.",
-	"Left click artifact bar opens artifact frame.",
-	"Hold alt and obtain player ilvl and spec in tooltip.",
-	"Hold shift to scroll instantly to end or start of chat.",
-	"Copy button to the bottom right side of chat.",
-	"Middle mouse click copy button to /roll.",
+		"",
+		"|cff3c9bedДоступные команды:|r",
+		"--------------------------",
+		"/rl - Перезагрузка интерфейса.",
+		"/rc - Активировать проверку готовности.",
+		"/gm - Открыть окно ГМ.",
+		"/rd - Распустить группу или рейд.",
+		"/toraid - Конвертировать в группу или рейд.",
+		"/teleport - Телепортация из случайного подземелья.",
+		"/spec, /ss - Переключение между наборами талантов.",
+		"/frame - Информация об элементе под указателем мыши.",
+		"/farmmode - Увеличение размера миникарты.",
+		"/moveui - Перемещение всех элементов интерфейса.",
+		"/resetui - Сброс общих настроек по умолчанию.",
+		"/resetconfig - Сброс настроек KkthnxUI_Config.",
+		"/settings ADDON_NAME - Применение настроек для msbt, dbm, skada, или всех аддонов сразу.",
+		"/pulsecd - Тест опции отображения времени перезарядки.",
+		"/tt - Выбрать в цель приватного собеседника.",
+		"/ainv - Активаци автоматического приглашения.",
+		"/cfg - Открывает настройки интерфейса.",
+		"/patch - Выводит информацию о патче WOW.",
+		"",
+		"|cff3c9bedДоступные скрытые функции:|r",
+		"--------------------------",
+		"Правый клик по миникарте открывает микроменю.",
+		"Средний клик по миникарте открывает меню выбора слежения.",
+		"Левый клик по полосе опыта открывает окно репутации.",
+		"Левый клик по полосе атифакта открывает окно артифакта.",
+		"Зажать Alt для получения среднего уровня вещей во всплывающей подсказке.",
+		"Зажать Shift для быстрой прокрутки в начало или конец чата.",
+		"Кнопка копии чата находится в правом нижнем углу окна чата.",
+		"Средний клик по кнопке копии чата выбрасывает /roll.",
 	}
 }

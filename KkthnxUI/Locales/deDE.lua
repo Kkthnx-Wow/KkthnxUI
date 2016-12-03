@@ -1,4 +1,5 @@
 local K, C, L = select(2, ...):unpack()
+
 -- Localization for deDE clients
 if (GetLocale() ~= "deDE") then
 	return
