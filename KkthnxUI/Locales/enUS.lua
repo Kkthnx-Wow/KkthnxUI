@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
--- Localization for ENUS & ENGB Clients
+-- Localization for enUS & enGB
 
 L.AFKScreen = {
 	NoGuild = "No Guild"

@@ -1,15 +1,38 @@
--- Gui for KkthnxUI (by fernir, tukz and tohveli, shestak)
+-- GUI for KkthnxUI (by fernir, tukz and tohveli, shestak)
 local K, C, L
 
+-- Lua API
 local _G = _G
 local format = string.format
-local max = math.max
-local pairs, type = pairs, type
+local pairs = pairs
 local print = print
-local sub = string.sub
+local tinsert = tinsert
+local tonumber = tonumber
+local tostring = tostring
+local tsort = table.sort
+local type = type
 local unpack = unpack
 
+-- Wow API
 local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local HideUIPanel = HideUIPanel
+local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
+local IsAddOnLoaded = IsAddOnLoaded
+local PlaySound = PlaySound
+local ReloadUI = ReloadUI
+local StaticPopup_Show = StaticPopup_Show
+local UIParent = UIParent
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CreateUIConfig, SLASH_CONFIG1, SLASH_CONFIG2, SLASH_CONFIG3, SLASH_CONFIG4
+-- GLOBALS: SLASH_CONFIG5, SLASH_RESETCONFIG1, UIConfigLocal, Aurora, KkthnxUIConfigAllCharacters
+-- GLOBALS: KkthnxUIConfigAll, UIConfigCover, KkthnxUIConfigPublic, KkthnxUIConfigPrivate, UIConfig
+-- GLOBALS: KkthnxUIDataPerChar, KkthnxUI, UIConfigGroupSlider, Print, UIConfigMain, UISpecialFrames
+-- GLOBALS: UIConfigGroup, GameFontHighlight, OKAY, colorbuttonname, COLOR, DEFAULT, loaded, ColorPickerFrame
+-- GLOBALS: OpacitySliderFrame, Error, GameMenuFrame, GameMenuButtonLogout, GameMenuButtonAddons
+
 local Locale = GetLocale()
 local name = UnitName("player")
 local realm = GetRealmName()
@@ -310,8 +333,8 @@ function CreateUIConfig()
 	end
 	local function pairsByKey(t, f)
 		local a = {}
-		for n in pairs(t) do table.insert(a, n) end
-		table.sort(a, sortMyTable)
+		for n in pairs(t) do tinsert(a, n) end
+		tsort(a, sortMyTable)
 		local i = 0
 		local iter = function()
 			i = i + 1
@@ -325,8 +348,8 @@ function CreateUIConfig()
 	local GetOrderedIndex = function(t)
 		local OrderedIndex = {}
 
-		for key in pairs(t) do table.insert(OrderedIndex, key) end
-		table.sort(OrderedIndex)
+		for key in pairs(t) do tinsert(OrderedIndex, key) end
+		tsort(OrderedIndex)
 		return OrderedIndex
 	end
 

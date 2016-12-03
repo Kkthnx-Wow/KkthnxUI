@@ -1,4 +1,5 @@
 local K, C, L = select(2, ...):unpack()
+
 -- Localization for zhTW clients
 if (GetLocale() ~= "zhTW") then
 	return

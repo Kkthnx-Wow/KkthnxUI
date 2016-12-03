@@ -1,5 +1,4 @@
 -- Localization for zhTW
-
 local Locale = GetLocale()
 if (Locale ~= "zhTW") then
 	return
@@ -97,7 +96,7 @@ UIConfigLocal.DataBarsReputationHeight = "Reputation bar height"
 UIConfigLocal.DataBarsReputationWidth = "Reputation bar width"
 
 -- Auras
-UIConfigLocal.AURAS = "Auras"
+UIConfigLocal.Auras = "Auras"
 UIConfigLocal.AurasAnimation = "Show a 'pop in' animation on auras"..PerformanceSlight
 UIConfigLocal.AurasBuffsPerRow = "Set the number of buffs to show before creating a new row"
 UIConfigLocal.AurasCastBy = "Show who cast an aura in its tooltip"
@@ -203,8 +202,10 @@ UIConfigLocal.NameplatesAdditionalWidth = "Additional width for selected namepla
 UIConfigLocal.NameplatesAurasSize = "Debuffs size"
 UIConfigLocal.NameplatesBadColor = "Bad threat color, varies depending if your a tank or dps/heal"
 UIConfigLocal.NameplatesCastbarName = "Show castbar name"
+UIConfigLocal.NameplatesClamp = "Clamp nameplates to the top of the screen when outside of view"
 UIConfigLocal.NameplatesClassIcons = "Icons by class in PvP"
 UIConfigLocal.NameplatesCombat = "Automatically show nameplates in combat"
+UIConfigLocal.NameplatesDistance = "Show nameplates for units within this range"
 UIConfigLocal.NameplatesEnable = "Enable nameplates"
 UIConfigLocal.NameplatesEnhancedThreat = "Enable threat feature, automatically changes by your role"
 UIConfigLocal.NameplatesGoodColor = "Good threat color, varies depending if your a tank or dps/heal"
@@ -213,6 +214,8 @@ UIConfigLocal.NameplatesHealthValue = "Numeral health value"
 UIConfigLocal.NameplatesHeight = "Nameplates height"
 UIConfigLocal.NameplatesNameAbbreviate = "Abbreviate names longer than 18 characters"
 UIConfigLocal.NameplatesNearColor = "Losing/Gaining threat color"
+UIConfigLocal.NameplatesSpiral = "Spiral on nameplate auras"
+UIConfigLocal.NameplatesTimer = "Show cooldown timer on nameplate auras"
 UIConfigLocal.NameplatesTrackAuras = "Show debuffs (from the list)"
 UIConfigLocal.NameplatesWidth = "Nameplates width"
 
@@ -300,7 +303,6 @@ UIConfigLocal.UnitframeShowPlayer = "Show yourself in the party"
 UIConfigLocal.UnitframeStyle = "Style the uniframes look 'fat or normal'"
 UIConfigLocal.UnitframeTargetCastbarHeight = "Target castbar height"
 UIConfigLocal.UnitframeTargetCastbarWidth = "Target castbar width"
-UIConfigLocal.UnitframeTargetDebuffsTop = "Display Target debuffs ontop of the frame."
 UIConfigLocal.UnitframeTextHealthColor = "Health text color"
 UIConfigLocal.UnitframeTextNameColor = "Name text color"
 UIConfigLocal.UnitframeTextPowerColor = "Power text color"

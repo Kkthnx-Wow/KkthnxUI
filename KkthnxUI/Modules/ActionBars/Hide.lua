@@ -1,13 +1,25 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
+-- Lua API
 local _G = _G
 local pairs = pairs
-local MainMenuBar, MainMenuBarArtFrame = MainMenuBar, MainMenuBarArtFrame
-local OverrideActionBar = OverrideActionBar
-local PossessBarFrame = PossessBarFrame
-local PetActionBarFrame = PetActionBarFrame
-local ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight = ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight
+
+-- Wow API
+local hooksecurefunc = hooksecurefunc
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: RightBarMouseOver, StanceBarMouseOver, PetBarMouseOver, IconIntroTracker
+-- GLOBALS: TalentMicroButtonAlert, CollectionsMicroButtonAlert, UIFrameHider
+-- GLOBALS: InterfaceOptionsActionBarsPanelBottomLeft, InterfaceOptionsActionBarsPanelBottomRight
+-- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo
+-- GLOBALS: InterfaceOptionsActionBarsPanelAlwaysShowActionBars, PlayerTalentFrame, RightActionBarAnchor
+-- GLOBALS: PetActionBarAnchor, ShapeShiftBarAnchor, MultiBarLeft, MultiBarBottomRight, MultiBarRight
+-- GLOBALS: PetHolder, ShiftHolder, HoverBind, MainMenuBar, MainMenuBarArtFrame, OverrideActionBar
+-- GLOBALS: PossessBarFrame, PetActionBarFrame, ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight
+-- GLOBALS: EJMicroButtonAlert
 
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
