@@ -4,10 +4,7 @@ if C.ActionBar.Enable ~= true then return end
 -- Lua API
 local _G = _G
 
--- Wow API
-local CreateFrame = CreateFrame
-
---	SETUP MULTIBARBOTTOMLEFT AS BAR #2 BY TUKZ
+-- MultiBarBottomLeft(by Tukz)
 local ActionBar2 = CreateFrame("Frame", "Bar2Holder", ActionBarAnchor)
 ActionBar2:SetAllPoints(ActionBarAnchor)
 MultiBarBottomLeft:SetParent(ActionBar2)
@@ -23,7 +20,7 @@ for i = 1, 12 do
 	end
 end
 
--- HIDE BAR
+-- Hide bar
 if C.ActionBar.BottomBars == 1 then
 	ActionBar2:Hide()
 end

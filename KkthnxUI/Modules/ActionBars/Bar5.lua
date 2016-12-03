@@ -4,10 +4,10 @@ if C.ActionBar.Enable ~= true then return end
 -- Lua API
 local _G = _G
 
--- Wow API
-local CreateFrame = CreateFrame
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: RightBarMouseOver, HoverBind
 
---	SETUP MULTIBARBOTTOMRIGHT AS BAR #5 BY TUKZ
+-- MultiBarBottomRight(by Tukz)
 local ActionBar5 = CreateFrame("Frame", "Bar5Holder", PetBattleFrameHider)
 if C.ActionBar.RightBars < 3 then
 	if C.ActionBar.SplitBars == true then
@@ -54,7 +54,7 @@ for i = 1, 12 do
 	end
 end
 
--- HIDE BAR
+-- Hide bar
 if C.ActionBar.RightBars < 3 and C.ActionBar.BottomBars < 3 then
 	ActionBar5:Hide()
 end

@@ -1,14 +1,39 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or IsAddOnLoaded("ncHoverBind") == true then return end
 
+-- Lua API
+local _G = _G
+local pairs = pairs
+local print = print
+local tonumber = tonumber
+
+-- Wow API
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local GetBindingKey = GetBindingKey
+local GetMacroInfo = GetMacroInfo
+local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
+local IsAddOnLoaded = IsAddOnLoaded
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local IsModifiedClick = IsModifiedClick
+local IsShiftKeyDown = IsShiftKeyDown
+local SetBinding = SetBinding
+local StaticPopup_Show = StaticPopup_Show
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, SLASH_MOUSEOVERBIND1, SLASH_MOUSEOVERBIND2, SLASH_MOUSEOVERBIND3
+-- GLOBALS: SLASH_MOUSEOVERBIND4, StaticPopupDialogs, APPLY, CANCEL, StanceButton1
+-- GLOBALS: PetActionButton1, ActionButton1, EnumerateFrames, GameTooltip_ShowCompareItem
+-- GLOBALS: ShoppingTooltip1, SpellBook_GetSpellBookSlot, GetSpellBookItemName, SpellBookFrame
+-- GLOBALS: EMPTY, KEY_BINDING, SaveBindings, LoadBindings, ReloadUI, MacroFrameTab1, MacroFrameTab2
+
 local bind, localmacros = CreateFrame("Frame", "HoverBind", UIParent), 0
 
 -- SLASH COMMAND
 SlashCmdList.MOUSEOVERBIND = function()
 	if InCombatLockdown() then K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
 	if not bind.loaded then
-		local find = string.find
-		local _G = getfenv(0)
 
 		bind:SetFrameStrata("DIALOG")
 		bind:EnableMouse(true)
@@ -82,12 +107,12 @@ SlashCmdList.MOUSEOVERBIND = function()
 				GameTooltip:AddLine(bind.button.name, 1, 1, 1)
 
 				bind.button.bindings = {GetBindingKey(spellmacro.." "..bind.button.name)}
-					if #bind.button.bindings == 0 then
-						GameTooltip:AddLine(EMPTY, .6, .6, .6)
-					else
-						GameTooltip:AddDoubleLine("Binding", "Key", .6, .6, .6, .6, .6, .6)
-						for i = 1, #bind.button.bindings do GameTooltip:AddDoubleLine("Binding"..i, bind.button.bindings[i], 1, 1, 1) end
-					end
+				if #bind.button.bindings == 0 then
+					GameTooltip:AddLine(EMPTY, .6, .6, .6)
+				else
+					GameTooltip:AddDoubleLine("Binding", "Key", .6, .6, .6, .6, .6, .6)
+					for i = 1, #bind.button.bindings do GameTooltip:AddDoubleLine("Binding"..i, bind.button.bindings[i], 1, 1, 1) end
+				end
 				GameTooltip:Show()
 			elseif spellmacro == "STANCE" or spellmacro == "PET" then
 				self.button.id = tonumber(b:GetID())
@@ -230,7 +255,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			preferredIndex = 3,
 		}
 
-		-- REGISTERING
+		-- Registering
 		local stance = StanceButton1:GetScript("OnClick")
 		local pet = PetActionButton1:GetScript("OnClick")
 		local button = ActionButton1:GetScript("OnClick")

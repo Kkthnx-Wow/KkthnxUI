@@ -4,10 +4,10 @@ if C.ActionBar.Enable ~= true then return end
 -- Lua API
 local _G = _G
 
--- Wow API
-local CreateFrame = CreateFrame
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: RightBarMouseOver, HoverBind
 
---	SETUP MULTIBARRIGHT AS BAR #4 BY TUKZ
+-- MultiBarRight(by Tukz)
 local ActionBar4 = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar4:SetAllPoints(RightActionBarAnchor)
 MultiBarRight:SetParent(ActionBar4)
@@ -23,7 +23,7 @@ for i = 1, 12 do
 	end
 end
 
--- HIDE BAR
+-- Hide bar
 if C.ActionBar.RightBars < 1 then
 	ActionBar4:Hide()
 end

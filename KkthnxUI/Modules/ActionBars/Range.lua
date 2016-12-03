@@ -1,12 +1,18 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
-local _G = _G
-local KkthnxUIActionBars = CreateFrame("Frame")
+-- Lua API
+local unpack = unpack
+
+-- Wow API
 local IsUsableAction = IsUsableAction
-local IsActionInRange = IsActionInRange
 local ActionHasRange = ActionHasRange
-local HasAction = HasAction
+local IsActionInRange = IsActionInRange
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: TOOLTIP_UPDATE_TIME
+
+local KkthnxUIActionBars = CreateFrame("Frame")
 
 function KkthnxUIActionBars:RangeOnUpdate(elapsed)
 	if (not self.rangeTimer) then

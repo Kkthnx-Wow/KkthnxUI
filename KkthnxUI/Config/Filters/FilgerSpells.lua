@@ -17,6 +17,10 @@ PVE_PVP_CC_Anchor = CreateFrame("Frame", "PVE_PVP_CC_Anchor", UIParent)
 COOLDOWN_Anchor = CreateFrame("Frame", "COOLDOWN_Anchor", UIParent)
 T_DE_BUFF_BAR_Anchor = CreateFrame("Frame", "T_DE_BUFF_BAR_Anchor", UIParent)
 
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: P_BUFF_ICON_Anchor, P_PROC_ICON_Anchor, SPECIAL_P_BUFF_ICON_Anchor ,T_DEBUFF_ICON_Anchor
+-- GLOBALS: T_BUFF_Anchor, PVE_PVP_DEBUFF_Anchor, PVE_PVP_CC_Anchor, COOLDOWN_Anchor, T_DE_BUFF_BAR_Anchor
+
 C["filger_spells"] = {
 	["DEATHKNIGHT"] = {
 		{
@@ -3795,8 +3799,6 @@ C["filger_spells"] = {
 			{spellID = 215307, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Necrotic Venom (dot)
 			{spellID = 215449, unitID = "player", caster = "all", filter = "DEBUFF"},
-			-- Necrotic Venom (dot, drops pools)
-			{spellID = 215460, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Twisting Shadows (dot)
 			{spellID = 210850, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Shimmering Feather (buff)

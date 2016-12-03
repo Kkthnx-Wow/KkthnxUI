@@ -3,23 +3,30 @@ if C.Chat.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local CreateFrame = CreateFrame
-local find = string.find
 local format = string.format
 local gsub = string.gsub
 local len = string.len
-local print = print
+local pairs = pairs
 local select = select
+local strfind = string.find
 local sub = string.sub
-local type = type
 local unpack = unpack
-local upper = string.upper
 
 -- Wow API
-local CreateFrame = CreateFrame
+local FCF_Close = FCF_Close
+local FCF_GetChatWindowInfo = FCF_GetChatWindowInfo
+local FCF_GetCurrentChatFrame = FCF_GetCurrentChatFrame
+local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local GetChannelName = GetChannelName
-local GetID, GetName = GetID, GetName
 local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
+local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
+local PET_BATTLE_COMBAT_LOG = PET_BATTLE_COMBAT_LOG
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CombatLogQuickButtonFrame_Custom, ChatTypeInfo, SLASH_BIGCHAT1, AFK, DND
+-- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
+-- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory
 
 local Movers = K.Movers
 local origs = {}
@@ -284,7 +291,7 @@ end
 
 -- Remove player"s realm name
 local function RemoveRealmName(self, event, msg, author, ...)
-	local realm = string.gsub(K.Realm, " ", "")
+	local realm = gsub(K.Realm, " ", "")
 	if msg:find("-" .. realm) then
 		return false, gsub(msg, "%-"..realm, ""), author, ...
 	end
