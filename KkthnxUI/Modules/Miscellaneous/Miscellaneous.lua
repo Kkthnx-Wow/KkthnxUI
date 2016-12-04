@@ -57,6 +57,47 @@ TicketFrame:SetScript("OnEvent", function(self, event)
 	end)
 end)
 
+-- LevelUp + BossBanner Mover
+local LBBMover = CreateFrame("Frame", "LevelUpBossBannerHolder", UIParent)
+LBBMover:SetSize(200, 20)
+LBBMover:SetPoint("TOP", K.UIParent, "TOP", 0, -120)
+
+local LevelUpBossBanner = CreateFrame("Frame")
+LevelUpBossBanner:RegisterEvent("PLAYER_LOGIN")
+LevelUpBossBanner:SetScript("OnEvent", function(self, event)
+	Movers:RegisterFrame(LBBMover)
+
+	local function Reanchor(frame, _, anchor)
+		if anchor ~= LBBMover then
+			frame:ClearAllPoints()
+			frame:SetPoint("TOP", LBBMover)
+		end
+	end
+
+	-- Level Up Display
+	LevelUpDisplay:ClearAllPoints()
+	LevelUpDisplay:SetPoint("TOP", LBBMover)
+	hooksecurefunc(LevelUpDisplay, "SetPoint", Reanchor)
+
+	-- Boss Banner
+	BossBanner:ClearAllPoints()
+	BossBanner:SetPoint("TOP", LBBMover)
+	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
+end)
+
+local PVPMessageEnhancement = CreateFrame("Frame")
+PVPMessageEnhancement:RegisterEvent("PLAYER_LOGIN")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
+PVPMessageEnhancement:SetScript("OnEvent", function(self, event)
+	-- if C.Misc.EnhancedPvPMessages ~= true then return end
+	local _, instanceType = IsInInstance()
+	if instanceType == "pvp" or instanceType == "arena" then
+		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])
+	end
+end)
+
 -- Move and scale UIErrorsFrame
 UIErrorsFrame:ClearAllPoints()
 UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
@@ -82,14 +123,12 @@ hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
 -- Force lockActionBars CVar
 local ForceCVar = CreateFrame("Frame")
-ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ForceCVar:RegisterEvent("PLAYER_LOGIN")
 ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
 	end
-
-	ForceCVar:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
 
 -- Force other warning
