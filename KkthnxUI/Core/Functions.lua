@@ -59,7 +59,6 @@ K.PriestColors = {
 	colorStr = "fcfcfc"
 }
 
-
 K.Print = function(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end

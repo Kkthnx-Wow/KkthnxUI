@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.Raidframe.AuraWatch ~= true then return end
+if C.Raidframe.AuraWatch ~= true or C.Raidframe.Enable ~= true then return end
 
 -- RAID DEBUFFS (TRACKING LIST)
 K.RaidDebuffsTracking = {

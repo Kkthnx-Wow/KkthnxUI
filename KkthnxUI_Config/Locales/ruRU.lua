@@ -214,8 +214,10 @@ UIConfigLocal.NameplatesHealthValue = "Цифровое значение здо�
 UIConfigLocal.NameplatesHeight = "Высота индикаторов"
 UIConfigLocal.NameplatesNameAbbreviate = "Сокращать до аббревиатур имена длиннее 18 символов"
 UIConfigLocal.NameplatesNearColor = "Цвет при уменьшении/увеличении значения угрозы"
+UIConfigLocal.NameplatesOffTankColor = "Offtank threat color"
 UIConfigLocal.NameplatesSpiral = "Spiral on nameplate auras"
 UIConfigLocal.NameplatesTimer = "Show cooldown timer on nameplate auras"
+UIConfigLocal.NameplatesTotemIcons = "Show icon above enemy totems nameplate"
 UIConfigLocal.NameplatesTrackAuras = "Показывать дебаффы (из списка)"
 UIConfigLocal.NameplatesWidth = "Ширина индикаторов"
 

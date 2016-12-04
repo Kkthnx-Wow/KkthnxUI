@@ -17,7 +17,9 @@ local GetNumBattlefieldScores = GetNumBattlefieldScores
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
+local IsInGroup = IsInGroup
 local IsInInstance = IsInInstance
+local IsInRaid = IsInRaid
 local SetCVar = SetCVar
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitClass = UnitClass
@@ -30,9 +32,11 @@ local UnitIsUnit = UnitIsUnit
 local UnitName = UnitName
 local UnitReaction = UnitReaction
 local UnitSelectionColor = UnitSelectionColor
+local GetNumGroupMembers = GetNumGroupMembers
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura
+-- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder
 
 -- oUF nameplates
 local _, ns = ...
@@ -66,21 +70,6 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	if C.Nameplates.EnhancedThreat == true then
 		SetCVar("threatWarning", 3)
 	end
-end
-
-KkthnxUIPlates:RegisterEvent("PLAYER_ENTERING_WORLD")
-function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
-	if C.Nameplates.Combat == true then
-		if InCombatLockdown() then
-			SetCVar("nameplateShowEnemies", 1)
-		else
-			SetCVar("nameplateShowEnemies", 0)
-		end
-	end
-	if C.Nameplates.EnhancedThreat == true then
-		SetCVar("threatWarning", 3)
-	end
-
 	SetCVar("namePlateMinScale", 1)
 	SetCVar("namePlateMaxScale", 1)
 	SetCVar("nameplateLargerScale", 1)
@@ -146,7 +135,7 @@ if C.Nameplates.HealerIcon == true then
 			for i = 1, 5 do
 				local specID = GetArenaOpponentSpec(i)
 				if specID and specID > 0 then
-					local name = UnitName(format('arena%d', i))
+					local name = UnitName(format("arena%d", i))
 					local _, talentSpec = GetSpecializationInfoByID(specID)
 					if name and healerSpecs[talentSpec] then
 						healList[name] = talentSpec
@@ -174,6 +163,34 @@ if C.Nameplates.HealerIcon == true then
 	t:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
 	t:SetScript("OnEvent", CheckLoc)
 end
+
+local totemData = {
+	[GetSpellInfo(192058)] = "Interface\\Icons\\spell_nature_brilliance", -- Lightning Surge Totem
+	[GetSpellInfo(98008)] = "Interface\\Icons\\spell_shaman_spiritlink", -- Spirit Link Totem
+	[GetSpellInfo(192077)] = "Interface\\Icons\\ability_shaman_windwalktotem", -- Wind Rush Totem
+	[GetSpellInfo(204331)] = "Interface\\Icons\\spell_nature_wrathofair_totem", -- Counterstrike Totem
+	[GetSpellInfo(204332)] = "Interface\\Icons\\spell_nature_windfury", -- Windfury Totem
+	[GetSpellInfo(204336)] = "Interface\\Icons\\spell_nature_groundingtotem", -- Grounding Totem
+	-- Water
+	[GetSpellInfo(157153)] = "Interface\\Icons\\ability_shaman_condensationtotem", -- Cloudburst Totem
+	[GetSpellInfo(5394)] = "Interface\\Icons\\INV_Spear_04", -- Healing Stream Totem
+	[GetSpellInfo(108280)] = "Interface\\Icons\\ability_shaman_healingtide", -- Healing Tide Totem
+	-- Earth
+	[GetSpellInfo(207399)] = "Interface\\Icons\\spell_nature_reincarnation", -- Ancestral Protection Totem
+	[GetSpellInfo(198838)] = "Interface\\Icons\\spell_nature_stoneskintotem", -- Earthen Shield Totem
+	[GetSpellInfo(51485)] = "Interface\\Icons\\spell_nature_stranglevines", -- Earthgrab Totem
+	[GetSpellInfo(61882)] = "Interface\\Icons\\spell_shaman_earthquake", -- Earthquake Totem
+	[GetSpellInfo(196932)] = "Interface\\Icons\\spell_totem_wardofdraining", -- Voodoo Totem
+	-- Fire
+	[GetSpellInfo(192222)] = "Interface\\Icons\\spell_shaman_spewlava", -- Liquid Magma Totem
+	[GetSpellInfo(204330)] = "Interface\\Icons\\spell_fire_totemofwrath", -- Skyfury Totem
+	-- Totem Mastery
+	[GetSpellInfo(202188)] = "Interface\\Icons\\spell_nature_stoneskintotem", -- Resonance Totem
+	[GetSpellInfo(210651)] = "Interface\\Icons\\spell_shaman_stormtotem", -- Storm Totem
+	[GetSpellInfo(210657)] = "Interface\\Icons\\spell_fire_searingtotem", -- Ember Totem
+	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
+}
+
 
 local FormatTime = function(s)
 	local day, hour, minute = 86400, 3600, 60
@@ -214,51 +231,58 @@ end
 
 local function threatColor(self, forced)
 	if UnitIsPlayer(self.unit) then return end
-	local healthbar = self.Health
 	local combat = UnitAffectingCombat("player")
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
 
+	if C.Nameplates.EnhancedThreat ~= true then
+		SetVirtualBorder(self, unpack(C.Media.Nameplate_BorderColor))
+	end
+
 	if UnitIsTapDenied(self.unit) then
-		healthbar:SetStatusBarColor(0.6, 0.6, 0.6)
+		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
 	elseif combat then
 		if threatStatus == 3 then -- securely tanking, highest threat
 			if K.Role == "TANK" then
 				if C.Nameplates.EnhancedThreat == true then
-					healthbar:SetStatusBarColor(unpack(C.Nameplates.GoodColor))
+					self.Health:SetStatusBarColor(unpack(C.Nameplates.GoodColor))
 				else
-					K.SetShadowBorder(healthbar, unpack(C.Nameplates.GoodColor))
+					K.SetShadowBorder(self.Health, unpack(C.Nameplates.BadColor))
 				end
 			else
 				if C.Nameplates.EnhancedThreat == true then
-					healthbar:SetStatusBarColor(unpack(C.Nameplates.BadColor))
+					self.Health:SetStatusBarColor(unpack(C.Nameplates.BadColor))
 				else
-					K.SetShadowBorder(healthbar, unpack(C.Nameplates.BadColor))
+					K.SetShadowBorder(self.Health, unpack(C.Nameplates.BadColor))
 				end
 			end
 		elseif threatStatus == 2 then -- insecurely tanking, another unit have higher threat but not tanking
 			if C.Nameplates.EnhancedThreat == true then
-				healthbar:SetStatusBarColor(unpack(C.Nameplates.NearColor))
+				self.Health:SetStatusBarColor(unpack(C.Nameplates.NearColor))
 			else
-				K.SetShadowBorder(healthbar, unpack(C.Nameplates.NearColor))
+				K.SetShadowBorder(self.Health, unpack(C.Nameplates.NearColor))
 			end
 		elseif threatStatus == 1 then -- not tanking, higher threat than tank
 			if C.Nameplates.EnhancedThreat == true then
-				healthbar:SetStatusBarColor(unpack(C.Nameplates.NearColor))
+				self.Health:SetStatusBarColor(unpack(C.Nameplates.NearColor))
 			else
-				K.SetShadowBorder(healthbar, unpack(C.Nameplates.NearColor))
+				K.SetShadowBorder(self.Health, unpack(C.Nameplates.NearColor))
 			end
 		elseif threatStatus == 0 then -- not tanking, lower threat than tank
-			if K.Role == "TANK" then
-				if C.Nameplates.EnhancedThreat == true then
-					healthbar:SetStatusBarColor(unpack(C.Nameplates.BadColor))
+			if C.Nameplates.EnhancedThreat == true then
+				if K.Role == "TANK" then
+					self.Health:SetStatusBarColor(unpack(C.Nameplates.BadColor))
+					if IsInGroup() or IsInRaid() then
+						for i = 1, GetNumGroupMembers() do
+							if UnitExists("raid"..i) and not UnitIsUnit("raid"..i, "player") then
+								local isTanking = UnitDetailedThreatSituation("raid"..i, self.unit)
+								if isTanking and UnitGroupRolesAssigned("raid"..i) == "TANK" then
+									self.Health:SetStatusBarColor(unpack(C.Nameplates.OffTankColor))
+								end
+							end
+						end
+					end
 				else
-					K.SetShadowBorder(healthbar, unpack(C.Nameplates.BadColor))
-				end
-			else
-				if C.Nameplates.EnhancedThreat == true then
-					healthbar:SetStatusBarColor(unpack(C.Nameplates.GoodColor))
-				else
-					K.SetShadowBorder(healthbar, unpack(C.Nameplates.GoodColor))
+					self.Health:SetStatusBarColor(unpack(C.Nameplates.GoodColor))
 				end
 			end
 		end
@@ -324,6 +348,18 @@ local function UpdateName(self)
 			self.Level:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
 		end
 	end
+	if C.Nameplates.TotemIcons == true then
+		local name = UnitName(self.unit)
+		if name then
+			if totemData[name] then
+				self.Totem.Icon:SetTexture(totemData[name])
+				self.Totem.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+				self.Totem:Show()
+			else
+				self.Totem:Hide()
+			end
+		end
+	end
 end
 
 local function castColor(self, unit, name, castid)
@@ -345,10 +381,8 @@ local function callback(event, nameplate, unit)
 	local name = UnitName(unit)
 	if name and K.PlateBlacklist[name] then
 		self:Hide()
-		-- self:SetAlpha(0)
 	else
 		self:Show()
-		-- self:SetAlpha(1)
 	end
 
 	if UnitIsUnit(unit, "player") then
@@ -405,7 +439,7 @@ local function style(self, unit)
 		self.Health.value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 		-- 	self.Health.value:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 		self.Health.value:SetPoint("RIGHT", self.Health, "RIGHT", 0, 0)
-		self:Tag(self.Health.value, "[NameplateShortCurHP] - [perhp]%")
+		self:Tag(self.Health.value, "[NameplateHealth]")
 	end
 
 	-- Create Player Power bar
@@ -431,9 +465,9 @@ local function style(self, unit)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
 
 	if C.Nameplates.NameAbbreviate == true then
-		self:Tag(self.Name, "[NameplateGetNameColor][NameplateNameLongAbbrev]")
+		self:Tag(self.Name, "[NameplateNameColor][NameplateNameLongAbbrev]")
 	else
-		self:Tag(self.Name, "[NameplateGetNameColor][NameLong]")
+		self:Tag(self.Name, "[NameplateNameColor][NameLong]")
 	end
 
 	-- Create Level
@@ -507,6 +541,15 @@ local function style(self, unit)
 		K.CreateShadowFrame(self.Class, self.Class.Icon)
 	end
 
+	-- Create Totem Icon
+	if C.Nameplates.TotemIcons == true then
+		self.Totem = CreateFrame("Frame", nil, self)
+		self.Totem.Icon = self.Totem:CreateTexture(nil, "OVERLAY")
+		self.Totem.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
+		self.Totem.Icon:SetPoint("BOTTOM", self.Health, "TOP", 0, 16)
+		K.CreateShadowFrame(self.Totem, self.Totem.Icon)
+	end
+
 	-- Create Healer Icon
 	if C.Nameplates.HealerIcon == true then
 		self.HPHeal = self.Health:CreateFontString(nil, "OVERLAY")
@@ -520,8 +563,8 @@ local function style(self, unit)
 		self.Auras = CreateFrame("Frame", nil, self)
 		self.Auras:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 2 * K.NoScaleMult, C.Media.Font_Size + 7)
 		self.Auras.initialAnchor = "BOTTOMRIGHT"
-		self.Auras['growth-y'] = "UP"
-		self.Auras['growth-x'] = "LEFT"
+		self.Auras["growth-y"] = "UP"
+		self.Auras["growth-x"] = "LEFT"
 		self.Auras.numDebuffs = 6
 		self.Auras.numBuffs = 0
 		self.Auras:SetSize(20 + C.Nameplates.Width, C.Nameplates.AurasSize)
@@ -609,8 +652,13 @@ local function style(self, unit)
 			perc = min / max
 		end
 
-		if not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
-			local r, g, b
+		local r, g, b
+		local mu = self.bg.multiplier
+		if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and UnitReaction(unit, "player") >= 5 then
+			r, g, b = unpack(K.Colors.power["MANA"])
+			self:SetStatusBarColor(r, g, b)
+			self.bg:SetVertexColor(r * mu, g * mu, b * mu)
+		elseif not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
 			local reaction = K.Colors.reaction[UnitReaction(unit, "player")]
 			if reaction then
 				r, g, b = reaction[1], reaction[2], reaction[3]
@@ -619,7 +667,6 @@ local function style(self, unit)
 			end
 
 			self:SetStatusBarColor(r, g, b)
-			local mu = self.bg.multiplier
 			self.bg:SetVertexColor(r * mu, g * mu, b * mu)
 		end
 

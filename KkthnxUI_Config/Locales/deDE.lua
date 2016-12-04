@@ -214,8 +214,10 @@ UIConfigLocal.NameplatesHealthValue = "Zeige die Lebenswerte auf den Plaketten a
 UIConfigLocal.NameplatesHeight = "Höhe der Namensplaketten"
 UIConfigLocal.NameplatesNameAbbreviate = "Kürze den Namen wenn er länger als 18 Zeichen ist"
 UIConfigLocal.NameplatesNearColor = "Verliere/Gewinne Bedrohungsfarbe"
+UIConfigLocal.NameplatesOffTankColor = "Offtank threat color"
 UIConfigLocal.NameplatesSpiral = "Spiral on nameplate auras"
 UIConfigLocal.NameplatesTimer = "Show cooldown timer on nameplate auras"
+UIConfigLocal.NameplatesTotemIcons = "Show icon above enemy totems nameplate"
 UIConfigLocal.NameplatesTrackAuras = "Zeige Schwächungszauber"
 UIConfigLocal.NameplatesWidth = "Breite der Namensplaketten"
 

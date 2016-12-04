@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.Unitframe.Enable ~= true then return end
+if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
 local abs = math.abs
