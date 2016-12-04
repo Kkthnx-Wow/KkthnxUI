@@ -52,6 +52,14 @@ K.UIParent.origHeight = K.UIParent:GetHeight()
 
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
+K.PriestColors = {
+	r = 0.99,
+	g = 0.99,
+	b = 0.99,
+	colorStr = "fcfcfc"
+}
+
+
 K.Print = function(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end

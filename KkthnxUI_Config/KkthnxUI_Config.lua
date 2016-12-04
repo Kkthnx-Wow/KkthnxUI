@@ -173,7 +173,11 @@ StaticPopupDialogs.RESET_ALL = {
 
 local function SetValue(group, option, value)
 	local mergesettings
-	if KkthnxUIConfigPrivate == KkthnxUIConfigPublic then mergesettings = true else mergesettings = false end
+	if KkthnxUIConfigPrivate == KkthnxUIConfigPublic then
+		mergesettings = true
+	else
+		mergesettings = false
+	end
 
 	if KkthnxUIConfigAll[realm][name] == true then
 		if not KkthnxUIConfigPrivate then KkthnxUIConfigPrivate = {} end
@@ -185,6 +189,7 @@ local function SetValue(group, option, value)
 			if not KkthnxUIConfigPrivate[group] then KkthnxUIConfigPrivate[group] = {} end
 			KkthnxUIConfigPrivate[group][option] = value
 		end
+
 		if not KkthnxUIConfigPublic then KkthnxUIConfigPublic = {} end
 		if not KkthnxUIConfigPublic[group] then KkthnxUIConfigPublic[group] = {} end
 		KkthnxUIConfigPublic[group][option] = value
