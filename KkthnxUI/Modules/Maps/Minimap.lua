@@ -12,6 +12,9 @@ local IsInInstance = IsInInstance
 -- GLOBALS: GarrisonLandingPageMinimapButton, Minimap, TimeManagerClockButton, GameTimeFrame
 -- GLOBALS: Minimap_ZoomIn, Minimap_ZoomOut
 
+local Mail = MiniMapMailFrame
+local MailBorder = MiniMapMailBorder
+local MailIcon = MiniMapMailIcon
 local Movers = K.Movers
 
 -- Minimap border
