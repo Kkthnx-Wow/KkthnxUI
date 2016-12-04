@@ -1,10 +1,8 @@
 local K, C, L = select(2, ...):unpack()
 
 -- Register a frame with: Movers:RegisterFrame(FrameName)
---[[
-Registered frames need a **GLOBAL Name**
-Drag values is saved in >> KkthnxUIDataPerChar.Movers SavedVariablesPerCharacter <<
---]]
+-- Registered frames need a **GLOBAL Name**
+-- Drag values is saved in >> KkthnxUIDataPerChar.Movers SavedVariablesPerCharacter <<
 
 -- Lua API
 local _G = _G

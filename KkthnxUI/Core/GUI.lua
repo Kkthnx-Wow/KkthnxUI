@@ -1,6 +1,9 @@
 local K, C, L = select(2, ...):unpack()
 if not IsAddOnLoaded("KkthnxUI_Config") then return end
 
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: KkthnxUIConfigAll
+
 -- This Module loads new user settings if KkthnxUI_Config is loaded
 if not KkthnxUIConfigAll then KkthnxUIConfigAll = {} end
 if KkthnxUIConfigAll[K.Realm] == nil then KkthnxUIConfigAll[K.Realm] = {} end
