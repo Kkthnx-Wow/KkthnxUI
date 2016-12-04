@@ -40,14 +40,14 @@ end)
 
 -- Move some frames (Elvui)
 local GMMover = CreateFrame("Frame", "GMMoverAnchor", UIParent)
-GMMover:SetPoint("TOPLEFT", K.UIParent, "TOPLEFT", 250, -50)
+GMMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -50)
 Movers:RegisterFrame(GMMover)
 
 local TicketFrame = CreateFrame("Frame")
 TicketFrame:RegisterEvent("PLAYER_LOGIN")
 TicketFrame:SetScript("OnEvent", function(self, event)
 	TicketStatusFrame:ClearAllPoints()
-	TicketStatusFrame:SetPoint("TOPLEFT", K.UIParent, "TOPLEFT", 250, -5)
+	TicketStatusFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -5)
 	-- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
 	hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
 		if anchor == UIParent then
@@ -60,7 +60,7 @@ end)
 -- LevelUp + BossBanner Mover
 local LBBMover = CreateFrame("Frame", "LevelUpBossBannerHolder", UIParent)
 LBBMover:SetSize(200, 20)
-LBBMover:SetPoint("TOP", K.UIParent, "TOP", 0, -120)
+LBBMover:SetPoint("TOP", UIParent, "TOP", 0, -120)
 
 local LevelUpBossBanner = CreateFrame("Frame")
 LevelUpBossBanner:RegisterEvent("PLAYER_LOGIN")
@@ -86,12 +86,11 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 end)
 
 local PVPMessageEnhancement = CreateFrame("Frame")
-PVPMessageEnhancement:RegisterEvent("PLAYER_LOGIN")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 PVPMessageEnhancement:SetScript("OnEvent", function(self, event)
-	-- if C.Misc.EnhancedPvPMessages ~= true then return end
+	if C.Misc.EnhancedPvPMessages ~= true then return end
 	local _, instanceType = IsInInstance()
 	if instanceType == "pvp" or instanceType == "arena" then
 		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])

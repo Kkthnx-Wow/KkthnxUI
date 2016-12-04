@@ -124,26 +124,9 @@ function ns.createArenaLayout(self, unit)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena
 
-	if (C.Unitframe.FilterArenaBuffs) then
-		self.Buffs.CustomFilter = FilterArenaBuffs
-	end
-
-	self.Buffs.PostCreateIcon = ns.UpdateAuraIcons
-	self.Buffs.PostUpdateIcon = ns.PostUpdateIcon
-
-	self.Debuffs = CreateFrame("Frame", nil, self)
-	self.Debuffs.size = 22
-	self.Debuffs:SetHeight(self.Debuffs.size * 3)
-	self.Debuffs:SetWidth(self.Debuffs.size * 4)
-	self.Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, -6)
-	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-x"] = "RIGHT"
-	self.Debuffs["growth-y"] = "DOWN"
-	self.Debuffs.num = 8
-	self.Debuffs.spacing = 4.5
-
-	self.Debuffs.PostCreateIcon = ns.UpdateAuraIcons
-	self.Debuffs.PostUpdateIcon = ns.PostUpdateIcon
+  self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 3, 2)
+  self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 7, 4)
+  self.Debuffs.CustomFilter = ns.CustomAuraFilters.arena
 
 	-- Castbars
 	if C.Unitframe.Castbars and uconfig.cbshow then

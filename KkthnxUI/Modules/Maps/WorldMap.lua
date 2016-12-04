@@ -36,7 +36,7 @@ local INVERTED_POINTS = {
 function WorldMap:SetLargeWorldMap()
 	if InCombatLockdown() then return end
 
-	WorldMapFrame:SetParent(K.UIParent)
+	WorldMapFrame:SetParent(UIParent)
 	WorldMapFrame:EnableKeyboard(false)
 	WorldMapFrame:SetScale(1)
 	WorldMapFrame:EnableMouse(true)

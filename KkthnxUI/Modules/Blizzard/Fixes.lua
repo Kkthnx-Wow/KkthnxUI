@@ -14,7 +14,7 @@ local ScriptErrors = CreateFrame("Frame")
 ScriptErrors:RegisterEvent("ADDON_LOADED")
 ScriptErrors:SetScript("OnEvent", function(self, addon)
 	if IsAddOnLoaded("Blizzard_DebugTools") or addon == "Blizzard_DebugTools" then
-		ScriptErrorsFrame:SetParent(K.UIParent)
+		ScriptErrorsFrame:SetParent(UIParent)
 	end
 end)
 
