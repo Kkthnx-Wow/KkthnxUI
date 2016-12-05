@@ -45,7 +45,7 @@ end
 
 -- Kill all stuff on default UI that we don't need
 local DisableBlizzard = CreateFrame("Frame")
-DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
+DisableBlizzard:RegisterEvent("PLAYER_ENTERING_WORLD")
 DisableBlizzard:SetScript("OnEvent", function(self, event)
 	if C.Unitframe.Enable then
 		function PetFrame_Update() end
@@ -54,20 +54,8 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		function PlayerFrame_ToPlayerArt() end
 		function PlayerFrame_ToVehicleArt() end
 
-		for i = 1, MAX_PARTY_MEMBERS do
-			_G["PartyMemberFrame"..i]:UnregisterAllEvents()
-			_G["PartyMemberFrame"..i]:SetParent(UIFrameHider)
-			_G["PartyMemberFrame"..i]:Hide()
-			_G["PartyMemberFrame"..i.."HealthBar"]:UnregisterAllEvents()
-			_G["PartyMemberFrame"..i.."ManaBar"]:UnregisterAllEvents()
-			_G["PartyMemberFrame"..i.."PetFrame"]:UnregisterAllEvents()
-			_G["PartyMemberFrame"..i.."PetFrame"]:SetParent(UIFrameHider)
-			_G["PartyMemberFrame"..i.."PetFrame".."HealthBar"]:UnregisterAllEvents()
-
-			HidePartyFrame()
-			ShowPartyFrame = K.Noop
-			HidePartyFrame = K.Noop
-		end
+		ShowPartyFrame = K.Noop
+		HidePartyFrame = K.Noop
 	end
 
 	if C.Raidframe.Enable then
@@ -101,14 +89,11 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		HelpOpenTicketButtonTutorial:Kill()
 		HelpPlate:Kill()
 		HelpPlateTooltip:Kill()
-		PetJournalTutorialButton:Kill()
-		PlayerTalentFramePetSpecializationTutorialButton:Kill()
-		PlayerTalentFrameSpecializationTutorialButton:Kill()
-		PlayerTalentFrameTalentsTutorialButton:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
 		SpellBookFrameTutorialButton:Kill()
 		TalentMicroButtonAlert:Kill()
+		TutorialFrameAlertButton:Kill()
 		WorldMapFrameTutorialButton:Kill()
 	end
 
@@ -128,4 +113,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		InterfaceOptionsActionBarsPanelRightTwo:Kill()
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
 	end
+
+	DisableBlizzard:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
