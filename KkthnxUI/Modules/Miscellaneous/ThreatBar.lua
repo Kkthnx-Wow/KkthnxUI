@@ -1,15 +1,20 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataText.BottomBar ~= true then return end
+if C.ActionBar.Enable ~= true or C.DataText.BottomBar ~= true then return end
 
+-- Lua API
 local floor = math.floor
+
+-- Wow API
 local GetNumGroupMembers = GetNumGroupMembers
 local HasPetUI = HasPetUI
+local InCombatLockdown = InCombatLockdown
 local UnitAffectingCombat = UnitAffectingCombat
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation
-local UnitName = UnitName
 local UnitIsDead = UnitIsDead
-local InCombatLockdown = InCombatLockdown
-local KkthnxUIDataTextBottomBar = KkthnxUIDataTextBottomBar
+local UnitName = UnitName
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: KkthnxUIDataTextBottomBar
 
 local ThreatBar = CreateFrame("StatusBar", nil, UIParent)
 
@@ -29,7 +34,7 @@ local OnEvent = function(self, event)
 			self:Hide()
 		end
 	else
-		if ((InCombatLockdown()) and (Party > 0 or Raid > 0 or Pet)) then
+		if (InCombatLockdown()) and (Party > 0 or Raid > 0 or Pet) then
 			self:Show()
 		else
 			self:Hide()
@@ -38,68 +43,72 @@ local OnEvent = function(self, event)
 end
 
 local OnUpdate = function(self)
-	if (not UnitAffectingCombat("player")) then
-		return
+	local GetColor = K.ColorGradient
+
+	if UnitAffectingCombat("player") then
+		local _, _, ThreatPercent = UnitDetailedThreatSituation("player", "target")
+		local ThreatValue = ThreatPercent or 0
+		local Text = self.Text
+		local Title = self.Title
+		local Dead = UnitIsDead("player")
+
+		self:SetValue(ThreatValue)
+		Text:SetText(floor(ThreatValue) .. "%")
+		Title:SetText((UnitName("target") and UnitName("target") .. ":") or "")
+
+		local R, G, B = GetColor(ThreatValue, 100, 0,.8,0,.8,.8,0,.8,0,0)
+		self:SetStatusBarColor(R, G, B)
+
+		if Dead then
+			self:SetAlpha(0)
+		elseif (ThreatValue > 0) then
+			self:SetAlpha(1)
+		else
+			self:SetAlpha(0)
+		end
 	end
-
-	local _, _, ThreatPercent = UnitDetailedThreatSituation("player", "target")
-	local ThreatPercent = ThreatPercent or 0
-	local Text = self.Text
-	local Title = self.Title
-	local Dead = UnitIsDead("player")
-
-	self:SetValue(ThreatPercent)
-	Title:SetText((UnitName("target") and UnitName("target") .. ":") or "")
-	Text:SetText(floor(ThreatPercent) .. "%")
-
-	local R, G, B = K.ColorGradient(ThreatPercent, 100, 0, 0.8, 0, 0.8, 0.8, 0, 0.8, 0, 0)
-	self:SetStatusBarColor(R, G, B)
-
-	if (Dead) then
-		self:SetAlpha(0)
-	elseif (ThreatPercent > 0) then
-		self:SetAlpha(1)
-	else
-		self:SetAlpha(0)
-	end
-end
-
-local CreateBar = function()
-	if (not KkthnxUIDataTextBottomBar) then
-		return
-	end
-
-	ThreatBar:SetStatusBarTexture(C.Media.Texture)
-	ThreatBar:SetInside(KkthnxUIDataTextBottomBar, 3.9, 3.9)
-	ThreatBar:SetFrameStrata("HIGH")
-	ThreatBar:SetFrameLevel(KkthnxUIDataTextBottomBar:GetFrameLevel() + 1)
-	ThreatBar:SetAlpha(0)
-
-	ThreatBar.Background = ThreatBar:CreateTexture(nil, "BORDER")
-	ThreatBar.Background:SetPoint("TOPLEFT", ThreatBar, 0, 0)
-	ThreatBar.Background:SetPoint("BOTTOMRIGHT", ThreatBar, 0, 0)
-	ThreatBar.Background:SetColorTexture(0.15, 0.15, 0.15)
-
-	ThreatBar.Title = K.SetFontString(ThreatBar, C.Media.Font, 14, "OUTLINE", "CENTER", true)
-	ThreatBar.Title:SetPoint("LEFT", ThreatBar, "LEFT", 15, 0)
-
-	ThreatBar.Text = K.SetFontString(ThreatBar, C.Media.Font, 14, "OUTLINE", "CENTER", true)
-	ThreatBar.Text:SetPoint("RIGHT", ThreatBar, "RIGHT", -15, 0)
-
-	ThreatBar:SetScript("OnShow", function(self)
-		self:SetScript("OnUpdate", OnUpdate)
-	end)
-
-	ThreatBar:SetScript("OnHide", function(self)
-		self:SetScript("OnUpdate", nil)
-	end)
-
-	ThreatBar:RegisterEvent("PLAYER_DEAD")
-	ThreatBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-	ThreatBar:RegisterEvent("PLAYER_REGEN_ENABLED")
-	ThreatBar:RegisterEvent("PLAYER_REGEN_DISABLED")
-	ThreatBar:SetScript("OnEvent", OnEvent)
 end
 
 ThreatBar:RegisterEvent("PLAYER_LOGIN")
-ThreatBar:SetScript("OnEvent", CreateBar)
+ThreatBar:SetScript("OnEvent", function(self, event)
+	ThreatBar:SetParent(KkthnxUIDataTextBottomBar)
+
+	self:SetPoint("TOPLEFT", 4, -4)
+	self:SetPoint("BOTTOMRIGHT", -4, 4)
+	self:SetFrameLevel(KkthnxUIDataTextBottomBar:GetFrameLevel() + 2)
+	self:SetFrameStrata("HIGH")
+	self:SetStatusBarTexture(C.Media.Texture)
+	self:SetMinMaxValues(0, 100)
+	self:SetAlpha(0)
+
+	self.Text = self:CreateFontString(nil, "OVERLAY")
+	self.Text:SetFont(C.Media.Font, 14, C.Media.Font_Style)
+	self.Text:SetPoint("RIGHT", self, -30, 0)
+	self.Text:SetShadowColor(0, 0, 0)
+	self.Text:SetShadowOffset(1.25, -1.25)
+
+	self.Title = self:CreateFontString(nil, "OVERLAY")
+	self.Title:SetFont(C.Media.Font, 14, C.Media.Font_Style)
+	self.Title:SetPoint("LEFT", self, 30, 0)
+	self.Title:SetShadowColor(0, 0, 0)
+	self.Title:SetShadowOffset(1.25, -1.25)
+
+	self.Background = self:CreateTexture(nil, "BORDER")
+	self.Background:SetPoint("TOPLEFT", self, 0, 0)
+	self.Background:SetPoint("BOTTOMRIGHT", self, 0, 0)
+	self.Background:SetColorTexture(0.15, 0.15, 0.15)
+
+	self:SetScript("OnShow", function(self)
+		self:SetScript("OnUpdate", OnUpdate)
+	end)
+
+	self:SetScript("OnHide", function(self)
+		self:SetScript("OnUpdate", nil)
+	end)
+
+	self:RegisterEvent("PLAYER_DEAD")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:SetScript("OnEvent", OnEvent)
+end)

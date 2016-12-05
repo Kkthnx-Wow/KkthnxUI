@@ -1,7 +1,42 @@
 local K, C, L = select(2, ...):unpack()
 if C.Bags.Enable ~= true then return end
 
+-- Lua API
 local _G = _G
+local getn = table.getn
+local pairs = pairs
+local select = select
+local unpack = unpack
+
+-- Wow API
+local BAG_FILTER_CLEANUP = BAG_FILTER_CLEANUP
+local BankFrame_AutoSortButtonOnClick = BankFrame_AutoSortButtonOnClick
+local GetAddOnInfo = GetAddOnInfo
+local GetContainerItemInfo = GetContainerItemInfo
+local GetContainerItemLink = GetContainerItemLink
+local GetContainerItemQuestInfo = GetContainerItemQuestInfo
+local GetContainerNumFreeSlots = GetContainerNumFreeSlots
+local GetContainerNumSlots = GetContainerNumSlots
+local GetItemInfo = GetItemInfo
+local GetItemQualityColor = GetItemQualityColor
+local IsBagOpen = IsBagOpen
+local IsBattlePayItem = IsBattlePayItem
+local IsShiftKeyDown = IsShiftKeyDown
+local PlaySound = PlaySound
+local ReagentBankFrameUnlockInfo = ReagentBankFrameUnlockInfo
+local UnitIsDead = UnitIsDead
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: BagHelpBox, BankFrame, ReagentBankFrame, CreateFrame, UIParent, ReagentBankFrameItem1
+-- GLOBALS: BagItemAutoSortButton, BankFramePurchaseButton, BankFrameSlotCost, BankFrameDetailMoneyFrame
+-- GLOBALS: BANK, ReagentBankFrameUnlockInfoPurchaseButton, BankFrame_ShowPanel, BANK_PANELS
+-- GLOBALS: BankFramePurchaseInfo, BankItemAutoSortButton, REAGENT_BANK, BankSlotsFrame, CloseAllBags
+-- GLOBALS: C_NewItems, ContainerFrame1Item1, ContainerFrame2MoneyFrame, BankFrameMoneyFrame, CanOpenPanels
+-- GLOBALS: CloseBankBagFrames, CloseBankFrame, BagItemSearchBox, BankItemSearchBox, ContainerFrame1MoneyFrame
+-- GLOBALS: NotWhileDeadError, ContainerFrame_GetOpenFrame, CloseBag, MerchantFrame, InboxFrame, SetSortBagsRightToLeft
+-- GLOBALS: SetInsertItemsLeftToRight, ContainerFrame1, GameMenuFrame, BankFrameItem1, UpdateContainerFrameAnchors
+-- GLOBALS: ToggleBag, ToggleBackpack, OpenAllBags, OpenBackpack, ToggleAllBags
+
 local ReplaceBags = 0
 local LastButtonBag, LastButtonBank, LastButtonReagent
 local Token1, Token2, Token3 = BackpackTokenFrameToken1, BackpackTokenFrameToken2, BackpackTokenFrameToken3
@@ -966,7 +1001,7 @@ function Bags:Enable()
 	self:RegisterEvent("BAG_UPDATE")
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
-	-- self:RegisterEvent("BAG_CLOSED")
+	self:RegisterEvent("BAG_CLOSED")
 	self:SetScript("OnEvent", self.OnEvent)
 
 	-- Force an update, setting colors
@@ -974,6 +1009,6 @@ function Bags:Enable()
 	ToggleAllBags()
 end
 
-Inventory.Bags = Bags
+Bags:RegisterEvent("ADDON_LOADED")
 Bags:RegisterEvent("PLAYER_LOGIN")
 Bags:SetScript("OnEvent", Bags.Enable)
