@@ -52,7 +52,7 @@ function DropDown:Enable()
 
 	hooksecurefunc("UIDropDownMenu_CreateFrames", self.Skin)
 
-	-- USE DROPDOWN LIB
+	-- Use dropdown lib
 	self.Open = Lib_EasyMenu or EasyMenu
 end
 

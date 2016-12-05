@@ -124,10 +124,6 @@ function ns.createArenaLayout(self, unit)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena
 
-  self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 3, 2)
-  self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 7, 4)
-  self.Debuffs.CustomFilter = ns.CustomAuraFilters.arena
-
 	-- Castbars
 	if C.Unitframe.Castbars and uconfig.cbshow then
 		ns.CreateCastbars(self)

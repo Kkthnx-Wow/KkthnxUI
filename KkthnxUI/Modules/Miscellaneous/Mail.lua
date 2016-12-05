@@ -2,9 +2,21 @@ local K, C, L = select(2, ...):unpack()
 if C.Misc.EnhancedMail ~= true then return end
 if IsAddOnLoaded("OpenAll") or IsAddOnLoaded("Postal") or IsAddOnLoaded("TradeSkillMaster_Mailing") then return end
 
+-- Lua API
 local format = string.format
 
--- GRAB MAIL IN 1 BUTTON(OPENALL BY KEMAYO)
+-- Wow API
+local ERR_INV_FULL = ERR_INV_FULL
+local ERR_ITEM_MAX_COUNT = ERR_ITEM_MAX_COUNT
+local GetInboxHeaderInfo = GetInboxHeaderInfo
+local GetInboxNumItems = GetInboxNumItems
+local TakeInboxItem = TakeInboxItem
+local TakeInboxMoney = TakeInboxMoney
+
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: InboxFrame_OnClick, InboxFrame, MiniMapMailFrame, GameTooltip, CreateFrame
+
+-- Grab mail in 1 button(openall by Kemayo)
 local deletedelay, t = 0.5, 0
 local takingOnlyCash = false
 local button, button2, waitForMail, openAll, openAllCash, openMail, lastopened, stopOpening, onEvent, needsToWait, total_cash

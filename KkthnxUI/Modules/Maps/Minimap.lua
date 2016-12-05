@@ -61,9 +61,6 @@ end)
 Minimap:SetArchBlobRingScalar(0)
 Minimap:SetQuestBlobRingScalar(0)
 
--- Fix garrison report keybind
-GarrisonLandingPageMinimapButton.IsShown = function() return true end
-
 -- Parent minimap into our frame
 Minimap:SetParent(MinimapAnchor)
 Minimap:ClearAllPoints()
@@ -93,7 +90,7 @@ QueueStatusFrame:StripTextures()
 QueueStatusFrame:SetTemplate()
 
 -- Garrison icon
-if C.Minimap.Garrison == true then
+if C.Minimap.Garrison == true and GarrisonLandingPageMinimapButton then
 	GarrisonLandingPageMinimapButton:ClearAllPoints()
 	GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -2, 2)
 	GarrisonLandingPageMinimapButton:SetScale(1)
@@ -104,11 +101,16 @@ else
 	GarrisonLandingPageMinimapButton:SetAlpha(0)
 end
 
+if GarrisonLandingPageTutorialBox then
+	GarrisonLandingPageTutorialBox:SetScale(1 / 1)
+	GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+end
+
 local AutoHideLandingPage = CreateFrame("Frame")
 AutoHideLandingPage:RegisterEvent("PLAYER_ENTERING_WORLD")
 AutoHideLandingPage:SetScript("OnEvent", function(self, event)
 	local InInstance, Type = IsInInstance()
-	if InInstance and (Type == "party" or Type == "pvp" or Type == "arena" or Type == "raid") and C.Minimap.Garrison == true then
+	if InInstance and (Type == "party" or Type == "pvp" or Type == "arena" or Type == "raid") and C.Minimap.Garrison == true and GarrisonLandingPageMinimapButton then
 		GarrisonLandingPageMinimapButton:SetScale(0.0001)
 		GarrisonLandingPageMinimapButton:SetAlpha(0)
 	else
@@ -197,7 +199,7 @@ FontString:SetTextColor(unpack(C.Media.Backdrop_Color))
 Minimap:EnableMouseWheel()
 local function Zoom(self, direction)
 	if(direction > 0) then Minimap_ZoomIn()
-	else Minimap_ZoomOut() end
+else Minimap_ZoomOut() end
 end
 Minimap:SetScript("OnMouseWheel", Zoom)
 

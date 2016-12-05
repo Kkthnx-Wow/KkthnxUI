@@ -170,10 +170,11 @@ C["General"] = {
     ["BubbleBackdrop"] = false,
     ["BubbleFontSize"] = 12,
     ["CustomLagTolerance"] = false,
+    ["DisableTutorialButtons"] = false,
+    ["ShowConfigButton"] = true,
     ["TranslateMessage"] = true,
     ["UIScale"] = 0.71,
     ["WelcomeMessage"] = true,
-    ["ShowConfigButton"] = true,
 }
 
 -- Loot
