@@ -54,8 +54,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		function PlayerFrame_ToPlayerArt() end
 		function PlayerFrame_ToVehicleArt() end
 
-		ShowPartyFrame = K.Noop
+		HidePartyFrame()
 		HidePartyFrame = K.Noop
+		ShowPartyFrame = K.Noop
 	end
 
 	if C.Raidframe.Enable then
@@ -81,6 +82,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 
 	Advanced_UIScaleSlider:Kill()
 	Advanced_UseUIScale:Kill()
+
+	InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
+	SetCVar("countdownForCooldowns", 0)
 
 	if C.General.DisableTutorialButtons then
 		BagHelpBox:Kill()

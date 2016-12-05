@@ -1,17 +1,19 @@
 local K, C, L = select(2, ...):unpack()
 
+-- Wow API
 local UnitIsAFK = UnitIsAFK
 local collectgarbage = collectgarbage
 
 local CollectGarbage = CreateFrame("Frame")
 
-function CollectGarbage:OnEvent(event, unit)
+CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
+CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
+CollectGarbage:SetScript("OnEvent", function(self, event, unit)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		collectgarbage("collect")
 
 		-- Just verifying that this clears the memory out :)
 		local Memory = K.DataTexts:GetDataText("Memory")
-
 		if (Memory and Memory.Enabled) then
 			Memory:Update(10)
 		end
@@ -27,8 +29,4 @@ function CollectGarbage:OnEvent(event, unit)
 			-- print(collectgarbage, UnitIsAFK)
 		end
 	end
-end
-
-CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
-CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
-CollectGarbage:SetScript("OnEvent", CollectGarbage.OnEvent)
+end)

@@ -51,12 +51,12 @@ C["Automation"] = {
 -- Bag
 C["Bags"] = {
     ["BagFilter"] = false,
-    ["SortRightToLeft"] = false,
     ["ButtonSize"] = 32,
     ["Enable"] = true,
     ["InsertLeftToRight"] = true,
     ["ItemsPerRow"] = 11,
     ["PulseNewItem"] = true,
+    ["SortRightToLeft"] = false,
     ["Spacing"] = 4,
 }
 
