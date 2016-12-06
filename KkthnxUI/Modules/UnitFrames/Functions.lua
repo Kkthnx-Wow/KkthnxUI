@@ -213,7 +213,7 @@ do
 	end
 end
 
--- Mouseover
+-- Mouseover enter
 function K.UnitFrame_OnEnter(self)
 	if self.__owner then
 		self = self.__owner
@@ -234,6 +234,7 @@ function K.UnitFrame_OnEnter(self)
 	end
 end
 
+-- Mouseover leave
 function K.UnitFrame_OnLeave(self)
 	if self.__owner then
 		self = self.__owner
@@ -250,71 +251,6 @@ function K.UnitFrame_OnLeave(self)
 
 	if (self.AdditionalPower and self.AdditionalPower.Value) then
 		self.AdditionalPower.Value:Hide()
-	end
-end
-
--- Painting frames
-do
-	local function toRgb(h, s, l)
-		if (s <= 0) then
-			return l, l, l
-		end
-		h, s, l = h * 6, s, l
-		local c = (1 - abs(2 * l - 1)) * s
-		local x = (1 - abs(h % 2 - 1 )) * c
-		local m, r, g, b = (l - .5 * c), 0, 0, 0
-		if h < 1 	 then
-			r, g, b = c, x, 0
-		elseif h < 2 then
-			r, g, b = x, c, 0
-		elseif h < 3 then
-			r, g, b = 0, c, x
-		elseif h < 4 then
-			r, g, b = 0, x, c
-		elseif h < 5 then
-			r, g, b = x, 0, c
-		else
-			r, g, b = c, 0, x
-		end return (r + m), (g + m), (b + m)
-	end
-
-	local function toHsl(r, g, b)
-		local min, max = min(r, g, b), max(r, g, b)
-		local h, s, l = 0, 0, (max + min) / 2
-		if max ~= min then
-			local d = max - min
-			s = l > 0.5 and d / (2 - max - min) or d / (max + min)
-			if max == r then
-				local mod = 6
-				if g > b then mod = 0 end
-				h = (g - b) / d + mod
-			elseif max == g then
-				h = (b - r) / d + 2
-			else
-				h = (r - g) / d + 4
-			end
-		end
-		h = h / 6
-		return h, s, l
-	end
-
-	local function LightenItUp(r, g, b, factor)
-		local h, s, l = toHsl(r, g, b)
-		l = l + (factor or 0.1)
-		if l > 1 then
-			l = 1
-		elseif l < 0 then
-			l = 0
-		end
-		return toRgb(h, s, l)
-	end
-
-	function K.GetPaintColor(factor)
-		local r, g, b = unpack(C.Media.Border_Color)
-		if factor then
-			r, g, b = LightenItUp(r, g, b, factor)
-		end
-		return r, g, b
 	end
 end
 
@@ -347,15 +283,16 @@ K.RaidBuffsTrackingPosition = {
 
 function K.CreateAuraWatchIcon(self, icon)
 	icon:SetBackdrop(K.TwoPixelBorder)
-	icon:CreateShadow()
 	icon.icon:SetPoint("TOPLEFT", 1, -1)
 	icon.icon:SetPoint("BOTTOMRIGHT", -1, 1)
 	icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	icon.icon:SetDrawLayer("ARTWORK")
+
 	if (icon.cd) then
 		icon.cd:SetHideCountdownNumbers(true)
 		icon.cd:SetReverse(true)
 	end
+
 	icon.overlay:SetTexture()
 end
 
@@ -400,11 +337,13 @@ function K.CreateAuraWatch(self)
 			local Texture = Icon:CreateTexture(nil, "OVERLAY")
 			Texture:SetAllPoints(Icon)
 			Texture:SetTexture(C.Media.Blank)
+
 			if (spell[3]) then
 				Texture:SetVertexColor(unpack(spell[3]))
 			else
 				Texture:SetVertexColor(0.8, 0.8, 0.8)
 			end
+
 			local Count = Icon:CreateFontString(nil, "OVERLAY")
 			Count:SetFont(C.Media.Font, 9, "THINOUTLINE")
 			Count:SetPoint("CENTER", unpack(K.RaidBuffsTrackingPosition[spell[2]]))

@@ -231,7 +231,6 @@ function ns.PostCastInterrupted(Castbar, unit, spellname, castid)
 end
 
 function ns.PostStop(Castbar, unit, spellname, castid)
-	--Castbar:SetValue(Castbar.max)
 	if (Castbar.Ticks) then
 		CastingBarFrameTicksSet(Castbar, unit, name, true)
 	end
@@ -253,7 +252,6 @@ end
 
 function ns.UpdateCastbarColor(Castbar, unit)
 	local color
-	local bR, bG, bB = K.GetPaintColor(0.2)
 	local text = "default"
 
 	if UnitIsUnit(unit, "player") then
@@ -261,7 +259,6 @@ function ns.UpdateCastbarColor(Castbar, unit)
 	elseif Castbar.interrupt then
 		color = colors.uninterruptible
 		text = "white"
-		bR, bG, bB = 0.8, 0.7, 0.2
 	elseif UnitIsFriend(unit, "player") then
 		color = colors.reaction[5]
 	else

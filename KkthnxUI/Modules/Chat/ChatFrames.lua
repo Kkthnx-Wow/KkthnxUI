@@ -289,7 +289,7 @@ local SetupTempChat = function()
 	SetChatStyle(Frame)
 end
 
--- Remove player"s realm name
+-- Remove player's realm name
 local function RemoveRealmName(self, event, msg, author, ...)
 	local realm = gsub(K.Realm, " ", "")
 	if msg:find("-" .. realm) then

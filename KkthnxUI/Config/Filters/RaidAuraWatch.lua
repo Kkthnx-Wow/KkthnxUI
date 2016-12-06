@@ -5,6 +5,7 @@ if C.Raidframe.AuraWatch ~= true or C.Raidframe.Enable ~= true then return end
 K.RaidDebuffsTracking = {
 	-- Proving Grounds (Healing)
 	[GetSpellInfo(145263)] = 6, -- Chomp, Large Illusionary Tunneler
+
 	-- Highmaul
 	[GetSpellInfo(159001)] = 6, -- Berserker Rush, Kargath Bladefist
 	[GetSpellInfo(156152)] = 6, -- Gushing Wounds, The Butcher
@@ -24,6 +25,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(164178)] = 6, -- Mark of Chaos: Fortification, Imperator Mar'gok
 	[GetSpellInfo(164191)] = 6, -- Mark of Chaos: Replication, Imperator Mar'gok
 	[GetSpellInfo(164191)] = 6, -- Mark of Chaos: Replication, Imperator Mar'gok
+
 	-- Blackrock Foundry
 	[GetSpellInfo(155365)] = 6, -- Pinned Down, Beastlord Darmac
 	[GetSpellInfo(155061)] = 6, -- Rend and Tear, Beastlord Darmac
@@ -38,6 +40,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(156743)] = 6, -- Impaled, Blackhand
 	[GetSpellInfo(156047)] = 6, -- Slagged, Blackhand
 	[GetSpellInfo(156401)] = 6, -- Molten Slag, Blackhand
+
 	-- Hellfire Citadel
 	[GetSpellInfo(184369)] = 6, -- Howling Axe, Hellfire Assault
 	[GetSpellInfo(180079)] = 6, -- Felfire Munitions, Hellfire Assault
@@ -99,6 +102,7 @@ K.RaidDebuffsTracking = {
 
 	-- LEGION
 	-- The Emerald Nightmare
+
 	-- Nythendra
 	[GetSpellInfo(204504)] = 6, -- Infested
 	[GetSpellInfo(205043)] = 6, -- Infested mind
@@ -106,6 +110,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(204463)] = 6, -- Volatile Rot
 	[GetSpellInfo(203045)] = 6, -- Infested Ground
 	[GetSpellInfo(203646)] = 6, -- Burst of Corruption
+
 	-- Elerethe Renferal
 	[GetSpellInfo(210228)] = 6, -- Dripping Fangs
 	[GetSpellInfo(215307)] = 6, -- Web of Pain
@@ -114,11 +119,13 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(213124)] = 6, -- Venomous Pool
 	[GetSpellInfo(210850)] = 6, -- Twisting Shadows
 	[GetSpellInfo(215489)] = 6, -- Venomous Pool
+
 	-- Il'gynoth, Heart of the Corruption
 	[GetSpellInfo(208929)] = 6, -- Spew Corruption
 	[GetSpellInfo(210984)] = 6, -- Eye of Fate
 	[GetSpellInfo(209469)] = 7, -- Touch of Corruption
 	[GetSpellInfo(208697)] = 6, -- Mind Flay
+
 	-- Ursoc
 	[GetSpellInfo(198108)] = 6, -- Unbalanced
 	[GetSpellInfo(197943)] = 6, -- Overwhelm
@@ -126,6 +133,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(205611)] = 6, -- Miasma
 	[GetSpellInfo(198006)] = 6, -- Focused Gaze
 	[GetSpellInfo(197980)] = 6, -- Nightmarish Cacophony
+
 	-- Dragons of Nightmare
 	[GetSpellInfo(203102)] = 6, -- Mark of Ysondre
 	[GetSpellInfo(203121)] = 6, -- Mark of Taerar
@@ -137,6 +145,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(205341)] = 7, -- Sleeping Fog
 	[GetSpellInfo(203770)] = 7, -- Defiled Vines
 	[GetSpellInfo(203787)] = 7, -- Volatile Infection
+
 	-- Cenarius
 	[GetSpellInfo(210279)] = 5, -- Creeping Nightmares
 	[GetSpellInfo(213162)] = 6, -- Nightmare Blast
@@ -146,6 +155,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(211471)] = 6, -- Scorned Touch
 	[GetSpellInfo(211612)] = 6, -- Replenishing Roots
 	[GetSpellInfo(216516)] = 6, -- Ancient Dream
+
 	-- Xavius
 	[GetSpellInfo(206005)] = 5, -- Dream Simulacrum
 	[GetSpellInfo(206651)] = 7, -- Darkening Soul
@@ -168,6 +178,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(204275)] = 6, -- Arcanoslash (Tank)
 	[GetSpellInfo(211659)] = 6, -- Arcane Tether (Tank debuff)
 	[GetSpellInfo(204483)] = 6, -- Focused Blast (Stun)
+
 	-- Chronomatic Anomaly
 	[GetSpellInfo(206607)] = 6, -- Chronometric Particles (Tank stack debuff)
 	[GetSpellInfo(206609)] = 6, -- Time Release (Heal buff/debuff)
@@ -176,6 +187,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(206618)] = 6, -- Time Bomb
 	[GetSpellInfo(207871)] = 6, -- Vortex (Mythic)
 	[GetSpellInfo(212099)] = 6, -- Temporal Charge
+
 	-- Trilliax
 	[GetSpellInfo(206488)] = 6, -- Arcane Seepage
 	[GetSpellInfo(206641)] = 6, -- Arcane Spear (Tank)
@@ -185,6 +197,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(214583)] = 6, -- Sterilize
 	[GetSpellInfo(208910)] = 6, -- Arcing Bonds
 	[GetSpellInfo(206838)] = 6, -- Succulent Feast
+
 	-- Spellblade Aluriel
 	[GetSpellInfo(212492)] = 6, -- Annihilate (Tank)
 	[GetSpellInfo(212494)] = 6, -- Annihilated (Main Tank debuff)
@@ -200,6 +213,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(213166)] = 6, -- Searing Brand
 	[GetSpellInfo(213278)] = 6, -- Burning Ground
 	[GetSpellInfo(213504)] = 6, -- Arcane Fog
+
 	-- Tichondrius
 	[GetSpellInfo(206480)] = 6, -- Carrion Plague
 	[GetSpellInfo(215988)] = 6, -- Carrion Nightmare
@@ -213,9 +227,11 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(216039)] = 6, -- Fel Storm
 	[GetSpellInfo(216726)] = 6, -- Ring of Shadows
 	[GetSpellInfo(216040)] = 6, -- Burning Soul
+
 	-- Krosus
 	[GetSpellInfo(206677)] = 6, -- Searing Brand
 	[GetSpellInfo(205344)] = 6, -- Orb of Destruction
+
 	-- High Botanist Tel'arn
 	[GetSpellInfo(218503)] = 6, -- Recursive Strikes (Tank)
 	[GetSpellInfo(219235)] = 6, -- Toxic Spores
@@ -223,6 +239,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(218342)] = 6, -- Parasitic Fixate
 	[GetSpellInfo(218304)] = 6, -- Parasitic Fetter
 	[GetSpellInfo(218780)] = 6, -- Plasma Explosion
+
 	-- Star Augur Etraeus
 	[GetSpellInfo(205984)] = 6, -- Gravitaional Pull
 	[GetSpellInfo(214167)] = 6, -- Gravitaional Pull
@@ -239,6 +256,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(206603)] = 6, -- Frozen Solid
 	[GetSpellInfo(207720)] = 6, -- Witness the Void
 	[GetSpellInfo(216697)] = 6, -- Frigid Pulse
+
 	-- Grand Magistrix Elisande
 	[GetSpellInfo(209166)] = 6, -- Fast Time
 	[GetSpellInfo(211887)] = 6, -- Ablated
@@ -251,6 +269,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(209549)] = 6, -- Lingering Burn
 	[GetSpellInfo(211261)] = 6, -- Permaliative Torment
 	[GetSpellInfo(208659)] = 6, -- Arcanetic Ring
+
 	-- Gul'dan
 	[GetSpellInfo(210339)] = 6, -- Time Dilation
 	[GetSpellInfo(180079)] = 6, -- Felfire Munitions
@@ -272,6 +291,7 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(227499)] = 6, -- Branded
 	[GetSpellInfo(227500)] = 6, -- Branded
 	[GetSpellInfo(231297)] = 6, -- Runic Brand (Mythic Only)
+
 	-- Guarm
 	[GetSpellInfo(228228)] = 5, -- Flame Lick
 	[GetSpellInfo(228248)] = 7, -- Frost Lick
@@ -279,6 +299,7 @@ K.RaidDebuffsTracking = {
 	--[GetSpellInfo(228768)] = 6, -- Salty Spittle
 	--[GetSpellInfo(228758)] = 6, -- Fiery Phlegm
 	--[GetSpellInfo(228769)] = 6, -- Dark Discharge
+
 	-- Helya
 	[GetSpellInfo(228883)] = 6, -- Unholy Reckoning (Trash)
 	[GetSpellInfo(228054)] = 7, -- Taint of the Sea
@@ -288,13 +309,14 @@ K.RaidDebuffsTracking = {
 	[GetSpellInfo(227982)] = 6, -- Bilewater Redox
 }
 
--- Raid buffs (Squared aura tracking list)
+-- RAID BUFFS (SQUARED AURA TRACKING LIST)
 K.RaidBuffsTracking = {
 	PRIEST = {
 		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
 		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
 		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
 	},
+
 	DRUID = {
 		{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
 		{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
@@ -302,6 +324,7 @@ K.RaidBuffsTracking = {
 		{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
 		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
 	},
+
 	PALADIN = {
 		{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
 		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
@@ -310,21 +333,19 @@ K.RaidBuffsTracking = {
 		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
 		{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
 	},
+
 	SHAMAN = {
 		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
-		{204288, "BOTTOMLEFT", {0.2, 0.7, 0.2}, true},-- Earth Shield
 	},
+
 	MONK = {
 		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
 		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
 		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
 		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
 	},
+
 	ALL = {
 		{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
 	},
-}
-
-K.RaidDebuffsReverse = {
-	--[spellID] = true,			-- Spell name
 }
