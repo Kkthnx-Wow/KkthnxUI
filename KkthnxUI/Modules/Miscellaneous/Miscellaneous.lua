@@ -39,9 +39,10 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 end)
 
 -- Move some frames (Elvui)
-local GMMover = CreateFrame("Frame", "GMMoverAnchor", UIParent)
-GMMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -50)
-Movers:RegisterFrame(GMMover)
+local TicketStatusMover = CreateFrame("Frame", "TicketStatusMoverAnchor", UIParent)
+TicketStatusMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)
+TicketStatusMover:SetSize(TicketStatusFrame:GetWidth(), TicketStatusFrame:GetHeight())
+Movers:RegisterFrame(TicketStatusMover)
 
 local TicketFrame = CreateFrame("Frame")
 TicketFrame:RegisterEvent("PLAYER_LOGIN")

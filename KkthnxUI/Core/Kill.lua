@@ -34,18 +34,9 @@ local UnitAffectingCombat = UnitAffectingCombat
 -- GLOBALS: PetFrame, TargetFrame, ComboFrame, FocusFrame, FocusFrameToT, TargetFrameToT, UIParent, PetJournalTutorialButton
 -- GLOBALS: PlayerTalentFramePetSpecializationTutorialButton, PlayerTalentFrameSpecializationTutorialButton, PlayerTalentFrameTalentsTutorialButton
 
-local function HideRaid()
-	if InCombatLockdown() then return end
-	CompactRaidFrameManager:Kill()
-	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
-	if compact_raid and compact_raid ~= "0" then
-		CompactRaidFrameManager_SetSetting("IsShown", "0")
-	end
-end
-
 -- Kill all stuff on default UI that we don't need
 local DisableBlizzard = CreateFrame("Frame")
-DisableBlizzard:RegisterEvent("PLAYER_ENTERING_WORLD")
+DisableBlizzard:RegisterEvent("ADDON_LOADED")
 DisableBlizzard:SetScript("OnEvent", function(self, event)
 	if C.Unitframe.Enable then
 		function PetFrame_Update() end
@@ -54,7 +45,13 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		function PlayerFrame_ToPlayerArt() end
 		function PlayerFrame_ToVehicleArt() end
 
-		HidePartyFrame()
+		for i = 1, MAX_PARTY_MEMBERS do
+			local pet = "PartyMemberFrame"..i.."PetFrame"
+
+			_G[pet]:SetParent(UIFrameHider)
+			_G[pet.."HealthBar"]:UnregisterAllEvents()
+		end
+
 		HidePartyFrame = K.Noop
 		ShowPartyFrame = K.Noop
 	end
@@ -63,21 +60,18 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		if not CompactRaidFrameManager_UpdateShown then
 			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 		else
-			if not CompactRaidFrameManager.hookedHide then
-				hooksecurefunc("CompactRaidFrameManager_UpdateShown", HideRaid)
-				CompactRaidFrameManager:HookScript("OnShow", HideRaid)
-				CompactRaidFrameManager.hookedHide = true
+			InterfaceOptionsFrameCategoriesButton10:SetParent(UIFrameHider)
+			if not InCombatLockdown() then
+				if IsAddOnLoaded("Blizzard_CompactRaidFrames") then
+					CompactRaidFrameManager:SetParent(UIFrameHider)
+					CompactUnitFrameProfiles:UnregisterAllEvents()
+				end
 			end
-			CompactRaidFrameContainer:UnregisterAllEvents()
-			HideRaid()
-		end
-	end
 
-	if C.Unitframe.Enable and C.Raidframe.Enable then
-		DisableBlizzard:RegisterEvent("GROUP_ROSTER_UPDATE", "DisableBlizzard")
-		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- This may fuck shit up.. we"ll see...
-	else
-		CompactUnitFrameProfiles:RegisterEvent("VARIABLES_LOADED")
+			CompactUnitFrameProfiles_ApplyProfile = K.Noop
+			CompactRaidFrameManager_UpdateShown = K.Noop
+			CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
+		end
 	end
 
 	Advanced_UIScaleSlider:Kill()

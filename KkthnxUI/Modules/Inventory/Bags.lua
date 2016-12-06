@@ -1009,6 +1009,5 @@ function Bags:Enable()
 	ToggleAllBags()
 end
 
-Bags:RegisterEvent("ADDON_LOADED")
 Bags:RegisterEvent("PLAYER_LOGIN")
 Bags:SetScript("OnEvent", Bags.Enable)

@@ -1,10 +1,16 @@
 local K, C, L = select(2, ...):unpack()
 
+-- WoW Lua
 local _G = _G
 
-local Durability = CreateFrame("Frame", nil, UIParent)
+-- Wow API
+local hooksecurefunc = hooksecurefunc
 
-local AddHooks = function()
+-- GLOBALS: DurabilityFrame, UIParent
+
+local Durability = CreateFrame("Frame", nil, UIParent)
+Durability:RegisterEvent("PLAYER_LOGIN")
+Durability:SetScript("OnEvent", function(self, event)
 	hooksecurefunc(DurabilityFrame, "SetPoint", function(self, _, parent)
 		if ((parent == "MinimapCluster") or (parent == _G["MinimapCluster"])) then
 			self:ClearAllPoints()
@@ -16,7 +22,4 @@ local AddHooks = function()
 			end
 		end
 	end)
-end
-
-Durability:RegisterEvent("PLAYER_LOGIN")
-Durability:SetScript("OnEvent", AddHooks)
+end)
