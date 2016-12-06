@@ -45,13 +45,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		function PlayerFrame_ToPlayerArt() end
 		function PlayerFrame_ToVehicleArt() end
 
-		for i = 1, MAX_PARTY_MEMBERS do
-			local pet = "PartyMemberFrame"..i.."PetFrame"
-
-			_G[pet]:SetParent(UIFrameHider)
-			_G[pet.."HealthBar"]:UnregisterAllEvents()
-		end
-
 		HidePartyFrame = K.Noop
 		ShowPartyFrame = K.Noop
 	end

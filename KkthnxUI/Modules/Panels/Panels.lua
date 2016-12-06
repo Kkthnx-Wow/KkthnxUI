@@ -190,6 +190,21 @@ if C.ActionBar.SplitBars and C.DataText.BottomBar then
 	Movers:RegisterFrame(DataTextSplitBarRight)
 end
 
+-- Battleground stats frame
+if C.DataText.Battleground == true and C.DataText.BottomBar == true then
+	local BattleGroundFrame = CreateFrame("Frame", "KkthnxUIInfoBottomBattleGround", UIParent)
+	BattleGroundFrame:SetTemplate()
+	BattleGroundFrame:SetAllPoints(KkthnxUIDataTextBottomBar)
+	BattleGroundFrame:SetFrameStrata("LOW")
+	BattleGroundFrame:SetFrameLevel(0)
+	BattleGroundFrame:EnableMouse(true)
+
+	BattleGroundFrame.Background = BattleGroundFrame:CreateTexture(nil, "BORDER")
+	BattleGroundFrame.Background:SetPoint("TOPLEFT", BattleGroundFrame, 4, -4)
+	BattleGroundFrame.Background:SetPoint("BOTTOMRIGHT", BattleGroundFrame, -4, 4)
+	BattleGroundFrame.Background:SetColorTexture(0.15, 0.15, 0.15)
+end
+
 -- ToggleButton Special
 if C.General.ShowConfigButton == true then
 	local ToggleButtonSpecial = CreateFrame( "Frame", "KkthnxToggleSpecialButton", oUF_PetBattleFrameHider)

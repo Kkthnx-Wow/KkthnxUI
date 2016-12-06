@@ -33,7 +33,6 @@ local Enable = function(self)
         self:RegisterEvent("PARTY_MEMBER_DISABLE", Path)
         self:RegisterEvent("PARTY_MEMBER_ENABLE", Path)
         self:RegisterEvent("PLAYER_TARGET_CHANGED", Path)
-        self:RegisterEvent("UNIT_CONNECTION", Path)
 
         if (officon:IsObjectType("Texture") and not officon:GetTexture()) then
             officon:SetTexture("Interface\\CharacterFrame\\Disconnect-Icon")

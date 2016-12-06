@@ -1,15 +1,21 @@
-﻿local K, C, L = select(2, ...):unpack()
-if C.DataText.Battleground ~= true then return end
+local K, C, L = select(2, ...):unpack()
+if C.DataText.Battleground ~= true or C.DataText.BottomBar ~= true then return end
 
 -- Lua API
-local unpack = unpack
 local format = string.format
 
 -- Wow API
-local CreateFrame, UIParent = CreateFrame, UIParent
-local GetNumBattlefieldScores = GetNumBattlefieldScores
+local GetBattlefieldScore = GetBattlefieldScore
+local GetBattlefieldStatData = GetBattlefieldStatData
 local GetCurrentMapAreaID = GetCurrentMapAreaID
+local GetNumBattlefieldScores = GetNumBattlefieldScores
 local IsInInstance = IsInInstance
+local RequestBattlefieldScoreData = RequestBattlefieldScoreData
+local SetMapToCurrentZone = SetMapToCurrentZone
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: STATISTICS, HONORABLE_KILLS, DEATHS, DAMAGE, SHOW_COMBAT_HEALING, QueueStatusMinimapButton
+-- GLOBALS: ToggleBattlefieldMinimap, ToggleWorldStateScoreFrame, COMBAT_HONOR_GAIN, KILLING_BLOWS, GameTooltip
 
 -- MAP IDS
 -- http://wow.gamepedia.com/MapID
@@ -28,9 +34,7 @@ local ASH = 978
 
 local ClassColor = ("|cff%.2x%.2x%.2x"):format(K.Color.r * 255, K.Color.g * 255, K.Color.b * 255)
 
-local bgframe = CreateFrame("Frame", "InfoBattleGround", UIParent)
-bgframe:CreatePanel("Invisible", 300, C.Media.Font_Size, unpack(C.Position.BGScore))
-bgframe:EnableMouse(true)
+local bgframe = KkthnxUIInfoBottomBattleGround
 bgframe:SetScript("OnEnter", function(self)
 	local numScores = GetNumBattlefieldScores()
 	for i = 1, numScores do
@@ -38,9 +42,9 @@ bgframe:SetScript("OnEnter", function(self)
 		if name and name == K.Name then
 			local curmapid = GetCurrentMapAreaID()
 			SetMapToCurrentZone()
-			GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT", -8, -4)
+			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, K.Scale(4))
 			GameTooltip:ClearLines()
-			GameTooltip:SetPoint("TOP", self, "BOTTOM", 0, -1)
+			GameTooltip:SetPoint("BOTTOM", self, "TOP", 0, 1)
 			GameTooltip:ClearLines()
 			GameTooltip:AddDoubleLine(STATISTICS, ClassColor..name.."|r")
 			GameTooltip:AddLine(" ")
@@ -94,23 +98,20 @@ end)
 local Stat = CreateFrame("Frame")
 Stat:EnableMouse(true)
 
-local Text1 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
+local Text1 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
 Text1:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-Text1:SetShadowOffset(0, 0)
-Text1:SetPoint("LEFT", 5, 0)
-Text1:SetHeight(C.Media.Font_Size)
+Text1:SetPoint("LEFT", 30, 0)
+Text1:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
 
-local Text2 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
+local Text2 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
 Text2:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-Text2:SetShadowOffset(0, 0)
-Text2:SetPoint("LEFT", Text1, "RIGHT", 5, 0)
-Text2:SetHeight(C.Media.Font_Size)
+Text2:SetPoint("CENTER", 0, 0)
+Text2:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
 
-local Text3 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
+local Text3 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
 Text3:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-Text3:SetShadowOffset(0, 0)
-Text3:SetPoint("LEFT", Text2, "RIGHT", 5, 0)
-Text3:SetHeight(C.Media.Font_Size)
+Text3:SetPoint("RIGHT", -30, 0)
+Text3:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
 
 local int = 2
 local function Update(self, t)
@@ -128,7 +129,7 @@ local function Update(self, t)
 			end
 			if name and name == K.Name then
 				Text1:SetText(dmgtxt)
-				Text2:SetText(ClassColor..COMBAT_HONOR_GAIN.." :|r "..format("%d", honorGained)) -- Honor no longer exsits in Legion??
+				Text2:SetText(ClassColor..COMBAT_HONOR_GAIN.." :|r "..format("%d", honorGained))
 				Text3:SetText(ClassColor..KILLING_BLOWS.." :|r "..killingBlows)
 			end
 		end

@@ -35,11 +35,12 @@ local SetCVar = SetCVar
 local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 local UIFrameFadeOut = UIFrameFadeOut
 local StaticPopup_Show = StaticPopup_Show
+local GetCVar = GetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
--- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3
+-- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
 -- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
@@ -230,7 +231,7 @@ local KkthnxUIVersionFrame = CreateFrame("Button", "KkthnxUIVersionFrame", UIPar
 KkthnxUIVersionFrame:SetSize(300, 36)
 KkthnxUIVersionFrame:SetPoint("CENTER")
 KkthnxUIVersionFrame:SetTemplate("Default")
-KkthnxUIVersionFrame:FontString("Text", C.Media.Font, 12)
+KkthnxUIVersionFrame:FontString("Text", C.Media.Font, 12, C.Media.Font_Style)
 KkthnxUIVersionFrame.Text:SetPoint("CENTER")
 KkthnxUIVersionFrame.Text:SetText("KkthnxUI ".. K.Version .." by Kkthnx|r")
 KkthnxUIVersionFrame:SetScript("OnClick", function()
@@ -266,25 +267,25 @@ Header:SetPoint("TOP", KkthnxUIInstallFrame, "TOP", 0, -20)
 
 local TextOne = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
 TextOne:SetJustifyH("LEFT")
-TextOne:SetFont(C.Media.Font, 12)
+TextOne:SetFont(C.Media.Font, 12, C.Media.Font_Style)
 TextOne:SetWidth(KkthnxUIInstallFrame:GetWidth() -40)
 TextOne:SetPoint("TOPLEFT", KkthnxUIInstallFrame, "TOPLEFT", 20, -60)
 
 local TextTwo = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
 TextTwo:SetJustifyH("LEFT")
-TextTwo:SetFont(C.Media.Font, 12)
+TextTwo:SetFont(C.Media.Font, 12, C.Media.Font_Style)
 TextTwo:SetWidth(KkthnxUIInstallFrame:GetWidth() -40)
 TextTwo:SetPoint("TOPLEFT", TextOne, "BOTTOMLEFT", 0, -20)
 
 local TextThree = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
 TextThree:SetJustifyH("LEFT")
-TextThree:SetFont(C.Media.Font, 12)
+TextThree:SetFont(C.Media.Font, 12, C.Media.Font_Style)
 TextThree:SetWidth(KkthnxUIInstallFrame:GetWidth() -40)
 TextThree:SetPoint("TOPLEFT", TextTwo, "BOTTOMLEFT", 0, -20)
 
 local TextFour = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
 TextFour:SetJustifyH("LEFT")
-TextFour:SetFont(C.Media.Font, 12)
+TextFour:SetFont(C.Media.Font, 12, C.Media.Font_Style)
 TextFour:SetWidth(KkthnxUIInstallFrame:GetWidth() -40)
 TextFour:SetPoint("TOPLEFT", TextThree, "BOTTOMLEFT", 0, -20)
 
@@ -296,14 +297,14 @@ local OptionOne = CreateFrame("Button", "KkthnxUIInstallOption1", KkthnxUIInstal
 OptionOne:SetPoint("BOTTOMLEFT", KkthnxUIInstallFrame, "BOTTOMLEFT", 22, 28)
 OptionOne:SetSize(128, 20)
 OptionOne:SkinButton()
-OptionOne:FontString("Text", C.Media.Font, 12)
+OptionOne:FontString("Text", C.Media.Font, 12, C.Media.Font_Style)
 OptionOne.Text:SetPoint("CENTER")
 
 local OptionTwo = CreateFrame("Button", "KkthnxUIInstallOption2", KkthnxUIInstallFrame)
 OptionTwo:SetPoint("BOTTOMRIGHT", KkthnxUIInstallFrame, "BOTTOMRIGHT", -22, 28)
 OptionTwo:SetSize(128, 20)
 OptionTwo:SkinButton()
-OptionTwo:FontString("Text", C.Media.Font, 12)
+OptionTwo:FontString("Text", C.Media.Font, 12, C.Media.Font_Style)
 OptionTwo.Text:SetPoint("CENTER")
 
 local Close = CreateFrame("Button", "KkthnxUIInstallCloseButton", KkthnxUIInstallFrame, "UIPanelCloseButton")
@@ -585,9 +586,9 @@ end
 
 -- On login function
 local Install = CreateFrame("Frame")
-Install:RegisterEvent("ADDON_LOADED")
-Install:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then return end
+Install:RegisterEvent("PLAYER_ENTERING_WORLD")
+Install:SetScript("OnEvent", function(self, event)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 	-- Create empty saved vars if they doesn't exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end
@@ -599,10 +600,25 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	if KkthnxUIDataPerChar.RightBars == nil then KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars end
 	if KkthnxUIDataPerChar.BottomBars == nil then KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars end
 
-	if K.ScreenWidth < 1200 then
+	if K.ScreenWidth < 1024 and GetCVar("gxMonitor") == "0" then
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
 	else
+		SetCVar("useUiScale", 1)
+		if C.General.UIScale > 1.28 then C.General.UIScale = 1.28 end
+		if C.General.UIScale < 0.64 then C.General.UIScale = 0.64 end
+
+		-- Set our uiscale
+		SetCVar("uiScale", C.General.UIScale)
+
+		-- Hack for 4K and WQHD Resolution
+		local CustomScale = min(2, max(0.32, 768 / match(K.Resolution, "%d+x(%d+)")))
+		if C.General.AutoScale == true and CustomScale < 0.64 then
+			UIParent:SetScale(CustomScale)
+		elseif CustomScale < 0.64 then
+			UIParent:SetScale(C.General.UIScale)
+		end
+
 		-- install default if we never ran KkthnxUI on this character.
 		if not KkthnxUIDataPerChar.Install then
 			KkthnxUIInstall.Install()
@@ -615,8 +631,6 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		print("|cffffff00"..L.Welcome.Line2.."|cffffff00"..L.Welcome.Line3.."|r")
 		print("|cffffff00"..L.Welcome.Line4.."|cffffff00"..L.Welcome.Line5.."|r")
 	end
-
-	self:UnregisterEvent("ADDON_LOADED")
 end)
 
 SLASH_TUTORIAL1, SLASH_TUTORIAL2 = "/uihelp", "/tutorial"

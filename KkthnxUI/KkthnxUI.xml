@@ -63,7 +63,9 @@
 	<Script file="Core\Temp.lua"/>
 	<Script file="Core\Tutorials.lua"/>
 	<Script file="Core\Faq.lua"/>
-	<Script file="Core\Panels.lua"/>
+
+	<!-- Panels -->
+	<Script file="Modules\Panels\Panels.lua"/>
 
 	<!-- Unitframes Core -->
 	<Script file="Modules\Unitframes\Init.lua"/>

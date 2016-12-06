@@ -235,7 +235,7 @@ local function threatColor(self, forced)
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
 
 	if C.Nameplates.EnhancedThreat ~= true then
-		SetVirtualBorder(self, unpack(C.Media.Nameplate_BorderColor))
+		K.SetShadowBorder(self.Health, unpack(C.Media.Nameplate_BorderColor))
 	end
 
 	if UnitIsTapDenied(self.unit) then
@@ -549,6 +549,28 @@ local function style(self, unit)
 		self.Totem.Icon:SetPoint("BOTTOM", self.Health, "TOP", 0, 16)
 		K.CreateShadowFrame(self.Totem, self.Totem.Icon)
 	end
+
+	local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
+	mhpb:SetTexture(C.Media.Texture)
+	mhpb:SetVertexColor(0, 1, 0.5, 0.6)
+	mhpb:SetWidth(self.Health:GetWidth())
+
+	local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
+	ohpb:SetTexture(C.Media.Texture)
+	ohpb:SetVertexColor(0, 1, 0, 0.6)
+	ohpb:SetWidth(self.Health:GetWidth())
+
+	local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
+	ahpb:SetTexture(C.Media.Texture)
+	ahpb:SetVertexColor(1, 1, 0, 0.6)
+
+	self.HealPrediction = {
+		myBar = mhpb,
+		otherBar = ohpb,
+		absorbBar = ahpb,
+		maxOverflow = 1,
+		frequentUpdates = true
+	}
 
 	-- Create Healer Icon
 	if C.Nameplates.HealerIcon == true then
