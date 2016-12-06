@@ -182,38 +182,40 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
-K.ShortenString = function(string, numChars, dots)
-	local bytes = string:len()
-	if (bytes <= numChars) then
-		return string
+K.UTF8Sub = function(self, i, dots)
+	if not self then return end
+
+	local Bytes = self:len()
+	if (Bytes <= i) then
+		return self
 	else
-		local len, pos = 0, 1
-		while(pos <= bytes) do
-			len = len + 1
-			local c = string:byte(pos)
+		local Len, Pos = 0, 1
+		while(Pos <= Bytes) do
+			Len = Len + 1
+			local c = self:byte(Pos)
 			if (c > 0 and c <= 127) then
-				pos = pos + 1
+				Pos = Pos + 1
 			elseif (c >= 192 and c <= 223) then
-				pos = pos + 2
+				Pos = Pos + 2
 			elseif (c >= 224 and c <= 239) then
-				pos = pos + 3
+				Pos = Pos + 3
 			elseif (c >= 240 and c <= 247) then
-				pos = pos + 4
+				Pos = Pos + 4
 			end
-			if (len == numChars) then break end
+			if (Len == i) then break end
 		end
 
-		if (len == numChars and pos <= bytes) then
-			return string:sub(1, pos - 1)..(dots and "..." or "")
+		if (Len == i and Pos <= Bytes) then
+			return self:sub(1, Pos - 1)..(dots and "..." or "")
 		else
-			return string
+			return self
 		end
 	end
 end
 
 K.Abbreviate = function(name)
 	local newname = (len(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
-	return K.ShortenString(newname, 18, false)
+	return K.UTF8Sub(newname, 18, false)
 end
 
 K.FormatMoney = function(value)
