@@ -91,13 +91,13 @@ end
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Subg(Name, 5, false)
+	return K.UTF8Sub(Name, 5, false)
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Sube(Name, 15, true)
+	return K.UTF8Sub(Name, 15, true)
 end
 
 oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
