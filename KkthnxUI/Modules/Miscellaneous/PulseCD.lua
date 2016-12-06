@@ -20,7 +20,7 @@ Movers:RegisterFrame(anchor)
 
 local frame = CreateFrame("Frame", "PulseCDFrame", anchor)
 frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
--- K.CreateBlizzardFrame(frame) --
+-- K.CreateBlizzardFrame(frame)
 frame:SetPoint("CENTER", anchor, "CENTER")
 
 local icon = frame:CreateTexture(nil, "ARTWORK")
@@ -130,6 +130,7 @@ end
 function frame:ADDON_LOADED(addon)
 	for _, v in pairs(K.PulseIgnoredSpells) do
 		K.PulseIgnoredSpells[v] = true
+		print(K.PulseIgnoredSpells)
 	end
 	self:UnregisterEvent("ADDON_LOADED")
 end

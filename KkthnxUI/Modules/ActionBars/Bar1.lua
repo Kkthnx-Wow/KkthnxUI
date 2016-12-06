@@ -1,14 +1,19 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
-local InCombatLockdown = InCombatLockdown
 local HasOverrideActionBar = HasOverrideActionBar
 local HasVehicleActionBar = HasVehicleActionBar
+local InCombatLockdown = InCombatLockdown
+local NUM_ACTIONBAR_BUTTONS = NUM_ACTIONBAR_BUTTONS
+local RegisterStateDriver = RegisterStateDriver
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ActionButton_Update, MainMenuBar_OnEvent
 
 -- ActionBar(by Tukz)
 local ActionBar1 = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")

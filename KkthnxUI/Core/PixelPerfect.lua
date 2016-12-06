@@ -1,5 +1,17 @@
 local K, C, L = select(2, ...):unpack()
 
+-- Lua API
+local format = string.format
+
+-- Wow API
+local GetCVar = GetCVar
+local SetCVar = SetCVar
+local StaticPopup_Show = StaticPopup_Show
+local UIParent = UIParent
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ForceQuit, WorldMapFrame
+
 local RequireRestart = false
 
 if (C.General.AutoScale) then
@@ -7,7 +19,7 @@ if (C.General.AutoScale) then
 end
 
 StaticPopupDialogs["CLIENT_RESTART"] = {
-	text = L_POPUP_RESOLUTIONCHANGED,
+	text = L.Popup.ResolutionChanged,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(self) RequireRestart = false ForceQuit() end,
@@ -33,7 +45,6 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 		if (UseUIScale ~= "1") and (event == "PLAYER_LOGIN") then
 			SetCVar("useUiScale", 1)
-			WorldMapFrame.hasTaint = true
 		end
 
 		if (format("%.2f", GetCVar("uiScale")) ~= format("%.2f", C.General.UIScale)) then

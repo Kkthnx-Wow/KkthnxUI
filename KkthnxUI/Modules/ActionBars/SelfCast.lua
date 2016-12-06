@@ -1,11 +1,11 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or C.ActionBar.SelfCast ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 local ipairs = ipairs
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local UIParent = UIParent
 local InCombatLockdown = InCombatLockdown

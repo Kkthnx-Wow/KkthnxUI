@@ -1,17 +1,29 @@
 local K, C, L = select(2, ...):unpack()
 
--- I NEED TO CLEAN THIS FILE UP.
-local _G = _G
+-- WoW Lua
+local select = select
+local tostring = tostring
 local unpack = unpack
-local PlaySound, PlaySoundFile = PlaySound, PlaySoundFile
-local hooksecurefunc = hooksecurefunc
-local CreateFrame = CreateFrame
+
+-- Wow API
 local GetBattlefieldStatus = GetBattlefieldStatus
-local GetZoneText = GetZoneText
-local GetLFGDungeonRewards = GetLFGDungeonRewards
+local GetCVar = GetCVar
+local GetCVarBool = GetCVarBool
 local GetLFGDungeonInfo = GetLFGDungeonInfo
+local GetLFGDungeonRewards = GetLFGDungeonRewards
 local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
+local GetMaxBattlefieldID = GetMaxBattlefieldID
 local GetNumRandomDungeons = GetNumRandomDungeons
+local GetZoneText = GetZoneText
+local hooksecurefunc = hooksecurefunc
+local PlaySound = PlaySound
+local PlaySoundFile = PlaySoundFile
+local SetCVar = SetCVar
+
+-- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
+-- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
+-- GLOBALS: SideDressUpModel, SideDressUpModelResetButton, DressUpModel, DressUpFrameResetButton
+
 local Movers = K.Movers
 
 -- Move some frames (Shestak)
@@ -22,27 +34,82 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 		TalkingHeadFrame.ignoreFramePositionManager = true
 		TalkingHeadFrame:ClearAllPoints()
 		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
+		TalkingHeadFrame:SetScale(.80)
 	end
 end)
 
-TicketStatusFrame:ClearAllPoints()
-TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
--- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
-hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
-	if anchor == UIParent then
-		TicketStatusFrame:ClearAllPoints()
-		TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
+-- Move some frames (Elvui)
+local TicketStatusMover = CreateFrame("Frame", "TicketStatusMoverAnchor", UIParent)
+TicketStatusMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)
+TicketStatusMover:SetSize(200, 40)
+Movers:RegisterFrame(TicketStatusMover)
+
+local TicketFrame = CreateFrame("Frame")
+TicketFrame:RegisterEvent("PLAYER_LOGIN")
+TicketFrame:SetScript("OnEvent", function(self, event)
+	TicketStatusFrame:ClearAllPoints()
+	TicketStatusFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -5)
+	-- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
+	hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
+		if anchor == UIParent then
+			TicketStatusFrame:ClearAllPoints()
+			TicketStatusFrame:SetPoint("TOPLEFT", TicketStatusMover, 0, 0)
+		end
+	end)
+end)
+
+-- LevelUp + BossBanner Mover
+local LBBMover = CreateFrame("Frame", "LevelUpBossBannerHolder", UIParent)
+LBBMover:SetSize(200, 20)
+LBBMover:SetPoint("TOP", UIParent, "TOP", 0, -120)
+
+local LevelUpBossBanner = CreateFrame("Frame")
+LevelUpBossBanner:RegisterEvent("PLAYER_LOGIN")
+LevelUpBossBanner:SetScript("OnEvent", function(self, event)
+	Movers:RegisterFrame(LBBMover)
+
+	local function Reanchor(frame, _, anchor)
+		if anchor ~= LBBMover then
+			frame:ClearAllPoints()
+			frame:SetPoint("TOP", LBBMover)
+		end
+	end
+
+	-- Level Up Display
+	LevelUpDisplay:ClearAllPoints()
+	LevelUpDisplay:SetPoint("TOP", LBBMover)
+	hooksecurefunc(LevelUpDisplay, "SetPoint", Reanchor)
+
+	-- Boss Banner
+	BossBanner:ClearAllPoints()
+	BossBanner:SetPoint("TOP", LBBMover)
+	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
+end)
+
+local PVPMessageEnhancement = CreateFrame("Frame")
+PVPMessageEnhancement:RegisterEvent("PLAYER_LOGIN")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
+PVPMessageEnhancement:SetScript("OnEvent", function(self, event)
+	-- if C.Misc.EnhancedPvPMessages ~= true then return end
+	local _, instanceType = IsInInstance()
+	if instanceType == "pvp" or instanceType == "arena" then
+		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])
 	end
 end)
 
+-- Move and scale UIErrorsFrame
 UIErrorsFrame:ClearAllPoints()
 UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
 UIErrorsFrame:SetFrameLevel(0)
 
+-- Move and scale RaidBossEmoteFrame
 RaidBossEmoteFrame:ClearAllPoints()
 RaidBossEmoteFrame:SetPoint("TOP", UIParent, "TOP", 0, -200)
 RaidBossEmoteFrame:SetScale(0.9)
 
+-- Move and scale RaidWarningFrame
 RaidWarningFrame:ClearAllPoints()
 RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260)
 RaidWarningFrame:SetScale(0.8)
@@ -57,14 +124,12 @@ hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
 -- Force lockActionBars CVar
 local ForceCVar = CreateFrame("Frame")
-ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ForceCVar:RegisterEvent("PLAYER_LOGIN")
 ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
 	end
-
-	ForceCVar:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
 
 -- Force other warning
@@ -110,23 +175,16 @@ LFDParentFrame:HookScript("OnShow", function()
 	end
 end)
 
--- Custom lag tolerance(By Elv22)
+-- Custom lag tolerance
 if C.General.CustomLagTolerance == true then
-	local customlag = CreateFrame("Frame")
-	local int = 5
-	local _, _, _, lag = GetNetStats()
-	local LatencyUpdate = function(self, elapsed)
-		int = int - elapsed
-		if int < 0 then
-			if GetCVar("reducedLagTolerance") ~= tostring(1) then SetCVar("reducedLagTolerance", tostring(1)) end
-			if lag ~= 0 and lag <= 400 then
-				SetCVar("maxSpellStartRecoveryOffset", tostring(lag))
-			end
-			int = 5
-		end
-	end
-	customlag:SetScript("OnUpdate", LatencyUpdate)
-	LatencyUpdate(customlag, 10)
+	local CustomLagTolerance = CreateFrame("Frame")
+	CustomLagTolerance:SetScript("OnEvent", function(self, event)
+		local down, up, lagHome, lagWorld = GetNetStats()
+		SetCVar("ReducedLagTolerance", 1)
+		SetCVar("MaxSpellStartRecoveryOffset", lagWorld)
+	end)
+	CustomLagTolerance:RegisterEvent("ZONE_CHANGED")
+	CustomLagTolerance:RegisterEvent("ADDON_LOADED")
 end
 
 -- Remove boss emote spam during bg(ArathiBasin SpamFix by Partha)
@@ -149,9 +207,14 @@ if C.Misc.BGSpam == true then
 	Fixer:SetScript("OnEvent", DisableSpam)
 end
 
+-- Boss Banner Hider
+if C.Automation.NoBanner == true then
+	BossBanner.PlayBanner = function() end
+end
+
 -- Undress button in auction dress-up frame(by Nefarion)
 local strip = CreateFrame("Button", "DressUpFrameUndressButton", DressUpFrame, "UIPanelButtonTemplate")
-strip:SetText(L_MISC_UNDRESS)
+strip:SetText(L.Misc.Undress)
 strip:SetHeight(22)
 strip:SetWidth(strip:GetTextWidth() + 40)
 strip:SetPoint("RIGHT", DressUpFrameResetButton, "LEFT", -2, 0)

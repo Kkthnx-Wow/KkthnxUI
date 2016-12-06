@@ -1,20 +1,38 @@
 local K, C, L = select(2, ...):unpack()
 
-local format, find, gsub = format, string.find, string.gsub
-local match = string.match
+-- Lua API
+local abs = math.abs
 local floor, ceil = math.floor, math.ceil
+local format, find, gsub = format, string.find, string.gsub
+local len = string.len
+local match = string.match
+local modf = math.modf
 local print = print
 local reverse = string.reverse
+local strsub = string.sub
+local tinsert, tremove = tinsert, tremove
 local tonumber, type = tonumber, type
 local unpack, select = unpack, select
-local modf = math.modf
-local len = string.len
+
+-- Wow API
 local CreateFrame = CreateFrame
+local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
 local GetCombatRatingBonus = GetCombatRatingBonus
-local GetSpellInfo = GetSpellInfo
 local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
+local GetNumWatchedTokens = GetNumWatchedTokens
+local GetSpellInfo = GetSpellInfo
+local IsEveryoneAssistant = IsEveryoneAssistant
+local IsInGroup = IsInGroup
+local IsInRaid = IsInRaid
+local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
+local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
+local UnitIsGroupAssistant = UnitIsGroupAssistant
+local UnitIsGroupLeader = UnitIsGroupLeader
 local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff
-local tinsert, tremove = tinsert, tremove
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, WEEKLY
+
 local Locale = GetLocale()
 
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
@@ -25,17 +43,17 @@ K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K
 K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
--- This frame everything in KkthnxUI should be anchored to for Eyefinity support.
-K.UIParent = CreateFrame("Frame", "KkthnxUIParent", UIParent)
-K.UIParent:SetFrameLevel(UIParent:GetFrameLevel())
-K.UIParent:SetPoint("CENTER", UIParent, "CENTER")
-K.UIParent:SetSize(UIParent:GetSize())
-K.UIParent.origHeight = K.UIParent:GetHeight()
-
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
+K.PriestColors = {
+	r = 0.99,
+	g = 0.99,
+	b = 0.99,
+	colorStr = "fcfcfc"
+}
+
 K.Print = function(...)
-	print("|cff3c9bedKkthnxUI|r:", ...)
+	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
 K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
@@ -54,26 +72,25 @@ K.Comma = function(num)
 	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
--- Shortvalue, we show a different value for the chinese client.
 K.ShortValue = function(value)
-	if (Locale == "zhCN") then
-		if abs(value) >= 1e8 then
-			return format("%.1fY", value / 1e8)
-		elseif abs(value) >= 1e4 then
-			return format("%.1fW", value / 1e4)
-		else
-			return format("%d", value)
-		end
+	if value >= 1e11 then
+		return ("%.0fb"):format(value / 1e9)
+	elseif value >= 1e10 then
+		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e9 then
+		return ("%.2fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e8 then
+		return ("%.0fm"):format(value / 1e6)
+	elseif value >= 1e7 then
+		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e6 then
+		return ("%.2fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e5 then
+		return ("%.0fk"):format(value / 1e3)
+	elseif value >= 1e3 then
+		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
 	else
-		if abs(value) >= 1e9 then
-			return format("%.1fG", value / 1e9)
-		elseif abs(value) >= 1e6 then
-			return format("%.1fM", value / 1e6)
-		elseif abs(value) >= 1e3 then
-			return format("%.1fk", value / 1e3)
-		else
-			return format("%d", value)
-		end
+		return value
 	end
 end
 
@@ -165,43 +182,6 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
--- Player's role check
-local isCaster = {
-	DEATHKNIGHT = {nil, nil, nil},
-	DEMONHUNTER = {nil, nil},
-	DRUID = {true},					-- Balance
-	HUNTER = {nil, nil, nil},
-	MAGE = {true, true, true},
-	MONK = {nil, nil, nil},
-	PALADIN = {nil, nil, nil},
-	PRIEST = {nil, nil, true},		-- Shadow
-	ROGUE = {nil, nil, nil},
-	SHAMAN = {true},				-- Elemental
-	WARLOCK = {true, true, true},
-	WARRIOR = {nil, nil, nil}
-}
-
-local function CheckRole(self, event, unit)
-	local Spec = GetSpecialization()
-	local Role = Spec and GetSpecializationRole(Spec)
-
-	if Role == "TANK" then
-		K.Role = "Tank"
-	elseif Role == "HEALER" then
-		K.Role = "Healer"
-	elseif Role == "DAMAGER" then
-		if isCaster[K.Class][Spec] then
-			K.Role = "Caster"
-		else
-			K.Role = "Melee"
-		end
-	end
-end
-local RoleUpdater = CreateFrame("Frame")
-RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
-RoleUpdater:SetScript("OnEvent", CheckRole)
-
 K.ShortenString = function(string, numChars, dots)
 	local bytes = string:len()
 	if (bytes <= numChars) then
@@ -232,7 +212,7 @@ K.ShortenString = function(string, numChars, dots)
 end
 
 K.Abbreviate = function(name)
-	local newname = (string.len(name) > 18) and string.gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	local newname = (len(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	return K.ShortenString(newname, 18, false)
 end
 
@@ -290,7 +270,7 @@ K.FormatTime = function(s)
 	return format("%.1f", s)
 end
 
--- Add time before calling a function
+--Add time before calling a function
 local TimerParent = CreateFrame("Frame")
 K.UnusedTimers = {}
 
@@ -302,8 +282,10 @@ end
 K.NewTimer = function()
 	local Parent = TimerParent:CreateAnimationGroup()
 	local Timer = Parent:CreateAnimation("Alpha")
+
 	Timer:SetScript("OnFinished", TimerOnFinished)
 	Timer.Parent = Parent
+
 	return Timer
 end
 
@@ -311,14 +293,40 @@ K.Delay = function(delay, func, ...)
 	if (type(delay) ~= "number" or type(func) ~= "function") then
 		return
 	end
+
 	local Timer
+
 	if K.UnusedTimers[1] then
 		Timer = tremove(K.UnusedTimers, 1) -- Recycle a timer
 	else
 		Timer = K.NewTimer() -- Or make a new one if needed
 	end
+
 	Timer.Args = {...}
 	Timer.Func = func
 	Timer:SetDuration(delay)
 	Timer.Parent:Play()
+end
+
+-- Currencys
+local GetCurrencyInfo = GetCurrencyInfo
+K.Currency = function(id, weekly, capped)
+	local name, amount, tex, week, weekmax, maxed, discovered = GetCurrencyInfo(id)
+
+	local r, g, b = 1, 1, 1
+	for i = 1, GetNumWatchedTokens() do
+		local _, _, _, itemID = GetBackpackCurrencyInfo(i)
+		if id == itemID then r, g, b = .77, .12, .23 end
+	end
+
+	if (amount == 0 and r == 1) then return end
+	if weekly then
+		if id == 390 then week = floor(abs(week) / 100) end
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, "Current: " .. amount .. " - " .. WEEKLY .. ": " .. week .. " / " .. weekmax, r, g, b, r, g, b) end
+	elseif capped then
+		if id == 392 then maxed = 4000 end
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount .. " / " .. maxed, r, g, b, r, g, b) end
+	else
+		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount, r, g, b, r, g, b) end
+	end
 end

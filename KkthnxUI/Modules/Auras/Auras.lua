@@ -1,16 +1,22 @@
 local K, C, L = select(2, ...):unpack()
 if C.Auras.Enable ~= true then return end
 
-local KkthnxUIAuras = K.Auras
+-- Lua API
+local next = next
+local select = select
 local unpack = unpack
+
+-- Wow API
+local GetInventoryItemTexture = GetInventoryItemTexture
 local GetTime = GetTime
-local DebuffTypeColor = DebuffTypeColor
-local NumberFontNormal = NumberFontNormal
-local BuffFrame = BuffFrame
-local TemporaryEnchantFrame = TemporaryEnchantFrame
-local ConsolidatedBuffs = ConsolidatedBuffs
-local InterfaceOptionsFrameCategoriesButton12 = InterfaceOptionsFrameCategoriesButton12
-local InterfaceOptionsFrameCategoriesButton12 = InterfaceOptionsFrameCategoriesButton12
+local GetWeaponEnchantInfo = GetWeaponEnchantInfo
+local UnitAura = UnitAura
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: BuffFrame, TemporaryEnchantFrame, InterfaceOptionsFrameCategoriesButton12
+-- GLOBALS: DebuffTypeColor
+
+local KkthnxUIAuras = K.Auras
 
 KkthnxUIAuras.Headers = {}
 KkthnxUIAuras.FlashTimer = 30

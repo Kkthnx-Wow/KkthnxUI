@@ -1,5 +1,11 @@
 local K, C, L = select(2, ...):unpack()
 
+-- Wow API
+local hooksecurefunc = hooksecurefunc
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: LossOfControlFrame
+
 local LossControl = CreateFrame("Frame", nil, UIParent)
 
 function LossControl:Update()

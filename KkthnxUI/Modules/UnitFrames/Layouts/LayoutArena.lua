@@ -6,6 +6,17 @@ local oUF = ns.oUF or oUF
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 
+local function FilterArenaBuffs(...)
+
+    local icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster = ...
+    local buffList = K.ArenaBuffList -- WIP
+
+    if (K.ArenaBuffList[name]) then
+        return true
+    end
+    return false
+end
+
 local function arenaPrep(self, event, ...)
 	if event ~= "ArenaPreparation" then return; end
 
@@ -108,7 +119,7 @@ function ns.createArenaLayout(self, unit)
 	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 	self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 
-	-- Auras
+  -- Auras
 	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena

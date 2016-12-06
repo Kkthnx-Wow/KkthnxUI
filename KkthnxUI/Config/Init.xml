@@ -1,6 +1,0 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="Settings.lua"/>
-	<Script file="Positions.lua"/>
-	<Script file="Profiles.lua"/>
-	<Script file="Addons.lua"/>
-</Ui>

@@ -1,13 +1,18 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 
--- WOW API
+-- Wow API
 local hooksecurefunc = hooksecurefunc
-local CreateFrame = CreateFrame
-local UIParent = UIParent
+local PetActionBar_HideGrid = PetActionBar_HideGrid
+local PetActionBar_ShowGrid = PetActionBar_ShowGrid
+local PetActionBar_UpdateCooldowns = PetActionBar_UpdateCooldowns
+local RegisterStateDriver = RegisterStateDriver
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PetActionBarFrame, PetHolder, RightBarMouseOver, HoverBind, PetBarMouseOver
 
 if C.ActionBar.PetBarHide then PetActionBarAnchor:Hide() return end
 

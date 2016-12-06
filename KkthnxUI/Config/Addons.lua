@@ -450,7 +450,7 @@ local UploadAbu = function()
 end
 
 StaticPopupDialogs.SETTINGS_ALL = {
-	text = L_POPUP_SETTINGS_ALL,
+	text = L.Popup.SettingsAll,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function()
@@ -472,40 +472,40 @@ SlashCmdList.SETTINGS = function(msg)
 			if C.Skins.DBM == true then
 				StaticPopup_Show("SETTINGS_DBM")
 			else
-				print("|cffffff00"..L_INFO_SKIN_DISABLED1.."DBM"..L_INFO_SKIN_DISABLED2.."|r")
+				print("|cffffff00"..L.Info.SkinDisabled1.."DBM"..L.Info.SkinDisabled2.."|r")
 			end
 		else
-			print("|cffffff00DBM"..L_INFO_NOT_INSTALLED.."|r")
+			print("|cffffff00DBM"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "msbt" then
 		if IsAddOnLoaded("MikScrollingBattleText") then
 			UploadMSBT()
 			ReloadUI()
 		else
-			print("|cffffff00MSBT"..L_INFO_NOT_INSTALLED.."|r")
+			print("|cffffff00MSBT"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "skada" then
 		if IsAddOnLoaded("Skada") then
 			UploadSkada()
 			ReloadUI()
 		else
-			print("|cffffff00Skada"..L_INFO_NOT_INSTALLED.."|r")
+			print("|cffffff00Skada"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "abu" then
 		if IsAddOnLoaded("oUF_Abu") then
 			UploadAbu()
 			ReloadUI()
 		else
-			print("|cffffff00oUF_Abu"..L_INFO_NOT_INSTALLED.."|r")
+			print("|cffffff00oUF_Abu"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "all" then
 		StaticPopup_Show("SETTINGS_ALL")
 	else
-		print("|cffffff00"..L_INFO_SETTINGS_DBM.."|r")
-		print("|cffffff00"..L_INFO_SETTINGS_MSBT.."|r")
-		print("|cffffff00"..L_INFO_SETTINGS_SKADA.."|r")
-		print("|cffffff00"..L_INFO_SETTINGS_Abu.."|r")
-		print("|cffffff00"..L_INFO_SETTINGS_ALL.."|r")
+		print("|cffffff00"..L.Info.SettingsDBM.."|r")
+		print("|cffffff00"..L.Info.SettingsMSBT.."|r")
+		print("|cffffff00"..L.Info.SettingsSKADA.."|r")
+		print("|cffffff00"..L.Info.SettingsAbu.."|r")
+		print("|cffffff00"..L.Info.SettingsALL.."|r")
 	end
 end
 SLASH_SETTINGS1 = "/settings"

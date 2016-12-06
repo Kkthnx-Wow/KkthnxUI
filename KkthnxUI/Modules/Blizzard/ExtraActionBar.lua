@@ -8,8 +8,12 @@ local Movers = K.Movers
 
 -- MAKE EXTRAACTIONBARFRAME MOVABLE (USE MACRO /click extraactionbutton1)
 local anchor = CreateFrame("Frame", "ExtraButtonAnchor", UIParent)
-if C.ActionBar.SplitBars then
-	anchor:SetPoint(C.Position.ExtraButton[1], SplitBarLeft, C.Position.ExtraButton[3], C.Position.ExtraButton[4], C.Position.ExtraButton[5])
+if C.ActionBar.SplitBars and not C.DataText.BottomBar then
+	anchor:SetPoint(C.Position.ExtraButton[1], SplitBarRight, C.Position.ExtraButton[3], C.Position.ExtraButton[4], C.Position.ExtraButton[5])
+elseif C.ActionBar.SplitBars and C.DataText.BottomBar then
+	anchor:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton12", "BOTTOMRIGHT", 3, -28)
+elseif not C.ActionBar.SplitBars and C.DataText.BottomBar then
+	anchor:SetPoint("BOTTOMLEFT", "ActionButton12", "BOTTOMRIGHT", 3, -28)
 else
 	anchor:SetPoint(unpack(C.Position.ExtraButton))
 end

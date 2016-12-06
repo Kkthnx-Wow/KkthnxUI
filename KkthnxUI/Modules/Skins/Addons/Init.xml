@@ -1,8 +1,0 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <Script file="CLCRet.lua"/>
-	<Script file="DBM.lua"/>
-	<Script file="Recount.lua"/>
-	<Script file="Skada.lua"/>
-	<Script file="Spy.lua"/>
-	<Script file="WeakAuras.lua"/>
-</Ui>

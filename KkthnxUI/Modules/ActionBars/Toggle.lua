@@ -1,9 +1,17 @@
 local K, C, L = select(2, ...):unpack()
-local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true or C.ActionBar.ToggleMode ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
+
+-- Wow API
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local InCombatLockdown = InCombatLockdown
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIDataPerChar, ActionBarAnchor
+-- GLOBALS: Bar2Holder, Bar5Holder, RightActionBarAnchor, Bar3Holder, Bar4Holder, SplitBarRight
+-- GLOBALS: SplitBarLeft, RightBarMouseOver, UIParent
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
 

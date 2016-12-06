@@ -18,7 +18,7 @@ ExperienceBar:SetStatusBarColor(unpack(C.DataBars.ExperienceColor))
 
 K.CreateBorder(ExperienceBar, 10, 2.8)
 
-local ExperienceBarRested = CreateFrame("StatusBar", nil, UIParent)
+local ExperienceBarRested = CreateFrame("StatusBar", nil, ExperienceBar)
 ExperienceBarRested:SetOrientation("HORIZONTAL")
 ExperienceBarRested:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
 ExperienceBarRested:SetPoint("BOTTOM", ExperienceBar, "BOTTOM", 0, 0)
@@ -72,9 +72,10 @@ end)
 ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
 if C.DataBars.ExperienceFade then
-    ExperienceBar:SetAlpha(0)
-    ExperienceBar:SetScript("OnEnter", function() ExperienceBar:FadeIn() end)
-	ExperienceBar:SetScript("OnLeave", function() ExperienceBar:FadeOut() end)
+	ExperienceBar:SetAlpha(0)
+	ExperienceBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
+	ExperienceBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
+	ExperienceBar.Tooltip = true
 end
 
 ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")

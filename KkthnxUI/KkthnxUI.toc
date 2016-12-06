@@ -1,30 +1,20 @@
 ## Interface: 70100
 ## Title: |cff3c9bedKkthnxUI|r
-## Notes: |cffffff00By Josh "Kkthnx" Russell|r |n|n|cff34a853PayPal.Me|r|cffffffff:|r|n|cffffffffwww.paypal.me/kkthnx|r
+## Notes: ||cff3c9bedBy Josh "Kkthnx" Russell|r |n|n|cff3c9bedPayPal.Me|r|cffffffff:|r|n|cffffffffwww.paypal.me/kkthnx|r
 ## Author: Shestak, Josh "Kkthnx" Russell
-## Version: 6.09
+## Version: 6.10
 ## DefaultState: Enabled
 ## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, DBM-Core, Recount, Skada, Spy, WeakAuras
 ## SavedVariables: KkthnxUIData
-## SavedVariablesPerCharacter: KkthnxUIDataPerChar, KkthnxUIPositions
+## SavedVariablesPerCharacter: KkthnxUIDataPerChar
 ## eMail: Kkthnxbye@live.com
 ## Website: https://github.com/Kkthnx
 ## X-oUF: oUFKkthnxUI
-## X-Curse-Packaged-Version: 6.09
+## X-Curse-Packaged-Version: 6.10
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Curse-Project-ID: kkthnxui
 ## X-WoWI-ID: 23677
 ## Donate: PayPal:PayPal.Me/Kkthnx
 ## License: The MIT License (MIT) Copyright (c) 2012 - 2016 Josh "Kkthnx" Russell
 
-Core\Init.lua
-Locales\Init.xml
-Config\Init.xml
-Core\GUI.lua
-Libraries\Init.xml
-Media\Media.lua
-Core\Colors.lua
-Config\Filters\Init.xml
-Core\Init.xml
-Modules\Init.xml
-Core\Temp.lua
+KkthnxUI.xml

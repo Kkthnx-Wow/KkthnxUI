@@ -7,10 +7,10 @@ C["WorldMapCoordinates"] = {
 	["YOffset"] = 0,
 }
 
--- LUA API
+-- Lua API
 local find = string.find
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
 local SetUIPanelAttribute = SetUIPanelAttribute
@@ -36,7 +36,7 @@ local INVERTED_POINTS = {
 function WorldMap:SetLargeWorldMap()
 	if InCombatLockdown() then return end
 
-	WorldMapFrame:SetParent(K.UIParent)
+	WorldMapFrame:SetParent(UIParent)
 	WorldMapFrame:EnableKeyboard(false)
 	WorldMapFrame:SetScale(1)
 	WorldMapFrame:EnableMouse(true)

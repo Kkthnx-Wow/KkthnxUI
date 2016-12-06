@@ -1,12 +1,12 @@
 local K, C, L = select(2, ...):unpack()
 if C.Announcements.BadGear ~= true then return end
 
--- LUA API
+-- Lua API
 local format = string.format
 local pairs = pairs
 local select = select
 
--- WOW API
+-- Wow API
 local CreateFrame = CreateFrame
 local GetInventoryItemID = GetInventoryItemID
 local GetItemInfo = GetItemInfo

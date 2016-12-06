@@ -1,13 +1,13 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 
--- WOW API
-local CreateFrame = CreateFrame
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: RightBarMouseOver, HoverBind
 
---	Setup multibarleft as bar #3 by tukz
+-- MultiBarLeft(by Tukz)
 local ActionBar3 = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
 ActionBar3:SetAllPoints(RightActionBarAnchor)
 MultiBarLeft:SetParent(ActionBar3)

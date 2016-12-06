@@ -1,8 +1,24 @@
 local K, C, L = select(2, ...):unpack()
 
--- REGISTER A FRAME WITH: Movers:RegisterFrame(FrameName)
--- NOTE 1: REGISTERED FRAMES NEED A **GLOBAL NAME**
--- NOTE 2: DRAG VALUES IS SAVED IN >> KkthnxUIPositions.Move SAVEDVARIABLESPERCHARACTER <<
+-- Register a frame with: Movers:RegisterFrame(FrameName)
+-- Registered frames need a **GLOBAL Name**
+-- Drag values is saved in >> KkthnxUIDataPerChar.Movers SavedVariablesPerCharacter <<
+
+-- Lua API
+local _G = _G
+local tinsert = table.insert
+
+-- Wow API
+local CreateFrame = CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local InCombatLockdown = InCombatLockdown
+local pairs = pairs
+local print = print
+local UIParent = UIParent
+local unpack = unpack
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_MOVING1, KkthnxUIDataPerChar
 
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -29,7 +45,7 @@ end
 function Movers:RestoreDefaults(button)
 	local FrameName = self.Parent:GetName()
 	local Data = Movers.Defaults[FrameName]
-	local SavedVariables = KkthnxUIPositions.Move
+	local SavedVariables = KkthnxUIDataPerChar.Movers
 
 	if (button == "RightButton") and (Data) then
 		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
@@ -42,7 +58,7 @@ function Movers:RestoreDefaults(button)
 		Frame.DragInfo:ClearAllPoints()
 		Frame.DragInfo:SetAllPoints(Frame)
 
-		-- DELETE SAVED VARIABLE
+		-- Delete Saved Variable
 		SavedVariables[FrameName] = nil
 	end
 end
@@ -62,7 +78,7 @@ end
 function Movers:OnDragStop()
 	self:StopMovingOrSizing()
 
-	local Data = KkthnxUIPositions.Move
+	local Data = KkthnxUIDataPerChar.Movers
 	local Anchor1, Parent, Anchor2, X, Y = self:GetPoint()
 	local FrameName = self.Parent:GetName()
 	local Frame = self.Parent
@@ -82,7 +98,7 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetAllPoints(self)
 	self.DragInfo:SetBackdrop(K.BorderBackdrop)
 	self.DragInfo:SetBackdropColor(60/255, 155/255, 237/255, 0.3)
-	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	self.DragInfo:FontString("Text", C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 	self.DragInfo.Text:SetText(self:GetName())
 	self.DragInfo.Text:SetPoint("CENTER")
 	self.DragInfo.Text:SetTextColor(60/255, 186/255, 84/255, 1)
@@ -90,6 +106,7 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetFrameStrata("HIGH")
 	self.DragInfo:SetMovable(true)
 	self.DragInfo:RegisterForDrag("LeftButton")
+	self.DragInfo:SetClampedToScreen(true)
 	self.DragInfo:Hide()
 	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
 
@@ -175,11 +192,11 @@ end
 
 Movers:SetScript("OnEvent", function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		if not KkthnxUIPositions.Move then
-			KkthnxUIPositions.Move = {}
+		if not KkthnxUIDataPerChar.Movers then
+			KkthnxUIDataPerChar.Movers = {}
 		end
 
-		local Data = KkthnxUIPositions.Move
+		local Data = KkthnxUIDataPerChar.Movers
 
 		for Frame, Position in pairs(Data) do
 			local Frame = _G[Frame]

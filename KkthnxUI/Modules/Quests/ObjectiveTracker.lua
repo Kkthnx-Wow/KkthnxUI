@@ -1,4 +1,5 @@
 local K, C, L = select(2, ...):unpack()
+if IsAddOnLoaded("DugisGuideViewerZ") then return end
 
 local ObjectiveTracker = CreateFrame("Frame", "ObjectiveTracker", UIParent)
 
@@ -8,7 +9,7 @@ local hooksecurefunc = hooksecurefunc
 local GetScreenWidth = GetScreenWidth
 local GetScreenHeight = GetScreenHeight
 
-local ObjectiveFrameHolder = CreateFrame("Frame", "ObjectiveFrameHolder", K.UIParent)
+local ObjectiveFrameHolder = CreateFrame("Frame", "ObjectiveFrameHolder", UIParent)
 ObjectiveFrameHolder:SetWidth(130)
 ObjectiveFrameHolder:SetHeight(22)
 ObjectiveFrameHolder:SetPoint(unpack(C.Position.ObjectiveTracker))
@@ -33,9 +34,7 @@ end
 function ObjectiveTracker:Enable()
 	local Movers = K.Movers
 
-	if not IsAddOnLoaded("DugisGuideViewerZ") then
-		Movers:RegisterFrame(ObjectiveFrameHolder)
-	end
+	Movers:RegisterFrame(ObjectiveFrameHolder)
 
 	ObjectiveTrackerFrame:ClearAllPoints()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")

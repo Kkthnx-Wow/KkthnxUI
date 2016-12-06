@@ -1,18 +1,28 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- BY TUKZ
-
--- LUA API
+-- Lua API
 local _G = _G
-local match = string.match
 local gsub = string.gsub
-local ipairs = ipairs
-local tostring = tostring
+local unpack = unpack
 
--- WOW API
-local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+-- Wow API
+local GetFlyoutID = GetFlyoutID
+local GetFlyoutInfo = GetFlyoutInfo
+local GetNumFlyouts = GetNumFlyouts
 local hooksecurefunc = hooksecurefunc
+local InCombatLockdown = InCombatLockdown
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SpellFlyout, RightBarMouseOver, ActionButton_UpdateState, KEY_MOUSEWHEELDOWN
+-- GLOBALS: KEY_MOUSEWHEELUP, KEY_BUTTON3, KEY_BUTTON4, KEY_BUTTON5, KEY_NUMPAD0, KEY_NUMPAD1
+-- GLOBALS: KEY_NUMPAD2, KEY_NUMPAD3, KEY_NUMPAD4, KEY_NUMPAD5, KEY_NUMPAD6, KEY_NUMPAD7
+-- GLOBALS: KEY_NUMPAD8, KEY_NUMPAD9, KEY_NUMPADDECIMAL, KEY_NUMPADDIVIDE, KEY_NUMPADMINUS
+-- GLOBALS: KEY_NUMPADMULTIPLY, KEY_NUMPADPLUS, KEY_PAGEUP, KEY_PAGEDOWN, KEY_SPACE, KEY_INSERT
+-- GLOBALS: KEY_HOME, KEY_DELETE, KEY_INSERT_MAC, SpellFlyoutHorizontalBackground, SpellFlyoutVerticalBackground
+-- GLOBALS: SpellFlyoutBackgroundEnd, ActionButton_HideOverlayGlow, ActionButton_UpdateHotkeys
 
 local function StyleNormalButton(self)
 	local name = self:GetName()

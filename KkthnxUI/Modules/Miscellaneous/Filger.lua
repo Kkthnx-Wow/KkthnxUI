@@ -1,7 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 if C.Unitframe.Enable ~= true or C.Filger.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
 local pairs = pairs
 local unpack = unpack
@@ -9,7 +9,7 @@ local format = string.format
 local time = time
 local print = print
 
--- WOW API
+-- Wow API
 local UnitDebuff, UnitBuff = UnitDebuff, UnitBuff
 local GetParent = GetParent
 local GetItemInfo = GetItemInfo

@@ -1,14 +1,14 @@
 ﻿local K, C, L = select(2, ...):unpack()
 if C.Chat.Enable ~= true or C.Chat.DamageMeterSpam ~= true then return end
 
--- LUA API
+-- Lua API
 local ipairs = ipairs
 local match = string.match
 local time = time
 local format = string.format
 local tonumber = tonumber
 
--- WOW API
+-- Wow API
 local strsplit = strsplit
 local UIParent = UIParent
 

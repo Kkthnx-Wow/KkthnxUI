@@ -1,31 +1,50 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
-local KkthnxUIActionBars = CreateFrame("Frame")
+-- Lua API
 local _G = _G
 local pairs = pairs
-local MainMenuBar, MainMenuBarArtFrame = MainMenuBar, MainMenuBarArtFrame
-local OverrideActionBar = OverrideActionBar
-local PossessBarFrame = PossessBarFrame
-local PetActionBarFrame = PetActionBarFrame
-local ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight = ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight
 
-local Frames = {
-	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
-	PossessBarFrame, PetActionBarFrame, IconIntroTracker,
-	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
-	TalentMicroButtonAlert, CollectionsMicroButtonAlert, EJMicroButtonAlert
-}
+-- Wow API
+local hooksecurefunc = hooksecurefunc
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
 
-function KkthnxUIActionBars:DisableBlizzard()
-	for _, frame in pairs(Frames) do
-		frame:UnregisterAllEvents()
-		frame.ignoreFramePositionManager = true
-		frame:SetParent(UIFrameHider)
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: RightBarMouseOver, StanceBarMouseOver, PetBarMouseOver, IconIntroTracker
+-- GLOBALS: TalentMicroButtonAlert, CollectionsMicroButtonAlert, UIFrameHider
+-- GLOBALS: InterfaceOptionsActionBarsPanelBottomLeft, InterfaceOptionsActionBarsPanelBottomRight
+-- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo
+-- GLOBALS: InterfaceOptionsActionBarsPanelAlwaysShowActionBars, PlayerTalentFrame, RightActionBarAnchor
+-- GLOBALS: PetActionBarAnchor, ShapeShiftBarAnchor, MultiBarLeft, MultiBarBottomRight, MultiBarRight
+-- GLOBALS: PetHolder, ShiftHolder, HoverBind, MainMenuBar, MainMenuBarArtFrame, OverrideActionBar
+-- GLOBALS: PossessBarFrame, PetActionBarFrame, ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight
+-- GLOBALS: EJMicroButtonAlert
+
+local DisableBlizzard = CreateFrame("Frame")
+DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
+DisableBlizzard:SetScript("OnEvent", function(self, event)
+	for _, Frame in pairs({
+		MainMenuBar,
+		MainMenuBarArtFrame,
+		OverrideActionBar,
+		PossessBarFrame,
+		PetActionBarFrame,
+		IconIntroTracker,
+		ShapeshiftBarLeft,
+		ShapeshiftBarMiddle,
+		ShapeshiftBarRight,
+		TalentMicroButtonAlert,
+		CollectionsMicroButtonAlert,
+		EJMicroButtonAlert
+	}) do
+		Frame:UnregisterAllEvents()
+		Frame.ignoreFramePositionManager = true
+		Frame:SetParent(UIFrameHider)
 	end
 
-	for i = 1, 6 do
-		local Button = _G["OverrideActionBarButton"..i]
+	for index = 1, 6 do
+		local Button = _G["OverrideActionBarButton" .. index]
 
 		Button:UnregisterAllEvents()
 		Button:SetAttribute("statehidden", true)
@@ -36,10 +55,29 @@ function KkthnxUIActionBars:DisableBlizzard()
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	end)
 
+	hooksecurefunc("ActionButton_OnEvent", function(self, event)
+		if (event == "PLAYER_ENTERING_WORLD") then
+			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
+			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
+	end)
+
 	MainMenuBar.slideOut.IsPlaying = function()
 		return true
 	end
-end
+
+	InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.00001)
+	InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
+	InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.00001)
+	InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
+	InterfaceOptionsActionBarsPanelRight:SetScale(0.00001)
+	InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
+	InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.00001)
+	InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
+	InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetScale(0.00001)
+	InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
+end)
 
 function RightBarMouseOver(alpha)
 	RightActionBarAnchor:SetAlpha(alpha)
@@ -179,6 +217,3 @@ do
 		PetActionBarAnchor:SetScript("OnLeave", function() if not HoverBind.enabled then PetBarMouseOver(0) end end)
 	end
 end
-
-KkthnxUIActionBars:RegisterEvent("PLAYER_LOGIN")
-KkthnxUIActionBars:SetScript("OnEvent", KkthnxUIActionBars.DisableBlizzard)

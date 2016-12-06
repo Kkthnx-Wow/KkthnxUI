@@ -1,19 +1,21 @@
 local K, C, L = select(2, ...):unpack()
 
--- LUA API
+-- Lua API
 local _G = _G
 local format = string.format
 local gsub = string.gsub
 local pairs = pairs
 local unpack = unpack
-local find = string.find
-local select = select
+local strfind = string.find
 
--- WOW API
-local tinsert = tinsert
+-- Wow API
+local tinsert = table.insert
 local CreateFrame, UIParent = CreateFrame, UIParent
 local ToggleFrame = ToggleFrame
 local GetSpellInfo = GetSpellInfo
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CopyScroll, C_Timer, RandomRoll, UISpecialFrames, ChatFontNormal, ChatMenu
 
 -- COPY CHAT
 local lines = {}
@@ -58,7 +60,7 @@ local function CreatCopyFrame()
 		local text = self:GetText()
 
 		for _, size in pairs(sizes) do
-			if find(text, size) and not find(text, size.."]") then
+			if strfind(text, size) and not strfind(text, size.."]") then
 				self:SetText(gsub(text, size, ":12:12"))
 			end
 		end
@@ -92,10 +94,12 @@ end
 for i = 1, NUM_CHAT_WINDOWS do
 	local cf = _G[format("ChatFrame%d", i)]
 	local button = CreateFrame("Button", format("ButtonCF%d", i), cf)
-	button:SetPoint("BOTTOMRIGHT", 0, -4)
+	button:SetPoint("TOPRIGHT", 0, 0)
 	button:SetSize(16, 16)
 	button:SetNormalTexture("Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up")
 	button:SetAlpha(0)
+	button:CreateBackdrop(size, 6)
+	button.backdrop:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 
 	button:SetScript("OnMouseUp", function(self, btn)
 		if btn == "RightButton" then

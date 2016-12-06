@@ -41,9 +41,9 @@ function KkthnxUIAuras:CreateHeaders()
 			Header.backdrop.Text:SetPoint("CENTER")
 
 			if (i == 1) then
-				Header.backdrop.Text:SetText(L_AURAS_MOVEBUFFS)
+				Header.backdrop.Text:SetText(L.Auras.MoveBuffs)
 			else
-				Header.backdrop.Text:SetText(L_AURAS_MOVEDEBUFFS)
+				Header.backdrop.Text:SetText(L.Auras.MoveDebuffs)
 			end
 		end
 

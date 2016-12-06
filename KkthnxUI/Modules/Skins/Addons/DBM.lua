@@ -337,7 +337,7 @@ function K.UploadDBM()
 end
 
 StaticPopupDialogs.SETTINGS_DBM = {
-	text = L_POPUP_SETTINGS_DBM,
+	text = L.Popup.SettingsDBM,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() K.UploadDBM() ReloadUI() end,

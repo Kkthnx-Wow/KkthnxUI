@@ -1,13 +1,29 @@
 local K, C, L = select(2, ...):unpack()
 if C.ActionBar.Enable ~= true then return end
 
--- LUA API
+-- Lua API
 local _G = _G
+local unpack = unpack
 
--- WOW API
+-- Wow API
+local AutoCastShine_AutoCastStart = AutoCastShine_AutoCastStart
+local AutoCastShine_AutoCastStop = AutoCastShine_AutoCastStop
 local GetNumShapeshiftForms = GetNumShapeshiftForms
+local GetPetActionInfo = GetPetActionInfo
+local GetPetActionSlotUsable = GetPetActionSlotUsable
+local GetShapeshiftFormCooldown = GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = GetShapeshiftFormInfo
+local InCombatLockdown = InCombatLockdown
+local IsPetAttackAction = IsPetAttackAction
+local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
+local PetActionButton_StartFlash = PetActionButton_StartFlash
+local PetActionButton_StopFlash = PetActionButton_StopFlash
 local PetHasActionBar = PetHasActionBar
+local SetDesaturation = SetDesaturation
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ShiftHolder, CooldownFrame_Set, StanceBarFrame
 
 -- PET AND SHAPESHIFT BARS STYLE FUNCTION
 K.ShiftBarUpdate = function(...)

@@ -6,19 +6,25 @@ local AFK = LibStub("AceAddon-3.0"):NewAddon("AFK", "AceEvent-3.0", "AceTimer-3.
 
 -- WoW Lua
 local _G = _G
-local GetTime = GetTime
-local tostring, pcall = tostring, pcall
 local floor = floor
 local format, strsub, gsub = string.format, string.sub, string.gsub
+local GetTime = GetTime
+local random = math.random
+local tostring, pcall = tostring, pcall
+
 -- Wow API
 local CinematicFrame = CinematicFrame
 local CloseAllWindows = CloseAllWindows
 local CreateFrame = CreateFrame
+local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
+local DND = DND
+local GetAchievementInfo = GetAchievementInfo
 local GetBattlefieldStatus = GetBattlefieldStatus
 local GetColoredName = GetColoredName
 local GetGuildInfo = GetGuildInfo
 local GetScreenHeight = GetScreenHeight
 local GetScreenWidth = GetScreenWidth
+local GetStatistic = GetStatistic
 local InCombatLockdown = InCombatLockdown
 local IsInGuild = IsInGuild
 local IsShiftKeyDown = IsShiftKeyDown
@@ -26,14 +32,16 @@ local MoveViewLeftStart = MoveViewLeftStart
 local MoveViewLeftStop = MoveViewLeftStop
 local MovieFrame = MovieFrame
 local PVEFrame_ToggleFrame = PVEFrame_ToggleFrame
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local RemoveExtraSpaces = RemoveExtraSpaces
 local Screenshot = Screenshot
 local SetCVar = SetCVar
+local UIFrameFadeIn = UIFrameFadeIn
 local UnitFactionGroup = UnitFactionGroup
 local UnitIsAFK = UnitIsAFK
-local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
-local DND = DND
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel
 
 local stats = {
 	60,		-- Total deaths
@@ -139,17 +147,17 @@ function AFK:UpdateTimer()
 end
 
 function AFK:SetAFK(status)
-	if(InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then return end
-	if(status) then
+	if (InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then return end
+	if (status) then
 		MoveViewLeftStart(CAMERA_SPEED)
 		self.AFKMode:Show()
 		CloseAllWindows()
 		UIParent:Hide()
-		if(IsInGuild()) then
+		if (IsInGuild()) then
 			local guildName, guildRankName = GetGuildInfo("player")
 			self.AFKMode.bottom.guild:SetFormattedText("%s-%s", guildName, guildRankName)
 		else
-			self.AFKMode.bottom.guild:SetText(L_AFKSCREEN_NOGUILD)
+			self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
 		end
 		self.AFKMode.bottom.model.curAnimation = "wave"
 		self.AFKMode.bottom.model.startTime = GetTime()
@@ -162,7 +170,7 @@ function AFK:SetAFK(status)
 		self.timer = self:ScheduleRepeatingTimer("UpdateTimer", 1)
 		self.AFKMode.statMsginfo:Show()
 		self.isAFK = true
-	elseif(self.isAFK) then
+	elseif (self.isAFK) then
 		UIParent:Show()
 		self.AFKMode:Hide()
 		self.AFKMode.statMsginfo:Hide()
@@ -170,7 +178,7 @@ function AFK:SetAFK(status)
 		self:CancelTimer(self.timer)
 		self:CancelTimer(self.animTimer)
 		self.AFKMode.bottom.time:SetText("00:00")
-		if(PVEFrame:IsShown()) then --odd bug, frame is blank
+		if (PVEFrame:IsShown()) then --odd bug, frame is blank
 			PVEFrame_ToggleFrame()
 			PVEFrame_ToggleFrame()
 		end
@@ -179,8 +187,8 @@ function AFK:SetAFK(status)
 end
 
 function AFK:OnEvent(event, ...)
-	if(event == "PLAYER_REGEN_DISABLED" or event == "LFG_PROPOSAL_SHOW" or event == "UPDATE_BATTLEFIELD_STATUS") then
-		if(event == "UPDATE_BATTLEFIELD_STATUS") then
+	if (event == "PLAYER_REGEN_DISABLED" or event == "LFG_PROPOSAL_SHOW" or event == "UPDATE_BATTLEFIELD_STATUS") then
+		if (event == "UPDATE_BATTLEFIELD_STATUS") then
 			local status = GetBattlefieldStatus(...)
 			if (status == "confirm") then
 				self:SetAFK(false)
@@ -188,15 +196,15 @@ function AFK:OnEvent(event, ...)
 		else
 			self:SetAFK(false)
 		end
-		if(event == "PLAYER_REGEN_DISABLED") then
+		if (event == "PLAYER_REGEN_DISABLED") then
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		end
 		return
 	end
-	if(event == "PLAYER_REGEN_ENABLED") then
+	if (event == "PLAYER_REGEN_ENABLED") then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
-	if(UnitIsAFK("player")) then
+	if (UnitIsAFK("player")) then
 		self:SetAFK(true)
 	else
 		self:SetAFK(false)
@@ -204,7 +212,7 @@ function AFK:OnEvent(event, ...)
 end
 
 function AFK:Toggle()
-	if(C.Misc.AFKCamera) then
+	if (C.Misc.AFKCamera) then
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "OnEvent")
 		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 		self:RegisterEvent("LFG_PROPOSAL_SHOW", "OnEvent")
@@ -219,7 +227,7 @@ function AFK:Toggle()
 end
 
 local function OnKeyDown(self, key)
-	if(ignoreKeys[key]) then return end
+	if (ignoreKeys[key]) then return end
 	if printKeys[key] then
 		Screenshot()
 	else
@@ -229,7 +237,7 @@ local function OnKeyDown(self, key)
 end
 
 function AFK:LoopAnimations()
-	if(KkthnxUIAFKPlayerModel.curAnimation == "wave") then
+	if (KkthnxUIAFKPlayerModel.curAnimation == "wave") then
 		KkthnxUIAFKPlayerModel:SetAnimation(69)
 		KkthnxUIAFKPlayerModel.curAnimation = "dance"
 		KkthnxUIAFKPlayerModel.startTime = GetTime()
@@ -343,7 +351,7 @@ function AFK:Initialize()
 	self.AFKMode.bottom.model:SetFacing(6)
 	self.AFKMode.bottom.model:SetScript("OnUpdateModel", function(self)
 		local timePassed = GetTime() - self.startTime
-		if(timePassed > self.duration) and self.isIdle ~= true then
+		if (timePassed > self.duration) and self.isIdle ~= true then
 			self:SetAnimation(0)
 			self.isIdle = true
 			AFK.animTimer = AFK:ScheduleTimer("LoopAnimations", self.idleDuration)
