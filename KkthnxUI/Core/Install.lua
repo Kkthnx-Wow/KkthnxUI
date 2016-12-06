@@ -604,22 +604,7 @@ Install:SetScript("OnEvent", function(self, event)
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
 	else
-		SetCVar("useUiScale", 1)
-		if C.General.UIScale > 1.28 then C.General.UIScale = 1.28 end
-		if C.General.UIScale < 0.64 then C.General.UIScale = 0.64 end
-
-		-- Set our uiscale
-		SetCVar("uiScale", C.General.UIScale)
-
-		-- Hack for 4K and WQHD Resolution
-		local CustomScale = min(2, max(0.32, 768 / match(K.Resolution, "%d+x(%d+)")))
-		if C.General.AutoScale == true and CustomScale < 0.64 then
-			UIParent:SetScale(CustomScale)
-		elseif CustomScale < 0.64 then
-			UIParent:SetScale(C.General.UIScale)
-		end
-
-		-- install default if we never ran KkthnxUI on this character.
+		-- Install default if we never ran KkthnxUI on this character.
 		if not KkthnxUIDataPerChar.Install then
 			KkthnxUIInstall.Install()
 		end
