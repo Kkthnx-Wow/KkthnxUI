@@ -4,23 +4,39 @@ if C.DataBars.ExperienceEnable ~= true or K.Level == MAX_PLAYER_LEVEL then retur
 local Bars = 20
 local Movers = K.Movers
 
+-- Temp fix for a backdrop atm.
+local function XPBackdrop(f)
+	if f.backdrop then return end
+
+	local b = CreateFrame("Frame", nil, f)
+	b:SetPoint("TOPLEFT", -1, 1)
+	b:SetPoint("BOTTOMRIGHT", 1, -1)
+	b:SetBackdrop({bgFile = C.Media.Blank})
+	b:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+
+	if f:GetFrameLevel() - 1 >= 0 then
+		b:SetFrameLevel(f:GetFrameLevel() - 1)
+	else
+		b:SetFrameLevel(0)
+	end
+
+	f.backdrop = b
+end
+
 local Anchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
 Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -33)
 Movers:RegisterFrame(Anchor)
 
 local ExperienceBar = CreateFrame("StatusBar", nil, UIParent)
+
 K.CreateBorder(ExperienceBar, 10, 2.8)
+XPBackdrop(ExperienceBar)
 ExperienceBar:SetOrientation("HORIZONTAL")
 ExperienceBar:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
 ExperienceBar:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
 ExperienceBar:SetStatusBarTexture(C.Media.Texture)
 ExperienceBar:SetStatusBarColor(unpack(C.DataBars.ExperienceColor))
-
-local ExperienceBarBG = ExperienceBar:CreateTexture(nil, "BORDER")
-ExperienceBarBG:SetAllPoints()
-ExperienceBarBG:SetTexture(C.Media.Texture)
-ExperienceBarBG:SetVertexColor(unpack(C.Media.Backdrop_Color))
 
 local ExperienceBarRested = CreateFrame("StatusBar", nil, ExperienceBar)
 ExperienceBarRested:SetOrientation("HORIZONTAL")
@@ -45,12 +61,12 @@ local function UpdateExperienceBar()
 	ExperienceBar:SetValue(Current)
 
 	if (IsRested == 1 and Rested) then
-		self:RegisterEvent("UPDATE_EXHAUSTION", UpdateExperienceBar)
+		ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
 		ExperienceBarRested:SetFrameLevel(ExperienceBar:GetFrameLevel() - 1)
 		ExperienceBarRested:SetMinMaxValues(0, Max)
 		ExperienceBarRested:SetValue(Rested + Current)
 	else
-		self:UnregisterEvent("UPDATE_EXHAUSTION", UpdateExperienceBar)
+		ExperienceBar:UnregisterEvent("UPDATE_EXHAUSTION")
 		ExperienceBarRested:Hide()
 	end
 end
