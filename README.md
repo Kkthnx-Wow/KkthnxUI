@@ -35,7 +35,5 @@ Donations are welcome, but not required to use the UI at all. Donations help me 
 The MIT License (MIT)   
 Copyright (c) 2012 - 2016 Josh "Kkthnx" Russell   
    
-![wowscrnshot_103116_042408](https://cloud.githubusercontent.com/assets/1692977/19891951/d218946c-a018-11e6-8c63-a5e814147ef9.jpg)![wowscrnshot_120616_125542](https://cloud.githubusercontent.com/assets/1692977/20976587/f778165a-bc70-11e6-9ac2-ceedbf20442e.jpg)
-![wowscrnshot_120416_042228](https://cloud.githubusercontent.com/assets/1692977/20976588/f77ad1e2-bc70-11e6-9558-f930ca847d22.jpg)
 ![wowscrnshot_120616_125542](https://cloud.githubusercontent.com/assets/1692977/20976587/f778165a-bc70-11e6-9ac2-ceedbf20442e.jpg)
 ![wowscrnshot_120416_042228](https://cloud.githubusercontent.com/assets/1692977/20976588/f77ad1e2-bc70-11e6-9558-f930ca847d22.jpg)
