@@ -31,17 +31,11 @@ Donations are welcome, but not required to use the UI at all. Donations help me 
 * Patreon: [Support on Patreon](https://www.patreon.com/kkthnx)   
 * Steam Trade: [Kkthnx Steam Trade URL](https://steamcommunity.com/tradeoffer/new/?partner=21318157&token=hTlU3SPa)
 
-### Credits   
-``` ALZA, AcidWeb, Aezay, Affli, Ailae, Allez, Ammo, Astromech, Beoko, BernCarney, Bitbyte, Blamdarot, Bozo, Bunny67, Caellian, Califpornia, Camealion, Chiril, CrusaderHeimdall, Cybey, Dawn, Don Kaban, Dridzt, Duffed, Durcyn, Eclipse, Egingell, Elv22, Evilpaul, Evl, Favorit, Fernir, Foof, Freebaser, freesay, Gorlasch, Gsuz, Haleth, Haste, Hoochie, Hungtar, HyPeRnIcS, Hydra, Ildyria, Jaslm, Karl_w_w, Karudon, Katae, Kellett, Kemayo, Killakhan, Kraftman, Kunda, Leatrix, Magdain, Magicnachos, Meurtcriss, Monolit, MrRuben5, Myrilandell of Lothar, Nathanyel, Nefarion, Nightcracker, Nils Ruesch, Partha, Phanx, Rahanprout, Renstrom, RustamIrzaev, SDPhantom, Safturento, Sara.Festung, Sildor, Silverwind, SinaC, Slakah, Soeters, Starlon, Suicidal Katt, Syzgyn, Tekkub, Telroth, Thalyra, Thizzelle, Tia Lynn, Tohveli, Tukz, Tuller, Veev, Villiv, Wetxius, Woffle of Dark Iron, Wrug, Xuerian, Yleaf, Zork, zp, g0st, gi2k15, iSpawnAtHome, m2jest1c, p3lim, sticklord ```   
-
-### Translation   
-``` freesay(ruRU), EnumaElis(ruRU), Rav(deDE) ```  
-
-### Supporters   
-``` XploitNT, jChirp, Magicnachos ```   
-
 ### License    
 The MIT License (MIT)   
 Copyright (c) 2012 - 2016 Josh "Kkthnx" Russell   
    
-![wowscrnshot_103116_042408](https://cloud.githubusercontent.com/assets/1692977/19891951/d218946c-a018-11e6-8c63-a5e814147ef9.jpg)
+![wowscrnshot_103116_042408](https://cloud.githubusercontent.com/assets/1692977/19891951/d218946c-a018-11e6-8c63-a5e814147ef9.jpg)![wowscrnshot_120616_125542](https://cloud.githubusercontent.com/assets/1692977/20976587/f778165a-bc70-11e6-9ac2-ceedbf20442e.jpg)
+![wowscrnshot_120416_042228](https://cloud.githubusercontent.com/assets/1692977/20976588/f77ad1e2-bc70-11e6-9558-f930ca847d22.jpg)
+![wowscrnshot_120616_125542](https://cloud.githubusercontent.com/assets/1692977/20976587/f778165a-bc70-11e6-9ac2-ceedbf20442e.jpg)
+![wowscrnshot_120416_042228](https://cloud.githubusercontent.com/assets/1692977/20976588/f77ad1e2-bc70-11e6-9558-f930ca847d22.jpg)
