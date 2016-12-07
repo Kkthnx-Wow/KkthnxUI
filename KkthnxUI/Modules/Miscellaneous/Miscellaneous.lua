@@ -86,19 +86,6 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
 end)
 
-local PVPMessageEnhancement = CreateFrame("Frame")
-PVPMessageEnhancement:RegisterEvent("PLAYER_LOGIN")
-PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
-PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
-PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
-PVPMessageEnhancement:SetScript("OnEvent", function(self, event)
-	-- if C.Misc.EnhancedPvPMessages ~= true then return end
-	local _, instanceType = IsInInstance()
-	if instanceType == "pvp" or instanceType == "arena" then
-		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])
-	end
-end)
-
 -- Move and scale UIErrorsFrame
 UIErrorsFrame:ClearAllPoints()
 UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
