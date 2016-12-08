@@ -122,7 +122,6 @@ end)
 -- Force other warning
 local ForceWarning = CreateFrame("Frame")
 ForceWarning:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
-ForceWarning:RegisterEvent("BATTLEFIELD_MGR_ENTRY_INVITE")
 ForceWarning:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH")
 ForceWarning:RegisterEvent("LFG_PROPOSAL_SHOW")
 ForceWarning:RegisterEvent("RESURRECT_REQUEST")
@@ -134,16 +133,13 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 				PlaySound("PVPTHROUGHQUEUE", "Master")
 				break
 			end
-			i = i + 1
 		end
-	elseif event == "BATTLEFIELD_MGR_ENTRY_INVITE" then
-		PlaySound("PVPTHROUGHQUEUE", "Master")
 	elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
 		PlaySound("PVPTHROUGHQUEUE", "Master")
 	elseif event == "LFG_PROPOSAL_SHOW" then
 		PlaySound("ReadyCheck", "Master")
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySoundFile("Sound\\Spells\\Resurrection.wav", "Master")
+		PlaySoundFile([[Sound\Spells\Resurrection.wav]], "Master")
 	end
 end)
 
@@ -170,6 +166,7 @@ if C.General.CustomLagTolerance == true then
 		SetCVar("ReducedLagTolerance", 1)
 		SetCVar("MaxSpellStartRecoveryOffset", lagWorld)
 	end)
+
 	CustomLagTolerance:RegisterEvent("ZONE_CHANGED")
 	CustomLagTolerance:RegisterEvent("ADDON_LOADED")
 end

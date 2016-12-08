@@ -9,6 +9,19 @@ local IsAddOnLoaded = IsAddOnLoaded
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame
 
+-- Turns out we can avoid the spellbook taint
+-- by opening it once before we login. Thanks TukUI! :)
+-- NB! taiting the GameTooltip taints the spellbook too, so DON'T! o.O
+local Cleenex = CreateFrame("Frame")
+Cleenex:RegisterEvent("ADDON_LOADED")
+Cleenex:SetScript("OnEvent", function(self, _, what)
+	if what ~= addon then return end
+	ToggleFrame(SpellBookFrame)
+	if build < 19678 then -- don't load this in 6.1, it's not there!
+		PetJournal_LoadUI()
+	end
+end)
+
 FCF_StartAlertFlash = K.Noop
 
 -- Fix the scale on this.
@@ -35,9 +48,12 @@ StaticPopupDialogs.CONFIRM_SUMMON.hideOnEscape = nil
 StaticPopupDialogs.ADDON_ACTION_FORBIDDEN.button1 = nil
 StaticPopupDialogs.TOO_MANY_LUA_ERRORS.button1 = nil
 PetBattleQueueReadyFrame.hideOnEscape = nil
-PVPReadyDialog.leaveButton:Hide()
-PVPReadyDialog.enterButton:ClearAllPoints()
-PVPReadyDialog.enterButton:SetPoint("BOTTOM", PVPReadyDialog, "BOTTOM", 0, 25)
+if PVPReadyDialog then
+	PVPReadyDialog.leaveButton:Hide()
+	PVPReadyDialog.enterButton:ClearAllPoints()
+	PVPReadyDialog.enterButton:SetPoint("BOTTOM", PVPReadyDialog, "BOTTOM", 0, 25)
+	PVPReadyDialog.label:SetPoint("TOP", 0, -22)
+end
 
 -- Original code (by Gnarfoz)
 -- C_ArtifactUI.GetTotalPurchasedRanks() shenanigans
