@@ -1,13 +1,21 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.ArtifactEnable ~= true or K.Level <= 99 then return end
 
+-- WoW Lua
+local format = string.format
 local min = math.min
 
-local HideUIPanel = HideUIPanel
-local SocketInventoryItem = SocketInventoryItem
-local LoadAddOn = LoadAddOn
+-- Wow API
+local ARTIFACT_POWER = ARTIFACT_POWER
+local ARTIFACT_POWER_TOOLTIP_BODY = ARTIFACT_POWER_TOOLTIP_BODY
 local HasArtifactEquipped = HasArtifactEquipped
+local HideUIPanel = HideUIPanel
+local LoadAddOn = LoadAddOn
 local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
+local SocketInventoryItem = SocketInventoryItem
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, ArtifactFrame, C_ArtifactUI, Max, Current
 
 local Bars = 20
 local Movers = K.Movers
@@ -96,8 +104,8 @@ ArtifactBar:SetScript("OnEnter", function(self)
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-		GameTooltip:AddLine(string.format("|cffe6cc80"..ARTIFACT_POWER..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
-		GameTooltip:AddLine(string.format("|cffe6cc80"..L.DataBars.ArtifactRemaining.."|r", xpForNextPoint - xp))
+		GameTooltip:AddLine(format("|cffe6cc80"..ARTIFACT_POWER..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+		GameTooltip:AddLine(format("|cffe6cc80"..L.DataBars.ArtifactRemaining.."|r", xpForNextPoint - xp))
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(ARTIFACT_POWER_TOOLTIP_BODY:format(numPointsAvailableToSpend), nil, nil, nil, true)
 		GameTooltip:AddLine(" ")

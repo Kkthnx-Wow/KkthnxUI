@@ -1,10 +1,44 @@
 local K, C, L = select(2, ...):unpack()
 if C.Loot.Enable ~= true then return end
 
-local gsub = string.gsub
+-- WoW Lua
+local format = string.format
+local max = math.max
 local pairs = pairs
-local CreateFrame = CreateFrame
+local unpack = unpack
+
+-- Wow API
+local CursorOnUpdate = CursorOnUpdate
+local CursorUpdate = CursorUpdate
+local GetCursorPosition = GetCursorPosition
+local GetCVar = GetCVar
+local GetLootSlotInfo = GetLootSlotInfo
+local GetLootSlotLink = GetLootSlotLink
+local GetLootSlotType = GetLootSlotType
+local GetNumLootItems = GetNumLootItems
+local GroupLootDropDown = GroupLootDropDown
+local HandleModifiedItemClick = HandleModifiedItemClick
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local IsFishingLoot = IsFishingLoot
+local IsModifiedClick = IsModifiedClick
+local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
+local LootSlotHasItem = LootSlotHasItem
+local ResetCursor = ResetCursor
+local SendChatMessage = SendChatMessage
+local StaticPopup_Hide = StaticPopup_Hide
+local ToggleDropDownMenu = ToggleDropDownMenu
+local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
+local UIDropDownMenu_Refresh = UIDropDownMenu_Refresh
+local UnitExists = UnitExists
 local UnitIsDead = UnitIsDead
+local UnitIsFriend = UnitIsFriend
+local UnitIsPlayer = UnitIsPlayer
+local UnitName = UnitName
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CloseLoot, autoLoot, LOOT, LOOT_SLOT_MONEY, EMPTY, LootFrame, GameTooltip
+-- GLOBALS: LootSlot, CreateFrame
 
 -- Loot frame(Butsu by Haste)
 local _, _NS = ...
@@ -93,7 +127,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 				slot.icon:SetTexture(texture)
 
 				if quality then
-					m = math.max(m, quality)
+					m = max(m, quality)
 				end
 
 				slot:Enable()
@@ -344,7 +378,7 @@ do
 
 	function _NS.CreateSlot(id)
 		local frame = CreateFrame("Button", "ButsuSlot"..id, Butsu)
-		frame:SetHeight(math.max(C.Media.Font_Size, C.Loot.IconSize))
+		frame:SetHeight(max(C.Media.Font_Size, C.Loot.IconSize))
 		frame:SetID(id)
 
 		frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -405,7 +439,7 @@ do
 	end
 
 	function Butsu:AnchorSlots()
-		local frameSize = math.max(C.Loot.IconSize, C.Loot.IconSize)
+		local frameSize = max(C.Loot.IconSize, C.Loot.IconSize)
 		local shownSlots = 0
 
 		local prevShown

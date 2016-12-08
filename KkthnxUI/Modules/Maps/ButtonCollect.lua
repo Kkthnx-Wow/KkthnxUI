@@ -1,10 +1,13 @@
 local K, C, L = select(2, ...):unpack()
 if C.Minimap.Enable ~= true or C.Minimap.CollectButtons ~= true then return end
 
-local unpack = unpack
+-- WoW Lua
 local ipairs = ipairs
-local ceil = math.ceil
-local CreateFrame, UIParent = CreateFrame, UIParent
+local tinsert = table.insert
+local unpack = unpack
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: Minimap
 
 -- COLLECT MINIMAP BUTTONS IN ONE LINE
 local BlackList = {

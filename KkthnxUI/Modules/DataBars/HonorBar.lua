@@ -1,14 +1,28 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.HonorEnable ~= true or K.Level ~= MAX_PLAYER_LEVEL then return end
 
-local UnitHonor = UnitHonor
-local UnitHonorMax = UnitHonorMax
-local UnitHonorLevel = UnitHonorLevel
+-- WoW Lua
+local _G = _G
+local format = string.format
+
+-- Wow API
 local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
-local UnitPrestige = UnitPrestige
-local TogglePVPUI = TogglePVPUI
-local LoadAddOn = LoadAddOn
+local HideUIPanel = HideUIPanel
 local IsAddOnLoaded = IsAddOnLoaded
+local LoadAddOn = LoadAddOn
+local PlayerTalentTab_OnClick = PlayerTalentTab_OnClick
+local PVP_HONOR_PRESTIGE_AVAILABLE = PVP_HONOR_PRESTIGE_AVAILABLE
+local PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE = PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE
+local PVP_PRESTIGE_RANK_UP_TITLE = PVP_PRESTIGE_RANK_UP_TITLE
+local ShowUIPanel = ShowUIPanel
+local TogglePVPUI = TogglePVPUI
+local UnitHonor = UnitHonor
+local UnitHonorLevel = UnitHonorLevel
+local UnitHonorMax = UnitHonorMax
+local UnitPrestige = UnitPrestige
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PVPFrame, PlayerTalentFrame, PVP_TALENTS_TAB, GameTooltip, HONOR, RANK
 
 local Bars = 20
 local Movers = K.Movers
@@ -77,9 +91,9 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(PVP_HONOR_PRESTIGE_AVAILABLE)
 		GameTooltip:AddLine(PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE)
 	else
-		GameTooltip:AddLine(string.format("|cffee2222"..HONOR..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
-		GameTooltip:AddLine(string.format("|cffcccccc"..RANK..": %d / %d|r", Level, LevelMax))
-		GameTooltip:AddLine(string.format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
+		GameTooltip:AddLine(format("|cffee2222"..HONOR..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+		GameTooltip:AddLine(format("|cffcccccc"..RANK..": %d / %d|r", Level, LevelMax))
+		GameTooltip:AddLine(format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L.DataBars.HonorLeftClick)

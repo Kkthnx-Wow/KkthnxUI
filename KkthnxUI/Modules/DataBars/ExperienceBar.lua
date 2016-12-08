@@ -1,6 +1,19 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.ExperienceEnable ~= true or K.Level == MAX_PLAYER_LEVEL then return end
 
+-- WoW Lua
+local format = string.format
+local unpack = unpack
+
+-- Wow API
+local GetRestState = GetRestState
+local GetXPExhaustion = GetXPExhaustion
+local UnitXP = UnitXP
+local UnitXPMax = UnitXPMax
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CreateFrame, XP, TUTORIAL_TITLE26, GameTooltip
+
 local Bars = 20
 local Movers = K.Movers
 
@@ -83,10 +96,10 @@ ExperienceBar:SetScript("OnEnter", function(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-	GameTooltip:AddLine(string.format("|cff0090FF"..XP..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+	GameTooltip:AddLine(format("|cff0090FF"..XP..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
 
 	if (IsRested == 1 and Rested) then
-		GameTooltip:AddLine(string.format("|cff4BAF4C"..TUTORIAL_TITLE26..": +%d (%d%%)|r", Rested, Rested / Max * 100))
+		GameTooltip:AddLine(format("|cff4BAF4C"..TUTORIAL_TITLE26..": +%d (%d%%)|r", Rested, Rested / Max * 100))
 	end
 
 	GameTooltip:Show()

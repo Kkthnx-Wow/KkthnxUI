@@ -1,8 +1,15 @@
 local K, C, L = select(2, ...):unpack()
 if C.DataBars.ReputationEnable ~= true then return end
 
+-- WoW Lua
+local _G = _G
+local format = string.format
+
+-- Wow API
 local GetWatchedFactionInfo = GetWatchedFactionInfo
-local ToggleCharacter = ToggleCharacter
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip
 
 local Colors = FACTION_BAR_COLORS
 local Movers = K.Movers
@@ -55,8 +62,8 @@ ReputationBar:SetScript("OnEnter", function(self)
 	GameTooltip:ClearLines()
     GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-	GameTooltip:AddLine(string.format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
-	GameTooltip:AddLine(string.format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / (Max - Min) * 100))
+	GameTooltip:AddLine(format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
+	GameTooltip:AddLine(format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / (Max - Min) * 100))
 
 	GameTooltip:Show()
 end)
