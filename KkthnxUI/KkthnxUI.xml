@@ -148,9 +148,11 @@
 	<Script file="Modules\Chat\ChatTabs.lua"/>
 	<Script file="Modules\Chat\CopyChat.lua"/>
 	<Script file="Modules\Chat\CopyUrl.lua"/>
+	<Script file="Modules\Chat\MessageFilter.lua"/>
 	<Script file="Modules\Chat\MouseScroll.lua"/>
 	<Script file="Modules\Chat\Sounds.lua"/>
 	<Script file="Modules\Chat\SpamageMeters.lua"/>
+	<Script file="Modules\Chat\SpamFilter.lua"/>
 	<Script file="Modules\Chat\TellTarget.lua"/>
 
 	<!-- DataBars -->

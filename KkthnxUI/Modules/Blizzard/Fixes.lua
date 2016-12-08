@@ -9,6 +9,8 @@ local IsAddOnLoaded = IsAddOnLoaded
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame
 
+FCF_StartAlertFlash = K.Noop
+
 -- Fix the scale on this.
 local ScriptErrors = CreateFrame("Frame")
 ScriptErrors:RegisterEvent("ADDON_LOADED")
