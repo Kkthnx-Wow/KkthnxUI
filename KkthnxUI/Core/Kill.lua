@@ -33,6 +33,7 @@ local UnitAffectingCombat = UnitAffectingCombat
 -- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo, InterfaceOptionsActionBarsPanelAlwaysShowActionBars
 -- GLOBALS: PetFrame, TargetFrame, ComboFrame, FocusFrame, FocusFrameToT, TargetFrameToT, UIParent, PetJournalTutorialButton
 -- GLOBALS: PlayerTalentFramePetSpecializationTutorialButton, PlayerTalentFrameSpecializationTutorialButton, PlayerTalentFrameTalentsTutorialButton
+-- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy, NamePlateDriverFrame
 
 local function HideRaid()
 	if InCombatLockdown() then return end
@@ -126,20 +127,27 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	end
 
 	if C.Unitframe.Enable then
-		InterfaceOptionsCombatPanelTargetOfTarget:SetScale(0.0001)
+		InterfaceOptionsCombatPanelTargetOfTarget:SetScale(0.00001)
 		InterfaceOptionsCombatPanelTargetOfTarget:SetAlpha(0)
 	end
 
 	if C.Nameplates.Enable then
 		SetCVar("ShowClassColorInNameplate", 1)
+		-- Hide the option to rescale, because we will do it from KkthnxUI settings.
+		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
+		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:SetScale(0.00001)
+		InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy:Hide()
+		InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy:SetScale(0.00001)
+		InterfaceOptionsNamesPanelUnitNameplatesAggroFlash:Hide()
+		InterfaceOptionsNamesPanelUnitNameplatesAggroFlash:SetScale(0.00001)
 	end
 
 	if C.ActionBar.Enable then
-		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
-		InterfaceOptionsActionBarsPanelBottomRight:Kill()
-		InterfaceOptionsActionBarsPanelRight:Kill()
-		InterfaceOptionsActionBarsPanelRightTwo:Kill()
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
+		InterfaceOptionsActionBarsPanelBottomLeft:Hide()
+		InterfaceOptionsActionBarsPanelBottomRight:Hide()
+		InterfaceOptionsActionBarsPanelRight:Hide()
+		InterfaceOptionsActionBarsPanelRightTwo:Hide()
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Hide()
 	end
 
 	DisableBlizzard:UnregisterEvent("PLAYER_ENTERING_WORLD")
