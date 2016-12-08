@@ -39,7 +39,6 @@
 
 	<!-- Config -->
 	<Script file="Config\Filters\Announcements.lua"/>
-	<Script file="Config\Filters\ChatSpam.lua"/>
 	<Script file="Config\Filters\Cooldowns.lua"/>
 	<Script file="Config\Filters\FilgerSpells.lua"/>
 	<Script file="Config\Filters\Nameplates.lua"/>
@@ -148,7 +147,6 @@
 	<Script file="Modules\Chat\ChatTabs.lua"/>
 	<Script file="Modules\Chat\CopyChat.lua"/>
 	<Script file="Modules\Chat\CopyUrl.lua"/>
-	<Script file="Modules\Chat\Filters.lua"/>
 	<Script file="Modules\Chat\MouseScroll.lua"/>
 	<Script file="Modules\Chat\Sounds.lua"/>
 	<Script file="Modules\Chat\SpamageMeters.lua"/>

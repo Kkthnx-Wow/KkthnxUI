@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.DataText.Battleground ~= true or C.DataText.BottomBar ~= true then return end
+if C.DataText.Battleground ~= true then return end
 
 -- Lua API
 local format = string.format
@@ -33,8 +33,18 @@ local DG = 935
 local ASH = 978
 
 local ClassColor = ("|cff%.2x%.2x%.2x"):format(K.Color.r * 255, K.Color.g * 255, K.Color.b * 255)
+local bgframe
+local Text1
+local Text2
+local Text3
 
-local bgframe = KkthnxUIInfoBottomBattleGround
+if C.DataText.BottomBar == true then
+	bgframe = KkthnxUIInfoBottomBattleGround
+else
+	bgframe = CreateFrame("Frame", "InfoBattleGround", UIParent)
+	bgframe:CreatePanel("Invisible", 300, C.Media.Font_Size, unpack(C.Position.BGScore))
+end
+
 bgframe:SetScript("OnEnter", function(self)
 	local numScores = GetNumBattlefieldScores()
 	for i = 1, numScores do
@@ -98,20 +108,40 @@ end)
 local Stat = CreateFrame("Frame")
 Stat:EnableMouse(true)
 
-local Text1 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
-Text1:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-Text1:SetPoint("LEFT", 30, 0)
-Text1:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
+if C.DataText.BottomBar == true then
+	Text1 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
+	Text1:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	Text1:SetPoint("LEFT", 30, 0)
+	Text1:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
 
-local Text2 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
-Text2:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-Text2:SetPoint("CENTER", 0, 0)
-Text2:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
+	Text2 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
+	Text2:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	Text2:SetPoint("CENTER", 0, 0)
+	Text2:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
 
-local Text3 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
-Text3:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-Text3:SetPoint("RIGHT", -30, 0)
-Text3:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
+	Text3 = KkthnxUIInfoBottomBattleGround:CreateFontString(nil, "OVERLAY")
+	Text3:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	Text3:SetPoint("RIGHT", -30, 0)
+	Text3:SetHeight(KkthnxUIDataTextBottomBar:GetHeight())
+else
+	Text1 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
+	Text1:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	Text1:SetShadowOffset(0, 0)
+	Text1:SetPoint("LEFT", 5, 0)
+	Text1:SetHeight(C.Media.Font_Size)
+
+	Text2 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
+	Text2:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	Text2:SetShadowOffset(0, 0)
+	Text2:SetPoint("LEFT", Text1, "RIGHT", 5, 0)
+	Text2:SetHeight(C.Media.Font_Size)
+
+	Text3 = InfoBattleGround:CreateFontString(nil, "OVERLAY")
+	Text3:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	Text3:SetShadowOffset(0, 0)
+	Text3:SetPoint("LEFT", Text2, "RIGHT", 5, 0)
+	Text3:SetHeight(C.Media.Font_Size)
+end
 
 local int = 2
 local function Update(self, t)
