@@ -204,7 +204,6 @@
 	<Script file="Modules\Miscellaneous\LFDQueueTimer.lua"/>
 	<Script file="Modules\Miscellaneous\LossControl.lua"/>
 	<Script file="Modules\Miscellaneous\Mail.lua"/>
-	<Script file="Modules\Miscellaneous\MassGuildKick.lua"/>
 	<Script file="Modules\Miscellaneous\Merchant.lua"/>
 	<Script file="Modules\Miscellaneous\Miscellaneous.lua"/>
 	<Script file="Modules\Miscellaneous\Mounts.lua"/>

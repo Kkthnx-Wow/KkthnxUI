@@ -46,7 +46,7 @@ function Merchant:OnEvent()
 			local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
 			DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.SoldTrash.." |cffffffff"..Gold..L.Misc.GoldShort.." |cffffffff"..Silver..L.Misc.SilverShort.." |cffffffff"..Copper..L.Misc.CopperShort..".", 0255, 255, 0)
 		end
-	end	
+	end
 	if (not IsShiftKeyDown()) then
 		if (CanMerchantRepair() and C.Misc.AutoRepair) then
 			local Cost, Possible = GetRepairAllCost()
