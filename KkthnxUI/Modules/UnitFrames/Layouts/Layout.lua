@@ -860,7 +860,7 @@ local function CreateUnitLayout(self, unit)
 				else
 					columns, rows = 6, 3
 				end
-				initialAnchor, relAnchor, offX, offY = "BOTTOMLEFT", "TOPLEFT", -2, 20
+				initialAnchor, relAnchor, offX, offY = "BOTTOMLEFT", "TOPLEFT", -2, 24
 			elseif (mode == "BOTTOM") then
 				if isFocus then
 					columns, rows = 3, 3
