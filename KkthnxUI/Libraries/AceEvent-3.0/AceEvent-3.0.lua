@@ -12,12 +12,10 @@
 -- @release $Id: AceEvent-3.0.lua 975 2010-10-23 11:26:18Z nevcairiel $
 local MAJOR, MINOR = "AceEvent-3.0", 3
 local AceEvent = LibStub:NewLibrary(MAJOR, MINOR)
-
 if not AceEvent then return end
 
 -- Lua APIs
 local pairs = pairs
-
 local CallbackHandler = LibStub:GetLibrary("CallbackHandler-1.0")
 
 AceEvent.frame = AceEvent.frame or CreateFrame("Frame", "AceEvent30Frame") -- our event frame
@@ -36,7 +34,6 @@ end
 function AceEvent.events:OnUnused(target, eventname)
 	AceEvent.frame:UnregisterEvent(eventname)
 end
-
 
 -- APIs and registry for IPC messages, using CallbackHandler lib
 if not AceEvent.messages then
@@ -92,7 +89,6 @@ local mixins = {
 -- @paramsig message, ...
 -- @param message The message to send
 -- @param ... Any arguments to the message
-
 
 -- Embeds AceEvent into the target object making the functions from the mixins list available on target:..
 -- @param target target object to embed AceEvent in

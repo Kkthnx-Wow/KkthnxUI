@@ -35,82 +35,74 @@ if C.Unitframe.FlatClassPortraits == true then
 	C.Unitframe.ClassPortraits = false
 end
 
-if C.Raidframe.Enable == false then
-	C.Raidframe.RaidAsParty = false
-end
-
 -- Auto-overwrite script config is X addon is found
 -- Here we use our own function to check.
-if K.IsAddOnEnabled("SexyMap") or K.IsAddOnEnabled("bdMinimap") or K.IsAddOnEnabled("BasicMinimap") or K.IsAddOnEnabled("RicoMiniMap") or K.IsAddOnEnabled("Chinchilla") then
+if IsAddOnLoaded("SexyMap") or IsAddOnLoaded("bdMinimap") or IsAddOnLoaded("BasicMinimap") or IsAddOnLoaded("RicoMiniMap") or IsAddOnLoaded("Chinchilla") then
 	C.Minimap.Enable = false
 end
 
-if K.IsAddOnEnabled("XPerl") or K.IsAddOnEnabled("Stuf") or K.IsAddOnEnabled("PitBull4") or K.IsAddOnEnabled("ShadowedUnitFrames") or K.IsAddOnEnabled("oUF_Abu") then
+if IsAddOnLoaded("XPerl") or IsAddOnLoaded("Stuf") or IsAddOnLoaded("PitBull4") or IsAddOnLoaded("ShadowedUnitFrames") or IsAddOnLoaded("oUF_Abu") then
 	C.Unitframe.Enable = false
 end
 
-if K.IsAddOnEnabled("Dominos") or K.IsAddOnEnabled("Bartender4") or K.IsAddOnEnabled("RazerNaga")  or K.IsAddOnEnabled("daftMainBar") or K.IsAddOnEnabled("ConsolePortBar") then
+if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga")  or IsAddOnLoaded("daftMainBar") or IsAddOnLoaded("ConsolePortBar") then
 	C.ActionBar.Enable = false
 end
 
-if K.IsAddOnEnabled("WorldQuestTracker") or K.IsAddOnEnabled("Mapster") or K.IsAddOnEnabled("WorldQuestsList") then
+if IsAddOnLoaded("WorldQuestTracker") or IsAddOnLoaded("Mapster") or IsAddOnLoaded("WorldQuestsList") then
 	C.WorldMap.SmallWorldMap = false
 end
 
-if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
+if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
 	C.Bags.Enable = false
 end
 
-if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
+if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
 	C.Chat.Enable = false
 end
 
-if K.IsAddOnEnabled("TidyPlates") or K.IsAddOnEnabled("Aloft") or K.IsAddOnEnabled("Kui_Nameplates") then
+if IsAddOnLoaded("TidyPlates") or IsAddOnLoaded("Aloft") or IsAddOnLoaded("Kui_Nameplates") then
 	C.Nameplates.Enable = false
 end
 
-if K.IsAddOnEnabled("TipTop") or K.IsAddOnEnabled("TipTac") or K.IsAddOnEnabled("FreebTip") or K.IsAddOnEnabled("bTooltip") or K.IsAddOnEnabled("PhoenixTooltip") or K.IsAddOnEnabled("Icetip") or K.IsAddOnEnabled("rTooltip") then
+if IsAddOnLoaded("TipTop") or IsAddOnLoaded("TipTac") or IsAddOnLoaded("FreebTip") or IsAddOnLoaded("bTooltip") or IsAddOnLoaded("PhoenixTooltip") or IsAddOnLoaded("Icetip") or IsAddOnLoaded("rTooltip") then
 	C.Tooltip.Enable = false
 end
 
-if K.IsAddOnEnabled("Pawn") then
+if IsAddOnLoaded("Pawn") then
 	C.Tooltip.ItemIcon = false
 end
 
-if K.IsAddOnEnabled("TipTacTalents") then
+if IsAddOnLoaded("TipTacTalents") then
 	C.Tooltip.Talents = false
 end
 
-if K.IsAddOnEnabled("ConsolePortBar") then
+if IsAddOnLoaded("ConsolePortBar") then
 	C.DataBars.Experience = false
 	C.DataBars.Artifact = false
 end
 
-if K.IsAddOnEnabled("GnomishVendorShrinker") or K.IsAddOnEnabled("AlreadyKnown") then
+if IsAddOnLoaded("GnomishVendorShrinker") or IsAddOnLoaded("AlreadyKnown") then
 	C.Misc.AlreadyKnown = false
 end
 
-if K.IsAddOnEnabled("BadBoy") then
-	C.Chat.Spam = false
-end
-
-if K.IsAddOnEnabled("cInterrupt") then
+if IsAddOnLoaded("cInterrupt") then
 	C.Announcements.Interrupt = false
 end
 
-if K.IsAddOnEnabled("NiceBubbles") then
+if IsAddOnLoaded("NiceBubbles") then
 	C.Skins.ChatBubble = false
 end
 
-if K.IsAddOnEnabled("ChatSounds") then
+if IsAddOnLoaded("ChatSounds") then
 	C.Chat.WhispSound = false
 end
 
-if K.IsAddOnEnabled("Doom_CooldownPulse") then
+if IsAddOnLoaded("Doom_CooldownPulse") then
 	C.PulseCD.Enable = false
 end
 
-if K.IsAddOnEnabled("MBB") or K.IsAddOnEnabled("MinimapButtonFrame") then
+if IsAddOnLoaded("MBB") or IsAddOnLoaded("MinimapButtonFrame") then
 	C.Skins.MinimapButtons = false
 	C.Minimap.CollectButtons = false
 end

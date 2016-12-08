@@ -456,7 +456,6 @@ function SetEnabledState(self, state)
 	self.enabledState = state
 end
 
-
 --- Return an iterator of all modules associated to the addon.
 -- @name //addon//:IterateModules
 -- @paramsig
@@ -516,7 +515,6 @@ function Embed(target, skipPMixins)
 		end
 	end
 end
-
 
 -- - Initialize the addon after creation.
 -- This function is only used internally during the ADDON_LOADED event

@@ -6,9 +6,7 @@ local strlower = string.lower
 
 -- Wow API
 local GetAddOnEnableState = GetAddOnEnableState
-local GetAddOnInfo = GetAddOnInfo
 local GetBuildInfo = GetBuildInfo
-local GetNumAddOns = GetNumAddOns
 local GetSpecialization = GetSpecialization
 local tonumber = tonumber
 local UnitClass = UnitClass
@@ -69,31 +67,6 @@ K.ScreenWidth = tonumber(string.match(K.Resolution, "(%d+)x+%d"))
 K.VersionNumber = tonumber(K.Version)
 K.WoWPatch, K.WoWBuild, K.WoWPatchReleaseDate, K.TocVersion = GetBuildInfo()
 K.WoWBuild = select(2, GetBuildInfo()) K.WoWBuild = tonumber(K.WoWBuild)
-
--- Matching the pre-MoP return arguments of the Blizzard API call (Credits to Goldpaw)
-K.GetAddOnInfo = function(index)
-	local name, title, notes, enabled, loadable, reason, security
-	if tonumber((select(2, GetBuildInfo()))) >= 19034 then
-		name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo(index)
-		enabled = not(GetAddOnEnableState(UnitName("player"), index) == 0) -- not a boolean, messed that one up! o.O
-	else
-		name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(index)
-	end
-	return name, title, notes, enabled, loadable, reason, security
-end
-
--- Check if an addon is enabled	in the addon listing
-K.IsAddOnEnabled = function(addon_name)
-	local addon_name = strlower(addon_name)
-	for i = 1,GetNumAddOns() do
-		local name, title, notes, enabled, loadable, reason, security = K.GetAddOnInfo(i)
-		if strlower(name) == addon_name then
-			if enabled then
-				return true
-			end
-		end
-	end
-end
 
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")

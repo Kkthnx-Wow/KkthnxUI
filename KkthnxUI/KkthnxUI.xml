@@ -25,6 +25,7 @@
 	<Script file="Libraries\LibStub\LibStub.lua"/>
 	<Script file="Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 	<Script file="Libraries\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
+	<Script file="Libraries\LibChatAnims\LibChatAnims.lua"/>
 	<Script file="Libraries\AceAddon-3.0\AceAddon-3.0.lua"/>
 	<Script file="Libraries\AceEvent-3.0\AceEvent-3.0.lua"/>
 	<Script file="Libraries\AceConsole-3.0\AceConsole-3.0.lua"/>
@@ -193,6 +194,7 @@
 	<Script file="Modules\Miscellaneous\AFKSpin.lua"/>
 	<Script file="Modules\Miscellaneous\AlreadyKnown.lua"/>
 	<Script file="Modules\Miscellaneous\ArmoryLink.lua"/>
+	<Script file="Modules\Miscellaneous\BlizzBugsSuck.lua"/>
 	<Script file="Modules\Miscellaneous\DropDown.lua"/>
 	<Script file="Modules\Miscellaneous\Durability.lua"/>
 	<Script file="Modules\Miscellaneous\Filger.lua"/>

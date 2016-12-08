@@ -11,9 +11,7 @@
 -- @name AceConsole-3.0
 -- @release $Id: AceConsole-3.0.lua 878 2009-11-02 18:51:58Z nevcairiel $
 local MAJOR,MINOR = "AceConsole-3.0", 7
-
 local AceConsole, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
-
 if not AceConsole then return end -- No upgrade needed
 
 AceConsole.embeds = AceConsole.embeds or {} -- table containing objects AceConsole is embedded in.
@@ -38,13 +36,13 @@ local function Print(self,frame,...)
 	local n=0
 	if self ~= AceConsole then
 		n=n+1
-		tmp[n] = "|cff33ff99"..tostring( self ).."|r:"
+		tmp[n] = "|cff33ff99"..tostring(self).."|r:"
 	end
 	for i=1, select("#", ...) do
 		n=n+1
 		tmp[n] = tostring(select(i, ...))
 	end
-	frame:AddMessage( tconcat(tmp," ",1,n) )
+	frame:AddMessage(tconcat(tmp," ",1,n))
 end
 
 --- Print to DEFAULT_CHAT_FRAME or given ChatFrame (anything with an .AddMessage function)
@@ -60,7 +58,6 @@ function AceConsole:Print(...)
 	end
 end
 
-
 --- Formatted (using format()) print to DEFAULT_CHAT_FRAME or given ChatFrame (anything with an .AddMessage function)
 -- @paramsig [chatframe ,] "format"[, ...]
 -- @param chatframe Custom ChatFrame to print to (or any frame with an .AddMessage function)
@@ -75,21 +72,18 @@ function AceConsole:Printf(...)
 	end
 end
 
-
-
-
 --- Register a simple chat command
 -- @param command Chat command to be registered WITHOUT leading "/"
 -- @param func Function to call when the slash command is being used (funcref or methodname)
 -- @param persist if false, the command will be soft disabled/enabled when aceconsole is used as a mixin (default: true)
-function AceConsole:RegisterChatCommand( command, func, persist )
-	if type(command)~="string" then error([[Usage: AceConsole:RegisterChatCommand( "command", func[, persist ]): 'command' - expected a string]], 2) end
+function AceConsole:RegisterChatCommand(command, func, persist)
+	if type(command)~="string" then error([[Usage: AceConsole:RegisterChatCommand("command", func[, persist ]): 'command' - expected a string]], 2) end
 
 	if persist==nil then persist=true end	-- I'd rather have my addon's "/addon enable" around if the author screws up. Having some extra slash regged when it shouldnt be isn't as destructive. True is a better default. /Mikk
 
 	local name = "ACECONSOLE_"..command:upper()
 
-	if type( func ) == "string" then
+	if type(func) == "string" then
 		SlashCmdList[name] = function(input, editBox)
 			self[func](self, input, editBox)
 		end
@@ -108,7 +102,7 @@ end
 
 --- Unregister a chatcommand
 -- @param command Chat command to be unregistered WITHOUT leading "/"
-function AceConsole:UnregisterChatCommand( command )
+function AceConsole:UnregisterChatCommand(command)
 	local name = AceConsole.commands[command]
 	if name then
 		SlashCmdList[name] = nil
@@ -122,7 +116,6 @@ end
 -- @return Iterator (pairs) over all commands
 function AceConsole:IterateChatCommands() return pairs(AceConsole.commands) end
 
-
 local function nils(n, ...)
 	if n>1 then
 		return nil, nils(n-1, ...)
@@ -132,7 +125,6 @@ local function nils(n, ...)
 		return ...
 	end
 end
-
 
 --- Retreive one or more space-separated arguments from a string.
 -- Treats quoted strings and itemlinks as non-spaced.
@@ -208,9 +200,7 @@ function AceConsole:GetArgs(str, numargs, startpos)
 	return strsub(str, startpos), nils(numargs-1, 1e9)
 end
 
-
 --- embedding and embed handling
-
 local mixins = {
 	"Print",
 	"Printf",
@@ -221,26 +211,26 @@ local mixins = {
 
 -- Embeds AceConsole into the target object making the functions from the mixins list available on target:..
 -- @param target target object to embed AceBucket in
-function AceConsole:Embed( target )
-	for k, v in pairs( mixins ) do
+function AceConsole:Embed(target)
+	for k, v in pairs(mixins) do
 		target[v] = self[v]
 	end
 	self.embeds[target] = true
 	return target
 end
 
-function AceConsole:OnEmbedEnable( target )
+function AceConsole:OnEmbedEnable(target)
 	if AceConsole.weakcommands[target] then
-		for command, func in pairs( AceConsole.weakcommands[target] ) do
-			target:RegisterChatCommand( command, func, false, true ) -- nonpersisting and silent registry
+		for command, func in pairs(AceConsole.weakcommands[target]) do
+			target:RegisterChatCommand(command, func, false, true) -- nonpersisting and silent registry
 		end
 	end
 end
 
-function AceConsole:OnEmbedDisable( target )
+function AceConsole:OnEmbedDisable(target)
 	if AceConsole.weakcommands[target] then
-		for command, func in pairs( AceConsole.weakcommands[target] ) do
-			target:UnregisterChatCommand( command ) -- TODO: this could potentially unregister a command from another application in case of command conflicts. Do we care?
+		for command, func in pairs(AceConsole.weakcommands[target]) do
+			target:UnregisterChatCommand(command) -- TODO: this could potentially unregister a command from another application in case of command conflicts. Do we care?
 		end
 	end
 end

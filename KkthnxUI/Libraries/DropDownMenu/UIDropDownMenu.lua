@@ -76,7 +76,7 @@ function Lib_UIDropDownMenu_Initialize(frame, initFunction, displayMode, level, 
 
 	securecall("Lib_UIDropDownMenu_InitializeHelper", frame);
 
-	-- Set the initialize function and call it.  The initFunction populates the dropdown list.
+	-- Set the initialize function and call it. The initFunction populates the dropdown list.
 	if ( initFunction ) then
 		frame.initialize = initFunction;
 		initFunction(frame, level, frame.menuList);
@@ -164,42 +164,42 @@ end
 --[[
 List of button attributes
 ======================================================
-info.text = [STRING]  --  The text of the button
-info.value = [ANYTHING]  --  The value that UIDROPDOWNMENU_MENU_VALUE is set to when the button is clicked
-info.func = [function()]  --  The function that is called when you click the button
-info.checked = [nil, true, function]  --  Check the button if true or function returns true
-info.isNotRadio = [nil, true]  --  Check the button uses radial image if false check box image if true
-info.isTitle = [nil, true]  --  If it's a title the button is disabled and the font color is set to yellow
-info.disabled = [nil, true]  --  Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
-info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
-info.hasArrow = [nil, true]  --  Show the expand arrow for multilevel menus
-info.hasColorSwatch = [nil, true]  --  Show color swatch or not, for color selection
-info.r = [1 - 255]  --  Red color value of the color swatch
-info.g = [1 - 255]  --  Green color value of the color swatch
-info.b = [1 - 255]  --  Blue color value of the color swatch
-info.colorCode = [STRING] -- "|cAARRGGBB" embedded hex value of the button text color. Only used when button is enabled
-info.swatchFunc = [function()]  --  Function called by the color picker on color change
-info.hasOpacity = [nil, 1]  --  Show the opacity slider on the colorpicker frame
-info.opacity = [0.0 - 1.0]  --  Percentatge of the opacity, 1.0 is fully shown, 0 is transparent
-info.opacityFunc = [function()]  --  Function called by the opacity slider when you change its value
-info.cancelFunc = [function(previousValues)] -- Function called by the colorpicker when you click the cancel button (it takes the previous values as its argument)
-info.notClickable = [nil, 1]  --  Disable the button and color the font white
-info.notCheckable = [nil, 1]  --  Shrink the size of the buttons and don't display a check box
-info.owner = [Frame]  --  Dropdown frame that "owns" the current dropdownlist
-info.keepShownOnClick = [nil, 1]  --  Don't hide the dropdownlist after a button is clicked
-info.tooltipTitle = [nil, STRING] -- Title of the tooltip shown on mouseover
-info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
-info.tooltipOnButton = [nil, 1] -- Show the tooltip attached to the button instead of as a Newbie tooltip.
-info.justifyH = [nil, "CENTER"] -- Justify button text
-info.arg1 = [ANYTHING] -- This is the first argument used by info.func
-info.arg2 = [ANYTHING] -- This is the second argument used by info.func
-info.fontObject = [FONT] -- font object replacement for Normal and Highlight
-info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
-info.noClickSound = [nil, 1]  --  Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
-info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
-info.leftPadding = [nil, NUMBER] -- Number of pixels to pad the button on the left side
-info.minWidth = [nil, NUMBER] -- Minimum width for this line
-]]
+info.text = [STRING] -- The text of the button
+info.value = [ANYTHING] -- The value that UIDROPDOWNMENU_MENU_VALUE is set to when the button is clicked
+info.func = [function()] -- The function that is called when you click the button
+	info.checked = [nil, true, function] -- Check the button if true or function returns true
+		info.isNotRadio = [nil, true] -- Check the button uses radial image if false check box image if true
+		info.isTitle = [nil, true] -- If it's a title the button is disabled and the font color is set to yellow
+		info.disabled = [nil, true] -- Disable the button and show an invisible button that still traps the mouseover event so menu doesn't time out
+		info.tooltipWhileDisabled = [nil, 1] -- Show the tooltip, even when the button is disabled.
+		info.hasArrow = [nil, true] -- Show the expand arrow for multilevel menus
+		info.hasColorSwatch = [nil, true] -- Show color swatch or not, for color selection
+		info.r = [1 - 255] -- Red color value of the color swatch
+		info.g = [1 - 255] -- Green color value of the color swatch
+		info.b = [1 - 255] -- Blue color value of the color swatch
+		info.colorCode = [STRING] -- "|cAARRGGBB" embedded hex value of the button text color. Only used when button is enabled
+		info.swatchFunc = [function()] -- Function called by the color picker on color change
+			info.hasOpacity = [nil, 1] -- Show the opacity slider on the colorpicker frame
+			info.opacity = [0.0 - 1.0] -- Percentatge of the opacity, 1.0 is fully shown, 0 is transparent
+			info.opacityFunc = [function()] -- Function called by the opacity slider when you change its value
+				info.cancelFunc = [function(previousValues)] -- Function called by the colorpicker when you click the cancel button (it takes the previous values as its argument)
+					info.notClickable = [nil, 1] -- Disable the button and color the font white
+					info.notCheckable = [nil, 1] -- Shrink the size of the buttons and don't display a check box
+					info.owner = [Frame] -- Dropdown frame that "owns" the current dropdownlist
+					info.keepShownOnClick = [nil, 1] -- Don't hide the dropdownlist after a button is clicked
+					info.tooltipTitle = [nil, STRING] -- Title of the tooltip shown on mouseover
+					info.tooltipText = [nil, STRING] -- Text of the tooltip shown on mouseover
+					info.tooltipOnButton = [nil, 1] -- Show the tooltip attached to the button instead of as a Newbie tooltip.
+					info.justifyH = [nil, "CENTER"] -- Justify button text
+					info.arg1 = [ANYTHING] -- This is the first argument used by info.func
+					info.arg2 = [ANYTHING] -- This is the second argument used by info.func
+					info.fontObject = [FONT] -- font object replacement for Normal and Highlight
+					info.menuTable = [TABLE] -- This contains an array of info tables to be displayed as a child menu
+					info.noClickSound = [nil, 1] -- Set to 1 to suppress the sound when clicking the button. The sound only plays if .func is set.
+					info.padding = [nil, NUMBER] -- Number of pixels to pad the text on the right side
+					info.leftPadding = [nil, NUMBER] -- Number of pixels to pad the button on the left side
+					info.minWidth = [nil, NUMBER] -- Minimum width for this line
+					]]
 
 local Lib_UIDropDownMenu_ButtonInfo = {};
 
@@ -262,12 +262,12 @@ function Lib_UIDropDownMenu_AddSeparator(info, level)
 	info.tSizeY = 8;
 	info.tFitDropDownSizeX = true;
 	info.iconInfo = { tCoordLeft = info.tCoordLeft,
-							tCoordRight = info.tCoordRight,
-							tCoordTop = info.tCoordTop,
-							tCoordBottom = info.tCoordBottom,
-							tSizeX = info.tSizeX,
-							tSizeY = info.tSizeY,
-							tFitDropDownSizeX = info.tFitDropDownSizeX };
+		tCoordRight = info.tCoordRight,
+		tCoordTop = info.tCoordTop,
+		tCoordBottom = info.tCoordBottom,
+		tSizeX = info.tSizeX,
+		tSizeY = info.tSizeY,
+	tFitDropDownSizeX = info.tFitDropDownSizeX };
 
 	Lib_UIDropDownMenu_AddButton(info, level);
 end
@@ -881,7 +881,7 @@ function Lib_ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset
 				relativeTo = nil;
 				local cursorX, cursorY = GetCursorPosition();
 				cursorX = cursorX/uiScale;
-				cursorY =  cursorY/uiScale;
+				cursorY = cursorY/uiScale;
 
 				if ( not xOffset ) then
 					xOffset = 0;
@@ -966,7 +966,7 @@ function Lib_ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset
 		listFrame.onHide = dropDownFrame.onHide;
 
 
-		--  We just move level 1 enough to keep it on the screen. We don't necessarily change the anchors.
+		-- We just move level 1 enough to keep it on the screen. We don't necessarily change the anchors.
 		if ( level == 1 ) then
 			local offLeft = listFrame:GetLeft()/uiScale;
 			local offRight = (GetScreenWidth() - listFrame:GetRight())/uiScale;
@@ -1220,18 +1220,18 @@ function Lib_UIDropDownMenu_GetValue(id)
 end
 
 --[[function OpenColorPicker(info) --ColorPicker stuff not changed
-	ColorPickerFrame.func = info.swatchFunc;
-	ColorPickerFrame.hasOpacity = info.hasOpacity;
-	ColorPickerFrame.opacityFunc = info.opacityFunc;
-	ColorPickerFrame.opacity = info.opacity;
-	ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity};
-	ColorPickerFrame.cancelFunc = info.cancelFunc;
-	ColorPickerFrame.extraInfo = info.extraInfo;
-	-- This must come last, since it triggers a call to ColorPickerFrame.func()
-	ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
-	ShowUIPanel(ColorPickerFrame);
+ColorPickerFrame.func = info.swatchFunc;
+ColorPickerFrame.hasOpacity = info.hasOpacity;
+ColorPickerFrame.opacityFunc = info.opacityFunc;
+ColorPickerFrame.opacity = info.opacity;
+ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity};
+ColorPickerFrame.cancelFunc = info.cancelFunc;
+ColorPickerFrame.extraInfo = info.extraInfo;
+-- This must come last, since it triggers a call to ColorPickerFrame.func()
+ColorPickerFrame:SetColorRGB(info.r, info.g, info.b);
+ShowUIPanel(ColorPickerFrame);
 end
 
 function ColorPicker_GetPreviousValues()
-	return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
+return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b;
 end]]
