@@ -3,8 +3,11 @@ local K, C, L = select(2, ...):unpack()
 -- Lua API
 local _G = _G
 
--- Wow API
-local CreateFrame = CreateFrame
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CHAT_FRAME_TAB_ALERTING_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_ALERTING_NOMOUSE_ALPHA
+-- GLOBALS: CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA
+-- GLOBALS: CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA
+-- GLOBALS: SELECTED_CHAT_FRAME, CombatLogQuickButtonFrame_Custom, UIFrameFadeRemoveFrame
 
 -- Based on fane(by haste)
 if C.Chat.TabsMouseover == true then
@@ -122,4 +125,5 @@ function Fane:ADDON_LOADED(event, addon)
 		return CombatLogQuickButtonFrame_Custom:SetAlpha(0.4)
 	end
 end
+
 Fane:RegisterEvent("ADDON_LOADED")
