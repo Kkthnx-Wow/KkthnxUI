@@ -61,7 +61,7 @@ local function OnUIErrorMessage(self, event, messageType, message)
 	UIErrorsFrame:AddMessage(message, 1, .1, .1)
 end
 
-UIErrorsFrame:UnregisterAllEvents()
+UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
 
 KkthnxUIError:SetScript("OnEvent", OnUIErrorMessage)
 KkthnxUIError:RegisterEvent("UI_ERROR_MESSAGE")

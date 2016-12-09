@@ -146,7 +146,7 @@ StaticPopupDialogs.RESET_PERCHAR = {
 		KkthnxUIConfigPrivate = KkthnxUIConfigPublic
 		ReloadUI()
 	end,
-	OnCancel = function() if UIConfig and UIConfig:IsShown() then UIConfigCover:Hide() end end,
+	OnCancel = function() if UIConfig and UIConfig:IsShown() then UIConfigMain:Hide() end end,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	timeout = 0,
@@ -163,7 +163,7 @@ StaticPopupDialogs.RESET_ALL = {
 
 		KkthnxUIDataPerChar.Install = false
 	end,
-	OnCancel = function() UIConfigCover:Hide() end,
+	OnCancel = function() UIConfigMain:Hide() end,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	timeout = 0,

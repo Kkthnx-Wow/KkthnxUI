@@ -1,24 +1,17 @@
 local K, C, L = select(2, ...):unpack()
 
--- Lua API
-local _G = _G
-
 -- Wow API
 local FCF_StartAlertFlash = FCF_StartAlertFlash
 local InCombatLockdown = InCombatLockdown
-
-local QuestMapFrame_OpenToQuestDetails = QuestMapFrame_OpenToQuestDetails
-local QuestMapFrame_ShowQuestDetails = QuestMapFrame_ShowQuestDetails
 local ShowUIPanel = ShowUIPanel
-local WorldMapBlobFrame_DelayedUpdateBlobs = WorldMapBlobFrame_DelayedUpdateBlobs
-local WorldMapFrame_ResetPOIHitTranslations = WorldMapFrame_ResetPOIHitTranslations
-local WorldMapFrame_Update = WorldMapFrame_Update
-local WorldMapScrollFrame_ReanchorQuestPOIs = WorldMapScrollFrame_ReanchorQuestPOIs
-local WorldMapScrollFrame_ResetZoom = WorldMapScrollFrame_ResetZoom
+local WorldMapFrame = WorldMapFrame
+local WorldMapFrame_OnHide = WorldMapFrame_OnHide
+local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame, addon, ToggleFrame
--- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, QuestMapFrame
+-- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
+-- GLOBALS: WorldMapLevelButton
 
 -- Turns out we can avoid the spellbook taint
 -- by opening it once before we login. Thanks TukUI! :)
@@ -86,29 +79,18 @@ local function artifactHook()
 end
 hooksecurefunc("ArtifactFrame_LoadUI", artifactHook)
 
--- Fix World Map taints (by lightspark)
-local old_ResetZoom = WorldMapScrollFrame_ResetZoom
-WorldMapScrollFrame_ResetZoom = function()
-	if InCombatLockdown() then
-		WorldMapFrame_Update()
-		WorldMapScrollFrame_ReanchorQuestPOIs()
-		WorldMapFrame_ResetPOIHitTranslations()
-		WorldMapBlobFrame_DelayedUpdateBlobs()
-	else
-		old_ResetZoom()
+-- Fix World Map taints (by goldpaw)
+local frame = CreateFrame("Frame", nil, UIParent)
+frame:RegisterEvent("PLAYER_REGEN_ENABLED")
+frame:RegisterEvent("PLAYER_REGEN_DISABLED")
+frame:SetScript("OnEvent", function(self)
+	if event == "PLAYER_REGEN_DISABLED" then
+		WorldMapFrame:UnregisterEvent("WORLD_MAP_UPDATE")
+		WorldMapFrame:SetScript("OnHide", nil)
+		WorldMapLevelButton:SetScript("OnClick", nil)
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		WorldMapFrame:RegisterEvent("WORLD_MAP_UPDATE")
+		WorldMapFrame:SetScript("OnHide", WorldMapFrame_OnHide)
+		WorldMapLevelButton:SetScript("OnClick", WorldMapLevelButton_OnClick)
 	end
-end
-
-local old_QuestMapFrame_OpenToQuestDetails = QuestMapFrame_OpenToQuestDetails
-QuestMapFrame_OpenToQuestDetails = function(questID)
-	if InCombatLockdown() then
-		ShowUIPanel(WorldMapFrame);
-		QuestMapFrame_ShowQuestDetails(questID)
-		QuestMapFrame.DetailsFrame.mapID = nil
-	else
-		old_QuestMapFrame_OpenToQuestDetails(questID)
-	end
-end
-
-WorldMapFrame.questLogMode = true
-QuestMapFrame_Open(true)
+end)
