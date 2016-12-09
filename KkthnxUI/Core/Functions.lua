@@ -112,6 +112,10 @@ K.RGBToHex = function(r, g, b)
 	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
+function K.CheckAddOn(addon)
+	return K.AddOns[strlower(addon)] or false
+end
+
 -- We might need to move these to API?
 K.CreateBlizzardFrame = function(frame, point)
 	if point == nil then point = frame end

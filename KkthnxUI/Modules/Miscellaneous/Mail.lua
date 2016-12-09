@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 if C.Misc.EnhancedMail ~= true then return end
-if IsAddOnLoaded("OpenAll") or IsAddOnLoaded("Postal") or IsAddOnLoaded("TradeSkillMaster_Mailing") then return end
+if K.CheckAddOn("OpenAll") or K.CheckAddOn("Postal") or K.CheckAddOn("TradeSkillMaster_Mailing") then return end
 
 -- Lua API
 local format = string.format

@@ -39,7 +39,7 @@ FCF_StartAlertFlash = K.Noop
 local ScriptErrors = CreateFrame("Frame")
 ScriptErrors:RegisterEvent("ADDON_LOADED")
 ScriptErrors:SetScript("OnEvent", function(self, addon)
-	if IsAddOnLoaded("Blizzard_DebugTools") or addon == "Blizzard_DebugTools" then
+	if K.CheckAddOn("Blizzard_DebugTools") or addon == "Blizzard_DebugTools" then
 		ScriptErrorsFrame:SetParent(UIParent)
 	end
 end)

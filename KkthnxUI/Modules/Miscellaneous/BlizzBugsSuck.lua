@@ -1,4 +1,5 @@
-if IsAddOnLoaded("BlizzBugsSuck") then return end
+local K, C, L = select(2, ...):unpack()
+if K.CheckAddOn("BlizzBugsSuck") then return end
 
 -- Lua API
 local _G = _G

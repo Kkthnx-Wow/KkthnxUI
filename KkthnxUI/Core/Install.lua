@@ -359,7 +359,7 @@ local StepTwo = function()
 	StatusBar:SetValue(2)
 	Header:SetText(L.Install.Header9)
 	StatusBarText:SetText("2/4")
-	if IsAddOnLoaded("Prat") or IsAddOnLoaded("Chatter") then
+	if K.CheckAddOn("Prat") or IsAddOnLoaded("Chatter") then
 		TextOne:SetText(L.Install.Step2Line0)
 		TextTwo:SetText("")
 		TextThree:SetText("")

@@ -96,7 +96,7 @@ end
 local EnhanceColorPicker = CreateFrame("Frame")
 EnhanceColorPicker:RegisterEvent("PLAYER_LOGIN")
 EnhanceColorPicker:SetScript("OnEvent", function(self, event)
-	if IsAddOnLoaded("ColorPickerPlus") then
+	if K.CheckAddOn("ColorPickerPlus") then
 		return
 	end
 	ColorPickerFrame:SetClampedToScreen(true)

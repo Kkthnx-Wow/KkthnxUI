@@ -1,5 +1,7 @@
 local K, C, L = select(2, ...):unpack()
 
+local CheckAddOn = K.CheckAddOn
+
 -- Prevent users config errors
 if C.ActionBar.RightBars > 3 then
 	C.ActionBar.RightBars = 3
@@ -37,72 +39,72 @@ end
 
 -- Auto-overwrite script config is X addon is found
 -- Here we use our own function to check.
-if IsAddOnLoaded("SexyMap") or IsAddOnLoaded("bdMinimap") or IsAddOnLoaded("BasicMinimap") or IsAddOnLoaded("RicoMiniMap") or IsAddOnLoaded("Chinchilla") then
+if CheckAddOn("SexyMap") or CheckAddOn("bdMinimap") or CheckAddOn("BasicMinimap") or CheckAddOn("RicoMiniMap") or CheckAddOn("Chinchilla") then
 	C.Minimap.Enable = false
 end
 
-if IsAddOnLoaded("XPerl") or IsAddOnLoaded("Stuf") or IsAddOnLoaded("PitBull4") or IsAddOnLoaded("ShadowedUnitFrames") or IsAddOnLoaded("oUF_Abu") then
+if CheckAddOn("XPerl") or CheckAddOn("Stuf") or CheckAddOn("PitBull4") or CheckAddOn("ShadowedUnitFrames") or CheckAddOn("oUF_Abu") then
 	C.Unitframe.Enable = false
 end
 
-if IsAddOnLoaded("Dominos") or IsAddOnLoaded("Bartender4") or IsAddOnLoaded("RazerNaga")  or IsAddOnLoaded("daftMainBar") or IsAddOnLoaded("ConsolePortBar") then
+if CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga")  or CheckAddOn("daftMainBar") or CheckAddOn("ConsolePortBar") then
 	C.ActionBar.Enable = false
 end
 
-if IsAddOnLoaded("WorldQuestTracker") or IsAddOnLoaded("Mapster") or IsAddOnLoaded("WorldQuestsList") then
+if CheckAddOn("WorldQuestTracker") or CheckAddOn("Mapster") or CheckAddOn("WorldQuestsList") then
 	C.WorldMap.SmallWorldMap = false
 end
 
-if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then
+if CheckAddOn("AdiBags") or CheckAddOn("ArkInventory") or CheckAddOn("cargBags_Nivaya") or CheckAddOn("cargBags") or CheckAddOn("Bagnon") or CheckAddOn("Combuctor") or CheckAddOn("TBag") or CheckAddOn("BaudBag") then
 	C.Bags.Enable = false
 end
 
-if IsAddOnLoaded("Prat-3.0") or IsAddOnLoaded("Chatter") then
+if CheckAddOn("Prat-3.0") or CheckAddOn("Chatter") then
 	C.Chat.Enable = false
 end
 
-if IsAddOnLoaded("TidyPlates") or IsAddOnLoaded("Aloft") or IsAddOnLoaded("Kui_Nameplates") then
+if CheckAddOn("TidyPlates") or CheckAddOn("Aloft") or CheckAddOn("Kui_Nameplates") then
 	C.Nameplates.Enable = false
 end
 
-if IsAddOnLoaded("TipTop") or IsAddOnLoaded("TipTac") or IsAddOnLoaded("FreebTip") or IsAddOnLoaded("bTooltip") or IsAddOnLoaded("PhoenixTooltip") or IsAddOnLoaded("Icetip") or IsAddOnLoaded("rTooltip") then
+if CheckAddOn("TipTop") or CheckAddOn("TipTac") or CheckAddOn("FreebTip") or CheckAddOn("bTooltip") or CheckAddOn("PhoenixTooltip") or CheckAddOn("Icetip") or CheckAddOn("rTooltip") then
 	C.Tooltip.Enable = false
 end
 
-if IsAddOnLoaded("Pawn") then
+if CheckAddOn("Pawn") then
 	C.Tooltip.ItemIcon = false
 end
 
-if IsAddOnLoaded("TipTacTalents") then
+if CheckAddOn("TipTacTalents") then
 	C.Tooltip.Talents = false
 end
 
-if IsAddOnLoaded("ConsolePortBar") then
+if CheckAddOn("ConsolePortBar") then
 	C.DataBars.Experience = false
 	C.DataBars.Artifact = false
 end
 
-if IsAddOnLoaded("GnomishVendorShrinker") or IsAddOnLoaded("AlreadyKnown") then
+if CheckAddOn("GnomishVendorShrinker") or CheckAddOn("AlreadyKnown") then
 	C.Misc.AlreadyKnown = false
 end
 
-if IsAddOnLoaded("cInterrupt") then
+if CheckAddOn("cInterrupt") then
 	C.Announcements.Interrupt = false
 end
 
-if IsAddOnLoaded("NiceBubbles") then
+if CheckAddOn("NiceBubbles") then
 	C.Skins.ChatBubble = false
 end
 
-if IsAddOnLoaded("ChatSounds") then
+if CheckAddOn("ChatSounds") then
 	C.Chat.WhispSound = false
 end
 
-if IsAddOnLoaded("Doom_CooldownPulse") then
+if CheckAddOn("Doom_CooldownPulse") then
 	C.PulseCD.Enable = false
 end
 
-if IsAddOnLoaded("MBB") or IsAddOnLoaded("MinimapButtonFrame") then
+if CheckAddOn("MBB") or CheckAddOn("MinimapButtonFrame") then
 	C.Skins.MinimapButtons = false
 	C.Minimap.CollectButtons = false
 end

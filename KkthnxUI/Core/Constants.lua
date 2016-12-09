@@ -67,6 +67,12 @@ K.ScreenWidth = tonumber(string.match(K.Resolution, "(%d+)x+%d"))
 K.VersionNumber = tonumber(K.Version)
 K.WoWPatch, K.WoWBuild, K.WoWPatchReleaseDate, K.TocVersion = GetBuildInfo()
 K.WoWBuild = select(2, GetBuildInfo()) K.WoWBuild = tonumber(K.WoWBuild)
+K.AddOns = {}
+
+for i = 1, GetNumAddOns() do
+	local Name = GetAddOnInfo(i)
+	K.AddOns[strlower(Name)] = GetAddOnEnableState(K.Name, Name) > 0
+end
 
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")

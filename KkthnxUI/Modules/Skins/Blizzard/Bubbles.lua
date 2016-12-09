@@ -1,6 +1,6 @@
 local K, C, L = select(2, ...):unpack()
 if C.Skins.ChatBubble ~= true then return end
-if IsAddOnLoaded("BossEncounter2") == true then return end --> i don't know wtf this addon is doing but it broke my bubble script.
+if K.CheckAddOn("BossEncounter2") == true then return end --> i don't know wtf this addon is doing but it broke my bubble script.
 
 local next = next
 local select, unpack, type = select, unpack, type

@@ -454,10 +454,10 @@ StaticPopupDialogs.SETTINGS_ALL = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function()
-		if IsAddOnLoaded("DBM-Core") and C.Skins.DBM then K.UploadDBM() end
-		if IsAddOnLoaded("MikScrollingBattleText") then UploadMSBT() end
-		if IsAddOnLoaded("Skada") then UploadSkada() end
-		if IsAddOnLoaded("oUF_Abu") then UploadAbu() end
+		if K.CheckAddOn("DBM-Core") and C.Skins.DBM then K.UploadDBM() end
+		if K.CheckAddOn("MikScrollingBattleText") then UploadMSBT() end
+		if K.CheckAddOn("Skada") then UploadSkada() end
+		if K.CheckAddOn("oUF_Abu") then UploadAbu() end
 		ReloadUI()
 	end,
 	timeout = 0,
@@ -468,7 +468,7 @@ StaticPopupDialogs.SETTINGS_ALL = {
 
 SlashCmdList.SETTINGS = function(msg)
 	if msg == "dbm" then
-		if IsAddOnLoaded("DBM-Core") then
+		if K.CheckAddOn("DBM-Core") then
 			if C.Skins.DBM == true then
 				StaticPopup_Show("SETTINGS_DBM")
 			else
@@ -478,21 +478,21 @@ SlashCmdList.SETTINGS = function(msg)
 			print("|cffffff00DBM"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "msbt" then
-		if IsAddOnLoaded("MikScrollingBattleText") then
+		if K.CheckAddOn("MikScrollingBattleText") then
 			UploadMSBT()
 			ReloadUI()
 		else
 			print("|cffffff00MSBT"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "skada" then
-		if IsAddOnLoaded("Skada") then
+		if K.CheckAddOn("Skada") then
 			UploadSkada()
 			ReloadUI()
 		else
 			print("|cffffff00Skada"..L.Info.NotInstalled.."|r")
 		end
 	elseif msg == "abu" then
-		if IsAddOnLoaded("oUF_Abu") then
+		if K.CheckAddOn("oUF_Abu") then
 			UploadAbu()
 			ReloadUI()
 		else

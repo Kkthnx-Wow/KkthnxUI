@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if IsAddOnLoaded("DugisGuideViewerZ") then return end
+if K.CheckAddOn("DugisGuideViewerZ") then return end
 
 local ObjectiveTracker = CreateFrame("Frame", "ObjectiveTracker", UIParent)
 

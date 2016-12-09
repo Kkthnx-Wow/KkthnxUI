@@ -161,7 +161,7 @@ SLASH_SPEC1 = "/ss"
 SLASH_SPEC2 = "/spec"
 
 -- Deadly boss mods testing.
-SlashCmdList.DBMTEST = function() if IsAddOnLoaded("DBM-Core") then DBM:DemoMode() end end
+SlashCmdList.DBMTEST = function() if K.CheckAddOn("DBM-Core") then DBM:DemoMode() end end
 SLASH_DBMTEST1 = "/dbmtest"
 
 -- Clear chat
