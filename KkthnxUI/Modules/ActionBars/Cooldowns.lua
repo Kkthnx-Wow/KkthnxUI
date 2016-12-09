@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("CooldownCount") or C.Cooldown.Enable ~= true then return end
+if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("CooldownCount") == true or C.Cooldown.Enable ~= true then return end
 
 -- Lua API
 local ceil = math.ceil

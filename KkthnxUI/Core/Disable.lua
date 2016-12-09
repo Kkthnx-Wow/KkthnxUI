@@ -80,8 +80,8 @@ if CheckAddOn("TipTacTalents") then
 end
 
 if CheckAddOn("ConsolePortBar") then
-	C.DataBars.Experience = false
 	C.DataBars.Artifact = false
+	C.DataBars.Experience = false
 end
 
 if CheckAddOn("GnomishVendorShrinker") or CheckAddOn("AlreadyKnown") then
@@ -105,6 +105,10 @@ if CheckAddOn("Doom_CooldownPulse") then
 end
 
 if CheckAddOn("MBB") or CheckAddOn("MinimapButtonFrame") then
-	C.Skins.MinimapButtons = false
 	C.Minimap.CollectButtons = false
+	C.Skins.MinimapButtons = false
+end
+
+if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("CooldownCount") then
+	C.Cooldown.Enable = false
 end
