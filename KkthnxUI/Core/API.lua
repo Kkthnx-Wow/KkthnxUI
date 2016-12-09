@@ -32,8 +32,12 @@ K.Scale = function(x) return Scale(x) end
 K.Mult = Mult
 K.NoScaleMult = K.Mult * C.General.UIScale
 
-local Hider = CreateFrame("Frame", "UIFrameHider", UIParent)
-Hider:Hide()
+-- frame to securely hide items (Goldpaw)
+local UIFrameHider = CreateFrame("Frame", "UIFrameHider", UIParent)
+UIFrameHider:Hide()
+UIFrameHider:SetAllPoints()
+UIFrameHider.children = {}
+RegisterStateDriver(UIFrameHider, "visibility", "hide")
 
 local PetBattleHider = CreateFrame("Frame", "PetBattleFrameHider", UIParent, "SecureHandlerStateTemplate")
 PetBattleHider:SetAllPoints()
