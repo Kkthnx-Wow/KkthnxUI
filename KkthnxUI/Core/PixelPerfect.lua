@@ -7,14 +7,13 @@ local format = string.format
 local GetCVar = GetCVar
 local SetCVar = SetCVar
 local StaticPopup_Show = StaticPopup_Show
-local UIParent = UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ForceQuit, WorldMapFrame
+-- GLOBALS: ForceQuit, WorldMapFrame, UIParent
 
 local RequireRestart = false
 
-if (C.General.AutoScale) then
+if C.General.AutoScale then
 	C.General.UIScale = min(2, max(0.32, 768 / string.match(K.Resolution, "%d+x(%d+)")))
 end
 
@@ -43,7 +42,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	else
 		local UseUIScale = GetCVar("useUiScale")
 
-		if (UseUIScale ~= "1") and (event == "PLAYER_LOGIN") then
+		if (UseUIScale ~= "1") then
 			SetCVar("useUiScale", 1)
 		end
 
