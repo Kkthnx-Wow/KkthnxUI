@@ -60,7 +60,7 @@ local function DisableHyperlink()
 	end
 end
 
-if C.Tooltip.HyperLink and C.Chat.Enable or C.Tooltip.Enable  or not IsAddOnLoaded("tekKompare") then
+if C.Tooltip.HyperLink and C.Chat.Enable or C.Tooltip.Enable or not K.CheckAddOn("tekKompare") then
 	EnableHyperlink()
 else
 	DisableHyperlink()

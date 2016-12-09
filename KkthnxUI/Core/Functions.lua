@@ -112,7 +112,7 @@ K.RGBToHex = function(r, g, b)
 	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
-function K.CheckAddOn(addon)
+K.CheckAddOn = function(addon)
 	return K.AddOns[strlower(addon)] or false
 end
 

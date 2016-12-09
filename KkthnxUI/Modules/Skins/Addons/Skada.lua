@@ -2,7 +2,7 @@ local K, C, L = select(2, ...):unpack()
 if C.Skins.Skada ~= true then return end
 
 -- SKADA SKIN
-if not IsAddOnLoaded("Skada") or not C.Skins.Skada then return end
+if not K.CheckAddOn("Skada") or not C.Skins.Skada then return end
 
 local Skada = Skada
 local barmod = Skada.displays["bar"]

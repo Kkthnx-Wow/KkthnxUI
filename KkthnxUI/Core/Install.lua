@@ -25,7 +25,6 @@ local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
 local FCF_StopDragging = FCF_StopDragging
 local GetCVarBool = GetCVarBool
-local IsAddOnLoaded = IsAddOnLoaded
 local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local PlayMusic = PlayMusic
@@ -359,7 +358,7 @@ local StepTwo = function()
 	StatusBar:SetValue(2)
 	Header:SetText(L.Install.Header9)
 	StatusBarText:SetText("2/4")
-	if K.CheckAddOn("Prat") or IsAddOnLoaded("Chatter") then
+	if K.CheckAddOn("Prat") or K.CheckAddOn("Chatter") then
 		TextOne:SetText(L.Install.Step2Line0)
 		TextTwo:SetText("")
 		TextThree:SetText("")

@@ -18,7 +18,7 @@ local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ColorPickerFrame, OpacitySliderFrame, ColorPPBoxA, ColorPPBoxR, ColorPPBoxG
 -- GLOBALS: ColorPPBoxB, ColorPPBoxH, ColorSwatch, ColorPickerFrameHeader, ColorPPPaste
--- GLOBALS: IsAddOnLoaded, ColorPickerOkayButton, ColorPickerCancelButton
+-- GLOBALS: ColorPickerOkayButton, ColorPickerCancelButton
 -- GLOBALS: ColorPPCopyColorSwatch, ColorPPBoxLabelA, ColorPPOldColorSwatch
 
 local initialized = nil

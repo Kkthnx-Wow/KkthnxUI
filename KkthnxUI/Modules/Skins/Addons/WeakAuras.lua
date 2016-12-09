@@ -10,7 +10,7 @@ local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:SetScript("OnEvent", function(self, event)
-	if not IsAddOnLoaded("WeakAuras") then return end
+	if not K.CheckAddOn("WeakAuras") then return end
 
 	local function Skin_WeakAuras(frame)
 		if not frame.shadow then

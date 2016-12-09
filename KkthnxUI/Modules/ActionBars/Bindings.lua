@@ -1,5 +1,5 @@
 local K, C, L = select(2, ...):unpack()
-if C.ActionBar.Enable ~= true or IsAddOnLoaded("ncHoverBind") == true then return end
+if C.ActionBar.Enable ~= true or K.CheckAddOn("ncHoverBind") == true then return end
 
 -- Lua API
 local _G = _G
@@ -13,7 +13,6 @@ local GetBindingKey = GetBindingKey
 local GetMacroInfo = GetMacroInfo
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsModifiedClick = IsModifiedClick
@@ -293,7 +292,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			MacroFrameTab2:HookScript("OnMouseUp", function() localmacros = 1 end)
 		end
 
-		if not IsAddOnLoaded("Blizzard_MacroUI") then
+		if not K.CheckAddOn("Blizzard_MacroUI") then
 			hooksecurefunc("LoadAddOn", function(addon)
 				if addon == "Blizzard_MacroUI" then registermacro() end
 			end)
@@ -311,6 +310,6 @@ SLASH_MOUSEOVERBIND1 = "/bindkey"
 SLASH_MOUSEOVERBIND2 = "/hoverbind"
 SLASH_MOUSEOVERBIND3 = "/bk"
 
-if not IsAddOnLoaded("Bartender4") and not IsAddOnLoaded("Dominos") then
+if not K.CheckAddOn("Bartender4") and not K.CheckAddOn("Dominos") then
 	SLASH_MOUSEOVERBIND4 = "/kb"
 end

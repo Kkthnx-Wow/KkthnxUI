@@ -14,7 +14,7 @@ local GetNumSpecializations = GetNumSpecializations
 local GetSpecialization = GetSpecialization
 local GetSpecializationInfo = GetSpecializationInfo
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
+
 local IsShiftKeyDown = IsShiftKeyDown
 local SetSpecialization = SetSpecialization
 local UIParent = UIParent

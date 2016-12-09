@@ -67,6 +67,7 @@ K.ScreenWidth = tonumber(string.match(K.Resolution, "(%d+)x+%d"))
 K.VersionNumber = tonumber(K.Version)
 K.WoWPatch, K.WoWBuild, K.WoWPatchReleaseDate, K.TocVersion = GetBuildInfo()
 K.WoWBuild = select(2, GetBuildInfo()) K.WoWBuild = tonumber(K.WoWBuild)
+
 K.AddOns = {}
 
 for i = 1, GetNumAddOns() do

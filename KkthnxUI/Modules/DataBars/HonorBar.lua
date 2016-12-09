@@ -8,7 +8,7 @@ local format = string.format
 -- Wow API
 local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
 local HideUIPanel = HideUIPanel
-local IsAddOnLoaded = IsAddOnLoaded
+
 local LoadAddOn = LoadAddOn
 local PlayerTalentTab_OnClick = PlayerTalentTab_OnClick
 local PVP_HONOR_PRESTIGE_AVAILABLE = PVP_HONOR_PRESTIGE_AVAILABLE
@@ -59,7 +59,7 @@ HonorBar:SetScript("OnMouseDown", function(self, button)
 		end
 	elseif(button == "RightButton") then
 
-		if(not IsAddOnLoaded("Blizzard_TalentUI")) then
+		if(not K.CheckAddOn("Blizzard_TalentUI")) then
 			LoadAddOn("Blizzard_TalentUI")
 		end
 

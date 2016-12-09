@@ -6,7 +6,7 @@ local _G = _G
 -- Wow API
 local FCF_StartAlertFlash = FCF_StartAlertFlash
 local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
+
 local QuestMapFrame_OpenToQuestDetails = QuestMapFrame_OpenToQuestDetails
 local QuestMapFrame_ShowQuestDetails = QuestMapFrame_ShowQuestDetails
 local ShowUIPanel = ShowUIPanel

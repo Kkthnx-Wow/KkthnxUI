@@ -2,12 +2,12 @@ local K, C, L = select(2, ...):unpack()
 if C.Skins.Spy ~= true then return end
 
 local CreateFrame = CreateFrame
-local IsAddOnLoaded = IsAddOnLoaded
+
 
 local SpySkin = CreateFrame("Frame")
 SpySkin:RegisterEvent("PLAYER_LOGIN")
 SpySkin:SetScript("OnEvent", function(self, event)
-	if not IsAddOnLoaded("Spy") then return end
+	if not K.CheckAddOn("Spy") then return end
 
 	Spy_MainWindow:SetTemplate("Transparent")
 	Spy_AlertWindow:SetTemplate("Transparent")
