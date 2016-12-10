@@ -72,4 +72,5 @@ local function RepeatMessageFilter(self, event, text, sender)
 end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", RepeatMessageFilter)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", RepeatMessageFilter)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", RepeatMessageFilter)

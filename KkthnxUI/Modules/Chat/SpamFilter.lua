@@ -93,6 +93,11 @@ local SpamList = {
 	"hippogryph hatchling",
 	"mottled drake",
 	"rocket chicken",
+	-- Taken from Badboy
+	"dving[%.,]ru.*уcлуги",
+	"dving[%.,]net",
+	"цeн[ae].*lootkeeper[%.,]com",
+	"wtsfast.*smooth.*karazhan.*mount.*valor.*nightmare.*wisp",
 }
 
 -- Trade channel spam
@@ -108,4 +113,5 @@ local function TradeFilter(self, event, text, sender)
 end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", TradeFilter)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", TradeFilter)
 ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", TradeFilter)
