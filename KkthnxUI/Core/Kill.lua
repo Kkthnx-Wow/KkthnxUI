@@ -99,6 +99,7 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
 
 	if C.Unitframe.Enable then
+		PlayerFrame:SetParent(UIFrameHider)
 		InterfaceOptionsCombatPanelTargetOfTarget:SetScale(0.00001)
 		InterfaceOptionsCombatPanelTargetOfTarget:SetAlpha(0)
 	end
