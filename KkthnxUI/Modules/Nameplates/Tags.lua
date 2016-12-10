@@ -27,6 +27,12 @@ local UnitReaction = UnitReaction
 -- GLOBALS: _TAGS, r, g, b
 
 -- Nameplate Tags
+oUF.Tags.Methods["NameplateNameLong"] = function(unit)
+	local name = UnitName(unit)
+	return K.UTF8Sub(name, 18, true)
+end
+oUF.Tags.Events["NameplateNameLong"] = "UNIT_NAME_UPDATE"
+
 oUF.Tags.Methods["NameplateNameLongAbbrev"] = function(unit)
 	local name = UnitName(unit)
 	local newname = (strlen(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
@@ -34,7 +40,7 @@ oUF.Tags.Methods["NameplateNameLongAbbrev"] = function(unit)
 end
 oUF.Tags.Events["NameplateNameLongAbbrev"] = "UNIT_NAME_UPDATE"
 
-oUF.Tags.Methods["NameplateDiffColor"] = function(unit)
+oUF.Tags.Methods["NameplateLevelDiffColor"] = function(unit)
 	local r, g, b
 	local level = UnitLevel(unit)
 	if level < 1 then
@@ -55,7 +61,7 @@ oUF.Tags.Methods["NameplateDiffColor"] = function(unit)
 	end
 	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
-oUF.Tags.Events["NameplateDiffColor"] = "UNIT_LEVEL"
+oUF.Tags.Events["NameplateLevelDiffColor"] = "UNIT_LEVEL"
 
 oUF.Tags.Methods["NameplateLevel"] = function(unit)
 	local level = UnitLevel(unit)
