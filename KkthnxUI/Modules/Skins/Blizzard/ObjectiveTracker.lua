@@ -22,7 +22,7 @@ local function LoadSkin()
 		if item and not item.skinned then
 			item:SetSize(30, 30)
 			item:SetTemplate("Transparent")
-			--item:StyleButton()
+			item:StyleButton()
 			item:SetNormalTexture(nil)
 			item.icon:SetTexCoord(unpack(K.TexCoords))
 			item.icon:SetPoint("TOPLEFT", item, 4, -4)

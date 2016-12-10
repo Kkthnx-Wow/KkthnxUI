@@ -716,7 +716,7 @@ local function CreateUnitLayout(self, unit)
 		ComboPointPlayerFrame.SetPoint = K.Noop
 
 		if C.Blizzard.ColorTextures == true then
-			ComboPointPlayerFrame.Background:SetVertexColor(unpack(C.Blizzard.TexturesColor, 0.1))
+			ComboPointPlayerFrame.Background:SetVertexColor(unpack(C.Blizzard.TexturesColor))
 		end
 
 		-- Totems

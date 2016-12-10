@@ -252,24 +252,18 @@ end
 
 function ns.UpdateCastbarColor(Castbar, unit)
 	local color
-	local text = "default"
 
 	if UnitIsUnit(unit, "player") then
 		color = colors.class[select(2, UnitClass("player"))]
 	elseif Castbar.interrupt then
 		color = colors.uninterruptible
-		text = "white"
 	elseif UnitIsFriend(unit, "player") then
 		color = colors.reaction[5]
 	else
 		color = colors.reaction[1]
 	end
 
-	Castbar:SetBorderTexture(text)
-	Castbar:SetBorderColor(bR, bG, bB)
-
 	local r, g, b = color[1], color[2], color[3]
 	Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-	--Castbar.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
-	Castbar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+	Castbar.Background:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
 end
