@@ -16,7 +16,7 @@ local UIFrameFadeIn, UIFrameFadeOut = UIFrameFadeIn, UIFrameFadeOut
 local UnitClass = UnitClass
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: noHover, noPushed, noChecked
+-- GLOBALS: noHover, noPushed, noChecked, self
 
 local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
 local borderr, borderg, borderb = unpack(C.Media.Border_Color)
@@ -68,7 +68,7 @@ end
 
 local function CreateOverlay(f, size)
 	if f.overlay then return end
-	size = size or 2
+	if not size then size = 2 end
 
 	local overlay = f:CreateTexture(nil, "BORDER", f)
 	overlay:SetPoint("TOPLEFT", size, -size)
@@ -80,7 +80,7 @@ end
 
 local function CreateBorder(f, size)
 	if f.border then return end
-	size = size or 2
+	if not size then size = 2 end
 
 	local border = CreateFrame("Frame", nil, f)
 	border:SetPoint("TOPLEFT", -size, size)
@@ -97,7 +97,7 @@ end
 -- Backdrop
 local function CreateBackdrop(f, t, size)
 	if not t then t = "Default" end
-	size = size or 2
+	if not size then size = 2 end
 
 	local b = CreateFrame("Frame", nil, f)
 	b:SetPoint("TOPLEFT", -size, size)
@@ -116,7 +116,7 @@ end
 -- Who doesn't like shadows! More shadows!
 local function CreateShadow(f, size)
 	if f.Shadow then return end
-	size = size or 3
+	if not size then size = 3 end
 
 	local shadow = CreateFrame("Frame", nil, f)
 	shadow:SetFrameLevel(1)
@@ -139,7 +139,7 @@ end
 
 local function CreateBlizzShadow(f, size)
 	if f.shadow then return end
-	size = size or 5
+	if not size then size = 5 end
 
 	local shadow = f:CreateTexture(nil, "BACKGROUND")
 	shadow:SetPoint("TOPLEFT", -size, size)
@@ -258,27 +258,31 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	return fs
 end
 
-local function StyleButton(button)
-	if button.SetHighlightTexture and not button.hover and not noHover then
-		local hover = button:CreateTexture()
+local function StyleButton(button, t, size)
+	if not size then size = 2 end
+	if button.SetHighlightTexture and not button.hover then
+		local hover = button:CreateTexture(nil, nil, self)
 		hover:SetColorTexture(1, 1, 1, 0.3)
-		hover:SetInside(button, 1, 1)
+		hover:SetPoint("TOPLEFT", button, size, -size)
+		hover:SetPoint("BOTTOMRIGHT", button, -size, size)
 		button.hover = hover
 		button:SetHighlightTexture(hover)
 	end
 
-	if button.SetPushedTexture and not button.pushed and not noPushed then
-		local pushed = button:CreateTexture()
+	if not t and button.SetPushedTexture and not button.pushed then
+		local pushed = button:CreateTexture(nil, nil, self)
 		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
-		pushed:SetInside(button, 1, 1)
+		pushed:SetPoint("TOPLEFT", button, size, -size)
+		pushed:SetPoint("BOTTOMRIGHT", button, -size, size)
 		button.pushed = pushed
 		button:SetPushedTexture(pushed)
 	end
 
-	if button.SetCheckedTexture and not button.checked and not noChecked then
-		local checked = button:CreateTexture()
-		checked:SetColorTexture(1, 1, 1, 0.3)
-		checked:SetInside(button, 1, 1)
+	if button.SetCheckedTexture and not button.checked then
+		local checked = button:CreateTexture(nil, nil, self)
+		checked:SetColorTexture(0, 1, 0, 0.3)
+		checked:SetPoint("TOPLEFT", button, size, -size)
+		checked:SetPoint("BOTTOMRIGHT", button, -size, size)
 		button.checked = checked
 		button:SetCheckedTexture(checked)
 	end
@@ -286,9 +290,8 @@ local function StyleButton(button)
 	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
-		cooldown:SetInside()
-		cooldown:SetDrawEdge(false)
-		cooldown:SetSwipeColor(0, 0, 0, 1)
+		cooldown:SetPoint("TOPLEFT", button, size, -size)
+		cooldown:SetPoint("BOTTOMRIGHT", button, -size, size)
 	end
 end
 
