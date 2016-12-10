@@ -217,11 +217,6 @@ K.UTF8Sub = function(self, i, dots)
 	end
 end
 
-K.Abbreviate = function(name)
-	local newname = (len(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
-	return K.UTF8Sub(newname, 18, false)
-end
-
 K.FormatMoney = function(value)
 	if value >= 1e4 then
 		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, strsub(value, -4) / 1e2, strsub(value, -2))
