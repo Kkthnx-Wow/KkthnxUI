@@ -30,7 +30,7 @@ local UnitReaction = UnitReaction
 oUF.Tags.Methods["NameplateNameLongAbbrev"] = function(unit)
 	local name = UnitName(unit)
 	local newname = (strlen(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
-	return K.Abbreviate(newname, 18, false)
+	return K.UTF8Sub(newname, 18, false)
 end
 oUF.Tags.Events["NameplateNameLongAbbrev"] = "UNIT_NAME_UPDATE"
 
