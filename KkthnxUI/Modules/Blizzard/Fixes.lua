@@ -16,29 +16,28 @@ local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
 -- Turns out we can avoid the spellbook taint
 -- by opening it once before we login. Thanks TukUI! :)
 -- NB! taiting the GameTooltip taints the spellbook too, so DON'T! o.O
-local Cleenex = CreateFrame("Frame")
-Cleenex:RegisterEvent("ADDON_LOADED")
-Cleenex:SetScript("OnEvent", function(self, _, what)
+local SpellBookTaint = CreateFrame("Frame")
+SpellBookTaint:RegisterEvent("ADDON_LOADED")
+SpellBookTaint:SetScript("OnEvent", function(self, _, what)
 	if what ~= addon then return end
 	ToggleFrame(SpellBookFrame)
-	if build < 19678 then -- don't load this in 6.1, it's not there!
-		PetJournal_LoadUI()
-	end
 end)
 
+-- Fix RemoveTalent() taint
 FCF_StartAlertFlash = K.Noop
 
--- Fix the scale on this.
-local ScriptErrors = CreateFrame("Frame")
-ScriptErrors:RegisterEvent("ADDON_LOADED")
-ScriptErrors:SetScript("OnEvent", function(self, addon)
+-- Fix the scale on ScriptErrorsFrame
+local ScriptErrorsScale = CreateFrame("Frame")
+ScriptErrorsScale:RegisterEvent("ADDON_LOADED")
+ScriptErrorsScale:SetScript("OnEvent", function(self, addon)
 	if K.CheckAddOn("Blizzard_DebugTools") or addon == "Blizzard_DebugTools" then
 		ScriptErrorsFrame:SetParent(UIParent)
 	end
 end)
 
-local TaintFix = CreateFrame("Frame")
-TaintFix:SetScript("OnUpdate", function(self, elapsed)
+-- Fix SearchLFGLeave() taint
+local LFRBrowseTaint = CreateFrame("Frame")
+LFRBrowseTaint:SetScript("OnUpdate", function(self, elapsed)
 	if LFRBrowseFrame.timeToClear then
 		LFRBrowseFrame.timeToClear = nil
 	end
@@ -79,11 +78,11 @@ local function artifactHook()
 end
 hooksecurefunc("ArtifactFrame_LoadUI", artifactHook)
 
--- Fix World Map taints (by goldpaw)
-local frame = CreateFrame("Frame", nil, UIParent)
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-frame:SetScript("OnEvent", function(self)
+-- Fix World Map taints (by Goldpaw)
+local WorldMapTaint = CreateFrame("Frame", nil, UIParent)
+WorldMapTaint:RegisterEvent("PLAYER_REGEN_ENABLED")
+WorldMapTaint:RegisterEvent("PLAYER_REGEN_DISABLED")
+WorldMapTaint:SetScript("OnEvent", function(self)
 	if event == "PLAYER_REGEN_DISABLED" then
 		WorldMapFrame:UnregisterEvent("WORLD_MAP_UPDATE")
 		WorldMapFrame:SetScript("OnHide", nil)

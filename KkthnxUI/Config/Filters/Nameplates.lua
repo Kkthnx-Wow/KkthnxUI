@@ -12,7 +12,7 @@ local function SpellName(id)
 	if name then
 		return name
 	else
-		print("|cffff0000WARNING: spell ID ["..tostring(id).."] no longer exists! Report this to Kkthnx.|r")
+		print("|cffff0000WARNING: Nameplates debuff whitelist spell ID ["..tostring(id).."] no longer exists! Report this to Kkthnx.|r")
 		return "Empty"
 	end
 end
@@ -293,10 +293,6 @@ K.DebuffWhiteList = {
 }
 
 K.DebuffBlackList = {
-	-- [SpellName(spellID)] = true,	-- Spell Name
-}
-
-K.ArenaBuffList = {
 	-- [SpellName(spellID)] = true,	-- Spell Name
 }
 
