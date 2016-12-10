@@ -6,19 +6,8 @@ local oUF = ns.oUF or oUF
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 
-local function FilterArenaBuffs(...)
-
-    local icons, unit, icon, name, rank, texture, count, dtype, duration, timeLeft, caster = ...
-    local buffList = K.ArenaBuffList -- WIP
-
-    if (K.ArenaBuffList[name]) then
-        return true
-    end
-    return false
-end
-
 local function arenaPrep(self, event, ...)
-	if event ~= "ArenaPreparation" then return; end
+	if event ~= "ArenaPreparation" then return end
 
 	local specID = GetArenaOpponentSpec(self.id)
 	local _, spec, _, icon, _, _, class = GetSpecializationInfoByID(specID)
@@ -119,7 +108,7 @@ function ns.createArenaLayout(self, unit)
 	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 	self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 
-  -- Auras
+	-- Auras
 	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena
@@ -134,6 +123,8 @@ function ns.createArenaLayout(self, unit)
 	self.Trinket:SetSize(25, 25)
 	self.Trinket:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Trinket:SetPoint("RIGHT", self.Health, "LEFT", 0, 15)
+  self.Trinket.trinketUseAnnounce = true
+  self.Trinket.trinketUpAnnounce = true
 
 	self.Trinket.Border = CreateFrame("Frame", nil, self.Trinket)
 	self.Trinket.Border:SetFrameLevel(self.Trinket:GetFrameLevel() + 1)

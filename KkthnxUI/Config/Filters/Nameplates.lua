@@ -63,6 +63,7 @@ K.DebuffWhiteList = {
 	[SpellName(1079)] = true,	-- Rip
 	[SpellName(1822)] = true, -- rake
 	[SpellName(8921)] = true, -- moonfire
+	[SpellName(155625)] = true, -- moonfire cat
 	[SpellName(77758)] = true, -- bear thrash
 	[SpellName(192090)] = true, -- bear thrash 7.0
 	[SpellName(106830)] = true, -- cat thrash
