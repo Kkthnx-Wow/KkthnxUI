@@ -12,8 +12,6 @@ local CompactRaidFrameManager_UpdateShown = CompactRaidFrameManager_UpdateShown
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
-local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
-local MAX_PARTY_MEMBERS = MAX_PARTY_MEMBERS
 local SetCVar = SetCVar
 local SetCVarBitfield = SetCVarBitfield
 local StaticPopup_Show = StaticPopup_Show
@@ -35,19 +33,16 @@ local UnitAffectingCombat = UnitAffectingCombat
 -- GLOBALS: PlayerTalentFramePetSpecializationTutorialButton, PlayerTalentFrameSpecializationTutorialButton, PlayerTalentFrameTalentsTutorialButton
 -- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy, NamePlateDriverFrame
 
-local function HideRaid()
-	if InCombatLockdown() then return end
-	CompactRaidFrameManager:Kill()
-	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
-	if compact_raid and compact_raid ~= "0" then
-		CompactRaidFrameManager_SetSetting("IsShown", "0")
-	end
-end
-
 -- Kill all stuff on default UI that we don"t need
 local DisableBlizzard = CreateFrame("Frame")
-DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
-DisableBlizzard:SetScript("OnEvent", function(self, event)
+DisableBlizzard:RegisterEvent("ADDON_LOADED")
+DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
+	if addon == "Blizzard_AchievementUI" then
+		if C.Tooltip.Enable then
+			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
+		end
+	end
+
 	if C.Unitframe.Enable then
 		function PetFrame_Update() end
 		function PlayerFrame_AnimateOut() end
@@ -55,61 +50,34 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		function PlayerFrame_ToPlayerArt() end
 		function PlayerFrame_ToVehicleArt() end
 
-		for i = 1, MAX_PARTY_MEMBERS do
-			HidePartyFrame()
-			HidePartyFrame = K.Noop
-			ShowPartyFrame = K.Noop
-		end
+		HidePartyFrame = K.Noop
+		ShowPartyFrame = K.Noop
 	end
 
 	if C.Raidframe.Enable then
 		if not CompactRaidFrameManager_UpdateShown then
 			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 		else
-			if not CompactRaidFrameManager.hookedHide then
-				hooksecurefunc("CompactRaidFrameManager_UpdateShown", HideRaid)
-				CompactRaidFrameManager:HookScript("OnShow", HideRaid)
-				CompactRaidFrameManager.hookedHide = true
-			end
-			CompactRaidFrameContainer:UnregisterAllEvents()
-
-			HideRaid()
-		end
-
-		--InterfaceOptionsFrameCategoriesButton11:SetScale(0.0001)
-		InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
-		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
-
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", "DisableBlizzard")
-		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") --This may fuck shit up.. we"ll see...
-	else
-		CompactUnitFrameProfiles:RegisterEvent("VARIABLES_LOADED")
-	end
-
-	--[[
-	if C.Raidframe.Enable then
-		if not CompactRaidFrameManager_UpdateShown then
-			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
-		else
-			if CompactRaidFrameManager then
-				CompactRaidFrameManager:SetParent(UIFrameHider)
-			end
-
-			if CompactUnitFrameProfiles then
-				CompactUnitFrameProfiles:UnregisterAllEvents()
-			end
-
 			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
 			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
+			if not InCombatLockdown() then
+				CompactRaidFrameManager:Kill()
+				CompactRaidFrameContainer:Kill()
+			end
+
+			CompactUnitFrameProfiles_ApplyProfile = K.Noop
+			CompactRaidFrameManager_UpdateShown = K.Noop
+			CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
 		end
 	end
-	--]]
 
 	Advanced_UIScaleSlider:Kill()
 	Advanced_UseUIScale:Kill()
 
-	InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
-	SetCVar("countdownForCooldowns", 0)
+	if C.Cooldown.Enable then
+		InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
+		SetCVar("countdownForCooldowns", 0)
+	end
 
 	if C.General.DisableTutorialButtons then
 		BagHelpBox:Kill()
@@ -125,6 +93,10 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		TutorialFrameAlertButton:Kill()
 		WorldMapFrameTutorialButton:Kill()
 	end
+
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
 
 	if C.Unitframe.Enable then
 		InterfaceOptionsCombatPanelTargetOfTarget:SetScale(0.00001)
@@ -142,6 +114,10 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		InterfaceOptionsNamesPanelUnitNameplatesAggroFlash:SetScale(0.00001)
 	end
 
+	if C.Chat.Enable then
+		SetCVar("chatStyle", "im")
+	end
+
 	if C.ActionBar.Enable then
 		InterfaceOptionsActionBarsPanelBottomLeft:Hide()
 		InterfaceOptionsActionBarsPanelBottomRight:Hide()
@@ -150,5 +126,7 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Hide()
 	end
 
-	DisableBlizzard:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if C.Minimap.Enable then
+		InterfaceOptionsDisplayPanelRotateMinimap:Kill()
+	end
 end)

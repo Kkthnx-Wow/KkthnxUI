@@ -27,136 +27,113 @@ local SetDesaturation = SetDesaturation
 
 -- PET AND SHAPESHIFT BARS STYLE FUNCTION
 K.ShiftBarUpdate = function(...)
-	if InCombatLockdown() then return end
-	local NumForms = GetNumShapeshiftForms()
-	local Texture, Name, IsActive, IsCastable, Button, Icon, Cooldown, Start, Duration, Enable
+	local numForms = GetNumShapeshiftForms()
+	local texture, name, isActive, isCastable
+	local button, icon, cooldown
+	local start, duration, enable
+	for i = 1, NUM_STANCE_SLOTS do
+		button = _G["StanceButton"..i]
+		icon = _G["StanceButton"..i.."Icon"]
+		if i <= numForms then
+			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i)
+			icon:SetTexture(texture)
 
-	if NumForms == 0 then
-		ShiftHolder:SetAlpha(0)
-	else
-		ShiftHolder:SetAlpha(1)
+			cooldown = _G["StanceButton"..i.."Cooldown"]
+			if texture then
+				cooldown:SetAlpha(1)
+			else
+				cooldown:SetAlpha(0)
+			end
 
-		for i = 1, NUM_STANCE_SLOTS do
-			local ButtonName = "StanceButton"..i
+			start, duration, enable = GetShapeshiftFormCooldown(i)
+			CooldownFrame_Set(cooldown, start, duration, enable)
 
-			Button = _G[ButtonName]
-			Icon = _G[ButtonName.."Icon"]
+			if isActive then
+				StanceBarFrame.lastSelected = button:GetID()
+				button:SetChecked(true)
+			else
+				button:SetChecked(false)
+			end
 
-			if i <= NumForms then
-				Texture, Name, IsActive, IsCastable = GetShapeshiftFormInfo(i)
-
-				if not Icon then
-					return
-				end
-
-				Icon:SetTexture(Texture)
-				Cooldown = _G[ButtonName.."Cooldown"]
-
-				if Texture then
-					Cooldown:SetAlpha(1)
-				else
-					Cooldown:SetAlpha(0)
-				end
-
-				Start, Duration, Enable = GetShapeshiftFormCooldown(i)
-				CooldownFrame_Set(Cooldown, Start, Duration, Enable)
-
-				if IsActive then
-					StanceBarFrame.lastSelected = Button:GetID()
-					Button:SetChecked(true)
-
-					if Button.Backdrop then
-						Button.Backdrop:SetBackdropBorderColor(0, 1, 0)
-					end
-				else
-					Button:SetChecked(false)
-
-					if Button.Backdrop then
-						Button.Backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-					end
-				end
-
-				if IsCastable then
-					Icon:SetVertexColor(1.0, 1.0, 1.0)
-				else
-					Icon:SetVertexColor(0.4, 0.4, 0.4)
-				end
+			if isCastable then
+				icon:SetVertexColor(1.0, 1.0, 1.0)
+			else
+				icon:SetVertexColor(0.4, 0.4, 0.4)
 			end
 		end
 	end
 end
 
 K.PetBarUpdate = function(...)
+	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
-		local ButtonName = "PetActionButton" .. i
-		local PetActionButton = _G[ButtonName]
-		local PetActionIcon = _G[ButtonName.."Icon"]
-		local PetActionBackdrop = PetActionButton.Backdrop
-		local PetAutoCastableTexture = _G[ButtonName.."AutoCastable"]
-		local PetAutoCastShine = _G[ButtonName.."Shine"]
-		local Name, SubText, Texture, IsToken, IsActive, AutoCastAllowed, AutoCastEnabled = GetPetActionInfo(i)
+		local buttonName = "PetActionButton"..i
+		petActionButton = _G[buttonName]
+		petActionIcon = _G[buttonName.."Icon"]
+		petAutoCastableTexture = _G[buttonName.."AutoCastable"]
+		petAutoCastShine = _G[buttonName.."Shine"]
+		local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
 
-		if (not IsToken) then
-			PetActionIcon:SetTexture(Texture)
-			PetActionButton.tooltipName = Name
+		if not isToken then
+			petActionIcon:SetTexture(texture)
+			petActionButton.tooltipName = name
 		else
-			PetActionIcon:SetTexture(_G[Texture])
-			PetActionButton.tooltipName = _G[Name]
+			petActionIcon:SetTexture(_G[texture])
+			petActionButton.tooltipName = _G[name]
 		end
 
-		PetActionButton.IsToken = IsToken
-		PetActionButton.tooltipSubtext = SubText
+		petActionButton.isToken = isToken
+		petActionButton.tooltipSubtext = subtext
 
-		if (IsActive) then
-			PetActionButton:SetChecked(1)
-
-			if PetActionBackdrop then
-				PetActionBackdrop:SetBackdropBorderColor(0, 1, 0)
-			end
-
+		if isActive and name ~= "PET_ACTION_FOLLOW" then
+			petActionButton:SetChecked(true)
 			if IsPetAttackAction(i) then
-				PetActionButton_StartFlash(PetActionButton)
+				PetActionButton_StartFlash(petActionButton)
 			end
 		else
-			PetActionButton:SetChecked()
-
-			if PetActionBackdrop then
-				PetActionBackdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-			end
-
+			petActionButton:SetChecked(false)
 			if IsPetAttackAction(i) then
-				PetActionButton_StopFlash(PetActionButton)
+				PetActionButton_StopFlash(petActionButton)
 			end
 		end
 
-		if AutoCastAllowed then
-			PetAutoCastableTexture:Show()
+		if autoCastAllowed then
+			petAutoCastableTexture:Show()
 		else
-			PetAutoCastableTexture:Hide()
+			petAutoCastableTexture:Hide()
 		end
 
-		if AutoCastEnabled then
-			AutoCastShine_AutoCastStart(PetAutoCastShine)
+		if autoCastEnabled then
+			AutoCastShine_AutoCastStart(petAutoCastShine)
 		else
-			AutoCastShine_AutoCastStop(PetAutoCastShine)
+			AutoCastShine_AutoCastStop(petAutoCastShine)
 		end
 
-		if Texture then
-			if (GetPetActionSlotUsable(i)) then
-				SetDesaturation(PetActionIcon, nil)
+		if name then
+			if not C.ActionBar.Grid then
+				petActionButton:SetAlpha(1)
+			end
+		else
+			if not C.ActionBar.Grid then
+				petActionButton:SetAlpha(0)
+			end
+		end
+
+		if texture then
+			if GetPetActionSlotUsable(i) then
+				SetDesaturation(petActionIcon, nil)
 			else
-				SetDesaturation(PetActionIcon, 1)
+				SetDesaturation(petActionIcon, 1)
 			end
-
-			PetActionIcon:Show()
+			petActionIcon:Show()
 		else
-			PetActionIcon:Hide()
+			petActionIcon:Hide()
 		end
 
-		if (not PetHasActionBar() and Texture and Name ~= "PET_ACTION_FOLLOW") then
-			PetActionButton_StopFlash(PetActionButton)
-			SetDesaturation(PetActionIcon, 1)
-			PetActionButton:SetChecked(0)
+		if not PetHasActionBar() and texture and name ~= "PET_ACTION_FOLLOW" then
+			PetActionButton_StopFlash(petActionButton)
+			SetDesaturation(petActionIcon, 1)
+			petActionButton:SetChecked(false)
 		end
 	end
 end
