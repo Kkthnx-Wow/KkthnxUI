@@ -1,11 +1,25 @@
 local K, C, L = unpack(select(2, ...))
 
+-- WoW Lua
 local pairs = pairs
+local strmatch = string.match
 
-local hooksecurefunc = hooksecurefunc
-local IsAltKeyDown, IsControlKeyDown = IsAltKeyDown, IsControlKeyDown
+-- Wow API
+local GetAbandonQuestItems = GetAbandonQuestItems
+local GetAbandonQuestName = GetAbandonQuestName
+local GetQuestLink = GetQuestLink
+local GetQuestLogIndexByID = GetQuestLogIndexByID
+local GetQuestLogPushable = GetQuestLogPushable
+local IsAltKeyDown = IsAltKeyDown
+local IsControlKeyDown = IsControlKeyDown
+local StaticPopup_Hide = StaticPopup_Hide
+local StaticPopup_Show = StaticPopup_Show
 
--- Quest level(by fgprodigal)
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: QuestMapFrame, QuestMapQuestOptions_AbandonQuest, QuestMapQuestOptions_ShareQuest
+-- GLOBALS: QuestLogPushQuest
+
+-- Quest level
 hooksecurefunc("QuestLogQuests_Update", function()
 	for i, button in pairs(QuestMapFrame.QuestsFrame.Contents.Titles) do
 		if button:IsShown() then
@@ -23,7 +37,7 @@ hooksecurefunc("QuestLogQuests_Update", function()
 	end
 end)
 
--- Ctrl+click to abandon a quest or alt+click to share a quest(by suicidal katt)
+-- Ctrl+Click to abandon a quest or Alt+Click to share a quest(by Suicidal Katt)
 hooksecurefunc("QuestMapLogTitleButton_OnClick", function(self)
 	local questLogIndex = GetQuestLogIndexByID(self.questID)
 	if IsControlKeyDown() then

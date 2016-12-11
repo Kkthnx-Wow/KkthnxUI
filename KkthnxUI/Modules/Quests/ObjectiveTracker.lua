@@ -1,6 +1,18 @@
 local K, C, L = unpack(select(2, ...))
 if K.CheckAddOn("DugisGuideViewerZ") then return end
 
+-- Wow API
+local GetNumQuestWatches = GetNumQuestWatches
+local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetQuestLogTitle = GetQuestLogTitle
+local GetQuestWatchInfo = GetQuestWatchInfo
+local GetScreenHeight = GetScreenHeight
+local GetScreenWidth = GetScreenWidth
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT, ObjectiveTrackerFrame, GameTooltip
+-- GLOBALS: ObjectiveTrackerBonusRewardsFrame, QUEST_TRACKER_MODULE, ACHIEVEMENT_TRACKER_MODULE
+
 local Movers = K.Movers
 
 -- Move ObjectiveTrackerFrame
