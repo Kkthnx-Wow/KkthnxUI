@@ -465,7 +465,7 @@ local function style(self, unit)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
 
 	if C.Nameplates.NameAbbreviate == true then
-		self:Tag(self.Name, "[NameplateNameColor][NameplateLongAbbrev]")
+		self:Tag(self.Name, "[NameplateNameColor][NameplateNameLongAbbrev]")
 	else
 		self:Tag(self.Name, "[NameplateNameColor][NameplateNameLong]")
 	end
