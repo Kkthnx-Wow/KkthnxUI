@@ -232,7 +232,6 @@
 	<!-- Skins Blizzard -->
 	<Include file="Modules\Skins\Blizzard\Bubbles.lua"/>
 	<Include file="Modules\Skins\Blizzard\MinimapButtons.lua"/>
-	<Include file="Modules\Skins\Blizzard\ObjectiveTracker.lua"/>
 	<Include file="Modules\Skins\Blizzard\OrderHall.lua"/>
 
 	<!-- Tooltip -->
