@@ -98,7 +98,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	if C.Unitframe.Enable then
-		PlayerFrame:SetParent(UIFrameHider)
 		InterfaceOptionsCombatPanelTargetOfTarget:SetScale(0.00001)
 		InterfaceOptionsCombatPanelTargetOfTarget:SetAlpha(0)
 	end

@@ -29,7 +29,7 @@ UIConfigLocal.ActionBarSplitBars = "Teile die fünfte Aktionsleiste auf zwei Lei
 UIConfigLocal.ActionBarStanceBarHide = "Verstecke die Haltungsleiste"
 UIConfigLocal.ActionBarStanceBarHorizontal = "Aktiviere horizontale Haltungsleiste"
 UIConfigLocal.ActionBarStanceBarMouseover = "Haltungsleiste bei mouseover"
-UIConfigLocal.ActionBarToggleMode = "Aktivere Umschaltmode"..ToggleOffReminde
+UIConfigLocal.ActionBarToggleMode = "Aktivere Umschaltmode"..ToggleOffReminder
 
 -- Ankündigungen
 UIConfigLocal.Announcements = "Ankündigungen"
