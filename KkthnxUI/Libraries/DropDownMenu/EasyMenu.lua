@@ -1,3 +1,4 @@
+
 -- Simplified Menu Display System
 --	This is a basic system for displaying a menu from a structure table.
 --
