@@ -4,7 +4,7 @@ local _G = _G
 
 local AddOnName, Engine = ...
 
-Engine[1] = {} -- T, Functions, Constants, Variables
+Engine[1] = {} -- K, Functions, Constants, Variables
 Engine[2] = {} -- C, Config
 Engine[3] = {} -- L, Localization
 Engine[4] = {} -- G, Globals (Optionnal)
