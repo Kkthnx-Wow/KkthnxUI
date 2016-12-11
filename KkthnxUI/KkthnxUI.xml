@@ -60,7 +60,6 @@
 	<Script file="Core\Movers.lua"/>
 	<Script file="Core\Temp.lua"/>
 	<Script file="Core\Tutorials.lua"/>
-	<Script file="Core\Faq.lua"/>
 
 	<!-- Panels -->
 	<Script file="Modules\Panels\Panels.lua"/>
