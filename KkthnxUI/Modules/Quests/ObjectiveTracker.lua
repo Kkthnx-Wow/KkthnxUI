@@ -11,7 +11,7 @@ ObjectiveFrameHolder:SetWidth(224)
 Movers:RegisterFrame(ObjectiveFrameHolder)
 
 ObjectiveTrackerFrame:ClearAllPoints()
-ObjectiveTrackerFrame:SetPoint("TOPLEFT", OTFMover, "TOPLEFT", 20, 0)
+ObjectiveTrackerFrame:SetPoint("TOPLEFT", ObjectiveFrameHolder, "TOPLEFT", 20, 0)
 ObjectiveTrackerFrame:SetHeight(K.ScreenHeight / 1.6)
 
 hooksecurefunc(ObjectiveTrackerFrame, "SetPoint", function(_, _, parent)
