@@ -13,90 +13,83 @@ local FrameStackTooltip_Toggle = FrameStackTooltip_Toggle
 -- GLOBALS: CopyFrame, SlashCmdList
 
 --[[
-	Command to grab frame information when mouseing over a frame
+Command to grab frame information when mouseing over a frame
 
-	Frame Name
-	Width
-	Height
-	Strata
-	Level
-	X Offset
-	Y Offset
-	Point
+Frame Name
+Width
+Height
+Strata
+Level
+X Offset
+Y Offset
+Point
 --]]
 
-SLASH_FRAME1 = "/frame"
-SlashCmdList["FRAME"] = function(arg)
+SlashCmdList.FRAME = function(arg)
 	if arg ~= "" then
 		arg = _G[arg]
 	else
 		arg = GetMouseFocus()
 	end
-	if arg ~= nil then FRAME = arg end -- Set the global variable frame to = whatever we are mousing over to simplify messing with frames that have no name.
+	if arg ~= nil then FRAME = arg end
 	if arg ~= nil and arg:GetName() ~= nil then
 		local point, relativeTo, relativePoint, xOfs, yOfs = arg:GetPoint()
-		ChatFrame1:AddMessage("|cffCC0000----------------------------")
-		ChatFrame1:AddMessage("Name: |cffffff00"..arg:GetName())
+		print("|cffCC0000--------------------------------------------------------------------|r")
+		print("Name: |cffFFD100"..arg:GetName().."|r")
 		if arg:GetParent() and arg:GetParent():GetName() then
-			ChatFrame1:AddMessage("Parent: |cffffff00"..arg:GetParent():GetName())
+			print("Parent: |cffFFD100"..arg:GetParent():GetName().."|r")
 		end
 
-		ChatFrame1:AddMessage("Width: |cffffff00"..format("%.2f", arg:GetWidth()))
-		ChatFrame1:AddMessage("Height: |cffffff00"..format("%.2f", arg:GetHeight()))
-		ChatFrame1:AddMessage("Strata: |cffffff00"..arg:GetFrameStrata())
-		ChatFrame1:AddMessage("Level: |cffffff00"..arg:GetFrameLevel())
+		print("Width: |cffFFD100"..format("%.2f", arg:GetWidth()).."|r")
+		print("Height: |cffFFD100"..format("%.2f", arg:GetHeight()).."|r")
+		print("Strata: |cffFFD100"..arg:GetFrameStrata().."|r")
+		print("Level: |cffFFD100"..arg:GetFrameLevel().."|r")
 
+		if relativeTo and relativeTo:GetName() then
+			print('Point: |cffFFD100 "'..point..'", '..relativeTo:GetName()..', "'..relativePoint..'"'.."|r")
+		end
 		if xOfs then
-			ChatFrame1:AddMessage("X: |cffffff00"..format("%.2f", xOfs))
+			print("X: |cffFFD100"..format("%.2f", xOfs).."|r")
 		end
 		if yOfs then
-			ChatFrame1:AddMessage("Y: |cffffff00"..format("%.2f", yOfs))
+			print("Y: |cffFFD100"..format("%.2f", yOfs).."|r")
 		end
-		if relativeTo and relativeTo:GetName() then
-			ChatFrame1:AddMessage("Point: |cffffff00"..point.."|r anchored to "..relativeTo:GetName().."'s |cffffff00"..relativePoint)
-		end
-		ChatFrame1:AddMessage("|cffCC0000----------------------------|r")
+		print("|cffCC0000--------------------------------------------------------------------|r")
 	elseif arg == nil then
-		ChatFrame1:AddMessage("Invalid frame name")
+		print("Invalid frame name")
 	else
-		ChatFrame1:AddMessage("Could not find frame info")
+		print("Could not find frame info")
 	end
 end
+SLASH_FRAME1 = "/frame"
 
-SLASH_FRAMELIST1 = "/framelist"
 SlashCmdList["FRAMELIST"] = function(msg)
-	if(not FrameStackTooltip) then
+	if not FrameStackTooltip then
 		UIParentLoadAddOn("Blizzard_DebugTools")
 	end
 
 	local isPreviouslyShown = FrameStackTooltip:IsShown()
-	if(not isPreviouslyShown) then
-		if(msg == tostring(true)) then
+	if not isPreviouslyShown then
+		if msg == tostring(true) then
 			FrameStackTooltip_Toggle(true)
 		else
 			FrameStackTooltip_Toggle()
 		end
 	end
 
-	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	print("|cffCC0000--------------------------------------------------------------------|r")
 	for i = 2, FrameStackTooltip:NumLines() do
 		local text = _G["FrameStackTooltipTextLeft"..i]:GetText()
-		if(text and text ~= "") then
-			print(text)
+		if text and text ~= "" then
+			print("|cffFFD100"..text)
 		end
 	end
-	print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+	print("|cffCC0000--------------------------------------------------------------------|r")
 
-
-	if CopyFrame then
-		CopyFrame:Hide()
-	end
-
-	SlashCmdList.COPY_CHAT(ChatFrame1)
-	if(not isPreviouslyShown) then
-		FrameStackTooltip_Toggle()
-	end
+	FrameStackTooltip_Toggle()
+	SlashCmdList.COPY_CHAT()
 end
+SLASH_FRAMELIST1 = "/framelist"
 
 local function TextureList(frame)
 	frame = _G[frame] or FRAME
