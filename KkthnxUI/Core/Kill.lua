@@ -88,15 +88,14 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		HelpPlateTooltip:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
 		SpellBookFrameTutorialButton:Kill()
 		TalentMicroButtonAlert:Kill()
 		TutorialFrameAlertButton:Kill()
 		WorldMapFrameTutorialButton:Kill()
 	end
-
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
-	SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
 
 	if C.Unitframe.Enable then
 		PlayerFrame:SetParent(UIFrameHider)
