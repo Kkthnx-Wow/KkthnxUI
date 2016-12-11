@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 if C.Auras.Enable ~= true then return end
 
 local KkthnxUIAuras = K.Auras

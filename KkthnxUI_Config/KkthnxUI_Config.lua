@@ -1,5 +1,4 @@
--- GUI for KkthnxUI (by fernir, tukz and tohveli, shestak)
-local K, C, L
+-- GUI for KkthnxUI (by Fernir, Shestak Tukz and Tohveli)
 
 -- Lua API
 local _G = _G
@@ -27,11 +26,11 @@ local UIParent = UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CreateUIConfig, SLASH_CONFIG1, SLASH_CONFIG2, SLASH_CONFIG3, SLASH_CONFIG4
--- GLOBALS: SLASH_CONFIG5, SLASH_RESETCONFIG1, UIConfigLocal, Aurora, KkthnxUIConfigAllCharacters
 -- GLOBALS: KkthnxUIConfigAll, UIConfigCover, KkthnxUIConfigPublic, KkthnxUIConfigPrivate, UIConfig
 -- GLOBALS: KkthnxUIDataPerChar, KkthnxUI, UIConfigGroupSlider, Print, UIConfigMain, UISpecialFrames
--- GLOBALS: UIConfigGroup, GameFontHighlight, OKAY, colorbuttonname, COLOR, DEFAULT, loaded, ColorPickerFrame
 -- GLOBALS: OpacitySliderFrame, Error, GameMenuFrame, GameMenuButtonLogout, GameMenuButtonAddons
+-- GLOBALS: SLASH_CONFIG5, SLASH_RESETCONFIG1, UIConfigLocal, Aurora, KkthnxUIConfigAllCharacters
+-- GLOBALS: UIConfigGroup, GameFontHighlight, OKAY, colorbuttonname, COLOR, DEFAULT, loaded, ColorPickerFrame
 
 local Locale = GetLocale()
 local name = UnitName("player")
@@ -80,6 +79,7 @@ local function Local(o)
 end
 
 local NewButton = function(text, parent)
+	local K, C, L = unpack(KkthnxUI)
 
 	local result = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
 	local label = result:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -98,6 +98,7 @@ local NewButton = function(text, parent)
 end
 
 local NormalButton = function(text, parent)
+	local K, C, L = unpack(KkthnxUI)
 
 	local result = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
 	local label = result:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -199,7 +200,7 @@ end
 local VISIBLE_GROUP = nil
 local lastbutton = nil
 local function ShowGroup(group, button)
-	local K = KkthnxUI[1]
+	local K, C, L = unpack(KkthnxUI)
 
 	if lastbutton then lastbutton:SetText(lastbutton:GetText().sub(lastbutton:GetText(), 11, -3)) end
 	if VISIBLE_GROUP then _G["UIConfig"..VISIBLE_GROUP]:Hide() end
@@ -253,8 +254,7 @@ end
 local Loaded
 function CreateUIConfig()
 	if InCombatLockdown() and not Loaded then Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
-	local K = KkthnxUI[1]
-	local C = KkthnxUI[2]
+	local K, C, L = unpack(KkthnxUI)
 
 	if UIConfigMain then
 		ShowGroup("General")
@@ -673,7 +673,7 @@ do
 	frame:SetScript("OnShow", function(self)
 		if self.show then return end
 
-		local K = KkthnxUI[1]
+		local K, C, L = unpack(KkthnxUI)
 
 		local title = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title:SetPoint("TOPLEFT", 16, -16)

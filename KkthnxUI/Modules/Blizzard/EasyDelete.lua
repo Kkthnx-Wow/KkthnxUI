@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 if C.Blizzard.EasyDelete ~= true then return end
 
 local EasyDelete = CreateFrame("Frame")

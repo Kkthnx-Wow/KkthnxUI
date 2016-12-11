@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 if C.Minimap.Enable ~= true or C.DataText.Location ~= true or K.CheckAddOn("Carbonite") then return end
 
 local Unknown = UNKNOWN

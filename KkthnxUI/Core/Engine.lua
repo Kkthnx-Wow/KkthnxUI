@@ -1,31 +1,23 @@
 -- Initiation / Engine of KkthnxUI
-local _G =_G
+
+local _G = _G
 
 local AddOnName, Engine = ...
 
-Engine[1] = {}
-Engine[2] = {}
-Engine[3] = {}
+Engine[1] = {} -- T, Functions, Constants, Variables
+Engine[2] = {} -- C, Config
+Engine[3] = {} -- L, Localization
+Engine[4] = {} -- G, Globals (Optionnal)
 
-function Engine:unpack()
-	return self[1], self[2], self[3]
-end
-
-_G[AddOnName] = Engine
+_G[AddOnName] = Engine -- Allow other addons to use our Engine
 
 --[[
 -- ** KkthnxUI Engine Documentation ** --
 
-	This should be at the top of every file inside of the KkthnxUI AddOn.
-	local K, C, L = select(2, ...):unpack()
-	You can also do local K, C = select(2, ...):unpack()
-	As well as K = select(2, ...):unpack()
-	This is going to depend on what you are going to be using in the file.
+To load the AddOn engine add this to the top of your file:
+local K, C, L = unpack(select(2, ...)) -- Import: Engine, Config, Locals
 
-	This is how another addon imports the KkthnxUI engine.
-	local K, C, L = KkthnxUI:unpack()
-	You can also do local K, C = KkthnxUI:unpack()
-	As well as K = select(2, ...):unpack()
-	This is going to depend on what you are going to be using in the file.
+To load the AddOn engine inside another addon add this to the top of your file:
+local K, C, L = unpack(KkthnxUI) -- Import: Engine, Config, Locals
 
 --]]

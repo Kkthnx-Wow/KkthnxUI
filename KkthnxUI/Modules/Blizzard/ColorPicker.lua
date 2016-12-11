@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 if C.Misc.ColorPicker ~= true then return end
 
 -- Credit to Jaslm, most of this code is his from the addon ColorPickerPlus

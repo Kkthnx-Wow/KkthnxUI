@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 
 local ipairs = ipairs
 local format, sub, split = string.format, string.sub, string.split

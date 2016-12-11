@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 
 -- If you're saving frame positions, use UIParent, not UIParent
 C["Position"] = {

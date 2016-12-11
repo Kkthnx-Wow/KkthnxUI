@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 if C.Misc.EnhancedMail ~= true then return end
 if K.CheckAddOn("OpenAll") or K.CheckAddOn("Postal") or K.CheckAddOn("TradeSkillMaster_Mailing") then return end
 

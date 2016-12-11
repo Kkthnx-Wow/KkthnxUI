@@ -1,4 +1,4 @@
-local K, C, L = select(2, ...):unpack()
+local K, C, L = unpack(select(2, ...))
 
 local GetGameTime = GetGameTime
 local EuropeString = "%s%02d|r:%s%02d|r"
