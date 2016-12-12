@@ -217,7 +217,7 @@ if C.DataText.Battleground == true and C.DataText.BottomBar == true then
 	BattleGroundFrame.Background = BattleGroundFrame:CreateTexture(nil, "BORDER")
 	BattleGroundFrame.Background:SetPoint("TOPLEFT", BattleGroundFrame, 4, -4)
 	BattleGroundFrame.Background:SetPoint("BOTTOMRIGHT", BattleGroundFrame, -4, 4)
-	BattleGroundFrame.Background:SetColorTexture(0.15, 0.15, 0.15)
+	BattleGroundFrame.Background:SetColorTexture(0.019, 0.019, 0.019, 0.9)
 end
 
 -- ToggleButton Special

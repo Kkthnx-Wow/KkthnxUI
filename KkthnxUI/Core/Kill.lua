@@ -58,16 +58,16 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		if not CompactRaidFrameManager_UpdateShown then
 			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 		else
-			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
 			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
+			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
 			if not InCombatLockdown() then
-				CompactRaidFrameManager:Kill()
 				CompactRaidFrameContainer:Kill()
+				CompactRaidFrameManager:Kill()
 			end
 
-			CompactUnitFrameProfiles_ApplyProfile = K.Noop
-			CompactRaidFrameManager_UpdateShown = K.Noop
 			CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
+			CompactRaidFrameManager_UpdateShown = K.Noop
+			CompactUnitFrameProfiles_ApplyProfile = K.Noop
 		end
 	end
 
@@ -118,14 +118,19 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	if C.ActionBar.Enable then
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Hide()
 		InterfaceOptionsActionBarsPanelBottomLeft:Hide()
 		InterfaceOptionsActionBarsPanelBottomRight:Hide()
 		InterfaceOptionsActionBarsPanelRight:Hide()
 		InterfaceOptionsActionBarsPanelRightTwo:Hide()
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Hide()
 	end
 
 	if C.Minimap.Enable then
 		InterfaceOptionsDisplayPanelRotateMinimap:Kill()
+	end
+
+	if C.Bags.Enable then
+		SetInsertItemsLeftToRight(false)
+		SetSortBagsRightToLeft(true)
 	end
 end)

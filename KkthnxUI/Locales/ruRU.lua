@@ -31,6 +31,13 @@ L.Merchant = {
 	SoldTrash = "Серые вещи были проданы. Вы заработали "
 }
 
+L.Bags = {
+	RightClickClose = "ПКМ, чтобы открыть меню",
+	RightClickSearch = "ПКМ для поиска",
+	ShowBags = "Показать сумки",
+	StackMenu = "Сложить"
+}
+
 -- Bindings Localization
 L.Bind = {
 	Binding = "Назначение клавиш",
@@ -332,8 +339,11 @@ L.Tooltip = {
 	AchievementComplete = "Ваш статус: Завершено на ",
 	AchievementIncomplete = "Ваш статус: Незавершено",
 	AchievementStatus = "Ваш статус:",
+	InspectOpen = "Открыто окно осмотра",
 	ItemCount = "Количество предметов:",
 	ItemID = "ID предмета:",
+	Loading = "Загрузка...",
+	NoTalents = "Нет талантов",
 	SpellID = "ID заклинания:"
 }
 

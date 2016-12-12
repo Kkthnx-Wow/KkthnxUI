@@ -16,7 +16,6 @@ local CHAT_FLAG_AFK = CHAT_FLAG_AFK
 local CHAT_FLAG_DND = CHAT_FLAG_DND
 local CreateFrame = CreateFrame
 local FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL
-local GetAverageItemLevel = GetAverageItemLevel
 local GetCreatureDifficultyColor = GetCreatureDifficultyColor
 local GetGuildInfo = GetGuildInfo
 local GetItemInfo = GetItemInfo
@@ -55,9 +54,8 @@ local UnitReaction = UnitReaction
 local UnitRealmRelationship = UnitRealmRelationship
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: TooltipAnchor, GameTooltipTextLeft1, GameTooltipTextLeft2, GameTooltip
--- GLOBALS: MAXIMUM, NONE, UNKNOWN, ItemLevel, InspectFrame, MaxItemLevel, PvPItemLevel
--- GLOBALS: Health, MaxHealth, CURRENTLY_EQUIPPED, PVP, SPECIALIZATION, DEAD
+-- GLOBALS: MAXIMUM, NONE, UNKNOWN, Health, MaxHealth, DEAD, GameTooltip, GameTooltipTextLeft2
+-- GLOBALS: TooltipAnchor, GameTooltipTextLeft1, GameTooltipTextLeft2
 
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
@@ -205,44 +203,6 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
-		if (C.Tooltip.ShowSpec and IsAltKeyDown()) then
-			local Talent = K.Tooltip.Talent
-
-			ItemLevel = "..."
-			TalentSpec = "..."
-
-			if (Unit ~= "player") then
-				Talent.CurrentGUID = UnitGUID(Unit)
-				Talent.CurrentUnit = Unit
-
-				for i, _ in pairs(Talent.Cache) do
-					local Cache = Talent.Cache[i]
-
-					if Cache.GUID == Talent.CurrentGUID then
-						ItemLevel = Cache.ItemLevel or "..."
-						TalentSpec = Cache.TalentSpec or "..."
-						LastUpdate = Cache.LastUpdate and abs(Cache.LastUpdate - floor(GetTime())) or 30
-					end
-				end
-
-				if (Unit and (CanInspect(Unit))) and (not (InspectFrame and InspectFrame:IsShown())) then
-					local LastInspectTime = GetTime() - Talent.LastInspectRequest
-
-					Talent.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
-
-					Talent:Show()
-				end
-			else
-				local Best, Current, PVP = GetAverageItemLevel()
-
-				ItemLevel = floor(Current) or UNKNOWN
-				MaxItemLevel = floor(Best) or UNKNOWN
-				PvPItemLevel = floor(PVP) or UNKNOWN
-
-				TalentSpec = Talent:GetTalentSpec() or NONE
-			end
-		end
-
 		if (UnitIsAFK(Unit)) then
 			self:AppendText((" %s"):format("|cffff0000".. CHAT_FLAG_AFK .."|r"))
 		elseif UnitIsDND(Unit) then
@@ -288,20 +248,6 @@ function Tooltip:OnTooltipSetUnit()
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
 	end
 
-	if (C.Tooltip.ShowSpec and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
-		GameTooltip:AddLine(" ")
-
-
-		if Unit == "player" then
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..CURRENTLY_EQUIPPED .."): |cff3eea23"..ItemLevel.."|r")
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..PVP.."): |cff3eea23"..PvPItemLevel.."|r")
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..MAXIMUM.."): |cff3eea23"..MaxItemLevel.."|r")
-		else
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ItemLevel.."|r")
-		end
-
-		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
-	end
 	self.fadeOut = nil
 end
 

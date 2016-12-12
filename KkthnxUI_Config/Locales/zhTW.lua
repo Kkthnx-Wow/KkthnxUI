@@ -53,7 +53,6 @@ UIConfigLocal.AutomationTabBinder = "Auto change tab key to only target enemy pl
 
 -- Bag
 UIConfigLocal.Bags = "Bags"
-UIConfigLocal.BagsBagFilter = "Automatically delete useless items from your bags when looted"
 UIConfigLocal.BagsButtonSize = "Set a size for bag slots"
 UIConfigLocal.BagsEnable = "Enable Bags"
 UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
@@ -278,8 +277,9 @@ UIConfigLocal.TooltipHyperLink = "Display the hyperlink tooltip while hovering o
 UIConfigLocal.TooltipInstanceLock = "Your instance lock status in tooltip"
 UIConfigLocal.TooltipItemCount = "Item count"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
-UIConfigLocal.TooltipShowSpec = "Display player specialization tooltip"
+UIConfigLocal.TooltipItemLevel = "Display target Item level on tooltip"
 UIConfigLocal.TooltipSpellID = "Spell ID"
+UIConfigLocal.TooltipTalents = "Display target talents on tooltip"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "Unit Frames"

@@ -50,14 +50,12 @@ UIConfigLocal.AutomationTabBinder = "Auto change tab key to only target enemy pl
 
 -- Bag
 UIConfigLocal.Bags = "Bags"
-UIConfigLocal.BagsBagFilter = "Automatically delete useless items from your bags when looted"
-UIConfigLocal.BagsButtonSize = "Set a size for bag slots"
-UIConfigLocal.BagsEnable = "Enable Bags"
-UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
-UIConfigLocal.BagsItemsPerRow = "Set how many slots are on each row of the bags"
-UIConfigLocal.BagsPulseNewItem = "New items in your bags will have a flash animation"
-UIConfigLocal.BagsSortRightToLeft = "Sort bags right to left, bottom to top"
-UIConfigLocal.BagsSpacing = "Set the spacing between bag slots"
+UIConfigLocal.BagsBagColumns = "Number of columns in main bag"
+UIConfigLocal.BagsBankColumns = "Number of columns in bank"
+UIConfigLocal.BagsButtonSize = "Buttons size"
+UIConfigLocal.BagsButtonSpace = "Buttons space"
+UIConfigLocal.BagsEnable = "Enable bags"
+UIConfigLocal.BagsItemLevel = "Show item level for weapons and armor"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
@@ -275,8 +273,9 @@ UIConfigLocal.TooltipHyperLink = "Display the hyperlink tooltip while hovering o
 UIConfigLocal.TooltipInstanceLock = "Your instance lock status in tooltip"
 UIConfigLocal.TooltipItemCount = "Item count"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
-UIConfigLocal.TooltipShowSpec = "Display player specialization tooltip"
+UIConfigLocal.TooltipItemLevel = "Display target Item level on tooltip"
 UIConfigLocal.TooltipSpellID = "Spell ID"
+UIConfigLocal.TooltipTalents = "Display target talents on tooltip"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "Unit Frames"

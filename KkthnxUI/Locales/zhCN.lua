@@ -31,6 +31,14 @@ L.Merchant = {
 	SoldTrash = "Your vendor trash has been sold and you earned"
 }
 
+-- Bags Localization
+L.Bags = {
+	RightClickClose = "Right-click to open menu",
+	RightClickSearch = "Right-click to search",
+	ShowBags = "Show Bags",
+	StackMenu = "Stack"
+}
+
 -- Bindings Localization
 L.Bind = {
 	Binding = "Binding",
@@ -332,8 +340,11 @@ L.Tooltip = {
 	AchievementComplete = "Your Status: Completed on ",
 	AchievementIncomplete = "Your Status: Incomplete",
 	AchievementStatus = "Your Status:",
+	InspectOpen = "Inspect Frame is open",
 	ItemCount = "Item count:",
 	ItemID = "Item ID:",
+	Loading = "Loading...",
+	NoTalents = "No Talents",
 	SpellID = "Spell ID:"
 }
 

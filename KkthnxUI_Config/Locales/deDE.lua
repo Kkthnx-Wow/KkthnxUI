@@ -53,14 +53,13 @@ UIConfigLocal.AutomationTabBinder = "Automatischer Wechsel der Tab-Taste um nur 
 
 -- Taschen
 UIConfigLocal.Bags = "Taschen"
-UIConfigLocal.BagsBagFilter = "Lösche automatisch unbrauchbare Gegenstände aus Deinen Taschen nach dem aufheben"
-UIConfigLocal.BagsButtonSize = "Größe der Taschenplätze"
-UIConfigLocal.BagsEnable = "Aktiviere die 'Alles in einer Tasche' Ansicht"
-UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
-UIConfigLocal.BagsItemsPerRow = "aschenplatzanzahl pro Reihe"
-UIConfigLocal.BagsPulseNewItem = "Aktiviere Pulseanimation für neue Gegenstände"
-UIConfigLocal.BagsSortRightToLeft = "Sort bags right to left, bottom to top"
-UIConfigLocal.BagsSpacing = "Zwischenraum zwischen den Taschenslots"
+UIConfigLocal.BagsBagColumns = "Anzahl der Spalten in der Tasche"
+UIConfigLocal.BagsBagFilter = "Löscht automatisch unbrauchebare Items aus den Taschen wenn gelootet wird"
+UIConfigLocal.BagsBankColumns = "Anzahl der Spalten in der Bank"
+UIConfigLocal.BagsButtonSize = "Buttongröße"
+UIConfigLocal.BagsButtonSpace = "Buttonabstand"
+UIConfigLocal.BagsEnable = "Taschen aktivieren"
+UIConfigLocal.BagsItemLevel = "Zeigt Itemlevel der Waffen & Rüstung"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
@@ -278,8 +277,10 @@ UIConfigLocal.TooltipHyperLink = "Zeige den Hyperlinktooltip während du it der 
 UIConfigLocal.TooltipInstanceLock = "Deine Instantensperrungen im Tooltip anzeigen"
 UIConfigLocal.TooltipItemCount = "Gegenstandsmenge anzeigen"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
-UIConfigLocal.TooltipShowSpec = "Zeige die Spieler Spezialisierung und den Gegenstandlevel im Tooltip an"
+UIConfigLocal.TooltipItemLevel = "Anzeige der Zielposition auf Tooltip"
 UIConfigLocal.TooltipSpellID = "Zauber-ID anzeigen"
+UIConfigLocal.TooltipTalents = "Zeige die talente im Tooltip an"
+UIConfigLocal.TooltipItemLevel = "Display target Item level on tooltip"
 
 -- Einheitenfenster
 UIConfigLocal.Unitframe = "Einheitenfenster"

@@ -71,6 +71,7 @@ function oUFKkthnx:START_TIMER(event)
 			local region = select(i, bar:GetRegions())
 			if (region and region:GetObjectType() == "FontString") then
 				region:SetFont(C.Media.Font, 13, C.Media.Font_Style)
+				region:SetShadowOffset(0, 0)
 			end
 		end
 	end

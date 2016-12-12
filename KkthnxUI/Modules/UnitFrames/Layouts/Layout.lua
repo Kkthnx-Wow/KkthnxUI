@@ -1084,6 +1084,7 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 
 	local text = _G["MirrorTimer" .. i .. "Text"]
 	text:SetFont(C.Media.Font, 13, C.Media.Font_Style)
+	text:SetShadowOffset(0, 0)
 	text:ClearAllPoints()
 	text:SetPoint("CENTER", bar)
 	bar.text = text

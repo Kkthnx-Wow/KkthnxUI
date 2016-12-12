@@ -53,14 +53,12 @@ UIConfigLocal.AutomationTabBinder = "Автоматически выбирать
 
 -- Сумки
 UIConfigLocal.Bags = "Сумки"
-UIConfigLocal.BagsBagFilter = "Автоматически удалять ненужные предметы из ваших сумок во время сбора добычи"
-UIConfigLocal.BagsButtonSize = "Размер слотов"
+UIConfigLocal.BagsBagColumns = "Количество столбцов в сумках"
+UIConfigLocal.BagsBankColumns = "Количество столбцов в банке"
+UIConfigLocal.BagsButtonSize = "Buttongröße"
+UIConfigLocal.BagsButtonSpace = "Buttonabstand"
 UIConfigLocal.BagsEnable = "Включить сумки"
-UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
-UIConfigLocal.BagsItemsPerRow = "Установить количество слотов в ряду"
-UIConfigLocal.BagsPulseNewItem = "Подсвечивать новые предметы"
-UIConfigLocal.BagsSortRightToLeft = "Sort bags right to left, bottom to top"
-UIConfigLocal.BagsSpacing = "Отступ слотов"
+UIConfigLocal.BagsItemLevel = "Показывать уровень предметов для оружия и брони"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
@@ -278,8 +276,9 @@ UIConfigLocal.TooltipHyperLink = "Показывать подсказку при
 UIConfigLocal.TooltipInstanceLock = "Отображать статус заблокированных подземелий в подсказке"
 UIConfigLocal.TooltipItemCount = "Количество предметов"
 UIConfigLocal.TooltipItemIcon = "Иконка предмета в подсказке"
-UIConfigLocal.TooltipShowSpec = "Показывать специализацию игрока"
+UIConfigLocal.TooltipItemLevel = "Дисплей целевой уровень товара по подсказке"
 UIConfigLocal.TooltipSpellID = "ID заклинаний"
+UIConfigLocal.TooltipTalents = "целевые Показать таланты на подсказке"
 
 -- Рамки Юнитов
 UIConfigLocal.Unitframe = "Рамки Юнитов"
