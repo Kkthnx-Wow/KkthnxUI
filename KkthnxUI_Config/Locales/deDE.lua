@@ -54,7 +54,6 @@ UIConfigLocal.AutomationTabBinder = "Automatischer Wechsel der Tab-Taste um nur 
 -- Taschen
 UIConfigLocal.Bags = "Taschen"
 UIConfigLocal.BagsBagColumns = "Anzahl der Spalten in der Tasche"
-UIConfigLocal.BagsBagFilter = "Löscht automatisch unbrauchebare Items aus den Taschen wenn gelootet wird"
 UIConfigLocal.BagsBankColumns = "Anzahl der Spalten in der Bank"
 UIConfigLocal.BagsButtonSize = "Buttongröße"
 UIConfigLocal.BagsButtonSpace = "Buttonabstand"
