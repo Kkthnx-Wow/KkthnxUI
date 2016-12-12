@@ -66,11 +66,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				end
 				self.comparing = false
 			end
-			self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-			self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end)
-		GameTooltip:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-		GameTooltip:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 
 		hooksecurefunc(GameTooltip, "Hide", function(self) for _, tt in pairs(self.shoppingTooltips) do tt:Hide() end end)
 
