@@ -130,7 +130,6 @@
 	<Script file="Modules\Blizzard\ClassColor.lua"/>
 	<Script file="Modules\Blizzard\ColorPicker.lua"/>
 	<Script file="Modules\Blizzard\ColorTextures.lua"/>
-	<Script file="Modules\Blizzard\EasyDelete.lua"/>
 	<Script file="Modules\Blizzard\Errors.lua"/>
 	<Script file="Modules\Blizzard\ExtraActionBar.lua"/>
 	<Script file="Modules\Blizzard\Fixes.lua"/>

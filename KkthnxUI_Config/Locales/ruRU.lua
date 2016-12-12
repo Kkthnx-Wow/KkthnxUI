@@ -64,7 +64,6 @@ UIConfigLocal.BagsItemLevel = "Показывать уровень предме�
 UIConfigLocal.Blizzard = "Blizzard"
 UIConfigLocal.BlizzardClassColor = "Окрасить имена игроков в списке друзей"
 UIConfigLocal.BlizzardColorTextures = "Изменить оттенок цвета большинства элементов UI."
-UIConfigLocal.BlizzardEasyDelete = "Удалять |CFF0080ffРедкие|r и|CFFb048f8Превосходные|r предметы без необходимости ввода 'УДАЛИТЬ'"
 UIConfigLocal.BlizzardReplaceBlizzardFonts = "Заменить стандартный шрифт |cff00B4FFBlizzard|r на различных элементах |cff3c9bedKkthnxUI|r."
 UIConfigLocal.BlizzardReputationGain = "Показывать сообщения о полученной репутации"
 UIConfigLocal.BlizzardTexturesColor = "Оттенок цвета текстур UI (по умолчанию цвет класса)"
