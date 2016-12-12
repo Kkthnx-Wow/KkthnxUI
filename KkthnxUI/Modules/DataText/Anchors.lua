@@ -4,7 +4,7 @@ local tinsert = tinsert
 
 local DataTexts = K.DataTexts
 
-local MenuFrame = CreateFrame("Frame", "DataTextToggleDropDown", UIParent, "UIDropDownMenuTemplate")
+local MenuFrame = CreateFrame("Frame", "DataTextToggleDropDown", UIParent, "Lib_UIDropDownMenuTemplate")
 local Anchors = DataTexts.Anchors
 local Menu = DataTexts.Menu
 local Active = false

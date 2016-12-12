@@ -44,7 +44,7 @@ local UnitName = UnitName
 local _, _NS = ...
 local Butsu = CreateFrame("Button", "Butsu")
 local lb = CreateFrame("Button", "ButsuAdv", Butsu, "UIPanelScrollDownButtonTemplate")
-local LDD = CreateFrame("Frame", "ButsuLDD", Butsu, "UIDropDownMenuTemplate")
+local LDD = CreateFrame("Frame", "ButsuLDD", Butsu, "Lib_UIDropDownMenuTemplate")
 Butsu:Hide()
 
 Butsu:SetScript("OnEvent", function(self, event, ...)

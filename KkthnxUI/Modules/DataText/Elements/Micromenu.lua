@@ -10,7 +10,7 @@ local CreateFrame, UIParent = CreateFrame, UIParent
 local ToggleFrame = ToggleFrame
 local ToggleDropDownMenu = ToggleDropDownMenu
 
-local MicroMenu = CreateFrame("Frame", "KkthnxUIMicroButtonsDropDown", UIParent, "UIDropDownMenuTemplate")
+local MicroMenu = CreateFrame("Frame", "KkthnxUIMicroButtonsDropDown", UIParent, "Lib_UIDropDownMenuTemplate")
 MicroMenu.Buttons = {
 	{text = CHARACTER_BUTTON,
 		func = function()

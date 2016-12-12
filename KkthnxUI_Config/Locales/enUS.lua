@@ -125,6 +125,12 @@ UIConfigLocal.DataTextSystem = "Enable system data text under the minimap displa
 UIConfigLocal.DataTextTime = "Enable clock data text displaying time information at the bottom of the minimap"
 UIConfigLocal.DataTextTime24Hr = "Set the Time data text to 24 hour format"
 
+-- Error
+UIConfigLocal.Error = "Errors"
+UIConfigLocal.ErrorBlack = "Hide errors from black list"
+UIConfigLocal.ErrorWhite = "Show errors from white list"
+UIConfigLocal.ErrorCombat = "Hide all errors in combat"
+
 -- Cooldown
 UIConfigLocal.Cooldown = "Cooldown"
 UIConfigLocal.CooldownEnable = "Enable UI cooldown module"
@@ -181,7 +187,6 @@ UIConfigLocal.MiscAutoSellGrays = "When visiting a vendor, automatically sell gr
 UIConfigLocal.MiscBGSpam = "Remove Boss Emote spam during BG"
 UIConfigLocal.MiscColorPicker = "Improved color picker"
 UIConfigLocal.MiscEnhancedMail = "Adds a take all button to your mail frame."
-UIConfigLocal.MiscErrors = "Filters out messages from the UIErrorsFrame."
 UIConfigLocal.MiscHideTalkingHead = "Hide Talking Head Frame"
 UIConfigLocal.MiscInviteKeyword = "Short keyword for invite (/ainv)"
 UIConfigLocal.MiscItemLevel = "Item level on character slot buttons"

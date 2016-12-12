@@ -128,6 +128,12 @@ UIConfigLocal.DataTextSystem = "Aktivere den Datatext unter der Minimap, der Dir
 UIConfigLocal.DataTextTime = "Aktiviere den Datatext auf der Minimap, der Dir die Uhrzeit anzeigt"
 UIConfigLocal.DataTextTime24Hr = "Stelle die Zeitanzeige in der MInimap auf das 24 Stunden Format um"
 
+-- Fehler
+UIConfigLocal.Error = "Fehler"
+UIConfigLocal.ErrorBlack = "Verstecke Fehler der Schwarzen Liste"
+UIConfigLocal.ErrorWhite = "Zeige Fehler der Weißen Liste"
+UIConfigLocal.ErrorCombat = "Verberge alle Fehlermeldungen im Kampf"
+
 -- Abklingzeiten
 UIConfigLocal.Cooldown = "Abklingzeiten"
 UIConfigLocal.CooldownEnable = "Aktivere das UI Modul für die Abklingzeiten"
@@ -184,7 +190,6 @@ UIConfigLocal.MiscAutoSellGrays = "Verkaufe automatisch graue Gegenstände beim 
 UIConfigLocal.MiscBGSpam = "Lösche 'Boss Emote spam' während du auf dem Schlachtfeld bist"
 UIConfigLocal.MiscColorPicker = "Verbesserte Farbauswahl"
 UIConfigLocal.MiscEnhancedMail = "Fügt einen 'Öffne Alles' Button deinem Briefkasten hinzu."
-UIConfigLocal.MiscErrors = "Filtert Nachrichten aus dem UIFehlerFenster raus."
 UIConfigLocal.MiscInviteKeyword = "Schlüsselwort zum einladen (/ainv)"
 UIConfigLocal.MiscItemLevel = "Zeige den Itemlevel auf Deinen Gegenständen in der Charakterübersicht an"
 UIConfigLocal.MiscMoveBlizzard = "Verschiebe einige Blizzard Fenster"

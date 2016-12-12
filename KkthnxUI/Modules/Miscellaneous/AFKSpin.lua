@@ -36,12 +36,11 @@ local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local RemoveExtraSpaces = RemoveExtraSpaces
 local Screenshot = Screenshot
 local SetCVar = SetCVar
-local UIFrameFadeIn = UIFrameFadeIn
 local UnitFactionGroup = UnitFactionGroup
 local UnitIsAFK = UnitIsAFK
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel
+-- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, UIFrameFadeIn
 
 local stats = {
 	60,		-- Total deaths

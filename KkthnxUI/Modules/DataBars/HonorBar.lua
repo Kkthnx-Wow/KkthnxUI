@@ -59,7 +59,7 @@ HonorBar:SetScript("OnMouseDown", function(self, button)
 		end
 	elseif(button == "RightButton") then
 
-		if(not K.CheckAddOn("Blizzard_TalentUI")) then
+		if(not IsAddOnLoaded("Blizzard_TalentUI")) then
 			LoadAddOn("Blizzard_TalentUI")
 		end
 

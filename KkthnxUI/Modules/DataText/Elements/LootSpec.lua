@@ -28,7 +28,7 @@ local LOOT_SPECIALIZATION_DEFAULT = LOOT_SPECIALIZATION_DEFAULT
 local displayString = ""
 local activeString = join("", "|cff00FF00" , ACTIVE_PETS, "|r")
 local inactiveString = join("", "|cffFF0000", FACTION_INACTIVE, "|r")
-local menuFrame = CreateFrame("Frame", "KkthnxUILootSpecializationDatatextClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "KkthnxUILootSpecializationDatatextClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 
 local menuList = {
 	{text = SELECT_LOOT_SPECIALIZATION, isTitle = true, notCheckable = true},

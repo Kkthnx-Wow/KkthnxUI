@@ -132,7 +132,7 @@ local function ActiveTalents()
 	return Tree
 end
 
-local KkthnxUISpecSwap = CreateFrame("Frame", "KkthnxUISpecSwap", UIParent, "UIDropDownMenuTemplate")
+local KkthnxUISpecSwap = CreateFrame("Frame", "KkthnxUISpecSwap", UIParent, "Lib_UIDropDownMenuTemplate")
 KkthnxUISpecSwap:SetTemplate()
 KkthnxUISpecSwap:RegisterEvent("PLAYER_LOGIN")
 KkthnxUISpecSwap:SetScript("OnEvent", function(...)

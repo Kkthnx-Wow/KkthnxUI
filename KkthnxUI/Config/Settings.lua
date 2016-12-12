@@ -148,6 +148,13 @@ C["DataText"] = {
 	["BottomBar"] = true,
 }
 
+-- Errors
+C["Error"] = {
+	["Black"] = true,
+	["Combat"] = false,
+	["White"] = false,
+}
+
 -- Filger
 C["Filger"] = {
 	["BuffsSize"] = 37,
@@ -204,7 +211,6 @@ C["Misc"] = {
 	["BGSpam"] = false,
 	["ColorPicker"] = false,
 	["EnhancedMail"] = true,
-	["Errors"] = true,
 	["HideTalkingHead"] = false,
 	["InviteKeyword"] = "inv",
 	["ItemLevel"] = true,

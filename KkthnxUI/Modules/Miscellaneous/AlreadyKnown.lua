@@ -213,7 +213,7 @@ local function GuildRewards_Update()
 end
 
 local isBlizzard_GuildUILoaded
-if K.CheckAddOn("Blizzard_GuildUI") then
+if IsAddOnLoaded("Blizzard_GuildUI") then
 	isBlizzard_GuildUILoaded = true
 	hooksecurefunc("GuildRewards_Update", GuildRewards_Update)
 	hooksecurefunc(GuildRewardsContainer, "update", GuildRewards_Update)
@@ -245,7 +245,7 @@ local function GuildBankFrame_Update()
 end
 
 local isBlizzard_GuildBankUILoaded
-if K.CheckAddOn("Blizzard_GuildBankUI") then
+if IsAddOnLoaded("Blizzard_GuildBankUI") then
 	isBlizzard_GuildBankUILoaded = true
 	hooksecurefunc("GuildBankFrame_Update", GuildBankFrame_Update)
 end
@@ -306,7 +306,7 @@ local function AuctionFrameAuctions_Update()
 end
 
 local isBlizzard_AuctionUILoaded
-if K.CheckAddOn("Blizzard_AuctionUI") then
+if IsAddOnLoaded("Blizzard_AuctionUI") then
 	isBlizzard_AuctionUILoaded = true
 	hooksecurefunc("AuctionFrameBrowse_Update", AuctionFrameBrowse_Update)
 	hooksecurefunc("AuctionFrameBid_Update", AuctionFrameBid_Update)
@@ -344,7 +344,7 @@ local function BlackMarketScrollFrame_Update()
 end
 
 local isBlizzard_BlackMarketUILoaded
-if K.CheckAddOn("Blizzard_BlackMarketUI") then
+if IsAddOnLoaded("Blizzard_BlackMarketUI") then
 	isBlizzard_BlackMarketUILoaded = true
 	hooksecurefunc("BlackMarketFrame_UpdateHotItem", BlackMarketFrame_UpdateHotItem)
 	hooksecurefunc("BlackMarketScrollFrame_Update", BlackMarketScrollFrame_Update)

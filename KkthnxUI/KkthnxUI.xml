@@ -39,11 +39,13 @@
 	<!-- Config -->
 	<Script file="Config\Filters\Announcements.lua"/>
 	<Script file="Config\Filters\Cooldowns.lua"/>
+	<Script file="Config\Filters\ErrorFilter.lua"/>
 	<Script file="Config\Filters\FilgerSpells.lua"/>
 	<Script file="Config\Filters\Nameplates.lua"/>
 	<Script file="Config\Filters\NeedItems.lua"/>
 	<Script file="Config\Filters\PortraitTimers.lua"/>
 	<Script file="Config\Filters\RaidAuraWatch.lua"/>
+	<Script file="Config\Filters\SpamFilter.lua"/>
 
 	<!-- Core -->
 	<Script file="Core\API.lua"/>
@@ -130,7 +132,7 @@
 	<Script file="Modules\Blizzard\ClassColor.lua"/>
 	<Script file="Modules\Blizzard\ColorPicker.lua"/>
 	<Script file="Modules\Blizzard\ColorTextures.lua"/>
-	<Script file="Modules\Blizzard\Errors.lua"/>
+	<Script file="Modules\Blizzard\ErrorFilter.lua"/>
 	<Script file="Modules\Blizzard\ExtraActionBar.lua"/>
 	<Script file="Modules\Blizzard\Fixes.lua"/>
 	<Script file="Modules\Blizzard\Fonts.lua"/>

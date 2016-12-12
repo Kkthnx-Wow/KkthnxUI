@@ -70,7 +70,7 @@ local function UpdateGuildMessage()
 	guildMotD = GetGuildRosterMOTD()
 end
 
-local menuFrame = CreateFrame("Frame", "_GuildRightClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "_GuildRightClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 local menuList = {
 	{text = OPTIONS_MENU, isTitle = true, notCheckable = true},
 	{text = INVITE, hasArrow = true, notCheckable = true,},

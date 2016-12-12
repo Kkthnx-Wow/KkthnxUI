@@ -41,7 +41,7 @@ local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
 
-local menuFrame = CreateFrame("Frame", "KkthnxUIFriendRightClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "KkthnxUIFriendRightClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 
 local menuList = {
 	{text = OPTIONS_MENU, isTitle = true, notCheckable=true},

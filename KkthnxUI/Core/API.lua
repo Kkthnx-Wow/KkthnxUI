@@ -12,11 +12,10 @@ local unpack, select = unpack, select
 -- Wow API
 local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
-local UIFrameFadeIn, UIFrameFadeOut = UIFrameFadeIn, UIFrameFadeOut
 local UnitClass = UnitClass
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: noHover, noPushed, noChecked, self
+-- GLOBALS: noHover, noPushed, noChecked, self, UIFrameFadeIn, UIFrameFadeOut
 
 local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
 local borderr, borderg, borderb = unpack(C.Media.Border_Color)
