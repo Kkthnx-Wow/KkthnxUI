@@ -46,7 +46,8 @@ L.Bind = {
 	Instruct = "Bewege die Maus über jeden beliebigen Aktionsbutton um ihn zu belegen. Drücke ESC, oder die rechte Maustaste, um die Belegung zu verwerfen.",
 	Key = "Taste",
 	NoSet = "Keine Tastenbelegungen gesetzt",
-	Saved = "Alle Tastenbelegungen wurden gespeichert."
+	Saved = "Alle Tastenbelegungen wurden gespeichert.",
+	Trigger = "Auslöser"
 }
 
 -- Chat Localization

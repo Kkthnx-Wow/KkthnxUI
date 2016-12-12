@@ -446,7 +446,7 @@ function CreateReagentContainer()
 
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		count:SetShadowOffset(0, 0)
-		count:SetPoint("BOTTOMRIGHT", 1, 1)
+		count:SetPoint("BOTTOMRIGHT", -3, 6)
 
 		LastButton = button
 	end
@@ -567,12 +567,13 @@ function Stuffing:SlotNew(bag, slot)
 		ret.count = _G[ret.frame:GetName().."Count"]
 		ret.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		ret.count:SetShadowOffset(0, 0)
-		ret.count:SetPoint("BOTTOMRIGHT", 1, 1)
+		ret.count:SetPoint("BOTTOMRIGHT", -3, 6)
 
 		if C.Bags.ItemLevel == true then
 			ret.frame:FontString("text", C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			ret.frame.text:SetPoint("TOPLEFT", 1, -1)
+			ret.frame.text:SetPoint("TOPLEFT", 4, -4)
 			ret.frame.text:SetTextColor(1, 1, 0)
+			ret.frame.text:SetShadowOffset(0, 0)
 		end
 
 		local Battlepay = _G[ret.frame:GetName()].BattlepayItemTexture

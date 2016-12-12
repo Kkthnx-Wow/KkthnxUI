@@ -47,7 +47,8 @@ L.Bind = {
 	Instruct = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
 	Key = "Key",
 	NoSet = "No bindings set",
-	Saved = "All keybindings have been saved."
+	Saved = "All keybindings have been saved.",
+	Trigger = "Trigger"
 }
 
 -- Chat Localization
