@@ -446,7 +446,7 @@ function CreateReagentContainer()
 
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		count:SetShadowOffset(0, 0)
-		count:SetPoint("BOTTOMRIGHT", -3, 6)
+		count:SetPoint("BOTTOMRIGHT", -3, 4)
 
 		LastButton = button
 	end
@@ -567,7 +567,7 @@ function Stuffing:SlotNew(bag, slot)
 		ret.count = _G[ret.frame:GetName().."Count"]
 		ret.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		ret.count:SetShadowOffset(0, 0)
-		ret.count:SetPoint("BOTTOMRIGHT", -3, 6)
+		ret.count:SetPoint("BOTTOMRIGHT", -3, 4)
 
 		if C.Bags.ItemLevel == true then
 			ret.frame:FontString("text", C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)

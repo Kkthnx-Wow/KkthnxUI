@@ -208,15 +208,14 @@ end
 -- Battleground stats frame
 if C.DataText.Battleground == true and C.DataText.BottomBar == true then
 	local BattleGroundFrame = CreateFrame("Frame", "KkthnxUIInfoBottomBattleGround", UIParent)
-	BattleGroundFrame:SetTemplate()
-	BattleGroundFrame:SetAllPoints(KkthnxUIDataTextBottomBar)
+	BattleGroundFrame:SetBackdrop(K.BorderBackdrop)
+	BattleGroundFrame:SetInside(KkthnxUIDataTextBottomBar, 4, 4)
 	BattleGroundFrame:SetFrameStrata("LOW")
 	BattleGroundFrame:SetFrameLevel(0)
 	BattleGroundFrame:EnableMouse(true)
 
 	BattleGroundFrame.Background = BattleGroundFrame:CreateTexture(nil, "BORDER")
-	BattleGroundFrame.Background:SetPoint("TOPLEFT", BattleGroundFrame, 4, -4)
-	BattleGroundFrame.Background:SetPoint("BOTTOMRIGHT", BattleGroundFrame, -4, 4)
+	BattleGroundFrame.Background:SetAllPoints(BattleGroundFrame)
 	BattleGroundFrame.Background:SetColorTexture(0.019, 0.019, 0.019, 0.9)
 end
 

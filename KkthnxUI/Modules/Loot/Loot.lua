@@ -411,7 +411,7 @@ do
 		count:SetJustifyH("RIGHT")
 		count:SetPoint("BOTTOMRIGHT", iconFrame, "BOTTOMRIGHT", 1, 1)
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		count:SetShadowOffset(K.Mult or 1, K.Scale(-3)) -- Temp
+		count:SetShadowOffset(K.Mult, -K.Mult)
 		count:SetText(1)
 		frame.count = count
 
@@ -420,7 +420,7 @@ do
 		name:SetPoint("LEFT", icon, "RIGHT", 10, 0)
 		name:SetNonSpaceWrap(true)
 		name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		name:SetShadowOffset(K.Mult,-K.Mult)
+		name:SetShadowOffset(K.Mult, -K.Mult)
 		name:SetWidth(C.Loot.Width - C.Loot.IconSize - 25)
 		name:SetHeight(C.Media.Font_Size)
 		frame.name = name
