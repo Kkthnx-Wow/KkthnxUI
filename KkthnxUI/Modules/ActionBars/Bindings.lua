@@ -175,7 +175,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self.button.bindstring = self.button.keyBoundTarget
 				else
 					local modact = 1 + (self.button.action - 1) % 12
-					if self.button.action < 13 or self.button.action > 72 then
+					if self.button.action < 25 or self.button.action > 72 then
 						self.button.bindstring = "ACTIONBUTTON"..modact
 					elseif self.button.action < 73 and self.button.action > 60 then
 						self.button.bindstring = "MULTIACTIONBAR1BUTTON"..modact
@@ -340,7 +340,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 		end
 
 		local function registermacro()
-			for i = 1, 120 do
+			for i = 1, MAX_ACCOUNT_MACROS do
 				local b = _G["MacroButton"..i]
 				b:HookScript("OnEnter", function(self) bind:Update(self, "MACRO") end)
 			end
