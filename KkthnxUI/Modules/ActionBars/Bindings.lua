@@ -5,7 +5,6 @@ if C.ActionBar.Enable ~= true or K.CheckAddOn("ncHoverBind") == true then return
 local _G = _G
 local pairs = pairs
 local print = print
-local strfind = string.find
 local tonumber = tonumber
 local unpack = unpack
 
@@ -234,7 +233,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			if key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL" or key == "RCTRL" or key == "LALT"
 			or key == "RALT" or key == "UNKNOWN" or key == "LeftButton" then return end
 			if key == "MiddleButton" then key = "BUTTON3" end
-			if key:strfind("Button%d") then key = key:upper() end
+			if key:find("Button%d") then key = key:upper() end
 
 			local alt = IsAltKeyDown() and "ALT-" or ""
 			local ctrl = IsControlKeyDown() and "CTRL-" or ""

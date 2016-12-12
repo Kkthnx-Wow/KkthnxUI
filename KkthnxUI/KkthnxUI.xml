@@ -160,7 +160,6 @@
 	<!-- DataText -->
 	<Script file="Modules\DataText\Battleground.lua"/>
 	<Script file="Modules\DataText\Time.lua"/>
-	<Script file="Modules\DataText\Location.lua"/>
 
 	<!-- DataText Modules -->
 	<Script file="Modules\DataText\DataTexts.lua"/>

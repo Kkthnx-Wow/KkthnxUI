@@ -832,8 +832,8 @@ local function CreateUnitLayout(self, unit)
 	if (self.cUnit == "target" or self.cUnit == "focus") then
 		-- Questmob Icon
 		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
-		self.QuestIcon:SetSize(32, 32)
-		self.QuestIcon:SetPoint("CENTER", self.Health, "TOPRIGHT", 1, 10)
+		self.QuestIcon:SetSize(22, 22)
+		self.QuestIcon:SetPoint("CENTER", self.Health, "TOPRIGHT", 2, 0)
 
 		tinsert(self.__elements, function(self, _, unit)
 			self.Texture:SetTexture(GetTargetTexture(self.cUnit, UnitClassification(unit)))

@@ -17,6 +17,14 @@ local MailBorder = MiniMapMailBorder
 local MailIcon = MiniMapMailIcon
 local Movers = K.Movers
 
+Minimap_ZoneColors = {
+	["friendly"] = {0.1, 1.0, 0.1},
+	["sanctuary"] = {0.41, 0.8, 0.94},
+	["arena"] = {1.0, 0.1, 0.1},
+	["hostile"] = {1.0, 0.1, 0.1},
+	["contested"] = {1.0, 0.7, 0.0},
+}
+
 -- Minimap border
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
 MinimapAnchor:CreatePanel("ClassColor", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
@@ -105,19 +113,6 @@ if GarrisonLandingPageTutorialBox then
 	GarrisonLandingPageTutorialBox:SetScale(1 / 1)
 	GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
 end
-
-local AutoHideLandingPage = CreateFrame("Frame")
-AutoHideLandingPage:RegisterEvent("PLAYER_ENTERING_WORLD")
-AutoHideLandingPage:SetScript("OnEvent", function(self, event)
-	local InInstance, Type = IsInInstance()
-	if InInstance and (Type == "party" or Type == "pvp" or Type == "arena" or Type == "raid") and C.Minimap.Garrison == true and GarrisonLandingPageMinimapButton then
-		GarrisonLandingPageMinimapButton:SetScale(0.0001)
-		GarrisonLandingPageMinimapButton:SetAlpha(0)
-	else
-		GarrisonLandingPageMinimapButton:SetScale(1)
-		GarrisonLandingPageMinimapButton:SetAlpha(1)
-	end
-end)
 
 -- Dungeon info
 MiniMapInstanceDifficulty:ClearAllPoints()
@@ -220,3 +215,107 @@ Minimap:SetMaskTexture(C.Media.Blank)
 Minimap:SetArchBlobRingAlpha(0)
 Minimap:SetQuestBlobRingAlpha(0)
 MinimapBorder:Hide()
+
+local MinimapZone = CreateFrame("Frame", "MinimapZone", Minimap)
+MinimapZone:SetSize(0,20)
+MinimapZone:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, 2)
+MinimapZone:SetFrameLevel(Minimap:GetFrameLevel() + 3)
+MinimapZone:SetFrameStrata(Minimap:GetFrameStrata())
+MinimapZone:SetPoint("TOPRIGHT", Minimap, -2, -2)
+MinimapZone:SetAlpha(0)
+
+local MinimapZoneText = MinimapZone:CreateFontString("MinimapZoneText", "Overlay")
+MinimapZoneText:SetFont(C.Media.Font, 12, C.Media.Font_Style)
+MinimapZoneText:SetPoint("TOP", 0, -1)
+MinimapZoneText:SetPoint("BOTTOM")
+MinimapZoneText:SetHeight(12)
+MinimapZoneText:SetWidth(MinimapZone:GetWidth() -6)
+MinimapZoneText:SetAlpha(0)
+
+local MinimapCoord = CreateFrame("Frame", "MinimapCoord", Minimap)
+MinimapCoord:SetSize(40, 20)
+MinimapCoord:SetPoint("TOP", MinimapZone, "BOTTOM", 0, 4)
+MinimapCoord:SetFrameLevel(Minimap:GetFrameLevel() + 3)
+MinimapCoord:SetFrameStrata(Minimap:GetFrameStrata())
+MinimapCoord:SetAlpha(0)
+
+local MinimapCoordText = MinimapCoord:CreateFontString("MinimapCoordText", "Overlay")
+MinimapCoordText:SetFont(C.Media.Font, 12, C.Media.Font_Style)
+MinimapCoordText:SetPoint("Center", -1, 0)
+MinimapCoordText:SetAlpha(0)
+MinimapCoordText:SetText("0, 0")
+
+Minimap:SetScript("OnEnter",function()
+	MinimapZone:SetAlpha(1)
+	MinimapZoneText:SetAlpha(1)
+	MinimapCoord:SetAlpha(1)
+	MinimapCoordText:SetAlpha(1)
+end)
+
+Minimap:SetScript("OnLeave",function()
+	MinimapZone:SetAlpha(0)
+	MinimapZoneText:SetAlpha(0)
+	MinimapCoord:SetAlpha(0)
+	MinimapCoordText:SetAlpha(0)
+end)
+
+local Elapsed = 0
+local CoordUpdate = function(self, t)
+	Elapsed = Elapsed - t
+
+	if (Elapsed > 0) then
+		return
+	end
+
+	local X, Y = GetPlayerMapPosition("player")
+	local XText, YText
+
+	if not GetPlayerMapPosition("player") then
+		X = 0
+		Y = 0
+	end
+
+	X = math.floor(100 * X)
+	Y = math.floor(100 * Y)
+
+	if (X == 0 and Y == 0) then
+		MinimapCoordText:SetText("?, ?")
+	else
+		if (X < 10) then
+			XText = "0"..X
+		else
+			XText = X
+		end
+
+		if (Y < 10) then
+			YText = "0"..Y
+		else
+			YText = Y
+		end
+
+		MinimapCoordText:SetText(XText .. ", " .. YText)
+	end
+
+	Elapsed = 0.5
+end
+MinimapCoord:SetScript("OnUpdate", CoordUpdate)
+
+local ZoneUpdate = function()
+	local Info = GetZonePVPInfo()
+
+	if Minimap_ZoneColors[Info] then
+		local Color = Minimap_ZoneColors[Info]
+
+		MinimapZoneText:SetTextColor(Color[1], Color[2], Color[3])
+	else
+		MinimapZoneText:SetTextColor(1.0, 1.0, 1.0)
+	end
+
+	MinimapZoneText:SetText(GetMinimapZoneText())
+end
+
+MinimapZone:RegisterEvent("PLAYER_ENTERING_WORLD")
+MinimapZone:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+MinimapZone:RegisterEvent("ZONE_CHANGED")
+MinimapZone:RegisterEvent("ZONE_CHANGED_INDOORS")
+MinimapZone:SetScript("OnEvent", ZoneUpdate)

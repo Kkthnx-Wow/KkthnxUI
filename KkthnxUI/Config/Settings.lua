@@ -140,7 +140,6 @@ C["Plugins"] = {
 
 -- Datatext
 C["DataText"] = {
-	["Location"] = true,
 	["System"] = true,
 	["Time"] = true,
 	["Time24Hr"] = false,
