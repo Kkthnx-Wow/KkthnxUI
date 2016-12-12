@@ -159,11 +159,21 @@ function KkthnxUIInstall:ChatSetup()
 
 		ChatFrame:SetSize(C.Chat.Width, C.Chat.Height)
 
-		if (index == 1) then
-			ChatFrame:ClearAllPoints()
-			ChatFrame:SetPoint(unpack(C.Position.Chat))
+		-- Position. Just to be safe here.
+		if C.Chat.Background == true then
+			if (index == 1) then
+				ChatFrame:ClearAllPoints()
+				ChatFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 6)
 
-			FCF_SavePositionAndDimensions(ChatFrame)
+				FCF_SavePositionAndDimensions(ChatFrame)
+			end
+		elseif C.Chat.Background == false then
+			if (index == 1) then
+				ChatFrame:ClearAllPoints()
+				ChatFrame:SetPoint(unpack(C.Position.Chat))
+
+				FCF_SavePositionAndDimensions(ChatFrame)
+			end
 		end
 
 		FCF_SavePositionAndDimensions(ChatFrame)

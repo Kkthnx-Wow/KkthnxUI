@@ -83,9 +83,8 @@ ThreatBar:SetScript("OnEvent", function(self, event)
 
 	self.Text = self:CreateFontString(nil, "OVERLAY")
 	self.Text:SetFont(C.Media.Font, 14, C.Media.Font_Style)
+	self.Text:SetShadowOffset(0, -0)
 	self.Text:SetPoint("RIGHT", self, -30, 0)
-	self.Text:SetShadowColor(0, 0, 0)
-	self.Text:SetShadowOffset(1.25, -1.25)
 
 	self.Title = self:CreateFontString(nil, "OVERLAY")
 	self.Title:SetFont(C.Media.Font, 14, C.Media.Font_Style)

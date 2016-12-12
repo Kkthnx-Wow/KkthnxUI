@@ -804,6 +804,7 @@ local function CreateUnitLayout(self, unit)
 			self.Swing.bg:SetVertexColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
 
 			self.Swing.Text = K.SetFontString(self.Swing, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
+			self.Swing.Text:SetShadowOffset(0, 0)
 			self.Swing.Text:SetPoint("CENTER", 0, 0)
 			self.Swing.Text:SetTextColor(1, 1, 1)
 

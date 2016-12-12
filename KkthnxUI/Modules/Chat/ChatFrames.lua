@@ -94,8 +94,8 @@ local function SetChatStyle(frame)
 
 	-- Move the chat edit box
 	editbox:ClearAllPoints()
-	editbox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", -4, 23)
-	editbox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 4, 23)
+	editbox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", -10, 23)
+	editbox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 11, 23)
 
 	-- Hide textures
 	for i = 1, #CHAT_FRAME_TEXTURES do
@@ -221,8 +221,8 @@ local function SetupChat(self)
 end
 
 local function SetupChatPosAndFont(self)
-	for i = 1, NUM_CHAT_WINDOWS do
-		local Frame = _G["ChatFrame"..i]
+	for index = 1, NUM_CHAT_WINDOWS do
+		local Frame = _G["ChatFrame"..index]
 		local ID = Frame:GetID()
 		local _, FontSize = FCF_GetChatWindowInfo(ID)
 
@@ -243,13 +243,30 @@ local function SetupChatPosAndFont(self)
 			Frame:SetShadowOffset(K.Mult, -K.Mult)
 			Frame:SetShadowColor(0, 0, 0, 0.9)
 		end
+
+		-- Position. Just to be safe here.
+		if C.Chat.Background == true then
+			if (index == 1) then
+				Frame:ClearAllPoints()
+				Frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 6)
+
+				FCF_SavePositionAndDimensions(Frame)
+			end
+		elseif C.Chat.Background == false then
+			if (index == 1) then
+				Frame:ClearAllPoints()
+				Frame:SetPoint(unpack(C.Position.Chat))
+
+				FCF_SavePositionAndDimensions(Frame)
+			end
+		end
 	end
 end
 
-local BNet = CreateFrame("Frame", "BNetMover", UIParent)
-BNet:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
-BNet:SetPoint(unpack(C.Position.BnetPopup))
-Movers:RegisterFrame(BNet)
+local BNetMover = CreateFrame("Frame", "BNetMover", UIParent)
+BNetMover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
+BNetMover:SetPoint(unpack(C.Position.BnetPopup))
+Movers:RegisterFrame(BNetMover)
 
 BNToastFrame:HookScript("OnShow", function(self)
 	self:ClearAllPoints()

@@ -108,6 +108,21 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
+-- Chat background
+if C.Chat.Background == true and C.Chat.Enable == true then
+	local chatbd = CreateFrame("Frame", "ChatBackground", UIParent)
+	chatbd:CreatePanel("Transparent", C.Chat.Width + 7, C.Chat.Height + 4, "TOPLEFT", ChatFrame1, "TOPLEFT", -3, 1)
+	chatbd:SetBackdrop(K.BorderBackdrop)
+	chatbd:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+
+	if C.Chat.TabsMouseover ~= true then
+		local chattabs = CreateFrame("Frame", "ChatTabsPanel", UIParent)
+		chattabs:CreatePanel("Transparent", chatbd:GetWidth(), 20, "BOTTOM", chatbd, "TOP", 0, 3)
+		chattabs:SetBackdrop(K.BorderBackdrop)
+		chattabs:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	end
+end
+
 -- Spec
 local LeftClickMenu = {}
 LeftClickMenu[1] = {text = L.ConfigButton.SpecMenu, isTitle = true, notCheckable = true}

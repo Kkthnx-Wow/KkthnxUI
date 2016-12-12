@@ -21,11 +21,13 @@ function LossControl:Update()
 	self.TimeLeft.NumberText:SetPoint("BOTTOM", self, 4, -58)
 	self.TimeLeft.NumberText.scrollTime = nil
 	self.TimeLeft.NumberText:SetFont(C.Media.Font, 18, "OUTLINE")
+	self.TimeLeft.NumberText:SetShadowOffset(0, 0)
 
 	self.TimeLeft.SecondsText:ClearAllPoints()
 	self.TimeLeft.SecondsText:SetPoint("BOTTOM", self, 0, -80)
 	self.TimeLeft.SecondsText.scrollTime = nil
 	self.TimeLeft.SecondsText:SetFont(C.Media.Font, 18, "OUTLINE")
+	self.TimeLeft.SecondsText:SetShadowOffset(0, 0)
 
 	if self.Anim:IsPlaying() then
 		self.Anim:Stop()

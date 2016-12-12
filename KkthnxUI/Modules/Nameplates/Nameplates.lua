@@ -430,7 +430,7 @@ local function style(self, unit)
 
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints()
-	self.Health.bg:SetTexture(C.Media.Texture)
+	self.Health.bg:SetTexture(C.Media.Blank)
 	self.Health.bg.multiplier = 0.2
 
 	-- Create Health Text
@@ -454,7 +454,7 @@ local function style(self, unit)
 
 	self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 	self.Power.bg:SetAllPoints()
-	self.Power.bg:SetTexture(C.Media.Texture)
+	self.Power.bg:SetTexture(C.Media.Blank)
 	self.Power.bg.multiplier = 0.2
 
 	-- Create Name Text
