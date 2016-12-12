@@ -1,9 +1,13 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua Wow
+local _G = _G
+
 -- Wow API
 local FCF_StartAlertFlash = FCF_StartAlertFlash
 local InCombatLockdown = InCombatLockdown
 local ShowUIPanel = ShowUIPanel
+local HideUIPanel = HideUIPanel
 local WorldMapFrame = WorldMapFrame
 local WorldMapFrame_OnHide = WorldMapFrame_OnHide
 local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
@@ -13,13 +17,11 @@ local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
 -- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
 -- GLOBALS: WorldMapLevelButton
 
--- Turns out we can avoid the spellbook taint
--- by opening it once before we login. Thanks TukUI! :)
--- NB! taiting the GameTooltip taints the spellbook too, so DON'T! o.O
+-- Open before login to stop taint
 local SpellBookTaint = CreateFrame("Frame")
 SpellBookTaint:RegisterEvent("ADDON_LOADED")
-SpellBookTaint:SetScript("OnEvent", function(self, _, what)
-	if what ~= addon then return end
+SpellBookTaint:SetScript("OnEvent", function(event, addon)
+	if addon ~= "KkthnxUI" then return end
 	ToggleFrame(SpellBookFrame)
 end)
 
@@ -59,37 +61,52 @@ if PVPReadyDialog then
 end
 
 -- Fix C_ArtifactUI.GetTotalPurchasedRanks() (by Gnarfoz)
-local oldOnShow
-local newOnShow
+do
+	local oldOnShow
+	local newOnShow
 
-local function newOnShow(self)
-	if C_ArtifactUI.GetTotalPurchasedRanks() then
-		oldOnShow(self)
-	else
-		ArtifactFrame:Hide()
+	local function newOnShow(self)
+		if C_ArtifactUI.GetTotalPurchasedRanks() then
+			oldOnShow(self)
+		else
+			HideUIPanel(ArtifactFrame)
+		end
 	end
+
+	local function artifactHook()
+		if not oldOnShow then
+			oldOnShow = ArtifactFrame:GetScript("OnShow")
+			ArtifactFrame:SetScript("OnShow", newOnShow)
+		end
+	end
+	hooksecurefunc("ArtifactFrame_LoadUI", artifactHook)
 end
 
-local function artifactHook()
-	if not oldOnShow then
-		oldOnShow = ArtifactFrame:GetScript("OnShow")
-		ArtifactFrame:SetScript("OnShow", newOnShow)
+-- Fix World Map taints (by lightspark)
+do
+	local old_ResetZoom = _G.WorldMapScrollFrame_ResetZoom
+	_G.WorldMapScrollFrame_ResetZoom = function()
+		if _G.InCombatLockdown() then
+			_G.WorldMapFrame_Update()
+			_G.WorldMapScrollFrame_ReanchorQuestPOIs()
+			_G.WorldMapFrame_ResetPOIHitTranslations()
+			_G.WorldMapBlobFrame_DelayedUpdateBlobs()
+		else
+			old_ResetZoom()
+		end
 	end
-end
-hooksecurefunc("ArtifactFrame_LoadUI", artifactHook)
 
--- Fix World Map taints (by Goldpaw)
-local WorldMapTaint = CreateFrame("Frame", nil, UIParent)
-WorldMapTaint:RegisterEvent("PLAYER_REGEN_ENABLED")
-WorldMapTaint:RegisterEvent("PLAYER_REGEN_DISABLED")
-WorldMapTaint:SetScript("OnEvent", function(self)
-	if event == "PLAYER_REGEN_DISABLED" then
-		WorldMapFrame:UnregisterEvent("WORLD_MAP_UPDATE")
-		WorldMapFrame:SetScript("OnHide", nil)
-		WorldMapLevelButton:SetScript("OnClick", nil)
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		WorldMapFrame:RegisterEvent("WORLD_MAP_UPDATE")
-		WorldMapFrame:SetScript("OnHide", WorldMapFrame_OnHide)
-		WorldMapLevelButton:SetScript("OnClick", WorldMapLevelButton_OnClick)
+	local old_QuestMapFrame_OpenToQuestDetails = _G.QuestMapFrame_OpenToQuestDetails
+	_G.QuestMapFrame_OpenToQuestDetails = function(questID)
+		if _G.InCombatLockdown() then
+			_G.ShowUIPanel(_G.WorldMapFrame);
+			_G.QuestMapFrame_ShowQuestDetails(questID)
+			_G.QuestMapFrame.DetailsFrame.mapID = nil
+		else
+			old_QuestMapFrame_OpenToQuestDetails(questID)
+		end
 	end
-end)
+
+	_G.WorldMapFrame.questLogMode = true
+	_G.QuestMapFrame_Open(true)
+end

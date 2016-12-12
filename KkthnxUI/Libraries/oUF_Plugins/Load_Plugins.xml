@@ -1,15 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<!-- Unitframe Plugins -->
+	<!-- Unitframe oUF Plugins -->
 	<Script file="oUF_Auraorbs.lua"/>
 	<Script file="oUF_AuraWatch.lua"/>
-	<Script file="oUF_GCD.lua"/>
-	<Script file="oUF_RaidDebuffs.lua"/>
 	<Script file="oUF_CCastbar.lua"/>
 	<Script file="oUF_CombatFeedback.lua"/>
+	<Script file="oUF_GCD.lua"/>
 	<Script file="oUF_Offline.lua"/>
 	<Script file="oUF_Portraittimers.lua"/>
+	<Script file="oUF_RaidDebuffs.lua"/>
 	<Script file="oUF_Smartthreat.lua"/>
 	<Script file="oUF_Smooth.lua"/>
 	<Script file="oUF_SpellRange.lua"/>
+	<Script file="oUF_Swing.lua"/>
 	<Script file="oUF_Trinkets.lua"/>
 </Ui>

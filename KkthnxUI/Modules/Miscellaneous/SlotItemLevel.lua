@@ -262,6 +262,6 @@ SlashCmdList.ILEVEL = function(...)
 		twipe(equiped)
 		_updateItems()
 	end
-	ChatFrame1:AddMessage("|cff3c9bed"..K.UIName..":|r /ilevel ( 0 | 1 | 2 )\n 0 - Only show item levels.\n 1 - Show item levels and upgrades.\n 2 - Show item levels, upgrades and enchants and gems.")
-	ChatFrame1:AddMessage("|cff3c9bed"..K.UIName..":|r Current setting is " .. tostring(setting))
+	ChatFrame1:AddMessage("|cff3c9bed"..K.UIName..":|r|cffffff00 /ilevel ( 0 | 1 | 2 )\n 0 - Only show item levels.\n 1 - Show item levels and upgrades.\n 2 - Show item levels, upgrades and enchants and gems.|r")
+	ChatFrame1:AddMessage("|cff3c9bed"..K.UIName..":|r|cffffff00 Current setting is |r" .. tostring(setting))
 end

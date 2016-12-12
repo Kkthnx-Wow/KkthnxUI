@@ -770,22 +770,44 @@ local function CreateUnitLayout(self, unit)
 		-- PvP Timer
 		if (self.PvP) then
 			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-			self.PvPTimer:SetShadowOffset(K.Mult,-K.Mult)
+			self.PvPTimer:SetShadowOffset(K.Mult, -K.Mult)
 			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, -3)
 			self.PvPTimer.frequentUpdates = 0.5
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
 
 		-- GCD spark
-		if C.Unitframe.GCDBar == true then
-			self.GCD = CreateFrame("StatusBar", self:GetName().."_GCD", self)
-			self.GCD:SetHeight(K.Scale(6))
-			self.GCD:SetWidth(K.Scale(150))
-			self.GCD:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -K.Scale(4))
-			self.GCD:SetStatusBarTexture(C.Media.Texture)
-			self.GCD:SetStatusBarColor(0.9, 0.9, 0.9)
+		if C.Unitframe.GCDBar == true and self.cUnit == "player" then
+			self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self)
+			self.GCD:SetWidth(116)
+			self.GCD:SetHeight(3)
+			self.GCD:SetFrameStrata("HIGH")
+			self.GCD:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 0)
 
-			Movers:RegisterFrame(self.GCD)
+			self.GCD.Color = {1, 1, 1}
+			self.GCD.Height = K.Scale(4)
+			self.GCD.Width = K.Scale(8)
+		end
+
+		-- Swing bar
+		if C.Unitframe.SwingBar == true and self.cUnit == "player" then
+			self.Swing = CreateFrame("StatusBar", self:GetName().."_Swing", self)
+			self.Swing:CreateShadow()
+			self.Swing:SetPoint("TOPRIGHT", "oUF_KkthnxPlayerCastbar", "BOTTOMRIGHT", 0, -4)
+			self.Swing:SetSize(C.Unitframe.PlayerCastbarWidth, 5)
+			self.Swing:SetStatusBarTexture(C.Media.Texture)
+			self.Swing:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
+
+			self.Swing.bg = self.Swing:CreateTexture(nil, "BORDER")
+			self.Swing.bg:SetAllPoints(self.Swing)
+			self.Swing.bg:SetTexture(C.Media.Blank)
+			self.Swing.bg:SetVertexColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
+
+			self.Swing.Text = K.SetFontString(self.Swing, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
+			self.Swing.Text:SetPoint("CENTER", 0, 0)
+			self.Swing.Text:SetTextColor(1, 1, 1)
+
+			Movers:RegisterFrame(self.Swing)
 		end
 
 		-- Combat icon

@@ -9,18 +9,26 @@ C["WorldMapCoordinates"] = {
 
 -- Lua API
 local find = string.find
+local unpack = unpack
 
 -- Wow API
 local CreateFrame = CreateFrame
-local InCombatLockdown = InCombatLockdown
-local SetUIPanelAttribute = SetUIPanelAttribute
-local IsInInstance = IsInInstance
-local GetPlayerMapPosition = GetPlayerMapPosition
 local GetCursorPosition = GetCursorPosition
-local PLAYER = PLAYER
+local GetPlayerMapPosition = GetPlayerMapPosition
+local InCombatLockdown = InCombatLockdown
+local IsInInstance = IsInInstance
 local MOUSE_LABEL = MOUSE_LABEL
+local PLAYER = PLAYER
+local SetCVar = SetCVar
+local SetUIPanelAttribute = SetUIPanelAttribute
 local WORLDMAP_FULLMAP_SIZE = WORLDMAP_FULLMAP_SIZE
 local WORLDMAP_WINDOWED_SIZE = WORLDMAP_WINDOWED_SIZE
+
+--Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: NumberFontNormal, WORLDMAP_SETTINGS, BlackoutWorld, WorldMapScrollFrame
+-- GLOBALS: UIParent, CoordsHolder, WorldMapDetailFrame, DropDownList1, WORLD_MAP_MIN_ALPHA
+-- GLOBALS: WorldMapFrame, WorldMapFrameSizeUpButton, WorldMapFrameSizeDownButton
+-- GLOBALS: WorldMapTooltip, WorldMapCompareTooltip1, WorldMapCompareTooltip2, x, y
 
 local WorldMap = LibStub("AceAddon-3.0"):NewAddon("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
@@ -140,7 +148,7 @@ function WorldMap:PositionCoords()
 end
 
 function WorldMap:Enable()
-	if(C.WorldMap.Coordinates) then
+	if (C.WorldMap.Coordinates) then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)
 		CoordsHolder:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() + 1)
 		CoordsHolder:SetFrameStrata(WorldMapDetailFrame:GetFrameStrata())
@@ -159,7 +167,7 @@ function WorldMap:Enable()
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	end
 
-	if(C.WorldMap.SmallWorldMap) then
+	if (C.WorldMap.SmallWorldMap) then
 		BlackoutWorld:SetTexture(nil)
 		self:SecureHook("WorldMap_ToggleSizeDown", "SetSmallWorldMap")
 		self:SecureHook("WorldMap_ToggleSizeUp", "SetLargeWorldMap")

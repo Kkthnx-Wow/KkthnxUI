@@ -30,10 +30,11 @@ local Enable = function(self)
         officon.__owner = self
         officon.ForceUpdate = ForceUpdate
 
+        self:RegisterEvent("GROUP_ROSTER_UPDATE", Path)
         self:RegisterEvent("PARTY_MEMBER_DISABLE", Path)
         self:RegisterEvent("PARTY_MEMBER_ENABLE", Path)
         self:RegisterEvent("PLAYER_TARGET_CHANGED", Path)
-        self:RegisterEvent("GROUP_ROSTER_UPDATE", Path)
+        self:RegisterEvent("UNIT_CONNECTION", Path)
 
         if (officon:IsObjectType("Texture") and not officon:GetTexture()) then
             officon:SetTexture("Interface\\CharacterFrame\\Disconnect-Icon")
@@ -47,10 +48,11 @@ local Disable = function(self)
     local officon = self.OfflineIcon
 
     if (officon) then
+        self:RegisterEvent("GROUP_ROSTER_UPDATE", Path)
         self:UnregisterEvent("PARTY_MEMBER_DISABLE", Path)
         self:UnregisterEvent("PARTY_MEMBER_ENABLE", Path)
         self:UnregisterEvent("PLAYER_TARGET_CHANGED", Path)
-        self:UnregisterEvent("GROUP_ROSTER_UPDATE", Path)
+        self:UnregisterEvent("UNIT_CONNECTION", Path)
     end
 end
 
