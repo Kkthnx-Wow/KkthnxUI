@@ -206,7 +206,6 @@ do
 	end
 end
 
-
 -- Fix glitchy-ness of EnableAddOn/DisableAddOn API, which affects the stability of the default
 -- UI's addon management list (both in-game and glue), as well as any addon-management addons.
 -- The problem is caused by broken defaulting logic used to merge AddOns.txt settings across

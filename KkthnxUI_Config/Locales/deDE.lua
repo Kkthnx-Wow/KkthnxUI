@@ -46,7 +46,6 @@ UIConfigLocal.AutomationAutoInvite = "Automatisches Akzeptieren von Einladungen 
 UIConfigLocal.AutomationAutoCollapse = "Automatisches Einklappen der Questanzeige in Instanzen"
 UIConfigLocal.AutomationDeclineDuel = "Automatische Ablehnung von Duellen"
 UIConfigLocal.AutomationLoggingCombat = "Automatisches Aktivieren der Kampflogdatei in Schlachtzuginstanzen"
-UIConfigLocal.AutomationNoBanner = "Auto hide the 'Boss Banner' loot frame"
 UIConfigLocal.AutomationResurrection = "Automatisches Wiederbeleben auf Schlachtfeldern"
 UIConfigLocal.AutomationScreenShot = "Automatisches Bildschirmfoto bei erreichen eines Erfolges"
 UIConfigLocal.AutomationTabBinder = "Automatischer Wechsel der Tab-Taste um nur feindliche Ziele anzuvisieren"
@@ -137,7 +136,7 @@ UIConfigLocal.CooldownFontSize = "chriftgröße der Abklingzeiten"
 UIConfigLocal.CooldownThreshold = "Abklingzeiten Schwellenwert"
 
 -- Filger
-UIConfigLocal.Filger = "Filger"
+UIConfigLocal.Filger = "Zeiten (Filger)"
 UIConfigLocal.FilgerBuffsSize = "Größe der Stärkungszauber"
 UIConfigLocal.FilgerCooldownSize = "Größe Abklingzeiten"
 UIConfigLocal.FilgerDisableCD = "Deaktivere Abklingzeiten"
@@ -193,6 +192,8 @@ UIConfigLocal.MiscMoveBlizzard = "Verschiebe einige Blizzard Fenster"
 UIConfigLocal.MiscSellMisc = "Automatisches Verkaufen von unnützen Gegenständen die nicht grauer Qualität sind"
 UIConfigLocal.MiscSlotDurability = "Zeige die Haltbarkeit auf Deinen Gegenständen in der Charakterübersicht an"
 UIConfigLocal.MiscUseGuildRepair = "Bei Benutzung von 'Automatisches Reparieren', benutzte die Gildenbank"
+UIConfigLocal.MiscNoBanner = "Autoverstecken des Boss Loot Frame"
+UIConfigLocal.MiscHideTalkingHead = "Verstecke das Questdialogfenster"
 
 -- Namensplaketten
 UIConfigLocal.Nameplates = "Namensplaketten"
@@ -201,10 +202,10 @@ UIConfigLocal.NameplatesAdditionalWidth = "Zusätzliche Breite für die ausgewä
 UIConfigLocal.NameplatesAurasSize = "Größe der Schwächungszauber"
 UIConfigLocal.NameplatesBadColor = "Farbe wenn die Bedrohung NICHT ok ist, variert je nach Rolle die Du spielst ->dps/heal"
 UIConfigLocal.NameplatesCastbarName = "Zeige namen des Zaubers"
-UIConfigLocal.NameplatesClamp = "Clamp nameplates to the top of the screen when outside of view"
+UIConfigLocal.NameplatesClamp = "Setze die Namensplaketten an den oberen Bildschrimrand fest, wenn die ausser Sicht wären"
 UIConfigLocal.NameplatesClassIcons = "Symbole nach Klasse im PvP"
 UIConfigLocal.NameplatesCombat = "Automatisches Anzeigen der Namensplaketten im Kampf"
-UIConfigLocal.NameplatesDistance = "Show nameplates for units within this range"
+UIConfigLocal.NameplatesDistance = "Zeige Namensplaketten für Einheiten im Sichtbereich"
 UIConfigLocal.NameplatesEnable = "Aktiviere die Namensplaketten"
 UIConfigLocal.NameplatesEnhancedThreat = "Aktiviere das Bedrohungsfeature. Wechselt automatisch je nach Deiner Rolle"
 UIConfigLocal.NameplatesGoodColor = "Farbe wenn die Bedrohung ok ist, variert je nach Rolle die Du spielst ->dps/heal"
@@ -214,9 +215,9 @@ UIConfigLocal.NameplatesHeight = "Höhe der Namensplaketten"
 UIConfigLocal.NameplatesNameAbbreviate = "Kürze den Namen wenn er länger als 18 Zeichen ist"
 UIConfigLocal.NameplatesNearColor = "Verliere/Gewinne Bedrohungsfarbe"
 UIConfigLocal.NameplatesOffTankColor = "Offtank threat color"
-UIConfigLocal.NameplatesSpiral = "Spiral on nameplate auras"
-UIConfigLocal.NameplatesTimer = "Show cooldown timer on nameplate auras"
-UIConfigLocal.NameplatesTotemIcons = "Show icon above enemy totems nameplate"
+UIConfigLocal.NameplatesSpiral = "Spiral on nameplate auras" -- Needs Translation
+UIConfigLocal.NameplatesTimer = "Show cooldown timer on nameplate auras" -- Needs Translation
+UIConfigLocal.NameplatesTotemIcons = "Show icon above enemy totems nameplate" -- Needs Translation
 UIConfigLocal.NameplatesTrackAuras = "Zeige Schwächungszauber"
 UIConfigLocal.NameplatesWidth = "Breite der Namensplaketten"
 
@@ -230,17 +231,17 @@ UIConfigLocal.PulseCDSound = "Soundwarnung"
 UIConfigLocal.PulseCDThreshold = "Minimaler Schwellwert"
 
 -- RaidCD
-UIConfigLocal.RaidCD = "Raid Cooldowns"
-UIConfigLocal.RaidCDEnable = "Enable raid cooldowns"
-UIConfigLocal.RaidCDHeight = "Raid cooldowns bars height"
-UIConfigLocal.RaidCDWidth = "Raid cooldowns bars width (if the icon is enabled, width+28)"
-UIConfigLocal.RaidCDUpWards = "Raid cooldowns sort upwards bars"
-UIConfigLocal.RaidCDExpiration = "Sort by expiration time"
-UIConfigLocal.RaidCDShowSelf = "Show self cooldowns"
-UIConfigLocal.RaidCDShowIcon = "Raid cooldowns icons"
-UIConfigLocal.RaidCDShowInRaid = "Show raid cooldowns in raid zone"
-UIConfigLocal.RaidCDShowInParty = "Show raid cooldowns in party zone"
-UIConfigLocal.RaidCDShowInArena = "Show raid cooldowns in arena zone"
+UIConfigLocal.RaidCD = "Schlachtzugs Cooldowns"
+UIConfigLocal.RaidCDEnable = "Abklingzeiten des Raids aktivieren"
+UIConfigLocal.RaidCDExpiration = "Sortieren nach Abklingzeit"
+UIConfigLocal.RaidCDHeight = "Leistenhöhe für Raidabklingzeiten"
+UIConfigLocal.RaidCDShowIcon = "Symbole für Raidabklingzeiten"
+UIConfigLocal.RaidCDShowInArena = "Zeige Raidabklingzeiten in der Arena"
+UIConfigLocal.RaidCDShowInParty = "Zeige Raidabklingzeiten in Gruppengebieten"
+UIConfigLocal.RaidCDShowInRaid = "Zeige Raidabklingzeiten in Raidgebieten"
+UIConfigLocal.RaidCDShowSelf = "Zeige deine Cooldowns"
+UIConfigLocal.RaidCDUpWards = "Leisten für Raidabklingzeiten wachsen nach oben"
+UIConfigLocal.RaidCDWidth = "Leistenbreite der Raidabklingzeiten(Wenn das Symbol aktiviert ist, Breite+28)"
 
 -- Config GUI Buttons
 UIConfigLocal.ConfigApplyButton = "Apply"
@@ -254,19 +255,19 @@ UIConfigLocal.ConfigResetChar = "Bist Du sicher, dass Du die Einstellungen für 
 UIConfigLocal.ConfigSetSavedSettings = "Setze Einstellungen für jeden Charakter einzeln"
 
 -- Skins
-UIConfigLocal.Skins = "AddOn Skins"
-UIConfigLocal.SkinsBigWigs = "BigWigs"
+UIConfigLocal.Skins = "AddOn Skins" -- Needs Translation
+UIConfigLocal.SkinsBigWigs = "BigWigs" -- Needs Translation
 UIConfigLocal.SkinsChatBubble = "Blizzard Sprachblasen"
-UIConfigLocal.SkinsDBM = "DeadlyBossMods"
+UIConfigLocal.SkinsDBM = "DeadlyBossMods" -- Needs Translation
 UIConfigLocal.SkinsDBMMove = "Erlaube das Bewegen der DBM Leisten"
-UIConfigLocal.SkinsMinimapButtons = "Minimap buttons"
-UIConfigLocal.SkinsRecount = "Recount"
-UIConfigLocal.SkinsSkada = "Skada"
-UIConfigLocal.SkinsSpy = "Spy"
-UIConfigLocal.SkinsWeakAuras = "WeakAuras"
+UIConfigLocal.SkinsMinimapButtons = "Minimap buttons" -- Needs Translation
+UIConfigLocal.SkinsRecount = "Recount" -- Needs Translation
+UIConfigLocal.SkinsSkada = "Skada" -- Needs Translation
+UIConfigLocal.SkinsSpy = "Spy" -- Needs Translation
+UIConfigLocal.SkinsWeakAuras = "WeakAuras" -- Needs Translation
 
 -- Tooltip
-UIConfigLocal.Tooltip = "Tooltip"
+UIConfigLocal.Tooltip = "Tooltip" -- Needs Translation
 UIConfigLocal.TooltipAchievements = "Vergleiche Erfolge per Tooltip"
 UIConfigLocal.TooltipCursor = "Tooltip über dem Cursor"
 UIConfigLocal.TooltipEnable = "Aktiviere Tooltip"
@@ -292,8 +293,8 @@ UIConfigLocal.UnitframeFlatClassPortraits = "Aktiviere die neuen Klassenportrait
 UIConfigLocal.UnitframeFocusCastbarHeight = "Höhe der Fokus Zauberleiste"
 UIConfigLocal.UnitframeFocusCastbarWidth = "breite der Fokus Zauberleiste"
 UIConfigLocal.UnitframeGCDBar = "Blitz für globalen Cooldown"
-UIConfigLocal.UnitframeIconPlayer = "Set player castbar icon 'LEFT OR RIGHT'"
-UIConfigLocal.UnitframeIconTarget = "Set target castbar icon 'LEFT OR RIGHT'"
+UIConfigLocal.UnitframeIconPlayer = "Set player castbar icon 'LEFT OR RIGHT'" -- Needs Translation
+UIConfigLocal.UnitframeIconTarget = "Set target castbar icon 'LEFT OR RIGHT'" -- Needs Translation
 UIConfigLocal.UnitframeParty = "Aktiviere die Gruppenfenster."
 UIConfigLocal.UnitframePlayerCastbarHeight = "Höhe der Spielerzauberleiste"
 UIConfigLocal.UnitframePlayerCastbarWidth = "Breite der Spielerzauberleiste"
@@ -315,7 +316,7 @@ UIConfigLocal.UnitframeThreatGlow = "Aktiviere das Bedrohungsleuchten um die Ein
 UIConfigLocal.UnitframeThreatValue = "Visueller Bedrohungstext auf dem Spielerfenster"
 
 -- Schlachtzug
-UIConfigLocal.Raidframe = "Raid Frames"
+UIConfigLocal.Raidframe = "Raid Frames" -- Needs Translation
 UIConfigLocal.RaidframeAuraWatch = "Zeige die Timer für Klassenspezifische Buffs in den Ecken des Schlachtzugsfenster an"
 UIConfigLocal.RaidframeAuraWatchTimers = "Zeige die Timer an den Debuff Icons die erstellt werden mit Debuff beobachten"
 UIConfigLocal.RaidframeDeficitThreshold = "Heilung Schwellenwert"

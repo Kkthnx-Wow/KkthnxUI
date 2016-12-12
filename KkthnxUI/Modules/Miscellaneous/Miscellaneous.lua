@@ -192,8 +192,22 @@ if C.Misc.BGSpam == true then
 end
 
 -- Boss Banner Hider
-if C.Automation.NoBanner == true then
+if C.Misc.NoBanner == true then
 	BossBanner.PlayBanner = function() end
+end
+
+--	Hide TalkingHeadFrame
+if C.Misc.HideTalkingHead == true then
+	local HideTalkingHead = CreateFrame("Frame")
+	HideTalkingHead:RegisterEvent("ADDON_LOADED")
+	HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
+		if addon == "Blizzard_TalkingHeadUI" then
+			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
+				TalkingHeadFrame:Hide()
+			end)
+			self:UnregisterEvent(event)
+		end
+	end)
 end
 
 -- Undress button in auction dress-up frame(by Nefarion)
@@ -226,5 +240,31 @@ strip:SetScript("OnEvent", function(self)
 		self:ClearAllPoints()
 		self:SetPoint("RIGHT", DressUpFrameResetButton, "LEFT", -2, 0)
 		self.model = DressUpModel
+	end
+end)
+
+-- Old achievements filter
+function AchievementFrame_GetCategoryNumAchievements_OldIncomplete(categoryID)
+	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID)
+	return numAchievements - numCompleted, 0, numCompleted
+end
+
+function old_nocomplete_filter_init()
+	AchievementFrameFilters = {
+		{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
+		{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
+		{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete},
+		{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE.." ("..ALL.." )", func = AchievementFrame_GetCategoryNumAchievements_OldIncomplete}
+	}
+end
+
+local OldAchievementFilter = CreateFrame("Frame")
+OldAchievementFilter:RegisterEvent("ADDON_LOADED")
+OldAchievementFilter:SetScript("OnEvent", function(self, event, addon, ...)
+	if addon == "Blizzard_AchievementUI" then
+		if AchievementFrame then
+			old_nocomplete_filter_init()
+			OldAchievementFilter:UnregisterEvent("ADDON_LOADED")
+		end
 	end
 end)
