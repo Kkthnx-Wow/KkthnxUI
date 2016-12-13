@@ -175,9 +175,6 @@ if C.General.CustomLagTolerance == true then
 	end
 	customlag:SetScript("OnUpdate", LatencyUpdate)
 	LatencyUpdate(customlag, 10)
-
-	customlag:RegisterEvent("ZONE_CHANGED")
-	customlag:RegisterEvent("ADDON_LOADED")
 end
 
 -- Remove boss emote spam during bg(ArathiBasin SpamFix by Partha)
