@@ -1,12 +1,12 @@
-local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true or C.Unitframe.GCDBar ~= true then return end
-
 -- Based on oUF_GCD(by ALZA)
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = oUF or ns.oUF
+assert(oUF, "oUF_GCD was unable to locate oUF install.")
 
 local starttime, duration, usingspell, spellid
 local GetTime = GetTime
+
+local MyClass = select(2, UnitClass("player"))
 
 local spells = {
 	["DEATHKNIGHT"] = 48266,
@@ -48,9 +48,9 @@ local Enable = function(self)
 	end
 
 	local function Init()
-		local isKnown = IsSpellKnown(spells[K.Class])
+		local isKnown = IsSpellKnown(spells[MyClass])
 		if isKnown then
-			spellid = spells[K.Class]
+			spellid = spells[MyClass]
 		end
 		if spellid == nil then
 			return

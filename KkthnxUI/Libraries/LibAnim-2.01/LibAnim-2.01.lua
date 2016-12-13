@@ -1,5 +1,3 @@
-local K, C, L = unpack(select(2, ...))
-
 -- LibAnim by Hydra
 local Version = 2.01
 

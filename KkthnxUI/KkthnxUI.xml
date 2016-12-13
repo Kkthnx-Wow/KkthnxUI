@@ -1,15 +1,17 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<!-- Libraries -->
-	<Include file="Libraries\oUF\oUF.xml"/>
 	<Script file="Libraries\LibStub\LibStub.lua"/>
 	<Script file="Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
-	<Script file="Libraries\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
-	<Script file="Libraries\LibChatAnims\LibChatAnims.lua"/>
 	<Script file="Libraries\AceAddon-3.0\AceAddon-3.0.lua"/>
 	<Script file="Libraries\AceEvent-3.0\AceEvent-3.0.lua"/>
 	<Script file="Libraries\AceConsole-3.0\AceConsole-3.0.lua"/>
 	<Script file="Libraries\AceTimer-3.0\AceTimer-3.0.lua"/>
 	<Script file="Libraries\AceHook-3.0\AceHook-3.0.lua"/>
+	<Script file="Libraries\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
+	<Include file="Libraries\oUF\oUF.xml"/>
+	<Include file="Libraries\oUF_Plugins\Load_Plugins.xml"/>
+	<Script file="Libraries\LibChatAnims\LibChatAnims.lua"/>
+	<Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua"/>
 	<Include file="Libraries\DropDownMenu\DropDownMenu.xml"/>
 
 	<!-- Engine -->
@@ -51,7 +53,6 @@
 	<Script file="Core\API.lua"/>
 	<Script file="Core\Functions.lua"/>
 	<Script file="Core\Border.lua"/>
-	<Script file="Core\Animation.lua"/>
 	<Script file="Core\Install.lua"/>
 	<Script file="Core\Commands.lua"/>
 	<Script file="Core\Developer.lua"/>
@@ -69,9 +70,6 @@
 	<!-- Unitframes Core -->
 	<Script file="Modules\Unitframes\Init.lua"/>
 	<Script file="Modules\Unitframes\Filters\AuraList.lua"/>
-
-	<!-- Unitframe Plugins -->
-	<Include file="Libraries\oUF_Plugins\Load_Plugins.xml"/>
 
 	<!-- Unitframe Config -->
 	<Script file="Modules\Unitframes\Config\Config.lua"/>

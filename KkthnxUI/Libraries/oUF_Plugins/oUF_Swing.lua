@@ -1,9 +1,7 @@
-local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true or C.Unitframe.SwingBar ~= true then return end
-
 --	Based on oUF_Swing(by p3lim and Thalyra)
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
+assert(oUF, "oUF_Swing could not find oUF")
 
 local function OnDurationUpdate(self)
 	self:SetMinMaxValues(self.min, self.max)

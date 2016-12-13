@@ -1,9 +1,6 @@
-local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
-
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, 'oUF not loaded')
+assert(oUF, "oUF_Trinkets could not find oUF")
 
 local trinketSpells = {
 	[59752] = 120,
@@ -21,7 +18,7 @@ end
 
 local Update = function(self, event, ...)
 	local _, instanceType = IsInInstance();
-	if instanceType ~= 'arena' then
+	if instanceType ~= "arena" then
 		self.Trinket:Hide();
 		return;
 	else
@@ -42,7 +39,7 @@ local Update = function(self, event, ...)
 				self.Trinket.Icon:SetTexture(GetTrinketIcon(unit))
 			end
 		end
-	elseif event == 'PLAYER_ENTERING_WORLD' then
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		CooldownFrame_Set(self.Trinket.cooldownFrame, 1, 1, 1)
 	end
 
@@ -64,7 +61,7 @@ local Enable = function(self)
 			self.Trinket.Icon = self.Trinket:CreateTexture(nil, "BORDER")
 			self.Trinket.Icon:SetAllPoints(self.Trinket)
 			self.Trinket.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-			self.Trinket.Icon:SetTexture(GetTrinketIcon('player'))
+			self.Trinket.Icon:SetTexture(GetTrinketIcon("player"))
 		end
 
 		return true
@@ -80,4 +77,4 @@ local Disable = function(self)
 	end
 end
 
-oUF:AddElement('Trinket', Update, Enable, Disable)
+oUF:AddElement("Trinket", Update, Enable, Disable)

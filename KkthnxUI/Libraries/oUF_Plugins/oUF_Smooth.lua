@@ -1,9 +1,6 @@
-local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
-
 local _, ns = ...
 local oUF = ns.oUF or oUF
-
+assert(oUF, "oUF_Smooth could not find oUF")
 if not oUF then return end
 
 local smoothing = {}
@@ -33,8 +30,8 @@ end
 for i, frame in ipairs(oUF.objects) do hook(frame) end
 oUF:RegisterInitCallback(hook)
 
-local f, min, max = CreateFrame('Frame'), math.min, math.max
-f:SetScript('OnUpdate', function()
+local f, min, max = CreateFrame("Frame"), math.min, math.max
+f:SetScript("OnUpdate", function()
 	local rate = GetFramerate()
 	local limit = 30/rate
 	for bar, value in pairs(smoothing) do

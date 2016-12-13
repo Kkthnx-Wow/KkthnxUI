@@ -1,10 +1,3 @@
-local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
-
-local _, ns = ...
-local oUF = ns.oUF or oUF
-local colors = K.Colors
-
 -- Custom castbar element
 -- Pretty much my own raped version of the oUF castbar element with fading and support for a flash textures.
 --[[
@@ -38,6 +31,10 @@ CCastbar.PostChannelStop(unit, spellname)
 CCastbar.CustomDelayText(duration)
 CCastbar.CustomTimeText(duration)
 ]]
+
+local _, ns = ...
+local oUF = oUF or ns.oUF
+assert(oUF, "oUF_CCastbar was unable to locate oUF install.")
 
 _G.CASTING_BAR_ALPHA_STEP = 0.05
 _G.CASTING_BAR_FLASH_STEP = 0.05

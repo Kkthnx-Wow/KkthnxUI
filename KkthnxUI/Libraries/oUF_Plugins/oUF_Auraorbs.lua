@@ -1,6 +1,3 @@
-local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
-
 --[==================================[
 
 	Widget

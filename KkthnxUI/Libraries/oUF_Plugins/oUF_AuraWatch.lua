@@ -1,8 +1,3 @@
-local _, ns = ...
-local oUF = ns.oUF or oUF
-
-if not oUF then return end
-
 --[[------------------------------------------------------------------------------------------------------
 oUF_AuraWatch by Astromech
 Please leave comments, suggestions, and bug reports on this addon's WoWInterface page
@@ -113,7 +108,7 @@ these frames, so you must do so yourself. Each icon needs a spellID entry,
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF_AuraWatch cannot find an instance of oUF. If your oUF is embedded into a layout, it may not be embedded properly.")
+assert(oUF, "oUF_AuraWatch cannot find an instance of oUF.")
 
 local UnitBuff, UnitDebuff, UnitGUID = UnitBuff, UnitDebuff, UnitGUID
 local GUIDs = {}
