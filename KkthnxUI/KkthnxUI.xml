@@ -124,7 +124,6 @@
 	<Script file="Modules\Automation\LoggingCombat.lua"/>
 	<Script file="Modules\Automation\Screenshots.lua"/>
 	<Script file="Modules\Automation\TabBinder.lua"/>
-	<Script file="Modules\Automation\TabBinder.lua"/>
 
 	<!-- Blizzard -->
 	<Script file="Modules\Blizzard\AlertFrames.lua"/>
