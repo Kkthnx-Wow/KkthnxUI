@@ -210,6 +210,13 @@ if C.Misc.HideTalkingHead == true then
 	end)
 end
 
+-- Disable QuestTrackingTooltips while in raid and in combat
+local QuestTracking = CreateFrame("Frame")
+QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
+QuestTracking:SetScript("OnEvent", function(self, event)
+	SetCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
+end)
+
 -- Undress button in auction dress-up frame(by Nefarion)
 local strip = CreateFrame("Button", "DressUpFrameUndressButton", DressUpFrame, "UIPanelButtonTemplate")
 strip:SetText(L.Misc.Undress)

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true or C.DataText.BottomBar ~= true then return end
+if C.ActionBar.Enable ~= true or C.DataText.BottomBar ~= true or C.DataText.ThreatBar ~= true then return end
 
 -- Lua API
 local floor = math.floor

@@ -18,7 +18,7 @@ StaticPopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
 
 -- Create main frame
 local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", oUF_PetBattleFrameHider)
-RaidUtilityPanel:CreatePanel("Transparent", 170, 144, unpack(C.Position.RaidUtility))
+RaidUtilityPanel:CreatePanel("Invisibile", 170, 144, unpack(C.Position.RaidUtility))
 if GetCVarBool("watchFrameWidth") then
 	RaidUtilityPanel:SetPoint(C.Position.RaidUtility[1], C.Position.RaidUtility[2], C.Position.RaidUtility[3], C.Position.RaidUtility[4] + 100, C.Position.RaidUtility[5])
 end
@@ -46,7 +46,7 @@ local function CreateButton(name, parent, template, width, height, point, relati
 	if text then
 		b.t = b:CreateFontString(nil, "OVERLAY")
 		b.t:SetFont(C.Media.Font, C.Media.Font_Size, "")
-		b.t:SetShadowOffset(K.Mult,-K.Mult)
+		b.t:SetShadowOffset(K.Mult, -K.Mult)
 		b.t:SetPoint("CENTER")
 		b.t:SetJustifyH("CENTER")
 		b.t:SetText(text)

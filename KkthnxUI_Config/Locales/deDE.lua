@@ -126,8 +126,9 @@ UIConfigLocal.DataTextBattleground = "Aktiviere die Datatextanzeige auf Schlacht
 UIConfigLocal.DataTextBottomBar = "Aktiviere eine Datatextleiste unter den Aktionsleisten"
 UIConfigLocal.DataTextLocalTime = "Benutze die lokale Zeit bei der Zeitanzeige auf der Minimap, anstatt der Serverzeit"
 UIConfigLocal.DataTextSystem = "Aktivere den Datatext unter der Minimap, der Dir Deine FPS & MS anzeigt"
+UIConfigLocal.DataTextThreatBar = "Display threat bar on the bottom datatext panel."
 UIConfigLocal.DataTextTime = "Aktiviere den Datatext auf der Minimap, der Dir die Uhrzeit anzeigt"
-UIConfigLocal.DataTextTime24Hr = "Stelle die Zeitanzeige in der MInimap auf das 24 Stunden Format um"
+UIConfigLocal.DataTextTime24Hr = "Stelle die Zeitanzeige in der Minimap auf das 24 Stunden Format um"
 
 -- Fehler
 UIConfigLocal.Error = "Fehler"

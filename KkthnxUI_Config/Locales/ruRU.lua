@@ -126,6 +126,7 @@ UIConfigLocal.DataTextBattleground = "Включить отображение т
 UIConfigLocal.DataTextBottomBar = "Enable DataTextBar under your Actionbars"
 UIConfigLocal.DataTextLocalTime = "Использовать локальное время в текстах данных"
 UIConfigLocal.DataTextSystem = "Включить отображение ФПС и МС под миникартой"
+UIConfigLocal.DataTextThreatBar = "Display threat bar on the bottom datatext panel."
 UIConfigLocal.DataTextTime = "Включить отображение часов внизу миникарты"
 UIConfigLocal.DataTextTime24Hr = "Установить 24-х часовой формат времени"
 

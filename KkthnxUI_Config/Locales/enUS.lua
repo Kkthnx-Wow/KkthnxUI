@@ -123,6 +123,7 @@ UIConfigLocal.DataTextBattleground = "Enable data text displaying battleground i
 UIConfigLocal.DataTextBottomBar = "Enable DataTextBar under your Actionbars"
 UIConfigLocal.DataTextLocalTime = "Use local time in the Time data text, rather than realm time"
 UIConfigLocal.DataTextSystem = "Enable system data text under the minimap displaying FPS & MS"
+UIConfigLocal.DataTextThreatBar = "Display threat bar on the bottom datatext panel."
 UIConfigLocal.DataTextTime = "Enable clock data text displaying time information at the bottom of the minimap"
 UIConfigLocal.DataTextTime24Hr = "Set the Time data text to 24 hour format"
 

@@ -2,7 +2,38 @@ local K, C, L = unpack(select(2, ...))
 if C.Chat.SpamFilter ~= true then return end
 
 -- Spam keywords
-K.SpamFilterList = {
+K.SpamFilterWhitelist = {
+	"%f[%a]lf[gmw%d%s]", -- lfg, lfm, lfw, lf5, lf ...
+	"%f[%a]sell",
+	"%f[%a]wt[bst]", -- wtb, wts, wtt
+	"|h", -- links
+	"blingtron",
+	"dps",
+	"drov",
+	"ffa",
+	"free ?roll",
+	"gold ?run",
+	"he[ai]l",
+	"heroic",
+	"kaufe", -- de
+	"mog ?run",
+	"mount",
+	"mythic",
+	"reserve",
+	"rukh", -- rukh, rukhan
+	"s[cz]ena?r?i?o?", -- en/de
+	"style ?ru[ns]h?", -- en/de
+	"suche", -- de
+	"tank",
+	"tar[il]na", -- tarlna, but people are dumb and also write tarina
+	"transmog",
+	"trash farm",
+	"vk", -- de
+	"weltboss", -- de
+	"world ?boss",
+}
+
+K.SpamFilterBlacklist = {
 	-- real spam
 	"%.c0m%f[%A]",
 	"%d/%d cm gold",

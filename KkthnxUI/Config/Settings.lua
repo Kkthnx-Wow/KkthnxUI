@@ -141,12 +141,13 @@ C["Plugins"] = {
 
 -- Datatext
 C["DataText"] = {
-	["System"] = true,
-	["Time"] = true,
-	["Time24Hr"] = false,
-	["LocalTime"] = true,
 	["Battleground"] = true,
 	["BottomBar"] = true,
+	["LocalTime"] = true,
+	["System"] = true,
+	["ThreatBar"] = false,
+	["Time"] = true,
+	["Time24Hr"] = false,
 }
 
 -- Errors
