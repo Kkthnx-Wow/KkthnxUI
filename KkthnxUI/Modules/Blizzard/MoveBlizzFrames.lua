@@ -1,6 +1,10 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.MoveBlizzard ~= true then return end
 
+-- Lua Wow
+local _G = _G
+local pairs = pairs
+
 -- MOVE SOME BLIZZARD FRAMES
 local frames = {
 	"CharacterFrame", "SpellBookFrame", "TaxiFrame", "QuestFrame", "PVEFrame", "AddonList",

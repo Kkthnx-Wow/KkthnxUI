@@ -216,6 +216,7 @@ C["Misc"] = {
 	["HideTalkingHead"] = false,
 	["InviteKeyword"] = "inv",
 	["ItemLevel"] = true,
+	["MerchantItemLevel"] = false,
 	["MoveBlizzard"] = false,
 	["NoBanner"] = false,
 	["SellMisc"] = true,

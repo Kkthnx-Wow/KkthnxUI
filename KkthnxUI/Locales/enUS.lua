@@ -303,6 +303,7 @@ L.Minimap = {
 
 -- Misc Localization
 L.Misc = {
+	BuyStack = "Alt-Click to buy a stack",
 	CopperShort = "|cffeda55fc|r",
 	GoldShort = "|cffffd700g|r",
 	SilverShort = "|cffc7c7cfs|r",

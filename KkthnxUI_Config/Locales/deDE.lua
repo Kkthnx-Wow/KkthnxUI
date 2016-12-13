@@ -192,14 +192,15 @@ UIConfigLocal.MiscAutoSellGrays = "Verkaufe automatisch graue Gegenstände beim 
 UIConfigLocal.MiscBGSpam = "Lösche 'Boss Emote spam' während du auf dem Schlachtfeld bist"
 UIConfigLocal.MiscColorPicker = "Verbesserte Farbauswahl"
 UIConfigLocal.MiscEnhancedMail = "Fügt einen 'Öffne Alles' Button deinem Briefkasten hinzu."
+UIConfigLocal.MiscHideTalkingHead = "Verstecke das Questdialogfenster"
 UIConfigLocal.MiscInviteKeyword = "Schlüsselwort zum einladen (/ainv)"
 UIConfigLocal.MiscItemLevel = "Zeige den Itemlevel auf Deinen Gegenständen in der Charakterübersicht an"
+UIConfigLocal.MiscMerchantItemLevel = "Zeige Itemlevel für Waffen & Rüstung bei Händler"
 UIConfigLocal.MiscMoveBlizzard = "Verschiebe einige Blizzard Fenster"
+UIConfigLocal.MiscNoBanner = "Autoverstecken des Boss Loot Frame"
 UIConfigLocal.MiscSellMisc = "Automatisches Verkaufen von unnützen Gegenständen die nicht grauer Qualität sind"
 UIConfigLocal.MiscSlotDurability = "Zeige die Haltbarkeit auf Deinen Gegenständen in der Charakterübersicht an"
 UIConfigLocal.MiscUseGuildRepair = "Bei Benutzung von 'Automatisches Reparieren', benutzte die Gildenbank"
-UIConfigLocal.MiscNoBanner = "Autoverstecken des Boss Loot Frame"
-UIConfigLocal.MiscHideTalkingHead = "Verstecke das Questdialogfenster"
 
 -- Namensplaketten
 UIConfigLocal.Nameplates = "Namensplaketten"

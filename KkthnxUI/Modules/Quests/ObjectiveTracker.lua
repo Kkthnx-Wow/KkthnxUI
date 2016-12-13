@@ -1,6 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 if K.CheckAddOn("DugisGuideViewerZ") then return end
 
+-- Wow Lua
+local unpack = unpack
+
 -- Wow API
 local GetNumQuestWatches = GetNumQuestWatches
 local GetQuestDifficultyColor = GetQuestDifficultyColor
@@ -10,7 +13,7 @@ local GetScreenHeight = GetScreenHeight
 local GetScreenWidth = GetScreenWidth
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT, ObjectiveTrackerFrame, GameTooltip
+-- GLOBALS: OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT, ObjectiveTrackerFrame, GameTooltip, UIParent
 -- GLOBALS: ObjectiveTrackerBonusRewardsFrame, QUEST_TRACKER_MODULE, ACHIEVEMENT_TRACKER_MODULE
 
 local Movers = K.Movers
@@ -62,7 +65,7 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 	local item = block.itemButton
 
 	if item and not item.skinned then
-		item:SetSize(C.ActionBar.ButtonSize - 2, C.ActionBar.ButtonSize - 2)
+		item:SetSize(C.ActionBar.ButtonSize - 4, C.ActionBar.ButtonSize - 4)
 		item:SetBackdrop(K.BorderBackdrop)
 		item:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		item:StyleButton()

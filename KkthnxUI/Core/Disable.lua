@@ -68,6 +68,10 @@ if CheckAddOn("WorldQuestTracker") or CheckAddOn("Mapster") or CheckAddOn("World
 	C.WorldMap.SmallWorldMap = false
 end
 
+if CheckAddOn("BadBoy") then
+	C.Chat.SpamFilter = false
+end
+
 if CheckAddOn("AdiBags") or CheckAddOn("ArkInventory") or CheckAddOn("cargBags_Nivaya") or CheckAddOn("cargBags") or CheckAddOn("Bagnon") or CheckAddOn("Combuctor") or CheckAddOn("TBag") or CheckAddOn("BaudBag") then
 	C.Bags.Enable = false
 end

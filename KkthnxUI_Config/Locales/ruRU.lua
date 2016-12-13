@@ -195,6 +195,7 @@ UIConfigLocal.MiscEnhancedMail = "Добавить кнопку 'ВСЕ' в ок
 UIConfigLocal.MiscHideTalkingHead = "Скрыть подсказку добычи после победы над боссом"
 UIConfigLocal.MiscInviteKeyword = "Ключевое слово для автоприглашения (/ainv)"
 UIConfigLocal.MiscItemLevel = "Показывать уровень предмета надетого на персонажа"
+UIConfigLocal.MiscMerchantItemLevel = "Отображать уровень предметов для оружия и брони в окне торговца"
 UIConfigLocal.MiscMoveBlizzard = "Перемещение некоторых элементов Blizzard"
 UIConfigLocal.MiscNoBanner = "Скрыть рамку говорящей головы"
 UIConfigLocal.MiscSellMisc = "Автоматически продавать ненужные предметы качеством выше серого"

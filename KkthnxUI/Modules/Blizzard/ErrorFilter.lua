@@ -1,5 +1,11 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Wow API
+local UIErrorsFrame = UIErrorsFrame
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_ERROR1
+
 -- Clear UIErrorsFrame(module from Kousei by Haste)
 if C.Error.White == true or C.Error.Black == true then
 	local KkthnxUIErrors = CreateFrame("Frame")

@@ -201,6 +201,7 @@
 	<Script file="Modules\Miscellaneous\LossControl.lua"/>
 	<Script file="Modules\Miscellaneous\Mail.lua"/>
 	<Script file="Modules\Miscellaneous\Merchant.lua"/>
+	<Script file="Modules\Miscellaneous\MerchantItemLevel.lua"/>
 	<Script file="Modules\Miscellaneous\Miscellaneous.lua"/>
 	<Script file="Modules\Miscellaneous\Mounts.lua"/>
 	<Script file="Modules\Miscellaneous\PulseCD.lua"/>
