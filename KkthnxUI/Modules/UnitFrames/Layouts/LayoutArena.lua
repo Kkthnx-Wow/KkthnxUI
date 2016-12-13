@@ -23,15 +23,15 @@ local function arenaPrep(self, event, ...)
 	self.Health:SetStatusBarColor(unpack(self.colors.class[class]))
 end
 
-local function updatePortrait(self, event, unit)
-	local specID = GetArenaOpponentSpec(self.id)
-	if specID then
-		local _, _, _, icon = GetSpecializationInfoByID(specID)
-		SetPortraitToTexture(self.Portrait, icon)
-	elseif unit and UnitIsUnit(self.unit, unit) then
-		SetPortraitTexture(self.Portrait, unit)
-	end
-end
+-- local function updatePortrait(self, event, unit)
+-- 	local specID = GetArenaOpponentSpec(self.id)
+-- 	if specID then
+-- 		local _, _, _, icon = GetSpecializationInfoByID(specID)
+-- 		SetPortraitToTexture(self.Portrait, icon)
+-- 	elseif unit and UnitIsUnit(self.unit, unit) then
+-- 		SetPortraitTexture(self.Portrait, unit)
+-- 	end
+-- end
 
 function ns.createArenaLayout(self, unit)
 	local config = ns.config
@@ -58,11 +58,11 @@ function ns.createArenaLayout(self, unit)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -3)
 	self.Power:SetHeight(self.Health:GetHeight())
 
-	self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND")
-	self.Portrait:SetSize(64, 64)
-	self.Portrait:SetPoint("TOPLEFT", self.Health, -64, 13)
-	self.Portrait.Override = updatePortrait
-	self:RegisterEvent("ARENA_OPPONENT_UPDATE", updatePortrait)
+	-- self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND")
+	-- self.Portrait:SetSize(64, 64)
+	-- self.Portrait:SetPoint("TOPLEFT", self.Health, -64, 13)
+	-- self.Portrait.Override = updatePortrait
+	-- self:RegisterEvent("ARENA_OPPONENT_UPDATE", updatePortrait)
 
 	self.Health.Value = K.SetFontString(self.Health, C.Media.Font, 13)
 	self.Health.Value:SetPoint("CENTER", self.Health)
@@ -99,14 +99,14 @@ function ns.createArenaLayout(self, unit)
 	self.PvP:SetSize(40, 40)
 	self.PvP:SetPoint("TOPLEFT", self.Texture, -20, -20)
 
-	-- portrait Timer
-	self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
-	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")
-	self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
-
-	self.PortraitTimer.Remaining = K.SetFontString(self, C.Media.Font, self.Portrait:GetWidth() / 3, C.Media.Font_Style)
-	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
-	self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
+	-- portrait Timer -- We need a workaround for this currently.
+	-- self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
+	-- self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")
+	-- self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
+	--
+	-- self.PortraitTimer.Remaining = K.SetFontString(self, C.Media.Font, self.Portrait:GetWidth() / 3, C.Media.Font_Style)
+	-- self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
+	-- self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 
 	-- Auras
 	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)

@@ -22,11 +22,11 @@ local function RYGColorGradient(perc)
 	end
 end
 
-local fontstrings = setmetatable({}, {
+	local fontstrings = setmetatable({}, {
 	__index = function(t, i)
 		local gslot = _G["Character"..i.."Slot"]
 		local fstr = gslot:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")
-		fstr:SetPoint("CENTER", gslot, "CENTER", 2, 0)
+		fstr:SetPoint("BOTTOM", gslot, "BOTTOM", 0, 1)
 		t[i] = fstr
 		return fstr
 	end,

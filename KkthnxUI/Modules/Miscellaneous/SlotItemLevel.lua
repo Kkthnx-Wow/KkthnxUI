@@ -1,267 +1,149 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.ItemLevel ~= true then return end
 
--- ILevel by (Sanex (Arathor EU))
-
--- WoW Lua
-local _G = _G
-local select = select
-local strmatch = string.match
-local strsplit = string.split
-local tonumber = tonumber
-local tostring = tostring
-local twipe = table.wipe
-local type = type
-
--- Wow API
-local GetInventoryItemLink = GetInventoryItemLink
-local GetItemGem = GetItemGem
-local GetItemInfo = GetItemInfo
-local hooksecurefunc = hooksecurefunc
-local upgradeTypeID = upgradeTypeID
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CharacterBackSlot, CharacterChestSlot, CharacterWristSlot, CharacterLegsSlot
--- GLOBALS: CharacterFeetSlot, CharacterFinger0Slot, CharacterFinger1Slot, CharacterTrinket0Slot
--- GLOBALS: CharacterHeadSlot, CharacterNeckSlot, CharacterShoulderSlot, CharacterWaistSlot
--- GLOBALS: CharacterTrinket1Slot, CharacterSecondaryHandSlot, PaperDollFrame, ChatFrame1
--- GLOBALS: iLevelSetting, UIParent, SLASH_ILEVEL1, CharacterMainHandSlot, CharacterHandsSlot
-
-local xo, yo = 8, 4 -- X-offset, Y-offset
-local equiped = {} -- Table to store equiped items
-local setting -- Setting on how much we show
-local socketsTable = {
-	-- WoD Sockets
-	[523] = true, -- Dungeon
-	[563] = true, -- Normal Raid
-	[564] = true, -- Heroic Raid
-	[565] = true, -- Mythic Raid
-
-	-- Prismatic Sockets in 7.0, how many are there?
-	[1808] = true, -- From Heroic Dungeons and T19 Normal Raids
-	[3386] = true, -- From Vendor
-	[3458] = true, -- Legendary item with socket?
+-- Item level on slot buttons in Character/InspectFrame(by Tukz)
+local slots = {
+	"HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot",
+	"WristSlot", "MainHandSlot", "SecondaryHandSlot", "HandsSlot", "WaistSlot",
+	"LegsSlot", "FeetSlot", "Finger0Slot", "Finger1Slot", "Trinket0Slot", "Trinket1Slot"
 }
 
-local f = CreateFrame("Frame", nil, PaperDollFrame) -- ILevel number frame
-f:RegisterEvent("PLAYER_LOGIN")
+local upgrades = {
+	["1"] = 8, ["373"] = 4, ["374"] = 8, ["375"] = 4, ["376"] = 4, ["377"] = 4,
+	["379"] = 4, ["380"] = 4, ["446"] = 4, ["447"] = 8, ["452"] = 8, ["454"] = 4,
+	["455"] = 8, ["457"] = 8, ["459"] = 4, ["460"] = 8, ["461"] = 12, ["462"] = 16,
+	["466"] = 4, ["467"] = 8, ["469"] = 4, ["470"] = 8, ["471"] = 12, ["472"] = 16,
+	["477"] = 4, ["478"] = 8, ["480"] = 8, ["492"] = 4, ["493"] = 8, ["495"] = 4,
+	["496"] = 8, ["497"] = 12, ["498"] = 16, ["504"] = 12, ["505"] = 16, ["506"] = 20,
+	["507"] = 24, ["530"] = 5, ["531"] = 10, ["535"] = 15, ["536"] = 30, ["537"] = 45
+}
 
--- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
-local S_ITEM_LEVEL = "^" .. gsub(ITEM_LEVEL, "%%d", "(%%d+)")
-local S_UPGRADE_LEVEL = "^" .. gsub(ITEM_UPGRADE_TOOLTIP_FORMAT, "%%d", "(%%d+)")
-local S_HEIRLOOM_LEVEL = "^" .. gsub(HEIRLOOM_UPGRADE_TOOLTIP_FORMAT, "%%d", "(%%d+)")
-
-local scantip = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTooltipTemplate")
-scantip:SetOwner(UIParent, "ANCHOR_NONE")
-
-local function _getRealItemLevel(slotId)
-	local realItemLevel, currentUpgradeLevel, maxUpgradeLevel
-	local hasItem = scantip:SetInventoryItem("player", slotId)
-	if not hasItem then return nil end -- With this we don't get ilvl for offhand if we equip 2h weapon
-
-	for i = 2, scantip:NumLines() do -- Line 1 is always the name so you can skip it.
-		local text = _G["iLvlScanningTooltipTextLeft"..i]:GetText()
-		if text and text ~= "" then
-			realItemLevel = realItemLevel or strmatch(text, S_ITEM_LEVEL)
-			if not (currentUpgradeLevel or maxUpgradeLevel) then
-				currentUpgradeLevel, maxUpgradeLevel = strmatch(text, S_UPGRADE_LEVEL)
-				if not (currentUpgradeLevel or maxUpgradeLevel) then
-					currentUpgradeLevel, maxUpgradeLevel = strmatch(text, S_HEIRLOOM_LEVEL)
-				end
-			end
-
-			if realItemLevel and currentUpgradeLevel and maxUpgradeLevel then
-				return realItemLevel, tonumber(currentUpgradeLevel), tonumber(maxUpgradeLevel)
-			end
+local function BOALevel(level, id)
+	if level > 97 then
+		if id == 133585 or id == 133595 or id == 133596 or id == 133597 or id == 133598 then
+			level = 815 - (110 - level) * 10
+		else
+			level = 605 - (100 - level) * 5
 		end
+	elseif level > 90 then
+		level = 590 - (97 - level) * 10
+	elseif level > 85 then
+		level = 463 - (90 - level) * 19.75
+	elseif level > 80 then
+		level = 333 - (85 - level) * 13.5
+	elseif level > 67 then
+		level = 187 - (80 - level) * 4
+	elseif level > 57 then
+		level = 105 - (67 - level) * 2.88
+	elseif level > 5 then
+		level = level + 5
+	else
+		level = 10
 	end
 
-	return realItemLevel
+	return floor(level + 0.5)
 end
 
-local function _updateItems()
-	for i = 1, 17 do -- Only check changed items or items without ilvl text, skip the shirt (4)
-		local itemLink = GetInventoryItemLink("player", i)
-		if i ~= 4 and (equiped[i] ~= itemLink or f[i]:GetText() == nil) then
-			equiped[i] = itemLink
-			local realItemLevel, currentUpgradeLevel, maxUpgradeLevel = _getRealItemLevel(i)
-			local upgradeString, enchantString, gemString = "", "", ""
-			local _, enchantID, gem1, gem2, gem3, gem4, numBonuses, affixes
+local timewarped = {
+	["615"] = 660, -- Dungeon drops
+	["692"] = 675, -- Timewarped badge vendors
+	["656"] = 675, -- Warforged Dungeon drops
+}
 
-			if setting >= 1 then
-				if currentUpgradeLevel and maxUpgradeLevel and currentUpgradeLevel < maxUpgradeLevel then
-					upgradeString = "|TInterface\\PetBattles\\BattleBar-AbilityBadge-Strong:0:0:0:0:32:32:2:30:2:30|t"
-				end
+local function CreateButtonsText(frame)
+	for _, slot in pairs(slots) do
+		local button = _G[frame..slot]
+		button.t = button:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")
+		button.t:SetPoint("TOP", button, "TOP", 0, -2)
+		button.t:SetText("")
+	end
+end
 
-				if setting == 2 then
-					if itemLink then
-						_, _, enchantID, _, _, _, _, _, _, _, _, upgradeTypeID, _, numBonuses, affixes = strsplit(":", itemLink, 15)
-					end
-					enchantID = tonumber(enchantID); numBonuses = tonumber(numBonuses); upgradeTypeID = tonumber(upgradeTypeID); realItemLevel = realItemLevel or ""
+local function UpdateButtonsText(frame)
+	if frame == "Inspect" and not InspectFrame:IsShown() then return end
 
-					if i == 2 or i == 3 or i == 11 or i == 12 or i == 15 then
-						-- Neck, Shoulders, Finger0, Finger1, Chest
-						if enchantID and enchantID > 0 then
-							enchantString = "|T136244:0:0:0:0:32:32:2:30:2:30|t"
-						elseif itemLink then
-							enchantString = "|T136244:0:0:0:0:32:32:2:30:2:30:221:0:0|t"
+	for _, slot in pairs(slots) do
+		local id = GetInventorySlotInfo(slot)
+		local text = _G[frame..slot].t
+		local itemLink
+		local ulvl
+
+		if frame == "Inspect" then
+			itemLink = GetInventoryItemLink("target", id)
+			ulvl = UnitLevel("target")
+		else
+			itemLink = GetInventoryItemLink("player", id)
+			ulvl = UnitLevel("player")
+		end
+
+		if slot == "ShirtSlot" or slot == "TabardSlot" then
+			text:SetText("")
+		elseif itemLink then
+			local oldlevel = text:GetText()
+			local _, _, quality, level = GetItemInfo(itemLink)
+			if level then
+				if level ~= oldlevel then
+					if quality == 7 and level == 1 then
+						local id = tonumber(strmatch(itemLink, "item:(%d+)"))
+						text:SetText("|cFFFFFF00"..BOALevel(ulvl, id))
+					elseif level == 1 then
+						text:SetText("")
+					else
+						local tid = strmatch(itemLink, ".+:512:22.+:(%d+):100")
+						if timewarped[tid] then
+							level = timewarped[tid]
 						end
-					end
-					if i == 16 and upgradeTypeID == 256 then -- Main Hand, Artifact Weapon
-						for b = 1, 3 do
-							local _, gemLink = GetItemGem(itemLink, b)
-							if gemLink and gemLink ~= "" then
-								local _, _, _, _, _, _, _, _, _, t = GetItemInfo(gemLink)
-								if t and t > 0 then
-									gemString = gemString.."|T"..t..":0:0:0:0:32:32:2:30:2:30|t"
-								end
-							else
-								gemString = gemString.."|TInterface\\ItemSocketingFrame\\UI-EmptySocket-Red:0:0:0:0:32:32:2:30:2:30|t"
+
+						local upgradeTypeID = select(12, strsplit(":", itemLink))
+						if upgradeTypeID and upgradeTypeID ~= "" then
+							local uid = itemLink:match("[-:%d]+:([-%d]+)")
+							if upgrades[uid] then
+								level = level + upgrades[uid]
 							end
 						end
-					elseif numBonuses and numBonuses > 0 then
-						for b = 1, numBonuses do
-							local bonusID = select(b, strsplit(":", affixes))
-							if socketsTable[tonumber(bonusID)] then
-								local _, gemLink = GetItemGem(itemLink, 1)
-								if gemLink and gemLink ~= "" then
-									local _, _, _, _, _, _, _, _, _, t = GetItemInfo(gemLink)
-									if t and t > 0 then
-										gemString = gemString.."|T"..t..":0:0:0:0:32:32:2:30:2:30|t"
-									end
-								else
-									gemString = gemString.."|TInterface\\ItemSocketingFrame\\UI-EmptySocket-Red:0:0:0:0:32:32:2:30:2:30|t"
-								end
-							end
+
+						local numBonusIDs = tonumber(strmatch(itemLink, ".+:%d+:512:%d*:(%d+).+"))
+						if numBonusIDs or quality == 6 then
+							level = GetDetailedItemLevelInfo(itemLink) or level
 						end
-					end
-				end
-			end
 
-			realItemLevel = realItemLevel or ""
-
-			if setting == 2 then
-				if i <= 5 or i == 15 or i == 9 then -- Left side
-					f[i]:SetFormattedText("%s%s%s%s", realItemLevel, enchantString, gemString, upgradeString)
-				elseif i == 16 then -- MainHand
-					if gemString ~= "" then
-						f[i]:SetFormattedText("%s%s\n%s", upgradeString, realItemLevel, gemString)
-						f[i]:SetWidth(CharacterMainHandSlot:GetWidth() + 2) -- Fix for 3 gems in weapon
-					else
-						f[i]:SetFormattedText("%s%s", upgradeString, realItemLevel)
-						f[i]:SetWidth(CharacterMainHandSlot:GetWidth())
+						text:SetText("|cFFFFFF00"..level)
 					end
-				elseif i == 17 then -- OffHand
-					if gemString ~= "" then
-						f[i]:SetFormattedText("%s%s\n%s", realItemLevel, upgradeString, gemString)
-					else
-						f[i]:SetFormattedText("%s%s", realItemLevel, upgradeString)
-					end
-				else -- Right side
-					f[i]:SetFormattedText("%s%s%s%s", upgradeString, gemString, enchantString, realItemLevel)
-				end
-			elseif setting == 1 then
-				if i <= 5 or i == 15 or i == 9 or i == 17 then -- Left side
-					f[i]:SetText(realItemLevel..upgradeString)
-				else
-					f[i]:SetText(upgradeString..realItemLevel)
 				end
 			else
-				f[i]:SetText(realItemLevel)
+				text:SetText("")
 			end
+		else
+			text:SetText("")
 		end
 	end
 end
 
-local function _createStrings()
-	local function _stringFactory(parent, myPoint, parentPoint, x, y)
-		local s = f:CreateFontString(nil, "OVERLAY", "GameFontNormalOutline")
-		s:SetPoint(myPoint, parent, parentPoint, x or 0, y or 0)
-		s:SetShadowOffset(0, 0)
-
-		return s
-	end
-
-	f:SetFrameLevel(CharacterHeadSlot:GetFrameLevel())
-
-	f[1] = _stringFactory(CharacterHeadSlot, "LEFT", "RIGHT", xo)
-	f[10] = _stringFactory(CharacterHandsSlot, "RIGHT", "LEFT", -xo)
-	f[11] = _stringFactory(CharacterFinger0Slot, "RIGHT", "LEFT", -xo)
-	f[12] = _stringFactory(CharacterFinger1Slot, "RIGHT", "LEFT", -xo)
-	f[13] = _stringFactory(CharacterTrinket0Slot, "RIGHT", "LEFT", -xo)
-	f[14] = _stringFactory(CharacterTrinket1Slot, "RIGHT", "LEFT", -xo)
-	f[15] = _stringFactory(CharacterBackSlot, "LEFT", "RIGHT", xo)
-	f[16] = _stringFactory(CharacterMainHandSlot, "BOTTOM", "TOP", 2, yo)
-	f[17] = _stringFactory(CharacterSecondaryHandSlot, "BOTTOM", "TOP", 2, yo)
-	f[2] = _stringFactory(CharacterNeckSlot, "LEFT", "RIGHT", xo)
-	f[3] = _stringFactory(CharacterShoulderSlot, "LEFT", "RIGHT", xo)
-	f[5] = _stringFactory(CharacterChestSlot, "LEFT", "RIGHT", xo)
-	f[6] = _stringFactory(CharacterWaistSlot, "RIGHT", "LEFT", -xo)
-	f[7] = _stringFactory(CharacterLegsSlot, "RIGHT", "LEFT", -xo)
-	f[8] = _stringFactory(CharacterFeetSlot, "RIGHT", "LEFT", -xo)
-	f[9] = _stringFactory(CharacterWristSlot, "LEFT", "RIGHT", xo)
-
-	f:Hide()
-end
-
-local function OnEvent(self, event, ...) -- Event handler
+local OnEvent = CreateFrame("Frame")
+OnEvent:RegisterEvent("PLAYER_LOGIN")
+OnEvent:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+OnEvent:SetScript("OnEvent", function(self, event)
 	if event == "PLAYER_LOGIN" then
-		self:UnregisterEvent(event)
-
-		if type(iLevelSetting) ~= "numeric" then
-			iLevelSetting = 2
-		end
-		setting = iLevelSetting
-
-		_createStrings()
-
-		PaperDollFrame:HookScript("OnShow", function(self)
-			f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-			f:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
-			f:RegisterEvent("ARTIFACT_UPDATE")
-			f:RegisterEvent("SOCKET_INFO_UPDATE")
-			f:RegisterEvent("COMBAT_RATING_UPDATE")
-			_updateItems()
-			f:Show()
-		end)
-
-		PaperDollFrame:HookScript("OnHide", function(self)
-			f:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-			f:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
-			f:UnregisterEvent("ARTIFACT_UPDATE")
-			f:UnregisterEvent("SOCKET_INFO_UPDATE")
-			f:UnregisterEvent("COMBAT_RATING_UPDATE")
-			f:Hide()
-		end)
-	elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "ITEM_UPGRADE_MASTER_UPDATE"
-	or event == "ARTIFACT_UPDATE" or event == "SOCKET_INFO_UPDATE" or event == "COMBAT_RATING_UPDATE" then
-		if (...) == 16 then
-			equiped[16] = nil
-			equiped[17] = nil
-		end
-		_updateItems()
+		CreateButtonsText("Character")
+		UpdateButtonsText("Character")
+		self:UnregisterEvent("PLAYER_LOGIN")
+		CharacterFrame:HookScript("OnShow", function(self) UpdateButtonsText("Character") end)
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+		UpdateButtonsText("Character")
+	else
+		UpdateButtonsText("Inspect")
 	end
-end
-f:SetScript("OnEvent", OnEvent)
+end)
 
-SLASH_ILEVEL1 = "/ilevel"
-SlashCmdList.ILEVEL = function(...)
-	if (...) == "0" then
-		setting = 0
-		iLevelSetting = 0
-		twipe(equiped)
-		_updateItems()
-	elseif (...) == "1" then
-		setting = 1
-		iLevelSetting = 1
-		twipe(equiped)
-		_updateItems()
-	elseif (...) == "2" then
-		setting = 2
-		iLevelSetting = 2
-		twipe(equiped)
-		_updateItems()
+local OnLoad = CreateFrame("Frame")
+OnLoad:RegisterEvent("ADDON_LOADED")
+OnLoad:SetScript("OnEvent", function(self, event, addon)
+	if addon == "Blizzard_InspectUI" then
+		CreateButtonsText("Inspect")
+		InspectFrame:HookScript("OnShow", function(self) UpdateButtonsText("Inspect") end)
+		OnEvent:RegisterEvent("UNIT_INVENTORY_CHANGED")
+		OnEvent:RegisterEvent("PLAYER_TARGET_CHANGED")
+		OnEvent:RegisterEvent("INSPECT_READY")
+		self:UnregisterEvent("ADDON_LOADED")
 	end
-	ChatFrame1:AddMessage("|cff3c9bed"..K.UIName..":|r|cffffff00 /ilevel ( 0 | 1 | 2 )\n 0 - Only show item levels.\n 1 - Show item levels and upgrades.\n 2 - Show item levels, upgrades and enchants and gems.|r")
-	ChatFrame1:AddMessage("|cff3c9bed"..K.UIName..":|r|cffffff00 Current setting is |r" .. tostring(setting))
-end
+end)

@@ -345,7 +345,8 @@ local function CreateRaidLayout(self, unit)
 		RaidDebuffs:SetWidth(22)
 		RaidDebuffs:SetPoint("CENTER", self.Health)
 		RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-		K.CreateBorder(RaidDebuffs, 10)
+		RaidDebuffs:SetBackdrop(K.BorderBackdrop)
+		RaidDebuffs:SetBackdropColor(0, 0, 0)
 		RaidDebuffs.icon = RaidDebuffs:CreateTexture(nil, "ARTWORK")
 		RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
 		RaidDebuffs.icon:SetInside(RaidDebuffs)
@@ -361,7 +362,7 @@ local function CreateRaidLayout(self, unit)
 		RaidDebuffs.count:SetFont(C.Media.Font, 12, "OUTLINE")
 		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
 		RaidDebuffs.count:SetTextColor(1, .9, 0)
-		RaidDebuffs.SetDebuffTypeColor = RaidDebuffs.SetBackdropBorderColor
+		RaidDebuffs.SetDebuffTypeColor = RaidDebuffs.SetBackdropColor
 		RaidDebuffs.Debuffs = K.RaidDebuffsTracking
 
 		self.RaidDebuffs = RaidDebuffs

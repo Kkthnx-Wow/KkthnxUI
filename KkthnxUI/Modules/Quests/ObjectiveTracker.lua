@@ -65,9 +65,9 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 	local item = block.itemButton
 
 	if item and not item.skinned then
-		item:SetSize(C.ActionBar.ButtonSize - 4, C.ActionBar.ButtonSize - 4)
+		item:SetSize(C.ActionBar.ButtonSize - 5, C.ActionBar.ButtonSize - 5)
 		item:SetBackdrop(K.BorderBackdrop)
-		item:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		item:SetBackdropColor(0.65, 0.63, 0.35)
 		item:StyleButton()
 
 		item:SetNormalTexture(nil)
@@ -86,6 +86,33 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 		item.skinned = true
 	end
 end)
+
+hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", function(_, block)
+	local item = block.itemButton
+
+	if item and not item.skinned then
+		item:SetSize(C.ActionBar.ButtonSize - 5, C.ActionBar.ButtonSize - 5)
+		item:SetBackdrop(K.BorderBackdrop)
+		item:SetBackdropColor(0.65, 0.63, 0.35)
+		item:StyleButton()
+
+		item:SetNormalTexture(nil)
+
+		item.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		item.icon:SetPoint("TOPLEFT", item, 2, -2)
+		item.icon:SetPoint("BOTTOMRIGHT", item, -2, 2)
+
+		item.Cooldown:SetAllPoints(item.icon)
+
+		item.Count:ClearAllPoints()
+		item.Count:SetPoint("TOPLEFT", 1, -1)
+		item.Count:SetFont(C.font.action_bars_font, C.font.action_bars_font_size, C.font.action_bars_font_style)
+		item.Count:SetShadowOffset(C.font.action_bars_font_shadow and 1 or 0, C.font.action_bars_font_shadow and -1 or 0)
+
+		item.skinned = true
+	end
+end)
+
 
 -- Difficulty color for ObjectiveTrackerFrame lines
 hooksecurefunc(QUEST_TRACKER_MODULE, "Update", function()

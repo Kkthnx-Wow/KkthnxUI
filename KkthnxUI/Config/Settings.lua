@@ -311,7 +311,6 @@ C["Unitframe"] = {
 	["ClassPortraits"] = false,
 	["CombatText"] = true,
 	["Enable"] = true,
-	["FlatClassPortraits"] = false,
 	["FocusCastbarHeight"] = 20,
 	["FocusCastbarWidth"] = 180,
 	["GCDBar"] = false,
