@@ -42,13 +42,13 @@ local function MasterLoot_GiveLoot(frame)
 	else
 		GiveMasterLoot(LootFrame.selectedSlot, frame.value)
 	end
-	CloseDropDownMenus()
+	Lib_CloseDropDownMenus()
 end
 
 local function init()
 	local candidate, lclass, className, cand
 	local slot = LootFrame.selectedSlot or 0
-	local info = UIDropDownMenu_CreateInfo()
+	local info = Lib_UIDropDownMenu_CreateInfo()
 
 	if UIDROPDOWNMENU_MENU_LEVEL == 2 then
 		-- Raid class menu
@@ -73,7 +73,7 @@ local function init()
 				info.notCheckable = 1
 				info.disabled = nil
 				info.func = MasterLoot_GiveLoot
-				UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL)
+				Lib_UIDropDownMenu_AddButton(info, LIB_UIDROPDOWNMENU_MENU_LEVEL)
 			end
 		end
 		return
@@ -85,7 +85,7 @@ local function init()
 	info.notCheckable = 1
 	info.disabled = nil
 	info.notClickable = nil
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	if IsInRaid() then
 		-- In a raid
@@ -109,7 +109,7 @@ local function init()
 				info.value = class
 				info.func = nil
 				info.disabled = nil
-				UIDropDownMenu_AddButton(info)
+				Lib_UIDropDownMenu_AddButton(info)
 			end
 		end
 	else
@@ -127,7 +127,7 @@ local function init()
 				info.isTitle = nil
 				info.disabled = nil
 				info.func = MasterLoot_GiveLoot
-				UIDropDownMenu_AddButton(info)
+				Lib_UIDropDownMenu_AddButton(info)
 			end
 		end
 	end
@@ -141,7 +141,7 @@ local function init()
 	info.text = REQUEST_ROLL
 	info.func = MasterLoot_RequestRoll
 	info.icon = "Interface\\Buttons\\UI-GroupLoot-Dice-Up"
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	wipe(randoms)
 	for i = 1, MAX_RAID_MEMBERS do
@@ -159,7 +159,7 @@ local function init()
 		info.text = L.Loot.Random
 		info.func = MasterLoot_GiveLoot
 		info.icon = "Interface\\Buttons\\UI-GroupLoot-Coin-Up"
-		UIDropDownMenu_AddButton(info)
+		Lib_UIDropDownMenu_AddButton(info)
 	end
 	for i = 1, MAX_RAID_MEMBERS do
 		candidate, lclass, className = GetMasterLootCandidate(slot, i)
@@ -172,9 +172,9 @@ local function init()
 			info.text = L.Loot.Self
 			info.func = MasterLoot_GiveLoot
 			info.icon = "Interface\\GossipFrame\\VendorGossipIcon"
-			UIDropDownMenu_AddButton(info)
+			Lib_UIDropDownMenu_AddButton(info)
 		end
 	end
 end
 
-UIDropDownMenu_Initialize(GroupLootDropDown, init, "MENU")
+Lib_UIDropDownMenu_Initialize(GroupLootDropDown, init, "MENU")

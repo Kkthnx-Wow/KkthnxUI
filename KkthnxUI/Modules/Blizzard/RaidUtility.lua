@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
---if C.Blizzard.RaidTools ~= true then return end
+if C.Blizzard.RaidTools ~= true then return end
 
 local unpack = unpack
 local Movers = K.Movers

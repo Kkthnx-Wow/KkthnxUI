@@ -40,19 +40,20 @@ local InCombatLockdown = InCombatLockdown
 local IsShiftKeyDown = IsShiftKeyDown
 local PlaySound = PlaySound
 local StaticPopup_Show = StaticPopup_Show
-local ToggleDropDownMenu = ToggleDropDownMenu
+local Lib_ToggleDropDownMenu = Lib_ToggleDropDownMenu
+local Lib_UIDropDownMenu_AddButton = Lib_UIDropDownMenu_AddButton
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: BankFrameItemButton_Update, BankFrameItemButton_UpdateLocked, hooksecurefunc
 -- GLOBALS: BANKSLOTPURCHASE, SEARCH, UISpecialFrames, ToggleBackpack, ToggleBag, ToggleAllBags, OpenAllBags
--- GLOBALS: CLOSE, SortReagentBankBags, UIDROPDOWNMENU_OPEN_MENU, CloseDropDownMenus, CloseBankFrame
+-- GLOBALS: CLOSE, SortReagentBankBags, UIDROPDOWNMENU_OPEN_MENU, Lib_CloseDropDownMenus, CloseBankFrame
 -- GLOBALS: CooldownFrame_Set, _, SetItemButtonTexture, SetItemButtonCount, SetItemButtonDesaturated
 -- GLOBALS: CreateFrame, UIParent, ReagentBankFrameItem1, BANK, REAGENTBANK_DEPOSIT, MoneyFrame_Update
 -- GLOBALS: LootWonAlertFrame_OnClick, LootUpgradeFrame_OnClick, StorePurchaseAlertFrame_OnClick
 -- GLOBALS: OpenBackpack, CloseAllBags, CloseBackpack, BankFrame, StuffingFrameReagent, PickupContainerItem
 -- GLOBALS: ReagentBankFrame, ReagentBankFrameUnlockInfo, Stuffing, CreateReagentContainer
 -- GLOBALS: ReagentBankFrameUnlockInfoPurchaseButton, BankFrame_ShowPanel, BANK_PANELS, GameTooltip
--- GLOBALS: SortBankBags, SortBags, StuffingPurchaseButtonBank, BAG_FILTER_CLEANUP, UIDropDownMenu_AddButton
+-- GLOBALS: SortBankBags, SortBags, StuffingPurchaseButtonBank, BAG_FILTER_CLEANUP, Lib_UIDropDownMenu_AddButton
 -- GLOBALS: StuffingFrameBags, REAGENT_BANK
 
 -- Based on Stuffing(by Hungtar, editors Tukz, Kkthnx, Modified for KkthnxUI)
@@ -138,7 +139,7 @@ Stuffing_DDMenu.displayMode = "MENU"
 Stuffing_DDMenu.info = {}
 Stuffing_DDMenu.HideMenu = function()
 	if UIDROPDOWNMENU_OPEN_MENU == Stuffing_DDMenu then
-		CloseDropDownMenus()
+		Lib_CloseDropDownMenus()
 	end
 end
 
@@ -376,10 +377,10 @@ function CreateReagentContainer()
 	Close:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			if Stuffing_DDMenu.initialize ~= Stuffing.Menu then
-				CloseDropDownMenus()
+				Lib_CloseDropDownMenus()
 				Stuffing_DDMenu.initialize = Stuffing.Menu
 			end
-			ToggleDropDownMenu(nil, nil, Stuffing_DDMenu, self:GetName(), 0, 0)
+			Lib_ToggleDropDownMenu(nil, nil, Stuffing_DDMenu, self:GetName(), 0, 0)
 			return
 		else
 			StuffingBank_OnHide()
@@ -774,10 +775,10 @@ function Stuffing:CreateBagFrame(w)
 	f.b_close:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			if Stuffing_DDMenu.initialize ~= Stuffing.Menu then
-				CloseDropDownMenus()
+				Lib_CloseDropDownMenus()
 				Stuffing_DDMenu.initialize = Stuffing.Menu
 			end
-			ToggleDropDownMenu(nil, nil, Stuffing_DDMenu, self:GetName(), 0, 0)
+			Lib_ToggleDropDownMenu(nil, nil, Stuffing_DDMenu, self:GetName(), 0, 0)
 			return
 		end
 		self:GetParent():Hide()
@@ -1526,7 +1527,7 @@ function Stuffing.Menu(self, level)
 			SortBags()
 		end
 	end
-	UIDropDownMenu_AddButton(info, level)
+	Lib_UIDropDownMenu_AddButton(info, level)
 
 	wipe(info)
 	info.text = BAG_FILTER_CLEANUP
@@ -1537,7 +1538,7 @@ function Stuffing.Menu(self, level)
 		end
 		Stuffing:SortBags()
 	end
-	UIDropDownMenu_AddButton(info, level)
+	Lib_UIDropDownMenu_AddButton(info, level)
 
 	wipe(info)
 	info.text = L.Bags.StackMenu
@@ -1549,7 +1550,7 @@ function Stuffing.Menu(self, level)
 		Stuffing:SetBagsForSorting("d")
 		Stuffing:Restack()
 	end
-	UIDropDownMenu_AddButton(info, level)
+	Lib_UIDropDownMenu_AddButton(info, level)
 
 	wipe(info)
 	info.text = L.Bags.ShowBags
@@ -1568,7 +1569,7 @@ function Stuffing.Menu(self, level)
 			Stuffing:Layout(true)
 		end
 	end
-	UIDropDownMenu_AddButton(info, level)
+	Lib_UIDropDownMenu_AddButton(info, level)
 
 	wipe(info)
 	info.disabled = nil
@@ -1576,7 +1577,7 @@ function Stuffing.Menu(self, level)
 	info.text = CLOSE
 	info.func = self.HideMenu
 	info.tooltipTitle = CLOSE
-	UIDropDownMenu_AddButton(info, level)
+	Lib_UIDropDownMenu_AddButton(info, level)
 end
 
 -- Kill Blizzard functions

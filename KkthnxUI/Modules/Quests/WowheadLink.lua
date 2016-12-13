@@ -56,7 +56,7 @@ hooksecurefunc("QuestObjectiveTracker_OnOpenDropDown", function(self)
 	local _, b, i, info, questID
 	b = self.activeFrame
 	questID = b.id
-	info = UIDropDownMenu_CreateInfo()
+	info = Lib_UIDropDownMenu_CreateInfo()
 	info.text = L.WatchFrame.WowheadLink
 	info.func = function(id)
 		local inputBox = StaticPopup_Show("WATCHFRAME_URL")
@@ -65,14 +65,14 @@ hooksecurefunc("QuestObjectiveTracker_OnOpenDropDown", function(self)
 	end
 	info.arg1 = questID
 	info.notCheckable = true
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
+	Lib_UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
 end)
 
 hooksecurefunc("AchievementObjectiveTracker_OnOpenDropDown", function(self)
 	local _, b, i, info
 	b = self.activeFrame
 	i = b.id
-	info = UIDropDownMenu_CreateInfo()
+	info = Lib_UIDropDownMenu_CreateInfo()
 	info.text = L.WatchFrame.WowheadLink
 	info.func = function(_, i)
 		local inputBox = StaticPopup_Show("WATCHFRAME_URL")
@@ -81,7 +81,7 @@ hooksecurefunc("AchievementObjectiveTracker_OnOpenDropDown", function(self)
 	end
 	info.arg1 = i
 	info.notCheckable = true
-	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
+	Lib_UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
 end)
 
 local frame = CreateFrame("Frame")

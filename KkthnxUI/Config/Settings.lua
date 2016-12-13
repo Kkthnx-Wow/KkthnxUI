@@ -62,6 +62,7 @@ C["Bags"] = {
 C["Blizzard"] = {
 	["ClassColor"] = true,
 	["ColorTextures"] = false,
+	["RaidTools"] = true,
 	["ReplaceBlizzardFonts"] = true,
 	["ReputationGain"] = false,
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b},

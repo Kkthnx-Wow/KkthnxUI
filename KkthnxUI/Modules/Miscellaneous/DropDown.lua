@@ -1,60 +1,78 @@
 local K, C, L = unpack(select(2, ...))
 
-local Levels = UIDROPDOWNMENU_MAXLEVELS
-local UIDropDownMenu_CreateFrames = UIDropDownMenu_CreateFrames
-local DropDown = CreateFrame("Frame")
+local _G = _G
 
-DropDown.ChatMenus = {
-	"ChatMenu",
-	"EmoteMenu",
-	"LanguageMenu",
-	"VoiceMacroMenu",
-}
+local SkinDropDowns = CreateFrame("Frame")
+SkinDropDowns:RegisterEvent("ADDON_LOADED")
+SkinDropDowns:SetScript("OnEvent", function(self, event, addon)
+	if K.CheckAddOn("Skinner") or K.CheckAddOn("Aurora") then return end
 
-function DropDown:Skin()
-	for i = 1, Levels do
-		local Backdrop
+	if addon == "KkthnxUI" then
 
-		Backdrop = _G["DropDownList"..i.."MenuBackdrop"]
-		if Backdrop and not Backdrop.IsSkinned then
-			Backdrop:SetTemplate("Default")
-			Backdrop.IsSkinned = true
+		local Skins = {
+			-- DropDownMenu library support
+			"Lib_DropDownList1MenuBackdrop",
+			"Lib_DropDownList2MenuBackdrop",
+			"Lib_DropDownList1Backdrop",
+			"Lib_DropDownList2Backdrop"
+		}
+
+		for i = 1, getn(Skins) do
+			_G[Skins[i]]:SetTemplate("Transparent")
 		end
 
-		Backdrop = _G["DropDownList"..i.."Backdrop"]
-		if Backdrop and not Backdrop.IsSkinned then
-			Backdrop:SetTemplate("Default")
-			Backdrop.IsSkinned = true
+		-- Reskin Dropdown menu
+		hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)
+			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+				_G["DropDownList"..i.."Backdrop"]:SetTemplate("Transparent")
+				_G["DropDownList"..i.."MenuBackdrop"]:SetTemplate("Transparent")
+			end
+		end)
+
+		-- Reskin menu
+		local ChatMenus = {
+			"ChatMenu",
+			"EmoteMenu",
+			"LanguageMenu",
+			"VoiceMacroMenu"
+		}
+
+		for i = 1, getn(ChatMenus) do
+			if _G[ChatMenus[i]] == _G["ChatMenu"] then
+				_G[ChatMenus[i]]:HookScript("OnShow", function(self)
+					self:SetTemplate("Transparent")
+					self:ClearAllPoints()
+					self:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 0, 30)
+				end)
+			else
+				_G[ChatMenus[i]]:HookScript("OnShow", function(self)
+					self:SetTemplate("Transparent")
+				end)
+			end
 		end
 
-		Backdrop = _G["Lib_DropDownList"..i.."MenuBackdrop"]
-		if Backdrop and not Backdrop.IsSkinned then
-			Backdrop:SetTemplate("Default")
-			Backdrop.IsSkinned = true
-		end
-
-		Backdrop = _G["Lib_DropDownList"..i.."Backdrop"]
-		if Backdrop and not Backdrop.IsSkinned then
-			Backdrop:SetTemplate("Default")
-			Backdrop.IsSkinned = true
-		end
+		-- Reskin buttons
+		-- local BlizzardButtons = {
+			-- 	"RaidUtilityConvertButton",
+			-- 	"RaidUtilityMainTankButton",
+			-- 	"RaidUtilityMainAssistButton",
+			-- 	"RaidUtilityRoleButton",
+			-- 	"RaidUtilityReadyCheckButton",
+			-- 	"RaidUtilityShowButton",
+			-- 	"RaidUtilityCloseButton",
+			-- 	"RaidUtilityDisbandButton",
+			-- 	"RaidUtilityRaidControlButton",
+		-- }
+		--
+		-- if C.Blizzard.RaidTools == true then
+		-- 	tinsert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
+		-- end
+		--
+		-- for i = 1, getn(BlizzardButtons) do
+		-- 	local buttons = _G[BlizzardButtons[i]]
+		-- 	if buttons then
+		-- 		buttons:SkinButton()
+		-- 	end
+		-- end
 	end
-end
-
-function DropDown:Enable()
-	local Menu
-
-	for i = 1, getn(self.ChatMenus) do
-		Menu = _G[self.ChatMenus[i]]
-		Menu:SetTemplate()
-		Menu.SetBackdropColor = K.Noop
-	end
-
-	hooksecurefunc("UIDropDownMenu_CreateFrames", self.Skin)
-
-	-- Use dropdown lib
-	self.Open = Lib_EasyMenu or EasyMenu
-end
-
-DropDown:RegisterEvent("PLAYER_LOGIN")
-DropDown:SetScript("OnEvent", DropDown.Enable)
+end)

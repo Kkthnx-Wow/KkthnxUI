@@ -20,10 +20,12 @@ local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
 
 -- Open before login to stop taint
 local SpellBookTaint = CreateFrame("Frame")
-SpellBookTaint:RegisterEvent("ADDON_LOADED")
+SpellBookTaint:RegisterEvent("ADDON_LOADED") -- We might need to fire PLAYER_LOGIN instead?
 SpellBookTaint:SetScript("OnEvent", function(event, addon)
 	if addon ~= "KkthnxUI" then return end
-	ToggleFrame(SpellBookFrame)
+	--Fix spellbook taint
+	ShowUIPanel(SpellBookFrame)
+	HideUIPanel(SpellBookFrame)
 end)
 
 -- Fix RemoveTalent() taint

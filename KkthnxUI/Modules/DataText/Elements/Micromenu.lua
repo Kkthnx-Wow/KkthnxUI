@@ -8,7 +8,6 @@ local format = string.format
 local match = string.match
 local CreateFrame, UIParent = CreateFrame, UIParent
 local ToggleFrame = ToggleFrame
-local ToggleDropDownMenu = ToggleDropDownMenu
 
 local MicroMenu = CreateFrame("Frame", "KkthnxUIMicroButtonsDropDown", UIParent, "Lib_UIDropDownMenuTemplate")
 MicroMenu.Buttons = {

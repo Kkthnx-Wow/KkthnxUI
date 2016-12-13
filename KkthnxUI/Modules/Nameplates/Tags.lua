@@ -81,7 +81,7 @@ oUF.Tags.Events["NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 
 oUF.Tags.Methods["NameplateNameColor"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
-	if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and reaction >= 5 then
+	if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and (reaction and reaction >= 5) then
 		local c = K.Colors.power["MANA"]
 		return format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
 	elseif UnitIsPlayer(unit) then

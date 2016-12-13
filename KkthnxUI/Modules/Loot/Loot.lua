@@ -27,9 +27,9 @@ local LootSlotHasItem = LootSlotHasItem
 local ResetCursor = ResetCursor
 local SendChatMessage = SendChatMessage
 local StaticPopup_Hide = StaticPopup_Hide
-local ToggleDropDownMenu = ToggleDropDownMenu
-local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
-local UIDropDownMenu_Refresh = UIDropDownMenu_Refresh
+local Lib_ToggleDropDownMenu = Lib_ToggleDropDownMenu
+local Lib_UIDropDownMenu_AddButton = Lib_UIDropDownMenu_AddButton
+local Lib_UIDropDownMenu_Refresh = Lib_UIDropDownMenu_Refresh
 local UnitExists = UnitExists
 local UnitIsDead = UnitIsDead
 local UnitIsFriend = UnitIsFriend
@@ -178,12 +178,12 @@ end
 Butsu:RegisterEvent("LOOT_CLOSED")
 
 function Butsu:OPEN_MASTER_LOOT_LIST()
-	ToggleDropDownMenu(nil, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0)
+	Lib_ToggleDropDownMenu(nil, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0)
 end
 Butsu:RegisterEvent("OPEN_MASTER_LOOT_LIST")
 
 function Butsu:UPDATE_MASTER_LOOT_LIST()
-	UIDropDownMenu_Refresh(GroupLootDropDown)
+	Lib_UIDropDownMenu_Refresh(GroupLootDropDown)
 end
 Butsu:RegisterEvent("UPDATE_MASTER_LOOT_LIST")
 
@@ -232,7 +232,7 @@ close:SetScript("OnClick", function() CloseLoot() end)
 
 -- lcLoot by RustamIrzaev
 local function OnLinkClick(self)
-	ToggleDropDownMenu(1, nil, LDD, lb, 0, 0)
+	Lib_ToggleDropDownMenu(1, nil, LDD, lb, 0, 0)
 end
 
 local function Announce(chn)
@@ -265,42 +265,42 @@ local function LDD_Initialize()
 	info.text = L.Loot.Announce
 	info.notCheckable = true
 	info.isTitle = true
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	info = {}
 	info.text = L.Loot.ToRaid
 	info.value = "raid"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	info = {}
 	info.text = L.Loot.ToGuild
 	info.value = "guild"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	info = {}
 	info.text = L.Loot.ToParty
 	info.value = "party"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	info = {}
 	info.text = L.Loot.ToInstance
 	info.value = "instance_chat"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	info = {}
 	info.text = L.Loot.ToSay
 	info.value = "say"
 	info.notCheckable = 1
 	info.func = LDD_OnClick
-	UIDropDownMenu_AddButton(info)
+	Lib_UIDropDownMenu_AddButton(info)
 
 	info = nil
 end
@@ -313,13 +313,13 @@ lb:SetFrameStrata("DIALOG")
 lb:RegisterForClicks("RightButtonUp", "LeftButtonUp")
 lb:SetScript("OnClick", function(self, button)
     if button == "RightButton" then
-        ToggleDropDownMenu(nil, nil, LDD, lb, 0, 0)
+        Lib_ToggleDropDownMenu(nil, nil, LDD, lb, 0, 0)
     else
         Announce(K.CheckChat())
     end
 end)
 lb:Hide()
-UIDropDownMenu_Initialize(LDD, LDD_Initialize, "MENU")
+Lib_UIDropDownMenu_Initialize(LDD, LDD_Initialize, "MENU")
 
 do
 	local slots = {}
