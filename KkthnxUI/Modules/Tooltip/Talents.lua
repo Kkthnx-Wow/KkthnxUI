@@ -1,4 +1,4 @@
-local K, C, L, _ = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C.Tooltip.Enable ~= true or C.Tooltip.Talents ~= true then return end
 
 -- Target Talents(TipTacTalents by Aezay)

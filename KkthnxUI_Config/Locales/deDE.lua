@@ -42,8 +42,9 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "Überprüfe Zauber von allen Mitspie
 
 -- Automatisierung
 UIConfigLocal.Automation = "Automatisierung"
-UIConfigLocal.AutomationAutoInvite = "Automatisches Akzeptieren von Einladungen (NUR Freunde/Gildenmitglieder)"
+UIConfigLocal.AutomationAcceptQuest = "Quests automatisch annehmen"
 UIConfigLocal.AutomationAutoCollapse = "Automatisches Einklappen der Questanzeige in Instanzen"
+UIConfigLocal.AutomationAutoInvite = "Automatisches Akzeptieren von Einladungen (NUR Freunde/Gildenmitglieder)"
 UIConfigLocal.AutomationDeclineDuel = "Automatische Ablehnung von Duellen"
 UIConfigLocal.AutomationLoggingCombat = "Automatisches Aktivieren der Kampflogdatei in Schlachtzuginstanzen"
 UIConfigLocal.AutomationResurrection = "Automatisches Wiederbeleben auf Schlachtfeldern"

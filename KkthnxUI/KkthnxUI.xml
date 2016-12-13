@@ -124,6 +124,7 @@
 	<Script file="Modules\Automation\LoggingCombat.lua"/>
 	<Script file="Modules\Automation\Screenshots.lua"/>
 	<Script file="Modules\Automation\TabBinder.lua"/>
+	<Script file="Modules\Automation\TabBinder.lua"/>
 
 	<!-- Blizzard -->
 	<Script file="Modules\Blizzard\AlertFrames.lua"/>
@@ -214,6 +215,7 @@
 	<Script file="Modules\Nameplates\Nameplates.lua"/>
 
 	<!-- Quests -->
+	<Script file="Modules\Quests\AutoAccept.lua"/>
 	<Script file="Modules\Quests\AutoCollapse.lua"/>
 	<Script file="Modules\Quests\ObjectiveTracker.lua"/>
 	<Script file="Modules\Quests\QuestLog.lua"/>

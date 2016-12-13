@@ -42,8 +42,9 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "Проверять умения вс
 
 -- Автоматизация
 UIConfigLocal.Automation = "Автоматизация"
-UIConfigLocal.AutomationAutoInvite = "Автоматически принимать приглашения от друзей и гильдии"
+UIConfigLocal.AutomationAcceptQuest = "Принятие заданий (если зажат Shift - не работает)"
 UIConfigLocal.AutomationAutoCollapse = "Автоматически сворачивать список заданий в подземельях"
+UIConfigLocal.AutomationAutoInvite = "Автоматически принимать приглашения от друзей и гильдии"
 UIConfigLocal.AutomationDeclineDuel = "Автоматически отклонять все дуэли"
 UIConfigLocal.AutomationLoggingCombat = "Автоматически сохранять лог боя в текстовый файл в рейде"
 UIConfigLocal.AutomationResurrection = "Автоматическое покидание тела на полях боя"

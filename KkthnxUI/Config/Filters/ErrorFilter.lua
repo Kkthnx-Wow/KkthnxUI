@@ -1,4 +1,4 @@
-local K, C, L, _ = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C.Error.White ~= true and C.Error.Black ~= true then return end
 
 -- All errors on http://wowwiki.wikia.com/wiki/WoW_Constants/Errors

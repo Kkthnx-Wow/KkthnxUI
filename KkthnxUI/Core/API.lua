@@ -65,18 +65,6 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
-local function CreateOverlay(f, size)
-	if f.overlay then return end
-	if not size then size = 2 end
-
-	local overlay = f:CreateTexture(nil, "BORDER", f)
-	overlay:SetPoint("TOPLEFT", size, -size)
-	overlay:SetPoint("BOTTOMRIGHT", -size, size)
-	overlay:SetTexture(C.Media.Blank)
-	overlay:SetVertexColor(26/255, 26/255, 26/255, 1)
-	f.overlay = overlay
-end
-
 local function CreateBorder(f, size)
 	if f.border then return end
 	if not size then size = 2 end
@@ -89,6 +77,7 @@ local function CreateBorder(f, size)
 		edgeFile = C.Media.Blizz, edgeSize = 14,
 		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
 	})
+
 	border:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 	f.border = border
 end
@@ -152,36 +141,26 @@ local function CreateBlizzShadow(f, size)
 	f.shadow = shadow
 end
 
-local function GetTemplate(t)
-	if t == "ClassColor" then
-		local Color = K.Colors.class[K.Class]
-		borderr, borderg, borderb, bordera = Color[1], Color[2], Color[3], Color[4]
-		backdropr, backdropg, backdropb, backdropa = unpack(C.Media.Backdrop_Color)
-	else
-		borderr, borderg, borderb, bordera = unpack(C.Media.Border_Color)
-		backdropr, backdropg, backdropb, backdropa = unpack(C.Media.Backdrop_Color)
-	end
-end
+local function SetTemplate(f, t, tex)
+	local balpha = C.Media.Backdrop_Color[4]
+	local borderr, borderg, borderb = unpack(C.Media.Border_Color)
+	local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
+	local backdropa = balpha
+	local texture = C.Media.Blank
 
-local function SetTemplate(f, t)
-	GetTemplate(t)
+	if tex then
+		texture = C.Media.Texture
+	end
 
 	f:SetBackdrop({
-		bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14,
+	  bgFile = C.Media.Blank,
+	  edgeFile = C.Media.Blizz,
+	  tile = false, tileSize = 0, edgeSize = K.Scale(14),
 		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
 	})
 
-	if t == "Transparent" then
-		backdropa = C.Media.Overlay_Color[4]
-	elseif t == "Overlay" then
-		backdropa = 0.8
-		f:CreateOverlay()
-	else
-		backdropa = C.Media.Backdrop_Color[4]
-	end
-
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
-	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
+	f:SetBackdropBorderColor(borderr, borderg, borderb)
 
 	if C.Blizzard.ColorTextures == true then
 		f:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
@@ -190,32 +169,46 @@ end
 
 -- Create panel
 local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
-	local r, g, b = K.Color.r, K.Color.g, K.Color.b
+	local balpha = C.Media.Backdrop_Color[4]
+	local borderr, borderg, borderb = unpack(C.Media.Border_Color)
+	local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
+	local backdropa = balpha
+
 	f:SetFrameLevel(1)
 	f:SetSize(w, h)
 	f:SetFrameStrata("BACKGROUND")
 	f:SetPoint(a1, p, a2, x, y)
 
-	if t == "CreateBackdrop" then
-		backdropa = C.Media.Overlay_Color[4]
-		f:CreateBackdrop()
-	elseif t == "CreateBorder" then
+	if t == "Transparent" then
+		backdropa = C.Media.Backdrop_Color[4]
+		f:CreateBorder()
+	elseif t == "CreateBackdrop" then
+		backdropa = C.Media.Backdrop_Color[4]
 		f:SetBackdrop(K.BorderBackdrop)
-		backdropa = C.Media.Overlay_Color[4]
-		K.CreateBorder(f)
-	elseif t == "SimpleBackdrop" then
-		f:SetBackdrop(K.BorderBackdrop)
-		backdropa = C.Media.Overlay_Color[4]
 		bordera = 0
 	elseif t == "Invisible" then
 		backdropa = 0
 		bordera = 0
 	else
-		backdropa = C.Media.Overlay_Color[4]
+		backdropa = C.Media.Backdrop_Color[4]
+	end
+
+	if t == "CreateBackdrop" then
+		backdropa = C.Media.Backdrop_Color[4]
+		f:CreateBackdrop()
+	elseif t == "CreateBorder" then
+		f:SetBackdrop(K.BorderBackdrop)
+		backdropa = C.Media.Backdrop_Color[4]
+		K.CreateBorder(f)
+	elseif t == "Invisible" then
+		backdropa = 0
+		bordera = 0
+	else
+		backdropa = C.Media.Backdrop_Color[4]
 	end
 
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
-	f:SetBackdropBorderColor(borderr, borderg, borderb, bordera)
+	f:SetBackdropBorderColor(borderr, borderg, borderb)
 end
 
 local function Kill(object)
@@ -351,7 +344,6 @@ end
 -- Merge KkthnxUI API with Wows API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
-	if not object.CreateOverlay then mt.CreateOverlay = CreateOverlay end
 	if not object.CreateBorder then mt.CreateBorder = CreateBorder end
 	if not object.SetOutside then mt.SetOutside = SetOutside end
 	if not object.SetInside then mt.SetInside = SetInside end

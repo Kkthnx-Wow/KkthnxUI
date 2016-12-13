@@ -42,6 +42,33 @@ WORLD_QUEST_TRACKER_MODULE.Header.Background:Hide()
 ObjectiveTrackerFrame.HeaderMenu.Title:SetAlpha(0)
 OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT = 30
 
+-- Skin ObjectiveTrackerFrame item buttons
+hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
+	local item = block.itemButton
+
+	if item and not item.skinned then
+		item:SetSize(C.ActionBar.ButtonSize - 2, C.ActionBar.ButtonSize - 2)
+		item:SetBackdrop(K.BorderBackdrop)
+		item:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		item:StyleButton()
+
+		item:SetNormalTexture(nil)
+
+		item.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		item.icon:SetPoint("TOPLEFT", item, 2, -2)
+		item.icon:SetPoint("BOTTOMRIGHT", item, -2, 2)
+
+		item.Cooldown:SetAllPoints(item.icon)
+
+		item.Count:ClearAllPoints()
+		item.Count:SetPoint("TOPLEFT", 1, -1)
+		item.Count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		item.Count:SetShadowOffset(0, 0)
+
+		item.skinned = true
+	end
+end)
+
 -- Difficulty color for ObjectiveTrackerFrame lines
 hooksecurefunc(QUEST_TRACKER_MODULE, "Update", function()
 	for i = 1, GetNumQuestWatches() do

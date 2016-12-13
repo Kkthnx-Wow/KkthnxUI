@@ -38,6 +38,7 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
+	["AcceptQuest"] = false,
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
 	["DeclineDuel"] = false,

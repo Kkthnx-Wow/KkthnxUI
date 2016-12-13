@@ -42,8 +42,9 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "Check spells cast from all members"
 
 -- Automation
 UIConfigLocal.Automation = "Automation"
-UIConfigLocal.AutomationAutoInvite = "Auto accept invites (friends/guild) only"
+UIConfigLocal.AutomationAcceptQuest = "Auto accept quest (disabled if hold Shift)"
 UIConfigLocal.AutomationAutoCollapse = "Auto collapse objective tracker in instances"
+UIConfigLocal.AutomationAutoInvite = "Auto accept invites (friends/guild) only"
 UIConfigLocal.AutomationDeclineDuel = "Auto decline all duels"
 UIConfigLocal.AutomationLoggingCombat = "Auto enables combat log text file in raid instances"
 UIConfigLocal.AutomationResurrection = "Auto resurrection in battlegrounds"

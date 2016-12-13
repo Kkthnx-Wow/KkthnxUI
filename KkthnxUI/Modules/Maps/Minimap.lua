@@ -27,7 +27,7 @@ Minimap_ZoneColors = {
 
 -- Minimap border
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
-MinimapAnchor:CreatePanel("ClassColor", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
+MinimapAnchor:CreatePanel("Invisible", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
 Movers:RegisterFrame(MinimapAnchor)
 
 local North = _G["MinimapNorthTag"]

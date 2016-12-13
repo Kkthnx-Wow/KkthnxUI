@@ -46,7 +46,6 @@ function DataTexts:ToggleDataPositions()
 	end
 end
 
-tinsert(Menu, {text = "", notCheckable = true})
 tinsert(Menu, {text = "|cffFF0000"..REMOVE.."|r", notCheckable = true, func = DataTexts.Remove})
 
 -- Datatext toggle
