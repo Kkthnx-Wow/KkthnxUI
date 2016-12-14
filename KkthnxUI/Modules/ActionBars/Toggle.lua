@@ -239,7 +239,7 @@ for i = 1, 5 do
 	ToggleBar[i].Text:SetPoint("CENTER", 2, 0)
 
 	if i == 1 then
-		ToggleBar[i]:CreatePanel("CreateBackdrop", ActionBarAnchor:GetWidth(), C.ActionBar.ButtonSize / 1.5, "BOTTOM", ActionBarAnchor, "TOP", 0, C.ActionBar.ButtonSpace)
+		ToggleBar[i]:CreatePanel("Transparent", ActionBarAnchor:GetWidth(), C.ActionBar.ButtonSize / 1.5, "BOTTOM", ActionBarAnchor, "TOP", 0, C.ActionBar.ButtonSpace)
 		ToggleBarText(i, "- - -", false, true)
 
 		ToggleBar[i]:SetScript("OnMouseDown", function()
@@ -268,7 +268,7 @@ for i = 1, 5 do
 		end)
 		ToggleBar[i]:SetScript("OnEvent", MainBars)
 	elseif i == 2 then
-		ToggleBar[i]:CreatePanel("CreateBackdrop", RightActionBarAnchor:GetWidth(), C.ActionBar.ButtonSize / 1.5, "TOPRIGHT", RightActionBarAnchor, "BOTTOMRIGHT", 0, -C.ActionBar.ButtonSpace)
+		ToggleBar[i]:CreatePanel("Transparent", RightActionBarAnchor:GetWidth(), C.ActionBar.ButtonSize / 1.5, "TOPRIGHT", RightActionBarAnchor, "BOTTOMRIGHT", 0, -C.ActionBar.ButtonSpace)
 		ToggleBar[i]:SetFrameStrata("LOW")
 		ToggleBarText(i, "> > >", false, true)
 
@@ -297,13 +297,13 @@ for i = 1, 5 do
 		ToggleBar[i]:SetScript("OnEvent", RightBars)
 	elseif i == 3 then
 		if C.ActionBar.SplitBars == true and C.ActionBar.RightBars ~= 3 then
-			ToggleBar[i]:CreatePanel("CreateBackdrop", C.ActionBar.ButtonSize / 1.5, ActionBarAnchor:GetHeight(), "BOTTOMLEFT", SplitBarRight, "BOTTOMRIGHT", C.ActionBar.ButtonSpace, 0)
+			ToggleBar[i]:CreatePanel("Transparent", C.ActionBar.ButtonSize / 1.5, ActionBarAnchor:GetHeight(), "BOTTOMLEFT", SplitBarRight, "BOTTOMRIGHT", C.ActionBar.ButtonSpace, 0)
 			ToggleBarText(i, "<\n<", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarRight:GetFrameLevel() + 1)
 		end
 	elseif i == 4 then
 		if C.ActionBar.SplitBars == true and C.ActionBar.RightBars ~= 3 then
-			ToggleBar[i]:CreatePanel("CreateBackdrop", C.ActionBar.ButtonSize / 1.5, ActionBarAnchor:GetHeight(), "BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
+			ToggleBar[i]:CreatePanel("Transparent", C.ActionBar.ButtonSize / 1.5, ActionBarAnchor:GetHeight(), "BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 			ToggleBarText(i, ">\n>", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarLeft:GetFrameLevel() + 1)
 		end

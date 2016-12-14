@@ -182,6 +182,7 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	if t == "Transparent" then
 		backdropa = C.Media.Backdrop_Color[4]
 		f:CreateBorder()
+		f:SetBackdrop(K.BorderBackdrop)
 	elseif t == "CreateBackdrop" then
 		backdropa = C.Media.Backdrop_Color[4]
 		f:SetBackdrop(K.BorderBackdrop)

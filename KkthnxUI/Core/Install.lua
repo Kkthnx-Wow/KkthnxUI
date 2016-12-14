@@ -40,7 +40,7 @@ local GetCVar = GetCVar
 -- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
--- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2
+-- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2, UIConfig
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 
@@ -140,12 +140,12 @@ function KkthnxUIInstall:ChatSetup()
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 
-	--Adjust Chat Colors
-	--General
+	-- Adjust Chat Colors (Thanks ElvUI)
+	-- General
 	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255)
-	--Trade
+	-- Trade
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255)
-	--Local Defense
+	-- Local Defense
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255)
 
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
@@ -245,9 +245,10 @@ local KkthnxUIVersionFrame = CreateFrame("Button", "KkthnxUIVersionFrame", UIPar
 KkthnxUIVersionFrame:SetSize(300, 36)
 KkthnxUIVersionFrame:SetPoint("CENTER")
 KkthnxUIVersionFrame:SetTemplate("Default")
-KkthnxUIVersionFrame:FontString("Text", C.Media.Font, 12, C.Media.Font_Style)
+KkthnxUIVersionFrame:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+KkthnxUIVersionFrame:FontString("Text", C.Media.Font, 13, C.Media.Font_Style)
 KkthnxUIVersionFrame.Text:SetPoint("CENTER")
-KkthnxUIVersionFrame.Text:SetText("KkthnxUI ".. K.Version .." by Kkthnx|r")
+KkthnxUIVersionFrame.Text:SetText("|cff3c9bed" ..K.UIName.." v".. K.Version .." |cffe6e6e6 Coded by: Kkthnx|r")
 KkthnxUIVersionFrame:SetScript("OnClick", function()
 	KkthnxUIVersionFrame:Hide()
 end)
@@ -276,7 +277,7 @@ StatusBarBorder:SetFrameStrata("HIGH")
 StatusBarBorder:SetFrameLevel(5)
 
 local Header = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
-Header:SetFont(C.Media.Font, 16, "THINOUTLINE")
+Header:SetFont(C.Media.Font, 16, "OUTLINE")
 Header:SetPoint("TOP", KkthnxUIInstallFrame, "TOP", 0, -20)
 
 local TextOne = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
@@ -304,7 +305,7 @@ TextFour:SetWidth(KkthnxUIInstallFrame:GetWidth() -40)
 TextFour:SetPoint("TOPLEFT", TextThree, "BOTTOMLEFT", 0, -20)
 
 local StatusBarText = StatusBar:CreateFontString(nil, "OVERLAY")
-StatusBarText:SetFont(C.Media.Font, 13, "THINOUTLINE")
+StatusBarText:SetFont(C.Media.Font, 13, "OUTLINE")
 StatusBarText:SetPoint("CENTER", StatusBar)
 
 local OptionOne = CreateFrame("Button", "KkthnxUIInstallOption1", KkthnxUIInstallFrame)
@@ -593,11 +594,6 @@ if (not InstallationMessageFrame) then
 	InstallationMessageFrame.Text:SetJustifyH("CENTER")
 end
 
-local function DisableUI()
-	DisableAddOn("KkthnxUI")
-	ReloadUI()
-end
-
 -- On login function
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -648,7 +644,7 @@ StaticPopupDialogs["DISABLE_UI"] = {
 	text = L.Popup.DisableUI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = DisableUI,
+	OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
 	showAlert = true,
 	timeout = 0,
 	whileDead = 1,
@@ -660,7 +656,7 @@ StaticPopupDialogs["RESET_UI"] = {
 	text = L.Popup.ResetUI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = KkthnxUIInstall.Install,
+	OnAccept = function() KkthnxUIInstall.Install() if UIConfig and UIConfig:IsShown() then UIConfigMain:Hide() end end,
 	OnCancel = function() KkthnxUIDataPerChar.Install = true end,
 	showAlert = true,
 	timeout = 0,

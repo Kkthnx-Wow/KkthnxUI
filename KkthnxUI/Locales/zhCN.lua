@@ -360,7 +360,7 @@ L.Welcome = {
 	Line2 = "",
 	Line3 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r",
 	Line4 = "",
-	Line5 = "Some of your questions can be answered by typing /uihelp or /faq"
+	Line5 = "Some of your questions can be answered by typing /uihelp"
 }
 
 L.SlashCommand = {

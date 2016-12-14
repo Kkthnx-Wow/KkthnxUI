@@ -359,7 +359,7 @@ L.Welcome = {
 	Line2 = "",
 	Line3 = "Tippe /cfg in den Chat ein um Dein Interface einzurichten",
 	Line4 = "",
-	Line5 = "Einige Fragen werden Dir eventuell durch den Chatbefehl /uihelp beantwortet"
+	Line5 = "Einige Fragen werden Dir eventuell durch den Chatbefehl /uihelp"
 }
 
 L.SlashCommand = {
