@@ -20,8 +20,8 @@ Movers:RegisterFrame(anchor)
 
 local frame = CreateFrame("Frame", "PulseCDFrame", anchor)
 frame:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
--- frame:SetBackdrop(K.BorderBackdrop)
--- frame:SetBackdropColor(0, 0, 0)
+frame:SetBackdrop(K.BorderBackdrop)
+frame:SetBackdropColor(0, 0, 0)
 frame:SetPoint("CENTER", anchor, "CENTER")
 
 local icon = frame:CreateTexture(nil, "ARTWORK")

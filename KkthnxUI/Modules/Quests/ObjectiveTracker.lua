@@ -19,7 +19,7 @@ local GetScreenWidth = GetScreenWidth
 local Movers = K.Movers
 local SetModifiedBackdrop = function(self)
 	if self:GetButtonState() == "DISABLED" then return end
-	self:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b)
+	self:SetBackdropColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3)
 	if self.overlay then
 		self.overlay:SetVertexColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3, 1)
 	end

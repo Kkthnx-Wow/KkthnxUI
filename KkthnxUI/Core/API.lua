@@ -15,12 +15,7 @@ local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_C
 local UnitClass = UnitClass
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: noHover, noPushed, noChecked, self, UIFrameFadeIn, UIFrameFadeOut
-
-local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
-local borderr, borderg, borderb = unpack(C.Media.Border_Color)
-local backdropa = 0.8
-local bordera = 1
+-- GLOBALS: noHover, noPushed, noChecked, self, UIFrameFadeIn, UIFrameFadeOut, bordera
 
 local Mult = 768 / string.match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 local Scale = function(x)
@@ -38,6 +33,7 @@ UIFrameHider:SetAllPoints()
 UIFrameHider.children = {}
 RegisterStateDriver(UIFrameHider, "visibility", "hide")
 
+-- Petbattle frame to hide items when in petbattles
 local PetBattleHider = CreateFrame("Frame", "PetBattleFrameHider", UIParent, "SecureHandlerStateTemplate")
 PetBattleHider:SetAllPoints()
 PetBattleHider:SetFrameStrata("LOW")

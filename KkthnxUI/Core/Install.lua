@@ -596,9 +596,9 @@ end
 
 -- On login function
 local Install = CreateFrame("Frame")
-Install:RegisterEvent("PLAYER_ENTERING_WORLD")
-Install:SetScript("OnEvent", function(self, event)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+Install:RegisterEvent("ADDON_LOADED")
+Install:SetScript("OnEvent", function(self, event, addon)
+	if (addon ~= "KkthnxUI") then return end
 
 	-- Create empty saved vars if they doesn't exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end
@@ -610,14 +610,15 @@ Install:SetScript("OnEvent", function(self, event)
 	if KkthnxUIDataPerChar.RightBars == nil then KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars end
 	if KkthnxUIDataPerChar.BottomBars == nil then KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars end
 
+	-- Check if we should disable our UI due to too small of ScreenWidth
 	if K.ScreenWidth < 1024 and GetCVar("gxMonitor") == "0" then
 		SetCVar("useUiScale", 0)
 		StaticPopup_Show("DISABLE_UI")
-	else
-		-- Install default if we never ran KkthnxUI on this character.
-		if not KkthnxUIDataPerChar.Install then
-			KkthnxUIInstall.Install()
-		end
+	end
+
+	-- Install default if we never ran KkthnxUI on this character.
+	if not KkthnxUIDataPerChar.Install then
+		KkthnxUIInstall.Install()
 	end
 
 	-- Welcome message
@@ -626,6 +627,8 @@ Install:SetScript("OnEvent", function(self, event)
 		print("|cffffff00"..L.Welcome.Line2.."|cffffff00"..L.Welcome.Line3.."|r")
 		print("|cffffff00"..L.Welcome.Line4.."|cffffff00"..L.Welcome.Line5.."|r")
 	end
+
+	self:UnregisterEvent("ADDON_LOADED")
 end)
 
 SLASH_TUTORIAL1, SLASH_TUTORIAL2 = "/uihelp", "/tutorial"

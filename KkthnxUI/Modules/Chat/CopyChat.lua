@@ -94,12 +94,12 @@ end
 for i = 1, NUM_CHAT_WINDOWS do
 	local cf = _G[format("ChatFrame%d", i)]
 	local button = CreateFrame("Button", format("ButtonCF%d", i), cf)
-	button:SetPoint("TOPRIGHT", 0, 0)
-	button:SetSize(16, 16)
-	button:SetNormalTexture("Interface\\BUTTONS\\UI-GuildButton-PublicNote-Up")
+	button:SetPoint("BOTTOMRIGHT", 3, -2)
+	button:SetSize(20, 20)
+	button:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Copy")
 	button:SetAlpha(0)
-	button:CreateBackdrop(size, 6)
-	button.backdrop:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+	button:SetBackdrop(K.BorderBackdrop)
+	button:SetBackdropColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3)
 
 	button:SetScript("OnMouseUp", function(self, btn)
 		if btn == "RightButton" then
