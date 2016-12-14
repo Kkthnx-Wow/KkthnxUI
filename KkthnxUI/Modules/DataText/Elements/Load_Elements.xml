@@ -3,6 +3,7 @@
 	<Script file="Armor.lua"/>
 	<Script file="Avoidance.lua"/>
 	<Script file="Bags.lua"/>
+	<Script file="Battleground.lua"/>
 	<Script file="CallToArms.lua"/>
 	<Script file="CombatTime.lua"/>
 	<Script file="Coordinates.lua"/>
@@ -27,5 +28,6 @@
 	<Script file="Regen.lua"/>
 	<Script file="System.lua"/>
 	<Script file="Talent.lua"/>
+	<Script file="Time.lua"/>
 	<Script file="Versatility.lua"/>
 </Ui>

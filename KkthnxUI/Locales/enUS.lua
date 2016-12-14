@@ -137,6 +137,7 @@ L.DataText = {
 	OrderHall = "OrderHall",
 	OrderHallReport = "Click: Open the OrderHall report",
 	System = "System Stats: ",
+	Time = "Time",
 	TotalBagSlots = "Total Bag Slots",
 	TotalFreeBagSlots = "Free Bag Slots",
 	TotalMemory = "Total Memory Usage:",

@@ -1,5 +1,13 @@
 local K, C, L = unpack(select(2, ...))
 
+local DataText = K.DataTexts
+local NameColor = DataText.NameColor
+local ValueColor = DataText.ValueColor
+
+local tonumber = tonumber
+local format = format
+local date = date
+
 local GetGameTime = GetGameTime
 local EuropeString = "%s%02d|r:%s%02d|r"
 local UKString = "%s%d|r:%s%02d|r %s%s|r"
@@ -12,17 +20,6 @@ local RaidFormat2 = "%s - %s" -- Siege of Orgrimmar - Mythic
 local DayHourMinute = "%dd, %dh, %dm"
 local HourMinute = "%dh, %dm"
 local MinuteSecond = "%dm, %ds"
-local StatColor = K.RGBToHex(1, 1, 1)
-
-local TimeDataText = CreateFrame("Frame")
-TimeDataText:RegisterEvent("PLAYER_ENTERING_WORLD")
-TimeDataText:SetFrameStrata("BACKGROUND")
-TimeDataText:SetFrameLevel(3)
-TimeDataText:EnableMouse(true)
-
-local TimeText = Minimap:CreateFontString(nil, "OVERLAY")
-TimeText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-TimeText:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 
 local AMPM = {
 	TIMEMANAGER_PM,
@@ -102,22 +99,19 @@ local Update = function(self, t)
 	end
 
 	if (AmPm == -1) then
-		TimeText:SetFormattedText(EuropeString, StatColor, Hour, StatColor, Minute)
+		self.Text:SetFormattedText(EuropeString, ValueColor, Hour, ValueColor, Minute)
 	else
-		TimeText:SetFormattedText(UKString, StatColor, Hour, StatColor, Minute, StatColor, AMPM[AmPm])
+		self.Text:SetFormattedText(UKString, ValueColor, Hour, ValueColor, Minute, NameColor, AMPM[AmPm])
 	end
 
 	CurrentHour = Hour
 	CurrentMin = Minute
 
 	tslu = 1
-
-	self:SetAllPoints(TimeText)
 end
 
 local OnEnter = function(self)
-	local anchor, panel, xoff, yoff = "ANCHOR_BOTTOMLEFT", self:GetParent(), 0, 5
-	GameTooltip:SetOwner(self, anchor, xoff, yoff)
+	GameTooltip:SetOwner(self:GetTooltipAnchor())
 	GameTooltip:ClearLines()
 
 	local SavedInstances = GetNumSavedInstances()
@@ -167,24 +161,27 @@ local OnLeave = function()
 	GameTooltip:Hide()
 end
 
-function TimeDataText:Enable()
+local Enable = function(self)
+	if (not self.Text) then
+		local Text = self:CreateFontString( nil, "OVERLAY")
+		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
+
+		self.Text = Text
+	end
+
 	self:SetScript("OnUpdate", Update)
 	self:SetScript("OnMouseUp", GameTimeFrame_OnClick)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", OnLeave)
-	Update(self, 1)
+	self:Update(1)
 	RequestRaidInfo()
 end
 
-function TimeDataText:Disable()
+local Disable = function(self)
 	self.Text:SetText("")
 	self:SetScript("OnUpdate", nil)
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
 end
 
-if C.DataText.Time then
-	TimeDataText:Enable()
-else
-	TimeDataText:Disable()
-end
+DataText:Register(L.DataText.Time, Enable, Disable, Update)

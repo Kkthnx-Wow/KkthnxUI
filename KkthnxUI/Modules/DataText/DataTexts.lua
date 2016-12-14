@@ -9,7 +9,7 @@ local strlower = strlower
 local tinsert = table.insert
 local hooksecurefunc = hooksecurefunc
 
-DataTexts.NumAnchors = 7
+DataTexts.NumAnchors = 8
 DataTexts.Font = C.Media.Font
 DataTexts.Size = C.Media.Font_Size
 DataTexts.Flags = C.Media.Font_Style
@@ -105,6 +105,9 @@ function DataTexts:CreateAnchors()
 		elseif (i == 7) and C.ActionBar.SplitBars and C.DataText.BottomBar then
 			Frame:SetSize(KkthnxUIDataTextSplitBarRight:GetWidth() - 1, KkthnxUIDataTextSplitBarRight:GetHeight() - 2)
 			Frame:SetPoint("LEFT", KkthnxUIDataTextSplitBarRight, 1, 0)
+			elseif (i == 8) then
+				Frame:SetSize(KkthnxUIMinimapStat:GetWidth() - 1, KkthnxUIMinimapStat:GetHeight() - 2)
+				Frame:SetPoint("LEFT", KkthnxUIMinimapStat, 1, 0)
 		end
 	end
 end
@@ -145,6 +148,10 @@ local function GetTooltipAnchor(self)
 	elseif (Position == 7) and C.ActionBar.SplitBars then
 		Anchor = "ANCHOR_RIGHT"
 		From = KkthnxUIDataTextSplitBarRight
+		Y = K.Scale(0)
+	elseif (Position == 8) and C.Minimap.Enable then
+		Anchor = "ANCHOR_LEFT"
+		From = KkthnxUIMinimapStat
 		Y = K.Scale(0)
 	end
 
@@ -235,6 +242,7 @@ function DataTexts:AddDefaults()
 		KkthnxUIDataPerChar.Texts["Talents"] = {true, 6}
 		KkthnxUIDataPerChar.Texts[CURRENCY] = {true, 7}
 	end
+	KkthnxUIDataPerChar.Texts[L.DataText.Time] = {true, 8}
 
 end
 

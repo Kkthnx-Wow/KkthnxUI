@@ -135,11 +135,6 @@ C["DataBars"] = {
 	["ReputationWidth"] = 142,
 }
 
--- Plugins
-C["Plugins"] = {
-	["Example"] = true,
-}
-
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
@@ -147,7 +142,6 @@ C["DataText"] = {
 	["LocalTime"] = true,
 	["System"] = true,
 	["ThreatBar"] = false,
-	["Time"] = true,
 	["Time24Hr"] = false,
 }
 

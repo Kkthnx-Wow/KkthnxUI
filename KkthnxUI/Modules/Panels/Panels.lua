@@ -84,7 +84,7 @@ else
 	PetBarAnchor:CreatePanel("Invisible", (C.ActionBar.ButtonSize + C.ActionBar.ButtonSpace), (C.ActionBar.ButtonSize * 10) + (C.ActionBar.ButtonSpace * 9), unpack(C.Position.RightBars))
 end
 PetBarAnchor:SetFrameStrata("LOW")
-RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
+RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show hide")
 Movers:RegisterFrame(PetBarAnchor)
 
 -- Stance bar anchor
@@ -144,7 +144,7 @@ KkthnxUISpecSwap:SetScript("OnEvent", function(...)
 			func = (function()
 				local getSpec = GetSpecialization()
 				if getSpec and getSpec == specIndex then
-					UIErrorsFrame:AddMessage(L.ConfigButton.SpecError, 1.0, 0.0, 0.0, 53, 5);
+					UIErrorsFrame:AddMessage(L.ConfigButton.SpecError, 1.0, 0.0, 0.0, 53, 5)
 					return
 				end
 				SetSpecialization(specIndex)
@@ -154,6 +154,15 @@ KkthnxUISpecSwap:SetScript("OnEvent", function(...)
 end)
 
 -- Minimap Panels
+-- This is a single panel inside the Minimap
+if Minimap and C.Minimap.Enable then
+	local MinimapStat = CreateFrame("Frame", "KkthnxUIMinimapStat", Minimap)
+	MinimapStat:SetSize(((Minimap:GetWidth() / 1.8)), 16)
+	MinimapStat:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 0)
+	MinimapStat:SetFrameStrata("LOW")
+	Movers:RegisterFrame(MinimapStat)
+end
+-- This is a single panel outside the Minimap
 if Minimap and C.Minimap.Enable then
 	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
 	MinimapStats:SetTemplate()
