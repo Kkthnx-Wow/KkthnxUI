@@ -9,7 +9,7 @@ local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 local function arenaPrep(self, event, ...)
 	if event ~= "ArenaPreparation" then return end
 
-	local specID = GetArenaOpponentSpec(tonumber(ID))
+	local specID = GetArenaOpponentSpec(self.id)
 	local _, spec, _, icon, _, _, class = GetSpecializationInfoByID(specID)
 
 	SetPortraitToTexture(self.Portrait, icon)
@@ -28,8 +28,8 @@ end
 local function updatePortrait(self, event, unit)
 	if event == "ARENA_OPPONENT_UPDATE" and unit ~= self.unit then return end
 	local _, instanceType = IsInInstance()
-	if instanceType == "arena" then
-		local specID = GetArenaOpponentSpec(tonumber(ID))
+	if instanceType == "arena" or instanceType == "pvp" then
+		local specID = GetArenaOpponentSpec(self.id)
 		if specID and specID > 0 then
 			local _, _, _, icon = GetSpecializationInfoByID(specID)
 			SetPortraitToTexture(self.Portrait, icon)
@@ -131,11 +131,11 @@ function ns.createArenaLayout(self, unit)
 
 	-- oUF_Trinkets support
 	self.Trinket = CreateFrame("Frame", nil, self)
-  self.Trinket:SetSize(30, 30)
+	self.Trinket:SetSize(30, 30)
 	--self.Trinket:SetFrameLevel(self:GetFrameLevel() + 2)
-  self.Trinket:SetPoint("RIGHT", self, "LEFT", -10, 1)
-  self.Trinket.trinketUseAnnounce = true
-  self.Trinket.trinketUpAnnounce = true
+	self.Trinket:SetPoint("RIGHT", self, "LEFT", -10, 1)
+	self.Trinket.trinketUseAnnounce = true
+	self.Trinket.trinketUpAnnounce = true
 
 	if C.Blizzard.ColorTextures == true then
 		self.Trinket.Border.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))

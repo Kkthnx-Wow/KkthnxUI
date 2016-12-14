@@ -265,13 +265,6 @@ local function Update(self)
 end
 
 local function Enable(self)
-	if(not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("GUILD_ROSTER_SHOW")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE")
 	self:RegisterEvent("PLAYER_GUILD_UPDATE")

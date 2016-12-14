@@ -58,13 +58,6 @@ local Update = function(self)
 end
 
 local Enable = function(self)
-	if (not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("UNIT_STATS")
 	self:RegisterEvent("UNIT_RESISTANCES")
 	self:RegisterEvent("FORGE_MASTER_ITEM_CHANGED")

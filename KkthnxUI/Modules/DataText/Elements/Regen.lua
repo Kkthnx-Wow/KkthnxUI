@@ -20,13 +20,6 @@ local function Update(self)
 end
 
 local function Enable(self)
-	if(not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("UNIT_AURA")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")

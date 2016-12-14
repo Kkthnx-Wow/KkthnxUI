@@ -70,13 +70,6 @@ local OnEvent = function(self)
 end
 
 local function Enable(self)
-	if (not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("MERCHANT_SHOW")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("UPDATE_INVENTORY_DURABILITY")

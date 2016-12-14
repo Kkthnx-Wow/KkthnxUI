@@ -181,7 +181,7 @@ if Minimap and C.Minimap.Enable then
 	end
 end
 
--- BottomBar DT
+-- BottomBar Datatext panel
 if C.DataText.BottomBar then
 	local DataTextBottomBar = CreateFrame("Frame", "KkthnxUIDataTextBottomBar", UIParent)
 	DataTextBottomBar:SetSize(ActionBarAnchor:GetWidth() + 6, 28)
@@ -192,7 +192,7 @@ if C.DataText.BottomBar then
 	Movers:RegisterFrame(DataTextBottomBar)
 end
 
--- BottomSplitBarLeft DT
+-- BottomSplitBarLeft Datatext panel
 if C.ActionBar.SplitBars and C.DataText.BottomBar then
 	local DataTextSplitBarLeft = CreateFrame("Frame", "KkthnxUIDataTextSplitBarLeft", UIParent)
 	DataTextSplitBarLeft:SetSize(((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2) +3), 28)
@@ -203,7 +203,7 @@ if C.ActionBar.SplitBars and C.DataText.BottomBar then
 	Movers:RegisterFrame(DataTextSplitBarLeft)
 end
 
--- BottomSplitBarRight DT
+-- BottomSplitBarRight Datatext panel
 if C.ActionBar.SplitBars and C.DataText.BottomBar then
 	local DataTextSplitBarRight = CreateFrame("Frame", "KkthnxUIDataTextSplitBarRight", UIParent)
 	DataTextSplitBarRight:SetSize(((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2) +3), 28)
@@ -219,10 +219,9 @@ if C.DataText.Battleground == true and C.DataText.BottomBar == true then
 	local BattleGroundFrame = CreateFrame("Frame", "KkthnxUIInfoBottomBattleGround", UIParent)
 	BattleGroundFrame:SetBackdrop(K.BorderBackdrop)
 	BattleGroundFrame:SetInside(KkthnxUIDataTextBottomBar, 4, 4)
-	BattleGroundFrame:SetFrameStrata("LOW")
-	BattleGroundFrame:SetFrameLevel(0)
+	BattleGroundFrame:SetFrameLevel(KkthnxUIDataTextBottomBar:GetFrameLevel() + 1)
 	BattleGroundFrame:EnableMouse(true)
-
+	-- Just create a layer over this. No need for another border
 	BattleGroundFrame.Background = BattleGroundFrame:CreateTexture(nil, "BORDER")
 	BattleGroundFrame.Background:SetAllPoints(BattleGroundFrame)
 	BattleGroundFrame.Background:SetColorTexture(0.019, 0.019, 0.019, 0.9)
@@ -237,10 +236,10 @@ if C.General.ShowConfigButton == true then
 	ToggleButtonSpecial:SetFrameLevel(2)
 	ToggleButtonSpecial:SkinButton()
 
-	ToggleButtonSpecial["Text"] = K.SetFontString(ToggleButtonSpecial, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-	ToggleButtonSpecial["Text"]:SetPoint("CENTER", ToggleButtonSpecial, "CENTER", 0, .5)
-	ToggleButtonSpecial["Text"]:SetText("|cff3c9bedK|r")
-	ToggleButtonSpecial["Text"]:SetShadowOffset(0, 0)
+	ToggleButtonSpecial.Text = K.SetFontString(ToggleButtonSpecial, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	ToggleButtonSpecial.Text:SetPoint("CENTER", ToggleButtonSpecial, "CENTER", 0, .5)
+	ToggleButtonSpecial.Text:SetText("|cff3c9bedK|r")
+	ToggleButtonSpecial.Text:SetShadowOffset(0, 0)
 
 	ToggleButtonSpecial:EnableMouse(true)
 	ToggleButtonSpecial:HookScript("OnMouseDown", function(self, btn)

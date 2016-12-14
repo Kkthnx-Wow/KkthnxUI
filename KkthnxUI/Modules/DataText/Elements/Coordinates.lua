@@ -35,13 +35,6 @@ local OnUpdate = function(self, elapsed)
 end
 
 local Enable = function(self)
-	if (not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:SetScript("OnMouseDown", OnMouseDown)
 	self:SetScript("OnUpdate", OnUpdate)
 end

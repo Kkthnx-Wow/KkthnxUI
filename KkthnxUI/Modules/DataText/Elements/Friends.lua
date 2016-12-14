@@ -566,13 +566,6 @@ local OnEvent = function(self, event)
 end
 
 local Enable = function(self)
-	if(not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("BN_FRIEND_ACCOUNT_ONLINE")
 	self:RegisterEvent("BN_FRIEND_ACCOUNT_OFFLINE")
 	self:RegisterEvent("BN_FRIEND_TOON_ONLINE")

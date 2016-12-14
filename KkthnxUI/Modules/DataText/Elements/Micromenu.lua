@@ -4,126 +4,136 @@ local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
 
+-- Lua API
 local format = string.format
-local match = string.match
-local CreateFrame, UIParent = CreateFrame, UIParent
-local ToggleFrame = ToggleFrame
+local print = print
 
-local MicroMenu = CreateFrame("Frame", "KkthnxUIMicroButtonsDropDown", UIParent, "Lib_UIDropDownMenuTemplate")
-MicroMenu.Buttons = {
-	{text = CHARACTER_BUTTON,
-		func = function()
+-- Wow API
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local InCombatLockdown = InCombatLockdown
+local IsInGuild = IsInGuild
+local Lib_ToggleDropDownMenu = Lib_ToggleDropDownMenu
+local ShowUIPanel = ShowUIPanel
+local ToggleAchievementFrame = ToggleAchievementFrame
+local ToggleCharacter = ToggleCharacter
+local ToggleFrame = ToggleFrame
+local UIErrorsFrame = UIErrorsFrame
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: FEATURE_BECOMES_AVAILABLE_AT_LEVEL, ToggleQuestLog, ToggleGuildFrame
+-- GLOBALS: GuildFrame_TabClicked, GuildFrameTab2, ToggleFriendsFrame, SHOW_PVP_LEVEL
+-- GLOBALS: MiniMapTrackingDropDown, ToggleDropDownMenu, Minimap_OnClick
+-- GLOBALS: SpellBookFrame, PlayerTalentFrame, TalentFrame_LoadUI, SHOW_TALENT_LEVEL
+-- GLOBALS: StoreMicroButton, Lib_EasyMenu, GarrisonLandingPage_Toggle, MinimapAnchor
+-- GLOBALS: ToggleEncounterJournal, FEATURE_NOT_YET_AVAILABLE, ToggleCollectionsJournal
+-- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap,  LootHistoryFrame
+-- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal
+
+local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
+local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
+
+local micromenu = {
+	{text = CHARACTER_BUTTON, notCheckable = 1, func = function()
 			ToggleCharacter("PaperDollFrame")
-		end,
-	notCheckable = true},
-	{text = SPELLBOOK_ABILITIES_BUTTON,
-		func = function()
-			ToggleFrame(SpellBookFrame)
-		end,
-	notCheckable = true},
-	{text = TALENTS_BUTTON,
-		func = function()
-			if (not PlayerTalentFrame) then
+	end},
+	{text = SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
+			--ToggleFrame(SpellBookFrame)
+			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
+	end},
+	{text = TALENTS_BUTTON, notCheckable = 1, func = function()
+			if not PlayerTalentFrame then
 				TalentFrame_LoadUI()
 			end
-			ShowUIPanel(PlayerTalentFrame)
-		end,
-	notCheckable = true},
-	{text = ACHIEVEMENT_BUTTON,
-		func = function()
+			if K.Level >= SHOW_TALENT_LEVEL then
+				ShowUIPanel(PlayerTalentFrame)
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL), 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+				end
+			end
+	end},
+	{text = ACHIEVEMENT_BUTTON, notCheckable = 1, func = function()
 			ToggleAchievementFrame()
-		end,
-	notCheckable = true},
-	{text = WORLD_MAP.." / "..QUESTLOG_BUTTON,
-		func = function()
-			ShowUIPanel(WorldMapFrame)
-		end,
-	notCheckable = true},
-	{text = MOUNTS,
-		func = function()
-			ToggleCollectionsJournal(1)
-		end,
-	notCheckable = true},
-	{text = PETS,
-		func = function()
-			ToggleCollectionsJournal(2)
-		end,
-	notCheckable = true},
-	{text = TOY_BOX,
-		func = function() ToggleCollectionsJournal(3) end,
-	notCheckable = true},
-	{text = HEIRLOOMS,
-		func = function()
-			ToggleCollectionsJournal(4)
-		end,
-	notCheckable = true},
-	{text = SOCIAL_BUTTON,
-		func = function()
-			ToggleFriendsFrame(1)
-		end,
-	notCheckable = true},
-	{text = COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE.." / "..COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVP,
-		func = function()
-			PVEFrame_ToggleFrame()
-		end,
-	notCheckable = true},
-	{text = ACHIEVEMENTS_GUILD_TAB,
-		func = function()
+	end},
+	{text = QUESTLOG_BUTTON, notCheckable = 1, func = function()
+			ToggleQuestLog()
+	end},
+	{text = guildText, notCheckable = 1, func = function()
+			ToggleGuildFrame()
 			if IsInGuild() then
-				if (not GuildFrame) then
-					GuildFrame_LoadUI()
-				end
-				GuildFrame_Toggle()
-			else
-				if (not LookingForGuildFrame) then
-					LookingForGuildFrame_LoadUI()
-				end
-				LookingForGuildFrame_Toggle()
+				GuildFrame_TabClicked(GuildFrameTab2)
 			end
-		end,
-	notCheckable = true},
-	{text = RAID,
-		func = function()
-			ToggleFriendsFrame(4)
-		end,
-	notCheckable = true},
-	{text = HELP_BUTTON,
-		func = function()
+	end},
+	{text = SOCIAL_BUTTON, notCheckable = 1, func = function()
+			ToggleFriendsFrame()
+	end},
+	{text = PLAYER_V_PLAYER, notCheckable = 1, func = function()
+			if K.Level >= SHOW_PVP_LEVEL then
+				TogglePVPUI()
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL), 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
+				end
+			end
+	end},
+	{text = DUNGEONS_BUTTON, notCheckable = 1, func = function()
+			if K.Level >= SHOW_LFD_LEVEL then
+				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL), 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
+				end
+			end
+	end},
+	{text = ADVENTURE_JOURNAL, notCheckable = 1, func = function()
+			if C_AdventureJournal.CanBeShown() then
+				ToggleEncounterJournal()
+			else
+				if C.Error.White == false then
+					UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
+				else
+					print("|cffffff00"..FEATURE_NOT_YET_AVAILABLE.."|r")
+				end
+			end
+	end},
+	{text = COLLECTIONS, notCheckable = 1, func = function()
+			if InCombatLockdown() then
+				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+			end
+			ToggleCollectionsJournal()
+	end},
+	{text = HELP_BUTTON, notCheckable = 1, func = function()
 			ToggleHelpFrame()
-		end,
-	notCheckable = true},
-	{text = CALENDAR_VIEW_EVENT,
-		func = function()
-			if (not CalendarFrame) then
-				LoadAddOn("Blizzard_Calendar")
-			end
-			Calendar_Toggle()
-		end,
-	notCheckable = true},
-	{text = ENCOUNTER_JOURNAL,
-		func = function()
-			ToggleEncounterJournal()
-		end,
-	notCheckable = true},
-	{text = ORDER_HALL_LANDING_PAGE_TITLE,
-		func = function()
-			GarrisonLandingPageMinimapButton_OnClick()
-		end,
-	notCheckable = true},
-	{text = SOCIAL_TWITTER_COMPOSE_NEW_TWEET,
-		func = function()
-			if not SocialPostFrame then
-				LoadAddOn("Blizzard_SocialUI")
-			end
-			local IsTwitterEnabled = C_Social.IsSocialEnabled()
-			if IsTwitterEnabled then
-				Social_SetShown(true)
-			else
-				K.Print(SOCIAL_TWITTER_TWEET_NOT_LINKED)
-			end
-		end,
-	notCheckable = true},
+	end},
+	{text = L_MINIMAP_CALENDAR, notCheckable = 1, func = function()
+			ToggleCalendar()
+	end},
+	{text = BATTLEFIELD_MINIMAP, notCheckable = 1, func = function()
+			ToggleBattlefieldMinimap()
+	end},
+	{text = LOOT_ROLLS, notCheckable = 1, func = function()
+			ToggleFrame(LootHistoryFrame)
+	end},
 }
+
+if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
+	tinsert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function() StoreMicroButton:Click() end})
+end
+
+if K.Level > 99 then
+	tinsert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+elseif K.Level > 89 then
+	tinsert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+end
 
 local function OnMouseDown()
 	Lib_EasyMenu(MicroMenu.Buttons, MicroMenu, "cursor", 0, 0, "MENU")
@@ -134,14 +144,7 @@ local function Update(self)
 end
 
 local function Enable(self)
-	if(not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-		self:SetScript("OnMouseDown", OnMouseDown)
-	end
-
+	self:SetScript("OnMouseDown", OnMouseDown)
 	self:Update()
 end
 

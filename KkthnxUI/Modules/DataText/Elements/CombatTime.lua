@@ -54,13 +54,6 @@ local OnEvent = function(self, event, timerType, timeSeconds, totalTime)
 end
 
 local Enable = function(self)
-	if (not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("START_TIMER")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")

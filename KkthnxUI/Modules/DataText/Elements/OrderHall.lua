@@ -77,7 +77,7 @@ local OnEnter = function(self)
 
 	C_GarrisonRequestLandingPageShipmentInfo()
 
-	GameTooltip:SetOwner(self:GetTooltipAnchor() )
+	GameTooltip:SetOwner(self:GetTooltipAnchor())
 	GameTooltip:ClearLines()
 	GameTooltip:ClearLines()
 
@@ -120,7 +120,7 @@ local OnEnter = function(self)
 	if (followerShipments) then
 		for i = 1, #followerShipments do
 			local name, _, _, shipmentsReady, shipmentsTotal = C_GarrisonGetLandingPageShipmentInfoByContainerID(followerShipments[i])
-			if (name and shipmentsReady and shipmentsTotal ) then
+			if (name and shipmentsReady and shipmentsTotal) then
 				if(hasFollowers == false) then
 					if(numMissions > 0) then GameTooltip:AddLine(" ") end
 					GameTooltip:AddLine(FOLLOWERLIST_LABEL_TROOPS)
@@ -176,12 +176,6 @@ local OnMouseDown = function(self)
 end
 
 local function Enable(self)
-	if(not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
 	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	self:RegisterEvent("GARRISON_MISSION_LIST_UPDATE")
 	self:RegisterEvent("GARRISON_MISSION_STARTED")
@@ -192,19 +186,19 @@ local function Enable(self)
 	self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:SetScript("OnEvent", Update)
-	self:SetScript("OnMouseDown", OnMouseDown )
-	self:SetScript("OnEnter", OnEnter )
-	self:SetScript("OnLeave", GameTooltip_Hide )
+	self:SetScript("OnMouseDown", OnMouseDown)
+	self:SetScript("OnEnter", OnEnter)
+	self:SetScript("OnLeave", GameTooltip_Hide)
 	self:Update()
 end
 
 local function Disable(self)
 	self.Text:SetText("")
 	self:UnregisterAllEvents()
-	self:SetScript("OnMouseDown", nil )
-	self:SetScript("OnEnter", nil )
-	self:SetScript("OnLeave", nil )
-	self:SetScript("OnEvent", nil )
+	self:SetScript("OnMouseDown", nil)
+	self:SetScript("OnEnter", nil)
+	self:SetScript("OnLeave", nil)
+	self:SetScript("OnEvent", nil)
 end
 
 DataText:Register(L.DataText.OrderHall, Enable, Disable, Update)

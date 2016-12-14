@@ -132,13 +132,6 @@ local OnMouseDown = function(self)
 end
 
 local function Enable(self)
-	if(not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("PLAYER_MONEY")
 	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
 	self:RegisterEvent("SEND_MAIL_COD_CHANGED")

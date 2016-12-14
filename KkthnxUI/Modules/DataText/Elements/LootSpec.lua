@@ -146,7 +146,7 @@ local OnMouseDown = function(self, button)
 		else
 			for index = 1, 4 do
 				local id, name, _, texture = GetSpecializationInfo(index)
-				if ( id ) then
+				if (id) then
 					specList[index + 1].text = format("|T%s:14:14:0:0:64:64:4:60:4:60|t  %s", texture, name)
 					specList[index + 1].func = function()
 					if index and index == specIndex then
@@ -167,7 +167,7 @@ local OnMouseDown = function(self, button)
 
 		for index = 1, 4 do
 			local id, name = GetSpecializationInfo(index)
-			if ( id ) then
+			if (id) then
 				menuList[index + 2].text = name
 				menuList[index + 2].func = function() SetLootSpecialization(id) end
 			else
@@ -180,13 +180,6 @@ local OnMouseDown = function(self, button)
 end
 
 local Enable = function(self)
-	if (not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	self:RegisterEvent("PLAYER_TALENT_UPDATE")
 	self:RegisterEvent("PLAYER_LOOT_SPEC_UPDATED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")

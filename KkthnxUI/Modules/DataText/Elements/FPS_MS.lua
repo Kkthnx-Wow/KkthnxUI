@@ -104,7 +104,7 @@ end
 local OnEnter = function(self)
 	if (not InCombatLockdown()) then
 
-		GameTooltip:SetOwner( self:GetTooltipAnchor() )
+		GameTooltip:SetOwner(self:GetTooltipAnchor())
 		GameTooltip:ClearLines()
 
 		local Bandwidth = GetAvailableBandwidth()
@@ -150,14 +150,7 @@ local ResetData = function(self, event)
 	wipe(MemoryTable)
 end
 
-local Enable = function( self )
-	if( not self.Text ) then
-		local Text = self:CreateFontString( nil, "OVERLAY" )
-		Text:SetFont( DataText.Font, DataText.Size, DataText.Flags )
-
-		self.Text = Text
-	end
-
+local Enable = function(self)
 	KilobyteString = "%d ".. MemoryColor .."kb".."|r"
 	MegabyteString = "%.2f ".. MemoryColor .."mb".."|r"
 	self:RegisterEvent("ADDON_LOADED")
@@ -169,13 +162,13 @@ local Enable = function( self )
 	Update(self, 10)
 end
 
-local Disable = function( self )
-	self.Text:SetText( "" )
+local Disable = function(self)
+	self.Text:SetText("")
 	self:SetScript("OnEvent", nil)
-	self:SetScript( "OnUpdate", nil )
-	self:SetScript( "OnEnter", nil )
-	self:SetScript( "OnLeave", nil )
+	self:SetScript("OnUpdate", nil)
+	self:SetScript("OnEnter", nil)
+	self:SetScript("OnLeave", nil)
 	self:SetScript("OnMouseUp", nil)
 end
 
-DataText:Register("FPS&MS", Enable, Disable, OnUpdate )
+DataText:Register("FPS&MS", Enable, Disable, OnUpdate)

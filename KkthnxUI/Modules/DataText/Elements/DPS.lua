@@ -101,13 +101,6 @@ local OnEvent = function(self, event, ...)
 end
 
 local Enable = function(self)
-	if (not self.Text) then
-		local Text = self:CreateFontString(nil, "OVERLAY")
-		Text:SetFont(DataText.Font, DataText.Size, DataText.Flags)
-
-		self.Text = Text
-	end
-
 	if (not self.Functions) then
 		CreateFunctions(self)
 	end
