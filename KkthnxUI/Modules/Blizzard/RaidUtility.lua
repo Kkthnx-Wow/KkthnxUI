@@ -5,7 +5,7 @@ local unpack = unpack
 local Movers = K.Movers
 
 StaticPopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
-	text =  L.Popup.BlizzardAddOns,
+	text = L.Popup.BlizzardAddOns,
 	button1 = OKAY,
 	OnAccept = function() EnableAddOn("Blizzard_CompactRaidFrames") ReloadUI() end,
 	timeout = 0,
@@ -38,14 +38,13 @@ end
 -- Function to create buttons in this module
 local function CreateButton(name, parent, template, width, height, point, relativeto, point2, xOfs, yOfs, text)
 	local b = CreateFrame("Button", name, parent, template)
-	b:SkinButton(true)
 	b:SetWidth(width)
 	b:SetHeight(height + 2)
 	b:SetPoint(point, relativeto, point2, xOfs, yOfs)
 	b:EnableMouse(true)
 	if text then
 		b.t = b:CreateFontString(nil, "OVERLAY")
-		b.t:SetFont(C.Media.Font, C.Media.Font_Size, "")
+		b.t:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		b.t:SetShadowOffset(K.Mult, -K.Mult)
 		b.t:SetPoint("CENTER")
 		b.t:SetJustifyH("CENTER")
@@ -180,7 +179,5 @@ if K.CheckAddOn("Aurora") then
 	local F = unpack(Aurora)
 	RaidUtilityPanel:SetBackdropColor(0, 0, 0, 0)
 	RaidUtilityPanel:SetBackdropBorderColor(0, 0, 0, 0)
-	RaidUtilityPanelInnerBorder:SetBackdropBorderColor(0, 0, 0, 0)
-	RaidUtilityPanelOuterBorder:SetBackdropBorderColor(0, 0, 0, 0)
 	F.CreateBD(RaidUtilityPanel)
 end

@@ -726,45 +726,24 @@ do
 	InterfaceOptions_AddCategory(frame)
 end
 
-local GameMenu = CreateFrame("Frame")
-local Menu = GameMenuFrame
-local Header = GameMenuFrameHeader
-local Logout = GameMenuButtonLogout
-local Addons = GameMenuButtonAddons
+-- Button in GameMenuButton frame
+if not IsAddOnLoaded("KkthnxUI_Config") and IsAddOnLoaded("ConsolePort") then return end
 
-function GameMenu:AddHooks()
-	local Logout = GameMenuButtonLogout
+local button = CreateFrame("Button", "GameMenuButtonSettingsUI", GameMenuFrame, "GameMenuButtonTemplate")
+button:SetText("|cff3c9bedKkthnxUI|r")
+button:SetPoint("TOP", "GameMenuButtonAddons", "BOTTOM", 0, -1)
 
-	Menu:SetHeight(Menu:GetHeight() + Logout:GetHeight())
-	local _, relTo, _, _, offY = Logout:GetPoint()
-	if relTo ~= GameMenu.KkthnxUIButton then
-		GameMenu.KkthnxUIButton:ClearAllPoints()
-		GameMenu.KkthnxUIButton:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
-		Logout:ClearAllPoints()
-		Logout:SetPoint("TOPLEFT", GameMenu.KkthnxUIButton, "BOTTOMLEFT", 0, offY)
+GameMenuFrame:HookScript("OnShow", function()
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + button:GetHeight())
+	GameMenuButtonLogout:SetPoint("TOP", button, "BOTTOM", 0, -16)
+end)
+
+button:SetScript("OnClick", function()
+	PlaySound("igMainMenuOption")
+	HideUIPanel(GameMenuFrame)
+	if not UIConfigMain or not UIConfigMain:IsShown() then
+		CreateUIConfig()
+	else
+		UIConfigMain:Hide()
 	end
-end
-
-function GameMenu:EnableKkthnxUIConfig()
-	local Logout = GameMenuButtonLogout
-
-	local KkthnxUIButton = CreateFrame("Button", nil, Menu, "GameMenuButtonTemplate")
-	KkthnxUIButton:SetSize(Logout:GetWidth(), Logout:GetHeight())
-	KkthnxUIButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
-	KkthnxUIButton:SetText("|cff3c9bedKkthnxUI|r")
-	KkthnxUIButton:SetScript("OnClick", function(self)
-		if UIConfigMain and UIConfigMain:IsShown() then
-			UIConfigMain:Hide()
-		else
-			CreateUIConfig()
-			HideUIPanel(Menu)
-		end
-	end)
-
-	hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.AddHooks)
-	self.KkthnxUIButton = KkthnxUIButton
-end
-
-if IsAddOnLoaded("KkthnxUI_Config") and not IsAddOnLoaded("ConsolePort") then
-	GameMenu:EnableKkthnxUIConfig()
-end
+end)

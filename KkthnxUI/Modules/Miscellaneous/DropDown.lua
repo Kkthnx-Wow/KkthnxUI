@@ -52,27 +52,32 @@ SkinDropDowns:SetScript("OnEvent", function(self, event, addon)
 		end
 
 		-- Reskin buttons
-		-- local BlizzardButtons = {
-			-- 	"RaidUtilityConvertButton",
-			-- 	"RaidUtilityMainTankButton",
-			-- 	"RaidUtilityMainAssistButton",
-			-- 	"RaidUtilityRoleButton",
-			-- 	"RaidUtilityReadyCheckButton",
-			-- 	"RaidUtilityShowButton",
-			-- 	"RaidUtilityCloseButton",
-			-- 	"RaidUtilityDisbandButton",
-			-- 	"RaidUtilityRaidControlButton",
-		-- }
-		--
-		-- if C.Blizzard.RaidTools == true then
-		-- 	tinsert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
-		-- end
-		--
-		-- for i = 1, getn(BlizzardButtons) do
-		-- 	local buttons = _G[BlizzardButtons[i]]
-		-- 	if buttons then
-		-- 		buttons:SkinButton()
-		-- 	end
-		-- end
+		local BlizzardButtons = {
+				"RaidUtilityConvertButton",
+				"RaidUtilityMainTankButton",
+				"RaidUtilityMainAssistButton",
+				"RaidUtilityRoleButton",
+				"RaidUtilityReadyCheckButton",
+				"RaidUtilityShowButton",
+				"RaidUtilityCloseButton",
+				"RaidUtilityDisbandButton",
+				"RaidUtilityRaidControlButton",
+		}
+
+		if C.Blizzard.RaidTools == true then
+			tinsert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
+		end
+
+		for i = 1, getn(BlizzardButtons) do
+			local buttons = _G[BlizzardButtons[i]]
+			if buttons then
+				buttons:SkinButton()
+			end
+		end
 	end
+
+	if event == "ADDON_LOADED" then
+		self:UnregisterEvent("ADDON_LOADED")
+	end
+
 end)
