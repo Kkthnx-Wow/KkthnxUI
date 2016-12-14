@@ -106,13 +106,12 @@ hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", function(_, block)
 
 		item.Count:ClearAllPoints()
 		item.Count:SetPoint("TOPLEFT", 1, -1)
-		item.Count:SetFont(C.font.action_bars_font, C.font.action_bars_font_size, C.font.action_bars_font_style)
-		item.Count:SetShadowOffset(C.font.action_bars_font_shadow and 1 or 0, C.font.action_bars_font_shadow and -1 or 0)
+		item.Count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		item.Count:SetShadowOffset(0, 0)
 
 		item.skinned = true
 	end
 end)
-
 
 -- Difficulty color for ObjectiveTrackerFrame lines
 hooksecurefunc(QUEST_TRACKER_MODULE, "Update", function()

@@ -53,7 +53,6 @@ UIConfigLocal.AutomationTabBinder = "Auto change tab key to only target enemy pl
 
 -- Bag
 UIConfigLocal.Bags = "Bags"
-UIConfigLocal.BagsBagFilter = "Automatically delete useless items from your bags when looted"
 UIConfigLocal.BagsButtonSize = "Set a size for bag slots"
 UIConfigLocal.BagsEnable = "Enable Bags"
 UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
