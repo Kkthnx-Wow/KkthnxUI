@@ -19,7 +19,7 @@ local TRADE = TRADE
 local reqLatin = not strmatch(GetLocale(), "^[rkz][uoh]")
 
 local prevID, result
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", function(_, _, message, sender, arg3, arg4, arg5, flag, channelID, arg8, channelName, arg10, lineID, senderGUID, ...)
+local function SpamChatEventFilter(_, _, message, sender, arg3, arg4, arg5, flag, channelID, arg8, channelName, arg10, lineID, senderGUID, ...)
 	if lineID == prevID then
 		if result == true then
 			return true
@@ -71,4 +71,8 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", function(_, _, message, send
 
 	-- print("Other:", channelID, search)
 	return true
-end)
+end
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", SpamChatEventFilter)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", SpamChatEventFilter)
+ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", SpamChatEventFilter)

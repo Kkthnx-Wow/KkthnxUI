@@ -136,7 +136,7 @@ elseif K.Level > 89 then
 end
 
 local function OnMouseDown()
-	Lib_EasyMenu(MicroMenu.Buttons, MicroMenu, "cursor", 0, 0, "MENU")
+	Lib_EasyMenu(micromenu, menuFrame, "cursor", 0, 0, "MENU")
 end
 
 local function Update(self)

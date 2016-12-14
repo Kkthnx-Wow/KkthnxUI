@@ -611,8 +611,11 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	if KkthnxUIDataPerChar.BottomBars == nil then KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars end
 
 	-- Check if we should disable our UI due to too small of ScreenWidth
-	if K.ScreenWidth < 1024 and GetCVar("gxMonitor") == "0" then
-		SetCVar("useUiScale", 0)
+	if K.ScreenWidth < 1024 and GetCVarBool("gxMonitor") == "0" then
+		local UseUIScale = GetCVarBool("useUiScale")
+		if not UseUIScale then
+			SetCVar("useUiScale", 0)
+		end
 		StaticPopup_Show("DISABLE_UI")
 	end
 
@@ -628,7 +631,9 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		print("|cffffff00"..L.Welcome.Line4.."|cffffff00"..L.Welcome.Line5.."|r")
 	end
 
-	self:UnregisterEvent("ADDON_LOADED")
+	if event == "ADDON_LOADED" then
+		self:UnregisterEvent("ADDON_LOADED")
+	end
 end)
 
 SLASH_TUTORIAL1, SLASH_TUTORIAL2 = "/uihelp", "/tutorial"

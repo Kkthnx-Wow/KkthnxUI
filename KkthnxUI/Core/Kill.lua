@@ -37,6 +37,11 @@ local UnitAffectingCombat = UnitAffectingCombat
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("ADDON_LOADED")
 DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
+	if InCombatLockdown() then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		return
+	end
+
 	if addon == "Blizzard_AchievementUI" then
 		if C.Tooltip.Enable then
 			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
@@ -58,8 +63,7 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		if not CompactRaidFrameManager_UpdateShown then
 			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 		else
-			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
-			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
+			K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
 			if not InCombatLockdown() then
 				CompactRaidFrameContainer:Kill()
 				CompactRaidFrameManager:Kill()
@@ -76,7 +80,10 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 
 	if C.Cooldown.Enable then
 		InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
-		SetCVar("countdownForCooldowns", 0)
+		local DisableCD = GetCVarBool("countdownForCooldowns")
+		if not DisableCD and not InCombatLockdown() then
+			SetCVar("countdownForCooldowns", 0)
+		end
 	end
 
 	if C.General.DisableTutorialButtons then
@@ -98,39 +105,48 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	if C.Unitframe.Enable then
-		InterfaceOptionsCombatPanelTargetOfTarget:SetScale(0.00001)
-		InterfaceOptionsCombatPanelTargetOfTarget:SetAlpha(0)
+		K.KillMenuOption(true, "InterfaceOptionsCombatPanelTargetOfTarget")
 	end
 
 	if C.Nameplates.Enable then
-		SetCVar("ShowClassColorInNameplate", 1)
+		local PlateClassColor = GetCVarBool("ShowClassColorInNameplate")
+		if not PlateClassColor and not InCombatLockdown() then
+			SetCVar("ShowClassColorInNameplate", 1)
+		end
 		-- Hide the option to rescale, because we will do it from KkthnxUI settings.
-		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:Hide()
-		InterfaceOptionsNamesPanelUnitNameplatesMakeLarger:SetScale(0.00001)
-		InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy:Hide()
-		InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy:SetScale(0.00001)
-		InterfaceOptionsNamesPanelUnitNameplatesAggroFlash:Hide()
-		InterfaceOptionsNamesPanelUnitNameplatesAggroFlash:SetScale(0.00001)
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
 	end
 
 	if C.Chat.Enable then
-		SetCVar("chatStyle", "im")
+		local ChatStyle = GetCVarBool("chatStyle")
+		if not ChatStyle and not InCombatLockdown() then
+			SetCVar("chatStyle", "im")
+		end
 	end
 
 	if C.ActionBar.Enable then
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Hide()
-		InterfaceOptionsActionBarsPanelBottomLeft:Hide()
-		InterfaceOptionsActionBarsPanelBottomRight:Hide()
-		InterfaceOptionsActionBarsPanelRight:Hide()
-		InterfaceOptionsActionBarsPanelRightTwo:Hide()
+		if InCombatLockdown() then return end
+		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
+		InterfaceOptionsActionBarsPanelBottomRight:Kill()
+		InterfaceOptionsActionBarsPanelRight:Kill()
+		InterfaceOptionsActionBarsPanelRightTwo:Kill()
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
 	end
 
 	if C.Minimap.Enable then
-		InterfaceOptionsDisplayPanelRotateMinimap:Kill()
+		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
 
 	if C.Bags.Enable then
 		SetInsertItemsLeftToRight(false)
 		SetSortBagsRightToLeft(true)
+	end
+
+	if event == "ADDON_LOADED" then
+		self:UnregisterEvent("ADDON_LOADED")
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 end)

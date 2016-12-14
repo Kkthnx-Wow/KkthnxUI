@@ -14,7 +14,7 @@ local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
 local UnitClass = UnitClass
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: noHover, noPushed, noChecked, self, UIFrameFadeIn, UIFrameFadeOut, bordera
 
 local Mult = 768 / string.match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
@@ -97,7 +97,7 @@ local function CreateBackdrop(f, t, size)
 	f.backdrop = b
 end
 
--- Who doesn't like shadows! More shadows!
+-- Who doesn"t like shadows! More shadows!
 local function CreateShadow(f, size)
 	if f.Shadow then return end
 	if not size then size = 3 end
@@ -211,20 +211,26 @@ end
 local function Kill(object)
 	if object.UnregisterAllEvents then
 		object:UnregisterAllEvents()
+		object:SetParent(UIFrameHider)
+	else
+		object.Show = object.Hide
 	end
-	object.Show = K.Noop
+
 	object:Hide()
 end
 
--- StripTextures
-local function StripTextures(Object, Kill, Text)
-	for i = 1, Object:GetNumRegions() do
-		local Region = select(i, Object:GetRegions())
-		if Region and Region:GetObjectType() == "Texture" then
-			if Kill then
-				Region:Kill()
+local function StripTextures(object, kill)
+	for i=1, object:GetNumRegions() do
+		local region = select(i, object:GetRegions())
+		if region and region:GetObjectType() == "Texture" then
+			if kill and type(kill) == "boolean" then
+				region:Kill()
+			elseif region:GetDrawLayer() == kill then
+				region:SetTexture(nil)
+			elseif kill and type(kill) == "string" and region:GetTexture() ~= kill then
+				region:SetTexture(nil)
 			else
-				Region:SetTexture(nil)
+				region:SetTexture(nil)
 			end
 		end
 	end
@@ -236,7 +242,7 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(K.Mult,-K.Mult)
+	fs:SetShadowOffset(K.Mult, -K.Mult)
 
 	if not name then
 		parent.Text = fs

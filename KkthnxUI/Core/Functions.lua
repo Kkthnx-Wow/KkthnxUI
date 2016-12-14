@@ -254,6 +254,61 @@ K.ColorGradient = function(a, b, ...)
 	return R1 + (R2 - R1) * RelPercent, G1 + (G2 - G1) * RelPercent, B1 + (B2 - B1) * RelPercent
 end
 
+-- Example:
+-- killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
+K.KillMenuOption = function(option_shrink, option_name)
+	local option = _G[option_name]
+	if not(option) or not(option.IsObjectType) or not(option:IsObjectType("Frame")) then
+		return
+	end
+	option:SetParent(UIFrameHider)
+	if option.UnregisterAllEvents then
+		option:UnregisterAllEvents()
+	end
+	if option_shrink then
+		option:SetHeight(0.00001)
+	end
+	option.cvar = ""
+	option.uvar = ""
+	option.value = nil
+	option.oldValue = nil
+	option.defaultValue = nil
+	option.setFunc = function() end
+end
+
+
+-- Example (killing the status text panel in WotLK, Cata and MoP):
+-- K.KillMenuPanel(9, "InterfaceOptionsStatusTextPanel")
+--
+-- 'panel_id' is basically the number of the submenu, when all menus are still there.
+-- Note that the this sometimes change between expansions, so you really need to check
+-- to make sure you are removing the right one.
+K.KillMenuPanel = function(panel_id, panel_name)
+	-- remove an entire blizzard options panel,
+	-- and disable its automatic cancel/okay functionality
+	-- this is needed, or the option will be reset when the menu closes
+	-- it is also a major source of taint related to the Compact group frames!
+	if panel_id then
+		local category = _G["InterfaceOptionsFrameCategoriesButton" .. panel_id]
+		if category then
+			category:SetScale(0.00001)
+			category:SetAlpha(0)
+		end
+	end
+	if panel_name then
+		local panel = _G[panel_name]
+		if panel then
+			panel:SetParent(UIHider)
+			if panel.UnregisterAllEvents then
+				panel:UnregisterAllEvents()
+			end
+			panel.cancel = function() end
+			panel.okay = function() end
+			panel.refresh = function() end
+		end
+	end
+end
+
 -- Format seconds to min/ hour / day
 K.FormatTime = function(s)
 	local Day, Hour, Minute = 86400, 3600, 60

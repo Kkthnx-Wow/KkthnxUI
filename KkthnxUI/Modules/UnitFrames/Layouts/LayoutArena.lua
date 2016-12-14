@@ -68,9 +68,9 @@ function ns.createArenaLayout(self, unit)
 	self.Portrait:SetSize(64, 64)
 	self.Portrait:SetPoint("TOPLEFT", self.Texture, 7, -6)
 	self.Portrait.Override = updatePortrait
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", updatePortrait)
 	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", updatePortrait)
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE", updatePortrait)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", updatePortrait)
 
 	self.Health.Value = K.SetFontString(self.Health, C.Media.Font, 13)
 	self.Health.Value:SetPoint("CENTER", self.Health)
@@ -131,11 +131,19 @@ function ns.createArenaLayout(self, unit)
 
 	-- oUF_Trinkets support
 	self.Trinket = CreateFrame("Frame", nil, self)
-	self.Trinket:SetSize(30, 30)
+	self.Trinket:SetSize(26, 26)
 	--self.Trinket:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Trinket:SetPoint("RIGHT", self, "LEFT", -10, 1)
 	self.Trinket.trinketUseAnnounce = true
 	self.Trinket.trinketUpAnnounce = true
+
+	self.Trinket.Border = CreateFrame("Frame", nil, self.Trinket)
+	self.Trinket.Border:SetFrameLevel(self.Trinket:GetFrameLevel() + 1)
+	self.Trinket.Border:SetAllPoints()
+	self.Trinket.Border.Texture = self.Trinket.Border:CreateTexture(nil, "OVERLAY")
+	self.Trinket.Border.Texture:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+	self.Trinket.Border.Texture:SetPoint("TOPLEFT", -6, 5)
+	self.Trinket.Border.Texture:SetSize(60, 60)
 
 	if C.Blizzard.ColorTextures == true then
 		self.Trinket.Border.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
