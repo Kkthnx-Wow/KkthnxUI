@@ -53,12 +53,12 @@ UIConfigLocal.AutomationTabBinder = "Automatischer Wechsel der Tab-Taste um nur 
 
 -- Taschen
 UIConfigLocal.Bags = "Taschen"
-UIConfigLocal.BagsBagColumns = "Anzahl der Spalten in der Tasche"
-UIConfigLocal.BagsBankColumns = "Anzahl der Spalten in der Bank"
-UIConfigLocal.BagsButtonSize = "Buttongröße"
-UIConfigLocal.BagsButtonSpace = "Buttonabstand"
-UIConfigLocal.BagsEnable = "Taschen aktivieren"
-UIConfigLocal.BagsItemLevel = "Zeigt Itemlevel der Waffen & Rüstung"
+UIConfigLocal.BagsButtonSize = "Größe der Taschenplätze"
+UIConfigLocal.BagsEnable = "Aktiviere die 'Alles in einer Tasche' Ansicht"
+UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
+UIConfigLocal.BagsItemsPerRow = "aschenplatzanzahl pro Reihe"
+UIConfigLocal.BagsSortRightToLeft = "Sort bags right to left, bottom to top"
+UIConfigLocal.BagsSpacing = "Zwischenraum zwischen den Taschenslots"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"

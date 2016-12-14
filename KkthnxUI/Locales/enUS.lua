@@ -27,14 +27,6 @@ L.Merchant = {
 	SoldTrash = "Your vendor trash has been sold and you earned"
 }
 
--- Bags Localization
-L.Bags = {
-	RightClickClose = "Right-click to open menu",
-	RightClickSearch = "Right-click to search",
-	ShowBags = "Show Bags",
-	StackMenu = "Stack"
-}
-
 -- Bindings Localization
 L.Bind = {
 	Binding = "Binding",

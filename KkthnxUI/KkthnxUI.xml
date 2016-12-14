@@ -167,7 +167,7 @@
 	<Include file="Modules\DataText\Elements\Load_Elements.xml"/>
 
 	<!-- Inventory -->
-	<Script file="Modules\Inventory\Bags.lua"/>
+	<Script file="Modules\Inventory\Bags.lua" />
 
 	<!-- Loot -->
 	<Script file="Modules\Loot\AutoConfirm.lua"/>

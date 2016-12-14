@@ -139,11 +139,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
 
-	if C.Bags.Enable then
-		SetInsertItemsLeftToRight(false)
-		SetSortBagsRightToLeft(true)
-	end
-
 	if event == "ADDON_LOADED" then
 		self:UnregisterEvent("ADDON_LOADED")
 	elseif event == "PLAYER_REGEN_ENABLED" then

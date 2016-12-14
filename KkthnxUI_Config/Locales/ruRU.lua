@@ -53,12 +53,13 @@ UIConfigLocal.AutomationTabBinder = "Автоматически выбирать
 
 -- Сумки
 UIConfigLocal.Bags = "Сумки"
-UIConfigLocal.BagsBagColumns = "Количество столбцов в сумках"
-UIConfigLocal.BagsBankColumns = "Количество столбцов в банке"
-UIConfigLocal.BagsButtonSize = "Buttongröße"
-UIConfigLocal.BagsButtonSpace = "Buttonabstand"
+UIConfigLocal.BagsBagFilter = "Автоматически удалять ненужные предметы из ваших сумок во время сбора добычи"
+UIConfigLocal.BagsButtonSize = "Размер слотов"
 UIConfigLocal.BagsEnable = "Включить сумки"
-UIConfigLocal.BagsItemLevel = "Показывать уровень предметов для оружия и брони"
+UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
+UIConfigLocal.BagsItemsPerRow = "Установить количество слотов в ряду"
+UIConfigLocal.BagsSortRightToLeft = "Sort bags right to left, bottom to top"
+UIConfigLocal.BagsSpacing = "Отступ слотов"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"

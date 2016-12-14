@@ -132,7 +132,7 @@ function ns.createArenaLayout(self, unit)
 	-- oUF_Trinkets support
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(26, 26)
-	--self.Trinket:SetFrameLevel(self:GetFrameLevel() + 2)
+	self.Trinket:SetFrameLevel(self:GetFrameLevel() + 2)
 	self.Trinket:SetPoint("RIGHT", self, "LEFT", -10, 1)
 	self.Trinket.trinketUseAnnounce = true
 	self.Trinket.trinketUpAnnounce = true

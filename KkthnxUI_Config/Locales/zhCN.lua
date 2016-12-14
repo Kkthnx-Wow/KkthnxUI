@@ -53,12 +53,13 @@ UIConfigLocal.AutomationTabBinder = "Auto change tab key to only target enemy pl
 
 -- Bag
 UIConfigLocal.Bags = "Bags"
-UIConfigLocal.BagsBagColumns = "Number of columns in main bag"
-UIConfigLocal.BagsBankColumns = "Number of columns in bank"
-UIConfigLocal.BagsButtonSize = "Buttons size"
-UIConfigLocal.BagsButtonSpace = "Buttons space"
-UIConfigLocal.BagsEnable = "Enable bags"
-UIConfigLocal.BagsItemLevel = "Show item level for weapons and armor"
+UIConfigLocal.BagsBagFilter = "Automatically delete useless items from your bags when looted"
+UIConfigLocal.BagsButtonSize = "Set a size for bag slots"
+UIConfigLocal.BagsEnable = "Enable Bags"
+UIConfigLocal.BagsInsertLeftToRight = "Set the loot to the left most bag first"
+UIConfigLocal.BagsItemsPerRow = "Set how many slots are on each row of the bags"
+UIConfigLocal.BagsSortRightToLeft = "Sort bags right to left, bottom to top"
+UIConfigLocal.BagsSpacing = "Set the spacing between bag slots"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"

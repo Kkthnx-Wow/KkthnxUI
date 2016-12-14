@@ -50,12 +50,12 @@ C["Automation"] = {
 
 -- Bag
 C["Bags"] = {
-	["BagColumns"] = 10,
-	["BankColumns"] = 17,
-	["ButtonSize"] = 38,
-	["ButtonSpace"] = 0,
+	["ButtonSize"] = 32,
 	["Enable"] = true,
-	["ItemLevel"] = false,
+	["InsertLeftToRight"] = true,
+	["ItemsPerRow"] = 11,
+	["SortRightToLeft"] = false,
+	["Spacing"] = 4,
 }
 
 -- Blizzard
@@ -329,9 +329,6 @@ C["Unitframe"] = {
 	["TextPowerColor"] = {.9, .9, .9},
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
-}
-
-C["Partyframe"] = { -- Could add this as its own in the future.
 }
 
 -- Raidframe

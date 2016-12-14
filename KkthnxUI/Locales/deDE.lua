@@ -31,13 +31,6 @@ L.Merchant = {
 	SoldTrash = "Dein Müll aus den Taschen wurde beim Händler verkauft und Du erhälst"
 }
 
-L.Bags = {
-	RightClickClose = "Rechtsklick öffnet Menü",
-	RightClickSearch = "Rechtsklick um zu suchen",
-	ShowBags = "Zeige Taschen",
-	StackMenu = "Stapeln"
-}
-
 -- Bindings Localization
 L.Bind = {
 	Binding = "Tastenbelegungen",
