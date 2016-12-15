@@ -100,10 +100,10 @@ do
 		button:SetScript("OnEnter", Aura_OnEnter)
 		button:SetScript("OnLeave", Aura_OnLeave)
 
-		if (element.largeAuraList) then -- i should really make a custom element by now THIS IS GETTING OUT OF HAND
-			button._SetSize = button.SetSize
-			button.SetSize = K.Noop
-		end
+		-- if (element.largeAuraList) then -- i should really make a custom element by now THIS IS GETTING OUT OF HAND
+		-- 	button._SetSize = button.SetSize
+		-- 	button.SetSize = K.Noop
+		-- end
 
 		element[element.createdIcons] = button
 		return button
@@ -160,9 +160,8 @@ do
 		pet = true,
 	}
 
-	function postUpdateIcon( element, unit, button, index, offset )
+	function postUpdateIcon(element, unit, button, index, offset)
 		local name, _, texture, count, dtype, duration, expirationTime, caster, canStealOrPurge, shouldConsolidate, spellID = UnitAura(unit, index, button.filter)
-		button:EnableMouse(not C.Unitframe.ClickThrough)
 		button.overlay:Show()
 		button.shadow:Show()
 
@@ -201,9 +200,9 @@ do
 			end
 		end
 
-		if (element.largeAuraList) then
-			element.largeAuraList[offset] = IS_PLAYER[button.owner]
-		end
+		-- if (element.largeAuraList) then
+		-- 	element.largeAuraList[offset] = IS_PLAYER[button.owner]
+		-- end
 	end
 end
 

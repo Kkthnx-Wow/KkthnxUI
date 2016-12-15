@@ -120,7 +120,6 @@ if CompactRaidFrameManager then
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetHeight(20)
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetWidth(RaidUtilityRoleButton:GetWidth() * 0.19)
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:StripTextures(true)
-	CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SkinButton()
 
 	-- Put other stuff back
 	CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:ClearAllPoints()

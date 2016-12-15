@@ -142,8 +142,8 @@ function ns.createArenaLayout(self, unit)
 	self.Trinket.Border:SetAllPoints()
 	self.Trinket.Border.Texture = self.Trinket.Border:CreateTexture(nil, "OVERLAY")
 	self.Trinket.Border.Texture:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
-	self.Trinket.Border.Texture:SetPoint("TOPLEFT", -6, 5)
-	self.Trinket.Border.Texture:SetSize(60, 60)
+	self.Trinket.Border.Texture:SetPoint("TOPLEFT", -10, 10)
+	self.Trinket.Border.Texture:SetSize(76, 76)
 
 	if C.Blizzard.ColorTextures == true then
 		self.Trinket.Border.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
@@ -152,4 +152,75 @@ function ns.createArenaLayout(self, unit)
 	self.PostUpdate = arenaPrep
 
 	return self
+end
+
+-- Arena preparation(by Blizzard)(../Blizzard_ArenaUI/Blizzard_ArenaUI.lua)
+if C.Unitframe.ShowArena == true then
+	local arenaprep = {}
+	for i = 1, 5 do
+		arenaprep[i] = CreateFrame("Frame", "oUF_ArenaPrep"..i, UIParent)
+		arenaprep[i]:SetAllPoints(_G["oUF_KkthnxArenaFrame"..i])
+		arenaprep[i]:SetTemplate()
+		arenaprep[i]:SetFrameStrata("BACKGROUND")
+
+		arenaprep[i].Health = CreateFrame("StatusBar", nil, arenaprep[i])
+		arenaprep[i].Health:SetInside(arenaprep[i], 4, 4)
+		arenaprep[i].Health:SetStatusBarTexture(C.Media.Texture)
+
+		arenaprep[i].Spec = K.SetFontString(arenaprep[i].Health, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
+		arenaprep[i].Spec:SetPoint("CENTER")
+
+		arenaprep[i]:Hide()
+	end
+
+	local arenaprepupdate = CreateFrame("Frame")
+	arenaprepupdate:RegisterEvent("PLAYER_LOGIN")
+	arenaprepupdate:RegisterEvent("PLAYER_ENTERING_WORLD")
+	arenaprepupdate:RegisterEvent("ARENA_OPPONENT_UPDATE")
+	arenaprepupdate:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+	arenaprepupdate:SetScript("OnEvent", function(self, event)
+		if event == "PLAYER_LOGIN" then
+			for i = 1, 5 do
+				arenaprep[i]:SetAllPoints(_G["oUF_KkthnxArenaFrame"..i])
+			end
+		elseif event == "ARENA_OPPONENT_UPDATE" then
+			for i = 1, 5 do
+				arenaprep[i]:Hide()
+			end
+		else
+			local numOpps = GetNumArenaOpponentSpecs()
+
+			if numOpps > 0 then
+				for i = 1, 5 do
+					local f = arenaprep[i]
+
+					if i <= numOpps then
+						local s = GetArenaOpponentSpec(i)
+						local _, spec, class = nil, "UNKNOWN", "UNKNOWN"
+
+						if s and s > 0 then
+							_, spec, _, _, _, _, class = GetSpecializationInfoByID(s)
+						end
+
+						if class and spec then
+							local color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[class]
+							if color then
+								f.Health:SetStatusBarColor(color.r, color.g, color.b)
+							else
+								f.Health:SetStatusBarColor(0.29, 0.67, 0.30)
+							end
+							f.Spec:SetText(spec)
+							f:Show()
+						end
+					else
+						f:Hide()
+					end
+				end
+			else
+				for i = 1, 5 do
+					arenaprep[i]:Hide()
+				end
+			end
+		end
+	end)
 end
