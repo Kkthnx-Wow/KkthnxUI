@@ -77,8 +77,3 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 end)
-
--- Pixel perfect fonts function
-if K.ScreenHeight <= 1200 then return end
-C.Media.Font_Size = C.Media.Font_Size * Mult
-C.Media.Combat_Font_Size = C.Media.Combat_Font_Size * Mult

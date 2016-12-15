@@ -15,16 +15,15 @@ do
 			PortraitTimerDB[list[i]] = true
 		end
 	end
-	local l = K.AuraList
-	add(l.Immunity, "HELPFUL")
-	add(l.Stun, "HARMFUL")
-	add(l.CC, "HARMFUL")
-	add(l.CCImmunity, "HELPFUL")
-	add(l.Defensive, "HELPFUL")
-	add(l.Offensive, "HELPFUL")
-	add(l.Helpful, "HELPFUL")
-	add(l.Silence, "HARMFUL")
-	add(l.Misc, "HELPFUL")
+	add(K.AuraList.CC, "HARMFUL")
+	add(K.AuraList.CCImmunity, "HELPFUL")
+	add(K.AuraList.Defensive, "HELPFUL")
+	add(K.AuraList.Helpful, "HELPFUL")
+	add(K.AuraList.Immunity, "HELPFUL")
+	add(K.AuraList.Misc, "HELPFUL")
+	add(K.AuraList.Offensive, "HELPFUL")
+	add(K.AuraList.Silence, "HARMFUL")
+	add(K.AuraList.Stun, "HARMFUL")
 end
 
 local function ExactTime(time)

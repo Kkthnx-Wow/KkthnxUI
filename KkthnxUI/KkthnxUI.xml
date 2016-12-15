@@ -20,9 +20,6 @@
 	<Script file="Core\GUI.lua"/>
 	<Script file="Core\PixelPerfect.lua"/>
 
-	<!-- Media -->
-	<Script file="Media\Media.lua"/>
-
 	<!-- Config -->
 	<Script file="Config\Filters\Announcements.lua"/>
 	<Script file="Config\Filters\AuraList.lua"/>
@@ -49,6 +46,9 @@
 	<Script file="Libraries\LibChatAnims\LibChatAnims.lua"/>
 	<Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua"/>
 	<Include file="Libraries\DropDownMenu\DropDownMenu.xml"/>
+
+	<!-- Media -->
+	<Script file="Media\Media.lua"/>
 
 	<!-- Core -->
 	<Script file="Core\API.lua"/>
