@@ -24,7 +24,6 @@ local UnitPowerMax = UnitPowerMax
 
 local _, ns = ...
 local oUF = ns.oUF
-local config = ns.config
 local timer = {}
 
 oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_DISPLAYPOWER UNIT_MAXPOWER"

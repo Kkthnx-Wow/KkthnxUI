@@ -39,7 +39,7 @@ end
 local Anchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
 Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -33)
-Movers:RegisterFrame(Anchor)
+K.Movers:RegisterFrame(Anchor)
 
 local ExperienceBar = CreateFrame("StatusBar", nil, UIParent)
 
@@ -47,7 +47,9 @@ K.CreateBorder(ExperienceBar, 10, 2.8)
 XPBackdrop(ExperienceBar)
 ExperienceBar:SetOrientation("HORIZONTAL")
 ExperienceBar:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
-ExperienceBar:SetPoint("CENTER", ExperienceAnchor, "CENTER", 0, 0)
+ExperienceBar:SetParent(UIParent)
+ExperienceBar:ClearAllPoints()
+ExperienceBar:SetPoint("CENTER", Anchor, "CENTER", 0, 0)
 ExperienceBar:SetStatusBarTexture(C.Media.Texture)
 ExperienceBar:SetStatusBarColor(unpack(C.DataBars.ExperienceColor))
 

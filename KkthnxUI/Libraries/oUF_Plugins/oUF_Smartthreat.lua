@@ -1,6 +1,6 @@
 local parent, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF_SmartThreat could not find oUF")
+if not oUF then return end
 
 local _G = _G
 local GetThreatStatusColor = _G.GetThreatStatusColor

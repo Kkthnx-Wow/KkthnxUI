@@ -1,7 +1,7 @@
 -- Based on oUF_GCD(by ALZA)
 local _, ns = ...
-local oUF = oUF or ns.oUF
-assert(oUF, "oUF_GCD was unable to locate oUF install.")
+local oUF = ns.oUF or oUF
+if not oUF then return end
 
 local starttime, duration, usingspell, spellid
 local GetTime = GetTime

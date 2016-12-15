@@ -108,7 +108,7 @@ these frames, so you must do so yourself. Each icon needs a spellID entry,
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF_AuraWatch cannot find an instance of oUF.")
+if not oUF then return end
 
 local UnitBuff, UnitDebuff, UnitGUID = UnitBuff, UnitDebuff, UnitGUID
 local GUIDs = {}

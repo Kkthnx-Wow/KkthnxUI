@@ -14,7 +14,7 @@
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "Unable to locate oUF.")
+if not oUF then return end
 
 local UpdateRate = 0.1
 

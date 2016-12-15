@@ -39,7 +39,7 @@ Hooks
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF_AuraOrbs could not find oUF")
+if not oUF then return end
 
 local Update = function(self, event, unit)
 	if (unit ~= self.unit) then return end

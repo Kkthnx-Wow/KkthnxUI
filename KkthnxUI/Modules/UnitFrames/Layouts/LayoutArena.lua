@@ -122,7 +122,7 @@ function ns.createArenaLayout(self, unit)
 	-- Auras
 	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
-	self.Buffs.CustomFilter = ns.CustomAuraFilters.arena
+	self.Buffs.CustomFilter = K.CustomAuraFilters.arena
 
 	-- Castbars
 	if C.Unitframe.Castbars then

@@ -1,6 +1,5 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-
 if not oUF then return end
 
 local damage_format = "-%d"

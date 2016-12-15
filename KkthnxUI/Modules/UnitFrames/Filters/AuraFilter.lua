@@ -1,9 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
-local _, ns = ...
-local oUF = ns.oUF
-
 --[[
 	Filters:
 	General (both):	On Players:Show all
@@ -26,28 +23,28 @@ local oUF = ns.oUF
 -- Default Aura Filter
 local BaseAuras = {
 	-- Useless
-	[63501] = 3, -- Argent Crusade Champion"s Pennant
 	[60023] = 3, -- Scourge Banner Aura (Boneguard Commander in Icecrown)
-	[63406] = 3, -- Darnassus Champion"s Pennant
-	[63405] = 3, -- Darnassus Valiant"s Pennant
-	[63423] = 3, -- Exodar Champion"s Pennant
-	[63422] = 3, -- Exodar Valiant"s Pennant
-	[63396] = 3, -- Gnomeregan Champion"s Pennant
-	[63395] = 3, -- Gnomeregan Valiant"s Pennant
-	[63427] = 3, -- Ironforge Champion"s Pennant
-	[63426] = 3, -- Ironforge Valiant"s Pennant
-	[63433] = 3, -- Orgrimmar Champion"s Pennant
-	[63432] = 3, -- Orgrimmar Valiant"s Pennant
-	[63399] = 3, -- Sen"jin Champion"s Pennant
-	[63398] = 3, -- Sen"jin Valiant"s Pennant
-	[63403] = 3, -- Silvermoon Champion"s Pennant
-	[63402] = 3, -- Silvermoon Valiant"s Pennant
 	[62594] = 3, -- Stormwind Champion"s Pennant
 	[62596] = 3, -- Stormwind Valiant"s Pennant
-	[63436] = 3, -- Thunder Bluff Champion"s Pennant
-	[63435] = 3, -- Thunder Bluff Valiant"s Pennant
-	[63430] = 3, -- Undercity Champion"s Pennant
+	[63395] = 3, -- Gnomeregan Valiant"s Pennant
+	[63396] = 3, -- Gnomeregan Champion"s Pennant
+	[63398] = 3, -- Sen"jin Valiant"s Pennant
+	[63399] = 3, -- Sen"jin Champion"s Pennant
+	[63402] = 3, -- Silvermoon Valiant"s Pennant
+	[63403] = 3, -- Silvermoon Champion"s Pennant
+	[63405] = 3, -- Darnassus Valiant"s Pennant
+	[63406] = 3, -- Darnassus Champion"s Pennant
+	[63422] = 3, -- Exodar Valiant"s Pennant
+	[63423] = 3, -- Exodar Champion"s Pennant
+	[63426] = 3, -- Ironforge Valiant"s Pennant
+	[63427] = 3, -- Ironforge Champion"s Pennant
 	[63429] = 3, -- Undercity Valiant"s Pennant
+	[63430] = 3, -- Undercity Champion"s Pennant
+	[63432] = 3, -- Orgrimmar Valiant"s Pennant
+	[63433] = 3, -- Orgrimmar Champion"s Pennant
+	[63435] = 3, -- Thunder Bluff Valiant"s Pennant
+	[63436] = 3, -- Thunder Bluff Champion"s Pennant
+	[63501] = 3, -- Argent Crusade Champion"s Pennant
 }
 
 do
@@ -71,7 +68,7 @@ local filters = {
 	[3] = function(self, unit, caster) return false end,
 }
 
-ns.CustomAuraFilters = {
+K.CustomAuraFilters = {
 	pet = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return (caster and isPlayer[caster]) and (not genFilter[spellID] == 3)
 	end,

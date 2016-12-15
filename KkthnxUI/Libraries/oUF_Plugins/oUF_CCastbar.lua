@@ -33,8 +33,8 @@ CCastbar.CustomTimeText(duration)
 ]]
 
 local _, ns = ...
-local oUF = oUF or ns.oUF
-assert(oUF, "oUF_CCastbar was unable to locate oUF install.")
+local oUF = ns.oUF or oUF
+if not oUF then return end
 
 _G.CASTING_BAR_ALPHA_STEP = 0.05
 _G.CASTING_BAR_FLASH_STEP = 0.05

@@ -1,5 +1,6 @@
 local parent, ns = ...
-local oUF = ns.oUF or _G.oUF
+local oUF = ns.oUF or oUF
+if not oUF then return end
 
 local Update = function(self, event, unit)
     if (unit ~= self.unit) then

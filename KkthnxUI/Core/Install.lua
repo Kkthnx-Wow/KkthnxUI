@@ -603,6 +603,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	-- Create empty saved vars if they doesn't exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end
 	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
+	if KkthnxUIDataPerChar.Movers == nil then KkthnxUIDataPerChar.Movers = {} end
 	if KkthnxUIDataPerChar.FogOfWar == nil then KkthnxUIDataPerChar.FogOfWar = false end
 	if KkthnxUIDataPerChar.AutoInvite == nil then KkthnxUIDataPerChar.AutoInvite = false end
 	if KkthnxUIDataPerChar.BarsLocked == nil then KkthnxUIDataPerChar.BarsLocked = false end

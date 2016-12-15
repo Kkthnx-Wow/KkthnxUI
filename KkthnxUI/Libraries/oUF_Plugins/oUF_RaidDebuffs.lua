@@ -19,7 +19,7 @@
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF RaidDebuffs: unable to locate oUF")
+if not oUF then return end
 
 local PLAYER_CLASS = select(2, UnitClass"player")
 

@@ -128,11 +128,15 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 
 	if C.ActionBar.Enable then
 		if InCombatLockdown() then return end
-		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
-		InterfaceOptionsActionBarsPanelBottomRight:Kill()
-		InterfaceOptionsActionBarsPanelRight:Kill()
-		InterfaceOptionsActionBarsPanelRightTwo:Kill()
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
+    InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
+    InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
+    InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.0001)
+    InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
+    InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.0001)
+    InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
+    InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.0001)
+    InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
+    InterfaceOptionsActionBarsPanelRight:SetScale(0.0001)
 	end
 
 	if C.Minimap.Enable then

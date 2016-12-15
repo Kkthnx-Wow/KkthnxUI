@@ -25,8 +25,7 @@ KkthnxUIAuras.ProxyIcon = "Interface\\Icons\\misc_arrowdown"
 function KkthnxUIAuras:DisableBlizzardAuras()
 	BuffFrame:Kill()
 	TemporaryEnchantFrame:Kill()
-	InterfaceOptionsFrameCategoriesButton12:SetScale(0.00001)
-	InterfaceOptionsFrameCategoriesButton12:SetAlpha(0)
+	K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 end
 
 function KkthnxUIAuras:StartOrStopFlash(timeleft)

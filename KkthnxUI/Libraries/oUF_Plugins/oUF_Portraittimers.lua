@@ -1,6 +1,6 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF_PortaitTimers could not find oUF")
+if not oUF then return end
 
 local PortraitTimerDB = {
 	-- Immunitys

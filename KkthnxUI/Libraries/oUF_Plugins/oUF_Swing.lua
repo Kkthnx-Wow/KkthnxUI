@@ -1,7 +1,7 @@
---	Based on oUF_Swing(by p3lim and Thalyra)
+-- Based on oUF_Swing(by p3lim and Thalyra)
 local _, ns = ...
 local oUF = ns.oUF or oUF
-assert(oUF, "oUF_Swing could not find oUF")
+if not oUF then return end
 
 local function OnDurationUpdate(self)
 	self:SetMinMaxValues(self.min, self.max)

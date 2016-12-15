@@ -336,7 +336,8 @@ local function UpdateName(self)
 	end
 
 	if C.Nameplates.ClassIcons == true then
-		if UnitIsPlayer(self.unit) and UnitReaction(self.unit, "player") <= 4 then
+		local reaction = UnitReaction(self.unit, "player")
+		if UnitIsPlayer(self.unit) and (reaction and reaction <= 4) then
 			local _, class = UnitClass(self.unit)
 			local texcoord = CLASS_ICON_TCOORDS[class]
 			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
@@ -583,10 +584,10 @@ local function style(self, unit)
 	-- Aura tracking
 	if C.Nameplates.TrackAuras == true then
 		self.Auras = CreateFrame("Frame", nil, self)
-		self.Auras:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 2 * K.NoScaleMult, C.Media.Font_Size + 7)
-		self.Auras.initialAnchor = "BOTTOMRIGHT"
+		self.Auras:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -2 * K.NoScaleMult, C.Media.Font_Size + 7)
+		self.Auras.initialAnchor = "BOTTOMLEFT"
 		self.Auras["growth-y"] = "UP"
-		self.Auras["growth-x"] = "LEFT"
+		self.Auras["growth-x"] = "RIGHT"
 		self.Auras.numDebuffs = 6
 		self.Auras.numBuffs = 0
 		self.Auras:SetSize(20 + C.Nameplates.Width, C.Nameplates.AurasSize)
@@ -676,12 +677,13 @@ local function style(self, unit)
 
 		local r, g, b
 		local mu = self.bg.multiplier
-		if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and UnitReaction(unit, "player") >= 5 then
+		local unitReaction = UnitReaction(unit, "player")
+		if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and (unitReaction and unitReaction >= 5) then
 			r, g, b = unpack(K.Colors.power["MANA"])
 			self:SetStatusBarColor(r, g, b)
 			self.bg:SetVertexColor(r * mu, g * mu, b * mu)
 		elseif not UnitIsTapDenied(unit) and not UnitIsPlayer(unit) then
-			local reaction = K.Colors.reaction[UnitReaction(unit, "player")]
+			local reaction = K.Colors.reaction[unitReaction]
 			if reaction then
 				r, g, b = reaction[1], reaction[2], reaction[3]
 			else
