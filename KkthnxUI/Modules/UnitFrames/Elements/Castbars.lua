@@ -126,7 +126,7 @@ function ns.CreateCastbars(self, unit)
 	if (unit == "player") then
 		local SafeZone = Castbar:CreateTexture(nil, "BORDER")
 		SafeZone:SetTexture(C.Media.Texture)
-		SafeZone:SetVertexColor(unpack(C.Unitframe.CastbarSafeZoneColor))
+		SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.85)
 		Castbar.SafeZone = SafeZone
 
 		local Flash = CreateFrame("Frame", nil, Castbar)

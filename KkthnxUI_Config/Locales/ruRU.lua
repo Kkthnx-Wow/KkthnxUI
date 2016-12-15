@@ -291,7 +291,6 @@ UIConfigLocal.TooltipTalents = "целевые Показать таланты �
 -- Рамки Юнитов
 UIConfigLocal.Unitframe = "Рамки Юнитов"
 UIConfigLocal.UnitframeCastbars = "Включить полосу заклинаний"
-UIConfigLocal.UnitframeCastbarSafeZoneColor = "Цвет полосы заклинаний игрока в безопасных зонах"
 UIConfigLocal.UnitframeClassColor = "Использовать цвет класса для полосы здоровья, вместо зеленого."
 UIConfigLocal.UnitframeClassPortraits = "Включить портреты классов"
 UIConfigLocal.UnitframeCombatText = "Показывать текст боя"
@@ -315,9 +314,6 @@ UIConfigLocal.UnitframeStyle = "Стиль рамок 'fat или normal'" -- Э
 UIConfigLocal.UnitframeSwingBar = "Отображать индикатор автоматической атаки"
 UIConfigLocal.UnitframeTargetCastbarHeight = "Высота полосы заклинаний цели"
 UIConfigLocal.UnitframeTargetCastbarWidth = "Ширина полосы заклинаний цели"
-UIConfigLocal.UnitframeTextHealthColor = "Цвет текста здоровья"
-UIConfigLocal.UnitframeTextNameColor = "Name text color"
-UIConfigLocal.UnitframeTextPowerColor = "Цвет текста ресурса"
 UIConfigLocal.UnitframeThreatGlow = "Свечение угрозы вокруг рамки"
 UIConfigLocal.UnitframeThreatValue = "Текст угрозы на рамке игрока"
 

@@ -301,7 +301,6 @@ C["Tooltip"] = {
 -- Unitframe
 C["Unitframe"] = {
 	["Castbars"] = true,
-	["CastbarSafeZoneColor"] = {.8, 0.4, 0},
 	["ClassColor"] = true,
 	["ClassPortraits"] = false,
 	["CombatText"] = true,
@@ -325,9 +324,6 @@ C["Unitframe"] = {
 	["SwingBar"] = false,
 	["TargetCastbarHeight"] = 18,
 	["TargetCastbarWidth"] = 200,
-	["TextHealthColor"] = {.9, .9, .9},
-	["TextNameColor"] = {1, 0.82, 0},
-	["TextPowerColor"] = {.9, .9, .9},
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
 }

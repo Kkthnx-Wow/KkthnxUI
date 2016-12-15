@@ -291,7 +291,6 @@ UIConfigLocal.TooltipItemLevel = "Display target Item level on tooltip"
 -- Einheitenfenster
 UIConfigLocal.Unitframe = "Einheitenfenster"
 UIConfigLocal.UnitframeCastbars = "Aktiviere die Zauberleiste"
-UIConfigLocal.UnitframeCastbarSafeZoneColor = "Farbe der Spielerzauberleiste Pufferzone"
 UIConfigLocal.UnitframeClassColor = "Lebensleisten in Klassenfarbe anzeigen."
 UIConfigLocal.UnitframeClassPortraits = "Aktiviere alten Klassenportraits"
 UIConfigLocal.UnitframeCombatText = "Zeige KampfFeedback auf den Einheitenfenstern an"
@@ -315,9 +314,6 @@ UIConfigLocal.UnitframeStyle = "Style den Look der Einheitenfenster 'fat oder no
 UIConfigLocal.UnitframeSwingBar = "Swingleiste"
 UIConfigLocal.UnitframeTargetCastbarHeight = "Höhe der Zauberleiste des Ziels"
 UIConfigLocal.UnitframeTargetCastbarWidth = "Breite der Zauberleiste des Ziels"
-UIConfigLocal.UnitframeTextHealthColor = "Farbe des Lebenstextes"
-UIConfigLocal.UnitframeTextNameColor = "Farbe des Namenstextes"
-UIConfigLocal.UnitframeTextPowerColor = "Farbe des Powertextes"
 UIConfigLocal.UnitframeThreatGlow = "Aktiviere das Bedrohungsleuchten um die Einheitenfenster"
 UIConfigLocal.UnitframeThreatValue = "Visueller Bedrohungstext auf dem Spielerfenster"
 

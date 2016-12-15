@@ -96,11 +96,11 @@ function ns.createArenaLayout(self, unit)
 	self.Power.PostUpdate = K.PostUpdatePower
 	table.insert(self.mouseovers, self.Power)
 
-	-- name
+	-- Name
 	self.Name = K.SetFontString(self.Health, C.Media.Font, 14)
 	self.Name:SetSize(110, 10)
 	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-	self:Tag(self.Name, "[KkthnxUI:Name]")
+	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	-- PvP Icon
 	self.PvP = self:CreateTexture(nil, "OVERLAY")

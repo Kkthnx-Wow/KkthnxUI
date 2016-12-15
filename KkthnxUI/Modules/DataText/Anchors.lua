@@ -20,6 +20,7 @@ end
 
 local function OnMouseDown(self)
 	CurrentFrame = self
+
 	Lib_EasyMenu(Menu, MenuFrame, "cursor", 0, 0, "MENU", 2)
 end
 
@@ -46,7 +47,9 @@ function DataTexts:ToggleDataPositions()
 	end
 end
 
+-- Add a remove button
 tinsert(Menu, {text = "|cffFF0000"..REMOVE.."|r", notCheckable = true, func = DataTexts.Remove})
+tinsert(Menu, {text = "", notCheckable = true})
 
 -- Datatext toggle
 SlashCmdList.DTSLASH = function() K.DataTexts:ToggleDataPositions() end

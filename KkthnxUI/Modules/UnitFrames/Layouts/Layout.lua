@@ -488,8 +488,22 @@ local function CreateUnitLayout(self, unit)
 	-- Name Text
 	if data.nam then
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-		self.Name:SetShadowOffset(K.Mult,-K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:Name]")
+		self.Name:SetShadowOffset(K.Mult, -K.Mult)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+	end
+
+	-- Name Text Party
+	if data.nam and self.IsPartyFrame and C.Unitframe.Party == true then
+		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+		self.Name:SetShadowOffset(K.Mult, -K.Mult)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+	end
+
+	-- Name text targettarget
+	if data.nam and self.IsTargetFrame then
+		self.Name = K.SetFontString(self, C.Media.Font, 12, nil, "LEFT")
+		self.Name:SetShadowOffset(K.Mult, -K.Mult)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 	end
 
 	-- Portrait
@@ -518,7 +532,7 @@ local function CreateUnitLayout(self, unit)
 		-- Level text
 		self.Level = self:CreateFontString(nil, "ARTWORK")
 		self.Level:SetFont(C.Media.Font, C.Media.Font_Size)
-		self.Level:SetShadowOffset(K.Mult,-K.Mult)
+		self.Level:SetShadowOffset(K.Mult, -K.Mult)
 		self.Level:SetPoint("CENTER", self.Texture, (self.cUnit == "player" and -63) or 63, -15.5)
 		self:Tag(self.Level, "[KkthnxUI:Level]")
 

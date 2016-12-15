@@ -595,6 +595,9 @@ function Bags:SlotUpdate(id, button)
 		IconQuestTexture:SetAlpha(0)
 	end
 
+	button.NewItemTexture:SetTexture(C.Media.Blizz)
+	button.NewItemTexture:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
+
 	-- Letting you style this
 	-- if IsProfBag then
   --
@@ -646,8 +649,7 @@ function Bags:UpdateAllBags()
 			end
 
 			Button:ClearAllPoints()
-			Button:SetWidth(C.Bags.ButtonSize)
-			Button:SetHeight(C.Bags.ButtonSize)
+			Button:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
 			Button:SetScale(1)
 			Button:SetFrameStrata("HIGH")
 			Button:SetFrameLevel(2)

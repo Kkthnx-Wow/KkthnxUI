@@ -76,9 +76,24 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	SetCVar("nameplateMinAlpha", 1)
 	SetCVar("nameplateMaxAlpha", 1)
 
-	SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
-	SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
-	SetCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
+	local OtherTopInset = GetCVarBool("nameplateOtherTopInset")
+	if not OtherTopInset and not InCombatLockdown() then
+		SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
+	end
+
+	local OtherTopInset = GetCVarBool("nameplateOtherBottomInset")
+	if not OtherTopInset and not InCombatLockdown() then
+		SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
+	end
+
+	local MaxDistance = GetCVarBool("nameplateMaxDistance")
+	if not MaxDistance and not InCombatLockdown() then
+		SetCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
+	end
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}

@@ -19,12 +19,24 @@ local UnitName = UnitName
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: SPELL_POWER_MANA, UNKNOWN
 
 local _, ns = ...
 local oUF = ns.oUF
-local timer = {}
+
+oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_POWER"
+oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
+	local Reaction = UnitReaction(unit, "player")
+	if (UnitIsPlayer(unit)) then
+		return _TAGS["raidcolor"](unit)
+	elseif (Reaction) then
+		local c = K.Colors.reaction[Reaction]
+		return string.format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+	else
+		return string.format("|cff%02x%02x%02x", .84 * 255, .75 * 255, .65 * 255)
+	end
+end
 
 oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_DISPLAYPOWER UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:DruidMana"] = function(unit)
@@ -36,13 +48,16 @@ oUF.Tags.Methods["KkthnxUI:DruidMana"] = function(unit)
 	end
 end
 
+oUF.Tags.OnUpdateThrottle["KkthnxUI:PvPTimer"] = 1
 oUF.Tags.Methods["KkthnxUI:PvPTimer"] = function(unit)
-	local pvpTime = (GetPVPTimer() or 0)/1000
-	if (not IsPVPTimerRunning()) or (pvpTime < 1) or (pvpTime > 300) then --999?
-		return ""
-	end
+	if (UnitIsPVPFreeForAll(unit) or UnitIsPVP(unit)) then
+		local pvpTime = (GetPVPTimer() or 0)/1000
+		if (not IsPVPTimerRunning()) or (pvpTime < 1) or (pvpTime > 300) then --999?
+			return ""
+		end
 
-	return K.FormatTime(floor(pvpTime))
+		return K.FormatTime(floor(pvpTime))
+	end
 end
 
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
@@ -65,32 +80,18 @@ oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
 	return format("|cff%02x%02x%02x%s|r", r * 255, g * 255, b * 255, Level)
 end
 
-oUF.Tags.Events["KkthnxUI:Name"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["KkthnxUI:Name"] = function(unit, realUnit)
-	local color
-	local unitName, unitRealm = UnitName(realUnit or unit)
-	local _, class = UnitClass(realUnit or unit)
+oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
+	local Name = UnitName(unit) or UNKNOWN
 
-	if not unitName then
-		local id = unit:match("arena(%d)$")
-		if(id) then
-			unitName = "Arena "..id
-		end
-	elseif (unitRealm) and (unitRealm ~= "") then
-		unitName = unitName.." (*)"
-	end
-
-	if not color then
-		color = C.Unitframe.TextNameColor
-	end
-
-	return format("|cff%02x%02x%02x%s|r", color[1] * 255, color[2] * 255, color[3] * 255, unitName)
+	return K.UTF8Sub(Name, 4, true)
 end
 
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Sub(Name, 5, false)
+
+	return K.UTF8Sub(Name, 8, true)
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
@@ -105,20 +106,38 @@ oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	return K.UTF8Sub(Name, 20, true)
 end
 
-oUF.Tags.Events["KkthnxUI:RaidStatus"] = "PLAYER_FLAGS_CHANGED UNIT_CONNECTION"
-oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
-	local name = UnitName(unit) or UNKNOWN
-
-	if (UnitIsAFK(unit) or not UnitIsConnected(unit)) then
-		if (not timer[name]) then
-			timer[name] = GetTime()
+local unitStatus = {}
+oUF.Tags.OnUpdateThrottle["KkthnxUI:StatusTimer"] = 1
+oUF.Tags.Methods["KkthnxUI:StatusTimer"] = function(unit)
+	if not UnitIsPlayer(unit) then return; end
+	local guid = UnitGUID(unit)
+	if (UnitIsAFK(unit)) then
+		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "AFK" then
+			unitStatus[guid] = {"AFK", GetTime()}
 		end
-
-		local time = (GetTime() - timer[name])
-
-		return K.FormatTime(time)
-	elseif timer[name] then
-		timer[name] = nil
+	elseif(UnitIsDND(unit)) then
+		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "DND" then
+			unitStatus[guid] = {"DND", GetTime()}
+		end
+	elseif(UnitIsDead(unit)) or (UnitIsGhost(unit))then
+		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "Dead" then
+			unitStatus[guid] = {"Dead", GetTime()}
+		end
+	elseif(not UnitIsConnected(unit)) then
+		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "Offline" then
+			unitStatus[guid] = {"Offline", GetTime()}
+		end
+	else
+		unitStatus[guid] = nil
+	end
+	if unitStatus[guid] ~= nil then
+		local status = unitStatus[guid][1]
+		local timer = GetTime() - unitStatus[guid][2]
+		local mins = floor(timer / 60)
+		local secs = floor(timer - (mins * 60))
+		return ("%s (%01.f:%02.f)"):format(status, mins, secs)
+	else
+		return ""
 	end
 end
 

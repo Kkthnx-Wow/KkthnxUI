@@ -187,7 +187,7 @@ local function CreateRaidLayout(self, unit)
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size)
 	self.Name:SetShadowOffset(K.Mult,-K.Mult)
 	self.Name:SetTextColor(1, 0.82, 0, 1)
-	self:Tag(self.Name, "[KkthnxUI:NameShort]")
+	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameVeryShort]")
 
 	-- Power bar
 	if (C.Raidframe.ManabarShow) then
@@ -212,7 +212,7 @@ local function CreateRaidLayout(self, unit)
 		self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.bg:SetAllPoints(self.Power)
 		self.Power.bg:SetColorTexture(.6, .6, .6)
-		self.Power.bg.multiplier = 0.3
+		self.Power.bg.multiplier = 0.2
 
 		tinsert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
@@ -280,7 +280,7 @@ local function CreateRaidLayout(self, unit)
 		self.NotHere:SetShadowOffset(0, 0)
 		self.NotHere:SetTextColor(0, 1, 0)
 		self.NotHere.frequentUpdates = 1
-		self:Tag(self.NotHere, "[KkthnxUI:RaidStatus]")
+		self:Tag(self.NotHere, "[KkthnxUI:StatusTimer]")
 	end
 
 	-- Mouseover darklight

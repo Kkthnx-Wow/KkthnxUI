@@ -92,7 +92,7 @@ local function UpdatePortraitColor(self, unit, cur, max)
 end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
-local function SetValueText(element, tag, cur, max, color, notMana)
+local function SetValueText(element, tag, cur, max, notMana)
 	if ( not max or max == 0 ) then max = 100 end -- not sure why this happens
 
 	if (tag == TEXT_PERCENT) and (max < 200) then
@@ -117,7 +117,7 @@ local function SetValueText(element, tag, cur, max, color, notMana)
 		s = ""
 	end
 
-	element:SetFormattedText("|cff%02x%02x%02x%s|r", color[1] * 255, color[2] * 255, color[3] * 255, s)
+	element:SetFormattedText("|cff%02x%02x%02x%s|r", .9 * 255, .9 * 255, .9 * 255, s)
 end
 
 -- Health Update
@@ -156,17 +156,14 @@ do
 			max = UnitHealthMax(unit) or 1
 		end
 
-		local color, _
-		color = C.Unitframe.TextHealthColor
-
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][1], cur, max, color)
+			SetValueText(Health.Value, tagtable[uconfig.HealthTag][1], cur, max, .9, .9, .9)
 		elseif cur < max then
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][2], cur, max, color)
+			SetValueText(Health.Value, tagtable[uconfig.HealthTag][2], cur, max, .9, .9, .9)
 		else
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][3], cur, max, color)
+			SetValueText(Health.Value, tagtable[uconfig.HealthTag][3], cur, max, .9, .9, .9)
 		end
 	end
 end
@@ -198,17 +195,14 @@ do
 			cur = UnitPowerMax(unit)
 		end
 
-		local color
-		color = C.Unitframe.TextPowerColor
-
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, color)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, 1, 1, 1)
 		elseif cur < max then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, color)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, 1, 1, 1)
 		else
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, color)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, 1, 1, 1)
 		end
 	end
 end

@@ -514,6 +514,7 @@ local UnregisterEvents = function(fontstr)
 	end
 end
 
+local onUpdateDelay = {}
 local tagPool = {}
 local funcPool = {}
 local tmp = {}
@@ -537,6 +538,13 @@ local Tag = function(self, fs, tagstr)
 	end
 
 	fs.parent = self
+
+	local containsOnUpdate
+	for tag in tagstr:gmatch(_PATTERN) do
+		if not tagEvents[tag:sub(2, -2)] then
+			containsOnUpdate = onUpdateDelay[tag:sub(2, -2)] or 0.15;
+		end
+	end
 
 	local func = tagPool[tagstr]
 	if(not func) then
@@ -709,6 +717,7 @@ oUF.Tags = {
 	Methods = tags,
 	Events = tagEvents,
 	SharedEvents = unitlessEvents,
+	OnUpdateThrottle = onUpdateDelay,
 
 }
 oUF:RegisterMetaFunction('Tag', Tag)
