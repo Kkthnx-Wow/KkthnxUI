@@ -1,8 +1,6 @@
+if (GetLocale() ~= "zhCN") then return end
+
 -- Localization for zhCN
-local Locale = GetLocale()
-if (Locale ~= "zhCN") then
-	return
-end
 
 local PerformanceSlight = "\n|cffFF0000Disabling this may slightly increase performance|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000Turn this off to manually input your bar numbers|r"
@@ -37,6 +35,7 @@ UIConfigLocal.AnnouncementsBadGear = "Check for bad gear in instances"
 UIConfigLocal.AnnouncementsInterrupt = "Announce in party/raid when you interrupt others"
 UIConfigLocal.AnnouncementsPullCountdown = "Simple script to aid in creating a pull countdown announce. /pc"
 UIConfigLocal.AnnouncementsSaySapped = "Instantly says Sapped to alert those around you whenever |cFFFFF569Rogues|r sap you."
+UIConfigLocal.AnnouncementsSayThanks = "Say thanks for some spells"
 UIConfigLocal.AnnouncementsSpells = "Announce in party/raid when you cast some spells"
 UIConfigLocal.AnnouncementsSpellsFromAll = "Check spells cast from all members"
 

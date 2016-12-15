@@ -1,9 +1,7 @@
 local K, C, L = unpack(select(2, ...))
+if (GetLocale() ~= "ruRU") then return end
 
 -- Localization For ruRU Clients
-if (GetLocale() ~= "ruRU") then
-	return
-end
 
 L.AFKScreen = {
 	NoGuild = "Нет гильдии"
@@ -15,8 +13,10 @@ L.Announce = {
 	PCAborted = "ОСТАНОВИТЬ АТАКУ!",
 	PCGo = "Вперед!",
 	PCMessage = "Атаковать %s через %s..",
+	Recieved = " получено от ",
 	Sapped = "Ошеломление!",
-	SappedBy = "Ошеломление от: "
+	SappedBy = "Ошеломление от: ",
+	SSThanks = "Спасибо за "
 }
 
 L.Auras = {

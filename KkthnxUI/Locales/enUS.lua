@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+
 -- Localization for enUS & enGB
 
 L.AFKScreen = {
@@ -11,8 +12,10 @@ L.Announce = {
 	PCAborted = "Pull ABORTED!",
 	PCGo = "GO!",
 	PCMessage = "Pulling %s in %s..",
+	Recieved = " received from ",
 	Sapped = "Sapped",
-	SappedBy = "Sapped by: "
+	SappedBy = "Sapped by: ",
+	SSThanks = "Thanks for "
 }
 
 L.Auras = {

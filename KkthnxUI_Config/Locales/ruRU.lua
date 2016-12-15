@@ -1,8 +1,6 @@
+if (GetLocale() ~= "ruRU") then return end
+
 -- Localization for ruRU
-local Locale = GetLocale()
-if (Locale ~= "ruRU") then
-	return
-end
 
 local PerformanceSlight = "\n|cffFF0000Отключение этого может немного повысить производительность|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000Включите эту опцию для ручного ввода количества панелей|r"
@@ -37,6 +35,7 @@ UIConfigLocal.AnnouncementsBadGear = "Проверять наличие плох
 UIConfigLocal.AnnouncementsInterrupt = "Анонсировать в группу/рейд ваши прерывания заклинаний"
 UIConfigLocal.AnnouncementsPullCountdown = "Активировать функцию обратного отсчета на запуск босса (/рс)"
 UIConfigLocal.AnnouncementsSaySapped = "Мнгновенно оповещать об ошеломлении, когда |cFFFFF569Разбойник|r напал на вас"
+UIConfigLocal.AnnouncementsSayThanks = "Благодарить за полезные заклинания"
 UIConfigLocal.AnnouncementsSpells = "Анонсировать в группу/рейд применение некоторых важных умений"
 UIConfigLocal.AnnouncementsSpellsFromAll = "Проверять умения всех членов группы/рейда"
 

@@ -32,6 +32,7 @@ C["Announcements"] = {
 	["Interrupt"] = false,
 	["PullCountdown"] = true,
 	["SaySapped"] = false,
+	["SayThanks"] = false,
 	["Spells"] = false,
 	["SpellsFromAll"] = false,
 }

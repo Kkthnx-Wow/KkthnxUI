@@ -1,9 +1,7 @@
 local K, C, L = unpack(select(2, ...))
+if (GetLocale() ~= "zhCN") then return end
 
 -- Localization for zhCN clients
-if (GetLocale() ~= "zhCN") then
-	return
-end
 
 L.AFKScreen = {
 	NoGuild = "No Guild"
@@ -15,8 +13,10 @@ L.Announce = {
 	PCAborted = "Pull ABORTED!",
 	PCGo = "GO!",
 	PCMessage = "Pulling %s in %s..",
+	Recieved = " received from ",
 	Sapped = "Sapped",
-	SappedBy = "Sapped by: "
+	SappedBy = "Sapped by: ",
+	SSThanks = "Thanks for "
 }
 
 L.Auras = {

@@ -1,9 +1,7 @@
 local K, C, L = unpack(select(2, ...))
+if (GetLocale() ~= "deDE") then return end
 
 -- Localization for deDE clients
-if (GetLocale() ~= "deDE") then
-	return
-end
 
 L.AFKScreen = {
 	NoGuild = "Keine Gilde",
@@ -15,8 +13,10 @@ L.Announce = {
 	PCAborted = "Pull ABGEBROCHEN!",
 	PCGo = "LOS GEHT'S!",
 	PCMessage = "Pulle %s in %s..",
+	Recieved = " erhalten von ",
 	Sapped = "Kopfnuss",
 	SappedBy = "Kopfnuss von: ",
+	SSThanks = "Danke für "
 }
 
 L.Auras = {

@@ -13,11 +13,11 @@ local GetItemInfo = GetItemInfo
 local IsInInstance = IsInInstance
 local PlaySound = PlaySound
 
--- CHECK BAD GEAR IN INSTANCE
+-- Check bad gear in instance
 local BadGear = CreateFrame("Frame")
 BadGear:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 BadGear:SetScript("OnEvent", function(self, event)
-	if (event ~= "ZONE_CHANGED_NEW_AREA") or (not IsInInstance()) then return end
+	if event ~= "ZONE_CHANGED_NEW_AREA" or not IsInInstance() then return end
 	local item = {}
 	for i = 1, 17 do
 		if K.AnnounceBadGear[i] ~= nil then

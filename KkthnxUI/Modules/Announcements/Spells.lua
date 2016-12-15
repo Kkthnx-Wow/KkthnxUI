@@ -20,11 +20,11 @@ AnnounceSpells:SetScript("OnEvent", function(self, _, ...)
 	local _, event, _, sourceGUID, sourceName, _, _, _, destName, _, _, spellID = ...
 	local spells = K.AnnounceSpells
 	local _, _, difficultyID = GetInstanceInfo()
-	if (difficultyID == 0 or event ~= "SPELL_CAST_SUCCESS") then return end
+	if difficultyID == 0 or event ~= "SPELL_CAST_SUCCESS" then return end
 
 	if sourceName then sourceName = sourceName:gsub("%-[^|]+", "") end
 	if destName then destName = destName:gsub("%-[^|]+", "") end
-	if (C.Announcements.SpellsFromAll == true) and (not (sourceGUID == UnitGUID("player")) and (sourceName == K.Name)) then
+	if C.Announcements.SpellsFromAll == true and not (sourceGUID == UnitGUID("player") and sourceName == K.Name) then
 		if not sourceName then return end
 
 		for i, spells in pairs(spells) do

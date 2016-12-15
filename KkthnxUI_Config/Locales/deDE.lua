@@ -1,8 +1,6 @@
+if (GetLocale() ~= "deDE") then return end
+
 -- Localization for deDE
-local Locale = GetLocale()
-if (Locale ~= "deDE") then
-	return
-end
 
 local PerformanceSlight = "\n|cffFF0000Eine Deaktivierung könnte die Spielperformance leicht erhöhen|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000Schalte diesen Menüpunt aus, um Deine Aktionsleisten manuell zu steuern|r"
@@ -37,6 +35,7 @@ UIConfigLocal.AnnouncementsBadGear = "Überprüfe kaputte Ausrüstung in Instanz
 UIConfigLocal.AnnouncementsInterrupt = "Ankündigungen im Gruppen-/Schlachtzugchat wenn Du jemanden unterbrochen hast."
 UIConfigLocal.AnnouncementsPullCountdown = "Simples Script um einen Pulltimer zu starten. Tippe /pc in den Chat."
 UIConfigLocal.AnnouncementsSaySapped = "Kopfnussansage wenn die ein |cFFFFF569Schurke|r aus dem Kampf genommen hat."
+UIConfigLocal.AnnouncementsSayThanks = "Bedanke dich für einige Zauber"
 UIConfigLocal.AnnouncementsSpells = "Ankündigungen im Gruppen-/Schlachtzugchat wenn Du bestimmte Zauber benutzt hast."
 UIConfigLocal.AnnouncementsSpellsFromAll = "Überprüfe Zauber von allen Mitspielern."
 
