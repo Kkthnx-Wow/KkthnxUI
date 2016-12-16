@@ -63,8 +63,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	end
 end)
 
-
--- -- Optimize graphic after we enter world
+-- Optimize graphic after we enter world
 -- local PixelPerfect = CreateFrame("Frame")
 -- PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- PixelPerfect:RegisterEvent("CINEMATIC_STOP")

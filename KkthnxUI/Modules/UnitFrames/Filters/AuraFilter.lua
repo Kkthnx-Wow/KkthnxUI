@@ -48,13 +48,13 @@ local BaseAuras = {
 }
 
 do
-	local l = K.AuraList
-	for _, list in pairs({l.Stun, l.CC, l.Silence, l.Taunt}) do
+	for _, list in pairs({K.AuraList.Stun, K.AuraList.CC, K.AuraList.Silence, K.AuraList.Taunt}) do
 		for i = 1, #list do
 			BaseAuras[list[i]] = 0
 		end
 	end
 end
+
 
 local genFilter, arenaFilter, bossFilter = {}, {}, {}
 local auraFilters = {genFilter, arenaFilter, bossFilter}

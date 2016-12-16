@@ -34,7 +34,9 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 	-- Skin the Countdown/BG timers
 	self:RegisterEvent("START_TIMER")
 
-	self.ADDON_LOADED = nil
+	if event == "ADDON_LOADED" then -- Be sure we do not miss the event. So we check.
+		self:UnregisterEvent("ADDON_LOADED")
+	end
 end
 
 -- Skin the blizzard Countdown Timers

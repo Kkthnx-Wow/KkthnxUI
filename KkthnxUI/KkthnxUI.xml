@@ -1,242 +1,247 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<!-- Engine -->
-	<Script file="Core\Engine.lua"/>
-	<Script file="Core\Constants.lua"/>
+      <!-- Engine -->
+    <Script file="Core\Engine.lua" />
+    <Script file="Core\Constants.lua" />
 
-	<!-- Locales -->
-	<Script file="Locales\enUS.lua"/>
-	<Script file="Locales\deDE.lua"/>
-	<Script file="Locales\ruRU.lua"/>
-	<Script file="Locales\zhCN.lua"/>
-	<Script file="Locales\zhTW.lua"/>
+    <!-- Locales -->
+    <Script file="Locales\enUS.lua" />
+    <Script file="Locales\deDE.lua" />
+    <Script file="Locales\ruRU.lua" />
+    <Script file="Locales\zhCN.lua" />
+    <Script file="Locales\zhTW.lua" />
 
-	<!-- Settings -->
-	<Script file="Config\Settings.lua"/>
-	<Script file="Config\Positions.lua"/>
-	<Script file="Config\Addons.lua"/>
-	<Script file="Config\Profiles.lua"/>
+    <!-- Settings -->
+    <Script file="Config\Settings.lua" />
+    <Script file="Config\Positions.lua" />
+    <Script file="Config\Addons.lua" />
+    <Script file="Config\Profiles.lua" />
 
-	<!-- GUI -->
-	<Script file="Core\GUI.lua"/>
-	<Script file="Core\PixelPerfect.lua"/>
+    <!-- GUI -->
+    <Script file="Core\GUI.lua" />
+    <Script file="Core\PixelPerfect.lua" />
 
-	<!-- Config -->
-	<Script file="Config\Filters\Announcements.lua"/>
-	<Script file="Config\Filters\AuraList.lua"/>
-	<Script file="Config\Filters\Cooldowns.lua"/>
-	<Script file="Config\Filters\ErrorFilter.lua"/>
-	<Script file="Config\Filters\FilgerSpells.lua"/>
-	<Script file="Config\Filters\Nameplates.lua"/>
-	<Script file="Config\Filters\NeedItems.lua"/>
-	<Script file="Config\Filters\PortraitTimers.lua"/>
-	<Script file="Config\Filters\RaidAuraWatch.lua"/>
-	<Script file="Config\Filters\SpamFilter.lua"/>
+    <!-- Config -->
+    <Script file="Config\Filters\Announcements.lua" />
+    <Script file="Config\Filters\AuraList.lua" />
+    <Script file="Config\Filters\Cooldowns.lua" />
+    <Script file="Config\Filters\ErrorFilter.lua" />
+    <Script file="Config\Filters\FilgerSpells.lua" />
+    <Script file="Config\Filters\Nameplates.lua" />
+    <Script file="Config\Filters\NeedItems.lua" />
+    <Script file="Config\Filters\PortraitTimers.lua" />
+    <Script file="Config\Filters\RaidAuraWatch.lua" />
+    <Script file="Config\Filters\SpamFilter.lua" />
 
-	<!-- Libraries -->
-	<Script file="Libraries\LibStub\LibStub.lua"/>
-	<Script file="Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
-	<Script file="Libraries\AceAddon-3.0\AceAddon-3.0.lua"/>
-	<Script file="Libraries\AceEvent-3.0\AceEvent-3.0.lua"/>
-	<Script file="Libraries\AceConsole-3.0\AceConsole-3.0.lua"/>
-	<Script file="Libraries\AceTimer-3.0\AceTimer-3.0.lua"/>
-	<Script file="Libraries\AceHook-3.0\AceHook-3.0.lua"/>
-	<Script file="Libraries\LibSharedMedia-3.0\LibSharedMedia-3.0.lua"/>
-	<Include file="Libraries\oUF\oUF.xml"/>
-	<Include file="Libraries\oUF_Plugins\Load_Plugins.xml"/>
-	<Script file="Libraries\LibChatAnims\LibChatAnims.lua"/>
-	<Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua"/>
-	<Include file="Libraries\DropDownMenu\DropDownMenu.xml"/>
+    <!-- Libraries -->
+    <Script file="Libraries\LibStub\LibStub.lua" />
+    <Script file="Libraries\CallbackHandler-1.0\CallbackHandler-1.0.lua" />
+    <Script file="Libraries\AceAddon-3.0\AceAddon-3.0.lua" />
+    <Script file="Libraries\AceEvent-3.0\AceEvent-3.0.lua" />
+    <Script file="Libraries\AceConsole-3.0\AceConsole-3.0.lua" />
+    <Script file="Libraries\AceTimer-3.0\AceTimer-3.0.lua" />
+    <Script file="Libraries\AceHook-3.0\AceHook-3.0.lua" />
+    <Script file="Libraries\LibSharedMedia-3.0\LibSharedMedia-3.0.lua" />
+    <Include file="Libraries\oUF\oUF.xml" />
+    <Include file="Libraries\oUF_Plugins\Load_Plugins.xml" />
+    <Script file="Libraries\LibChatAnims\LibChatAnims.lua" />
+    <Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua" />
+    <Include file="Libraries\DropDownMenu\DropDownMenu.xml" />
 
-	<!-- Media -->
-	<Script file="Media\Media.lua"/>
+    <!-- Media -->
+    <Script file="Media\Media.lua" />
 
-	<!-- Core -->
-	<Script file="Core\API.lua"/>
-	<Script file="Core\Functions.lua"/>
-	<Script file="Core\Border.lua"/>
-	<Script file="Core\Install.lua"/>
-	<Script file="Core\Commands.lua"/>
-	<Script file="Core\Developer.lua"/>
-	<Script file="Core\Colors.lua"/>
-	<Script file="Core\Disable.lua"/>
-	<Script file="Core\Kill.lua"/>
-	<Script file="Core\CheckVersion.lua"/>
-	<Script file="Core\Movers.lua"/>
-	<Script file="Core\Temp.lua"/>
-	<Script file="Core\Tutorials.lua"/>
+    <!-- Core -->
+    <Script file="Core\API.lua" />
+    <Script file="Core\Functions.lua" />
+    <Script file="Core\Border.lua" />
+    <Script file="Core\Install.lua" />
+    <Script file="Core\Commands.lua" />
+    <Script file="Core\Developer.lua" />
+    <Script file="Core\Colors.lua" />
+    <Script file="Core\Disable.lua" />
+    <Script file="Core\Kill.lua" />
+    <Script file="Core\CheckVersion.lua" />
+    <Script file="Core\Movers.lua" />
+    <Script file="Core\Temp.lua" />
+    <Script file="Core\Tutorials.lua" />
 
-	<!-- Panels -->
-	<Script file="Modules\Panels\Panels.lua"/>
+    <!-- Panels -->
+    <Script file="Modules\Panels\Panels.lua" />
 
-	<!-- Unitframes Core -->
-	<Script file="Modules\Unitframes\Init.lua"/>
-	<Script file="Modules\Unitframes\Filters\AuraList.lua"/>
+    <!-- Unitframes Core -->
+    <Script file="Modules\Unitframes\Init.lua" />
+    <Script file="Modules\Unitframes\Filters\AuraList.lua" />
 
-	<!-- Unitframe Config -->
-	<Script file="Modules\Unitframes\Config\Config.lua"/>
-	<Include file="Modules\Unitframes\Elements\Elements.xml"/>
-	<Script file="Modules\Unitframes\Functions.lua"/>
+    <!-- Unitframe Config -->
+    <Script file="Modules\Unitframes\Config\Config.lua" />
+    <Include file="Modules\Unitframes\Elements\Elements.xml" />
+    <Script file="Modules\Unitframes\Functions.lua" />
+    <Script file="Modules\Unitframes\Filters\AuraFilter.lua" />
 
-	<!-- Unitframe Layouts -->
-	<Script file="Modules\Unitframes\Layouts\LayoutArena.lua"/>
-	<Script file="Modules\Unitframes\Layouts\Layout.lua"/>
-	<Include file="Modules\Unitframes\Layouts\oUF_KkthnxRaid.xml"/>
-	<Script file="Modules\Unitframes\Layouts\LayoutRaid.lua"/>
+    <!-- Unitframe Layouts -->
+    <Script file="Modules\Unitframes\Layouts\LayoutArena.lua" />
+    <Script file="Modules\Unitframes\Layouts\Layout.lua" />
+    <Include file="Modules\Unitframes\Layouts\oUF_KkthnxRaid.xml" />
+    <Script file="Modules\Unitframes\Layouts\LayoutRaid.lua" />
 
-	<!-- ActionBars -->
-	<Script file="Modules\ActionBars\Functions.lua"/>
-	<Script file="Modules\ActionBars\Bindings.lua"/>
-	<Script file="Modules\ActionBars\Hide.lua"/>
-	<Script file="Modules\ActionBars\Bar1.lua"/>
-	<Script file="Modules\ActionBars\Bar2.lua"/>
-	<Script file="Modules\ActionBars\Bar3.lua"/>
-	<Script file="Modules\ActionBars\Bar4.lua"/>
-	<Script file="Modules\ActionBars\Bar5.lua"/>
-	<Script file="Modules\ActionBars\StanceBar.lua"/>
-	<Script file="Modules\ActionBars\PetBar.lua"/>
-	<Script file="Modules\ActionBars\Toggle.lua"/>
-	<Script file="Modules\ActionBars\Style.lua"/>
-	<Script file="Modules\ActionBars\Range.lua"/>
-	<Script file="Modules\ActionBars\Others.lua"/>
-	<Script file="Modules\ActionBars\Cooldowns.lua"/>
-	<Script file="Modules\ActionBars\SelfCast.lua"/>
+    <!-- ActionBars -->
+    <Script file="Modules\ActionBars\Functions.lua" />
+    <Script file="Modules\ActionBars\Bindings.lua" />
+    <Script file="Modules\ActionBars\Hide.lua" />
+    <Script file="Modules\ActionBars\Bar1.lua" />
+    <Script file="Modules\ActionBars\Bar2.lua" />
+    <Script file="Modules\ActionBars\Bar3.lua" />
+    <Script file="Modules\ActionBars\Bar4.lua" />
+    <Script file="Modules\ActionBars\Bar5.lua" />
+    <Script file="Modules\ActionBars\StanceBar.lua" />
+    <Script file="Modules\ActionBars\PetBar.lua" />
+    <Script file="Modules\ActionBars\Toggle.lua" />
+    <Script file="Modules\ActionBars\Style.lua" />
+    <Script file="Modules\ActionBars\Range.lua" />
+    <Script file="Modules\ActionBars\Others.lua" />
+    <Script file="Modules\ActionBars\Cooldowns.lua" />
+    <Script file="Modules\ActionBars\SelfCast.lua" />
 
-	<!-- Announcements -->
-	<Script file="Modules\Announcements\BadGear.lua"/>
-	<Script file="Modules\Announcements\Interrupt.lua"/>
-	<Script file="Modules\Announcements\PullCountdown.lua"/>
-	<Script file="Modules\Announcements\SaySapped.lua"/>
-	<Script file="Modules\Announcements\Spells.lua"/>
+    <!-- Announcements -->
+    <Script file="Modules\Announcements\BadGear.lua" />
+    <Script file="Modules\Announcements\Interrupt.lua" />
+    <Script file="Modules\Announcements\PullCountdown.lua" />
+    <Script file="Modules\Announcements\SaySapped.lua" />
+    <Script file="Modules\Announcements\Spells.lua" />
 
-	<!-- Auras -->
-	<Include file="Modules\Auras\Templates.xml"/>
-	<Script file="Modules\Auras\Core.lua"/>
-	<Script file="Modules\Auras\Auras.lua"/>
-	<Script file="Modules\Auras\Headers.lua"/>
-	<Script file="Modules\Auras\AurasSource.lua"/>
+    <!-- Auras -->
+    <Include file="Modules\Auras\Templates.xml" />
+    <Script file="Modules\Auras\Core.lua" />
+    <Script file="Modules\Auras\Auras.lua" />
+    <Script file="Modules\Auras\Headers.lua" />
+    <Script file="Modules\Auras\AurasSource.lua" />
 
-	<!-- Automation -->
-	<Script file="Modules\Automation\AutoInvite.lua"/>
-	<Script file="Modules\Automation\AutoRelease.lua"/>
-	<Script file="Modules\Automation\DeclineDuel.lua"/>
-	<Script file="Modules\Automation\LoggingCombat.lua"/>
-	<Script file="Modules\Automation\Screenshots.lua"/>
-	<Script file="Modules\Automation\TabBinder.lua"/>
+    <!-- Automation -->
+    <Script file="Modules\Automation\AutoInvite.lua" />
+    <Script file="Modules\Automation\AutoRelease.lua" />
+    <Script file="Modules\Automation\DeclineDuel.lua" />
+    <Script file="Modules\Automation\LoggingCombat.lua" />
+    <Script file="Modules\Automation\Screenshots.lua" />
+    <Script file="Modules\Automation\TabBinder.lua" />
 
-	<!-- Blizzard -->
-	<Script file="Modules\Blizzard\AlertFrames.lua"/>
-	<Script file="Modules\Blizzard\AltPowerBar.lua"/>
-	<Script file="Modules\Blizzard\CaptureBar.lua"/>
-	<Script file="Modules\Blizzard\ClassColor.lua"/>
-	<Script file="Modules\Blizzard\ColorPicker.lua"/>
-	<Script file="Modules\Blizzard\ColorTextures.lua"/>
-	<Script file="Modules\Blizzard\ErrorFilter.lua"/>
-	<Script file="Modules\Blizzard\ExtraActionBar.lua"/>
-	<Script file="Modules\Blizzard\Fixes.lua"/>
-	<Script file="Modules\Blizzard\Fonts.lua"/>
-	<Script file="Modules\Blizzard\MoveBlizzFrames.lua"/>
-	<Script file="Modules\Blizzard\RaidUtility.lua"/>
-	<Script file="Modules\Blizzard\ReputationGain.lua"/>
-	<Script file="Modules\Blizzard\Vehicle.lua"/>
+    <!-- Blizzard -->
+    <Script file="Modules\Blizzard\AlertFrames.lua" />
+    <Script file="Modules\Blizzard\AltPowerBar.lua" />
+    <Script file="Modules\Blizzard\CaptureBar.lua" />
+    <Script file="Modules\Blizzard\ClassColor.lua" />
+    <Script file="Modules\Blizzard\ColorPicker.lua" />
+    <Script file="Modules\Blizzard\ColorTextures.lua" />
+    <Script file="Modules\Blizzard\ErrorFilter.lua" />
+    <Script file="Modules\Blizzard\ExtraActionBar.lua" />
+    <Script file="Modules\Blizzard\Fixes.lua" />
+    <Script file="Modules\Blizzard\Fonts.lua" />
+    <Script file="Modules\Blizzard\MoveBlizzFrames.lua" />
+    <Script file="Modules\Blizzard\RaidUtility.lua" />
+    <Script file="Modules\Blizzard\ReputationGain.lua" />
+    <Script file="Modules\Blizzard\Vehicle.lua" />
 
-	<!-- Chat -->
-	<Script file="Modules\Chat\ChatFrames.lua"/>
-	<Script file="Modules\Chat\ChatTabs.lua"/>
-	<Script file="Modules\Chat\CopyChat.lua"/>
-	<Script file="Modules\Chat\CopyUrl.lua"/>
-	<Script file="Modules\Chat\MessageFilter.lua"/>
-	<Script file="Modules\Chat\MouseScroll.lua"/>
-	<Script file="Modules\Chat\Sounds.lua"/>
-	<Script file="Modules\Chat\SpamageMeters.lua"/>
-	<Script file="Modules\Chat\SpamFilter.lua"/>
-	<Script file="Modules\Chat\TellTarget.lua"/>
+    <!-- Chat -->
+    <Script file="Modules\Chat\ChatFrames.lua" />
+    <Script file="Modules\Chat\ChatTabs.lua" />
+    <Script file="Modules\Chat\CopyChat.lua" />
+    <Script file="Modules\Chat\CopyUrl.lua" />
+    <Script file="Modules\Chat\MessageFilter.lua" />
+    <Script file="Modules\Chat\MouseScroll.lua" />
+    <Script file="Modules\Chat\Sounds.lua" />
+    <Script file="Modules\Chat\SpamageMeters.lua" />
+    <Script file="Modules\Chat\SpamFilter.lua" />
+    <Script file="Modules\Chat\TellTarget.lua" />
 
-	<!-- DataBars -->
-	<Script file="Modules\DataBars\ArtifactBar.lua"/>
-	<Script file="Modules\DataBars\ExperienceBar.lua"/>
-	<Script file="Modules\DataBars\HonorBar.lua"/>
-	<Script file="Modules\DataBars\ReputationBar.lua"/>
+    <!-- DataBars -->
+    <Script file="Modules\DataBars\ArtifactBar.lua" />
+    <Script file="Modules\DataBars\ExperienceBar.lua" />
+    <Script file="Modules\DataBars\HonorBar.lua" />
+    <Script file="Modules\DataBars\ReputationBar.lua" />
 
-	<!-- DataText Modules -->
-	<Script file="Modules\DataText\DataTexts.lua"/>
-	<Script file="Modules\DataText\Anchors.lua"/>
-	<Include file="Modules\DataText\Elements\Load_Elements.xml"/>
+    <!-- DataText -->
+    <Script file="Modules\DataText\Battleground.lua" />
+    <Script file="Modules\DataText\Time.lua" />
 
-	<!-- Inventory -->
-	<Script file="Modules\Inventory\Bags.lua" />
+    <!-- DataText Modules -->
+    <Script file="Modules\DataText\DataTexts.lua" />
+    <Script file="Modules\DataText\Anchors.lua" />
+    <Include file="Modules\DataText\Elements\Load_Elements.xml" />
 
-	<!-- Loot -->
-	<Script file="Modules\Loot\AutoConfirm.lua"/>
-	<Script file="Modules\Loot\AutoGreed.lua"/>
-	<Script file="Modules\Loot\GroupLoot.lua"/>
-	<Script file="Modules\Loot\Loot.lua"/>
-	<Script file="Modules\Loot\LootFilter.lua"/>
-	<Script file="Modules\Loot\MasterLoot.lua"/>
+    <!-- Inventory -->
+    <Script file="Modules\Inventory\Bags.lua" />
 
-	<!-- Maps -->
-	<Script file="Modules\Maps\ButtonCollect.lua"/>
-	<Script file="Modules\Maps\FarmMode.lua"/>
-	<Script file="Modules\Maps\FogOfWar.lua"/>
-	<Script file="Modules\Maps\MicroMenu.lua"/>
-	<Script file="Modules\Maps\MiniMap.lua"/>
-	<Script file="Modules\Maps\Pinged.lua"/>
-	<Script file="Modules\Maps\WorldMap.lua"/>
+    <!-- Loot -->
+    <Script file="Modules\Loot\AutoConfirm.lua" />
+    <Script file="Modules\Loot\AutoGreed.lua" />
+    <Script file="Modules\Loot\GroupLoot.lua" />
+    <Script file="Modules\Loot\Loot.lua" />
+    <Script file="Modules\Loot\LootFilter.lua" />
+    <Script file="Modules\Loot\MasterLoot.lua" />
 
-	<!-- Miscellaneous -->
-	<Script file="Modules\Miscellaneous\AFKSpin.lua"/>
-	<Script file="Modules\Miscellaneous\AlreadyKnown.lua"/>
-	<Script file="Modules\Miscellaneous\ArmoryLink.lua"/>
-	<Script file="Modules\Miscellaneous\BlizzBugsSuck.lua"/>
-	<Script file="Modules\Miscellaneous\DropDown.lua"/>
-	<Script file="Modules\Miscellaneous\Durability.lua"/>
-	<Script file="Modules\Miscellaneous\Filger.lua"/>
-	<Script file="Modules\Miscellaneous\GarbageCollect.lua"/>
-	<Script file="Modules\Miscellaneous\LFDQueueTimer.lua"/>
-	<Script file="Modules\Miscellaneous\LossControl.lua"/>
-	<Script file="Modules\Miscellaneous\Mail.lua"/>
-	<Script file="Modules\Miscellaneous\Merchant.lua"/>
-	<Script file="Modules\Miscellaneous\MerchantItemLevel.lua"/>
-	<Script file="Modules\Miscellaneous\Miscellaneous.lua"/>
-	<Script file="Modules\Miscellaneous\Mounts.lua"/>
-	<Script file="Modules\Miscellaneous\PulseCD.lua"/>
-	<Script file="Modules\Miscellaneous\RaidCD.lua"/>
-	<Script file="Modules\Miscellaneous\SlotDurability.lua"/>
-	<Script file="Modules\Miscellaneous\SlotItemLevel.lua"/>
-	<Script file="Modules\Miscellaneous\ThreatBar.lua"/>
+    <!-- Maps -->
+    <Script file="Modules\Maps\ButtonCollect.lua" />
+    <Script file="Modules\Maps\FarmMode.lua" />
+    <Script file="Modules\Maps\FogOfWar.lua" />
+    <Script file="Modules\Maps\MicroMenu.lua" />
+    <Script file="Modules\Maps\MiniMap.lua" />
+    <Script file="Modules\Maps\Pinged.lua" />
+    <Script file="Modules\Maps\WorldMap.lua" />
 
-	<!-- Nameplates -->
-	<Script file="Modules\Nameplates\Tags.lua"/>
-	<Script file="Modules\Nameplates\Nameplates.lua"/>
+    <!-- Miscellaneous -->
+    <Script file="Modules\Miscellaneous\AFKSpin.lua" />
+    <Script file="Modules\Miscellaneous\AlreadyKnown.lua" />
+    <Script file="Modules\Miscellaneous\ArmoryLink.lua" />
+    <Script file="Modules\Miscellaneous\BlizzBugsSuck.lua" />
+    <Script file="Modules\Miscellaneous\DropDown.lua" />
+    <Script file="Modules\Miscellaneous\Durability.lua" />
+    <Script file="Modules\Miscellaneous\Filger.lua" />
+    <Script file="Modules\Miscellaneous\GarbageCollect.lua" />
+    <Script file="Modules\Miscellaneous\LFDQueueTimer.lua" />
+    <Script file="Modules\Miscellaneous\LossControl.lua" />
+    <Script file="Modules\Miscellaneous\Mail.lua" />
+    <Script file="Modules\Miscellaneous\Merchant.lua" />
+    <Script file="Modules\Miscellaneous\MerchantItemLevel.lua" />
+    <Script file="Modules\Miscellaneous\Miscellaneous.lua" />
+    <Script file="Modules\Miscellaneous\Mounts.lua" />
+    <Script file="Modules\Miscellaneous\PulseCD.lua" />
+    <Script file="Modules\Miscellaneous\RaidCD.lua" />
+    <Script file="Modules\Miscellaneous\SlotDurability.lua" />
+    <Script file="Modules\Miscellaneous\SlotItemLevel.lua" />
+    <Script file="Modules\Miscellaneous\ThreatBar.lua" />
 
-	<!-- Quests -->
-	<Script file="Modules\Quests\AutoAccept.lua"/>
-	<Script file="Modules\Quests\AutoCollapse.lua"/>
-	<Script file="Modules\Quests\ObjectiveTracker.lua"/>
-	<Script file="Modules\Quests\QuestLog.lua"/>
-	<Script file="Modules\Quests\WowheadLink.lua"/>
+    <!-- Nameplates -->
+    <Script file="Modules\Nameplates\Tags.lua" />
+    <Script file="Modules\Nameplates\Nameplates.lua" />
 
-	<!-- Skins Addons -->
-	<Include file="Modules\Skins\Addons\BigWigs.lua"/>
-	<Include file="Modules\Skins\Addons\DBM.lua"/>
-	<Include file="Modules\Skins\Addons\Omen.lua"/>
-	<Include file="Modules\Skins\Addons\Recount.lua"/>
-	<Include file="Modules\Skins\Addons\Skada.lua"/>
-	<Include file="Modules\Skins\Addons\Spy.lua"/>
-	<Include file="Modules\Skins\Addons\WeakAuras.lua"/>
+    <!-- Quests -->
+    <Script file="Modules\Quests\AutoAccept.lua" />
+    <Script file="Modules\Quests\AutoCollapse.lua" />
+    <Script file="Modules\Quests\ObjectiveTracker.lua" />
+    <Script file="Modules\Quests\QuestLog.lua" />
+    <Script file="Modules\Quests\WowheadLink.lua" />
 
-	<!-- Skins Blizzard -->
-	<Include file="Modules\Skins\Blizzard\Bubbles.lua"/>
-	<Include file="Modules\Skins\Blizzard\MinimapButtons.lua"/>
-	<Include file="Modules\Skins\Blizzard\OrderHall.lua"/>
+    <!-- Skins Addons -->
+    <Include file="Modules\Skins\Addons\BigWigs.lua" />
+    <Include file="Modules\Skins\Addons\DBM.lua" />
+    <Include file="Modules\Skins\Addons\Omen.lua" />
+    <Include file="Modules\Skins\Addons\Recount.lua" />
+    <Include file="Modules\Skins\Addons\Skada.lua" />
+    <Include file="Modules\Skins\Addons\Spy.lua" />
+    <Include file="Modules\Skins\Addons\WeakAuras.lua" />
 
-	<!-- Tooltip -->
-	<Script file="Modules\Tooltip\Tooltip.lua"/>
-	<Script file="Modules\Tooltip\Achievement.lua"/>
-	<Script file="Modules\Tooltip\HyperLink.lua"/>
-	<Script file="Modules\Tooltip\InstanceLockCompare.lua"/>
-	<Script file="Modules\Tooltip\ItemCount.lua"/>
-	<Script file="Modules\Tooltip\ItemIcons.lua"/>
-	<Script file="Modules\Tooltip\ItemLevel.lua"/>
-	<Script file="Modules\Tooltip\SpellID.lua"/>
-	<Script file="Modules\Tooltip\Talents.lua"/>
+    <!-- Skins Blizzard -->
+    <Include file="Modules\Skins\Blizzard\Bubbles.lua" />
+    <Include file="Modules\Skins\Blizzard\MinimapButtons.lua" />
+    <Include file="Modules\Skins\Blizzard\OrderHall.lua" />
+
+    <!-- Tooltip -->
+    <Script file="Modules\Tooltip\Tooltip.lua" />
+    <Script file="Modules\Tooltip\Achievement.lua" />
+    <Script file="Modules\Tooltip\HyperLink.lua" />
+    <Script file="Modules\Tooltip\InstanceLockCompare.lua" />
+    <Script file="Modules\Tooltip\ItemCount.lua" />
+    <Script file="Modules\Tooltip\ItemIcons.lua" />
+    <Script file="Modules\Tooltip\ItemLevel.lua" />
+    <Script file="Modules\Tooltip\SpellID.lua" />
+    <Script file="Modules\Tooltip\Talents.lua" />
 </Ui>

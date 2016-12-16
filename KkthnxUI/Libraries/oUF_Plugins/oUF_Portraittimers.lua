@@ -3,11 +3,11 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
-local GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
+local PortraitTimerDB = {}
+
+local 	GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
 local floor, fmod = floor, math.fmod
 local day, hour, minute = 86400, 3600, 60
-
-local PortraitTimerDB = {}
 
 do
 	local function add(list, filter)
@@ -15,15 +15,15 @@ do
 			PortraitTimerDB[list[i]] = true
 		end
 	end
+	add(K.AuraList.Immunity, "HELPFUL")
+	add(K.AuraList.Stun, "HARMFUL")
 	add(K.AuraList.CC, "HARMFUL")
 	add(K.AuraList.CCImmunity, "HELPFUL")
 	add(K.AuraList.Defensive, "HELPFUL")
-	add(K.AuraList.Helpful, "HELPFUL")
-	add(K.AuraList.Immunity, "HELPFUL")
-	add(K.AuraList.Misc, "HELPFUL")
 	add(K.AuraList.Offensive, "HELPFUL")
+	add(K.AuraList.Helpful, "HELPFUL")
 	add(K.AuraList.Silence, "HARMFUL")
-	add(K.AuraList.Stun, "HARMFUL")
+	add(K.AuraList.Misc, "HELPFUL")
 end
 
 local function ExactTime(time)
