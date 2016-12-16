@@ -198,11 +198,11 @@ do
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, 1, 1, 1)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, .9, .9, .9)
 		elseif cur < max then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, 1, 1, 1)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, .9, .9, .9)
 		else
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, 1, 1, 1)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, .9, .9, .9)
 		end
 	end
 end
