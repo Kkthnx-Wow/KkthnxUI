@@ -26,6 +26,9 @@ local SetCVar = SetCVar
 
 local Movers = K.Movers
 
+-- Fix frame level for UIErrorsFrame
+UIErrorsFrame:SetFrameLevel(0)
+
 -- Move some frames (Shestak)
 local HeadFrame = CreateFrame("Frame")
 HeadFrame:RegisterEvent("ADDON_LOADED")
@@ -34,7 +37,6 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 		TalkingHeadFrame.ignoreFramePositionManager = true
 		TalkingHeadFrame:ClearAllPoints()
 		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
-		TalkingHeadFrame:SetScale(.80)
 	end
 end)
 
@@ -85,21 +87,6 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 	BossBanner:SetPoint("TOP", LBBMover)
 	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
 end)
-
--- Move and scale UIErrorsFrame
-UIErrorsFrame:ClearAllPoints()
-UIErrorsFrame:SetPoint(unpack(C.Position.UIError))
-UIErrorsFrame:SetFrameLevel(0)
-
--- Move and scale RaidBossEmoteFrame
-RaidBossEmoteFrame:ClearAllPoints()
-RaidBossEmoteFrame:SetPoint("TOP", UIParent, "TOP", 0, -200)
-RaidBossEmoteFrame:SetScale(0.9)
-
--- Move and scale RaidWarningFrame
-RaidWarningFrame:ClearAllPoints()
-RaidWarningFrame:SetPoint("TOP", UIParent, "TOP", 0, -260)
-RaidWarningFrame:SetScale(0.8)
 
 -- Force readycheck warning
 local ShowReadyCheckHook = function(self, initiator)
@@ -217,67 +204,9 @@ if C.Misc.HideTalkingHead == true then
 end
 
 -- Disable QuestTrackingTooltips while in raid and in combat
+-- This can become a spam fest when you have 20+ people on the same quest!
 local QuestTracking = CreateFrame("Frame")
 QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
 QuestTracking:SetScript("OnEvent", function(self, event)
 	SetCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
-end)
-
--- Undress button in auction dress-up frame(by Nefarion)
-local strip = CreateFrame("Button", "DressUpFrameUndressButton", DressUpFrame, "UIPanelButtonTemplate")
-strip:SetText(L.Misc.Undress)
-strip:SetHeight(22)
-strip:SetWidth(strip:GetTextWidth() + 40)
-strip:SetPoint("RIGHT", DressUpFrameResetButton, "LEFT", -2, 0)
-strip:RegisterForClicks("AnyUp")
-strip:SetScript("OnClick", function(self, button)
-	if button == "RightButton" then
-		self.model:UndressSlot(19)
-	else
-		self.model:Undress()
-	end
-	PlaySound("gsTitleOptionOK")
-end)
-strip.model = DressUpModel
-
-strip:RegisterEvent("AUCTION_HOUSE_SHOW")
-strip:RegisterEvent("AUCTION_HOUSE_CLOSED")
-strip:SetScript("OnEvent", function(self)
-	if AuctionFrame:IsVisible() and self.model ~= SideDressUpModel then
-		self:SetParent(SideDressUpModel)
-		self:ClearAllPoints()
-		self:SetPoint("TOP", SideDressUpModelResetButton, "BOTTOM", 0, -3)
-		self.model = SideDressUpModel
-	elseif self.model ~= DressUpModel then
-		self:SetParent(DressUpModel)
-		self:ClearAllPoints()
-		self:SetPoint("RIGHT", DressUpFrameResetButton, "LEFT", -2, 0)
-		self.model = DressUpModel
-	end
-end)
-
--- Old achievements filter
-function AchievementFrame_GetCategoryNumAchievements_OldIncomplete(categoryID)
-	local numAchievements, numCompleted = GetCategoryNumAchievements(categoryID)
-	return numAchievements - numCompleted, 0, numCompleted
-end
-
-function old_nocomplete_filter_init()
-	AchievementFrameFilters = {
-		{text = ACHIEVEMENTFRAME_FILTER_ALL, func = AchievementFrame_GetCategoryNumAchievements_All},
-		{text = ACHIEVEMENTFRAME_FILTER_COMPLETED, func = AchievementFrame_GetCategoryNumAchievements_Complete},
-		{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE, func = AchievementFrame_GetCategoryNumAchievements_Incomplete},
-		{text = ACHIEVEMENTFRAME_FILTER_INCOMPLETE.." ("..ALL.." )", func = AchievementFrame_GetCategoryNumAchievements_OldIncomplete}
-	}
-end
-
-local OldAchievementFilter = CreateFrame("Frame")
-OldAchievementFilter:RegisterEvent("ADDON_LOADED")
-OldAchievementFilter:SetScript("OnEvent", function(self, event, addon, ...)
-	if addon == "Blizzard_AchievementUI" then
-		if AchievementFrame then
-			old_nocomplete_filter_init()
-			OldAchievementFilter:UnregisterEvent("ADDON_LOADED")
-		end
-	end
 end)

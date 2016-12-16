@@ -70,7 +70,6 @@
 
     <!-- Unitframes Core -->
     <Script file="Modules\Unitframes\Init.lua" />
-    <Script file="Modules\Unitframes\Filters\AuraList.lua" />
 
     <!-- Unitframe Config -->
     <Script file="Modules\Unitframes\Config\Config.lua" />
@@ -157,10 +156,6 @@
     <Script file="Modules\DataBars\ExperienceBar.lua" />
     <Script file="Modules\DataBars\HonorBar.lua" />
     <Script file="Modules\DataBars\ReputationBar.lua" />
-
-    <!-- DataText -->
-    <Script file="Modules\DataText\Battleground.lua" />
-    <Script file="Modules\DataText\Time.lua" />
 
     <!-- DataText Modules -->
     <Script file="Modules\DataText\DataTexts.lua" />

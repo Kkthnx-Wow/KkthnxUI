@@ -4,22 +4,24 @@ local K, C, L = unpack(select(2, ...))
 local UnitIsAFK = UnitIsAFK
 local collectgarbage = collectgarbage
 
+local EventCount = 0
 local CollectGarbage = CreateFrame("Frame")
-
 CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
 CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
+-- CollectGarbage:RegisterAllEvents()
 CollectGarbage:SetScript("OnEvent", function(self, event, unit)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		collectgarbage("collect")
+	EventCount = EventCount + 1
 
-		-- Just verifying that this clears the memory out :)
-		local Memory = K.DataTexts:GetDataText("Memory")
-		if (Memory and Memory.Enabled) then
-			Memory:Update(10)
-		end
+	if (InCombatLockdown() and EventCount > 25000) or (not InCombatLockdown() and EventCount > 10000) or event == "PLAYER_ENTERING_WORLD" then
+		collectgarbage("collect")
+		EventCount = 0
 
 		-- print(collectgarbage, event)
-		self:UnregisterEvent(event)
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		else
+			self:UnregisterEvent(event)
+		end
 	else
 		if (unit ~= "player") then
 			return
