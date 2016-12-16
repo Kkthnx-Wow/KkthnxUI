@@ -453,6 +453,7 @@ local function style(self, unit)
 	if C.Nameplates.HealthValue == true then
 		self.Health.value = self.Health:CreateFontString(nil, "OVERLAY")
 		self.Health.value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		self.Health.value:SetTextColor(1, 1, 1)
 		-- 	self.Health.value:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 		self.Health.value:SetPoint("RIGHT", self.Health, "RIGHT", 0, 0)
 		self:Tag(self.Health.value, "[NameplateHealth]")

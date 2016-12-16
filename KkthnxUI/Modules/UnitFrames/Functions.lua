@@ -117,7 +117,7 @@ local function SetValueText(element, tag, cur, max, notMana)
 		s = ""
 	end
 
-	element:SetFormattedText("|cff%02x%02x%02x%s|r", .9 * 255, .9 * 255, .9 * 255, s)
+	element:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, s)
 end
 
 -- Health Update
@@ -161,11 +161,11 @@ do
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][1], cur, max, .9, .9, .9)
+			SetValueText(Health.Value, tagtable[uconfig.HealthTag][1], cur, max, 1, 1, 1)
 		elseif cur < max then
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][2], cur, max, .9, .9, .9)
+			SetValueText(Health.Value, tagtable[uconfig.HealthTag][2], cur, max, 1, 1, 1)
 		else
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][3], cur, max, .9, .9, .9)
+			SetValueText(Health.Value, tagtable[uconfig.HealthTag][3], cur, max, 1, 1, 1)
 		end
 	end
 end
@@ -200,11 +200,11 @@ do
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, .9, .9, .9)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, 1, 1, 1)
 		elseif cur < max then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, .9, .9, .9)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, 1, 1, 1)
 		else
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, .9, .9, .9)
+			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, 1, 1, 1)
 		end
 	end
 end

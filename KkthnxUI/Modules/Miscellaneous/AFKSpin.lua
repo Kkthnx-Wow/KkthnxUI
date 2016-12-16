@@ -314,7 +314,7 @@ function AFK:Initialize()
 	self.AFKMode.statMsginfo:SetFadeDuration(1)
 	self.AFKMode.statMsginfo:SetTimeVisible(4)
 	self.AFKMode.statMsginfo:SetJustifyH("CENTER")
-	self.AFKMode.statMsginfo:SetTextColor(0.9, 0.9, 0.9)
+	self.AFKMode.statMsginfo:SetTextColor(1, 1, 1)
 	self.AFKMode.statMsginfo:SetScript("OnUpdate", onUpdate)
 	self.AFKMode.statMsginfo:Hide()
 

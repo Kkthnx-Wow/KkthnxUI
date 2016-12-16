@@ -61,9 +61,6 @@ local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
 local Short = K.ShortValue
-local ILevel, TalentSpec, LastUpdate = 0, "", 30
-local InspectDelay = 0.2
-local InspectFreq = 2
 local Texture = C.Media.Texture
 local Tooltip = CreateFrame("Frame")
 
@@ -179,7 +176,7 @@ function Tooltip:OnTooltipSetUnit()
 	local R, G, B = GetCreatureDifficultyColor(Level).r, GetCreatureDifficultyColor(Level).g, GetCreatureDifficultyColor(Level).b
 
 	if (not Color) then
-		Color = "|CFFFFFFFF"
+		Color = "|cffffffff"
 	end
 
 	if (UnitIsPlayer(Unit)) then
@@ -393,6 +390,7 @@ function Tooltip:Enable()
 		HealthBar.Text = HealthBar:CreateFontString(nil, "OVERLAY")
 		HealthBar.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		HealthBar.Text:SetPoint("CENTER", HealthBar, "CENTER", 0, 6)
+		HealthBar.Text:SetTextColor(1, 1, 1)
 	end
 end
 

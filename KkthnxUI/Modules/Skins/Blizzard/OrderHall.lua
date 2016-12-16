@@ -34,7 +34,7 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, addon)
 				OrderHallCommandBar.Currency:ClearAllPoints()
 				OrderHallCommandBar.Currency:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 5, 0)
 				OrderHallCommandBar.Currency:SetFont(C.Media.Font, 14, "OUTLINE")
-				OrderHallCommandBar.Currency:SetTextColor(.9, .9, .9)
+				OrderHallCommandBar.Currency:SetTextColor(1, 1, 1)
 				OrderHallCommandBar.Currency:SetShadowOffset(0, 0)
 
 				OrderHallCommandBar.WorldMapButton:Kill()
@@ -53,7 +53,7 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, addon)
 					child.Icon:SetSize(40, 20)
 
 					child.Count:SetFont(C.Media.Font, 14, "OUTLINE")
-					child.Count:SetTextColor(.9, .9, .9)
+					child.Count:SetTextColor(1, 1, 1)
 					child.Count:SetShadowOffset(0, 0)
 
 					index = index + 1

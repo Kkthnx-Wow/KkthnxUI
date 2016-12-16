@@ -177,10 +177,12 @@ function ns.CreateCastbars(self, unit)
 
 	Castbar.Time = K.SetFontString(Castbar, C.Media.Font, 13, nil, "RIGHT")
 	Castbar.Time:SetPoint("RIGHT", Castbar, -5, 0)
+	Castbar.Time:SetTextColor(1, 1, 1)
 
 	Castbar.Text = K.SetFontString(Castbar, C.Media.Font, 13, nil, "LEFT")
 	Castbar.Text:SetPoint("LEFT", Castbar, 4, 0)
 	Castbar.Text:SetPoint("RIGHT", Castbar.Time, "LEFT", -8, 0)
+	Castbar.Text:SetTextColor(1, 1, 1)
 	Castbar.Text:SetWordWrap(false)
 
 	Castbar.PostCastStart = ns.PostCastStart

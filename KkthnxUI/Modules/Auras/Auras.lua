@@ -66,7 +66,7 @@ function KkthnxUIAuras:OnUpdate(elapsed)
 		return self:SetScript("OnUpdate", nil)
 	else
 		local Text = K.FormatTime(TimeLeft)
-		local r, g, b = K.ColorGradient(self.TimeLeft, self.Dur, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+		local r, g, b = K.ColorGradient(self.TimeLeft, self.Dur, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 
 		if(TimeLeft < 60.5) then
 			if C.Auras.Flash then
@@ -83,7 +83,7 @@ function KkthnxUIAuras:OnUpdate(elapsed)
 				self.Animation:Stop()
 			end
 
-			self.Duration:SetTextColor(.9, .9, .9)
+			self.Duration:SetTextColor(1, 1, 1)
 		end
 
 		self.Duration:SetText(Text)

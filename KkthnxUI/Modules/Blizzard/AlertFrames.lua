@@ -1,17 +1,11 @@
 local K, C, L = unpack(select(2, ...))
+if IsAddOnLoaded("MoveAnything") then return end
 
-local unpack = unpack
-local find = string.find
-local ipairs = ipairs
-local next = next
-local CreateFrame, UIParent = CreateFrame, UIParent
-local hooksecurefunc = hooksecurefunc
-local Movers = K.Movers
-
+-- AlertFrameMove(by Gethe)
 local AchievementAnchor = CreateFrame("Frame", "AchievementAnchor", UIParent)
-AchievementAnchor:SetSize(230, 50)
+AchievementAnchor:SetWidth(230)
+AchievementAnchor:SetHeight(50)
 AchievementAnchor:SetPoint(unpack(C.Position.Alerts))
-Movers:RegisterFrame(AchievementAnchor)
 
 local alertBlacklist = {
 	GroupLootContainer = C.Loot.GroupLoot,
@@ -23,7 +17,7 @@ local POSITION, ANCHOR_POINT, YOFFSET = "BOTTOM", "TOP", -9
 local function CheckGrow()
 	local point = AchievementAnchor:GetPoint()
 
-	if find(point, "TOP") or point == "CENTER" or point == "LEFT" or point == "RIGHT" then
+	if string.find(point, "TOP") or point == "CENTER" or point == "LEFT" or point == "RIGHT" then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
 		YOFFSET = 9
@@ -45,6 +39,15 @@ local ReplaceAnchors do
 			alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 			relativeAlert = alertFrame
 		end
+
+		-- if C.Loot.GroupLoot then
+		-- GroupLootContainer:ClearAllPoints()
+		-- GroupLootContainer:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
+		-- else
+		-- GroupLootContainer:ClearAllPoints()
+		-- GroupLootContainer:SetPoint(POSITION, AchievementAnchor, POSITION, 2, FIRST_YOFFSET)
+		-- end
+
 		return relativeAlert
 	end
 

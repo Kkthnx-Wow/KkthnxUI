@@ -370,10 +370,9 @@ local function CreateRaidLayout(self, unit)
 	-- Role indicator
 	if (C.Raidframe.ShowRolePrefix) then
 		self.LFDRoleText = self.Health:CreateFontString(nil, "ARTWORK")
-		self.LFDRoleText:SetPoint("TOPLEFT", self.Health, 0, 4)
-		self.LFDRoleText:SetFont(C.Media.Font, 15)
-		self.LFDRoleText:SetShadowOffset(K.Mult,-K.Mult)
-		self.LFDRoleText:SetTextColor(1, 0, 1)
+		self.LFDRoleText:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
+		self.LFDRoleText:SetFont(C.Media.Font, 10)
+		self.LFDRoleText:SetShadowOffset(K.Mult, -K.Mult)
 		self:Tag(self.LFDRoleText, "[KkthnxUI:RaidRole]")
 	end
 

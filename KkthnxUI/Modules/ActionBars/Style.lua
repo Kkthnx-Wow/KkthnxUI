@@ -54,7 +54,7 @@ local function StyleNormalButton(self)
 			btname:SetPoint("BOTTOM", 0, 2)
 			btname:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
 			btname:SetWidth(C.ActionBar.ButtonSize)
-			btname:SetVertexColor(.9, .9, .9)
+			btname:SetVertexColor(1, 1, 1)
 		else
 			btname:Kill()
 		end

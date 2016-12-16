@@ -27,7 +27,7 @@ local UnitHasVehicleUI = UnitHasVehicleUI
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsUnit = UnitIsUnit
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
 -- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
 -- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
@@ -489,26 +489,26 @@ local function CreateUnitLayout(self, unit)
 	if data.nam then
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameMedium]")
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 	end
 
 	-- Name Text Party
 	if data.nam and self.IsPartyFrame and C.Unitframe.Party == true then
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameShort]")
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 	end
 
 	-- Name text targettarget
 	if data.nam and self.IsTargetFrame then
 		self.Name = K.SetFontString(self, C.Media.Font, 12, nil, "LEFT")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameShort]")
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 	end
 
 	-- Portrait
 	if data.por then
-		self.Portrait = self.Health:CreateTexture(nil, 'BACKGROUND')
+		self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND")
 		self.Portrait.Override = function(self, event, unit)
 			if (not unit or not UnitIsUnit(self.unit, unit)) then return; end
 			local portrait = self.Portrait
