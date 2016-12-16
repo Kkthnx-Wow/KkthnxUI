@@ -43,12 +43,32 @@ local UnitIsAFK = UnitIsAFK
 -- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, UIFrameFadeIn
 
 local stats = {
-	60,		-- Total deaths
-	97,		-- Daily quests completed
-	98,		-- Quests completed
+	1042,	-- Number of hugs
+	1045,	-- Total cheers
+	1047,	-- Total facepalms
+	1065,	-- Total waves
+	1066,	-- Total times LOL'd
 	107,	-- Creatures killed
+	1088,	-- Kael'thas Sunstrider kills (Tempest Keep)
+	1098,	-- Onyxia kills (Onyxia's Lair)
+	10981, -- Legion dungeons completed (final boss defeated)
+	10984, -- Legion raids completed (final boss defeated)
+	10986, -- Legion raid boss defeated the most
 	112,	-- Deaths from drowning
+	11236, -- ClassHall Missions completed
+	11237, -- ClassHall Rare Missions completed
 	114,	-- Deaths from falling
+	11407, -- Odyn defeats (Raid Finder Trial of Valor)
+	1149,	-- Talent tree respecs
+	1197,	-- Total kills
+	1198,	-- Total kills that grant experience or honor
+	1487,	-- Killing Blows
+	1491,	-- Battleground Killing Blows
+	1518,	-- Fish caught
+	1716,	-- Battleground with the most Killing Blows
+	197, -- Total damage done
+	2219, -- Total deaths in 5-player Heroic dungeons
+	318, -- Total deaths from opposite faction
 	319,	-- Duels won
 	320,	-- Duels lost
 	321,	-- Total raid and dungeon deaths
@@ -61,49 +81,29 @@ local stats = {
 	342,	-- Epic items acquired
 	349,	-- Flight paths taken
 	377,	-- Most factions at Exalted
+	4687,	-- Victories over the Lich King (Icecrown 25 player)
+	5692,	-- Rated battlegrounds played
+	5694,	-- Rated battlegrounds won
 	588,	-- Total Honorable Kills
+	60,		-- Total deaths
+	6167,	-- Deathwing kills (Dragon Soul)
+	7399,	-- Challenge mode dungeons completed
+	8278,	-- Pet Battles won at max level
 	837,	-- Arenas won
 	838,	-- Arenas played
 	839,	-- Battlegrounds played
 	840,	-- Battlegrounds won
+	8632,	-- Garrosh Hellscream (LFR Siege of Orgrimmar)
 	919,	-- Gold earned from auctions
 	931,	-- Total factions encountered
 	932,	-- Total 5-player dungeons entered
 	933,	-- Total 10-player raids entered
 	934,	-- Total 25-player raids entered
-	1042,	-- Number of hugs
-	1045,	-- Total cheers
-	1047,	-- Total facepalms
-	1065,	-- Total waves
-	1066,	-- Total times LOL'd
-	1088,	-- Kael'thas Sunstrider kills (Tempest Keep)
-	1149,	-- Talent tree respecs
-	1197,	-- Total kills
-	1098,	-- Onyxia kills (Onyxia's Lair)
-	1198,	-- Total kills that grant experience or honor
-	1487,	-- Killing Blows
-	1491,	-- Battleground Killing Blows
-	1518,	-- Fish caught
-	1716,	-- Battleground with the most Killing Blows
-	4687,	-- Victories over the Lich King (Icecrown 25 player)
-	5692,	-- Rated battlegrounds played
-	5694,	-- Rated battlegrounds won
-	6167,	-- Deathwing kills (Dragon Soul)
-	7399,	-- Challenge mode dungeons completed
-	8278,	-- Pet Battles won at max level
-	8632,	-- Garrosh Hellscream (LFR Siege of Orgrimmar)
-	9430,	-- Draenor dungeons completed (final boss defeated)
-	9561,	-- Draenor raid boss defeated the most
-	9558,	-- Draenor raids completed (final boss defeated)
-	9430,	-- Draenor dungeons completed (final boss defeated)
-	9561,	-- Draenor raid boss defeated the most
-	9558,	-- Draenor raids completed (final boss defeated)
-	10060,	-- Garrison Followers recruited
-	10181,	-- Garrision Missions completed
-	10184,	-- Garrision Rare Missions completed
+	97,		-- Daily quests completed
+	98,		-- Quests completed
 }
 
---Create Random Stats
+-- Create Random Stats
 local function createStats()
 	local id = stats[random( #stats )]
 	local _, name = GetAchievementInfo(id)
@@ -112,7 +112,7 @@ local function createStats()
 	return format("%s: |cfff0ff00%s|r", name, result)
 end
 
---Simple-Timer for Stats
+-- Simple-Timer for Stats
 local showTime = 5
 local total = 0
 local function onUpdate(self, elapsed)
@@ -339,6 +339,7 @@ function AFK:Initialize()
 	self.AFKMode.bottom.time:SetText("00:00")
 	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
+
 	--Use this frame to control position of the model
 	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.modelHolder:SetSize(150, 150)

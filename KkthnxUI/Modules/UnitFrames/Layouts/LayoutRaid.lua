@@ -185,9 +185,12 @@ local function CreateRaidLayout(self, unit)
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOM", self.Health, "CENTER", 0, 3)
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size)
-	self.Name:SetShadowOffset(K.Mult,-K.Mult)
-	self.Name:SetTextColor(1, 0.82, 0, 1)
-	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameVeryShort]")
+	self.Name:SetShadowOffset(K.Mult, -K.Mult)
+	if C.Raidframe.ClassColorName == true then
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameVeryShort]")
+	else
+		self:Tag(self.Name, "[KkthnxUI:NameVeryShort]")
+	end
 
 	-- Power bar
 	if (C.Raidframe.ManabarShow) then

@@ -489,21 +489,33 @@ local function CreateUnitLayout(self, unit)
 	if data.nam then
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		if C.Unitframe.ClassColorName == true then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:NameMedium]")
+		end
 	end
 
 	-- Name Text Party
 	if data.nam and self.IsPartyFrame and C.Unitframe.Party == true then
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		if C.Unitframe.ClassColorName == true then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:NameShort]")
+		end
 	end
 
 	-- Name text targettarget
 	if data.nam and self.IsTargetFrame then
 		self.Name = K.SetFontString(self, C.Media.Font, 12, nil, "LEFT")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		if C.Unitframe.ClassColorName == true then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:NameShort]")
+		end
 	end
 
 	-- Portrait
