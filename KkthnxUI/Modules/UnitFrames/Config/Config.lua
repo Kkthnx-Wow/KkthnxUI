@@ -10,11 +10,9 @@ K.DefaultAuras = {
 	General = {},
 }
 
-do
-	for _, list in pairs({K.AuraList.Immunity, K.AuraList.CCImmunity, K.AuraList.Defensive, K.AuraList.Offensive, K.AuraList.Helpful, K.AuraList.Misc}) do
-		for i = 1, #list do
-			K.DefaultAuras.Arena[list[i]] = true
-		end
+for _, list in pairs({K.AuraList.Stun, K.AuraList.CC, K.AuraList.Silence, K.AuraList.Taunt}) do
+	for i = 1, #list do
+		K.DefaultAuras.Arena[list[i]] = true
 	end
 end
 

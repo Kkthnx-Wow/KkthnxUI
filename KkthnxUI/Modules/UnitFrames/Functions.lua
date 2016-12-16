@@ -131,6 +131,8 @@ do
 	}
 
 	function K.PostUpdateHealth(Health, unit, cur, max)
+		if not unit then return end -- Blizz bug in 7.1
+
 		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GetSpellInfo(8326) or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
 		local uconfig = ns.config[self.cUnit]
