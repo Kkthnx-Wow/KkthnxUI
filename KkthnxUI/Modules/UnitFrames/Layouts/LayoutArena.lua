@@ -100,11 +100,7 @@ function ns.createArenaLayout(self, unit)
 	self.Name = K.SetFontString(self.Health, C.Media.Font, 14)
 	self.Name:SetSize(110, 10)
 	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-	if C.Unitframe.ClassColorName == true then
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
-	else
-		self:Tag(self.Name, "[KkthnxUI:NameMedium]")
-	end
+	self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameMedium]")
 
 	-- PvP Icon
 	self.PvP = self:CreateTexture(nil, "OVERLAY")

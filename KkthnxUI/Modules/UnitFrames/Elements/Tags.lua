@@ -25,17 +25,9 @@ local UnitPowerMax = UnitPowerMax
 local _, ns = ...
 local oUF = ns.oUF
 
-oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_POWER"
-oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
-	local Reaction = UnitReaction(unit, "player")
-	if (UnitIsPlayer(unit)) then
-		return _TAGS["raidcolor"](unit)
-	elseif (Reaction) then
-		local c = K.Colors.reaction[Reaction]
-		return string.format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
-	else
-		return string.format("|cff%02x%02x%02x", .84 * 255, .75 * 255, .65 * 255)
-	end
+oUF.Tags.Events["KkthnxUI:NameColor"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameColor"] = function(unit)
+	return format("|cff%02x%02x%02x", .9 * 255, .9 * 255, .9 * 255)
 end
 
 oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_DISPLAYPOWER UNIT_MAXPOWER"
