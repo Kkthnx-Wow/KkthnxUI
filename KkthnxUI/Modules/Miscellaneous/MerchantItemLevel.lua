@@ -1,6 +1,17 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.MerchantItemLevel ~= true then return end
 
+-- Lua API
+local _G = _G
+
+-- Wow API
+local GetItemInfo = GetItemInfo
+local GetMerchantItemLink = GetMerchantItemLink
+local GetMerchantNumItems = GetMerchantNumItems
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: MERCHANT_ITEMS_PER_PAGE, MerchantFrame
+
 -- Show item level for weapons and armor in merchant
 local function MerchantItemlevel()
 	local numItems = GetMerchantNumItems()

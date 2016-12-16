@@ -9,6 +9,7 @@ local format = string.format
 -- Wow API
 local UnitGUID = UnitGUID
 local SendChatMessage = SendChatMessage
+local IsInGroup = IsInGroup
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_ERROR1

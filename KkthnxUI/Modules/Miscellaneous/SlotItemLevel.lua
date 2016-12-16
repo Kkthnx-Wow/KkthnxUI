@@ -1,6 +1,25 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.ItemLevel ~= true then return end
 
+-- Lua API
+local _G = _G
+local floor = math.floor
+local pairs = pairs
+local select = select
+local strmatch = string.match
+local strsplit = string.split
+local tonumber = tonumber
+
+-- Wow API
+local GetDetailedItemLevelInfo = GetDetailedItemLevelInfo
+local GetInventoryItemLink = GetInventoryItemLink
+local GetInventorySlotInfo = GetInventorySlotInfo
+local GetItemInfo = GetItemInfo
+local UnitLevel = UnitLevel
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CharacterFrame, InspectFrame
+
 -- Item level on slot buttons in Character/InspectFrame(by Tukz)
 local slots = {
 	"HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "ShirtSlot", "TabardSlot",

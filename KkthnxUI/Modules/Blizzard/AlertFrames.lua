@@ -1,11 +1,25 @@
 local K, C, L = unpack(select(2, ...))
 if IsAddOnLoaded("MoveAnything") then return end
 
+-- Lua API
+local ipairs = ipairs
+local strfind = string.find
+local tremove = table.remove
+
+-- Wow API
+local hooksecurefunc = hooksecurefunc
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: AlertFrame, FIRST_YOFFSET, next,
+
+local Movers = K.Movers
+
 -- AlertFrameMove(by Gethe)
 local AchievementAnchor = CreateFrame("Frame", "AchievementAnchor", UIParent)
 AchievementAnchor:SetWidth(230)
 AchievementAnchor:SetHeight(50)
 AchievementAnchor:SetPoint(unpack(C.Position.Alerts))
+Movers:RegisterFrame(AchievementAnchor)
 
 local alertBlacklist = {
 	GroupLootContainer = C.Loot.GroupLoot,
@@ -17,7 +31,7 @@ local POSITION, ANCHOR_POINT, YOFFSET = "BOTTOM", "TOP", -9
 local function CheckGrow()
 	local point = AchievementAnchor:GetPoint()
 
-	if string.find(point, "TOP") or point == "CENTER" or point == "LEFT" or point == "RIGHT" then
+	if strfind(point, "TOP") or point == "CENTER" or point == "LEFT" or point == "RIGHT" then
 		POSITION = "TOP"
 		ANCHOR_POINT = "BOTTOM"
 		YOFFSET = 9
@@ -107,7 +121,7 @@ local function SetUpAlert()
 		if isBlacklisted then
 			for i, alertSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
 				if alertFrameSubSystem == alertSubSystem then
-					return table.remove(AlertFrame.alertFrameSubSystems, i)
+					return tremove(AlertFrame.alertFrameSubSystems, i)
 				end
 			end
 		end
@@ -122,7 +136,7 @@ local function SetUpAlert()
 	end
 
 	for i, name in next, remove do
-		table.remove(AlertFrame.alertFrameSubSystems, i)
+		tremove(AlertFrame.alertFrameSubSystems, i)
 	end
 end
 

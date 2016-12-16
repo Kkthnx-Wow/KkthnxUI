@@ -1,6 +1,12 @@
 local K, C, L = unpack(select(2, ...))
 if C.Announcements.SayThanks ~= true then return end
 
+-- Wow API
+local pairs = pairs
+local SendChatMessage = SendChatMessage
+local GetSpellLink = GetSpellLink
+local print = print
+
 -- Says thanks for some spells(SaySapped by Bitbyte, modified by m2jest1c)
 local spells = {
 	[20484] = true,		-- Rebirth

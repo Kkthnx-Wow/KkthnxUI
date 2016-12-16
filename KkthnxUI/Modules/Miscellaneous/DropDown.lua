@@ -1,6 +1,15 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua API
 local _G = _G
+local tinsert = table.insert
+
+-- Wow API
+local hooksecurefunc = hooksecurefunc
+local UIDROPDOWNMENU_MAXLEVELS = UIDROPDOWNMENU_MAXLEVELS
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ChatFrame1, getn -- No idea what this is. There is no info about it. Maybe we shouldn't cahe this.
 
 local SkinDropDowns = CreateFrame("Frame")
 SkinDropDowns:RegisterEvent("ADDON_LOADED")

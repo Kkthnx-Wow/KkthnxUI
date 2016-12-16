@@ -1,6 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 if C.Announcements.SaySapped ~= true then return end
 
+-- Wow API
+local SendChatMessage = SendChatMessage
+
 local SaySapped = CreateFrame("Frame")
 
 SaySapped:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")

@@ -4,14 +4,19 @@ if C.Announcements.BadGear ~= true then return end
 -- Lua API
 local format = string.format
 local pairs = pairs
+local print = print
 local select = select
 
 -- Wow API
-local CreateFrame = CreateFrame
+local ChatTypeInfo = ChatTypeInfo
 local GetInventoryItemID = GetInventoryItemID
 local GetItemInfo = GetItemInfo
 local IsInInstance = IsInInstance
 local PlaySound = PlaySound
+local RaidNotice_AddMessage = RaidNotice_AddMessage
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: RaidWarningFrame, CURRENTLY_EQUIPPED
 
 -- Check bad gear in instance
 local BadGear = CreateFrame("Frame")
