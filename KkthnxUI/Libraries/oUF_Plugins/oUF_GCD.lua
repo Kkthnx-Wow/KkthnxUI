@@ -30,7 +30,7 @@ local Enable = function(self)
 	bar:Hide()
 
 	bar.spark = bar:CreateTexture(nil, "DIALOG")
-	bar.spark:SetTexture(C.Media.Texture)
+	bar.spark:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Blank]])
 	bar.spark:SetVertexColor(unpack(bar.Color))
 	bar.spark:SetHeight(bar.Height)
 	bar.spark:SetWidth(bar.Width)
