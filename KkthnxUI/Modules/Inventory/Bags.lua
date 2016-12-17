@@ -595,8 +595,10 @@ function Bags:SlotUpdate(id, button)
 		IconQuestTexture:SetAlpha(0)
 	end
 
-	button.NewItemTexture:SetTexture(C.Media.Blizz)
-	button.NewItemTexture:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
+	if (isNewItem) then -- Leave this check for bags only?
+		NewItem:SetTexture(C.Media.Blizz)
+		NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
+	end
 
 	-- Letting you style this
 	-- if IsProfBag then
