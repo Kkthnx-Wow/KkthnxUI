@@ -205,7 +205,6 @@
     <Script file="Modules\Miscellaneous\ThreatBar.lua" />
 
     <!-- Nameplates -->
-    <Script file="Modules\Nameplates\Tags.lua" />
     <Script file="Modules\Nameplates\Nameplates.lua" />
 
     <!-- Quests -->

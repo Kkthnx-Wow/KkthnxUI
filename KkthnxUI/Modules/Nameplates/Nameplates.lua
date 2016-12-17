@@ -2,8 +2,8 @@ local K, C, L = unpack(select(2, ...))
 if C.Nameplates.Enable ~= true then return end
 
 -- Lua API
-local floor = math.floor -- ??
-local format = string.format -- ??
+local floor = math.floor
+local format = string.format
 local huge = math.huge
 local tinsert = table.insert
 local unpack = unpack
@@ -14,6 +14,7 @@ local CreateFrame = CreateFrame
 local GetArenaOpponentSpec = GetArenaOpponentSpec
 local GetBattlefieldScore = GetBattlefieldScore
 local GetNumBattlefieldScores = GetNumBattlefieldScores
+local GetNumGroupMembers = GetNumGroupMembers
 local GetSpecializationInfoByID = GetSpecializationInfoByID
 local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
@@ -26,19 +27,19 @@ local UnitClass = UnitClass
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation
 local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
+local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsTapDenied = UnitIsTapDenied
 local UnitIsUnit = UnitIsUnit
 local UnitName = UnitName
 local UnitReaction = UnitReaction
 local UnitSelectionColor = UnitSelectionColor
-local GetNumGroupMembers = GetNumGroupMembers
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
+local GetCVarBool = GetCVarBool
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder
+-- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder, event
 
--- oUF nameplates
+-- oUF_KkthnxNameplates
 local _, ns = ...
 local oUF = ns.oUF
 
@@ -454,7 +455,6 @@ local function style(self, unit)
 		self.Health.value = self.Health:CreateFontString(nil, "OVERLAY")
 		self.Health.value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 		self.Health.value:SetTextColor(1, 1, 1)
-		-- 	self.Health.value:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 		self.Health.value:SetPoint("RIGHT", self.Health, "RIGHT", 0, 0)
 		self:Tag(self.Health.value, "[NameplateHealth]")
 	end
@@ -477,7 +477,6 @@ local function style(self, unit)
 	-- Create Name Text
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
-	-- self.Name:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
 
@@ -490,9 +489,8 @@ local function style(self, unit)
 	-- Create Level
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
-	-- self.Level:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 	self.Level:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
-	self:Tag(self.Level, "[NameplateLevelDiffColor][NameplateLevel][shortclassification]")
+	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level][KkthnxUI:ClassificationColor][KkthnxUI:ClassificationShort]")
 
 	-- Create Cast Bar
 	self.Castbar = CreateFrame("StatusBar", nil, self)
@@ -517,7 +515,6 @@ local function style(self, unit)
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
 	self.Castbar.Time:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
-	-- self.Castbar.Time:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 
 	self.Castbar.CustomTimeText = function(self, duration)
 		self.Time:SetText(("%.1f"):format(self.channeling and duration or self.max - duration))
@@ -529,7 +526,6 @@ local function style(self, unit)
 		self.Castbar.Text:SetPoint("LEFT", self.Castbar, "LEFT", 3, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -1, 0)
 		self.Castbar.Text:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
-		-- self.Castbar.Text:SetShadowOffset(C.Media.Font_shadow and 1 or 0, C.Media.Font_shadow and -1 or 0)
 		self.Castbar.Text:SetHeight(C.Media.Font_Size)
 		self.Castbar.Text:SetJustifyH("LEFT")
 	end
@@ -630,7 +626,6 @@ local function style(self, unit)
 			button:EnableMouse(false)
 
 			button.remaining = K.SetFontString(button, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
-			-- button.remaining:SetShadowOffset(C.font.auras_font_shadow and 1 or 0, C.font.auras_font_shadow and -1 or 0)
 			button.remaining:SetPoint("CENTER", button, "CENTER", 1, 1)
 			button.remaining:SetJustifyH("CENTER")
 
@@ -644,7 +639,6 @@ local function style(self, unit)
 			button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, 0)
 			button.count:SetJustifyH("RIGHT")
 			button.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			-- button.count:SetShadowOffset(C.font.auras_font_shadow and 1 or 0, C.font.auras_font_shadow and -1 or 0)
 
 			if C.Nameplates.Spiral == true then
 				element.disableCooldown = false
