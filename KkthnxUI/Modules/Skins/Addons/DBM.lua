@@ -204,7 +204,7 @@ DBMSkin:SetScript("OnEvent", function(self, event, addon)
 				end
 
 				if not progress.styled then
-					progress:SetStatusBarTexture(C.media.texture)
+					progress:SetStatusBarTexture(C.Media.Texture)
 					progress:SetBackdrop(backdrop)
 					progress:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
 					progress.styled = true
