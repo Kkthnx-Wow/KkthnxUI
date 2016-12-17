@@ -57,7 +57,7 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 		local reaction = K.Colors.reaction[unitReaction]
 		return Hex(reaction[1], reaction[2], reaction[3])
 	else
-		return Hex(194/255, 194/255, 194/255)
+		return "|cffc2c2c2"
 	end
 end
 
