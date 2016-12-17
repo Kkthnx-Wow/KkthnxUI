@@ -275,10 +275,9 @@ local function CreateRaidLayout(self, unit)
 	if (C.Raidframe.ShowNotHereTimer) then
 		self.NotHere = self.Health:CreateFontString(nil, "OVERLAY")
 		self.NotHere:SetPoint("CENTER", self, "BOTTOM")
-		self.NotHere:SetFont(C.Media.Font, 11, "THINOUTLINE")
+		self.NotHere:SetFont(C.Media.Font, 10, "THINOUTLINE")
 		self.NotHere:SetShadowOffset(0, 0)
 		self.NotHere:SetTextColor(0, 1, 0)
-		self.NotHere.frequentUpdates = 1
 		self:Tag(self.NotHere, "[KkthnxUI:StatusTimer]")
 	end
 
