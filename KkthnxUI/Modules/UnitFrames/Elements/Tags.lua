@@ -8,18 +8,24 @@ local format = string.format
 -- Wow API
 local GetPVPTimer = GetPVPTimer
 local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetQuestGreenRange = GetQuestGreenRange
+local GetRelativeDifficultyColor = GetRelativeDifficultyColor
 local GetTime = GetTime
 local IsPVPTimerRunning = IsPVPTimerRunning
+local QuestDifficultyColors = QuestDifficultyColors
+local UnitBattlePetLevel = UnitBattlePetLevel
 local UnitClass = UnitClass
 local UnitGroupRolesAssigned = UnitGroupRolesAssigned
 local UnitGUID = UnitGUID
 local UnitIsAFK = UnitIsAFK
+local UnitIsBattlePetCompanion =UnitIsBattlePetCompanion
 local UnitIsConnected = UnitIsConnected
 local UnitIsDND = UnitIsDND
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
 local UnitIsPVPFreeForAll = UnitIsPVPFreeForAll
 local UnitIsUnit = UnitIsUnit
+local UnitIsWildBattlePet = UnitIsWildBattlePet
 local UnitLevel = UnitLevel
 local UnitName = UnitName
 local UnitPower = UnitPower
@@ -27,7 +33,7 @@ local UnitPowerMax = UnitPowerMax
 local UnitReaction = UnitReaction
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role
+-- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role C_PetJournal_GetPetTeamAverageLevel
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -44,23 +50,9 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 		local reaction = K.Colors.reaction[unitReaction]
 		return Hex(reaction[1], reaction[2], reaction[3])
 	else
-		return "|cFFC2C2C2"
-		-- return Hex(194/255, 194/255, 194/255)
+		return Hex(194/255, 194/255, 194/255)
 	end
 end
-
--- oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_POWER"
--- oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
--- 	local Reaction = UnitReaction(unit, "player")
--- 	if (UnitIsPlayer(unit)) then
--- 		return _TAGS["raidcolor"](unit)
--- 	elseif (Reaction) then
--- 		local c = K.Colors.reaction[Reaction]
--- 		return format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
--- 	else
--- 		return format("|cff%02x%02x%02x", .84 * 255, .75 * 255, .65 * 255)
--- 	end
--- end
 
 -- We will just use this for now.
 oUF.Tags.Events["KkthnxUI:NameColor"] = "UNIT_NAME_UPDATE"
@@ -90,37 +82,60 @@ oUF.Tags.Methods["KkthnxUI:PvPTimer"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:DifficultyColor"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
+	local r, g, b = 0.55, 0.57, 0.61
+	if ( UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) ) then
+		local level = UnitBattlePetLevel(unit)
+		local teamLevel = C_PetJournal_GetPetTeamAverageLevel()
+		if teamLevel < level or teamLevel > level then
+			local c = GetRelativeDifficultyColor(teamLevel, level)
+			r, g, b = c.r, c.g, c.b
+		else
+			local c = QuestDifficultyColors["difficult"]
+			r, g, b = c.r, c.g, c.b
+		end
+	else
+		local DiffColor = UnitLevel(unit) - UnitLevel("player")
+		if (DiffColor >= 5) then
+			r, g, b = 0.69, 0.31, 0.31
+		elseif (DiffColor >= 3) then
+			r, g, b = 0.71, 0.43, 0.27
+		elseif (DiffColor >= -2) then
+			r, g, b = 0.84, 0.75, 0.65
+		elseif (-DiffColor <= GetQuestGreenRange()) then
+			r, g, b = 0.33, 0.59, 0.33
+		else
+			r, g, b = 0.55, 0.57, 0.61
+		end
+	end
+	return Hex(r, g, b)
+end
+
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
-	local r, g, b
-	local Level = UnitLevel(unit)
-	local Color = GetQuestDifficultyColor(Level)
+	local level = UnitEffectiveLevel(unit)
 
-	if (Level < 0) then
-		r, g, b = 1, 0, 0
-		Level = "??"
-	elseif (Level == 0) then
-		r, g, b = Color.r, Color.g, Color.b
-		Level = "?"
-	else
-		r, g, b = Color.r, Color.g, Color.b
-		Level = Level
+	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
+		level = UnitBattlePetLevel(unit)
 	end
 
-	return format("|cff%02x%02x%02x%s|r", r * 255, g * 255, b * 255, Level)
+	if level > 0 then
+		return level
+	else
+		return "??"
+	end
 end
 
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-
 	return K.UTF8Sub(Name, 6, true)
 end
 
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-
 	return K.UTF8Sub(Name, 8, true)
 end
 
@@ -148,10 +163,6 @@ oUF.Tags.Methods["KkthnxUI:StatusTimer"] = function(unit)
 	elseif(UnitIsDND(unit)) then
 		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "DND" then
 			unitStatus[guid] = {"DND", GetTime()}
-		end
-	elseif(not UnitIsConnected(unit)) then
-		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "Offline" then
-			unitStatus[guid] = {"Offline", GetTime()}
 		end
 	else
 		unitStatus[guid] = nil

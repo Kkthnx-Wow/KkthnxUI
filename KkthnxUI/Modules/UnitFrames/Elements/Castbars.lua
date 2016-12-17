@@ -252,6 +252,12 @@ function ns.PostChannelStart(Castbar, unit, name)
 	end
 end
 
+function K.ColorBorder(Castbar, ...)
+    local texture, r, g, b, s = ...
+    Castbar:SetBorderTexture(texture)
+    Castbar:SetBorderColor(r, g, b)
+end
+
 function ns.UpdateCastbarColor(Castbar, unit)
 	local color
 
@@ -259,11 +265,15 @@ function ns.UpdateCastbarColor(Castbar, unit)
 		color = colors.class[select(2, UnitClass("player"))]
 	elseif Castbar.interrupt then
 		color = colors.uninterruptible
+		 K.ColorBorder(Castbar, "white",  0.8, 0.7, 0.2)
 	elseif UnitIsFriend(unit, "player") then
 		color = colors.reaction[5]
 	else
 		color = colors.reaction[1]
 	end
+
+	Castbar:SetBorderTexture("default")
+	Castbar:SetBorderColor(1, 1, 1)
 
 	local r, g, b = color[1], color[2], color[3]
 	Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)

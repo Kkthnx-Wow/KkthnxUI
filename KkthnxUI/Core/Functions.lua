@@ -37,9 +37,9 @@ local Locale = GetLocale()
 
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
-K.BorderBackdrop = {bgFile = C.Media.Blank}
+K.BorderBackdrop = {bgFile = C.Media.Blank, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
-K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
+K.PixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
@@ -61,7 +61,7 @@ K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH(justify or "CENTER")
 	fs:SetShadowColor(0, 0, 0, 1)
-	fs:SetShadowOffset(K.Mult, -K.Mult) -- Temp
+	fs:SetShadowOffset(K.Mult, -K.Mult)
 
 	return fs
 end

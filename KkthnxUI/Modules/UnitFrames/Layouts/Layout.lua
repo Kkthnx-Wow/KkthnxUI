@@ -534,7 +534,7 @@ local function CreateUnitLayout(self, unit)
 		self.Level:SetFont(C.Media.Font, C.Media.Font_Size)
 		self.Level:SetShadowOffset(K.Mult, -K.Mult)
 		self.Level:SetPoint("CENTER", self.Texture, (self.cUnit == "player" and -63) or 63, -15.5)
-		self:Tag(self.Level, "[KkthnxUI:Level]")
+		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level]")
 
 		-- PvP Icon
 		self.PvP = self:CreateTexture(nil, "OVERLAY")
