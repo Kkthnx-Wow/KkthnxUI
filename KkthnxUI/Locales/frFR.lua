@@ -1,6 +1,7 @@
 local K, C, L = unpack(select(2, ...))
+if (GetLocale() ~= "frFR") then return end
 
--- Localization for enUS & enGB
+-- Localization for frFR clients
 
 L.AFKScreen = {
 	NoGuild = "No Guild",
