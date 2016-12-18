@@ -103,7 +103,63 @@ local stats = {
 	98,		-- Quests completed
 }
 
--- Create Random Stats
+-- Create Time
+local function createTime()
+	local hour, hour24, minute, ampm = tonumber(date("%I")), tonumber(date("%H")), tonumber(date("%M")), date("%p"):lower()
+	local sHour, sMinute = GetGameTime()
+
+	local localTime = format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_LOCALTIME, hour, minute, ampm)
+	local localTime24 = format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_LOCALTIME, hour24, minute)
+	local realmTime = format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute, ampm)
+	local realmTime24 = format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute)
+
+	if C.DataText.LocalTime then
+		if C.DataText.Time24Hr then
+			return localTime24
+		else
+			return localTime
+		end
+	else
+		if C.DataText.Time24Hr then
+			return realmTime24
+		else
+			return realmTime
+		end
+	end
+end
+
+local monthAbr = {
+	[1] = L.AFKScreen.Jan,
+	[2] = L.AFKScreen.Feb,
+	[3] = L.AFKScreen.Mar,
+	[4] = L.AFKScreen.Apr,
+	[5] = L.AFKScreen.May,
+	[6] = L.AFKScreen.Jun,
+	[7] = L.AFKScreen.Jul,
+	[8] = L.AFKScreen.Aug,
+	[9] = L.AFKScreen.Sep,
+	[10] = L.AFKScreen.Oct,
+	[11] = L.AFKScreen.Nov,
+	[12] = L.AFKScreen.Dec,
+}
+
+local daysAbr = {
+	[1] = L.AFKScreen.Sun,
+	[2] = L.AFKScreen.Mon,
+	[3] = L.AFKScreen.Tue,
+	[4] = L.AFKScreen.Wed,
+	[5] = L.AFKScreen.Thu,
+	[6] = L.AFKScreen.Fri,
+	[7] = L.AFKScreen.Sat,
+}
+
+-- </ Create Date > --
+local function createDate()
+	local curDayName, curMonth, curDay, curYear = CalendarGetDate()
+	AFK.AFKMode.top.date:SetFormattedText("%s, %s %d, %d", daysAbr[curDayName], monthAbr[curMonth], curDay, curYear)
+end
+
+-- </ Create Random Stats > --
 local function createStats()
 	local id = stats[random( #stats )]
 	local _, name = GetAchievementInfo(id)
@@ -142,6 +198,15 @@ end
 
 function AFK:UpdateTimer()
 	local time = GetTime() - self.startTime
+
+	local createdTime = createTime()
+
+	-- </ Set Time > --
+	self.AFKMode.top.time:SetFormattedText(createdTime)
+
+	-- </ Set Date > --
+	createDate()
+
 	self.AFKMode.bottom.time:SetFormattedText("%02d:%02d", floor(time/60), time % 60)
 end
 
@@ -276,6 +341,22 @@ function AFK:Initialize()
 	self.AFKMode.top.wowlogo.tex:SetAtlas("Glues-WoW-LegionLogo")
 	self.AFKMode.top.wowlogo.tex:SetInside()
 
+	-- </ Server/Local Time text > --
+	self.AFKMode.top.time = self.AFKMode.top:CreateFontString(nil, 'OVERLAY')
+	self.AFKMode.top.time:SetFont(C.Media.Font, 20, C.Media.Font_Style)
+	self.AFKMode.top.time:SetText("")
+	self.AFKMode.top.time:SetPoint("RIGHT", self.AFKMode.top, "RIGHT", -20, 0)
+	self.AFKMode.top.time:SetJustifyH("LEFT")
+	self.AFKMode.top.time:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
+
+	-- </ Date text > --
+	self.AFKMode.top.date = self.AFKMode.top:CreateFontString(nil, 'OVERLAY')
+	self.AFKMode.top.date:SetFont(C.Media.Font, 20, C.Media.Font_Style)
+	self.AFKMode.top.date:SetText("")
+	self.AFKMode.top.date:SetPoint("LEFT", self.AFKMode.top, "LEFT", 20, 0)
+	self.AFKMode.top.date:SetJustifyH("RIGHT")
+	self.AFKMode.top.date:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
+
 	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.bottom:SetFrameLevel(0)
 	self.AFKMode.bottom:SetTemplate("Transparent")
@@ -306,7 +387,7 @@ function AFK:Initialize()
 	self.AFKMode.bottom.kkthnxui:SetTextColor(60/255, 155/255, 237/255)
 	-- </ KkthnxUI Version > --
 	self.AFKMode.bottom.ktext = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.ktext:SetFont(C.Media.Font, 16, C.Media.Font_Style)
+	self.AFKMode.bottom.ktext:SetFont(C.Media.Font, 17, C.Media.Font_Style)
 	self.AFKMode.bottom.ktext:SetFormattedText("v%s", K.Version)
 	self.AFKMode.bottom.ktext:SetPoint("TOP", self.AFKMode.bottom.kkthnxui, "BOTTOM")
 	self.AFKMode.bottom.ktext:SetTextColor(0.7, 0.7, 0.7)

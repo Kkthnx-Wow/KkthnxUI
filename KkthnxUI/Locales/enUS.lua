@@ -3,7 +3,26 @@ local K, C, L = unpack(select(2, ...))
 -- Localization for enUS & enGB
 
 L.AFKScreen = {
-	NoGuild = "No Guild"
+	NoGuild = "No Guild",
+	Sun = "Sunday",
+	Mon = "Monday",
+	Tue = "Tuesday",
+	Wed = "Wednesday",
+	Thu = "Thursday",
+	Fri = "Friday",
+	Sat = "Saturday",
+	Jan = "January",
+	Feb = "February",
+	Mar = "March",
+	Apr = "April",
+	May = "May",
+	Jun = "June",
+	Jul = "July",
+	Aug = "August",
+	Sep = "September",
+	Oct = "October",
+	Nov = "November",
+	Dec = "December"
 }
 
 L.Announce = {

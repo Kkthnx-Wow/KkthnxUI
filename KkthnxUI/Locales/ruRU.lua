@@ -5,6 +5,26 @@ if (GetLocale() ~= "ruRU") then return end
 
 L.AFKScreen = {
 	NoGuild = "Нет гильдии"
+	-- Needs translation
+	Sun = "Sunday",
+	Mon = "Monday",
+	Tue = "Tuesday",
+	Wed = "Wednesday",
+	Thu = "Thursday",
+	Fri = "Friday",
+	Sat = "Saturday",
+	Jan = "January",
+	Feb = "February",
+	Mar = "March",
+	Apr = "April",
+	May = "May",
+	Jun = "June",
+	Jul = "July",
+	Aug = "August",
+	Sep = "September",
+	Oct = "October",
+	Nov = "November",
+	Dec = "December"
 }
 
 L.Announce = {
