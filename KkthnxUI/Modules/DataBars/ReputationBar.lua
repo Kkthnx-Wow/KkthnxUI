@@ -34,33 +34,30 @@ if C.Blizzard.ColorTextures == true then
 	ReputationBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
-ReputationBar:SetScript("OnMouseDown", function(self, button)
-	if (button == "LeftButton") then
-		if ReputationFrame and ReputationFrame:IsShown() then ToggleCharacter("ReputationFrame")
-		else
-			ToggleCharacter("ReputationFrame")
-		end
+ReputationBar:SetScript("OnMouseUp", function(self)
+	if GetMouseFocus() == self then
+		ToggleCharacter("ReputationFrame")
 	end
 end)
 
 local function UpdateReputationBar()
-    local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
+	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 
 	if Name then
-	    ReputationBar:Show()
-        ReputationBar:SetMinMaxValues(Min, Max)
-        ReputationBar:SetValue(Value)
-        ReputationBar:SetStatusBarColor(Colors[ID].r, Colors[ID].g, Colors[ID].b)
+		ReputationBar:Show()
+		ReputationBar:SetMinMaxValues(Min, Max)
+		ReputationBar:SetValue(Value)
+		ReputationBar:SetStatusBarColor(Colors[ID].r, Colors[ID].g, Colors[ID].b)
 	else
-	    ReputationBar:Hide()
+		ReputationBar:Hide()
 	end
 end
 
 ReputationBar:SetScript("OnEnter", function(self)
-    local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
+	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 
 	GameTooltip:ClearLines()
-    GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	GameTooltip:AddLine(format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
 	GameTooltip:AddLine(format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / (Max - Min) * 100))

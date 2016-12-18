@@ -45,24 +45,22 @@ if C.Blizzard.ColorTextures == true then
 	ArtifactBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
-ArtifactBar:SetScript("OnMouseDown", function(self, button)
-	if (button == "LeftButton") then
-		local HasArtifactEquip = HasArtifactEquipped()
+ArtifactBar:SetScript("OnMouseUp", function(self)
+	if GetMouseFocus() == self then
 
-		if not ArtifactFrame then
-			LoadAddOn("Blizzard_ArtifactUI")
-		end
+		if IsAddOnLoaded("Blizzard_ArtifactUI") then
 
-		if HasArtifactEquip then
-			local frame = ArtifactFrame
-			local activeID = C_ArtifactUI.GetArtifactInfo()
-			local equippedID = C_ArtifactUI.GetEquippedArtifactInfo()
+			if ArtifactFrame:IsShown() then
+				HideUIPanel(ArtifactFrame)
 
-			if frame:IsShown() and activeID == equippedID then
-				HideUIPanel(frame)
 			else
 				SocketInventoryItem(16)
+				SocketInventoryItem(17)
 			end
+
+		else
+			SocketInventoryItem(16)
+			SocketInventoryItem(17)
 		end
 	end
 end)

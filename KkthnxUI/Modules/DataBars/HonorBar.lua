@@ -48,26 +48,23 @@ if C.Blizzard.ColorTextures == true then
 	HonorBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
-HonorBar:SetScript("OnMouseDown", function(self, button)
-	if (button == "LeftButton") then
-		if not PVPFrame then
-			LoadAddOn("Blizzard_PVPUI")
-		end
-		if PVPFrame and PVPFrame:IsShown() then TogglePVPUI()
+HonorBar:SetScript("OnMouseUp", function(self)
+	if GetMouseFocus() == self then
+		local isInstance, instanceType = IsInInstance()
+
+		if isInstance and (instanceType == "pvp") then
+			LoadAddOn("Blizzard_TalentUI")
+
+			if PlayerTalentFrame:IsShown() then
+				HideUIPanel(PlayerTalentFrame)
+
+			else
+				PlayerTalentFrame:Show()
+				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PVP_TALENTS_TAB])
+			end
+
 		else
 			TogglePVPUI()
-		end
-	elseif(button == "RightButton") then
-
-		if(not IsAddOnLoaded("Blizzard_TalentUI")) then
-			LoadAddOn("Blizzard_TalentUI")
-		end
-
-		if not PlayerTalentFrame:IsShown() then
-			ShowUIPanel(PlayerTalentFrame)
-			PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab" .. PVP_TALENTS_TAB])
-		else
-			HideUIPanel(PlayerTalentFrame)
 		end
 	end
 end)

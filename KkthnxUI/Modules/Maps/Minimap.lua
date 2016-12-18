@@ -163,6 +163,14 @@ HelpOpenTicketButton:SetAlpha(0)
 HelpOpenTicketButton:HookScript("OnShow", function(self) Minimap.Ticket:SetAlpha(1) end)
 HelpOpenTicketButton:HookScript("OnHide", function(self) Minimap.Ticket:SetAlpha(0) end)
 
+GhostFrame:StripTextures()
+GhostFrame:SkinButton()
+GhostFrame:ClearAllPoints()
+GhostFrame:SetPoint(unpack(C.Position.Ghost))
+GhostFrameContentsFrameIcon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+GhostFrameContentsFrameIcon:SetSize(36, 36)
+GhostFrameContentsFrame:SetFrameLevel(GhostFrameContentsFrame:GetFrameLevel() + 2)
+
 -- Gametime
 GameTimeFrame:SetParent(Minimap)
 GameTimeFrame:SetScale(0.6)
