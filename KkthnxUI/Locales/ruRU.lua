@@ -4,7 +4,7 @@ if (GetLocale() ~= "ruRU") then return end
 -- Localization For ruRU Clients
 
 L.AFKScreen = {
-	NoGuild = "Нет гильдии"
+	NoGuild = "Нет гильдии",
 	-- Needs translation
 	Sun = "Sunday",
 	Mon = "Monday",
