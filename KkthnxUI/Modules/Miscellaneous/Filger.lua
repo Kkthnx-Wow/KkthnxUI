@@ -174,9 +174,9 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+					bar.count:SetFont(C.Media.Font, C.Media.Font_Size + 2, C.Media.Font_Style)
 					bar.count:SetShadowOffset(0, -0)
-					bar.count:SetPoint("BOTTOMRIGHT", 1, -2)
+					bar.count:SetPoint("BOTTOMRIGHT", -2, 3)
 					bar.count:SetJustifyH("RIGHT")
 				end
 			else
@@ -185,7 +185,7 @@ function Filger:DisplayActives()
 				else
 					bar.statusbar = CreateFrame("StatusBar", "$parentStatusBar", bar)
 					bar.statusbar:SetWidth(self.BarWidth)
-					bar.statusbar:SetHeight(self.IconSize - 10)
+					bar.statusbar:SetHeight(self.IconSize - 5)
 					bar.statusbar:SetStatusBarTexture(C.Media.Texture)
 					bar.statusbar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b, 1)
 					if self.IconSide == "LEFT" then
@@ -232,7 +232,7 @@ function Filger:DisplayActives()
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
 					bar.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 					bar.count:SetShadowOffset(0, -0)
-					bar.count:SetPoint("BOTTOMRIGHT", 1, 0)
+					bar.count:SetPoint("BOTTOMRIGHT", -2, 3)
 					bar.count:SetJustifyH("RIGHT")
 				end
 
