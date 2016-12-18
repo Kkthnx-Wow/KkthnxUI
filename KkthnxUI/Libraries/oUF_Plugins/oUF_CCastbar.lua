@@ -36,6 +36,21 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
+-- Lua API
+local _G = _G
+
+-- Wow API
+local CASTING_BAR_ALPHA_STEP = CASTING_BAR_ALPHA_STEP
+local CASTING_BAR_FLASH_STEP = CASTING_BAR_FLASH_STEP
+local CASTING_BAR_FLASH_STEPOUT = CASTING_BAR_FLASH_STEPOUT
+local CASTING_BAR_HOLD_TIME = CASTING_BAR_HOLD_TIME
+local GetNetStats = GetNetStats
+local notInterruptible = notInterruptible
+local UnitIsPossessed = UnitIsPossessed
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: castid, CastingBarFrame, PetCastingBarFrame
+
 _G.CASTING_BAR_ALPHA_STEP = 0.05
 _G.CASTING_BAR_FLASH_STEP = 0.05
 _G.CASTING_BAR_FLASH_STEPOUT = 0.05

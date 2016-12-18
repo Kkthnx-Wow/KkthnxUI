@@ -1,12 +1,24 @@
 local K, C, L = unpack(select(2, ...))
+if C.Unitframe.Enable ~= true then return end
+
 local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
+-- Lua API
+local floor, fmod = floor, math.fmod
+local format = string.format
+local GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
+
+-- Wow API
+local UnitBuff = UnitBuff
+local UnitDebuff = UnitDebuff
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SetPortraitToTexture
+
 local PortraitTimerDB = {}
 
-local GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
-local floor, fmod = floor, math.fmod
 local day, hour, minute = 86400, 3600, 60
 
 do

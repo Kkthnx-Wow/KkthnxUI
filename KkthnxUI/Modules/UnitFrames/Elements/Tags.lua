@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
+if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true and C.Nameplates.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
