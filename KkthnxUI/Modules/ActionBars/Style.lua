@@ -195,7 +195,7 @@ function K.StylePet()
 	end
 end
 
-local function UpdateHotkey(self, actionButtonType)
+local function UpdateHotkey(self, btype)
 	local hotkey = _G[self:GetName() .. "HotKey"]
 	local text = hotkey:GetText()
 	local Indicator = _G["RANGE_INDICATOR"]
@@ -244,47 +244,54 @@ local function UpdateHotkey(self, actionButtonType)
 	end
 end
 
-local buttons = 0
+local FlyoutButtons = 0
 local function SetupFlyoutButton()
-	for i = 1, buttons do
-		if _G["SpellFlyoutButton"..i] then
-			StyleNormalButton(_G["SpellFlyoutButton"..i])
-			_G["SpellFlyoutButton"..i]:StyleButton()
+	for i = 1, FlyoutButtons do
+		local Button = _G["SpellFlyoutButton"..i]
 
-			if _G["SpellFlyoutButton"..i]:GetChecked() then
-				_G["SpellFlyoutButton"..i]:SetChecked(false)
+		if Button and not Button.IsSkinned then
+			StyleNormalButton(Button)
+			Button:StyleButton()
+
+			if Button:GetChecked() then
+				Button:SetChecked(nil)
 			end
 
-			if C.ActionBar.RightBarsMouseover == true then
-				SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-				SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
-				_G["SpellFlyoutButton"..i]:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-				_G["SpellFlyoutButton"..i]:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
-			end
+			Button.IsSkinned = true
+		end
+
+		if C.ActionBar.RightBarsMouseover == true then
+			SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+			SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+			Button:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+			Button:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
 		end
 	end
 end
 SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
 
 local function StyleFlyoutButton(self)
+	if not self.FlyoutArrow then return end
+
+	local HB = SpellFlyoutHorizontalBackground
+	local VB = SpellFlyoutVerticalBackground
+	local BE = SpellFlyoutBackgroundEnd
+
 	if self.FlyoutBorder then
 		self.FlyoutBorder:SetAlpha(0)
-	end
-	if self.FlyoutBorderShadow then
 		self.FlyoutBorderShadow:SetAlpha(0)
 	end
 
-	SpellFlyoutHorizontalBackground:SetAlpha(0)
-	SpellFlyoutVerticalBackground:SetAlpha(0)
-	SpellFlyoutBackgroundEnd:SetAlpha(0)
+	HB:SetAlpha(0)
+	VB:SetAlpha(0)
+	BE:SetAlpha(0)
 
 	for i = 1, GetNumFlyouts() do
-		local x = GetFlyoutID(i)
-		local _, _, numSlots, isKnown = GetFlyoutInfo(x)
-		if isKnown then
-			if numSlots > buttons then
-				buttons = numSlots
-			end
+		local ID = GetFlyoutID(i)
+		local _, _, NumSlots, IsKnown = GetFlyoutInfo(ID)
+		if IsKnown then
+			FlyoutButtons = NumSlots
+			break
 		end
 	end
 end
@@ -313,10 +320,17 @@ end
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
+-- hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
+
 if C.ActionBar.Hotkey == true then
-	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...) if event == "PLAYER_ENTERING_WORLD" then ActionButton_UpdateHotkeys(self, self.buttonType) end end)
+	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...)
+		if event == ("PLAYER_ENTERING_WORLD") then
+		ActionButton_UpdateHotkeys(self, self.buttonType) end
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end)
 	hooksecurefunc("ActionButton_UpdateHotkeys", UpdateHotkey)
 end
+
 if C.ActionBar.HideHightlight == true then
 	hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
 end
