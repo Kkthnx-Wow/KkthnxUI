@@ -560,6 +560,11 @@ function Bags:SkinTokens()
 		Token:SetFrameStrata("HIGH")
 		Token:SetFrameLevel(5)
 		Token:SetScale(1)
+		Token:CreateBackdrop()
+		Token.backdrop:SetOutside(Icon)
+		Token.backdrop:SetBackdropBorderColor(0, 0, 0, 0)
+		Token.backdrop:SetBackdrop(K.BorderBackdrop)
+		Token.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 		Icon:SetSize(12, 12)
 		Icon:SetTexCoord(unpack(K.TexCoords))
@@ -595,10 +600,10 @@ function Bags:SlotUpdate(id, button)
 		IconQuestTexture:SetAlpha(0)
 	end
 
-	if (isNewItem) then -- Leave this check for bags only?
-		NewItem:SetTexture(C.Media.Blizz)
-		NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
-	end
+	-- if (isNewItem) then -- Leave this check for bags only?
+	-- 	NewItem:SetTexture(C.Media.Blizz)
+	-- 	NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
+	-- end
 
 	-- Letting you style this
 	-- if IsProfBag then
