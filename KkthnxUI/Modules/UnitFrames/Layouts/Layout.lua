@@ -617,7 +617,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Portrait Timer
-	if (C.Unitframe.PortraitTimer and self.Portrait) then
+	if (C.Unitframe.PortraitTimer == true and self.Portrait) then
 		self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
 
 		self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")

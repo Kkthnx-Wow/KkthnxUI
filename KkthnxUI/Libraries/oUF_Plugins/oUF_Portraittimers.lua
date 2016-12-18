@@ -5,7 +5,7 @@ if not oUF then return end
 
 local PortraitTimerDB = {}
 
-local 	GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
+local GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
 local floor, fmod = floor, math.fmod
 local day, hour, minute = 86400, 3600, 60
 

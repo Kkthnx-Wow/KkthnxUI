@@ -219,8 +219,8 @@ if C.DataText.Battleground == true and C.DataText.BottomBar == true then
 	local BattleGroundFrame = CreateFrame("Frame", "KkthnxUIInfoBottomBattleGround", PetBattleFrameHider)
 	BattleGroundFrame:SetBackdrop(K.BorderBackdrop)
 	BattleGroundFrame:SetInside(KkthnxUIDataTextBottomBar, 4, 4)
-	BattleGroundFrame:SetFrameStrata("MEDIUM")
-	BattleGroundFrame:SetFrameLevel(KkthnxUIDataTextBottomBar:GetFrameLevel() + 1)
+	BattleGroundFrame:SetFrameStrata("HIGH")
+	BattleGroundFrame:SetFrameLevel(2)
 	BattleGroundFrame:EnableMouse(true)
 	-- Just create a layer over this. No need for another border
 	BattleGroundFrame.Background = BattleGroundFrame:CreateTexture(nil, "BORDER")

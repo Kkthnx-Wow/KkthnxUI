@@ -180,7 +180,7 @@ end
 function DataTexts:Register(name, enable, disable, update)
 	local Data = CreateFrame("Frame", nil, PetBattleFrameHider)
 	Data:EnableMouse(true)
-	Data:SetFrameStrata("LOW")
+	Data:SetFrameStrata("MEDIUM")
 
 	Data.Text = Data:CreateFontString(nil, "OVERLAY")
 	-- Data.Text:SetFont(self.Font, self.Size, self.Flags)

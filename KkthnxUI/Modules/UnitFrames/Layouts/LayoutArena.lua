@@ -68,8 +68,6 @@ function ns.createArenaLayout(self, unit)
 	self.Portrait:SetSize(64, 64)
 	self.Portrait:SetPoint("TOPLEFT", self.Texture, 7, -6)
 	self.Portrait.Override = updatePortrait
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", updatePortrait)
-	self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", updatePortrait)
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE", updatePortrait)
 
 	self.Health.Value = K.SetFontString(self.Health, C.Media.Font, 13)
@@ -100,7 +98,7 @@ function ns.createArenaLayout(self, unit)
 	self.Name = K.SetFontString(self.Health, C.Media.Font, 14)
 	self.Name:SetSize(110, 10)
 	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-	self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameMedium]")
+	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	-- PvP Icon
 	self.PvP = self:CreateTexture(nil, "OVERLAY")
@@ -108,7 +106,7 @@ function ns.createArenaLayout(self, unit)
 	self.PvP:SetPoint("TOPLEFT", self.Texture, -14, -20)
 
 	-- Portrait Timer
-	if (C.Unitframe.PortraitTimer and self.Portrait) then
+	if (C.Unitframe.PortraitTimer == true and self.Portrait) then
 		self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
 
 		self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")
@@ -168,6 +166,7 @@ if C.Unitframe.ShowArena == true then
 		arenaprep[i].Health:SetStatusBarTexture(C.Media.Texture)
 
 		arenaprep[i].Spec = K.SetFontString(arenaprep[i].Health, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
+		arenaprep[i].Spec:SetShadowOffset(0, 0)
 		arenaprep[i].Spec:SetPoint("CENTER")
 
 		arenaprep[i]:Hide()
