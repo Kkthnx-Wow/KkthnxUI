@@ -27,6 +27,10 @@ local SetCVar = SetCVar
 local ToggleHelpFrame = ToggleHelpFrame
 local UnitInRaid = UnitInRaid
 
+-- Fixes the issue when the dialog to release spirit does not come up.
+SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end
+SLASH_RELEASE1 = "/release"
+
 -- Ready check
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
 SLASH_RCSLASH1 = "/rc"
