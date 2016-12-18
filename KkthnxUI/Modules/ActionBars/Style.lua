@@ -244,54 +244,64 @@ local function UpdateHotkey(self, btype)
 	end
 end
 
-local FlyoutButtons = 0
+local buttons = 0
 local function SetupFlyoutButton()
-	for i = 1, FlyoutButtons do
-		local Button = _G["SpellFlyoutButton"..i]
+	for i = 1, buttons do
+		local button = _G["SpellFlyoutButton"..i]
+		if button and not button.IsSkinned then
+			StyleNormalButton(button)
+			button:StyleButton()
+			if button:GetChecked() then button:SetChecked(nil) end
 
-		if Button and not Button.IsSkinned then
-			StyleNormalButton(Button)
-			Button:StyleButton()
+			button.IsSkinned = true
 
-			if Button:GetChecked() then
-				Button:SetChecked(nil)
+			if C.ActionBar.RightBarsMouseover == true then
+				SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+				SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+				button:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+				button:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
 			end
-
-			Button.IsSkinned = true
-		end
-
-		if C.ActionBar.RightBarsMouseover == true then
-			SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-			SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
-			Button:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-			Button:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
 		end
 	end
 end
 SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
 
-local function StyleFlyoutButton(self)
-	if not self.FlyoutArrow then return end
+local function StyleFlyoutButton(button)
+	if(not button.FlyoutArrow or not button.FlyoutArrow:IsShown()) then return end
 
-	local HB = SpellFlyoutHorizontalBackground
-	local VB = SpellFlyoutVerticalBackground
-	local BE = SpellFlyoutBackgroundEnd
+	if not button.FlyoutBorder then return end
+	button.FlyoutBorder:SetAlpha(0)
+	button.FlyoutBorderShadow:SetAlpha(0)
 
-	if self.FlyoutBorder then
-		self.FlyoutBorder:SetAlpha(0)
-		self.FlyoutBorderShadow:SetAlpha(0)
+	SpellFlyoutHorizontalBackground:SetAlpha(0)
+	SpellFlyoutVerticalBackground:SetAlpha(0)
+	SpellFlyoutBackgroundEnd:SetAlpha(0)
+
+	for i=1, GetNumFlyouts() do
+		local x = GetFlyoutID(i)
+		local _, _, numSlots, isKnown = GetFlyoutInfo(x)
+		if isKnown then
+			buttons = numSlots
+			break
+		end
 	end
 
-	HB:SetAlpha(0)
-	VB:SetAlpha(0)
-	BE:SetAlpha(0)
+	--Change arrow direction depending on what bar the button is on
+	local arrowDistance
+	if ((SpellFlyout:IsShown() and SpellFlyout:GetParent() == button) or GetMouseFocus() == button) then arrowDistance = 5 else arrowDistance = 2 end
+	if button:GetParent() and button:GetParent():GetParent() and button:GetParent():GetParent():GetName() and button:GetParent():GetParent():GetName() == "SpellBookSpellIconsFrame" then return end
+	if button:GetParent() then
+		local point, _, _, _, _ = button:GetParent():GetParent():GetPoint()
+		if point == "UNKNOWN" then return end
 
-	for i = 1, GetNumFlyouts() do
-		local ID = GetFlyoutID(i)
-		local _, _, NumSlots, IsKnown = GetFlyoutInfo(ID)
-		if IsKnown then
-			FlyoutButtons = NumSlots
-			break
+		if strfind == "TOP" then
+			button.FlyoutArrow:ClearAllPoints()
+			button.FlyoutArrow:SetPoint("TOP", button, "TOP", 0, arrowDistance)
+			SetClampedTextureRotation(button.FlyoutArrow, 0)
+		elseif point == "RIGHT" then
+			button.FlyoutArrow:ClearAllPoints()
+			button.FlyoutArrow:SetPoint("LEFT", button, "LEFT", -arrowDistance, 0)
+			SetClampedTextureRotation(button.FlyoutArrow, 270)
 		end
 	end
 end
@@ -320,7 +330,6 @@ end
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
--- hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
 
 if C.ActionBar.Hotkey == true then
 	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...)
