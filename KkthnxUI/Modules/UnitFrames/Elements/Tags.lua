@@ -2,12 +2,14 @@ local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local floor = math.floor
 local format = string.format
 local gsub = string.gsub
 local strlen = string.len
 
 -- Wow API
+local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
 local GetPVPTimer = GetPVPTimer
 local GetQuestDifficultyColor = GetQuestDifficultyColor
 local GetQuestGreenRange = GetQuestGreenRange
@@ -34,15 +36,25 @@ local UnitIsUnit = UnitIsUnit
 local UnitIsWildBattlePet = UnitIsWildBattlePet
 local UnitLevel = UnitLevel
 local UnitName = UnitName
+local UNITNAME_SUMMON_TITLE17 = UNITNAME_SUMMON_TITLE17
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitReaction = UnitReaction
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role C_PetJournal_GetPetTeamAverageLevel, _TAGS, r, g, b
+-- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
+
+local function UnitName(unit)
+	local name, realm = _G.UnitName(unit)
+	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
+		name = UNITNAME_SUMMON_TITLE17:format(_G.UnitName("player"))
+	else
+		return name, realm
+	end
+end
 
 -- KkthnxUI Unitframe Tags
 oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE"
@@ -92,7 +104,7 @@ end
 oUF.Tags.Events["KkthnxUI:DifficultyColor"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 	local r, g, b = 0.55, 0.57, 0.61
-	if ( UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) ) then
+	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		local level = UnitBattlePetLevel(unit)
 		local teamLevel = C_PetJournal_GetPetTeamAverageLevel()
 		if teamLevel < level or teamLevel > level then

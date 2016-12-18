@@ -178,7 +178,7 @@ local function OnDisable(self)
 end
 
 function DataTexts:Register(name, enable, disable, update)
-	local Data = CreateFrame("Frame", nil, UIParent)
+	local Data = CreateFrame("Frame", nil, PetBattleFrameHider)
 	Data:EnableMouse(true)
 	Data:SetFrameStrata("MEDIUM")
 

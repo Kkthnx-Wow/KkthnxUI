@@ -277,7 +277,7 @@ local function StyleFlyoutButton(button)
 	SpellFlyoutVerticalBackground:SetAlpha(0)
 	SpellFlyoutBackgroundEnd:SetAlpha(0)
 
-	for i=1, GetNumFlyouts() do
+	for i = 1, GetNumFlyouts() do
 		local x = GetFlyoutID(i)
 		local _, _, numSlots, isKnown = GetFlyoutInfo(x)
 		if isKnown then
@@ -286,7 +286,7 @@ local function StyleFlyoutButton(button)
 		end
 	end
 
-	--Change arrow direction depending on what bar the button is on
+	-- Change arrow direction depending on what bar the button is on
 	local arrowDistance
 	if ((SpellFlyout:IsShown() and SpellFlyout:GetParent() == button) or GetMouseFocus() == button) then arrowDistance = 5 else arrowDistance = 2 end
 	if button:GetParent() and button:GetParent():GetParent() and button:GetParent():GetParent():GetName() and button:GetParent():GetParent():GetName() == "SpellBookSpellIconsFrame" then return end
@@ -294,7 +294,7 @@ local function StyleFlyoutButton(button)
 		local point, _, _, _, _ = button:GetParent():GetParent():GetPoint()
 		if point == "UNKNOWN" then return end
 
-		if strfind == "TOP" then
+		if strfind == "BOTTOM" then
 			button.FlyoutArrow:ClearAllPoints()
 			button.FlyoutArrow:SetPoint("TOP", button, "TOP", 0, arrowDistance)
 			SetClampedTextureRotation(button.FlyoutArrow, 0)

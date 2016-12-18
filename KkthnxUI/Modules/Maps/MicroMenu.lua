@@ -3,7 +3,6 @@ if C.Minimap.Enable ~= true then return end
 
 -- Lua API
 local format = string.format
-local print = print
 
 -- Wow API
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
@@ -23,7 +22,7 @@ local UIErrorsFrame = UIErrorsFrame
 -- GLOBALS: SpellBookFrame, PlayerTalentFrame, TalentFrame_LoadUI, SHOW_TALENT_LEVEL
 -- GLOBALS: StoreMicroButton, Lib_EasyMenu, GarrisonLandingPage_Toggle, MinimapAnchor
 -- GLOBALS: ToggleEncounterJournal, FEATURE_NOT_YET_AVAILABLE, ToggleCollectionsJournal
--- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap,  LootHistoryFrame
+-- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap, LootHistoryFrame
 -- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal
 
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
@@ -35,7 +34,7 @@ local micromenu = {
 	end},
 	{text = SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function()
 			if InCombatLockdown() then
-				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 			end
 			--ToggleFrame(SpellBookFrame)
 			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
@@ -50,7 +49,7 @@ local micromenu = {
 				if C.Error.White == false then
 					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL), 1, 0.1, 0.1)
 				else
-					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+					K.Print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 				end
 			end
 	end},
@@ -76,7 +75,7 @@ local micromenu = {
 				if C.Error.White == false then
 					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL), 1, 0.1, 0.1)
 				else
-					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
+					K.Print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
 				end
 			end
 	end},
@@ -87,7 +86,7 @@ local micromenu = {
 				if C.Error.White == false then
 					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL), 1, 0.1, 0.1)
 				else
-					print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
+					K.Print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
 				end
 			end
 	end},
@@ -98,27 +97,47 @@ local micromenu = {
 				if C.Error.White == false then
 					UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
 				else
-					print("|cffffff00"..FEATURE_NOT_YET_AVAILABLE.."|r")
+					K.Print("|cffffff00"..FEATURE_NOT_YET_AVAILABLE.."|r")
 				end
 			end
 	end},
+	{text = HEIRLOOMS, notCheckable = 1, func = function()
+			ToggleCollectionsJournal(4)
+	end},
 	{text = COLLECTIONS, notCheckable = 1, func = function()
 			if InCombatLockdown() then
-				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 			end
 			ToggleCollectionsJournal()
 	end},
 	{text = HELP_BUTTON, notCheckable = 1, func = function()
 			ToggleHelpFrame()
 	end},
-	{text = L_MINIMAP_CALENDAR, notCheckable = 1, func = function()
-			ToggleCalendar()
+	{text = CALENDAR_VIEW_EVENT, notCheckable = 1, func = function()
+			if (not CalendarFrame) then
+				LoadAddOn("Blizzard_Calendar")
+			end
+			Calendar_Toggle()
 	end},
 	{text = BATTLEFIELD_MINIMAP, notCheckable = 1, func = function()
 			ToggleBattlefieldMinimap()
 	end},
+	{text = ENCOUNTER_JOURNAL, notCheckable = 1, func = function()
+			ToggleEncounterJournal()
+	end},
 	{text = LOOT_ROLLS, notCheckable = 1, func = function()
 			ToggleFrame(LootHistoryFrame)
+	end},
+	{text = SOCIAL_TWITTER_COMPOSE_NEW_TWEET, notCheckable = 1, func = function()
+			if not SocialPostFrame then
+				LoadAddOn("Blizzard_SocialUI")
+			end
+			local IsTwitterEnabled = C_Social.IsSocialEnabled()
+			if IsTwitterEnabled then
+				Social_SetShown(true)
+			else
+				K.Print(SOCIAL_TWITTER_TWEET_NOT_LINKED)
+			end
 	end},
 }
 
