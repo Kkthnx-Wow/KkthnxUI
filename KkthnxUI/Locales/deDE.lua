@@ -82,18 +82,19 @@ L.Chat = {
 
 -- Configbutton Localization
 L.ConfigButton = {
+	Config = "Öffnet das KkthnxUI Einstellungsmenü",
 	Functions = "Buttonfunktionen",
 	LeftClick = "Linksklick:",
-	RightClick = "Rechtsklick:",
 	MiddleClick = "Mittlere Maustaste:",
-	ShiftClick = "Shift + Linksklick:",
 	MoveUI = "UI Elemente bewegen",
 	Recount = "Zeigt/Versteckt das Recount Fenster",
+	RightClick = "Rechtsklick:",
+	ShiftClick = "Shift + Linksklick:",
+	ShiftPlusRightClick = "Shift + right-click:",
 	Skada = "Zeigt/Versteckt das Skada Fenster",
-	Config = "Öffnet das KkthnxUI Einstellungsmenü",
 	Spec = "Öffnet das KkthnxUI Spezialisierungsmenü",
-	SpecMenu = "Spezialisierungsauswahl",
-	SpecError = "Diese Spezialisierung ist bereits aktiv!"
+	SpecError = "Diese Spezialisierung ist bereits aktiv!",
+	SpecMenu = "Spezialisierungsauswahl"
 }
 
 -- Cooldowns

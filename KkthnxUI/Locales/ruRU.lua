@@ -83,18 +83,19 @@ L.Chat = {
 
 -- Configbutton Localization
 L.ConfigButton = {
+	Config = "Показать окно настроек KkthnxUI",
 	Functions = "Buttonfunctions:",
 	LeftClick = "Левый клик:",
-	RightClick = "Правый клик:",
 	MiddleClick = "Клик колесом:",
-	ShiftClick = "Shift + клик:",
 	MoveUI = "Режим перемещения элементов",
 	Recount = "Показать/скрыть окно Recount",
+	RightClick = "Правый клик:",
+	ShiftClick = "Shift + клик:",
+	ShiftPlusRightClick = "Shift + right-click:",
 	Skada = "Показать/скрыть окно Skada",
-	Config = "Показать окно настроек KkthnxUI",
 	Spec = "Показать меню выбора специализаций",
-	SpecMenu = "Выбор специализации",
-	SpecError = "Эта специализация уже активна!"
+	SpecError = "Эта специализация уже активна!",
+	SpecMenu = "Выбор специализации"
 }
 
 -- Cooldowns

@@ -82,18 +82,19 @@ L.Chat = {
 
 -- Configbutton Localization
 L.ConfigButton = {
+	Config = "Show config GUI",
 	Functions = "Button functions:",
 	LeftClick = "Left click:",
-	RightClick = "Right click:",
 	MiddleClick = "Middle click:",
-	ShiftClick = "Shift + click:",
 	MoveUI = "Move UI elements",
 	Recount = "Show/Hide Recount",
+	RightClick = "Right click:",
+	ShiftClick = "Shift + click:",
+	ShiftPlusRightClick = "Shift + right-click:",
 	Skada = "Show/Hide Skada",
-	Config = "Show config GUI",
 	Spec = "Show specialization menu",
-	SpecMenu = "Specialization selection",
-	SpecError = "You already have this specialization active!"
+	SpecError = "You already have this specialization active!",
+	SpecMenu = "Specialization selection"
 }
 
 -- Cooldowns

@@ -301,7 +301,7 @@ if C.General.ShowConfigButton == true then
 		end
 		GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Config, 1, 1, 1)
 		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClick, L.ConfigButton.Spec, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClick, "Toggle Datatext", 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftPlusRightClick, "Toggle Datatext", 1, 1, 1)
 		GameTooltip:Show()
 		GameTooltip:SetTemplate()
 	end)
