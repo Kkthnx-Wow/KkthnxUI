@@ -27,7 +27,7 @@
    AltPowerBar:SetPoint('BOTTOM')
    AltPowerBar:SetPoint('LEFT')
    AltPowerBar:SetPoint('RIGHT')
-   
+
    -- Register with oUF
    self.AltPowerBar = AltPowerBar
 

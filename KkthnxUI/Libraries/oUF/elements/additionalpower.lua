@@ -38,12 +38,12 @@
    AdditionalPower:SetPoint('TOP')
    AdditionalPower:SetPoint('LEFT')
    AdditionalPower:SetPoint('RIGHT')
-   
+
    -- Add a background
    local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
    Background:SetAllPoints(AdditionalPower)
    Background:SetTexture(1, 1, 1, .5)
-   
+
    -- Register it with oUF
    self.AdditionalPower = AdditionalPower
    self.AdditionalPower.bg = Background
