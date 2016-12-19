@@ -560,7 +560,7 @@ function Bags:SkinTokens()
 		Token:SetFrameStrata("HIGH")
 		Token:SetFrameLevel(5)
 		Token:SetScale(1)
-		Token:CreateBackdrop()
+		Token:CreateBackdrop(nil)
 		Token.backdrop:SetOutside(Icon)
 		Token.backdrop:SetBackdropBorderColor(0, 0, 0, 0)
 		Token.backdrop:SetBackdrop(K.BorderBackdrop)
@@ -593,24 +593,16 @@ function Bags:SlotUpdate(id, button)
 	local IsQuestItem, QuestId, IsActive = GetContainerItemQuestInfo(id, button:GetID())
 	local IsBattlePayItem = IsBattlePayItem(id, button:GetID())
 	local NewItem = button.NewItemTexture
-	local IsProfBag = self:IsProfessionBag(id)
 	local IconQuestTexture = button.IconQuestTexture
 
 	if IconQuestTexture then
 		IconQuestTexture:SetAlpha(0)
 	end
 
-	-- if (isNewItem) then -- Leave this check for bags only?
-	-- 	NewItem:SetTexture(C.Media.Blizz)
-	-- 	NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
-	-- end
-
-	-- Letting you style this
-	-- if IsProfBag then
-  --
-	-- else
-		--button:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	-- end
+	if IsNewItem and NewItem then -- Leave this check for bags only?
+		NewItem:SetTexture(C.Media.Blizz)
+		NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
+	end
 
 	if IsQuestItem then
 		button.backdrop:SetBackdropBorderColor(1, 1, 0)
@@ -989,5 +981,12 @@ function Bags:Enable()
 	ToggleAllBags()
 end
 
-Bags:RegisterEvent("PLAYER_LOGIN")
-Bags:SetScript("OnEvent", Bags.Enable)
+Bags:RegisterEvent("ADDON_LOADED")
+Bags:RegisterEvent("PLAYER_ENTERING_WORLD")
+Bags:SetScript("OnEvent", function(self, event, ...)
+	Bags:Enable()
+
+	if event == ("PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
+end)

@@ -42,7 +42,7 @@ AuraList.Defensive = {
 	186265, -- Aspect of the Turtle
 	192081, -- IronFur
 	192083, -- Mark of Ursol
-	195181, -- Bone Shield
+	-- 195181, -- Bone Shield
 	198589, -- Blur
 	203720, -- Demon Spikes
 	212800, -- blur
