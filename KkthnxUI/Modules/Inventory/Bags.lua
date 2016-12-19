@@ -594,7 +594,7 @@ function Bags:SlotUpdate(id, button)
 		IconQuestTexture:SetAlpha(0)
 	end
 
-	if IsNewItem and NewItem then -- Leave this check for bags only?
+	if IsNewItem and NewItem then
 		NewItem:SetTexture(C.Media.Blizz)
 		NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
 	end
