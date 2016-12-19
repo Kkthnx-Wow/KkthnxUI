@@ -16,6 +16,7 @@ function LossControl:Update()
 	self.AbilityName:SetPoint("BOTTOM", self, 0, -28)
 	self.AbilityName.scrollTime = nil
 	self.AbilityName:SetFont(C.Media.Font, 18, "OUTLINE")
+	self.AbilityName:SetShadowOffset(0, 0)
 
 	self.TimeLeft.NumberText:ClearAllPoints()
 	self.TimeLeft.NumberText:SetPoint("BOTTOM", self, 4, -58)
@@ -51,5 +52,18 @@ function LossControl:Enable()
 	self:AddHooks()
 end
 
-LossControl:RegisterEvent("PLAYER_LOGIN")
-LossControl:SetScript("OnEvent", LossControl.Enable)
+local Loading = CreateFrame("Frame")
+
+function Loading:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
+		LossControl:Enable()
+	end
+end
+
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:RegisterEvent("ADDON_LOADED")
+Loading:SetScript("OnEvent", Loading.OnEvent)
+
+if event == ("ADDON_LOADED") then
+	Loading:UnregisterEvent("ADDON_LOADED")
+end

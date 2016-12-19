@@ -110,4 +110,8 @@ ThreatBar:SetScript("OnEvent", function(self, event)
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:SetScript("OnEvent", OnEvent)
+
+	if event == ("PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end)

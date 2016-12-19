@@ -38,6 +38,10 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 		TalkingHeadFrame:ClearAllPoints()
 		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
 	end
+
+	if event == ("ADDON_LOADED") then
+		self:UnregisterEvent("ADDON_LOADED")
+	end
 end)
 
 -- Move some frames (Elvui)
@@ -182,6 +186,10 @@ if C.Misc.BGSpam == true then
 	Fixer:RegisterEvent("PLAYER_ENTERING_WORLD")
 	Fixer:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	Fixer:SetScript("OnEvent", DisableSpam)
+
+	if event == ("PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end
 
 -- Boss Banner Hider
@@ -200,13 +208,22 @@ if C.Misc.HideTalkingHead == true then
 			end)
 			self:UnregisterEvent(event)
 		end
+
+		if event == ("ADDON_LOADED") then
+			self:UnregisterEvent("ADDON_LOADED")
+		end
 	end)
 end
 
 -- Disable QuestTrackingTooltips while in raid and in combat
 -- This can become a spam fest when you have 20+ people on the same quest!
 local QuestTracking = CreateFrame("Frame")
+QuestTracking:RegisterEvent("PLAYER_ENTERING_WORLD")
 QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
 QuestTracking:SetScript("OnEvent", function(self, event)
 	SetCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
+
+	if event == ("PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end)

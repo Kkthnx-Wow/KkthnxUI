@@ -976,5 +976,18 @@ function Bags:Enable()
 	ToggleAllBags()
 end
 
-Bags:RegisterEvent("PLAYER_LOGIN")
-Bags:SetScript("OnEvent", Bags.Enable)
+local Loading = CreateFrame("Frame")
+
+function Loading:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
+		Bags:Enable()
+	end
+end
+
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:RegisterEvent("ADDON_LOADED")
+Loading:SetScript("OnEvent", Loading.OnEvent)
+
+if event == ("ADDON_LOADED") then
+	Loading:UnregisterEvent("ADDON_LOADED")
+end

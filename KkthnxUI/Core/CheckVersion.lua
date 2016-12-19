@@ -58,6 +58,10 @@ EventFrame:RegisterEvent("GUILD_ROSTER_UPDATE")
 EventFrame:RegisterEvent("CHAT_MSG_ADDON")
 EventFrame:SetScript("OnEvent", OnEvent)
 
+if event == ("PLAYER_ENTERING_WORLD") then
+	EventFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
+
 RegisterAddonMessagePrefix("KkthnxUI")
 
 local OnWhisper = function(self, event, text, name, ...)
