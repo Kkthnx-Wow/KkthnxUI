@@ -5,7 +5,7 @@ local pairs = pairs
 local select = select
 local CreateFrame = CreateFrame
 
--- WEAKAURAS SKIN
+-- </ WeakAuras skin > --
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -13,9 +13,12 @@ frame:SetScript("OnEvent", function(self, event)
 	if not K.CheckAddOn("WeakAuras") then return end
 
 	local function Skin_WeakAuras(frame)
-		if not frame.shadow then
-			-- We just use our pixel shadow here
+		if not frame.styled then
+			if frame.styled then return end
+
 			frame:CreateShadow()
+
+			frame.styled = true
 		end
 
 		if frame.icon then
@@ -48,5 +51,9 @@ frame:SetScript("OnEvent", function(self, event)
 		if WeakAuras.regions[weakAura].regionType == "icon" or WeakAuras.regions[weakAura].regionType == "aurabar" then
 			Skin_WeakAuras(WeakAuras.regions[weakAura].region)
 		end
+	end
+
+	if event == ("PLAYER_ENTERING_WORLD") then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end)
