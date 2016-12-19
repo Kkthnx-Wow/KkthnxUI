@@ -284,7 +284,7 @@ UIConfigLocal.TooltipItemCount = "Item count"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
 UIConfigLocal.TooltipItemLevel = "Display target Item level on tooltip"
 UIConfigLocal.TooltipSpellID = "Spell ID"
-UIConfigLocal.TooltipTalents = "Display target talents on tooltip"
+UIConfigLocal.TooltipTalents = "Display target talents/itemlevel on tooltip"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "Unit Frames"

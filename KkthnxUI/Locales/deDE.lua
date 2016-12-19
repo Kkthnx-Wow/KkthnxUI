@@ -356,11 +356,8 @@ L.Tooltip = {
 	AchievementComplete = "Dein Status: Abgeschlossen am ",
 	AchievementIncomplete = "Dein Status: Unvollständig",
 	AchievementStatus = "Dein Status:",
-	InspectOpen = "Betrachtungsfenster offen",
 	ItemCount = "Gegenstandsanzahl:",
 	ItemID = "Gegenstands-ID:",
-	Loading = "Lade...",
-	NoTalents = "Keine Talente",
 	SpellID = "Zauber-ID:"
 }
 

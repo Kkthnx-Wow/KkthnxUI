@@ -293,7 +293,6 @@ C["Tooltip"] = {
 	["InstanceLock"] = false,
 	["ItemCount"] = false,
 	["ItemIcon"] = false,
-	["ItemLevel"] = false,
 	["SpellID"] = false,
 	["Talents"] = false,
 }

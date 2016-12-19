@@ -976,12 +976,5 @@ function Bags:Enable()
 	ToggleAllBags()
 end
 
-Bags:RegisterEvent("ADDON_LOADED")
-Bags:RegisterEvent("PLAYER_ENTERING_WORLD")
-Bags:SetScript("OnEvent", function(self, event, ...)
-	Bags:Enable()
-
-	if event == ("PLAYER_ENTERING_WORLD") then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
-end)
+Bags:RegisterEvent("PLAYER_LOGIN")
+Bags:SetScript("OnEvent", Bags.Enable)

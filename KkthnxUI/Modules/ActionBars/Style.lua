@@ -287,13 +287,11 @@ local function StyleFlyoutButton(button)
 		end
 	end
 
-	if button:GetParent() and button:GetParent():GetParent() and button:GetParent():GetParent():GetName() and button:GetParent():GetParent():GetName() == "SpellBookSpellIconsFrame" then return end
-
 	-- Change arrow direction depending on what bar the button is on
 	local arrowDistance
 	if ((SpellFlyout:IsShown() and SpellFlyout:GetParent() == button) or GetMouseFocus() == button) then arrowDistance = 5 else arrowDistance = 2 end
-	local actionbar = button:GetParent()
-	if actionbar then
+	if button:GetParent() and button:GetParent():GetParent() and button:GetParent():GetParent():GetName() and button:GetParent():GetParent():GetName() == "SpellBookSpellIconsFrame" then return end
+	if button:GetParent() then
 		local point, _, _, _, _ = button:GetParent():GetParent():GetPoint()
 		if point == "UNKNOWN" then return end
 

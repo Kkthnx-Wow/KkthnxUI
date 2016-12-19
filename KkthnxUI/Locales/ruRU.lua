@@ -357,11 +357,8 @@ L.Tooltip = {
 	AchievementComplete = "Ваш статус: Завершено на ",
 	AchievementIncomplete = "Ваш статус: Незавершено",
 	AchievementStatus = "Ваш статус:",
-	InspectOpen = "Открыто окно осмотра",
 	ItemCount = "Количество предметов:",
 	ItemID = "ID предмета:",
-	Loading = "Загрузка...",
-	NoTalents = "Нет талантов",
 	SpellID = "ID заклинания:"
 }
 

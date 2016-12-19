@@ -283,9 +283,8 @@ UIConfigLocal.TooltipHyperLink = "Display the hyperlink tooltip while hovering o
 UIConfigLocal.TooltipInstanceLock = "Your instance lock status in tooltip"
 UIConfigLocal.TooltipItemCount = "Item count"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
-UIConfigLocal.TooltipItemLevel = "Display target Item level on tooltip"
 UIConfigLocal.TooltipSpellID = "Spell ID"
-UIConfigLocal.TooltipTalents = "Display target talents on tooltip"
+UIConfigLocal.TooltipTalents = "Display target talents/itemlevel on tooltip"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "Unit Frames"
