@@ -110,7 +110,7 @@ function Bags:SkinBagButton()
 
 	self:SetNormalTexture("")
 	self:SetPushedTexture("")
-	self:CreateBackdrop()
+	self:CreateBackdrop(true)
 	self.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 	self:StyleButton()
 
@@ -284,8 +284,6 @@ function Bags:CreateReagentContainer()
 
 	UnlockButton:SkinButton()
 
-	-- Movers:RegisterFrame(Reagent)
-
 	self.Reagent = Reagent
 	-- Couldn't access these.
 	self.Reagent.SwitchBankButton = SwitchBankButton
@@ -320,7 +318,6 @@ function Bags:CreateContainer(storagetype, ...)
 		BagsContainer:SetHeight(10)
 		BagsContainer:SetPoint("BOTTOMRIGHT", Container, "TOPRIGHT", 0, 27)
 		BagsContainer:Hide()
-		--BagsContainer:SetTemplate()
 
 		Sort:SetSize(Container:GetWidth() - 8, 23)
 		Sort:ClearAllPoints()
@@ -357,7 +354,6 @@ function Bags:CreateContainer(storagetype, ...)
 					BagsContainer:Show()
 					BanksContainer:Show()
 					BanksContainer:ClearAllPoints()
-					--ToggleBagsContainer.Text:SetTextColor(1, 1, 1)
 
 					if Purchase:IsShown() then
 						BanksContainer:SetPoint("BOTTOMLEFT", Purchase, "TOPLEFT", 50, 2)
@@ -368,7 +364,6 @@ function Bags:CreateContainer(storagetype, ...)
 					ReplaceBags = 0
 					BagsContainer:Hide()
 					BanksContainer:Hide()
-					-- ToggleBagsContainer.Text:SetTextColor(.4, .4, .4)
 				end
 			else
 				CloseAllBags()
