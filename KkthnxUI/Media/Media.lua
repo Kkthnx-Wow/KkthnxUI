@@ -38,13 +38,3 @@ LibSharedMedia:Register("sound", "GameMaster_Whisper", [[Sound\Spells\Simongame_
 LibSharedMedia:Register("sound", "KkthnxUI_Whisper", [[Interface\AddOns\KkthnxUI\Media\Sounds\KWhisper.ogg]])
 LibSharedMedia:Register("sound", "Spell_Proc", [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]])
 LibSharedMedia:Register("statusbar", "KkthnxUI_StatusBar", [[Interface\TargetingFrame\UI-StatusBar]])
-
-local settings = KkthnxUIEditedDefaultConfig
-if settings then
-	local media = settings.media
-	if media then
-		for option, value in pairs(media) do
-			C.Media[option] = value
-		end
-	end
-end

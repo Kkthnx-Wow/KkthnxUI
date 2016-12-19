@@ -4,9 +4,14 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local format = string.format
+local min, max = math.min, math.max
+local strmatch = string.match
 
 -- Wow API
 local GetCVar = GetCVar
+local GetCVarBool = GetCVarBool
+local InCinematic = InCinematic
+local InCombatLockdown = InCombatLockdown
 local SetCVar = SetCVar
 local StaticPopup_Show = StaticPopup_Show
 
@@ -55,7 +60,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	-- Automatically change the scale if auto scaling is activated
 	if C.General.AutoScale then
-		C.General.UIScale = min(2, max(0.32, 768 / string.match(K.Resolution, "%d+x(%d+)")))
+		C.General.UIScale = min(2, max(0.32, 768 / strmatch(K.Resolution, "%d+x(%d+)")))
 	end
 
 	if (format("%.2f", GetCVar("uiScale")) ~= format("%.2f", C.General.UIScale)) then
@@ -70,10 +75,10 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- The lowest value of UIParent scale by default
 	if (C.General.UIScale < 0.64) then
 		UIParent:SetScale(C.General.UIScale)
-		if not RequireRestart then
-			StaticPopup_Show("CLIENT_RESTART")
-			RequireRestart = true
-		end
+		-- if not RequireRestart then
+		-- 	StaticPopup_Show("CLIENT_RESTART")
+		-- 	RequireRestart = true
+		-- end
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" then
