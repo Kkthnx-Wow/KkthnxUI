@@ -300,7 +300,7 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	["CastbarIcon"] = true,
+	["CastbarIcon"] = false,
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
 	["CastbarTicks"] = true,
