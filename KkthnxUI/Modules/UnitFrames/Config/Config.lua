@@ -21,7 +21,6 @@ ns.config = {
 	playerstyle = "normal",
 	customPlayerTexture = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\CUSTOMPLAYER-FRAME",
 
-	castbarticks = true,
 	useAuraTimer = false,
 
 	classBar = {},
@@ -78,19 +77,11 @@ ns.config = {
 	player = {
 		HealthTag = "NUMERIC",
 		PowerTag = "PERCENT",
-		cbshow = true,
-		cbwidth = 200,
-		cbheight = 18,
-		cbicon = C.Unitframe.IconPlayer, --"LEFT"
 	},
 
 	pet = {
 		HealthTag = "MINIMAL",
 		PowerTag = "DISABLE",
-		cbshow = true,
-		cbwidth = 200,
-		cbheight = 18,
-		cbicon = "NONE",
 	},
 
 	target = {
@@ -98,14 +89,9 @@ ns.config = {
 		PowerTag = "PERCENT",
 		buffPos = "BOTTOM",
 		debuffPos = "TOP",
-		cbshow = true,
-		cbwidth = 200,
-		cbheight = 18,
-		cbicon = C.Unitframe.IconTarget,
 	},
 
 	targettarget = {
-		enable = true,
 		enableAura = false,
 		HealthTag = "DISABLE",
 	},
@@ -115,14 +101,9 @@ ns.config = {
 		PowerTag = "PERCENT",
 		buffPos = "NONE",
 		debuffPos = "BOTTOM",
-		cbshow = true,
-		cbwidth = 180,
-		cbheight = 20,
-		cbicon = "NONE",
 	},
 
 	focustarget = {
-		enable = true,
 		enableAura = false,
 		HealthTag = "DISABLE",
 	},
@@ -135,20 +116,10 @@ ns.config = {
 	boss = {
 		HealthTag = "PERCENT",
 		PowerTag = "PERCENT",
-		cbshow = true,
-		cboffset = {0, 0},
-		cbwidth = 150,
-		cbheight = 18,
-		cbicon = "NONE",
 	},
 
 	arena = {
 		HealthTag = "BOTH",
 		PowerTag = "PERCENT",
-		cboffset = {0, 0},
-		cbshow = true,
-		cbwidth = 150,
-		cbheight = 22,
-		cbicon = "NONE",
 	},
 }

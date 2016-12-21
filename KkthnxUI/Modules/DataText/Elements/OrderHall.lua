@@ -64,7 +64,7 @@ local function Update(self, event)
 		end
 	end
 
-	if (CountInProgress > 0) then self.Text:SetText(format(L.DataText.NoOrderhallWO, CountCompleted, #Missions)) else self.Text:SetText(classcolor ..(L.DataText.OrderHall)) end
+	if (CountInProgress > 0) then self.Text:SetText(format(L.DataText.NoOrderHallWO, CountCompleted, #Missions)) else self.Text:SetText(classcolor ..(L.DataText.OrderHall)) end
 	--self:SetAllPoints(Text)
 end
 

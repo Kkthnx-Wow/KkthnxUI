@@ -179,6 +179,7 @@ UIConfigLocal.MinimapCollectButtons = "Sammel die Minimapbuttons und zeige sie i
 UIConfigLocal.MinimapEnable = "Aktiviere die Minimap & zeige sie viereckig"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Zeige das Garnisonssymbol an der Minimap"
+UIConfigLocal.MinimapHideCalendar = "Calendar icon is shown on minimap"
 UIConfigLocal.MinimapPing = "Zeige eine Nachricht, wenn jemand auf der Minimap 'pingt'. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
 UIConfigLocal.MinimapSize = "Größe der Minimap - Standard ist 150"
 
@@ -288,7 +289,10 @@ UIConfigLocal.TooltipTalents = "Zeige die talente/itemlevel im Tooltip an"
 
 -- Einheitenfenster
 UIConfigLocal.Unitframe = "Einheitenfenster"
+UIConfigLocal.UnitframeCastbarIcon = "Show castbar icons"
+UIConfigLocal.UnitframeCastbarLatency = "Show Castbar latency when casting (Player only)"
 UIConfigLocal.UnitframeCastbars = "Aktiviere die Zauberleiste"
+UIConfigLocal.UnitframeCastbarTicks = "Display Castbar ticks"
 UIConfigLocal.UnitframeClassColor = "Lebensleisten in Klassenfarbe anzeigen."
 UIConfigLocal.UnitframeClassPortraits = "Aktiviere alten Klassenportraits"
 UIConfigLocal.UnitframeCombatText = "Zeige KampfFeedback auf den Einheitenfenstern an"
@@ -296,8 +300,6 @@ UIConfigLocal.UnitframeEnable = "Aktiviere die Einheitenfenster"
 UIConfigLocal.UnitframeFocusCastbarHeight = "Höhe der Fokus Zauberleiste"
 UIConfigLocal.UnitframeFocusCastbarWidth = "breite der Fokus Zauberleiste"
 UIConfigLocal.UnitframeGCDBar = "Blitz für globalen Cooldown"
-UIConfigLocal.UnitframeIconPlayer = "Set player castbar icon 'LEFT OR RIGHT'" -- Needs Translation
-UIConfigLocal.UnitframeIconTarget = "Set target castbar icon 'LEFT OR RIGHT'" -- Needs Translation
 UIConfigLocal.UnitframeParty = "Aktiviere die Gruppenfenster."
 UIConfigLocal.UnitframePlayerCastbarHeight = "Höhe der Spielerzauberleiste"
 UIConfigLocal.UnitframePlayerCastbarWidth = "Breite der Spielerzauberleiste"

@@ -18,14 +18,16 @@ local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
 -- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
 -- GLOBALS: WorldMapLevelButton
 
--- Open before login to stop taint
+-- Fix spellbook taint in combat.
 local SpellBookTaint = CreateFrame("Frame")
-SpellBookTaint:RegisterEvent("ADDON_LOADED") -- We might need to fire PLAYER_LOGIN instead?
-SpellBookTaint:SetScript("OnEvent", function(event, addon)
+SpellBookTaint:RegisterEvent("ADDON_LOADED")
+SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
 	if addon ~= "KkthnxUI" then return end
-	--Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
+	if event == ("ADDON_LOADED") then
+		self:UnregisterEvent("ADDON_LOADED")
+	end
 end)
 
 -- Fix RemoveTalent() taint
@@ -37,6 +39,9 @@ ScriptErrorsScale:RegisterEvent("ADDON_LOADED")
 ScriptErrorsScale:SetScript("OnEvent", function(self, addon)
 	if IsAddOnLoaded("Blizzard_DebugTools") or addon == "Blizzard_DebugTools" then
 		ScriptErrorsFrame:SetParent(UIParent)
+	end
+	if event == ("ADDON_LOADED") then
+		self:UnregisterEvent("ADDON_LOADED")
 	end
 end)
 
@@ -61,6 +66,61 @@ if PVPReadyDialog then
 	PVPReadyDialog.enterButton:ClearAllPoints()
 	PVPReadyDialog.enterButton:SetPoint("BOTTOM", PVPReadyDialog, "BOTTOM", 0, 25)
 	PVPReadyDialog.label:SetPoint("TOP", 0, -22)
+end
+
+-- blizzard's baghandling just doesn't cut it
+-- we wish for all backpack/bag hotkeys and buttons to toggle all bags, always
+local function OpenAllBags()
+	if not UIParent:IsShown() or IsOptionFrameOpen() then
+		return
+	end
+	if not BankFrame:IsShown() then
+		if IsBagOpen(0) then
+			CloseAllBags()
+		else
+			for i = 0, NUM_BAG_FRAMES, 1 do
+				OpenBag(i)
+			end
+		end
+	else
+		local bagsOpen = 0
+		local totalBags = 0
+
+		-- check for open bank bags
+		for i = NUM_BAG_FRAMES + 1, NUM_CONTAINER_FRAMES, 1 do
+			if GetContainerNumSlots(i) > 0 then
+				totalBags = totalBags + 1
+			end
+			if IsBagOpen(i) then
+				CloseBag(i)
+				bagsOpen = bagsOpen + 1
+			end
+		end
+		if bagsOpen < totalBags or totalBags == 0 then
+			for i = 0, NUM_CONTAINER_FRAMES, 1 do
+				OpenBag(i)
+			end
+		else
+			CloseAllBags()
+		end
+	end
+end
+
+-- replace blizzard's bag opening functions
+local otherBagsLoaded
+for _,bags in ipairs({"ArkInventory", "Bagnon", "OneBag3", "BagForce", "Tbag", "Tbag-Shefki"}) do
+	if K.CheckAddOn(bags) then
+		otherBagsLoaded = true
+		break
+	end
+end
+if not otherBagsLoaded then
+	_G.OpenBackpack = OpenAllBags
+	_G.OpenAllBags = OpenAllBags
+	_G.ToggleBackpack = OpenAllBags
+	_G.ToggleBag = OpenAllBags
+else
+	OpenAllBags = nil
 end
 
 -- Fix C_ArtifactUI.GetTotalPurchasedRanks() (by Gnarfoz)

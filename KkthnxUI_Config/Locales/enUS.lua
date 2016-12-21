@@ -179,8 +179,9 @@ UIConfigLocal.MinimapCollectButtons = "Collect some minimap buttons in one line"
 UIConfigLocal.MinimapEnable = "Enable minimap & make it square"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Garrison icon is shown on minimap"
-UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
+UIConfigLocal.MinimapHideCalendar = "Calendar icon is shown on minimap"
 UIConfigLocal.MinimapPing = "Displays a message when someone pings the minimap. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
+UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
 
 -- Misc
 UIConfigLocal.Misc = "Miscellaneous"
@@ -288,7 +289,10 @@ UIConfigLocal.TooltipTalents = "Display target talents/itemlevel on tooltip"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "Unit Frames"
+UIConfigLocal.UnitframeCastbarIcon = "Show castbar icons"
+UIConfigLocal.UnitframeCastbarLatency = "Show Castbar latency when casting (Player only)"
 UIConfigLocal.UnitframeCastbars = "Enable uniframe castbars"
+UIConfigLocal.UnitframeCastbarTicks = "Display Castbar ticks"
 UIConfigLocal.UnitframeClassColor = "Classcolor the uniframe healthbars."
 UIConfigLocal.UnitframeClassPortraits = "Enable class portraits"
 UIConfigLocal.UnitframeCombatText = "Show Combat Feedback"

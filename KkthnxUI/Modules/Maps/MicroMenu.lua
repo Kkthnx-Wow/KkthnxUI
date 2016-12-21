@@ -29,17 +29,21 @@ local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "Lib_U
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
 
 local micromenu = {
-	{text = CHARACTER_BUTTON, notCheckable = 1, func = function()
+	{
+		text = MAINMENU_BUTTON,
+		isTitle = true,
+		notCheckable = true,
+	},
+	{text = CHARACTER_BUTTON, icon = "Interface\\PaperDollInfoFrame\\UI-EquipmentManager-Toggle", notCheckable = 1, func = function()
 			ToggleCharacter("PaperDollFrame")
 	end},
-	{text = SPELLBOOK_ABILITIES_BUTTON, notCheckable = 1, func = function()
+	{text = SPELLBOOK_ABILITIES_BUTTON, icon = "Interface\\MINIMAP\\TRACKING\\Class", notCheckable = 1, func = function()
 			if InCombatLockdown() then
 				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 			end
-			--ToggleFrame(SpellBookFrame)
 			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
 	end},
-	{text = TALENTS_BUTTON, notCheckable = 1, func = function()
+	{text = TALENTS_BUTTON, icon = "Interface\\MINIMAP\\TRACKING\\Ammunition", notCheckable = 1, func = function()
 			if not PlayerTalentFrame then
 				TalentFrame_LoadUI()
 			end
@@ -53,22 +57,22 @@ local micromenu = {
 				end
 			end
 	end},
-	{text = ACHIEVEMENT_BUTTON, notCheckable = 1, func = function()
+	{text = ACHIEVEMENT_BUTTON, icon = "Interface\\cursor\\Directions", notCheckable = 1, func = function()
 			ToggleAchievementFrame()
 	end},
-	{text = QUESTLOG_BUTTON, notCheckable = 1, func = function()
+	{text = QUESTLOG_BUTTON, icon = "Interface\\GossipFrame\\ActiveQuestIcon", notCheckable = 1, func = function()
 			ToggleQuestLog()
 	end},
-	{text = guildText, notCheckable = 1, func = function()
+	{text = guildText, icon = "Interface\\GossipFrame\\TabardGossipIcon", notCheckable = 1, func = function()
 			ToggleGuildFrame()
 			if IsInGuild() then
 				GuildFrame_TabClicked(GuildFrameTab2)
 			end
 	end},
-	{text = SOCIAL_BUTTON, notCheckable = 1, func = function()
+	{text = SOCIAL_BUTTON, icon = "Interface\\FriendsFrame\\PlusManz-BattleNet", notCheckable = 1, func = function()
 			ToggleFriendsFrame()
 	end},
-	{text = PLAYER_V_PLAYER, notCheckable = 1, func = function()
+	{text = PLAYER_V_PLAYER, icon = "Interface\\MINIMAP\\TRACKING\\BattleMaster", notCheckable = 1, func = function()
 			if K.Level >= SHOW_PVP_LEVEL then
 				TogglePVPUI()
 			else
@@ -79,7 +83,7 @@ local micromenu = {
 				end
 			end
 	end},
-	{text = DUNGEONS_BUTTON, notCheckable = 1, func = function()
+	{text = DUNGEONS_BUTTON, icon = "Interface\\LFGFRAME\\BattleNetWorking0", notCheckable = 1, func = function()
 			if K.Level >= SHOW_LFD_LEVEL then
 				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
 			else
@@ -90,7 +94,7 @@ local micromenu = {
 				end
 			end
 	end},
-	{text = ADVENTURE_JOURNAL, notCheckable = 1, func = function()
+	{text = ADVENTURE_JOURNAL, icon = "Interface\\MINIMAP\\TRACKING\\Profession", notCheckable = 1, func = function()
 			if C_AdventureJournal.CanBeShown() then
 				ToggleEncounterJournal()
 			else
@@ -101,34 +105,31 @@ local micromenu = {
 				end
 			end
 	end},
-	{text = HEIRLOOMS, notCheckable = 1, func = function()
+	{text = HEIRLOOMS, icon = "Interface\\PaperDollInfoFrame\\UI-EquipmentManager-Toggle", notCheckable = 1, func = function()
 			ToggleCollectionsJournal(4)
 	end},
-	{text = COLLECTIONS, notCheckable = 1, func = function()
+	{text = COLLECTIONS, icon = "Interface\\MINIMAP\\TRACKING\\StableMaster", notCheckable = 1, func = function()
 			if InCombatLockdown() then
 				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 			end
 			ToggleCollectionsJournal()
 	end},
-	{text = HELP_BUTTON, notCheckable = 1, func = function()
+	{text = HELP_BUTTON, icon = "Interface\\CHATFRAME\\UI-ChatIcon-Blizz", notCheckable = 1, func = function()
 			ToggleHelpFrame()
 	end},
-	{text = CALENDAR_VIEW_EVENT, notCheckable = 1, func = function()
+	{text = CALENDAR_VIEW_EVENT, icon = "Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp", notCheckable = 1, func = function()
 			if (not CalendarFrame) then
 				LoadAddOn("Blizzard_Calendar")
 			end
 			Calendar_Toggle()
 	end},
-	{text = BATTLEFIELD_MINIMAP, notCheckable = 1, func = function()
+	{text = BATTLEFIELD_MINIMAP, colorCode = "|cff999999", icon = "Interface\\PVPFrame\\Icon-Combat", notCheckable = 1, func = function()
 			ToggleBattlefieldMinimap()
 	end},
-	{text = ENCOUNTER_JOURNAL, notCheckable = 1, func = function()
-			ToggleEncounterJournal()
-	end},
-	{text = LOOT_ROLLS, notCheckable = 1, func = function()
+	{text = LOOT_ROLLS, icon = "Interface\\Buttons\\UI-GroupLoot-Dice-Up", notCheckable = 1, func = function()
 			ToggleFrame(LootHistoryFrame)
 	end},
-	{text = SOCIAL_TWITTER_COMPOSE_NEW_TWEET, notCheckable = 1, func = function()
+	{text = "Compose New Tweet", icon = "Interface\\FriendsFrame\\BroadcastIcon", notCheckable = 1, func = function()
 			if not SocialPostFrame then
 				LoadAddOn("Blizzard_SocialUI")
 			end
@@ -142,13 +143,13 @@ local micromenu = {
 }
 
 if not IsTrialAccount() and not C_StorePublic.IsDisabledByParentalControls() then
-	tinsert(micromenu, {text = BLIZZARD_STORE, notCheckable = 1, func = function() StoreMicroButton:Click() end})
+	tinsert(micromenu, {text = BLIZZARD_STORE, icon = "Interface\\MINIMAP\\TRACKING\\None", notCheckable = 1, func = function() StoreMicroButton:Click() end})
 end
 
 if K.Level > 99 then
-	tinsert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+	tinsert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, icon = "", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
 elseif K.Level > 89 then
-	tinsert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+	tinsert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
 end
 
 Minimap:SetScript("OnMouseUp", function(self, button)

@@ -305,6 +305,7 @@ local SetupTempChat = function()
 	Frame.temp = true
 	SetChatStyle(Frame)
 end
+hooksecurefunc("FCF_OpenTemporaryWindow", SetupTempChat)
 
 -- Remove player's realm name
 local function RemoveRealmName(self, event, msg, author, ...)

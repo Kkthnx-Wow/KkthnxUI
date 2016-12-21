@@ -37,7 +37,7 @@ AuraList.Defensive = {
 	115610,	-- Temporal Shield
 	116888,	-- Shroud of Purgatory
 	122278,	-- Dampen Harm
-	122470,	--Touch of Karma
+	122470,	-- Touch of Karma
 	122783,	-- Diffuse Magic
 	186265, -- Aspect of the Turtle
 	192081, -- IronFur

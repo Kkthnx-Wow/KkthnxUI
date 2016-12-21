@@ -18,6 +18,7 @@ local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 local CreateFrame = CreateFrame
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local GetThreatStatusColor = GetThreatStatusColor
+local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
 local UnitClass = UnitClass
@@ -442,8 +443,133 @@ local function CreateUnitLayout(self, unit)
 	local data = GetData(self.cUnit)
 
 	-- Load Castbars
-	if C.Unitframe.Castbars and uconfig and uconfig.cbshow then
-		ns.CreateCastbars(self, self.cUnit)
+	if C.Unitframe.Castbars == true and self.cUnit ~= "arenatarget" and self.cUnit ~= "targettarget" and self.cUnit ~= "focustarget" and self.cUnit ~= "party" then
+		self.Castbar = CreateFrame("StatusBar", self:GetName().."_Castbar", self)
+		self.Castbar:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
+
+		self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")
+		self.Castbar.bg:SetAllPoints()
+		self.Castbar.bg:SetTexture(C.Media.Blank)
+
+		self.Castbar.Overlay = CreateFrame("Frame", nil, self.Castbar)
+		K.CreateBorder(self.Castbar.Overlay, 11)
+		self.Castbar.Overlay:SetFrameStrata("BACKGROUND")
+		self.Castbar.Overlay:SetFrameLevel(3)
+		self.Castbar.Overlay:SetPoint("TOPLEFT", -2, 2)
+		self.Castbar.Overlay:SetPoint("BOTTOMRIGHT", 2, -2)
+
+		self.Castbar.PostCastStart = K.PostCastStart
+		self.Castbar.PostChannelStart = K.PostChannelStart
+
+		if self.cUnit == "player" then
+			Movers:RegisterFrame(self.Castbar)
+
+			if C.Unitframe.CastbarIcon == true then
+				self.Castbar:SetPoint(C.Position.UnitFrames.PlayerCastbar[1], C.Position.UnitFrames.PlayerCastbar[2], C.Position.UnitFrames.PlayerCastbar[3], C.Position.UnitFrames.PlayerCastbar[4] + 11, C.Position.UnitFrames.PlayerCastbar[5])
+				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth + 10)
+			else
+				self.Castbar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
+				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth)
+			end
+			self.Castbar:SetHeight(C.Unitframe.PlayerCastbarHeight)
+		elseif self.cUnit == "target" then
+			Movers:RegisterFrame(self.Castbar)
+
+			if C.Unitframe.CastbarIcon == true then
+				self.Castbar:SetPoint(C.Position.UnitFrames.TargetCastbar[1], C.Position.UnitFrames.TargetCastbar[2], C.Position.UnitFrames.TargetCastbar[3], C.Position.UnitFrames.TargetCastbar[4] - 23, C.Position.UnitFrames.TargetCastbar[5])
+				self.Castbar:SetWidth(C.Unitframe.TargetCastbarWidth + 10)
+			else
+				self.Castbar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
+				self.Castbar:SetWidth(C.Unitframe.TargetCastbarWidth)
+			end
+			self.Castbar:SetHeight(C.Unitframe.TargetCastbarHeight)
+		elseif self.cUnit == "boss" or self.cUnit == "arena" then
+			self.Castbar:SetPoint("RIGHT", self, "LEFT", -8, 7)
+			self.Castbar:SetWidth(114)
+			self.Castbar:SetHeight(14)
+		end
+
+		if self.cUnit == "focus" then
+			Movers:RegisterFrame(self.Castbar)
+
+			if C.Unitframe.CastbarIcon == true then
+				self.Castbar:SetPoint(C.Position.UnitFrames.FocusCastbar[1], C.Position.UnitFrames.FocusCastbar[2], C.Position.UnitFrames.FocusCastbar[3], C.Position.UnitFrames.FocusCastbar[4] - 23, C.Position.UnitFrames.FocusCastbar[5])
+				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth + 10)
+			else
+				self.Castbar:SetPoint(unpack(C.Position.UnitFrames.FocusCastbar))
+				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth)
+			end
+			self.Castbar:SetHeight(C.Unitframe.PlayerCastbarHeight)
+		end
+
+		if self.cUnit == "player" or self.cUnit == "target" or self.cUnit == "arena" or self.cUnit == "boss" or self.cUnit == "focus" then
+			self.Castbar.Time = K.SetFontString(self.Castbar, C.Media.Font, C.Media.Font_Size)
+			self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
+			self.Castbar.Time:SetTextColor(1, 1, 1)
+			self.Castbar.Time:SetShadowOffset(K.Mult, -K.Mult)
+			self.Castbar.Time:SetJustifyH("RIGHT")
+			self.Castbar.CustomTimeText = K.CustomCastTimeText
+			self.Castbar.CustomDelayText = K.CustomCastDelayText
+
+			self.Castbar.Text = K.SetFontString(self.Castbar, C.Media.Font, C.Media.Font_Size)
+			self.Castbar.Text:SetPoint("LEFT", self.Castbar, "LEFT", 2, 0)
+			self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -1, 0)
+			self.Castbar.Text:SetTextColor(1, 1, 1)
+			self.Castbar.Text:SetShadowOffset(K.Mult, -K.Mult)
+			self.Castbar.Text:SetJustifyH("LEFT")
+			self.Castbar.Text:SetHeight(C.Media.Font_Size)
+
+			if C.Unitframe.CastbarIcon == true and self.cUnit ~= "arena" then
+				self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+				self.Castbar.Button:SetHeight(22)
+				self.Castbar.Button:SetWidth(22)
+				K.CreateBorder(self.Castbar.Button, 11)
+
+				self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+				self.Castbar.Icon:SetPoint("TOPLEFT", self.Castbar.Button, 2, -2)
+				self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar.Button, -2, 2)
+				self.Castbar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+				if self.cUnit == "player" then
+					self.Castbar.Button:SetPoint("RIGHT", self.Castbar, "LEFT", -5, 0)
+				elseif self.cUnit == "target" or self.cUnit == "focus" then
+					self.Castbar.Button:SetPoint("LEFT", self.Castbar, "RIGHT", 5, 0)
+				end
+			end
+
+			if self.cUnit == "arena" or self.cUnit == "boss" then
+				self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+				self.Castbar.Button:SetHeight(18)
+				self.Castbar.Button:SetWidth(18)
+				K.CreateBorder(self.Castbar.Button, 11, 1)
+				if self.cUnit == "boss" then
+					self.Castbar.Button:SetPoint("RIGHT", self.Castbar, "LEFT", -5, 0)
+				end
+
+				self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+				self.Castbar.Icon:SetPoint("TOPLEFT", self.Castbar.Button, 2, -2)
+				self.Castbar.Icon:SetPoint("BOTTOMRIGHT", self.Castbar.Button, -2, 2)
+				self.Castbar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+			end
+
+			if unit == "player" and C.Unitframe.CastbarLatency == true then
+				self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "BORDER", nil, 1)
+				self.Castbar.SafeZone:SetTexture(C.Media.Texture)
+				self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.85)
+
+				self.Castbar.Latency = K.SetFontString(self.Castbar, C.Media.Font, C.Media.Font_Size)
+				self.Castbar.Latency:SetShadowOffset(K.Mult, -K.Mult)
+				self.Castbar.Latency:SetTextColor(1, 1, 1)
+				self.Castbar.Latency:SetPoint("TOPRIGHT", self.Castbar.Time, "BOTTOMRIGHT", 0, 0)
+				self.Castbar.Latency:SetJustifyH("RIGHT")
+
+				self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", function(self, event, caster) -- BETA Event check
+					if (caster == "player" or caster == "vehicle") then
+						self.Castbar.castSent = GetTime()
+					end
+				end)
+			end
+		end
 	end
 
 	--Textures
@@ -804,7 +930,7 @@ local function CreateUnitLayout(self, unit)
 		if C.Unitframe.SwingBar == true and self.cUnit == "player" then
 			self.Swing = CreateFrame("StatusBar", self:GetName().."_Swing", self)
 			self.Swing:CreateShadow()
-			self.Swing:SetPoint("TOPRIGHT", "oUF_KkthnxPlayerCastbar", "BOTTOMRIGHT", 0, -4)
+			self.Swing:SetPoint("TOPRIGHT", "oUF_Player_Castbar", "BOTTOMRIGHT", 0, -4)
 			self.Swing:SetSize(C.Unitframe.PlayerCastbarWidth, 5)
 			self.Swing:SetStatusBarTexture(C.Media.Texture)
 			self.Swing:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
@@ -1000,21 +1126,17 @@ local target = oUF:Spawn("target", "oUF_KkthnxTarget")
 target:SetPoint(unpack(C.Position.UnitFrames.Target))
 Movers:RegisterFrame(target)
 
-if (config.targettarget.enable) then
-	local targettarget = oUF:Spawn("targettarget", "oUF_KkthnxTargetTarget")
-	targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
-	Movers:RegisterFrame(targettarget)
-end
+local targettarget = oUF:Spawn("targettarget", "oUF_KkthnxTargetTarget")
+targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
+Movers:RegisterFrame(targettarget)
 
 local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
 focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
 Movers:RegisterFrame(focus)
 
-if (config.focustarget.enable) then
-	local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
-	focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
-	Movers:RegisterFrame(focustarget)
-end
+local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
+focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
+Movers:RegisterFrame(focustarget)
 
 if (C.Unitframe.Party) then
 	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Raidframe.RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",

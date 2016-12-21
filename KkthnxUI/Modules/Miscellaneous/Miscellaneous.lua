@@ -29,6 +29,33 @@ local Movers = K.Movers
 -- Fix frame level for UIErrorsFrame
 UIErrorsFrame:SetFrameLevel(0)
 
+-- Skin return to graveyard button(Elvui)
+do
+	GhostFrame:StripTextures()
+	GhostFrame:SkinButton()
+	GhostFrame:SetBackdropColor(0, 0, 0, 0)
+	GhostFrame:SetBackdropBorderColor(0, 0, 0, 0)
+	local function forceBackdropColor(self, r, g, b, a)
+		if r ~= 0 or g ~= 0 or b ~= 0 or a ~= 0 then
+			GhostFrame:SetBackdropColor(0, 0, 0, 0)
+			GhostFrame:SetBackdropBorderColor(0, 0, 0, 0)
+		end
+	end
+	hooksecurefunc(GhostFrame, "SetBackdropColor", forceBackdropColor)
+	hooksecurefunc(GhostFrame, "SetBackdropBorderColor", forceBackdropColor)
+	GhostFrame:ClearAllPoints()
+	GhostFrame:SetPoint("TOP", UIParent, "TOP", 0, -270)
+	GhostFrameContentsFrameIcon:SetTexture(nil)
+	local x = CreateFrame("Frame", nil, GhostFrame)
+	x:SetFrameStrata("MEDIUM")
+	x:CreateBackdrop()
+	x:SetOutside(GhostFrameContentsFrameIcon)
+	local tex = x:CreateTexture(nil, "OVERLAY")
+	tex:SetTexture("Interface\\Icons\\spell_holy_guardianspirit")
+	tex:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	tex:SetInside()
+end
+
 -- Move some frames (Shestak)
 local HeadFrame = CreateFrame("Frame")
 HeadFrame:RegisterEvent("ADDON_LOADED")

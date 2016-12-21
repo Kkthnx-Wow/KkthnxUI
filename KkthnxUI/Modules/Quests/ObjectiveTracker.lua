@@ -67,6 +67,7 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 	if item and not item.skinned then
 		item:SetSize(C.ActionBar.ButtonSize - 5, C.ActionBar.ButtonSize - 5)
 		item:SetBackdrop(K.BorderBackdrop)
+		item:CreateShadow()
 		item:SetBackdropColor(0.65, 0.63, 0.35)
 		item:StyleButton()
 
@@ -93,6 +94,7 @@ hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", function(_, block)
 	if item and not item.skinned then
 		item:SetSize(C.ActionBar.ButtonSize - 5, C.ActionBar.ButtonSize - 5)
 		item:SetBackdrop(K.BorderBackdrop)
+		item:CreateShadow()
 		item:SetBackdropColor(0.65, 0.63, 0.35)
 		item:StyleButton()
 

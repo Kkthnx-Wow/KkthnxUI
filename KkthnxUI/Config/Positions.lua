@@ -39,7 +39,7 @@ C["Position"] = {
 		["Arena"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -140, 140},
 		["Boss"] = {"BOTTOMRIGHT", "UIParent", "RIGHT", -140, 140},
 		["Focus"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPLEFT", -60, 30},
-		["FocusCastbar"] = {"BOTTOM", "oUF_KkthnxFocus", "TOP", 0, 50},
+		["FocusCastbar"] = {"BOTTOM", "oUF_KkthnxFocus", "TOP", 12, 50},
 		["FocusTarget"] = {"TOPLEFT", "oUF_KkthnxFocus", "BOTTOMRIGHT", -78, -16},
 		["Party"] = {"TOPLEFT", "UIParent", "TOPLEFT", 6, -175},
 		["Pet"] = {"TOPLEFT", "oUF_KkthnxPlayer", "BOTTOMLEFT", 0, -12},
@@ -47,7 +47,7 @@ C["Position"] = {
 		["PlayerCastbar"] = {"BOTTOM", "ActionBarAnchor", "TOP", 0, 175},
 		["Raid"] = {"TOPLEFT", "UIParent", "TOPLEFT", 6, -175},
 		["Target"] = {"BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 9, 175},
-		["TargetCastbar"] = {"BOTTOM", "oUF_KkthnxPlayerCastbar", "TOP", 0, 7},
+		["TargetCastbar"] = {"BOTTOM", "oUF_KkthnxPlayer_Castbar", "TOP", 0, 7},
 		["TargetTarget"] = {"TOPLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", -78, -16},
 	},
 	-- Filger positions

@@ -195,6 +195,7 @@ C["Minimap"] = {
 	["Enable"] = true,
 	["FadeButtons"] = true,
 	["Garrison"] = true,
+	["HideCalendar"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
 }
@@ -237,12 +238,12 @@ C["Nameplates"] = {
 	["HealerIcon"] = false,
 	["HealthValue"] = true,
 	["Height"] = 11,
-	["OffTankColor"] = {0, 0.5, 1},
 	["NameAbbreviate"] = true,
 	["NearColor"] = {1, 1, 0},
+	["OffTankColor"] = {0, 0.5, 1},
 	["Spiral"] = true,
-	["TotemIcons"] = false,
 	["Timer"] = true,
+	["TotemIcons"] = false,
 	["TrackAuras"] = true,
 	["Width"] = 120,
 }
@@ -299,7 +300,10 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["CastbarIcon"] = true,
+	["CastbarLatency"] = true,
 	["Castbars"] = true,
+	["CastbarTicks"] = true,
 	["ClassColor"] = true,
 	["ClassPortraits"] = false,
 	["CombatText"] = true,
@@ -307,8 +311,6 @@ C["Unitframe"] = {
 	["FocusCastbarHeight"] = 20,
 	["FocusCastbarWidth"] = 180,
 	["GCDBar"] = false,
-	["IconPlayer"] = "NONE",
-	["IconTarget"] = "NONE",
 	["Party"] = true,
 	["PlayerCastbarHeight"] = 18,
 	["PlayerCastbarWidth"] = 200,

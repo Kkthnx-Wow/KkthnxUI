@@ -4,8 +4,8 @@
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: Simplistic user interface
 ## Notes-deDE: Simplistic user interface
-## Notes-frFR: Simplistic user interface
-## Notes-ruRU: Simplistic user interface
+## Notes-frFR: Interface d'utilisateur simplifiée
+## Notes-ruRU: Минималистичный пользовательский интерфейс
 
 ## LoadOnDemand: 0
 ## DefaultState: Enabled

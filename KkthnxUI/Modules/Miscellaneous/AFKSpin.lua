@@ -168,6 +168,22 @@ local function createStats()
 	return format("%s: |cfff0ff00%s|r", name, result)
 end
 
+local active
+local function getSpec()
+	local specIndex = GetSpecialization();
+	if not specIndex then return end
+	active = GetActiveSpecGroup()
+	local talent = ""
+	local i = GetSpecialization(false, false, active)
+	if i then
+		i = select(2, GetSpecializationInfo(i))
+		if(i) then
+			talent = format("%s", i)
+		end
+	end
+	return format("%s", talent)
+end
+
 -- </ Simple-Timer for Stats > --
 local showTime = 5
 local total = 0
@@ -312,7 +328,10 @@ function AFK:LoopAnimations()
 end
 
 function AFK:Initialize()
-	local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class]
+	local level = UnitLevel("player")
+	local race = UnitRace("player")
+	local localizedClass = UnitClass("player")
+	local spec = getSpec()
 
 	self.AFKMode = CreateFrame("Frame", "KkthnxUIAFKFrame")
 	self.AFKMode:SetFrameLevel(1)
@@ -342,7 +361,7 @@ function AFK:Initialize()
 	self.AFKMode.top.wowlogo.tex:SetInside()
 
 	-- </ Server/Local Time text > --
-	self.AFKMode.top.time = self.AFKMode.top:CreateFontString(nil, 'OVERLAY')
+	self.AFKMode.top.time = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.top.time:SetFont(C.Media.Font, 20, C.Media.Font_Style)
 	self.AFKMode.top.time:SetText("")
 	self.AFKMode.top.time:SetPoint("RIGHT", self.AFKMode.top, "RIGHT", -20, 0)
@@ -350,7 +369,7 @@ function AFK:Initialize()
 	self.AFKMode.top.time:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
 
 	-- </ Date text > --
-	self.AFKMode.top.date = self.AFKMode.top:CreateFontString(nil, 'OVERLAY')
+	self.AFKMode.top.date = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.top.date:SetFont(C.Media.Font, 20, C.Media.Font_Style)
 	self.AFKMode.top.date:SetText("")
 	self.AFKMode.top.date:SetPoint("LEFT", self.AFKMode.top, "LEFT", 20, 0)
@@ -438,13 +457,14 @@ function AFK:Initialize()
 
 	self.AFKMode.bottom.name = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.name:SetFont(C.Media.Font, 20)
-	self.AFKMode.bottom.name:SetFormattedText("%s-%s", K.Name, K.Realm)
+	-- self.AFKMode.bottom.name:SetFormattedText("%s - %s".. "\n" .."%s %s %s %s %s", K.Name, K.Realm, LEVEL, level, race, spec, localizedClass)
+	self.AFKMode.bottom.name:SetFormattedText("%s - %s", K.Name, K.Realm)
 	self.AFKMode.bottom.name:SetPoint("TOPLEFT", self.AFKMode.bottom.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
-	self.AFKMode.bottom.name:SetTextColor(classColor.r, classColor.g, classColor.b)
+	self.AFKMode.bottom.name:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
 
 	self.AFKMode.bottom.guild = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.guild:SetFont(C.Media.Font, 20)
-	self.AFKMode.bottom.guild:SetText(L["No Guild"])
+	self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
 	self.AFKMode.bottom.guild:SetPoint("TOPLEFT", self.AFKMode.bottom.name, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
 	self.AFKMode.bottom.time = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")

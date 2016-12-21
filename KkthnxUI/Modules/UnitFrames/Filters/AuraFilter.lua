@@ -1,7 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
-
 -- Filters:
 -- General (both):	On Players:Show all
 -- "Blacklist" 0 = Show All (override default)

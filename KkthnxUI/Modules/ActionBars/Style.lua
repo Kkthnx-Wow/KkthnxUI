@@ -131,7 +131,7 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 
 	if C.ActionBar.Hotkey == true then
 		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPRIGHT", 0, 0)
+		hotkey:SetPoint("TOPRIGHT", 0, -2)
 		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		hotkey:SetWidth(C.ActionBar.ButtonSize - 1)
 		hotkey.ClearAllPoints = K.Noop

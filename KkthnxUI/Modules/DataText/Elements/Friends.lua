@@ -16,7 +16,7 @@ local wowString = "WoW"
 local totalOnlineString = "Online: " .. "%s/%s"
 local tthead, ttsubh, ttoff = {r=0.4, g=0.78, b=1}, {r=0.75, g=0.9, b=1}, {r=.3,g=1,b=.3}
 local activezone, inactivezone = {r=0.3, g=1.0, b=0.3}, {r=0.65, g=0.65, b=0.65}
-local statusTable = {"|cffff0000[AFK]|r", "|cffff0000[DND]|r", ""}
+local statusTable = {L.Chat.AFK, L.Chat.DND, ""}
 local groupedTable = {"|cffaaaaaa*|r", ""}
 local friendTable, BNTable = {}, {}
 local totalOnline, BNTotalOnline = 0, 0
@@ -131,9 +131,9 @@ local function BuildFriendTable(total)
 		end
 
 		if status == "<"..AFK..">" then
-			status = "|cffff0000[AFK]|r"
+			status = L.Chat.AFK
 		elseif status == "<"..DND..">" then
-			status = "|cffff0000[DND]|r"
+			status = L.Chat.DND
 		end
 
 		friendTable[i] = {name, level, class, area, connected, status, note}
@@ -401,7 +401,7 @@ local OnEnter = function(self)
 						levelc = GetQuestDifficultyColor(BNTable[i][16])
 
 						if not classc then
-							classc = {r=1, g=1, b=1}
+							classc = RAID_CLASS_COLORS["PRIEST"]
 						end
 
 						if UnitInParty(BNTable[i][4]) or UnitInRaid(BNTable[i][4]) then

@@ -10,16 +10,16 @@ local tremove = table.remove
 local hooksecurefunc = hooksecurefunc
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: AlertFrame, FIRST_YOFFSET, next,
+-- GLOBALS: AlertFrame, FIRST_YOFFSET, next, GroupLootContainer, UIPARENT_MANAGED_FRAME_POSITIONS
 
 local Movers = K.Movers
 
 -- AlertFrameMove(by Gethe)
-local AchievementAnchor = CreateFrame("Frame", "AchievementAnchor", UIParent)
-AchievementAnchor:SetWidth(230)
-AchievementAnchor:SetHeight(50)
-AchievementAnchor:SetPoint(unpack(C.Position.Alerts))
-Movers:RegisterFrame(AchievementAnchor)
+local AlertFrameHolder = CreateFrame("Frame", "AlertFrameHolder", UIParent)
+AlertFrameHolder:SetWidth(180)
+AlertFrameHolder:SetHeight(20)
+AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", 0, -18)
+Movers:RegisterFrame(AlertFrameHolder)
 
 local alertBlacklist = {
 	GroupLootContainer = C.Loot.GroupLoot,
@@ -29,7 +29,7 @@ local alertBlacklist = {
 local POSITION, ANCHOR_POINT, YOFFSET = "BOTTOM", "TOP", -9
 
 local function CheckGrow()
-	local point = AchievementAnchor:GetPoint()
+	local point = AlertFrameHolder:GetPoint()
 
 	if strfind(point, "TOP") or point == "CENTER" or point == "LEFT" or point == "RIGHT" then
 		POSITION = "TOP"
@@ -54,13 +54,13 @@ local ReplaceAnchors do
 			relativeAlert = alertFrame
 		end
 
-		-- if C.Loot.GroupLoot then
-		-- GroupLootContainer:ClearAllPoints()
-		-- GroupLootContainer:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
-		-- else
-		-- GroupLootContainer:ClearAllPoints()
-		-- GroupLootContainer:SetPoint(POSITION, AchievementAnchor, POSITION, 2, FIRST_YOFFSET)
-		-- end
+		if C.Loot.GroupLoot then
+			GroupLootContainer:ClearAllPoints()
+			GroupLootContainer:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
+		else
+			GroupLootContainer:ClearAllPoints()
+			GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, POSITION, 2, FIRST_YOFFSET)
+		end
 
 		return relativeAlert
 	end
@@ -84,6 +84,7 @@ local ReplaceAnchors do
 	end
 
 	function ReplaceAnchors(alertFrameSubSystem)
+		UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
 		if alertFrameSubSystem.alertFramePool then
 			local frame = alertFrameSubSystem.alertFramePool:GetNextActive()
 			if alertBlacklist[alertFrameSubSystem.alertFramePool.frameTemplate] then
@@ -113,7 +114,7 @@ local function SetUpAlert()
 	hooksecurefunc(AlertFrame, "UpdateAnchors", function(self)
 		CheckGrow()
 		self:ClearAllPoints()
-		self:SetPoint(POSITION, AchievementAnchor, POSITION, 2, FIRST_YOFFSET)
+		self:SetPoint(POSITION, AlertFrameHolder, POSITION, 2, FIRST_YOFFSET)
 	end)
 
 	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(self, alertFrameSubSystem)
@@ -140,4 +141,18 @@ local function SetUpAlert()
 	end
 end
 
-SetUpAlert()
+local Loading = CreateFrame("Frame")
+
+function Loading:OnEvent(event, addon)
+	if (event == "PLAYER_LOGIN") then
+		SetUpAlert()
+	end
+end
+
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:RegisterEvent("ADDON_LOADED")
+Loading:SetScript("OnEvent", Loading.OnEvent)
+
+if event == ("ADDON_LOADED") then
+	Loading:UnregisterEvent("ADDON_LOADED")
+end

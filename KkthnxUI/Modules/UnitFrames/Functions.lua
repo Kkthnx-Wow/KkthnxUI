@@ -93,10 +93,10 @@ end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
 local function SetValueText(element, tag, cur, max, notMana)
-	if ( not max or max == 0 ) then max = 100 end -- not sure why this happens
+	if (not max or max == 0) then max = 100 end -- </ not sure why this happens > --
 
 	if (tag == TEXT_PERCENT) and (max < 200) then
-		tag = TEXT_SHORT -- Shows energy etc. with real number
+		tag = TEXT_SHORT -- </ Shows energy etc. with real number > --
 	end
 
 	local s
@@ -120,7 +120,7 @@ local function SetValueText(element, tag, cur, max, notMana)
 	element:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, s)
 end
 
--- Health Update
+-- </ PostHealth update > --
 do
 	local tagtable = {
 		NUMERIC = {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
@@ -131,7 +131,7 @@ do
 	}
 
 	function K.PostUpdateHealth(Health, unit, cur, max)
-		if not unit then return end -- Blizz bug in 7.1
+		if not unit then return end -- </ Blizz bug in 7.1 > --
 
 		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GetSpellInfo(8326) or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
@@ -141,7 +141,7 @@ do
 			UpdatePortraitColor(self, unit, cur, max)
 		end
 
-		if (self.Name) and (self.Name.Bg) then -- For boss frames
+		if (self.Name) and (self.Name.Bg) then -- </ For boss frames > --
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
@@ -170,7 +170,7 @@ do
 	end
 end
 
--- Power Update
+-- </ PostPower update > --
 do
 	local tagtable = {
 		NUMERIC	= {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
@@ -209,12 +209,12 @@ do
 	end
 end
 
--- Mouseover enter
+-- </ Mouseover enter > --
 function K.UnitFrame_OnEnter(self)
 	if self.__owner then
 		self = self.__owner
 	end
-	if not self:IsEnabled() then return end --arena prep
+	if not self:IsEnabled() then return end -- </ arena prep > --
 
 	UnitFrame_OnEnter(self)
 
@@ -230,12 +230,12 @@ function K.UnitFrame_OnEnter(self)
 	end
 end
 
--- Mouseover leave
+-- </ Mouseover leave > --
 function K.UnitFrame_OnLeave(self)
 	if self.__owner then
 		self = self.__owner
 	end
-	if not self:IsEnabled() then return end --arena prep
+	if not self:IsEnabled() then return end -- </ arena prep > --
 	UnitFrame_OnLeave(self)
 
 	self.isMouseOver = nil
@@ -250,7 +250,7 @@ function K.UnitFrame_OnLeave(self)
 	end
 end
 
--- Statusbar Functions
+-- </ Statusbar functions > --
 function K.CreateStatusBar(parent, layer, name, AddBackdrop)
 	if type(layer) ~= "string" then layer = "BORDER" end
 	local bar = CreateFrame("StatusBar", name, parent)
@@ -292,7 +292,7 @@ function K.CreateAuraWatchIcon(self, icon)
 	icon.overlay:SetTexture()
 end
 
--- create the icon
+-- </ Create the icon > --
 function K.CreateAuraWatch(self)
 	local Class = select(2, UnitClass("player"))
 	local Auras = CreateFrame("Frame", nil, self)
@@ -321,7 +321,7 @@ function K.CreateAuraWatch(self)
 		end
 	end
 
-	-- Cornerbuffs
+	-- </ Cornerbuffs > --
 	if buffs then
 		for key, spell in pairs(buffs) do
 			local Icon = CreateFrame("Frame", nil, Auras)
@@ -349,4 +349,172 @@ function K.CreateAuraWatch(self)
 	end
 
 	self.AuraWatch = Auras
+end
+
+-- </ Castbar functions > --
+local ticks = {}
+local channelingTicks = K.CastBarTicks
+
+local setBarTicks = function(Castbar, ticknum)
+	for k, v in pairs(ticks) do
+		v:Hide()
+	end
+	if ticknum and ticknum > 0 then
+		local delta = Castbar:GetWidth() / ticknum
+		for k = 1, ticknum do
+			if not ticks[k] then
+				ticks[k] = Castbar:CreateTexture(nil, "OVERLAY")
+				ticks[k]:SetTexture(C.Media.Blank)
+				ticks[k]:SetVertexColor(unpack(C.Media.Border_Color))
+				ticks[k]:SetWidth(1)
+				ticks[k]:SetHeight(Castbar:GetHeight())
+				ticks[k]:SetDrawLayer("OVERLAY", 7)
+			end
+			ticks[k]:ClearAllPoints()
+			ticks[k]:SetPoint("CENTER", Castbar, "RIGHT", -delta * k, 0)
+			ticks[k]:Show()
+		end
+	end
+end
+
+K.PostCastStart = function(Castbar, unit, name, castid)
+	Castbar.channeling = false
+	if unit == "vehicle" then unit = "player" end
+
+	if unit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
+		local _, _, _, lag = GetNetStats()
+		local latency = GetTime() - (Castbar.castSent or 0)
+		lag = lag / 1e3 > Castbar.max and Castbar.max or lag / 1e3
+		latency = latency > Castbar.max and lag or latency
+		Castbar.Latency:SetText(("%dms"):format(latency * 1e3))
+		Castbar.SafeZone:SetWidth(Castbar:GetWidth() * latency / Castbar.max)
+		Castbar.SafeZone:ClearAllPoints()
+		Castbar.SafeZone:SetPoint("TOPRIGHT")
+		Castbar.SafeZone:SetPoint("BOTTOMRIGHT")
+		Castbar.castSent = nil
+	end
+
+	if unit == "player" and C.Unitframe.CastbarTicks == true then
+		setBarTicks(Castbar, 0)
+	end
+
+	local r, g, b, color
+	if UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		color = K.Colors.class[class]
+	else
+		local reaction = K.Colors.reaction[UnitReaction(unit, "player")]
+		if reaction then
+			r, g, b = reaction[1], reaction[2], reaction[3]
+		else
+			r, g, b = 1, 1, 1
+		end
+	end
+
+	if color then
+		r, g, b = color[1], color[2], color[3]
+	end
+
+	if Castbar.interrupt and UnitCanAttack("player", unit) then
+		Castbar:SetStatusBarColor(0.87 * 0.8, 0.37 * 0.8, 0.37 * 0.8)
+		Castbar.bg:SetVertexColor(0.87 * 0.1, 0.37 * 0.1, 0.37 * 0.1, 0.6)
+		Castbar.Overlay:SetBackdropBorderColor(0.87, 0.37, 0.37)
+		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
+		else
+			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
+		end
+	else
+		if unit == "pet" or unit == "vehicle" then
+			local _, class = UnitClass("player")
+			local r, g, b = unpack(K.Colors.class[class])
+			if b then
+				Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
+				Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+			end
+		else
+			Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
+			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+		end
+		Castbar.Overlay:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+			Castbar.Button:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		end
+	end
+end
+
+K.PostChannelStart = function(Castbar, unit, name)
+	Castbar.channeling = true
+	if unit == "vehicle" then unit = "player" end
+
+	if unit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
+		local _, _, _, lag = GetNetStats()
+		local latency = GetTime() - (Castbar.castSent or 0)
+		lag = lag / 1e3 > Castbar.max and Castbar.max or lag / 1e3
+		latency = latency > Castbar.max and lag or latency
+		Castbar.Latency:SetText(("%dms"):format(latency * 1e3))
+		Castbar.SafeZone:SetWidth(Castbar:GetWidth() * latency / Castbar.max)
+		Castbar.SafeZone:ClearAllPoints()
+		Castbar.SafeZone:SetPoint("TOPLEFT")
+		Castbar.SafeZone:SetPoint("BOTTOMLEFT")
+		Castbar.castSent = nil
+	end
+
+	if unit == "player" and C.Unitframe.CastbarTicks == true then
+		local spell = UnitChannelInfo(unit)
+		Castbar.channelingTicks = channelingTicks[spell] or 0
+		setBarTicks(Castbar, Castbar.channelingTicks)
+	end
+
+	local r, g, b, color
+	if UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		color = K.Colors.class[class]
+	else
+		local reaction = K.Colors.reaction[UnitReaction(unit, "player")]
+		if reaction then
+			r, g, b = reaction[1], reaction[2], reaction[3]
+		else
+			r, g, b = 1, 1, 1
+		end
+	end
+
+	if color then
+		r, g, b = color[1], color[2], color[3]
+	end
+
+	if Castbar.interrupt and UnitCanAttack("player", unit) then
+		Castbar:SetStatusBarColor(0.87 * 0.8, 0.37 * 0.8, 0.37 * 0.8)
+		Castbar.bg:SetVertexColor(0 * 0.1, 0 * 0.1, 0 * 0.1, 0.8)
+		Castbar.Overlay:SetBackdropBorderColor(0.87, 0.37, 0.37)
+		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
+		else
+			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
+		end
+	else
+		if unit == "pet" or unit == "vehicle" then
+			local _, class = UnitClass("player")
+			local r, g, b = unpack(K.Colors.class[class])
+			if b then
+				Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
+				Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+			end
+		else
+			Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
+			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+		end
+		Castbar.Overlay:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+			Castbar.Button:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		end
+	end
+end
+
+K.CustomCastTimeText = function(self, duration)
+	self.Time:SetText(("%.1f / %.1f"):format(self.channeling and duration or self.max - duration, self.max))
+end
+
+K.CustomCastDelayText = function(self, duration)
+	self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(self.channeling and duration or self.max - duration, self.channeling and "-" or "+", abs(self.delay)))
 end
