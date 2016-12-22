@@ -43,7 +43,6 @@ K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K
 K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
-
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
 K.PriestColors = {
@@ -312,19 +311,18 @@ end
 
 -- Format seconds to min/ hour / day
 K.FormatTime = function(s)
-	local Day, Hour, Minute = 86400, 3600, 60
+	local day, hour, minute = 86400, 3600, 60
 
-	if (s >= Day) then
-		return format("%dd", ceil(s / Day))
-	elseif (s >= Hour) then
-		return format("%dh", ceil(s / Hour))
-	elseif (s >= Minute) then
-		return format("%dm", ceil(s / Minute))
-	elseif (s >= Minute / 12) then
-		return floor(s)
+	if s >= day then
+		return format("%dd", floor(s / day + 0.5)), s % day
+	elseif s >= hour then
+		return format("%dh", floor(s / hour + 0.5)), s % hour
+	elseif s >= minute then
+		return format("%dm", floor(s / minute + 0.5)), s % minute
+	elseif s >= minute / 12 then
+		return floor(s + 0.5), (s * 100 - floor(s * 100)) / 100
 	end
-
-	return format("%.1f", s)
+	return format("%.1f", s), (s * 100 - floor(s * 100)) / 100
 end
 
 --Add time before calling a function
