@@ -52,6 +52,10 @@ local OnUpdate = function(self, elapsed)
 		local Texture, R, G, B = UnitAlternatePowerTextureInfo("player", 2, 0)
 		local PowerName = select(11 , UnitAlternatePowerInfo("player")) or UNKNOWN
 
+		if Texture then
+			Texture = string.upper(Texture)
+		end
+
 		if (Texture and AltPowerBarColors.Texture) then
 			R, G, B = AltPowerBarColors.Texture.r, AltPowerBarColors.Texture.g, AltPowerBarColors.Texture.b
 		else

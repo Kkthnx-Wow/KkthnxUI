@@ -65,7 +65,7 @@ hooksecurefunc("QuestObjectiveTracker_OnOpenDropDown", function(self)
 	end
 	info.arg1 = questID
 	info.notCheckable = true
-	Lib_UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
 end)
 
 hooksecurefunc("AchievementObjectiveTracker_OnOpenDropDown", function(self)
@@ -81,7 +81,7 @@ hooksecurefunc("AchievementObjectiveTracker_OnOpenDropDown", function(self)
 	end
 	info.arg1 = i
 	info.notCheckable = true
-	Lib_UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
+	UIDropDownMenu_AddButton(info, UIDROPDOWN_MENU_LEVEL)
 end)
 
 hooksecurefunc("BonusObjectiveTracker_OnOpenDropDown", function(self)
