@@ -930,7 +930,7 @@ local function CreateUnitLayout(self, unit)
 		if C.Unitframe.SwingBar == true and self.cUnit == "player" then
 			self.Swing = CreateFrame("StatusBar", self:GetName().."_Swing", self)
 			self.Swing:CreateShadow()
-			self.Swing:SetPoint("TOPRIGHT", "oUF_Player_Castbar", "BOTTOMRIGHT", 0, -4)
+			self.Swing:SetPoint("TOPRIGHT", "oUF_KkthnxPlayer_Castbar", "BOTTOMRIGHT", 0, -4)
 			self.Swing:SetSize(C.Unitframe.PlayerCastbarWidth, 5)
 			self.Swing:SetStatusBarTexture(C.Media.Texture)
 			self.Swing:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)

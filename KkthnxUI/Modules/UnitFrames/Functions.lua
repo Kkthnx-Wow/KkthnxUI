@@ -421,8 +421,6 @@ K.PostCastStart = function(Castbar, unit, name, castid)
 		Castbar.Overlay:SetBackdropBorderColor(0.87, 0.37, 0.37)
 		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
 			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
-		else
-			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
 		end
 	else
 		if unit == "pet" or unit == "vehicle" then
