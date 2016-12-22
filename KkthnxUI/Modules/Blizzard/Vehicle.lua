@@ -12,7 +12,7 @@ Movers:RegisterFrame(VehicleAnchor)
 hooksecurefunc(VehicleSeatIndicator, "SetPoint", function(_, _, parent)
 	if parent == "MinimapCluster" or parent == _G["MinimapCluster"] then
 		VehicleSeatIndicator:ClearAllPoints()
-		VehicleSeatIndicator:SetPoint("BOTTOM", VehicleAnchor, "BOTTOM", -30, -54)
+		VehicleSeatIndicator:SetPoint("CENTER", VehicleAnchor, "CENTER", 0, 0)
 		VehicleSeatIndicator:SetFrameStrata("LOW")
 	end
 end)
@@ -37,7 +37,7 @@ if C.Blizzard.VehicleMouseover == true then
 
 	local function vehmousebutton(alpha)
 		for i = 1, K.numSeat do
-		local pb = _G["VehicleSeatIndicatorButton"..i]
+			local pb = _G["VehicleSeatIndicatorButton"..i]
 			pb:SetAlpha(alpha)
 		end
 	end
