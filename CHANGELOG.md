@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - PVP dialog timer implemented.
 - Cached some more globals
+- New animations file to handle fade in and out and flashing.
 
 ### Fixed
-- Big report fixes for cast bar and pixel perfect script.
+- Bug report fixes for cast bar and pixel perfect script.
 
 ### Removed
 - General UI files/code cleanup.
@@ -22,3 +23,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Media changes for certain languages. (Keep an eye on this).
 - Globals slowly being coverted a different way so table.insert will be cached like table_insert = table.insert.
 - Code cleanup in fixes file.
+- Time datatext is redone.

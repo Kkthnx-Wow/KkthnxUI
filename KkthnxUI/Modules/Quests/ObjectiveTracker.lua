@@ -70,6 +70,7 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 		item:CreateShadow()
 		item:SetBackdropColor(0.65, 0.63, 0.35)
 		item:StyleButton()
+		item:SetScale(1)
 
 		item:SetNormalTexture(nil)
 
@@ -97,6 +98,7 @@ hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", function(_, block)
 		item:CreateShadow()
 		item:SetBackdropColor(0.65, 0.63, 0.35)
 		item:StyleButton()
+		item:SetScale(1)
 
 		item:SetNormalTexture(nil)
 
@@ -152,6 +154,7 @@ button:SetSize(17, 17)
 button:StripTextures()
 button:SetBackdrop(K.BorderBackdrop)
 button:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+button:CreateShadow(2)
 
 button.minus = button:CreateTexture(nil, "OVERLAY")
 button.minus:SetSize(10, 2)

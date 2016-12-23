@@ -4,10 +4,11 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local floor = math.floor
+local math_floor = math.floor
 local getmetatable = getmetatable
 local string_match = string.match
 local unpack, select = unpack, select
+local type = type
 
 -- Wow API
 local CreateFrame = CreateFrame
@@ -19,7 +20,7 @@ local UnitClass = UnitClass
 
 local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 local Scale = function(x)
-	return Mult * floor(x / Mult + 0.5)
+	return Mult * math_floor(x / Mult + 0.5)
 end
 
 K.Scale = function(x) return Scale(x) end
