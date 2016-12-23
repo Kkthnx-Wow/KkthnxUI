@@ -1,23 +1,28 @@
 local K, C, L = unpack(select(2, ...))
--- if C.Blizzard.AltPowerBar ~= true then return end
-local AltPowerBar = CreateFrame("Frame", nil, UIParent)
+if IsAddOnLoaded("SimplePowerBar") then return end
 
+-- Lua API
 local select = select
-local CreateFrame = CreateFrame
+local strupper = string.upper
 
-local UnitPower, UnitPowerMax, UnitAlternatePowerTextureInfo, UnitAlternatePowerInfo = UnitPower, UnitPowerMax, UnitAlternatePowerTextureInfo, UnitAlternatePowerInfo
-local ALTERNATE_POWER_INDEX = ALTERNATE_POWER_INDEX
-local UNKNOWN = UNKNOWN
+-- Wow API
+local UnitAlternatePowerInfo = UnitAlternatePowerInfo
+local UnitAlternatePowerTextureInfo = UnitAlternatePowerTextureInfo
+local UnitPower = UnitPower
+local UnitPowerMax = UnitPowerMax
 
-local Elapsed = 1
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: GameTooltip, ALTERNATE_POWER_INDEX
 
-local AltPowerBarColors = {-- Update this list as time goes.
+-- Skin AltPowerBar(by Tukz)
+local blizzColors = {
 	["INTERFACE\\UNITPOWERBARALT\\AMBER_HORIZONTAL_FILL.BLP"] = {r = 0.97, g = 0.81, b = 0},
 	["INTERFACE\\UNITPOWERBARALT\\ARCANE_CIRCULAR_FILL.BLP"] = {r = 0.52, g = 0.44, b = 1},
 	["INTERFACE\\UNITPOWERBARALT\\ARSENAL_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0, b = 0.2},
 	["INTERFACE\\UNITPOWERBARALT\\BREWINGSTORM_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0.84, b = 0},
 	["INTERFACE\\UNITPOWERBARALT\\BULLETBAR_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
 	["INTERFACE\\UNITPOWERBARALT\\CHOGALL_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.05, b = 0.67},
+	["INTERFACE\\UNITPOWERBARALT\\FELCORRUPTION_HORIZONTAL_FILL.BLP"] = {r = 0.13, g = 0.55, b = 0.13},
 	["INTERFACE\\UNITPOWERBARALT\\FELCORRUPTIONRED_HORIZONTAL_FILL.BLP"] = {r = 0.8, g = 0.05, b = 0},
 	["INTERFACE\\UNITPOWERBARALT\\GARROSHENERGY_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.05, b = 0.67},
 	["INTERFACE\\UNITPOWERBARALT\\KARGATHROARCROWD_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
@@ -36,84 +41,92 @@ local AltPowerBarColors = {-- Update this list as time goes.
 	["INTERFACE\\UNITPOWERBARALT\\STONEGUARDJASPER_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0.4, b = 0},
 	["INTERFACE\\UNITPOWERBARALT\\THUNDERKING_HORIZONTAL_FILL.BLP"] = {r = 0.12, g = 0.56, b = 1},
 	["INTERFACE\\UNITPOWERBARALT\\TWINOGRONDISTANCE_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\XAVIUS_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.1, b = 0.6},
+	["INTERFACE\\UNITPOWERBARALT\\XAVIUS_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.1, b = 0.6}
 }
 
-local DisableElements = function()
-	PlayerPowerBarAlt:UnregisterAllEvents()
-end
+local Movers = K.Movers
 
-local OnUpdate = function(self, elapsed)
-	Elapsed = Elapsed + elapsed
+-- Get rid of old AltPowerBar
+PlayerPowerBarAlt:UnregisterAllEvents()
+PlayerPowerBarAlt.ignoreFramePositionManager = true
 
-	if (Elapsed >= 1) then
-		local Power = UnitPower("player", ALTERNATE_POWER_INDEX)
-		local MaxPower = UnitPowerMax("player", ALTERNATE_POWER_INDEX)
-		local Texture, R, G, B = UnitAlternatePowerTextureInfo("player", 2, 0)
-		local PowerName = select(11 , UnitAlternatePowerInfo("player")) or UNKNOWN
+local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
+holder:SetPoint("TOP", UIParent, "TOP", 0, -18)
+holder:SetSize(214, 22)
+Movers:RegisterFrame(holder)
 
-		if Texture then
-			Texture = string.upper(Texture)
-		end
+-- AltPowerBar
+local bar = CreateFrame("Frame", "UIAltPowerBar", UIParent)
+bar:SetSize(220, 26)
+bar:SetPoint("CENTER", AltPowerBarHolder, "CENTER")
+bar:CreateBackdrop(size, 2)
 
-		if (Texture and AltPowerBarColors.Texture) then
-			R, G, B = AltPowerBarColors.Texture.r, AltPowerBarColors.Texture.g, AltPowerBarColors.Texture.b
-		else
-			R, G, B = K.ColorGradient(Power, MaxPower, 0, 0.8, 0, 0.8, 0.8, 0, 0.8, 0, 0)
-		end
-
-		self.Status:SetMinMaxValues(0, MaxPower)
-		self.Status:SetValue(Power)
-		self.Status:SetStatusBarColor(R, G, B)
-		self.Text:SetText(PowerName .. ": " .. Power .. " / " .. MaxPower)
-
-		Elapsed = 0
-	end
-end
-
-local OnEvent = function(self, event, unit, power)
-	local AltPowerInfo = UnitAlternatePowerInfo("player")
-
-	if (not AltPowerInfo or event == "UNIT_POWER_BAR_HIDE") then
-		self:Hide()
-		self:SetScript("OnUpdate", nil)
-	else
-		if ((event == "UNIT_POWER" or event == "UNIT_MAXPOWER") and power ~= "ALTERNATE") then
-			return
-		end
-
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
+-- Event handling
+bar:RegisterEvent("UNIT_POWER")
+bar:RegisterEvent("UNIT_POWER_BAR_SHOW")
+bar:RegisterEvent("UNIT_POWER_BAR_HIDE")
+bar:RegisterEvent("PLAYER_ENTERING_WORLD")
+bar:SetScript("OnEvent", function(self)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if UnitAlternatePowerInfo("player") then
 		self:Show()
-		self:SetScript("OnUpdate", OnUpdate)
+	else
+		self:Hide()
 	end
-end
+end)
 
-local CreateBar = function()
-	DisableElements()
+-- Tooltip
+bar:SetScript("OnEnter", function(self)
+	local name = select(11, UnitAlternatePowerInfo("player"))
+	local tooltip = select(12, UnitAlternatePowerInfo("player"))
 
-	AltPowerBar:SetParent(UIParent)
-	AltPowerBar:SetSize(222, 26)
-	AltPowerBar:SetPoint(unpack(C.Position.AltPowerBar))
-	AltPowerBar:CreateBackdrop(size, 2)
-	AltPowerBar:SetFrameStrata("HIGH")
+	GameTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -5)
+	GameTooltip:AddLine(name, 1, 1, 1)
+	GameTooltip:AddLine(tooltip, nil, nil, nil, true)
 
-	AltPowerBar.Status = CreateFrame("StatusBar", nil, AltPowerBar)
-	AltPowerBar.Status:SetFrameLevel(AltPowerBar:GetFrameLevel() + 1)
-	AltPowerBar.Status:SetStatusBarTexture(C.Media.Texture)
-	AltPowerBar.Status:SetMinMaxValues(0, 100)
-	AltPowerBar.Status:SetInside(AltPowerBar)
+	GameTooltip:Show()
+end)
+bar:SetScript("OnLeave", GameTooltip_Hide)
 
-	AltPowerBar.Text = K.SetFontString(AltPowerBar.Status, C.Media.Font, 12, "OUTLINE", "CENTER")
-	AltPowerBar.Text:SetPoint("CENTER", AltPowerBar.Status, "CENTER", 0, 1)
+-- StatusBar
+local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
+status:SetFrameLevel(bar:GetFrameLevel() + 1)
+status:SetStatusBarTexture(C.Media.Texture)
+status:SetMinMaxValues(0, 100)
+status:SetPoint("TOPLEFT", bar, "TOPLEFT", 2, -2)
+status:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -2, 2)
 
-	AltPowerBar:RegisterEvent("UNIT_POWER_BAR_SHOW")
-	AltPowerBar:RegisterEvent("UNIT_POWER_BAR_HIDE")
-	AltPowerBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-	AltPowerBar:RegisterUnitEvent("UNIT_POWER", "player")
-	AltPowerBar:RegisterUnitEvent("UNIT_MAXPOWER", "player")
-	AltPowerBar:SetScript("OnEvent", OnEvent)
-end
+status.bg = status:CreateTexture(nil, "BACKGROUND")
+status.bg:SetAllPoints(status)
+status.bg:SetTexture(C.Media.Blank)
 
-AltPowerBar:RegisterEvent("PLAYER_LOGIN")
-AltPowerBar:SetScript("OnEvent", CreateBar)
+status.text = status:CreateFontString(nil, "OVERLAY")
+status.text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+status.text:SetPoint("CENTER", bar, "CENTER", 0, 0)
+
+-- Update Function
+local update = 1
+status:SetScript("OnUpdate", function(self, elapsed)
+	if not bar:IsShown() then return end
+	update = update + elapsed
+
+	if update >= 1 then
+		local power = UnitPower("player", ALTERNATE_POWER_INDEX)
+		local mpower = UnitPowerMax("player", ALTERNATE_POWER_INDEX)
+		local texture, r, g, b = UnitAlternatePowerTextureInfo("player", 2, 0)
+		if texture then
+			texture = strupper(texture)
+		end
+		if blizzColors[texture] then
+			r, g, b = blizzColors[texture].r, blizzColors[texture].g, blizzColors[texture].b
+		elseif not texture then
+			r, g, b = 0.3, 0.7, 0.3
+		end
+		self:SetMinMaxValues(0, mpower)
+		self:SetValue(power)
+		self.text:SetText(power.."/"..mpower)
+		self:SetStatusBarColor(r, g, b)
+		self.bg:SetVertexColor(r * 0.3, g * 0.3, b * 0.3, 0.25)
+		update = 0
+	end
+end)

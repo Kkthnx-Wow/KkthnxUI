@@ -50,7 +50,12 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		return
 	end
-	if event ~= "CINEMATIC_STOP" and InCinematic() then return end
+	if event ~= "CINEMATIC_STOP" and InCinematic() then
+		return
+	end
+	if InCinematic() and not(CinematicFrame.isRealCinematic or CanCancelScene() or CanExitVehicle()) then
+		return
+	end
 
 	-- Make sure that UI scaling is turned on
 	local UseUIScale = GetCVarBool("useUiScale")
@@ -66,8 +71,10 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	if (format("%.2f", GetCVar("uiScale")) ~= format("%.2f", C.General.UIScale)) then
 		SetCVar("uiScale", C.General.UIScale)
 		if not RequireRestart then
-			StaticPopup_Show("CLIENT_RESTART")
-			RequireRestart = true
+			if C.General.UIScale >= 0.64 then
+				StaticPopup_Show("CLIENT_RESTART")
+				RequireRestart = true
+			end
 		end
 	end
 
@@ -75,10 +82,6 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- The lowest value of UIParent scale by default
 	if (C.General.UIScale < 0.64) then
 		UIParent:SetScale(C.General.UIScale)
-		-- if not RequireRestart then
-		-- 	StaticPopup_Show("CLIENT_RESTART")
-		-- 	RequireRestart = true
-		-- end
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" then
