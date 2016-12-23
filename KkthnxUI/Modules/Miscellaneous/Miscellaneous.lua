@@ -19,10 +19,12 @@ local hooksecurefunc = hooksecurefunc
 local PlaySound = PlaySound
 local PlaySoundFile = PlaySoundFile
 local SetCVar = SetCVar
+local IsInRaid = IsInRaid
 
 -- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
 -- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
 -- GLOBALS: SideDressUpModel, SideDressUpModelResetButton, DressUpModel, DressUpFrameResetButton
+-- GLOBALS: GhostFrame, LevelUpDisplay, BossBanner, statusBar
 
 local Movers = K.Movers
 

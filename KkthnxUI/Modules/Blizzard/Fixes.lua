@@ -9,16 +9,13 @@ local HideUIPanel = HideUIPanel
 local InCombatLockdown = InCombatLockdown
 local IsAddOnLoaded = IsAddOnLoaded
 local ShowUIPanel = ShowUIPanel
-local WorldMapFrame = WorldMapFrame
-local WorldMapFrame_OnHide = WorldMapFrame_OnHide
-local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame, addon, ToggleFrame
 -- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
--- GLOBALS: WorldMapLevelButton
+-- GLOBALS: WorldMapLevelButton, WorldMapFrame_OnHide, WorldMapLevelButton_OnClick, WorldMapFrame
 
--- Fix spellbook taint in combat.
+-- </ Fix spellbook taint in combat > --
 local SpellBookTaint = CreateFrame("Frame")
 SpellBookTaint:RegisterEvent("ADDON_LOADED")
 SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
@@ -30,10 +27,10 @@ SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
 	end
 end)
 
--- Fix RemoveTalent() taint
+-- </ Fix RemoveTalent() taint > --
 FCF_StartAlertFlash = K.Noop
 
--- Fix the scale on ScriptErrorsFrame
+-- </ Fix the scale on ScriptErrorsFrame > --
 local ScriptErrorsScale = CreateFrame("Frame")
 ScriptErrorsScale:RegisterEvent("ADDON_LOADED")
 ScriptErrorsScale:SetScript("OnEvent", function(self, addon)
@@ -45,7 +42,7 @@ ScriptErrorsScale:SetScript("OnEvent", function(self, addon)
 	end
 end)
 
--- Fix SearchLFGLeave() taint
+-- </ Fix SearchLFGLeave() taint > --
 local LFRBrowseTaint = CreateFrame("Frame")
 LFRBrowseTaint:SetScript("OnUpdate", function(self, elapsed)
 	if LFRBrowseFrame.timeToClear then
@@ -53,7 +50,7 @@ LFRBrowseTaint:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 
--- Misclicks for some popups
+-- </ Misclicks for some popups
 StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
 StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil
@@ -68,8 +65,8 @@ if PVPReadyDialog then
 	PVPReadyDialog.label:SetPoint("TOP", 0, -22)
 end
 
--- blizzard's baghandling just doesn't cut it
--- we wish for all backpack/bag hotkeys and buttons to toggle all bags, always
+-- </ blizzard's baghandling just doesn't cut it > --
+-- </ we wish for all backpack/bag hotkeys and buttons to toggle all bags, always > --
 local function OpenAllBags()
 	if not UIParent:IsShown() or IsOptionFrameOpen() then
 		return
@@ -106,7 +103,7 @@ local function OpenAllBags()
 	end
 end
 
--- replace blizzard's bag opening functions
+-- </ replace blizzard's bag opening functions > --
 local otherBagsLoaded
 for _,bags in ipairs({"ArkInventory", "Bagnon", "OneBag3", "BagForce", "Tbag", "Tbag-Shefki"}) do
 	if K.CheckAddOn(bags) then
@@ -123,7 +120,40 @@ else
 	OpenAllBags = nil
 end
 
--- Fix C_ArtifactUI.GetTotalPurchasedRanks() (by Gnarfoz)
+-- </ World Map > --
+-- </ original code by ls- (lightspark) > --
+do
+	local old_ResetZoom = _G.WorldMapScrollFrame_ResetZoom
+	_G.WorldMapScrollFrame_ResetZoom = function()
+		if _G.InCombatLockdown() then
+			_G.WorldMapFrame_Update()
+			_G.WorldMapScrollFrame_ReanchorQuestPOIs()
+			_G.WorldMapFrame_ResetPOIHitTranslations()
+			_G.WorldMapBlobFrame_DelayedUpdateBlobs()
+		else
+			old_ResetZoom()
+		end
+	end
+
+	local old_QuestMapFrame_OpenToQuestDetails = _G.QuestMapFrame_OpenToQuestDetails
+	_G.QuestMapFrame_OpenToQuestDetails = function(questID)
+		if _G.InCombatLockdown() then
+			_G.ShowUIPanel(_G.WorldMapFrame);
+			_G.QuestMapFrame_ShowQuestDetails(questID)
+			_G.QuestMapFrame.DetailsFrame.mapID = nil
+		else
+			old_QuestMapFrame_OpenToQuestDetails(questID)
+		end
+	end
+
+	_G.WorldMapFrame.questLogMode = true
+	_G.QuestMapFrame_Open(true)
+end
+
+
+-- </ Artifact Frame > --
+-- </ original code by Gnarfoz > --
+-- </ C_ArtifactUI.GetTotalPurchasedRanks() shenanigans > --
 do
 	local oldOnShow
 	local newOnShow
@@ -144,62 +174,3 @@ do
 	end
 	hooksecurefunc("ArtifactFrame_LoadUI", artifactHook)
 end
-
--- Fix World Map taints (by lightspark)
-local old_ResetZoom = _G.WorldMapScrollFrame_ResetZoom
-
-_G.WorldMapScrollFrame_ResetZoom = function()
-	if _G.InCombatLockdown() then
-		_G.WorldMapFrame_Update()
-		_G.WorldMapScrollFrame_ReanchorQuestPOIs()
-		_G.WorldMapFrame_ResetPOIHitTranslations()
-		_G.WorldMapBlobFrame_DelayedUpdateBlobs()
-	else
-		old_ResetZoom()
-	end
-end
-
-local old_QuestMapFrame_OpenToQuestDetails = _G.QuestMapFrame_OpenToQuestDetails
-
-_G.QuestMapFrame_OpenToQuestDetails = function(questID)
-	if _G.InCombatLockdown() then
-		_G.ShowUIPanel(_G.WorldMapFrame);
-		_G.QuestMapFrame_ShowQuestDetails(questID)
-		_G.QuestMapFrame.DetailsFrame.mapID = nil
-	else
-		old_QuestMapFrame_OpenToQuestDetails(questID)
-	end
-end
-
-if _G.WorldMapFrame.UIElementsFrame.BountyBoard.GetDisplayLocation == _G.WorldMapBountyBoardMixin.GetDisplayLocation then
-	_G.WorldMapFrame.UIElementsFrame.BountyBoard.GetDisplayLocation = function(frame)
-		if _G.InCombatLockdown() then
-			return
-		end
-
-		return _G.WorldMapBountyBoardMixin.GetDisplayLocation(frame)
-	end
-end
-
-if _G.WorldMapFrame.UIElementsFrame.ActionButton.GetDisplayLocation == _G.WorldMapActionButtonMixin.GetDisplayLocation then
-	_G.WorldMapFrame.UIElementsFrame.ActionButton.GetDisplayLocation = function(frame, useAlternateLocation)
-		if _G.InCombatLockdown() then
-			return
-		end
-
-		return _G.WorldMapActionButtonMixin.GetDisplayLocation(frame, useAlternateLocation)
-	end
-end
-
-if _G.WorldMapFrame.UIElementsFrame.ActionButton.Refresh == _G.WorldMapActionButtonMixin.Refresh then
-	_G.WorldMapFrame.UIElementsFrame.ActionButton.Refresh = function(frame)
-		if _G.InCombatLockdown() then
-			return
-		end
-
-		_G.WorldMapActionButtonMixin.Refresh(frame)
-	end
-end
-
-_G.WorldMapFrame.questLogMode = true
-_G.QuestMapFrame_Open(true)

@@ -6,7 +6,7 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 local floor = math.floor
 local getmetatable = getmetatable
-local match = string.match
+local string_match = string.match
 local unpack, select = unpack, select
 
 -- Wow API
@@ -17,7 +17,7 @@ local UnitClass = UnitClass
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: noHover, noPushed, noChecked, self, UIFrameFadeIn, UIFrameFadeOut, bordera
 
-local Mult = 768 / string.match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
+local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 local Scale = function(x)
 	return Mult * floor(x / Mult + 0.5)
 end
@@ -379,3 +379,7 @@ while Object do
 
 	Object = EnumerateFrames(Object)
 end
+
+--Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the "Frame" widget
+local scrollFrame = CreateFrame("ScrollFrame")
+AddAPI(scrollFrame)

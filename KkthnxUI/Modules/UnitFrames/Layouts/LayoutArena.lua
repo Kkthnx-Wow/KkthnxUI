@@ -1,6 +1,23 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
+-- Lua Wow
+local _G = _G
+local table_insert = table.insert
+local tostring = tostring
+local unpack = unpack
+
+-- Wow API
+local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
+local GetArenaOpponentSpec = GetArenaOpponentSpec
+local GetNumArenaOpponentSpecs = GetNumArenaOpponentSpecs
+local GetSpecializationInfoByID = GetSpecializationInfoByID
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local UnitIsUnit = UnitIsUnit
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SetPortraitToTexture, ARENA, SetPortraitTexture, CreateFrame
+
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
@@ -80,13 +97,13 @@ function ns.createArenaLayout(self, unit)
 
 	self.Health.Smooth = true
 	self.Health.PostUpdate = K.PostUpdateHealth
-	table.insert(self.mouseovers, self.Health)
+	table_insert(self.mouseovers, self.Health)
 
 	self.Power.colorPower = true
 
 	self.Power.Smooth = true
 	self.Power.PostUpdate = K.PostUpdatePower
-	table.insert(self.mouseovers, self.Power)
+	table_insert(self.mouseovers, self.Power)
 
 	-- Name
 	self.Name = K.SetFontString(self.Health, C.Media.Font, 14)
