@@ -163,7 +163,7 @@ end
 
 -- Fix cooldown spiral alpha
 function K.HideSpiral(f, alpha)
-	f:SetSwipeColor(0, 0, 0, alpha * 0.8)
+	f:SetSwipeColor(0, 0, 0, alpha * 0.9)
 	f:SetDrawBling(alpha == 1)
 end
 

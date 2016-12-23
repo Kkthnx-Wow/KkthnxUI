@@ -116,7 +116,7 @@ local function CreateShadow(f, size)
 	})
 
 	shadow:SetBackdropColor(C.Media.Backdrop_Color)
-	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+	shadow:SetBackdropBorderColor(0, 0, 0, 0.9)
 
 	f.Shadow = shadow
 end
@@ -132,7 +132,7 @@ local function CreateBlizzShadow(f, size)
 	shadow:SetPoint("BOTTOMRIGHT", size, -size)
 
 	shadow:SetTexture(C.Media.Border_Shadow)
-	shadow:SetVertexColor(0, 0, 0, 0.8)
+	shadow:SetVertexColor(0, 0, 0, 0.9)
 
 	f.shadow = shadow
 end

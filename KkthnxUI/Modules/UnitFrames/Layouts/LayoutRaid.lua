@@ -148,7 +148,7 @@ local function CreateRaidLayout(self, unit)
 		bgFile = C.Media.Blank,
 		insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
 	})
-	self:SetBackdropColor(0.019, 0.019, 0.019, 0.8)
+	self:SetBackdropColor(0.019, 0.019, 0.019, 0.9)
 
 	K.CreateBorder(self, 10, 3)
 	self:SetBorderTexture("white")
@@ -164,7 +164,7 @@ local function CreateRaidLayout(self, unit)
 	self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.Background:SetAllPoints()
 	self.Health.Background:SetTexture(C.Media.Blank)
-	self.Health.Background:SetColorTexture(0.019, 0.019, 0.019, 0.8)
+	self.Health.Background:SetColorTexture(0.019, 0.019, 0.019, 0.9)
 
 	self.Health.PostUpdate = UpdateHealth
 	self.Health.frequentUpdates = true

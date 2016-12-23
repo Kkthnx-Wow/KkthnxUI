@@ -43,7 +43,7 @@
    <Include file="Libraries\oUF_Plugins\Load_Plugins.xml" />
    <Script file="Libraries\LibChatAnims\LibChatAnims.lua" />
    <Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua" />
-   <Include file="Libraries\DropDownMenu\DropDownMenu.xml" />
+   <Include file="Libraries\LibDropDownMenu\LibDropDownMenu.xml" />
    <!-- Media -->
    <Script file="Media\Media.lua" />
    <!-- Core -->
@@ -179,6 +179,7 @@
    <Script file="Modules\Miscellaneous\Miscellaneous.lua" />
    <Script file="Modules\Miscellaneous\Mounts.lua" />
    <Script file="Modules\Miscellaneous\PulseCD.lua" />
+   <Script file="Modules\Miscellaneous\PvPQueueTimer.lua" />
    <Script file="Modules\Miscellaneous\RaidCD.lua" />
    <Script file="Modules\Miscellaneous\SlotDurability.lua" />
    <Script file="Modules\Miscellaneous\SlotItemLevel.lua" />

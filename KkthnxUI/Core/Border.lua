@@ -191,24 +191,14 @@ function K.CreateOutsideBar(parent, onTop, r, g, b)
 	--bar:SetFrameLevel(10)
 
 	local point, anchor, point2, x, y, step
-	if onTop then
-		point, anchor, point2, x, y = "BOTTOM", parent.Health, "TOP", 0, 3
-		step = 2
-	else
-		point, anchor, point2, x, y = "TOP", parent.Power, "BOTTOM", 0, -2
-		step = -2
-	end
+	point, anchor, point2, x, y = "TOP", parent.Power, "BOTTOM", 0, -2
+	step = -2
 	bar:SetPoint(point, anchor, point2, x, y)
 
 	local tex = bar:CreateTexture(nil, "ARTWORK")
 	tex:SetSize(104, 28)
-	if onTop then
-		tex:SetTexture(textPath.. "FrameBarTop")
-		tex:SetPoint("TOP", 0, 12)
-	else
-		tex:SetTexture(textPath.. "FrameBarBot")
-		tex:SetPoint("BOTTOM", 0, -10)
-	end
+	tex:SetTexture(textPath.. "FrameBarBot")
+	tex:SetPoint("BOTTOM", 0, -10)
 
 	if C.Blizzard.ColorTextures == true then
 		tex:SetVertexColor(unpack(C.Blizzard.TexturesColor))

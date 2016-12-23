@@ -150,7 +150,7 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	self:AnchorSlots()
 
 	local color = ITEM_QUALITY_COLORS[m]
-	self:SetBackdropBorderColor(color.r, color.g, color.b, 0.8)
+	self:SetBackdropBorderColor(color.r, color.g, color.b, 0.9)
 
 	self:SetWidth(C.Loot.Width)
 	self.title:SetWidth(C.Loot.Width - 45)
@@ -403,7 +403,7 @@ do
 		local quest = iconFrame:CreateTexture(nil, "OVERLAY")
 		quest:SetTexture("Interface\\Minimap\\ObjectIcons")
 		quest:SetTexCoord(1/8, 2/8, 1/8, 2/8)
-		quest:SetSize(C.Loot.IconSize * 0.8, C.Loot.IconSize * 0.8)
+		quest:SetSize(C.Loot.IconSize * 0.8, C.Loot.IconSize * 0.9)
 		quest:SetPoint("BOTTOMLEFT", -C.Loot.IconSize * 0.15, 0)
 		frame.quest = quest
 

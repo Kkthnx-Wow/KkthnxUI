@@ -428,11 +428,11 @@ K.PostCastStart = function(Castbar, unit, name, castid)
 			local r, g, b = unpack(K.Colors.class[class])
 			if b then
 				Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-				Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+				Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.9)
 			end
 		else
 			Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.9)
 		end
 		Castbar.Overlay:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
@@ -483,7 +483,7 @@ K.PostChannelStart = function(Castbar, unit, name)
 
 	if Castbar.interrupt and UnitCanAttack("player", unit) then
 		Castbar:SetStatusBarColor(0.87 * 0.8, 0.37 * 0.8, 0.37 * 0.8)
-		Castbar.bg:SetVertexColor(0 * 0.1, 0 * 0.1, 0 * 0.1, 0.8)
+		Castbar.bg:SetVertexColor(0 * 0.1, 0 * 0.1, 0 * 0.1, 0.9)
 		Castbar.Overlay:SetBackdropBorderColor(0.87, 0.37, 0.37)
 		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
 			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
@@ -494,11 +494,11 @@ K.PostChannelStart = function(Castbar, unit, name)
 			local r, g, b = unpack(K.Colors.class[class])
 			if b then
 				Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-				Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+				Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.9)
 			end
 		else
 			Castbar:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.9)
 		end
 		Castbar.Overlay:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
