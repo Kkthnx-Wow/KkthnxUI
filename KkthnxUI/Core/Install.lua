@@ -32,7 +32,6 @@ local PlaySoundFile = PlaySoundFile
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar
 local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
-local UIFrameFadeOut = UIFrameFadeOut
 local StaticPopup_Show = StaticPopup_Show
 local GetCVar = GetCVar
 
@@ -545,7 +544,7 @@ if (not InstallationMessageFrame) then
 		if (self.Message) then
 			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
 			self.Text:SetText(self.Message)
-			UIFrameFadeOut(self, 1.5, 1, 0)
+			K.UIFrameFadeOut(self, 1.5, 1, 0)
 
 			K.Delay(2, function()
 				self:Hide()

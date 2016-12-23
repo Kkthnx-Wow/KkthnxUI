@@ -106,7 +106,7 @@ end
 local frameFadeManager = CreateFrame("FRAME")
 local FADEFRAMES = {}
 
-K.UIFrameFade_OnUpdate = function(elapsed)
+K.UIFrameFade_OnUpdate = function(self, elapsed)
 	local index = 1
 	local frame, fadeInfo
 	while FADEFRAMES[index] do

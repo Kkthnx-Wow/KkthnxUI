@@ -177,9 +177,9 @@ local Update = function(self, t)
 	if int > 0 then return end
 
 	if GameTimeFrame.flashInvite then
-		K.Flash(self, 0.53, true)
+		K:Flash(self, 0.53, true)
 	else
-		K.StopFlash(self)
+		K:StopFlash(self)
 	end
 
 	if enteredFrame then

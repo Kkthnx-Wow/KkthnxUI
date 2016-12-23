@@ -355,15 +355,19 @@ for i = 1, 5 do
 				ToggleBar[i]:SetAlpha(1)
 				RightBarMouseOver(1)
 			else
-				ToggleBar[i]:FadeIn()
+				-- ToggleBar[i]:FadeIn()
+				K.UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
 			end
 		elseif i == 3 or i == 4 then
-			ToggleBar[3]:FadeIn()
-			ToggleBar[4]:FadeIn()
+		--	ToggleBar[3]:FadeIn()
+			K.UIFrameFadeIn(ToggleBar[3], 0.4, ToggleBar[i]:GetAlpha(), 1)
+		--	ToggleBar[4]:FadeIn()
+			K.UIFrameFadeIn(ToggleBar[4], 0.4, ToggleBar[i]:GetAlpha(), 1)
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 		else
-			ToggleBar[i]:FadeIn()
+			-- ToggleBar[i]:FadeIn()
+			K.UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
 		end
 	end)
 
@@ -373,12 +377,15 @@ for i = 1, 5 do
 				ToggleBar[i]:SetAlpha(0)
 				RightBarMouseOver(0)
 			else
-				ToggleBar[i]:FadeOut()
+				-- ToggleBar[i]:FadeOut()
+				K.UIFrameFadeOut(ToggleBar[i], 0.8, ToggleBar[i]:GetAlpha(), 0)
 			end
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-			ToggleBar[3]:FadeOut()
-			ToggleBar[4]:FadeOut()
+			-- ToggleBar[3]:FadeOut()
+			K.UIFrameFadeOut(ToggleBar[3], 0.8, ToggleBar[i]:GetAlpha(), 0)
+			-- ToggleBar[4]:FadeOut()
+			K.UIFrameFadeOut(ToggleBar[4], 0.8, ToggleBar[i]:GetAlpha(), 0)
 			VehicleButtonAnchor:ClearAllPoints()
 			if KkthnxUIDataPerChar.SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
@@ -386,7 +393,8 @@ for i = 1, 5 do
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 			end
 		else
-			ToggleBar[i]:FadeOut()
+			-- ToggleBar[i]:FadeOut()
+			K.UIFrameFadeOut(ToggleBar[i], 0.8, ToggleBar[i]:GetAlpha(), 0)
 		end
 	end)
 

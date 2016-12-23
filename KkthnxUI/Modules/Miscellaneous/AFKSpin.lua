@@ -192,7 +192,7 @@ local function onUpdate(self, elapsed)
 	if total >= showTime then
 		local createdStat = createStats()
 		self:AddMessage(createdStat)
-		UIFrameFadeIn(self, 1, 0, 1)
+		K.UIFrameFadeIn(self, 1, 0, 1)
 		total = 0
 	end
 end
