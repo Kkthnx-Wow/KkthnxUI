@@ -172,6 +172,7 @@ local AutoHide = CreateFrame("Frame")
 AutoHide:RegisterEvent("PLAYER_ENTERING_WORLD")
 AutoHide:SetScript("OnEvent", function(self, event)
 	if C.Minimap.Calendar ~= true and C.Minimap.Garrison ~= true then return end
+
 	if IsInInstance() and GameTimeFrame and GarrisonLandingPageMinimapButton then
 		GameTimeFrame:Hide()
 		GarrisonLandingPageMinimapButton:SetAlpha(0 or 0)
