@@ -11,7 +11,7 @@ local GetGameTime = GetGameTime
 local join = string.join
 
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
-local APM = { TIMEMANAGER_PM, TIMEMANAGER_AM }
+local APM = {TIMEMANAGER_PM, TIMEMANAGER_AM}
 local europeDisplayFormat = ""
 local ukDisplayFormat = ""
 local europeDisplayFormat_nocolor = join("", "%02d", ":|r%02d")
@@ -105,7 +105,7 @@ local OnEnter = function(self)
 
 	if next(lockedInstances["raids"]) then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("Saved Raid(s)")
+		GameTooltip:AddLine(L.DataText.SavedRaids)
 
 		for pos,instance in pairs(lockedInstances["raids"]) do
 			name, _, reset, difficultyId, _, extended, _, _, maxPlayers, _, numEncounters, encounterProgress = unpack(instance)
@@ -122,7 +122,7 @@ local OnEnter = function(self)
 
 	if next(lockedInstances["dungeons"]) then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine("Saved Dungeon(s)")
+		GameTooltip:AddLine(L.DataText.SavedDungeons)
 
 		for pos,instance in pairs(lockedInstances["dungeons"]) do
 			name, _, reset, difficultyId, _, extended, _, _, maxPlayers, _, numEncounters, encounterProgress = unpack(instance)

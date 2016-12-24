@@ -30,6 +30,22 @@ end)
 -- </ Fix RemoveTalent() taint > --
 FCF_StartAlertFlash = K.Noop
 
+local AcceptQuestFix = CreateFrame("Frame")
+AcceptQuestFix:RegisterEvent("QUEST_DETAIL")
+AcceptQuestFix:SetScript("OnEvent", function(self, event)
+	if QuestFlagsPVP() then
+		QuestFrame.dialog = StaticPopup_Show("CONFIRM_ACCEPT_PVP_QUEST")
+	elseif QuestGetAutoAccept() then
+		AcknowledgeAutoAcceptQuest()
+		PlayAutoAcceptQuestSound()
+
+		QuestFrame:Hide()
+	else
+		AcceptQuest()
+		-- </ Some quests do not automatically close the UI. Weird. TODO Look where the issue is here > --
+	end
+end)
+
 -- </ Fix the scale on ScriptErrorsFrame > --
 local ScriptErrorsScale = CreateFrame("Frame")
 ScriptErrorsScale:RegisterEvent("ADDON_LOADED")

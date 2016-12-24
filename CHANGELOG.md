@@ -12,9 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - PVP dialog timer implemented.
 - Cached some more globals
 - New animations file to handle fade in and out and flashing.
+- Maybe fixed a rare questframe issue. ??
+- locals for the new time datatext
 
 ### Fixed
 - Bug report fixes for cast bar and pixel perfect script.
+- Silly me. I had to calendar code backwards :D
 
 ### Removed
 - General UI files/code cleanup.

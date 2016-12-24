@@ -158,13 +158,13 @@ if HelpOpenTicketButton and HelpOpenWebTicketButton then
 end
 
 if GameTimeFrame then
-	if C.Minimap.HideCalendar then
-		GameTimeFrame:Hide()
-	else
+	if C.Minimap.Calendar then
 		GameTimeFrame:ClearAllPoints()
-		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0 or 0, -2 or -2)
+		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2 or -2, -2 or -2)
 		GameTimeFrame:SetScale(0.7 or 0.7)
 		GameTimeFrame:Show()
+	else
+		GameTimeFrame:Hide()
 	end
 end
 

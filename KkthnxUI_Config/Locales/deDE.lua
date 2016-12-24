@@ -179,7 +179,7 @@ UIConfigLocal.MinimapCollectButtons = "Sammel die Minimapbuttons und zeige sie i
 UIConfigLocal.MinimapEnable = "Aktiviere die Minimap & zeige sie viereckig"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Zeige das Garnisonssymbol an der Minimap"
-UIConfigLocal.MinimapHideCalendar = "Calendar icon is shown on minimap"
+UIConfigLocal.MinimapCalendar = "Calendar icon is shown on minimap"
 UIConfigLocal.MinimapPing = "Zeige eine Nachricht, wenn jemand auf der Minimap 'pingt'. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
 UIConfigLocal.MinimapSize = "Größe der Minimap - Standard ist 150"
 

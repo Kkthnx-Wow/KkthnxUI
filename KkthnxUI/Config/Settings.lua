@@ -195,7 +195,7 @@ C["Minimap"] = {
 	["Enable"] = true,
 	["FadeButtons"] = true,
 	["Garrison"] = true,
-	["HideCalendar"] = true,
+	["Calendar"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
 }
