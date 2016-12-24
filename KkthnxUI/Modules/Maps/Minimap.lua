@@ -168,6 +168,21 @@ if GameTimeFrame then
 	end
 end
 
+local AutoHide = CreateFrame("Frame")
+AutoHide:RegisterEvent("PLAYER_ENTERING_WORLD")
+AutoHide:SetScript("OnEvent", function(self, event)
+	if C.Minimap.Calendar ~= true and C.Minimap.Garrison ~= true then return end
+	if IsInInstance() and GameTimeFrame and GarrisonLandingPageMinimapButton then
+		GameTimeFrame:Hide()
+		GarrisonLandingPageMinimapButton:SetAlpha(0 or 0)
+		GarrisonLandingPageMinimapButton:SetScale(0.0001 or 0.0001)
+	elseif not IsInInstance() and GameTimeFrame and GarrisonLandingPageMinimapButton then
+		GameTimeFrame:Show()
+		GarrisonLandingPageMinimapButton:SetAlpha(1 or 1)
+		GarrisonLandingPageMinimapButton:SetScale(0.6 or 0.6)
+	end
+end)
+
 -- </ Enable mouse scrolling > --
 Minimap:EnableMouseWheel()
 local function Zoom(self, direction)

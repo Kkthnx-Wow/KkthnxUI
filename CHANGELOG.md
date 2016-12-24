@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
-- PVP dialog timer implemented.
+- Brought back the auto hide feature for garrison icon and calendar. (Can be improved)
 - Cached some more globals
-- New animations file to handle fade in and out and flashing.
-- Maybe fixed a rare questframe issue. ??
 - locals for the new time datatext
+- Maybe fixed a rare questframe issue. ??
+- New animations file to handle fade in and out and flashing.
+- PVP dialog timer implemented.
 
 ### Fixed
 - Bug report fixes for cast bar and pixel perfect script.
@@ -23,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - General UI files/code cleanup.
 
 ### Changed
-- Media changes for certain languages. (Keep an eye on this).
-- Globals slowly being coverted a different way so table.insert will be cached like table_insert = table.insert.
 - Code cleanup in fixes file.
+- Globals slowly being coverted a different way so table.insert will be cached like table_insert = table.insert.
+- Media changes for certain languages. (Keep an eye on this).
 - Time datatext is redone.
