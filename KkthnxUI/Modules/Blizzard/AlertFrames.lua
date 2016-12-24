@@ -54,13 +54,13 @@ local ReplaceAnchors do
 			relativeAlert = alertFrame
 		end
 
-		if C.Loot.GroupLoot then
-			GroupLootContainer:ClearAllPoints()
-			GroupLootContainer:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
-		else
-			GroupLootContainer:ClearAllPoints()
-			GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, POSITION, 2, FIRST_YOFFSET)
-		end
+		-- if C.Loot.GroupLoot then
+		-- 	GroupLootContainer:ClearAllPoints()
+		-- 	GroupLootContainer:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
+		-- else
+		-- 	GroupLootContainer:ClearAllPoints()
+		-- 	GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, POSITION, 2, FIRST_YOFFSET)
+		-- end
 
 		return relativeAlert
 	end
@@ -84,7 +84,6 @@ local ReplaceAnchors do
 	end
 
 	function ReplaceAnchors(alertFrameSubSystem)
-		UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
 		if alertFrameSubSystem.alertFramePool then
 			local frame = alertFrameSubSystem.alertFramePool:GetNextActive()
 			if alertBlacklist[alertFrameSubSystem.alertFramePool.frameTemplate] then

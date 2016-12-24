@@ -379,9 +379,10 @@ end
 
 K.PostCastStart = function(Castbar, unit, name, castid)
 	Castbar.channeling = false
-	if unit == "vehicle" then unit = "player" end
+	Castbar.cUnit = K.cUnit(unit)
+	if Castbar.cUnit == "vehicle" then Castbar.cUnit = "player" end
 
-	if unit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
+	if Castbar.cUnit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
 		local _, _, _, lag = GetNetStats()
 		local latency = GetTime() - (Castbar.castSent or 0)
 		lag = lag / 1e3 > Castbar.max and Castbar.max or lag / 1e3
@@ -394,7 +395,7 @@ K.PostCastStart = function(Castbar, unit, name, castid)
 		Castbar.castSent = nil
 	end
 
-	if unit == "player" and C.Unitframe.CastbarTicks == true then
+	if Castbar.cUnit == "player" and C.Unitframe.CastbarTicks == true then
 		setBarTicks(Castbar, 0)
 	end
 
@@ -419,11 +420,11 @@ K.PostCastStart = function(Castbar, unit, name, castid)
 		Castbar:SetStatusBarColor(0.87 * 0.8, 0.37 * 0.8, 0.37 * 0.8)
 		Castbar.bg:SetVertexColor(0.87 * 0.1, 0.37 * 0.1, 0.37 * 0.1, 0.6)
 		Castbar.Overlay:SetBackdropBorderColor(0.87, 0.37, 0.37)
-		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+		if C.Unitframe.CastbarIcon == true and (Castbar.cUnit == "target" or Castbar.cUnit == "focus") then
 			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
 		end
 	else
-		if unit == "pet" or unit == "vehicle" then
+		if Castbar.cUnit == "pet" or Castbar.cUnit == "vehicle" then
 			local _, class = UnitClass("player")
 			local r, g, b = unpack(K.Colors.class[class])
 			if b then
@@ -435,7 +436,7 @@ K.PostCastStart = function(Castbar, unit, name, castid)
 			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.9)
 		end
 		Castbar.Overlay:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+		if C.Unitframe.CastbarIcon == true and (Castbar.cUnit == "target" or Castbar.cUnit == "focus") then
 			Castbar.Button:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end
 	end
@@ -443,9 +444,10 @@ end
 
 K.PostChannelStart = function(Castbar, unit, name)
 	Castbar.channeling = true
-	if unit == "vehicle" then unit = "player" end
+	Castbar.cUnit = K.cUnit(unit)
+	if Castbar.cUnit == "vehicle" then Castbar.cUnit = "player" end
 
-	if unit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
+	if Castbar.cUnit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
 		local _, _, _, lag = GetNetStats()
 		local latency = GetTime() - (Castbar.castSent or 0)
 		lag = lag / 1e3 > Castbar.max and Castbar.max or lag / 1e3
@@ -458,7 +460,7 @@ K.PostChannelStart = function(Castbar, unit, name)
 		Castbar.castSent = nil
 	end
 
-	if unit == "player" and C.Unitframe.CastbarTicks == true then
+	if Castbar.cUnit == "player" and C.Unitframe.CastbarTicks == true then
 		local spell = UnitChannelInfo(unit)
 		Castbar.channelingTicks = channelingTicks[spell] or 0
 		setBarTicks(Castbar, Castbar.channelingTicks)
@@ -485,11 +487,11 @@ K.PostChannelStart = function(Castbar, unit, name)
 		Castbar:SetStatusBarColor(0.87 * 0.8, 0.37 * 0.8, 0.37 * 0.8)
 		Castbar.bg:SetVertexColor(0 * 0.1, 0 * 0.1, 0 * 0.1, 0.9)
 		Castbar.Overlay:SetBackdropBorderColor(0.87, 0.37, 0.37)
-		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+		if C.Unitframe.CastbarIcon == true and (Castbar.cUnit == "target" or Castbar.cUnit == "focus") then
 			Castbar.Button:SetBackdropBorderColor(0.87, 0.37, 0.37)
 		end
 	else
-		if unit == "pet" or unit == "vehicle" then
+		if Castbar.cUnit == "pet" or Castbar.cUnit == "vehicle" then
 			local _, class = UnitClass("player")
 			local r, g, b = unpack(K.Colors.class[class])
 			if b then
@@ -501,7 +503,7 @@ K.PostChannelStart = function(Castbar, unit, name)
 			Castbar.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.9)
 		end
 		Castbar.Overlay:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-		if C.Unitframe.CastbarIcon == true and (unit == "target" or unit == "focus") then
+		if C.Unitframe.CastbarIcon == true and (Castbar.cUnit == "target" or Castbar.cUnit == "focus") then
 			Castbar.Button:SetBackdropBorderColor(unpack(C.Media.Border_Color))
 		end
 	end

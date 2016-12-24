@@ -552,7 +552,7 @@ local function CreateUnitLayout(self, unit)
 				self.Castbar.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 			end
 
-			if unit == "player" and C.Unitframe.CastbarLatency == true then
+			if self.cUnit == "player" and C.Unitframe.CastbarLatency == true then
 				self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "BORDER", nil, 1)
 				self.Castbar.SafeZone:SetTexture(C.Media.Texture)
 				self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.85)
@@ -909,7 +909,6 @@ local function CreateUnitLayout(self, unit)
 			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 			self.PvPTimer:SetShadowOffset(K.Mult, -K.Mult)
 			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, -3)
-			self.PvPTimer.frequentUpdates = 0.5
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
 
@@ -963,9 +962,10 @@ local function CreateUnitLayout(self, unit)
 		self:RegisterEvent("UNIT_ENTERING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", UpdatePlayerFrame)
+		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame) -- </ Test > --
 	end
 
-	-- Focus & Target Frame
+	-- </ Focus & Target Frame > --
 	if (self.cUnit == "target" or self.cUnit == "focus") then
 		-- Questmob Icon
 		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
