@@ -544,7 +544,7 @@ if (not InstallationMessageFrame) then
 		if (self.Message) then
 			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
 			self.Text:SetText(self.Message)
-			K.UIFrameFadeOut(self, 1.5, 1, 0)
+			K.FadeOut(self, 1, 0)
 
 			K.Delay(2, function()
 				self:Hide()
