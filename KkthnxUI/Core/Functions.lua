@@ -225,16 +225,30 @@ function K.FormatMoney(value)
 end
 
 -- Color Gradient
-function K.ColorGradient(perc, ...)
-	if perc >= 1 then
-		return select(select('#', ...) - 2, ...)
-	elseif perc <= 0 then
-		return ...
+function K.ColorGradient(a, b, ...)
+	local percent
+
+	if(b == 0) then
+		percent = 0
+	else
+		percent = a / b
 	end
-	local num = select('#', ...) / 3
-	local segment, relperc = modf(perc*(num-1))
-	local r1, g1, b1, r2, g2, b2 = select((segment*3)+1, ...)
-	return r1 + (r2-r1)*relperc, g1 + (g2-g1)*relperc, b1 + (b2-b1)*relperc
+
+	if (percent >= 1) then
+		local r, g, b = select(select("#", ...) - 2, ...)
+
+		return r, g, b
+	elseif (percent <= 0) then
+		local r, g, b = ...
+
+		return r, g, b
+	end
+
+	local num = (select("#", ...) / 3)
+	local segment, relpercent = modf(percent * (num - 1))
+	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
+
+	return r1 + (r2 - r1) * relpercent, g1 + (g2 - g1) * relpercent, b1 + (b2 - b1) * relpercent
 end
 
 -- Example:
