@@ -259,13 +259,13 @@ local function SetupFlyoutButton()
 			end
 
 			button.isSkinned = true
-		end
 
-		if C.ActionBar.RightBarsMouseover == true then
-			SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-			SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
-			button:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-			button:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+			if C.ActionBar.RightBarsMouseover == true then
+				SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+				SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+				button:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
+				button:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
+			end
 		end
 	end
 end
