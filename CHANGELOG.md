@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+- nil
+
+## [v6.11.5] - 9:45:10 pm EST Saturday, December 24, 2016
 ### Added
 - Brought back the auto hide feature for garrison icon and calendar. (Can be improved)
 - Cached some more globals
