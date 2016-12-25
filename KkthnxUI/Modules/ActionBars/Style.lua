@@ -245,9 +245,9 @@ local function UpdateHotkey(self, btype)
 	end
 end
 
-local flyoutbuttons = 0
+local buttons = 0
 local function SetupFlyoutButton()
-	for i = 1, flyoutbuttons do
+	for i = 1, buttons do
 		local button = _G["SpellFlyoutButton"..i]
 
 		if button and not button.isSkinned then
@@ -271,12 +271,12 @@ local function SetupFlyoutButton()
 end
 SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
 
-local function StyleFlyoutButton(self)
-	if not self.FlyoutArrow then return end
+local function StyleFlyoutButton(button)
+	if (not button.FlyoutArrow or not button.FlyoutArrow:IsShown()) then return end
 
-	if self.FlyoutBorder then
-		self.FlyoutBorder:SetAlpha(0)
-		self.FlyoutBorderShadow:SetAlpha(0)
+	if button.FlyoutBorder then
+		button.FlyoutBorder:SetAlpha(0)
+		button.FlyoutBorderShadow:SetAlpha(0)
 	end
 
 	SpellFlyoutHorizontalBackground:SetAlpha(0)
@@ -284,11 +284,12 @@ local function StyleFlyoutButton(self)
 	SpellFlyoutBackgroundEnd:SetAlpha(0)
 
 	for i = 1, GetNumFlyouts() do
-		local ID = GetFlyoutID(i)
-		local _, _, NumSlots, IsKnown = GetFlyoutInfo(ID)
-		if IsKnown then
-			flyoutbuttons = NumSlots
-			break
+		local id = GetFlyoutID(i)
+		local _, _, numSlots, isKnown = GetFlyoutInfo(id)
+		if isKnown then
+			if numSlots > buttons then
+				buttons = numSlots
+			end
 		end
 	end
 end
