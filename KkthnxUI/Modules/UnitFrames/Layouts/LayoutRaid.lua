@@ -150,8 +150,7 @@ local function CreateRaidLayout(self, unit)
 	})
 	self:SetBackdropColor(0.019, 0.019, 0.019, 0.9)
 
-	K.CreateBorder(self, 10, 3)
-	self:SetBorderTexture("white")
+	K.CreateBorder(self)
 	self:SetBorderColor(unpack(C.Media.Border_Color))
 
 	-- Health bar
@@ -408,7 +407,6 @@ local function CreateRaidLayout(self, unit)
 		if (UnitIsUnit("target", self.unit)) then
 			self:SetBorderColor(1, 1, 1)
 		else
-			self:SetBorderTexture("white")
 			self:SetBorderColor(unpack(C.Media.Border_Color))
 		end
 	end)

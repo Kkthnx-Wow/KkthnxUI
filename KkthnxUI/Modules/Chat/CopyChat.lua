@@ -98,6 +98,7 @@ for i = 1, NUM_CHAT_WINDOWS do
 	button:SetSize(20, 20)
 	button:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Copy")
 	button:SetAlpha(0)
+	K.CreateBorder(button)
 	button:SetBackdrop(K.BorderBackdrop)
 	button:SetBackdropColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3)
 
@@ -110,8 +111,8 @@ for i = 1, NUM_CHAT_WINDOWS do
 			Copy(cf)
 		end
 	end)
-	button:SetScript("OnEnter", function() button:FadeIn() end)
-	button:SetScript("OnLeave", function() button:FadeOut() end)
+	button:SetScript("OnEnter", function() K.FadeIn(button) end)
+	button:SetScript("OnLeave", function() K.FadeOut(button) end)
 
 	SlashCmdList.COPY_CHAT = function()
 		Copy(_G["ChatFrame1"])

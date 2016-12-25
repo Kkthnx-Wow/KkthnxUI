@@ -453,7 +453,7 @@ local function CreateUnitLayout(self, unit)
 		self.Castbar.bg:SetTexture(C.Media.Blank)
 
 		self.Castbar.Overlay = CreateFrame("Frame", nil, self.Castbar)
-		K.CreateBorder(self.Castbar.Overlay, 11)
+		K.CreateBorder(self.Castbar.Overlay, 1)
 		self.Castbar.Overlay:SetFrameStrata("BACKGROUND")
 		self.Castbar.Overlay:SetFrameLevel(3)
 		self.Castbar.Overlay:SetPoint("TOPLEFT", -2, 2)
@@ -524,7 +524,7 @@ local function CreateUnitLayout(self, unit)
 				self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 				self.Castbar.Button:SetHeight(22)
 				self.Castbar.Button:SetWidth(22)
-				K.CreateBorder(self.Castbar.Button, 11)
+				K.CreateBorder(self.Castbar.Button, 1)
 
 				self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 				self.Castbar.Icon:SetPoint("TOPLEFT", self.Castbar.Button, 2, -2)
@@ -542,7 +542,7 @@ local function CreateUnitLayout(self, unit)
 				self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 				self.Castbar.Button:SetHeight(18)
 				self.Castbar.Button:SetWidth(18)
-				K.CreateBorder(self.Castbar.Button, 11, 1)
+				K.CreateBorder(self.Castbar.Button, 1)
 				if self.cUnit == "boss" then
 					self.Castbar.Button:SetPoint("RIGHT", self.Castbar, "LEFT", -5, 0)
 				end
@@ -1199,7 +1199,7 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	bar:SetParent(UIParent)
 	bar:SetSize(220, 18)
 
-	K.CreateBorder(bar, 11, 3)
+	K.CreateBorder(bar, -1)
 
 	if (i > 1) then
 		local p1, p2, p3, p4, p5 = bar:GetPoint()

@@ -25,12 +25,11 @@ ReputationBar:SetSize(C.DataBars.ReputationWidth, C.DataBars.ReputationHeight)
 ReputationBar:SetPoint("CENTER", ReputationAnchor, "CENTER", 0, 0)
 ReputationBar:SetStatusBarTexture(C.Media.Texture)
 
-K.CreateBorder(ReputationBar, 10, 2.8)
+K.CreateBorder(ReputationBar, -1)
 ReputationBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ReputationBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 if C.Blizzard.ColorTextures == true then
-	ReputationBar:SetBorderTexture("white")
 	ReputationBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 

@@ -390,7 +390,7 @@ do
 
 		local iconFrame = CreateFrame("Frame", nil, frame)
 		iconFrame:SetSize(C.Loot.IconSize, C.Loot.IconSize)
-		K.CreateBorder(iconFrame, 10, 1)
+		K.CreateBorder(iconFrame, 1)
 		iconFrame:SetPoint("LEFT", frame)
 		frame.iconFrame = iconFrame
 
@@ -432,7 +432,7 @@ do
 		drop:SetAlpha(0.5)
 		frame.drop = drop
 
-		K.CreateBorder(frame, 10, 1)
+		K.CreateBorder(frame, 1)
 
 		slots[id] = frame
 		return frame

@@ -16,7 +16,7 @@ local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_C
 local UnitClass = UnitClass
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: noHover, noPushed, noChecked, self, UIFrameFadeIn, UIFrameFadeOut, bordera
+-- GLOBALS: noHover, noPushed, noChecked, self, bordera
 
 local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 local Scale = function(x)
@@ -197,7 +197,7 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	elseif t == "CreateBorder" then
 		f:SetBackdrop(K.BorderBackdrop)
 		backdropa = C.Media.Backdrop_Color[4]
-		K.CreateBorder(f)
+		K.CreateBorder(f, 1)
 	elseif t == "Invisible" then
 		backdropa = 0
 		bordera = 0
@@ -336,15 +336,6 @@ local function SkinButton(Frame, Strip)
 	end)
 end
 
--- Fade in/out functions
-local function FadeIn(f)
-	K.UIFrameFadeIn(f, 0.4, f:GetAlpha(), 1)
-end
-
-local function FadeOut(f)
-	K.UIFrameFadeOut(f, 0.8, f:GetAlpha(), 0)
-end
-
 -- Merge KkthnxUI API with Wows API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
@@ -361,8 +352,6 @@ local function AddAPI(object)
 	if not object.Kill then mt.Kill = Kill end
 	if not object.SkinButton then mt.SkinButton = SkinButton end
 	if not object.StripTextures then mt.StripTextures = StripTextures end
-	if not object.FadeIn then mt.FadeIn = FadeIn end
-	if not object.FadeOut then mt.FadeOut = FadeOut end
 end
 
 local Handled = {["Frame"] = true}

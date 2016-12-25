@@ -36,12 +36,11 @@ ArtifactBar:SetPoint("CENTER", ArtifactAnchor, "CENTER", 0, 0)
 ArtifactBar:SetStatusBarTexture(C.Media.Texture)
 ArtifactBar:SetStatusBarColor(unpack(C.DataBars.ArtifactColor))
 
-K.CreateBorder(ArtifactBar, 10, 3)
+K.CreateBorder(ArtifactBar, -1)
 ArtifactBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ArtifactBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 if C.Blizzard.ColorTextures == true then
-	ArtifactBar:SetBorderTexture("white")
 	ArtifactBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 

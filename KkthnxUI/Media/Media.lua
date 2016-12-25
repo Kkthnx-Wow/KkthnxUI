@@ -27,10 +27,9 @@ C["Media"] = {
 	["Whisp_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 }
 
-if (Locale == "koKR" or Locale == "zhTW" or Locale == "zhCN") then
-	C.Media.Font = STANDARD_TEXT_FONT
-	C.Media.Font = UNIT_NAME_FONT
-	C.Media.Combat_Font = DAMAGE_TEXT_FONT
+if (Locale == "zhTW" or Locale == "zhCN") then
+	C.Media.Font = [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal_Chi.ttf]]
+	C.Media.Combat_Font = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage_Chi.ttf]]
 end
 
 if LibSharedMedia == nil then return end

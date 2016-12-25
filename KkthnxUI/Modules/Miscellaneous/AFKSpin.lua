@@ -40,7 +40,7 @@ local UnitFactionGroup = UnitFactionGroup
 local UnitIsAFK = UnitIsAFK
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, UIFrameFadeIn
+-- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel
 
 local stats = {
 	1042,	-- Number of hugs
@@ -192,7 +192,7 @@ local function onUpdate(self, elapsed)
 	if total >= showTime then
 		local createdStat = createStats()
 		self:AddMessage(createdStat)
-		K.UIFrameFadeIn(self, 1, 0, 1)
+		K.FadeIn(self)
 		total = 0
 	end
 end

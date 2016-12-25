@@ -284,8 +284,9 @@ UIConfigLocal.TooltipHyperLink = "Zeige den Hyperlinktooltip während du it der 
 UIConfigLocal.TooltipInstanceLock = "Deine Instantensperrungen im Tooltip anzeigen"
 UIConfigLocal.TooltipItemCount = "Gegenstandsmenge anzeigen"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
+UIConfigLocal.TooltipItemLevel = "Display targets average itemlevel on tooltip"
 UIConfigLocal.TooltipSpellID = "Zauber-ID anzeigen"
-UIConfigLocal.TooltipTalents = "Zeige die talente/itemlevel im Tooltip an"
+UIConfigLocal.TooltipTalents = "Display targets talents on tooltip"
 
 -- Einheitenfenster
 UIConfigLocal.Unitframe = "Einheitenfenster"

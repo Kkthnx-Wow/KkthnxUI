@@ -205,41 +205,6 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
-		if (C.Tooltip.Talents and IsAltKeyDown()) then
-			local Talents = K.Tooltip.Talents
-
-			ILevel = "..."
-			TalentSpec = "..."
-
-			if (Unit ~= "player") then
-				Talents.CurrentGUID = UnitGUID(Unit)
-				Talents.CurrentUnit = Unit
-
-				for i, _ in pairs(Talents.Cache) do
-					local Cache = Talents.Cache[i]
-
-					if Cache.GUID == Talents.CurrentGUID then
-						ILevel = Cache.ItemLevel or "..."
-						TalentSpec = Cache.TalentSpec or "..."
-						LastUpdate = Cache.LastUpdate and abs(Cache.LastUpdate - floor(GetTime())) or 30
-					end
-				end
-
-				if (Unit and (CanInspect(Unit))) and (not (InspectFrame and InspectFrame:IsShown())) then
-					local LastInspectTime = GetTime() - Talents.LastInspectRequest
-
-					Talents.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
-
-					Talents:Show()
-				end
-			else
-				local Current = GetAverageItemLevel()
-
-				ILevel = floor(Current) or UNKNOWN
-
-				TalentSpec = Talents:GetTalentSpec() or NONE
-			end
-		end
 		if (UnitIsAFK(Unit)) then
 			self:AppendText((" %s"):format("|cffff0000".. CHAT_FLAG_AFK .."|r"))
 		elseif UnitIsDND(Unit) then
@@ -283,12 +248,6 @@ function Tooltip:OnTooltipSetUnit()
 
 	if (C.Tooltip.HealthValue and Health and MaxHealth) then
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
-	end
-
-	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
-		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
 	end
 
 	self.fadeOut = nil
@@ -439,8 +398,6 @@ function Tooltip:Enable()
 		HealthBar.Text:SetTextColor(1, 1, 1)
 	end
 end
-
-K.Tooltip = Tooltip
 
 local Loading = CreateFrame("Frame")
 

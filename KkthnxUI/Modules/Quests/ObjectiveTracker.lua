@@ -65,12 +65,9 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 	local item = block.itemButton
 
 	if item and not item.skinned then
-		item:SetSize(C.ActionBar.ButtonSize - 5, C.ActionBar.ButtonSize - 5)
-		item:SetBackdrop(K.BorderBackdrop)
-		item:CreateShadow()
-		item:SetBackdropColor(0.65, 0.63, 0.35)
+		item:SetSize(28, 28)
+		K.CreateBorder(item, 1)
 		item:StyleButton()
-		item:SetScale(1)
 
 		item:SetNormalTexture(nil)
 
@@ -93,12 +90,9 @@ hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", function(_, block)
 	local item = block.itemButton
 
 	if item and not item.skinned then
-		item:SetSize(C.ActionBar.ButtonSize - 5, C.ActionBar.ButtonSize - 5)
-		item:SetBackdrop(K.BorderBackdrop)
-		item:CreateShadow()
-		item:SetBackdropColor(0.65, 0.63, 0.35)
+		item:SetSize(28, 28)
+		K.CreateBorder(item, 1)
 		item:StyleButton()
-		item:SetScale(1)
 
 		item:SetNormalTexture(nil)
 
@@ -150,11 +144,11 @@ end)
 
 -- Skin ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 local button = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
-button:SetSize(17, 17)
+button:SetSize(18, 18)
 button:StripTextures()
 button:SetBackdrop(K.BorderBackdrop)
 button:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-button:CreateShadow(2)
+K.CreateBorder(button)
 
 button.minus = button:CreateTexture(nil, "OVERLAY")
 button.minus:SetSize(10, 2)

@@ -52,11 +52,11 @@ K.PriestColors = {
 	colorStr = "fcfcfc"
 }
 
-K.Print = function(...)
+function K.Print(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
-K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
+function K.SetFontString(parent, fontName, fontHeight, fontStyle, justify)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH(justify or "CENTER")
@@ -66,13 +66,13 @@ K.SetFontString = function(parent, fontName, fontHeight, fontStyle, justify)
 	return fs
 end
 
-K.Comma = function(num)
+function K.Comma(num)
 	local Left, Number, Right = match(num, "^([^%d]*%d)(%d*)(.-)$")
 
 	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
-K.ShortValue = function(value)
+function K.ShortValue(value)
 	if value >= 1e11 then
 		return ("%.0fb"):format(value / 1e9)
 	elseif value >= 1e10 then
@@ -95,29 +95,28 @@ K.ShortValue = function(value)
 end
 
 -- Rounding
-K.Round = function(number, decimals)
-	if (not decimals) then
-		decimals = 0
+function K.Round(num, idp)
+	if (idp and idp > 0) then
+		local mult = 10 ^ idp
+		return floor(num * mult + 0.5) / mult
 	end
-
-	return format(format("%%.%df", decimals), number)
+	return floor(num + 0.5)
 end
 
 -- RgbToHex color
-K.RGBToHex = function(r, g, b)
+function K.RGBToHex(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0
 	b = b <= 1 and b >= 0 and b or 0
-
-	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+	return format("|cff%02x%02x%02x", r*255, g*255, b*255)
 end
 
-K.CheckAddOn = function(addon)
+function K.CheckAddOn(addon)
 	return K.AddOns[strlower(addon)] or false
 end
 
 -- We might need to move these to API?
-K.CreateBlizzardFrame = function(frame, point)
+function K.CreateBlizzardFrame(frame, point)
 	if point == nil then point = frame end
 
 	if point.backdrop then return end
@@ -136,12 +135,12 @@ K.CreateBlizzardFrame = function(frame, point)
 	end
 end
 
-K.SetBlizzardBorder = function(frame, r, g, b, a)
+function K.SetBlizzardBorder(frame, r, g, b, a)
 	if not a then a = 1 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
-K.CreateShadowFrame = function(frame, point)
+function K.CreateShadowFrame(frame, point)
 	if point == nil then point = frame end
 
 	if point.backdrop then return end
@@ -165,13 +164,13 @@ K.CreateShadowFrame = function(frame, point)
 	end
 end
 
-K.SetShadowBorder = function(frame, r, g, b, a)
+function K.SetShadowBorder(frame, r, g, b, a)
 	if not a then a = 0.9 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
 -- Chat channel check
-K.CheckChat = function(warning)
+function K.CheckChat(warning)
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 		return "INSTANCE_CHAT"
 	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
@@ -186,38 +185,36 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
-K.UTF8Sub = function(self, i, dots)
-	if not self then return end
-
-	local Bytes = self:len()
-	if (Bytes <= i) then
-		return self
+function K.UTF8Sub(string, numChars, dots)
+	local bytes = string:len()
+	if (bytes <= numChars) then
+		return string
 	else
-		local Len, Pos = 0, 1
-		while(Pos <= Bytes) do
-			Len = Len + 1
-			local c = self:byte(Pos)
+		local len, pos = 0, 1
+		while(pos <= bytes) do
+			len = len + 1
+			local c = string:byte(pos)
 			if (c > 0 and c <= 127) then
-				Pos = Pos + 1
+				pos = pos + 1
 			elseif (c >= 192 and c <= 223) then
-				Pos = Pos + 2
+				pos = pos + 2
 			elseif (c >= 224 and c <= 239) then
-				Pos = Pos + 3
+				pos = pos + 3
 			elseif (c >= 240 and c <= 247) then
-				Pos = Pos + 4
+				pos = pos + 4
 			end
-			if (Len == i) then break end
+			if (len == numChars) then break end
 		end
 
-		if (Len == i and Pos <= Bytes) then
-			return self:sub(1, Pos - 1)..(dots and "..." or "")
+		if (len == numChars and pos <= bytes) then
+			return string:sub(1, pos - 1)..(dots and '...' or '')
 		else
-			return self
+			return string
 		end
 	end
 end
 
-K.FormatMoney = function(value)
+function K.FormatMoney(value)
 	if value >= 1e4 then
 		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, strsub(value, -4) / 1e2, strsub(value, -2))
 	elseif value >= 1e2 then
@@ -228,35 +225,21 @@ K.FormatMoney = function(value)
 end
 
 -- Color Gradient
-K.ColorGradient = function(a, b, ...)
-	local Percent
-
-	if(b == 0) then
-		Percent = 0
-	else
-		Percent = a / b
+function K.ColorGradient(perc, ...)
+	if perc >= 1 then
+		return select(select('#', ...) - 2, ...)
+	elseif perc <= 0 then
+		return ...
 	end
-
-	if (Percent >= 1) then
-		local R, G, B = select(select("#", ...) - 2, ...)
-
-		return R, G, B
-	elseif (Percent <= 0) then
-		local R, G, B = ...
-
-		return R, G, B
-	end
-
-	local Num = (select("#", ...) / 3)
-	local Segment, RelPercent = modf(Percent * (Num - 1))
-	local R1, G1, B1, R2, G2, B2 = select((Segment * 3) + 1, ...)
-
-	return R1 + (R2 - R1) * RelPercent, G1 + (G2 - G1) * RelPercent, B1 + (B2 - B1) * RelPercent
+	local num = select('#', ...) / 3
+	local segment, relperc = modf(perc*(num-1))
+	local r1, g1, b1, r2, g2, b2 = select((segment*3)+1, ...)
+	return r1 + (r2-r1)*relperc, g1 + (g2-g1)*relperc, b1 + (b2-b1)*relperc
 end
 
 -- Example:
 -- killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
-K.KillMenuOption = function(option_shrink, option_name)
+function K.KillMenuOption(option_shrink, option_name)
 	local option = _G[option_name]
 	if not(option) or not(option.IsObjectType) or not(option:IsObjectType("Frame")) then
 		return
@@ -276,14 +259,13 @@ K.KillMenuOption = function(option_shrink, option_name)
 	option.setFunc = function() end
 end
 
-
 -- Example (killing the status text panel in WotLK, Cata and MoP):
 -- K.KillMenuPanel(9, "InterfaceOptionsStatusTextPanel")
 --
 -- 'panel_id' is basically the number of the submenu, when all menus are still there.
 -- Note that the this sometimes change between expansions, so you really need to check
 -- to make sure you are removing the right one.
-K.KillMenuPanel = function(panel_id, panel_name)
+function K.KillMenuPanel(panel_id, panel_name)
 	-- remove an entire blizzard options panel,
 	-- and disable its automatic cancel/okay functionality
 	-- this is needed, or the option will be reset when the menu closes
@@ -310,7 +292,7 @@ K.KillMenuPanel = function(panel_id, panel_name)
 end
 
 -- Format seconds to min/ hour / day
-K.FormatTime = function(s)
+function K.FormatTime(s)
 	local day, hour, minute = 86400, 3600, 60
 
 	if s >= day then
@@ -326,46 +308,39 @@ K.FormatTime = function(s)
 end
 
 --Add time before calling a function
-local TimerParent = CreateFrame("Frame")
-K.UnusedTimers = {}
-
-local TimerOnFinished = function(self)
-	self.Func(unpack(self.Args))
-	tinsert(K.UnusedTimers, self)
-end
-
-K.NewTimer = function()
-	local Parent = TimerParent:CreateAnimationGroup()
-	local Timer = Parent:CreateAnimation("Alpha")
-
-	Timer:SetScript("OnFinished", TimerOnFinished)
-	Timer.Parent = Parent
-
-	return Timer
-end
-
-K.Delay = function(delay, func, ...)
+local waitTable = {}
+local waitFrame
+function K.Delay(delay, func, ...)
 	if (type(delay) ~= "number" or type(func) ~= "function") then
-		return
+		return false
 	end
-
-	local Timer
-
-	if K.UnusedTimers[1] then
-		Timer = tremove(K.UnusedTimers, 1) -- Recycle a timer
-	else
-		Timer = K.NewTimer() -- Or make a new one if needed
+	if (waitFrame == nil) then
+		waitFrame = CreateFrame("Frame", "WaitFrame", UIParent)
+		waitFrame:SetScript("onUpdate", function (_, elapse)
+			local count = #waitTable
+			local i = 1
+			while(i <= count) do
+				local waitRecord = tremove(waitTable,i)
+				local d = tremove(waitRecord,1)
+				local f = tremove(waitRecord,1)
+				local p = tremove(waitRecord,1)
+				if (d > elapse) then
+					tinsert(waitTable,i,{d-elapse,f,p})
+					i = i + 1
+				else
+					count = count - 1
+					f(unpack(p))
+				end
+			end
+		end)
 	end
-
-	Timer.Args = {...}
-	Timer.Func = func
-	Timer:SetDuration(delay)
-	Timer.Parent:Play()
+	tinsert(waitTable,{delay,func,{...}})
+	return true
 end
 
 -- Currencys
 local GetCurrencyInfo = GetCurrencyInfo
-K.Currency = function(id, weekly, capped)
+function K.Currency(id, weekly, capped)
 	local name, amount, tex, week, weekmax, maxed, discovered = GetCurrencyInfo(id)
 
 	local r, g, b = 1, 1, 1

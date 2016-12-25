@@ -284,8 +284,9 @@ UIConfigLocal.TooltipHyperLink = "Показывать подсказку при
 UIConfigLocal.TooltipInstanceLock = "Отображать статус заблокированных подземелий в подсказке"
 UIConfigLocal.TooltipItemCount = "Количество предметов"
 UIConfigLocal.TooltipItemIcon = "Иконка предмета в подсказке"
+UIConfigLocal.TooltipItemLevel = "Display targets average itemlevel on tooltip"
 UIConfigLocal.TooltipSpellID = "ID заклинаний"
-UIConfigLocal.TooltipTalents = "целевые Показать таланты/itemlevel на подсказке"
+UIConfigLocal.TooltipTalents = "Display targets talents on tooltip"
 
 -- Рамки Юнитов
 UIConfigLocal.Unitframe = "Рамки Юнитов"

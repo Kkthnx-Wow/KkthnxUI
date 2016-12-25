@@ -39,12 +39,11 @@ HonorBar:SetPoint("CENTER", HonorAnchor, "CENTER", 0, 0)
 HonorBar:SetStatusBarTexture(C.Media.Texture)
 HonorBar:SetStatusBarColor(unpack(C.DataBars.HonorColor))
 
-K.CreateBorder(HonorBar, 10, 3)
+K.CreateBorder(HonorBar, -1)
 HonorBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 HonorBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 if C.Blizzard.ColorTextures == true then
-	HonorBar:SetBorderTexture("white")
 	HonorBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 

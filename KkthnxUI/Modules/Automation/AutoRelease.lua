@@ -1,24 +1,25 @@
 local K, C, L = unpack(select(2, ...))
+if C.Automation.Resurrection ~= true then return end
 
-local tostring = tostring
-local CreateFrame = CreateFrame
-local inBattlefield = inBattlefield
-local GetCurrentMapAreaID = GetCurrentMapAreaID
-local GetBattlefieldStatus = GetBattlefieldStatus
-local GetMaxBattlefieldID = GetMaxBattlefieldID
+-- Wow API
 local CanUseSoulstone = CanUseSoulstone
+local GetBattlefieldStatus = GetBattlefieldStatus
+local GetCurrentMapAreaID = GetCurrentMapAreaID
+local GetMaxBattlefieldID = GetMaxBattlefieldID
 local HasSoulstone = HasSoulstone
 
--- AUTO RESURRECTION IN PVP
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_DEAD")
-frame:SetScript("OnEvent", function(self, event)
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: SetMapToCurrentZone, RepopMe
+
+-- Auto release the spirit in battlegrounds
+local AutoRelease = CreateFrame("Frame")
+AutoRelease:RegisterEvent("PLAYER_DEAD")
+AutoRelease:SetScript("OnEvent", function(self, event)
 	local inBattlefield = false
 	for i = 1, GetMaxBattlefieldID() do
 		local status = GetBattlefieldStatus(i)
 		if status == "active" then inBattlefield = true end
 	end
-
 	if not (HasSoulstone() and CanUseSoulstone()) then
 		SetMapToCurrentZone()
 		local areaID = GetCurrentMapAreaID() or 0

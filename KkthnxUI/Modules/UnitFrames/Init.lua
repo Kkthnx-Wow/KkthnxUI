@@ -60,7 +60,7 @@ function oUFKkthnx:START_TIMER(event)
 				end
 			end
 
-			K.CreateBorder(bar, 11, 3)
+			K.CreateBorder(bar, -1)
 
 			local backdrop = select(1, bar:GetRegions())
 			backdrop:SetTexture(C.Media.Blank)

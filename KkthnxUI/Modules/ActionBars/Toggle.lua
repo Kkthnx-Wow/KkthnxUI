@@ -309,7 +309,7 @@ for i = 1, 5 do
 		end
 	elseif i == 5 then
 		ToggleBar[i]:CreatePanel("Invisible", 19, 19, "BOTTOMRIGHT", Minimap, "BOTTOMLEFT", -4, -2)
-		K.CreateBorder(ToggleBar[i])
+		K.CreateBorder(ToggleBar[i], 1)
 		ToggleBar[i]:SetBackdrop(K.BorderBackdrop)
 		ToggleBar[i]:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		ToggleBar[i].Text:SetPoint("CENTER", 0, 0)
@@ -355,19 +355,15 @@ for i = 1, 5 do
 				ToggleBar[i]:SetAlpha(1)
 				RightBarMouseOver(1)
 			else
-				-- ToggleBar[i]:FadeIn()
-				K.UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
+				K.FadeIn(ToggleBar[i])
 			end
 		elseif i == 3 or i == 4 then
-		--	ToggleBar[3]:FadeIn()
-			K.UIFrameFadeIn(ToggleBar[3], 0.4, ToggleBar[i]:GetAlpha(), 1)
-		--	ToggleBar[4]:FadeIn()
-			K.UIFrameFadeIn(ToggleBar[4], 0.4, ToggleBar[i]:GetAlpha(), 1)
+			K.FadeIn(ToggleBar[3])
+			K.FadeIn(ToggleBar[4])
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 		else
-			-- ToggleBar[i]:FadeIn()
-			K.UIFrameFadeIn(ToggleBar[i], 0.4, ToggleBar[i]:GetAlpha(), 1)
+			K.FadeIn(ToggleBar[i])
 		end
 	end)
 
@@ -377,15 +373,12 @@ for i = 1, 5 do
 				ToggleBar[i]:SetAlpha(0)
 				RightBarMouseOver(0)
 			else
-				-- ToggleBar[i]:FadeOut()
-				K.UIFrameFadeOut(ToggleBar[i], 0.8, ToggleBar[i]:GetAlpha(), 0)
+				K.FadeOut(ToggleBar[i])
 			end
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-			-- ToggleBar[3]:FadeOut()
-			K.UIFrameFadeOut(ToggleBar[3], 0.8, ToggleBar[i]:GetAlpha(), 0)
-			-- ToggleBar[4]:FadeOut()
-			K.UIFrameFadeOut(ToggleBar[4], 0.8, ToggleBar[i]:GetAlpha(), 0)
+			K.FadeOut(ToggleBar[3])
+			K.FadeOut(ToggleBar[4])
 			VehicleButtonAnchor:ClearAllPoints()
 			if KkthnxUIDataPerChar.SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
@@ -393,8 +386,7 @@ for i = 1, 5 do
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 			end
 		else
-			-- ToggleBar[i]:FadeOut()
-			K.UIFrameFadeOut(ToggleBar[i], 0.8, ToggleBar[i]:GetAlpha(), 0)
+			K.FadeOut(ToggleBar[i])
 		end
 	end)
 

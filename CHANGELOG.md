@@ -8,7 +8,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-- nil
+### Added
+- Locals added corresponding to this update.
+- New border textures and code.
+- New translations for zhCN, as well a proper font.
+
+### Fixed
+- AutoRelease script will now properly disable when turned off.
+
+### Removed
+- Cleanup uneeded code with new updates as of now.
+
+### Changed
+- Added a border around quest buttons.
+- Animations file code.
+- Functions file and imrpoved the file a bit.
 
 ## [v6.11.5] - 9:45:10 pm EST Saturday, December 24, 2016
 ### Added

@@ -19,7 +19,7 @@ SLASH_FARMMODE2 = "/fm"
 
 -- Button for farm-mode
 local Farm = CreateFrame("Button", "FarmMode", UIParent)
-K.CreateBorder(Farm)
+K.CreateBorder(Farm, 1)
 Farm:SetBackdrop(K.BorderBackdrop)
 Farm:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 Farm:SetPoint("TOPRIGHT", Minimap, "BOTTOMLEFT", -4, -4)
@@ -37,9 +37,9 @@ Farm:SetScript("OnClick", function()
 end)
 
 Farm:SetScript("OnEnter", function()
-	Farm:FadeIn()
+	K.FadeIn(Farm)
 end)
 
 Farm:SetScript("OnLeave", function()
-	Farm:FadeOut()
+	K.FadeOut(Farm)
 end)
