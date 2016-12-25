@@ -134,10 +134,10 @@ end
 -- </ Dungeon info > --
 if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
 	MiniMapInstanceDifficulty:ClearAllPoints()
-	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0 or 0, 0 or 0)
+	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1 or -1, -1 or -1)
 	MiniMapInstanceDifficulty:SetScale(1 or 1)
 	GuildInstanceDifficulty:ClearAllPoints()
-	GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0 or 0, 0 or 0)
+	GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1 or -1, -1 or -1)
 	GuildInstanceDifficulty:SetScale(1 or 1)
 end
 MiniMapInstanceDifficulty:SetParent(Minimap)

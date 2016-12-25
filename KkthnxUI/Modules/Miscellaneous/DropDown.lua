@@ -88,5 +88,4 @@ SkinDropDowns:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" then
 		self:UnregisterEvent("ADDON_LOADED")
 	end
-
 end)

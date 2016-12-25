@@ -152,7 +152,7 @@ end
 local function IsTrackingTrivial()
 	for index = 1, GetNumTrackingTypes() do
 		local name, _, active = GetTrackingInfo(index)
-		if name == MINIMAP_TRACKING_TRIVIAL_QUESTS then
+		if(name == (MINIMAP_TRACKING_TRIVIAL_QUESTS or MINIMAP_TRACKING_HIDDEN_QUESTS)) then
 			return active
 		end
 	end

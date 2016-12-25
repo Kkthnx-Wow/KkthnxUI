@@ -423,6 +423,7 @@ local function CreateUnitLayout(self, unit)
 	self.IsMainFrame = K.MultiCheck(self.cUnit, "player", "target", "focus")
 	self.IsTargetFrame = K.MultiCheck(self.cUnit, "targettarget", "focustarget")
 	self.IsPartyFrame = self.cUnit:match("party")
+	self.IsBossFrame = self.cUnit:match("boss")
 
 	if (self.IsTargetFrame) then
 		self:SetFrameLevel(4)
@@ -623,13 +624,15 @@ local function CreateUnitLayout(self, unit)
 		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
-	end
-
-	-- Name text targettarget
-	if data.nam and self.IsTargetFrame then
+		-- Name text targettarget
+	elseif data.nam and self.IsTargetFrame then
 		self.Name = K.SetFontString(self, C.Media.Font, 12, nil, "LEFT")
 		self.Name:SetShadowOffset(K.Mult, -K.Mult)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+	elseif data.nam and self.IsBossFrame then
+		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+		self.Name:SetShadowOffset(K.Mult, -K.Mult)
+		self:Tag(self.Name, "[KkthnxUI:NameMedium]")
 	end
 
 	-- Portrait

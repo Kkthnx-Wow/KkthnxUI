@@ -215,10 +215,6 @@ if C.Misc.BGSpam == true then
 	Fixer:RegisterEvent("PLAYER_ENTERING_WORLD")
 	Fixer:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	Fixer:SetScript("OnEvent", DisableSpam)
-
-	if event == ("PLAYER_ENTERING_WORLD") then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
 end
 
 -- Boss Banner Hider
@@ -250,9 +246,12 @@ local QuestTracking = CreateFrame("Frame")
 QuestTracking:RegisterEvent("PLAYER_ENTERING_WORLD")
 QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
 QuestTracking:SetScript("OnEvent", function(self, event)
-	SetCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
-
 	if event == ("PLAYER_ENTERING_WORLD") then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		local _, instanceType = IsInInstance()
+		if instanceType == "raid" then
+			SetCVar("showQuestTrackingTooltips", 0)
+		else
+			SetCVar("showQuestTrackingTooltips", 1)
+		end
 	end
 end)

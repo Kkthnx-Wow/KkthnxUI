@@ -135,7 +135,7 @@ function KkthnxUIAuras:UpdateAura(index)
 
 		if (self.Filter == "HARMFUL") then
 			local Color = DebuffTypeColor[DType or "none"]
-			self.border:SetBackdropBorderColor(Color.r * 3/5, Color.g * 3/5, Color.b * 3/5)
+			self.backdrop:SetBackdropBorderColor(Color.r * 3/5, Color.g * 3/5, Color.b * 3/5)
 		end
 
 		self.Icon:SetTexture(Texture)
@@ -250,11 +250,10 @@ function KkthnxUIAuras:Skin()
 
 	self.Icon = Icon
 	self.Count = Count
-	--self:SetTemplate("Default")
-	self:CreateBorder() -- has to be a better way to create the blizzard border with SetTemplate.
+	self:CreateBackdrop()
 
 	if C.Blizzard.ColorTextures == true then
-		self.border:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+		self.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
 
 	if not self.shadow then

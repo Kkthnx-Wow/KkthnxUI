@@ -30,22 +30,6 @@ end)
 -- </ Fix RemoveTalent() taint > --
 FCF_StartAlertFlash = K.Noop
 
-local AcceptQuestFix = CreateFrame("Frame")
-AcceptQuestFix:RegisterEvent("QUEST_DETAIL")
-AcceptQuestFix:SetScript("OnEvent", function(self, event)
-	if QuestFlagsPVP() then
-		QuestFrame.dialog = StaticPopup_Show("CONFIRM_ACCEPT_PVP_QUEST")
-	elseif QuestGetAutoAccept() then
-		AcknowledgeAutoAcceptQuest()
-		PlayAutoAcceptQuestSound()
-
-		QuestFrame:Hide()
-	else
-		AcceptQuest()
-		-- </ Some quests do not automatically close the UI. Weird. TODO Look where the issue is here > --
-	end
-end)
-
 -- </ Fix the scale on ScriptErrorsFrame > --
 local ScriptErrorsScale = CreateFrame("Frame")
 ScriptErrorsScale:RegisterEvent("ADDON_LOADED")
@@ -138,55 +122,60 @@ end
 
 -- </ World Map > --
 -- </ original code by ls- (lightspark) > --
-do
-	local old_ResetZoom = _G.WorldMapScrollFrame_ResetZoom
-	_G.WorldMapScrollFrame_ResetZoom = function()
-		if _G.InCombatLockdown() then
-			_G.WorldMapFrame_Update()
-			_G.WorldMapScrollFrame_ReanchorQuestPOIs()
-			_G.WorldMapFrame_ResetPOIHitTranslations()
-			_G.WorldMapBlobFrame_DelayedUpdateBlobs()
-		else
-			old_ResetZoom()
-		end
-	end
+local old_ResetZoom = _G.WorldMapScrollFrame_ResetZoom
 
-	local old_QuestMapFrame_OpenToQuestDetails = _G.QuestMapFrame_OpenToQuestDetails
-	_G.QuestMapFrame_OpenToQuestDetails = function(questID)
-		if _G.InCombatLockdown() then
-			_G.ShowUIPanel(_G.WorldMapFrame);
-			_G.QuestMapFrame_ShowQuestDetails(questID)
-			_G.QuestMapFrame.DetailsFrame.mapID = nil
-		else
-			old_QuestMapFrame_OpenToQuestDetails(questID)
-		end
+_G.WorldMapScrollFrame_ResetZoom = function()
+	if _G.InCombatLockdown() then
+		_G.WorldMapFrame_Update()
+		_G.WorldMapScrollFrame_ReanchorQuestPOIs()
+		_G.WorldMapFrame_ResetPOIHitTranslations()
+		_G.WorldMapBlobFrame_DelayedUpdateBlobs()
+	else
+		old_ResetZoom()
 	end
-
-	_G.WorldMapFrame.questLogMode = true
-	_G.QuestMapFrame_Open(true)
 end
 
+local old_QuestMapFrame_OpenToQuestDetails = _G.QuestMapFrame_OpenToQuestDetails
 
--- </ Artifact Frame > --
--- </ original code by Gnarfoz > --
--- </ C_ArtifactUI.GetTotalPurchasedRanks() shenanigans > --
-do
-	local oldOnShow
-	local newOnShow
-
-	local function newOnShow(self)
-		if C_ArtifactUI.GetTotalPurchasedRanks() then
-			oldOnShow(self)
-		else
-			ArtifactFrame:Hide()
-		end
+_G.QuestMapFrame_OpenToQuestDetails = function(questID)
+	if _G.InCombatLockdown() then
+		_G.ShowUIPanel(_G.WorldMapFrame);
+		_G.QuestMapFrame_ShowQuestDetails(questID)
+		_G.QuestMapFrame.DetailsFrame.mapID = nil
+	else
+		old_QuestMapFrame_OpenToQuestDetails(questID)
 	end
-
-	local function artifactHook()
-		if not oldOnShow then
-			oldOnShow = ArtifactFrame:GetScript("OnShow")
-			ArtifactFrame:SetScript("OnShow", newOnShow)
-		end
-	end
-	hooksecurefunc("ArtifactFrame_LoadUI", artifactHook)
 end
+
+if _G.WorldMapFrame.UIElementsFrame.BountyBoard.GetDisplayLocation == _G.WorldMapBountyBoardMixin.GetDisplayLocation then
+	_G.WorldMapFrame.UIElementsFrame.BountyBoard.GetDisplayLocation = function(frame)
+		if _G.InCombatLockdown() then
+			return
+		end
+
+		return _G.WorldMapBountyBoardMixin.GetDisplayLocation(frame)
+	end
+end
+
+if _G.WorldMapFrame.UIElementsFrame.ActionButton.GetDisplayLocation == _G.WorldMapActionButtonMixin.GetDisplayLocation then
+	_G.WorldMapFrame.UIElementsFrame.ActionButton.GetDisplayLocation = function(frame, useAlternateLocation)
+		if _G.InCombatLockdown() then
+			return
+		end
+
+		return _G.WorldMapActionButtonMixin.GetDisplayLocation(frame, useAlternateLocation)
+	end
+end
+
+if _G.WorldMapFrame.UIElementsFrame.ActionButton.Refresh == _G.WorldMapActionButtonMixin.Refresh then
+	_G.WorldMapFrame.UIElementsFrame.ActionButton.Refresh = function(frame)
+		if _G.InCombatLockdown() then
+			return
+		end
+
+		_G.WorldMapActionButtonMixin.Refresh(frame)
+	end
+end
+
+_G.WorldMapFrame.questLogMode = true
+_G.QuestMapFrame_Open(true)

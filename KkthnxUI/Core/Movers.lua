@@ -218,9 +218,7 @@ Movers:SetScript("OnEvent", function(self, event)
 				Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
 			end
 		end
-		if (event == "PLAYER_ENTERING_WORLD") then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		elseif (event == "PLAYER_REGEN_DISABLED") then
+		if (event == "PLAYER_REGEN_DISABLED") then
 			if self.IsEnabled then
 				self:StartOrStopMoving()
 			end

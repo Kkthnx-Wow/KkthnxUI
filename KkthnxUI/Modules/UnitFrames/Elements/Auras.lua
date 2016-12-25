@@ -11,7 +11,7 @@ local CreateFrame = CreateFrame
 local GetTime = GetTime
 local UnitAura = UnitAura
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: GameTooltip, Aura_OnClick, DebuffTypeColor
 
 local createAuraIcon
@@ -49,15 +49,15 @@ do
 		button.icon = icon
 
 		local overlay = button:CreateTexture(nil, "OVERLAY")
-		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderWhite")
-		overlay:SetVertexColor(unpack(C.Media.Border_Color))
-		overlay:SetOutside(button.icon, 1.36, 1.36)
+		overlay:SetTexture(C.Media.Border_White)
+		overlay:SetPoint("TOPRIGHT", button.icon, 1.35, 1.35)
+		overlay:SetPoint("BOTTOMLEFT", button.icon, -1.35, -1.35)
 		button.overlay = overlay
 
 		local shadow = button:CreateTexture(nil, "BACKGROUND")
 		shadow:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
 		shadow:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
-		shadow:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
+		shadow:SetTexture(C.Media.Border_Shadow)
 		shadow:SetVertexColor(0, 0, 0, 1)
 		button.shadow = shadow
 
@@ -79,7 +79,7 @@ do
 		local stealable = button:CreateTexture(nil, "OVERLAY")
 		stealable:SetPoint("TOPLEFT", button.icon, "TOPLEFT", -5, 5)
 		stealable:SetPoint("BOTTOMRIGHT", button.icon, "BOTTOMRIGHT", 5, -5)
-		stealable:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\BorderShadow")
+		stealable:SetTexture(C.Media.Border_Shadow)
 		stealable:SetVertexColor(1, 190/255, 82/255)
 		stealable:SetDrawLayer("OVERLAY", 1)
 		stealable:SetBlendMode("ADD")
