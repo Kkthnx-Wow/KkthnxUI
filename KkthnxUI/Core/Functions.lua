@@ -224,7 +224,7 @@ function K.FormatMoney(value)
 	end
 end
 
--- Color Gradient
+-- http://www.wowwiki.com/ColorGradient
 function K.ColorGradient(a, b, ...)
 	local percent
 

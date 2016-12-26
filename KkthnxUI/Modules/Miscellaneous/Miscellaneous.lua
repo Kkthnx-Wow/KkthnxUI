@@ -67,10 +67,6 @@ HeadFrame:SetScript("OnEvent", function(self, event, addon)
 		TalkingHeadFrame:ClearAllPoints()
 		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
 	end
-
-	if event == ("ADDON_LOADED") then
-		self:UnregisterEvent("ADDON_LOADED")
-	end
 end)
 
 -- Move some frames (Elvui)
@@ -231,11 +227,8 @@ if C.Misc.HideTalkingHead == true then
 			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
 				TalkingHeadFrame:Hide()
 			end)
-			self:UnregisterEvent(event)
-		end
 
-		if event == ("ADDON_LOADED") then
-			self:UnregisterEvent("ADDON_LOADED")
+			self:UnregisterEvent(event)
 		end
 	end)
 end
