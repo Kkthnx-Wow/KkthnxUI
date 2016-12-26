@@ -210,12 +210,12 @@ local function UpdateThreat(self)
 	end
 end
 
-local function GetDBUnit(cUnit)
-	if cUnit == "focus" then
+local function GetDBUnit(MatchUnit)
+	if MatchUnit == "focus" then
 		return "target"
-	elseif cUnit == "focustarget" then
+	elseif MatchUnit == "focustarget" then
 		return "targettarget"
-	elseif cUnit == "player" then -- can player be vehicle? no it cant
+	elseif MatchUnit == "player" then -- can player be vehicle? no it cant
 		if UnitHasVehicleUI("player") then
 			if (UnitVehicleSkin("player") == "Natural") then
 				return "vehicleorganic"
@@ -226,21 +226,21 @@ local function GetDBUnit(cUnit)
 			return "player"
 		end
 	end
-	return cUnit
+	return MatchUnit
 end
 
-local function GetData(cUnit)
-	local dbUnit = GetDBUnit(cUnit)
+local function GetData(MatchUnit)
+	local dbUnit = GetDBUnit(MatchUnit)
 	if (C.Unitframe.Style == "fat") then
 		return DataFat[dbUnit]
 	end
 	return DataNormal[dbUnit]
 end
 
-local function GetTargetTexture(cUnit, type)
-	local dbUnit = GetDBUnit(cUnit)
+local function GetTargetTexture(MatchUnit, type)
+	local dbUnit = GetDBUnit(MatchUnit)
 	if dbUnit == "vehicle" or dbUnit == "vehicleorganic" then
-		return GetData(cUnit).tex.t
+		return GetData(MatchUnit).tex.t
 	end
 	if dbUnit == "player" then
 		if ns.config.playerStyle == "custom" then
@@ -351,19 +351,19 @@ local function UpdatePlayerFrame(self, ...)
 end
 
 local function UpdateUnitFrameLayout(frame)
-	local cUnit = frame.cUnit
-	local data = GetData(cUnit)
-	local uconfig = ns.config[cUnit]
+	local MatchUnit = frame.MatchUnit
+	local data = GetData(MatchUnit)
+	local uconfig = ns.config[MatchUnit]
 
 	-- Player frame, its special
-	if cUnit == "player" then
+	if MatchUnit == "player" then
 		return UpdatePlayerFrame(frame)
 	elseif (not data) then
 		return
 	end
 
 	-- Frame Size
-	if not InCombatLockdown() then
+	if not InCombatLockdown() and MatchUnit ~= "party" then
 		frame:SetSize(data.siz.w, data.siz.h)
 		frame:SetScale(C.Unitframe.Scale or 1)
 	end
@@ -411,7 +411,7 @@ function oUFKkthnx:UpdateBaseFrames(optUnit)
 	end
 
 	for _, obj in pairs(oUF.objects) do
-		local unit = obj.cUnit
+		local unit = obj.MatchUnit
 		if obj.style == "oUF_Kkthnx" and unit and (not optUnit or optUnit == unit:match("^.%a+")) then
 			UpdateUnitFrameLayout(obj)
 		end
@@ -1161,7 +1161,7 @@ if (C.Unitframe.Party) then
 	)
 
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))
-	party:SetScale(1)
+	party:SetScale(C.Partyframe.Scale)
 	Movers:RegisterFrame(party)
 end
 

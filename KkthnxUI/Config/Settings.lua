@@ -330,6 +330,13 @@ C["Unitframe"] = {
 	["ThreatValue"] = false,
 }
 
+C["Partyframe"] = {
+	["Scale"] = 1,
+	["Enable"] = true,
+	["ShowPlayer"] = true,
+	["RaidAsParty"] = false,
+}
+
 -- Raidframe
 C["Raidframe"] = {
 	["AuraWatch"] = true,
