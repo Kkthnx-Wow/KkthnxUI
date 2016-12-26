@@ -1161,7 +1161,6 @@ if (C.Unitframe.Party) then
 	)
 
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))
-	party:SetScale(C.Partyframe.Scale)
 	Movers:RegisterFrame(party)
 end
 
