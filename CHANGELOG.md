@@ -7,22 +7,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Unreleased] - nil
+
+## [v6.11.6] - 4:56:04 pm EST Monday, December 26, 2016
 ### Added
 - Locals added corresponding to this update.
 - New border textures and code.
+- New filger spells added.
 - New translations for zhCN, as well a proper font.
 
 ### Fixed
 - AutoRelease script will now properly disable when turned off.
+- Border on raidframes was off by 1
+- Fixed checking for channeling on castbars for unit.
+- Fixed error on install.
+- Resolved 3 nil errors.
+- Try to fix hiding of TalkingHeadFrame.
 
 ### Removed
 - Cleanup uneeded code with new updates as of now.
 
 ### Changed
 - Added a border around quest buttons.
+- Adjusted party/raid positions for better aligning of the UI.
 - Animations file code.
+- Cleanup/update some code in LibDropDownMenu.
 - Functions file and imrpoved the file a bit.
+- Renamed a couple functions for better reference.
+- Updated spamfilter white/blacklists.
 
 ## [v6.11.5] - 9:45:10 pm EST Saturday, December 24, 2016
 ### Added
