@@ -281,8 +281,14 @@ function Lib_UIDropDownMenu_AddButton(info, level)
 		level = 1
 	end
 
+	local index
 	local listFrame = _G["Lib_DropDownList"..level]
-	local index = listFrame and (listFrame.numButtons + 1) or 1
+	if (listFrame and listFrame.numButtons) then
+		index = listFrame.numButtons + 1
+	else
+		index = 1
+	end
+
 	local width
 
 	Lib_UIDropDownMenuDelegate:SetAttribute("createframes-level", level)
@@ -536,10 +542,14 @@ function Lib_UIDropDownMenu_AddButton(info, level)
 	end
 
 	width = max(Lib_UIDropDownMenu_GetButtonWidth(button), info.minWidth or 0)
-	--Set maximum button width
-	if (width > listFrame.maxWidth) then
+	-- Set maximum button width
+	-- if (width > listFrame.maxWidth) then
+	-- 	listFrame.maxWidth = width
+	-- end
+	if (listFrame.maxWidth and width > listFrame.maxWidth) then
 		listFrame.maxWidth = width
 	end
+
 	-- Set the height of the listframe
 	listFrame:SetHeight((index * LIB_UIDROPDOWNMENU_BUTTON_HEIGHT) + (LIB_UIDROPDOWNMENU_BORDER_HEIGHT * 2))
 
@@ -959,7 +969,6 @@ function Lib_ToggleDropDownMenu(level, value, dropDownFrame, anchorName, xOffset
 
 		listFrame.onHide = dropDownFrame.onHide
 
-
 		-- We just move level 1 enough to keep it on the screen. We don't necessarily change the anchors.
 		if (level == 1) then
 			local offLeft = listFrame:GetLeft()/uiScale
@@ -1204,28 +1213,28 @@ function Lib_UIDropDownMenu_IsEnabled(dropDown)
 end
 
 function Lib_UIDropDownMenu_GetValue(id)
-	--Only works if the dropdown has just been initialized, lame, I know =(
-	local button = _G["DropDownList1Button"..id]
+	-- Only works if the dropdown has just been initialized, lame, I know =(
+	local button = _G["Lib_DropDownList1Button"..id]
 	if (button) then
-		return _G["DropDownList1Button"..id].value
+		return _G["Lib_DropDownList1Button"..id].value
 	else
 		return nil
 	end
 end
 
---[[function OpenColorPicker(info) ColorPicker stuff not changed
-ColorPickerFrame.func = info.swatchFunc
-ColorPickerFrame.hasOpacity = info.hasOpacity
-ColorPickerFrame.opacityFunc = info.opacityFunc
-ColorPickerFrame.opacity = info.opacity
-ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity}
-ColorPickerFrame.cancelFunc = info.cancelFunc
-ColorPickerFrame.extraInfo = info.extraInfo
--- This must come last, since it triggers a call to ColorPickerFrame.func()
-ColorPickerFrame:SetColorRGB(info.r, info.g, info.b)
-ShowUIPanel(ColorPickerFrame)
-end
-
-function ColorPicker_GetPreviousValues()
-return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b
-end]]
+-- function OpenColorPicker(info) ColorPicker stuff not changed
+-- 	ColorPickerFrame.func = info.swatchFunc
+-- 	ColorPickerFrame.hasOpacity = info.hasOpacity
+-- 	ColorPickerFrame.opacityFunc = info.opacityFunc
+-- 	ColorPickerFrame.opacity = info.opacity
+-- 	ColorPickerFrame.previousValues = {r = info.r, g = info.g, b = info.b, opacity = info.opacity}
+-- 	ColorPickerFrame.cancelFunc = info.cancelFunc
+-- 	ColorPickerFrame.extraInfo = info.extraInfo
+-- 	This must come last, since it triggers a call to ColorPickerFrame.func()
+-- 	-- ColorPickerFrame:SetColorRGB(info.r, info.g, info.b)
+-- 	ShowUIPanel(ColorPickerFrame)
+-- end
+--
+-- function ColorPicker_GetPreviousValues()
+-- 	return ColorPickerFrame.previousValues.r, ColorPickerFrame.previousValues.g, ColorPickerFrame.previousValues.b
+-- end

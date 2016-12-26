@@ -1,5 +1,5 @@
 ## Interface: 70100
-## Version: 6.11.5
+## Version: 6.11.6
 
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: Simplistic user interface
