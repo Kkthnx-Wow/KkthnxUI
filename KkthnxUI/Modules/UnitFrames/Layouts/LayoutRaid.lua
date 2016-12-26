@@ -150,7 +150,7 @@ local function CreateRaidLayout(self, unit)
 	})
 	self:SetBackdropColor(0.019, 0.019, 0.019, 0.9)
 
-	K.CreateBorder(self)
+	K.CreateBorder(self, -1)
 	self:SetBorderColor(unpack(C.Media.Border_Color))
 
 	-- Health bar
