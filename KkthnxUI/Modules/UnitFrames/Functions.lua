@@ -443,7 +443,6 @@ end
 
 K.PostChannelStart = function(Castbar, unit, name)
 	Castbar.channeling = true
-	unit = K.cUnit(unit)
 	if unit == "vehicle" then unit = "player" end
 
 	if unit == "player" and C.Unitframe.CastbarLatency == true and Castbar.Latency then
