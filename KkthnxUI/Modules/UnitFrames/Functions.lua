@@ -47,7 +47,7 @@ function K.UnitframeValue(self)
 	end
 end
 
-function K.cUnit(unit)
+function K.MatchUnit(unit)
 	if (unit:match("vehicle")) then
 		return "player"
 	elseif (unit:match("party%d")) then
@@ -135,7 +135,7 @@ do
 
 		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GetSpellInfo(8326) or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
-		local uconfig = ns.config[self.cUnit]
+		local uconfig = ns.config[self.MatchUnit]
 
 		if (self.Portrait) then
 			UpdatePortraitColor(self, unit, cur, max)
@@ -180,7 +180,7 @@ do
 
 	function K.PostUpdatePower(Power, unit, cur, max)
 		local self = Power:GetParent()
-		local uconfig = ns.config[self.cUnit]
+		local uconfig = ns.config[self.MatchUnit]
 
 		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
 			Power:SetValue(0)
@@ -377,7 +377,7 @@ local setBarTicks = function(Castbar, ticknum)
 	end
 end
 
-K.PostCastStart = function(Castbar, unit, name, castid)
+function K.PostCastStart(Castbar, unit, name, castid)
 	Castbar.channeling = false
 	if unit == "vehicle" then unit = "player" end
 
@@ -441,7 +441,7 @@ K.PostCastStart = function(Castbar, unit, name, castid)
 	end
 end
 
-K.PostChannelStart = function(Castbar, unit, name)
+function K.PostChannelStart(Castbar, unit, name)
 	Castbar.channeling = true
 	if unit == "vehicle" then unit = "player" end
 
@@ -507,10 +507,10 @@ K.PostChannelStart = function(Castbar, unit, name)
 	end
 end
 
-K.CustomCastTimeText = function(self, duration)
+function K.CustomCastTimeText(self, duration)
 	self.Time:SetText(("%.1f / %.1f"):format(self.channeling and duration or self.max - duration, self.max))
 end
 
-K.CustomCastDelayText = function(self, duration)
+function K.CustomCastDelayText(self, duration)
 	self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(self.channeling and duration or self.max - duration, self.channeling and "-" or "+", abs(self.delay)))
 end

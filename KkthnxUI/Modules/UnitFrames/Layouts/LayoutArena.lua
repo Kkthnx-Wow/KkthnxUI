@@ -52,7 +52,7 @@ end
 
 function ns.createArenaLayout(self, unit)
 	local config = ns.config
-	local uconfig = config[self.cUnit]
+	local uconfig = config[self.MatchUnit]
 
 	self.Texture = self:CreateTexture(nil, "BORDER")
 	self.Texture:SetTexture(textPath.. "Arena")
