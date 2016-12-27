@@ -9,7 +9,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - nil
 
-## [v6.11.6] - 4:56:04 pm EST Monday, December 26, 2016
+## [v6.11.7] - 12/27/2016
+### Added
+- 2 new options for flat texture and blizzard font.
+- Can toggle dropdown menus with esc now.
+- New LibSpellRange-1.0
+
+### Fixed
+- Dropdown list width
+
+### Removed
+- Huge font files.
+- Old range code for new range code.
+
+### Changed
+- Castbars for player and target is 1 global value now. No sense in having 2.
+- Mirror timers
+
+## [v6.11.6] - 12/26/2016
 ### Added
 - Locals added corresponding to this update.
 - New border textures and code.
@@ -36,7 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Renamed a couple functions for better reference.
 - Updated spamfilter white/blacklists.
 
-## [v6.11.5] - 9:45:10 pm EST Saturday, December 24, 2016
+## [v6.11.5] - 12/24/2016
 ### Added
 - Brought back the auto hide feature for garrison icon and calendar. (Can be improved)
 - Cached some more globals
