@@ -639,7 +639,7 @@ local function CreateUnitLayout(self, unit)
 	if data.por then
 		self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND")
 		self.Portrait.Override = function(self, event, unit)
-			if (not unit or not UnitIsUnit(self.unit, unit)) then return; end
+			if (not unit or not UnitIsUnit(self.unit, unit)) then return end
 			local portrait = self.Portrait
 			local _, class = UnitClass(self.unit)
 			if C.Unitframe.ClassPortraits and UnitIsPlayer(unit) and class then
@@ -1192,38 +1192,57 @@ if C.Unitframe.ShowArena then
 	end
 end
 
--- MirrorTimers
-for i = 1, MIRRORTIMER_NUMTIMERS do
-	local bar = _G["MirrorTimer" .. i]
-	bar:SetParent(UIParent)
-	bar:SetSize(220, 18)
+local function MirrorTimer_OnUpdate(frame, elapsed)
+		if (frame.paused) then
+			return
+		end
 
-	K.CreateBorder(bar, -1)
+		if frame.timeSinceUpdate >= 0.3 then
+			local minutes = frame.value / 60
+			local seconds = frame.value % 60
+			local text = frame.label:GetText()
 
-	if (i > 1) then
-		local p1, p2, p3, p4, p5 = bar:GetPoint()
-		bar:SetPoint(p1, p2, p3, p4, p5 - 10)
+			if frame.value > 0 then
+				frame.TimerText:SetText(format("%s (%d:%02d)", text, minutes, seconds))
+			else
+				frame.TimerText:SetText(format("%s (0:00)", text))
+			end
+			frame.timeSinceUpdate = 0
+		else
+			frame.timeSinceUpdate = frame.timeSinceUpdate + elapsed
+		end
 	end
 
-	local statusbar = _G["MirrorTimer" .. i .. "StatusBar"]
-	statusbar:SetStatusBarTexture(C.Media.Texture)
-	statusbar:SetAllPoints(bar)
+-- Mirror Timers (Underwater Breath etc.)
+--Mirror Timers (Underwater Breath etc.), credit to Azilroka
+	for i = 1, MIRRORTIMER_NUMTIMERS do
+		local mirrorTimer = _G["MirrorTimer"..i]
+		local statusBar = _G["MirrorTimer"..i.."StatusBar"]
+		local text = _G["MirrorTimer"..i.."Text"]
 
-	local backdrop = select(1, bar:GetRegions())
-	backdrop:SetTexture(C.Media.Blank)
-	backdrop:SetVertexColor(unpack(C.Media.Backdrop_Color))
-	backdrop:SetAllPoints(bar)
+		mirrorTimer:StripTextures()
+		mirrorTimer:SetSize(222, 18)
+		mirrorTimer.label = text
+		statusBar:SetStatusBarTexture(C.Media.Texture)
+		K.CreateBorder(statusBar, -1)
+		statusBar:SetSize(222, 18)
+		text:Hide()
 
-	local border = _G["MirrorTimer" .. i .. "Border"]
-	border:Hide()
+		local Backdrop = select(1, mirrorTimer:GetRegions())
+		Backdrop:SetTexture(C.Media.Blank)
+		Backdrop:SetVertexColor(unpack(C.Media.Backdrop_Color))
+		Backdrop:SetAllPoints(statusBar)
 
-	local text = _G["MirrorTimer" .. i .. "Text"]
-	text:SetFont(C.Media.Font, 13, C.Media.Font_Style)
-	text:SetShadowOffset(0, 0)
-	text:ClearAllPoints()
-	text:SetPoint("CENTER", bar)
-	bar.text = text
-end
+		local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
+		TimerText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
+		mirrorTimer.TimerText = TimerText
+
+		mirrorTimer.timeSinceUpdate = 0.3 -- Make sure timer value updates right away on first show
+		mirrorTimer:HookScript("OnUpdate", MirrorTimer_OnUpdate)
+
+		Movers:RegisterFrame(mirrorTimer)
+	end
 
 -- Test the unitframes :D
 local moving = false

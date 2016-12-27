@@ -1,6 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 
-local LibSharedMedia = LibStub("LibSharedMedia-3.0")
+local LSM = LibStub("LibSharedMedia-3.0")
 local Locale = GetLocale()
 
 C["Media"] = {
@@ -32,14 +32,27 @@ if (Locale == "zhTW" or Locale == "zhCN") then
 	C.Media.Combat_Font = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage_Chi.ttf]]
 end
 
-if LibSharedMedia == nil then return end
+-- For those who love flat textures.
+if C.General.UseFlatTextures then
+	C.Media.Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat]]
+	C.Media.Blank = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat]]
+end
+
+-- Let people turn off my font.
+if C.General.UseBlizzardFonts and (Locale ~= "zhTW" or Locale ~= "zhCN") then
+	C.Media.Font = STANDARD_TEXT_FONT
+	C.Media.Combat_Font = DAMAGE_TEXT_FONT
+	C.Blizzard.ReplaceBlizzardFonts = false
+end
+
+if LSM == nil then return end
 
 -- LibSharedMedia fonts
-LibSharedMedia:Register("border", "KkthnxUI_Border", [[Interface\Tooltips\UI-Tooltip-Border]])
-LibSharedMedia:Register("border", "KkthnxUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
-LibSharedMedia:Register("font", "KkthnxUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]])
-LibSharedMedia:Register("font", "KkthnxUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]])
-LibSharedMedia:Register("sound", "GameMaster_Whisper", [[Sound\Spells\Simongame_visual_gametick.wav]])
-LibSharedMedia:Register("sound", "KkthnxUI_Whisper", [[Interface\AddOns\KkthnxUI\Media\Sounds\KWhisper.ogg]])
-LibSharedMedia:Register("sound", "Spell_Proc", [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]])
-LibSharedMedia:Register("statusbar", "KkthnxUI_StatusBar", [[Interface\TargetingFrame\UI-StatusBar]])
+LSM:Register("border", "KkthnxUI_Border", [[Interface\Tooltips\UI-Tooltip-Border]])
+LSM:Register("border", "KkthnxUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
+LSM:Register("font", "KkthnxUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]])
+LSM:Register("font", "KkthnxUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]])
+LSM:Register("sound", "GameMaster_Whisper", [[Sound\Spells\Simongame_visual_gametick.wav]])
+LSM:Register("sound", "KkthnxUI_Whisper", [[Interface\AddOns\KkthnxUI\Media\Sounds\KWhisper.ogg]])
+LSM:Register("sound", "Spell_Proc", [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]])
+LSM:Register("statusbar", "KkthnxUI_StatusBar", [[Interface\TargetingFrame\UI-StatusBar]])

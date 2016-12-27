@@ -166,7 +166,7 @@ end
 if Minimap and C.Minimap.Enable then
 	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
 	MinimapStats:SetTemplate()
-	if C.General.ShowConfigButton == true then
+	if C.Minimap.ShowConfigButton == true then
 		MinimapStats:SetSize(((Minimap:GetWidth() -16)), 28)
 		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", -13, -2)
 	else
@@ -229,7 +229,7 @@ if C.DataText.Battleground == true and C.DataText.BottomBar == true then
 end
 
 -- ToggleButton Special
-if C.General.ShowConfigButton == true then
+if C.Minimap.ShowConfigButton == true then
 	local ToggleButtonSpecial = CreateFrame( "Frame", "KkthnxToggleSpecialButton", UIParent)
 	ToggleButtonSpecial:SetPoint("LEFT", KkthnxUIMinimapStats, "RIGHT", 2, 0)
 	ToggleButtonSpecial:SetSize(20, 20)

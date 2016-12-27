@@ -106,6 +106,7 @@ UIConfigLocal.AurasHideDebuffs = "Отключить показ дебаффов
 
 -- Chat
 UIConfigLocal.ChatBackground = "Включить фон чата"
+UIConfigLocal.ChatBubbleBackdrop = "Удалить фон облачков сообщений"
 UIConfigLocal.ChatDamageMeterSpam = "Объединять спам аддонов учета урона в одну строку-ссылку"
 UIConfigLocal.ChatEnable = "Включить чат"
 UIConfigLocal.ChatFading = "Включить затухание чата"
@@ -156,13 +157,13 @@ UIConfigLocal.FilgerTestMode = "Тестовый режим"
 
 -- General
 UIConfigLocal.GeneralAutoScale = "Автоматически масштабировать интерфейс"
-UIConfigLocal.GeneralBubbleBackdrop = "Удалить фон облачков сообщений"
 UIConfigLocal.GeneralBubbleFontSize = "Размер шрифта в облочках сообщений"
 UIConfigLocal.GeneralCustomLagTolerance = "Автоматически обновлять опцию Blizzard Custom Lag Tolerance для вашей задержки"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
-UIConfigLocal.GeneralShowConfigButton = "Show config button on minimap"
 UIConfigLocal.GeneralTranslateMessage = "Оповещение о помощи перевода GUI"
 UIConfigLocal.GeneralUIScale = "Масштаб интерфейса (если автомасштабирование отключено)"
+UIConfigLocal.GeneralUseBlizzardFonts = "Use the default blizzard font"
+UIConfigLocal.GeneralUseFlatTextures = "Use flat statusbar textures"
 UIConfigLocal.GeneralWelcomeMessage = "Приветственное сообщение в чате"
 
 -- Loot
@@ -181,6 +182,7 @@ UIConfigLocal.MinimapEnable = "Включить миникарту и сдела
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Показывать иконку Оплота/Гарнизона на миникарте"
 UIConfigLocal.MinimapPing = "Выводить сообщение о пинге с ником игрока на миникарте. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
+UIConfigLocal.MinimapShowConfigButton = "Show config button on minimap"
 UIConfigLocal.MinimapSize = "Размер миникарты (по умолчанию 150)"
 
 -- Разное

@@ -85,6 +85,7 @@ C["Auras"] = {
 -- Chat
 C["Chat"] = {
 	["Background"] = false,
+	["BubbleBackdrop"] = false,
 	["DamageMeterSpam"] = false,
 	["Enable"] = true,
 	["Fading"] = true,
@@ -168,13 +169,13 @@ C["Filger"] = {
 -- General
 C["General"] = {
 	["AutoScale"] = true,
-	["BubbleBackdrop"] = false,
 	["BubbleFontSize"] = 12,
 	["CustomLagTolerance"] = false,
 	["DisableTutorialButtons"] = false,
-	["ShowConfigButton"] = true,
+	["UseFlatTextures"] = false,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
+	["UseBlizzardFonts"] = false,
 	["WelcomeMessage"] = true,
 }
 
@@ -198,6 +199,7 @@ C["Minimap"] = {
 	["Calendar"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
+	["ShowConfigButton"] = true,
 }
 
 -- Miscellaneous

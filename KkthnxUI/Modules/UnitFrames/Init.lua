@@ -44,8 +44,7 @@ function oUFKkthnx:START_TIMER(event)
 	for _, b in pairs(TimerTracker.timerList) do
 		local bar = b["bar"]
 		if (not bar.borderTextures) then
-			bar:SetScale(1)
-			bar:SetSize(220, 18)
+			bar:SetSize(222, 18)
 
 			for i = 1, select("#", bar:GetRegions()) do
 				local region = select(i, bar:GetRegions())

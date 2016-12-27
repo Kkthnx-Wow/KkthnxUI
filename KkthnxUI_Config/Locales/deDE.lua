@@ -105,6 +105,7 @@ UIConfigLocal.AurasHideDebuffs = "Deaktivere die Schwächungszauberanzeige"
 
 -- Chat
 UIConfigLocal.ChatBackground = "Chathintergrund aktivieren"
+UIConfigLocal.ChatBubbleBackdrop = "Entferne den Hintergrund der Sprachblasen."
 UIConfigLocal.ChatDamageMeterSpam = "Zeige den 'damage meter spam' zusammengefasst in einem 'line-link' an"
 UIConfigLocal.ChatEnable = "Aktiviere Chat"
 UIConfigLocal.ChatFading = "Aktiviere das Verblassen des Chats"
@@ -155,13 +156,13 @@ UIConfigLocal.FilgerTestMode = "Testmodus der Symbole"
 
 -- General
 UIConfigLocal.GeneralAutoScale = "AAutomatische UI Skalierung"
-UIConfigLocal.GeneralBubbleBackdrop = "Entferne den Hintergrund der Sprachblasen."
 UIConfigLocal.GeneralBubbleFontSize = "Schriftgröße in den Sprachblasen"
 UIConfigLocal.GeneralCustomLagTolerance = "Automatisches Update der 'Blizzard Custom Lag Tolerance' Option zu Deiner Latenz"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
-UIConfigLocal.GeneralShowConfigButton = "Zeigt den Konfigurationsbutton an der Minimap an"
 UIConfigLocal.GeneralTranslateMessage = "Popup anzeigen für Hilfe bei der UI Übersetzung."
 UIConfigLocal.GeneralUIScale = "UI Skalierung (Wenn automatische Skalierung deaktivert ist)"
+UIConfigLocal.GeneralUseBlizzardFonts = "Use the default blizzard font"
+UIConfigLocal.GeneralUseFlatTextures = "Use flat statusbar textures"
 UIConfigLocal.GeneralWelcomeMessage = "Willkommensnachricht im Chat anzeigen."
 
 -- Loot
@@ -175,12 +176,13 @@ UIConfigLocal.LootWidth = "Größe des Beutefensters"
 
 -- Minimap
 UIConfigLocal.Minimap = "Minimap"
+UIConfigLocal.MinimapCalendar = "Calendar icon is shown on minimap"
 UIConfigLocal.MinimapCollectButtons = "Sammel die Minimapbuttons und zeige sie in einer Leiste an"
 UIConfigLocal.MinimapEnable = "Aktiviere die Minimap & zeige sie viereckig"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Zeige das Garnisonssymbol an der Minimap"
-UIConfigLocal.MinimapCalendar = "Calendar icon is shown on minimap"
 UIConfigLocal.MinimapPing = "Zeige eine Nachricht, wenn jemand auf der Minimap 'pingt'. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
+UIConfigLocal.MinimapShowConfigButton = "Zeigt den Konfigurationsbutton an der Minimap an"
 UIConfigLocal.MinimapSize = "Größe der Minimap - Standard ist 150"
 
 -- Sonstiges

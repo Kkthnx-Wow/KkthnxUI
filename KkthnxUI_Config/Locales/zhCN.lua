@@ -105,6 +105,7 @@ UIConfigLocal.AurasHideDebuffs = "Disable debuff display"
 
 -- Chat
 UIConfigLocal.ChatBackground = "Enable chat background"
+UIConfigLocal.ChatBubbleBackdrop = "Remove the chat bubble backdrop."
 UIConfigLocal.ChatDamageMeterSpam = "Merge damage meter spam in one line-link"
 UIConfigLocal.ChatEnable = "Enable chat"
 UIConfigLocal.ChatFading = "Enable chat fading"
@@ -155,13 +156,13 @@ UIConfigLocal.FilgerTestMode = "Test icon mode"
 
 -- General
 UIConfigLocal.GeneralAutoScale = "Auto UI Scale"
-UIConfigLocal.GeneralBubbleBackdrop = "Remove the chat bubble backdrop."
 UIConfigLocal.GeneralBubbleFontSize = "Chat bubble font size"
 UIConfigLocal.GeneralCustomLagTolerance = "Automatically update the Blizzard Custom Lag Tolerance option to your latency"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
-UIConfigLocal.GeneralShowConfigButton = "Show config button on minimap"
 UIConfigLocal.GeneralTranslateMessage = "Popup to gain help for GUI translation."
 UIConfigLocal.GeneralUIScale = "UI Scale (if auto-scale is disabled)"
+UIConfigLocal.GeneralUseBlizzardFonts = "Use the default blizzard font"
+UIConfigLocal.GeneralUseFlatTextures = "Use flat statusbar textures"
 UIConfigLocal.GeneralWelcomeMessage = "Welcome message in chat."
 
 -- Loot
@@ -175,13 +176,14 @@ UIConfigLocal.LootWidth = "Loot frame width"
 
 -- Minimap
 UIConfigLocal.Minimap = "Minimap"
+UIConfigLocal.MinimapCalendar = "Calendar icon is shown on minimap"
 UIConfigLocal.MinimapCollectButtons = "Collect some minimap buttons in one line"
 UIConfigLocal.MinimapEnable = "Enable minimap & make it square"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Garrison icon is shown on minimap"
-UIConfigLocal.MinimapCalendar = "Calendar icon is shown on minimap"
-UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
 UIConfigLocal.MinimapPing = "Displays a message when someone pings the minimap. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
+UIConfigLocal.MinimapShowConfigButton = "Show config button on minimap"
+UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
 
 -- Misc
 UIConfigLocal.Misc = "Miscellaneous"
