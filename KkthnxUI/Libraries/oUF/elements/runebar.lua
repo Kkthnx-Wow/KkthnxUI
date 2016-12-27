@@ -99,8 +99,60 @@ local Path = function(self, event, ...)
 	end
 end
 
+local function RunesEnable(self)
+	self:RegisterEvent('UNIT_ENTERED_VEHICLE', VisibilityPath)
+	self:UnregisterEvent("UNIT_EXITED_VEHICLE", VisibilityPath)
+
+	self.Runes:Show()
+
+	if self.Runes.PostUpdateVisibility then
+		self.Runes:PostUpdateVisibility(true, not self.Runes.isEnabled)
+	end
+
+	self.Runes.isEnabled = true
+
+	Path(self, 'RunesEnable')
+end
+
+local function RunesDisable(self)
+	self:UnregisterEvent('UNIT_ENTERED_VEHICLE', VisibilityPath)
+	self:RegisterEvent("UNIT_EXITED_VEHICLE", VisibilityPath)
+
+	self.Runes:Hide()
+
+	if self.Runes.PostUpdateVisibility then
+		self.Runes:PostUpdateVisibility(false, self.Runes.isEnabled)
+	end
+
+	self.Runes.isEnabled = false
+
+	Path(self, 'RunesDisable')
+end
+
+local function Visibility(self, event, ...)
+	local element = self.Runes
+	local shouldEnable
+
+	if not (UnitHasVehicleUI('player')) then
+		shouldEnable = true
+	end
+
+	local isEnabled = element.isEnabled
+	if(shouldEnable and not isEnabled) then
+		RunesEnable(self)
+	elseif(not shouldEnable and (isEnabled or isEnabled == nil)) then
+		RunesDisable(self)
+	elseif(shouldEnable and isEnabled) then
+		Path(self, event, ...)
+	end
+end
+
+local VisibilityPath = function(self, ...)
+	return (self.Runes.OverrideVisibility or Visibility) (self, ...)
+end
+
 local ForceUpdate = function(element)
-	return Path(element.__owner, 'ForceUpdate')
+	return VisibilityPath(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
 local Enable = function(self, unit)
@@ -132,6 +184,8 @@ end
 
 local Disable = function(self)
 	self:UnregisterEvent("RUNE_POWER_UPDATE", Path)
+
+	RunesDisable(self)
 end
 
-oUF:AddElement("Runes", Path, Enable, Disable)
+oUF:AddElement("Runes", VisibilityPath, Enable, Disable)

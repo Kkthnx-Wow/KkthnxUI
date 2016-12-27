@@ -22,7 +22,7 @@ local function skinbubble(frame)
 		end
 	end
 
-	if C.General.BubbleBackdrop == false then
+	if C.Chat.BubbleBackdrop == false then
 		frame:SetBackdrop(K.Backdrop)
 		frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 		frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))

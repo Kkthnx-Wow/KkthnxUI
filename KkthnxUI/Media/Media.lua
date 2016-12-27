@@ -27,19 +27,14 @@ C["Media"] = {
 	["Whisp_Sound"] = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 }
 
-if (Locale == "zhTW" or Locale == "zhCN") then
-	C.Media.Font = [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal_Chi.ttf]]
-	C.Media.Combat_Font = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage_Chi.ttf]]
-end
-
 -- For those who love flat textures.
 if C.General.UseFlatTextures then
 	C.Media.Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat]]
 	C.Media.Blank = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat]]
 end
 
--- Let people turn off my font.
-if C.General.UseBlizzardFonts and (Locale ~= "zhTW" or Locale ~= "zhCN") then
+-- Let people turn off my font and replace for certain locals
+if (C.General.UseBlizzardFonts or Locale == "koKR" or Locale == "zhTW" or Locale == "zhCN") then
 	C.Media.Font = STANDARD_TEXT_FONT
 	C.Media.Combat_Font = DAMAGE_TEXT_FONT
 	C.Blizzard.ReplaceBlizzardFonts = false

@@ -1,5 +1,5 @@
 ## Interface: 70100
-## Version: 6.11.6
+## Version: 6.11.7
 
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: Config GUI

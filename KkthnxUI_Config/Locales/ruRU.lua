@@ -292,7 +292,9 @@ UIConfigLocal.TooltipTalents = "Display targets talents on tooltip"
 
 -- Рамки Юнитов
 UIConfigLocal.Unitframe = "Рамки Юнитов"
+UIConfigLocal.UnitframeCastbarHeight = "Height of the unitframe castbars"
 UIConfigLocal.UnitframeCastbars = "Включить полосу заклинаний"
+UIConfigLocal.UnitframeCastbarWidth = "Width of the unitframe castbars"
 UIConfigLocal.UnitframeClassColor = "Использовать цвет класса для полосы здоровья, вместо зеленого."
 UIConfigLocal.UnitframeClassPortraits = "Включить портреты классов"
 UIConfigLocal.UnitframeCombatText = "Показывать текст боя"
@@ -303,8 +305,6 @@ UIConfigLocal.UnitframeGCDBar = "Отображать полосу глобал�
 UIConfigLocal.UnitframeIconPlayer = "Set player castbar icon 'LEFT OR RIGHT'" -- Needs translation
 UIConfigLocal.UnitframeIconTarget = "Set target castbar icon 'LEFT OR RIGHT'" -- Needs translation
 UIConfigLocal.UnitframeParty = "Включить рамки юнитов группы."
-UIConfigLocal.UnitframePlayerCastbarHeight = "Высота полосы заклинаний игрока"
-UIConfigLocal.UnitframePlayerCastbarWidth = "Ширина полосы заклинаний игрока"
 UIConfigLocal.UnitframePlayerDebuffsOnly = "Окрашивать только дебаффы игрока"
 UIConfigLocal.UnitframePortraitTimer = "Показывать таймеры на портретах"
 UIConfigLocal.UnitframePowerPredictionBar = "Прогнозируемая полоса ресурса (Показывает ориентировочную стоимость заклинания во время его применения)"
@@ -314,8 +314,6 @@ UIConfigLocal.UnitframeShowBoss = "Включить рамки боссов"
 UIConfigLocal.UnitframeShowPlayer = "SПоказывать себя в группе"
 UIConfigLocal.UnitframeStyle = "Стиль рамок 'fat или normal'" -- Это ключевые слова, чтобы опция работала их надо писать
 UIConfigLocal.UnitframeSwingBar = "Отображать индикатор автоматической атаки"
-UIConfigLocal.UnitframeTargetCastbarHeight = "Высота полосы заклинаний цели"
-UIConfigLocal.UnitframeTargetCastbarWidth = "Ширина полосы заклинаний цели"
 UIConfigLocal.UnitframeThreatGlow = "Свечение угрозы вокруг рамки"
 UIConfigLocal.UnitframeThreatValue = "Текст угрозы на рамке игрока"
 

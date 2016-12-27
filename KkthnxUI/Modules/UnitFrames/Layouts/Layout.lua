@@ -467,27 +467,31 @@ local function CreateUnitLayout(self, unit)
 
 			if C.Unitframe.CastbarIcon == true then
 				self.Castbar:SetPoint(C.Position.UnitFrames.PlayerCastbar[1], C.Position.UnitFrames.PlayerCastbar[2], C.Position.UnitFrames.PlayerCastbar[3], C.Position.UnitFrames.PlayerCastbar[4] + 11, C.Position.UnitFrames.PlayerCastbar[5])
-				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth + 10)
+				self.Castbar:SetWidth(C.Unitframe.CastbarWidth + 10)
 			else
 				self.Castbar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
-				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth)
+				self.Castbar:SetWidth(C.Unitframe.CastbarWidth)
 			end
-			self.Castbar:SetHeight(C.Unitframe.PlayerCastbarHeight)
+			self.Castbar:SetHeight(C.Unitframe.CastbarHeight)
 		elseif self.MatchUnit == "target" then
 			Movers:RegisterFrame(self.Castbar)
 
 			if C.Unitframe.CastbarIcon == true then
 				self.Castbar:SetPoint(C.Position.UnitFrames.TargetCastbar[1], C.Position.UnitFrames.TargetCastbar[2], C.Position.UnitFrames.TargetCastbar[3], C.Position.UnitFrames.TargetCastbar[4] - 23, C.Position.UnitFrames.TargetCastbar[5])
-				self.Castbar:SetWidth(C.Unitframe.TargetCastbarWidth + 10)
+				self.Castbar:SetWidth(C.Unitframe.CastbarWidth + 10)
 			else
 				self.Castbar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
-				self.Castbar:SetWidth(C.Unitframe.TargetCastbarWidth)
+				self.Castbar:SetWidth(C.Unitframe.CastbarWidth)
 			end
-			self.Castbar:SetHeight(C.Unitframe.TargetCastbarHeight)
-		elseif self.MatchUnit == "boss" or self.MatchUnit == "arena" then
-			self.Castbar:SetPoint("RIGHT", self, "LEFT", -8, 7)
-			self.Castbar:SetWidth(114)
-			self.Castbar:SetHeight(14)
+			self.Castbar:SetHeight(C.Unitframe.CastbarHeight)
+		elseif self.MatchUnit == "arena" or self.MatchUnit == "boss" then
+			self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -7)
+			self.Castbar:SetWidth(150)
+			self.Castbar:SetHeight(16)
+		elseif self.MatchUnit ~= "focus" then
+			self.Castbar:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, -7)
+			self.Castbar:SetWidth(105)
+			self.Castbar:SetHeight(5)
 		end
 
 		if self.MatchUnit == "focus" then
@@ -495,12 +499,12 @@ local function CreateUnitLayout(self, unit)
 
 			if C.Unitframe.CastbarIcon == true then
 				self.Castbar:SetPoint(C.Position.UnitFrames.FocusCastbar[1], C.Position.UnitFrames.FocusCastbar[2], C.Position.UnitFrames.FocusCastbar[3], C.Position.UnitFrames.FocusCastbar[4] - 23, C.Position.UnitFrames.FocusCastbar[5])
-				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth + 10)
+				self.Castbar:SetWidth(C.Unitframe.FocusCastbarWidth + 10)
 			else
 				self.Castbar:SetPoint(unpack(C.Position.UnitFrames.FocusCastbar))
-				self.Castbar:SetWidth(C.Unitframe.PlayerCastbarWidth)
+				self.Castbar:SetWidth(C.Unitframe.FocusCastbarWidth)
 			end
-			self.Castbar:SetHeight(C.Unitframe.PlayerCastbarHeight)
+			self.Castbar:SetHeight(C.Unitframe.FocusCastbarHeight)
 		end
 
 		if self.MatchUnit == "player" or self.MatchUnit == "target" or self.MatchUnit == "arena" or self.MatchUnit == "boss" or self.MatchUnit == "focus" then
@@ -522,8 +526,8 @@ local function CreateUnitLayout(self, unit)
 
 			if C.Unitframe.CastbarIcon == true and self.MatchUnit ~= "arena" then
 				self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
-				self.Castbar.Button:SetHeight(22)
-				self.Castbar.Button:SetWidth(22)
+				self.Castbar.Button:SetHeight(20)
+				self.Castbar.Button:SetWidth(20)
 				K.CreateBorder(self.Castbar.Button, 1)
 
 				self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
@@ -544,6 +548,8 @@ local function CreateUnitLayout(self, unit)
 				self.Castbar.Button:SetWidth(18)
 				K.CreateBorder(self.Castbar.Button, 1)
 				if self.MatchUnit == "boss" then
+					self.Castbar.Button:SetPoint("RIGHT", self.Castbar, "LEFT", -5, 0)
+				else
 					self.Castbar.Button:SetPoint("RIGHT", self.Castbar, "LEFT", -5, 0)
 				end
 
@@ -933,7 +939,7 @@ local function CreateUnitLayout(self, unit)
 			self.Swing = CreateFrame("StatusBar", self:GetName().."_Swing", self)
 			self.Swing:CreateShadow()
 			self.Swing:SetPoint("TOPRIGHT", "oUF_KkthnxPlayer_Castbar", "BOTTOMRIGHT", 0, -4)
-			self.Swing:SetSize(C.Unitframe.PlayerCastbarWidth, 5)
+			self.Swing:SetSize(C.Unitframe.CastbarWidth, 5)
 			self.Swing:SetStatusBarTexture(C.Media.Texture)
 			self.Swing:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
 
@@ -1193,56 +1199,56 @@ if C.Unitframe.ShowArena then
 end
 
 local function MirrorTimer_OnUpdate(frame, elapsed)
-		if (frame.paused) then
-			return
-		end
-
-		if frame.timeSinceUpdate >= 0.3 then
-			local minutes = frame.value / 60
-			local seconds = frame.value % 60
-			local text = frame.label:GetText()
-
-			if frame.value > 0 then
-				frame.TimerText:SetText(format("%s (%d:%02d)", text, minutes, seconds))
-			else
-				frame.TimerText:SetText(format("%s (0:00)", text))
-			end
-			frame.timeSinceUpdate = 0
-		else
-			frame.timeSinceUpdate = frame.timeSinceUpdate + elapsed
-		end
+	if (frame.paused) then
+		return
 	end
+
+	if frame.timeSinceUpdate >= 0.3 then
+		local minutes = frame.value / 60
+		local seconds = frame.value % 60
+		local text = frame.label:GetText()
+
+		if frame.value > 0 then
+			frame.TimerText:SetText(format("%s (%d:%02d)", text, minutes, seconds))
+		else
+			frame.TimerText:SetText(format("%s (0:00)", text))
+		end
+		frame.timeSinceUpdate = 0
+	else
+		frame.timeSinceUpdate = frame.timeSinceUpdate + elapsed
+	end
+end
 
 -- Mirror Timers (Underwater Breath etc.)
 --Mirror Timers (Underwater Breath etc.), credit to Azilroka
-	for i = 1, MIRRORTIMER_NUMTIMERS do
-		local mirrorTimer = _G["MirrorTimer"..i]
-		local statusBar = _G["MirrorTimer"..i.."StatusBar"]
-		local text = _G["MirrorTimer"..i.."Text"]
+for i = 1, MIRRORTIMER_NUMTIMERS do
+	local mirrorTimer = _G["MirrorTimer"..i]
+	local statusBar = _G["MirrorTimer"..i.."StatusBar"]
+	local text = _G["MirrorTimer"..i.."Text"]
 
-		mirrorTimer:StripTextures()
-		mirrorTimer:SetSize(222, 18)
-		mirrorTimer.label = text
-		statusBar:SetStatusBarTexture(C.Media.Texture)
-		K.CreateBorder(statusBar, -1)
-		statusBar:SetSize(222, 18)
-		text:Hide()
+	mirrorTimer:StripTextures()
+	mirrorTimer:SetSize(222, 18)
+	mirrorTimer.label = text
+	statusBar:SetStatusBarTexture(C.Media.Texture)
+	K.CreateBorder(statusBar, -1)
+	statusBar:SetSize(222, 18)
+	text:Hide()
 
-		local Backdrop = select(1, mirrorTimer:GetRegions())
-		Backdrop:SetTexture(C.Media.Blank)
-		Backdrop:SetVertexColor(unpack(C.Media.Backdrop_Color))
-		Backdrop:SetAllPoints(statusBar)
+	local Backdrop = select(1, mirrorTimer:GetRegions())
+	Backdrop:SetTexture(C.Media.Blank)
+	Backdrop:SetVertexColor(unpack(C.Media.Backdrop_Color))
+	Backdrop:SetAllPoints(statusBar)
 
-		local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
-		TimerText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
-		mirrorTimer.TimerText = TimerText
+	local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
+	TimerText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
+	mirrorTimer.TimerText = TimerText
 
-		mirrorTimer.timeSinceUpdate = 0.3 -- Make sure timer value updates right away on first show
-		mirrorTimer:HookScript("OnUpdate", MirrorTimer_OnUpdate)
+	mirrorTimer.timeSinceUpdate = 0.3 -- Make sure timer value updates right away on first show
+	mirrorTimer:HookScript("OnUpdate", MirrorTimer_OnUpdate)
 
-		Movers:RegisterFrame(mirrorTimer)
-	end
+	Movers:RegisterFrame(mirrorTimer)
+end
 
 -- Test the unitframes :D
 local moving = false
