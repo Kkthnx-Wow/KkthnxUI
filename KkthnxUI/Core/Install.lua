@@ -220,6 +220,9 @@ function KkthnxUIInstall:CVarSetup()
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
+
+	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
+	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 end
 
 function KkthnxUIInstall:PositionSetup()
