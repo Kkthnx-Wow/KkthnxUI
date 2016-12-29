@@ -58,21 +58,6 @@ do
 	tex:SetInside()
 end
 
--- Move some frames (Shestak)
-local HeadFrame = CreateFrame("Frame")
-HeadFrame:RegisterEvent("ADDON_LOADED")
-HeadFrame:SetScript("OnEvent", function(self, event, addon)
-	if (addon == "Blizzard_TalkingHeadUI") then
-		TalkingHeadFrame.ignoreFramePositionManager = true
-		TalkingHeadFrame:ClearAllPoints()
-		TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
-	end
-
-	if event == ("ADDON_LOADED") then
-		self:UnregisterEvent("ADDON_LOADED")
-	end
-end)
-
 -- Move some frames (Elvui)
 local TicketStatusMover = CreateFrame("Frame", "TicketStatusMoverAnchor", UIParent)
 TicketStatusMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)
@@ -220,23 +205,6 @@ end
 -- Boss Banner Hider
 if C.Misc.NoBanner == true then
 	BossBanner.PlayBanner = function() end
-end
-
---	Hide TalkingHeadFrame
-if C.Misc.HideTalkingHead == true then
-	local HideTalkingHead = CreateFrame("Frame")
-	HideTalkingHead:RegisterEvent("ADDON_LOADED")
-	HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
-		if addon == "Blizzard_TalkingHeadUI" then
-			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-				TalkingHeadFrame:Hide()
-			end)
-
-			if event == ("ADDON_LOADED") then
-				self:UnregisterEvent("ADDON_LOADED")
-			end
-		end
-	end)
 end
 
 -- Disable QuestTrackingTooltips while in raid and in combat

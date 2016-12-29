@@ -355,15 +355,15 @@ for i = 1, 5 do
 				ToggleBar[i]:SetAlpha(1)
 				RightBarMouseOver(1)
 			else
-				K.FadeIn(ToggleBar[i])
+				ToggleBar[i]:FadeIn()
 			end
 		elseif i == 3 or i == 4 then
-			K.FadeIn(ToggleBar[3])
-			K.FadeIn(ToggleBar[4])
+			ToggleBar[3]:FadeIn()
+			ToggleBar[4]:FadeIn()
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 		else
-			K.FadeIn(ToggleBar[i])
+			ToggleBar[i]:FadeIn()
 		end
 	end)
 
@@ -373,12 +373,12 @@ for i = 1, 5 do
 				ToggleBar[i]:SetAlpha(0)
 				RightBarMouseOver(0)
 			else
-				K.FadeOut(ToggleBar[i])
+				ToggleBar[i]:FadeOut()
 			end
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-			K.FadeOut(ToggleBar[3])
-			K.FadeOut(ToggleBar[4])
+				ToggleBar[3]:FadeOut()
+				ToggleBar[4]:FadeOut()
 			VehicleButtonAnchor:ClearAllPoints()
 			if KkthnxUIDataPerChar.SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
@@ -386,7 +386,7 @@ for i = 1, 5 do
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)
 			end
 		else
-			K.FadeOut(ToggleBar[i])
+			ToggleBar[i]:FadeOut()
 		end
 	end)
 

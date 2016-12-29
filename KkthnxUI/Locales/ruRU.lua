@@ -324,6 +324,7 @@ L.Minimap = {
 -- Misc Localization
 L.Misc = {
 	BuyStack = "Зажмите Alt и щелкните мышью, чтобы купить связку",
+	Collapse = "Обрушение",
 	CopperShort = "|cffeda55fм|r",
 	GoldShort = "|cffffd700з|r",
 	SilverShort = "|cffc7c7cfс|r",

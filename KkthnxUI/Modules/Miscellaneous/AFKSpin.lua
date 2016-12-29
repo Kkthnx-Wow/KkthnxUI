@@ -192,7 +192,7 @@ local function onUpdate(self, elapsed)
 	if total >= showTime then
 		local createdStat = createStats()
 		self:AddMessage(createdStat)
-		K.FadeIn(self)
+		self:FadeIn()
 		total = 0
 	end
 end
@@ -495,17 +495,10 @@ function AFK:Initialize()
 end
 
 local Loading = CreateFrame("Frame")
-
 function Loading:OnEvent(event, addon)
 	if (event == "PLAYER_LOGIN") then
 		AFK:Initialize()
 	end
 end
-
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:RegisterEvent("ADDON_LOADED")
 Loading:SetScript("OnEvent", Loading.OnEvent)
-
-if event == ("ADDON_LOADED") then
-	Loading:UnregisterEvent("ADDON_LOADED")
-end

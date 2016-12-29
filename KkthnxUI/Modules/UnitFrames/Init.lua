@@ -12,11 +12,12 @@ local unpack = unpack
 -- Wow API
 local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
+local UnitAffectingCombat = UnitAffectingCombat
+local IsShiftKeyDown = IsShiftKeyDown
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: TimerTracker
+-- GLOBALS:
 
--- Event handler
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
 oUFKkthnx:RegisterEvent("ADDON_LOADED")
 oUFKkthnx:SetScript("OnEvent", function(self, event, ...)
@@ -24,66 +25,34 @@ oUFKkthnx:SetScript("OnEvent", function(self, event, ...)
 end)
 
 function oUFKkthnx:ADDON_LOADED(event, addon)
-	if (addon ~= "KkthnxUI") then
-		return
-	end
+	if addon ~= "KkthnxUI" then return end
 
 	self:UnregisterEvent(event)
-	self:RegisterEvent("MODIFIER_STATE_CHANGED")
+	self.ADDON_LOADED = nil
 
-	-- Skin the Countdown/BG timers
-	self:RegisterEvent("START_TIMER")
-
-	if event == "ADDON_LOADED" then -- Be sure we do not miss the event. So we check.
-		self:UnregisterEvent("ADDON_LOADED")
+	-- Shift to temporarily show all buffs
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	if not UnitAffectingCombat("player") then
+		self:RegisterEvent("MODIFIER_STATE_CHANGED")
 	end
-end
 
--- Skin the blizzard Countdown Timers
-function oUFKkthnx:START_TIMER(event)
-	for _, b in pairs(TimerTracker.timerList) do
-		local bar = b["bar"]
-		if (not bar.borderTextures) then
-			bar:SetSize(222, 18)
+	function oUFKkthnx:PLAYER_REGEN_DISABLED(event)
+		self:UnregisterEvent("MODIFIER_STATE_CHANGED")
+		self:MODIFIER_STATE_CHANGED(event, "LSHIFT", 0)
+	end
 
-			for i = 1, select("#", bar:GetRegions()) do
-				local region = select(i, bar:GetRegions())
+	function oUFKkthnx:PLAYER_REGEN_ENABLED(event)
+		self:RegisterEvent("MODIFIER_STATE_CHANGED")
+		self:MODIFIER_STATE_CHANGED(event, "LSHIFT", IsShiftKeyDown() and 1 or 0)
+	end
 
-				if (region and region:GetObjectType() == "Texture") then
-					region:SetTexture(nil)
-				end
-
-				if (region and region:GetObjectType() == "FontString") then
-					region:ClearAllPoints()
-					region:SetPoint("CENTER", bar)
-				end
-			end
-
-			K.CreateBorder(bar, -1)
-
-			local backdrop = select(1, bar:GetRegions())
-			backdrop:SetTexture(C.Media.Blank)
-			backdrop:SetVertexColor(unpack(C.Media.Backdrop_Color))
-			backdrop:SetAllPoints(bar)
+	-- View Auras
+	function oUFKkthnx:MODIFIER_STATE_CHANGED(event, key, state)
+		if key ~= "LSHIFT" and key ~= "RSHIFT" then
+			return
 		end
 
-		bar:SetStatusBarTexture(C.Media.Texture)
-		for i = 1, select("#", bar:GetRegions()) do
-			local region = select(i, bar:GetRegions())
-			if (region and region:GetObjectType() == "FontString") then
-				region:SetFont(C.Media.Font, 13, C.Media.Font_Style)
-				region:SetShadowOffset(0, 0)
-			end
-		end
-	end
-end
-
--- View Auras
-function oUFKkthnx:MODIFIER_STATE_CHANGED(event, key, state)
-	if
-	(IsControlKeyDown() and (key == "LALT" or key == "RALT")) or
-	(IsAltKeyDown() and (key == "LCTRL" or key == "RCTRL"))
-	then
 		local a, b
 		if state == 1 then
 			a, b = "CustomFilter", "__CustomFilter"
@@ -92,20 +61,30 @@ function oUFKkthnx:MODIFIER_STATE_CHANGED(event, key, state)
 		end
 		for i = 1, #oUF.objects do
 			local object = oUF.objects[i]
-			if object.style == "oUF_Kkthnx" then
-				local buffs = object.Auras or object.Buffs
-				local debuffs = object.Debuffs
-				if buffs and buffs[a] then
-					buffs[b] = buffs[a]
-					buffs[a] = nil
-					buffs:ForceUpdate()
-				end
-				if debuffs and debuffs[a] then
-					debuffs[b] = debuffs[a]
-					debuffs[a] = nil
-					debuffs:ForceUpdate()
-				end
+
+			local buffs = object.Auras or object.Buffs
+			if buffs and buffs[a] then
+				buffs[b] = buffs[a]
+				buffs[a] = nil
+				buffs:ForceUpdate()
 			end
+
+			local debuffs = object.Debuffs
+			if debuffs and debuffs[a] then
+				debuffs[b] = debuffs[a]
+				debuffs[a] = nil
+				debuffs:ForceUpdate()
+			end
+		end
+	end
+end
+
+-- Remove irrelevant rightclick menu entries
+for _, menu in pairs(UnitPopupMenus) do
+	for i = #menu, 1, -1 do
+		local name = menu[i]
+		if name == "SET_FOCUS" or name == "CLEAR_FOCUS" or name:match("^LOCK_%u+_FRAME$") or name:match("^UNLOCK_%u+_FRAME$") or name:match("^MOVE_%u+_FRAME$") or name:match("^RESET_%u+_FRAME_POSITION") then
+			tremove(menu, i)
 		end
 	end
 end

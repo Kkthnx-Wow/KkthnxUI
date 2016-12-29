@@ -23,7 +23,7 @@ barmod.ApplySettings = function(self, win)
 	if not skada.border then
 		skada.border = CreateFrame("Frame", "KkthnxUI"..skada:GetName().."Skin", skada)
 		skada.border:SetAllPoints(skada.borderFrame)
-		skada.border:CreateBackdrop("Transparent")
+		skada.border:CreateBackdrop(size, 3)
 	end
 end
 

@@ -150,9 +150,9 @@ local function SetTemplate(f, t, tex)
 	end
 
 	f:SetBackdrop({
-	  bgFile = C.Media.Blank,
-	  edgeFile = C.Media.Blizz,
-	  tile = false, tileSize = 0, edgeSize = K.Scale(14),
+		bgFile = C.Media.Blank,
+		edgeFile = C.Media.Blizz,
+		tile = false, tileSize = 0, edgeSize = K.Scale(14),
 		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
 	})
 
@@ -336,6 +336,15 @@ local function SkinButton(Frame, Strip)
 	end)
 end
 
+-- Fade in/out functions
+local function FadeIn(f)
+	UIFrameFadeIn(f, 0.4, f:GetAlpha(), 1)
+end
+
+local function FadeOut(f)
+	UIFrameFadeOut(f, 0.8, f:GetAlpha(), 0)
+end
+
 -- Merge KkthnxUI API with Wows API
 local function AddAPI(object)
 	local mt = getmetatable(object).__index
@@ -352,6 +361,8 @@ local function AddAPI(object)
 	if not object.Kill then mt.Kill = Kill end
 	if not object.SkinButton then mt.SkinButton = SkinButton end
 	if not object.StripTextures then mt.StripTextures = StripTextures end
+	if not object.FadeIn then mt.FadeIn = FadeIn end
+	if not object.FadeOut then mt.FadeOut = FadeOut end
 end
 
 local Handled = {["Frame"] = true}

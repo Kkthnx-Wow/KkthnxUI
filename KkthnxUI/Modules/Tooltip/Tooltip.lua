@@ -3,9 +3,6 @@ if C.Tooltip.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local abs = math.abs
-local floor = math.floor
-local gsub, find, format = string.gsub, string.find, string.format
 local pairs = pairs
 local select = select
 local unpack = unpack
@@ -62,9 +59,6 @@ local UnitRealmRelationship = UnitRealmRelationship
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
-local ILevel, TalentSpec, MAXILevel, PVPILevel, LastUpdate = 0, "", 0, 0, 30
-local InspectDelay = 0.2
-local InspectFreq = 2
 local Short = K.ShortValue
 local Texture = C.Media.Texture
 local Tooltip = CreateFrame("Frame")
@@ -213,22 +207,26 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	local Offset = 2
-	if ((UnitIsPlayer(Unit) and Guild)) then
+	if(guildName) then
 		if(GuildRealm and IsShiftKeyDown()) then
-			Guild = Guild.."-"..GuildRealm
+			GuildName = GuildName.."-"..GuildRealm
 		end
 
-		Line2:SetFormattedText("%s", IsInGuild() and GetGuildInfo("player") == Guild and "|cff0090ff".. Guild .."|r" or "|cff00ff10".. Guild .."|r")
-		Offset = Offset + 1
+		if(GuildRank) then
+			GameTooltipTextLeft2:SetText(("<|cff00ff10%s|r> [|cff00ff10%s|r]"):format(GuildName, GuildRankName))
+		else
+			GameTooltipTextLeft2:SetText(("<|cff00ff10%s|r>"):format(GuildName))
+		end
+		Offset = 3
 	end
 
 	for i = Offset, NumLines do
 		local Line = _G["GameTooltipTextLeft"..i]
 		if (Line:GetText():find("^" .. LEVEL)) then
 			if (UnitIsPlayer(Unit) and Race) then
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Race, Color, Class .."|r")
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Race, Color, Class .."|r")
 			else
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
 			end
 
 			break
@@ -400,17 +398,10 @@ function Tooltip:Enable()
 end
 
 local Loading = CreateFrame("Frame")
-
 function Loading:OnEvent(event, addon)
 	if (event == "PLAYER_LOGIN") then
 		Tooltip:Enable()
 	end
 end
-
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:RegisterEvent("ADDON_LOADED")
 Loading:SetScript("OnEvent", Loading.OnEvent)
-
-if event == ("ADDON_LOADED") then
-	Loading:UnregisterEvent("ADDON_LOADED")
-end

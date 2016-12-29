@@ -21,7 +21,6 @@
    <!-- Config -->
    <Script file="Config\Filters\Announcements.lua" />
    <Script file="Config\Filters\AuraList.lua" />
-   <Script file="Config\Filters\ChannelingTicks.lua" />
    <Script file="Config\Filters\Cooldowns.lua" />
    <Script file="Config\Filters\ErrorFilter.lua" />
    <Script file="Config\Filters\FilgerSpells.lua" />
@@ -43,12 +42,10 @@
    <Include file="Libraries\oUF\oUF.xml" />
    <Include file="Libraries\oUF_Plugins\Load_Plugins.xml" />
    <Script file="Libraries\LibChatAnims\LibChatAnims.lua" />
-   <Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua" />
    <Include file="Libraries\LibDropDownMenu\LibDropDownMenu.xml" />
    <!-- Media -->
    <Script file="Media\Media.lua" />
    <!-- Core -->
-   <Script file="Core\Animation.lua" />
    <Script file="Core\API.lua" />
    <Script file="Core\Functions.lua" />
    <Script file="Core\Border.lua" />
@@ -123,9 +120,12 @@
    <Script file="Modules\Blizzard\ExtraActionBar.lua" />
    <Script file="Modules\Blizzard\Fixes.lua" />
    <Script file="Modules\Blizzard\Fonts.lua" />
+   <Script file="Modules\Blizzard\MirrorBars.lua" />
    <Script file="Modules\Blizzard\MoveBlizzFrames.lua" />
    <Script file="Modules\Blizzard\RaidUtility.lua" />
    <Script file="Modules\Blizzard\ReputationGain.lua" />
+   <Script file="Modules\Blizzard\TalkingHeadFrame.lua" />
+   <Script file="Modules\Blizzard\TimerTracker.lua" />
    <Script file="Modules\Blizzard\Vehicle.lua" />
    <!-- Chat -->
    <Script file="Modules\Chat\ChatFrames.lua" />

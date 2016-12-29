@@ -380,13 +380,27 @@ local function UpdateName(self)
 end
 
 local function castColor(self, unit, name, castid)
-	if self.interrupt then
-		self:SetStatusBarColor(1.0 * 0.8, 0.7 * 0.8, 0 * 0.8)
-		self.bg:SetColorTexture(1.0 * 0.8, 0.7 * 0.8, 0 * 0.8, 0.2)
+	local color
+
+	if self.interrupt and UnitCanAttack("player", unit) then
+		color = K.Colors.uninterruptible
+	elseif UnitIsFriend(unit, "player") then
+		color = K.Colors.reaction[5]
 	else
-		self:SetStatusBarColor(0.87, 0.37, 0.37)
-		self.bg:SetColorTexture(0.87, 0.37, 0.37, 0.2)
+		color = K.Colors.reaction[1]
 	end
+
+	local r, g, b = color[1], color[2], color[3]
+	self:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
+	self.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+
+	-- if self.interrupt then
+	-- 	self:SetStatusBarColor(K.Colors.uninterruptible)
+	-- 	self.bg:SetColorTexture(0.78, 0.25, 0.25, 0.2)
+	-- else
+	-- 	self:SetStatusBarColor(1, 0.8, 0)
+	-- 	self.bg:SetColorTexture(1, 0.8, 0, 0.2)
+	-- end
 end
 
 local function callback(event, nameplate, unit)
@@ -490,13 +504,13 @@ local function style(self, unit)
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 	self.Level:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
-	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level][KkthnxUI:ClassificationColor][KkthnxUI:ClassificationShort]")
+	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level] [KkthnxUI:ClassificationColor][shortclassification]")
 
 	-- Create Cast Bar
 	self.Castbar = CreateFrame("StatusBar", nil, self)
 	self.Castbar:SetFrameLevel(3)
 	self.Castbar:SetStatusBarTexture(C.Media.Texture)
-	self.Castbar:SetStatusBarColor(0.87, 0.37, 0.37)
+	-- self.Castbar:SetStatusBarColor(1, 0.8, 0)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult))
 	K.CreateShadowFrame(self.Castbar)

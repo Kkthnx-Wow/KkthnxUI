@@ -67,6 +67,7 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 	if item and not item.skinned then
 		item:SetSize(28, 28)
 		K.CreateBorder(item, 1)
+		item:SetBackdropBorderColor(1, 1, 0)
 		item:StyleButton()
 
 		item:SetNormalTexture(nil)

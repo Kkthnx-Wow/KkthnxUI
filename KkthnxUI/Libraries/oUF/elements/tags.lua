@@ -234,13 +234,13 @@ local tagStrings = {
 	["shortclassification"] = [[function(u)
 		local c = UnitClassification(u)
 		if(c == "rare") then
-			return "R"
+			return "|cffAF5050R|r"
 		elseif(c == "rareelite") then
-			return "R+"
+			return "|cffAF5050R+|r"
 		elseif(c == "elite") then
-			return "+"
+			return "|cffAF5050+|r"
 		elseif(c == "worldboss") then
-			return "B"
+			return "|cffAF5050B|r"
 		elseif(c == "minus") then
 			return "-"
 		end

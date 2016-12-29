@@ -544,7 +544,7 @@ if (not InstallationMessageFrame) then
 		if (self.Message) then
 			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
 			self.Text:SetText(self.Message)
-			K.FadeOut(self, 1, 0)
+			self:FadeOut()
 
 			K.Delay(2, function()
 				self:Hide()
@@ -554,7 +554,7 @@ if (not InstallationMessageFrame) then
 
 			if (InstallationMessageFrame.FirstShow == false) then
 				if (GetCVarBool("Sound_EnableMusic")) then
-					PlayMusic([[Sound\Music\ZoneMusic\DMF_L70ETC01.mp3]])
+					PlaySoundKitID(44323)
 				end
 
 				InstallationMessageFrame.FirstShow = true

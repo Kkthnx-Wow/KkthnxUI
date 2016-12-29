@@ -1,6 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true and C.Nameplates.Enable ~= true then return end
 
+local _, ns = ...
+local oUF = ns.oUF or oUF
+
 -- Lua API
 local _G = _G
 local floor = math.floor
@@ -44,9 +47,6 @@ local UnitReaction = UnitReaction
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
 
-local _, ns = ...
-local oUF = ns.oUF or oUF
-
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
 	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
@@ -79,7 +79,7 @@ oUF.Tags.Methods["KkthnxUI:NameColor"] = function(unit)
 	return format("|cff%02x%02x%02x", 1 * 255, 1 * 255, 1 * 255)
 end
 
-oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_DISPLAYPOWER UNIT_MAXPOWER"
+oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:DruidMana"] = function(unit)
 	local min, max = UnitPower(unit, SPELL_POWER_MANA), UnitPowerMax(unit, SPELL_POWER_MANA)
 	if (min == max) then
@@ -129,22 +129,6 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 		end
 	end
 	return Hex(r, g, b)
-end
-
-oUF.Tags.Events["KkthnxUI:ClassificationShort"] = "UNIT_CLASSIFICATION_CHANGED"
-oUF.Tags.Methods["KkthnxUI:ClassificationShort"] = function(unit)
-	local c = UnitClassification(u)
-	if(c == "rare") then
-		return "R"
-	elseif(c == "rareelite") then
-		return "R+"
-	elseif(c == "elite") then
-		return "+"
-	elseif(c == "worldboss") then
-		return "B"
-	elseif(c == "minus") then
-		return "-"
-	end
 end
 
 oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED"
@@ -237,13 +221,13 @@ oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 			return ""
 		end
 
-		return Role
+		return role
 	else
 		return ""
 	end
 end
 
--- KkthnxUI Nameplate Tags
+-- Nameplate Tags
 oUF.Tags.Events["NameplateNameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["NameplateNameLong"] = function(unit)
 	local name = UnitName(unit)
@@ -256,45 +240,6 @@ oUF.Tags.Methods["NameplateNameLongAbbrev"] = function(unit)
 	local newname = (strlen(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	return K.UTF8Sub(newname, 18, false)
 end
-
--- oUF.Tags.Events["NameplateLevelDiffColor"] = "UNIT_LEVEL"
--- oUF.Tags.Methods["NameplateLevelDiffColor"] = function(unit)
--- 	local r, g, b
--- 	local level = UnitLevel(unit)
--- 	if level < 1 then
--- 		r, g, b = 0.69, 0.31, 0.31
--- 	else
--- 		local DiffColor = UnitLevel(unit) - UnitLevel("player")
--- 		if DiffColor >= 5 then
--- 			r, g, b = 0.69, 0.31, 0.31
--- 		elseif DiffColor >= 3 then
--- 			r, g, b = 0.71, 0.43, 0.27
--- 		elseif DiffColor >= -2 then
--- 			r, g, b = 0.84, 0.75, 0.65
--- 		elseif -DiffColor <= GetQuestGreenRange() then
--- 			r, g, b = 0.33, 0.59, 0.33
--- 		else
--- 			r, g, b = 0.55, 0.57, 0.61
--- 		end
--- 	end
--- 	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
--- end
-
--- oUF.Tags.Events["NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
--- oUF.Tags.Methods["NameplateLevel"] = function(unit)
--- 	local level = UnitLevel(unit)
--- 	local c = UnitClassification(unit)
--- 	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
--- 		level = UnitBattlePetLevel(unit)
--- 	end
---
--- 	if level == K.Level and c == "normal" then return end
--- 	if level > 0 then
--- 		return level
--- 	else
--- 		return "??"
--- 	end
--- end
 
 oUF.Tags.Events["NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"
 oUF.Tags.Methods["NameplateNameColor"] = function(unit)

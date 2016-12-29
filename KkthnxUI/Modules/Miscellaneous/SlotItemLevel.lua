@@ -35,7 +35,7 @@ local scantip = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTool
 scantip:SetOwner(UIParent, "ANCHOR_NONE")
 
 local function _getRealItemLevel(slotId, unit)
-	local realItemLevel, currentUpgradeLevel, maxUpgradeLevel
+	local realItemLevel
 	local hasItem = scantip:SetInventoryItem(unit, slotId)
 	if not hasItem then return nil end -- With this we don't get ilvl for offhand if we equip 2h weapon
 
@@ -45,7 +45,7 @@ local function _getRealItemLevel(slotId, unit)
 			realItemLevel = realItemLevel or strmatch(text, S_ITEM_LEVEL)
 
 			if realItemLevel then
-				return realItemLevel
+				return tonumber(realItemLevel)
 			end
 		end
 	end
@@ -86,7 +86,7 @@ local function _updateItems(unit, frame)
 
 			local realItemLevel = _getRealItemLevel(i, unit)
 			realItemLevel = realItemLevel or ""
-			if tonumber(realItemLevel) and tonumber(realItemLevel) == 1 then
+			if realItemLevel and realItemLevel == 1 then
 				realItemLevel = ""
 			end
 			frame[i]:SetText("|cFFFFFF00"..realItemLevel)

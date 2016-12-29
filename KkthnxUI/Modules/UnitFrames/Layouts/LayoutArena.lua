@@ -133,6 +133,59 @@ function ns.createArenaLayout(self, unit)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = K.CustomAuraFilters.arena
 
+if C.Unitframe.Castbars then
+	if self.MatchUnit == "arena" then
+		local CastBar = CreateFrame("StatusBar", nil, self)
+
+		CastBar:SetPoint("LEFT", 20, 0)
+		CastBar:SetPoint("RIGHT", 0, 0)
+		CastBar:SetPoint("BOTTOM", 0, -22)
+		CastBar:SetHeight(16)
+		CastBar:SetStatusBarTexture(C.Media.Texture)
+		CastBar:SetFrameLevel(6)
+
+		K.CreateBorder(CastBar, -1)
+
+		CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
+		CastBar.Background:SetAllPoints(CastBar)
+		CastBar.Background:SetTexture(C.Media.Blank)
+		CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+
+		CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
+		CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
+		CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
+		CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
+		CastBar.Time:SetTextColor(1, 1, 1)
+		CastBar.Time:SetJustifyH("RIGHT")
+
+		CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
+		CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
+		CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+		CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 4, 0)
+		CastBar.Text:SetTextColor(1, 1, 1)
+		CastBar.Text:SetWidth(166)
+		CastBar.Text:SetJustifyH("LEFT")
+
+		CastBar.Button = CreateFrame("Frame", nil, CastBar)
+		CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
+		CastBar.Button:SetPoint("RIGHT", CastBar, "LEFT", -4, 0)
+
+		K.CreateBorder(CastBar.Button, -1)
+
+		CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
+		CastBar.Icon:SetAllPoints()
+		CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
+
+		CastBar.CustomTimeText = K.CustomCastTimeText
+		CastBar.CustomDelayText = K.CustomCastDelayText
+		CastBar.PostCastStart = K.CheckCast
+		CastBar.PostChannelStart = K.CheckChannel
+
+		self.Castbar = CastBar
+		self.Castbar.Icon = CastBar.Icon
+	end
+end
+
 	-- oUF_Trinkets support
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(26, 26)

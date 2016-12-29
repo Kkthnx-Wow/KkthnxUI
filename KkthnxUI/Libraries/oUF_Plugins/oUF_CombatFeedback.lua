@@ -10,23 +10,23 @@ local feedback = {}
 local originalHeight = {}
 local color
 local colors = {
-	STANDARD		= { 1, 1, 1 }, -- color for everything not in the list below
+	STANDARD		= {1, 1, 1}, -- color for everything not in the list below
 	-- damage colors
-	IMMUNE			= { 1, 1, 1 },
-	DAMAGE			= { 1, 0, 0 },
-	CRUSHING		= { 1, 0, 0 },
-	CRITICAL		= { 1, 0, 0 },
-	GLANCING		= { 1, 0, 0 },
-	ABSORB			= { 1, 1, 1 },
-	BLOCK			= { 1, 1, 1 },
-	RESIST			= { 1, 1, 1 },
-	MISS			= { 1, 1, 1 },
+	IMMUNE			= {1, 1, 1},
+	DAMAGE			= {1, 0, 0},
+	CRUSHING		= {1, 0, 0},
+	CRITICAL		= {1, 0, 0},
+	GLANCING		= {1, 0, 0},
+	ABSORB			= {1, 1, 1},
+	BLOCK			= {1, 1, 1},
+	RESIST			= {1, 1, 1},
+	MISS			= {1, 1, 1},
 	-- heal colors
-	HEAL			= { 0, 1, 0 },
-	CRITHEAL		= { 0, 1, 0 },
+	HEAL			= {0, 1, 0},
+	CRITHEAL		= {0, 1, 0},
 	-- energize colors
-	ENERGIZE		= { 0.41, 0.8, 0.94 },
-	CRITENERGIZE	= { 0.41, 0.8, 0.94 },
+	ENERGIZE		= {0.41, 0.8, 0.94},
+	CRITENERGIZE	= {0.41, 0.8, 0.94},
 }
 
 local function createUpdateFrame()

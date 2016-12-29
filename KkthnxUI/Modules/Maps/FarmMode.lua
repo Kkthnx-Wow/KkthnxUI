@@ -37,9 +37,9 @@ Farm:SetScript("OnClick", function()
 end)
 
 Farm:SetScript("OnEnter", function()
-	K.FadeIn(Farm)
+	Farm:FadeIn()
 end)
 
 Farm:SetScript("OnLeave", function()
-	K.FadeOut(Farm)
+	Farm:FadeOut()
 end)

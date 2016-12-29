@@ -5,10 +5,10 @@ if C.Tooltip.Enable ~= true or C.Tooltip.ItemLevel ~= true then return end
 local _G = _G
 local pairs = pairs
 local select = select
-local strfind = string.find
-local strformat = string.format
-local strmatch = string.match
-local strsplit = string.split
+local string_find = string.find
+local string_format = string.format
+local string_match = string.match
+local string_split = string.split
 local tonumber = tonumber
 
 -- Wow API
@@ -41,6 +41,7 @@ local UnitOnTaxi = UnitOnTaxi
 
 -- Equipped average item level(Cloudy Unit Info by Cloudyfa)
 -- Variables
+-- Variables
 local currentUNIT, currentGUID
 local GearDB, SpecDB, ItemDB = {}, {}, {}
 
@@ -67,7 +68,7 @@ local function SetUnitInfo(gear)
 		local line = _G["GameTooltipTextLeft" .. i]
 		local text = line:GetText()
 
-		if text and strfind(text, gearPrefix) then
+		if text and string_find(text, gearPrefix) then
 			gearLine = line
 		end
 	end
@@ -106,18 +107,18 @@ scantip:SetOwner(UIParent, "ANCHOR_NONE")
 local function _getRealItemLevel(slotId, unit, link, forced)
 	if (not forced) and ItemDB[link] then return ItemDB[link] end
 
-	local realItemLevel, currentUpgradeLevel, maxUpgradeLevel
+	local realItemLevel
 	local hasItem = scantip:SetInventoryItem(unit, slotId)
 	if not hasItem then return nil end -- With this we don't get ilvl for offhand if we equip 2h weapon
 
 	for i = 2, scantip:NumLines() do -- Line 1 is always the name so you can skip it.
 		local text = _G["iLvlScanningTooltipTextLeft"..i]:GetText()
 		if text and text ~= "" then
-			realItemLevel = realItemLevel or strmatch(text, S_ITEM_LEVEL)
+			realItemLevel = realItemLevel or string_match(text, S_ITEM_LEVEL)
 
 			if realItemLevel then
 				ItemDB[link] = tonumber(realItemLevel)
-				return realItemLevel
+				return tonumber(realItemLevel)
 			end
 		end
 	end
@@ -152,7 +153,7 @@ local function UnitGear(unit)
 						delay = true
 					else
 						if (quality == 6) and (i == 16 or i == 17) then
-							local relics = {select(4, strsplit(":", itemLink))}
+							local relics = {select(4, string_split(":", itemLink))}
 							for i = 1, 3 do
 								local relicID = relics[i] ~= "" and relics[i]
 								local relicLink = select(2, GetItemGem(itemLink, i))
@@ -222,7 +223,7 @@ local function UnitGear(unit)
 			ilvl = total / 16
 		end
 
-		if ilvl > 0 then ilvl = strformat("%.1f", ilvl) end
+		if ilvl > 0 then ilvl = string_format("%.1f", ilvl) end
 		if boa > 0 then ilvl = ilvl.." |cffe6cc80"..boa.." "..HEIRLOOMS end
 		if pvp > 0 then ilvl = ilvl.." |cffa335ee"..pvp.." "..PVP end
 	else
@@ -301,8 +302,8 @@ hooksecurefunc("PaperDollFrame_SetItemLevel", function(self, unit)
 	if unit ~= "player" then return end
 
 	local total, equip = GetAverageItemLevel()
-	if total > 0 then total = strformat("%.1f", total) end
-	if equip > 0 then equip = strformat("%.1f", equip) end
+	if total > 0 then total = string_format("%.1f", total) end
+	if equip > 0 then equip = string_format("%.1f", equip) end
 
 	local ilvl = equip
 	if equip ~= total then

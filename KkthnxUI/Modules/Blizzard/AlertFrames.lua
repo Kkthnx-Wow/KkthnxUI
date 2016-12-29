@@ -141,17 +141,10 @@ local function SetUpAlert()
 end
 
 local Loading = CreateFrame("Frame")
-
 function Loading:OnEvent(event, addon)
 	if (event == "PLAYER_LOGIN") then
 		SetUpAlert()
 	end
 end
-
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:RegisterEvent("ADDON_LOADED")
 Loading:SetScript("OnEvent", Loading.OnEvent)
-
-if event == ("ADDON_LOADED") then
-	Loading:UnregisterEvent("ADDON_LOADED")
-end

@@ -214,6 +214,32 @@ function K.UTF8Sub(string, numChars, dots)
 	end
 end
 
+local SetUpAnimGroup = function(self)
+	self.anim = self:CreateAnimationGroup()
+	self.anim:SetLooping("BOUNCE")
+	self.anim.fade = self.anim:CreateAnimation("Alpha")
+	self.anim.fade:SetFromAlpha(1)
+	self.anim.fade:SetToAlpha(0)
+	self.anim.fade:SetDuration(0.6)
+	self.anim.fade:SetSmoothing("IN_OUT")
+end
+
+function K.Flash(self)
+	if not self.anim then
+		SetUpAnimGroup(self)
+	end
+
+	if not self.anim:IsPlaying() then
+		self.anim:Play()
+	end
+end
+
+function K.StopFlash(self)
+	if self.anim then
+		self.anim:Finish()
+	end
+end
+
 function K.FormatMoney(value)
 	if value >= 1e4 then
 		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, strsub(value, -4) / 1e2, strsub(value, -2))
