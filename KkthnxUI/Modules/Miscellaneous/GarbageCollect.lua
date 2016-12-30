@@ -8,7 +8,6 @@ local EventCount = 0
 local CollectGarbage = CreateFrame("Frame")
 CollectGarbage:RegisterEvent("PLAYER_FLAGS_CHANGED")
 CollectGarbage:RegisterEvent("PLAYER_ENTERING_WORLD")
--- CollectGarbage:RegisterAllEvents()
 CollectGarbage:SetScript("OnEvent", function(self, event, unit)
 	EventCount = EventCount + 1
 

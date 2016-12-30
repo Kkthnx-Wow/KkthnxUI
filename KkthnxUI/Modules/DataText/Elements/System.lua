@@ -1,41 +1,48 @@
 local K, C, L = unpack(select(2, ...))
 
+-- WoW Lua
+local math_floor = math.floor
+local select = select
+local string_format = string.format
+local table_sort = table.sort
+local wipe = wipe
+
+-- Wow API
 local GetAddOnInfo = GetAddOnInfo
+local GetAddOnMemoryUsage = GetAddOnMemoryUsage
+local GetAvailableBandwidth = GetAvailableBandwidth
+local GetDownloadedPercentage = GetDownloadedPercentage
+local GetFramerate = GetFramerate
+local GetNetStats = GetNetStats
 local GetNumAddOns = GetNumAddOns
+local InCombatLockdown = InCombatLockdown
 local IsAddOnLoaded = IsAddOnLoaded
 local UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
-local GetAddOnMemoryUsage = GetAddOnMemoryUsage
-local GetNetStats = GetNetStats
-local GetFramerate = GetFramerate
-local GetAvailableBandwidth = GetAvailableBandwidth
-local InCombatLockdown = InCombatLockdown
-local collectgarbage = collectgarbage
-local select = select
-local format = format
 
-local int = 1
-local int2 = 2
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip
+
+local int, int2 = 2, 3
 local MemoryTable = {}
-local KilobyteString, MegabyteString
-local Mult = 10^1
 local bandwidthString = "%.2f Mbps"
 local percentageString = "%.2f%%"
 
 local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
-local MemoryColor = K.RGBToHex(1, 1, 1)
+local MemoryColor = K.RGBToHex(1, 1, 1 or 1, 1, 1)
 local KilobyteString = "%d ".. MemoryColor .."kb".."|r"
 local MegabyteString = "%.2f ".. MemoryColor .."mb".."|r"
 
 -- Format Memory
 local FormatMemory = function(memory)
+	local Mult = 10^1
 	if (memory > 999) then
 		local Memory = ((memory/1024) * Mult) / Mult
-		return string.format(MegabyteString, Memory)
+		return string_format(MegabyteString, Memory)
 	else
 		local Memory = (memory * Mult) / Mult
-		return string.format(KilobyteString, Memory)
+		return string_format(KilobyteString, Memory)
 	end
 end
 
@@ -66,7 +73,7 @@ local UpdateMemory = function()
 		TotalMem = TotalMem + AddOnMem
 	end
 	-- Sort the table to put the largest addon on top
-	table.sort(MemoryTable, function(a, b)
+	table_sort(MemoryTable, function(a, b)
 		if (a and b) then
 			return a[3] > b[3]
 		end
@@ -88,14 +95,14 @@ local Update = function(self, second)
 	if (int2 < 0) then
 
 		local MS = select(3, GetNetStats())
-		local Rate = floor(GetFramerate())
+		local Rate = math_floor(GetFramerate())
 
 		if (MS == 0) then
 			MS = "0"
 		end
 
 		self.Text:SetFormattedText("%s %s %s %s", ValueColor .. Rate .. "|r", NameColor .. L.DataText.FPS .. "|r", "& " .. ValueColor .. MS .. "|r", NameColor .. L.DataText.MS .. "|r")
-		int2 = 2
+		int2 = 1
 	end
 end
 
@@ -123,13 +130,13 @@ local OnEnter = function(self)
 
 		GameTooltip:AddLine(" ")
 		if (Bandwidth ~= 0) then
-			GameTooltip:AddDoubleLine(L.DataText.Bandwidth , string.format(bandwidthString, Bandwidth), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
-			GameTooltip:AddDoubleLine(L.DataText.Download , string.format(percentageString, GetDownloadedPercentage() * 100), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
+			GameTooltip:AddDoubleLine(L.DataText.Bandwidth , string_format(bandwidthString, Bandwidth), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
+			GameTooltip:AddDoubleLine(L.DataText.Download , string_format(percentageString, GetDownloadedPercentage() * 100), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
 			GameTooltip:AddLine(" ")
 		end
 
 		local _, _, HomeLatency, WorldLatency = GetNetStats()
-		local Latency = format(MAINMENUBAR_LATENCY_LABEL, HomeLatency, WorldLatency)
+		local Latency = string_format(MAINMENUBAR_LATENCY_LABEL, HomeLatency, WorldLatency)
 
 		GameTooltip:AddLine(Latency)
 		GameTooltip:Show()

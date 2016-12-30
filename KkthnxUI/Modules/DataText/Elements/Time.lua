@@ -3,7 +3,7 @@ local K, C, L = unpack(select(2, ...))
 -- Lua API
 local math_floor = math.floor
 local string_format = string.format
-local string_join = string.format
+local string_join = string.join
 
 -- Wow API
 local date = date
