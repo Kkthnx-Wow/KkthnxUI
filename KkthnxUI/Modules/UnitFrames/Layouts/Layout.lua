@@ -242,12 +242,6 @@ local function GetTargetTexture(MatchUnit, type)
 	if dbUnit == "vehicle" or dbUnit == "vehicleorganic" then
 		return GetData(MatchUnit).tex.t
 	end
-	if dbUnit == "player" then
-		if ns.config.playerStyle == "custom" then
-			return ns.config.customPlayerTexture
-		end
-		type = ns.config.playerStyle
-	end
 
 	-- only "target", "focus" & "player" gets this far
 	local data = C.Unitframe.Style == "normal" and DataNormal.targetTexture or DataFat.targetTexture
@@ -455,16 +449,15 @@ local function CreateUnitLayout(self, unit)
 
 			K.CreateBorder(CastBar, -1)
 
-			local Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
-			Spark:SetAlpha(0.6)
-			Spark:SetBlendMode("ADD")
-			CastBar.Spark = Spark
-
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
 			CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark:SetBlendMode("ADD")
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -558,12 +551,6 @@ local function CreateUnitLayout(self, unit)
 
 				CastBar.Button:SetAllPoints(CastBar.Icon)
 			end
-
-			--if (C.Unitframe.CastbarLatency) then
-			--	CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
-			--	CastBar.SafeZone:SetTexture(C.Media.Texture)
-			--	CastBar.SafeZone:SetVertexColor(1, 0.5, 0, 0.75)
-			--end
 
 			CastBar.CustomTimeText = K.CustomCastTimeText
 			CastBar.CustomDelayText = K.CustomCastDelayText
@@ -963,18 +950,36 @@ local function CreateUnitLayout(self, unit)
 		end
 
 		-- Totems
-		if config[K.Class].showTotems then
-			ns.classModule.Totems(self, config, uconfig)
+		if C.UnitframePlugins.TotemsFrame == true and K.Class ~= "DEMONHUNTER" or K.Class ~= "PRIEST" or K.Class ~= "ROGUE" then
+			K.ClassModule:Totems(self)
 		end
-
 		-- Alternate Mana Bar
-		if config[K.Class].showAdditionalPower then
-			ns.classModule.alternatePowerBar(self, config, uconfig)
+		if C.UnitframePlugins.AdditionalPower and K.Class == "DRUID" or K.Class == "MONK" or K.Class == "PALADIN" or K.Class == "PRIEST" or K.Class == "SHAMAN" then
+			K.ClassModule:AlternatePowerBar(self)
 		end
-
-		-- Load Class Modules
-		if ns.classModule[K.Class] then
-			self.classPowerBar = ns.classModule[K.Class](self, config, uconfig)
+		-- Deathknight
+		if C.UnitframePlugins.RuneFrame and K.Class == "DEATHKNIGHT" then
+			K.ClassModule:RuneFrame(self)
+		end
+		-- Mage
+		if C.UnitframePlugins.ArcaneCharges and K.Class == "MAGE" then
+			K.ClassModule:ArcaneCharges(self)
+		end
+		-- Monk
+		if (C.UnitframePlugins.HarmonyBar or C.UnitframePlugins.StaggerBar) and K.Class == "MONK" then
+			K.ClassModule:StaggerBar(self)
+		end
+		-- Paladin
+		if C.UnitframePlugins.HolyPowerBar and K.Class == "PALADIN" then
+			K.ClassModule:HolyPowerBar(self)
+		end
+		-- Priest
+		if C.UnitframePlugins.InsanityBar and K.Class == "PRIEST" then
+			K.ClassModule:InsanityBar(self)
+		end
+		-- Warlock
+		if C.UnitframePlugins.ShardsBar and K.Class == "WARLOCK" then
+			K.ClassModule:ShardsBar(self)
 		end
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)

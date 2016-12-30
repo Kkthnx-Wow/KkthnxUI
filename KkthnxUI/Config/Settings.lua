@@ -328,6 +328,18 @@ C["Unitframe"] = {
 	["ThreatValue"] = false,
 }
 
+C["UnitframePlugins"] = {
+	["AdditionalPower"] = true,
+	["ArcaneCharges"] = true,
+	["HarmonyBar"] = true,
+	["HolyPowerBar"] = true,
+	["InsanityBar"] = true,
+	["RuneFrame"] = true,
+	["ShardsBar"] = true,
+	["StaggerBar"] = true,
+	["TotemsFrame"] = true,
+}
+
 C["Partyframe"] = {
 	["Scale"] = 1,
 	["Enable"] = true,

@@ -1,10 +1,26 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
-local _, ns = ...
-ns.classModule = {}
+-- Lua API
+local _G = _G
+local unpack = unpack
+local select = select
 
-local function updateTotemPosition()
+-- Wow API
+local GetShapeshiftFormID = GetShapeshiftFormID
+local GetSpecialization = GetSpecialization
+local hooksecurefunc = hooksecurefunc
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: TotemFrame, oUF_KkthnxPet, oUF_KkthnxPlayer, CAT_FORM, SPEC_SHAMAN_RESTORATION
+-- GLOBALS: MAX_TOTEMS, UIFrameHider, TotemFrame_AdjustPetFrame, PlayerFrame_AdjustAttachments
+-- GLOBALS: RuneFrame, RuneFrame_OnLoad, MageArcaneChargesFrame, MonkStaggerBar, MonkStaggerBar_OnLoad
+-- GLOBALS: MonkHarmonyBarFrame, PaladinPowerBarFrame, PaladinPowerBarFrameBG, InsanityBarFrame
+-- GLOBALS: WarlockPowerFrame
+
+local ClassModule = CreateFrame("Frame")
+
+local function UpdateTotemPosition()
 	TotemFrame:ClearAllPoints()
 	if (K.Class == "PALADIN" or K.Class == "DEATHKNIGHT") then
 		local hasPet = oUF_KkthnxPet and oUF_KkthnxPet:IsShown()
@@ -36,7 +52,7 @@ local function updateTotemPosition()
 	end
 end
 
-function ns.classModule.Totems(self)
+function ClassModule:Totems(self)
 	TotemFrame:ClearAllPoints()
 	TotemFrame:SetParent(self)
 
@@ -63,11 +79,11 @@ function ns.classModule.Totems(self)
 	TotemFrame_AdjustPetFrame = K.Noop
 	PlayerFrame_AdjustAttachments = K.Noop
 
-	hooksecurefunc("TotemFrame_Update", updateTotemPosition)
-	updateTotemPosition()
+	hooksecurefunc("TotemFrame_Update", UpdateTotemPosition)
+	UpdateTotemPosition()
 end
 
-function ns.classModule.alternatePowerBar(self)
+function ClassModule:AlternatePowerBar(self)
 	self.AdditionalPower = K.CreateOutsideBar(self, false, 0, 0, 1)
 	self.DruidMana = self.AdditionalPower
 	self.AdditionalPower.colorPower = true
@@ -78,15 +94,13 @@ function ns.classModule.alternatePowerBar(self)
 	self:Tag(self.AdditionalPower.Value, "[KkthnxUI:DruidMana]")
 end
 
-function ns.classModule.DEATHKNIGHT(self, config, uconfig)
-	if (config.DEATHKNIGHT.showRunes) then
+function ClassModule:RuneFrame(self)
+	if C.UnitframePlugins.RuneFrame then
 		RuneFrame:SetParent(self)
 		RuneFrame_OnLoad(RuneFrame)
 		RuneFrame:ClearAllPoints()
 		RuneFrame:SetPoint("TOP", self, "BOTTOM", 33, -1)
-		if (ns.config.playerStyle == "normal") then
-			RuneFrame:SetFrameStrata("LOW")
-		end
+		RuneFrame:SetFrameStrata("LOW")
 		for i = 1, 6 do
 			local b = _G["RuneButtonIndividual"..i].Border
 			if C.Blizzard.ColorTextures == true then
@@ -96,8 +110,8 @@ function ns.classModule.DEATHKNIGHT(self, config, uconfig)
 	end
 end
 
-function ns.classModule.MAGE(self, config, uconfig)
-	if (config.MAGE.showArcaneStacks) then
+function ClassModule:ArcaneCharges(self)
+	if C.UnitframePlugins.ArcaneCharges then
 		MageArcaneChargesFrame:SetParent(self)
 		MageArcaneChargesFrame:ClearAllPoints()
 		MageArcaneChargesFrame:SetPoint("TOP", self, "BOTTOM", 30, -0.5)
@@ -106,20 +120,20 @@ function ns.classModule.MAGE(self, config, uconfig)
 	end
 end
 
-function ns.classModule.MONK(self, config, uconfig)
-	if (config.MONK.showStagger) then
+function ClassModule:StaggerBar(self)
+	if C.UnitframePlugins.StaggerBar then
 		-- Stagger Bar for tank monk
 		MonkStaggerBar:SetParent(self)
 		MonkStaggerBar_OnLoad(MonkStaggerBar)
 		MonkStaggerBar:ClearAllPoints()
-		MonkStaggerBar:SetPoint("TOP", self, "BOTTOM", 31, 0)
+		MonkStaggerBar:SetPoint("TOP", self, "BOTTOM", 31, -2)
 		if C.Blizzard.ColorTextures == true then
 			MonkStaggerBar.MonkBorder:SetVertexColor(unpack(C.Blizzard.TexturesColor))
 		end
 		MonkStaggerBar:SetFrameLevel(1)
 	end
 
-	if (config.MONK.showChi) then
+	if C.UnitframePlugins.HarmonyBar then
 		-- Monk combo points for Windwalker
 		MonkHarmonyBarFrame:SetParent(self)
 		MonkHarmonyBarFrame:ClearAllPoints()
@@ -131,8 +145,8 @@ function ns.classModule.MONK(self, config, uconfig)
 	end
 end
 
-function ns.classModule.PALADIN(self, config, uconfig)
-	if (config.PALADIN.showHolyPower) then
+function ClassModule:HolyPowerBar(self)
+	if C.UnitframePlugins.HolyPowerBar then
 		PaladinPowerBarFrame:SetParent(self)
 		PaladinPowerBarFrame:ClearAllPoints()
 		PaladinPowerBarFrame:SetPoint("TOP", self, "BOTTOM", 27, 4)
@@ -144,8 +158,8 @@ function ns.classModule.PALADIN(self, config, uconfig)
 	end
 end
 
-function ns.classModule.PRIEST(self, config, uconfig)
-	if (config.PRIEST.showInsanity) then
+function ClassModule:InsanityBar(self)
+	if C.UnitframePlugins.InsanityBar then
 		InsanityBarFrame:SetParent(self)
 		InsanityBarFrame:ClearAllPoints()
 		InsanityBarFrame:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 52, -50)
@@ -153,14 +167,12 @@ function ns.classModule.PRIEST(self, config, uconfig)
 	end
 end
 
-function ns.classModule.WARLOCK(self, config, uconfig)
-	if (config.WARLOCK.showShards) then
+function ClassModule:ShardsBar(self)
+	if C.UnitframePlugins.ShardsBar then
 		WarlockPowerFrame:SetParent(self)
 		WarlockPowerFrame:ClearAllPoints()
 		WarlockPowerFrame:SetPoint("TOP", self, "BOTTOM", 29, -2)
-		if (ns.config.playerStyle == "normal") then
-			WarlockPowerFrame:SetFrameStrata("LOW")
-		end
+		WarlockPowerFrame:SetFrameStrata("LOW")
 		for i = 1, 5 do
 			local shard = _G["WarlockPowerFrameShard"..i]
 			if C.Blizzard.ColorTextures == true then
@@ -171,3 +183,5 @@ function ns.classModule.WARLOCK(self, config, uconfig)
 		return WarlockPowerFrame
 	end
 end
+
+K.ClassModule = ClassModule
