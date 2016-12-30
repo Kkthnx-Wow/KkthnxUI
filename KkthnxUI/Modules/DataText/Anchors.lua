@@ -1,6 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 
-local tinsert = tinsert
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_DTSLASH1, Lib_EasyMenu
 
 local DataTexts = K.DataTexts
 
@@ -50,7 +51,3 @@ end
 -- Add a remove button
 tinsert(Menu, {text = "|cffFF0000"..REMOVE.."|r", notCheckable = true, func = DataTexts.Remove})
 tinsert(Menu, {text = "", notCheckable = true})
-
--- Datatext toggle
-SlashCmdList.DTSLASH = function() K.DataTexts:ToggleDataPositions() end
-SLASH_DTSLASH1 = "/dt"

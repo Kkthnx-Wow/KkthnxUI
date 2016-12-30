@@ -57,8 +57,8 @@
    <Script file="Core\Kill.lua" />
    <Script file="Core\CheckVersion.lua" />
    <Script file="Core\Movers.lua" />
-   <Script file="Core\Temp.lua" />
    <Script file="Core\Tutorials.lua" />
+   <Script file="Core\Temp.lua" />
    <!-- Panels -->
    <Script file="Modules\Panels\Panels.lua" />
    <!-- Unitframes Core -->

@@ -644,11 +644,8 @@ do
 			UIConfigMain:Hide()
 		end
 	end
-	SLASH_CONFIG1 = "/config"
-	SLASH_CONFIG2 = "/cfg"
-	SLASH_CONFIG3 = "/configui"
-	SLASH_CONFIG4 = "/kc"
-	SLASH_CONFIG5 = "/kkthnxui"
+	SLASH_CONFIG1 = "/cfg"
+	SLASH_CONFIG2 = "/configui"
 
 	function SlashCmdList.RESETCONFIG()
 		if UIConfigMain and UIConfigMain:IsShown() then UIConfigCover:Show() end

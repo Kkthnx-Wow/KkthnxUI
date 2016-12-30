@@ -16,7 +16,7 @@ local RequestRaidInfo = RequestRaidInfo
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, ChatFrame_TimeBreakDown, TIMEMANAGER_TOOLTIP_REALMTIME
--- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, GameTimeFrame_OnClick
+-- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, GameTimeFrame_OnClick, GameTimeFrame
 
 local DataText = K.DataTexts
 local NameColor = DataText.NameColor
@@ -27,6 +27,7 @@ local UKString = "%s%d|r:%s%02d|r %s%s|r"
 local CurrentHour
 local CurrentMin
 local CurrentAmPm
+local EnteredFrame = false
 
 local RaidFormat1 = "%s - %s (%d/%d)" -- Siege of Orgrimmar - Mythic (10/14)
 local RaidFormat2 = "%s - %s" -- Siege of Orgrimmar - Mythic
@@ -84,6 +85,12 @@ local Update = function(self, t)
 		return
 	end
 
+	if GameTimeFrame.flashInvite then
+		K.Flash(self, 0.53, true)
+	else
+		K.StopFlash(self)
+	end
+
 	local Hour, Minute, AmPm = CalculateTimeValues(false)
 
 	if (CurrentHour == Hour and CurrentMin == Minute and CurrentAmPm == AmPm) and not (tslu < -15000) then
@@ -107,6 +114,11 @@ end
 local OnEnter = function(self)
 	GameTooltip:SetOwner(self:GetTooltipAnchor())
 	GameTooltip:ClearLines()
+
+	if (not EnteredFrame) then
+		EnteredFrame = true
+		RequestRaidInfo()
+	end
 
 	local SavedInstances = GetNumSavedInstances()
 	local SavedWorldBosses = GetNumSavedWorldBosses()
@@ -165,22 +177,32 @@ end
 
 local OnLeave = function()
 	GameTooltip:Hide()
+	EnteredFrame = false
+end
+
+local function OnEvent(self, event)
+	if event == "UPDATE_INSTANCE_INFO" and EnteredFrame then
+		OnEnter(self)
+	end
 end
 
 local Enable = function(self)
+	self:RegisterEvent("UPDATE_INSTANCE_INFO")
 	self:SetScript("OnUpdate", Update)
 	self:SetScript("OnMouseUp", GameTimeFrame_OnClick)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", OnLeave)
-	self:Update(1)
-	RequestRaidInfo()
+	self:SetScript("OnEvent", OnEvent)
 end
 
 local Disable = function(self)
 	self.Text:SetText("")
+	self:UnregisterEvent("UPDATE_INSTANCE_INFO")
 	self:SetScript("OnUpdate", nil)
+	self:SetScript("OnMouseUp", nil)
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
+	self:SetScript("OnEvent", nil)
 end
 
 DataText:Register(L.DataText.Time, Enable, Disable, Update)
