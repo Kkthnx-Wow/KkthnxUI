@@ -1,11 +1,48 @@
 local K, C, L = unpack(select(2, ...))
 
-local format = format
+-- Wow Lua
+local ipairs = ipairs
+local pairs = pairs
+local select = select
+local string_find = string.find
+local string_format = string.format
+local string_sub = string.sub
+local type = type
+local wipe = wipe
 
+-- WoW API
+local AFK = AFK
+local BNGetFriendInfo = BNGetFriendInfo
+local BNGetGameAccountInfo = BNGetGameAccountInfo
+local BNGetNumFriends = BNGetNumFriends
+local BNInviteFriend = BNInviteFriend
 local BNSetCustomMessage = BNSetCustomMessage
+local ChatFrame_SendSmartTell = ChatFrame_SendSmartTell
+local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
+local DND = DND
+local EasyMenu = EasyMenu
+local GetFriendInfo = GetFriendInfo
+local GetNumFriends = GetNumFriends
+local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetRealmName = GetRealmName
+local GetRealZoneText = GetRealZoneText
+local InCombatLockdown = InCombatLockdown
+local InviteUnit = InviteUnit
 local IsChatAFK = IsChatAFK
 local IsChatDND = IsChatDND
+local IsShiftKeyDown = IsShiftKeyDown
+local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local SendChatMessage = SendChatMessage
+local SetItemRef = SetItemRef
+local StaticPopup_Show = StaticPopup_Show
+local ToggleFriendsFrame = ToggleFriendsFrame
+local UnitFactionGroup = UnitFactionGroup
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, Lib_EasyMenu, FRIENDS_LIST, FRIENDS, GameTooltip_Hide
 
 local levelNameString = "|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r"
 local clientLevelNameString = "%s (|cff%02x%02x%02x%d|r |cff%02x%02x%02x%s|r%s) |cff%02x%02x%02x%s|r"
@@ -20,9 +57,6 @@ local statusTable = {L.Chat.AFK, L.Chat.DND, ""}
 local groupedTable = {"|cffaaaaaa*|r", ""}
 local friendTable, BNTable = {}, {}
 local totalOnline, BNTotalOnline = 0, 0
-local BNGetGameAccountInfo = BNGetGameAccountInfo
-local GetFriendInfo = GetFriendInfo
-local BNGetFriendInfo = BNGetFriendInfo
 
 StaticPopupDialogs["BROADCAST"] = {
 	text = BN_BROADCAST_TOOLTIP,
@@ -44,12 +78,12 @@ local ValueColor = DataText.ValueColor
 local menuFrame = CreateFrame("Frame", "KkthnxUIFriendRightClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
 
 local menuList = {
-	{text = OPTIONS_MENU, isTitle = true, notCheckable=true},
-	{text = INVITE, hasArrow = true, notCheckable=true,},
-	{text = CHAT_MSG_WHISPER_INFORM, hasArrow = true, notCheckable=true,},
-	{text = PLAYER_STATUS, hasArrow = true, notCheckable=true,
+	{text = OPTIONS_MENU, isTitle = true, notCheckable = true},
+	{text = INVITE, hasArrow = true, notCheckable = true,},
+	{text = CHAT_MSG_WHISPER_INFORM, hasArrow = true, notCheckable = true,},
+	{text = PLAYER_STATUS, hasArrow = true, notCheckable = true,
 		menuList = {
-			{text = "|cff2BC226"..AVAILABLE.."|r", notCheckable=true, func = function()
+			{text = "|cff2BC226"..AVAILABLE.."|r", notCheckable = true, func = function()
 					if IsChatAFK() then
 						SendChatMessage("", "AFK")
 					elseif IsChatDND() then
@@ -57,20 +91,20 @@ local menuList = {
 					end
 			end},
 
-			{text = "|cffE7E716"..DND.."|r", notCheckable=true, func = function()
+			{text = "|cffE7E716"..DND.."|r", notCheckable = true, func = function()
 					if not IsChatDND() then
 						SendChatMessage("", "DND")
 					end
 			end},
 
-			{text = "|cffFF0000"..AFK.."|r", notCheckable=true, func = function()
+			{text = "|cffFF0000"..AFK.."|r", notCheckable = true, func = function()
 					if not IsChatAFK() then
 						SendChatMessage("", "AFK")
 					end
 			end},
 		},
 	},
-	{text = BN_BROADCAST_TOOLTIP, notCheckable=true, func = function()
+	{text = BN_BROADCAST_TOOLTIP, notCheckable = true, func = function()
 			StaticPopup_Show("BROADCAST")
 	end},
 }
@@ -86,10 +120,10 @@ local function GetTableIndex(table, fieldIndex, value)
 end
 
 local function RemoveTagNumber(tag)
-	local symbol = string.find(tag, "#")
+	local symbol = string_find(tag, "#")
 
 	if (symbol) then
-		return string.sub(tag, 1, symbol - 1)
+		return string_sub(tag, 1, symbol - 1)
 	else
 		return tag
 	end
@@ -111,7 +145,7 @@ local function whisperClick(self, name, bnet)
 	if bnet then
 		ChatFrame_SendSmartTell(name)
 	else
-		SetItemRef("player:"..name, ("|Hplayer:%1$s|h[%1$s]|h"):format(name), "LeftButton")
+		SetItemRef("player:"..name, ("|Hplayer:%1$s|h[%1$s]|h"):string_format(name), "LeftButton")
 	end
 end
 
@@ -279,8 +313,8 @@ local OnMouseUp = function(self, btn)
 					classc = GetQuestDifficultyColor(friendTable[i][2])
 				end
 
-				menuList[2].menuList[menuCountInvites] = {text = format(levelNameString,levelc.r*255,levelc.g*255,levelc.b*255,friendTable[i][2],classc.r*255,classc.g*255,classc.b*255,friendTable[i][1]), arg1 = friendTable[i][1],notCheckable=true, func = inviteClick}
-				menuList[3].menuList[menuCountWhispers] = {text = format(levelNameString,levelc.r*255,levelc.g*255,levelc.b*255,friendTable[i][2],classc.r*255,classc.g*255,classc.b*255,friendTable[i][1]), arg1 = friendTable[i][1],notCheckable=true, func = whisperClick}
+				menuList[2].menuList[menuCountInvites] = {text = string_format(levelNameString,levelc.r * 255, levelc.g * 255, levelc.b * 255, friendTable[i][2],classc.r * 255, classc.g * 255, classc.b * 255, friendTable[i][1]), arg1 = friendTable[i][1], notCheckable = true, func = inviteClick}
+				menuList[3].menuList[menuCountWhispers] = {text = string_format(levelNameString,levelc.r * 255, levelc.g * 255, levelc.b * 255, friendTable[i][2],classc.r * 255, classc.g * 255, classc.b * 255, friendTable[i][1]), arg1 = friendTable[i][1], notCheckable = true, func = whisperClick}
 			end
 		end
 	end
@@ -292,7 +326,7 @@ local OnMouseUp = function(self, btn)
 			if (BNTable[i][7]) then
 				realID = BNTable[i][2]
 				menuCountWhispers = menuCountWhispers + 1
-				menuList[3].menuList[menuCountWhispers] = {text = realID, arg1 = realID, arg2 = true, notCheckable=true, func = whisperClick}
+				menuList[3].menuList[menuCountWhispers] = {text = realID, arg1 = realID, arg2 = true, notCheckable = true, func = whisperClick}
 
 				if BNTable[i][6] == wowString and UnitFactionGroup("player") == BNTable[i][12] then
 					classc, levelc = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[BNTable[i][14]], GetQuestDifficultyColor(BNTable[i][16])
@@ -308,7 +342,7 @@ local OnMouseUp = function(self, btn)
 					end
 
 					menuCountInvites = menuCountInvites + 1
-					menuList[2].menuList[menuCountInvites] = {text = format(levelNameString,levelc.r*255,levelc.g*255,levelc.b*255,BNTable[i][16],classc.r*255,classc.g*255,classc.b*255,BNTable[i][4]), arg1 = BNTable[i][5],notCheckable=true, func = inviteClick}
+					menuList[2].menuList[menuCountInvites] = {text = string_format(levelNameString, levelc.r * 255, levelc.g * 255, levelc.b * 255, BNTable[i][16],classc.r * 255, classc.g * 255, classc.b * 255, BNTable[i][4]), arg1 = BNTable[i][5], notCheckable = true, func = inviteClick}
 				end
 			end
 		end
@@ -340,7 +374,7 @@ local OnEnter = function(self)
 	if (totalonline > 0) then
 		GameTooltip:SetOwner(self:GetTooltipAnchor())
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(FRIENDS_LIST, format(totalOnlineString, totalonline, totalfriends),tthead.r,tthead.g,tthead.b,tthead.r,tthead.g,tthead.b)
+		GameTooltip:AddDoubleLine(FRIENDS_LIST, string_format(totalOnlineString, totalonline, totalfriends), tthead.r, tthead.g, tthead.b, tthead.r, tthead.g, tthead.b)
 
 		if totalOnline > 0 then
 			GameTooltip:AddLine(" ")
@@ -365,7 +399,7 @@ local OnEnter = function(self)
 						grouped = 2
 					end
 
-					GameTooltip:AddDoubleLine(format(levelNameClassString,levelc.r*255,levelc.g*255,levelc.b*255,friendTable[i][2],friendTable[i][1],groupedTable[grouped]," "..friendTable[i][6]),friendTable[i][4],classc.r,classc.g,classc.b,zonec.r,zonec.g,zonec.b)
+					GameTooltip:AddDoubleLine(string_format(levelNameClassString,levelc.r * 255, levelc.g * 255, levelc.b * 255, friendTable[i][2], friendTable[i][1], groupedTable[grouped], " "..friendTable[i][6]), friendTable[i][4], classc.r, classc.g, classc.b, zonec.r, zonec.g, zonec.b)
 				end
 			end
 		end
@@ -410,7 +444,7 @@ local OnEnter = function(self)
 							grouped = 2
 						end
 
-						GameTooltip:AddDoubleLine(format(clientLevelNameString, BNTable[i][3],levelc.r*255,levelc.g*255,levelc.b*255,BNTable[i][16],classc.r*255,classc.g*255,classc.b*255,BNTable[i][4],groupedTable[grouped], 255, 0, 0, statusTable[status]),isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine(string_format(clientLevelNameString, BNTable[i][3],levelc.r * 255, levelc.g * 255, levelc.b * 255, BNTable[i][16], classc.r * 255, classc.g * 255, classc.b * 255, BNTable[i][4], groupedTable[grouped], 255, 0, 0, statusTable[status]), isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 
 						if IsShiftKeyDown() then
 							if GetRealZoneText() == BNTable[i][15] then
@@ -444,7 +478,7 @@ local OnEnter = function(self)
 							GameTooltip:AddDoubleLine("|cffD49E43"..Client.."|r", "")
 						end
 
-						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 					end
 				end
 			end
@@ -462,7 +496,7 @@ local OnEnter = function(self)
 							GameTooltip:AddDoubleLine("|cffCC2200"..Client.."|r", "")
 						end
 
-						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 					end
 				end
 			end
@@ -480,7 +514,7 @@ local OnEnter = function(self)
 							GameTooltip:AddDoubleLine("|cffACE5EE"..Client.."|r", "")
 						end
 
-						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 					end
 				end
 			end
@@ -498,7 +532,7 @@ local OnEnter = function(self)
 							GameTooltip:AddDoubleLine("|cffACE5EE".. Client .."|r", "")
 						end
 
-						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 					end
 				end
 			end
@@ -516,7 +550,7 @@ local OnEnter = function(self)
 							GameTooltip:AddDoubleLine("|cffACE5EE".. Client .."|r", "")
 						end
 
-						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 					end
 				end
 			end
@@ -534,7 +568,7 @@ local OnEnter = function(self)
 							GameTooltip:AddDoubleLine("|cff00B4FF".. Client .."|r", "")
 						end
 
-						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2],238,238,238,238,238,238)
+						GameTooltip:AddDoubleLine("|cffeeeeee"..BNTable[i][3].."|r", isBattleTag == false and BNTable[i][2], 238, 238, 238, 238, 238, 238)
 					end
 				end
 			end
@@ -595,7 +629,6 @@ local Enable = function(self)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", GameTooltip_Hide)
 	self:SetScript("OnEvent", OnEvent)
-	self:Update()
 end
 
 local Disable = function(self)
@@ -608,4 +641,4 @@ local Disable = function(self)
 	self:SetScript("OnEvent", nil)
 end
 
-DataText:Register(FRIENDS, Enable, Disable, OnEvent)
+DataText:Register(FRIENDS, Enable, Disable, Update)

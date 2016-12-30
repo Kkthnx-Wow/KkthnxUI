@@ -364,10 +364,10 @@ SLASH_MOUSEOVERBIND1 = "/bindkey"
 SLASH_MOUSEOVERBIND2 = "/hoverbind"
 SLASH_MOUSEOVERBIND3 = "/bk"
 
-if not IsAddOnLoaded("Bartender4") and not IsAddOnLoaded("Dominos") then
+if not K.CheckAddOn("Bartender4") and not K.CheckAddOn("Dominos") then
 	SLASH_MOUSEOVERBIND4 = "/kb"
 end
 
-if not IsAddOnLoaded("HealBot") then
+if not K.CheckAddOn("HealBot") then
 	SLASH_MOUSEOVERBIND5 = "/hb"
 end

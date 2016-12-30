@@ -377,78 +377,6 @@ local UploadSkada = function()
 	}
 end
 
--- OUF_ABU SETTINGS
-local UploadAbu = function()
-	if oUFAbuSettings then table.wipe(oUFAbuSettings) end
-	oUFAbuSettings = {
-		["Default"] = {
-			["useAuraTimer"] = false,
-			["target"] = {
-				["debuffPos"] = "TOP",
-				["buffPos"] = "BOTTOM",
-				["style"] = "fat",
-				["position"] = "CENTER/294/-175",
-				["cbposition"] = "CENTER/0/-175",
-			},
-			["classPortraits"] = true,
-			["player"] = {
-				["style"] = "fat",
-				["position"] = "CENTER/-294/-175",
-				["cbposition"] = "CENTER/0/-206",
-			},
-			["arena"] = {
-				["position"] = "RIGHT/-274/148",
-			},
-			["TextNameColor"] = {
-				1.0, -- [1]
-				0.82, -- [2]
-				0.0, -- [3]
-			},
-			["party"] = {
-				["style"] = "fat",
-			},
-			["focus"] = {
-				["style"] = "fat",
-				["position"] = "LEFT/439/32",
-				["cbposition"] = "LEFT/441/-39",
-			},
-			["fontBigSize"] = 0.900000005960465,
-			["classBar"] = {
-				[577] = {
-					["spellID"] = 0,
-					["r"] = 0,
-					["g"] = 0,
-					["b"] = 0,
-				},
-			},
-			["boss"] = {
-				["position"] = "RIGHT/-274/166",
-			},
-			["pet"] = {
-				["cbshow"] = false,
-				["style"] = "fat",
-				["position"] = "BOTTOM/-240/200",
-			},
-			["fontBig"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf",
-			["fontNormalSize"] = 0.900000005960465,
-			["fontNormal"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf",
-			["focustarget"] = {
-				["style"] = "fat",
-			},
-			["frameColor"] = {
-				0.752941176470588, -- [1]
-				0.764705882352941, -- [2]
-				0.752941176470588, -- [3]
-			},
-			["borderType"] = "abu",
-			["statusbar"] = "Interface\\TargetingFrame\\UI-StatusBar",
-			["targettarget"] = {
-				["style"] = "fat",
-			},
-		},
-	}
-end
-
 StaticPopupDialogs.SETTINGS_ALL = {
 	text = L.Popup.SettingsAll,
 	button1 = ACCEPT,
@@ -457,7 +385,6 @@ StaticPopupDialogs.SETTINGS_ALL = {
 		if K.CheckAddOn("DBM-Core") and C.Skins.DBM then K.UploadDBM() end
 		if K.CheckAddOn("MikScrollingBattleText") then UploadMSBT() end
 		if K.CheckAddOn("Skada") then UploadSkada() end
-		if K.CheckAddOn("oUF_Abu") then UploadAbu() end
 		ReloadUI()
 	end,
 	timeout = 0,
@@ -491,20 +418,12 @@ SlashCmdList.SETTINGS = function(msg)
 		else
 			print("|cffffff00Skada"..L.Info.NotInstalled.."|r")
 		end
-	elseif msg == "abu" then
-		if K.CheckAddOn("oUF_Abu") then
-			UploadAbu()
-			ReloadUI()
-		else
-			print("|cffffff00oUF_Abu"..L.Info.NotInstalled.."|r")
-		end
 	elseif msg == "all" then
 		StaticPopup_Show("SETTINGS_ALL")
 	else
 		print("|cffffff00"..L.Info.SettingsDBM.."|r")
 		print("|cffffff00"..L.Info.SettingsMSBT.."|r")
 		print("|cffffff00"..L.Info.SettingsSKADA.."|r")
-		print("|cffffff00"..L.Info.SettingsAbu.."|r")
 		print("|cffffff00"..L.Info.SettingsALL.."|r")
 	end
 end

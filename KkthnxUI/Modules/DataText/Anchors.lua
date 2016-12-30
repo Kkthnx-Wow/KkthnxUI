@@ -51,3 +51,23 @@ end
 -- Add a remove button
 tinsert(Menu, {text = "|cffFF0000"..REMOVE.."|r", notCheckable = true, func = DataTexts.Remove})
 tinsert(Menu, {text = "", notCheckable = true})
+
+-- Command to toggle, resetgold and reset all DT.
+-- We need to check for details here because it uses '/dt' for all of its commands.
+-- We format out slash command like so '/datatext reset' or '/datatext toggole' and so on.
+SlashCmdList.DATATEXT = function(msg)
+	local DataText = K.DataTexts
+
+	if msg == "reset" then
+		DataText:Reset()
+	elseif msg == "resetgold" then
+		DataText:ResetGold()
+	elseif msg == "toggle" then
+		DataText:ToggleDataPositions()
+	end
+end
+
+if not K.CheckAddOn("Details") then
+	SLASH_DATATEXT1 = "/dt"
+end
+SLASH_DATATEXT2 = "/datatext"

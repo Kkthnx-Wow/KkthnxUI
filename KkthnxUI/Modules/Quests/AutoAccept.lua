@@ -2,12 +2,59 @@ local K, C, L = unpack(select(2, ...))
 if C.Automation.AcceptQuest ~= true then return end
 
 -- Wow Lua
+local next = next
+local select = select
+local setmetatable = setmetatable
 local string_match = string.match
+local tonumber = tonumber
 
 -- Wow API
+local AcceptQuest = AcceptQuest
+local AcknowledgeAutoAcceptQuest = AcknowledgeAutoAcceptQuest
+local CompleteQuest = CompleteQuest
+local GetActiveTitle = GetActiveTitle
+local GetAutoQuestPopUp = GetAutoQuestPopUp
+local GetAvailableQuestInfo = GetAvailableQuestInfo
+local GetGossipActiveQuests = GetGossipActiveQuests
+local GetGossipAvailableQuests = GetGossipAvailableQuests
+local GetInstanceInfo = GetInstanceInfo
+local GetItemInfo = GetItemInfo
+local GetNumActiveQuests = GetNumActiveQuests
+local GetNumAutoQuestPopUps = GetNumAutoQuestPopUps
+local GetNumAvailableQuests = GetNumAvailableQuests
+local GetNumGossipActiveQuests = GetNumGossipActiveQuests
+local GetNumGossipAvailableQuests = GetNumGossipAvailableQuests
+local GetNumGossipOptions = GetNumGossipOptions
+local GetNumGroupMembers = GetNumGroupMembers
+local GetNumQuestChoices = GetNumQuestChoices
+local GetNumQuestItems = GetNumQuestItems
+local GetNumQuestLogEntries = GetNumQuestLogEntries
+local GetNumTrackingTypes = GetNumTrackingTypes
+local GetQuestID = GetQuestID
+local GetQuestItemInfo = GetQuestItemInfo
+local GetQuestItemLink = GetQuestItemLink
+local GetQuestLogIndexByID = GetQuestLogIndexByID
+local GetQuestLogTitle = GetQuestLogTitle
+local GetQuestReward = GetQuestReward
+local GetQuestTagInfo = GetQuestTagInfo
+local GetTrackingInfo = GetTrackingInfo
+local IsQuestCompletable = IsQuestCompletable
+local IsQuestIgnored = IsQuestIgnored
+local QuestGetAutoAccept = QuestGetAutoAccept
+local SelectActiveQuest = SelectActiveQuest
+local SelectGossipActiveQuest = SelectGossipActiveQuest
+local SelectGossipAvailableQuest = SelectGossipAvailableQuest
+local SelectGossipOption = SelectGossipOption
+local ShowQuestComplete = ShowQuestComplete
+local ShowQuestOffer = ShowQuestOffer
+local StaticPopup_Hide = StaticPopup_Hide
+local UnitGUID = UnitGUID
+local UnitIsDeadOrGhost = UnitIsDeadOrGhost
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS:
+-- GLOBALS: MINIMAP_TRACKING_TRIVIAL_QUESTS, MINIMAP_TRACKING_HIDDEN_QUESTS, SelectAvailableQuest
+-- GLOBALS: QuestIsFromAreaTrigger, QuestFrame_OnEvent, QuestFrame, C_Timer, QuestLogPushQuest
+-- GLOBALS: QuestInfoItem_OnClick, QuestInfoRewardsFrame, C_Scenario
 
 -- Quest automation(QuickQuest by p3lim)
 local QuickQuest = CreateFrame("Frame")

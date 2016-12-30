@@ -275,7 +275,6 @@ L.Info = {
 	Invite = "Accepted invite from ",
 	NotInstalled = " is not installed.",
 	PetDuel = "Declined pet duel request from ",
-	SettingsAbu = "Type /settings abu, to apply the settings oUF_Abu.",
 	SettingsALL = "Type /settings all, to apply the settings for all modifications.",
 	SettingsDBM = "Type /settings dbm, to apply the settings DBM.",
 	SettingsMSBT = "Type /settings msbt, to apply the settings MSBT.",

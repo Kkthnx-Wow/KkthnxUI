@@ -6,17 +6,10 @@ local oUF = ns.oUF or oUF
 
 -- Lua API
 local pairs = pairs
-local select = select
-local unpack = unpack
 
 -- Wow API
-local IsAltKeyDown = IsAltKeyDown
-local IsControlKeyDown = IsControlKeyDown
 local UnitAffectingCombat = UnitAffectingCombat
 local IsShiftKeyDown = IsShiftKeyDown
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS:
 
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
 oUFKkthnx:RegisterEvent("ADDON_LOADED")

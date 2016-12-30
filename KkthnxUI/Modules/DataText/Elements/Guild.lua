@@ -1,16 +1,41 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua API
+local math_ceil = math.ceil
+local string_format = string.format
+local string_gsub = string.gsub
+local string_join = string.join
+local table_sort = table.sort
+local tostring = tostring
+local wipe = wipe
+
+-- Wow API
+local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
+local GetGuildRosterInfo = GetGuildRosterInfo
+local GetGuildRosterMOTD = GetGuildRosterMOTD
+local GetNumGuildMembers = GetNumGuildMembers
+local GetQuestDifficultyColor = GetQuestDifficultyColor
+local GetRealmName = GetRealmName
+local InCombatLockdown = InCombatLockdown
+local IsInGuild = IsInGuild
+local maxDailyXP = maxDailyXP
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local UnitGetGuildXP = UnitGetGuildXP
+local UnitInParty = UnitInParty
+local UnitInRaid = UnitInRaid
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: AFK, DND, InviteUnit, SetItemRef, GuildFrame, GuildFrame_LoadUI, GuildFrame_Toggle
+-- GLOBALS: GuildFrame_TabClicked, GuildFrameTab2, LookingForGuildFrame, LookingForGuildFrame_LoadUI
+-- GLOBALS: LookingForGuildFrame_Toggle, GameTooltip, Lib_EasyMenu, GuildRoster
+
 local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
 
-local format = string.format
-local join = string.join
-local gsub = string.gsub
-
 local tthead, ttsubh, ttoff = {r = 0.4, g = 0.78, b = 1}, {r = 0.75, g = 0.9, b = 1}, {r = 0.3, g = 1, b = 0.3}
 local activezone, inactivezone = {r = 0.3, g = 1.0, b = 0.3}, {r = 0.65, g = 0.65, b = 0.65}
-local displayString = join("", "%s: ", "%d")
+local displayString = string_join("", "%s: ", "%d")
 local guildInfoString = "%s [%d]"
 local guildInfoString2 = "%s: %d/%d"
 local guildMotDString = " %s |cffaaaaaa- |cffffffff%s"
@@ -30,7 +55,7 @@ local function BuildGuildTable()
 	local _, name, rank, level, zone, note, officernote, connected, status, class, isMobile
 	for i = 1, GetNumGuildMembers() do
 		name, rank, _, level, _, zone, note, officernote, connected, status, class, _, _, isMobile = GetGuildRosterInfo(i)
-		name = gsub(name, "-.*", "")
+		name = string_gsub(name, "-.*", "")
 
 		if(status == 1) then
 			status = "|cffff0000[" .. AFK .. "]|r"
@@ -46,7 +71,7 @@ local function BuildGuildTable()
 		end
 	end
 
-	table.sort(guildTable, function(a, b)
+	table_sort(guildTable, function(a, b)
 		if(a and b) then
 			return a[1] < b[1]
 		end
@@ -61,7 +86,7 @@ local function UpdateGuildXP()
 		return
 	end
 
-	local percentTotal = tostring(math.ceil((currentXP / nextLevelXP) * 100))
+	local percentTotal = tostring(math_ceil((currentXP / nextLevelXP) * 100))
 
 	guildXP[0] = {currentXP, nextLevelXP, percentTotal}
 end
@@ -84,7 +109,7 @@ end
 
 local function whisperClick(self, arg1, arg2, checked)
 	menuFrame:Hide()
-	SetItemRef("player:" .. arg1, ("|Hplayer:%1$s|h[%1$s]|h"):format(arg1), "LeftButton")
+	SetItemRef("player:" .. arg1, ("|Hplayer:%1$s|h[%1$s]|h"):string_format(arg1), "LeftButton")
 end
 
 local function ToggleGuildFrame()
@@ -131,7 +156,7 @@ local function OnMouseUp(self, btn)
 				if(not guildTable[i][10]) then
 					menuCountInvites = menuCountInvites + 1
 					menuList[2].menuList[menuCountInvites] = {
-						text = format(levelNameString, levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, guildTable[i][1], ""),
+						text = string_format(levelNameString, levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, guildTable[i][1], ""),
 						arg1 = guildTable[i][1],
 						notCheckable = true,
 						func = inviteClick
@@ -140,7 +165,7 @@ local function OnMouseUp(self, btn)
 			end
 			menuCountWhispers = menuCountWhispers + 1
 			menuList[3].menuList[menuCountWhispers] = {
-				text = format(levelNameString, levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, guildTable[i][1], grouped),
+				text = string_format(levelNameString, levelc.r * 255, levelc.g * 255, levelc.b * 255, guildTable[i][3], classc.r * 255, classc.g * 255, classc.b * 255, guildTable[i][1], grouped),
 				arg1 = guildTable[i][1],
 				notCheckable = true,
 				func = whisperClick
@@ -171,12 +196,12 @@ local function OnEnter(self)
 
 	--if(GuildInfo and GuildLevel) then
 	if(GuildInfo) then
-		GameTooltip:AddDoubleLine(format(guildInfoString, GuildInfo, ""), format(guildInfoString2, GUILD, online, #guildTable), tthead.r, tthead.g, tthead.b, tthead.r, tthead.g, tthead.b)
+		GameTooltip:AddDoubleLine(string_format(guildInfoString, GuildInfo, ""), string_format(guildInfoString2, GUILD, online, #guildTable), tthead.r, tthead.g, tthead.b, tthead.r, tthead.g, tthead.b)
 	end
 
 	if(guildMotD ~= "") then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(format(guildMotDString, GUILD_MOTD, guildMotD), ttsubh.r, ttsubh.g, ttsubh.b, 1)
+		GameTooltip:AddLine(string_format(guildMotDString, GUILD_MOTD, guildMotD), ttsubh.r, ttsubh.g, ttsubh.b, 1)
 	end
 
 	local col = K.RGBToHex(ttsubh.r, ttsubh.g, ttsubh.b)
@@ -187,7 +212,7 @@ local function OnEnter(self)
 		if(guildXP[0]) then
 			local currentXP, nextLevelXP, percentTotal = unpack(guildXP[0])
 
-			GameTooltip:AddLine(format(col .. GUILD_EXPERIENCE_CURRENT, "|r |cffffffff" .. K.ShortValue(currentXP), K.ShortValue(nextLevelXP), percentTotal))
+			GameTooltip:AddLine(string_format(col .. GUILD_EXPERIENCE_CURRENT, "|r |cffffffff" .. K.ShortValue(currentXP), K.ShortValue(nextLevelXP), percentTotal))
 		end
 	end
 
@@ -196,7 +221,7 @@ local function OnEnter(self)
 		barMax = barMax - barMin
 		barValue = barValue - barMin
 		barMin = 0
-		GameTooltip:AddLine(format("%s:|r |cffffffff%s/%s (%s%%)", col .. COMBAT_FACTION_CHANGE, K.ShortValue(barValue), K.ShortValue(barMax), math.ceil((barValue / barMax) * 100)))
+		GameTooltip:AddLine(string_format("%s:|r |cffffffff%s/%s (%s%%)", col .. COMBAT_FACTION_CHANGE, K.ShortValue(barValue), K.ShortValue(barMax), math_ceil((barValue / barMax) * 100)))
 	end
 
 	if(online > 1) then
@@ -204,7 +229,7 @@ local function OnEnter(self)
 		for i = 1, #guildTable do
 			if(online <= 1) then
 				if(online > 1) then
-					GameTooltip:AddLine(format("+ %d More...", online - modules.Guild.maxguild), ttsubh.r, ttsubh.g, ttsubh.b)
+					GameTooltip:AddLine(string_format("+ %d More...", online - modules.Guild.maxguild), ttsubh.r, ttsubh.g, ttsubh.b)
 				end
 
 				break
@@ -224,17 +249,17 @@ local function OnEnter(self)
 				end
 
 				if(IsShiftKeyDown()) then
-					GameTooltip:AddDoubleLine(format(nameRankString, name, rank), zone, classc.r, classc.g, classc.b, zonec.r, zonec.g, zonec.b)
+					GameTooltip:AddDoubleLine(string_format(nameRankString, name, rank), zone, classc.r, classc.g, classc.b, zonec.r, zonec.g, zonec.b)
 
 					if(note ~= "") then
-						GameTooltip:AddLine(format(noteString, note), ttsubh.r, ttsubh.g, ttsubh.b, 1)
+						GameTooltip:AddLine(string_format(noteString, note), ttsubh.r, ttsubh.g, ttsubh.b, 1)
 					end
 
 					if(officernote ~= "") then
-						GameTooltip:AddLine(format(officerNoteString, officernote), ttoff.r, ttoff.g, ttoff.b ,1)
+						GameTooltip:AddLine(string_format(officerNoteString, officernote), ttoff.r, ttoff.g, ttoff.b ,1)
 					end
 				else
-					GameTooltip:AddDoubleLine(format(levelNameStatusString, levelc.r * 255, levelc.g * 255, levelc.b * 255, level, name, status), zone, classc.r, classc.g, classc.b, zonec.r, zonec.g, zonec.b)
+					GameTooltip:AddDoubleLine(string_format(levelNameStatusString, levelc.r * 255, levelc.g * 255, levelc.b * 255, level, name, status), zone, classc.r, classc.g, classc.b, zonec.r, zonec.g, zonec.b)
 				end
 			end
 		end

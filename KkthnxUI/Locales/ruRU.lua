@@ -276,7 +276,6 @@ L.Info = {
 	Invite = "Приглашение принято от ",
 	NotInstalled = " не установлено.",
 	PetDuel = "Дуэль петомцев отклонена от ",
-	SettingsAbu = "Введите /settings abu, для применения настроек oUF_Abu.",
 	SettingsAll = "Введите /settings all, для применения настроек ко всем модификациям.",
 	SettingsDbm = "Введите /settings dbm, для применения настроек DBM.",
 	SettingsMsbt = "Введите /settings msbt, для применения настроек MSBT.",

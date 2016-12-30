@@ -11,11 +11,15 @@ local GetRealmName = GetRealmName
 local hooksecurefunc = hooksecurefunc
 local UnitName = UnitName
 
+local KkthnxUIDataTextBottomBar = KkthnxUIDataTextBottomBar
+local KkthnxUIDataTextSplitBarLeft = KkthnxUIDataTextSplitBarLeft
+local KkthnxUIDataTextSplitBarRight = KkthnxUIDataTextSplitBarRight
+local KkthnxUIMinimapStat = KkthnxUIMinimapStat
+local KkthnxUIMinimapStats = KkthnxUIMinimapStats
+
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: KkthnxUIDataPerChar, KkthnxUIDataTextBottomBar, KkthnxUIDataTextSplitBarLeft
--- GLOBALS: KkthnxUIDataTextSplitBarRight, UIParent, KkthnxUIMinimapStats, KkthnxUIMinimapStat
--- GLOBALS: PetBattleFrameHider, KkthnxUIData, GUILD, FRIENDS, DURABILITY, CURRENCY, Name
--- GLOBALS: CreateFrame
+-- GLOBALS: KkthnxUIDataPerChar, UIParent, CreateFrame, PetBattleFrameHider. KkthnxUIData
+-- GLOBALS: GUILD, FRIENDS, DURABILITY, CURRENCY, Name, Minimap
 
 local DataTexts = CreateFrame("Frame")
 
@@ -76,11 +80,6 @@ end
 
 -- Here we def the ancors for all dts
 function DataTexts:CreateAnchors()
-
-	local KkthnxUIDataTextBottomBar = KkthnxUIDataTextBottomBar
-	local KkthnxUIDataTextSplitBarLeft = KkthnxUIDataTextSplitBarLeft
-	local KkthnxUIDataTextSplitBarRight = KkthnxUIDataTextSplitBarRight
-
 	self.NumAnchors = self.NumAnchors
 
 	for i = 1, self.NumAnchors do
@@ -159,7 +158,7 @@ local function GetTooltipAnchor(self)
 		Anchor = "ANCHOR_RIGHT"
 		From = KkthnxUIDataTextSplitBarRight
 		Y = K.Scale(0)
-	elseif (Position == 8) and C.Minimap.Enable then
+	elseif (Position == 8) and C.Minimap.Enable and Minimap then
 		Anchor = "ANCHOR_BOTTOMLEFT"
 		From = KkthnxUIMinimapStat
 		Y = K.Scale(-5)
@@ -255,7 +254,7 @@ function DataTexts:AddDefaults()
 		KkthnxUIDataPerChar.Texts["Talents"] = {true, 6}
 		KkthnxUIDataPerChar.Texts[CURRENCY] = {true, 7}
 	end
-	if C.Minimap.Enable then
+	if C.Minimap.Enable and Minimap then
 		KkthnxUIDataPerChar.Texts[L.DataText.Time] = {true, 8}
 	end
 end
