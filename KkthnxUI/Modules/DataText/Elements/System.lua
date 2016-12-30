@@ -1,32 +1,62 @@
 local K, C, L = unpack(select(2, ...))
 
+local GetAddOnInfo = GetAddOnInfo
+local GetNumAddOns = GetNumAddOns
+local IsAddOnLoaded = IsAddOnLoaded
+local UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
+local GetAddOnMemoryUsage = GetAddOnMemoryUsage
+local GetNetStats = GetNetStats
+local GetFramerate = GetFramerate
+local GetAvailableBandwidth = GetAvailableBandwidth
+local InCombatLockdown = InCombatLockdown
+local collectgarbage = collectgarbage
+local select = select
+local format = format
+
+local int = 1
+local int2 = 2
+local MemoryTable = {}
+local KilobyteString, MegabyteString
+local Mult = 10^1
+local bandwidthString = "%.2f Mbps"
+local percentageString = "%.2f%%"
+
 local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
+local MemoryColor = K.RGBToHex(1, 1, 1)
+local KilobyteString = "%d ".. MemoryColor .."kb".."|r"
+local MegabyteString = "%.2f ".. MemoryColor .."mb".."|r"
 
-local format = string.format
-
-local int = 1
-local MemoryTable = {}
-local KilobyteString = "%d ".. DataText.ValueColor .."kb".."|r"
-local MegabyteString = "%.2f ".. DataText.ValueColor .."mb".."|r"
-local Mult = 10^1
-local BandwidthString = "%.2f Mbps"
-local PercentageString = "%.2f%%"
-
-local function FormatMemory(memory)
-	if(memory > 999) then
-		local Memory = ((memory / 1024) * Mult) / Mult
-		return format(MegabyteString, Memory)
+-- Format Memory
+local FormatMemory = function(memory)
+	if (memory > 999) then
+		local Memory = ((memory/1024) * Mult) / Mult
+		return string.format(MegabyteString, Memory)
 	else
 		local Memory = (memory * Mult) / Mult
-		return format(KilobyteString, Memory)
+		return string.format(KilobyteString, Memory)
 	end
 end
 
-local function UpdateMemory()
-	UpdateAddOnMemoryUsage()
+-- Build MemoryTable
+local RebuildAddonList = function(self)
+	local AddOnCount = GetNumAddOns()
+	if (AddOnCount == #MemoryTable) or self.tooltip then
+		return
+	end
 
+	wipe(MemoryTable)
+
+	for i = 1, AddOnCount do
+		MemoryTable[i] = {i, select(2, GetAddOnInfo(i)), 0, IsAddOnLoaded(i)}
+	end
+end
+
+-- Update MemoryTable
+local UpdateMemory = function()
+	-- Update the memory usages of the addons
+	UpdateAddOnMemoryUsage()
 	local AddOnMem = 0
 	local TotalMem = 0
 
@@ -35,9 +65,9 @@ local function UpdateMemory()
 		MemoryTable[i][3] = AddOnMem
 		TotalMem = TotalMem + AddOnMem
 	end
-
+	-- Sort the table to put the largest addon on top
 	table.sort(MemoryTable, function(a, b)
-		if(a and b) then
+		if (a and b) then
 			return a[3] > b[3]
 		end
 	end)
@@ -45,84 +75,94 @@ local function UpdateMemory()
 	return TotalMem
 end
 
-local function RebuildAddonList(self)
-	local AddOnCount = GetNumAddOns()
-	if(AddOnCount == #MemoryTable) or self.tooltip then
-		return
+-- Build DataText
+local Update = function(self, second)
+	int = int - second
+
+	if (int < 0) then
+		RebuildAddonList(self)
+		int = 10
 	end
 
-	MemoryTable = {}
+	int2 = int2 - second
+	if (int2 < 0) then
 
-	for i = 1, AddOnCount do
-		local Title = select(2, GetAddOnInfo(i))
-		MemoryTable[i] = { i, Title, 0, IsAddOnLoaded(i) }
-	end
-end
+		local MS = select(3, GetNetStats())
+		local Rate = floor(GetFramerate())
 
-local function OnEnter(self)
-	if(InCombatLockdown()) then
-		return
-	end
-
-	GameTooltip:SetOwner(self:GetTooltipAnchor())
-	GameTooltip:ClearLines()
-	GameTooltip:AddLine(L.DataText.System)
-	GameTooltip:AddLine(" ")
-
-	local Bandwidth = GetAvailableBandwidth()
-	if(Bandwidth ~= 0) then
-		GameTooltip:AddDoubleLine(NameColor .. L.DataText.Bandwidth .. "|r", format(ValueColor .. BandwidthString .. "|r", Bandwidth))
-		GameTooltip:AddDoubleLine(NameColor .. L.DataText.Bandwidth .. "|r", format(ValueColor .. PercentageString .. "|r", GetDownloadedPercentage() * 100))
-		GameTooltip:AddLine(" ")
-	end
-
-	local TotalMemory = UpdateMemory()
-	GameTooltip:AddDoubleLine(L.DataText.TotalMemoryUsage, FormatMemory(TotalMemory), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
-	GameTooltip:AddLine("")
-
-	for i = 1, #MemoryTable do
-		if(MemoryTable[i][4]) then
-			local Red = MemoryTable[i][3] / TotalMemory
-			local Green = 1 - Red
-
-			GameTooltip:AddDoubleLine(MemoryTable[i][2], FormatMemory(MemoryTable[i][3]), 1, 1, 1, Red, Green + 0.5, 0)
+		if (MS == 0) then
+			MS = "0"
 		end
-	end
 
-	self.Text:SetText(DataText.ValueColor .. FormatMemory(TotalMemory) .. "|r")
-	GameTooltip:Show()
+		self.Text:SetFormattedText("%s %s %s %s", ValueColor .. Rate .. "|r", NameColor .. L.DataText.FPS .. "|r", "& " .. ValueColor .. MS .. "|r", NameColor .. L.DataText.MS .. "|r")
+		int2 = 2
+	end
 end
 
-local function OnMouseUp()
+-- Tooltip
+local OnEnter = function(self)
+	if (not InCombatLockdown()) then
+
+		GameTooltip:SetOwner(self:GetTooltipAnchor())
+		GameTooltip:ClearLines()
+
+		local Bandwidth = GetAvailableBandwidth()
+
+		local TotalMemory = UpdateMemory()
+		GameTooltip:AddDoubleLine(L.DataText.TotalMemory, FormatMemory(TotalMemory), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
+		GameTooltip:AddLine(" ")
+
+		for i = 1, #MemoryTable do
+			if (MemoryTable[i][4]) then
+				local Red = MemoryTable[i][3] / TotalMemory
+				local Green = 1 - Red
+
+				GameTooltip:AddDoubleLine(MemoryTable[i][2], FormatMemory(MemoryTable[i][3]), 1, 1, 1, Red, Green + .5, 0)
+			end
+		end
+
+		GameTooltip:AddLine(" ")
+		if (Bandwidth ~= 0) then
+			GameTooltip:AddDoubleLine(L.DataText.Bandwidth , string.format(bandwidthString, Bandwidth), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
+			GameTooltip:AddDoubleLine(L.DataText.Download , string.format(percentageString, GetDownloadedPercentage() * 100), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
+			GameTooltip:AddLine(" ")
+		end
+
+		local _, _, HomeLatency, WorldLatency = GetNetStats()
+		local Latency = format(MAINMENUBAR_LATENCY_LABEL, HomeLatency, WorldLatency)
+
+		GameTooltip:AddLine(Latency)
+		GameTooltip:Show()
+	end
+end
+
+local OnLeave = function()
+	GameTooltip:Hide()
+end
+
+local OnMouseUp = function()
 	collectgarbage("collect")
 end
 
-local function Update(self, second)
-	int = int - second
-
-	if(int < 0) then
-		RebuildAddonList(self)
-		local Total = UpdateMemory()
-
-		self.Text:SetText(DataText.ValueColor .. FormatMemory(Total) .. "|r")
-		int = 10
-	end
+local ResetData = function(self, event)
+	wipe(MemoryTable)
 end
 
-local function Enable(self)
+local Enable = function(self)
+	self:SetScript("OnEvent", ResetData)
 	self:SetScript("OnUpdate", Update)
 	self:SetScript("OnEnter", OnEnter)
-	self:SetScript("OnLeave", GameTooltip_Hide)
+	self:SetScript("OnLeave", OnLeave)
 	self:SetScript("OnMouseUp", OnMouseUp)
-	self:Update(1)
 end
 
-local function Disable(self)
+local Disable = function(self)
 	self.Text:SetText("")
+	self:SetScript("OnEvent", nil)
 	self:SetScript("OnUpdate", nil)
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
 	self:SetScript("OnMouseUp", nil)
 end
 
-DataText:Register(L.DataText.Memory, Enable, Disable, Update)
+DataText:Register("System", Enable, Disable, Update)

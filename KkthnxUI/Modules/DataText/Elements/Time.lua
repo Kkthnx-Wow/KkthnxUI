@@ -1,19 +1,32 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua API
+local math_floor = math.floor
+local string_format = string.format
+local string_join = string.format
+
+-- Wow API
+local date = date
+local GetGameTime = GetGameTime
+local GetNumSavedInstances = GetNumSavedInstances
+local GetNumSavedWorldBosses = GetNumSavedWorldBosses
+local GetSavedInstanceInfo = GetSavedInstanceInfo
+local GetSavedWorldBossInfo = GetSavedWorldBossInfo
+local RequestRaidInfo = RequestRaidInfo
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, ChatFrame_TimeBreakDown, TIMEMANAGER_TOOLTIP_REALMTIME
+-- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, GameTimeFrame_OnClick
+
 local DataText = K.DataTexts
 local NameColor = DataText.NameColor
 local ValueColor = DataText.ValueColor
 
-local tonumber = tonumber
-local format = format
-local date = date
-
-local GetGameTime = GetGameTime
 local EuropeString = "%s%02d|r:%s%02d|r"
 local UKString = "%s%d|r:%s%02d|r %s%s|r"
 local CurrentHour
 local CurrentMin
-local tslu = 1
+local CurrentAmPm
 
 local RaidFormat1 = "%s - %s (%d/%d)" -- Siege of Orgrimmar - Mythic (10/14)
 local RaidFormat2 = "%s - %s" -- Siege of Orgrimmar - Mythic
@@ -52,14 +65,14 @@ local function CalculateTimeValues(tooltip)
 end
 
 local GetResetTime = function(seconds)
-	local Days, Hours, Minutes, Seconds = ChatFrame_TimeBreakDown(floor(seconds))
+	local Days, Hours, Minutes, Seconds = ChatFrame_TimeBreakDown(math_floor(seconds))
 
 	if (Days > 0) then
-		return format(DayHourMinute, Days, Hours, Minutes) -- 7d, 2h, 5m
+		return string_format(DayHourMinute, Days, Hours, Minutes) -- 7d, 2h, 5m
 	elseif (Hours > 0) then
-		return format(HourMinute, Hours, Minutes) -- 12h, 32m
+		return string_format(HourMinute, Hours, Minutes) -- 12h, 32m
 	else
-		return format(MinuteSecond, Minutes, Seconds) -- 5m, 42s
+		return string_format(MinuteSecond, Minutes, Seconds) -- 5m, 42s
 	end
 end
 
@@ -74,11 +87,11 @@ local Update = function(self, t)
 	local Hour, Minute, AmPm = CalculateTimeValues(false)
 
 	if (CurrentHour == Hour and CurrentMin == Minute and CurrentAmPm == AmPm) and not (tslu < -15000) then
-		int = 5
+		tslu = 5
 		return
 	end
 
-	if (AmPm == -1) then
+	if AmPm == -1 then
 		self.Text:SetFormattedText(EuropeString, DataText.ValueColor, Hour, DataText.ValueColor, Minute)
 	else
 		self.Text:SetFormattedText(UKString, DataText.ValueColor, Hour, DataText.ValueColor, Minute, DataText.NameColor, AMPM[AmPm])
@@ -127,9 +140,9 @@ local OnEnter = function(self)
 				local ResetTime = GetResetTime(Reset)
 
 				if (MaxBosses and MaxBosses > 0) and (DefeatedBosses and DefeatedBosses > 0) then
-					GameTooltip:AddDoubleLine(format(RaidFormat1, Name, Difficulty, DefeatedBosses, MaxBosses), ResetTime, 1, 1, 1, 1, 1, 1)
+					GameTooltip:AddDoubleLine(string_format(RaidFormat1, Name, Difficulty, DefeatedBosses, MaxBosses), ResetTime, 1, 1, 1, 1, 1, 1)
 				else
-					GameTooltip:AddDoubleLine(format(RaidFormat2, Name, Difficulty), ResetTime, 1, 1, 1, 1, 1, 1)
+					GameTooltip:AddDoubleLine(string_format(RaidFormat2, Name, Difficulty), ResetTime, 1, 1, 1, 1, 1, 1)
 				end
 
 				GameTooltip:AddLine(' ')
@@ -141,10 +154,10 @@ local OnEnter = function(self)
 
 	if AmPm == -1 then
 		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
-		format(string.join("", "%02d", ":|r%02d"), Hour, Minute), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
+		string_format(string_join("", "%02d", ":|r%02d"), Hour, Minute), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
 	else
 		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
-		format(string.join("", "", "%d", ":|r%02d", " %s|r"), Hour, Minute, AMPM[AmPm]), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
+		string_format(string_join("", "", "%d", ":|r%02d", " %s|r"), Hour, Minute, AMPM[AmPm]), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
 end
 
 	GameTooltip:Show()

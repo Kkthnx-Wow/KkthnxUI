@@ -11,7 +11,7 @@
 	<Script file="Currency.lua"/>
 	<Script file="DPS.lua"/>
 	<Script file="Durability.lua"/>
-	<Script file="FPS_MS.lua"/>
+	<Script file="Memory.lua"/>
 	<Script file="Friends.lua"/>
 	<Script file="Gold.lua"/>
 	<Script file="Guild.lua"/>

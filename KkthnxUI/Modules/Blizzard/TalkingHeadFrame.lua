@@ -11,6 +11,7 @@ local IsAddOnLoaded = IsAddOnLoaded
 -- GLOBALS: CreateFrame, TalkingHeadFrame, UIPARENT_MANAGED_FRAME_POSITIONS, TalkingHead_LoadUI
 -- GLOBALS: Model_ApplyUICamera, AlertFrame, table, hooksecurefunc
 
+local TalkingHead = CreateFrame("Frame")
 local Movers = K.Movers
 
 -- Hide TalkingHeadFrame option
@@ -29,7 +30,7 @@ if C.Blizzard.HideTalkingHead == true then
 end
 
 -- Main script
-function K:ScaleTalkingHeadFrame()
+function TalkingHead:ScaleTalkingHeadFrame()
 	local scale = C.Blizzard.TalkingHeadScale or 1
 
 	-- Sanitize
@@ -77,10 +78,10 @@ local function InitializeTalkingHead()
 	end
 end
 
-function K:PositionTalkingHead()
+function TalkingHead:PositionTalkingHead()
 	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
 		InitializeTalkingHead()
-		K:ScaleTalkingHeadFrame()
+		TalkingHead:ScaleTalkingHeadFrame()
 	else -- We want the mover to be available immediately, so we load it ourselves
 		local f = CreateFrame("Frame")
 		f:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -90,7 +91,7 @@ function K:PositionTalkingHead()
 			end
 			TalkingHead_LoadUI()
 			InitializeTalkingHead()
-			K:ScaleTalkingHeadFrame()
+			TalkingHead:ScaleTalkingHeadFrame()
 		end)
 	end
 end
@@ -98,7 +99,7 @@ end
 local Loading = CreateFrame("Frame")
 function Loading:OnEvent(event, addon)
 	if (event == "PLAYER_LOGIN") and C.Blizzard.HideTalkingHead ~= true then
-		K:PositionTalkingHead()
+		TalkingHead:PositionTalkingHead()
 	end
 end
 Loading:RegisterEvent("PLAYER_LOGIN")
