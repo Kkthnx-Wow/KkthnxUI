@@ -455,6 +455,12 @@ local function CreateUnitLayout(self, unit)
 
 			K.CreateBorder(CastBar, -1)
 
+			local Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			Spark:SetAlpha(0.6)
+			Spark:SetBlendMode("ADD")
+			CastBar.Spark = Spark
+
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
@@ -492,7 +498,7 @@ local function CreateUnitLayout(self, unit)
 			if (C.Unitframe.CastbarLatency) then
 				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
 				CastBar.SafeZone:SetTexture(C.Media.Texture)
-				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.90)
+				CastBar.SafeZone:SetVertexColor(1, 0.5, 0, 0.75)
 			end
 
 			CastBar.CustomTimeText = K.CustomCastTimeText
@@ -514,6 +520,12 @@ local function CreateUnitLayout(self, unit)
 
 			K.CreateBorder(CastBar, -1)
 
+			local Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			Spark:SetAlpha(0.6)
+			Spark:SetBlendMode("ADD")
+			CastBar.Spark = Spark
+
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
@@ -547,11 +559,11 @@ local function CreateUnitLayout(self, unit)
 				CastBar.Button:SetAllPoints(CastBar.Icon)
 			end
 
-			if (C.Unitframe.CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
-				CastBar.SafeZone:SetTexture(C.Media.Texture)
-				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.90)
-			end
+			--if (C.Unitframe.CastbarLatency) then
+			--	CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
+			--	CastBar.SafeZone:SetTexture(C.Media.Texture)
+			--	CastBar.SafeZone:SetVertexColor(1, 0.5, 0, 0.75)
+			--end
 
 			CastBar.CustomTimeText = K.CustomCastTimeText
 			CastBar.CustomDelayText = K.CustomCastDelayText
