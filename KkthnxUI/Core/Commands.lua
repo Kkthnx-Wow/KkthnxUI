@@ -60,7 +60,7 @@ SLASH_CLEARQUESTS2 = "/clquests"
 SlashCmdList.UIHELP = function()
 	for i, v in ipairs(L.SlashCommand.Help) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
 end
-SLASH_UIHELP1 = "/uihelp"
+SLASH_UIHELP1 = "/uicommands"
 SLASH_UIHELP2 = "/helpui"
 
 SLASH_SCALE1 = "/uiscale"
@@ -302,7 +302,7 @@ function GridCreate()
 end
 
 SlashCmdList.TEST_UI = function(msg)
-if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
 	if C.PulseCD.Enable == true then
 		SlashCmdList.PulseCD()
 	end
@@ -324,7 +324,6 @@ SLASH_TEST_UI1 = "/testui"
 
 -- Reduce video settings to optimize performance
 local function BoostUI()
-
 	SetCVar("SSAO", 0)
 	SetCVar("ShadowTextureSize", 1024)
 	SetCVar("environmentDetail", 60)
@@ -340,7 +339,6 @@ local function BoostUI()
 	SetCVar("timingmethod", 1)
 	SetCVar("waterDetail", 0)
 	SetCVar("weatherDensity", 0)
-
 	RestartGx()
 end
 

@@ -162,6 +162,7 @@ local Enable = function(self)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", OnLeave)
 	self:SetScript("OnMouseUp", OnMouseUp)
+	self:Update(10)
 end
 
 local Disable = function(self)

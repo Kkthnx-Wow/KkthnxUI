@@ -147,12 +147,12 @@ local OnMouseDown = function(self, button)
 			for index = 1, 4 do
 				local id, name, _, texture = GetSpecializationInfo(index)
 				if (id) then
-					specList[index + 1].text = format("|T%s:14:14:0:0:64:64:4:60:4:60|t  %s", texture, name)
+					specList[index + 1].text = format("|T%s:14:14:0:0:64:64:4:60:4:60|t %s", texture, name)
 					specList[index + 1].func = function()
-					if index and index == specIndex then
-					UIErrorsFrame:AddMessage(L.ConfigButton.SpecError, 1.0, 0.0, 0.0, 53, 5)
-					return
-					end
+						if index and index == specIndex then
+							UIErrorsFrame:AddMessage(L.ConfigButton.SpecError, 1.0, 0.0, 0.0, 53, 5)
+							return
+						end
 					SetSpecialization(index) end
 				else
 					specList[index + 1] = nil
@@ -185,7 +185,6 @@ local Enable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("CHARACTER_POINTS_CHANGED")
 	self:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-
 	self:SetScript("OnEvent", Update)
 	self:SetScript("OnMouseDown", OnMouseDown)
 	self:SetScript("OnEnter", OnEnter)
@@ -195,13 +194,11 @@ end
 
 local Disable = function(self)
 	self:UnregisterAllEvents()
-
 	self:SetScript("OnEvent", nil)
 	self:SetScript("OnMouseDown", nil)
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
-
 	self.Text:SetText("")
 end
 
-DataText:Register("LootSpec", Enable, Disable, Update)
+DataText:Register("Talents", Enable, Disable, Update)

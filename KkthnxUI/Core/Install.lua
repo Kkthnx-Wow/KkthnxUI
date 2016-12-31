@@ -35,7 +35,7 @@ local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 local StaticPopup_Show = StaticPopup_Show
 local GetCVar = GetCVar
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
@@ -44,6 +44,8 @@ local GetCVar = GetCVar
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 
 function KkthnxUIInstall:ChatSetup()
+	InstallStepComplete.Message = "Chat Set"
+	InstallStepComplete:Show()
 	-- Setting chat frames if using KkthnxUI.
 	FCF_ResetChatWindows()
 	FCF_SetLocked(ChatFrame1, 1)
@@ -223,6 +225,9 @@ function KkthnxUIInstall:CVarSetup()
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
+
+	InstallStepComplete.Message = "CVars Set"
+	InstallStepComplete:Show()
 end
 
 function KkthnxUIInstall:PositionSetup()
@@ -279,7 +284,8 @@ StatusBarBorder:SetFrameStrata("HIGH")
 StatusBarBorder:SetFrameLevel(5)
 
 local Header = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
-Header:SetFont(C.Media.Font, 16, "OUTLINE")
+Header:SetFont(C.Media.Font, 18, "OUTLINE")
+Header:SetTextColor(60/255, 155/255, 237/255)
 Header:SetPoint("TOP", KkthnxUIInstallFrame, "TOP", 0, -20)
 
 local TextOne = KkthnxUIInstallFrame:CreateFontString(nil, "OVERLAY")
@@ -331,9 +337,9 @@ Close:SetScript("OnClick", function()
 end)
 
 local StepFour = function()
-	InstallationMessageFrame.Message = "Installation Complete"
-	InstallationMessageFrame:Show()
-
+	if (GetCVarBool("Sound_EnableMusic")) then
+		PlaySoundKitID(44323)
+	end
 	KkthnxUIDataPerChar.Install = true
 	StatusBar:SetValue(4)
 	Header:SetText(L.Install.Header11)
@@ -344,6 +350,8 @@ local StepFour = function()
 	StatusBarText:SetText("4/4")
 	OptionOne:Hide()
 	OptionTwo.Text:SetText(L.Install.ButtonFinish)
+	InstallStepComplete.Message = "Install Complete"
+	InstallStepComplete:Show()
 	OptionTwo:SetScript("OnClick", function()
 		ReloadUI()
 	end)
@@ -351,10 +359,6 @@ end
 
 local StepThree = function()
 	if not OptionTwo:IsShown() then OptionTwo:Show() end
-
-	InstallationMessageFrame.Message = "Installation ChatFrames"
-	InstallationMessageFrame:Show()
-
 	StatusBar:SetValue(3)
 	Header:SetText(L.Install.Header10)
 	TextOne:SetText(L.Install.Step3Line1)
@@ -370,9 +374,6 @@ local StepThree = function()
 end
 
 local StepTwo = function()
-	InstallationMessageFrame.Message = "Installation CVARs"
-	InstallationMessageFrame:Show()
-
 	StatusBar:SetValue(2)
 	Header:SetText(L.Install.Header9)
 	StatusBarText:SetText("2/4")
@@ -420,11 +421,9 @@ local StepOne = function()
 	end)
 
 	-- this is really essential, whatever if skipped or not
-	if (ActionBars) then
+	if (C.ActionBar.Enable) then
 		SetActionBarToggles(1, 1, 1, 1)
 	end
-
-	SetCVar("alwaysShowActionBars", 1)
 end
 
 local TutorialSix = function()
@@ -537,63 +536,51 @@ function KkthnxUIInstall:Install()
 	OptionTwo:SetScript("OnClick", StepOne)
 end
 
-if (not InstallationMessageFrame) then
-	local InstallationMessageFrame = CreateFrame("Frame", "InstallationMessageFrame", UIParent)
-	InstallationMessageFrame:SetPoint("TOP", 0, -100)
-	InstallationMessageFrame:SetSize(418, 72)
-	InstallationMessageFrame:Hide()
-
-	InstallationMessageFrame:SetScript("OnShow", function(self)
-		if (self.Message) then
+if not InstallStepComplete then
+	local InstallMessage = CreateFrame("Frame", "InstallStepComplete", UIParent)
+	InstallMessage:SetSize(418, 72)
+	InstallMessage:SetPoint("TOP", 0, -190)
+	InstallMessage:Hide()
+	InstallMessage:SetScript("OnShow", function(self)
+		if self.Message then
 			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
 			self.Text:SetText(self.Message)
-			self:FadeOut()
-
-			K.Delay(2, function()
-				self:Hide()
-			end)
-
+			UIFrameFadeOut(self, 3.5, 1, 0)
+			K.Delay(1, function() self:Hide() end)
 			self.Message = nil
-
-			if (InstallationMessageFrame.FirstShow == false) then
-				if (GetCVarBool("Sound_EnableMusic")) then
-					PlaySoundKitID(44323)
-				end
-
-				InstallationMessageFrame.FirstShow = true
-			end
 		else
 			self:Hide()
 		end
 	end)
 
-	InstallationMessageFrame.FirstShow = false
+	InstallMessage.FirstShow = false
 
-	InstallationMessageFrame.Texture = InstallationMessageFrame:CreateTexture(nil, "BACKGROUND")
-	InstallationMessageFrame.Texture:SetPoint("BOTTOM")
-	InstallationMessageFrame.Texture:SetSize(326, 103)
-	InstallationMessageFrame.Texture:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	InstallationMessageFrame.Texture:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
-	InstallationMessageFrame.Texture:SetVertexColor(1, 1, 1, 0.6)
+	InstallMessage.Background = InstallMessage:CreateTexture(nil, "BACKGROUND")
+	InstallMessage.Background:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	InstallMessage.Background:SetPoint("BOTTOM")
+	InstallMessage.Background:SetSize(326, 103)
+	InstallMessage.Background:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+	InstallMessage.Background:SetVertexColor(1, 1, 1, 0.6)
 
-	InstallationMessageFrame.LineTop = InstallationMessageFrame:CreateTexture(nil, "BACKGROUND")
-	InstallationMessageFrame.LineTop:SetPoint("TOP")
-	InstallationMessageFrame.LineTop:SetSize(418, 7)
-	InstallationMessageFrame.LineTop:SetDrawLayer("BACKGROUND", 2)
-	InstallationMessageFrame.LineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	InstallationMessageFrame.LineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+	InstallMessage.LineTop = InstallMessage:CreateTexture(nil, "BACKGROUND")
+	InstallMessage.LineTop:SetDrawLayer("BACKGROUND", 2)
+	InstallMessage.LineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	InstallMessage.LineTop:SetPoint("TOP")
+	InstallMessage.LineTop:SetSize(418, 7)
+	InstallMessage.LineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	InstallationMessageFrame.LineBottom = InstallationMessageFrame:CreateTexture(nil, "BACKGROUND")
-	InstallationMessageFrame.LineBottom:SetPoint("BOTTOM")
-	InstallationMessageFrame.LineBottom:SetSize(418, 7)
-	InstallationMessageFrame.LineBottom:SetDrawLayer("BACKGROUND", 2)
-	InstallationMessageFrame.LineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	InstallationMessageFrame.LineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+	InstallMessage.LineBottom = InstallMessage:CreateTexture(nil, "BACKGROUND")
+	InstallMessage.LineBottom:SetDrawLayer("BACKGROUND", 2)
+	InstallMessage.LineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+	InstallMessage.LineBottom:SetPoint("BOTTOM")
+	InstallMessage.LineBottom:SetSize(418, 7)
+	InstallMessage.LineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	InstallationMessageFrame.Text = InstallationMessageFrame:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
-	InstallationMessageFrame.Text:SetPoint("BOTTOM", 0, 12)
-	InstallationMessageFrame.Text:SetTextColor(1, 0.82, 0)
-	InstallationMessageFrame.Text:SetJustifyH("CENTER")
+	InstallMessage.Text = InstallMessage:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
+	InstallMessage.Text:SetPoint("BOTTOM", 0, 12)
+	InstallMessage.Text:SetFont(C.Media.Font, 40, "")
+	InstallMessage.Text:SetTextColor(1, 0.82, 0)
+	InstallMessage.Text:SetJustifyH("CENTER")
 end
 
 -- On login function
@@ -602,7 +589,7 @@ Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
 	if (addon ~= "KkthnxUI") then return end
 
-	-- Create empty saved vars if they doesn't exist.
+	-- Create empty saved vars if they doesn"t exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end
 	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
 	if KkthnxUIDataPerChar.Movers == nil then KkthnxUIDataPerChar.Movers = {} end
