@@ -116,13 +116,16 @@ QueueStatusMinimapButtonBorder:Hide()
 QueueStatusFrame:SetClampedToScreen(true)
 
 -- </ Garrison icon > --
-if GarrisonLandingPageMinimapButton and C.Minimap.Garrison == true then
-	GarrisonLandingPageMinimapButton:ClearAllPoints()
-	GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
-	GarrisonLandingPageMinimapButton:SetScale(0.6 or 0.6)
-	if GarrisonLandingPageTutorialBox then
-		GarrisonLandingPageTutorialBox:SetScale(1 or 1 / 0.6 or 0.6)
-		GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+if GarrisonLandingPageMinimapButton and K.Level > 89 then
+	if C.Minimap.Garrison then
+		GarrisonLandingPageMinimapButton:ClearAllPoints()
+		GarrisonLandingPageMinimapButton:SetFrameLevel(2)
+		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		GarrisonLandingPageMinimapButton:SetScale(0.6)
+		if GarrisonLandingPageTutorialBox then
+			GarrisonLandingPageTutorialBox:SetScale(1 / 0.6)
+			GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+		end
 	end
 end
 
@@ -134,25 +137,25 @@ end
 -- </ Dungeon info > --
 if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
 	MiniMapInstanceDifficulty:ClearAllPoints()
-	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1 or -1, -1 or -1)
-	MiniMapInstanceDifficulty:SetScale(1 or 1)
+	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -1)
+	MiniMapInstanceDifficulty:SetScale(1)
 	GuildInstanceDifficulty:ClearAllPoints()
-	GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1 or -1, -1 or -1)
-	GuildInstanceDifficulty:SetScale(1 or 1)
+	GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -1)
+	GuildInstanceDifficulty:SetScale(1)
 end
 MiniMapInstanceDifficulty:SetParent(Minimap)
 GuildInstanceDifficulty:SetParent(Minimap)
 
 if MiniMapChallengeMode then
 	MiniMapChallengeMode:ClearAllPoints()
-	MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 8 or 8, -8 or -8)
-	MiniMapChallengeMode:SetScale(1 or 1)
+	MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 8, -8)
+	MiniMapChallengeMode:SetScale(1)
 end
 MiniMapChallengeMode:SetParent(Minimap)
 
 if HelpOpenTicketButton and HelpOpenWebTicketButton then
-	HelpOpenTicketButton:SetScale(1 or 1)
-	HelpOpenWebTicketButton:SetScale(1 or 1)
+	HelpOpenTicketButton:SetScale(1)
+	HelpOpenWebTicketButton:SetScale(1)
 
 	PositionTicketButtons()
 end
@@ -160,29 +163,13 @@ end
 if GameTimeFrame then
 	if C.Minimap.Calendar then
 		GameTimeFrame:ClearAllPoints()
-		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2 or -2, -2 or -2)
-		GameTimeFrame:SetScale(0.7 or 0.7)
+		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -2)
+		GameTimeFrame:SetScale(0.7)
 		GameTimeFrame:Show()
 	else
 		GameTimeFrame:Hide()
 	end
 end
-
-local AutoHide = CreateFrame("Frame")
-AutoHide:RegisterEvent("PLAYER_ENTERING_WORLD")
-AutoHide:SetScript("OnEvent", function(self, event)
-	if C.Minimap.Calendar ~= true and C.Minimap.Garrison ~= true then return end
-
-	if IsInInstance() and GameTimeFrame and GarrisonLandingPageMinimapButton then
-		GameTimeFrame:Hide()
-		GarrisonLandingPageMinimapButton:SetAlpha(0 or 0)
-		GarrisonLandingPageMinimapButton:SetScale(0.0001 or 0.0001)
-	elseif not IsInInstance() and GameTimeFrame and GarrisonLandingPageMinimapButton then
-		GameTimeFrame:Show()
-		GarrisonLandingPageMinimapButton:SetAlpha(1 or 1)
-		GarrisonLandingPageMinimapButton:SetScale(0.6 or 0.6)
-	end
-end)
 
 -- </ Enable mouse scrolling > --
 Minimap:EnableMouseWheel()
