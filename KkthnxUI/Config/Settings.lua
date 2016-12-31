@@ -170,6 +170,7 @@ C["Filger"] = {
 
 -- General
 C["General"] = {
+	["FontScale"] = 1,
 	["AutoScale"] = true,
 	["BubbleFontSize"] = 12,
 	["CustomLagTolerance"] = false,
