@@ -31,7 +31,7 @@ local UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT
 
 local function SetFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
 	if not obj then return end
-	obj:SetFont(font, floor(size * C.General.FontScale), style)
+	obj:SetFont(font, size, style)
 	if sr and sg and sb then
 		obj:SetShadowColor(sr, sg, sb)
 	end
