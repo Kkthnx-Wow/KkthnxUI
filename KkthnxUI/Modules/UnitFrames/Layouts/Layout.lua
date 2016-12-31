@@ -1204,7 +1204,7 @@ local function CreateUnitLayout(self, unit)
 	local RangeFader
 	if K.CheckAddOn("KkthnxUI") then
 		RangeFader = "SpellRange"
-	elseif self.MatchUnit == "pet" or self.MatchUnit == "party" or self.MatchUnit == "partypet" then
+	elseif self.MatchUnit == "pet" or self.MatchUnit == "party" then
 		RangeFader = "Range"
 	end
 	if RangeFader then
