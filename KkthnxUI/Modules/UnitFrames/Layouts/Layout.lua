@@ -1201,18 +1201,16 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Range Fader
-	if (self.MatchUnit == "pet" or self.IsPartyFrame) then
-		self.Range = {
-			insideAlpha = 1,
-			outsideAlpha = 0.8,
-		}
+	local RangeFader
+	if K.CheckAddOn("KkthnxUI") then
+		RangeFader = "SpellRange"
+	elseif self.MatchUnit == "pet" or self.MatchUnit == "party" or self.MatchUnit == "partypet" then
+		RangeFader = "Range"
+	end
+	if RangeFader then
+		self[RangeFader] = {insideAlpha = 1, outsideAlpha = C.UnitframePlugins.OORAlpha}
 	end
 
-	self.CFade = {
-		FadeInMin = .2,
-		FadeInMax = 1,
-		FadeTime = 0.5,
-	}
 	return self
 end
 

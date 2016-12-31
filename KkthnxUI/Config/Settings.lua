@@ -338,6 +338,7 @@ C["UnitframePlugins"] = {
 	["ShardsBar"] = true,
 	["StaggerBar"] = true,
 	["TotemsFrame"] = true,
+	["OORAlpha"] = 0.60,
 }
 
 C["Partyframe"] = {
