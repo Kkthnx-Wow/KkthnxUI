@@ -1,8 +1,23 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
+local _, ns = ...
+local oUF = ns.oUF or oUF
+
+-- Lua API
+local wipe = wipe
+local ipairs = ipairs
+local pairs = pairs
+
+-- Wow API
+local UnitCanAttack = UnitCanAttack
+local UnitPlayerControlled = UnitPlayerControlled
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: UIParent, CreateFrame
+
 -- Filters:
--- General (both):	On Players:Show all
+-- General (both): On Players:Show all
 -- "Blacklist" 0 = Show All (override default)
 -- 1 = Show only mine
 -- 2 = Hide on friendly
@@ -45,15 +60,50 @@ local BaseAuras = {
 	[63501] = 3, -- Argent Crusade Champion"s Pennant
 }
 
-for _, list in pairs({K.AuraList.Stun, K.AuraList.CC, K.AuraList.Silence, K.AuraList.Taunt}) do
+for _, list in pairs({
+	K.AuraList.Stun,
+	K.AuraList.CC,
+	K.AuraList.Silence,
+	K.AuraList.Taunt
+})
+do
 	for i = 1, #list do
 		BaseAuras[list[i]] = 0
 	end
 end
 
-local genFilter, arenaFilter, bossFilter = {}, {}, {}
-local auraFilters = {genFilter, arenaFilter, bossFilter}
-local UnitCanAttack, UnitPlayerControlled = UnitCanAttack, UnitPlayerControlled
+local genFilter = {}
+local arenaFilter = {}
+local bossFilter = {}
+
+local auraFilters = {
+	genFilter,
+	arenaFilter,
+	bossFilter
+}
+
+local WipeFilters = CreateFrame("Frame")
+WipeFilters:RegisterEvent("PLAYER_LOGIN")
+WipeFilters:SetScript("OnEvent", function(self, event)
+	if event ~= ("PLAYER_LOGIN") then return end
+
+	for _, list in ipairs(auraFilters) do
+		wipe(list)
+	end
+
+	for _, obj in pairs(oUF.objects) do
+		if obj.Auras then
+			obj.Auras:ForceUpdate()
+		end
+		if obj.Buffs then
+			obj.Buffs:ForceUpdate()
+		end
+		if obj.Debuffs then
+			obj.Debuffs:ForceUpdate()
+		end
+	end
+end)
+
 local isPlayer = {player = true, pet = true, vehicle = true}
 
 local filters = {
@@ -67,19 +117,17 @@ K.CustomAuraFilters = {
 	pet = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return (caster and isPlayer[caster]) and (not genFilter[spellID] == 3)
 	end,
-
 	target = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = genFilter[spellID]
-		if v and filters[v] then -- In Filters
+		if v and filters[v] then
 			return filters[v](self, unit, caster)
-		elseif UnitPlayerControlled(unit) then -- Player
+		elseif UnitPlayerControlled(unit) then
 			return true
-		else -- NPC
+		else
 			-- Always show BUFFS, Show boss debuffs, aura cast by the unit, or auras cast by the player's vehicle.
 			return (iconFrame.filter == "HELPFUL") or (isBossDebuff) or nameplateShowAll or (isPlayer[caster]) or (caster == unit)
 		end
 	end,
-
 	party = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = genFilter[spellID]
 		if v and filters[v] then
@@ -90,11 +138,9 @@ K.CustomAuraFilters = {
 			return true
 		end
 	end,
-
 	arena = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return arenaFilter[spellID]
 	end,
-
 	boss = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = bossFilter[spellID]
 		if v == 1 then

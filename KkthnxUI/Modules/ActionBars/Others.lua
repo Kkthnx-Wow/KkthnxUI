@@ -3,12 +3,24 @@ if C.ActionBar.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local format = string.format
-local unpack = unpack
+local string_format = string.format
 
 -- Wow API
-local ActionBars = CreateFrame("Frame")
-local CreateFrame = CreateFrame
+local CanExitVehicle = CanExitVehicle
+local GetActionBarToggles = GetActionBarToggles
+local GetPossessInfo = GetPossessInfo
+local IsPossessBarVisible = IsPossessBarVisible
+local SetActionBarToggles = SetActionBarToggles
+local SetCVar = SetCVar
+local StaticPopup_Show = StaticPopup_Show
+local TaxiRequestEarlyLanding = TaxiRequestEarlyLanding
+local UnitOnTaxi = UnitOnTaxi
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: CancelUnitBuff, GameTooltip, TAXI_CANCEL, TAXI_CANCEL_DESCRIPTION
+-- GLOBALS: GameTooltip_AddNewbieTip, CANCEL, LEAVE_VEHICLE
+-- GLOBALS: KkthnxUIDataPerChar, ActionButton_ShowGrid, VehicleExit, NUM_POSSESS_SLOTS
+
 local Movers = K.Movers
 
 StaticPopupDialogs["FIX_ACTIONBARS"] = {
@@ -40,23 +52,23 @@ ActionBars:SetScript("OnEvent", function(self, event)
 	if C.ActionBar.Grid == true then
 		SetCVar("alwaysShowActionBars", 1)
 		for i = 1, 12 do
-			local button = _G[format("ActionButton%d", i)]
+			local button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarRightButton%d", i)]
+			button = _G[string_format("MultiBarRightButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarBottomRightButton%d", i)]
+			button = _G[string_format("MultiBarBottomRightButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarLeftButton%d", i)]
+			button = _G[string_format("MultiBarLeftButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarBottomLeftButton%d", i)]
+			button = _G[string_format("MultiBarBottomLeftButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 		end

@@ -3,7 +3,10 @@ local K, C, L = unpack(select(2, ...))
 -- Wow API
 local IsShiftKeyDown = IsShiftKeyDown
 
--- CHAT SCROLL MODULE
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: FloatingChatFrame_OnMouseScroll
+
+-- Scrolling for chat
 function FloatingChatFrame_OnMouseScroll(self, delta)
 	if (delta < 0) then
 		if IsShiftKeyDown() then

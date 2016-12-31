@@ -6,7 +6,6 @@ local _G = _G
 local pairs = pairs
 local print = print
 local tonumber = tonumber
-local unpack = unpack
 
 -- Wow API
 local EnumerateFrames = EnumerateFrames
@@ -23,15 +22,19 @@ local IsAltKeyDown = IsAltKeyDown
 local IsControlKeyDown = IsControlKeyDown
 local IsModifiedClick = IsModifiedClick
 local IsShiftKeyDown = IsShiftKeyDown
+local LoadBindings = LoadBindings
+local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
 local ReloadUI = ReloadUI
+local SaveBindings = SaveBindings
+local SetBinding = SetBinding
 local SpellBook_GetSpellBookSlot = SpellBook_GetSpellBookSlot
 local StaticPopup_Hide = StaticPopup_Hide
 local StaticPopup_Show = StaticPopup_Show
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: APPLY, CANCEL, StanceButton1, PetActionButton1, ActionButton1, GameTooltip_ShowCompareItem
--- GLOBALS: DEFAULT_CHAT_FRAME, RunBinding, SetBinding, RightBarMouseOver, StanceBarMouseOver
--- GLOBALS: PetBarMouseOver, SaveBindings, LoadBindings, MacroFrameTab1, MacroFrameTab2
+-- GLOBALS: APPLY, CANCEL, StanceButton1, PetActionButton1, ActionButton1
+-- GLOBALS: DEFAULT_CHAT_FRAME, RunBinding, RightBarMouseOver, StanceBarMouseOver
+-- GLOBALS: PetBarMouseOver, MacroFrameTab1, MacroFrameTab2, GameTooltip_ShowCompareItem
 -- GLOBALS: ShoppingTooltip1, SpellBookFrame, GameTooltip SLASH_MOUSEOVERBIND1, SLASH_MOUSEOVERBIND2
 -- GLOBALS: SLASH_MOUSEOVERBIND3, SLASH_MOUSEOVERBIND4, SLASH_MOUSEOVERBIND5, StaticPopupDialogs
 

@@ -8,6 +8,7 @@ local table_sort = table.sort
 local wipe = wipe
 
 -- Wow API
+local collectgarbage = collectgarbage
 local GetAddOnInfo = GetAddOnInfo
 local GetAddOnMemoryUsage = GetAddOnMemoryUsage
 local GetAvailableBandwidth = GetAvailableBandwidth
@@ -20,7 +21,7 @@ local IsAddOnLoaded = IsAddOnLoaded
 local UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: GameTooltip
+-- GLOBALS: GameTooltip, MAINMENUBAR_LATENCY_LABEL
 
 local int, int2 = 2, 3
 local MemoryTable = {}

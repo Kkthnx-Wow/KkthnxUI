@@ -3,9 +3,8 @@ if C.ActionBar.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local gsub = string.gsub
+local string_gsub = string.gsub
 local unpack = unpack
-local strfind = strfind
 
 -- Wow API
 local GetFlyoutID = GetFlyoutID
@@ -205,38 +204,38 @@ local function UpdateHotkey(self, btype)
 		return
 	end
 
-	text = gsub(text, "(s%-)", "S")
-	text = gsub(text, "(a%-)", "A")
-	text = gsub(text, "(c%-)", "C")
-	text = gsub(text, KEY_MOUSEWHEELDOWN , "MDn")
-	text = gsub(text, KEY_MOUSEWHEELUP , "MUp")
-	text = gsub(text, KEY_BUTTON3, "M3")
-	text = gsub(text, KEY_BUTTON4, "M4")
-	text = gsub(text, KEY_BUTTON5, "M5")
-	text = gsub(text, KEY_MOUSEWHEELUP, "MU")
-	text = gsub(text, KEY_MOUSEWHEELDOWN, "MD")
-	text = gsub(text, KEY_NUMPAD0, "N0")
-	text = gsub(text, KEY_NUMPAD1, "N1")
-	text = gsub(text, KEY_NUMPAD2, "N2")
-	text = gsub(text, KEY_NUMPAD3, "N3")
-	text = gsub(text, KEY_NUMPAD4, "N4")
-	text = gsub(text, KEY_NUMPAD5, "N5")
-	text = gsub(text, KEY_NUMPAD6, "N6")
-	text = gsub(text, KEY_NUMPAD7, "N7")
-	text = gsub(text, KEY_NUMPAD8, "N8")
-	text = gsub(text, KEY_NUMPAD9, "N9")
-	text = gsub(text, KEY_NUMPADDECIMAL, "N.")
-	text = gsub(text, KEY_NUMPADDIVIDE, "N/")
-	text = gsub(text, KEY_NUMPADMINUS, "N-")
-	text = gsub(text, KEY_NUMPADMULTIPLY, "N*")
-	text = gsub(text, KEY_NUMPADPLUS, "N+")
-	text = gsub(text, KEY_PAGEUP, "PU")
-	text = gsub(text, KEY_PAGEDOWN, "PD")
-	text = gsub(text, KEY_SPACE, "SpB")
-	text = gsub(text, KEY_INSERT, "Ins")
-	text = gsub(text, KEY_HOME, "Hm")
-	text = gsub(text, KEY_DELETE, "Del")
-	text = gsub(text, KEY_INSERT_MAC, "Hlp") -- MAC
+	text = string_gsub(text, "(s%-)", "S")
+	text = string_gsub(text, "(a%-)", "A")
+	text = string_gsub(text, "(c%-)", "C")
+	text = string_gsub(text, KEY_MOUSEWHEELDOWN , "MDn")
+	text = string_gsub(text, KEY_MOUSEWHEELUP , "MUp")
+	text = string_gsub(text, KEY_BUTTON3, "M3")
+	text = string_gsub(text, KEY_BUTTON4, "M4")
+	text = string_gsub(text, KEY_BUTTON5, "M5")
+	text = string_gsub(text, KEY_MOUSEWHEELUP, "MU")
+	text = string_gsub(text, KEY_MOUSEWHEELDOWN, "MD")
+	text = string_gsub(text, KEY_NUMPAD0, "N0")
+	text = string_gsub(text, KEY_NUMPAD1, "N1")
+	text = string_gsub(text, KEY_NUMPAD2, "N2")
+	text = string_gsub(text, KEY_NUMPAD3, "N3")
+	text = string_gsub(text, KEY_NUMPAD4, "N4")
+	text = string_gsub(text, KEY_NUMPAD5, "N5")
+	text = string_gsub(text, KEY_NUMPAD6, "N6")
+	text = string_gsub(text, KEY_NUMPAD7, "N7")
+	text = string_gsub(text, KEY_NUMPAD8, "N8")
+	text = string_gsub(text, KEY_NUMPAD9, "N9")
+	text = string_gsub(text, KEY_NUMPADDECIMAL, "N.")
+	text = string_gsub(text, KEY_NUMPADDIVIDE, "N/")
+	text = string_gsub(text, KEY_NUMPADMINUS, "N-")
+	text = string_gsub(text, KEY_NUMPADMULTIPLY, "N*")
+	text = string_gsub(text, KEY_NUMPADPLUS, "N+")
+	text = string_gsub(text, KEY_PAGEUP, "PU")
+	text = string_gsub(text, KEY_PAGEDOWN, "PD")
+	text = string_gsub(text, KEY_SPACE, "SpB")
+	text = string_gsub(text, KEY_INSERT, "Ins")
+	text = string_gsub(text, KEY_HOME, "Hm")
+	text = string_gsub(text, KEY_DELETE, "Del")
+	text = string_gsub(text, KEY_INSERT_MAC, "Hlp") -- MAC
 
 	if hotkey:GetText() == Indicator then
 		hotkey:SetText("")

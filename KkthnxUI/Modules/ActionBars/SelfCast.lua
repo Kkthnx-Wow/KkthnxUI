@@ -11,6 +11,8 @@ local UIParent = UIParent
 local InCombatLockdown = InCombatLockdown
 local IsLoggedIn = IsLoggedIn
 
+-- This will not make your macros right-click self-cast.
+-- You have to manually add the [button:2] modifier to your macro in order for it to work with right-clicks.
 local SelfCast = CreateFrame("frame", "RightClickSelfCast", UIParent)
 SelfCast:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 
@@ -22,7 +24,7 @@ end
 
 function SelfCast:PLAYER_LOGIN()
 	-- if we load/reload in combat don't try to set secure attributes or we get action_blocked errors
-	 if InCombatLockdown() then self:RegisterEvent("PLAYER_REGEN_ENABLED") return end
+	if InCombatLockdown() then self:RegisterEvent("PLAYER_REGEN_ENABLED") return end
 
 	for id = 1, 12 do
 		local button = _G["ActionButton"..id]
