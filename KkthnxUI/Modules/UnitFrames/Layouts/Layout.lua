@@ -894,14 +894,10 @@ local function CreateUnitLayout(self, unit)
 			self.Leader:SetPoint("CENTER", self.Portrait, "TOPLEFT", 1, -1)
 		end
 
-		if not self.IsTargetFrame then
+		if self.IsMainFrame then
 			self.PhaseIcon = self:CreateTexture(nil, "OVERLAY")
 			self.PhaseIcon:SetPoint("CENTER", self.Portrait, "BOTTOM")
-			if self.IsMainFrame then
-				self.PhaseIcon:SetSize(26, 26)
-			else
-				self.PhaseIcon:SetSize(18, 18)
-			end
+			self.PhaseIcon:SetSize(26, 26)
 		end
 
 		self.OfflineIcon = self:CreateTexture(nil, "OVERLAY")
@@ -1077,7 +1073,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- </ Focus & Target Frame > --
-	if (self.MatchUnit == "target" or self.MatchUnit == "focus") then
+	if (self.MatchUnit == "target") then
 		-- Questmob Icon
 		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
 		self.QuestIcon:SetSize(22, 22)

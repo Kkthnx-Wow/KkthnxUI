@@ -59,9 +59,9 @@ SlashCmdList.DATATEXT = function(msg)
 	local DataText = K.DataTexts
 
 	if msg == "reset" then
-		DataText:Reset()
+		DataText:Reset() ReloadUI()
 	elseif msg == "resetgold" then
-		DataText:ResetGold()
+		DataText:ResetGold() ReloadUI()
 	elseif msg == "toggle" then
 		DataText:ToggleDataPositions()
 	end
