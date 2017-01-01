@@ -671,7 +671,7 @@ local function CreateUnitLayout(self, unit)
 		end
 	end
 
-	--Textures
+	-- Textures
 	self.Texture = self:CreateTexture(nil, "BORDER")
 	if C.Blizzard.ColorTextures == true then
 		self.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
@@ -680,7 +680,7 @@ local function CreateUnitLayout(self, unit)
 
 	-- Healthbar
 	self.Health = K.CreateStatusBar(self, nil, nil, true)
-	self.Health:SetFrameLevel(self:GetFrameLevel()-1)
+	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	tinsert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
 	self.Health.Smooth = true
@@ -694,7 +694,11 @@ local function CreateUnitLayout(self, unit)
 	self.Health.colorReaction = true
 
 	-- Health text
-	self.Health.Value = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+	if self.IsPartyFrame or self.IsTargetFrame then
+		self.Health.Value = K.SetFontString(self, C.Media.Font, 11, nil, "CENTER")
+	else
+		self.Health.Value = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+	end
 
 	-- Power bar
 	self.Power = K.CreateStatusBar(self, nil, nil, true)
@@ -707,7 +711,11 @@ local function CreateUnitLayout(self, unit)
 
 	-- Power Text
 	if (data.mpt) then
-		self.Power.Value = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+		if self.IsPartyFrame or self.IsTargetFrame then
+			self.Power.Value = K.SetFontString(self, C.Media.Font, 11, nil, "CENTER")
+		else
+			self.Power.Value = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+		end
 	end
 
 	-- Name Text

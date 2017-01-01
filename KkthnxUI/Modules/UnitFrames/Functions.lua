@@ -82,7 +82,7 @@ local function UpdatePortraitColor(self, unit, cur, max)
 		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
 	elseif (cur / max * 100 < 25) then
 		if (UnitIsPlayer(unit)) then
-			if (unit ~= "player") then
+			if (self.MatchUnit ~= "player") then
 				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
 			end
 		end
@@ -363,8 +363,8 @@ end
 function K:CheckInterrupt(unit)
 	local color
 
-	if (unit == "vehicle") then
-		unit = "player"
+	if (self.MatchUnit == "vehicle") then
+		self.MatchUnit = "player"
 	end
 
 	self:SetBackdropBorderColor(1, 1, 1)

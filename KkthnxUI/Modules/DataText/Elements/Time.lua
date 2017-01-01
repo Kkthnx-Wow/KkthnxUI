@@ -156,8 +156,6 @@ local OnEnter = function(self)
 				else
 					GameTooltip:AddDoubleLine(string_format(RaidFormat2, Name, Difficulty), ResetTime, 1, 1, 1, 1, 1, 1)
 				end
-
-				GameTooltip:AddLine(' ')
 			end
 		end
 	end
@@ -165,6 +163,7 @@ local OnEnter = function(self)
 	local Hour, Minute, AmPm = CalculateTimeValues(true)
 
 	if AmPm == -1 then
+		GameTooltip:AddLine(' ') -- Space
 		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
 		string_format(string_join("", "%02d", ":|r%02d"), Hour, Minute), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
 	else

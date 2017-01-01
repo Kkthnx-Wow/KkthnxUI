@@ -393,14 +393,6 @@ local function castColor(self, unit, name, castid)
 	local r, g, b = color[1], color[2], color[3]
 	self:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
 	self.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
-
-	-- if self.interrupt then
-	-- 	self:SetStatusBarColor(K.Colors.uninterruptible)
-	-- 	self.bg:SetColorTexture(0.78, 0.25, 0.25, 0.2)
-	-- else
-	-- 	self:SetStatusBarColor(1, 0.8, 0)
-	-- 	self.bg:SetColorTexture(1, 0.8, 0, 0.2)
-	-- end
 end
 
 local function callback(event, nameplate, unit)
