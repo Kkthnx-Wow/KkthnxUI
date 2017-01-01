@@ -8,7 +8,7 @@ local freebg = {}
 -- Styling functions
 local createbg = function()
 	local bg = CreateFrame("Frame")
-	bg:CreateShadow(1)
+	K.CreateBorder(bg, 1)
 	return bg
 end
 
@@ -63,7 +63,7 @@ end
 
 local applystyle = function(bar)
 	-- General bar settings
-	bar:SetHeight(15)
+	bar:SetHeight(16)
 	bar:SetScale(1)
 	bar.OldSetScale = bar.SetScale
 	bar.SetScale = K.Noop
@@ -127,7 +127,7 @@ local applystyle = function(bar)
 	-- Setup icon positions and other things
 	bar.candyBarIconFrame:ClearAllPoints()
 	bar.candyBarIconFrame:SetPoint("BOTTOMLEFT", bar, "BOTTOMLEFT", -28, 0)
-	bar.candyBarIconFrame:SetSize(21, 21)
+	bar.candyBarIconFrame:SetSize(20, 20)
 	bar.candyBarIconFrame.OldSetWidth = bar.candyBarIconFrame.SetWidth
 	bar.candyBarIconFrame.SetWidth = K.Noop
 	bar.candyBarIconFrame:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -141,7 +141,7 @@ local function registerStyle()
 		bars:RegisterBarStyle("KkthnxUI", {
 			apiVersion = 1,
 			version = 1,
-			GetSpacing = function(bar) return K.Scale(13) end,
+			GetSpacing = function(bar) return K.Scale(14) end,
 			ApplyStyle = applystyle,
 			BarStopped = freestyle,
 			GetStyleName = function() return "KkthnxUI" end,
@@ -150,7 +150,7 @@ local function registerStyle()
 	bars.defaultDB.barStyle = "KkthnxUI"
 	if BigWigsLoader and bars.defaultDB.barStyle == "KkthnxUI" then
 		BigWigsLoader.RegisterMessage("BigWigs_Plugins", "BigWigs_FrameCreated", function()
-			BigWigsProximityAnchor:CreateShadow()
+			K.CreateBorder(BigWigsProximityAnchor, 1)
 		end)
 	end
 end
@@ -178,9 +178,9 @@ StaticPopupDialogs.BW_TEST = {
 		if bars then
 			bars.db.profile.barStyle = "KkthnxUI"
 			bars.db.profile.font = C.Media.Font
-			bars.db.profile.BigWigsAnchor_width = 185
+			bars.db.profile.BigWigsAnchor_width = 184
 			bars.db.profile.BigWigsAnchor_x = 38
-			bars.db.profile.BigWigsEmphasizeAnchor_width = 185
+			bars.db.profile.BigWigsEmphasizeAnchor_width = 184
 			bars.db.profile.BigWigsEmphasizeAnchor_x = 420
 			bars.db.profile.BigWigsEmphasizeAnchor_y = 248
 			bars.db.profile.emphasizeGrowup = true
@@ -190,18 +190,18 @@ StaticPopupDialogs.BW_TEST = {
 			elseif C.ActionBar.BottomBars == 2 then
 				bars.db.profile.BigWigsAnchor_y = 138
 			elseif C.ActionBar.BottomBars == 3 then
-				bars.db.profile.BigWigsAnchor_y = 159
+				bars.db.profile.BigWigsAnchor_y = 160
 			end
 		end
 		local mess = BigWigs and BigWigs:GetPlugin("Messages")
 		if mess then
 			mess.db.profile.font = "KkthnxUI_Normal"
 			mess.db.profile.fontSize = 20
-			mess.db.profile.BWMessageAnchor_x = 415
+			mess.db.profile.BWMessageAnchor_x = 416
 			mess.db.profile.BWMessageAnchor_y = 320
-			mess.db.profile.BWEmphasizeMessageAnchor_x = 415
-			mess.db.profile.BWEmphasizeMessageAnchor_y = 335
-			mess.db.profile.BWEmphasizeCountdownMessageAnchor_x = 465
+			mess.db.profile.BWEmphasizeMessageAnchor_x = 416
+			mess.db.profile.BWEmphasizeMessageAnchor_y = 336
+			mess.db.profile.BWEmphasizeCountdownMessageAnchor_x = 466
 			mess.db.profile.BWEmphasizeCountdownMessageAnchor_y = 370
 		end
 		local prox = BigWigs and BigWigs:GetPlugin("Proximity")

@@ -147,18 +147,20 @@ local CreateBar = function()
 	end
 	bar:SetStatusBarTexture(C.Media.Texture)
 	bar:SetMinMaxValues(0, 100)
-	bar:CreateShadow()
+	K.CreateBorder(bar, -1)
 
 	bar.bg = bar:CreateTexture(nil, "BACKGROUND")
 	bar.bg:SetAllPoints(bar)
-	bar.bg:SetTexture(C.Media.Texture)
+	bar.bg:SetTexture(C.Media.Blank)
 
 	bar.left = K.SetFontString(bar, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, LEFT)
+	bar.left:SetShadowOffset(0, 0)
 	bar.left:SetPoint("LEFT", 2, 0)
 	bar.left:SetJustifyH("LEFT")
 	bar.left:SetSize(C.RaidCD.Width - 30, C.Media.Font_Size)
 
 	bar.right = K.SetFontString(bar, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, RIGHT)
+	bar.right:SetShadowOffset(0, 0)
 	bar.right:SetPoint("RIGHT", 1, 0)
 	bar.right:SetJustifyH("RIGHT")
 
@@ -166,8 +168,8 @@ local CreateBar = function()
 		bar.icon = CreateFrame("Button", nil, bar)
 		bar.icon:SetWidth(bar:GetHeight() + 6)
 		bar.icon:SetHeight(bar.icon:GetWidth())
-		bar.icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -4, 0)
-		bar.icon:CreateShadow()
+		bar.icon:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -8, 0)
+		K.CreateBorder(bar.icon, -1)
 	end
 	return bar
 end
@@ -204,11 +206,11 @@ local StartTimer = function(name, spellId)
 		end
 		bar:Show()
 		if color then
-			bar:SetStatusBarColor(color.r, color.g, color.b)
-			bar.bg:SetVertexColor(color.r, color.g, color.b, 0.2)
+			bar:SetStatusBarColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+			bar.bg:SetVertexColor(color.r * 0.2, color.g * 0.2, color.b * 0.2, 0.6)
 		else
-			bar:SetStatusBarColor(0.3, 0.7, 0.3)
-			bar.bg:SetVertexColor(0.3, 0.7, 0.3, 0.2)
+			bar:SetStatusBarColor(0.3 * 0.8, 0.7 * 0.8, 0.3 * 0.8)
+			bar.bg:SetVertexColor(0.3 * 0.2, 0.7 * 0.2, 0.3 * 0.2, 0.6)
 		end
 
 		bar:SetScript("OnUpdate", BarUpdate)
@@ -235,11 +237,11 @@ local StartTimer = function(name, spellId)
 		end
 		bar:Show()
 		if color then
-			bar:SetStatusBarColor(color.r, color.g, color.b)
-			bar.bg:SetVertexColor(color.r, color.g, color.b, 0.2)
+			bar:SetStatusBarColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+			bar.bg:SetVertexColor(color.r * 0.2, color.g * 0.2, color.b * 0.2, 0.6)
 		else
-			bar:SetStatusBarColor(0.3, 0.7, 0.3)
-			bar.bg:SetVertexColor(0.3, 0.7, 0.3, 0.2)
+			bar:SetStatusBarColor(0.3 * 0.8, 0.7 * 0.8, 0.3 * 0.8)
+			bar.bg:SetVertexColor(0.3 * 0.2, 0.7 * 0.2, 0.3 * 0.2, 0.6)
 		end
 
 		bar:SetScript("OnUpdate", BarUpdate)
