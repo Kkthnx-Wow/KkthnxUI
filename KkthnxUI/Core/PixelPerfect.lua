@@ -60,7 +60,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Make sure that UI scaling is turned on
 	local UseUIScale = GetCVarBool("useUiScale")
 	if not UseUIScale then
-		SetCVar("useUiScale", 1)
+		K.LockCVar("useUiScale", 1)
 	end
 
 	-- Automatically change the scale if auto scaling is activated

@@ -233,9 +233,9 @@ QuestTracking:SetScript("OnEvent", function(self, event)
 	if event == ("PLAYER_ENTERING_WORLD") then
 		local _, instanceType = IsInInstance()
 		if instanceType == "raid" then
-			SetCVar("showQuestTrackingTooltips", 0)
+			K.LockCVar("showQuestTrackingTooltips", 0)
 		else
-			SetCVar("showQuestTrackingTooltips", 1)
+			K.LockCVar("showQuestTrackingTooltips", 1)
 		end
 	end
 

@@ -57,6 +57,12 @@ if C.Nameplates.Combat == true then
 	function KkthnxUIPlates:PLAYER_REGEN_DISABLED()
 		SetCVar("nameplateShowEnemies", 1)
 	end
+
+	if event == "PLAYER_REGEN_ENABLED" then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+	end
 end
 
 KkthnxUIPlates:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -71,26 +77,15 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	if C.Nameplates.EnhancedThreat == true then
 		SetCVar("threatWarning", 3)
 	end
-	SetCVar("namePlateMinScale", 1)
-	SetCVar("namePlateMaxScale", 1)
-	SetCVar("nameplateLargerScale", 1)
-	SetCVar("nameplateMinAlpha", 1)
-	SetCVar("nameplateMaxAlpha", 1)
+	K.LockCVar("namePlateMinScale", 1)
+	K.LockCVar("namePlateMaxScale", 1)
+	K.LockCVar("nameplateLargerScale", 1)
+	K.LockCVar("nameplateMinAlpha", 1)
+	K.LockCVar("nameplateMaxAlpha", 1)
 
-	local OtherTopInset = GetCVarBool("nameplateOtherTopInset")
-	if not OtherTopInset and not InCombatLockdown() then
-		SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
-	end
-
-	local OtherTopInset = GetCVarBool("nameplateOtherBottomInset")
-	if not OtherTopInset and not InCombatLockdown() then
-		SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
-	end
-
-	local MaxDistance = GetCVarBool("nameplateMaxDistance")
-	if not MaxDistance and not InCombatLockdown() then
-		SetCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
-	end
+	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
+	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
+	K.LockCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
 
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
