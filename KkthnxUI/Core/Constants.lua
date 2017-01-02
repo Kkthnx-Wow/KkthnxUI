@@ -21,7 +21,7 @@ local Windowed = Display_DisplayModeDropDown:windowedmode()
 local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
 local RoleUpdater = CreateFrame("Frame")
 
-local CheckRole = function(self)
+local CheckRole = function(self, event)
 	local Tank = "TANK"
 	local Melee = "MELEE"
 	local Caster = "CASTER"

@@ -47,7 +47,7 @@ local function SetFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
 end
 
 local KkthnxUIFonts = CreateFrame("Frame", nil, UIParent)
-KkthnxUIFonts:RegisterEvent("PLAYER_LOGIN")
+KkthnxUIFonts:RegisterEvent("ADDON_LOADED")
 KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	local NORMAL = C.Media.Font
 	local COMBAT = C.Media.Combat_Font
@@ -56,6 +56,7 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
 
 	UNIT_NAME_FONT = NORMAL
+	NAMEPLATE_FONT = NORMAL
 	DAMAGE_TEXT_FONT = COMBAT
 	STANDARD_TEXT_FONT = NORMAL
 
@@ -154,7 +155,18 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(WorldMapTextFont, NORMAL, 31, "OUTLINE", 40, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ZoneTextString, NORMAL, 32, "OUTLINE")
 
-	if event == "PLAYER_LOGIN" then
-		self:UnregisterEvent("PLAYER_LOGIN")
+	-- I have no idea why the channel list is getting fucked up
+	-- but re-setting the font obj seems to fix it
+	for i = 1, MAX_CHANNEL_BUTTONS do
+		_G["ChannelButton"..i.."Text"]:SetFontObject(GameFontNormalSmallLeft)
+	end
+
+	for _, button in pairs(PaperDollTitlesPane.buttons) do
+		button.text:SetFontObject(GameFontHighlightSmallLeft)
+	end
+
+	-- Fix help frame category buttons, NFI why they need fixing
+	for i = 1, 6 do
+		_G["HelpFrameButton"..i.."Text"]:SetFontObject(GameFontNormalMed3)
 	end
 end)
