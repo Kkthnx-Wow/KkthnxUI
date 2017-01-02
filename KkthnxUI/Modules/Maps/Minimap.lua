@@ -119,12 +119,17 @@ QueueStatusFrame:SetClampedToScreen(true)
 if GarrisonLandingPageMinimapButton and K.Level > 89 then
 	if C.Minimap.Garrison then
 		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		GarrisonLandingPageMinimapButton:SetFrameLevel(2)
 		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		GarrisonLandingPageMinimapButton:SetAlpha(1)
 		GarrisonLandingPageMinimapButton:SetScale(0.6)
 		if GarrisonLandingPageTutorialBox then
 			GarrisonLandingPageTutorialBox:SetScale(1 / 0.6)
 			GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+		end
+		if C.Minimap.FadeButtons then
+			GarrisonLandingPageMinimapButton:SetAlpha(0)
+			GarrisonLandingPageMinimapButton:HookScript("OnEnter", function() GarrisonLandingPageMinimapButton:FadeIn() end)
+			GarrisonLandingPageMinimapButton:HookScript("OnLeave", function() GarrisonLandingPageMinimapButton:FadeOut() end)
 		end
 	end
 end
@@ -163,9 +168,15 @@ end
 if GameTimeFrame then
 	if C.Minimap.Calendar then
 		GameTimeFrame:ClearAllPoints()
-		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -2)
+		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -1, -2)
+		GameTimeFrame:SetAlpha(1)
 		GameTimeFrame:SetScale(0.7)
 		GameTimeFrame:Show()
+		if C.Minimap.FadeButtons then
+			GameTimeFrame:SetAlpha(0)
+			GameTimeFrame:HookScript("OnEnter", function() GameTimeFrame:FadeIn() end)
+			GameTimeFrame:HookScript("OnLeave", function() GameTimeFrame:FadeOut() end)
+		end
 	else
 		GameTimeFrame:Hide()
 	end
