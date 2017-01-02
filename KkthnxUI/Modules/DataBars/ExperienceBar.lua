@@ -121,4 +121,8 @@ ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
 
+if event == "PLAYER_ENTERING_WORLD" then
+	ExperienceBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
+
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)

@@ -1128,6 +1128,12 @@ local function CreateUnitLayout(self, unit)
 			self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
 			self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateThreat)
+
+			if event == "PLAYER_REGEN_DISABLED" then
+				self:UnregisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
+			elseif event == "PLAYER_REGEN_ENABLED" then
+				self:UnregisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
+			end
 		end
 	end
 
@@ -1222,8 +1228,6 @@ local function CreateUnitLayout(self, unit)
 	if RangeFader then
 		self[RangeFader] = {insideAlpha = 1, outsideAlpha = C.UnitframePlugins.OORAlpha}
 	end
-
-	return self
 end
 
 -- local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly

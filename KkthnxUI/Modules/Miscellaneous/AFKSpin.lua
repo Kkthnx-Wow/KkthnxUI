@@ -10,20 +10,26 @@ local floor = floor
 local format, strsub, gsub = string.format, string.sub, string.gsub
 local GetTime = GetTime
 local random = math.random
+local select = select
 local tostring, pcall = tostring, pcall
 
 -- Wow API
+local CalendarGetDate = CalendarGetDate
 local CinematicFrame = CinematicFrame
 local CloseAllWindows = CloseAllWindows
 local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
 local DND = DND
 local GetAchievementInfo = GetAchievementInfo
+local GetActiveSpecGroup = GetActiveSpecGroup
 local GetBattlefieldStatus = GetBattlefieldStatus
 local GetColoredName = GetColoredName
+local GetGameTime = GetGameTime
 local GetGuildInfo = GetGuildInfo
 local GetScreenHeight = GetScreenHeight
 local GetScreenWidth = GetScreenWidth
+local GetSpecialization = GetSpecialization
+local GetSpecializationInfo = GetSpecializationInfo
 local GetStatistic = GetStatistic
 local InCombatLockdown = InCombatLockdown
 local IsInGuild = IsInGuild
@@ -36,11 +42,16 @@ local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 local RemoveExtraSpaces = RemoveExtraSpaces
 local Screenshot = Screenshot
 local SetCVar = SetCVar
+local tonumber = tonumber
+local UnitClass = UnitClass
 local UnitFactionGroup = UnitFactionGroup
 local UnitIsAFK = UnitIsAFK
+local UnitLevel = UnitLevel
+local UnitRace = UnitRace
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel
+-- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, date
+-- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME
 
 local stats = {
 	1042,	-- Number of hugs
@@ -387,6 +398,7 @@ function AFK:Initialize()
 	self.AFKMode.bottom.logo:SetSize(512 / 1.2, 256 / 1.2)
 	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 40)
 	self.AFKMode.bottom.logo:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Logo")
+
 	local factionGroup = UnitFactionGroup("player")
 
 	-- </ factionGroup = "Alliance" > --

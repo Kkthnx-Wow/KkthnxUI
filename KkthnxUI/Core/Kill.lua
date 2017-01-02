@@ -75,11 +75,11 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		end
 	end
 
-	Advanced_UIScaleSlider:Kill()
-	Advanced_UseUIScale:Kill()
+	K.KillMenuOption(true, "Advanced_UseUIScale")
+	K.KillMenuOption(true, "Advanced_UIScaleSlider")
 
 	if C.Cooldown.Enable then
-		InterfaceOptionsActionBarsPanelCountdownCooldowns:Kill()
+		K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
 		local DisableCD = GetCVarBool("countdownForCooldowns")
 		if not DisableCD and not InCombatLockdown() then
 			SetCVar("countdownForCooldowns", 0)
@@ -128,15 +128,15 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 
 	if C.ActionBar.Enable then
 		if InCombatLockdown() then return end
-    InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.0001)
-    InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.0001)
-    InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.0001)
-    InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelRight:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelRight:SetScale(0.0001)
 	end
 
 	if C.Minimap.Enable then

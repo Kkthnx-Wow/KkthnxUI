@@ -24,7 +24,9 @@ if C.Blizzard.HideTalkingHead == true then
 				TalkingHeadFrame:Hide()
 			end)
 
-			self:UnregisterEvent(event)
+			if event == "event" then -- Do we have to dertermine the event?
+				self:UnregisterEvent(event)
+			end
 		end
 	end)
 end
@@ -86,7 +88,7 @@ function TalkingHead:PositionTalkingHead()
 		local f = CreateFrame("Frame")
 		f:RegisterEvent("PLAYER_ENTERING_WORLD")
 		f:SetScript("OnEvent", function(self, event)
-			if event == ("PLAYER_ENTERING_WORLD") then
+			if event == "PLAYER_ENTERING_WORLD" then
 				self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 			end
 			TalkingHead_LoadUI()

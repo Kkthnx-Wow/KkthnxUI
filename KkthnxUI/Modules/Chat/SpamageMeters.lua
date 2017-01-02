@@ -1,4 +1,4 @@
-﻿local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C.Chat.Enable ~= true or C.Chat.DamageMeterSpam ~= true then return end
 
 -- Lua API
@@ -37,7 +37,7 @@ local firstLines = {
 
 local nextLines = {
 	"^(%d+)\. (.*)$",										-- Recount, Details! and Skada
-	"^(.*)   (.*)$",										-- Additional Skada
+	"^(.*) (.*)$",										-- Additional Skada
 	"^[+-]%d+.%d",											-- Numeration deathlog details
 	"^(%d+). (.*):(.*)(%d+)(.*)(%d+)%%(.*)%((%d+)%)$"		-- TinyDPS
 }

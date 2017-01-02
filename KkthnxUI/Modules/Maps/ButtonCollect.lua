@@ -59,5 +59,8 @@ collect:SetScript("OnEvent", function(self)
 	if #buttons == 0 then
 		button:Hide()
 	end
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 	PositionAndStyle()
 end)

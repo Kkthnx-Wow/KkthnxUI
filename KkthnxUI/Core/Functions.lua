@@ -1,16 +1,22 @@
 local K, C, L = unpack(select(2, ...))
 
 -- Lua API
-local abs = math.abs
-local floor, ceil = math.floor, math.ceil
-local format, find, gsub = format, string.find, string.gsub
-local len = string.len
-local match = string.match
-local modf = math.modf
+local _G = _G
+local format = format
+local GetCVar = GetCVar
+local InCombatLockdown = InCombatLockdown
+local math_abs = math.abs
+local math_floor = math.floor
+local math_modf = math.modf
+local pairs = pairs
 local print = print
-local reverse = string.reverse
-local strsub = string.sub
-local tinsert, tremove = tinsert, tremove
+local SetCVar = SetCVar
+local string_gsub = string.gsub
+local string_lower = string.lower
+local string_match = string.match
+local string_reverse = string.reverse
+local string_sub = string.sub
+local table_insert, table_remove = table.insert, table.remove
 local tonumber, type = tonumber, type
 local unpack, select = unpack, select
 
@@ -31,7 +37,7 @@ local UnitIsGroupLeader = UnitIsGroupLeader
 local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: GameTooltip, WEEKLY
+-- GLOBALS: GameTooltip, WEEKLY, UIFrameHider, UIHider,UIParent
 
 local Locale = GetLocale()
 
@@ -67,9 +73,9 @@ function K.SetFontString(parent, fontName, fontHeight, fontStyle, justify)
 end
 
 function K.Comma(num)
-	local Left, Number, Right = match(num, "^([^%d]*%d)(%d*)(.-)$")
+	local Left, Number, Right = string_match(num, "^([^%d]*%d)(%d*)(.-)$")
 
-	return 	Left .. reverse(gsub(reverse(Number), "(%d%d%d)", "%1,")) .. Right
+	return 	Left .. string_reverse(string_gsub(string_reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
 function K.ShortValue(value)
@@ -98,9 +104,9 @@ end
 function K.Round(num, idp)
 	if (idp and idp > 0) then
 		local mult = 10 ^ idp
-		return floor(num * mult + 0.5) / mult
+		return math_floor(num * mult + 0.5) / mult
 	end
-	return floor(num + 0.5)
+	return math_floor(num + 0.5)
 end
 
 -- RgbToHex color
@@ -112,7 +118,7 @@ function K.RGBToHex(r, g, b)
 end
 
 function K.CheckAddOn(addon)
-	return K.AddOns[strlower(addon)] or false
+	return K.AddOns[string_lower(addon)] or false
 end
 
 -- We might need to move these to API?
@@ -242,13 +248,49 @@ end
 
 function K.FormatMoney(value)
 	if value >= 1e4 then
-		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, strsub(value, -4) / 1e2, strsub(value, -2))
+		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, string_sub(value, -4) / 1e2, string_sub(value, -2))
 	elseif value >= 1e2 then
-		return format("|cffc7c7cf%ds |r|cffeda55f%dc|r", strsub(value, -4) / 1e2, strsub(value, -2))
+		return format("|cffc7c7cf%ds |r|cffeda55f%dc|r", string_sub(value, -4) / 1e2, string_sub(value, -2))
 	else
-		return format("|cffeda55f%dc|r", strsub(value, -2))
+		return format("|cffeda55f%dc|r", string_sub(value, -2))
 	end
 end
+
+-- LockedCVars
+K.LockedCVars = {}
+function K:PLAYER_REGEN_ENABLED(_)
+	if(self.CVarUpdate) then
+		for cvarName, value in pairs(self.LockedCVars) do
+			if(GetCVar(cvarName) ~= value) then
+				SetCVar(cvarName, value)
+				print(cvarName, value)
+			end
+		end
+		self.CVarUpdate = nil
+	end
+end
+
+local function CVAR_UPDATE(cvarName, value)
+	if (K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+		if(InCombatLockdown()) then
+			K.CVarUpdate = true
+			print(K.CVarUpdate)
+			return
+		end
+
+		SetCVar(cvarName, K.LockedCVars[cvarName])
+		print(cvarName, K.LockedCVars[cvarName])
+	end
+end
+
+hooksecurefunc("SetCVar", CVAR_UPDATE)
+function K:LockCVar(cvarName, value)
+	if(GetCVar(cvarName) ~= value) then
+		SetCVar(cvarName, value)
+	end
+	self.LockedCVars[cvarName] = value
+end
+
 
 -- http://www.wowwiki.com/ColorGradient
 function K.ColorGradient(a, b, ...)
@@ -271,7 +313,7 @@ function K.ColorGradient(a, b, ...)
 	end
 
 	local num = (select("#", ...) / 3)
-	local segment, relpercent = modf(percent * (num - 1))
+	local segment, relpercent = math_modf(percent * (num - 1))
 	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
 
 	return r1 + (r2 - r1) * relpercent, g1 + (g2 - g1) * relpercent, b1 + (b2 - b1) * relpercent
@@ -336,15 +378,15 @@ function K.FormatTime(s)
 	local day, hour, minute = 86400, 3600, 60
 
 	if s >= day then
-		return format("%dd", floor(s / day + 0.5)), s % day
+		return format("%dd", math_floor(s / day + 0.5)), s % day
 	elseif s >= hour then
-		return format("%dh", floor(s / hour + 0.5)), s % hour
+		return format("%dh", math_floor(s / hour + 0.5)), s % hour
 	elseif s >= minute then
-		return format("%dm", floor(s / minute + 0.5)), s % minute
+		return format("%dm", math_floor(s / minute + 0.5)), s % minute
 	elseif s >= minute / 12 then
-		return floor(s + 0.5), (s * 100 - floor(s * 100)) / 100
+		return math_floor(s + 0.5), (s * 100 - math_floor(s * 100)) / 100
 	end
-	return format("%.1f", s), (s * 100 - floor(s * 100)) / 100
+	return format("%.1f", s), (s * 100 - math_floor(s * 100)) / 100
 end
 
 --Add time before calling a function
@@ -360,12 +402,12 @@ function K.Delay(delay, func, ...)
 			local count = #waitTable
 			local i = 1
 			while(i <= count) do
-				local waitRecord = tremove(waitTable,i)
-				local d = tremove(waitRecord,1)
-				local f = tremove(waitRecord,1)
-				local p = tremove(waitRecord,1)
+				local waitRecord = table_remove(waitTable, i)
+				local d = table_remove(waitRecord,1)
+				local f = table_remove(waitRecord,1)
+				local p = table_remove(waitRecord,1)
 				if (d > elapse) then
-					tinsert(waitTable,i,{d-elapse,f,p})
+					table_insert(waitTable, i, {d-elapse, f, p})
 					i = i + 1
 				else
 					count = count - 1
@@ -374,7 +416,7 @@ function K.Delay(delay, func, ...)
 			end
 		end)
 	end
-	tinsert(waitTable,{delay,func,{...}})
+	table_insert(waitTable, {delay, func, {...}})
 	return true
 end
 
@@ -391,7 +433,7 @@ function K.Currency(id, weekly, capped)
 
 	if (amount == 0 and r == 1) then return end
 	if weekly then
-		if id == 390 then week = floor(abs(week) / 100) end
+		if id == 390 then week = math_floor(math_abs(week) / 100) end
 		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, "Current: " .. amount .. " - " .. WEEKLY .. ": " .. week .. " / " .. weekmax, r, g, b, r, g, b) end
 	elseif capped then
 		if id == 392 then maxed = 4000 end

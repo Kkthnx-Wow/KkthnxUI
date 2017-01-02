@@ -77,40 +77,6 @@ local GetResetTime = function(seconds)
 	end
 end
 
-local tslu = 3
-local Update = function(self, t)
-	tslu = tslu - t
-
-	if (tslu > 0) then
-		return
-	end
-
-	if GameTimeFrame.flashInvite then
-		K.Flash(self, 0.53, true)
-	else
-		K.StopFlash(self)
-	end
-
-	local Hour, Minute, AmPm = CalculateTimeValues(false)
-
-	if (CurrentHour == Hour and CurrentMin == Minute and CurrentAmPm == AmPm) and not (tslu < -15000) then
-		tslu = 5
-		return
-	end
-
-	if AmPm == -1 then
-		self.Text:SetFormattedText(EuropeString, DataText.ValueColor, Hour, DataText.ValueColor, Minute)
-	else
-		self.Text:SetFormattedText(UKString, DataText.ValueColor, Hour, DataText.ValueColor, Minute, DataText.NameColor, AMPM[AmPm])
-	end
-
-	CurrentHour = Hour
-	CurrentMin = Minute
-	CurrentAmPm = AmPm
-
-	tslu = 5
-end
-
 local OnEnter = function(self)
 	GameTooltip:SetOwner(self:GetTooltipAnchor())
 	GameTooltip:ClearLines()
@@ -169,9 +135,47 @@ local OnEnter = function(self)
 	else
 		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
 		string_format(string_join("", "", "%d", ":|r%02d", " %s|r"), Hour, Minute, AMPM[AmPm]), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
-end
+	end
 
 	GameTooltip:Show()
+end
+
+local tslu = 3
+function Update(self, t)
+	tslu = tslu - t
+
+	if (tslu > 0) then
+		return
+	end
+
+	if GameTimeFrame.flashInvite then
+		K.Flash(self, 0.53, true)
+	else
+		K.StopFlash(self)
+	end
+
+	if EnteredFrame then
+		OnEnter(self)
+	end
+
+	local Hour, Minute, AmPm = CalculateTimeValues(false)
+
+	if (CurrentHour == Hour and CurrentMin == Minute and CurrentAmPm == AmPm) and not (tslu < -15000) then
+		tslu = 5
+		return
+	end
+
+	if AmPm == -1 then
+		self.Text:SetFormattedText(EuropeString, DataText.ValueColor, Hour, DataText.ValueColor, Minute)
+	else
+		self.Text:SetFormattedText(UKString, DataText.ValueColor, Hour, DataText.ValueColor, Minute, DataText.NameColor, AMPM[AmPm])
+	end
+
+	CurrentHour = Hour
+	CurrentMin = Minute
+	CurrentAmPm = AmPm
+
+	tslu = 5
 end
 
 local OnLeave = function()
@@ -203,6 +207,7 @@ local Disable = function(self)
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
 	self:SetScript("OnEvent", nil)
+	self:Update(nil)
 end
 
-DataText:Register(L.DataText.Time, Enable, Disable, Update)
+DataText:Register(L.DataText.Time, Enable, Disable, OnEvent, Update)

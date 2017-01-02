@@ -67,11 +67,14 @@ bar:RegisterEvent("UNIT_POWER_BAR_SHOW")
 bar:RegisterEvent("UNIT_POWER_BAR_HIDE")
 bar:RegisterEvent("PLAYER_ENTERING_WORLD")
 bar:SetScript("OnEvent", function(self)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	if UnitAlternatePowerInfo("player") then
 		self:Show()
 	else
 		self:Hide()
+	end
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end)
 

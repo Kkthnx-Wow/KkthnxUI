@@ -74,4 +74,8 @@ frame:SetScript("OnEvent", function(self, event, addon)
 			end
 		end
 	end
+
+	if event == "ADDON_LOADED" then
+		self:UnregisterEvent("ADDON_LOADED")
+	end
 end)

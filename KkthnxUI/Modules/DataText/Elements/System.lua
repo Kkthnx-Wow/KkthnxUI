@@ -174,4 +174,4 @@ local Disable = function(self)
 	self:SetScript("OnMouseUp", nil)
 end
 
-DataText:Register("System", Enable, Disable, Update)
+DataText:Register("System", Enable, Disable, OnEvent, Update)

@@ -1,25 +1,34 @@
 local K, C, L = unpack(select(2, ...))
--- if not C.general.rareAlert then return end
+-- if not C.Announcments.RareAlert then return end
 
-local blacklist = {
-	[971] = true, -- Alliance garrison
-	[976] = true, -- Horde garrison
+-- Wow API
+local ChatTypeInfo = ChatTypeInfo
+local GetCurrentMapAreaID =GetCurrentMapAreaID
+local GetObjectIconTextureCoords = GetObjectIconTextureCoords
+local PlaySoundFile = PlaySoundFile
+local print = print
+local RaidNotice_AddMessage = RaidNotice_AddMessage
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: C_Vignettes, RaidWarningFrame
+
+local AlertBackList = {
+	[971] = true, -- </ Alliance garrison > --
+	[976] = true, -- </ Horde garrison > --
 }
 
-local function OnVignetteAdded(self, event, id)
-	if blacklist[GetCurrentMapAreaID()] then return end
-	if not id then return end
-	self.vignettes = self.vignettes or {}
-	if self.vignettes[id] then return end
-	local x, y, name, icon = C_Vignettes.GetVignetteInfoFromInstanceID(id)
-	local left, right, top, bottom = GetObjectIconTextureCoords(icon)
-	PlaySoundFile("Sound\\Interface\\RaidWarning.ogg")
-	local str = "|TInterface\\MINIMAP\\ObjectIconsAtlas:0:0:0:0:256:256:"..(left * 256)..":"..(right * 256)..":"..(top * 256)..":"..(bottom * 256).."|t"
-	RaidNotice_AddMessage(RaidWarningFrame, str..name.." spotted!", ChatTypeInfo["RAID_WARNING"])
-	print(str..name, "spotted!")
-	self.vignettes[id] = true
-end
+local RareAlert = CreateFrame("Frame")
+RareAlert:RegisterEvent("VIGNETTE_ADDED")
+RareAlert:SetScript("OnEvent", function(self, event, ID)
+	if AlertBackList[GetCurrentMapAreaID()] or not ID then return end -- </ Kill it if we do not have an id > --
 
-local eventHandler = CreateFrame("Frame")
-eventHandler:RegisterEvent("VIGNETTE_ADDED")
-eventHandler:SetScript("OnEvent", OnVignetteAdded)
+	self.Vignettes = self.Vignettes or {}
+	if self.Vignettes[ID] then return end
+	local X, Y, Name, Icon = C_Vignettes.GetVignetteInfoFromInstanceID(ID)
+	local Left, Right, Top, Bottom = GetObjectIconTextureCoords(Icon)
+	PlaySoundFile("Sound\\Interface\\RaidWarning.ogg")
+	local String = "|TInterface\\MINIMAP\\ObjectIconsAtlas:0:0:0:0:256:256:"..(Left * 256)..":"..(Right * 256)..":"..(Top * 256)..":"..(Bottom * 256).."|t"
+	RaidNotice_AddMessage(RaidWarningFrame, String..Name.." spotted!", ChatTypeInfo["RAID_WARNING"])
+	print(String..Name, "spotted!")
+	self.Vignettes[ID] = true
+end)

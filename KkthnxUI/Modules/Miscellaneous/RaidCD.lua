@@ -1,6 +1,31 @@
 local K, C, L = unpack(select(2, ...))
 if C.RaidCD.Enable ~= true then return end
 
+-- Lua API
+local bit_band = bit.band
+local pairs = pairs
+local select = select
+local string_format = string.format
+local table_insert = table.insert
+local table_remove = table.remove
+local table_sort = table.sort
+
+-- Wow API
+local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
+local GetSpellCharges = GetSpellCharges
+local GetSpellInfo = GetSpellInfo
+local GetSpellLink = GetSpellLink
+local GetTime = GetTime
+local IsInGroup = IsInGroup
+local IsInInstance = IsInInstance
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local SendChatMessage = SendChatMessage
+local UnitClass = UnitClass
+local UnitName = UnitName
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, SLASH_RaidCD1, CreateFrame, UIParent, LEFT, RIGHT
+
 local Movers = K.Movers
 
 -- Raid cooldowns(alRaidCD by Allez, msylgj0@NGACN)
@@ -11,9 +36,6 @@ local show = {
 }
 
 local filter = COMBATLOG_OBJECT_AFFILIATION_RAID + COMBATLOG_OBJECT_AFFILIATION_PARTY + COMBATLOG_OBJECT_AFFILIATION_MINE
-local band = bit.band
-local sformat = string.format
-local floor = math.floor
 local currentNumResses = 0
 local charges = nil
 local inBossCombat = nil
@@ -76,9 +98,9 @@ local StopTimer = function(bar)
 	bar:SetScript("OnUpdate", nil)
 	bar:Hide()
 	if bar.isResses then
-		tremove(Ressesbars, bar.id)
+		table_remove(Ressesbars, bar.id)
 	else
-		tremove(bars, bar.id)
+		table_remove(bars, bar.id)
 	end
 	UpdatePositions()
 end
@@ -128,9 +150,9 @@ end
 local OnMouseDown = function(self, button)
 	if button == "LeftButton" then
 		if self.isResses then
-			SendChatMessage(sformat(L.Cooldowns.CombatResRemainder.."%d, "..L.Cooldowns.NextTime.."%s.", currentNumResses, self.right:GetText()), K.CheckChat())
+			SendChatMessage(string_format(L.Cooldowns.CombatResRemainder.."%d, "..L.Cooldowns.NextTime.."%s.", currentNumResses, self.right:GetText()), K.CheckChat())
 		else
-			SendChatMessage(sformat(L.Cooldowns.Cooldowns.."%s - %s: %s", self.name, GetSpellLink(self.spellId), self.right:GetText()), K.CheckChat())
+			SendChatMessage(string_format(L.Cooldowns.Cooldowns.."%s - %s: %s", self.name, GetSpellLink(self.spellId), self.right:GetText()), K.CheckChat())
 		end
 	elseif button == "RightButton" then
 		StopTimer(self)
@@ -218,9 +240,9 @@ local StartTimer = function(name, spellId)
 		bar:SetScript("OnEnter", OnEnter)
 		bar:SetScript("OnLeave", OnLeave)
 		bar:SetScript("OnMouseDown", OnMouseDown)
-		tinsert(Ressesbars, bar)
+		table_insert(Ressesbars, bar)
 		if C.RaidCD.Expiration == true then
-			table.sort(Ressesbars, sortByExpiration)
+			table_sort(Ressesbars, sortByExpiration)
 		end
 	else
 		bar.startTime = GetTime()
@@ -249,9 +271,9 @@ local StartTimer = function(name, spellId)
 		bar:SetScript("OnEnter", OnEnter)
 		bar:SetScript("OnLeave", OnLeave)
 		bar:SetScript("OnMouseDown", OnMouseDown)
-		tinsert(bars, bar)
+		table_insert(bars, bar)
 		if C.RaidCD.Expiration == true then
-			table.sort(bars, sortByExpiration)
+			table_sort(bars, sortByExpiration)
 		end
 	end
 	UpdatePositions()
@@ -286,7 +308,7 @@ local OnEvent = function(self, event, ...)
 	end
 	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local _, eventType, _, _, sourceName, sourceFlags = ...
-		if band(sourceFlags, filter) == 0 then return end
+		if bit_band(sourceFlags, filter) == 0 then return end
 		if eventType == "SPELL_RESURRECT" or eventType == "SPELL_CAST_SUCCESS" or eventType == "SPELL_AURA_APPLIED" then
 			local spellId = select(12, ...)
 			if sourceName then

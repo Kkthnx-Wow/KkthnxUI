@@ -2,7 +2,8 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local select = select
-local strlower = string.lower
+local string_lower = string.lower
+local string_match = string.match
 
 -- Wow API
 local GetAddOnEnableState = GetAddOnEnableState
@@ -20,7 +21,7 @@ local Windowed = Display_DisplayModeDropDown:windowedmode()
 local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
 local RoleUpdater = CreateFrame("Frame")
 
-local CheckRole = function(self, event, unit)
+local CheckRole = function(self)
 	local Tank = "TANK"
 	local Melee = "MELEE"
 	local Caster = "CASTER"
@@ -62,22 +63,25 @@ K.Realm = GetRealmName()
 K.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
 K.Color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[K.Class]
 K.Version = GetAddOnMetadata(K.UIName, "Version")
-K.ScreenHeight = tonumber(string.match(K.Resolution, "%d+x(%d+)"))
-K.ScreenWidth = tonumber(string.match(K.Resolution, "(%d+)x+%d"))
+K.ScreenHeight = tonumber(string_match(K.Resolution, "%d+x(%d+)"))
+K.ScreenWidth = tonumber(string_match(K.Resolution, "(%d+)x+%d"))
 K.VersionNumber = tonumber(K.Version)
 K.WoWPatch, K.WoWBuild, K.WoWPatchReleaseDate, K.TocVersion = GetBuildInfo()
 K.WoWBuild = select(2, GetBuildInfo()) K.WoWBuild = tonumber(K.WoWBuild)
 
 K.AddOns = {}
-
 for i = 1, GetNumAddOns() do
 	local Name = GetAddOnInfo(i)
-	K.AddOns[strlower(Name)] = GetAddOnEnableState(K.Name, Name) > 0
+	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) > 0
 end
 
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
 RoleUpdater:SetScript("OnEvent", K.CheckRole)
+
+if event == "PLAYER_ENTERING_WORLD" then
+	RoleUpdater:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
 
 SLASH_RELOADUI1, SLASH_RELOADUI2 = "/rl", "/reloadui"
 SlashCmdList["RELOADUI"] = ReloadUI

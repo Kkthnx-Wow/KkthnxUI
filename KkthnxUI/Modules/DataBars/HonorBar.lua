@@ -112,4 +112,8 @@ HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("HONOR_LEVEL_UPDATE")
 HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
 
+if event == "PLAYER_ENTERING_WORLD" then
+	HonorBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
+
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

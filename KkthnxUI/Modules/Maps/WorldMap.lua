@@ -50,7 +50,7 @@ function WorldMap:SetLargeWorldMap()
 	WorldMapFrame:EnableMouse(true)
 	WorldMapTooltip:SetFrameStrata("TOOLTIP")
 	WorldMapCompareTooltip1:SetFrameStrata("TOOLTIP")
- 	WorldMapCompareTooltip2:SetFrameStrata("TOOLTIP")
+	WorldMapCompareTooltip2:SetFrameStrata("TOOLTIP")
 
 	if WorldMapFrame:GetAttribute("UIPanelLayout-area") ~= "center" then
 		SetUIPanelAttribute(WorldMapFrame, "area", "center")
@@ -158,13 +158,16 @@ function WorldMap:Enable()
 		CoordsHolder.MouseCoords:SetTextColor(1, 1 ,0)
 		CoordsHolder.PlayerCoords:SetFontObject(NumberFontNormal)
 		CoordsHolder.MouseCoords:SetFontObject(NumberFontNormal)
-		CoordsHolder.PlayerCoords:SetText(PLAYER..":   0, 0")
-		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..":   0, 0")
+		CoordsHolder.PlayerCoords:SetText(PLAYER..": 0, 0")
+		CoordsHolder.MouseCoords:SetText(MOUSE_LABEL..": 0, 0")
 
 		self.CoordsTimer = self:ScheduleRepeatingTimer("UpdateCoords", 0.05)
 		WorldMap:PositionCoords()
 
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
 	end
 
 	if (C.WorldMap.SmallWorldMap) then
@@ -178,6 +181,12 @@ function WorldMap:Enable()
 			self:SetLargeWorldMap()
 		elseif WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE then
 			self:SetSmallWorldMap()
+		end
+
+		if event == "PLAYER_REGEN_ENABLED" then
+			self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		elseif event == "PLAYER_REGEN_DISABLED" then
+			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end
 	end
 

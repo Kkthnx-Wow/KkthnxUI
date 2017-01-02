@@ -128,10 +128,8 @@ end
 
 ColorTextures:RegisterEvent("PLAYER_ENTERING_WORLD")
 ColorTextures:SetScript("OnEvent", function(self, event, ...)
-	ColorTextures:Style()
-	ColorTextures:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
+	ColorTextures:Style()
 end)

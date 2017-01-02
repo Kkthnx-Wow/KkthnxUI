@@ -18,8 +18,11 @@ SelfCast:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) 
 
 function SelfCast:PLAYER_REGEN_ENABLED()
 	self:PLAYER_LOGIN()
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	self.PLAYER_REGEN_ENABLED = nil
+
+	if event == "PLAYER_REGEN_ENABLED" then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+		self.PLAYER_REGEN_ENABLED = nil
+	end
 end
 
 function SelfCast:PLAYER_LOGIN()
@@ -33,8 +36,10 @@ function SelfCast:PLAYER_LOGIN()
 		end
 	end
 
-	self:UnregisterEvent("PLAYER_LOGIN")
-	self.PLAYER_LOGIN = nil
+	if event == "PLAYER_LOGIN" then
+		self:UnregisterEvent("PLAYER_LOGIN")
+		self.PLAYER_LOGIN = nil
+	end
 end
 
 if IsLoggedIn() then SelfCast:PLAYER_LOGIN() else SelfCast:RegisterEvent("PLAYER_LOGIN") end

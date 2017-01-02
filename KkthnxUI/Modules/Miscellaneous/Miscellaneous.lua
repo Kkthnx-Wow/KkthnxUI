@@ -16,10 +16,11 @@ local GetMaxBattlefieldID = GetMaxBattlefieldID
 local GetNumRandomDungeons = GetNumRandomDungeons
 local GetZoneText = GetZoneText
 local hooksecurefunc = hooksecurefunc
+local IsInInstance = IsInInstance
+local IsInRaid = IsInRaid
 local PlaySound = PlaySound
 local PlaySoundFile = PlaySoundFile
 local SetCVar = SetCVar
-local IsInRaid = IsInRaid
 
 -- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
 -- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
@@ -76,6 +77,10 @@ TicketFrame:SetScript("OnEvent", function(self, event)
 			TicketStatusFrame:SetPoint("TOPLEFT", TicketStatusMover, 0, 0)
 		end
 	end)
+
+	if event == "PLAYER_LOGIN" then
+		self:UnregisterEvent("PLAYER_LOGIN")
+	end
 end)
 
 -- LevelUp + BossBanner Mover
@@ -104,6 +109,10 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 	BossBanner:ClearAllPoints()
 	BossBanner:SetPoint("TOP", LBBMover)
 	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
+
+	if event == "PLAYER_LOGIN" then
+		self:UnregisterEvent("PLAYER_LOGIN")
+	end
 end)
 
 -- Force readycheck warning
@@ -121,6 +130,10 @@ ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
+	end
+
+	if event == "PLAYER_LOGIN" then
+		self:UnregisterEvent("PLAYER_LOGIN")
 	end
 end)
 
@@ -200,6 +213,10 @@ if C.Misc.BGSpam == true then
 	Fixer:RegisterEvent("PLAYER_ENTERING_WORLD")
 	Fixer:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	Fixer:SetScript("OnEvent", DisableSpam)
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end
 
 -- Boss Banner Hider
@@ -220,5 +237,9 @@ QuestTracking:SetScript("OnEvent", function(self, event)
 		else
 			SetCVar("showQuestTrackingTooltips", 1)
 		end
+	end
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end)

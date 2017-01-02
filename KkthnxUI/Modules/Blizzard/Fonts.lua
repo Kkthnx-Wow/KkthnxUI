@@ -8,6 +8,7 @@ local pairs = pairs
 -- Wow API
 local MAX_CHANNEL_BUTTONS = MAX_CHANNEL_BUTTONS
 local UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT
+local SetCVar = SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: AchievementFont_Small, CoreAbilityFont, GameTooltipTextSmall, InvoiceFont_Med
@@ -46,7 +47,7 @@ local function SetFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
 end
 
 local KkthnxUIFonts = CreateFrame("Frame", nil, UIParent)
-KkthnxUIFonts:RegisterEvent("ADDON_LOADED")
+KkthnxUIFonts:RegisterEvent("PLAYER_LOGIN")
 KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	local NORMAL = C.Media.Font
 	local COMBAT = C.Media.Combat_Font
@@ -57,6 +58,21 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	UNIT_NAME_FONT = NORMAL
 	DAMAGE_TEXT_FONT = COMBAT
 	STANDARD_TEXT_FONT = NORMAL
+
+	if (K.ScreenWidth > 3840) then
+		K.KillMenuOption(true, "InterfaceOptionsCombatTextPanelHealing")
+		K.KillMenuOption(true, "InterfaceOptionsCombatTextPanelPeriodicDamage")
+		K.KillMenuOption(true, "InterfaceOptionsCombatTextPanelPetDamage")
+		K.KillMenuOption(true, "InterfaceOptionsCombatTextPanelTargetDamage")
+		SetCVar("CombatDamage", 0)
+		SetCVar("CombatHealing", 0)
+		SetCVar("CombatLogPeriodicSpells", 0)
+		SetCVar("PetMeleeDamage", 0)
+
+		local INVISIBLE = [=[Interface\Addons\KkthnxUI\Media\Fonts\Invisible.ttf]=]
+		COMBAT = INVISIBLE
+		DAMAGE_TEXT_FONT = INVISIBLE
+	end
 
 	-- Base fonts
 	SetFont(AchievementFont_Small, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
@@ -138,16 +154,7 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(WorldMapTextFont, NORMAL, 31, "OUTLINE", 40, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ZoneTextString, NORMAL, 32, "OUTLINE")
 
-	for i = 1, MAX_CHANNEL_BUTTONS do
-		_G["ChannelButton"..i.."Text"]:SetFontObject(GameFontNormalSmallLeft)
-	end
-
-	for _, button in pairs(PaperDollTitlesPane.buttons) do
-		button.text:SetFontObject(GameFontHighlightSmallLeft)
-	end
-
-	-- Fix help frame category buttons, NFI why they need fixing
-	for i = 1, 6 do
-		_G["HelpFrameButton"..i.."Text"]:SetFontObject(GameFontNormalMed3)
+	if event == "PLAYER_LOGIN" then
+		self:UnregisterEvent("PLAYER_LOGIN")
 	end
 end)

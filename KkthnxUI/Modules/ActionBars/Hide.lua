@@ -181,6 +181,10 @@ EventSpiral:SetScript("OnEvent", function()
 	if C.ActionBar.StanceBarMouseover == true and C.ActionBar.StanceBarHorizontal == true then
 		StanceBarMouseOver(0)
 	end
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 end)
 
 if (C.ActionBar.RightBarsMouseover == true and C.ActionBar.PetBarHorizontal == false and C.ActionBar.PetBarHide == false) or (C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true and C.ActionBar.PetBarHide == false) then

@@ -3,6 +3,7 @@ if C.Misc.ItemLevel ~= true then return end
 
 -- Lua API
 local _G = _G
+local C_Timer_After = C_Timer.After
 local floor = math.floor
 local pairs = pairs
 local select = select
@@ -14,11 +15,12 @@ local tonumber = tonumber
 local GetDetailedItemLevelInfo = GetDetailedItemLevelInfo
 local GetInventoryItemLink = GetInventoryItemLink
 local GetInventorySlotInfo = GetInventorySlotInfo
+local GetItemGem = GetItemGem
 local GetItemInfo = GetItemInfo
 local UnitLevel = UnitLevel
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CharacterFrame, InspectFrame
+-- GLOBALS: CharacterFrame, InspectFrame,CreateFrame
 
 local _G = _G
 local equiped = {} -- Table to store equiped items
@@ -75,7 +77,7 @@ local function _updateItems(unit, frame)
 						end
 					end
 					if delay then
-						C_Timer.After(0.1, function()
+						C_Timer_After(0.1, function()
 							local realItemLevel = _getRealItemLevel(i, unit)
 							realItemLevel = realItemLevel or ""
 							frame[i]:SetText("|cFFFFFF00"..realItemLevel)

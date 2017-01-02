@@ -1,8 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 
 -- Wow API
-local UnitIsAFK = UnitIsAFK
 local collectgarbage = collectgarbage
+local InCombatLockdown = InCombatLockdown
+local UnitIsAFK = UnitIsAFK
 
 local EventCount = 0
 local CollectGarbage = CreateFrame("Frame")
@@ -15,19 +16,16 @@ CollectGarbage:SetScript("OnEvent", function(self, event, unit)
 		collectgarbage("collect")
 		EventCount = 0
 
-		-- print(collectgarbage, event)
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		else
+		if event == event then
 			self:UnregisterEvent(event)
 		end
 	else
 		if (unit ~= "player") then
 			return
 		end
+
 		if UnitIsAFK(unit) then
 			collectgarbage("collect")
-			-- print(collectgarbage, UnitIsAFK)
 		end
 	end
 end)

@@ -76,4 +76,8 @@ end
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
 
+if event == "PLAYER_ENTERING_WORLD" then
+	ReputationBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
+end
+
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)

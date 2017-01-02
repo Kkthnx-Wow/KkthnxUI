@@ -33,17 +33,31 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local colors = K.Colors
 
-function K.UnitframeValue(self)
-	if self <= 999 then
-		return self
+function K.UnitframeValue(value, raw)
+	if not value then return "" end
+	local absvalue = abs(value)
+	local str, val
+
+	if absvalue >= 1e10 then
+		str, val = "%.0fb", value / 1e9
+	elseif absvalue >= 1e9 then
+		str, val = "%.1fb", value / 1e9
+	elseif absvalue >= 1e7 then
+		str, val = "%.1fm", value / 1e6
+	elseif absvalue >= 1e6 then
+		str, val = "%.2fm", value / 1e6
+	elseif absvalue >= 1e5 then
+		str, val = "%.0fk", value / 1e3
+	elseif absvalue >= 1e3 then
+		str, val = "%.1fk", value / 1e3
+	else
+		str, val = "%d", value
 	end
-	local Value
-	if self >= 1000000 then
-		Value = format("%.1fm", self/1000000)
-		return Value
-	elseif self >= 1000 then
-		Value = format("%.1fk", self/1000)
-		return Value
+
+	if raw then
+		return str, val
+	else
+		return format(str, val)
 	end
 end
 
