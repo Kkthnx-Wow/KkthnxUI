@@ -4,6 +4,9 @@ if K.CheckAddOn("DBM-Core") then return end
 -- Wow API
 local GetTime = GetTime
 
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PVPReadyDialog
+
 -- </ Queue timer on PVPReadyDialog > --
 local frame = CreateFrame("Frame", nil, PVPReadyDialog)
 frame:SetPoint("TOP", PVPReadyDialog, "BOTTOM", 0, -10)

@@ -76,12 +76,12 @@ for i = 1, GetNumAddOns() do
 end
 
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
+RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
+RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
+RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
+RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
 RoleUpdater:SetScript("OnEvent", K.CheckRole)
-
-if event == "PLAYER_ENTERING_WORLD" then
-	RoleUpdater:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
 
 SLASH_RELOADUI1, SLASH_RELOADUI2 = "/rl", "/reloadui"
 SlashCmdList["RELOADUI"] = ReloadUI

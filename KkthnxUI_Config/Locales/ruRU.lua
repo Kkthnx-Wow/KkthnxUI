@@ -288,6 +288,7 @@ UIConfigLocal.TooltipInstanceLock = "Отображать статус забл�
 UIConfigLocal.TooltipItemCount = "Количество предметов"
 UIConfigLocal.TooltipItemIcon = "Иконка предмета в подсказке"
 UIConfigLocal.TooltipItemLevel = "Display targets average itemlevel on tooltip"
+UIConfigLocal.TooltipRank = "Display targets guild rank on tooltip when shift is held down"
 UIConfigLocal.TooltipSpellID = "ID заклинаний"
 UIConfigLocal.TooltipTalents = "Display targets talents on tooltip"
 

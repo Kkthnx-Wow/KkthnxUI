@@ -14,14 +14,17 @@ local unpack = unpack
 -- Wow API
 local CreateFrame = CreateFrame
 local GetSpellInfo = GetSpellInfo
+local UnitCanAttack = UnitCanAttack
 local UnitClass = UnitClass
 local UnitHealth = UnitHealth
 local UnitHealthMax = UnitHealthMax
 local UnitIsConnected = UnitIsConnected
 local UnitIsDead = UnitIsDead
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
+local UnitIsFriend = UnitIsFriend
 local UnitIsGhost = UnitIsGhost
 local UnitIsPlayer = UnitIsPlayer
+local UnitIsUnit = UnitIsUnit
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 local UnitSelectionColor = UnitSelectionColor
@@ -32,34 +35,6 @@ local UnitSelectionColor = UnitSelectionColor
 local _, ns = ...
 local oUF = ns.oUF or oUF
 local colors = K.Colors
-
-function K.UnitframeValue(value, raw)
-	if not value then return "" end
-	local absvalue = abs(value)
-	local str, val
-
-	if absvalue >= 1e10 then
-		str, val = "%.0fb", value / 1e9
-	elseif absvalue >= 1e9 then
-		str, val = "%.1fb", value / 1e9
-	elseif absvalue >= 1e7 then
-		str, val = "%.1fm", value / 1e6
-	elseif absvalue >= 1e6 then
-		str, val = "%.2fm", value / 1e6
-	elseif absvalue >= 1e5 then
-		str, val = "%.0fk", value / 1e3
-	elseif absvalue >= 1e3 then
-		str, val = "%.1fk", value / 1e3
-	else
-		str, val = "%d", value
-	end
-
-	if raw then
-		return str, val
-	else
-		return format(str, val)
-	end
-end
 
 function K.MatchUnit(unit)
 	if (unit:match("vehicle")) then
@@ -116,15 +91,15 @@ local function SetValueText(element, tag, cur, max, notMana)
 	local s
 
 	if tag == TEXT_SHORT then
-		s = format("%s", cur > 0 and K.UnitframeValue(cur) or "")
+		s = format("%s", cur > 0 and K.ShortValue(cur) or "")
 	elseif tag == TEXT_LONG then
-		s = format("%s - %.1f%%", K.UnitframeValue(cur), cur / max * 100)
+		s = format("%s - %.1f%%", K.ShortValue(cur), cur / max * 100)
 	elseif tag == TEXT_MINMAX then
-		s = format("%s/%s", K.UnitframeValue(cur), K.UnitframeValue(max))
+		s = format("%s/%s", K.ShortValue(cur), K.ShortValue(max))
 	elseif tag == TEXT_MAX then
-		s = format("%s", K.UnitframeValue(max))
+		s = format("%s", K.ShortValue(max))
 	elseif tag == TEXT_DEF then
-		s = format("%s", (cur == max and "" or "-"..K.UnitframeValue(max - cur)))
+		s = format("%s", (cur == max and "" or "-"..K.ShortValue(max - cur)))
 	elseif tag == TEXT_PERCENT then
 		s = format("%d%%", cur / max * 100)
 	else

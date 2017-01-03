@@ -1,11 +1,21 @@
 local K, C, L = unpack(select(2, ...))
 
-local IsMounted = IsMounted
+-- Lua API
+local pairs = pairs
+local select = select
+
+-- Wow API
+local C_MountJournal = C_MountJournal
 local CanExitVehicle = CanExitVehicle
-local IsFlyableArea = IsFlyableArea
 local IsControlKeyDown = IsControlKeyDown
-local GetNumCompanions = GetNumCompanions
-local GetCompanionInfo = GetCompanionInfo
+local IsFlyableArea = IsFlyableArea
+local IsMounted = IsMounted
+local IsSwimming = IsSwimming
+local IsUsableSpell = IsUsableSpell
+local UnitBuff = UnitBuff
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: Mountz, Dismount, VehicleExit
 
 -- Universal Mount macro(by Monolit)
 -- /cancelform [noform:4]

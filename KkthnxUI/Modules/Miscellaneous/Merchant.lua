@@ -1,6 +1,34 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.AutoSellGrays ~= true or C.Misc.SellMisc ~= true then return end
 
+-- Lua API
+local _G = _G
+local math_floor = math.floor
+local select = select
+
+-- Wow API
+local CanGuildBankRepair = CanGuildBankRepair
+local CanMerchantRepair = CanMerchantRepair
+local GetContainerItemID = GetContainerItemID
+local GetContainerItemInfo = GetContainerItemInfo
+local GetContainerItemLink = GetContainerItemLink
+local GetContainerNumSlots = GetContainerNumSlots
+local GetGuildBankWithdrawMoney = GetGuildBankWithdrawMoney
+local GetItemInfo = GetItemInfo
+local GetMerchantItemInfo = GetMerchantItemInfo
+local GetMerchantItemLink= GetMerchantItemLink
+local GetMerchantItemMaxStack = GetMerchantItemMaxStack
+local GetMouseFocus = GetMouseFocus
+local GetRepairAllCost = GetRepairAllCost
+local IsAltKeyDown = IsAltKeyDown
+local IsInGuild = IsInGuild
+local IsShiftKeyDown = IsShiftKeyDown
+local UseContainerItem = UseContainerItem
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: PickupMerchantItem, DEFAULT_CHAT_FRAME, RepairAllItems, BuyMerchantItem
+-- GLOBALS: MerchantFrame, GameTooltip, ITEM_VENDOR_STACK_BUY
+
 local MerchantScript = CreateFrame("Frame")
 
 K.MerchantFilter = {
@@ -48,7 +76,7 @@ MerchantScript:SetScript("OnEvent", function()
 		end
 
 		if (Cost > 0) then
-			local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
+			local Gold, Silver, Copper = math_floor(Cost / 10000) or 0, math_floor((Cost % 10000) / 100) or 0, Cost % 100
 			DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.SoldTrash.." |cffffffff"..Gold..L.Misc.GoldShort.." |cffffffff"..Silver..L.Misc.SilverShort.." |cffffffff"..Copper..L.Misc.CopperShort..".", 0255, 255, 0)
 		end
 	end
@@ -71,8 +99,8 @@ MerchantScript:SetScript("OnEvent", function()
 					RepairAllItems()
 
 					local Copper = Cost % 100
-					local Silver = math.floor((Cost % 10000) / 100)
-					local Gold = math.floor(Cost / 10000)
+					local Silver = math_floor((Cost % 10000) / 100)
+					local Gold = math_floor(Cost / 10000)
 					DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.RepairCost.." |cffffffff"..Gold..L.Misc.GoldShort.." |cffffffff"..Silver..L.Misc.SilverShort.." |cffffffff"..Copper..L.Misc.CopperShort..".", 255, 255, 0)
 				else
 					DEFAULT_CHAT_FRAME:AddMessage(L.Merchant.NotEnoughMoney, 255, 0, 0)

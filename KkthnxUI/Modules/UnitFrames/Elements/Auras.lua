@@ -85,7 +85,7 @@ do
 		stealable:SetBlendMode("ADD")
 		button.stealable = stealable
 
-		if C.Unitframe.AuraTimer then
+		if C.Unitframe.AuraTimer and not C.Cooldown.Enable then
 			button.cd.noCooldownCount = true
 			if button.cd.SetHideCountdownNumbers then
 				button.cd:SetHideCountdownNumbers(true)
@@ -99,11 +99,6 @@ do
 		button:SetScript("OnClick", Aura_OnClick)
 		button:SetScript("OnEnter", Aura_OnEnter)
 		button:SetScript("OnLeave", Aura_OnLeave)
-
-		-- if (element.largeAuraList) then -- i should really make a custom element by now THIS IS GETTING OUT OF HAND
-		-- 	button._SetSize = button.SetSize
-		-- 	button.SetSize = K.Noop
-		-- end
 
 		element[element.createdIcons] = button
 		return button
@@ -199,10 +194,6 @@ do
 				button:SetScript("OnUpdate", nil)
 			end
 		end
-
-		-- if (element.largeAuraList) then
-		-- 	element.largeAuraList[offset] = IS_PLAYER[button.owner]
-		-- end
 	end
 end
 

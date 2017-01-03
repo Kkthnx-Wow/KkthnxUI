@@ -1,12 +1,18 @@
 local K, C, L = unpack(select(2, ...))
 if C.Automation.TabBinder ~= true then return end
 
-local CreateFrame = CreateFrame
+-- Wow API
+local GetBindingAction = GetBindingAction
 local GetBindingKey = GetBindingKey
 local GetCurrentBindingSet = GetCurrentBindingSet
-local IsInInstance = IsInInstance
 local GetZonePVPInfo = GetZonePVPInfo
-local GetBindingAction = GetBindingAction
+local InCombatLockdown = InCombatLockdown
+local IsInInstance = IsInInstance
+local SaveBindings = SaveBindings
+local SetBinding = SetBinding
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ERR_DUEL_REQUESTED
 
 -- </ Auto change Tab key to only target enemy players(RE/TabBinder by Veev/AcidWeb) > --
 local TabBinder = CreateFrame("Frame")

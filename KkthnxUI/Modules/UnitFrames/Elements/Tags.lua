@@ -83,9 +83,9 @@ oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:DruidMana"] = function(unit)
 	local min, max = UnitPower(unit, SPELL_POWER_MANA), UnitPowerMax(unit, SPELL_POWER_MANA)
 	if (min == max) then
-		return K.UnitframeValue(min)
+		return K.ShortValue(min)
 	else
-		return K.UnitframeValue(min).."/"..K.UnitframeValue(max)
+		return K.ShortValue(min).."/"..K.ShortValue(max)
 	end
 end
 

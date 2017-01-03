@@ -287,6 +287,7 @@ UIConfigLocal.TooltipInstanceLock = "Your instance lock status in tooltip"
 UIConfigLocal.TooltipItemCount = "Item count"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
 UIConfigLocal.TooltipItemLevel = "Display targets average itemlevel on tooltip"
+UIConfigLocal.TooltipRank = "Display targets guild rank on tooltip when shift is held down"
 UIConfigLocal.TooltipSpellID = "Spell ID"
 UIConfigLocal.TooltipTalents = "Display targets talents on tooltip"
 

@@ -2,14 +2,14 @@ local K, C, L = unpack(select(2, ...))
 if C.Automation.ScreenShot ~= true then return end
 
 -- Wow API
-local C_Timer = C_Timer
+local C_Timer_After = C_Timer.After
 local Screenshot = Screenshot
 
 -- Take screenshots of defined events (Sinaris)
 local function OnEvent(self, event, ...)
-	C_Timer.After(1, function() Screenshot() end)
+	C_Timer_After(1, function() Screenshot() end)
 end
 
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("ACHIEVEMENT_EARNED")
-frame:SetScript("OnEvent", OnEvent)
+local AScreenShot = CreateFrame("Frame")
+AScreenShot:RegisterEvent("ACHIEVEMENT_EARNED")
+AScreenShot:SetScript("OnEvent", OnEvent)

@@ -257,39 +257,43 @@ function K.FormatMoney(value)
 end
 
 -- LockedCVars
-K.LockedCVars = {}
-function K.PLAYER_REGEN_ENABLED(_)
-	if(K.CVarUpdate) then
-		for cvarName, value in pairs(K.LockedCVars) do
-			if(GetCVar(cvarName) ~= value) then
-				SetCVar(cvarName, value)
-				-- print(cvarName, value)
+do
+	K.LockedCVars = {}
+	function K:PLAYER_REGEN_ENABLED(_)
+		if(self.CVarUpdate) then
+			for cvarName, value in pairs(K.LockedCVars) do
+				if(GetCVar(cvarName) ~= value) then
+					SetCVar(cvarName, value)
+					-- print(cvarName, value)
+				end
 			end
+			K.CVarUpdate = nil
 		end
-		K.CVarUpdate = nil
 	end
-end
 
-local function CVAR_UPDATE(cvarName, value)
-	if(K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-		if(InCombatLockdown()) then
-			K.CVarUpdate = true
-			return
+	local function CVAR_UPDATE(cvarName, value)
+		if(K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+			if(InCombatLockdown()) then
+				K.CVarUpdate = true
+				return
+			end
+
+			SetCVar(cvarName, K.LockedCVars[cvarName])
+			-- print(cvarName, K.LockedCVars[cvarName])
 		end
+	end
 
-		SetCVar(cvarName, K.LockedCVars[cvarName])
-		-- print(cvarName, K.LockedCVars[cvarName])
+	hooksecurefunc("SetCVar", CVAR_UPDATE)
+	function K.LockCVar(cvarName, value)
+		if(GetCVar(cvarName) ~= value) then
+			SetCVar(cvarName, value)
+			-- print(cvarName, value)
+		end
+		K.LockedCVars[cvarName] = value
+		-- print(value)
 	end
 end
 
-hooksecurefunc("SetCVar", CVAR_UPDATE)
-function K.LockCVar(cvarName, value)
-	if(GetCVar(cvarName) ~= value) then
-		SetCVar(cvarName, value)
-		-- print(cvarName, value)
-	end
-	K.LockedCVars[cvarName] = value
-end
 
 -- http://www.wowwiki.com/ColorGradient
 function K.ColorGradient(a, b, ...)

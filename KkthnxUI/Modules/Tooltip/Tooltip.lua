@@ -52,7 +52,7 @@ local UnitReaction = UnitReaction
 local UnitRealmRelationship = UnitRealmRelationship
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SPECIALIZATION, NONE, UNKNOWN, Health
+-- GLOBALS: SPECIALIZATION, NONE, UNKNOWN, Health, guildName
 -- GLOBALS: DEAD, GameTooltip, GameTooltipTextLeft2, TooltipAnchor, GameTooltipTextLeft1
 -- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, InspectFrame, MaxHealth
 
@@ -165,7 +165,7 @@ function Tooltip:OnTooltipSetUnit()
 	local Race = UnitRace(Unit)
 	local Class = UnitClass(Unit)
 	local Level = UnitLevel(Unit)
-	local Guild, GuildRankName, _, GuildRealm = GetGuildInfo(Unit)
+	local Guild, GuildRankName, _ = GetGuildInfo(Unit)
 	local Name, Realm = UnitName(Unit)
 	local CreatureType = UnitCreatureType(Unit)
 	local CreatureClassification = UnitClassification(Unit)
@@ -185,7 +185,7 @@ function Tooltip:OnTooltipSetUnit()
 
 		if(Realm and Realm ~= "") then
 			if IsShiftKeyDown() then
-				Name = Name.."-"..Realm
+				Name = Name.." - "..Realm
 			elseif(Relationship == LE_REALM_RELATION_COALESCED) then
 				Name = Name..FOREIGN_SERVER_LABEL
 			elseif(Relationship == LE_REALM_RELATION_VIRTUAL) then
@@ -207,26 +207,22 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	local Offset = 2
-	if(guildName) then
-		if(GuildRealm and IsShiftKeyDown()) then
-			GuildName = GuildName.."-"..GuildRealm
+	if ((UnitIsPlayer(Unit) and Guild)) then
+		if(C.Tooltip.Rank and IsShiftKeyDown()) then
+			Guild = Guild.." - "..GuildRankName
 		end
 
-		if(GuildRank) then
-			GameTooltipTextLeft2:SetText(("<|cff00ff10%s|r> [|cff00ff10%s|r]"):format(GuildName, GuildRankName))
-		else
-			GameTooltipTextLeft2:SetText(("<|cff00ff10%s|r>"):format(GuildName))
-		end
-		Offset = 3
+		Line2:SetFormattedText("%s", IsInGuild() and GetGuildInfo("player") == Guild and "|cff0090ff".. Guild .."|r" or "|cff00ff10".. Guild .."|r")
+		Offset = Offset + 1
 	end
 
 	for i = Offset, NumLines do
 		local Line = _G["GameTooltipTextLeft"..i]
 		if (Line:GetText():find("^" .. LEVEL)) then
 			if (UnitIsPlayer(Unit) and Race) then
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Race, Color, Class .."|r")
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Race, Color, Class .."|r")
 			else
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
 			end
 
 			break

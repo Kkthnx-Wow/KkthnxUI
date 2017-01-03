@@ -1,6 +1,16 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.SlotDurability ~= true then return end
 
+-- Lua API
+local _G = _G
+local math_min = math.min
+local pairs = pairs
+local rawget = rawget
+local string_format = string.format
+
+-- Wow API
+local GetInventoryItemDurability = GetInventoryItemDurability
+
 local SLOTIDS = {}
 for _, slot in pairs({"Head", "Shoulder", "Chest", "Waist", "Legs", "Feet", "Wrist", "Hands", "MainHand", "SecondaryHand"}) do
 	SLOTIDS[slot] = GetInventorySlotInfo(slot.."Slot")
@@ -38,11 +48,11 @@ function frame:OnEvent(event, arg1)
 		local v1, v2 = GetInventoryItemDurability(id)
 
 		if v1 and v2 and v2 ~= 0 then
-			min = math.min(v1 / v2, min)
+			min = math_min(v1 / v2, min)
 			local str = fontstrings[slot]
 			str:SetTextColor(RYGColorGradient(v1 / v2))
 			if v1 < v2 then
-				str:SetText(string.format("%d%%", v1 / v2 * 100))
+				str:SetText(string_format("%d%%", v1 / v2 * 100))
 			else
 				str:SetText(nil)
 			end

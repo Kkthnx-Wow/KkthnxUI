@@ -10,7 +10,7 @@ local _G = _G
 local pairs = pairs
 local print = print
 local select = select
-local tinsert = table.insert
+local table_insert = table.insert
 local unpack = unpack
 
 -- Wow API
@@ -32,7 +32,7 @@ local UnitIsUnit = UnitIsUnit
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
 -- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
 -- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
--- GLOBALS: SetPortraitTexture, oUF_KkthnxPet
+-- GLOBALS: SetPortraitTexture, oUF_KkthnxPet, SLASH_TEST_UF1
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 local pathFat = textPath.."Fat\\"
@@ -681,7 +681,7 @@ local function CreateUnitLayout(self, unit)
 	-- Healthbar
 	self.Health = K.CreateStatusBar(self, nil, nil, true)
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
-	tinsert(self.mouseovers, self.Health)
+	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
 	self.Health.Smooth = true
 	self.Health.frequentUpdates = true
@@ -703,7 +703,7 @@ local function CreateUnitLayout(self, unit)
 	-- Power bar
 	self.Power = K.CreateStatusBar(self, nil, nil, true)
 	self.Power:SetFrameLevel(self:GetFrameLevel()-1)
-	tinsert(self.mouseovers, self.Power)
+	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = self.MatchUnit == "player" or self.MatchUnit == "boss"
 	self.Power.PostUpdate = K.PostUpdatePower
 	self.Power.Smooth = true
@@ -1095,7 +1095,7 @@ local function CreateUnitLayout(self, unit)
 		self.QuestIcon:SetSize(22, 22)
 		self.QuestIcon:SetPoint("CENTER", self.Health, "TOPRIGHT", 2, 0)
 
-		tinsert(self.__elements, function(self, _, unit)
+		table_insert(self.__elements, function(self, _, unit)
 			self.Texture:SetTexture(GetTargetTexture(self.MatchUnit, UnitClassification(unit)))
 		end)
 	end
@@ -1163,10 +1163,10 @@ local function CreateUnitLayout(self, unit)
 				else
 					columns, rows = 8, 3
 				end
-				initialAnchor, relAnchor, offX, offY = "TOPRIGHT", "TOPLEFT", -8, -1.5
+				initialAnchor, relAnchor, offX, offY = "TOPRIGHT", "TOPLEFT", -8, -2
 			end
 			size = isFocus and 26 or 20
-			gap = 4.5
+			gap = 4
 			return size, gap, columns, rows, initialAnchor, relAnchor, offX, offY
 		end
 
@@ -1197,7 +1197,7 @@ local function CreateUnitLayout(self, unit)
 
 	elseif (self.MatchUnit == "pet") then
 		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 6, 1)
-		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 1, -3)
+		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 1, -2)
 		self.Debuffs.CustomFilter = K.CustomAuraFilters.pet
 
 	elseif (self.IsPartyFrame) then
@@ -1210,24 +1210,27 @@ local function CreateUnitLayout(self, unit)
 		self.Buffs.CustomFilter = K.CustomAuraFilters.party
 
 	elseif (self.MatchUnit == "boss") then
-		self.Buffs = K.AddBuffs(self, "TOPLEFT", 30, 4.5, 5, 1)
-		self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 3, -6)
+		self.Buffs = K.AddBuffs(self, "TOPLEFT", 30, 4, 5, 1)
+		self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 2, -6)
 
-		self.Debuffs = K.AddDebuffs(self, "TOPRIGHT", 30, 4.5, 7, 1)
+		self.Debuffs = K.AddDebuffs(self, "TOPRIGHT", 30, 4, 7, 1)
 		self.Debuffs:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", -34, 18)
 		self.Debuffs.CustomFilter = K.CustomAuraFilters.boss
 	end
 
-	-- Range Fader
-	local RangeFader
-	if K.CheckAddOn("KkthnxUI") then
-		RangeFader = "SpellRange"
-	elseif self.MatchUnit == "pet" or self.MatchUnit == "party" then
-		RangeFader = "Range"
+	-- OOR and oUF_SpellRange
+	if not self:IsElementEnabled("Range") then
+		self:EnableElement("Range")
 	end
-	if RangeFader then
-		self[RangeFader] = {insideAlpha = 1, outsideAlpha = C.UnitframePlugins.OORAlpha}
-	end
+
+	self.SpellRange = true
+
+	self.SpellRange = {
+		insideAlpha = 1,
+		outsideAlpha = C.UnitframePlugins.OORAlpha,
+	}
+
+	return self
 end
 
 -- local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
