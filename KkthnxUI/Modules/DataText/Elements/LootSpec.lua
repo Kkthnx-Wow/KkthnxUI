@@ -189,7 +189,6 @@ local Enable = function(self)
 	self:SetScript("OnMouseDown", OnMouseDown)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", OnLeave)
-	self:Update()
 end
 
 local Disable = function(self)
@@ -201,4 +200,4 @@ local Disable = function(self)
 	self.Text:SetText("")
 end
 
-DataText:Register("Talents", Enable, Disable, Update)
+DataText:Register("Talent/Loot Specialization", Enable, Disable, Update)

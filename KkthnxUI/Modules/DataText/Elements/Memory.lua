@@ -125,4 +125,4 @@ local function Disable(self)
 	self:SetScript("OnMouseUp", nil)
 end
 
-DataText:Register(L.DataText.Memory, Enable, Disable, Update)
+DataText:Register("Memory", Enable, Disable, Update)

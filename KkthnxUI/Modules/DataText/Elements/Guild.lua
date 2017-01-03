@@ -290,17 +290,18 @@ local function Update(self)
 end
 
 local function Enable(self)
-	self:RegisterEvent("GUILD_ROSTER_SHOW")
+	self:RegisterEvent("CHAT_MSG_SYSTEM")
+	self:RegisterEvent("GUILD_MOTD")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE")
-	self:RegisterEvent("PLAYER_GUILD_UPDATE")
+	self:RegisterEvent("GUILD_ROSTER_UPDATE")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_GUILD_UPDATE")
 
 	self:SetScript("OnMouseDown", OnMouseDown)
 	self:SetScript("OnMouseUp", OnMouseUp)
 	self:SetScript("OnLeave", GameTooltip_Hide)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnEvent", Update)
-	self:Update()
 end
 
 local function Disable(self)
@@ -313,4 +314,4 @@ local function Disable(self)
 	self:SetScript("OnEvent", nil)
 end
 
-DataText:Register(GUILD, Enable, Disable, Update)
+DataText:Register("Guild", Enable, Disable, Update)

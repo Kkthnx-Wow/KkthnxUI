@@ -128,8 +128,8 @@ local OnEnter = function(self)
 
 	local Hour, Minute, AmPm = CalculateTimeValues(true)
 
+	GameTooltip:AddLine(" ") -- Space
 	if AmPm == -1 then
-		GameTooltip:AddLine(' ') -- Space
 		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
 		string_format(string_join("", "%02d", ":|r%02d"), Hour, Minute), 1, 1, 1, {r = 0.3, g = 1, b = 0.3})
 	else
@@ -196,7 +196,6 @@ local Enable = function(self)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", OnLeave)
 	self:SetScript("OnEvent", OnEvent)
-	self:Update(1)
 end
 
 local Disable = function(self)
@@ -207,7 +206,6 @@ local Disable = function(self)
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
 	self:SetScript("OnEvent", nil)
-	self:Update(nil)
 end
 
-DataText:Register(L.DataText.Time, Enable, Disable, OnEvent, Update)
+DataText:Register("Time", Enable, Disable, Update)

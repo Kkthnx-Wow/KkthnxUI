@@ -23,7 +23,7 @@ local UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, MAINMENUBAR_LATENCY_LABEL
 
-local int, int2 = 2, 3
+local int, int2 = 6, 5
 local MemoryTable = {}
 local bandwidthString = "%.2f Mbps"
 local percentageString = "%.2f%%"
@@ -86,21 +86,16 @@ end
 -- Build DataText
 local Update = function(self, second)
 	int = int - second
+	int2 = int2 - second
 
 	if (int < 0) then
 		RebuildAddonList(self)
 		int = 10
 	end
 
-	int2 = int2 - second
 	if (int2 < 0) then
-
-		local MS = select(3, GetNetStats())
+		local MS = select(4, GetNetStats())
 		local Rate = math_floor(GetFramerate())
-
-		if (MS == 0) then
-			MS = "0"
-		end
 
 		self.Text:SetFormattedText("%s %s %s %s", ValueColor .. Rate .. "|r", NameColor .. L.DataText.FPS .. "|r", "& " .. ValueColor .. MS .. "|r", NameColor .. L.DataText.MS .. "|r")
 		int2 = 1
@@ -162,7 +157,6 @@ local Enable = function(self)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", OnLeave)
 	self:SetScript("OnMouseUp", OnMouseUp)
-	self:Update(10)
 end
 
 local Disable = function(self)
@@ -174,4 +168,4 @@ local Disable = function(self)
 	self:SetScript("OnMouseUp", nil)
 end
 
-DataText:Register("System", Enable, Disable, OnEvent, Update)
+DataText:Register("System", Enable, Disable, Update)

@@ -125,20 +125,27 @@ end
 
 local Enable = function(self)
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:SetScript("OnEvent", OnUpdate)
+	self:RegisterEvent("PLAYER_MONEY")
+	self:RegisterEvent("SEND_MAIL_MONEY_CHANGED")
+	self:RegisterEvent("SEND_MAIL_COD_CHANGED")
+	self:RegisterEvent("PLAYER_TRADE_MONEY")
+	self:RegisterEvent("TRADE_MONEY_CHANGED")
+	self:RegisterEvent("CHAT_MSG_CURRENCY")
+	self:RegisterEvent("CHAT_MSG_CURRENCY")
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+	self:SetScript("OnEvent", OnEvent)
 	self:SetScript("OnMouseDown", OnMouseDown)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", GameTooltip_Hide)
-	self:Update()
 end
 
 local Disable = function(self)
 	self.Text:SetText("")
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterAllEvents()
 	self:SetScript("OnEnter", nil)
 	self:SetScript("OnLeave", nil)
 	self:SetScript("OnUpdate", nil)
 	self:SetScript("OnMouseDown", nil)
 end
 
-DataText:Register(CURRENCY, Enable, Disable, OnEvent, OnEnter)
+DataText:Register("Currencies", Enable, Disable, Update)

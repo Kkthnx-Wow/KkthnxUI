@@ -77,7 +77,6 @@ local function Enable(self)
 	self:SetScript("OnEnter", OnEnter)
 	self:SetScript("OnLeave", GameTooltip_Hide)
 	self:SetScript("OnMouseDown", OnMouseDown)
-	self:Update()
 end
 
 local function Disable(self)
@@ -89,4 +88,4 @@ local function Disable(self)
 	self:SetScript("OnMouseDown", nil)
 end
 
-DataText:Register(DURABILITY, Enable, Disable, OnEvent)
+DataText:Register("Durability", Enable, Disable, Update)

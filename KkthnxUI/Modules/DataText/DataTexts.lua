@@ -245,17 +245,17 @@ end
 function DataTexts:AddDefaults()
 	KkthnxUIDataPerChar.Texts = {}
 
-	KkthnxUIDataPerChar.Texts[GUILD] = {true, 1}
-	KkthnxUIDataPerChar.Texts[FRIENDS] = {true, 2}
-	KkthnxUIDataPerChar.Texts[DURABILITY] = {true, 3}
+	KkthnxUIDataPerChar.Texts["Guild"] = {true, 1}
+	KkthnxUIDataPerChar.Texts["Friends"] = {true, 2}
+	KkthnxUIDataPerChar.Texts["Durability"] = {true, 3}
 	KkthnxUIDataPerChar.Texts["Gold"] = {true, 4}
 	KkthnxUIDataPerChar.Texts["System"] = {true, 5}
 	if C.ActionBar.SplitBars then
-		KkthnxUIDataPerChar.Texts["Talents"] = {true, 6}
-		KkthnxUIDataPerChar.Texts[CURRENCY] = {true, 7}
+		KkthnxUIDataPerChar.Texts["Talent/Loot Specialization"] = {true, 6}
+		KkthnxUIDataPerChar.Texts["Currencies"] = {true, 7}
 	end
 	if C.Minimap.Enable and Minimap then
-		KkthnxUIDataPerChar.Texts[L.DataText.Time] = {true, 8}
+		KkthnxUIDataPerChar.Texts["Time"] = {true, 8}
 	end
 end
 

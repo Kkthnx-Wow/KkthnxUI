@@ -106,13 +106,13 @@ local Enable = function(self)
 	end
 
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_LEAVE_COMBAT")
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("UNIT_PET")
 	self:SetScript("OnEvent", OnEvent)
 	self:SetScript("OnUpdate", OnUpdate)
 	self:SetScript("OnMouseDown", OnMouseDown)
-	self:Update()
 end
 
 local Disable = function(self)
@@ -123,4 +123,4 @@ local Disable = function(self)
 	self:SetScript("OnMouseDown", nil)
 end
 
-DataText:Register(STAT_DPS_SHORT, Enable, Disable, OnEvent)
+DataText:Register("DPS", Enable, Disable, OnUpdate)

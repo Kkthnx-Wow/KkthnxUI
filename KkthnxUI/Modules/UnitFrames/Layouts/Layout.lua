@@ -493,7 +493,7 @@ local function CreateUnitLayout(self, unit)
 			if (C.Unitframe.CastbarLatency) then
 				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
 				CastBar.SafeZone:SetTexture(C.Media.Texture)
-				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+				CastBar.SafeZone:SetVertexColor(1, 0.5, 0, 0.75)
 			end
 
 			CastBar.CustomTimeText = K.CustomCastTimeText
