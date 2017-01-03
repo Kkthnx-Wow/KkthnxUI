@@ -1,42 +1,42 @@
 --[[ Element: PvP and Prestige Icons
 
- Handles updating and visibility of PvP and prestige icons based on unit's PvP
- status and prestige level.
+Handles updating and visibility of PvP and prestige icons based on unit's PvP
+status and prestige level.
 
- Widget
+Widget
 
- PvP - A Texture used to display faction, FFA PvP status or prestige icon.
+PvP - A Texture used to display faction, FFA PvP status or prestige icon.
 
- Sub-Widgets
+Sub-Widgets
 
- Prestige - A Texture used to display prestige background image.
+Prestige - A Texture used to display prestige background image.
 
- Notes
+Notes
 
- This element updates by changing the texture;
- `Prestige` texture has to be on a lower sub-layer than `PvP` texture.
+This element updates by changing the texture;
+`Prestige` texture has to be on a lower sub-layer than `PvP` texture.
 
- Examples
+Examples
 
-   -- Position and size
-   local PvP = self:CreateTexture(nil, 'ARTWORK', nil, 1)
-   PvP:SetSize(30, 30)
-   PvP:SetPoint('RIGHT', self, 'LEFT')
+-- Position and size
+local PvP = self:CreateTexture(nil, 'ARTWORK', nil, 1)
+PvP:SetSize(30, 30)
+PvP:SetPoint('RIGHT', self, 'LEFT')
 
-   local Prestige = self:CreateTexture(nil, 'ARTWORK')
-   Prestige:SetSize(50, 52)
-   Prestige:SetPoint('CENTER', PvP, 'CENTER')
+local Prestige = self:CreateTexture(nil, 'ARTWORK')
+Prestige:SetSize(50, 52)
+Prestige:SetPoint('CENTER', PvP, 'CENTER')
 
-   -- Register it with oUF
-   self.PvP = PvP
-   self.PvP.Prestige = Prestige
+-- Register it with oUF
+self.PvP = PvP
+self.PvP.Prestige = Prestige
 
- Hooks
+Hooks
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+Override(self) - Used to completely override the internal update function.
+	Removing the table key entry will make the element fall-back
+	to its internal function again.
+		]]
 
 local parent, ns = ...
 local oUF = ns.oUF

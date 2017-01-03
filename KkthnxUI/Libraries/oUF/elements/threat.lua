@@ -1,51 +1,53 @@
 --[[ Element: Threat Icon
 
- Handles updating and toggles visibility of current threat level icon.
+Handles updating and toggles visibility of current threat level icon.
 
- Widget
+Widget
 
- Threat - A Texture used to display the current threat level.
+Threat - A Texture used to display the current threat level.
 
- Notes
+Notes
 
- This element updates by changing colors of the texture.
+This element updates by changing colors of the texture.
 
- The default threat icon will be used if the UI widget is a texture and doesn't
- have a texture or color defined.
+The default threat icon will be used if the UI widget is a texture and doesn't
+have a texture or color defined.
 
- Examples
+Examples
 
-   -- Position and size
-   local Threat = self:CreateTexture(nil, 'OVERLAY')
-   Threat:SetSize(16, 16)
-   Threat:SetPoint('TOPRIGHT', self)
-   
-   -- Register it with oUF
-   self.Threat = Threat
+-- Position and size
+local Threat = self:CreateTexture(nil, 'OVERLAY')
+Threat:SetSize(16, 16)
+Threat:SetPoint('TOPRIGHT', self)
 
- Hooks
+-- Register it with oUF
+self.Threat = Threat
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+Hooks
+
+Override(self) - Used to completely override the internal update function.
+	Removing the table key entry will make the element fall-back
+	to its internal function again.
+		]]
 
 local parent, ns = ...
 local oUF = ns.oUF
 
 local Update = function(self, event, unit)
-	if(unit ~= self.unit) then return end
+	if(unit ~= self.unit) or not unit or not IsLoggedIn() then return end
 
 	local threat = self.Threat
 	if(threat.PreUpdate) then threat:PreUpdate(unit) end
 
-	unit = unit or self.unit
 	local status = UnitThreatSituation(unit)
 
 	local r, g, b
 	if(status and status > 0) then
 		r, g, b = GetThreatStatusColor(status)
-		threat:SetVertexColor(r, g, b)
+
+		if threat:IsObjectType"Texture" then
+			threat:SetVertexColor(r, g, b)
+		end
 		threat:Show()
 	else
 		threat:Hide()
@@ -71,6 +73,7 @@ local Enable = function(self)
 		threat.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Path)
+		self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Path)
 
 		if(threat:IsObjectType"Texture" and not threat:GetTexture()) then
 			threat:SetTexture[[Interface\Minimap\ObjectIcons]]
@@ -86,6 +89,8 @@ local Disable = function(self)
 	if(threat) then
 		threat:Hide()
 		self:UnregisterEvent("UNIT_THREAT_SITUATION_UPDATE", Path)
+		self:UnregisterEvent("UNIT_THREAT_LIST_UPDATE", Path)
+		threat:Hide()
 	end
 end
 

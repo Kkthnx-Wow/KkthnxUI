@@ -1,37 +1,37 @@
 --[[ Element: Alternative Power Bar
 
- Handles visibility and updating of the alternative power bar.
+Handles visibility and updating of the alternative power bar.
 
- This bar is used to display encounter/quest related power information, such as
- the number of hour glass uses left on the end boss in End Time.
+This bar is used to display encounter/quest related power information, such as
+the number of hour glass uses left on the end boss in End Time.
 
- Widget
+Widget
 
- AltPowerBar - A StatusBar to represent alternative power.
+AltPowerBar - A StatusBar to represent alternative power.
 
- Options
+Options
 
- .colorTexture     - Use the vertex color values returned by
-                     UnitAlternatePowerTextureInfo to color the bar.
+.colorTexture - Use the vertex color values returned by
+UnitAlternatePowerTextureInfo to color the bar.
 
- Notes
+Notes
 
- OnEnter and OnLeave handlers to display a tooltip will be set on the widget if
- it is mouse enabled.
+OnEnter and OnLeave handlers to display a tooltip will be set on the widget if
+it is mouse enabled.
 
- Examples
+Examples
 
-   -- Position and size
-   local AltPowerBar = CreateFrame('StatusBar', nil, self)
-   AltPowerBar:SetHeight(20)
-   AltPowerBar:SetPoint('BOTTOM')
-   AltPowerBar:SetPoint('LEFT')
-   AltPowerBar:SetPoint('RIGHT')
+-- Position and size
+local AltPowerBar = CreateFrame('StatusBar', nil, self)
+AltPowerBar:SetHeight(20)
+AltPowerBar:SetPoint('BOTTOM')
+AltPowerBar:SetPoint('LEFT')
+AltPowerBar:SetPoint('RIGHT')
 
-   -- Register with oUF
-   self.AltPowerBar = AltPowerBar
+-- Register with oUF
+self.AltPowerBar = AltPowerBar
 
- Callbacks
+Callbacks
 ]]
 
 local parent, ns = ...
@@ -41,12 +41,12 @@ local ALTERNATE_POWER_INDEX = ALTERNATE_POWER_INDEX
 
 --[[ :UpdateTooltip()
 
- The function called when the widget is hovered. Used to populate the tooltip.
+The function called when the widget is hovered. Used to populate the tooltip.
 
- Arguments
+	Arguments
 
- self - The AltPowerBar element.
-]]
+	self - The AltPowerBar element.
+	]]
 local UpdateTooltip = function(self)
 	GameTooltip:SetText(self.powerName, 1, 1, 1)
 	GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
@@ -65,18 +65,18 @@ local OnLeave = function()
 end
 
 local UpdatePower = function(self, event, unit, powerType)
-	if(self.unit ~= unit or powerType ~= 'ALTERNATE') then return end
+	if(self.unit ~= unit or powerType ~= 'ALTERNATE') or not unit then return end
 
 	local altpowerbar = self.AltPowerBar
 
 	--[[ :PreUpdate()
 
-	 Called before the element has been updated.
+	Called before the element has been updated.
 
-	 Arguments
+	Arguments
 
-	 self - The AltPowerBar element.
-	 ]]
+	self - The AltPowerBar element.
+	]]
 	if(altpowerbar.PreUpdate) then
 		altpowerbar:PreUpdate()
 	end
@@ -102,14 +102,14 @@ local UpdatePower = function(self, event, unit, powerType)
 
 	--[[ :PostUpdate(min, cur, max)
 
-	 Called after the element has been updated.
+	Called after the element has been updated.
 
-	 Arguments
+	Arguments
 
-	 self - The AltPowerBar element.
-	 min  - The minimum possible power value for the active type.
-	 cur  - The current power value.
-	 max  - The maximum possible power value for the active type.
+	self - The AltPowerBar element.
+	min - The minimum possible power value for the active type.
+	cur - The current power value.
+	max - The maximum possible power value for the active type.
 	]]
 	if(altpowerbar.PostUpdate) then
 		return altpowerbar:PostUpdate(min, cur, max)
@@ -119,10 +119,10 @@ end
 
 --[[ Hooks
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+Override(self) - Used to completely override the internal update function.
+	Removing the table key entry will make the element fall-back
+	to its internal function again.
+		]]
 local Path = function(self, ...)
 	return (self.AltPowerBar.Override or UpdatePower)(self, ...)
 end
@@ -132,7 +132,7 @@ local ForceUpdate = function(element)
 end
 
 local Toggler = function(self, event, unit)
-	if(unit ~= self.unit) then return end
+	if(unit ~= self.unit) or not unit then return end
 	local altpowerbar = self.AltPowerBar
 
 	local barType, _, _, _, _, hideFromOthers, showOnRaid = UnitAlternatePowerInfo(unit)

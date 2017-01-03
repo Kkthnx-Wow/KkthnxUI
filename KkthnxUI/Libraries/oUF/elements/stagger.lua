@@ -1,50 +1,50 @@
 --[[ Element: Monk Stagger Bar
 
- Handles updating and visibility of the monk's stagger bar.
+Handles updating and visibility of the monk's stagger bar.
 
- Widget
+Widget
 
- Stagger - A StatusBar
+Stagger - A StatusBar
 
- Sub-Widgets
+Sub-Widgets
 
- .bg - A Texture that functions as a background. It will inherit the color
-       of the main StatusBar.
+.bg - A Texture that functions as a background. It will inherit the color
+of the main StatusBar.
 
- Notes
+Notes
 
- The default StatusBar texture will be applied if the UI widget doesn't have a
- status bar texture or color defined.
+The default StatusBar texture will be applied if the UI widget doesn't have a
+status bar texture or color defined.
 
- In order to override the internal update define the 'OnUpdate' script on the
- widget in the layout
+In order to override the internal update define the 'OnUpdate' script on the
+widget in the layout
 
- Sub-Widgets Options
+Sub-Widgets Options
 
- .multiplier - Defines a multiplier, which is used to tint the background based
-               on the main widgets R, G and B values. Defaults to 1 if not
-               present.
+.multiplier - Defines a multiplier, which is used to tint the background based
+on the main widgets R, G and B values. Defaults to 1 if not
+present.
 
- Examples
+Examples
 
-   local Stagger = CreateFrame('StatusBar', nil, self)
-   Stagger:SetSize(120, 20)
-   Stagger:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, 0)
+local Stagger = CreateFrame('StatusBar', nil, self)
+Stagger:SetSize(120, 20)
+Stagger:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, 0)
 
-   -- Register with oUF
-   self.Stagger = Stagger
+-- Register with oUF
+self.Stagger = Stagger
 
- Hooks
+Hooks
 
- OverrideVisibility(self) - Used to completely override the internal visibility
-                            function. Removing the table key entry will make
-                            the element fall-back to its internal function
-                            again.
- Override(self)           - Used to completely override the internal
-                            update function. Removing the table key entry will
-                            make the element fall-back to its internal function
-                            again.
-]]
+OverrideVisibility(self) - Used to completely override the internal visibility
+function. Removing the table key entry will make
+	the element fall-back to its internal function
+		again.
+		Override(self) - Used to completely override the internal
+		update function. Removing the table key entry will
+			make the element fall-back to its internal function
+				again.
+				]]
 
 local parent, ns = ...
 local oUF = ns.oUF
@@ -71,6 +71,7 @@ local Update = function(self, event, unit)
 	if(element.PreUpdate) then
 		element:PreUpdate()
 	end
+
 
 	local maxHealth = UnitHealthMax("player")
 	local stagger = UnitStagger("player")
@@ -107,15 +108,27 @@ local Path = function(self, ...)
 end
 
 local Visibility = function(self, event, unit)
+	local isShown = self.Stagger:IsShown()
+	local stateChanged = false
 	if(SPEC_MONK_BREWMASTER ~= GetSpecialization() or UnitHasVehiclePlayerFrameUI('player')) then
-		if self.Stagger:IsShown() then
+		if isShown then
 			self.Stagger:Hide()
 			self:UnregisterEvent('UNIT_AURA', Path)
+			stateChanged = true
+		end
+
+		if(self.Stagger.PostUpdateVisibility) then
+			self.Stagger.PostUpdateVisibility(self, event, unit, false, stateChanged)
 		end
 	else
-		if(not self.Stagger:IsShown()) then
+		if(not isShown) then
 			self.Stagger:Show()
 			self:RegisterEvent('UNIT_AURA', Path)
+			stateChanged = true
+		end
+
+		if(self.Stagger.PostUpdateVisibility) then
+			self.Stagger.PostUpdateVisibility(self, event, unit, true, stateChanged)
 		end
 
 		return Path(self, event, unit)

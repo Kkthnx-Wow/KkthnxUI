@@ -1,60 +1,60 @@
 --[[ Element: Additional Power Bar
- Handles updating and visibility of a status bar displaying the player's
- alternate/additional power, such as Mana for Balance druids.
+Handles updating and visibility of a status bar displaying the player's
+alternate/additional power, such as Mana for Balance druids.
 
- Widget
+Widget
 
- AdditionalPower - A StatusBar to represent current caster mana.
+AdditionalPower - A StatusBar to represent current caster mana.
 
- Sub-Widgets
+Sub-Widgets
 
- .bg - A Texture which functions as a background. It will inherit the color of
-       the main StatusBar.
+.bg - A Texture which functions as a background. It will inherit the color of
+the main StatusBar.
 
- Notes
+Notes
 
- The default StatusBar texture will be applied if the UI widget doesn't have a
- status bar texture or color defined.
+The default StatusBar texture will be applied if the UI widget doesn't have a
+status bar texture or color defined.
 
- Options
+Options
 
- .colorClass  - Use `self.colors.class[class]` to color the bar.
- .colorSmooth - Use `self.colors.smooth` to color the bar with a smooth
-                gradient based on the players current mana percentage.
- .colorPower  - Use `self.colors.power[token]` to color the bar. This will
-                always use MANA as token.
+.colorClass - Use `self.colors.class[class]` to color the bar.
+.colorSmooth - Use `self.colors.smooth` to color the bar with a smooth
+gradient based on the players current mana percentage.
+.colorPower - Use `self.colors.power[token]` to color the bar. This will
+always use MANA as token.
 
- Sub-Widget Options
+Sub-Widget Options
 
- .multiplier - Defines a multiplier, which is used to tint the background based
-               on the main widgets R, G and B values. Defaults to 1 if not
-               present.
+.multiplier - Defines a multiplier, which is used to tint the background based
+on the main widgets R, G and B values. Defaults to 1 if not
+present.
 
- Examples
+Examples
 
-   -- Position and size
-   local AdditionalPower = CreateFrame("StatusBar", nil, self)
-   AdditionalPower:SetSize(20, 20)
-   AdditionalPower:SetPoint('TOP')
-   AdditionalPower:SetPoint('LEFT')
-   AdditionalPower:SetPoint('RIGHT')
+-- Position and size
+local AdditionalPower = CreateFrame("StatusBar", nil, self)
+AdditionalPower:SetSize(20, 20)
+AdditionalPower:SetPoint('TOP')
+AdditionalPower:SetPoint('LEFT')
+AdditionalPower:SetPoint('RIGHT')
 
-   -- Add a background
-   local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
-   Background:SetAllPoints(AdditionalPower)
-   Background:SetTexture(1, 1, 1, .5)
+-- Add a background
+local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
+Background:SetAllPoints(AdditionalPower)
+Background:SetTexture(1, 1, 1, .5)
 
-   -- Register it with oUF
-   self.AdditionalPower = AdditionalPower
-   self.AdditionalPower.bg = Background
+-- Register it with oUF
+self.AdditionalPower = AdditionalPower
+self.AdditionalPower.bg = Background
 
- Hooks
+Hooks
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
+Override(self) - Used to completely override the internal update function.
+	Removing the table key entry will make the element fall-back
+	to its internal function again.
 
-]]
+		]]
 
 local _, ns = ...
 local oUF = ns.oUF

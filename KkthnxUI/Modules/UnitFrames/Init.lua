@@ -23,11 +23,56 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 	self:UnregisterEvent(event)
 	self.ADDON_LOADED = nil
 
+	-- Sounds for target/focus changing and PVP flagging
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	self:RegisterUnitEvent("UNIT_FACTION", "player")
+
 	-- Shift to temporarily show all buffs
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	if not UnitAffectingCombat("player") then
 		self:RegisterEvent("MODIFIER_STATE_CHANGED")
+	end
+
+	function oUFKkthnx:PLAYER_FOCUS_CHANGED(event)
+		if UnitExists("focus") then
+			if UnitIsEnemy("focus", "player") then
+				PlaySound("igCreatureAggroSelect")
+			elseif UnitIsFriend("player", "focus") then
+				PlaySound("igCharacterNPCSelect")
+			else
+				PlaySound("igCreatureNeutralSelect")
+			end
+		else
+			PlaySound("INTERFACESOUND_LOSTTARGETUNIT")
+		end
+	end
+
+	function oUFKkthnx:PLAYER_TARGET_CHANGED(event)
+		if UnitExists("target") then
+			if UnitIsEnemy("target", "player") then
+				PlaySound("igCreatureAggroSelect")
+			elseif UnitIsFriend("player", "target") then
+				PlaySound("igCharacterNPCSelect")
+			else
+				PlaySound("igCreatureNeutralSelect")
+			end
+		else
+			PlaySound("INTERFACESOUND_LOSTTARGETUNIT")
+		end
+	end
+
+	local announcedPVP
+	function oUFKkthnx:UNIT_FACTION(event, unit)
+		if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
+			if not announcedPVP then
+				announcedPVP = true
+				PlaySound("igPVPUpdate")
+			end
+		else
+			announcedPVP = nil
+		end
 	end
 
 	function oUFKkthnx:PLAYER_REGEN_DISABLED(event)

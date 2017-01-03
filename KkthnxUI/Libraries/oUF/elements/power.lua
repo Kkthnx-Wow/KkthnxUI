@@ -1,107 +1,108 @@
 --[[ Element: Power Bar
 
- Handles updating of `self.Power` based upon the units power.
+Handles updating of `self.Power` based upon the units power.
 
- Widget
+Widget
 
- Power - A StatusBar used to represent mana.
+Power - A StatusBar used to represent mana.
 
- Sub-Widgets
+Sub-Widgets
 
- .bg - A Texture which functions as a background. It will inherit the color of
-       the main StatusBar.
+.bg - A Texture which functions as a background. It will inherit the color of
+the main StatusBar.
 
- Notes
+Notes
 
- The default StatusBar texture will be applied if the UI widget doesn't have a
- status bar texture or color defined.
+The default StatusBar texture will be applied if the UI widget doesn't have a
+status bar texture or color defined.
 
- Options
+Options
 
- .displayAltPower   - Use this to let the widget display alternate power if the
-                      unit has one. If no alternate power the display will fall
-                      back to primary power.
- .useAtlas          - Use this to let the widget use an atlas for its texture if
-                      `.atlas` is defined on the widget or an atlas is present in
-                      `self.colors.power` for the appropriate power type.
- .atlas             - A custom atlas
+.displayAltPower - Use this to let the widget display alternate power if the
+unit has one. If no alternate power the display will fall
+back to primary power.
+.useAtlas - Use this to let the widget use an atlas for its texture if
+`.atlas` is defined on the widget or an atlas is present in
+`self.colors.power` for the appropriate power type.
+.atlas - A custom atlas
 
- The following options are listed by priority. The first check that returns
- true decides the color of the bar.
+The following options are listed by priority. The first check that returns
+true decides the color of the bar.
 
- .colorTapping      - Use `self.colors.tapping` to color the bar if the unit
-                      isn't tapped by the player.
- .colorDisconnected - Use `self.colors.disconnected` to color the bar if the
-                      unit is offline.
- .altPowerColor     - A table containing the RGB values to use for a fixed
-                      color if the alt power bar is being displayed instead
- .colorPower        - Use `self.colors.power[token]` to color the bar based on
-                      the unit's power type. This method will fall-back to
-                      `:GetAlternativeColor()` if it can't find a color matching
-                      the token. If this function isn't defined, then it will
-                      attempt to color based upon the alternative power colors
-                      returned by [UnitPowerType](http://wowprogramming.com/docs/api/UnitPowerType).
-                      Finally, if these aren't defined, then it will attempt to
-                      color the bar based upon `self.colors.power[type]`.
- .colorClass        - Use `self.colors.class[class]` to color the bar based on
-                      unit class. `class` is defined by the second return of
-                      [UnitClass](http://wowprogramming.com/docs/api/UnitClass).
- .colorClassNPC     - Use `self.colors.class[class]` to color the bar if the
-                      unit is a NPC.
- .colorClassPet     - Use `self.colors.class[class]` to color the bar if the
-                      unit is player controlled, but not a player.
- .colorReaction     - Use `self.colors.reaction[reaction]` to color the bar
-                      based on the player's reaction towards the unit.
-                      `reaction` is defined by the return value of
-                      [UnitReaction](http://wowprogramming.com/docs/api/UnitReaction).
- .colorSmooth       - Use `self.colors.smooth` to color the bar with a smooth
-                      gradient based on the player's current health percentage.
+.colorTapping - Use `self.colors.tapping` to color the bar if the unit
+isn't tapped by the player.
+.colorDisconnected - Use `self.colors.disconnected` to color the bar if the
+unit is offline.
+.altPowerColor - A table containing the RGB values to use for a fixed
+color if the alt power bar is being displayed instead
+.colorPower - Use `self.colors.power[token]` to color the bar based on
+the unit's power type. This method will fall-back to
+`:GetAlternativeColor()` if it can't find a color matching
+the token. If this function isn't defined, then it will
+	attempt to color based upon the alternative power colors
+	returned by [UnitPowerType](http://wowprogramming.com/docs/api/UnitPowerType).
+	Finally, if these aren't defined, then it will attempt to
+		color the bar based upon `self.colors.power[type]`.
+		.colorClass - Use `self.colors.class[class]` to color the bar based on
+		unit class. `class` is defined by the second return of
+		[UnitClass](http://wowprogramming.com/docs/api/UnitClass).
+		.colorClassNPC - Use `self.colors.class[class]` to color the bar if the
+		unit is a NPC.
+		.colorClassPet - Use `self.colors.class[class]` to color the bar if the
+		unit is player controlled, but not a player.
+		.colorReaction - Use `self.colors.reaction[reaction]` to color the bar
+		based on the player's reaction towards the unit.
+		`reaction` is defined by the return value of
+		[UnitReaction](http://wowprogramming.com/docs/api/UnitReaction).
+		.colorSmooth - Use `self.colors.smooth` to color the bar with a smooth
+		gradient based on the player's current health percentage.
 
- Sub-Widget Options
+		Sub-Widget Options
 
- .multiplier - Defines a multiplier, which is used to tint the background based
-               on the main widgets R, G and B values. Defaults to 1 if not
-               present.
+		.multiplier - Defines a multiplier, which is used to tint the background based
+		on the main widgets R, G and B values. Defaults to 1 if not
+		present.
 
- Examples
+		Examples
 
-   -- Position and size
-   local Power = CreateFrame("StatusBar", nil, self)
-   Power:SetHeight(20)
-   Power:SetPoint('BOTTOM')
-   Power:SetPoint('LEFT')
-   Power:SetPoint('RIGHT')
+		-- Position and size
+		local Power = CreateFrame("StatusBar", nil, self)
+		Power:SetHeight(20)
+		Power:SetPoint('BOTTOM')
+		Power:SetPoint('LEFT')
+		Power:SetPoint('RIGHT')
 
-   -- Add a background
-   local Background = Power:CreateTexture(nil, 'BACKGROUND')
-   Background:SetAllPoints(Power)
-   Background:SetTexture(1, 1, 1, .5)
+		-- Add a background
+		local Background = Power:CreateTexture(nil, 'BACKGROUND')
+		Background:SetAllPoints(Power)
+		Background:SetTexture(1, 1, 1, .5)
 
-   -- Options
-   Power.frequentUpdates = true
-   Power.colorTapping = true
-   Power.colorDisconnected = true
-   Power.colorPower = true
-   Power.colorClass = true
-   Power.colorReaction = true
+		-- Options
+		Power.frequentUpdates = true
+		Power.colorTapping = true
+		Power.colorDisconnected = true
+		Power.colorPower = true
+		Power.colorClass = true
+		Power.colorReaction = true
 
-   -- Make the background darker.
-   Background.multiplier = .5
+		-- Make the background darker.
+		Background.multiplier = .5
 
-   -- Register it with oUF
-   self.Power = Power
-   self.Power.bg = Background
+		-- Register it with oUF
+		self.Power = Power
+		self.Power.bg = Background
 
- Hooks
+		Hooks
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+		Override(self) - Used to completely override the internal update function.
+			Removing the table key entry will make the element fall-back
+			to its internal function again.
+				]]
 
 local parent, ns = ...
 local oUF = ns.oUF
 
+local updateFrequentUpdates
 oUF.colors.power = {}
 for power, color in next, PowerBarColor do
 	if (type(power) == "string") then
@@ -136,6 +137,7 @@ oUF.colors.power[17] = oUF.colors.power.FURY
 oUF.colors.power[18] = oUF.colors.power.PAIN
 
 local GetDisplayPower = function(unit)
+	if not unit then return; end
 	local _, min, _, _, _, _, showOnRaid = UnitAlternatePowerInfo(unit)
 	if(showOnRaid) then
 		return ALTERNATE_POWER_INDEX, min
@@ -143,7 +145,7 @@ local GetDisplayPower = function(unit)
 end
 
 local Update = function(self, event, unit)
-	if(self.unit ~= unit) then return end
+	if(self.unit ~= unit) or not unit then return end
 	local power = self.Power
 
 	if(power.PreUpdate) then power:PreUpdate(unit) end
@@ -155,6 +157,11 @@ local Update = function(self, event, unit)
 	local cur, max = UnitPower(unit, displayType), UnitPowerMax(unit, displayType)
 	local disconnected = not UnitIsConnected(unit)
 	local tapped = not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)
+
+	if max == 0 then
+		max = 1
+	end
+
 	power:SetMinMaxValues(min or 0, max)
 
 	if(disconnected) then
@@ -165,6 +172,11 @@ local Update = function(self, event, unit)
 
 	power.disconnected = disconnected
 	power.tapped = tapped
+
+	if power.frequentUpdates ~= power.__frequentUpdates then
+		power.__frequentUpdates = power.frequentUpdates
+		updateFrequentUpdates(self)
+	end
 
 	local ptype, ptoken, altR, altG, altB = UnitPowerType(unit)
 	local r, g, b, t
@@ -192,8 +204,8 @@ local Update = function(self, event, unit)
 			end
 		end
 	elseif(power.colorClass and UnitIsPlayer(unit)) or
-		(power.colorClassNPC and not UnitIsPlayer(unit)) or
-		(power.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
+	(power.colorClassNPC and not UnitIsPlayer(unit)) or
+	(power.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
 		t = self.colors.class[class]
 	elseif(power.colorReaction and UnitReaction(unit, 'player')) then
@@ -245,17 +257,31 @@ local ForceUpdate = function(element)
 	return Path(element.__owner, 'ForceUpdate', element.__owner.unit)
 end
 
+function updateFrequentUpdates(self)
+	local power = self.Power
+	if power.frequentUpdates and not self:IsEventRegistered('UNIT_POWER_FREQUENT') then
+		self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
+
+		if self:IsEventRegistered('UNIT_POWER') then
+			self:UnregisterEvent('UNIT_POWER', Path)
+		end
+	elseif not self:IsEventRegistered('UNIT_POWER') then
+		self:RegisterEvent('UNIT_POWER', Path)
+
+		if self:IsEventRegistered('UNIT_POWER_FREQUENT') then
+			self:UnregisterEvent('UNIT_POWER_FREQUENT', Path)
+		end
+	end
+end
+
 local Enable = function(self, unit)
 	local power = self.Power
 	if(power) then
 		power.__owner = self
 		power.ForceUpdate = ForceUpdate
 
-		if(power.frequentUpdates and (unit == 'player' or unit == 'pet')) then
-			self:RegisterEvent('UNIT_POWER_FREQUENT', Path)
-		else
-			self:RegisterEvent('UNIT_POWER', Path)
-		end
+		power.__frequentUpdates = power.frequentUpdates
+		updateFrequentUpdates(self)
 
 		self:RegisterEvent('UNIT_POWER_BAR_SHOW', Path)
 		self:RegisterEvent('UNIT_POWER_BAR_HIDE', Path)

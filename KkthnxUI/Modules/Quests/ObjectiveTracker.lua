@@ -173,6 +173,54 @@ hooksecurefunc("ObjectiveTracker_Expand", function()
 	button.plus:Hide()
 end)
 
+-- Skin bonus/world quest objective progress bar
+local function SkinBar(line)
+	local progressBar = line.ProgressBar
+	local bar = progressBar.Bar
+	local icon = bar.Icon
+	local label = bar.Label
+
+	if not progressBar.styled then
+		bar.BarFrame:Hide()
+		bar.BarGlow:Kill()
+		bar.IconBG:Kill()
+		bar:SetSize(200, 20)
+		bar:SetStatusBarTexture(C.Media.Texture)
+		K.CreateBorder(bar)
+		bar:SetBackdropColor(0, 0, 0, 0)
+
+		label:ClearAllPoints()
+		label:SetPoint("CENTER", 0, 0)
+		label:SetFont(C.Media.Font, 13, "")
+		label:SetShadowOffset(K.Mult, -K.Mult)
+
+		icon:SetPoint("RIGHT", 24, 0)
+		icon:SetSize(20, 20)
+
+		local border = CreateFrame("Frame", "$parentBorder", bar)
+		border:SetAllPoints(icon)
+		K.CreateBorder(border)
+		border:SetBackdrop(K.BorderBackdrop)
+		border:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		border:SetFrameLevel(2)
+		bar.newIconBg = border
+
+		bar.AnimIn.Play = K.Noop
+		BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
+		progressBar.styled = true
+	end
+
+	bar.newIconBg:SetShown(icon:IsShown())
+end
+
+hooksecurefunc(BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", function(_, _, line)
+	SkinBar(line)
+end)
+
+hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", function(_, _, line)
+	SkinBar(line)
+end)
+
 -- Set tooltip depending on position
 local function IsFramePositionedLeft(frame)
 	local x = frame:GetCenter()

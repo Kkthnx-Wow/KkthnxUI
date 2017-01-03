@@ -1,49 +1,49 @@
 --[[ Element: Runes Bar
 
- Handle updating and visibility of the Death Knight's Rune indicators.
+Handle updating and visibility of the Death Knight's Rune indicators.
 
- Widget
+Widget
 
- Runes - An array holding StatusBar's.
+Runes - An array holding StatusBar's.
 
- Sub-Widgets
+Sub-Widgets
 
- .bg - A Texture which functions as a background. It will inherit the color of
-       the main StatusBar.
+.bg - A Texture which functions as a background. It will inherit the color of
+the main StatusBar.
 
- Notes
+Notes
 
- The default StatusBar texture will be applied if the UI widget doesn't have a
-             status bar texture or color defined.
+The default StatusBar texture will be applied if the UI widget doesn't have a
+status bar texture or color defined.
 
- Sub-Widgets Options
+Sub-Widgets Options
 
- .multiplier - Defines a multiplier, which is used to tint the background based
-               on the main widgets R, G and B values. Defaults to 1 if not
-               present.
+.multiplier - Defines a multiplier, which is used to tint the background based
+on the main widgets R, G and B values. Defaults to 1 if not
+present.
 
- Examples
+Examples
 
-   local Runes = {}
-   for index = 1, 6 do
-      -- Position and size of the rune bar indicators
-      local Rune = CreateFrame('StatusBar', nil, self)
-      Rune:SetSize(120 / 6, 20)
-      Rune:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * 120 / 6, 0)
+local Runes = {}
+for index = 1, 6 do
+	-- Position and size of the rune bar indicators
+	local Rune = CreateFrame('StatusBar', nil, self)
+	Rune:SetSize(120 / 6, 20)
+	Rune:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * 120 / 6, 0)
 
-      Runes[index] = Rune
-   end
+	Runes[index] = Rune
+end
 
-   -- Register with oUF
-   self.Runes = Runes
+-- Register with oUF
+self.Runes = Runes
 
- Hooks
+Hooks
 
- Override(self)           - Used to completely override the internal update
-                            function. Removing the table key entry will make the
-                            element fall-back to its internal function again.
+Override(self) - Used to completely override the internal update
+function. Removing the table key entry will make the
+	element fall-back to its internal function again.
 
-]]
+		]]
 
 if select(2, UnitClass("player")) ~= "DEATHKNIGHT" then return end
 

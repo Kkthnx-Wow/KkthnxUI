@@ -1,51 +1,51 @@
 --[[ Element: Power Prediction Bar
- Handles updating and visibility of the power prediction status bars.
+Handles updating and visibility of the power prediction status bars.
 
- Widget
+Widget
 
- PowerPrediction - A table containing `mainBar` and `altBar`.
+PowerPrediction - A table containing `mainBar` and `altBar`.
 
- Sub-Widgets
+Sub-Widgets
 
- mainBar - A StatusBar used to represent power cost of spells, that consume
-           your main power, e.g. mana for mages;
- altBar  - A StatusBar used to represent power cost of spells, that consume
-           your additional power, e.g. mana for balance druids.
+mainBar - A StatusBar used to represent power cost of spells, that consume
+your main power, e.g. mana for mages;
+altBar - A StatusBar used to represent power cost of spells, that consume
+your additional power, e.g. mana for balance druids.
 
- Notes
+Notes
 
- The default StatusBar texture will be applied if the UI widget doesn't have a
- status bar texture.
+The default StatusBar texture will be applied if the UI widget doesn't have a
+status bar texture.
 
- Examples
+Examples
 
-   -- Position and size
-   local mainBar = CreateFrame('StatusBar', nil, self.Power)
-   mainBar:SetReverseFill(true)
-   mainBar:SetPoint('TOP')
-   mainBar:SetPoint('BOTTOM')
-   mainBar:SetPoint('RIGHT', self.Power:GetStatusBarTexture(), 'RIGHT')
-   mainBar:SetWidth(200)
+-- Position and size
+local mainBar = CreateFrame('StatusBar', nil, self.Power)
+mainBar:SetReverseFill(true)
+mainBar:SetPoint('TOP')
+mainBar:SetPoint('BOTTOM')
+mainBar:SetPoint('RIGHT', self.Power:GetStatusBarTexture(), 'RIGHT')
+mainBar:SetWidth(200)
 
-   local altBar = CreateFrame('StatusBar', nil, self.DruidMana)
-   altBar:SetReverseFill(true)
-   altBar:SetPoint('TOP')
-   altBar:SetPoint('BOTTOM')
-   altBar:SetPoint('RIGHT', self.DruidMana:GetStatusBarTexture(), 'RIGHT')
-   altBar:SetWidth(200)
+local altBar = CreateFrame('StatusBar', nil, self.AdditionalPower)
+altBar:SetReverseFill(true)
+altBar:SetPoint('TOP')
+altBar:SetPoint('BOTTOM')
+altBar:SetPoint('RIGHT', self.AdditionalPower:GetStatusBarTexture(), 'RIGHT')
+altBar:SetWidth(200)
 
-   -- Register with oUF
-   self.PowerPrediction = {
-      mainBar = mainBar,
-      altBar = altBar
-   }
+-- Register with oUF
+self.PowerPrediction = {
+	mainBar = mainBar,
+	altBar = altBar
+}
 
- Hooks
+Hooks
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+Override(self) - Used to completely override the internal update function.
+	Removing the table key entry will make the element fall-back
+	to its internal function again.
+		]]
 
 local _, ns = ...
 local oUF = ns.oUF
@@ -71,14 +71,14 @@ local function Update(self, event, unit)
 
 		for _, costInfo in pairs(costTable) do
 			--[[costInfo content:
-				-- name: string (powerToken)
-				-- type: number (powerType)
-				-- cost: number
-				-- costPercent: number
-				-- costPerSec: number
-				-- minCost: number
-				-- hasRequiredAura: boolean
-				-- requiredAuraID: number
+			-- name: string (powerToken)
+			-- type: number (powerType)
+			-- cost: number
+			-- costPercent: number
+			-- costPerSec: number
+			-- minCost: number
+			-- hasRequiredAura: boolean
+			-- requiredAuraID: number
 			]]
 			if(costInfo.type == mainPowerType) then
 				mainCost = costInfo.cost

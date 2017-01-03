@@ -19,7 +19,7 @@
    local RaidIcon = self:CreateTexture(nil, 'OVERLAY')
    RaidIcon:SetSize(16, 16)
    RaidIcon:SetPoint('TOPRIGHT', self)
-   
+
    -- Register it with oUF
    self.RaidIcon = RaidIcon
 
@@ -37,6 +37,7 @@ local GetRaidTargetIndex = GetRaidTargetIndex
 local SetRaidTargetIconTexture = SetRaidTargetIconTexture
 
 local Update = function(self, event)
+	if not self.unit then return end
 	local icon = self.RaidIcon
 	if(icon.PreUpdate) then
 		icon:PreUpdate()

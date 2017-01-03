@@ -140,7 +140,7 @@ local HCYColorGradient = function(...)
 	local y = y1 + (y2-y1) * relperc
 	if h1 and h2 then
 		local dh = h2 - h1
-		if dh < -0.5  then
+		if dh < -0.5 then
 			dh = dh + 1
 		elseif dh > 0.5 then
 			dh = dh - 1

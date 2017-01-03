@@ -1,33 +1,33 @@
 --[[ Element: Quest Icon
 
- Handles updating and toggles visibility based upon the units connection to a
- quest.
+Handles updating and toggles visibility based upon the units connection to a
+quest.
 
- Widget
+Widget
 
- QuestIcon - Any UI widget.
+QuestIcon - Any UI widget.
 
- Notes
+Notes
 
- The default quest icon will be used if the UI widget is a texture and doesn't
- have a texture or color defined.
+The default quest icon will be used if the UI widget is a texture and doesn't
+have a texture or color defined.
 
- Examples
+Examples
 
-   -- Position and size
-   local QuestIcon = self:CreateTexture(nil, 'OVERLAY')
-   QuestIcon:SetSize(16, 16)
-   QuestIcon:SetPoint('TOPRIGHT', self)
-   
-   -- Register it with oUF
-   self.QuestIcon = QuestIcon
+-- Position and size
+local QuestIcon = self:CreateTexture(nil, 'OVERLAY')
+QuestIcon:SetSize(16, 16)
+QuestIcon:SetPoint('TOPRIGHT', self)
 
- Hooks
+-- Register it with oUF
+self.QuestIcon = QuestIcon
 
- Override(self) - Used to completely override the internal update function.
-                  Removing the table key entry will make the element fall-back
-                  to its internal function again.
-]]
+Hooks
+
+Override(self) - Used to completely override the internal update function.
+	Removing the table key entry will make the element fall-back
+	to its internal function again.
+		]]
 
 local parent, ns = ...
 local oUF = ns.oUF
