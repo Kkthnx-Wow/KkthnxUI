@@ -61,7 +61,7 @@ end
 
 -- Move some frames (Elvui)
 local TicketStatusMover = CreateFrame("Frame", "TicketStatusMoverAnchor", UIParent)
-TicketStatusMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)
+TicketStatusMover:SetPoint(unpack(C.Position.Ticket))
 TicketStatusMover:SetSize(200, 40)
 Movers:RegisterFrame(TicketStatusMover)
 
@@ -69,7 +69,7 @@ local TicketFrame = CreateFrame("Frame")
 TicketFrame:RegisterEvent("PLAYER_LOGIN")
 TicketFrame:SetScript("OnEvent", function(self, event)
 	TicketStatusFrame:ClearAllPoints()
-	TicketStatusFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -5)
+	TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
 	-- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
 	hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
 		if anchor == UIParent then

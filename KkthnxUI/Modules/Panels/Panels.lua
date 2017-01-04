@@ -27,11 +27,7 @@ local Movers = K.Movers
 
 -- Bottom bars anchor
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", PetBattleFrameHider)
-if C.DataText.BottomBar ~= true then
-	BottomBarAnchor:CreatePanel("Invisible", 1, 1, "BOTTOM", "UIParent", "BOTTOM", 0, 4)
-else
-	BottomBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.BottomBars))
-end
+BottomBarAnchor:CreatePanel("Invisible", 1, 1, "BOTTOM", "UIParent", "BOTTOM", 0, 4)
 BottomBarAnchor:SetWidth((C.ActionBar.ButtonSize * 12) + (C.ActionBar.ButtonSpace * 11))
 if C.ActionBar.BottomBars == 2 then
 	BottomBarAnchor:SetHeight((C.ActionBar.ButtonSize * 2) + C.ActionBar.ButtonSpace)
@@ -123,190 +119,16 @@ if C.Chat.Background == true and C.Chat.Enable == true then
 	end
 end
 
--- Spec
-local LeftClickMenu = {}
-LeftClickMenu[1] = {text = L.ConfigButton.SpecMenu, isTitle = true, notCheckable = true}
-
-local function ActiveTalents()
-	local Tree = GetSpecialization(false, false, GetActiveSpecGroup())
-	return Tree
-end
-
-local KkthnxUISpecSwap = CreateFrame("Frame", "KkthnxUISpecSwap", UIParent, "Lib_UIDropDownMenuTemplate")
-KkthnxUISpecSwap:SetTemplate()
-KkthnxUISpecSwap:RegisterEvent("PLAYER_LOGIN")
-KkthnxUISpecSwap:SetScript("OnEvent", function(...)
-	local specIndex
-	for specIndex = 1, GetNumSpecializations() do
-		LeftClickMenu[specIndex + 1] = {
-			text = tostring(select(2, GetSpecializationInfo(specIndex))),
-			notCheckable = true,
-			func = (function()
-				local getSpec = GetSpecialization()
-				if getSpec and getSpec == specIndex then
-					UIErrorsFrame:AddMessage(L.ConfigButton.SpecError, 1.0, 0.0, 0.0, 53, 5)
-					return
-				end
-				SetSpecialization(specIndex)
-			end)
-		}
-	end
-end)
-
--- Minimap Panels
--- This is a single panel inside the Minimap
-if Minimap and C.Minimap.Enable then
-	local MinimapStat = CreateFrame("Frame", "KkthnxUIMinimapStat", Minimap)
-	MinimapStat:SetSize(((Minimap:GetWidth() / 1.8)), 16)
-	MinimapStat:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 0)
-	MinimapStat:SetFrameStrata("LOW")
-	Movers:RegisterFrame(MinimapStat)
-end
 -- This is a single panel outside the Minimap
 if Minimap and C.Minimap.Enable then
 	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
 	MinimapStats:SetTemplate()
-	if C.Minimap.ShowConfigButton == true then
-		MinimapStats:SetSize(((Minimap:GetWidth() -16)), 28)
-		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", -13, -2)
-	else
-		MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
-		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
-	end
+	MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
+	MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
 	MinimapStats:SetFrameStrata("LOW")
 	Movers:RegisterFrame(MinimapStats)
 
 	if C.Blizzard.ColorTextures == true then
 		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 	end
-end
-
--- BottomBar Datatext panel
-if C.DataText.BottomBar then
-	local DataTextBottomBar = CreateFrame("Frame", "KkthnxUIDataTextBottomBar", PetBattleFrameHider)
-	DataTextBottomBar:SetSize(ActionBarAnchor:GetWidth() + 6, 28)
-	DataTextBottomBar:SetPoint("TOP", ActionBarAnchor, "BOTTOM", 0, -1)
-	DataTextBottomBar:SetTemplate()
-	DataTextBottomBar:SetFrameStrata("BACKGROUND")
-	DataTextBottomBar:SetFrameLevel(1)
-	Movers:RegisterFrame(DataTextBottomBar)
-end
-
--- BottomSplitBarLeft Datatext panel
-if C.ActionBar.SplitBars and C.DataText.BottomBar then
-	local DataTextSplitBarLeft = CreateFrame("Frame", "KkthnxUIDataTextSplitBarLeft", PetBattleFrameHider)
-	DataTextSplitBarLeft:SetSize(((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2) +3), 28)
-	DataTextSplitBarLeft:SetPoint("RIGHT", KkthnxUIDataTextBottomBar, "LEFT", 0, 0)
-	DataTextSplitBarLeft:SetTemplate()
-	DataTextSplitBarLeft:SetFrameStrata("BACKGROUND")
-	DataTextSplitBarLeft:SetFrameLevel(1)
-	Movers:RegisterFrame(DataTextSplitBarLeft)
-end
-
--- BottomSplitBarRight Datatext panel
-if C.ActionBar.SplitBars and C.DataText.BottomBar then
-	local DataTextSplitBarRight = CreateFrame("Frame", "KkthnxUIDataTextSplitBarRight", PetBattleFrameHider)
-	DataTextSplitBarRight:SetSize(((C.ActionBar.ButtonSize * 3) + (C.ActionBar.ButtonSpace * 2) +3), 28)
-	DataTextSplitBarRight:SetPoint("LEFT", KkthnxUIDataTextBottomBar, "RIGHT", 0, 0)
-	DataTextSplitBarRight:SetTemplate()
-	DataTextSplitBarRight:SetFrameStrata("BACKGROUND")
-	DataTextSplitBarRight:SetFrameLevel(1)
-	Movers:RegisterFrame(DataTextSplitBarRight)
-end
-
--- Battleground stats frame
-if C.DataText.Battleground == true and C.DataText.BottomBar == true then
-	local BattleGroundFrame = CreateFrame("Frame", "KkthnxUIInfoBottomBattleGround", PetBattleFrameHider)
-	BattleGroundFrame:SetBackdrop(K.BorderBackdrop)
-	BattleGroundFrame:SetInside(KkthnxUIDataTextBottomBar, 4, 4)
-	BattleGroundFrame:SetFrameStrata("HIGH")
-	BattleGroundFrame:SetFrameLevel(2)
-	BattleGroundFrame:EnableMouse(true)
-	-- Just create a layer over this. No need for another border
-	BattleGroundFrame.Background = BattleGroundFrame:CreateTexture(nil, "BORDER")
-	BattleGroundFrame.Background:SetAllPoints(BattleGroundFrame)
-	BattleGroundFrame.Background:SetColorTexture(0.019, 0.019, 0.019, 0.9)
-end
-
--- ToggleButton Special
-if C.Minimap.ShowConfigButton == true then
-	local ToggleButtonSpecial = CreateFrame( "Frame", "KkthnxToggleSpecialButton", UIParent)
-	ToggleButtonSpecial:SetPoint("LEFT", KkthnxUIMinimapStats, "RIGHT", 2, 0)
-	ToggleButtonSpecial:SetSize(20, 20)
-	ToggleButtonSpecial:SetFrameStrata("BACKGROUND")
-	ToggleButtonSpecial:SetFrameLevel(2)
-	ToggleButtonSpecial:SkinButton()
-
-	ToggleButtonSpecial.Text = K.SetFontString(ToggleButtonSpecial, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-	ToggleButtonSpecial.Text:SetPoint("CENTER", ToggleButtonSpecial, "CENTER", 0, .5)
-	ToggleButtonSpecial.Text:SetText("|cff3c9bedK|r")
-	ToggleButtonSpecial.Text:SetShadowOffset(0, 0)
-
-	ToggleButtonSpecial:EnableMouse(true)
-	ToggleButtonSpecial:HookScript("OnMouseDown", function(self, btn)
-		if(InCombatLockdown() and not btn == "RightButton") then
-			K.Print(ERR_NOT_IN_COMBAT)
-			return
-		end
-
-		if (IsShiftKeyDown() and btn == "LeftButton") then
-			Lib_EasyMenu(LeftClickMenu, KkthnxUISpecSwap, "cursor", 0, 0, "MENU", 2)
-			return
-		end
-
-		if (IsShiftKeyDown() and btn == "RightButton") then
-			K.DataTexts:ToggleDataPositions()
-			return
-		end
-
-		if btn == "LeftButton" then
-			local Movers = K.Movers
-			Movers:StartOrStopMoving()
-		end
-
-		if btn == "RightButton" then
-			if K.CheckAddOn("Recount") then
-				if Recount_MainWindow:IsShown() then
-					Recount_MainWindow:Hide()
-				else
-					Recount_MainWindow:Show()
-				end
-			end
-			if K.CheckAddOn("Skada") then
-				Skada:ToggleWindow()
-			end
-		end
-
-		if btn == "MiddleButton" then
-			if UIConfigMain and UIConfigMain:IsShown() then
-				UIConfigMain:Hide()
-			else
-				CreateUIConfig()
-				HideUIPanel(Menu)
-			end
-		end
-	end)
-
-	ToggleButtonSpecial:HookScript("OnEnter", function(self)
-		local anchor, panel, xoff, yoff = "ANCHOR_BOTTOM", self:GetParent(), 0, 5
-		GameTooltip:SetOwner(self, anchor, xoff, yoff)
-		GameTooltip:ClearLines()
-		GameTooltip:AddLine(L.ConfigButton.Functions)
-		GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, L.ConfigButton.MoveUI, 1, 1, 1)
-		if K.CheckAddOn("Recount") then
-			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Recount, 1, 1, 1)
-		end
-		if K.CheckAddOn("Skada") then
-			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Skada, 1, 1, 1)
-		end
-		GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Config, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClick, L.ConfigButton.Spec, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L.ConfigButton.ShiftPlusRightClick, "Toggle Datatext", 1, 1, 1)
-		GameTooltip:Show()
-		GameTooltip:SetTemplate()
-	end)
-
-	ToggleButtonSpecial:HookScript("OnLeave", function(self)
-		GameTooltip:Hide()
-	end)
 end

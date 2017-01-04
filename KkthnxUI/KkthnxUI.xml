@@ -144,9 +144,9 @@
    <Script file="Modules\DataBars\HonorBar.lua" />
    <Script file="Modules\DataBars\ReputationBar.lua" />
    <!-- DataText Modules -->
-   <Script file="Modules\DataText\DataTexts.lua" />
-   <Script file="Modules\DataText\Anchors.lua" />
-   <Include file="Modules\DataText\Elements\Load_Elements.xml" />
+   <Script file="Modules\DataText\Battleground.lua" />
+   <Script file="Modules\DataText\System.lua" />
+   <Script file="Modules\DataText\Time.lua" />
    <!-- Inventory -->
    <Script file="Modules\Inventory\Bags.lua" />
    <!-- Loot -->

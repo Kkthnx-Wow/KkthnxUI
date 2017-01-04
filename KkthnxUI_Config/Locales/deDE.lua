@@ -126,10 +126,8 @@ UIConfigLocal.ChatWidth = "Breite des Chatfensters"
 -- Datatexte
 UIConfigLocal.DataText = "Datatexte"
 UIConfigLocal.DataTextBattleground = "Aktiviere die Datatextanzeige auf Schlachtfeldern"
-UIConfigLocal.DataTextBottomBar = "Aktiviere eine Datatextleiste unter den Aktionsleisten"
 UIConfigLocal.DataTextLocalTime = "Benutze die lokale Zeit bei der Zeitanzeige auf der Minimap, anstatt der Serverzeit"
 UIConfigLocal.DataTextSystem = "Aktivere den Datatext unter der Minimap, der Dir Deine FPS & MS anzeigt"
-UIConfigLocal.DataTextThreatBar = "Display threat bar on the bottom datatext panel."
 UIConfigLocal.DataTextTime = "Aktiviere den Datatext auf der Minimap, der Dir die Uhrzeit anzeigt"
 UIConfigLocal.DataTextTime24Hr = "Stelle die Zeitanzeige in der Minimap auf das 24 Stunden Format um"
 

@@ -241,9 +241,6 @@ function KkthnxUIInstall:PositionSetup()
 	KkthnxUIDataPerChar.RightBars = C.ActionBar.RightBars
 	KkthnxUIDataPerChar.BottomBars = C.ActionBar.BottomBars
 
-	-- Default our DataTexts
-	if K.DataTexts then K.DataTexts:Reset() end
-
 	-- Reset movable stuff into original positions
 	if KkthnxUIDataPerChar.Movers then KkthnxUIDataPerChar.Movers = {} end
 end

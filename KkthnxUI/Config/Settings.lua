@@ -142,10 +142,8 @@ C["DataBars"] = {
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
-	["BottomBar"] = true,
 	["LocalTime"] = true,
 	["System"] = true,
-	["ThreatBar"] = false,
 	["Time24Hr"] = false,
 }
 
