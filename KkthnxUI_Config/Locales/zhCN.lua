@@ -1,4 +1,4 @@
-UIConfigLocal = {}
+if (GetLocale() ~= "zhCN") then return end
 
 -- Localization for zhCN
 
