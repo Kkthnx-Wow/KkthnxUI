@@ -177,7 +177,7 @@ UIConfigLocal.LootGroupLoot = "开启队伍拾取窗口"
 UIConfigLocal.LootWidth = "拾取窗口宽度"
 
 -- Minimap
-UIConfigLocal.Minimap = "Minimap小地图"
+UIConfigLocal.Minimap = "小地图"
 UIConfigLocal.MinimapCalendar = "小地图显示日历按钮"
 UIConfigLocal.MinimapCollectButtons = "一些小地图按钮收集在一行中"
 UIConfigLocal.MinimapEnable = "开启方形小地图"
