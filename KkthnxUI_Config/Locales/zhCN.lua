@@ -2,8 +2,8 @@ if (GetLocale() ~= "zhCN") then return end
 
 -- Localization for zhCN
 
-local PerformanceSlight = "\n|cffFF0000Disabling this may slightly increase performance|r" -- For semi-high CPU options
-local ToggleOffReminder = "\n|cffFF0000Turn this off to manually input your bar numbers|r"
+local PerformanceSlight = "\n|cffFF0000禁用此功能可能会轻微提升运行速度|r" -- For semi-high CPU options
+local ToggleOffReminder = "\n|cffFF0000关闭此项可以手动输入数值|r"
 
 -- Actionbar
 UIConfigLocal.ActionBarBottomBars = "底部动作条数量(1, 2 or 3)"
@@ -12,7 +12,7 @@ UIConfigLocal.ActionBarButtonSpace = "动作条间距"
 UIConfigLocal.ActionBarEnable = "启用动作条"
 UIConfigLocal.ActionBarEquipBorder = "已装备物品周围显示绿色边框"
 UIConfigLocal.ActionBarGrid = "显示动作条空位"
-UIConfigLocal.ActionBarHideHighlight = "Hide proc highlight"
+UIConfigLocal.ActionBarHideHighlight = "隐藏按键周围闪光"
 UIConfigLocal.ActionBarHotkey = "显示绑定按键"
 UIConfigLocal.ActionBarMacro = "显示宏名称"
 UIConfigLocal.ActionBarOutOfMana = "低魔法值染色"
@@ -63,11 +63,11 @@ UIConfigLocal.BagsSpacing = "背包格子间距"
 UIConfigLocal.Blizzard = "暴雪框体"
 UIConfigLocal.BlizzardClassColor = "好友列表、查询列表、公会成员列表中玩家名称职业颜色"
 UIConfigLocal.BlizzardColorTextures = "更改大多数UI材质色调颜色"
-UIConfigLocal.BlizzardHideTalkingHead = "Hide Talking Head Frame"
+UIConfigLocal.BlizzardHideTalkingHead = "隐藏NPC语音消息框"
 UIConfigLocal.BlizzardRaidTools = "团队工具"
 UIConfigLocal.BlizzardReplaceBlizzardFonts = "替换各框体|cff00B4FF默认字体|r为|cff3c9bedKkthnxUI|r字体"
 UIConfigLocal.BlizzardReputationGain = "显示声望获得信息"
-UIConfigLocal.BlizzardTalkingHeadScale = "Scale the Talking Head Frame"
+UIConfigLocal.BlizzardTalkingHeadScale = "NPC语音信息框缩放"
 UIConfigLocal.BlizzardTexturesColor = "UI材质色调颜色(默认为职业颜色)"
 UIConfigLocal.BlizzardVehicleMouseover = "鼠标悬停显示载具框体"
 
@@ -163,7 +163,7 @@ UIConfigLocal.GeneralBubbleFontSize = "聊天泡泡文字大小"
 UIConfigLocal.GeneralCustomLagTolerance = "根据延迟情况自动更新按键触发延时"
 UIConfigLocal.GeneralDisableTutorialButtons = "禁用一些框体上的教学按钮"
 UIConfigLocal.GeneralShowConfigButton = "小地图上显示设置按钮"
-UIConfigLocal.GeneralTranslateMessage = "Popup to gain help for GUI translation."
+UIConfigLocal.GeneralTranslateMessage = "弹出GUI帮助信息"
 UIConfigLocal.GeneralUIScale = "UI缩放（如果自动缩放被禁用）"
 UIConfigLocal.GeneralWelcomeMessage = "聊天窗内显示欢迎信息"
 
@@ -178,13 +178,13 @@ UIConfigLocal.LootWidth = "拾取窗口宽度"
 
 -- Minimap
 UIConfigLocal.Minimap = "Minimap小地图"
-UIConfigLocal.MinimapCalendar = "Calendar icon is shown on minimap"
+UIConfigLocal.MinimapCalendar = "小地图显示日历按钮"
 UIConfigLocal.MinimapCollectButtons = "一些小地图按钮收集在一行中"
 UIConfigLocal.MinimapEnable = "开启方形小地图"
 UIConfigLocal.MinimapFadeButtons = "被收集的按钮渐隐"
 UIConfigLocal.MinimapGarrison = "小地图上显示要塞图标"
 UIConfigLocal.MinimapPing = "有人点击小地图时显示信息|cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
-UIConfigLocal.MinimapShowConfigButton = "Show config button on minimap"
+UIConfigLocal.MinimapShowConfigButton = "小地图显示设置按钮"
 UIConfigLocal.MinimapSize = "小地图尺寸 - 默认150"
 
 -- Misc
@@ -200,7 +200,7 @@ UIConfigLocal.MiscEnhancedMail = "一键收邮件"
 UIConfigLocal.MiscInviteKeyword = "邀请短语"
 UIConfigLocal.MiscItemLevel = "装备栏显示物品等级"
 UIConfigLocal.MiscMoveBlizzard = "一部分系统框体可移动"
-UIConfigLocal.MiscNoBanner = "Hide Boss Banner Loot Frame"
+UIConfigLocal.MiscNoBanner = "隐藏BOSS拾取结果（个人拾取时）"
 UIConfigLocal.MiscSellMisc = "自动出售除灰色物品外的无用物品"
 UIConfigLocal.MiscSlotDurability = "装备栏显示耐久度"
 UIConfigLocal.MiscUseGuildRepair = "优先使用公会修理"
