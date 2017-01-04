@@ -323,9 +323,9 @@ L.Minimap = {
 L.Misc = {
 	BuyStack = "Alt左键批量购买",
 	Collapse = "The Collapse",
-	CopperShort = "|cffeda55f铜|r",
-	GoldShort = "|cffffd700金|r",
-	SilverShort = "|cffc7c7cf银|r",
+	CopperShort = "|cffeda55fC|r",
+	GoldShort = "|cffffd700G|r",
+	SilverShort = "|cffc7c7cfS|r",
 	UIOutdated = "KkthnxUI版本已过期。您可以从Curse.com上下载最新版本。安装Curse App可以自动更新！",
 	Undress = "一键脱光"
 }
