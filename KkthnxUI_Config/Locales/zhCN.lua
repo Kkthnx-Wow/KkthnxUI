@@ -1,4 +1,4 @@
-if (GetLocale() ~= "zhCN") then return end
+UIConfigLocal = {}
 
 -- Localization for zhCN
 
@@ -158,14 +158,15 @@ UIConfigLocal.FilgerTestMode = "测试模式"
 
 -- General
 UIConfigLocal.GeneralAutoScale = "自动缩放UI"
-UIConfigLocal.GeneralBubbleBackdrop = "移除聊天泡泡背景"
 UIConfigLocal.GeneralBubbleFontSize = "聊天泡泡文字大小"
 UIConfigLocal.GeneralCustomLagTolerance = "根据延迟情况自动更新按键触发延时"
 UIConfigLocal.GeneralDisableTutorialButtons = "禁用一些框体上的教学按钮"
-UIConfigLocal.GeneralShowConfigButton = "小地图上显示设置按钮"
 UIConfigLocal.GeneralTranslateMessage = "弹出GUI帮助信息"
 UIConfigLocal.GeneralUIScale = "UI缩放（如果自动缩放被禁用）"
+UIConfigLocal.GeneralUseBlizzardFonts = "使用默认字体"
+UIConfigLocal.GeneralUseFlatTextures = "使用“平坦”材质"
 UIConfigLocal.GeneralWelcomeMessage = "聊天窗内显示欢迎信息"
+
 
 -- Loot
 UIConfigLocal.LootConfirmDisenchant = "自动确认分解物品"
@@ -304,6 +305,8 @@ UIConfigLocal.UnitframeClassPortraits = "头像显示职业图标"
 UIConfigLocal.UnitframeCombatText = "显示伤害数字"
 UIConfigLocal.UnitframeEnable = "显示单位框体"
 UIConfigLocal.UnitframeGCDBar = "玩家框体上显示公共冷却提示"
+UIConfigLocal.UnitframeIconPlayer = "玩家施法条图标显示在左侧或右侧"
+UIConfigLocal.UnitframeIconTarget = "目标施法条图标显示在左侧或右侧"
 UIConfigLocal.UnitframeParty = "启用小队框架"
 UIConfigLocal.UnitframePlayerDebuffsOnly = "只对玩家释放的减益染色"
 UIConfigLocal.UnitframePortraitTimer = "在头像上显示计时"
@@ -312,7 +315,7 @@ UIConfigLocal.UnitframeScale = "缩放一些单位框架"
 UIConfigLocal.UnitframeShowArena = "启用竞技场框架"
 UIConfigLocal.UnitframeShowBoss = "启用首领框架"
 UIConfigLocal.UnitframeShowPlayer = "在小队中显示自身"
-UIConfigLocal.UnitframeStyle = "使单位框架看起来“厚或薄”"
+UIConfigLocal.UnitframeStyle = "使单位框架看起来“厚fat或薄normal”"
 UIConfigLocal.UnitframeSwingBar = "显示普通攻击计时条"
 UIConfigLocal.UnitframeThreatGlow = "单位框架四周仇恨提示闪光"
 UIConfigLocal.UnitframeThreatValue = "玩家框体上方显示仇恨数值"
