@@ -27,7 +27,7 @@ UIConfigLocal.ActionBarSplitBars = "第五动作条分为各6个空位的2个动
 UIConfigLocal.ActionBarStanceBarHide = "隐藏姿态条"
 UIConfigLocal.ActionBarStanceBarHorizontal = "开启水平姿态条"
 UIConfigLocal.ActionBarStanceBarMouseover = "姿态条鼠标悬停可见"
-UIConfigLocal.ActionBarToggleMode = "启用切换模式"..ToggleOffReminder
+UIConfigLocal.ActionBarToggleMode = "启用动作条数量切换模式"..ToggleOffReminder
 
 -- Announcements
 UIConfigLocal.Announcements = "通告"
