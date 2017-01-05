@@ -221,9 +221,9 @@ function Tooltip:OnTooltipSetUnit()
 		local Line = _G["GameTooltipTextLeft"..i]
 		if (Line:GetText():find("^" .. LEVEL)) then
 			if (UnitIsPlayer(Unit) and Race) then
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Race, Color, Class .."|r")
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Race, Color, Class .."|r")
 			else
-				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "|cffAF5050??|r", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
+				Line:SetFormattedText("|cff%02x%02x%02x%s|r %s%s", R * 255, G * 255, B * 255, Level > 0 and Level or "??", Classification[CreatureClassification] or "", CreatureType or "" .."|r")
 			end
 
 			break

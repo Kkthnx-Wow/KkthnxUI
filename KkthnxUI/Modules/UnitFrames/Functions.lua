@@ -13,7 +13,9 @@ local unpack = unpack
 
 -- Wow API
 local CreateFrame = CreateFrame
+local GetNetStats = GetNetStats
 local GetSpellInfo = GetSpellInfo
+local GetTime = GetTime
 local UnitCanAttack = UnitCanAttack
 local UnitClass = UnitClass
 local UnitHealth = UnitHealth
@@ -341,7 +343,8 @@ function K.CreateAuraWatch(self)
 end
 
 -- Castbar functions
-function K:PostCastStart(unit, name, rank, castid)
+function K.PostCastStart(self, unit, name, rank, castid)
+	self.channeling = false
 	if unit == "vehicle" then unit = "player" end
 	if unit == "focus" and UnitIsUnit("focus", "target") then
 		self.duration = self.casting and self.max or 0
@@ -374,7 +377,8 @@ function K:PostCastStart(unit, name, rank, castid)
 	self.__castType = "CAST"
 end
 
-function K:PostChannelStart(unit, name, rank, text)
+function K.PostChannelStart(self, unit, name, rank, text)
+	self.channeling = true
 	if unit == "vehicle" then unit = "player" end
 
 	if unit == "player" and C.Unitframe.CastbarLatency == true and self.Latency then
@@ -403,10 +407,10 @@ function K:PostChannelStart(unit, name, rank, text)
 	self.__castType = "CHANNEL"
 end
 
-function K:CustomDelayText(duration)
+function K.CustomDelayText(self, duration)
 	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
 end
 
-function K:CustomTimeText(duration)
+function K.CustomTimeText(self, duration)
 	self.Time:SetFormattedText("%.1f", self.max - duration)
 end
