@@ -371,18 +371,6 @@ function K:PostCastStart(unit, name, rank, castid)
 	self:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
 	self.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
 
-	local safezone = self.SafeZone
-	if safezone then
-		local width = safezone:GetWidth()
-		if width and width > 0 and width <= self:GetWidth() then
-			self:GetStatusBarTexture():SetDrawLayer("ARTWORK")
-			safezone:SetDrawLayer("BORDER")
-			safezone:SetWidth(width)
-		else
-			safezone:Hide()
-		end
-	end
-
 	self.__castType = "CAST"
 end
 
@@ -411,18 +399,6 @@ function K:PostChannelStart(unit, name, rank, text)
 	local r, g, b = color[1], color[2], color[3]
 	self:SetStatusBarColor(r * 0.6, g * 0.6, b * 0.6)
 	self.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
-
-	local safezone = self.SafeZone
-	if safezone then
-		local width = safezone:GetWidth()
-		if width and width > 0 and width <= self:GetWidth() then
-			self:GetStatusBarTexture():SetDrawLayer("BORDER")
-			safezone:SetDrawLayer("ARTWORK")
-			safezone:SetWidth(width)
-		else
-			safezone:Hide()
-		end
-	end
 
 	self.__castType = "CHANNEL"
 end
