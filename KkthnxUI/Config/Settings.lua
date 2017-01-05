@@ -137,6 +137,8 @@ C["DataBars"] = {
 	["ReputationFade"] = false,
 	["ReputationHeight"] = 8,
 	["ReputationWidth"] = 142,
+	-- Info text for all bars
+	["InfoText"] = false,
 }
 
 -- Datatext

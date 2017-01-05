@@ -113,7 +113,6 @@ L.DataBars = {
 	ArtifactClick = "Клик: Открывает обзор артефактов",
 	ArtifactRemaining = "|cffe6cc80Осталось: %s|r",
 	HonorLeftClick = "|cffccccccЛевый Клик: Открывает окно чести|r",
-	HonorRightClick = "|cffccccccПравый Клик: Открывает окно талантов чести|r"
 }
 
 -- DataText Localization

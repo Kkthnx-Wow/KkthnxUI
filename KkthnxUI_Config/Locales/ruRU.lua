@@ -90,6 +90,7 @@ UIConfigLocal.DataBarsHonorEnable = "Активировать полосу че�
 UIConfigLocal.DataBarsHonorFade = "Скрытие полосы чести"
 UIConfigLocal.DataBarsHonorHeight = "Высота полосы чести"
 UIConfigLocal.DataBarsHonorWidth = "Ширина высоты чести"
+UIConfigLocal.DataBarsInfoText = "Display info text on all databars"
 UIConfigLocal.DataBarsReputationEnable = "Включить полосу репутации"
 UIConfigLocal.DataBarsReputationFade = "Скрытие полосы репутации"
 UIConfigLocal.DataBarsReputationHeight = "Высота полосы репутации"

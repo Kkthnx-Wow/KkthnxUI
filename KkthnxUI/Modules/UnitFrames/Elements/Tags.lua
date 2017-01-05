@@ -111,7 +111,7 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 			local c = GetRelativeDifficultyColor(teamLevel, level)
 			r, g, b = c.r, c.g, c.b
 		else
-			local c = QuestDifficultyColors["difficult"]
+			local c = QuestDifficultyColors.difficult
 			r, g, b = c.r, c.g, c.b
 		end
 	else
@@ -135,9 +135,9 @@ oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED"
 oUF.Tags.Methods["KkthnxUI:ClassificationColor"] = function(unit)
 	local c = UnitClassification(unit)
 	if(c == "rare" or c == "elite") then
-		return Hex(1, 0.5, 0.25) --Orange
+		return Hex(0.69, 0.31, 0.31) -- Red
 	elseif(c == "rareelite" or c == "worldboss") then
-		return Hex(1, 0, 0) --Red
+		return Hex(0.69, 0.31, 0.31) -- Red
 	end
 end
 

@@ -40,28 +40,24 @@ K.CreateBorder(ArtifactBar, -1)
 ArtifactBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ArtifactBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
+ArtifactBar.Text = ArtifactBar:CreateFontString(nil, "OVERLAY")
+ArtifactBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
+ArtifactBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+ArtifactBar.Text:SetPoint("CENTER", ArtifactBar, "CENTER", 0, 0)
+ArtifactBar.Text:SetHeight(C.Media.Font_Size)
+ArtifactBar.Text:SetTextColor(1, 1, 1)
+ArtifactBar.Text:SetJustifyH("CENTER")
+
 if C.Blizzard.ColorTextures == true then
 	ArtifactBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
-ArtifactBar:SetScript("OnMouseUp", function(self)
-	if GetMouseFocus() == self then
-
-		if IsAddOnLoaded("Blizzard_ArtifactUI") then
-
-			if ArtifactFrame:IsShown() then
-				HideUIPanel(ArtifactFrame)
-
-			else
-				SocketInventoryItem(16)
-				SocketInventoryItem(17)
-			end
-
-		else
-			SocketInventoryItem(16)
-			SocketInventoryItem(17)
+ArtifactBar:SetScript("OnMouseUp", function()
+		if not ArtifactFrame or not ArtifactFrame:IsShown() then
+			ShowUIPanel(SocketInventoryItem(16))
+		elseif ArtifactFrame and ArtifactFrame:IsShown() then
+			HideUIPanel(ArtifactFrame)
 		end
-	end
 end)
 
 local function GetArtifact()
@@ -74,12 +70,22 @@ end
 local function UpdateArtifactBar()
 	local HasArtifactEquip = HasArtifactEquipped()
 
-	if not HasArtifactEquip then
+	if not HasArtifactEquip or event == "PLAYER_REGEN_DISABLED" then
 		ArtifactBar:Hide()
-	else
+	elseif HasArtifactEquip and not InCombatLockdown() then
 		local _, _, _, _, TotalExp, PointsSpent, _, _, _, _, _, _ = C_ArtifactUI.GetEquippedArtifactInfo()
 		local _, Exp, ExpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp)
 
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
+
+		local Text = format("%d%%", Exp / ExpForNextPoint * 100)
+		if C.DataBars.InfoText then
+			ArtifactBar.Text:SetText(Text)
+		else
+			ArtifactBar.Text:SetText(nil)
+		end
 		ArtifactBar:SetMinMaxValues(min(0, Exp), ExpForNextPoint)
 		ArtifactBar:SetValue(Exp)
 		ArtifactBar:Show()
@@ -121,12 +127,9 @@ if C.DataBars.ArtifactFade then
 	ArtifactBar.Tooltip = true
 end
 
-ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ArtifactBar:RegisterEvent("ARTIFACT_XP_UPDATE")
+ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ArtifactBar:RegisterEvent("PLAYER_REGEN_DISABLED")
+ArtifactBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ArtifactBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
-
-if event == "PLAYER_ENTERING_WORLD" then
-	ArtifactBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
-
 ArtifactBar:SetScript("OnEvent", UpdateArtifactBar)

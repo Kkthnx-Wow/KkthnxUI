@@ -115,6 +115,18 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 	end
 end)
 
+local PVPMessageEnhancement = CreateFrame("Frame")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
+PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
+PVPMessageEnhancement:SetScript("OnEvent", function(_, msg)
+	--	if not C.Misc.EnhancedPvpMessages then return end
+	local _, instanceType = IsInInstance()
+	if instanceType == "pvp" or instanceType == "arena" then
+		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])
+	end
+end)
+
 -- Force readycheck warning
 local ShowReadyCheckHook = function(self, initiator)
 	if initiator ~= "player" then

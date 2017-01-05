@@ -43,35 +43,64 @@ K.CreateBorder(HonorBar, -1)
 HonorBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 HonorBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
+HonorBar.Text = HonorBar:CreateFontString(nil, "OVERLAY")
+HonorBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
+HonorBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+HonorBar.Text:SetPoint("CENTER", HonorBar, "CENTER", 0, 0)
+HonorBar.Text:SetHeight(C.Media.Font_Size)
+HonorBar.Text:SetTextColor(1, 1, 1)
+HonorBar.Text:SetJustifyH("CENTER")
+
 if C.Blizzard.ColorTextures == true then
 	HonorBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
-HonorBar:SetScript("OnMouseUp", function(self)
-	if GetMouseFocus() == self then
-		local isInstance, instanceType = IsInInstance()
-
-		if isInstance and (instanceType == "pvp") then
-			LoadAddOn("Blizzard_TalentUI")
-
-			if PlayerTalentFrame:IsShown() then
-				HideUIPanel(PlayerTalentFrame)
-
-			else
-				PlayerTalentFrame:Show()
-				PlayerTalentTab_OnClick(_G["PlayerTalentFrameTab"..PVP_TALENTS_TAB])
-			end
-
-		else
-			TogglePVPUI()
-		end
-	end
+HonorBar:SetScript("OnMouseUp", function()
+	ToggleTalentFrame(3) --3 is PvP
 end)
 
 local function UpdateHonorBar()
+	if event == "HONOR_PRESTIGE_UPDATE" and unit ~= "player" then return end
+	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then return end
+
 	local Current, Max = UnitHonor("player"), UnitHonorMax("player")
-	HonorBar:SetMinMaxValues(0, Max)
-	HonorBar:SetValue(Current)
+	local Level, LevelMax = UnitHonorLevel("player"), GetMaxPlayerHonorLevel()
+	local ShowHonor = UnitLevel("player") >= MAX_PLAYER_LEVEL
+
+	if event == "PLAYER_REGEN_DISABLED" or InCombatLockdown() then
+		ShowHonor = false
+	elseif not UnitIsPVP("player") then
+		ShowHonor = false
+	end
+
+	if not ShowHonor then
+		HonorBar:Hide()
+	else
+		HonorBar:Show()
+
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
+
+		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
+		if Max == 0 then Max = 1 end
+
+		local Text = ""
+		if (CanPrestige()) then
+			Text = PVP_HONOR_PRESTIGE_AVAILABLE
+		elseif (Level == LevelMax) then
+			Text = MAX_HONOR_LEVEL
+		else
+			Text = format("%d%%", Current / Max * 100)
+		end
+		if C.DataBars.InfoText then
+			HonorBar.Text:SetText(Text)
+		else
+			HonorBar.Text:SetText(nil)
+		end
+		HonorBar:SetMinMaxValues(0, Max)
+		HonorBar:SetValue(Current)
+	end
 end
 
 HonorBar:SetScript("OnEnter", function(self)
@@ -93,7 +122,6 @@ HonorBar:SetScript("OnEnter", function(self)
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L.DataBars.HonorLeftClick)
-	GameTooltip:AddLine(L.DataBars.HonorRightClick)
 
 	GameTooltip:Show()
 end)
@@ -108,12 +136,8 @@ if C.DataBars.HonorFade then
 end
 
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-HonorBar:RegisterEvent("HONOR_XP_UPDATE")
-HonorBar:RegisterEvent("HONOR_LEVEL_UPDATE")
-HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
-
-if event == "PLAYER_ENTERING_WORLD" then
-	HonorBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
-
+HonorBar:RegisterEvent("PLAYER_REGEN_DISABLED")
+HonorBar:RegisterEvent("PLAYER_REGEN_ENABLED")
+HonorBar:RegisterEvent("HONOR_XP_UPDATE", UpdateHonorBar)
+HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE", UpdateHonorBar)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)
