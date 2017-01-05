@@ -24,22 +24,24 @@ local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
 local FCF_SetLocked = FCF_SetLocked
 local FCF_SetWindowName = FCF_SetWindowName
 local FCF_StopDragging = FCF_StopDragging
+local GetCVar = GetCVar
 local GetCVarBool = GetCVarBool
 local LOOT, GENERAL, TRADE = LOOT, GENERAL, TRADE
 local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
 local PlayMusic = PlayMusic
 local PlaySoundFile = PlaySoundFile
+local PlaySoundKitID = PlaySoundKitID
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar
-local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 local StaticPopup_Show = StaticPopup_Show
-local GetCVar = GetCVar
+local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
 -- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2, UIConfig
+-- GLOBALS: InstallStepComplete, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 

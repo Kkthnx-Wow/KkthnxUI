@@ -65,6 +65,8 @@ L.Bind = {
 -- Chat Localization
 L.Chat = {
 	AFK = "|cffff0000[AFK]|r",
+	BigChatOff = "Big chat feature deactivated",
+	BigChatOn = "Big chat feature activated",
 	DND = "|cffe7e716[DND]|r",
 	Guild = "G",
 	GuildRecruitment = "GildenRekrutierung",

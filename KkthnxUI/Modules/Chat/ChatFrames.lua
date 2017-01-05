@@ -284,7 +284,7 @@ UIChat:SetScript("OnEvent", function(self, event, addon)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		SetupChatPosAndFont(self)
+		--	SetupChatPosAndFont(self)
 	end
 end)
 
@@ -294,7 +294,6 @@ local SetupTempChat = function()
 
 	if (_G[Frame:GetName() .. "Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG)) then
 		FCF_Close(Frame)
-
 		return
 	end
 
@@ -329,17 +328,21 @@ for i = 1, NUM_CHAT_WINDOWS do
 	end
 end
 
+-- Reset chat command
+SLASH_CHATRESET1 = "/chatreset"
+SlashCmdList.CHATRESET = function() SetupChatPosAndFont(self) K.Print("Chat has been successfully reset!") end
+
 -- Big Trade Chat
 local bigchat = false
-function SlashCmdList.BIGCHAT(msg, editbox)
+function SlashCmdList.BIGCHAT(msg)
 	if bigchat == false then
 		ChatFrame1:SetSize(400, 400)
 		bigchat = true
-		K.Print(L.Chat.BIGCHAT_ON)
+		K.Print(L.Chat.BigChatOn)
 	else
 		ChatFrame1:SetSize(400, 150)
 		bigchat = false
-		K.Print(L.Chat.BIGCHAT_OFF)
+		K.Print(L.Chat.BigChatOff)
 	end
 end
 SLASH_BIGCHAT1 = "/bigchat"
