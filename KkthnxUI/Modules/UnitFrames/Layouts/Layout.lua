@@ -494,12 +494,24 @@ local function CreateUnitLayout(self, unit)
 				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
 				CastBar.SafeZone:SetTexture(C.Media.Texture)
 				CastBar.SafeZone:SetVertexColor(1, 0.5, 0, 0.75)
+
+				CastBar.Latency = K.SetFontString(CastBar, C.Media.Font, C.Media.Font_Size, "", "RIGHT")
+				CastBar.Latency:SetShadowOffset(K.Mult, -K.Mult)
+				CastBar.Latency:SetTextColor(1, 1, 1)
+				CastBar.Latency:SetPoint("TOPRIGHT", CastBar.Time, "BOTTOMRIGHT", 0, 0)
+				CastBar.Latency:SetJustifyH("RIGHT")
+
+				self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", function(self, event, caster) -- BETA Event check
+					if (caster == "player" or caster == "vehicle") then
+						CastBar.castSent = GetTime()
+					end
+				end)
 			end
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostChannelStart
 
 			Movers:RegisterFrame(CastBar)
 
@@ -556,10 +568,10 @@ local function CreateUnitLayout(self, unit)
 				CastBar.Button:SetAllPoints(CastBar.Icon)
 			end
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostChannelStart
 
 			Movers:RegisterFrame(CastBar)
 
@@ -609,10 +621,10 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Icon:SetAllPoints()
 			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostChannelStart
 
 			self.Castbar = CastBar
 			self.Castbar.Icon = CastBar.Icon
@@ -661,10 +673,10 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Icon:SetAllPoints()
 			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostChannelStart
 
 			self.Castbar = CastBar
 			self.Castbar.Icon = CastBar.Icon

@@ -341,49 +341,96 @@ function K.CreateAuraWatch(self)
 end
 
 -- Castbar functions
-function K:CustomCastTimeText(duration)
-	self.Time:SetFormattedText("%.1f", self.max - duration)
-end
+function K:PostCastStart(unit, name, rank, castid)
+	if unit == "vehicle" then unit = "player" end
+	if unit == "focus" and UnitIsUnit("focus", "target") then
+		self.duration = self.casting and self.max or 0
+		return
+	end
 
-function K:CustomCastDelayText(duration)
-	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
-end
+	if unit == "player" and C.Unitframe.CastbarLatency == true and self.Latency then
+		local _, _, _, lag = GetNetStats()
+		local latency = GetTime() - (self.castSent or 0)
+		lag = lag / 1e3 > self.max and self.max or lag / 1e3
+		latency = latency > self.max and lag or latency
+		self.Latency:SetText(("%dms"):format(latency * 1e3))
+		self.castSent = nil
+	end
 
-function K:CheckInterrupt(unit)
 	local color
-
-	if (self.MatchUnit == "vehicle") then
-		self.MatchUnit = "player"
-	end
-
-	self:SetBackdropBorderColor(1, 1, 1)
-	if C.Unitframe.CastbarIcon then
-		self.Button:SetBackdropBorderColor(1, 1, 1)
-	end
-
 	if UnitIsUnit(unit, "player") then
 		color = K.Colors.class[K.Class]
-	elseif self.interrupt and UnitCanAttack("player", unit) then
+	elseif self.interrupt then
 		color = K.Colors.uninterruptible
-		self:SetBackdropBorderColor(unpack(K.Colors.uninterruptible))
-		if C.Unitframe.CastbarIcon then
-			self.Button:SetBackdropBorderColor(unpack(K.Colors.uninterruptible))
-		end
 	elseif UnitIsFriend(unit, "player") then
 		color = K.Colors.reaction[5]
 	else
 		color = K.Colors.reaction[1]
 	end
-
 	local r, g, b = color[1], color[2], color[3]
 	self:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
 	self.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+
+	local safezone = self.SafeZone
+	if safezone then
+		local width = safezone:GetWidth()
+		if width and width > 0 and width <= self:GetWidth() then
+			self:GetStatusBarTexture():SetDrawLayer("ARTWORK")
+			safezone:SetDrawLayer("BORDER")
+			safezone:SetWidth(width)
+		else
+			safezone:Hide()
+		end
+	end
+
+	self.__castType = "CAST"
 end
 
-function K:CheckCast(unit, name, rank, castid)
-	K.CheckInterrupt(self, unit)
+function K:PostChannelStart(unit, name, rank, text)
+	if unit == "vehicle" then unit = "player" end
+
+	if unit == "player" and C.Unitframe.CastbarLatency == true and self.Latency then
+		local _, _, _, lag = GetNetStats()
+		local latency = GetTime() - (self.castSent or 0)
+		lag = lag / 1e3 > self.max and self.max or lag / 1e3
+		latency = latency > self.max and lag or latency
+		self.Latency:SetText(("%dms"):format(latency * 1e3))
+		self.castSent = nil
+	end
+
+	local color
+	if UnitIsUnit(unit, "player") then
+		color = K.Colors.class[K.Class]
+	elseif self.interrupt then
+		color = K.Colors.reaction[4]
+	elseif UnitIsFriend(unit, "player") then
+		color = K.Colors.reaction[5]
+	else
+		color = K.Colors.reaction[1]
+	end
+	local r, g, b = color[1], color[2], color[3]
+	self:SetStatusBarColor(r * 0.6, g * 0.6, b * 0.6)
+	self.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+
+	local safezone = self.SafeZone
+	if safezone then
+		local width = safezone:GetWidth()
+		if width and width > 0 and width <= self:GetWidth() then
+			self:GetStatusBarTexture():SetDrawLayer("BORDER")
+			safezone:SetDrawLayer("ARTWORK")
+			safezone:SetWidth(width)
+		else
+			safezone:Hide()
+		end
+	end
+
+	self.__castType = "CHANNEL"
 end
 
-function K:CheckChannel(unit, name, rank)
-	K.CheckInterrupt(self, unit)
+function K:CustomDelayText(duration)
+	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
+end
+
+function K:CustomTimeText(duration)
+	self.Time:SetFormattedText("%.1f", self.max - duration)
 end

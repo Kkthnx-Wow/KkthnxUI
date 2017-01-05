@@ -176,10 +176,10 @@ if C.Unitframe.Castbars then
 		CastBar.Icon:SetAllPoints()
 		CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-		CastBar.CustomTimeText = K.CustomCastTimeText
-		CastBar.CustomDelayText = K.CustomCastDelayText
-		CastBar.PostCastStart = K.CheckCast
-		CastBar.PostChannelStart = K.CheckChannel
+		CastBar.CustomTimeText = K.CustomTimeText
+		CastBar.CustomDelayText = K.CustomDelayText
+		CastBar.PostCastStart = K.PostCastStart
+		CastBar.PostChannelStart = K.PostChannelStart
 
 		self.Castbar = CastBar
 		self.Castbar.Icon = CastBar.Icon
