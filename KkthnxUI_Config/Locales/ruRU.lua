@@ -226,6 +226,7 @@ UIConfigLocal.NameplatesHeight = "Высота индикаторов"
 UIConfigLocal.NameplatesNameAbbreviate = "Сокращать до аббревиатур имена длиннее 18 символов"
 UIConfigLocal.NameplatesNearColor = "Цвет при уменьшении/увеличении значения угрозы"
 UIConfigLocal.NameplatesOffTankColor = "Цвет угрозы для оффтанка"
+UIConfigLocal.NameplatesSmooth = "Bars will transition smoothly"
 UIConfigLocal.NameplatesSpiral = "Spiral on nameplate auras" -- Needs translation
 UIConfigLocal.NameplatesTimer = "Show cooldown timer on nameplate auras"
 UIConfigLocal.NameplatesTotemIcons = "Отображать иконку над вражескими тотемами"
@@ -313,6 +314,7 @@ UIConfigLocal.UnitframeScale = "Масштабировать некоторые 
 UIConfigLocal.UnitframeShowArena = "Включить рамки арены"
 UIConfigLocal.UnitframeShowBoss = "Включить рамки боссов"
 UIConfigLocal.UnitframeShowPlayer = "SПоказывать себя в группе"
+UIConfigLocal.UnitframeSmooth = "Bars will transition smoothly"
 UIConfigLocal.UnitframeStyle = "Стиль рамок 'fat или normal'" -- Это ключевые слова, чтобы опция работала их надо писать
 UIConfigLocal.UnitframeSwingBar = "Отображать индикатор автоматической атаки"
 UIConfigLocal.UnitframeThreatGlow = "Свечение угрозы вокруг рамки"
@@ -339,6 +341,7 @@ UIConfigLocal.RaidframeShowNotHereTimer = "Показывать таймер А�
 UIConfigLocal.RaidframeShowResurrectText = "Показывать текст воскрешения"
 UIConfigLocal.RaidframeShowRolePrefix = "Показывать префиксы ролей"
 UIConfigLocal.RaidframeShowThreatText = "Показывать текст угрозы"
+UIConfigLocal.RaidframeSmooth = "Bars will transition smoothly."
 UIConfigLocal.RaidframeWidth = "Ширина рамок рейда"
 
 -- Карта мира

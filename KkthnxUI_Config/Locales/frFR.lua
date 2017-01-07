@@ -166,6 +166,7 @@ UIConfigLocal.GeneralUseBlizzardFonts = "Use the default blizzard font"
 UIConfigLocal.GeneralUseFlatTextures = "Use flat statusbar textures"
 UIConfigLocal.GeneralWelcomeMessage = "Welcome message in chat."
 
+
 -- Loot
 UIConfigLocal.LootConfirmDisenchant = "Auto confirm disenchant"
 UIConfigLocal.LootAutoGreed = "Enable auto-greed & disenchant for green items at max level"
