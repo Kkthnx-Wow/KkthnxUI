@@ -32,7 +32,8 @@ ReputationBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 ReputationBar.Text = ReputationBar:CreateFontString(nil, "OVERLAY")
 ReputationBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
 ReputationBar.Text:SetShadowOffset(K.Mult, -K.Mult)
-ReputationBar.Text:SetPoint("CENTER", ReputationBar, "CENTER", 0, 0)
+ReputationBar.Text:SetPoint("LEFT", ReputationBar, "RIGHT", 0, 0)
+ReputationBar.Text:SetPoint("RIGHT", ReputationBar, "LEFT", 0, 0)
 ReputationBar.Text:SetHeight(C.Media.Font_Size)
 ReputationBar.Text:SetTextColor(1, 1, 1)
 ReputationBar.Text:SetJustifyH("CENTER")
@@ -61,7 +62,7 @@ local function UpdateReputationBar()
 			standingLabel = FactionStandingLabelUnknown
 		end
 
-		local Text = format("%s: %d%% [%s]", K.UTF8Sub(Name, 8, true), ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
+		local Text = format("%s: %d%% [%s]", Name, ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
 		if C.DataBars.InfoText then
 			ReputationBar.Text:SetText(Text)
 		else
