@@ -711,7 +711,7 @@ local function CreateUnitLayout(self, unit)
 	self.Texture:SetDrawLayer("BORDER", 3)
 
 	-- Healthbar
-	self.Health = K.CreateStatusBar(self, nil, nil, true)
+	self.Health = K.CreateStatusBar(self, false)
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
@@ -735,8 +735,8 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Power bar
-	self.Power = K.CreateStatusBar(self, nil, nil, true)
-	self.Power:SetFrameLevel(self:GetFrameLevel()-1)
+	self.Power = K.CreateStatusBar(self, false)
+	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = self.MatchUnit == "player" or self.MatchUnit == "boss"
 	self.Power.PostUpdate = K.PostUpdatePower

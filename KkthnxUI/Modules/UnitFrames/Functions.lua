@@ -242,7 +242,7 @@ function K.UnitFrame_OnLeave(self)
 end
 
 -- </ Statusbar functions > --
-function K.CreateStatusBar(self, noBG, noSmoothing)
+function K.CreateStatusBar(self, noBG)
 	local StatusBar = CreateFrame("StatusBar", "oUFKkthnxStatusBar", self) -- global name to avoid Blizzard /fstack error
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
@@ -258,9 +258,9 @@ function K.CreateStatusBar(self, noBG, noSmoothing)
 		StatusBar.BG:SetAllPoints(true)
 	end
 
-	local SmoothBar = not noSmoothing and (self.SmoothBar or self.__owner and self.__owner.SmoothBar)
+	local SmoothBar = self.SmoothBar or self.__owner and self.__owner.SmoothBar
 	if SmoothBar and C.Unitframe.Smooth then
-		SmoothBar(nil, StatusBar) -- nil should be frame but isn't used
+		SmoothBar(nil, StatusBar) -- nil should be self but isn't used
 		StatusBar.__smooth = true
 	end
 
@@ -361,7 +361,7 @@ function K.HideTicks()
 end
 
 function K.SetCastTicks(self, numTicks, extraTickRatio)
-	--Adjust tick heights
+	-- Adjust tick heights
 	self.tickHeight = self:GetHeight()
 
 	extraTickRatio = extraTickRatio or 0
