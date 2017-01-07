@@ -493,13 +493,30 @@ local function CreateUnitLayout(self, unit)
 			if (C.Unitframe.CastbarLatency) then
 				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
 				CastBar.SafeZone:SetTexture(C.Media.Texture)
-				CastBar.SafeZone:SetVertexColor(1, 0.5, 0, 0.75)
+				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+
+				CastBar.Latency = K.SetFontString(CastBar, C.Media.Font, C.Media.Font_Size, "", "RIGHT")
+				CastBar.Latency:SetShadowOffset(K.Mult, -K.Mult)
+				CastBar.Latency:SetTextColor(1, 1, 1)
+				CastBar.Latency:SetPoint("TOPRIGHT", CastBar.Time, "BOTTOMRIGHT", 0, 0)
+				CastBar.Latency:SetJustifyH("RIGHT")
+
+				self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", function(self, event, caster)
+					if (caster == "player" or caster == "vehicle") then
+						CastBar.castSent = GetTime()
+					end
+				end)
 			end
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostCastStart
+			CastBar.PostCastStop = K.PostCastStop
+			CastBar.PostChannelStop = K.PostCastStop
+			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			Movers:RegisterFrame(CastBar)
 
@@ -556,10 +573,15 @@ local function CreateUnitLayout(self, unit)
 				CastBar.Button:SetAllPoints(CastBar.Icon)
 			end
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostCastStart
+			CastBar.PostCastStop = K.PostCastStop
+			CastBar.PostChannelStop = K.PostCastStop
+			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			Movers:RegisterFrame(CastBar)
 
@@ -609,10 +631,15 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Icon:SetAllPoints()
 			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostCastStart
+			CastBar.PostCastStop = K.PostCastStop
+			CastBar.PostChannelStop = K.PostCastStop
+			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			self.Castbar = CastBar
 			self.Castbar.Icon = CastBar.Icon
@@ -661,10 +688,15 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Icon:SetAllPoints()
 			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-			CastBar.CustomTimeText = K.CustomCastTimeText
-			CastBar.CustomDelayText = K.CustomCastDelayText
-			CastBar.PostCastStart = K.CheckCast
-			CastBar.PostChannelStart = K.CheckChannel
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostCastStart
+			CastBar.PostCastStop = K.PostCastStop
+			CastBar.PostChannelStop = K.PostCastStop
+			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 			self.Castbar = CastBar
 			self.Castbar.Icon = CastBar.Icon
@@ -683,8 +715,10 @@ local function CreateUnitLayout(self, unit)
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
-	self.Health.Smooth = true
 	self.Health.frequentUpdates = true
+	if C.Unitframe.Smooth then
+			self.Health.Smooth = true
+  end
 
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
@@ -706,8 +740,10 @@ local function CreateUnitLayout(self, unit)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = self.MatchUnit == "player" or self.MatchUnit == "boss"
 	self.Power.PostUpdate = K.PostUpdatePower
-	self.Power.Smooth = true
 	self.Power.colorPower = true
+	if C.Unitframe.Smooth then
+			self.Power.Smooth = true
+  end
 
 	-- Power Text
 	if (data.mpt) then

@@ -5,7 +5,11 @@ local oUF = oUF or Framework.oUF
 
 -- Colors
 oUF.colors.uninterruptible = {
-	1, 0.7, 0
+	1, 0, 0, 0.5
+}
+
+oUF.colors.interruptible = {
+	0.31, 0.45, 0.63, 0.5
 }
 
 oUF.colors.fallback = {

@@ -1,19 +1,17 @@
 local K, C, L = unpack(select(2, ...))
 if C.Nameplates.Enable ~= true then return end
 
---[[
-The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
-Example: Polymorph -> http://www.wowhead.com/spell=118
-Take the number ID at the end of the URL, and add it to the list
---]]
+-- The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
+-- Example: Polymorph -> http://www.wowhead.com/spell=118
+-- Take the number ID at the end of the URL, and add it to the list
 
 local function SpellName(id)
-	local name = GetSpellInfo(id)
-	if name then
-		return name
+	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
+	if not name then
+    print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
+		return "Impale"
 	else
-		print("|cffff0000WARNING: Nameplates debuff whitelist spell ID ["..tostring(id).."] no longer exists! Report this to Kkthnx.|r")
-		return "Empty"
+		return name
 	end
 end
 

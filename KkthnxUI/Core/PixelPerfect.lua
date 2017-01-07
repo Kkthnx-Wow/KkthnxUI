@@ -3,9 +3,10 @@ local K, C, L = unpack(select(2, ...))
 -- Big thanks to Goldpaw for failproofing this badass script some more.
 
 -- Lua API
-local format = string.format
-local min, max = math.min, math.max
-local strmatch = string.match
+local math_max = math.max
+local math_min = math.min
+local string_format = string.format
+local string_match = string.match
 
 -- Wow API
 local GetCVar = GetCVar
@@ -13,10 +14,9 @@ local GetCVarBool = GetCVarBool
 local InCinematic = InCinematic
 local InCombatLockdown = InCombatLockdown
 local SetCVar = SetCVar
-local StaticPopup_Show = StaticPopup_Show
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ForceQuit, WorldMapFrame, UIParent
+-- GLOBALS: ForceQuit, WorldMapFrame, UIParent, StaticPopup_Show
 
 local Lock = false
 local RequireRestart = false
@@ -50,9 +50,11 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		return
 	end
+
 	if event ~= "CINEMATIC_STOP" and InCinematic() then
 		return
 	end
+
 	if InCinematic() and not(CinematicFrame.isRealCinematic or CanCancelScene() or CanExitVehicle()) then
 		return
 	end
@@ -60,15 +62,16 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Make sure that UI scaling is turned on
 	local UseUIScale = GetCVarBool("useUiScale")
 	if not UseUIScale then
-		K.LockCVar("useUiScale", 1)
+			K.LockCVar("useUiScale", 1)
+			WorldMapFrame.hasTaint = true
 	end
 
 	-- Automatically change the scale if auto scaling is activated
 	if C.General.AutoScale then
-		C.General.UIScale = min(2, max(0.32, 768 / strmatch(K.Resolution, "%d+x(%d+)")))
+		C.General.UIScale = math_min(2, math_max(0.32, 768 / string_match(K.Resolution, "%d+x(%d+)")))
 	end
 
-	if (format("%.2f", GetCVar("uiScale")) ~= format("%.2f", C.General.UIScale)) then
+	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C.General.UIScale)) then
 		SetCVar("uiScale", C.General.UIScale)
 		if not RequireRestart then
 			if C.General.UIScale >= 0.64 then

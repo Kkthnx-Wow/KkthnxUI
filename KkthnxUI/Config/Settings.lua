@@ -137,15 +137,15 @@ C["DataBars"] = {
 	["ReputationFade"] = false,
 	["ReputationHeight"] = 8,
 	["ReputationWidth"] = 142,
+	-- Info text for all bars
+	["InfoText"] = false,
 }
 
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
-	["BottomBar"] = true,
 	["LocalTime"] = true,
 	["System"] = true,
-	["ThreatBar"] = false,
 	["Time24Hr"] = false,
 }
 
@@ -231,6 +231,7 @@ C["Nameplates"] = {
 	["AurasSize"] = 26,
 	["BadColor"] = {1, 0, 0},
 	["CastbarName"] = false,
+	["CastUnitReaction"] = false,
 	["Clamp"] = false,
 	["ClassIcons"] = false,
 	["Combat"] = false,
@@ -244,6 +245,7 @@ C["Nameplates"] = {
 	["NameAbbreviate"] = true,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
+	["Smooth"] = false,
 	["Spiral"] = true,
 	["Timer"] = true,
 	["TotemIcons"] = false,
@@ -305,17 +307,20 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["CastbarHeight"] = 18,
 	["CastbarIcon"] = false,
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
+	["CastbarTicks"] = false,
+	["CastbarWidth"] = 200,
+	["CastClassColor"] = false,
+	["CastUnitReaction"] = false,
 	["ClassColor"] = true,
 	["ClassPortraits"] = false,
 	["CombatText"] = true,
 	["Enable"] = true,
 	["GCDBar"] = false,
 	["Party"] = true,
-	["CastbarHeight"] = 18,
-	["CastbarWidth"] = 200,
 	["PlayerDebuffsOnly"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
@@ -323,6 +328,7 @@ C["Unitframe"] = {
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
 	["ShowPlayer"] = true,
+	["Smooth"] = false,
 	["Style"] = "fat",
 	["SwingBar"] = false,
 	["ThreatGlow"] = true,
@@ -370,6 +376,7 @@ C["Raidframe"] = {
 	["ShowResurrectText"] = true,
 	["ShowRolePrefix"] = false,
 	["ShowThreatText"] = false,
+	["Smooth"] = false,
 	["Width"] = 56,
 }
 

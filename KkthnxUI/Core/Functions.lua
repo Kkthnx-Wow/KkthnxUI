@@ -17,16 +17,11 @@ local string_match = string.match
 local string_reverse = string.reverse
 local string_sub = string.sub
 local table_insert, table_remove = table.insert, table.remove
-local tonumber, type = tonumber, type
+local type = type
 local unpack, select = unpack, select
 
 -- Wow API
 local CreateFrame = CreateFrame
-local GetBackpackCurrencyInfo = GetBackpackCurrencyInfo
-local GetCombatRatingBonus = GetCombatRatingBonus
-local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
-local GetNumWatchedTokens = GetNumWatchedTokens
-local GetSpellInfo = GetSpellInfo
 local IsEveryoneAssistant = IsEveryoneAssistant
 local IsInGroup = IsInGroup
 local IsInRaid = IsInRaid
@@ -34,7 +29,6 @@ local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
 local UnitIsGroupAssistant = UnitIsGroupAssistant
 local UnitIsGroupLeader = UnitIsGroupLeader
-local UnitStat, UnitAttackPower, UnitBuff = UnitStat, UnitAttackPower, UnitBuff
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, WEEKLY, UIFrameHider, UIHider,UIParent
@@ -160,7 +154,7 @@ function K.CreateShadowFrame(frame, point)
 	})
 	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(.05, .05, .05, .9)
+	frame.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
 
 	if frame:GetFrameLevel() - 1 > 0 then
@@ -257,43 +251,40 @@ function K.FormatMoney(value)
 end
 
 -- LockedCVars
-do
-	K.LockedCVars = {}
-	function K:PLAYER_REGEN_ENABLED(_)
-		if(self.CVarUpdate) then
-			for cvarName, value in pairs(K.LockedCVars) do
-				if(GetCVar(cvarName) ~= value) then
-					SetCVar(cvarName, value)
-					-- print(cvarName, value)
-				end
+K.LockedCVars = {}
+function K:PLAYER_REGEN_ENABLED(_)
+	if(self.CVarUpdate) then
+		for cvarName, value in pairs(K.LockedCVars) do
+			if(GetCVar(cvarName) ~= value) then
+				SetCVar(cvarName, value)
+				-- print(cvarName, value)
 			end
-			K.CVarUpdate = nil
 		end
-	end
-
-	local function CVAR_UPDATE(cvarName, value)
-		if(K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-			if(InCombatLockdown()) then
-				K.CVarUpdate = true
-				return
-			end
-
-			SetCVar(cvarName, K.LockedCVars[cvarName])
-			-- print(cvarName, K.LockedCVars[cvarName])
-		end
-	end
-
-	hooksecurefunc("SetCVar", CVAR_UPDATE)
-	function K.LockCVar(cvarName, value)
-		if(GetCVar(cvarName) ~= value) then
-			SetCVar(cvarName, value)
-			-- print(cvarName, value)
-		end
-		K.LockedCVars[cvarName] = value
-		-- print(value)
+		K.CVarUpdate = nil
 	end
 end
 
+local function CVAR_UPDATE(cvarName, value)
+	if(K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+		if(InCombatLockdown()) then
+			K.CVarUpdate = true
+			return
+		end
+
+		SetCVar(cvarName, K.LockedCVars[cvarName])
+		-- print(cvarName, K.LockedCVars[cvarName])
+	end
+end
+
+hooksecurefunc("SetCVar", CVAR_UPDATE)
+function K.LockCVar(cvarName, value)
+	if(GetCVar(cvarName) ~= value) then
+		SetCVar(cvarName, value)
+		-- print(cvarName, value)
+	end
+	K.LockedCVars[cvarName] = value
+	-- print(value)
+end
 
 -- http://www.wowwiki.com/ColorGradient
 function K.ColorGradient(a, b, ...)
@@ -322,8 +313,7 @@ function K.ColorGradient(a, b, ...)
 	return r1 + (r2 - r1) * relpercent, g1 + (g2 - g1) * relpercent, b1 + (b2 - b1) * relpercent
 end
 
--- Example:
--- killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
+-- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
 function K.KillMenuOption(option_shrink, option_name)
 	local option = _G[option_name]
 	if not(option) or not(option.IsObjectType) or not(option:IsObjectType("Frame")) then
@@ -421,27 +411,4 @@ function K.Delay(delay, func, ...)
 	end
 	table_insert(waitTable, {delay, func, {...}})
 	return true
-end
-
--- Currencys
-local GetCurrencyInfo = GetCurrencyInfo
-function K.Currency(id, weekly, capped)
-	local name, amount, tex, week, weekmax, maxed, discovered = GetCurrencyInfo(id)
-
-	local r, g, b = 1, 1, 1
-	for i = 1, GetNumWatchedTokens() do
-		local _, _, _, itemID = GetBackpackCurrencyInfo(i)
-		if id == itemID then r, g, b = .77, .12, .23 end
-	end
-
-	if (amount == 0 and r == 1) then return end
-	if weekly then
-		if id == 390 then week = math_floor(math_abs(week) / 100) end
-		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, "Current: " .. amount .. " - " .. WEEKLY .. ": " .. week .. " / " .. weekmax, r, g, b, r, g, b) end
-	elseif capped then
-		if id == 392 then maxed = 4000 end
-		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount .. " / " .. maxed, r, g, b, r, g, b) end
-	else
-		if discovered then GameTooltip:AddDoubleLine("\124T" .. tex .. ":12\124t " .. name, amount, r, g, b, r, g, b) end
-	end
 end

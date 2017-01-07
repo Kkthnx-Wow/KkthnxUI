@@ -18,9 +18,10 @@
    <!-- GUI -->
    <Script file="Core\GUI.lua" />
    <Script file="Core\PixelPerfect.lua" />
-   <!-- Config -->
+   <!-- Filters -->
    <Script file="Config\Filters\Announcements.lua" />
    <Script file="Config\Filters\AuraList.lua" />
+   <Script file="Config\Filters\CastbarTicks.lua" />
    <Script file="Config\Filters\Cooldowns.lua" />
    <Script file="Config\Filters\ErrorFilter.lua" />
    <Script file="Config\Filters\FilgerSpells.lua" />
@@ -42,6 +43,7 @@
    <Include file="Libraries\oUF\oUF.xml" />
    <Include file="Libraries\oUF_Plugins\Load_Plugins.xml" />
    <Script file="Libraries\LibChatAnims\LibChatAnims.lua" />
+   <Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua" />
    <Include file="Libraries\LibDropDownMenu\LibDropDownMenu.xml" />
    <!-- Media -->
    <Script file="Media\Media.lua" />
@@ -137,16 +139,15 @@
    <Script file="Modules\Chat\Sounds.lua" />
    <Script file="Modules\Chat\SpamageMeters.lua" />
    <Script file="Modules\Chat\SpamFilter.lua" />
-   <Script file="Modules\Chat\TellTarget.lua" />
    <!-- DataBars -->
    <Script file="Modules\DataBars\ArtifactBar.lua" />
    <Script file="Modules\DataBars\ExperienceBar.lua" />
    <Script file="Modules\DataBars\HonorBar.lua" />
    <Script file="Modules\DataBars\ReputationBar.lua" />
    <!-- DataText Modules -->
-   <Script file="Modules\DataText\DataTexts.lua" />
-   <Script file="Modules\DataText\Anchors.lua" />
-   <Include file="Modules\DataText\Elements\Load_Elements.xml" />
+   <Script file="Modules\DataText\Battleground.lua" />
+   <Script file="Modules\DataText\System.lua" />
+   <Script file="Modules\DataText\Time.lua" />
    <!-- Inventory -->
    <Script file="Modules\Inventory\Bags.lua" />
    <!-- Loot -->

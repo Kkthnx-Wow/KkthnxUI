@@ -13,7 +13,9 @@ local unpack = unpack
 
 -- Wow API
 local CreateFrame = CreateFrame
+local GetNetStats = GetNetStats
 local GetSpellInfo = GetSpellInfo
+local GetTime = GetTime
 local UnitCanAttack = UnitCanAttack
 local UnitClass = UnitClass
 local UnitHealth = UnitHealth
@@ -240,19 +242,29 @@ function K.UnitFrame_OnLeave(self)
 end
 
 -- </ Statusbar functions > --
-function K.CreateStatusBar(parent, layer, name, AddBackdrop)
-	if type(layer) ~= "string" then layer = "BORDER" end
-	local bar = CreateFrame("StatusBar", name, parent)
-	bar:SetStatusBarTexture(C.Media.Texture, layer)
-	bar.texture = C.Media.Texture
+function K.CreateStatusBar(self, noBG, noSmoothing)
+	local StatusBar = CreateFrame("StatusBar", "oUFKkthnxStatusBar", self) -- global name to avoid Blizzard /fstack error
+	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
-	if AddBackdrop then
-		bar:SetBackdrop({bgFile = C.Media.Blank})
-		local r,g,b,a = unpack(C.Media.Backdrop_Color)
-		bar:SetBackdropColor(r, g, b, a)
+	StatusBar.Texture = StatusBar:GetStatusBarTexture()
+	StatusBar.Texture:SetDrawLayer("BORDER")
+	StatusBar.Texture:SetHorizTile(false)
+	StatusBar.Texture:SetVertTile(false)
+
+	if not noBG then
+		StatusBar.BG = StatusBar:CreateTexture(nil, "BACKGROUND")
+		StatusBar.BG:SetTexture(C.Media.Blank)
+		StatusBar.BG:SetColorTexture(unpack(C.Media.Backdrop_Color))
+		StatusBar.BG:SetAllPoints(true)
 	end
 
-	return bar
+	local SmoothBar = not noSmoothing and (self.SmoothBar or self.__owner and self.__owner.SmoothBar)
+	if SmoothBar and C.Unitframe.Smooth then
+		SmoothBar(nil, StatusBar) -- nil should be frame but isn't used
+		StatusBar.__smooth = true
+	end
+
+	return StatusBar
 end
 
 K.RaidBuffsTrackingPosition = {
@@ -340,50 +352,250 @@ function K.CreateAuraWatch(self)
 	self.AuraWatch = Auras
 end
 
--- Castbar functions
-function K:CustomCastTimeText(duration)
-	self.Time:SetFormattedText("%.1f", self.max - duration)
-end
-
-function K:CustomCastDelayText(duration)
-	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
-end
-
-function K:CheckInterrupt(unit)
-	local color
-
-	if (self.MatchUnit == "vehicle") then
-		self.MatchUnit = "player"
+-- </ All unitframe castbar functions > --
+local ticks = {}
+function K.HideTicks()
+	for i = 1, #ticks do
+		ticks[i]:Hide()
 	end
+end
+
+function K.SetCastTicks(self, numTicks, extraTickRatio)
+	--Adjust tick heights
+	self.tickHeight = self:GetHeight()
+
+	extraTickRatio = extraTickRatio or 0
+	K.HideTicks()
+	if numTicks and numTicks <= 0 then return end;
+	local w = self:GetWidth()
+	local d = w / (numTicks + extraTickRatio)
+	for i = 1, numTicks do
+		if not ticks[i] then
+			ticks[i] = self:CreateTexture(nil, "OVERLAY")
+			ticks[i]:SetTexture(C.Media.Texture)
+			ticks[i]:SetVertexColor(0, 0, 0, 0.8)
+			ticks[i]:SetWidth(2) -- We could use 1
+		end
+
+		ticks[i]:SetHeight(self.tickHeight)
+
+		ticks[i]:ClearAllPoints()
+		ticks[i]:SetPoint("RIGHT", self, "LEFT", d * i, 0)
+		ticks[i]:Show()
+	end
+end
+
+local MageSpellName = GetSpellInfo(5143) --Arcane Missiles
+local MageBuffName = GetSpellInfo(166872) --4p T17 bonus proc for arcane
+
+function K.PostCastStart(self, unit, name)
+	if unit == "vehicle" then unit = "player" end
+
+	-- if C.Unitframe.DisplayTarget and self.curTarget then
+	-- 	self.Text:SetText(name.." --> "..self.curTarget)
+	-- else
+	-- 	self.Text:SetText(name)
+	-- end
+
+	if C.Unitframe.CastbarTicks and unit == "player" then
+		local baseTicks = K.ChannelTicks[name]
+
+		-- Detect channeling spell and if it"s the same as the previously channeled one
+		if baseTicks and name == self.prevSpellCast then
+			self.chainChannel = true
+		elseif baseTicks then
+			self.chainChannel = nil
+			self.prevSpellCast = name
+		end
+
+		if baseTicks and K.ChannelTicksSize[name] and K.HastedChannelTicks[name] then
+			local tickIncRate = 1 / baseTicks
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local firstTickInc = tickIncRate / 2
+			local bonusTicks = 0
+			if curHaste >= firstTickInc then
+				bonusTicks = bonusTicks + 1
+			end
+
+			local x = tonumber(K.Round(firstTickInc + tickIncRate, 2))
+			while curHaste >= x do
+				x = tonumber(K.Round(firstTickInc + (tickIncRate * bonusTicks), 2))
+				if curHaste >= x then
+					bonusTicks = bonusTicks + 1
+				end
+			end
+
+			local baseTickSize = K.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
+			local extraTickRatio = extraTick / hastedTickSize
+
+			K.SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
+		elseif baseTicks and K.ChannelTicksSize[name] then
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local baseTickSize = K.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks)
+			local extraTickRatio = extraTick / hastedTickSize
+
+			K.SetCastTicks(self, baseTicks, extraTickRatio)
+		elseif baseTicks then
+			local hasBuff = UnitBuff("player", MageBuffName)
+			if name == MageSpellName and hasBuff then
+				baseTicks = baseTicks + 5
+			end
+			K.SetCastTicks(self, baseTicks)
+		else
+			K.HideTicks()
+		end
+	elseif unit == "player" then
+		K.HideTicks()
+	end
+
+	-- Colors, you know Colours? ;)
+	local color
+	local r, g, b = 1.0, 0.7, 0.0, 0.5
 
 	self:SetBackdropBorderColor(1, 1, 1)
 	if C.Unitframe.CastbarIcon then
 		self.Button:SetBackdropBorderColor(1, 1, 1)
 	end
 
-	if UnitIsUnit(unit, "player") then
-		color = K.Colors.class[K.Class]
-	elseif self.interrupt and UnitCanAttack("player", unit) then
-		color = K.Colors.uninterruptible
-		self:SetBackdropBorderColor(unpack(K.Colors.uninterruptible))
-		if C.Unitframe.CastbarIcon then
-			self.Button:SetBackdropBorderColor(unpack(K.Colors.uninterruptible))
-		end
-	elseif UnitIsFriend(unit, "player") then
-		color = K.Colors.reaction[5]
-	else
-		color = K.Colors.reaction[1]
+	if C.Unitframe.CastClassColor and UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		color = K.Colors.class[class]
+	elseif C.Unitframe.CastUnitReaction and UnitReaction(unit, "player") then
+		color = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 
-	local r, g, b = color[1], color[2], color[3]
-	self:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-	self.Background:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+	if (color) then
+		r, g, b = color[1], color[2], color[3]
+	end
+
+	if self.interrupt and unit ~= "player" and UnitCanAttack("player", unit) then
+		r, g, b = unpack(K.Colors.uninterruptible)
+		self:SetBackdropBorderColor(r, g, b)
+		if C.Unitframe.CastbarIcon then
+			self.Button:SetBackdropBorderColor(r, g, b)
+		end
+	end
+
+	self:SetStatusBarColor(r, g, b)
+	if self.Background:IsShown() then
+		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25)
+	end
 end
 
-function K:CheckCast(unit, name, rank, castid)
-	K.CheckInterrupt(self, unit)
+function K.PostCastStop(self)
+	self.chainChannel = nil
+	self.prevSpellCast = nil
 end
 
-function K:CheckChannel(unit, name, rank)
-	K.CheckInterrupt(self, unit)
+function K.PostChannelUpdate(self, unit, name)
+	if not (unit == "player" or unit == "vehicle") then return end
+
+	if C.Unitframe.CastbarTicks then
+		local baseTicks = K.ChannelTicks[name]
+
+		if baseTicks and K.ChannelTicksSize[name] and K.HastedChannelTicks[name] then
+			local tickIncRate = 1 / baseTicks
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local firstTickInc = tickIncRate / 2
+			local bonusTicks = 0
+			if curHaste >= firstTickInc then
+				bonusTicks = bonusTicks + 1
+			end
+
+			local x = tonumber(K.Round(firstTickInc + tickIncRate, 2))
+			while curHaste >= x do
+				x = tonumber(K.Round(firstTickInc + (tickIncRate * bonusTicks), 2))
+				if curHaste >= x then
+					bonusTicks = bonusTicks + 1
+				end
+			end
+
+			local baseTickSize = K.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
+			if self.chainChannel then
+				self.extraTickRatio = extraTick / hastedTickSize
+				self.chainChannel = nil
+			end
+
+			K.SetCastTicks(self, baseTicks + bonusTicks, self.extraTickRatio)
+		elseif baseTicks and K.ChannelTicksSize[name] then
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local baseTickSize = K.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks)
+			if self.chainChannel then
+				self.extraTickRatio = extraTick / hastedTickSize
+				self.chainChannel = nil
+			end
+
+			K.SetCastTicks(self, baseTicks, self.extraTickRatio)
+		elseif baseTicks then
+			local hasBuff = UnitBuff("player", MageBuffName)
+			if name == MageSpellName and hasBuff then
+				baseTicks = baseTicks + 5
+			end
+			if self.chainChannel then
+				baseTicks = baseTicks + 1
+			end
+			K.SetCastTicks(self, baseTicks)
+		else
+			K.HideTicks()
+		end
+	else
+		K.HideTicks()
+	end
+end
+
+function K.PostCastInterruptible(self, unit)
+	if unit == "vehicle" or unit == "player" then return end
+
+	-- Colors, you know Colours? ;)
+	local color
+	local r, g, b = 1.0, 0.7, 0.0, 0.5
+
+	self:SetBackdropBorderColor(1, 1, 1)
+	if C.Unitframe.CastbarIcon then
+		self.Button:SetBackdropBorderColor(1, 1, 1)
+	end
+
+	if C.Unitframe.CastClassColor and UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		color = K.Colors.class[class]
+	elseif C.Unitframe.CastUnitReaction and UnitReaction(unit, "player") then
+		color = K.Colors.reaction[UnitReaction(unit, "player")]
+	end
+
+	if (color) then
+		r, g, b = color[1], color[2], color[3]
+	end
+
+	if self.interrupt and UnitCanAttack("player", unit) then
+		r, g, b = unpack(K.Colors.uninterruptible)
+		self:SetBackdropBorderColor(r, g, b)
+		if C.Unitframe.CastbarIcon then
+			self.Button:SetBackdropBorderColor(r, g, b)
+		end
+	end
+
+	self:SetStatusBarColor(r, g, b)
+	if self.Background:IsShown() then
+		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25)
+	end
+end
+
+function K.PostCastNotInterruptible()
+	self:SetStatusBarColor(unpack(K.Colors.uninterruptible))
+end
+
+function K.CustomDelayText(self, duration)
+	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
+end
+
+function K.CustomTimeText(self, duration)
+	self.Time:SetFormattedText("%.1f", self.max - duration)
 end

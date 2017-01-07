@@ -29,26 +29,52 @@ K.CreateBorder(ReputationBar, -1)
 ReputationBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ReputationBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
+ReputationBar.Text = ReputationBar:CreateFontString(nil, "OVERLAY")
+ReputationBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
+ReputationBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+ReputationBar.Text:SetPoint("CENTER", ReputationBar, "CENTER", 0, 0)
+ReputationBar.Text:SetHeight(C.Media.Font_Size)
+ReputationBar.Text:SetTextColor(1, 1, 1)
+ReputationBar.Text:SetJustifyH("CENTER")
+
 if C.Blizzard.ColorTextures == true then
 	ReputationBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
 
-ReputationBar:SetScript("OnMouseUp", function(self)
-	if GetMouseFocus() == self then
-		ToggleCharacter("ReputationFrame")
-	end
+ReputationBar:SetScript("OnMouseUp", function()
+	ToggleCharacter("ReputationFrame")
 end)
 
 local function UpdateReputationBar()
+	local isFriend, friendText, standingLabel
+	local FactionStandingLabelUnknown = UNKNOWN
 	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 
-	if Name then
+	if not Name or event == "PLAYER_REGEN_DISABLED" then
+		ReputationBar:Hide()
+	elseif Name and not InCombatLockdown() then
 		ReputationBar:Show()
+
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
+
+		if ID then
+			standingLabel = _G["FACTION_STANDING_LABEL"..ID]
+		else
+			standingLabel = FactionStandingLabelUnknown
+		end
+
+		local Text = format("%s: %d%% [%s]", K.UTF8Sub(Name, 8, true), ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
+		if C.DataBars.InfoText then
+			ReputationBar.Text:SetText(Text)
+		else
+			ReputationBar.Text:SetText(nil)
+		end
+
 		ReputationBar:SetMinMaxValues(Min, Max)
 		ReputationBar:SetValue(Value)
 		ReputationBar:SetStatusBarColor(Colors[ID].r, Colors[ID].g, Colors[ID].b)
-	else
-		ReputationBar:Hide()
 	end
 end
 
@@ -74,10 +100,7 @@ if C.DataBars.ReputationFade then
 end
 
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ReputationBar:RegisterEvent("PLAYER_REGEN_DISABLED")
+ReputationBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
-
-if event == "PLAYER_ENTERING_WORLD" then
-	ReputationBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
-
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)

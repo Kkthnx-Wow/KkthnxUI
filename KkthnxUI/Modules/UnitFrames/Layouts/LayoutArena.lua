@@ -94,14 +94,17 @@ function ns.createArenaLayout(self, unit)
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-
-	self.Health.Smooth = true
+	if C.Unitframe.Smooth then
+			self.Health.Smooth = true
+	end
 	self.Health.PostUpdate = K.PostUpdateHealth
 	table_insert(self.mouseovers, self.Health)
 
 	self.Power.colorPower = true
 
-	self.Power.Smooth = true
+	if C.Unitframe.Smooth then
+			self.Power.Smooth = true
+	end
 	self.Power.PostUpdate = K.PostUpdatePower
 	table_insert(self.mouseovers, self.Power)
 
@@ -137,10 +140,10 @@ if C.Unitframe.Castbars then
 	if self.MatchUnit == "arena" then
 		local CastBar = CreateFrame("StatusBar", nil, self)
 
-		CastBar:SetPoint("LEFT", 20, 0)
-		CastBar:SetPoint("RIGHT", 0, 0)
-		CastBar:SetPoint("BOTTOM", 0, -22)
-		CastBar:SetHeight(16)
+		CastBar:SetPoint("RIGHT", -138, 0)
+		CastBar:SetPoint("LEFT", 0, 10)
+		CastBar:SetPoint("LEFT", -138, 8)
+		CastBar:SetHeight(20)
 		CastBar:SetStatusBarTexture(C.Media.Texture)
 		CastBar:SetFrameLevel(6)
 
@@ -176,10 +179,15 @@ if C.Unitframe.Castbars then
 		CastBar.Icon:SetAllPoints()
 		CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-		CastBar.CustomTimeText = K.CustomCastTimeText
-		CastBar.CustomDelayText = K.CustomCastDelayText
-		CastBar.PostCastStart = K.CheckCast
-		CastBar.PostChannelStart = K.CheckChannel
+		CastBar.CustomDelayText = K.CustomDelayText
+		CastBar.CustomTimeText = K.CustomTimeText
+		CastBar.PostCastStart = K.PostCastStart
+		CastBar.PostChannelStart = K.PostCastStart
+		CastBar.PostCastStop = K.PostCastStop
+		CastBar.PostChannelStop = K.PostCastStop
+		CastBar.PostChannelUpdate = K.PostChannelUpdate
+		CastBar.PostCastInterruptible = K.PostCastInterruptible
+		CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
 		self.Castbar = CastBar
 		self.Castbar.Icon = CastBar.Icon

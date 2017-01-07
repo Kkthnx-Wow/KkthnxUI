@@ -98,19 +98,19 @@ MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 -- </ Mail > --
 if MiniMapMailFrame then
 	MiniMapMailFrame:ClearAllPoints()
-	MiniMapMailFrame:SetPoint("BOTTOM", 0 or 0, 4 or 4)
+	MiniMapMailFrame:SetPoint("BOTTOM", 0, 4)
 	MiniMapMailFrame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 	MiniMapMailBorder:Hide()
-	MiniMapMailFrame:SetScale(1.2 or 1.2)
+	MiniMapMailFrame:SetScale(1.2)
 	MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 end
 
 -- </ QueueStatusMinimapButton > --
 if QueueStatusMinimapButton then
 	QueueStatusMinimapButton:ClearAllPoints()
-	QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 3 or 3, -3 or -3)
-	QueueStatusMinimapButton:SetScale(1 or 1)
-	QueueStatusFrame:SetScale(1 or 1)
+	QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 3, -4)
+	QueueStatusMinimapButton:SetScale(1)
+	QueueStatusFrame:SetScale(1)
 end
 QueueStatusMinimapButtonBorder:Hide()
 QueueStatusFrame:SetClampedToScreen(true)
@@ -119,7 +119,7 @@ QueueStatusFrame:SetClampedToScreen(true)
 if GarrisonLandingPageMinimapButton and K.Level > 89 then
 	if C.Minimap.Garrison then
 		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 1)
 		GarrisonLandingPageMinimapButton:SetAlpha(1)
 		GarrisonLandingPageMinimapButton:SetScale(0.6)
 		if GarrisonLandingPageTutorialBox then
@@ -167,11 +167,21 @@ end
 
 if GameTimeFrame then
 	if C.Minimap.Calendar then
+		GameTimeFrame:SetParent(Minimap)
+		GameTimeFrame:SetScale(0.6)
 		GameTimeFrame:ClearAllPoints()
 		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -1, -2)
-		GameTimeFrame:SetAlpha(1)
-		GameTimeFrame:SetScale(0.7)
-		GameTimeFrame:Show()
+		GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
+		GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
+		GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
+		GameTimeFrame:SetPushedTexture(nil)
+		GameTimeFrame:SetHighlightTexture (nil)
+
+		local GTFont = GameTimeFrame:GetFontString()
+		GTFont:ClearAllPoints()
+		GTFont:SetPoint("CENTER", 0, -5)
+		GTFont:SetFont(C.Media.Font, 20)
+		GTFont:SetTextColor(0.2, 0.2, 0.1, 0.9)
 		if C.Minimap.FadeButtons then
 			GameTimeFrame:SetAlpha(0)
 			GameTimeFrame:HookScript("OnEnter", function() GameTimeFrame:FadeIn() end)

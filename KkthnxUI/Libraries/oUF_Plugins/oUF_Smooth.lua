@@ -2,6 +2,16 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
+-- Lua API
+local ipairs = ipairs
+local math_abs = math.abs
+local math_max = math.max
+local math_min = math.min
+local pairs = pairs
+
+-- Wow API
+local GetFramerate = GetFramerate
+
 local smoothing = {}
 local function Smooth(self, value)
 	if value ~= self:GetValue() or value == 0 then
@@ -40,20 +50,20 @@ end
 for i, frame in ipairs(oUF.objects) do hook(frame) end
 oUF:RegisterInitCallback(hook)
 
-local f, min, max = CreateFrame('Frame'), math.min, math.max
+local f = CreateFrame('Frame')
 f:SetScript('OnUpdate', function()
 	local rate = GetFramerate()
 	local limit = 30/rate
 
 	for bar, value in pairs(smoothing) do
 		local cur = bar:GetValue()
-		local new = cur + min((value-cur)/3, max(value-cur, limit))
+		local new = cur + math_min((value-cur)/3, math_max(value-cur, limit))
 		if new ~= new then
 			-- Mad hax to prevent QNAN.
 			new = value
 		end
 		bar:SetValue_(new)
-		if (cur == value or abs(new - value) < 2) and bar.Smooth then
+		if (cur == value or math_abs(new - value) < 2) and bar.Smooth then
 			bar:SetValue_(value)
 			smoothing[bar] = nil
 		elseif not bar.Smooth then

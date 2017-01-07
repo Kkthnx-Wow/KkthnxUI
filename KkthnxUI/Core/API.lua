@@ -254,31 +254,27 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	return fs
 end
 
-local function StyleButton(button, t, size)
-	if not size then size = 2 end
-	if button.SetHighlightTexture and not button.hover then
-		local hover = button:CreateTexture(nil, nil, self)
+local function StyleButton(button, noHover, noPushed, noChecked)
+	if button.SetHighlightTexture and not button.hover and not noHover then
+		local hover = button:CreateTexture()
 		hover:SetColorTexture(1, 1, 1, 0.3)
-		hover:SetPoint("TOPLEFT", button, size, -size)
-		hover:SetPoint("BOTTOMRIGHT", button, -size, size)
+		hover:SetInside()
 		button.hover = hover
 		button:SetHighlightTexture(hover)
 	end
 
-	if not t and button.SetPushedTexture and not button.pushed then
-		local pushed = button:CreateTexture(nil, nil, self)
+	if button.SetPushedTexture and not button.pushed and not noPushed then
+		local pushed = button:CreateTexture()
 		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
-		pushed:SetPoint("TOPLEFT", button, size, -size)
-		pushed:SetPoint("BOTTOMRIGHT", button, -size, size)
+		pushed:SetInside()
 		button.pushed = pushed
 		button:SetPushedTexture(pushed)
 	end
 
-	if button.SetCheckedTexture and not button.checked then
-		local checked = button:CreateTexture(nil, nil, self)
-		checked:SetColorTexture(0, 1, 0, 0.3)
-		checked:SetPoint("TOPLEFT", button, size, -size)
-		checked:SetPoint("BOTTOMRIGHT", button, -size, size)
+	if button.SetCheckedTexture and not button.checked and not noChecked then
+		local checked = button:CreateTexture()
+		checked:SetColorTexture(1, 1, 1, 0.3)
+		checked:SetInside()
 		button.checked = checked
 		button:SetCheckedTexture(checked)
 	end
@@ -286,8 +282,9 @@ local function StyleButton(button, t, size)
 	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
 	if cooldown then
 		cooldown:ClearAllPoints()
-		cooldown:SetPoint("TOPLEFT", button, size, -size)
-		cooldown:SetPoint("BOTTOMRIGHT", button, -size, size)
+		cooldown:SetInside()
+		cooldown:SetDrawEdge(false)
+		cooldown:SetSwipeColor(0, 0, 0, 1)
 	end
 end
 

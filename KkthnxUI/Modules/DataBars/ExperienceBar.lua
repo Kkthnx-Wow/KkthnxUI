@@ -62,6 +62,14 @@ ExperienceBarRested:SetStatusBarTexture(C.Media.Texture)
 ExperienceBarRested:SetStatusBarColor(unpack(C.DataBars.ExperienceRestedColor))
 ExperienceBarRested:SetAlpha(.5)
 
+ExperienceBar.Text = ExperienceBar:CreateFontString(nil, "OVERLAY")
+ExperienceBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
+ExperienceBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+ExperienceBar.Text:SetPoint("CENTER", ExperienceBar, "CENTER", 0, 0)
+ExperienceBar.Text:SetHeight(C.Media.Font_Size)
+ExperienceBar.Text:SetTextColor(1, 1, 1)
+ExperienceBar.Text:SetJustifyH("CENTER")
+
 if C.Blizzard.ColorTextures == true then
 	ExperienceBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
 end
@@ -70,18 +78,40 @@ local function UpdateExperienceBar()
 	local Current, Max = UnitXP("player"), UnitXPMax("player")
 	local Rested = GetXPExhaustion()
 	local IsRested = GetRestState()
+	local HideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
 
-	ExperienceBar:SetMinMaxValues(0, Max)
-	ExperienceBar:SetValue(Current)
+	if HideXP or event == "PLAYER_REGEN_DISABLED" then
+		ExperienceBar:Hide()
+	elseif not HideXP and not InCombatLockdown() then
+		ExperienceBar:Show()
 
-	if (IsRested == 1 and Rested) then
-		ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
-		ExperienceBarRested:SetFrameLevel(ExperienceBar:GetFrameLevel() - 1)
-		ExperienceBarRested:SetMinMaxValues(0, Max)
-		ExperienceBarRested:SetValue(Rested + Current)
-	else
-		ExperienceBar:UnregisterEvent("UPDATE_EXHAUSTION")
-		ExperienceBarRested:Hide()
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
+
+		local Text = ""
+		if Rested and Rested > 0 then
+			Text = format("%d%% R:%d%%", Current / Max * 100, Rested / Max * 100)
+		else
+			Text = format("%d%%", Current / Max * 100)
+		end
+		if C.DataBars.InfoText then
+			ExperienceBar.Text:SetText(Text)
+		else
+			ExperienceBar.Text:SetText(nil)
+		end
+		ExperienceBar:SetMinMaxValues(0, Max)
+		ExperienceBar:SetValue(Current)
+
+		if (IsRested == 1 and Rested) then
+			ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
+			ExperienceBarRested:SetFrameLevel(ExperienceBar:GetFrameLevel() - 1)
+			ExperienceBarRested:SetMinMaxValues(0, Max)
+			ExperienceBarRested:SetValue(Rested + Current)
+		else
+			ExperienceBar:UnregisterEvent("UPDATE_EXHAUSTION")
+			ExperienceBarRested:Hide()
+		end
 	end
 end
 
@@ -115,14 +145,11 @@ if C.DataBars.ExperienceFade then
 	ExperienceBar.Tooltip = true
 end
 
-ExperienceBar:RegisterEvent("DISABLE_XP_GAIN", true)
-ExperienceBar:RegisterEvent("ENABLE_XP_GAIN", true)
-ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
+ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
+ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ExperienceBar:RegisterEvent("PLAYER_REGEN_DISABLED")
+ExperienceBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
-
-if event == "PLAYER_ENTERING_WORLD" then
-	ExperienceBar:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end
-
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)

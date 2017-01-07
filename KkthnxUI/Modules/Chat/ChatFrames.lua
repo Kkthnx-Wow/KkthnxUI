@@ -28,8 +28,8 @@ local PET_BATTLE_COMBAT_LOG = PET_BATTLE_COMBAT_LOG
 -- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
 -- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory
 
-local Movers = K.Movers
 local origs = {}
+local Movers = K.Movers
 
 local RenameChannels = {
 	INSTANCE_CHAT = L.Chat.Instance,
@@ -71,6 +71,20 @@ end
 ChatConfigFrameDefaultButton:Kill()
 QuickJoinToastButton:Kill()
 ChatFrameMenuButton:Kill()
+
+local function GetGroupDistribution()
+	local inInstance, kind = IsInInstance()
+	if inInstance and (kind == "pvp") then
+		return "/bg "
+	end
+	if IsInRaid() then
+		return "/ra "
+	end
+	if IsInGroup() then
+		return "/p "
+	end
+	return "/s "
+end
 
 -- Set chat style
 local function SetChatStyle(frame)
@@ -130,7 +144,7 @@ local function SetChatStyle(frame)
 			if (len(text) > MIN_REPEAT_CHARACTERS) then
 				local repeatChar = true
 				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-					if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i))) then
+					if (sub(text,(0 - i), (0 - i)) ~= sub(text,(-1 - i),(-1 - i))) then
 						repeatChar = false
 						break
 					end
@@ -139,6 +153,22 @@ local function SetChatStyle(frame)
 					self:Hide()
 					return
 				end
+			end
+		end
+
+		if text:len() < 5 then
+			if text:sub(1, 4) == "/tt " then
+				local unitname, realm = UnitName("target")
+				if unitname then unitname = gsub(unitname, " ", "") end
+				if unitname and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
+					unitname = format("%s-%s", unitname, gsub(realm, " ", ""))
+				end
+				ChatFrame_SendTell((unitname or "Invalid Target"), ChatFrame1)
+			end
+
+			if text:sub(1, 4) == "/gr " then
+				self:SetText(GetGroupDistribution() .. text:sub(5))
+				ChatEdit_ParseText(self, 0)
 			end
 		end
 
@@ -284,7 +314,7 @@ UIChat:SetScript("OnEvent", function(self, event, addon)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		SetupChatPosAndFont(self)
+		--	SetupChatPosAndFont(self)
 	end
 end)
 
@@ -294,7 +324,6 @@ local SetupTempChat = function()
 
 	if (_G[Frame:GetName() .. "Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG)) then
 		FCF_Close(Frame)
-
 		return
 	end
 
@@ -329,17 +358,21 @@ for i = 1, NUM_CHAT_WINDOWS do
 	end
 end
 
+-- Reset chat command
+SLASH_CHATRESET1 = "/chatreset"
+SlashCmdList.CHATRESET = function() SetupChatPosAndFont(self) K.Print("Chat has been successfully reset!") end
+
 -- Big Trade Chat
 local bigchat = false
-function SlashCmdList.BIGCHAT(msg, editbox)
+function SlashCmdList.BIGCHAT(msg)
 	if bigchat == false then
 		ChatFrame1:SetSize(400, 400)
 		bigchat = true
-		K.Print(L.Chat.BIGCHAT_ON)
+		K.Print(L.Chat.BigChatOn)
 	else
 		ChatFrame1:SetSize(400, 150)
 		bigchat = false
-		K.Print(L.Chat.BIGCHAT_OFF)
+		K.Print(L.Chat.BigChatOff)
 	end
 end
 SLASH_BIGCHAT1 = "/bigchat"

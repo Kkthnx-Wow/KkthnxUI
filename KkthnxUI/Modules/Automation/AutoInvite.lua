@@ -46,7 +46,7 @@ if C.Automation.AutoInvite == true then
 
 	AutoInvite:RegisterEvent("PARTY_INVITE_REQUEST")
 	AutoInvite:SetScript("OnEvent", function(self, event, name)
-		if QueueStatusMinimapButton:IsShown() or GetNumGroupMembers() > 0 then return end
+		if QueueStatusMinimapButton:IsShown() or IsInGroup() then return end
 		if CheckFriend(name) then
 			RaidNotice_AddMessage(RaidWarningFrame, L.Info.Invite..name, {r = 0.41, g = 0.8, b = 0.94}, 3)
 			K.Print(format("|cffffff00"..L.Info.Invite..name..".|r"))

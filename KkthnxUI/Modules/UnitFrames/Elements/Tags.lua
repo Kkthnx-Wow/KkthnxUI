@@ -3,13 +3,15 @@ if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true and C.Nameplates.En
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
+assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 -- Lua API
 local _G = _G
-local floor = math.floor
-local format = string.format
-local gsub = string.gsub
-local strlen = string.len
+local format = format
+local math_floor = math.floor
+local string_format = string.format
+local string_gsub = string.gsub
+local string_len = string.len
 
 -- Wow API
 local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
@@ -31,6 +33,7 @@ local UnitHealthMax = UnitHealthMax
 local UnitIsAFK = UnitIsAFK
 local UnitIsBattlePetCompanion = UnitIsBattlePetCompanion
 local UnitIsConnected = UnitIsConnected
+local UnitIsCorpse = UnitIsCorpse
 local UnitIsDND = UnitIsDND
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
@@ -57,7 +60,7 @@ local function UnitName(unit)
 end
 
 -- KkthnxUI Unitframe Tags
-oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE UNIT_POWER"
 oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	local unitReaction = UnitReaction(unit, "player")
 	local _, unitClass = UnitClass(unit)
@@ -74,9 +77,9 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 end
 
 -- We will just use this for now.
-oUF.Tags.Events["KkthnxUI:NameColor"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameColor"] = "UNIT_NAME_UPDATE UNIT_POWER"
 oUF.Tags.Methods["KkthnxUI:NameColor"] = function(unit)
-	return format("|cff%02x%02x%02x", 1 * 255, 1 * 255, 1 * 255)
+	return string_format("|cff%02x%02x%02x", 1 * 255, 1 * 255, 1 * 255)
 end
 
 oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_MAXPOWER"
@@ -97,7 +100,7 @@ oUF.Tags.Methods["KkthnxUI:PvPTimer"] = function(unit)
 			return ""
 		end
 
-		return K.FormatTime(floor(pvpTime))
+		return K.FormatTime(math_floor(pvpTime))
 	end
 end
 
@@ -106,6 +109,7 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 	local r, g, b = 0.55, 0.57, 0.61
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		local level = UnitBattlePetLevel(unit)
+
 		local teamLevel = C_PetJournal_GetPetTeamAverageLevel()
 		if teamLevel < level or teamLevel > level then
 			local c = GetRelativeDifficultyColor(teamLevel, level)
@@ -115,7 +119,7 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 			r, g, b = c.r, c.g, c.b
 		end
 	else
-		local DiffColor = UnitLevel(unit) - UnitLevel("player")
+		local DiffColor = UnitLevel(unit) - UnitLevel('player')
 		if (DiffColor >= 5) then
 			r, g, b = 0.69, 0.31, 0.31
 		elseif (DiffColor >= 3) then
@@ -128,6 +132,7 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 			r, g, b = 0.55, 0.57, 0.61
 		end
 	end
+
 	return Hex(r, g, b)
 end
 
@@ -135,21 +140,21 @@ oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED"
 oUF.Tags.Methods["KkthnxUI:ClassificationColor"] = function(unit)
 	local c = UnitClassification(unit)
 	if(c == "rare" or c == "elite") then
-		return Hex(1, 0.5, 0.25) --Orange
+		return Hex(0.69, 0.31, 0.31) -- Red
 	elseif(c == "rareelite" or c == "worldboss") then
-		return Hex(1, 0, 0) --Red
+		return Hex(0.69, 0.31, 0.31) -- Red
 	end
 end
 
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
-	local level = UnitEffectiveLevel(unit)
+	local level = UnitLevel(unit)
 
-	if UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit) then
-		level = UnitBattlePetLevel(unit)
-	end
-
-	if level > 0 then
+	if (level <= 0 or UnitIsCorpse(unit)) and (unit == "player" or unit == "target" or unit == "focus") then
+		return "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:16:16:0:0|t" -- boss skull icon
+	elseif (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+		return UnitBattlePetLevel(unit)
+	elseif (level > 0) then
 		return level
 	else
 		return "??"
@@ -159,25 +164,25 @@ end
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Sub(Name, 5, true)
+	return Name ~= nil and K.UTF8Sub(Name, 5, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Sub(Name, 8, true)
+	return Name ~= nil and K.UTF8Sub(Name, 8, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Sub(Name, 15, true)
+	return Name ~= nil and K.UTF8Sub(Name, 15, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	local Name = UnitName(unit) or UNKNOWN
-	return K.UTF8Sub(Name, 20, true)
+	return Name ~= nil and K.UTF8Sub(Name, 20, true) or ""
 end
 
 local unitStatus = {}
@@ -199,8 +204,8 @@ oUF.Tags.Methods["KkthnxUI:StatusTimer"] = function(unit)
 	if unitStatus[guid] ~= nil then
 		local status = unitStatus[guid][1]
 		local timer = GetTime() - unitStatus[guid][2]
-		local mins = floor(timer / 60)
-		local secs = floor(timer - (mins * 60))
+		local mins = math_floor(timer / 60)
+		local secs = math_floor(timer - (mins * 60))
 		return ("%s (%01.f:%02.f)"):format(status, mins, secs)
 	else
 		return ""
@@ -227,39 +232,57 @@ oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 	end
 end
 
--- Nameplate Tags
-oUF.Tags.Events["NameplateNameLong"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["NameplateNameLong"] = function(unit)
+-- </ Nameplate Tags > --
+oUF.Tags.Events["KkthnxUI:NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
+	local level = UnitLevel(unit)
+	local classification = UnitClassification(unit)
+	if (level <= 0 or UnitIsCorpse(unit)) then
+		return "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:16:16:0:0|t" -- boss skull icon
+	elseif (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+		return UnitBattlePetLevel(unit)
+	end
+
+	if level == K.Level and classification == "normal" then return end
+	if (level > 0) then
+		return level
+	else
+		return "??"
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:NameplateNameLong"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameplateNameLong"] = function(unit)
 	local name = UnitName(unit)
 	return K.UTF8Sub(name, 18, true)
 end
 
-oUF.Tags.Events["NameplateNameLongAbbrev"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["NameplateNameLongAbbrev"] = function(unit)
+oUF.Tags.Events["KkthnxUI:NameplateNameLongAbbrev"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameplateNameLongAbbrev"] = function(unit)
 	local name = UnitName(unit)
-	local newname = (strlen(name) > 18) and gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	local newname = (string_len(name) > 18) and string_gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
 	return K.UTF8Sub(newname, 18, false)
 end
 
-oUF.Tags.Events["NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"
-oUF.Tags.Methods["NameplateNameColor"] = function(unit)
+oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"
+oUF.Tags.Methods["KkthnxUI:NameplateNameColor"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
 	if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and (reaction and reaction >= 5) then
 		local c = K.Colors.power["MANA"]
-		return format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+		return string_format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
 	elseif UnitIsPlayer(unit) then
 		return _TAGS["raidcolor"](unit)
 	elseif reaction then
 		local c = K.Colors.reaction[reaction]
-		return format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+		return string_format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
 	else
 		r, g, b = 0.33, 0.59, 0.33
-		return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+		return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 	end
 end
 
-oUF.Tags.Events["NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH NAME_PLATE_UNIT_ADDED"
-oUF.Tags.Methods["NameplateHealth"] = function(unit)
+oUF.Tags.Events["KkthnxUI:NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH NAME_PLATE_UNIT_ADDED"
+oUF.Tags.Methods["KkthnxUI:NameplateHealth"] = function(unit)
 	local hp = UnitHealth(unit)
 	local maxhp = UnitHealthMax(unit)
 	if maxhp == 0 then
