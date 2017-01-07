@@ -144,11 +144,11 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-	self:SetBackdrop({
-		bgFile = C.Media.Blank,
-		insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
-	})
-	self:SetBackdropColor(0.019, 0.019, 0.019, 0.9)
+	-- self:SetBackdrop({
+	-- 	bgFile = C.Media.Blank,
+	-- 	insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
+	-- })
+	-- self:SetBackdropColor(0.019, 0.019, 0.019, 0.9)
 
 	K.CreateBorder(self, -1)
 	self:SetBorderColor(unpack(C.Media.Border_Color))
@@ -163,16 +163,18 @@ local function CreateRaidLayout(self, unit)
 	self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.Background:SetAllPoints()
 	self.Health.Background:SetTexture(C.Media.Blank)
-	self.Health.Background:SetColorTexture(0.019, 0.019, 0.019, 0.9)
+	self.Health.Background:SetColorTexture(unpack(C.Media.Backdrop_Color))
 
 	self.Health.PostUpdate = UpdateHealth
 	self.Health.frequentUpdates = true
 
 	self.Health.colorClass = true
 	self.Health.colorDisconnected = true
-	self.Health.Smooth = true
 	self.Health.colorTapping = true
 	self.Health.colorReaction = true
+	if C.Raidframe.Smooth then
+		self.Health.Smooth = true
+	end
 
 	-- Health text
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -205,7 +207,9 @@ local function CreateRaidLayout(self, unit)
 		end
 
 		self.Power.colorPower = true
-		self.Power.Smooth = true
+		if C.Raidframe.Smooth then
+			self.Power.Smooth = true
+		end
 
 		self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.bg:SetAllPoints(self.Power)

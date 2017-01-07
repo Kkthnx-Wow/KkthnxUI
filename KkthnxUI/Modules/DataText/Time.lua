@@ -38,7 +38,7 @@ local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1)
 local Text = Minimap:CreateFontString(nil, "OVERLAY")
 Text:SetFont(Font, FontSize, FontStyle)
-Text:SetPoint("TOP", Minimap, "BOTTOM", 0, 14)
+Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
 local APM = {TIMEMANAGER_PM, TIMEMANAGER_AM}

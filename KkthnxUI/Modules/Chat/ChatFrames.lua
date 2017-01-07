@@ -72,6 +72,20 @@ ChatConfigFrameDefaultButton:Kill()
 QuickJoinToastButton:Kill()
 ChatFrameMenuButton:Kill()
 
+local function GetGroupDistribution()
+	local inInstance, kind = IsInInstance()
+	if inInstance and (kind == "pvp") then
+		return "/bg "
+	end
+	if IsInRaid() then
+		return "/ra "
+	end
+	if IsInGroup() then
+		return "/p "
+	end
+	return "/s "
+end
+
 -- Set chat style
 local function SetChatStyle(frame)
 	local frame = frame
@@ -130,7 +144,7 @@ local function SetChatStyle(frame)
 			if (len(text) > MIN_REPEAT_CHARACTERS) then
 				local repeatChar = true
 				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-					if (sub(text,(0-i), (0-i)) ~= sub(text,(-1-i),(-1-i))) then
+					if ( sub(text,(0 - i), (0 - i)) ~= sub(text,(-1 - i),(-1 - i)) ) then
 						repeatChar = false
 						break
 					end
@@ -139,6 +153,22 @@ local function SetChatStyle(frame)
 					self:Hide()
 					return
 				end
+			end
+		end
+
+		if text:len() < 5 then
+			if text:sub(1, 4) == "/tt " then
+				local unitname, realm = UnitName("target")
+				if unitname then unitname = gsub(unitname, " ", "") end
+				if unitname and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
+					unitname = format("%s-%s", unitname, gsub(realm, " ", ""))
+				end
+				ChatFrame_SendTell((unitname or "Invalid Target"), ChatFrame1)
+			end
+
+			if text:sub(1, 4) == "/gr " then
+				self:SetText(GetGroupDistribution() .. text:sub(5))
+				ChatEdit_ParseText(self, 0)
 			end
 		end
 

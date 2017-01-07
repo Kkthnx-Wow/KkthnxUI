@@ -135,9 +135,10 @@ if C.DataBars.HonorFade then
 	HonorBar.Tooltip = true
 end
 
+HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
+HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+HonorBar:RegisterEvent("PLAYER_LEVEL_UP")
 HonorBar:RegisterEvent("PLAYER_REGEN_DISABLED")
 HonorBar:RegisterEvent("PLAYER_REGEN_ENABLED")
-HonorBar:RegisterEvent("HONOR_XP_UPDATE", UpdateHonorBar)
-HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE", UpdateHonorBar)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

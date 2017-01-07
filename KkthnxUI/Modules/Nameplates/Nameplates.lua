@@ -374,20 +374,26 @@ local function UpdateName(self)
 	end
 end
 
-local function castColor(self, unit, name, castid)
+local function castColor(self, unit)
 	local color
+	local r, g, b = 1.0, 0.7, 0.0, 0.5
 
-	if self.interrupt and UnitCanAttack("player", unit) then
-		color = K.Colors.uninterruptible
-	elseif UnitIsFriend(unit, "player") then
-		color = K.Colors.reaction[5]
-	else
-		color = K.Colors.reaction[1]
+	if C.Nameplates.CastUnitReaction and UnitReaction(unit, "player") then
+		color = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 
-	local r, g, b = color[1], color[2], color[3]
-	self:SetStatusBarColor(r * 0.8, g * 0.8, b * 0.8)
-	self.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2)
+	if (color) then
+		r, g, b = color[1], color[2], color[3]
+	end
+
+	if self.interrupt then
+		r, g, b = unpack(K.Colors.uninterruptible)
+	end
+
+	self:SetStatusBarColor(r, g, b)
+	if self.bg:IsShown() then
+		self.bg:SetColorTexture(r * 0.25, g * 0.25, b * 0.25)
+	end
 end
 
 local function callback(event, nameplate, unit)
@@ -444,6 +450,9 @@ local function style(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.colorHealth = true
+	if C.Nameplates.Smooth then
+			self.Health.Smooth = true
+  end
 	K.CreateShadowFrame(self.Health)
 
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
@@ -457,7 +466,7 @@ local function style(self, unit)
 		self.Health.value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 		self.Health.value:SetTextColor(1, 1, 1)
 		self.Health.value:SetPoint("RIGHT", self.Health, "RIGHT", 0, 0)
-		self:Tag(self.Health.value, "[NameplateHealth]")
+		self:Tag(self.Health.value, "[KkthnxUI:NameplateHealth]")
 	end
 
 	-- Create Player Power bar
@@ -468,6 +477,9 @@ local function style(self, unit)
 	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult / 2))
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
+	if C.Nameplates.Smooth then
+      self.Power.Smooth = true
+  end
 	K.CreateShadowFrame(self.Power)
 
 	self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
@@ -482,24 +494,27 @@ local function style(self, unit)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
 
 	if C.Nameplates.NameAbbreviate == true then
-		self:Tag(self.Name, "[NameplateNameColor][NameplateNameLongAbbrev]")
+		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameplateNameLongAbbrev]")
 	else
-		self:Tag(self.Name, "[NameplateNameColor][NameplateNameLong]")
+		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameplateNameLong]")
 	end
 
 	-- Create Level
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 	self.Level:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
-	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level] [KkthnxUI:ClassificationColor][shortclassification]")
+	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:NameplateLevel] [KkthnxUI:ClassificationColor][shortclassification]")
 
 	-- Create Cast Bar
 	self.Castbar = CreateFrame("StatusBar", nil, self)
 	self.Castbar:SetFrameLevel(3)
 	self.Castbar:SetStatusBarTexture(C.Media.Texture)
-	-- self.Castbar:SetStatusBarColor(1, 0.8, 0)
+	-- self.Castbar:SetStatusBarColor(0.31, 0.45, 0.63, 0.5)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult))
+	if C.Nameplates.Smooth then
+      self.Castbar.Smooth = true
+  end
 	K.CreateShadowFrame(self.Castbar)
 
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")

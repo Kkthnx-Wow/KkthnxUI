@@ -19,12 +19,15 @@ SkinDropDowns:SetScript("OnEvent", function(self, event, addon)
 	if addon == "KkthnxUI" then
 
 		local Skins = {
+			"QueueStatusFrame",
 			-- DropDownMenu library support
 			"Lib_DropDownList1MenuBackdrop",
 			"Lib_DropDownList2MenuBackdrop",
 			"Lib_DropDownList1Backdrop",
 			"Lib_DropDownList2Backdrop"
 		}
+
+		QueueStatusFrame:StripTextures()
 
 		for i = 1, getn(Skins) do
 			_G[Skins[i]]:SetTemplate("Transparent")

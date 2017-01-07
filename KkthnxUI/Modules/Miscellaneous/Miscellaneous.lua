@@ -77,10 +77,6 @@ TicketFrame:SetScript("OnEvent", function(self, event)
 			TicketStatusFrame:SetPoint("TOPLEFT", TicketStatusMover, 0, 0)
 		end
 	end)
-
-	if event == "PLAYER_LOGIN" then
-		self:UnregisterEvent("PLAYER_LOGIN")
-	end
 end)
 
 -- LevelUp + BossBanner Mover
@@ -109,18 +105,15 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 	BossBanner:ClearAllPoints()
 	BossBanner:SetPoint("TOP", LBBMover)
 	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
-
-	if event == "PLAYER_LOGIN" then
-		self:UnregisterEvent("PLAYER_LOGIN")
-	end
 end)
 
+-- Display battleground messages in the middle of the screen.
 local PVPMessageEnhancement = CreateFrame("Frame")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
-PVPMessageEnhancement:SetScript("OnEvent", function(_, msg)
-	--	if not C.Misc.EnhancedPvpMessages then return end
+PVPMessageEnhancement:SetScript("OnEvent", function(self, _, msg)
+	-- if not C.Misc.EnhancedPvpMessages then return end
 	local _, instanceType = IsInInstance()
 	if instanceType == "pvp" or instanceType == "arena" then
 		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])
@@ -137,15 +130,11 @@ hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 
 -- Force lockActionBars CVar
 local ForceCVar = CreateFrame("Frame")
-ForceCVar:RegisterEvent("PLAYER_LOGIN")
+ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
-	end
-
-	if event == "PLAYER_LOGIN" then
-		self:UnregisterEvent("PLAYER_LOGIN")
 	end
 end)
 

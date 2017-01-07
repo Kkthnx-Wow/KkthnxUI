@@ -98,10 +98,10 @@ MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
 -- </ Mail > --
 if MiniMapMailFrame then
 	MiniMapMailFrame:ClearAllPoints()
-	MiniMapMailFrame:SetPoint("BOTTOM", 0 or 0, 4 or 4)
+	MiniMapMailFrame:SetPoint("BOTTOM", 0, 4)
 	MiniMapMailFrame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 	MiniMapMailBorder:Hide()
-	MiniMapMailFrame:SetScale(1.2 or 1.2)
+	MiniMapMailFrame:SetScale(1.2)
 	MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 end
 

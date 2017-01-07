@@ -18,11 +18,13 @@ local IsInGroup = IsInGroup
 local Interrupts = CreateFrame("Frame")
 Interrupts:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 Interrupts:SetScript("OnEvent", function(self, _, ...)
+	local inGroup = IsInGroup()
 	local _, event, _, sourceGUID, _, _, _, _, destName, _, _, _, _, _, spellID, spellName = ...
 	if not (event == "SPELL_INTERRUPT" and (sourceGUID == UnitGUID("player") or sourceGUID == UnitGUID("pet"))) then return end
 
-	local inGroup = IsInGroup()
-	if not inGroup then return end -- Exit if we are not in a group.
-
-	SendChatMessage(format(L.Announce.Interrupted, destName, spellID, spellName), K.CheckChat())
+	if not inGroup then
+		SendChatMessage(format(L.Announce.Interrupted, destName, spellID, spellName), "EMOTE")
+	else
+		SendChatMessage(format(L.Announce.Interrupted, destName, spellID, spellName), K.CheckChat())
+	end
 end)

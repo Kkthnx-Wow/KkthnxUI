@@ -147,9 +147,9 @@ end
 
 ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
+ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
 ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ExperienceBar:RegisterEvent("PLAYER_REGEN_DISABLED")
 ExperienceBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
-ExperienceBar:UnregisterEvent("UPDATE_EXPANSION_LEVEL")
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)
