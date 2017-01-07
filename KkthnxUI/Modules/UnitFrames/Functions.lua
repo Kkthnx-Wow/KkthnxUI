@@ -397,6 +397,15 @@ function K.PostCastStart(self, unit, name)
 	-- 	self.Text:SetText(name)
 	-- end
 
+	if unit == "player" and C.Unitframe.CastbarLatency == true and self.Latency then
+		local _, _, _, lag = GetNetStats()
+		local latency = GetTime() - (self.castSent or 0)
+		lag = lag / 1e3 > self.max and self.max or lag / 1e3
+		latency = latency > self.max and lag or latency
+		self.Latency:SetText(("%dms"):format(latency * 1e3))
+		self.castSent = nil
+	end
+
 	if C.Unitframe.CastbarTicks and unit == "player" then
 		local baseTicks = K.ChannelTicks[name]
 
