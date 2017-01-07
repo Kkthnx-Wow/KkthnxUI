@@ -262,10 +262,10 @@ UIConfigLocal.ConfigButtonReset = "复位"
 UIConfigLocal.ConfigCloseButton = "关闭"
 
 -- Config Static Popups
-UIConfigLocal.ConfigPerChar = "确定更改每个人物的设置？"
+UIConfigLocal.ConfigPerChar = "确定设置只针对当前人物？"
 UIConfigLocal.ConfigResetAll = "确定重置所有|cff3c9bedKkthnxUI|r设置？"
 UIConfigLocal.ConfigResetChar = "确定重置当前人物|cff3c9bedKkthnxUI|r设置？?"
-UIConfigLocal.ConfigSetSavedSettings = "应用设置至每个人物"
+UIConfigLocal.ConfigSetSavedSettings = "设置只针对当前人物"
 
 -- Skins
 UIConfigLocal.Skins = "插件皮肤"
