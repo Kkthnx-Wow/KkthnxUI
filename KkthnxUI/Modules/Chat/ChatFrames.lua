@@ -28,8 +28,8 @@ local PET_BATTLE_COMBAT_LOG = PET_BATTLE_COMBAT_LOG
 -- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
 -- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory
 
-local Movers = K.Movers
 local origs = {}
+local Movers = K.Movers
 
 local RenameChannels = {
 	INSTANCE_CHAT = L.Chat.Instance,
@@ -144,7 +144,7 @@ local function SetChatStyle(frame)
 			if (len(text) > MIN_REPEAT_CHARACTERS) then
 				local repeatChar = true
 				for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-					if ( sub(text,(0 - i), (0 - i)) ~= sub(text,(-1 - i),(-1 - i)) ) then
+					if (sub(text,(0 - i), (0 - i)) ~= sub(text,(-1 - i),(-1 - i))) then
 						repeatChar = false
 						break
 					end
