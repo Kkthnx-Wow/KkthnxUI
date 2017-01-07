@@ -446,9 +446,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar:SetFrameLevel(6)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
-			if C.Unitframe.Smooth then
-					CastBar.Smooth = true
-		  end
 
 			K.CreateBorder(CastBar, -1)
 
@@ -532,9 +529,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar:SetFrameLevel(6)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
-			if C.Unitframe.Smooth then
-					CastBar.Smooth = true
-		  end
 
 			K.CreateBorder(CastBar, -1)
 
@@ -602,9 +596,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar:SetHeight(18)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetFrameLevel(6)
-			if C.Unitframe.Smooth then
-					CastBar.Smooth = true
-		  end
 
 			K.CreateBorder(CastBar, -1)
 
@@ -662,9 +653,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar:SetHeight(16)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetFrameLevel(6)
-			if C.Unitframe.Smooth then
-					CastBar.Smooth = true
-		  end
 
 			K.CreateBorder(CastBar, -1)
 

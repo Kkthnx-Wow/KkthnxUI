@@ -146,9 +146,6 @@ if C.Unitframe.Castbars then
 		CastBar:SetHeight(20)
 		CastBar:SetStatusBarTexture(C.Media.Texture)
 		CastBar:SetFrameLevel(6)
-		if C.Unitframe.Smooth then
-				CastBar.Smooth = true
-		end
 
 		K.CreateBorder(CastBar, -1)
 

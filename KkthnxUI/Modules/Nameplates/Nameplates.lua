@@ -512,9 +512,6 @@ local function style(self, unit)
 	-- self.Castbar:SetStatusBarColor(0.31, 0.45, 0.63, 0.5)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult))
-	if C.Nameplates.Smooth then
-      self.Castbar.Smooth = true
-  end
 	K.CreateShadowFrame(self.Castbar)
 
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")

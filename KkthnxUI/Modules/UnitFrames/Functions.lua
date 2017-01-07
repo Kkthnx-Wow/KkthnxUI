@@ -242,19 +242,29 @@ function K.UnitFrame_OnLeave(self)
 end
 
 -- </ Statusbar functions > --
-function K.CreateStatusBar(parent, layer, name, AddBackdrop)
-	if type(layer) ~= "string" then layer = "BORDER" end
-	local bar = CreateFrame("StatusBar", name, parent)
-	bar:SetStatusBarTexture(C.Media.Texture, layer)
-	bar.texture = C.Media.Texture
+function K.CreateStatusBar(self, noBG, noSmoothing)
+	local StatusBar = CreateFrame("StatusBar", "oUFKkthnxStatusBar", self) -- global name to avoid Blizzard /fstack error
+	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
-	if AddBackdrop then
-		bar:SetBackdrop({bgFile = C.Media.Blank})
-		local r,g,b,a = unpack(C.Media.Backdrop_Color)
-		bar:SetBackdropColor(r, g, b, a)
+	StatusBar.Texture = StatusBar:GetStatusBarTexture()
+	StatusBar.Texture:SetDrawLayer("BORDER")
+	StatusBar.Texture:SetHorizTile(false)
+	StatusBar.Texture:SetVertTile(false)
+
+	if not noBG then
+		StatusBar.BG = StatusBar:CreateTexture(nil, "BACKGROUND")
+		StatusBar.BG:SetTexture(C.Media.Blank)
+		StatusBar.BG:SetColorTexture(unpack(C.Media.Backdrop_Color))
+		StatusBar.BG:SetAllPoints(true)
 	end
 
-	return bar
+	local SmoothBar = not noSmoothing and (self.SmoothBar or self.__owner and self.__owner.SmoothBar)
+	if SmoothBar and C.Unitframe.Smooth then
+		SmoothBar(nil, StatusBar) -- nil should be frame but isn't used
+		StatusBar.__smooth = true
+	end
+
+	return StatusBar
 end
 
 K.RaidBuffsTrackingPosition = {
@@ -387,7 +397,7 @@ function K.PostCastStart(self, unit, name)
 	-- 	self.Text:SetText(name)
 	-- end
 
-if C.Unitframe.CastbarTicks and unit == "player" then
+	if C.Unitframe.CastbarTicks and unit == "player" then
 		local baseTicks = K.ChannelTicks[name]
 
 		-- Detect channeling spell and if it"s the same as the previously channeled one
