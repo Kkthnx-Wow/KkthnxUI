@@ -59,7 +59,7 @@ HonorBar:SetScript("OnMouseUp", function()
 	ToggleTalentFrame(3) --3 is PvP
 end)
 
-local function UpdateHonorBar()
+local function UpdateHonorBar(event, unit)
 	if event == "HONOR_PRESTIGE_UPDATE" and unit ~= "player" then return end
 	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then return end
 
@@ -67,20 +67,10 @@ local function UpdateHonorBar()
 	local Level, LevelMax = UnitHonorLevel("player"), GetMaxPlayerHonorLevel()
 	local ShowHonor = UnitLevel("player") >= MAX_PLAYER_LEVEL
 
-	if event == "PLAYER_REGEN_DISABLED" or InCombatLockdown() then
-		ShowHonor = false
-	elseif not UnitIsPVP("player") then
-		ShowHonor = false
-	end
-
 	if not ShowHonor then
 		HonorBar:Hide()
 	else
 		HonorBar:Show()
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 
 		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
 		if Max == 0 then Max = 1 end
@@ -93,11 +83,13 @@ local function UpdateHonorBar()
 		else
 			Text = format("%d%%", Current / Max * 100)
 		end
+
 		if C.DataBars.InfoText then
 			HonorBar.Text:SetText(Text)
 		else
 			HonorBar.Text:SetText(nil)
 		end
+
 		HonorBar:SetMinMaxValues(0, Max)
 		HonorBar:SetValue(Current)
 	end
@@ -126,8 +118,6 @@ HonorBar:SetScript("OnEnter", function(self)
 	GameTooltip:Show()
 end)
 
-HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
 if C.DataBars.HonorFade then
 	HonorBar:SetAlpha(0)
 	HonorBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
@@ -138,7 +128,7 @@ end
 HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
 HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+HonorBar:RegisterEvent("PLAYER_FLAGS_CHANGED")
 HonorBar:RegisterEvent("PLAYER_LEVEL_UP")
-HonorBar:RegisterEvent("PLAYER_REGEN_DISABLED")
-HonorBar:RegisterEvent("PLAYER_REGEN_ENABLED")
+HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

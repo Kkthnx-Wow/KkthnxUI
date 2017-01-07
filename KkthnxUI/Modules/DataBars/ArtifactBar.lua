@@ -67,18 +67,19 @@ local function GetArtifact()
 	return xp, xpForNextPoint
 end
 
-local function UpdateArtifactBar()
+local function UpdateArtifactBar(event, unit)
+	if (event == "UNIT_INVENTORY_CHANGED" and unit ~= "player") then
+		return
+	end
 	local HasArtifactEquip = HasArtifactEquipped()
 
-	if not HasArtifactEquip or event == "PLAYER_REGEN_DISABLED" then
+	if not HasArtifactEquip then
 		ArtifactBar:Hide()
 	elseif HasArtifactEquip and not InCombatLockdown() then
+		ArtifactBar:Show()
+
 		local _, _, _, _, TotalExp, PointsSpent, _, _, _, _, _, _ = C_ArtifactUI.GetEquippedArtifactInfo()
 		local _, Exp, ExpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp)
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 
 		local Text = format("%d%%", Exp / ExpForNextPoint * 100)
 		if C.DataBars.InfoText then
@@ -86,9 +87,9 @@ local function UpdateArtifactBar()
 		else
 			ArtifactBar.Text:SetText(nil)
 		end
-		ArtifactBar:SetMinMaxValues(min(0, Exp), ExpForNextPoint)
+
+		ArtifactBar:SetMinMaxValues(0, ExpForNextPoint)
 		ArtifactBar:SetValue(Exp)
-		ArtifactBar:Show()
 	end
 end
 
@@ -118,8 +119,6 @@ ArtifactBar:SetScript("OnEnter", function(self)
 	end
 end)
 
-ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
 if C.DataBars.ArtifactFade then
 	ArtifactBar:SetAlpha(0)
 	ArtifactBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
@@ -129,7 +128,6 @@ end
 
 ArtifactBar:RegisterEvent("ARTIFACT_XP_UPDATE")
 ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ArtifactBar:RegisterEvent("PLAYER_REGEN_DISABLED")
-ArtifactBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ArtifactBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
+ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ArtifactBar:SetScript("OnEvent", UpdateArtifactBar)
