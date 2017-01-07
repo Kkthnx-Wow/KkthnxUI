@@ -4,62 +4,62 @@ if (GetLocale() ~= "zhCN") then return end
 -- Localization for zhCN clients
 
 L.AFKScreen = {
-	NoGuild = "No Guild",
-	Sun = "Sunday",
-	Mon = "Monday",
-	Tue = "Tuesday",
-	Wed = "Wednesday",
-	Thu = "Thursday",
-	Fri = "Friday",
-	Sat = "Saturday",
-	Jan = "January",
-	Feb = "February",
-	Mar = "March",
-	Apr = "April",
-	May = "May",
-	Jun = "June",
-	Jul = "July",
-	Aug = "August",
-	Sep = "September",
-	Oct = "October",
-	Nov = "November",
-	Dec = "December"
+	NoGuild = "无公会",
+	Sun = "星期天",
+	Mon = "星期一",
+	Tue = "星期二",
+	Wed = "星期三",
+	Thu = "星期四",
+	Fri = "星期五",
+	Sat = "星期六",
+	Jan = "一月",
+	Feb = "二月",
+	Mar = "三月",
+	Apr = "四月",
+	May = "五月",
+	Jun = "六月",
+	Jul = "七月",
+	Aug = "八月",
+	Sep = "九月",
+	Oct = "十月",
+	Nov = "十一月",
+	Dec = "十二月"
 }
 
 L.Announce = {
-	FPUse = "%s used %s.",
-	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
-	PCAborted = "Pull ABORTED!",
-	PCGo = "GO!",
-	PCMessage = "Pulling %s in %s..",
-	Recieved = " received from ",
-	Sapped = "Sapped",
-	SappedBy = "Sapped by: ",
-	SSThanks = "Thanks for "
+	FPUse = "%s使用了%s.",
+	Interrupted = INTERRUPTED.."%s的\124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
+	PCAborted = "中止开怪!",
+	PCGo = "冲啊!",
+	PCMessage = "嘲讽%s倒计时%s..",
+	Recieved = "接收自",
+	Sapped = "被闷棍",
+	SappedBy = "被闷棍:",
+	SSThanks = "感谢"
 }
 
 L.Auras = {
-	MoveBuffs = "Move Buffs",
-	MoveDebuffs = "Move Debuffs",
+	MoveBuffs = "移动增益",
+	MoveDebuffs = "移动减益",
 }
 
 -- Merchant Localization
 L.Merchant = {
-	NotEnoughMoney = "You don't have enough money to repair!",
-	RepairCost = "Your items have been repaired for",
-	SoldTrash = "Your vendor trash has been sold and you earned"
+	NotEnoughMoney = "您没有足够的金钱修理装备!",
+	RepairCost = "您的装备修理完毕，共花费",
+	SoldTrash = "您的垃圾已经处理完毕，共获得"
 }
 
 -- Bindings Localization
 L.Bind = {
-	Binding = "Binding",
-	Cleared = "All keybindings cleared for",
-	Discard = "All newly set keybindings were discarded.",
-	Instruct = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
-	Key = "Key",
-	NoSet = "No bindings set",
-	Saved = "All keybindings have been saved.",
-	Trigger = "Trigger"
+	Binding = "按键绑定",
+	Cleared = "所有按键绑定已被清除",
+	Discard = "所有按键绑定的新设置已被取消.",
+	Instruct = "将您的鼠标箭头放置在任何需要绑定的动作条空格上，然后按下需要绑定的按键。按下空格键或单击鼠标右键来清除当前动作条空格的按键绑定.",
+	Key = "按键",
+	NoSet = "未设置按键绑定",
+	Saved = "所有按键绑定已被保存.",
+	Trigger = "触发"
 }
 
 -- Chat Localization
@@ -68,55 +68,55 @@ L.Chat = {
 	BigChatOff = "Big chat feature deactivated",
 	BigChatOn = "Big chat feature activated",
 	DND = "|cffe7e716[DND]|r",
-	Guild = "G",
-	GuildRecruitment = "GuildRecruitment",
-	Instance = "I",
-	InstanceLeader = "IL",
-	LocalDefense = "LocalDefense",
-	LookingForGroup = "LookingForGroup",
-	Officer = "O",
-	Party = "P",
-	PartyLeader = "P",
-	Raid = "R",
-	RaidLeader = "R",
-	RaidWarning = "W",
+	Guild = "公",
+	GuildRecruitment = "招募",
+	Instance = "随机",
+	InstanceLeader = "随机队长",
+	LocalDefense = "本地防御",
+	LookingForGroup = "寻求组队",
+	Officer = "官",
+	Party = "队",
+	PartyLeader = "队长",
+	Raid = "团",
+	RaidLeader = "团长",
+	RaidWarning = "团队警告",
 }
 
 -- Configbutton Localization
 L.ConfigButton = {
-	Config = "Show config GUI",
-	Functions = "Button functions:",
-	LeftClick = "Left click:",
-	MiddleClick = "Middle click:",
-	MoveUI = "Move UI elements",
-	Recount = "Show/Hide Recount",
-	RightClick = "Right click:",
-	ShiftClick = "Shift + click:",
-	ShiftPlusRightClick = "Shift + right-click:",
-	Skada = "Show/Hide Skada",
-	Spec = "Show specialization menu",
-	SpecError = "You already have this specialization active!",
-	SpecMenu = "Specialization selection"
+	Config = "设置界面",
+	Functions = "鼠标按键功能:",
+	LeftClick = "鼠标左键:",
+	MiddleClick = "鼠标中键:",
+	MoveUI = "移动框体",
+	Recount = "显示/隐藏Recount",
+	RightClick = "鼠标右键:",
+	ShiftClick = "Shift+鼠标左键:",
+	ShiftPlusRightClick = "Shift+鼠标右键:",
+	Skada = "显示/隐藏Skada",
+	Spec = "专精选择",
+	SpecError = "您已经启用了此专精!",
+	SpecMenu = "专精选择"
 }
 
 -- Cooldowns
 L.Cooldowns = {
-	Cooldowns = "CD: ",
-	CombatRes = "BattleRes",
-	CombatResRemainder = "Battle Resurrection: ",
-	NextTime = "Next time: "
+	Cooldowns = "冷却:",
+	CombatRes = "战复",
+	CombatResRemainder = "战复:",
+	NextTime = "下次:"
 }
 
 -- DataBars Localization
 L.DataBars = {
-	ArtifactClick = "Click: Opens the artifact overview",
-	ArtifactRemaining = "|cffe6cc80Remaining: %s|r",
-	HonorLeftClick = "|cffccccccLeft Click: Opens the honor frame|r",
+  ArtifactClick = "鼠标左键:神器面板",
+  ArtifactRemaining = "|cffe6cc80剩余:%s|r",
+  HonorLeftClick = "|cffcccccc鼠标左键：PVP面板|r",
 }
 
 -- DataText Localization
 L.DataText = {
-	Bandwidth = "Bandwidth",
+  Bandwidth = "Bandwidth",
 	BaseAssault = "Bases Assaulted:",
 	BaseDefend = "Bases Defended:",
 	CartControl = "Carts Controlled:",
@@ -151,236 +151,235 @@ L.DataText = {
 
 -- headers
 L.Install = {
-	Header1 = "Welcome",
-	Header2 = "1. Essentials",
-	Header3 = "2. Unitframes",
-	Header4 = "3. Features",
-	Header5 = "4. Things you should know!",
-	Header6 = "5. Commands",
-	Header7 = "6. Finished",
-	Header8 = "1. Essential Settings",
-	Header9 = "2. Social",
-	Header10 = "3. Frames",
-	Header11 = "4. Success!",
-	InitLine1 = "Thank you for choosing KkthnxUI!",
-	InitLine2 = "You will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings.",
-	InitLine3 = "You are also given the possibility to be shown a brief tutorial on some of the features of KkthnxUI.",
-	InitLine4 = "Press the 'Tutorial' button to be guided through this small introduction, or press 'Install' to skip this step.",
-	Step1Line1 = "These steps will apply the correct CVar settings for KkthnxUI.",
-	Step1Line2 = "The first step applies the essential settings.",
-	Step1Line3 = "This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings.",
-	Step1Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step2Line0 = "Another chat addon is found. We will ignore this step. Please press skip to continue installation.",
-	Step2Line1 = "The second step applies the correct chat setup.",
-	Step2Line2 = "If you are a new user, this step is recommended. If you are an existing user, you may want to skip this step.",
-	Step2Line3 = "It is normal that your chat font will appear too big upon applying these settings. It will revert back to normal when you finish with the installation.",
-	Step2Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step3Line1 = "The third and final step applies for the default frame positions.",
-	Step3Line2 = "This step is |cffff0000recommended|r for new users.",
+	Header1 = "欢迎使用",
+	Header2 = "1. 基本",
+	Header3 = "2. 角色框体",
+	Header4 = "3. 功能",
+	Header5 = "4. 您需要了解以下信息！",
+	Header6 = "5. 命令",
+	Header7 = "6. 结束",
+	Header8 = "1. 基本设置",
+	Header9 = "2. 社交",
+	Header10 = "3. 框体",
+	Header11 = "4. 成功！",
+	InitLine1 = "感谢您选择KkthnxUI！",
+	InitLine2 = "接下来您将被引导安装本UI，只有很少的几个步骤。在每一个步骤您可以选择接受或者跳过我们的一些插件预设。",
+	InitLine3 = "您还可以获得简单的教程来了解KkthnxUI的一些功能。",
+	InitLine4 = "点击“教程”按钮将会向您介绍本UI，或者直接点击“安装”按钮来略过这一步。",
+	Step1Line1 = "这些步骤会加载适合KkthnxUI的系统设置。",
+	Step1Line2 = "第一步将加载基本设置。",
+	Step1Line3 = "这一步我们|cffff0000强烈建议|r您加载这些基本设置，当然您也可以只加载部分设置。",
+	Step1Line4 = "点击“继续”来加载设置，或者点击“忽略”如果您想跳过这一步。",
+	Step2Line0 = "检测到您已经安装有另一个聊天窗口插件。我们将跳过这一步。请点击“忽略”继续进行安装。",
+	Step2Line1 = "第二步将应用合适的聊天窗口设置。",
+	Step2Line2 = "如果您是新用户，我们建议您完成这一步。如果您是老用户，您可以跳过这一步。",
+	Step2Line3 = "在应用设置后，您的聊天字体大小可能会很大，这很正常。当您结束安装后字体大小会恢复正常。 It will revert back to normal when you finish with the installation.",
+	Step2Line4 = "点击“继续”来加载设置，或者点击“忽略”如果您想跳过这一步。",
+	Step3Line1 = "第三步和最后一步将会加载默认的框体位置。",
+	Step3Line2 = "我们|cffff0000强烈建议|r新用户完成这一步.",
 	Step3Line3 = "",
-	Step3Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step4Line1 = "Installation is complete.",
-	Step4Line2 = "Please click the 'Finish' button to reload the UI.",
+	Step3Line4 = "点击“继续”来加载设置，或者点击“忽略”如果您想跳过这一步。",
+	Step4Line1 = "安装完成。",
+	Step4Line2 = "请点击“结束”按钮来重载界面。",
 	Step4Line3 = "",
-	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r",
-	ButtonTutorial = "Tutorial",
-	ButtonInstall = "Install",
-	ButtonNext = "Next",
-	ButtonSkip = "Skip",
-	ButtonContinue = "Continue",
-	ButtonFinish = "Finish",
-	ButtonClose = "Close",
-	Complete = "Installation Complete"
+	Step4Line4 = "享受KkthnxUI吧！欢迎与我们在 Discord @ |cff748BD9discord.gg/Kjyebkf|r 上交流",
+	ButtonTutorial = "教程",
+	ButtonInstall = "安装",
+	ButtonNext = "下一步",
+	ButtonSkip = "忽略",
+	ButtonContinue = "继续",
+	ButtonFinish = "结束",
+	ButtonClose = "关闭",
+	Complete = "安装完成"
 }
 
 -- tutorial 1
 L.Tutorial = {
-	Step1Line1 = "This quick tutorial will show you some of the features in KkthnxUI.",
-	Step1Line2 = "First, the essentials that you should know before you can play with this UI.",
-	Step1Line3 = "This installer is partially character-specific. While some of the settings that will be applied later on are account-wide, you need to run the install script for each new character running KkthnxUI. The script is auto shown on every new character you log in with KkthnxUI installed for the first time. Also, the options can be found in /KkthnxUI/Config/Settings.lua for `Power` users or by typing /KkthnxUI in the game for `Friendly` users.",
-	Step1Line4 = "A power user is a user of a personal computer who has the ability to use advanced features (ex: Lua editing) which are beyond the abilities of normal users. A friendly user is a normal user and is not necessarily capable of programming. It's recommended for them to use our in-game configuration tool (/KkthnxUI) for settings they want to be changed in KkthnxUI.",
-	Step2Line1 = "KkthnxUI includes an embedded version of oUF (oUFKkthnxUI) created by Haste. This handles all of the unit frames on the screen, the buffs and debuffs, and the class-specific elements.",
-	Step2Line2 = "You can visit wowinterface.com and search for oUF for more information about this tool.",
-	Step2Line3 = "To easily change the unitframes positions, just type /moveui.",
+	Step1Line1 = "本简易教程将向您展示KkthnxUI的一些功能。",
+	Step1Line2 = "在使用本UI前您首先需要了解一些基本点。",
+	Step1Line3 = "KkthnxUI的安装器是区分角色的。虽然有些设置是全帐号通用的，在每个新角色开始使用前都需要进行一次安装操作。安装界面会在您登录新角色时自动弹出。此外，一些给“强力”用户使用的选项可以在/KkthnxUI/Config/Settings.lua中找到，而普通玩家也可以在在游戏中输入/KkthnxUI来调取设置界面。",
+	Step1Line4 = "我们所说的“强力”玩家是有一定高级计算机知识的玩家（比如LUA编辑），普通玩家一般不具有这一能力，因此我们建议普通玩家在游戏中直接使用设置界面（/KkthnxUI）来对自定义KkthnxUI。",
+	Step2Line1 = "KkthnxUI包括一个内置的oUF插件（作者：Haste）。这一插件是屏幕上所有角色框体，增益和减益以及职业资源条的基础。",
+	Step2Line2 = "您可以访问wowinterface.com并搜索oUF来获得更多关于它的信息。",
+	Step2Line3 = "您可以通过输入/moveui来很方便地移动各框体位置。",
 	Step2Line4 = "",
-	Step3Line1 = "KkthnxUI is a redesigned Blizzard UI. Nothing less, nothing more. Approxmently all features you see with Default UI is available though KkthnxUI. The only features not available through default UI are some automated features not really visible on screen, for example, auto selling grays when visiting a vendor or, auto sorting bags.",
-	Step3Line2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is one of the most popular UI at the moment. It fits everyone's play style and is extremely editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons. Since 2012 a lot of users have started using KkthnxUI as a base for their own UI.",
-	Step3Line3 = "Users may want to visit our extra mods section on our website or by visiting www.wowinterface.com to install additional features or mods.",
+	Step3Line1 = "KkthnxUI对魔兽世界原始界面进行了重新设计。不多也不少刚刚好。基本上在原始界面上您能看到的功能在KkthnxUI中也能找到。此外，KkthnxUI还有一些原始界面中没有的功能，比如自动卖垃圾及自动整理背包。",
+	Step3Line2 = "并不是每个玩家都喜欢使用比如伤害统计、BOSS模块、仇恨监视等类型的插件，我们深知这一点。KkthnxUI的设计理念是将其发展为所有职业、所有角色、所有专精、所有游戏方式、所有玩家品味都适合的UI。 这就是为什么KkthnxUI是目前最受欢迎的UI之一。它适合所有人的游戏方式并有很高的可定制性。它也是一款很好的启蒙UI来让初学者们制作自己的UI。自2012年以来，很多玩家将KkthnxUI作为他们自制UI的基础。",
+	Step3Line3 = "玩家们可以访问我们的网站或访问www.wowinterface.com来获得更多的模块和功能",
 	Step3Line4 = "",
-	Step4Line1 = "To set how many bars you want, mouseover on left or right of bottom action bar background. Do the same on the right, via bottom. To copy text from the chat frame, click the button shown on mouseover in the right bottom corner of chat frames.",
-	Step4Line2 = "You can left-click through 80% of data text to show various panels from Blizzard. Friend and Guild Datatext have right-clicked features as well.",
-	Step4Line3 = "There are some dropdown menus available. Right-clicking on the [X] (Close) bag button will show bags. right-clicking the Minimap will show the micro menu.",
+	Step4Line1 = "鼠标指针移至下方动作条上侧或右侧动作条下侧可以更改动作条数量。请点击聊天框右下角的按钮复制聊天窗口文字。",
+	Step4Line2 = "80%的状态信息都可以点击打开相应窗口。右键点击好友和公会信息条也有附加功能。",
+	Step4Line3 = "一些下拉菜单也被实现了。右键点击背包右上角的X可以显示背包装备情况，右键点击小地图可以调取微型菜单。",
 	Step4Line4 = "",
-	Step5Line1 = "Lastly, KkthnxUI includes useful slash commands. Below is a list.",
-	Step5Line2 = "/moveui allow you to move lots of the frames anywhere on the screen. /rl reloads the UI.",
-	Step5Line3 = "/tt lets you whisper your target. /rc initiates a ready check. /rd disbands a party or raid. /ainv enable auto invite by whisper to you. (/ainv off) to turn it off",
-	Step5Line4 = "/gm toggles the Help frame. /install or /tutorial loads this installer. ",
-	Step6Line1 = "The tutorial is complete. You can choose to reconsult it at any time by typing /tutorial.",
-	Step6Line2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs.",
-	Step6Line3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!",
+	Step5Line1 = "最后，KkthnxUI还有一些有用的命令可以使用。命令列表如下。",
+	Step5Line2 = "/moveui 允许您自由移动很多框体。 /rl 重载界面。",
+	Step5Line3 = "/tt 允许您向目标发送密语。 /rc 开始团队检查。 /rd 解散队伍或团队。 /ainv 自动邀请向您发送密语的玩家。 (/ainv off) 关闭自动邀请功能。",
+	Step5Line4 = "/gm 打开帮助界面。 /install or /tutorial 加载安装界面。 ",
+	Step6Line1 = "教程已经结束。您可以通过输入/tutorial在以后重新调取教程。",
+	Step6Line2 = "我建议您查看一下config/config.lua，或输入/KkthnxUI来自定义您理想中的UI。",
+	Step6Line3 = "如果您想继续未完成的安装步骤或重置所有设置，您可以继续点击安装按钮！",
 	Step6Line4 = "",
-	Message1 = "For technical support visit https://github.com/Kkthnx.",
-	Message2 = "You can toggle the microbar by using your right mouse button on the minimap.",
-	Message3 = "You can set your keybindings quickly by typing /kb.",
-	Message4 = "The focus unit can be set by typing /focus when you are targeting the unit you want to focus. It is recommended you make a macro do this.",
-	Message5 = "You can access copy chat and chat menu functions by mouse over the bottom right corner of chat panel and left click on the button that will appear.",
-	Message6 = "If you are experiencing issues with KkthnxUI try disabling all your addons except KkthnxUI, remember KkthnxUI is a full UI replacement addon, you cannot run two addons that do the same thing.",
-	Message7 = "To setup which channels appear in which chat frame, right click the chat tab and go to settings.",
-	Message8 = "You can use the /resetui command to reset all of your movers. You can also type /moveui and just right click a mover to reset its position.",
-	Message9 = "To move abilities on the action bars by default hold shift + drag. You can change the modifier key from the action bar options menu.",
-	Message10 = "You can see someones average item level of their gear by enabling the item level for tooltip option"
+	Message1 = "技术支持请访问https://github.com/Kkthnx.",
+	Message2 = "您可以右键小地图以打开微型菜单。",
+	Message3 = "您可以输入/kb以快速绑定快捷键。",
+	Message4 = "您可以输入/focus将当前目标设置为焦点。我们建议您建立相应的宏来使用这项功能。",
+	Message5 = "鼠标移动至聊天窗口右下角后会有按钮显示，点击它可以复制聊天窗口内的文字。",
+	Message6 = "如果您在使用过程中遇到问题，请关闭除KkthnxUI外的所有插件。请记住KkthnxUI是一个全界面替换插件，您不可以同时运行另一个具有类似功能的插件。",
+	Message7 = "您可以右键点击聊天窗口标签并进入设置界面来设置此标签下显示哪些频道的聊天内容。",
+	Message8 = "您可以使用/resetui命令来重置所有框体位置。您还可以使用/moveui命令并右键点击某个框体来重置其位置。",
+	Message9 = "您需要按住alt键并拖动技能来改变其在动作条中的位置。您可以在动作条设置中更改按键。",
+	Message10 = "在鼠标提示设置中启用物品等级功能，之后您将可以在鼠标提示中看到其他玩家的平均装备等级。"
 }
 
 -- AutoInvite Localization
 L.Invite = {
-	Enable = "Autoinvite enabled: ",
-	Disable = "AutoInvite disabled"
+	Enable = "启用自动邀请",
+	Disable = "禁用自动邀请"
 }
 
 -- Info Localization
 L.Info = {
-	Disabnd = "Disbanding group...",
-	Duel = "Declined duel request from ",
-	Errors = "No error yet.",
-	Invite = "Accepted invite from ",
-	NotInstalled = " is not installed.",
-	PetDuel = "Declined pet duel request from ",
-	SettingsALL = "Type /settings all, to apply the settings for all modifications.",
-	SettingsDBM = "Type /settings dbm, to apply the settings DBM.",
-	SettingsMSBT = "Type /settings msbt, to apply the settings MSBT.",
-	SettingsSKADA = "Type /settings skada, to apply the settings Skada.",
-	SkinDisabled1 = "Skin for ",
-	SkinDisabled2 = " is disabled."
+	Disabnd = "解散团队...",
+	Duel = "已拒绝决斗请求自",
+	Errors = "没有错误.",
+	Invite = "已接受组队邀请自",
+	NotInstalled = " 未安装.",
+	PetDuel = "已拒绝宠物决斗请求自",
+	SettingsALL = "输入/settings all来加载全局设置.",
+	SettingsDBM = "输入/settings dbm来加载DBM设置.",
+	SettingsMSBT = "输入/settings msbt来加载MSBT设置.",
+	SettingsSKADA = "输入/settings skada来加载Skada设置.",
+	SkinDisabled1 = "插件",
+	SkinDisabled2 = "皮肤已禁用."
 }
 
 -- Loot Localization
 L.Loot = {
-	Announce = "Announce to",
-	Cannot = "Cannot roll",
-	Chest = ">> Loot from chest",
-	Fish = "Fishing loot",
-	Monster = ">> Loot from ",
-	Random = "Random Player",
-	Self = "Self Loot",
-	ToGuild = " Guild",
-	ToInstance = " Instance",
-	ToParty = " Party",
-	ToRaid = " Raid",
-	ToSay = " Say"
+	Announce = "通告",
+	Cannot = "无法roll点",
+	Chest = ">> 拾取自宝箱",
+	Fish = "钓鱼获得",
+	Monster = ">> 拾取自",
+	Random = "随机玩家",
+	Self = "个人拾取",
+	ToGuild = " 公会",
+	ToInstance = " 随机队伍",
+	ToParty = " 队伍",
+	ToRaid = " 团队",
+	ToSay = " 说"
 }
 
 -- Mail Localization
 L.Mail = {
-	Complete = "All done.",
-	Messages = "messages",
-	Need = "Need a mailbox.",
-	Stopped = "Stopped, inventory is full.",
-	Unique = "Stopped. Found a unique duplicate item in a bag or the bank."
+	Complete = "全部结束。",
+	Messages = "邮件",
+	Need = "需要邮箱.",
+	Stopped = "已停止.背包已满.",
+	Unique = "已停止.在背包或银行中已有拾取唯一的相同物品."
 }
 
 -- World Map Localization
 L.Map = {
-	Fog = "Fog of War"
+	Fog = "战争迷雾"
 }
 
 -- FarmMode Minimap
 L.Minimap = {
-	FarmModeOn = "Farm mode enabled",
-	FarmModeOff = "Farm mode disabled"
+	FarmModeOn = "采集模式开启",
+	FarmModeOff = "采集模式关闭"
 }
 
 -- Misc Localization
 L.Misc = {
-	BuyStack = "Alt-Click to buy a stack",
+	BuyStack = "Alt左键批量购买",
 	Collapse = "The Collapse",
-	CopperShort = "|cffeda55fc|r",
-	GoldShort = "|cffffd700g|r",
-	SilverShort = "|cffc7c7cfs|r",
-	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
-	Undress = "Undress"
+	CopperShort = "|cffeda55fC|r",
+	GoldShort = "|cffffd700G|r",
+	SilverShort = "|cffc7c7cfS|r",
+	UIOutdated = "KkthnxUI版本已过期。您可以从Curse.com上下载最新版本。安装Curse App可以自动更新！",
+	Undress = "一键脱光"
 }
 
 L.Popup = {
-	Armory = "Armory",
-	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
-	BoostUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r",
-	DisableUI = "KkthnxUI might not work for this resolution, do you want to disable KkthnxUI? (Cancel if you want to try another resolution)",
-	DisbandRaid = "Are you sure you want to disband the group?",
-	FixActionbars = "There is something wrong with your action bars. Do you want to reload the UI to fix it?",
-	InstallUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings.",
-	ReloadUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r.",
-
-	ResetUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?",
-	ResolutionChanged = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?",
-	SettingsAll = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons.",
-	SettingsBW = "Need to change the position of elements BigWigs.",
-	SettingsDBM = "We need to change the bar positions of |cff3c9bedDBM|r.",
+Armory = "英雄榜",
+	BlizzardAddOns = "您的一个插件禁用了Blizzard_CompactRaidFrames插件。这可能会引发错误或其他情况。这个插件将被重新启用。",
+	BoostUI = "|cffff0000警告|r |n|n这将会通过降低图像质量来优化性能，请在您有|cffff0000FPS|r issues!|r问题时再点击接受！",
+	DisableUI = "KkthnxUI在这一分辨率上可能不会正常工作，您想禁用KkthnxUI吗? （如果您想试试其他分辨率请取消）",
+	DisbandRaid = "您确定您想解散队伍吗？",
+	FixActionbars = "您的动作条有一些问题。您想重载界面来修复问题吗？",
+	InstallUI = "感谢您选择|cff3c9bedKkthnxUI|r! |n|n请接受安装来加载设置。",
+	ReloadUI = "安装已经完成。请点击“接受”按钮来重载界面。祝您使用|cff3c9bedKkthnxUI|r愉快。|n|n请访问我的GitHub主页|cff3c9bedwww.github.com/kkthnx|r.",
+	ResetUI = "您确定您想重置|cff3c9bedKkthnxUI|r的设置吗?",
+	ResolutionChanged = "我们检测到您的魔兽世界客户端的分辨率被改变。我们强烈建议您重启游戏。您想继续吗？",
+	SettingsAll = "|cffff0000警告|r |n|n这将替换所有被支持插件的设置为|cff3c9bedKkthnxUI|r默认设置。如果您没有安装被支持的插件，这一功能不会对其他插件产生影响。",
+	SettingsBW = "需要改变BigWigs各元素的位置。",
+	SettingsDBM = "需要改变|cff3c9bedDBM|r计时条的位置。",
 }
 
 -- Raid Utility Localization
 L.Raid = {
-	UtilityDisband = "Disband Group",
-	DisbandRaid = "Are you sure you want to disband the group?"
+	UtilityDisband = "解散团队",
+	DisbandRaid = "您确定您想要解散团队？"
 }
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "Your Status: Completed on ",
-	AchievementIncomplete = "Your Status: Incomplete",
-	AchievementStatus = "Your Status:",
-	InspectOpen = "Inspect Frame is open",
-	ItemCount = "Item count:",
-	ItemID = "Item ID:",
-	Loading = "Loading...",
-	NoTalents = "No Talents",
-	SpellID = "Spell ID:"
+	AchievementComplete = "您的状态:已完成",
+	AchievementIncomplete = "您的状态:未完成",
+	AchievementStatus = "您的状态:",
+	InspectOpen = "观察窗口已打开",
+	ItemCount = "物品数量:",
+	ItemID = "物品ID:",
+	Loading = "读取...",
+	NoTalents = "无天赋",
+	SpellID = "法术ID:"
 }
 
 L.WatchFrame = {
-	WowheadLink = "Wowhead Link"
+	WowheadLink = "Wowhead链接"
 }
 
 L.Welcome = {
-	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
+	Line1 = "欢迎使用|cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "Type /cfg to config interface, or visit www.github.com/kkthnx|r",
+	Line3 = "输入/cfg打开设置界面，或访问www.github.com/kkthnx|r",
 	Line4 = "",
-	Line5 = "Some of your questions can be answered by typing /uihelp"
+	Line5 = "一些常见问题可以输入/uihelp来查看。"
 }
 
 L.SlashCommand = {
 	Help = {
-		"",
-		"|cff3c9bedAvailable slash commands:|r",
-		"--------------------------",
-		"/rl - Reload interface.",
-		"/rc - Activates a ready check.",
-		"/gm - Opens GM frame.",
-		"/rd - Disband party or raid.",
-		"/toraid - Convert to party or raid.",
-		"/teleport - Teleportation from random dungeon.",
-		"/spec, /ss - Switches between talent spec's.",
-		"/frame - Description is not ready.",
-		"/farmmode - Increase the size of the minimap.",
-		"/moveui - Allows the movement of interface elements.",
-		"/resetui - Resets general settings to default.",
-		"/resetconfig - Resets KkthnxUI_Config settings.",
-		"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-		"/pulsecd - Self cooldown pulse test.",
-		"/tt - Whisper target.",
-		"/ainv - Enables automatic invitation.",
-		"/cfg - Opens interface settings.",
-		"/patch - Display Wow patch info.",
-		"",
-		"|cff3c9bedAvailable hidden features:|r",
-		"--------------------------",
-		"Right-click minimap for micromenu.",
-		"Middle mouse click minimap for tracking.",
-		"Left click experience bar opens rep frame.",
-		"Left click artifact bar opens artifact frame.",
-		"Hold alt and obtain player ilvl and spec in tooltip.",
-		"Hold shift to scroll instantly to end or start of chat.",
-		"Copy button to the bottom right side of chat.",
-		"Middle mouse click copy button to /roll.",
+	"",
+	"|cff3c9bed可用命令:|r",
+	"--------------------------",
+	"/rl - 重载界面。",
+	"/rc - 团队检查。",
+	"/gm - 打开GM窗口。",
+	"/rd - 解散队伍或团队。",
+	"/toraid - 转换为队伍或团队。",
+	"/teleport - 传送至随机副本。",
+	"/spec, /ss - 切换专精。",
+	"/frame - 暂无说明。",
+	"/farmmode - 小地图变大。",
+	"/moveui - 允许自由移动框体。",
+	"/resetui - 加载默认设置。",
+	"/resetconfig - 重置KkthnxUI_Config设置。",
+	"/settings 插件名称(msbt, dbm, skada, all) - 加载msbt，dbm，skada，或以上所有插件的默认设置。",
+	"/pulsecd - 冷却模块测试。",
+	"/tt - 密语目标。",
+	"/ainv - 启用自动邀请。",
+	"/cfg - 打开设置界面。",
+	"/patch - 显示游戏版本信息",
+	"",
+	"|cff3c9bed可用隐藏功能:|r",
+	"--------------------------",
+	"右键点击小地图打开系统微型菜单。",
+	"中键点击小地图打开跟踪菜单。",
+	"左键点击经验条打开声望面板。",
+	"左键点击神器能量条打开神器面板。",
+	"按住Alt在鼠标提示上显示玩家装备等级和专精。",
+	"按住并滚动鼠标滚轮直接显示聊天窗口最后一行。",
+	"复制按钮在聊天窗口右下方。",
+	"中键点击复制按钮自动roll点。",
 	}
 }
