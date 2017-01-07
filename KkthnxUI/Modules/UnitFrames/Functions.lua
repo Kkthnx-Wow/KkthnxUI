@@ -588,7 +588,7 @@ function K.PostCastInterruptible(self, unit)
 	end
 end
 
-function K.PostCastNotInterruptible()
+function K.PostCastNotInterruptible(self)
 	self:SetStatusBarColor(unpack(K.Colors.uninterruptible))
 end
 
