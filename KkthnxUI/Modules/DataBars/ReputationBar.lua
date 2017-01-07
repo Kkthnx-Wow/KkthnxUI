@@ -50,14 +50,10 @@ local function UpdateReputationBar()
 	local FactionStandingLabelUnknown = UNKNOWN
 	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 
-	if not Name or event == "PLAYER_REGEN_DISABLED" then
+	if not Name then
 		ReputationBar:Hide()
 	elseif Name and not InCombatLockdown() then
 		ReputationBar:Show()
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 
 		if ID then
 			standingLabel = _G["FACTION_STANDING_LABEL"..ID]
@@ -90,8 +86,6 @@ ReputationBar:SetScript("OnEnter", function(self)
 	GameTooltip:Show()
 end)
 
-ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
 if C.DataBars.ReputationFade then
 	ReputationBar:SetAlpha(0)
 	ReputationBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
@@ -100,7 +94,7 @@ if C.DataBars.ReputationFade then
 end
 
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ReputationBar:RegisterEvent("PLAYER_REGEN_DISABLED")
-ReputationBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
+ReputationBar:RegisterEvent("PLAYER_LEVEL_UP")
+ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)

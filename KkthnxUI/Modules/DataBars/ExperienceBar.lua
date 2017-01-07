@@ -80,14 +80,10 @@ local function UpdateExperienceBar()
 	local IsRested = GetRestState()
 	local HideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
 
-	if HideXP or event == "PLAYER_REGEN_DISABLED" then
+	if HideXP then
 		ExperienceBar:Hide()
 	elseif not HideXP and not InCombatLockdown() then
 		ExperienceBar:Show()
-
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 
 		local Text = ""
 		if Rested and Rested > 0 then
@@ -95,11 +91,13 @@ local function UpdateExperienceBar()
 		else
 			Text = format("%d%%", Current / Max * 100)
 		end
+
 		if C.DataBars.InfoText then
 			ExperienceBar.Text:SetText(Text)
 		else
 			ExperienceBar.Text:SetText(nil)
 		end
+
 		ExperienceBar:SetMinMaxValues(0, Max)
 		ExperienceBar:SetValue(Current)
 
@@ -136,8 +134,6 @@ ExperienceBar:SetScript("OnEnter", function(self)
 	GameTooltip:Show()
 end)
 
-ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
 if C.DataBars.ExperienceFade then
 	ExperienceBar:SetAlpha(0)
 	ExperienceBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
@@ -149,7 +145,6 @@ ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
 ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ExperienceBar:RegisterEvent("PLAYER_REGEN_DISABLED")
-ExperienceBar:RegisterEvent("PLAYER_REGEN_ENABLED")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
+ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)

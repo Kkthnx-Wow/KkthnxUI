@@ -64,12 +64,12 @@ function ns.createArenaLayout(self, unit)
 		self.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
 	end
 
-	self.Health = K.CreateStatusBar(self, nil, nil, true)
+	self.Health = K.CreateStatusBar(self, false)
 	self.Health:SetFrameLevel(self:GetFrameLevel()-1)
 	self.Health:SetSize(117, 18)
 	self.Health:SetPoint("TOPRIGHT", self.Texture, -43, -17)
 
-	self.Power = K.CreateStatusBar(self, nil, nil, true)
+	self.Power = K.CreateStatusBar(self, false)
 	self.Power:SetFrameLevel(self:GetFrameLevel()-1)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -3)
