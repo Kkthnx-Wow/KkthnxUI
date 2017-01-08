@@ -150,9 +150,7 @@ oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
 	local level = UnitLevel(unit)
 
-	if (level <= 0 or UnitIsCorpse(unit)) and (unit == "player" or unit == "target" or unit == "focus") then
-		return "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:16:16:0:0|t" -- boss skull icon
-	elseif (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
 	elseif (level > 0) then
 		return level
@@ -237,13 +235,13 @@ oUF.Tags.Events["KkthnxUI:NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
 	local level = UnitLevel(unit)
 	local classification = UnitClassification(unit)
-	if (level <= 0 or UnitIsCorpse(unit)) then
-		return "|TInterface\\TargetingFrame\\UI-TargetingFrame-Skull:16:16:0:0|t" -- boss skull icon
-	elseif (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+
+	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
 	end
 
 	if level == K.Level and classification == "normal" then return end
+
 	if (level > 0) then
 		return level
 	else
@@ -268,13 +266,13 @@ oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"
 oUF.Tags.Methods["KkthnxUI:NameplateNameColor"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
 	if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and (reaction and reaction >= 5) then
-		local c = K.Colors.power["MANA"]
-		return string_format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+		local color = K.Colors.power["MANA"]
+		return string_format("|cff%02x%02x%02x", color[1] * 255, color[2] * 255, color[3] * 255)
 	elseif UnitIsPlayer(unit) then
 		return _TAGS["raidcolor"](unit)
 	elseif reaction then
-		local c = K.Colors.reaction[reaction]
-		return string_format("|cff%02x%02x%02x", c[1] * 255, c[2] * 255, c[3] * 255)
+		local color = K.Colors.reaction[reaction]
+		return string_format("|cff%02x%02x%02x", color[1] * 255, color[2] * 255, color[3] * 255)
 	else
 		r, g, b = 0.33, 0.59, 0.33
 		return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
@@ -283,11 +281,11 @@ end
 
 oUF.Tags.Events["KkthnxUI:NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH NAME_PLATE_UNIT_ADDED"
 oUF.Tags.Methods["KkthnxUI:NameplateHealth"] = function(unit)
-	local hp = UnitHealth(unit)
-	local maxhp = UnitHealthMax(unit)
-	if maxhp == 0 then
+	local health = UnitHealth(unit)
+	local maxhealth = UnitHealthMax(unit)
+	if maxhealth == 0 then
 		return 0
 	else
-		return ("%s - %d%%"):format(K.ShortValue(hp), hp / maxhp * 100 + 0.5)
+		return ("%s - %d%%"):format(K.ShortValue(health), health / maxhealth * 100 + 0.5)
 	end
 end
