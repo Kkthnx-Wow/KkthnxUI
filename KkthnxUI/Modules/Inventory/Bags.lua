@@ -570,7 +570,7 @@ function Bags:SkinTokens()
 end
 
 function Bags:SlotUpdate(id, button)
-	if not button then
+	if not button or button.backdrop then
 		return
 	end
 
@@ -578,6 +578,10 @@ function Bags:SlotUpdate(id, button)
 
 	local Texture, Count, Lock, quality, _, _, _, _, _, ItemID = GetContainerItemInfo(id, button:GetID())
 	local IsNewItem = C_NewItems.IsNewItem(id, button:GetID())
+
+	if IsNewItem ~= true and button.Animation and button.Animation:IsPlaying() then
+		button.Animation:Stop()
+	end
 
 	if (button.ItemID == ItemID) then
 		return
@@ -588,15 +592,22 @@ function Bags:SlotUpdate(id, button)
 	local IsQuestItem, QuestId, IsActive = GetContainerItemQuestInfo(id, button:GetID())
 	local IsBattlePayItem = IsBattlePayItem(id, button:GetID())
 	local NewItem = button.NewItemTexture
+	local IsProfBag = self:IsProfessionBag(id)
 	local IconQuestTexture = button.IconQuestTexture
 
 	if IconQuestTexture then
 		IconQuestTexture:SetAlpha(0)
 	end
 
+	-- Letting you style this
+	if IsProfBag then
+
+	else
+		--button:SetBackdropColor(unpack(C["General"].BackdropColor))
+	end
+
 	if IsNewItem and NewItem then
-		NewItem:SetTexture(C.Media.Blizz)
-		NewItem:SetSize(C.Bags.ButtonSize, C.Bags.ButtonSize)
+		NewItem:SetAlpha(0)
 	end
 
 	if IsQuestItem then
