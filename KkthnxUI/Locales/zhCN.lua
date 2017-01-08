@@ -82,21 +82,17 @@ L.Chat = {
 	RaidWarning = "团队警告",
 }
 
--- Configbutton Localization
-L.ConfigButton = {
-	Config = "设置界面",
-	Functions = "鼠标按键功能:",
-	LeftClick = "鼠标左键:",
-	MiddleClick = "鼠标中键:",
-	MoveUI = "移动框体",
-	Recount = "显示/隐藏Recount",
-	RightClick = "鼠标右键:",
-	ShiftClick = "Shift+鼠标左键:",
-	ShiftPlusRightClick = "Shift+鼠标右键:",
-	Skada = "显示/隐藏Skada",
-	Spec = "专精选择",
-	SpecError = "您已经启用了此专精!",
-	SpecMenu = "专精选择"
+-- ToggleButton Localization
+L.ToggleButton = {
+	Config = "Toggle KkthnxUI Config",
+	Functions = "ToggleButton functions:",
+	LeftClick = "Left click:",
+	MiddleClick = "Middle click:",
+	MoveUI = "Toggle Move UI",
+	Recount = "Toggle Recount",
+	RightClick = "Right click:",
+	ShiftClick = "Shift + click:",
+	Skada = "Toggle Skada",
 }
 
 -- Cooldowns

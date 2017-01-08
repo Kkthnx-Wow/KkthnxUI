@@ -8,7 +8,7 @@ if C.Nameplates.Enable ~= true then return end
 local function SpellName(id)
 	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
 	if not name then
-    print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
+		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
 		return "Impale"
 	else
 		return name
@@ -17,6 +17,9 @@ end
 
 K.DebuffWhiteList = {
 	-- Death Knight
+	-- Helpful
+	[SpellName(3714)] = true, -- path of frost
+	[SpellName(57330)] = true, -- horn of winter
 	-- Harmful
 	[SpellName(47476)] = true, -- Strangulate
 	[SpellName(43265)] = true, -- death and decay
@@ -31,7 +34,15 @@ K.DebuffWhiteList = {
 	[SpellName(45524)] = true, -- chains of ice
 	[SpellName(108194)] = true, -- asphyxiate stun
 
-	-- Demon Hunter
+	-- DemonHunter
+	-- Self
+	[SpellName(218256)] = true, -- empower wards
+	[SpellName(203819)] = true, -- demon spikes
+	[SpellName(187827)] = true, -- metamorphosis (vengeance)
+	[SpellName(212800)] = true, -- blur
+	[SpellName(196555)] = true, -- netherwalk
+	-- Helpful
+	[SpellName(209426)] = true, -- darkness
 	-- Harmful
 	[SpellName(207744)] = true, -- fiery brand
 	[SpellName(207771)] = true, -- fiery brand 2
@@ -53,6 +64,24 @@ K.DebuffWhiteList = {
 	[SpellName(217932)] = true, -- imprison
 
 	-- Druid
+	-- Self
+	[SpellName(22842)] = true, -- frenzied regeneration
+	[SpellName(192081)] = true, -- ironfur
+	[SpellName(61336)] = true, -- survival instincts
+	[SpellName(22812)] = true, -- barkskin
+	[SpellName(192083)] = true, -- mark of ursol
+	[SpellName(213680)] = true, -- guardian of elune
+	-- Helpful
+	[SpellName(774)] = true, -- rejuvenation
+	[SpellName(8936)] = true, -- regrowth
+	[SpellName(33763)] = true, -- lifebloom
+	[SpellName(188550)] = true, -- lifebloom (HFC 4-set bonus)
+	[SpellName(48438)] = true, -- wild growth
+	[SpellName(102342)] = true, -- ironbark
+	[SpellName(155777)] = true, -- rejuvenation (germination)
+	[SpellName(102351)] = true, -- cenarion ward
+	[SpellName(102352)] = true, -- cenarion ward proc
+	[SpellName(77761)] = true, -- stampeding roar
 	-- Harmful
 	[SpellName(164812)] = true,	-- Moonfire
 	[SpellName(164815)] = true,	-- Sunfire
@@ -79,6 +108,14 @@ K.DebuffWhiteList = {
 	[SpellName(61391)] = true, -- typhoon daze
 
 	-- Hunter
+	-- Self
+	[SpellName(190931)] = true, -- mongoose fury
+	[SpellName(186257)] = true, -- aspect of the cheetah 90%
+	[SpellName(186258)] = true, -- aspect of the cheetah 30%
+	[SpellName(186289)] = true, -- aspect of the eagle
+	[SpellName(186265)] = true, -- aspect of the turtle
+	-- Helpful
+	[SpellName(34477)] = true, -- misdirection
 	-- Harmful
 	[SpellName(3355)] = true, -- Freezing Trap
 	[SpellName(1130)] = true, -- hunter's arrow
@@ -104,6 +141,15 @@ K.DebuffWhiteList = {
 	[SpellName(195645)] = true, -- wing clip
 
 	-- Mage
+	-- Self
+	[SpellName(108839)] = true, -- ice floes
+	[SpellName(108843)] = true, -- blazing speed
+	[SpellName(116014)] = true, -- rune of power
+	[SpellName(116267)] = true, -- incanter's flow
+	[SpellName(198924)] = true, -- quickening
+	[SpellName(205766)] = true, -- bone chilling
+	-- Helpful
+	[SpellName(130)] = true, -- slow fall
 	-- Harmful
 	[SpellName(2120)] = true, -- flamestrike
 	[SpellName(11366)] = true, -- pyroblast
@@ -141,6 +187,23 @@ K.DebuffWhiteList = {
 	[SpellName(161372)] = true, -- polymorph: turtle
 
 	-- Monk
+	-- Self
+	[SpellName(116680)] = true, -- thunder focus tea
+	[SpellName(116847)] = true, -- rushing jade wind
+	[SpellName(119085)] = true, -- chi torpedo
+	[SpellName(120954)] = true, -- fortifying brew
+	[SpellName(122278)] = true, -- dampen harm
+	[SpellName(122783)] = true, -- diffuse magic
+	[SpellName(196725)] = true, -- refreshing jade wind
+	[SpellName(215479)] = true, -- ironskin brew
+	-- Helpful
+	[SpellName(116841)] = true, -- tiger's lust
+	[SpellName(116844)] = true, -- ring of peace
+	[SpellName(116849)] = true, -- life cocoon
+	[SpellName(119611)] = true, -- renewing mist
+	[SpellName(124081)] = true, -- zen sphere
+	[SpellName(124682)] = true, -- enveloping mist
+	[SpellName(191840)] = true, -- essence font
 	-- Harmful
 	[SpellName(123725)] = true, -- breath of fire dot
 	[SpellName(138130)] = true, -- storm, earth and fire 1
@@ -158,6 +221,18 @@ K.DebuffWhiteList = {
 	[SpellName(198909)] = true, -- song of chi-ji
 
 	-- Paladin
+	-- Helpful
+	[SpellName(184662)] = true, -- shield of vengeance
+	[SpellName(114163)] = true, -- eternal flame
+	[SpellName(53563)] = true, -- beacon of light
+	[SpellName(156910)] = true, -- beacon of faith
+	[SpellName(203528)] = true, -- greater blessing of might
+	[SpellName(203538)] = true, -- greater blessing of kings
+	[SpellName(203539)] = true, -- greater blessing of wisdom
+	-- hand of...
+	[SpellName(6940)] = true, -- sacrifice
+	[SpellName(1044)] = true, -- freedom
+	[SpellName(1022)] = true, -- protection
 	-- Harmful
 	[SpellName(26573)] = true, -- consecration
 	[SpellName(197277)] = true, -- judgement
@@ -170,6 +245,22 @@ K.DebuffWhiteList = {
 	[SpellName(105421)] = true, -- blinding light
 
 	-- Priest
+	-- Helpful
+	[SpellName(17)] = true, -- power word: shield
+	[SpellName(81782)] = true, -- power word: barrier
+	[SpellName(139)] = true, -- renew
+	[SpellName(33206)] = true, -- pain suppression
+	[SpellName(41635)] = true, -- prayer of mending buff
+	[SpellName(47788)] = true, -- guardian spirit
+	[SpellName(114908)] = true, -- spirit shell shield
+	[SpellName(152118)] = true, -- clarity of will
+	[SpellName(111759)] = true, -- levitate
+	[SpellName(121557)] = true, -- angelic feather
+	[SpellName(65081)] = true, -- body and soul
+	[SpellName(214121)] = true, -- body and mind
+	[SpellName(77489)] = true, -- echo of light
+	[SpellName(64901)] = true, -- symbol of hope
+	[SpellName(194384)] = true, -- attonement
 	-- Harmful
 	[SpellName(2096)] = true, -- mind vision
 	[SpellName(589)] = true, -- shadow word: pain
@@ -192,6 +283,18 @@ K.DebuffWhiteList = {
 	[SpellName(204263)] = true, -- shining force
 
 	-- Rogue
+	-- Self
+	[SpellName(5171)] = true, -- slice and dice
+	[SpellName(185311)] = true, -- crimson vial
+	[SpellName(193538)] = true, -- alacrity
+	[SpellName(193356)] = true, -- rtb: broadsides
+	[SpellName(199600)] = true, -- rtb: buried treasure
+	[SpellName(193358)] = true, -- rtb: grand melee
+	[SpellName(199603)] = true, -- rtb: jolly roger
+	[SpellName(193357)] = true, -- rtb: shark infested waters
+	[SpellName(193359)] = true, -- rtb: true bearing
+	-- Helpful
+	[SpellName(57934)] = true, -- tricks of the trade
 	-- Harmful
 	[SpellName(703)] = true, -- garrote
 	[SpellName(1943)] = true, -- rupture
@@ -222,6 +325,9 @@ K.DebuffWhiteList = {
 	[SpellName(199743)] = true, -- parley
 
 	-- Shaman
+	-- Helpful
+	[SpellName(546)] = true, -- water walking
+	[SpellName(61295)] = true, -- riptide
 	-- Harmful
 	[SpellName(196840)] = true,	-- Frost Shock
 	[SpellName(188389)] = true,	-- Flame Shock
@@ -236,6 +342,8 @@ K.DebuffWhiteList = {
 	[SpellName(51490)] = true, -- thunderstorm slow
 
 	-- Warlock
+	[SpellName(5697)] = true, -- unending breath
+	[SpellName(20707)] = true, -- soulstone
 	-- Harmful
 	[SpellName(6789)] = true,	-- Mortal Coil
 	[SpellName(6358)] = true,	-- Seduction
@@ -261,6 +369,26 @@ K.DebuffWhiteList = {
 	[SpellName(171018)] = true, -- meteor strike (abyssal stun)
 
 	-- Warrior
+	-- Self
+	[SpellName(871)] = true, -- shield wall
+	[SpellName(1719)] = true, -- battle cry
+	[SpellName(12975)] = true, -- last stand
+	[SpellName(18499)] = true, -- berserker rage
+	[SpellName(23920)] = true, -- spell reflection
+	[SpellName(107574)] = true, -- avatar
+	[SpellName(114030)] = true, -- vigilance
+	[SpellName(132404)] = true, -- shield block
+	[SpellName(184362)] = true, -- enrage
+	[SpellName(184364)] = true, -- enraged regeneration
+	[SpellName(190456)] = true, -- ignore pain
+	[SpellName(202539)] = true, -- frenzy
+	[SpellName(202602)] = true, -- into the fray
+	[SpellName(206333)] = true, -- taste for blood
+	[SpellName(227744)] = true, -- ravager
+	-- Helpful
+	[SpellName(3411)] = true, -- intervene
+	[SpellName(97463)] = true, -- commanding shout
+	[SpellName(223658)] = true, -- safeguard
 	-- Harmful
 	[SpellName(167105)] = true, -- colossus smash again
 	[SpellName(1160)] = true, -- demoralizing shout

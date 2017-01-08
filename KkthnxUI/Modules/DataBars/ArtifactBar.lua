@@ -75,7 +75,7 @@ local function UpdateArtifactBar(event, unit)
 
 	if not HasArtifactEquip then
 		ArtifactBar:Hide()
-	elseif HasArtifactEquip and not InCombatLockdown() then
+	elseif HasArtifactEquip then
 		ArtifactBar:Show()
 
 		local _, _, _, _, TotalExp, PointsSpent, _, _, _, _, _, _ = C_ArtifactUI.GetEquippedArtifactInfo()

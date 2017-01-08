@@ -179,6 +179,7 @@ C["General"] = {
 	["UIScale"] = 0.71,
 	["UseBlizzardFonts"] = false,
 	["WelcomeMessage"] = true,
+	["ToggleButton"] = true,
 }
 
 -- Loot
