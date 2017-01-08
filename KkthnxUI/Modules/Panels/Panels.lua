@@ -120,14 +120,18 @@ if C.Chat.Background == true and C.Chat.Enable == true then
 end
 
 -- This is a single panel outside the Minimap
-if Minimap and C.Minimap.Enable then
-	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
+if Minimap and C.Minimap.Enable and C.DataText.System == true then
+	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", UIParent)
 	MinimapStats:SetTemplate()
 	if C.General.ToggleButton == true then
-		MinimapStats:SetSize(((Minimap:GetWidth() -16)), 28)
-		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", -13, -2)
+		MinimapStats:SetSize(Minimap:GetWidth(), 28)
+		MinimapStats:SetPoint("RIGHT", Minimap, "LEFT", -4, 0)
+		MinimapStats:SetPoint("LEFT", Minimap, "RIGHT", -22, 0)
+		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
 	else
-		MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
+		MinimapStats:SetSize(Minimap:GetWidth(), 28)
+		MinimapStats:SetPoint("RIGHT", Minimap, "LEFT", -4, 0)
+		MinimapStats:SetPoint("LEFT", Minimap, "RIGHT", 4, 0)
 		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
 	end
 	MinimapStats:SetFrameStrata("LOW")
@@ -138,7 +142,7 @@ if Minimap and C.Minimap.Enable then
 	end
 end
 
-if C.General.ToggleButton == true then
+if C.General.ToggleButton == true and C.DataText.System == true then
 	local ToggleButton = CreateFrame("Frame", "KkthnxUIToggleButton", UIParent)
 	ToggleButton:SetSize(20, 20)
 	ToggleButton:SetPoint("LEFT", KkthnxUIMinimapStats, "RIGHT", 2, 0)
