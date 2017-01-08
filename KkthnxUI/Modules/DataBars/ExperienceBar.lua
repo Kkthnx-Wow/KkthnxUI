@@ -146,7 +146,5 @@ ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
 ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
-ExperienceBar:RegisterEvent("PLAYER_UPDATE_RESTING")
-
 ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)
