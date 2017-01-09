@@ -570,7 +570,7 @@ function Bags:SkinTokens()
 end
 
 function Bags:SlotUpdate(id, button)
-	if not button or button.backdrop then
+	if not button or backdrop then
 		return
 	end
 
@@ -608,6 +608,21 @@ function Bags:SlotUpdate(id, button)
 
 	if IsNewItem and NewItem then
 		NewItem:SetAlpha(0)
+
+		if C.Bags.PulseNewItem then
+			if not button.Animation then
+				button.Animation = button:CreateAnimationGroup()
+				button.Animation:SetLooping("BOUNCE")
+
+				button.FadeOut = button.Animation:CreateAnimation("Alpha")
+				button.FadeOut:SetFromAlpha(1)
+				button.FadeOut:SetToAlpha(0)
+				button.FadeOut:SetDuration(0.40)
+				button.FadeOut:SetSmoothing("IN_OUT")
+			end
+
+			button.Animation:Play()
+		end
 	end
 
 	if IsQuestItem then
@@ -658,6 +673,12 @@ function Bags:UpdateAllBags()
 			Button:SetScale(1)
 			Button:SetFrameStrata("HIGH")
 			Button:SetFrameLevel(2)
+
+			Button.newitemglowAnim:Stop()
+			Button.newitemglowAnim.Play = K.Noop
+
+			Button.flashAnim:Stop()
+			Button.flashAnim.Play = K.Noop
 
 			Money:ClearAllPoints()
 			Money:Show()
