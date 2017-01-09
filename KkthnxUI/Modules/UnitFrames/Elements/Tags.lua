@@ -240,9 +240,9 @@ oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
 		return UnitBattlePetLevel(unit)
 	end
 
-	if level == K.Level and classification == "normal" then return end
-
-	if (level > 0) then
+	if level == K.Level and classification == "normal" then
+		return " "
+	elseif (level > 0) then
 		return level
 	else
 		return "??"

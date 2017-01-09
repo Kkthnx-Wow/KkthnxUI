@@ -1,17 +1,13 @@
 local K, C, L = unpack(select(2, ...))
 if C.Misc.AFKCamera ~= true then return end
 
-local AFKString = _G["AFK"]
-local AFK = LibStub("AceAddon-3.0"):NewAddon("AFK", "AceEvent-3.0", "AceTimer-3.0")
-
 -- WoW Lua
 local _G = _G
-local floor = floor
-local format, strsub, gsub = string.format, string.sub, string.gsub
-local GetTime = GetTime
-local random = math.random
+local math_floor = math.floor
+local math_pi = math.pi
+local math_random = math.random
 local select = select
-local tostring, pcall = tostring, pcall
+local string_format = string.format
 
 -- Wow API
 local CalendarGetDate = CalendarGetDate
@@ -31,6 +27,7 @@ local GetScreenWidth = GetScreenWidth
 local GetSpecialization = GetSpecialization
 local GetSpecializationInfo = GetSpecializationInfo
 local GetStatistic = GetStatistic
+local GetTime = GetTime
 local InCombatLockdown = InCombatLockdown
 local IsInGuild = IsInGuild
 local IsShiftKeyDown = IsShiftKeyDown
@@ -52,6 +49,8 @@ local UnitRace = UnitRace
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, date
 -- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME
+
+local AFK = LibStub("AceAddon-3.0"):NewAddon("AFK", "AceEvent-3.0", "AceTimer-3.0")
 
 local stats = {
 	1042,	-- Number of hugs
@@ -77,7 +76,6 @@ local stats = {
 	1491,	-- Battleground Killing Blows
 	1518,	-- Fish caught
 	1716,	-- Battleground with the most Killing Blows
-	197, -- Total damage done
 	2219, -- Total deaths in 5-player Heroic dungeons
 	318, -- Total deaths from opposite faction
 	319,	-- Duels won
@@ -119,10 +117,10 @@ local function createTime()
 	local hour, hour24, minute, ampm = tonumber(date("%I")), tonumber(date("%H")), tonumber(date("%M")), date("%p"):lower()
 	local sHour, sMinute = GetGameTime()
 
-	local localTime = format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_LOCALTIME, hour, minute, ampm)
-	local localTime24 = format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_LOCALTIME, hour24, minute)
-	local realmTime = format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute, ampm)
-	local realmTime24 = format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute)
+	local localTime = string_format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_LOCALTIME, hour, minute, ampm)
+	local localTime24 = string_format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_LOCALTIME, hour24, minute)
+	local realmTime = string_format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute, ampm)
+	local realmTime24 = string_format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute)
 
 	if C.DataText.LocalTime then
 		if C.DataText.Time24Hr then
@@ -172,11 +170,11 @@ end
 
 -- </ Create Random Stats > --
 local function createStats()
-	local id = stats[random( #stats )]
+	local id = stats[math_random( #stats )]
 	local _, name = GetAchievementInfo(id)
 	local result = GetStatistic(id)
 	if result == "--" then result = NONE end
-	return format("%s: |cfff0ff00%s|r", name, result)
+	return string_format("%s: |cfff0ff00%s|r", name, result)
 end
 
 local active
@@ -189,10 +187,10 @@ local function getSpec()
 	if i then
 		i = select(2, GetSpecializationInfo(i))
 		if(i) then
-			talent = format("%s", i)
+			talent = string_format("%s", i)
 		end
 	end
-	return format("%s", talent)
+	return string_format("%s", talent)
 end
 
 -- </ Simple-Timer for Stats > --
@@ -234,22 +232,23 @@ function AFK:UpdateTimer()
 	-- </ Set Date > --
 	createDate()
 
-	self.AFKMode.bottom.time:SetFormattedText("%02d:%02d", floor(time/60), time % 60)
+	self.AFKMode.bottom.time:SetFormattedText("%02d:%02d", math_floor(time/60), time % 60)
 end
 
 function AFK:SetAFK(status)
-	if (InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then return end
 	if (status) then
 		MoveViewLeftStart(CAMERA_SPEED)
 		self.AFKMode:Show()
 		CloseAllWindows()
 		UIParent:Hide()
+
 		if (IsInGuild()) then
 			local guildName, guildRankName = GetGuildInfo("player")
 			self.AFKMode.bottom.guild:SetFormattedText("%s-%s", guildName, guildRankName)
 		else
 			self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
 		end
+
 		self.AFKMode.bottom.model.curAnimation = "wave"
 		self.AFKMode.bottom.model.startTime = GetTime()
 		self.AFKMode.bottom.model.duration = 2.3
@@ -259,7 +258,9 @@ function AFK:SetAFK(status)
 		self.AFKMode.bottom.model.idleDuration = 40
 		self.startTime = GetTime()
 		self.timer = self:ScheduleRepeatingTimer("UpdateTimer", 1)
+
 		self.AFKMode.statMsginfo:Show()
+
 		self.isAFK = true
 	elseif (self.isAFK) then
 		UIParent:Show()
@@ -269,10 +270,12 @@ function AFK:SetAFK(status)
 		self:CancelTimer(self.timer)
 		self:CancelTimer(self.animTimer)
 		self.AFKMode.bottom.time:SetText("00:00")
+
 		if (PVEFrame:IsShown()) then -- </ odd bug, frame is blank > --
 			PVEFrame_ToggleFrame()
 			PVEFrame_ToggleFrame()
 		end
+
 		self.isAFK = false
 	end
 end
@@ -287,14 +290,24 @@ function AFK:OnEvent(event, ...)
 		else
 			self:SetAFK(false)
 		end
+
 		if (event == "PLAYER_REGEN_DISABLED") then
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", "OnEvent")
 		end
 		return
 	end
+
 	if (event == "PLAYER_REGEN_ENABLED") then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
+
+	if (InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then return end
+	if (UnitCastingInfo("player") ~= nil) then
+		-- Don't activate afk if player is crafting stuff, check back in 30 seconds
+		self:ScheduleTimer('OnEvent', 30)
+		return
+	end
+
 	if (UnitIsAFK("player")) then
 		self:SetAFK(true)
 	else
@@ -358,9 +371,9 @@ function AFK:Initialize()
 	self.AFKMode.top:SetTemplate("Transparent")
 	self.AFKMode.top:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 	self.AFKMode.top:ClearAllPoints()
-	self.AFKMode.top:SetPoint("TOP", self.AFKMode, "TOP", 0, 4)
-	self.AFKMode.top:SetWidth(GetScreenWidth() + (4 * 2))
-	self.AFKMode.top:SetHeight(GetScreenHeight() * (1 / 9.6))
+	self.AFKMode.top:SetPoint("TOP", self.AFKMode, "TOP", 0, 2)
+	self.AFKMode.top:SetWidth(GetScreenWidth() + (2 * 2))
+	self.AFKMode.top:SetHeight(GetScreenHeight() * (1 / 10))
 
 	-- </ Wow Logo > --
 	self.AFKMode.top.wowlogo = CreateFrame("Frame", nil, self.AFKMode) -- </ need this to upper the logo layer > --
@@ -391,9 +404,9 @@ function AFK:Initialize()
 	self.AFKMode.bottom:SetFrameLevel(0)
 	self.AFKMode.bottom:SetTemplate("Transparent")
 	self.AFKMode.bottom:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
-	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -4)
-	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (4 * 2))
-	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 9.6))
+	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -2)
+	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2))
+	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))
 	self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY")
 	self.AFKMode.bottom.logo:SetSize(512 / 1.2, 256 / 1.2)
 	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 40)
@@ -402,7 +415,7 @@ function AFK:Initialize()
 	local factionGroup = UnitFactionGroup("player")
 
 	-- </ factionGroup = "Alliance" > --
-	local size, offsetX, offsetY = 140, -20, -16
+	local size, offsetX, offsetY = 130, -20, -12
 	local nameOffsetX, nameOffsetY = -10, -28
 	if factionGroup == "Neutral" then
 		factionGroup = "Panda"
@@ -453,7 +466,7 @@ function AFK:Initialize()
 	self.AFKMode.statMsginfo:SetFont(C.Media.Font, 17, C.Media.Font_Style)
 	self.AFKMode.statMsginfo:SetPoint("CENTER", self.AFKMode.statMsg, "CENTER", 0, 0)
 	self.AFKMode.statMsginfo:SetSize(800, 24)
-	self.AFKMode.statMsginfo:AddMessage(format("|cffb3b3b3%s|r", "Random Stats"))
+	self.AFKMode.statMsginfo:AddMessage(string_format("|cffb3b3b3%s|r", "Random Stats"))
 	self.AFKMode.statMsginfo:SetFading(true)
 	self.AFKMode.statMsginfo:SetFadeDuration(1)
 	self.AFKMode.statMsginfo:SetTimeVisible(4)
@@ -484,6 +497,19 @@ function AFK:Initialize()
 	self.AFKMode.bottom.time:SetText("00:00")
 	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
+
+	-- NPC Model
+	self.AFKMode.bottom.npcHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
+	self.AFKMode.bottom.npcHolder:SetSize(150, 150)
+	self.AFKMode.bottom.npcHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 130)
+
+	self.AFKMode.bottom.npc = CreateFrame("PlayerModel", "KkthnxUIAFKNPCModel", self.AFKMode.bottom.npcHolder)
+	self.AFKMode.bottom.npc:SetCreature(85009)
+	self.AFKMode.bottom.npc:SetPoint("CENTER", self.AFKMode.bottom.npcHolder, "CENTER")
+	self.AFKMode.bottom.npc:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
+	self.AFKMode.bottom.npc:SetCamDistanceScale(6)
+	self.AFKMode.bottom.npc:SetFacing(15 * (math_pi/180))
+	-- self.AFKMode.bottom.npc:SetAnimation(26)
 
 	-- </ Use this frame to control position of the model > --
 	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
