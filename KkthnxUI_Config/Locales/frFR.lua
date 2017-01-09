@@ -160,12 +160,12 @@ UIConfigLocal.GeneralAutoScale = "Auto UI Scale"
 UIConfigLocal.GeneralBubbleFontSize = "Chat bubble font size"
 UIConfigLocal.GeneralCustomLagTolerance = "Automatically update the Blizzard Custom Lag Tolerance option to your latency"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
+UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
 UIConfigLocal.GeneralTranslateMessage = "Popup to gain help for GUI translation."
 UIConfigLocal.GeneralUIScale = "UI Scale (if auto-scale is disabled)"
 UIConfigLocal.GeneralUseBlizzardFonts = "Use the default blizzard font"
 UIConfigLocal.GeneralUseFlatTextures = "Use flat statusbar textures"
 UIConfigLocal.GeneralWelcomeMessage = "Welcome message in chat."
-
 
 -- Loot
 UIConfigLocal.LootConfirmDisenchant = "Auto confirm disenchant"
@@ -184,7 +184,6 @@ UIConfigLocal.MinimapEnable = "Enable minimap & make it square"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Garrison icon is shown on minimap"
 UIConfigLocal.MinimapPing = "Displays a message when someone pings the minimap. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
-UIConfigLocal.MinimapShowConfigButton = "Show config button on minimap"
 UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
 
 -- Misc

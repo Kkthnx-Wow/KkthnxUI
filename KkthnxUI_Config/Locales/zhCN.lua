@@ -160,12 +160,12 @@ UIConfigLocal.GeneralAutoScale = "自动缩放UI"
 UIConfigLocal.GeneralBubbleFontSize = "聊天泡泡文字大小"
 UIConfigLocal.GeneralCustomLagTolerance = "根据延迟情况自动更新按键触发延时"
 UIConfigLocal.GeneralDisableTutorialButtons = "禁用一些框体上的教学按钮"
+UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
 UIConfigLocal.GeneralTranslateMessage = "弹出GUI帮助信息"
 UIConfigLocal.GeneralUIScale = "UI缩放（如果自动缩放被禁用）"
 UIConfigLocal.GeneralUseBlizzardFonts = "使用默认字体"
 UIConfigLocal.GeneralUseFlatTextures = "使用“平坦”材质"
 UIConfigLocal.GeneralWelcomeMessage = "聊天窗内显示欢迎信息"
-
 
 -- Loot
 UIConfigLocal.LootConfirmDisenchant = "自动确认分解物品"
@@ -184,7 +184,6 @@ UIConfigLocal.MinimapEnable = "开启方形小地图"
 UIConfigLocal.MinimapFadeButtons = "被收集的按钮渐隐"
 UIConfigLocal.MinimapGarrison = "小地图显示要塞图标"
 UIConfigLocal.MinimapPing = "有人点击小地图时显示信息|cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
-UIConfigLocal.MinimapShowConfigButton = "小地图显示设置按钮"
 UIConfigLocal.MinimapSize = "小地图尺寸 - 默认150"
 
 -- Misc

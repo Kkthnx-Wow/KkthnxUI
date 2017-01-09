@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+if C.DataText.System ~= true then return end
 
 -- Lua API
 local collectgarbage = collectgarbage
@@ -114,11 +115,6 @@ local function UpdateCPU()
 	return totalCPU
 end
 
-local function Click()
-	collectgarbage("collect");
-	ResetCPUUsage();
-end
-
 local function OnEnter(self)
 	enteredFrame = true
 	local cpuProfiling = GetCVar("scriptProfile") == "1"
@@ -132,8 +128,8 @@ local function OnEnter(self)
 	GameTooltip:AddDoubleLine(L.DataText.HomeLatency, string_format(homeLatencyString, select(3, GetNetStats())), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
 
 	if bandwidth ~= 0 then
-		GameTooltip:AddDoubleLine(L.DataText.Bandwidth, string_format(bandwidthString, bandwidth),0.69, 0.31, 0.31,0.84, 0.75, 0.65)
-		GameTooltip:AddDoubleLine(L.DataText.Download, string_format(percentageString, GetDownloadedPercentage() *100),0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
+		GameTooltip:AddDoubleLine(L.DataText.Bandwidth, string_format(bandwidthString, bandwidth), 0.69, 0.31, 0.31,0.84, 0.75, 0.65)
+		GameTooltip:AddDoubleLine(L.DataText.Download, string_format(percentageString, GetDownloadedPercentage() * 100), 0.69, 0.31, 0.31, 0.84, 0.75, 0.65)
 		GameTooltip:AddLine(" ")
 	end
 
@@ -198,6 +194,19 @@ local function Update(self, t)
 			OnEnter(self)
 		end
 	end
+end
+
+local function Click(self, button)
+	if button == "LeftButton" and not InCombatLockdown() then
+		collectgarbage("collect")
+	elseif button == "RightButton" and not InCombatLockdown() then
+		if not PVEFrame then
+			PVEFrame_ToggleFrame()
+		end
+		PVEFrame_ToggleFrame()
+	end
+
+	ResetCPUUsage()
 end
 
 -- Command to toggle, cpuProfiling.

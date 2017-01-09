@@ -120,13 +120,99 @@ if C.Chat.Background == true and C.Chat.Enable == true then
 end
 
 -- This is a single panel outside the Minimap
-if Minimap and C.Minimap.Enable then
-	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", Minimap)
+if Minimap and C.Minimap.Enable and C.DataText.System == true then
+	local MinimapStats = CreateFrame("Frame", "KkthnxUIMinimapStats", UIParent)
 	MinimapStats:SetTemplate()
-	MinimapStats:SetSize(((Minimap:GetWidth() + 10)), 28)
-	MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
+	if C.General.ToggleButton == true then
+		MinimapStats:SetSize(Minimap:GetWidth(), 28)
+		MinimapStats:SetPoint("RIGHT", Minimap, "LEFT", -4, 0)
+		MinimapStats:SetPoint("LEFT", Minimap, "RIGHT", -22, 0)
+		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
+	else
+		MinimapStats:SetSize(Minimap:GetWidth(), 28)
+		MinimapStats:SetPoint("RIGHT", Minimap, "LEFT", -4, 0)
+		MinimapStats:SetPoint("LEFT", Minimap, "RIGHT", 4, 0)
+		MinimapStats:SetPoint("TOP", Minimap, "BOTTOM", 0, -2)
+	end
 	MinimapStats:SetFrameStrata("LOW")
 	Movers:RegisterFrame(MinimapStats)
+
+	if C.Blizzard.ColorTextures == true then
+		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	end
+end
+
+if C.General.ToggleButton == true and C.DataText.System == true then
+	local ToggleButton = CreateFrame("Frame", "KkthnxUIToggleButton", UIParent)
+	ToggleButton:SetSize(20, 20)
+	ToggleButton:SetPoint("LEFT", KkthnxUIMinimapStats, "RIGHT", 2, 0)
+	ToggleButton:SetFrameStrata("LOW")
+	ToggleButton:SkinButton()
+
+	ToggleButton.Text = ToggleButton:CreateFontString(nil, "OVERLAY")
+	ToggleButton.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	ToggleButton.Text:SetShadowOffset(0, 0)
+	ToggleButton.Text:SetText("|cff3c9bedK|r")
+	ToggleButton.Text:SetPoint("CENTER", ToggleButton, "CENTER", 0, 0)
+	ToggleButton.Text:SetHeight(C.Media.Font_Size)
+	ToggleButton.Text:SetJustifyH("CENTER")
+
+	ToggleButton:SetScript("OnMouseDown", function(self, button)
+		if (InCombatLockdown() and not button == "RightButton") then
+			K.Print(ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if button == "LeftButton" then
+			local Movers = K.Movers
+			Movers:StartOrStopMoving()
+		end
+
+		if button == "RightButton" then
+			if K.CheckAddOn("Recount") then
+				if Recount_MainWindow:IsShown() then
+					Recount_MainWindow:Hide()
+				else
+					Recount_MainWindow:Show()
+				end
+			end
+			if K.CheckAddOn("Skada") then
+				Skada:ToggleWindow()
+			end
+		end
+
+		if button == "MiddleButton" then
+			if UIConfigMain and UIConfigMain:IsShown() then
+				UIConfigMain:Hide()
+			else
+				CreateUIConfig()
+				HideUIPanel(Menu)
+			end
+		end
+	end)
+
+	ToggleButton:HookScript("OnEnter", function(self)
+		local anchor, panel, xoff, yoff = "ANCHOR_BOTTOMLEFT", self:GetParent(), -4, 4
+		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+		GameTooltip:ClearLines()
+
+		GameTooltip:AddLine(L.ToggleButton.Functions)
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddDoubleLine(L.ToggleButton.LeftClick, L.ToggleButton.MoveUI, 1, 1, 1)
+		if K.CheckAddOn("Recount") then
+			GameTooltip:AddDoubleLine(L.ToggleButton.RightClick, L.ToggleButton.Recount, 1, 1, 1)
+		end
+		if K.CheckAddOn("Skada") then
+			GameTooltip:AddDoubleLine(L.ToggleButton.RightClick, L.ToggleButton.Skada, 1, 1, 1)
+		end
+		GameTooltip:AddDoubleLine(L.ToggleButton.MiddleClick, L.ToggleButton.Config, 1, 1, 1)
+
+		GameTooltip:Show()
+	end)
+
+	ToggleButton:HookScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 
 	if C.Blizzard.ColorTextures == true then
 		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))

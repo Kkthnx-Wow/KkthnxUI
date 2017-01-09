@@ -82,7 +82,7 @@ local function UpdateExperienceBar()
 
 	if HideXP then
 		ExperienceBar:Hide()
-	elseif not HideXP and not InCombatLockdown() then
+	elseif not HideXP then
 		ExperienceBar:Show()
 
 		local Text = ""

@@ -551,6 +551,11 @@ local function style(self, unit)
 	self.Castbar.Icon:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 4, 0)
 	K.CreateShadowFrame(self.Castbar, self.Castbar.Icon)
 
+	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
+	self.Castbar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
+	self.Castbar.Shield:SetSize(38, 38)
+	self.Castbar.Shield:SetPoint("CENTER", self.Castbar.Icon, "CENTER", 4, 2)
+
 	-- Raid Icon
 	self.RaidIcon = self:CreateTexture(nil, "OVERLAY", nil, 7)
 	self.RaidIcon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)

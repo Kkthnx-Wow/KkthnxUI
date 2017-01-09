@@ -82,21 +82,17 @@ L.Chat = {
 	RaidWarning = "W",
 }
 
--- Configbutton Localization
-L.ConfigButton = {
-	Config = "Öffnet das KkthnxUI Einstellungsmenü",
-	Functions = "Buttonfunktionen",
-	LeftClick = "Linksklick:",
-	MiddleClick = "Mittlere Maustaste:",
-	MoveUI = "UI Elemente bewegen",
-	Recount = "Zeigt/Versteckt das Recount Fenster",
-	RightClick = "Rechtsklick:",
-	ShiftClick = "Shift + Linksklick:",
-	ShiftPlusRightClick = "Shift + right-click:",
-	Skada = "Zeigt/Versteckt das Skada Fenster",
-	Spec = "Öffnet das KkthnxUI Spezialisierungsmenü",
-	SpecError = "Diese Spezialisierung ist bereits aktiv!",
-	SpecMenu = "Spezialisierungsauswahl"
+-- ToggleButton Localization
+L.ToggleButton = {
+	Config = "Toggle KkthnxUI Config",
+	Functions = "ToggleButton functions:",
+	LeftClick = "Left click:",
+	MiddleClick = "Middle click:",
+	MoveUI = "Toggle Move UI",
+	Recount = "Toggle Recount",
+	RightClick = "Right click:",
+	ShiftClick = "Shift + click:",
+	Skada = "Toggle Skada",
 }
 
 -- Cooldowns

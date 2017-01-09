@@ -53,7 +53,7 @@ local function UpdateReputationBar()
 
 	if not Name then
 		ReputationBar:Hide()
-	elseif Name and not InCombatLockdown() then
+	elseif Name then
 		ReputationBar:Show()
 
 		if ID then
