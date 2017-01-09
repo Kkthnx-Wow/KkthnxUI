@@ -213,8 +213,4 @@ if C.General.ToggleButton == true and C.DataText.System == true then
 	ToggleButton:HookScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
-
-	if C.Blizzard.ColorTextures == true then
-		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
-	end
 end
