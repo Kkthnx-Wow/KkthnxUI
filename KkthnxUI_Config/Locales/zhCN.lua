@@ -160,7 +160,7 @@ UIConfigLocal.GeneralAutoScale = "自动缩放UI"
 UIConfigLocal.GeneralBubbleFontSize = "聊天泡泡文字大小"
 UIConfigLocal.GeneralCustomLagTolerance = "根据延迟情况自动更新按键触发延时"
 UIConfigLocal.GeneralDisableTutorialButtons = "禁用一些框体上的教学按钮"
-UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
+UIConfigLocal.GeneralToggleButton = "小地图下显示设置按钮(需要开启信息条系统)"
 UIConfigLocal.GeneralTranslateMessage = "弹出GUI帮助信息"
 UIConfigLocal.GeneralUIScale = "UI缩放（如果自动缩放被禁用）"
 UIConfigLocal.GeneralUseBlizzardFonts = "使用默认字体"
@@ -261,10 +261,10 @@ UIConfigLocal.ConfigButtonReset = "复位"
 UIConfigLocal.ConfigCloseButton = "关闭"
 
 -- Config Static Popups
-UIConfigLocal.ConfigPerChar = "确定更改每个人物的设置？"
+UIConfigLocal.ConfigPerChar = "确定设置只针对当前人物？"
 UIConfigLocal.ConfigResetAll = "确定重置所有|cff3c9bedKkthnxUI|r设置？"
 UIConfigLocal.ConfigResetChar = "确定重置当前人物|cff3c9bedKkthnxUI|r设置？?"
-UIConfigLocal.ConfigSetSavedSettings = "应用设置至每个人物"
+UIConfigLocal.ConfigSetSavedSettings = "设置只针对当前人物"
 
 -- Skins
 UIConfigLocal.Skins = "插件皮肤"
