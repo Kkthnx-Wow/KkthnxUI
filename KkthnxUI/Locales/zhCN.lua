@@ -84,15 +84,15 @@ L.Chat = {
 
 -- ToggleButton Localization
 L.ToggleButton = {
-	Config = "Toggle KkthnxUI Config",
-	Functions = "ToggleButton functions:",
-	LeftClick = "Left click:",
-	MiddleClick = "Middle click:",
-	MoveUI = "Toggle Move UI",
-	Recount = "Toggle Recount",
-	RightClick = "Right click:",
-	ShiftClick = "Shift + click:",
-	Skada = "Toggle Skada",
+	Config = "打开KkthnxUI设置",
+	Functions = "按键功能:",
+	LeftClick = "鼠标左键:",
+	MiddleClick = "鼠标中键:",
+	MoveUI = "移动框体",
+	Recount = "打开/关闭Recount",
+	RightClick = "鼠标右键:",
+	ShiftClick = "Shift+鼠标左键:",
+	Skada = "打开/关闭Skada",
 }
 
 -- Cooldowns
