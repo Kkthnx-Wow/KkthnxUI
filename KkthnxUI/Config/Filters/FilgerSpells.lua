@@ -1165,8 +1165,6 @@ C["filger_spells"] = {
 			{spellID = 157913, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Alter Time
 			{spellID = 110909, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Temporal Shield
-			{spellID = 115610, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Mirror Image
 			{spellID = 55342, filter = "ICD", trigger = "NONE", duration = 40},
 		},
@@ -1309,8 +1307,6 @@ C["filger_spells"] = {
 			{spellID = 113724, filter = "CD"},
 			-- Ice Barrier
 			{spellID = 11426, filter = "CD"},
-			-- Temporal Shield
-			{spellID = 115610, filter = "CD"},
 			-- Fire Blast
 			{spellID = 108853, filter = "CD"},
 			-- Frost Bomb
@@ -3547,8 +3543,6 @@ C["filger_spells"] = {
 			{spellID = 116, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Frostfire Bolt
 			{spellID = 44614, unitID = "player", caster = "all", filter = "DEBUFF"},
-			-- Chilled
-			{spellID = 7321, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Mind Flay
 			{spellID = 15407, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Deadly Throw
@@ -3757,8 +3751,6 @@ C["filger_spells"] = {
 			{spellID = 66, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Greater Invisibility
 			{spellID = 113862, unitID = "target", caster = "all", filter = "BUFF"},
-			-- Temporal Shield
-			{spellID = 115610, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Alter Time
 			{spellID = 110909, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Evanesce

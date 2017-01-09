@@ -34,7 +34,6 @@ AuraList.CCImmunity = {
 AuraList.Defensive = {
 	115176,	-- Zen Meditation
 	115203,	-- Fortifying Brew
-	115610,	-- Temporal Shield
 	116888,	-- Shroud of Purgatory
 	122278,	-- Dampen Harm
 	122470,	-- Touch of Karma

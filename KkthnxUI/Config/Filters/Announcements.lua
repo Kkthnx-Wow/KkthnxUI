@@ -61,4 +61,3 @@ if C.Announcements.BadGear == true then
 		},
 	}
 end
-

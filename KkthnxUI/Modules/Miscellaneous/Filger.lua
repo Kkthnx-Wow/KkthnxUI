@@ -518,7 +518,7 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 				end
 			end
 			if not spn and not data[j].slotID then
-				print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
+				print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..(data[j].spellID or data[j].slotID or "UNKNOWN")..". Please check for an updated version, if none exists report to KkthnxUI author.")
 				table.insert(jdx, j)
 			end
 		end
@@ -528,7 +528,7 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 		end
 
 		if #data == 0 then
-			print("|cffff0000WARNING: section ["..data.Name.."] is empty! Report this to Kkthnx.|r")
+			print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..data.Name..". Please check for an updated version, if none exists report to KkthnxUI author.")
 			table.insert(idx, i)
 		end
 	end

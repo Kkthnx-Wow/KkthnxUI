@@ -226,7 +226,6 @@ K.DebuffWhiteList = {
 	[SpellName(114163)] = true, -- eternal flame
 	[SpellName(53563)] = true, -- beacon of light
 	[SpellName(156910)] = true, -- beacon of faith
-	[SpellName(203528)] = true, -- greater blessing of might
 	[SpellName(203538)] = true, -- greater blessing of kings
 	[SpellName(203539)] = true, -- greater blessing of wisdom
 	-- hand of...
