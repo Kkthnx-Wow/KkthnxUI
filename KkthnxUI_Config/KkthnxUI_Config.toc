@@ -1,5 +1,5 @@
 ## Interface: 70100
-## Version: 6.11.7
+## Version: 6.11.8
 
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: Config GUI
@@ -12,7 +12,7 @@
 
 ## Author: Tohveli, Kkthnx
 ## Dependencies: KkthnxUI
-## X-Copyright: The MIT License (MIT) Copyright (c) 2012 - 2016 Kkthnx
+## X-Copyright: The MIT License (MIT) Copyright (c) 2012 - 2017 Kkthnx
 ## X-Curse-Project-ID: 95528
 ## X-Donate: https://www.paypal.me/kkthnx
 ## X-Email: Kkthnxbye@live.com
