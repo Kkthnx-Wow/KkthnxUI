@@ -821,17 +821,17 @@ local function CreateUnitLayout(self, unit)
 
 		local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
 		mhpb:SetTexture(C.Media.Texture)
-		mhpb:SetVertexColor(0, 1, 0.5, 0.6)
+		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
 		mhpb:SetWidth(self.Health:GetWidth())
 
 		local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
 		ohpb:SetTexture(C.Media.Texture)
-		ohpb:SetVertexColor(0, 1, 0, 0.6)
+		ohpb:SetVertexColor(0, 1, 0, 0.25)
 		ohpb:SetWidth(self.Health:GetWidth())
 
 		local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
 		ahpb:SetTexture(C.Media.Texture)
-		ahpb:SetVertexColor(1, 1, 0, 0.6)
+		ahpb:SetVertexColor(1, 1, 0, 0.25)
 
 		self.HealPrediction = {
 			myBar = mhpb,
