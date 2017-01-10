@@ -1339,8 +1339,6 @@ C["filger_spells"] = {
 			{spellID = 55342, filter = "CD"},
 			-- Combustion
 			{spellID = 190319, filter = "CD"},
-			-- Cold Snap
-			{spellID = 11958, filter = "CD"},
 			-- Ice Block
 			{spellID = 45438, filter = "CD"},
 			-- Invisibility
@@ -2713,8 +2711,6 @@ C["filger_spells"] = {
 			{spellID = 104773, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Soul Harvest
 			{spellID = 196098, unitID = "player", caster = "player", filter = "BUFF"},
-			-- Mana Tap
-			{spellID = 196104, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Soul Swap
 			{spellID = 86211, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Dark Regeneration

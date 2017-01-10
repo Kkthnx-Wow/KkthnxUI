@@ -265,11 +265,7 @@ if C.Unitframe.ShowArena == true then
 						local _, spec, class = nil, "UNKNOWN", "UNKNOWN"
 
 						if s and s > 0 then
-							if K.WowBuild > 23222 then --7.1.5
-								_, spec, _, _, _, class = GetSpecializationInfoByID(s)
-							else
-								_, spec, _, _, _, _, class = GetSpecializationInfoByID(s)
-							end
+							_, spec, _, _, _, class = GetSpecializationInfoByID(s)
 						end
 
 						if class and spec then

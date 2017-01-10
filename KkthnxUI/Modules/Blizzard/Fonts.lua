@@ -31,19 +31,11 @@ local SetCVar = SetCVar
 -- GLOBALS: WorldMapTextFont, GameFontNormalSmallLeft, PaperDollTitlesPane
 
 local function SetFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
-	if not obj then return end
 	obj:SetFont(font, size, style)
-	if sr and sg and sb then
-		obj:SetShadowColor(sr, sg, sb)
-	end
-	if sox and soy then
-		obj:SetShadowOffset(sox, soy)
-	end
-	if r and g and b then
-		obj:SetTextColor(r, g, b)
-	elseif r then
-		obj:SetAlpha(r)
-	end
+	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb) end
+	if sox and soy then obj:SetShadowOffset(sox, soy) end
+	if r and g and b then obj:SetTextColor(r, g, b)
+		elseif r then obj:SetAlpha(r) end
 end
 
 local KkthnxUIFonts = CreateFrame("Frame", nil, UIParent)
@@ -83,16 +75,21 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(DestinyFontHuge, NORMAL, 32)
 	SetFont(DestinyFontLarge, NORMAL, 18)
 	SetFont(ErrorFont, NORMAL, 16, nil, 60)
-	SetFont(FriendsFont_Large, NORMAL, 14, nil, nil, nil, nil, 0, 0, 0, 1, -1)
+	SetFont(FriendsFont_Large, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(FriendsFont_Normal, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
-	SetFont(FriendsFont_Small, NORMAL, 11, nil, nil, nil, nil, 0, 0, 0, 1, -1)
-	SetFont(FriendsFont_UserText, NORMAL, 11, nil, nil, nil, nil, 0, 0, 0, 1, -1)
+	SetFont(FriendsFont_Small, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
+	SetFont(FriendsFont_UserText, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(Game13FontShadow, NORMAL, 13)
 	SetFont(Game15Font_o1, NORMAL, 15, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(Game18Font, NORMAL, 18)
+	SetFont(Game18Font, NORMAL, 18)
 	SetFont(Game24Font, NORMAL, 24)
+	SetFont(Game24Font, NORMAL, 24) -- there are two of these, good job Blizzard
+	SetFont(Game27Font, NORMAL, 27)
 	SetFont(Game27Font, NORMAL, 27)
 	SetFont(Game30Font, NORMAL, 30)
+	SetFont(Game30Font, NORMAL, 30)
+	SetFont(Game32Font, NORMAL, 32)
 	SetFont(Game32Font, NORMAL, 32)
 	SetFont(GameFont_Gigantic, NORMAL, 32, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(GameFontHighlightMedium, NORMAL, 15)
@@ -104,20 +101,22 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(InvoiceFont_Small, NORMAL, 11, nil, 0.15, 0.09, 0.04)
 	SetFont(MailFont_Large, NORMAL, 15, nil, 0.15, 0.09, 0.04, 0.54, 0.4, 0.1, 1, -1)
 	SetFont(NumberFont_GameNormal, NORMAL, 11)
-	SetFont(NumberFont_Outline_Huge, NORMAL, 30, "OUTLINE", 30)
-	SetFont(NumberFont_Outline_Large, NORMAL, 16, "OUTLINE")
-	SetFont(NumberFont_Outline_Med, NORMAL, 14, "OUTLINE")
+	SetFont(NumberFont_Normal_Med, NORMAL, 14)
+	SetFont(NumberFont_Outline_Huge, NORMAL, 28, "OUTLINE", 28)
+	SetFont(NumberFont_Outline_Large, NORMAL, 15, "OUTLINE")
+	SetFont(NumberFont_Outline_Med, NORMAL, 12 * 1.1, "OUTLINE")
 	SetFont(NumberFont_OutlineThick_Mono_Small, NORMAL, 12, "OUTLINE")
-	SetFont(NumberFont_Shadow_Med, NORMAL, 12)
+	SetFont(NumberFont_Shadow_Med, NORMAL, 12) -- Chat editbox uses this
 	SetFont(NumberFont_Shadow_Small, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(NumberFontNormalSmall, NORMAL, 11, "OUTLINE")
 	SetFont(PVPArenaTextString, NORMAL, 22, "OUTLINE")
 	SetFont(PVPInfoTextString, NORMAL, 22, "OUTLINE")
 	SetFont(QuestFont_Huge, NORMAL, 18, nil, nil, nil, nil, 0, 0, 0, 1, -1)
-	SetFont(QuestFont_Large, NORMAL, 15)
+	SetFont(QuestFont_Large, NORMAL, 16)
 	SetFont(QuestFont_Shadow_Huge, NORMAL, 19, nil, nil, nil, nil, 0.54, 0.4, 0.1)
 	SetFont(QuestFont_Shadow_Small, NORMAL, 14)
 	SetFont(QuestFont_Super_Huge, NORMAL, 20, nil, nil, nil, nil, 0, 0, 0, 1, -1)
+	SetFont(QuestFont, NORMAL, 13)
 	SetFont(QuestFontNormalSmall, NORMAL, 13, nil, nil, nil, nil, 0.54, 0.4, 0.1)
 	SetFont(QuestMapRewardsFont, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ReputationDetailFont, NORMAL, 11, nil, nil, nil, nil, 0, 0, 0, 1, -1)
@@ -126,34 +125,36 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(SystemFont_InverseShadow_Small, NORMAL, 11)
 	SetFont(SystemFont_Large, NORMAL, 17)
 	SetFont(SystemFont_Med1, NORMAL, 12)
-	SetFont(SystemFont_Med2, NORMAL, 13, nil, 0.15, 0.09, 0.04)
-	SetFont(SystemFont_Med3, NORMAL, 13)
-	SetFont(SystemFont_Outline_Small, NORMAL, 11, "OUTLINE")
+	SetFont(SystemFont_Med2, NORMAL, 13 * 1.1, nil, 0.15, 0.09, 0.04)
+	SetFont(SystemFont_Med3, NORMAL, 13 * 1.1)
+	SetFont(SystemFont_Outline_Small, NORMAL, 12, "OUTLINE")
 	SetFont(SystemFont_Outline, NORMAL, 13, "OUTLINE")
 	SetFont(SystemFont_OutlineThick_Huge2, NORMAL, 20, "OUTLINE")
 	SetFont(SystemFont_OutlineThick_Huge4, NORMAL, 24, "OUTLINE")
 	SetFont(SystemFont_OutlineThick_WTF, NORMAL, 32, "OUTLINE", nil, nil, nil, 0, 0, 0, 1, -1)
-	SetFont(SystemFont_Shadow_Huge1, NORMAL, 20, "OUTLINE")
+	SetFont(SystemFont_Shadow_Huge1, NORMAL, 20, "OUTLINE") -- Raid Warning, Boss emote frame too
 	SetFont(SystemFont_Shadow_Huge2, NORMAL, 22)
 	SetFont(SystemFont_Shadow_Huge3, NORMAL, 24)
-	SetFont(SystemFont_Shadow_Large_Outline, NORMAL, 20, "OUTLINE")
 	SetFont(SystemFont_Shadow_Large, NORMAL, 15)
 	SetFont(SystemFont_Shadow_Large2, NORMAL, 18)
 	SetFont(SystemFont_Shadow_Med1_Outline, NORMAL, 12, "OUTLINE")
 	SetFont(SystemFont_Shadow_Med1, NORMAL, 12)
-	SetFont(SystemFont_Shadow_Med2, NORMAL, 12)
-	SetFont(SystemFont_Shadow_Med3, NORMAL, 13)
-	SetFont(SystemFont_Shadow_Outline_Huge2, NORMAL, 22, "OUTLINE")
-	SetFont(SystemFont_Shadow_Small, NORMAL, 10)
-	SetFont(SystemFont_Shadow_Small2, NORMAL, 10)
-	SetFont(SystemFont_Small, NORMAL, 11)
-	SetFont(SystemFont_Small2, NORMAL, 11)
-	SetFont(SystemFont_Tiny, NORMAL, 9)
+	SetFont(SystemFont_Shadow_Med2, NORMAL, 13 * 1.1)
+	SetFont(SystemFont_Shadow_Med3, NORMAL, 13 * 1.1)
+	SetFont(SystemFont_Shadow_Outline_Huge2, NORMAL, 20, "OUTLINE")
+	SetFont(SystemFont_Shadow_Small, NORMAL, 12 * 0.9)
+	SetFont(SystemFont_Shadow_Small2, NORMAL, 12 * 0.9)
+	SetFont(SystemFont_Small, NORMAL, 12 * 0.9)
+	SetFont(SystemFont_Small2, NORMAL, 12 * 0.9)
+	SetFont(SystemFont_Tiny, NORMAL, 10)
 	SetFont(Tooltip_Med, NORMAL, 12)
-	SetFont(Tooltip_Small, NORMAL, 11)
+	SetFont(Tooltip_Small, NORMAL, 12)
 	SetFont(WhiteNormalNumberFont, NORMAL, 11)
 	SetFont(WorldMapTextFont, NORMAL, 31, "OUTLINE", 40, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ZoneTextString, NORMAL, 32, "OUTLINE")
+
+	-- Player title
+	for _, butt in pairs(PaperDollTitlesPane.buttons) do butt.text:SetFontObject(GameFontHighlightSmallLeft) end
 
 	-- I have no idea why the channel list is getting fucked up
 	-- but re-setting the font obj seems to fix it
