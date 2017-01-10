@@ -545,7 +545,7 @@ local function CreateUnitLayout(self, unit)
 
 			CastBar.Shield = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
-			CastBar.Shield:SetPoint("CENTER", CastBar, "CENTER", 12, 12)
+			CastBar.Shield:SetPoint("LEFT", CastBar, "RIGHT", -4, 12)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)

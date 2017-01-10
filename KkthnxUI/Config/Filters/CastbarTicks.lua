@@ -20,13 +20,10 @@ end
 -- List of spells to display ticks
 K.ChannelTicks = {
 	--Warlock
-	[SpellName(689)] = 6, -- "Drain Life"
 	[SpellName(198590)] = 6, -- "Drain Soul"
 	[SpellName(755)] = 6, -- Health Funnel
 	[SpellName(117952)] = 6, -- Health Funnel
 	--Priest
-	[SpellName(48045)] = 5, -- "Mind Sear"
-	[SpellName(179338)] = 5, -- "Searing insanity"
 	[SpellName(64843)] = 4, -- Divine Hymn
 	[SpellName(15407)] = 4, -- Mind Flay
 	--Mage
@@ -58,7 +55,6 @@ end)
 
 K.ChannelTicksSize = {
 	--Warlock
-	[SpellName(689)] = 1, -- "Drain Life"
 	[SpellName(198590)] = 1, -- "Drain Soul"
 }
 

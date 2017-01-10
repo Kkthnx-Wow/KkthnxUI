@@ -451,8 +451,8 @@ local function style(self, unit)
 	self.Health.colorReaction = true
 	self.Health.colorHealth = true
 	if C.Nameplates.Smooth then
-			self.Health.Smooth = true
-  end
+		self.Health.Smooth = true
+	end
 	K.CreateShadowFrame(self.Health)
 
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
@@ -478,8 +478,8 @@ local function style(self, unit)
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
 	if C.Nameplates.Smooth then
-      self.Power.Smooth = true
-  end
+		self.Power.Smooth = true
+	end
 	K.CreateShadowFrame(self.Power)
 
 	self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
@@ -517,7 +517,7 @@ local function style(self, unit)
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")
 	self.Castbar.bg:SetAllPoints()
 	self.Castbar.bg:SetTexture(C.Media.Texture)
-	self.Castbar.bg:SetColorTexture(0.87, 0.37, 0.37, 0.2)
+	-- self.Castbar.bg:SetColorTexture(0.87, 0.37, 0.37, 0.2)
 
 	self.Castbar.PostCastStart = castColor
 	self.Castbar.PostChannelStart = castColor
@@ -553,8 +553,12 @@ local function style(self, unit)
 
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
-	self.Castbar.Shield:SetSize(38, 38)
-	self.Castbar.Shield:SetPoint("CENTER", self.Castbar.Icon, "CENTER", 4, 2)
+	self.Castbar.Shield:SetSize(46, 46)
+	if C.Nameplates.ClassIcons == true then
+		self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 24, -8)
+	else
+		self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 24, 8)
+	end
 
 	-- Raid Icon
 	self.RaidIcon = self:CreateTexture(nil, "OVERLAY", nil, 7)
