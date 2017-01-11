@@ -72,12 +72,6 @@ end)
 -- 	WorldMapActionButtonMixin.Refresh(self)
 -- end
 
--- if not InCombatLockdown() then
--- 		WorldMapFrame:Show()
--- 	else
--- 		ShowUIPanel(WorldMapFrame)
--- end
-
 -- </ blizzard's baghandling just doesn't cut it > --
 -- </ we wish for all backpack/bag hotkeys and buttons to toggle all bags, always > --
 local function OpenAllBags()

@@ -107,6 +107,18 @@ LevelUpBossBanner:SetScript("OnEvent", function(self, event)
 	hooksecurefunc(BossBanner, "SetPoint", Reanchor)
 end)
 
+-- Display combat state changes
+local CombatState = CreateFrame("Frame")
+CombatState:RegisterEvent("PLAYER_REGEN_ENABLED")
+CombatState:RegisterEvent("PLAYER_REGEN_DISABLED")
+CombatState:SetScript("OnEvent", function(self, event)
+	if event == ("PLAYER_REGEN_DISABLED") then
+    UIErrorsFrame:AddMessage("+ Combat", 1, 1, 1)
+  elseif event == ("PLAYER_REGEN_ENABLED") then
+    UIErrorsFrame:AddMessage("- Combat", 1, 1, 1)
+  end
+end)
+
 -- Display battleground messages in the middle of the screen.
 local PVPMessageEnhancement = CreateFrame("Frame")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
