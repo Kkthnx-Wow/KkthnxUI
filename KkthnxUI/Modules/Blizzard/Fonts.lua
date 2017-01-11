@@ -79,6 +79,9 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(FriendsFont_Normal, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(FriendsFont_Small, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(FriendsFont_UserText, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
+	SetFont(Game11Font_o1, NORMAL, 11, "OUTLINE")
+	SetFont(Game12Font_o1, NORMAL, 12, "OUTLINE")
+	SetFont(Game13Font_o1, NORMAL, 13, "OUTLINE")
 	SetFont(Game13FontShadow, NORMAL, 13)
 	SetFont(Game15Font_o1, NORMAL, 15, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(Game18Font, NORMAL, 18)
@@ -153,8 +156,19 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(WorldMapTextFont, NORMAL, 31, "OUTLINE", 40, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ZoneTextString, NORMAL, 32, "OUTLINE")
 
+	-- Fix issue with labels not following changes to GameFontNormal as they should
+	local function SetLabelFontObject(self, btnIndex)
+		local button = self.CategoryButtons[btnIndex]
+		if button then
+			button.Label:SetFontObject(GameFontNormal)
+		end
+	end
+	hooksecurefunc("LFGListCategorySelection_AddButton", SetLabelFontObject)
+
 	-- Player title
-	for _, butt in pairs(PaperDollTitlesPane.buttons) do butt.text:SetFontObject(GameFontHighlightSmallLeft) end
+	for _, btn in pairs(PaperDollTitlesPane.buttons) do
+		btn.text:SetFontObject(GameFontHighlightSmallLeft)
+	end
 
 	-- I have no idea why the channel list is getting fucked up
 	-- but re-setting the font obj seems to fix it
@@ -162,8 +176,8 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 		_G["ChannelButton"..i.."Text"]:SetFontObject(GameFontNormalSmallLeft)
 	end
 
-	for _, button in pairs(PaperDollTitlesPane.buttons) do
-		button.text:SetFontObject(GameFontHighlightSmallLeft)
+	for _, btn in pairs(PaperDollTitlesPane.buttons) do
+		btn.text:SetFontObject(GameFontHighlightSmallLeft)
 	end
 
 	-- Fix help frame category buttons, NFI why they need fixing

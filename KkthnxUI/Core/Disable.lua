@@ -60,7 +60,7 @@ if CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga") 
 	C.ActionBar.Enable = false
 end
 
-if CheckAddOn("WorldQuestTracker") or CheckAddOn("Mapster") or CheckAddOn("WorldQuestsList") then
+if CheckAddOn("WorldQuestTracker") or CheckAddOn("Mapster") then
 	C.WorldMap.SmallWorldMap = false
 end
 
