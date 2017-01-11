@@ -1,36 +1,53 @@
 local K, C, L = unpack(select(2, ...))
+--if C.Blizzard.ObjectiveTracker ~= true or K.CheckAddOn("DugisGuideViewerZ") then return end
 if K.CheckAddOn("DugisGuideViewerZ") then return end
 
 -- Wow Lua
 local unpack = unpack
+local math_min = math.min
 
 -- Wow API
 local GetNumQuestWatches = GetNumQuestWatches
 local GetQuestDifficultyColor = GetQuestDifficultyColor
 local GetQuestLogTitle = GetQuestLogTitle
 local GetQuestWatchInfo = GetQuestWatchInfo
-local GetScreenHeight = GetScreenHeight
-local GetScreenWidth = GetScreenWidth
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT, ObjectiveTrackerFrame, GameTooltip, UIParent
 -- GLOBALS: ObjectiveTrackerBonusRewardsFrame, QUEST_TRACKER_MODULE, ACHIEVEMENT_TRACKER_MODULE
 
+local bonusObjectivePosition = "AUTO"
 local Movers = K.Movers
-local SetModifiedBackdrop = function(self)
-	if self:GetButtonState() == "DISABLED" then return end
-	self:SetBackdropColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3)
-	if self.overlay then
-		self.overlay:SetVertexColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3, 1)
-	end
+
+-- Blah some shit to skin the button.
+local function SetModifiedBackdrop(self)
+	if self.backdrop then self = self.backdrop end
+	self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 end
 
-local SetOriginalBackdrop = function(self)
-	if self:GetButtonState() == "DISABLED" then return end
-	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	if self.overlay then
-		self.overlay:SetVertexColor(0.1, 0.1, 0.1, 1)
-	end
+local function SetOriginalBackdrop(self)
+	if self.backdrop then self = self.backdrop end
+	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+end
+
+-- Blah blah blah. You get the idea.
+local function HandleButton(f, strip)
+	assert(f, "doesn't exist!")
+	if f.Left then f.Left:SetAlpha(0) end
+	if f.Middle then f.Middle:SetAlpha(0) end
+	if f.Right then f.Right:SetAlpha(0) end
+	if f.LeftSeparator then f.LeftSeparator:SetAlpha(0) end
+	if f.RightSeparator then f.RightSeparator:SetAlpha(0) end
+
+	if f.SetNormalTexture then f:SetNormalTexture("") end
+	if f.SetHighlightTexture then f:SetHighlightTexture("") end
+	if f.SetPushedTexture then f:SetPushedTexture("") end
+	if f.SetDisabledTexture then f:SetDisabledTexture("") end
+
+	if strip then f:StripTextures() end
+
+	f:HookScript("OnEnter", SetModifiedBackdrop)
+	f:HookScript("OnLeave", SetOriginalBackdrop)
 end
 
 -- Move ObjectiveTrackerFrame
@@ -40,9 +57,19 @@ ObjectiveFrameHolder:SetHeight(150)
 ObjectiveFrameHolder:SetWidth(224)
 Movers:RegisterFrame(ObjectiveFrameHolder)
 
+local function SetObjectiveFrameHeight()
+	local top = ObjectiveTrackerFrame:GetTop() or 0
+	local gapFromTop = K.ScreenHeight - top
+	local maxHeight = K.ScreenHeight - gapFromTop
+	local objectiveFrameHeight = math_min(maxHeight, 480)
+
+	ObjectiveTrackerFrame:SetHeight(objectiveFrameHeight)
+end
+
 ObjectiveTrackerFrame:ClearAllPoints()
 ObjectiveTrackerFrame:SetPoint("TOPLEFT", ObjectiveFrameHolder, "TOPLEFT", 20, 0)
-ObjectiveTrackerFrame:SetHeight(K.ScreenHeight / 1.6)
+SetObjectiveFrameHeight()
+ObjectiveTrackerFrame:SetClampedToScreen(false)
 
 hooksecurefunc(ObjectiveTrackerFrame, "SetPoint", function(_, _, parent)
 	if parent ~= ObjectiveFrameHolder then
@@ -51,14 +78,17 @@ hooksecurefunc(ObjectiveTrackerFrame, "SetPoint", function(_, _, parent)
 	end
 end)
 
-for _, headerName in pairs({"QuestHeader", "AchievementHeader", "ScenarioHeader"}) do
-	ObjectiveTrackerFrame.BlocksFrame[headerName].Background:Hide()
-end
-BONUS_OBJECTIVE_TRACKER_MODULE.Header.Background:Hide()
-WORLD_QUEST_TRACKER_MODULE.Header.Background:Hide()
+ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
+ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetFont(C.Media.Font, 16)
+ObjectiveTrackerBlocksFrame.AchievementHeader:StripTextures()
+ObjectiveTrackerBlocksFrame.AchievementHeader.Text:SetFont(C.Media.Font, 16)
+ObjectiveTrackerBlocksFrame.ScenarioHeader:StripTextures()
+ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetFont(C.Media.Font, 16)
 
-ObjectiveTrackerFrame.HeaderMenu.Title:SetAlpha(0)
-OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT = 30
+BONUS_OBJECTIVE_TRACKER_MODULE.Header:StripTextures()
+BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:SetFont(C.Media.Font, 16)
+WORLD_QUEST_TRACKER_MODULE.Header:StripTextures()
+WORLD_QUEST_TRACKER_MODULE.Header.Text:SetFont(C.Media.Font, 16)
 
 -- Skin ObjectiveTrackerFrame item buttons
 hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
@@ -69,183 +99,83 @@ hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", function(_, block)
 		K.CreateBorder(item, 1)
 		item:SetBackdropBorderColor(1, 1, 0)
 		item:StyleButton()
-
 		item:SetNormalTexture(nil)
-
 		item.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		item.icon:SetPoint("TOPLEFT", item, 2, -2)
 		item.icon:SetPoint("BOTTOMRIGHT", item, -2, 2)
-
 		item.Cooldown:SetAllPoints(item.icon)
-
 		item.Count:ClearAllPoints()
 		item.Count:SetPoint("TOPLEFT", 1, -1)
 		item.Count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		item.Count:SetShadowOffset(0, 0)
-
 		item.skinned = true
 	end
 end)
 
 hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", function(_, block)
 	local item = block.itemButton
-
 	if item and not item.skinned then
 		item:SetSize(28, 28)
 		K.CreateBorder(item, 1)
 		item:StyleButton()
-
 		item:SetNormalTexture(nil)
-
 		item.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		item.icon:SetPoint("TOPLEFT", item, 2, -2)
 		item.icon:SetPoint("BOTTOMRIGHT", item, -2, 2)
-
 		item.Cooldown:SetAllPoints(item.icon)
-
 		item.Count:ClearAllPoints()
 		item.Count:SetPoint("TOPLEFT", 1, -1)
 		item.Count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		item.Count:SetShadowOffset(0, 0)
-
 		item.skinned = true
 	end
 end)
 
--- Difficulty color for ObjectiveTrackerFrame lines
-hooksecurefunc(QUEST_TRACKER_MODULE, "Update", function()
-	for i = 1, GetNumQuestWatches() do
-		local questID, _, questIndex = GetQuestWatchInfo(i)
-		if not questID then
-			break
-		end
-		local _, level = GetQuestLogTitle(questIndex)
-		local col = GetQuestDifficultyColor(level)
-		local block = QUEST_TRACKER_MODULE:GetExistingBlock(questID)
-		if block then
-			block.HeaderText:SetTextColor(col.r, col.g, col.b)
-			block.HeaderText.col = col
-		end
+-- Skin the MinimizeButton
+local function OnClick(self)
+	local textObject = self.text
+	local text = textObject:GetText()
+
+	if (text and text == "-") then
+		textObject:SetText("+")
+	else
+		textObject:SetText("-")
 	end
-end)
-
-hooksecurefunc(DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddObjective", function(self, block)
-	if block.module == ACHIEVEMENT_TRACKER_MODULE then
-		block.HeaderText:SetTextColor(0.75, 0.61, 0)
-		block.HeaderText.col = nil
-	end
-end)
-
-hooksecurefunc("ObjectiveTrackerBlockHeader_OnLeave", function(self)
-	local block = self:GetParent()
-	if block.HeaderText.col then
-		block.HeaderText:SetTextColor(block.HeaderText.col.r, block.HeaderText.col.g, block.HeaderText.col.b)
-	end
-end)
-
--- Skin ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
-local button = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
-button:SetSize(18, 18)
-button:StripTextures()
-button:SetBackdrop(K.BorderBackdrop)
-button:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-K.CreateBorder(button)
-
-button.minus = button:CreateTexture(nil, "OVERLAY")
-button.minus:SetSize(10, 2)
-button.minus:SetPoint("CENTER")
-button.minus:SetTexture(C.Media.Blank)
-
-button.plus = button:CreateTexture(nil, "OVERLAY")
-button.plus:SetSize(2, 10)
-button.plus:SetPoint("CENTER")
-button.plus:SetTexture(C.Media.Blank)
-
-button:HookScript("OnEnter", SetModifiedBackdrop)
-button:HookScript("OnLeave", SetOriginalBackdrop)
-
-button.plus:Hide()
-hooksecurefunc("ObjectiveTracker_Collapse", function()
-	button.plus:Show()
-end)
-
-hooksecurefunc("ObjectiveTracker_Expand", function()
-	button.plus:Hide()
-end)
-
--- Skin bonus/world quest objective progress bar
-local function SkinBar(line)
-	local progressBar = line.ProgressBar
-	local bar = progressBar.Bar
-	local icon = bar.Icon
-	local label = bar.Label
-
-	if not progressBar.styled then
-		bar.BarFrame:Hide()
-		bar.BarGlow:Kill()
-		bar.IconBG:Kill()
-		bar:SetSize(200, 20)
-		bar:SetStatusBarTexture(C.Media.Texture)
-		K.CreateBorder(bar)
-		bar:SetBackdropColor(0, 0, 0, 0)
-
-		label:ClearAllPoints()
-		label:SetPoint("CENTER", 0, 0)
-		label:SetFont(C.Media.Font, 13, "")
-		label:SetShadowOffset(K.Mult, -K.Mult)
-
-		icon:SetPoint("RIGHT", 24, 0)
-		icon:SetSize(20, 20)
-
-		local border = CreateFrame("Frame", "$parentBorder", bar)
-		border:SetAllPoints(icon)
-		K.CreateBorder(border)
-		border:SetBackdrop(K.BorderBackdrop)
-		border:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-		border:SetFrameLevel(2)
-		bar.newIconBg = border
-
-		bar.AnimIn.Play = K.Noop
-		BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
-		progressBar.styled = true
-	end
-
-	bar.newIconBg:SetShown(icon:IsShown())
 end
 
-hooksecurefunc(BONUS_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", function(_, _, line)
-	SkinBar(line)
-end)
-
-hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddProgressBar", function(_, _, line)
-	SkinBar(line)
-end)
+local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
+HandleButton(minimizeButton)
+minimizeButton:SetSize(16, 14)
+minimizeButton:SetBackdrop(K.BorderBackdrop)
+minimizeButton:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+K.CreateBorder(minimizeButton)
+minimizeButton.text = minimizeButton:CreateFontString(nil, "OVERLAY")
+minimizeButton.text:SetFont(C.Media.Font, 15, C.Media.Font_Style)
+minimizeButton.text:SetPoint("CENTER", minimizeButton, "CENTER", 0, 0)
+minimizeButton.text:SetText("-")
+minimizeButton.text:SetJustifyH("CENTER")
+minimizeButton.text:SetJustifyV("CENTER")
+minimizeButton:HookScript("OnClick", OnClick)
 
 -- Set tooltip depending on position
 local function IsFramePositionedLeft(frame)
 	local x = frame:GetCenter()
-	local screenWidth = GetScreenWidth()
-	local screenHeight = GetScreenHeight()
 	local positionedLeft = false
 
-	if x and x < (screenWidth / 2) then
+	if x and x < (K.ScreenWidth / 2) then
 		positionedLeft = true
 	end
 
 	return positionedLeft
 end
 
-hooksecurefunc("BonusObjectiveTracker_ShowRewardsTooltip", function(block)
-	if IsFramePositionedLeft(ObjectiveTrackerFrame) then
-		GameTooltip:ClearAllPoints()
-		GameTooltip:SetPoint("TOPLEFT", block, "TOPRIGHT", 0, 0)
+local function RewardsFrame_SetPosition(block)
+	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame
+	rewardsFrame:ClearAllPoints()
+	if (bonusObjectivePosition == "AUTO" and IsFramePositionedLeft(ObjectiveTrackerFrame)) then
+		rewardsFrame:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)
+	else
+		rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4)
 	end
-end)
-
--- Kill reward animation when finished dungeon or bonus objectives
-ObjectiveTrackerScenarioRewardsFrame.Show = K.Noop
-
-hooksecurefunc("BonusObjectiveTracker_AnimateReward", function(block)
-	ObjectiveTrackerBonusRewardsFrame:ClearAllPoints()
-	ObjectiveTrackerBonusRewardsFrame:SetPoint("BOTTOM", UIParent, "TOP", 0, 90)
-end)
+end
+hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition)

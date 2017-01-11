@@ -39,7 +39,7 @@ LFRBrowseTaint:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 
--- </ Misclicks for some popups
+-- </ Misclicks for some popups > --
 StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
 StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil
@@ -53,6 +53,30 @@ if PVPReadyDialog then
 	PVPReadyDialog.enterButton:SetPoint("BOTTOM", PVPReadyDialog, "BOTTOM", 0, 25)
 	PVPReadyDialog.label:SetPoint("TOP", 0, -22)
 end
+
+ReadyCheckFrame:HookScript("OnShow", function(self)
+	-- </ bug fix, don't show it if player is initiator > --
+	if self.initiator and UnitIsUnit("player", self.initiator) then
+		self:Hide()
+	end
+end)
+
+-- </ Prevent Blizzard world map taint errors > --
+-- function WorldMapFrame.UIElementsFrame.ActionButton.GetDisplayLocation(self, useAlternateLocation)
+-- 	if InCombatLockdown() then return end
+-- 	return WorldMapActionButtonMixin.GetDisplayLocation(self, useAlternateLocation)
+-- end
+--
+-- function WorldMapFrame.UIElementsFrame.ActionButton.Refresh(self)
+-- 	if InCombatLockdown() then return end
+-- 	WorldMapActionButtonMixin.Refresh(self)
+-- end
+
+-- if not InCombatLockdown() then
+-- 		WorldMapFrame:Show()
+-- 	else
+-- 		ShowUIPanel(WorldMapFrame)
+-- end
 
 -- </ blizzard's baghandling just doesn't cut it > --
 -- </ we wish for all backpack/bag hotkeys and buttons to toggle all bags, always > --
