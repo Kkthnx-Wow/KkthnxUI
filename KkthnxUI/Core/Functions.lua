@@ -45,12 +45,7 @@ K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, r
 
 K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
-K.PriestColors = {
-	r = 0.99,
-	g = 0.99,
-	b = 0.99,
-	colorStr = "fcfcfc"
-}
+K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 
 function K.Print(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
@@ -115,7 +110,6 @@ function K.CheckAddOn(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
 
--- We might need to move these to API?
 function K.CreateBlizzardFrame(frame, point)
 	if point == nil then point = frame end
 

@@ -124,6 +124,7 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(QuestMapRewardsFont, NORMAL, 12, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ReputationDetailFont, NORMAL, 11, nil, nil, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(SpellFont_Small, NORMAL, 11)
+	SetFont(SubZoneTextFont, NORMAL, 18, "OUTLINE")
 	SetFont(SubZoneTextString, NORMAL, 25, "OUTLINE")
 	SetFont(SystemFont_InverseShadow_Small, NORMAL, 11)
 	SetFont(SystemFont_Large, NORMAL, 17)
@@ -155,6 +156,9 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	SetFont(WhiteNormalNumberFont, NORMAL, 11)
 	SetFont(WorldMapTextFont, NORMAL, 31, "OUTLINE", 40, nil, nil, 0, 0, 0, 1, -1)
 	SetFont(ZoneTextString, NORMAL, 32, "OUTLINE")
+
+	-- Fix Navbar font button text
+	WorldMapFrameNavBarHomeButton.text:SetFontObject(SystemFont_Shadow_Med1)
 
 	-- Fix issue with labels not following changes to GameFontNormal as they should
 	local function SetLabelFontObject(self, btnIndex)

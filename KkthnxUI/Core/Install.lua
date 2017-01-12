@@ -145,11 +145,11 @@ function KkthnxUIInstall:ChatSetup()
 
 	-- Adjust Chat Colors (Thanks ElvUI)
 	-- General
-	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255)
+	ChangeChatColor("CHANNEL1", 0.76, 0.90, 0.91)
 	-- Trade
-	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255)
+	ChangeChatColor("CHANNEL2", 0.91, 0.62, 0.47)
 	-- Local Defense
-	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255)
+	ChangeChatColor("CHANNEL3", 0.91, 0.89, 0.47)
 
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 

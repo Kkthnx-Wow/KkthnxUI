@@ -31,11 +31,11 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	local text = _G["MirrorTimer"..i.."Text"]
 
 	mirrorTimer:StripTextures()
-	mirrorTimer:SetSize(222, 24)
+	mirrorTimer:SetSize(222, 20)
 	mirrorTimer.label = text
 	statusBar:SetStatusBarTexture(C.Media.Texture)
 	K.CreateBorder(statusBar, -1)
-	statusBar:SetSize(222, 24)
+	statusBar:SetSize(222, 20)
 	text:Hide()
 
 	local Backdrop = select(1, mirrorTimer:GetRegions())
