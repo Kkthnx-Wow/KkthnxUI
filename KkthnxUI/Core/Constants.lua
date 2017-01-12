@@ -61,7 +61,7 @@ K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
 K.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
-K.Color = (CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS)[K.Class]
+K.Color = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 K.Version = GetAddOnMetadata(K.UIName, "Version")
 K.ScreenHeight = tonumber(string_match(K.Resolution, "%d+x(%d+)"))
 K.ScreenWidth = tonumber(string_match(K.Resolution, "(%d+)x+%d"))

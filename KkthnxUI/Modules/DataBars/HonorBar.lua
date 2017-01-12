@@ -130,5 +130,7 @@ HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 HonorBar:RegisterEvent("PLAYER_FLAGS_CHANGED")
 HonorBar:RegisterEvent("PLAYER_LEVEL_UP")
+HonorBar:RegisterEvent("HONOR_LEVEL_UPDATE")
+
 HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

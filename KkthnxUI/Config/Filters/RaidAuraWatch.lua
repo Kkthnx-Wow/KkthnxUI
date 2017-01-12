@@ -1,351 +1,405 @@
 local K, C, L = unpack(select(2, ...))
 if C.Raidframe.AuraWatch ~= true or C.Raidframe.Enable ~= true then return end
 
--- RAID DEBUFFS (TRACKING LIST)
-K.RaidDebuffsTracking = {
-	-- Proving Grounds (Healing)
-	[GetSpellInfo(145263)] = 6, -- Chomp, Large Illusionary Tunneler
-
-	-- Highmaul
-	[GetSpellInfo(159001)] = 6, -- Berserker Rush, Kargath Bladefist
-	[GetSpellInfo(156152)] = 6, -- Gushing Wounds, The Butcher
-	[GetSpellInfo(159220)] = 6, -- Necrotic Breath, Brackenspore
-	[GetSpellInfo(162346)] = 6, -- Crystalline Barrage, Tectus
-	[GetSpellInfo(155569)] = 6, -- Injured, Twin Ogrons
-	[GetSpellInfo(158241)] = 6, -- Blaze, Twin Ogrons
-	[GetSpellInfo(163472)] = 6, -- Dominating Power, Ko'ragh
-	[GetSpellInfo(172895)] = 6, -- Expel Magic: Fel, Ko'ragh
-	[GetSpellInfo(162185)] = 6, -- Expel Magic: Fire, Ko'ragh
-	[GetSpellInfo(162184)] = 6, -- Expel Magic: Shadow, Ko'ragh
-	[GetSpellInfo(164004)] = 6, -- Branded: Displacement, Imperator Mar'gok
-	[GetSpellInfo(164005)] = 6, -- Branded: Fortification, Imperator Mar'gok
-	[GetSpellInfo(164006)] = 6, -- Branded: Replication, Imperator Mar'gok
-	[GetSpellInfo(158619)] = 6, -- Fetter, Imperator Mar'gok
-	[GetSpellInfo(164176)] = 6, -- Mark of Chaos: Displacement, Imperator Mar'gok
-	[GetSpellInfo(164178)] = 6, -- Mark of Chaos: Fortification, Imperator Mar'gok
-	[GetSpellInfo(164191)] = 6, -- Mark of Chaos: Replication, Imperator Mar'gok
-	[GetSpellInfo(164191)] = 6, -- Mark of Chaos: Replication, Imperator Mar'gok
-
-	-- Blackrock Foundry
-	[GetSpellInfo(155365)] = 6, -- Pinned Down, Beastlord Darmac
-	[GetSpellInfo(155061)] = 6, -- Rend and Tear, Beastlord Darmac
-	[GetSpellInfo(155399)] = 6, -- Conflagration, Beastlord Darmac
-	[GetSpellInfo(165195)] = 6, -- Prototype Pulse Grenade, Operator Thogar
-	[GetSpellInfo(164271)] = 6, -- Penetrating Shot, Iron Maidens
-	[GetSpellInfo(155080)] = 6, -- Inferno Slice, Gruul
-	[GetSpellInfo(155326)] = 6, -- Petrifying Slam, Gruul
-	[GetSpellInfo(156934)] = 6, -- Rupture, Blast Furnace
-	[GetSpellInfo(155225)] = 6, -- Melt, Blast Furnace
-	[GetSpellInfo(181488)] = 6, -- Marked for Death, Blackhand
-	[GetSpellInfo(156743)] = 6, -- Impaled, Blackhand
-	[GetSpellInfo(156047)] = 6, -- Slagged, Blackhand
-	[GetSpellInfo(156401)] = 6, -- Molten Slag, Blackhand
-
-	-- Hellfire Citadel
-	[GetSpellInfo(184369)] = 6, -- Howling Axe, Hellfire Assault
-	[GetSpellInfo(180079)] = 6, -- Felfire Munitions, Hellfire Assault
-	[GetSpellInfo(182280)] = 6, -- Artillery, Iron Reaver
-	[GetSpellInfo(182074)] = 6, -- Immolation, Iron Reaver
-	[GetSpellInfo(182001)] = 6, -- Unstable Orb, Iron Reaver
-	[GetSpellInfo(187819)] = 6, -- Crush, Kormrok
-	[GetSpellInfo(181345)] = 6, -- Foul Crush, Kormrok
-	[GetSpellInfo(184652)] = 6, -- Reap, High Council
-	[GetSpellInfo(188929)] = 6, -- Heart Seeker, Kilrogg
-	[GetSpellInfo(180389)] = 6, -- Heart Seeker DoT, Kilrogg
-	[GetSpellInfo(181488)] = 6, -- Vision of Death, Kilrogg
-	[GetSpellInfo(179867)] = 6, -- Gorefiend's Corruption, Gorefiend
-	[GetSpellInfo(181295)] = 6, -- Digest, Gorefiend
-	[GetSpellInfo(179908)] = 6, -- Shared Fate, Gorefiend
-	[GetSpellInfo(179909)] = 6, -- Shared Fate, Gorefiend
-	[GetSpellInfo(181957)] = 6, -- Phantasmal Winds, Shadow-Lord Iskar
-	[GetSpellInfo(182200)] = 6, -- Fel Chakram, Shadow-Lord Iskar
-	[GetSpellInfo(182178)] = 6, -- Fel Chakram, Shadow-Lord Iskar
-	[GetSpellInfo(182325)] = 6, -- Phantasmal Wounds, Shadow-Lord Iskar
-	[GetSpellInfo(185239)] = 6, -- Radiance of Anzu, Shadow-Lord Iskar
-	[GetSpellInfo(185510)] = 6, -- Dark Bindings, Shadow-Lord Iskar
-	[GetSpellInfo(182600)] = 6, -- Fel Fire, Shadow-Lord Iskar
-	[GetSpellInfo(179219)] = 6, -- Phantasmal Fel Bomb, Shadow-Lord Iskar
-	[GetSpellInfo(181753)] = 6, -- Fel Bomb, Shadow-Lord Iskar
-	[GetSpellInfo(185237)] = 6, -- Touch of Harm, Tyrant Velhari
-	[GetSpellInfo(185238)] = 6, -- Touch of Harm, Tyrant Velhari
-	[GetSpellInfo(185241)] = 6, -- Edict of Condemnation, Tyrant Velhari
-	[GetSpellInfo(180526)] = 6, -- Font of Corruption, Tyrant Velhari
-	[GetSpellInfo(181508)] = 6, -- Seed of Destruction, Fel Lord Zakuun
-	[GetSpellInfo(181653)] = 6, -- Fel Crystals, Fel Lord Zakuun
-	[GetSpellInfo(179428)] = 6, -- Rumbling Fissure, Fel Lord Zakuun
-	[GetSpellInfo(182008)] = 6, -- Latent Energy, Fel Lord Zakuun
-	[GetSpellInfo(179407)] = 6, -- Disembodied, Fel Lord Zakuun
-	[GetSpellInfo(189030)] = 6, -- Befouled (Red), Fel Lord Zakuun
-	[GetSpellInfo(189031)] = 6, -- Befouled (Orange), Fel Lord Zakuun
-	[GetSpellInfo(189032)] = 6, -- Befouled (Green), Fel Lord Zakuun
-	[GetSpellInfo(188208)] = 6, -- Ablaze, Xhul'horac
-	[GetSpellInfo(186073)] = 6, -- Felsinged, Xhul'horac
-	[GetSpellInfo(186407)] = 6, -- Fel Surge, Xhul'horac
-	[GetSpellInfo(186500)] = 6, -- Chains of Fel, Xhul'horac
-	[GetSpellInfo(186063)] = 6, -- Wasting Void, Xhul'horac
-	[GetSpellInfo(186333)] = 6, -- Void Surge, Xhul'horac
-	[GetSpellInfo(181275)] = 6, -- Curse of the Legion, Mannoroth
-	[GetSpellInfo(181099)] = 6, -- Mark of Doom, Mannoroth
-	[GetSpellInfo(181597)] = 6, -- Mannoroth's Gaze, Mannoroth
-	[GetSpellInfo(182006)] = 6, -- Empowered Mannoroth's Gaze, Mannoroth
-	[GetSpellInfo(181841)] = 6, -- Shadowforce, Mannoroth
-	[GetSpellInfo(182088)] = 6, -- Empowered Shadowforce, Mannoroth
-	[GetSpellInfo(184964)] = 6, -- Shackled Torment, Archimonde
-	[GetSpellInfo(186123)] = 6, -- Wrought Chaos, Archimonde
-	[GetSpellInfo(185014)] = 6, -- Focused Chaos, Archimonde
-	[GetSpellInfo(186952)] = 6, -- Nether Banish, Archimonde
-	[GetSpellInfo(186961)] = 6, -- Nether Banish, Archimonde
-	[GetSpellInfo(189891)] = 6, -- Nether Tear, Archimonde
-	[GetSpellInfo(183634)] = 6, -- Shadowfel Burst, Archimonde
-	[GetSpellInfo(189895)] = 6, -- Void Star Fixate, Archimonde
-	[GetSpellInfo(190049)] = 6, -- Nether Corruption, Archimonde
-
-	-- LEGION
-	-- The Emerald Nightmare
-
-	-- Nythendra
-	[GetSpellInfo(204504)] = 6, -- Infested
-	[GetSpellInfo(205043)] = 6, -- Infested mind
-	[GetSpellInfo(203096)] = 6, -- Rot
-	[GetSpellInfo(204463)] = 6, -- Volatile Rot
-	[GetSpellInfo(203045)] = 6, -- Infested Ground
-	[GetSpellInfo(203646)] = 6, -- Burst of Corruption
-
-	-- Elerethe Renferal
-	[GetSpellInfo(210228)] = 6, -- Dripping Fangs
-	[GetSpellInfo(215307)] = 6, -- Web of Pain
-	[GetSpellInfo(215300)] = 6, -- Web of Pain
-	[GetSpellInfo(215460)] = 6, -- Necrotic Venom
-	[GetSpellInfo(213124)] = 6, -- Venomous Pool
-	[GetSpellInfo(210850)] = 6, -- Twisting Shadows
-	[GetSpellInfo(215489)] = 6, -- Venomous Pool
-
-	-- Il'gynoth, Heart of the Corruption
-	[GetSpellInfo(208929)] = 6, -- Spew Corruption
-	[GetSpellInfo(210984)] = 6, -- Eye of Fate
-	[GetSpellInfo(209469)] = 7, -- Touch of Corruption
-	[GetSpellInfo(208697)] = 6, -- Mind Flay
-
-	-- Ursoc
-	[GetSpellInfo(198108)] = 6, -- Unbalanced
-	[GetSpellInfo(197943)] = 6, -- Overwhelm
-	[GetSpellInfo(204859)] = 6, -- Rend Flesh
-	[GetSpellInfo(205611)] = 6, -- Miasma
-	[GetSpellInfo(198006)] = 6, -- Focused Gaze
-	[GetSpellInfo(197980)] = 6, -- Nightmarish Cacophony
-
-	-- Dragons of Nightmare
-	[GetSpellInfo(203102)] = 6, -- Mark of Ysondre
-	[GetSpellInfo(203121)] = 6, -- Mark of Taerar
-	[GetSpellInfo(203125)] = 6, -- Mark of Emeriss
-	[GetSpellInfo(203124)] = 6, -- Mark of Lethon
-	[GetSpellInfo(204731)] = 7, -- Wasting Dread
-	[GetSpellInfo(203110)] = 7, -- Slumbering Nightmare
-	[GetSpellInfo(207681)] = 7, -- Nightmare Bloom
-	[GetSpellInfo(205341)] = 7, -- Sleeping Fog
-	[GetSpellInfo(203770)] = 7, -- Defiled Vines
-	[GetSpellInfo(203787)] = 7, -- Volatile Infection
-
-	-- Cenarius
-	[GetSpellInfo(210279)] = 5, -- Creeping Nightmares
-	[GetSpellInfo(213162)] = 6, -- Nightmare Blast
-	[GetSpellInfo(210315)] = 6, -- Nightmare Brambles
-	[GetSpellInfo(212681)] = 6, -- Cleansed Ground
-	[GetSpellInfo(211507)] = 6, -- Nightmare Javelin
-	[GetSpellInfo(211471)] = 6, -- Scorned Touch
-	[GetSpellInfo(211612)] = 6, -- Replenishing Roots
-	[GetSpellInfo(216516)] = 6, -- Ancient Dream
-
-	-- Xavius
-	[GetSpellInfo(206005)] = 5, -- Dream Simulacrum
-	[GetSpellInfo(206651)] = 7, -- Darkening Soul
-	[GetSpellInfo(209158)] = 7, -- Blackening Soul
-	[GetSpellInfo(211802)] = 6, -- Nightmare Blades
-	[GetSpellInfo(206109)] = 6, -- Awakening to the Nightmare
-	[GetSpellInfo(209034)] = 6, -- Bonds of Terror
-	[GetSpellInfo(210451)] = 6, -- Bonds of Terror
-	[GetSpellInfo(208431)] = 6, -- Corruption: Descent into Madness
-	[GetSpellInfo(207409)] = 6, -- Madness
-	[GetSpellInfo(211634)] = 6, -- The Infinite Dark
-	[GetSpellInfo(208385)] = 6, -- Tainted Discharge
-
-	-- The Nighthold
-	-- Skorpyron
-	[GetSpellInfo(204766)] = 6, -- Energy Surge
-	[GetSpellInfo(214718)] = 6, -- Acidic Fragments
-	[GetSpellInfo(211801)] = 6, -- Volatile Fragments
-	[GetSpellInfo(204284)] = 6, -- Broken Shard (Protection)
-	[GetSpellInfo(204275)] = 6, -- Arcanoslash (Tank)
-	[GetSpellInfo(211659)] = 6, -- Arcane Tether (Tank debuff)
-	[GetSpellInfo(204483)] = 6, -- Focused Blast (Stun)
-
-	-- Chronomatic Anomaly
-	[GetSpellInfo(206607)] = 6, -- Chronometric Particles (Tank stack debuff)
-	[GetSpellInfo(206609)] = 6, -- Time Release (Heal buff/debuff)
-	[GetSpellInfo(205653)] = 6, -- Passage of Time
-	[GetSpellInfo(206617)] = 6, -- Time Bomb
-	[GetSpellInfo(206618)] = 6, -- Time Bomb
-	[GetSpellInfo(207871)] = 6, -- Vortex (Mythic)
-	[GetSpellInfo(212099)] = 6, -- Temporal Charge
-
-	-- Trilliax
-	[GetSpellInfo(206488)] = 6, -- Arcane Seepage
-	[GetSpellInfo(206641)] = 6, -- Arcane Spear (Tank)
-	[GetSpellInfo(206798)] = 6, -- Toxic Slice
-	[GetSpellInfo(214672)] = 6, -- Annihilation
-	[GetSpellInfo(214573)] = 6, -- Stuffed
-	[GetSpellInfo(214583)] = 6, -- Sterilize
-	[GetSpellInfo(208910)] = 6, -- Arcing Bonds
-	[GetSpellInfo(206838)] = 6, -- Succulent Feast
-
-	-- Spellblade Aluriel
-	[GetSpellInfo(212492)] = 6, -- Annihilate (Tank)
-	[GetSpellInfo(212494)] = 6, -- Annihilated (Main Tank debuff)
-	[GetSpellInfo(212587)] = 6, -- Mark of Frost
-	[GetSpellInfo(212531)] = 6, -- Mark of Frost (marked)
-	[GetSpellInfo(212530)] = 6, -- Replicate: Mark of Frost
-	[GetSpellInfo(212647)] = 6, -- Frostbitten
-	[GetSpellInfo(212736)] = 6, -- Pool of Frost
-	[GetSpellInfo(213085)] = 6, -- Frozen Tempest
-	[GetSpellInfo(213621)] = 6, -- Entombed in Ice
-	[GetSpellInfo(213148)] = 6, -- Searing Brand Chosen
-	[GetSpellInfo(213181)] = 6, -- Searing Brand Stunned
-	[GetSpellInfo(213166)] = 6, -- Searing Brand
-	[GetSpellInfo(213278)] = 6, -- Burning Ground
-	[GetSpellInfo(213504)] = 6, -- Arcane Fog
-
-	-- Tichondrius
-	[GetSpellInfo(206480)] = 6, -- Carrion Plague
-	[GetSpellInfo(215988)] = 6, -- Carrion Nightmare
-	[GetSpellInfo(208230)] = 6, -- Feast of Blood
-	[GetSpellInfo(212794)] = 6, -- Brand of Argus
-	[GetSpellInfo(216685)] = 6, -- Flames of Argus
-	[GetSpellInfo(206311)] = 6, -- Illusionary Night
-	[GetSpellInfo(206466)] = 6, -- Essence of Night
-	[GetSpellInfo(216024)] = 6, -- Volatile Wound
-	[GetSpellInfo(216027)] = 6, -- Nether Zone
-	[GetSpellInfo(216039)] = 6, -- Fel Storm
-	[GetSpellInfo(216726)] = 6, -- Ring of Shadows
-	[GetSpellInfo(216040)] = 6, -- Burning Soul
-
-	-- Krosus
-	[GetSpellInfo(206677)] = 6, -- Searing Brand
-	[GetSpellInfo(205344)] = 6, -- Orb of Destruction
-
-	-- High Botanist Tel'arn
-	[GetSpellInfo(218503)] = 6, -- Recursive Strikes (Tank)
-	[GetSpellInfo(219235)] = 6, -- Toxic Spores
-	[GetSpellInfo(218809)] = 6, -- Call of Night
-	[GetSpellInfo(218342)] = 6, -- Parasitic Fixate
-	[GetSpellInfo(218304)] = 6, -- Parasitic Fetter
-	[GetSpellInfo(218780)] = 6, -- Plasma Explosion
-
-	-- Star Augur Etraeus
-	[GetSpellInfo(205984)] = 6, -- Gravitaional Pull
-	[GetSpellInfo(214167)] = 6, -- Gravitaional Pull
-	[GetSpellInfo(214335)] = 6, -- Gravitaional Pull
-	[GetSpellInfo(206936)] = 6, -- Icy Ejection
-	[GetSpellInfo(206388)] = 6, -- Felburst
-	[GetSpellInfo(206585)] = 6, -- Absolute Zero
-	[GetSpellInfo(206398)] = 6, -- Felflame
-	[GetSpellInfo(206589)] = 6, -- Chilled
-	[GetSpellInfo(205649)] = 6, -- Fel Ejection
-	[GetSpellInfo(206965)] = 6, -- Voidburst
-	[GetSpellInfo(206464)] = 6, -- Coronal Ejection
-	[GetSpellInfo(207143)] = 6, -- Void Ejection
-	[GetSpellInfo(206603)] = 6, -- Frozen Solid
-	[GetSpellInfo(207720)] = 6, -- Witness the Void
-	[GetSpellInfo(216697)] = 6, -- Frigid Pulse
-
-	-- Grand Magistrix Elisande
-	[GetSpellInfo(209166)] = 6, -- Fast Time
-	[GetSpellInfo(211887)] = 6, -- Ablated
-	[GetSpellInfo(209615)] = 6, -- Ablation
-	[GetSpellInfo(209244)] = 6, -- Delphuric Beam
-	[GetSpellInfo(209165)] = 6, -- Slow Time
-	[GetSpellInfo(209598)] = 6, -- Conflexive Burst
-	[GetSpellInfo(209433)] = 6, -- Spanning Singularity
-	[GetSpellInfo(209973)] = 6, -- Ablating Explosion
-	[GetSpellInfo(209549)] = 6, -- Lingering Burn
-	[GetSpellInfo(211261)] = 6, -- Permaliative Torment
-	[GetSpellInfo(208659)] = 6, -- Arcanetic Ring
-
-	-- Gul'dan
-	[GetSpellInfo(210339)] = 6, -- Time Dilation
-	[GetSpellInfo(180079)] = 6, -- Felfire Munitions
-	[GetSpellInfo(206875)] = 6, -- Fel Obelisk (Tank)
-	[GetSpellInfo(206840)] = 6, -- Gaze of Vethriz
-	[GetSpellInfo(206896)] = 6, -- Torn Soul
-	[GetSpellInfo(206221)] = 6, -- Empowered Bonds of Fel
-	[GetSpellInfo(208802)] = 6, -- Soul Corrosion
-	[GetSpellInfo(212686)] = 6, -- Flames of Sargeras
-
-	-- Trial of Valor (By Anzor)
-	-- Odyn
-	[GetSpellInfo(228030)] = 6, -- Expel Light (need aura)
-	[GetSpellInfo(227807)] = 6, -- Storm of Justice
-	[GetSpellInfo(228918)] = 6, -- Stormforged Spear
-	[GetSpellInfo(227490)] = 6, -- Branded
-	[GetSpellInfo(227491)] = 6, -- Branded
-	[GetSpellInfo(227498)] = 6, -- Branded
-	[GetSpellInfo(227499)] = 6, -- Branded
-	[GetSpellInfo(227500)] = 6, -- Branded
-	[GetSpellInfo(231297)] = 6, -- Runic Brand (Mythic Only)
-
-	-- Guarm
-	[GetSpellInfo(228228)] = 5, -- Flame Lick
-	[GetSpellInfo(228248)] = 7, -- Frost Lick
-	[GetSpellInfo(228253)] = 6, -- Shadow Lick
-	--[GetSpellInfo(228768)] = 6, -- Salty Spittle
-	--[GetSpellInfo(228758)] = 6, -- Fiery Phlegm
-	--[GetSpellInfo(228769)] = 6, -- Dark Discharge
-
-	-- Helya
-	[GetSpellInfo(228883)] = 6, -- Unholy Reckoning (Trash)
-	[GetSpellInfo(228054)] = 7, -- Taint of the Sea
-	[GetSpellInfo(229119)] = 6, -- Orb of Corruption
-	[GetSpellInfo(228058)] = 6, -- Orb of Corrosion
-	[GetSpellInfo(193367)] = 6, -- Fetid Rot
-	[GetSpellInfo(227982)] = 6, -- Bilewater Redox
-}
-
--- RAID BUFFS (SQUARED AURA TRACKING LIST)
-K.RaidBuffsTracking = {
+K.RaidBuffs = {
+	DRUID = {
+		{102342, "LEFT", {0.45, 0.3, 0.2}, true}, -- Ironbark
+		{155777, "RIGHT", {0.4, 0.9, 0.4}}, -- Rejuvenation (Germination)
+		{33763, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
+		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
+		{774, "TOPRIGHT", {0.8, 0.4, 0.8}}, -- Rejuvenation
+		{8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}}, -- Regrowth
+	},
+	MONK = {
+		{115175, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Soothing Mist
+		{116849, "LEFT", {0.81, 0.85, 0.1}, true}, -- Life Cocoon
+		{119611, "TOPRIGHT", {0.2, 0.7, 0.7}}, -- Renewing Mist
+		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
+		{191840, "TOPLEFT", {0.1, 0.4, 0.9}}, -- Essence Font
+	},
+	PALADIN = {
+		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, -- Blessing of Protection
+		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true}, -- Blessing of Freedom
+		{114163, "BOTTOMLEFT", {0.9, 0.6, 0.4}}, -- Eternal Flame
+		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Faith
+		{204013, "BOTTOMRIGHT", {0.93, 0.75, 0}, true}, -- Blessing of Salvation
+		{204018, "BOTTOMRIGHT", {0.4, 0.6, 0.8}, true}, -- Blessing of Spellwarding
+		{53563, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Light
+		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Blessing of Sacrifice
+	},
 	PRIEST = {
-		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
 		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
 		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
+		{194384, "TOPRIGHT", {0.8, 0.4, 0.2}}, -- Atonement
+		{33206, "LEFT", {0.89, 0.1, 0.1}, true}, -- Pain Suppression
+		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
+		{47788, "LEFT", {0.86, 0.52, 0}, true}, -- Guardian Spirit
 	},
-
-	DRUID = {
-		{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
-		{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
-		{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
-		{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
-	},
-
-	PALADIN = {
-		{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
-		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
-		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
-		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
-		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
-		{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
-	},
-
 	SHAMAN = {
-		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
+		{204288, "BOTTOMRIGHT", {0.2, 0.7, 0.2}, true}, -- Earth Shield
+		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Riptide
 	},
-
-	MONK = {
-		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
-		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
-		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
-		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
+	HUNTER = {
+		{35079, "TOPRIGHT", {0.2, 0.2, 1}}, -- Misdirection
 	},
-
+	ROGUE = {
+		{57934, "TOPRIGHT", {0.89, 0.1, 0.1}}, -- Tricks of the Trade
+	},
+	WARLOCK = {
+		{20707, "TOPRIGHT", {0.7, 0.32, 0.75}}, -- Soulstone
+	},
+	WARRIOR = {
+		{114030, "TOPLEFT", {0.2, 0.2, 1}}, -- Vigilance
+		{3411, "TOPRIGHT", {0.89, 0.1, 0.1}}, -- Intervene
+	},
 	ALL = {
-		{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
+		{23333, "LEFT", {1, 0, 0}, true}, -- Warsong flag, Horde
+		{23335, "LEFT", {0, 0, 1}, true}, -- Warsong flag, Alliance
+		{34976, "LEFT", {1, 0, 0}, true}, -- Netherstorm Flag
 	},
+}
+
+K.RaidBuffsIgnore = {
+	-- [spellID] = true,			-- Spell name
+}
+
+local function SpellName(id)
+	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
+	if not name then
+		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
+		return "Impale"
+	else
+		return name
+	end
+end
+
+K.RaidDebuffs = {
+	-- Legion Raids
+	-- The Nighthold
+	-- Skorpyron
+	[SpellName(211659)] = 3, -- Arcane Tether
+	[SpellName(204483)] = 3, -- Focused Blast
+	-- Chronomatic Anomaly
+	[SpellName(206609)] = 3, -- Time Release
+	[SpellName(206607)] = 3, -- Chronometric Particles
+	-- Trilliax
+	[SpellName(206788)] = 3, -- Toxic Slice
+	[SpellName(206641)] = 3, -- Arcane Slash
+	-- Spellblade Aluriel
+	[SpellName(212492)] = 3, -- Annihilate
+	[SpellName(212494)] = 3, -- Annihilated
+	[SpellName(212587)] = 3, -- Mark of Frost
+	-- Tichondrius
+	[SpellName(206480)] = 3, -- Carrion Plague
+	[SpellName(216040)] = 3, -- Burning Soul
+	[SpellName(208230)] = 3, -- Feast of Blood
+	-- Krosus
+	[SpellName(206677)] = 3, -- Searing Brand
+	-- High Botanist Tel'arn
+	[SpellName(218304)] = 3, -- Parasitic Fetter
+	[SpellName(218503)] = 3, -- Recursive Strikes
+	-- Star Augur Etraeus
+	[SpellName(206936)] = 3, -- Icy Ejection
+	-- Gul'dan
+	[SpellName(206222)] = 3, -- Bonds of Fel
+	[SpellName(212568)] = 3, -- Drain
+	[SpellName(206875)] = 3, -- Fel Obelisk
+	-- Trial of Valor
+	-- Odyn
+	[SpellName(198088)] = 3, -- Glowing Fragment
+	[SpellName(228915)] = 3, -- Stormforged Spear
+	[SpellName(227959)] = 3, -- Storm of Justice
+	[SpellName(227475)] = 3, -- Cleansing Flame
+	-- Guarm
+	[SpellName(227570)] = 3, -- Dark Discharge
+	[SpellName(227566)] = 3, -- Salty Spittle
+	[SpellName(227539)] = 3, -- Fiery Phlegm
+	[SpellName(228250)] = 4, -- Shadow Lick
+	[SpellName(228246)] = 4, -- Frost Lick
+	[SpellName(228226)] = 4, -- Flame Lick
+	-- Helya
+	[SpellName(228054)] = 3, -- Taint of the Sea
+	[SpellName(227982)] = 3, -- Bilewater Redox
+	[SpellName(193367)] = 3, -- Fetid Rot
+	[SpellName(227903)] = 3, -- Orb of Corruption
+	[SpellName(228058)] = 3, -- Orb of Corrosion
+	[SpellName(228519)] = 3, -- Anchor Slam
+	[SpellName(202476)] = 3, -- Rabid
+	[SpellName(232450)] = 3, -- Corrupted Axion
+	-- The Emerald Nightmare
+	-- Nythendra
+	[SpellName(204504)] = 5, -- Infested
+	[SpellName(203096)] = 3, -- Rot
+	[SpellName(204463)] = 3, -- Volatile Rot
+	[SpellName(203646)] = 4, -- Burst of Corruption
+	-- Il'gynoth, Heart of Corruption
+	[SpellName(215845)] = 3, -- Dispersed Spores
+	[SpellName(210099)] = 6, -- Fixate
+	[SpellName(209469)] = 5, -- Touch of Corruption
+	[SpellName(210984)] = 3, -- Eye of Fate
+	[SpellName(208697)] = 4, -- Mind Flay
+	[SpellName(208929)] = 3, -- Spew Corruption
+	[SpellName(215128)] = 3, -- Cursed Blood
+	-- Erethe Renferal
+	[SpellName(215582)] = 4, -- Raking Talons
+	[SpellName(218519)] = 4, -- Wind Burn
+	[SpellName(215307)] = 4, -- Web of Pain
+	[SpellName(215449)] = 3, -- Necrotic Venom
+	[SpellName(215460)] = 3, -- Necrotic Venom
+	[SpellName(210850)] = 4, -- Twisting Shadows
+	-- Ursoc
+	[SpellName(197943)] = 3, -- Overwhelm
+	[SpellName(204859)] = 4, -- Rend Flesh
+	[SpellName(198006)] = 3, -- Focused Gaze
+	[SpellName(198108)] = 3, -- Momentum
+	-- Dragons of Nightmare
+	[SpellName(207681)] = 4, -- Nightmare Bloom
+	[SpellName(203770)] = 3, -- Defiled Vines
+	[SpellName(203787)] = 3, -- Volatile Infection
+	[SpellName(204044)] = 3, -- Shadow Burst
+	[SpellName(205341)] = 3, -- Seeping Fog
+	[SpellName(204078)] = 3, -- Bellowing Roar
+	-- Cenarius
+	[SpellName(210315)] = 3, -- Nightmare Brambles
+	[SpellName(226821)] = 3, -- Desiccating Stomp
+	[SpellName(211507)] = 3, -- Nightmare Javelin
+	[SpellName(211471)] = 3, -- Scorned Touch
+	[SpellName(214529)] = 3, -- Spear of Nightmares
+	[SpellName(210279)] = 3, -- Creeping Nightmare
+	-- Xavius
+	[SpellName(208431)] = 3, -- Descent into Madness
+	[SpellName(206651)] = 3, -- Darkening Soul
+	[SpellName(209158)] = 3, -- Blackening Soul
+	[SpellName(211802)] = 3, -- Nightmare Blades
+	[SpellName(205771)] = 3, -- Tormenting Fixation
+	[SpellName(210451)] = 3, -- Bonds of Terror
+	[SpellName(224508)] = 3, -- Corruption Meteor
+
+	-- Legion Dungeons
+	-- Mythic+ Affixes
+	[SpellName(221772)] = 5, -- Overflowing
+	[SpellName(209858)] = 5, -- Necrotic
+	[SpellName(226512)] = 5, -- Sanguine
+	-- Black Rook Hold
+	-- Trash Mobs
+	[SpellName(194969)] = 3, -- Soul Echoes
+	[SpellName(225962)] = 3, -- Bloodthirsty Leap
+	[SpellName(200261)] = 3, -- Bonebreaking Strike
+	[SpellName(222397)] = 3, -- Boulder Crush
+	[SpellName(214001)] = 3, -- Raven's Dive
+	-- Illysanna Ravencrest
+	[SpellName(197546)] = 3, -- Brutal Glaive
+	[SpellName(197484)] = 3, -- Dark Rush
+	[SpellName(197687)] = 4, -- Eye Beams
+	-- Smashspite
+	[SpellName(198446)] = 3, -- Fel Vomit
+	[SpellName(198245)] = 3, -- Brutal Haymaker
+	-- Lord Ravencrest
+	[SpellName(201733)] = 3, -- Stinging Swarm
+	-- Court of Stars
+	-- Trash Mobs
+	[SpellName(209413)] = 3, -- Suppress
+	[SpellName(209512)] = 3, -- Disrupting Energy
+	[SpellName(211473)] = 3, -- Shadow Slash
+	[SpellName(211464)] = 3, -- Fel Detonation
+	[SpellName(207980)] = 3, -- Disintegration Beam
+	[SpellName(207979)] = 3, -- Shockwave
+	-- Advisor Melandrus
+	[SpellName(209602)] = 3, -- Blade Surge
+	[SpellName(224333)] = 4, -- Enveloping Winds
+	-- Darkheart Thicket
+	-- Trash Mobs
+	[SpellName(200620)] = 3, -- Frantic Rip
+	[SpellName(225484)] = 3, -- Grievous Rip
+	[SpellName(200631)] = 4, -- Unnerving Screech
+	[SpellName(201400)] = 3, -- Dread Inferno
+	[SpellName(201361)] = 4, -- Darksoul Bite
+	-- Archdruid Glaidalis
+	[SpellName(198408)] = 4, -- Nightfall
+	[SpellName(196376)] = 3, -- Grievous Tear
+	-- Shade of Xavius
+	[SpellName(200289)] = 4, -- Growing Paranoia
+	[SpellName(200329)] = 4, -- Overwhelming Terror
+	[SpellName(200238)] = 3, -- Feed on the Weak
+	-- Eye of Azshara
+	-- Trash Mobs
+	[SpellName(196111)] = 4, -- Jagged Claws
+	[SpellName(195561)] = 3, -- Blinding Peck
+	-- Warlord Parjesh
+	[SpellName(192094)] = 3, -- Impaling Spear
+	-- Serpentrix
+	[SpellName(191855)] = 3, -- Toxic Wound
+	[SpellName(191858)] = 4, -- Toxic Puddle
+	-- King Deepbeard
+	[SpellName(193018)] = 3, -- Gaseous Bubbles
+	-- Halls of Valor
+	-- Trash Mobs
+	[SpellName(198605)] = 3, -- Thunderstrike
+	[SpellName(199805)] = 3, -- Crackle
+	[SpellName(199050)] = 3, -- Mortal Hew
+	[SpellName(199341)] = 3, -- Bear Trap
+	[SpellName(196194)] = 3, -- Raven's Dive
+	[SpellName(199674)] = 3, -- Wicked Dagger
+	-- Hymdall
+	[SpellName(193092)] = 3, -- Bloodletting Sweep
+	-- Hyrja
+	[SpellName(192048)] = 3, -- Expel Light
+	-- Fenryr
+	[SpellName(197556)] = 4, -- Ravenous Leap
+	[SpellName(196838)] = 3, -- Scent of Blood
+	[SpellName(196497)] = 4, -- Ravenous Leap
+	-- Odyn
+	[SpellName(198088)] = 4, -- Glowing Fragment
+	-- Maw of Souls
+	-- Trash Mobs
+	[SpellName(201566)] = 3, -- Swirling Muck
+	[SpellName(191960)] = 5, -- Barbed Spear
+	[SpellName(199061)] = 4, -- Hew Soul
+	[SpellName(222397)] = 4, -- Breach Armor
+	[SpellName(201397)] = 4, -- Brackwater Blast
+	[SpellName(194102)] = 4, -- Poisonous Sludge
+	-- Harbaron
+	[SpellName(194325)] = 3, -- Fragment
+	[SpellName(194235)] = 4, -- Nether Rip
+	-- Helya
+	[SpellName(185539)] = 3, -- Rapid Rupture
+	-- Neltharion's Lair
+	-- Trash Mobs
+	[SpellName(226296)] = 3, -- Piercing Shards
+	[SpellName(193639)] = 4, -- Bone Chomp
+	[SpellName(202181)] = 3, -- Stone Gaze
+	[SpellName(186616)] = 3, -- Petrified
+	[SpellName(202231)] = 3, -- Leech
+	[SpellName(200154)] = 4, -- Burning Hatred
+	[SpellName(193585)] = 3, -- Bound
+	-- Rokmora
+	[SpellName(192799)] = 3, -- Choking Dust
+	-- Naraxas
+	[SpellName(205549)] = 3, -- Rancid Maw
+	-- The Arcway
+	-- Trash Mobs
+	[SpellName(202156)] = 4, -- Corrosion
+	[SpellName(210688)] = 3, -- Collapsing Rift
+	[SpellName(226269)] = 3, -- Torment
+	[SpellName(211756)] = 3, -- Searing Wound
+	[SpellName(211217)] = 3, -- Arcane Slicer
+	[SpellName(211543)] = 3, -- Devour
+	-- Corstilax
+	[SpellName(195791)] = 3, -- Quarantine
+	-- Ivanyr
+	[SpellName(196804)] = 3, -- Nether Link
+	[SpellName(196562)] = 3, -- Volatile Magic
+	-- Nal'tira
+	[SpellName(200040)] = 4, -- Nether Venom
+	[SpellName(200227)] = 3, -- Tangled Web
+	-- Advisor Vandros
+	[SpellName(220871)] = 3, -- Unstable Mana
+	-- Vault of the Wardens
+	-- Trash Mobs
+	[SpellName(191735)] = 3, -- Deafening Screech
+	[SpellName(210202)] = 4, -- Foul Stench
+	[SpellName(202658)] = 3, -- Drain
+	[SpellName(193164)] = 3, -- Gift of the Doomsayer
+	[SpellName(202615)] = 3, -- Torment
+	[SpellName(193969)] = 3, -- Razors
+	-- Inquisitor Tormentorum
+	[SpellName(201488)] = 3, -- Frightening Shout
+	[SpellName(225416)] = 3, -- Intercept
+	[SpellName(214804)] = 3, -- Seed of Corruption
+	[SpellName(201488)] = 3, -- Frightening Shout
+	-- Glazer
+	[SpellName(194945)] = 3, -- Lingering Gaze
+	-- Ash'Golm
+	[SpellName(192519)] = 3, -- Lava
+	-- Cordana Felsong
+	[SpellName(197541)] = 3, -- Detonation
+	[SpellName(213583)] = 4, -- Deepening Shadows
+	-- Violet Hold
+	-- Trash Mobs
+	[SpellName(204608)] = 3, -- Fel Prison
+	[SpellName(204901)] = 3, -- Carrion Swarm
+	[SpellName(205097)] = 3, -- Fel Blind
+	[SpellName(205096)] = 3, -- Fel Poison
+	-- Anub'esset
+	[SpellName(202217)] = 3, -- Mandible Strike
+	-- Blood-Princess Thal'ena
+	[SpellName(202779)] = 3, -- Essence of the Blood Princess
+	-- Millificent Manastorm
+	[SpellName(201159)] = 3, -- Delta Finger Laser X-treme
+	-- Mindflayer Kaahrj
+	[SpellName(197783)] = 3, -- Shadow Crash
+	-- Shivermaw
+	[SpellName(201960)] = 3, -- Ice Bomb
+	[SpellName(202062)] = 3, -- Frigid Winds
+	-- Lord Malgath
+	[SpellName(204962)] = 3, -- Shadow Bomb
+	-- Other
+	[SpellName(87023)] = 4, -- Cauterize
+	[SpellName(94794)] = 4, -- Rocket Fuel Leak
+	[SpellName(116888)] = 4, -- Shroud of Purgatory
+	[SpellName(121175)] = 2, -- Orb of Power
+}
+
+-- PvP
+if C.Raidframe.PvPDebuffs == true then
+	K.PvPDebuffs = {
+		-- Death Knight
+		[SpellName(108194)] = 3, -- Asphyxiate
+		[SpellName(91797)] = 3, -- Monstrous Blow (Mutated Ghoul)
+		[SpellName(91800)] = 3, -- Gnaw (Ghoul)
+		[SpellName(47476)] = 3, -- Strangulate
+		-- Druid
+		[SpellName(33786)] = 3, -- Cyclone
+		[SpellName(78675)] = 3, -- Solar Beam
+		[SpellName(339)] = 2, -- Entangling Roots
+		-- Hunter
+		[SpellName(3355)] = 3, -- Freezing Trap
+		[SpellName(19386)] = 3, -- Wyvern Sting
+		[SpellName(117526)] = 3, -- Binding Shot
+		[SpellName(5384)] = 3, -- Intimidation
+		-- Mage
+		[SpellName(61305)] = 3, -- Polymorph
+		[SpellName(82691)] = 3, -- Ring of Frost
+		[SpellName(31661)] = 3, -- Dragon's Breath
+		[SpellName(122)] = 2, -- Frost Nova
+		-- Monk
+		[SpellName(115078)] = 3,	-- Paralysis
+		[SpellName(119381)] = 3,	-- Leg Sweep
+		-- Paladin
+		[SpellName(20066)] = 3, -- Repentance
+		[SpellName(853)] = 3, -- Hammer of Justice
+		[SpellName(105421)] = 3, -- Blinding Light
+		-- Priest
+		[SpellName(605)] = 3, -- Dominate Mind
+		[SpellName(8122)] = 3, -- Psychic Scream
+		[SpellName(64044)] = 3, -- Psychic Horror
+		[SpellName(15487)] = 3, -- Silence
+		-- Rogue
+		[SpellName(6770)] = 3, -- Sap
+		[SpellName(2094)] = 3, -- Blind
+		[SpellName(1776)] = 3, -- Gouge
+		[SpellName(1330)] = 3, -- Garrote - Silence
+		-- Shaman
+		[SpellName(51514)] = 3, -- Hex
+		[SpellName(118905)] = 3, -- Static Charge
+		-- Warlock
+		[SpellName(118699)] = 3, -- Fear
+		[SpellName(6789)] = 3, -- Mortal Coil
+		[SpellName(5484)] = 3, -- Howl of Terror
+		[SpellName(6358)] = 3, -- Seduction (Succubus)
+		[SpellName(115268)] = 3, -- Mesmerize (Shivarra)
+		[SpellName(30283)] = 3, -- Shadowfury
+		-- Warrior
+		[SpellName(46968)] = 3, -- Shockwave
+		[SpellName(132169)] = 3, -- Storm Bolt
+		[SpellName(194958)] = 3, -- Intimidating Shout
+	}
+end
+
+K.RaidDebuffsReverse = {
+	--[spellID] = true, -- Spell name
+}
+
+K.RaidDebuffsIgnore = {
+	--[spellID] = true, -- Spell name
 }

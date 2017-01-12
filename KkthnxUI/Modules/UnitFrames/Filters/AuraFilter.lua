@@ -28,7 +28,7 @@ local UnitPlayerControlled = UnitPlayerControlled
 -- 2 = Hide on friendly
 -- 3 = Hide Mine
 -- Arena (buff): true = whitelisted
--- "Whitelist"
+--  "Whitelist"
 -- Boss (debuff): 0 = Whitelisted
 -- "Whitelist" 1 = Only show own
 
@@ -58,6 +58,40 @@ local BaseAuras = {
 	[63435] = 3, -- Thunder Bluff Valiant"s Pennant
 	[63436] = 3, -- Thunder Bluff Champion"s Pennant
 	[63501] = 3, -- Argent Crusade Champion"s Pennant
+
+	----------------------------------------------
+	-- </ Unsure about hiding this right now. > --
+	----------------------------------------------
+	[113942] = 3, -- Demonic: Gateway
+	[114216] = 3, -- Angelic Bulwark
+	[117870] = 3, -- Touch of The Titans
+	[123981] = 3, -- Perdition
+	[124273] = 3, -- Stagger
+	[124274] = 3, -- Stagger
+	[124275] = 3, -- Stagger
+	[15007] = 3, -- Ress Sickness
+	[23445] = 3, -- evil twin
+	[24755] = 3, -- tricked or treated debuff
+	[25163] = 3, -- pet debuff oozeling disgusting aura
+	[25771] = 3, -- forbearance
+	[26013] = 3, -- deserter
+	[36032] = 3, -- Arcane Charge
+	[36893] = 3, -- Transporter Malfunction
+	[36900] = 3, -- Soul Split: Evil!
+	[36901] = 3, -- Soul Split: Good
+	[41425] = 3, -- "Hypothermia"
+	[55711] = 3, -- Weakened Heart
+	[57723] = 3, -- Exhaustion
+	[57724] = 3, -- Sated
+	[58539] = 3, -- watchers corpse
+	[71041] = 3, -- dungeon deserter
+	[80354] = 3, -- timewarp debuff
+	[8326] = 3, --  ghost
+	[8733] = 3, -- Blessing of Blackfathom
+	[89140] = 3, -- Demonic Rebirth: Cooldown
+	[95223] = 3, -- group res debuff
+	[95809] = 3, -- Insanity debuff (Hunter Pet heroism)
+	[97821] = 3, -- Void-Touched
 }
 
 for _, list in pairs({

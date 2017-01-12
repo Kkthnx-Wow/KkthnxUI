@@ -267,7 +267,8 @@ function K.CreateStatusBar(self, noBG)
 	return StatusBar
 end
 
-K.RaidBuffsTrackingPosition = {
+-- </ AuraWatch > --
+local CountOffSets = {
 	TOPLEFT = {6, 1},
 	TOPRIGHT = {-6, 1},
 	BOTTOMLEFT = {6, 1},
@@ -280,76 +281,68 @@ K.RaidBuffsTrackingPosition = {
 
 function K.CreateAuraWatchIcon(self, icon)
 	icon:SetBackdrop(K.TwoPixelBorder)
-	icon.icon:SetPoint("TOPLEFT", 1, -1)
-	icon.icon:SetPoint("BOTTOMRIGHT", -1, 1)
-	icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	icon.icon:SetPoint("TOPLEFT", icon, 1, -1)
+	icon.icon:SetPoint("BOTTOMRIGHT", icon, -1, 1)
+	icon.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 	icon.icon:SetDrawLayer("ARTWORK")
-
-	if (icon.cd) then
-		icon.cd:SetHideCountdownNumbers(true)
+	if icon.cd then
 		icon.cd:SetReverse(true)
 	end
-
 	icon.overlay:SetTexture()
 end
 
--- </ Create the icon > --
-function K.CreateAuraWatch(self)
-	local Class = select(2, UnitClass("player"))
-	local Auras = CreateFrame("Frame", nil, self)
-	Auras:SetPoint("TOPLEFT", self.Health, 2, -2)
-	Auras:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
-	Auras.presentAlpha = 1
-	Auras.missingAlpha = 0
-	Auras.icons = {}
-	Auras.PostCreateIcon = K.CreateAuraWatchIcon
-	Auras.strictMatching = true
+function K.CreateAuraWatch(self, unit)
+	local auras = CreateFrame("Frame", nil, self)
+	auras:SetPoint("TOPLEFT", self.Health, 0, 0)
+	auras:SetPoint("BOTTOMRIGHT", self.Health, 0, 0)
+	auras.icons = {}
+	auras.PostCreateIcon = K.CreateAuraWatchIcon
 
-	if (not C.Raidframe.AuraWatchTimers) then
-		Auras.hideCooldown = true
-	end
+	-- if not then
+	-- 	auras.hideCooldown = true
+	-- end
 
 	local buffs = {}
-	if (K.RaidBuffsTracking["ALL"]) then
-		for key, value in pairs(K.RaidBuffsTracking["ALL"]) do
+	if K.RaidBuffs["ALL"] then
+		for key, value in pairs(K.RaidBuffs["ALL"]) do
 			tinsert(buffs, value)
 		end
 	end
 
-	if (K.RaidBuffsTracking[Class]) then
-		for key, value in pairs(K.RaidBuffsTracking[Class]) do
+	if K.RaidBuffs[K.Class] then
+		for key, value in pairs(K.RaidBuffs[K.Class]) do
 			tinsert(buffs, value)
 		end
 	end
 
-	-- </ Cornerbuffs > --
 	if buffs then
 		for key, spell in pairs(buffs) do
-			local Icon = CreateFrame("Frame", nil, Auras)
-			Icon.spellID = spell[1]
-			Icon.anyUnit = spell[4]
-			Icon:SetWidth(6)
-			Icon:SetHeight(6)
-			Icon:SetPoint(spell[2], 0, 0)
-			local Texture = Icon:CreateTexture(nil, "OVERLAY")
-			Texture:SetAllPoints(Icon)
-			Texture:SetTexture(C.Media.Blank)
+			local icon = CreateFrame("Frame", nil, auras)
+			icon.spellID = spell[1]
+			icon.anyUnit = spell[4]
+			icon.strictMatching = spell[5]
+			icon:SetWidth(6)
+			icon:SetHeight(6)
+			icon:SetPoint(spell[2], 0, 0)
 
-			if (spell[3]) then
-				Texture:SetVertexColor(unpack(spell[3]))
+			local tex = icon:CreateTexture(nil, "OVERLAY")
+			tex:SetAllPoints(icon)
+			tex:SetTexture(C.Media.Blank)
+			if spell[3] then
+				tex:SetVertexColor(unpack(spell[3]))
 			else
-				Texture:SetVertexColor(0.8, 0.8, 0.8)
+				tex:SetVertexColor(0.8, 0.8, 0.8)
 			end
 
-			local Count = Icon:CreateFontString(nil, "OVERLAY")
-			Count:SetFont(C.Media.Font, 9, "THINOUTLINE")
-			Count:SetPoint("CENTER", unpack(K.RaidBuffsTrackingPosition[spell[2]]))
-			Icon.count = Count
-			Auras.icons[spell[1]] = Icon
+			local count = K.SetFontString(icon, C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style, "CENTER")
+			count:SetPoint("CENTER", unpack(CountOffSets[spell[2]]))
+			icon.count = count
+
+			auras.icons[spell[1]] = icon
 		end
 	end
 
-	self.AuraWatch = Auras
+	self.AuraWatch = auras
 end
 
 -- </ All unitframe castbar functions > --
@@ -409,7 +402,7 @@ function K.PostCastStart(self, unit, name)
 	if C.Unitframe.CastbarTicks and unit == "player" then
 		local baseTicks = K.ChannelTicks[name]
 
-		-- Detect channeling spell and if it"s the same as the previously channeled one
+		-- Detect channeling spell and if it's the same as the previously channeled one
 		if baseTicks and name == self.prevSpellCast then
 			self.chainChannel = true
 		elseif baseTicks then

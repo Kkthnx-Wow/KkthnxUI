@@ -144,11 +144,11 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-	-- self:SetBackdrop({
-	-- 	bgFile = C.Media.Blank,
-	-- 	insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
-	-- })
-	-- self:SetBackdropColor(0.019, 0.019, 0.019, 0.9)
+	self:SetBackdrop({
+		bgFile = C.Media.Blank,
+		insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
+	})
+	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 
 	K.CreateBorder(self, -1)
 	self:SetBorderColor(unpack(C.Media.Border_Color))
@@ -160,10 +160,10 @@ local function CreateRaidLayout(self, unit)
 	self.Health:SetOrientation(C.Raidframe.HorizontalHealthBars and "HORIZONTAL" or "VERTICAL")
 
 	-- Health background
-	self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
-	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetTexture(C.Media.Blank)
-	self.Health.Background:SetColorTexture(unpack(C.Media.Backdrop_Color))
+	-- self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
+	-- self.Health.Background:SetAllPoints()
+	-- self.Health.Background:SetTexture(C.Media.Blank)
+	-- self.Health.Background:SetColorTexture(unpack(C.Media.Backdrop_Color))
 
 	self.Health.PostUpdate = UpdateHealth
 	self.Health.frequentUpdates = true
@@ -224,15 +224,15 @@ local function CreateRaidLayout(self, unit)
 	-- Heal prediction
 	local mhpb = CreateFrame("StatusBar", nil, self)
 	mhpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-	mhpb:SetStatusBarColor(1, 1, 0, 0.6)
+	mhpb:SetStatusBarColor(0, 1, 0.5, 0.25)
 
 	local ohpb = CreateFrame("StatusBar", nil, self)
 	ohpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-	ohpb:SetStatusBarColor(0, 1, 0.5, 0.6)
+	ohpb:SetStatusBarColor(0, 1, 0, 0.25)
 
 	local ahpb = CreateFrame("StatusBar", nil, self)
 	ahpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-	ahpb:SetStatusBarColor(1, 1, 0, 0.6)
+	ahpb:SetStatusBarColor(1, 1, 0, 0.25)
 
 	if (C.Raidframe.HorizontalHealthBars) then
 		mhpb:SetOrientation("HORIZONTAL")
@@ -335,38 +335,54 @@ local function CreateRaidLayout(self, unit)
 	self.ReadyCheck = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheck:SetPoint("CENTER")
 	self.ReadyCheck:SetSize(20, 20)
-	self.ReadyCheck.delayTime = 2
-	self.ReadyCheck.fadeTime = 1
 
 	-- AuraWatch (corner and center icon)
-	if C.Raidframe.AuraWatch then
-		K.CreateAuraWatch(self)
-		local RaidDebuffs = CreateFrame("Frame", nil, self)
-		RaidDebuffs:SetHeight(22)
-		RaidDebuffs:SetWidth(22)
-		RaidDebuffs:SetPoint("CENTER", self.Health)
-		RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-		RaidDebuffs:SetBackdrop(K.BorderBackdrop)
-		RaidDebuffs:SetBackdropColor(0, 0, 0)
-		RaidDebuffs.icon = RaidDebuffs:CreateTexture(nil, "ARTWORK")
-		RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
-		RaidDebuffs.icon:SetInside(RaidDebuffs)
-		RaidDebuffs.cd = CreateFrame("Cooldown", nil, RaidDebuffs)
-		RaidDebuffs.cd:SetAllPoints(RaidDebuffs)
-		RaidDebuffs.cd:SetHideCountdownNumbers(true)
-		RaidDebuffs.ShowDispelableDebuff = true
-		RaidDebuffs.FilterDispelableDebuff = true
-		RaidDebuffs.MatchBySpellName = true
-		RaidDebuffs.ShowBossDebuff = true
-		RaidDebuffs.BossDebuffPriority = 5
-		RaidDebuffs.count = RaidDebuffs:CreateFontString(nil, "OVERLAY")
-		RaidDebuffs.count:SetFont(C.Media.Font, 12, "OUTLINE")
-		RaidDebuffs.count:SetPoint("BOTTOMRIGHT", RaidDebuffs, "BOTTOMRIGHT", 2, 0)
-		RaidDebuffs.count:SetTextColor(1, .9, 0)
-		RaidDebuffs.SetDebuffTypeColor = RaidDebuffs.SetBackdropColor
-		RaidDebuffs.Debuffs = K.RaidDebuffsTracking
+	if C.Raidframe.AuraWatch == true then
+		K.CreateAuraWatch(self, unit)
 
-		self.RaidDebuffs = RaidDebuffs
+		-- Raid debuffs
+		self.RaidDebuffs = CreateFrame("Frame", nil, self)
+		self.RaidDebuffs:SetHeight(24)
+		self.RaidDebuffs:SetWidth(24)
+		self.RaidDebuffs:SetPoint("CENTER", self, 0, 1)
+		self.RaidDebuffs:SetFrameStrata("MEDIUM")
+		self.RaidDebuffs:SetFrameLevel(10)
+		K.CreateBorder(self.RaidDebuffs, 1)
+
+		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "BORDER")
+		self.RaidDebuffs.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+		self.RaidDebuffs.icon:SetPoint("TOPLEFT", 2, -2)
+		self.RaidDebuffs.icon:SetPoint("BOTTOMRIGHT", -2, 2)
+
+		if C.Raidframe.AuraWatchTimers == true then
+			self.RaidDebuffs.time = K.SetFontString(self.RaidDebuffs, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+			self.RaidDebuffs.time:SetPoint("CENTER", 1, 1)
+			self.RaidDebuffs.time:SetTextColor(1, 1, 1)
+		end
+
+		self.RaidDebuffs.count = K.SetFontString(self.RaidDebuffs, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 3, -1)
+		self.RaidDebuffs.count:SetTextColor(1, 1, 1)
+
+		if C.Raidframe.AuraWatchTimers == true then
+			self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
+			self.RaidDebuffs.cd:SetPoint("TOPLEFT", 2, -2)
+			self.RaidDebuffs.cd:SetPoint("BOTTOMRIGHT", -2, 2)
+			self.RaidDebuffs.cd:SetReverse(true)
+			self.RaidDebuffs.cd:SetDrawEdge(false)
+			self.RaidDebuffs.cd.noOCC = true
+			self.RaidDebuffs.parent = CreateFrame("Frame", nil, self.RaidDebuffs)
+			self.RaidDebuffs.parent:SetFrameLevel(self.RaidDebuffs.cd:GetFrameLevel() + 1)
+			self.RaidDebuffs.time:SetParent(self.RaidDebuffs.parent)
+			self.RaidDebuffs.count:SetParent(self.RaidDebuffs.parent)
+		end
+
+		self.RaidDebuffs.ShowDispellableDebuff = true
+		self.RaidDebuffs.FilterDispellableDebuff = true
+		self.RaidDebuffs.MatchBySpellName = true
+		self.RaidDebuffs.Debuffs = K.RaidDebuffs
+
+		return self
 	end
 
 	-- Role indicator
@@ -415,15 +431,16 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-	-- Range check
-	self.Range = {
-		insideAlpha = 1,
-		outsideAlpha = 0.3,
-	}
+	-- OOR and oUF_SpellRange
+	if not self:IsElementEnabled("Range") then
+		self:EnableElement("Range")
+	end
+
+	self.SpellRange = true
 
 	self.SpellRange = {
 		insideAlpha = 1,
-		outsideAlpha = 0.3,
+		outsideAlpha = C.UnitframePlugins.OORAlpha,
 	}
 
 	return self

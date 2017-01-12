@@ -162,13 +162,17 @@ local daysAbr = {
 	[7] = L.AFKScreen.Sat,
 }
 
+----------------------
 -- </ Create Date > --
+----------------------
 local function createDate()
 	local curDayName, curMonth, curDay, curYear = CalendarGetDate()
 	AFK.AFKMode.top.date:SetFormattedText("%s, %s %d, %d", daysAbr[curDayName], monthAbr[curMonth], curDay, curYear)
 end
 
+------------------------------
 -- </ Create Random Stats > --
+------------------------------
 local function createStats()
 	local id = stats[math_random( #stats )]
 	local _, name = GetAchievementInfo(id)
@@ -179,7 +183,7 @@ end
 
 local active
 local function getSpec()
-	local specIndex = GetSpecialization();
+	local specIndex = GetSpecialization()
 	if not specIndex then return end
 	active = GetActiveSpecGroup()
 	local talent = ""
@@ -193,7 +197,9 @@ local function getSpec()
 	return string_format("%s", talent)
 end
 
+---------------------------------
 -- </ Simple-Timer for Stats > --
+---------------------------------
 local showTime = 5
 local total = 0
 local function onUpdate(self, elapsed)
@@ -226,10 +232,14 @@ function AFK:UpdateTimer()
 
 	local createdTime = createTime()
 
+	-------------------
 	-- </ Set Time > --
+	-------------------
 	self.AFKMode.top.time:SetFormattedText(createdTime)
 
+	-------------------
 	-- </ Set Date > --
+	-------------------
 	createDate()
 
 	self.AFKMode.bottom.time:SetFormattedText("%02d:%02d", math_floor(time/60), time % 60)
@@ -237,6 +247,11 @@ end
 
 function AFK:SetAFK(status)
 	if (status) then
+		local level = UnitLevel("player")
+		local race = UnitRace("player")
+		local localizedClass = UnitClass("player")
+		local spec = getSpec()
+
 		MoveViewLeftStart(CAMERA_SPEED)
 		self.AFKMode:Show()
 		CloseAllWindows()
@@ -303,8 +318,8 @@ function AFK:OnEvent(event, ...)
 
 	if (InCombatLockdown() or CinematicFrame:IsShown() or MovieFrame:IsShown()) then return end
 	if (UnitCastingInfo("player") ~= nil) then
-		-- Don't activate afk if player is crafting stuff, check back in 30 seconds
-		self:ScheduleTimer('OnEvent', 30)
+		-- Don"t activate afk if player is crafting stuff, check back in 30 seconds
+		self:ScheduleTimer("OnEvent", 30)
 		return
 	end
 
@@ -355,6 +370,7 @@ function AFK:Initialize()
 	local level = UnitLevel("player")
 	local race = UnitRace("player")
 	local localizedClass = UnitClass("player")
+	local className = K.Class
 	local spec = getSpec()
 
 	self.AFKMode = CreateFrame("Frame", "KkthnxUIAFKFrame")
@@ -365,7 +381,9 @@ function AFK:Initialize()
 	self.AFKMode:EnableKeyboard(true)
 	self.AFKMode:SetScript("OnKeyDown", OnKeyDown)
 
+	---------------------------
 	-- </ Create Top frame > --
+	---------------------------
 	self.AFKMode.top = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.top:SetFrameLevel(0)
 	self.AFKMode.top:SetTemplate("Transparent")
@@ -375,7 +393,9 @@ function AFK:Initialize()
 	self.AFKMode.top:SetWidth(GetScreenWidth() + (2 * 2))
 	self.AFKMode.top:SetHeight(GetScreenHeight() * (1 / 10))
 
+	-------------------
 	-- </ Wow Logo > --
+	-------------------
 	self.AFKMode.top.wowlogo = CreateFrame("Frame", nil, self.AFKMode) -- </ need this to upper the logo layer > --
 	self.AFKMode.top.wowlogo:SetPoint("TOP", self.AFKMode.top, "TOP", 0, -5)
 	self.AFKMode.top.wowlogo:SetFrameStrata("MEDIUM")
@@ -384,7 +404,9 @@ function AFK:Initialize()
 	self.AFKMode.top.wowlogo.tex:SetAtlas("Glues-WoW-LegionLogo")
 	self.AFKMode.top.wowlogo.tex:SetInside()
 
+	---------------------------------
 	-- </ Server/Local Time text > --
+	---------------------------------
 	self.AFKMode.top.time = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.top.time:SetFont(C.Media.Font, 20, C.Media.Font_Style)
 	self.AFKMode.top.time:SetText("")
@@ -392,7 +414,9 @@ function AFK:Initialize()
 	self.AFKMode.top.time:SetJustifyH("LEFT")
 	self.AFKMode.top.time:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
 
+	--------------------
 	-- </ Date text > --
+	--------------------
 	self.AFKMode.top.date = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.top.date:SetFont(C.Media.Font, 20, C.Media.Font_Style)
 	self.AFKMode.top.date:SetText("")
@@ -407,14 +431,16 @@ function AFK:Initialize()
 	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -2)
 	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2))
 	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))
-	self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY")
-	self.AFKMode.bottom.logo:SetSize(512 / 1.2, 256 / 1.2)
-	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 40)
-	self.AFKMode.bottom.logo:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Logo")
+	-- self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY")
+	-- self.AFKMode.bottom.logo:SetSize(512 / 1.2, 256 / 1.2)
+	-- self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 40)
+	-- self.AFKMode.bottom.logo:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Logo")
 
 	local factionGroup = UnitFactionGroup("player")
 
+	------------------------------------
 	-- </ factionGroup = "Alliance" > --
+	------------------------------------
 	local size, offsetX, offsetY = 130, -20, -12
 	local nameOffsetX, nameOffsetY = -10, -28
 	if factionGroup == "Neutral" then
@@ -423,20 +449,27 @@ function AFK:Initialize()
 		nameOffsetX, nameOffsetY = 20, -5
 	end
 
+	------------------------
 	-- </ KkthnxUI Name > --
+	------------------------
 	self.AFKMode.bottom.kkthnxui = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.kkthnxui:SetFont(C.Media.Font, 30, C.Media.Font_Style)
+	self.AFKMode.bottom.kkthnxui:SetFont(C.Media.Font, 30)
 	self.AFKMode.bottom.kkthnxui:SetText(K.UIName)
 	self.AFKMode.bottom.kkthnxui:SetPoint("RIGHT", self.AFKMode.bottom, "RIGHT", -25, 8)
 	self.AFKMode.bottom.kkthnxui:SetTextColor(60/255, 155/255, 237/255)
+
+	---------------------------
 	-- </ KkthnxUI Version > --
+	---------------------------
 	self.AFKMode.bottom.ktext = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.ktext:SetFont(C.Media.Font, 17, C.Media.Font_Style)
+	self.AFKMode.bottom.ktext:SetFont(C.Media.Font, 17)
 	self.AFKMode.bottom.ktext:SetFormattedText("v%s", K.Version)
 	self.AFKMode.bottom.ktext:SetPoint("TOP", self.AFKMode.bottom.kkthnxui, "BOTTOM")
 	self.AFKMode.bottom.ktext:SetTextColor(0.7, 0.7, 0.7)
 
+	-----------------------------
 	-- </ Random stats frame > --
+	-----------------------------
 	self.AFKMode.statMsg = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.statMsg:SetSize(418, 72)
 	self.AFKMode.statMsg:SetPoint("CENTER", 0, 200)
@@ -475,43 +508,59 @@ function AFK:Initialize()
 	self.AFKMode.statMsginfo:SetScript("OnUpdate", onUpdate)
 	self.AFKMode.statMsginfo:Hide()
 
+	---------------------------------------------------
+	-- </ Move the factiongroup sign to the center > --
+	---------------------------------------------------
+	self.AFKMode.bottom.factionb = CreateFrame("Frame", nil, self.AFKMode) -- need this to upper the faction logo layer
+	self.AFKMode.bottom.factionb:SetPoint("BOTTOM", self.AFKMode.bottom, "TOP", 0, -40)
+	self.AFKMode.bottom.factionb:SetFrameStrata("MEDIUM")
+	self.AFKMode.bottom.factionb:SetSize(220, 220)
 	self.AFKMode.bottom.faction = self.AFKMode.bottom:CreateTexture(nil, "OVERLAY")
-	self.AFKMode.bottom.faction:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", offsetX, offsetY)
-	self.AFKMode.bottom.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo")
+	self.AFKMode.bottom.faction:ClearAllPoints()
+	self.AFKMode.bottom.faction:SetParent(self.AFKMode.bottom.factionb)
+	self.AFKMode.bottom.faction:SetInside()
+
+	------------------------------------------------------
+	-- </ Apply class texture rather than the faction > --
+	------------------------------------------------------
+	self.AFKMode.bottom.faction:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\ClassIcons\\CLASS-"..className)
 	self.AFKMode.bottom.faction:SetSize(size, size)
 
 	self.AFKMode.bottom.name = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.name:SetFont(C.Media.Font, 20)
-	-- self.AFKMode.bottom.name:SetFormattedText("%s - %s".. "\n" .."%s %s %s %s %s", K.Name, K.Realm, LEVEL, level, race, spec, localizedClass)
-	self.AFKMode.bottom.name:SetFormattedText("%s - %s", K.Name, K.Realm)
-	self.AFKMode.bottom.name:SetPoint("TOPLEFT", self.AFKMode.bottom.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
+	self.AFKMode.bottom.name:SetFormattedText("%s - %s".. "\n" .."%s %s %s %s %s", K.Name, K.Realm, LEVEL, level, race, spec, localizedClass)
+	self.AFKMode.bottom.name:SetPoint("TOP", self.AFKMode.bottom.factionb, "BOTTOM", 0, 5)
 	self.AFKMode.bottom.name:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
 
 	self.AFKMode.bottom.guild = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.guild:SetFont(C.Media.Font, 20)
+	self.AFKMode.bottom.guild:SetFont(C.Media.Font, 18)
 	self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
-	self.AFKMode.bottom.guild:SetPoint("TOPLEFT", self.AFKMode.bottom.name, "BOTTOMLEFT", 0, -6)
+	self.AFKMode.bottom.guild:SetPoint("TOP", self.AFKMode.bottom.name, "BOTTOM", 0, -6)
+	self.AFKMode.bottom.guild:SetJustifyH("CENTER")
 	self.AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
-	self.AFKMode.bottom.time = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.time:SetFont(C.Media.Font, 20)
-	self.AFKMode.bottom.time:SetText("00:00")
-	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
-	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
 
-	-- NPC Model
+	self.AFKMode.bottom.time = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
+	self.AFKMode.bottom.time:SetFont(C.Media.Font, 30)
+	self.AFKMode.bottom.time:SetText("00:00")
+	self.AFKMode.bottom.time:SetPoint("LEFT", self.AFKMode.bottom, "LEFT", 25, 0)
+	self.AFKMode.bottom.time:SetTextColor(60/255, 155/255, 237/255)
+
+	--------------------
+	-- </ NPC Model > --
+	--------------------
 	self.AFKMode.bottom.npcHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.npcHolder:SetSize(150, 150)
 	self.AFKMode.bottom.npcHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 130)
-
 	self.AFKMode.bottom.npc = CreateFrame("PlayerModel", "KkthnxUIAFKNPCModel", self.AFKMode.bottom.npcHolder)
 	self.AFKMode.bottom.npc:SetCreature(85009)
 	self.AFKMode.bottom.npc:SetPoint("CENTER", self.AFKMode.bottom.npcHolder, "CENTER")
 	self.AFKMode.bottom.npc:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
 	self.AFKMode.bottom.npc:SetCamDistanceScale(6)
 	self.AFKMode.bottom.npc:SetFacing(15 * (math_pi/180))
-	-- self.AFKMode.bottom.npc:SetAnimation(26)
 
+	----------------------------------------------------------
 	-- </ Use this frame to control position of the model > --
+	----------------------------------------------------------
 	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.modelHolder:SetSize(150, 150)
 	self.AFKMode.bottom.modelHolder:SetPoint("BOTTOMRIGHT", self.AFKMode.bottom, "BOTTOMRIGHT", -200, 220)

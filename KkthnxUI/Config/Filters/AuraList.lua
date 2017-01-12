@@ -182,14 +182,14 @@ AuraList.Silence = {
 }
 
 AuraList.Taunt = {
-	56222,	-- Dark Command
-	57604,	-- Death Grip
-	20736,	-- Distracting Shot
-	6795,	-- Growl
 	116189,	-- Provoke
-	62124,	-- Reckoning
-	355,	-- Taunt
 	185245, -- Torment
+	20736, -- Distracting Shot
+	355,	-- Taunt
+	56222, -- Dark Command
+	57604, -- Death Grip
+	62124,	-- Reckoning
+	6795,	-- Growl
 }
 
 for k, v in pairs(AuraList) do

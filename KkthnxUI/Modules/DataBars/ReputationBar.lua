@@ -94,8 +94,12 @@ if C.DataBars.ReputationFade then
 	ReputationBar.Tooltip = true
 end
 
+ReputationBar:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE")
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ReputationBar:RegisterEvent("UPDATE_FACTION")
 ReputationBar:RegisterEvent("PLAYER_LEVEL_UP")
+ReputationBar:RegisterEvent("PLAYER_XP_UPDATE")
+ReputationBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
+ReputationBar:RegisterEvent("UPDATE_FACTION")
+
 ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)

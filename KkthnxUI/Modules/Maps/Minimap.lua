@@ -127,6 +127,8 @@ if GarrisonLandingPageMinimapButton and K.Level > 89 then
 			GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
 		end
 		if C.Minimap.FadeButtons then
+			GarrisonLandingPageMinimapButton.MinimapAlertAnim = K.Noop
+			GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim = K.Noop
 			GarrisonLandingPageMinimapButton:SetAlpha(0)
 			GarrisonLandingPageMinimapButton:HookScript("OnEnter", function() GarrisonLandingPageMinimapButton:FadeIn() end)
 			GarrisonLandingPageMinimapButton:HookScript("OnLeave", function() GarrisonLandingPageMinimapButton:FadeOut() end)

@@ -17,11 +17,9 @@
 .SetDebuffTypeColor [function] function(r, g, b) end
 --]=]
 
+local K, C, L = unpack(select(2, ...))
 local _, ns = ...
 local oUF = ns.oUF or oUF
-if not oUF then return end
-
-local PLAYER_CLASS = select(2, UnitClass"player")
 
 local bossDebuffPrio = 9999999
 local invalidPrio = -1
@@ -29,45 +27,130 @@ local auraFilters = {
 	["HARMFUL"] = true,
 }
 
-local debuffTypeColor = {
-	["none"] = {0, 0, 0},
+local DispellColor = {
+	["Magic"]	= {0.2, 0.6, 1},
+	["Curse"]	= {0.6, 0, 1},
+	["Disease"]	= {0.6, 0.4, 0},
+	["Poison"]	= {0, 0.6, 0},
+	["none"]	= {1, 1, 1},
 }
-for k, v in next, DebuffTypeColor do
-	if(k ~= "" and k ~= "none") then
-		debuffTypeColor[k] = { v.r, v.g, v.b }
+
+DispellColor.none = {1, 0, 0}
+
+local DispellPriority = {
+	["Magic"]	= 4,
+	["Curse"]	= 3,
+	["Disease"]	= 2,
+	["Poison"]	= 1,
+}
+
+local DispellFilter
+do
+	local dispellClasses = {
+		["DRUID"] = {
+			["Magic"] = false,
+			["Curse"] = true,
+			["Poison"] = true,
+		},
+		["MONK"] = {
+			["Magic"] = false,
+			["Poison"] = true,
+			["Disease"] = true,
+		},
+		["PALADIN"] = {
+			["Magic"] = false,
+			["Poison"] = true,
+			["Disease"] = true,
+		},
+		["PRIEST"] = {
+			["Magic"] = false,
+			["Disease"] = false,
+		},
+		["SHAMAN"] = {
+			["Magic"] = false,
+			["Curse"] = true,
+		},
+	}
+
+	DispellFilter = dispellClasses[K.Class] or {}
+end
+
+local function CheckSpec()
+	local spec = GetSpecialization()
+
+	if K.Class == "DRUID" then
+		if spec == 4 then
+			DispellFilter.Magic = true
+		else
+			DispellFilter.Magic = false
+		end
+	elseif K.Class == "MONK" then
+		if spec == 2 then
+			DispellFilter.Magic = true
+		else
+			DispellFilter.Magic = false
+		end
+	elseif K.Class == "PALADIN" then
+		if spec == 1 then
+			DispellFilter.Magic = true
+		else
+			DispellFilter.Magic = false
+		end
+	elseif K.Class == "PRIEST" then
+		if spec == 3 then
+			DispellFilter.Magic = false
+			DispellFilter.Disease = false
+		else
+			DispellFilter.Magic = true
+			DispellFilter.Disease = true
+		end
+	elseif K.Class == "SHAMAN" then
+		if spec == 3 then
+			DispellFilter.Magic = true
+		else
+			DispellFilter.Magic = false
+		end
 	end
 end
 
-local dispelPrio = {
-	["Magic"] = 4,
-	["Curse"] = 3,
-	["Disease"] = 2,
-	["Poison"] = 1,
-}
+local function formatTime(s)
+	if s > 60 then
+		return format("%dm", s/60), s%60
+	elseif s < 1 then
+		return format("%.1f", s), s - floor(s)
+	else
+		return format("%d", s), s - floor(s)
+	end
+end
 
-local dispelFilter = ({
-	PRIEST = { Magic = true, Disease = true, },
-	SHAMAN = { Magic = false, Curse = true, },
-	PALADIN = { Magic = false, Poison = true, Disease = true, },
-	DRUID = { Magic = false, Curse = true, Poison = true, },
-	MONK = { Magic = false, Poison = true, Disease = true, },
-})[PLAYER_CLASS]
+local abs = math.abs
+local function OnUpdate(self, elapsed)
+	self.elapsed = (self.elapsed or 0) + elapsed
+	if self.elapsed >= 0.1 then
+		local timeLeft = self.expirationTime - GetTime()
+		if self.reverse then timeLeft = abs((self.expirationTime - GetTime()) - self.duration) end
+		if timeLeft > 0 then
+			local text = formatTime(timeLeft)
+			self.time:SetText(text)
+		else
+			self:SetScript("OnUpdate", nil)
+			self.time:Hide()
+		end
+		self.elapsed = 0
+	end
+end
 
 local UpdateDebuffFrame = function(rd)
-	if(rd.PreUpdate) then
-		rd:PreUpdate()
-	end
+	if rd.index and rd.type and rd.filter then
+		local name, rank, icon, count, debuffType, duration, expirationTime, _, _, _, spellId, _, isBossDebuff = UnitAura(rd.__owner.unit, rd.index, rd.filter)
 
-	if(rd.index and rd.type and rd.filter) then
-		local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId, canApplyAura, isBossDebuff, value1, value2, value3 = UnitAura(rd.__owner.unit, rd.index, rd.filter)
-
-		if(rd.icon) then
+		if rd.icon then
 			rd.icon:SetTexture(icon)
 			rd.icon:Show()
 		end
 
-		if(rd.count) then
-			if count and (count > 0) then
+		if rd.count then
+			if count and (count > 1) then
 				rd.count:SetText(count)
 				rd.count:Show()
 			else
@@ -75,8 +158,27 @@ local UpdateDebuffFrame = function(rd)
 			end
 		end
 
-		if(rd.cd) then
-			if(duration and (duration > 0)) then
+		if spellId and K.RaidDebuffsReverse[spellId] then
+			rd.reverse = true
+		else
+			rd.reverse = nil
+		end
+
+		if rd.time then
+			rd.duration = duration
+			if duration and (duration > 0) then
+				rd.expirationTime = expirationTime
+				rd.nextUpdate = 0
+				rd:SetScript("OnUpdate", OnUpdate)
+				rd.time:Show()
+			else
+				rd:SetScript("OnUpdate", nil)
+				rd.time:Hide()
+			end
+		end
+
+		if rd.cd then
+			if duration and (duration > 0) then
 				rd.cd:SetCooldown(expirationTime - duration, duration)
 				rd.cd:Show()
 			else
@@ -84,28 +186,21 @@ local UpdateDebuffFrame = function(rd)
 			end
 		end
 
-		if(rd.SetDebuffTypeColor) then
-			local colors = rd.DebuffTypeColor or debuffTypeColor
-			local c = colors[debuffType] or colors.none or debuffTypeColor.none
-			rd:SetDebuffTypeColor(unpack(c))
-		end
+		local c = DispellColor[debuffType] or DispellColor.none
+		rd:SetBackdropBorderColor(c[1], c[2], c[3])
 
-		if(not rd:IsShown()) then
+		if not rd:IsShown() then
 			rd:Show()
 		end
 	else
-		if(rd:IsShown()) then
+		if rd:IsShown() then
 			rd:Hide()
 		end
-	end
-
-	if(rd.PostUpdate) then
-		rd:PostUpdate()
 	end
 end
 
 local Update = function(self, event, unit)
-	if(unit ~= self.unit) then return end
+	if unit ~= self.unit then return end
 	local rd = self.RaidDebuffs
 	rd.priority = invalidPrio
 
@@ -113,12 +208,12 @@ local Update = function(self, event, unit)
 		local i = 0
 		while(true) do
 			i = i + 1
-			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellId, canApplyAura, isBossDebuff, value1, value2, value3 = UnitAura(unit, i, filter)
-			if (not name) then break end
+			local name, rank, icon, count, debuffType, duration, expirationTime, _, _, _, spellId, _, isBossDebuff = UnitAura(unit, i, filter)
+			if not name then break end
 
-			if(rd.ShowBossDebuff and isBossDebuff) then
+			if rd.ShowBossDebuff and isBossDebuff then
 				local prio = rd.BossDebuffPriority or bossDebuffPrio
-				if(prio and prio > rd.priority) then
+				if prio and prio > rd.priority then
 					rd.priority = prio
 					rd.index = i
 					rd.type = "Boss"
@@ -126,18 +221,18 @@ local Update = function(self, event, unit)
 				end
 			end
 
-			if(rd.ShowDispelableDebuff and debuffType) then
-				local disPrio = rd.DispelPriority or dispelPrio
-				local disFilter = rd.DispelFilter or dispelFilter
+			if rd.ShowDispellableDebuff and debuffType then
+				local disPrio = rd.DispellPriority or DispellPriority
+				local disFilter = rd.DispellFilter or DispellFilter
 				local prio
 
-				if(rd.FilterDispelableDebuff and disFilter) then
+				if rd.FilterDispellableDebuff and disFilter then
 					prio = disFilter[debuffType] and disPrio[debuffType]
 				else
 					prio = disPrio[debuffType]
 				end
 
-				if(prio and (prio > rd.priority)) then
+				if prio and (prio > rd.priority) then
 					rd.priority = prio
 					rd.index = i
 					rd.type = "Dispel"
@@ -146,8 +241,18 @@ local Update = function(self, event, unit)
 			end
 
 			local prio = rd.Debuffs and rd.Debuffs[rd.MatchBySpellName and name or spellId]
-			if(prio and (prio > rd.priority)) then
-				rd.priority = prio
+			local prioPvP
+
+			if C.Raidframe.PvPDebuffs == true then
+			prioPvP = rd.Debuffs and K.PvPDebuffs[rd.MatchBySpellName and name or spellId]
+			end
+
+			if not K.RaidDebuffsIgnore[spellId] and (prio and (prio > rd.priority) or prioPvP and (prioPvP > rd.priority)) then
+				if (prio and not prioPvP) or ((prio and prioPvP) and prio > prioPvP) then
+					rd.priority = prio
+				else
+					rd.priority = prioPvP
+				end
 				rd.index = i
 				rd.type = "Custom"
 				rd.filter = filter
@@ -155,39 +260,13 @@ local Update = function(self, event, unit)
 		end
 	end
 
-	if(rd.priority == invalidPrio) then
+	if rd.priority == invalidPrio then
 		rd.index = nil
 		rd.filter = nil
 		rd.type = nil
 	end
 
-	return (rd.OverrideUpdateFrame or UpdateDebuffFrame) ( rd )
-end
-
-local talentTbl = ({
-	PALADIN = {
-		PALADIN_HOLY = "Magic",
-	},
-	SHAMAN = {
-		SHAMAN_RESTO = "Magic",
-	},
-	DRUID = {
-		DRUID_RESTO = "Magic",
-	},
-	MONK = {
-		MONK_MIST = "Magic",
-	}
-})[PLAYER_CLASS]
-
-local spellCheck = function()
-	local spec = GetSpecialization()
-	local id = spec and GetSpecializationInfo(spec)
-	local specText = id and SPEC_CORE_ABILITY_TEXT and SPEC_CORE_ABILITY_TEXT[id]
-	if(specText and talentTbl) then
-		for key, disp in next, talentTbl do
-			dispelFilter[disp] = key == specText
-		end
-	end
+	return UpdateDebuffFrame(rd)
 end
 
 local Path = function(self, ...)
@@ -198,32 +277,25 @@ local ForceUpdate = function(element)
 	return Path(element.__owner, "ForceUpdate", element.__owner.unit)
 end
 
-local f
 local Enable = function(self)
 	local rd = self.RaidDebuffs
-	if(rd) then
+	if rd then
 		self:RegisterEvent("UNIT_AURA", Path)
 		rd.ForceUpdate = ForceUpdate
 		rd.__owner = self
-
-		if(talentTbl and (not f) and (not rd.DispelFilter) and (not rd.Override)) then
-			f = CreateFrame"Frame"
-			f:SetScript("OnEvent", spellCheck)
-			f:RegisterEvent"PLAYER_TALENT_UPDATE"
-			f:RegisterEvent"CHARACTER_POINTS_CHANGED"
-			spellCheck()
-		end
-
 		return true
 	end
+	self:RegisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
+	CheckSpec()
 end
 
 local Disable = function(self)
-	if(self.RaidDebuffs) then
+	if self.RaidDebuffs then
 		self:UnregisterEvent("UNIT_AURA", Path)
 		self.RaidDebuffs:Hide()
 		self.RaidDebuffs.__owner = nil
 	end
+	self:UnregisterEvent("PLAYER_TALENT_UPDATE", CheckSpec)
 end
 
 oUF:AddElement("RaidDebuffs", Update, Enable, Disable)

@@ -128,6 +128,9 @@ end
 
 ArtifactBar:RegisterEvent("ARTIFACT_XP_UPDATE")
 ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ArtifactBar:RegisterEvent("PLAYER_LEVEL_UP")
 ArtifactBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
+ArtifactBar:RegisterEvent("UPDATE_FACTION")
+
 ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ArtifactBar:SetScript("OnEvent", UpdateArtifactBar)

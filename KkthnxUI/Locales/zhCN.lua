@@ -323,11 +323,8 @@ L.Tooltip = {
 	AchievementComplete = "您的状态:已完成",
 	AchievementIncomplete = "您的状态:未完成",
 	AchievementStatus = "您的状态:",
-	InspectOpen = "观察窗口已打开",
 	ItemCount = "物品数量:",
 	ItemID = "物品ID:",
-	Loading = "读取...",
-	NoTalents = "无天赋",
 	SpellID = "法术ID:"
 }
 

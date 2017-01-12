@@ -1,8 +1,10 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
-if not oUF then return end
+assert(oUF, 'oUF not loaded')
 
 local trinketSpells = {
+	[208683] = 120,
+	[195710] = 180,
 	[59752] = 120,
 	[42292] = 120,
 	[7744] = 45,
@@ -18,7 +20,7 @@ end
 
 local Update = function(self, event, ...)
 	local _, instanceType = IsInInstance();
-	if instanceType ~= "arena" then
+	if instanceType ~= 'arena' then
 		self.Trinket:Hide();
 		return;
 	else
@@ -39,7 +41,7 @@ local Update = function(self, event, ...)
 				self.Trinket.Icon:SetTexture(GetTrinketIcon(unit))
 			end
 		end
-	elseif event == "PLAYER_ENTERING_WORLD" then
+	elseif event == 'PLAYER_ENTERING_WORLD' then
 		CooldownFrame_Set(self.Trinket.cooldownFrame, 1, 1, 1)
 	end
 
@@ -53,15 +55,16 @@ local Enable = function(self)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update, true)
 
 		if not self.Trinket.cooldownFrame then
-			self.Trinket.cooldownFrame = CreateFrame("Cooldown", nil, self.Trinket)
+			self.Trinket.cooldownFrame = CreateFrame("Cooldown", nil, self.Trinket, "CooldownFrameTemplate")
 			self.Trinket.cooldownFrame:SetAllPoints(self.Trinket)
+			--	self.Trinket.cooldownFrame:SetHideCountdownNumbers(true)
 		end
 
 		if not self.Trinket.Icon then
 			self.Trinket.Icon = self.Trinket:CreateTexture(nil, "BORDER")
 			self.Trinket.Icon:SetAllPoints(self.Trinket)
 			self.Trinket.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-			self.Trinket.Icon:SetTexture(GetTrinketIcon("player"))
+			self.Trinket.Icon:SetTexture(GetTrinketIcon('player'))
 		end
 
 		return true
@@ -77,4 +80,4 @@ local Disable = function(self)
 	end
 end
 
-oUF:AddElement("Trinket", Update, Enable, Disable)
+oUF:AddElement('Trinket', Update, Enable, Disable)

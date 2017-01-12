@@ -103,8 +103,11 @@ local function SetChatStyle(frame)
 	}
 
 	frame:SetClampRectInsets(0, 0, 0, 0)
+	frame:SetHitRectInsets(0, 0, 0, 0)
 	frame:SetClampedToScreen(false)
-	frame:SetFading(false)
+	frame:SetFading(C.Chat.Fading)
+	frame:SetTimeVisible(C.Chat.FadingTimeVisible)
+	frame:SetFadeDuration(C.Chat.FadingTimeFading)
 
 	-- Move the chat edit box
 	editbox:ClearAllPoints()
