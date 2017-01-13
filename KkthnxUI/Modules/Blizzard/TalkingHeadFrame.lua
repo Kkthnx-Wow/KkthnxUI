@@ -17,14 +17,14 @@ local Movers = K.Movers
 -- Hide TalkingHeadFrame option
 if C.Blizzard.HideTalkingHead == true then
 	local HideTalkingHead = CreateFrame("Frame")
-	HideTalkingHead:RegisterEvent("PLAYER_ENTERING_WORLD")
+	HideTalkingHead:RegisterEvent("ADDON_LOADED")
 	HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
-		self:UnregisterEvent(event)
-
-		if addon == "Blizzard_TalkingHeadUI" then
+			if addon == "Blizzard_TalkingHeadUI" then
 			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
 				TalkingHeadFrame:Hide()
 			end)
+
+			self:UnregisterEvent(event)
 		end
 	end)
 end
