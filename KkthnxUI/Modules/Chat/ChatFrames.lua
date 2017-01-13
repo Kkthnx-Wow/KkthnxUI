@@ -278,20 +278,15 @@ local function SetupChatPosAndFont(self)
 		end
 
 		-- Position. Just to be safe here.
-		if C.Chat.Background == true then
-			if (index == 1) then
-				Frame:ClearAllPoints()
-				Frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 6)
-
-				FCF_SavePositionAndDimensions(Frame)
+		if index == 1 then
+			Frame:ClearAllPoints()
+			Frame:SetSize(C.Chat.Width, C.Chat.Height)
+			if C.Chat.Background == true then
+				Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5] + 4)
+			else
+				Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 			end
-		elseif C.Chat.Background == false then
-			if (index == 1) then
-				Frame:ClearAllPoints()
-				Frame:SetPoint(unpack(C.Position.Chat))
-
-				FCF_SavePositionAndDimensions(Frame)
-			end
+			FCF_SavePositionAndDimensions(Frame)
 		end
 	end
 end
@@ -363,7 +358,7 @@ end
 
 -- Reset chat command
 SLASH_CHATRESET1 = "/chatreset"
-SlashCmdList.CHATRESET = function() SetupChatPosAndFont(self) K.Print("Chat has been successfully reset!") end
+SlashCmdList.CHATRESET = function() SetupChatPosAndFont() K.Print("Chat has been successfully reset!") end
 
 -- Big Trade Chat
 local bigchat = false

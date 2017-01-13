@@ -1128,7 +1128,10 @@ local function CreateUnitLayout(self, unit)
 		self:RegisterEvent("UNIT_ENTERING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", UpdatePlayerFrame)
-		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame) -- </ Test > --
+		if event == "UPDATE_VEHICLE_ACTIONBAR" then
+			print(event)
+		end
+		-- self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame) -- </ Test > --
 	end
 
 	-- </ Focus & Target Frame > --

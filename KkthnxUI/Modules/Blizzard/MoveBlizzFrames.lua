@@ -5,7 +5,7 @@ if C.Misc.MoveBlizzard ~= true then return end
 local _G = _G
 local type = type
 
--- Global variables that we don't cache, list them here for the mikk"s Find Globals script
+-- Global variables that we don"t cache, list them here for the mikk"s Find Globals script
 -- GLOBALS: TradeSkillFrame, AchievementFrameHeader
 
 local MovableFrame = CreateFrame("Frame")
@@ -96,9 +96,13 @@ K.AddonsList = {
 
 function MovableFrame:MakeMovable(frame)
 	local name = frame:GetName()
-	if K.CheckAddOn('KkthnxUI') and name == 'LossOfControlFrame' then return end
+	-- if K.CheckAddOn("KkthnxUI") and name == "LossOfControlFrame" then
+	-- 	return
+	-- end
 
-	if name == "AchievementFrame" then AchievementFrameHeader:EnableMouse(false) end
+	if name == "AchievementFrame" then
+		AchievementFrameHeader:EnableMouse(false)
+	end
 
 	frame:EnableMouse(true)
 	frame:SetMovable(true)
