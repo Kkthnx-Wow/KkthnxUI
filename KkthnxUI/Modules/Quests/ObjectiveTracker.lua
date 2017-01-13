@@ -22,12 +22,17 @@ local Movers = K.Movers
 -- Blah some shit to skin the button.
 local function SetModifiedBackdrop(self)
 	if self.backdrop then self = self.backdrop end
-	self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+	self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b, C.Media.Border_Color[4])
+	self:SetBackdropColor(K.Color.r * .15, K.Color.g * .15, K.Color.b * .15, C.Media.Backdrop_Color[4])
 end
 
 local function SetOriginalBackdrop(self)
 	if self.backdrop then self = self.backdrop end
 	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	self:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	if C.Blizzard.ColorTextures == false then
+		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], C.Media.Border_Color[4])
+	end
 end
 
 -- Blah blah blah. You get the idea.

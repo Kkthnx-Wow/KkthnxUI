@@ -213,20 +213,16 @@ end
 oUF.Tags.Events["KkthnxUI:RaidRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED"
 oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
+	local string = ""
+
 	if role then
 		if role == "TANK" then
-			return "|cff0070DET|r"
+			string = "|cff0099CCT|r"
 		elseif role == "HEALER" then
-			return "|cff00CC12H|r"
-		elseif role == "DAMAGER" then
-			return "" -- We do not need to be spammed :D
-		elseif role == "NONE" then
-			return ""
+			string = "|cff00FF00H|r"
 		end
 
-		return role
-	else
-		return ""
+		return string
 	end
 end
 

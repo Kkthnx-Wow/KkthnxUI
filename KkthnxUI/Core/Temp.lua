@@ -24,17 +24,16 @@ local K, C, L = unpack(select(2, ...))
 -- 	return PVPEmotes[math_random(1, #(PVPEmotes))]
 -- end
 --
+-- PVPEmoteMessages:RegisterEvent("PLAYER_LOGIN")
 -- PVPEmoteMessages:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
--- PVPEmoteMessages:SetScript("OnEvent", function(self, event, ...)
---   local eventType, _, sourceGUID, _, _, _, destGUID = ...
--- 	if eventType == "PARTY_KILL" then
--- 		if sourceGUID == UnitGUID("player") then
---       local tarName = select(8, ...)
--- 			if select(3, GetAchievementInfo(247)) then
--- 				DoEmote(GetRandomEmote(), tarName)
--- 			else
--- 				DoEmote("HUG", tarName)
--- 			end
+-- PVPEmoteMessages:SetScript("OnEvent", function(_, _, _, event, _, sourceGUID, sourceName, _, _, destGUID, destName,  destFlags)
+-- 	local playerid = UnitGUID("player")
+--
+-- 	if event == "PARTY_KILL" and sourceGUID == playerid then
+-- 		if select(3, GetAchievementInfo(247)) then
+-- 			DoEmote(GetRandomEmote(), destName)
+-- 		else
+-- 			DoEmote("HUG", destName)
 -- 		end
 -- 	end
 -- end)
