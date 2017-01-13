@@ -51,12 +51,16 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		Button:SetAttribute("showgrid", 1)
 	end
 
-	hooksecurefunc("TalentFrame_LoadUI", function()
+	if PlayerTalentFrame then
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
+	end
 
 	hooksecurefunc("ActionButton_OnEvent", function(self, event)
-		if (event == "PLAYER_ENTERING_WORLD") then
+		if event == "PLAYER_ENTERING_WORLD" then
 			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
 			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
@@ -66,17 +70,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	MainMenuBar.slideOut.IsPlaying = function()
 		return true
 	end
-
-	InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.00001)
-	InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
-	InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.00001)
-	InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
-	InterfaceOptionsActionBarsPanelRight:SetScale(0.00001)
-	InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
-	InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.00001)
-	InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
-	InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetScale(0.00001)
-	InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
 end)
 
 function RightBarMouseOver(alpha)

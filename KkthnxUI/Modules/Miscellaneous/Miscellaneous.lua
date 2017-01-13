@@ -112,10 +112,11 @@ local CombatState = CreateFrame("Frame")
 CombatState:RegisterEvent("PLAYER_REGEN_ENABLED")
 CombatState:RegisterEvent("PLAYER_REGEN_DISABLED")
 CombatState:SetScript("OnEvent", function(self, event)
-	if event == ("PLAYER_REGEN_DISABLED") then
-    UIErrorsFrame:AddMessage("+ Combat", 1, 1, 1)
-  elseif event == ("PLAYER_REGEN_ENABLED") then
-    UIErrorsFrame:AddMessage("- Combat", 1, 1, 1)
+	if not C.Misc.CombatState then return end
+	if event == "PLAYER_REGEN_DISABLED" then
+		UIErrorsFrame:AddMessage("+ " .. COMBAT, 1, 1, 1)
+  elseif event == "PLAYER_REGEN_DISABLED" then
+    UIErrorsFrame:AddMessage("- " .. COMBAT, 1, 1, 1)
   end
 end)
 
@@ -125,7 +126,7 @@ PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_ALLIANCE")
 PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_NEUTRAL")
 PVPMessageEnhancement:SetScript("OnEvent", function(self, _, msg)
-	-- if not C.Misc.EnhancedPvpMessages then return end
+	if not C.Misc.EnhancedPvpMessages then return end
 	local _, instanceType = IsInInstance()
 	if instanceType == "pvp" or instanceType == "arena" then
 		RaidNotice_AddMessage(RaidBossEmoteFrame, msg, ChatTypeInfo["RAID_BOSS_EMOTE"])
@@ -147,6 +148,9 @@ ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
+		if event == "PLAYER_ENTERING_WORLD" then
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
 	end
 end)
 
@@ -250,9 +254,7 @@ QuestTracking:SetScript("OnEvent", function(self, event)
 		else
 			K.LockCVar("showQuestTrackingTooltips", 1)
 		end
-	end
 
-	if event == "PLAYER_ENTERING_WORLD" then
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end)

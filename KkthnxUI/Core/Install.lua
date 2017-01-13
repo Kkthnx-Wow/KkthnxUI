@@ -586,7 +586,7 @@ end
 local Install = CreateFrame("Frame")
 Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then return end
+	if addon ~= "KkthnxUI" then return end
 
 	-- Create empty saved vars if they doesn"t exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end

@@ -22,9 +22,9 @@ local statedriver = {
 		ObjectiveTracker_Collapse(watchFrame)
 		ObjectiveTrackerFrame:Show()
 	end,
-	["HIDDEN"] = function(frame)
-		ObjectiveTrackerFrame:Hide()
-	end,
+	-- ["HIDDEN"] = function(frame)
+	-- 	ObjectiveTrackerFrame:Hide()
+	-- end,
 }
 
 local AutoCollapse = CreateFrame("Frame")
@@ -42,13 +42,15 @@ AutoCollapse:SetScript("OnEvent", function(self, event)
 		elseif instanceType == "arena" then
 			statedriver["COLLAPSED"](watchFrame)
 		elseif instanceType == "party" then
-			statedriver["HIDDEN"](watchFrame)
+			statedriver["COLLAPSED"](watchFrame)
 		elseif instanceType == "raid" then
-			statedriver["HIDDEN"](watchFrame)
+			statedriver["COLLAPSED"](watchFrame)
 		else
 			statedriver["NONE"](watchFrame)
 		end
 	end
 
-	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	if event == "PLAYER_REGEN_ENABLED" then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	end
 end)
