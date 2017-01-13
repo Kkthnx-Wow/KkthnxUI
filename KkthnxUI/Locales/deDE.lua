@@ -12,7 +12,7 @@ L.AFKScreen = {
 	Thu = "Donnerstag",
 	Fri = "Freitag",
 	Sat = "Samstag",
-	Jan = "Jänner",
+	Jan = "Januar",
 	Feb = "Februar",
 	Mar = "März",
 	Apr = "April",
@@ -65,8 +65,8 @@ L.Bind = {
 -- Chat Localization
 L.Chat = {
 	AFK = "|cffff0000[AFK]|r",
-	BigChatOff = "Big chat feature deactivated",
-	BigChatOn = "Big chat feature activated",
+	BigChatOff = "Großer Chat deaktiviert",
+	BigChatOn = "Großer Chat aktiviert",
 	DND = "|cffe7e716[DND]|r",
 	Guild = "G",
 	GuildRecruitment = "GildenRekrutierung",
@@ -84,15 +84,15 @@ L.Chat = {
 
 -- ToggleButton Localization
 L.ToggleButton = {
-	Config = "Toggle KkthnxUI Config",
-	Functions = "ToggleButton functions:",
-	LeftClick = "Left click:",
-	MiddleClick = "Middle click:",
-	MoveUI = "Toggle Move UI",
-	Recount = "Toggle Recount",
-	RightClick = "Right click:",
-	ShiftClick = "Shift + click:",
-	Skada = "Toggle Skada",
+	Config = "Zeige/Verstecke KkthnxUI Konfiguration",
+	Functions = "Button Funktionen:",
+	LeftClick = "Links-Klick:",
+	MiddleClick = "Mittel-Klick:",
+	MoveUI = "UI bewegen",
+	Recount = "Zeige/Verstecke Recount",
+	RightClick = "Rechts-Klick:",
+	ShiftClick = "Shift + Klick:",
+	Skada = "Zeige/Verstecke Skada",
 }
 
 -- Cooldowns
@@ -100,7 +100,7 @@ L.Cooldowns = {
 	Cooldowns = "CD: ",
 	CombatRes = "BattleRes",
 	CombatResRemainder = "Battle Resurrection: ",
-	NextTime = "Next time: "
+	NextTime = "Zeit bis: "
 }
 
 -- DataBars Localization
@@ -112,37 +112,37 @@ L.DataBars = {
 
 -- DataText Localization
 L.DataText = {
-	Bandwidth = "Bandwidth",
-	BaseAssault = "Bases Assaulted:",
-	BaseDefend = "Bases Defended:",
-	CartControl = "Carts Controlled:",
-	Damage = "Damage: ",
-	DamageDone = "Damage Done:",
-	Death = "Deaths:",
-	DemolisherDestroy = "Demolishers Destroyed:",
+	Bandwidth = "Bandbreite",
+	BaseAssault = "Stützpunkte angegriffen:",
+	BaseDefend = "Stützpunkte verteidigt:",
+	CartControl = "Loren kontrolliert:",
+	Damage = "Schaden: ",
+	DamageDone = "Verursachter Schaden:",
+	Death = "Tode:",
+	DemolisherDestroy = "Verwüster zerstört:",
 	Download = "Download",
-	FlagCapture = "Flags Captured:",
-	FlagReturn = "Flags Returned:",
-	GateDestroy = "Gates Destroyed:",
-	GraveyardAssault = "Graveyards Assaulted:",
-	GraveyardDefend = "Graveyards Defended:",
-	Healing = "Healing: ",
-	HealingDone = "Healing Done:",
-	HomeLatency = "Home Latency:",
-	Honor = "Honor: ",
-	HonorableKill = "Honorable Kills:",
-	HonorGained = "Honor Gained:",
-	KillingBlow = "Killing Blows: ",
-	MemoryUsage = "(Hold Shift) Memory Usage",
-	OrbPossession = "Orb Possessions:",
-	SavedDungeons = "Saved Dungeon(s)",
-	SavedRaids = "Saved Raid(s)",
-	StatsFor = "Stats for ",
-	TotalCPU = "Total CPU:",
-	TotalMemory = "Total Memory:",
-	TowerAssault = "Towers Assaulted:",
-	TowerDefend = "Towers Defended:",
-	VictoryPts = "Victory Points:"
+	FlagCapture = "Flaggen eingenommen:",
+	FlagReturn = "Flaggen zurückgebracht:",
+	GateDestroy = "Tore zerstört:",
+	GraveyardAssault = "Friedhöfe angegriffen:",
+	GraveyardDefend = "Friedhöfe verteidigt:",
+	Healing = "Heilung: ",
+	HealingDone = "Verursachte Heilung:",
+	HomeLatency = "Heimlatenz:",
+	Honor = "Ehre: ",
+	HonorableKill = "Ehrenhafte Tötungen:",
+	HonorGained = "Ehre erhalten:",
+	KillingBlow = "Todesstöße: ",
+	MemoryUsage = "(Halte Shift) Speichervrebrauch",
+	OrbPossession = "Kugel in Besitz:",
+	SavedDungeons = "Gespeicherte(r) Dungeon(s)",
+	SavedRaids = "Gespeicherte(r) Raid(s)",
+	StatsFor = "Stats für ",
+	TotalCPU = "CPU Gesamt:",
+	TotalMemory = "Speichernutzung Übersicht:",
+	TowerAssault = "Türme angegriffen:",
+	TowerDefend = "Türme verteidigt:",
+	VictoryPts = "Siegpunkte:"
 }
 
 -- headers
@@ -174,19 +174,19 @@ L.Install = {
 	Step3Line1 = "The third and final step applies for the default frame positions.",
 	Step3Line2 = "This step is |cffff0000recommended|r for new users.",
 	Step3Line3 = "",
-	Step3Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step4Line1 = "Installation is complete.",
-	Step4Line2 = "Please click the 'Finish' button to reload the UI.",
+	Step3Line4 = "Klicke auf 'Fortfahren' um die Einstellungen zu übernehmen, oder klicke auf 'Überspringen' wenn du diesen Installationschritt überspringen möchtest.",
+	Step4Line1 = "Installation erfolgreich abgeschlossen.",
+	Step4Line2 = "Bitte klick auf 'Fertigstellen' um das UI neu zu laden.",
 	Step4Line3 = "",
-	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r",
-	ButtonTutorial = "Tutorial",
-	ButtonInstall = "Install",
-	ButtonNext = "Next",
-	ButtonSkip = "Skip",
-	ButtonContinue = "Continue",
-	ButtonFinish = "Finish",
-	ButtonClose = "Close",
-	Complete = "Installation Complete"
+	Step4Line4 = "Genieße KkthnxUI! Besuche uns bei Discord @ |cff748BD9discord.gg/Kjyebkf|r",
+	ButtonTutorial = "Anleitung",
+	ButtonInstall = "Installieren",
+	ButtonNext = "Weiter",
+	ButtonSkip = "Überspringen",
+	ButtonContinue = "Forfahren",
+	ButtonFinish = "Fertigstellen",
+	ButtonClose = "Schließen",
+	Complete = "Installation Abgeschlossen"
 }
 
 -- tutorial 1
@@ -292,7 +292,7 @@ L.Misc = {
 	CopperShort = "|cffeda55fc|r",
 	GoldShort = "|cffffd700g|r",
 	SilverShort = "|cffc7c7cfs|r",
-	UIOutdated = "Achtung! Deine Version von KkthnxUI ist veraltet. Du kansnt die neueste Version von Curse.com downloaden. Benutzte die Curse App und lasse Deine KkthnxUI automatisch vom Client aktualisieren!",
+	UIOutdated = "Achtung! Deine Version von KkthnxUI ist veraltet. Du kannst die neueste Version von Curse.com downloaden. Benutzte die Curse App und lasse Deine KkthnxUI automatisch vom Client aktualisieren!",
 	Undress = "Ausziehen"
 }
 
@@ -300,7 +300,7 @@ L.Popup = {
 	Armory = "Armory",
 	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
 	BoostUI = "|cffff0000WARNUNG|r |n|nDiese Einstellung optimiert Deine Performance indem die Grafikdetails runtergesetzt werden. Klicke nur auf Annehmen wenn Du massive |cffff0000FPS|r Probleme hast!|r",
-	DisableUI = "KkthnxUI might not work for this resolution, do you want to disable KkthnxUI? (Cancel if you want to try another resolution)",
+	DisableUI = "KkthnxUI funktioniert mit deiner eingestellten Auflösung wahrscheinlich nicht, möchtest du KkthnxUI deaktivieren? (Wähle Abbrechen, wenn du eine andere Auflösung einstellen magst)",
 	DisbandRaid = "Bist Du sicher, dass Du den Schlachtzug auflösen willst?",
 	FixActionbars = "Etwas stimmt mit den Aktionsleisten nicht. Möchtest Du das UI neu laden um diesen Fehler zu beheben?",
 	InstallUI = "Danke das du |cff3c9bedKkthnxUI|r verwendest! |n|nSobald Du auf 'Annehmen' klickst, beginnen wir mit der Installation.",
@@ -309,7 +309,7 @@ L.Popup = {
 	ResetUI = "Bist Du sicher, dass Du alle Einstellungen von |cff3c9bedKkthnxUI|r zurücksetzen willst?",
 	ResolutionChanged = "Deine Grafikauflösung wurde geändert und der Spieleclient muss neu gestartet werden. Möchtest Du das Spiel jetzt neu starten?",
 	SettingsAll = "|cffff0000WARNUNG|r |n|nWenn Du auf Annehmen klickst werden alle Einstellungen für die Addons übernommen, die von |cff3c9bedKkthnxUI|r unterstützt werden. Diese Einstellungen sind unwirksam, wenn keine unterstützten Addons installiert sind.",
-	SettingsBW = "Need to change the position of elements BigWigs.",
+	SettingsBW = "Einige Elemente von BigWigs müssen verschoben werden.",
 	SettingsDBM = "Wir müssen die Leistenpositionen von |cff3c9bedDBM|r ändern.",
 }
 
