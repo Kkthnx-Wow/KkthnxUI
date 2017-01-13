@@ -146,7 +146,9 @@ local ForceCVar = CreateFrame("Frame")
 ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
 
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
@@ -239,13 +241,7 @@ end
 -- Disable QuestTrackingTooltips while in raid and in combat
 -- This can become a spam fest when you have 20+ people on the same quest!
 local QuestTracking = CreateFrame("Frame")
-QuestTracking:RegisterEvent("PLAYER_ENTERING_WORLD")
 QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
 QuestTracking:SetScript("OnEvent", function(self, event)
-	local _, instanceType = IsInInstance()
-	if instanceType == "raid" then
-		K.LockCVar("showQuestTrackingTooltips", 0)
-	else
-		K.LockCVar("showQuestTrackingTooltips", 1)
-	end
+	K.LockCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
 end)

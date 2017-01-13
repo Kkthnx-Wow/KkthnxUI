@@ -165,9 +165,6 @@ function WorldMap:Enable()
 		WorldMap:PositionCoords()
 
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 	end
 
 	if (C.WorldMap.SmallWorldMap) then
@@ -181,12 +178,6 @@ function WorldMap:Enable()
 			self:SetLargeWorldMap()
 		elseif WORLDMAP_SETTINGS.size == WORLDMAP_WINDOWED_SIZE then
 			self:SetSmallWorldMap()
-		end
-
-		if event == "PLAYER_REGEN_ENABLED" then
-			self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		elseif event == "PLAYER_REGEN_DISABLED" then
-			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 		end
 	end
 

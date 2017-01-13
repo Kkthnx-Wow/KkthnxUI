@@ -298,10 +298,6 @@ function K.CreateAuraWatch(self, unit)
 	auras.icons = {}
 	auras.PostCreateIcon = K.CreateAuraWatchIcon
 
-	-- if not then
-	-- 	auras.hideCooldown = true
-	-- end
-
 	local buffs = {}
 	if K.RaidBuffs["ALL"] then
 		for key, value in pairs(K.RaidBuffs["ALL"]) do

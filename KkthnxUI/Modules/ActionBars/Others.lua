@@ -38,9 +38,7 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 	local Installed = KkthnxUIDataPerChar.Install
 	if Installed then

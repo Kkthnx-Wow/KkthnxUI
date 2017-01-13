@@ -13,11 +13,9 @@ function KkthnxUIAuras:Enable()
 	local EnterWorld = CreateFrame("Frame")
 	EnterWorld:RegisterEvent("PLAYER_ENTERING_WORLD")
 	EnterWorld:SetScript("OnEvent", function(self, event)
-		KkthnxUIAuras:OnEnterWorld()
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
+		KkthnxUIAuras:OnEnterWorld()
 	end)
 end
 

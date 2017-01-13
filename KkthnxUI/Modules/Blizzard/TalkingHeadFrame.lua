@@ -15,19 +15,18 @@ local TalkingHead = CreateFrame("Frame")
 local Movers = K.Movers
 
 -- Hide TalkingHeadFrame option
-if C.Blizzard.HideTalkingHead == true then
-	local HideTalkingHead = CreateFrame("Frame")
-	HideTalkingHead:RegisterEvent("ADDON_LOADED")
-	HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
-			if addon == "Blizzard_TalkingHeadUI" then
-			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-				TalkingHeadFrame:Hide()
-			end)
+local HideTalkingHead = CreateFrame("Frame")
+HideTalkingHead:RegisterEvent("ADDON_LOADED")
+HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
+	if C.Blizzard.HideTalkingHead ~= true then return end
+	if addon == "Blizzard_TalkingHeadUI" then
+		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
+			TalkingHeadFrame:Hide()
+		end)
 
-			self:UnregisterEvent(event)
-		end
-	end)
-end
+		self:UnregisterEvent("ADDON_LOADED")
+	end
+end)
 
 -- Main script
 function TalkingHead:ScaleTalkingHeadFrame()
@@ -86,7 +85,7 @@ function TalkingHead:PositionTalkingHead()
 		local f = CreateFrame("Frame")
 		f:RegisterEvent("PLAYER_ENTERING_WORLD")
 		f:SetScript("OnEvent", function(self, event)
-			self:UnregisterEvent(event)
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 			TalkingHead_LoadUI()
 			InitializeTalkingHead()
