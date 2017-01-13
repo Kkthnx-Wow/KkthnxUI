@@ -721,8 +721,8 @@ local function CreateUnitLayout(self, unit)
 	self.Health.PostUpdate = K.PostUpdateHealth
 	self.Health.frequentUpdates = true
 	if C.Unitframe.Smooth then
-			self.Health.Smooth = true
-  end
+		self.Health.Smooth = true
+	end
 
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
@@ -746,8 +746,8 @@ local function CreateUnitLayout(self, unit)
 	self.Power.PostUpdate = K.PostUpdatePower
 	self.Power.colorPower = true
 	if C.Unitframe.Smooth then
-			self.Power.Smooth = true
-  end
+		self.Power.Smooth = true
+	end
 
 	-- Power Text
 	if (data.mpt) then
@@ -1264,13 +1264,7 @@ local function CreateUnitLayout(self, unit)
 		self.Debuffs.CustomFilter = K.CustomAuraFilters.boss
 	end
 
-	-- OOR and oUF_SpellRange
-	if not self:IsElementEnabled("Range") then
-		self:EnableElement("Range")
-	end
-
-	self.SpellRange = true
-
+	-- Range Fader (We use oUF_SpellRange)
 	self.SpellRange = {
 		insideAlpha = 1,
 		outsideAlpha = C.UnitframePlugins.OORAlpha,

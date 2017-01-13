@@ -21,7 +21,7 @@ local Windowed = Display_DisplayModeDropDown:windowedmode()
 local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
 local RoleUpdater = CreateFrame("Frame")
 
-local CheckRole = function(self, event)
+local function CheckRole(self, event)
 	local Tank = "TANK"
 	local Melee = "MELEE"
 	local Caster = "CASTER"
@@ -35,14 +35,14 @@ local CheckRole = function(self, event)
 		MAGE = {Caster, Caster, Caster},
 		MONK = {Tank, Healer, Melee},
 		PALADIN = {Healer, Tank, Melee},
-		PRIEST = {Healer, Caster, Healer},
+		PRIEST = {Healer, Healer, Caster},
 		ROGUE = {Melee, Melee, Melee},
 		SHAMAN = {Caster, Melee, Healer},
 		WARLOCK = {Caster, Caster, Caster},
 		WARRIOR = {Melee, Melee, Tank}
 	}
 
-	local Specialization = GetSpecialization()
+	local Specialization = GetSpecialization() or 0
 	local Class = select(2, UnitClass("player"))
 	return Roles[Class][Specialization]
 end
@@ -55,7 +55,7 @@ K.Unit = UnitGUID("player")
 K.Name = UnitName("player")
 K.Class = select(2, UnitClass("player"))
 K.Role = CheckRole("player")
-K.CheckRole = CheckRole
+K.Spec = GetSpecialization() or 0
 K.Race = select(2, UnitRace("player"))
 K.Level = UnitLevel("player")
 K.Client = GetLocale()
@@ -81,7 +81,7 @@ RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
 RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
 RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
 RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-RoleUpdater:SetScript("OnEvent", K.CheckRole)
+RoleUpdater:SetScript("OnEvent", CheckRole)
 
 SLASH_RELOADUI1, SLASH_RELOADUI2 = "/rl", "/reloadui"
 SlashCmdList["RELOADUI"] = ReloadUI
