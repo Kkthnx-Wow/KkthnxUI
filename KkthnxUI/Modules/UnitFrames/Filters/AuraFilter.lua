@@ -59,9 +59,7 @@ local BaseAuras = {
 	[63436] = 3, -- Thunder Bluff Champion"s Pennant
 	[63501] = 3, -- Argent Crusade Champion"s Pennant
 
-	----------------------------------------------
 	-- </ Unsure about hiding this right now. > --
-	----------------------------------------------
 	[113942] = 3, -- Demonic: Gateway
 	[114216] = 3, -- Angelic Bulwark
 	[117870] = 3, -- Touch of The Titans
@@ -115,28 +113,6 @@ local auraFilters = {
 	arenaFilter,
 	bossFilter
 }
-
-local WipeFilters = CreateFrame("Frame")
-WipeFilters:RegisterEvent("PLAYER_LOGIN")
-WipeFilters:SetScript("OnEvent", function(self, event)
-	if event ~= ("PLAYER_LOGIN") then return end
-
-	for _, list in ipairs(auraFilters) do
-		wipe(list)
-	end
-
-	for _, obj in pairs(oUF.objects) do
-		if obj.Auras then
-			obj.Auras:ForceUpdate()
-		end
-		if obj.Buffs then
-			obj.Buffs:ForceUpdate()
-		end
-		if obj.Debuffs then
-			obj.Debuffs:ForceUpdate()
-		end
-	end
-end)
 
 local isPlayer = {player = true, pet = true, vehicle = true}
 

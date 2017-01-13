@@ -337,7 +337,7 @@ local function CreateRaidLayout(self, unit)
 	self.ReadyCheck:SetSize(20, 20)
 
 	-- AuraWatch (corner and center icon)
-	if C.Raidframe.AuraWatch == true then
+	if C.Raidframe.AuraWatch == true and not (self:GetAttribute("unitsuffix") == "pet" or self:GetAttribute("unitsuffix") == "target" or self:GetAttribute("unitsuffix") == "targettarget") then
 		K.CreateAuraWatch(self, unit)
 
 		-- Raid debuffs

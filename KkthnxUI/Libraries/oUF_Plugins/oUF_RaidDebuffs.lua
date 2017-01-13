@@ -76,28 +76,26 @@ do
 end
 
 local function CheckSpec()
-	local spec = GetSpecialization()
-
 	if K.Class == "DRUID" then
-		if spec == 4 then
+		if K.Spec == 4 then
 			DispellFilter.Magic = true
 		else
 			DispellFilter.Magic = false
 		end
 	elseif K.Class == "MONK" then
-		if spec == 2 then
+		if K.Spec == 2 then
 			DispellFilter.Magic = true
 		else
 			DispellFilter.Magic = false
 		end
 	elseif K.Class == "PALADIN" then
-		if spec == 1 then
+		if K.Spec == 1 then
 			DispellFilter.Magic = true
 		else
 			DispellFilter.Magic = false
 		end
 	elseif K.Class == "PRIEST" then
-		if spec == 3 then
+		if K.Spec == 3 then
 			DispellFilter.Magic = false
 			DispellFilter.Disease = false
 		else
@@ -105,7 +103,7 @@ local function CheckSpec()
 			DispellFilter.Disease = true
 		end
 	elseif K.Class == "SHAMAN" then
-		if spec == 3 then
+		if K.Spec == 3 then
 			DispellFilter.Magic = true
 		else
 			DispellFilter.Magic = false
