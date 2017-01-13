@@ -140,10 +140,4 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	if C.Minimap.Enable then
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
-
-	if event == "ADDON_LOADED" then
-		self:UnregisterEvent("ADDON_LOADED")
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	end
 end)

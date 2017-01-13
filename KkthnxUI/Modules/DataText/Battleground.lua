@@ -163,7 +163,3 @@ DataTextBG:SetScript("OnUpdate", OnUpdate)
 DataTextBG:SetScript("OnEvent", OnEvent)
 DataTextBG:SetScript("OnEnter", OnEnter)
 DataTextBG:SetScript("OnLeave", OnLeave)
-
-if event == "PLAYER_ENTERING_WORLD" then
-	DataTextBG:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end

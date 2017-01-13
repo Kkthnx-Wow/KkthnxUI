@@ -24,6 +24,8 @@ local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
 DisableBlizzard:SetScript("OnEvent", function(self, event)
+	SetCVar("alwaysShowActionBars", 1)
+
 	for _, Frame in pairs({
 		MainMenuBar,
 		MainMenuBarArtFrame,
@@ -173,10 +175,6 @@ EventSpiral:SetScript("OnEvent", function()
 
 	if C.ActionBar.StanceBarMouseover == true and C.ActionBar.StanceBarHorizontal == true then
 		StanceBarMouseOver(0)
-	end
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end)
 

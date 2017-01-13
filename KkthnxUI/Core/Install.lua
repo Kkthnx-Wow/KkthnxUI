@@ -620,9 +620,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 		print("|cffffff00"..L.Welcome.Line4.."|cffffff00"..L.Welcome.Line5.."|r")
 	end
 
-	if event == "ADDON_LOADED" then
-		self:UnregisterEvent("ADDON_LOADED")
-	end
+	self:UnregisterEvent("ADDON_LOADED")
 end)
 
 SLASH_TUTORIAL1, SLASH_TUTORIAL2 = "/uihelp", "/tutorial"

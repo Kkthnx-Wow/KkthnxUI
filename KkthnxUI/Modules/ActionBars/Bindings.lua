@@ -283,7 +283,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 			self.enabled = false
 			self:HideFrame()
-			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			if event == "PLAYER_REGEN_DISABLED" then
+				self:UnregisterEvent("PLAYER_REGEN_DISABLED")
+			end
 			StaticPopup_Hide("KEYBIND_MODE")
 			if C.ActionBar.RightBarsMouseover == true then
 				RightBarMouseOver(0)

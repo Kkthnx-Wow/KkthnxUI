@@ -115,9 +115,9 @@ CombatState:SetScript("OnEvent", function(self, event)
 	if not C.Misc.CombatState then return end
 	if event == "PLAYER_REGEN_DISABLED" then
 		UIErrorsFrame:AddMessage("+ " .. COMBAT, 1, 1, 1)
-  elseif event == "PLAYER_REGEN_DISABLED" then
-    UIErrorsFrame:AddMessage("- " .. COMBAT, 1, 1, 1)
-  end
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		UIErrorsFrame:AddMessage("- " .. COMBAT, 1, 1, 1)
+	end
 end)
 
 -- Display battleground messages in the middle of the screen.
@@ -146,11 +146,10 @@ local ForceCVar = CreateFrame("Frame")
 ForceCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ForceCVar:RegisterEvent("CVAR_UPDATE")
 ForceCVar:SetScript("OnEvent", function(self, event)
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
 	if not GetCVarBool("lockActionBars") and C.ActionBar.Enable then
 		SetCVar("lockActionBars", 1)
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
 	end
 end)
 
@@ -230,10 +229,6 @@ if C.Misc.BGSpam == true then
 	Fixer:RegisterEvent("PLAYER_ENTERING_WORLD")
 	Fixer:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 	Fixer:SetScript("OnEvent", DisableSpam)
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
 end
 
 -- Boss Banner Hider
@@ -247,14 +242,10 @@ local QuestTracking = CreateFrame("Frame")
 QuestTracking:RegisterEvent("PLAYER_ENTERING_WORLD")
 QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
 QuestTracking:SetScript("OnEvent", function(self, event)
-	if event == ("PLAYER_ENTERING_WORLD") then
-		local _, instanceType = IsInInstance()
-		if instanceType == "raid" then
-			K.LockCVar("showQuestTrackingTooltips", 0)
-		else
-			K.LockCVar("showQuestTrackingTooltips", 1)
-		end
-
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	local _, instanceType = IsInInstance()
+	if instanceType == "raid" then
+		K.LockCVar("showQuestTrackingTooltips", 0)
+	else
+		K.LockCVar("showQuestTrackingTooltips", 1)
 	end
 end)

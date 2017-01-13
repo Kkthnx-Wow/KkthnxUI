@@ -312,12 +312,12 @@ UIChat:RegisterEvent("PLAYER_ENTERING_WORLD")
 UIChat:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" then
 		if addon == "Blizzard_CombatLog" then
-			SetupChat(self)
 			self:UnregisterEvent("ADDON_LOADED")
+			SetupChat(self)
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		SetupChatPosAndFont(self)
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		SetupChatPosAndFont(self)
 	end
 end)
 

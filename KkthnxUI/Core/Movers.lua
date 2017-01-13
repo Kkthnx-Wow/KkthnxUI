@@ -225,12 +225,6 @@ Movers:SetScript("OnEvent", function(self, event)
 			end
 		end
 	end
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	elseif event == "PLAYER_REGEN_DISABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	end
 end)
 
 SLASH_MOVING1 = "/moveui"

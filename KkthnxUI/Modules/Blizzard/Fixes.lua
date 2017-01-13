@@ -20,12 +20,9 @@ local SpellBookTaint = CreateFrame("Frame")
 SpellBookTaint:RegisterEvent("ADDON_LOADED")
 SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
 	if addon ~= "KkthnxUI" then return end
+
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
-
-	if event == "ADDON_LOADED" then
-		self:UnregisterEvent("ADDON_LOADED")
-	end
 end)
 
 -- </ Fix RemoveTalent() taint > --
