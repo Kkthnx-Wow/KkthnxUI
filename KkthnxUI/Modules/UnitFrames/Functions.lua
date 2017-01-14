@@ -39,28 +39,27 @@ local oUF = ns.oUF or oUF
 local colors = K.Colors
 
 function K.MatchUnit(unit)
-	if (unit:match("vehicle")) then
+	if (unit and unit:match("vehicle")) then
 		return "player"
-	elseif (unit:match("party%d")) then
+	elseif (unit and unit:match("party%d")) then
 		return "party"
-	elseif (unit:match("arena%d")) then
+	elseif (unit and unit:match("arena%d")) then
 		return "arena"
-	elseif (unit:match("boss%d")) then
+	elseif (unit and unit:match("boss%d")) then
 		return "boss"
-	elseif (unit:match("partypet%d")) then
+	elseif (unit and unit:match("partypet%d")) then
 		return "pet"
 	else
 		return unit
 	end
 end
 
-function K.MultiCheck(what, ...)
+function K.MultiCheck(check, ...)
 	for i = 1, select("#", ...) do
-		if (what == select(i, ...)) then
+		if (check == select(i, ...)) then
 			return true
 		end
 	end
-
 	return false
 end
 

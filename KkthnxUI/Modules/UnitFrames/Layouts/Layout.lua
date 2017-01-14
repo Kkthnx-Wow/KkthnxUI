@@ -413,6 +413,8 @@ function oUFKkthnx:UpdateBaseFrames(optUnit)
 end
 
 local function CreateUnitLayout(self, unit)
+	-- unit = unit:match('^(.-)%d+') or unit
+
 	self.MatchUnit = K.MatchUnit(unit)
 	self.IsMainFrame = K.MultiCheck(self.MatchUnit, "player", "target", "focus")
 	self.IsTargetFrame = K.MultiCheck(self.MatchUnit, "targettarget", "focustarget")
