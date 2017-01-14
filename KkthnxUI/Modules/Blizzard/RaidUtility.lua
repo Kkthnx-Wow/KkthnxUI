@@ -44,7 +44,7 @@ local function CreateButton(name, parent, template, width, height, point, relati
 	b:EnableMouse(true)
 	if text then
 		b.t = b:CreateFontString(nil, "OVERLAY")
-		b.t:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		b.t:SetFont(C.Media.Font, C.Media.Font_Size)
 		b.t:SetShadowOffset(K.Mult, -K.Mult)
 		b.t:SetPoint("CENTER")
 		b.t:SetJustifyH("CENTER")

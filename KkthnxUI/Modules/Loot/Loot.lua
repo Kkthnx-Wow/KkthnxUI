@@ -190,6 +190,7 @@ Butsu:RegisterEvent("UPDATE_MASTER_LOOT_LIST")
 do
 	local title = Butsu:CreateFontString(nil, "OVERLAY")
 	title:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	title:SetShadowOffset(0, 0)
 	title:SetJustifyH("LEFT")
 	title:SetPoint("TOPLEFT", Butsu, "TOPLEFT", 8, -7)
 	Butsu.title = title
@@ -411,7 +412,7 @@ do
 		count:SetJustifyH("RIGHT")
 		count:SetPoint("BOTTOMRIGHT", iconFrame, "BOTTOMRIGHT", 1, 1)
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		count:SetShadowOffset(K.Mult, -K.Mult)
+		count:SetShadowOffset(0, 0)
 		count:SetText(1)
 		frame.count = count
 
@@ -420,7 +421,7 @@ do
 		name:SetPoint("LEFT", icon, "RIGHT", 10, 0)
 		name:SetNonSpaceWrap(true)
 		name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		name:SetShadowOffset(K.Mult, -K.Mult)
+		name:SetShadowOffset(0, 0)
 		name:SetWidth(C.Loot.Width - C.Loot.IconSize - 25)
 		name:SetHeight(C.Media.Font_Size)
 		frame.name = name

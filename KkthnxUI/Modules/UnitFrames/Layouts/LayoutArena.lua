@@ -127,6 +127,7 @@ function ns.createArenaLayout(self, unit)
 		self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
 
 		self.PortraitTimer.Remaining = K.SetFontString(self.PortraitTimer, C.Media.Font, self.Portrait:GetWidth() / 3, C.Media.Font_Style, "CENTER")
+		self.PortraitTimer.Remaining:SetShadowOffset(0, 0)
 		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 		self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 	end

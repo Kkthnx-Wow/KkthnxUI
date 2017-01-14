@@ -2,8 +2,8 @@ local K, C, L = unpack(select(2, ...))
 if C.Raidframe.Enable ~= true then return end
 
 -- Lua API
-local format = string.format
-local tinsert = table.insert
+local string_format = string.format
+local table_insert = table.insert
 local unpack = unpack
 
 -- Wow API
@@ -82,7 +82,7 @@ end
 
 local function DeficitValue(self)
 	if (self >= 1000) then
-		return format("-%.1f", self/1000)
+		return string_format("-%.1f", self/1000)
 	else
 		return self
 	end
@@ -106,7 +106,7 @@ local function GetHealthText(unit, cur, max)
 		healthString = GetUnitStatus(unit)
 	else
 		if ((cur / max) < C.Raidframe.DeficitThreshold) then
-			healthString = format("|cff%02x%02x%02x%s|r", 0.9 * 255, 0 * 255, 0 * 255, DeficitValue(max-cur))
+			healthString = string_format("|cff%02x%02x%02x%s|r", 0.9 * 255, 0 * 255, 0 * 255, DeficitValue(max-cur))
 		else
 			healthString = ""
 		end
@@ -217,7 +217,7 @@ local function CreateRaidLayout(self, unit)
 		self.Power.bg:SetColorTexture(.6, .6, .6)
 		self.Power.bg.multiplier = 0.2
 
-		tinsert(self.__elements, UpdatePower)
+		table_insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
 		UpdatePower(self, _, unit)
 	end
@@ -313,7 +313,7 @@ local function CreateRaidLayout(self, unit)
 		self.ThreatText:SetText("AGGRO")
 	end
 
-	tinsert(self.__elements, UpdateThreat)
+	table_insert(self.__elements, UpdateThreat)
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
 
@@ -439,11 +439,11 @@ local function CreateRaidLayout(self, unit)
 end
 
 oUF:RegisterStyle("oUF_Kkthnx_Raid", CreateRaidLayout)
-oUF:RegisterStyle("oUF_Kkthnx_Raid_MT", CreateRaidLayout)
 oUF:SetActiveStyle("oUF_Kkthnx_Raid")
 
 if not C.Raidframe.UseHealLayout then
-	local raid = oUF:SpawnHeader("oUF_Raid", nil, C.Raidframe.RaidAsParty and "custom [group:party][group:raid] show; hide" or C.Unitframe.Party and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+	local raid = oUF:SpawnHeader("oUF_Kkthnx_Raid", nil, C.Raidframe.RaidAsParty and "custom [group:party][group:raid] show; hide" or C.Raidframe.Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+	-- local raid = oUF:SpawnHeader("oUF_Kkthnx_Raid", nil, C.Raidframe.Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid")
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
@@ -470,28 +470,20 @@ if not C.Raidframe.UseHealLayout then
 	raid:SetFrameStrata("LOW")
 	raid:SetPoint(unpack(C.Position.UnitFrames.Raid))
 	Movers:RegisterFrame(raid)
-	raid:Show()
 end
 
 -- Main Tank/Assist Frames
 if C.Raidframe.MainTankFrames then
-	oUF:SetActiveStyle("oUF_Kkthnx_Raid_MT")
-
-	local tanks = oUF:SpawnHeader("oUF_Kkthnx_Raid_MT", nil, "raid, party, solo",
+	local raidtank = oUF:SpawnHeader("oUF_Kkthnx_Raid_MT", nil, "raid",
 	"oUF-initialConfigFunction", ([[
-	self:SetWidth(%d)
-	self:SetHeight(%d)
-	]]):format(K.Scale(C.Raidframe.Width), K.Scale(C.Raidframe.Height)),
+	self:SetWidth(70)
+	self:SetHeight(40)
+	]]),
 	"showRaid", true,
-	"showParty", false,
 	"yOffset", -K.Scale(8),
-	"template", "oUF_KkthnxRaid_MT_Target_Template", -- Target
-	"sortMethod", "INDEX",
-	"groupFilter", "MAINTANK, MAINASSIST")
-
-	tanks:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-	tanks:SetScale(1)
-	tanks:SetFrameStrata("LOW")
-	Movers:RegisterFrame(tanks)
-	tanks:Show()
+	"groupFilter", "MAINTANK",
+	"template", "oUF_Kkthnx_Raid_MT"
+	)
+	raidtank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+	Movers:RegisterFrame(raidtank)
 end
