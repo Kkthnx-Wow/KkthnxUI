@@ -1,14 +1,7 @@
+-- Based on oUF_Swing(by p3lim and Thalyra)
 local _, ns = ...
-local oUF = oUF or ns.oUF
+local oUF = ns.oUF or oUF
 if not oUF then return end
-
-local find = string.find
-local GetSpellInfo = GetSpellInfo
-local UnitGUID = UnitGUID
-local UnitAttackSpeed = UnitAttackSpeed
-local GetInventoryItemID = GetInventoryItemID
-local GetItemInfo = GetItemInfo
-local UnitRangedDamage = UnitRangedDamage
 
 local function OnDurationUpdate(self)
 	self:SetMinMaxValues(self.min, self.max)
@@ -32,15 +25,16 @@ end
 
 local function Melee(self, _, _, event, _, GUID, _, _, _, tarGUID, _, _, _, missType, spellName)
 	local bar = self.Swing
+
 	if UnitGUID(self.unit) == tarGUID then
-		if find(event, "MISSED") then
+		if string.find(event, "MISSED") then
 			if missType == "PARRY" and bar.max then
 				bar.max = bar.min + ((bar.max - bar.min) * 0.6)
 				bar:SetMinMaxValues(bar.min, bar.max)
 			end
 		end
 	elseif UnitGUID(self.unit) == GUID then
-		if not find(event, "SWING") then return end
+		if not string.find(event, "SWING") then return end
 
 		bar.min = GetTime()
 		bar.max = bar.min + UnitAttackSpeed(self.unit)
