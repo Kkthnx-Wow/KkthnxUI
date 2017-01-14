@@ -382,8 +382,6 @@ local function CreateRaidLayout(self, unit)
 		self.RaidDebuffs.FilterDispellableDebuff = true
 		self.RaidDebuffs.MatchBySpellName = true
 		self.RaidDebuffs.Debuffs = K.RaidDebuffs
-
-		return self
 	end
 
 	-- Role indicator
@@ -431,13 +429,6 @@ local function CreateRaidLayout(self, unit)
 			self:SetBorderColor(unpack(C.Media.Border_Color))
 		end
 	end)
-
-	-- OOR and oUF_SpellRange
-	if not self:IsElementEnabled("Range") then
-		self:EnableElement("Range")
-	end
-
-	self.SpellRange = true
 
 	self.SpellRange = {
 		insideAlpha = 1,
