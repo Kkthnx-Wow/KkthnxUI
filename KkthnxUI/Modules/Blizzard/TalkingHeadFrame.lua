@@ -77,27 +77,12 @@ local function InitializeTalkingHead()
 	end
 end
 
-function TalkingHead:PositionTalkingHead()
-	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-		InitializeTalkingHead()
-		TalkingHead:ScaleTalkingHeadFrame()
-	else -- We want the mover to be available immediately, so we load it ourselves
-		local f = CreateFrame("Frame")
-		f:RegisterEvent("PLAYER_ENTERING_WORLD")
-		f:SetScript("OnEvent", function(self, event)
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
-			TalkingHead_LoadUI()
-			InitializeTalkingHead()
-			TalkingHead:ScaleTalkingHeadFrame()
-		end)
-	end
-end
-
 local Loading = CreateFrame("Frame")
 function Loading:OnEvent(event, addon)
 	if (event == "PLAYER_LOGIN") and C.Blizzard.HideTalkingHead ~= true then
-		TalkingHead:PositionTalkingHead()
+		TalkingHead_LoadUI()
+		InitializeTalkingHead()
+		TalkingHead:ScaleTalkingHeadFrame()
 	end
 end
 Loading:RegisterEvent("PLAYER_LOGIN")
