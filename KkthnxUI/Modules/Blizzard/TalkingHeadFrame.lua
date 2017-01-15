@@ -57,7 +57,7 @@ function TalkingHead:ScaleTalkingHeadFrame()
 	end
 end
 
-local function InitializeTalkingHead()
+function TalkingHead:InitializeTalkingHead()
 	-- Prevent WoW from moving the frame around
 	TalkingHeadFrame.ignoreFramePositionManager = true
 	UIPARENT_MANAGED_FRAME_POSITIONS["TalkingHeadFrame"] = nil
@@ -77,13 +77,15 @@ local function InitializeTalkingHead()
 	end
 end
 
-local Loading = CreateFrame("Frame")
-function Loading:OnEvent(event, addon)
-	if (event == "PLAYER_LOGIN") and C.Blizzard.HideTalkingHead ~= true then
+if C.Blizzard.HideTalkingHead ~= true then
+	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+		TalkingHead:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		TalkingHead:InitializeTalkingHead()
+		TalkingHead:ScaleTalkingHeadFrame()
+	else
+		TalkingHead:RegisterEvent("PLAYER_ENTERING_WORLD")
 		TalkingHead_LoadUI()
-		InitializeTalkingHead()
+		TalkingHead:InitializeTalkingHead()
 		TalkingHead:ScaleTalkingHeadFrame()
 	end
 end
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)

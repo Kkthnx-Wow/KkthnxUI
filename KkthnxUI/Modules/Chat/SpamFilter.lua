@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Chat.SpamFilter ~= true then return end
+if C.Chat.SpamFilter ~= true or K.CheckAddOn("BadBoy") then return end
 
 -- Lua API
 local gsub = string.gsub
