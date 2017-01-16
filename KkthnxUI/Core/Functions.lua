@@ -281,27 +281,17 @@ function K.LockCVar(cvarName, value)
 end
 
 -- Personal use only
-K.IsDev = {"Aceer", "Kkthnx", "Kkthnxx", "Pervie", "Tatterdots"} -- We will add more of my names as we go.
-K.IsDevRealm = {"Stormreaver"} -- Don't forget to update realm name(s) if we ever transfer realms.
+K.IsDev = {Aceer = true, Kkthnx = true, Kkthnxx = true, Pervie = true, Tatterdots = true} -- We will add more of my names as we go.
+K.IsDevRealm = {Stormreaver = true} -- Don't forget to update realm name(s) if we ever transfer realms.
 -- If we forget it could be easly picked up by another player who matches these combinations.
 -- End result we piss off people and we do not want to do that. :(
 
 function K.IsDeveloper()
-    for _, name in pairs(K.IsDev) do
-        if name == K.Name then
-            return true
-        end
-    end
-    return false
+    return K.IsDev[K.Name]
 end
 
 function K.IsDeveloperRealm()
-    for _, realm in pairs(K.IsDevRealm) do
-        if realm == K.Realm then
-            return true
-        end
-    end
-    return false
+    return K.IsDevRealm[K.Realm]
 end
 
 -- http://www.wowwiki.com/ColorGradient

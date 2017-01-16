@@ -1,8 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 if not K.IsDeveloper and not K.IsDeveloperRealm then return end
 
-print("If you are seeing this message and you are |cffff0000NOT|r a dev of |cff3c9bedKkthnxUI|r then please contact Kkthnx")
-
 -- Remove the editbox for deleting "good" items
 StaticPopupDialogs.DELETE_ITEM.enterClicksFirstButton = true
 StaticPopupDialogs.DELETE_GOOD_ITEM = StaticPopupDialogs.DELETE_ITEM

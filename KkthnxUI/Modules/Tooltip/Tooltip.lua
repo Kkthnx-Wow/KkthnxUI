@@ -3,23 +3,29 @@ if C.Tooltip.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
+local math_abs = math.abs
+local math_floor = math.floor
 local pairs = pairs
 local select = select
 local unpack = unpack
 
 -- Wow API
+local CanInspect = CanInspect
 local CHAT_FLAG_AFK = CHAT_FLAG_AFK
 local CHAT_FLAG_DND = CHAT_FLAG_DND
 local CreateFrame = CreateFrame
 local FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL
+local GetAverageItemLevel = GetAverageItemLevel
 local GetCreatureDifficultyColor = GetCreatureDifficultyColor
 local GetGuildInfo = GetGuildInfo
 local GetItemInfo = GetItemInfo
 local GetItemQualityColor = GetItemQualityColor
 local GetMouseFocus = GetMouseFocus
+local GetTime = GetTime
 local hooksecurefunc = hooksecurefunc
 local InCombatLockdown = InCombatLockdown
 local INTERACTIVE_SERVER_LABEL = INTERACTIVE_SERVER_LABEL
+local IsAltKeyDown = IsAltKeyDown
 local IsInGuild = IsInGuild
 local IsShiftKeyDown = IsShiftKeyDown
 local LE_REALM_RELATION_COALESCED = LE_REALM_RELATION_COALESCED
@@ -31,6 +37,7 @@ local UnitClass = UnitClass
 local UnitClassification = UnitClassification
 local UnitCreatureType = UnitCreatureType
 local UnitExists = UnitExists
+local UnitGUID = UnitGUID
 local UnitHasVehicleUI = UnitHasVehicleUI
 local UnitIsAFK = UnitIsAFK
 local UnitIsDeadOrGhost = UnitIsDeadOrGhost
@@ -47,8 +54,8 @@ local UnitRealmRelationship = UnitRealmRelationship
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: DEAD, GameTooltip, GameTooltipTextLeft2, TooltipAnchor, GameTooltipTextLeft1
--- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth
--- GLOBALS: Health
+-- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth, SPECIALIZATION
+-- GLOBALS: Health, InspectFrame, UNKNOWN, NONE, STAT_AVERAGE_ITEM_LEVEL
 
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
@@ -213,7 +220,7 @@ function Tooltip:OnTooltipSetUnit()
 					if Cache.GUID == Talents.CurrentGUID then
 						ILevel = Cache.ItemLevel or "..."
 						TalentSpec = Cache.TalentSpec or "..."
-						LastUpdate = Cache.LastUpdate and abs(Cache.LastUpdate - floor(GetTime())) or 30
+						LastUpdate = Cache.LastUpdate and math_abs(Cache.LastUpdate - math_floor(GetTime())) or 30
 					end
 				end
 
@@ -227,7 +234,7 @@ function Tooltip:OnTooltipSetUnit()
 			else
 				local Current = GetAverageItemLevel()
 
-				ILevel = floor(Current) or UNKNOWN
+				ILevel = math_floor(Current) or UNKNOWN
 
 				TalentSpec = Talents:GetTalentSpec() or NONE
 			end
