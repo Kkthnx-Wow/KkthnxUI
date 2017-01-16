@@ -35,6 +35,7 @@ local ReloadUI = ReloadUI
 local SetCVar = SetCVar
 local StaticPopup_Show = StaticPopup_Show
 local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
+local UIFrameFadeOut = UIFrameFadeOut
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
@@ -42,6 +43,7 @@ local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 -- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
 -- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2, UIConfig
 -- GLOBALS: InstallStepComplete, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
+-- GLOBALS: UIConfigMain
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 
@@ -115,7 +117,7 @@ function KkthnxUIInstall:ChatSetup()
 	ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
 	ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
 
-	if (K.Name == "Pervie" or K.Name == "Aceer" or K.Name == "Kkthnxx" or K.Name == "Tatterdots") and (K.Realm == "Stormreaver") then
+	if K.IsDeveloper and K.IsDeveloperRealm then
 		SetCVar("scriptErrors", 1)
 	end
 

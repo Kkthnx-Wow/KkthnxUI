@@ -6,11 +6,16 @@ local _G = _G
 
 -- Wow API
 local GetMinimapShape = GetMinimapShape
+local GetMinimapZoneText = GetMinimapZoneText
+local GetPlayerMapPosition = GetPlayerMapPosition
+local GetZonePVPInfo = GetZonePVPInfo
 local IsInInstance = IsInInstance
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GarrisonLandingPageMinimapButton, Minimap, TimeManagerClockButton, GameTimeFrame
--- GLOBALS: Minimap_ZoomIn, Minimap_ZoomOut
+-- GLOBALS: Minimap_ZoomIn, Minimap_ZoomOut, Minimap_ZoneColors, HelpOpenTicketButton
+-- GLOBALS: HelpOpenWebTicketButton, FeedbackUIButton
+
 local Movers = K.Movers
 
 Minimap_ZoneColors = {
@@ -123,8 +128,7 @@ if GarrisonLandingPageMinimapButton and K.Level > 89 then
 		GarrisonLandingPageMinimapButton:SetAlpha(1)
 		GarrisonLandingPageMinimapButton:SetScale(0.6)
 		if GarrisonLandingPageTutorialBox then
-			GarrisonLandingPageTutorialBox:SetScale(1 / 0.6)
-			GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+			GarrisonLandingPageTutorialBox:Kill()
 		end
 		if C.Minimap.FadeButtons then
 			GarrisonLandingPageMinimapButton:SetAlpha(0)
