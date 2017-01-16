@@ -205,6 +205,7 @@ UIConfigLocal.MiscItemLevel = "Zeige den Itemlevel auf Deinen Gegenständen in d
 UIConfigLocal.MiscMerchantItemLevel = "Zeige Itemlevel für Waffen & Rüstung bei Händler"
 UIConfigLocal.MiscMoveBlizzard = "Verschiebe einige Blizzard Fenster"
 UIConfigLocal.MiscNoBanner = "Autoverstecken des Boss Loot Frame"
+UIConfigLocal.MiscPvPEmote = "Does a random emote on a player that you get a killing blow on"
 UIConfigLocal.MiscSellMisc = "Automatisches Verkaufen von unnützen Gegenständen die nicht grauer Qualität sind"
 UIConfigLocal.MiscSlotDurability = "Zeige die Haltbarkeit auf Deinen Gegenständen in der Charakterübersicht an"
 UIConfigLocal.MiscUseGuildRepair = "Bei Benutzung von 'Automatisches Reparieren', benutzte die Gildenbank"

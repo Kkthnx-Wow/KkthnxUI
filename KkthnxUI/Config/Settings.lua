@@ -224,6 +224,7 @@ C["Misc"] = {
 	["MerchantItemLevel"] = false,
 	["MoveBlizzard"] = false,
 	["NoBanner"] = false,
+	["PvPEmote"] = false,
 	["SellMisc"] = true,
 	["SlotDurability"] = false,
 	["UseGuildRepair"] = false,

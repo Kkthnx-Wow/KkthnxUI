@@ -27,7 +27,7 @@ end
 PVPEmoteMessages:RegisterEvent("PLAYER_LOGIN")
 PVPEmoteMessages:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 PVPEmoteMessages:SetScript("OnEvent", function(_, _, _, event, _, sourceGUID, sourceName, _, _, destGUID, destName,  destFlags)
-  -- if C.Misc.PvPEmote ~= true then return end
+  if C.Misc.PvPEmote ~= true then return end
 
 	local playerid = UnitGUID("player")
 

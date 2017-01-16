@@ -9,7 +9,7 @@ local IsAddOnLoaded = IsAddOnLoaded
 
 -- No point caching anything here, but list them here for mikk's FindGlobals script
 -- GLOBALS: CreateFrame, TalkingHeadFrame, UIPARENT_MANAGED_FRAME_POSITIONS, TalkingHead_LoadUI
--- GLOBALS: Model_ApplyUICamera, AlertFrame, table, hooksecurefunc
+-- GLOBALS: Model_ApplyUICamera, AlertFrame
 
 local TalkingHead = CreateFrame("Frame")
 local Movers = K.Movers
@@ -18,74 +18,65 @@ local Movers = K.Movers
 local HideTalkingHead = CreateFrame("Frame")
 HideTalkingHead:RegisterEvent("ADDON_LOADED")
 HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
-	if C.Blizzard.HideTalkingHead ~= true then return end
-	if addon == "Blizzard_TalkingHeadUI" then
-		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-			TalkingHeadFrame:Hide()
-		end)
-
-		self:UnregisterEvent("ADDON_LOADED")
-	end
+    if C.Blizzard.HideTalkingHead ~= true then return end
+    if addon == "Blizzard_TalkingHeadUI" then
+        hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
+            TalkingHeadFrame:Hide()
+        end)
+    end
+    self:UnregisterEvent("ADDON_LOADED")
 end)
 
 -- Main script
-function TalkingHead:ScaleTalkingHeadFrame()
-	local scale = C.Blizzard.TalkingHeadScale or 1
+local SetTalkingHead = CreateFrame("Frame")
+SetTalkingHead:RegisterEvent("ADDON_LOADED")
+SetTalkingHead:SetScript("OnEvent", function(self, event)
+    if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+        self:UnregisterEvent(event)
 
-	-- Sanitize
-	if scale < 0.5 then
-		scale = 0.5
-	elseif scale > 2 then
-		scale = 2
-	end
+        local scale = C.Blizzard.TalkingHeadScale or 1
 
-	-- :SetScale no longer triggers OnSizeChanged in Legion, and as such the mover will not update its size
-	-- Calculate dirtyWidth/dirtyHeight based on original size and scale
-	-- This way the mover frame will use the right size when we manually trigger "OnSizeChanged"
-	local width = TalkingHeadFrame:GetWidth() * scale
-	local height = TalkingHeadFrame:GetHeight() * scale
-	TalkingHeadFrame.dirtyWidth = width
-	TalkingHeadFrame.dirtyHeight = height
+        if scale < 0.5 then
+            scale = 0.5
+        elseif scale > 2 then
+            scale = 2
+        end
 
-	TalkingHeadFrame:SetScale(scale)
+        local width = TalkingHeadFrame:GetWidth() * scale
+        local height = TalkingHeadFrame:GetHeight() * scale
+        TalkingHeadFrame.dirtyWidth = width
+        TalkingHeadFrame.dirtyHeight = height
 
-	-- Reset Model Camera
-	local model = TalkingHeadFrame.MainFrame.Model
-	if model.uiCameraID then
-		model:RefreshCamera()
-		Model_ApplyUICamera(model, model.uiCameraID)
-	end
-end
+        TalkingHeadFrame:SetScale(scale)
 
-function TalkingHead:InitializeTalkingHead()
-	-- Prevent WoW from moving the frame around
-	TalkingHeadFrame.ignoreFramePositionManager = true
-	UIPARENT_MANAGED_FRAME_POSITIONS["TalkingHeadFrame"] = nil
+        -- Reset Model Camera
+        local model = TalkingHeadFrame.MainFrame.Model
+        if model.uiCameraID then
+            model:RefreshCamera()
+            Model_ApplyUICamera(model, model.uiCameraID)
+        end
 
-	-- Set default position
-	TalkingHeadFrame:ClearAllPoints()
-	TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
+        TalkingHeadFrame.ignoreFramePositionManager = true
+        UIPARENT_MANAGED_FRAME_POSITIONS.TalkingHeadFrame = nil
 
-	Movers:RegisterFrame(TalkingHeadFrame)
+        TalkingHeadFrame:ClearAllPoints()
+        TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
 
-	-- Iterate through all alert subsystems in order to find the one created for TalkingHeadFrame, and then remove it.
-	-- We do this to prevent alerts from anchoring to this frame when it is shown.
-	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
-		if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
-			table_remove(AlertFrame.alertFrameSubSystems, index)
-		end
-	end
-end
+        Movers:RegisterFrame(TalkingHeadFrame)
 
-if C.Blizzard.HideTalkingHead ~= true then
-	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-		TalkingHead:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		TalkingHead:InitializeTalkingHead()
-		TalkingHead:ScaleTalkingHeadFrame()
-	else
-		TalkingHead:RegisterEvent("PLAYER_ENTERING_WORLD")
-		TalkingHead_LoadUI()
-		TalkingHead:InitializeTalkingHead()
-		TalkingHead:ScaleTalkingHeadFrame()
-	end
-end
+        -- Iterate through all alert subsystems in order to find the one created for TalkingHeadFrame, and then remove it.
+        -- We do this to prevent alerts from anchoring to this frame when it is shown.
+        for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+            if alertFrameSubSystem.anchorFrame and alertFrameSubSystem.anchorFrame == TalkingHeadFrame then
+                table.remove(AlertFrame.alertFrameSubSystems, index)
+            end
+        end
+    else
+        TalkingHead_LoadUI()
+    end
+
+    -- Use this to prevent the frame from auto closing, so you have time to test things.
+    -- TalkingHeadFrame:UnregisterEvent("SOUNDKIT_FINISHED")
+    -- TalkingHeadFrame:UnregisterEvent("TALKINGHEAD_CLOSE")
+    -- TalkingHeadFrame:UnregisterEvent("LOADING_SCREEN_ENABLED")
+end)

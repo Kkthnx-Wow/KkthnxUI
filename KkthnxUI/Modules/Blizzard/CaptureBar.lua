@@ -3,6 +3,9 @@ local K, C, L = unpack(select(2, ...))
 -- Wow Lua
 local _G = _G
 
+-- Wow API
+local UIParent = UIParent
+
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: NUM_EXTENDED_UI_FRAMES, hooksecurefunc
 

@@ -182,11 +182,11 @@
    <Script file="Modules\Miscellaneous\Miscellaneous.lua" />
    <Script file="Modules\Miscellaneous\Mounts.lua" />
    <Script file="Modules\Miscellaneous\PulseCD.lua" />
+   <Script file="Modules\Miscellaneous\PvPEmote.lua" />
    <Script file="Modules\Miscellaneous\PvPQueueTimer.lua" />
    <Script file="Modules\Miscellaneous\RaidCD.lua" />
    <Script file="Modules\Miscellaneous\SlotDurability.lua" />
    <Script file="Modules\Miscellaneous\SlotItemLevel.lua" />
-   <Script file="Modules\Miscellaneous\ThreatBar.lua" />
    <!-- Nameplates -->
    <Script file="Modules\Nameplates\Nameplates.lua" />
    <!-- Quests -->

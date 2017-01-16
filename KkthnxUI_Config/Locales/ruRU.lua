@@ -205,6 +205,7 @@ UIConfigLocal.MiscItemLevel = "Показывать уровень предме�
 UIConfigLocal.MiscMerchantItemLevel = "Отображать уровень предметов для оружия и брони в окне торговца"
 UIConfigLocal.MiscMoveBlizzard = "Перемещение некоторых элементов Blizzard"
 UIConfigLocal.MiscNoBanner = "Скрыть рамку говорящей головы"
+UIConfigLocal.MiscPvPEmote = "Does a random emote on a player that you get a killing blow on"
 UIConfigLocal.MiscSellMisc = "Автоматически продавать ненужные предметы качеством выше серого"
 UIConfigLocal.MiscSlotDurability = "Показывать прочность предмета надетого на персонажа"
 UIConfigLocal.MiscUseGuildRepair = "Автоматический ремонт за счет банка гильдии"
