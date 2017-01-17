@@ -57,12 +57,6 @@ if C.Nameplates.Combat == true then
 	function KkthnxUIPlates:PLAYER_REGEN_DISABLED()
 		SetCVar("nameplateShowEnemies", 1)
 	end
-
-	if event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	elseif event == "PLAYER_REGEN_DISABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-	end
 end
 
 KkthnxUIPlates:RegisterEvent("PLAYER_ENTERING_WORLD")

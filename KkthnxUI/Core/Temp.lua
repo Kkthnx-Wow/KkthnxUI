@@ -125,10 +125,11 @@ function KkthnxUIDebugTools:PLAYER_REGEN_DISABLED()
 	ScriptErrorsFrame:SetParent(self.HideFrame)
 end
 
+TRIED_TO_CALL = "%s: %s tried to call the protected function '%s'."
 function KkthnxUIDebugTools:TaintError(event, addonName, addonFunc)
 	-- if GetCVarBool("scriptErrors") ~= true or C.General.TaintLog ~= true then return end
 	if GetCVarBool("scriptErrors") ~= true then return end
-	ScriptErrorsFrame_OnError("%s: %s tried to call the protected function '%s'."):format(event, addonName or "<name>", addonFunc or "<func>", false)
+  ScriptErrorsFrame_OnError(TRIED_TO_CALL:format(event, addonName or "<name>", addonFunc or "<func>"), false)
 end
 
 function KkthnxUIDebugTools:StaticPopup_Show(name)

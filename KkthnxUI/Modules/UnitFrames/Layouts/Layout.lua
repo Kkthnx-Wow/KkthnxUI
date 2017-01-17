@@ -1177,12 +1177,6 @@ local function CreateUnitLayout(self, unit)
 			self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
 			self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateThreat)
-
-			if event == "PLAYER_REGEN_DISABLED" then
-				self:UnregisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
-			elseif event == "PLAYER_REGEN_ENABLED" then
-				self:UnregisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
-			end
 		end
 	end
 
@@ -1276,9 +1270,9 @@ local function CreateUnitLayout(self, unit)
 	return self
 end
 
--- local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
--- 	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
--- end
+local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
+	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
+end
 
 -- Spawn our frames.
 oUF:RegisterStyle("oUF_Kkthnx", CreateUnitLayout)
@@ -1291,7 +1285,7 @@ Movers:RegisterFrame(player)
 local pet = oUF:Spawn("pet", "oUF_KkthnxPet")
 pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
 Movers:RegisterFrame(pet)
--- player:RegisterEvent("UNIT_PET", FixPetUpdate)
+player:RegisterEvent("UNIT_PET", FixPetUpdate)
 
 local target = oUF:Spawn("target", "oUF_KkthnxTarget")
 target:SetPoint(unpack(C.Position.UnitFrames.Target))
