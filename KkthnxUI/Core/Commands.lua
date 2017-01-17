@@ -2,10 +2,6 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local format, lower = string.format, string.lower
-local ipairs = ipairs
-local ceil = math.ceil
-local floor = math.floor
 local CombatLogClearEntries = CombatLogClearEntries
 local DoReadyCheck = DoReadyCheck
 local EnableAddOn, DisableAllAddOns = EnableAddOn, DisableAllAddOns
@@ -17,13 +13,17 @@ local GetNumQuestLogEntries = GetNumQuestLogEntries
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetScreenResolutions = GetScreenResolutions
 local InCombatLockdown = InCombatLockdown
+local ipairs = ipairs
 local IsInInstance = IsInInstance
+local math_ceil = math.ceil
+local math_floor = math.floor
 local print, tostring, select = print, tostring, select
 local ReloadUI = ReloadUI
 local RestartGx = RestartGx
 local SelectQuestLogEntry = SelectQuestLogEntry
 local SetAbandonQuest = SetAbandonQuest
 local SetCVar = SetCVar
+local string_format, string_lower = string.format, string.lower
 local ToggleHelpFrame = ToggleHelpFrame
 local UnitInRaid = UnitInRaid
 
@@ -108,7 +108,7 @@ SLASH_GROUPDISBAND1 = "/rd"
 
 -- Enable lua error by command
 function SlashCmdList.LUAERROR(msg)
-	msg = lower(msg)
+	msg = string_lower(msg)
 	if(msg == "on") then
 		DisableAllAddOns()
 		EnableAddOn("KkthnxUI")
@@ -158,7 +158,7 @@ SlashCmdList.SPEC = function(spec)
 			SetSpecialization(spec)
 		end
 	else
-		print("|cffff0000"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+		print("|cffff0000"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 	end
 end
 SLASH_SPEC1 = "/ss"
@@ -170,7 +170,7 @@ SLASH_DBMTEST1 = "/dbmtest"
 
 -- Clear chat
 SlashCmdList.CLEARCHAT = function(cmd)
-	cmd = cmd and strtrim(strlower(cmd))
+	cmd = cmd and strtrim(string_lower(cmd))
 	for i = 1, NUM_CHAT_WINDOWS do
 		local f = _G["ChatFrame"..i]
 		if f:IsVisible() or cmd == "all" then
@@ -247,7 +247,7 @@ SlashCmdList.TOGGLE_GRID = function(arg)
 		GridHide()
 		isAligning = false
 	else
-		BoxSize = (ceil((tonumber(arg) or BoxSize) / 32) * 32)
+		BoxSize = (math_ceil((tonumber(arg) or BoxSize) / 32) * 32)
 		if BoxSize > 256 then BoxSize = 256 end
 		Grid_Show()
 		isAligning = true
@@ -259,10 +259,10 @@ function GridCreate()
 	Grid.BoxSize = BoxSize
 	Grid:SetAllPoints(UIParent)
 
-	local Size = K.Scale(1)
-	local Width = K.ScreenWidth
-	local Ratio = Width / K.ScreenHeight
-	local Height = K.ScreenHeight * Ratio
+	local Size = K.Scale(2)
+	local Width = GetScreenWidth()
+	local Ratio = Width / GetScreenHeight()
+	local Height = GetScreenHeight() * Ratio
 
 	local WStep = Width / BoxSize
 	local HStep = Height / BoxSize
@@ -270,34 +270,34 @@ function GridCreate()
 	for i = 0, BoxSize do
 		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
 		if i == BoxSize / 2 then
-			Tx:SetColorTexture(1, 0, 0, 0.9)
+			Tx:SetColorTexture(1, 0, 0, 0.5)
 		else
-			Tx:SetColorTexture(0, 0, 0, 0.9)
+			Tx:SetColorTexture(0, 0, 0, 0.5)
 		end
 		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", i * WStep - (Size / 2), 0)
 		Tx:SetPoint("BOTTOMRIGHT", Grid, "BOTTOMLEFT", i * WStep + (Size / 2), 0)
 	end
-	Height = K.ScreenHeight
+	Height = GetScreenHeight()
 
 	do
 		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		Tx:SetColorTexture(1, 0, 0, 0.9)
+		Tx:SetColorTexture(1, 0, 0, 0.5)
 		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2) + (Size / 2))
 		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 + Size / 2))
 	end
 
-	for i = 1, floor((Height / 2) / HStep) do
+	for i = 1, math_floor((Height / 2) / HStep) do
 		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		Tx:SetColorTexture(0, 0, 0, 0.9)
+		Tx:SetColorTexture(0, 0, 0, 0.5)
 
 		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2 + i * HStep) + (Size / 2))
 		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 + i * HStep + Size / 2))
 
 		Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		Tx:SetColorTexture(0, 0, 0, 0.9)
+		Tx:SetColorTexture(0, 0, 0, 0.5)
 
 		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2 - i * HStep) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2- i * HStep + Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 - i * HStep + Size / 2))
 	end
 end
 
