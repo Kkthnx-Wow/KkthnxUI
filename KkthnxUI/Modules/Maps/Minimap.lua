@@ -127,9 +127,16 @@ if GarrisonLandingPageMinimapButton and K.Level > 89 then
 		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 1)
 		GarrisonLandingPageMinimapButton:SetAlpha(1)
 		GarrisonLandingPageMinimapButton:SetScale(0.6)
+
+		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Stop()
+		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim.Play = K.Noop
+		GarrisonLandingPageMinimapButton.MinimapAlertAnim:Stop()
+		GarrisonLandingPageMinimapButton.MinimapAlertAnim.Play = K.Noop
+
 		if GarrisonLandingPageTutorialBox then
 			GarrisonLandingPageTutorialBox:Kill()
 		end
+
 		if C.Minimap.FadeButtons then
 			GarrisonLandingPageMinimapButton:SetAlpha(0)
 			GarrisonLandingPageMinimapButton:HookScript("OnEnter", function() GarrisonLandingPageMinimapButton:FadeIn() end)
