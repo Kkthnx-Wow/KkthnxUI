@@ -15,10 +15,6 @@ local LoadAddOn = LoadAddOn
 local Movers = K.Movers
 local isInit = false
 
-local function TalkingHeadIsInit()
-	return isInit
-end
-
 -- Hide TalkingHeadFrame option
 local HideTalkingHead = CreateFrame("Frame")
 HideTalkingHead:RegisterEvent("ADDON_LOADED")
@@ -64,6 +60,7 @@ SetTalkingHead:SetScript("OnEvent", function(self, event)
 
 			return true
 		end
+
 		self:UnregisterEvent("ADDON_LOADED")
 	end
 end)

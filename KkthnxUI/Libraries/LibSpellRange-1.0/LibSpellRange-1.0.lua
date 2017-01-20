@@ -17,6 +17,7 @@ assert(LibStub, format("%s requires LibStub.", major))
 local Lib = LibStub:NewLibrary(major, minor)
 if not Lib then return end
 
+local _G = _G
 local tonumber = _G.tonumber
 local strlower = _G.strlower
 local wipe = _G.wipe

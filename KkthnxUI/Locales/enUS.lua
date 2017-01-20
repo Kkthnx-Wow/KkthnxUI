@@ -291,6 +291,7 @@ L.Misc = {
 	CopperShort = "|cffeda55fc|r",
 	GoldShort = "|cffffd700g|r",
 	SilverShort = "|cffc7c7cfs|r",
+	TriedToCall = "%s: %s tried to call the protected function '%s'.",
 	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
 	Undress = "Undress"
 }

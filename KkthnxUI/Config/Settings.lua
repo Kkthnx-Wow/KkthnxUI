@@ -176,12 +176,13 @@ C["General"] = {
 	["BubbleFontSize"] = 12,
 	["CustomLagTolerance"] = false,
 	["DisableTutorialButtons"] = false,
-	["UseFlatTextures"] = false,
+	["TaintLog"] = false,
+	["ToggleButton"] = true,
 	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
 	["UseBlizzardFonts"] = false,
+	["UseFlatTextures"] = false,
 	["WelcomeMessage"] = true,
-	["ToggleButton"] = true,
 }
 
 -- Loot

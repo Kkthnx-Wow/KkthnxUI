@@ -292,6 +292,7 @@ L.Misc = {
 	CopperShort = "|cffeda55fC|r",
 	GoldShort = "|cffffd700G|r",
 	SilverShort = "|cffc7c7cfS|r",
+	TriedToCall = "%s: %s 尝试调用保护函数 '%s'.",
 	UIOutdated = "KkthnxUI版本已过期。您可以从Curse.com上下载最新版本。安装Curse App可以自动更新！",
 	Undress = "一键脱光"
 }

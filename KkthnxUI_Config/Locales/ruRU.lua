@@ -163,6 +163,7 @@ UIConfigLocal.GeneralAutoScale = "Автоматически масштабир�
 UIConfigLocal.GeneralBubbleFontSize = "Размер шрифта в облочках сообщений"
 UIConfigLocal.GeneralCustomLagTolerance = "Автоматически обновлять опцию Blizzard Custom Lag Tolerance для вашей задержки"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
+UIConfigLocal.GeneralTaintLog = "Отслеживать недочеты"
 UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
 UIConfigLocal.GeneralTranslateMessage = "Оповещение о помощи перевода GUI"
 UIConfigLocal.GeneralUIScale = "Масштаб интерфейса (если автомасштабирование отключено)"

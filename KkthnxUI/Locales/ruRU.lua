@@ -293,6 +293,7 @@ L.Misc = {
 	CopperShort = "|cffeda55fм|r",
 	GoldShort = "|cffffd700з|r",
 	SilverShort = "|cffc7c7cfс|r",
+	TriedToCall = "%s: %s tried to call the protected function '%s'.",
 	UIOutdated = "KkthnxUI устарел. Вы можете загрузить последнюю версию с сайта curse.com. Установите приложение Curse и получайте автоматические обновления KkthnxUI.",
 	Undress = "Раздеть"
 }
