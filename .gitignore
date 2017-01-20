@@ -42,8 +42,6 @@ $RECYCLE.BIN/
 # Directories potentially created on remote AFP share
 .AppleDB
 .AppleDesktop
-Network Trash Folder
-Temporary Items
 .apdisk
 /Cache
 /Data
@@ -53,6 +51,8 @@ Temporary Items
 /Screenshots
 /Utils
 /WTF
-KkthnxUI/Core/Temp.lua
 KkthnxUI/Config/Profiles.lua
 KkthnxUI/Config/ProfilesExample.lua
+KkthnxUI/Core/Temp.lua
+Network Trash Folder
+Temporary Items
