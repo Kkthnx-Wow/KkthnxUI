@@ -1,6 +1,6 @@
-if (GetLocale() ~= "zhCN") then return end
+if (GetLocale() ~= "zhTW") then return end
 
--- Localization for zhCN
+-- Localization for zhTW
 
 local PerformanceSlight = "\n|cffFF0000禁用此功能可能會輕微提升運行速度|r" -- For semi-high CPU options
 local ToggleOffReminder = "\n|cffFF0000關閉此項可以手動輸入數值|r"
