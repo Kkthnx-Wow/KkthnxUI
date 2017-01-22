@@ -7,6 +7,7 @@ local math_abs = math.abs
 local math_floor = math.floor
 local pairs = pairs
 local select = select
+local table_remove = table.remove
 local unpack = unpack
 
 -- Wow API
@@ -57,15 +58,17 @@ local UnitRealmRelationship = UnitRealmRelationship
 -- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth, SPECIALIZATION
 -- GLOBALS: Health, InspectFrame, UNKNOWN, NONE, STAT_AVERAGE_ITEM_LEVEL
 
+local Tooltip = CreateFrame("Frame")
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
 local ILevel, TalentSpec, MAXILevel, PVPILevel, LastUpdate = 0, "", 0, 0, 30
 local InspectDelay = 0.2
 local InspectFreq = 2
+local InspectCache = {}
+local LastInspectRequest = 0
 local Short = K.ShortValue
 local Texture = C.Media.Texture
-local Tooltip = CreateFrame("Frame")
 
 Tooltip.ItemRefTooltip = ItemRefTooltip
 
@@ -90,6 +93,25 @@ local Classification = {
 	elite = "|cffAF5050+ |r",
 	rare = "|cffAF5050R |r",
 	minus = "-",
+}
+
+Tooltip.SlotNames = {
+	"Head",
+	"Neck",
+	"Shoulder",
+	"Back",
+	"Chest",
+	"Wrist",
+	"Hands",
+	"Waist",
+	"Legs",
+	"Feet",
+	"Finger0",
+	"Finger1",
+	"Trinket0",
+	"Trinket1",
+	"MainHand",
+	"SecondaryHand"
 }
 
 function Tooltip:CreateAnchor()
@@ -147,6 +169,148 @@ function Tooltip:GetColor(unit)
 	end
 end
 
+function Tooltip:GetItemLevel(unit)
+	local Total, Item = 0, 0
+	local ArtefactEquiped = false
+	local TotalSlots = 16
+
+	for i = 1, #Tooltip.SlotNames do
+		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Tooltip.SlotNames[i])))
+
+		if (ItemLink ~= nil) then
+			local _, _, Rarity, _, _, _, _, _, EquipLoc = GetItemInfo(ItemLink)
+
+			--Check if we have an artifact equipped in main hand
+			if (EquipLoc and EquipLoc == "INVTYPE_WEAPONMAINHAND" and Rarity and Rarity == 6) then
+				ArtifactEquipped = true
+			end
+
+			--If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			if (not ArtifactEquipped or (ArtifactEquipped and EquipLoc and EquipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
+				local ItemLevel
+
+				ItemLevel = GetDetailedItemLevelInfo(ItemLink)
+
+				if(ItemLevel and ItemLevel > 0) then
+					Item = Item + 1
+					Total = Total + ItemLevel
+				end
+
+				-- Total slots depend if one/two handed weapon
+				if (i == 15) then
+					if (ArtifactEquipped or (EquipLoc and EquipLoc == "INVTYPE_2HWEAPON")) then
+						TotalSlots = 15
+					end
+				end
+			end
+		end
+	end
+
+	if(Total < 1 or Item < TotalSlots) then
+		return
+	end
+
+	return math_floor(Total / Item)
+end
+
+function Tooltip:GetTalentSpec(unit)
+	local Spec
+
+	if not unit then
+		Spec = GetSpecialization()
+	else
+		Spec = GetInspectSpecialization(unit)
+	end
+
+	if(Spec and Spec > 0) then
+		if (unit) then
+			local Role = GetSpecializationRoleByID(Spec)
+
+			if (Role) then
+				local Name = select(2, GetSpecializationInfoByID(Spec))
+
+				return Name
+			end
+		else
+			local Name = select(2, GetSpecializationInfo(Spec))
+
+			return Name
+		end
+	end
+end
+
+Tooltip:SetScript("OnUpdate", function(self, elapsed)
+	if not (C.Tooltip.Talents) then
+		self:Hide()
+		self:SetScript("OnUpdate", nil)
+	end
+
+	self.NextUpdate = (self.NextUpdate or 0) - elapsed
+
+	if (self.NextUpdate) <= 0 then
+		self:Hide()
+
+		local GUID = UnitGUID("mouseover")
+
+		if not GUID then
+			return
+		end
+
+		if (GUID == self.CurrentGUID) and (not (InspectFrame and InspectFrame:IsShown())) then
+			self.LastGUID = self.CurrentGUID
+			LastInspectRequest = GetTime()
+			self:RegisterEvent("INSPECT_READY")
+			NotifyInspect(self.CurrentUnit)
+		end
+	end
+end)
+
+Tooltip:SetScript("OnEvent", function(self, event, GUID)
+	if GUID ~= self.LastGUID or (InspectFrame and InspectFrame:IsShown()) then
+		self:UnregisterEvent("INSPECT_READY")
+
+		return
+	end
+
+	local ILVL = self:GetItemLevel("mouseover")
+	local TalentSpec = self:GetTalentSpec("mouseover")
+	local CurrentTime = GetTime()
+	local MatchFound
+
+	for i, Cache in ipairs(InspectCache) do
+		if Cache.GUID == GUID then
+			Cache.ItemLevel = ILVL
+			Cache.TalentSpec = TalentSpec
+			Cache.LastUpdate = math_floor(CurrentTime)
+
+			MatchFound = true
+
+			break
+		end
+	end
+
+	if (not MatchFound) then
+		local GUIDInfo = {
+			["GUID"] = GUID,
+			["ItemLevel"] = ILVL,
+			["TalentSpec"] = TalentSpec,
+			["LastUpdate"] = math_floor(CurrentTime)
+		}
+
+		InspectCache[#InspectCache + 1] = GUIDInfo
+	end
+
+	if (#InspectCache > 50) then
+		table_remove(InspectCache, 1)
+	end
+
+	GameTooltip:SetUnit("mouseover")
+
+	ClearInspectPlayer()
+
+	self:UnregisterEvent("INSPECT_READY")
+end)
+
 function Tooltip:OnTooltipSetUnit()
 	local NumLines = self:NumLines()
 	local GetMouseFocus = GetMouseFocus()
@@ -203,21 +367,20 @@ function Tooltip:OnTooltipSetUnit()
 		Line1:SetFormattedText("%s%s%s", Color, Name, "|r")
 	end
 
-	if (UnitIsPlayer(Unit) and UnitIsFriend("player", Unit)) then
-		if (C.Tooltip.Talents and IsAltKeyDown()) then
-			local Talents = K.Tooltip.Talents
+	if (UnitIsPlayer(Unit)) then
+		if (C.Tooltip.Talents and IsShiftKeyDown()) then
 
 			ILevel = "..."
 			TalentSpec = "..."
 
 			if (Unit ~= "player") then
-				Talents.CurrentGUID = UnitGUID(Unit)
-				Talents.CurrentUnit = Unit
+				Tooltip.CurrentGUID = UnitGUID(Unit)
+				Tooltip.CurrentUnit = Unit
 
-				for i, _ in pairs(Talents.Cache) do
-					local Cache = Talents.Cache[i]
+				for i, _ in pairs(InspectCache) do
+					local Cache = InspectCache[i]
 
-					if Cache.GUID == Talents.CurrentGUID then
+					if Cache.GUID == Tooltip.CurrentGUID then
 						ILevel = Cache.ItemLevel or "..."
 						TalentSpec = Cache.TalentSpec or "..."
 						LastUpdate = Cache.LastUpdate and math_abs(Cache.LastUpdate - math_floor(GetTime())) or 30
@@ -225,18 +388,20 @@ function Tooltip:OnTooltipSetUnit()
 				end
 
 				if (Unit and (CanInspect(Unit))) and (not (InspectFrame and InspectFrame:IsShown())) then
-					local LastInspectTime = GetTime() - Talents.LastInspectRequest
+					local LastInspectTime = GetTime() - LastInspectRequest
 
-					Talents.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
+					Tooltip.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
 
-					Talents:Show()
+					Tooltip:Show()
 				end
 			else
-				local Current = GetAverageItemLevel()
+				local Best, Current, PVP = GetAverageItemLevel()
 
 				ILevel = math_floor(Current) or UNKNOWN
+				MAXILevel = math_floor(Best) or UNKNOWN
+				PVPILevel = math_floor(PVP) or UNKNOWN
 
-				TalentSpec = Talents:GetTalentSpec() or NONE
+				TalentSpec = Tooltip:GetTalentSpec() or NONE
 			end
 		end
 		if (UnitIsAFK(Unit)) then
@@ -284,9 +449,17 @@ function Tooltip:OnTooltipSetUnit()
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
 	end
 
-	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and UnitIsFriend("player", Unit) and IsAltKeyDown()) then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
+	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and IsShiftKeyDown()) then
+		if Unit == "player" then
+			GameTooltip:AddLine(" ") -- We really need this to keep it clean and not bunched up!
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..CURRENTLY_EQUIPPED .."): |cff3eea23"..ILevel.."|r")
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..PVP.."): |cff3eea23"..PVPILevel.."|r")
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..MAXIMUM.."): |cff3eea23"..MAXILevel.."|r")
+		else
+			GameTooltip:AddLine(" ")  -- We really need this to keep it clean and not bunched up! (Target)
+			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
+		end
+
 		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
 	end
 
@@ -416,6 +589,7 @@ function Tooltip:Enable()
 		end
 
 		Tooltip:HookScript("OnShow", self.Skin)
+		if Tooltip.BackdropFrame then Tooltip.BackdropFrame:Kill() end
 	end
 
 	HealthBar:SetScript("OnValueChanged", self.OnValueChanged)
@@ -439,7 +613,6 @@ function Tooltip:Enable()
 	end
 end
 
-K.Tooltip = Tooltip
 local Loading = CreateFrame("Frame")
 function Loading:OnEvent(event, addon)
 	if (event == "PLAYER_LOGIN") then

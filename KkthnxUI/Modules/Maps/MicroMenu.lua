@@ -25,9 +25,96 @@ local UIErrorsFrame = UIErrorsFrame
 -- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap, LootHistoryFrame
 -- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal
 
-local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent, "Lib_UIDropDownMenuTemplate")
-local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
+-- This function is copied from FrameXML and modified to use DropDownMenu library function calls
+-- Using the regular DropDownMenu code causes taints in various places.
+local function MiniMapTrackingDropDown_Initialize(self, level)
+	local name, texture, active, category, nested, numTracking
+	local count = GetNumTrackingTypes()
+	local info
+	local _, class = UnitClass("player")
 
+	if (level == 1) then
+		info = Lib_UIDropDownMenu_CreateInfo()
+		info.text = MINIMAP_TRACKING_NONE
+		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive
+		info.func = ClearAllTracking
+		info.icon = nil
+		info.arg1 = nil
+		info.isNotRadio = true
+		info.keepShownOnClick = true
+		Lib_UIDropDownMenu_AddButton(info, level)
+
+		if (class == "HUNTER") then -- only show hunter dropdown for hunters
+			numTracking = 0
+			-- make sure there are at least two options in dropdown
+			for id = 1, count do
+				name, texture, active, category, nested = GetTrackingInfo(id)
+				if (nested == HUNTER_TRACKING and category == "spell") then
+					numTracking = numTracking + 1
+				end
+			end
+			if (numTracking > 1) then
+				info.text = HUNTER_TRACKING_TEXT
+				info.func = nil
+				info.notCheckable = true
+				info.keepShownOnClick = false
+				info.hasArrow = true
+				info.value = HUNTER_TRACKING
+				Lib_UIDropDownMenu_AddButton(info, level)
+			end
+		end
+
+		info.text = TOWNSFOLK_TRACKING_TEXT
+		info.func = nil
+		info.notCheckable = true
+		info.keepShownOnClick = false
+		info.hasArrow = true
+		info.value = TOWNSFOLK
+		Lib_UIDropDownMenu_AddButton(info, level)
+	end
+
+	for id = 1, count do
+		name, texture, active, category, nested = GetTrackingInfo(id)
+		info = Lib_UIDropDownMenu_CreateInfo()
+		info.text = name
+		info.checked = MiniMapTrackingDropDownButton_IsActive
+		info.func = MiniMapTracking_SetTracking
+		info.icon = texture
+		info.arg1 = id
+		info.isNotRadio = true
+		info.keepShownOnClick = true
+		if (category == "spell") then
+			info.tCoordLeft = 0.0625
+			info.tCoordRight = 0.9
+			info.tCoordTop = 0.0625
+			info.tCoordBottom = 0.9
+		else
+			info.tCoordLeft = 0
+			info.tCoordRight = 1
+			info.tCoordTop = 0
+			info.tCoordBottom = 1
+		end
+		if (level == 1 and
+		(nested < 0 or -- this tracking shouldn't be nested
+		(nested == HUNTER_TRACKING and class ~= "HUNTER") or
+		(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
+			Lib_UIDropDownMenu_AddButton(info, level)
+		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == LIB_UIDROPDOWNMENU_MENU_VALUE) then
+			Lib_UIDropDownMenu_AddButton(info, level)
+		end
+	end
+end
+
+-- Create the new minimap tracking dropdown frame and initialize it
+local KkthnxUIMiniMapTrackingDropDown = CreateFrame("Frame", "KkthnxUIMiniMapTrackingDropDown", UIParent, "Lib_UIDropDownMenuTemplate")
+KkthnxUIMiniMapTrackingDropDown:SetID(1)
+KkthnxUIMiniMapTrackingDropDown:SetClampedToScreen(true)
+KkthnxUIMiniMapTrackingDropDown:Hide()
+Lib_UIDropDownMenu_Initialize(KkthnxUIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
+KkthnxUIMiniMapTrackingDropDown.noResize = true
+
+local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
+local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
 local micromenu = {
 	{
 		text = MAINMENU_BUTTON,
@@ -152,21 +239,17 @@ elseif K.Level > 89 then
 	tinsert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
 end
 
-Minimap:SetScript("OnMouseUp", function(self, button)
+Minimap:SetScript("OnMouseUp", function(self, btn)
 	local position = MinimapAnchor:GetPoint()
-	if button == "RightButton" then
+	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
 		if position:match("LEFT") then
-			Lib_EasyMenu(micromenu, menuFrame, "cursor", 0, 0, "MENU")
+			Lib_EasyMenu(micromenu, menuFrame, "cursor")
 		else
-			Lib_EasyMenu(micromenu, menuFrame, "cursor", -160, 0, "MENU")
+			Lib_EasyMenu(micromenu, menuFrame, "cursor", -160, 0)
 		end
-	elseif button == "MiddleButton" then
-		if position:match("LEFT") then
-			Lib_ToggleDropDownMenu(nil, nil, MiniMapTrackingDropDown, "cursor", 0, 0, "MENU", 2)
-		else
-			ToggleDropDownMenu(nil, nil, MiniMapTrackingDropDown, "cursor", -160, 0, "MENU", 2)
-		end
-	elseif button == "LeftButton" then
+	elseif btn == "RightButton" then
+		Lib_ToggleDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown, "cursor")
+	else
 		Minimap_OnClick(self)
 	end
 end)

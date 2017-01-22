@@ -399,21 +399,21 @@ end
 
 function oUFKkthnx:UpdateBaseFrames(optUnit)
 	if InCombatLockdown() then return end
-	config = ns.config
+
 	if optUnit and optUnit:find("%d") then
 		optUnit = optUnit:match("^.%a+")
 	end
 
 	for _, obj in pairs(oUF.objects) do
 		local unit = obj.MatchUnit
-		if obj.style == "oUF_Kkthnx" and unit and (not optUnit or optUnit == unit:match("^.%a+")) then
+		-- if obj.style == "oUF_Kkthnx" and unit and (not optUnit or optUnit == unit:match("^.%a+")) then
+		if unit and (not optUnit or optUnit == unit:match("^.%a+") or unit) then
 			UpdateUnitFrameLayout(obj)
 		end
 	end
 end
 
 local function CreateUnitLayout(self, unit)
-	-- unit = unit:match('^(.-)%d+') or unit
 
 	self.MatchUnit = K.MatchUnit(unit)
 	self.IsMainFrame = K.MultiCheck(self.MatchUnit, "player", "target", "focus")

@@ -570,7 +570,7 @@ function Bags:SkinTokens()
 end
 
 function Bags:SlotUpdate(id, button)
-	if not button or button.backdrop then
+	if not button or backdrop then
 		return
 	end
 
