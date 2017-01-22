@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if (GetLocale() ~= "zhCN") then return end
+if (GetLocale() ~= "zhTW") then return end
 
--- Localization for zhCN clients
+-- Localization for zhTW clients
 
 L.AFKScreen = {
 	NoGuild = "無公會",
