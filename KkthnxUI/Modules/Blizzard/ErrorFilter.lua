@@ -1,5 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Wow Lua
+local _G = _G
+
 -- Wow API
 local UIErrorsFrame = UIErrorsFrame
 
@@ -29,7 +32,7 @@ if C.Error.White == true or C.Error.Black == true then
 		UIErrorsFrame:AddMessage(L.Info.Errors, 1, .1, .1)
 	end
 
-	SLASH_ERROR1 = "/error"
+	_G.SLASH_ERROR1 = "/error"
 	UIErrorsFrame:UnregisterEvent("UI_ERROR_MESSAGE")
 	KkthnxUIErrors:RegisterEvent("UI_ERROR_MESSAGE")
 end

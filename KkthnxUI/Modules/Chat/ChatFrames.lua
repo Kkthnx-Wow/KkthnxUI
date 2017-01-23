@@ -357,7 +357,7 @@ for i = 1, NUM_CHAT_WINDOWS do
 end
 
 -- Reset chat command
-SLASH_CHATRESET1 = "/chatreset"
+_G.SLASH_CHATRESET1 = "/chatreset"
 SlashCmdList.CHATRESET = function() SetupChatPosAndFont() K.Print("Chat has been successfully reset!") end
 
 -- Big Trade Chat
@@ -373,4 +373,4 @@ function SlashCmdList.BIGCHAT(msg)
         K.Print(L.Chat.BigChatOff)
     end
 end
-SLASH_BIGCHAT1 = "/bigchat"
+_G.SLASH_BIGCHAT1 = "/bigchat"

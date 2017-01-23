@@ -26,7 +26,7 @@ Point
 
 --]]
 
-SLASH_FRAME1 = "/frame"
+_G.SLASH_FRAME1 = "/frame"
 SlashCmdList["FRAME"] = function(arg)
 	if arg ~= "" then
 		arg = _G[arg]
@@ -64,7 +64,7 @@ SlashCmdList["FRAME"] = function(arg)
 	end
 end
 
-SLASH_FRAMELIST1 = "/framelist"
+_G.SLASH_FRAMELIST1 = "/framelist"
 SlashCmdList["FRAMELIST"] = function(msg)
 	if(not FrameStackTooltip) then
 		UIParentLoadAddOn("Blizzard_DebugTools")
@@ -109,7 +109,7 @@ local function TextureList(frame)
 		end
 	end
 end
-SLASH_TEXLIST1 = "/texlist"
+_G.SLASH_TEXLIST1 = "/texlist"
 SlashCmdList["TEXLIST"] = TextureList
 
 local function GetPoint(frame)
@@ -126,17 +126,17 @@ local function GetPoint(frame)
 	print("|cffFFD100"..frameName, point, relativeToName, relativePoint, xOffset, yOffset.."|r")
 end
 
-SLASH_GETPOINT1 = "/getpoint"
+_G.SLASH_GETPOINT1 = "/getpoint"
 SlashCmdList["GETPOINT"] = GetPoint
 
 -- Frame stack on cyrillic
-SLASH_FSTACK1 = "/fs"
+_G.SLASH_FSTACK1 = "/fs"
 SlashCmdList["FSTACK"] = function()
 	SlashCmdList.FRAMESTACK(0)
 end
 
 -- Inform us of the patch info we play on.
-SLASH_WOWVERSION1, SLASH_WOWVERSION2 = "/patch", "/version"
+_G.SLASH_WOWVERSION1, _G.SLASH_WOWVERSION2 = "/patch", "/version"
 SlashCmdList["WOWVERSION"] = function()
 	K.Print("Patch:", K.WoWPatch..", ".. "Build:", K.WoWBuild..", ".. "Released:", K.WoWPatchReleaseDate..", ".. "Interface:", K.TocVersion)
 end

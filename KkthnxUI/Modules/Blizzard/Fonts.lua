@@ -45,12 +45,12 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	local COMBAT = C.Media.Combat_Font
 
 	UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = 12
-	CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
+	_G.CHAT_FONT_HEIGHTS = {12, 13, 14, 15, 16, 17, 18, 19, 20}
 
-	UNIT_NAME_FONT = NORMAL
-	NAMEPLATE_FONT = NORMAL
-	DAMAGE_TEXT_FONT = COMBAT
-	STANDARD_TEXT_FONT = NORMAL
+	_G.UNIT_NAME_FONT = NORMAL
+	_G.NAMEPLATE_FONT = NORMAL
+	_G.DAMAGE_TEXT_FONT = COMBAT
+	_G.STANDARD_TEXT_FONT = NORMAL
 
 	if (K.ScreenWidth > 3840) then
 		K.KillMenuOption(true, "InterfaceOptionsCombatTextPanelHealing")

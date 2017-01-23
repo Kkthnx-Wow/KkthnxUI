@@ -8,7 +8,6 @@ local EnableAddOn, DisableAllAddOns = EnableAddOn, DisableAllAddOns
 local GetAddOnInfo = GetAddOnInfo
 local GetCurrentResolution = GetCurrentResolution
 local GetMouseFocus = GetMouseFocus
-local GetNumPartyMembers, GetNumRaidMembers = GetNumPartyMembers, GetNumRaidMembers
 local GetNumQuestLogEntries = GetNumQuestLogEntries
 local GetRaidRosterInfo = GetRaidRosterInfo
 local GetScreenResolutions = GetScreenResolutions
@@ -29,47 +28,47 @@ local UnitInRaid = UnitInRaid
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end
-SLASH_RELEASE1 = "/release"
+_G.SLASH_RELEASE1 = "/release"
 
 -- Ready check
 SlashCmdList.RCSLASH = function() DoReadyCheck() end
-SLASH_RCSLASH1 = "/rc"
+_G.SLASH_RCSLASH1 = "/rc"
 
 -- Help frame.
 SlashCmdList.TICKET = function() ToggleHelpFrame() end
-SLASH_TICKET1 = "/gm"
+_G.SLASH_TICKET1 = "/gm"
 
 -- Fix The CombatLog.
 SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffff0000Combatlog has been fixed.|r") end
-SLASH_CLEARCOMBAT1 = "/clearcombat"
-SLASH_CLEARCOMBAT2 = "/clfix"
+_G.SLASH_CLEARCOMBAT1 = "/clearcombat"
+_G.SLASH_CLEARCOMBAT2 = "/clfix"
 
 -- Here we can restart wow's engine. could be use for sound issues and more.
 SlashCmdList.GFXENGINE = function() RestartGx() end
-SLASH_GFXENGINE1 = "/restartgfx"
-SLASH_GFXENGINE2 = "/fixgfx"
+_G.SLASH_GFXENGINE1 = "/restartgfx"
+_G.SLASH_GFXENGINE2 = "/fixgfx"
 
 -- Clear all quests in questlog
 SlashCmdList.CLEARQUESTS = function()
 	for i = 1, GetNumQuestLogEntries() do SelectQuestLogEntry(i) SetAbandonQuest() AbandonQuest() end
 end
-SLASH_CLEARQUESTS1 = "/clearquests"
-SLASH_CLEARQUESTS2 = "/clquests"
+_G.SLASH_CLEARQUESTS1 = "/clearquests"
+_G.SLASH_CLEARQUESTS2 = "/clquests"
 
 -- KKTHNXUI help commands
 SlashCmdList.UIHELP = function()
 	for i, v in ipairs(L.SlashCommand.Help) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
 end
-SLASH_UIHELP1 = "/uicommands"
-SLASH_UIHELP2 = "/helpui"
+_G.SLASH_UIHELP1 = "/uicommands"
+_G.SLASH_UIHELP2 = "/helpui"
 
-SLASH_SCALE1 = "/uiscale"
+_G.SLASH_SCALE1 = "/uiscale"
 SlashCmdList["SCALE"] = function()
 	SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 end
 
 -- Disband party or raid (by Monolit)
-function DisbandRaidGroup()
+function _G.DisbandRaidGroup()
 	if InCombatLockdown() then return end
 	if UnitInRaid("player") then
 		SendChatMessage(L.Info.Disabnd, "RAID")
@@ -94,7 +93,7 @@ StaticPopupDialogs.DISBAND_RAID = {
 	text = L.Popup.DisbandRaid,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = DisbandRaidGroup,
+	OnAccept = _G.DisbandRaidGroup,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
@@ -104,7 +103,7 @@ StaticPopupDialogs.DISBAND_RAID = {
 SlashCmdList.GROUPDISBAND = function()
 	StaticPopup_Show("DISBAND_RAID")
 end
-SLASH_GROUPDISBAND1 = "/rd"
+_G.SLASH_GROUPDISBAND1 = "/rd"
 
 -- Enable lua error by command
 function SlashCmdList.LUAERROR(msg)
@@ -122,7 +121,7 @@ function SlashCmdList.LUAERROR(msg)
 		K.Print("|cffff0000/luaerror on - /luaerror off|r")
 	end
 end
-SLASH_LUAERROR1 = "/luaerror"
+_G.SLASH_LUAERROR1 = "/luaerror"
 
 -- Convert party to raid
 SlashCmdList.PARTYTORAID = function()
@@ -136,9 +135,9 @@ SlashCmdList.PARTYTORAID = function()
 		print("|cffff0000"..ERR_NOT_IN_GROUP.."|r")
 	end
 end
-SLASH_PARTYTORAID1 = "/toraid"
-SLASH_PARTYTORAID2 = "/toparty"
-SLASH_PARTYTORAID3 = "/convert"
+_G.SLASH_PARTYTORAID1 = "/toraid"
+_G.SLASH_PARTYTORAID2 = "/toparty"
+_G.SLASH_PARTYTORAID3 = "/convert"
 
 -- Instance teleport
 SlashCmdList.INSTTELEPORT = function()
@@ -149,7 +148,7 @@ SlashCmdList.INSTTELEPORT = function()
 		LFGTeleport()
 	end
 end
-SLASH_INSTTELEPORT1 = "/teleport"
+_G.SLASH_INSTTELEPORT1 = "/teleport"
 
 -- Spec switching(by Monolit)
 SlashCmdList.SPEC = function(spec)
@@ -161,12 +160,12 @@ SlashCmdList.SPEC = function(spec)
 		print("|cffff0000"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 	end
 end
-SLASH_SPEC1 = "/ss"
-SLASH_SPEC2 = "/spec"
+_G.SLASH_SPEC1 = "/ss"
+_G.SLASH_SPEC2 = "/spec"
 
 -- Deadly boss mods testing.
 SlashCmdList.DBMTEST = function() if K.CheckAddOn("DBM-Core") then DBM:DemoMode() end end
-SLASH_DBMTEST1 = "/dbmtest"
+_G.SLASH_DBMTEST1 = "/dbmtest"
 
 -- Clear chat
 SlashCmdList.CLEARCHAT = function(cmd)
@@ -178,8 +177,8 @@ SlashCmdList.CLEARCHAT = function(cmd)
 		end
 	end
 end
-SLASH_CLEARCHAT1 = "/cc"
-SLASH_CLEARCHAT2 = "/clearchat"
+_G.SLASH_CLEARCHAT1 = "/cc"
+_G.SLASH_CLEARCHAT2 = "/clearchat"
 
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
@@ -201,7 +200,7 @@ SlashCmdList.TEST_ACHIEVEMENT = function()
 	DigsiteCompleteAlertSystem:AddAlert(1)
 	NewRecipeLearnedAlertSystem:AddAlert(204)
 end
-SLASH_TEST_ACHIEVEMENT1 = "/testa"
+_G.SLASH_TEST_ACHIEVEMENT1 = "/testa"
 
 -- Test Blizzard Extra Action Button
 SlashCmdList.TEST_EXTRABUTTON = function()
@@ -217,7 +216,7 @@ SlashCmdList.TEST_EXTRABUTTON = function()
 		ExtraActionButton1.icon:SetAlpha(1)
 	end
 end
-SLASH_TEST_EXTRABUTTON1 = "/teb"
+_G.SLASH_TEST_EXTRABUTTON1 = "/teb"
 
 -- Grid on screen
 local Grid
@@ -225,10 +224,10 @@ local BoxSize = 32
 
 local function Grid_Show()
 	if not Grid then
-		GridCreate()
+		_G.GridCreate()
 	elseif Grid.BoxSize ~= BoxSize then
 		Grid:Hide()
-		GridCreate()
+		_G.GridCreate()
 	else
 		Grid:Show()
 	end
@@ -241,7 +240,7 @@ local function GridHide()
 end
 
 local isAligning = false
-SLASH_TOGGLE_GRID1 = "/align"
+_G.SLASH_TOGGLE_GRID1 = "/align"
 SlashCmdList.TOGGLE_GRID = function(arg)
 	if isAligning then
 		GridHide()
@@ -254,7 +253,7 @@ SlashCmdList.TOGGLE_GRID = function(arg)
 	end
 end
 
-function GridCreate()
+function _G.GridCreate()
 	Grid = CreateFrame("Frame", nil, UIParent)
 	Grid.BoxSize = BoxSize
 	Grid:SetAllPoints(UIParent)
@@ -320,7 +319,7 @@ SlashCmdList.TEST_UI = function(msg)
 	SlashCmdList.TEST_ACHIEVEMENT()
 	SlashCmdList.TOGGLE_GRID()
 end
-SLASH_TEST_UI1 = "/testui"
+_G.SLASH_TEST_UI1 = "/testui"
 
 -- Reduce video settings to optimize performance
 local function BoostUI()
@@ -355,6 +354,6 @@ StaticPopupDialogs.BOOST_UI = {
 	preferredIndex = 3,
 }
 
-SLASH_BOOSTUI1 = "/boostfps"
-SLASH_BOOSTUI2 = "/boostui"
+_G.SLASH_BOOSTUI1 = "/boostfps"
+_G.SLASH_BOOSTUI2 = "/boostui"
 SlashCmdList.BOOSTUI = function() StaticPopup_Show("BOOST_UI") end

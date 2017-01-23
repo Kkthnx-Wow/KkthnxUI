@@ -49,14 +49,14 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	if C.Unitframe.Enable then
-		function PetFrame_Update() end
-		function PlayerFrame_AnimateOut() end
-		function PlayerFrame_AnimFinished() end
-		function PlayerFrame_ToPlayerArt() end
-		function PlayerFrame_ToVehicleArt() end
+		function _G.PetFrame_Update() end
+		function _G.PlayerFrame_AnimateOut() end
+		function _G.PlayerFrame_AnimFinished() end
+		function _G.PlayerFrame_ToPlayerArt() end
+		function _G.PlayerFrame_ToVehicleArt() end
 
-		HidePartyFrame = K.Noop
-		ShowPartyFrame = K.Noop
+		_G.HidePartyFrame = K.Noop
+		_G.ShowPartyFrame = K.Noop
 	end
 
 	if C.Raidframe.Enable then
@@ -69,9 +69,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 				CompactRaidFrameManager:Kill()
 			end
 
-			CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
-			CompactRaidFrameManager_UpdateShown = K.Noop
-			CompactUnitFrameProfiles_ApplyProfile = K.Noop
+			_G.CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
+			_G.CompactRaidFrameManager_UpdateShown = K.Noop
+			_G.CompactUnitFrameProfiles_ApplyProfile = K.Noop
 		end
 	end
 

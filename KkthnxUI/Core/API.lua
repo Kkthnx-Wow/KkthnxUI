@@ -12,7 +12,7 @@ local type = type
 
 -- Wow API
 local CreateFrame = CreateFrame
-local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
+local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
 local UIFrameFadeIn = UIFrameFadeIn
 local UIFrameFadeOut = UIFrameFadeOut
 local UnitClass = UnitClass
@@ -185,10 +185,8 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	elseif t == "CreateBackdrop" then
 		backdropa = C.Media.Backdrop_Color[4]
 		f:SetBackdrop(K.BorderBackdrop)
-		bordera = 0
 	elseif t == "Invisible" then
 		backdropa = 0
-		bordera = 0
 	else
 		backdropa = C.Media.Backdrop_Color[4]
 	end
@@ -202,7 +200,6 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 		K.CreateBorder(f, 1)
 	elseif t == "Invisible" then
 		backdropa = 0
-		bordera = 0
 	else
 		backdropa = C.Media.Backdrop_Color[4]
 	end

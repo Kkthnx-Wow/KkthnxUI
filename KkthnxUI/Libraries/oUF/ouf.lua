@@ -553,7 +553,7 @@ do
 	end
 end
 
-function oUF:Spawn(unit, overrideName, nameplate)
+function oUF:Spawn(unit, overrideName, overrideTemplate, nameplate)
 	argcheck(unit, 2, 'string')
 	if(not style) then return error("Unable to create frame. No styles have been registered.") end
 
@@ -562,9 +562,9 @@ function oUF:Spawn(unit, overrideName, nameplate)
 
 	local object
 	if nameplate then
-		object = CreateFrame("Button", name, nameplate)
+		object = CreateFrame("Button", name, nameplate, overrideTemplate)
 	else
-		object = CreateFrame("Button", name, oUF_PetBattleFrameHider, "SecureUnitButtonTemplate")
+		object = CreateFrame("Button", name, oUF_PetBattleFrameHider, overrideTemplate or "SecureUnitButtonTemplate")
 	end
 
 	Private.UpdateUnits(object, unit)
@@ -608,7 +608,7 @@ function oUF:SpawnNamePlates(styleName, namePrefix, nameplateCallback, nameplate
 		if not nameplate.unitFrame then
 			-- spawn nameplate unitframe on nameplate base
 			oUF:SetActiveStyle(self.activeStyle)
-			nameplate.unitFrame = oUF:Spawn(unit, namePrefix..nameplate:GetName(), nameplate)
+			nameplate.unitFrame = oUF:Spawn(unit, namePrefix..nameplate:GetName(), overrideTemplate, nameplate)
 			nameplate.unitFrame:EnableMouse(false)
 		end
 		nameplate.unitFrame:SetAttribute("unit", unit)

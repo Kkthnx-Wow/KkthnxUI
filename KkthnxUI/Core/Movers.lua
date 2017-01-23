@@ -227,7 +227,7 @@ Movers:SetScript("OnEvent", function(self, event)
 	end
 end)
 
-SLASH_MOVING1 = "/moveui"
+_G.SLASH_MOVING1 = "/moveui"
 SlashCmdList["MOVING"] = function()
 	if InCombatLockdown() then print(ERR_NOT_IN_COMBAT) return end
 

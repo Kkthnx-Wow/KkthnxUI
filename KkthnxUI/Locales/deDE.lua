@@ -342,6 +342,11 @@ L.Welcome = {
 	Line5 = "Einige Fragen werden Dir eventuell durch den Chatbefehl /uihelp"
 }
 
+L.Zone = {
+	ArathiBasin = "Arathi Basin",
+	Gilneas = "The Battle for Gilneas"
+}
+
 L.SlashCommand = {
 	Help = {
 		"",

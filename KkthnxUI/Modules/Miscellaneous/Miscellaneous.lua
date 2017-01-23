@@ -219,7 +219,7 @@ if C.Misc.BGSpam == true then
 	local RaidBossEmoteFrame, spamDisabled = RaidBossEmoteFrame
 
 	local function DisableSpam()
-		if GetZoneText() == L_ZONE_ARATHIBASIN or GetZoneText() == L_ZONE_GILNEAS then
+		if GetZoneText() == L.Zone.ArathiBasin or GetZoneText() == L.Zone.Gilneas then
 			RaidBossEmoteFrame:UnregisterEvent("RAID_BOSS_EMOTE")
 			spamDisabled = true
 		elseif spamDisabled then

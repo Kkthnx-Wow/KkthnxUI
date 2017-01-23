@@ -341,6 +341,11 @@ L.Welcome = {
 	Line5 = "壹些常見問題可以輸入/uihelp來查看。"
 }
 
+L.Zone = {
+	ArathiBasin = "Arathi Basin",
+	Gilneas = "The Battle for Gilneas"
+}
+
 L.SlashCommand = {
 	Help = {
 		"",
