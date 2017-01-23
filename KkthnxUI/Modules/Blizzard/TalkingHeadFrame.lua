@@ -22,10 +22,10 @@ HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
 	if C.Blizzard.HideTalkingHead ~= true then return end
 	if addon == "Blizzard_TalkingHeadUI" then
 		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-			TalkingHeadFrame:Hide()
+			TalkingHeadFrame:Kill()
 		end)
+		self:UnregisterEvent(event)
 	end
-	self:UnregisterEvent("ADDON_LOADED")
 end)
 
 -- We set our TalkingHeadFrame scale and position here.

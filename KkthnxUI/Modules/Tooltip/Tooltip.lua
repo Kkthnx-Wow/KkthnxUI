@@ -172,7 +172,7 @@ end
 function Tooltip:GetItemLevel(unit)
 	local Total, Item = 0, 0
 	local ArtefactEquiped = false
-	local TotalSlots = 16
+	-- local TotalSlots = 16
 
 	for i = 1, #Tooltip.SlotNames do
 		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Tooltip.SlotNames[i])))
@@ -180,12 +180,12 @@ function Tooltip:GetItemLevel(unit)
 		if (ItemLink ~= nil) then
 			local _, _, Rarity, _, _, _, _, _, EquipLoc = GetItemInfo(ItemLink)
 
-			--Check if we have an artifact equipped in main hand
+			-- Check if we have an artifact equipped in main hand
 			if (EquipLoc and EquipLoc == "INVTYPE_WEAPONMAINHAND" and Rarity and Rarity == 6) then
 				ArtifactEquipped = true
 			end
 
-			--If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
 			if (not ArtifactEquipped or (ArtifactEquipped and EquipLoc and EquipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
 				local ItemLevel
 
@@ -196,43 +196,43 @@ function Tooltip:GetItemLevel(unit)
 					Total = Total + ItemLevel
 				end
 
-				-- Total slots depend if one/two handed weapon
-				if (i == 15) then
-					if (ArtifactEquipped or (EquipLoc and EquipLoc == "INVTYPE_2HWEAPON")) then
-						TotalSlots = 15
-					end
-				end
+				-- -- Total slots depend if one/two handed weapon
+				-- if (i == 15) then
+				-- 	if (ArtifactEquipped or (EquipLoc and EquipLoc == "INVTYPE_2HWEAPON")) then
+				-- 		TotalSlots = 15
+				-- 	end
+				-- end
 			end
 		end
 	end
 
-	if(Total < 1 or Item < TotalSlots) then
+	-- if(Total < 1 or Item < TotalSlots)
+	if(Total < 1 or Item < 15) then
 		return
 	end
 
 	return math_floor(Total / Item)
 end
 
-function Tooltip:GetTalentSpec(unit)
+function Tooltip:GetTalentSpec(unit, isPlayer)
 	local Spec
 
-	if not unit then
+	if not unit or (isPlayer) then
 		Spec = GetSpecialization()
 	else
 		Spec = GetInspectSpecialization(unit)
 	end
 
-	if(Spec and Spec > 0) then
-		if (unit) then
+	if(Spec ~= nil and Spec > 0) then
+		if (unit) and (not isPlayer) then
 			local Role = GetSpecializationRoleByID(Spec)
 
-			if (Role) then
-				local Name = select(2, GetSpecializationInfoByID(Spec))
-
+			if (Role ~= nil) then
+				local _, Name = GetSpecializationInfoByID(Spec)
 				return Name
 			end
 		else
-			local Name = select(2, GetSpecializationInfo(Spec))
+			local _, Name = GetSpecializationInfo(Spec)
 
 			return Name
 		end
@@ -456,7 +456,7 @@ function Tooltip:OnTooltipSetUnit()
 			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..PVP.."): |cff3eea23"..PVPILevel.."|r")
 			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..MAXIMUM.."): |cff3eea23"..MAXILevel.."|r")
 		else
-			GameTooltip:AddLine(" ")  -- We really need this to keep it clean and not bunched up! (Target)
+			GameTooltip:AddLine(" ") -- We really need this to keep it clean and not bunched up! (Target)
 			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
 		end
 
@@ -589,7 +589,9 @@ function Tooltip:Enable()
 		end
 
 		Tooltip:HookScript("OnShow", self.Skin)
-		if Tooltip.BackdropFrame then Tooltip.BackdropFrame:Kill() end
+		if Tooltip.BackdropFrame then
+			Tooltip.BackdropFrame:Kill()
+		end
 	end
 
 	HealthBar:SetScript("OnValueChanged", self.OnValueChanged)

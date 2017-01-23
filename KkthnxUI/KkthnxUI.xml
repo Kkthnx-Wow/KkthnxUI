@@ -26,7 +26,6 @@
    <Script file="Config\Filters\ErrorFilter.lua" />
    <Script file="Config\Filters\FilgerSpells.lua" />
    <Script file="Config\Filters\Nameplates.lua" />
-   <Script file="Config\Filters\NeedItems.lua" />
    <Script file="Config\Filters\PortraitTimers.lua" />
    <Script file="Config\Filters\RaidAuraWatch.lua" />
    <Script file="Config\Filters\SpamFilter.lua" />
