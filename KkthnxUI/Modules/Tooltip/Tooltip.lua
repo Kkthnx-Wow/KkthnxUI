@@ -76,14 +76,14 @@ Tooltip.Tooltips = {
 	GameTooltip,
 	ItemRefShoppingTooltip1,
 	ItemRefShoppingTooltip2,
-	ItemRefShoppingTooltip3,
+	-- ItemRefShoppingTooltip3,
 	ShoppingTooltip1,
 	ShoppingTooltip2,
-	ShoppingTooltip3,
+	-- ShoppingTooltip3,
 	WorldMapTooltip,
 	WorldMapCompareTooltip1,
 	WorldMapCompareTooltip2,
-	WorldMapCompareTooltip3,
+	-- WorldMapCompareTooltip3,
 	ItemRefTooltip,
 }
 
@@ -445,7 +445,7 @@ function Tooltip:OnTooltipSetUnit()
 		GameTooltip:AddLine(UnitName(Unit .. "target"), R, G, B)
 	end
 
-	if (C.Tooltip.HealthValue and Health and MaxHealth) then
+	if (C.Tooltip.HealthValue and self.Health and self.MaxHealth) then
 		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
 	end
 

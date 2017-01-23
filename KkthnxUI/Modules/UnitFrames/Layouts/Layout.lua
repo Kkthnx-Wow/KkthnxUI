@@ -1131,10 +1131,7 @@ local function CreateUnitLayout(self, unit)
 		self:RegisterEvent("UNIT_ENTERING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", UpdatePlayerFrame)
-		if event == "UPDATE_VEHICLE_ACTIONBAR" then
-			print(event)
-		end
-		-- self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame) -- </ Test > --
+		-- self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
 	end
 
 	-- </ Focus & Target Frame > --
@@ -1397,4 +1394,4 @@ SlashCmdList.TEST_UF = function(msg)
 		moving = false
 	end
 end
-SLASH_TEST_UF1 = "/testuf"
+_G.SLASH_TEST_UF1 = "/testuf"

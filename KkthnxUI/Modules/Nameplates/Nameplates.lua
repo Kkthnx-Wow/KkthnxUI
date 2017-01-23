@@ -80,10 +80,6 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
 	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
 	K.LockCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}
