@@ -121,8 +121,8 @@ function Tutorial:Tutorials(forceShow)
 	self:SetNextTutorial()
 end
 
-Tutorial:RegisterEvent("PLAYER_ENTERING_WORLD")
-Tutorial:SetScript("OnEvent", function(self, event, ...)
+Tutorial:RegisterEvent("ADDON_LOADED")
+Tutorial:SetScript("OnEvent", function(self, event)
 	Tutorial:Tutorials(forceShow)
-	Tutorial:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	Tutorial:UnregisterEvent("ADDON_LOADED")
 end)

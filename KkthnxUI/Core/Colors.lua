@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 
-local Framework = select(2, ...)
-local oUF = oUF or Framework.oUF
+local _, ns = ...
+local oUF = ns.oUF
 
 -- Colors
 oUF.colors.uninterruptible = {

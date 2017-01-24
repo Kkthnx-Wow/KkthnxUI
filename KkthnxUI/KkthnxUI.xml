@@ -99,9 +99,7 @@
    <Script file="Modules\Announcements\Spells.lua" />
    <!-- Auras -->
    <Include file="Modules\Auras\Templates.xml" />
-   <Script file="Modules\Auras\Core.lua" />
    <Script file="Modules\Auras\Auras.lua" />
-   <Script file="Modules\Auras\Headers.lua" />
    <Script file="Modules\Auras\AurasSource.lua" />
    <!-- Automation -->
    <Script file="Modules\Automation\AutoInvite.lua" />

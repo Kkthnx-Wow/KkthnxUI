@@ -1,19 +1,19 @@
---  Copyright (C) 2009, 2010 Tyson Brown
+-- Copyright (C) 2009, 2010 Tyson Brown
 --
---  This file is part of LibDebug.
+-- This file is part of LibDebug.
 --
---  LibDebug is free software: you can redistribute it and/or modify
---  it under the terms of the GNU Lesser General Public License as published by
---  the Free Software Foundation, either version 3 of the License, or
---  (at your option) any later version.
+-- LibDebug is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU Lesser General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
 --
---  LibDebug is distributed in the hope that it will be useful,
---  but WITHOUT ANY WARRANTY; without even the implied warranty of
---  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
---  GNU Lesser General Public License for more details.
+-- LibDebug is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+-- GNU Lesser General Public License for more details.
 --
---  You should have received a copy of the GNU Lesser General Public License
---  along with LibDebug.  If not, see <http://www.gnu.org/licenses/>.
+-- You should have received a copy of the GNU Lesser General Public License
+-- along with LibDebug. If not, see <http://www.gnu.org/licenses/>.
 
 local version = 4
 local pp=print -- plain,old,boring print
@@ -57,7 +57,7 @@ local function ParseDebugStack(stack)
 
 	-- debugstack seems to truncate long file names, so if we don't get a match, we'll try removing some of the bits we're trying to match with.
 	--if not file then file, line = stack:match("AddOns[\\//]([/\\%w_]*%.[Ll][Uu][Aa]):(%d-):") end -- First Interface/
-	--if not file then file, line = stack:match("[\\//]([/\\%w_]*%.[Ll][Uu][Aa]):(%d-):") end  -- Then Interface/AddOns/
+	--if not file then file, line = stack:match("[\\//]([/\\%w_]*%.[Ll][Uu][Aa]):(%d-):") end -- Then Interface/AddOns/
 	--file=nil
 	local addon,file, line = stack:match("([%w_]*)[/\\]?([%w_]*%.[Ll][Uu][Aa]):(%d-):")
 	return file,line,addon
@@ -150,7 +150,7 @@ end
 local fake_G_resume = function(co, ...)
 	if type(co) ~= "thread" then return false, "Invoked LibDebug.coroutine.resume on a non-thread."
 	elseif status(co) == "dead" then return false, "Invoked LibDebug.coroutine.resume on terminated thread."
-	else return resume_wrapper(co, _G.coroutine.resume(co, ...)) end
+else return resume_wrapper(co, _G.coroutine.resume(co, ...)) end
 end
 
 fake_G.coroutine.resume = fake_G_resume
@@ -343,7 +343,7 @@ showTable = function(tbl,async)
 	pp("Passed",tbl,async)
 	DEFAULT_CHAT_FRAME=GetChatFrame("LibDebug")
 
-	DEFAULT_CHAT_FRAME:AddMessage("       ".._G.tostring(tbl)  .. (async and " async" or ""), 0.5, 0.5, 0.5)
+	DEFAULT_CHAT_FRAME:AddMessage(" ".._G.tostring(tbl) .. (async and " async" or ""), 0.5, 0.5, 0.5)
 
 	local meta = getmetatable(tbl)
 

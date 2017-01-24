@@ -570,7 +570,7 @@ function Bags:SkinTokens()
 end
 
 function Bags:SlotUpdate(id, button)
-	if not button or backdrop then
+	if not button then
 		return
 	end
 
@@ -989,12 +989,12 @@ function Bags:Enable()
 	end)
 
 	-- Rewrite Blizzard Bags Functions
-	function UpdateContainerFrameAnchors() end
-	function ToggleBag() ToggleAllBags() end
-	function ToggleBackpack() ToggleAllBags() end
-	function OpenAllBags() ToggleAllBags() end
-	function OpenBackpack() ToggleAllBags() end
-	function ToggleAllBags() self:ToggleBags() end
+	function _G.UpdateContainerFrameAnchors() end
+	function _G.ToggleBag() ToggleAllBags() end
+	function _G.ToggleBackpack() ToggleAllBags() end
+	function _G.OpenAllBags() ToggleAllBags() end
+	function _G.OpenBackpack() ToggleAllBags() end
+	function _G.ToggleAllBags() self:ToggleBags() end
 
 	-- Register Events for Updates
 	self:RegisterEvent("BAG_UPDATE")

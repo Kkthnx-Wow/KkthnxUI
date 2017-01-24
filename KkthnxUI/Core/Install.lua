@@ -33,15 +33,15 @@ local PlaySoundFile = PlaySoundFile
 local PlaySoundKitID = PlaySoundKitID
 local ReloadUI = ReloadUI
 local SetCVar = SetCVar
-local StaticPopup_Show = StaticPopup_Show
+local StaticPopup_Show = _G.StaticPopup_Show
 local ToggleChatColorNamesByClassGroup = ToggleChatColorNamesByClassGroup
 local UIFrameFadeOut = UIFrameFadeOut
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: ActionBars, SetActionBarToggles, SLASH_VERSION1, DisableAddOn, KkthnxUIData
+-- GLOBALS: ActionBars, SetActionBarToggles, _G.SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
--- GLOBALS: SLASH_CONFIGURE1, SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
--- GLOBALS: SLASH_TUTORIAL2, SLASH_TUTORIAL1, SLASH_TUTORIAL1, SLASH_CONFIGURE2, UIConfig
+-- GLOBALS: _G.SLASH_CONFIGURE1, _G.SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
+-- GLOBALS: _G.SLASH_TUTORIAL2, _G.SLASH_TUTORIAL1, _G.SLASH_TUTORIAL1, _G.SLASH_CONFIGURE2, UIConfig
 -- GLOBALS: InstallStepComplete, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 -- GLOBALS: UIConfigMain
 
@@ -351,8 +351,11 @@ local StepFour = function()
 	StatusBarText:SetText("4/4")
 	OptionOne:Hide()
 	OptionTwo.Text:SetText(L.Install.ButtonFinish)
-	InstallStepComplete.Message = "Install Complete"
-	InstallStepComplete:Show()
+
+	if InstallStepComplete then
+		InstallStepComplete.Message = "Install Complete"
+		InstallStepComplete:Show()
+	end
 	OptionTwo:SetScript("OnClick", function()
 		ReloadUI()
 	end)
@@ -625,16 +628,16 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	self:UnregisterEvent("ADDON_LOADED")
 end)
 
-SLASH_TUTORIAL1, SLASH_TUTORIAL2 = "/uihelp", "/tutorial"
+_G.SLASH_TUTORIAL1, _G.SLASH_TUTORIAL2 = "/uihelp", "/tutorial"
 SlashCmdList.TUTORIAL = function() KkthnxUIInstallFrame:Show() TutorialOne() end
 
-SLASH_VERSION1 = "/version"
+_G.SLASH_VERSION1 = "/version"
 SlashCmdList.VERSION = function() if KkthnxUIVersionFrame:IsShown() then KkthnxUIVersionFrame:Hide() else KkthnxUIVersionFrame:Show() end end
 
-SLASH_CONFIGURE1, SLASH_CONFIGURE2 = "/install", "/installui"
+_G.SLASH_CONFIGURE1, _G.SLASH_CONFIGURE2 = "/install", "/installui"
 SlashCmdList.CONFIGURE = KkthnxUIInstall.Install
 
-SLASH_RESETUI1 = "/resetui"
+_G.SLASH_RESETUI1 = "/resetui"
 SlashCmdList.RESETUI = function() KkthnxUIInstallFrame:Show() StepOne() end
 
 StaticPopupDialogs["DISABLE_UI"] = {
