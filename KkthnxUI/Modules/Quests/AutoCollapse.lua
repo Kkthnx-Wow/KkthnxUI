@@ -1,6 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 if C.Automation.AutoCollapse ~= true then return end
 
+-- Wow Lua
+local _G = _G
+
 -- Wow API
 local UnitAffectingCombat = UnitAffectingCombat
 local IsResting = IsResting
@@ -22,9 +25,6 @@ local statedriver = {
 		ObjectiveTracker_Collapse(watchFrame)
 		ObjectiveTrackerFrame:Show()
 	end,
-	-- ["HIDDEN"] = function(frame)
-	-- 	ObjectiveTrackerFrame:Hide()
-	-- end,
 }
 
 local AutoCollapse = CreateFrame("Frame")
