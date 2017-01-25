@@ -165,7 +165,7 @@ function Bags:HideBlizzard()
 end
 
 function Bags:CreateReagentContainer()
-	if select(4, GetAddOnInfo("TradeSkillMaster")) then
+	if K.CheckAddOn("TradeSkillMaster") then
 		return
 	end
 
@@ -441,11 +441,11 @@ function Bags:CreateContainer(storagetype, ...)
 			BankFrame_ShowPanel(BANK_PANELS[2].name)
 
 			if (not ReagentBankFrame.isMade) then
-				self:CreateReagentContainer()
-				ReagentBankFrame.isMade = true
+				-- self:CreateReagentContainer()
+				-- ReagentBankFrame.isMade = true
+				ReagentBankFrame.isMade = self:CreateReagentContainer() -- Attempt to fix a conflict with TSM.
 			else
 				self.Reagent:Show()
-
 			end
 
 			for i = 5, 11 do
@@ -570,7 +570,7 @@ function Bags:SkinTokens()
 end
 
 function Bags:SlotUpdate(id, button)
-	if not button then
+	if not button or not button.backdrop then
 		return
 	end
 
@@ -603,7 +603,7 @@ function Bags:SlotUpdate(id, button)
 	if IsProfBag then
 
 	else
-		--button:SetBackdropColor(unpack(C["General"].BackdropColor))
+		-- button:SetBackdropColor(unpack(C["General"].BackdropColor))
 	end
 
 	if IsNewItem and NewItem then

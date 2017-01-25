@@ -13,8 +13,6 @@ local type = type
 -- Wow API
 local CreateFrame = CreateFrame
 local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
-local UIFrameFadeIn = UIFrameFadeIn
-local UIFrameFadeOut = UIFrameFadeOut
 local UnitClass = UnitClass
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
@@ -333,12 +331,13 @@ local function SkinButton(Frame, Strip)
 end
 
 -- Fade in/out functions
-local function FadeIn(f)
-	UIFrameFadeIn(f, 0.4, f:GetAlpha(), 1)
+local function FadeIn(frame)
+	K:UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
+
 end
 
-local function FadeOut(f)
-	UIFrameFadeOut(f, 0.8, f:GetAlpha(), 0)
+local function FadeOut(frame)
+	K:UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), 0)
 end
 
 -- Merge KkthnxUI API with Wows API

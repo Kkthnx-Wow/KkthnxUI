@@ -31,7 +31,9 @@ local AutoCollapse = CreateFrame("Frame")
 AutoCollapse:RegisterEvent("PLAYER_ENTERING_WORLD")
 AutoCollapse:RegisterEvent("PLAYER_UPDATE_RESTING")
 AutoCollapse:SetScript("OnEvent", function(self, event)
-	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED") return end
+	if UnitAffectingCombat("player") then self:RegisterEvent("PLAYER_REGEN_ENABLED", "AutoCollapse") return end
+
+	watchFrame = _G["WatchFrame"]
 
 	if IsResting() then
 		statedriver["COLLAPSED"](watchFrame)
@@ -50,7 +52,5 @@ AutoCollapse:SetScript("OnEvent", function(self, event)
 		end
 	end
 
-	if event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	end
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end)

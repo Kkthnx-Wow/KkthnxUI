@@ -49,6 +49,7 @@
    <!-- Core -->
    <Script file="Core\API.lua" />
    <Script file="Core\Functions.lua" />
+   <Script file="Core\Animation.lua" />
    <Script file="Core\Border.lua" />
    <Script file="Core\Install.lua" />
    <Script file="Core\Commands.lua" />

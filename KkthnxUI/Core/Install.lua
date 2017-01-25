@@ -550,7 +550,7 @@ if not InstallStepComplete then
 			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
 			self.Text:SetText(self.Message)
 			UIFrameFadeOut(self, 3.5, 1, 0)
-			K.Delay(1, function() self:Hide() end)
+			K.Delay(4, function() self:Hide() end)
 			self.Message = nil
 		else
 			self:Hide()

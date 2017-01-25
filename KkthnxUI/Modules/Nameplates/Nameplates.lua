@@ -39,7 +39,7 @@ local GetCVarBool = GetCVarBool
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder, event
 
--- oUF_KkthnxNameplates
+-- oUF_Kkthnx Nameplates
 local _, ns = ...
 local oUF = ns.oUF
 
