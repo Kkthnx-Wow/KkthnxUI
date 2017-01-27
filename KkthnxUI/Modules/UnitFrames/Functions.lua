@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local abs = math.abs
 local format = string.format
 local min, max = math.min, math.max

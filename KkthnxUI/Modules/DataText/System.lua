@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 if C.DataText.System ~= true then return end
 
 -- Lua API
+local _G = _G
 local collectgarbage = collectgarbage
 local math_floor = math.floor
 local select = select

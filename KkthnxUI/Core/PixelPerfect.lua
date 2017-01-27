@@ -3,6 +3,7 @@ local K, C, L = unpack(select(2, ...))
 -- Big thanks to Goldpaw for failproofing this badass script some more.
 
 -- Lua API
+local _G = _G
 local math_max = math.max
 local math_min = math.min
 local string_format = string.format

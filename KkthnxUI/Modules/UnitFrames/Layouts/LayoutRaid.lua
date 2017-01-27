@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 if C.Raidframe.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local string_format = string.format
 local table_insert = table.insert
 local unpack = unpack

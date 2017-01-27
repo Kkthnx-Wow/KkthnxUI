@@ -1,6 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 
 -- Lua API
+local _G = _G
 local unpack = unpack
 local next = next
 local pairs = pairs
