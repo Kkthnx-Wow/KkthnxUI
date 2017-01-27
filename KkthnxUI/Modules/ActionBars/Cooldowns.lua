@@ -2,13 +2,14 @@ local K, C, L = unpack(select(2, ...))
 if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("CooldownCount") == true or C.Cooldown.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local ceil = math.ceil
 local floor = math.floor
 local pairs = pairs
 local strfind = string.find
 
 -- Wow API
-local GetTime = GetTime
+local GetTime = _G.GetTime
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, CreateFrame, GetActionCooldown, GetActionCharges

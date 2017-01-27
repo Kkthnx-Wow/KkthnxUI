@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 if C.Nameplates.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local floor = math.floor
 local format = string.format
 local huge = math.huge
@@ -9,39 +10,39 @@ local tinsert = table.insert
 local unpack = unpack
 
 -- Wow API
-local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
-local CreateFrame = CreateFrame
-local GetArenaOpponentSpec = GetArenaOpponentSpec
-local GetBattlefieldScore = GetBattlefieldScore
-local GetNumBattlefieldScores = GetNumBattlefieldScores
-local GetNumGroupMembers = GetNumGroupMembers
-local GetSpecializationInfoByID = GetSpecializationInfoByID
-local GetTime = GetTime
-local InCombatLockdown = InCombatLockdown
-local IsInGroup = IsInGroup
-local IsInInstance = IsInInstance
-local IsInRaid = IsInRaid
-local SetCVar = SetCVar
-local UnitAffectingCombat = UnitAffectingCombat
-local UnitClass = UnitClass
-local UnitDetailedThreatSituation = UnitDetailedThreatSituation
-local UnitExists = UnitExists
-local UnitFactionGroup = UnitFactionGroup
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsTapDenied = UnitIsTapDenied
-local UnitIsUnit = UnitIsUnit
-local UnitName = UnitName
-local UnitReaction = UnitReaction
-local UnitSelectionColor = UnitSelectionColor
-local GetCVarBool = GetCVarBool
+local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
+local CreateFrame = _G.CreateFrame
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetBattlefieldScore = _G.GetBattlefieldScore
+local GetCVarBool = _G.GetCVarBool
+local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
+local GetTime = _G.GetTime
+local InCombatLockdown = _G.InCombatLockdown
+local IsInGroup = _G.IsInGroup
+local IsInInstance = _G.IsInInstance
+local IsInRaid = _G.IsInRaid
+local SetCVar = _G.SetCVar
+local UnitAffectingCombat = _G.UnitAffectingCombat
+local UnitClass = _G.UnitClass
+local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
+local UnitExists = _G.UnitExists
+local UnitFactionGroup = _G.UnitFactionGroup
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsTapDenied = _G.UnitIsTapDenied
+local UnitIsUnit = _G.UnitIsUnit
+local UnitName = _G.UnitName
+local UnitReaction = _G.UnitReaction
+local UnitSelectionColor = _G.UnitSelectionColor
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder, event
 
 -- oUF_Kkthnx Nameplates
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or oUF
 
 -- Only show nameplates when in combat
 local KkthnxUIPlates = CreateFrame("Frame", nil, UIParent)

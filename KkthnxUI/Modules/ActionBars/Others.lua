@@ -6,15 +6,15 @@ local _G = _G
 local string_format = string.format
 
 -- Wow API
-local CanExitVehicle = CanExitVehicle
-local GetActionBarToggles = GetActionBarToggles
-local GetPossessInfo = GetPossessInfo
-local IsPossessBarVisible = IsPossessBarVisible
-local SetActionBarToggles = SetActionBarToggles
-local SetCVar = SetCVar
-local StaticPopup_Show = StaticPopup_Show
-local TaxiRequestEarlyLanding = TaxiRequestEarlyLanding
-local UnitOnTaxi = UnitOnTaxi
+local CanExitVehicle = _G.CanExitVehicle
+local GetActionBarToggles = _G.GetActionBarToggles
+local GetPossessInfo = _G.GetPossessInfo
+local IsPossessBarVisible = _G.IsPossessBarVisible
+local SetActionBarToggles = _G.SetActionBarToggles
+local SetCVar = _G.SetCVar
+local StaticPopup_Show =_G.StaticPopup_Show
+local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
+local UnitOnTaxi = _G.UnitOnTaxi
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CancelUnitBuff, GameTooltip, TAXI_CANCEL, TAXI_CANCEL_DESCRIPTION

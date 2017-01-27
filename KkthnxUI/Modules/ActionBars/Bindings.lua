@@ -8,28 +8,28 @@ local print = print
 local tonumber = tonumber
 
 -- Wow API
-local EnumerateFrames = EnumerateFrames
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
-local GetBindingByKey = GetBindingByKey
-local GetBindingKey = GetBindingKey
-local GetCurrentBindingSet = GetCurrentBindingSet
-local GetMacroInfo = GetMacroInfo
-local GetSpellBookItemName = GetSpellBookItemName
-local hooksecurefunc = hooksecurefunc
-local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
-local IsAltKeyDown = IsAltKeyDown
-local IsControlKeyDown = IsControlKeyDown
-local IsModifiedClick = IsModifiedClick
-local IsShiftKeyDown = IsShiftKeyDown
-local LoadBindings = LoadBindings
-local MAX_ACCOUNT_MACROS = MAX_ACCOUNT_MACROS
-local ReloadUI = ReloadUI
-local SaveBindings = SaveBindings
-local SetBinding = SetBinding
-local SpellBook_GetSpellBookSlot = SpellBook_GetSpellBookSlot
-local StaticPopup_Hide = StaticPopup_Hide
-local StaticPopup_Show = StaticPopup_Show
+local EnumerateFrames = _G.EnumerateFrames
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GetBindingByKey = _G.GetBindingByKey
+local GetBindingKey = _G.GetBindingKey
+local GetCurrentBindingSet = _G.GetCurrentBindingSet
+local GetMacroInfo = _G.GetMacroInfo
+local GetSpellBookItemName = _G.GetSpellBookItemName
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsModifiedClick = _G.IsModifiedClick
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local LoadBindings = _G.LoadBindings
+local MAX_ACCOUNT_MACROS = _G.MAX_ACCOUNT_MACROS
+local ReloadUI =_G.ReloadUI
+local SaveBindings = _G.SaveBindings
+local SetBinding = _G.SetBinding
+local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
+local StaticPopup_Hide = _G.StaticPopup_Hide
+local StaticPopup_Show = _G.StaticPopup_Show
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: APPLY, CANCEL, StanceButton1, PetActionButton1, ActionButton1

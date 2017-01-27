@@ -33,8 +33,6 @@ local UnitIsGroupLeader = UnitIsGroupLeader
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, WEEKLY, UIFrameHider, UIHider,UIParent
 
-local Locale = GetLocale()
-
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
 K.BorderBackdrop = {bgFile = C.Media.Blank}

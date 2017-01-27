@@ -7,9 +7,9 @@ local unpack = unpack
 local select = select
 
 -- Wow API
-local GetShapeshiftFormID = GetShapeshiftFormID
-local GetSpecialization = GetSpecialization
-local hooksecurefunc = hooksecurefunc
+local GetShapeshiftFormID = _G.GetShapeshiftFormID
+local GetSpecialization = _G.GetSpecialization
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: TotemFrame, oUF_KkthnxPet, oUF_KkthnxPlayer, CAT_FORM, SPEC_SHAMAN_RESTORATION

@@ -5,9 +5,9 @@ if C.ActionBar.Enable ~= true then return end
 local unpack = unpack
 
 -- Wow API
-local IsUsableAction = IsUsableAction
-local ActionHasRange = ActionHasRange
-local IsActionInRange = IsActionInRange
+local ActionHasRange = _G.ActionHasRange
+local IsActionInRange = _G.IsActionInRange
+local IsUsableAction = _G.IsUsableAction
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: TOOLTIP_UPDATE_TIME

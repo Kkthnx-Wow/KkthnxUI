@@ -1,17 +1,18 @@
 local K, C, L = unpack(select(2, ...))
 
 -- Lua API
+local _G = _G
 local select = select
 local string_lower = string.lower
 local string_match = string.match
+local tonumber = tonumber
 
 -- Wow API
-local GetAddOnEnableState = GetAddOnEnableState
-local GetBuildInfo = GetBuildInfo
-local GetSpecialization = GetSpecialization
-local tonumber = tonumber
-local UnitClass = UnitClass
-local UnitName = UnitName
+local GetAddOnEnableState = _G.GetAddOnEnableState
+local GetBuildInfo = _G.GetBuildInfo
+local GetSpecialization = _G.GetSpecialization
+local UnitClass = _G.UnitClass
+local UnitName = _G.UnitName
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion

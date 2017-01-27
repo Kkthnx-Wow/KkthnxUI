@@ -5,13 +5,14 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 
 -- Lua API
+local _G = _G
 local wipe = wipe
 local ipairs = ipairs
 local pairs = pairs
 
 -- Wow API
-local UnitCanAttack = UnitCanAttack
-local UnitPlayerControlled = UnitPlayerControlled
+local UnitCanAttack = _G.UnitCanAttack
+local UnitPlayerControlled = _G.UnitPlayerControlled
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, CreateFrame

@@ -2,14 +2,15 @@ local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local floor = math.floor
 local format = string.format
 local unpack = unpack
 
 -- Wow API
-local CreateFrame = CreateFrame
-local GetTime = GetTime
-local UnitAura = UnitAura
+local CreateFrame = _G.CreateFrame
+local GetTime = _G.GetTime
+local UnitAura = _G.UnitAura
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: GameTooltip, Aura_OnClick, DebuffTypeColor

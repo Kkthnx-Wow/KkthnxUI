@@ -4,16 +4,17 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local math_floor = math.floor
 local getmetatable = getmetatable
+local math_floor = math.floor
 local string_match = string.match
-local unpack, select = unpack, select
 local type = type
+local unpack, select = unpack, select
 
 -- Wow API
-local CreateFrame = CreateFrame
-local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS
-local UnitClass = UnitClass
+local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS, _G.RAID_CLASS_COLORS
+local UIParent = _G.UIParent
+local UnitClass = _G.UnitClass
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: noHover, noPushed, noChecked, self, bordera

@@ -12,24 +12,27 @@ local type = type
 local unpack = unpack
 
 -- Wow API
-local CreateFrame = CreateFrame
-local GetNetStats = GetNetStats
-local GetSpellInfo = GetSpellInfo
-local GetTime = GetTime
-local UnitCanAttack = UnitCanAttack
-local UnitClass = UnitClass
-local UnitHealth = UnitHealth
-local UnitHealthMax = UnitHealthMax
-local UnitIsConnected = UnitIsConnected
-local UnitIsDead = UnitIsDead
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitIsFriend = UnitIsFriend
-local UnitIsGhost = UnitIsGhost
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsUnit = UnitIsUnit
-local UnitPower = UnitPower
-local UnitPowerMax = UnitPowerMax
-local UnitSelectionColor = UnitSelectionColor
+local CreateFrame = _G.CreateFrame
+local GetNetStats = _G.GetNetStats
+local GetSpellInfo = _G.GetSpellInfo
+local GetTime = _G.GetTime
+local UnitBuff = _G.UnitBuff
+local UnitCanAttack = _G.UnitCanAttack
+local UnitClass = _G.UnitClass
+local UnitHealth = _G.UnitHealth
+local UnitHealthMax = _G.UnitHealthMax
+local UnitIsConnected = _G.UnitIsConnected
+local UnitIsDead = _G.UnitIsDead
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsGhost = _G.UnitIsGhost
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitPower = _G.UnitPower
+local UnitPowerMax = _G.UnitPowerMax
+local UnitReaction = _G.UnitReaction
+local UnitSelectionColor = _G.UnitSelectionColor
+local UnitSpellHaste = _G.UnitSpellHaste
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: PLAYER_OFFLINE, DEAD, UnitFrame_OnLeave, UnitFrame_OnEnter

@@ -5,12 +5,12 @@ if C.ActionBar.Enable ~= true then return end
 local _G = _G
 
 -- Wow API
-local CreateFrame = CreateFrame
-local HasOverrideActionBar = HasOverrideActionBar
-local HasVehicleActionBar = HasVehicleActionBar
-local InCombatLockdown = InCombatLockdown
-local NUM_ACTIONBAR_BUTTONS = NUM_ACTIONBAR_BUTTONS
-local RegisterStateDriver = RegisterStateDriver
+local CreateFrame = _G.CreateFrame
+local HasOverrideActionBar = _G.HasOverrideActionBar
+local HasVehicleActionBar = _G.HasVehicleActionBar
+local InCombatLockdown = _G.InCombatLockdown
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
+local RegisterStateDriver = _G.RegisterStateDriver
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ActionButton_Update, MainMenuBar_OnEvent

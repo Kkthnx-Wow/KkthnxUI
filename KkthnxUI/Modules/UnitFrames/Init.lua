@@ -5,11 +5,18 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 
 -- Lua API
+local _G = _G
 local pairs = pairs
 
 -- Wow API
-local UnitAffectingCombat = UnitAffectingCombat
-local IsShiftKeyDown = IsShiftKeyDown
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local PlaySound = _G.PlaySound
+local UnitAffectingCombat = _G.UnitAffectingCombat
+local UnitExists = _G.UnitExists
+local UnitIsEnemy = _G.UnitIsEnemy
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
 oUFKkthnx:RegisterEvent("ADDON_LOADED")

@@ -10,21 +10,22 @@ local table_sort = table.sort
 local table_wipe = table.wipe
 
 -- Wow API
-local GetAddOnCPUUsage = GetAddOnCPUUsage
-local GetAddOnInfo = GetAddOnInfo
-local GetAddOnMemoryUsage = GetAddOnMemoryUsage
-local GetAvailableBandwidth = GetAvailableBandwidth
-local GetCVar = GetCVar
-local GetDownloadedPercentage = GetDownloadedPercentage
-local GetFramerate = GetFramerate
-local GetNetStats = GetNetStats
-local GetNumAddOns = GetNumAddOns
-local IsAddOnLoaded = IsAddOnLoaded
-local IsShiftKeyDown = IsShiftKeyDown
-local ResetCPUUsage = ResetCPUUsage
-local SetCVar = SetCVar
-local UpdateAddOnCPUUsage = UpdateAddOnCPUUsage
-local UpdateAddOnMemoryUsage = UpdateAddOnMemoryUsage
+local GetAddOnCPUUsage = _G.GetAddOnCPUUsage
+local GetAddOnInfo = _G.GetAddOnInfo
+local GetAddOnMemoryUsage = _G.GetAddOnMemoryUsage
+local GetAvailableBandwidth = _G.GetAvailableBandwidth
+local GetCVar = _G.GetCVar
+local GetDownloadedPercentage = _G.GetDownloadedPercentage
+local GetFramerate = _G.GetFramerate
+local GetNetStats = _G.GetNetStats
+local GetNumAddOns = _G.GetNumAddOns
+local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local ResetCPUUsage = _G.ResetCPUUsage
+local SetCVar = _G.SetCVar
+local UpdateAddOnCPUUsage = _G.UpdateAddOnCPUUsage
+local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, SLASH_CPUPROFILING1

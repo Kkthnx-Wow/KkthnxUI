@@ -9,22 +9,22 @@ local select = select
 local unpack = unpack
 
 -- Wow API
-local BAG_FILTER_CLEANUP = BAG_FILTER_CLEANUP
-local BankFrame_AutoSortButtonOnClick = BankFrame_AutoSortButtonOnClick
-local GetAddOnInfo = GetAddOnInfo
-local GetContainerItemInfo = GetContainerItemInfo
-local GetContainerItemLink = GetContainerItemLink
-local GetContainerItemQuestInfo = GetContainerItemQuestInfo
-local GetContainerNumFreeSlots = GetContainerNumFreeSlots
-local GetContainerNumSlots = GetContainerNumSlots
-local GetItemInfo = GetItemInfo
-local GetItemQualityColor = GetItemQualityColor
-local IsBagOpen = IsBagOpen
-local IsBattlePayItem = IsBattlePayItem
-local IsShiftKeyDown = IsShiftKeyDown
-local PlaySound = PlaySound
-local ReagentBankFrameUnlockInfo = ReagentBankFrameUnlockInfo
-local UnitIsDead = UnitIsDead
+local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
+local BankFrame_AutoSortButtonOnClick = _G.BankFrame_AutoSortButtonOnClick
+local GetAddOnInfo = _G.GetAddOnInfo
+local GetContainerItemInfo = _G.GetContainerItemInfo
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetContainerItemQuestInfo = _G.GetContainerItemQuestInfo
+local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetItemInfo = _G.GetItemInfo
+local GetItemQualityColor = _G.GetItemQualityColor
+local IsBagOpen = _G.IsBagOpen
+local IsBattlePayItem = _G.IsBattlePayItem
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local PlaySound = _G.PlaySound
+local ReagentBankFrameUnlockInfo = _G.ReagentBankFrameUnlockInfo
+local UnitIsDead = _G.UnitIsDead
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: BagHelpBox, BankFrame, ReagentBankFrame, CreateFrame, UIParent, ReagentBankFrameItem1

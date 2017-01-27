@@ -1,17 +1,18 @@
 local K, C, L = unpack(select(2, ...))
 
 -- Lua API
+local _G = _G
 local select = select
 local tostring = tostring
 
 -- Wow API
-local IsInGroup = IsInGroup
-local IsInGuild = IsInGuild
-local IsInRaid = IsInRaid
-local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
-local SendAddonMessage = SendAddonMessage
-local SendChatMessage = SendChatMessage
+local IsInGroup = _G.IsInGroup
+local IsInGuild = _G.IsInGuild
+local IsInRaid = _G.IsInRaid
+local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
+local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
+local SendAddonMessage = _G.SendAddonMessage
+local SendChatMessage = _G.SendChatMessage
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: BNSendWhisper

@@ -14,19 +14,19 @@ local table_insert = table.insert
 local unpack = unpack
 
 -- Wow API
-local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
-local CreateFrame = CreateFrame
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
-local GetThreatStatusColor = GetThreatStatusColor
-local GetTime = GetTime
-local InCombatLockdown = InCombatLockdown
-local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
-local UnitClass = UnitClass
-local UnitClassification = UnitClassification
-local UnitDetailedThreatSituation = UnitDetailedThreatSituation
-local UnitHasVehicleUI = UnitHasVehicleUI
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsUnit = UnitIsUnit
+local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
+local CreateFrame = _G.CreateFrame
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GetThreatStatusColor = _G.GetThreatStatusColor
+local GetTime = _G.GetTime
+local InCombatLockdown = _G.InCombatLockdown
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+local UnitClass = _G.UnitClass
+local UnitClassification = _G.UnitClassification
+local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
+local UnitHasVehicleUI = _G.UnitHasVehicleUI
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall

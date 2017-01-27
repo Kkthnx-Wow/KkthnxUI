@@ -9,11 +9,14 @@ local string_format = string.format
 local string_match = string.match
 
 -- Wow API
-local GetCVar = GetCVar
-local GetCVarBool = GetCVarBool
-local InCinematic = InCinematic
-local InCombatLockdown = InCombatLockdown
-local SetCVar = SetCVar
+local CanCancelScene = _G.CanCancelScene
+local CanExitVehicle = _G.CanExitVehicle
+local CinematicFrame = _G.CinematicFrame
+local GetCVar = _G.GetCVar
+local GetCVarBool = _G.GetCVarBool
+local InCinematic = _G.InCinematic
+local InCombatLockdown = _G.InCombatLockdown
+local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ForceQuit, WorldMapFrame, UIParent, StaticPopup_Show

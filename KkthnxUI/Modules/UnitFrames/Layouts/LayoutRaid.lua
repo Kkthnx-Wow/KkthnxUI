@@ -7,17 +7,17 @@ local table_insert = table.insert
 local unpack = unpack
 
 -- Wow API
-local GetThreatStatusColor = GetThreatStatusColor
-local UnitHasIncomingResurrection = UnitHasIncomingResurrection
-local UnitHasMana = UnitHasMana
-local UnitIsConnected = UnitIsConnected
-local UnitIsDead = UnitIsDead
-local UnitIsDeadOrGhost = UnitIsDeadOrGhost
-local UnitIsGhost = UnitIsGhost
-local UnitIsPlayer = UnitIsPlayer
-local UnitIsUnit = UnitIsUnit
-local UnitPowerType = UnitPowerType
-local UnitThreatSituation = UnitThreatSituation
+local GetThreatStatusColor = _G.GetThreatStatusColor
+local UnitHasIncomingResurrection = _G.UnitHasIncomingResurrection
+local UnitHasMana = _G.UnitHasMana
+local UnitIsConnected = _G.UnitIsConnected
+local UnitIsDead = _G.UnitIsDead
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsGhost = _G.UnitIsGhost
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitPowerType = _G.UnitPowerType
+local UnitThreatSituation = _G.UnitThreatSituation
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: DEAD, PLAYER_OFFLINE, CreateFrame, UnitFrame_OnEnter, UnitFrame_OnLeave

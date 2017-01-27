@@ -9,21 +9,21 @@ local string_format = string.format
 local string_join = string.join
 
 -- Wow API
-local GetDifficultyInfo = GetDifficultyInfo
-local GetGameTime = GetGameTime
-local GetNumSavedInstances = GetNumSavedInstances
-local GetNumSavedWorldBosses = GetNumSavedWorldBosses
-local GetNumWorldPVPAreas = GetNumWorldPVPAreas
-local GetSavedInstanceInfo = GetSavedInstanceInfo
-local GetSavedWorldBossInfo = GetSavedWorldBossInfo
-local GetWorldPVPAreaInfo = GetWorldPVPAreaInfo
-local QUEUE_TIME_UNAVAILABLE = QUEUE_TIME_UNAVAILABLE
-local RequestRaidInfo = RequestRaidInfo
-local SecondsToTime = SecondsToTime
-local TIMEMANAGER_TOOLTIP_LOCALTIME = TIMEMANAGER_TOOLTIP_LOCALTIME
-local TIMEMANAGER_TOOLTIP_REALMTIME = TIMEMANAGER_TOOLTIP_REALMTIME
-local VOICE_CHAT_BATTLEGROUND = VOICE_CHAT_BATTLEGROUND
-local WINTERGRASP_IN_PROGRESS = WINTERGRASP_IN_PROGRESS
+local GetDifficultyInfo = _G.GetDifficultyInfo
+local GetGameTime = _G.GetGameTime
+local GetNumSavedInstances = _G.GetNumSavedInstances
+local GetNumSavedWorldBosses = _G.GetNumSavedWorldBosses
+local GetNumWorldPVPAreas = _G.GetNumWorldPVPAreas
+local GetSavedInstanceInfo = _G.GetSavedInstanceInfo
+local GetSavedWorldBossInfo = _G.GetSavedWorldBossInfo
+local GetWorldPVPAreaInfo = _G.GetWorldPVPAreaInfo
+local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
+local RequestRaidInfo = _G.RequestRaidInfo
+local SecondsToTime = _G.SecondsToTime
+local TIMEMANAGER_TOOLTIP_LOCALTIME = _G.TIMEMANAGER_TOOLTIP_LOCALTIME
+local TIMEMANAGER_TOOLTIP_REALMTIME = _G.TIMEMANAGER_TOOLTIP_REALMTIME
+local VOICE_CHAT_BATTLEGROUND = _G.VOICE_CHAT_BATTLEGROUND
+local WINTERGRASP_IN_PROGRESS = _G.WINTERGRASP_IN_PROGRESS
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTimeFrame, GameTooltip, ToggleTimeManager
