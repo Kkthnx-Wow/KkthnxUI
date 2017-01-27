@@ -2,8 +2,11 @@ local K, C, L = unpack(select(2, ...))
 
 -- Animation Functions
 
--- Wow Lua
+-- Lua API
 local table_remove = table.remove
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: UIFrameFade_RemoveFrame
 
 local function SetAnimationGroup(object, type, ...)
 	if not type then type = "Flash" end

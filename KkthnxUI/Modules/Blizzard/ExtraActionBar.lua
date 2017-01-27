@@ -6,7 +6,7 @@ local unpack = unpack
 local hooksecurefunc = hooksecurefunc
 local Movers = K.Movers
 
--- MAKE EXTRAACTIONBARFRAME MOVABLE (USE MACRO /click extraactionbutton1)
+-- Make ExtraActionBarFrame movable (use macro /click ExtraActionButton1)
 local anchor = CreateFrame("Frame", "ExtraButtonAnchor", UIParent)
 if C.ActionBar.SplitBars and not C.DataText.BottomBar then
 	anchor:SetPoint(C.Position.ExtraButton[1], SplitBarRight, C.Position.ExtraButton[3], C.Position.ExtraButton[4], C.Position.ExtraButton[5])
@@ -18,9 +18,10 @@ else
 	anchor:SetPoint(unpack(C.Position.ExtraButton))
 end
 anchor:SetSize(53, 53)
+anchor:SetFrameStrata("LOW")
 Movers:RegisterFrame(anchor)
 
-ExtraActionBarFrame:SetParent(UIParent)
+ExtraActionBarFrame:SetParent(ExtraButtonAnchor)
 ExtraActionBarFrame:ClearAllPoints()
 ExtraActionBarFrame:SetPoint("CENTER", anchor, "CENTER")
 ExtraActionBarFrame:SetSize(53, 53)
@@ -28,13 +29,13 @@ ExtraActionBarFrame.ignoreFramePositionManager = true
 
 RegisterStateDriver(anchor, "visibility", "[petbattle] hide; show")
 
-ZoneAbilityFrame:SetParent(UIParent)
+ZoneAbilityFrame:SetParent(ExtraButtonAnchor)
 ZoneAbilityFrame:ClearAllPoints()
 ZoneAbilityFrame:SetPoint("CENTER", anchor, "CENTER")
 ZoneAbilityFrame:SetSize(53, 53)
 ZoneAbilityFrame.ignoreFramePositionManager = true
 
--- SKIN EXTRAACTIONBARFRAME(BY ZORK)
+-- Skin ExtraActionBarFrame(by Zork)
 local button = ExtraActionButton1
 local texture = button.style
 local disableTexture = function(style, texture)
@@ -48,7 +49,7 @@ hooksecurefunc(texture, "SetTexture", disableTexture)
 button:StyleButton()
 button:SetSize(53, 53)
 
--- SKIN ZONEABILITYFRAME
+-- Skin ZoneAbilityFrame
 local button = ZoneAbilityFrame.SpellButton
 local texture = button.Style
 local disableTexture = function(style, texture)
