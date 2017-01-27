@@ -2,14 +2,19 @@ local K, C, L = unpack(select(2, ...))
 if C.DataBars.ExperienceEnable ~= true or K.Level == MAX_PLAYER_LEVEL then return end
 
 -- WoW Lua
+local _G = _G
 local format = string.format
 local unpack = unpack
 
 -- Wow API
-local GetRestState = GetRestState
-local GetXPExhaustion = GetXPExhaustion
-local UnitXP = UnitXP
-local UnitXPMax = UnitXPMax
+local GetExpansionLevel = _G.GetExpansionLevel
+local GetRestState = _G.GetRestState
+local GetXPExhaustion = _G.GetXPExhaustion
+local IsXPUserDisabled = _G.IsXPUserDisabled
+local MAX_PLAYER_LEVEL_TABLE = _G.MAX_PLAYER_LEVEL_TABLE
+local UnitLevel = _G.UnitLevel
+local UnitXP = _G.UnitXP
+local UnitXPMax = _G.UnitXPMax
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CreateFrame, XP, TUTORIAL_TITLE26, GameTooltip
@@ -25,7 +30,8 @@ local function XPBackdrop(f)
 	b:SetPoint("TOPLEFT", -1, 1)
 	b:SetPoint("BOTTOMRIGHT", 1, -1)
 	b:SetBackdrop({bgFile = C.Media.Blank})
-	b:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	-- b:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	b:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4]) -- This is faster
 
 	if f:GetFrameLevel() - 1 >= 0 then
 		b:SetFrameLevel(f:GetFrameLevel() - 1)
