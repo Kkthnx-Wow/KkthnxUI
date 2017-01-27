@@ -6,9 +6,10 @@ local _G = _G
 local pairs = pairs
 
 -- Wow API
-local hooksecurefunc = hooksecurefunc
-local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
-local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
+local hooksecurefunc = _G.hooksecurefunc
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: RightBarMouseOver, StanceBarMouseOver, PetBarMouseOver, IconIntroTracker
@@ -24,7 +25,10 @@ local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
 DisableBlizzard:SetScript("OnEvent", function(self, event)
-	SetCVar("alwaysShowActionBars", 1)
+	local AlwaysShowBars = GetCVarBool("alwaysShowActionBars")
+	if not AlwaysShowBars then
+			SetCVar("alwaysShowActionBars", 1)
+	end
 
 	for _, Frame in pairs({
 		MainMenuBar,

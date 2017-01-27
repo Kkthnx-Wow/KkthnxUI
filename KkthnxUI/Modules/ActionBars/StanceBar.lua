@@ -6,11 +6,11 @@ local _G = _G
 local unpack = unpack
 
 -- Wow API
-local GetShapeshiftFormInfo = GetShapeshiftFormInfo
-local hooksecurefunc = hooksecurefunc
-local InCombatLockdown = InCombatLockdown
-local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
-local RegisterStateDriver = RegisterStateDriver
+local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+local RegisterStateDriver = _G.RegisterStateDriver
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: StanceButton1, RightBarMouseOver, HoverBind, StanceBarMouseOver, UIParent

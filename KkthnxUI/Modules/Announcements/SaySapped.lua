@@ -1,8 +1,10 @@
 local K, C, L = unpack(select(2, ...))
 if C.Announcements.SaySapped ~= true then return end
 
+local _G = _G
+
 -- Wow API
-local SendChatMessage = SendChatMessage
+local SendChatMessage = _G.SendChatMessage
 
 local SaySapped = CreateFrame("Frame")
 

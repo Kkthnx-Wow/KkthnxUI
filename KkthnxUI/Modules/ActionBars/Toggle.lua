@@ -5,8 +5,8 @@ if C.ActionBar.Enable ~= true or C.ActionBar.ToggleMode ~= true then return end
 local _G = _G
 
 -- Wow API
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
-local InCombatLockdown = InCombatLockdown
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local InCombatLockdown = _G.InCombatLockdown
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIDataPerChar, ActionBarAnchor

@@ -7,13 +7,13 @@ local string_gsub = string.gsub
 local unpack = unpack
 
 -- Wow API
-local GetFlyoutID = GetFlyoutID
-local GetFlyoutInfo = GetFlyoutInfo
-local GetNumFlyouts = GetNumFlyouts
-local hooksecurefunc = hooksecurefunc
-local InCombatLockdown = InCombatLockdown
-local NUM_PET_ACTION_SLOTS = NUM_PET_ACTION_SLOTS
-local NUM_STANCE_SLOTS = NUM_STANCE_SLOTS
+local GetFlyoutID = _G.GetFlyoutID
+local GetFlyoutInfo = _G.GetFlyoutInfo
+local GetNumFlyouts = _G.GetNumFlyouts
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
+local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SpellFlyout, RightBarMouseOver, ActionButton_UpdateState, KEY_MOUSEWHEELDOWN

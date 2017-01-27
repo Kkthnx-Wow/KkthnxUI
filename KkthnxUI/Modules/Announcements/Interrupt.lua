@@ -7,9 +7,9 @@ local pairs = pairs
 local format = string.format
 
 -- Wow API
-local UnitGUID = UnitGUID
-local SendChatMessage = SendChatMessage
-local IsInGroup = IsInGroup
+local UnitGUID = _G.UnitGUID
+local SendChatMessage = _G.SendChatMessage
+local IsInGroup = _G.IsInGroup
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_ERROR1

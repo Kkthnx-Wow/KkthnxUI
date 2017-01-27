@@ -2,18 +2,19 @@ local K, C, L = unpack(select(2, ...))
 if C.Announcements.BadGear ~= true then return end
 
 -- Lua API
+local _G = _G
 local format = string.format
 local pairs = pairs
 local print = print
 local select = select
 
 -- Wow API
-local ChatTypeInfo = ChatTypeInfo
-local GetInventoryItemID = GetInventoryItemID
-local GetItemInfo = GetItemInfo
-local IsInInstance = IsInInstance
-local PlaySound = PlaySound
-local RaidNotice_AddMessage = RaidNotice_AddMessage
+local ChatTypeInfo = _G.ChatTypeInfo
+local GetInventoryItemID = _G.GetInventoryItemID
+local GetItemInfo = _G.GetItemInfo
+local IsInInstance = _G.IsInInstance
+local PlaySound = _G.PlaySound
+local RaidNotice_AddMessage = _G.RaidNotice_AddMessage
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: RaidWarningFrame, CURRENTLY_EQUIPPED

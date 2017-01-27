@@ -6,10 +6,10 @@ local _G = _G
 local ipairs = ipairs
 
 -- Wow API
-local CreateFrame = CreateFrame
-local UIParent = UIParent
-local InCombatLockdown = InCombatLockdown
-local IsLoggedIn = IsLoggedIn
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local InCombatLockdown = _G.InCombatLockdown
+local IsLoggedIn = _G.IsLoggedIn
 
 -- This will not make your macros right-click self-cast.
 -- You have to manually add the [button:2] modifier to your macro in order for it to work with right-clicks.
@@ -19,10 +19,8 @@ SelfCast:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) 
 function SelfCast:PLAYER_REGEN_ENABLED()
 	self:PLAYER_LOGIN()
 
-	if event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-		self.PLAYER_REGEN_ENABLED = nil
-	end
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self.PLAYER_REGEN_ENABLED = nil
 end
 
 function SelfCast:PLAYER_LOGIN()

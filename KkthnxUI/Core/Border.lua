@@ -5,11 +5,6 @@ local pairs = pairs
 local type = type
 local unpack = unpack
 
--- Wow API
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS:
-
 -- Mine
 local sections = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "TOP", "BOTTOM", "LEFT", "RIGHT"}
 
@@ -103,7 +98,8 @@ function K.CreateOutsideBar(parent, onTop, r, g, b)
 	tex:SetPoint("BOTTOM", 0, -12)
 
 	if C.Blizzard.ColorTextures == true then
-		tex:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+		-- tex:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+		tex:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3]) -- This is faster.
 	end
 	bar.Texture = tex
 	return bar

@@ -1,11 +1,16 @@
 local K, C, L = unpack(select(2, ...))
 if C.Announcements.PullCountdown ~= true then return end
 
+-- Lua API
+local _G = _G
 local format = string.format
-local tostring, tonumber = tostring, tonumber
-local CreateFrame = CreateFrame
-local SendChatMessage = SendChatMessage
-local UnitName = UnitName
+
+-- Wow API
+local UnitName = _G.UnitName
+local SendChatMessage = _G.SendChatMessage
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: SLASH_PULLCOUNTDOWN1
 
 -- Pull Countdown(by Dridzt)
 local frame = CreateFrame("Frame", "PullCountdown")

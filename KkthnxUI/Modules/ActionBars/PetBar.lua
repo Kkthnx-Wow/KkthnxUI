@@ -5,11 +5,11 @@ if C.ActionBar.Enable ~= true then return end
 local _G = _G
 
 -- Wow API
-local hooksecurefunc = hooksecurefunc
-local PetActionBar_HideGrid = PetActionBar_HideGrid
-local PetActionBar_ShowGrid = PetActionBar_ShowGrid
-local PetActionBar_UpdateCooldowns = PetActionBar_UpdateCooldowns
-local RegisterStateDriver = RegisterStateDriver
+local hooksecurefunc = _G.hooksecurefunc
+local PetActionBar_HideGrid = _G.PetActionBar_HideGrid
+local PetActionBar_ShowGrid = _G.PetActionBar_ShowGrid
+local PetActionBar_UpdateCooldowns = _G.PetActionBar_UpdateCooldowns
+local RegisterStateDriver = _G.RegisterStateDriver
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PetActionBarFrame, PetHolder, RightBarMouseOver, HoverBind, PetBarMouseOver

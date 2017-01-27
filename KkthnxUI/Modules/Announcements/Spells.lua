@@ -2,16 +2,17 @@ local K, C, L = unpack(select(2, ...))
 if C.Announcements.Spells ~= true then return end
 
 -- Lua API
+local _G = _G
 local format = string.format
 local gsub = string.gsub
 local pairs = pairs
 
 -- Wow API
-local CreateFrame = CreateFrame
-local GetInstanceInfo = GetInstanceInfo
-local GetSpellLink = GetSpellLink
-local SendChatMessage = SendChatMessage
-local UnitGUID = UnitGUID
+local CreateFrame = _G.CreateFrame
+local GetInstanceInfo = _G.GetInstanceInfo
+local GetSpellLink = _G.GetSpellLink
+local SendChatMessage = _G.SendChatMessage
+local UnitGUID = _G.UnitGUID
 
 -- Announce some spells
 local AnnounceSpells = CreateFrame("Frame")

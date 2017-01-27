@@ -1,6 +1,12 @@
 local K, C, L = unpack(select(2, ...))
 if C.Nameplates.Enable ~= true then return end
 
+-- Lua API
+local _G = _G
+
+-- Wow API
+local GetSpellInfo = _G.GetSpellInfo
+
 -- The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
 -- Example: Polymorph -> http://www.wowhead.com/spell=118
 -- Take the number ID at the end of the URL, and add it to the list

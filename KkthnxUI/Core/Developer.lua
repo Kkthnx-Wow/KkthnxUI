@@ -4,8 +4,8 @@ local _G = _G
 local print, tostring, select = print, tostring, select
 local format = format
 
-local GetMouseFocus = GetMouseFocus
-local FrameStackTooltip_Toggle = FrameStackTooltip_Toggle
+local GetMouseFocus = _G.GetMouseFocus
+local FrameStackTooltip_Toggle = _G.FrameStackTooltip_Toggle
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_FRAME1, SLASH_FRAMELIST1, SLASH_TEXLIST1, SLASH_FSTACK1, SLASH_WOWVERSION2
