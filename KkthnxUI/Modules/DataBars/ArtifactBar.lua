@@ -2,17 +2,19 @@ local K, C, L = unpack(select(2, ...))
 if C.DataBars.ArtifactEnable ~= true or K.Level <= 99 then return end
 
 -- WoW Lua
+local _G = _G
 local format = string.format
 local min = math.min
 
 -- Wow API
-local ARTIFACT_POWER = ARTIFACT_POWER
-local ARTIFACT_POWER_TOOLTIP_BODY = ARTIFACT_POWER_TOOLTIP_BODY
-local HasArtifactEquipped = HasArtifactEquipped
-local HideUIPanel = HideUIPanel
-local LoadAddOn = LoadAddOn
-local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
-local SocketInventoryItem = SocketInventoryItem
+local ARTIFACT_POWER = _G.ARTIFACT_POWER
+local ARTIFACT_POWER_TOOLTIP_BODY = _G.ARTIFACT_POWER_TOOLTIP_BODY
+local HasArtifactEquipped = _G.HasArtifactEquipped
+local HideUIPanel = _G.HideUIPanel
+local LoadAddOn = _G.LoadAddOn
+local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = _G.MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
+local ShowUIPanel = _G.ShowUIPanel
+local SocketInventoryItem = _G.SocketInventoryItem
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, ArtifactFrame, C_ArtifactUI, Max, Current
