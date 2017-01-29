@@ -81,7 +81,7 @@ local function UpdatePortraitColor(self, unit, cur, max)
 			end
 		end
 	else
-		self.Portrait:SetVertexColor(1, 1, 1, 1)
+		-- self.Portrait:SetVertexColor(1, 1, 1, 1)
 	end
 end
 

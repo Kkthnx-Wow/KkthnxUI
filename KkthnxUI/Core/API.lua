@@ -334,7 +334,6 @@ end
 -- Fade in/out functions
 local function FadeIn(frame)
 	K:UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
-
 end
 
 local function FadeOut(frame)
