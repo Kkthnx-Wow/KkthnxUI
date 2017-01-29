@@ -116,20 +116,20 @@ C["Cooldown"] = {
 -- DataBars
 C["DataBars"] = {
 	-- Artifact
-	["ArtifactColor"] = {229/255, 204/255, 127/255},
+	["ArtifactColor"] = {230/255, 204/255, 128/255},
 	["ArtifactEnable"] = true,
 	["ArtifactFade"] = false,
 	["ArtifactHeight"] = 8,
 	["ArtifactWidth"] = 142,
 	-- Experience
-	["ExperienceColor"] = {0/255, 144/255, 255/255},
+	["ExperienceColor"] = {23/255, 152/255, 251/255},
 	["ExperienceEnable"] = true,
 	["ExperienceFade"] = false,
 	["ExperienceHeight"] = 8,
-	["ExperienceRestedColor"] = {75/255, 175/255, 76/255},
+	["ExperienceRestedColor"] = {46/255, 172/255, 52/255},
 	["ExperienceWidth"] = 142,
 	-- Honor
-	["HonorColor"] = {222/255, 22/255, 22/255},
+	["HonorColor"] = {220/255, 68/255, 54/255},
 	["HonorEnable"] = true,
 	["HonorFade"] = false,
 	["HonorHeight"] = 8,

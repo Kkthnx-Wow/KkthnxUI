@@ -40,7 +40,7 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 
 	local Backdrop = select(1, mirrorTimer:GetRegions())
 	Backdrop:SetTexture(C.Media.Blank)
-	Backdrop:SetVertexColor(unpack(C.Media.Backdrop_Color))
+	Backdrop:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	Backdrop:SetAllPoints(statusBar)
 
 	local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")

@@ -117,8 +117,8 @@ function K.CreateBlizzardFrame(frame, point)
 	frame.backdrop:SetBackdrop(K.Backdrop)
 	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	frame.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	frame.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 	if frame:GetFrameLevel() - 1 > 0 then
 		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
@@ -146,7 +146,7 @@ function K.CreateShadowFrame(frame, point)
 	})
 	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
 
 	if frame:GetFrameLevel() - 1 > 0 then

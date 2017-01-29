@@ -38,9 +38,16 @@ ArtifactBar:SetPoint("CENTER", ArtifactAnchor, "CENTER", 0, 0)
 ArtifactBar:SetStatusBarTexture(C.Media.Texture)
 ArtifactBar:SetStatusBarColor(unpack(C.DataBars.ArtifactColor))
 
+ArtifactBar.Spark = ArtifactBar:CreateTexture(nil, "ARTWORK", nil, 1)
+ArtifactBar.Spark:SetSize(C.DataBars.ArtifactHeight, C.DataBars.ArtifactHeight * 2)
+ArtifactBar.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+ArtifactBar.Spark:SetPoint("CENTER", ArtifactBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+ArtifactBar.Spark:SetAlpha(0.6)
+ArtifactBar.Spark:SetBlendMode("ADD")
+
 K.CreateBorder(ArtifactBar, -1)
 ArtifactBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
-ArtifactBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+ArtifactBar:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 ArtifactBar.Text = ArtifactBar:CreateFontString(nil, "OVERLAY")
 ArtifactBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
@@ -51,7 +58,7 @@ ArtifactBar.Text:SetTextColor(1, 1, 1)
 ArtifactBar.Text:SetJustifyH("CENTER")
 
 if C.Blizzard.ColorTextures == true then
-	ArtifactBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	ArtifactBar:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 
 ArtifactBar:SetScript("OnMouseUp", function()
@@ -128,11 +135,13 @@ if C.DataBars.ArtifactFade then
 	ArtifactBar.Tooltip = true
 end
 
-ArtifactBar:RegisterEvent("ARTIFACT_XP_UPDATE")
 ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ArtifactBar:RegisterEvent("PLAYER_LEVEL_UP")
+ArtifactBar:RegisterEvent("PET_BATTLE_CLOSE")
+ArtifactBar:RegisterEvent("PET_BATTLE_OPENING_START")
+ArtifactBar:RegisterEvent("PLAYER_UPDATE_RESTING")
+ArtifactBar:RegisterEvent("UPDATE_EXHAUSTION")
+ArtifactBar:RegisterEvent("ARTIFACT_XP_UPDATE")
 ArtifactBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
-ArtifactBar:RegisterEvent("UPDATE_FACTION")
 
 ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ArtifactBar:SetScript("OnEvent", UpdateArtifactBar)

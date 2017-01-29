@@ -30,7 +30,7 @@ local function XPBackdrop(f)
 	b:SetPoint("TOPLEFT", -1, 1)
 	b:SetPoint("BOTTOMRIGHT", 1, -1)
 	b:SetBackdrop({bgFile = C.Media.Blank})
-	-- b:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	-- b:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	b:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4]) -- This is faster
 
 	if f:GetFrameLevel() - 1 >= 0 then
@@ -68,6 +68,13 @@ ExperienceBarRested:SetStatusBarTexture(C.Media.Texture)
 ExperienceBarRested:SetStatusBarColor(unpack(C.DataBars.ExperienceRestedColor))
 ExperienceBarRested:SetAlpha(.5)
 
+ExperienceBar.Spark = ExperienceBar:CreateTexture(nil, "ARTWORK", nil, 1)
+ExperienceBar.Spark:SetSize(C.DataBars.ExperienceHeight, C.DataBars.ExperienceHeight * 2)
+ExperienceBar.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+ExperienceBar.Spark:SetPoint("CENTER", ExperienceBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+ExperienceBar.Spark:SetAlpha(0.6)
+ExperienceBar.Spark:SetBlendMode("ADD")
+
 ExperienceBar.Text = ExperienceBar:CreateFontString(nil, "OVERLAY")
 ExperienceBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
 ExperienceBar.Text:SetShadowOffset(K.Mult, -K.Mult)
@@ -77,7 +84,7 @@ ExperienceBar.Text:SetTextColor(1, 1, 1)
 ExperienceBar.Text:SetJustifyH("CENTER")
 
 if C.Blizzard.ColorTextures == true then
-	ExperienceBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	ExperienceBar:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 
 local function UpdateExperienceBar()
@@ -147,12 +154,17 @@ if C.DataBars.ExperienceFade then
 	ExperienceBar.Tooltip = true
 end
 
+ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ExperienceBar:RegisterEvent("PET_BATTLE_CLOSE")
+ExperienceBar:RegisterEvent("PET_BATTLE_OPENING_START")
+ExperienceBar:RegisterEvent("PLAYER_UPDATE_RESTING")
+ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
 ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
-ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ExperienceBar:RegisterEvent("PET_BATTLE_LEVEL_CHANGED")
+ExperienceBar:RegisterEvent("PET_BATTLE_XP_CHANGED")
 ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
-ExperienceBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
 ExperienceBar:RegisterEvent("UPDATE_EXPANSION_LEVEL")
 
 ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)

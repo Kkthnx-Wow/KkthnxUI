@@ -28,7 +28,7 @@ end
 
 local function SetOriginalBackdrop(self)
 	if self.backdrop then self = self.backdrop end
-	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	self:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	if C.Blizzard.ColorTextures == false then
 		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], C.Media.Border_Color[4])
@@ -152,7 +152,7 @@ local minimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 HandleButton(minimizeButton)
 minimizeButton:SetSize(16, 14)
 minimizeButton:SetBackdrop(K.BorderBackdrop)
-minimizeButton:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+minimizeButton:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 K.CreateBorder(minimizeButton)
 minimizeButton.text = minimizeButton:CreateFontString(nil, "OVERLAY")
 minimizeButton.text:SetFont(C.Media.Font, 15, C.Media.Font_Style)

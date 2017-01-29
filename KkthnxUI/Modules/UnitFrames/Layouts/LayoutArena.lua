@@ -61,7 +61,7 @@ function ns.createArenaLayout(self, unit)
 	self.Texture:SetTexCoord(0, 0.90625, 0, 0.78125)
 
 	if C.Blizzard.ColorTextures == true then
-		self.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+		self.Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
 	self.Health = K.CreateStatusBar(self, false)
@@ -153,7 +153,7 @@ if C.Unitframe.Castbars then
 		CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 		CastBar.Background:SetAllPoints(CastBar)
 		CastBar.Background:SetTexture(C.Media.Blank)
-		CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+		CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 		CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 		CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -212,7 +212,7 @@ end
 	self.Trinket.Border.Texture:SetSize(76, 76)
 
 	if C.Blizzard.ColorTextures == true then
-		self.Trinket.Border.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+		self.Trinket.Border.Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
 	self.PostUpdate = arenaPrep

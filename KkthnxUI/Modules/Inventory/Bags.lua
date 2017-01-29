@@ -111,7 +111,7 @@ function Bags:SkinBagButton()
 	self:SetNormalTexture("")
 	self:SetPushedTexture("")
 	self:CreateBackdrop(true)
-	self.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	self.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	self:StyleButton()
 
 	self.IsSkinned = true
@@ -559,7 +559,7 @@ function Bags:SkinTokens()
 		Token.backdrop:SetOutside(Icon)
 		Token.backdrop:SetBackdropBorderColor(0, 0, 0, 0)
 		Token.backdrop:SetBackdrop(K.BorderBackdrop)
-		Token.backdrop:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		Token.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 		Icon:SetSize(12, 12)
 		Icon:SetTexCoord(unpack(K.TexCoords))
@@ -632,7 +632,7 @@ function Bags:SlotUpdate(id, button)
 
 		button.backdrop:SetBackdropBorderColor(GetItemQualityColor(Rarity))
 	else
-		button.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		button.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	end
 end
 

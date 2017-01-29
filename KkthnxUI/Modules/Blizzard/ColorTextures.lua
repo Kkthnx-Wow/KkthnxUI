@@ -122,7 +122,7 @@ function ColorTextures:Style()
 		MinimapBorderTop,
 		MiniMapTrackingButtonBorder,
 	}) do
-		texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+		texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 end
 

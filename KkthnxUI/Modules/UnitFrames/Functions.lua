@@ -257,7 +257,7 @@ function K.CreateStatusBar(self, noBG)
 	if not noBG then
 		StatusBar.BG = StatusBar:CreateTexture(nil, "BACKGROUND")
 		StatusBar.BG:SetTexture(C.Media.Blank)
-		StatusBar.BG:SetColorTexture(unpack(C.Media.Backdrop_Color))
+		StatusBar.BG:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 		StatusBar.BG:SetAllPoints(true)
 	end
 

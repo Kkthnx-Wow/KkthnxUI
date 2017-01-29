@@ -190,8 +190,8 @@ local function SetChatStyle(frame)
     if C.Chat.TabsMouseover ~= true then
         local EditBoxBackground = CreateFrame("Frame", "ChatEditBoxBackground", editbox)
         EditBoxBackground:SetBackdrop(K.Backdrop)
-        EditBoxBackground:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-        EditBoxBackground:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+        EditBoxBackground:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+        EditBoxBackground:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
         EditBoxBackground:ClearAllPoints()
         EditBoxBackground:SetPoint("TOPLEFT", editbox, "TOPLEFT", 7, -2)
         EditBoxBackground:SetPoint("BOTTOMRIGHT", editbox, "BOTTOMRIGHT", -7, 2)
@@ -208,7 +208,7 @@ local function SetChatStyle(frame)
             if type == "CHANNEL" then
                 local id = GetChannelName(editbox:GetAttribute("channelTarget"))
                 if id == 0 then
-                    colorize(unpack(C.Media.Border_Color))
+                    colorize(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
                 else
                     colorize(ChatTypeInfo[type..id].r, ChatTypeInfo[type..id].g, ChatTypeInfo[type..id].b)
                 end
@@ -224,7 +224,7 @@ local function SetChatStyle(frame)
     else
         CombatLogQuickButtonFrame_Custom:StripTextures()
         CombatLogQuickButtonFrame_Custom:SetBackdrop(K.BorderBackdrop)
-        CombatLogQuickButtonFrame_Custom:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+        CombatLogQuickButtonFrame_Custom:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
     end
 
     frame.skinned = true

@@ -6,23 +6,26 @@ local _G = _G
 local format = string.format
 
 -- Wow API
-local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
-local HideUIPanel = HideUIPanel
-
-local LoadAddOn = LoadAddOn
-local PlayerTalentTab_OnClick = PlayerTalentTab_OnClick
-local PVP_HONOR_PRESTIGE_AVAILABLE = PVP_HONOR_PRESTIGE_AVAILABLE
-local PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE = PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE
-local PVP_PRESTIGE_RANK_UP_TITLE = PVP_PRESTIGE_RANK_UP_TITLE
-local ShowUIPanel = ShowUIPanel
-local TogglePVPUI = TogglePVPUI
-local UnitHonor = UnitHonor
-local UnitHonorLevel = UnitHonorLevel
-local UnitHonorMax = UnitHonorMax
-local UnitPrestige = UnitPrestige
+local CanPrestige = _G.CanPrestige
+local GetMaxPlayerHonorLevel = _G.GetMaxPlayerHonorLevel
+local HideUIPanel = _G.HideUIPanel
+local LoadAddOn = _G.LoadAddOn
+local MAX_HONOR_LEVEL = _G.MAX_HONOR_LEVEL
+local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
+local PlayerTalentTab_OnClick = _G.PlayerTalentTab_OnClick
+local PVP_HONOR_PRESTIGE_AVAILABLE = _G.PVP_HONOR_PRESTIGE_AVAILABLE
+local PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE = _G.PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE
+local PVP_PRESTIGE_RANK_UP_TITLE = _G.PVP_PRESTIGE_RANK_UP_TITLE
+local ShowUIPanel = _G.ShowUIPanel
+local TogglePVPUI = _G.TogglePVPUI
+local UnitHonor = _G.UnitHonor
+local UnitHonorLevel = _G.UnitHonorLevel
+local UnitHonorMax = _G.UnitHonorMax
+local UnitLevel = _G.UnitLevel
+local UnitPrestige = _G.UnitPrestige
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: PVPFrame, PlayerTalentFrame, PVP_TALENTS_TAB, GameTooltip, HONOR, RANK
+-- GLOBALS: PVPFrame, PlayerTalentFrame, PVP_TALENTS_TAB, GameTooltip, HONOR, RANK, ToggleTalentFrame
 
 local Bars = 20
 local Movers = K.Movers
@@ -39,9 +42,16 @@ HonorBar:SetPoint("CENTER", HonorAnchor, "CENTER", 0, 0)
 HonorBar:SetStatusBarTexture(C.Media.Texture)
 HonorBar:SetStatusBarColor(unpack(C.DataBars.HonorColor))
 
+HonorBar.Spark = HonorBar:CreateTexture(nil, "ARTWORK", nil, 1)
+HonorBar.Spark:SetSize(C.DataBars.HonorHeight, C.DataBars.HonorHeight * 2)
+HonorBar.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+HonorBar.Spark:SetPoint("CENTER", HonorBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+HonorBar.Spark:SetAlpha(0.6)
+HonorBar.Spark:SetBlendMode("ADD")
+
 K.CreateBorder(HonorBar, -1)
 HonorBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
-HonorBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+HonorBar:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 HonorBar.Text = HonorBar:CreateFontString(nil, "OVERLAY")
 HonorBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
@@ -52,11 +62,11 @@ HonorBar.Text:SetTextColor(1, 1, 1)
 HonorBar.Text:SetJustifyH("CENTER")
 
 if C.Blizzard.ColorTextures == true then
-	HonorBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	HonorBar:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 
 HonorBar:SetScript("OnMouseUp", function()
-	ToggleTalentFrame(3) --3 is PvP
+	ToggleTalentFrame(3) -- 3 is PvP
 end)
 
 local function UpdateHonorBar(event, unit)
@@ -108,9 +118,9 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddLine(PVP_HONOR_PRESTIGE_AVAILABLE)
 		GameTooltip:AddLine(PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE)
 	else
-		GameTooltip:AddLine(format("|cffee2222"..HONOR..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
-		GameTooltip:AddLine(format("|cffcccccc"..RANK..": %d / %d|r", Level, LevelMax))
-		GameTooltip:AddLine(format("|cffcccccc"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
+		GameTooltip:AddLine(format("|cffdc4436"..HONOR..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+		GameTooltip:AddLine(format("|cffcacaca"..RANK..": %d / %d|r", Level, LevelMax))
+		GameTooltip:AddLine(format("|cffcacaca"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
 	end
 	GameTooltip:AddLine(" ")
 	GameTooltip:AddLine(L.DataBars.HonorLeftClick)
@@ -125,12 +135,15 @@ if C.DataBars.HonorFade then
 	HonorBar.Tooltip = true
 end
 
-HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
-HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-HonorBar:RegisterEvent("PLAYER_FLAGS_CHANGED")
-HonorBar:RegisterEvent("PLAYER_LEVEL_UP")
+HonorBar:RegisterEvent("PET_BATTLE_CLOSE")
+HonorBar:RegisterEvent("PET_BATTLE_OPENING_START")
+HonorBar:RegisterEvent("PLAYER_UPDATE_RESTING")
+HonorBar:RegisterEvent("UPDATE_EXHAUSTION")
 HonorBar:RegisterEvent("HONOR_LEVEL_UPDATE")
+HonorBar:RegisterEvent("HONOR_XP_UPDATE")
+HonorBar:RegisterEvent("ZONE_CHANGED")
+HonorBar:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
 HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

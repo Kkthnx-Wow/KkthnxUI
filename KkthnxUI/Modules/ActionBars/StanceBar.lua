@@ -20,7 +20,7 @@ local Movers = K.Movers
 
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", PetBattleFrameHider)
 if C.ActionBar.StanceBarHorizontal == true then
-	ShiftHolder:SetPoint(unpack(C.Position.StanceBar))
+	ShiftHolder:SetPoint(C.Position.StanceBar[1], C.Position.StanceBar[2], C.Position.StanceBar[3], C.Position.StanceBar[4], C.Position.StanceBar[5])
 	ShiftHolder:SetWidth((C.ActionBar.ButtonSize * 7) + (C.ActionBar.ButtonSpace * 6))
 	ShiftHolder:SetHeight(C.ActionBar.ButtonSize)
 else

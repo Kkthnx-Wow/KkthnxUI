@@ -76,7 +76,7 @@ local function CreateBorder(f, size)
 		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
 	})
 
-	border:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	border:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	f.border = border
 end
 
@@ -161,7 +161,7 @@ local function SetTemplate(f, t, tex)
 	f:SetBackdropBorderColor(borderr, borderg, borderb)
 
 	if C.Blizzard.ColorTextures == true then
-		f:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+		f:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 end
 

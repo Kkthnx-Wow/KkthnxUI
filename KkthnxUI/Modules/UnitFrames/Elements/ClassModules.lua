@@ -59,7 +59,7 @@ function ClassModule:Totems(self)
 	for i = 1, MAX_TOTEMS do
 		local _, totemBorder = _G["TotemFrameTotem"..i]:GetChildren()
 		if C.Blizzard.ColorTextures == true then
-			totemBorder:GetRegions():SetVertexColor(unpack(C.Blizzard.TexturesColor))
+			totemBorder:GetRegions():SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 		end
 
 		_G["TotemFrameTotem"..i]:SetFrameStrata("LOW")
@@ -104,7 +104,7 @@ function ClassModule:RuneFrame(self)
 		for i = 1, 6 do
 			local b = _G["RuneButtonIndividual"..i].Border
 			if C.Blizzard.ColorTextures == true then
-				b:GetRegions():SetVertexColor(unpack(C.Blizzard.TexturesColor))
+				b:GetRegions():SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 			end
 		end
 	end
@@ -128,7 +128,7 @@ function ClassModule:StaggerBar(self)
 		MonkStaggerBar:ClearAllPoints()
 		MonkStaggerBar:SetPoint("TOP", self, "BOTTOM", 31, -2)
 		if C.Blizzard.ColorTextures == true then
-			MonkStaggerBar.MonkBorder:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+			MonkStaggerBar.MonkBorder:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 		end
 		MonkStaggerBar:SetFrameLevel(1)
 	end
@@ -139,7 +139,7 @@ function ClassModule:StaggerBar(self)
 		MonkHarmonyBarFrame:ClearAllPoints()
 		MonkHarmonyBarFrame:SetPoint("TOP", self, "BOTTOM", 31, 18)
 		if C.Blizzard.ColorTextures == true then
-			select(2, MonkHarmonyBarFrame:GetRegions()):SetVertexColor(unpack(C.Blizzard.TexturesColor))
+			select(2, MonkHarmonyBarFrame:GetRegions()):SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 		end
 		return MonkHarmonyBarFrame
 	end
@@ -152,7 +152,7 @@ function ClassModule:HolyPowerBar(self)
 		PaladinPowerBarFrame:SetPoint("TOP", self, "BOTTOM", 27, 4)
 		PaladinPowerBarFrame:SetFrameStrata("LOW")
 		if C.Blizzard.ColorTextures == true then
-			PaladinPowerBarFrameBG:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+			PaladinPowerBarFrameBG:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 		end
 		return PaladinPowerBarFrame
 	end
@@ -176,7 +176,7 @@ function ClassModule:ShardsBar(self)
 		for i = 1, 5 do
 			local shard = _G["WarlockPowerFrameShard"..i]
 			if C.Blizzard.ColorTextures == true then
-				select(5, shard:GetRegions()):SetVertexColor(unpack(C.Blizzard.TexturesColor))
+				select(5, shard:GetRegions()):SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 			end
 		end
 

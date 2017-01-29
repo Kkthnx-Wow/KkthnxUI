@@ -151,10 +151,10 @@ local function CreateRaidLayout(self, unit)
 		bgFile = C.Media.Blank,
 		insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
 	})
-	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	self:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 	K.CreateBorder(self, -1)
-	self:SetBorderColor(unpack(C.Media.Border_Color))
+	self:SetBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", nil, self)
@@ -427,7 +427,7 @@ local function CreateRaidLayout(self, unit)
 		if (UnitIsUnit("target", self.unit)) then
 			self:SetBorderColor(1, 1, 1)
 		else
-			self:SetBorderColor(unpack(C.Media.Border_Color))
+			self:SetBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		end
 	end)
 

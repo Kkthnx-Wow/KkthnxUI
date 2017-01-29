@@ -90,12 +90,12 @@ local function StyleNormalButton(self)
 		if border:IsShown() and C.ActionBar.EquipBorder then
 			button.backdrop:SetBackdropBorderColor(.08, .70, 0)
 		else
-			button.backdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+			button.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		end
 	end
 
 	if C.Blizzard.ColorTextures == true then
-		button.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+		button.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
 	if not button.shadow and button.isSkinned then

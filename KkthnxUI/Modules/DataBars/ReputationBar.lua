@@ -6,10 +6,10 @@ local _G = _G
 local format = string.format
 
 -- Wow API
-local GetWatchedFactionInfo = GetWatchedFactionInfo
+local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip
+-- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip, UNKNOWN
 
 local Colors = FACTION_BAR_COLORS
 local Movers = K.Movers
@@ -25,9 +25,16 @@ ReputationBar:SetSize(C.DataBars.ReputationWidth, C.DataBars.ReputationHeight)
 ReputationBar:SetPoint("CENTER", ReputationAnchor, "CENTER", 0, 0)
 ReputationBar:SetStatusBarTexture(C.Media.Texture)
 
+ReputationBar.Spark = ReputationBar:CreateTexture(nil, "ARTWORK", nil, 1)
+ReputationBar.Spark:SetSize(C.DataBars.ReputationHeight, C.DataBars.ReputationHeight * 2)
+ReputationBar.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+ReputationBar.Spark:SetPoint("CENTER", ReputationBar:GetStatusBarTexture(), "RIGHT", 0, 0)
+ReputationBar.Spark:SetAlpha(0.6)
+ReputationBar.Spark:SetBlendMode("ADD")
+
 K.CreateBorder(ReputationBar, -1)
 ReputationBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
-ReputationBar:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+ReputationBar:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 ReputationBar.Text = ReputationBar:CreateFontString(nil, "OVERLAY")
 ReputationBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
@@ -39,7 +46,7 @@ ReputationBar.Text:SetTextColor(1, 1, 1)
 ReputationBar.Text:SetJustifyH("CENTER")
 
 if C.Blizzard.ColorTextures == true then
-	ReputationBar:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+	ReputationBar:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 
 ReputationBar:SetScript("OnMouseUp", function()
@@ -94,11 +101,11 @@ if C.DataBars.ReputationFade then
 	ReputationBar.Tooltip = true
 end
 
-ReputationBar:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE")
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ReputationBar:RegisterEvent("PLAYER_LEVEL_UP")
-ReputationBar:RegisterEvent("PLAYER_XP_UPDATE")
-ReputationBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
+ReputationBar:RegisterEvent("PET_BATTLE_CLOSE")
+ReputationBar:RegisterEvent("PET_BATTLE_OPENING_START")
+ReputationBar:RegisterEvent("PLAYER_UPDATE_RESTING")
+ReputationBar:RegisterEvent("UPDATE_EXHAUSTION")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
 
 ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)

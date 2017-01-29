@@ -175,7 +175,7 @@ function KkthnxUIInstall:ChatSetup()
 		elseif C.Chat.Background == false then
 			if (index == 1) then
 				ChatFrame:ClearAllPoints()
-				ChatFrame:SetPoint(unpack(C.Position.Chat))
+				ChatFrame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 
 				FCF_SavePositionAndDimensions(ChatFrame)
 			end

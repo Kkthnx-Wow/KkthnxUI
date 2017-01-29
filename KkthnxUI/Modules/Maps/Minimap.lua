@@ -233,9 +233,9 @@ end
 -- </ Set border texture > --
 MinimapBackdrop:SetBackdrop(K.Backdrop)
 MinimapBackdrop:SetBackdropColor(0.05, 0.05, 0.05, 0.0)
-MinimapBackdrop:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+MinimapBackdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 if C.Blizzard.ColorTextures == true then
-    MinimapBackdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+    MinimapBackdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 MinimapBackdrop:SetOutside(Minimap, 4, 4)
 

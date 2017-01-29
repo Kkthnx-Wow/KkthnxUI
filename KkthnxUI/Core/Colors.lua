@@ -4,21 +4,11 @@ local _, ns = ...
 local oUF = ns.oUF
 
 -- Colors
-oUF.colors.uninterruptible = {
-	1, 0, 0, 0.5
-}
-
-oUF.colors.interruptible = {
-	0.31, 0.45, 0.63, 0.5
-}
-
-oUF.colors.fallback = {
-	1, 1, 0.8
-}
-
-oUF.colors.disconnected = {
-	0.1, 0.1, 0.1
-}
+oUF.colors.health = {0.18, 0.67, 0.20}
+oUF.colors.uninterruptible = {1, 0, 0, 0.5}
+oUF.colors.interruptible = {0.31, 0.45, 0.63, 0.5}
+oUF.colors.fallback = {1, 1, 0.8}
+oUF.colors.disconnected = {0.53, 0.54, 0.53}
 
 oUF.colors.runes = {
 	["CD"] = {0.7, 0.7, 0.7},

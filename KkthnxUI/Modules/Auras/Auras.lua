@@ -253,7 +253,7 @@ function KkthnxUIAuras:Skin()
 	self:CreateBackdrop()
 
 	if C.Blizzard.ColorTextures == true then
-		self.backdrop:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+		self.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
 	if not self.shadow then
@@ -351,7 +351,7 @@ function KkthnxUIAuras:CreateHeaders()
 	local DropDown = CreateFrame("BUTTON", nil, Proxy, "SecureHandlerClickTemplate")
 
 	if (not C.Auras.HideBuffs) then
-		Buffs:SetPoint(unpack(C.Position.PlayerBuffs))
+		Buffs:SetPoint(C.Position.PlayerBuffs[1], C.Position.PlayerBuffs[2], C.Position.PlayerBuffs[3], C.Position.PlayerBuffs[4], C.Position.PlayerBuffs[5])
 		Buffs:SetAttribute("filter", "HELPFUL")
 		Buffs:SetAttribute("consolidateProxy", Proxy)
 		Buffs:SetAttribute("consolidateHeader", Consolidate)

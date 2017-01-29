@@ -460,7 +460,7 @@ function CreateUIConfig()
 				editbox:SetPoint("TOPLEFT", 8, -(offset + 20))
 				editbox:SetText(value)
 				editbox:SetBackdrop(K.Backdrop)
-				editbox:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+				editbox:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 				editbox:SetBackdropColor(.05, .05, .05)
 
 				local okbutton = CreateFrame("Button", nil, frame)
@@ -625,8 +625,8 @@ function CreateUIConfig()
 	local bgSkins = {TitleBox, TitleBoxVer, UIConfigBG, groupsBG}
 	for _, sb in pairs(bgSkins) do
 		sb:SetBackdrop(K.Backdrop)
-		sb:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-		sb:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		sb:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+		sb:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	end
 
 	ShowGroup("General")

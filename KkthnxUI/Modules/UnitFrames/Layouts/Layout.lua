@@ -454,7 +454,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
@@ -543,7 +543,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Shield = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
@@ -608,7 +608,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -665,7 +665,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(unpack(C.Media.Backdrop_Color))
+			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -712,7 +712,7 @@ local function CreateUnitLayout(self, unit)
 	-- Textures
 	self.Texture = self:CreateTexture(nil, "BORDER")
 	if C.Blizzard.ColorTextures == true then
-		self.Texture:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+		self.Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 	self.Texture:SetDrawLayer("BORDER", 3)
 
@@ -1004,7 +1004,7 @@ local function CreateUnitLayout(self, unit)
 		ComboPointPlayerFrame.SetPoint = K.Noop
 
 		if C.Blizzard.ColorTextures == true then
-			ComboPointPlayerFrame.Background:SetVertexColor(unpack(C.Blizzard.TexturesColor))
+			ComboPointPlayerFrame.Background:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 		end
 
 		-- Totems

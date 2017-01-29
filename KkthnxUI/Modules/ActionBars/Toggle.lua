@@ -311,7 +311,7 @@ for i = 1, 5 do
 		ToggleBar[i]:CreatePanel("Invisible", 19, 19, "BOTTOMRIGHT", Minimap, "BOTTOMLEFT", -4, -2)
 		K.CreateBorder(ToggleBar[i], 1)
 		ToggleBar[i]:SetBackdrop(K.BorderBackdrop)
-		ToggleBar[i]:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		ToggleBar[i]:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 		ToggleBar[i].Text:SetPoint("CENTER", 0, 0)
 
 		ToggleBar[i]:SetScript("OnMouseDown", function()

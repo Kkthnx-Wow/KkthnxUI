@@ -107,7 +107,7 @@ L.Cooldowns = {
 L.DataBars = {
 	ArtifactClick = "鼠标左键:神器面板",
 	ArtifactRemaining = "|cffe6cc80剩余:%s|r",
-	HonorLeftClick = "|cffcccccc鼠标左键：PVP面板|r",
+	HonorLeftClick = "|cffcacaca鼠标左键：PVP面板|r",
 }
 
 -- DataText Localization

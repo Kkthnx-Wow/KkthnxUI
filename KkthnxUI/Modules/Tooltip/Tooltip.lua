@@ -483,8 +483,8 @@ function Tooltip:SetColor()
 		Unit = "mouseover"
 	end
 
-	self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-	self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+	self:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 	local Reaction = Unit and UnitReaction(Unit, "player")
 	local Player = Unit and UnitIsPlayer(Unit)
@@ -518,8 +518,8 @@ function Tooltip:SetColor()
 			local Color = K.Colors
 
 			HealthBar:SetStatusBarColor(unpack(K.Colors.reaction[5]))
-			HealthBar:SetBackdropBorderColor(unpack(C.Media.Border_Color))
-			self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+			HealthBar:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
+			self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		end
 	end
 end
@@ -540,8 +540,8 @@ function Tooltip:OnUpdate(elapsed)
 
 	-- This ensures that default anchored world frame tips have the proper color.
 	if (Owner == "UIParent" and Anchor == "ANCHOR_CURSOR") then
-		self:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-		self:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		self:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	end
 end
 
@@ -614,7 +614,7 @@ function Tooltip:Enable()
 	HealthBarBG:SetPoint("TOPLEFT", -1, 1)
 	HealthBarBG:SetPoint("BOTTOMRIGHT", 1, -1)
 	HealthBarBG:SetBackdrop(K.BorderBackdrop)
-	HealthBarBG:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	HealthBarBG:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 	if C.Tooltip.HealthValue then
 		HealthBar.Text = HealthBar:CreateFontString(nil, "OVERLAY")

@@ -79,7 +79,7 @@ end)
 
 -- Vehicle button anchor
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
-VehicleButtonAnchor:SetPoint(unpack(C.Position.VehicleBar))
+VehicleButtonAnchor:SetPoint(C.Position.VehicleBar[1], C.Position.VehicleBar[2], C.Position.VehicleBar[3], C.Position.VehicleBar[4], C.Position.VehicleBar[5])
 VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 Movers:RegisterFrame(VehicleButtonAnchor)
 

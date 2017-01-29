@@ -109,13 +109,13 @@ if C.Chat.Background == true and C.Chat.Enable == true then
 	local chatbd = CreateFrame("Frame", "ChatBackground", UIParent)
 	chatbd:CreatePanel("Invisible", C.Chat.Width + 7, C.Chat.Height + 4, "TOPLEFT", ChatFrame1, "TOPLEFT", -3, 1)
 	chatbd:SetBackdrop(K.BorderBackdrop)
-	chatbd:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+	chatbd:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 	if C.Chat.TabsMouseover ~= true then
 		local chattabs = CreateFrame("Frame", "ChatTabsPanel", UIParent)
 		chattabs:CreatePanel("Invisible", chatbd:GetWidth(), 20, "BOTTOM", chatbd, "TOP", 0, 3)
 		chattabs:SetBackdrop(K.BorderBackdrop)
-		chattabs:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+		chattabs:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	end
 end
 
@@ -138,7 +138,7 @@ if Minimap and C.Minimap.Enable and C.DataText.System == true then
 	Movers:RegisterFrame(MinimapStats)
 
 	if C.Blizzard.ColorTextures == true then
-		MinimapStats:SetBackdropBorderColor(unpack(C.Blizzard.TexturesColor))
+		MinimapStats:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 end
 

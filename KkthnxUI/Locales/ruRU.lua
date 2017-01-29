@@ -108,7 +108,7 @@ L.Cooldowns = {
 L.DataBars = {
 	ArtifactClick = "Клик: Открывает обзор артефактов",
 	ArtifactRemaining = "|cffe6cc80Осталось: %s|r",
-	HonorLeftClick = "|cffccccccЛевый Клик: Открывает окно чести|r",
+	HonorLeftClick = "|cffcacacaЛевый Клик: Открывает окно чести|r",
 }
 
 -- DataText Localization

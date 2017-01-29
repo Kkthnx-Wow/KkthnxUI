@@ -24,8 +24,8 @@ local function skinbubble(frame)
 
 	if C.Chat.BubbleBackdrop == false then
 		frame:SetBackdrop(K.Backdrop)
-		frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
-		frame:SetBackdropBorderColor(unpack(C.Media.Border_Color))
+		frame:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+		frame:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		frame:SetClampedToScreen(false)
 		frame.text:SetFont(C.Media.Font, C.General.BubbleFontSize)
 		frame.text:SetShadowOffset(K.Mult * UIParent:GetScale() or 1 * UIParent:GetScale(), -K.Mult * UIParent:GetScale() or -K.Scale(-3) * UIParent:GetScale())

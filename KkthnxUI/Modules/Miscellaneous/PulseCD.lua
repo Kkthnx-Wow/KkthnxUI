@@ -122,7 +122,7 @@ local function OnUpdate(_, update)
 			frame:SetWidth(scale)
 			frame:SetHeight(scale)
 			frame:SetBackdropBorderColor(0, 0, 0)
-			frame:SetBackdropColor(unpack(C.Media.Backdrop_Color))
+			frame:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 		end
 	end
 end
