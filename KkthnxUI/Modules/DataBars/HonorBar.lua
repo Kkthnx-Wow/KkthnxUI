@@ -136,14 +136,8 @@ if C.DataBars.HonorFade then
 end
 
 HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-HonorBar:RegisterEvent("PET_BATTLE_CLOSE")
-HonorBar:RegisterEvent("PET_BATTLE_OPENING_START")
-HonorBar:RegisterEvent("PLAYER_UPDATE_RESTING")
-HonorBar:RegisterEvent("UPDATE_EXHAUSTION")
-HonorBar:RegisterEvent("HONOR_LEVEL_UPDATE")
 HonorBar:RegisterEvent("HONOR_XP_UPDATE")
-HonorBar:RegisterEvent("ZONE_CHANGED")
-HonorBar:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-
+HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
+HonorBar:RegisterEvent("PLAYER_FLAGS_CHANGED")
 HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

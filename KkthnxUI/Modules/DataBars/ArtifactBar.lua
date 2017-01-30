@@ -136,12 +136,7 @@ if C.DataBars.ArtifactFade then
 end
 
 ArtifactBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ArtifactBar:RegisterEvent("PET_BATTLE_CLOSE")
-ArtifactBar:RegisterEvent("PET_BATTLE_OPENING_START")
-ArtifactBar:RegisterEvent("PLAYER_UPDATE_RESTING")
-ArtifactBar:RegisterEvent("UPDATE_EXHAUSTION")
 ArtifactBar:RegisterEvent("ARTIFACT_XP_UPDATE")
 ArtifactBar:RegisterEvent("UNIT_INVENTORY_CHANGED")
-
 ArtifactBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ArtifactBar:SetScript("OnEvent", UpdateArtifactBar)

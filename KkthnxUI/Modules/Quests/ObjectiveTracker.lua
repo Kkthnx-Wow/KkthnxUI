@@ -139,9 +139,8 @@ end)
 -- Skin the MinimizeButton
 local function OnClick(self)
 	local textObject = self.text
-	local text = textObject:GetText()
 
-	if (text and text == "-") then
+	if ObjectiveTrackerFrame.collapsed then
 		textObject:SetText("+")
 	else
 		textObject:SetText("-")

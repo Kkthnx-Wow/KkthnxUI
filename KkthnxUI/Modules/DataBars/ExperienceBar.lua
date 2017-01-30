@@ -155,17 +155,11 @@ if C.DataBars.ExperienceFade then
 end
 
 ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ExperienceBar:RegisterEvent("PET_BATTLE_CLOSE")
-ExperienceBar:RegisterEvent("PET_BATTLE_OPENING_START")
-ExperienceBar:RegisterEvent("PLAYER_UPDATE_RESTING")
-ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
+ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
 ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
-ExperienceBar:RegisterEvent("PET_BATTLE_LEVEL_CHANGED")
-ExperienceBar:RegisterEvent("PET_BATTLE_XP_CHANGED")
-ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
-ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
-ExperienceBar:RegisterEvent("UPDATE_EXPANSION_LEVEL")
-
+ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
+-- be careful with this.
+ExperienceBar:UnregisterEvent("UPDATE_EXPANSION_LEVEL")
 ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)

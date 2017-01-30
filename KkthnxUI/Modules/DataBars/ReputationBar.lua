@@ -102,11 +102,6 @@ if C.DataBars.ReputationFade then
 end
 
 ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
-ReputationBar:RegisterEvent("PET_BATTLE_CLOSE")
-ReputationBar:RegisterEvent("PET_BATTLE_OPENING_START")
-ReputationBar:RegisterEvent("PLAYER_UPDATE_RESTING")
-ReputationBar:RegisterEvent("UPDATE_EXHAUSTION")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
-
 ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)
