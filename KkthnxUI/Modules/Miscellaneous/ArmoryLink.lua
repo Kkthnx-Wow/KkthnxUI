@@ -123,7 +123,7 @@ local function showArmoryPopup(name, server)
 		inputBox.editBox:HighlightText()
 		return
 	else
-		print("|cFFFFFF00Unsupported realm location.|r")
+		print("|cffffff00Unsupported realm location.|r")
 		StaticPopup_Hide("LINK_COPY_DIALOG")
 		return
 	end

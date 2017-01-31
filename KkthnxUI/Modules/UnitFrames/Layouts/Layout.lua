@@ -1077,7 +1077,8 @@ local function CreateUnitLayout(self, unit)
 		if (self.PvP) then
 			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
 			self.PvPTimer:SetShadowOffset(K.Mult, -K.Mult)
-			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, -3)
+			self.PvPTimer:SetTextColor(1, 0.819, 0)
+			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, 2)
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
 

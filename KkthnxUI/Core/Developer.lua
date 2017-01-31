@@ -83,7 +83,7 @@ SlashCmdList["FRAMELIST"] = function(msg)
 	for i = 2, FrameStackTooltip:NumLines() do
 		local text = _G["FrameStackTooltipTextLeft"..i]:GetText()
 		if(text and text ~= "") then
-			print("|cffFFD100"..text)
+			print("|cffffff00"..text)
 		end
 	end
 	print("|cffCC0000~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|r")
@@ -123,7 +123,7 @@ local function GetPoint(frame)
 	local frameName = frame.GetName and frame:GetName() or "nil"
 	local relativeToName = relativeTo.GetName and relativeTo:GetName() or "nil"
 
-	print("|cffFFD100"..frameName, point, relativeToName, relativePoint, xOffset, yOffset.."|r")
+	print("|cffffff00"..frameName, point, relativeToName, relativePoint, xOffset, yOffset.."|r")
 end
 
 _G.SLASH_GETPOINT1 = "/getpoint"

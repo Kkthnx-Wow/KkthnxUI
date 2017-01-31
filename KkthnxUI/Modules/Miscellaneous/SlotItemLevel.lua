@@ -80,7 +80,7 @@ local function _updateItems(unit, frame)
 						C_Timer_After(0.1, function()
 							local realItemLevel = _getRealItemLevel(i, unit)
 							realItemLevel = realItemLevel or ""
-							frame[i]:SetText("|cFFFFFF00"..realItemLevel)
+							frame[i]:SetText("|cffffff00"..realItemLevel)
 						end)
 					end
 				end
@@ -91,7 +91,7 @@ local function _updateItems(unit, frame)
 			if realItemLevel and realItemLevel == 1 then
 				realItemLevel = ""
 			end
-			frame[i]:SetText("|cFFFFFF00"..realItemLevel)
+			frame[i]:SetText("|cffffff00"..realItemLevel)
 		end
 	end
 end
