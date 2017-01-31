@@ -146,15 +146,6 @@ tinsert(UnitPopupMenus["PARTY"], #UnitPopupMenus["PARTY"] - 1, "ARMORYLINK")
 tinsert(UnitPopupMenus["RAID"], #UnitPopupMenus["RAID"] - 1, "ARMORYLINK")
 tinsert(UnitPopupMenus["PLAYER"], #UnitPopupMenus["PLAYER"] - 1, "ARMORYLINK")
 
--- Delete some lines from unit dropdown menu (broke some line)
-for _, menu in pairs(UnitPopupMenus) do
-	for index = #menu, 1, -1 do
-		if menu[index] == "SET_FOCUS" or menu[index] == "CLEAR_FOCUS" or menu[index] == "MOVE_PLAYER_FRAME" or menu[index] == "MOVE_TARGET_FRAME" or menu[index] == "LARGE_FOCUS" or menu[index] == "MOVE_FOCUS_FRAME" or (menu[index] == "PET_DISMISS" and K.Class == "HUNTER") then
-			table.remove(menu, index)
-		end
-	end
-end
-
 -- LFG list applicants
 local LFG_LIST_APPLICANT_MEMBER_MENU = {
 	{

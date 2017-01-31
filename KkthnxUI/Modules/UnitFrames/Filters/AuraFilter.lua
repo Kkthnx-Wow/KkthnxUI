@@ -29,7 +29,7 @@ local UnitPlayerControlled = _G.UnitPlayerControlled
 -- 2 = Hide on friendly
 -- 3 = Hide Mine
 -- Arena (buff): true = whitelisted
---  "Whitelist"
+-- "Whitelist"
 -- Boss (debuff): 0 = Whitelisted
 -- "Whitelist" 1 = Only show own
 
@@ -59,7 +59,8 @@ local BaseAuras = {
 	[63435] = 3, -- Thunder Bluff Valiant"s Pennant
 	[63436] = 3, -- Thunder Bluff Champion"s Pennant
 	[63501] = 3, -- Argent Crusade Champion"s Pennant
-	-- Unsure about hiding this right now.
+
+	-- We only need to see these on ourselves.
 	[108370] = 1, -- Soul Leech
 	[113942] = 1, -- Demonic: Gateway
 	[114216] = 1, -- Angelic Bulwark
@@ -134,7 +135,11 @@ local auraFilters = {
 	bossFilter
 }
 
-local isPlayer = {player = true, pet = true, vehicle = true}
+local isPlayer = {
+	player = true,
+	pet = true,
+	vehicle = true
+}
 
 local filters = {
 	[0] = function(self, unit, caster) return true end,
@@ -147,6 +152,7 @@ K.CustomAuraFilters = {
 	pet = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return (caster and isPlayer[caster]) and (not genFilter[spellID] == 3)
 	end,
+
 	target = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = genFilter[spellID]
 		if v and filters[v] then
@@ -158,6 +164,7 @@ K.CustomAuraFilters = {
 			return (iconFrame.filter == "HELPFUL") or (isBossDebuff) or nameplateShowAll or (isPlayer[caster]) or (caster == unit)
 		end
 	end,
+
 	party = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = genFilter[spellID]
 		if v and filters[v] then
@@ -168,9 +175,11 @@ K.CustomAuraFilters = {
 			return true
 		end
 	end,
+
 	arena = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		return arenaFilter[spellID]
 	end,
+
 	boss = function(self, unit, iconFrame, name, rank, icon, count, dispelType, duration, expires, caster, isStealable, nameplateShowPersonal, spellID, canApplyAura, isBossDebuff, unknown, nameplateShowAll, timeMod, value1, value2, value3)
 		local v = bossFilter[spellID]
 		if v == 1 then

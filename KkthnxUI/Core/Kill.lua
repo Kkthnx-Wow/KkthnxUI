@@ -5,33 +5,32 @@ local _G = _G
 local type = type
 
 -- Wow API
-local CompactRaidFrameContainer = CompactRaidFrameContainer
-local CompactRaidFrameManager_GetSetting = CompactRaidFrameManager_GetSetting
-local CompactRaidFrameManager_SetSetting = CompactRaidFrameManager_SetSetting
-local CompactRaidFrameManager_UpdateShown = CompactRaidFrameManager_UpdateShown
-local CreateFrame = CreateFrame
-local hooksecurefunc = hooksecurefunc
-local InCombatLockdown = InCombatLockdown
-local SetCVar = SetCVar
-local SetCVarBitfield = SetCVarBitfield
-local StaticPopup_Show = StaticPopup_Show
-local UnitAffectingCombat = UnitAffectingCombat
+local CompactRaidFrameManager_UpdateShown = _G.CompactRaidFrameManager_UpdateShown
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local SetCVar = _G.SetCVar
+local SetCVarBitfield = _G.SetCVarBitfield
+local StaticPopup_Show = _G.StaticPopup_Show
+local UnitAffectingCombat = _G.UnitAffectingCombat
+local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+local GetCVarBool = _G.GetCVarBool
+local UIParent = _G.UIParent
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: addon, InterfaceOptionsFrameCategoriesButton10, PetFrame_Update, PlayerFrame_AnimateOut
--- GLOBALS: PlayerFrame_AnimFinished, PlayerFrame_ToPlayerArt, PlayerFrame_ToVehicleArt, CompactRaidFrameManager
--- GLOBALS: UIFrameHider, CompactUnitFrameProfiles, HidePartyFrame, ShowPartyFrame, GarrisonLandingPageTutorialBox
+-- GLOBALS: addon, PetFrame_Update, PlayerFrame_AnimateOut
 -- GLOBALS: Advanced_UIScaleSlider, Advanced_UseUIScale, BagHelpBox, CollectionsMicroButtonAlert, EJMicroButtonAlert
 -- GLOBALS: HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip, PremadeGroupsPvETutorialAlert, ReagentBankHelpBox
--- GLOBALS: SpellBookFrameTutorialButton, TalentMicroButtonAlert, TutorialFrameAlertButton, WorldMapFrameTutorialButton
--- GLOBALS: LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, LE_FRAME_TUTORIAL_PET_JOURNAL, LE_FRAME_TUTORIAL_GARRISON_BUILDING
--- GLOBALS: InterfaceOptionsCombatPanelTargetOfTarget, InterfaceOptionsActionBarsPanelCountdownCooldowns, PlayerFrame
--- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesMakeLarger, InterfaceOptionsDisplayPanelRotateMinimap, RuneFrame
--- GLOBALS: InterfaceOptionsActionBarsPanelBottomLeft, InterfaceOptionsActionBarsPanelBottomRight, unit
+-- GLOBALS: InterfaceOptionsActionBarsPanelLockActionBars, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 -- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo, InterfaceOptionsActionBarsPanelAlwaysShowActionBars
--- GLOBALS: PetFrame, TargetFrame, ComboFrame, FocusFrame, FocusFrameToT, TargetFrameToT, UIParent, PetJournalTutorialButton
--- GLOBALS: PlayerTalentFramePetSpecializationTutorialButton, PlayerTalentFrameSpecializationTutorialButton, PlayerTalentFrameTalentsTutorialButton
--- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy, NamePlateDriverFrame
+-- GLOBALS: InterfaceOptionsCombatPanelTargetOfTarget, InterfaceOptionsActionBarsPanelCountdownCooldowns, PlayerFrame
+-- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesMakeLarger, InterfaceOptionsDisplayPanelRotateMinimap
+-- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy, InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton
+-- GLOBALS: LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, LE_FRAME_TUTORIAL_PET_JOURNAL, LE_FRAME_TUTORIAL_GARRISON_BUILDING
+-- GLOBALS: PlayerFrame_AnimFinished, PlayerFrame_ToPlayerArt, PlayerFrame_ToVehicleArt, CompactRaidFrameManager
+-- GLOBALS: SpellBookFrameTutorialButton, TalentMicroButtonAlert, TutorialFrameAlertButton, WorldMapFrameTutorialButton
+-- GLOBALS: UIFrameHider, CompactUnitFrameProfiles, HidePartyFrame, ShowPartyFrame
 
 -- Kill all stuff on default UI that we don"t need
 local DisableBlizzard = CreateFrame("Frame")
@@ -48,6 +47,22 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		end
 	end
 
+	if C.Raidframe.Enable then
+		if not CompactRaidFrameManager_UpdateShown then
+			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
+		else
+			K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
+
+			if CompactRaidFrameManager then
+				CompactRaidFrameManager:SetParent(UIFrameHider)
+			end
+
+			if CompactUnitFrameProfiles then
+				CompactUnitFrameProfiles:UnregisterAllEvents()
+			end
+		end
+	end
+
 	if C.Unitframe.Enable then
 		function _G.PetFrame_Update() end
 		function _G.PlayerFrame_AnimateOut() end
@@ -55,23 +70,39 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		function _G.PlayerFrame_ToPlayerArt() end
 		function _G.PlayerFrame_ToVehicleArt() end
 
-		_G.HidePartyFrame = K.Noop
-		_G.ShowPartyFrame = K.Noop
-	end
+		for i = 1, MAX_BOSS_FRAMES do
+			local Boss = _G["Boss"..i.."TargetFrame"]
+			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
+			local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
 
-	if C.Raidframe.Enable then
-		if not CompactRaidFrameManager_UpdateShown then
-			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
-		else
-			K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
-			if not InCombatLockdown() then
-				CompactRaidFrameContainer:Kill()
-				CompactRaidFrameManager:Kill()
-			end
+			Boss:UnregisterAllEvents()
+			Boss.Show = K.Noop
+			Boss:Hide()
 
-			_G.CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
-			_G.CompactRaidFrameManager_UpdateShown = K.Noop
-			_G.CompactUnitFrameProfiles_ApplyProfile = K.Noop
+			Health:UnregisterAllEvents()
+			Power:UnregisterAllEvents()
+		end
+
+		for i = 1, MAX_PARTY_MEMBERS do
+			local PartyMember = _G["PartyMemberFrame" .. i]
+			local Health = _G["PartyMemberFrame" .. i .. "HealthBar"]
+			local Power = _G["PartyMemberFrame" .. i .. "ManaBar"]
+			local Pet = _G["PartyMemberFrame" .. i .."PetFrame"]
+			local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
+
+			PartyMember:UnregisterAllEvents()
+			PartyMember:SetParent(UIFrameHider)
+			PartyMember:Hide()
+			Health:UnregisterAllEvents()
+			Power:UnregisterAllEvents()
+
+			Pet:UnregisterAllEvents()
+			Pet:SetParent(UIFrameHider)
+			PetHealth:UnregisterAllEvents()
+
+			HidePartyFrame()
+			_G.ShowPartyFrame = K.Noop
+			_G.HidePartyFrame = K.Noop
 		end
 	end
 
@@ -114,9 +145,9 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 			SetCVar("ShowClassColorInNameplate", 1)
 		end
 		-- Hide the option to rescale, because we will do it from KkthnxUI settings.
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
 	end
 
 	if C.Chat.Enable then
@@ -128,13 +159,13 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 
 	if C.ActionBar.Enable then
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:EnableMouse(false)
-		InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton:SetScale(0.0001)
-		InterfaceOptionsActionBarsPanelLockActionBars:SetScale(0.0001)
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
-		InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton:SetAlpha(0)
 		InterfaceOptionsActionBarsPanelLockActionBars:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelLockActionBars:SetScale(0.0001)
 		InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetAlpha(0)
 		InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton:SetScale(0.0001)
 	end
 
 	if C.Minimap.Enable then

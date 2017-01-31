@@ -123,13 +123,3 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 		end
 	end
 end
-
--- Remove irrelevant rightclick menu entries
-for _, menu in pairs(UnitPopupMenus) do
-	for i = #menu, 1, -1 do
-		local name = menu[i]
-		if name == "SET_FOCUS" or name == "CLEAR_FOCUS" or name:match("^LOCK_%u+_FRAME$") or name:match("^UNLOCK_%u+_FRAME$") or name:match("^MOVE_%u+_FRAME$") or name:match("^RESET_%u+_FRAME_POSITION") then
-			tremove(menu, i)
-		end
-	end
-end

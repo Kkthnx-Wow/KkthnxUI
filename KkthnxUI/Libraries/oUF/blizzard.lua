@@ -57,6 +57,7 @@ function oUF:DisableBlizzard(unit)
 		-- User placed frames don't animate
 		PlayerFrame:SetUserPlaced(true)
 		PlayerFrame:SetDontSavePosition(true)
+		RuneFrame:SetParent(PlayerFrame)
 	elseif(unit == 'pet') then
 		HandleFrame(PetFrame)
 	elseif(unit == 'target') then
@@ -72,7 +73,7 @@ function oUF:DisableBlizzard(unit)
 		if(id) then
 			HandleFrame('Boss' .. id .. 'TargetFrame')
 		else
-			for i=1, 5 do
+			for i=1, MAX_BOSS_FRAMES do
 				HandleFrame(('Boss%dTargetFrame'):format(i))
 			end
 		end
@@ -85,13 +86,19 @@ function oUF:DisableBlizzard(unit)
 				HandleFrame(('PartyMemberFrame%d'):format(i))
 			end
 		end
+		HandleFrame(PartyMemberBackground)
 	elseif(unit:match'(arena)%d?$' == 'arena') then
 		local id = unit:match'arena(%d)'
+
 		if(id) then
 			HandleFrame('ArenaEnemyFrame' .. id)
+			HandleFrame('ArenaPrepFrame'..id)
+			HandleFrame('ArenaEnemyFrame'..id..'PetFrame')
 		else
 			for i=1, 5 do
 				HandleFrame(('ArenaEnemyFrame%d'):format(i))
+				HandleFrame(('ArenaPrepFrame%d'):format(i))
+				HandleFrame(('ArenaEnemyFrame%dPetFrame'):format(i))
 			end
 		end
 

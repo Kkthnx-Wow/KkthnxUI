@@ -4,9 +4,6 @@ if C.Unitframe.Enable ~= true then return end
 local string_format = string.format
 
 local AuraList = {}
-if not AuraList then
-	AuraList = {}
-end
 
 AuraList.Immunity = {
 	1022,	-- Hand of Protection

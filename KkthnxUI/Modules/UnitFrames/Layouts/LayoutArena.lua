@@ -95,7 +95,7 @@ function ns.createArenaLayout(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	if C.Unitframe.Smooth then
-			self.Health.Smooth = true
+		self.Health.Smooth = true
 	end
 	self.Health.PostUpdate = K.PostUpdateHealth
 	table_insert(self.mouseovers, self.Health)
@@ -103,7 +103,7 @@ function ns.createArenaLayout(self, unit)
 	self.Power.colorPower = true
 
 	if C.Unitframe.Smooth then
-			self.Power.Smooth = true
+		self.Power.Smooth = true
 	end
 	self.Power.PostUpdate = K.PostUpdatePower
 	table_insert(self.mouseovers, self.Power)
@@ -137,63 +137,63 @@ function ns.createArenaLayout(self, unit)
 	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
 	self.Buffs.CustomFilter = K.CustomAuraFilters.arena
 
-if C.Unitframe.Castbars then
-	if self.MatchUnit == "arena" then
-		local CastBar = CreateFrame("StatusBar", nil, self)
+	if C.Unitframe.Castbars then
+		if self.MatchUnit == "arena" then
+			local CastBar = CreateFrame("StatusBar", nil, self)
 
-		CastBar:SetPoint("RIGHT", -138, 0)
-		CastBar:SetPoint("LEFT", 0, 10)
-		CastBar:SetPoint("LEFT", -138, 8)
-		CastBar:SetHeight(20)
-		CastBar:SetStatusBarTexture(C.Media.Texture)
-		CastBar:SetFrameLevel(6)
+			CastBar:SetPoint("RIGHT", -138, 0)
+			CastBar:SetPoint("LEFT", 0, 10)
+			CastBar:SetPoint("LEFT", -138, 8)
+			CastBar:SetHeight(20)
+			CastBar:SetStatusBarTexture(C.Media.Texture)
+			CastBar:SetFrameLevel(6)
 
-		K.CreateBorder(CastBar, -1)
+			K.CreateBorder(CastBar, -1)
 
-		CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
-		CastBar.Background:SetAllPoints(CastBar)
-		CastBar.Background:SetTexture(C.Media.Blank)
-		CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
+			CastBar.Background:SetAllPoints(CastBar)
+			CastBar.Background:SetTexture(C.Media.Blank)
+			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
-		CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-		CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
-		CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
-		CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
-		CastBar.Time:SetTextColor(1, 1, 1)
-		CastBar.Time:SetJustifyH("RIGHT")
+			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
+			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
+			CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
+			CastBar.Time:SetTextColor(1, 1, 1)
+			CastBar.Time:SetJustifyH("RIGHT")
 
-		CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-		CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
-		CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
-		CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 4, 0)
-		CastBar.Text:SetTextColor(1, 1, 1)
-		CastBar.Text:SetWidth(166)
-		CastBar.Text:SetJustifyH("LEFT")
+			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
+			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
+			CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 4, 0)
+			CastBar.Text:SetTextColor(1, 1, 1)
+			CastBar.Text:SetWidth(166)
+			CastBar.Text:SetJustifyH("LEFT")
 
-		CastBar.Button = CreateFrame("Frame", nil, CastBar)
-		CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
-		CastBar.Button:SetPoint("RIGHT", CastBar, "LEFT", -4, 0)
+			CastBar.Button = CreateFrame("Frame", nil, CastBar)
+			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
+			CastBar.Button:SetPoint("RIGHT", CastBar, "LEFT", -4, 0)
 
-		K.CreateBorder(CastBar.Button, -1)
+			K.CreateBorder(CastBar.Button, -1)
 
-		CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
-		CastBar.Icon:SetAllPoints()
-		CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
+			CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
+			CastBar.Icon:SetAllPoints()
+			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
-		CastBar.CustomDelayText = K.CustomDelayText
-		CastBar.CustomTimeText = K.CustomTimeText
-		CastBar.PostCastStart = K.PostCastStart
-		CastBar.PostChannelStart = K.PostCastStart
-		CastBar.PostCastStop = K.PostCastStop
-		CastBar.PostChannelStop = K.PostCastStop
-		CastBar.PostChannelUpdate = K.PostChannelUpdate
-		CastBar.PostCastInterruptible = K.PostCastInterruptible
-		CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostCastStart
+			CastBar.PostCastStop = K.PostCastStop
+			CastBar.PostChannelStop = K.PostCastStop
+			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
-		self.Castbar = CastBar
-		self.Castbar.Icon = CastBar.Icon
+			self.Castbar = CastBar
+			self.Castbar.Icon = CastBar.Icon
+		end
 	end
-end
 
 	-- oUF_Trinkets support
 	self.Trinket = CreateFrame("Frame", nil, self)
