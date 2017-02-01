@@ -1,31 +1,33 @@
 local K, C, L = unpack(select(2, ...))
 
 -- WoW Lua
+local _G = _G
 local select = select
 local tostring = tostring
 local unpack = unpack
 
 -- Wow API
-local GetBattlefieldStatus = GetBattlefieldStatus
-local GetCVar = GetCVar
-local GetCVarBool = GetCVarBool
-local GetLFGDungeonInfo = GetLFGDungeonInfo
-local GetLFGDungeonRewards = GetLFGDungeonRewards
-local GetLFGRandomDungeonInfo = GetLFGRandomDungeonInfo
-local GetMaxBattlefieldID = GetMaxBattlefieldID
-local GetNumRandomDungeons = GetNumRandomDungeons
-local GetZoneText = GetZoneText
-local hooksecurefunc = hooksecurefunc
-local IsInInstance = IsInInstance
-local IsInRaid = IsInRaid
-local PlaySound = PlaySound
-local PlaySoundFile = PlaySoundFile
-local SetCVar = SetCVar
+local GetBattlefieldStatus = _G.GetBattlefieldStatus
+local GetCVar = _G.GetCVar
+local GetCVarBool = _G.GetCVarBool
+local GetLFGDungeonInfo = _G.GetLFGDungeonInfo
+local GetLFGDungeonRewards = _G.GetLFGDungeonRewards
+local GetLFGRandomDungeonInfo = _G.GetLFGRandomDungeonInfo
+local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
+local GetNumRandomDungeons = _G.GetNumRandomDungeons
+local GetZoneText = _G.GetZoneText
+local hooksecurefunc = _G.hooksecurefunc
+local IsInInstance = _G.IsInInstance
+local IsInRaid = _G.IsInRaid
+local PlaySound = _G.PlaySound
+local PlaySoundFile = _G.PlaySoundFile
+local SetCVar = _G.SetCVar
 
 -- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
 -- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
 -- GLOBALS: SideDressUpModel, SideDressUpModelResetButton, DressUpModel, DressUpFrameResetButton
--- GLOBALS: GhostFrame, LevelUpDisplay, BossBanner, statusBar
+-- GLOBALS: GhostFrame, LevelUpDisplay, BossBanner, statusBar, UIErrorsFrame, COMBAT, RaidNotice_AddMessage
+-- GLOBALS: RaidBossEmoteFrame, ChatTypeInfo
 
 local Movers = K.Movers
 

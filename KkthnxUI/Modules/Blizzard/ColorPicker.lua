@@ -2,23 +2,23 @@ local K, C, L = unpack(select(2, ...))
 if C.Misc.ColorPicker ~= true then return end
 
 -- Credit to Jaslm, most of this code is his from the addon ColorPickerPlus
-
 -- Lua API
+local _G = _G
 local floor = math.floor
 local format, strsub = string.format, strsub
 local tonumber, collectgarbage = tonumber, collectgarbage
 
 -- Lua Wow
-local CALENDAR_COPY_EVENT, CALENDAR_PASTE_EVENT = CALENDAR_COPY_EVENT, CALENDAR_PASTE_EVENT
-local CLASS, DEFAULT = CLASS, DEFAULT
-local CreateFrame = CreateFrame
-local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+local CALENDAR_COPY_EVENT, CALENDAR_PASTE_EVENT = _G.CALENDAR_COPY_EVENT, _G.CALENDAR_PASTE_EVENT
+local CLASS, DEFAULT = _G.CLASS, _G.DEFAULT
+local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local RAID_CLASS_COLORS =_G. RAID_CLASS_COLORS
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ColorPickerFrame, OpacitySliderFrame, ColorPPBoxA, ColorPPBoxR, ColorPPBoxG
--- GLOBALS: ColorPPBoxB, ColorPPBoxH, ColorSwatch, ColorPickerFrameHeader, ColorPPPaste
 -- GLOBALS: ColorPickerOkayButton, ColorPickerCancelButton
+-- GLOBALS: ColorPPBoxB, ColorPPBoxH, ColorSwatch, ColorPickerFrameHeader, ColorPPPaste
 -- GLOBALS: ColorPPCopyColorSwatch, ColorPPBoxLabelA, ColorPPOldColorSwatch
 
 local initialized = nil

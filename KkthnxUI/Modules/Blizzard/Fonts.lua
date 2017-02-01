@@ -6,9 +6,9 @@ local _G = _G
 local pairs = pairs
 
 -- Wow API
-local MAX_CHANNEL_BUTTONS = MAX_CHANNEL_BUTTONS
-local UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT
-local SetCVar = SetCVar
+local MAX_CHANNEL_BUTTONS = _G.MAX_CHANNEL_BUTTONS
+local UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT = _G.UIDROPDOWNMENU_DEFAULT_TEXT_HEIGHT
+local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: AchievementFont_Small, CoreAbilityFont, GameTooltipTextSmall, InvoiceFont_Med

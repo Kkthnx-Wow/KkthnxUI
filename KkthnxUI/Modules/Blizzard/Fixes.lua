@@ -4,11 +4,11 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
-local FCF_StartAlertFlash = FCF_StartAlertFlash
-local HideUIPanel = HideUIPanel
-local InCombatLockdown = InCombatLockdown
-local IsAddOnLoaded = IsAddOnLoaded
-local ShowUIPanel = ShowUIPanel
+local FCF_StartAlertFlash = _G.FCF_StartAlertFlash
+local HideUIPanel = _G.HideUIPanel
+local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local ShowUIPanel = _G.ShowUIPanel
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame, addon, ToggleFrame

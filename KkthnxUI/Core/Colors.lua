@@ -1,7 +1,10 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua API
+local _G = _G
+
 local _, ns = ...
-local oUF = ns.oUF
+local oUF = ns.oUF or _G.oUF
 
 -- Colors
 oUF.colors.health = {0.18, 0.67, 0.20}

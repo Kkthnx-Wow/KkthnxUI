@@ -1,17 +1,37 @@
 local K, C, L = unpack(select(2, ...))
 if C.Blizzard.ClassColor ~= true then return end
 
-local format = string.format
-local gsub = string.gsub
-local pairs = pairs
-local select = select
-local setmetatable = setmetatable
-local type = type
-local unpack = unpack
-local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local hooksecurefunc = hooksecurefunc
-local wipe = table.wipe
+-- Lua API
+local _G = _G
+local string_format = string.format
+local string_split = string.split
+local table_wipe = table.wipe
+
+-- Wow API
+local BNGetFriendInfo = _G.BNGetFriendInfo
+local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
+local GetBattlefieldScore = _G.GetBattlefieldScore
+local GetCVar = _G.GetCVar
+local GetFriendInfo = _G.GetFriendInfo
+local GetGuildInfo = _G.GetGuildInfo
+local GetGuildRosterInfo = _G.GetGuildRosterInfo
+local GetGuildTradeSkillInfo = _G.GetGuildTradeSkillInfo
+local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
+local GetRealZoneText = _G.GetRealZoneText
+local GetWhoInfo = _G.GetWhoInfo
+local hooksecurefunc = _G.hooksecurefunc
+local IsActiveBattlefieldArena = _G.IsActiveBattlefieldArena
+local UnitRace = _G.UnitRace
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: BATTLENET_NAME_FORMAT, FRIENDS_WOW_NAME_COLOR_CODE
+-- GLOBALS: FauxScrollFrame_GetOffset, WhoListScrollFrame, WHOS_TO_DISPLAY
+-- GLOBALS: FriendsFrameFriendsScrollFrame, HybridScrollFrame_GetOffset, button
+-- GLOBALS: GuildRosterContainer, REMOTE_CHAT, ChatFrame_GetMobileEmbeddedTexture
+-- GLOBALS: index, FRIENDS_BUTTON_TYPE_WOW, FRIENDS_BUTTON_TYPE_BNET, BNET_CLIENT_WOW
+-- GLOBALS: UIDropDownMenu_GetSelectedID, WhoFrameDropDown, SearchLFGGetResults
+-- GLOBALS: WorldStateScoreScrollFrame, MAX_WORLDSTATE_SCORE_BUTTONS
 
 --	Class color guild/friends/etc list(yClassColor by yleaf)
 local GUILD_INDEX_MAX = 12
@@ -24,7 +44,7 @@ end
 for k, v in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
 	BC[v] = k
 end
-local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
+local RAID_CLASS_COLORS = CUSTOM_CLASS_COLORS or _G.RAID_CLASS_COLORS
 local WHITE_HEX = "|cffffffff"
 
 local function Hex(r, g, b)
@@ -36,7 +56,7 @@ local function Hex(r, g, b)
 		r, g, b = 1, 1, 1
 	end
 
-	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
 local function ColorGradient(perc, ...)
@@ -104,8 +124,8 @@ local WHITE = {1, 1, 1}
 
 if CUSTOM_CLASS_COLORS then
 	CUSTOM_CLASS_COLORS:RegisterCallback(function()
-		wipe(classColorRaw)
-		wipe(classColor)
+		table_wipe(classColorRaw)
+		table_wipe(classColor)
 	end)
 end
 
@@ -166,7 +186,7 @@ hooksecurefunc("WorldStateScoreFrame_Update", function()
 		local index = offset + i
 		local name, _, _, _, _, faction, _, _, class = GetBattlefieldScore(index)
 		if name then
-			local n, r = strsplit("-", name, 2)
+			local n, r = string_split("-", name, 2)
 			n = classColor[class]..n.."|r"
 
 			if name == myName then
@@ -302,9 +322,9 @@ local function friendsFrame()
 			if button.buttonType == FRIENDS_BUTTON_TYPE_WOW then
 				local name, level, class, area, connected = GetFriendInfo(button.id)
 				if connected then
-					nameText = classColor[class]..name.."|r, "..format(FRIENDS_LEVEL_TEMPLATE, diffColor[level]..level.."|r", class)
+					nameText = classColor[class]..name.."|r, "..string_format(FRIENDS_LEVEL_TEMPLATE, diffColor[level]..level.."|r", class)
 					if area == playerArea then
-						infoText = format("|cff00ff00%s|r", area)
+						infoText = string_format("|cff00ff00%s|r", area)
 					end
 				end
 			elseif button.buttonType == FRIENDS_BUTTON_TYPE_BNET then
@@ -312,9 +332,9 @@ local function friendsFrame()
 				if isOnline and client == BNET_CLIENT_WOW then
 					local _, toonName, client, _, _, _, _, class, _, zoneName, level = BNGetGameAccountInfo(toonID)
 					if presenceName and toonName and class then
-						nameText = format(BATTLENET_NAME_FORMAT, presenceName, "").." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..classColor[class]..classColor[class]..toonName..FRIENDS_WOW_NAME_COLOR_CODE..")"
+						nameText = string_format(BATTLENET_NAME_FORMAT, presenceName, "").." "..FRIENDS_WOW_NAME_COLOR_CODE.."("..classColor[class]..classColor[class]..toonName..FRIENDS_WOW_NAME_COLOR_CODE..")"
 						if zoneName == playerArea then
-							infoText = format("|cff00ff00%s|r", zoneName)
+							infoText = string_format("|cff00ff00%s|r", zoneName)
 						end
 					end
 				end

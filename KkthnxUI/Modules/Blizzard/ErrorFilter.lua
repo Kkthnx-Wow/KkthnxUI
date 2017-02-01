@@ -4,7 +4,7 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
-local UIErrorsFrame = UIErrorsFrame
+local UIErrorsFrame = _G.UIErrorsFrame
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_ERROR1

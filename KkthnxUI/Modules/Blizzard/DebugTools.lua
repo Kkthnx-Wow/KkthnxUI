@@ -3,14 +3,17 @@ if not K.IsDeveloper and not K.IsDeveloperRealm then return end
 
 local KkthnxUIDebugTools = LibStub("AceAddon-3.0"):NewAddon("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
+-- Lua API
+local _G = _G
+
 --WoW API
-local hooksecurefunc = hooksecurefunc
-local CreateFrame = CreateFrame
-local ScriptErrorsFrame_Update = ScriptErrorsFrame_Update
-local InCombatLockdown = InCombatLockdown
-local GetCVarBool = GetCVarBool
-local ScriptErrorsFrame_OnError = ScriptErrorsFrame_OnError
-local StaticPopup_Hide = StaticPopup_Hide
+local hooksecurefunc = _G.hooksecurefunc
+local CreateFrame = _G.CreateFrame
+local ScriptErrorsFrame_Update = _G.ScriptErrorsFrame_Update
+local InCombatLockdown = _G.InCombatLockdown
+local GetCVarBool = _G.GetCVarBool
+local ScriptErrorsFrame_OnError = _G.ScriptErrorsFrame_OnError
+local StaticPopup_Hide = _G.StaticPopup_Hide
 
 -- Global variables that we don"t cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ScriptErrorsFrameScrollFrameText, ScriptErrorsFrame, ScriptErrorsFrameScrollFrame

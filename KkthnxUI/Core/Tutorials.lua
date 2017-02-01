@@ -4,10 +4,10 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
-local CreateFrame = CreateFrame
-local StaticPopupSpecial_Hide = StaticPopupSpecial_Hide
-local StaticPopupSpecial_Show = StaticPopupSpecial_Show
-local UIParent = UIParent
+local CreateFrame = _G.CreateFrame
+local StaticPopupSpecial_Hide = _G.StaticPopupSpecial_Hide
+local StaticPopupSpecial_Show = _G.StaticPopupSpecial_Show
+local UIParent = _G.UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: KkthnxUIDataPerChar, TutorialWindow, DISABLE, HIDE, forceShow

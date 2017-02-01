@@ -4,7 +4,7 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
-local UIParent = UIParent
+local UIParent = _G.UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: NUM_EXTENDED_UI_FRAMES, hooksecurefunc
