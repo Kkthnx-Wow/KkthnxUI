@@ -46,6 +46,8 @@ local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
+local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
+local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
@@ -119,7 +121,7 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 			r, g, b = c.r, c.g, c.b
 		end
 	else
-		local DiffColor = UnitLevel(unit) - UnitLevel('player')
+		local DiffColor = UnitLevel(unit) - UnitLevel("player")
 		if (DiffColor >= 5) then
 			r, g, b = 0.69, 0.31, 0.31
 		elseif (DiffColor >= 3) then
@@ -223,6 +225,26 @@ oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 		end
 
 		return string
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:ThreatPercent"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:ThreatPercent"] = function(unit)
+	local _, _, percent = UnitDetailedThreatSituation("player", unit)
+	if(percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
+		return format("%.0f%%", percent)
+	else
+		return ""
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:ThreatColor"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
+	local _, status = UnitDetailedThreatSituation("player", unit)
+	if (status) and (IsInGroup() or UnitExists("pet")) then
+		return Hex(GetThreatStatusColor(status))
+	else
+		return ""
 	end
 end
 

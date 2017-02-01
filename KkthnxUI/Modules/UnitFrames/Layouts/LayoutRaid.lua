@@ -28,30 +28,6 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local Movers = K.Movers
 
-local function UpdateThreat(self, _, unit)
-	if (self.unit ~= unit) then
-		return
-	end
-
-	local threatStatus = UnitThreatSituation(unit) or 0
-	if (threatStatus == 3) then
-		if (self.ThreatText) then
-			self.ThreatText:Show()
-		end
-	end
-
-	if (threatStatus and threatStatus >= 2) then
-		local r, g, b = GetThreatStatusColor(threatStatus)
-		self.ThreatGlow:SetBackdropBorderColor(r, g, b, 1)
-	else
-		self.ThreatGlow:SetBackdropBorderColor(0, 0, 0, 0)
-
-		if (self.ThreatText) then
-			self.ThreatText:Hide()
-		end
-	end
-end
-
 local function UpdatePower(self, _, unit)
 	if (self.unit ~= unit) then
 		return
@@ -295,28 +271,19 @@ local function CreateRaidLayout(self, unit)
 		self.Mouseover:SetAlpha(0)
 	end
 
-	-- Threat glow
-	self.ThreatGlow = CreateFrame("Frame", nil, self)
-	self.ThreatGlow:SetPoint("TOPLEFT", self, "TOPLEFT", -5, 5)
-	self.ThreatGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 5, -5)
-	self.ThreatGlow:SetBackdrop({edgeFile = C.Media.Glow, edgeSize = 3})
-	self.ThreatGlow:SetBackdropBorderColor(0, 0, 0, 0)
-	self.ThreatGlow:SetFrameLevel(self:GetFrameLevel() - 1)
-	self.ThreatGlow.ignore = true
-
 	-- Threat text
 	if (C.Raidframe.ShowThreatText) then
 		self.ThreatText = self.Health:CreateFontString(nil, "OVERLAY")
 		self.ThreatText:SetPoint("CENTER", self, "BOTTOM")
-		self.ThreatText:SetFont(C.Media.Font, 11, "THINOUTLINE")
+		self.ThreatText:SetFont(C.Media.Font, 10, "THINOUTLINE")
 		self.ThreatText:SetShadowOffset(0, 0)
 		self.ThreatText:SetTextColor(1, 0, 0)
 		self.ThreatText:SetText("AGGRO")
 	end
 
-	table_insert(self.__elements, UpdateThreat)
-	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
+	table_insert(self.__elements, K.UpdateThreat)
+	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", K.UpdateThreat)
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", K.UpdateThreat)
 
 	-- Masterlooter icons
 	self.MasterLooter = self.Health:CreateTexture(nil, "OVERLAY", self)
@@ -339,49 +306,39 @@ local function CreateRaidLayout(self, unit)
 	self.ReadyCheck:SetSize(20, 20)
 
 	-- AuraWatch (corner and center icon)
-	if C.Raidframe.AuraWatch == true and not (self:GetAttribute("unitsuffix") == "pet" or self:GetAttribute("unitsuffix") == "target" or self:GetAttribute("unitsuffix") == "targettarget") then
+	if C.Raidframe.AuraWatch == true then
 		K.CreateAuraWatch(self, unit)
 
-		-- Raid debuffs
 		self.RaidDebuffs = CreateFrame("Frame", nil, self)
-		self.RaidDebuffs:SetHeight(24)
-		self.RaidDebuffs:SetWidth(24)
-		self.RaidDebuffs:SetPoint("CENTER", self, 0, 1)
-		self.RaidDebuffs:SetFrameStrata("MEDIUM")
-		self.RaidDebuffs:SetFrameLevel(10)
+		self.RaidDebuffs:SetHeight(22)
+		self.RaidDebuffs:SetWidth(22)
+		self.RaidDebuffs:SetPoint("CENTER", self.Health)
+		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
+		--self.RaidDebuffs:SetBackdrop(K.BorderBackdrop)
+		-- self.RaidDebuffs:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+		self.RaidDebuffs:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		K.CreateBorder(self.RaidDebuffs, 1)
 
-		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "BORDER")
-		self.RaidDebuffs.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		self.RaidDebuffs.icon:SetPoint("TOPLEFT", 2, -2)
-		self.RaidDebuffs.icon:SetPoint("BOTTOMRIGHT", -2, 2)
+		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
+		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
+		self.RaidDebuffs.icon:SetInside(self.RaidDebuffs)
 
-		if C.Raidframe.AuraWatchTimers == true then
-			self.RaidDebuffs.time = K.SetFontString(self.RaidDebuffs, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			self.RaidDebuffs.time:SetPoint("CENTER", 1, 1)
-			self.RaidDebuffs.time:SetTextColor(1, 1, 1)
-		end
+		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs)
+		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs)
+		self.RaidDebuffs.cd:SetHideCountdownNumbers(true)
 
-		self.RaidDebuffs.count = K.SetFontString(self.RaidDebuffs, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 3, -1)
-		self.RaidDebuffs.count:SetTextColor(1, 1, 1)
-
-		if C.Raidframe.AuraWatchTimers == true then
-			self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs, "CooldownFrameTemplate")
-			self.RaidDebuffs.cd:SetPoint("TOPLEFT", 2, -2)
-			self.RaidDebuffs.cd:SetPoint("BOTTOMRIGHT", -2, 2)
-			self.RaidDebuffs.cd:SetReverse(true)
-			self.RaidDebuffs.cd:SetDrawEdge(false)
-			self.RaidDebuffs.cd.noOCC = true
-			self.RaidDebuffs.parent = CreateFrame("Frame", nil, self.RaidDebuffs)
-			self.RaidDebuffs.parent:SetFrameLevel(self.RaidDebuffs.cd:GetFrameLevel() + 1)
-			self.RaidDebuffs.time:SetParent(self.RaidDebuffs.parent)
-			self.RaidDebuffs.count:SetParent(self.RaidDebuffs.parent)
-		end
-
-		self.RaidDebuffs.ShowDispellableDebuff = true
-		self.RaidDebuffs.FilterDispellableDebuff = true
+		self.RaidDebuffs.ShowDispelableDebuff = true
+		self.RaidDebuffs.FilterDispelableDebuff = true
 		self.RaidDebuffs.MatchBySpellName = true
+		self.RaidDebuffs.ShowBossDebuff = true
+		self.RaidDebuffs.BossDebuffPriority = 5
+
+		self.RaidDebuffs.count = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")
+		self.RaidDebuffs.count:SetFont(C.Media.Font, 12, "OUTLINE")
+		self.RaidDebuffs.count:SetPoint("BOTTOMRIGHT", self.RaidDebuffs, "BOTTOMRIGHT", 2, 0)
+		self.RaidDebuffs.count:SetTextColor(1, .9, 0)
+
+		self.RaidDebuffs.SetDebuffTypeColor = self.RaidDebuffs.SetBackdropBorderColor
 		self.RaidDebuffs.Debuffs = K.RaidDebuffs
 	end
 

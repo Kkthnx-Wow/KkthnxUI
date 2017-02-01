@@ -244,6 +244,28 @@ function K.UnitFrame_OnLeave(self)
 	end
 end
 
+function K.UpdateThreat(self, _, unit)
+	if (self.unit ~= unit) or not unit then return end
+
+	local threatStatus = UnitThreatSituation(unit) or 0
+	if (threatStatus == 3) then
+		if (self.ThreatText) then
+			self.ThreatText:Show()
+		end
+	end
+
+	if (threatStatus and threatStatus >= 2) then
+		local r, g, b = GetThreatStatusColor(threatStatus)
+		self:SetBackdropBorderColor(r, g, b, 1)
+	else
+		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], 1)
+
+		if (self.ThreatText) then
+			self.ThreatText:Hide()
+		end
+	end
+end
+
 -- </ Statusbar functions > --
 function K.CreateStatusBar(self, noBG)
 	local StatusBar = CreateFrame("StatusBar", "oUFKkthnxStatusBar", self) -- global name to avoid Blizzard /fstack error
@@ -271,7 +293,7 @@ function K.CreateStatusBar(self, noBG)
 end
 
 -- </ AuraWatch > --
-local CountOffSets = {
+local RaidBuffsPosition = {
 	TOPLEFT = {6, 1},
 	TOPRIGHT = {-6, 1},
 	BOTTOMLEFT = {6, 1},
@@ -283,25 +305,36 @@ local CountOffSets = {
 }
 
 function K.CreateAuraWatchIcon(self, icon)
-	icon:SetBackdrop(K.TwoPixelBorder)
-	icon.icon:SetPoint("TOPLEFT", icon, 1, -1)
-	icon.icon:SetPoint("BOTTOMRIGHT", icon, -1, 1)
-	icon.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-	icon.icon:SetDrawLayer("ARTWORK")
-	if icon.cd then
-		icon.cd:SetReverse(true)
+	if icon.icon and not icon.hideIcon then
+		icon:SetBackdrop(K.TwoPixelBorder)
+		icon.icon:SetPoint("TOPLEFT", icon, 1, -1)
+		icon.icon:SetPoint("BOTTOMRIGHT", icon, -1, 1)
+		icon.icon:SetTexCoord(.08, .92, .08, .92)
+		icon.icon:SetDrawLayer("ARTWORK")
+
+		if (icon.cd) then
+			icon.cd:SetHideCountdownNumbers(true)
+			icon.cd:SetReverse(true)
+		end
+
+		if icon.overlay then
+			icon.overlay:SetTexture()
+		end
 	end
-	icon.overlay:SetTexture()
 end
 
 function K.CreateAuraWatch(self, unit)
 	local auras = CreateFrame("Frame", nil, self)
-	auras:SetPoint("TOPLEFT", self.Health, 0, 0)
-	auras:SetPoint("BOTTOMRIGHT", self.Health, 0, 0)
+	auras:SetPoint("TOPLEFT", self.Health, 2, -2)
+	auras:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)
+	auras.presentAlpha = 1
+	auras.missingAlpha = 0
 	auras.icons = {}
 	auras.PostCreateIcon = K.CreateAuraWatchIcon
+	auras.strictMatching = true
 
 	local buffs = {}
+
 	if K.RaidBuffs["ALL"] then
 		for key, value in pairs(K.RaidBuffs["ALL"]) do
 			tinsert(buffs, value)
@@ -319,7 +352,6 @@ function K.CreateAuraWatch(self, unit)
 			local icon = CreateFrame("Frame", nil, auras)
 			icon.spellID = spell[1]
 			icon.anyUnit = spell[4]
-			icon.strictMatching = spell[5]
 			icon:SetWidth(6)
 			icon:SetHeight(6)
 			icon:SetPoint(spell[2], 0, 0)
@@ -333,8 +365,9 @@ function K.CreateAuraWatch(self, unit)
 				tex:SetVertexColor(0.8, 0.8, 0.8)
 			end
 
-			local count = K.SetFontString(icon, C.Media.Font, C.Media.Font_Size - 2, C.Media.Font_Style, "CENTER")
-			count:SetPoint("CENTER", unpack(CountOffSets[spell[2]]))
+			local count = icon:CreateFontString(nil, "OVERLAY")
+			count:SetFont(C.Media.Font, 8, "THINOUTLINE")
+			count:SetPoint("CENTER", unpack(RaidBuffsPosition[spell[2]]))
 			icon.count = count
 
 			auras.icons[spell[1]] = icon

@@ -64,8 +64,9 @@ Movers:RegisterFrame(ObjectiveFrameHolder)
 
 local function SetObjectiveFrameHeight()
 	local top = ObjectiveTrackerFrame:GetTop() or 0
-	local gapFromTop = K.ScreenHeight - top
-	local maxHeight = K.ScreenHeight - gapFromTop
+	local screenHeight = GetScreenHeight()
+	local gapFromTop = screenHeight - top
+	local maxHeight = screenHeight - gapFromTop
 	local objectiveFrameHeight = math_min(maxHeight, 480)
 
 	ObjectiveTrackerFrame:SetHeight(objectiveFrameHeight)
@@ -164,9 +165,10 @@ minimizeButton:HookScript("OnClick", OnClick)
 -- Set tooltip depending on position
 local function IsFramePositionedLeft(frame)
 	local x = frame:GetCenter()
+	local screenWidth = GetScreenWidth()
 	local positionedLeft = false
 
-	if x and x < (K.ScreenWidth / 2) then
+	if x and x < (screenWidth / 2) then
 		positionedLeft = true
 	end
 
@@ -176,10 +178,10 @@ end
 local function RewardsFrame_SetPosition(block)
 	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame
 	rewardsFrame:ClearAllPoints()
-	if (bonusObjectivePosition == "AUTO" and IsFramePositionedLeft(ObjectiveTrackerFrame)) then
-		rewardsFrame:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)
+		if bonusObjectivePosition == "RIGHT" or (bonusObjectivePosition == "AUTO" and IsFramePositionedLeft(ObjectiveTrackerFrame)) then
+			rewardsFrame:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)
 	else
-		rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4)
+			rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4)
 	end
 end
 hooksecurefunc("BonusObjectiveTracker_AnimateReward", RewardsFrame_SetPosition)

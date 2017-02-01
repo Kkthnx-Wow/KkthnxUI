@@ -653,24 +653,20 @@ local function style(self, unit)
 			button.count:SetJustifyH("RIGHT")
 			button.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 
-			if C.Nameplates.Spiral == true then
-				element.disableCooldown = false
-				button.cd:SetReverse(true)
-				button.cd:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-				button.cd:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
-				button.parent = CreateFrame("Frame", nil, button)
-				button.parent:SetFrameLevel(button.cd:GetFrameLevel() + 1)
-				button.count:SetParent(button.parent)
-				button.remaining:SetParent(button.parent)
-			else
-				element.disableCooldown = true
-			end
+			element.disableCooldown = false
+			button.cd:SetReverse(true)
+			button.cd:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
+			button.cd:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
+			button.parent = CreateFrame("Frame", nil, button)
+			button.parent:SetFrameLevel(button.cd:GetFrameLevel() + 1)
+			button.count:SetParent(button.parent)
+			button.remaining:SetParent(button.parent)
 		end
 
 		self.Auras.PostUpdateIcon = function(icons, unit, icon, index, offset, filter, isDebuff, duration, timeLeft)
 			local _, _, _, _, dtype, duration, expirationTime, _, isStealable = UnitAura(unit, index, icon.filter)
 
-			if duration and duration > 0 and C.Nameplates.Timer == true then
+			if duration and duration > 0 then
 				icon.remaining:Show()
 				icon.timeLeft = expirationTime
 				icon:SetScript("OnUpdate", CreateAuraTimer)

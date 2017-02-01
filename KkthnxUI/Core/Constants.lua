@@ -4,7 +4,6 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 local select = select
 local string_lower = string.lower
-local string_match = string.match
 local tonumber = tonumber
 
 -- Wow API
@@ -17,16 +16,11 @@ local UnitName = _G.UnitName
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion
 
-local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
-local Windowed = Display_DisplayModeDropDown:windowedmode()
-local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
-local RoleUpdater = CreateFrame("Frame")
-
 local function CheckRole(self, event)
-	local Tank = "TANK"
-	local Melee = "MELEE"
-	local Caster = "CASTER"
-	local Healer = "HEALER"
+	local Tank = "TANK" or "Tank"
+	local Melee = "MELEE" or "Melee"
+	local Caster = "CASTER" or "Caster"
+	local Healer = "HEALER" or "Healer"
 
 	local Roles = {
 		DEATHKNIGHT = {Tank, Melee, Melee},
@@ -49,8 +43,6 @@ local function CheckRole(self, event)
 end
 
 K.UIName = "KkthnxUI"
-K.WindowedMode = Windowed
-K.FullscreenMode = Fullscreen
 K.Noop = function() return end
 K.Unit = UnitGUID("player")
 K.Name = UnitName("player")
@@ -61,21 +53,22 @@ K.Race = select(2, UnitRace("player"))
 K.Level = UnitLevel("player")
 K.Client = GetLocale()
 K.Realm = GetRealmName()
-K.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
+-- Currently in Legion logging in while in Windowed mode will cause the game to use "Custom" resolution and GetCurrentResolution() returns 0. We use GetCVar("gxWindowedResolution") as fail safe
+K.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
 K.Color = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 K.Version = GetAddOnMetadata(K.UIName, "Version")
-K.ScreenHeight = tonumber(string_match(K.Resolution, "%d+x(%d+)"))
-K.ScreenWidth = tonumber(string_match(K.Resolution, "(%d+)x+%d"))
+K.ScreenWidth, K.ScreenHeight = DecodeResolution(K.Resolution)
 K.VersionNumber = tonumber(K.Version)
 K.WoWPatch, K.WoWBuild, K.WoWPatchReleaseDate, K.TocVersion = GetBuildInfo()
 K.WoWBuild = select(2, GetBuildInfo()) K.WoWBuild = tonumber(K.WoWBuild)
 
 K.AddOns = {}
 for i = 1, GetNumAddOns() do
-	local Name = GetAddOnInfo(i)
-	K.AddOns[string_lower(Name)] = GetAddOnEnableState(K.Name, Name) > 0
+	local AddOnName = GetAddOnInfo(i)
+	K.AddOns[string_lower(AddOnName)] = GetAddOnEnableState(K.Name, AddOnName) > 0
 end
 
+local RoleUpdater = CreateFrame("Frame")
 RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
 RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
