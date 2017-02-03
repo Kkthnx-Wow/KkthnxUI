@@ -68,10 +68,12 @@ L.Chat = {
 	BigChatOff = "Großer Chat deaktiviert",
 	BigChatOn = "Großer Chat aktiviert",
 	DND = "|cffe7e716[DND]|r",
+	General = "Allgemein",
 	Guild = "G",
 	GuildRecruitment = "GildenRekrutierung",
 	Instance = "I",
 	InstanceLeader = "IL",
+	InvalidTarget = "Ungültiges Ziel",
 	LocalDefense = "LokaleVerteidigung",
 	LookingForGroup = "SucheNachGruppe",
 	Officer = "O",
@@ -80,6 +82,10 @@ L.Chat = {
 	Raid = "R",
 	RaidLeader = "R",
 	RaidWarning = "W",
+	Says = "sagen",
+	Trade = "Handel",
+	Whispers = "flüstern",
+	Yells = "schreien",
 }
 
 -- ToggleButton Localization

@@ -313,6 +313,8 @@ local function SkinButton(Frame, Strip)
 	Frame:CreateBackdrop("Default", 4)
 
 	Frame:HookScript("OnEnter", function(self)
+		if not backdrop then return end
+
 		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
 		Frame.backdrop:SetBackdropColor(Color.r * .15, Color.g * .15, Color.b * .15, C.Media.Backdrop_Color[4])
@@ -322,6 +324,8 @@ local function SkinButton(Frame, Strip)
 	end)
 
 	Frame:HookScript("OnLeave", function(self)
+		if not backdrop then return end
+
 		local Color = RAID_CLASS_COLORS[select(2, UnitClass("player"))]
 
 		Frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])

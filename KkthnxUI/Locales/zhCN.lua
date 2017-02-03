@@ -64,14 +64,16 @@ L.Bind = {
 
 -- Chat Localization
 L.Chat = {
-	AFK = "|cffff0000[AFK]|r",
+	AFK = "|cffff0000[离开]|r",
 	BigChatOff = "大聊天框已停用",
 	BigChatOn = "大聊天框已启用",
-	DND = "|cffe7e716[DND]|r",
+	DND = "|cffe7e716[忙碌]|r",
+	General = "综合",
 	Guild = "公",
 	GuildRecruitment = "招募",
 	Instance = "随机",
 	InstanceLeader = "随机队长",
+	InvalidTarget = "无效的目标",
 	LocalDefense = "本地防御",
 	LookingForGroup = "寻求组队",
 	Officer = "官",
@@ -80,6 +82,10 @@ L.Chat = {
 	Raid = "团",
 	RaidLeader = "团长",
 	RaidWarning = "团队警告",
+	Says = "说",
+	Trade = "交易",
+	Whispers = "密语",
+	Yells = "大喊",
 }
 
 -- ToggleButton Localization

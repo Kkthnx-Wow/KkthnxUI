@@ -64,8 +64,8 @@ function KkthnxUIInstall:ChatSetup()
 
 	-- Set more chat groups
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
-	ChatFrame_RemoveChannel(ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.Trade)
+	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.General)
 	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.LocalDefense)
 	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.GuildRecruitment)
 	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.LookingForGroup)
@@ -103,8 +103,8 @@ function KkthnxUIInstall:ChatSetup()
 
 	-- Setup the spam chat frame
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
-	ChatFrame_AddChannel(ChatFrame3, TRADE)
-	ChatFrame_AddChannel(ChatFrame3, GENERAL)
+	ChatFrame_AddChannel(ChatFrame3, L.Chat.Trade)
+	ChatFrame_AddChannel(ChatFrame3, L.Chat.General)
 	ChatFrame_AddChannel(ChatFrame3, L.Chat.LocalDefense)
 	ChatFrame_AddChannel(ChatFrame3, L.Chat.GuildRecruitment)
 	ChatFrame_AddChannel(ChatFrame3, L.Chat.LookingForGroup)

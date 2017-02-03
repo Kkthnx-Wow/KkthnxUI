@@ -64,22 +64,28 @@ L.Bind = {
 
 -- Chat Localization
 L.Chat = {
-	AFK = "|cffff0000[AFK]|r",
+	AFK = "|cffff0000[ABS]|r",
 	BigChatOff = "Grande fonction de tchat désactivée",
 	BigChatOn = "Grande fonction de tchat activée",
-	DND = "|cffe7e716[DND]|r",
+	DND = "|cffe7e716[NPD]|r",
+	General = "Général",
 	Guild = "G",
 	GuildRecruitment = "GuildRecruitment",
 	Instance = "I",
 	InstanceLeader = "IL",
+	InvalidTarget = "Cible incorrecte",
 	LocalDefense = "LocalDefense",
 	LookingForGroup = "LookingForGroup",
 	Officer = "O",
-	Party = "P",
-	PartyLeader = "P",
+	Party = "Gr",
+	PartyLeader = "CdG",
 	Raid = "R",
 	RaidLeader = "R",
 	RaidWarning = "W",
+	Says = "dit",
+	Trade = "Commerce",
+	Whispers = "chuchote",
+	Yells = "crie",
 }
 
 -- ToggleButton Localization
