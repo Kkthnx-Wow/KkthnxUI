@@ -5,60 +5,37 @@ local _G = _G
 local GetSpellInfo = _G.GetSpellInfo
 
 K.RaidBuffs = {
-	DRUID = {
-		{102342, "LEFT", {0.45, 0.3, 0.2}, true}, -- Ironbark
-		{155777, "RIGHT", {0.4, 0.9, 0.4}}, -- Rejuvenation (Germination)
-		{33763, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
-		{774, "TOPRIGHT", {0.8, 0.4, 0.8}}, -- Rejuvenation
-		{8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}}, -- Regrowth
-	},
-	MONK = {
-		{115175, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Soothing Mist
-		{116849, "LEFT", {0.81, 0.85, 0.1}, true}, -- Life Cocoon
-		{119611, "TOPRIGHT", {0.2, 0.7, 0.7}}, -- Renewing Mist
-		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
-		{191840, "TOPLEFT", {0.1, 0.4, 0.9}}, -- Essence Font
-	},
-	PALADIN = {
-		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, -- Blessing of Protection
-		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true}, -- Blessing of Freedom
-		{114163, "BOTTOMLEFT", {0.9, 0.6, 0.4}}, -- Eternal Flame
-		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Faith
-		{204013, "BOTTOMRIGHT", {0.93, 0.75, 0}, true}, -- Blessing of Salvation
-		{204018, "BOTTOMRIGHT", {0.4, 0.6, 0.8}, true}, -- Blessing of Spellwarding
-		{53563, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Light
-		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Blessing of Sacrifice
-	},
 	PRIEST = {
+		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
 		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
 		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
-		{194384, "TOPRIGHT", {0.8, 0.4, 0.2}}, -- Atonement
-		{33206, "LEFT", {0.89, 0.1, 0.1}, true}, -- Pain Suppression
-		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
-		{47788, "LEFT", {0.86, 0.52, 0}, true}, -- Guardian Spirit
+	},
+	DRUID = {
+		{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
+		{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
+		{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
+		{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
+		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
+	},
+	PALADIN = {
+		{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
+		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
+		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
+		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
+		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
+		{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
 	},
 	SHAMAN = {
-		{204288, "BOTTOMRIGHT", {0.2, 0.7, 0.2}, true}, -- Earth Shield
-		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Riptide
+		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
 	},
-	HUNTER = {
-		{35079, "TOPRIGHT", {0.2, 0.2, 1}}, -- Misdirection
-	},
-	ROGUE = {
-		{57934, "TOPRIGHT", {0.89, 0.1, 0.1}}, -- Tricks of the Trade
-	},
-	WARLOCK = {
-		{20707, "TOPRIGHT", {0.7, 0.32, 0.75}}, -- Soulstone
-	},
-	WARRIOR = {
-		{114030, "TOPLEFT", {0.2, 0.2, 1}}, -- Vigilance
-		{3411, "TOPRIGHT", {0.89, 0.1, 0.1}}, -- Intervene
+	MONK = {
+		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
+		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
+		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
+		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
 	},
 	ALL = {
-		{23333, "LEFT", {1, 0, 0}, true}, -- Warsong flag, Horde
-		{23335, "LEFT", {0, 0, 1}, true}, -- Warsong flag, Alliance
-		{34976, "LEFT", {1, 0, 0}, true}, -- Netherstorm Flag
+		{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
 	},
 }
 

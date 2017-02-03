@@ -333,11 +333,11 @@ end
 
 -- Fade in/out functions
 local function FadeIn(frame)
-	K:UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
+	K.UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
 end
 
 local function FadeOut(frame)
-	K:UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), 0)
+	K.UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), 0)
 end
 
 -- Merge KkthnxUI API with Wows API

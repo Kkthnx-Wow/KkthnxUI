@@ -1,9 +1,12 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua API
+local _G = _G
+
+-- Wow API
+local ipairs = _G.ipairs
+
 local OrderHallSkin = CreateFrame("Frame")
-
-local ipairs = ipairs
-
 OrderHallSkin:RegisterEvent("ADDON_LOADED")
 OrderHallSkin:SetScript("OnEvent", function(self, event, addon)
 	if (event == "ADDON_LOADED" and addon == "Blizzard_OrderHallUI") then
@@ -25,20 +28,19 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, addon)
 
 				OrderHallCommandBar.AreaName:ClearAllPoints()
 				OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.ClassIcon, "RIGHT", 5, 0)
-				OrderHallCommandBar.AreaName:SetFont(C.Media.Font, 14, "OUTLINE")
+				OrderHallCommandBar.AreaName:SetFont(C.Media.Font, 14)
 				OrderHallCommandBar.AreaName:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
-				OrderHallCommandBar.AreaName:SetShadowOffset(0, 0)
+				OrderHallCommandBar.AreaName:SetShadowOffset(K.Mult, -K.Mult)
 
 				OrderHallCommandBar.CurrencyIcon:ClearAllPoints()
 				OrderHallCommandBar.CurrencyIcon:SetPoint("LEFT", OrderHallCommandBar.AreaName, "RIGHT", 5, 0)
 				OrderHallCommandBar.Currency:ClearAllPoints()
 				OrderHallCommandBar.Currency:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 5, 0)
-				OrderHallCommandBar.Currency:SetFont(C.Media.Font, 14, "OUTLINE")
+				OrderHallCommandBar.Currency:SetFont(C.Media.Font, 14)
 				OrderHallCommandBar.Currency:SetTextColor(1, 1, 1)
-				OrderHallCommandBar.Currency:SetShadowOffset(0, 0)
+				OrderHallCommandBar.Currency:SetShadowOffset(K.Mult, -K.Mult)
 
 				OrderHallCommandBar.WorldMapButton:Kill()
-
 				OrderHallCommandBar.styled = true
 			end
 		end)
@@ -49,13 +51,10 @@ OrderHallSkin:SetScript("OnEvent", function(self, event, addon)
 				if child.Icon and child.Count and child.TroopPortraitCover then
 					child:SetPoint("TOPLEFT", OrderHallCommandBar.ClassIcon, "BOTTOMLEFT", -5, -index * 25 + 20)
 					child.TroopPortraitCover:Hide()
-
 					child.Icon:SetSize(40, 20)
-
-					child.Count:SetFont(C.Media.Font, 14, "OUTLINE")
+					child.Count:SetFont(C.Media.Font, 14)
 					child.Count:SetTextColor(1, 1, 1)
-					child.Count:SetShadowOffset(0, 0)
-
+					child.Count:SetShadowOffset(K.Mult, -K.Mult)
 					index = index + 1
 				end
 			end

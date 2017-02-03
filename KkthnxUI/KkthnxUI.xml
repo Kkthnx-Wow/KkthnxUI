@@ -60,7 +60,6 @@
    <Script file="Core\Kill.lua" />
    <Script file="Core\CheckVersion.lua" />
    <Script file="Core\Movers.lua" />
-   <Script file="Core\Tutorials.lua" />
    <Script file="Core\Temp.lua" />
    <!-- Panels -->
    <Script file="Modules\Panels\Panels.lua" />
@@ -117,6 +116,7 @@
    <Script file="Modules\Blizzard\ClassColor.lua" />
    <Script file="Modules\Blizzard\ColorPicker.lua" />
    <Script file="Modules\Blizzard\ColorTextures.lua" />
+   <Script file="Modules\Blizzard\CommandBar.lua" />
    <Script file="Modules\Blizzard\DebugTools.lua" />
    <Script file="Modules\Blizzard\ErrorFilter.lua" />
    <Script file="Modules\Blizzard\ExtraActionBar.lua" />

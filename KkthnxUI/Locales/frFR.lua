@@ -215,16 +215,6 @@ L.Tutorial = {
 	Step6Line2 = "Je vous suggère de jeter un coup d'oeil à config / config.lua ou de taper / KkthnxUI pour personnaliser l'interface utilisateur selon vos besoins.",
 	Step6Line3 = "Vous pouvez maintenant continuer à installer l'interface utilisateur si ce n'est pas encore fait ou si vous voulez rétablir la valeur par défaut!",
 	Step6Line4 = "",
-	Message1 = "Pour obtenir de l'aide, visitez https://github.com/Kkthnx.",
-	Message2 = "Vous pouvez basculer la microbar en utilisant le bouton droit de votre souris sur la mini-carte.",
-	Message3 = "Vous pouvez définir vos raccourcis clavier rapidement en tapant /kb.",
-	Message4 = "Le focus d'unité peut être définie en tapant / focus lorsque vous ciblez l'unité que vous souhaitez focus. Il est recommandé de faire une macro pour faire cela.",
-	Message5 = "Vous pouvez accéder aux fonctions de tchat par la souris sur le coin inférieur droit du panneau de discussion et cliquer gauche sur le bouton qui apparaîtra.",
-	Message6 = "Si vous rencontrez des problèmes avec l'interface utilisateur de Kkthnx essayez de désactiver tous vos addons à l'exception de l'interface utilisateur Kkthnx, n'oubliez pas que KkthnxUI est un addon complet de remplacement d'interface utilisateur, vous ne pouvez pas exécuter deux addons qui font la même chose.",
-	Message7 = "Pour configurer les canaux qui s'affichent dans le cadre de discussion, cliquez avec le bouton droit de la souris sur l'onglet de discussion et allez dans les paramètres.",
-	Message8 = "Vous pouvez utiliser la commande / resetui pour réinitialiser tous vos déplacements effectués sur l'affichage. Vous pouvez également taper / moveui et juste un clic droit sur un module pour réinitialiser sa position.",
-	Message9 = "Pour déplacer des capacités sur les barres d'action par défaut, maintenez la touche shift + glisser enfoncée. Vous pouvez modifier la touche de modification dans le menu d'options de la barre d'actions.",
-	Message10 = "Vous pouvez voir le niveau d'élément moyen de leur équipement en activant le niveau d'élément pour l'info-bulle"
 }
 
 -- AutoInvite Localization

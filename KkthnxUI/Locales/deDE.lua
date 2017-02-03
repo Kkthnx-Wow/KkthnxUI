@@ -215,16 +215,6 @@ L.Tutorial = {
 	Step6Line2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs.",
 	Step6Line3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!",
 	Step6Line4 = "",
-	Message1 = "Für technische Hilfe besuche https://github.com/Kkthnx",
-	Message2 = "Um das Mikromenü aufzurufen klicke mit der rechten Maustaste auf die Minimap. Um das Menü zum Aufspüren von Materialien etc. aufzurufen klicke mit der mittleren Maustaste auf die Minimap.",
-	Message3 = "Um Deine Tastaturbelegung schnell zu ändern|ntippe in den Chat /kb.",
-	Message4 = "Um ein Fokusziel anzuzeigen tippe bei anvisierten Ziel /fokus in den Chat. Als Tipp rate ich Dir ein /makro dafür anzulegen.",
-	Message5 = "Um eine Chatkopie einzusehen fahre mit dem Mauszeiger über den unteren rechten Rand Deines Chat und klicke auf das erscheinende Symbol.",
-	Message6 = "Solltest Du plötzlich Fehlermeldungen erhalten, versuche zuerst alle Addons außer KkthnxUI in der Addonsübersicht zu deaktivieren. Damit schliesst Du Fehler aus, die von anderen Addons eventuell ausgelöst werden.",
-	Message7 = "Klicke mit der rechten Maustaste auf die einzelnen Chatreiter um etwaige Chateinstellungen vorzunehmen (z.B. Schriftgröße etc.).",
-	Message8 = "Mit dem Chatbefehl /resetui kannst Du alle Einstellungen zurücksetzen. Der Chatbefehl /moveui zeigt Dir alle verschiebbaren Elemente an, ein Rechtsklick auf diese Elemente setzt diese an ihren Ursprungsort zurück.",
-	Message9 = "Um Deine Fähigkeiten in den Aktionsleisten zu verschieben halte die Shifttaste und ziehe mit der Maus die Fähigkeiten an die gewünschte Position.",
-	Message10 = "Du kannst Dir das Itemlevel Deiner Mitspieler ansehen, wenn Du die Option aktivierst und bei gedrückter ALT Taste über den Mitspieler fährst."
 }
 
 -- AutoInvite Localization

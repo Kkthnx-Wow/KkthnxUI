@@ -1,12 +1,13 @@
 local K, C, L = unpack(select(2, ...))
 
+local _G = _G
 local ipairs = ipairs
 local table_remove = table.remove
 local unpack = unpack
 
-local hooksecurefunc = hooksecurefunc
-local IsAddOnLoaded = IsAddOnLoaded
-local LoadAddOn = LoadAddOn
+local hooksecurefunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local LoadAddOn = _G.LoadAddOn
 
 -- No point caching anything here, but list them here for mikk's FindGlobals script
 -- GLOBALS: CreateFrame, TalkingHeadFrame, UIPARENT_MANAGED_FRAME_POSITIONS, TalkingHead_LoadUI

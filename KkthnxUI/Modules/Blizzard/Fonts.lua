@@ -189,3 +189,5 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 		_G["HelpFrameButton"..i.."Text"]:SetFontObject(GameFontNormalMed3)
 	end
 end)
+
+K.Fonts = KkthnxUIFonts

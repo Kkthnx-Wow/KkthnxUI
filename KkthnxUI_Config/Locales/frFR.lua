@@ -107,7 +107,6 @@ UIConfigLocal.AurasHideBuffs = "Disable buff display"
 UIConfigLocal.AurasHideDebuffs = "Disable debuff display"
 
 -- Chat
-UIConfigLocal.ChatBackground = "Enable chat background"
 UIConfigLocal.ChatBubbleBackdrop = "Remove the chat bubble backdrop."
 UIConfigLocal.ChatDamageMeterSpam = "Merge damage meter spam in one line-link"
 UIConfigLocal.ChatEnable = "Enable chat"

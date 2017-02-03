@@ -107,7 +107,6 @@ UIConfigLocal.AurasHideBuffs = "Deaktivere die Stärkungszauberanzeige"
 UIConfigLocal.AurasHideDebuffs = "Deaktivere die Schwächungszauberanzeige"
 
 -- Chat
-UIConfigLocal.ChatBackground = "Chathintergrund aktivieren"
 UIConfigLocal.ChatBubbleBackdrop = "Entferne den Hintergrund der Sprachblasen."
 UIConfigLocal.ChatDamageMeterSpam = "Zeige den 'damage meter spam' zusammengefasst in einem 'line-link' an"
 UIConfigLocal.ChatEnable = "Aktiviere Chat"

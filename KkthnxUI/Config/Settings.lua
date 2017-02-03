@@ -86,7 +86,6 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	["Background"] = false,
 	["BubbleBackdrop"] = false,
 	["DamageMeterSpam"] = false,
 	["Enable"] = true,

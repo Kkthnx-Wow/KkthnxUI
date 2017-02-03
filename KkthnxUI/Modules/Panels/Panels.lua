@@ -7,17 +7,16 @@ local tostring = tostring
 local unpack = unpack
 
 -- Wow API
-local CreateFrame = CreateFrame
-local GetActiveSpecGroup = GetActiveSpecGroup
-local GetNumShapeshiftForms = GetNumShapeshiftForms
-local GetNumSpecializations = GetNumSpecializations
-local GetSpecialization = GetSpecialization
-local GetSpecializationInfo = GetSpecializationInfo
-local InCombatLockdown = InCombatLockdown
-
-local IsShiftKeyDown = IsShiftKeyDown
-local SetSpecialization = SetSpecialization
-local UIParent = UIParent
+local CreateFrame = _G.CreateFrame
+local GetActiveSpecGroup = _G.GetActiveSpecGroup
+local GetNumShapeshiftForms = _G.GetNumShapeshiftForms
+local GetNumSpecializations = _G.GetNumSpecializations
+local GetSpecialization = _G.GetSpecialization
+local GetSpecializationInfo = _G.GetSpecializationInfo
+local InCombatLockdown = _G.InCombatLockdown
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local SetSpecialization = _G.SetSpecialization
+local UIParent = _G.UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIErrorsFrame, ERR_NOT_IN_COMBAT, Lib_EasyMenu, Recount_MainWindow
@@ -103,21 +102,6 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end)
-
--- Chat background
-if C.Chat.Background == true and C.Chat.Enable == true then
-	local chatbd = CreateFrame("Frame", "ChatBackground", UIParent)
-	chatbd:CreatePanel("Invisible", C.Chat.Width + 7, C.Chat.Height + 4, "TOPLEFT", ChatFrame1, "TOPLEFT", -3, 1)
-	chatbd:SetBackdrop(K.BorderBackdrop)
-	chatbd:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-
-	if C.Chat.TabsMouseover ~= true then
-		local chattabs = CreateFrame("Frame", "ChatTabsPanel", UIParent)
-		chattabs:CreatePanel("Invisible", chatbd:GetWidth(), 20, "BOTTOM", chatbd, "TOP", 0, 3)
-		chattabs:SetBackdrop(K.BorderBackdrop)
-		chattabs:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	end
-end
 
 -- This is a single panel outside the Minimap
 if Minimap and C.Minimap.Enable and C.DataText.System == true then

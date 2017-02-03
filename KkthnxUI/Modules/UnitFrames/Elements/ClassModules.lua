@@ -75,7 +75,7 @@ function ClassModule:Totems(self)
 		end
 	end
 
-	-- K.Noop these else we'll get a taint
+	-- return end these else we'll get a taint
 	TotemFrame_AdjustPetFrame = K.Noop
 	PlayerFrame_AdjustAttachments = K.Noop
 

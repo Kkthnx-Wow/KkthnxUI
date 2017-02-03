@@ -108,7 +108,6 @@ UIConfigLocal.AurasHideBuffs = "Отключить показ баффов"
 UIConfigLocal.AurasHideDebuffs = "Отключить показ дебаффов"
 
 -- Chat
-UIConfigLocal.ChatBackground = "Включить фон чата"
 UIConfigLocal.ChatBubbleBackdrop = "Удалить фон облачков сообщений"
 UIConfigLocal.ChatDamageMeterSpam = "Объединять спам аддонов учета урона в одну строку-ссылку"
 UIConfigLocal.ChatEnable = "Включить чат"

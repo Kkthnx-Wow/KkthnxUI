@@ -107,7 +107,6 @@ UIConfigLocal.AurasHideBuffs = "关闭增益显示"
 UIConfigLocal.AurasHideDebuffs = "关闭减益显示"
 
 -- Chat
-UIConfigLocal.ChatBackground = "开启聊天背景"
 UIConfigLocal.ChatBubbleBackdrop = "移除聊天泡泡背景"
 UIConfigLocal.ChatDamageMeterSpam = "伤害统计刷屏合并在一行内显示"
 UIConfigLocal.ChatEnable = "开启聊天模块"

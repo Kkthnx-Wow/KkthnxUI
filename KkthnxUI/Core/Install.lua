@@ -145,15 +145,19 @@ function KkthnxUIInstall:ChatSetup()
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
 
-	-- Adjust Chat Colors (Thanks ElvUI)
-	-- General
+	-- Adjust Chat Colors
+	ChangeChatColor("BATTLEGROUND_LEADER", 1, 1/2, 0)
+	ChangeChatColor("BN_WHISPER_INFORM", 1, 1/2, 1)
+	ChangeChatColor("BN_WHISPER", 1, 1/2, 1)
 	ChangeChatColor("CHANNEL1", 0.76, 0.90, 0.91)
-	-- Trade
 	ChangeChatColor("CHANNEL2", 0.91, 0.62, 0.47)
-	-- Local Defense
 	ChangeChatColor("CHANNEL3", 0.91, 0.89, 0.47)
-
-	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
+	ChangeChatColor("INSTANCE_CHAT_LEADER", 1, 1/2, 0)
+	ChangeChatColor("OFFICER", 3/4, 1/2, 1/2)
+	ChangeChatColor("PARTY_LEADER", 2/3, 2/3, 1)
+	ChangeChatColor("RAID_LEADER", 0, 1, 4/5)
+	ChangeChatColor("RAID_WARNING", 1, 1/4, 1/4)
+	ChangeChatColor("RAID", 0, 1, 4/5)
 
 	for index = 1, NUM_CHAT_WINDOWS do
 		local ChatFrame = _G[format("ChatFrame%s", index)]
@@ -165,20 +169,10 @@ function KkthnxUIInstall:ChatSetup()
 		ChatFrame:SetSize(C.Chat.Width, C.Chat.Height)
 
 		-- Position. Just to be safe here.
-		if C.Chat.Background == true then
-			if (index == 1) then
-				ChatFrame:ClearAllPoints()
-				ChatFrame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 6)
-
-				FCF_SavePositionAndDimensions(ChatFrame)
-			end
-		elseif C.Chat.Background == false then
-			if (index == 1) then
-				ChatFrame:ClearAllPoints()
-				ChatFrame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
-
-				FCF_SavePositionAndDimensions(ChatFrame)
-			end
+		DEFAULT_CHAT_FRAME:SetUserPlaced(true)
+		if (index == 1) then
+			ChatFrame:ClearAllPoints()
+			ChatFrame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 		end
 
 		FCF_SavePositionAndDimensions(ChatFrame)
@@ -191,8 +185,6 @@ function KkthnxUIInstall:ChatSetup()
 		if (index == 2) then
 			FCF_SetWindowName(ChatFrame, "Log")
 		end
-
-		DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 	end
 end
 

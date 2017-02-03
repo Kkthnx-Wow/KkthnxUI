@@ -1,129 +1,92 @@
 local K, C, L = unpack(select(2, ...))
+if C.Chat.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Wow API
+local hooksecurefunc = _G.hooksecurefunc
+
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CHAT_FRAME_TAB_ALERTING_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_ALERTING_NOMOUSE_ALPHA
 -- GLOBALS: CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA
 -- GLOBALS: CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA
--- GLOBALS: SELECTED_CHAT_FRAME, CombatLogQuickButtonFrame_Custom, UIFrameFadeRemoveFrame
+-- GLOBALS: SELECTED_CHAT_FRAME
 
--- Based on fane(by haste)
-if C.Chat.TabsMouseover == true then
-	CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA = 0
-	CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA = 0
-	CHAT_FRAME_TAB_ALERTING_NOMOUSE_ALPHA = 1
-	CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA = 1
-	CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA = 1
-	CHAT_FRAME_TAB_ALERTING_MOUSEOVER_ALPHA = 1
-end
-
-local Fane = CreateFrame("Frame")
-
-local updateFS = function(self, inc, ...)
-	local fstring = self:GetFontString()
-
-	-- FONT AND FONT STYLE FOR CHAT
-	if C.Chat.TabsOutline == true then
-		fstring:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		fstring:SetShadowOffset(0, -0)
-	else
-		fstring:SetFont(C.Media.Font, C.Media.Font_Size)
-		fstring:SetShadowOffset(K.Mult, -K.Mult) -- Temp
+local function UpdateTab(self)
+	if (self:GetObjectType() ~= "Button") then
+		self = _G[self:GetName() .. "Tab"]
 	end
 
-	if (...) then
-		fstring:SetTextColor(...)
-	end
-end
-
-local OnEnter = function(self)
-	local emphasis = _G["ChatFrame"..self:GetID().."TabFlash"]:IsShown()
-	updateFS(self, emphasis, K.Color.r, K.Color.g, K.Color.b)
-end
-
-local OnLeave = function(self)
-	local r, g, b
-	local id = self:GetID()
-	local emphasis = _G["ChatFrame"..id.."TabFlash"]:IsShown()
-
-	if _G["ChatFrame"..id] == SELECTED_CHAT_FRAME then
-		r, g, b = K.Color.r, K.Color.g, K.Color.b
-	elseif emphasis then
-		r, g, b = 1, 0, 0
-	else
-		r, g, b = 1, 1, 1
-	end
-
-	updateFS(self, emphasis, r, g, b)
-end
-
-local ChatFrame2_SetAlpha = function(self, alpha)
-	if CombatLogQuickButtonFrame_Custom then
-		CombatLogQuickButtonFrame_Custom:SetAlpha(alpha)
-	end
-end
-
-local ChatFrame2_GetAlpha = function(self)
-	if CombatLogQuickButtonFrame_Custom then
-		return CombatLogQuickButtonFrame_Custom:GetAlpha()
-	end
-end
-
-local faneifyTab = function(frame, sel)
-	local i = frame:GetID()
-
-	if not frame.Fane then
-		frame:HookScript("OnEnter", OnEnter)
-		frame:HookScript("OnLeave", OnLeave)
-		if C.Chat.TabsMouseover ~= true then
-			frame:SetAlpha(1)
-
-			if i ~= 2 then
-				-- MIGHT NOT BE THE BEST SOLUTION, BUT WE AVOID HOOKING INTO THE UIFRAMEFADE
-				-- SYSTEM THIS WAY.
-				frame.SetAlpha = UIFrameFadeRemoveFrame
-			else
-				frame.SetAlpha = ChatFrame2_SetAlpha
-				frame.GetAlpha = ChatFrame2_GetAlpha
-
-				-- WE DO THIS HERE AS PEOPLE MIGHT BE USING ADDONLOADER TOGETHER WITH FANE
-				if CombatLogQuickButtonFrame_Custom then
-					CombatLogQuickButtonFrame_Custom:SetAlpha(0.4)
-				end
-			end
+	local tab = self.fontString
+	if (tab) then
+		if(self:IsMouseOver()) then
+			tab:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
+		elseif(self.alerting) then
+			tab:SetTextColor(1, 0, 0)
+		elseif(self:GetID() == SELECTED_CHAT_FRAME:GetID()) then
+			tab:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
+		else
+			tab:SetTextColor(0.8, 0.8, 0.8)
 		end
+	end
+end
 
-		frame.Fane = true
+local SetupTabs = CreateFrame("Frame")
+SetupTabs:RegisterEvent("PLAYER_LOGIN")
+SetupTabs:SetScript("OnEvent", function()
+	for index = 1, 5 do
+		if (index ~= 2) then
+			_G["ChatFrame" .. index .. "Tab"]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+
+			local tab = _G["ChatFrame" .. index .. "Tab"]
+			tab.fontString = tab:GetFontString()
+			if C.Chat.TabsOutline == true then
+				tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+				tab.fontString:SetShadowOffset(0, -0)
+			else
+				tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size)
+				tab.fontString:SetShadowOffset(K.Mult, -K.Mult)
+			end
+
+			tab.leftTexture:SetTexture(nil)
+			tab.middleTexture:SetTexture(nil)
+			tab.rightTexture:SetTexture(nil)
+
+			tab.leftHighlightTexture:SetTexture(nil)
+			tab.middleHighlightTexture:SetTexture(nil)
+			tab.rightHighlightTexture:SetTexture(nil)
+
+			tab.leftSelectedTexture:SetTexture(nil)
+			tab.middleSelectedTexture:SetTexture(nil)
+			tab.rightSelectedTexture:SetTexture(nil)
+
+			if (tab.conversationIcon) then
+				tab.conversationIcon:SetTexture(nil)
+			end
+
+			tab.glow:SetTexture(nil)
+			tab:SetAlpha(0)
+
+			tab:HookScript("OnEnter", UpdateTab)
+			tab:HookScript("OnLeave", UpdateTab)
+			tab:SetScript("OnDragStart", nil)
+
+			UpdateTab(tab)
+		end
 	end
 
-	-- WE CAN'T TRUST SEL
-	if i == SELECTED_CHAT_FRAME:GetID() then
-		updateFS(frame, nil, K.Color.r, K.Color.g, K.Color.b)
+	if C.Chat.TabsMouseover == true then
+		CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA = 0
+		CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA = 0
+		CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA = 0.7
 	else
-		updateFS(frame, nil, 1, 1, 1)
+		CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA = 1
+		CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA = 0.7
+		CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA = 1
 	end
-end
 
-hooksecurefunc("FCF_StartAlertFlash", function(frame)
-	local tab = _G["ChatFrame"..frame:GetID().."Tab"]
-	updateFS(tab, true, 1, 0, 0)
+	hooksecurefunc("FCFTab_UpdateColors", UpdateTab)
+	hooksecurefunc("FCF_StartAlertFlash", UpdateTab)
+	hooksecurefunc("FCF_FadeOutChatFrame", UpdateTab)
 end)
-
-hooksecurefunc("FCFTab_UpdateColors", faneifyTab)
-
-for i = 1, NUM_CHAT_WINDOWS do
-	faneifyTab(_G["ChatFrame"..i.."Tab"])
-end
-
-function Fane:ADDON_LOADED(event, addon)
-	if addon == "Blizzard_CombatLog" then
-		self:UnregisterEvent(event)
-		self[event] = nil
-
-		return CombatLogQuickButtonFrame_Custom:SetAlpha(0.4)
-	end
-end
-
-Fane:RegisterEvent("ADDON_LOADED")
