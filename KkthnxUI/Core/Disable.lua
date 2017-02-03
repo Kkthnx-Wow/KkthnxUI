@@ -56,7 +56,7 @@ if CheckAddOn("XPerl") or CheckAddOn("Stuf") or CheckAddOn("PitBull4") or CheckA
 	C.Unitframe.Enable = false
 end
 
-if CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga")  or CheckAddOn("daftMainBar") or CheckAddOn("ConsolePortBar") then
+if (CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga")  or CheckAddOn("daftMainBar")) or (CheckAddOn("ConsolePortBar") and CheckAddOn("ConsolePort")) then -- We have to check for main ConsolePort addon too.
 	C.ActionBar.Enable = false
 end
 
