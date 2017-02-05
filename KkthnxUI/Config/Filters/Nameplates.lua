@@ -301,16 +301,17 @@ K.DebuffWhiteList = {
 	-- Helpful
 	[SpellName(57934)] = true, -- tricks of the trade
 	-- Harmful
-	[SpellName(703)] = true, -- garrote
-	[SpellName(1943)] = true, -- rupture
-	[SpellName(16511)] = true, -- hemorrhage
-	[SpellName(79140)] = true, -- vendetta
-	[SpellName(2818)] = true, -- deadly poison
-	[SpellName(8680)] = true, -- wound poison
 	[SpellName(137619)] = true, -- marked for death
-	[SpellName(195452)] = true, -- nightblade
+	[SpellName(16511)] = true, -- hemorrhage
 	[SpellName(192759)] = true, -- kingsbane
+	[SpellName(1943)] = true, -- rupture
+	[SpellName(195452)] = true, -- nightblade
 	[SpellName(196937)] = true, -- ghostly strike
+	[SpellName(200803)] = true, -- agonizing poison
+	[SpellName(2818)] = true, -- deadly poison
+	[SpellName(703)] = true, -- garrote
+	[SpellName(79140)] = true, -- vendetta
+	[SpellName(8680)] = true, -- wound poison
 	-- Control
 	[SpellName(408)] = true, -- kidney shot
 	[SpellName(1330)] = true, -- garrote silence
@@ -334,9 +335,10 @@ K.DebuffWhiteList = {
 	[SpellName(546)] = true, -- water walking
 	[SpellName(61295)] = true, -- riptide
 	-- Harmful
-	[SpellName(196840)] = true,	-- Frost Shock
-	[SpellName(188389)] = true,	-- Flame Shock
 	[SpellName(17364)] = true, -- stormstrike
+	[SpellName(188389)] = true,	-- Flame Shock
+	[SpellName(196840)] = true,	-- Frost Shock
+	[SpellName(197209)] = true, -- lightning rod
 	[SpellName(61882)] = true, -- earthquake
 	-- Control
 	[SpellName(3600)] = true, -- earthbind totem slow

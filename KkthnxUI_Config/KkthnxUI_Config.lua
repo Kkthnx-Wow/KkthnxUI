@@ -720,23 +720,37 @@ do
 end
 
 -- Button in GameMenuButton frame
-if not IsAddOnLoaded("KkthnxUI_Config") and IsAddOnLoaded("ConsolePort") then return end
-
-local button = CreateFrame("Button", "GameMenuButtonSettingsUI", GameMenuFrame, "GameMenuButtonTemplate")
-button:SetText("|cff3c9bedKkthnxUI|r")
-button:SetPoint("TOP", "GameMenuButtonAddons", "BOTTOM", 0, -1)
-
-GameMenuFrame:HookScript("OnShow", function()
-	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + button:GetHeight())
-	GameMenuButtonLogout:SetPoint("TOP", button, "BOTTOM", 0, -16)
-end)
-
-button:SetScript("OnClick", function()
-	PlaySound("igMainMenuOption")
-	HideUIPanel(GameMenuFrame)
-	if not UIConfigMain or not UIConfigMain:IsShown() then
-		CreateUIConfig()
-	else
-		UIConfigMain:Hide()
+local function PositionGameMenuButton()
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight())
+	local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
+	if relTo ~= GameMenuFrame["KkthnxUI"] then
+		GameMenuFrame["KkthnxUI"]:ClearAllPoints()
+		GameMenuFrame["KkthnxUI"]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
+		GameMenuButtonLogout:ClearAllPoints()
+		GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame["KkthnxUI"], "BOTTOMLEFT", 0, offY)
 	end
+end
+
+local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
+GameMenuButton:SetText("|cff3c9bedKkthnxUI|r")
+GameMenuButton:SetScript("OnClick", function()
+  CreateUIConfig()
+	HideUIPanel(GameMenuFrame)
 end)
+GameMenuFrame["KkthnxUI"] = GameMenuButton
+
+if not IsAddOnLoaded("ConsolePort") then
+	GameMenuButton:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
+	GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
+	hooksecurefunc('GameMenuFrame_UpdateVisibleButtons', PositionGameMenuButton)
+else
+	if GameMenuButton.Middle then
+		GameMenuButton.Middle:Hide()
+		GameMenuButton.Left:Hide()
+		GameMenuButton.Right:Hide()
+	end
+	ConsolePort:GetData().Atlas.SetFutureButtonStyle(GameMenuButton, nil, nil, true)
+	GameMenuButton:SetSize(240, 46)
+	GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, -1)
+	GameMenuFrame:SetSize(530, 576)
+end
