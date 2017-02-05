@@ -13,11 +13,11 @@ If you're familiar with git, simply clone the repository to a folder named **Kkt
 
 If not, and you need to do this manually, then download and unzip it to your `World of Warcraft\\Interface\\AddOns\\` directory. Rename the folder from **KkthnxUI-master** to just **KkthnxUI**, or the game won't find it. 
 
-Also, make sure the game is closed when moving new files into the addon directory as it is unable to discover new files when it's already running. And remember to check the "load out of date addons" checkbox in the addon listing on the character selection screen, or the game won't load the addon. The latter should not be a problem in Legion as the addon is always labeled with the most recent version it supports, but for game clients running older versions of WoW, it is vital to check this box to load the addon!
+Also, make sure the game is closed when moving new files into the addon directory as it is unable to discover new files when it's already running.
 
 ## Report bugs, suggest features, development progress
 
-Bug reports and feature suggestions are all done through GitHub's Issue tracker linked below. If you're looking for the current development status of the current or next version of the UI, you can check that out at DiabolicUI's GitHub project pages.
+Bug reports and feature suggestions are all done through GitHub's Issue tracker linked below. If you're looking for the current development status of the current or next version of the UI, you can check that out at Kkthnx's GitHub project pages.
 
 * Issues: [github.com/Kkthnx-WoW/KkthnxUI/issues)](https://github.com/Kkthnx-WoW/KkthnxUI/issues)
 
