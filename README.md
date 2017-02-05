@@ -37,7 +37,7 @@ It is in no way required, since my UI has been and always will be free and fully
 * PayPal: [paypal@kkthnxui.org](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=XC5463FDLTKSE&lc=US&item_name=KkthnxUI&item_number=55846984&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) (click to go straight to PayPal) 
 * PayPal Me: [www.paypal.me/kkthnx](https://www.paypal.me/kkthnx)
 * Patreon: [www.patreon.com/kkthnx](https://www.patreon.com/kkthnx) 
-* Steam: [My Steam Trade URL](https://steamcommunity.com/tradeoffer/new/?partner=12981766&token=YxIjFAlT)
+* Steam: [My Steam Trade URL](steam://openurl/https://steamcommunity.com/tradeoffer/new/?partner=21318157&token=hTlU3SPa)
 
 Regards 
 Josh *"Kkthnx"* Russell
