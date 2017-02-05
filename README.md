@@ -1,39 +1,43 @@
+### Note! UI Does not currently work for WoW 7.2.0, but a beta of KkthnxUI is in progress and will be available as soon as possible.
+
 ![kkthnxuilogo2](https://cloud.githubusercontent.com/assets/1692977/19082420/14dd3d3c-8a2c-11e6-818f-0f6a404678be.png)  
 
 KkthnxUI is a simplistic user interface that holds onto the information and functionality, while still keeping most of the good looks.
-It can be used for any class or role.      
+It can be used for any class or role. 
 
-### Installation      
-* Copy KkthnxUI & KkthnxUI_Config from the .zip to your World of Warcraft folder(WoW\Interface\AddOns\PLACE THEM HERE)
-* Put these files  in `...C:\Program Files (x86)\World of Warcraft` Or where ever you have your World of Warcraft installed. You get the idea.   
-* Also, make sure the game is closed when moving new files into the addon directory as it is unable to discover new files when it's already running.
+[ ![Support me on Patreon](http://i.imgur.com/kVU2d3f.png) ](https://www.patreon.com/kkthnx) 
 
-### F.A.Q   
-* All questions, suggestions, and bugs can be directed to me in-game or in a issues report too [Issue Report](https://github.com/Kkthnx/KkthnxUI_Legion/issues/new)      
-* Once the UI reloads off the install, you can type **/settings** or **/settings all** if you prefer all the settings for addon profiles.   
-* You can type /moveui and move certain features of the UI. More to come later.    
-* If you find a bug, then properly make an [Issue Report](https://github.com/Kkthnx/KkthnxUI_Legion/issues/new).   
-   
-### Contact Me   
-* Curse Client: Kkthnx      
-* Battle.net: Kkthnx#1105   
-* Discord: https://discord.gg/Kjyebkf   
-   
-### Social Media
-* Facebook: [KkthnxUI](https://www.facebook.com/kkthnxui)   
-* Twitter: [KkthnxUI](https://twitter.com/KkthnxUI)
+## How to install
 
-### Donations   
-Donations are welcome, but not required to use the UI at all. Donations help me further my development and fuel my gaming! Donations will never be a requirement! If you would like to donate, you can do so here
+If you're familiar with git, simply clone the repository to a folder named **KkthnxUI** inside your World of Warcraft addons folder. 
 
-* PayPal Me: [Kkthnx PayPal.Me](https://www.paypal.me/kkthnx)
-* PayPal: [KkthnxUI PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=XC5463FDLTKSE&lc=US&item_name=KkthnxUI&item_number=55846984&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) (click to go straight to PayPal)   
-* Patreon: [Support on Patreon](https://www.patreon.com/kkthnx)   
-* Steam Trade: [Kkthnx Steam Trade URL](https://steamcommunity.com/tradeoffer/new/?partner=21318157&token=hTlU3SPa)
+If not, and you need to do this manually, then download and unzip it to your `World of Warcraft\\Interface\\AddOns\\` directory. Rename the folder from **KkthnxUI-master** to just **KkthnxUI**, or the game won't find it. 
 
-### License    
-The MIT License (MIT)   
-Copyright (c) 2012 - 2016 Josh "Kkthnx" Russell   
-   
-![wowscrnshot_120616_125542](https://cloud.githubusercontent.com/assets/1692977/20976587/f778165a-bc70-11e6-9ac2-ceedbf20442e.jpg)
-![wowscrnshot_120416_042228](https://cloud.githubusercontent.com/assets/1692977/20976588/f77ad1e2-bc70-11e6-9558-f930ca847d22.jpg)
+Also, make sure the game is closed when moving new files into the addon directory as it is unable to discover new files when it's already running. And remember to check the "load out of date addons" checkbox in the addon listing on the character selection screen, or the game won't load the addon. The latter should not be a problem in Legion as the addon is always labeled with the most recent version it supports, but for game clients running older versions of WoW, it is vital to check this box to load the addon!
+
+## Report bugs, suggest features, development progress
+
+Bug reports and feature suggestions are all done through GitHub's Issue tracker linked below. If you're looking for the current development status of the current or next version of the UI, you can check that out at DiabolicUI's GitHub project pages.
+
+* Issues: [github.com/Kkthnx-WoW/KkthnxUI/issues)](https://github.com/Kkthnx-WoW/KkthnxUI/issues)
+
+## Join the community
+
+There are thousands of users, but most are content to simply download and use the interface without further ado. If you wish to get more involved though, have some questions you can't find answers to anywhere else or simply just wish to stop by and say hello, we have both a [discord](https://discordapp.com/) server and a facebook page. 
+
+* Discord: [Q2KhGY2](https://discord.gg/Q2KhGY2)
+* Facebook: [@kkthnxui](https://www.facebook.com/kkthnxui)
+
+## Buy/gift me gametime!
+
+Making stuff like this takes a lot of time and effort, as this user interface is a one-man project. I do it because I love doing it, because I believe it makes people happy and improves the user experience. But still, a lot of hours is put into it nonetheless. 
+
+It is in no way required, since my UI has been and always will be free and fully available to everybody without restrictions. But if you truly wish to support my hard work, a donation goes a long way!
+
+* PayPal: [paypal@kkthnxui.org](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=XC5463FDLTKSE&lc=US&item_name=KkthnxUI&item_number=55846984&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) (click to go straight to PayPal) 
+* PayPal Me: [www.paypal.me/kkthnx](https://www.paypal.me/kkthnx)
+* Patreon: [www.patreon.com/kkthnx](https://www.patreon.com/kkthnx) 
+* Steam: [My Steam Trade URL](https://steamcommunity.com/tradeoffer/new/?partner=12981766&token=YxIjFAlT)
+
+Regards 
+Josh *"Kkthnx"* Russell
