@@ -141,11 +141,10 @@ local function SetUpAlert()
 end
 
 local Loading = CreateFrame("Frame")
-function Loading:OnEvent()
-	SetUpAlert()
-end
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:SetScript("OnEvent", function()
+	SetUpAlert()
+end)
 
 -- -- Code you can use for alert testing
 -- -- Queued Alerts:

@@ -69,7 +69,6 @@ UIConfigLocal.BlizzardReplaceBlizzardFonts = "替換各框體|cff00B4FF默認字
 UIConfigLocal.BlizzardReputationGain = "顯示聲望獲得信息"
 UIConfigLocal.BlizzardTalkingHeadScale = "NPC語音信息框縮放"
 UIConfigLocal.BlizzardTexturesColor = "UI材質色調顏色(默認為職業顏色)"
-UIConfigLocal.BlizzardVehicleMouseover = "鼠標懸停顯示載具框體"
 
 -- DataBars
 UIConfigLocal.DataBars = "經驗信息條"

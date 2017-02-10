@@ -451,6 +451,8 @@ local function CreateUnitLayout(self, unit)
 
 			K.CreateBorder(CastBar, -1)
 
+			CastBar.timeToHold = 0.4
+
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
@@ -534,11 +536,12 @@ local function CreateUnitLayout(self, unit)
 
 			K.CreateBorder(CastBar, -1)
 
-			local Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
-			Spark:SetAlpha(0.6)
-			Spark:SetBlendMode("ADD")
-			CastBar.Spark = Spark
+			CastBar.timeToHold = 0.4
+
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark:SetBlendMode("ADD")
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
@@ -604,6 +607,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar:SetFrameLevel(6)
 
 			K.CreateBorder(CastBar, -1)
+
+			CastBar.timeToHold = 0.4
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)

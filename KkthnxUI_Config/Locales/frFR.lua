@@ -69,7 +69,6 @@ UIConfigLocal.BlizzardReplaceBlizzardFonts = "Replaces the default |cff00B4FFBli
 UIConfigLocal.BlizzardReputationGain = "Display a message which shows how much reputation you gained"
 UIConfigLocal.BlizzardTalkingHeadScale = "Scale the Talking Head Frame"
 UIConfigLocal.BlizzardTexturesColor = "UI texture hue color. (Default is Classcolor)"
-UIConfigLocal.BlizzardVehicleMouseover = "Vehicle frame on mouseover"
 
 -- DataBars
 UIConfigLocal.DataBars = "DataBars"

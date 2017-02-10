@@ -190,10 +190,7 @@ function WorldMap:Enable()
 end
 
 local Loading = CreateFrame("Frame")
-function Loading:OnEvent(event, addon)
-	if (event == "PLAYER_LOGIN") then
-		WorldMap:Enable()
-	end
-end
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:SetScript("OnEvent", function()
+	WorldMap:Enable()
+end)

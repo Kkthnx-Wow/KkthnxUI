@@ -69,7 +69,6 @@ C["Blizzard"] = {
 	["ReputationGain"] = false,
 	["TalkingHeadScale"] = 1,
 	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b},
-	["VehicleMouseover"] = false,
 }
 
 -- Buffs & Debuffs

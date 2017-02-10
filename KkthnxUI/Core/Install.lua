@@ -117,7 +117,7 @@ function KkthnxUIInstall:ChatSetup()
 	ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
 	ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
 
-	if K.IsDeveloper and K.IsDeveloperRealm then
+	if K.IsDeveloper() and K.IsDeveloperRealm() then
 		SetCVar("scriptErrors", 1)
 	end
 

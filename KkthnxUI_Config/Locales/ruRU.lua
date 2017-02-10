@@ -70,7 +70,6 @@ UIConfigLocal.BlizzardReplaceBlizzardFonts = "Заменить стандарт�
 UIConfigLocal.BlizzardReputationGain = "Показывать сообщения о полученной репутации"
 UIConfigLocal.BlizzardTalkingHeadScale = "Scale the Talking Head Frame"
 UIConfigLocal.BlizzardTexturesColor = "Оттенок цвета текстур UI (по умолчанию цвет класса)"
-UIConfigLocal.BlizzardVehicleMouseover = "Фрейм транспорта оп наведению мыши"
 
 -- Панель Данных
 UIConfigLocal.DataBars = "Панель Данных"

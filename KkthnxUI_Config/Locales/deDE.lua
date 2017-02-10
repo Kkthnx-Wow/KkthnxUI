@@ -69,7 +69,6 @@ UIConfigLocal.BlizzardReplaceBlizzardFonts = "Ersetze die Standard |cff00B4FFBli
 UIConfigLocal.BlizzardReputationGain = "Zeige eine Nachricht, wenn Du Rufpunkte gesammelt hast"
 UIConfigLocal.BlizzardTalkingHeadScale = "Scale the Talking Head Frame"
 UIConfigLocal.BlizzardTexturesColor = "UI Texturfarbton. (Standard ist Klassenfarbe)"
-UIConfigLocal.BlizzardVehicleMouseover = "Farhzeuganzeige bei 'mouseover'"
 
 -- Datenleisten
 UIConfigLocal.DataBars = "Datenleisten"

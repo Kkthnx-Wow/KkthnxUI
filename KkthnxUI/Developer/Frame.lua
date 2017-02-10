@@ -23,7 +23,6 @@ Level
 X Offset
 Y Offset
 Point
-
 --]]
 
 _G.SLASH_FRAME1 = "/frame"

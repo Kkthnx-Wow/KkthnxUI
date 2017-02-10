@@ -54,13 +54,15 @@
    <Script file="Core\Border.lua" />
    <Script file="Core\Install.lua" />
    <Script file="Core\Commands.lua" />
-   <Script file="Core\Developer.lua" />
    <Script file="Core\Colors.lua" />
    <Script file="Core\Disable.lua" />
    <Script file="Core\Kill.lua" />
    <Script file="Core\CheckVersion.lua" />
    <Script file="Core\Movers.lua" />
-   <Script file="Core\Temp.lua" />
+   <!-- Developer Stuff -->
+   <Script file="Developer\ReloadUI.lua" />
+   <Script file="Developer\Frame.lua" />
+   <Script file="Developer\Test.lua" />
    <!-- Panels -->
    <Script file="Modules\Panels\Panels.lua" />
    <!-- Unitframes Core -->
@@ -170,6 +172,7 @@
    <Script file="Modules\Miscellaneous\AlreadyKnown.lua" />
    <Script file="Modules\Miscellaneous\ArmoryLink.lua" />
    <Script file="Modules\Miscellaneous\BlizzBugsSuck.lua" />
+   <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />
    <Script file="Modules\Miscellaneous\Filger.lua" />
@@ -178,6 +181,7 @@
    <Script file="Modules\Miscellaneous\Mail.lua" />
    <Script file="Modules\Miscellaneous\Merchant.lua" />
    <Script file="Modules\Miscellaneous\MerchantItemLevel.lua" />
+   <Script file="Modules\Miscellaneous\MinimapButton.lua" />
    <Script file="Modules\Miscellaneous\Miscellaneous.lua" />
    <Script file="Modules\Miscellaneous\Mounts.lua" />
    <Script file="Modules\Miscellaneous\PulseCD.lua" />
@@ -202,10 +206,6 @@
    <Include file="Modules\Skins\Addons\Skada.lua" />
    <Include file="Modules\Skins\Addons\Spy.lua" />
    <Include file="Modules\Skins\Addons\WeakAuras.lua" />
-   <!-- Skins Blizzard -->
-   <Include file="Modules\Skins\Blizzard\Bubbles.lua" />
-   <Include file="Modules\Skins\Blizzard\MinimapButtons.lua" />
-   <Include file="Modules\Skins\Blizzard\OrderHall.lua" />
    <!-- Tooltip -->
    <Script file="Modules\Tooltip\Tooltip.lua" />
    <Script file="Modules\Tooltip\Achievement.lua" />

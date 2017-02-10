@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if not K.IsDeveloper and not K.IsDeveloperRealm then return end
+if not K.IsDeveloper() and not K.IsDeveloperRealm() then return end
 
 local KkthnxUIDebugTools = LibStub("AceAddon-3.0"):NewAddon("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
@@ -23,6 +23,7 @@ function KkthnxUIDebugTools:ModifyErrorFrame()
 	ScriptErrorsFrameScrollFrameText.cursorOffset = 0
 	ScriptErrorsFrameScrollFrameText.cursorHeight = 0
 	ScriptErrorsFrameScrollFrameText:SetScript("OnEditFocusGained", nil)
+
 	-- 	local Orig_ScriptErrorsFrame_Update = ScriptErrorsFrame_Update
 	-- 	ScriptErrorsFrame_Update = function(...)
 	-- 		if GetCVarBool("scriptErrors") ~= true then
@@ -153,10 +154,7 @@ function KkthnxUIDebugTools:Initialize()
 end
 
 local Loading = CreateFrame("Frame")
-function Loading:OnEvent(event, addon)
-	if event == "PLAYER_LOGIN" then
-		KkthnxUIDebugTools:Initialize()
-	end
-end
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:SetScript("OnEvent", function()
+	KkthnxUIDebugTools:Initialize()
+end)

@@ -582,10 +582,7 @@ function AFK:Initialize()
 end
 
 local Loading = CreateFrame("Frame")
-function Loading:OnEvent(event, addon)
-	if (event == "PLAYER_LOGIN") then
-		AFK:Initialize()
-	end
-end
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:SetScript("OnEvent", function()
+	AFK:Initialize()
+end)

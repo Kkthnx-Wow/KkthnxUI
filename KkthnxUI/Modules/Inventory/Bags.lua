@@ -1009,10 +1009,7 @@ function Bags:Enable()
 end
 
 local Loading = CreateFrame("Frame")
-function Loading:OnEvent(event, addon)
-	if (event == "PLAYER_LOGIN") then
-		Bags:Enable()
-	end
-end
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", Loading.OnEvent)
+Loading:SetScript("OnEvent", function()
+	Bags:Enable()
+end)

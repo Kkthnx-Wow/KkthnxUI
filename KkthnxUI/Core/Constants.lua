@@ -76,6 +76,3 @@ RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
 RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
 RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
 RoleUpdater:SetScript("OnEvent", CheckRole)
-
-SLASH_RELOADUI1, SLASH_RELOADUI2 = "/rl", "/reloadui"
-SlashCmdList["RELOADUI"] = ReloadUI

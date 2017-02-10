@@ -252,19 +252,27 @@ function K.LockCVar(cvarName, value)
 	-- print(value)
 end
 
--- Personal use only
+-- Personal Dev use only
 K.IsDev = {Aceer = true, Kkthnx = true, Kkthnxx = true, Pervie = true, Tatterdots = true} -- We will add more of my names as we go.
 K.IsDevRealm = {Stormreaver = true} -- Don't forget to update realm name(s) if we ever transfer realms.
 -- If we forget it could be easly picked up by another player who matches these combinations.
 -- End result we piss off people and we do not want to do that. :(
 
 function K.IsDeveloper()
-    return K.IsDev[K.Name]
+    return K.IsDev[K.Name] or false
 end
 
 function K.IsDeveloperRealm()
-    return K.IsDevRealm[K.Realm]
+    return K.IsDevRealm[K.Realm] or false
 end
+
+-- if K.IsDeveloper() then
+-- 	print(K.Name .." is a Dev of ".. K.UIName)
+-- end
+--
+-- if K.IsDeveloperRealm() then
+-- 	print("Dev realm is ".. K.Realm)
+-- end
 
 -- http://www.wowwiki.com/ColorGradient
 function K.ColorGradient(a, b, ...)
