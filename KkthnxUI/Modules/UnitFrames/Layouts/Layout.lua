@@ -462,6 +462,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
 			CastBar.Spark:SetAlpha(0.6)
 			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -495,7 +496,7 @@ local function CreateUnitLayout(self, unit)
 			end
 
 			if (C.Unitframe.CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
+				CastBar.SafeZone = CastBar:CreateTexture(nil, "BORDER")
 				CastBar.SafeZone:SetTexture(C.Media.Texture)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 
@@ -519,6 +520,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastFailed = K.PostCastFailed
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
@@ -542,6 +545,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
 			CastBar.Spark:SetAlpha(0.6)
 			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
@@ -589,6 +593,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastFailed = K.PostCastFailed
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
@@ -609,6 +615,12 @@ local function CreateUnitLayout(self, unit)
 			K.CreateBorder(CastBar, -1)
 
 			CastBar.timeToHold = 0.4
+
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
+			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
@@ -649,6 +661,8 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastFailed = K.PostCastFailed
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 

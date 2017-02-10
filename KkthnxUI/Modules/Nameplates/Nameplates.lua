@@ -515,6 +515,12 @@ local function style(self, unit)
 	self.Castbar.PostCastNotInterruptible = castColor
 	self.Castbar.PostCastInterruptible = castColor
 
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
+	self.Castbar.Spark:SetSize(C.Nameplates.Height, C.Nameplates.Height * 2)
+	self.Castbar.Spark:SetAlpha(0.6)
+	self.Castbar.Spark:SetBlendMode("ADD")
+	self.Castbar.Spark:SetVertexColor(1, 1, 1)
+
 	-- Create Cast Time Text
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
