@@ -1059,8 +1059,8 @@ local function CreateUnitLayout(self, unit)
 			mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
 			mainBar:GetStatusBarTexture():SetBlendMode("ADD")
 			mainBar:SetReverseFill(true)
-			mainBar:SetPoint"TOP"
-			mainBar:SetPoint"BOTTOM"
+			mainBar:SetPoint("TOP")
+			mainBar:SetPoint("BOTTOM")
 			mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
 			mainBar:SetWidth(self.Power:GetWidth())
 			mainBar:SetStatusBarColor(1, 1, 1, .3)
@@ -1071,8 +1071,8 @@ local function CreateUnitLayout(self, unit)
 				altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
 				altBar:GetStatusBarTexture():SetBlendMode("ADD")
 				altBar:SetReverseFill(true)
-				altBar:SetPoint"TOP"
-				altBar:SetPoint"BOTTOM"
+				altBar:SetPoint("TOP")
+				altBar:SetPoint("BOTTOM")
 				altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
 				altBar:SetWidth(self.AdditionalPower:GetWidth())
 				altBar:SetStatusBarColor(1, 1, 1, .3)
@@ -1143,7 +1143,7 @@ local function CreateUnitLayout(self, unit)
 		self:RegisterEvent("UNIT_ENTERING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITING_VEHICLE", UpdatePlayerFrame)
 		self:RegisterEvent("UNIT_EXITED_VEHICLE", UpdatePlayerFrame)
-		-- self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
+		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
 	end
 
 	-- </ Focus & Target Frame > --
@@ -1183,9 +1183,11 @@ local function CreateUnitLayout(self, unit)
 
 			self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
 			self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
-			self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
-			self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
+			-- self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
+			-- self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
 			self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateThreat)
+			self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateThreat)
+			self:RegisterEvent("UNIT_PET", UpdateThreat)
 		end
 	end
 

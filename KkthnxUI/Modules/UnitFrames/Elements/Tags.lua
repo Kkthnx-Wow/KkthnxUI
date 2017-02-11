@@ -19,12 +19,14 @@ local GetPVPTimer = _G.GetPVPTimer
 local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetQuestGreenRange = _G.GetQuestGreenRange
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
+local GetThreatStatusColor = _G.GetThreatStatusColor
 local GetTime = _G.GetTime
 local IsPVPTimerRunning = _G.IsPVPTimerRunning
 local QuestDifficultyColors = _G.QuestDifficultyColors
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
+local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitEffectiveLevel = _G.UnitEffectiveLevel
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitGUID = _G.UnitGUID
@@ -46,7 +48,6 @@ local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
-local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script

@@ -245,28 +245,6 @@ function K.UnitFrame_OnLeave(self)
 	end
 end
 
-function K.UpdateThreat(self, _, unit)
-	if (self.unit ~= unit) or not unit then return end
-
-	local threatStatus = UnitThreatSituation(unit) or 0
-	if (threatStatus == 3) then
-		if (self.ThreatText) then
-			self.ThreatText:Show()
-		end
-	end
-
-	if (threatStatus and threatStatus >= 2) then
-		local r, g, b = GetThreatStatusColor(threatStatus)
-		self:SetBackdropBorderColor(r, g, b, 1)
-	else
-		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], 1)
-
-		if (self.ThreatText) then
-			self.ThreatText:Hide()
-		end
-	end
-end
-
 -- </ Statusbar functions > --
 function K.CreateStatusBar(parent, name)
 	local StatusBar = _G.CreateFrame("StatusBar", name, parent)
@@ -626,7 +604,7 @@ end
 
 function K.CustomDelayText(self, duration)
 	if self.casting then
-		self = castbar.max - duration
+		self = self.max - duration
 	end
 
 	if self.casting then
