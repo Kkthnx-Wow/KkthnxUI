@@ -458,7 +458,7 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background:SetTexture(C.Media.Blank)
 			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
 			CastBar.Spark:SetAlpha(0.6)
 			CastBar.Spark:SetBlendMode("ADD")
@@ -496,8 +496,8 @@ local function CreateUnitLayout(self, unit)
 			end
 
 			if (C.Unitframe.CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "BORDER")
-				CastBar.SafeZone:SetTexture(C.Media.Texture)
+				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
+				CastBar.SafeZone:SetTexture(C.Media.Blank)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 
 				CastBar.Latency = K.SetFontString(CastBar, C.Media.Font, C.Media.Font_Size, "", "RIGHT")
@@ -520,7 +520,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
-			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
@@ -541,7 +540,7 @@ local function CreateUnitLayout(self, unit)
 
 			CastBar.timeToHold = 0.4
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
 			CastBar.Spark:SetAlpha(0.6)
 			CastBar.Spark:SetBlendMode("ADD")
@@ -593,7 +592,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
-			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
@@ -616,7 +614,7 @@ local function CreateUnitLayout(self, unit)
 
 			CastBar.timeToHold = 0.4
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
 			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
 			CastBar.Spark:SetAlpha(0.6)
 			CastBar.Spark:SetBlendMode("ADD")
@@ -661,7 +659,6 @@ local function CreateUnitLayout(self, unit)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
-			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible

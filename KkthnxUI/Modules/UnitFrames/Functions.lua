@@ -622,24 +622,12 @@ function K.PostCastInterruptible(self, unit)
 	end
 end
 
-function K.PostCastFailed(self, unit, spellname, castid)
-	if (self.Text) then
-		self.Text:SetText(FAILED)
-	end
+function K.PostCastInterrupted(self)
+	self:SetMinMaxValues(0, 1)
+	self:SetValue(1)
 	self:SetStatusBarColor(1, 0, 0)
-	if (self.max) then
-		self:SetValue(self.max)
-	end
-end
-
-function K.PostCastInterrupted(self, unit, spellname, castid)
-	if (self.Text) then
-		self.Text:SetText(INTERRUPTED)
-	end
-	self:SetStatusBarColor(1, 0, 0)
-	if (self.max) then
-		self:SetValue(self.max)
-	end
+	
+	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
 function K.PostCastNotInterruptible(self)
