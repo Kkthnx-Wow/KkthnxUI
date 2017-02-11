@@ -3,8 +3,9 @@ if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local abs = math.abs
+local abs = math_abs
 local format = string.format
+local math_abs = math.abs
 local min, max = math.min, math.max
 local pairs = pairs
 local select = select
@@ -267,27 +268,16 @@ function K.UpdateThreat(self, _, unit)
 end
 
 -- </ Statusbar functions > --
-function K.CreateStatusBar(self, noBG)
-	local StatusBar = CreateFrame("StatusBar", "oUFKkthnxStatusBar", self) -- global name to avoid Blizzard /fstack error
+function K.CreateStatusBar(parent, name)
+	local StatusBar = _G.CreateFrame("StatusBar", name, parent)
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
-	StatusBar.Texture = StatusBar:GetStatusBarTexture()
-	StatusBar.Texture:SetDrawLayer("BORDER")
-	StatusBar.Texture:SetHorizTile(false)
-	StatusBar.Texture:SetVertTile(false)
+	local StatusBarBG = StatusBar:CreateTexture(nil, "BACKGROUND")
+	StatusBarBG:SetTexture(C.Media.Blank)
+	StatusBarBG:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	StatusBarBG:SetAllPoints()
 
-	if not noBG then
-		StatusBar.BG = StatusBar:CreateTexture(nil, "BACKGROUND")
-		StatusBar.BG:SetTexture(C.Media.Blank)
-		StatusBar.BG:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-		StatusBar.BG:SetAllPoints(true)
-	end
-
-	local SmoothBar = self.SmoothBar or self.__owner and self.__owner.SmoothBar
-	if SmoothBar and C.Unitframe.Smooth then
-		SmoothBar(nil, StatusBar) -- nil should be self but isn't used
-		StatusBar.__smooth = true
-	end
+	StatusBar.styled = true
 
 	return StatusBar
 end
@@ -626,7 +616,7 @@ function K.PostCastInterrupted(self)
 	self:SetMinMaxValues(0, 1)
 	self:SetValue(1)
 	self:SetStatusBarColor(1, 0, 0)
-	
+
 	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
@@ -635,9 +625,21 @@ function K.PostCastNotInterruptible(self)
 end
 
 function K.CustomDelayText(self, duration)
-	self.Time:SetFormattedText("%.1f|cffff0000%.1f|r", self.max - duration, -self.delay)
+	if self.casting then
+		self = castbar.max - duration
+	end
+
+	if self.casting then
+		self.Time:SetFormattedText("%.1f|cffdc4436+%.1f|r ", duration, math_abs(self.delay))
+	elseif self.channeling then
+		self.Time:SetFormattedText("%.1f|cffdc4436-%.1f|r ", duration, math_abs(self.delay))
+	end
 end
 
 function K.CustomTimeText(self, duration)
-	self.Time:SetFormattedText("%.1f", self.max - duration)
+	if self.casting then
+		duration = self.max - duration
+	end
+
+	self.Time:SetFormattedText("%.1f ", duration)
 end

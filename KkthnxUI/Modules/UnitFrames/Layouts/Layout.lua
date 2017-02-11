@@ -442,10 +442,10 @@ local function CreateUnitLayout(self, unit)
 	-- Castbars
 	if C.Unitframe.Castbars then
 		if self.MatchUnit == "player" then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
-			CastBar:SetFrameStrata(self:GetFrameStrata())
+			-- local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar")
+			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
 
@@ -529,10 +529,9 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "target" then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxTarget_Castbar", self)
-			CastBar:SetFrameStrata(self:GetFrameStrata())
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxTarget_Castbar")
+			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.TargetCastbar))
 
@@ -601,14 +600,12 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "focus" then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxFocus_Castbar", self)
-
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxFocus_Castbar")
 			CastBar:SetPoint("LEFT", 0, 0)
 			CastBar:SetPoint("RIGHT", -20, 0)
 			CastBar:SetPoint("TOP", 0, 60)
 			CastBar:SetHeight(18)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 
 			K.CreateBorder(CastBar, -1)
 
@@ -667,14 +664,12 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar.Icon = CastBar.Icon
 
 		elseif self.IsBossFrame then
-			local CastBar = CreateFrame("StatusBar", "oUF_KkthnxBoss_Castbar", self)
-
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxBoss_Castbar")
 			CastBar:SetPoint("RIGHT", -138, 0)
 			CastBar:SetPoint("LEFT", 0, 10)
 			CastBar:SetPoint("LEFT", -138, 8)
 			CastBar:SetHeight(16)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
 
 			K.CreateBorder(CastBar, -1)
 
@@ -733,7 +728,7 @@ local function CreateUnitLayout(self, unit)
 	self.Texture:SetDrawLayer("BORDER", 3)
 
 	-- Healthbar
-	self.Health = K.CreateStatusBar(self, false)
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.PostUpdateHealth
@@ -757,7 +752,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Power bar
-	self.Power = K.CreateStatusBar(self, false)
+	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = self.MatchUnit == "player" or self.MatchUnit == "boss"
