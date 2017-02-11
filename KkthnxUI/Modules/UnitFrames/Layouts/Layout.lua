@@ -1183,11 +1183,9 @@ local function CreateUnitLayout(self, unit)
 
 			self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
 			self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
-			-- self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
-			-- self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
+			self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
+			self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
 			self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateThreat)
-			self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateThreat)
-			self:RegisterEvent("UNIT_PET", UpdateThreat)
 		end
 	end
 

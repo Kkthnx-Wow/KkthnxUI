@@ -216,10 +216,8 @@ local function CreateRaidLayout(self, unit)
 		self.Power.bg:SetColorTexture(.6, .6, .6)
 		self.Power.bg.multiplier = 0.2
 
-		-- table_insert(self.__elements, UpdatePower)
+		table_insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
-		self:RegisterEvent("UNIT_POWER_FREQUENT", UpdatePower)
-		self:RegisterEvent("UNIT_MAXPOWER", UpdatePower)
 		UpdatePower(self, _, unit)
 	end
 
@@ -305,10 +303,9 @@ local function CreateRaidLayout(self, unit)
 		self.ThreatText:SetText("AGGRO")
 	end
 
-	-- table_insert(self.__elements, UpdateThreat)
+	table_insert(self.__elements, UpdateThreat)
 	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
 	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateThreat)
 
 	-- Masterlooter icons
 	self.MasterLooter = self.Health:CreateTexture(nil, "OVERLAY", self)
