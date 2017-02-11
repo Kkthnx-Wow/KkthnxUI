@@ -28,6 +28,28 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 local Movers = K.Movers
 
+local function UpdateThreat(self, _, unit)
+	if (self.unit ~= unit) or not unit then return end
+
+	local threatStatus = UnitThreatSituation(unit) or 0
+	if (threatStatus == 3) then
+		if (self.ThreatText) then
+			self.ThreatText:Show()
+		end
+	end
+
+	if (threatStatus and threatStatus >= 2) then
+		local r, g, b = GetThreatStatusColor(threatStatus)
+		self:SetBackdropBorderColor(r, g, b, 1)
+	else
+		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], 1)
+
+		if (self.ThreatText) then
+			self.ThreatText:Hide()
+		end
+	end
+end
+
 local function UpdatePower(self, _, unit)
 	if (self.unit ~= unit) then
 		return
@@ -194,8 +216,10 @@ local function CreateRaidLayout(self, unit)
 		self.Power.bg:SetColorTexture(.6, .6, .6)
 		self.Power.bg.multiplier = 0.2
 
-		table_insert(self.__elements, UpdatePower)
+		-- table_insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
+		self:RegisterEvent("UNIT_POWER_FREQUENT", UpdatePower)
+		self:RegisterEvent("UNIT_MAXPOWER", UpdatePower)
 		UpdatePower(self, _, unit)
 	end
 
@@ -281,9 +305,10 @@ local function CreateRaidLayout(self, unit)
 		self.ThreatText:SetText("AGGRO")
 	end
 
-	table_insert(self.__elements, K.UpdateThreat)
-	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", K.UpdateThreat)
-	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", K.UpdateThreat)
+	-- table_insert(self.__elements, UpdateThreat)
+	self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
+	self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateThreat)
 
 	-- Masterlooter icons
 	self.MasterLooter = self.Health:CreateTexture(nil, "OVERLAY", self)
