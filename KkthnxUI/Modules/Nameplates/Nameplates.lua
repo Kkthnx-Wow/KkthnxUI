@@ -4,7 +4,7 @@ if C.Nameplates.Enable ~= true then return end
 -- Lua API
 local _G = _G
 local floor = math.floor
-local format = string.format
+local string_format = string.format
 local huge = math.huge
 local tinsert = table.insert
 local unpack = unpack
@@ -137,7 +137,7 @@ if C.Nameplates.HealerIcon == true then
 			for i = 1, 5 do
 				local specID = GetArenaOpponentSpec(i)
 				if specID and specID > 0 then
-					local name = UnitName(format("arena%d", i))
+					local name = UnitName(string_format("arena%d", i))
 					local _, talentSpec = GetSpecializationInfoByID(specID)
 					if name and healerSpecs[talentSpec] then
 						healList[name] = talentSpec
@@ -197,15 +197,15 @@ local totemData = {
 local FormatTime = function(s)
 	local day, hour, minute = 86400, 3600, 60
 	if s >= day then
-		return format("%dd", floor(s / day + 0.5)), s % day
+		return string_format("%dd", floor(s / day + 0.5)), s % day
 	elseif s >= hour then
-		return format("%dh", floor(s / hour + 0.5)), s % hour
+		return string_format("%dh", floor(s / hour + 0.5)), s % hour
 	elseif s >= minute then
-		return format("%dm", floor(s / minute + 0.5)), s % minute
+		return string_format("%dm", floor(s / minute + 0.5)), s % minute
 	elseif s >= minute / 12 then
 		return floor(s + 0.5), (s * 100 - floor(s * 100)) / 100
 	end
-	return format("%.1f", s), (s * 100 - floor(s * 100)) / 100
+	return string_format("%.1f", s), (s * 100 - floor(s * 100)) / 100
 end
 
 local CreateAuraTimer = function(self, elapsed)
@@ -508,27 +508,25 @@ local function style(self, unit)
 	self.Castbar = CreateFrame("StatusBar", nil, self)
 	self.Castbar:SetFrameLevel(3)
 	self.Castbar:SetStatusBarTexture(C.Media.Texture)
-	-- self.Castbar:SetStatusBarColor(0.31, 0.45, 0.63, 0.5)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult))
 	K.CreateShadowFrame(self.Castbar)
 
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")
 	self.Castbar.bg:SetAllPoints()
-	self.Castbar.bg:SetTexture(C.Media.Texture)
-	-- self.Castbar.bg:SetColorTexture(0.87, 0.37, 0.37, 0.2)
-
-	self.Castbar.PostCastStart = castColor
-	self.Castbar.PostChannelStart = castColor
-	self.Castbar.PostCastInterrupted = castInterrupted
-	self.Castbar.PostCastNotInterruptible = castColor
-	self.Castbar.PostCastInterruptible = castColor
+	self.Castbar.bg:SetTexture(C.Media.Blank)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetSize(C.Nameplates.Height, C.Nameplates.Height * 2)
 	self.Castbar.Spark:SetAlpha(0.6)
 	self.Castbar.Spark:SetBlendMode("ADD")
 	self.Castbar.Spark:SetVertexColor(1, 1, 1)
+
+	self.Castbar.PostCastStart = castColor
+	self.Castbar.PostChannelStart = castColor
+	self.Castbar.PostCastInterrupted = castInterrupted
+	self.Castbar.PostCastNotInterruptible = castColor
+	self.Castbar.PostCastInterruptible = castColor
 
 	-- Create Cast Time Text
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
@@ -538,8 +536,6 @@ local function style(self, unit)
 	self.Castbar.timeToHold = 0.4
 
 	self.Castbar.CustomTimeText = function(self, duration)
-		-- self.Time:SetText(("%.1f"):format(self.channeling and duration or self.max - duration))
-
 		if self.casting then
 			duration = self.max - duration
 		end

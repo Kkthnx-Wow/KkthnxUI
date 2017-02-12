@@ -52,98 +52,120 @@ function KkthnxUIInstall:ChatSetup()
 	InstallStepComplete:Show()
 	-- Setting chat frames if using KkthnxUI.
 	FCF_ResetChatWindows()
+
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
-	FCF_OpenNewWindow(GENERAL)
-	FCF_SetLocked(ChatFrame3, 1)
-	FCF_DockFrame(ChatFrame3)
 	FCF_OpenNewWindow(LOOT)
-	FCF_SetLocked(ChatFrame4, 1)
-	FCF_DockFrame(ChatFrame4)
+	FCF_SetLocked(ChatFrame3, 1)
+	ChatFrame3:Show()
+
+	for i = 1, NUM_CHAT_WINDOWS do
+		local frame = _G[format("ChatFrame%s", i)]
+
+		-- move general bottom left
+		if i == 1 then
+			frame:ClearAllPoints()
+			frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+		end
+
+		FCF_SavePositionAndDimensions(frame)
+		FCF_StopDragging(frame)
+
+		-- set default font size
+		FCF_SetChatWindowFontSize(nil, frame, 12)
+
+		-- rename windows general because moved to chat #3
+		if i == 1 then
+			FCF_SetWindowName(frame, GENERAL)
+		elseif i == 2 then
+			FCF_SetWindowName(frame, GUILD_EVENT_LOG)
+		elseif i == 3 then
+			FCF_SetWindowName(frame, LOOT.." / "..TRADE)
+		end
+	end
 
 	-- Set more chat groups
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.Trade)
-	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.General)
-	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.LocalDefense)
-	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.GuildRecruitment)
-	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.LookingForGroup)
-	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
+	ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
+	ChatFrame_AddMessageGroup(ChatFrame1, "AFK")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BATTLEGROUND_LEADER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BATTLEGROUND")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BN_INLINE_TOAST_ALERT")
+	ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "DND")
 	ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD")
-	ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "ERRORS")
 	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD_ACHIEVEMENT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD")
+	ChatFrame_AddMessageGroup(ChatFrame1, "IGNORED")
+	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
 	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
+	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
+	ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER")
 	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
+	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
 	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_LEADER")
 	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_WARNING")
-	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
+	ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
+	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
 	ChatFrame_AddMessageGroup(ChatFrame1, "SYSTEM")
-	ChatFrame_AddMessageGroup(ChatFrame1, "ERRORS")
-	ChatFrame_AddMessageGroup(ChatFrame1, "AFK")
-	ChatFrame_AddMessageGroup(ChatFrame1, "DND")
-	ChatFrame_AddMessageGroup(ChatFrame1, "IGNORED")
-	ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
+	ChatFrame_AddMessageGroup(ChatFrame1, "WHISPER")
+	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
 
-	-- Setup the spam chat frame
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_FACTION_CHANGE")
+	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_GUILD_XP_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_HONOR_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_XP_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame3, "CURRENCY")
+	ChatFrame_AddMessageGroup(ChatFrame3, "LOOT")
+	ChatFrame_AddMessageGroup(ChatFrame3, "MONEY")
+	ChatFrame_AddMessageGroup(ChatFrame3, "SKILL")
+	ChatFrame_AddChannel(ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(ChatFrame1,L.Chat.Trade)
 	ChatFrame_AddChannel(ChatFrame3, L.Chat.Trade)
-	ChatFrame_AddChannel(ChatFrame3, L.Chat.General)
-	ChatFrame_AddChannel(ChatFrame3, L.Chat.LocalDefense)
-	ChatFrame_AddChannel(ChatFrame3, L.Chat.GuildRecruitment)
-	ChatFrame_AddChannel(ChatFrame3, L.Chat.LookingForGroup)
-
-	-- Setup the loot chat
-	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
-	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
-	ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
-	ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
 
 	if K.IsDeveloper() and K.IsDeveloperRealm() then
 		SetCVar("scriptErrors", 1)
 	end
 
 	-- Enable class color automatically on login and each character without doing /configure each time.
-	ToggleChatColorNamesByClassGroup(true, "SAY")
-	ToggleChatColorNamesByClassGroup(true, "EMOTE")
-	ToggleChatColorNamesByClassGroup(true, "YELL")
-	ToggleChatColorNamesByClassGroup(true, "GUILD")
-	ToggleChatColorNamesByClassGroup(true, "OFFICER")
-	ToggleChatColorNamesByClassGroup(true, "GUILD_ACHIEVEMENT")
 	ToggleChatColorNamesByClassGroup(true, "ACHIEVEMENT")
-	ToggleChatColorNamesByClassGroup(true, "WHISPER")
-	ToggleChatColorNamesByClassGroup(true, "PARTY")
-	ToggleChatColorNamesByClassGroup(true, "PARTY_LEADER")
-	ToggleChatColorNamesByClassGroup(true, "RAID")
-	ToggleChatColorNamesByClassGroup(true, "RAID_LEADER")
-	ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
-	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
 	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL1")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL10")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL11")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL2")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL3")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL4")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL5")
-	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL6")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL7")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL8")
+	ToggleChatColorNamesByClassGroup(true, "CHANNEL9")
+	ToggleChatColorNamesByClassGroup(true, "EMOTE")
+	ToggleChatColorNamesByClassGroup(true, "GUILD_ACHIEVEMENT")
+	ToggleChatColorNamesByClassGroup(true, "GUILD")
 	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
+	ToggleChatColorNamesByClassGroup(true, "OFFICER")
+	ToggleChatColorNamesByClassGroup(true, "PARTY_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "PARTY")
+	ToggleChatColorNamesByClassGroup(true, "RAID_LEADER")
+	ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
+	ToggleChatColorNamesByClassGroup(true, "RAID")
+	ToggleChatColorNamesByClassGroup(true, "SAY")
+	ToggleChatColorNamesByClassGroup(true, "WHISPER")
+	ToggleChatColorNamesByClassGroup(true, "YELL")
 
 	-- Adjust Chat Colors
 	ChangeChatColor("BATTLEGROUND_LEADER", 1, 1/2, 0)
@@ -158,65 +180,23 @@ function KkthnxUIInstall:ChatSetup()
 	ChangeChatColor("RAID_LEADER", 0, 1, 4/5)
 	ChangeChatColor("RAID_WARNING", 1, 1/4, 1/4)
 	ChangeChatColor("RAID", 0, 1, 4/5)
-
-	for index = 1, NUM_CHAT_WINDOWS do
-		local ChatFrame = _G[format("ChatFrame%s", index)]
-		local ChatFrameID = ChatFrame:GetID()
-		local _, FontSize = FCF_GetChatWindowInfo(ChatFrameID)
-
-		FCF_SetChatWindowFontSize(nil, ChatFrame, FontSize)
-
-		ChatFrame:SetSize(C.Chat.Width, C.Chat.Height)
-
-		-- Position. Just to be safe here.
-		DEFAULT_CHAT_FRAME:SetUserPlaced(true)
-		if (index == 1) then
-			ChatFrame:ClearAllPoints()
-			ChatFrame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
-		end
-
-		FCF_SavePositionAndDimensions(ChatFrame)
-		FCF_StopDragging(ChatFrame)
-
-		if (index == 1) then
-			FCF_SetWindowName(ChatFrame, "G, S, W")
-		end
-
-		if (index == 2) then
-			FCF_SetWindowName(ChatFrame, "Log")
-		end
-	end
 end
 
 function KkthnxUIInstall:CVarSetup()
 	SetCVar("alwaysShowActionBars", 1)
-	SetCVar("autoLootDefault", 0)
-	SetCVar("autoOpenLootHistory", 0)
-	SetCVar("autoQuestProgress", 1)
-	SetCVar("autoQuestWatch", 1)
-	SetCVar("buffDurations", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
 	SetCVar("chatMouseScroll", 1)
-	SetCVar("chatStyle", "im")
-	SetCVar("colorblindMode", 0)
-	SetCVar("countdownForCooldowns", 0)
-	SetCVar("gameTip", 0)
-	SetCVar("lootUnderMouse", 0)
-	SetCVar("NamePlateHorizontalScale", 1)
+	SetCVar("chatStyle", "classic")
+	SetCVar("lockActionBars", 1)
+	SetCVar("nameplateShowFriendlyNPCs", 1)
 	SetCVar("nameplateShowSelf", 0)
-	SetCVar("NamePlateVerticalScale", 1)
-	SetCVar("removeChatDelay", 1)
-	SetCVar("RotateMinimap", 0)
-	SetCVar("screenshotQuality", 8)
-	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("screenshotQuality", 10)
 	SetCVar("ShowClassColorInNameplate", 1)
 	SetCVar("showTutorials", 0)
-	SetCVar("showVKeyCastbar", 1)
-	SetCVar("spamFilter", 0)
-	SetCVar("taintLog", 0)
+	SetCVar("SpamFilter", 0)
+	SetCVar("statusTextDisplay", "BOTH")
+	SetCVar("threatWarning", 3)
 	SetCVar("UberTooltips", 1)
-	SetCVar("violenceLevel", 5)
-	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")

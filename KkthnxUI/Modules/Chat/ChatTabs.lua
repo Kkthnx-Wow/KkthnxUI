@@ -70,7 +70,6 @@ SetupTabs:SetScript("OnEvent", function()
 
 			tab:HookScript("OnEnter", UpdateTab)
 			tab:HookScript("OnLeave", UpdateTab)
-			tab:SetScript("OnDragStart", nil)
 
 			UpdateTab(tab)
 		end
