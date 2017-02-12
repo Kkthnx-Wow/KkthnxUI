@@ -203,7 +203,6 @@ C["Minimap"] = {
 	["Calendar"] = true,
 	["Ping"] = true,
 	["Size"] = 150,
-	["ShowConfigButton"] = true,
 }
 
 -- Miscellaneous
@@ -251,8 +250,6 @@ C["Nameplates"] = {
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
 	["Smooth"] = false,
-	["Spiral"] = true,
-	["Timer"] = true,
 	["TotemIcons"] = false,
 	["TrackAuras"] = true,
 	["Width"] = 120,

@@ -604,7 +604,7 @@ end
 
 function K.CustomDelayText(self, duration)
 	if self.casting then
-		self = self.max - duration
+		duration = self.max - duration
 	end
 
 	if self.casting then

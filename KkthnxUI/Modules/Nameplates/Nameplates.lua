@@ -301,7 +301,7 @@ local function UpdateTarget(self)
 		if C.Nameplates.ClassIcons == true then
 			self.Class.Icon:SetSize(((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8, ((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8)
 		end
-		self:SetAlpha(1)
+		-- self:SetAlpha(1)  -- I am testing to see if using SpellRange will make this better.
 	else
 		self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
 		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-(C.Nameplates.Height * K.NoScaleMult))
@@ -309,11 +309,11 @@ local function UpdateTarget(self)
 		if C.Nameplates.ClassIcons == true then
 			self.Class.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
 		end
-		if UnitExists("target") and not UnitIsUnit(self.unit, "player") then
-			self:SetAlpha(0.5)
-		else
-			self:SetAlpha(1)
-		end
+		-- if UnitExists("target") and not UnitIsUnit(self.unit, "player") then -- I am testing to see if using SpellRange will make this better.
+		-- 	self:SetAlpha(0.5)
+		-- else
+		-- 	self:SetAlpha(1)
+		-- end
 	end
 end
 
@@ -757,6 +757,12 @@ local function style(self, unit)
 
 	tinsert(self.__elements, UpdateTarget)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTarget)
+
+	-- Range Fader (We use oUF_SpellRange)
+	self.SpellRange = {
+		insideAlpha = 1,
+		outsideAlpha = C.UnitframePlugins.OORAlpha,
+	}
 end
 
 oUF:RegisterStyle("KkthnxUINameplate", style)
