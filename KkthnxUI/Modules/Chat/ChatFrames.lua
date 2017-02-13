@@ -13,20 +13,27 @@ local sub = string.sub
 local unpack = unpack
 
 -- Wow API
-local FCF_Close = FCF_Close
-local FCF_GetChatWindowInfo = FCF_GetChatWindowInfo
-local FCF_GetCurrentChatFrame = FCF_GetCurrentChatFrame
-local FCF_SetChatWindowFontSize = FCF_SetChatWindowFontSize
-local GetChannelName = GetChannelName
-local hooksecurefunc = hooksecurefunc
-local InCombatLockdown = InCombatLockdown
-local NUM_CHAT_WINDOWS = NUM_CHAT_WINDOWS
-local PET_BATTLE_COMBAT_LOG = PET_BATTLE_COMBAT_LOG
+local ChatEdit_ParseText = _G.ChatEdit_ParseText
+local ChatFrame_SendTell = _G.ChatFrame_SendTell
+local COMBATLOG = _G.COMBATLOG
+local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
+local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
+local GetChannelName = _G.GetChannelName
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local IsInGroup = _G.IsInGroup
+local IsInInstance = _G.IsInInstance
+local IsInRaid = _G.IsInRaid
+local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local PET_BATTLE_COMBAT_LOG = _G.PET_BATTLE_COMBAT_LOG
+local UnitName = _G.UnitName
+local UnitRealmRelationship = _G.UnitRealmRelationship
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CombatLogQuickButtonFrame_Custom, ChatTypeInfo, SLASH_BIGCHAT1, AFK, DND
 -- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
--- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory
+-- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory, BNToastFrame
 
 local hooks = {}
 local Movers = K.Movers
@@ -219,6 +226,11 @@ local function SetChatStyle(frame)
 	-- Hide edit box every time we click on a tab
 	tab:HookScript("OnClick", function() editbox:Hide() end)
 
+	-- Temp Chats
+	if (id > 10) then
+		frame:SetFont(C.Media.Font, 12)
+	end
+
 	-- Create our own texture for edit box
 	if C.Chat.TabsMouseover ~= true then
 		local editboxbg = CreateFrame("Frame", "ChatEditBoxBackground", editbox)
@@ -262,27 +274,59 @@ local function SetChatStyle(frame)
 		CombatLogQuickButtonFrame_Custom:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	end
 
-	-- Security for font, in case if revert back to WoW default we restore instantly the font default.
-	-- hooksecurefunc(frame, "SetFont", SetChatFont)
-
 	frame.IsSkinned = true
 end
 
--- Remember last channel
-ChatTypeInfo.BN_WHISPER.sticky = 1
-ChatTypeInfo.CHANNEL.sticky = 1
-ChatTypeInfo.EMOTE.sticky = 0
-ChatTypeInfo.GUILD.sticky = 1
-ChatTypeInfo.INSTANCE_CHAT.sticky = 1
-ChatTypeInfo.OFFICER.sticky = 1
-ChatTypeInfo.PARTY.sticky = 1
-ChatTypeInfo.RAID.sticky = 1
-ChatTypeInfo.SAY.sticky = 1
-ChatTypeInfo.WHISPER.sticky = 1
-ChatTypeInfo.YELL.sticky = 0
+local function SetupChat()
+	for i = 1, NUM_CHAT_WINDOWS do
+		local chatframe = _G[format("ChatFrame%s", i)]
 
-ChatTypeInfo.GUILD.flashTabOnGeneral = true
-ChatTypeInfo.OFFICER.flashTabOnGeneral = true
+		SetChatStyle(chatframe)
+	end
+
+	local ChatTypeInfo = getmetatable(ChatTypeInfo).__index
+	-- Remember last channel
+	ChatTypeInfo.BN_WHISPER.sticky = 1
+	ChatTypeInfo.CHANNEL.sticky = 1
+	ChatTypeInfo.EMOTE.sticky = 0
+	ChatTypeInfo.GUILD.sticky = 1
+	ChatTypeInfo.INSTANCE_CHAT.sticky = 1
+	ChatTypeInfo.OFFICER.sticky = 1
+	ChatTypeInfo.PARTY.sticky = 1
+	ChatTypeInfo.RAID.sticky = 1
+	ChatTypeInfo.SAY.sticky = 1
+	ChatTypeInfo.WHISPER.sticky = 1
+	ChatTypeInfo.YELL.sticky = 0
+
+	ChatTypeInfo.GUILD.flashTabOnGeneral = true
+	ChatTypeInfo.OFFICER.flashTabOnGeneral = true
+end
+
+local function SetupChatFont()
+	for index = 1, NUM_CHAT_WINDOWS do
+		local frame = _G["ChatFrame"..index]
+		local id = frame:GetID()
+		local _, fontsize = FCF_GetChatWindowInfo(id)
+
+		-- Min. size for chat font
+		if fontsize < 12 then
+			FCF_SetChatWindowFontSize(nil, frame, 12)
+		else
+			FCF_SetChatWindowFontSize(nil, frame, fontsize)
+		end
+
+		-- Font and font style for chat
+		if C.Chat.Outline == true then
+			frame:SetFont(C.Media.Font, fontsize, C.Media.Font_Style)
+			frame:SetShadowOffset(0, 0)
+			frame:SetShadowColor(0, 0, 0, 0.2)
+		else
+			frame:SetFont(C.Media.Font, fontsize)
+			frame:SetShadowOffset(K.Mult, -K.Mult)
+			frame:SetShadowColor(0, 0, 0, 0.9)
+		end
+	end
+end
 
 local BNetMover = CreateFrame("Frame", "BNetMover", UIParent)
 BNetMover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
@@ -294,7 +338,7 @@ local function SetToastFrame()
 	BNToastFrame:ClearAllPoints()
 	BNToastFrame:SetFrameStrata("Medium")
 	BNToastFrame:SetFrameLevel(20)
-	BNToastFrame:SetPoint("CENTER", BNetMover, "CENTER", 0, 0)
+	BNToastFrame:SetPoint("TOPLEFT", BNetMover, "TOPLEFT", 3, -3)
 end
 
 -- Remove player"s realm name
@@ -329,10 +373,7 @@ SlashCmdList.CHATRESET = function() Install:ChatSetup() _G.ReloadUI() end
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function()
-	for i = 1, NUM_CHAT_WINDOWS do
-		local chatframe = _G[format("ChatFrame%s", i)]
-		SetChatStyle(chatframe)
-	end
-
+	SetupChat()
+	SetupChatFont()
 	SetToastFrame()
 end)

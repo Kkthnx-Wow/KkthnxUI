@@ -1,12 +1,12 @@
 local K, C, L = unpack(select(2, ...))
 
-local LSM = LibStub("LibSharedMedia-3.0")
 local Locale = GetLocale()
+local LSM = LibStub("LibSharedMedia-3.0")
 
 C["Media"] = {
 	["Backdrop_Color"] = {6/255, 6/255, 6/255, 0.9},
 	["Blank_Font"] = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
-	["Blank"] = [[Interface\AddOns\KkthnxUI\Media\Textures\Blank]],
+	["Blank"] = [[Interface\BUTTONS\WHITE8X8]],
 	["Blizz"] = [[Interface\Tooltips\UI-Tooltip-Border]],
 	["Border_Color"] = {192/255, 192/255, 192/255},
 	["Border_Shadow"] = [[Interface\AddOns\KkthnxUI\Media\Border\BorderShadow.tga]],
