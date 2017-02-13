@@ -328,17 +328,36 @@ local function SetupChatFont()
 	end
 end
 
+--This changes the growth direction of the toast frame depending on position of the mover
 local BNetMover = CreateFrame("Frame", "BNetMover", UIParent)
 BNetMover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
 BNetMover:SetPoint(unpack(C.Position.BnetPopup))
-Movers:RegisterFrame(BNetMover)
+
+local function PostBNToastMove()
+	local x, y = BNetMover:GetCenter()
+	local screenHeight = UIParent:GetTop()
+	local screenWidth = UIParent:GetRight()
+
+	local anchorPoint
+	if (y > (screenHeight / 2)) then
+		anchorPoint = (x > (screenWidth/2)) and "TOPRIGHT" or "TOPLEFT"
+	else
+		anchorPoint = (x > (screenWidth/2)) and "BOTTOMRIGHT" or "BOTTOMLEFT"
+	end
+	BNetMover.anchorPoint = anchorPoint
+
+	BNToastFrame:ClearAllPoints()
+	BNToastFrame:SetPoint(anchorPoint, BNetMover)
+end
 
 local function SetToastFrame()
 	BNToastFrame:SetTemplate()
-	BNToastFrame:ClearAllPoints()
+	BNToastFrameCloseButton:SetAlpha(0)
 	BNToastFrame:SetFrameStrata("Medium")
 	BNToastFrame:SetFrameLevel(20)
-	BNToastFrame:SetPoint("TOPLEFT", BNetMover, "TOPLEFT", 3, -3)
+	BNToastFrame:SetPoint("TOPRIGHT", BNetMover, "BOTTOMRIGHT", 0, -10)
+	Movers:RegisterFrame(BNToastFrame)
+	BNToastFrame:HookScript("OnShow", PostBNToastMove)
 end
 
 -- Remove player"s realm name
