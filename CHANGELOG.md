@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - Fixed conflict with ConsolePort.
 - Taint with Moving frames script.
-- nil error in Animation.Lua resolved finally.
+- nil error in Animation.lua resolved finally.
 - Fixed chat not being movable after updating our tabs script.
 
 ### Removed
@@ -48,8 +48,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - I moved the /reload script to its own file. Prevents it from being broken in most cases.
 - Cleaned the ReputationGain.lua file.
 
-## --- Archived Changelogs ---
--
+# Archived Changelogs
+
 ## [v6.11.7] - 12/27/2016
 ### Added
 - 2 new options for flat texture and blizzard font.
