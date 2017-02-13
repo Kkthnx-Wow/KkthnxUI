@@ -7,8 +7,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - nil
+## [Unreleased] - 2/13/2017
+### Added
+- Added a debug lib.
+- More features to cast bars added (Interrupted, Holdtime, etc).
+- Better taint logging.
+- Added more chat channel colors of our own.
+- Added some fix scripts from @goldpaw
+- Added a developer check script for me.
+- Nameplates cast bar now support a hold time of 0.4 and a cast bar spark.
+- Unitframe cast bars now supports a hold time of 0.4 and a cast bar spark.
+- Skinning to thew BNetToastFrame.
 
+### Fixed
+- Fixed conflict with ConsolePort.
+- Taint with Moving frames script.
+- nil error in Animation.Lua resolved finally.
+- Fixed chat not being movable after updating our tabs script.
+
+### Removed
+- Cleaned up the old chat frame code.
+- Found and removed old settings.lua code.
+- ClassColor script was removed. Enough AddOns around to handle this. This script was a mess and out of date too.
+- Chat background script. We will now work on using the default wow one provided.
+- Tutorials.lua
+- The vehicle mouseover script is gone now.
+
+### Changed
+- Cleaned up XML files, and properly formatted them.
+- Aurawatch was completely revamped.
+- Raiddebuffs was revamped.
+- KkthnxUI Esc menu button rewrote.
+- Wow API will now be formatted like so. local UnitName = _G.UnitName. Be sure we always declare _G before hand.
+- Adjusted our Engine script.
+- Changes to the install script to better suit the new chat changes and cleanup.
+- Updated locals
+- Changed how some files get loaded and changed the script to be cleaner and smaller.
+- Updated nameplate auras.
+- Updated formatting of our readme thanks to @goldpaw.
+- I moved the /reload script to its own file. Prevents it from being broken in most cases.
+- Cleaned the ReputationGain.lua file.
+
+## --- Archived Changelogs ---
+-
 ## [v6.11.7] - 12/27/2016
 ### Added
 - 2 new options for flat texture and blizzard font.
