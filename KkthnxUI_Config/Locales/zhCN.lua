@@ -61,7 +61,6 @@ UIConfigLocal.BagsSpacing = "背包格子间距"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "暴雪框体"
-UIConfigLocal.BlizzardClassColor = "好友列表、查询列表、公会成员列表中玩家名称职业颜色"
 UIConfigLocal.BlizzardColorTextures = "更改大多数UI材质色调颜色"
 UIConfigLocal.BlizzardHideTalkingHead = "隐藏NPC语音消息框"
 UIConfigLocal.BlizzardRaidTools = "团队工具"

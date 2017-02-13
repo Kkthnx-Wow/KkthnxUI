@@ -62,7 +62,6 @@ UIConfigLocal.BagsSpacing = "Отступ слотов"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
-UIConfigLocal.BlizzardClassColor = "Окрасить имена игроков в списке друзей"
 UIConfigLocal.BlizzardColorTextures = "Изменить оттенок цвета большинства элементов UI."
 UIConfigLocal.BlizzardHideTalkingHead = "Скрыть подсказку добычи после победы над боссом"
 UIConfigLocal.BlizzardRaidTools = "Инструменты рейда"

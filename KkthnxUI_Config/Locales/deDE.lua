@@ -61,7 +61,6 @@ UIConfigLocal.BagsSpacing = "Zwischenraum zwischen den Taschenslots"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
-UIConfigLocal.BlizzardClassColor = "Zeige Spielernamen in deren Klassenfarbe an. (Freundesliste, Wer Liste, Gildenliste, etc.)"
 UIConfigLocal.BlizzardColorTextures = "Passe von den meisten UI Texturen den Farbton an."
 UIConfigLocal.BlizzardHideTalkingHead = "Verstecke das Questdialogfenster"
 UIConfigLocal.BlizzardRaidTools = "Raid Hilfsmittel"

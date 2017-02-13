@@ -61,7 +61,6 @@ UIConfigLocal.BagsSpacing = "Set the spacing between bag slots"
 
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
-UIConfigLocal.BlizzardClassColor = "Colorize player names by their class in friend list, who list, guild list, etc.."
 UIConfigLocal.BlizzardColorTextures = "Change most UI texture hue colors."
 UIConfigLocal.BlizzardHideTalkingHead = "Hide Talking Head Frame"
 UIConfigLocal.BlizzardRaidTools = "Raid tools"

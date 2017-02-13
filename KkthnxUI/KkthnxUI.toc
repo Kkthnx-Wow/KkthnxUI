@@ -1,5 +1,5 @@
 ## Interface: 70100
-## Version: 6.15
+## Version: 6.16
 
 ## Author: Kkthnx, Shestak
 ## Title: |cff3c9bedKkthnxUI|r

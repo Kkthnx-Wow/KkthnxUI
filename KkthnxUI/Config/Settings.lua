@@ -61,7 +61,6 @@ C["Bags"] = {
 
 -- Blizzard
 C["Blizzard"] = {
-	["ClassColor"] = true,
 	["ColorTextures"] = false,
 	["HideTalkingHead"] = false,
 	["RaidTools"] = true,
