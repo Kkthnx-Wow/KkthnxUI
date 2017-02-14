@@ -27,13 +27,14 @@ local IsInRaid = _G.IsInRaid
 local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PET_BATTLE_COMBAT_LOG = _G.PET_BATTLE_COMBAT_LOG
+local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CombatLogQuickButtonFrame_Custom, ChatTypeInfo, SLASH_BIGCHAT1, AFK, DND
 -- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
--- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory, BNToastFrame
+-- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory, BNToastFrame, BNToastFrameCloseButton
 
 local hooks = {}
 local Movers = K.Movers
@@ -157,7 +158,6 @@ local function SetChatStyle(frame)
 	local editbox = _G[framename.."EditBox"]
 
 	frame:SetClampRectInsets(0, 0, 0, 0)
-	frame:SetHitRectInsets(0, 0, 0, 0)
 	frame:SetClampedToScreen(false)
 	frame:SetFading(C.Chat.Fading)
 	frame:SetTimeVisible(C.Chat.FadingTimeVisible)
@@ -264,10 +264,8 @@ local function SetChatStyle(frame)
 	end
 
 	if frame ~= COMBATLOG or id ~= 2 then
-		if not hooks[frame] then
-			hooks[frame] = frame.AddMessage
-			frame.AddMessage = AddMessage
-		end
+		hooks[frame] = frame.AddMessage
+		frame.AddMessage = AddMessage
 	else
 		CombatLogQuickButtonFrame_Custom:StripTextures()
 		CombatLogQuickButtonFrame_Custom:SetBackdrop(K.BorderBackdrop)
@@ -278,35 +276,14 @@ local function SetChatStyle(frame)
 end
 
 local function SetupChat()
-	for i = 1, NUM_CHAT_WINDOWS do
-		local chatframe = _G[format("ChatFrame%s", i)]
-
-		SetChatStyle(chatframe)
-	end
-
 	local ChatTypeInfo = getmetatable(ChatTypeInfo).__index
-	-- Remember last channel
-	ChatTypeInfo.BN_WHISPER.sticky = 1
-	ChatTypeInfo.CHANNEL.sticky = 1
-	ChatTypeInfo.EMOTE.sticky = 0
-	ChatTypeInfo.GUILD.sticky = 1
-	ChatTypeInfo.INSTANCE_CHAT.sticky = 1
-	ChatTypeInfo.OFFICER.sticky = 1
-	ChatTypeInfo.PARTY.sticky = 1
-	ChatTypeInfo.RAID.sticky = 1
-	ChatTypeInfo.SAY.sticky = 1
-	ChatTypeInfo.WHISPER.sticky = 1
-	ChatTypeInfo.YELL.sticky = 0
 
-	ChatTypeInfo.GUILD.flashTabOnGeneral = true
-	ChatTypeInfo.OFFICER.flashTabOnGeneral = true
-end
-
-local function SetupChatFont()
-	for index = 1, NUM_CHAT_WINDOWS do
-		local frame = _G["ChatFrame"..index]
+	for i = 1, NUM_CHAT_WINDOWS do
+		local frame = _G["ChatFrame"..i]
 		local id = frame:GetID()
 		local _, fontsize = FCF_GetChatWindowInfo(id)
+
+		SetChatStyle(frame)
 
 		-- Min. size for chat font
 		if fontsize < 12 then
@@ -325,7 +302,25 @@ local function SetupChatFont()
 			frame:SetShadowOffset(K.Mult, -K.Mult)
 			frame:SetShadowColor(0, 0, 0, 0.9)
 		end
+
+		frame:SetSize(C.Chat.Width, C.Chat.Height)
 	end
+
+	-- Remember last channel
+	ChatTypeInfo.BN_WHISPER.sticky = 1
+	ChatTypeInfo.CHANNEL.sticky = 1
+	ChatTypeInfo.EMOTE.sticky = 0
+	ChatTypeInfo.GUILD.sticky = 1
+	ChatTypeInfo.INSTANCE_CHAT.sticky = 1
+	ChatTypeInfo.OFFICER.sticky = 1
+	ChatTypeInfo.PARTY.sticky = 1
+	ChatTypeInfo.RAID.sticky = 1
+	ChatTypeInfo.SAY.sticky = 1
+	ChatTypeInfo.WHISPER.sticky = 1
+	ChatTypeInfo.YELL.sticky = 0
+
+	ChatTypeInfo.GUILD.flashTabOnGeneral = true
+	ChatTypeInfo.OFFICER.flashTabOnGeneral = true
 end
 
 --This changes the growth direction of the toast frame depending on position of the mover
@@ -393,6 +388,5 @@ local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function()
 	SetupChat()
-	SetupChatFont()
 	SetToastFrame()
 end)

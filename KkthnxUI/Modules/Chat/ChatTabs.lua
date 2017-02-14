@@ -6,6 +6,7 @@ local _G = _G
 
 -- Wow API
 local hooksecurefunc = _G.hooksecurefunc
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CHAT_FRAME_TAB_ALERTING_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_ALERTING_NOMOUSE_ALPHA
@@ -35,44 +36,37 @@ end
 local SetupTabs = CreateFrame("Frame")
 SetupTabs:RegisterEvent("PLAYER_LOGIN")
 SetupTabs:SetScript("OnEvent", function()
-	for index = 1, 5 do
-		if (index ~= 2) then
-			_G["ChatFrame" .. index .. "Tab"]:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	for i = 1, NUM_CHAT_WINDOWS do
+		local tab = _G["ChatFrame"..i.."Tab"]
 
-			local tab = _G["ChatFrame" .. index .. "Tab"]
-			tab.fontString = tab:GetFontString()
-			if C.Chat.TabsOutline == true then
-				tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-				tab.fontString:SetShadowOffset(0, -0)
-			else
-				tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size)
-				tab.fontString:SetShadowOffset(K.Mult, -K.Mult)
-			end
-
-			tab.leftTexture:SetTexture(nil)
-			tab.middleTexture:SetTexture(nil)
-			tab.rightTexture:SetTexture(nil)
-
-			tab.leftHighlightTexture:SetTexture(nil)
-			tab.middleHighlightTexture:SetTexture(nil)
-			tab.rightHighlightTexture:SetTexture(nil)
-
-			tab.leftSelectedTexture:SetTexture(nil)
-			tab.middleSelectedTexture:SetTexture(nil)
-			tab.rightSelectedTexture:SetTexture(nil)
-
-			if (tab.conversationIcon) then
-				tab.conversationIcon:SetTexture(nil)
-			end
-
-			tab.glow:SetTexture(nil)
-			tab:SetAlpha(0)
-
-			tab:HookScript("OnEnter", UpdateTab)
-			tab:HookScript("OnLeave", UpdateTab)
-
-			UpdateTab(tab)
+		tab.fontString = tab:GetFontString()
+		if C.Chat.TabsOutline == true then
+			tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+			tab.fontString:SetShadowOffset(0, -0)
+		else
+			tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size)
+			tab.fontString:SetShadowOffset(K.Mult, -K.Mult)
 		end
+
+		tab.leftTexture:SetTexture(nil)
+		tab.middleTexture:SetTexture(nil)
+		tab.rightTexture:SetTexture(nil)
+
+		tab.leftHighlightTexture:SetTexture(nil)
+		tab.middleHighlightTexture:SetTexture(nil)
+		tab.rightHighlightTexture:SetTexture(nil)
+
+		tab.leftSelectedTexture:SetTexture(nil)
+		tab.middleSelectedTexture:SetTexture(nil)
+		tab.rightSelectedTexture:SetTexture(nil)
+
+		if (tab.conversationIcon) then
+			tab.conversationIcon:Kill()
+		end
+
+		tab:HookScript("OnEnter", UpdateTab)
+		tab:HookScript("OnLeave", UpdateTab)
+		UpdateTab(tab)
 	end
 
 	if C.Chat.TabsMouseover == true then
