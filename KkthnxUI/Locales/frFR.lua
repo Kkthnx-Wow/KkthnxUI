@@ -361,7 +361,6 @@ L.SlashCommand = {
 		"/resetui - Réinitialise les paramètres généraux par défaut.",
 		"/resetconfig - Réinitialise les paramètres KkthnxUI_Config.",
 		"/settings ADDON_NAME - Applique les paramètres msbt, dbm, skada, ou tous les addons.",
-		"/pulsecd - Test de cooldown.",
 		"/tt - Cible de chuchotement.",
 		"/ainv - Autorise les invitations automatiques.",
 		"/cfg - Ouvre les paramètres de l'interface.",

@@ -9,7 +9,7 @@ local rawget = rawget
 local string_format = string.format
 
 -- Wow API
-local GetInventoryItemDurability = GetInventoryItemDurability
+local GetInventoryItemDurability = _G.GetInventoryItemDurability
 
 local SLOTIDS = {}
 for _, slot in pairs({"Head", "Shoulder", "Chest", "Waist", "Legs", "Feet", "Wrist", "Hands", "MainHand", "SecondaryHand"}) do

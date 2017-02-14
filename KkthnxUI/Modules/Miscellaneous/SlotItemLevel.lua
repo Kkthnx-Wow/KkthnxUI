@@ -12,17 +12,16 @@ local strsplit = string.split
 local tonumber = tonumber
 
 -- Wow API
-local GetDetailedItemLevelInfo = GetDetailedItemLevelInfo
-local GetInventoryItemLink = GetInventoryItemLink
-local GetInventorySlotInfo = GetInventorySlotInfo
-local GetItemGem = GetItemGem
-local GetItemInfo = GetItemInfo
-local UnitLevel = UnitLevel
+local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local GetInventorySlotInfo = _G.GetInventorySlotInfo
+local GetItemGem = _G.GetItemGem
+local GetItemInfo = _G.GetItemInfo
+local UnitLevel = _G.UnitLevel
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CharacterFrame, InspectFrame,CreateFrame
 
-local _G = _G
 local equiped = {} -- Table to store equiped items
 
 local f = CreateFrame("Frame", nil, _G.PaperDollFrame) -- iLvel number frame

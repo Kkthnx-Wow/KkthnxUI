@@ -113,10 +113,6 @@ if CheckAddOn("ChatSounds") then
 	C.Chat.WhispSound = false
 end
 
-if CheckAddOn("Doom_CooldownPulse") then
-	C.PulseCD.Enable = false
-end
-
 if CheckAddOn("MBB") or CheckAddOn("MinimapButtonFrame") then
 	C.Minimap.CollectButtons = false
 	C.Skins.MinimapButtons = false

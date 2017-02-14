@@ -302,9 +302,6 @@ end
 
 SlashCmdList.TEST_UI = function(msg)
 	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
-	if C.PulseCD.Enable == true then
-		SlashCmdList.PulseCD()
-	end
 	if C.Unitframe.Enable == true then
 		SlashCmdList.TEST_UF()
 	end

@@ -4,18 +4,26 @@ if C.Unitframe.Enable ~= true or C.Filger.Enable ~= true then return end
 -- Lua API
 local _G = _G
 local pairs = pairs
-local unpack = unpack
-local format = string.format
-local time = time
 local print = print
+local string_format = string.format
+local time = time
+local unpack = unpack
 
 -- Wow API
-local UnitDebuff, UnitBuff = UnitDebuff, UnitBuff
-local GetParent = GetParent
-local GetItemInfo = GetItemInfo
-local GetSpellInfo = GetSpellInfo
-local GetInventoryItemLink = GetInventoryItemLink
-local GetSpellCooldown = GetSpellCooldown
+local CreateFrame = _G.CreateFrame
+local GetInventoryItemCooldown = _G.GetInventoryItemCooldown
+local GetInventoryItemLink = _G.GetInventoryItemLink
+local GetItemInfo = _G.GetItemInfo
+local GetParent = _G.GetParent
+local GetSpecialization = _G.GetSpecialization
+local GetSpellCooldown = _G.GetSpellCooldown
+local GetSpellInfo = _G.GetSpellInfo
+local GetTime = _G.GetTime
+local UnitDebuff, UnitBuff = _G.UnitDebuff, _G.UnitBuff
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: GameTooltip, _, CooldownFrame_Set
+
 local Movers = K.Movers
 
 P_BUFF_ICON_Anchor:SetPoint(unpack(C.Position.Filger.PlayerBuffIcon))
@@ -63,7 +71,7 @@ function Filger:TooltipOnEnter()
 		local str = "spell:%s"
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 0, 3)
-		GameTooltip:SetHyperlink(format(str, self.spellID))
+		GameTooltip:SetHyperlink(string_format(str, self.spellID))
 		GameTooltip:Show()
 	end
 end

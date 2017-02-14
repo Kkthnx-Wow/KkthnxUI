@@ -196,7 +196,6 @@ UIConfigLocal.MiscAutoSellGrays = "When visiting a vendor, automatically sell gr
 UIConfigLocal.MiscBGSpam = "Remove Boss Emote spam during BG"
 UIConfigLocal.MiscColorPicker = "Improved color picker"
 UIConfigLocal.MiscCombatState = "Display a message when you enter/leave combat at the top of the screen"
-UIConfigLocal.MiscEnhancedMail = "Adds a take all button to your mail frame."
 UIConfigLocal.MiscEnhancedPvpMessages = "Display battleground messages in the middle of the screen."
 UIConfigLocal.MiscInviteKeyword = "Short keyword for invite (/ainv)"
 UIConfigLocal.MiscItemLevel = "Item level on character slot buttons"
@@ -233,28 +232,6 @@ UIConfigLocal.NameplatesSmooth = "Bars will transition smoothly"
 UIConfigLocal.NameplatesTotemIcons = "Show icon above enemy totems nameplate"
 UIConfigLocal.NameplatesTrackAuras = "Show debuffs (from the list)"
 UIConfigLocal.NameplatesWidth = "Nameplates width"
-
--- PulseCD
-UIConfigLocal.PulseCD = "Pulse Cooldowns"
-UIConfigLocal.PulseCDAnimationScale = "Animation scaling"
-UIConfigLocal.PulseCDEnable = "Show cooldowns pulse"
-UIConfigLocal.PulseCDHoldTime = "Max opacity hold time"
-UIConfigLocal.PulseCDSize = "Cooldowns pulse icon size"
-UIConfigLocal.PulseCDSound = "Warning sound notification"
-UIConfigLocal.PulseCDThreshold = "Minimal threshold time"
-
--- RaidCD
-UIConfigLocal.RaidCD = "Raid Cooldowns"
-UIConfigLocal.RaidCDEnable = "Enable raid cooldowns"
-UIConfigLocal.RaidCDHeight = "Raid cooldowns bars height"
-UIConfigLocal.RaidCDWidth = "Raid cooldowns bars width (if the icon is enabled, width+28)"
-UIConfigLocal.RaidCDUpWards = "Raid cooldowns sort upwards bars"
-UIConfigLocal.RaidCDExpiration = "Sort by expiration time"
-UIConfigLocal.RaidCDShowSelf = "Show self cooldowns"
-UIConfigLocal.RaidCDShowIcon = "Raid cooldowns icons"
-UIConfigLocal.RaidCDShowInRaid = "Show raid cooldowns in raid zone"
-UIConfigLocal.RaidCDShowInParty = "Show raid cooldowns in party zone"
-UIConfigLocal.RaidCDShowInArena = "Show raid cooldowns in arena zone"
 
 -- Config GUI Buttons
 UIConfigLocal.ConfigApplyButton = "Apply"

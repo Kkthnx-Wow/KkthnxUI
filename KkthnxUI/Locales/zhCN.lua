@@ -360,7 +360,6 @@ L.SlashCommand = {
 		"/resetui - 加载默认设置。",
 		"/resetconfig - 重置KkthnxUI_Config设置。",
 		"/settings 插件名称(msbt, dbm, skada, all) - 加载msbt，dbm，skada，或以上所有插件的默认设置。",
-		"/pulsecd - 冷却模块测试。",
 		"/tt - 密语目标。",
 		"/ainv - 启用自动邀请。",
 		"/cfg - 打开设置界面。",

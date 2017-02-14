@@ -214,7 +214,6 @@ C["Misc"] = {
 	["BGSpam"] = false,
 	["ColorPicker"] = false,
 	["CombatState"] = false,
-	["EnhancedMail"] = true,
 	["EnhancedPvpMessages"] = false,
 	["InviteKeyword"] = "inv",
 	["ItemLevel"] = false,
@@ -252,29 +251,6 @@ C["Nameplates"] = {
 	["TotemIcons"] = false,
 	["TrackAuras"] = true,
 	["Width"] = 120,
-}
-
--- PulseCD
-C["PulseCD"] = {
-	["Enable"] = false,
-	["Size"] = 76,
-	["Sound"] = false,
-	["AnimationScale"] = 1.5,
-	["HoldTime"] = 0,
-	["Threshold"] = 3,
-}
-
-C["RaidCD"] = {
-	["Enable"] = true,
-	["Height"] = 15,
-	["Width"] = 186,
-	["UpWards"] = false,
-	["Expiration"] = false,
-	["ShowSelf"] = true,
-	["ShowIcon"] = true,
-	["ShowInRaid"] = true,
-	["ShowInParty"] = true,
-	["ShowInArena"] = true,
 }
 
 -- Skins

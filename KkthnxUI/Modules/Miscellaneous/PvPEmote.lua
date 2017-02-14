@@ -1,14 +1,15 @@
 local K, C, L = unpack(select(2, ...))
 
 -- Lua API
+local _G = _G
 local bit_band = bit.band
 local math_random = math.random
 local select = select
 
 -- Wow API
-local DoEmote = DoEmote
-local UnitGUID = UnitGUID
-local GetAchievementInfo = GetAchievementInfo
+local DoEmote = _G.DoEmote
+local GetAchievementInfo = _G.GetAchievementInfo
+local UnitGUID = _G.UnitGUID
 
 -- GLOBALS: COMBATLOG_OBJECT_CONTROL_PLAYER
 

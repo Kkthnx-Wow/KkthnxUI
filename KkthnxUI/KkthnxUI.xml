@@ -175,18 +175,16 @@
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />
    <Script file="Modules\Miscellaneous\Filger.lua" />
+   <Script file="Modules\Miscellaneous\LagTolerance.lua" />
    <Script file="Modules\Miscellaneous\LFDQueueTimer.lua" />
    <Script file="Modules\Miscellaneous\LossControl.lua" />
-   <Script file="Modules\Miscellaneous\Mail.lua" />
    <Script file="Modules\Miscellaneous\Merchant.lua" />
    <Script file="Modules\Miscellaneous\MerchantItemLevel.lua" />
    <Script file="Modules\Miscellaneous\MinimapButton.lua" />
    <Script file="Modules\Miscellaneous\Miscellaneous.lua" />
    <Script file="Modules\Miscellaneous\Mounts.lua" />
-   <Script file="Modules\Miscellaneous\PulseCD.lua" />
    <Script file="Modules\Miscellaneous\PvPEmote.lua" />
    <Script file="Modules\Miscellaneous\PvPQueueTimer.lua" />
-   <Script file="Modules\Miscellaneous\RaidCD.lua" />
    <Script file="Modules\Miscellaneous\SlotDurability.lua" />
    <Script file="Modules\Miscellaneous\SlotItemLevel.lua" />
    <!-- Nameplates -->

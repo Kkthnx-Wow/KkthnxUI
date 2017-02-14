@@ -26,7 +26,7 @@ local UseContainerItem = _G.UseContainerItem
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PickupMerchantItem, DEFAULT_CHAT_FRAME, RepairAllItems, BuyMerchantItem
--- GLOBALS: MerchantFrame, GameTooltip, ITEM_VENDOR_STACK_BUY
+-- GLOBALS: MerchantFrame, GameTooltip, ITEM_VENDOR_STACK_BUY, MerchantFilter
 
 MerchantFilter = {
 	[6289]  = true, -- Raw Longjaw Mud Snapper

@@ -2,14 +2,15 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local tinsert = table.insert
+local table_insert = table.insert
+local getn = getn
 
 -- Wow API
-local hooksecurefunc = hooksecurefunc
-local UIDROPDOWNMENU_MAXLEVELS = UIDROPDOWNMENU_MAXLEVELS
+local hooksecurefunc = _G.hooksecurefunc
+local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ChatFrame1, getn -- No idea what this is. There is no info about it. Maybe we shouldn't cahe this.
+-- GLOBALS: ChatFrame1, QueueStatusFrame
 
 local SkinDropDowns = CreateFrame("Frame")
 SkinDropDowns:RegisterEvent("ADDON_LOADED")
@@ -77,7 +78,7 @@ SkinDropDowns:SetScript("OnEvent", function(self, event, addon)
 		}
 
 		if C.Blizzard.RaidTools == true then
-			tinsert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
+			table_insert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
 		end
 
 		for i = 1, getn(BlizzardButtons) do

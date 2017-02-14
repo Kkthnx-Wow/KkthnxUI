@@ -361,7 +361,6 @@ L.SlashCommand = {
 		"/resetui - Setzt die Einstellungen auf den Standartwert zurück.",
 		"/resetconfig - Setzt alle Einstellungen aus dem KkthnxUI_Config Menü auf den Standartwert zurück.",
 		"/settings ADDON_NAME - Übernimmt die Einstellungen für msbt, dbm, skada, oder allen Addons.",
-		"/pulsecd - Abklingzeit Pulsetest.",
 		"/tt - Ziel anflüstern.",
 		"/ainv - Aktiviert die automatischen Einladungen.",
 		"/cfg - Öffnet das Interface Einstellgsmenü.",

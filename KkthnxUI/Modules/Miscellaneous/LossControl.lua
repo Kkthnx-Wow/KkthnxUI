@@ -1,14 +1,15 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Wow Lua
+local _G = _G
+
 -- Wow API
-local hooksecurefunc = hooksecurefunc
+local hooksecurefunc = _G.hooksecurefunc
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LossOfControlFrame
 
-local LossControl = CreateFrame("Frame", nil, UIParent)
-
-function LossControl:Update()
+local function LossControl_Update(self)
 	self.Icon:ClearAllPoints()
 	self.Icon:SetPoint("CENTER", self, "CENTER", 0, 0)
 
@@ -35,25 +36,18 @@ function LossControl:Update()
 	end
 end
 
-function LossControl:AddHooks()
-	hooksecurefunc("LossOfControlFrame_SetUpDisplay", self.Update)
-end
-
-function LossControl:Enable()
+local function LossControl_Enable()
 	LossOfControlFrame:StripTextures()
 	LossOfControlFrame:CreateBackdrop()
 	LossOfControlFrame.Icon:SetTexCoord(.1, .9, .1, .9)
 	LossOfControlFrame.AbilityName:ClearAllPoints()
 	LossOfControlFrame.backdrop:SetOutside(LossOfControlFrame.Icon, 4, 4)
-	LossOfControlFrame.Cooldown:SetDrawSwipe(false)
-	LossOfControlFrame.Cooldown:SetDrawEdge(false)
-	LossOfControlFrame.Cooldown:SetAlpha(0)
 
-	self:AddHooks()
+	hooksecurefunc("LossOfControlFrame_SetUpDisplay", LossControl_Update)
 end
 
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function()
-	LossControl:Enable()
+	LossControl_Enable()
 end)

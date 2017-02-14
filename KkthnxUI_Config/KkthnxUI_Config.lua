@@ -58,13 +58,11 @@ local ALLOWED_GROUPS = {
 	["Minimap"] = 15,
 	["Misc"] = 16,
 	["Nameplates"] = 17,
-	["PulseCD"] = 18,
-	["RaidCD"] = 19,
-	["Raidframe"] = 20,
-	["Skins"] = 21,
-	["Tooltip"] = 22,
-	["Unitframe"] = 23,
-	["WorldMap"] = 24,
+	["Raidframe"] = 18,
+	["Skins"] = 19,
+	["Tooltip"] = 20,
+	["Unitframe"] = 21,
+	["WorldMap"] = 22,
 }
 
 local function Local(o)

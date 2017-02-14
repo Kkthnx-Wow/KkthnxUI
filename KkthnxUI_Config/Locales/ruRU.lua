@@ -196,7 +196,6 @@ UIConfigLocal.MiscAutoSellGrays = "Автоматически продавать
 UIConfigLocal.MiscBGSpam = "Удалить спам эмоций боссов во время боя"
 UIConfigLocal.MiscColorPicker = "Улучшенная выборка цветов"
 UIConfigLocal.MiscCombatState = "Display a message when you enter/leave combat at the top of the screen"
-UIConfigLocal.MiscEnhancedMail = "Добавить кнопку 'ВСЕ' в окно почты"
 UIConfigLocal.MiscEnhancedPvpMessages = "Отображать сообщения полей боя в центре экрана."
 UIConfigLocal.MiscInviteKeyword = "Ключевое слово для автоприглашения (/ainv)"
 UIConfigLocal.MiscItemLevel = "Показывать уровень предмета надетого на персонажа"
@@ -233,28 +232,6 @@ UIConfigLocal.NameplatesSmooth = "Bars will transition smoothly"
 UIConfigLocal.NameplatesTotemIcons = "Отображать иконку над вражескими тотемами"
 UIConfigLocal.NameplatesTrackAuras = "Показывать дебаффы (из списка)"
 UIConfigLocal.NameplatesWidth = "Ширина индикаторов"
-
--- Иконки восстановления
-UIConfigLocal.PulseCD = "Иконки восстановления"
-UIConfigLocal.PulseCDAnimationScale = "Масштаб анимации"
-UIConfigLocal.PulseCDEnable = "Показывать иконки восстановления"
-UIConfigLocal.PulseCDHoldTime = "Время отображения"
-UIConfigLocal.PulseCDSize = "Размер иконки восстановления"
-UIConfigLocal.PulseCDSound = "Предупреждать звуковым оповещением"
-UIConfigLocal.PulseCDThreshold = "Минимальный порог времени"
-
--- RaidCD
-UIConfigLocal.RaidCD = "Перезарядки рейда"
-UIConfigLocal.RaidCDEnable = "Включить рейдовые перезарядки"
-UIConfigLocal.RaidCDExpiration = "Сортировка по времени"
-UIConfigLocal.RaidCDHeight = "Высота индикаторов"
-UIConfigLocal.RaidCDShowIcon = "Отображать иконки рейдовых перезарядок"
-UIConfigLocal.RaidCDShowInArena = "Отображать на арене"
-UIConfigLocal.RaidCDShowInParty = "Отображать в группе"
-UIConfigLocal.RaidCDShowInRaid = "Отображать в рейде"
-UIConfigLocal.RaidCDShowSelf = "Отображать свои перезарядки"
-UIConfigLocal.RaidCDUpWards = "Сделать сортировку вверх"
-UIConfigLocal.RaidCDWidth = "Ширина индикаторов"
 
 -- Config GUI Buttons
 UIConfigLocal.ConfigApplyButton = "Apply"

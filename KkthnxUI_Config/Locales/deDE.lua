@@ -196,7 +196,6 @@ UIConfigLocal.MiscAutoSellGrays = "Verkaufe automatisch graue Gegenstände beim 
 UIConfigLocal.MiscBGSpam = "Lösche 'Boss Emote spam' während du auf dem Schlachtfeld bist"
 UIConfigLocal.MiscColorPicker = "Verbesserte Farbauswahl"
 UIConfigLocal.MiscCombatState = "Display a message when you enter/leave combat at the top of the screen"
-UIConfigLocal.MiscEnhancedMail = "Fügt einen 'Öffne Alles' Button deinem Briefkasten hinzu."
 UIConfigLocal.MiscEnhancedPvpMessages = "Zeigt Schlachtfeld Nachrichten in der Mitte des Bildschirms."
 UIConfigLocal.MiscInviteKeyword = "Schlüsselwort zum einladen (/ainv)"
 UIConfigLocal.MiscItemLevel = "Zeige den Itemlevel auf Deinen Gegenständen in der Charakterübersicht an"
@@ -233,28 +232,6 @@ UIConfigLocal.NameplatesSmooth = "Bars will transition smoothly"
 UIConfigLocal.NameplatesTotemIcons = "Show icon above enemy totems nameplate" -- Needs Translation
 UIConfigLocal.NameplatesTrackAuras = "Zeige Schwächungszauber"
 UIConfigLocal.NameplatesWidth = "Breite der Namensplaketten"
-
--- Pulsieren
-UIConfigLocal.PulseCD = "Pulsieren"
-UIConfigLocal.PulseCDAnimationScale = "Animationsskalierung"
-UIConfigLocal.PulseCDEnable = "Zeige pulsierende Abklingzeiten"
-UIConfigLocal.PulseCDHoldTime = "Maximal anhaltende Effektdauer"
-UIConfigLocal.PulseCDSize = "Symbolgröße der pulsierende Abklingzeiten"
-UIConfigLocal.PulseCDSound = "Soundwarnung"
-UIConfigLocal.PulseCDThreshold = "Minimaler Schwellwert"
-
--- RaidCD
-UIConfigLocal.RaidCD = "Schlachtzugs Cooldowns"
-UIConfigLocal.RaidCDEnable = "Abklingzeiten des Raids aktivieren"
-UIConfigLocal.RaidCDExpiration = "Sortieren nach Abklingzeit"
-UIConfigLocal.RaidCDHeight = "Leistenhöhe für Raidabklingzeiten"
-UIConfigLocal.RaidCDShowIcon = "Symbole für Raidabklingzeiten"
-UIConfigLocal.RaidCDShowInArena = "Zeige Raidabklingzeiten in der Arena"
-UIConfigLocal.RaidCDShowInParty = "Zeige Raidabklingzeiten in Gruppengebieten"
-UIConfigLocal.RaidCDShowInRaid = "Zeige Raidabklingzeiten in Raidgebieten"
-UIConfigLocal.RaidCDShowSelf = "Zeige deine Cooldowns"
-UIConfigLocal.RaidCDUpWards = "Leisten für Raidabklingzeiten wachsen nach oben"
-UIConfigLocal.RaidCDWidth = "Leistenbreite der Raidabklingzeiten(Wenn das Symbol aktiviert ist, Breite+28)"
 
 -- Config GUI Buttons
 UIConfigLocal.ConfigApplyButton = "Apply"

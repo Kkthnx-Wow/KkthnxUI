@@ -5,9 +5,9 @@ if C.Misc.MerchantItemLevel ~= true then return end
 local _G = _G
 
 -- Wow API
-local GetItemInfo = GetItemInfo
-local GetMerchantItemLink = GetMerchantItemLink
-local GetMerchantNumItems = GetMerchantNumItems
+local GetItemInfo = _G.GetItemInfo
+local GetMerchantItemLink = _G.GetMerchantItemLink
+local GetMerchantNumItems = _G.GetMerchantNumItems
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: MERCHANT_ITEMS_PER_PAGE, MerchantFrame
@@ -40,4 +40,5 @@ local function MerchantItemlevel()
 		end
 	end
 end
+
 hooksecurefunc("MerchantFrame_UpdateMerchantInfo", MerchantItemlevel)

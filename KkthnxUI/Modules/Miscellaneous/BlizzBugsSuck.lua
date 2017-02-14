@@ -7,12 +7,12 @@ local pairs = pairs
 local type = type
 
 -- Wow API
-local DAY_ONELETTER_ABBR = DAY_ONELETTER_ABBR
-local GetNumAddOns = GetNumAddOns
-local hooksecurefunc = hooksecurefunc
-local InCombatLockdown = InCombatLockdown
-local INTERFACEOPTIONS_ADDONCATEGORIES = INTERFACEOPTIONS_ADDONCATEGORIES
-local IsModifiedClick = IsModifiedClick
+local DAY_ONELETTER_ABBR = _G.DAY_ONELETTER_ABBR
+local GetNumAddOns = _G.GetNumAddOns
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local INTERFACEOPTIONS_ADDONCATEGORIES = _G.INTERFACEOPTIONS_ADDONCATEGORIES
+local IsModifiedClick = _G.IsModifiedClick
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: InterfaceOptionsFrameAddOnsListScrollBar, InterfaceOptionsFrame_OpenToCategory

@@ -355,8 +355,6 @@ L.SlashCommand = {
 		"/gm - Opens GM frame.",
 		"/moveui - Allows the movement of interface elements.",
 		"/patch - Display Wow patch info.",
-		"/pulsecd - Self cooldown pulse test.",
-		"/raidcd - Raid cooldown test.",
 		"/rc - Activates a ready check.",
 		"/rd - Disband party or raid.",
 		"/resetconfig - Resets KkthnxUI_Config settings.",
