@@ -45,6 +45,7 @@ local Inventory = CreateFrame("Frame")
 local QuestColor = {1, 1, 0}
 
 local BlizzardBags = {
+	MainMenuBarBackpackButton,
 	CharacterBag0Slot,
 	CharacterBag1Slot,
 	CharacterBag2Slot,
@@ -347,9 +348,10 @@ function Bags:CreateContainer(storagetype, ...)
 		ToggleBagsContainer.Text:SetFont(C.Media.Font, 12)
 		ToggleBagsContainer.Text:SetJustifyH("LEFT")
 		ToggleBagsContainer.Text:SetShadowColor(0, 0, 0)
-		ToggleBagsContainer.Text:SetShadowOffset(K.Mult,-K.Mult)
+		ToggleBagsContainer.Text:SetShadowOffset(K.Mult, -K.Mult)
 		ToggleBagsContainer.Text:SetPoint("CENTER")
 		ToggleBagsContainer.Text:SetText(BAGSLOTTEXT)
+
 		ToggleBagsContainer:SetScript("OnMouseUp", function(self, button)
 			local Purchase = BankFramePurchaseInfo
 
@@ -387,7 +389,6 @@ function Bags:CreateContainer(storagetype, ...)
 		end)
 
 		for _, Button in pairs(BlizzardBags) do
-			local Count = _G[Button:GetName().."Count"]
 			local Icon = _G[Button:GetName().."IconTexture"]
 
 			Button:SetParent(BagsContainer)
@@ -407,9 +408,6 @@ function Bags:CreateContainer(storagetype, ...)
 			else
 				Button:SetPoint("TOPLEFT", BagsContainer, "TOPLEFT", C.Bags.Spacing, -C.Bags.Spacing)
 			end
-
-			Count.Show = K.Noop
-			Count:Hide()
 
 			Icon:SetTexCoord(unpack(K.TexCoords))
 			Icon:SetInside()

@@ -2,17 +2,17 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local format = string.format
-local gsub = string.gsub
 local pairs = pairs
+local string_find = string.find
+local string_format = string.format
+local string_gsub = string.gsub
+local table_insert = table.insert
 local unpack = unpack
-local strfind = string.find
 
 -- Wow API
-local tinsert = table.insert
-local CreateFrame, UIParent = CreateFrame, UIParent
-local ToggleFrame = ToggleFrame
-local GetSpellInfo = GetSpellInfo
+local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
+local GetSpellInfo = _G.GetSpellInfo
+local ToggleFrame = _G.ToggleFrame
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CopyScroll, C_Timer, RandomRoll, UISpecialFrames, ChatFontNormal, ChatMenu
@@ -21,6 +21,7 @@ local GetSpellInfo = GetSpellInfo
 local lines = {}
 local frame = nil
 local editBox = nil
+local font = nil
 local isf = nil
 local sizes = {
 	":14:14",
@@ -38,7 +39,7 @@ local function CreatCopyFrame()
 	frame:SetSize(540, 300)
 	frame:SetPoint("CENTER", UIParent, "CENTER", 0, 100)
 	frame:SetFrameStrata("DIALOG")
-	tinsert(UISpecialFrames, "CopyFrame")
+	table_insert(UISpecialFrames, "CopyFrame")
 	frame:Hide()
 
 	local scrollArea = CreateFrame("ScrollFrame", "CopyScroll", frame, "UIPanelScrollFrameTemplate")
@@ -60,8 +61,8 @@ local function CreatCopyFrame()
 		local text = self:GetText()
 
 		for _, size in pairs(sizes) do
-			if strfind(text, size) and not strfind(text, size.."]") then
-				self:SetText(gsub(text, size, ":12:12"))
+			if string_find(text, size) and not string_find(text, size.."]") then
+				self:SetText(string_gsub(text, size, ":12:12"))
 			end
 		end
 	end)
@@ -69,6 +70,9 @@ local function CreatCopyFrame()
 	local close = CreateFrame("Button", "CopyCloseButton", frame, "UIPanelCloseButton")
 	close:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
 	scrollArea:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 8)
+
+	font = frame:CreateFontString(nil, nil, "GameFontNormal")
+	font:Hide()
 
 	isf = true
 end
@@ -78,13 +82,17 @@ local scrollDown = function()
 end
 
 local function Copy(cf)
+	if not isf then CreatCopyFrame() end
 	local text = ""
 	for i = 1, cf:GetNumMessages() do
-		text = text..cf:GetMessageInfo(i).."\n"
+		local line = cf:GetMessageInfo(i)
+		font:SetFormattedText("%s\n", line)
+		local cleanLine = font:GetText() or ""
+		text = text..cleanLine
 	end
-	text = text:gsub("|[Tt]Interface\\TargetingFrame\\UI%-RaidTargetingIcon_(%d):0|[Tt]", "{rt%1}")
-	text = text:gsub("|[Tt][^|]+|[Tt]", "")
-	if not isf then CreatCopyFrame() end
+	text = text:gsub("|T[^\\]+\\[^\\]+\\[Uu][Ii]%-[Rr][Aa][Ii][Dd][Tt][Aa][Rr][Gg][Ee][Tt][Ii][Nn][Gg][Ii][Cc][Oo][Nn]_(%d)[^|]+|t", "{rt%1}")
+	text = text:gsub("|T13700([1-8])[^|]+|t", "{rt%1}")
+	text = text:gsub("|T[^|]+|t", "")
 	if frame:IsShown() then frame:Hide() return end
 	frame:Show()
 	editBox:SetText(text)
@@ -92,8 +100,8 @@ local function Copy(cf)
 end
 
 for i = 1, NUM_CHAT_WINDOWS do
-	local cf = _G[format("ChatFrame%d", i)]
-	local button = CreateFrame("Button", format("ButtonCF%d", i), cf)
+	local cf = _G[string_format("ChatFrame%d", i)]
+	local button = CreateFrame("Button", string_format("ButtonCF%d", i), cf)
 	button:SetPoint("BOTTOMRIGHT", 3, -2)
 	button:SetSize(20, 20)
 	button:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Copy")
