@@ -22,7 +22,6 @@
    <Script file="Config\Filters\Announcements.lua" />
    <Script file="Config\Filters\AuraList.lua" />
    <Script file="Config\Filters\CastbarTicks.lua" />
-   <Script file="Config\Filters\Cooldowns.lua" />
    <Script file="Config\Filters\ErrorFilter.lua" />
    <Script file="Config\Filters\FilgerSpells.lua" />
    <Script file="Config\Filters\Nameplates.lua" />
