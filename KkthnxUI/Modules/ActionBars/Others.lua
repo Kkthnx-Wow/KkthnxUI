@@ -9,6 +9,7 @@ local string_format = string.format
 local CanExitVehicle = _G.CanExitVehicle
 local GetActionBarToggles = _G.GetActionBarToggles
 local GetPossessInfo = _G.GetPossessInfo
+local InCombatLockdown = _G.InCombatLockdown
 local IsPossessBarVisible = _G.IsPossessBarVisible
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
@@ -38,20 +39,20 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	if InCombatLockdown() then return end
 
 	local Installed = KkthnxUIDataPerChar.Install
 	if Installed then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
-			SetActionBarToggles(1, 1, 1, 1)
+			SetActionBarToggles(nil, nil, nil, nil, nil)
 			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
 
 	if C.ActionBar.Grid == true then
 		SetCVar("alwaysShowActionBars", 1)
-		for i = 1, 12 do
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)

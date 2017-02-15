@@ -10,74 +10,90 @@ local hooksecurefunc = _G.hooksecurefunc
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local SetCVar = _G.SetCVar
+local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: RightBarMouseOver, StanceBarMouseOver, PetBarMouseOver, IconIntroTracker
--- GLOBALS: TalentMicroButtonAlert, CollectionsMicroButtonAlert, UIFrameHider
--- GLOBALS: InterfaceOptionsActionBarsPanelBottomLeft, InterfaceOptionsActionBarsPanelBottomRight
--- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo
--- GLOBALS: InterfaceOptionsActionBarsPanelAlwaysShowActionBars, PlayerTalentFrame, RightActionBarAnchor
--- GLOBALS: PetActionBarAnchor, ShapeShiftBarAnchor, MultiBarLeft, MultiBarBottomRight, MultiBarRight
--- GLOBALS: PetHolder, ShiftHolder, HoverBind, MainMenuBar, MainMenuBarArtFrame, OverrideActionBar
--- GLOBALS: PossessBarFrame, PetActionBarFrame, ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight
--- GLOBALS: EJMicroButtonAlert
+-- Global variables that we don't need to cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ActionBarController, MainMenuBar, MainMenuExpBar, ReputationWatchBar
+-- GLOBALS: CollectionsMicroButtonAlert, EJMicroButtonAlert, TalentMicroButtonAlert
+-- GLOBALS: IconIntroTracker, MultiCastActionBarFrame, RightBarMouseOver, PetBarMouseOver
+-- GLOBALS: MainMenuBarArtFrame, PlayerTalentFrame, ArtifactWatchBar, HonorWatchBar
+-- GLOBALS: MultiBarBottomRight, MultiBarLeft, MultiBarRight, StanceBarMouseOver
+-- GLOBALS: PetActionBarAnchor, ShapeShiftBarAnchor, PetActionBarFrame, PossessBarFrame
+-- GLOBALS: OverrideActionBar, StanceBarFramePetHolder, ShiftHolder, PetHolder
+-- GLOBALS: HoverBind, UIFrameHider, RightActionBarAnchor, StanceBarFrame, SetActionBarToggles
 
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("PLAYER_LOGIN")
-DisableBlizzard:SetScript("OnEvent", function(self, event)
-	local AlwaysShowBars = GetCVarBool("alwaysShowActionBars")
-	if not AlwaysShowBars then
-			SetCVar("alwaysShowActionBars", 1)
+DisableBlizzard:SetScript("OnEvent", function()
+	-- Lets start with these
+	CollectionsMicroButtonAlert:Kill()
+	EJMicroButtonAlert:Kill()
+	TalentMicroButtonAlert:Kill()
+
+	-- Look into what this does
+	ArtifactWatchBar:SetParent(UIFrameHider)
+	HonorWatchBar:SetParent(UIFrameHider)
+
+	for i = 1, 12 do
+	if _G["OverrideActionBarButton"..i] then
+			_G["OverrideActionBarButton"..i]:Hide()
+			_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
+			_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
+		end
 	end
 
-	for _, Frame in pairs({
-		MainMenuBar,
-		MainMenuBarArtFrame,
-		OverrideActionBar,
-		PossessBarFrame,
-		PetActionBarFrame,
-		IconIntroTracker,
-		ShapeshiftBarLeft,
-		ShapeshiftBarMiddle,
-		ShapeshiftBarRight,
-		TalentMicroButtonAlert,
-		CollectionsMicroButtonAlert,
-		EJMicroButtonAlert
-	}) do
-		Frame:UnregisterAllEvents()
-		Frame.ignoreFramePositionManager = true
-		Frame:SetParent(UIFrameHider)
-	end
+	ActionBarController:UnregisterAllEvents()
+	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
 
-	for index = 1, 6 do
-		local Button = _G["OverrideActionBarButton" .. index]
+	MainMenuBar:EnableMouse(false)
+	MainMenuBar:SetAlpha(0)
+	MainMenuExpBar:UnregisterAllEvents()
+	MainMenuExpBar:Hide()
+	MainMenuExpBar:SetParent(UIFrameHider)
 
-		Button:UnregisterAllEvents()
-		Button:SetAttribute("statehidden", true)
-		Button:SetAttribute("showgrid", 1)
-	end
+	ReputationWatchBar:UnregisterAllEvents()
+	ReputationWatchBar:Hide()
+	ReputationWatchBar:SetParent(UIFrameHider)
+
+	MainMenuBarArtFrame:UnregisterEvent("ACTIONBAR_PAGE_CHANGED")
+	MainMenuBarArtFrame:UnregisterEvent("ADDON_LOADED")
+	MainMenuBarArtFrame:Hide()
+	MainMenuBarArtFrame:SetParent(UIFrameHider)
+
+	StanceBarFrame:UnregisterAllEvents()
+	StanceBarFrame:Hide()
+	StanceBarFrame:SetParent(UIFrameHider)
+
+	OverrideActionBar:UnregisterAllEvents()
+	OverrideActionBar:Hide()
+	OverrideActionBar:SetParent(UIFrameHider)
+
+	PossessBarFrame:UnregisterAllEvents()
+	PossessBarFrame:Hide()
+	PossessBarFrame:SetParent(UIFrameHider)
+
+	PetActionBarFrame:UnregisterAllEvents()
+	PetActionBarFrame:Hide()
+	PetActionBarFrame:SetParent(UIFrameHider)
+
+	MultiCastActionBarFrame:UnregisterAllEvents()
+	MultiCastActionBarFrame:Hide()
+	MultiCastActionBarFrame:SetParent(UIFrameHider)
+
+	IconIntroTracker:UnregisterAllEvents()
+	IconIntroTracker:Hide()
+	IconIntroTracker:SetParent(UIFrameHider)
 
 	if PlayerTalentFrame then
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
+		hooksecurefunc("TalentFrame_LoadUI", function() PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED") end)
 	end
 
-	hooksecurefunc("ActionButton_OnEvent", function(self, event)
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
-			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
-	end)
-
-	MainMenuBar.slideOut.IsPlaying = function()
-		return true
-	end
+	SetActionBarToggles(nil, nil, nil, nil, nil)
 end)
 
+-- Mouseover stuff
 function RightBarMouseOver(alpha)
 	RightActionBarAnchor:SetAlpha(alpha)
 	PetActionBarAnchor:SetAlpha(alpha)

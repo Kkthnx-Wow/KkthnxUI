@@ -329,16 +329,13 @@ local function CreateRaidLayout(self, unit)
 
 	-- AuraWatch (corner and center icon)
 	if C.Raidframe.AuraWatch == true then
-		K.CreateAuraWatch(self, unit)
+		K.CreateAuraWatch(self)
 
 		self.RaidDebuffs = CreateFrame("Frame", nil, self)
 		self.RaidDebuffs:SetHeight(22)
 		self.RaidDebuffs:SetWidth(22)
 		self.RaidDebuffs:SetPoint("CENTER", self.Health)
 		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-		-- self.RaidDebuffs:SetBackdrop(K.BorderBackdrop)
-		-- self.RaidDebuffs:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-		self.RaidDebuffs:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		K.CreateBorder(self.RaidDebuffs, 1)
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")

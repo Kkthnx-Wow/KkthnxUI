@@ -398,7 +398,8 @@ local StepOne = function()
 
 	-- this is really essential, whatever if skipped or not
 	if (C.ActionBar.Enable) then
-		SetActionBarToggles(1, 1, 1, 1)
+		-- SetActionBarToggles(1, 1, 1, 1)
+		SetActionBarToggles(nil, nil, nil, nil, nil)
 	end
 end
 

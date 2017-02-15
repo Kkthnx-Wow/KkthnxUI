@@ -22,7 +22,9 @@ local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local IsBagOpen = _G.IsBagOpen
 local IsBattlePayItem = _G.IsBattlePayItem
+local IsContainerItemAnUpgrade = _G.IsContainerItemAnUpgrade
 local IsShiftKeyDown = _G.IsShiftKeyDown
+local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local PlaySound = _G.PlaySound
 local ReagentBankFrameUnlockInfo = _G.ReagentBankFrameUnlockInfo
 local UnitIsDead = _G.UnitIsDead
@@ -89,7 +91,6 @@ function Bags:SkinBagButton()
 
 	local Icon = _G[self:GetName().."IconTexture"]
 	local Quest = _G[self:GetName().."IconQuestTexture"]
-	local JunkIcon = self.JunkIcon
 	local Border = self.IconBorder
 	local BattlePay = self.BattlepayItemTexture
 
@@ -101,10 +102,6 @@ function Bags:SkinBagButton()
 	if Quest then
 		Quest:SetAlpha(0)
 	end
-
-	--if JunkIcon then
-	--	JunkIcon:SetAlpha(0)
-	--end
 
 	if BattlePay then
 		BattlePay:SetAlpha(0)
@@ -587,6 +584,29 @@ function Bags:SkinTokens()
 	end
 end
 
+-- local UpdateItemUpgradeIcon, UpgradeCheck_OnUpdate
+-- local ITEM_UPGRADE_CHECK_TIME = 0.5
+-- local function UpgradeCheck_OnUpdate(self, elapsed)
+-- 	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed
+--
+-- 	if (self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME) then
+-- 		UpdateItemUpgradeIcon(self)
+-- 	end
+-- end
+--
+-- function UpdateItemUpgradeIcon(button)
+-- 	button.timeSinceUpgradeCheck = 0
+--
+-- 	local itemIsUpgrade = IsContainerItemAnUpgrade(button:GetParent():GetID(), button:GetID())
+-- 	if (itemIsUpgrade == nil) then -- nil means not all the data was available to determine if this is an upgrade.
+-- 		button.UpgradeIcon:SetShown(false)
+-- 		button:SetScript("OnUpdate", UpgradeCheck_OnUpdate)
+-- 	else
+-- 		button.UpgradeIcon:SetShown(itemIsUpgrade)
+-- 		button:SetScript("OnUpdate", nil)
+-- 	end
+-- end
+
 function Bags:SlotUpdate(id, button)
 	if not button or not button.backdrop then
 		return
@@ -612,10 +632,17 @@ function Bags:SlotUpdate(id, button)
 	local NewItem = button.NewItemTexture
 	local IsProfBag = self:IsProfessionBag(id)
 	local IconQuestTexture = button.IconQuestTexture
+	-- local IconItemUpgrade = button.UpgradeIcon
+	local IconJunkTexture = button.JunkIcon
 
 	if IconQuestTexture then
 		IconQuestTexture:SetAlpha(0)
 	end
+
+	-- if IconItemUpgrade then
+	-- 	-- Check if item is an upgrade and show/hide upgrade icon accordingly
+	-- 	UpdateItemUpgradeIcon(button)
+	-- end
 
 	-- Letting you style this
 	if IsProfBag then
@@ -627,19 +654,17 @@ function Bags:SlotUpdate(id, button)
 	if IsNewItem and NewItem then
 		NewItem:SetAlpha(0)
 
-		if C.Bags.PulseNewItem then
-			if not button.Animation then
-				button.Animation = button:CreateAnimationGroup()
-				button.Animation:SetLooping("BOUNCE")
+		if not button.Animation then
+			button.Animation = button:CreateAnimationGroup()
+			button.Animation:SetLooping("BOUNCE")
 
-				button.FadeOut = button.Animation:CreateAnimation("Alpha")
-				button.FadeOut:SetFromAlpha(1)
-				button.FadeOut:SetToAlpha(0)
-				button.FadeOut:SetDuration(0.40)
-				button.FadeOut:SetSmoothing("IN_OUT")
-			end
-
-			button.Animation:Play()
+			button.FadeOut = button.Animation:CreateAnimation("Alpha")
+			button.FadeOut:SetFromAlpha(1)
+			button.FadeOut:SetToAlpha(0)
+			button.FadeOut:SetDuration(0.40)
+			button.FadeOut:SetSmoothing("IN_OUT")
+		else
+			button.Animation:Stop()
 		end
 	end
 

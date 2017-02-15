@@ -27,6 +27,9 @@ local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
+local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
+local UnitExists = _G.UnitExists
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
@@ -194,12 +197,12 @@ local DataFat = {
 }
 
 local function UpdateThreat(self)
-	local _, status, scaledPercent, _, _ = UnitDetailedThreatSituation("player", "target")
-
-	if (scaledPercent) then
+	local isInGroup, isInRaid = IsInGroup(), IsInRaid()
+	local _, status, percent = UnitDetailedThreatSituation("player", "target")
+	if percent and percent > 0 and isInGroup then
 		local red, green, blue = GetThreatStatusColor(status)
 		self.NumericalThreat.bg:SetStatusBarColor(red, green, blue)
-		self.NumericalThreat.value:SetText(math.ceil(scaledPercent).."%")
+		self.NumericalThreat.value:SetText(math.ceil(percent).."%")
 		if (not self.NumericalThreat:IsVisible()) then
 			self.NumericalThreat:Show()
 		end

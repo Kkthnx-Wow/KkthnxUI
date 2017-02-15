@@ -31,7 +31,7 @@ local auraFilters = {
 }
 
 local debuffTypeColor = {
-	["none"] = {0, 0, 0},
+	["none"] = {192/255, 192/255, 192/255},
 }
 for k, v in next, DebuffTypeColor do
 	if(k ~= "" and k ~= "none") then
