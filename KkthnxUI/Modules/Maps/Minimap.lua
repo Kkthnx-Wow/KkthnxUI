@@ -19,7 +19,7 @@ local IsInInstance = IsInInstance
 
 local Movers = K.Movers
 
-function GetLocTextColor()
+local function GetLocTextColor()
     local pvpType = GetZonePVPInfo()
     if pvpType == "arena" then
         return 0.84, 0.03, 0.03
@@ -37,6 +37,7 @@ function GetLocTextColor()
         return 0.9, 0.85, 0.05
     end
 end
+
 -- </ Minimap border > --
 local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
 MinimapAnchor:CreatePanel("Invisible", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
@@ -240,7 +241,7 @@ end
 MinimapBackdrop:SetOutside(Minimap, 4, 4)
 
 -- </ Set square map view > --
-Minimap:SetMaskTexture(C.Media.Blank)
+Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
 Minimap:SetArchBlobRingAlpha(0)
 Minimap:SetQuestBlobRingAlpha(0)
 MinimapBorder:Hide()
@@ -259,7 +260,7 @@ MinimapZoneText:SetPoint("BOTTOM")
 MinimapZoneText:SetHeight(12)
 MinimapZoneText:SetWidth(MinimapZone:GetWidth() -6)
 
-MinimapZoneAnim = CreateAnimationGroup(MinimapZone):CreateAnimation("Fade")
+local MinimapZoneAnim = CreateAnimationGroup(MinimapZone):CreateAnimation("Fade")
 MinimapZoneAnim:SetDuration(0.3)
 MinimapZoneAnim:SetSmoothing("InOut")
 MinimapZoneAnim:SetChange(1)

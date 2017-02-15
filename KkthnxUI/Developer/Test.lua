@@ -6,7 +6,7 @@
 -- CodeName : Code Gone Wild ;D
 
 local K, C, L = unpack(select(2, ...))
--- if not K.IsDeveloper() and not K.IsDeveloperRealm() then return end -- Check this code.
+if not K.IsDeveloper() and not K.IsDeveloperRealm() then return end -- Check this code.
 
 -- Always debug our temp code.
 if LibDebug then LibDebug() end

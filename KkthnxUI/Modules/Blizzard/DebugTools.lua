@@ -1,7 +1,4 @@
 local K, C, L = unpack(select(2, ...))
-if not K.IsDeveloper() and not K.IsDeveloperRealm() then return end
-
-local KkthnxUIDebugTools = LibStub("AceAddon-3.0"):NewAddon("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
 -- Lua API
 local _G = _G
@@ -19,34 +16,12 @@ local StaticPopup_Hide = _G.StaticPopup_Hide
 -- GLOBALS: ScriptErrorsFrameScrollFrameText, ScriptErrorsFrame, ScriptErrorsFrameScrollFrame
 -- GLOBALS: UIParent, IsAddOnLoaded, LoadAddOn
 
-function KkthnxUIDebugTools:ModifyErrorFrame()
+local UIDebugTools = LibStub("AceAddon-3.0"):NewAddon("DebugTools", "AceEvent-3.0", "AceHook-3.0")
+
+function UIDebugTools:ModifyErrorFrame()
 	ScriptErrorsFrameScrollFrameText.cursorOffset = 0
 	ScriptErrorsFrameScrollFrameText.cursorHeight = 0
 	ScriptErrorsFrameScrollFrameText:SetScript("OnEditFocusGained", nil)
-
-	-- 	local Orig_ScriptErrorsFrame_Update = ScriptErrorsFrame_Update
-	-- 	ScriptErrorsFrame_Update = function(...)
-	-- 		if GetCVarBool("scriptErrors") ~= true then
-	-- 			Orig_ScriptErrorsFrame_Update(...)
-	-- 			return
-	-- 		end
-	--
-	-- 		-- Sometimes the locals table does not have an entry for an index, which can cause an argument #6 error
-	-- 		-- in Blizzard_DebugTools.lua:430 and then cause a C stack overflow, this will prevent that
-	-- 		local index = ScriptErrorsFrame.index
-	-- 		if (not index or not ScriptErrorsFrame.order[index]) then
-	-- 			index = #(ScriptErrorsFrame.order)
-	-- 		end
-	--
-	-- 		if (index > 0) then
-	-- 			ScriptErrorsFrame.locals[index] = ScriptErrorsFrame.locals[index] or L.Misc.NoLocalsToDump
-	-- 		end
-	--
-	-- 		Orig_ScriptErrorsFrame_Update(...)
-	--
-	-- 		-- Stop text highlighting again
-	-- 		ScriptErrorsFrameScrollFrameText:HighlightText(0, 0)
-	-- 	end
 
 	local function ScriptErrors_UnHighlightText()
 		ScriptErrorsFrameScrollFrameText:HighlightText(0, 0)
@@ -91,7 +66,7 @@ function KkthnxUIDebugTools:ModifyErrorFrame()
 	ScriptErrorsFrame.lastButton = lastButton
 end
 
-function KkthnxUIDebugTools:ScriptErrorsFrame_UpdateButtons()
+function UIDebugTools:ScriptErrorsFrame_UpdateButtons()
 	local numErrors = #ScriptErrorsFrame.order
 	local index = ScriptErrorsFrame.index
 	if (index == 0) then
@@ -108,34 +83,34 @@ function KkthnxUIDebugTools:ScriptErrorsFrame_UpdateButtons()
 	end
 end
 
-function KkthnxUIDebugTools:ScriptErrorsFrame_OnError(_, keepHidden)
+function UIDebugTools:ScriptErrorsFrame_OnError(_, keepHidden)
 	if keepHidden or self.MessagePrinted or not InCombatLockdown() or GetCVarBool("scriptErrors") ~= true then return end
 
 	K.Print("|cFFE30000Lua error recieved. You can view the error message when you exit combat.")
 	self.MessagePrinted = true
 end
 
-function KkthnxUIDebugTools:PLAYER_REGEN_ENABLED()
+function UIDebugTools:PLAYER_REGEN_ENABLED()
 	ScriptErrorsFrame:SetParent(UIParent)
 	self.MessagePrinted = nil
 end
 
-function KkthnxUIDebugTools:PLAYER_REGEN_DISABLED()
+function UIDebugTools:PLAYER_REGEN_DISABLED()
 	ScriptErrorsFrame:SetParent(self.HideFrame)
 end
 
-function KkthnxUIDebugTools:TaintError(event, addonName, addonFunc)
+function UIDebugTools:TaintError(event, addonName, addonFunc)
 	if GetCVarBool("scriptErrors") ~= true or C.General.TaintLog ~= true then return end
 	ScriptErrorsFrame_OnError(L.Misc.TriedToCall:format(event, addonName or "<name>", addonFunc or "<func>"), false)
 end
 
-function KkthnxUIDebugTools:StaticPopup_Show(name)
+function UIDebugTools:StaticPopup_Show(name)
 	if (name == "ADDON_ACTION_FORBIDDEN") then
 		StaticPopup_Hide(name)
 	end
 end
 
-function KkthnxUIDebugTools:Initialize()
+function UIDebugTools:Initialize()
 	self.HideFrame = CreateFrame("Frame")
 	self.HideFrame:Hide()
 
@@ -156,5 +131,5 @@ end
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function()
-	KkthnxUIDebugTools:Initialize()
+	UIDebugTools:Initialize()
 end)

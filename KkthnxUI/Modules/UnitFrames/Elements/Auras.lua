@@ -55,7 +55,6 @@ do
 		overlay:SetPoint("BOTTOMLEFT", button.icon, -3, -3)
 		-- overlay:SetTexCoord(0, 0.515625, 0, 0.515625)
 		overlay:SetTexCoord(0, 0.6875, 0, 0.6875)
-
 		button.overlay = overlay
 
 		local shadow = button:CreateTexture(nil, "BACKGROUND")

@@ -10,6 +10,7 @@ local unpack = unpack
 
 -- Wow API
 local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
+local BAGSLOTTEXT = _G.BAGSLOTTEXT
 local BankFrame_AutoSortButtonOnClick = _G.BankFrame_AutoSortButtonOnClick
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetContainerItemInfo = _G.GetContainerItemInfo
@@ -101,9 +102,9 @@ function Bags:SkinBagButton()
 		Quest:SetAlpha(0)
 	end
 
-	if JunkIcon then
-		JunkIcon:SetAlpha(0)
-	end
+	--if JunkIcon then
+	--	JunkIcon:SetAlpha(0)
+	--end
 
 	if BattlePay then
 		BattlePay:SetAlpha(0)
@@ -401,6 +402,8 @@ function Bags:CreateContainer(storagetype, ...)
 			Button:SetPushedTexture("")
 			Button:SetCheckedTexture("")
 			Button:CreateBackdrop()
+			-- Button.backdrop:SetBackdropBorderColor(r, g, b)
+
 			Button.IconBorder:SetAlpha(0)
 
 			if LastButtonBag then
