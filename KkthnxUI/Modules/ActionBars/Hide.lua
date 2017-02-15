@@ -89,8 +89,6 @@ DisableBlizzard:SetScript("OnEvent", function()
 	else
 		hooksecurefunc("TalentFrame_LoadUI", function() PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED") end)
 	end
-
-	SetActionBarToggles(nil, nil, nil, nil, nil)
 end)
 
 -- Mouseover stuff

@@ -26,6 +26,7 @@ local FCF_SetWindowName = _G.FCF_SetWindowName
 local FCF_StopDragging = _G.FCF_StopDragging
 local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
+local GUILD_EVENT_LOG = _G.GUILD_EVENT_LOG
 local LOOT, GENERAL, TRADE = _G.LOOT, _G.GENERAL, _G.TRADE
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlayMusic = _G.PlayMusic
@@ -50,15 +51,16 @@ local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 function KkthnxUIInstall:ChatSetup()
 	InstallStepComplete.Message = "Chat Set"
 	InstallStepComplete:Show()
-	-- Setting chat frames if using KkthnxUI.
 	FCF_ResetChatWindows()
-
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
 	FCF_OpenNewWindow(LOOT)
+	FCF_DockFrame(ChatFrame3)
 	FCF_SetLocked(ChatFrame3, 1)
-	ChatFrame3:Show()
+	FCF_OpenNewWindow(TRADE)
+	FCF_DockFrame(ChatFrame4)
+	FCF_SetLocked(ChatFrame4, 1)
 
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G[format("ChatFrame%s", i)]
@@ -81,7 +83,9 @@ function KkthnxUIInstall:ChatSetup()
 		elseif i == 2 then
 			FCF_SetWindowName(frame, GUILD_EVENT_LOG)
 		elseif i == 3 then
-			FCF_SetWindowName(frame, LOOT.." / "..TRADE)
+			FCF_SetWindowName(frame, TRADE)
+		elseif i == 4 then
+			FCF_SetWindowName(frame, LOOT)
 		end
 	end
 
@@ -121,16 +125,17 @@ function KkthnxUIInstall:ChatSetup()
 	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
 
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_FACTION_CHANGE")
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_GUILD_XP_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_HONOR_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_XP_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame3, "CURRENCY")
-	ChatFrame_AddMessageGroup(ChatFrame3, "LOOT")
-	ChatFrame_AddMessageGroup(ChatFrame3, "MONEY")
-	ChatFrame_AddMessageGroup(ChatFrame3, "SKILL")
+	ChatFrame_RemoveAllMessageGroups(ChatFrame4)
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_FACTION_CHANGE")
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_GUILD_XP_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_HONOR_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame4, "COMBAT_XP_GAIN")
+	ChatFrame_AddMessageGroup(ChatFrame4, "CURRENCY")
+	ChatFrame_AddMessageGroup(ChatFrame4, "LOOT")
+	ChatFrame_AddMessageGroup(ChatFrame4, "MONEY")
+	ChatFrame_AddMessageGroup(ChatFrame4, "SKILL")
 	ChatFrame_AddChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1,L.Chat.Trade)
+	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.Trade)
 	ChatFrame_AddChannel(ChatFrame3, L.Chat.Trade)
 
 	if K.IsDeveloper() and K.IsDeveloperRealm() then
@@ -398,8 +403,7 @@ local StepOne = function()
 
 	-- this is really essential, whatever if skipped or not
 	if (C.ActionBar.Enable) then
-		-- SetActionBarToggles(1, 1, 1, 1)
-		SetActionBarToggles(nil, nil, nil, nil, nil)
+		SetActionBarToggles(true, true, true, true)
 	end
 end
 

@@ -16,6 +16,7 @@ local SetCVar = _G.SetCVar
 local StaticPopup_Show =_G.StaticPopup_Show
 local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UnitOnTaxi = _G.UnitOnTaxi
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CancelUnitBuff, GameTooltip, TAXI_CANCEL, TAXI_CANCEL_DESCRIPTION
@@ -45,7 +46,7 @@ ActionBars:SetScript("OnEvent", function(self, event)
 	if Installed then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
-			SetActionBarToggles(nil, nil, nil, nil, nil)
+			SetActionBarToggles(true, true, true, true)
 			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
