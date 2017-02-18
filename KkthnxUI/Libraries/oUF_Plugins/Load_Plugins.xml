@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Unitframe oUF Plugins -->
+   <Script file="oUF_Absorb.lua" />
    <Script file="oUF_Auraorbs.lua" />
    <Script file="oUF_AuraWatch.lua" />
    <Script file="oUF_CombatFeedback.lua" />

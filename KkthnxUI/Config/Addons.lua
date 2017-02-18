@@ -1,12 +1,13 @@
 local K, C, L = unpack(select(2, ...))
 
+local _G = _G
+
 local print = print
-local ReloadUI = ReloadUI
-local wipe = table.wipe
+local table_wipe = table.wipe
 
 local UploadMSBT = function()
-	if MSBTProfiles_SavedVars then table.wipe(MSBTProfiles_SavedVars) end
-	if MSBT_SavedMedia then table.wipe(MSBT_SavedMedia) end
+	if MSBTProfiles_SavedVars then table_wipe(MSBTProfiles_SavedVars) end
+	if MSBT_SavedMedia then table_wipe(MSBT_SavedMedia) end
 	MSBTProfiles_SavedVars = {
 		["profiles"] = {
 			["Default"] = {
@@ -339,46 +340,87 @@ end
 
 -- SKADA SETTINGS
 local UploadSkada = function()
-	if SkadaDB then table.wipe(SkadaDB) end
-	SkadaDB = {
+	if SkadaDB then table_wipe(SkadaDB) end
+	_G.SkadaDB = {
+		["profileKeys"] = {
+			["Aceer - Stormreaver"] = "Default",
+		},
 		["profiles"] = {
 			["Default"] = {
+				["showself"] = false,
+				["modules"] = {
+					["notankwarnings"] = true,
+				},
 				["windows"] = {
 					{
-						["barheight"] = 15,
+						["classicons"] = false,
 						["barslocked"] = true,
-						["y"] = 7,
-						["x"] = -332,
-						["point"] = "BOTTOMRIGHT",
-						["mode"] = "DPS",
-						["bartexture"] = "KkthnxUI_StatusBar",
-						["barwidth"] = 222,
-						["barspacing"] = 1,
-						["background"] = {
-							["height"] = 80,
-							["color"] = {
-								["a"] = 0,
-							},
-						},
+						["y"] = 6,
 						["barfont"] = "KkthnxUI_Normal",
 						["title"] = {
+							["color"] = {
+								["a"] = 0,
+								["b"] = 0.3,
+								["g"] = 0.1,
+								["r"] = 0.1,
+							},
 							["font"] = "KkthnxUI_Normal",
 							["fontsize"] = 12,
-							["height"] = 14,
+							["height"] = 17,
 							["texture"] = "KkthnxUI_StatusBar",
+						},
+						["point"] = "BOTTOMRIGHT",
+						["barbgcolor"] = {
+							["a"] = 0,
+							["r"] = 0.3,
+							["g"] = 0.3,
+							["b"] = 0.3,
+						},
+						["barcolor"] = {
+							["r"] = 0.05,
+							["g"] = 0.05,
+							["b"] = 0.05,
+						},
+						["barfontsize"] = 12,
+						["smoothing"] = true,
+						["mode"] = "DPS",
+						["spark"] = false,
+						["bartexture"] = "KkthnxUI_StatusBar",
+						["barwidth"] = 200,
+						["x"] = -300,
+						["background"] = {
+							["height"] = 152,
+							["color"] = {
+								["a"] = 0,
+								["b"] = 0.5,
+							},
 						},
 					}, -- [1]
 				},
 				["icon"] = {
 					["hide"] = true,
 				},
+				["report"] = {
+					["channel"] = "Guild",
+				},
+				["columns"] = {
+					["Healing_Healing"] = false,
+					["Damage_Damage"] = false,
+				},
+				["hidesolo"] = true,
+				["versions"] = {
+					["1.6.3"] = true,
+					["1.6.4"] = true,
+				},
+				["hidedisables"] = false,
+				["onlykeepbosses"] = true,
 			},
 		},
 	}
 end
 
 local UploadDetails = function()
-	if _detalhes_global then table.wipe(_detalhes_global) end
+	if _detalhes_global then table_wipe(_detalhes_global) end
 	_detalhes_global = {
 		["tutorial"] = {
 			["unlock_button"] = 0,

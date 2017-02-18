@@ -364,6 +364,18 @@ local function RemoveRealmName(self, event, msg, author, ...)
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", RemoveRealmName)
 
+
+local ClosePetLog = CreateFrame("Frame")
+ClosePetLog:RegisterEvent("PET_BATTLE_CLOSE")
+ClosePetLog:SetScript("OnEvent", function(self, event)
+	for _, frameName in pairs(CHAT_FRAMES) do
+		local frame = _G[frameName]
+		if frame and _G[frameName.."Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG) then
+			FCF_Close(frame)
+		end
+	end
+end)
+
 -- Big Trade Chat
 local bigchat = false
 function SlashCmdList.BIGCHAT(msg)

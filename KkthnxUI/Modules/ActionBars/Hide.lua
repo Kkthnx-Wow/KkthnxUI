@@ -35,7 +35,13 @@ DisableBlizzard:SetScript("OnEvent", function()
 	HonorWatchBar:SetParent(UIFrameHider)
 
 	for i = 1, 12 do
-	if _G["OverrideActionBarButton"..i] then
+		if _G["VehicleMenuBarActionButton"..i] then
+			_G["VehicleMenuBarActionButton"..i]:Hide()
+			_G["VehicleMenuBarActionButton"..i]:UnregisterAllEvents()
+			_G["VehicleMenuBarActionButton"..i]:SetAttribute("statehidden", true)
+		end
+
+		if _G["OverrideActionBarButton"..i] then
 			_G["OverrideActionBarButton"..i]:Hide()
 			_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
 			_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
@@ -50,6 +56,15 @@ DisableBlizzard:SetScript("OnEvent", function()
 	MainMenuExpBar:UnregisterAllEvents()
 	MainMenuExpBar:Hide()
 	MainMenuExpBar:SetParent(UIFrameHider)
+
+	for i=1, MainMenuBar:GetNumChildren() do
+		local child = select(i, MainMenuBar:GetChildren())
+		if child then
+			child:UnregisterAllEvents()
+			child:Hide()
+			child:SetParent(UIFrameHider)
+		end
+	end
 
 	ReputationWatchBar:UnregisterAllEvents()
 	ReputationWatchBar:Hide()

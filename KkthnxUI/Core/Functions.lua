@@ -66,6 +66,8 @@ function K.Comma(num)
 end
 
 function K.ShortValue(value)
+	if not value then return "" end
+
 	if value >= 1e11 then
 		return ("%.0fb"):format(value / 1e9)
 	elseif value >= 1e10 then

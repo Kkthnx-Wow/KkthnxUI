@@ -97,7 +97,7 @@ function ns.createArenaLayout(self, unit)
 	if C.Unitframe.Smooth then
 		self.Health.Smooth = true
 	end
-	self.Health.PostUpdate = K.PostUpdateHealth
+	self.Health.PostUpdate = K.Health_PostUpdate
 	table_insert(self.mouseovers, self.Health)
 
 	self.Power.colorPower = true
@@ -105,7 +105,7 @@ function ns.createArenaLayout(self, unit)
 	if C.Unitframe.Smooth then
 		self.Power.Smooth = true
 	end
-	self.Power.PostUpdate = K.PostUpdatePower
+	self.Power.PostUpdate = K.Power_PostUpdate
 	table_insert(self.mouseovers, self.Power)
 
 	-- Name

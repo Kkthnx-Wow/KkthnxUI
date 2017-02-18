@@ -337,7 +337,6 @@ C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Height"] = 40,
-	["HorizontalHealthBars"] = false,
 	["IconSize"] = 22,
 	["MainTankFrames"] = true,
 	["ManabarHorizontal"] = false,

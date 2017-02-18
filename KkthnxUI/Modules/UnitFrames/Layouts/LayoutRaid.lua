@@ -20,7 +20,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
 local UnitThreatSituation = _G.UnitThreatSituation
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: DEAD, PLAYER_OFFLINE, CreateFrame, UnitFrame_OnEnter, UnitFrame_OnLeave
 
 -- Credits to Neav, Renstrom, Grimsbain
@@ -56,18 +56,11 @@ local function UpdatePower(self, _, unit)
 	end
 
 	local _, powerToken = UnitPowerType(unit)
-
 	if (powerToken == "MANA" and UnitHasMana(unit)) then
 		if (not self.Power:IsVisible()) then
 			self.Health:ClearAllPoints()
-			if (C.Raidframe.ManabarHorizontal) then
-				self.Health:SetPoint("BOTTOMLEFT", self, 0, 3)
-				self.Health:SetPoint("TOPRIGHT", self)
-			else
-				self.Health:SetPoint("BOTTOMLEFT", self)
-				self.Health:SetPoint("TOPRIGHT", self, -3.5, 0)
-			end
-
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, 3)
+			self.Health:SetPoint("TOPRIGHT", self)
 			self.Power:Show()
 		end
 	else
@@ -158,7 +151,6 @@ local function CreateRaidLayout(self, unit)
 	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 	self.Health:SetAllPoints(self)
-	self.Health:SetOrientation(C.Raidframe.HorizontalHealthBars and "HORIZONTAL" or "VERTICAL")
 
 	-- Health background
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
@@ -193,18 +185,9 @@ local function CreateRaidLayout(self, unit)
 	if (C.Raidframe.ManabarShow) then
 		self.Power = K.CreateStatusBar(self, "$parenPowerBar")
 		self.Power:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-
-		if (C.Raidframe.ManabarHorizontal) then
-			self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
-			self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-			self.Power:SetOrientation("HORIZONTAL")
-			self.Power:SetHeight(2.5)
-		else
-			self.Power:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 1, 0)
-			self.Power:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", 1, 0)
-			self.Power:SetOrientation("VERTICAL")
-			self.Power:SetWidth(2.5)
-		end
+		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
+		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
+		self.Power:SetHeight(2.5)
 
 		self.Power.colorPower = true
 		if C.Raidframe.Smooth then
@@ -222,57 +205,52 @@ local function CreateRaidLayout(self, unit)
 	end
 
 	-- Heal prediction
-	local mhpb = CreateFrame("StatusBar", nil, self)
-	mhpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-	mhpb:SetStatusBarColor(0, 1, 0.5, 0.25)
-
-	local ohpb = CreateFrame("StatusBar", nil, self)
-	ohpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-	ohpb:SetStatusBarColor(0, 1, 0, 0.25)
-
-	local ahpb = CreateFrame("StatusBar", nil, self)
-	ahpb:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
-	ahpb:SetStatusBarColor(1, 1, 0, 0.25)
-
-	if (C.Raidframe.HorizontalHealthBars) then
-		mhpb:SetOrientation("HORIZONTAL")
-		mhpb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		mhpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		mhpb:SetWidth(self:GetWidth(true))
-
-		ohpb:SetOrientation("HORIZONTAL")
-		ohpb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		ohpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		ohpb:SetWidth(self:GetWidth(true))
-
-		ahpb:SetOrientation("HORIZONTAL")
-		ahpb:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		ahpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT")
-		ahpb:SetWidth(self:GetWidth(true))
-	else
-		mhpb:SetOrientation("VERTICAL")
-		mhpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
-		mhpb:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		mhpb:SetWidth(self:GetHeight(true))
-
-		ohpb:SetOrientation("VERTICAL")
-		ohpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
-		ohpb:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		ohpb:SetWidth(self:GetHeight(true))
-
-		ahpb:SetOrientation("VERTICAL")
-		ahpb:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "TOPLEFT")
-		ahpb:SetPoint("BOTTOMRIGHT", self.Health:GetStatusBarTexture(), "TOPRIGHT")
-		ahpb:SetWidth(self:GetHeight(true))
-	end
-
-	self.HealPrediction = {
-		myBar = mhpb,
-		otherBar = ohpb,
-		absorbBar = ahpb,
-		maxOverflow = 1,
-		frequentUpdates = true
+	self.Absorb = {
+			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+			tile = true,
+			drawLayer = {"BACKGROUND", 4},
+			colour = {.3, .7, 1},
+			alpha = .5
 	}
+
+	do
+			local width = 55 - 2
+
+			local myBar = CreateFrame("StatusBar", nil, self.Health)
+			myBar:SetStatusBarTexture(C.Media.Texture)
+			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND",2)
+			myBar:SetPoint("TOP")
+			myBar:SetPoint("BOTTOM")
+			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar:SetWidth(55 - 2)
+
+			local otherBar = CreateFrame("StatusBar", nil, self.Health)
+			otherBar:SetStatusBarTexture(C.Media.Texture)
+			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND",3)
+			otherBar:SetPoint("TOP")
+			otherBar:SetPoint("BOTTOM")
+			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			otherBar:SetStatusBarColor(0, 1, 0, .5)
+			otherBar:SetWidth(55 - 2)
+
+			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
+			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
+			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND",5)
+			healAbsorbBar:SetPoint("TOP")
+			healAbsorbBar:SetPoint("BOTTOM")
+			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+			healAbsorbBar:SetWidth(55 - 2)
+
+			self.HealPrediction = {
+					myBar = myBar,
+					otherBar = otherBar,
+					healAbsorbBar = healAbsorbBar,
+					maxOverflow = 1,
+					frequentUpdates = true
+			}
+	end
 
 	-- Afk /offline timer, using frequentUpdates function from oUF tags
 	if (C.Raidframe.ShowNotHereTimer) then

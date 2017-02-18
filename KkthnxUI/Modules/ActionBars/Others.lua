@@ -7,21 +7,20 @@ local string_format = string.format
 
 -- Wow API
 local CanExitVehicle = _G.CanExitVehicle
+local CreateFrame = _G.CreateFrame
 local GetActionBarToggles = _G.GetActionBarToggles
-local GetPossessInfo = _G.GetPossessInfo
 local InCombatLockdown = _G.InCombatLockdown
-local IsPossessBarVisible = _G.IsPossessBarVisible
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local StaticPopup_Show =_G.StaticPopup_Show
 local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UnitOnTaxi = _G.UnitOnTaxi
-local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
+local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CancelUnitBuff, GameTooltip, TAXI_CANCEL, TAXI_CANCEL_DESCRIPTION
--- GLOBALS: GameTooltip_AddNewbieTip, CANCEL, LEAVE_VEHICLE
--- GLOBALS: KkthnxUIDataPerChar, ActionButton_ShowGrid, VehicleExit, NUM_POSSESS_SLOTS
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: KkthnxUIDataPerChar, ActionButton_ShowGrid, VehicleExit, LeaveVehicleButton
+-- GLOBALS: MainMenuBarVehicleLeaveButton_OnEnter, GameTooltip_Hide
 
 local Movers = K.Movers
 
@@ -79,69 +78,73 @@ ActionBars:SetScript("OnEvent", function(self, event)
 	end
 end)
 
--- Vehicle button anchor
+-- Vehicle button stuff
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 VehicleButtonAnchor:SetPoint(C.Position.VehicleBar[1], C.Position.VehicleBar[2], C.Position.VehicleBar[3], C.Position.VehicleBar[4], C.Position.VehicleBar[5])
 VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 Movers:RegisterFrame(VehicleButtonAnchor)
 
--- Vehicle button
-local Vehicle = CreateFrame("Button", "VehicleButton", UIParent)
-Vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
-Vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
-Vehicle:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
-Vehicle:GetNormalTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
-Vehicle:GetNormalTexture():ClearAllPoints()
-Vehicle:GetNormalTexture():SetPoint("TOPLEFT", 2, -2)
-Vehicle:GetNormalTexture():SetPoint("BOTTOMRIGHT", -2, 2)
-Vehicle:CreateBackdrop(2)
-Vehicle:StyleButton(true)
-Vehicle:RegisterForClicks("AnyUp")
-Vehicle:SetFrameLevel(3)
-
-hooksecurefunc("MainMenuBarVehicleLeaveButton_Update", function()
-	if CanExitVehicle() then
-		if UnitOnTaxi("player") then
-			Vehicle:SetScript("OnClick", function(self)
-				TaxiRequestEarlyLanding()
-				self:LockHighlight()
-			end)
-		else
-			Vehicle:SetScript("OnClick", function(self)
-				VehicleExit()
-			end)
-		end
-		Vehicle:Show()
+local function Vehicle_OnEvent(self)
+	if (CanExitVehicle()) then
+		self:Show()
+		self:GetNormalTexture():SetVertexColor(1, 1, 1)
+		self:EnableMouse(true)
 	else
-		Vehicle:Hide()
+		self:Hide()
 	end
-end)
+end
 
-hooksecurefunc("PossessBar_UpdateState", function()
-	for i = 1, NUM_POSSESS_SLOTS do
-		local _, name, enabled = GetPossessInfo(i)
-		if enabled then
-			Vehicle:SetScript("OnClick", function()
-				CancelUnitBuff("player", name)
-			end)
-			Vehicle:Show()
-		else
-			Vehicle:Hide()
-		end
-	end
-end)
-
--- Set tooltip
-Vehicle:SetScript("OnEnter", function(self)
-	if UnitOnTaxi("player") then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(TAXI_CANCEL, 1, 1, 1)
-		GameTooltip:AddLine(TAXI_CANCEL_DESCRIPTION, 1, 0.8, 0, true)
-		GameTooltip:Show()
-	elseif IsPossessBarVisible() then
-		GameTooltip_AddNewbieTip(self, CANCEL, 1, 1, 1, nil)
+local function Vehicle_OnClick(self)
+	if (UnitOnTaxi("player")) then
+		TaxiRequestEarlyLanding()
+		self:GetNormalTexture():SetVertexColor(1, 0, 0)
+		self:EnableMouse(false)
 	else
-		GameTooltip_AddNewbieTip(self, LEAVE_VEHICLE, 1, 1, 1, nil)
+		VehicleExit()
 	end
+end
+
+local function UpdateVehicleLeave()
+	local button = LeaveVehicleButton
+	if not button then return end
+
+	button:ClearAllPoints()
+	button:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
+	button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+end
+
+local function CreateVehicleLeave()
+	local vehicle = CreateFrame("Button", "LeaveVehicleButton", UIParent)
+	vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+	vehicle:SetFrameStrata("HIGH")
+	vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
+	vehicle:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
+	vehicle:GetNormalTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
+	vehicle:GetNormalTexture():ClearAllPoints()
+	vehicle:GetNormalTexture():SetPoint("TOPLEFT", 2, -2)
+	vehicle:GetNormalTexture():SetPoint("BOTTOMRIGHT", -2, 2)
+	vehicle:CreateBackdrop(2)
+	vehicle:StyleButton(true)
+	vehicle:RegisterForClicks("AnyUp")
+
+	vehicle:SetScript("OnClick", Vehicle_OnClick)
+	vehicle:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
+	vehicle:SetScript("OnLeave", GameTooltip_Hide)
+	vehicle:RegisterEvent("PLAYER_ENTERING_WORLD")
+	vehicle:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+	vehicle:RegisterEvent("UPDATE_MULTI_CAST_ACTIONBAR")
+	vehicle:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	vehicle:RegisterEvent("UNIT_EXITED_VEHICLE")
+	vehicle:RegisterEvent("VEHICLE_UPDATE")
+	vehicle:SetScript("OnEvent", Vehicle_OnEvent)
+
+	UpdateVehicleLeave()
+
+	vehicle:Hide()
+end
+
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:SetScript("OnEvent", function()
+	CreateVehicleLeave()
 end)
-Vehicle:SetScript("OnLeave", function() GameTooltip:Hide() end)

@@ -4,6 +4,8 @@ if C.Misc.MoveBlizzard ~= true then return end
 -- Lua API
 local _G = _G
 
+local InCombatLockdown = _G.InCombatLockdown
+
 local frames = {
 	"CharacterFrame", "SpellBookFrame", "TaxiFrame", "QuestFrame", "PVEFrame", "AddonList",
 	"QuestLogPopupDetailFrame", "MerchantFrame", "TradeFrame", "MailFrame", "LootFrame",
@@ -49,18 +51,20 @@ local AddOnFrames = {
 	["Blizzard_ItemUpgradeUI"] = {"ItemUpgradeFrame"},
 	["Blizzard_LookingForGuildUI"] = {"LookingForGuildFrame"},
 	["Blizzard_MacroUI"] = {"MacroFrame"},
+	["Blizzard_OrderHallUI"] = {"OrderHallTalentFrame"},
 	["Blizzard_QuestChoice"] = {"QuestChoiceFrame"},
 	["Blizzard_TalentUI"] = {"PlayerTalentFrame"},
+	["Blizzard_TalkingHeadUI"] = {"TalkingHeadFrame"},
 	["Blizzard_TradeSkillUI"] = {"TradeSkillFrame"},
 	["Blizzard_TrainerUI"] = {"ClassTrainerFrame"},
-	["Blizzard_VoidStorageUI"] = {"VoidStorageFrame"},
-	["Blizzard_TalkingHeadUI"] = {"TalkingHeadFrame"}
+	["Blizzard_VoidStorageUI"] = {"VoidStorageFrame"}
 }
 
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("ADDON_LOADED")
 frame:SetScript("OnEvent", function(self, event, addon)
 	if AddOnFrames[addon] then
+		if InCombatLockdown() then return end
 		for _, v in pairs(AddOnFrames[addon]) do
 			if _G[v] then
 				_G[v]:EnableMouse(true)

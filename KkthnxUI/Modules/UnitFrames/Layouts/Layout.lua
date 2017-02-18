@@ -734,7 +734,7 @@ local function CreateUnitLayout(self, unit)
 	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
-	self.Health.PostUpdate = K.PostUpdateHealth
+	self.Health.PostUpdate = K.Health_PostUpdate
 	self.Health.frequentUpdates = true
 	if C.Unitframe.Smooth then
 		self.Health.Smooth = true
@@ -758,8 +758,8 @@ local function CreateUnitLayout(self, unit)
 	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
-	self.Power.frequentUpdates = self.MatchUnit == "player" or self.MatchUnit == "boss"
-	self.Power.PostUpdate = K.PostUpdatePower
+	self.Power.frequentUpdates = true
+	self.Power.PostUpdate = K.Power_PostUpdate
 	self.Power.colorPower = true
 	if C.Unitframe.Smooth then
 		self.Power.Smooth = true
@@ -835,30 +835,53 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetSize(50, 52)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
-		local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
-		mhpb:SetTexture(C.Media.Texture)
-		mhpb:SetVertexColor(0, 1, 0.5, 0.25)
-		mhpb:SetWidth(self.Health:GetWidth())
-		mhpb:Hide()
-
-		local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
-		ohpb:SetTexture(C.Media.Texture)
-		ohpb:SetVertexColor(0, 1, 0, 0.25)
-		ohpb:SetWidth(self.Health:GetWidth())
-		ohpb:Hide()
-
-		local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
-		ahpb:SetTexture(C.Media.Texture)
-		ahpb:SetVertexColor(1, 1, 0, 0.25)
-		ahpb:Hide()
-
-		self.HealPrediction = {
-			myBar = mhpb,
-			otherBar = ohpb,
-			absorbBar = ahpb,
-			maxOverflow = 1,
-			frequentUpdates = true
+		self.Absorb = {
+			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+			tile = true,
+			drawLayer = {"BACKGROUND", 4},
+			colour = {.3, .7, 1},
+			alpha = .5
 		}
+
+		do
+			local myBar = CreateFrame("StatusBar", nil, self.Health)
+			myBar:SetStatusBarTexture(C.Media.Texture)
+			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
+			myBar:SetPoint("TOP")
+			myBar:SetPoint("BOTTOM")
+			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			myBar:SetStatusBarColor(0, 1, .5, .5)
+
+			local otherBar = CreateFrame("StatusBar", nil, self.Health)
+			otherBar:SetStatusBarTexture(C.Media.Texture)
+			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
+			otherBar:SetPoint("TOP")
+			otherBar:SetPoint("BOTTOM")
+			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			otherBar:SetStatusBarColor(0, 1, 0, .5)
+
+			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
+			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
+			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
+			healAbsorbBar:SetPoint("TOP")
+			healAbsorbBar:SetPoint("BOTTOM")
+			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+
+			self.Health:HookScript("OnSizeChanged",function(bar, width)
+				myBar:SetWidth(55 - 2)
+				otherBar:SetWidth(55 - 2)
+				healAbsorbBar:SetWidth(55 - 2)
+			end)
+
+			self.HealPrediction = {
+				myBar = myBar,
+				otherBar = otherBar,
+				healAbsorbBar = healAbsorbBar,
+				maxOverflow = 1,
+				frequentUpdates = true
+			}
+		end
 
 		-- Combat CombatFeedbackText
 		if C.Unitframe.CombatText == true then
@@ -887,27 +910,53 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	if (self.IsPartyFrame and C.Unitframe.Party == true) then
-		local mhpb = self.Health:CreateTexture(nil, "ARTWORK")
-		mhpb:SetTexture(C.Media.Texture)
-		mhpb:SetVertexColor(0, 1, 0.5, 0.6)
-		mhpb:SetWidth(self.Health:GetWidth())
-
-		local ohpb = self.Health:CreateTexture(nil, "ARTWORK")
-		ohpb:SetTexture(C.Media.Texture)
-		ohpb:SetVertexColor(0, 1, 0, 0.6)
-		ohpb:SetWidth(self.Health:GetWidth())
-
-		local ahpb = self.Health:CreateTexture(nil, "ARTWORK")
-		ahpb:SetTexture(C.Media.Texture)
-		ahpb:SetVertexColor(1, 1, 0, 0.6)
-
-		self.HealPrediction = {
-			myBar = mhpb,
-			otherBar = ohpb,
-			absorbBar = ahpb,
-			maxOverflow = 1,
-			frequentUpdates = true
+		self.Absorb = {
+			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+			tile = true,
+			drawLayer = {"BACKGROUND", 4},
+			colour = {.3, .7, 1},
+			alpha = .5
 		}
+
+		do
+			local myBar = CreateFrame("StatusBar", nil, self.Health)
+			myBar:SetStatusBarTexture(C.Media.Texture)
+			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
+			myBar:SetPoint("TOP")
+			myBar:SetPoint("BOTTOM")
+			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			myBar:SetStatusBarColor(0, 1, .5, .5)
+
+			local otherBar = CreateFrame("StatusBar", nil, self.Health)
+			otherBar:SetStatusBarTexture(C.Media.Texture)
+			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
+			otherBar:SetPoint("TOP")
+			otherBar:SetPoint("BOTTOM")
+			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			otherBar:SetStatusBarColor(0, 1, 0, .5)
+
+			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
+			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
+			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
+			healAbsorbBar:SetPoint("TOP")
+			healAbsorbBar:SetPoint("BOTTOM")
+			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+
+			self.Health:HookScript("OnSizeChanged",function(bar, width)
+				myBar:SetWidth(55 - 2)
+				otherBar:SetWidth(55 - 2)
+				healAbsorbBar:SetWidth(55 - 2)
+			end)
+
+			self.HealPrediction = {
+				myBar = myBar,
+				otherBar = otherBar,
+				healAbsorbBar = healAbsorbBar,
+				maxOverflow = 1,
+				frequentUpdates = true
+			}
+		end
 	end
 
 	-- Portrait Timer

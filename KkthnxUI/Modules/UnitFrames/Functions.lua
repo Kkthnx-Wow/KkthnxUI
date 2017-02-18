@@ -3,13 +3,12 @@ if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local abs = math_abs
-local format = string.format
 local math_abs = math.abs
-local min, max = math.min, math.max
+local math_floor = math.floor
 local pairs = pairs
 local select = select
-local tinsert = table.insert
+local string_format = string.format
+local table_insert = table.insert
 local type = type
 local unpack = unpack
 
@@ -26,10 +25,8 @@ local UnitHealthMax = _G.UnitHealthMax
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
@@ -40,7 +37,7 @@ local UnitSpellHaste = _G.UnitSpellHaste
 -- GLOBALS: PLAYER_OFFLINE, DEAD, UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = ns.oUF or _G.oUF
 local colors = K.Colors
 
 function K.MatchUnit(unit)
@@ -69,6 +66,7 @@ function K.MultiCheck(check, ...)
 end
 
 local function UpdatePortraitColor(self, unit, cur, max)
+	if not unit then return end
 	if (not UnitIsConnected(unit)) then
 		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
 	elseif (UnitIsDead(unit)) then
@@ -87,32 +85,35 @@ local function UpdatePortraitColor(self, unit, cur, max)
 end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
-local function SetValueText(element, tag, cur, max, notMana)
-	if (not max or max == 0) then max = 100 end -- </ not sure why this happens > --
+local function SetValueText(self, tag, cur, max)
+	if not tag then return TEXT_NONE or "" end
+
+	 -- not sure why this happens
+	if (not max or max == 0) then max = 100 end
 
 	if (tag == TEXT_PERCENT) and (max < 200) then
-		tag = TEXT_SHORT -- </ Shows energy etc. with real number > --
+		tag = TEXT_SHORT -- Shows energy etc. with real number
 	end
 
-	local s
+	local string
 
 	if tag == TEXT_SHORT then
-		s = format("%s", cur > 0 and K.ShortValue(cur) or "")
+		string = string_format("%s", cur > 0 and K.ShortValue(cur) or "")
 	elseif tag == TEXT_LONG then
-		s = format("%s - %.1f%%", K.ShortValue(cur), cur / max * 100)
+		string = string_format("%s - %.1f%%", K.ShortValue(cur), cur / max * 100)
 	elseif tag == TEXT_MINMAX then
-		s = format("%s/%s", K.ShortValue(cur), K.ShortValue(max))
+		string = string_format("%s/%s", K.ShortValue(cur), K.ShortValue(max))
 	elseif tag == TEXT_MAX then
-		s = format("%s", K.ShortValue(max))
+		string = string_format("%s", K.ShortValue(max))
 	elseif tag == TEXT_DEF then
-		s = format("%s", (cur == max and "" or "-"..K.ShortValue(max - cur)))
+		string = string_format("%s", (cur == max and "" or "-"..K.ShortValue(max - cur)))
 	elseif tag == TEXT_PERCENT then
-		s = format("%d%%", cur / max * 100)
+		string = string_format("%d%%", cur / max * 100)
 	else
-		s = ""
+		string = string or ""
 	end
 
-	element:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, s)
+	self:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, string)
 end
 
 -- </ PostHealth update > --
@@ -125,8 +126,8 @@ do
 		DEFICIT = {TEXT_DEF, TEXT_DEF, TEXT_NONE},
 	}
 
-	function K.PostUpdateHealth(Health, unit, cur, max)
-		if not unit then return end -- </ Blizz bug in 7.1 > --
+	function K.Health_PostUpdate(Health, unit, cur, max)
+		if not unit then return end -- Blizz bug in 7.1
 
 		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GetSpellInfo(8326) or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
@@ -141,8 +142,9 @@ do
 		end
 
 		if absent then
+			Health:SetValue(0) -- UnitHealth is sometimes > 0 for dead units
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
-			if Health.Value then
+			if Health.Value and max > 0 then
 				Health.Value:SetText(absent)
 			end
 			return
@@ -165,7 +167,7 @@ do
 	end
 end
 
--- </ PostPower update > --
+-- PostPower update
 do
 	local tagtable = {
 		NUMERIC	= {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
@@ -173,14 +175,14 @@ do
 		MINIMAL	= {TEXT_SHORT, TEXT_PERCENT, TEXT_NONE},
 	}
 
-	function K.PostUpdatePower(Power, unit, cur, max)
+	function K.Power_PostUpdate(Power, unit, cur, max)
 		local self = Power:GetParent()
 		local uconfig = ns.config[self.MatchUnit]
 
 		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
 			Power:SetValue(0)
 			if Power.Value then
-				Power.Value:SetText("")
+				Power.Value:SetText(nil)
 			end
 			return
 		end
@@ -305,13 +307,13 @@ function K.CreateAuraWatch(self, unit)
 
 	if K.RaidBuffs["ALL"] then
 		for key, value in pairs(K.RaidBuffs["ALL"]) do
-			tinsert(buffs, value)
+			table_insert(buffs, value)
 		end
 	end
 
 	if K.RaidBuffs[K.Class] then
 		for key, value in pairs(K.RaidBuffs[K.Class]) do
-			tinsert(buffs, value)
+			table_insert(buffs, value)
 		end
 	end
 
