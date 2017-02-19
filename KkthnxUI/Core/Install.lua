@@ -597,9 +597,9 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	-- Welcome message
 	if C.General.WelcomeMessage == true then
-		print("|cffffff00"..L.Welcome.Line1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)..".|r")
-		print("|cffffff00"..L.Welcome.Line2.."|cffffff00"..L.Welcome.Line3.."|r")
-		print("|cffffff00"..L.Welcome.Line4.."|cffffff00"..L.Welcome.Line5.."|r")
+		print(L.Welcome.Line1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
+		print(L.Welcome.Line2..L.Welcome.Line3)
+		print(L.Welcome.Line4..L.Welcome.Line5)
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")

@@ -119,6 +119,54 @@ function ns.createArenaLayout(self, unit)
 	self.PvP:SetSize(32, 32)
 	self.PvP:SetPoint("TOPLEFT", self.Texture, -14, -20)
 
+	self.Absorb = {
+		texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+		tile = true,
+		drawLayer = {"BACKGROUND", 4},
+		colour = {.3, .7, 1},
+		alpha = .5
+	}
+
+	do
+		local myBar = CreateFrame("StatusBar", nil, self.Health)
+		myBar:SetStatusBarTexture(C.Media.Texture)
+		myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
+		myBar:SetPoint("TOP")
+		myBar:SetPoint("BOTTOM")
+		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		myBar:SetStatusBarColor(0, 1, .5, .5)
+
+		local otherBar = CreateFrame("StatusBar", nil, self.Health)
+		otherBar:SetStatusBarTexture(C.Media.Texture)
+		otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
+		otherBar:SetPoint("TOP")
+		otherBar:SetPoint("BOTTOM")
+		otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		otherBar:SetStatusBarColor(0, 1, 0, .5)
+
+		local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
+		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
+		healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
+		healAbsorbBar:SetPoint("TOP")
+		healAbsorbBar:SetPoint("BOTTOM")
+		healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+
+		self.Health:HookScript("OnSizeChanged", function(bar, width)
+			myBar:SetWidth(55 - 2)
+			otherBar:SetWidth(55 - 2)
+			healAbsorbBar:SetWidth(55 - 2)
+		end)
+
+		self.HealPrediction = {
+			myBar = myBar,
+			otherBar = otherBar,
+			healAbsorbBar = healAbsorbBar,
+			maxOverflow = 1,
+			frequentUpdates = true
+		}
+	end
+
 	-- Portrait Timer
 	if (C.Unitframe.PortraitTimer == true and self.Portrait) then
 		self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
