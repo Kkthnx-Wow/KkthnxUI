@@ -40,6 +40,11 @@ local _, ns = ...
 local oUF = ns.oUF or _G.oUF
 local colors = K.Colors
 
+local GHOST = GetSpellInfo(8326)
+if GetLocale() == "deDE" then
+	GHOST = "Geist"
+end
+
 function K.MatchUnit(unit)
 	if (unit and unit:match("vehicle")) then
 		return "player"
@@ -67,29 +72,32 @@ end
 
 local function UpdatePortraitColor(self, unit, cur, max)
 	if not unit then return end
-	if (not UnitIsConnected(unit)) then
-		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-	elseif (UnitIsDead(unit)) then
-		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-	elseif (UnitIsGhost(unit)) then
-		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-	elseif (cur / max * 100 < 25) then
-		if (UnitIsPlayer(unit)) then
-			if (self.MatchUnit ~= "player") then
-				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+
+	if (UnitIsPlayer(unit)) then
+		if (self.Portrait) then
+			if (UnitIsDead(unit)) then
+				self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 1.0)
+			elseif (not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD(unit)) then
+				self.Portrait:SetVertexColor(0.2, 0.2, 0.75, 1.0)
+			elseif ((cur / max > 0) and (cur / max <= 0.2)) then
+				self.Portrait:SetVertexColor(1.0, 0.0, 0.0)
+			else
+				self.Portrait:SetVertexColor(1.0, 1.0, 1.0, 1.0)
 			end
 		end
-	else
-		self.Portrait:SetVertexColor(1, 1, 1, 1)
 	end
 end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
 local function SetValueText(self, tag, cur, max)
-	if not tag then return TEXT_NONE or "" end
+	if not tag then
+		return ""
+	end
 
-	 -- not sure why this happens
-	if (not max or max == 0) then max = 100 end
+	-- not sure why this happens
+	if (not max or max == 0) then
+		max = 100
+	end
 
 	if (tag == TEXT_PERCENT) and (max < 200) then
 		tag = TEXT_SHORT -- Shows energy etc. with real number
@@ -129,7 +137,7 @@ do
 	function K.Health_PostUpdate(Health, unit, cur, max)
 		if not unit then return end -- Blizz bug in 7.1
 
-		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GetSpellInfo(8326) or UnitIsDead(unit) and DEAD
+		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
 		local uconfig = ns.config[self.MatchUnit]
 
@@ -137,12 +145,12 @@ do
 			UpdatePortraitColor(self, unit, cur, max)
 		end
 
-		if (self.Name) and (self.Name.Bg) then -- </ For boss frames > --
+		if (self.Name) and (self.Name.Bg) then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
 		if absent then
-			Health:SetValue(0) -- UnitHealth is sometimes > 0 for dead units
+			Health:SetValue(nil) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value and max > 0 then
 				Health.Value:SetText(absent)
@@ -179,8 +187,15 @@ do
 		local self = Power:GetParent()
 		local uconfig = ns.config[self.MatchUnit]
 
+		if max == 0 then
+			return self:Hide()
+		else
+			self:Show()
+		end
+
+		-- if UnitIsDeadOrGhost(unit) then
 		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
-			Power:SetValue(0)
+			Power:SetValue(nil) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			if Power.Value then
 				Power.Value:SetText(nil)
 			end
@@ -380,8 +395,8 @@ function K.SetCastTicks(self, numTicks, extraTickRatio)
 	end
 end
 
-local MageSpellName = GetSpellInfo(5143) --Arcane Missiles
-local MageBuffName = GetSpellInfo(166872) --4p T17 bonus proc for arcane
+local MageSpellName = GetSpellInfo(5143) -- Arcane Missiles
+local MageBuffName = GetSpellInfo(166872) -- 4p T17 bonus proc for arcane
 
 function K.PostCastStart(self, unit, name)
 	if unit == "vehicle" then unit = "player" end
