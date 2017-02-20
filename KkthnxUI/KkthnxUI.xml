@@ -105,6 +105,7 @@
    <!-- Blizzard -->
    <Script file="Modules\Blizzard\AlertFrames.lua" />
    <Script file="Modules\Blizzard\AltPowerBar.lua" />
+   <Script file="Modules\Blizzard\BlizzBugFixes.lua" />
    <Script file="Modules\Blizzard\CaptureBar.lua" />
    <Script file="Modules\Blizzard\ColorPicker.lua" />
    <Script file="Modules\Blizzard\ColorTextures.lua" />
@@ -112,7 +113,6 @@
    <Script file="Modules\Blizzard\DebugTools.lua" />
    <Script file="Modules\Blizzard\ErrorFilter.lua" />
    <Script file="Modules\Blizzard\ExtraActionBar.lua" />
-   <Script file="Modules\Blizzard\Fixes.lua" />
    <Script file="Modules\Blizzard\Fonts.lua" />
    <Script file="Modules\Blizzard\MirrorBars.lua" />
    <Script file="Modules\Blizzard\RaidUtility.lua" />
@@ -157,7 +157,6 @@
    <Script file="Modules\Miscellaneous\AFKSpin.lua" />
    <Script file="Modules\Miscellaneous\AlreadyKnown.lua" />
    <Script file="Modules\Miscellaneous\ArmoryLink.lua" />
-   <Script file="Modules\Miscellaneous\BlizzBugsSuck.lua" />
    <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />

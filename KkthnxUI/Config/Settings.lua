@@ -280,7 +280,6 @@ C["Unitframe"] = {
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
 	["Style"] = "fat",
-	["SwingBar"] = false,
 	["ThreatGlow"] = true,
 	["ThreatValue"] = false,
 }

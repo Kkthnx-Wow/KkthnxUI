@@ -49,14 +49,20 @@ function K.Print(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
-function K.SetFontString(parent, fontName, fontHeight, fontStyle, justify)
-	local fs = parent:CreateFontString(nil, "OVERLAY")
-	fs:SetFont(fontName, fontHeight, fontStyle)
-	fs:SetJustifyH(justify or "CENTER")
-	fs:SetShadowColor(0, 0, 0, 1)
-	fs:SetShadowOffset(K.Mult, -K.Mult)
+local FALLBACK_FONT_SIZE = 13 -- some Blizzard bug
+local FONT_SCALE = 1
+function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
+	if not fontSize or fontSize < 6 then fontSize = FALLBACK_FONT_SIZE end
+	fontSize = fontSize * FONT_SCALE
 
-	return fs
+	local fontString = parent:CreateFontString(nil, "OVERLAY")
+	fontString:SetFont(fontName, fontSize, fontStyle)
+	fontString:SetJustifyH(justify or "CENTER")
+	fontString:SetWordWrap(false)
+	fontString:SetShadowOffset(K.Mult or 1, -K.Mult or -1)
+	fontString.baseSize = fontSize
+
+	return fontString
 end
 
 function K.Comma(num)

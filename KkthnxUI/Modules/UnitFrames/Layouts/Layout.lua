@@ -446,7 +446,7 @@ local function CreateUnitLayout(self, unit)
 	if C.Unitframe.Castbars then
 		if self.MatchUnit == "player" then
 			-- local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar", false)
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar")
 			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
@@ -532,7 +532,7 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "target" then
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxTarget_Castbar", false)
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxTarget_Castbar")
 			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
@@ -603,7 +603,7 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "focus" then
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxFocus_Castbar", false)
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxFocus_Castbar")
 			CastBar:SetPoint("LEFT", 0, 0)
 			CastBar:SetPoint("RIGHT", -20, 0)
 			CastBar:SetPoint("TOP", 0, 60)
@@ -667,7 +667,7 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar.Icon = CastBar.Icon
 
 		elseif self.IsBossFrame then
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxBoss_Castbar", false)
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxBoss_Castbar")
 			CastBar:SetPoint("RIGHT", -138, 0)
 			CastBar:SetPoint("LEFT", 0, 10)
 			CastBar:SetPoint("LEFT", -138, 8)
@@ -731,7 +731,7 @@ local function CreateUnitLayout(self, unit)
 	self.Texture:SetDrawLayer("BORDER", 3)
 
 	-- Healthbar
-	self.Health = K.CreateStatusBar(self, "$parentHealthBar", true)
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.Health_PostUpdate
@@ -751,7 +751,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Power bar
-	self.Power = K.CreateStatusBar(self, "$parentPowerBar", true)
+	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = true
@@ -1141,37 +1141,17 @@ local function CreateUnitLayout(self, unit)
 
 		-- GCD spark
 		if C.Unitframe.GCDBar == true and self.MatchUnit == "player" then
-			self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self)
-			self.GCD:SetWidth(116)
-			self.GCD:SetHeight(3)
-			self.GCD:SetFrameStrata("HIGH")
-			self.GCD:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 0)
+			self.GCD = CreateFrame("Frame", nil, self.Health)
+			self.GCD:SetPoint("LEFT", self.Health, "LEFT")
+			self.GCD:SetPoint("RIGHT", self.Health, "RIGHT")
+			self.GCD:SetHeight(self.Health:GetHeight() - 2)
 
-			self.GCD.Color = {1, 1, 1}
-			self.GCD.Height = K.Scale(4)
-			self.GCD.Width = K.Scale(8)
-		end
-
-		-- Swing bar
-		if C.Unitframe.SwingBar == true and self.MatchUnit == "player" then
-			self.Swing = CreateFrame("StatusBar", self:GetName().."_Swing", self)
-			self.Swing:CreateShadow()
-			self.Swing:SetPoint("TOPRIGHT", "oUF_KkthnxPlayer_Castbar", "BOTTOMRIGHT", 0, -4)
-			self.Swing:SetSize(C.Unitframe.CastbarWidth, 5)
-			self.Swing:SetStatusBarTexture(C.Media.Texture)
-			self.Swing:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
-
-			self.Swing.bg = self.Swing:CreateTexture(nil, "BORDER")
-			self.Swing.bg:SetAllPoints(self.Swing)
-			self.Swing.bg:SetTexture(C.Media.Blank)
-			self.Swing.bg:SetVertexColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
-
-			self.Swing.Text = K.SetFontString(self.Swing, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
-			self.Swing.Text:SetShadowOffset(0, 0)
-			self.Swing.Text:SetPoint("CENTER", 0, 0)
-			self.Swing.Text:SetTextColor(1, 1, 1)
-
-			Movers:RegisterFrame(self.Swing)
+			self.GCD.Spark = self.GCD:CreateTexture(nil, "OVERLAY")
+			self.GCD.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+			self.GCD.Spark:SetBlendMode("ADD")
+			self.GCD.Spark:SetHeight(self.Health:GetHeight() * 2 - 8)
+			self.GCD.Spark:SetWidth(10)
+			self.GCD.Spark:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
 		end
 
 		-- Combat icon

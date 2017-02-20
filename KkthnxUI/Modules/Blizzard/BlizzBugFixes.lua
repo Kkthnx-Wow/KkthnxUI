@@ -4,12 +4,7 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
-local DropDownList1 = _G.DropDownList1
-local FCF_StartAlertFlash = _G.FCF_StartAlertFlash
 local GetContainerNumSlots = _G.GetContainerNumSlots
-local HideUIPanel = _G.HideUIPanel
-local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsBagOpen = _G.IsBagOpen
 local IsOptionFrameOpen = _G.IsOptionFrameOpen
 local UnitIsUnit = _G.UnitIsUnit
@@ -18,10 +13,10 @@ local WorldMapFrame_OnHide = _G.WorldMapFrame_OnHide
 local WorldMapLevelButton_OnClick = _G.WorldMapLevelButton_OnClick
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame, addon, ToggleFrame
+-- GLOBALS: LFRBrowseFrame, addon, ToggleFrame
+-- GLOBALS: NUM_CONTAINER_FRAMES, CloseBag
 -- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
 -- GLOBALS: WorldMapLevelButton, BankFrame, CloseAllBags, NUM_BAG_FRAMES, OpenBag
--- GLOBALS: NUM_CONTAINER_FRAMES, CloseBag
 
 -- Fix spellbook taint in combat
 local SpellBookTaint = CreateFrame("Frame")
@@ -35,9 +30,6 @@ SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
 
 	self:UnregisterEvent("ADDON_LOADED")
 end)
-
--- Fix RemoveTalent() taint
-FCF_StartAlertFlash = K.Noop
 
 -- Fix SearchLFGLeave() taint
 local LFRBrowseTaint = CreateFrame("Frame")
@@ -72,12 +64,11 @@ end)
 -- The first problem is that WorldMapScrollFrame_ResetZoom doesn't work properly in combat.
 -- The second problem is that changing it taints the WorldMap and probably the POI system and Objectives Tracker too.
 -- The "solution" is to remove events and script handlers that call it while engaged in combat.
-
 -- WoW frames & functions
-local MapResetZoomFix = CreateFrame("Frame", nil, UIParent)
-MapResetZoomFix:RegisterEvent("PLAYER_REGEN_ENABLED")
-MapResetZoomFix:RegisterEvent("PLAYER_REGEN_DISABLED")
-MapResetZoomFix:SetScript("OnEvent", function(self)
+local ResetZoom = CreateFrame("Frame", nil, UIParent)
+ResetZoom:RegisterEvent("PLAYER_REGEN_ENABLED")
+ResetZoom:RegisterEvent("PLAYER_REGEN_DISABLED")
+ResetZoom:SetScript("OnEvent", function(self)
 	if event == "PLAYER_REGEN_DISABLED" then
 		WorldMapFrame:UnregisterEvent("WORLD_MAP_UPDATE")
 		WorldMapFrame:SetScript("OnHide", nil)

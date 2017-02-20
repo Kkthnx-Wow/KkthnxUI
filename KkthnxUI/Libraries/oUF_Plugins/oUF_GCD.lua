@@ -1,94 +1,154 @@
--- Based on oUF_GCD(by ALZA)
+--[[
+oUF_GCD - Global Cooldown timer for oUF
+by Exactly of Turalyon (us)
+
+
+Example
+
+self.GCD = CreateFrame('Frame', nil, self)
+self.GCD:SetPoint('BOTTOMLEFT', self.Title, 'BOTTOMLEFT')
+self.GCD:SetPoint('BOTTOMRIGHT', self.Title, 'BOTTOMRIGHT')
+self.GCD:SetHeight(2)
+
+self.GCD.Spark = self.GCD:CreateTexture(nil, "OVERLAY")
+self.GCD.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+self.GCD.Spark:SetBlendMode("ADD")
+self.GCD.Spark:SetHeight(10)
+self.GCD.Spark:SetWidth(10)
+self.GCD.Spark:SetPoint('BOTTOMLEFT', self.Title, 'BOTTOMLEFT', -5, -5)
+
+self.GCD.ReferenceSpellName = '***SEE BELOW***'
+
+You have to set a reference spell. You should choose one that has no cooldown
+except the global cooldown, and that cant be interrupted or silenced -- and
+it has to be one that's in your spellbook.
+
+Alternatively, you can add spells to the "referenceSpells" block at the top of
+this file and the addon will automatically choose the first one that you know. I'll add
+more spells to the list as I figure out what they are. For now, you can just add more
+spells to the list -- it doesnt matter where.
+
+Enjoy!
+--]]
+
 local _, ns = ...
 local oUF = ns.oUF or oUF
-if not oUF then return end
 
-local starttime, duration, usingspell, spellid
-local GetTime = GetTime
-
-local MyClass = select(2, UnitClass("player"))
-
-local spells = {
-	["DEATHKNIGHT"] = 50977,
-	["DEMONHUNTER"] = 204157,
-	["DRUID"] = 8921,
-	["HUNTER"] = 982,
-	["MAGE"] = 118,
-	["MONK"] = 100780,
-	["PALADIN"] = 35395,
-	["PRIEST"] = 585,
-	["ROGUE"] = 1752,
-	["SHAMAN"] = 403,
-	["WARLOCK"] = 686,
-	["WARRIOR"] = 57755,
+local referenceSpells = {
+	100780, -- Monk
+	118, -- Mage
+	1752, -- Rogue
+	204157, -- Demon Hunter
+	35395, -- Paladin
+	403, -- Shaman
+	50977, -- Death Knight
+	57755, -- Warrior
+	585, -- Priest
+	686, -- Warlock
+	8921, -- Druid
+	982, -- Hunter
 }
 
-local Enable = function(self)
-	if not self.GCD then return end
-	local bar = self.GCD
-	local width = bar:GetWidth()
-	bar:Hide()
+local spellid
+local GetTime = GetTime
+local BOOKTYPE_SPELL = BOOKTYPE_SPELL
+local GetSpellCooldown = GetSpellCooldown
 
-	bar.spark = bar:CreateTexture(nil, "DIALOG")
-	bar.spark:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Blank]])
-	bar.spark:SetVertexColor(unpack(bar.Color))
-	bar.spark:SetHeight(bar.Height)
-	bar.spark:SetWidth(bar.Width)
-	bar.spark:SetBlendMode("ADD")
+local Init = function()
+	local FindInSpellbook = function(spell)
+		for tab = 1, 4 do
+			local _, _, offset, numSpells = GetSpellTabInfo(tab)
+			for i = (1+offset), (offset + numSpells) do
+				local bspell = GetSpellInfo(i, BOOKTYPE_SPELL)
+				if (bspell == spell) then
+					return i
+				end
+			end
+		end
+		return nil
+	end
 
-	local function OnUpdateSpark()
-		bar.spark:ClearAllPoints()
-		local elapsed = GetTime() - starttime
-		local perc = elapsed / duration
+	for _, lspell in pairs(referenceSpells) do
+		local na = GetSpellInfo (lspell)
+		local x = FindInSpellbook(na)
+		if x ~= nil then
+			spellid = lspell
+			break
+		end
+	end
+
+	if spellid == nil then
+		-- XXX: print some error ..
+		print ("Cant find spellid, oUF_GCD")
+	end
+
+	return spellid
+end
+
+local OnUpdateGCD
+do
+	OnUpdateGCD = function(self)
+		self.Spark:ClearAllPoints()
+		local perc = (GetTime() - self.starttime) / self.duration
 		if perc > 1 then
-			return bar:Hide()
-		else
-			bar.spark:SetPoint("CENTER", bar, "LEFT", width * perc, 0)
-		end
-	end
-
-	local function Init()
-		local isKnown = IsSpellKnown(spells[MyClass])
-		if isKnown then
-			spellid = spells[MyClass]
-		end
-		if spellid == nil then
+			self:Hide()
 			return
+		else
+			self.Spark:SetPoint('CENTER', self, 'LEFT', self:GetWidth() * perc, 0)
 		end
-		return spellid
 	end
+end
 
-	local function OnHide()
-		bar:SetScript("OnUpdate", nil)
-		usingspell = nil
-	end
+local OnHideGCD = function(self)
+	self:SetScript('OnUpdate', nil)
+	self.drawing = false
+end
 
-	local function OnShow()
-		bar:SetScript("OnUpdate", OnUpdateSpark)
-	end
+local OnShowGCD = function(self)
+	self:SetScript('OnUpdate', OnUpdateGCD)
+end
 
-	local function UpdateGCD()
+local Update = function(self, event, unit)
+	if self.GCD then
 		if spellid == nil then
 			if Init() == nil then
 				return
 			end
 		end
+
 		local start, dur = GetSpellCooldown(spellid)
-		if dur and dur > 0 and dur <= 2 then
-			usingspell = 1
-			starttime = start
-			duration = dur
-			bar:Show()
-			return
-		elseif usingspell == 1 and dur == 0 then
-			bar:Hide()
+
+		if (not start) then return end
+		if (not dur) then dur = 0 end
+
+		if (dur == 0) then
+			self.GCD:Hide()
+		else
+			self.GCD.starttime = start
+			self.GCD.duration = dur
+			self.GCD:Show()
 		end
 	end
-
-	bar:SetScript("OnShow", OnShow)
-	bar:SetScript("OnHide", OnHide)
-
-	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", UpdateGCD)
 end
 
-oUF:AddElement("GCD", UpdateGCD, Enable)
+local Enable = function(self)
+	if (self.GCD) then
+		self.GCD:Hide()
+		self.GCD.drawing = false
+		self.GCD.starttime = 0
+		self.GCD.duration = 0
+
+		self:RegisterEvent('ACTIONBAR_UPDATE_COOLDOWN', Update)
+		self.GCD:SetScript('OnHide', OnHideGCD)
+		self.GCD:SetScript('OnShow', OnShowGCD)
+	end
+end
+
+local Disable = function(self)
+	if (self.GCD) then
+		self:UnregisterEvent('ACTIONBAR_UPDATE_COOLDOWN')
+		self.GCD:Hide()
+	end
+end
+
+oUF:AddElement('GCD', Update, Enable, Disable)

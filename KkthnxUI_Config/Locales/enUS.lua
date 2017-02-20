@@ -270,7 +270,6 @@ UIConfigLocal.UnitframeShowBoss = "Enable boss frames"
 UIConfigLocal.UnitframeShowPlayer = "Show yourself in the party"
 UIConfigLocal.UnitframeSmooth = "Bars will transition smoothly"
 UIConfigLocal.UnitframeStyle = "Style the uniframes look 'fat or normal'"
-UIConfigLocal.UnitframeSwingBar = "Enable swing bar"
 UIConfigLocal.UnitframeThreatGlow = "Threat glow around unitframes"
 UIConfigLocal.UnitframeThreatValue = "Visual threat text on the player frame"
 

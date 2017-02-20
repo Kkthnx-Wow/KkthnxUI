@@ -267,7 +267,6 @@ UIConfigLocal.UnitframeShowBoss = "Включить рамки боссов"
 UIConfigLocal.UnitframeShowPlayer = "SПоказывать себя в группе"
 UIConfigLocal.UnitframeSmooth = "Bars will transition smoothly"
 UIConfigLocal.UnitframeStyle = "Стиль рамок 'fat или normal'" -- Это ключевые слова, чтобы опция работала их надо писать
-UIConfigLocal.UnitframeSwingBar = "Отображать индикатор автоматической атаки"
 UIConfigLocal.UnitframeThreatGlow = "Свечение угрозы вокруг рамки"
 UIConfigLocal.UnitframeThreatValue = "Текст угрозы на рамке игрока"
 

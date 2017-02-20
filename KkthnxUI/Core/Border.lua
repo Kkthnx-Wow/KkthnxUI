@@ -78,7 +78,7 @@ end
 
 -- Small bar below of frames
 function K.CreateOutsideBar(parent, onTop, r, g, b)
-	local StatusBar = K.CreateStatusBar(parent, "OutsideBar", true)
+	local StatusBar = K.CreateStatusBar(parent, "OutsideBar")
 
 	StatusBar:SetSize(98, 10)
 	StatusBar:SetStatusBarColor(r or 1, g or 0, b or 0)

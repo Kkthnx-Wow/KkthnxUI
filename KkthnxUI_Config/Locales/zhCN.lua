@@ -272,7 +272,6 @@ UIConfigLocal.UnitframeShowBoss = "启用首领框架"
 UIConfigLocal.UnitframeShowPlayer = "在小队中显示自身"
 UIConfigLocal.UnitframeSmooth = "生命条及法力条平滑过渡效果"
 UIConfigLocal.UnitframeStyle = "使单位框架看起来“厚fat或薄normal”"
-UIConfigLocal.UnitframeSwingBar = "显示普通攻击计时条"
 UIConfigLocal.UnitframeThreatGlow = "单位框架四周仇恨提示闪光"
 UIConfigLocal.UnitframeThreatValue = "玩家框体上方显示仇恨数值"
 

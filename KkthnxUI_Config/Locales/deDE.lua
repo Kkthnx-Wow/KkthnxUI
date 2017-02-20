@@ -271,7 +271,6 @@ UIConfigLocal.UnitframeShowBoss = "Aktiviere die Bossfenster"
 UIConfigLocal.UnitframeShowPlayer = "Zeige dich selbst in der Gruppe an"
 UIConfigLocal.UnitframeSmooth = "Bars will transition smoothly"
 UIConfigLocal.UnitframeStyle = "Style den Look der Einheitenfenster 'fat oder normal'"
-UIConfigLocal.UnitframeSwingBar = "Swingleiste"
 UIConfigLocal.UnitframeThreatGlow = "Aktiviere das Bedrohungsleuchten um die Einheitenfenster"
 UIConfigLocal.UnitframeThreatValue = "Visueller Bedrohungstext auf dem Spielerfenster"
 

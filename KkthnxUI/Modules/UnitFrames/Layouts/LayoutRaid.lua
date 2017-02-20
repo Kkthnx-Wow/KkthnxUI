@@ -148,7 +148,7 @@ local function CreateRaidLayout(self, unit)
 	self:SetBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 	-- Health bar
-	self.Health = K.CreateStatusBar(self, "$parentHealthBar", true)
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 	self.Health:SetAllPoints(self)
 
@@ -181,7 +181,7 @@ local function CreateRaidLayout(self, unit)
 
 	-- Power bar
 	if (C.Raidframe.ManabarShow) then
-		self.Power = K.CreateStatusBar(self, "$parenPowerBar", true)
+		self.Power = K.CreateStatusBar(self, "$parenPowerBar")
 		self.Power:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)

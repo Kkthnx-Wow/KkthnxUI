@@ -258,20 +258,18 @@ function K.UnitFrame_OnLeave(self)
 end
 
 -- </ Statusbar functions > --
-function K.CreateStatusBar(parent, name, smooth)
+function K.CreateStatusBar(parent, name)
 	local StatusBar = CreateFrame("StatusBar", name, parent)
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
-	local StatusBarBG = StatusBar:CreateTexture(nil, "BACKGROUND")
-	StatusBarBG:SetTexture(C.Media.Blank)
-	StatusBarBG:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	StatusBarBG:SetAllPoints()
+	if StatusBar.styled then return end
+
+	StatusBar.Background = StatusBar:CreateTexture(nil, "BACKGROUND")
+	StatusBar.Background:SetTexture(C.Media.Blank)
+	StatusBar.Background:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	StatusBar.Background:SetAllPoints()
 
 	StatusBar.styled = true
-
-	if smooth then
-		StatusBar.Smooth = true
-	end
 
 	return StatusBar
 end
