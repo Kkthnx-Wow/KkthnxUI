@@ -192,7 +192,6 @@ UIConfigLocal.NameplatesBadColor = "Bad threat color, varies depending if your a
 UIConfigLocal.NameplatesCastbarName = "Show castbar name"
 UIConfigLocal.NameplatesCastUnitReaction = "Color castbars by the reaction type of non-player units"
 UIConfigLocal.NameplatesClamp = "Clamp nameplates to the top of the screen when outside of view"
-UIConfigLocal.NameplatesClassIcons = "Icons by class in PvP"
 UIConfigLocal.NameplatesCombat = "Automatically show nameplates in combat"
 UIConfigLocal.NameplatesDistance = "Show nameplates for units within this range"
 UIConfigLocal.NameplatesEnable = "Enable nameplates"

@@ -298,17 +298,11 @@ local function UpdateTarget(self)
 		self:SetSize((C.Nameplates.Width + C.Nameplates.AdditionalWidth) * K.NoScaleMult, (C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult)
 		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult))
 		self.Castbar.Icon:SetSize(((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8, ((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8)
-		if C.Nameplates.ClassIcons == true then
-			self.Class.Icon:SetSize(((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8, ((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8)
-		end
 		self:SetAlpha(1)
 	else
 		self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
 		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-(C.Nameplates.Height * K.NoScaleMult))
 		self.Castbar.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
-		if C.Nameplates.ClassIcons == true then
-			self.Class.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
-		end
 		if UnitExists("target") and not UnitIsUnit(self.unit, "player") then
 			self:SetAlpha(C.UnitframePlugins.OORAlpha)
 		else
@@ -337,20 +331,6 @@ local function UpdateName(self)
 		end
 	end
 
-	if C.Nameplates.ClassIcons == true then
-		local reaction = UnitReaction(self.unit, "player")
-		if UnitIsPlayer(self.unit) and (reaction and reaction <= 4) then
-			local _, class = UnitClass(self.unit)
-			local texcoord = CLASS_ICON_TCOORDS[class]
-			self.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
-			self.Class:Show()
-			self.Level:SetPoint("RIGHT", self.Name, "LEFT", 0, 0)
-		else
-			self.Class.Icon:SetTexCoord(0, 0, 0, 0)
-			self.Class:Hide()
-			self.Level:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
-		end
-	end
 	if C.Nameplates.TotemIcons == true then
 		local name = UnitName(self.unit)
 		if name then
@@ -560,27 +540,12 @@ local function style(self, unit)
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
 	self.Castbar.Shield:SetSize(46, 46)
-	if C.Nameplates.ClassIcons == true then
-		self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 24, -8)
-	else
-		self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 24, 8)
-	end
+	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 24, 8)
 
 	-- Raid Icon
 	self.RaidIcon = self:CreateTexture(nil, "OVERLAY", nil, 7)
 	self.RaidIcon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
 	self.RaidIcon:SetPoint("BOTTOM", self.Health, "TOP", 0, C.Nameplates.TrackAuras == true and 38 or 16)
-
-	-- Create Class Icon
-	if C.Nameplates.ClassIcons == true then
-		self.Class = CreateFrame("Frame", nil, self)
-		self.Class.Icon = self.Class:CreateTexture(nil, "OVERLAY")
-		self.Class.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
-		self.Class.Icon:SetPoint("TOPRIGHT", self.Health, "TOPLEFT", -4, 0)
-		self.Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
-		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
-		K.CreateShadowFrame(self.Class, self.Class.Icon)
-	end
 
 	-- Create Totem Icon
 	if C.Nameplates.TotemIcons == true then
