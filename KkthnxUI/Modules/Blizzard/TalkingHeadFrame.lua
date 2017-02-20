@@ -25,6 +25,7 @@ HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
 		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
 			TalkingHeadFrame:Kill()
 		end)
+
 		self:UnregisterEvent(event)
 	end
 end)

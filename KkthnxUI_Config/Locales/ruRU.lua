@@ -31,20 +31,15 @@ UIConfigLocal.ActionBarToggleMode = "Включить режим переклю�
 
 -- Оповещения
 UIConfigLocal.Announcements = "Оповещения"
-UIConfigLocal.AnnouncementsBadGear = "Проверять наличие плохой экипировки в подземельях"
 UIConfigLocal.AnnouncementsInterrupt = "Анонсировать в группу/рейд ваши прерывания заклинаний"
 UIConfigLocal.AnnouncementsPullCountdown = "Активировать функцию обратного отсчета на запуск босса (/рс)"
 UIConfigLocal.AnnouncementsSaySapped = "Мнгновенно оповещать об ошеломлении, когда |cFFFFF569Разбойник|r напал на вас"
-UIConfigLocal.AnnouncementsSayThanks = "Благодарить за полезные заклинания"
-UIConfigLocal.AnnouncementsSpells = "Анонсировать в группу/рейд применение некоторых важных умений"
-UIConfigLocal.AnnouncementsSpellsFromAll = "Проверять умения всех членов группы/рейда"
 
 -- Автоматизация
 UIConfigLocal.Automation = "Автоматизация"
 UIConfigLocal.AutomationAutoCollapse = "Автоматически сворачивать список заданий в подземельях"
 UIConfigLocal.AutomationAutoInvite = "Автоматически принимать приглашения от друзей и гильдии"
 UIConfigLocal.AutomationDeclineDuel = "Автоматически отклонять все дуэли"
-UIConfigLocal.AutomationLoggingCombat = "Автоматически сохранять лог боя в текстовый файл в рейде"
 UIConfigLocal.AutomationResurrection = "Автоматическое покидание тела на полях боя"
 UIConfigLocal.AutomationScreenShot = "Автоматически делать скриншот при получении достижений"
 
@@ -148,7 +143,6 @@ UIConfigLocal.GeneralBubbleFontSize = "Размер шрифта в облочк
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
 UIConfigLocal.GeneralTaintLog = "Отслеживать недочеты"
 UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
-UIConfigLocal.GeneralTranslateMessage = "Оповещение о помощи перевода GUI"
 UIConfigLocal.GeneralUIScale = "Масштаб интерфейса (если автомасштабирование отключено)"
 UIConfigLocal.GeneralUseBlizzardFonts = "Use the default blizzard font"
 UIConfigLocal.GeneralUseFlatTextures = "Use flat statusbar textures"
@@ -304,5 +298,4 @@ UIConfigLocal.WorldMap = "Карта мира"
 UIConfigLocal.WorldMapAlphaWhenMoving = "Прозрачность карты мира во время движения."
 UIConfigLocal.WorldMapCoordinates = "Координаты на карте мира."
 UIConfigLocal.WorldMapFadeWhenMoving = "Затухание карты мира во время движения."
-UIConfigLocal.WorldMapFogOfWar = "Убрать туман войны на карте мира"
 UIConfigLocal.WorldMapSmallWorldMap = "Сделать карту мира меньше."

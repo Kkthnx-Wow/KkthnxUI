@@ -19,12 +19,10 @@
    <Script file="Core\GUI.lua" />
    <Script file="Core\PixelPerfect.lua" />
    <!-- Filters -->
-   <Script file="Config\Filters\Announcements.lua" />
    <Script file="Config\Filters\AuraList.lua" />
    <Script file="Config\Filters\CastbarTicks.lua" />
    <Script file="Config\Filters\ErrorFilter.lua" />
    <Script file="Config\Filters\Nameplates.lua" />
-   <Script file="Config\Filters\PortraitTimers.lua" />
    <Script file="Config\Filters\RaidAuraWatch.lua" />
    <Script file="Config\Filters\SpamFilter.lua" />
    <!-- Libraries -->
@@ -91,13 +89,10 @@
    <Script file="Modules\ActionBars\Range.lua" />
    <Script file="Modules\ActionBars\Others.lua" />
    <Script file="Modules\ActionBars\Cooldowns.lua" />
-   <Script file="Modules\ActionBars\SelfCast.lua" />
    <!-- Announcements -->
-   <Script file="Modules\Announcements\BadGear.lua" />
    <Script file="Modules\Announcements\Interrupt.lua" />
    <Script file="Modules\Announcements\PullCountdown.lua" />
    <Script file="Modules\Announcements\SaySapped.lua" />
-   <Script file="Modules\Announcements\Spells.lua" />
    <!-- Auras -->
    <Include file="Modules\Auras\Templates.xml" />
    <Script file="Modules\Auras\Auras.lua" />
@@ -106,7 +101,6 @@
    <Script file="Modules\Automation\AutoInvite.lua" />
    <Script file="Modules\Automation\AutoRelease.lua" />
    <Script file="Modules\Automation\DeclineDuel.lua" />
-   <Script file="Modules\Automation\LoggingCombat.lua" />
    <Script file="Modules\Automation\Screenshots.lua" />
    <!-- Blizzard -->
    <Script file="Modules\Blizzard\AlertFrames.lua" />
@@ -121,7 +115,6 @@
    <Script file="Modules\Blizzard\Fixes.lua" />
    <Script file="Modules\Blizzard\Fonts.lua" />
    <Script file="Modules\Blizzard\MirrorBars.lua" />
-   <Script file="Modules\Blizzard\MoveBlizzFrames.lua" />
    <Script file="Modules\Blizzard\RaidUtility.lua" />
    <Script file="Modules\Blizzard\ReputationGain.lua" />
    <Script file="Modules\Blizzard\TalkingHeadFrame.lua" />
@@ -157,7 +150,6 @@
    <!-- Maps -->
    <Script file="Modules\Maps\ButtonCollect.lua" />
    <Script file="Modules\Maps\FarmMode.lua" />
-   <Script file="Modules\Maps\FogOfWar.lua" />
    <Script file="Modules\Maps\MicroMenu.lua" />
    <Script file="Modules\Maps\MiniMap.lua" />
    <Script file="Modules\Maps\WorldMap.lua" />
@@ -169,7 +161,6 @@
    <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />
-   <Script file="Modules\Miscellaneous\LagTolerance.lua" />
    <Script file="Modules\Miscellaneous\LossControl.lua" />
    <Script file="Modules\Miscellaneous\Merchant.lua" />
    <Script file="Modules\Miscellaneous\MinimapButton.lua" />
@@ -181,7 +172,6 @@
    <!-- Nameplates -->
    <Script file="Modules\Nameplates\Nameplates.lua" />
    <!-- Quests -->
-   <Script file="Modules\Quests\AutoAccept.lua" />
    <Script file="Modules\Quests\AutoCollapse.lua" />
    <Script file="Modules\Quests\ObjectiveTracker.lua" />
    <Script file="Modules\Quests\QuestLog.lua" />

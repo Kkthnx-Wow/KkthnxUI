@@ -215,7 +215,6 @@ function KkthnxUIInstall:PositionSetup()
 	-- Reset saved variables on char
 	KkthnxUIDataPerChar = {}
 
-	KkthnxUIDataPerChar.FogOfWar = false
 	KkthnxUIDataPerChar.AutoInvite = false
 	KkthnxUIDataPerChar.BarsLocked = false
 	KkthnxUIDataPerChar.SplitBars = true
@@ -574,7 +573,6 @@ Install:SetScript("OnEvent", function(self, event, addon)
 	if KkthnxUIData == nil then KkthnxUIData = {} end
 	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
 	if KkthnxUIDataPerChar.Movers == nil then KkthnxUIDataPerChar.Movers = {} end
-	if KkthnxUIDataPerChar.FogOfWar == nil then KkthnxUIDataPerChar.FogOfWar = false end
 	if KkthnxUIDataPerChar.AutoInvite == nil then KkthnxUIDataPerChar.AutoInvite = false end
 	if KkthnxUIDataPerChar.BarsLocked == nil then KkthnxUIDataPerChar.BarsLocked = false end
 	if KkthnxUIDataPerChar.SplitBars == nil then KkthnxUIDataPerChar.SplitBars = true end
@@ -641,12 +639,5 @@ StaticPopupDialogs["RESET_UI"] = {
 	hideOnEscape = true,
 	preferredIndex = 3
 }
-
--- Help translate
-if C.General.TranslateMessage == true then
-	if GetLocale() == "zhCN" or GetLocale() == "zhTW" then
-		print("|cffffff00Please help us translate the text settings for |cff3c9bedKkthnxUI|r. |cffffff00You can post a commit to|r |cff3c9bedgithub.com/Kkthnx/KkthnxUI_Legion|r")
-	end
-end
 
 K.Install = KkthnxUIInstall

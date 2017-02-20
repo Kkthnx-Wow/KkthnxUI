@@ -27,15 +27,12 @@ L.AFKScreen = {
 }
 
 L.Announce = {
-	FPUse = "%s使用了%s.",
 	Interrupted = INTERRUPTED.."%s的\124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
 	PCAborted = "中止開怪!",
 	PCGo = "沖啊!",
 	PCMessage = "嘲諷%s倒計時%s..",
-	Recieved = "接收自",
 	Sapped = "被悶棍",
 	SappedBy = "被悶棍:",
-	SSThanks = "感謝"
 }
 
 L.Auras = {
@@ -97,16 +94,7 @@ L.ToggleButton = {
 	MoveUI = "移動框體",
 	Recount = "打開/關閉Recount",
 	RightClick = "鼠標右鍵:",
-	ShiftClick = "Shift+鼠標左鍵:",
 	Skada = "打開/關閉Skada",
-}
-
--- Cooldowns
-L.Cooldowns = {
-	Cooldowns = "冷卻:",
-	CombatRes = "戰復",
-	CombatResRemainder = "戰復:",
-	NextTime = "下次:"
 }
 
 -- DataBars Localization
@@ -259,20 +247,6 @@ L.Loot = {
 	ToParty = " 隊伍",
 	ToRaid = " 團隊",
 	ToSay = " 說"
-}
-
--- Mail Localization
-L.Mail = {
-	Complete = "全部結束。",
-	Messages = "郵件",
-	Need = "需要郵箱.",
-	Stopped = "已停止.背包已滿.",
-	Unique = "已停止.在背包或銀行中已有拾取唯壹的相同物品."
-}
-
--- World Map Localization
-L.Map = {
-	Fog = "戰爭迷霧"
 }
 
 -- FarmMode Minimap

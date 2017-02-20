@@ -2,19 +2,23 @@ local K, C, L = unpack(select(2, ...))
 if C.Auras.Enable ~= true then return end
 
 -- Lua API
+local _G = _G
 local next = next
 local select = select
 local unpack = unpack
 
 -- Wow API
-local GetInventoryItemTexture = GetInventoryItemTexture
-local GetTime = GetTime
-local GetWeaponEnchantInfo = GetWeaponEnchantInfo
-local UnitAura = UnitAura
+local GetInventoryItemTexture = _G.GetInventoryItemTexture
+local GetTime = _G.GetTime
+local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
+local UnitAura = _G.UnitAura
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local RegisterAttributeDriver = _G.RegisterAttributeDriver
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: BuffFrame, TemporaryEnchantFrame, InterfaceOptionsFrameCategoriesButton12
--- GLOBALS: DebuffTypeColor
+-- GLOBALS: DebuffTypeColor, PetBattleFrameHider, SecureHandlerSetFrameRef
 
 local KkthnxUIAuras = CreateFrame("Frame", "KkthnxUIAuras")
 
@@ -301,7 +305,7 @@ function KkthnxUIAuras:CreateHeaders()
 
 	local Movers = K.Movers
 	local Headers = KkthnxUIAuras.Headers
-	local Parent = oUF_PetBattleFrameHider
+	local Parent = PetBattleFrameHider
 
 	for i = 1, 3 do
 		local Header

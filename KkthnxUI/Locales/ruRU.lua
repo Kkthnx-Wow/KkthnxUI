@@ -28,15 +28,12 @@ L.AFKScreen = {
 }
 
 L.Announce = {
-	FPUse = "%s использует %s.",
 	Interrupted = INTERRUPTED.." %s \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
 	PCAborted = "ОСТАНОВИТЬ АТАКУ!",
 	PCGo = "Вперед!",
 	PCMessage = "Атаковать %s через %s..",
-	Recieved = " получено от ",
 	Sapped = "Ошеломление!",
 	SappedBy = "Ошеломление от: ",
-	SSThanks = "Спасибо за "
 }
 
 L.Auras = {
@@ -98,16 +95,7 @@ L.ToggleButton = {
 	MoveUI = "Toggle Move UI",
 	Recount = "Toggle Recount",
 	RightClick = "Right click:",
-	ShiftClick = "Shift + click:",
 	Skada = "Toggle Skada",
-}
-
--- Cooldowns
-L.Cooldowns = {
-	Cooldowns = "CD: ",
-	CombatRes = "Боевое Воскрешение",
-	CombatResRemainder = "Боевое Воскрешение: ",
-	NextTime = "Следующий раз: "
 }
 
 -- DataBars Localization
@@ -260,20 +248,6 @@ L.Loot = {
 	ToParty = " Группе",
 	ToRaid = " Рейду",
 	ToSay = " Сказать"
-}
-
--- Mail Localization
-L.Mail = {
-	Complete = "Сбор почты завершен.",
-	Messages = "сообщения",
-	Need = "Нужен почтовый ящик.",
-	Stopped = "Остановлено. Сумки полны.",
-	Unique = "Остановлено. Найден дубликат предмета в сумках или банке."
-}
-
--- World Map Localization
-L.Map = {
-	Fog = "Туман Войны"
 }
 
 -- FarmMode Minimap

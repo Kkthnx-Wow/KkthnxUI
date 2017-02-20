@@ -32,7 +32,6 @@ L.Announce = {
 	PCAborted = "中止开怪!",
 	PCGo = "冲啊!",
 	PCMessage = "嘲讽%s倒计时%s..",
-	Recieved = "接收自",
 	Sapped = "被闷棍",
 	SappedBy = "被闷棍:",
 	SSThanks = "感谢"
@@ -97,16 +96,7 @@ L.ToggleButton = {
 	MoveUI = "移动框体",
 	Recount = "打开/关闭Recount",
 	RightClick = "鼠标右键:",
-	ShiftClick = "Shift+鼠标左键:",
 	Skada = "打开/关闭Skada",
-}
-
--- Cooldowns
-L.Cooldowns = {
-	Cooldowns = "冷却:",
-	CombatRes = "战复",
-	CombatResRemainder = "战复:",
-	NextTime = "下次:"
 }
 
 -- DataBars Localization
@@ -259,20 +249,6 @@ L.Loot = {
 	ToParty = " 队伍",
 	ToRaid = " 团队",
 	ToSay = " 说"
-}
-
--- Mail Localization
-L.Mail = {
-	Complete = "全部结束。",
-	Messages = "邮件",
-	Need = "需要邮箱.",
-	Stopped = "已停止.背包已满.",
-	Unique = "已停止.在背包或银行中已有拾取唯一的相同物品."
-}
-
--- World Map Localization
-L.Map = {
-	Fog = "战争迷雾"
 }
 
 -- FarmMode Minimap

@@ -18,7 +18,6 @@ C["ActionBar"] = {
 	["PetBarMouseover"] = false,
 	["RightBars"] = 2,
 	["RightBarsMouseover"] = true,
-	["SelfCast"] = false,
 	["SplitBars"] = false,
 	["StanceBarHide"] = false,
 	["StanceBarHorizontal"] = true,
@@ -28,13 +27,9 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
-	["BadGear"] = false,
 	["Interrupt"] = false,
 	["PullCountdown"] = true,
 	["SaySapped"] = false,
-	["SayThanks"] = false,
-	["Spells"] = false,
-	["SpellsFromAll"] = false,
 }
 
 -- Automation
@@ -42,7 +37,6 @@ C["Automation"] = {
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
 	["DeclineDuel"] = false,
-	["LoggingCombat"] = false,
 	["Resurrection"] = false,
 	["ScreenShot"] = false,
 }
@@ -160,7 +154,6 @@ C["General"] = {
 	["DisableTutorialButtons"] = false,
 	["TaintLog"] = false,
 	["ToggleButton"] = true,
-	["TranslateMessage"] = true,
 	["UIScale"] = 0.71,
 	["UseBlizzardFonts"] = false,
 	["UseFlatTextures"] = false,
@@ -339,5 +332,4 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["SmallWorldMap"] = true,
-	["FogOfWar"] = false,
 }

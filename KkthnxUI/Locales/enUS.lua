@@ -26,15 +26,12 @@ L.AFKScreen = {
 }
 
 L.Announce = {
-	FPUse = "%s used %s.",
 	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
 	PCAborted = "Pull ABORTED!",
 	PCGo = "GO!",
 	PCMessage = "Pulling %s in %s..",
-	Recieved = " received from ",
 	Sapped = "Sapped",
 	SappedBy = "Sapped by: ",
-	SSThanks = "Thanks for "
 }
 
 L.Auras = {
@@ -95,16 +92,7 @@ L.ToggleButton = {
 	MoveUI = "Toggle Move UI",
 	Recount = "Toggle Recount",
 	RightClick = "Right click:",
-	ShiftClick = "Shift + click:",
 	Skada = "Toggle Skada",
-}
-
--- Cooldowns
-L.Cooldowns = {
-	Cooldowns = "CD: ",
-	CombatRes = "BattleRes",
-	CombatResRemainder = "Battle Resurrection: ",
-	NextTime = "Next time: "
 }
 
 -- DataBars Localization
@@ -257,20 +245,6 @@ L.Loot = {
 	ToParty = " Party",
 	ToRaid = " Raid",
 	ToSay = " Say"
-}
-
--- Mail Localization
-L.Mail = {
-	Complete = "All done.",
-	Messages = "messages",
-	Need = "Need a mailbox.",
-	Stopped = "Stopped, inventory is full.",
-	Unique = "Stopped. Found a unique duplicate item in a bag or the bank."
-}
-
--- World Map Localization
-L.Map = {
-	Fog = "Fog of War"
 }
 
 -- FarmMode Minimap
