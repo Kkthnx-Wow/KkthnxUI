@@ -90,9 +90,7 @@ end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
 local function SetValueText(self, tag, cur, max)
-	if not tag then
-		return ""
-	end
+	if not tag then return "" end
 
 	-- not sure why this happens
 	if (not max or max == 0) then
@@ -118,7 +116,7 @@ local function SetValueText(self, tag, cur, max)
 	elseif tag == TEXT_PERCENT then
 		string = string_format("%d%%", cur / max * 100)
 	else
-		string = string or ""
+		return string or ""
 	end
 
 	self:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, string)
@@ -150,18 +148,18 @@ do
 		end
 
 		if absent then
-			Health:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+			Health:SetValue(0 or "") -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value and max > 0 then
-				Health.Value:SetText(absent)
+				Health.Value:SetText(absent or "")
 			end
 			return
 		end
 
-		-- if not cur then
-		-- 	cur = UnitHealth(unit)
-		-- 	max = UnitHealthMax(unit) or 1
-		-- end
+		if (not cur) then
+			cur = UnitHealth(unit)
+			max = UnitHealthMax(unit) or 1
+		end
 
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
@@ -193,21 +191,20 @@ do
 			Power:Show()
 		end
 
-		if UnitIsDeadOrGhost(unit) then
-		-- if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
-			Power:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) then
+			Power:SetValue(0 or "") -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			if Power.Value then
-				Power.Value:SetText(nil)
+				Power.Value:SetText(nil or "")
 			end
 			return
 		end
 
 		if not Power.Value then return end
 
-		-- if (not cur) then
-		-- 	max = UnitPower(unit) or 1
-		-- 	cur = UnitPowerMax(unit)
-		-- end
+		if (not cur) then
+			max = UnitPower(unit)
+			cur = UnitPowerMax(unit) or 1
+		end
 
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)

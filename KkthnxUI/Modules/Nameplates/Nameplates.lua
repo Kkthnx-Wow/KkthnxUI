@@ -440,7 +440,6 @@ local function style(self, unit)
 	self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
 
 	-- Health Bar
-	-- self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health = K.CreateStatusBar(self, "$parentHealthBar", true)
 	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(C.Media.Texture)
@@ -468,7 +467,7 @@ local function style(self, unit)
 	end
 
 	-- Create Player Power bar
-	self.Power = CreateFrame("StatusBar", nil, self)
+	self.Power = K.CreateStatusBar(self, "$parentPowerBar", true)
 	self.Power:SetStatusBarTexture(C.Media.Texture)
 	self.Power:ClearAllPoints()
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
