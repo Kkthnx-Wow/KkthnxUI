@@ -253,15 +253,11 @@ end
 oUF.Tags.Events["KkthnxUI:NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
 	local level = UnitLevel(unit)
-	local classification = UnitClassification(unit)
-
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
-	end
-
-	if level == K.Level and classification == "normal" then
-		return " "
-	elseif (level > 0) then
+	elseif level == UnitLevel("player") then
+		return ""
+	elseif(level > 0) then
 		return level
 	else
 		return "??"
