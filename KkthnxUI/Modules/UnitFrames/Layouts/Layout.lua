@@ -1141,17 +1141,14 @@ local function CreateUnitLayout(self, unit)
 
 		-- GCD spark
 		if C.Unitframe.GCDBar == true and self.MatchUnit == "player" then
-			self.GCD = CreateFrame("Frame", nil, self.Health)
-			self.GCD:SetPoint("LEFT", self.Health, "LEFT")
-			self.GCD:SetPoint("RIGHT", self.Health, "RIGHT")
-			self.GCD:SetHeight(self.Health:GetHeight() - 2)
-
-			self.GCD.Spark = self.GCD:CreateTexture(nil, "OVERLAY")
-			self.GCD.Spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
-			self.GCD.Spark:SetBlendMode("ADD")
-			self.GCD.Spark:SetHeight(self.Health:GetHeight() * 2 - 8)
-			self.GCD.Spark:SetWidth(10)
-			self.GCD.Spark:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+			self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self.Health)
+			self.GCD:SetWidth(self.Health:GetWidth())
+			self.GCD:SetHeight(self.Health:GetHeight() * 1.6)
+			self.GCD:SetFrameStrata("HIGH")
+			self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+			self.GCD.Color = {1, 1, 1}
+			self.GCD.Height = (self.Health:GetHeight() * 1.6)
+			self.GCD.Width = 10
 		end
 
 		-- Combat icon
