@@ -440,7 +440,8 @@ local function style(self, unit)
 	self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
 
 	-- Health Bar
-	self.Health = CreateFrame("StatusBar", nil, self)
+	-- self.Health = CreateFrame("StatusBar", nil, self)
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar", true)
 	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(C.Media.Texture)
 	self.Health.frequentUpdates = true
@@ -449,9 +450,7 @@ local function style(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.colorHealth = true
-	if C.Nameplates.Smooth then
-		self.Health.Smooth = true
-	end
+	self.Health.Smooth = C.Nameplates.Smooth
 	K.CreateShadowFrame(self.Health)
 
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
@@ -476,9 +475,7 @@ local function style(self, unit)
 	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C.Nameplates.Height * K.NoScaleMult / 2))
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
-	if C.Nameplates.Smooth then
-		self.Power.Smooth = true
-	end
+	self.Power.Smooth = C.Nameplates.Smooth
 	K.CreateShadowFrame(self.Power)
 
 	self.Power.bg = self.Power:CreateTexture(nil, "BORDER")

@@ -446,7 +446,7 @@ local function CreateUnitLayout(self, unit)
 	if C.Unitframe.Castbars then
 		if self.MatchUnit == "player" then
 			-- local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar")
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar", false)
 			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
@@ -532,7 +532,7 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "target" then
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxTarget_Castbar")
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxTarget_Castbar", false)
 			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
@@ -603,7 +603,7 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar = CastBar
 
 		elseif self.MatchUnit == "focus" then
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxFocus_Castbar")
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxFocus_Castbar", false)
 			CastBar:SetPoint("LEFT", 0, 0)
 			CastBar:SetPoint("RIGHT", -20, 0)
 			CastBar:SetPoint("TOP", 0, 60)
@@ -667,7 +667,7 @@ local function CreateUnitLayout(self, unit)
 			self.Castbar.Icon = CastBar.Icon
 
 		elseif self.IsBossFrame then
-			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxBoss_Castbar")
+			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxBoss_Castbar", false)
 			CastBar:SetPoint("RIGHT", -138, 0)
 			CastBar:SetPoint("LEFT", 0, 10)
 			CastBar:SetPoint("LEFT", -138, 8)
@@ -731,20 +731,16 @@ local function CreateUnitLayout(self, unit)
 	self.Texture:SetDrawLayer("BORDER", 3)
 
 	-- Healthbar
-	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar", true)
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.PostUpdate = K.Health_PostUpdate
 	self.Health.frequentUpdates = true
-	if C.Unitframe.Smooth then
-		self.Health.Smooth = true
-	end
-
+	self.Health.Smooth = C.Unitframe.Smooth
+	self.Health.Cutaway = true
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
-	if C.Unitframe.ClassColor then
-		self.Health.colorClass = true
-	end
+	self.Health.colorClass = C.Unitframe.ClassColor
 	self.Health.colorReaction = true
 
 	-- Health text
@@ -755,15 +751,13 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Power bar
-	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
+	self.Power = K.CreateStatusBar(self, "$parentPowerBar", true)
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.frequentUpdates = true
 	self.Power.PostUpdate = K.Power_PostUpdate
 	self.Power.colorPower = true
-	if C.Unitframe.Smooth then
-		self.Power.Smooth = true
-	end
+	self.Power.Smooth = C.Unitframe.Smooth
 
 	-- Power Text
 	if (data.mpt) then

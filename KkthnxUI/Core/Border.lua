@@ -78,25 +78,26 @@ end
 
 -- Small bar below of frames
 function K.CreateOutsideBar(parent, onTop, r, g, b)
-	local bar = K.CreateStatusBar(parent, false)
+	local StatusBar = K.CreateStatusBar(parent, "OutsideBar", true)
 
-	bar:SetSize(98, 10)
-	bar:SetStatusBarColor(r or 1, g or 0, b or 0)
+	StatusBar:SetSize(98, 10)
+	StatusBar:SetStatusBarColor(r or 1, g or 0, b or 0)
 
 	local point, anchor, point2, x, y, step
 	point, anchor, point2, x, y = "TOP", parent.Power, "BOTTOM", 0, -2
 	step = -2
-	bar:SetPoint(point, anchor, point2, x, y)
+	StatusBar:SetPoint(point, anchor, point2, x, y)
 
-	local tex = bar:CreateTexture(nil, "ARTWORK")
-	tex:SetSize(104, 32)
-	tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\FrameBarBot")
-	tex:SetPoint("BOTTOM", 0, -12)
+	local Texture = StatusBar:CreateTexture(nil, "ARTWORK")
+	Texture:SetSize(104, 32)
+	Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\FrameBarBot")
+	Texture:SetPoint("BOTTOM", 0, -12)
 
 	if C.Blizzard.ColorTextures == true then
-		-- tex:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
-		tex:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3]) -- This is faster.
+		Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3]) -- This is faster.
 	end
-	bar.Texture = tex
-	return bar
+
+	StatusBar.Texture = Texture
+
+	return StatusBar
 end

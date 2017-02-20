@@ -2,15 +2,13 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
--- Lua API
-local ipairs = ipairs
-local math_abs = math.abs
-local math_max = math.max
-local math_min = math.min
-local pairs = pairs
+local _G = _G
 
--- Wow API
-local GetFramerate = GetFramerate
+local math_min = math.min
+local math_max = math.max
+local math_abs = math.abs
+
+local GetFramerate = _G.GetFramerate
 
 local smoothing = {}
 local function Smooth(self, value)
@@ -22,10 +20,8 @@ local function Smooth(self, value)
 end
 
 local function SmoothBar(bar)
-	if not bar.SetValue_ then
-		bar.SetValue_ = bar.SetValue
-		bar.SetValue = Smooth
-	end
+	bar.SetValue_ = bar.SetValue
+	bar.SetValue = Smooth
 end
 
 local function ResetBar(bar)
@@ -42,24 +38,21 @@ local function hook(frame)
 	if frame.Power then
 		SmoothBar(frame.Power)
 	end
-	if frame.AltPowerBar then
-		SmoothBar(frame.AltPowerBar)
-	end
 end
 
-for i, frame in ipairs(oUF.objects) do hook(frame) end
+for index, frame in ipairs(oUF.objects) do hook(frame) end
 oUF:RegisterInitCallback(hook)
 
-local f = CreateFrame('Frame')
-f:SetScript('OnUpdate', function()
+local frame = CreateFrame("Frame")
+frame:SetScript("OnUpdate", function()
 	local rate = GetFramerate()
-	local limit = 30/rate
+	local limit = 40 / rate
 
 	for bar, value in pairs(smoothing) do
 		local cur = bar:GetValue()
-		local new = cur + math_min((value-cur)/3, math_max(value-cur, limit))
+		local barmax = bar:GetMinMaxValues()
+		local new = cur + math_min((value - cur) / 10, math_max(value - cur, limit))
 		if new ~= new then
-			-- Mad hax to prevent QNAN.
 			new = value
 		end
 		bar:SetValue_(new)

@@ -64,12 +64,12 @@ function ns.createArenaLayout(self, unit)
 		self.Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
-	self.Health = K.CreateStatusBar(self, "$parenHealthBar")
+	self.Health = K.CreateStatusBar(self, "$parenHealthBar", true)
 	self.Health:SetFrameLevel(self:GetFrameLevel()-1)
 	self.Health:SetSize(117, 18)
 	self.Health:SetPoint("TOPRIGHT", self.Texture, -43, -17)
 
-	self.Power = K.CreateStatusBar(self, "$parenPowerBar")
+	self.Power = K.CreateStatusBar(self, "$parenPowerBar", true)
 	self.Power:SetFrameLevel(self:GetFrameLevel()-1)
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -3)
@@ -94,17 +94,12 @@ function ns.createArenaLayout(self, unit)
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-	if C.Unitframe.Smooth then
-		self.Health.Smooth = true
-	end
+	self.Health.Smooth = C.Unitframe.Smooth
 	self.Health.PostUpdate = K.Health_PostUpdate
 	table_insert(self.mouseovers, self.Health)
 
 	self.Power.colorPower = true
-
-	if C.Unitframe.Smooth then
-		self.Power.Smooth = true
-	end
+	self.Power.Smooth = C.Unitframe.Smooth
 	self.Power.PostUpdate = K.Power_PostUpdate
 	table_insert(self.mouseovers, self.Power)
 

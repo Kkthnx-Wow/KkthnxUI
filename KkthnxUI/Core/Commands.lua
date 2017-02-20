@@ -2,29 +2,66 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local CombatLogClearEntries = CombatLogClearEntries
-local DoReadyCheck = DoReadyCheck
-local EnableAddOn, DisableAllAddOns = EnableAddOn, DisableAllAddOns
-local GetAddOnInfo = GetAddOnInfo
-local GetCurrentResolution = GetCurrentResolution
-local GetMouseFocus = GetMouseFocus
-local GetNumQuestLogEntries = GetNumQuestLogEntries
-local GetRaidRosterInfo = GetRaidRosterInfo
-local GetScreenResolutions = GetScreenResolutions
-local InCombatLockdown = InCombatLockdown
-local ipairs = ipairs
-local IsInInstance = IsInInstance
 local math_ceil = math.ceil
 local math_floor = math.floor
-local print, tostring, select = print, tostring, select
-local ReloadUI = ReloadUI
-local RestartGx = RestartGx
-local SelectQuestLogEntry = SelectQuestLogEntry
-local SetAbandonQuest = SetAbandonQuest
-local SetCVar = SetCVar
-local string_format, string_lower = string.format, string.lower
-local ToggleHelpFrame = ToggleHelpFrame
-local UnitInRaid = UnitInRaid
+local string_format = string.format
+local string_lower = string.lower
+local string_trim = string.trim
+
+-- Wow API
+local AbandonQuest = _G.AbandonQuest
+local CombatLogClearEntries = _G.CombatLogClearEntries
+local ConvertToParty = _G.ConvertToParty
+local ConvertToRaid = _G.ConvertToRaid
+local CreateFrame = _G.CreateFrame
+local DisableAllAddOns = _G.DisableAllAddOns
+local DoReadyCheck = _G.DoReadyCheck
+local EnableAddOn = _G.EnableAddOn
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
+local FEATURE_BECOMES_AVAILABLE_AT_LEVEL = _G.FEATURE_BECOMES_AVAILABLE_AT_LEVEL
+local GetCurrentResolution = _G.GetCurrentResolution
+local GetCVarBool = _G.GetCVarBool
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
+local GetRaidRosterInfo = _G.GetRaidRosterInfo
+local GetScreenHeight = _G.GetScreenHeight
+local GetScreenResolutions = _G.GetScreenResolutions
+local GetScreenWidth = _G.GetScreenWidth
+local GetSpecialization = _G.GetSpecialization
+local InCombatLockdown = _G.InCombatLockdown
+local IsInInstance = _G.IsInInstance
+local LeaveParty = _G.LeaveParty
+local LFGTeleport = _G.LFGTeleport
+local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
+local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local PlaySound = _G.PlaySound
+local ReloadUI = _G.ReloadUI
+local RepopMe = _G.RepopMe
+local RestartGx = _G.RestartGx
+local RetrieveCorpse = _G.RetrieveCorpse
+local SelectQuestLogEntry = _G.SelectQuestLogEntry
+local SendChatMessage = _G.SendChatMessage
+local SetAbandonQuest = _G.SetAbandonQuest
+local SetCVar = _G.SetCVar
+local SetSpecialization = _G.SetSpecialization
+local SHOW_TALENT_LEVEL = _G.SHOW_TALENT_LEVEL
+local SlashCmdList = _G.SlashCmdList
+local StaticPopup_Show = _G.StaticPopup_Show
+local UIParent = _G.UIParent
+local UninviteUnit = _G.UninviteUnit
+local UnitExists = _G.UnitExists
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
+local UnitIsGroupLeader = _G.UnitIsGroupLeader
+local UnitName = _G.UnitName
+
+-- Global variables that we don't need to cache, list them here for mikk's FindGlobals script
+-- GLOBALS: ToggleHelpFrame, DBM, AchievementFrame,  AchievementFrame_LoadUI, AchievementAlertSystem
+-- GLOBALS: CriteriaAlertSystem, GuildChallengeAlertSystem, InvasionAlertSystem, GarrisonShipFollowerAlertSystem
+-- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
+-- GLOBALS: ExtraActionBarFrame, ExtraActionButton1, MoneyWonAlertSystem, StorePurchaseAlertSystem
+-- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end
@@ -55,21 +92,46 @@ end
 _G.SLASH_CLEARQUESTS1 = "/clearquests"
 _G.SLASH_CLEARQUESTS2 = "/clquests"
 
--- KKTHNXUI help commands
+-- KkthnxUI help commands
 SlashCmdList.UIHELP = function()
 	for i, v in ipairs(L.SlashCommand.Help) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
 end
 _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
-_G.SLASH_SCALE1 = "/uiscale"
-SlashCmdList["SCALE"] = function()
-	SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+local function SetUIScale()
+	if InCombatLockdown() then return end
+
+	local SetUIScale = GetCVarBool("uiScale")
+	if not SetUIScale then
+			-- K.LockCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+			SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+	end
+
+	ReloadUI()
 end
+
+StaticPopupDialogs.SET_UISCALE = {
+	text = L.Popup.SetUIScale,
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = SetUIScale,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3,
+}
+SlashCmdList.SETUISCALE = function()
+	if InCombatLockdown() then return end
+
+	StaticPopup_Show("SET_UISCALE")
+end
+_G.SLASH_SETUISCALE1 = "/uiscale"
 
 -- Disband party or raid (by Monolit)
 function _G.DisbandRaidGroup()
 	if InCombatLockdown() then return end
+
 	if UnitInRaid("player") then
 		SendChatMessage(L.Info.Disabnd, "RAID")
 		for i = 1, GetNumGroupMembers() do
@@ -81,7 +143,7 @@ function _G.DisbandRaidGroup()
 	else
 		SendChatMessage(L.Info.Disband, "PARTY")
 		for i = MAX_PARTY_MEMBERS, 1, -1 do
-			if GetNumGroupMembers(i) then
+			if UnitExists("party"..i) then
 				UninviteUnit(UnitName("party"..i))
 			end
 		end
@@ -169,7 +231,7 @@ _G.SLASH_DBMTEST1 = "/dbmtest"
 
 -- Clear chat
 SlashCmdList.CLEARCHAT = function(cmd)
-	cmd = cmd and strtrim(string_lower(cmd))
+	cmd = cmd and string_trim(string_lower(cmd))
 	for i = 1, NUM_CHAT_WINDOWS do
 		local f = _G["ChatFrame"..i]
 		if f:IsVisible() or cmd == "all" then

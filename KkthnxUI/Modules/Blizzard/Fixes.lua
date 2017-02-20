@@ -4,18 +4,28 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
+local DropDownList1 = _G.DropDownList1
 local FCF_StartAlertFlash = _G.FCF_StartAlertFlash
+local GetContainerNumSlots = _G.GetContainerNumSlots
 local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local IsBagOpen = _G.IsBagOpen
+local IsOptionFrameOpen = _G.IsOptionFrameOpen
+local oldUpdate = _G.WorldMapLevelDropDown_Update
 local ShowUIPanel = _G.ShowUIPanel
+local UnitIsUnit = _G.UnitIsUnit
+local WorldMapFrame = _G.WorldMapFrame
+local WorldMapFrame_OnHide = _G.WorldMapFrame_OnHide
+local WorldMapLevelButton_OnClick = _G.WorldMapLevelButton_OnClick
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: LFRBrowseFrame, ScriptErrorsFrame, C_ArtifactUI, ArtifactFrame, addon, ToggleFrame
 -- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
--- GLOBALS: WorldMapLevelButton, WorldMapFrame_OnHide, WorldMapLevelButton_OnClick, WorldMapFrame
+-- GLOBALS: WorldMapLevelButton, BankFrame, CloseAllBags, NUM_BAG_FRAMES, OpenBag
+-- GLOBALS: NUM_CONTAINER_FRAMES, CloseBag
 
--- </ Fix spellbook taint in combat > --
+-- Fix spellbook taint in combat
 local SpellBookTaint = CreateFrame("Frame")
 SpellBookTaint:RegisterEvent("ADDON_LOADED")
 SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
@@ -28,10 +38,10 @@ SpellBookTaint:SetScript("OnEvent", function(self, event, addon)
 	self:UnregisterEvent("ADDON_LOADED")
 end)
 
--- </ Fix RemoveTalent() taint > --
+-- Fix RemoveTalent() taint
 FCF_StartAlertFlash = K.Noop
 
--- </ Fix SearchLFGLeave() taint > --
+-- Fix SearchLFGLeave() taint
 local LFRBrowseTaint = CreateFrame("Frame")
 LFRBrowseTaint:SetScript("OnUpdate", function(self, elapsed)
 	if LFRBrowseFrame.timeToClear then
@@ -39,7 +49,7 @@ LFRBrowseTaint:SetScript("OnUpdate", function(self, elapsed)
 	end
 end)
 
--- </ Misclicks for some popups > --
+-- Misclicks for some popups
 StaticPopupDialogs.RESURRECT.hideOnEscape = nil
 StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
 StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil
@@ -55,7 +65,7 @@ if PVPReadyDialog then
 end
 
 ReadyCheckFrame:HookScript("OnShow", function(self)
-	-- </ bug fix, don't show it if player is initiator > --
+	-- bug fix, don't show it if player is initiator
 	if self.initiator and UnitIsUnit("player", self.initiator) then
 		self:Hide()
 	end
@@ -66,14 +76,10 @@ end)
 -- The "solution" is to remove events and script handlers that call it while engaged in combat.
 
 -- WoW frames & functions
-local WorldMapFrame = WorldMapFrame
-local WorldMapFrame_OnHide = WorldMapFrame_OnHide
-local WorldMapLevelButton_OnClick = WorldMapLevelButton_OnClick
-
-local frame = CreateFrame("Frame", nil, UIParent)
-frame:RegisterEvent("PLAYER_REGEN_ENABLED")
-frame:RegisterEvent("PLAYER_REGEN_DISABLED")
-frame:SetScript("OnEvent", function(self)
+local MapResetZoomFix = CreateFrame("Frame", nil, UIParent)
+MapResetZoomFix:RegisterEvent("PLAYER_REGEN_ENABLED")
+MapResetZoomFix:RegisterEvent("PLAYER_REGEN_DISABLED")
+MapResetZoomFix:SetScript("OnEvent", function(self)
 	if event == "PLAYER_REGEN_DISABLED" then
 		WorldMapFrame:UnregisterEvent("WORLD_MAP_UPDATE")
 		WorldMapFrame:SetScript("OnHide", nil)
@@ -85,8 +91,21 @@ frame:SetScript("OnEvent", function(self)
 	end
 end)
 
--- </ blizzard's baghandling just doesn't cut it > --
--- </ we wish for all backpack/bag hotkeys and buttons to toggle all bags, always > --
+-- In 7.1 if you open the world map and open any dropdown in the UI
+-- (from the world map frame or any other frame) the dropdown will suddenly close itself.
+
+-- This little fix was supplied by Ellypse@WowInterface.
+-- http://www.wowinterface.com/forums/showthread.php?t=54979
+local newUpdate = function()
+	if not DropDownList1:IsVisible() then
+		oldUpdate()
+	end
+end
+
+_G.WorldMapLevelDropDown_Update = newUpdate
+
+-- blizzard's baghandling just doesn't cut it
+-- we wish for all backpack/bag hotkeys and buttons to toggle all bags, always
 local function OpenAllBags()
 	if not UIParent:IsShown() or IsOptionFrameOpen() then
 		return
@@ -123,9 +142,9 @@ local function OpenAllBags()
 	end
 end
 
--- </ replace blizzard's bag opening functions > --
+-- replace blizzard's bag opening functions
 local otherBagsLoaded
-for _,bags in ipairs({"ArkInventory", "Bagnon", "OneBag3", "BagForce", "Tbag", "Tbag-Shefki"}) do
+for _, bags in ipairs({"ArkInventory", "Bagnon", "OneBag3", "BagForce", "Tbag", "Tbag-Shefki"}) do
 	if K.CheckAddOn(bags) then
 		otherBagsLoaded = true
 		break

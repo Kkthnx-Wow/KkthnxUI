@@ -150,7 +150,7 @@ do
 		end
 
 		if absent then
-			Health:SetValue(nil) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+			Health:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value and max > 0 then
 				Health.Value:SetText(absent)
@@ -158,10 +158,10 @@ do
 			return
 		end
 
-		if not cur then
-			cur = UnitHealth(unit)
-			max = UnitHealthMax(unit) or 1
-		end
+		-- if not cur then
+		-- 	cur = UnitHealth(unit)
+		-- 	max = UnitHealthMax(unit) or 1
+		-- end
 
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
@@ -188,14 +188,14 @@ do
 		local uconfig = ns.config[self.MatchUnit]
 
 		if max == 0 then
-			return self:Hide()
+			return Power:Hide()
 		else
-			self:Show()
+			Power:Show()
 		end
 
-		-- if UnitIsDeadOrGhost(unit) then
-		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
-			Power:SetValue(nil) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+		if UnitIsDeadOrGhost(unit) then
+		-- if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
+			Power:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			if Power.Value then
 				Power.Value:SetText(nil)
 			end
@@ -204,10 +204,10 @@ do
 
 		if not Power.Value then return end
 
-		if (not cur) then
-			max = UnitPower(unit) or 1
-			cur = UnitPowerMax(unit)
-		end
+		-- if (not cur) then
+		-- 	max = UnitPower(unit) or 1
+		-- 	cur = UnitPowerMax(unit)
+		-- end
 
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
@@ -263,8 +263,8 @@ function K.UnitFrame_OnLeave(self)
 end
 
 -- </ Statusbar functions > --
-function K.CreateStatusBar(parent, name)
-	local StatusBar = _G.CreateFrame("StatusBar", name, parent)
+function K.CreateStatusBar(parent, name, smooth)
+	local StatusBar = CreateFrame("StatusBar", name, parent)
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
 	local StatusBarBG = StatusBar:CreateTexture(nil, "BACKGROUND")
@@ -273,6 +273,10 @@ function K.CreateStatusBar(parent, name)
 	StatusBarBG:SetAllPoints()
 
 	StatusBar.styled = true
+
+	if smooth then
+		StatusBar.Smooth = true
+	end
 
 	return StatusBar
 end

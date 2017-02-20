@@ -148,7 +148,7 @@ local function CreateRaidLayout(self, unit)
 	self:SetBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 	-- Health bar
-	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
+	self.Health = K.CreateStatusBar(self, "$parentHealthBar", true)
 	self.Health:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 	self.Health:SetAllPoints(self)
 
@@ -164,9 +164,7 @@ local function CreateRaidLayout(self, unit)
 	self.Health.colorDisconnected = true
 	self.Health.colorTapping = true
 	self.Health.colorReaction = true
-	if C.Raidframe.Smooth then
-		self.Health.Smooth = true
-	end
+	self.Health.Smooth = C.Raidframe.Smooth
 
 	-- Health text
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -183,16 +181,14 @@ local function CreateRaidLayout(self, unit)
 
 	-- Power bar
 	if (C.Raidframe.ManabarShow) then
-		self.Power = K.CreateStatusBar(self, "$parenPowerBar")
+		self.Power = K.CreateStatusBar(self, "$parenPowerBar", true)
 		self.Power:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
 		self.Power:SetHeight(2.5)
 
 		self.Power.colorPower = true
-		if C.Raidframe.Smooth then
-			self.Power.Smooth = true
-		end
+		self.Power.Smooth = C.Raidframe.Smooth
 
 		self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.bg:SetAllPoints(self.Power)
@@ -214,11 +210,9 @@ local function CreateRaidLayout(self, unit)
 	}
 
 	do
-			local width = 55 - 2
-
 			local myBar = CreateFrame("StatusBar", nil, self.Health)
 			myBar:SetStatusBarTexture(C.Media.Texture)
-			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND",2)
+			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
 			myBar:SetPoint("TOP")
 			myBar:SetPoint("BOTTOM")
 			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
@@ -227,7 +221,7 @@ local function CreateRaidLayout(self, unit)
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)
-			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND",3)
+			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
 			otherBar:SetPoint("TOP")
 			otherBar:SetPoint("BOTTOM")
 			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
@@ -236,7 +230,7 @@ local function CreateRaidLayout(self, unit)
 
 			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
-			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND",5)
+			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
 			healAbsorbBar:SetPoint("TOP")
 			healAbsorbBar:SetPoint("BOTTOM")
 			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
