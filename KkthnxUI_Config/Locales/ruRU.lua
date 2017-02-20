@@ -41,14 +41,12 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "Проверять умения вс
 
 -- Автоматизация
 UIConfigLocal.Automation = "Автоматизация"
-UIConfigLocal.AutomationAcceptQuest = "Принятие заданий (если зажат Shift - не работает)"
 UIConfigLocal.AutomationAutoCollapse = "Автоматически сворачивать список заданий в подземельях"
 UIConfigLocal.AutomationAutoInvite = "Автоматически принимать приглашения от друзей и гильдии"
 UIConfigLocal.AutomationDeclineDuel = "Автоматически отклонять все дуэли"
 UIConfigLocal.AutomationLoggingCombat = "Автоматически сохранять лог боя в текстовый файл в рейде"
 UIConfigLocal.AutomationResurrection = "Автоматическое покидание тела на полях боя"
 UIConfigLocal.AutomationScreenShot = "Автоматически делать скриншот при получении достижений"
-UIConfigLocal.AutomationTabBinder = "Автоматически выбирать только вражеских игроков клавишей TAB"
 
 -- Сумки
 UIConfigLocal.Bags = "Сумки"
@@ -144,21 +142,9 @@ UIConfigLocal.CooldownEnable = "Включить модуль перезаряд
 UIConfigLocal.CooldownFontSize = "Размер шрифта перезарядки"
 UIConfigLocal.CooldownThreshold = "Пороговое время"
 
--- Filger
-UIConfigLocal.Filger = "Таймеры (Filger)"
-UIConfigLocal.FilgerBuffsSize = "Размер баффов"
-UIConfigLocal.FilgerCooldownSize = "Размер перезарядок"
-UIConfigLocal.FilgerDisableCD = "Отключить перезарядки"
-UIConfigLocal.FilgerEnable = "Включить Filger"
-UIConfigLocal.FilgerMaxTestIcon = "Количество иконок в тестовом режиме"
-UIConfigLocal.FilgerPvPSize = "Размер ПВП дебаффов"
-UIConfigLocal.FilgerShowTooltip = "Показывать подсказки"
-UIConfigLocal.FilgerTestMode = "Тестовый режим"
-
 -- General
 UIConfigLocal.GeneralAutoScale = "Автоматически масштабировать интерфейс"
 UIConfigLocal.GeneralBubbleFontSize = "Размер шрифта в облочках сообщений"
-UIConfigLocal.GeneralCustomLagTolerance = "Автоматически обновлять опцию Blizzard Custom Lag Tolerance для вашей задержки"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
 UIConfigLocal.GeneralTaintLog = "Отслеживать недочеты"
 UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
@@ -174,7 +160,6 @@ UIConfigLocal.LootConfirmDisenchant = "Автоматически нажимат
 UIConfigLocal.LootEnable = "Включить окно добычи"
 UIConfigLocal.LootGroupLoot = "Включить окно распределения добычи"
 UIConfigLocal.LootIconSize = "Размер иконок"
-UIConfigLocal.LootLootFilter = "Фильтровать сообщения о добыче в группе и рейде в зависимости от редкости предмета"
 UIConfigLocal.LootWidth = "Ширина окна добычи"
 
 -- Миникарта
@@ -183,7 +168,6 @@ UIConfigLocal.MinimapCollectButtons = "Сделать минипанель дл�
 UIConfigLocal.MinimapEnable = "Включить миникарту и сделать её квадратной"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Показывать иконку Оплота/Гарнизона на миникарте"
-UIConfigLocal.MinimapPing = "Выводить сообщение о пинге с ником игрока на миникарте. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
 UIConfigLocal.MinimapSize = "Размер миникарты (по умолчанию 150)"
 
 -- Разное
@@ -199,8 +183,6 @@ UIConfigLocal.MiscCombatState = "Display a message when you enter/leave combat a
 UIConfigLocal.MiscEnhancedPvpMessages = "Отображать сообщения полей боя в центре экрана."
 UIConfigLocal.MiscInviteKeyword = "Ключевое слово для автоприглашения (/ainv)"
 UIConfigLocal.MiscItemLevel = "Показывать уровень предмета надетого на персонажа"
-UIConfigLocal.MiscMerchantItemLevel = "Отображать уровень предметов для оружия и брони в окне торговца"
-UIConfigLocal.MiscMoveBlizzard = "Перемещение некоторых элементов Blizzard"
 UIConfigLocal.MiscNoBanner = "Скрыть рамку говорящей головы"
 UIConfigLocal.MiscPvPEmote = "Does a random emote on a player that you get a killing blow on"
 UIConfigLocal.MiscSellMisc = "Автоматически продавать ненужные предметы качеством выше серого"

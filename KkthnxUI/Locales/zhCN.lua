@@ -307,6 +307,7 @@ L.Popup = {
 	SettingsAll = "|cffff0000警告|r |n|n这将替换所有被支持插件的设置为|cff3c9bedKkthnxUI|r默认设置。如果您没有安装被支持的插件，这一功能不会对其他插件产生影响。",
 	SettingsBW = "需要改变BigWigs各元素的位置。",
 	SettingsDBM = "需要改变|cff3c9bedDBM|r计时条的位置。",
+	SetUIScale = "This will set a near 'Pixel Perfect' Scale to your interface. Do you want to proceed?",
 }
 
 -- Raid Utility Localization
@@ -330,11 +331,11 @@ L.WatchFrame = {
 }
 
 L.Welcome = {
-	Line1 = "欢迎使用|cff3c9bedKkthnxUI|r v",
+	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "输入/cfg打开设置界面，或访问www.github.com/kkthnx|r",
+	Line3 = "Type |cff3c9bed/cfg|r to access the in-game configuration menu.",
 	Line4 = "",
-	Line5 = "一些常见问题可以输入/uihelp来查看。"
+	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedQ2KhGY2|r"
 }
 
 L.Zone = {

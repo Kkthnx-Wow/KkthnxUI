@@ -41,11 +41,6 @@ if C.Error.Combat == true then
 	C.Error.White = false
 end
 
--- Unitframes
-if C.Unitframe.Enable == false then
-	C.Filger.Enable = false
-end
-
 -- Auto-overwrite script config is X addon is found
 -- Here we use our own functions to check for addons.
 if CheckAddOn("SexyMap") or CheckAddOn("bdMinimap") or CheckAddOn("BasicMinimap") or CheckAddOn("RicoMiniMap") or CheckAddOn("Chinchilla") then

@@ -41,14 +41,12 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "Check spells cast from all members"
 
 -- Automation
 UIConfigLocal.Automation = "Automation"
-UIConfigLocal.AutomationAcceptQuest = "Auto accept quest (disabled if hold Shift)"
 UIConfigLocal.AutomationAutoCollapse = "Auto collapse objective tracker in instances"
 UIConfigLocal.AutomationAutoInvite = "Auto accept invites (friends/guild) only"
 UIConfigLocal.AutomationDeclineDuel = "Auto decline all duels"
 UIConfigLocal.AutomationLoggingCombat = "Auto enables combat log text file in raid instances"
 UIConfigLocal.AutomationResurrection = "Auto resurrection in battlegrounds"
 UIConfigLocal.AutomationScreenShot = "Take screenshot when player gets an achievement"
-UIConfigLocal.AutomationTabBinder = "Auto change tab key to only target enemy players"
 
 -- Bag
 UIConfigLocal.Bags = "Bags"
@@ -143,21 +141,9 @@ UIConfigLocal.CooldownEnable = "Enable UI cooldown module"
 UIConfigLocal.CooldownFontSize = "Cooldown font size"
 UIConfigLocal.CooldownThreshold = "Cooldown threshold number"
 
--- Filger
-UIConfigLocal.Filger = "Timers (Filger)"
-UIConfigLocal.FilgerBuffsSize = "Buffs size"
-UIConfigLocal.FilgerCooldownSize = "Cooldowns size"
-UIConfigLocal.FilgerDisableCD = "Disable cooldowns"
-UIConfigLocal.FilgerEnable = "Enable Filger"
-UIConfigLocal.FilgerMaxTestIcon = "The number of icons to the test"
-UIConfigLocal.FilgerPvPSize = "PvP debuffs size"
-UIConfigLocal.FilgerShowTooltip = "Show tooltip"
-UIConfigLocal.FilgerTestMode = "Test icon mode"
-
 -- General
 UIConfigLocal.GeneralAutoScale = "Auto UI Scale"
 UIConfigLocal.GeneralBubbleFontSize = "Chat bubble font size"
-UIConfigLocal.GeneralCustomLagTolerance = "Automatically update the Blizzard Custom Lag Tolerance option to your latency"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
 UIConfigLocal.GeneralTaintLog = "Log taints"
 UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
@@ -170,7 +156,6 @@ UIConfigLocal.GeneralWelcomeMessage = "Welcome message in chat."
 -- Loot
 UIConfigLocal.LootConfirmDisenchant = "Auto confirm disenchant"
 UIConfigLocal.LootAutoGreed = "Enable auto-greed & disenchant for green items at max level"
-UIConfigLocal.LootLootFilter = "Filter party & raid members loot messages, based on item rarity"
 UIConfigLocal.LootEnable = "Enable loot frame"
 UIConfigLocal.LootIconSize = "Icon size"
 UIConfigLocal.LootGroupLoot = "Enable group loot frame"
@@ -183,7 +168,6 @@ UIConfigLocal.MinimapCollectButtons = "Collect some minimap buttons in one line"
 UIConfigLocal.MinimapEnable = "Enable minimap & make it square"
 UIConfigLocal.MinimapFadeButtons = "Fade addon button when collected next to minimap"
 UIConfigLocal.MinimapGarrison = "Garrison icon is shown on minimap"
-UIConfigLocal.MinimapPing = "Displays a message when someone pings the minimap. |cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
 UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
 
 -- Misc
@@ -199,8 +183,6 @@ UIConfigLocal.MiscCombatState = "Display a message when you enter/leave combat a
 UIConfigLocal.MiscEnhancedPvpMessages = "Display battleground messages in the middle of the screen."
 UIConfigLocal.MiscInviteKeyword = "Short keyword for invite (/ainv)"
 UIConfigLocal.MiscItemLevel = "Item level on character slot buttons"
-UIConfigLocal.MiscMerchantItemLevel = "Show item level for weapons and armor in merchant"
-UIConfigLocal.MiscMoveBlizzard = "Move some Blizzard frames"
 UIConfigLocal.MiscNoBanner = "Hide Boss Banner Loot Frame"
 UIConfigLocal.MiscPvPEmote = "Does a random emote on a player that you get a killing blow on"
 UIConfigLocal.MiscSellMisc = "Automatically sells useless items that are not gray quality"

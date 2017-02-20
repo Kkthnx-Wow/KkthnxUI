@@ -203,15 +203,15 @@ L.Tutorial = {
 	Step1Line4 = "A power user is a user of a personal computer who has the ability to use advanced features (ex: Lua editing) which are beyond the abilities of normal users. A friendly user is a normal user and is not necessarily capable of programming. It's recommended for them to use our in-game configuration tool (/KkthnxUI) for settings they want to be changed in KkthnxUI.",
 	Step2Line1 = "KkthnxUI includes an embedded version of oUF (oUFKkthnxUI) created by Haste. This handles all of the unit frames on the screen, the buffs and debuffs, and the class-specific elements.",
 	Step2Line2 = "You can visit wowinterface.com and search for oUF for more information about this tool.",
-	Step2Line3 = "To easily change the unitframes positions, just type /moveui.",
+	Step2Line3 = "To easily change the unit frames positions, just type /moveui.",
 	Step2Line4 = "",
 	Step3Line1 = "KkthnxUI is a redesigned Blizzard UI. Nothing less, nothing more. Approxmently all features you see with Default UI is available though KkthnxUI. The only features not available through default UI are some automated features not really visible on screen, for example, auto selling grays when visiting a vendor or, auto sorting bags.",
-	Step3Line2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is one of the most popular UI at the moment. It fits everyone's play style and is extremely editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons. Since 2012 a lot of users have started using KkthnxUI as a base for their own UI.",
-	Step3Line3 = "Users may want to visit our extra mods section on our website or by visiting www.wowinterface.com to install additional features or mods.",
+	Step3Line2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is becoming a very popular UI at the currently. It fits everyone's play style and it is editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons.",
+	Step3Line3 = "Users may want to visit our WowInterface to install additional mods like Skada, DBM and so on.",
 	Step3Line4 = "",
 	Step4Line1 = "To set how many bars you want, mouseover on left or right of bottom action bar background. Do the same on the right, via bottom. To copy text from the chat frame, click the button shown on mouseover in the right bottom corner of chat frames.",
 	Step4Line2 = "You can left-click through 80% of data text to show various panels from Blizzard. Friend and Guild Datatext have right-clicked features as well.",
-	Step4Line3 = "There are some dropdown menus available. Right-clicking on the [X] (Close) bag button will show bags. right-clicking the Minimap will show the micro menu.",
+	Step4Line3 = "There are some drop-down menus available. Right-clicking on the [X] (Close) bag button will show bags. right-clicking the Minimap will show the micro menu.",
 	Step4Line4 = "",
 	Step5Line1 = "Lastly, KkthnxUI includes useful slash commands. Below is a list.",
 	Step5Line2 = "/moveui allow you to move lots of the frames anywhere on the screen. /rl reloads the UI.",
@@ -302,12 +302,12 @@ L.Popup = {
 	FixActionbars = "Etwas stimmt mit den Aktionsleisten nicht. Möchtest Du das UI neu laden um diesen Fehler zu beheben?",
 	InstallUI = "Danke das du |cff3c9bedKkthnxUI|r verwendest! |n|nSobald Du auf 'Annehmen' klickst, beginnen wir mit der Installation.",
 	ReloadUI = "Die Installation ist abgeschlossen. Bitte klick erneut auf 'Annehmen' um das UI neu zu laden.|n|nViel Spaß mit |cff3c9bedKkthnxUI|r. |n|nFür Updates der UI besuche meine Seite auf |cff3c9bedhttps://github.com/Kkthnx|r.",
-
 	ResetUI = "Bist Du sicher, dass Du alle Einstellungen von |cff3c9bedKkthnxUI|r zurücksetzen willst?",
 	ResolutionChanged = "Deine Grafikauflösung wurde geändert und der Spieleclient muss neu gestartet werden. Möchtest Du das Spiel jetzt neu starten?",
 	SettingsAll = "|cffff0000WARNUNG|r |n|nWenn Du auf Annehmen klickst werden alle Einstellungen für die Addons übernommen, die von |cff3c9bedKkthnxUI|r unterstützt werden. Diese Einstellungen sind unwirksam, wenn keine unterstützten Addons installiert sind.",
 	SettingsBW = "Einige Elemente von BigWigs müssen verschoben werden.",
 	SettingsDBM = "Wir müssen die Leistenpositionen von |cff3c9bedDBM|r ändern.",
+	SetUIScale = "This will set a near 'Pixel Perfect' Scale to your interface. Do you want to proceed?",
 }
 
 -- Raid Utility Localization
@@ -331,11 +331,11 @@ L.WatchFrame = {
 }
 
 L.Welcome = {
-	Line1 = "Willkommen bei |cff3c9bedKkthnxUI|r v",
+	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "Tippe /cfg in den Chat ein um Dein Interface einzurichten",
+	Line3 = "Type |cff3c9bed/cfg|r to access the in-game configuration menu.",
 	Line4 = "",
-	Line5 = "Einige Fragen werden Dir eventuell durch den Chatbefehl /uihelp"
+	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedQ2KhGY2|r"
 }
 
 L.Zone = {

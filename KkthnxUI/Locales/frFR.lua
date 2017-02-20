@@ -213,7 +213,7 @@ L.Tutorial = {
 	Step4Line2 = "Vous pouvez cliquer avec le bouton gauche de la souris sur 80% du texte de données pour afficher divers panneaux de Blizzard. Ami(e)s et Guilde possède également des fonctions cliquées avec le bouton droit de la souris.",
 	Step4Line3 = "Il existe des menus déroulants disponibles. Un clic droit sur le bouton [X] (Fermer) du sac montrera des sacs. En cliquant avec le bouton droit de la souris sur Minimap,.",
 	Step4Line4 = "",
-	Step5Line1 = "Enfin, KkthnxUI inclut des commandes "/" utiles. Voici une liste.",
+	Step5Line1 = "Enfin, KkthnxUI inclut des commandes '/' utiles. Voici une liste.",
 	Step5Line2 = "/moveui vous permet de déplacer beaucoup de cadres n'importe où sur l'écran. /rl recharge l'interface.",
 	Step5Line3 = "/tt vous permet de chuchoter votre cible. /rc lance un ready check. /rd vous décroche d'un groupe ou un raid. /ainv active les invitations auto par messages privés. (/ainv off) pour désactiver ",
 	Step5Line4 = "/gm Bascule le cadre d'aide. /install ou /tutorial charge cet installateur. ",
@@ -302,12 +302,12 @@ L.Popup = {
 	FixActionbars = "Il y a quelque chose qui ne va pas avec vos barres d'actions. Voulez-vous recharger l'interface utilisateur pour le corriger?",
 	InstallUI = "Merci d'avoir choisi |cff3c9bedKkthnxUI|r! |n|nAcceptez cette boîte de dialogue d'installation pour appliquer les paramètres.",
 	ReloadUI = "L'installation est terminée. Cliquez sur le bouton 'Accepter' pour recharger l'interface utilisateur. Amusez vous |cff3c9bedKkthnxUI|r. |n|n Visitez moi sur |cff3c9bedwww.github.com/kkthnx|r.",
-
 	ResetUI = "Voulez-vous vraiment réinitialiser tous les paramètres |cff3c9bedKkthnxUI|r?",
 	ResolutionChanged = "Nous avons détecté un changement de résolution sur votre client World of Warcraft. Nous recommandons fortement de redémarrer votre jeu. Voulez-vous poursuivre?",
 	SettingsAll = "|cffff0000WARNING|r |n|nCela s'appliquera à tous les paramètres des addons pris en charge et les importera pour aller avec |cff3c9bedKkthnxUI|r. Cette fonctionnalité ne fera rien si vous n'avez pas l'un des modules complémentaires pris en charge.",
 	SettingsBW = "Besoin de changer la position des éléments BigWigs.",
 	SettingsDBM = "Nous devons changer les positions |cff3c9bedDBM|r.",
+	SetUIScale = "This will set a near 'Pixel Perfect' Scale to your interface. Do you want to proceed?",
 }
 
 -- Raid Utility Localization
@@ -331,11 +331,11 @@ L.WatchFrame = {
 }
 
 L.Welcome = {
-	Line1 = "Bienvenue sur |cff3c9bedKkthnxUI|r v",
+	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "Tapez /cfg pour configurer l'interface, ou visitez www.github.com/kkthnx|r",
+	Line3 = "Type |cff3c9bed/cfg|r to access the in-game configuration menu.",
 	Line4 = "",
-	Line5 = "Certaines de vos questions peuvent être répondu sur /uihelp"
+	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedQ2KhGY2|r"
 }
 
 L.Zone = {

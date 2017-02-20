@@ -41,14 +41,12 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "Überprüfe Zauber von allen Mitspie
 
 -- Automatisierung
 UIConfigLocal.Automation = "Automatisierung"
-UIConfigLocal.AutomationAcceptQuest = "Quests automatisch annehmen"
 UIConfigLocal.AutomationAutoCollapse = "Automatisches Einklappen der Questanzeige in Instanzen"
 UIConfigLocal.AutomationAutoInvite = "Automatisches Akzeptieren von Einladungen (NUR Freunde/Gildenmitglieder)"
 UIConfigLocal.AutomationDeclineDuel = "Automatische Ablehnung von Duellen"
 UIConfigLocal.AutomationLoggingCombat = "Automatisches Aktivieren der Kampflogdatei in Schlachtzuginstanzen"
 UIConfigLocal.AutomationResurrection = "Automatisches Wiederbeleben auf Schlachtfeldern"
 UIConfigLocal.AutomationScreenShot = "Automatisches Bildschirmfoto bei erreichen eines Erfolges"
-UIConfigLocal.AutomationTabBinder = "Automatischer Wechsel der Tab-Taste um nur feindliche Ziele anzuvisieren"
 
 -- Taschen
 UIConfigLocal.Bags = "Taschen"
@@ -143,21 +141,9 @@ UIConfigLocal.CooldownEnable = "Aktivere das UI Modul für die Abklingzeiten"
 UIConfigLocal.CooldownFontSize = "chriftgröße der Abklingzeiten"
 UIConfigLocal.CooldownThreshold = "Abklingzeiten Schwellenwert"
 
--- Filger
-UIConfigLocal.Filger = "Zeiten (Filger)"
-UIConfigLocal.FilgerBuffsSize = "Größe der Stärkungszauber"
-UIConfigLocal.FilgerCooldownSize = "Größe Abklingzeiten"
-UIConfigLocal.FilgerDisableCD = "Deaktivere Abklingzeiten"
-UIConfigLocal.FilgerEnable = "Aktiviere Filger"
-UIConfigLocal.FilgerMaxTestIcon = "Anzahl der Symbole beim Testen"
-UIConfigLocal.FilgerPvPSize = "Größe der PvP Schwächungszauber"
-UIConfigLocal.FilgerShowTooltip = "Zeige Tooltip"
-UIConfigLocal.FilgerTestMode = "Testmodus der Symbole"
-
 -- General
 UIConfigLocal.GeneralAutoScale = "AAutomatische UI Skalierung"
 UIConfigLocal.GeneralBubbleFontSize = "Schriftgröße in den Sprachblasen"
-UIConfigLocal.GeneralCustomLagTolerance = "Automatisches Update der 'Blizzard Custom Lag Tolerance' Option zu Deiner Latenz"
 UIConfigLocal.GeneralDisableTutorialButtons = "Disables the tutorial button found on some frames"
 UIConfigLocal.GeneralTaintLog = "Log Fehler"
 UIConfigLocal.GeneralToggleButton = "Toggle button under minimap (if DataText System is enabled)"
@@ -173,7 +159,6 @@ UIConfigLocal.LootConfirmDisenchant = "Auto confirm disenchant"
 UIConfigLocal.LootEnable = "ktiviere das Beutefenster"
 UIConfigLocal.LootGroupLoot = "Aktivere das Fenster für die Beute der Gruppen"
 UIConfigLocal.LootIconSize = "Symbolgröße"
-UIConfigLocal.LootLootFilter = "Filter die Gruppen- & Schlachtzugmitglieder Nachrichten, basierend auf den Gegenstandsqualität"
 UIConfigLocal.LootWidth = "Größe des Beutefensters"
 
 -- Minimap
@@ -199,8 +184,6 @@ UIConfigLocal.MiscCombatState = "Display a message when you enter/leave combat a
 UIConfigLocal.MiscEnhancedPvpMessages = "Zeigt Schlachtfeld Nachrichten in der Mitte des Bildschirms."
 UIConfigLocal.MiscInviteKeyword = "Schlüsselwort zum einladen (/ainv)"
 UIConfigLocal.MiscItemLevel = "Zeige den Itemlevel auf Deinen Gegenständen in der Charakterübersicht an"
-UIConfigLocal.MiscMerchantItemLevel = "Zeige Itemlevel für Waffen & Rüstung bei Händler"
-UIConfigLocal.MiscMoveBlizzard = "Verschiebe einige Blizzard Fenster"
 UIConfigLocal.MiscNoBanner = "Autoverstecken des Boss Loot Frame"
 UIConfigLocal.MiscPvPEmote = "Does a random emote on a player that you get a killing blow on"
 UIConfigLocal.MiscSellMisc = "Automatisches Verkaufen von unnützen Gegenständen die nicht grauer Qualität sind"

@@ -303,12 +303,12 @@ L.Popup = {
 	FixActionbars = "Что-то не так с вашими панелями команд. Хотите перезагрузить UI, чтобы исправить это?",
 	InstallUI = "Спасибо за выбор |cff3c9bedKkthnxUI|r! |n|nПодтвердите установку для применения настроек.",
 	ReloadUI = "Установка завершена. Пожалуйста, нажмите кнопку 'Принять' для перезагрузки UI. Наслаждайтесь |cff2eb6ffKkthnxUI|r!|n|nПосетите мою страницу: |cff2eb6ffwww.github.com/kkthnx|r!",
-
 	ResetUI = "Вы уверены, что хотите сбросить все настройки |cff3c9bedKkthnxUI|r?",
 	ResolutionChanged = "Мы обнаружили изменение разрешения в вашем клиенте World of Warcraft. Мы НАСТОЯТЕЛЬНО РЕКОМЕНДУЕМ перезагрузить игру. Хотите продолжить?",
 	SettingsAll = "|cffff0000ВНИМАНИЕ|r |n|nЭто применит настройки ко всем аддонам поддерживаемым |cff3c9bedKkthnxUI|r. Ничего не произойдет, если у вас нет ни одного поддерживаемого аддона.",
 	SettingsBW = "Need to change the position of elements BigWigs.",
 	SettingsDBM = "Нам нужно изменить позицию баров |cff3c9bedDBM|r.",
+	SetUIScale = "This will set a near 'Pixel Perfect' Scale to your interface. Do you want to proceed?",
 }
 
 -- Raid Utility Localization
@@ -332,11 +332,11 @@ L.WatchFrame = {
 }
 
 L.Welcome = {
-	Line1 = "Добро пожаловать в |cff3c9bedKkthnxUI|r v",
+	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
 	Line2 = "",
-	Line3 = "Введите /cfg для настройки интерфейса, или посетите www.github.com/kkthnx|r",
+	Line3 = "Type |cff3c9bed/cfg|r to access the in-game configuration menu.",
 	Line4 = "",
-	Line5 = "Некоторые ваши вопросы могут быть решены путем ввода команды /uihelp"
+	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedQ2KhGY2|r"
 }
 
 L.Zone = {

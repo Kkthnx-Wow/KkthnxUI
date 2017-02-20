@@ -23,7 +23,6 @@
    <Script file="Config\Filters\AuraList.lua" />
    <Script file="Config\Filters\CastbarTicks.lua" />
    <Script file="Config\Filters\ErrorFilter.lua" />
-   <Script file="Config\Filters\FilgerSpells.lua" />
    <Script file="Config\Filters\Nameplates.lua" />
    <Script file="Config\Filters\PortraitTimers.lua" />
    <Script file="Config\Filters\RaidAuraWatch.lua" />
@@ -109,7 +108,6 @@
    <Script file="Modules\Automation\DeclineDuel.lua" />
    <Script file="Modules\Automation\LoggingCombat.lua" />
    <Script file="Modules\Automation\Screenshots.lua" />
-   <Script file="Modules\Automation\TabBinder.lua" />
    <!-- Blizzard -->
    <Script file="Modules\Blizzard\AlertFrames.lua" />
    <Script file="Modules\Blizzard\AltPowerBar.lua" />
@@ -155,7 +153,6 @@
    <Script file="Modules\Loot\AutoGreed.lua" />
    <Script file="Modules\Loot\GroupLoot.lua" />
    <Script file="Modules\Loot\Loot.lua" />
-   <Script file="Modules\Loot\LootFilter.lua" />
    <Script file="Modules\Loot\MasterLoot.lua" />
    <!-- Maps -->
    <Script file="Modules\Maps\ButtonCollect.lua" />
@@ -163,7 +160,6 @@
    <Script file="Modules\Maps\FogOfWar.lua" />
    <Script file="Modules\Maps\MicroMenu.lua" />
    <Script file="Modules\Maps\MiniMap.lua" />
-   <Script file="Modules\Maps\Pinged.lua" />
    <Script file="Modules\Maps\WorldMap.lua" />
    <!-- Miscellaneous -->
    <Script file="Modules\Miscellaneous\AFKSpin.lua" />
@@ -173,17 +169,13 @@
    <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />
-   <Script file="Modules\Miscellaneous\Filger.lua" />
    <Script file="Modules\Miscellaneous\LagTolerance.lua" />
-   <Script file="Modules\Miscellaneous\LFDQueueTimer.lua" />
    <Script file="Modules\Miscellaneous\LossControl.lua" />
    <Script file="Modules\Miscellaneous\Merchant.lua" />
-   <Script file="Modules\Miscellaneous\MerchantItemLevel.lua" />
    <Script file="Modules\Miscellaneous\MinimapButton.lua" />
    <Script file="Modules\Miscellaneous\Miscellaneous.lua" />
    <Script file="Modules\Miscellaneous\Mounts.lua" />
    <Script file="Modules\Miscellaneous\PvPEmote.lua" />
-   <Script file="Modules\Miscellaneous\PvPQueueTimer.lua" />
    <Script file="Modules\Miscellaneous\SlotDurability.lua" />
    <Script file="Modules\Miscellaneous\SlotItemLevel.lua" />
    <!-- Nameplates -->

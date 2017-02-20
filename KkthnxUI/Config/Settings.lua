@@ -39,14 +39,12 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["AcceptQuest"] = false,
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
 	["DeclineDuel"] = false,
 	["LoggingCombat"] = false,
 	["Resurrection"] = false,
 	["ScreenShot"] = false,
-	["TabBinder"] = false,
 }
 
 -- Bag
@@ -155,23 +153,10 @@ C["Error"] = {
 	["White"] = false,
 }
 
--- Filger
-C["Filger"] = {
-	["BuffsSize"] = 37,
-	["CooldownSize"] = 30,
-	["DisableCD"] = true,
-	["Enable"] = true,
-	["MaxTestIcon"] = 5,
-	["PvPSize"] = 60,
-	["ShowTooltip"] = false,
-	["TestMode"] = false,
-}
-
 -- General
 C["General"] = {
 	["AutoScale"] = true,
 	["BubbleFontSize"] = 12,
-	["CustomLagTolerance"] = false,
 	["DisableTutorialButtons"] = false,
 	["TaintLog"] = false,
 	["ToggleButton"] = true,
@@ -186,7 +171,6 @@ C["General"] = {
 C["Loot"] = {
 	["ConfirmDisenchant"] = false,
 	["AutoGreed"] = false,
-	["LootFilter"] = true,
 	["IconSize"] = 30,
 	["Enable"] = true,
 	["GroupLoot"] = true,
@@ -200,7 +184,6 @@ C["Minimap"] = {
 	["FadeButtons"] = true,
 	["Garrison"] = true,
 	["Calendar"] = true,
-	["Ping"] = true,
 	["Size"] = 150,
 }
 
@@ -217,8 +200,6 @@ C["Misc"] = {
 	["EnhancedPvpMessages"] = false,
 	["InviteKeyword"] = "inv",
 	["ItemLevel"] = false,
-	["MerchantItemLevel"] = false,
-	["MoveBlizzard"] = false,
 	["NoBanner"] = false,
 	["PvPEmote"] = false,
 	["SellMisc"] = true,
@@ -339,7 +320,6 @@ C["Raidframe"] = {
 	["Height"] = 40,
 	["IconSize"] = 22,
 	["MainTankFrames"] = true,
-	["ManabarHorizontal"] = false,
 	["ManabarShow"] = true,
 	["MaxUnitPerColumn"] = 10,
 	["RaidAsParty"] = false,

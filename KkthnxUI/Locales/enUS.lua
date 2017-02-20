@@ -305,7 +305,7 @@ L.Popup = {
 	SettingsAll = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons.",
 	SettingsBW = "Need to change the position of elements BigWigs.",
 	SettingsDBM = "We need to change the bar positions of |cff3c9bedDBM|r.",
-	SetUIScale = "This will set a near 'perfect pixel' UIScale. Do you want to proceed?",
+	SetUIScale = "This will set a near 'Pixel Perfect' Scale to your interface. Do you want to proceed?",
 }
 
 -- Raid Utility Localization

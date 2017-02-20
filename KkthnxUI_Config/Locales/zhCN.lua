@@ -41,14 +41,12 @@ UIConfigLocal.AnnouncementsSpellsFromAll = "检查所有队友的法术释放情
 
 -- Automation
 UIConfigLocal.Automation = "自动化"
-UIConfigLocal.AutomationAcceptQuest = "自动接受任务(按住Shift手动接受)"
 UIConfigLocal.AutomationAutoCollapse = "在副本中自动折叠任务追踪"
 UIConfigLocal.AutomationAutoInvite = "自动接受邀请(好友/公会成员)"
 UIConfigLocal.AutomationDeclineDuel = "自动拒绝决斗请求"
 UIConfigLocal.AutomationLoggingCombat = "自动记录团队副本战斗数据"
 UIConfigLocal.AutomationResurrection = "自动在战场中释放尸体"
 UIConfigLocal.AutomationScreenShot = "获得成就时自动截屏"
-UIConfigLocal.AutomationTabBinder = "tab切换目标时只会选中敌方目标"
 
 -- Bag
 UIConfigLocal.Bags = "背包"
@@ -143,21 +141,9 @@ UIConfigLocal.CooldownEnable = "开启冷却模块"
 UIConfigLocal.CooldownFontSize = "冷却数字大小"
 UIConfigLocal.CooldownThreshold = "冷却触发阈值"
 
--- Filger
-UIConfigLocal.Filger = "计时器(Filger)"
-UIConfigLocal.FilgerBuffsSize = "增益图标大小"
-UIConfigLocal.FilgerCooldownSize = "冷却图标大小"
-UIConfigLocal.FilgerDisableCD = "禁用冷却提示"
-UIConfigLocal.FilgerEnable = "启用Filger"
-UIConfigLocal.FilgerMaxTestIcon = "测试模式中图标个数"
-UIConfigLocal.FilgerPvPSize = "PvP减益图标大小"
-UIConfigLocal.FilgerShowTooltip = "启用鼠标提示"
-UIConfigLocal.FilgerTestMode = "测试模式"
-
 -- General
 UIConfigLocal.GeneralAutoScale = "自动缩放UI"
 UIConfigLocal.GeneralBubbleFontSize = "聊天泡泡文字大小"
-UIConfigLocal.GeneralCustomLagTolerance = "根据延迟情况自动更新按键触发延时"
 UIConfigLocal.GeneralDisableTutorialButtons = "禁用一些框体上的教学按钮"
 UIConfigLocal.GeneralTaintLog = "错误记录"
 UIConfigLocal.GeneralToggleButton = "小地图下显示设置按钮(需要开启信息条系统)"
@@ -170,7 +156,6 @@ UIConfigLocal.GeneralWelcomeMessage = "聊天窗内显示欢迎信息"
 -- Loot
 UIConfigLocal.LootConfirmDisenchant = "自动确认分解物品"
 UIConfigLocal.LootAutoGreed = "满级时开启绿装自动贪婪和分解"
-UIConfigLocal.LootLootFilter = "根据稀有度过滤小队和团队成员拾取信息"
 UIConfigLocal.LootEnable = "开启拾取窗口"
 UIConfigLocal.LootIconSize = "图标大小"
 UIConfigLocal.LootGroupLoot = "开启队伍拾取窗口"
@@ -183,7 +168,6 @@ UIConfigLocal.MinimapCollectButtons = "一些小地图按钮收集在一行中"
 UIConfigLocal.MinimapEnable = "开启方形小地图"
 UIConfigLocal.MinimapFadeButtons = "被收集的按钮渐隐"
 UIConfigLocal.MinimapGarrison = "小地图显示要塞图标"
-UIConfigLocal.MinimapPing = "有人点击小地图时显示信息|cffff0000*|r |ccfabd473Kkthnx|r |cffff0000*|r"
 UIConfigLocal.MinimapSize = "小地图尺寸 - 默认150"
 
 -- Misc
@@ -199,8 +183,6 @@ UIConfigLocal.MiscCombatState = "在屏幕顶部显示进入/离开战斗"
 UIConfigLocal.MiscEnhancedPvpMessages = "屏幕中间显示战场信息"
 UIConfigLocal.MiscInviteKeyword = "邀请短语"
 UIConfigLocal.MiscItemLevel = "装备栏显示物品等级"
-UIConfigLocal.MiscMerchantItemLevel = "商人出售窗口内武器及装备显示物品等级"
-UIConfigLocal.MiscMoveBlizzard = "一部分系统框体可移动"
 UIConfigLocal.MiscNoBanner = "隐藏BOSS拾取结果（个人拾取时）"
 UIConfigLocal.MiscPvPEmote = "在您获得击杀后对对方玩家做一个随机动作"
 UIConfigLocal.MiscSellMisc = "自动出售除灰色物品外的无用物品"
