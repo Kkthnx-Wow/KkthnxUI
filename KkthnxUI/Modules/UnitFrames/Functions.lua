@@ -90,8 +90,6 @@ end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
 local function SetValueText(self, tag, cur, max)
-	if not tag then return "" end
-
 	-- not sure why this happens
 	if (not max or max == 0) then
 		max = 100
@@ -116,13 +114,13 @@ local function SetValueText(self, tag, cur, max)
 	elseif tag == TEXT_PERCENT then
 		string = string_format("%d%%", cur / max * 100)
 	else
-		return string or ""
+		return string
 	end
 
 	self:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, string)
 end
 
--- </ PostHealth update > --
+-- PostHealth update
 do
 	local tagtable = {
 		NUMERIC = {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
@@ -148,10 +146,10 @@ do
 		end
 
 		if absent then
-			Health:SetValue(0 or "") -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+			Health:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value and max > 0 then
-				Health.Value:SetText(absent or "")
+				Health.Value:SetText(absent)
 			end
 			return
 		end
@@ -192,9 +190,9 @@ do
 		end
 
 		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) then
-			Power:SetValue(0 or "") -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+			Power:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			if Power.Value then
-				Power.Value:SetText(nil or "")
+				Power.Value:SetText(nil)
 			end
 			return
 		end

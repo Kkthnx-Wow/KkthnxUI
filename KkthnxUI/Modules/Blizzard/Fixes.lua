@@ -12,8 +12,6 @@ local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local IsBagOpen = _G.IsBagOpen
 local IsOptionFrameOpen = _G.IsOptionFrameOpen
-local oldUpdate = _G.WorldMapLevelDropDown_Update
-local ShowUIPanel = _G.ShowUIPanel
 local UnitIsUnit = _G.UnitIsUnit
 local WorldMapFrame = _G.WorldMapFrame
 local WorldMapFrame_OnHide = _G.WorldMapFrame_OnHide
@@ -90,19 +88,6 @@ MapResetZoomFix:SetScript("OnEvent", function(self)
 		WorldMapLevelButton:SetScript("OnClick", WorldMapLevelButton_OnClick)
 	end
 end)
-
--- In 7.1 if you open the world map and open any dropdown in the UI
--- (from the world map frame or any other frame) the dropdown will suddenly close itself.
-
--- This little fix was supplied by Ellypse@WowInterface.
--- http://www.wowinterface.com/forums/showthread.php?t=54979
-local newUpdate = function()
-	if not DropDownList1:IsVisible() then
-		oldUpdate()
-	end
-end
-
-_G.WorldMapLevelDropDown_Update = newUpdate
 
 -- blizzard's baghandling just doesn't cut it
 -- we wish for all backpack/bag hotkeys and buttons to toggle all bags, always
