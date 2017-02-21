@@ -72,15 +72,36 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	if C.Nameplates.EnhancedThreat == true then
 		SetCVar("threatWarning", 3)
 	end
-	K.LockCVar("namePlateMinScale", 1)
-	K.LockCVar("namePlateMaxScale", 1)
-	K.LockCVar("nameplateLargerScale", 1)
-	K.LockCVar("nameplateMinAlpha", 1)
-	K.LockCVar("nameplateMaxAlpha", 1)
 
-	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or -1)
-	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or -1)
-	K.LockCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
+	if not InCombatLockdown() then
+		-- Insets at the top and bottom of the screen
+		-- which the target nameplate will be kept away from.
+		-- Used to avoid the target plate being overlapped
+		-- by the target frame or actionbars and keep it in view.
+		SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and .22 or .22)
+		SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and .22 or .22)
+
+		SetCVar("nameplateGlobalScale", 1)
+		SetCVar("NamePlateHorizontalScale", 1)
+		SetCVar("NamePlateVerticalScale", 1)
+
+		-- Scale modifier for large plates, used for important monsters
+		SetCVar("nameplateLargerScale", 1)
+
+		-- The maximum scale and alpha of nameplates
+		SetCVar("namePlateMaxScale", 1)
+		SetCVar("nameplateMaxAlpha", 0.85)
+
+		-- The maximum distance to show a nameplate at
+		SetCVar("nameplateMaxDistance", C.Nameplates.Distance or 100)
+
+		-- The maximum scale and alpha of nameplates
+		SetCVar("nameplateMinAlpha", 0.3)
+		SetCVar("namePlateMinScale", 1)
+
+		-- Show nameplates above heads or at the base (0 or 2)
+		SetCVar("nameplateOtherAtBase", 0)
+	end
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}

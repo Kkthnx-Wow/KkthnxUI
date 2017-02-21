@@ -379,7 +379,7 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-	self.SpellRange = {
+	self.Range = {
 		insideAlpha = 1,
 		outsideAlpha = C.UnitframePlugins.OORAlpha,
 	}

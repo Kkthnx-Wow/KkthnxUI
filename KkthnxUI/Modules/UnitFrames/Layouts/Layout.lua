@@ -1294,7 +1294,7 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Range Fader (We use oUF_SpellRange)
-	self.SpellRange = {
+	self.Range = {
 		insideAlpha = 1,
 		outsideAlpha = C.UnitframePlugins.OORAlpha,
 	}

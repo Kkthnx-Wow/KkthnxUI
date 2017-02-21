@@ -39,8 +39,6 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
-	if InCombatLockdown() then return end
-
 	local Installed = KkthnxUIDataPerChar.Install
 	if Installed then
 		local b1, b2, b3, b4 = GetActionBarToggles()
@@ -51,7 +49,10 @@ ActionBars:SetScript("OnEvent", function(self, event)
 	end
 
 	if C.ActionBar.Grid == true then
-		SetCVar("alwaysShowActionBars", 1)
+		if not InCombatLockdown() then
+			SetCVar("alwaysShowActionBars", 1)
+		end
+
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)
@@ -74,7 +75,9 @@ ActionBars:SetScript("OnEvent", function(self, event)
 			ActionButton_ShowGrid(button)
 		end
 	else
-		SetCVar("alwaysShowActionBars", 0)
+		if not InCombatLockdown() then
+			SetCVar("alwaysShowActionBars", 0)
+		end
 	end
 end)
 
