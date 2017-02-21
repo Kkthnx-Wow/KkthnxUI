@@ -1,23 +1,22 @@
 
 --[=[
-	.icon                   [texture]
-	.count                  [fontstring]
-	.cd                     [cooldown]
+.icon [texture]
+.count [fontstring]
+.cd [cooldown]
 
-	.ShowBossDebuff         [boolean]
-	.BossDebuffPriority     [number]
+.ShowBossDebuff [boolean]
+.BossDebuffPriority [number]
 
-	.ShowDispelableDebuff   [boolean]
-	.DispelPriority         [table]     { [type] = prio }
-	.DispelFilter           [table]     { [type] = true }
-	.DebuffTypeColor        [table]     { [type] = { r, g, b } }
+.ShowDispelableDebuff [boolean]
+.DispelPriority [table] { [type] = prio }
+.DispelFilter [table] { [type] = true }
+.DebuffTypeColor [table] { [type] = { r, g, b } }
 
-	.Debuffs                [table]     { [name(string)|id(number)] = prio(number) }
-	.MatchBySpellName       [boolean]
+.Debuffs [table] { [name(string)|id(number)] = prio(number) }
+.MatchBySpellName [boolean]
 
-	.SetDebuffTypeColor     [function]  function(r, g, b) end
+.SetDebuffTypeColor [function] function(r, g, b) end
 --]=]
-
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -32,7 +31,7 @@ local auraFilters = {
 }
 
 local debuffTypeColor = {
-	['none'] = {0, 0, 0},
+	['none'] = {1, 0, 0},
 }
 for k, v in next, DebuffTypeColor do
 	if(k ~= '' and k ~= 'none') then
@@ -41,10 +40,10 @@ for k, v in next, DebuffTypeColor do
 end
 
 local dispelPrio = {
-	['Magic']   = 4,
-	['Curse']   = 3,
+	['Magic'] = 4,
+	['Curse'] = 3,
 	['Disease'] = 2,
-	['Poison']  = 1,
+	['Poison'] = 1,
 }
 
 local dispelFilter = ({

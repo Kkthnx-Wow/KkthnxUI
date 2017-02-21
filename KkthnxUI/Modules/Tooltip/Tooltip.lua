@@ -101,7 +101,6 @@ local Classification = {
 	rareelite = "|cffAF5050R+ |r",
 	elite = "|cffAF5050+ |r",
 	rare = "|cffAF5050R |r",
-	minus = "-",
 }
 
 Tooltip.SlotNames = {

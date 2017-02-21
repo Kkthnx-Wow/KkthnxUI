@@ -15,14 +15,14 @@
    local CPoints = {}
    for index = 1, MAX_COMBO_POINTS do
       local CPoint = self:CreateTexture(nil, 'BACKGROUND')
-   
+
       -- Position and size of the combo point.
       CPoint:SetSize(12, 16)
       CPoint:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * CPoint:GetWidth(), 0)
-   
+
       CPoints[index] = CPoint
    end
-   
+
    -- Register with oUF
    self.CPoints = CPoints
 

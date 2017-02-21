@@ -242,7 +242,7 @@ local tagStrings = {
 		elseif(c == 'worldboss') then
 			return '|cffAF5050B |r'
 		elseif(c == 'minus') then
-			return '-'
+			return ''
 		end
 	end]],
 

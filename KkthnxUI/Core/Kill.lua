@@ -84,11 +84,11 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		end
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			local PartyMember = _G["PartyMemberFrame" .. i]
-			local Health = _G["PartyMemberFrame" .. i .. "HealthBar"]
-			local Power = _G["PartyMemberFrame" .. i .. "ManaBar"]
-			local Pet = _G["PartyMemberFrame" .. i .."PetFrame"]
-			local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
+			local PartyMember = _G["PartyMemberFrame"..i]
+			local Health = _G["PartyMemberFrame"..i.."HealthBar"]
+			local Power = _G["PartyMemberFrame"..i.."ManaBar"]
+			local Pet = _G["PartyMemberFrame"..i.."PetFrame"]
+			local PetHealth = _G["PartyMemberFrame"..i.."PetFrame".."HealthBar"]
 
 			PartyMember:UnregisterAllEvents()
 			PartyMember:SetParent(UIFrameHider)
@@ -126,9 +126,40 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		HelpPlateTooltip:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
+		if not InCombatLockdown() then -- Check for combat here.
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CORE_ABILITITES, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GLYPH, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPELLBOOK, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED, true)
+			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
+		end
 		SpellBookFrameTutorialButton:Kill()
 		TalentMicroButtonAlert:Kill()
 		TutorialFrameAlertButton:Kill()
@@ -150,23 +181,16 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
 	end
 
-	if C.Chat.Enable then
-		local ChatStyle = GetCVarBool("chatStyle")
-		if not ChatStyle and not InCombatLockdown() then
-			SetCVar("chatStyle", "im")
-		end
-	end
-
 	if C.ActionBar.Enable then
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:EnableMouse(false)
-    InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.0001)
-    InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.0001)
-    InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
-    InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.0001)
-    InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
+		InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.0001)
+		InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
 		InterfaceOptionsActionBarsPanelRight:SetScale(0.0001)
 	end
 
