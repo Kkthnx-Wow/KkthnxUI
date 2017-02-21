@@ -29,7 +29,6 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
-local UnitExists = _G.UnitExists
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
@@ -737,7 +736,6 @@ local function CreateUnitLayout(self, unit)
 	self.Health.PostUpdate = K.Health_PostUpdate
 	self.Health.frequentUpdates = true
 	self.Health.Smooth = C.Unitframe.Smooth
-	self.Health.Cutaway = true
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = C.Unitframe.ClassColor

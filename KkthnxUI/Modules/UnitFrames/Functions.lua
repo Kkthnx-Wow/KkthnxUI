@@ -4,7 +4,6 @@ if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 -- Lua API
 local _G = _G
 local math_abs = math.abs
-local math_floor = math.floor
 local pairs = pairs
 local select = select
 local string_format = string.format
@@ -17,6 +16,7 @@ local CreateFrame = _G.CreateFrame
 local GetNetStats = _G.GetNetStats
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
+local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local UnitBuff = _G.UnitBuff
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
@@ -34,7 +34,7 @@ local UnitSelectionColor = _G.UnitSelectionColor
 local UnitSpellHaste = _G.UnitSpellHaste
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: PLAYER_OFFLINE, DEAD, UnitFrame_OnLeave, UnitFrame_OnEnter
+-- GLOBALS: DEAD, UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local _, ns = ...
 local oUF = ns.oUF or _G.oUF
@@ -216,12 +216,12 @@ do
 	end
 end
 
--- </ Mouseover enter > --
+-- Mouseover enter
 function K.UnitFrame_OnEnter(self)
 	if self.__owner then
 		self = self.__owner
 	end
-	if not self:IsEnabled() then return end -- </ arena prep > --
+	if not self:IsEnabled() then return end -- arena prep
 
 	UnitFrame_OnEnter(self)
 
@@ -237,12 +237,12 @@ function K.UnitFrame_OnEnter(self)
 	end
 end
 
--- </ Mouseover leave > --
+-- Mouseover leave
 function K.UnitFrame_OnLeave(self)
 	if self.__owner then
 		self = self.__owner
 	end
-	if not self:IsEnabled() then return end -- </ arena prep > --
+	if not self:IsEnabled() then return end -- arena prep
 	UnitFrame_OnLeave(self)
 
 	self.isMouseOver = nil
@@ -257,7 +257,7 @@ function K.UnitFrame_OnLeave(self)
 	end
 end
 
--- </ Statusbar functions > --
+-- Statusbar functions
 function K.CreateStatusBar(parent, name)
 	local StatusBar = CreateFrame("StatusBar", name, parent)
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
@@ -274,7 +274,7 @@ function K.CreateStatusBar(parent, name)
 	return StatusBar
 end
 
--- </ AuraWatch > --
+-- AuraWatch
 local RaidBuffsPosition = {
 	TOPLEFT = {6, 1},
 	TOPRIGHT = {-6, 1},
@@ -359,7 +359,7 @@ function K.CreateAuraWatch(self, unit)
 	self.AuraWatch = auras
 end
 
--- </ All unitframe castbar functions > --
+-- All unitframe castbar functions
 local ticks = {}
 function K.HideTicks()
 	for i = 1, #ticks do

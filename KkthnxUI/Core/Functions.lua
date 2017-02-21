@@ -3,35 +3,32 @@ local K, C, L = unpack(select(2, ...))
 -- Lua API
 local _G = _G
 local format = format
-local GetCVar = GetCVar
-local InCombatLockdown = InCombatLockdown
-local math_abs = math.abs
 local math_floor = math.floor
 local math_modf = math.modf
-local pairs = pairs
-local print = print
-local SetCVar = SetCVar
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
-local string_reverse = string.reverse
+local string_reverse = string.reserve
 local string_sub = string.sub
-local table_insert, table_remove = table.insert, table.remove
-local type = type
-local unpack, select = unpack, select
+local table_insert = table.insert
+local table_remove = table.remove
 
 -- Wow API
-local CreateFrame = CreateFrame
-local IsEveryoneAssistant = IsEveryoneAssistant
-local IsInGroup = IsInGroup
-local IsInRaid = IsInRaid
-local LE_PARTY_CATEGORY_HOME = LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = LE_PARTY_CATEGORY_INSTANCE
-local UnitIsGroupAssistant = UnitIsGroupAssistant
-local UnitIsGroupLeader = UnitIsGroupLeader
+local CreateFrame = _G.CreateFrame
+local GetCVar = _G.GetCVar
+local InCombatLockdown = _G.InCombatLockdown
+local IsEveryoneAssistant = _G.IsEveryoneAssistant
+local IsInGroup = _G.IsInGroup
+local IsInRaid = _G.IsInRaid
+local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
+local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
+local SetCVar = _G.SetCVar
+local UIParent = _G.UIParent
+local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
+local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: GameTooltip, WEEKLY, UIFrameHider, UIHider,UIParent
+-- GLOBALS: UIFrameHider, UIHider
 
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
@@ -109,7 +106,7 @@ function K.RGBToHex(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0
 	b = b <= 1 and b >= 0 and b or 0
-	return format("|cff%02x%02x%02x", r*255, g*255, b*255)
+	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
 function K.CheckAddOn(addon)
@@ -224,40 +221,41 @@ function K.FormatMoney(value)
 	end
 end
 
--- LockedCVars
 K.LockedCVars = {}
+K.IgnoredCVars = {}
+
 function K:PLAYER_REGEN_ENABLED(_)
-	if(self.CVarUpdate) then
-		for cvarName, value in pairs(K.LockedCVars) do
-			if(GetCVar(cvarName) ~= value) then
+	if (self.CVarUpdate) then
+		for cvarName, value in pairs(self.LockedCVars) do
+			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
 				SetCVar(cvarName, value)
-				-- print(cvarName, value)
 			end
 		end
-		K.CVarUpdate = nil
+		self.CVarUpdate = nil
 	end
 end
 
 local function CVAR_UPDATE(cvarName, value)
-	if(K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-		if(InCombatLockdown()) then
+	if(not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+		if (InCombatLockdown()) then
 			K.CVarUpdate = true
 			return
 		end
 
 		SetCVar(cvarName, K.LockedCVars[cvarName])
-		-- print(cvarName, K.LockedCVars[cvarName])
 	end
 end
 
 hooksecurefunc("SetCVar", CVAR_UPDATE)
-function K.LockCVar(cvarName, value)
-	if(GetCVar(cvarName) ~= value) then
+function K.LockCVar(self, cvarName, value)
+	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
-		-- print(cvarName, value)
 	end
-	K.LockedCVars[cvarName] = value
-	-- print(value)
+	self.LockedCVars[cvarName] = value
+end
+
+function K.IgnoreCVar(self, cvarName, ignore)
+	self.IgnoredCVars[cvarName] = ignore
 end
 
 -- Personal Dev use only

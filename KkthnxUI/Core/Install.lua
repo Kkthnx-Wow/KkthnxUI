@@ -2,10 +2,8 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local format = format
-local match = string.match
-local min, max = math.min, math.max
 local print = print
+local string_format = string.format
 local unpack, select = unpack, select
 
 -- Wow API
@@ -15,8 +13,7 @@ local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
 local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
 local CreateFrame = _G.CreateFrame
-local FCF_DockFrame, FCF_UnDockFrame = _G.FCF_DockFrame, _G.FCF_UnDockFrame
-local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
+local FCF_DockFrame = _G.FCF_DockFrame
 local FCF_OpenNewWindow = _G.FCF_OpenNewWindow
 local FCF_ResetChatWindows = _G.FCF_ResetChatWindows
 local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
@@ -29,7 +26,6 @@ local GetCVarBool = _G.GetCVarBool
 local GUILD_EVENT_LOG = _G.GUILD_EVENT_LOG
 local LOOT, GENERAL, TRADE = _G.LOOT, _G.GENERAL, _G.TRADE
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
-local PlayMusic = _G.PlayMusic
 local PlaySoundFile = _G.PlaySoundFile
 local PlaySoundKitID = _G.PlaySoundKitID
 local ReloadUI = _G.ReloadUI
@@ -63,7 +59,7 @@ function KkthnxUIInstall:ChatSetup()
 	FCF_SetLocked(ChatFrame4, 1)
 
 	for i = 1, NUM_CHAT_WINDOWS do
-		local frame = _G[format("ChatFrame%s", i)]
+		local frame = _G[string_format("ChatFrame%s", i)]
 
 		-- move general bottom left
 		if i == 1 then
@@ -595,7 +591,7 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	-- Welcome message
 	if C.General.WelcomeMessage == true then
-		print(L.Welcome.Line1..K.Version.." "..K.Client..", "..format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
+		print(L.Welcome.Line1..K.Version.." "..K.Client..", "..string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
 		print(L.Welcome.Line2..L.Welcome.Line3)
 		print(L.Welcome.Line4..L.Welcome.Line5)
 	end

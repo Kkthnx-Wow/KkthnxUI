@@ -17,10 +17,10 @@ local UnitName = _G.UnitName
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion
 
 local function CheckRole(self, event)
-	local Tank = "TANK" or "Tank"
-	local Melee = "MELEE" or "Melee"
-	local Caster = "CASTER" or "Caster"
-	local Healer = "HEALER" or "Healer"
+	local Tank = "TANK"
+	local Melee = "MELEE"
+	local Caster = "CASTER"
+	local Healer = "HEALER"
 
 	local Roles = {
 		DEATHKNIGHT = {Tank, Melee, Melee},
