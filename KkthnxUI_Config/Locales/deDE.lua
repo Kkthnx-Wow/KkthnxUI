@@ -55,7 +55,6 @@ UIConfigLocal.BagsSpacing = "Zwischenraum zwischen den Taschenslots"
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
 UIConfigLocal.BlizzardColorTextures = "Passe von den meisten UI Texturen den Farbton an."
-UIConfigLocal.BlizzardHideTalkingHead = "Verstecke das Questdialogfenster"
 UIConfigLocal.BlizzardRaidTools = "Raid Hilfsmittel"
 UIConfigLocal.BlizzardReplaceBlizzardFonts = "Ersetze die Standard |cff00B4FFBlizzard Schriftarten|r auf vielen UI Elementen der |cff3c9bedKkthnxUI|r."
 UIConfigLocal.BlizzardReputationGain = "Zeige eine Nachricht, wenn Du Rufpunkte gesammelt hast"

@@ -17,7 +17,7 @@ local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: noHover, noPushed, noChecked, self, bordera
+-- GLOBALS: noHover, noPushed, noChecked, bordera
 
 local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 local Scale = function(x)

@@ -55,7 +55,6 @@ UIConfigLocal.BagsSpacing = "Set the spacing between bag slots"
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
 UIConfigLocal.BlizzardColorTextures = "Change most UI texture hue colors."
-UIConfigLocal.BlizzardHideTalkingHead = "Hide Talking Head Frame"
 UIConfigLocal.BlizzardRaidTools = "Raid tools"
 UIConfigLocal.BlizzardReplaceBlizzardFonts = "Replaces the default |cff00B4FFBlizzard fonts|r on various panels and frames from |cff3c9bedKkthnxUI|r."
 UIConfigLocal.BlizzardReputationGain = "Display a message which shows how much reputation you gained"

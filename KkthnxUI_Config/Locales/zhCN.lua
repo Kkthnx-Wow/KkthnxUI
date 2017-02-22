@@ -55,7 +55,6 @@ UIConfigLocal.BagsSpacing = "背包格子间距"
 -- Blizzard
 UIConfigLocal.Blizzard = "暴雪框体"
 UIConfigLocal.BlizzardColorTextures = "更改大多数UI材质色调颜色"
-UIConfigLocal.BlizzardHideTalkingHead = "隐藏NPC语音消息框"
 UIConfigLocal.BlizzardRaidTools = "团队工具"
 UIConfigLocal.BlizzardReplaceBlizzardFonts = "替换各框体|cff00B4FF默认字体|r为|cff3c9bedKkthnxUI|r字体"
 UIConfigLocal.BlizzardReputationGain = "显示声望获得信息"

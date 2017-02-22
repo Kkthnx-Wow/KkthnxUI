@@ -19,7 +19,7 @@ local GetCVarBool = _G.GetCVarBool
 local UIParent = _G.UIParent
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: addon, PetFrame_Update, PlayerFrame_AnimateOut
+-- GLOBALS: PetFrame_Update, PlayerFrame_AnimateOut
 -- GLOBALS: Advanced_UIScaleSlider, Advanced_UseUIScale, BagHelpBox, CollectionsMicroButtonAlert, EJMicroButtonAlert
 -- GLOBALS: HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip, PremadeGroupsPvETutorialAlert, ReagentBankHelpBox
 -- GLOBALS: InterfaceOptionsActionBarsPanelLockActionBars, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown

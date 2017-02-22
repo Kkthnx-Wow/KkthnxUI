@@ -5,20 +5,23 @@
 local parent, ns = ...
 local oUF = ns.oUF
 
+local CreateFrame = CreateFrame
 local format = string.format
 local tinsert, tremove = table.insert, table.remove
+local UnitExists = UnitExists
 
 local _PATTERN = '%[..-%]+'
 
 local _ENV = {
 	Hex = function(r, g, b)
-		if type(r) == "table" then
-			if r.r then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
+		if(type(r) == 'table') then
+			if(r.r) then
+				r, g, b = r.r, r.g, r.b
+			else
+				r, g, b = unpack(r)
+			end
 		end
-		if not r or type(r) == 'string' then --wtf?
-			return '|cffFFFFFF'
-		end
-		return format("|cff%02x%02x%02x", r*255, g*255, b*255)
+		return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
 	end,
 	ColorGradient = oUF.ColorGradient,
 }
@@ -242,6 +245,8 @@ local tagStrings = {
 		elseif(c == 'worldboss') then
 			return '|cffAF5050B |r'
 		elseif(c == 'minus') then
+			return ''
+		elseif(c == 'normal') then
 			return ''
 		end
 	end]],

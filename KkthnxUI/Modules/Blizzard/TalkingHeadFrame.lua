@@ -2,10 +2,8 @@ local K, C, L = unpack(select(2, ...))
 
 local _G = _G
 local ipairs = ipairs
-local table_remove = table.remove
 local unpack = unpack
 
-local hooksecurefunc = _G.hooksecurefunc
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local LoadAddOn = _G.LoadAddOn
 
@@ -16,25 +14,10 @@ local LoadAddOn = _G.LoadAddOn
 local Movers = K.Movers
 local isInit = false
 
--- Hide TalkingHeadFrame option
-local HideTalkingHead = CreateFrame("Frame")
-HideTalkingHead:RegisterEvent("ADDON_LOADED")
-HideTalkingHead:SetScript("OnEvent", function(self, event, addon)
-	if C.Blizzard.HideTalkingHead ~= true then return end
-	if addon == "Blizzard_TalkingHeadUI" then
-		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-			TalkingHeadFrame:Kill()
-		end)
-
-		self:UnregisterEvent(event)
-	end
-end)
-
 -- We set our TalkingHeadFrame scale and position here.
 local SetTalkingHead = CreateFrame("Frame")
 SetTalkingHead:RegisterEvent("ADDON_LOADED")
 SetTalkingHead:SetScript("OnEvent", function(self, event)
-	if C.Blizzard.HideTalkingHead == true then return end
 	if not isInit then
 		local isLoaded = true
 

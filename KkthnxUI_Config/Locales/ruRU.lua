@@ -56,7 +56,6 @@ UIConfigLocal.BagsSpacing = "Отступ слотов"
 -- Blizzard
 UIConfigLocal.Blizzard = "Blizzard"
 UIConfigLocal.BlizzardColorTextures = "Изменить оттенок цвета большинства элементов UI."
-UIConfigLocal.BlizzardHideTalkingHead = "Скрыть подсказку добычи после победы над боссом"
 UIConfigLocal.BlizzardRaidTools = "Инструменты рейда"
 UIConfigLocal.BlizzardReplaceBlizzardFonts = "Заменить стандартный шрифт |cff00B4FFBlizzard|r на различных элементах |cff3c9bedKkthnxUI|r."
 UIConfigLocal.BlizzardReputationGain = "Показывать сообщения о полученной репутации"

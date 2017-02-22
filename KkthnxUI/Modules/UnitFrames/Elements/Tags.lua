@@ -21,6 +21,7 @@ local GetQuestGreenRange = _G.GetQuestGreenRange
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local GetTime = _G.GetTime
+local IsInGroup = _G.IsInGroup
 local IsPVPTimerRunning = _G.IsPVPTimerRunning
 local QuestDifficultyColors = _G.QuestDifficultyColors
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
@@ -28,6 +29,7 @@ local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
 local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitEffectiveLevel = _G.UnitEffectiveLevel
+local UnitExists = _G.UnitExists
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitGUID = _G.UnitGUID
 local UnitHealth = _G.UnitHealth
@@ -249,15 +251,19 @@ oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
 	end
 end
 
--- </ Nameplate Tags > --
+-- Nameplate Tags
 oUF.Tags.Events["KkthnxUI:NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
+	if not UnitExists(unit) then
+		return
+	end
+
 	local level = UnitLevel(unit)
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
 	elseif level == UnitLevel("player") then
 		return ""
-	elseif(level > 0) then
+	elseif (level > 0) then
 		return level
 	else
 		return "??"
