@@ -15,6 +15,7 @@ local CreateFrame = _G.CreateFrame
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetCVarBool = _G.GetCVarBool
+local GetCVarDefault = _G.GetCVarDefault
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
@@ -37,7 +38,7 @@ local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk's FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder, event
 
 -- oUF_Kkthnx Nameplates
@@ -74,33 +75,14 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	end
 
 	if not InCombatLockdown() then
-		-- Insets at the top and bottom of the screen
-		-- which the target nameplate will be kept away from.
-		-- Used to avoid the target plate being overlapped
-		-- by the target frame or actionbars and keep it in view.
-		SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and .22 or .22)
-		SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and .22 or .22)
-
-		SetCVar("nameplateGlobalScale", 1)
-		SetCVar("NamePlateHorizontalScale", 1)
-		SetCVar("NamePlateVerticalScale", 1)
-
-		-- Scale modifier for large plates, used for important monsters
 		SetCVar("nameplateLargerScale", 1)
-
-		-- The maximum scale and alpha of nameplates
-		SetCVar("namePlateMaxScale", 1)
-		SetCVar("nameplateMaxAlpha", 0.85)
-
-		-- The maximum distance to show a nameplate at
-		SetCVar("nameplateMaxDistance", C.Nameplates.Distance or 100)
-
-		-- The maximum scale and alpha of nameplates
-		SetCVar("nameplateMinAlpha", 0.3)
-		SetCVar("namePlateMinScale", 1)
-
-		-- Show nameplates above heads or at the base (0 or 2)
-		SetCVar("nameplateOtherAtBase", 0)
+		SetCVar("nameplateMaxAlpha", 1)
+		SetCVar("nameplateMaxAlphaDistance", 0)
+		SetCVar("nameplateMaxDistance", C.Nameplates.Distance + 6 or GetCVarDefault("nameplateLargeBottomInset"))
+		SetCVar("nameplateMinAlpha", 1)
+		SetCVar("nameplateMinScale", 1)
+		SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or GetCVarDefault("nameplateOtherBottomInset"))
+		SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or GetCVarDefault("nameplateOtherTopInset"))
 	end
 end
 
