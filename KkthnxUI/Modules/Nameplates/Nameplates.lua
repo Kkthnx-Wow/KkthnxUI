@@ -74,16 +74,16 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 		SetCVar("threatWarning", 3)
 	end
 
-	if not InCombatLockdown() then
-		SetCVar("nameplateLargerScale", 1)
-		SetCVar("nameplateMaxAlpha", 1)
-		SetCVar("nameplateMaxAlphaDistance", 0)
-		SetCVar("nameplateMaxDistance", C.Nameplates.Distance + 6 or GetCVarDefault("nameplateLargeBottomInset"))
-		SetCVar("nameplateMinAlpha", 1)
-		SetCVar("nameplateMinScale", 1)
-		SetCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.1 or GetCVarDefault("nameplateOtherBottomInset"))
-		SetCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.08 or GetCVarDefault("nameplateOtherTopInset"))
-	end
+	K.LockCVar("nameplateMotion", 1)
+	K.LockCVar("nameplateLargerScale", 1)
+	K.LockCVar("nameplateMaxAlpha", 1)
+	K.LockCVar("nameplateMaxAlphaDistance", 0)
+	K.LockCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
+	K.LockCVar("nameplateMinAlpha", 1)
+	K.LockCVar("nameplateMinScale", 1)
+	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.08 or 1)
+	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.1 or -1)
+	print(K.LockCVar)
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}

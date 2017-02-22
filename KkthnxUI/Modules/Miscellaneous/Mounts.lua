@@ -19,10 +19,12 @@ local UnitBuff = UnitBuff
 
 -- -- Universal Mount macro(by Monolit)
 
--- /cancelform [noform]
--- /leavevehicle [canexitvehicle]
--- /dismount [mounted]
--- /run Mountz("GROUND MOUNT", "FLYING MOUNT", "WATER MOUNT")
+--[[
+/cancelform [noform]
+/leavevehicle [canexitvehicle]
+/dismount [mounted]
+/run Mountz("GROUND MOUNT", "FLYING MOUNT", "WATER MOUNT")
+--]]
 
 function Mountz(groundmount, flyingmount, underwatermount)
 	if not underwatermount then underwatermount = groundmount end

@@ -68,27 +68,53 @@ function K.Comma(num)
 	return 	Left .. string_reverse(string_gsub(string_reverse(Number), "(%d%d%d)", "%1,")) .. Right
 end
 
-function K.ShortValue(value)
-	if not value then return "" end
+-- function K.ShortValue(value)
+-- 	if not value then return "" end
+--
+-- 	if value >= 1e11 then
+-- 		return ("%.0fb"):format(value / 1e9)
+-- 	elseif value >= 1e10 then
+-- 		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+-- 	elseif value >= 1e9 then
+-- 		return ("%.2fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
+-- 	elseif value >= 1e8 then
+-- 		return ("%.0fm"):format(value / 1e6)
+-- 	elseif value >= 1e7 then
+-- 		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+-- 	elseif value >= 1e6 then
+-- 		return ("%.2fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+-- 	elseif value >= 1e5 then
+-- 		return ("%.0fk"):format(value / 1e3)
+-- 	elseif value >= 1e3 then
+-- 		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+-- 	else
+-- 		return value
+-- 	end
+-- end
 
-	if value >= 1e11 then
-		return ("%.0fb"):format(value / 1e9)
-	elseif value >= 1e10 then
-		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e9 then
-		return ("%.2fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e8 then
-		return ("%.0fm"):format(value / 1e6)
-	elseif value >= 1e7 then
-		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e6 then
-		return ("%.2fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e5 then
-		return ("%.0fk"):format(value / 1e3)
-	elseif value >= 1e3 then
-		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+K.ShortValue = (GetLocale() == "zhCN") and function(value)
+	value = tonumber(value)
+	if not value then return "" end
+	if value >= 1e8 then
+		return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
+	elseif value >= 1e4 or value <= -1e3 then
+		return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
 	else
-		return value
+		return tostring(math_floor(value))
+	end
+end
+
+or function(value)
+	value = tonumber(value)
+	if not value then return "" end
+	if value >= 1e9 then
+		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([kmb])$", "%1")
+	elseif value >= 1e6 then
+		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([kmb])$", "%1")
+	elseif value >= 1e3 or value <= -1e3 then
+		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([kmb])$", "%1")
+	else
+		return tostring(math_floor(value))
 	end
 end
 
@@ -247,15 +273,15 @@ local function CVAR_UPDATE(cvarName, value)
 end
 
 hooksecurefunc("SetCVar", CVAR_UPDATE)
-function K.LockCVar(self, cvarName, value)
+function K.LockCVar(cvarName, value)
 	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
 	end
-	self.LockedCVars[cvarName] = value
+	K.LockedCVars[cvarName] = value
 end
 
-function K.IgnoreCVar(self, cvarName, ignore)
-	self.IgnoredCVars[cvarName] = ignore
+function K.IgnoreCVar(cvarName, ignore)
+	K.IgnoredCVars[cvarName] = ignore
 end
 
 -- Personal Dev use only
