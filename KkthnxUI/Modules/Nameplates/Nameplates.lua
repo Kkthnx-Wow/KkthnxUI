@@ -83,7 +83,6 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 	K.LockCVar("nameplateMinScale", 1)
 	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.08 or 1)
 	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.1 or -1)
-	print(K.LockCVar)
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}
