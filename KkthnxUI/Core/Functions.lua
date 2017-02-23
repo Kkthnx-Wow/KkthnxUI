@@ -16,6 +16,7 @@ local table_remove = table.remove
 -- Wow API
 local CreateFrame = _G.CreateFrame
 local GetCVar = _G.GetCVar
+local GetLocale = _G.GetLocale
 local InCombatLockdown = _G.InCombatLockdown
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
@@ -27,7 +28,7 @@ local UIParent = _G.UIParent
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIFrameHider, UIHider
 
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
@@ -62,59 +63,28 @@ function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
 	return fontString
 end
 
-function K.Comma(num)
-	local Left, Number, Right = string_match(num, "^([^%d]*%d)(%d*)(.-)$")
-
-	return 	Left .. string_reverse(string_gsub(string_reverse(Number), "(%d%d%d)", "%1,")) .. Right
-end
-
--- function K.ShortValue(value)
--- 	if not value then return "" end
---
--- 	if value >= 1e11 then
--- 		return ("%.0fb"):format(value / 1e9)
--- 	elseif value >= 1e10 then
--- 		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
--- 	elseif value >= 1e9 then
--- 		return ("%.2fb"):format(value / 1e9):gsub("%.?0+([km])$", "%1")
--- 	elseif value >= 1e8 then
--- 		return ("%.0fm"):format(value / 1e6)
--- 	elseif value >= 1e7 then
--- 		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
--- 	elseif value >= 1e6 then
--- 		return ("%.2fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
--- 	elseif value >= 1e5 then
--- 		return ("%.0fk"):format(value / 1e3)
--- 	elseif value >= 1e3 then
--- 		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
--- 	else
--- 		return value
--- 	end
--- end
-
-K.ShortValue = (GetLocale() == "zhCN") and function(value)
-	value = tonumber(value)
+-- Return short value of a number
+function K.ShortValue(value)
 	if not value then return "" end
-	if value >= 1e8 then
-		return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e4 or value <= -1e3 then
-		return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
-	else
-		return tostring(math_floor(value))
-	end
-end
-
-or function(value)
 	value = tonumber(value)
-	if not value then return "" end
-	if value >= 1e9 then
-		return ("%.1fb"):format(value / 1e9):gsub("%.?0+([kmb])$", "%1")
-	elseif value >= 1e6 then
-		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([kmb])$", "%1")
-	elseif value >= 1e3 or value <= -1e3 then
-		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([kmb])$", "%1")
+	if GetLocale() == "zhCN" then
+		if value >= 1e8 then
+			return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
+		elseif value >= 1e4 or value <= -1e3 then
+			return ("%.1f万"):format(value / 1e4):gsub("%.?0+([km])$", "%1")
+		else
+			return tostring(math_floor(value))
+		end
 	else
-		return tostring(math_floor(value))
+		if value >= 1e9 then
+			return ("%.1fb"):format(value / 1e9):gsub("%.?0+([kmb])$", "%1")
+		elseif value >= 1e6 then
+			return ("%.1fm"):format(value / 1e6):gsub("%.?0+([kmb])$", "%1")
+		elseif value >= 1e3 or value <= -1e3 then
+			return ("%.1fk"):format(value / 1e3):gsub("%.?0+([kmb])$", "%1")
+		else
+			return tostring(math_floor(value))
+		end
 	end
 end
 
@@ -230,7 +200,7 @@ function K.UTF8Sub(string, numChars, dots)
 		end
 
 		if (len == numChars and pos <= bytes) then
-			return string:sub(1, pos - 1)..(dots and '...' or '')
+			return string:sub(1, pos - 1)..(dots and "..." or "")
 		else
 			return string
 		end
@@ -287,7 +257,7 @@ end
 
 -- Personal Dev use only
 K.IsDev = {Aceer = true, Kkthnx = true, Kkthnxx = true, Pervie = true, Tatterdots = true} -- We will add more of my names as we go.
-K.IsDevRealm = {Stormreaver = true} -- Don't forget to update realm name(s) if we ever transfer realms.
+K.IsDevRealm = {Stormreaver = true} -- Don"t forget to update realm name(s) if we ever transfer realms.
 -- If we forget it could be easly picked up by another player who matches these combinations.
 -- End result we piss off people and we do not want to do that. :(
 
@@ -308,30 +278,18 @@ end
 -- end
 
 -- http://www.wowwiki.com/ColorGradient
-function K.ColorGradient(a, b, ...)
-	local percent
-
-	if(b == 0) then
-		percent = 0
-	else
-		percent = a / b
+function K.ColorGradient(perc, ...)
+	if perc >= 1 then
+		return select(select("#", ...) - 2, ...)
+	elseif perc <= 0 then
+		return ...
 	end
 
-	if (percent >= 1) then
-		local r, g, b = select(select("#", ...) - 2, ...)
+	local num = select("#", ...) / 3
+	local segment, relperc = math_modf(perc*(num-1))
+	local r1, g1, b1, r2, g2, b2 = select((segment*3)+1, ...)
 
-		return r, g, b
-	elseif (percent <= 0) then
-		local r, g, b = ...
-
-		return r, g, b
-	end
-
-	local num = (select("#", ...) / 3)
-	local segment, relpercent = math_modf(percent * (num - 1))
-	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
-
-	return r1 + (r2 - r1) * relpercent, g1 + (g2 - g1) * relpercent, b1 + (b2 - b1) * relpercent
+	return r1 + (r2-r1)*relperc, g1 + (g2-g1)*relperc, b1 + (b2-b1)*relperc
 end
 
 -- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
@@ -358,7 +316,7 @@ end
 -- Example (killing the status text panel in WotLK, Cata and MoP):
 -- K.KillMenuPanel(9, "InterfaceOptionsStatusTextPanel")
 --
--- 'panel_id' is basically the number of the submenu, when all menus are still there.
+-- "panel_id" is basically the number of the submenu, when all menus are still there.
 -- Note that the this sometimes change between expansions, so you really need to check
 -- to make sure you are removing the right one.
 function K.KillMenuPanel(panel_id, panel_name)

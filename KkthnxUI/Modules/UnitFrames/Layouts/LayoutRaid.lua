@@ -111,9 +111,9 @@ local function UpdateHealth(self, unit, cur, max)
 	if (not cur) or (not max) then return end
 
 	if (not UnitIsPlayer(unit)) then
-		local r, g, b = K.ColorGradient(cur, max, 0, .8, 0, .8, .8, 0, .8, 0, 0)
+		local r, g, b = K.ColorGradient(cur / max, 0, 0.8, 0, 0.8, 0.8, 0, 0.8, 0, 0)
 		self:SetStatusBarColor(r, g, b)
-		self.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1)
+		self.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
 	end
 
 	self.Value:SetText(GetHealthText(unit, cur, max))
