@@ -56,7 +56,7 @@ local function Update(self, event, unit)
 	local factionGroup = UnitFactionGroup(unit)
 
 	if(UnitIsPVPFreeForAll(unit)) then
-		if(level > 0 and pvp.Prestige) then
+		if(pvp.Prestige and level > 0) then
 			pvp:SetTexture(GetPrestigeInfo(level))
 			pvp:SetTexCoord(0, 1, 0, 1)
 
@@ -70,7 +70,7 @@ local function Update(self, event, unit)
 
 		status = 'ffa'
 	elseif(factionGroup and factionGroup ~= 'Neutral' and UnitIsPVP(unit)) then
-		if(UnitIsMercenary(unit)) then
+		if(unit == 'player' and UnitIsMercenary(unit)) then
 			if(factionGroup == 'Horde') then
 				factionGroup = 'Alliance'
 			elseif(factionGroup == 'Alliance') then
@@ -78,7 +78,7 @@ local function Update(self, event, unit)
 			end
 		end
 
-		if(level > 0 and pvp.Prestige) then
+		if(pvp.Prestige and level > 0) then
 			pvp:SetTexture(GetPrestigeInfo(level))
 			pvp:SetTexCoord(0, 1, 0, 1)
 
