@@ -1,18 +1,20 @@
 ## Interface: 70100
-
-## Author: Kkthnx, Tohveli
+## Name: KkthnxUI Config
+## Author: Josh "Kkthnx" Russell, Tohveli
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
-## RequiredDeps: KkthnxUI
-## LoadOnDemand: 1
-
+## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigAll, KkthnxUIConfigPublic
 ## SavedVariablesPerCharacter: KkthnxUIConfigPrivate
+## RequiredDeps: KkthnxUI
 
+### Load Locales
 Locales\enUS.lua
 Locales\deDE.lua
 Locales\frFR.lua
 Locales\ruRU.lua
 Locales\zhCN.lua
 Locales\zhTW.lua
+
+### Load Core File
 KkthnxUI_Config.lua

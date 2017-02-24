@@ -1,20 +1,19 @@
 ## Interface: 70100
-## Version: 6.17
-
-## Author: Kkthnx, Shestak
+## Name: KkthnxUI
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: User Interface replacement AddOn for World of Warcraft.
-
-## X-Copyright: The MIT License (MIT) Copyright (c) 2012 - 2017 Kkthnx <kkthnxui@gmail.com>
-## X-Curse-Project-ID: 95528
-## X-Donate: https://www.paypal.me/kkthnx
-## X-Email: Kkthnxbye@live.com
-## X-oUF: oUFKkthnxUI
-## X-Website: https://github.com/Kkthnx
-## X-WoWI-ID: 23677
-
+## Author: Josh "Kkthnx" Russell, Shestak
+## Version: 6.17
+## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
-## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, Blizzard_PetJournal, SharedMedia, Gatherer, DBM-Core, Recount, Skada, Spy, WeakAuras
+## OptionalDeps: Blizzard_DebugTools, SharedMedia, Gatherer, DBM-Core, Recount, Skada, Spy, WeakAuras
+## X-License: The MIT License (MIT)
+## X-Donate: https://www.paypal.me/kkthnx
+## X-eMail: Kkthnxbye@live.com
+## X-oUF: oUFKkthnxUI
+## X-Website: https://github.com/Kkthnx
+## X-Category: Interface Enhancements
 
+### Load Core File
 KkthnxUI.xml
