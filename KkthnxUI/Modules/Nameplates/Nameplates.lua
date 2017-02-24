@@ -74,13 +74,13 @@ function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
 		SetCVar("threatWarning", 3)
 	end
 
-	K.LockCVar("nameplateMotion", 1)
 	K.LockCVar("nameplateLargerScale", 1)
 	K.LockCVar("nameplateMaxAlpha", 1)
-	K.LockCVar("nameplateMaxAlphaDistance", 0)
 	K.LockCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
+	K.LockCVar("namePlateMaxScale", 1)
 	K.LockCVar("nameplateMinAlpha", 1)
 	K.LockCVar("nameplateMinScale", 1)
+	K.LockCVar("nameplateMotion", 1)
 	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.08 or 1)
 	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.1 or -1)
 end
