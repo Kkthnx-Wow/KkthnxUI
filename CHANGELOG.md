@@ -7,6 +7,85 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v6.17] - 2/23/2017
+### Added
+- More _G. for Wow API
+- JunkIcon display for bags.
+- Combat checks for some cvars and code to prevent errors.
+- oUF_Absorb.lua 
+- More status bars will use K.CreateStatusBar now.
+- 2 Fixes from Goldpaw to fix 2 blizzard issues.
+
+### Fixed
+- Caching of Global variables in some places we missed. I'm sure there is more.
+- Fixed nil error in Chat tabs.
+- K.IsDeveloper() and K.IsDeveloperRealm().
+- CopyChat for /played command.
+- Leak in Minimap.lua
+- Minimap no longer goes tot he dark side when we enable flat status bar textures.
+- DebuffTypeColor not showing red. Was only showing the default UI border color.
+- KkthnxUI welcome message.
+- UIScale command from firing in combat.
+- DisbandRaidGroup will properly work again.
+- Updated SetValueText function to prevent a nil error
+- A font was causing some fonts that were black text color to have an outline. This is now fixed.
+- A lot of code was optimized and fixed as well as cleaned!
+- CheckRole function.
+- Couple typos
+
+### Removed This list will mainly hold what modules were removed.
+- RaidCD.
+- PulseCD.
+- EnhancedMail.
+- BlizzBugsSuck - People can manually pick this up off curse.
+- LagTolerance.
+- MerchantItemLevel.
+- BlizzMoveFrames
+- Filger
+- AcceptQuest
+- TabBinder
+- LootFilter
+- Ping
+- LFDQueueTimer
+- PvPQueueTimer
+- AnnounceSpells
+- LoggingCombat
+- BadGear
+- SayThanks
+- TranslateMessage
+- FogOfWar
+- Selfcast
+- Nameplate ClassIcons
+- SwingBar
+- All code/settings / locals related to all removed modules.
+- Double SpellRange code. No idea how this happened.
+- Fixed SpellRange properly now.
+- Manabar vertical code for raid frames
+- Removed a fix that would taint our world map. The fix is no longer needed for us.
+
+### Changed
+- Change how the Chat frame now works. Less of a cluster fuck.
+- The bags now have a damn toggle bag slots button.
+- The bags slots now show all bags. Even the MainMenuBarBackpack.
+- Range code cleanup
+- DebugTools now have correct buttons spacing and align properly.
+- Rewrote some of the Hide.lua code.
+- Improved K.LockCVar
+- Unitframe / raid frame threat code
+- Updated AuraWatch code
+- Updated and streamlined the install process code.
+- Improved the Skada profile settings. This is for /settings skada
+- Rewrote the heal prediction handling on unit frames, raid frames, and nameplates.
+- Rewrote the vehicle button code
+- Rewrote the ExtraActionBar code
+- Improved Health PostUpdate and Power PostUpdate code. Related to Unitframes.
+- oUF_Smooth.lua. Unitframes, Nameplates, and Raid frames now are smoothed once again.
+- Improved K.SetFontString function
+- Improved GCD code and placement/style
+- Improved KkthnxUI:NameplateLevel oUF Tag
+
+# Archived Changelogs
+
 ## [v6.16] - 2/13/2017
 ### Added
 - Added a debug lib.
@@ -47,8 +126,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Updated formatting of our readme thanks to @goldpaw.
 - I moved the /reload script to its own file. Prevents it from being broken in most cases.
 - Cleaned the ReputationGain.lua file.
-
-# Archived Changelogs
 
 ## [v6.11.7] - 12/27/2016
 ### Added
