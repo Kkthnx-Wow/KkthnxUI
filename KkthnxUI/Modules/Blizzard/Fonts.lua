@@ -31,6 +31,8 @@ local SetCVar = _G.SetCVar
 -- GLOBALS: WorldMapTextFont, GameFontNormalSmallLeft, PaperDollTitlesPane
 
 local function SetFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
+	if(not obj) then return end
+
 	obj:SetFont(font, size, style)
 	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb) end
 	if sox and soy then obj:SetShadowOffset(sox, soy) end
