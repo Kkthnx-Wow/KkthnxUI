@@ -134,6 +134,7 @@ local UNIT_SPELLCAST_START = function(self, event, unit)
 	castbar.max = max
 	castbar.delay = 0
 	castbar.casting = true
+	castbar.interrupt = notInterruptible -- NOTE: deprecated; to be removed
 	castbar.notInterruptible = notInterruptible
 	castbar.holdTime = 0
 	castbar.isTradeSkill = isTradeSkill
@@ -198,6 +199,7 @@ local UNIT_SPELLCAST_FAILED = function(self, event, unit, spellname, _, castid, 
 	end
 
 	castbar.casting = nil
+	castbar.interrupt = nil -- NOTE: deprecated; to be removed
 	castbar.notInterruptible = nil
 	castbar.holdTime = castbar.timeToHold or 0
 
@@ -220,6 +222,7 @@ local UNIT_SPELLCAST_FAILED_QUIET = function(self, event, unit, spellname, _, ca
 	end
 
 	castbar.casting = nil
+	castbar.interrupt = nil -- NOTE: deprecated; to be removed
 	castbar.notInterruptible = nil
 	castbar:SetValue(0)
 	castbar:Hide()
@@ -256,6 +259,7 @@ local UNIT_SPELLCAST_INTERRUPTIBLE = function(self, event, unit)
 		shield:Hide()
 	end
 
+	castbar.interrupt = nil -- NOTE: deprecated; to be removed
 	castbar.notInterruptible = nil
 
 	if(castbar.PostCastInterruptible) then
@@ -272,6 +276,7 @@ local UNIT_SPELLCAST_NOT_INTERRUPTIBLE = function(self, event, unit)
 		shield:Show()
 	end
 
+	castbar.interrupt = nil -- NOTE: deprecated; to be removed
 	castbar.notInterruptible = nil
 
 	if(castbar.PostCastNotInterruptible) then
@@ -313,6 +318,7 @@ local UNIT_SPELLCAST_STOP = function(self, event, unit, spellname, _, castid, sp
 		end
 	else
 		castbar.casting = nil
+		castbar.interrupt = nil -- NOTE: deprecated; to be removed
 		castbar.notInterruptible = nil
 	end
 
@@ -342,6 +348,7 @@ local UNIT_SPELLCAST_CHANNEL_START = function(self, event, unit, _, _, _, spelli
 	castbar.endTime = endTime
 	castbar.extraTickRatio = 0
 	castbar.channeling = true
+	castbar.interrupt = notInterruptible -- NOTE: deprecated; to be removed
 	castbar.notInterruptible = notInterruptible
 	castbar.holdTime = 0
 
@@ -410,6 +417,7 @@ local UNIT_SPELLCAST_CHANNEL_STOP = function(self, event, unit, spellname, _, _,
 	local castbar = self.Castbar
 	if(castbar:IsShown()) then
 		castbar.channeling = nil
+		castbar.interrupt = nil -- NOTE: deprecated; to be removed
 		castbar.notInterruptible = nil
 
 		if(castbar.PostChannelStop) then

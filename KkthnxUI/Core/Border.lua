@@ -88,16 +88,14 @@ function K.CreateOutsideBar(parent, onTop, r, g, b)
 	step = -2
 	StatusBar:SetPoint(point, anchor, point2, x, y)
 
-	local Texture = StatusBar:CreateTexture(nil, "ARTWORK")
-	Texture:SetSize(104, 32)
-	Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\FrameBarBot")
-	Texture:SetPoint("BOTTOM", 0, -12)
+	StatusBar.Texture = StatusBar:CreateTexture(nil, "ARTWORK")
+	StatusBar.Texture:SetSize(104, 32)
+	StatusBar.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\FrameBarBot")
+	StatusBar.Texture:SetPoint("BOTTOM", 0, -12)
 
 	if C.Blizzard.ColorTextures == true then
-		Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3]) -- This is faster.
+		StatusBar.Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3]) -- This is faster.
 	end
-
-	StatusBar.Texture = Texture
 
 	return StatusBar
 end

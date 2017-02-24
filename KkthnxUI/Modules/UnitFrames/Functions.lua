@@ -70,20 +70,17 @@ function K.MultiCheck(check, ...)
 	return false
 end
 
-local function UpdatePortraitColor(self, unit, cur, max)
+local function UpdatePortraitColor(self, unit)
 	if not unit then return end
-
 	if (UnitIsPlayer(unit)) then
-		if (self.Portrait) then
-			if (UnitIsDead(unit)) then
-				self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 1.0)
-			elseif (not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD(unit)) then
-				self.Portrait:SetVertexColor(0.2, 0.2, 0.75, 1.0)
-			elseif ((cur / max > 0) and (cur / max <= 0.2)) then
-				self.Portrait:SetVertexColor(1.0, 0.0, 0.0)
-			else
-				self.Portrait:SetVertexColor(1.0, 1.0, 1.0, 1.0)
-			end
+		if (not UnitIsConnected(unit)) then
+			self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+		elseif (UnitIsDead(unit)) then
+			self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+		elseif (UnitIsGhost(unit)) then
+			self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+		else
+			self.Portrait:SetVertexColor(1, 1, 1, 1)
 		end
 	end
 end
@@ -137,24 +134,23 @@ do
 		local self = Health:GetParent()
 		local uconfig = ns.config[self.MatchUnit]
 
-		if (self.Portrait) then
-			UpdatePortraitColor(self, unit, cur, max)
+		if self.Portrait then
+			UpdatePortraitColor(self, unit)
 		end
 
-		if (self.Name) and (self.Name.Bg) then -- For boss frames
+		if self.Name and self.Name.Bg then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
 		if absent then
 			Health:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
-			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value and max > 0 then
 				Health.Value:SetText(absent)
 			end
 			return
 		end
 
-		if (not cur) then
+		if not cur then
 			cur = UnitHealth(unit)
 			max = UnitHealthMax(unit) or 1
 		end
@@ -180,16 +176,17 @@ do
 	}
 
 	function K.Power_PostUpdate(Power, unit, cur, max)
+		if not Power.Value then return end
+
 		local self = Power:GetParent()
 		local uconfig = ns.config[self.MatchUnit]
 
 		if max == 0 then
-			return Power:Hide()
-		else
-			Power:Show()
+			Power.Value:SetText(nil)
+			return
 		end
 
-		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) then
+		if UnitIsDeadOrGhost(unit) then
 			Power:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			if Power.Value then
 				Power.Value:SetText(nil)
@@ -197,9 +194,7 @@ do
 			return
 		end
 
-		if not Power.Value then return end
-
-		if (not cur) then
+		if not cur then
 			max = UnitPower(unit)
 			cur = UnitPowerMax(unit) or 1
 		end

@@ -1097,35 +1097,33 @@ local function CreateUnitLayout(self, unit)
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
 		if C.Unitframe.PowerPredictionBar then
-			local mainBar, altBar
-			mainBar = CreateFrame("StatusBar", nil, self.Power)
-			mainBar:SetFrameLevel(self.Power:GetFrameLevel())
-			mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-			mainBar:GetStatusBarTexture():SetBlendMode("ADD")
-			mainBar:SetReverseFill(true)
-			mainBar:SetPoint("TOP")
-			mainBar:SetPoint("BOTTOM")
-			mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
-			mainBar:SetWidth(self.Power:GetWidth())
-			mainBar:SetStatusBarColor(1, 1, 1, .3)
+			self.PowerPrediction = {}
+
+			self.PowerPrediction.mainBar = CreateFrame("StatusBar", "$parentPowerCostPrediction", self.Power)
+			self.PowerPrediction.mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
+			self.PowerPrediction.mainBar:GetStatusBarTexture():SetBlendMode("ADD")
+			self.PowerPrediction.mainBar:SetReverseFill(true)
+			self.PowerPrediction.mainBar:SetPoint("TOP")
+			self.PowerPrediction.mainBar:SetPoint("BOTTOM")
+			self.PowerPrediction.mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
+			self.PowerPrediction.mainBar:SetWidth(self.Power:GetWidth())
+			self.PowerPrediction.mainBar:SetHeight(self.Power:GetHeight())
+			self.PowerPrediction.mainBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
+			self.PowerPrediction.mainBar.Smooth = C.Unitframe.Smooth
 
 			if self.AdditionalPower then
-				altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
-				altBar:SetFrameLevel(self.AdditionalPower:GetFrameLevel())
-				altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-				altBar:GetStatusBarTexture():SetBlendMode("ADD")
-				altBar:SetReverseFill(true)
-				altBar:SetPoint("TOP")
-				altBar:SetPoint("BOTTOM")
-				altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
-				altBar:SetWidth(self.AdditionalPower:GetWidth())
-				altBar:SetStatusBarColor(1, 1, 1, .3)
+				self.PowerPrediction.altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
+				self.PowerPrediction.altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
+				self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
+				self.PowerPrediction.altBar:SetReverseFill(true)
+				self.PowerPrediction.altBar:SetPoint("TOP")
+				self.PowerPrediction.altBar:SetPoint("BOTTOM")
+				self.PowerPrediction.altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
+				self.PowerPrediction.altBar:SetWidth(self.AdditionalPower:GetWidth())
+				self.PowerPrediction.altBar:SetHeight(self.Power:GetHeight())
+				self.PowerPrediction.altBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
+				self.PowerPrediction.altBar.Smooth = C.Unitframe.Smooth
 			end
-
-			self.PowerPrediction = {
-				mainBar = mainBar,
-				altBar = altBar
-			}
 		end
 
 		-- PvP Timer

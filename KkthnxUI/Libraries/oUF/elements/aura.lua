@@ -147,8 +147,8 @@ local updateIcon = function(unit, icons, index, offset, filter, isDebuff, visibl
 	end
 
 	if(name) then
-		local position = visible + offset + 1
-		local icon = icons[position]
+		local n = visible + offset + 1
+		local icon = icons[n]
 		if(not icon) then
 			--[[ :CreateIcon(index)
 
@@ -162,10 +162,14 @@ local updateIcon = function(unit, icons, index, offset, filter, isDebuff, visibl
 
 				A button used to represent aura icons.
 				]]
-			icon = (icons.CreateIcon or createAuraIcon) (icons, position)
+			local prev = icons.createdIcons
+			icon = (icons.CreateIcon or createAuraIcon) (icons, n)
 
-			table.insert(icons, icon)
-			icons.createdIcons = icons.createdIcons + 1
+			-- XXX: Update the counters if the layout doesn't.
+			if(prev == icons.createdIcons) then
+				table.insert(icons, icon)
+				icons.createdIcons = icons.createdIcons + 1
+			end
 		end
 
 		local isPlayer
@@ -257,7 +261,7 @@ local updateIcon = function(unit, icons, index, offset, filter, isDebuff, visibl
 			offset - The offset the button was created at.
 			]]
 			if(icons.PostUpdateIcon) then
-				icons:PostUpdateIcon(unit, icon, index, position)
+				icons:PostUpdateIcon(unit, icon, index, n)
 			end
 
 			return VISIBLE
@@ -346,9 +350,13 @@ local UpdateAuras = function(self, event, unit)
 
 			local icon = auras[visibleBuffs]
 			if(not icon) then
+				local prev = auras.createdIcons
 				icon = (auras.CreateIcon or createAuraIcon) (auras, visibleBuffs)
-				table.insert(auras, icon)
-				auras.createdIcons = auras.createdIcons + 1
+				-- XXX: Update the counters if the layout doesn't.
+				if(prev == auras.createdIcons) then
+					table.insert(auras, icon)
+					auras.createdIcons = auras.createdIcons + 1
+				end
 			end
 
 			-- Prevent the icon from displaying anything.
@@ -511,10 +519,6 @@ end
 local Disable = function(self)
 	if(self.Buffs or self.Debuffs or self.Auras) then
 		self:UnregisterEvent("UNIT_AURA", UpdateAuras)
-
-		if(self.Buffs) then self.Buffs:Hide() end
-		if(self.Debuffs) then self.Debuffs:Hide() end
-		if(self.Auras) then self.Auras:Hide() end
 	end
 end
 
