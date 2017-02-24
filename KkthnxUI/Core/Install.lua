@@ -44,7 +44,7 @@ local UIFrameFadeOut = _G.UIFrameFadeOut
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 
-function KkthnxUIInstall:ChatSetup()
+KkthnxUIInstall.ChatSetup = function()
 	InstallStepComplete.Message = "Chat Set"
 	InstallStepComplete:Show()
 	FCF_ResetChatWindows()
@@ -180,7 +180,7 @@ function KkthnxUIInstall:ChatSetup()
 	ChangeChatColor("INSTANCE_CHAT_LEADER", 230/255, 179/255, 38/255)
 end
 
-function KkthnxUIInstall:CVarSetup()
+KkthnxUIInstall.CVarSetup = function()
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
 	SetCVar("chatMouseScroll", 1)
@@ -204,7 +204,7 @@ function KkthnxUIInstall:CVarSetup()
 	InstallStepComplete:Show()
 end
 
-function KkthnxUIInstall:PositionSetup()
+KkthnxUIInstall.PositionSetup = function()
 	-- Reset saved variables on char
 	KkthnxUIDataPerChar = {}
 
@@ -490,7 +490,7 @@ local TutorialOne = function()
 end
 
 -- Install KkthnxUI with default settings.
-function KkthnxUIInstall:Install()
+KkthnxUIInstall.Install = function()
 	KkthnxUIInstallFrame:Show()
 	StatusBar:Hide()
 	OptionOne:Show()
@@ -509,51 +509,53 @@ function KkthnxUIInstall:Install()
 	OptionTwo:SetScript("OnClick", StepOne)
 end
 
-if not InstallStepComplete then
-	local InstallMessage = CreateFrame("Frame", "InstallStepComplete", UIParent)
-	InstallMessage:SetSize(418, 72)
-	InstallMessage:SetPoint("TOP", 0, -190)
-	InstallMessage:Hide()
-	InstallMessage:SetScript("OnShow", function(self)
-		if self.Message then
-			PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
-			self.Text:SetText(self.Message)
-			UIFrameFadeOut(self, 3.5, 1, 0)
-			K.Delay(4, function() self:Hide() end)
-			self.Message = nil
-		else
-			self:Hide()
-		end
-	end)
+do
+	if not InstallStepComplete then
+		local InstallMessage = CreateFrame("Frame", "InstallStepComplete", UIParent)
+		InstallMessage:SetSize(418, 72)
+		InstallMessage:SetPoint("TOP", 0, -190)
+		InstallMessage:Hide()
+		InstallMessage:SetScript("OnShow", function(self)
+			if self.Message then
+				PlaySoundFile([[Sound\Interface\LevelUp.ogg]])
+				self.Text:SetText(self.Message)
+				UIFrameFadeOut(self, 3.5, 1, 0)
+				K.Delay(4, function() self:Hide() end)
+				self.Message = nil
+			else
+				self:Hide()
+			end
+		end)
 
-	InstallMessage.FirstShow = false
+		InstallMessage.FirstShow = false
 
-	InstallMessage.Background = InstallMessage:CreateTexture(nil, "BACKGROUND")
-	InstallMessage.Background:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	InstallMessage.Background:SetPoint("BOTTOM")
-	InstallMessage.Background:SetSize(326, 103)
-	InstallMessage.Background:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
-	InstallMessage.Background:SetVertexColor(1, 1, 1, 0.6)
+		InstallMessage.Background = InstallMessage:CreateTexture(nil, "BACKGROUND")
+		InstallMessage.Background:SetTexture([[Interface\LevelUp\LevelUpTex]])
+		InstallMessage.Background:SetPoint("BOTTOM")
+		InstallMessage.Background:SetSize(326, 103)
+		InstallMessage.Background:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+		InstallMessage.Background:SetVertexColor(1, 1, 1, 0.6)
 
-	InstallMessage.LineTop = InstallMessage:CreateTexture(nil, "BACKGROUND")
-	InstallMessage.LineTop:SetDrawLayer("BACKGROUND", 2)
-	InstallMessage.LineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	InstallMessage.LineTop:SetPoint("TOP")
-	InstallMessage.LineTop:SetSize(418, 7)
-	InstallMessage.LineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+		InstallMessage.LineTop = InstallMessage:CreateTexture(nil, "BACKGROUND")
+		InstallMessage.LineTop:SetDrawLayer("BACKGROUND", 2)
+		InstallMessage.LineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
+		InstallMessage.LineTop:SetPoint("TOP")
+		InstallMessage.LineTop:SetSize(418, 7)
+		InstallMessage.LineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	InstallMessage.LineBottom = InstallMessage:CreateTexture(nil, "BACKGROUND")
-	InstallMessage.LineBottom:SetDrawLayer("BACKGROUND", 2)
-	InstallMessage.LineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-	InstallMessage.LineBottom:SetPoint("BOTTOM")
-	InstallMessage.LineBottom:SetSize(418, 7)
-	InstallMessage.LineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+		InstallMessage.LineBottom = InstallMessage:CreateTexture(nil, "BACKGROUND")
+		InstallMessage.LineBottom:SetDrawLayer("BACKGROUND", 2)
+		InstallMessage.LineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+		InstallMessage.LineBottom:SetPoint("BOTTOM")
+		InstallMessage.LineBottom:SetSize(418, 7)
+		InstallMessage.LineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	InstallMessage.Text = InstallMessage:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
-	InstallMessage.Text:SetPoint("BOTTOM", 0, 12)
-	InstallMessage.Text:SetFont(C.Media.Font, 40, "")
-	InstallMessage.Text:SetTextColor(1, 0.82, 0)
-	InstallMessage.Text:SetJustifyH("CENTER")
+		InstallMessage.Text = InstallMessage:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
+		InstallMessage.Text:SetPoint("BOTTOM", 0, 12)
+		InstallMessage.Text:SetFont(C.Media.Font, 40, "")
+		InstallMessage.Text:SetTextColor(1, 0.82, 0)
+		InstallMessage.Text:SetJustifyH("CENTER")
+	end
 end
 
 -- On login function

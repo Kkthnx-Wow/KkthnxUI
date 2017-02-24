@@ -39,7 +39,7 @@ K.RaidBuffs = {
 	},
 }
 
-local function SpellName(id)
+local SpellName = function(id)
 	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
 	if not name then
 		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")

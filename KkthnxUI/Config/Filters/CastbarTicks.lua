@@ -1,16 +1,19 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.CastbarTicks ~= true then return end
 
+local _G = _G
 local lower = string.lower
+
+local GetSpellInfo = _G.GetSpellInfo
 
 -- The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
 -- Example: Polymorph -> http://www.wowhead.com/spell=118
 -- Take the number ID at the end of the URL, and add it to the list
 
-local function SpellName(id)
+local SpellName = function(id)
 	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
 	if not name then
-    print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
+		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
 		return "Impale"
 	else
 		return name

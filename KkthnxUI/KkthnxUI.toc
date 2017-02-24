@@ -7,7 +7,7 @@
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
-## OptionalDeps: Blizzard_DebugTools, SharedMedia, Gatherer, DBM-Core, Recount, Skada, Spy, WeakAuras
+## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, SharedMedia, DBM-Core, Recount, Skada, Spy, WeakAuras
 ## X-License: The MIT License (MIT)
 ## X-Donate: https://www.paypal.me/kkthnx
 ## X-eMail: Kkthnxbye@live.com

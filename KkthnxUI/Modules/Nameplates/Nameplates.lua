@@ -233,7 +233,7 @@ local CreateAuraTimer = function(self, elapsed)
 	end
 end
 
-local function threatColor(self, forced)
+local threatColor = function(self, forced)
 	if UnitIsPlayer(self.unit) then return end
 	local combat = UnitAffectingCombat("player")
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
@@ -295,7 +295,7 @@ local function threatColor(self, forced)
 	end
 end
 
-local function UpdateTarget(self)
+local UpdateTarget = function(self)
 	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
 		self:SetSize((C.Nameplates.Width + C.Nameplates.AdditionalWidth) * K.NoScaleMult, (C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult)
 		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult))
@@ -313,7 +313,7 @@ local function UpdateTarget(self)
 	end
 end
 
-local function UpdateName(self)
+local UpdateName = function(self)
 	if C.Nameplates.HealerIcon == true then
 		local name = UnitName(self.unit)
 		if name then
@@ -347,7 +347,7 @@ local function UpdateName(self)
 	end
 end
 
-local function castColor(self, unit)
+local castColor = function(self, unit)
 	local color
 	local r, g, b = 1.0, 0.7, 0.0, 0.5
 
@@ -369,7 +369,7 @@ local function castColor(self, unit)
 	end
 end
 
-local function castInterrupted(self)
+local castInterrupted = function(self)
 	self:SetMinMaxValues(0, 1)
 	self:SetValue(1)
 	self:SetStatusBarColor(1, 0, 0)
@@ -377,7 +377,7 @@ local function castInterrupted(self)
 	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
-local function callback(event, nameplate, unit)
+local callback = function(event, nameplate, unit)
 	local unit = unit or "target"
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 	if not nameplate then return end
@@ -403,7 +403,7 @@ local function callback(event, nameplate, unit)
 	end
 end
 
-local function style(self, unit)
+local style = function(self, unit)
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 	local main = self
 	nameplate.ouf = self

@@ -31,25 +31,27 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIFrameHider, UIHider
 
-K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
-K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
-K.BorderBackdrop = {bgFile = C.Media.Blank}
-K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
-K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
-K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
-K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
+do
+	K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
+	K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
+	K.BorderBackdrop = {bgFile = C.Media.Blank}
+	K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
+	K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
+	K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
+	K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
-K.TexCoords = {0.08, 0.92, 0.08, 0.92}
+	K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
-K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
+	K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
+end
 
-function K.Print(...)
+K.Print = function(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
 local FALLBACK_FONT_SIZE = 13 -- some Blizzard bug
 local FONT_SCALE = 1
-function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
+K.SetFontString = function(parent, fontName, fontSize, fontStyle, justify)
 	if not fontSize or fontSize < 6 then fontSize = FALLBACK_FONT_SIZE end
 	fontSize = fontSize * FONT_SCALE
 
@@ -64,7 +66,7 @@ function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
 end
 
 -- Return short value of a number
-function K.ShortValue(value)
+K.ShortValue = function(value)
 	if not value then return "" end
 	value = tonumber(value)
 	if GetLocale() == "zhCN" then
@@ -89,7 +91,7 @@ function K.ShortValue(value)
 end
 
 -- Rounding
-function K.Round(num, idp)
+K.Round = function(num, idp)
 	if (idp and idp > 0) then
 		local mult = 10 ^ idp
 		return math_floor(num * mult + 0.5) / mult
@@ -98,18 +100,18 @@ function K.Round(num, idp)
 end
 
 -- RgbToHex color
-function K.RGBToHex(r, g, b)
+K.RGBToHex = function(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0
 	b = b <= 1 and b >= 0 and b or 0
 	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
-function K.CheckAddOn(addon)
+K.CheckAddOn = function(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
 
-function K.CreateBlizzardFrame(frame, point)
+K.CreateBlizzardFrame = function(frame, point)
 	if point == nil then point = frame end
 
 	if point.backdrop then return end
@@ -128,12 +130,12 @@ function K.CreateBlizzardFrame(frame, point)
 	end
 end
 
-function K.SetBlizzardBorder(frame, r, g, b, a)
+K.SetBlizzardBorder = function(frame, r, g, b, a)
 	if not a then a = 1 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
-function K.CreateShadowFrame(frame, point)
+K.CreateShadowFrame = function(frame, point)
 	if point == nil then point = frame end
 
 	if point.backdrop then return end
@@ -157,13 +159,13 @@ function K.CreateShadowFrame(frame, point)
 	end
 end
 
-function K.SetShadowBorder(frame, r, g, b, a)
+K.SetShadowBorder = function(frame, r, g, b, a)
 	if not a then a = 0.9 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
 -- Chat channel check
-function K.CheckChat(warning)
+K.CheckChat = function(warning)
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 		return "INSTANCE_CHAT"
 	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
@@ -178,7 +180,7 @@ function K.CheckChat(warning)
 	return "SAY"
 end
 
-function K.UTF8Sub(string, numChars, dots)
+K.UTF8Sub = function(string, numChars, dots)
 	local bytes = string:len()
 	if (bytes <= numChars) then
 		return string
@@ -207,7 +209,7 @@ function K.UTF8Sub(string, numChars, dots)
 	end
 end
 
-function K.FormatMoney(value)
+K.FormatMoney = function(value)
 	if value >= 1e4 then
 		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, string_sub(value, -4) / 1e2, string_sub(value, -2))
 	elseif value >= 1e2 then
@@ -220,11 +222,13 @@ end
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
-function K:PLAYER_REGEN_ENABLED(_)
+K.PLAYER_REGEN_ENABLED = function(self)
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	if (self.CVarUpdate) then
 		for cvarName, value in pairs(self.LockedCVars) do
 			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
 				SetCVar(cvarName, value)
+				print(SetCVar(cvarName, value))
 			end
 		end
 		self.CVarUpdate = nil
@@ -243,14 +247,14 @@ local function CVAR_UPDATE(cvarName, value)
 end
 
 hooksecurefunc("SetCVar", CVAR_UPDATE)
-function K.LockCVar(cvarName, value)
+K.LockCVar = function(cvarName, value)
 	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
 	end
 	K.LockedCVars[cvarName] = value
 end
 
-function K.IgnoreCVar(cvarName, ignore)
+K.IgnoreCVar = function(cvarName, ignore)
 	ignore = not not ignore -- cast to bool, just in case
 	K.IgnoredCVars[cvarName] = ignore
 end
@@ -261,24 +265,16 @@ K.IsDevRealm = {Stormreaver = true} -- Don"t forget to update realm name(s) if w
 -- If we forget it could be easly picked up by another player who matches these combinations.
 -- End result we piss off people and we do not want to do that. :(
 
-function K.IsDeveloper()
+K.IsDeveloper = function()
     return K.IsDev[K.Name] or false
 end
 
-function K.IsDeveloperRealm()
+K.IsDeveloperRealm = function()
     return K.IsDevRealm[K.Realm] or false
 end
 
--- if K.IsDeveloper() then
--- 	print(K.Name .." is a Dev of ".. K.UIName)
--- end
---
--- if K.IsDeveloperRealm() then
--- 	print("Dev realm is ".. K.Realm)
--- end
-
 -- http://www.wowwiki.com/ColorGradient
-function K.ColorGradient(perc, ...)
+K.ColorGradient = function(perc, ...)
 	if perc >= 1 then
 		return select(select("#", ...) - 2, ...)
 	elseif perc <= 0 then
@@ -293,7 +289,7 @@ function K.ColorGradient(perc, ...)
 end
 
 -- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
-function K.KillMenuOption(option_shrink, option_name)
+K.KillMenuOption = function(option_shrink, option_name)
 	local option = _G[option_name]
 	if not(option) or not(option.IsObjectType) or not(option:IsObjectType("Frame")) then
 		return
@@ -315,11 +311,11 @@ end
 
 -- Example (killing the status text panel in WotLK, Cata and MoP):
 -- K.KillMenuPanel(9, "InterfaceOptionsStatusTextPanel")
---
+
 -- "panel_id" is basically the number of the submenu, when all menus are still there.
 -- Note that the this sometimes change between expansions, so you really need to check
 -- to make sure you are removing the right one.
-function K.KillMenuPanel(panel_id, panel_name)
+K.KillMenuPanel = function(panel_id, panel_name)
 	-- remove an entire blizzard options panel,
 	-- and disable its automatic cancel/okay functionality
 	-- this is needed, or the option will be reset when the menu closes
@@ -346,7 +342,7 @@ function K.KillMenuPanel(panel_id, panel_name)
 end
 
 -- Format seconds to min/ hour / day
-function K.FormatTime(s)
+K.FormatTime = function(s)
 	local day, hour, minute = 86400, 3600, 60
 
 	if s >= day then
@@ -361,10 +357,10 @@ function K.FormatTime(s)
 	return format("%.1f", s), (s * 100 - math_floor(s * 100)) / 100
 end
 
---Add time before calling a function
+-- Add time before calling a function
 local waitTable = {}
 local waitFrame
-function K.Delay(delay, func, ...)
+K.Delay = function(delay, func, ...)
 	if (type(delay) ~= "number" or type(func) ~= "function") then
 		return false
 	end

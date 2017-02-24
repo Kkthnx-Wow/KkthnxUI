@@ -2,18 +2,37 @@ local K, C, L = unpack(select(2, ...))
 if C.Minimap.Enable ~= true then return end
 
 -- Lua API
-local format = string.format
+local _G = _G
+local string_format = string.format
 
 -- Wow API
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
-local InCombatLockdown = InCombatLockdown
-local IsInGuild = IsInGuild
-local Lib_ToggleDropDownMenu = Lib_ToggleDropDownMenu
-local ShowUIPanel = ShowUIPanel
-local ToggleAchievementFrame = ToggleAchievementFrame
-local ToggleCharacter = ToggleCharacter
-local ToggleFrame = ToggleFrame
-local UIErrorsFrame = UIErrorsFrame
+local Calendar_Toggle = _G.Calendar_Toggle
+local ClearAllTracking = _G.ClearAllTracking
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GetNumTrackingTypes = _G.GetNumTrackingTypes
+local GetTrackingInfo = _G.GetTrackingInfo
+local HUNTER_TRACKING = _G.HUNTER_TRACKING
+local HUNTER_TRACKING_TEXT = _G.HUNTER_TRACKING_TEXT
+local InCombatLockdown = _G.InCombatLockdown
+local IsInGuild = _G.IsInGuild
+local IsShiftKeyDown = _G.IsShiftKeyDown
+local Lib_ToggleDropDownMenu = _G.Lib_ToggleDropDownMenu
+local Lib_UIDropDownMenu_AddButton = _G.Lib_UIDropDownMenu_AddButton
+local Lib_UIDropDownMenu_CreateInfo = _G.Lib_UIDropDownMenu_CreateInfo
+local LoadAddOn = _G.LoadAddOn
+local MINIMAP_TRACKING_NONE = _G.MINIMAP_TRACKING_NONE
+local MiniMapTracking_SetTracking = _G.MiniMapTracking_SetTracking
+local MiniMapTrackingDropDown_IsNoTrackingActive = _G.MiniMapTrackingDropDown_IsNoTrackingActive
+local MiniMapTrackingDropDownButton_IsActive = _G.MiniMapTrackingDropDownButton_IsActive
+local ShowUIPanel = _G.ShowUIPanel
+local SOCIAL_TWITTER_TWEET_NOT_LINKED = _G.SOCIAL_TWITTER_TWEET_NOT_LINKED
+local ToggleAchievementFrame = _G.ToggleAchievementFrame
+local ToggleCharacter = _G.ToggleCharacter
+local ToggleFrame = _G.ToggleFrame
+local TOWNSFOLK = _G.TOWNSFOLK
+local TOWNSFOLK_TRACKING_TEXT = _G.TOWNSFOLK_TRACKING_TEXT
+local UIErrorsFrame = _G.UIErrorsFrame
+local UnitClass = _G.UnitClass
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: FEATURE_BECOMES_AVAILABLE_AT_LEVEL, ToggleQuestLog, ToggleGuildFrame
@@ -23,11 +42,12 @@ local UIErrorsFrame = UIErrorsFrame
 -- GLOBALS: StoreMicroButton, Lib_EasyMenu, GarrisonLandingPage_Toggle, MinimapAnchor
 -- GLOBALS: ToggleEncounterJournal, FEATURE_NOT_YET_AVAILABLE, ToggleCollectionsJournal
 -- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap, LootHistoryFrame
--- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal
+-- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal, HideUIPanel
+-- GLOBALS: CalendarFrame, SocialPostFrame, C_Social, Social_SetShown, LIB_UIDROPDOWNMENU_MENU_VALUE
 
 -- This function is copied from FrameXML and modified to use DropDownMenu library function calls
 -- Using the regular DropDownMenu code causes taints in various places.
-local function MiniMapTrackingDropDown_Initialize(self, level)
+local MiniMapTrackingDropDown_Initialize = function(self, level)
 	local name, texture, active, category, nested, numTracking
 	local count = GetNumTrackingTypes()
 	local info
@@ -138,9 +158,9 @@ local micromenu = {
 				ShowUIPanel(PlayerTalentFrame)
 			else
 				if C.Error.White == false then
-					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL), 1, 0.1, 0.1)
+					UIErrorsFrame:AddMessage(string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL), 1, 0.1, 0.1)
 				else
-					K.Print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
+					K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 				end
 			end
 	end},
@@ -164,9 +184,9 @@ local micromenu = {
 				TogglePVPUI()
 			else
 				if C.Error.White == false then
-					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL), 1, 0.1, 0.1)
+					UIErrorsFrame:AddMessage(string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL), 1, 0.1, 0.1)
 				else
-					K.Print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
+					K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
 				end
 			end
 	end},
@@ -175,9 +195,9 @@ local micromenu = {
 				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
 			else
 				if C.Error.White == false then
-					UIErrorsFrame:AddMessage(format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL), 1, 0.1, 0.1)
+					UIErrorsFrame:AddMessage(string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL), 1, 0.1, 0.1)
 				else
-					K.Print("|cffffff00"..format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
+					K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
 				end
 			end
 	end},

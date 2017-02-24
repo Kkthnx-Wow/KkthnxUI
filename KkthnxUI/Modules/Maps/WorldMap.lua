@@ -41,7 +41,7 @@ local INVERTED_POINTS = {
 	["BOTTOM"] = "TOP",
 }
 
-function WorldMap:SetLargeWorldMap()
+WorldMap.SetLargeWorldMap = function()
 	if InCombatLockdown() then return end
 
 	WorldMapFrame:SetParent(UIParent)
@@ -68,25 +68,25 @@ function WorldMap:SetLargeWorldMap()
 	WorldMapFrame:SetSize(1002, 668)
 end
 
-function WorldMap:SetSmallWorldMap()
+WorldMap.SetSmallWorldMap = function()
 	if InCombatLockdown() then return end
 
 	WorldMapFrameSizeUpButton:Show()
 	WorldMapFrameSizeDownButton:Hide()
 end
 
-function WorldMap:PLAYER_REGEN_ENABLED()
+WorldMap.PLAYER_REGEN_ENABLED = function()
 	WorldMapFrameSizeDownButton:Enable()
 	WorldMapFrameSizeUpButton:Enable()
 end
 
-function WorldMap:PLAYER_REGEN_DISABLED()
+WorldMap.PLAYER_REGEN_DISABLED = function()
 	WorldMapFrameSizeDownButton:Disable()
 	WorldMapFrameSizeUpButton:Disable()
 end
 
 local inRestrictedArea = false
-function WorldMap:PLAYER_ENTERING_WORLD()
+WorldMap.PLAYER_ENTERING_WORLD = function(self)
 	local x = GetPlayerMapPosition("player")
 	if not x then
 		inRestrictedArea = true
@@ -100,7 +100,7 @@ function WorldMap:PLAYER_ENTERING_WORLD()
 	end
 end
 
-function WorldMap:UpdateCoords()
+WorldMap.UpdateCoords = function()
 	if (not WorldMapFrame:IsShown() or inRestrictedArea) then return end
 
 	local X, Y = GetPlayerMapPosition("player")
@@ -131,7 +131,7 @@ function WorldMap:UpdateCoords()
 	end
 end
 
-function WorldMap:PositionCoords()
+WorldMap.PositionCoords = function()
 	local DataBase = C.WorldMapCoordinates -- Plan to change all this at a later time.
 	local Position = DataBase.Position
 	local XOffset = DataBase.XOffset
@@ -147,7 +147,7 @@ function WorldMap:PositionCoords()
 	CoordsHolder.MouseCoords:SetPoint(Position, CoordsHolder.PlayerCoords, INVERTED_POINTS[Position], 0, Y)
 end
 
-function WorldMap:Enable()
+WorldMap.Enable = function(self)
 	if (C.WorldMap.Coordinates) then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)
 		CoordsHolder:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() + 1)

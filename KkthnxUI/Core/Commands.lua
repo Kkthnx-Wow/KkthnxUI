@@ -57,11 +57,11 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitName = _G.UnitName
 
 -- Global variables that we don't need to cache, list them here for mikk's FindGlobals script
--- GLOBALS: ToggleHelpFrame, DBM, AchievementFrame,  AchievementFrame_LoadUI, AchievementAlertSystem
+-- GLOBALS: ToggleHelpFrame, DBM, AchievementFrame, AchievementFrame_LoadUI, AchievementAlertSystem
 -- GLOBALS: CriteriaAlertSystem, GuildChallengeAlertSystem, InvasionAlertSystem, GarrisonShipFollowerAlertSystem
 -- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
 -- GLOBALS: ExtraActionBarFrame, ExtraActionButton1, MoneyWonAlertSystem, StorePurchaseAlertSystem
--- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem
+-- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem, DisbandRaidGroup, GridCreate
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end
@@ -99,13 +99,12 @@ end
 _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
-local function SetUIScale()
+local SetUIScale = function()
 	if InCombatLockdown() then return end
 
-	local SetUIScale = GetCVarBool("uiScale")
-	if not SetUIScale then
-			-- K.LockCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
-			SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+	local ApplyUIScale = GetCVarBool("uiScale")
+	if not ApplyUIScale then
+		SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 	end
 
 	ReloadUI()
@@ -129,7 +128,7 @@ end
 _G.SLASH_SETUISCALE1 = "/uiscale"
 
 -- Disband party or raid (by Monolit)
-function _G.DisbandRaidGroup()
+DisbandRaidGroup = function()
 	if InCombatLockdown() then return end
 
 	if UnitInRaid("player") then
@@ -155,7 +154,7 @@ StaticPopupDialogs.DISBAND_RAID = {
 	text = L.Popup.DisbandRaid,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = _G.DisbandRaidGroup,
+	OnAccept = DisbandRaidGroup,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
@@ -168,7 +167,7 @@ end
 _G.SLASH_GROUPDISBAND1 = "/rd"
 
 -- Enable lua error by command
-function SlashCmdList.LUAERROR(msg)
+SlashCmdList.LUAERROR = function(msg)
 	msg = string_lower(msg)
 	if(msg == "on") then
 		DisableAllAddOns()
@@ -284,18 +283,18 @@ _G.SLASH_TEST_EXTRABUTTON1 = "/teb"
 local Grid
 local BoxSize = 32
 
-local function Grid_Show()
+local Grid_Show = function()
 	if not Grid then
-		_G.GridCreate()
+		GridCreate()
 	elseif Grid.BoxSize ~= BoxSize then
 		Grid:Hide()
-		_G.GridCreate()
+		GridCreate()
 	else
 		Grid:Show()
 	end
 end
 
-local function GridHide()
+local GridHide = function()
 	if Grid then
 		Grid:Hide()
 	end
@@ -315,7 +314,7 @@ SlashCmdList.TOGGLE_GRID = function(arg)
 	end
 end
 
-function _G.GridCreate()
+GridCreate = function()
 	Grid = CreateFrame("Frame", nil, UIParent)
 	Grid.BoxSize = BoxSize
 	Grid:SetAllPoints(UIParent)
@@ -381,7 +380,7 @@ end
 _G.SLASH_TEST_UI1 = "/testui"
 
 -- Reduce video settings to optimize performance
-local function BoostUI()
+local BoostUI = function()
 	SetCVar("SSAO", 0)
 	SetCVar("ShadowTextureSize", 1024)
 	SetCVar("environmentDetail", 60)
@@ -397,6 +396,7 @@ local function BoostUI()
 	SetCVar("timingmethod", 1)
 	SetCVar("waterDetail", 0)
 	SetCVar("weatherDensity", 0)
+
 	RestartGx()
 end
 
