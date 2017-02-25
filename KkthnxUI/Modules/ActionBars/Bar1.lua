@@ -38,7 +38,7 @@ local Page = {
 	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
-local function GetBar()
+local GetBar = function()
 	local condition = Page["DEFAULT"]
 	local class = K.Class
 	local page = Page[class]

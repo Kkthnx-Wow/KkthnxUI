@@ -17,21 +17,21 @@ local RegisterStateDriver = _G.RegisterStateDriver
 if C.ActionBar.PetBarHide then PetActionBarAnchor:Hide() return end
 
 -- Create bar
-local bar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTemplate")
-bar:SetAllPoints(PetActionBarAnchor)
+local PetBar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTemplate")
+PetBar:SetAllPoints(PetActionBarAnchor)
 
-bar:RegisterEvent("PLAYER_LOGIN")
-bar:RegisterEvent("PLAYER_CONTROL_LOST")
-bar:RegisterEvent("PLAYER_CONTROL_GAINED")
-bar:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED")
-bar:RegisterEvent("PET_BAR_UPDATE")
-bar:RegisterEvent("PET_BAR_UPDATE_USABLE")
-bar:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
-bar:RegisterEvent("PET_BAR_HIDE")
-bar:RegisterEvent("UNIT_PET")
-bar:RegisterEvent("UNIT_FLAGS")
-bar:RegisterEvent("UNIT_AURA")
-bar:SetScript("OnEvent", function(self, event, arg1)
+PetBar:RegisterEvent("PLAYER_LOGIN")
+PetBar:RegisterEvent("PLAYER_CONTROL_LOST")
+PetBar:RegisterEvent("PLAYER_CONTROL_GAINED")
+PetBar:RegisterEvent("PLAYER_FARSIGHT_FOCUS_CHANGED")
+PetBar:RegisterEvent("PET_BAR_UPDATE")
+PetBar:RegisterEvent("PET_BAR_UPDATE_USABLE")
+PetBar:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
+PetBar:RegisterEvent("PET_BAR_HIDE")
+PetBar:RegisterEvent("UNIT_PET")
+PetBar:RegisterEvent("UNIT_FLAGS")
+PetBar:RegisterEvent("UNIT_AURA")
+PetBar:SetScript("OnEvent", function(self, event, arg1)
 	if event == "PLAYER_LOGIN" then
 		K.StylePet()
 		PetActionBar_ShowGrid = K.Noop
@@ -58,7 +58,7 @@ bar:SetScript("OnEvent", function(self, event, arg1)
 			button:Show()
 			self:SetAttribute("addchild", button)
 		end
-		RegisterStateDriver(self, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
+		RegisterStateDriver(self, "visibility", "[pet, nopetbattle, novehicleui, nooverridebar, nobonusbar:5] show; hide")
 		hooksecurefunc("PetActionBar_Update", K.PetBarUpdate)
 	elseif event == "PET_BAR_UPDATE" or event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED"
 	or event == "UNIT_FLAGS" or (event == "UNIT_PET" and arg1 == "player") or (arg1 == "pet" and event == "UNIT_AURA") then

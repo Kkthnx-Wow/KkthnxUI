@@ -38,29 +38,20 @@ Movers:RegisterFrame(ShiftHolder)
 if C.ActionBar.StanceBarHide then ShiftHolder:Hide() return end
 
 -- CREATE BAR
-local bar = CreateFrame("Frame", "UIShapeShift", ShiftHolder, "SecureHandlerStateTemplate")
-bar:ClearAllPoints()
-bar:SetAllPoints(ShiftHolder)
+local StanceBar = CreateFrame("Frame", "UIShapeShift", ShiftHolder, "SecureHandlerStateTemplate")
+StanceBar:ClearAllPoints()
+StanceBar:SetAllPoints(ShiftHolder)
 
-local States = {
-	["DEATHKNIGHT"] = "show",
-	["DRUID"] = "show",
-	["MONK"] = "show",
-	["PALADIN"] = "show",
-	["PRIEST"] = "show",
-	["ROGUE"] = "show",
-	["WARLOCK"] = "show",
-	["WARRIOR"] = "show",
-}
-
-bar:RegisterEvent("PLAYER_LOGIN")
-bar:RegisterEvent("PLAYER_ENTERING_WORLD")
-bar:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
-bar:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
-bar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
-bar:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-bar:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-bar:SetScript("OnEvent", function(self, event, ...)
+StanceBar:RegisterEvent("PLAYER_LOGIN")
+StanceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
+StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
+StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
+StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
+StanceBar:RegisterEvent("PLAYER_TALENT_UPDATE")
+StanceBar:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
+StanceBar:RegisterEvent("SPELLS_CHANGED")
+StanceBar:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_STANCE_SLOTS do
 			local button = _G["StanceButton"..i]
@@ -87,8 +78,9 @@ bar:SetScript("OnEvent", function(self, event, ...)
 				button:Hide()
 			end
 		end
-		RegisterStateDriver(self, "visibility", States[K.Class] or "hide")
-		local function movestance()
+		RegisterStateDriver(self, "visibility", "[vehicleui][petbattle] hide; show")
+
+		local movestance = function()
 			if not InCombatLockdown() then
 				if C.ActionBar.StanceBarHorizontal == true then
 					StanceButton1:SetPoint("BOTTOMLEFT", ShiftHolder, "BOTTOMLEFT", 0, 0)

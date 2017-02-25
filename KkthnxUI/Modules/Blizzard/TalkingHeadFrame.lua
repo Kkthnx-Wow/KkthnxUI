@@ -9,15 +9,13 @@ local LoadAddOn = _G.LoadAddOn
 
 -- No point caching anything here, but list them here for mikk's FindGlobals script
 -- GLOBALS: CreateFrame, TalkingHeadFrame, UIPARENT_MANAGED_FRAME_POSITIONS, TalkingHead_LoadUI
--- GLOBALS: Model_ApplyUICamera, AlertFrame
+-- GLOBALS: Model_ApplyUICamera, AlertFrame, TalkingHead_Init
 
 local Movers = K.Movers
 local isInit = false
 
 -- We set our TalkingHeadFrame scale and position here.
-local SetTalkingHead = CreateFrame("Frame")
-SetTalkingHead:RegisterEvent("ADDON_LOADED")
-SetTalkingHead:SetScript("OnEvent", function(self, event)
+TalkingHead_Init = function()
 	if not isInit then
 		local isLoaded = true
 
@@ -45,7 +43,11 @@ SetTalkingHead:SetScript("OnEvent", function(self, event)
 
 			return true
 		end
-
-		self:UnregisterEvent("ADDON_LOADED")
 	end
+end
+
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:SetScript("OnEvent", function()
+	TalkingHead_Init()
 end)

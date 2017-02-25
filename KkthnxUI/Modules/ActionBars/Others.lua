@@ -87,7 +87,7 @@ VehicleButtonAnchor:SetPoint(C.Position.VehicleBar[1], C.Position.VehicleBar[2],
 VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 Movers:RegisterFrame(VehicleButtonAnchor)
 
-local function Vehicle_OnEvent(self)
+local Vehicle_OnEvent = function(self)
 	if (CanExitVehicle()) then
 		self:Show()
 		self:GetNormalTexture():SetVertexColor(1, 1, 1)
@@ -97,7 +97,7 @@ local function Vehicle_OnEvent(self)
 	end
 end
 
-local function Vehicle_OnClick(self)
+local Vehicle_OnClick = function(self)
 	if (UnitOnTaxi("player")) then
 		TaxiRequestEarlyLanding()
 		self:GetNormalTexture():SetVertexColor(1, 0, 0)
@@ -107,7 +107,7 @@ local function Vehicle_OnClick(self)
 	end
 end
 
-local function UpdateVehicleLeave()
+local UpdateVehicleLeave = function()
 	local button = LeaveVehicleButton
 	if not button then return end
 
@@ -116,7 +116,7 @@ local function UpdateVehicleLeave()
 	button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 end
 
-local function CreateVehicleLeave()
+local CreateVehicleLeave = function()
 	local vehicle = CreateFrame("Button", "LeaveVehicleButton", UIParent)
 	vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 	vehicle:SetFrameStrata("HIGH")

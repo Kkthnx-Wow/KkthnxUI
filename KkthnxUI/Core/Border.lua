@@ -78,7 +78,7 @@ end
 
 -- Small bar below of frames
 K.CreateOutsideBar = function(parent, onTop, r, g, b)
-	local StatusBar = K.CreateStatusBar(parent, "OutsideBar")
+	local StatusBar = K.CreateStatusBar(parent, "$parentPowerBar")
 
 	StatusBar:SetSize(98, 10)
 	StatusBar:SetStatusBarColor(r or 1, g or 0, b or 0)
@@ -88,7 +88,7 @@ K.CreateOutsideBar = function(parent, onTop, r, g, b)
 	step = -2
 	StatusBar:SetPoint(point, anchor, point2, x, y)
 
-	StatusBar.Texture = StatusBar:CreateTexture(nil, "ARTWORK")
+	StatusBar.Texture = StatusBar:CreateTexture(nil, "OVERLAY")
 	StatusBar.Texture:SetSize(104, 32)
 	StatusBar.Texture:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\FrameBarBot")
 	StatusBar.Texture:SetPoint("BOTTOM", 0, -12)

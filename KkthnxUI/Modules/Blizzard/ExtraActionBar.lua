@@ -9,7 +9,7 @@ local Texture = Button.style
 local ZoneTexture = ZoneButton.Style
 local CreateFrame = CreateFrame
 
-local function DisableExtraButtonTexture(self, texture, loop)
+local DisableExtraButtonTexture = function(self, texture, loop)
 	if loop then
 		return
 	end
@@ -19,7 +19,7 @@ end
 hooksecurefunc(ExtraActionButton1.style, "SetTexture", DisableExtraButtonTexture)
 hooksecurefunc(ZoneAbilityFrame.SpellButton.Style, "SetTexture", DisableExtraButtonTexture)
 
-local function SetUpExtraActionButton()
+local SetUpExtraActionButton = function()
 	local Holder = CreateFrame("Frame", "ExtraActionButton", UIParent)
 	if C.ActionBar.SplitBars and not C.DataText.BottomBar then
 		Holder:SetPoint(C.Position.ExtraButton[1], SplitBarRight, C.Position.ExtraButton[3], C.Position.ExtraButton[4], C.Position.ExtraButton[5])
