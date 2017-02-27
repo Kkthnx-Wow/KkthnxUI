@@ -86,6 +86,7 @@
    <Script file="Modules\ActionBars\StanceBar.lua" />
    <Script file="Modules\ActionBars\Toggle.lua" />
    <Script file="Modules\ActionBars\Style.lua" />
+   <Script file="Modules\ActionBars\ExtraActionButton.lua" />
    <Script file="Modules\ActionBars\Range.lua" />
    <Script file="Modules\ActionBars\Others.lua" />
    <Script file="Modules\ActionBars\Cooldowns.lua" />
@@ -112,7 +113,6 @@
    <Script file="Modules\Blizzard\CommandBar.lua" />
    <Script file="Modules\Blizzard\DebugTools.lua" />
    <Script file="Modules\Blizzard\ErrorFilter.lua" />
-   <Script file="Modules\Blizzard\ExtraActionBar.lua" />
    <Script file="Modules\Blizzard\Fonts.lua" />
    <Script file="Modules\Blizzard\MirrorBars.lua" />
    <Script file="Modules\Blizzard\RaidUtility.lua" />
@@ -155,7 +155,6 @@
    <Script file="Modules\Maps\WorldMap.lua" />
    <!-- Miscellaneous -->
    <Script file="Modules\Miscellaneous\AFKSpin.lua" />
-   <Script file="Modules\Miscellaneous\AlreadyKnown.lua" />
    <Script file="Modules\Miscellaneous\ArmoryLink.lua" />
    <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
@@ -186,8 +185,6 @@
    <!-- Tooltip -->
    <Script file="Modules\Tooltip\Tooltip.lua" />
    <Script file="Modules\Tooltip\Achievement.lua" />
-   <Script file="Modules\Tooltip\HyperLink.lua" />
-   <Script file="Modules\Tooltip\InstanceLockCompare.lua" />
    <Script file="Modules\Tooltip\ItemCount.lua" />
    <Script file="Modules\Tooltip\ItemIcons.lua" />
    <Script file="Modules\Tooltip\SpellID.lua" />

@@ -182,7 +182,6 @@ C["Minimap"] = {
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
-	["AlreadyKnown"] = false,
 	["Armory"] = false,
 	["AutoRepair"] = true,
 	["AutoSellGrays"] = true,
@@ -244,8 +243,6 @@ C["Tooltip"] = {
 	["Cursor"] = false,
 	["Enable"] = true,
 	["HealthValue"] = true,
-	["HyperLink"] = false,
-	["InstanceLock"] = false,
 	["ItemCount"] = false,
 	["ItemIcon"] = false,
 	["Rank"] = true,

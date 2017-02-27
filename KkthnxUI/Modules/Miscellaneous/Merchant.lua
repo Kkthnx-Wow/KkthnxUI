@@ -29,11 +29,11 @@ local UseContainerItem = _G.UseContainerItem
 -- GLOBALS: MerchantFrame, GameTooltip, ITEM_VENDOR_STACK_BUY, MerchantFilter
 
 MerchantFilter = {
-	[6289]  = true, -- Raw Longjaw Mud Snapper
-	[6291]  = true, -- Raw Brilliant Smallfish
-	[6308]  = true, -- Raw Bristle Whisker Catfish
-	[6309]  = true, -- 17 Pound Catfish
-	[6310]  = true, -- 19 Pound Catfish
+	[6289] = true, -- Raw Longjaw Mud Snapper
+	[6291] = true, -- Raw Brilliant Smallfish
+	[6308] = true, -- Raw Bristle Whisker Catfish
+	[6309] = true, -- 17 Pound Catfish
+	[6310] = true, -- 19 Pound Catfish
 	[41808] = true, -- Bonescale Snapper
 	[42336] = true, -- Bloodstone Band
 	[42337] = true, -- Sun Rock Ring

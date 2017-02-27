@@ -12,21 +12,21 @@ local LoadAddOn = _G.LoadAddOn
 -- Mine
 local isInit = false
 
-local CommandBar_OnEnter = function(self)
+local function CommandBar_OnEnter(self)
 	if not self.isShown then
 		self.isShown = true
 		self:SetPoint("TOP", 0, 1)
 	end
 end
 
-local CommandBar_OnLeave = function(self)
+local function CommandBar_OnLeave(self)
 	if not self:IsMouseOver(0, -6, 0, 0) then
 		self.isShown = false
 		self:SetPoint("TOP", 0, 23)
 	end
 end
 
-CommandBar_Init = function()
+local function CommandBar_Init()
 	if not isInit then
 		local isLoaded = true
 
@@ -38,14 +38,13 @@ CommandBar_Init = function()
 			OrderHallCommandBar:StripTextures()
 			OrderHallCommandBar:CreateBackdrop()
 			OrderHallCommandBar:ClearAllPoints()
-			OrderHallCommandBar:SetWidth(800)
 			OrderHallCommandBar:SetPoint("TOP", 0, 23)
+			OrderHallCommandBar:SetPoint("LEFT", 0, 0)
+			OrderHallCommandBar:SetPoint("RIGHT", 0, 0)
 			OrderHallCommandBar:SetHitRectInsets(0, 0, 0, -8)
 			OrderHallCommandBar.ClassIcon:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
 			OrderHallCommandBar.ClassIcon:SetSize(46, 20)
 			OrderHallCommandBar.CurrencyIcon:SetAtlas("legionmission-icon-currency", false)
-			OrderHallCommandBar.AreaName:ClearAllPoints()
-			OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 10, 0)
 			OrderHallCommandBar.AreaName:SetVertexColor(K.Color.r, K.Color.g, K.Color.b)
 			OrderHallCommandBar.WorldMapButton:Kill()
 			OrderHallCommandBar:SetScript("OnEnter", CommandBar_OnEnter)

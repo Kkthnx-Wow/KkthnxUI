@@ -378,18 +378,14 @@ function KkthnxUIAuras:CreateHeaders()
 		DropDown:SetAttribute("_onclick", [=[
 		local Header = self:GetParent():GetFrameRef("header")
 		local NumChild = 0
-
 		repeat
 			NumChild = NumChild + 1
 			local child = Header:GetFrameRef("child" .. NumChild)
 		until not child or not child:IsShown()
-
 		NumChild = NumChild - 1
-
 		local x, y = self:GetWidth(), self:GetHeight()
 		Header:SetWidth(x)
 		Header:SetHeight(y)
-
 		if Header:IsShown() then
 			Header:Hide()
 		else
@@ -435,5 +431,8 @@ function KkthnxUIAuras:Enable()
 	end)
 end
 
-KkthnxUIAuras:RegisterEvent("PLAYER_LOGIN")
-KkthnxUIAuras:SetScript("OnEvent", KkthnxUIAuras.Enable)
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:SetScript("OnEvent", function()
+	KkthnxUIAuras:Enable()
+end)

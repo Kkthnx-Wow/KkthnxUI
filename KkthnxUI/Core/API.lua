@@ -41,7 +41,7 @@ PetBattleHider:SetAllPoints()
 PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(PetBattleHider, "visibility", "[petbattle] hide; show")
 
-local SetOutside = function(obj, anchor, xOffset, yOffset)
+local function SetOutside(obj, anchor, xOffset, yOffset)
 	xOffset = xOffset or 2
 	yOffset = yOffset or 2
 	anchor = anchor or obj:GetParent()
@@ -52,7 +52,7 @@ local SetOutside = function(obj, anchor, xOffset, yOffset)
 	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", xOffset, -yOffset)
 end
 
-local SetInside = function(obj, anchor, xOffset, yOffset)
+local function SetInside(obj, anchor, xOffset, yOffset)
 	xOffset = xOffset or 2
 	yOffset = yOffset or 2
 	anchor = anchor or obj:GetParent()
@@ -63,7 +63,7 @@ local SetInside = function(obj, anchor, xOffset, yOffset)
 	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
-local CreateBorder = function(f, size)
+local function CreateBorder(f, size)
 	if f.border then return end
 	if not size then size = 2 end
 
@@ -81,7 +81,7 @@ local CreateBorder = function(f, size)
 end
 
 -- Backdrop
-local CreateBackdrop = function(f, t, size)
+local function CreateBackdrop(f, t, size)
 	if not t then t = "Default" end
 	if not size then size = 2 end
 
@@ -100,7 +100,7 @@ local CreateBackdrop = function(f, t, size)
 end
 
 -- Who doesn"t like shadows! More shadows!
-local CreateShadow = function(f, size)
+local function CreateShadow(f, size)
 	if f.Shadow then return end
 	if not size then size = 3 end
 
@@ -123,7 +123,7 @@ local CreateShadow = function(f, size)
 	f.Shadow = shadow
 end
 
-local CreateBlizzShadow = function(f, size)
+local function CreateBlizzShadow(f, size)
 	if f.shadow then return end
 	if not size then size = 5 end
 
@@ -139,7 +139,7 @@ local CreateBlizzShadow = function(f, size)
 	f.shadow = shadow
 end
 
-local SetTemplate = function(f, t, tex)
+local function SetTemplate(f, t, tex)
 	local balpha = C.Media.Backdrop_Color[4]
 	local borderr, borderg, borderb = unpack(C.Media.Border_Color)
 	local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
@@ -166,7 +166,7 @@ local SetTemplate = function(f, t, tex)
 end
 
 -- Create panel
-local CreatePanel = function(f, t, w, h, a1, p, a2, x, y)
+local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 	local balpha = C.Media.Backdrop_Color[4]
 	local borderr, borderg, borderb = unpack(C.Media.Border_Color)
 	local backdropr, backdropg, backdropb = unpack(C.Media.Backdrop_Color)
@@ -207,7 +207,7 @@ local CreatePanel = function(f, t, w, h, a1, p, a2, x, y)
 	f:SetBackdropBorderColor(borderr, borderg, borderb)
 end
 
-local Kill = function(object)
+local function Kill(object)
 	object:SetParent(UIFrameHider)
 	if object.UnregisterAllEvents then
 		object:UnregisterAllEvents()
@@ -220,7 +220,7 @@ local Kill = function(object)
 	return true
 end
 
-local StripTextures = function(object, kill)
+local function StripTextures(object, kill)
 	for i = 1, object:GetNumRegions() do
 		local region = select(i, object:GetRegions())
 		if region and region:GetObjectType() == "Texture" then
@@ -237,7 +237,7 @@ local StripTextures = function(object, kill)
 	end
 end
 
-local FontString = function(parent, name, fontName, fontHeight, fontStyle)
+local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
@@ -253,7 +253,7 @@ local FontString = function(parent, name, fontName, fontHeight, fontStyle)
 	return fs
 end
 
-local StyleButton = function(button, noHover, noPushed, noChecked)
+local function StyleButton(button, noHover, noPushed, noChecked)
 	if button.SetHighlightTexture and not button.hover and not noHover then
 		local hover = button:CreateTexture()
 		hover:SetColorTexture(1, 1, 1, 0.3)
@@ -287,7 +287,7 @@ local StyleButton = function(button, noHover, noPushed, noChecked)
 	end
 end
 
-local SkinButton = function(Frame, Strip)
+local function SkinButton(Frame, Strip)
 	if Frame:GetName() then
 		local Left = _G[Frame:GetName().."Left"]
 		local Middle = _G[Frame:GetName().."Middle"]
@@ -337,11 +337,11 @@ local SkinButton = function(Frame, Strip)
 end
 
 -- Fade in/out functions
-local FadeIn = function(frame)
+local function FadeIn(frame)
 	K.UIFrameFadeIn(frame, 0.4, frame:GetAlpha(), 1)
 end
 
-local FadeOut = function(frame)
+local function FadeOut(frame)
 	K.UIFrameFadeOut(frame, 0.2, frame:GetAlpha(), 0)
 end
 

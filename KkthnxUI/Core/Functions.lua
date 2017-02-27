@@ -2,9 +2,10 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local format = format
+local math_ceil = math.ceil
 local math_floor = math.floor
 local math_modf = math.modf
+local string_format = string.format
 local string_gsub = string.gsub
 local string_lower = string.lower
 local string_match = string.match
@@ -45,13 +46,13 @@ do
 	K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 end
 
-K.Print = function(...)
+function K.Print(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
 local FALLBACK_FONT_SIZE = 13 -- some Blizzard bug
 local FONT_SCALE = 1
-K.SetFontString = function(parent, fontName, fontSize, fontStyle, justify)
+function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
 	if not fontSize or fontSize < 6 then fontSize = FALLBACK_FONT_SIZE end
 	fontSize = fontSize * FONT_SCALE
 
@@ -66,7 +67,7 @@ K.SetFontString = function(parent, fontName, fontSize, fontStyle, justify)
 end
 
 -- Return short value of a number
-K.ShortValue = function(value)
+function K.ShortValue(value)
 	if not value then return "" end
 	value = tonumber(value)
 	if GetLocale() == "zhCN" then
@@ -91,7 +92,7 @@ K.ShortValue = function(value)
 end
 
 -- Rounding
-K.Round = function(num, idp)
+function K.Round(num, idp)
 	if (idp and idp > 0) then
 		local mult = 10 ^ idp
 		return math_floor(num * mult + 0.5) / mult
@@ -100,18 +101,18 @@ K.Round = function(num, idp)
 end
 
 -- RgbToHex color
-K.RGBToHex = function(r, g, b)
+function K.RGBToHex(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0
 	b = b <= 1 and b >= 0 and b or 0
-	return format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
+	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
-K.CheckAddOn = function(addon)
+function K.CheckAddOn(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
 
-K.CreateBlizzardFrame = function(frame, point)
+function K.CreateBlizzardFrame(frame, point)
 	if point == nil then point = frame end
 
 	if point.backdrop then return end
@@ -130,12 +131,12 @@ K.CreateBlizzardFrame = function(frame, point)
 	end
 end
 
-K.SetBlizzardBorder = function(frame, r, g, b, a)
+function K.SetBlizzardBorder(frame, r, g, b, a)
 	if not a then a = 1 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
-K.CreateShadowFrame = function(frame, point)
+function K.CreateShadowFrame(frame, point)
 	if point == nil then point = frame end
 
 	if point.backdrop then return end
@@ -159,13 +160,13 @@ K.CreateShadowFrame = function(frame, point)
 	end
 end
 
-K.SetShadowBorder = function(frame, r, g, b, a)
+function K.SetShadowBorder(frame, r, g, b, a)
 	if not a then a = 0.9 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
 -- Chat channel check
-K.CheckChat = function(warning)
+function K.CheckChat(warning)
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
 		return "INSTANCE_CHAT"
 	elseif IsInRaid(LE_PARTY_CATEGORY_HOME) then
@@ -180,49 +181,49 @@ K.CheckChat = function(warning)
 	return "SAY"
 end
 
-K.UTF8Sub = function(string, numChars, dots)
-	local bytes = string:len()
-	if (bytes <= numChars) then
-		return string
+function K.UTF8Sub(str, i, dots)
+	if not str then return end
+	local bytes = str:len()
+	if bytes <= i then
+		return str
 	else
 		local len, pos = 0, 1
-		while(pos <= bytes) do
+		while pos <= bytes do
 			len = len + 1
-			local c = string:byte(pos)
-			if (c > 0 and c <= 127) then
+			local c = str:byte(pos)
+			if c > 0 and c <= 127 then
 				pos = pos + 1
-			elseif (c >= 192 and c <= 223) then
+			elseif c >= 192 and c <= 223 then
 				pos = pos + 2
-			elseif (c >= 224 and c <= 239) then
+			elseif c >= 224 and c <= 239 then
 				pos = pos + 3
-			elseif (c >= 240 and c <= 247) then
+			elseif c >= 240 and c <= 247 then
 				pos = pos + 4
 			end
-			if (len == numChars) then break end
+			if len == i then break end
 		end
-
-		if (len == numChars and pos <= bytes) then
-			return string:sub(1, pos - 1)..(dots and "..." or "")
+		if len == i and pos <= bytes then
+			return str:sub(1, pos - 1)..(dots and "..." or "")
 		else
-			return string
+			return str
 		end
 	end
 end
 
-K.FormatMoney = function(value)
+function K.FormatMoney(value)
 	if value >= 1e4 then
-		return format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, string_sub(value, -4) / 1e2, string_sub(value, -2))
+		return string_format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, string_sub(value, -4) / 1e2, string_sub(value, -2))
 	elseif value >= 1e2 then
-		return format("|cffc7c7cf%ds |r|cffeda55f%dc|r", string_sub(value, -4) / 1e2, string_sub(value, -2))
+		return string_format("|cffc7c7cf%ds |r|cffeda55f%dc|r", string_sub(value, -4) / 1e2, string_sub(value, -2))
 	else
-		return format("|cffeda55f%dc|r", string_sub(value, -2))
+		return string_format("|cffeda55f%dc|r", string_sub(value, -2))
 	end
 end
 
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
-K.PLAYER_REGEN_ENABLED = function(self)
+function K:PLAYER_REGEN_ENABLED(_)
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	if (self.CVarUpdate) then
 		for cvarName, value in pairs(self.LockedCVars) do
@@ -236,7 +237,7 @@ K.PLAYER_REGEN_ENABLED = function(self)
 end
 
 local function CVAR_UPDATE(cvarName, value)
-	if(not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+	if (not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
 		if (InCombatLockdown()) then
 			K.CVarUpdate = true
 			return
@@ -247,14 +248,14 @@ local function CVAR_UPDATE(cvarName, value)
 end
 
 hooksecurefunc("SetCVar", CVAR_UPDATE)
-K.LockCVar = function(cvarName, value)
+function K.LockCVar(cvarName, value)
 	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
 	end
 	K.LockedCVars[cvarName] = value
 end
 
-K.IgnoreCVar = function(cvarName, ignore)
+function K.IgnoreCVar(cvarName, ignore)
 	ignore = not not ignore -- cast to bool, just in case
 	K.IgnoredCVars[cvarName] = ignore
 end
@@ -265,16 +266,16 @@ K.IsDevRealm = {Stormreaver = true} -- Don"t forget to update realm name(s) if w
 -- If we forget it could be easly picked up by another player who matches these combinations.
 -- End result we piss off people and we do not want to do that. :(
 
-K.IsDeveloper = function()
-    return K.IsDev[K.Name] or false
+function K.IsDeveloper()
+	return K.IsDev[K.Name] or false
 end
 
-K.IsDeveloperRealm = function()
-    return K.IsDevRealm[K.Realm] or false
+function K.IsDeveloperRealm()
+	return K.IsDevRealm[K.Realm] or false
 end
 
 -- http://www.wowwiki.com/ColorGradient
-K.ColorGradient = function(perc, ...)
+function K.ColorGradient(perc, ...)
 	if perc >= 1 then
 		return select(select("#", ...) - 2, ...)
 	elseif perc <= 0 then
@@ -289,7 +290,7 @@ K.ColorGradient = function(perc, ...)
 end
 
 -- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
-K.KillMenuOption = function(option_shrink, option_name)
+function K.KillMenuOption(option_shrink, option_name)
 	local option = _G[option_name]
 	if not(option) or not(option.IsObjectType) or not(option:IsObjectType("Frame")) then
 		return
@@ -315,7 +316,7 @@ end
 -- "panel_id" is basically the number of the submenu, when all menus are still there.
 -- Note that the this sometimes change between expansions, so you really need to check
 -- to make sure you are removing the right one.
-K.KillMenuPanel = function(panel_id, panel_name)
+function K.KillMenuPanel(panel_id, panel_name)
 	-- remove an entire blizzard options panel,
 	-- and disable its automatic cancel/okay functionality
 	-- this is needed, or the option will be reset when the menu closes
@@ -341,26 +342,27 @@ K.KillMenuPanel = function(panel_id, panel_name)
 	end
 end
 
--- Format seconds to min/ hour / day
-K.FormatTime = function(s)
-	local day, hour, minute = 86400, 3600, 60
+-- Format seconds to min/hour/day
+function K.FormatTime(time)
+	local Day, Hour, Minute = 86400, 3600, 60
 
-	if s >= day then
-		return format("%dd", math_floor(s / day + 0.5)), s % day
-	elseif s >= hour then
-		return format("%dh", math_floor(s / hour + 0.5)), s % hour
-	elseif s >= minute then
-		return format("%dm", math_floor(s / minute + 0.5)), s % minute
-	elseif s >= minute / 12 then
-		return math_floor(s + 0.5), (s * 100 - math_floor(s * 100)) / 100
+	if (time >= Day) then
+		return string_format("%dd", math_ceil(time / Day))
+	elseif (time >= Hour) then
+		return string_format("%dh", math_ceil(time / Hour))
+	elseif (time >= Minute) then
+		return string_format("%dm", math_ceil(time / Minute))
+	elseif (time >= Minute / 12) then
+		return math_floor(time)
 	end
-	return format("%.1f", s), (s * 100 - math_floor(s * 100)) / 100
+
+	return string_format("%.1f", time)
 end
 
 -- Add time before calling a function
 local waitTable = {}
 local waitFrame
-K.Delay = function(delay, func, ...)
+function K.Delay(delay, func, ...)
 	if (type(delay) ~= "number" or type(func) ~= "function") then
 		return false
 	end

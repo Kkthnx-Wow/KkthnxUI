@@ -377,8 +377,8 @@ for i = 1, 5 do
 			end
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-				ToggleBar[3]:FadeOut()
-				ToggleBar[4]:FadeOut()
+			ToggleBar[3]:FadeOut()
+			ToggleBar[4]:FadeOut()
 			VehicleButtonAnchor:ClearAllPoints()
 			if KkthnxUIDataPerChar.SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C.ActionBar.ButtonSpace, 0)

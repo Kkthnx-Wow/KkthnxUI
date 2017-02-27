@@ -92,10 +92,6 @@ if CheckAddOn("ConsolePortBar") then
 	C.DataBars.Experience = false
 end
 
-if CheckAddOn("GnomishVendorShrinker") or CheckAddOn("AlreadyKnown") then
-	C.Misc.AlreadyKnown = false
-end
-
 if CheckAddOn("cInterrupt") then
 	C.Announcements.Interrupt = false
 end

@@ -65,6 +65,9 @@ function frame:OnEvent(event, arg1)
 	local r, g, b = RYGColorGradient(min)
 end
 
-frame:SetScript("OnEvent", frame.OnEvent)
-frame:RegisterEvent("ADDON_LOADED")
-frame:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("ADDON_LOADED")
+Loading:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
+Loading:SetScript("OnEvent", function()
+	frame:OnEvent()
+end)

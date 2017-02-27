@@ -44,7 +44,7 @@ local UIFrameFadeOut = _G.UIFrameFadeOut
 
 local KkthnxUIInstall = CreateFrame("Frame", nil, UIParent)
 
-KkthnxUIInstall.ChatSetup = function()
+function KkthnxUIInstall:ChatSetup()
 	InstallStepComplete.Message = "Chat Set"
 	InstallStepComplete:Show()
 	FCF_ResetChatWindows()
@@ -180,7 +180,7 @@ KkthnxUIInstall.ChatSetup = function()
 	ChangeChatColor("INSTANCE_CHAT_LEADER", 230/255, 179/255, 38/255)
 end
 
-KkthnxUIInstall.CVarSetup = function()
+function KkthnxUIInstall:CVarSetup()
 	SetCVar("alwaysShowActionBars", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
 	SetCVar("chatMouseScroll", 1)
@@ -204,7 +204,7 @@ KkthnxUIInstall.CVarSetup = function()
 	InstallStepComplete:Show()
 end
 
-KkthnxUIInstall.PositionSetup = function()
+function KkthnxUIInstall:PositionSetup()
 	-- Reset saved variables on char
 	KkthnxUIDataPerChar = {}
 
@@ -490,7 +490,7 @@ local TutorialOne = function()
 end
 
 -- Install KkthnxUI with default settings.
-KkthnxUIInstall.Install = function()
+function KkthnxUIInstall:Install()
 	KkthnxUIInstallFrame:Show()
 	StatusBar:Hide()
 	OptionOne:Show()

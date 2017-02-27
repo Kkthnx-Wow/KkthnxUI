@@ -47,7 +47,7 @@ local UnitClass = _G.UnitClass
 
 -- This function is copied from FrameXML and modified to use DropDownMenu library function calls
 -- Using the regular DropDownMenu code causes taints in various places.
-local MiniMapTrackingDropDown_Initialize = function(self, level)
+local function MiniMapTrackingDropDown_Initialize(self, level)
 	local name, texture, active, category, nested, numTracking
 	local count = GetNumTrackingTypes()
 	local info

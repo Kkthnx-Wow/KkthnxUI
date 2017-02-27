@@ -1,20 +1,15 @@
-
 --[=[
 .icon [texture]
 .count [fontstring]
 .cd [cooldown]
-
 .ShowBossDebuff [boolean]
 .BossDebuffPriority [number]
-
 .ShowDispelableDebuff [boolean]
 .DispelPriority [table] { [type] = prio }
 .DispelFilter [table] { [type] = true }
 .DebuffTypeColor [table] { [type] = { r, g, b } }
-
 .Debuffs [table] { [name(string)|id(number)] = prio(number) }
 .MatchBySpellName [boolean]
-
 .SetDebuffTypeColor [function] function(r, g, b) end
 --]=]
 

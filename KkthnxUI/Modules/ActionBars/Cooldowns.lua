@@ -42,7 +42,7 @@ local DAYISH, HOURISH, MINUTEISH = HOUR * 23.5, MINUTE * 59.5, 59.5 -- used for 
 local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY/2 + 0.5, HOUR/2 + 0.5, MINUTE/2 + 0.5 -- used for calculating next update times
 
 -- will return the the value to display, the formatter id to use and calculates the next update for the Aura
-local GetTimeInfo = function(s, threshhold)
+local function GetTimeInfo(s, threshhold)
 	if s < MINUTE then
 		if s >= threshhold then
 			return floor(s), 3, 0.51
@@ -61,17 +61,17 @@ local GetTimeInfo = function(s, threshhold)
 	end
 end
 
-local Cooldown_Stop = function(self)
+local function Cooldown_Stop(self)
 	self.enabled = nil
 	self:Hide()
 end
 
-local Cooldown_ForceUpdate = function(self)
+local function Cooldown_ForceUpdate(self)
 	self.nextUpdate = 0
 	self:Show()
 end
 
-local Cooldown_OnSizeChanged = function(self, width, height)
+local function Cooldown_OnSizeChanged(self, width, height)
 	local fontScale = floor(width +.5) / ICON_SIZE
 	local override = self:GetParent():GetParent().SizeOverride
 	if override then
@@ -94,7 +94,7 @@ local Cooldown_OnSizeChanged = function(self, width, height)
 	end
 end
 
-local Cooldown_OnUpdate = function(self, elapsed)
+local function Cooldown_OnUpdate(self, elapsed)
 	if self.nextUpdate > 0 then
 		self.nextUpdate = self.nextUpdate - elapsed
 		return
@@ -116,7 +116,7 @@ local Cooldown_OnUpdate = function(self, elapsed)
 	end
 end
 
-local Cooldown_Create = function(self)
+local function Cooldown_Create(self)
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints()
 
@@ -136,7 +136,7 @@ local Cooldown_Create = function(self)
 	return timer
 end
 
-local Cooldown_Start = function(self, start, duration, charges, maxCharges)
+local function Cooldown_Start(self, start, duration, charges, maxCharges)
 	local remainingCharges = charges or 0
 
 	if self:GetName() and strfind(self:GetName(), "ChargeCooldown") then return end
@@ -163,20 +163,20 @@ if not _G["ActionBarButtonEventsFrame"] then return end
 local active = {}
 local hooked = {}
 
-local cooldown_OnShow = function(self)
+local function cooldown_OnShow(self)
 	active[self] = true
 end
 
-local cooldown_OnHide = function(self)
+local function cooldown_OnHide(self)
 	active[self] = nil
 end
 
-local cooldown_ShouldUpdateTimer = function(self, start, duration, charges, maxCharges)
+local function cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges)
 	local timer = self.timer
 	return not(timer and timer.start == start and timer.duration == duration and timer.charges == charges and timer.maxCharges == maxCharges)
 end
 
-local cooldown_Update = function(self)
+local function cooldown_Update(self)
 	local button = self:GetParent()
 	local action = button.action
 	local start, duration, enable = GetActionCooldown(action)
@@ -196,7 +196,7 @@ EventWatcher:SetScript("OnEvent", function(self, event)
 end)
 EventWatcher:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
 
-local actionButton_Register = function(frame)
+local function actionButton_Register(frame)
 	local cooldown = frame.cooldown
 	if not hooked[cooldown] then
 		cooldown:HookScript("OnShow", cooldown_OnShow)

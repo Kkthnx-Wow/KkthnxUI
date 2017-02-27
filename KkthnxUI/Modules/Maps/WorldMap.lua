@@ -41,7 +41,7 @@ local INVERTED_POINTS = {
 	["BOTTOM"] = "TOP",
 }
 
-WorldMap.SetLargeWorldMap = function()
+function WorldMap:SetLargeWorldMap()
 	if InCombatLockdown() then return end
 
 	WorldMapFrame:SetParent(UIParent)
@@ -68,25 +68,25 @@ WorldMap.SetLargeWorldMap = function()
 	WorldMapFrame:SetSize(1002, 668)
 end
 
-WorldMap.SetSmallWorldMap = function()
+function WorldMap:SetSmallWorldMap()
 	if InCombatLockdown() then return end
 
 	WorldMapFrameSizeUpButton:Show()
 	WorldMapFrameSizeDownButton:Hide()
 end
 
-WorldMap.PLAYER_REGEN_ENABLED = function()
+function WorldMap:PLAYER_REGEN_ENABLED()
 	WorldMapFrameSizeDownButton:Enable()
 	WorldMapFrameSizeUpButton:Enable()
 end
 
-WorldMap.PLAYER_REGEN_DISABLED = function()
+function WorldMap:PLAYER_REGEN_DISABLED()
 	WorldMapFrameSizeDownButton:Disable()
 	WorldMapFrameSizeUpButton:Disable()
 end
 
 local inRestrictedArea = false
-WorldMap.PLAYER_ENTERING_WORLD = function(self)
+function WorldMap:PLAYER_ENTERING_WORLD()
 	local x = GetPlayerMapPosition("player")
 	if not x then
 		inRestrictedArea = true
@@ -100,7 +100,7 @@ WorldMap.PLAYER_ENTERING_WORLD = function(self)
 	end
 end
 
-WorldMap.UpdateCoords = function()
+function WorldMap:UpdateCoords()
 	if (not WorldMapFrame:IsShown() or inRestrictedArea) then return end
 
 	local X, Y = GetPlayerMapPosition("player")
@@ -131,7 +131,7 @@ WorldMap.UpdateCoords = function()
 	end
 end
 
-WorldMap.PositionCoords = function()
+function WorldMap:PositionCoords()
 	local DataBase = C.WorldMapCoordinates -- Plan to change all this at a later time.
 	local Position = DataBase.Position
 	local XOffset = DataBase.XOffset
@@ -147,7 +147,7 @@ WorldMap.PositionCoords = function()
 	CoordsHolder.MouseCoords:SetPoint(Position, CoordsHolder.PlayerCoords, INVERTED_POINTS[Position], 0, Y)
 end
 
-WorldMap.Enable = function(self)
+function WorldMap:Enable()
 	if (C.WorldMap.Coordinates) then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)
 		CoordsHolder:SetFrameLevel(WorldMapDetailFrame:GetFrameLevel() + 1)

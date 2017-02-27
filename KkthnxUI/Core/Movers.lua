@@ -27,7 +27,7 @@ Movers:RegisterEvent("PLAYER_REGEN_DISABLED")
 Movers.Frames = {}
 Movers.Defaults = {}
 
-Movers.SaveDefaults = function(frame, a1, p, a2, x, y)
+function Movers:SaveDefaults(frame, a1, p, a2, x, y)
 	if not a1 then
 		return
 	end
@@ -42,7 +42,7 @@ Movers.SaveDefaults = function(frame, a1, p, a2, x, y)
 	Data[Frame] = {a1, p:GetName(), a2, x, y}
 end
 
-Movers.RestoreDefaults = function(self, button)
+function Movers:RestoreDefaults(button)
 	local FrameName = self.Parent:GetName()
 	local Data = Movers.Defaults[FrameName]
 	local SavedVariables = KkthnxUIDataPerChar.Movers
@@ -63,19 +63,19 @@ Movers.RestoreDefaults = function(self, button)
 	end
 end
 
-Movers.RegisterFrame = function(self, frame)
+function Movers:RegisterFrame(frame)
 	local Anchor1, Parent, Anchor2, X, Y = frame:GetPoint()
 
 	tinsert(self.Frames, frame)
 
-	self.SaveDefaults(frame, Anchor1, Parent, Anchor2, X, Y)
+	self:SaveDefaults(frame, Anchor1, Parent, Anchor2, X, Y)
 end
 
-Movers.OnDragStart = function(self)
+function Movers:OnDragStart()
 	self:StartMoving()
 end
 
-Movers.OnDragStop = function(self)
+function Movers:OnDragStop()
 	self:StopMovingOrSizing()
 
 	local Data = KkthnxUIDataPerChar.Movers
@@ -93,7 +93,7 @@ Movers.OnDragStop = function(self)
 	Data[FrameName] = {Anchor1, Parent:GetName(), Anchor2, X, Y}
 end
 
-Movers.CreateDragInfo = function(self)
+function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
 	self.DragInfo:SetAllPoints(self)
 	K.CreateBorder(self.DragInfo)
@@ -119,7 +119,7 @@ Movers.CreateDragInfo = function(self)
 	self.DragInfo.Parent = self.DragInfo:GetParent()
 end
 
-Movers.StartOrStopMoving = function(self)
+function Movers:StartOrStopMoving()
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
@@ -184,7 +184,7 @@ Movers.StartOrStopMoving = function(self)
 	end
 end
 
-Movers.IsRegisteredFrame = function(self, frame)
+function Movers:IsRegisteredFrame(frame)
 	local Match = false
 
 	for i = 1, #self.Frames do
@@ -211,7 +211,7 @@ Movers:SetScript("OnEvent", function(self, event)
 			if Frame and IsRegistered then
 				local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
 
-				self.SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
+				self:SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
 
 				Anchor1, Parent, Anchor2, X, Y = unpack(Position)
 

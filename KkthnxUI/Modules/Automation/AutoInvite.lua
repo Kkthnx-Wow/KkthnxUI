@@ -1,101 +1,84 @@
-﻿local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C.Automation.AutoInvite ~= true then return end
 
+-- WoW Lua
 local _G = _G
-local format = string.format
-local select = select
-local strmatch = strmatch
-local strlower = strlower
-local CreateFrame = CreateFrame
-local GetNumPartyMembers = GetNumPartyMembers
-local GetNumFriends = GetNumFriends
-local GetFriendInfo = GetFriendInfo
-local GetNumGuildMembers = GetNumGuildMembers
-local GetGuildRosterInfo = GetGuildRosterInfo
-local UnitIsRaidOfficer = UnitIsRaidOfficer
-local UnitIsPartyLeader = UnitIsPartyLeader
-local Keyword = C.Misc.InviteKeyword
-local AutoInvite = CreateFrame("Frame")
-local InviteWhisper = CreateFrame("Frame")
+local string_gsub = string.gsub
 
--- Accept invites from guild members or friend list(by ALZA)
-if C.Automation.AutoInvite == true then
-	local CheckFriend = function(name)
-		for i = 1, GetNumFriends() do
-			if GetFriendInfo(i) == name then
-				return true
+-- Wow API
+local AcceptGroup = _G.AcceptGroup
+local BNGetFriendInfo = _G.BNGetFriendInfo
+local BNGetNumFriends = _G.BNGetNumFriends
+local GetFriendInfo = _G.GetFriendInfo
+local GetGuildRosterInfo = _G.GetGuildRosterInfo
+local GetNumFriends = _G.GetNumFriends
+local GetNumGuildMembers = _G.GetNumGuildMembers
+local GuildRoster = _G.GuildRoster
+local IsInGroup = _G.IsInGroup
+local IsInGuild = _G.IsInGuild
+local ShowFriends = _G.ShowFriends
+local StaticPopup_Hide = _G.StaticPopup_Hide
+local StaticPopupSpecial_Hide = _G.StaticPopupSpecial_Hide
+
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: leaderName, QueueStatusMinimapButton, LFGInvitePopup
+
+-- Accept invites from guild members or friend list
+local hideStatic = false
+
+local function AutoInvite(event, leaderName)
+	if event == "PARTY_INVITE_REQUEST" then
+		if QueueStatusMinimapButton:IsShown() then return end -- Prevent losing que inside LFD if someone invites you to group
+		if IsInGroup() then return end
+		hideStatic = true
+
+		-- Update Guild and Friendlist
+		if GetNumFriends() > 0 then ShowFriends() end
+		if IsInGuild() then GuildRoster() end
+		local inGroup = false
+
+		for friendIndex = 1, GetNumFriends() do
+			local friendName = string_gsub(GetFriendInfo(friendIndex), "-.*", "")
+			if friendName == leaderName then
+				AcceptGroup()
+				inGroup = true
+				break
 			end
 		end
-		for i = 1, select(2, BNGetNumFriends()) do
-			local presenceID, _, _, _, _, toonID, client, isOnline = BNGetFriendInfo(i)
-			if client == BNET_CLIENT_WOW and isOnline then
-				local _, toonName, _, realmName = BNGetGameAccountInfo(toonID or presenceID)
-				if name == toonName or name == toonName.."-"..realmName then
-					return true
+
+		if not inGroup then
+			for guildIndex = 1, GetNumGuildMembers(true) do
+				local guildMemberName = string_gsub(GetGuildRosterInfo(guildIndex), "-.*", "")
+				if guildMemberName == leaderName then
+					AcceptGroup()
+					inGroup = true
+					break
 				end
 			end
 		end
-		if IsInGuild() then
-			for i = 1, GetNumGuildMembers() do
-				if Ambiguate(GetGuildRosterInfo(i), "none") == name then
-					return true
+
+		if not inGroup then
+			for bnIndex = 1, BNGetNumFriends() do
+				local _, _, _, _, name = BNGetFriendInfo(bnIndex)
+				leaderName = leaderName:match("(.+)%-.+") or leaderName
+				if name == leaderName then
+					AcceptGroup()
+					break
 				end
 			end
 		end
+	elseif event == "GROUP_ROSTER_UPDATE" and hideStatic == true then
+		StaticPopupSpecial_Hide(LFGInvitePopup) -- New LFD popup when invited in custon created group
+		StaticPopup_Hide("PARTY_INVITE")
+		StaticPopup_Hide("PARTY_INVITE_XREALM") -- Not sure bout this but whatever, still an invite
+		hideStatic = false
 	end
-
-	AutoInvite:RegisterEvent("PARTY_INVITE_REQUEST")
-	AutoInvite:SetScript("OnEvent", function(self, event, name)
-		if QueueStatusMinimapButton:IsShown() or IsInGroup() then return end
-		if CheckFriend(name) then
-			RaidNotice_AddMessage(RaidWarningFrame, L.Info.Invite..name, {r = 0.41, g = 0.8, b = 0.94}, 3)
-			K.Print(format("|cffffff00"..L.Info.Invite..name..".|r"))
-			AcceptGroup()
-			for i = 1, STATICPOPUP_NUMDIALOGS do
-				local frame = _G["StaticPopup"..i]
-				if frame:IsVisible() and frame.which == "PARTY_INVITE" then
-					frame.inviteAccepted = 1
-					StaticPopup_Hide("PARTY_INVITE")
-					return
-				elseif frame:IsVisible() and frame.which == "PARTY_INVITE_XREALM" then
-					frame.inviteAccepted = 1
-					StaticPopup_Hide("PARTY_INVITE_XREALM")
-					return
-				end
-			end
-		else
-			SendWho(name)
-		end
-	end)
 end
 
--- Auto invite by whisper(by Tukz)
-InviteWhisper:RegisterEvent("CHAT_MSG_WHISPER")
-InviteWhisper:RegisterEvent("CHAT_MSG_BN_WHISPER")
-InviteWhisper:SetScript("OnEvent", function(self, event, arg1, arg2, ...)
-	if ((not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and arg1:lower():match(Keyword)) and KkthnxUIDataPerChar.AutoInvite == true and not QueueStatusMinimapButton:IsShown() then
-		if event == "CHAT_MSG_WHISPER" then
-			InviteUnit(arg2)
-		elseif event == "CHAT_MSG_BN_WHISPER" then
-			local bnetIDAccount = select(11, ...)
-			local bnetIDGameAccount = select(6, BNGetFriendInfoByID(bnetIDAccount))
-			BNInviteFriend(bnetIDGameAccount)
-		end
-	end
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:RegisterEvent("PARTY_INVITE_REQUEST")
+Loading:RegisterEvent("GROUP_ROSTER_UPDATE")
+Loading:SetScript("OnEvent", function(self, event)
+	AutoInvite(event, leaderName)
 end)
-
-SlashCmdList["AUTOINVITE"] = function(msg)
-	if msg == "off" then
-		KkthnxUIDataPerChar.AutoInvite = false
-		K.Print("|cffffff00"..L.Invite.Disable..".|r")
-	elseif msg == "" then
-		KkthnxUIDataPerChar.AutoInvite = true
-		K.Print("|cffffff00"..L.Invite.Enable..Keyword..".|r")
-		Keyword = Keyword
-	else
-		KkthnxUIDataPerChar.AutoInvite = true
-		K.Print("|cffffff00"..L.Invite.Enable..msg..".|r")
-		Keyword = msg
-	end
-end
-SLASH_AUTOINVITE1 = "/ainv"

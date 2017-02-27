@@ -8,8 +8,9 @@ local format = string.format
 local CreateFrame = CreateFrame
 local SendChatMessage = SendChatMessage
 
--- AUTO DECLINE DUEL
 local Disable = false
+
+-- Auto decline duels
 local DeclineDuel = CreateFrame("Frame")
 DeclineDuel:RegisterEvent("DUEL_REQUESTED")
 DeclineDuel:RegisterEvent("PET_BATTLE_PVP_DUEL_REQUESTED")

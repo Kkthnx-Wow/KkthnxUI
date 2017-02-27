@@ -1,6 +1,20 @@
 local K, C, L = unpack(select(2, ...))
 if C.Auras.CastBy ~= true then return end
 
+-- Lua API
+local _G = _G
+local string_format = string.format
+
+-- Wow API
+local GetUnitName = _G.GetUnitName
+local UnitIsPlayer = _G.UnitIsPlayer
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local UnitClass = _G.UnitClass
+local UnitReaction = _G.UnitReaction
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: DONE_BY
+
 -- Tells you who cast a buff or debuff in its tooltip(prButler by Renstrom)
 local function addAuraSource(self, func, unit, index, filter)
 	local srcUnit = select(8, func(unit, index, filter))

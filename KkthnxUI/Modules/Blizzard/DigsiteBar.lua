@@ -16,7 +16,7 @@ local Movers = K.Movers
 
 local isInit = false
 
-DigsiteBar_Init = function()
+local function DigsiteBar_Init()
 	if not isInit then
 		local isLoaded = true
 

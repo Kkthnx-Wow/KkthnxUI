@@ -155,6 +155,8 @@ do
 			max = UnitHealthMax(unit) or 1
 		end
 
+		if not Health.Value then return end
+
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
 		elseif self.isMouseOver then
@@ -176,8 +178,6 @@ do
 	}
 
 	function K.Power_PostUpdate(Power, unit, cur, max)
-		if not Power.Value then return end
-
 		local self = Power:GetParent()
 		local uconfig = ns.config[self.MatchUnit]
 
@@ -198,6 +198,8 @@ do
 			max = UnitPower(unit)
 			cur = UnitPowerMax(unit) or 1
 		end
+
+		if not Power.Value then return end
 
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)

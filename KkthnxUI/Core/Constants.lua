@@ -16,7 +16,7 @@ local UnitName = _G.UnitName
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion
 
-local CheckRole = function(self, event)
+local function CheckRole(self, event)
 	local Tank = "TANK"
 	local Melee = "MELEE"
 	local Caster = "CASTER"

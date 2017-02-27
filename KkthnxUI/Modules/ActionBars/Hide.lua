@@ -107,7 +107,7 @@ DisableBlizzard:SetScript("OnEvent", function()
 end)
 
 -- Mouseover stuff
-RightBarMouseOver = function(alpha)
+function RightBarMouseOver(alpha)
 	RightActionBarAnchor:SetAlpha(alpha)
 	PetActionBarAnchor:SetAlpha(alpha)
 	ShapeShiftBarAnchor:SetAlpha(alpha)
@@ -169,7 +169,7 @@ RightBarMouseOver = function(alpha)
 	end
 end
 
-StanceBarMouseOver = function(alpha)
+function StanceBarMouseOver(alpha)
 	for i = 1, NUM_STANCE_SLOTS do
 		local pb = _G["StanceButton"..i]
 		pb:SetAlpha(alpha)
@@ -179,7 +179,7 @@ StanceBarMouseOver = function(alpha)
 	ShapeShiftBarAnchor:SetAlpha(alpha)
 end
 
-PetBarMouseOver = function(alpha)
+function PetBarMouseOver(alpha)
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local pb = _G["PetActionButton"..i]
 		pb:SetAlpha(alpha)
@@ -190,7 +190,7 @@ PetBarMouseOver = function(alpha)
 end
 
 -- Fix cooldown spiral alpha
-K.HideSpiral = function(f, alpha)
+function K.HideSpiral(f, alpha)
 	f:SetSwipeColor(0, 0, 0, alpha * 0.9)
 	f:SetDrawBling(alpha == 1)
 end

@@ -11,7 +11,7 @@ local GetSpellInfo = _G.GetSpellInfo
 -- Example: Polymorph -> http://www.wowhead.com/spell=118
 -- Take the number ID at the end of the URL, and add it to the list
 
-local SpellName = function(id)
+local function SpellName(id)
 	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
 	if not name then
 		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")

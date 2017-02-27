@@ -8,7 +8,7 @@ local unpack = unpack
 -- Mine
 local sections = {"TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "TOP", "BOTTOM", "LEFT", "RIGHT"}
 
-local SetBorderColor = function(self, r, g, b, a)
+local function SetBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if not t then return end
 
@@ -17,7 +17,7 @@ local SetBorderColor = function(self, r, g, b, a)
 	end
 end
 
-local SetBackdropBorderColor = function(self, r, g, b, a)
+local function SetBackdropBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if not t then return end
 
@@ -26,11 +26,11 @@ local SetBackdropBorderColor = function(self, r, g, b, a)
 	end
 end
 
-local GetBorderColor = function(self)
+local function GetBorderColor(self)
 	return self.borderTextures and self.borderTextures.TOPLEFT:GetVertexColor()
 end
 
-K.CreateBorder = function(object, offset)
+function K.CreateBorder(object, offset)
 	if type(object) ~= "table" or not object.CreateTexture or object.borderTextures then return end
 
 	local t = {}
@@ -77,7 +77,7 @@ K.CreateBorder = function(object, offset)
 end
 
 -- Small bar below of frames
-K.CreateOutsideBar = function(parent, onTop, r, g, b)
+function K.CreateOutsideBar(parent, onTop, r, g, b)
 	local StatusBar = K.CreateStatusBar(parent, "$parentPowerBar")
 
 	StatusBar:SetSize(98, 10)

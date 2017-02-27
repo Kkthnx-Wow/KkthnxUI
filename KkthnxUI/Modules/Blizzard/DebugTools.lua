@@ -18,18 +18,18 @@ local StaticPopup_Hide = _G.StaticPopup_Hide
 
 local UIDebugTools = LibStub("AceAddon-3.0"):NewAddon("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
-UIDebugTools.ModifyErrorFrame = function()
+function UIDebugTools:ModifyErrorFrame()
 	ScriptErrorsFrameScrollFrameText.cursorOffset = 0
 	ScriptErrorsFrameScrollFrameText.cursorHeight = 0
 	ScriptErrorsFrameScrollFrameText:SetScript("OnEditFocusGained", nil)
 
-	local ScriptErrors_UnHighlightText = function()
+	local function ScriptErrors_UnHighlightText()
 		ScriptErrorsFrameScrollFrameText:HighlightText(0, 0)
 	end
 	hooksecurefunc("ScriptErrorsFrame_Update", ScriptErrors_UnHighlightText)
 
 	-- Unhighlight text when focus is hit
-	local UnHighlightText = function(self)
+	local function UnHighlightText(self)
 		self:HighlightText(0, 0)
 	end
 	ScriptErrorsFrameScrollFrameText:HookScript("OnEscapePressed", UnHighlightText)
@@ -66,7 +66,7 @@ UIDebugTools.ModifyErrorFrame = function()
 	ScriptErrorsFrame.lastButton = lastButton
 end
 
-UIDebugTools.ScriptErrorsFrame_UpdateButtons = function()
+function UIDebugTools:ScriptErrorsFrame_UpdateButtons()
 	local numErrors = #ScriptErrorsFrame.order
 	local index = ScriptErrorsFrame.index
 	if (index == 0) then
@@ -83,34 +83,34 @@ UIDebugTools.ScriptErrorsFrame_UpdateButtons = function()
 	end
 end
 
-UIDebugTools.ScriptErrorsFrame_OnError = function(self, keepHidden)
+function UIDebugTools:ScriptErrorsFrame_OnError(_, keepHidden)
 	if keepHidden or self.MessagePrinted or not InCombatLockdown() or GetCVarBool("scriptErrors") ~= true then return end
 
 	K.Print("|cFFE30000Lua error recieved. You can view the error message when you exit combat.")
 	self.MessagePrinted = true
 end
 
-UIDebugTools.PLAYER_REGEN_ENABLED = function(self)
+function UIDebugTools:PLAYER_REGEN_ENABLED()
 	ScriptErrorsFrame:SetParent(UIParent)
 	self.MessagePrinted = nil
 end
 
-UIDebugTools.PLAYER_REGEN_DISABLED = function(self)
+function UIDebugTools:PLAYER_REGEN_DISABLED()
 	ScriptErrorsFrame:SetParent(self.HideFrame)
 end
 
-UIDebugTools.TaintError = function(event, addonName, addonFunc)
+function UIDebugTools:TaintError(event, addonName, addonFunc)
 	if GetCVarBool("scriptErrors") ~= true or C.General.TaintLog ~= true then return end
 	ScriptErrorsFrame_OnError(L.Misc.TriedToCall:format(event, addonName or "<name>", addonFunc or "<func>"), false)
 end
 
-UIDebugTools.StaticPopup_Show = function(name)
+function UIDebugTools:StaticPopup_Show(name)
 	if (name == "ADDON_ACTION_FORBIDDEN") then
 		StaticPopup_Hide(name)
 	end
 end
 
-UIDebugTools.Initialize = function(self)
+function UIDebugTools:Initialize()
 	self.HideFrame = CreateFrame("Frame")
 	self.HideFrame:Hide()
 

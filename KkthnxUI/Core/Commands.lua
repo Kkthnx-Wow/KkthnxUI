@@ -61,7 +61,7 @@ local UnitName = _G.UnitName
 -- GLOBALS: CriteriaAlertSystem, GuildChallengeAlertSystem, InvasionAlertSystem, GarrisonShipFollowerAlertSystem
 -- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
 -- GLOBALS: ExtraActionBarFrame, ExtraActionButton1, MoneyWonAlertSystem, StorePurchaseAlertSystem
--- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem, DisbandRaidGroup, GridCreate
+-- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end
@@ -99,11 +99,12 @@ end
 _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
-local SetUIScale = function()
+local function SetUIScale()
 	if InCombatLockdown() then return end
 
-	local ApplyUIScale = GetCVarBool("uiScale")
-	if not ApplyUIScale then
+	local SetUIScale = GetCVarBool("uiScale")
+	if not SetUIScale then
+		-- K.LockCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 		SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 	end
 
@@ -128,7 +129,7 @@ end
 _G.SLASH_SETUISCALE1 = "/uiscale"
 
 -- Disband party or raid (by Monolit)
-DisbandRaidGroup = function()
+function _G.DisbandRaidGroup()
 	if InCombatLockdown() then return end
 
 	if UnitInRaid("player") then
@@ -154,7 +155,7 @@ StaticPopupDialogs.DISBAND_RAID = {
 	text = L.Popup.DisbandRaid,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = DisbandRaidGroup,
+	OnAccept = _G.DisbandRaidGroup,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = true,
@@ -167,7 +168,7 @@ end
 _G.SLASH_GROUPDISBAND1 = "/rd"
 
 -- Enable lua error by command
-SlashCmdList.LUAERROR = function(msg)
+function SlashCmdList.LUAERROR(msg)
 	msg = string_lower(msg)
 	if(msg == "on") then
 		DisableAllAddOns()
@@ -283,7 +284,7 @@ _G.SLASH_TEST_EXTRABUTTON1 = "/teb"
 local Grid
 local BoxSize = 32
 
-local Grid_Show = function()
+local function Grid_Show()
 	if not Grid then
 		GridCreate()
 	elseif Grid.BoxSize ~= BoxSize then
@@ -294,7 +295,7 @@ local Grid_Show = function()
 	end
 end
 
-local GridHide = function()
+local function GridHide()
 	if Grid then
 		Grid:Hide()
 	end
@@ -314,7 +315,7 @@ SlashCmdList.TOGGLE_GRID = function(arg)
 	end
 end
 
-GridCreate = function()
+function GridCreate()
 	Grid = CreateFrame("Frame", nil, UIParent)
 	Grid.BoxSize = BoxSize
 	Grid:SetAllPoints(UIParent)
@@ -380,7 +381,7 @@ end
 _G.SLASH_TEST_UI1 = "/testui"
 
 -- Reduce video settings to optimize performance
-local BoostUI = function()
+local function BoostUI()
 	SetCVar("SSAO", 0)
 	SetCVar("ShadowTextureSize", 1024)
 	SetCVar("environmentDetail", 60)
@@ -396,7 +397,6 @@ local BoostUI = function()
 	SetCVar("timingmethod", 1)
 	SetCVar("waterDetail", 0)
 	SetCVar("weatherDensity", 0)
-
 	RestartGx()
 end
 

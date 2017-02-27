@@ -78,7 +78,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 		bind:SetScript("OnMouseUp", function(self, key) self:Listener(key) end)
 		bind:SetScript("OnMouseWheel", function(self, delta) if delta > 0 then self:Listener("MOUSEWHEELUP") else self:Listener("MOUSEWHEELDOWN") end end)
 
-		bind.Update = function(self, b, spellmacro)
+		function bind:Update(b, spellmacro)
 			if not self.enabled or InCombatLockdown() then return end
 			self.button = b
 			self.spellmacro = spellmacro
@@ -207,7 +207,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end
 
-		bind.Listener = function(self, key)
+		function bind:Listener(key)
 			if GetBindingKey(key) == "OPENCHAT" then
 				DEFAULT_CHAT_FRAME.editBox:Show()
 				return
@@ -252,13 +252,13 @@ SlashCmdList.MOUSEOVERBIND = function()
 			if self.spellmacro ~= "MACRO" then GameTooltip:Hide() end
 		end
 
-		bind.HideFrame = function(self)
+		function bind:HideFrame()
 			self:ClearAllPoints()
 			self:Hide()
 			GameTooltip:Hide()
 		end
 
-		bind.Activate = function(self)
+		function bind:Activate()
 			self.enabled = true
 			self:RegisterEvent("PLAYER_REGEN_DISABLED")
 			if C.ActionBar.RightBarsMouseover == true then
@@ -272,7 +272,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end
 
-		bind.Deactivate = function(self, save)
+		function bind:Deactivate(save)
 			local which = GetCurrentBindingSet()
 			if save then
 				SaveBindings(which)
@@ -313,7 +313,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 		local pet = PetActionButton1:GetScript("OnClick")
 		local button = ActionButton1:GetScript("OnClick")
 
-		local register = function(val)
+		local function register(val)
 			if val.IsProtected and val.GetObjectType and val.GetScript and val:GetObjectType() == "CheckButton" and val:IsProtected() then
 				local script = val:GetScript("OnClick")
 				if script == button then
@@ -337,7 +337,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			b:HookScript("OnEnter", function(self) bind:Update(self, "SPELL") end)
 		end
 
-		local registermacro = function()
+		local function registermacro()
 			for i = 1, MAX_ACCOUNT_MACROS do
 				local b = _G["MacroButton"..i]
 				b:HookScript("OnEnter", function(self) bind:Update(self, "MACRO") end)

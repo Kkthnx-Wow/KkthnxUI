@@ -9,13 +9,13 @@ local LoadAddOn = _G.LoadAddOn
 
 -- No point caching anything here, but list them here for mikk's FindGlobals script
 -- GLOBALS: CreateFrame, TalkingHeadFrame, UIPARENT_MANAGED_FRAME_POSITIONS, TalkingHead_LoadUI
--- GLOBALS: Model_ApplyUICamera, AlertFrame, TalkingHead_Init
+-- GLOBALS: Model_ApplyUICamera, AlertFrame
 
 local Movers = K.Movers
 local isInit = false
 
 -- We set our TalkingHeadFrame scale and position here.
-TalkingHead_Init = function()
+local function TalkingHead_Init()
 	if not isInit then
 		local isLoaded = true
 

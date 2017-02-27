@@ -1,12 +1,15 @@
 local K, C, L = unpack(select(2, ...))
 if C.Automation.Resurrection ~= true then return end
 
+-- Wow Lua
+local _G = _G
+
 -- Wow API
-local CanUseSoulstone = CanUseSoulstone
-local GetBattlefieldStatus = GetBattlefieldStatus
-local GetCurrentMapAreaID = GetCurrentMapAreaID
-local GetMaxBattlefieldID = GetMaxBattlefieldID
-local HasSoulstone = HasSoulstone
+local CanUseSoulstone = _G.CanUseSoulstone
+local GetBattlefieldStatus = _G.GetBattlefieldStatus
+local GetCurrentMapAreaID = _G.GetCurrentMapAreaID
+local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
+local HasSoulstone = _G.HasSoulstone
 
 -- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: SetMapToCurrentZone, RepopMe

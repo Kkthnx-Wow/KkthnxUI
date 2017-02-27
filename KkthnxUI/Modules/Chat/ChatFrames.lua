@@ -13,9 +13,11 @@ local sub = string.sub
 local unpack = unpack
 
 -- Wow API
+local CHAT_FRAMES = _G.CHAT_FRAMES
 local ChatEdit_ParseText = _G.ChatEdit_ParseText
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
 local COMBATLOG = _G.COMBATLOG
+local FCF_Close = _G.FCF_Close
 local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
 local GetChannelName = _G.GetChannelName
@@ -61,11 +63,11 @@ local ShortChannelNames = {
 	RAID_LEADER = L.Chat.RaidLeader
 }
 
-local ShortChannels = function(self)
+local function ShortChannels(self)
 	return format("|Hchannel:%s|h[%s]|h", self, ShortChannelNames[self:upper()] or self:gsub("channel:", ""))
 end
 
-local AddMessage = function(frame, string, ...)
+local function AddMessage(frame, string, ...)
 	local messagestring
 
 	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then

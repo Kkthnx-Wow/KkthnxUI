@@ -8,7 +8,7 @@ local table_remove = table.remove
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIFrameFade_RemoveFrame
 
-local SetAnimationGroup = function(object, type, ...)
+local function SetAnimationGroup(object, type, ...)
 	if not type then type = "Flash" end
 
 	if type == "Flash" then
@@ -42,7 +42,7 @@ local SetAnimationGroup = function(object, type, ...)
 	end
 end
 
-K.UIFrameFlash = function(object, duration, loop)
+function K.UIFrameFlash(object, duration, loop)
 	if not object.anim then
 		SetAnimationGroup(object, loop and "FlashLoop" or "Flash")
 	end
@@ -55,7 +55,7 @@ K.UIFrameFlash = function(object, duration, loop)
 	end
 end
 
-K.UIFrameStopFlash = function(object)
+function K.UIFrameStopFlash(object)
 	if object.anim and object.anim.playing then
 		object.anim:Stop()
 		object.anim.playing = nil
@@ -65,7 +65,7 @@ end
 local frameFadeManager = CreateFrame("FRAME")
 local FADEFRAMES = {}
 
-local tDeleteItem = function(table, item)
+local function tDeleteItem(table, item)
 	local index = 1
 	while table[index] do
 		if (item == table[index]) then
@@ -77,7 +77,7 @@ local tDeleteItem = function(table, item)
 	end
 end
 
-local UIFrameFade_OnUpdate = function(self, elapsed)
+local function UIFrameFade_OnUpdate(self, elapsed)
 	local index = 1
 	local frame, fadeInfo
 	while FADEFRAMES[index] do
@@ -118,7 +118,7 @@ local UIFrameFade_OnUpdate = function(self, elapsed)
 end
 
 -- Generic fade function
-local UIFrameFade = function(frame, fadeInfo)
+local function UIFrameFade(frame, fadeInfo)
 	if (not frame) then
 		return
 	end
@@ -160,7 +160,7 @@ local UIFrameFade = function(frame, fadeInfo)
 end
 
 -- Convenience function to do a simple fade in
-K.UIFrameFadeIn = function(frame, timeToFade, startAlpha, endAlpha)
+function K.UIFrameFadeIn(frame, timeToFade, startAlpha, endAlpha)
 	local fadeInfo = {}
 	fadeInfo.mode = "IN"
 	fadeInfo.timeToFade = timeToFade
@@ -170,7 +170,7 @@ K.UIFrameFadeIn = function(frame, timeToFade, startAlpha, endAlpha)
 end
 
 -- Convenience function to do a simple fade out
-K.UIFrameFadeOut = function(frame, timeToFade, startAlpha, endAlpha)
+function K.UIFrameFadeOut(frame, timeToFade, startAlpha, endAlpha)
 	local fadeInfo = {}
 	fadeInfo.mode = "OUT"
 	fadeInfo.timeToFade = timeToFade

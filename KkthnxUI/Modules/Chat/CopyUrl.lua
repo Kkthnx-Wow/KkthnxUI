@@ -19,7 +19,7 @@ local function PrintURL(url)
 	return url
 end
 
-local FindURL = function(self, event, msg, ...)
+local function FindURL(self, event, msg, ...)
 	local NewMsg, Found = string_gsub(msg, "(%a+)://(%S+)%s?", PrintURL("%1://%2"))
 
 	if (Found > 0) then

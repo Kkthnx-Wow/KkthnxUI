@@ -24,7 +24,7 @@ local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 -- GLOBALS: KEY_HOME, KEY_DELETE, KEY_INSERT_MAC, SpellFlyoutHorizontalBackground, SpellFlyoutVerticalBackground
 -- GLOBALS: SpellFlyoutBackgroundEnd, ActionButton_HideOverlayGlow, ActionButton_UpdateHotkeys
 
-local StyleNormalButton = function(self)
+local function StyleNormalButton(self)
 	local name = self:GetName()
 	local button = self
 	local icon = _G[name.."Icon"]
@@ -112,7 +112,7 @@ local StyleNormalButton = function(self)
 	end
 end
 
-local StyleSmallButton = function(normal, button, icon, name, pet)
+local function StyleSmallButton(normal, button, icon, name, pet)
 	local flash = _G[name.."Flash"]
 	local hotkey = _G[name.."HotKey"]
 
@@ -175,7 +175,7 @@ local StyleSmallButton = function(normal, button, icon, name, pet)
 	end
 end
 
-K.StyleShift = function()
+function K.StyleShift()
 	for i = 1, NUM_STANCE_SLOTS do
 		local name = "StanceButton"..i
 		local button = _G[name]
@@ -185,7 +185,7 @@ K.StyleShift = function()
 	end
 end
 
-K.StylePet = function()
+function K.StylePet()
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local name = "PetActionButton"..i
 		local button = _G[name]
@@ -195,7 +195,7 @@ K.StylePet = function()
 	end
 end
 
-local UpdateHotkey = function(self, btype)
+local function UpdateHotkey(self, btype)
 	local hotkey = _G[self:GetName() .. "HotKey"]
 	local text = hotkey:GetText()
 	local Indicator = _G["RANGE_INDICATOR"]
@@ -245,7 +245,7 @@ local UpdateHotkey = function(self, btype)
 end
 
 local buttons = 0
-local SetupFlyoutButton = function()
+local function SetupFlyoutButton()
 	for i = 1, buttons do
 		local button = _G["SpellFlyoutButton"..i]
 
@@ -270,7 +270,7 @@ local SetupFlyoutButton = function()
 end
 SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
 
-local StyleFlyoutButton = function(button)
+local function StyleFlyoutButton(button)
 	if (not button.FlyoutArrow or not button.FlyoutArrow:IsShown()) then return end
 
 	if button.FlyoutBorder then
@@ -293,7 +293,7 @@ local StyleFlyoutButton = function(button)
 	end
 end
 
-local HideHighlightButton = function(self)
+local function HideHighlightButton(self)
 	if self.overlay then
 		self.overlay:Hide()
 		ActionButton_HideOverlayGlow(self)
