@@ -32,18 +32,14 @@ local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
 local UnitSpellHaste = _G.UnitSpellHaste
+local DEAD = _G.DEAD
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: DEAD, UnitFrame_OnLeave, UnitFrame_OnEnter
+-- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local _, ns = ...
 local oUF = ns.oUF or _G.oUF
 local colors = K.Colors
-
-local GHOST = GetSpellInfo(8326)
-if GetLocale() == "deDE" then
-	GHOST = "Geist"
-end
 
 function K.MatchUnit(unit)
 	if (unit and unit:match("vehicle")) then
@@ -70,19 +66,22 @@ function K.MultiCheck(check, ...)
 	return false
 end
 
-local function UpdatePortraitColor(self, unit)
-	if not unit then return end
-	if (UnitIsPlayer(unit)) then
-		if (not UnitIsConnected(unit)) then
-			self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-		elseif (UnitIsDead(unit)) then
-			self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-		elseif (UnitIsGhost(unit)) then
-			self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-		else
-			self.Portrait:SetVertexColor(1, 1, 1, 1)
-		end
-	end
+local function UpdatePortraitColor(self, unit, min, max)
+    if (not UnitIsConnected(unit)) then
+        self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+    elseif (UnitIsDead(unit)) then
+        self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+    elseif (UnitIsGhost(unit)) then
+        self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+    elseif (max == 0 or min/max * 100 < 25) then
+        if (UnitIsPlayer(unit)) then
+            if (unit ~= 'player') then
+                self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+            end
+        end
+    else
+        self.Portrait:SetVertexColor(1, 1, 1, 1)
+    end
 end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
@@ -111,7 +110,7 @@ local function SetValueText(self, tag, cur, max)
 	elseif tag == TEXT_PERCENT then
 		string = string_format("%d%%", cur / max * 100)
 	else
-		return string
+		string = ""
 	end
 
 	self:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, string)
@@ -119,6 +118,11 @@ end
 
 -- PostHealth update
 do
+	local GHOST = GetSpellInfo(8326)
+	if GetLocale() == "deDE" then
+		GHOST = "Geist"
+	end
+
 	local tagtable = {
 		NUMERIC = {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
 		BOTH	= {TEXT_MINMAX, TEXT_LONG, TEXT_MAX},
@@ -135,7 +139,7 @@ do
 		local uconfig = ns.config[self.MatchUnit]
 
 		if self.Portrait then
-			UpdatePortraitColor(self, unit)
+			UpdatePortraitColor(self, unit, cur, max)
 		end
 
 		if self.Name and self.Name.Bg then -- For boss frames
@@ -143,19 +147,19 @@ do
 		end
 
 		if absent then
-			Health:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
-			if Health.Value and max > 0 then
+			Health:SetStatusBarColor(0.5, 0.5, 0.5)
+			if Health.Value then
 				Health.Value:SetText(absent)
 			end
 			return
 		end
 
+		if not Health.Value then return end
+
 		if not cur then
 			cur = UnitHealth(unit)
 			max = UnitHealthMax(unit) or 1
 		end
-
-		if not Health.Value then return end
 
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
@@ -186,7 +190,7 @@ do
 			return
 		end
 
-		if UnitIsDeadOrGhost(unit) then
+		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
 			Power:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
 			if Power.Value then
 				Power.Value:SetText(nil)
@@ -194,12 +198,12 @@ do
 			return
 		end
 
+		if not Power.Value then return end
+
 		if not cur then
 			max = UnitPower(unit)
 			cur = UnitPowerMax(unit) or 1
 		end
-
-		if not Power.Value then return end
 
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
@@ -259,14 +263,14 @@ function K.CreateStatusBar(parent, name)
 	local StatusBar = CreateFrame("StatusBar", name, parent)
 	StatusBar:SetStatusBarTexture(C.Media.Texture)
 
-	if StatusBar.styled then return end
+	if StatusBar.Styled then return end
 
 	StatusBar.Background = StatusBar:CreateTexture(nil, "BACKGROUND")
 	StatusBar.Background:SetTexture(C.Media.Blank)
 	StatusBar.Background:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	StatusBar.Background:SetAllPoints()
 
-	StatusBar.styled = true
+	StatusBar.Styled = true
 
 	return StatusBar
 end

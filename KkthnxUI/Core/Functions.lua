@@ -223,8 +223,8 @@ end
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
+K:RegisterEvent("PLAYER_REGEN_ENABLED")
 function K:PLAYER_REGEN_ENABLED(_)
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	if (self.CVarUpdate) then
 		for cvarName, value in pairs(self.LockedCVars) do
 			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
