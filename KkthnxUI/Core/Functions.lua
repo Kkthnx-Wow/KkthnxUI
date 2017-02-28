@@ -95,9 +95,9 @@ end
 function K.Round(num, idp)
 	if (idp and idp > 0) then
 		local mult = 10 ^ idp
-		return math_floor(num * mult + 0.5) / mult
+		return math_floor(num * mult + 0.5) / mult or nil
 	end
-	return math_floor(num + 0.5)
+	return math_floor(num + 0.5) or nil
 end
 
 -- RgbToHex color

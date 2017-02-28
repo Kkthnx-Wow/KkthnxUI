@@ -260,7 +260,6 @@ C["Unitframe"] = {
 	["CastbarWidth"] = 200,
 	["CastClassColor"] = false,
 	["CastUnitReaction"] = false,
-	["ClassColor"] = true,
 	["ClassPortraits"] = false,
 	["CombatText"] = true,
 	["Enable"] = true,

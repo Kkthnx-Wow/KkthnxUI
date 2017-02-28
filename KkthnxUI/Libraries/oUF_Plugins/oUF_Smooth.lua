@@ -27,6 +27,13 @@ local function SmoothBar(self, bar)
 	bar.SetValue = Smooth
 end
 
+local function ResetBar(self, bar)
+	if bar.SetValue_ then
+		bar.SetValue = bar.SetValue_
+		bar.SetValue_ = nil
+	end
+end
+
 local function hook(frame)
 	frame.SmoothBar = SmoothBar
 	if frame.Health and frame.Health.Smooth then
@@ -34,6 +41,9 @@ local function hook(frame)
 	end
 	if frame.Power and frame.Power.Smooth then
 		frame:SmoothBar(frame.Power)
+	end
+	if frame.AltPowerBar and frame.AltPowerBar.Smooth then
+		frame:SmoothBar(frame.AltPowerBar)
 	end
 end
 
@@ -45,9 +55,15 @@ f:SetScript("OnUpdate", function()
 	local limit = 30/GetFramerate()
 	for bar, value in pairs(smoothing) do
 		local current = bar:GetValue()
-		local new = current and (current + math_min((value-current)/10, math_max(value-current, limit))) or value
+		local new = current and (current + math_min((value-current)/20, math_max(value-current, limit))) or value
+		if new ~= new then -- Mad hax to prevent QNAN.
+			new = value
+		end
 		bar:SetValue_(new)
-		if current == value or math_abs(new - value) < 2 then
+		if (current == value or math_abs(new - value) < 2) and bar.Smooth then
+			bar:SetValue_(value)
+			smoothing[bar] = nil
+		elseif not bar.Smooth then
 			bar:SetValue_(value)
 			smoothing[bar] = nil
 		end

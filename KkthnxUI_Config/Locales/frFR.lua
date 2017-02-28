@@ -250,7 +250,6 @@ UIConfigLocal.UnitframeCastbarTicks = "Display tick marks on the castbar for cha
 UIConfigLocal.UnitframeCastbarWidth = "Width of the unitframe castbars"
 UIConfigLocal.UnitframeCastClassColor = "Color castbars by the class of player units"
 UIConfigLocal.UnitframeCastUnitReaction = "Color castbars by the reaction type of non-player units"
-UIConfigLocal.UnitframeClassColor = "Classcolor the uniframe healthbars."
 UIConfigLocal.UnitframeClassPortraits = "Enable class portraits"
 UIConfigLocal.UnitframeCombatText = "Show Combat Feedback"
 UIConfigLocal.UnitframeEnable = "Enable unit frames"

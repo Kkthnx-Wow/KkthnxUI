@@ -12,6 +12,7 @@ if not K.IsDeveloper() and not K.IsDeveloperRealm() then return end -- Check thi
 if LibDebug then LibDebug() end
 
 -- Lua API
+local _G = _G
 
 -- Wow API
 

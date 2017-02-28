@@ -733,13 +733,15 @@ local function CreateUnitLayout(self, unit)
 	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
-	self.Health.PostUpdate = K.Health_PostUpdate
-	self.Health.frequentUpdates = true
-	self.Health.Smooth = C.Unitframe.Smooth
-	self.Health.colorTapping = true
-	self.Health.colorDisconnected = true
-	self.Health.colorClass = C.Unitframe.ClassColor
+	self.Health.colorHealth = false
+	self.Health.colorClass = true
 	self.Health.colorReaction = true
+	self.Health.colorDisconnected = true
+	self.Health.colorTapping = true
+	self.Health.colorSmooth = true
+	self.Health.Smooth = true
+	self.Health.frequentUpdates = true
+	self.Health.PostUpdate = K.Health_PostUpdate
 
 	-- Health text
 	if self.IsPartyFrame or self.IsTargetFrame then
@@ -752,10 +754,15 @@ local function CreateUnitLayout(self, unit)
 	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
+	self.Power.colorPower = true
+	self.Power.colorClass = false
+	self.Power.colorSmooth = false
+	self.Power.colorReaction = true
+	self.Power.colorDisconnected = true
+	self.Power.colorTapping = true
+	self.Power.Smooth = true
 	self.Power.frequentUpdates = true
 	self.Power.PostUpdate = K.Power_PostUpdate
-	self.Power.colorPower = true
-	self.Power.Smooth = C.Unitframe.Smooth
 
 	-- Power Text
 	if (data.mpt) then
