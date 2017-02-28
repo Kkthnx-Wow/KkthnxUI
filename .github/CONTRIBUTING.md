@@ -3,7 +3,7 @@
 #### **Did You Find a Bug?**
 
   * **Ensure the bug was not already reported** by searching on GitHub under [Issues](issues).
-  * If you're unable to find an open issue addressing the problem, [open a new one](new). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
+  * If you're unable to find an open issue addressing the problem, [open a new one](new-issue). Be sure to include a **title and clear description**, as much relevant information as possible, and a **code sample** or an **executable test case** demonstrating the expected behavior that is not occurring.
 
 #### **Did You Write a Patch That Fixes a Bug?**
 
@@ -21,5 +21,5 @@
 
 Thanks for contributing! :heart:
 
-[issues]: https://github.com/Kkthnx-WoW/KkthnxUI/issues
-[new]: https://github.com/Kkthnx-WoW/KkthnxUI/issues/new
+[issues]: github.com/Kkthnx-WoW/KkthnxUI/issues
+[new-issue]: github.com/Kkthnx-WoW/KkthnxUI/issues/new
