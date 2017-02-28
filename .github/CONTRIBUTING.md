@@ -21,9 +21,5 @@
 
 Thanks for contributing! :heart:
 
-
-
-[//]: # (Simply change the urls below to your project information)
-
-[issues]: daniellmb/daniellmb.github.io/issues
-[new-issue]: daniellmb/daniellmb.github.io/issues/new
+[issues]: https://github.com/Kkthnx-WoW/KkthnxUI/issues
+[new-issue]: https://github.com/Kkthnx-WoW/KkthnxUI/issues/new
