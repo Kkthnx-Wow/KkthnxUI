@@ -7,6 +7,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v6.20] - 2/28/2017
+### Added
+- Adding more globals caching.
+- Cleaned up old leftover globals/upvalues.
+
+### Fixed
+- AutoInvite script should work properly again
+- Party frames and their text vaules will no longer stick after being interacted with.
+- K.LockCVars should work once again. We forgot to Register PLAYER_REGEN_ENABLED
+
+### Removed
+- Removed option to disable class color for frames.
+- Removed old settings left behind from previous cleanups
+- AlreadyKnown module
+- HyperLink module
+- InstanceLock module
+
+### Changed
+- Change K.Round function by adding protection.
+
+# Archived Changelogs
+
 ## [v6.17] - 2/23/2017
 ### Added
 - More _G. for Wow API
@@ -83,8 +105,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improved K.SetFontString function
 - Improved GCD code and placement/style
 - Improved KkthnxUI:NameplateLevel oUF Tag
-
-# Archived Changelogs
 
 ## [v6.16] - 2/13/2017
 ### Added
