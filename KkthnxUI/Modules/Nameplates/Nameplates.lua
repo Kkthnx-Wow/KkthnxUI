@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 if C.Nameplates.Enable ~= true then return end
 
+-- NOTE: The newest function in oUF to handle this breaks out script here. It will cause clicking the nameplates to act funky. We need to look into this.
+
 -- Lua API
 local _G = _G
 local floor = math.floor
@@ -38,7 +40,7 @@ local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
 
--- Global variables that we don"t cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, SetVirtualBorder, event
 
 -- oUF_Kkthnx Nameplates
@@ -48,41 +50,50 @@ local oUF = ns.oUF or oUF
 -- Only show nameplates when in combat
 local KkthnxUIPlates = CreateFrame("Frame", nil, UIParent)
 KkthnxUIPlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
-if C.Nameplates.Combat == true then
-	KkthnxUIPlates:RegisterEvent("PLAYER_REGEN_ENABLED")
-	KkthnxUIPlates:RegisterEvent("PLAYER_REGEN_DISABLED")
 
-	function KkthnxUIPlates:PLAYER_REGEN_ENABLED()
-		SetCVar("nameplateShowEnemies", 0)
-	end
+-- Default then apply our CVars
+K.LockCVar("nameplateMotionSpeed", .1)
+-- These should be defaulted pretty much always
+K.LockCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+K.LockCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+K.LockCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
+K.LockCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
+K.LockCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+K.LockCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
 
-	function KkthnxUIPlates:PLAYER_REGEN_DISABLED()
-		SetCVar("nameplateShowEnemies", 1)
-	end
+local UpdateCVars = {}
+
+if C.Nameplates.EnhancedThreat == true and not InCombatLockdown() then
+	SetCVar("threatWarning", 3) -- NOTE: Merge this into UpdateCVars
 end
 
-KkthnxUIPlates:RegisterEvent("PLAYER_ENTERING_WORLD")
-function KkthnxUIPlates:PLAYER_ENTERING_WORLD()
-	if C.Nameplates.Combat == true then
-		if InCombatLockdown() then
-			SetCVar("nameplateShowEnemies", 1)
-		else
-			SetCVar("nameplateShowEnemies", 0)
+UpdateCVars["nameplateGlobalScale"] = 1
+UpdateCVars["nameplateGlobalScale"] = 1
+UpdateCVars["nameplateLargerScale"] = 1
+UpdateCVars["nameplateLargerScale"] = 1
+UpdateCVars["nameplateMaxAlpha"] = 1
+UpdateCVars["nameplateMaxAlphaDistance"] = 0
+UpdateCVars["nameplateMaxDistance"] = C.Nameplates.Distance or 40
+UpdateCVars["namePlateMaxScale"] = 1
+UpdateCVars["nameplateMaxScaleDistance"] = 0
+UpdateCVars["nameplateMinAlpha"] = 1
+UpdateCVars["nameplateMinScale"] = 1
+UpdateCVars["nameplateMinScaleDistance"] = 0
+UpdateCVars["nameplateOtherBottomInset"] = C.Nameplates.Clamp and 0.08 or 1
+UpdateCVars["nameplateOtherTopInset"] = C.Nameplates.Clamp and 0.1 or -1
+UpdateCVars["nameplateSelfAlpha"] = 1
+UpdateCVars["nameplateShowAll"] = 1
+UpdateCVars["nameplateShowFriendlyNPCs"] = 0
+
+KkthnxUIPlates.UpdateCVars = UpdateCVars
+
+if (not InCombatLockdown()) then
+	for k, v in pairs(UpdateCVars) do
+		local current = tonumber(GetCVar(k))
+		if (current ~= tonumber(v)) then
+			SetCVar(k, v)
 		end
 	end
-	if C.Nameplates.EnhancedThreat == true then
-		SetCVar("threatWarning", 3)
-	end
-
-	K.LockCVar("nameplateLargerScale", 1)
-	K.LockCVar("nameplateMaxAlpha", 1)
-	K.LockCVar("nameplateMaxDistance", C.Nameplates.Distance or 40)
-	K.LockCVar("namePlateMaxScale", 1)
-	K.LockCVar("nameplateMinAlpha", 1)
-	K.LockCVar("nameplateMinScale", 1)
-	K.LockCVar("nameplateMotion", 1)
-	K.LockCVar("nameplateOtherBottomInset", C.Nameplates.Clamp and 0.08 or 1)
-	K.LockCVar("nameplateOtherTopInset", C.Nameplates.Clamp and 0.1 or -1)
 end
 
 local healList, exClass, healerSpecs = {}, {}, {}
@@ -195,22 +206,7 @@ local totemData = {
 	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
 }
 
-
-local FormatTime = function(s)
-	local day, hour, minute = 86400, 3600, 60
-	if s >= day then
-		return string_format("%dd", floor(s / day + 0.5)), s % day
-	elseif s >= hour then
-		return string_format("%dh", floor(s / hour + 0.5)), s % hour
-	elseif s >= minute then
-		return string_format("%dm", floor(s / minute + 0.5)), s % minute
-	elseif s >= minute / 12 then
-		return floor(s + 0.5), (s * 100 - floor(s * 100)) / 100
-	end
-	return string_format("%.1f", s), (s * 100 - floor(s * 100)) / 100
-end
-
-local CreateAuraTimer = function(self, elapsed)
+local function CreateAuraTimer(self, elapsed)
 	if self.timeLeft then
 		self.elapsed = (self.elapsed or 0) + elapsed
 		if self.elapsed >= 0.1 then
@@ -221,7 +217,7 @@ local CreateAuraTimer = function(self, elapsed)
 				self.first = false
 			end
 			if self.timeLeft > 0 then
-				local time = FormatTime(self.timeLeft)
+				local time = K.FormatTime(self.timeLeft)
 				self.remaining:SetText(time)
 				self.remaining:SetTextColor(1, 1, 1)
 			else
@@ -233,7 +229,7 @@ local CreateAuraTimer = function(self, elapsed)
 	end
 end
 
-local threatColor = function(self, forced)
+local function threatColor(self, forced)
 	if UnitIsPlayer(self.unit) then return end
 	local combat = UnitAffectingCombat("player")
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
@@ -295,7 +291,7 @@ local threatColor = function(self, forced)
 	end
 end
 
-local UpdateTarget = function(self)
+local function UpdateTarget(self)
 	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
 		self:SetSize((C.Nameplates.Width + C.Nameplates.AdditionalWidth) * K.NoScaleMult, (C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult)
 		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult))
@@ -313,7 +309,7 @@ local UpdateTarget = function(self)
 	end
 end
 
-local UpdateName = function(self)
+local function UpdateName(self)
 	if C.Nameplates.HealerIcon == true then
 		local name = UnitName(self.unit)
 		if name then
@@ -347,7 +343,7 @@ local UpdateName = function(self)
 	end
 end
 
-local castColor = function(self, unit)
+local function castColor(self, unit)
 	local color
 	local r, g, b = 1.0, 0.7, 0.0, 0.5
 
@@ -369,7 +365,7 @@ local castColor = function(self, unit)
 	end
 end
 
-local castInterrupted = function(self)
+local function castInterrupted(self)
 	self:SetMinMaxValues(0, 1)
 	self:SetValue(1)
 	self:SetStatusBarColor(1, 0, 0)
@@ -377,7 +373,7 @@ local castInterrupted = function(self)
 	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
-local callback = function(event, nameplate, unit)
+local function callback(event, nameplate, unit)
 	local unit = unit or "target"
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 	if not nameplate then return end
@@ -403,7 +399,7 @@ local callback = function(event, nameplate, unit)
 	end
 end
 
-local style = function(self, unit)
+local function style(self, unit)
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 	local main = self
 	nameplate.ouf = self
@@ -745,4 +741,5 @@ local style = function(self, unit)
 end
 
 oUF:RegisterStyle("KkthnxUINameplate", style)
-oUF:SpawnNamePlates("KkthnxUINameplate", "KkthnxUI", callback)
+oUF:SetActiveStyle("KkthnxUINameplate")
+oUF:SpawnNamePlates("KkthnxUINameplate", "KkthnxUI", callback, KkthnxUIPlates.UpdateCVars)

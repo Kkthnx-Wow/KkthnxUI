@@ -207,7 +207,6 @@ C["Nameplates"] = {
 	["CastbarName"] = true,
 	["CastUnitReaction"] = false,
 	["Clamp"] = false,
-	["Combat"] = false,
 	["Distance"] = 40,
 	["Enable"] = true,
 	["EnhancedThreat"] = true,

@@ -190,7 +190,6 @@ UIConfigLocal.NameplatesBadColor = "Farbe wenn die Bedrohung NICHT ok ist, varie
 UIConfigLocal.NameplatesCastbarName = "Zeige namen des Zaubers"
 UIConfigLocal.NameplatesCastUnitReaction = "Color castbars by the reaction type of non-player units"
 UIConfigLocal.NameplatesClamp = "Setze die Namensplaketten an den oberen Bildschrimrand fest, wenn die ausser Sicht wären"
-UIConfigLocal.NameplatesCombat = "Automatisches Anzeigen der Namensplaketten im Kampf"
 UIConfigLocal.NameplatesDistance = "Zeige Namensplaketten für Einheiten im Sichtbereich"
 UIConfigLocal.NameplatesEnable = "Aktiviere die Namensplaketten"
 UIConfigLocal.NameplatesEnhancedThreat = "Aktiviere das Bedrohungsfeature. Wechselt automatisch je nach Deiner Rolle"
