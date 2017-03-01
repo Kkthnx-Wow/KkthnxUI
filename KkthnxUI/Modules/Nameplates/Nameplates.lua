@@ -748,6 +748,6 @@ local function style(self, unit)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTarget)
 end
 
-oUF:RegisterStyle("KkthnxUINameplate", style)
-oUF:SetActiveStyle("KkthnxUINameplate")
-oUF:SpawnNamePlates("KkthnxUI", callback, KkthnxUIPlates.UpdateCVars)
+oUF:RegisterStyle(K.UIName.."Nameplate", style)
+oUF:SetActiveStyle(K.UIName.."Nameplate")
+oUF:SpawnNamePlates(K.UIName, callback, KkthnxUIPlates.UpdateCVars)

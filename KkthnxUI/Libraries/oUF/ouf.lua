@@ -288,9 +288,11 @@ local initObject = function(unit, style, styleFunc, header, ...)
 			func(object)
 		end
 
-		-- Make Clique happy
-		_G.ClickCastFrames = ClickCastFrames or {}
-		ClickCastFrames[object] = true
+		-- Make Clique kinda happy
+		if not object.isNamePlate then
+			_G.ClickCastFrames = ClickCastFrames or {}
+			ClickCastFrames[object] = true
+		end
 	end
 end
 
@@ -586,6 +588,10 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 	local style = style
 	local prefix = namePrefix or generateName()
 
+	-- There's no way to prevent nameplate settings updates without tainting UI,
+	-- thus we should allow default nameplate driver to create, update, and remove
+	-- Blizz nameplates. "Disabling" them via oUF:DisableBlizzard is a bit ugly,
+	-- but taint-free solution.
 	NamePlateDriverFrame:Hide()
 	NamePlateDriverFrame:UnregisterAllEvents()
 	NamePlateDriverFrame:RegisterEvent('NAME_PLATE_CREATED')
@@ -604,11 +610,21 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 	eventHandler:RegisterEvent('PLAYER_LOGIN')
 	eventHandler:SetScript('OnEvent', function(_, event, unit)
 		if(event == 'PLAYER_LOGIN') then
-			if(not nameplateCVars) then return end
-
-			for cvar, value in next, nameplateCVars do
-				SetCVar(cvar, value)
+			if(nameplateCVars) then
+				for cvar, value in next, nameplateCVars do
+					SetCVar(cvar, value)
+				end
 			end
+
+			-- Disable power and classpower bars.
+			ClassNameplateManaBarFrame:UnregisterAllEvents()
+			DeathKnightResourceOverlayFrame:UnregisterAllEvents()
+			ClassNameplateBarMageFrame:UnregisterAllEvents()
+			ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
+			ClassNameplateBrewmasterBarFrame:UnregisterAllEvents()
+			ClassNameplateBarPaladinFrame:UnregisterAllEvents()
+			ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
+			ClassNameplateBarWarlockFrame:UnregisterAllEvents()
 		elseif(event == 'PLAYER_TARGET_CHANGED') then
 			local nameplate = C_NamePlate.GetNamePlateForUnit('target')
 			if(not nameplate) then return end
@@ -622,11 +638,12 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 			if(not nameplate) then return end
 
-			nameplate.style = style
-
 			if(not nameplate.unitFrame) then
+				nameplate.style = style
+
 				nameplate.unitFrame = CreateFrame('Button', prefix..nameplate:GetName(), nameplate)
 				nameplate.unitFrame:EnableMouse(false)
+				nameplate.unitFrame.isNamePlate = true
 
 				Private.UpdateUnits(nameplate.unitFrame, unit)
 

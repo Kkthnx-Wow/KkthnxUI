@@ -39,6 +39,11 @@ local HandleFrame = function(baseName)
 		if(altpowerbar) then
 			altpowerbar:UnregisterAllEvents()
 		end
+
+		local buffFrame = frame.BuffFrame
+		if(buffFrame) then
+			buffFrame:UnregisterAllEvents()
+		end
 	end
 end
 
@@ -69,7 +74,7 @@ function oUF:DisableBlizzard(unit)
 		HandleFrame(TargetofFocusFrame)
 	elseif(unit == 'targettarget') then
 		HandleFrame(TargetFrameToT)
-	elseif(unit:match'(boss)%d?$' == 'boss') then
+	elseif(unit:match('boss%d?$')) then
 		local id = unit:match'boss(%d)'
 		if(id) then
 			HandleFrame('Boss' .. id .. 'TargetFrame')
@@ -78,7 +83,7 @@ function oUF:DisableBlizzard(unit)
 				HandleFrame(string.format('Boss%dTargetFrame', i))
 			end
 		end
-	elseif(unit:match'(party)%d?$' == 'party') then
+	elseif(unit:match('party%d?$')) then
 		local id = unit:match'party(%d)'
 		if(id) then
 			HandleFrame('PartyMemberFrame' .. id)
@@ -88,7 +93,7 @@ function oUF:DisableBlizzard(unit)
 			end
 		end
 		HandleFrame(PartyMemberBackground)
-	elseif(unit:match'(arena)%d?$' == 'arena') then
+	elseif(unit:match('arena%d?$')) then
 		local id = unit:match'arena(%d)'
 
 		if(id) then
