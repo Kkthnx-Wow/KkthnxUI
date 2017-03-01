@@ -1,7 +1,8 @@
 local parent, ns = ...
 local oUF = ns.oUF
 
-local hiddenParent = CreateFrame("Frame")
+local hiddenParent = CreateFrame('Frame', nil, UIParent)
+hiddenParent:SetAllPoints()
 hiddenParent:Hide()
 
 local HandleFrame = function(baseName)
@@ -19,7 +20,7 @@ local HandleFrame = function(baseName)
 		-- Keep frame hidden without causing taint
 		frame:SetParent(hiddenParent)
 
-		local health = frame.healthbar
+		local health = frame.healthBar or frame.healthbar
 		if(health) then
 			health:UnregisterAllEvents()
 		end
@@ -29,7 +30,7 @@ local HandleFrame = function(baseName)
 			power:UnregisterAllEvents()
 		end
 
-		local spell = frame.spellbar
+		local spell = frame.castBar or frame.spellbar
 		if(spell) then
 			spell:UnregisterAllEvents()
 		end
@@ -74,7 +75,7 @@ function oUF:DisableBlizzard(unit)
 			HandleFrame('Boss' .. id .. 'TargetFrame')
 		else
 			for i=1, MAX_BOSS_FRAMES do
-				HandleFrame(('Boss%dTargetFrame'):format(i))
+				HandleFrame(string.format('Boss%dTargetFrame', i))
 			end
 		end
 	elseif(unit:match'(party)%d?$' == 'party') then
@@ -83,7 +84,7 @@ function oUF:DisableBlizzard(unit)
 			HandleFrame('PartyMemberFrame' .. id)
 		else
 			for i=1, 4 do
-				HandleFrame(('PartyMemberFrame%d'):format(i))
+				HandleFrame(string.format('PartyMemberFrame%d', i))
 			end
 		end
 		HandleFrame(PartyMemberBackground)
@@ -96,14 +97,19 @@ function oUF:DisableBlizzard(unit)
 			HandleFrame('ArenaEnemyFrame'..id..'PetFrame')
 		else
 			for i=1, 5 do
-				HandleFrame(('ArenaEnemyFrame%d'):format(i))
-				HandleFrame(('ArenaPrepFrame%d'):format(i))
-				HandleFrame(('ArenaEnemyFrame%dPetFrame'):format(i))
+				HandleFrame(string.format('ArenaEnemyFrame%d', i))
+				HandleFrame(string.format('ArenaPrepFrame%d', i))
+				HandleFrame(string.format('ArenaEnemyFrame%dPetFrame', i))
 			end
 		end
 
 		-- Blizzard_ArenaUI should not be loaded
 		Arena_LoadUI = function() end
 		SetCVar('showArenaEnemyFrames', '0', 'SHOW_ARENA_ENEMY_FRAMES_TEXT')
+	elseif(unit:match('nameplate%d+$')) then
+		local frame = C_NamePlate.GetNamePlateForUnit(unit)
+		if(frame and frame.UnitFrame) then
+			HandleFrame(frame.UnitFrame)
+		end
 	end
 end

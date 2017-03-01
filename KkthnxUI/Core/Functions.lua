@@ -151,7 +151,7 @@ function K.CreateShadowFrame(frame, point)
 	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
 	frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
+	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 0.8)
 
 	if frame:GetFrameLevel() - 1 > 0 then
 		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
@@ -161,7 +161,7 @@ function K.CreateShadowFrame(frame, point)
 end
 
 function K.SetShadowBorder(frame, r, g, b, a)
-	if not a then a = 0.9 end
+	if not a then a = 0.8 end
 	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 

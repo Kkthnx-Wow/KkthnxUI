@@ -386,6 +386,9 @@ local function callback(event, nameplate, unit)
 		self:Show()
 	end
 
+	self:EnableMouse(false)
+	self.Health:EnableMouse(false)
+
 	if UnitIsUnit(unit, "player") then
 		self.Power:Show()
 		self.Name:Hide()
@@ -403,6 +406,7 @@ local function style(self, unit)
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 	local main = self
 	nameplate.ouf = self
+	self:EnableMouse(false)
 	self.unit = unit
 	self:SetScript("OnEnter", function()
 		ShowUIPanel(GameTooltip)
@@ -413,9 +417,11 @@ local function style(self, unit)
 	self:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
+	self.hooked = true
 
 	self:SetPoint("CENTER", nameplate, "CENTER")
 	self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
+	self:SetScale(1)
 
 	-- Health Bar
 	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
@@ -429,6 +435,7 @@ local function style(self, unit)
 	self.Health.colorHealth = true
 	self.Health.Smooth = C.Nameplates.Smooth
 	K.CreateShadowFrame(self.Health)
+	self.Health:EnableMouse(false)
 
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints()
@@ -614,6 +621,7 @@ local function style(self, unit)
 	if C.Nameplates.TrackAuras == true then
 		self.Auras = CreateFrame("Frame", nil, self)
 		self.Auras:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -2 * K.NoScaleMult, C.Media.Font_Size + 7)
+		self.Auras:EnableMouse(false)
 		self.Auras.initialAnchor = "BOTTOMLEFT"
 		self.Auras["growth-y"] = "UP"
 		self.Auras["growth-x"] = "RIGHT"
@@ -742,4 +750,4 @@ end
 
 oUF:RegisterStyle("KkthnxUINameplate", style)
 oUF:SetActiveStyle("KkthnxUINameplate")
-oUF:SpawnNamePlates("KkthnxUINameplate", "KkthnxUI", callback, KkthnxUIPlates.UpdateCVars)
+oUF:SpawnNamePlates("KkthnxUI", callback, KkthnxUIPlates.UpdateCVars)
