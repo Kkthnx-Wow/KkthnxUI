@@ -760,6 +760,7 @@ local function CreateUnitLayout(self, unit)
 	self.Power.colorReaction = true
 	self.Power.colorDisconnected = true
 	self.Power.colorTapping = true
+	self.Power.displayAltPower = true
 	self.Power.Smooth = true
 	self.Power.frequentUpdates = true
 	self.Power.PostUpdate = K.Power_PostUpdate

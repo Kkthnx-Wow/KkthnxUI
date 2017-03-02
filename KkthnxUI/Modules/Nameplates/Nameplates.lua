@@ -1,8 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 if C.Nameplates.Enable ~= true then return end
 
--- NOTE: The newest function in oUF to handle this breaks out script here. It will cause clicking the nameplates to act funky. We need to look into this.
-
 -- Lua API
 local _G = _G
 local floor = math.floor
@@ -68,8 +66,6 @@ if C.Nameplates.EnhancedThreat == true and not InCombatLockdown() then
 end
 
 UpdateCVars["nameplateGlobalScale"] = 1
-UpdateCVars["nameplateGlobalScale"] = 1
-UpdateCVars["nameplateLargerScale"] = 1
 UpdateCVars["nameplateLargerScale"] = 1
 UpdateCVars["nameplateMaxAlpha"] = 1
 UpdateCVars["nameplateMaxAlphaDistance"] = 0
@@ -83,7 +79,7 @@ UpdateCVars["nameplateOtherBottomInset"] = C.Nameplates.Clamp and 0.08 or 1
 UpdateCVars["nameplateOtherTopInset"] = C.Nameplates.Clamp and 0.1 or -1
 UpdateCVars["nameplateSelfAlpha"] = 1
 UpdateCVars["nameplateShowAll"] = 1
-UpdateCVars["nameplateShowFriendlyNPCs"] = 0
+UpdateCVars["nameplateShowFriendlyNPCs"] = 1
 
 KkthnxUIPlates.UpdateCVars = UpdateCVars
 

@@ -75,7 +75,7 @@ function oUF:DisableBlizzard(unit)
 	elseif(unit == 'targettarget') then
 		HandleFrame(TargetFrameToT)
 	elseif(unit:match('boss%d?$')) then
-		local id = unit:match'boss(%d)'
+		local id = unit:match('boss(%d)')
 		if(id) then
 			HandleFrame('Boss' .. id .. 'TargetFrame')
 		else
@@ -84,7 +84,7 @@ function oUF:DisableBlizzard(unit)
 			end
 		end
 	elseif(unit:match('party%d?$')) then
-		local id = unit:match'party(%d)'
+		local id = unit:match('party(%d)')
 		if(id) then
 			HandleFrame('PartyMemberFrame' .. id)
 		else
@@ -94,7 +94,7 @@ function oUF:DisableBlizzard(unit)
 		end
 		HandleFrame(PartyMemberBackground)
 	elseif(unit:match('arena%d?$')) then
-		local id = unit:match'arena(%d)'
+		local id = unit:match('arena(%d)')
 
 		if(id) then
 			HandleFrame('ArenaEnemyFrame' .. id)
@@ -110,7 +110,9 @@ function oUF:DisableBlizzard(unit)
 
 		-- Blizzard_ArenaUI should not be loaded
 		Arena_LoadUI = function() end
-		SetCVar('showArenaEnemyFrames', '0', 'SHOW_ARENA_ENEMY_FRAMES_TEXT')
+		if not InCombatLockdown() then
+			SetCVar('showArenaEnemyFrames', '0', 'SHOW_ARENA_ENEMY_FRAMES_TEXT')
+		end
 	elseif(unit:match('nameplate%d+$')) then
 		local frame = C_NamePlate.GetNamePlateForUnit(unit)
 		if(frame and frame.UnitFrame) then
