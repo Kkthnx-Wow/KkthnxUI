@@ -213,7 +213,7 @@ local function initObject(unit, style, styleFunc, header, ...)
 			objectUnit = objectUnit .. suffix
 		end
 
-		if(not (suffix == 'target' or objectUnit and objectUnit:match'target')) then
+		if(not (suffix == 'target' or objectUnit and objectUnit:match('target'))) then
 			object:RegisterEvent('UNIT_ENTERED_VEHICLE', updateActiveUnit)
 			object:RegisterEvent('UNIT_EXITED_VEHICLE', updateActiveUnit)
 
@@ -494,7 +494,7 @@ do
 
 		template = (template or 'SecureGroupHeaderTemplate')
 
-		local isPetHeader = template:match'PetHeader'
+		local isPetHeader = template:match('PetHeader')
 		local name = overrideName or generateName(nil, ...)
 		local header = CreateFrame('Frame', name, oUF_PetBattleFrameHider, template)
 
@@ -567,15 +567,10 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 	local style = style
 	local prefix = namePrefix or generateName()
 
-	-- There's no way to prevent nameplate settings updates without tainting UI,
-	-- thus we should allow default nameplate driver to create, update, and remove
-	-- Blizz nameplates. "Disabling" them via oUF:DisableBlizzard is a bit ugly,
-	-- but taint-free solution.
-	NamePlateDriverFrame:Hide()
-	NamePlateDriverFrame:UnregisterAllEvents()
-	NamePlateDriverFrame:RegisterEvent('NAME_PLATE_CREATED')
-	NamePlateDriverFrame:RegisterEvent('NAME_PLATE_UNIT_ADDED')
-	NamePlateDriverFrame:RegisterEvent('NAME_PLATE_UNIT_REMOVED')
+	-- Because there's no way to prevent nameplate settings updates without tainting UI,
+	-- and because forbidden nameplates exist, we have to allow default nameplate
+	-- driver to create, update, and remove Blizz nameplates.
+	-- Disable only not forbidden nameplates.
 	NamePlateDriverFrame:HookScript('OnEvent', function(_, event, unit)
 		if(event == 'NAME_PLATE_UNIT_ADDED' and unit) then
 			self:DisableBlizzard(unit)
@@ -594,16 +589,6 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 					SetCVar(cvar, value)
 				end
 			end
-
-			-- Disable power and classpower bars.
-			ClassNameplateManaBarFrame:UnregisterAllEvents()
-			DeathKnightResourceOverlayFrame:UnregisterAllEvents()
-			ClassNameplateBarMageFrame:UnregisterAllEvents()
-			ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
-			ClassNameplateBrewmasterBarFrame:UnregisterAllEvents()
-			ClassNameplateBarPaladinFrame:UnregisterAllEvents()
-			ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
-			ClassNameplateBarWarlockFrame:UnregisterAllEvents()
 		elseif(event == 'PLAYER_TARGET_CHANGED') then
 			local nameplate = C_NamePlate.GetNamePlateForUnit('target')
 			if(not nameplate) then return end
@@ -611,7 +596,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			nameplate.unitFrame:UpdateAllElements(event)
 
 			if(nameplateCallback) then
-				nameplateCallback(event, nameplate.unitFrame, 'target')
+				nameplateCallback(nameplate.unitFrame, event, 'target')
 			end
 		elseif(event == 'NAME_PLATE_UNIT_ADDED' and unit) then
 			local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
@@ -633,7 +618,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			nameplate.unitFrame:UpdateAllElements(event)
 
 			if(nameplateCallback) then
-				nameplateCallback(event, nameplate.unitFrame, unit)
+				nameplateCallback(nameplate.unitFrame, event, unit)
 			end
 		elseif(event == 'NAME_PLATE_UNIT_REMOVED' and unit) then
 			local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
@@ -643,7 +628,7 @@ function oUF:SpawnNamePlates(namePrefix, nameplateCallback, nameplateCVars)
 			nameplate.unitFrame:UpdateAllElements(event)
 
 			if(nameplateCallback) then
-				nameplateCallback(event, nameplate.unitFrame, unit)
+				nameplateCallback(nameplate.unitFrame, event, unit)
 			end
 		end
 	end)
