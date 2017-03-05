@@ -1,14 +1,17 @@
-﻿local K, C, L = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 if C.Tooltip.Enable ~= true or C.Tooltip.ItemIcon ~= true then return end
 
 local _G = _G
+local pairs = pairs
 local select = select
 
-local GetName, GetItem = GetName, GetItem
-local GetItemIcon = GetItemIcon
-local GetSpellInfo = GetSpellInfo
+local BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT = _G.BONUS_OBJECTIVE_REWARD_WITH_COUNT_FORMAT
+local GetItem = _G.GetItem
+local GetItemIcon = _G.GetItemIcon
+local GetName = _G.GetName
+local GetSpellInfo = _G.GetSpellInfo
 
-local function setTooltipIcon(self, icon)
+local function SetTooltipIcon(self, icon)
 	local title = icon and _G[self:GetName().."TextLeft1"]
 	if title then
 		title:SetFormattedText("|T%s:20:20:0:0:64:64:5:59:5:59:%d|t %s", icon, 20, title:GetText())
@@ -35,14 +38,14 @@ end
 local hookItem = newTooltipHooker("OnTooltipSetItem", function(self, ...)
 	local _, link = self:GetItem()
 	if link then
-		setTooltipIcon(self, GetItemIcon(link))
+		SetTooltipIcon(self, GetItemIcon(link))
 	end
 end)
 
 local hookSpell = newTooltipHooker("OnTooltipSetSpell", function(self, ...)
 	local _, _, id = self:GetSpell()
 	if id then
-		setTooltipIcon(self, select(3, GetSpellInfo(id)))
+		SetTooltipIcon(self, select(3, GetSpellInfo(id)))
 	end
 end)
 

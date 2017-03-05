@@ -71,7 +71,7 @@ if CheckAddOn("Prat-3.0") or CheckAddOn("Chatter") then
 	C.Chat.Enable = false
 end
 
-if CheckAddOn("TidyPlates") or CheckAddOn("Aloft") or CheckAddOn("Kui_Nameplates") then
+if CheckAddOn("TidyPlates") or CheckAddOn("Aloft") or CheckAddOn("Kui_Nameplates") or CheckAddOn("bdNameplates") then
 	C.Nameplates.Enable = false
 end
 

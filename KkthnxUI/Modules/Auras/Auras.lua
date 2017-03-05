@@ -254,7 +254,7 @@ function KkthnxUIAuras:Skin()
 
 	self.Icon = Icon
 	self.Count = Count
-	self:CreateBackdrop()
+	self:CreateBorder() -- NOTE: For now this will fix the backdrop issue.
 
 	if C.Blizzard.ColorTextures == true then
 		self.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])

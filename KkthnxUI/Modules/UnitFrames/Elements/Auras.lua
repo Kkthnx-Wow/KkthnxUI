@@ -33,7 +33,7 @@ do
 	end
 
 	local function fixCooldownFlash(self, start, duration)
-		if (self.duration == duration) and (self.starttime == start) then return; end
+		if (self.duration == duration) and (self.starttime == start) then return end
 		self.starttime = start
 		self.duration = duration
 		self:_SetCooldown(start, duration)
@@ -53,7 +53,6 @@ do
 		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\border-2")
 		overlay:SetPoint("TOPRIGHT", button.icon, 3, 3)
 		overlay:SetPoint("BOTTOMLEFT", button.icon, -3, -3)
-		-- overlay:SetTexCoord(0, 0.515625, 0, 0.515625)
 		overlay:SetTexCoord(0, 0.6875, 0, 0.6875)
 		button.overlay = overlay
 
@@ -133,18 +132,18 @@ do
 	end
 
 	local function UpdateAura( button, elapsed )
-		if not (button.timeLeft) then return; end
+		if not (button.timeLeft) then return end
 		button.timeLeft = button.timeLeft - elapsed
 
 		if button.nextupdate > 0 then
 			button.nextupdate = button.nextupdate - elapsed
-			return;
+			return
 		end
 
 		if (button.timeLeft <= 0) then
 			button.timer:SetText("")
 			button:SetScript("OnUpdate", nil)
-			return;
+			return
 		end
 
 		local text

@@ -2,32 +2,32 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 
+-- Lua API
 local _G = _G
-
-local math_min = math.min
-local math_max = math.max
 local math_abs = math.abs
+local math_max = math.max
+local math_min = math.min
 
+-- Wow API
 local GetFramerate = _G.GetFramerate
 
 local smoothing = {}
 local function Smooth(self, value)
-	local _, max = self:GetMinMaxValues()
-	if value == self:GetValue() or (self._max and self._max ~= max) then
-		smoothing[self] = nil
-		self:SetValue_(value)
-	else
+	if value ~= self:GetValue() or value == 0 then
 		smoothing[self] = value
+	else
+		smoothing[self] = nil
 	end
-	self._max = max
 end
 
-local function SmoothBar(self, bar)
-	bar.SetValue_ = bar.SetValue
-	bar.SetValue = Smooth
+local function SmoothBar(bar)
+	if not bar.SetValue_ then
+		bar.SetValue_ = bar.SetValue
+		bar.SetValue = Smooth
+	end
 end
 
-local function ResetBar(self, bar)
+local function ResetBar(bar)
 	if bar.SetValue_ then
 		bar.SetValue = bar.SetValue_
 		bar.SetValue_ = nil
@@ -35,32 +35,50 @@ local function ResetBar(self, bar)
 end
 
 local function hook(frame)
-	frame.SmoothBar = SmoothBar
-	if frame.Health and frame.Health.Smooth then
-		frame:SmoothBar(frame.Health)
+	if frame.Health then
+		SmoothBar(frame.Health)
 	end
-	if frame.Power and frame.Power.Smooth then
-		frame:SmoothBar(frame.Power)
+
+	if frame.Power then
+		SmoothBar(frame.Power)
 	end
-	if frame.AltPowerBar and frame.AltPowerBar.Smooth then
-		frame:SmoothBar(frame.AltPowerBar)
+
+	if frame.AltPowerBar then
+		SmoothBar(frame.AltPowerBar)
+	end
+
+	if frame.HealPrediction then
+		if frame.HealPrediction.myBar then
+			SmoothBar(frame.HealPrediction.myBar)
+		end
+
+		if frame.HealPrediction.otherBar then
+			SmoothBar(frame.HealPrediction.otherBar)
+		end
+
+		if frame.HealPrediction.healAbsorbBar then
+			SmoothBar(frame.HealPrediction.healAbsorbBar)
+		end
 	end
 end
 
 for i, frame in ipairs(oUF.objects) do hook(frame) end
 oUF:RegisterInitCallback(hook)
 
-local f = CreateFrame("Frame")
-f:SetScript("OnUpdate", function()
-	local limit = 30/GetFramerate()
+local f, min, max = CreateFrame('Frame'), math.min, math.max
+f:SetScript('OnUpdate', function()
+	local rate = GetFramerate()
+	local limit = 30/rate
+
 	for bar, value in pairs(smoothing) do
-		local current = bar:GetValue()
-		local new = current and (current + math_min((value-current)/20, math_max(value-current, limit))) or value
-		if new ~= new then -- Mad hax to prevent QNAN.
+		local cur = bar:GetValue()
+		local new = cur + math_min((value-cur)/10, math_max(value-cur, limit))
+		if new ~= new then
+			-- Mad hax to prevent QNAN.
 			new = value
 		end
 		bar:SetValue_(new)
-		if (current == value or math_abs(new - value) < 2) and bar.Smooth then
+		if (cur == value or math_abs(new - value) < 2) and bar.Smooth then
 			bar:SetValue_(value)
 			smoothing[bar] = nil
 		elseif not bar.Smooth then

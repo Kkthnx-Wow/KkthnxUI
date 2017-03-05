@@ -4,17 +4,17 @@ if C.Unitframe.Enable ~= true then return end
 local _, ns = ...
 
 -- Default Aura Filter
-K.DefaultAuras = {
-	Arena = {},
-	Boss = {},
-	General = {},
-}
-
-for _, list in pairs({K.AuraList.Stun, K.AuraList.CC, K.AuraList.Silence, K.AuraList.Taunt}) do
-	for i = 1, #list do
-		K.DefaultAuras.Arena[list[i]] = true
-	end
-end
+-- K.DefaultAuras = {
+-- 	Arena = {},
+-- 	Boss = {},
+-- 	General = {},
+-- }
+--
+-- for _, list in pairs({K.AuraList.Stun, K.AuraList.CC, K.AuraList.Silence, K.AuraList.Taunt}) do
+-- 	for i = 1, #list do
+-- 		K.DefaultAuras.Arena[list[i]] = true
+-- 	end
+-- end
 
 -- Default Settings
 ns.config = {
