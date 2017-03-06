@@ -139,7 +139,7 @@ function KkthnxUIAuras:UpdateAura(index)
 
 		if (self.Filter == "HARMFUL") then
 			local Color = DebuffTypeColor[DType or "none"]
-			self.backdrop:SetBackdropBorderColor(Color.r * 3/5, Color.g * 3/5, Color.b * 3/5)
+			self.border:SetBackdropBorderColor(Color.r * 3/5, Color.g * 3/5, Color.b * 3/5)
 		end
 
 		self.Icon:SetTexture(Texture)
