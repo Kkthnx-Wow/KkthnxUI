@@ -6,7 +6,6 @@ local _G = _G
 local string_format = string.format
 
 -- Wow API
-local Calendar_Toggle = _G.Calendar_Toggle
 local ClearAllTracking = _G.ClearAllTracking
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetNumTrackingTypes = _G.GetNumTrackingTypes
