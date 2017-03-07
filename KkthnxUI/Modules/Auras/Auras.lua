@@ -257,7 +257,7 @@ function KkthnxUIAuras:Skin()
 	self:CreateBorder() -- NOTE: For now this will fix the backdrop issue.
 
 	if C.Blizzard.ColorTextures == true then
-		self.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
+		self.border:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
 	if not self.shadow then
