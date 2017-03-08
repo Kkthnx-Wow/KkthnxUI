@@ -101,8 +101,13 @@ end
 
 -- Who doesn"t like shadows! More shadows!
 local function CreateShadow(f, size)
-	if f.Shadow then return end
-	if not size then size = 3 end
+	if f.Shadow then
+		return
+	end
+
+	if not size then
+		size = 3
+	end
 
 	local shadow = CreateFrame("Frame", nil, f)
 	shadow:SetFrameLevel(1)
@@ -124,19 +129,24 @@ local function CreateShadow(f, size)
 end
 
 local function CreateBlizzShadow(f, size)
-	if f.shadow then return end
-	if not size then size = 5 end
+	if f.blizzshadow then
+		return
+	end
 
-	local shadow = f:CreateTexture(nil, "BACKGROUND")
-	shadow:SetPoint("TOPLEFT", -size, size)
-	shadow:SetPoint("BOTTOMLEFT", -size, -size)
-	shadow:SetPoint("TOPRIGHT", size, size)
-	shadow:SetPoint("BOTTOMRIGHT", size, -size)
+	if not size then
+		size = 4
+	end
 
-	shadow:SetTexture(C.Media.Border_Shadow)
-	shadow:SetVertexColor(0, 0, 0, 0.9)
+	local blizzshadow = f:CreateTexture(nil, "BACKGROUND")
+	blizzshadow:SetPoint("TOPLEFT", -size, size)
+	blizzshadow:SetPoint("BOTTOMLEFT", -size, -size)
+	blizzshadow:SetPoint("TOPRIGHT", size, size)
+	blizzshadow:SetPoint("BOTTOMRIGHT", size, -size)
 
-	f.shadow = shadow
+	blizzshadow:SetTexture(C.Media.Border_Shadow)
+	blizzshadow:SetVertexColor(0, 0, 0, 0.9)
+
+	f.blizzshadow = blizzshadow
 end
 
 local function SetTemplate(f, t, tex)

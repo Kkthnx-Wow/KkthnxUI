@@ -30,7 +30,6 @@ C["Media"] = {
 -- For those who love flat textures.
 if C.General.UseFlatTextures then
 	C.Media.Texture = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat]]
-	C.Media.Blank = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat]]
 end
 
 -- Let people turn off my font and replace for certain locals

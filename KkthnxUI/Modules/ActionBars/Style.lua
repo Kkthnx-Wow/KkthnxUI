@@ -81,6 +81,7 @@ local function StyleNormalButton(self)
 		icon:SetTexCoord(unpack(K.TexCoords))
 		icon:SetPoint("TOPLEFT", button, 2, -2)
 		icon:SetPoint("BOTTOMRIGHT", button, -2, 2)
+		icon:SetDrawLayer("BORDER", 0)
 
 		button.isSkinned = true
 	end
@@ -98,8 +99,12 @@ local function StyleNormalButton(self)
 		button.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
-	if not button.shadow and button.isSkinned then
-		button:CreateBlizzShadow(6)
+	if not button.blizzshadow and button.isSkinned then
+		if button.backdrop then
+			button.backdrop:CreateBlizzShadow()
+		else
+			button:CreateBlizzShadow(6)
+		end
 	end
 
 	if normal and button:GetChecked() then
@@ -165,8 +170,12 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 		button.isSkinned = true
 	end
 
-	if not button.shadow then
-		button:CreateBlizzShadow(6)
+	if not button.blizzshadow and button.isSkinned then
+		if button.backdrop then
+			button.backdrop:CreateBlizzShadow()
+		else
+			button:CreateBlizzShadow(6)
+		end
 	end
 
 	if normal then

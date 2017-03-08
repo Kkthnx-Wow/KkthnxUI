@@ -168,16 +168,13 @@ function KkthnxUIInstall:ChatSetup()
 	ToggleChatColorNamesByClassGroup(true, "WHISPER")
 	ToggleChatColorNamesByClassGroup(true, "YELL")
 
-	-- Adjust Chat Colors
-	ChangeChatColor("CHANNEL1", 153/255, 153/255, 255/255)
-	ChangeChatColor("CHANNEL2", 102/255, 102/255, 204/255)
+	--Adjust Chat Colors
+	--General
+	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255)
+	--Trade
+	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255)
+	--Local Defense
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255)
-	ChangeChatColor("RAID", 255/255, 71/255, 10/255)
-	ChangeChatColor("RAID_LEADER", 230/255, 179/255, 38/255)
-	ChangeChatColor("BATTLEGROUND", 255/255, 71/255, 10/255)
-	ChangeChatColor("BATTLEGROUND_LEADER", 230/255, 179/255, 38/255)
-	ChangeChatColor("INSTANCE_CHAT", 255/255, 71/255, 10/255)
-	ChangeChatColor("INSTANCE_CHAT_LEADER", 230/255, 179/255, 38/255)
 end
 
 function KkthnxUIInstall:CVarSetup()

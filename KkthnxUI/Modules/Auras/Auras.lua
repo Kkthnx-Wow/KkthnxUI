@@ -139,7 +139,7 @@ function KkthnxUIAuras:UpdateAura(index)
 
 		if (self.Filter == "HARMFUL") then
 			local Color = DebuffTypeColor[DType or "none"]
-			self.border:SetBackdropBorderColor(Color.r * 3/5, Color.g * 3/5, Color.b * 3/5)
+			self.backdrop:SetBackdropBorderColor(Color.r * 3/5, Color.g * 3/5, Color.b * 3/5)
 		end
 
 		self.Icon:SetTexture(Texture)
@@ -191,6 +191,7 @@ function KkthnxUIAuras:Skin()
 	local Icon = self:CreateTexture(nil, "BORDER")
 	Icon:SetTexCoord(unpack(K.TexCoords))
 	Icon:SetInside()
+	Icon:SetDrawLayer("BORDER", 0)
 
 	local Count = self:CreateFontString(nil, "OVERLAY")
 	Count:SetFont(Font, FontSize, FontStyle)
@@ -254,14 +255,18 @@ function KkthnxUIAuras:Skin()
 
 	self.Icon = Icon
 	self.Count = Count
-	self:CreateBorder() -- NOTE: For now this will fix the backdrop issue.
+	self:CreateBackdrop() -- NOTE: For now this will fix the backdrop issue.
 
 	if C.Blizzard.ColorTextures == true then
-		self.border:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
+		self.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 	end
 
-	if not self.shadow then
-		self:CreateBlizzShadow(5)
+	if not self.blizzshadow then
+		if self.backdrop then
+			self.backdrop:CreateBlizzShadow(3)
+		else
+			self:CreateBlizzShadow(5)
+		end
 	end
 end
 

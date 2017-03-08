@@ -17,6 +17,7 @@ local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
 local InCinematic = _G.InCinematic
 local InCombatLockdown = _G.InCombatLockdown
+local ReloadUI = _G.ReloadUI
 local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
@@ -27,10 +28,10 @@ local RequireRestart = false
 
 StaticPopupDialogs["CLIENT_RESTART"] = {
 	text = L.Popup.ResolutionChanged,
-	button1 = ACCEPT,
-	button2 = CANCEL,
+	button1 = "Restart Client",
+	button2 = RELOADUI,
 	OnAccept = function(self) RequireRestart = false ForceQuit() end,
-	OnCancel = function(self) RequireRestart = false end,
+	OnCancel = function(self) RequireRestart = false ReloadUI() end,
 	timeout = 0,
 	whileDead = 1,
 	hideOnEscape = false,
@@ -45,10 +46,13 @@ PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
 PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Prevent a C stack overflow
-	if Lock then
+	if Lock == true then
 		return
 	end
-	Lock = true
+
+	if Lock == false then
+		Lock = true
+	end
 
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -77,7 +81,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C.General.UIScale)) then
 		SetCVar("uiScale", C.General.UIScale)
-		if not RequireRestart then
+		if RequireRestart == false then
 			if C.General.UIScale >= 0.64 then
 				StaticPopup_Show("CLIENT_RESTART")
 				RequireRestart = true
@@ -97,5 +101,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
-	Lock = false
+	if Lock == true then
+		Lock = false
+	end
 end)

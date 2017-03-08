@@ -34,15 +34,22 @@ local function SetFont(obj, font, size, style, r, g, b, sr, sg, sb, sox, soy)
 	if (not obj) then return end
 
 	obj:SetFont(font, size, style)
-	if sr and sg and sb then obj:SetShadowColor(sr, sg, sb) end
-	if sox and soy then obj:SetShadowOffset(sox, soy) end
-	if r and g and b then obj:SetTextColor(r, g, b)
-		elseif r then obj:SetAlpha(r) end
+	if sr and sg and sb then
+		obj:SetShadowColor(sr, sg, sb)
+	end
+	if sox and soy then
+		obj:SetShadowOffset(sox, soy)
+	end
+	if r and g and b then
+		obj:SetTextColor(r, g, b)
+	elseif r then
+		obj:SetAlpha(r)
+	end
 end
 
-local KkthnxUIFonts = CreateFrame("Frame", nil, UIParent)
-KkthnxUIFonts:RegisterEvent("ADDON_LOADED")
-KkthnxUIFonts:SetScript("OnEvent", function(self, event)
+local InterfaceFonts = CreateFrame("Frame", nil, UIParent)
+InterfaceFonts:RegisterEvent("ADDON_LOADED")
+InterfaceFonts:SetScript("OnEvent", function(self, event)
 	local NORMAL = C.Media.Font
 	local COMBAT = C.Media.Combat_Font
 
@@ -197,4 +204,4 @@ KkthnxUIFonts:SetScript("OnEvent", function(self, event)
 	end
 end)
 
-K.Fonts = KkthnxUIFonts
+K.Fonts = InterfaceFonts

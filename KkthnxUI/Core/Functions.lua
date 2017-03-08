@@ -223,8 +223,10 @@ end
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
-K:RegisterEvent("PLAYER_REGEN_ENABLED")
-function K:PLAYER_REGEN_ENABLED(_)
+
+local CVarUpdateEvent = CreateFrame("Frame")
+CVarUpdateEvent:RegisterEvent("PLAYER_REGEN_ENABLED")
+CVarUpdateEvent:SetScript("OnEvent", function(self, event)
 	if (self.CVarUpdate) then
 		for cvarName, value in pairs(self.LockedCVars) do
 			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
@@ -234,7 +236,7 @@ function K:PLAYER_REGEN_ENABLED(_)
 		end
 		self.CVarUpdate = nil
 	end
-end
+end)
 
 local function CVAR_UPDATE(cvarName, value)
 	if (not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
