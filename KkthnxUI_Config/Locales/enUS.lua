@@ -166,7 +166,6 @@ UIConfigLocal.MinimapSize = "Minimap size - Default is 150"
 -- Misc
 UIConfigLocal.Misc = "Miscellaneous"
 UIConfigLocal.MiscAFKCamera = "Spin camera while AFK"
-UIConfigLocal.MiscArmory = "Add Armory link in UnitPopupMenus (It can break UnitPopupMenus)"
 UIConfigLocal.MiscAutoRepair = "When visiting a repair merchant, automatically repair our gear"
 UIConfigLocal.MiscAutoSellGrays = "When visiting a vendor, automatically sell gray quality items"
 UIConfigLocal.MiscBGSpam = "Remove Boss Emote spam during BG"

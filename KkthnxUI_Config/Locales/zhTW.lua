@@ -166,7 +166,6 @@ UIConfigLocal.MinimapSize = "小地圖尺寸 - 默認150"
 -- Misc
 UIConfigLocal.Misc = "其他"
 UIConfigLocal.MiscAFKCamera = "AFK時自動轉動鏡頭"
-UIConfigLocal.MiscArmory = "人物右鍵菜單中加入英雄榜鏈接（可能使菜單崩潰）"
 UIConfigLocal.MiscAutoRepair = "自動修理物品"
 UIConfigLocal.MiscAutoSellGrays = "自動出售灰色物品"
 UIConfigLocal.MiscBGSpam = "戰場中不顯示BOSS喊話"

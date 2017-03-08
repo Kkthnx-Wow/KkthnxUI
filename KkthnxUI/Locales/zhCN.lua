@@ -270,7 +270,6 @@ L.Misc = {
 }
 
 L.Popup = {
-	Armory = "英雄榜",
 	BlizzardAddOns = "您的一个插件禁用了Blizzard_CompactRaidFrames插件。这可能会引发错误或其他情况。这个插件将被重新启用。",
 	BoostUI = "|cffff0000警告|r |n|n这将会通过降低图像质量来优化性能，请在您有|cffff0000FPS|r issues!|r问题时再点击接受！",
 	DisableUI = "KkthnxUI在这一分辨率上可能不会正常工作，您想禁用KkthnxUI吗? （如果您想试试其他分辨率请取消）",

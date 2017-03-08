@@ -182,7 +182,6 @@ C["Minimap"] = {
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
-	["Armory"] = false,
 	["AutoRepair"] = true,
 	["AutoSellGrays"] = true,
 	["BGSpam"] = false,

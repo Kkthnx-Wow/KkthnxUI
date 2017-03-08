@@ -268,7 +268,6 @@ L.Misc = {
 }
 
 L.Popup = {
-	Armory = "Armory",
 	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
 	BoostUI = "|cffff0000WARNUNG|r |n|nDiese Einstellung optimiert Deine Performance indem die Grafikdetails runtergesetzt werden. Klicke nur auf Annehmen wenn Du massive |cffff0000FPS|r Probleme hast!|r",
 	DisableUI = "KkthnxUI funktioniert mit deiner eingestellten Auflösung wahrscheinlich nicht, möchtest du KkthnxUI deaktivieren? (Wähle Abbrechen, wenn du eine andere Auflösung einstellen magst)",

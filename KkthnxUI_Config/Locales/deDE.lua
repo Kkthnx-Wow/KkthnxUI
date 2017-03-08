@@ -167,7 +167,6 @@ UIConfigLocal.MinimapSize = "Größe der Minimap - Standard ist 150"
 -- Sonstiges
 UIConfigLocal.Misc = "Sonstiges"
 UIConfigLocal.MiscAFKCamera = "Drehe die Kamera während Du AFK bist"
-UIConfigLocal.MiscArmory = "Zeige einen Link zur Armory an, wenn Du die Einstellungen eines Einheitenfensters aufrufst"
 UIConfigLocal.MiscAutoRepair = "Repariere automatisch Deine Ausrüstung beim Händler"
 UIConfigLocal.MiscAutoSellGrays = "Verkaufe automatisch graue Gegenstände beim Händler"
 UIConfigLocal.MiscBGSpam = "Lösche 'Boss Emote spam' während du auf dem Schlachtfeld bist"

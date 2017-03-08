@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Engine -->
-   <Script file="Core\Engine.lua" />
+   <Script file="Init.lua" />
    <Script file="Core\Constants.lua" />
    <!-- Locales -->
    <Script file="Locales\enUS.lua" />
@@ -155,7 +155,6 @@
    <Script file="Modules\Maps\WorldMap.lua" />
    <!-- Miscellaneous -->
    <Script file="Modules\Miscellaneous\AFKSpin.lua" />
-   <Script file="Modules\Miscellaneous\ArmoryLink.lua" />
    <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />
