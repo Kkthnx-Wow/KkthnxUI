@@ -117,6 +117,7 @@
    <Script file="Modules\Blizzard\MirrorBars.lua" />
    <Script file="Modules\Blizzard\RaidUtility.lua" />
    <Script file="Modules\Blizzard\ReputationGain.lua" />
+   <Script file="Modules\Blizzard\ScriptErrors.lua" />
    <Script file="Modules\Blizzard\TalkingHeadFrame.lua" />
    <Script file="Modules\Blizzard\TimerTracker.lua" />
    <Script file="Modules\Blizzard\Vehicle.lua" />

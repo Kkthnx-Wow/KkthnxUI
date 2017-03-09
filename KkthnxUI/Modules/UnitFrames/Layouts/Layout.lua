@@ -44,11 +44,11 @@ local Movers = K.Movers
 -- Frame data
 local DataNormal = {
 	targetTexture = {
-		elite = pathNormal .. "Target-Elite",
-		rareelite = pathNormal .. "Target-Rare-Elite",
-		rare = pathNormal .. "Target-Rare",
-		worldboss = pathNormal .. "Target-Elite",
-		normal = pathNormal .. "Target",
+		["elite"] = pathNormal.."Target-Elite",
+		["rareelite"] = pathNormal.."Target-Rare-Elite",
+		["rare"] = pathNormal.."Target-Rare",
+		["worldboss"] = pathNormal.."Target-Elite",
+		["normal"] = pathNormal.."Target",
 	},
 	vehicle = {-- w = width, h = height, x offset, y offset, t=texture, j = justify, s = size, c=Texture Coordinates, p = point
 		siz = {w = 175, h = 42}, -- size
@@ -95,7 +95,7 @@ local DataNormal = {
 		glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
 	},
 	targettarget = {-- and focus target
-		siz = {w = 85, h = 20},
+		siz = {w = 86, h = 20},
 		tex = {w = 128, h = 64, x = 16, y = -10, t = pathNormal.."TargetOfTarget", c = {0, 1, 0, 1}},
 		hpb = {w = 43, h = 6, x = 2, y = 14,},
 		hpt = {x = -2, y = 0, j = "CENTER", s = 10},
@@ -139,11 +139,11 @@ local DataNormal = {
 
 local DataFat = {
 	targetTexture = {
-		elite = pathFat .. "Target-Elite",
-		rareelite = pathFat .. "Target-Rare-Elite",
-		rare = pathFat .. "Target-Rare",
-		worldboss = pathFat .. "Target-Elite",
-		normal = pathFat .. "Target",
+		["elite"] = pathFat.."Target-Elite",
+		["rareelite"] = pathFat.."Target-Rare-Elite",
+		["rare"] = pathFat.."Target-Rare",
+		["worldboss"] = pathFat.."Target-Elite",
+		["normal"] = pathFat.."Target",
 	},
 	vehicle = DataNormal.vehicle,
 	vehicleorganic = DataNormal.vehicleorganic,
@@ -177,12 +177,12 @@ local DataFat = {
 		hpt = {x = 1, y = 1, j = "CENTER", s = 13},
 		mpb = {w = 69, h = 8, x = 0, y = 0,},
 		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		--nam = {w = 110, h = 10, x = 20, y = 15, j = "LEFT", s = 12},
+		-- nam = {w = 110, h = 10, x = 20, y = 15, j = "LEFT", s = 12},
 		por = {w = 37, h = 37, x = -41, y = 10,},
 		glo = {w = 128, h = 64, x = -4, y = 12, t = pathFat.."Party-Flash", c = {0, 1, 1, 0}},
 	},
 	party = {
-		siz = {w = 116, h = 35},
+		siz = {w = 116, h = 36},
 		tex = {w = 128, h = 64, x = 2, y = -16, t = pathFat.."Party", c = {0, 1, 0, 1}},
 		hpb = {w = 69, h = 12, x = 17, y = 15,},
 		hpt = {x = 0, y = 1, j = "CENTER", s = 10},
@@ -735,12 +735,15 @@ local function CreateUnitLayout(self, unit)
 	table_insert(self.mouseovers, self.Health)
 	self.Health.colorHealth = false
 	self.Health.colorClass = true
+	self.Health.colorClassPet = false
+	self.Health.colorPetAsPlayer = false -- let's keep this one to the player pet frame only
 	self.Health.colorReaction = true
 	self.Health.colorDisconnected = true
 	self.Health.colorTapping = true
 	self.Health.colorSmooth = true
 	self.Health.Smooth = true
 	self.Health.frequentUpdates = true
+	self.Health.SpiritHealer = self.SpiritHealer -- connect the spirithealer artwork
 	self.Health.PostUpdate = K.Health_PostUpdate
 
 	-- Health text
@@ -756,6 +759,7 @@ local function CreateUnitLayout(self, unit)
 	table_insert(self.mouseovers, self.Power)
 	self.Power.colorPower = true
 	self.Power.colorClass = false
+	self.Power.colorClassNPC = false
 	self.Power.colorSmooth = false
 	self.Power.colorReaction = true
 	self.Power.colorDisconnected = true

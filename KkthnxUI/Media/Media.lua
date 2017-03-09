@@ -33,10 +33,9 @@ if C.General.UseFlatTextures then
 end
 
 -- Let people turn off my font and replace for certain locals
-if (C.General.UseBlizzardFonts or Locale == "koKR" or Locale == "zhTW" or Locale == "zhCN") then
+if (Locale == "koKR" or Locale == "zhTW" or Locale == "zhCN") then
 	C.Media.Font = STANDARD_TEXT_FONT
 	C.Media.Combat_Font = DAMAGE_TEXT_FONT
-	C.Blizzard.ReplaceBlizzardFonts = false
 end
 
 if LSM == nil then return end
