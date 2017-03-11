@@ -70,11 +70,6 @@ for i = 1, GetNumAddOns() do
 	K.AddOns[string_lower(AddOnName)] = GetAddOnEnableState(K.Name, AddOnName) > 0
 end
 
-local _VERSION = K.Version
-if(_VERSION:find("project%-version")) then
-	_VERSION = "devel"
-end
-
 StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
 	text = "Oh no, you have |cff3c9bedKkthnxUI|r and |cff8a0707Diabolic|r|cffffffffUI|r both enabled at the same time. Select an addon to disable to prevent conflicts!",
 	button1 = "|cff3c9bedKkthnxUI|r",

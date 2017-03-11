@@ -45,18 +45,20 @@ local oUF = ns.oUF
 local KkthnxUINamePlates = CreateFrame("Frame")
 KkthnxUINamePlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 
-local UpdateCVars = {}
+-- NOTE: We should determine what Vars tend to bug out the nameplates and make sure we always have these defaulted. If not, we fetch the defaulted settings and reset them.
+-- NOTE: This is the safest way to prevent any unknown issues currently.
 
--- Setup CVars. These will fire on PLAYER_LOGIN
-UpdateCVars["nameplateMotionSpeed"] = .1
 -- These should be defaulted pretty much always
-UpdateCVars["nameplateLargeBottomInset"] = GetCVarDefault("nameplateLargeBottomInset")
-UpdateCVars["nameplateLargeTopInset"] = GetCVarDefault("nameplateLargeTopInset")
-UpdateCVars["nameplateOtherBottomInset"] = GetCVarDefault("nameplateOtherBottomInset")
-UpdateCVars["nameplateOtherTopInset"] = GetCVarDefault("nameplateOtherTopInset")
-UpdateCVars["nameplateOverlapH"] = GetCVarDefault("nameplateOverlapH")
-UpdateCVars["nameplateOverlapV"] = GetCVarDefault("nameplateOverlapV")
+K.LockCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
+K.LockCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
+K.LockCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+K.LockCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
+K.LockCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
+K.LockCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+K.LockCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+
 -- Set what we want for the nameplates. Only certain ones will work for oUF.
+local UpdateCVars = {}
 if C.Nameplates.EnhancedThreat == true then
 	UpdateCVars["threatWarning"] = 3
 end
@@ -76,14 +78,7 @@ UpdateCVars["nameplateSelfAlpha"] = 1
 UpdateCVars["nameplateShowAll"] = 1
 UpdateCVars["nameplateShowFriendlyNPCs"] = 1
 
-if not InCombatLockdown() then
-	for k, v in pairs(UpdateCVars) do
-		local current = tonumber(GetCVar(k))
-		if (current ~= tonumber(v)) then
-			SetCVar(k, v)
-		end
-	end
-end
+KkthnxUINamePlates.UpdateCVars = UpdateCVars
 
 local healList, exClass, healerSpecs = {}, {}, {}
 local testing = false
@@ -863,4 +858,4 @@ end
 
 oUF:RegisterStyle("KkthnxUINamePlates", StyleNamePlates)
 oUF:SetActiveStyle("KkthnxUINamePlates")
-oUF:SpawnNamePlates("KkthnxUINamePlates", CallbackNamePlates, UpdateCVars)
+oUF:SpawnNamePlates("KkthnxUINamePlates", CallbackNamePlates, KkthnxUINamePlates.UpdateCVars)
