@@ -3,7 +3,7 @@
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: User Interface replacement AddOn for World of Warcraft.
 ## Author: Josh "Kkthnx" Russell, Shestak
-## Version: 6.22
+## Version: @project-version@
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
@@ -15,5 +15,5 @@
 ## X-Website: https://github.com/Kkthnx
 ## X-Category: Interface Enhancements
 
-### Load Core File
+# -- Load Core File
 KkthnxUI.xml

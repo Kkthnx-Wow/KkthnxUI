@@ -203,7 +203,7 @@ function K.LockCVar(cvarName, value)
 	K.LockedCVars[cvarName] = value
 end
 
-function K.IgnoreCVar(self, cvarName, ignore)
+function K.IgnoreCVar(cvarName, ignore)
 	ignore = not not ignore -- cast to bool, just in case
 	K.IgnoredCVars[cvarName] = ignore
 end
