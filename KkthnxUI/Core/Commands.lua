@@ -104,7 +104,6 @@ local function SetUIScale()
 
 	local SetUIScale = GetCVarBool("uiScale")
 	if not SetUIScale then
-		-- K.LockCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 		SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 	end
 

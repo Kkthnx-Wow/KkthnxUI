@@ -1,0 +1,13 @@
+package-as: KkthnxUI
+
+enable-nolib-creation: no
+
+ignore:
+ - README.md
+ - .gitignore
+ - .github
+ - .gitattributes
+
+move-folders:
+ KkthnxUI/KkthnxUI: KkthnxUI
+ KkthnxUI/KkthnxUI_Config: KkthnxUI_Config

@@ -213,11 +213,11 @@ end
 
 -- Command to toggle, cpuProfiling.
 SlashCmdList.CPUPROFILING = function(msg)
-	if msg == "on" or msg == "1" or msg == "true" then
-		K.LockCVar("scriptProfile", 1)
+	if msg == "on" or msg == "1" or msg == "true" and not InCombatLockdown() then
+		SetCVar("scriptProfile", 1)
 		K.Print("cpuProfiling is now activated.")
-	elseif msg == "off" or msg == "0" or msg == "false" then
-		K.LockCVar("scriptProfile", 0)
+	elseif msg == "off" or msg == "0" or msg == "false" and not InCombatLockdown() then
+		SetCVar("scriptProfile", 0)
 		K.Print("cpuProfiling is now deactivated.")
 	end
 end

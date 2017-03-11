@@ -444,9 +444,7 @@ local function CreateUnitLayout(self, unit)
 	-- Castbars
 	if C.Unitframe.Castbars then
 		if self.MatchUnit == "player" then
-			-- local CastBar = CreateFrame("StatusBar", "oUF_KkthnxPlayer_Castbar", self)
 			local CastBar = K.CreateStatusBar(self, "oUF_KkthnxPlayer_Castbar")
-			CastBar:SetOrientation("HORIZONTAL")
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(unpack(C.Position.UnitFrames.PlayerCastbar))
@@ -460,10 +458,10 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background:SetTexture(C.Media.Blank)
 			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
-			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
-			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetWidth(10)
+			CastBar.Spark:SetHeight(CastBar:GetHeight() * 2)
 			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
@@ -541,10 +539,10 @@ local function CreateUnitLayout(self, unit)
 
 			CastBar.timeToHold = 0.4
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
-			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
-			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetWidth(10)
+			CastBar.Spark:SetHeight(CastBar:GetHeight() * 2)
 			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
@@ -613,10 +611,10 @@ local function CreateUnitLayout(self, unit)
 
 			CastBar.timeToHold = 0.4
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
-			CastBar.Spark:SetSize(C.Unitframe.CastbarHeight, C.Unitframe.CastbarHeight * 2)
-			CastBar.Spark:SetAlpha(0.6)
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetWidth(10)
+			CastBar.Spark:SetHeight(CastBar:GetHeight() * 2)
 			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
@@ -679,6 +677,12 @@ local function CreateUnitLayout(self, unit)
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
 			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+
+			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
+			CastBar.Spark:SetBlendMode("ADD")
+			CastBar.Spark:SetWidth(10)
+			CastBar.Spark:SetHeight(CastBar:GetHeight() * 2)
+			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)

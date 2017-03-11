@@ -112,59 +112,6 @@ function K.CheckAddOn(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
 
-function K.CreateBlizzardFrame(frame, point)
-	if point == nil then point = frame end
-
-	if point.backdrop then return end
-	frame.backdrop = CreateFrame("Frame", nil , frame)
-	frame.backdrop:SetAllPoints()
-	frame.backdrop:SetBackdrop(K.Backdrop)
-	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
-	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	frame.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
-
-	if frame:GetFrameLevel() - 1 > 0 then
-		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
-	else
-		frame.backdrop:SetFrameLevel(0)
-	end
-end
-
-function K.SetBlizzardBorder(frame, r, g, b, a)
-	if not a then a = 1 end
-	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
-end
-
-function K.CreateShadowFrame(frame, point)
-	if point == nil then point = frame end
-
-	if point.backdrop then return end
-	frame.backdrop = CreateFrame("Frame", nil , frame)
-	frame.backdrop:SetAllPoints()
-	frame.backdrop:SetBackdrop({
-		bgFile = C.Media.Blank,
-		edgeFile = C.Media.Glow,
-		edgeSize = 3 * K.NoScaleMult,
-		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
-	})
-	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
-	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
-	frame.backdrop:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 0.8)
-
-	if frame:GetFrameLevel() - 1 > 0 then
-		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)
-	else
-		frame.backdrop:SetFrameLevel(0)
-	end
-end
-
-function K.SetShadowBorder(frame, r, g, b, a)
-	if not a then a = 0.8 end
-	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
-end
-
 -- Chat channel check
 function K.CheckChat(warning)
 	if IsInGroup(LE_PARTY_CATEGORY_INSTANCE) then
@@ -223,14 +170,13 @@ end
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
-local UpdateCVar = CreateFrame("Frame")
-UpdateCVar:RegisterEvent("PLAYER_REGEN_ENABLED")
-function UpdateCVar:PLAYER_REGEN_ENABLED(_)
-	if (self.CVarUpdate) then
+local UpdateCVars = CreateFrame("Frame")
+UpdateCVars:RegisterEvent("PLAYER_REGEN_ENABLED")
+function UpdateCVars:PLAYER_REGEN_ENABLED(_)
+	if(self.CVarUpdate) then
 		for cvarName, value in pairs(self.LockedCVars) do
 			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
 				SetCVar(cvarName, value)
-				print(SetCVar(cvarName, value))
 			end
 		end
 		self.CVarUpdate = nil
@@ -238,8 +184,8 @@ function UpdateCVar:PLAYER_REGEN_ENABLED(_)
 end
 
 local function CVAR_UPDATE(cvarName, value)
-	if (not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-		if (InCombatLockdown()) then
+	if(not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+		if(InCombatLockdown()) then
 			K.CVarUpdate = true
 			return
 		end
@@ -250,13 +196,14 @@ end
 
 hooksecurefunc("SetCVar", CVAR_UPDATE)
 function K.LockCVar(cvarName, value)
-	if (GetCVar(cvarName) ~= value) then
+	if(GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
+		print(SetCVar(cvarName, value))
 	end
 	K.LockedCVars[cvarName] = value
 end
 
-function K.IgnoreCVar(cvarName, ignore)
+function K.IgnoreCVar(self, cvarName, ignore)
 	ignore = not not ignore -- cast to bool, just in case
 	K.IgnoredCVars[cvarName] = ignore
 end

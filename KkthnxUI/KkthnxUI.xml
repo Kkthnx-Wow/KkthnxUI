@@ -13,7 +13,7 @@
    <!-- Settings -->
    <Script file="Config\Settings.lua" />
    <Script file="Config\Positions.lua" />
-   <Script file="Config\Addons.lua" />
+   <Script file="Config\AddOnData.lua" />
    <Script file="Config\Profiles.lua" />
    <!-- GUI -->
    <Script file="Core\GUI.lua" />
