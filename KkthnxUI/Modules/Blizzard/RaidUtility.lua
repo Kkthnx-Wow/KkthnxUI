@@ -132,7 +132,7 @@ if CompactRaidFrameManager then
 
 	local MarkTexture = CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:CreateTexture(nil, "OVERLAY")
 	MarkTexture:SetTexture("Interface\\RaidFrame\\Raid-WorldPing")
-	MarkTexture:SetPoint("CENTER", 0, -1)
+	MarkTexture:SetPoint("CENTER", -1, -1)
 else
 	StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 end

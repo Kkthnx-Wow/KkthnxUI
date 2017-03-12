@@ -218,16 +218,14 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 end
 
 local function Kill(object)
-	object:SetParent(UIFrameHider)
 	if object.UnregisterAllEvents then
 		object:UnregisterAllEvents()
+		object:SetParent(UIFrameHider)
 	else
 		object.Show = object.Hide
 	end
 
 	object:Hide()
-
-	return true
 end
 
 local function StripTextures(object, kill)

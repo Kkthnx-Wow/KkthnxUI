@@ -3,7 +3,7 @@
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Josh "Kkthnx" Russell, Tohveli
-## Version: 6.24
+## Version: 6.25
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigAll, KkthnxUIConfigPublic
 ## SavedVariablesPerCharacter: KkthnxUIConfigPrivate

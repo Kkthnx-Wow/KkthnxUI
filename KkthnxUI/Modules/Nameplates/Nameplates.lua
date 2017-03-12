@@ -665,7 +665,7 @@ local function StyleNamePlates(self, unit)
 
 	self.Castbar.bg = self.Castbar:CreateTexture(nil, "BORDER")
 	self.Castbar.bg:SetAllPoints()
-	self.Castbar.bg:SetTexture(C.Media.Texture)
+	self.Castbar.bg:SetTexture(C.Media.Blank)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetBlendMode("ADD")
