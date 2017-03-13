@@ -35,11 +35,8 @@ local UIParent = _G.UIParent
 -- Kill all stuff on default UI that we don"t need
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("ADDON_LOADED")
-DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
-	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		return
-	end
+DisableBlizzard:SetScript("OnEvent", function(self, addon)
+	self:UnregisterEvent("ADDON_LOADED")
 
 	if addon == "Blizzard_AchievementUI" then
 		if C.Tooltip.Enable then
@@ -111,10 +108,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 
 	if C.Cooldown.Enable then
 		K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
-		local DisableCD = GetCVarBool("countdownForCooldowns")
-		if not DisableCD and not InCombatLockdown() then
-			SetCVar("countdownForCooldowns", 0)
-		end
 	end
 
 	if C.General.DisableTutorialButtons then
@@ -126,40 +119,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 		HelpPlateTooltip:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
-		if not InCombatLockdown() then -- Check for combat here.
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CORE_ABILITITES, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GLYPH, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPELLBOOK, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED, true)
-			SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
-		end
 		SpellBookFrameTutorialButton:Kill()
 		TalentMicroButtonAlert:Kill()
 		TutorialFrameAlertButton:Kill()
@@ -171,10 +130,6 @@ DisableBlizzard:SetScript("OnEvent", function(self, event, addon)
 	end
 
 	if C.Nameplates.Enable then
-		local PlateClassColor = GetCVarBool("ShowClassColorInNameplate")
-		if not PlateClassColor and not InCombatLockdown() then
-			SetCVar("ShowClassColorInNameplate", 1)
-		end
 		-- Hide the option to rescale, because we will do it from KkthnxUI settings.
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")

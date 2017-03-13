@@ -47,7 +47,7 @@ local SetUpExtraActionButton = function()
 	ZoneButton:StyleButton()
 	ZoneButton:SetNormalTexture("")
 	ZoneButton.Icon:SetInside()
-	ZoneButton.Icon:SetDrawLayer("ARTWORK")
+	ZoneButton.Icon:SetDrawLayer("BACKGROUND", 0)
 	ZoneButton.Icon:SetTexCoord(unpack(K.TexCoords))
 
 	Texture:SetTexture("")
@@ -58,6 +58,4 @@ end
 
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", function()
-	SetUpExtraActionButton()
-end)
+Loading:SetScript("OnEvent", SetUpExtraActionButton)

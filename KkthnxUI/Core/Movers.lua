@@ -6,7 +6,7 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local tinsert = table.insert
+local table_insert = table.insert
 
 -- Wow API
 local CreateFrame = CreateFrame
@@ -66,7 +66,7 @@ end
 function Movers:RegisterFrame(frame)
 	local Anchor1, Parent, Anchor2, X, Y = frame:GetPoint()
 
-	tinsert(self.Frames, frame)
+	table_insert(self.Frames, frame)
 
 	self:SaveDefaults(frame, Anchor1, Parent, Anchor2, X, Y)
 end
