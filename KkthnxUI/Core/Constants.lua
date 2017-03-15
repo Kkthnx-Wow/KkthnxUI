@@ -18,7 +18,7 @@ local ReloadUI = _G.ReloadUI
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion, Spec
 
-local function CheckRole(self, event, unit)
+local function CheckRole()
 	local Tank = "TANK" or "Tank"
 	local Melee = "MELEE" or "Melee"
 	local Caster = "CASTER" or "Caster"
@@ -87,6 +87,10 @@ if IsAddOnLoaded("DiabolicUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 end
 
+local function OnEvent(self, event, ...)
+    CheckRole()
+end
+
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
 Loading:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
@@ -94,4 +98,4 @@ Loading:RegisterEvent("PLAYER_TALENT_UPDATE")
 Loading:RegisterEvent("CHARACTER_POINTS_CHANGED")
 Loading:RegisterEvent("UNIT_INVENTORY_CHANGED")
 Loading:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-Loading:SetScript("OnEvent", CheckRole)
+Loading:SetScript("OnEvent", OnEvent)

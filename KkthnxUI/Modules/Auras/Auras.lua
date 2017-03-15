@@ -71,6 +71,7 @@ function KkthnxUIAuras:OnUpdate(elapsed)
 	else
 		local Text = K.FormatTime(TimeLeft)
 		local r, g, b = K.ColorGradient(self.TimeLeft / self.Dur, 1, 0, 0, 1, 1, 0, 0, 1, 0)
+		-- self.Duration:SetFormattedText(("%s%s|r"):format(TimeColors[formatid], TimeFormats[formatid][2]), timervalue)
 
 		if(TimeLeft < 60.5) then
 			if C.Auras.Flash then
