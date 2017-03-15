@@ -21,15 +21,12 @@ hooksecurefunc(ZoneAbilityFrame.SpellButton.Style, "SetTexture", DisableExtraBut
 
 local SetUpExtraActionButton = function()
 	local Holder = CreateFrame("Frame", "ExtraActionButton", UIParent)
-	if C.ActionBar.SplitBars and not C.DataText.BottomBar then
+	if C.ActionBar.SplitBars then
 		Holder:SetPoint(C.Position.ExtraButton[1], SplitBarRight, C.Position.ExtraButton[3], C.Position.ExtraButton[4], C.Position.ExtraButton[5])
-	elseif C.ActionBar.SplitBars and C.DataText.BottomBar then
-		Holder:SetPoint("BOTTOMLEFT", "MultiBarBottomRightButton12", "BOTTOMRIGHT", 3, -28)
-	elseif not C.ActionBar.SplitBars and C.DataText.BottomBar then
-		Holder:SetPoint("BOTTOMLEFT", "ActionButton12", "BOTTOMRIGHT", 3, -28)
 	else
 		Holder:SetPoint(unpack(C.Position.ExtraButton))
 	end
+
 	Holder:SetSize(ExtraActionBarFrame:GetSize() - 12, ExtraActionBarFrame:GetSize() - 12)
 	Holder:SetPoint("BOTTOM", 0, 250)
 
@@ -45,9 +42,12 @@ local SetUpExtraActionButton = function()
 
 	ZoneButton:SetTemplate()
 	ZoneButton:StyleButton()
+	if not ZoneButton.blizzshadow then
+		ZoneButton:CreateBlizzShadow(6)
+	end
 	ZoneButton:SetNormalTexture("")
 	ZoneButton.Icon:SetInside()
-	ZoneButton.Icon:SetDrawLayer("BACKGROUND", 0)
+	-- ZoneButton.Icon:SetDrawLayer("BACKGROUND", 0)
 	ZoneButton.Icon:SetTexCoord(unpack(K.TexCoords))
 
 	Texture:SetTexture("")
