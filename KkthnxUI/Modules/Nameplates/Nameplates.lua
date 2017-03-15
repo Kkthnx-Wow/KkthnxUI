@@ -49,13 +49,13 @@ KkthnxUINamePlates:SetScript("OnEvent", function(self, event, ...) self[event](s
 -- NOTE: This is the safest way to prevent any unknown issues currently.
 
 -- These should be defaulted pretty much always
-K.LockCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
-K.LockCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
-K.LockCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
-K.LockCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
-K.LockCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
-K.LockCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
-K.LockCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+K:LockCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
+K:LockCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
+K:LockCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+K:LockCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
+K:LockCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
+K:LockCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+K:LockCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
 
 -- Set what we want for the nameplates. Only certain ones will work for oUF.
 local UpdateCVars = {}
@@ -309,7 +309,7 @@ local function UpdateAuraIcon(button, unit, index, filter)
 	local name, _, icon, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
 
 	if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
-		button:SetSize(C.Nameplates.AurasSize + 6, C.Nameplates.AurasSize + 6)
+		button:SetSize(C.Nameplates.AurasSize + C.Nameplates.AdditionalWidth, C.Nameplates.AurasSize + C.Nameplates.AdditionalHeight)
 	else
 		button:SetSize(C.Nameplates.AurasSize, C.Nameplates.AurasSize)
 	end
@@ -669,7 +669,7 @@ local function StyleNamePlates(self, unit)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetBlendMode("ADD")
-	self.Castbar.Spark:SetSize(10, C.Nameplates.Height * 2 * K.NoScaleMult + 12)
+	self.Castbar.Spark:SetSize(10, C.Nameplates.Height * 2 * K.NoScaleMult + 8)
 	self.Castbar.Spark:SetVertexColor(1, 1, 1)
 
 	self.Castbar.PostCastStart = castColor

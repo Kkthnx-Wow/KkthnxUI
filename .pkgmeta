@@ -1,13 +1,21 @@
 package-as: KkthnxUI
 
-enable-nolib-creation: no
+enable-nolib-creation: 
+	no
 
 ignore:
- - README.md
- - .gitignore
- - .github
- - .gitattributes
+	- README.md
+	- .gitignore
+	- .github
+	- .gitattributes
 
 move-folders:
- KkthnxUI/KkthnxUI: KkthnxUI
- KkthnxUI/KkthnxUI_Config: KkthnxUI_Config
+	KkthnxUI/KkthnxUI: KkthnxUI
+	KkthnxUI/KkthnxUI_Config: KkthnxUI_Config
+ 
+manual-changelog:
+	filename: CHANGELOG.md
+	markup-type: markdown
+	
+license-output: 
+	LICENSE.txt

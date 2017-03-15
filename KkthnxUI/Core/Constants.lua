@@ -16,32 +16,32 @@ local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion
+-- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion, Spec
 
-local function CheckRole(self, event)
-	local Tank = "TANK"
-	local Melee = "MELEE"
-	local Caster = "CASTER"
-	local Healer = "HEALER"
+local function CheckRole(self, event, unit)
+	local Tank = "TANK" or "Tank"
+	local Melee = "MELEE" or "Melee"
+	local Caster = "CASTER" or "Caster"
+	local Healer = "HEALER" or "Healer"
 
 	local Roles = {
-		DEATHKNIGHT = {Tank, Melee, Melee},
-		DEMONHUNTER = {Melee, Tank},
-		DRUID = {Caster, Melee, Tank, Healer},
-		HUNTER = {Melee, Melee, Melee},
-		MAGE = {Caster, Caster, Caster},
-		MONK = {Tank, Healer, Melee},
-		PALADIN = {Healer, Tank, Melee},
-		PRIEST = {Healer, Healer, Caster},
-		ROGUE = {Melee, Melee, Melee},
-		SHAMAN = {Caster, Melee, Healer},
-		WARLOCK = {Caster, Caster, Caster},
-		WARRIOR = {Melee, Melee, Tank}
+		["DEATHKNIGHT"] = {Tank, Melee, Melee},
+		["DEMONHUNTER"] = {Melee, Tank},
+		["DRUID"] = {Caster, Melee, Tank, Healer},
+		["HUNTER"] = {Melee, Melee, Melee},
+		["MAGE"] = {Caster, Caster, Caster},
+		["MONK"] = {Tank, Healer, Melee},
+		["PALADIN"] = {Healer, Tank, Melee},
+		["PRIEST"] = {Healer, Healer, Caster},
+		["ROGUE"] = {Melee, Melee, Melee},
+		["SHAMAN"] = {Caster, Melee, Healer},
+		["WARLOCK"] = {Caster, Caster, Caster},
+		["WARRIOR"] = {Melee, Melee, Tank}
 	}
 
-	local Specialization = GetSpecialization() or 0
+	local Spec = GetSpecialization(Spec) or nil
 	local Class = select(2, UnitClass("player"))
-	return Roles[Class][Specialization]
+	return Roles[Class][Spec] or nil
 end
 
 K.UIName = "KkthnxUI"
@@ -50,7 +50,7 @@ K.Unit = UnitGUID("player")
 K.Name = UnitName("player")
 K.Class = select(2, UnitClass("player"))
 K.Role = CheckRole("player")
-K.Spec = GetSpecialization() or 0
+K.Spec = GetSpecialization(K.Spec) or nil
 K.Race = select(2, UnitRace("player"))
 K.Level = UnitLevel("player")
 K.Client = GetLocale()
@@ -87,11 +87,11 @@ if IsAddOnLoaded("DiabolicUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 end
 
-local RoleUpdater = CreateFrame("Frame")
-RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
-RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
-RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
-RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-RoleUpdater:SetScript("OnEvent", CheckRole)
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
+Loading:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+Loading:RegisterEvent("PLAYER_TALENT_UPDATE")
+Loading:RegisterEvent("CHARACTER_POINTS_CHANGED")
+Loading:RegisterEvent("UNIT_INVENTORY_CHANGED")
+Loading:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+Loading:SetScript("OnEvent", CheckRole)

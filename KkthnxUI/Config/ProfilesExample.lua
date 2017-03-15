@@ -39,7 +39,7 @@ if K.Class == "DRUID" then
 end
 
 -- Role type needs to be uppercase -- TANK, HEALER, CASTER, MELEE
-if K.Role == "TANK" then
+if K.Role == "Tank" then
 
 end
 

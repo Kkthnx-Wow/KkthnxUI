@@ -6,11 +6,7 @@ local math_ceil = math.ceil
 local math_floor = math.floor
 local math_modf = math.modf
 local string_format = string.format
-local string_gsub = string.gsub
 local string_lower = string.lower
-local string_match = string.match
-local string_reverse = string.reverse
-local string_sub = string.sub
 local table_insert = table.insert
 local table_remove = table.remove
 
@@ -32,29 +28,27 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIFrameHider, UIHider
 
-do
-	K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
-	K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
-	K.BorderBackdrop = {bgFile = C.Media.Blank}
-	K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
-	K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
-	K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
-	K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
+K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
+K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
+K.BorderBackdrop = {bgFile = C.Media.Blank}
+K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
+K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
+K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
+K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
-	K.TexCoords = {0.08, 0.92, 0.08, 0.92}
+K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 
-	K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
-end
+K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 
 function K.Print(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
 end
 
-local FALLBACK_FONT_SIZE = 13 -- some Blizzard bug
-local FONT_SCALE = 1
 function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
-	if not fontSize or fontSize < 6 then fontSize = FALLBACK_FONT_SIZE end
-	fontSize = fontSize * FONT_SCALE
+	if not fontSize or fontSize < 6 then
+		fontSize = 13
+	end
+	fontSize = fontSize * 1
 
 	local fontString = parent:CreateFontString(nil, "OVERLAY")
 	fontString:SetFont(fontName, fontSize, fontStyle)
@@ -95,9 +89,9 @@ end
 function K.Round(num, idp)
 	if (idp and idp > 0) then
 		local mult = 10 ^ idp
-		return math_floor(num * mult + 0.5) / mult or nil
+		return math_floor(num * mult + 0.5) / mult
 	end
-	return math_floor(num + 0.5) or nil
+	return math_floor(num + 0.5)
 end
 
 -- RgbToHex color
@@ -157,23 +151,13 @@ function K.UTF8Sub(str, i, dots)
 	end
 end
 
-function K.FormatMoney(value)
-	if value >= 1e4 then
-		return string_format("|cffffd700%dg |r|cffc7c7cf%ds |r|cffeda55f%dc|r", value/1e4, string_sub(value, -4) / 1e2, string_sub(value, -2))
-	elseif value >= 1e2 then
-		return string_format("|cffc7c7cf%ds |r|cffeda55f%dc|r", string_sub(value, -4) / 1e2, string_sub(value, -2))
-	else
-		return string_format("|cffeda55f%dc|r", string_sub(value, -2))
-	end
-end
-
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
-local UpdateCVars = CreateFrame("Frame")
-UpdateCVars:RegisterEvent("PLAYER_REGEN_ENABLED")
-function UpdateCVars:PLAYER_REGEN_ENABLED(_)
-	if(self.CVarUpdate) then
+local UpdateCVar = CreateFrame("Frame")
+UpdateCVar:RegisterEvent("PLAYER_REGEN_ENABLED")
+function UpdateCVar:PLAYER_REGEN_ENABLED(_)
+	if (self.CVarUpdate) then
 		for cvarName, value in pairs(self.LockedCVars) do
 			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
 				SetCVar(cvarName, value)
@@ -184,8 +168,8 @@ function UpdateCVars:PLAYER_REGEN_ENABLED(_)
 end
 
 local function CVAR_UPDATE(cvarName, value)
-	if(not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-		if(InCombatLockdown()) then
+	if (not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
+		if (InCombatLockdown()) then
 			K.CVarUpdate = true
 			return
 		end
@@ -195,17 +179,16 @@ local function CVAR_UPDATE(cvarName, value)
 end
 
 hooksecurefunc("SetCVar", CVAR_UPDATE)
-function K.LockCVar(cvarName, value)
-	if(GetCVar(cvarName) ~= value) then
+function K:LockCVar(cvarName, value)
+	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
-		print(SetCVar(cvarName, value))
 	end
-	K.LockedCVars[cvarName] = value
+	self.LockedCVars[cvarName] = value
 end
 
-function K.IgnoreCVar(cvarName, ignore)
+function K:IgnoreCVar(cvarName, ignore)
 	ignore = not not ignore -- cast to bool, just in case
-	K.IgnoredCVars[cvarName] = ignore
+	self.IgnoredCVars[cvarName] = ignore
 end
 
 -- Personal Dev use only
@@ -279,7 +262,7 @@ function K.KillMenuPanel(panel_id, panel_name)
 	if panel_name then
 		local panel = _G[panel_name]
 		if panel then
-			panel:SetParent(UIHider)
+			panel:SetParent(UIFrameHider)
 			if panel.UnregisterAllEvents then
 				panel:UnregisterAllEvents()
 			end

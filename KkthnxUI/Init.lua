@@ -5,11 +5,9 @@ local AddOnName, Engine = ...
 -- Lua API
 local _G = _G
 
--- Wow API
-local CreateFrame = _G.CreateFrame
-
-Engine[1] = CreateFrame("Frame") -- K, Functions, Constants, Variables
-Engine[2] = {} -- C, Config
-Engine[3] = {} -- L, Localization
+Engine[1] = CreateFrame("Frame")
+Engine[2] = {}
+Engine[3] = {}
+Engine[4] = {}
 
 _G[AddOnName] = Engine -- Allow other addons to use our Engine

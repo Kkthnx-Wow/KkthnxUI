@@ -212,14 +212,14 @@ C["Nameplates"] = {
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealerIcon"] = false,
 	["HealthValue"] = true,
-	["Height"] = 11,
+	["Height"] = 16,
 	["NameAbbreviate"] = true,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
 	["Smooth"] = false,
 	["TotemIcons"] = false,
 	["TrackAuras"] = true,
-	["Width"] = 120,
+	["Width"] = 130,
 }
 
 -- Skins
