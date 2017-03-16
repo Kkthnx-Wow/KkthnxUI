@@ -781,9 +781,9 @@ local function StyleNamePlates(self, unit)
 		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
 
 		self.Health:HookScript("OnSizeChanged",function(bar, width)
-			myBar:SetWidth(55 - 2)
-			otherBar:SetWidth(55 - 2)
-			healAbsorbBar:SetWidth(55 - 2)
+			myBar:SetWidth(self.Health:GetWidth())
+			otherBar:SetWidth(self.Health:GetWidth())
+			healAbsorbBar:SetWidth(self.Health:GetWidth())
 		end)
 
 		self.HealPrediction = {

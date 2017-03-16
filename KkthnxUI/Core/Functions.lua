@@ -28,6 +28,7 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIFrameHider, UIHider
 
+-- Backdrop & Borders
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
 K.BorderBackdrop = {bgFile = C.Media.Blank}
@@ -35,10 +36,6 @@ K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -
 K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
-
-K.TexCoords = {0.08, 0.92, 0.08, 0.92}
-
-K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 
 function K.Print(...)
 	print("|cff3c9bed" .. K.UIName .. "|r:", ...)

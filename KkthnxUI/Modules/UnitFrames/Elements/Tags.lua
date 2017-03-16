@@ -144,9 +144,9 @@ end
 oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED"
 oUF.Tags.Methods["KkthnxUI:ClassificationColor"] = function(unit)
 	local c = UnitClassification(unit)
-	if(c == "rare" or c == "elite") then
+	if (c == "rare" or c == "elite") then
 		return Hex(0.69, 0.31, 0.31) -- Red
-	elseif(c == "rareelite" or c == "worldboss") then
+	elseif (c == "rareelite" or c == "worldboss") then
 		return Hex(0.69, 0.31, 0.31) -- Red
 	end
 end
@@ -166,26 +166,26 @@ end
 
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
-	local Name = UnitName(unit) or UNKNOWN
-	return Name ~= nil and K.UTF8Sub(Name, 5, true) or ""
+	local NameVeryShort = UnitName(unit) or UNKNOWN
+	return NameVeryShort ~= nil and K.UTF8Sub(NameVeryShort, 5, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
-	local Name = UnitName(unit) or UNKNOWN
-	return Name ~= nil and K.UTF8Sub(Name, 8, true) or ""
+	local NameShort = UnitName(unit) or UNKNOWN
+	return NameShort ~= nil and K.UTF8Sub(NameShort, 8, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
-	local Name = UnitName(unit) or UNKNOWN
-	return Name ~= nil and K.UTF8Sub(Name, 15, true) or ""
+	local NameMedium = UnitName(unit) or UNKNOWN
+	return NameMedium ~= nil and K.UTF8Sub(NameMedium, 15, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
-	local Name = UnitName(unit) or UNKNOWN
-	return Name ~= nil and K.UTF8Sub(Name, 20, true) or ""
+	local NameLong = UnitName(unit) or UNKNOWN
+	return NameLong ~= nil and K.UTF8Sub(NameLong, 20, true) or ""
 end
 
 local unitStatus = {}
@@ -197,7 +197,7 @@ oUF.Tags.Methods["KkthnxUI:StatusTimer"] = function(unit)
 		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "AFK" then
 			unitStatus[guid] = {"AFK", GetTime()}
 		end
-	elseif(UnitIsDND(unit)) then
+	elseif (UnitIsDND(unit)) then
 		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "DND" then
 			unitStatus[guid] = {"DND", GetTime()}
 		end
@@ -234,7 +234,7 @@ end
 oUF.Tags.Events["KkthnxUI:ThreatPercent"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:ThreatPercent"] = function(unit)
 	local _, _, percent = UnitDetailedThreatSituation("player", unit)
-	if(percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
+	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
 		return format("%.0f%%", percent)
 	else
 		return ""
@@ -272,15 +272,15 @@ end
 
 oUF.Tags.Events["KkthnxUI:NameplateNameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameplateNameLong"] = function(unit)
-	local name = UnitName(unit)
-	return K.UTF8Sub(name, 18, true)
+	local NameplateNameLong = UnitName(unit) or UNKNOWN
+	return NameplateNameLong ~= nil and K.UTF8Sub(NameplateNameLong, 20, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameplateNameLongAbbrev"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameplateNameLongAbbrev"] = function(unit)
-	local name = UnitName(unit)
-	local newname = (string_len(name) > 18) and string_gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
-	return K.UTF8Sub(newname, 18, false)
+	local Name = UnitName(unit) or UNKNOWN
+	local NameLongAbbrev = (string_len(Name) > 18) and string_gsub(Name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or Name
+	return K.UTF8Sub(NameLongAbbrev, 18, false) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"

@@ -876,10 +876,10 @@ local function CreateUnitLayout(self, unit)
 			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
 
-			self.Health:HookScript("OnSizeChanged",function(bar, width)
-				myBar:SetWidth(55 - 2)
-				otherBar:SetWidth(55 - 2)
-				healAbsorbBar:SetWidth(55 - 2)
+			self.Health:HookScript("OnSizeChanged", function(bar, width)
+				myBar:SetWidth(self.Health:GetWidth())
+				otherBar:SetWidth(self.Health:GetWidth())
+				healAbsorbBar:SetWidth(self.Health:GetWidth())
 			end)
 
 			self.HealPrediction = {

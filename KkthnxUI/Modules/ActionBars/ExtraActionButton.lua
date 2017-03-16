@@ -40,15 +40,15 @@ local SetUpExtraActionButton = function()
 	ZoneAbilityFrame:SetPoint("CENTER", Holder, "CENTER", 0, 0)
 	ZoneAbilityFrame.ignoreFramePositionManager = true
 
-	ZoneButton:SetTemplate()
+	ZoneButton:CreateBackdrop()
 	ZoneButton:StyleButton()
 	if not ZoneButton.blizzshadow then
-		ZoneButton:CreateBlizzShadow(6)
+		ZoneButton:CreateBlizzShadow()
 	end
 	ZoneButton:SetNormalTexture("")
 	ZoneButton.Icon:SetInside()
-	-- ZoneButton.Icon:SetDrawLayer("BACKGROUND", 0)
 	ZoneButton.Icon:SetTexCoord(unpack(K.TexCoords))
+	ZoneButton.Cooldown:SetAllPoints(ZoneButton.Icon)
 
 	Texture:SetTexture("")
 	ZoneTexture:SetTexture("")

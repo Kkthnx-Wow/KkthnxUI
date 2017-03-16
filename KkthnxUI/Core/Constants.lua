@@ -18,6 +18,7 @@ local ReloadUI = _G.ReloadUI
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion, Spec
 
+-- Check role to return what role the player is.
 local function CheckRole()
 	local Tank = "TANK" or "Tank"
 	local Melee = "MELEE" or "Melee"
@@ -57,9 +58,11 @@ K.Client = GetLocale()
 K.Realm = GetRealmName()
 -- Currently in Legion logging in while in Windowed mode will cause the game to use "Custom" resolution and GetCurrentResolution() returns 0. We use GetCVar("gxWindowedResolution") as fail safe
 K.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
+K.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 K.Color = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 K.Version = GetAddOnMetadata(K.UIName, "Version")
 K.ScreenWidth, K.ScreenHeight = DecodeResolution(K.Resolution)
+K.TexCoords = {0.08, 0.92, 0.08, 0.92}
 K.VersionNumber = tonumber(K.Version)
 K.WoWPatch, K.WoWBuild, K.WoWPatchReleaseDate, K.TocVersion = GetBuildInfo()
 K.WoWBuild = select(2, GetBuildInfo()) K.WoWBuild = tonumber(K.WoWBuild)
@@ -70,6 +73,7 @@ for i = 1, GetNumAddOns() do
 	K.AddOns[string_lower(AddOnName)] = GetAddOnEnableState(K.Name, AddOnName) > 0
 end
 
+-- Incompatible vs DiabolicUI
 StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
 	text = "Oh no, you have |cff3c9bedKkthnxUI|r and |cff8a0707Diabolic|r|cffffffffUI|r both enabled at the same time. Select an addon to disable to prevent conflicts!",
 	button1 = "|cff3c9bedKkthnxUI|r",
@@ -87,10 +91,7 @@ if IsAddOnLoaded("DiabolicUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 end
 
-local function OnEvent(self, event, ...)
-    CheckRole()
-end
-
+-- Register events for CheckRole function.
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
 Loading:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
@@ -98,4 +99,4 @@ Loading:RegisterEvent("PLAYER_TALENT_UPDATE")
 Loading:RegisterEvent("CHARACTER_POINTS_CHANGED")
 Loading:RegisterEvent("UNIT_INVENTORY_CHANGED")
 Loading:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-Loading:SetScript("OnEvent", OnEvent)
+Loading:SetScript("OnEvent", CheckRole)

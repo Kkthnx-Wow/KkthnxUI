@@ -15,14 +15,14 @@ local isInit = false
 local function CommandBar_OnEnter(self)
 	if not self.isShown then
 		self.isShown = true
-		self:SetPoint("TOP", 0, 1)
+		self:SetPoint("TOP", 0, 2)
 	end
 end
 
 local function CommandBar_OnLeave(self)
 	if not self:IsMouseOver(0, -6, 0, 0) then
 		self.isShown = false
-		self:SetPoint("TOP", 0, 23)
+		self:SetPoint("TOP", 0, 24)
 	end
 end
 
@@ -38,10 +38,12 @@ local function CommandBar_Init()
 			OrderHallCommandBar:StripTextures()
 			OrderHallCommandBar:CreateBackdrop()
 			OrderHallCommandBar:ClearAllPoints()
-			OrderHallCommandBar:SetPoint("TOP", 0, 23)
-			OrderHallCommandBar:SetPoint("LEFT", 0, 0)
-			OrderHallCommandBar:SetPoint("RIGHT", 0, 0)
+			OrderHallCommandBar:SetPoint("TOP", 0, 24)
 			OrderHallCommandBar:SetHitRectInsets(0, 0, 0, -8)
+			OrderHallCommandBar.AreaName:ClearAllPoints()
+			OrderHallCommandBar.Currency:SetPoint("LEFT", OrderHallCommandBar.ClassIcon, "RIGHT", 10, 0)
+			OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 10, 2)
+			OrderHallCommandBar:SetWidth(OrderHallCommandBar.AreaName:GetStringWidth() + 500)
 			OrderHallCommandBar.ClassIcon:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
 			OrderHallCommandBar.ClassIcon:SetSize(46, 20)
 			OrderHallCommandBar.CurrencyIcon:SetAtlas("legionmission-icon-currency", false)
@@ -59,6 +61,4 @@ end
 
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", function()
-	CommandBar_Init()
-end)
+Loading:SetScript("OnEvent", CommandBar_Init)
