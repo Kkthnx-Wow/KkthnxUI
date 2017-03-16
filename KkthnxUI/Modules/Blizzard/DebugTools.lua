@@ -14,7 +14,7 @@ local StaticPopup_Hide = _G.StaticPopup_Hide
 
 -- Global variables that we don"t cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ScriptErrorsFrameScrollFrameText, ScriptErrorsFrame, ScriptErrorsFrameScrollFrame
--- GLOBALS: UIParent, IsAddOnLoaded, LoadAddOn
+-- GLOBALS: UIParent, IsAddOnLoaded, LoadAddOn, UIFrameHider
 
 local UIDebugTools = LibStub("AceAddon-3.0"):NewAddon("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
@@ -96,7 +96,7 @@ function UIDebugTools:PLAYER_REGEN_ENABLED()
 end
 
 function UIDebugTools:PLAYER_REGEN_DISABLED()
-	ScriptErrorsFrame:SetParent(self.HideFrame)
+	ScriptErrorsFrame:SetParent(UIFrameHider)
 end
 
 function UIDebugTools:TaintError(event, addonName, addonFunc)
@@ -111,9 +111,6 @@ function UIDebugTools:StaticPopup_Show(name)
 end
 
 function UIDebugTools:Initialize()
-	self.HideFrame = CreateFrame("Frame")
-	self.HideFrame:Hide()
-
 	if (not IsAddOnLoaded("Blizzard_DebugTools")) then
 		LoadAddOn("Blizzard_DebugTools")
 	end

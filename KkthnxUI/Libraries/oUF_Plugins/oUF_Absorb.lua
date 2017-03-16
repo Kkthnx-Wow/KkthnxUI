@@ -63,6 +63,7 @@ local function Absorb_Enable(self,unit)
 	end
 
 	self.Absorb.spark = self.Health:CreateTexture(nil, "ARTWORK")
+	self.Absorb.spark:SetTexture('Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark')
 	self.Absorb.spark:SetDrawLayer(unpack(self.Absorb.drawLayer))
 	self.Absorb.spark:SetPoint('TOP', self.Health, 'TOPRIGHT', -1, 5)
 	self.Absorb.spark:SetPoint('BOTTOM', self.Health, 'BOTTOMRIGHT', -1, -5)

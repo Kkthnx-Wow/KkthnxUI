@@ -859,6 +859,7 @@ local function CreateUnitLayout(self, unit)
 			myBar:SetPoint("BOTTOM")
 			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar:SetMinMaxValues(0, 1)
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)

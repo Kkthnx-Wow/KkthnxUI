@@ -63,6 +63,4 @@ end
 
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", function()
-	ScriptErrors_Init()
-end)
+Loading:SetScript("OnEvent", ScriptErrors_Init)

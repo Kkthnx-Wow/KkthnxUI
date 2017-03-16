@@ -667,10 +667,11 @@ local function StyleNamePlates(self, unit)
 	self.Castbar.bg:SetAllPoints()
 	self.Castbar.bg:SetTexture(C.Media.Blank)
 
-	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Spark:SetBlendMode("ADD")
-	self.Castbar.Spark:SetSize(10, C.Nameplates.Height * 2 * K.NoScaleMult + 8)
-	self.Castbar.Spark:SetVertexColor(1, 1, 1)
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "ARTWORK", nil, 7)
+  self.Castbar.Spark:SetVertexColor(1, 1, .8)
+  self.Castbar.Spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark")
+  self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
+	self.Castbar.Spark:SetWidth(3)
 
 	self.Castbar.PostCastStart = castColor
 	self.Castbar.PostChannelStart = castColor
@@ -763,6 +764,7 @@ local function StyleNamePlates(self, unit)
 		myBar:SetPoint("BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarColor(0, 1, .5, .5)
+		myBar:SetMinMaxValues(0, 1)
 
 		local otherBar = CreateFrame("StatusBar", nil, self.Health)
 		otherBar:SetStatusBarTexture(C.Media.Texture)

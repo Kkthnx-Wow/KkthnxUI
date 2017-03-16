@@ -217,6 +217,7 @@ local function CreateRaidLayout(self, unit)
 			myBar:SetPoint("BOTTOM")
 			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar:SetMinMaxValues(0, 1)
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)
@@ -416,7 +417,7 @@ if not C.Raidframe.UseHealLayout then
 	"yOffset", -K.Scale(8),
 	"xOffset", K.Scale(8))
 
-	raid:SetScale(C.Raidframe.Scale)
+	raid:SetScale(C.Raidframe.Scale or 1)
 	raid:SetFrameStrata("LOW")
 	raid:SetPoint(unpack(C.Position.UnitFrames.Raid))
 	Movers:RegisterFrame(raid)
