@@ -7,6 +7,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v6.27] - 3/16/2017
+### Fixed
+Spark for absorb has its proper texture.
+Heal prediction mybar has a min and max value now.
+Raid frames scale will default to 1 if no value is found.
+ExtraButton position fixed.
+Cooldown for ExtraButton fixed.
+Function UpdateCVar will fire once again.
+
+### Removed
+Old code removed in KkthnxUI/Modules/ActionBars/ExtraActionButton.lua 
+
+### Changed
+UIDebugTools will parent to our UIFrameHider now.
+Shortened some loading OnEvent script functions.
+Castbar spark on Nameplates look more fitting.
+K.PriestColors moved to KkthnxUI/Core/Constants.lua.
+K.TexCoords moved to KkthnxUI/Core/Constants.lua.
+OrderHallCommandBar tweaked and is smaller now.
+Cleaned CheckRole function.
+
+# Archived Changelogs
+
 ## [v6.26] - 3/14/2017
 ### Fixed
 - UIHider > UIFrameHider. This never threw an error but was wrong since the start.
@@ -26,8 +49,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Cleaned CheckRole function.
 - Cleaned Functions.lua file.
 - Added some more CVars to Install.lua.
-
-# Archived Changelogs
 
 ## [v6.20] - 2/28/2017
 ### Added

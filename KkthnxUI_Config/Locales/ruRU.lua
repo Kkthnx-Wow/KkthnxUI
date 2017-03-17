@@ -181,8 +181,7 @@ UIConfigLocal.MiscUseGuildRepair = "Автоматический ремонт з
 
 -- Nameplates
 UIConfigLocal.Nameplates = "Nameplates"
-UIConfigLocal.NameplatesAdditionalHeight = "Дополнительная высота для индикатора цели"
-UIConfigLocal.NameplatesAdditionalWidth = "Дополнительная ширина для индикатора цели"
+UIConfigLocal.NameplatesAdditionalSize = "Дополнительная высота для индикатора цели"
 UIConfigLocal.NameplatesAurasSize = "Размер Дебаффов"
 UIConfigLocal.NameplatesBadColor = "Цвет плохого состояния угрозы"
 UIConfigLocal.NameplatesCastbarName = "Показывать название применяемого заклинания"

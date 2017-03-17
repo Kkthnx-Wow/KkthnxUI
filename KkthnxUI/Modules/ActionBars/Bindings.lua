@@ -46,13 +46,13 @@ SlashCmdList.MOUSEOVERBIND = function()
 	if not bind.loaded then
 
 		bind:SetFrameStrata("DIALOG")
+		bind:SetFrameLevel(99)
 		bind:EnableMouse(true)
 		bind:EnableKeyboard(true)
 		bind:EnableMouseWheel(true)
 		bind.texture = bind:CreateTexture()
-		bind.texture:SetPoint("TOPLEFT", bind, 2, -2)
-		bind.texture:SetPoint("BOTTOMRIGHT", bind, -2, 2)
-		bind.texture:SetColorTexture(1, 1, 1, 0.3)
+		bind.texture:SetAllPoints(bind)
+		bind.texture:SetColorTexture(0, 0, 0, .25)
 		bind:Hide()
 
 		local elapsed = 0

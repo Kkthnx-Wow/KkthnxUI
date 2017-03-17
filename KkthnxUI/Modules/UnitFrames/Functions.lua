@@ -499,7 +499,7 @@ function K.PostCastStart(self, unit, name)
 
 	self:SetStatusBarColor(r, g, b)
 	if self.Background:IsShown() then
-		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25)
+		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, C.Media.Backdrop_Color[4])
 	end
 end
 
@@ -601,7 +601,7 @@ function K.PostCastInterruptible(self, unit)
 
 	self:SetStatusBarColor(r, g, b)
 	if self.Background:IsShown() then
-		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25)
+		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, C.Media.Backdrop_Color[4])
 	end
 end
 

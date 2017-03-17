@@ -182,8 +182,7 @@ UIConfigLocal.MiscUseGuildRepair = "Bei Benutzung von 'Automatisches Reparieren'
 
 -- Namensplaketten
 UIConfigLocal.Nameplates = "Namensplaketten"
-UIConfigLocal.NameplatesAdditionalHeight = "Zusätzliche Höhe für die ausgewählte Namenplakette"
-UIConfigLocal.NameplatesAdditionalWidth = "Zusätzliche Breite für die ausgewählte Namenplakette"
+UIConfigLocal.NameplatesAdditionalSize = "Zusätzliche Höhe für die ausgewählte Namenplakette"
 UIConfigLocal.NameplatesAurasSize = "Größe der Schwächungszauber"
 UIConfigLocal.NameplatesBadColor = "Farbe wenn die Bedrohung NICHT ok ist, variert je nach Rolle die Du spielst ->dps/heal"
 UIConfigLocal.NameplatesCastbarName = "Zeige namen des Zaubers"

@@ -181,8 +181,7 @@ UIConfigLocal.MiscUseGuildRepair = "When using 'Auto Repair', use funds from the
 
 -- Nameplates
 UIConfigLocal.Nameplates = "Nameplates"
-UIConfigLocal.NameplatesAdditionalHeight = "Additional height for selected nameplate"
-UIConfigLocal.NameplatesAdditionalWidth = "Additional width for selected nameplate"
+UIConfigLocal.NameplatesAdditionalSize = "Additional size for selected nameplate"
 UIConfigLocal.NameplatesAurasSize = "Debuffs size"
 UIConfigLocal.NameplatesBadColor = "Bad threat color, varies depending if your a tank or dps/heal"
 UIConfigLocal.NameplatesCastbarName = "Show castbar name"

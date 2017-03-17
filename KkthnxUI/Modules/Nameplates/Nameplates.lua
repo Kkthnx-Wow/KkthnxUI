@@ -36,7 +36,7 @@ local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, event
+-- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, DebuffTypeColor
 
 -- oUF_Kkthnx Nameplates
 local _, ns = ...
@@ -301,6 +301,7 @@ local function CreateAuraIcon(parent)
 	button.parent:SetFrameLevel(button.cd:GetFrameLevel() + 1)
 	button.count:SetParent(button.parent)
 	button.remaining:SetParent(button.parent)
+	button:EnableMouse(false)
 
 	return button
 end
@@ -309,7 +310,7 @@ local function UpdateAuraIcon(button, unit, index, filter)
 	local name, _, icon, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
 
 	if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
-		button:SetSize(C.Nameplates.AurasSize + C.Nameplates.AdditionalWidth, C.Nameplates.AurasSize + C.Nameplates.AdditionalHeight)
+		button:SetSize(C.Nameplates.AurasSize + C.Nameplates.AdditionalSize, C.Nameplates.AurasSize + C.Nameplates.AdditionalSize)
 	else
 		button:SetSize(C.Nameplates.AurasSize, C.Nameplates.AurasSize)
 	end
@@ -321,8 +322,12 @@ local function UpdateAuraIcon(button, unit, index, filter)
 	button.cd:SetCooldown(expirationTime - duration, duration)
 	button.cd:Show()
 
-	-- local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
-	-- button.bord:SetColorTexture(color.r, color.g, color.b)
+	local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
+	if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+		button.backdrop:SetBackdropBorderColor(0.05, 0.85, 0.94)
+	else
+		button.backdrop:SetBackdropBorderColor(color.r, color.g, color.b)
+	end
 
 	if count and count > 1 then
 		button.count:SetText(count)
@@ -386,7 +391,9 @@ local function UpdateAuras(self)
 		end
 	end
 
-	for index = i, #self.DebuffIcons do self.DebuffIcons[index]:Hide() end
+	for index = i, #self.DebuffIcons do
+		self.DebuffIcons[index]:Hide()
+	end
 end
 
 local function ThreatColor(self, forced)
@@ -401,7 +408,7 @@ local function ThreatColor(self, forced)
 		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
 	elseif combat then
 		if threatStatus == 3 then -- securely tanking, highest threat
-			if K.Role == "Tank" then
+			if K.Role == "Tank" or "TANK" then
 				if C.Nameplates.EnhancedThreat == true then
 					self.Health:SetStatusBarColor(C.Nameplates.GoodColor[1], C.Nameplates.GoodColor[2], C.Nameplates.GoodColor[3])
 				else
@@ -452,15 +459,15 @@ end
 
 local function UpdateTarget(self)
 	if UnitIsUnit(self.unit, "target") and not UnitIsUnit(self.unit, "player") then
-		self:SetSize((C.Nameplates.Width + C.Nameplates.AdditionalWidth) * K.NoScaleMult, (C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult)
-		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * K.NoScaleMult))
-		self.Castbar.Icon:SetSize(((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8, ((C.Nameplates.Height + C.Nameplates.AdditionalHeight) * 2 * K.NoScaleMult) + 8)
+		self:SetSize((C.Nameplates.Width + C.Nameplates.AdditionalSize) * K.NoScaleMult, (C.Nameplates.Height + C.Nameplates.AdditionalSize) * K.NoScaleMult)
+		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-((C.Nameplates.Height + C.Nameplates.AdditionalSize) * K.NoScaleMult))
+		self.Castbar.Icon:SetSize(((C.Nameplates.Height + C.Nameplates.AdditionalSize) * 2 * K.NoScaleMult) + 8, ((C.Nameplates.Height + C.Nameplates.AdditionalSize) * 2 * K.NoScaleMult) + 8)
 		self:SetAlpha(1)
 	else
 		self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
 		self.Castbar:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMLEFT", 0, -8-(C.Nameplates.Height * K.NoScaleMult))
 		self.Castbar.Icon:SetSize((C.Nameplates.Height * 2 * K.NoScaleMult) + 8, (C.Nameplates.Height * 2 * K.NoScaleMult) + 8)
-		if UnitExists("target") and not UnitIsUnit(self.unit, "player") then
+		if (UnitExists("target") and not UnitIsUnit(self.unit, "player")) then
 			self:SetAlpha(C.UnitframePlugins.OORAlpha)
 		else
 			self:SetAlpha(1)
@@ -520,7 +527,7 @@ local function castColor(self, unit, name, castid)
 
 	self:SetStatusBarColor(r, g, b)
 	if self.bg:IsShown() then
-		self.bg:SetColorTexture(r * 0.25, g * 0.25, b * 0.25)
+		self.bg:SetColorTexture(r * 0.25, g * 0.25, b * 0.25, C.Media.Backdrop_Color[4])
 	end
 end
 
@@ -587,6 +594,7 @@ local function StyleNamePlates(self, unit)
 	self:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
+	self.hooked = true
 
 	self:SetPoint("CENTER", nameplate, "CENTER")
 	self:SetSize(C.Nameplates.Width * K.NoScaleMult, C.Nameplates.Height * K.NoScaleMult)
@@ -668,9 +676,9 @@ local function StyleNamePlates(self, unit)
 	self.Castbar.bg:SetTexture(C.Media.Blank)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "ARTWORK", nil, 7)
-  self.Castbar.Spark:SetVertexColor(1, 1, .8)
-  self.Castbar.Spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark")
-  self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
+	self.Castbar.Spark:SetVertexColor(1, 1, .8)
+	self.Castbar.Spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark")
+	self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
 	self.Castbar.Spark:SetWidth(3)
 
 	self.Castbar.PostCastStart = castColor
@@ -745,6 +753,7 @@ local function StyleNamePlates(self, unit)
 		self.DebuffIcons = CreateFrame("Frame", nil, self)
 		self.DebuffIcons:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 2 * K.NoScaleMult, C.Media.Font_Size + 7)
 		self.DebuffIcons:SetSize(20 + C.Nameplates.Width, C.Nameplates.AurasSize)
+		self.DebuffIcons:EnableMouse(false)
 	end
 
 	-- HealPrediction

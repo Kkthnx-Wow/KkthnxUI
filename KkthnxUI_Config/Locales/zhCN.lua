@@ -181,8 +181,7 @@ UIConfigLocal.MiscUseGuildRepair = "优先使用公会修理"
 
 -- Nameplates
 UIConfigLocal.Nameplates = "姓名板"
-UIConfigLocal.NameplatesAdditionalHeight = "目标姓名板加高"
-UIConfigLocal.NameplatesAdditionalWidth = "目标姓名板加宽"
+UIConfigLocal.NameplatesAdditionalSize = "目标姓名板加高"
 UIConfigLocal.NameplatesAurasSize = "减益尺寸"
 UIConfigLocal.NameplatesBadColor = "仇恨错误染色"
 UIConfigLocal.NameplatesCastbarName = "显示施法条名称"

@@ -199,8 +199,7 @@ C["Misc"] = {
 
 -- Nameplates
 C["Nameplates"] = {
-	["AdditionalHeight"] = 0,
-	["AdditionalWidth"] = 0,
+	["AdditionalSize"] = 0,
 	["AurasSize"] = 26,
 	["BadColor"] = {1, 0, 0},
 	["CastbarName"] = true,
