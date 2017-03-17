@@ -9,24 +9,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v6.27] - 3/16/2017
 ### Fixed
-Spark for absorb has its proper texture.
-Heal prediction mybar has a min and max value now.
-Raid frames scale will default to 1 if no value is found.
-ExtraButton position fixed.
-Cooldown for ExtraButton fixed.
-Function UpdateCVar will fire once again.
+- Spark for absorb has its proper texture.
+- Heal prediction mybar has a min and max value now.
+- Raid frames scale will default to 1 if no value is found.
+- ExtraButton position fixed.
+- Cooldown for ExtraButton fixed.
+- Function UpdateCVar will fire once again.
 
 ### Removed
-Old code removed in KkthnxUI/Modules/ActionBars/ExtraActionButton.lua 
+- Old code removed in KkthnxUI/Modules/ActionBars/ExtraActionButton.lua 
 
 ### Changed
-UIDebugTools will parent to our UIFrameHider now.
-Shortened some loading OnEvent script functions.
-Castbar spark on Nameplates look more fitting.
-K.PriestColors moved to KkthnxUI/Core/Constants.lua.
-K.TexCoords moved to KkthnxUI/Core/Constants.lua.
-OrderHallCommandBar tweaked and is smaller now.
-Cleaned CheckRole function.
+- UIDebugTools will parent to our UIFrameHider now.
+- Shortened some loading OnEvent script functions.
+- Castbar spark on Nameplates look more fitting.
+- K.PriestColors moved to KkthnxUI/Core/Constants.lua.
+- K.TexCoords moved to KkthnxUI/Core/Constants.lua.
+- OrderHallCommandBar tweaked and is smaller now.
+- Cleaned CheckRole function.
 
 # Archived Changelogs
 
