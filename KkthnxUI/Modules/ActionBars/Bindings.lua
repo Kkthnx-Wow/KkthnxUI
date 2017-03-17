@@ -52,7 +52,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 		bind:EnableMouseWheel(true)
 		bind.texture = bind:CreateTexture()
 		bind.texture:SetAllPoints(bind)
-		bind.texture:SetColorTexture(0, 0, 0, .25)
+		bind.texture:SetColorTexture(1, 1, 1, .30)
 		bind:Hide()
 
 		local elapsed = 0
