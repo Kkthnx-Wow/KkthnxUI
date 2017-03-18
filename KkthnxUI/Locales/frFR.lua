@@ -142,20 +142,12 @@ L.DataText = {
 -- headers
 L.Install = {
 	Header1 = "Bienvenue",
-	Header2 = "1. Essentiels",
-	Header3 = "2. Unitframes",
-	Header4 = "3. Features",
-	Header5 = "4. Choses que vous devez savoir!",
-	Header6 = "5. Commandes",
-	Header7 = "6. Fini",
 	Header8 = "1. Paramètres essentiels",
 	Header9 = "2. Social",
 	Header10 = "3. Frames",
 	Header11 = "4. Success!",
 	InitLine1 = "Merci d'avoir choisi KkthnxUI!",
 	InitLine2 = "Vous serez guidé par le processus d'installation simple en quelques étapes. À chaque étape, vous pouvez décider si vous souhaitez ou non appliquer les paramètres présentés.",
-	InitLine3 = "Vous êtes également invité à suivre le tutoriel sur certaines des caractéristiques KkthnxUI.",
-	InitLine4 = "Appuyez sur le bouton 'Tutoriel' pour vous guider dans cette petite introduction, ou appuyez sur 'Installer' pour sauter cette étape.",
 	Step1Line1 = "Ces étapes appliqueront les paramètres CVar correctes pour KkthnxUI.",
 	Step1Line2 = "La première étape s'applique aux paramètres essentiels.",
 	Step1Line3 = "C'est |cffff0000recommended|r pour tout utilisateur à moins que vous ne souhaitiez appliquer qu'une partie spécifique des paramètres.",
@@ -173,7 +165,6 @@ L.Install = {
 	Step4Line2 = "Cliquez sur le bouton 'Finir' pour recharger l'interface.",
 	Step4Line3 = "",
 	Step4Line4 = "Profitez de KkthnxUI! Rejoignez-nous sur Discord @ |cff748BD9discord.gg/Kjyebkf|r",
-	ButtonTutorial = "Tutoriel",
 	ButtonInstall = "Installer",
 	ButtonNext = "Suivant",
 	ButtonSkip = "Passer",
@@ -182,35 +173,6 @@ L.Install = {
 	ButtonClose = "Fermer",
 	Complete = "Installation terminé"
 }
-
--- tutorial 1
-L.Tutorial = {
-	Step1Line1 = "Ce didacticiel rapide vous montrera quelques-unes des fonctionnalités de KkthnxUI.",
-	Step1Line2 = "Tout d'abord, l'essentiel que vous devez savoir avant de pouvoir jouer avec ce UI.",
-	Step1Line3 = "Cet installateur est partiellement spécifique aux personnages. Bien que certains des paramètres qui seront appliqués plus tard sont à l'échelle du compte, vous devez exécuter le script d'installation pour chaque nouveau personnage exécutant KkthnxUI. Le script est automatiquement affiché sur chaque nouveau personnage que vous ouvrez une session avec KkthnxUI installé pour la première fois. En outre, les options peuvent être trouvées dans /KkthnxUI/Config/Settings.lua pour `Power` utilisateurs ou en tapant /KkthnxUI dans le jeu pour `Friendly` .",
-	Step1Line4 = "Un utilisateur puissant est un utilisateur d'un ordinateur personnel qui a la capacité d'utiliser des fonctionnalités avancées (ex: Lua édition) qui sont au-delà des capacités des utilisateurs normaux. Un utilisateur convivial est un utilisateur normal et n'est pas nécessairement capable de programmer. Il est recommandé pour eux d'utiliser notre outil de configuration dans le jeu (/ KkthnxUI) pour les paramètres qu'ils souhaitent être modifiés dans KkthnxUI.",
-	Step2Line1 = "KkthnxUI Inclut une version intégrée de oUF (oUFKkthnxUI) créée par Haste. Cela gère toutes les trames de l'unité sur l'écran, les buffs et debuffs, et les éléments spécifiques à la classe.",
-	Step2Line2 = "Vous pouvez visiter wowinterface.com et recherchez oUF pour plus d'informations sur cet outil.",
-	Step2Line3 = "Pour changer facilement les positions unitframes, tapez simplement / moveui.",
-	Step2Line4 = "",
-	Step3Line1 = "KkthnxUI est une interface utilisateur redessinée de Blizzard. Rien de moins, rien de plus. Approximativement toutes les fonctionnalités que vous voyez avec l'interface utilisateur par défaut est disponible par KkthnxUI. Les seules fonctionnalités non disponibles via l'interface utilisateur par défaut sont certaines fonctionnalités automatisées qui ne sont pas vraiment visibles à l'écran, par exemple, la vente d'objets gris lorsque vous visitez un fournisseur ou, les sacs de tri automatique.",
-	Step3Line2 = "Ce n'est pas tout le monde qui aime des choses comme les compteurs DPS, Boss mods, les compteurs de menace, etc, nous jugeons que c'est la meilleure chose à faire. KkthnxUI est fait autour de l'idée de travailler pour toutes les classes, les rôles, les spécifications, le type de gameplay, le goût des utilisateurs, etc. C'est pourquoi KkthnxUI est l'une des interfaces utilisateur les plus populaires actuellement. Il s'adapte à tous les styles de jeu et est extrêmement modifiable. Il est également conçu pour être un bon début pour tout le monde qui veulent faire leur propre interface personnalisée sans dépendre des add-ons. Depuis 2012, beaucoup d'utilisateurs ont commencé à utiliser KkthnxUI comme base pour leur propre interface utilisateur.",
-	Step3Line3 = "Les utilisateurs peuvent visiter notre section de mods supplémentaires sur notre site Web ou en visitant www.wowinterface.com pour installer des fonctionnalités supplémentaires ou des mods.",
-	Step3Line4 = "",
-	Step4Line1 = "Pour définir le nombre de barres souhaitées, placez la souris sur la gauche ou la droite de la barre d'action inférieure. Faites la même chose sur la droite, par le bas. Pour copier le texte du cadre de discussion, cliquez sur le bouton affiché sur la souris dans le coin inférieur droit des images de chat.",
-	Step4Line2 = "Vous pouvez cliquer avec le bouton gauche de la souris sur 80% du texte de données pour afficher divers panneaux de Blizzard. Ami(e)s et Guilde possède également des fonctions cliquées avec le bouton droit de la souris.",
-	Step4Line3 = "Il existe des menus déroulants disponibles. Un clic droit sur le bouton [X] (Fermer) du sac montrera des sacs. En cliquant avec le bouton droit de la souris sur Minimap,.",
-	Step4Line4 = "",
-	Step5Line1 = "Enfin, KkthnxUI inclut des commandes '/' utiles. Voici une liste.",
-	Step5Line2 = "/moveui vous permet de déplacer beaucoup de cadres n'importe où sur l'écran. /rl recharge l'interface.",
-	Step5Line3 = "/tt vous permet de chuchoter votre cible. /rc lance un ready check. /rd vous décroche d'un groupe ou un raid.",
-	Step5Line4 = "/gm Bascule le cadre d'aide. /install ou /tutorial charge cet installateur. ",
-	Step6Line1 = "Le didacticiel est terminé. Vous pouvez choisir de le reconsulter à tout moment en tapant /tutorial.",
-	Step6Line2 = "Je vous suggère de jeter un coup d'oeil à config / config.lua ou de taper / KkthnxUI pour personnaliser l'interface utilisateur selon vos besoins.",
-	Step6Line3 = "Vous pouvez maintenant continuer à installer l'interface utilisateur si ce n'est pas encore fait ou si vous voulez rétablir la valeur par défaut!",
-	Step6Line4 = "",
-}
-
 -- AutoInvite Localization
 L.Invite = {
 	Enable = "Autoinvite activé: ",

@@ -34,6 +34,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
+local UnitDebuff = _G.UnitDebuff
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, DebuffTypeColor
@@ -349,23 +350,31 @@ local function UpdateAuraIcon(button, unit, index, filter)
 	button:Show()
 end
 
-local function DebuffFilter(name, caster, spellId, nameplateShowPersonal, nameplateShowAll)
-	local allow = false
-
+local function DebuffFilter(name, caster, spellId, nameplateShowPersonal, nameplateShowAll, unit)
 	if caster == "player" then
 		if ((nameplateShowPersonal or nameplateShowAll) and not K.DebuffBlackList[name]) then
-			allow = true
+			return true
 		elseif K.DebuffWhiteList[name] then
-			allow = true
+			return true
 		end
 	end
 
 	-- Star Augur Etraeus debuffs
 	if spellId == 205445 or spellId == 205429 or spellId == 216345 or spellId == 216344 then
-		allow = true
+		local playermark = select(1, UnitDebuff("player", "Star Sign: Crab")) or nil
+		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Wolf")) or nil
+		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Dragon")) or nil
+		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Hunter")) or nil
+
+		local unitmark = select(1, UnitDebuff(unit,"Star Sign: Crab")) or nil
+		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Wolf")) or nil
+		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Dragon")) or nil
+		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Hunter")) or nil
+
+		return true, true
 	end
 
-	return allow
+	return false
 end
 
 local function UpdateAuras(self)
@@ -376,12 +385,17 @@ local function UpdateAuras(self)
 		if i > C.Nameplates.Width / C.Nameplates.AurasSize then return end
 		local name, _, _, _, _, _, _, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(self.unit, index, "HARMFUL")
 
-		local allow = DebuffFilter(name, caster, spellId, nameplateShowPersonal, nameplateShowAll)
+		local allow, boss = DebuffFilter(name, caster, spellId, nameplateShowPersonal, nameplateShowAll, self.unit)
 		if name and allow then
 			if not self.DebuffIcons[i] then
 				self.DebuffIcons[i] = CreateAuraIcon(self)
 			end
 			UpdateAuraIcon(self.DebuffIcons[i], self.unit, index, "HARMFUL")
+			if boss then
+				self.DebuffIcons[i].icon:SetVertexColor(r, g, b)
+			else
+				self.DebuffIcons[i].icon:SetVertexColor(1, 1, 1)
+			end
 			if i == 1 then
 				self.DebuffIcons[i]:SetPoint("BOTTOMRIGHT", self.DebuffIcons, "BOTTOMRIGHT")
 			elseif i ~= 1 then
@@ -539,11 +553,11 @@ local function castInterrupted(self, unit, name, castid)
 	self.Spark:SetPoint("CENTER", self, "RIGHT")
 end
 
-local function CallbackNamePlates(event, nameplate, unit)
+local function CallbackNamePlates(self, event, unit)
 	local unit = unit or "target"
-	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
-	if not nameplate then return end
-	local self = nameplate.ouf
+	-- local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
+	-- if not nameplate then return end
+	-- local self = nameplate.ouf
 
 	local name = UnitName(unit)
 	if name and K.PlateBlacklist[name] then

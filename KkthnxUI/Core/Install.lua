@@ -38,7 +38,7 @@ local UIFrameFadeOut = _G.UIFrameFadeOut
 -- GLOBALS: ActionBars, SetActionBarToggles, _G.SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: _G.SLASH_CONFIGURE1, _G.SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
--- GLOBALS: _G.SLASH_TUTORIAL2, _G.SLASH_TUTORIAL1, _G.SLASH_TUTORIAL1, _G.SLASH_CONFIGURE2, UIConfig
+-- GLOBALS: _G.SLASH_CONFIGURE2, UIConfig
 -- GLOBALS: InstallStepComplete, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
 -- GLOBALS: UIConfigMain
 
@@ -188,19 +188,19 @@ function KkthnxUIInstall:CVarSetup()
 	SetCVar("statusTextDisplay", "BOTH")
 	SetCVar("UberTooltips", 1)
 	SetCVar("WholeChatWindowClickable", 0)
-  SetCVar("autoOpenLootHistory", 0)
-  SetCVar("autoQuestWatch", 1)
-  SetCVar("chatStyle", "classic")
-  SetCVar("countdownForCooldowns", 0)
-  SetCVar("nameplateShowFriendlyNPCs", 1)
-  SetCVar("nameplateShowSelf", 0)
-  SetCVar("removeChatDelay", 1)
-  SetCVar("showArenaEnemyFrames", 0)
-  SetCVar("ShowClassColorInNameplate", 1)
-  SetCVar("showVKeyCastbar", 1)
-  SetCVar("threatWarning", 3)
-  SetCVar("violenceLevel", 5)
-  SetCVar("WhisperMode", "inline")
+	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("autoQuestWatch", 1)
+	SetCVar("chatStyle", "classic")
+	SetCVar("countdownForCooldowns", 0)
+	SetCVar("nameplateShowFriendlyNPCs", 1)
+	SetCVar("nameplateShowSelf", 0)
+	SetCVar("removeChatDelay", 1)
+	SetCVar("showArenaEnemyFrames", 0)
+	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("showVKeyCastbar", 1)
+	SetCVar("threatWarning", 3)
+	SetCVar("violenceLevel", 5)
+	SetCVar("WhisperMode", "inline")
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
@@ -404,96 +404,6 @@ local StepOne = function()
 	end
 end
 
-local TutorialSix = function()
-	StatusBar:SetValue(6)
-	Header:SetText(L.Install.Header7)
-	TextOne:SetText(L.Tutorial.Step6Line1)
-	TextTwo:SetText(L.Tutorial.Step6Line2)
-	TextThree:SetText(L.Tutorial.Step6Line3)
-	TextFour:SetText(L.Tutorial.Step6Line4)
-
-	StatusBarText:SetText("6/6")
-
-	OptionOne:Show()
-
-	OptionOne.Text:SetText(L.Install.ButtonClose)
-	OptionTwo.Text:SetText(L.Install.ButtonInstall)
-
-	OptionOne:SetScript("OnClick", function()
-		KkthnxUIInstallFrame:Hide()
-	end)
-	OptionTwo:SetScript("OnClick", StepOne)
-end
-
-local TutorialFive = function()
-	StatusBar:SetValue(5)
-	Header:SetText(L.Install.Header6)
-	TextOne:SetText(L.Tutorial.Step5Line1)
-	TextTwo:SetText(L.Tutorial.Step5Line2)
-	TextThree:SetText(L.Tutorial.Step5Line3)
-	TextFour:SetText(L.Tutorial.Step5Line4)
-
-	StatusBarText:SetText("5/6")
-
-	OptionTwo:SetScript("OnClick", TutorialSix)
-end
-
-local TutorialFour = function()
-	StatusBar:SetValue(4)
-	Header:SetText(L.Install.Header5)
-	TextOne:SetText(L.Tutorial.Step4Line1)
-	TextTwo:SetText(L.Tutorial.Step4Line2)
-	TextThree:SetText(L.Tutorial.Step4Line3)
-	TextFour:SetText(L.Tutorial.Step4Line4)
-
-	StatusBarText:SetText("4/6")
-
-	OptionTwo:SetScript("OnClick", TutorialFive)
-end
-
-local TutorialThree = function()
-	StatusBar:SetValue(3)
-	Header:SetText(L.Install.Header4)
-	TextOne:SetText(L.Tutorial.Step3Line1)
-	TextTwo:SetText(L.Tutorial.Step3Line2)
-	TextThree:SetText(L.Tutorial.Step3Line3)
-	TextFour:SetText(L.Tutorial.Step3Line4)
-
-	StatusBarText:SetText("3/6")
-
-	OptionTwo:SetScript("OnClick", TutorialFour)
-end
-
-local TutorialTwo = function()
-	StatusBar:SetValue(2)
-	Header:SetText(L.Install.Header3)
-	TextOne:SetText(L.Tutorial.Step2Line1)
-	TextTwo:SetText(L.Tutorial.Step2Line2)
-	TextThree:SetText(L.Tutorial.Step2Line3)
-	TextFour:SetText(L.Tutorial.Step2Line4)
-
-	StatusBarText:SetText("2/6")
-
-	OptionTwo:SetScript("OnClick", TutorialThree)
-end
-
-local TutorialOne = function()
-	StatusBar:SetMinMaxValues(0, 6)
-	StatusBar:Show()
-	Close:Show()
-	StatusBar:SetValue(1)
-	StatusBar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b)
-	Header:SetText(L.Install.Header2)
-	TextOne:SetText(L.Tutorial.Step1Line1)
-	TextTwo:SetText(L.Tutorial.Step1Line2)
-	TextThree:SetText(L.Tutorial.Step1Line3)
-	TextFour:SetText(L.Tutorial.Step1Line4)
-	StatusBarText:SetText("1/6")
-	OptionOne:Hide()
-	OptionTwo.Text:SetText(L.Install.ButtonNext)
-	OptionTwo:SetScript("OnClick", TutorialTwo)
-end
-
 -- Install KkthnxUI with default settings.
 function KkthnxUIInstall:Install()
 	KkthnxUIInstallFrame:Show()
@@ -504,13 +414,11 @@ function KkthnxUIInstall:Install()
 	Header:SetText(L.Install.Header1)
 	TextOne:SetText(L.Install.InitLine1)
 	TextTwo:SetText(L.Install.InitLine2)
-	TextThree:SetText(L.Install.InitLine3)
-	TextFour:SetText(L.Install.InitLine4)
 
-	OptionOne.Text:SetText(L.Install.ButtonTutorial)
+	OptionOne.Text:SetText(L.Install.ButtonSkip)
 	OptionTwo.Text:SetText(L.Install.ButtonInstall)
 
-	OptionOne:SetScript("OnClick", TutorialOne)
+	OptionOne:SetScript("OnClick", StepFour)
 	OptionTwo:SetScript("OnClick", StepOne)
 end
 
@@ -602,9 +510,6 @@ Install:SetScript("OnEvent", function(self, event, addon)
 
 	self:UnregisterEvent("ADDON_LOADED")
 end)
-
-_G.SLASH_TUTORIAL1, _G.SLASH_TUTORIAL2 = "/uihelp", "/tutorial"
-SlashCmdList.TUTORIAL = function() KkthnxUIInstallFrame:Show() TutorialOne() end
 
 _G.SLASH_VERSION1 = "/version"
 SlashCmdList.VERSION = function() if KkthnxUIVersionFrame:IsShown() then KkthnxUIVersionFrame:Hide() else KkthnxUIVersionFrame:Show() end end

@@ -142,20 +142,12 @@ L.DataText = {
 -- headers
 L.Install = {
 	Header1 = "歡迎使用",
-	Header2 = "1. 基本",
-	Header3 = "2. 角色框體",
-	Header4 = "3. 功能",
-	Header5 = "4. 您需要了解以下信息！",
-	Header6 = "5. 命令",
-	Header7 = "6. 結束",
 	Header8 = "1. 基本設置",
 	Header9 = "2. 社交",
 	Header10 = "3. 框體",
 	Header11 = "4. 成功！",
 	InitLine1 = "感謝您選擇KkthnxUI！",
 	InitLine2 = "接下來您將被引導安裝本UI，只有很少的幾個步驟。在每壹個步驟您可以選擇接受或者跳過我們的壹些插件預設。",
-	InitLine3 = "您還可以獲得簡單的教程來了解KkthnxUI的壹些功能。",
-	InitLine4 = "點擊“教程”按鈕將會向您介紹本UI，或者直接點擊“安裝”按鈕來略過這壹步。",
 	Step1Line1 = "這些步驟會加載適合KkthnxUI的系統設置。",
 	Step1Line2 = "第壹步將加載基本設置。",
 	Step1Line3 = "這壹步我們|cffff0000強烈建議|r您加載這些基本設置，當然您也可以只加載部分設置。",
@@ -173,7 +165,6 @@ L.Install = {
 	Step4Line2 = "請點擊“結束”按鈕來重載界面。",
 	Step4Line3 = "",
 	Step4Line4 = "享受KkthnxUI吧！歡迎與我們在 Discord @ |cff748BD9discord.gg/Kjyebkf|r 上交流",
-	ButtonTutorial = "教程",
 	ButtonInstall = "安裝",
 	ButtonNext = "下壹步",
 	ButtonSkip = "忽略",
@@ -181,34 +172,6 @@ L.Install = {
 	ButtonFinish = "結束",
 	ButtonClose = "關閉",
 	Complete = "安裝完成"
-}
-
--- tutorial 1
-L.Tutorial = {
-	Step1Line1 = "本簡易教程將向您展示KkthnxUI的壹些功能。",
-	Step1Line2 = "在使用本UI前您首先需要了解壹些基本點。",
-	Step1Line3 = "KkthnxUI的安裝器是區分角色的。雖然有些設置是全帳號通用的，在每個新角色開始使用前都需要進行壹次安裝操作。安裝界面會在您登錄新角色時自動彈出。此外，壹些給“強力”用戶使用的選項可以在/KkthnxUI/Config/Settings.lua中找到，而普通玩家也可以在在遊戲中輸入/KkthnxUI來調取設置界面。",
-	Step1Line4 = "我們所說的“強力”玩家是有壹定高級計算機知識的玩家（比如LUA編輯），普通玩家壹般不具有這壹能力，因此我們建議普通玩家在遊戲中直接使用設置界面（/KkthnxUI）來對自定義KkthnxUI。",
-	Step2Line1 = "KkthnxUI包括壹個內置的oUF插件（作者：Haste）。這壹插件是屏幕上所有角色框體，增益和減益以及職業資源條的基礎。",
-	Step2Line2 = "您可以訪問wowinterface.com並搜索oUF來獲得更多關於它的信息。",
-	Step2Line3 = "您可以通過輸入/moveui來很方便地移動各框體位置。",
-	Step2Line4 = "",
-	Step3Line1 = "KkthnxUI對魔獸世界原始界面進行了重新設計。不多也不少剛剛好。基本上在原始界面上您能看到的功能在KkthnxUI中也能找到。此外，KkthnxUI還有壹些原始界面中沒有的功能，比如自動賣垃圾及自動整理背包。",
-	Step3Line2 = "並不是每個玩家都喜歡使用比如傷害統計、BOSS模塊、仇恨監視等類型的插件，我們深知這壹點。KkthnxUI的設計理念是將其發展為所有職業、所有角色、所有專精、所有遊戲方式、所有玩家品味都適合的UI。 這就是為什麽KkthnxUI是目前最受歡迎的UI之壹。它適合所有人的遊戲方式並有很高的可定制性。它也是壹款很好的啟蒙UI來讓初學者們制作自己的UI。自2012年以來，很多玩家將KkthnxUI作為他們自制UI的基礎。",
-	Step3Line3 = "玩家們可以訪問我們的網站或訪問www.wowinterface.com來獲得更多的模塊和功能",
-	Step3Line4 = "",
-	Step4Line1 = "鼠標指針移至下方動作條上側或右側動作條下側可以更改動作條數量。請點擊聊天框右下角的按鈕復制聊天窗口文字。",
-	Step4Line2 = "80%的狀態信息都可以點擊打開相應窗口。右鍵點擊好友和公會信息條也有附加功能。",
-	Step4Line3 = "壹些下拉菜單也被實現了。右鍵點擊背包右上角的X可以顯示背包裝備情況，右鍵點擊小地圖可以調取微型菜單。",
-	Step4Line4 = "",
-	Step5Line1 = "最後，KkthnxUI還有壹些有用的命令可以使用。命令列表如下。",
-	Step5Line2 = "/moveui 允許您自由移動很多框體。 /rl 重載界面。",
-	Step5Line3 = "/tt 允許您向目標發送密語。 /rc 開始團隊檢查。 /rd 解散隊伍或團隊。",
-	Step5Line4 = "/gm 打開幫助界面。 /install or /tutorial 加載安裝界面。 ",
-	Step6Line1 = "教程已經結束。您可以通過輸入/tutorial在以後重新調取教程。",
-	Step6Line2 = "我建議您查看壹下config/config.lua，或輸入/KkthnxUI來自定義您理想中的UI。",
-	Step6Line3 = "如果您想繼續未完成的安裝步驟或重置所有設置，您可以繼續點擊安裝按鈕！",
-	Step6Line4 = "",
 }
 
 -- AutoInvite Localization

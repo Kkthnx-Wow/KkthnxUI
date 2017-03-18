@@ -740,14 +740,12 @@ local function CreateUnitLayout(self, unit)
 	self.Health.colorHealth = false
 	self.Health.colorClass = true
 	self.Health.colorClassPet = false
-	self.Health.colorPetAsPlayer = false -- let's keep this one to the player pet frame only
 	self.Health.colorReaction = true
 	self.Health.colorDisconnected = true
 	self.Health.colorTapping = true
 	self.Health.colorSmooth = true
 	self.Health.Smooth = true
 	self.Health.frequentUpdates = true
-	self.Health.SpiritHealer = self.SpiritHealer -- connect the spirithealer artwork
 	self.Health.PostUpdate = K.Health_PostUpdate
 
 	-- Health text

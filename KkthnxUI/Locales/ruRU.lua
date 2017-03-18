@@ -143,20 +143,12 @@ L.DataText = {
 -- headers
 L.Install = {
 	Header1 = "Welcome",
-	Header2 = "1. Essentials",
-	Header3 = "2. Рамки Юнитов",
-	Header4 = "3. Features",
-	Header5 = "4. Вам нужно знать!",
-	Header6 = "5. Команды",
-	Header7 = "6. Finished",
 	Header8 = "1. Essential Settings",
 	Header9 = "2. Social",
 	Header10 = "3. Рамки",
 	Header11 = "4. Success!",
 	InitLine1 = "Thank you for choosing KkthnxUI!",
 	InitLine2 = "You will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings.",
-	InitLine3 = "You are also given the possibility to be shown a brief tutorial on some of the features of KkthnxUI.",
-	InitLine4 = "Press the 'Tutorial' button to be guided through this small introduction, or press 'Install' to skip this step.",
 	Step1Line1 = "These steps will apply the correct CVar settings for KkthnxUI.",
 	Step1Line2 = "The first step applies the essential settings.",
 	Step1Line3 = "This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings.",
@@ -174,7 +166,6 @@ L.Install = {
 	Step4Line2 = "Please click the 'Finish' button to reload the UI.",
 	Step4Line3 = "",
 	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r",
-	ButtonTutorial = "Tutorial",
 	ButtonInstall = "Install",
 	ButtonNext = "Next",
 	ButtonSkip = "Skip",
@@ -182,34 +173,6 @@ L.Install = {
 	ButtonFinish = "Finish",
 	ButtonClose = "Close",
 	Complete = "Установка Завершена"
-}
-
--- tutorial 1
-L.Tutorial = {
-	Step1Line1 = "This quick tutorial will show you some of the features in KkthnxUI.",
-	Step1Line2 = "First, the essentials that you should know before you can play with this UI.",
-	Step1Line3 = "This installer is partially character-specific. While some of the settings that will be applied later on are account-wide, you need to run the install script for each new character running KkthnxUI. The script is auto shown on every new character you log in with KkthnxUI installed for the first time. Also, the options can be found in /KkthnxUI/Config/Settings.lua for `Power` users or by typing /KkthnxUI in the game for `Friendly` users.",
-	Step1Line4 = "A power user is a user of a personal computer who has the ability to use advanced features (ex: Lua editing) which are beyond the abilities of normal users. A friendly user is a normal user and is not necessarily capable of programming. It's recommended for them to use our in-game configuration tool (/KkthnxUI) for settings they want to be changed in KkthnxUI.",
-	Step2Line1 = "KkthnxUI includes an embedded version of oUF (oUFKkthnxUI) created by Haste. This handles all of the unit frames on the screen, the buffs and debuffs, and the class-specific elements.",
-	Step2Line2 = "You can visit wowinterface.com and search for oUF for more information about this tool.",
-	Step2Line3 = "To easily change the unitframes positions, just type /moveui.",
-	Step2Line4 = "",
-	Step3Line1 = "KkthnxUI is a redesigned Blizzard UI. Nothing less, nothing more. Approxmently all features you see with Default UI is available though KkthnxUI. The only features not available through default UI are some automated features not really visible on screen, for example, auto selling grays when visiting a vendor or, auto sorting bags.",
-	Step3Line2 = "Not everyone enjoys things like DPS meters, Boss mods, Threat meters, etc, we judge that it's the best thing to do. KkthnxUI is made around the idea to work for all classes, roles, specs, type of gameplay, a taste of the users, etc. This why KkthnxUI is one of the most popular UI at the moment. It fits everyone's play style and is extremely editable. It's also designed to be a good start for everyone that want to make their own custom UI without depending on add-ons. Since 2012 a lot of users have started using KkthnxUI as a base for their own UI.",
-	Step3Line3 = "Users may want to visit our extra mods section on our website or by visiting www.wowinterface.com to install additional features or mods.",
-	Step3Line4 = "",
-	Step4Line1 = "To set how many bars you want, mouseover on left or right of bottom action bar background. Do the same on the right, via bottom. To copy text from the chat frame, click the button shown on mouseover in the right bottom corner of chat frames.",
-	Step4Line2 = "You can left-click through 80% of data text to show various panels from Blizzard. Friend and Guild Datatext have right-clicked features as well.",
-	Step4Line3 = "There are some dropdown menus available. Right-clicking on the [X] (Close) bag button will show bags. right-clicking the Minimap will show the micro menu.",
-	Step4Line4 = "",
-	Step5Line1 = "Lastly, KkthnxUI includes useful slash commands. Below is a list.",
-	Step5Line2 = "/moveui allow you to move lots of the frames anywhere on the screen. /rl reloads the UI.",
-	Step5Line3 = "/tt lets you whisper your target. /rc initiates a ready check. /rd disbands a party or raid.",
-	Step5Line4 = "/gm toggles the Help frame. /install or /tutorial loads this installer. ",
-	Step6Line1 = "The tutorial is complete. You can choose to reconsult it at any time by typing /tutorial.",
-	Step6Line2 = "I suggest you have a look through config/config.lua or type /KkthnxUI to customize the UI to your needs.",
-	Step6Line3 = "You can now continue to install the UI if it's not done yet or if you want to reset to default!",
-	Step6Line4 = "",
 }
 
 -- AutoInvite Localization
