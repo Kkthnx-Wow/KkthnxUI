@@ -235,9 +235,15 @@ local function CreateRaidLayout(self, unit)
 			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
 
-			myBar:SetWidth(self.Health:GetWidth())
-			otherBar:SetWidth(self.Health:GetWidth())
-			healAbsorbBar:SetWidth(self.Health:GetWidth())
+			-- myBar:SetWidth(self.Health:GetWidth())
+			-- otherBar:SetWidth(self.Health:GetWidth())
+			-- healAbsorbBar:SetWidth(self.Health:GetWidth())
+
+			self.Health:HookScript("OnSizeChanged", function(bar, width)
+				myBar:SetWidth(self.Health:GetWidth())
+				otherBar:SetWidth(self.Health:GetWidth())
+				healAbsorbBar:SetWidth(self.Health:GetWidth())
+			end)
 
 			self.HealPrediction = {
 					myBar = myBar,

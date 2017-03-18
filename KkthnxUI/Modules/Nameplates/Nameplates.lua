@@ -397,9 +397,9 @@ local function UpdateAuras(self)
 				self.DebuffIcons[i].icon:SetVertexColor(1, 1, 1)
 			end
 			if i == 1 then
-				self.DebuffIcons[i]:SetPoint("BOTTOMRIGHT", self.DebuffIcons, "BOTTOMRIGHT")
+				self.DebuffIcons[i]:SetPoint("BOTTOMLEFT", self.DebuffIcons, "BOTTOMLEFT")
 			elseif i ~= 1 then
-				self.DebuffIcons[i]:SetPoint("RIGHT", self.DebuffIcons[i-1], "LEFT", -2, 0)
+				self.DebuffIcons[i]:SetPoint("LEFT", self.DebuffIcons[i-1], "RIGHT", -2, 0)
 			end
 			i = i + 1
 		end
@@ -576,7 +576,8 @@ local function CallbackNamePlates(self, event, unit)
 		self.RaidIcon:SetAlpha(0)
 	else
 		local unitReaction = UnitReaction(unit, "player")
-		if UnitIsPlayer(unit) and (unitReaction and unitReaction >= 5) then
+		--if UnitIsPlayer(unit) and (unitReaction and unitReaction >= 5) then
+		if (UnitIsPVPSanctuary(unit) or (UnitIsPlayer(unit) and UnitIsFriend("player", unit) and unitReaction and unitReaction >= 5)) then
 			self.Health:SetAlpha(0)
 			self.Castbar:SetAlpha(0)
 			self.Level:SetAlpha(0)
@@ -765,7 +766,7 @@ local function StyleNamePlates(self, unit)
 	-- Aura tracking
 	if C.Nameplates.TrackAuras == true then
 		self.DebuffIcons = CreateFrame("Frame", nil, self)
-		self.DebuffIcons:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 2 * K.NoScaleMult, C.Media.Font_Size + 7)
+		self.DebuffIcons:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C.Media.Font_Size + 7)
 		self.DebuffIcons:SetSize(20 + C.Nameplates.Width, C.Nameplates.AurasSize)
 		self.DebuffIcons:EnableMouse(false)
 	end
