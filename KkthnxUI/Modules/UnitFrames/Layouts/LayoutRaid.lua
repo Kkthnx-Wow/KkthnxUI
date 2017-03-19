@@ -210,6 +210,8 @@ local function CreateRaidLayout(self, unit)
 	}
 
 	do
+			local width = 55 - 2
+
 			local myBar = CreateFrame("StatusBar", nil, self.Health)
 			myBar:SetStatusBarTexture(C.Media.Texture)
 			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
@@ -217,6 +219,7 @@ local function CreateRaidLayout(self, unit)
 			myBar:SetPoint("BOTTOM")
 			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar:SetWidth(width)
 			myBar:SetMinMaxValues(0, 1)
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
@@ -225,6 +228,7 @@ local function CreateRaidLayout(self, unit)
 			otherBar:SetPoint("TOP")
 			otherBar:SetPoint("BOTTOM")
 			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			otherBar:SetWidth(width)
 			otherBar:SetStatusBarColor(0, 1, 0, .5)
 
 			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
@@ -233,17 +237,8 @@ local function CreateRaidLayout(self, unit)
 			healAbsorbBar:SetPoint("TOP")
 			healAbsorbBar:SetPoint("BOTTOM")
 			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			healAbsorbBar:SetWidth(width)
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
-
-			-- myBar:SetWidth(self.Health:GetWidth())
-			-- otherBar:SetWidth(self.Health:GetWidth())
-			-- healAbsorbBar:SetWidth(self.Health:GetWidth())
-
-			self.Health:HookScript("OnSizeChanged", function(bar, width)
-				myBar:SetWidth(self.Health:GetWidth())
-				otherBar:SetWidth(self.Health:GetWidth())
-				healAbsorbBar:SetWidth(self.Health:GetWidth())
-			end)
 
 			self.HealPrediction = {
 					myBar = myBar,

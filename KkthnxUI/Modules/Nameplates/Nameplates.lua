@@ -380,6 +380,7 @@ end
 local function UpdateAuras(self)
 	if not C.Nameplates.TrackAuras or UnitIsUnit(self.unit, "player") then return end
 	local i = 1
+	local r, g, b
 
 	for index = 1, 40 do
 		if i > C.Nameplates.Width / C.Nameplates.AurasSize then return end
@@ -399,7 +400,7 @@ local function UpdateAuras(self)
 			if i == 1 then
 				self.DebuffIcons[i]:SetPoint("BOTTOMLEFT", self.DebuffIcons, "BOTTOMLEFT")
 			elseif i ~= 1 then
-				self.DebuffIcons[i]:SetPoint("LEFT", self.DebuffIcons[i-1], "RIGHT", -2, 0)
+				self.DebuffIcons[i]:SetPoint("LEFT", self.DebuffIcons[i-1], "RIGHT", 2, 0)
 			end
 			i = i + 1
 		end
@@ -411,8 +412,7 @@ local function UpdateAuras(self)
 end
 
 local function ThreatColor(self, forced)
-	if UnitIsPlayer(self.unit) then return end
-	local combat = UnitAffectingCombat("player")
+	if not self.Health:IsShown() then return end
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
 
 	if C.Nameplates.EnhancedThreat ~= true then
@@ -420,9 +420,9 @@ local function ThreatColor(self, forced)
 	end
 	if UnitIsTapDenied(self.unit) then
 		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
-	elseif combat then
+	elseif threatStatus then
 		if threatStatus == 3 then -- securely tanking, highest threat
-			if K.Role == "Tank" or "TANK" then
+			if K.Role == "Tank" then
 				if C.Nameplates.EnhancedThreat == true then
 					self.Health:SetStatusBarColor(C.Nameplates.GoodColor[1], C.Nameplates.GoodColor[2], C.Nameplates.GoodColor[3])
 				else

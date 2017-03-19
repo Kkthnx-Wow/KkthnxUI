@@ -31,12 +31,7 @@ local SetCVar = _G.SetCVar
 
 local Movers = K.Movers
 
--- Move UIErrorsFrame
-UIErrorsFrame:ClearAllPoints()
-UIErrorsFrame:SetPoint("CENTER", UIParent, "CENTER", 0, -60)
-UIErrorsFrame:SetSize(600, 18 + 4 + 18)
-UIErrorsFrame:SetTimeVisible(3)
-UIErrorsFrame:SetFadeDuration(1.5)
+-- Fix UIErrorsFrame framelevel
 UIErrorsFrame:SetFrameLevel(0)
 
 -- Skin return to graveyard button(Elvui)

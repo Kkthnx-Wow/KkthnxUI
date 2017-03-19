@@ -20,10 +20,10 @@ local ReloadUI = _G.ReloadUI
 
 -- Check role to return what role the player is.
 local function CheckRole()
-	local Tank = "TANK" or "Tank"
-	local Melee = "MELEE" or "Melee"
-	local Caster = "CASTER" or "Caster"
-	local Healer = "HEALER" or "Healer"
+	local Tank = "Tank"
+	local Melee = "Melee"
+	local Caster = "Caster"
+	local Healer = "Healer"
 
 	local Roles = {
 		["DEATHKNIGHT"] = {Tank, Melee, Melee},
