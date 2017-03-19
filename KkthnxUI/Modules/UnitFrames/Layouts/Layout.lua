@@ -841,15 +841,16 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetSize(50, 52)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
-		self.Absorb = {
-			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-			tile = true,
-			drawLayer = {"BACKGROUND", 4},
-			colour = {.3, .7, 1},
-			alpha = .5
-		}
-
 		do
+			self.Absorb = {
+				texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+				tile = true,
+				drawLayer = {"BACKGROUND", 4},
+				colour = {.3, .7, 1},
+				alpha = .5
+			}
+
+			-- Heal Prediction
 			local myBar = CreateFrame("StatusBar", nil, self.Health)
 			myBar:SetStatusBarTexture(C.Media.Texture)
 			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
@@ -857,7 +858,7 @@ local function CreateUnitLayout(self, unit)
 			myBar:SetPoint("BOTTOM")
 			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			myBar:SetStatusBarColor(0, 1, .5, .5)
-			myBar:SetMinMaxValues(0, 1)
+			myBar.Smooth = C.Unitframe.Smooth
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)
@@ -866,6 +867,7 @@ local function CreateUnitLayout(self, unit)
 			otherBar:SetPoint("BOTTOM")
 			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			otherBar:SetStatusBarColor(0, 1, 0, .5)
+			otherBar.Smooth = C.Unitframe.Smooth
 
 			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
@@ -874,11 +876,12 @@ local function CreateUnitLayout(self, unit)
 			healAbsorbBar:SetPoint("BOTTOM")
 			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+			healAbsorbBar.Smooth = C.Unitframe.Smooth
 
 			self.Health:HookScript("OnSizeChanged", function(bar, width)
-				myBar:SetWidth(self.Health:GetWidth())
-				otherBar:SetWidth(self.Health:GetWidth())
-				healAbsorbBar:SetWidth(self.Health:GetWidth())
+				myBar:SetWidth(width)
+				otherBar:SetWidth(width)
+				healAbsorbBar:SetWidth(width)
 			end)
 
 			self.HealPrediction = {
@@ -916,16 +919,17 @@ local function CreateUnitLayout(self, unit)
 		end
 	end
 
+	-- Heal Prediction
 	if (self.IsPartyFrame and C.Unitframe.Party == true) then
-		self.Absorb = {
-			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-			tile = true,
-			drawLayer = {"BACKGROUND", 4},
-			colour = {.3, .7, 1},
-			alpha = .5
-		}
-
 		do
+			self.Absorb = {
+				texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+				tile = true,
+				drawLayer = {"BACKGROUND", 4},
+				colour = {.3, .7, 1},
+				alpha = .5
+			}
+
 			local myBar = CreateFrame("StatusBar", nil, self.Health)
 			myBar:SetStatusBarTexture(C.Media.Texture)
 			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
@@ -933,6 +937,7 @@ local function CreateUnitLayout(self, unit)
 			myBar:SetPoint("BOTTOM")
 			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar.Smooth = C.Unitframe.Smooth
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)
@@ -941,6 +946,7 @@ local function CreateUnitLayout(self, unit)
 			otherBar:SetPoint("BOTTOM")
 			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			otherBar:SetStatusBarColor(0, 1, 0, .5)
+			otherBar.Smooth = C.Unitframe.Smooth
 
 			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
@@ -949,18 +955,19 @@ local function CreateUnitLayout(self, unit)
 			healAbsorbBar:SetPoint("BOTTOM")
 			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+			healAbsorbBar.Smooth = C.Unitframe.Smooth
 
 			self.Health:HookScript("OnSizeChanged",function(bar, width)
-				myBar:SetWidth(55 - 2)
-				otherBar:SetWidth(55 - 2)
-				healAbsorbBar:SetWidth(55 - 2)
+				myBar:SetWidth(width)
+				otherBar:SetWidth(width)
+				healAbsorbBar:SetWidth(width)
 			end)
 
 			self.HealPrediction = {
 				myBar = myBar,
 				otherBar = otherBar,
 				healAbsorbBar = healAbsorbBar,
-				maxOverflow = 1,
+				maxOverflow = 1.05,
 				frequentUpdates = true
 			}
 		end

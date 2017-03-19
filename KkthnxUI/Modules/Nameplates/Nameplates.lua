@@ -771,16 +771,16 @@ local function StyleNamePlates(self, unit)
 		self.DebuffIcons:EnableMouse(false)
 	end
 
-	-- HealPrediction
-	self.Absorb = {
-		texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-		tile = true,
-		drawLayer = {"BACKGROUND", 4},
-		colour = {.3, .7, 1},
-		alpha = .5
-	}
-
 	do
+		self.Absorb = {
+			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+			tile = true,
+			drawLayer = {"BACKGROUND", 4},
+			colour = {.3, .7, 1},
+			alpha = .5
+		}
+
+		-- Heal Prediction
 		local myBar = CreateFrame("StatusBar", nil, self.Health)
 		myBar:SetStatusBarTexture(C.Media.Texture)
 		myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
@@ -788,7 +788,7 @@ local function StyleNamePlates(self, unit)
 		myBar:SetPoint("BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarColor(0, 1, .5, .5)
-		myBar:SetMinMaxValues(0, 1)
+		myBar.Smooth = C.Nameplates.Smooth
 
 		local otherBar = CreateFrame("StatusBar", nil, self.Health)
 		otherBar:SetStatusBarTexture(C.Media.Texture)
@@ -797,6 +797,7 @@ local function StyleNamePlates(self, unit)
 		otherBar:SetPoint("BOTTOM")
 		otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarColor(0, 1, 0, .5)
+		otherBar.Smooth = C.Nameplates.Smooth
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
@@ -805,11 +806,12 @@ local function StyleNamePlates(self, unit)
 		healAbsorbBar:SetPoint("BOTTOM")
 		healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+		healAbsorbBar.Smooth = C.Nameplates.Smooth
 
-		self.Health:HookScript("OnSizeChanged",function(bar, width)
-			myBar:SetWidth(self.Health:GetWidth())
-			otherBar:SetWidth(self.Health:GetWidth())
-			healAbsorbBar:SetWidth(self.Health:GetWidth())
+		self.Health:HookScript("OnSizeChanged", function(bar, width)
+			myBar:SetWidth(width)
+			otherBar:SetWidth(width)
+			healAbsorbBar:SetWidth(width)
 		end)
 
 		self.HealPrediction = {

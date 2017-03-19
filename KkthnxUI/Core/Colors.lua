@@ -7,7 +7,7 @@ local _, ns = ...
 local oUF = ns.oUF or _G.oUF
 
 -- Colors
-oUF.colors.health = {0.18, 0.67, 0.20}
+oUF.colors.health = {0.31, 0.31, 0.31}
 oUF.colors.uninterruptible = {1, 0, 0, 0.5}
 oUF.colors.interruptible = {0.31, 0.45, 0.63, 0.5}
 oUF.colors.fallback = {1, 1, 0.8}
