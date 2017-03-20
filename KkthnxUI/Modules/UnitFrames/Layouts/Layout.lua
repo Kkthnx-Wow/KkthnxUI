@@ -37,6 +37,7 @@ local IsInRaid = _G.IsInRaid
 -- GLOBALS: SetPortraitTexture, oUF_KkthnxPet, SLASH_TEST_UF1
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
+local tarTexPath = "Interface\\TargetingFrame\\"
 local pathFat = textPath.."Fat\\"
 local pathNormal = textPath.."Normal\\"
 local Movers = K.Movers
@@ -156,7 +157,7 @@ local DataFat = {
 		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
 		nam = {w = 110, h = 10, x = 50, y = 19, j = "CENTER", s = 12},
 		por = {w = 64, h = 64, x = -42, y = 7,},
-		glo = {w = 242, h = 92, x = 13, y = -1, t = pathFat.."Target-Flash", c = {0.945, 0, 0, 0.182}},
+		glo = {w = 242, h = 92, x = 13, y = -1, t = tarTexPath.."UI-TargetingFrame-Flash", c = {0.9453125, 0, 0 , 0.182}},
 	},
 	target = {
 		siz = {w = 176, h = 42},
@@ -167,7 +168,7 @@ local DataFat = {
 		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
 		nam = {w = 110, h = 10, x = 0, y = 18, j = "CENTER", s = 12},
 		por = {w = 64, h = 64, x = 41, y = 6,},
-		glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
+		glo = {w = 239, h = 94, x = -24, y = 1, t = tarTexPath.."UI-TargetingFrame-Flash", c = {0, 0.9453125, 0, 0.182}},
 	},
 	targettarget = DataNormal.targettarget, --same for now
 	pet = {
@@ -822,7 +823,7 @@ local function CreateUnitLayout(self, unit)
 
 	-- Threat glow
 	if (C.Unitframe.ThreatGlow) and (data.glo) then
-		self.ThreatGlow = self:CreateTexture(nil, "BACKGROUND", -1)
+		self.ThreatGlow = self:CreateTexture(nil, "BACKGROUND")
 	end
 
 	if (self.IsMainFrame) then

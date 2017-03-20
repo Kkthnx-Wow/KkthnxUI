@@ -73,7 +73,6 @@ local function CreateBorder(f, size)
 	border:SetFrameLevel(f:GetFrameLevel() + 1)
 	border:SetBackdrop({
 		edgeFile = C.Media.Blizz, edgeSize = 14,
-		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
 	})
 
 	border:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
@@ -164,7 +163,7 @@ local function SetTemplate(f, t, tex)
 		bgFile = C.Media.Blank,
 		edgeFile = C.Media.Blizz,
 		tile = false, tileSize = 0, edgeSize = K.Scale(14),
-		insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}
+		insets = {left = 3, right = 3, top = 3, bottom = 3}
 	})
 
 	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)

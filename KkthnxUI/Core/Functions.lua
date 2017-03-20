@@ -31,7 +31,7 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 -- Backdrop & Borders
 K.Backdrop = {bgFile = C.Media.Blank, edgeFile = C.Media.Blizz, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
 K.Border = {edgeFile = C.Media.Blizz, edgeSize = 14}
-K.BorderBackdrop = {bgFile = C.Media.Blank}
+K.BorderBackdrop = {bgFile = C.Media.Blank, insets = {left = 1, right = 1, top = 1, bottom = 1}}
 K.BorderBackdropTwo = {bgFile = C.Media.Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
 K.PixelBorder = {edgeFile = C.Media.Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
