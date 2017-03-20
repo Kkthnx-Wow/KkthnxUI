@@ -353,26 +353,26 @@ function Bags:CreateContainer(storagetype, ...)
 		ToggleBagsContainer:SetScript("OnMouseUp", function(self, button)
 			local Purchase = BankFramePurchaseInfo
 
-				local BanksContainer = Bags.Bank.BagsContainer
-				local Purchase = BankFramePurchaseInfo
-				local ReagentButton = Bags.Bank.ReagentButton
+			local BanksContainer = Bags.Bank.BagsContainer
+			local Purchase = BankFramePurchaseInfo
+			local ReagentButton = Bags.Bank.ReagentButton
 
-				if (ReplaceBags == 0) then
-					ReplaceBags = 1
-					BagsContainer:Show()
-					BanksContainer:Show()
-					BanksContainer:ClearAllPoints()
+			if (ReplaceBags == 0) then
+				ReplaceBags = 1
+				BagsContainer:Show()
+				BanksContainer:Show()
+				BanksContainer:ClearAllPoints()
 
-					if Purchase:IsShown() then
-						BanksContainer:SetPoint("BOTTOMLEFT", Purchase, "TOPLEFT", 50, 2)
-					else
-						BanksContainer:SetPoint("BOTTOMLEFT", ReagentButton, "TOPLEFT", 0, 2)
-					end
+				if Purchase:IsShown() then
+					BanksContainer:SetPoint("BOTTOMLEFT", Purchase, "TOPLEFT", 50, 2)
 				else
-					ReplaceBags = 0
-					BagsContainer:Hide()
-					BanksContainer:Hide()
+					BanksContainer:SetPoint("BOTTOMLEFT", ReagentButton, "TOPLEFT", 0, 2)
 				end
+			else
+				ReplaceBags = 0
+				BagsContainer:Hide()
+				BanksContainer:Hide()
+			end
 		end)
 
 		local ToggleBagsContainer = CreateFrame("Button", "BagsCloseButton", Container, "UIPanelCloseButton")
@@ -380,10 +380,10 @@ function Bags:CreateContainer(storagetype, ...)
 		ToggleBagsContainer:SetParent(Container)
 		ToggleBagsContainer:EnableMouse(true)
 		ToggleBagsContainer:SetScript("OnMouseUp", function(self, button)
-				CloseAllBags()
-				CloseBankBagFrames()
-				CloseBankFrame()
-				PlaySound("igBackPackClose")
+			CloseAllBags()
+			CloseBankBagFrames()
+			CloseBankFrame()
+			PlaySound("igBackPackClose")
 		end)
 
 		for _, Button in pairs(BlizzardBags) do
@@ -584,65 +584,66 @@ function Bags:SkinTokens()
 	end
 end
 
--- local UpdateItemUpgradeIcon, UpgradeCheck_OnUpdate
--- local ITEM_UPGRADE_CHECK_TIME = 0.5
--- local function UpgradeCheck_OnUpdate(self, elapsed)
--- 	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed
---
--- 	if (self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME) then
--- 		UpdateItemUpgradeIcon(self)
--- 	end
--- end
---
--- function UpdateItemUpgradeIcon(button)
--- 	button.timeSinceUpgradeCheck = 0
---
--- 	local itemIsUpgrade = IsContainerItemAnUpgrade(button:GetParent():GetID(), button:GetID())
--- 	if (itemIsUpgrade == nil) then -- nil means not all the data was available to determine if this is an upgrade.
--- 		button.UpgradeIcon:SetShown(false)
--- 		button:SetScript("OnUpdate", UpgradeCheck_OnUpdate)
--- 	else
--- 		button.UpgradeIcon:SetShown(itemIsUpgrade)
--- 		button:SetScript("OnUpdate", nil)
--- 	end
--- end
+local UpdateItemUpgradeIcon, UpgradeCheck_OnUpdate
+local ITEM_UPGRADE_CHECK_TIME = 0.5
+local function UpgradeCheck_OnUpdate(self, elapsed)
+	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed
+
+	if (self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME) then
+		UpdateItemUpgradeIcon(self)
+	end
+end
+
+function UpdateItemUpgradeIcon(button)
+	button.timeSinceUpgradeCheck = 0
+
+	local itemIsUpgrade = IsContainerItemAnUpgrade(button:GetParent():GetID(), button:GetID())
+	if (itemIsUpgrade == nil) then -- nil means not all the data was available to determine if this is an upgrade.
+		button.UpgradeIcon:SetShown(false)
+		button:SetScript("OnUpdate", UpgradeCheck_OnUpdate)
+	else
+		button.UpgradeIcon:SetShown(itemIsUpgrade)
+		button:SetScript("OnUpdate", nil)
+	end
+end
 
 function Bags:SlotUpdate(id, button)
 	if not button or not button.backdrop then
 		return
 	end
 
+	local _ = nil
+	button.Quality = nil
+
 	local ItemLink = GetContainerItemLink(id, button:GetID())
-
-	local Texture, Count, Lock, quality, _, _, _, _, _, ItemID = GetContainerItemInfo(id, button:GetID())
+	local Texture, Count, Locked, Quality, Readable, HasNoValue
+	Texture, Count, Locked, Quality, Readable, _, _, _, HasNoValue = GetContainerItemInfo(id, button:GetID())
 	local IsNewItem = C_NewItems.IsNewItem(id, button:GetID())
-
-	if IsNewItem ~= true and button.Animation and button.Animation:IsPlaying() then
-		button.Animation:Stop()
-	end
-
-	if (button.ItemID == ItemID) then
-		return
-	end
-
-	button.ItemID = ItemID
 
 	local IsQuestItem, QuestId, IsActive = GetContainerItemQuestInfo(id, button:GetID())
 	local IsBattlePayItem = IsBattlePayItem(id, button:GetID())
 	local NewItem = button.NewItemTexture
 	local IsProfBag = self:IsProfessionBag(id)
 	local IconQuestTexture = button.IconQuestTexture
-	-- local IconItemUpgrade = button.UpgradeIcon
+	local IconItemUpgrade = button.UpgradeIcon
 	local IconJunkTexture = button.JunkIcon
 
 	if IconQuestTexture then
 		IconQuestTexture:SetAlpha(0)
 	end
 
-	-- if IconItemUpgrade then
-	-- 	-- Check if item is an upgrade and show/hide upgrade icon accordingly
-	-- 	UpdateItemUpgradeIcon(button)
-	-- end
+	if (IconJunkTexture) then
+		if (Quality) and (Quality == LE_ITEM_QUALITY_POOR and not HasNoValue) then
+			IconJunkTexture:Show()
+		else
+			IconJunkTexture:Hide()
+		end
+	end
+
+	if IconItemUpgrade then
+		-- Check if item is an upgrade and show/hide upgrade icon accordingly
+		UpdateItemUpgradeIcon(button)
+	end
 
 	-- Letting you style this
 	if IsProfBag then
@@ -652,20 +653,9 @@ function Bags:SlotUpdate(id, button)
 	end
 
 	if IsNewItem and NewItem then
-		NewItem:SetAlpha(0)
-
-		if not button.Animation then
-			button.Animation = button:CreateAnimationGroup()
-			button.Animation:SetLooping("BOUNCE")
-
-			button.FadeOut = button.Animation:CreateAnimation("Alpha")
-			button.FadeOut:SetFromAlpha(1)
-			button.FadeOut:SetToAlpha(0)
-			button.FadeOut:SetDuration(0.40)
-			button.FadeOut:SetSmoothing("IN_OUT")
-		else
-			button.Animation:Stop()
-		end
+		K.UIFrameFlash(button, 1, true)
+	else
+		K.UIFrameStopFlash(button)
 	end
 
 	if IsQuestItem then

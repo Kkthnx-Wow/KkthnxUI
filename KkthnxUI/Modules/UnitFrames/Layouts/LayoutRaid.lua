@@ -155,7 +155,8 @@ local function CreateRaidLayout(self, unit)
 	-- Health background
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints()
-	self.Health.bg:SetColorTexture(.1, .1, .1, 0.8)
+	self.Health.bg:SetTexture(C.Media.Blank)
+	self.Health.bg.multiplier = 0.3
 
 	self.Health.PostUpdate = UpdateHealth
 	self.Health.frequentUpdates = true

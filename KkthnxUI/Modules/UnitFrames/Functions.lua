@@ -96,11 +96,17 @@ local function SetValueText(self, tag, cur, max)
 	end
 
 	local string
+	local percent = cur / max * 100
 
 	if tag == TEXT_SHORT then
 		string = string_format("%s", cur > 0 and K.ShortValue(cur) or "")
 	elseif tag == TEXT_LONG then
-		string = string_format("%s - %.1f%%", K.ShortValue(cur), cur / max * 100)
+		-- string = string_format("%s - %.1f%%", K.ShortValue(cur), cur / max * 100)
+		if (percent > 99.95) then
+			string = string_format('%s - 100%%', K.ShortValue(cur))
+		else
+			string = string_format('%s - %.1f%%', K.ShortValue(cur), percent)
+		end
 	elseif tag == TEXT_MINMAX then
 		string = string_format("%s/%s", K.ShortValue(cur), K.ShortValue(max))
 	elseif tag == TEXT_MAX then

@@ -497,7 +497,7 @@ local function CreateUnitLayout(self, unit)
 			end
 
 			if (C.Unitframe.CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK", nil, 1)
+				CastBar.SafeZone = CastBar:CreateTexture(nil, "OVERLAY")
 				CastBar.SafeZone:SetTexture(C.Media.Blank)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 

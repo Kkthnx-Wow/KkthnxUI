@@ -114,6 +114,8 @@ K.RaidDebuffs = {
 	-- Trial of Valor (By Anzor)
 	-- Odyn
 	[SpellName(228030)] = 6, -- Expel Light (need aura)
+	[SpellName(227781)] = 6, -- Glowing Fragment
+	[SpellName(227959)] = 6, -- Storm of Justice
 	[SpellName(227807)] = 6, -- Storm of Justice
 	[SpellName(228918)] = 6, -- Stormforged Spear
 	[SpellName(227490)] = 6, -- Branded
@@ -126,9 +128,9 @@ K.RaidDebuffs = {
 	[SpellName(228228)] = 5, -- Flame Lick
 	[SpellName(228248)] = 7, -- Frost Lick
 	[SpellName(228253)] = 6, -- Shadow Lick
-	--[SpellName(228768)] = 6, -- Salty Spittle
-	--[SpellName(228758)] = 6, -- Fiery Phlegm
-	--[SpellName(228769)] = 6, -- Dark Discharge
+	[SpellName(227539)] = 6, -- Fiery Phlegm
+	[SpellName(227566)] = 6, -- Salty Spittle
+	[SpellName(227570)] = 6, -- Dark Discharge
 	-- Helya
 	[SpellName(228883)] = 6, -- Unholy Reckoning (Trash)
 	[SpellName(228054)] = 7, -- Taint of the Sea

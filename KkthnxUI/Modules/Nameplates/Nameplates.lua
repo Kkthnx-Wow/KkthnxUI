@@ -412,7 +412,7 @@ local function UpdateAuras(self)
 end
 
 local function ThreatColor(self, forced)
-	if not self.Health:IsShown() then return end
+	if not self.Health:IsShown() or UnitIsPlayer(self.unit) then return end
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
 
 	if C.Nameplates.EnhancedThreat ~= true then
