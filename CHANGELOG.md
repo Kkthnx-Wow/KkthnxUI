@@ -7,6 +7,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v6.28] - 3/21/2017
+### Added
+- More RaidAuraWatch spells.
+- Flash for newly obtained items in bags. (Will be improved apon over time.)
+- Smoothing for all HealPrediction modules.
+- Skip button to skip the installer steps. This will take you directly to the last step.
+
+### Fixed
+- Junk icon will propely show on the bag slots.
+- Threat showing on player units is now fixed and wont show anymore.
+- Backdrops on borders/buttons will respectly stay inside the border/button now. :D
+
+### Removed
+- UIErrorFrame code all removed.
+- All Tutorial code from installer.
+
+### Changed
+- Improved apon tag 'TEXT_LONG' text status for unitframes.
+- Used proper global strings for unlocking and locking actionbars.
+- oUF.colors.health now defaults to a grey.
+- Improved nameplates threat code.
+- Debuffs on nameplates will now default to the left. They now grow left to right. ->
+
+# Archived Changelogs
+
 ## [v6.27] - 3/16/2017
 ### Fixed
 - Spark for absorb has its proper texture.
@@ -27,8 +52,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - K.TexCoords moved to KkthnxUI/Core/Constants.lua.
 - OrderHallCommandBar tweaked and is smaller now.
 - Cleaned CheckRole function.
-
-# Archived Changelogs
 
 ## [v6.26] - 3/14/2017
 ### Fixed

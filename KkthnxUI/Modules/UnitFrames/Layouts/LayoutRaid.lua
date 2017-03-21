@@ -113,7 +113,8 @@ local function UpdateHealth(self, unit, cur, max)
 	if (not UnitIsPlayer(unit)) then
 		local r, g, b = K.ColorGradient(cur / max, 0, 0.8, 0, 0.8, 0.8, 0, 0.8, 0, 0)
 		self:SetStatusBarColor(r, g, b)
-		self.bg:SetVertexColor(r * 0.1, g * 0.1, b * 0.1, 0.8)
+		-- self.bg:SetVertexColor(r * 0.6, g * 0.6, b * 0.6)
+		self.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2, 0.8)
 	end
 
 	self.Value:SetText(GetHealthText(unit, cur, max))
@@ -156,7 +157,7 @@ local function CreateRaidLayout(self, unit)
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints()
 	self.Health.bg:SetTexture(C.Media.Blank)
-	self.Health.bg.multiplier = 0.3
+	self.Health.bg.multiplier = 0.2
 
 	self.Health.PostUpdate = UpdateHealth
 	self.Health.frequentUpdates = true

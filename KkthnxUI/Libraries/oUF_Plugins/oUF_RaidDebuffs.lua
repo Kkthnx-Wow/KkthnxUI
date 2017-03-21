@@ -203,7 +203,7 @@ local Enable = function(self)
 		rd.__owner = self
 
 		if(talentTbl and (not f) and (not rd.DispelFilter) and (not rd.Override)) then
-			f = CreateFrame'Frame'
+			f = CreateFrame('Frame')
 			f:SetScript('OnEvent', spellCheck)
 			f:RegisterEvent'PLAYER_TALENT_UPDATE'
 			f:RegisterEvent'CHARACTER_POINTS_CHANGED'

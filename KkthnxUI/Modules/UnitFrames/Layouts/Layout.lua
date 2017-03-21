@@ -37,7 +37,6 @@ local IsInRaid = _G.IsInRaid
 -- GLOBALS: SetPortraitTexture, oUF_KkthnxPet, SLASH_TEST_UF1
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
-local tarTexPath = "Interface\\TargetingFrame\\"
 local pathFat = textPath.."Fat\\"
 local pathNormal = textPath.."Normal\\"
 local Movers = K.Movers
@@ -157,7 +156,7 @@ local DataFat = {
 		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
 		nam = {w = 110, h = 10, x = 50, y = 19, j = "CENTER", s = 12},
 		por = {w = 64, h = 64, x = -42, y = 7,},
-		glo = {w = 242, h = 92, x = 13, y = -1, t = tarTexPath.."UI-TargetingFrame-Flash", c = {0.9453125, 0, 0 , 0.182}},
+		glo = {w = 242, h = 92, x = 13, y = 0, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
 	},
 	target = {
 		siz = {w = 176, h = 42},
@@ -168,7 +167,7 @@ local DataFat = {
 		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
 		nam = {w = 110, h = 10, x = 0, y = 18, j = "CENTER", s = 12},
 		por = {w = 64, h = 64, x = 41, y = 6,},
-		glo = {w = 239, h = 94, x = -24, y = 1, t = tarTexPath.."UI-TargetingFrame-Flash", c = {0, 0.9453125, 0, 0.182}},
+		glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
 	},
 	targettarget = DataNormal.targettarget, --same for now
 	pet = {
@@ -819,6 +818,16 @@ local function CreateUnitLayout(self, unit)
 				SetPortraitTexture(portrait, unit)
 			end
 		end
+	end
+
+	-- Afk /offline timer, using frequentUpdates function from oUF tags
+	if (self.IsPartyFrame and  C.Raidframe.ShowNotHereTimer) then
+		self.NotHere = self.Health:CreateFontString(nil, "OVERLAY")
+		self.NotHere:SetPoint("CENTER", self.Name, "RIGHT", -4, 0)
+		self.NotHere:SetFont(C.Media.Font, 10)
+		self.NotHere:SetShadowOffset(K.Mult, -K.Mult)
+		self.NotHere:SetTextColor(0, 1, 0)
+		self:Tag(self.NotHere, "[KkthnxUI:StatusTimer]")
 	end
 
 	-- Threat glow
