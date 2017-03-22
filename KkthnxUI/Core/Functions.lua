@@ -152,7 +152,9 @@ K.LockedCVars = {}
 K.IgnoredCVars = {}
 
 local UpdateCVar = CreateFrame("Frame")
-UpdateCVar:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+UpdateCVar:SetScript("OnEvent", function(self, event, ...)
+	return self[event](self, event, ...)
+end)
 UpdateCVar:RegisterEvent("PLAYER_REGEN_ENABLED")
 function UpdateCVar:PLAYER_REGEN_ENABLED(_)
 	if (self.CVarUpdate) then

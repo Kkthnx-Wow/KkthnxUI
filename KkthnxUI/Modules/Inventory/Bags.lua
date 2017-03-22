@@ -44,7 +44,6 @@ local ReplaceBags = 0
 local LastButtonBag, LastButtonBank, LastButtonReagent
 local Token1, Token2, Token3 = BackpackTokenFrameToken1, BackpackTokenFrameToken2, BackpackTokenFrameToken3
 local Bags = CreateFrame("Frame")
-local Inventory = CreateFrame("Frame")
 local QuestColor = {1, 1, 0}
 
 local BlizzardBags = {
@@ -91,6 +90,7 @@ function Bags:SkinBagButton()
 
 	local Icon = _G[self:GetName().."IconTexture"]
 	local Quest = _G[self:GetName().."IconQuestTexture"]
+	local JunkIcon = self.JunkIcon
 	local Border = self.IconBorder
 	local BattlePay = self.BattlepayItemTexture
 
@@ -101,6 +101,10 @@ function Bags:SkinBagButton()
 
 	if Quest then
 		Quest:SetAlpha(0)
+	end
+
+	if JunkIcon then
+		JunkIcon:SetAlpha(0)
 	end
 
 	if BattlePay then
@@ -584,85 +588,64 @@ function Bags:SkinTokens()
 	end
 end
 
-local UpdateItemUpgradeIcon, UpgradeCheck_OnUpdate
-local ITEM_UPGRADE_CHECK_TIME = 0.5
-local function UpgradeCheck_OnUpdate(self, elapsed)
-	self.timeSinceUpgradeCheck = self.timeSinceUpgradeCheck + elapsed
-
-	if (self.timeSinceUpgradeCheck >= ITEM_UPGRADE_CHECK_TIME) then
-		UpdateItemUpgradeIcon(self)
-	end
-end
-
-function UpdateItemUpgradeIcon(button)
-	button.timeSinceUpgradeCheck = 0
-
-	local itemIsUpgrade = IsContainerItemAnUpgrade(button:GetParent():GetID(), button:GetID())
-	if (itemIsUpgrade == nil) then -- nil means not all the data was available to determine if this is an upgrade.
-		button.UpgradeIcon:SetShown(false)
-		button:SetScript("OnUpdate", UpgradeCheck_OnUpdate)
-	else
-		button.UpgradeIcon:SetShown(itemIsUpgrade)
-		button:SetScript("OnUpdate", nil)
-	end
-end
-
 function Bags:SlotUpdate(id, button)
 	if not button or not button.backdrop then
 		return
 	end
 
-	local _ = nil
-	button.Quality = nil
-
 	local ItemLink = GetContainerItemLink(id, button:GetID())
-	local Texture, Count, Locked, Quality, Readable, HasNoValue
-	Texture, Count, Locked, Quality, Readable, _, _, _, HasNoValue = GetContainerItemInfo(id, button:GetID())
+
+	local Texture, Count, Lock, quality, _, _, _, _, _, ItemID = GetContainerItemInfo(id, button:GetID())
 	local IsNewItem = C_NewItems.IsNewItem(id, button:GetID())
+
+	if IsNewItem ~= true and button.Animation and button.Animation:IsPlaying() then
+		button.Animation:Stop()
+	end
+
+	if (button.ItemID == ItemID) then
+		return
+	end
+
+	button.ItemID = ItemID
 
 	local IsQuestItem, QuestId, IsActive = GetContainerItemQuestInfo(id, button:GetID())
 	local IsBattlePayItem = IsBattlePayItem(id, button:GetID())
 	local NewItem = button.NewItemTexture
 	local IsProfBag = self:IsProfessionBag(id)
 	local IconQuestTexture = button.IconQuestTexture
-	local IconItemUpgrade = button.UpgradeIcon
-	local IconJunkTexture = button.JunkIcon
 
 	if IconQuestTexture then
 		IconQuestTexture:SetAlpha(0)
-	end
-
-	if (IconJunkTexture) then
-		if (Quality) and (Quality == LE_ITEM_QUALITY_POOR and not HasNoValue) then
-			IconJunkTexture:Show()
-		else
-			IconJunkTexture:Hide()
-		end
-	end
-
-	if IconItemUpgrade then
-		-- Check if item is an upgrade and show/hide upgrade icon accordingly
-		UpdateItemUpgradeIcon(button)
 	end
 
 	-- Letting you style this
 	if IsProfBag then
 
 	else
-		-- button:SetBackdropColor(unpack(C["General"].BackdropColor))
+		-- button:SetBackdropColor(unpack(C.Media.Backdrop_Color))
 	end
 
 	if IsNewItem and NewItem then
-		K.UIFrameFlash(button, 1, true)
-	else
-		K.UIFrameStopFlash(button)
+		NewItem:SetAlpha(0)
+
+		if not button.Animation then
+			button.Animation = button:CreateAnimationGroup()
+			button.Animation:SetLooping("BOUNCE")
+
+			button.FadeOut = button.Animation:CreateAnimation("Alpha")
+			button.FadeOut:SetFromAlpha(1)
+			button.FadeOut:SetToAlpha(0)
+			button.FadeOut:SetDuration(0.40)
+			button.FadeOut:SetSmoothing("IN_OUT")
+		end
+
+		button.Animation:Play()
 	end
 
 	if IsQuestItem then
 		button.backdrop:SetBackdropBorderColor(1, 1, 0)
 	elseif ItemLink then
 		local Rarity = select(3, GetItemInfo(ItemLink)) or 0
-
 		button.backdrop:SetBackdropBorderColor(GetItemQualityColor(Rarity))
 	else
 		button.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
@@ -903,7 +886,9 @@ function Bags:CloseAllBankBags()
 	end
 end
 
-function Bags:ToggleBags()
+function Bags:ToggleBags(id)
+	if id and GetContainerNumSlots(id) == 0 then return end -- Closes a bag when inserting a new container..
+
 	if (self.Bag:IsShown() and BankFrame:IsShown()) and (not self.Bank:IsShown()) and (not ReagentBankFrame:IsShown()) then
 		self:OpenAllBankBags()
 
@@ -933,6 +918,9 @@ end
 function Bags:OnEvent(event, ...)
 	if (event == "BAG_UPDATE") then
 		self:BagUpdate(...)
+	elseif (event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED") and self:IsShown() then
+		self:BagUpdate(...) -- self:UpdateAllBags(...)
+		-- print(event, ...)
 	elseif (event == "BAG_CLOSED") then
 		-- This is usually where the client find a bag swap in character or bank slots.
 
@@ -1034,6 +1022,8 @@ function Bags:Enable()
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
+	self:RegisterEvent("QUEST_ACCEPTED") -- This is new so lets keep an eye on this updating.
+	self:RegisterEvent("QUEST_REMOVED") -- This is new so lets keep an eye on this updating.
 	self:SetScript("OnEvent", self.OnEvent)
 
 	-- Force an update, setting colors

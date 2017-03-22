@@ -24,6 +24,22 @@ local function TalkingHead_Init()
 		end
 
 		if isLoaded then
+			local FrameScale = C.Blizzard.TalkingHeadScale or 1
+
+			-- Sanitize
+			if FrameScale < 0.5 then
+				FrameScale = 0.5
+			elseif FrameScale > 2 then
+				FrameScale = 2
+			end
+
+			-- Calculate dirtyWidth/dirtyHeight based on original size and scale
+			-- This way the mover frame will use the right size when we manually trigger "OnSizeChanged"
+			local FrameWidth = TalkingHeadFrame:GetWidth() * FrameScale
+			local FrameHeight = TalkingHeadFrame:GetHeight() * FrameScale
+			TalkingHeadFrame.dirtyWidth = FrameWidth
+			TalkingHeadFrame.dirtyHeight = FrameHeight
+
 			TalkingHeadFrame.ignoreFramePositionManager = true
 			UIPARENT_MANAGED_FRAME_POSITIONS["TalkingHeadFrame"] = nil
 
@@ -37,7 +53,7 @@ local function TalkingHead_Init()
 			TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
 			Movers:RegisterFrame(TalkingHeadFrame)
 
-			TalkingHeadFrame:SetScale(C.Blizzard.TalkingHeadScale or 1)
+			TalkingHeadFrame:SetScale(FrameScale)
 
 			isInit = true
 

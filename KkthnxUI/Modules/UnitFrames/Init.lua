@@ -19,10 +19,10 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
-oUFKkthnx:RegisterEvent("ADDON_LOADED")
 oUFKkthnx:SetScript("OnEvent", function(self, event, ...)
-	return self[event] and self[event](self, event, ...)
+	return self[event](self, event, ...)
 end)
+oUFKkthnx:RegisterEvent("ADDON_LOADED")
 
 function oUFKkthnx:ADDON_LOADED(event, addon)
 	if addon ~= "KkthnxUI" then return end
