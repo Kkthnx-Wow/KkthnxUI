@@ -61,18 +61,15 @@
    <Script file="Developer\Test.lua" />
    <!-- Panels -->
    <Script file="Modules\Panels\Panels.lua" />
-   <!-- Unitframes Core -->
+   <!-- Unitframes -->
    <Script file="Modules\Unitframes\Init.lua" />
-   <!-- Unitframe Config -->
-   <Script file="Modules\Unitframes\Config\Config.lua" />
    <Include file="Modules\Unitframes\Elements\Elements.xml" />
    <Script file="Modules\Unitframes\Functions.lua" />
    <Script file="Modules\Unitframes\Filters\AuraFilter.lua" />
-   <!-- Unitframe Layouts -->
-   <Script file="Modules\Unitframes\Layouts\LayoutArena.lua" />
-   <Script file="Modules\Unitframes\Layouts\Layout.lua" />
-   <Include file="Modules\Unitframes\Layouts\oUF_KkthnxRaid.xml" />
-   <Script file="Modules\Unitframes\Layouts\LayoutRaid.lua" />
+   <Script file="Modules\Unitframes\Layouts\Arena.lua" />
+   <Script file="Modules\Unitframes\Layouts\Unitframes.lua" />
+   <Include file="Modules\Unitframes\Layouts\Raid.xml" />
+   <Script file="Modules\Unitframes\Layouts\Raid.lua" />
    <!-- ActionBars -->
    <Script file="Modules\ActionBars\Functions.lua" />
    <Script file="Modules\ActionBars\Bindings.lua" />

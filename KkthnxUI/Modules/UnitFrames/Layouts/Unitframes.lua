@@ -2,7 +2,7 @@ local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
 local _, ns = ...
-local config = ns.config
+local config = C.UnitframePlugins
 local oUF = ns.oUF or oUF
 
 -- Lua API
@@ -256,7 +256,7 @@ end
 
 local function UpdatePlayerFrame(self, ...)
 	local data = GetData(self.MatchUnit)
-	local uconfig = ns.config[self.MatchUnit]
+	local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 	self.Texture:SetSize(data.tex.w, data.tex.h)
 	self.Texture:SetPoint("CENTER", self, data.tex.x, data.tex.y)
@@ -349,7 +349,7 @@ end
 local function UpdateUnitFrameLayout(frame)
 	local MatchUnit = frame.MatchUnit
 	local data = GetData(MatchUnit)
-	local uconfig = ns.config[MatchUnit]
+	local uconfig = C.UnitframePlugins[MatchUnit]
 
 	-- Player frame, its special
 	if MatchUnit == "player" then
@@ -438,7 +438,7 @@ local function CreateUnitLayout(self, unit)
 		return ns.createArenaLayout(self, unit)
 	end
 
-	local uconfig = ns.config[self.MatchUnit]
+	local uconfig = C.UnitframePlugins[self.MatchUnit]
 	local data = GetData(self.MatchUnit)
 
 	-- Castbars

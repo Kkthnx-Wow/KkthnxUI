@@ -51,7 +51,7 @@ local function updatePortrait(self, event, unit)
 end
 
 function ns.createArenaLayout(self, unit)
-	local config = ns.config
+	local config = C.UnitframePlugins
 	local uconfig = config[self.MatchUnit]
 
 	self.Texture = self:CreateTexture(nil, "BORDER")

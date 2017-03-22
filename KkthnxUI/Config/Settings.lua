@@ -286,6 +286,47 @@ C["UnitframePlugins"] = {
 	["StaggerBar"] = true,
 	["TotemsFrame"] = true,
 	["OORAlpha"] = 0.60,
+	-- Unitframe Text
+	["player"] = {
+		["HealthTag"] = "NUMERIC",
+		["PowerTag"] = "PERCENT",
+	},
+	["pet"] = {
+		["HealthTag"] = "MINIMAL",
+		["PowerTag"] = "DISABLE",
+	},
+	["target"] = {
+		["HealthTag"] = "BOTH",
+		["PowerTag"] = "PERCENT",
+		["buffPos"] = "BOTTOM",
+		["debuffPos"] = "TOP",
+	},
+	["targettarget"] = {
+		["enableAura"] = false,
+		["HealthTag"] = "DISABLE",
+	},
+	["focus"] = {
+		["HealthTag"] = "BOTH",
+		["PowerTag"] = "PERCENT",
+		["buffPos"] = "NONE",
+		["debuffPos"] = "BOTTOM",
+	},
+	["focustarget"] = {
+		["enableAura"] = false,
+		["HealthTag"] = "DISABLE",
+	},
+	["party"] = {
+		["HealthTag"] = "MINIMAL",
+		["PowerTag"] = "DISABLE",
+	},
+	["boss"] = {
+		["HealthTag"] = "PERCENT",
+		["PowerTag"] = "PERCENT",
+	},
+	["arena"] = {
+		["HealthTag"] = "BOTH",
+		["PowerTag"] = "PERCENT",
+	},
 }
 
 C["Partyframe"] = {

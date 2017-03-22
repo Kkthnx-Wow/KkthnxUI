@@ -142,7 +142,7 @@ do
 
 		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
-		local uconfig = ns.config[self.MatchUnit]
+		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 		if self.Portrait then
 			UpdatePortraitColor(self, unit, cur, max)
@@ -189,7 +189,7 @@ do
 
 	function K.Power_PostUpdate(Power, unit, cur, max)
 		local self = Power:GetParent()
-		local uconfig = ns.config[self.MatchUnit]
+		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 		if max == 0 then
 			Power.Value:SetText(nil)
