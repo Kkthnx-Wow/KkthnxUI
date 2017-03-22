@@ -153,7 +153,7 @@ K.IgnoredCVars = {}
 
 local UpdateCVar = CreateFrame("Frame")
 UpdateCVar:SetScript("OnEvent", function(self, event, ...)
-	return self[event](self, event, ...)
+	return self[event] and self[event](self, event, ...)
 end)
 UpdateCVar:RegisterEvent("PLAYER_REGEN_ENABLED")
 function UpdateCVar:PLAYER_REGEN_ENABLED(_)

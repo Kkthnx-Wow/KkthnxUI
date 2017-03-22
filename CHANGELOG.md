@@ -7,6 +7,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v6.29] - 3/22/2017
+### Added
+- Bags will update when you pickup/drop a quest.
+
+### Removed
+- Old unit frame config merged into default UI config now.
+- Engine[4] = {}.
+
+### Changed
+- Reverted some inventory code.
+- Frame UpdateCVar script has been updated.
+- Improved scaling for 'KkthnxUI/Modules/Blizzard/TalkingHeadFrame.lua'.
+- Frame oUFKkthnx script.
+
+# Archived Changelogs
+
 ## [v6.28] - 3/21/2017
 ### Added
 - More RaidAuraWatch spells.
@@ -30,8 +46,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improved nameplates threat code.
 - Debuffs on nameplates will now default to the left. They now grow left to right. ->
 
-# Archived Changelogs
-
 ## [v6.27] - 3/16/2017
 ### Fixed
 - Spark for absorb has its proper texture.
@@ -42,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Function UpdateCVar will fire once again.
 
 ### Removed
-- Old code removed in KkthnxUI/Modules/ActionBars/ExtraActionButton.lua 
+- Old code removed in KkthnxUI/Modules/ActionBars/ExtraActionButton.lua
 
 ### Changed
 - UIDebugTools will parent to our UIFrameHider now.
@@ -98,7 +112,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - More _G. for Wow API
 - JunkIcon display for bags.
 - Combat checks for some cvars and code to prevent errors.
-- oUF_Absorb.lua 
+- oUF_Absorb.lua
 - More status bars will use K.CreateStatusBar now.
 - 2 Fixes from Goldpaw to fix 2 blizzard issues.
 
