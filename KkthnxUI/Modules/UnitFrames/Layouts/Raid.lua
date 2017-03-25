@@ -59,7 +59,7 @@ local function UpdatePower(self, _, unit)
 	if (powerToken == "MANA" and UnitHasMana(unit)) then
 		if (not self.Power:IsVisible()) then
 			self.Health:ClearAllPoints()
-			self.Health:SetPoint("BOTTOMLEFT", self, 0, 3)
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, 4)
 			self.Health:SetPoint("TOPRIGHT", self)
 			self.Power:Show()
 		end
@@ -195,7 +195,7 @@ local function CreateRaidLayout(self, unit)
 
 		self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.bg:SetAllPoints(self.Power)
-		-- self.Power.bg:SetColorTexture(.6, .6, .6)
+		self.Power.bg:SetColorTexture(1, 1, 1)
 		self.Power.bg.multiplier = 0.18
 
 		table_insert(self.__elements, UpdatePower)

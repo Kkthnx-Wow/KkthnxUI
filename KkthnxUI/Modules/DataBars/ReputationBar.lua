@@ -3,10 +3,16 @@ if C.DataBars.ReputationEnable ~= true then return end
 
 -- WoW Lua
 local _G = _G
-local format = string.format
+local string_format = string.format
 
 -- Wow API
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
+local C_Reputation_GetFactionParagonInfo
+local C_Reputation_IsFactionParagon
+if K.WoWBuild >= 23623 then --7.2
+	C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
+	C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
+end
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip, UNKNOWN
@@ -56,7 +62,14 @@ end)
 local function UpdateReputationBar()
 	local isFriend, friendText, standingLabel
 	local FactionStandingLabelUnknown = UNKNOWN
-	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
+	local Name, ID, Min, Max, Value, factionID = GetWatchedFactionInfo()
+
+	if K.WoWBuild >= 23623 then -- 7.2
+		if (C_Reputation_IsFactionParagon(ID)) then
+			local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
+			Min, Max, Value = 0, Threshold, CurrentValue
+		end
+	end
 
 	if not Name then
 		ReputationBar:Hide()
@@ -69,7 +82,7 @@ local function UpdateReputationBar()
 			standingLabel = FactionStandingLabelUnknown
 		end
 
-		local Text = format("%s: %d%% [%s]", Name, ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
+		local Text = string_format("%s: %d%% [%s]", Name, ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
 		if C.DataBars.InfoText then
 			ReputationBar.Text:SetText(Text)
 		else
@@ -85,11 +98,18 @@ end
 ReputationBar:SetScript("OnEnter", function(self)
 	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 
+	if K.WoWBuild >= 23623 then -- 7.2
+		if (C_Reputation_IsFactionParagon(ID)) then
+			local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
+			Min, Max, Value = 0, Threshold, CurrentValue
+		end
+	end
+
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-	GameTooltip:AddLine(format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
-	GameTooltip:AddLine(format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / (Max - Min) * 100))
+	GameTooltip:AddLine(string_format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
+	GameTooltip:AddLine(string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100), 1, 1, 1)
 
 	GameTooltip:Show()
 end)
