@@ -42,6 +42,7 @@ local function LossControl_Enable()
 	LossOfControlFrame.Icon:SetTexCoord(.1, .9, .1, .9)
 	LossOfControlFrame.AbilityName:ClearAllPoints()
 	LossOfControlFrame.backdrop:SetOutside(LossOfControlFrame.Icon, 4, 4)
+	LossOfControlFrame.backdrop:CreateBlizzShadow()
 
 	hooksecurefunc("LossOfControlFrame_SetUpDisplay", LossControl_Update)
 end

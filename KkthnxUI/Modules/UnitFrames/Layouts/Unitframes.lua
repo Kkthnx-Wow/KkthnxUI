@@ -154,7 +154,7 @@ local DataFat = {
 		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
 		nam = {w = 110, h = 10, x = 50, y = 19, j = "CENTER", s = 12},
 		por = {w = 64, h = 64, x = -42, y = 7,},
-		glo = {w = 242, h = 92, x = 13, y = 0, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
+		glo = {w = 242, h = 92, x = 13, y = -1, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
 	},
 	target = {
 		siz = {w = 176, h = 42},

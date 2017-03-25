@@ -75,7 +75,9 @@ local function PositionTicketButtons()
     HelpOpenWebTicketButton:ClearAllPoints()
     HelpOpenWebTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0 or 0, 0 or 0)
 end
-hooksecurefunc("HelpOpenTicketButton_Move", PositionTicketButtons)
+if not (K.WoWBuild >= 23623) then -- 7.1.5
+  hooksecurefunc("HelpOpenTicketButton_Move", PositionTicketButtons)
+end
 
 -- </ Hide Game Time > --
 MinimapAnchor:RegisterEvent("PLAYER_LOGIN")

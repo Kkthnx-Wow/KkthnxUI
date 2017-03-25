@@ -8,7 +8,8 @@ local oUF = ns.oUF or _G.oUF
 
 -- Colors
 oUF.colors.health = {0.31, 0.31, 0.31}
-oUF.colors.uninterruptible = {1, 0, 0, 0.5}
+oUF.colors.castColor = {0.31, 0.31, 0.31}
+oUF.colors.castNoInterrupt = {1, 0, 0}
 oUF.colors.interruptible = {0.31, 0.45, 0.63, 0.5}
 oUF.colors.fallback = {1, 1, 0.8}
 oUF.colors.disconnected = {0.53, 0.54, 0.53}

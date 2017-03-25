@@ -30,6 +30,8 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 	self:UnregisterEvent(event)
 	self.ADDON_LOADED = nil
 
+	oUFKkthnx:UpdateAuraLists()
+
 	-- Sounds for target/focus changing and PVP flagging
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")

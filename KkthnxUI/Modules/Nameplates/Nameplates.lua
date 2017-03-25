@@ -3,6 +3,7 @@ if C.Nameplates.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
+local math_abs = math.abs
 local math_floor = math.floor
 local math_huge = math.huge
 local string_format = string.format
@@ -24,17 +25,21 @@ local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
 local SetCVar = _G.SetCVar
 local UnitAffectingCombat = _G.UnitAffectingCombat
+local UnitCanAttack = _G.UnitCanAttack
+local UnitClass = _G.UnitClass
+local UnitDebuff = _G.UnitDebuff
 local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsPVPSanctuary = _G.UnitIsPVPSanctuary
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
-local UnitDebuff = _G.UnitDebuff
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, DebuffTypeColor
@@ -44,7 +49,9 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local KkthnxUINamePlates = CreateFrame("Frame")
-KkthnxUINamePlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+KkthnxUINamePlates:SetScript("OnEvent", function(self, event, ...)
+	return self[event] and self[event](self, event, ...)
+end)
 
 -- NOTE: We should determine what Vars tend to bug out the nameplates and make sure we always have these defaulted. If not, we fetch the defaulted settings and reset them.
 -- NOTE: This is the safest way to prevent any unknown issues currently.
@@ -366,7 +373,7 @@ local function DebuffFilter(name, caster, spellId, nameplateShowPersonal, namepl
 		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Dragon")) or nil
 		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Hunter")) or nil
 
-		local unitmark = select(1, UnitDebuff(unit,"Star Sign: Crab")) or nil
+		local unitmark = select(1, UnitDebuff(unit, "Star Sign: Crab")) or nil
 		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Wolf")) or nil
 		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Dragon")) or nil
 		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Hunter")) or nil
@@ -523,25 +530,35 @@ local function UpdateName(self)
 	end
 end
 
-local function castColor(self, unit, name, castid)
-	local color
-	local r, g, b = 1.0, 0.7, 0.0, 0.5
+local function castColor(self, unit)
+	if unit == "vehicle" or unit == "player" then return end
 
+	-- Colors, you know Colours? ;)
+	local colors = K.Colors
+	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
+
+	local t
 	if C.Nameplates.CastUnitReaction and UnitReaction(unit, "player") then
-		color = K.Colors.reaction[UnitReaction(unit, "player")]
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
+	end
+	-- if C.Nameplates.CastClassColor and UnitIsPlayer(unit) then
+	-- 	local _, class = UnitClass(unit)
+	-- 	t = K.Colors.class[class]
+	-- elseif C.Nameplates.CastUnitReaction and UnitReaction(unit, "player") then
+	-- 	t = K.Colors.reaction[UnitReaction(unit, "player")]
+	-- end
+
+	if (t) then
+		r, g, b = t[1], t[2], t[3]
 	end
 
-	if (color) then
-		r, g, b = color[1], color[2], color[3]
-	end
-
-	if self.interrupt then
-		r, g, b = unpack(K.Colors.uninterruptible)
+	if self.interrupt and UnitCanAttack("player", unit) then
+		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
 	end
 
 	self:SetStatusBarColor(r, g, b)
 	if self.bg:IsShown() then
-		self.bg:SetColorTexture(r * 0.25, g * 0.25, b * 0.25, C.Media.Backdrop_Color[4])
+		self.bg:SetVertexColor(r * 0.18, g * 0.18, b * 0.18)
 	end
 end
 
@@ -555,10 +572,6 @@ end
 
 local function CallbackNamePlates(self, event, unit)
 	local unit = unit or "target"
-	-- local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
-	-- if not nameplate then return end
-	-- local self = nameplate.ouf
-
 	local name = UnitName(unit)
 	if name and K.PlateBlacklist[name] then
 		self:Hide()
@@ -576,7 +589,6 @@ local function CallbackNamePlates(self, event, unit)
 		self.RaidIcon:SetAlpha(0)
 	else
 		local unitReaction = UnitReaction(unit, "player")
-		--if UnitIsPlayer(unit) and (unitReaction and unitReaction >= 5) then
 		if (UnitIsPVPSanctuary(unit) or (UnitIsPlayer(unit) and UnitIsFriend("player", unit) and unitReaction and unitReaction >= 5)) then
 			self.Health:SetAlpha(0)
 			self.Castbar:SetAlpha(0)
@@ -631,7 +643,7 @@ local function StyleNamePlates(self, unit)
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints()
 	self.Health.bg:SetTexture(C.Media.Blank)
-	self.Health.bg.multiplier = 0.2
+	self.Health.bg.multiplier = 0.18
 
 	-- Create Health Text
 	if C.Nameplates.HealthValue == true then
@@ -656,7 +668,7 @@ local function StyleNamePlates(self, unit)
 	self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 	self.Power.bg:SetAllPoints()
 	self.Power.bg:SetTexture(C.Media.Blank)
-	self.Power.bg.multiplier = 0.2
+	self.Power.bg.multiplier = 0.18
 
 	-- Create Name Text
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -692,7 +704,7 @@ local function StyleNamePlates(self, unit)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "ARTWORK", nil, 7)
 	self.Castbar.Spark:SetVertexColor(1, 1, .8)
-	self.Castbar.Spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark")
+	self.Castbar.Spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark") -- C.Media.Spark
 	self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
 	self.Castbar.Spark:SetWidth(3)
 
@@ -707,14 +719,12 @@ local function StyleNamePlates(self, unit)
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
 	self.Castbar.Time:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
 
-	self.Castbar.timeToHold = 0.4
-
 	self.Castbar.CustomTimeText = function(self, duration)
-		if self.casting then
-			duration = self.max - duration
+		if self.channeling then
+			self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
+		else
+			self.Time:SetText(("%.1f"):format(duration))
 		end
-
-		self.Time:SetFormattedText("%.1f ", duration)
 	end
 
 	-- Create Cast Name Text
@@ -766,7 +776,7 @@ local function StyleNamePlates(self, unit)
 	-- Aura tracking
 	if C.Nameplates.TrackAuras == true then
 		self.DebuffIcons = CreateFrame("Frame", nil, self)
-		self.DebuffIcons:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C.Media.Font_Size + 7)
+		self.DebuffIcons:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0 * K.NoScaleMult, C.Media.Font_Size + 7)
 		self.DebuffIcons:SetSize(20 + C.Nameplates.Width, C.Nameplates.AurasSize)
 		self.DebuffIcons:EnableMouse(false)
 	end

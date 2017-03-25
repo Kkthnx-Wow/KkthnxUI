@@ -123,36 +123,28 @@ function K.PostCastStart(self, unit, name)
 	end
 
 	-- Colors, you know Colours? ;)
-	local color
-	local r, g, b = 1.0, 0.7, 0.0, 0.5
+	local colors = K.Colors
+	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
 
-	self:SetBackdropBorderColor(1, 1, 1)
-	if C.Unitframe.CastbarIcon then
-		self.Button:SetBackdropBorderColor(1, 1, 1)
-	end
-
+	local t
 	if C.Unitframe.CastClassColor and UnitIsPlayer(unit) then
 		local _, class = UnitClass(unit)
-		color = K.Colors.class[class]
-	elseif C.Unitframe.CastUnitReaction and UnitReaction(unit, "player") then
-		color = K.Colors.reaction[UnitReaction(unit, "player")]
+		t = K.Colors.class[class]
+	elseif C.Unitframe.CastUnitReaction and UnitReaction(unit, 'player') then
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 
-	if (color) then
-		r, g, b = color[1], color[2], color[3]
+	if (t) then
+		r, g, b = t[1], t[2], t[3]
 	end
 
 	if self.interrupt and unit ~= "player" and UnitCanAttack("player", unit) then
-		r, g, b = K.Colors.uninterruptible[1], K.Colors.uninterruptible[2], K.Colors.uninterruptible[3]
-		self:SetBackdropBorderColor(r, g, b)
-		if C.Unitframe.CastbarIcon then
-			self.Button:SetBackdropBorderColor(r, g, b)
-		end
+		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
 	end
 
 	self:SetStatusBarColor(r, g, b)
 	if self.Background:IsShown() then
-		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, C.Media.Backdrop_Color[4])
+		self.Background:SetVertexColor(r * 0.18, g * 0.18, b * 0.18)
 	end
 end
 
@@ -225,36 +217,28 @@ function K.PostCastInterruptible(self, unit)
 	if unit == "vehicle" or unit == "player" then return end
 
 	-- Colors, you know Colours? ;)
-	local color
-	local r, g, b = 1.0, 0.7, 0.0, 0.5
+	local colors = K.Colors
+	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
 
-	self:SetBackdropBorderColor(1, 1, 1)
-	if C.Unitframe.CastbarIcon then
-		self.Button:SetBackdropBorderColor(1, 1, 1)
-	end
-
+	local t
 	if C.Unitframe.CastClassColor and UnitIsPlayer(unit) then
 		local _, class = UnitClass(unit)
-		color = K.Colors.class[class]
-	elseif C.Unitframe.CastUnitReaction and UnitReaction(unit, "player") then
-		color = K.Colors.reaction[UnitReaction(unit, "player")]
+		t = K.Colors.class[class]
+	elseif C.Unitframe.CastUnitReaction and UnitReaction(unit, 'player') then
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 
-	if (color) then
-		r, g, b = color[1], color[2], color[3]
+	if (t) then
+		r, g, b = t[1], t[2], t[3]
 	end
 
 	if self.interrupt and UnitCanAttack("player", unit) then
-		r, g, b = K.Colors.uninterruptible[1], K.Colors.uninterruptible[2], K.Colors.uninterruptible[3]
-		self:SetBackdropBorderColor(r, g, b)
-		if C.Unitframe.CastbarIcon then
-			self.Button:SetBackdropBorderColor(r, g, b)
-		end
+		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
 	end
 
 	self:SetStatusBarColor(r, g, b)
 	if self.Background:IsShown() then
-		self.Background:SetVertexColor(r * 0.25, g * 0.25, b * 0.25, C.Media.Backdrop_Color[4])
+		self.Background:SetVertexColor(r * 0.18, g * 0.18, b * 0.18)
 	end
 end
 
@@ -267,27 +251,24 @@ function K.PostCastInterrupted(self)
 end
 
 function K.PostCastNotInterruptible(self)
-	self:SetStatusBarColor(K.Colors.uninterruptible[1], K.Colors.uninterruptible[2], K.Colors.uninterruptible[3])
+	local colors = K.Colors
+	self:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
 end
 
 function K.CustomDelayText(self, duration)
-	if self.casting then
-		duration = self.max - duration
-	end
-
-	if self.casting then
-		self.Time:SetFormattedText("%.1f|cffdc4436+%.1f|r ", duration, math_abs(self.delay))
-	elseif self.channeling then
-		self.Time:SetFormattedText("%.1f|cffdc4436-%.1f|r ", duration, math_abs(self.delay))
+	if self.channeling then
+		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(math_abs(duration - self.max), self.delay))
+	else
+		self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(duration, "+", self.delay))
 	end
 end
 
 function K.CustomTimeText(self, duration)
-	if self.casting then
-		duration = self.max - duration
+	if self.channeling then
+		self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
+	else
+		self.Time:SetText(("%.1f"):format(duration))
 	end
-
-	self.Time:SetFormattedText("%.1f ", duration)
 end
 
 -- Create CastBars
@@ -298,7 +279,7 @@ function K.CreateCastBar(self)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(C.Position.UnitFrames.PlayerCastbar[1], C.Position.UnitFrames.PlayerCastbar[2], C.Position.UnitFrames.PlayerCastbar[3], C.Position.UnitFrames.PlayerCastbar[4], C.Position.UnitFrames.PlayerCastbar[5])
-      CastBar:SetClampedToScreen(true)
+			CastBar:SetClampedToScreen(true)
 
 			K.CreateBorder(CastBar, -1)
 
@@ -307,7 +288,6 @@ function K.CreateCastBar(self)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Spark:SetBlendMode("ADD")
@@ -385,7 +365,7 @@ function K.CreateCastBar(self)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
 			CastBar:SetSize(C.Unitframe.CastbarWidth, C.Unitframe.CastbarHeight)
 			CastBar:SetPoint(C.Position.UnitFrames.TargetCastbar[1], C.Position.UnitFrames.TargetCastbar[2], C.Position.UnitFrames.TargetCastbar[3], C.Position.UnitFrames.TargetCastbar[4], C.Position.UnitFrames.TargetCastbar[5])
-      CastBar:SetClampedToScreen(true)
+			CastBar:SetClampedToScreen(true)
 
 			K.CreateBorder(CastBar, -1)
 
@@ -400,7 +380,6 @@ function K.CreateCastBar(self)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Shield = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
@@ -458,7 +437,7 @@ function K.CreateCastBar(self)
 			CastBar:SetPoint("TOP", 0, 60)
 			CastBar:SetHeight(18)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-      CastBar:SetClampedToScreen(true)
+			CastBar:SetClampedToScreen(true)
 
 			K.CreateBorder(CastBar, -1)
 
@@ -473,7 +452,6 @@ function K.CreateCastBar(self)
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
 			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
@@ -523,14 +501,13 @@ function K.CreateCastBar(self)
 			CastBar:SetPoint("LEFT", -138, 8)
 			CastBar:SetHeight(16)
 			CastBar:SetStatusBarTexture(C.Media.Texture)
-      CastBar:SetClampedToScreen(true)
+			CastBar:SetClampedToScreen(true)
 
 			K.CreateBorder(CastBar, -1)
 
 			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
 			CastBar.Background:SetAllPoints(CastBar)
 			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
 			CastBar.Spark:SetBlendMode("ADD")

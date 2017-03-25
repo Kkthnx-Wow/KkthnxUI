@@ -37,6 +37,49 @@ local UnitPlayerControlled = _G.UnitPlayerControlled
 -- Default Aura Filter
 local BaseAuras = {
 	-- Useless
+	[113942] = 3, -- Demonic: Gateway
+	[114216] = 3, -- Angelic Bulwark
+	[117870] = 3, -- Touch of The Titans
+	[123981] = 3, -- Perdition
+	[124273] = 3, -- Stagger
+	[124274] = 3, -- Stagger
+	[124275] = 3, -- Stagger
+	[126434] = 3, -- Tushui Champion
+	[126436] = 3, -- Huojin Champion
+	[143625] = 3, -- Brawling Champion
+	[15007] = 3, -- Ress Sickness
+	[170616] = 3, -- Pet Deserter
+	[182957] = 3, -- Treasures of Stormheim
+	[182958] = 3, -- Treasures of Azsuna
+	[185719] = 3, -- Treasures of Val'sharah
+	[186401] = 3, -- Sign of the Skirmisher
+	[186403] = 3, -- Sign of Battle
+	[186404] = 3, -- Sign of the Emissary
+	[186406] = 3, -- Sign of the Critter
+	[188741] = 3, -- Treasures of Highmountain
+	[199416] = 3, -- Treasures of Suramar
+	[225787] = 3, -- Sign of the Warrior
+	[225788] = 3, -- Sign of the Emissary
+	[227723] = 3, -- Mana Divining Stone
+	[231115] = 3, -- Treasures of Broken Shore
+	[23445] = 3, -- Evil Twin
+	[24755] = 3, -- Tricked or Treated
+	[25163] = 3, -- Oozeling's Disgusting Aura
+	[25771] = 3, -- Forbearance
+	[26013] = 3, -- Deserter
+	[36032] = 3, -- Arcane Charge
+	[36893] = 3, -- Transporter Malfunction
+	[36900] = 3, -- Soul Split: Evil!
+	[36901] = 3, -- Soul Split: Good
+	[39953] = 3, -- A'dal's Song of Battle
+	[41425] = 3, -- Hypothermia
+	[55711] = 3, -- Weakened Heart
+	[57723] = 3, -- Exhaustion
+	[57724] = 3, -- Sated
+	[57819] = 3, -- Argent Champion
+	[57820] = 3, -- Ebon Champion
+	[57821] = 3, -- Champion of the Kirin Tor
+	[58539] = 3, -- Watcher's Corpse
 	[60023] = 3, -- Scourge Banner Aura (Boneguard Commander in Icecrown)
 	[62594] = 3, -- Stormwind Champion"s Pennant
 	[62596] = 3, -- Stormwind Valiant"s Pennant
@@ -59,6 +102,43 @@ local BaseAuras = {
 	[63435] = 3, -- Thunder Bluff Valiant"s Pennant
 	[63436] = 3, -- Thunder Bluff Champion"s Pennant
 	[63501] = 3, -- Argent Crusade Champion"s Pennant
+	[71041] = 3, -- Dungeon Deserter
+	[72968] = 3, -- Precious's Ribbon
+	[80354] = 3, -- Timewarp
+	[8326] = 3, -- Ghost
+	[85612] = 3, -- Fiona's Lucky Charm
+	[85613] = 3, -- Gidwin's Weapon Oil
+	[85614] = 3, -- Tarenar's Talisman
+	[85615] = 3, -- Pamela's Doll
+	[85616] = 3, -- Vex'tul's Armbands
+	[85617] = 3, -- Argus' Journal
+	[85618] = 3, -- Rimblat's Stone
+	[85619] = 3, -- Beezil's Cog
+	[8733] = 3, -- Blessing of Blackfathom
+	[89140] = 3, -- Demonic Rebirth: Cooldown
+	[93337] = 3, -- Champion of Ramkahen
+	[93339] = 3, -- Champion of the Earthen Ring
+	[93341] = 3, -- Champion of the Guardians of Hyjal
+	[93347] = 3, -- Champion of Therazane
+	[93368] = 3, -- Champion of the Wildhammer Clan
+	[93795] = 3, -- Stormwind Champion
+	[93805] = 3, -- Ironforge Champion
+	[93806] = 3, -- Darnassus Champion
+	[93811] = 3, -- Exodar Champion
+	[93816] = 3, -- Gilneas Champion
+	[93821] = 3, -- Gnomeregan Champion
+	[93825] = 3, -- Orgrimmar Champion
+	[93827] = 3, -- Darkspear Champion
+	[93828] = 3, -- Silvermoon Champion
+	[93830] = 3, -- Bilgewater Champion
+	[94158] = 3, -- Champion of the Dragonmaw Clan
+	[94462] = 3, -- Undercity Champion
+	[94463] = 3, -- Thunder Bluff Champion
+	[95223] = 3, -- group res debuff
+	[95809] = 3, -- Insanity debuff (Hunter Pet heroism)
+	[97340] = 3, -- Guild Champion
+	[97341] = 3, -- Guild Champion
+	[97821] = 3, -- Void-Touched
 }
 
 for _, list in pairs({
@@ -82,6 +162,25 @@ local auraFilters = {
 	arenaFilter,
 	bossFilter
 }
+
+function oUFKkthnx:UpdateAuraLists()
+	-- print("UpdateAuraList")
+	for _,list in ipairs(auraFilters) do
+		wipe(list)
+	end
+
+	for _, obj in pairs(oUF.objects) do
+		if obj.Auras then
+			obj.Auras:ForceUpdate()
+		end
+		if obj.Buffs then
+			obj.Buffs:ForceUpdate()
+		end
+		if obj.Debuffs then
+			obj.Debuffs:ForceUpdate()
+		end
+	end
+end
 
 local isPlayer = {
 	player = true,
@@ -108,7 +207,7 @@ K.CustomAuraFilters = {
 		elseif UnitPlayerControlled(unit) then
 			return true
 		else
-			-- Always show BUFFS, Show boss debuffs, aura cast by the unit, or auras cast by the player's vehicle.
+			-- Always show Buffs, Show boss debuffs, aura cast by the unit, or auras cast by the player's vehicle.
 			return (iconFrame.filter == "HELPFUL") or (isBossDebuff) or nameplateShowAll or (isPlayer[caster]) or (caster == unit)
 		end
 	end,
@@ -117,7 +216,7 @@ K.CustomAuraFilters = {
 		local v = genFilter[spellID]
 		if v and filters[v] then
 			return filters[v](self, unit, caster)
-		elseif (iconFrame.filter == "HELPFUL") then -- BUFFS
+		elseif (iconFrame.filter == "HELPFUL") then -- Buffs
 			return (nameplateShowPersonal and isPlayer[caster]) or isBossDebuff or nameplateShowAll
 		else
 			return true

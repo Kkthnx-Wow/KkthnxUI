@@ -40,9 +40,9 @@ local function UpdateThreat(self, _, unit)
 
 	if (threatStatus and threatStatus >= 2) then
 		local r, g, b = GetThreatStatusColor(threatStatus)
-		self:SetBackdropBorderColor(r, g, b, 1)
+		self:SetBackdropBorderColor(r, g, b)
 	else
-		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], 1)
+		self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 
 		if (self.ThreatText) then
 			self.ThreatText:Hide()
@@ -113,8 +113,9 @@ local function UpdateHealth(self, unit, cur, max)
 	if (not UnitIsPlayer(unit)) then
 		local r, g, b = K.ColorGradient(cur / max, 0, 0.8, 0, 0.8, 0.8, 0, 0.8, 0, 0)
 		self:SetStatusBarColor(r, g, b)
-		-- self.bg:SetVertexColor(r * 0.6, g * 0.6, b * 0.6)
-		self.bg:SetVertexColor(r * 0.2, g * 0.2, b * 0.2, 0.8)
+		if self.bg:IsShown() then
+			self.bg:SetVertexColor(r * 0.18, g * 0.18, b * 0.18)
+		end
 	end
 
 	self.Value:SetText(GetHealthText(unit, cur, max))
@@ -157,7 +158,7 @@ local function CreateRaidLayout(self, unit)
 	self.Health.bg = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.bg:SetAllPoints()
 	self.Health.bg:SetTexture(C.Media.Blank)
-	self.Health.bg.multiplier = 0.2
+	self.Health.bg.multiplier = 0.18
 
 	self.Health.PostUpdate = UpdateHealth
 	self.Health.frequentUpdates = true
@@ -187,15 +188,15 @@ local function CreateRaidLayout(self, unit)
 		self.Power:SetStatusBarTexture(C.Media.Texture, "ARTWORK")
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
-		self.Power:SetHeight(2.5)
+		self.Power:SetHeight(3)
 
 		self.Power.colorPower = true
 		self.Power.Smooth = C.Raidframe.Smooth
 
 		self.Power.bg = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.bg:SetAllPoints(self.Power)
-		self.Power.bg:SetColorTexture(.6, .6, .6)
-		self.Power.bg.multiplier = 0.2
+		-- self.Power.bg:SetColorTexture(.6, .6, .6)
+		self.Power.bg.multiplier = 0.18
 
 		table_insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
@@ -397,7 +398,6 @@ oUF:SetActiveStyle("oUF_Kkthnx_Raid")
 
 if not C.Raidframe.UseHealLayout then
 	local raid = oUF:SpawnHeader("oUF_Kkthnx_Raid", nil, C.Raidframe.RaidAsParty and "custom [group:party][group:raid] show; hide" or C.Raidframe.Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid",
-	-- local raid = oUF:SpawnHeader("oUF_Kkthnx_Raid", nil, C.Raidframe.Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid")
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
