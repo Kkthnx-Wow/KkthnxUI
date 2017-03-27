@@ -455,12 +455,6 @@ local function CreateUnitLayout(self, unit)
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
 
-	self.Health.colorClass = nil
-	self.Health.colorReaction = nil
-	self.Health.colorDisconnected = nil
-	self.Health.colorTapping = nil
-	self.Health.colorHealth = nil
-
 	if C.Unitframe.ColorHealth then
 		self.Health.colorClass = true
 		self.Health.colorReaction = true

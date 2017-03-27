@@ -631,12 +631,6 @@ local function StyleNamePlates(self, unit)
 	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(C.Media.Texture)
 
-	self.Health.colorClass = nil
-	self.Health.colorReaction = nil
-	self.Health.colorDisconnected = nil
-	self.Health.colorTapping = nil
-	self.Health.colorHealth = nil
-
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
@@ -644,6 +638,7 @@ local function StyleNamePlates(self, unit)
 	self.Health.colorHealth = true
 	self.Health.Smooth = C.Nameplates.Smooth
 	self.Health.frequentUpdates = true
+
 	CreateVirtualFrame(self.Health)
 	self.Health:EnableMouse(false)
 
@@ -709,11 +704,10 @@ local function StyleNamePlates(self, unit)
 	self.Castbar.bg:SetAllPoints()
 	self.Castbar.bg:SetTexture(C.Media.Blank)
 
-	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "ARTWORK", nil, 7)
-	self.Castbar.Spark:SetVertexColor(1, 1, .8)
-	self.Castbar.Spark:SetHeight(self.Castbar:GetHeight() * 2)
-	-- self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
-	self.Castbar.Spark:SetWidth(3)
+	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "ARTWORK", nil, 1)
+	self.Castbar.Spark:SetBlendMode("ADD")
+	self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
+	self.Castbar.Spark:SetWidth(8)
 
 	self.Castbar.PostCastStart = castColor
 	self.Castbar.PostChannelStart = castColor

@@ -11,9 +11,8 @@ local function SetBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if not t then return end
 
-	for i = 1, #t do
-		t[i]:SetVertexColor(r or 1, g or 1, b or 1)
-		t[i]:SetAlpha(a or 1)
+	for _, tex in pairs(t) do
+		tex:SetVertexColor(r or 1, g or 1, b or 1, a or 1)
 	end
 end
 
@@ -21,9 +20,8 @@ local function SetBackdropBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if not t then return end
 
-	for i = 1, #t do
-		t[i]:SetVertexColor(r or 1, g or 1, b or 1)
-		t[i]:SetAlpha(a or 1)
+	for _, tex in pairs(t) do
+		tex:SetVertexColor(r or 1, g or 1, b or 1, a or 1)
 	end
 end
 
