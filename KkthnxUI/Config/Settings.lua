@@ -58,7 +58,7 @@ C["Blizzard"] = {
 	["ReplaceBlizzardFonts"] = true,
 	["ReputationGain"] = false,
 	["TalkingHeadScale"] = 1,
-	["TexturesColor"] = {K.Color.r, K.Color.g, K.Color.b},
+	["TexturesColor"] = {0.31, 0.31, 0.31},
 }
 
 -- Buffs & Debuffs
@@ -171,11 +171,13 @@ C["Loot"] = {
 
 -- Minimap
 C["Minimap"] = {
+	["Calendar"] = true,
 	["CollectButtons"] = true,
 	["Enable"] = true,
 	["FadeButtons"] = true,
 	["Garrison"] = true,
-	["Calendar"] = true,
+	["ResetZoom"] = false,
+	["ResetZoomTime"] = 3,
 	["Size"] = 150,
 }
 
@@ -257,6 +259,7 @@ C["Unitframe"] = {
 	["CastbarWidth"] = 200,
 	["CastClassColor"] = false,
 	["CastUnitReaction"] = false,
+	["ColorHealth"] = false,
 	["ClassPortraits"] = false,
 	["CombatText"] = true,
 	["Enable"] = true,

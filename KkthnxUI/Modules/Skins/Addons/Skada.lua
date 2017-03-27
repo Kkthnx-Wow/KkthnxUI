@@ -1,10 +1,13 @@
 local K, C, L = unpack(select(2, ...))
-if C.Skins.Skada ~= true then return end
+if C.Skins.Skada ~= true or not K.CheckAddOn("Skada") then return end
 
--- SKADA SKIN
-if not K.CheckAddOn("Skada") or not C.Skins.Skada then return end
+local _G = _G
 
-local Skada = Skada
+local CreateFrame = _G.CreateFrame
+local Skada = _G.Skada
+
+-- GLOBALS: size
+
 local barmod = Skada.displays["bar"]
 
 barmod.ApplySettings_ = barmod.ApplySettings
@@ -15,7 +18,6 @@ barmod.ApplySettings = function(self, win)
 
 	skada:SetTexture(C.Media.Texture)
 	skada:SetSpacing(1, 1)
-	-- skada:SetFont(C.Media.Font, 12) -- Disable this for now until we properly handle this.
 
 	skada:SetBackdrop(nil)
 	skada.borderFrame:SetBackdrop(nil)

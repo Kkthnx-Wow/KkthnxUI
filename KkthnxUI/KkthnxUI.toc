@@ -11,7 +11,7 @@
 ## X-License: The MIT License (MIT)
 ## X-Donate: https://www.paypal.me/kkthnx
 ## X-eMail: Kkthnxbye@live.com
-## X-oUF: oUFKkthnxUI
+## X-oUF: oUF_Kkthnx
 ## X-Website: https://github.com/Kkthnx
 ## X-Category: Interface Enhancements
 

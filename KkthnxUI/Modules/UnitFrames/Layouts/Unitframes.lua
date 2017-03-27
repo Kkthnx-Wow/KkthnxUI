@@ -454,14 +454,26 @@ local function CreateUnitLayout(self, unit)
 	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Health)
-	self.Health.colorHealth = false
-	self.Health.colorClass = true
-	self.Health.colorClassPet = false
-	self.Health.colorReaction = true
-	self.Health.colorDisconnected = true
-	self.Health.colorTapping = true
-	self.Health.colorSmooth = true
-	self.Health.Smooth = true
+
+	self.Health.colorClass = nil
+	self.Health.colorReaction = nil
+	self.Health.colorDisconnected = nil
+	self.Health.colorTapping = nil
+	self.Health.colorHealth = nil
+
+	if C.Unitframe.ColorHealth then
+		self.Health.colorClass = true
+		self.Health.colorReaction = true
+		self.Health.colorDisconnected = true
+		self.Health.colorTapping = true
+	else
+		self.Health.colorHealth = true
+		self.Health.colorClass = false
+		self.Health.colorReaction = false
+		self.Health.colorDisconnected = false
+		self.Health.colorTapping = false
+	end
+	self.Health.Smooth = C.Unitframe.Smooth
 	self.Health.frequentUpdates = true
 	self.Health.PostUpdate = K.Health_PostUpdate
 
@@ -476,15 +488,17 @@ local function CreateUnitLayout(self, unit)
 	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
+
+	self.Power.colorPower = nil
+	self.Power.colorReaction = nil
+	self.Power.colorDisconnected = nil
+	self.Power.colorTapping = nil
+
 	self.Power.colorPower = true
-	self.Power.colorClass = false
-	self.Power.colorClassNPC = false
-	self.Power.colorSmooth = false
 	self.Power.colorReaction = true
-	self.Power.colorDisconnected = true
-	self.Power.colorTapping = true
-	self.Power.displayAltPower = true
-	self.Power.Smooth = true
+	self.Power.colorDisconnected = false
+	self.Power.colorTapping = false
+	self.Power.Smooth = C.Unitframe.Smooth
 	self.Power.frequentUpdates = true
 	self.Power.PostUpdate = K.Power_PostUpdate
 

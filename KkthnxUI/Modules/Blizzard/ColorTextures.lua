@@ -7,16 +7,16 @@ local unpack = unpack
 
 local ColorTextures = CreateFrame("Frame")
 
--- COLORING FRAMES
+-- Coloring frames
 function ColorTextures:Style()
 	for i, texture in pairs({
-		-- CLASS RESOURCES
+		-- Class resources
 		select(5, WarlockPowerFrameShard1:GetRegions()),
 		select(5, WarlockPowerFrameShard2:GetRegions()),
 		select(5, WarlockPowerFrameShard3:GetRegions()),
 		select(5, WarlockPowerFrameShard4:GetRegions()),
 		select(5, WarlockPowerFrameShard5:GetRegions()),
-		-- UNITFRAMES
+		-- Unit frames
 		PlayerFrameTexture,
 		PlayerFrameAlternateManaBarBorder,
 		PlayerFrameAlternateManaBarRightBorder,
@@ -61,7 +61,7 @@ function ColorTextures:Style()
 		FocusFrameSpellBar.BorderShield,
 		TargetFrameSpellBar.Border,
 		TargetFrameSpellBar.BorderShield,
-		-- MAINMENUBAR
+		-- mainmenubar
 		SlidingActionBarTexture0,
 		SlidingActionBarTexture1,
 		MainMenuBarTexture0,
@@ -88,7 +88,7 @@ function ColorTextures:Style()
 		StanceBarLeft,
 		StanceBarMiddle,
 		StanceBarRight,
-		-- ARENAFRAMES
+		-- Arena frames
 		ArenaEnemyFrame1Texture,
 		ArenaEnemyFrame2Texture,
 		ArenaEnemyFrame3Texture,
@@ -114,21 +114,19 @@ function ColorTextures:Style()
 		ArenaPrepFrame3SpecBorder,
 		ArenaPrepFrame4SpecBorder,
 		ArenaPrepFrame5SpecBorder,
-		-- PANES
+		-- Panels
 		CharacterFrameTitleBg,
 		CharacterFrameBg,
-		-- MINIMAP
+		-- Minimap
 		MinimapBorder,
 		MinimapBorderTop,
 		MiniMapTrackingButtonBorder,
 	}) do
-		texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
+		texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3] or 0.31, 0.31, 0.31)
 	end
 end
 
 ColorTextures:RegisterEvent("PLAYER_ENTERING_WORLD")
-ColorTextures:SetScript("OnEvent", function(self, event, ...)
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
+ColorTextures:SetScript("OnEvent", function()
 	ColorTextures:Style()
 end)

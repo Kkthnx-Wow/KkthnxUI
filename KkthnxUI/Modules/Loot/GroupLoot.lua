@@ -234,7 +234,13 @@ local function START_LOOT_ROLL(rollID, time)
 	f.button.icon:SetTexture(texture)
 	f.button.link = GetLootRollItemLink(rollID)
 
-	if C.Loot.AutoGreed and K.Level == MAX_PLAYER_LEVEL and quality == 2 and not bop then return end
+	if C.Loot.AutoGreed and K.Level == MAX_PLAYER_LEVEL and quality == 2 and not bop then
+		if canDisenchant then
+			RollOnLoot(rollID, 3)
+		else
+			RollOnLoot(rollID, 2)
+		end
+	end
 
 	if canNeed then
 		f.needbutt:Enable()
@@ -276,11 +282,11 @@ local function START_LOOT_ROLL(rollID, time)
 	f.fsloot:SetText(name)
 	f.fsloot:SetVertexColor(color.r, color.g, color.b)
 
-	f.status:SetStatusBarColor(color.r, color.g, color.b, 0.7)
-	f.status.bg:SetColorTexture(color.r, color.g, color.b)
+	f.status:SetStatusBarColor(color.r, color.g, color.b)
+	f.status.bg:SetColorTexture(color.r * 0.18, color.g * 0.18, color.b * 0.18)
 
-	f:SetBackdropBorderColor(color.r, color.g, color.b, 0.7)
-	f.button:SetBackdropBorderColor(color.r, color.g, color.b, 0.7)
+	f:SetBackdropBorderColor(color.r, color.g, color.b)
+	f.button:SetBackdropBorderColor(color.r, color.g, color.b)
 
 	f.status:SetMinMaxValues(0, time)
 	f.status:SetValue(time)
@@ -336,11 +342,11 @@ SlashCmdList.TESTROLL = function()
 
 		f.status:SetMinMaxValues(0, 100)
 		f.status:SetValue(math.random(50, 90))
-		f.status:SetStatusBarColor(r, g, b, 0.7)
-		f.status.bg:SetColorTexture(r, g, b)
+		f.status:SetStatusBarColor(r, g, b)
+		f.status.bg:SetColorTexture(r * 0.18, g * 0.18, b * 0.18)
 
-		f:SetBackdropBorderColor(r, g, b, 0.7)
-		f.button:SetBackdropBorderColor(r, g, b, 0.7)
+		f:SetBackdropBorderColor(r, g, b)
+		f.button:SetBackdropBorderColor(r, g, b)
 
 		f.need:SetText(0)
 		f.greed:SetText(0)
