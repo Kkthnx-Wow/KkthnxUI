@@ -73,9 +73,9 @@ end
 
 local function PositionTicketButtons()
 	HelpOpenTicketButton:ClearAllPoints()
-	HelpOpenTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0 or 0, 0 or 0)
+	HelpOpenTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
 	HelpOpenWebTicketButton:ClearAllPoints()
-	HelpOpenWebTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0 or 0, 0 or 0)
+	HelpOpenWebTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
 end
 if not (K.WoWBuild >= 23623) then -- 7.1.5
 	hooksecurefunc("HelpOpenTicketButton_Move", PositionTicketButtons)
@@ -273,6 +273,7 @@ MinimapZone:SetSize(Minimap:GetWidth() + 4, 19)
 MinimapZone:SetPoint("TOP", Minimap, 0, 2)
 MinimapZone:SetFrameStrata(Minimap:GetFrameStrata())
 MinimapZone:SetAlpha(0)
+MinimapZone:EnableMouse()
 
 local MinimapZoneText = MinimapZone:CreateFontString("KkthnxUIMinimapZoneText", "Overlay")
 MinimapZoneText:SetFont(C.Media.Font, 12, C.Media.Font_Style)
@@ -281,22 +282,15 @@ MinimapZoneText:SetPoint("BOTTOM")
 MinimapZoneText:SetHeight(12)
 MinimapZoneText:SetWidth(MinimapZone:GetWidth() -6)
 
-local MinimapZoneAnim = CreateAnimationGroup(MinimapZone):CreateAnimation("Fade")
-MinimapZoneAnim:SetDuration(0.3)
-MinimapZoneAnim:SetSmoothing("InOut")
-MinimapZoneAnim:SetChange(1)
-
 Minimap:SetScript("OnEnter", function()
 	MinimapZone:SetAlpha(1)
-	MinimapZoneText:SetAlpha(1)
 end)
 
 Minimap:SetScript("OnLeave", function()
 	MinimapZone:SetAlpha(0)
-	MinimapZoneText:SetAlpha(0)
 end)
 
-local ZoneUpdate = function()
+local function ZoneUpdate()
 	MinimapZoneText:SetText(string_sub(GetMinimapZoneText(), 1, 46))
 	MinimapZoneText:SetTextColor(GetLocTextColor())
 end

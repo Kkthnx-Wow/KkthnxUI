@@ -109,7 +109,7 @@ ReputationBar:SetScript("OnEnter", function(self)
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	GameTooltip:AddLine(string_format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
-	GameTooltip:AddLine(string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100), 1, 1, 1)
+	GameTooltip:AddLine(string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100))
 
 	GameTooltip:Show()
 end)

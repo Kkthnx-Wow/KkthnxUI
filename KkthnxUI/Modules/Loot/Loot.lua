@@ -410,7 +410,7 @@ do
 
 		local count = iconFrame:CreateFontString(nil, "OVERLAY")
 		count:SetJustifyH("RIGHT")
-		count:SetPoint("BOTTOMRIGHT", iconFrame, "BOTTOMRIGHT", 1, 1)
+		count:SetPoint("BOTTOMRIGHT", iconFrame, "BOTTOMRIGHT", -2, 3)
 		count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
 		count:SetShadowOffset(0, 0)
 		count:SetText(1)
