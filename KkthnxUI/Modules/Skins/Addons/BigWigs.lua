@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Skins.BigWigs ~= true then return end
+if C.Skins.BigWigs ~= true or not K.CheckAddOn("BigWigs") then return end
 
 local _G = _G
 local table_remove = table.remove
@@ -11,7 +11,7 @@ local UIParent = _G.UIParent
 
 local BigWigs_Skin = CreateFrame("Frame")
 BigWigs_Skin:RegisterEvent("ADDON_LOADED")
-BigWigs_Skin:SetScript("OnEvent", function(self, event, addon)
+BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 	if event == "PLAYER_ENTERING_WORLD" then
 		if BigWigsLoader then
 			BigWigsLoader.RegisterMessage("KkthnxUI", "BigWigs_FrameCreated", function(event, frame, name)
@@ -113,7 +113,7 @@ BigWigs_Skin:SetScript("OnEvent", function(self, event, addon)
 			bar.candyBarBackground:SetTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 			bar.candyBarIconFrame:ClearAllPoints()
-			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -7, 0)
+			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -4, 0)
 			bar.candyBarIconFrame:SetSize(buttonsize, buttonsize)
 			bar.candyBarIconFrame.SetWidth = K.Noop
 
@@ -132,10 +132,14 @@ BigWigs_Skin:SetScript("OnEvent", function(self, event, addon)
 		BigWigsBars:RegisterBarStyle("KkthnxUI", {
 			apiVersion = 1,
 			version = 1,
-			GetSpacing = function() return 8 end,
+			GetSpacing = function() return 4 end,
 			ApplyStyle = ApplyStyle,
 			BarStopped = FreeStyle,
 			GetStyleName = function() return "KkthnxUI" end,
 		})
+
+		if BigWigsBars then
+			BigWigsBars.db.profile.barStyle = "KkthnxUI"
+		end
 	end
 end)

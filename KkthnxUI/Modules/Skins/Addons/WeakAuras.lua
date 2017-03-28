@@ -14,8 +14,12 @@ WeakAura_Skin:SetScript("OnEvent", function(self, event)
 	local function Skin_WeakAuras(frame, ftype)
 		if not frame.Shadow then
 			frame:CreateShadow()
-			frame.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-			frame.icon.SetTexCoord = K.Noop
+
+			if frame.icon then
+				frame.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+				frame.icon.SetTexCoord = K.Noop
+			end
+
 			if ftype == "icon" then
 				frame.Shadow:HookScript("OnUpdate", function(self)
 					self:SetAlpha(self:GetParent().icon:GetAlpha())
@@ -33,7 +37,7 @@ WeakAura_Skin:SetScript("OnEvent", function(self, event)
 
 	WeakAuras.regionTypes.icon.create = function(parent, data)
 		local region = Create_Icon(parent, data)
-		Skin_WeakAuras("icon")
+		Skin_WeakAuras(region, "icon")
 		return region
 	end
 

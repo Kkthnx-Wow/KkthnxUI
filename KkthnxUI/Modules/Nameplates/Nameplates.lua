@@ -707,7 +707,7 @@ local function StyleNamePlates(self, unit)
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "ARTWORK", nil, 1)
 	self.Castbar.Spark:SetBlendMode("ADD")
 	self.Castbar.Spark:SetPoint("CENTER", self.Castbar:GetRegions(), "RIGHT", 1, 0)
-	self.Castbar.Spark:SetWidth(8)
+	self.Castbar.Spark:SetSize(10, C.Nameplates.Height + 6)
 
 	self.Castbar.PostCastStart = castColor
 	self.Castbar.PostChannelStart = castColor

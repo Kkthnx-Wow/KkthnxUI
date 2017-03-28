@@ -41,6 +41,7 @@ StaticPopupDialogs["CLIENT_RESTART"] = {
 -- Optimize graphic after we enter world
 local PixelPerfect = CreateFrame("Frame")
 PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
+PixelPerfect:RegisterEvent("VARIABLES_LOADED")
 PixelPerfect:RegisterEvent("CINEMATIC_STOP")
 PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
 PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")

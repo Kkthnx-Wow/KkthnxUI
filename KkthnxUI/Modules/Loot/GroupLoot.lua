@@ -1,12 +1,6 @@
 ﻿local K, C, L = unpack(select(2, ...))
 if C.Loot.GroupLoot ~= true then return end
 
-local unpack = unpack
-local pairs = pairs
-local time = time
-local CreateFrame, UIParent = CreateFrame, UIParent
-local IsShiftKeyDown = IsShiftKeyDown
-local GetLootRollTimeLeft = GetLootRollTimeLeft
 
 -- Based on teksLoot(by Tekkub)
 local pos = "TOP"
@@ -26,12 +20,15 @@ local function HideTip() GameTooltip:Hide() end
 local function HideTip2() GameTooltip:Hide() ResetCursor() end
 
 local function SetTip(frame)
-	GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT")
+	GameTooltip:SetOwner(frame, "ANCHOR_RIGHT")
 	GameTooltip:SetText(frame.tiptext)
-	if not frame:IsEnabled() then
-		GameTooltip:AddLine(frame.errtext, 1, 0.2, 0.2, 1)
+	if frame:IsEnabled() == 0 then GameTooltip:AddLine("|cffff3333"..LOOT_ROLL_INELIGIBLE_REASON1) end
+	for name, tbl in pairs(frame.parent.rolls) do
+		if rolltypes[tbl[1]] == rolltypes[frame.rolltype] then
+			local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[tbl[2]] or RAID_CLASS_COLORS[tbl[2]]
+			GameTooltip:AddLine(name, classColor.r, classColor.g, classColor.b)
+		end
 	end
-	for name, roll in pairs(frame.parent.rolls) do if roll == rolltypes[frame.rolltype] then GameTooltip:AddLine(name, 1, 1, 1) end end
 	GameTooltip:Show()
 end
 
@@ -43,33 +40,18 @@ local function SetItemTip(frame)
 	if IsModifiedClick("DRESSUP") then ShowInspectCursor() else ResetCursor() end
 end
 
-local function ItemOnUpdate(frame)
-	if GameTooltip:IsOwned(frame) then
-		if IsShiftKeyDown() then
-			GameTooltip_ShowCompareItem()
-		else
-			ShoppingTooltip1:Hide()
-			ShoppingTooltip2:Hide()
-		end
-
-		if IsControlKeyDown() then
-			ShowInspectCursor()
-		else
-			ResetCursor()
-		end
+local function ItemOnUpdate(self)
+	if IsShiftKeyDown() then
+		GameTooltip_ShowCompareItem()
 	end
+	CursorOnUpdate(self)
 end
 
 local function LootClick(frame)
 	if IsControlKeyDown() then
 		DressUpItemLink(frame.link)
 	elseif IsShiftKeyDown() then
-		local _, item = GetItemInfo(frame.link)
-		if ChatEdit_GetActiveWindow() then
-			ChatEdit_InsertLink(item)
-		else
-			ChatFrame_OpenChat(item)
-		end
+		ChatEdit_InsertLink(frame.link)
 	end
 end
 
@@ -86,7 +68,12 @@ local function StatusUpdate(frame)
 	if not frame.parent.rollID then return end
 	local t = GetLootRollTimeLeft(frame.parent.rollID)
 	local perc = t / frame.parent.time
+	frame.spark:SetPoint("CENTER", frame, "LEFT", perc * frame:GetWidth(), 0)
 	frame:SetValue(t)
+
+	if t > 1000000000 then
+		frame:GetParent():Hide()
+	end
 end
 
 local function CreateRollButton(parent, ntex, ptex, htex, rolltype, tiptext, ...)
@@ -115,15 +102,15 @@ local function CreateRollFrame()
 	frame:SetBackdrop(K.BorderBackdropTwo)
 	frame:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 	frame:SetSize(280, 22)
+	frame:SetScript("OnEvent", OnEvent)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetFrameLevel(10)
-	frame:SetScript("OnEvent", OnEvent)
 	frame:RegisterEvent("CANCEL_LOOT_ROLL")
 	frame:Hide()
 
 	local button = CreateFrame("Button", nil, frame)
-	button:SetPoint("LEFT", -29, 0)
-	button:SetSize(22, 22)
+	button:SetPoint("RIGHT", frame, "LEFT", -(2 * 4), 0)
+	button:SetSize(28 - (2 * 3), 28 - (2 * 3))
 	K.CreateBorder(button, -1)
 	button:SetBackdrop(K.BorderBackdropTwo)
 	button:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
@@ -152,6 +139,11 @@ local function CreateRollFrame()
 	status.bg:SetAlpha(0.1)
 	status.bg:SetAllPoints()
 	status.bg:SetDrawLayer("BACKGROUND", 2)
+	local spark = frame:CreateTexture(nil, "OVERLAY")
+	spark:SetSize(14, frame:GetHeight() * 1.6)
+	spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+	spark:SetBlendMode("ADD")
+	status.spark = spark
 
 	local need, needtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Dice-Up", "Interface\\Buttons\\UI-GroupLoot-Dice-Highlight", "Interface\\Buttons\\UI-GroupLoot-Dice-Down", 1, NEED, "LEFT", frame.button, "RIGHT", 5, -1)
 	local greed, greedtext = CreateRollButton(frame, "Interface\\Buttons\\UI-GroupLoot-Coin-Up", "Interface\\Buttons\\UI-GroupLoot-Coin-Highlight", "Interface\\Buttons\\UI-GroupLoot-Coin-Down", 2, GREED, "LEFT", need, "RIGHT", 0, -1)
@@ -282,8 +274,8 @@ local function START_LOOT_ROLL(rollID, time)
 	f.fsloot:SetText(name)
 	f.fsloot:SetVertexColor(color.r, color.g, color.b)
 
-	f.status:SetStatusBarColor(color.r, color.g, color.b)
-	f.status.bg:SetColorTexture(color.r * 0.18, color.g * 0.18, color.b * 0.18)
+	f.status:SetStatusBarColor(color.r, color.g, color.b, .7)
+	f.status.bg:SetColorTexture(color.r, color.g, color.b)
 
 	f:SetBackdropBorderColor(color.r, color.g, color.b)
 	f.button:SetBackdropBorderColor(color.r, color.g, color.b)

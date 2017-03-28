@@ -49,11 +49,10 @@ do
 		icon:SetTexCoord(.03, .97, .03, .97)
 		button.icon = icon
 
-		local overlay = button:CreateTexture(nil, "OVERLAY")
-		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\border-2")
-		overlay:SetPoint("TOPRIGHT", button.icon, 3, 3)
-		overlay:SetPoint("BOTTOMLEFT", button.icon, -3, -3)
-		overlay:SetTexCoord(0, 0.6875, 0, 0.6875)
+		local overlay = button:CreateTexture(nil, "OVERLAY", nil, 1)
+		overlay:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border")
+		overlay:SetPoint("TOPRIGHT", button.icon, 1.36, 1.36)
+		overlay:SetPoint("BOTTOMLEFT", button.icon, -1.36, -1.36)
 		button.overlay = overlay
 
 		local shadow = button:CreateTexture(nil, "BACKGROUND")

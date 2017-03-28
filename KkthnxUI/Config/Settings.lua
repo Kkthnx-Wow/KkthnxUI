@@ -228,7 +228,6 @@ C["Skins"] = {
 	["BigWigs"] = false,
 	["ChatBubble"] = true,
 	["DBM"] = false,
-	["DBMMove"] = false,
 	["MinimapButtons"] = true,
 	["Recount"] = false,
 	["Skada"] = false,

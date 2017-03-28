@@ -1,9 +1,9 @@
-## Interface: 70100
+## Interface: 70200
 ## Name: KkthnxUI Config
 ## Title: |cff3c9bedKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Josh "Kkthnx" Russell, Tohveli
-## Version: 6.29
+## Version: 6.30
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigAll, KkthnxUIConfigPublic
 ## SavedVariablesPerCharacter: KkthnxUIConfigPrivate
