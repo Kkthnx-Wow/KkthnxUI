@@ -1,4 +1,4 @@
-### Note! UI Does not currently work for WoW 7.2.0, but a beta of KkthnxUI is in progress and will be available as soon as possible.
+### Note! UI Does currently work for WoW 7.2.0
 
 ![kkthnxuilogo2](https://cloud.githubusercontent.com/assets/1692977/19082420/14dd3d3c-8a2c-11e6-818f-0f6a404678be.png)  
 
