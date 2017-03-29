@@ -29,14 +29,6 @@ local TimeColors = {
 	[4] = K.RGBToHex(1, 0, 0) or "|cfffe0000",
 }
 
--- local TimeColors = {
--- 	[0] = "|cfffefefe",
--- 	[1] = "|cfffefefe",
--- 	[2] = "|cfffefefe",
--- 	[3] = "|cfffefefe",
--- 	[4] = "|cfffe0000",
--- }
-
 local TimeFormats = {
 	[0] = {"%dd", "%dd"},
 	[1] = {"%dh", "%dh"},
@@ -220,13 +212,3 @@ if _G["ActionBarButtonEventsFrame"].frames then
 end
 
 hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", actionButton_Register)
-
--- function K.UpdateCooldownSettings()
--- 	threshold = C.Cooldown.Threshold
---
--- 	TimeColors[4] = K.RGBToHex(1, 0, 0) -- color for timers that are soon to expire
--- 	TimeColors[3] = K.RGBToHex(1, 1, 0) -- color for timers that have seconds remaining
--- 	TimeColors[2] = K.RGBToHex(1, 1, 1) -- color for timers that have minutes remaining
--- 	TimeColors[1] = K.RGBToHex(0.4, 1, 1) -- color for timers that have hours remaining
--- 	TimeColors[0] = K.RGBToHex(0.4, 0.4, 1) -- color for timers that have days remaining
--- end

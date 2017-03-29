@@ -89,7 +89,6 @@ UIConfigLocal.DataBarsReputationWidth = "声望条宽度"
 UIConfigLocal.Auras = "光环"
 UIConfigLocal.AurasAnimation = "给光环加入弹出特效"..PerformanceSlight
 UIConfigLocal.AurasBuffsPerRow = "每一行光环显示数量"
-UIConfigLocal.AurasCastBy = "鼠标提示上显示光环释放者"
 UIConfigLocal.AurasConsolidate = "合并光环"
 UIConfigLocal.AurasEnable = "开启光环显示"
 UIConfigLocal.AurasFlash = "光环剩余时间不多时闪烁"..PerformanceSlight
@@ -227,16 +226,15 @@ UIConfigLocal.SkinsSpy = "Spy"
 UIConfigLocal.SkinsWeakAuras = "WeakAuras"
 
 -- Tooltip
-UIConfigLocal.Tooltip = "鼠标提示"
-UIConfigLocal.TooltipAchievements = "成就对比"
-UIConfigLocal.TooltipCursor = "随鼠标移动"
-UIConfigLocal.TooltipEnable = "启用鼠标提示"
-UIConfigLocal.TooltipHealthValue = "生命数值显示"
-UIConfigLocal.TooltipItemCount = "物品数量"
-UIConfigLocal.TooltipItemIcon = "物品图标"
-UIConfigLocal.TooltipRank = "按下shift时在鼠标提示上显示目标公会声望等级"
-UIConfigLocal.TooltipSpellID = "法术ID"
-UIConfigLocal.TooltipTalents = "显示玩家的专精"
+UIConfigLocal.Tooltip = "Tooltip"
+UIConfigLocal.TooltipCursor = "Tooltip be anchored to mouse cursor"
+UIConfigLocal.TooltipEnable = "Enable tooltip"
+UIConfigLocal.TooltipHealthValue = "Numeral health value"
+UIConfigLocal.TooltipItemCount = "Display how many of a certain item you have on you"
+UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
+UIConfigLocal.TooltipRank = "Display guild ranks if a unit is guilded."
+UIConfigLocal.TooltipSpellID = "Display the spell or item ID when mousing over a spell or item tooltip."
+UIConfigLocal.TooltipTalents = "Display the players talent spec and item level in the tooltip, this may not instantly update when mousing over players"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "单位框架"

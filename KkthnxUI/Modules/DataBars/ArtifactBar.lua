@@ -71,12 +71,7 @@ end)
 
 local function GetArtifact()
 	local itemID, altItemID, name, icon, totalXP, pointsSpent, quality, artifactAppearanceID, appearanceModID, itemAppearanceID, altItemAppearanceID, altOnTop, ArtifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
-	local numPointsAvailableToSpend, xp, xpForNextPoint
-	if K.WoWBuild >= 23623 then -- 7.2
-		numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP, ArtifactTier)
-	else
-		numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP)
-	end
+	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP, ArtifactTier)
 
 	return xp, xpForNextPoint
 end
@@ -93,12 +88,7 @@ local function UpdateArtifactBar(event, unit)
 		ArtifactBar:Show()
 
 		local _, _, _, _, TotalExp, PointsSpent, _, _, _, _, _, _, ArtifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
-		local _, Exp, ExpForNextPoint
-		if K.WoWBuild >= 23623 then -- 7.2
-			_, Exp, ExpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp, ArtifactTier)
-		else
-			_, Exp, ExpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp)
-		end
+		local _, Exp, ExpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp, ArtifactTier)
 
 		local Text = format("%d%%", Exp / ExpForNextPoint * 100)
 		if C.DataBars.InfoText then
@@ -115,12 +105,7 @@ end
 ArtifactBar:SetScript("OnEnter", function(self)
 	local HasArtifactEquip = HasArtifactEquipped()
 	local _, _, _, _, TotalExp, PointsSpent, _, _, _, _, _, _, ArtifactTier = C_ArtifactUI.GetEquippedArtifactInfo()
-	local numPointsAvailableToSpend, xp, xpForNextPoint
-	if K.WoWBuild >= 23623 then -- 7.2
-		numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp, ArtifactTier)
-	else
-		numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp)
-	end
+	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(PointsSpent, TotalExp, ArtifactTier)
 
 	Current, Max = GetArtifact()
 

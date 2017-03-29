@@ -253,11 +253,7 @@ L.Raid = {
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "Votre statut: Complété le ",
-	AchievementIncomplete = "Votre statut: Incomplet",
-	AchievementStatus = "Votre statut:",
 	ItemCount = "Item count:",
-	ItemID = "Item ID:",
 	SpellID = "Spell ID:"
 }
 

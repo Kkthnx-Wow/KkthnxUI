@@ -6,52 +6,56 @@ local oUF = ns.oUF or oUF
 if not oUF then return end
 
 -- Lua API
-local floor, fmod = floor, math.fmod
-local format = string.format
-local GetTime, GetSpellInfo, UnitAura = GetTime, GetSpellInfo, UnitAura
+local math_floor = math.floor
+local math_fmod = math.fmod
+local string_format = string.format
+local math_ceil = math.ceil
 
 -- Wow API
-local UnitBuff = UnitBuff
-local UnitDebuff = UnitDebuff
+local UnitBuff = _G.UnitBuff
+local UnitDebuff = _G.UnitDebuff
+local GetTime = _G.GetTime
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SetPortraitToTexture
 
 local PortraitTimerDB = {}
 
-local day, hour, minute = 86400, 3600, 60
-
 do
-	local function add(list, filter)
+	local function AddFilterList(list, filter)
 		for i = 1, #list do
 			PortraitTimerDB[list[i]] = true
 		end
 	end
-	add(K.AuraList.CC, "HARMFUL")
-	add(K.AuraList.CCImmunity, "HELPFUL")
-	add(K.AuraList.Defensive, "HELPFUL")
-	add(K.AuraList.Helpful, "HELPFUL")
-	add(K.AuraList.Immunity, "HELPFUL")
-	add(K.AuraList.Misc, "HELPFUL")
-	add(K.AuraList.Offensive, "HELPFUL")
-	add(K.AuraList.Silence, "HARMFUL")
-	add(K.AuraList.Stun, "HARMFUL")
+	AddFilterList(K.AuraList.CC, "HARMFUL")
+	AddFilterList(K.AuraList.CCImmunity, "HELPFUL")
+	AddFilterList(K.AuraList.Defensive, "HELPFUL")
+	AddFilterList(K.AuraList.Helpful, "HELPFUL")
+	AddFilterList(K.AuraList.Immunity, "HELPFUL")
+	AddFilterList(K.AuraList.Misc, "HELPFUL")
+	AddFilterList(K.AuraList.Offensive, "HELPFUL")
+	AddFilterList(K.AuraList.Silence, "HARMFUL")
+	AddFilterList(K.AuraList.Stun, "HARMFUL")
 end
 
 local function ExactTime(time)
-	return format("%.1f", time), (time * 100 - floor(time * 100))/100
+	return string_format("%.1f", time), (time * 100 - math_floor(time * 100))/100
 end
 
-local function FormatTime(s)
-	if (s >= day) then
-		return format("%dd", floor(s/day + 0.5))
-	elseif (s >= hour) then
-		return format("%dh", floor(s/hour + 0.5))
-	elseif (s >= minute) then
-		return format("%dm", floor(s/minute + 0.5))
+local function FormatTime(time)
+	local Day, Hour, Minute = 86400, 3600, 60
+
+	if (time >= Day) then
+		return string_format("%dd", math_ceil(time / Day))
+	elseif (time >= Hour) then
+		return string_format("%dh", math_ceil(time / Hour))
+	elseif (time >= Minute) then
+		return string_format("%dm", math_ceil(time / Minute))
+	elseif (time >= Minute / 12) then
+		return math_floor(time)
 	end
 
-	return format("%d", fmod(s, minute))
+	return string_format("%.1f", time)
 end
 
 local function AuraTimer(self, elapsed)
@@ -67,15 +71,15 @@ local function AuraTimer(self, elapsed)
 	if (timeLeft <= 0) then
 		self.Remaining:SetText(nil)
 	else
-		if (timeLeft <= 5) then
+		if (timeLeft <= 3) then
 			self.Remaining:SetText("|cffff0000"..ExactTime(timeLeft).."|r")
 		else
-			self.Remaining:SetText(FormatTime(timeLeft))
+			self.Remaining:SetText("|cfffefefe"..FormatTime(timeLeft).."|r")
 		end
 	end
 end
 
-local Update = function(self, event, unit)
+local function Update(self, event, unit)
 	if (self.unit ~= unit) then
 		return
 	end
@@ -112,7 +116,7 @@ local Update = function(self, event, unit)
 				UnitDebuff = nil
 				index = 0
 			else
-				break;
+				break
 			end
 		end
 	end

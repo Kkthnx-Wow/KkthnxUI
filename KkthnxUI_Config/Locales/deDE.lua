@@ -89,7 +89,6 @@ UIConfigLocal.DataBarsReputationWidth = "Breite der Rufleiste"
 UIConfigLocal.Auras = "Auren"
 UIConfigLocal.AurasAnimation = "Zeige eine 'pop in' Animation der Auren"..PerformanceSlight
 UIConfigLocal.AurasBuffsPerRow = "Anzahl der Stärkungszauber bevor eine neue Zeile angefangen wird"
-UIConfigLocal.AurasCastBy = "Zeige von wem eine Aura stammt im Tooltip an"
 UIConfigLocal.AurasConsolidate = "Auren einklappen"
 UIConfigLocal.AurasEnable = "Aktivere Auren"
 UIConfigLocal.AurasFlash = "Aufblitzen der Auren, wenn die Zeit fast abgelaufen ist"..PerformanceSlight
@@ -227,16 +226,15 @@ UIConfigLocal.SkinsSpy = "Spy" -- Needs Translation
 UIConfigLocal.SkinsWeakAuras = "WeakAuras" -- Needs Translation
 
 -- Tooltip
-UIConfigLocal.Tooltip = "Tooltip" -- Needs Translation
-UIConfigLocal.TooltipAchievements = "Vergleiche Erfolge per Tooltip"
-UIConfigLocal.TooltipCursor = "Tooltip über dem Cursor"
-UIConfigLocal.TooltipEnable = "Aktiviere Tooltip"
-UIConfigLocal.TooltipHealthValue = "Lebensanzeige über dem Tooltip"
-UIConfigLocal.TooltipItemCount = "Gegenstandsmenge anzeigen"
+UIConfigLocal.Tooltip = "Tooltip"
+UIConfigLocal.TooltipCursor = "Tooltip be anchored to mouse cursor"
+UIConfigLocal.TooltipEnable = "Enable tooltip"
+UIConfigLocal.TooltipHealthValue = "Numeral health value"
+UIConfigLocal.TooltipItemCount = "Display how many of a certain item you have on you"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
-UIConfigLocal.TooltipRank = "Display targets guild rank on tooltip when shift is held down"
-UIConfigLocal.TooltipSpellID = "Zauber-ID anzeigen"
-UIConfigLocal.TooltipTalents = "Zeigt die Spieler Spezialisierung und die Gegenstandstufe im Tooltip an"
+UIConfigLocal.TooltipRank = "Display guild ranks if a unit is guilded."
+UIConfigLocal.TooltipSpellID = "Display the spell or item ID when mousing over a spell or item tooltip."
+UIConfigLocal.TooltipTalents = "Display the players talent spec and item level in the tooltip, this may not instantly update when mousing over players"
 
 -- Einheitenfenster
 UIConfigLocal.Unitframe = "Einheitenfenster"

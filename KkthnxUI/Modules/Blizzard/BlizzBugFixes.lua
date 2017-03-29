@@ -6,7 +6,6 @@ local _G = _G
 -- Wow API
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetCVarBool = _G.GetCVarBool
-local InCombatLockdown = _G.InCombatLockdown
 local IsBagOpen = _G.IsBagOpen
 local IsOptionFrameOpen = _G.IsOptionFrameOpen
 local SetCVar = _G.SetCVar
@@ -20,19 +19,6 @@ local WorldMapLevelButton_OnClick = _G.WorldMapLevelButton_OnClick
 -- GLOBALS: NUM_CONTAINER_FRAMES, CloseBag
 -- GLOBALS: SpellBookFrame, build, PetJournal_LoadUI, UIParent, WorldMapFrame, event
 -- GLOBALS: WorldMapLevelButton, BankFrame, CloseAllBags, NUM_BAG_FRAMES, OpenBag
-
-local SilverLoad = CreateFrame("Frame")
-SilverLoad:RegisterEvent("PLAYER_ENTERING_WORLD")
-SilverLoad:SetScript("OnEvent", function(self, event)
-	if InCombatLockdown() then return end
-
-	local worldPreload = GetCVarBool("worldPreloadNonCritical")
-	if not worldPreload then
-		SetCVar("worldPreloadNonCritical", 0)
-	end
-
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-end)
 
 -- Fix spellbook taint in combat
 local SpellBookTaint = CreateFrame("Frame")

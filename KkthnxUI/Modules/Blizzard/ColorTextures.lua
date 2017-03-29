@@ -10,12 +10,6 @@ local ColorTextures = CreateFrame("Frame")
 -- Coloring frames
 function ColorTextures:Style()
 	for i, texture in pairs({
-		-- Class resources
-		select(5, WarlockPowerFrameShard1:GetRegions()),
-		select(5, WarlockPowerFrameShard2:GetRegions()),
-		select(5, WarlockPowerFrameShard3:GetRegions()),
-		select(5, WarlockPowerFrameShard4:GetRegions()),
-		select(5, WarlockPowerFrameShard5:GetRegions()),
 		-- Unit frames
 		PlayerFrameTexture,
 		PlayerFrameAlternateManaBarBorder,
@@ -49,12 +43,6 @@ function ColorTextures:Style()
 		Boss3TargetFrameSpellBar.BorderShield,
 		Boss4TargetFrameSpellBar.BorderShield,
 		Boss5TargetFrameSpellBar.BorderShield,
-		RuneButtonIndividual1BorderTexture,
-		RuneButtonIndividual2BorderTexture,
-		RuneButtonIndividual3BorderTexture,
-		RuneButtonIndividual4BorderTexture,
-		RuneButtonIndividual5BorderTexture,
-		RuneButtonIndividual6BorderTexture,
 		CastingBarFrame.Border,
 		CastingBarFrame.BorderShield,
 		FocusFrameSpellBar.Border,

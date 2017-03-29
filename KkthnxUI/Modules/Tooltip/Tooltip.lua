@@ -8,13 +8,18 @@ local math_floor = math.floor
 local pairs = pairs
 local select = select
 local table_remove = table.remove
+local format = string.format
 local unpack = unpack
+local string_find = string.find
+local string_sub = string.sub
 
 -- Wow API
 local CanInspect = _G.CanInspect
 local CHAT_FLAG_AFK = _G.CHAT_FLAG_AFK
 local CHAT_FLAG_DND = _G.CHAT_FLAG_DND
+local ClearInspectPlayer = _G.ClearInspectPlayer
 local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
@@ -23,6 +28,7 @@ local GetGuildInfo = _G.GetGuildInfo
 local GetInspectSpecialization = _G.GetInspectSpecialization
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventorySlotInfo = _G.GetInventorySlotInfo
+local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMouseFocus = _G.GetMouseFocus
@@ -32,6 +38,7 @@ local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpecializationRoleByID = _G.GetSpecializationRoleByID
 local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
+local ID = _G.ID
 local InCombatLockdown = _G.InCombatLockdown
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
 local IsAltKeyDown = _G.IsAltKeyDown
@@ -40,9 +47,13 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
 local LEVEL = _G.LEVEL
+local MAXIMUM = _G.MAXIMUM
 local NotifyInspect = _G.NotifyInspect
+local PVP = _G.PVP
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local RaidColors = _G.RAID_CLASS_COLORS
 local UIParent = _G.UIParent
+local UnitAura = _G.UnitAura
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
 local UnitCreatureType = _G.UnitCreatureType
@@ -64,14 +75,14 @@ local UnitRealmRelationship = _G.UnitRealmRelationship
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: DEAD, GameTooltip, GameTooltipTextLeft2, TooltipAnchor, GameTooltipTextLeft1
--- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth, SPECIALIZATION
--- GLOBALS: Health, InspectFrame, UNKNOWN, NONE, STAT_AVERAGE_ITEM_LEVEL
+-- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth, SPECIALIZATION, ItemRefTooltip
+-- GLOBALS: Health, InspectFrame, UNKNOWN, NONE, STAT_AVERAGE_ITEM_LEVEL, CURRENTLY_EQUIPPED
 
 local Tooltip = CreateFrame("Frame")
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
-local ILevel, TalentSpec, MAXILevel, PVPILevel, LastUpdate = 0, "", 0, 0, 30
+local ILevel, TalentSpec, LastUpdate = 0, "", 30
 local InspectDelay = 0.2
 local InspectFreq = 2
 local InspectCache = {}
@@ -105,24 +116,12 @@ local Classification = {
 	normal = "",
 }
 
-Tooltip.SlotNames = {
-	"Head",
-	"Neck",
-	"Shoulder",
-	"Back",
-	"Chest",
-	"Wrist",
-	"Hands",
-	"Waist",
-	"Legs",
-	"Feet",
-	"Finger0",
-	"Finger1",
-	"Trinket0",
-	"Trinket1",
-	"MainHand",
-	"SecondaryHand"
+local SlotName = {
+	"Head","Neck","Shoulder","Back","Chest","Wrist",
+	"Hands","Waist","Legs","Feet","Finger0","Finger1",
+	"Trinket0","Trinket1","MainHand","SecondaryHand"
 }
+
 
 function Tooltip:CreateAnchor()
 	local Movers = K.Movers
@@ -181,21 +180,21 @@ end
 
 function Tooltip:GetItemLevel(unit)
 	local Total, Item = 0, 0
-	local ArtefactEquiped = false
-	-- local TotalSlots = 16
+	local ArtifactEquipped = false
+	local TotalSlots = 16
 
-	for i = 1, #Tooltip.SlotNames do
-		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Tooltip.SlotNames[i])))
+	for i = 1, #SlotName do
+		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(SlotName[i])))
 
 		if (ItemLink ~= nil) then
 			local _, _, Rarity, _, _, _, _, _, EquipLoc = GetItemInfo(ItemLink)
 
-			-- Check if we have an artifact equipped in main hand
+			--Check if we have an artifact equipped in main hand
 			if (EquipLoc and EquipLoc == "INVTYPE_WEAPONMAINHAND" and Rarity and Rarity == 6) then
 				ArtifactEquipped = true
 			end
 
-			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			--If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
 			if (not ArtifactEquipped or (ArtifactEquipped and EquipLoc and EquipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
 				local ItemLevel
 
@@ -206,35 +205,34 @@ function Tooltip:GetItemLevel(unit)
 					Total = Total + ItemLevel
 				end
 
-				-- -- Total slots depend if one/two handed weapon
-				-- if (i == 15) then
-				-- 	if (ArtifactEquipped or (EquipLoc and EquipLoc == "INVTYPE_2HWEAPON")) then
-				-- 		TotalSlots = 15
-				-- 	end
-				-- end
+				-- Total slots depend if one/two handed weapon
+				if (i == 15) then
+					if (ArtifactEquipped or (EquipLoc and EquipLoc == "INVTYPE_2HWEAPON")) then
+						TotalSlots = 15
+					end
+				end
 			end
 		end
 	end
 
-	-- if(Total < 1 or Item < TotalSlots)
-	if(Total < 1 or Item < 15) then
+	if(Total < 1 or Item < TotalSlots) then
 		return
 	end
 
 	return math_floor(Total / Item)
 end
 
-function Tooltip:GetTalentSpec(unit, isPlayer)
+function Tooltip:GetTalentSpec(unit)
 	local Spec
 
-	if not unit or (isPlayer) then
+	if not unit then
 		Spec = GetSpecialization()
 	else
 		Spec = GetInspectSpecialization(unit)
 	end
 
-	if(Spec ~= nil and Spec > 0) then
-		if (unit) and (not isPlayer) then
+	if (Spec ~= nil and Spec > 0) then
+		if (unit) then
 			local Role = GetSpecializationRoleByID(Spec)
 
 			if (Role ~= nil) then
@@ -399,18 +397,12 @@ function Tooltip:OnTooltipSetUnit()
 
 				if (Unit and (CanInspect(Unit))) and (not (InspectFrame and InspectFrame:IsShown())) then
 					local LastInspectTime = GetTime() - LastInspectRequest
-
 					Tooltip.NextUpdate = (LastInspectTime > InspectFreq) and InspectDelay or (InspectFreq - LastInspectTime + InspectDelay)
-
 					Tooltip:Show()
 				end
 			else
-				local Best, Current, PVP = GetAverageItemLevel()
-
+				local Current = GetAverageItemLevel()
 				ILevel = math_floor(Current) or UNKNOWN
-				MAXILevel = math_floor(Best) or UNKNOWN
-				PVPILevel = math_floor(PVP) or UNKNOWN
-
 				TalentSpec = Tooltip:GetTalentSpec() or NONE
 			end
 		end
@@ -460,16 +452,8 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and IsShiftKeyDown()) then
-		if Unit == "player" then
-			GameTooltip:AddLine(" ") -- We really need this to keep it clean and not bunched up!
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..CURRENTLY_EQUIPPED .."): |cff3eea23"..ILevel.."|r")
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..PVP.."): |cff3eea23"..PVPILevel.."|r")
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL.." ("..MAXIMUM.."): |cff3eea23"..MAXILevel.."|r")
-		else
-			GameTooltip:AddLine(" ") -- We really need this to keep it clean and not bunched up! (Target)
-			GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
-		end
-
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
 		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
 	end
 
@@ -555,6 +539,71 @@ function Tooltip:Skin()
 	Tooltip.SetColor(self)
 end
 
+hooksecurefunc(GameTooltip, "SetUnitAura", function(self, unit, index, filter)
+	local _, _, _, _, _, _, _, caster, _, _, id = UnitAura(unit, index, filter)
+	if id and C.Tooltip.SpellID then
+		if caster then
+			local name = UnitName(caster)
+			local _, class = UnitClass(caster)
+			local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+			self:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(ID, id), format("|c%s%s|r", color.colorStr, name))
+		else
+			self:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
+		end
+
+		self:Show()
+	end
+end)
+
+function Tooltip:OnTooltipSetSpell()
+	local id = select(3, self:GetSpell())
+	if not id or not C.Tooltip.SpellID then return end
+
+	local displayString = ("|cFFCA3C3C%s|r %d"):format(ID, id)
+	local lines = self:NumLines()
+	local isFound
+	for i = 1, lines do
+		local line = _G[("GameTooltipTextLeft%d"):format(i)]
+		if line and line:GetText() and line:GetText():find(displayString) then
+			isFound = true;
+			break
+		end
+	end
+
+	if not isFound then
+		self:AddLine(displayString)
+		self:Show()
+	end
+end
+
+hooksecurefunc("SetItemRef", function(link)
+	if string_find(link, "^spell:") and C.Tooltip.SpellID then
+		local id = string_sub(link, 7)
+		ItemRefTooltip:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
+		ItemRefTooltip:Show()
+	end
+end)
+
+function Tooltip:OnTooltipSetItem()
+	local _, Link = self:GetItem()
+	local ItemCount = GetItemCount(Link)
+	local Left = " "
+	local Right = " "
+
+	if Link ~= nil and C.Tooltip.SpellID then
+		Left = (("|cFFCA3C3C%s|r %s"):format(ID, Link)):match(":(%w+)")
+	end
+
+	if C.Tooltip.ItemCount then
+		Right = ("|cFFCA3C3C%s|r %d"):format("Count", ItemCount)
+	end
+
+	if Left ~= " " or Right ~= " " then
+		self:AddLine(" ")
+		self:AddDoubleLine(Left, Right)
+	end
+end
+
 function Tooltip:OnValueChanged()
 	if (not C.Tooltip.HealthValue) then
 		return
@@ -596,6 +645,8 @@ function Tooltip:Enable()
 		if Tooltip == GameTooltip then
 			Tooltip:HookScript("OnUpdate", self.OnUpdate)
 			Tooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
+			Tooltip:HookScript("OnTooltipSetItem", self.OnTooltipSetItem)
+			Tooltip:HookScript("OnTooltipSetSpell", self.OnTooltipSetSpell)
 		end
 
 		Tooltip:HookScript("OnShow", self.Skin)

@@ -254,11 +254,7 @@ L.Raid = {
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "您的狀態:已完成",
-	AchievementIncomplete = "您的狀態:未完成",
-	AchievementStatus = "您的狀態:",
 	ItemCount = "物品數量:",
-	ItemID = "物品ID:",
 	SpellID = "法術ID:"
 }
 

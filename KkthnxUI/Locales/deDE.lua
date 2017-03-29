@@ -254,12 +254,8 @@ L.Raid = {
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "Dein Status: Abgeschlossen am ",
-	AchievementIncomplete = "Dein Status: Unvollständig",
-	AchievementStatus = "Dein Status:",
-	ItemCount = "Gegenstandsanzahl:",
-	ItemID = "Gegenstands-ID:",
-	SpellID = "Zauber-ID:"
+	SpellID = "Zauber-ID:",
+	ItemCount = "Item count:",
 }
 
 L.WatchFrame = {

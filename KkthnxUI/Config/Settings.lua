@@ -70,7 +70,6 @@ C["Auras"] = {
 	["HideDebuffs"] = false,
 	["Animation"] = false,
 	["BuffsPerRow"] = 12,
-	["CastBy"] = false,
 }
 
 -- Chat
@@ -237,14 +236,13 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
-	["Achievements"] = false,
 	["Cursor"] = false,
 	["Enable"] = true,
 	["HealthValue"] = true,
 	["ItemCount"] = false,
 	["ItemIcon"] = false,
-	["Rank"] = true,
 	["SpellID"] = false,
+	["Rank"] = true,
 	["Talents"] = false,
 }
 

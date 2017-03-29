@@ -15,33 +15,33 @@ local UnitName = _G.UnitName
 local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
 
+local GetSpecializationInfo = _G.GetSpecializationInfo
+
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_RELOADUI2, SLASH_RELOADUI1, newVersion, Spec
 
 -- Check role to return what role the player is.
 local function CheckRole()
-	local Tank = "Tank"
-	local Melee = "Melee"
-	local Caster = "Caster"
-	local Healer = "Healer"
-
-	local Roles = {
-		["DEATHKNIGHT"] = {Tank, Melee, Melee},
-		["DEMONHUNTER"] = {Melee, Tank},
-		["DRUID"] = {Caster, Melee, Tank, Healer},
-		["HUNTER"] = {Melee, Melee, Melee},
-		["MAGE"] = {Caster, Caster, Caster},
-		["MONK"] = {Tank, Healer, Melee},
-		["PALADIN"] = {Healer, Tank, Melee},
-		["PRIEST"] = {Healer, Healer, Caster},
-		["ROGUE"] = {Melee, Melee, Melee},
-		["SHAMAN"] = {Caster, Melee, Healer},
-		["WARLOCK"] = {Caster, Caster, Caster},
-		["WARRIOR"] = {Melee, Melee, Tank}
-	}
-
 	local Spec = GetSpecialization(Spec) or nil
 	local Class = select(2, UnitClass("player"))
+
+	if not Spec or not Class then return end
+
+	local Roles = {
+		["DEATHKNIGHT"] = {"Tank", "Melee", "Melee"},
+		["DEMONHUNTER"] = {"Melee", "Tank"},
+		["DRUID"] = {"Caster", "Melee", "Tank", "Healer"},
+		["HUNTER"] = {"Melee", "Melee", "Melee"},
+		["MAGE"] = {"Caster", "Caster", "Caster"},
+		["MONK"] = {"Tank", "Healer", "Melee"},
+		["PALADIN"] = {"Healer", "Tank", "Melee"},
+		["PRIEST"] = {"Healer", "Healer", "Caster"},
+		["ROGUE"] = {"Melee", "Melee", "Melee"},
+		["SHAMAN"] = {"Caster", "Melee", "Healer"},
+		["WARLOCK"] = {"Caster", "Caster", "Caster"},
+		["WARRIOR"] = {"Melee", "Melee", "Tank"}
+	}
+
 	return Roles[Class][Spec] or nil
 end
 
@@ -93,7 +93,7 @@ end
 
 -- Register events for CheckRole function.
 local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
+Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 Loading:RegisterEvent("PLAYER_TALENT_UPDATE")
 Loading:RegisterEvent("CHARACTER_POINTS_CHANGED")

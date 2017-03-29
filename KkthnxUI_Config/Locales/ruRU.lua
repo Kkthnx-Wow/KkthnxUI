@@ -90,7 +90,6 @@ UIConfigLocal.DataBarsReputationWidth = "Ширина полосы репута�
 UIConfigLocal.Auras = "Ауры"
 UIConfigLocal.AurasAnimation = "Анимировать появление аур"..PerformanceSlight
 UIConfigLocal.AurasBuffsPerRow = "Установить количество баффов в ряду"
-UIConfigLocal.AurasCastBy = "Показывать, кто наложил ауру в подсказке"
 UIConfigLocal.AurasConsolidate = "Объединять ауры"
 UIConfigLocal.AurasEnable = "Включить ауры"
 UIConfigLocal.AurasFlash = "Подсвечивать ауры когда их эффект заканчивается"..PerformanceSlight
@@ -226,16 +225,15 @@ UIConfigLocal.SkinsSpy = "Включить скин Spy"
 UIConfigLocal.SkinsWeakAuras = "Включить скин WeakAuras"
 
 -- Подсказка
-UIConfigLocal.Tooltip = "Подсказка"
-UIConfigLocal.TooltipAchievements = "Сравнивать достижения в подсказке"
-UIConfigLocal.TooltipCursor = "Подсказка над курсором"
-UIConfigLocal.TooltipEnable = "Включить подсказку"
-UIConfigLocal.TooltipHealthValue = "Числовое значение здоровья"
-UIConfigLocal.TooltipItemCount = "Количество предметов"
-UIConfigLocal.TooltipItemIcon = "Иконка предмета в подсказке"
-UIConfigLocal.TooltipRank = "Display targets guild rank on tooltip when shift is held down"
-UIConfigLocal.TooltipSpellID = "ID заклинаний"
-UIConfigLocal.TooltipTalents = "Отображать специализацию игрока и уровень предметов в подсказке"
+UIConfigLocal.Tooltip = "Tooltip"
+UIConfigLocal.TooltipCursor = "Tooltip be anchored to mouse cursor"
+UIConfigLocal.TooltipEnable = "Enable tooltip"
+UIConfigLocal.TooltipHealthValue = "Numeral health value"
+UIConfigLocal.TooltipItemCount = "Display how many of a certain item you have on you"
+UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
+UIConfigLocal.TooltipRank = "Display guild ranks if a unit is guilded."
+UIConfigLocal.TooltipSpellID = "Display the spell or item ID when mousing over a spell or item tooltip."
+UIConfigLocal.TooltipTalents = "Display the players talent spec and item level in the tooltip, this may not instantly update when mousing over players"
 
 -- Рамки Юнитов
 UIConfigLocal.Unitframe = "Рамки Юнитов"

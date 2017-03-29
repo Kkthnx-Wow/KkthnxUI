@@ -7,12 +7,8 @@ local string_format = string.format
 
 -- Wow API
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
-local C_Reputation_GetFactionParagonInfo
-local C_Reputation_IsFactionParagon
-if K.WoWBuild >= 23623 then --7.2
-	C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
-	C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
-end
+local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
+local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip, UNKNOWN
@@ -64,11 +60,9 @@ local function UpdateReputationBar()
 	local FactionStandingLabelUnknown = UNKNOWN
 	local Name, ID, Min, Max, Value, factionID = GetWatchedFactionInfo()
 
-	if K.WoWBuild >= 23623 then -- 7.2
-		if (C_Reputation_IsFactionParagon(ID)) then
-			local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
-			Min, Max, Value = 0, Threshold, CurrentValue
-		end
+	if (C_Reputation_IsFactionParagon(ID)) then
+		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
+		Min, Max, Value = 0, Threshold, CurrentValue
 	end
 
 	if not Name then
@@ -98,11 +92,9 @@ end
 ReputationBar:SetScript("OnEnter", function(self)
 	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
 
-	if K.WoWBuild >= 23623 then -- 7.2
-		if (C_Reputation_IsFactionParagon(ID)) then
-			local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
-			Min, Max, Value = 0, Threshold, CurrentValue
-		end
+	if (C_Reputation_IsFactionParagon(ID)) then
+		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
+		Min, Max, Value = 0, Threshold, CurrentValue
 	end
 
 	GameTooltip:ClearLines()

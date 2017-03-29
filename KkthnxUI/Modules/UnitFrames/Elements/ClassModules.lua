@@ -174,9 +174,9 @@ function ClassModule:ShardsBar(self)
 		WarlockPowerFrame:SetPoint("TOP", self, "BOTTOM", 29, -2)
 		WarlockPowerFrame:SetFrameStrata("LOW")
 		for i = 1, 5 do
-			local shard = _G["WarlockPowerFrameShard"..i]
+			local shard = _G["WarlockPowerFrameShard"..i] -- Changed in 7.2
 			if C.Blizzard.ColorTextures == true then
-				select(5, shard:GetRegions()):SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
+				-- select(5, shard:GetRegions()):SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 			end
 		end
 

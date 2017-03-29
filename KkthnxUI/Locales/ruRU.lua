@@ -255,11 +255,7 @@ L.Raid = {
 
 -- Tooltip Localization
 L.Tooltip = {
-	AchievementComplete = "Ваш статус: Завершено на ",
-	AchievementIncomplete = "Ваш статус: Незавершено",
-	AchievementStatus = "Ваш статус:",
 	ItemCount = "Количество предметов:",
-	ItemID = "ID предмета:",
 	SpellID = "ID заклинания:"
 }
 

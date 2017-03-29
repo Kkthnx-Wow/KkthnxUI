@@ -89,7 +89,6 @@ UIConfigLocal.DataBarsReputationWidth = "Reputation bar width"
 UIConfigLocal.Auras = "Auras"
 UIConfigLocal.AurasAnimation = "Show a 'pop in' animation on auras"..PerformanceSlight
 UIConfigLocal.AurasBuffsPerRow = "Set the number of buffs to show before creating a new row"
-UIConfigLocal.AurasCastBy = "Show who cast an aura in its tooltip"
 UIConfigLocal.AurasConsolidate = "Consolidate Auras"
 UIConfigLocal.AurasEnable = "Enable Auras"
 UIConfigLocal.AurasFlash = "Flash auras when their duration is low"..PerformanceSlight
@@ -228,15 +227,14 @@ UIConfigLocal.SkinsWeakAuras = "WeakAuras"
 
 -- Tooltip
 UIConfigLocal.Tooltip = "Tooltip"
-UIConfigLocal.TooltipAchievements = "Comparing achievements in tooltip"
-UIConfigLocal.TooltipCursor = "Tooltip above cursor"
+UIConfigLocal.TooltipCursor = "Tooltip be anchored to mouse cursor"
 UIConfigLocal.TooltipEnable = "Enable tooltip"
 UIConfigLocal.TooltipHealthValue = "Numeral health value"
-UIConfigLocal.TooltipItemCount = "Item count"
+UIConfigLocal.TooltipItemCount = "Display how many of a certain item you have on you"
 UIConfigLocal.TooltipItemIcon = "Item icon in tooltip"
-UIConfigLocal.TooltipRank = "Display targets guild rank on tooltip when shift is held down"
-UIConfigLocal.TooltipSpellID = "Spell ID"
-UIConfigLocal.TooltipTalents = "Display player specialization and ilevel in tooltip"
+UIConfigLocal.TooltipRank = "Display guild ranks if a unit is guilded."
+UIConfigLocal.TooltipSpellID = "Display the spell or item ID when mousing over a spell or item tooltip."
+UIConfigLocal.TooltipTalents = "Display the players talent spec and item level in the tooltip, this may not instantly update when mousing over players"
 
 -- Unitframe
 UIConfigLocal.Unitframe = "Unit Frames"

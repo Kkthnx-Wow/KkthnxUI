@@ -440,7 +440,7 @@ local function CreateUnitLayout(self, unit)
 	local data = GetData(self.MatchUnit)
 
 	if C.Unitframe.Castbars then
-		 K.CreateCastBar(self)
+		K.CreateCastBar(self)
 	end
 
 	-- Textures
@@ -546,8 +546,8 @@ local function CreateUnitLayout(self, unit)
 	end
 
 	-- Afk /offline timer, using frequentUpdates function from oUF tags
-	if (self.IsPartyFrame and  C.Raidframe.ShowNotHereTimer) then
-		self.NotHere = self.Health:CreateFontString(nil, "OVERLAY")
+	if (self.IsPartyFrame and C.Raidframe.ShowNotHereTimer) then
+		self.NotHere = self:CreateFontString(nil, "OVERLAY")
 		self.NotHere:SetPoint("CENTER", self.Name, "RIGHT", -4, 0)
 		self.NotHere:SetFont(C.Media.Font, 10)
 		self.NotHere:SetShadowOffset(K.Mult, -K.Mult)
