@@ -58,10 +58,10 @@ end)
 local function UpdateReputationBar()
 	local isFriend, friendText, standingLabel
 	local FactionStandingLabelUnknown = UNKNOWN
-	local Name, ID, Min, Max, Value, factionID = GetWatchedFactionInfo()
+	local Name, ID, Min, Max, Value, FactionID = GetWatchedFactionInfo()
 
-	if (C_Reputation_IsFactionParagon(ID)) then
-		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
+	if (C_Reputation_IsFactionParagon(FactionID)) then
+		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(FactionID)
 		Min, Max, Value = 0, Threshold, CurrentValue
 	end
 
@@ -90,10 +90,10 @@ local function UpdateReputationBar()
 end
 
 ReputationBar:SetScript("OnEnter", function(self)
-	local Name, ID, Min, Max, Value = GetWatchedFactionInfo()
+	local Name, ID, Min, Max, Value, FactionID = GetWatchedFactionInfo()
 
-	if (C_Reputation_IsFactionParagon(ID)) then
-		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(ID)
+	if (C_Reputation_IsFactionParagon(FactionID)) then
+		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(FactionID)
 		Min, Max, Value = 0, Threshold, CurrentValue
 	end
 
