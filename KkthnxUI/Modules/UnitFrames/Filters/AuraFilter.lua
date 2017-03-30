@@ -103,6 +103,7 @@ local BaseAuras = {
 	[63436] = 3, -- Thunder Bluff Champion"s Pennant
 	[63501] = 3, -- Argent Crusade Champion"s Pennant
 	[71041] = 3, -- Dungeon Deserter
+	[71909] = 3, -- Heartbroken
 	[72968] = 3, -- Precious's Ribbon
 	[80354] = 3, -- Timewarp
 	[8326] = 3, -- Ghost

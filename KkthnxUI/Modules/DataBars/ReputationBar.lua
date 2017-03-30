@@ -77,6 +77,7 @@ local function UpdateReputationBar()
 		end
 
 		local Text = string_format("%s: %d%% [%s]", Name, ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
+
 		if C.DataBars.InfoText then
 			ReputationBar.Text:SetText(Text)
 		else
@@ -101,7 +102,10 @@ ReputationBar:SetScript("OnEnter", function(self)
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	GameTooltip:AddLine(string_format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
-	GameTooltip:AddLine(string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100))
+
+	if Min ~= Max then
+		GameTooltip:AddLine(string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100))
+	end
 
 	GameTooltip:Show()
 end)

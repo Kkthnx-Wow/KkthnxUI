@@ -121,7 +121,7 @@ do
 		GHOST = "Geist"
 	end
 
-	local tagtable = {
+	local HealthTagTable = {
 		NUMERIC = {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
 		BOTH	= {TEXT_MINMAX, TEXT_LONG, TEXT_MAX},
 		PERCENT = {TEXT_SHORT, TEXT_PERCENT, TEXT_PERCENT},
@@ -130,11 +130,12 @@ do
 	}
 
 	function K.Health_PostUpdate(Health, unit, cur, max)
-		if not unit then return end -- Blizz bug in 7.1
-
-		local absent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD
 		local self = Health:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
+
+		if (not unit or self.unit ~= unit) then
+			return
+		end
 
 		if self.Portrait then
 			UpdatePortraitColor(self, unit, cur, max)
@@ -144,15 +145,15 @@ do
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
-		if absent then
+		local IsAbsent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD
+		if IsAbsent then
+			Health:SetValue(0)
 			Health:SetStatusBarColor(0.5, 0.5, 0.5)
 			if Health.Value then
-				Health.Value:SetText(absent)
+				Health.Value:SetText(IsAbsent)
 			end
 			return
 		end
-
-		if not Health.Value then return end
 
 		if not cur then
 			cur = UnitHealth(unit)
@@ -162,18 +163,18 @@ do
 		if uconfig.HealthTag == "DISABLE" then
 			Health.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][1], cur, max, 1, 1, 1)
+			SetValueText(Health.Value, HealthTagTable[uconfig.HealthTag][1], cur, max, 1, 1, 1)
 		elseif cur < max then
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][2], cur, max, 1, 1, 1)
+			SetValueText(Health.Value, HealthTagTable[uconfig.HealthTag][2], cur, max, 1, 1, 1)
 		else
-			SetValueText(Health.Value, tagtable[uconfig.HealthTag][3], cur, max, 1, 1, 1)
+			SetValueText(Health.Value, HealthTagTable[uconfig.HealthTag][3], cur, max, 1, 1, 1)
 		end
 	end
 end
 
 -- PostPower update
 do
-	local tagtable = {
+	local PowerTagTable = {
 		NUMERIC	= {TEXT_MINMAX, TEXT_SHORT, TEXT_MAX},
 		PERCENT	= {TEXT_SHORT, TEXT_PERCENT, TEXT_PERCENT},
 		MINIMAL	= {TEXT_SHORT, TEXT_PERCENT, TEXT_NONE},
@@ -184,33 +185,34 @@ do
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 		if max == 0 then
-			Power.Value:SetText(nil)
-			return
+			return self.Power:Hide()
+		else
+			self.Power:Show()
 		end
 
-		if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) or (max == 0) then
-			Power:SetValue(0) -- Does this bug event exsit still? Where health and power sometimes dont show properly when dead?
+		if UnitIsDeadOrGhost(unit) then
+			Power:SetValue(0)
 			if Power.Value then
 				Power.Value:SetText(nil)
 			end
 			return
 		end
 
-		if not Power.Value then return end
-
 		if not cur then
 			max = UnitPower(unit)
 			cur = UnitPowerMax(unit) or 1
 		end
 
+		if not Power.Value then return end
+
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][1], cur, max, 1, 1, 1)
+			SetValueText(Power.Value, PowerTagTable[uconfig.PowerTag][1], cur, max, 1, 1, 1)
 		elseif cur < max then
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][2], cur, max, 1, 1, 1)
+			SetValueText(Power.Value, PowerTagTable[uconfig.PowerTag][2], cur, max, 1, 1, 1)
 		else
-			SetValueText(Power.Value, tagtable[uconfig.PowerTag][3], cur, max, 1, 1, 1)
+			SetValueText(Power.Value, PowerTagTable[uconfig.PowerTag][3], cur, max, 1, 1, 1)
 		end
 	end
 end

@@ -40,6 +40,7 @@ local GetTime = _G.GetTime
 local hooksecurefunc = _G.hooksecurefunc
 local ID = _G.ID
 local InCombatLockdown = _G.InCombatLockdown
+local InspectFrame = _G.InspectFrame
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGuild = _G.IsInGuild
@@ -51,7 +52,6 @@ local MAXIMUM = _G.MAXIMUM
 local NotifyInspect = _G.NotifyInspect
 local PVP = _G.PVP
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local RaidColors = _G.RAID_CLASS_COLORS
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 local UnitClass = _G.UnitClass
@@ -63,7 +63,6 @@ local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsDND = _G.UnitIsDND
-local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitLevel = _G.UnitLevel
@@ -82,13 +81,13 @@ local Tooltip = CreateFrame("Frame")
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
-local ILevel, TalentSpec, LastUpdate = 0, "", 30
-local InspectDelay = 0.2
-local InspectFreq = 2
+
+-- Tooltip inspect stufffffs
+local ItemLevel, TalentSpec, LastUpdate = 0, "", 30
 local InspectCache = {}
 local LastInspectRequest = 0
-local Short = K.ShortValue
-local Texture = C.Media.Texture
+local InspectDelay = 0.2
+local InspectFreq = 2
 
 Tooltip.ItemRefTooltip = ItemRefTooltip
 
@@ -96,14 +95,14 @@ Tooltip.Tooltips = {
 	GameTooltip,
 	ItemRefShoppingTooltip1,
 	ItemRefShoppingTooltip2,
-	-- ItemRefShoppingTooltip3,
+	ItemRefShoppingTooltip3,
 	ShoppingTooltip1,
 	ShoppingTooltip2,
-	-- ShoppingTooltip3,
+	ShoppingTooltip3,
 	WorldMapTooltip,
 	WorldMapCompareTooltip1,
 	WorldMapCompareTooltip2,
-	-- WorldMapCompareTooltip3,
+	WorldMapCompareTooltip3,
 	ItemRefTooltip,
 }
 
@@ -116,23 +115,20 @@ local Classification = {
 	normal = "",
 }
 
-local SlotName = {
+Tooltip.SlotName = {
 	"Head","Neck","Shoulder","Back","Chest","Wrist",
 	"Hands","Waist","Legs","Feet","Finger0","Finger1",
 	"Trinket0","Trinket1","MainHand","SecondaryHand"
 }
 
-
 function Tooltip:CreateAnchor()
 	local Movers = K.Movers
 
 	local Anchor = CreateFrame("Frame", "TooltipAnchor", UIParent)
-	Anchor:SetSize(200, 36)
+	Anchor:SetSize(130, 36)
 	Anchor:SetFrameStrata("TOOLTIP")
-	Anchor:SetFrameLevel(20)
-	Anchor:SetClampedToScreen(true)
+	Anchor:SetFrameLevel(Anchor:GetFrameLevel() + 400)
 	Anchor:SetPoint(unpack(C.Position.Tooltip))
-	Anchor:SetMovable(true)
 
 	self.Anchor = Anchor
 
@@ -157,7 +153,7 @@ function Tooltip:GetColor(unit)
 
 	if (UnitIsPlayer(unit) and not UnitHasVehicleUI(unit)) then
 		local Class = select(2, UnitClass(unit))
-		local Color = RaidColors[Class]
+		local Color = RAID_CLASS_COLORS[Class]
 
 		if (not Color) then
 			return
@@ -183,18 +179,18 @@ function Tooltip:GetItemLevel(unit)
 	local ArtifactEquipped = false
 	local TotalSlots = 16
 
-	for i = 1, #SlotName do
-		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(SlotName[i])))
+	for i = 1, #Tooltip.SlotName do
+		local ItemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(Tooltip.SlotName[i])))
 
 		if (ItemLink ~= nil) then
 			local _, _, Rarity, _, _, _, _, _, EquipLoc = GetItemInfo(ItemLink)
 
-			--Check if we have an artifact equipped in main hand
+			-- Check if we have an artifact equipped in main hand
 			if (EquipLoc and EquipLoc == "INVTYPE_WEAPONMAINHAND" and Rarity and Rarity == 6) then
 				ArtifactEquipped = true
 			end
 
-			--If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
 			if (not ArtifactEquipped or (ArtifactEquipped and EquipLoc and EquipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
 				local ItemLevel
 
@@ -222,21 +218,22 @@ function Tooltip:GetItemLevel(unit)
 	return math_floor(Total / Item)
 end
 
-function Tooltip:GetTalentSpec(unit)
+function Tooltip:GetTalentSpec(unit, isPlayer)
 	local Spec
 
-	if not unit then
+	if not unit or (isPlayer) then
 		Spec = GetSpecialization()
 	else
 		Spec = GetInspectSpecialization(unit)
 	end
 
-	if (Spec ~= nil and Spec > 0) then
-		if (unit) then
+	if (Spec and Spec ~= nil and Spec > 0) then
+		if (unit) and (not isPlayer) then
 			local Role = GetSpecializationRoleByID(Spec)
 
 			if (Role ~= nil) then
 				local _, Name = GetSpecializationInfoByID(Spec)
+
 				return Name
 			end
 		else
@@ -280,14 +277,14 @@ Tooltip:SetScript("OnEvent", function(self, event, GUID)
 		return
 	end
 
-	local ILVL = self:GetItemLevel("mouseover")
+	local ItemLevel = self:GetItemLevel("mouseover")
 	local TalentSpec = self:GetTalentSpec("mouseover")
 	local CurrentTime = GetTime()
 	local MatchFound
 
 	for i, Cache in ipairs(InspectCache) do
 		if Cache.GUID == GUID then
-			Cache.ItemLevel = ILVL
+			Cache.ItemLevel = ItemLevel
 			Cache.TalentSpec = TalentSpec
 			Cache.LastUpdate = math_floor(CurrentTime)
 
@@ -300,7 +297,7 @@ Tooltip:SetScript("OnEvent", function(self, event, GUID)
 	if (not MatchFound) then
 		local GUIDInfo = {
 			["GUID"] = GUID,
-			["ItemLevel"] = ILVL,
+			["ItemLevel"] = ItemLevel,
 			["TalentSpec"] = TalentSpec,
 			["LastUpdate"] = math_floor(CurrentTime)
 		}
@@ -376,9 +373,9 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (UnitIsPlayer(Unit)) then
-		if (C.Tooltip.Talents and IsShiftKeyDown()) then
+		if C.Tooltip.Talents then
 
-			ILevel = "..."
+			ItemLevel = "..."
 			TalentSpec = "..."
 
 			if (Unit ~= "player") then
@@ -389,7 +386,7 @@ function Tooltip:OnTooltipSetUnit()
 					local Cache = InspectCache[i]
 
 					if Cache.GUID == Tooltip.CurrentGUID then
-						ILevel = Cache.ItemLevel or "..."
+						ItemLevel = Cache.ItemLevel or "..."
 						TalentSpec = Cache.TalentSpec or "..."
 						LastUpdate = Cache.LastUpdate and math_abs(Cache.LastUpdate - math_floor(GetTime())) or 30
 					end
@@ -402,14 +399,16 @@ function Tooltip:OnTooltipSetUnit()
 				end
 			else
 				local Current = GetAverageItemLevel()
-				ILevel = math_floor(Current) or UNKNOWN
+
+				ItemLevel = math_floor(Current) or UNKNOWN
+
 				TalentSpec = Tooltip:GetTalentSpec() or NONE
 			end
 		end
 		if (UnitIsAFK(Unit)) then
-			self:AppendText((" %s"):format("|cffff0000".. CHAT_FLAG_AFK .."|r"))
+			self:AppendText((" %s"):format("|cffff0000"..CHAT_FLAG_AFK.."|r"))
 		elseif UnitIsDND(Unit) then
-			self:AppendText((" %s"):format("|cffe7e716".. CHAT_FLAG_DND .."|r"))
+			self:AppendText((" %s"):format("|cffe7e716"..CHAT_FLAG_DND.."|r"))
 		end
 	end
 
@@ -448,13 +447,13 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (C.Tooltip.HealthValue and self.Health and self.MaxHealth) then
-		HealthBar.Text:SetText(Short(Health) .. " / " .. Short(MaxHealth))
+		HealthBar.Text:SetText(K.ShortValue(Health) .. " / " .. K.ShortValue(MaxHealth))
 	end
 
-	if (C.Tooltip.Talents and UnitIsPlayer(Unit) and IsShiftKeyDown()) then
+	if (C.Tooltip.Talents and IsShiftKeyDown()) and type(Level) == "number" and Level > 10 then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(STAT_AVERAGE_ITEM_LEVEL..": |cff3eea23"..ILevel.."|r")
-		GameTooltip:AddLine(SPECIALIZATION..": |cff3eea23"..TalentSpec.."|r")
+		GameTooltip:AddDoubleLine(SPECIALIZATION, TalentSpec, nil, nil, nil, 0/255, 255/255, 16/255)
+		GameTooltip:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, ItemLevel, nil, nil, nil, 0/255, 255/255, 16/255)
 	end
 
 	self.fadeOut = nil
@@ -473,10 +472,9 @@ function Tooltip:SetColor()
 
 	local Reaction = Unit and UnitReaction(Unit, "player")
 	local Player = Unit and UnitIsPlayer(Unit)
-	local Friend = Unit and UnitIsFriend("player", Unit)
 	local R, G, B
 
-	if Player and Friend then
+	if Player then
 		local Class = select(2, UnitClass(Unit))
 		local Color = K.Colors.class[Class]
 		if Color then -- thanks to liquidbase for this fix.
@@ -585,16 +583,16 @@ hooksecurefunc("SetItemRef", function(link)
 end)
 
 function Tooltip:OnTooltipSetItem()
-	local _, Link = self:GetItem()
+	local Item, Link = self:GetItem()
 	local ItemCount = GetItemCount(Link)
 	local Left = " "
 	local Right = " "
 
-	if Link ~= nil and C.Tooltip.SpellID then
+	if Link ~= nil and C.Tooltip.SpellID and IsShiftKeyDown() then
 		Left = (("|cFFCA3C3C%s|r %s"):format(ID, Link)):match(":(%w+)")
 	end
 
-	if C.Tooltip.ItemCount then
+	if C.Tooltip.ItemCount and IsShiftKeyDown() then
 		Right = ("|cFFCA3C3C%s|r %d"):format("Count", ItemCount)
 	end
 
@@ -628,7 +626,7 @@ function Tooltip:OnValueChanged()
 	if (Value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
 		self.Text:SetText("|cffd94545"..DEAD.."|r")
 	else
-		self.Text:SetText(Short(Value) .. " / " .. Short(Max))
+		self.Text:SetText(K.ShortValue(Value) .. " / " .. K.ShortValue(Max))
 	end
 end
 
@@ -656,7 +654,7 @@ function Tooltip:Enable()
 	end
 
 	HealthBar:SetScript("OnValueChanged", self.OnValueChanged)
-	HealthBar:SetStatusBarTexture(Texture)
+	HealthBar:SetStatusBarTexture(C.Media.Texture)
 	HealthBar:CreateShadow()
 	HealthBar:ClearAllPoints()
 	HealthBar:SetPoint("BOTTOMLEFT", HealthBar:GetParent(), "TOPLEFT", 4, 2)
