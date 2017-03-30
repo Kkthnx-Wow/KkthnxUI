@@ -71,7 +71,6 @@ function KkthnxUIAuras:OnUpdate(elapsed)
 	else
 		local Text = K.FormatTime(TimeLeft)
 		local r, g, b = K.ColorGradient(self.TimeLeft / self.Dur, 1, 0, 0, 1, 1, 0, 0, 1, 0)
-		-- self.Duration:SetFormattedText(("%s%s|r"):format(TimeColors[formatid], TimeFormats[formatid][2]), timervalue)
 
 		if(TimeLeft < 60.5) then
 			if C.Auras.Flash then
@@ -189,10 +188,9 @@ function KkthnxUIAuras:Skin()
 	local FontSize = C.Media.Font_Size
 	local FontStyle = C.Media.Font_Style
 
-	local Icon = self:CreateTexture(nil, "BORDER")
+	local Icon = self:CreateTexture(nil, "BACKGROUND", 7)
 	Icon:SetTexCoord(unpack(K.TexCoords))
 	Icon:SetInside()
-	Icon:SetDrawLayer("BORDER", 0)
 
 	local Count = self:CreateFontString(nil, "OVERLAY")
 	Count:SetFont(Font, FontSize, FontStyle)

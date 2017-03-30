@@ -47,15 +47,17 @@ local function StyleNormalButton(self)
 	count:ClearAllPoints()
 	count:SetPoint("BOTTOMRIGHT", 0, 2)
 	count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	count:SetShadowOffset(0, 0)
 
 	if btname then
 		if C.ActionBar.Macro == true then
 			btname:ClearAllPoints()
 			btname:SetPoint("BOTTOM", 0, 2)
 			btname:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
+			btname:SetShadowOffset(0, 0)
 			btname:SetWidth(C.ActionBar.ButtonSize)
-			btname:SetVertexColor(1, 1, 1)
 		else
+			btname:SetText("")
 			btname:Kill()
 		end
 	end
@@ -64,10 +66,12 @@ local function StyleNormalButton(self)
 		hotkey:ClearAllPoints()
 		hotkey:SetPoint("TOPRIGHT", 0, -2)
 		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		hotkey:SetShadowOffset(0, 0)
 		hotkey:SetWidth(C.ActionBar.ButtonSize - 1)
 		hotkey.ClearAllPoints = K.Noop
 		hotkey.SetPoint = K.Noop
 	else
+		hotkey:SetText("")
 		hotkey:Kill()
 	end
 
@@ -75,13 +79,20 @@ local function StyleNormalButton(self)
 		if self:GetHeight() ~= C.ActionBar.ButtonSize and not InCombatLockdown() and not name:match("ExtraAction") then
 			self:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
 		end
+
+		if (name:match("Extra")) then
+			button.Pushed = true
+		end
+
 		button:CreateBackdrop()
 		button.backdrop:SetOutside()
 
+		button:UnregisterEvent("ACTIONBAR_SHOWGRID")
+		button:UnregisterEvent("ACTIONBAR_HIDEGRID")
+
 		icon:SetTexCoord(unpack(K.TexCoords))
-		icon:SetPoint("TOPLEFT", button, 2, -2)
-		icon:SetPoint("BOTTOMRIGHT", button, -2, 2)
-		icon:SetDrawLayer("BORDER", 0)
+		icon:SetInside()
+		icon:SetDrawLayer("BACKGROUND", 7)
 
 		button.isSkinned = true
 	end
@@ -113,7 +124,8 @@ local function StyleNormalButton(self)
 
 	if normal then
 		normal:ClearAllPoints()
-		normal:SetOutside()
+		normal:SetPoint("TOPLEFT")
+		normal:SetPoint("BOTTOMRIGHT")
 	end
 end
 

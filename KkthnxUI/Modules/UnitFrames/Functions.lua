@@ -59,21 +59,21 @@ function K.MultiCheck(check, ...)
 end
 
 local function UpdatePortraitColor(self, unit, min, max)
-    if (not UnitIsConnected(unit)) then
-        self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-    elseif (UnitIsDead(unit)) then
-        self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-    elseif (UnitIsGhost(unit)) then
-        self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-    elseif (max == 0 or min/max * 100 < 25) then
-        if (UnitIsPlayer(unit)) then
-            if (unit ~= 'player') then
-                self.Portrait:SetVertexColor(1, 0, 0, 0.7)
-            end
-        end
-    else
-        self.Portrait:SetVertexColor(1, 1, 1, 1)
-    end
+	if (not UnitIsConnected(unit)) then
+		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+	elseif (UnitIsDead(unit)) then
+		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+	elseif (UnitIsGhost(unit)) then
+		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+	elseif (max == 0 or min/max * 100 < 25) then
+		if (UnitIsPlayer(unit)) then
+			if (unit ~= 'player') then
+				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+			end
+		end
+	else
+		self.Portrait:SetVertexColor(1, 1, 1, 1)
+	end
 end
 
 local TEXT_PERCENT, TEXT_SHORT, TEXT_LONG, TEXT_MINMAX, TEXT_MAX, TEXT_DEF, TEXT_NONE = 0, 1, 2, 3, 4, 5, 6
@@ -130,6 +130,8 @@ do
 	}
 
 	function K.Health_PostUpdate(Health, unit, cur, max)
+		if not Health.Value then return end
+
 		local self = Health:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
@@ -145,19 +147,14 @@ do
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
-		local IsAbsent = not UnitIsConnected(unit) and PLAYER_OFFLINE or UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD
-		if IsAbsent then
+		if not UnitIsConnected(unit) then
 			Health:SetValue(0)
-			Health:SetStatusBarColor(0.5, 0.5, 0.5)
-			if Health.Value then
-				Health.Value:SetText(IsAbsent)
-			end
-			return
-		end
 
-		if not cur then
-			cur = UnitHealth(unit)
-			max = UnitHealthMax(unit) or 1
+			return Health.Value:SetText(PLAYER_OFFLINE)
+		elseif UnitIsDeadOrGhost(unit) then
+			Health:SetValue(0)
+
+			return Health.Value:SetText(DEAD)
 		end
 
 		if uconfig.HealthTag == "DISABLE" then
@@ -181,29 +178,17 @@ do
 	}
 
 	function K.Power_PostUpdate(Power, unit, cur, max)
+		if not Power.Value then return end
 		local self = Power:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 		if max == 0 then
-			return self.Power:Hide()
-		else
-			self.Power:Show()
-		end
-
-		if UnitIsDeadOrGhost(unit) then
+			return Power.Value:SetText(nil)
+		elseif UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
 			Power:SetValue(0)
-			if Power.Value then
-				Power.Value:SetText(nil)
-			end
-			return
-		end
 
-		if not cur then
-			max = UnitPower(unit)
-			cur = UnitPowerMax(unit) or 1
+			return Power.Value:SetText(nil)
 		end
-
-		if not Power.Value then return end
 
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)
