@@ -5,7 +5,6 @@ if C.Raidframe.Enable ~= true then return end
 local _G = _G
 local string_format = string.format
 local table_insert = table.insert
-local unpack = unpack
 
 -- Wow API
 local GetThreatStatusColor = _G.GetThreatStatusColor
@@ -172,14 +171,14 @@ local function CreateRaidLayout(self, unit)
 	-- Health text
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("TOP", self.Health, "CENTER", 0, 4)
-	self.Health.Value:SetFont(C.Media.Font, 11)
-	self.Health.Value:SetShadowOffset(K.Mult, -K.Mult)
+	self.Health.Value:SetFont(C.Media.Font, 11, C.Raidframe.Outline and "OUTLINE" or "")
+	self.Health.Value:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 
 	-- Name text
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOM", self.Health, "CENTER", 0, 3)
-	self.Name:SetFont(C.Media.Font, C.Media.Font_Size)
-	self.Name:SetShadowOffset(K.Mult, -K.Mult)
+	self.Name:SetFont(C.Media.Font, C.Media.Font_Size, C.Raidframe.Outline and "OUTLINE" or "")
+	self.Name:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 	self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameVeryShort]")
 
 	-- Power bar
@@ -203,44 +202,45 @@ local function CreateRaidLayout(self, unit)
 		UpdatePower(self, _, unit)
 	end
 
-	-- Heal prediction
-	self.Absorb = {
-		texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-		tile = true,
-		drawLayer = {"BACKGROUND", 4},
-		colour = {.3, .7, 1},
-		alpha = .5
-	}
-
 	do
+		-- Heal prediction
+		self.Absorb = {
+			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+			tile = true,
+			drawLayer = {"BACKGROUND", 4},
+			colour = {.3, .7, 1},
+			alpha = .5
+		}
+
 		local myBar = CreateFrame("StatusBar", nil, self.Health)
 		myBar:SetStatusBarTexture(C.Media.Texture)
 		myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-		myBar:SetPoint("TOP")
-		myBar:SetPoint("BOTTOM")
-		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
-		myBar:SetStatusBarColor(0, 1, .5, .5)
+		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 		myBar:SetWidth(self:GetWidth())
+		myBar:SetStatusBarColor(0, 1, .5, .5)
+		myBar:SetMinMaxValues(0, 1)
+		myBar:Hide()
 		myBar.Smooth = C.Raidframe.Smooth
 
 		local otherBar = CreateFrame("StatusBar", nil, self.Health)
 		otherBar:SetStatusBarTexture(C.Media.Texture)
 		otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-		otherBar:SetPoint("TOP")
-		otherBar:SetPoint("BOTTOM")
-		otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
-		otherBar:SetStatusBarColor(0, 1, 0, .5)
+		otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+		otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 		otherBar:SetWidth(self:GetWidth())
+		otherBar:SetStatusBarColor(0, 1, 0, .5)
+		otherBar:Hide()
 		otherBar.Smooth = C.Raidframe.Smooth
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
 		healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-		healAbsorbBar:SetPoint("TOP")
-		healAbsorbBar:SetPoint("BOTTOM")
-		healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
-		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 		healAbsorbBar:SetWidth(self:GetWidth())
+		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+		healAbsorbBar:Hide()
 		healAbsorbBar.Smooth = C.Raidframe.Smooth
 
 		self.HealPrediction = {
@@ -343,8 +343,8 @@ local function CreateRaidLayout(self, unit)
 	if (C.Raidframe.ShowRolePrefix) then
 		self.LFDRoleText = self.Health:CreateFontString(nil, "ARTWORK")
 		self.LFDRoleText:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
-		self.LFDRoleText:SetFont(C.Media.Font, 10)
-		self.LFDRoleText:SetShadowOffset(K.Mult, -K.Mult)
+		self.LFDRoleText:SetFont(C.Media.Font, 10, C.Raidframe.Outline and "OUTLINE" or "")
+		self.LFDRoleText:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 		self:Tag(self.LFDRoleText, "[KkthnxUI:RaidRole]")
 	end
 

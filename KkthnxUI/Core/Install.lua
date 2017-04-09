@@ -4,7 +4,6 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 local print = print
 local string_format = string.format
-local unpack, select = unpack, select
 
 -- Wow API
 local ChangeChatColor = _G.ChangeChatColor
@@ -179,28 +178,28 @@ end
 
 function KkthnxUIInstall:CVarSetup()
 	SetCVar("alwaysShowActionBars", 1)
-	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
-	SetCVar("chatMouseScroll", 1)
-	SetCVar("lockActionBars", 1)
-	SetCVar("screenshotQuality", 10)
-	SetCVar("showTutorials", 0)
-	SetCVar("SpamFilter", 0)
-	SetCVar("statusTextDisplay", "BOTH")
-	SetCVar("UberTooltips", 1)
-	SetCVar("WholeChatWindowClickable", 0)
 	SetCVar("autoOpenLootHistory", 0)
 	SetCVar("autoQuestWatch", 1)
+	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
+	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
 	SetCVar("countdownForCooldowns", 0)
+	SetCVar("lockActionBars", 1)
 	SetCVar("nameplateShowFriendlyNPCs", 1)
 	SetCVar("nameplateShowSelf", 0)
 	SetCVar("removeChatDelay", 1)
+	SetCVar("screenshotQuality", 10)
 	SetCVar("showArenaEnemyFrames", 0)
 	SetCVar("ShowClassColorInNameplate", 1)
+	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
+	SetCVar("SpamFilter", 0)
+	SetCVar("statusTextDisplay", "BOTH")
 	SetCVar("threatWarning", 3)
+	SetCVar("UberTooltips", 1)
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
+	SetCVar("WholeChatWindowClickable", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()

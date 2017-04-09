@@ -4,7 +4,6 @@ if C.ActionBar.Enable ~= true then return end
 -- Lua API
 local _G = _G
 local string_gsub = string.gsub
-local unpack = unpack
 
 -- Wow API
 local GetFlyoutID = _G.GetFlyoutID

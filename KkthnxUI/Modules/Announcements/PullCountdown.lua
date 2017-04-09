@@ -3,14 +3,11 @@ if C.Announcements.PullCountdown ~= true then return end
 
 -- Lua API
 local _G = _G
-local format = string.format
+local string_format = string.format
 
 -- Wow API
 local UnitName = _G.UnitName
 local SendChatMessage = _G.SendChatMessage
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SLASH_PULLCOUNTDOWN1
 
 -- Pull Countdown(by Dridzt)
 local frame = CreateFrame("Frame", "PullCountdown")
@@ -33,7 +30,7 @@ local function pull(self, elapsed)
 		target = ""
 	end
 	if not firstdone then
-		SendChatMessage(format(L.Announce.PCMessage, target, tostring(delay)), K.CheckChat(true))
+		SendChatMessage(string_format(L.Announce.PCMessage, target, tostring(delay)), K.CheckChat(true))
 		firstdone = true
 		delay = delay - 1
 	end
@@ -67,4 +64,4 @@ SlashCmdList.PULLCOUNTDOWN = function(msg)
 		frame.Pull()
 	end
 end
-SLASH_PULLCOUNTDOWN1 = "/pc"
+_G.SLASH_PULLCOUNTDOWN1 = "/pc"

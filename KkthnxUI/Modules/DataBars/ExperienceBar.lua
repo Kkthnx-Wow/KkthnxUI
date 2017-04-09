@@ -16,7 +16,7 @@ local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CreateFrame, XP, TUTORIAL_TITLE26, GameTooltip
 
 local Bars = 20
@@ -30,8 +30,7 @@ local function XPBackdrop(f)
 	b:SetPoint("TOPLEFT", -1, 1)
 	b:SetPoint("BOTTOMRIGHT", 1, -1)
 	b:SetBackdrop({bgFile = C.Media.Blank})
-	-- b:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	b:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4]) -- This is faster
+	b:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 	if f:GetFrameLevel() - 1 >= 0 then
 		b:SetFrameLevel(f:GetFrameLevel() - 1)
@@ -66,7 +65,6 @@ ExperienceBarRested:SetParent(ExperienceBar)
 ExperienceBarRested:SetAllPoints()
 ExperienceBarRested:SetStatusBarTexture(C.Media.Texture)
 ExperienceBarRested:SetStatusBarColor(unpack(C.DataBars.ExperienceRestedColor))
-ExperienceBarRested:SetAlpha(.5)
 
 ExperienceBar.Spark = ExperienceBar:CreateTexture(nil, "ARTWORK", nil, 1)
 ExperienceBar.Spark:SetSize(C.DataBars.ExperienceHeight, C.DataBars.ExperienceHeight * 2)
@@ -108,7 +106,7 @@ local function UpdateExperienceBar()
 		if C.DataBars.InfoText then
 			ExperienceBar.Text:SetText(Text)
 		else
-			ExperienceBar.Text:SetText(nil)
+			ExperienceBar.Text:SetText("")
 		end
 
 		ExperienceBar:SetMinMaxValues(0, Max)
@@ -138,10 +136,14 @@ ExperienceBar:SetScript("OnEnter", function(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-	GameTooltip:AddLine(format("|cff0090FF"..XP..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
+	GameTooltip:AddLine("Experience")
+	GameTooltip:AddLine(" ")
+
+	GameTooltip:AddDoubleLine("XP:", format(" %d / %d (%d%%)", Current, Max, Current/Max * 100), 1, 1, 1)
+	GameTooltip:AddDoubleLine("Remaining:", format(" %d (%d%% - %d ".."Bars"..")", Max - Current, (Max - Current) / Max * 100, 20 * (Max - Current) / Max), 1, 1, 1)
 
 	if (IsRested == 1 and Rested) then
-		GameTooltip:AddLine(format("|cff4BAF4C"..TUTORIAL_TITLE26..": +%d (%d%%)|r", Rested, Rested / Max * 100))
+		GameTooltip:AddDoubleLine("Rested:", format("+%d (%d%%)", Rested, Rested / Max * 100), 1, 1, 1)
 	end
 
 	GameTooltip:Show()
@@ -154,11 +156,24 @@ if C.DataBars.ExperienceFade then
 	ExperienceBar.Tooltip = true
 end
 
-ExperienceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ExperienceBar:SetScript("OnEvent", function(self, event, ...)
+	return self[event] and self[event](self, event, ...)
+end)
+function ExperienceBar:PLAYER_LEVEL_UP(level)
+	local maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
+	if (level ~= maxLevel) and C.DataBars.ExperienceEnable then
+		UpdateExperienceBar("PLAYER_LEVEL_UP", level)
+	else
+		ExperienceBar:Hide()
+	end
+end
+
+ExperienceBar:RegisterEvent("PLAYER_LOGIN")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
 ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
+ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
 -- be careful with this.
 ExperienceBar:UnregisterEvent("UPDATE_EXPANSION_LEVEL")
 ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)

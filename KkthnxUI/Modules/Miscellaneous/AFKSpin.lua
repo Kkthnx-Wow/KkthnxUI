@@ -55,31 +55,13 @@ local UnitRace = _G.UnitRace
 local AFK = LibStub("AceAddon-3.0"):NewAddon("AFK", "AceEvent-3.0", "AceTimer-3.0")
 
 local stats = {
-	1042,	-- Number of hugs
-	1045,	-- Total cheers
-	1047,	-- Total facepalms
-	1065,	-- Total waves
-	1066,	-- Total times LOL"d
+	60,		-- Total deaths
+	94,		-- Quests abandoned
+	97,		-- Daily quests completed
+	98,		-- Quests completed
 	107,	-- Creatures killed
-	1088,	-- Kael"thas Sunstrider kills (Tempest Keep)
-	1098,	-- Onyxia kills (Onyxia"s Lair)
-	10981, -- Legion dungeons completed (final boss defeated)
-	10984, -- Legion raids completed (final boss defeated)
-	10986, -- Legion raid boss defeated the most
 	112,	-- Deaths from drowning
-	11236, -- ClassHall Missions completed
-	11237, -- ClassHall Rare Missions completed
 	114,	-- Deaths from falling
-	11407, -- Odyn defeats (Raid Finder Trial of Valor)
-	1149,	-- Talent tree respecs
-	1197,	-- Total kills
-	1198,	-- Total kills that grant experience or honor
-	1487,	-- Killing Blows
-	1491,	-- Battleground Killing Blows
-	1518,	-- Fish caught
-	1716,	-- Battleground with the most Killing Blows
-	2219, -- Total deaths in 5-player Heroic dungeons
-	318, -- Total deaths from opposite faction
 	319,	-- Duels won
 	320,	-- Duels lost
 	321,	-- Total raid and dungeon deaths
@@ -91,27 +73,43 @@ local stats = {
 	339,	-- Mounts owned
 	342,	-- Epic items acquired
 	349,	-- Flight paths taken
+	353,	-- Number of times hearthed
 	377,	-- Most factions at Exalted
-	4687,	-- Victories over the Lich King (Icecrown 25 player)
-	5692,	-- Rated battlegrounds played
-	5694,	-- Rated battlegrounds won
 	588,	-- Total Honorable Kills
-	60,		-- Total deaths
-	6167,	-- Deathwing kills (Dragon Soul)
-	7399,	-- Challenge mode dungeons completed
-	8278,	-- Pet Battles won at max level
 	837,	-- Arenas won
 	838,	-- Arenas played
 	839,	-- Battlegrounds played
 	840,	-- Battlegrounds won
-	8632,	-- Garrosh Hellscream (LFR Siege of Orgrimmar)
 	919,	-- Gold earned from auctions
 	931,	-- Total factions encountered
 	932,	-- Total 5-player dungeons entered
 	933,	-- Total 10-player raids entered
 	934,	-- Total 25-player raids entered
-	97,		-- Daily quests completed
-	98,		-- Quests completed
+	1042,	-- Number of hugs
+	1045,	-- Total cheers
+	1047,	-- Total facepalms
+	1065,	-- Total waves
+	1066,	-- Total times LOL'd
+	1149,	-- Talent tree respecs
+	1197,	-- Total kills
+	1198,	-- Total kills that grant experience or honor
+	1339,	-- Mage portal taken most
+	1487,	-- Killing Blows
+	1491,	-- Battleground Killing Blows
+	1518,	-- Fish caught
+	1716,	-- Battleground with the most Killing Blows
+	2277,	-- Summons accepted
+	5692,	-- Rated battlegrounds played
+	5694,	-- Rated battlegrounds won
+	7399,	-- Challenge mode dungeons completed
+	8278,	-- Pet Battles won at max level
+	10060,	-- Garrison Followers recruited
+	10181,	-- Garrision Missions completed
+	10184,	-- Garrision Rare Missions completed
+	11234,	-- Class Hall Champions recruited
+	11235,	-- Class Hall Troops recruited
+	11236,	-- Class Hall Missions completed
+	11237,	-- Class Hall Rare Missions completed
 }
 
 -- Create Time
@@ -195,6 +193,13 @@ local function getSpec()
 	return string_format("%s", talent)
 end
 
+function AFK:UpdateStatMessage()
+	K.UIFrameFadeIn(self.AFKMode.statMsg.info, 1, 1, 0)
+	local createdStat = createStats()
+	self.AFKMode.statMsg.info:SetText(createdStat)
+	K.UIFrameFadeIn(self.AFKMode.statMsg.info, 1, 0, 1)
+end
+
 -- Simple-Timer for Stats
 local showTime = 5
 local total = 0
@@ -202,7 +207,7 @@ local function onUpdate(self, elapsed)
 	total = total + elapsed
 	if total >= showTime then
 		local createdStat = createStats()
-		self:AddMessage(createdStat)
+		self:SetText(createdStat)
 		self:FadeIn()
 		total = 0
 	end
@@ -238,6 +243,8 @@ function AFK:UpdateTimer()
 end
 
 function AFK:SetAFK(status)
+	if (InCombatLockdown()) then return end
+
 	if (status) then
 		local level = UnitLevel("player")
 		local race = UnitRace("player")
@@ -263,17 +270,19 @@ function AFK:SetAFK(status)
 		self.AFKMode.bottom.model.isIdle = nil
 		self.AFKMode.bottom.model:SetAnimation(67)
 		self.AFKMode.bottom.model.idleDuration = 40
+		self.statsTimer = self:ScheduleRepeatingTimer("UpdateStatMessage", 5)
 		self.startTime = GetTime()
 		self.timer = self:ScheduleRepeatingTimer("UpdateTimer", 1)
 
-		self.AFKMode.statMsginfo:Show()
+		self.AFKMode.statMsg.info:Show()
 
 		self.isAFK = true
 	elseif (self.isAFK) then
 		UIParent:Show()
 		self.AFKMode:Hide()
-		self.AFKMode.statMsginfo:Hide()
+		self.AFKMode.statMsg.info:Hide()
 		MoveViewLeftStop()
+		self:CancelTimer(self.statsTimer)
 		self:CancelTimer(self.timer)
 		self:CancelTimer(self.animTimer)
 		self.AFKMode.bottom.time:SetText("00:00")
@@ -467,23 +476,19 @@ function AFK:Initialize()
 	self.AFKMode.statMsg.lineBottom:SetSize(418, 7)
 	self.AFKMode.statMsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
 
-	self.AFKMode.statMsginfo = CreateFrame("ScrollingMessageFrame", "self.AFKModestatMsg.info", self.AFKMode.statMsg)
-	self.AFKMode.statMsginfo:SetFont(C.Media.Font, 17, C.Media.Font_Style)
-	self.AFKMode.statMsginfo:SetPoint("CENTER", self.AFKMode.statMsg, "CENTER", 0, 0)
-	self.AFKMode.statMsginfo:SetSize(800, 24)
-	self.AFKMode.statMsginfo:AddMessage(string_format("|cffb3b3b3%s|r", "Random Stats"))
-	self.AFKMode.statMsginfo:SetFading(true)
-	self.AFKMode.statMsginfo:SetFadeDuration(1)
-	self.AFKMode.statMsginfo:SetTimeVisible(4)
-	self.AFKMode.statMsginfo:SetJustifyH("CENTER")
-	self.AFKMode.statMsginfo:SetTextColor(1, 1, 1)
-	self.AFKMode.statMsginfo:SetScript("OnUpdate", onUpdate)
-	self.AFKMode.statMsginfo:Hide()
+	-- Random stats frame
+	self.AFKMode.statMsg.info = self.AFKMode.statMsg:CreateFontString(nil, 'OVERLAY')
+	self.AFKMode.statMsg.info:SetFont(C.Media.Font, 18, "OUTLINE")
+	self.AFKMode.statMsg.info:SetPoint("CENTER", self.AFKMode.statMsg, "CENTER", 0, -2)
+	self.AFKMode.statMsg.info:SetText(string_format("|cffb3b3b3%s|r", PAPERDOLL_SIDEBAR_STATS))
+	self.AFKMode.statMsg.info:SetJustifyH("CENTER")
+	self.AFKMode.statMsg.info:SetTextColor(0.7, 0.7, 0.7)
 
 	-- Move the factiongroup sign to the center
 	self.AFKMode.bottom.factionb = CreateFrame("Frame", nil, self.AFKMode) -- need this to upper the faction logo layer
 	self.AFKMode.bottom.factionb:SetPoint("BOTTOM", self.AFKMode.bottom, "TOP", 0, -40)
 	self.AFKMode.bottom.factionb:SetFrameStrata("MEDIUM")
+	self.AFKMode.bottom.factionb:SetFrameLevel(10)
 	self.AFKMode.bottom.factionb:SetSize(220, 220)
 	self.AFKMode.bottom.faction = self.AFKMode.bottom:CreateTexture(nil, "OVERLAY")
 	self.AFKMode.bottom.faction:ClearAllPoints()

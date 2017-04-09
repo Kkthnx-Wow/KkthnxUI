@@ -61,7 +61,7 @@ local UnitName = _G.UnitName
 -- GLOBALS: CriteriaAlertSystem, GuildChallengeAlertSystem, InvasionAlertSystem, GarrisonShipFollowerAlertSystem
 -- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
 -- GLOBALS: ExtraActionBarFrame, ExtraActionButton1, MoneyWonAlertSystem, StorePurchaseAlertSystem
--- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem
+-- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem, GridCreate
 
 -- Fixes the issue when the dialog to release spirit does not come up.
 SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end

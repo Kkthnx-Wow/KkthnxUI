@@ -3,14 +3,11 @@ if C.ActionBar.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local pairs = pairs
 
 -- Wow API
 local hooksecurefunc = _G.hooksecurefunc
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
-local SetCVar = _G.SetCVar
-local UIParent = _G.UIParent
 
 -- Global variables that we don't need to cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ActionBarController, MainMenuBar, MainMenuExpBar, ReputationWatchBar

@@ -3,16 +3,12 @@ if C.Announcements.Interrupt ~= true then return end
 
 -- Lua Wow
 local _G = _G
-local pairs = pairs
-local format = string.format
+local string_format = string.format
 
 -- Wow API
 local UnitGUID = _G.UnitGUID
 local SendChatMessage = _G.SendChatMessage
 local IsInGroup = _G.IsInGroup
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SLASH_ERROR1
 
 -- Interrupt announcement
 local Interrupts = CreateFrame("Frame")
@@ -23,8 +19,8 @@ Interrupts:SetScript("OnEvent", function(self, _, ...)
 	if not (event == "SPELL_INTERRUPT" and (sourceGUID == UnitGUID("player") or sourceGUID == UnitGUID("pet"))) then return end
 
 	if not inGroup then
-		SendChatMessage(format(L.Announce.Interrupted, destName, spellID, spellName), "EMOTE")
+		SendChatMessage(string_format(L.Announce.Interrupted, destName, spellID, spellName), "EMOTE")
 	else
-		SendChatMessage(format(L.Announce.Interrupted, destName, spellID, spellName), K.CheckChat())
+		SendChatMessage(string_format(L.Announce.Interrupted, destName, spellID, spellName), K.CheckChat())
 	end
 end)

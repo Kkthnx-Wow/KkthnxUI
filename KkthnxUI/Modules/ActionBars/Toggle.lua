@@ -7,11 +7,14 @@ local _G = _G
 -- Wow API
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local InCombatLockdown = _G.InCombatLockdown
+local LOCK = _G.LOCK
+local UIParent = _G.UIParent
+local UNLOCK = _G.UNLOCK
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIDataPerChar, ActionBarAnchor
 -- GLOBALS: Bar2Holder, Bar5Holder, RightActionBarAnchor, Bar3Holder, Bar4Holder, SplitBarRight
--- GLOBALS: SplitBarLeft, RightBarMouseOver, UIParent
+-- GLOBALS: SplitBarLeft, RightBarMouseOver
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
 

@@ -112,8 +112,6 @@ function Bags:SkinBagButton()
 	end
 
 	self:SetNormalTexture("")
-	self:SetPushedTexture("")
-	self:SetHighlightTexture("")
 	self:CreateBackdrop(true)
 	self.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	self:StyleButton()

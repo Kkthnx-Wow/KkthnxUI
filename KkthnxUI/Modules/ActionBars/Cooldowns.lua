@@ -5,7 +5,6 @@ if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("Cooldow
 local _G = _G
 local ceil = math.ceil
 local floor = math.floor
-local pairs = pairs
 local strfind = string.find
 
 -- Wow API
@@ -23,10 +22,10 @@ local threshold = C.Cooldown.Threshold
 
 local TimeColors = {
 	[0] = K.RGBToHex(0.4, 0.4, 1) or "|cfffefefe",
-	[1] = K.RGBToHex(0.4, 1, 1) or "|cfffefefe",
-	[2] = K.RGBToHex(1, 1, 1) or "|cfffefefe",
-	[3] = K.RGBToHex(1, 1, 0) or "|cfffefefe",
-	[4] = K.RGBToHex(1, 0, 0) or "|cfffe0000",
+	[1] = K.RGBToHex(0.4, 1, 1) or "|cff66ffff",
+	[2] = K.RGBToHex(1, 1, 1) or "|cffffffff",
+	[3] = K.RGBToHex(1, 1, 0) or "|cffffff00",
+	[4] = K.RGBToHex(1, 0, 0) or "|cffff0000",
 }
 
 local TimeFormats = {
@@ -137,10 +136,12 @@ local function Cooldown_Create(self)
 end
 
 local function Cooldown_Start(self, start, duration, charges, maxCharges)
+	if (self.noOCC) then return end
+
 	local remainingCharges = charges or 0
 
 	if self:GetName() and strfind(self:GetName(), "ChargeCooldown") then return end
-	if start > 0 and duration > MIN_DURATION and remainingCharges < NUM_CHARGES and (not self.noOCC) then
+	if start > 0 and duration > MIN_DURATION and remainingCharges < NUM_CHARGES then
 		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
 		timer.duration = duration

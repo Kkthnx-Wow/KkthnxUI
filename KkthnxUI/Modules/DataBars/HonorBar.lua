@@ -24,7 +24,7 @@ local UnitHonorMax = _G.UnitHonorMax
 local UnitLevel = _G.UnitLevel
 local UnitPrestige = _G.UnitPrestige
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: PVPFrame, PlayerTalentFrame, PVP_TALENTS_TAB, GameTooltip, HONOR, RANK, ToggleTalentFrame
 
 local Bars = 20
@@ -32,7 +32,7 @@ local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "HonorAnchor", UIParent)
 Anchor:SetSize(C.DataBars.HonorWidth, C.DataBars.HonorHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -48)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -50)
 Movers:RegisterFrame(Anchor)
 
 local HonorBar = CreateFrame("StatusBar", nil, UIParent)
@@ -41,6 +41,7 @@ HonorBar:SetSize(C.DataBars.HonorWidth, C.DataBars.HonorHeight)
 HonorBar:SetPoint("CENTER", HonorAnchor, "CENTER", 0, 0)
 HonorBar:SetStatusBarTexture(C.Media.Texture)
 HonorBar:SetStatusBarColor(unpack(C.DataBars.HonorColor))
+HonorBar:SetMinMaxValues(0, 325)
 
 HonorBar.Spark = HonorBar:CreateTexture(nil, "ARTWORK", nil, 1)
 HonorBar.Spark:SetSize(C.DataBars.HonorHeight, C.DataBars.HonorHeight * 2)
@@ -85,6 +86,15 @@ local function UpdateHonorBar(event, unit)
 		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
 		if Max == 0 then Max = 1 end
 
+		if (Level == LevelMax) then
+			-- Force the bar to full for the max level
+			HonorBar:SetMinMaxValues(0, 1)
+			HonorBar:SetValue(1)
+		else
+			HonorBar:SetMinMaxValues(0, Max)
+			HonorBar:SetValue(Current)
+		end
+
 		local Text = ""
 		if (CanPrestige()) then
 			Text = PVP_HONOR_PRESTIGE_AVAILABLE
@@ -97,7 +107,7 @@ local function UpdateHonorBar(event, unit)
 		if C.DataBars.InfoText then
 			HonorBar.Text:SetText(Text)
 		else
-			HonorBar.Text:SetText(nil)
+			HonorBar.Text:SetText("")
 		end
 
 		HonorBar:SetMinMaxValues(0, Max)
@@ -114,16 +124,21 @@ HonorBar:SetScript("OnEnter", function(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-	if Max == 0 then
+	GameTooltip:AddLine(HONOR)
+
+	GameTooltip:AddDoubleLine("Current Level:", Level, 1, 1, 1)
+	GameTooltip:AddLine(" ")
+
+	if (CanPrestige()) then
 		GameTooltip:AddLine(PVP_HONOR_PRESTIGE_AVAILABLE)
-		GameTooltip:AddLine(PVP_HONOR_XP_BAR_CANNOT_PRESTIGE_HERE)
+	elseif (Level == LevelMax) then
+		GameTooltip:AddLine(MAX_HONOR_LEVEL)
 	else
-		GameTooltip:AddLine(format("|cffdc4436"..HONOR..": %d / %d (%d%% - %d/%d)|r", Current, Max, Current / Max * 100, Bars - (Bars * (Max - Current) / Max), Bars))
-		GameTooltip:AddLine(format("|cffcacaca"..RANK..": %d / %d|r", Level, LevelMax))
-		GameTooltip:AddLine(format("|cffcacaca"..PVP_PRESTIGE_RANK_UP_TITLE..": %d|r", Prestige))
+		GameTooltip:AddDoubleLine("Honor XP:", format(" %d / %d (%d%%)", Current, Max, Current/Max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine("Honor Remaining:", format(" %d (%d%% - %d ".."Bars"..")", Max - Current, (Max - Current) / Max * 100, 20 * (Max - Current) / Max), 1, 1, 1)
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(L.DataBars.HonorLeftClick)
+	GameTooltip:AddLine(L.DataBars.HonorClick)
 
 	GameTooltip:Show()
 end)
@@ -135,9 +150,21 @@ if C.DataBars.HonorFade then
 	HonorBar.Tooltip = true
 end
 
-HonorBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+HonorBar:SetScript("OnEvent", function(self, event, ...)
+	return self[event] and self[event](self, event, ...)
+end)
+function HonorBar:PLAYER_LEVEL_UP(level)
+	if (C.DataBars.HonorEnable) then
+		UpdateHonorBar("PLAYER_LEVEL_UP", level)
+	else
+		HonorBar:Hide()
+	end
+end
+
+HonorBar:RegisterEvent("PLAYER_LOGIN")
 HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
 HonorBar:RegisterEvent("PLAYER_FLAGS_CHANGED")
+HonorBar:RegisterEvent("PLAYER_LEVEL_UP")
 HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

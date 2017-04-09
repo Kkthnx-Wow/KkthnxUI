@@ -7,13 +7,10 @@ local _G = _G
 local getmetatable = getmetatable
 local math_floor = math.floor
 local string_match = string.match
-local type = type
-local unpack, select = unpack, select
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
-local CUSTOM_CLASS_COLORS, RAID_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS, _G.RAID_CLASS_COLORS
-local UIParent = _G.UIParent
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
@@ -260,27 +257,48 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	return fs
 end
 
+local function FontTemplate(fs, font, fontSize, fontStyle)
+	fs.font = font
+	fs.fontSize = fontSize
+	fs.fontStyle = fontStyle
+
+	font = font or C.Media.Font
+	fontSize = fontSize or C.Media.Font_Size
+	fontStyle = fontStyle or "OUTLINE" or C.Media.Font_Style
+
+	fs:SetFont(font, fontSize, fontStyle)
+	if fontStyle and (fontStyle ~= "NONE") then
+		fs:SetShadowColor(0, 0, 0, 0.2)
+	else
+		fs:SetShadowColor(0, 0, 0, 1)
+	end
+	fs:SetShadowOffset((K.mult or 1), -(K.mult or 1))
+end
+
 local function StyleButton(button, noHover, noPushed, noChecked)
 	if button.SetHighlightTexture and not button.hover and not noHover then
 		local hover = button:CreateTexture()
-		hover:SetColorTexture(1, 1, 1, 0.3)
-		hover:SetInside()
+		hover:SetVertexColor(1, 1, 1, 0.4)
+		hover:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\StyleButton")
+		hover:SetInside(button, 1, 1)
 		button.hover = hover
 		button:SetHighlightTexture(hover)
 	end
 
 	if button.SetPushedTexture and not button.pushed and not noPushed then
 		local pushed = button:CreateTexture()
-		pushed:SetColorTexture(0.9, 0.8, 0.1, 0.3)
-		pushed:SetInside()
+		pushed:SetVertexColor(0.9, 0.8, 0.1, 0.4)
+		pushed:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\StyleButton")
+		pushed:SetInside(button, 1, 1)
 		button.pushed = pushed
 		button:SetPushedTexture(pushed)
 	end
 
 	if button.SetCheckedTexture and not button.checked and not noChecked then
 		local checked = button:CreateTexture()
-		checked:SetColorTexture(1, 1, 1, 0.3)
-		checked:SetInside()
+		checked:SetVertexColor(1, 1, 1, 0.4)
+		checked:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\StyleButton")
+		checked:SetInside(button, 1, 1)
 		button.checked = checked
 		button:SetCheckedTexture(checked)
 	end
@@ -365,6 +383,7 @@ local function AddAPI(object)
 	if not object.CreateBlizzShadow then mt.CreateBlizzShadow = CreateBlizzShadow end
 	if not object.StyleButton then mt.StyleButton = StyleButton end
 	if not object.FontString then mt.FontString = FontString end
+	if not object.FontTemplate then mt.FontTemplate = FontTemplate end
 	if not object.Kill then mt.Kill = Kill end
 	if not object.SkinButton then mt.SkinButton = SkinButton end
 	if not object.StripTextures then mt.StripTextures = StripTextures end

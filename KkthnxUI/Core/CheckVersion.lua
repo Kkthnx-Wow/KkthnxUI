@@ -2,7 +2,6 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local select = select
 local tostring = tostring
 
 -- Wow API

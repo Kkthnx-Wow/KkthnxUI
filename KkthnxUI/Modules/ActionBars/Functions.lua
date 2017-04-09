@@ -13,7 +13,6 @@ local GetPetActionInfo = _G.GetPetActionInfo
 local GetPetActionSlotUsable = _G.GetPetActionSlotUsable
 local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
-local InCombatLockdown = _G.InCombatLockdown
 local IsPetAttackAction = _G.IsPetAttackAction
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS

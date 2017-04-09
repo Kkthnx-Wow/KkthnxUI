@@ -41,7 +41,7 @@ function Mountz(groundmount, flyingmount, underwatermount)
 		return
 	end
 
-	if IsUsableSpell(59569) ~= true then
+	if IsUsableSpell(59569) ~= true and IsSpellKnown(34090) == true then
 		nofly = true
 	end
 

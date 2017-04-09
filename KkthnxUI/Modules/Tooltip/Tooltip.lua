@@ -5,11 +5,8 @@ if C.Tooltip.Enable ~= true then return end
 local _G = _G
 local math_abs = math.abs
 local math_floor = math.floor
-local pairs = pairs
-local select = select
 local table_remove = table.remove
 local format = string.format
-local unpack = unpack
 local string_find = string.find
 local string_sub = string.sub
 
@@ -20,6 +17,7 @@ local CHAT_FLAG_DND = _G.CHAT_FLAG_DND
 local ClearInspectPlayer = _G.ClearInspectPlayer
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local DEAD = _G.DEAD
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
 local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
@@ -49,9 +47,12 @@ local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
 local LEVEL = _G.LEVEL
 local MAXIMUM = _G.MAXIMUM
+local NONE = _G.NONE
 local NotifyInspect = _G.NotifyInspect
 local PVP = _G.PVP
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
+local TALENTS = _G.TALENTS
 local UIParent = _G.UIParent
 local UnitAura = _G.UnitAura
 local UnitClass = _G.UnitClass
@@ -71,18 +72,19 @@ local UnitPVPName = _G.UnitPVPName
 local UnitRace = _G.UnitRace
 local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
+local UNKNOWN = _G.UNKNOWN
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: DEAD, GameTooltip, GameTooltipTextLeft2, TooltipAnchor, GameTooltipTextLeft1
--- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth, SPECIALIZATION, ItemRefTooltip
--- GLOBALS: Health, InspectFrame, UNKNOWN, NONE, STAT_AVERAGE_ITEM_LEVEL, CURRENTLY_EQUIPPED
+-- GLOBALS: GameTooltip, GameTooltipTextLeft2, TooltipAnchor, GameTooltipTextLeft1
+-- GLOBALS: GameTooltipTextLeft1, GameTooltipTextLeft2, MaxHealth, ItemRefTooltip
+-- GLOBALS: Health, InspectFrame
 
 local Tooltip = CreateFrame("Frame")
 local BackdropColor = {0, 0, 0}
 local HealthBar = GameTooltipStatusBar
 local HealthBarBG = CreateFrame("Frame", "StatusBarBG", HealthBar)
 
--- Tooltip inspect stufffffs
+-- ItemLevel, TalentSpec
 local ItemLevel, TalentSpec, LastUpdate = 0, "", 30
 local InspectCache = {}
 local LastInspectRequest = 0
@@ -128,7 +130,7 @@ function Tooltip:CreateAnchor()
 	Anchor:SetSize(130, 36)
 	Anchor:SetFrameStrata("TOOLTIP")
 	Anchor:SetFrameLevel(Anchor:GetFrameLevel() + 400)
-	Anchor:SetPoint(unpack(C.Position.Tooltip))
+	Anchor:SetPoint(C.Position.Tooltip[1], C.Position.Tooltip[2], C.Position.Tooltip[3], C.Position.Tooltip[4], C.Position.Tooltip[5])
 
 	self.Anchor = Anchor
 
@@ -168,7 +170,7 @@ function Tooltip:GetColor(unit)
 			return
 		end
 
-		local Hex = K.RGBToHex(unpack(Color))
+		local Hex = K.RGBToHex(Color[1], Color[2], Color[3])
 
 		return Hex, Color[1], Color[2], Color[3]
 	end
@@ -196,7 +198,7 @@ function Tooltip:GetItemLevel(unit)
 
 				ItemLevel = GetDetailedItemLevelInfo(ItemLink)
 
-				if(ItemLevel and ItemLevel > 0) then
+				if (ItemLevel and ItemLevel > 0) then
 					Item = Item + 1
 					Total = Total + ItemLevel
 				end
@@ -211,33 +213,33 @@ function Tooltip:GetItemLevel(unit)
 		end
 	end
 
-	if(Total < 1 or Item < TotalSlots) then
+	if (Total < 1 or Item < TotalSlots) then
 		return
 	end
 
 	return math_floor(Total / Item)
 end
 
-function Tooltip:GetTalentSpec(unit, isPlayer)
+function Tooltip:GetTalentSpec(unit)
 	local Spec
 
-	if not unit or (isPlayer) then
+	if not unit then
 		Spec = GetSpecialization()
 	else
 		Spec = GetInspectSpecialization(unit)
 	end
 
-	if (Spec and Spec ~= nil and Spec > 0) then
-		if (unit) and (not isPlayer) then
+	if(Spec and Spec > 0) then
+		if (unit) then
 			local Role = GetSpecializationRoleByID(Spec)
 
-			if (Role ~= nil) then
-				local _, Name = GetSpecializationInfoByID(Spec)
+			if (Role) then
+				local Name = select(2, GetSpecializationInfoByID(Spec))
 
 				return Name
 			end
 		else
-			local _, Name = GetSpecializationInfo(Spec)
+			local Name = select(2, GetSpecializationInfo(Spec))
 
 			return Name
 		end
@@ -252,8 +254,11 @@ Tooltip:SetScript("OnUpdate", function(self, elapsed)
 
 	self.NextUpdate = (self.NextUpdate or 0) - elapsed
 
+	if (self.NextUpdate > 0) then return end
+
 	if (self.NextUpdate) <= 0 then
 		self:Hide()
+		ClearInspectPlayer()
 
 		local GUID = UnitGUID("mouseover")
 
@@ -373,7 +378,7 @@ function Tooltip:OnTooltipSetUnit()
 	end
 
 	if (UnitIsPlayer(Unit)) then
-		if C.Tooltip.Talents then
+		if (C.Tooltip.Talents and IsShiftKeyDown() and Level > 10) then
 
 			ItemLevel = "..."
 			TalentSpec = "..."
@@ -405,6 +410,7 @@ function Tooltip:OnTooltipSetUnit()
 				TalentSpec = Tooltip:GetTalentSpec() or NONE
 			end
 		end
+
 		if (UnitIsAFK(Unit)) then
 			self:AppendText((" %s"):format("|cffff0000"..CHAT_FLAG_AFK.."|r"))
 		elseif UnitIsDND(Unit) then
@@ -450,10 +456,11 @@ function Tooltip:OnTooltipSetUnit()
 		HealthBar.Text:SetText(K.ShortValue(Health) .. " / " .. K.ShortValue(MaxHealth))
 	end
 
-	if (C.Tooltip.Talents and IsShiftKeyDown()) and type(Level) == "number" and Level > 10 then
+	if (C.Tooltip.Talents and IsShiftKeyDown() and UnitIsPlayer(Unit) and Level > 10) then
+
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(SPECIALIZATION, TalentSpec, nil, nil, nil, 0/255, 255/255, 16/255)
-		GameTooltip:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, ItemLevel, nil, nil, nil, 0/255, 255/255, 16/255)
+		GameTooltip:AddDoubleLine(TALENTS, TalentSpec, nil, nil, nil, 0/255, 255/255, 16/255)
+		GameTooltip:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, ItemLevel, nil, nil, nil, 0/255, 255/255, 16/255) -- Use string ITEM_LEVEL_ABBR if you want this shorter.
 	end
 
 	self.fadeOut = nil
@@ -498,12 +505,23 @@ function Tooltip:SetColor()
 			R, G, B = GetItemQualityColor(Quality)
 			self:SetBackdropBorderColor(R, G, B)
 		else
-			local Color = K.Colors
-
-			HealthBar:SetStatusBarColor(unpack(K.Colors.reaction[5]))
+			HealthBar:SetStatusBarColor(K.Colors.reaction[5][1], K.Colors.reaction[5][2], K.Colors.reaction[5][3])
 			HealthBar:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 			self:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 		end
+	end
+end
+
+function Tooltip:CheckBackdropColor()
+	local r, g, b = GameTooltip:GetBackdropColor()
+	r = K.Round(r, 1)
+	g = K.Round(g, 1)
+	b = K.Round(b, 1)
+	local red, green, blue = C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3]
+	local alpha = C.Media.Backdrop_Color[4]
+
+	if(r ~= red or g ~= green or b ~= blue) then
+		GameTooltip:SetBackdropColor(red, green, blue, alpha)
 	end
 end
 
@@ -645,6 +663,9 @@ function Tooltip:Enable()
 			Tooltip:HookScript("OnTooltipSetUnit", self.OnTooltipSetUnit)
 			Tooltip:HookScript("OnTooltipSetItem", self.OnTooltipSetItem)
 			Tooltip:HookScript("OnTooltipSetSpell", self.OnTooltipSetSpell)
+			Tooltip:HookScript("OnSizeChanged", self.CheckBackdropColor)
+			Tooltip:HookScript("OnUpdate", self.CheckBackdropColor) --There has to be a more elegant way of doing this.
+			Tooltip:RegisterEvent("CURSOR_UPDATE", self.CheckBackdropColor)
 		end
 
 		Tooltip:HookScript("OnShow", self.Skin)

@@ -226,24 +226,10 @@ local function SetVirtualBorder(frame, r, g, b)
 	frame.backdrop:SetBackdropBorderColor(r, g, b)
 end
 
-local FormatTime = function(s)
-	local day, hour, minute = 86400, 3600, 60
-	if s >= day then
-		return string_format("%dd", math_floor(s / day + 0.5)), s % day
-	elseif s >= hour then
-		return string_format("%dh", math_floor(s / hour + 0.5)), s % hour
-	elseif s >= minute then
-		return string_format("%dm", math_floor(s / minute + 0.5)), s % minute
-	elseif s >= minute / 12 then
-		return math_floor(s + 0.5), (s * 100 - math_floor(s * 100)) / 100
-	end
-	return string_format("%.1f", s), (s * 100 - math_floor(s * 100)) / 100
-end
-
 local CreateAuraTimer = function(self, elapsed)
 	if self.timeLeft then
 		self.elapsed = (self.elapsed or 0) + elapsed
-		if self.elapsed >= 0.1 then
+		if self.elapsed >= .1 then
 			if not self.first then
 				self.timeLeft = self.timeLeft - self.elapsed
 			else
@@ -251,9 +237,13 @@ local CreateAuraTimer = function(self, elapsed)
 				self.first = false
 			end
 			if self.timeLeft > 0 then
-				local time = FormatTime(self.timeLeft)
+				local time = K.FormatTime(self.timeLeft)
 				self.remaining:SetText(time)
-				self.remaining:SetTextColor(1, 1, 1)
+				if self.timeLeft <= 2.5 then
+					self.remaining:SetTextColor(1, 0, 0)
+				else
+					self.remaining:SetTextColor(1, 1, 0)
+				end
 			else
 				self.remaining:Hide()
 				self:SetScript("OnUpdate", nil)
@@ -294,7 +284,7 @@ local function CreateAuraIcon(parent)
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
 
-	button.remaining = K.SetFontString(button, C.Media.Font, C.Media.Font_Size, C.Media.Font_Style, "CENTER")
+	button.remaining = K.SetFontString(button, C.Media.Font, C.Nameplates.FontSize, C.Media.Font_Style, "CENTER")
 	button.remaining:SetShadowOffset(0, 0)
 	button.remaining:SetPoint("CENTER", button, "CENTER", 1, 1)
 	button.remaining:SetJustifyH("CENTER")
@@ -302,7 +292,7 @@ local function CreateAuraIcon(parent)
 	button.count = button:CreateFontString(nil, "OVERLAY")
 	button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, 0)
 	button.count:SetJustifyH("RIGHT")
-	button.count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	button.count:SetFont(C.Media.Font, C.Nameplates.FontSize, C.Media.Font_Style)
 	button.count:SetShadowOffset(0, 0)
 
 	button.parent = CreateFrame("Frame", nil, button)
@@ -366,20 +356,20 @@ local function DebuffFilter(name, caster, spellId, nameplateShowPersonal, namepl
 		end
 	end
 
-	-- Star Augur Etraeus debuffs
-	if spellId == 205445 or spellId == 205429 or spellId == 216345 or spellId == 216344 then
-		local playermark = select(1, UnitDebuff("player", "Star Sign: Crab")) or nil
-		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Wolf")) or nil
-		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Dragon")) or nil
-		playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Hunter")) or nil
-
-		local unitmark = select(1, UnitDebuff(unit, "Star Sign: Crab")) or nil
-		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Wolf")) or nil
-		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Dragon")) or nil
-		unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Hunter")) or nil
-
-		return true, true
-	end
+	-- -- Star Augur Etraeus debuffs -- Pointless since patch 7.2
+	-- if spellId == 205445 or spellId == 205429 or spellId == 216345 or spellId == 216344 then
+	-- 	local playermark = select(1, UnitDebuff("player", "Star Sign: Crab")) or nil
+	-- 	playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Wolf")) or nil
+	-- 	playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Dragon")) or nil
+	-- 	playermark = playermark or select(1, UnitDebuff("player", "Star Sign: Hunter")) or nil
+	--
+	-- 	local unitmark = select(1, UnitDebuff(unit, "Star Sign: Crab")) or nil
+	-- 	unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Wolf")) or nil
+	-- 	unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Dragon")) or nil
+	-- 	unitmark = unitmark or select(1, UnitDebuff(unit, "Star Sign: Hunter")) or nil
+	--
+	-- 	return true, true
+	-- end
 
 	return false
 end
@@ -541,12 +531,6 @@ local function castColor(self, unit)
 	if C.Nameplates.CastUnitReaction and UnitReaction(unit, "player") then
 		t = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
-	-- if C.Nameplates.CastClassColor and UnitIsPlayer(unit) then
-	-- 	local _, class = UnitClass(unit)
-	-- 	t = K.Colors.class[class]
-	-- elseif C.Nameplates.CastUnitReaction and UnitReaction(unit, "player") then
-	-- 	t = K.Colors.reaction[UnitReaction(unit, "player")]
-	-- end
 
 	if (t) then
 		r, g, b = t[1], t[2], t[3]
@@ -650,7 +634,7 @@ local function StyleNamePlates(self, unit)
 	-- Create Health Text
 	if C.Nameplates.HealthValue == true then
 		self.Health.value = self.Health:CreateFontString(nil, "OVERLAY")
-		self.Health.value:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		self.Health.value:SetFont(C.Media.Font, C.Nameplates.FontSize * K.NoScaleMult, C.Media.Font_Style)
 		self.Health.value:SetShadowOffset(0, 0)
 		self.Health.value:SetPoint("RIGHT", self.Health, "RIGHT", 0, 0)
 		self:Tag(self.Health.value, "[KkthnxUI:NameplateHealth]")
@@ -674,7 +658,7 @@ local function StyleNamePlates(self, unit)
 
 	-- Create Name Text
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	self.Name:SetFont(C.Media.Font, C.Nameplates.FontSize * K.NoScaleMult, C.Media.Font_Style)
 	self.Name:SetShadowOffset(0, 0)
 	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
@@ -687,7 +671,7 @@ local function StyleNamePlates(self, unit)
 
 	-- Create Level
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	self.Level:SetFont(C.Media.Font, C.Nameplates.FontSize * K.NoScaleMult, C.Media.Font_Style)
 	self.Level:SetShadowOffset(0, 0)
 	self.Level:SetPoint("RIGHT", self.Health, "LEFT", -2, 0)
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:NameplateLevel] [KkthnxUI:ClassificationColor][shortclassification]")
@@ -718,7 +702,9 @@ local function StyleNamePlates(self, unit)
 	-- Create Cast Time Text
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
-	self.Castbar.Time:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+	self.Castbar.Time:SetFont(C.Media.Font, C.Nameplates.FontSize * K.NoScaleMult, C.Media.Font_Style)
+
+	self.Castbar.timeToHold = 0.4
 
 	self.Castbar.CustomTimeText = function(self, duration)
 		if self.channeling then
@@ -733,7 +719,7 @@ local function StyleNamePlates(self, unit)
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 		self.Castbar.Text:SetPoint("LEFT", self.Castbar, "LEFT", 3, 0)
 		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -1, 0)
-		self.Castbar.Text:SetFont(C.Media.Font, C.Media.Font_Size * K.NoScaleMult, C.Media.Font_Style)
+		self.Castbar.Text:SetFont(C.Media.Font, C.Nameplates.FontSize * K.NoScaleMult, C.Media.Font_Style)
 		self.Castbar.Text:SetShadowOffset(0, 0)
 		self.Castbar.Text:SetHeight(C.Media.Font_Size)
 		self.Castbar.Text:SetJustifyH("LEFT")
@@ -769,7 +755,7 @@ local function StyleNamePlates(self, unit)
 	-- Create Healer Icon
 	if C.Nameplates.HealerIcon == true then
 		self.HPHeal = self.Health:CreateFontString(nil, "OVERLAY")
-		self.HPHeal:SetFont(C.Media.Font, 32, C.Media.Font_Style)
+		self.HPHeal:SetFont(C.Media.Font, 32 * K.NoScaleMult, C.Media.Font_Style)
 		self.HPHeal:SetText("|cFFD53333+|r")
 		self.HPHeal:SetPoint("BOTTOM", self.Name, "TOP", 0, C.Nameplates.TrackAuras == true and 13 or 0)
 	end
@@ -795,35 +781,33 @@ local function StyleNamePlates(self, unit)
 		local myBar = CreateFrame("StatusBar", nil, self.Health)
 		myBar:SetStatusBarTexture(C.Media.Texture)
 		myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-		myBar:SetPoint("TOP")
-		myBar:SetPoint("BOTTOM")
-		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+		myBar:SetWidth(self.Health:GetWidth())
 		myBar:SetStatusBarColor(0, 1, .5, .5)
+		myBar:SetMinMaxValues(0, 1)
+		myBar:Hide()
 		myBar.Smooth = C.Nameplates.Smooth
 
 		local otherBar = CreateFrame("StatusBar", nil, self.Health)
 		otherBar:SetStatusBarTexture(C.Media.Texture)
 		otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-		otherBar:SetPoint("TOP")
-		otherBar:SetPoint("BOTTOM")
-		otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+		otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+		otherBar:SetWidth(self.Health:GetWidth())
 		otherBar:SetStatusBarColor(0, 1, 0, .5)
+		otherBar:Hide()
 		otherBar.Smooth = C.Nameplates.Smooth
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
 		healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-		healAbsorbBar:SetPoint("TOP")
-		healAbsorbBar:SetPoint("BOTTOM")
-		healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+		healAbsorbBar:SetWidth(self.Health:GetWidth())
 		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+		healAbsorbBar:Hide()
 		healAbsorbBar.Smooth = C.Nameplates.Smooth
-
-		self.Health:HookScript("OnSizeChanged", function(bar, width)
-			myBar:SetWidth(width)
-			otherBar:SetWidth(width)
-			healAbsorbBar:SetWidth(width)
-		end)
 
 		self.HealPrediction = {
 			myBar = myBar,

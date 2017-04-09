@@ -1,10 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 
--- Lua API
-local pairs = pairs
-local type = type
-local unpack = unpack
-
 local sections = {"TOPLEFT", "TOP", "TOPRIGHT", "RIGHT", "BOTTOMRIGHT", "BOTTOM", "BOTTOMLEFT", "LEFT"}
 
 local function SetBorderColor(self, r, g, b, a)

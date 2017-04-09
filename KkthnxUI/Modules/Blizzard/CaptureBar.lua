@@ -29,7 +29,8 @@ local function CaptureUpdate()
 end
 
 local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
+Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
 Loading:SetScript("OnEvent", function()
+	Loading:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	hooksecurefunc("UIParent_ManageFramePositions", CaptureUpdate)
 end)

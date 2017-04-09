@@ -3,28 +3,21 @@ if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local pairs = pairs
-local select = select
 local string_format = string.format
 local table_insert = table.insert
-local type = type
-local unpack = unpack
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
+local DEAD = _G.DEAD
 local GetSpellInfo = _G.GetSpellInfo
+local IsPlayerSpell = _G.IsPlayerSpell
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
-local UnitHealth = _G.UnitHealth
-local UnitHealthMax = _G.UnitHealthMax
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitPower = _G.UnitPower
-local UnitPowerMax = _G.UnitPowerMax
 local UnitSelectionColor = _G.UnitSelectionColor
-local DEAD = _G.DEAD
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
@@ -32,6 +25,50 @@ local DEAD = _G.DEAD
 local _, ns = ...
 local oUF = ns.oUF or _G.oUF
 local colors = K.Colors
+
+do
+	local DispelTypesByClass = {
+		PALADIN = {},
+		SHAMAN = {},
+		DRUID = {},
+		PRIEST = {},
+		MONK = {},
+	}
+
+	local ClassDispelTypes = CreateFrame("Frame")
+	ClassDispelTypes:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, event, ...) end)
+	ClassDispelTypes:RegisterEvent("SPELLS_CHANGED", function()
+		local dispelTypes = DispelTypesByClass[K.Class]
+
+		if dispelTypes then
+			if K.Class == "PALADIN" then
+				dispelTypes.Disease = IsPlayerSpell(4987) or IsPlayerSpell(213644) or nil -- Cleanse or Cleanse Toxins
+				dispelTypes.Magic = IsPlayerSpell(4987) or nil -- Cleanse
+				dispelTypes.Poison = dispelTypes.Disease
+			elseif K.Class == "SHAMAN" then
+				dispelTypes.Curse = IsPlayerSpell(51886) or IsPlayerSpell(77130) or nil -- Cleanse Spirit or Purify Spirit
+				dispelTypes.Magic = IsPlayerSpell(77130) or nil -- Purify Spirit
+			elseif K.Class == "DRUID" then
+				dispelTypes.Curse = IsPlayerSpell(2782) or IsPlayerSpell(88423) or nil -- Remove Corruption or Nature's Cure
+				dispelTypes.Magic = IsPlayerSpell(88423) or nil -- Nature's Cure
+				dispelTypes.Poison = dispelTypes.Curse
+			elseif K.Class == "PRIEST" then
+				dispelTypes.Disease = IsPlayerSpell(527) or nil -- Purify
+				dispelTypes.Magic = IsPlayerSpell(527) or IsPlayerSpell(32375) or nil -- Purify or Mass Dispel
+			elseif K.Class == "MONK" then
+				dispelTypes.Disease = IsPlayerSpell(115450) or nil -- Detox
+				dispelTypes.Magic = dispelTypes.Disease
+				dispelTypes.Poison = dispelTypes.Disease
+			end
+		end
+	end)
+
+	function K.IsDispellable(debuffType)
+		if not DispelTypesByClass[K.Class] then return end
+
+		return DispelTypesByClass[K.Class][debuffType]
+	end
+end
 
 function K.MatchUnit(unit)
 	if (unit and unit:match("vehicle")) then
@@ -130,8 +167,6 @@ do
 	}
 
 	function K.Health_PostUpdate(Health, unit, cur, max)
-		if not Health.Value then return end
-
 		local self = Health:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
@@ -148,13 +183,24 @@ do
 		end
 
 		if not UnitIsConnected(unit) then
-			Health:SetValue(0)
-
-			return Health.Value:SetText(PLAYER_OFFLINE)
+			local Color = K.Colors.disconnected
+			if Health then
+				-- Health:SetValue(0)
+				Health:SetStatusBarColor(0.5, 0.5, 0.5)
+				if Health.Value then
+					Health.Value:SetText(nil)
+				end
+			end
+			return Health.Value:SetFormattedText("|cff%02x%02x%02x%s|r", Color[1] * 255, Color[2] * 255, Color[3] * 255, PLAYER_OFFLINE)
 		elseif UnitIsDeadOrGhost(unit) then
-			Health:SetValue(0)
-
-			return Health.Value:SetText(DEAD)
+			local Color = K.Colors.disconnected
+			if Health then
+				Health:SetValue(0)
+				if Health.Value then
+					Health.Value:SetText(nil)
+				end
+			end
+			return Health.Value:SetFormattedText("|cff%02x%02x%02x%s|r", Color[1] * 255, Color[2] * 255, Color[3] * 255, UnitIsGhost(unit) and GHOST or DEAD)
 		end
 
 		if uconfig.HealthTag == "DISABLE" then
@@ -178,17 +224,27 @@ do
 	}
 
 	function K.Power_PostUpdate(Power, unit, cur, max)
-		if not Power.Value then return end
 		local self = Power:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 		if max == 0 then
-			return Power.Value:SetText(nil)
-		elseif UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit) then
-			Power:SetValue(0)
-
-			return Power.Value:SetText(nil)
+			if Power:IsShown() then
+				Power:Hide()
+			end
+			return
+		elseif not Power:IsShown() then
+			Power:Show()
 		end
+
+		if UnitIsDeadOrGhost(unit) then
+			Power:SetValue(0)
+			if Power.Value then
+				Power.Value:SetText(nil)
+			end
+			return
+		end
+
+		if not Power.Value then return end
 
 		if uconfig.PowerTag == "DISABLE" then
 			Power.Value:SetText(nil)

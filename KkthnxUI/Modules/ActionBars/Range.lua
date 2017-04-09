@@ -13,7 +13,7 @@ local IsUsableAction = _G.IsUsableAction
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: TOOLTIP_UPDATE_TIME
 
-local function Button_RangeUpdate(self)
+local function RangeUpdate(self)
 	local Icon = self.icon
 	local NormalTexture = self.NormalTexture
 	local ID = self.action
@@ -41,16 +41,16 @@ local function Button_RangeUpdate(self)
 	end
 end
 
-local function Button_RangeOnUpdate(self, elapsed)
+local function RangeOnUpdate(self, elapsed)
 	if (not self.rangeTimer) then
 		return
 	end
 
 	if (self.rangeTimer == TOOLTIP_UPDATE_TIME) then
-		Button_RangeUpdate(self)
+		RangeUpdate(self)
 	end
 end
 
-hooksecurefunc("ActionButton_OnUpdate", Button_RangeOnUpdate)
-hooksecurefunc("ActionButton_Update", Button_RangeUpdate)
-hooksecurefunc("ActionButton_UpdateUsable", Button_RangeUpdate)
+hooksecurefunc("ActionButton_OnUpdate", RangeOnUpdate)
+hooksecurefunc("ActionButton_Update", RangeUpdate)
+hooksecurefunc("ActionButton_UpdateUsable", RangeUpdate)

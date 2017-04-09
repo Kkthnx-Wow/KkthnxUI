@@ -102,6 +102,7 @@ K.DebuffWhiteList = {
 	[SpellName(106830)] = true, -- cat thrash
 	[SpellName(93402)] = true, -- sunfire
 	[SpellName(202347)] = true, -- stellar flare
+	[SpellName(197637)] = true, -- stellar empowerment
 	-- Control
 	[SpellName(339)] = true, -- entangling roots
 	[SpellName(6795)] = true, -- growl

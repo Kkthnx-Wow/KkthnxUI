@@ -2,20 +2,14 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local type = type
 
 -- Wow API
 local CompactRaidFrameManager_UpdateShown = _G.CompactRaidFrameManager_UpdateShown
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
-local SetCVar = _G.SetCVar
-local SetCVarBitfield = _G.SetCVarBitfield
 local StaticPopup_Show = _G.StaticPopup_Show
-local UnitAffectingCombat = _G.UnitAffectingCombat
 local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
-local GetCVarBool = _G.GetCVarBool
 local UIParent = _G.UIParent
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script

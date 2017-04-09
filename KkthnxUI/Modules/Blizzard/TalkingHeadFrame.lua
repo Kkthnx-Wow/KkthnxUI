@@ -50,10 +50,10 @@ local function TalkingHead_Init()
 			end
 
 			TalkingHeadFrame:ClearAllPoints()
-			TalkingHeadFrame:SetPoint(unpack(C.Position.TalkingHead))
-			Movers:RegisterFrame(TalkingHeadFrame)
+			TalkingHeadFrame:SetPoint(C.Position.TalkingHead[1], C.Position.TalkingHead[2], C.Position.TalkingHead[3], C.Position.TalkingHead[4], C.Position.TalkingHead[5])
+			TalkingHeadFrame:SetScale(FrameScale) -- Set the scale before we register the mover.
 
-			TalkingHeadFrame:SetScale(FrameScale)
+			Movers:RegisterFrame(TalkingHeadFrame)
 
 			isInit = true
 

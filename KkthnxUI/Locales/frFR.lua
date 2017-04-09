@@ -99,9 +99,9 @@ L.ToggleButton = {
 
 -- DataBars Localization
 L.DataBars = {
-	ArtifactClick = "Clique: Ouvre l'aperçu de l'artefact",
-	ArtifactRemaining = "|cffe6cc80Remaining: %s|r",
-	HonorLeftClick = "|cffcacacaLeft Clique: Ouvre le menu d'honneur|r",
+	ArtifactClick = "Toggle Artifact Frame",
+	HonorClick = "Toggle Honor Frame",
+	ReputationClick = "Toggle Reputation Frame",
 }
 
 -- DataText Localization

@@ -1,6 +1,12 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
+-- Lua API
+local _G = _G
+
+-- WoW API
+local string_format = string.format
+
 local Movers = K.Movers
 
 local function MirrorTimer_OnUpdate(frame, elapsed)
@@ -14,9 +20,9 @@ local function MirrorTimer_OnUpdate(frame, elapsed)
 		local text = frame.label:GetText()
 
 		if frame.value > 0 then
-			frame.TimerText:SetText(format("%s (%d:%02d)", text, minutes, seconds))
+			frame.TimerText:SetText(string_format("%s (%d:%02d)", text, minutes, seconds))
 		else
-			frame.TimerText:SetText(format("%s (0:00)", text))
+			frame.TimerText:SetText(string_format("%s (0:00)", text))
 		end
 		frame.timeSinceUpdate = 0
 	else

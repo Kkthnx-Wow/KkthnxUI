@@ -1,6 +1,19 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
+
 if not oUF then return end
+
+-- Lua API
+local _G = _G
+
+-- Wow API
+local CreateFrame = _G.CreateFrame
+local GetTime = _G.GetTime
+local STANDARD_TEXT_FONT = _G.STANDARD_TEXT_FONT
+
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: COMBATFEEDBACK_FADEINTIME, COMBATFEEDBACK_HOLDTIME, COMBATFEEDBACK_FADEOUTTIME
+-- GLOBALS: CombatFeedbackText
 
 local damage_format = "-%d"
 local heal_format = "+%d"
@@ -10,23 +23,23 @@ local feedback = {}
 local originalHeight = {}
 local color
 local colors = {
-	STANDARD		= {1, 1, 1}, -- color for everything not in the list below
+	STANDARD = {1, 1, 1}, -- color for everything not in the list below
 	-- damage colors
-	IMMUNE			= {1, 1, 1},
-	DAMAGE			= {1, 0, 0},
-	CRUSHING		= {1, 0, 0},
-	CRITICAL		= {1, 0, 0},
-	GLANCING		= {1, 0, 0},
-	ABSORB			= {1, 1, 1},
-	BLOCK			= {1, 1, 1},
-	RESIST			= {1, 1, 1},
-	MISS			= {1, 1, 1},
+	IMMUNE = {1, 1, 1},
+	DAMAGE = {1, 0, 0},
+	CRUSHING = {1, 0, 0},
+	CRITICAL = {1, 0, 0},
+	GLANCING = {1, 0, 0},
+	ABSORB = {1, 1, 1},
+	BLOCK = {1, 1, 1},
+	RESIST = {1, 1, 1},
+	MISS = {1, 1, 1},
 	-- heal colors
-	HEAL			= {0, 1, 0},
-	CRITHEAL		= {0, 1, 0},
+	HEAL = {0, 1, 0},
+	CRITHEAL = {0, 1, 0},
 	-- energize colors
-	ENERGIZE		= {0.41, 0.8, 0.94},
-	CRITENERGIZE	= {0.41, 0.8, 0.94},
+	ENERGIZE = {0.41, 0.8, 0.94},
+	CRITENERGIZE = {0.41, 0.8, 0.94},
 }
 
 local function createUpdateFrame()
@@ -41,12 +54,12 @@ local function createUpdateFrame()
 		for object, startTime in pairs(feedback) do
 			local maxalpha = object.CombatFeedbackText.maxAlpha
 			local elapsedTime = GetTime() - startTime
-			if ( elapsedTime < COMBATFEEDBACK_FADEINTIME ) then
+			if (elapsedTime < COMBATFEEDBACK_FADEINTIME) then
 				local alpha = maxalpha*(elapsedTime / COMBATFEEDBACK_FADEINTIME)
 				object.CombatFeedbackText:SetAlpha(alpha)
-			elseif ( elapsedTime < (COMBATFEEDBACK_FADEINTIME + COMBATFEEDBACK_HOLDTIME) ) then
+			elseif (elapsedTime < (COMBATFEEDBACK_FADEINTIME + COMBATFEEDBACK_HOLDTIME)) then
 				object.CombatFeedbackText:SetAlpha(maxalpha)
-			elseif ( elapsedTime < (COMBATFEEDBACK_FADEINTIME + COMBATFEEDBACK_HOLDTIME + COMBATFEEDBACK_FADEOUTTIME) ) then
+			elseif (elapsedTime < (COMBATFEEDBACK_FADEINTIME + COMBATFEEDBACK_HOLDTIME + COMBATFEEDBACK_FADEOUTTIME)) then
 				local alpha = maxalpha - maxalpha*((elapsedTime - COMBATFEEDBACK_HOLDTIME - COMBATFEEDBACK_FADEINTIME) / COMBATFEEDBACK_FADEOUTTIME)
 				object.CombatFeedbackText:SetAlpha(alpha)
 			else

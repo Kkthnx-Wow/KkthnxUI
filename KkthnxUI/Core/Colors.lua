@@ -1,14 +1,11 @@
 local K, C, L = unpack(select(2, ...))
 
--- Lua API
-local _G = _G
-
 local _, ns = ...
-local oUF = ns.oUF or _G.oUF
+local oUF = ns.oUF or oUF
 
 -- Colors
-oUF.colors.health = {0.31, 0.31, 0.31}
-oUF.colors.castColor = {0.31, 0.31, 0.31}
+oUF.colors.health = {0.29, 0.67, 0.30}
+oUF.colors.castColor = {0.85, 0.77, 0.36}
 oUF.colors.castNoInterrupt = {1, 0, 0}
 oUF.colors.interruptible = {0.31, 0.45, 0.63, 0.5}
 oUF.colors.fallback = {1, 1, 0.8}

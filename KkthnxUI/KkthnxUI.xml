@@ -19,11 +19,10 @@
    <Script file="Core\GUI.lua" />
    <Script file="Core\PixelPerfect.lua" />
    <!-- Filters -->
-   <Script file="Config\Filters\AuraList.lua" />
    <Script file="Config\Filters\CastbarTicks.lua" />
    <Script file="Config\Filters\ErrorFilter.lua" />
    <Script file="Config\Filters\Nameplates.lua" />
-   <Script file="Config\Filters\RaidAuraWatch.lua" />
+   <Script file="Config\Filters\AuraWatch.lua" />
    <Script file="Config\Filters\SpamFilter.lua" />
    <!-- Libraries -->
    <Script file="Libraries\LibStub\LibStub.lua" />
@@ -63,9 +62,8 @@
    <Script file="Modules\Panels\Panels.lua" />
    <!-- Unitframes -->
    <Script file="Modules\Unitframes\Init.lua" />
-   <Include file="Modules\Unitframes\Elements\Elements.xml" />
    <Script file="Modules\Unitframes\Functions.lua" />
-   <Script file="Modules\Unitframes\Filters\AuraFilter.lua" />
+   <Include file="Modules\Unitframes\Elements\Elements.xml" />
    <Script file="Modules\Unitframes\Layouts\Arena.lua" />
    <Script file="Modules\Unitframes\Layouts\Unitframes.lua" />
    <Include file="Modules\Unitframes\Layouts\Raid.xml" />
@@ -113,7 +111,6 @@
    <Script file="Modules\Blizzard\Fonts.lua" />
    <Script file="Modules\Blizzard\MirrorBars.lua" />
    <Script file="Modules\Blizzard\RaidUtility.lua" />
-   <Script file="Modules\Blizzard\ReputationGain.lua" />
    <Script file="Modules\Blizzard\ScriptErrors.lua" />
    <Script file="Modules\Blizzard\TalkingHeadFrame.lua" />
    <Script file="Modules\Blizzard\TimerTracker.lua" />
@@ -156,6 +153,7 @@
    <Script file="Modules\Miscellaneous\ChatBubble.lua" />
    <Script file="Modules\Miscellaneous\DropDown.lua" />
    <Script file="Modules\Miscellaneous\Durability.lua" />
+   <Script file="Modules\Miscellaneous\KillingBlow.lua" />
    <Script file="Modules\Miscellaneous\LossControl.lua" />
    <Script file="Modules\Miscellaneous\Merchant.lua" />
    <Script file="Modules\Miscellaneous\MinimapButton.lua" />
@@ -164,6 +162,7 @@
    <Script file="Modules\Miscellaneous\PvPEmote.lua" />
    <Script file="Modules\Miscellaneous\SlotDurability.lua" />
    <Script file="Modules\Miscellaneous\SlotItemLevel.lua" />
+   <Script file="Modules\Miscellaneous\SpellTolerance.lua" />
    <!-- Nameplates -->
    <Script file="Modules\Nameplates\Nameplates.lua" />
    <!-- Quests -->

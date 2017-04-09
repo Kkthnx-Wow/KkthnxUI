@@ -9,8 +9,14 @@ local string_format = string.format
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
+local GetFriendshipReputation = _G.GetFriendshipReputation
+local STANDING = _G.STANDING
+local REPUTATION = _G.REPUTATION
+local GetFactionInfo = _G.GetFactionInfo
+local GetNumFactions = _G.GetNumFactions
+local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip, UNKNOWN
 
 local Colors = FACTION_BAR_COLORS
@@ -18,7 +24,7 @@ local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ReputationWidth, C.DataBars.ReputationHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -63)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -67)
 Movers:RegisterFrame(Anchor)
 
 local ReputationBar = CreateFrame("StatusBar", nil, UIParent)
@@ -55,43 +61,69 @@ ReputationBar:SetScript("OnMouseUp", function()
 	ToggleCharacter("ReputationFrame")
 end)
 
+local BackupColor = FACTION_BAR_COLORS[1]
+local FactionStandingLabelUnknown = UNKNOWN
 local function UpdateReputationBar()
-	local isFriend, friendText, standingLabel
-	local FactionStandingLabelUnknown = UNKNOWN
-	local Name, ID, Min, Max, Value, FactionID = GetWatchedFactionInfo()
+	local ID
+	local IsFriend, FriendText, StandingLabel
+	local Name, Reaction, Min, Max, Value, FactionID = GetWatchedFactionInfo()
 
 	if (C_Reputation_IsFactionParagon(FactionID)) then
 		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(FactionID)
 		Min, Max, Value = 0, Threshold, CurrentValue
 	end
 
+	local NumFactions = GetNumFactions()
+
 	if not Name then
 		ReputationBar:Hide()
 	elseif Name then
 		ReputationBar:Show()
 
-		if ID then
-			standingLabel = _G["FACTION_STANDING_LABEL"..ID]
-		else
-			standingLabel = FactionStandingLabelUnknown
+		local color = FACTION_BAR_COLORS[Reaction] or BackupColor
+		ReputationBar:SetStatusBarColor(color.r, color.g, color.b)
+
+		ReputationBar:SetMinMaxValues(Min, Max)
+		ReputationBar:SetValue(Value)
+
+		for i = 1, NumFactions do
+			local FactionName, _, StandingID, _, _, _, _, _, _, _, _, _, _, FactionID = GetFactionInfo(i)
+			local FriendID, _, _, _, _, _, FriendTextLevel = GetFriendshipReputation(FactionID)
+			if FactionName == Name then
+				if FriendID ~= nil then
+					IsFriend = true
+					FriendText = FriendTextLevel
+				else
+					ID = StandingID
+				end
+			end
 		end
 
-		local Text = string_format("%s: %d%% [%s]", Name, ((Value - Min) / (Max - Min) * 100), isFriend and friendText or standingLabel)
+		if ID then
+			StandingLabel = _G["FACTION_STANDING_LABEL"..ID]
+		else
+			StandingLabel = FactionStandingLabelUnknown
+		end
+
+		-- Prevent a division by zero
+		local MaxMinDiff = Max - Min
+		if (MaxMinDiff == 0) then
+			MaxMinDiff = 1
+		end
+
+		local Text = string_format("%s: %d%% [%s]", Name, ((Value - Min) / (MaxMinDiff) * 100), IsFriend and FriendText or StandingLabel)
 
 		if C.DataBars.InfoText then
 			ReputationBar.Text:SetText(Text)
 		else
-			ReputationBar.Text:SetText(nil)
+			ReputationBar.Text:SetText("")
 		end
-
-		ReputationBar:SetMinMaxValues(Min, Max)
-		ReputationBar:SetValue(Value)
-		ReputationBar:SetStatusBarColor(Colors[ID].r, Colors[ID].g, Colors[ID].b)
 	end
 end
 
 ReputationBar:SetScript("OnEnter", function(self)
-	local Name, ID, Min, Max, Value, FactionID = GetWatchedFactionInfo()
+	local Name, Reaction, Min, Max, Value, FactionID = GetWatchedFactionInfo()
+	local FriendID, _, _, _, _, _, FriendTextLevel = GetFriendshipReputation(FactionID)
 
 	if (C_Reputation_IsFactionParagon(FactionID)) then
 		local CurrentValue, Threshold = C_Reputation_GetFactionParagonInfo(FactionID)
@@ -101,11 +133,15 @@ ReputationBar:SetScript("OnEnter", function(self)
 	GameTooltip:ClearLines()
 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
-	GameTooltip:AddLine(string_format("%s (%s)", Name, _G["FACTION_STANDING_LABEL" .. ID]))
+	if Name then
+		GameTooltip:AddLine(Name)
+		GameTooltip:AddLine(" ")
 
-	if Min ~= Max then
-		GameTooltip:AddLine(string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100))
+		GameTooltip:AddDoubleLine(STANDING..":", FriendID and FriendTextLevel or _G["FACTION_STANDING_LABEL"..Reaction], 1, 1, 1)
+		GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100), 1, 1, 1)
 	end
+	GameTooltip:AddLine(" ")
+	GameTooltip:AddLine(L.DataBars.ReputationClick)
 
 	GameTooltip:Show()
 end)
@@ -117,7 +153,7 @@ if C.DataBars.ReputationFade then
 	ReputationBar.Tooltip = true
 end
 
-ReputationBar:RegisterEvent("PLAYER_ENTERING_WORLD")
+ReputationBar:RegisterEvent("PLAYER_LOGIN")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
 ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)

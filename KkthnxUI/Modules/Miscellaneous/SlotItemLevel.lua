@@ -1,3 +1,4 @@
+
 local K, C, L = unpack(select(2, ...))
 if C.Misc.ItemLevel ~= true then return end
 
@@ -26,8 +27,8 @@ local equiped = {} -- Table to store equiped items
 
 local f = CreateFrame("Frame", nil, _G.PaperDollFrame) -- iLvel number frame
 local g -- iLvel number for Inspect frame
-f:RegisterEvent("ADDON_LOADED")
 f:RegisterEvent("PLAYER_LOGIN")
+f:RegisterEvent("ADDON_LOADED")
 
 -- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
 local S_ITEM_LEVEL = "^" .. gsub(ITEM_LEVEL, "%%d", "(%%d+)")
@@ -190,8 +191,6 @@ local function OnEvent(self, event, ...) -- Event handler
 			f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
 			f:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
 			f:RegisterEvent("ARTIFACT_UPDATE")
-			f:RegisterEvent("SOCKET_INFO_UPDATE")
-			f:RegisterEvent("COMBAT_RATING_UPDATE")
 			_updateItems("player", f)
 			f:Show()
 		end)
@@ -200,12 +199,9 @@ local function OnEvent(self, event, ...) -- Event handler
 			f:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 			f:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
 			f:UnregisterEvent("ARTIFACT_UPDATE")
-			f:UnregisterEvent("SOCKET_INFO_UPDATE")
-			f:UnregisterEvent("COMBAT_RATING_UPDATE")
 			f:Hide()
 		end)
-	elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "ITEM_UPGRADE_MASTER_UPDATE"
-	or event == "ARTIFACT_UPDATE" or event == "SOCKET_INFO_UPDATE" or event == "COMBAT_RATING_UPDATE" then
+	elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "ITEM_UPGRADE_MASTER_UPDATE" or event == "ARTIFACT_UPDATE" then
 		if (...) == 16 then
 			equiped[16] = nil
 			equiped[17] = nil

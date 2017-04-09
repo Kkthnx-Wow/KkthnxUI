@@ -3,7 +3,6 @@ if C.ActionBar.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local unpack = unpack
 
 -- Wow API
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo

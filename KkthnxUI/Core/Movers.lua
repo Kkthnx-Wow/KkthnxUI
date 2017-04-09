@@ -9,13 +9,12 @@ local _G = _G
 local table_insert = table.insert
 
 -- Wow API
-local CreateFrame = CreateFrame
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
-local InCombatLockdown = InCombatLockdown
-local pairs = pairs
-local print = print
-local UIParent = UIParent
-local unpack = unpack
+local CreateFrame = _G.CreateFrame
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local InCombatLockdown = _G.InCombatLockdown
+local pairs = _G.pairs
+local print = _G.print
+local UIParent = _G.UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_MOVING1, KkthnxUIDataPerChar

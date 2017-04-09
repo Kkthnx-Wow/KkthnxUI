@@ -4,19 +4,18 @@ if C.Unitframe.Enable ~= true then return end
 -- Lua Wow
 local _G = _G
 local table_insert = table.insert
-local tostring = tostring
-local unpack = unpack
 
 -- Wow API
-local CUSTOM_CLASS_COLORS = CUSTOM_CLASS_COLORS
-local GetArenaOpponentSpec = GetArenaOpponentSpec
-local GetNumArenaOpponentSpecs = GetNumArenaOpponentSpecs
-local GetSpecializationInfoByID = GetSpecializationInfoByID
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local UnitIsUnit = UnitIsUnit
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UnitIsUnit = _G.UnitIsUnit
+local ARENA = _G.ARENA
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SetPortraitToTexture, ARENA, SetPortraitTexture, CreateFrame
+-- GLOBALS: SetPortraitToTexture, SetPortraitTexture, CreateFrame
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -32,7 +31,7 @@ local function arenaPrep(self, event, ...)
 	SetPortraitToTexture(self.Portrait, icon)
 	self.Portrait:SetVertexColor(1, 1, 1, 1)
 
-	self.Name:SetText(ARENA .. " " .. tostring(self.id))
+	self.Name:SetText(ARENA.." ".. tostring(self.id))
 
 	self.Health.Value:SetText(spec)
 	self.Health:SetMinMaxValues(0, 1)
@@ -81,10 +80,12 @@ function ns.createArenaLayout(self, unit)
 	self.Portrait.Override = updatePortrait
 	self:RegisterEvent("ARENA_OPPONENT_UPDATE", updatePortrait)
 
-	self.Health.Value = K.SetFontString(self.Health, C.Media.Font, 13)
+	self.Health.Value = K.SetFontString(self.Health, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+	self.Health.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 	self.Health.Value:SetPoint("CENTER", self.Health)
 
-	self.Power.Value = K.SetFontString(self.Health, C.Media.Font, 13)
+	self.Power.Value = K.SetFontString(self.Health, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+	self.Power.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 	self.Power.Value:SetPoint("CENTER", self.Power)
 
 	self:SetSize(167, 46)
@@ -104,7 +105,8 @@ function ns.createArenaLayout(self, unit)
 	table_insert(self.mouseovers, self.Power)
 
 	-- Name
-	self.Name = K.SetFontString(self.Health, C.Media.Font, 14)
+	self.Name = K.SetFontString(self.Health, C.Media.Font, 14, C.Unitframe.Outline and "OUTLINE" or "")
+	self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 	self.Name:SetSize(110, 10)
 	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
@@ -114,15 +116,16 @@ function ns.createArenaLayout(self, unit)
 	self.PvP:SetSize(32, 32)
 	self.PvP:SetPoint("TOPLEFT", self.Texture, -14, -20)
 
-	self.Absorb = {
-		texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-		tile = true,
-		drawLayer = {"BACKGROUND", 4},
-		colour = {.3, .7, 1},
-		alpha = .5
-	}
-
 	do
+		self.Absorb = {
+			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
+			tile = true,
+			drawLayer = {"BACKGROUND", 4},
+			colour = {.3, .7, 1},
+			alpha = .5
+		}
+
+		-- Heal Prediction
 		local myBar = CreateFrame("StatusBar", nil, self.Health)
 		myBar:SetStatusBarTexture(C.Media.Texture)
 		myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
@@ -130,7 +133,8 @@ function ns.createArenaLayout(self, unit)
 		myBar:SetPoint("BOTTOM")
 		myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		myBar:SetStatusBarColor(0, 1, .5, .5)
-		myBar:SetMinMaxValues(0, 1)
+		myBar.Smooth = C.Unitframe.Smooth
+		myBar:Hide()
 
 		local otherBar = CreateFrame("StatusBar", nil, self.Health)
 		otherBar:SetStatusBarTexture(C.Media.Texture)
@@ -139,6 +143,8 @@ function ns.createArenaLayout(self, unit)
 		otherBar:SetPoint("BOTTOM")
 		otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		otherBar:SetStatusBarColor(0, 1, 0, .5)
+		otherBar.Smooth = C.Unitframe.Smooth
+		otherBar:Hide()
 
 		local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
@@ -147,12 +153,8 @@ function ns.createArenaLayout(self, unit)
 		healAbsorbBar:SetPoint("BOTTOM")
 		healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
 		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
-
-		self.Health:HookScript("OnSizeChanged", function(bar, width)
-			myBar:SetWidth(self.Health:GetWidth())
-			otherBar:SetWidth(self.Health:GetWidth())
-			healAbsorbBar:SetWidth(self.Health:GetWidth())
-		end)
+		healAbsorbBar.Smooth = C.Unitframe.Smooth
+		healAbsorbBar:Hide()
 
 		self.HealPrediction = {
 			myBar = myBar,
@@ -174,69 +176,6 @@ function ns.createArenaLayout(self, unit)
 		self.PortraitTimer.Remaining:SetShadowOffset(0, 0)
 		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 		self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
-	end
-
-	-- Auras
-	self.Buffs = K.AddBuffs(self, "TOPLEFT", 28, 5, 6, 1)
-	self.Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
-	self.Buffs.CustomFilter = K.CustomAuraFilters.arena
-
-	if C.Unitframe.Castbars then
-		if self.MatchUnit == "arena" then
-			local CastBar = CreateFrame("StatusBar", nil, self)
-
-			CastBar:SetPoint("RIGHT", -138, 0)
-			CastBar:SetPoint("LEFT", 0, 10)
-			CastBar:SetPoint("LEFT", -138, 8)
-			CastBar:SetHeight(20)
-			CastBar:SetStatusBarTexture(C.Media.Texture)
-			CastBar:SetFrameLevel(6)
-
-			K.CreateBorder(CastBar, -1)
-
-			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
-			CastBar.Background:SetAllPoints(CastBar)
-			CastBar.Background:SetTexture(C.Media.Blank)
-			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-
-			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
-			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
-			CastBar.Time:SetTextColor(1, 1, 1)
-			CastBar.Time:SetJustifyH("RIGHT")
-
-			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
-			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 4, 0)
-			CastBar.Text:SetTextColor(1, 1, 1)
-			CastBar.Text:SetWidth(166)
-			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar.Button = CreateFrame("Frame", nil, CastBar)
-			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
-			CastBar.Button:SetPoint("RIGHT", CastBar, "LEFT", -4, 0)
-
-			K.CreateBorder(CastBar.Button, -1)
-
-			CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
-			CastBar.Icon:SetAllPoints()
-			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
-
-			CastBar.CustomDelayText = K.CustomDelayText
-			CastBar.CustomTimeText = K.CustomTimeText
-			CastBar.PostCastStart = K.PostCastStart
-			CastBar.PostChannelStart = K.PostCastStart
-			CastBar.PostCastStop = K.PostCastStop
-			CastBar.PostChannelStop = K.PostCastStop
-			CastBar.PostChannelUpdate = K.PostChannelUpdate
-			CastBar.PostCastInterruptible = K.PostCastInterruptible
-			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
-
-			self.Castbar = CastBar
-			self.Castbar.Icon = CastBar.Icon
-		end
 	end
 
 	-- oUF_Trinkets support

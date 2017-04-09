@@ -1,16 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
-local _, ns = ...
-local config = C.UnitframePlugins
-local oUF = ns.oUF or oUF
-
 -- Lua API
 local _G = _G
-local pairs = pairs
-local print = print
 local table_insert = table.insert
-local unpack = unpack
 
 -- Wow API
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
@@ -33,6 +26,10 @@ local IsInRaid = _G.IsInRaid
 -- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
 -- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
 -- GLOBALS: SetPortraitTexture, oUF_KkthnxPet, SLASH_TEST_UF1
+
+local _, ns = ...
+local config = C.UnitframePlugins
+local oUF = ns.oUF or oUF
 
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 local pathFat = textPath.."Fat\\"
@@ -285,11 +282,9 @@ local function UpdatePlayerFrame(self, ...)
 		self.PvP:ClearAllPoints()
 	end
 
-	local inVehicle = UnitHasVehicleUI("player")
-
 	ComboFrame_Update(ComboPointPlayerFrame)
 
-	if inVehicle then
+	if UnitHasVehicleUI("player") then
 		self.Name:Show()
 		self.Level:Hide()
 
@@ -406,8 +401,7 @@ function oUFKkthnx:UpdateBaseFrames(optUnit)
 
 	for _, obj in pairs(oUF.objects) do
 		local unit = obj.MatchUnit
-		-- if obj.style == "oUF_Kkthnx" and unit and (not optUnit or optUnit == unit:match("^.%a+")) then
-		if unit and (not optUnit or optUnit == unit:match("^.%a+") or unit) then
+		if unit and (not optUnit or optUnit == unit:match("^.%a+")) then
 			UpdateUnitFrameLayout(obj)
 		end
 	end
@@ -473,20 +467,17 @@ local function CreateUnitLayout(self, unit)
 
 	-- Health text
 	if self.IsPartyFrame or self.IsTargetFrame then
-		self.Health.Value = K.SetFontString(self, C.Media.Font, 11, nil, "CENTER")
+		self.Health.Value = K.SetFontString(self, C.Media.Font, 11, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 	else
-		self.Health.Value = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+		self.Health.Value = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 	end
 
 	-- Power bar
 	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
 	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
 	table_insert(self.mouseovers, self.Power)
-
-	self.Power.colorPower = nil
-	self.Power.colorReaction = nil
-	self.Power.colorDisconnected = nil
-	self.Power.colorTapping = nil
 
 	self.Power.colorPower = true
 	self.Power.colorReaction = true
@@ -499,32 +490,46 @@ local function CreateUnitLayout(self, unit)
 	-- Power Text
 	if (data.mpt) then
 		if self.IsPartyFrame or self.IsTargetFrame then
-			self.Power.Value = K.SetFontString(self, C.Media.Font, 11, nil, "CENTER")
+			self.Power.Value = K.SetFontString(self, C.Media.Font, 11, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+			self.Power.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 		else
-			self.Power.Value = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
+			self.Power.Value = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+			self.Power.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 		end
 	end
 
 	-- Name Text
 	if data.nam then
-		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		self.Name = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+		if C.Unitframe.ColorHealth then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameMedium]")
+		end
 	end
 
 	-- Name Text Party
 	if data.nam and self.IsPartyFrame and C.Unitframe.Party == true then
-		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		self.Name = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+		if C.Unitframe.ColorHealth then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameShort]")
+		end
 		-- Name text targettarget
 	elseif data.nam and self.IsTargetFrame then
-		self.Name = K.SetFontString(self, C.Media.Font, 12, nil, "LEFT")
-		self.Name:SetShadowOffset(K.Mult, -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		self.Name = K.SetFontString(self, C.Media.Font, 12, C.Unitframe.Outline and "OUTLINE" or "", "LEFT")
+		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+		if C.Unitframe.ColorHealth then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameShort]")
+		end
 	elseif data.nam and self.IsBossFrame then
-		self.Name = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-		self.Name:SetShadowOffset(K.Mult, -K.Mult)
+		self.Name = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 		self:Tag(self.Name, "[KkthnxUI:NameMedium]")
 	end
 
@@ -549,8 +554,8 @@ local function CreateUnitLayout(self, unit)
 	if (self.IsPartyFrame and C.Raidframe.ShowNotHereTimer) then
 		self.NotHere = self:CreateFontString(nil, "OVERLAY")
 		self.NotHere:SetPoint("CENTER", self.Name, "RIGHT", -4, 0)
-		self.NotHere:SetFont(C.Media.Font, 10)
-		self.NotHere:SetShadowOffset(K.Mult, -K.Mult)
+		self.NotHere:SetFont(C.Media.Font, 10, C.Unitframe.Outline and "OUTLINE" or "")
+		self.NotHere:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 		self.NotHere:SetTextColor(0, 1, 0)
 		self:Tag(self.NotHere, "[KkthnxUI:StatusTimer]")
 	end
@@ -563,8 +568,8 @@ local function CreateUnitLayout(self, unit)
 	if (self.IsMainFrame) then
 		-- Level text
 		self.Level = self:CreateFontString(nil, "ARTWORK")
-		self.Level:SetFont(C.Media.Font, C.Media.Font_Size)
-		self.Level:SetShadowOffset(K.Mult, -K.Mult)
+		self.Level:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+		self.Level:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 		self.Level:SetPoint("CENTER", self.Texture, (self.MatchUnit == "player" and -63) or 63, -15.5)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level]")
 
@@ -585,39 +590,39 @@ local function CreateUnitLayout(self, unit)
 				alpha = .5
 			}
 
+			local data = GetData(self.MatchUnit)
+
 			-- Heal Prediction
 			local myBar = CreateFrame("StatusBar", nil, self.Health)
 			myBar:SetStatusBarTexture(C.Media.Texture)
 			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-			myBar:SetPoint("TOP")
-			myBar:SetPoint("BOTTOM")
-			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+			myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+			myBar:SetWidth(data.hpb.w)
 			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar:SetMinMaxValues(0, 1)
+			myBar:Hide()
 			myBar.Smooth = C.Unitframe.Smooth
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)
 			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-			otherBar:SetPoint("TOP")
-			otherBar:SetPoint("BOTTOM")
-			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+			otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+			otherBar:SetWidth(data.hpb.w)
 			otherBar:SetStatusBarColor(0, 1, 0, .5)
+			otherBar:Hide()
 			otherBar.Smooth = C.Unitframe.Smooth
 
 			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
 			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-			healAbsorbBar:SetPoint("TOP")
-			healAbsorbBar:SetPoint("BOTTOM")
-			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+			healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+			healAbsorbBar:SetWidth(data.hpb.w)
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+			healAbsorbBar:Hide()
 			healAbsorbBar.Smooth = C.Unitframe.Smooth
-
-			self.Health:HookScript("OnSizeChanged", function(bar, width)
-				myBar:SetWidth(width)
-				otherBar:SetWidth(width)
-				healAbsorbBar:SetWidth(width)
-			end)
 
 			self.HealPrediction = {
 				myBar = myBar,
@@ -629,28 +634,30 @@ local function CreateUnitLayout(self, unit)
 		end
 
 		-- Combat CombatFeedbackText
-		if C.Unitframe.CombatText == true then
-			local CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
-			CombatFeedbackText:SetFont(C.Media.Font, 16, "THINOUTLINE")
-			CombatFeedbackText:SetPoint("CENTER", self.Portrait)
-			CombatFeedbackText.colors = {
-				DAMAGE = {0.69, 0.31, 0.31},
-				CRUSHING = {0.69, 0.31, 0.31},
-				CRITICAL = {0.69, 0.31, 0.31},
-				GLANCING = {0.69, 0.31, 0.31},
-				STANDARD = {0.84, 0.75, 0.65},
-				IMMUNE = {0.84, 0.75, 0.65},
-				ABSORB = {0.84, 0.75, 0.65},
-				BLOCK = {0.84, 0.75, 0.65},
-				RESIST = {0.84, 0.75, 0.65},
-				MISS = {0.84, 0.75, 0.65},
-				HEAL = {0.33, 0.59, 0.33},
-				CRITHEAL = {0.33, 0.59, 0.33},
-				ENERGIZE = {0.31, 0.45, 0.63},
-				CRITENERGIZE = {0.31, 0.45, 0.63},
-			}
+		if (C.Unitframe.CombatText) then
+			do
+				local CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
+				CombatFeedbackText:SetFont(C.Media.Font, 16, "THINOUTLINE")
+				CombatFeedbackText:SetPoint("CENTER", self.Portrait)
+				CombatFeedbackText.colors = {
+					DAMAGE = {0.69, 0.31, 0.31},
+					CRUSHING = {0.69, 0.31, 0.31},
+					CRITICAL = {0.69, 0.31, 0.31},
+					GLANCING = {0.69, 0.31, 0.31},
+					STANDARD = {0.84, 0.75, 0.65},
+					IMMUNE = {0.84, 0.75, 0.65},
+					ABSORB = {0.84, 0.75, 0.65},
+					BLOCK = {0.84, 0.75, 0.65},
+					RESIST = {0.84, 0.75, 0.65},
+					MISS = {0.84, 0.75, 0.65},
+					HEAL = {0.33, 0.59, 0.33},
+					CRITHEAL = {0.33, 0.59, 0.33},
+					ENERGIZE = {0.31, 0.45, 0.63},
+					CRITENERGIZE = {0.31, 0.45, 0.63},
+				}
 
-			self.CombatFeedbackText = CombatFeedbackText
+				self.CombatFeedbackText = CombatFeedbackText
+			end
 		end
 	end
 
@@ -665,44 +672,44 @@ local function CreateUnitLayout(self, unit)
 				alpha = .5
 			}
 
+			local data = GetData(self.MatchUnit)
+
 			local myBar = CreateFrame("StatusBar", nil, self.Health)
 			myBar:SetStatusBarTexture(C.Media.Texture)
 			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-			myBar:SetPoint("TOP")
-			myBar:SetPoint("BOTTOM")
-			myBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+			myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+			myBar:SetWidth(data.hpb.w)
 			myBar:SetStatusBarColor(0, 1, .5, .5)
+			myBar:SetMinMaxValues(0,1)
+			myBar:Hide()
 			myBar.Smooth = C.Unitframe.Smooth
 
 			local otherBar = CreateFrame("StatusBar", nil, self.Health)
 			otherBar:SetStatusBarTexture(C.Media.Texture)
 			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-			otherBar:SetPoint("TOP")
-			otherBar:SetPoint("BOTTOM")
-			otherBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+			otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+			otherBar:SetWidth(data.hpb.w)
 			otherBar:SetStatusBarColor(0, 1, 0, .5)
+			otherBar:Hide()
 			otherBar.Smooth = C.Unitframe.Smooth
 
 			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
 			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-			healAbsorbBar:SetPoint("TOP")
-			healAbsorbBar:SetPoint("BOTTOM")
-			healAbsorbBar:SetPoint("LEFT", self.Health:GetStatusBarTexture(), "RIGHT")
+			healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
+			healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
+			healAbsorbBar:SetWidth(data.hpb.w)
 			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
+			healAbsorbBar:Hide()
 			healAbsorbBar.Smooth = C.Unitframe.Smooth
-
-			self.Health:HookScript("OnSizeChanged",function(bar, width)
-				myBar:SetWidth(width)
-				otherBar:SetWidth(width)
-				healAbsorbBar:SetWidth(width)
-			end)
 
 			self.HealPrediction = {
 				myBar = myBar,
 				otherBar = otherBar,
 				healAbsorbBar = healAbsorbBar,
-				maxOverflow = 1.05,
+				maxOverflow = 1,
 				frequentUpdates = true
 			}
 		end
@@ -885,8 +892,8 @@ local function CreateUnitLayout(self, unit)
 
 		-- PvP Timer
 		if (self.PvP) then
-			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, nil, "CENTER")
-			self.PvPTimer:SetShadowOffset(K.Mult, -K.Mult)
+			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
+			self.PvPTimer:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			self.PvPTimer:SetTextColor(1, 0.819, 0)
 			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, 2)
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
@@ -922,7 +929,7 @@ local function CreateUnitLayout(self, unit)
 		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
 	end
 
-	-- </ Focus & Target Frame > --
+	-- Focus & Target Frame
 	if (self.MatchUnit == "target") then
 		-- Questmob Icon
 		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
@@ -965,86 +972,7 @@ local function CreateUnitLayout(self, unit)
 		end
 	end
 
-	-- Auras
-	if (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
-		local isFocus = self.MatchUnit == "focus"
-
-		local function GetAuraData(mode)
-			local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY
-			if (mode == "TOP") then
-				if isFocus then
-					columns, rows = 3, 3
-				else
-					columns, rows = 6, 3
-				end
-				initialAnchor, relAnchor, offX, offY = "BOTTOMLEFT", "TOPLEFT", -2, 24
-			elseif (mode == "BOTTOM") then
-				if isFocus then
-					columns, rows = 3, 3
-				else
-					columns, rows = 4, 3
-				end
-				initialAnchor, relAnchor, offX, offY = "TOPLEFT", "BOTTOMLEFT", -2, -8
-			elseif (mode == "LEFT") then
-				if isFocus then
-					columns, rows = 5, 3
-				else
-					columns, rows = 8, 3
-				end
-				initialAnchor, relAnchor, offX, offY = "TOPRIGHT", "TOPLEFT", -8, -2
-			end
-			size = isFocus and 26 or 20
-			gap = 4
-			return size, gap, columns, rows, initialAnchor, relAnchor, offX, offY
-		end
-
-		if (uconfig.buffPos == uconfig.debuffPos) and (uconfig.debuffPos ~= "NONE") then
-			local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY = GetAuraData(uconfig.debuffPos)
-			self.Auras = K.AddAuras(self, initialAnchor, size, gap, columns, rows)
-			self.Auras:SetPoint(initialAnchor, self, relAnchor, offX, offY)
-			self.Auras.CustomFilter = K.CustomAuraFilters.target
-		else
-			if (uconfig.buffPos ~= "NONE") then
-				local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY = GetAuraData(uconfig.buffPos)
-				self.Buffs = K.AddBuffs(self, initialAnchor, size, gap, columns, rows)
-				self.Buffs:SetPoint(initialAnchor, self, relAnchor, offX, offY)
-				self.Buffs.CustomFilter = K.CustomAuraFilters.target
-			end
-			if (uconfig.debuffPos ~= "NONE") then
-				local size, gap, columns, rows, initialAnchor, relAnchor, offX, offY = GetAuraData(uconfig.debuffPos)
-				self.Debuffs = K.AddDebuffs(self, initialAnchor, size, gap, columns, rows)
-				self.Debuffs:SetPoint(initialAnchor, self, relAnchor, offX, offY)
-				self.Debuffs.CustomFilter = K.CustomAuraFilters.target
-			end
-		end
-
-	elseif (self.IsTargetFrame and uconfig.enableAura) then
-		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 3, 2)
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 7, 10)
-		self.Debuffs.CustomFilter = K.CustomAuraFilters.target
-
-	elseif (self.MatchUnit == "pet") then
-		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 6, 1)
-		self.Debuffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 1, -2)
-		self.Debuffs.CustomFilter = K.CustomAuraFilters.pet
-
-	elseif (self.IsPartyFrame) then
-		self.Debuffs = K.AddDebuffs(self, "TOPLEFT", 20, 4, 4, 1)
-		self.Debuffs:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 5, 1)
-		self.Debuffs.CustomFilter = K.CustomAuraFilters.party
-
-		self.Buffs = K.AddBuffs(self, "TOPLEFT", 20, 4, 4, 1)
-		self.Buffs:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 2, -11)
-		self.Buffs.CustomFilter = K.CustomAuraFilters.party
-
-	elseif (self.MatchUnit == "boss") then
-		self.Buffs = K.AddBuffs(self, "TOPLEFT", 30, 4, 5, 1)
-		self.Buffs:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 2, -6)
-
-		self.Debuffs = K.AddDebuffs(self, "TOPRIGHT", 30, 4, 7, 1)
-		self.Debuffs:SetPoint("TOPRIGHT", self, "BOTTOMLEFT", -34, 18)
-		self.Debuffs.CustomFilter = K.CustomAuraFilters.boss
-	end
+	K.CreateAuras(self)
 
 	-- Range Fader (We use oUF_SpellRange)
 	self.Range = {
@@ -1104,7 +1032,7 @@ if (C.Unitframe.Party) then
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
 	"showPlayer", C.Unitframe.ShowPlayer, -- Need to add this as an option.
-	"yOffset", K.Scale(-32)
+	"yOffset", K.Scale(-34)
 	)
 
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))

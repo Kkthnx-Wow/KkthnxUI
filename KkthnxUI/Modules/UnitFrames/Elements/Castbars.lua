@@ -296,16 +296,17 @@ function K.CreateCastBar(self)
 			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+
+			CastBar.Time:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C.Media.Font_Size)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Text:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C.Media.Font_Size)
@@ -331,8 +332,8 @@ function K.CreateCastBar(self)
 				CastBar.SafeZone:SetTexture(C.Media.Blank)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 
-				CastBar.Latency = K.SetFontString(CastBar, C.Media.Font, C.Media.Font_Size, "", "RIGHT")
-				CastBar.Latency:SetShadowOffset(K.Mult, -K.Mult)
+				CastBar.Latency = K.SetFontString(CastBar, C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "", "RIGHT")
+				CastBar.Latency:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 				CastBar.Latency:SetTextColor(1, 1, 1)
 				CastBar.Latency:SetPoint("TOPRIGHT", CastBar.Time, "BOTTOMRIGHT", 0, 0)
 				CastBar.Latency:SetJustifyH("RIGHT")
@@ -386,16 +387,16 @@ function K.CreateCastBar(self)
 			CastBar.Shield:SetPoint("LEFT", CastBar, "RIGHT", -4, 12)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Time:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C.Media.Font_Size)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Text:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C.Media.Font_Size)
@@ -454,16 +455,16 @@ function K.CreateCastBar(self)
 			CastBar.Background:SetTexture(C.Media.Blank)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Time:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C.Media.Font_Size)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Text:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C.Media.Font_Size)
@@ -516,16 +517,16 @@ function K.CreateCastBar(self)
 			CastBar.Spark:SetVertexColor(1, 1, 1)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Time:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Time:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C.Media.Font_Size)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size)
-			CastBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Text:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C.Media.Font_Size)
@@ -541,6 +542,61 @@ function K.CreateCastBar(self)
 			CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
 			CastBar.Icon:SetAllPoints()
 			CastBar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
+			CastBar.CustomDelayText = K.CustomDelayText
+			CastBar.CustomTimeText = K.CustomTimeText
+			CastBar.PostCastStart = K.PostCastStart
+			CastBar.PostChannelStart = K.PostCastStart
+			CastBar.PostCastStop = K.PostCastStop
+			CastBar.PostChannelStop = K.PostCastStop
+			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterruptible = K.PostCastInterruptible
+			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
+
+			self.Castbar = CastBar
+			self.Castbar.Icon = CastBar.Icon
+
+		elseif self.MatchUnit == "arena" then
+			local CastBar = CreateFrame("StatusBar", nil, self)
+
+			CastBar:SetPoint("RIGHT", -138, 0)
+			CastBar:SetPoint("LEFT", 0, 10)
+			CastBar:SetPoint("LEFT", -138, 8)
+			CastBar:SetHeight(20)
+			CastBar:SetStatusBarTexture(C.Media.Texture)
+			CastBar:SetFrameLevel(6)
+
+			K.CreateBorder(CastBar, -1)
+
+			CastBar.Background = CastBar:CreateTexture(nil, "BORDER")
+			CastBar.Background:SetAllPoints(CastBar)
+			CastBar.Background:SetTexture(C.Media.Blank)
+			CastBar.Background:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+
+			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
+			CastBar.Time:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Time:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
+			CastBar.Time:SetTextColor(1, 1, 1)
+			CastBar.Time:SetJustifyH("RIGHT")
+
+			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
+			CastBar.Text:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
+			CastBar.Text:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 4, 0)
+			CastBar.Text:SetTextColor(1, 1, 1)
+			CastBar.Text:SetWidth(166)
+			CastBar.Text:SetJustifyH("LEFT")
+
+			CastBar.Button = CreateFrame("Frame", nil, CastBar)
+			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
+			CastBar.Button:SetPoint("RIGHT", CastBar, "LEFT", -4, 0)
+
+			K.CreateBorder(CastBar.Button, -1)
+
+			CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
+			CastBar.Icon:SetAllPoints()
+			CastBar.Icon:SetTexCoord(unpack(K.TexCoords))
 
 			CastBar.CustomDelayText = K.CustomDelayText
 			CastBar.CustomTimeText = K.CustomTimeText

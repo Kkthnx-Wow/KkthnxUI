@@ -10,7 +10,7 @@ local rolltypes = {"need", "greed", "disenchant", [0] = "pass"}
 local Movers = K.Movers
 
 local LootRollAnchor = CreateFrame("Frame", "LootRollAnchor", UIParent)
-LootRollAnchor:SetSize(313, 26)
+LootRollAnchor:SetSize(314, 26)
 
 local function ClickRoll(frame)
 	RollOnLoot(frame.parent.rollID, frame.rolltype)
@@ -234,38 +234,15 @@ local function START_LOOT_ROLL(rollID, time)
 		end
 	end
 
-	if canNeed then
-		f.needbutt:Enable()
-		f.needbutt:SetAlpha(1)
-		SetDesaturation(f.needbutt:GetNormalTexture(), false)
-	else
-		f.needbutt:Disable()
-		f.needbutt:SetAlpha(0.2)
-		SetDesaturation(f.needbutt:GetNormalTexture(), true)
-		f.needbutt.errtext = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonNeed]
-	end
-
-	if canGreed then
-		f.greedbutt:Enable()
-		f.greedbutt:SetAlpha(1)
-		SetDesaturation(f.greedbutt:GetNormalTexture(), false)
-	else
-		f.greedbutt:Disable()
-		f.greedbutt:SetAlpha(0.2)
-		SetDesaturation(f.greedbutt:GetNormalTexture(), true)
-		f.greedbutt.errtext = _G["LOOT_ROLL_INELIGIBLE_REASON"..reasonGreed]
-	end
-
-	if canDisenchant then
-		f.disenchantbutt:Enable()
-		f.disenchantbutt:SetAlpha(1)
-		SetDesaturation(f.disenchantbutt:GetNormalTexture(), false)
-	else
-		f.disenchantbutt:Disable()
-		f.disenchantbutt:SetAlpha(0.2)
-		SetDesaturation(f.disenchantbutt:GetNormalTexture(), true)
-		f.disenchantbutt.errtext = format(_G["LOOT_ROLL_INELIGIBLE_REASON"..reasonDisenchant], deSkillRequired)
-	end
+	if canNeed then f.needbutt:Enable() else f.needbutt:Disable() end
+	if canGreed then f.greedbutt:Enable() else f.greedbutt:Disable() end
+	if canDisenchant then f.disenchantbutt:Enable() else f.disenchantbutt:Disable() end
+	SetDesaturation(f.needbutt:GetNormalTexture(), not canNeed)
+	SetDesaturation(f.greedbutt:GetNormalTexture(), not canGreed)
+	SetDesaturation(f.disenchantbutt:GetNormalTexture(), not canDisenchant)
+	if canNeed then f.needbutt:SetAlpha(1) else f.needbutt:SetAlpha(0.2) end
+	if canGreed then f.greedbutt:SetAlpha(1) else f.greedbutt:SetAlpha(0.2) end
+	if canDisenchant then f.disenchantbutt:SetAlpha(1) else f.disenchantbutt:SetAlpha(0.2) end
 
 	f.fsbind:SetText(bop and "BoP" or "BoE")
 	f.fsbind:SetVertexColor(bop and 1 or 0.3, bop and 0.3 or 1, bop and 0.1 or 0.3)
@@ -293,12 +270,10 @@ local function LOOT_HISTORY_ROLL_CHANGED(rollindex, playerindex)
 end
 
 LootRollAnchor:RegisterEvent("ADDON_LOADED")
-LootRollAnchor:SetScript("OnEvent", function(frame, event, addon)
-	if addon ~= "KkthnxUI" then return end
-
+LootRollAnchor:SetScript("OnEvent", function(frame, event)
 	LootRollAnchor:UnregisterEvent("ADDON_LOADED")
-	LootRollAnchor:RegisterEvent("START_LOOT_ROLL")
 	LootRollAnchor:RegisterEvent("LOOT_HISTORY_ROLL_CHANGED")
+	LootRollAnchor:RegisterEvent("START_LOOT_ROLL")
 
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
@@ -311,43 +286,7 @@ LootRollAnchor:SetScript("OnEvent", function(frame, event, addon)
 		end
 	end)
 
-	LootRollAnchor:SetPoint(unpack(C.Position.GroupLoot))
+	LootRollAnchor:SetPoint(C.Position.GroupLoot[1], C.Position.GroupLoot[2], C.Position.GroupLoot[3], C.Position.GroupLoot[4], C.Position.GroupLoot[5])
 
 	Movers:RegisterFrame(LootRollAnchor)
 end)
-
-SlashCmdList.TESTROLL = function()
-	local f = GetFrame()
-	local items = {32837, 34196, 33820, 84004}
-	if f:IsShown() then
-		f:Hide()
-	else
-		local item = items[math.random(1, #items)]
-		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
-		local r, g, b = GetItemQualityColor(quality or 1)
-
-		f.button.icon:SetTexture(texture)
-		f.button.icon:SetTexCoord(unpack(K.TexCoords))
-
-		f.fsloot:SetText(GetItemInfo(item))
-		f.fsloot:SetVertexColor(r, g, b)
-
-		f.status:SetMinMaxValues(0, 100)
-		f.status:SetValue(math.random(50, 90))
-		f.status:SetStatusBarColor(r, g, b)
-		f.status.bg:SetColorTexture(r * 0.18, g * 0.18, b * 0.18)
-
-		f:SetBackdropBorderColor(r, g, b)
-		f.button:SetBackdropBorderColor(r, g, b)
-
-		f.need:SetText(0)
-		f.greed:SetText(0)
-		f.pass:SetText(0)
-		f.disenchant:SetText(0)
-
-		f.button.link = "item:"..item..":0:0:0:0:0:0:0"
-		f:Show()
-	end
-end
-SLASH_TESTROLL1 = "/testroll"
-SLASH_TESTROLL2 = "/tr"

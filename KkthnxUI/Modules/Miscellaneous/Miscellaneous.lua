@@ -2,9 +2,6 @@ local K, C, L = unpack(select(2, ...))
 
 -- WoW Lua
 local _G = _G
-local select = select
-local tostring = tostring
-local unpack = unpack
 
 -- Wow API
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
@@ -18,15 +15,15 @@ local GetNumRandomDungeons = _G.GetNumRandomDungeons
 local GetZoneText = _G.GetZoneText
 local hooksecurefunc = _G.hooksecurefunc
 local IsInInstance = _G.IsInInstance
-local IsInRaid = _G.IsInRaid
 local PlaySound = _G.PlaySound
 local PlaySoundFile = _G.PlaySoundFile
 local SetCVar = _G.SetCVar
+local COMBAT = _G.COMBAT
 
 -- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
 -- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
 -- GLOBALS: SideDressUpModel, SideDressUpModelResetButton, DressUpModel, DressUpFrameResetButton
--- GLOBALS: GhostFrame, LevelUpDisplay, BossBanner, statusBar, UIErrorsFrame, COMBAT, RaidNotice_AddMessage
+-- GLOBALS: GhostFrame, LevelUpDisplay, BossBanner, statusBar, UIErrorsFrame, RaidNotice_AddMessage
 -- GLOBALS: RaidBossEmoteFrame, ChatTypeInfo
 
 local Movers = K.Movers
@@ -220,3 +217,10 @@ end
 if C.Misc.NoBanner == true then
 	BossBanner.PlayBanner = function() end
 end
+
+local QuestTracking = CreateFrame("Frame")
+QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
+QuestTracking:RegisterEvent("PLAYER_ENTERING_WORLD")
+QuestTracking:SetScript("OnEvent", function(self, event)
+    K:LockCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
+end)

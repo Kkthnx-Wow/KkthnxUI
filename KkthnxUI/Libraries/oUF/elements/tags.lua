@@ -21,6 +21,9 @@ local _ENV = {
 				r, g, b = unpack(r)
 			end
 		end
+		if not r or type(r) == "string" then
+			return "|cffFFFFFF"
+		end
 		return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
 	end,
 	ColorGradient = oUF.ColorGradient,
