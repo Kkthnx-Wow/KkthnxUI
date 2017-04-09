@@ -28,9 +28,9 @@ local IsInRaid = _G.IsInRaid
 -- GLOBALS: SetPortraitTexture, oUF_KkthnxPet, SLASH_TEST_UF1
 
 local _, ns = ...
-local config = C.UnitframePlugins
 local oUF = ns.oUF or oUF
 
+local config = C.UnitframePlugins
 local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
 local pathFat = textPath.."Fat\\"
 local pathNormal = textPath.."Normal\\"

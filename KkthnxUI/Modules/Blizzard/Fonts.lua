@@ -65,7 +65,7 @@ UpdateBlizzardFonts:SetScript("OnEvent", function(self, event)
 	SetFont(NumberFont_Outline_Med, NORMAL, C.General.FontSize * 1.1, "OUTLINE")
 	SetFont(NumberFont_Shadow_Med, NORMAL, C.General.FontSize) -- chat editbox uses this
 	SetFont(NumberFont_Shadow_Small, NORMAL, C.General.FontSize)
-	SetFont(QuestFont, NORMAL, C.General.FontSize * 0.9)
+	SetFont(QuestFont, NORMAL, C.General.FontSize)
 	SetFont(QuestFont_Large, NORMAL, 14)
 	SetFont(SystemFont_Large, NORMAL, 15)
 	SetFont(GameFontNormalMed3, NORMAL, 15)

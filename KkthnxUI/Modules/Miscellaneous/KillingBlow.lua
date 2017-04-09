@@ -16,17 +16,14 @@ local ACTION_PARTY_KILL = _G.ACTION_PARTY_KILL
 -- GLOBALS: COMBATLOG_OBJECT_CONTROL_PLAYER
 
 -- Setup message frame
-local KillingBlowMsg = CreateFrame("ScrollingMessageFrame", "KillingBlowMsgFrame", UIParent)
-KillingBlowMsg:SetFont(C.Media.Font, 18, "OUTLINE")
-KillingBlowMsg:SetPoint("CENTER", 0, 205)
-KillingBlowMsg:SetWidth(256)
-KillingBlowMsg:SetHeight(18)
-KillingBlowMsg:SetSpacing(1)
-KillingBlowMsg:SetClampedToScreen(true)
-KillingBlowMsg:SetInsertMode("TOP")
-KillingBlowMsg:SetTimeVisible(3)
-KillingBlowMsg:SetFadeDuration(1.5)
-KillingBlowMsg:SetClampRectInsets(0, 0, 18, 0)
+local MessageFrame = CreateFrame("ScrollingMessageFrame", "KillingBlowMessageFrame", UIParent)
+MessageFrame:SetFont(C.Media.Font, 18, "OUTLINE")
+MessageFrame:SetSize(200, 150)
+MessageFrame:SetPoint("CENTER", 0, 205)
+MessageFrame:SetInsertMode("TOP")
+MessageFrame:SetTimeVisible(3)
+MessageFrame:SetFadeDuration(1.5)
+MessageFrame:SetFrameLevel(0)
 
 local KillingBlow = CreateFrame("Frame")
 KillingBlow:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
@@ -36,6 +33,6 @@ KillingBlow:SetScript("OnEvent", function(self, event, ...)
 		local destGUID, tname = select(8, ...)
 		local classIndex = select(2, GetPlayerInfoByGUID(destGUID))
 		local color = classIndex and RAID_CLASS_COLORS[classIndex] or {r = 0.2, g = 1, b = 0.2}
-		KillingBlowMsg:AddMessage("|cff33FF33"..ACTION_PARTY_KILL..": |r"..tname, color.r, color.g, color.b)
+		MessageFrame:AddMessage("|cff33FF33"..ACTION_PARTY_KILL..": |r"..tname, color.r, color.g, color.b)
 	end
 end)

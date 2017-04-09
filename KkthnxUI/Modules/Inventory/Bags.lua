@@ -596,8 +596,9 @@ function Bags:SlotUpdate(id, button)
 	local Texture, Count, Lock, quality, _, _, _, _, _, ItemID = GetContainerItemInfo(id, button:GetID())
 	local IsNewItem = C_NewItems.IsNewItem(id, button:GetID())
 
-	if IsNewItem ~= true and button.Animation and button.Animation:IsPlaying() then
-		button.Animation:Stop()
+	--if IsNewItem ~= true and button.Animation and button.Animation.playing then
+	if IsNewItem ~= true then
+		K.UIFrameStopFlash(button)
 	end
 
 	if (button.ItemID == ItemID) then
@@ -626,18 +627,19 @@ function Bags:SlotUpdate(id, button)
 	if IsNewItem and NewItem then
 		NewItem:SetAlpha(0)
 
-		if not button.Animation then
-			button.Animation = button:CreateAnimationGroup()
-			button.Animation:SetLooping("BOUNCE")
+		-- if not button.Animation then
+		-- 	button.Animation = button:CreateAnimationGroup()
+		-- 	button.Animation:SetLooping("BOUNCE")
+		--
+		-- 	button.FadeOut = button.Animation:CreateAnimation("Alpha")
+		-- 	button.FadeOut:SetFromAlpha(1)
+		-- 	button.FadeOut:SetToAlpha(0)
+		-- 	button.FadeOut:SetDuration(0.40)
+		-- 	button.FadeOut:SetSmoothing("IN_OUT")
+		-- end
 
-			button.FadeOut = button.Animation:CreateAnimation("Alpha")
-			button.FadeOut:SetFromAlpha(1)
-			button.FadeOut:SetToAlpha(0)
-			button.FadeOut:SetDuration(0.40)
-			button.FadeOut:SetSmoothing("IN_OUT")
-		end
-
-		button.Animation:Play()
+		--button.Animation:Play()
+		K.UIFrameFlash(button, 1, true)
 	end
 
 	if IsQuestItem then

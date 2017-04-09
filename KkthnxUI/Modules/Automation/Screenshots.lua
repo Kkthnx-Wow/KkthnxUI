@@ -6,10 +6,11 @@ local C_Timer_After = C_Timer.After
 local Screenshot = Screenshot
 
 -- Take screenshots of defined events (Sinaris)
-local function OnEvent(self, event, ...)
-	C_Timer_After(1, function() Screenshot() end)
+local function TakeScreenshot(self, event, ...)
+	C_Timer_After(1.2, function() Screenshot() end)
 end
 
-local AScreenShot = CreateFrame("Frame")
-AScreenShot:RegisterEvent("ACHIEVEMENT_EARNED")
-AScreenShot:SetScript("OnEvent", OnEvent)
+local Loading = CreateFrame("Frame")
+Loading:RegisterEvent("ACHIEVEMENT_EARNED")
+Loading:RegisterEvent("SHOW_LOOT_TOAST_LEGENDARY_LOOTED")
+Loading:SetScript("OnEvent", TakeScreenshot)

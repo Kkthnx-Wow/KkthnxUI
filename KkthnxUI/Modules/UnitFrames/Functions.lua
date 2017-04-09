@@ -23,7 +23,7 @@ local UnitSelectionColor = _G.UnitSelectionColor
 -- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local _, ns = ...
-local oUF = ns.oUF or _G.oUF
+local oUF = ns.oUF or oUF
 local colors = K.Colors
 
 do
