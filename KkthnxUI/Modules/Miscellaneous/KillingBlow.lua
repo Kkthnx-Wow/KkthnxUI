@@ -15,15 +15,18 @@ local ACTION_PARTY_KILL = _G.ACTION_PARTY_KILL
 -- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: COMBATLOG_OBJECT_CONTROL_PLAYER
 
+local Movers = K.Movers
+
 -- Setup message frame
 local MessageFrame = CreateFrame("ScrollingMessageFrame", "KillingBlowMessageFrame", UIParent)
 MessageFrame:SetFont(C.Media.Font, 18, "OUTLINE")
-MessageFrame:SetSize(200, 150)
+MessageFrame:SetSize(256, 64)
 MessageFrame:SetPoint("CENTER", 0, 205)
 MessageFrame:SetInsertMode("TOP")
 MessageFrame:SetTimeVisible(3)
 MessageFrame:SetFadeDuration(1.5)
 MessageFrame:SetFrameLevel(0)
+Movers:RegisterFrame(MessageFrame)
 
 local KillingBlow = CreateFrame("Frame")
 KillingBlow:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")

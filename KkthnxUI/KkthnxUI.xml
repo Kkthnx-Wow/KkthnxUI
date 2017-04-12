@@ -39,7 +39,6 @@
    <Script file="Libraries\LibChatAnims\LibChatAnims.lua" />
    <Script file="Libraries\LibAnim-2.01\LibAnim-2.01.lua" />
    <Include file="Libraries\LibDropDownMenu\LibDropDownMenu.xml" />
-   <Script file="Libraries\LibDebug\LibDebug.lua" />
    <!-- Media -->
    <Script file="Media\Media.lua" />
    <!-- Core -->

@@ -33,11 +33,11 @@ function KkthnxUIAuras:DisableBlizzardAuras()
 end
 
 function KkthnxUIAuras:StartOrStopFlash(timeleft)
-	if(timeleft < KkthnxUIAuras.FlashTimer) then
-		if(not self:IsPlaying()) then
+	if (timeleft < KkthnxUIAuras.FlashTimer) then
+		if (not self:IsPlaying()) then
 			self:Play()
 		end
-	elseif(self:IsPlaying()) then
+	elseif (self:IsPlaying()) then
 		self:Stop()
 	end
 end
@@ -45,10 +45,10 @@ end
 function KkthnxUIAuras:OnUpdate(elapsed)
 	local TimeLeft
 
-	if(self.Enchant) then
+	if (self.Enchant) then
 		local Expiration = select(self.Enchant, GetWeaponEnchantInfo())
 
-		if(Expiration) then
+		if (Expiration) then
 			TimeLeft = Expiration / 1e3
 		else
 			TimeLeft = 0
@@ -59,7 +59,7 @@ function KkthnxUIAuras:OnUpdate(elapsed)
 
 	self.TimeLeft = TimeLeft
 
-	if(TimeLeft <= 0) then
+	if (TimeLeft <= 0) then
 		self.TimeLeft = nil
 		self.Duration:SetText("")
 
@@ -70,24 +70,23 @@ function KkthnxUIAuras:OnUpdate(elapsed)
 		return self:SetScript("OnUpdate", nil)
 	else
 		local Text = K.FormatTime(TimeLeft)
-		local r, g, b = K.ColorGradient(self.TimeLeft / self.Dur, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 
-		if(TimeLeft < 60.5) then
+		if (TimeLeft < 60.5) then
 			if C.Auras.Flash then
 				KkthnxUIAuras.StartOrStopFlash(self.Animation, TimeLeft)
 			end
 
-			if(TimeLeft < 5) then
-				self.Duration:SetTextColor(255/255, 20/255, 20/255)
+			if (TimeLeft < 5) then
+				self.Duration:SetTextColor(255/255, 0/255, 0/255)
 			else
-				self.Duration:SetTextColor(255/255, 165/255, 0/255)
+				self.Duration:SetTextColor(255/255, 255/255, 0/255)
 			end
 		else
 			if self.Animation and self.Animation:IsPlaying() then
 				self.Animation:Stop()
 			end
 
-			self.Duration:SetTextColor(1, 1, 1)
+			self.Duration:SetTextColor(255/255, 255/255, 255/255)
 		end
 
 		self.Duration:SetText(Text)
@@ -177,7 +176,7 @@ end
 function KkthnxUIAuras:OnAttributeChanged(attribute, value)
 	if (attribute == "index") then
 		return KkthnxUIAuras.UpdateAura(self, value)
-	elseif(attribute == "target-slot") then
+	elseif (attribute == "target-slot") then
 		return KkthnxUIAuras.UpdateTempEnchant(self, value)
 	end
 end

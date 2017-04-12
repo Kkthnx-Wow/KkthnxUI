@@ -29,6 +29,12 @@ local IsInRaid = _G.IsInRaid
 local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PET_BATTLE_COMBAT_LOG = _G.PET_BATTLE_COMBAT_LOG
+local TIMESTAMP_FORMAT_HHMM = _G.TIMESTAMP_FORMAT_HHMM
+local TIMESTAMP_FORMAT_HHMM_24HR = _G.TIMESTAMP_FORMAT_HHMM_24HR
+local TIMESTAMP_FORMAT_HHMM_AMPM = _G.TIMESTAMP_FORMAT_HHMM_AMPM
+local TIMESTAMP_FORMAT_HHMMSS = _G.TIMESTAMP_FORMAT_HHMMSS
+local TIMESTAMP_FORMAT_HHMMSS_24HR = _G.TIMESTAMP_FORMAT_HHMMSS_24HR
+local TIMESTAMP_FORMAT_HHMMSS_AMPM = _G.TIMESTAMP_FORMAT_HHMMSS_AMPM
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
@@ -265,7 +271,14 @@ local function SetChatStyle(frame)
 		end)
 	end
 
-	if frame ~= COMBATLOG or id ~= 2 then
+	if frame ~= COMBATLOG and id ~= 2 then
+		TIMESTAMP_FORMAT_HHMM = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M]|r "
+		TIMESTAMP_FORMAT_HHMMSS = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M:%S]|r "
+		TIMESTAMP_FORMAT_HHMMSS_24HR = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%H:%M:%S]|r "
+		TIMESTAMP_FORMAT_HHMMSS_AMPM = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M:%S %p]|r "
+		TIMESTAMP_FORMAT_HHMM_24HR = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%H:%M]|r "
+		TIMESTAMP_FORMAT_HHMM_AMPM = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M %p]|r "
+
 		hooks[frame] = frame.AddMessage
 		frame.AddMessage = AddMessage
 	else
@@ -295,15 +308,8 @@ local function SetupChat()
 		end
 
 		-- Font and font style for chat
-		if C.Chat.Outline == true then
-			frame:SetFont(C.Media.Font, fontsize, C.Media.Font_Style)
-			frame:SetShadowOffset(0, 0)
-			frame:SetShadowColor(0, 0, 0, 0.2)
-		else
-			frame:SetFont(C.Media.Font, fontsize)
-			frame:SetShadowOffset(K.Mult, -K.Mult)
-			frame:SetShadowColor(0, 0, 0, 0.9)
-		end
+		frame:SetFont(C.Media.Font, fontsize, C.Chat.Outline and "OUTLINE" or "")
+		frame:SetShadowOffset(C.Chat.Outline and 0 or K.Mult, C.Chat.Outline and -0 or -K.Mult)
 
 		frame:SetSize(C.Chat.Width, C.Chat.Height)
 	end
@@ -320,12 +326,9 @@ local function SetupChat()
 	ChatTypeInfo.SAY.sticky = 1
 	ChatTypeInfo.WHISPER.sticky = 1
 	ChatTypeInfo.YELL.sticky = 0
-
-	ChatTypeInfo.GUILD.flashTabOnGeneral = true
-	ChatTypeInfo.OFFICER.flashTabOnGeneral = true
 end
 
---This changes the growth direction of the toast frame depending on position of the mover
+-- This changes the growth direction of the toast frame depending on position of the mover
 local BNetMover = CreateFrame("Frame", "BNetMover", UIParent)
 BNetMover:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
 BNetMover:SetPoint(unpack(C.Position.BnetPopup))

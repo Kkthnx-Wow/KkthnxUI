@@ -3,9 +3,9 @@ if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("Cooldow
 
 -- Lua API
 local _G = _G
-local ceil = math.ceil
-local floor = math.floor
-local strfind = string.find
+local math_ceil = math.ceil
+local math_floor = math.floor
+local string_find = string.find
 
 -- Wow API
 local GetTime = _G.GetTime
@@ -17,7 +17,6 @@ local ICON_SIZE = 36 -- the normal size for an icon (don"t change this)
 local FONT_SIZE = C.Cooldown.FontSize -- the base font size to use at a scale of 1
 local MIN_SCALE = 0.5 -- the minimum scale we want to show cooldown counts at, anything below this will be hidden
 local MIN_DURATION = 1.5 -- the minimum duration to show cooldown text for
-local NUM_CHARGES = 2 -- the minimum duration to show cooldown text for
 local threshold = C.Cooldown.Threshold
 
 local TimeColors = {
@@ -38,25 +37,25 @@ local TimeFormats = {
 
 local DAY, HOUR, MINUTE = 86400, 3600, 60 -- used for calculating aura time text
 local DAYISH, HOURISH, MINUTEISH = HOUR * 23.5, MINUTE * 59.5, 59.5 -- used for caclculating aura time at transition points
-local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY/2 + 0.5, HOUR/2 + 0.5, MINUTE/2 + 0.5 -- used for calculating next update times
+local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY / 2 + 0.5, HOUR / 2 + 0.5, MINUTE / 2 + 0.5 -- used for calculating next update times
 
 -- will return the the value to display, the formatter id to use and calculates the next update for the Aura
 local function GetTimeInfo(s, threshhold)
 	if s < MINUTE then
 		if s >= threshhold then
-			return floor(s), 3, 0.51
+			return math_floor(s), 3, 0.51
 		else
 			return s, 4, 0.051
 		end
 	elseif s < HOUR then
-		local minutes = floor((s/MINUTE)+.5)
-		return ceil(s / MINUTE), 2, minutes > 1 and (s - (minutes*MINUTE - HALFMINUTEISH)) or (s - MINUTEISH)
+		local minutes = math_floor((s / MINUTE) + 0.5)
+		return math_ceil(s / MINUTE), 2, minutes > 1 and (s - (minutes * MINUTE - HALFMINUTEISH)) or (s - MINUTEISH)
 	elseif s < DAY then
-		local hours = floor((s/HOUR)+.5)
-		return ceil(s / HOUR), 1, hours > 1 and (s - (hours*HOUR - HALFHOURISH)) or (s - HOURISH)
+		local hours = math_floor((s / HOUR) + 0.5)
+		return math_ceil(s / HOUR), 1, hours > 1 and (s - (hours * HOUR - HALFHOURISH)) or (s - HOURISH)
 	else
-		local days = floor((s/DAY)+.5)
-		return ceil(s / DAY), 0, days > 1 and (s - (days*DAY - HALFDAYISH)) or (s - DAYISH)
+		local days = math_floor((s / DAY) + 0.5)
+		return math_ceil(s / DAY), 0, days > 1 and (s - (days * DAY - HALFDAYISH)) or (s - DAYISH)
 	end
 end
 
@@ -71,7 +70,7 @@ local function Cooldown_ForceUpdate(self)
 end
 
 local function Cooldown_OnSizeChanged(self, width, height)
-	local fontScale = floor(width +.5) / ICON_SIZE
+	local fontScale = math_floor(width + 0.5) / ICON_SIZE
 	local override = self:GetParent():GetParent().SizeOverride
 	if override then
 		fontScale = override / FONT_SIZE
@@ -119,7 +118,8 @@ local function Cooldown_Create(self)
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints()
 
-	local timer = CreateFrame("Frame", nil, scaler) timer:Hide()
+	local timer = CreateFrame("Frame", nil, scaler)
+	timer:Hide()
 	timer:SetAllPoints()
 	timer:SetScript("OnUpdate", Cooldown_OnUpdate)
 
@@ -128,20 +128,21 @@ local function Cooldown_Create(self)
 	text:SetJustifyH("CENTER")
 	timer.text = text
 
-	Cooldown_OnSizeChanged(timer, scaler:GetSize())
-	scaler:SetScript("OnSizeChanged", function(_, ...) Cooldown_OnSizeChanged(timer, ...) end)
+	Cooldown_OnSizeChanged(timer, self:GetSize())
+	self:SetScript("OnSizeChanged", function(_, ...) Cooldown_OnSizeChanged(timer, ...) end)
+
+	-- prevent display of blizzard cooldown text
+	self:SetHideCountdownNumbers(true)
 
 	self.timer = timer
 	return timer
 end
 
 local function Cooldown_Start(self, start, duration, charges, maxCharges)
-	if (self.noOCC) then return end
+	if self.noOCC then return end
+	self:SetHideCountdownNumbers(true)
 
-	local remainingCharges = charges or 0
-
-	if self:GetName() and strfind(self:GetName(), "ChargeCooldown") then return end
-	if start > 0 and duration > MIN_DURATION and remainingCharges < NUM_CHARGES then
+	if start > 0 and duration > MIN_DURATION then
 		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
 		timer.duration = duration
@@ -152,7 +153,6 @@ local function Cooldown_Start(self, start, duration, charges, maxCharges)
 		local timer = self.timer
 		if timer then
 			Cooldown_Stop(timer)
-			return
 		end
 	end
 end
@@ -161,8 +161,7 @@ hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown",
 
 if not _G["ActionBarButtonEventsFrame"] then return end
 
-local active = {}
-local hooked = {}
+local active, hooked = {}, {}
 
 local function cooldown_OnShow(self)
 	active[self] = true
@@ -171,31 +170,6 @@ end
 local function cooldown_OnHide(self)
 	active[self] = nil
 end
-
-local function cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges)
-	local timer = self.timer
-	return not(timer and timer.start == start and timer.duration == duration and timer.charges == charges and timer.maxCharges == maxCharges)
-end
-
-local function cooldown_Update(self)
-	local button = self:GetParent()
-	local action = button.action
-	local start, duration, enable = GetActionCooldown(action)
-	local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action)
-
-	if cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges) then
-		Cooldown_Start(self, start, duration, charges, maxCharges)
-	end
-end
-
-local EventWatcher = CreateFrame("Frame")
-EventWatcher:Hide()
-EventWatcher:SetScript("OnEvent", function(self, event)
-	for cooldown in pairs(active) do
-		cooldown_Update(cooldown)
-	end
-end)
-EventWatcher:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
 
 local function actionButton_Register(frame)
 	local cooldown = frame.cooldown

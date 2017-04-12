@@ -5,37 +5,11 @@ if C.Unitframe.Enable ~= true then return end
 local _G = _G
 
 -- Wow API
-local UnitIsFriend = _G.UnitIsFriend
-local UnitIsUnit = _G.UnitIsUnit
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
-local C_MountJournal_GetMountIDs = _G.C_MountJournal.GetMountIDs
-local C_MountJournal_GetMountInfoByID = _G.C_MountJournal.GetMountInfoByID
+local UnitCanAttack = _G.UnitCanAttack
+local UnitPlayerControlled = _G.UnitPlayerControlled
 
 -- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS:
-
-local mountsList = {}
-
-for _, id in next, C_MountJournal_GetMountIDs() do
-	local _, spellID = C_MountJournal_GetMountInfoByID(id)
-
-	mountsList[spellID] = true
-end
-
-do
-	if K.Class == "HUNTER" or K.Class == "MAGE" or K.Class == "ROGUE" or K.Class == "WARLOCK" then
-		function K.GetPlayerRole()
-			return "DAMAGER"
-		end
-	else
-		function K.GetPlayerRole()
-			local spec = GetSpecialization() or 0
-			local _, _, _, _, _, role = GetSpecializationInfo(spec)
-			return role or "DAMAGER"
-		end
-	end
-end
 
 local blackList = {
 	-- Useless
@@ -144,57 +118,91 @@ local blackList = {
 	[97821] = true, -- Void-Touched
 }
 
-function K.CustomAuraFilters(_, unit, icon, _, _, _, _, dtype, duration, _, unitCaster, isStealable, _, spellID, _, isBossAura)
+local genFilter = {}
+local arenaFilter = {}
+local bossFilter = {}
+
+local auraFilters = {
+	genFilter,
+	arenaFilter,
+	bossFilter
+}
+
+local isPlayer = {
+	player = true,
+	pet = true,
+	vehicle = true
+}
+
+local filters = {
+	[0] = function(self, unit, caster) return true end,
+	[1] = function(self, unit, caster) return isPlayer[caster] end,
+	[2] = function(self, unit, caster) return UnitCanAttack("player", unit) end,
+	[3] = function(self, unit, caster) return false end,
+}
+
+function K.PetAuraFilter(_, _, _, _, _, _, _, _, _, _, caster, _, _, spellID, _, _, _, _, _, _, _, _)
 	-- blackList
 	if blackList[spellID] then
 		return false
 	end
 
-	local isFriendly = UnitIsFriend("player", unit)
-	local isFriendlyBuff = (isFriendly and not icon.isDebuff) and K.GetPlayerRole() or false
-	local isHostileBuff = (not isFriendly and not icon.isDebuff) and K.GetPlayerRole() or false
-	local isFriendlyDebuff = (isFriendly and icon.isDebuff) and K.GetPlayerRole() or false
-	local isHostileDebuff = (not isFriendly and icon.isDebuff) and K.GetPlayerRole() or false
-	local isPlayerAura = icon.isPlayer or (unitCaster and UnitIsUnit(unitCaster, "pet"))
-	isBossAura = isBossAura or unitCaster and (UnitIsUnit(unitCaster, "boss1") or UnitIsUnit(unitCaster, "boss2") or UnitIsUnit(unitCaster, "boss3") or UnitIsUnit(unitCaster, "boss4") or UnitIsUnit(unitCaster, "boss5"))
+	return (caster and isPlayer[caster]) and (not genFilter[spellID] == 3)
+end
 
-	-- isBossAura
-	if isBossAura then
-		return true, isHostileDebuff, isFriendlyDebuff, isHostileDebuff, isFriendlyBuff
+function K.TargetAuraFilter(self, unit, iconFrame, _, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, _, nameplateShowAll, _, _, _, _)
+	-- blackList
+	if blackList[spellID] then
+		return false
 	end
 
-	-- mountsList
-	if mountsList[spellID] then
-		return false, isHostileDebuff, isFriendlyBuff
-	end
-
-	-- self-cast
-	if unitCaster and UnitIsUnit(unit, unitCaster) then
-		if duration and duration ~= 0 then
-			return true, isHostileDebuff, isFriendlyDebuff, isHostileDebuff, isFriendlyBuff
-		else
-			return true, isHostileDebuff, isFriendlyDebuff, isHostileDebuff, isFriendlyBuff
-		end
-	end
-
-	-- isPlayerAura
-	if isPlayerAura and duration and duration ~= 0 then
-		return true, isHostileDebuff, isFriendlyDebuff, isHostileDebuff, isFriendlyBuff
-	end
-
-	if isFriendly then
-		if icon.filter == "HARMFUL"then
-			-- IsDispellable
-			if dtype and K.IsDispellable(dtype) then
-				return true, isFriendlyBuff
-			end
-		end
+	local v = genFilter[spellID]
+	if v and filters[v] then
+		return filters[v](self, unit, caster)
+	elseif UnitPlayerControlled(unit) then
+		return true
 	else
-		-- stealable
-		if isStealable and not UnitIsUnit(unit, "player") then
-			return true, isHostileDebuff
-		end
+		return (iconFrame.filter == "HELPFUL") or (isBossDebuff) or nameplateShowAll or (isPlayer[caster]) or (caster == unit)
+	end
+end
+
+function K.PartyAuraFilter(self, unit, iconFrame, _, _, _, _, _, _, _, caster, _, nameplateShowPersonal, spellID, _, isBossDebuff, _, nameplateShowAll, _, _, _, _)
+	-- blackList
+	if blackList[spellID] then
+		return false
 	end
 
-	return false
+	local v = genFilter[spellID]
+	if v and filters[v] then
+		return filters[v](self, unit, caster)
+	elseif (iconFrame.filter == "HELPFUL") then -- BUFFS
+		return (nameplateShowPersonal and isPlayer[caster]) or isBossDebuff or nameplateShowAll
+	else
+		return true
+	end
+end
+
+function K.ArenaAuraFilter(_, _, _, _, _, _, _, _, _, _, _, _, _, spellID, _, _, _, _, _, _, _, _)
+	-- blackList
+	if blackList[spellID] then
+		return false
+	end
+
+	return arenaFilter[spellID]
+end
+
+function K.BossAuraFilter(_, _, _, _, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, _, _, _, _, _, _)
+	-- blackList
+	if blackList[spellID] then
+		return false
+	end
+
+	local v = bossFilter[spellID]
+	if v == 1 then
+		return isPlayer[caster]
+	elseif v == 0 then
+		return true
+	else
+		return isBossDebuff
+	end
 end

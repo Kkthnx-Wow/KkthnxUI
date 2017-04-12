@@ -17,7 +17,7 @@
    local Resting = self:CreateTexture(nil, 'OVERLAY')
    Resting:SetSize(16, 16)
    Resting:SetPoint('TOPLEFT', self)
-   
+
    -- Register it with oUF
    self.Resting = Resting
 

@@ -40,13 +40,8 @@ SetupTabs:SetScript("OnEvent", function()
 		local tab = _G["ChatFrame"..i.."Tab"]
 
 		tab.fontString = tab:GetFontString()
-		if C.Chat.TabsOutline == true then
-			tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-			tab.fontString:SetShadowOffset(0, -0)
-		else
-			tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size)
-			tab.fontString:SetShadowOffset(K.Mult, -K.Mult)
-		end
+		tab.fontString:SetFont(C.Media.Font, C.Media.Font_Size, C.Chat.TabsOutline and "OUTLINE" or "")
+		tab.fontString:SetShadowOffset(C.Chat.TabsOutline and 0 or K.Mult, C.Chat.TabsOutline and -0 or -K.Mult)
 
 		tab.leftTexture:SetTexture(nil)
 		tab.middleTexture:SetTexture(nil)

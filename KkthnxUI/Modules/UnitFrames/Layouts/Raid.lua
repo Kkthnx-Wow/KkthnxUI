@@ -172,13 +172,13 @@ local function CreateRaidLayout(self, unit)
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("TOP", self.Health, "CENTER", 0, 4)
 	self.Health.Value:SetFont(C.Media.Font, 11, C.Raidframe.Outline and "OUTLINE" or "")
-	self.Health.Value:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+	self.Health.Value:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Raidframe.Outline and -0 or -K.Mult)
 
 	-- Name text
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOM", self.Health, "CENTER", 0, 3)
 	self.Name:SetFont(C.Media.Font, C.Media.Font_Size, C.Raidframe.Outline and "OUTLINE" or "")
-	self.Name:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+	self.Name:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Raidframe.Outline and -0 or -K.Mult)
 	self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameVeryShort]")
 
 	-- Power bar
@@ -344,7 +344,7 @@ local function CreateRaidLayout(self, unit)
 		self.LFDRoleText = self.Health:CreateFontString(nil, "ARTWORK")
 		self.LFDRoleText:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
 		self.LFDRoleText:SetFont(C.Media.Font, 10, C.Raidframe.Outline and "OUTLINE" or "")
-		self.LFDRoleText:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+		self.LFDRoleText:SetShadowOffset(C.Raidframe.Outline and 0 or K.Mult, C.Raidframe.Outline and -0 or -K.Mult)
 		self:Tag(self.LFDRoleText, "[KkthnxUI:RaidRole]")
 	end
 

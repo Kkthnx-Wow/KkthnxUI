@@ -17,7 +17,7 @@
    local Leader = self:CreateTexture(nil, "OVERLAY")
    Leader:SetSize(16, 16)
    Leader:SetPoint("BOTTOM", self, "TOP")
-   
+
    -- Register it with oUF
    self.Leader = Leadera
 

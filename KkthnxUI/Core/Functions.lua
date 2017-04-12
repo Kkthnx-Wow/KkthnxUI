@@ -38,7 +38,7 @@ K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = tru
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
 function K.Print(...)
-	print("|cff3c9bed" .. K.UIName .. "|r:", ...)
+	print("|cff3c9bed"..K.UIName.."|r:", ...)
 end
 
 function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
@@ -60,7 +60,9 @@ end
 -- Return short value of a number
 function K.ShortValue(value)
 	if not value then return "" end
+
 	value = tonumber(value)
+
 	if GetLocale() == "zhCN" then
 		if value >= 1e8 then
 			return ("%.1f亿"):format(value / 1e8):gsub("%.?0+([km])$", "%1")
@@ -82,16 +84,16 @@ function K.ShortValue(value)
 	end
 end
 
--- Rounding
+-- Return rounded number
 function K.Round(num, idp)
-	if (idp and idp > 0) then
+	if(idp and idp > 0) then
 		local mult = 10 ^ idp
 		return math_floor(num * mult + 0.5) / mult
 	end
 	return math_floor(num + 0.5)
 end
 
--- RgbToHex color
+-- RGB to Hex
 function K.RGBToHex(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
 	g = g <= 1 and g >= 0 and g or 0
@@ -214,10 +216,10 @@ function K.ColorGradient(perc, ...)
 	end
 
 	local num = select("#", ...) / 3
-	local segment, relperc = math_modf(perc*(num-1))
-	local r1, g1, b1, r2, g2, b2 = select((segment*3)+1, ...)
+	local segment, relperc = math_modf(perc * (num - 1))
+	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
 
-	return r1 + (r2-r1)*relperc, g1 + (g2-g1)*relperc, b1 + (b2-b1)*relperc
+	return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
 end
 
 -- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
@@ -274,9 +276,9 @@ function K.KillMenuPanel(panel_id, panel_name)
 end
 
 -- Format seconds to min/hour/day
-function K.FormatTime(time)
-	local Day, Hour, Minute = 86400, 3600, 60
+local Day, Hour, Minute = 86400, 3600, 60
 
+function K.FormatTime(time)
 	if (time >= Day) then
 		return string_format("%dd", math_ceil(time / Day))
 	elseif (time >= Hour) then

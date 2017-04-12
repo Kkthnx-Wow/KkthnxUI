@@ -35,7 +35,7 @@ local function SetAnimationGroup(object, type, ...)
 		object.anim.fadeout:SetOrder(1)
 
 		object.anim:SetScript("OnFinished", function(_, requested)
-			if(not requested) then
+			if (not requested) then
 				object.anim:Play()
 			end
 		end)
