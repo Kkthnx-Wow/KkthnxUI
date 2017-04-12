@@ -118,8 +118,7 @@ local function Cooldown_Create(self)
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints()
 
-	local timer = CreateFrame("Frame", nil, scaler)
-	timer:Hide()
+	local timer = CreateFrame("Frame", nil, scaler) timer:Hide()
 	timer:SetAllPoints()
 	timer:SetScript("OnUpdate", Cooldown_OnUpdate)
 
@@ -131,18 +130,15 @@ local function Cooldown_Create(self)
 	Cooldown_OnSizeChanged(timer, self:GetSize())
 	self:SetScript("OnSizeChanged", function(_, ...) Cooldown_OnSizeChanged(timer, ...) end)
 
-	-- prevent display of blizzard cooldown text
-	self:SetHideCountdownNumbers(true)
-
 	self.timer = timer
 	return timer
 end
 
 local function Cooldown_Start(self, start, duration, charges, maxCharges)
-	if self.noOCC then return end
-	self:SetHideCountdownNumbers(true)
+	local remainingCharges = charges or 0
 
-	if start > 0 and duration > MIN_DURATION then
+	if self:GetName() and string_find(self:GetName(), "ChargeCooldown") then return end
+	if start > 0 and duration > MIN_DURATION and remainingCharges < 2 and (not self.noOCC) then
 		local timer = self.timer or Cooldown_Create(self)
 		timer.start = start
 		timer.duration = duration
@@ -153,6 +149,7 @@ local function Cooldown_Start(self, start, duration, charges, maxCharges)
 		local timer = self.timer
 		if timer then
 			Cooldown_Stop(timer)
+			return
 		end
 	end
 end
@@ -161,7 +158,8 @@ hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown",
 
 if not _G["ActionBarButtonEventsFrame"] then return end
 
-local active, hooked = {}, {}
+local active = {}
+local hooked = {}
 
 local function cooldown_OnShow(self)
 	active[self] = true
@@ -171,13 +169,41 @@ local function cooldown_OnHide(self)
 	active[self] = nil
 end
 
+local function cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges)
+	local timer = self.timer
+	return not(timer and timer.start == start and timer.duration == duration and timer.charges == charges and timer.maxCharges == maxCharges)
+end
+
+local function cooldown_Update(self)
+	local button = self:GetParent()
+	local action = button.action
+	local start, duration, enable = GetActionCooldown(action)
+	local charges, maxCharges, chargeStart, chargeDuration = GetActionCharges(action)
+
+	if cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges) then
+		Cooldown_Start(self, start, duration, charges, maxCharges)
+	end
+end
+
+local EventWatcher = CreateFrame("Frame")
+EventWatcher:SetParent(UIFrameHider)
+EventWatcher:SetScript("OnEvent", function(self, event)
+	for cooldown in pairs(active) do
+		cooldown_Update(cooldown)
+	end
+end)
+EventWatcher:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN")
+EventWatcher:RegisterEvent("SPELL_UPDATE_COOLDOWN")
+EventWatcher:RegisterEvent("LOSS_OF_CONTROL_ADDED")
+EventWatcher:RegisterEvent("LOSS_OF_CONTROL_UPDATE")
+
 local function actionButton_Register(frame)
 	local cooldown = frame.cooldown
-	if not hooked[cooldown] then
-		cooldown:HookScript("OnShow", cooldown_OnShow)
-		cooldown:HookScript("OnHide", cooldown_OnHide)
-		hooked[cooldown] = true
-	end
+	if (not C.Cooldown.Enable or cooldown.isHooked) then return end
+	cooldown:HookScript("OnShow", cooldown_OnShow)
+	cooldown:HookScript("OnHide", cooldown_OnHide)
+	cooldown.isHooked = true
+	cooldown:SetHideCountdownNumbers(true)
 end
 
 if _G["ActionBarButtonEventsFrame"].frames then
