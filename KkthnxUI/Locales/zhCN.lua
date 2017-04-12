@@ -27,14 +27,12 @@ L.AFKScreen = {
 }
 
 L.Announce = {
-	FPUse = "%s使用了%s.",
 	Interrupted = INTERRUPTED.."%s的\124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
 	PCAborted = "中止开怪!",
 	PCGo = "冲啊!",
 	PCMessage = "嘲讽%s倒计时%s..",
 	Sapped = "被闷棍",
 	SappedBy = "被闷棍:",
-	SSThanks = "感谢"
 }
 
 L.Auras = {

@@ -106,7 +106,6 @@ end
 
 if CheckAddOn("MBB") or CheckAddOn("MinimapButtonFrame") then
 	C.Minimap.CollectButtons = false
-	C.Skins.MinimapButtons = false
 end
 
 if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("CooldownCount") then

@@ -16,7 +16,6 @@ C["Position"] = {
 	["GroupLoot"] = {"BOTTOM", "UIParent", "BOTTOM", -238, 700},
 	["Loot"] = {"TOPLEFT", "UIParent", "TOPLEFT", 245, -220},
 	["Minimap"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -4, -4},
-	["MinimapButtons"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -4, 1},
 	["ObjectiveTracker"] = {"TOPRIGHT", "UIParent", "TOPRIGHT", -135, -300},
 	["PetHorizontal"] = {"BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167},
 	["PlayerBuffs"] = {"TOPRIGHT", "Minimap", "TOPLEFT", -26, 2},

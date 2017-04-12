@@ -222,7 +222,6 @@ UIConfigLocal.Skins = "AddOn Skins" -- Needs Translation
 UIConfigLocal.SkinsBigWigs = "BigWigs" -- Needs Translation
 UIConfigLocal.SkinsChatBubble = "Blizzard Sprachblasen"
 UIConfigLocal.SkinsDBM = "DeadlyBossMods" -- Needs Translation
-UIConfigLocal.SkinsMinimapButtons = "Minimap buttons" -- Needs Translation
 UIConfigLocal.SkinsRecount = "Recount" -- Needs Translation
 UIConfigLocal.SkinsSkada = "Skada" -- Needs Translation
 UIConfigLocal.SkinsSpy = "Spy" -- Needs Translation

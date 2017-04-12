@@ -14,6 +14,8 @@ local table_remove = table.remove
 local CreateFrame = _G.CreateFrame
 local GetCVar = _G.GetCVar
 local GetLocale = _G.GetLocale
+local GetScreenHeight = _G.GetScreenHeight
+local GetScreenWidth = _G.GetScreenWidth
 local InCombatLockdown = _G.InCombatLockdown
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
@@ -148,6 +150,39 @@ function K.UTF8Sub(str, i, dots)
 			return str
 		end
 	end
+end
+
+function K.GetScreenQuadrant(frame)
+	local x, y = frame:GetCenter()
+	local screenWidth = GetScreenWidth()
+	local screenHeight = GetScreenHeight()
+	local point
+
+	if not frame:GetCenter() then
+		return "UNKNOWN", frame:GetName()
+	end
+
+	if (x > (screenWidth / 4) and x < (screenWidth / 4)*3) and y > (screenHeight / 4)*3 then
+		point = "TOP"
+	elseif x < (screenWidth / 4) and y > (screenHeight / 4)*3 then
+		point = "TOPLEFT"
+	elseif x > (screenWidth / 4)*3 and y > (screenHeight / 4)*3 then
+		point = "TOPRIGHT"
+	elseif (x > (screenWidth / 4) and x < (screenWidth / 4)*3) and y < (screenHeight / 4) then
+		point = "BOTTOM"
+	elseif x < (screenWidth / 4) and y < (screenHeight / 4) then
+		point = "BOTTOMLEFT"
+	elseif x > (screenWidth / 4)*3 and y < (screenHeight / 4) then
+		point = "BOTTOMRIGHT"
+	elseif x < (screenWidth / 4) and (y > (screenHeight / 4) and y < (screenHeight / 4)*3) then
+		point = "LEFT"
+	elseif x > (screenWidth / 4)*3 and y < (screenHeight / 4)*3 and y > (screenHeight / 4) then
+		point = "RIGHT"
+	else
+		point = "CENTER"
+	end
+
+	return point
 end
 
 K.LockedCVars = {}
