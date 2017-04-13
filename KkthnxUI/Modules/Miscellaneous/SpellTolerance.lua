@@ -3,40 +3,38 @@ if C.General.SpellTolerance ~= true then return end
 
 -- Lua API
 local _G = _G
+local math_min = math.min
 
 -- Wow API
 local GetNetStats = _G.GetNetStats
-local SetCVar = _G.SetCVar
+local GetCVar = _G.GetCVar
 
-local SpellTolerance = CreateFrame("Frame")
-local CurrentTolerance = tonumber(GetCVar("SpellQueueWindow"))
-local LastUpdate = 0
+local SpellTolerance = CreateFrame("Frame", "AutoLagTolerance")
+SpellTolerance.cache = GetCVar("SpellQueueWindow")
+SpellTolerance.timer = 0
 
-local function SpellTolerance_OnUpdate(_, Elapsed)
-	LastUpdate = LastUpdate + Elapsed
+local function SpellTolerance_OnUpdate(self, elapsed)
+	self.timer = self.timer + elapsed
 
-	-- Update once per 10 seconds.
-	if (LastUpdate < 10) then
+	if self.timer < 1.0 then
 		return
-	else
-		LastUpdate = 0
 	end
 
-	-- Retrieve the world latency.
-	local _, _, _, NewTolerance = GetNetStats()
+	self.timer = 0
 
-	-- Prevent update spam.
-	if CurrentTolerance then
-		if (NewTolerance == 0 or NewTolerance == CurrentTolerance) then
-			return
-		else
-			CurrentTolerance = NewTolerance
-		end
+	local SpellLatency = math_min(400, select(4, GetNetStats()))
+
+	if SpellLatency == 0 then
+		return
 	end
 
-	-- Adjust our lag as needed.
-	K:LockCVar("SpellQueueWindow", NewTolerance)
-	-- print(NewTolerance)
+	if SpellLatency == self.cache then
+		return
+	end
+
+	K:LockCVar("SpellQueueWindow", SpellLatency)
+
+	self.cache = SpellLatency
 end
 
 SpellTolerance:SetScript("OnUpdate", SpellTolerance_OnUpdate)

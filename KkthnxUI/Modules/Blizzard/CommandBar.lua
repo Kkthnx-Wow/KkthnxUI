@@ -1,64 +1,82 @@
 local K, C, L = unpack(select(2, ...))
 
--- Lua Wow
+-- Lua API
 local _G = _G
 
--- API Wow
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local LoadAddOn = _G.LoadAddOn
+-- Wow API
+local UIParent = _G.UIParent
+local C_Timer_After = _G.C_Timer.After
 
--- GLOBALS: OrderHallCommandBar, CommandBar_Init
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: OrderHallCommandBar
 
--- Mine
-local isInit = false
+local OrderHallSkin = CreateFrame("Frame")
+OrderHallSkin:RegisterEvent("ADDON_LOADED")
+OrderHallSkin:SetScript("OnEvent", function(self, event, addon)
+	if (event == "ADDON_LOADED" and addon == "Blizzard_OrderHallUI") then
+		OrderHallSkin:RegisterEvent("DISPLAY_SIZE_CHANGED")
+		OrderHallSkin:RegisterEvent("UI_SCALE_CHANGED")
+		OrderHallSkin:RegisterEvent("GARRISON_FOLLOWER_CATEGORIES_UPDATED")
+		OrderHallSkin:RegisterEvent("GARRISON_FOLLOWER_ADDED")
+		OrderHallSkin:RegisterEvent("GARRISON_FOLLOWER_REMOVED")
 
-local function CommandBar_OnEnter(self)
-	if not self.isShown then
-		self.isShown = true
-		self:SetPoint("TOP", 0, 2)
+		self.styled = false
+
+		OrderHallCommandBar:HookScript("OnShow", function()
+			local bar = OrderHallCommandBar
+			if not bar.styled then
+
+				bar:EnableMouse(false)
+				bar.Background:SetAtlas(nil)
+
+				bar.ClassIcon:Hide()
+				bar.AreaName:Hide()
+
+				bar.CurrencyIcon:ClearAllPoints()
+				bar.CurrencyIcon:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 2, 0)
+				bar.CurrencyIcon:SetAtlas("legionmission-icon-currency", false)
+
+				bar.Currency:ClearAllPoints()
+				bar.Currency:SetPoint("LEFT", bar.CurrencyIcon, "RIGHT", 5, 0)
+				bar.Currency:SetTextColor(.9, .9, .9)
+				bar.Currency:SetShadowOffset(0.75, -.75)
+
+				bar.WorldMapButton:UnregisterAllEvents()
+				bar.WorldMapButton:Hide()
+
+				bar.styled = true
+			end
+		end)
+	elseif event ~= "ADDON_LOADED" then
+		local bar = OrderHallCommandBar
+
+		local index = 1
+		C_Timer_After(0.3, function() -- Give it a bit more time to collect.
+			local last
+			for i, child in ipairs({bar:GetChildren()}) do
+				if child.Icon and child.Count and child.TroopPortraitCover then
+					child:ClearAllPoints()
+					child:SetPoint("LEFT", bar.Currency, "RIGHT", 10 + (index - 1) * 70, 0)
+					child:SetWidth(60)
+
+					child.TroopPortraitCover:Hide()
+					child.Icon:ClearAllPoints()
+					child.Icon:SetPoint("LEFT", child, "LEFT", 0, 0)
+					child.Icon:SetSize(32, 16)
+
+					child.Count:ClearAllPoints()
+					child.Count:SetPoint("LEFT", child.Icon, "RIGHT", 5, 0)
+					child.Count:SetTextColor(.9, .9, .9)
+					child.Count:SetShadowOffset(.75, -.75)
+
+					last = child.Count
+
+					index = index + 1
+				end
+			end
+		end)
 	end
-end
+end)
 
-local function CommandBar_OnLeave(self)
-	if not self:IsMouseOver(0, -6, 0, 0) then
-		self.isShown = false
-		self:SetPoint("TOP", 0, 24)
-	end
-end
-
-local function CommandBar_Init()
-	if not isInit then
-		local isLoaded = true
-
-		if not IsAddOnLoaded("Blizzard_OrderHallUI") then
-			isLoaded = LoadAddOn("Blizzard_OrderHallUI")
-		end
-
-		if isLoaded then
-			OrderHallCommandBar:StripTextures()
-			OrderHallCommandBar:CreateBackdrop()
-			OrderHallCommandBar:ClearAllPoints()
-			OrderHallCommandBar:SetPoint("TOP", 0, 24)
-			OrderHallCommandBar:SetHitRectInsets(0, 0, 0, -8)
-			OrderHallCommandBar.AreaName:ClearAllPoints()
-			OrderHallCommandBar.Currency:SetPoint("LEFT", OrderHallCommandBar.ClassIcon, "RIGHT", 10, 0)
-			OrderHallCommandBar.AreaName:SetPoint("LEFT", OrderHallCommandBar.CurrencyIcon, "RIGHT", 10, 2)
-			OrderHallCommandBar:SetWidth(OrderHallCommandBar.AreaName:GetStringWidth() + 500)
-			OrderHallCommandBar.ClassIcon:SetTexture("Interface\\TargetingFrame\\UI-Classes-Circles")
-			OrderHallCommandBar.ClassIcon:SetSize(46, 20)
-			OrderHallCommandBar.CurrencyIcon:SetAtlas("legionmission-icon-currency", false)
-			OrderHallCommandBar.AreaName:SetVertexColor(K.Color.r, K.Color.g, K.Color.b)
-			OrderHallCommandBar.WorldMapButton:Kill()
-			OrderHallCommandBar:SetScript("OnEnter", CommandBar_OnEnter)
-			OrderHallCommandBar:SetScript("OnLeave", CommandBar_OnLeave)
-
-			isInit = true
-
-			return true
-		end
-	end
-end
-
-local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", CommandBar_Init)
+-- Credits
+-- Lars "Goldpaw" Norberg for the design.

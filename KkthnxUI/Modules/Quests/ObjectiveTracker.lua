@@ -3,20 +3,21 @@ local K, C, L = unpack(select(2, ...))
 if K.CheckAddOn("DugisGuideViewerZ") then return end
 
 -- Wow Lua
-local unpack = unpack
+local _G = _G
 local math_min = math.min
 
 -- Wow API
-local GetNumQuestWatches = GetNumQuestWatches
-local GetQuestDifficultyColor = GetQuestDifficultyColor
-local GetQuestLogTitle = GetQuestLogTitle
-local GetQuestWatchInfo = GetQuestWatchInfo
+local GetNumQuestWatches = _G.GetNumQuestWatches
+local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
+local GetQuestLogTitle = _G.GetQuestLogTitle
+local GetQuestWatchInfo = _G.GetQuestWatchInfo
+local GetScreenHeight = _G.GetScreenHeight
+local GetScreenWidth = _G.GetScreenWidth
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: OBJECTIVE_TRACKER_DOUBLE_LINE_HEIGHT, ObjectiveTrackerFrame, GameTooltip, UIParent
 -- GLOBALS: ObjectiveTrackerBonusRewardsFrame, QUEST_TRACKER_MODULE, ACHIEVEMENT_TRACKER_MODULE
 
-local bonusObjectivePosition = "AUTO"
 local Movers = K.Movers
 
 -- Blah some shit to skin the button.
@@ -178,7 +179,7 @@ end
 local function RewardsFrame_SetPosition(block)
 	local rewardsFrame = ObjectiveTrackerBonusRewardsFrame
 	rewardsFrame:ClearAllPoints()
-		if bonusObjectivePosition == "RIGHT" or (bonusObjectivePosition == "AUTO" and IsFramePositionedLeft(ObjectiveTrackerFrame)) then
+		if IsFramePositionedLeft(ObjectiveTrackerFrame) then
 			rewardsFrame:SetPoint("TOPLEFT", block, "TOPRIGHT", -10, -4)
 	else
 			rewardsFrame:SetPoint("TOPRIGHT", block, "TOPLEFT", 10, -4)

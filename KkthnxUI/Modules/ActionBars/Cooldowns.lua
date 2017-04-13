@@ -13,18 +13,18 @@ local GetTime = _G.GetTime
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIParent, CreateFrame, GetActionCooldown, GetActionCharges
 
-local ICON_SIZE = 36 -- the normal size for an icon (don"t change this)
+local ICON_SIZE = 36 -- the normal size for an icon (don't change this)
 local FONT_SIZE = C.Cooldown.FontSize -- the base font size to use at a scale of 1
 local MIN_SCALE = 0.5 -- the minimum scale we want to show cooldown counts at, anything below this will be hidden
 local MIN_DURATION = 1.5 -- the minimum duration to show cooldown text for
 local threshold = C.Cooldown.Threshold
 
 local TimeColors = {
-	[0] = K.RGBToHex(0.4, 0.4, 1) or "|cfffefefe",
-	[1] = K.RGBToHex(0.4, 1, 1) or "|cff66ffff",
-	[2] = K.RGBToHex(1, 1, 1) or "|cffffffff",
-	[3] = K.RGBToHex(1, 1, 0) or "|cffffff00",
-	[4] = K.RGBToHex(1, 0, 0) or "|cffff0000",
+	[0] = K.RGBToHex(0.4, 0.4, 1),
+	[1] = K.RGBToHex(0.4, 1, 1),
+	[2] = K.RGBToHex(1, 1, 1),
+	[3] = K.RGBToHex(1, 1, 0),
+	[4] = K.RGBToHex(1, 0, 0),
 }
 
 local TimeFormats = {

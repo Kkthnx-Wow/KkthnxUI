@@ -167,12 +167,10 @@ do
 	}
 
 	function K.Health_PostUpdate(Health, unit, cur, max)
+		if not unit then return end -- Blizz bug in 7.1
+
 		local self = Health:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
-
-		if (not unit or self.unit ~= unit) then
-			return
-		end
 
 		if self.Portrait then
 			UpdatePortraitColor(self, unit, cur, max)
@@ -182,17 +180,16 @@ do
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
-		if not UnitIsConnected(unit) then
+		if unit and not UnitIsConnected(unit) then
 			local Color = K.Colors.disconnected
 			if Health then
-				-- Health:SetValue(0)
 				Health:SetStatusBarColor(0.5, 0.5, 0.5)
 				if Health.Value then
 					Health.Value:SetText(nil)
 				end
 			end
 			return Health.Value:SetFormattedText("|cff%02x%02x%02x%s|r", Color[1] * 255, Color[2] * 255, Color[3] * 255, PLAYER_OFFLINE)
-		elseif UnitIsDeadOrGhost(unit) then
+		elseif unit and UnitIsDeadOrGhost(unit) then
 			local Color = K.Colors.disconnected
 			if Health then
 				Health:SetValue(0)
