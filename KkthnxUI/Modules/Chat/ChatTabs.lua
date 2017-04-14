@@ -8,7 +8,7 @@ local _G = _G
 local hooksecurefunc = _G.hooksecurefunc
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CHAT_FRAME_TAB_ALERTING_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_ALERTING_NOMOUSE_ALPHA
 -- GLOBALS: CHAT_FRAME_TAB_NORMAL_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_NORMAL_NOMOUSE_ALPHA
 -- GLOBALS: CHAT_FRAME_TAB_SELECTED_MOUSEOVER_ALPHA, CHAT_FRAME_TAB_SELECTED_NOMOUSE_ALPHA

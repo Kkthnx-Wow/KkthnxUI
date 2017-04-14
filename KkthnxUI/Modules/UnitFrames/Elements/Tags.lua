@@ -52,7 +52,7 @@ local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
 local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
 
 local function UnitName(unit)

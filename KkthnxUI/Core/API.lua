@@ -13,7 +13,7 @@ local CreateFrame = _G.CreateFrame
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: noHover, noPushed, noChecked, bordera
 
 local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
@@ -95,7 +95,7 @@ local function CreateBackdrop(f, t, size)
 	f.backdrop = b
 end
 
--- Who doesn"t like shadows! More shadows!
+-- Who doesn't like shadows! More shadows!
 local function CreateShadow(f, size)
 	if f.Shadow then
 		return
@@ -407,6 +407,6 @@ while Object do
 	Object = EnumerateFrames(Object)
 end
 
---Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the "Frame" widget
+-- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the "Frame" widget
 local scrollFrame = CreateFrame("ScrollFrame")
 AddAPI(scrollFrame)

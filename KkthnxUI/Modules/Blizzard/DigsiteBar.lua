@@ -8,7 +8,7 @@ local UIParent = _G.UIParent
 local GetCVar = _G.GetCVar
 local DigsiteBar_Init = _G.DigsiteBar_Init
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ArcheologyDigsiteProgressBar, ArchaeologyFrameArtifactPageSolveFrameStatusBar
 -- GLOBALS: UIPARENT_MANAGED_FRAME_POSITIONS, ScriptErrorsFrame, ScriptErrorsFrameScrollFrameText
 

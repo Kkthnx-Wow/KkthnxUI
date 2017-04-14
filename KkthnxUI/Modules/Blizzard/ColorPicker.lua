@@ -15,7 +15,7 @@ local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local RAID_CLASS_COLORS =_G. RAID_CLASS_COLORS
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ColorPickerFrame, OpacitySliderFrame, ColorPPBoxA, ColorPPBoxR, ColorPPBoxG
 -- GLOBALS: ColorPickerOkayButton, ColorPickerCancelButton
 -- GLOBALS: ColorPPBoxB, ColorPPBoxH, ColorSwatch, ColorPickerFrameHeader, ColorPPPaste
@@ -138,7 +138,7 @@ EnhanceColorPicker:SetScript("OnEvent", function(self, event)
 	end)
 
 	ColorPickerOkayButton:HookScript("OnClick", function()
-		collectgarbage("collect"); --Couldn"t hurt to do this, this button usually executes a lot of code.
+		collectgarbage("collect"); --Couldn't hurt to do this, this button usually executes a lot of code.
 		end)
 
 		OpacitySliderFrame:HookScript("OnValueChanged", function(self)

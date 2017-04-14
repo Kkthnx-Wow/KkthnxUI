@@ -96,12 +96,12 @@ function ns.createArenaLayout(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.Smooth = C.Unitframe.Smooth
-	self.Health.PostUpdate = K.Health_PostUpdate
+	self.Health.PostUpdate = K.PostUpdateHealth
 	table_insert(self.mouseovers, self.Health)
 
 	self.Power.colorPower = true
 	self.Power.Smooth = C.Unitframe.Smooth
-	self.Power.PostUpdate = K.Power_PostUpdate
+	self.Power.PostUpdate = K.PostUpdatePower
 	table_insert(self.mouseovers, self.Power)
 
 	-- Name

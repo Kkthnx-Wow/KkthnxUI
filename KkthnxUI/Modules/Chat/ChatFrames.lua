@@ -3,14 +3,11 @@ if C.Chat.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-local format = string.format
-local gsub = string.gsub
-local len = string.len
-local pairs = pairs
-local select = select
-local strfind = string.find
-local sub = string.sub
-local unpack = unpack
+local string_format = string.format
+local string_gsub = string.gsub
+local string_len = string.len
+local string_find = string.find
+local string_sub = string.sub
 
 -- Wow API
 local CHAT_FRAMES = _G.CHAT_FRAMES
@@ -19,6 +16,7 @@ local ChatFrame_SendTell = _G.ChatFrame_SendTell
 local COMBATLOG = _G.COMBATLOG
 local FCF_Close = _G.FCF_Close
 local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
+local FCF_SavePositionAndDimensions = _G.FCF_SavePositionAndDimensions
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
 local GetChannelName = _G.GetChannelName
 local hooksecurefunc = _G.hooksecurefunc
@@ -39,7 +37,7 @@ local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CombatLogQuickButtonFrame_Custom, ChatTypeInfo, SLASH_BIGCHAT1, AFK, DND
 -- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
 -- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory, BNToastFrame, BNToastFrameCloseButton
@@ -70,7 +68,7 @@ local ShortChannelNames = {
 }
 
 local function ShortChannels(self)
-	return format("|Hchannel:%s|h[%s]|h", self, ShortChannelNames[self:upper()] or self:gsub("channel:", ""))
+	return string_format("|Hchannel:%s|h[%s]|h", self, ShortChannelNames[self:upper()] or self:gsub("channel:", ""))
 end
 
 local function AddMessage(frame, string, ...)
@@ -115,10 +113,10 @@ local function OnTextChanged(self)
 
 	if InCombatLockdown() then
 		local MIN_REPEAT_CHARACTERS = 5
-		if (len(text) > MIN_REPEAT_CHARACTERS) then
+		if (string_len(text) > MIN_REPEAT_CHARACTERS) then
 			local repeatChar = true
 			for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-				if (sub(text,(0 - i), (0 - i)) ~= sub(text,(-1 - i),(-1 - i))) then
+				if (string_sub(text,(0 - i), (0 - i)) ~= string_sub(text,(-1 - i),(-1 - i))) then
 					repeatChar = false
 					break
 				end
@@ -133,9 +131,9 @@ local function OnTextChanged(self)
 	if text:len() < 5 then
 		if text:sub(1, 4) == "/tt " then
 			local unitname, realm = UnitName("target")
-			if unitname then unitname = gsub(unitname, " ", "") end
+			if unitname then unitname = string_gsub(unitname, " ", "") end
 			if unitname and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
-				unitname = format("%s-%s", unitname, gsub(realm, " ", ""))
+				unitname = string_format("%s-%s", unitname, string_gsub(realm, " ", ""))
 			end
 			ChatFrame_SendTell((unitname or L.Chat.InvalidTarget), ChatFrame1)
 		end
@@ -146,7 +144,7 @@ local function OnTextChanged(self)
 		end
 	end
 
-	local new, found = gsub(text, "|Kf(%S+)|k(%S+)%s(%S+)|k", "%2 %3")
+	local new, found = string_gsub(text, "|Kf(%S+)|k(%S+)%s(%S+)|k", "%2 %3")
 	if found > 0 then
 		new = new:gsub("|", "")
 		self:SetText(new)
@@ -201,35 +199,35 @@ local function SetChatStyle(frame)
 	end
 
 	-- Remove default chatframe tab textures
-	_G[format("ChatFrame%sTabLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabRight", id)]:Kill()
+	_G[string_format("ChatFrame%sTabLeft", id)]:Kill()
+	_G[string_format("ChatFrame%sTabMiddle", id)]:Kill()
+	_G[string_format("ChatFrame%sTabRight", id)]:Kill()
 
-	_G[format("ChatFrame%sTabSelectedLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedRight", id)]:Kill()
+	_G[string_format("ChatFrame%sTabSelectedLeft", id)]:Kill()
+	_G[string_format("ChatFrame%sTabSelectedMiddle", id)]:Kill()
+	_G[string_format("ChatFrame%sTabSelectedRight", id)]:Kill()
 
-	_G[format("ChatFrame%sTabHighlightLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabHighlightMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabHighlightRight", id)]:Kill()
+	_G[string_format("ChatFrame%sTabHighlightLeft", id)]:Kill()
+	_G[string_format("ChatFrame%sTabHighlightMiddle", id)]:Kill()
+	_G[string_format("ChatFrame%sTabHighlightRight", id)]:Kill()
 
-	_G[format("ChatFrame%sTabSelectedLeft", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedMiddle", id)]:Kill()
-	_G[format("ChatFrame%sTabSelectedRight", id)]:Kill()
+	_G[string_format("ChatFrame%sTabSelectedLeft", id)]:Kill()
+	_G[string_format("ChatFrame%sTabSelectedMiddle", id)]:Kill()
+	_G[string_format("ChatFrame%sTabSelectedRight", id)]:Kill()
 
-	_G[format("ChatFrame%sButtonFrameUpButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrameDownButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrameBottomButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrameMinimizeButton", id)]:Kill()
-	_G[format("ChatFrame%sButtonFrame", id)]:Kill()
+	_G[string_format("ChatFrame%sButtonFrameUpButton", id)]:Kill()
+	_G[string_format("ChatFrame%sButtonFrameDownButton", id)]:Kill()
+	_G[string_format("ChatFrame%sButtonFrameBottomButton", id)]:Kill()
+	_G[string_format("ChatFrame%sButtonFrameMinimizeButton", id)]:Kill()
+	_G[string_format("ChatFrame%sButtonFrame", id)]:Kill()
 
-	_G[format("ChatFrame%sEditBoxFocusLeft", id)]:Kill()
-	_G[format("ChatFrame%sEditBoxFocusMid", id)]:Kill()
-	_G[format("ChatFrame%sEditBoxFocusRight", id)]:Kill()
+	_G[string_format("ChatFrame%sEditBoxFocusLeft", id)]:Kill()
+	_G[string_format("ChatFrame%sEditBoxFocusMid", id)]:Kill()
+	_G[string_format("ChatFrame%sEditBoxFocusRight", id)]:Kill()
 
-	_G[format("ChatFrame%sEditBoxLeft", id)]:Kill()
-	_G[format("ChatFrame%sEditBoxMid", id)]:Kill()
-	_G[format("ChatFrame%sEditBoxRight", id)]:Kill()
+	_G[string_format("ChatFrame%sEditBoxLeft", id)]:Kill()
+	_G[string_format("ChatFrame%sEditBoxMid", id)]:Kill()
+	_G[string_format("ChatFrame%sEditBoxRight", id)]:Kill()
 
 	-- Hide edit box every time we click on a tab
 	tab:HookScript("OnClick", function() editbox:Hide() end)
@@ -291,27 +289,9 @@ local function SetChatStyle(frame)
 end
 
 local function SetupChat()
-	local ChatTypeInfo = getmetatable(ChatTypeInfo).__index
-
 	for i = 1, NUM_CHAT_WINDOWS do
-		local frame = _G["ChatFrame"..i]
-		local id = frame:GetID()
-		local _, fontsize = FCF_GetChatWindowInfo(id)
-
+		local frame = _G[string_format("ChatFrame%s", i)]
 		SetChatStyle(frame)
-
-		-- Min. size for chat font
-		if fontsize < 12 then
-			FCF_SetChatWindowFontSize(nil, frame, 12)
-		else
-			FCF_SetChatWindowFontSize(nil, frame, fontsize)
-		end
-
-		-- Font and font style for chat
-		frame:SetFont(C.Media.Font, fontsize, C.Chat.Outline and "OUTLINE" or "")
-		frame:SetShadowOffset(C.Chat.Outline and 0 or K.Mult, C.Chat.Outline and -0 or -K.Mult)
-
-		frame:SetSize(C.Chat.Width, C.Chat.Height)
 	end
 
 	-- Remember last channel
@@ -326,6 +306,33 @@ local function SetupChat()
 	ChatTypeInfo.SAY.sticky = 1
 	ChatTypeInfo.WHISPER.sticky = 1
 	ChatTypeInfo.YELL.sticky = 0
+end
+
+local function SetupChatPosAndFont()
+	for i = 1, NUM_CHAT_WINDOWS do
+		local frame = _G[string_format("ChatFrame%s", i)]
+		local id = frame:GetID()
+		local _, fontSize = FCF_GetChatWindowInfo(id)
+
+		-- Min. size for chat font
+		if fontSize < 12 then
+			FCF_SetChatWindowFontSize(nil, frame, 12)
+		else
+			FCF_SetChatWindowFontSize(nil, frame, fontSize)
+		end
+
+		-- Font and font style for chat
+		frame:SetFont(C.Media.Font, fontSize, C.Chat.Outline and "OUTLINE" or "")
+		frame:SetShadowOffset(C.Chat.Outline and 0 or K.Mult, C.Chat.Outline and -0 or -K.Mult)
+
+		-- Force chat position
+		if i == 1 then
+			frame:ClearAllPoints()
+			frame:SetSize(C.Chat.Width, C.Chat.Height)
+			frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
+			FCF_SavePositionAndDimensions(frame) -- Important
+		end
+	end
 end
 
 -- This changes the growth direction of the toast frame depending on position of the mover
@@ -361,18 +368,18 @@ local function SetToastFrame()
 end
 
 -- Remove player"s realm name
-local function RemoveRealmName(self, event, msg, author, ...)
-	local realm = gsub(K.Realm, " ", "")
+local function RemoveRealmName(event, msg, author, ...)
+	local realm = string_gsub(K.Realm, " ", "")
 	if msg:find("-" .. realm) then
-		return false, gsub(msg, "%-"..realm, ""), author, ...
+		return false, string_gsub(msg, "%-"..realm, ""), author, ...
 	end
 end
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", RemoveRealmName)
 
-
+-- Close Pet COMBATLOG
 local ClosePetLog = CreateFrame("Frame")
 ClosePetLog:RegisterEvent("PET_BATTLE_CLOSE")
-ClosePetLog:SetScript("OnEvent", function(self, event)
+ClosePetLog:SetScript("OnEvent", function(event)
 	for _, frameName in pairs(CHAT_FRAMES) do
 		local frame = _G[frameName]
 		if frame and _G[frameName.."Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG) then
@@ -382,15 +389,15 @@ ClosePetLog:SetScript("OnEvent", function(self, event)
 end)
 
 -- Big Trade Chat
-local bigchat = false
+local bigChat = false
 function SlashCmdList.BIGCHAT(msg)
-	if bigchat == false then
+	if bigChat == false then
 		ChatFrame1:SetSize(400, 400)
-		bigchat = true
+		bigChat = true
 		print(L.Chat.BigChatOn)
 	else
 		ChatFrame1:SetSize(400, 150)
-		bigchat = false
+		bigChat = false
 		print(L.Chat.BigChatOff)
 	end
 end
@@ -402,8 +409,15 @@ _G.SLASH_CHATRESET1 = "/chatreset"
 SlashCmdList.CHATRESET = function() Install:ChatSetup() _G.ReloadUI() end
 
 local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", function()
-	SetupChat()
-	SetToastFrame()
+Loading:RegisterEvent("ADDON_LOADED")
+Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
+Loading:SetScript("OnEvent", function(self, event)
+	if event == "ADDON_LOADED" then
+		self:UnregisterEvent("ADDON_LOADED")
+		SetupChat()
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		SetupChatPosAndFont()
+		SetToastFrame()
+	end
 end)

@@ -12,7 +12,7 @@ local GetCVarBool = _G.GetCVarBool
 local ScriptErrorsFrame_OnError = _G.ScriptErrorsFrame_OnError
 local StaticPopup_Hide = _G.StaticPopup_Hide
 
--- Global variables that we don"t cache, list them here for mikk's FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ScriptErrorsFrameScrollFrameText, ScriptErrorsFrame, ScriptErrorsFrameScrollFrame
 -- GLOBALS: UIParent, IsAddOnLoaded, LoadAddOn, UIFrameHider
 

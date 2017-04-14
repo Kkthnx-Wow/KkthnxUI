@@ -11,7 +11,7 @@ local UnitAlternatePowerTextureInfo = UnitAlternatePowerTextureInfo
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: GameTooltip, ALTERNATE_POWER_INDEX
 
 -- Skin AltPowerBar(by Tukz)

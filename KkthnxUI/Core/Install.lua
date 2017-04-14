@@ -33,7 +33,7 @@ local StaticPopup_Show = _G.StaticPopup_Show
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local UIFrameFadeOut = _G.UIFrameFadeOut
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, _G.SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: _G.SLASH_CONFIGURE1, _G.SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
@@ -477,7 +477,7 @@ Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
 	if addon ~= "KkthnxUI" then return end
 
-	-- Create empty saved vars if they doesn"t exist.
+	-- Create empty saved vars if they doesn't exist.
 	if KkthnxUIData == nil then KkthnxUIData = {} end
 	if KkthnxUIDataPerChar == nil then KkthnxUIDataPerChar = {} end
 	if KkthnxUIDataPerChar.Movers == nil then KkthnxUIDataPerChar.Movers = {} end

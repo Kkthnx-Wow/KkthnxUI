@@ -9,7 +9,7 @@ Portrait - A PlayerModel or Texture used to represent the unit"s portrait.
 Notes
 
 The quest delivery question mark will be used instead of the unit"s model when
-the client doesn"t have the model information for the unit.
+the client doesn't have the model information for the unit.
 
 Examples
 
@@ -98,7 +98,7 @@ local Enable = function(self, unit)
 		-- party members overlapping quests. This will probably be enough to handle
 		-- model updating.
 		--
-		-- DISABLE isn"t used as it fires when we most likely don"t have the
+		-- DISABLE isn't used as it fires when we most likely don't have the
 		-- information we want.
 		if(unit == "party") then
 			self:RegisterEvent("PARTY_MEMBER_ENABLE", Path)

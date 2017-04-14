@@ -52,7 +52,7 @@ function ChatBubbles:SkinBubble(frame)
 	end
 
 	frame:HookScript("OnShow", ChatBubbles.UpdateBubbleBorder)
-	frame:SetFrameStrata("DIALOG") -- Doesn"t work currently in Legion due to a bug on Blizzards end
+	frame:SetFrameStrata("DIALOG") -- Doesn't work currently in Legion due to a bug on Blizzards end
 	ChatBubbles.UpdateBubbleBorder(frame)
 	frame.isBubblePowered = true
 end

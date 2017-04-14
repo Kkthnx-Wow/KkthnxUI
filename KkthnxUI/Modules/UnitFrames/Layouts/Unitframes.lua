@@ -21,7 +21,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
 -- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
 -- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
@@ -463,7 +463,7 @@ local function CreateUnitLayout(self, unit)
 	end
 	self.Health.Smooth = C.Unitframe.Smooth
 	self.Health.frequentUpdates = true
-	self.Health.PostUpdate = K.Health_PostUpdate
+	self.Health.PostUpdate = K.PostUpdateHealth
 
 	-- Health text
 	if self.IsPartyFrame or self.IsTargetFrame then
@@ -485,7 +485,7 @@ local function CreateUnitLayout(self, unit)
 	self.Power.colorTapping = false
 	self.Power.Smooth = C.Unitframe.Smooth
 	self.Power.frequentUpdates = true
-	self.Power.PostUpdate = K.Power_PostUpdate
+	self.Power.PostUpdate = K.PostUpdatePower
 
 	-- Power Text
 	if (data.mpt) then
@@ -681,7 +681,7 @@ local function CreateUnitLayout(self, unit)
 			myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
 			myBar:SetWidth(data.hpb.w)
 			myBar:SetStatusBarColor(0, 1, .5, .5)
-			myBar:SetMinMaxValues(0,1)
+			myBar:SetMinMaxValues(0, 1)
 			myBar:Hide()
 			myBar.Smooth = C.Unitframe.Smooth
 

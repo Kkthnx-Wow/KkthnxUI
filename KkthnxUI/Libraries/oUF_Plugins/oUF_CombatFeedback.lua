@@ -11,7 +11,7 @@ local CreateFrame = _G.CreateFrame
 local GetTime = _G.GetTime
 local STANDARD_TEXT_FONT = _G.STANDARD_TEXT_FONT
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: COMBATFEEDBACK_FADEINTIME, COMBATFEEDBACK_HOLDTIME, COMBATFEEDBACK_FADEOUTTIME
 -- GLOBALS: CombatFeedbackText
 

@@ -16,7 +16,7 @@ local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CreateFrame, XP, TUTORIAL_TITLE26, GameTooltip
 
 local Bars = 20

@@ -10,65 +10,24 @@ local table_insert = table.insert
 local CreateFrame = _G.CreateFrame
 local DEAD = _G.DEAD
 local GetSpellInfo = _G.GetSpellInfo
-local IsPlayerSpell = _G.IsPlayerSpell
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
+local UnitHealth = _G.UnitHealth
+local UnitHealthMax = _G.UnitHealthMax
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
+local UnitPower = _G.UnitPower
+local UnitPowerMax = _G.UnitPowerMax
 local UnitSelectionColor = _G.UnitSelectionColor
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
 local colors = K.Colors
-
-do
-	local DispelTypesByClass = {
-		PALADIN = {},
-		SHAMAN = {},
-		DRUID = {},
-		PRIEST = {},
-		MONK = {},
-	}
-
-	local ClassDispelTypes = CreateFrame("Frame")
-	ClassDispelTypes:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, event, ...) end)
-	ClassDispelTypes:RegisterEvent("SPELLS_CHANGED", function()
-		local dispelTypes = DispelTypesByClass[K.Class]
-
-		if dispelTypes then
-			if K.Class == "PALADIN" then
-				dispelTypes.Disease = IsPlayerSpell(4987) or IsPlayerSpell(213644) or nil -- Cleanse or Cleanse Toxins
-				dispelTypes.Magic = IsPlayerSpell(4987) or nil -- Cleanse
-				dispelTypes.Poison = dispelTypes.Disease
-			elseif K.Class == "SHAMAN" then
-				dispelTypes.Curse = IsPlayerSpell(51886) or IsPlayerSpell(77130) or nil -- Cleanse Spirit or Purify Spirit
-				dispelTypes.Magic = IsPlayerSpell(77130) or nil -- Purify Spirit
-			elseif K.Class == "DRUID" then
-				dispelTypes.Curse = IsPlayerSpell(2782) or IsPlayerSpell(88423) or nil -- Remove Corruption or Nature's Cure
-				dispelTypes.Magic = IsPlayerSpell(88423) or nil -- Nature's Cure
-				dispelTypes.Poison = dispelTypes.Curse
-			elseif K.Class == "PRIEST" then
-				dispelTypes.Disease = IsPlayerSpell(527) or nil -- Purify
-				dispelTypes.Magic = IsPlayerSpell(527) or IsPlayerSpell(32375) or nil -- Purify or Mass Dispel
-			elseif K.Class == "MONK" then
-				dispelTypes.Disease = IsPlayerSpell(115450) or nil -- Detox
-				dispelTypes.Magic = dispelTypes.Disease
-				dispelTypes.Poison = dispelTypes.Disease
-			end
-		end
-	end)
-
-	function K.IsDispellable(debuffType)
-		if not DispelTypesByClass[K.Class] then return end
-
-		return DispelTypesByClass[K.Class][debuffType]
-	end
-end
 
 function K.MatchUnit(unit)
 	if (unit and unit:match("vehicle")) then
@@ -104,7 +63,7 @@ local function UpdatePortraitColor(self, unit, min, max)
 		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
 	elseif (max == 0 or min/max * 100 < 25) then
 		if (UnitIsPlayer(unit)) then
-			if (unit ~= 'player') then
+			if (unit ~= "player") then
 				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
 			end
 		end
@@ -148,10 +107,10 @@ local function SetValueText(self, tag, cur, max)
 		string = ""
 	end
 
-	self:SetFormattedText("|cff%02x%02x%02x%s|r", 1 * 255, 1 * 255, 1 * 255, string)
+	self:SetFormattedText("|cff%02x%02x%02x%s|r", K.Colors.white[1] * 255, K.Colors.white[2] * 255, K.Colors.white[3] * 255, string)
 end
 
--- PostHealth update
+-- PostUpdateHealth
 do
 	local GHOST = GetSpellInfo(8326)
 	if GetLocale() == "deDE" then
@@ -166,48 +125,53 @@ do
 		DEFICIT = {TEXT_DEF, TEXT_DEF, TEXT_NONE},
 	}
 
-	function K.Health_PostUpdate(Health, unit, cur, max)
-		if not unit then return end -- Blizz bug in 7.1
-
-		local self = Health:GetParent()
+	function K.PostUpdateHealth(bar, unit, cur, max, min)
+		local self = bar:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
-		if self.Portrait then
+		if (not self.Portrait.Bg) then
 			UpdatePortraitColor(self, unit, cur, max)
 		end
 
-		if self.Name and self.Name.Bg then -- For boss frames
+		if self.Name and self.Name.Bg and unit == "boss" then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 
-		if unit and not UnitIsConnected(unit) then
-			local Color = K.Colors.disconnected
-			if Health then
-				Health:SetStatusBarColor(0.5, 0.5, 0.5)
-				if Health.Value then
-					Health.Value:SetText(nil)
+		if (not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit)) then
+			if (not UnitIsConnected(unit)) then
+				local color = K.Colors.white
+				if bar then
+					bar:SetStatusBarColor(0.5, 0.5, 0.5)
+					if bar.Value then
+						bar.Value:SetText(nil)
+					end
 				end
-			end
-			return Health.Value:SetFormattedText("|cff%02x%02x%02x%s|r", Color[1] * 255, Color[2] * 255, Color[3] * 255, PLAYER_OFFLINE)
-		elseif unit and UnitIsDeadOrGhost(unit) then
-			local Color = K.Colors.disconnected
-			if Health then
-				Health:SetValue(0)
-				if Health.Value then
-					Health.Value:SetText(nil)
+				return bar.Value:SetFormattedText("|cff%02x%02x%02x%s|r", color[1] * 255, color[2] * 255, color[3] * 255, PLAYER_OFFLINE)
+			elseif (UnitIsDeadOrGhost(unit)) then
+				local color = K.Colors.white
+				if bar then
+					bar:SetValue(0)
+					if bar.Value then
+						bar.Value:SetText(nil)
+					end
 				end
+				return bar.Value:SetFormattedText("|cff%02x%02x%02x%s|r", color[1] * 255, color[2] * 255, color[3] * 255, UnitIsGhost(unit) and GHOST or UnitIsDead(unit) and DEAD)
 			end
-			return Health.Value:SetFormattedText("|cff%02x%02x%02x%s|r", Color[1] * 255, Color[2] * 255, Color[3] * 255, UnitIsGhost(unit) and GHOST or DEAD)
+		end
+
+		if (not cur) then
+			cur = UnitHealth(unit)
+			max = UnitHealthMax(unit) or 1
 		end
 
 		if uconfig.HealthTag == "DISABLE" then
-			Health.Value:SetText(nil)
-		elseif self.isMouseOver then
-			SetValueText(Health.Value, HealthTagTable[uconfig.HealthTag][1], cur, max, 1, 1, 1)
+			bar.Value:SetText(nil)
+		elseif self.isMouseOver and bar.Value then
+			SetValueText(bar.Value, HealthTagTable[uconfig.HealthTag][1], cur, max)
 		elseif cur < max then
-			SetValueText(Health.Value, HealthTagTable[uconfig.HealthTag][2], cur, max, 1, 1, 1)
+			SetValueText(bar.Value, HealthTagTable[uconfig.HealthTag][2], cur, max)
 		else
-			SetValueText(Health.Value, HealthTagTable[uconfig.HealthTag][3], cur, max, 1, 1, 1)
+			SetValueText(bar.Value, HealthTagTable[uconfig.HealthTag][3], cur, max)
 		end
 	end
 end
@@ -220,37 +184,50 @@ do
 		MINIMAL	= {TEXT_SHORT, TEXT_PERCENT, TEXT_NONE},
 	}
 
-	function K.Power_PostUpdate(Power, unit, cur, max)
-		local self = Power:GetParent()
+	function K.PostUpdatePower(bar, unit, cur, max, min)
+		local self = bar:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
+		local shown = bar:IsShown()
 
 		if max == 0 then
-			if Power:IsShown() then
-				Power:Hide()
+			if shown then
+				bar:Hide()
 			end
 			return
-		elseif not Power:IsShown() then
-			Power:Show()
+		elseif not shown then
+			bar:Show()
 		end
 
-		if UnitIsDeadOrGhost(unit) then
-			Power:SetValue(0)
-			if Power.Value then
-				Power.Value:SetText(nil)
+		if (not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit)) then
+			if not (UnitIsConnected(unit)) then
+				bar:SetValue(0)
+				if bar.Value then
+					bar.Value:SetText(nil)
+				end
+			elseif (UnitIsDeadOrGhost(unit)) then
+				bar:SetValue(0)
+				if bar.Value then
+					bar.Value:SetText(nil)
+				end
+				return
 			end
-			return
 		end
 
-		if not Power.Value then return end
+		if not bar.Value then return end
+
+		if (not cur) then
+			max = UnitPower(unit) or 1
+			cur = UnitPowerMax(unit)
+		end
 
 		if uconfig.PowerTag == "DISABLE" then
-			Power.Value:SetText(nil)
+			bar.Value:SetText(nil)
 		elseif self.isMouseOver then
-			SetValueText(Power.Value, PowerTagTable[uconfig.PowerTag][1], cur, max, 1, 1, 1)
+			SetValueText(bar.Value, PowerTagTable[uconfig.PowerTag][1], cur, max)
 		elseif cur < max then
-			SetValueText(Power.Value, PowerTagTable[uconfig.PowerTag][2], cur, max, 1, 1, 1)
+			SetValueText(bar.Value, PowerTagTable[uconfig.PowerTag][2], cur, max)
 		else
-			SetValueText(Power.Value, PowerTagTable[uconfig.PowerTag][3], cur, max, 1, 1, 1)
+			SetValueText(bar.Value, PowerTagTable[uconfig.PowerTag][3], cur, max)
 		end
 	end
 end
@@ -297,22 +274,22 @@ function K.UnitFrame_OnLeave(self)
 end
 
 -- Statusbar functions
-function K.CreateStatusBar(parent, name)
-	local StatusBar = CreateFrame("StatusBar", name, parent)
-	StatusBar:SetStatusBarTexture(C.Media.Texture)
-	StatusBar:GetStatusBarTexture():SetHorizTile(false)
-	StatusBar:GetStatusBarTexture():SetVertTile(false)
+function K.CreateStatusBar(bar, name)
+	local statusBar = CreateFrame("StatusBar", name, bar)
+	statusBar:SetStatusBarTexture(C.Media.Texture)
+	statusBar:GetStatusBarTexture():SetHorizTile(false)
+	statusBar:GetStatusBarTexture():SetVertTile(false)
 
-	if StatusBar.Styled then return end
+	if statusBar.styled then return end
 
-	StatusBar.Background = StatusBar:CreateTexture(nil, "BACKGROUND")
-	StatusBar.Background:SetTexture(C.Media.Blank)
-	StatusBar.Background:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	StatusBar.Background:SetAllPoints()
+	statusBar.background = statusBar:CreateTexture(nil, "BACKGROUND")
+	statusBar.background:SetTexture(C.Media.Blank)
+	statusBar.background:SetColorTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	statusBar.background:SetAllPoints()
 
-	StatusBar.Styled = true
+	statusBar.styled = true
 
-	return StatusBar
+	return statusBar
 end
 
 -- AuraWatch

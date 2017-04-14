@@ -118,15 +118,16 @@ local blackList = {
 	[97821] = true, -- Void-Touched
 }
 
-local genFilter = {}
 local arenaFilter = {}
 local bossFilter = {}
+local genFilter = {}
+local mountFilter = {}
 
-local auraFilters = {
-	genFilter,
-	arenaFilter,
-	bossFilter
-}
+for _, id in next, C_MountJournal.GetMountIDs() do
+	local _, spellID = C_MountJournal.GetMountInfoByID(id)
+
+	mountFilter[spellID] = true
+end
 
 local isPlayer = {
 	player = true,
@@ -156,6 +157,11 @@ function K.TargetAuraFilter(self, unit, iconFrame, _, _, _, _, _, _, _, caster, 
 		return false
 	end
 
+	-- Mounts
+	if mountFilter[spellID] then
+		return false
+	end
+
 	local v = genFilter[spellID]
 	if v and filters[v] then
 		return filters[v](self, unit, caster)
@@ -172,6 +178,11 @@ function K.PartyAuraFilter(self, unit, iconFrame, _, _, _, _, _, _, _, caster, _
 		return false
 	end
 
+	-- Mounts
+	if mountFilter[spellID] then
+		return false
+	end
+
 	local v = genFilter[spellID]
 	if v and filters[v] then
 		return filters[v](self, unit, caster)
@@ -185,6 +196,11 @@ end
 function K.ArenaAuraFilter(_, _, _, _, _, _, _, _, _, _, _, _, _, spellID, _, _, _, _, _, _, _, _)
 	-- blackList
 	if blackList[spellID] then
+		return false
+	end
+
+	-- Mounts
+	if mountFilter[spellID] then
 		return false
 	end
 

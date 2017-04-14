@@ -27,7 +27,7 @@ local UIParent = _G.UIParent
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UIFrameHider, UIHider
 
 -- Backdrop & Borders
@@ -197,7 +197,7 @@ end
 
 -- Personal Dev use only
 K.IsDev = {Aceer = true, Kkthnx = true, Kkthnxx = true, Pervie = true, Tatterdots = true} -- We will add more of my names as we go.
-K.IsDevRealm = {Stormreaver = true} -- Don"t forget to update realm name(s) if we ever transfer realms.
+K.IsDevRealm = {Stormreaver = true} -- Don't forget to update realm name(s) if we ever transfer realms.
 -- If we forget it could be easly picked up by another player who matches these combinations.
 -- End result we piss off people and we do not want to do that. :(
 

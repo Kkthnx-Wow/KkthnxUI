@@ -14,7 +14,7 @@ local string_join = string.join
 
 -- Wow API
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS:
 
 -- Always debug our temp code.

@@ -12,7 +12,7 @@ local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local UIParent = _G.UIParent
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: PetFrame_Update, PlayerFrame_AnimateOut
 -- GLOBALS: Advanced_UIScaleSlider, Advanced_UseUIScale, BagHelpBox, CollectionsMicroButtonAlert, EJMicroButtonAlert
 -- GLOBALS: HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip, PremadeGroupsPvETutorialAlert, ReagentBankHelpBox
@@ -26,7 +26,7 @@ local UIParent = _G.UIParent
 -- GLOBALS: SpellBookFrameTutorialButton, TalentMicroButtonAlert, TutorialFrameAlertButton, WorldMapFrameTutorialButton
 -- GLOBALS: UIFrameHider, CompactUnitFrameProfiles, HidePartyFrame, ShowPartyFrame
 
--- Kill all stuff on default UI that we don"t need
+-- Kill all stuff on default UI that we don't need
 local DisableBlizzard = CreateFrame("Frame")
 DisableBlizzard:RegisterEvent("ADDON_LOADED")
 DisableBlizzard:SetScript("OnEvent", function(self, addon)
