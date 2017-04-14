@@ -411,8 +411,8 @@ SlashCmdList.CHATRESET = function() Install:ChatSetup() _G.ReloadUI() end
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("ADDON_LOADED")
 Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
-Loading:RegisterEvent("UPDATE_CHAT_WINDOWS")
-Loading:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS")
+Loading:RegisterEvent("UPDATE_CHAT_WINDOWS", SetupChatPosAndFont())
+Loading:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS", SetupChatPosAndFont())
 Loading:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" then
 		if addon == "Blizzard_CombatLog" then
@@ -420,10 +420,8 @@ Loading:SetScript("OnEvent", function(self, event, addon)
 			SetupChat()
 		end
 	elseif event == "PLAYER_ENTERING_WORLD" then
-		if event == "UPDATE_CHAT_WINDOWS" and "UPDATE_FLOATING_CHAT_WINDOWS" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-			SetupChatPosAndFont()
-			SetToastFrame()
-		end
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		SetToastFrame()
+		SetupChatPosAndFont() -- Fire it here too?
 	end
 end)
