@@ -129,11 +129,11 @@ do
 		local self = bar:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
-		if (self.Portrait and self.Portrait.Bg) then
+		if (self.Portrait) then
 			UpdatePortraitColor(self, unit, cur, max)
 		end
 
-		if (self.Name and self.Name.Bg and self.MatchUnit == "boss") then -- For boss frames
+		if (self.Name) and (self.Name.Bg) and (self.MatchUnit == "boss") then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
 		end
 

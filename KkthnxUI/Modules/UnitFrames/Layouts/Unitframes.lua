@@ -352,37 +352,44 @@ local function UpdateUnitFrameLayout(frame)
 	end
 
 	-- Frame Size
-	if not InCombatLockdown() and MatchUnit ~= "party" then
-		frame:SetSize(data.siz.w, data.siz.h)
-		frame:SetScale(C.Unitframe.Scale or 1)
-	end
+	frame:SetSize(data.siz.w, data.siz.h)
+	frame:SetScale(C.Unitframe.Scale or 1)
+	frame:EnableMouse(frame.IsPartyFrame)
+
 	-- Texture
 	frame.Texture:SetTexture(data.tex.t)
 	frame.Texture:SetSize(data.tex.w, data.tex.h)
 	frame.Texture:SetPoint("CENTER", frame, data.tex.x, data.tex.y)
 	frame.Texture:SetTexCoord(unpack(data.tex.c))
+
 	-- HealthBar
 	frame.Health:SetSize(data.hpb.w, data.hpb.h)
 	frame.Health:SetPoint("CENTER", frame.Texture, data.hpb.x, data.hpb.y)
+
 	-- ManaBar
 	frame.Power:SetSize(data.mpb.w, data.mpb.h)
 	frame.Power:SetPoint("TOPLEFT", frame.Health, "BOTTOMLEFT", data.mpb.x, data.mpb.y)
+
 	-- HealthText
 	frame.Health.Value:SetPoint("CENTER", frame.Health, data.hpt.x, data.hpt.y)
+
 	-- ManaText - not for tots
 	if frame.Power.Value then
 		frame.Power.Value:SetPoint("CENTER", frame.Power, data.mpt.x, data.mpt.y)
 	end
+
 	-- NameText
 	if frame.Name then
 		frame.Name:SetSize(data.nam.w, data.nam.h)
 		frame.Name:SetPoint("TOP", frame.Health, data.nam.x, data.nam.y)
 	end
+
 	-- Portrait
 	if frame.Portrait then
 		frame.Portrait:SetSize(data.por.w, data.por.h)
 		frame.Portrait:SetPoint("CENTER", frame.Texture, data.por.x, data.por.y)
 	end
+
 	-- Threat Glow -- if enabled
 	if frame.ThreatGlow then
 		frame.ThreatGlow:SetSize(data.glo.w, data.glo.h)
