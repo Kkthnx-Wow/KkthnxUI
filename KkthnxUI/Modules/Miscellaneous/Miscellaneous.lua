@@ -114,7 +114,7 @@ CombatState:SetScript("OnEvent", function(self, event)
 	if not C.Misc.CombatState then return end
 	if event == "PLAYER_REGEN_DISABLED" then
 		UIErrorsFrame:AddMessage("+ " .. COMBAT, 1, 1, 1)
-	elseif event == "PLAYER_REGEN_DISABLED" then
+	elseif event == "PLAYER_REGEN_ENABLED" then
 		UIErrorsFrame:AddMessage("- " .. COMBAT, 1, 1, 1)
 	end
 end)

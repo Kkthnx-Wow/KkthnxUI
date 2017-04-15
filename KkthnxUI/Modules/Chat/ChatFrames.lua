@@ -270,12 +270,12 @@ local function SetChatStyle(frame)
 	end
 
 	if frame ~= COMBATLOG and id ~= 2 then
-		TIMESTAMP_FORMAT_HHMM = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M]|r "
-		TIMESTAMP_FORMAT_HHMMSS = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M:%S]|r "
-		TIMESTAMP_FORMAT_HHMMSS_24HR = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%H:%M:%S]|r "
-		TIMESTAMP_FORMAT_HHMMSS_AMPM = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M:%S %p]|r "
-		TIMESTAMP_FORMAT_HHMM_24HR = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%H:%M]|r "
-		TIMESTAMP_FORMAT_HHMM_AMPM = K.RGBToHex(1 or 1, 1 or 1, 0 or 1).."[%I:%M %p]|r "
+		TIMESTAMP_FORMAT_HHMM = K.RGBToHex(1, 1, 0).."[%I:%M]|r "
+		TIMESTAMP_FORMAT_HHMMSS = K.RGBToHex(1, 1, 0).."[%I:%M:%S]|r "
+		TIMESTAMP_FORMAT_HHMMSS_24HR = K.RGBToHex(1, 1, 0).."[%H:%M:%S]|r "
+		TIMESTAMP_FORMAT_HHMMSS_AMPM = K.RGBToHex(1, 1, 0).."[%I:%M:%S %p]|r "
+		TIMESTAMP_FORMAT_HHMM_24HR = K.RGBToHex(1, 1, 0).."[%H:%M]|r "
+		TIMESTAMP_FORMAT_HHMM_AMPM = K.RGBToHex(1, 1, 0).."[%I:%M %p]|r "
 
 		hooks[frame] = frame.AddMessage
 		frame.AddMessage = AddMessage
@@ -309,6 +309,8 @@ local function SetupChat()
 end
 
 local function SetupChatPosAndFont()
+	if InCombatLockdown() then return end
+
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G[string_format("ChatFrame%s", i)]
 		local id = frame:GetID()
@@ -411,8 +413,8 @@ SlashCmdList.CHATRESET = function() Install:ChatSetup() _G.ReloadUI() end
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("ADDON_LOADED")
 Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
-Loading:RegisterEvent("UPDATE_CHAT_WINDOWS", SetupChatPosAndFont())
-Loading:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS", SetupChatPosAndFont())
+Loading:RegisterEvent("UPDATE_CHAT_WINDOWS", "SetupChatPosAndFont")
+Loading:RegisterEvent("UPDATE_FLOATING_CHAT_WINDOWS", "SetupChatPosAndFont")
 Loading:SetScript("OnEvent", function(self, event, addon)
 	if event == "ADDON_LOADED" then
 		if addon == "Blizzard_CombatLog" then

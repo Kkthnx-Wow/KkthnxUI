@@ -328,7 +328,7 @@ function K.CreateCastBar(self)
 			end
 
 			if (C.Unitframe.CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "OVERLAY")
+				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK", -6)
 				CastBar.SafeZone:SetTexture(C.Media.Blank)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 
