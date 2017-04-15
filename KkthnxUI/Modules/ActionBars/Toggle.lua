@@ -10,13 +10,25 @@ local InCombatLockdown = _G.InCombatLockdown
 local LOCK = _G.LOCK
 local UIParent = _G.UIParent
 local UNLOCK = _G.UNLOCK
+local PlaySoundFile = _G.PlaySoundFile
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIDataPerChar, ActionBarAnchor
 -- GLOBALS: Bar2Holder, Bar5Holder, RightActionBarAnchor, Bar3Holder, Bar4Holder, SplitBarRight
--- GLOBALS: SplitBarLeft, RightBarMouseOver
+-- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIDataPerChar, ActionBarAnchor
+-- GLOBALS: SplitBarLeft, RightBarMouseOver, GameTooltip
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
+
+-- Tooltip code ripped from StatBlockCore by Funkydude
+local function getAnchors(frame)
+	local x, y = frame:GetCenter()
+
+	if not x or not y then return "CENTER" end
+	local hhalf = (x > UIParent:GetWidth()* 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
+	local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
+
+	return vhalf..hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP")..hhalf
+end
 
 local ToggleBarText = function(i, text, plus, neg)
 	if plus then
@@ -322,9 +334,11 @@ for i = 1, 5 do
 
 			if KkthnxUIDataPerChar.BarsLocked == true then
 				KkthnxUIDataPerChar.BarsLocked = false
+				PlaySoundFile("Sound/Interface/Iuiinterfacebuttona.Ogg")
 				print(UNLOCK)
 			elseif KkthnxUIDataPerChar.BarsLocked == false then
 				KkthnxUIDataPerChar.BarsLocked = true
+				PlaySoundFile("Sound/Interface/Iuiinterfacebuttona.Ogg")
 				print(LOCK)
 			end
 
@@ -353,6 +367,17 @@ for i = 1, 5 do
 
 	ToggleBar[i]:SetScript("OnEnter", function()
 		if InCombatLockdown() then return end
+
+		if i == 5 then
+			GameTooltip:SetOwner(ToggleBar[5], "ANCHOR_NONE")
+			GameTooltip:SetPoint(getAnchors(ToggleBar[i]))
+			GameTooltip:ClearLines()
+			GameTooltip:AddLine("Toggle")
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(L.Tooltip.ToggleBar, 0.2, 1, 0.2, 1)
+			GameTooltip:Show()
+		end
+
 		if i == 2 then
 			if C.ActionBar.RightBarsMouseover == true then
 				ToggleBar[i]:SetAlpha(1)
@@ -371,6 +396,10 @@ for i = 1, 5 do
 	end)
 
 	ToggleBar[i]:SetScript("OnLeave", function()
+		if i == 5 then
+			GameTooltip:Hide()
+		end
+
 		if i == 2 then
 			if C.ActionBar.RightBarsMouseover == true then
 				ToggleBar[i]:SetAlpha(0)

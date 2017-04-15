@@ -256,7 +256,8 @@ L.Raid = {
 -- Tooltip Localization
 L.Tooltip = {
 	ItemCount = "Количество предметов:",
-	SpellID = "ID заклинания:"
+	SpellID = "ID заклинания:",
+	ToggleBar = "Unlock and lock the action bars using this button. Once you have unlocked the bars, you can hover over them to see the 'toggle bar' feature to toggle more or fewer action bars.",
 }
 
 L.WatchFrame = {
