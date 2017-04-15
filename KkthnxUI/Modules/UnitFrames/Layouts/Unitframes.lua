@@ -354,7 +354,6 @@ local function UpdateUnitFrameLayout(frame)
 	-- Frame Size
 	frame:SetSize(data.siz.w, data.siz.h)
 	frame:SetScale(C.Unitframe.Scale or 1)
-	frame:EnableMouse(frame.IsPartyFrame)
 
 	-- Texture
 	frame.Texture:SetTexture(data.tex.t)
@@ -415,7 +414,6 @@ function oUFKkthnx:UpdateBaseFrames(optUnit)
 end
 
 local function CreateUnitLayout(self, unit)
-
 	self.MatchUnit = K.MatchUnit(unit)
 	self.IsMainFrame = K.MultiCheck(self.MatchUnit, "player", "target", "focus")
 	self.IsTargetFrame = K.MultiCheck(self.MatchUnit, "targettarget", "focustarget")
