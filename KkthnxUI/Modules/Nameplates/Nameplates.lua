@@ -32,6 +32,8 @@ local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitHealth = _G.UnitHealth
+local UnitHealthMax = _G.UnitHealthMax
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVPSanctuary = _G.UnitIsPVPSanctuary
@@ -411,14 +413,17 @@ end
 
 local function ThreatColor(self, forced)
 	if not self.Health:IsShown() or UnitIsPlayer(self.unit) then return end
+	local combatStatus = UnitAffectingCombat("player")
 	local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
+	local unitPerc = (UnitHealth(self.unit) / UnitHealthMax(self.unit)) * 100
+	local unitName = UnitName(self.unit) or ""
 
 	if C.Nameplates.EnhancedThreat ~= true then
 		SetVirtualBorder(self.Health, C.Media.Nameplate_BorderColor[1], C.Media.Nameplate_BorderColor[2], C.Media.Nameplate_BorderColor[3])
 	end
 	if UnitIsTapDenied(self.unit) then
 		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
-	elseif threatStatus then
+	elseif combatStatus then
 		if threatStatus == 3 then -- securely tanking, highest threat
 			if K.Role == "Tank" then
 				if C.Nameplates.EnhancedThreat == true then
@@ -464,7 +469,7 @@ local function ThreatColor(self, forced)
 				end
 			end
 		end
-	elseif not forced then
+	elseif (not forced) then
 		self.Health:ForceUpdate()
 	end
 end

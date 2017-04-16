@@ -175,26 +175,26 @@ if C.General.ToggleButton == true and C.DataText.System == true then
 		end
 	end)
 
-	ToggleButton:HookScript("OnEnter", function(self)
-		local anchor, panel, xoff, yoff = "ANCHOR_BOTTOMLEFT", self:GetParent(), -4, 4
-		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+	ToggleButton:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(self))
 		GameTooltip:ClearLines()
 
 		GameTooltip:AddLine(L.ToggleButton.Functions)
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddDoubleLine(L.ToggleButton.LeftClick, L.ToggleButton.MoveUI, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ToggleButton.LeftClick, L.ToggleButton.MoveUI, 0.93, 0.647, 0.372, 0.2, 1, 0.2)
 		if K.CheckAddOn("Recount") then
-			GameTooltip:AddDoubleLine(L.ToggleButton.RightClick, L.ToggleButton.Recount, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.ToggleButton.RightClick, L.ToggleButton.Recount, 0.93, 0.647, 0.372, 0.2, 1, 0.2)
 		end
 		if K.CheckAddOn("Skada") then
-			GameTooltip:AddDoubleLine(L.ToggleButton.RightClick, L.ToggleButton.Skada, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.ToggleButton.RightClick, L.ToggleButton.Skada, 0.93, 0.647, 0.372, 0.2, 1, 0.2)
 		end
-		GameTooltip:AddDoubleLine(L.ToggleButton.MiddleClick, L.ToggleButton.Config, 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ToggleButton.MiddleClick, L.ToggleButton.Config, 0.93, 0.647, 0.372, 0.2, 1, 0.2)
 
 		GameTooltip:Show()
 	end)
 
-	ToggleButton:HookScript("OnLeave", function()
+	ToggleButton:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
 end

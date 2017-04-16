@@ -10,14 +10,18 @@ local ReloadUI = _G.ReloadUI
 -- Prevent users config errors and using other UIs over mine.
 local CheckAddOn = K.CheckAddOn
 
+-- If a UI does not use a color to color their name in their TOC then we will default it to |cffffd100UINAME|r
 local buttonText, disableText
-if IsAddOnLoaded("ElvUI") then
+if K.CheckAddOn("ShestakUI") then
+	buttonText = "|cffffd100ShestakUI|r"
+	disableText = "ShestakUI"
+elseif K.CheckAddOn("ElvUI") then
 	buttonText = "|cff1784d1ElvUI|r"
 	disableText = "ElvUI"
-elseif IsAddOnLoaded("Tukui") then
+elseif K.CheckAddOn("Tukui") then
 	buttonText = "|cffff8000Tukui|r"
 	disableText = "Tukui"
-elseif IsAddOnLoaded("DiabolicUI") then
+elseif K.CheckAddOn("DiabolicUI") then
 	buttonText = "|cff8a0707Diabolic|r|cffffffffUI|r"
 	disableText = "DiabolicUI"
 else
@@ -27,7 +31,7 @@ else
 end
 
 StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
-	text = "Oh no, you have |cff3c9bedKkthnxUI|r and "..buttonText.." both enabled at the same time. Select an addon to disable to prevent conflicts!",
+	text = "Oh no, you have |cff3c9bedKkthnxUI|r and "..buttonText.." enabled at the same time. Select an addon to disable to prevent conflicts!",
 	button1 = "|cff3c9bedKkthnxUI|r",
 	button2 = buttonText,
 	OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
@@ -39,8 +43,9 @@ StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
 	showAlert = 1
 }
 
-if IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") then
+if K.CheckAddOn("DiabolicUI") or K.CheckAddOn("ElvUI") or K.CheckAddOn("Tukui") or K.CheckAddOn("ShestakUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
+	return
 end
 
 -- Actionbars
