@@ -4,8 +4,46 @@ What makes unicorns cry?
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/)
+Format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [v3.34] - 4/16/2017
+### Added
+- Actionbar toggle button now has tooltip info.
+- Actionbar toggle button now plays a sound when pressed.
+- CopyChat button now has a tooltip with useful info.
+- Event "UPDATE_FLOATING_CHAT_WINDOWS" and "UPDATE_CHAT_WINDOWS" to SetupChatPosAndFont function.
+- Latency and Time will now hide on failed or interrupted casts.
+- New function K.GetAnchors, Used mainly for tooltips.
+- New function K.PostCastFailed for cast bars that fail.
+- Reworked minimap buttons.
+- TalkingHeadFrame has an alpha value now.
+
+### Fixed
+- Chat resizing when tabbing out.
+- Cooldown numbers disappearing.
+- CopyButton position to better match chat position.
+- nil error on UpdatePortraitColor function
+- nil value in chat.lua.
+- Target frame not able to use the dropdown.
+
+### Removed
+- InCombatLockdown() check in Unitframes.lua.
+
+### Changed
+- ArtifactBar, HonorBar, ExperienceBar, ReputationBar tooltip anchoring to use K.GetAnchors function.
+- Clean dev file.
+- Cleaned code in chat.lua.
+- CommandBar visual update.
+- DataText modules now use K.GetAnchors function.
+- Hotfixes and optimizations.
+- KkthnxUI/Core/Disable.lua → KkthnxUI/Core/Conflicts.lua.
+- ToggleButton changed script from HookScript → SetScript.
+- Updated Nameplates ThreatColor function.
+- Updated Unit frames AurasFilter blackList.
+- Vastly improved the KKTHNXUI_INCOMPATIBLE script.
+
+# Archived Changelogs
 
 ## [v6.29] - 3/22/2017
 ### Added
@@ -20,8 +58,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Frame UpdateCVar script has been updated.
 - Improved scaling for 'KkthnxUI/Modules/Blizzard/TalkingHeadFrame.lua'.
 - Frame oUFKkthnx script.
-
-# Archived Changelogs
 
 ## [v6.28] - 3/21/2017
 ### Added

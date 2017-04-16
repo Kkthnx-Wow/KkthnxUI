@@ -36,6 +36,7 @@ local LEVEL = _G.LEVEL
 local MoveViewLeftStart = _G.MoveViewLeftStart
 local MoveViewLeftStop = _G.MoveViewLeftStop
 local MovieFrame = _G.MovieFrame
+local PAPERDOLL_SIDEBAR_STATS = _G.PAPERDOLL_SIDEBAR_STATS
 local PVEFrame_ToggleFrame = _G.PVEFrame_ToggleFrame
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local RemoveExtraSpaces = _G.RemoveExtraSpaces
@@ -386,7 +387,7 @@ function AFK:Initialize()
 	self.AFKMode.top = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.top:SetFrameLevel(0)
 	self.AFKMode.top:SetTemplate("Transparent")
-	self.AFKMode.top:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+	self.AFKMode.top:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	self.AFKMode.top:ClearAllPoints()
 	self.AFKMode.top:SetPoint("TOP", self.AFKMode, "TOP", 0, 2)
 	self.AFKMode.top:SetWidth(GetScreenWidth() + (2 * 2))
@@ -420,7 +421,7 @@ function AFK:Initialize()
 	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.bottom:SetFrameLevel(0)
 	self.AFKMode.bottom:SetTemplate("Transparent")
-	self.AFKMode.bottom:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
+	self.AFKMode.bottom:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -2)
 	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2))
 	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))

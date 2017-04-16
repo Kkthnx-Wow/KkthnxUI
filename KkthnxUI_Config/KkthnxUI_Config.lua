@@ -674,7 +674,7 @@ do
 		subtitle:SetWidth(580)
 		subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
 		subtitle:SetJustifyH("LEFT")
-		subtitle:SetText("UI Site: |cff3c9bedhttps://kkthnx.github.io/KkthnxUI_Legion|r\nGitHub: |cff3c9bedhttps://github.com/Kkthnx/KkthnxUI_Legion|r\nChangelog: |cff3c9bedhttps://github.com/Kkthnx/KkthnxUI_Legion/commits/master|r")
+		subtitle:SetText("GitHub: |cff3c9bedhttps://github.com/Kkthnx-WoW|r\nChangelog: |cff3c9bedhttps://github.com/Kkthnx-WoW/KkthnxUI/blob/master/CHANGELOG.md|r")
 
 		local title2 = self:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 		title2:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -16)
@@ -731,7 +731,7 @@ end
 local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
 GameMenuButton:SetText("|cff3c9bedKkthnxUI|r")
 GameMenuButton:SetScript("OnClick", function()
-  CreateUIConfig()
+	CreateUIConfig()
 	HideUIPanel(GameMenuFrame)
 end)
 GameMenuFrame["KkthnxUI"] = GameMenuButton
