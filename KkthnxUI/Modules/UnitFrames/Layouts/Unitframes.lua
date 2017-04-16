@@ -21,7 +21,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
 -- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
 -- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize

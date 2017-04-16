@@ -1,14 +1,14 @@
 --[[ Element: Portraits
 
-Handles updating of the unit"s portrait.
+Handles updating of the unit's portrait.
 
 Widget
 
-Portrait - A PlayerModel or Texture used to represent the unit"s portrait.
+Portrait - A PlayerModel or Texture used to represent the unit's portrait.
 
 Notes
 
-The quest delivery question mark will be used instead of the unit"s model when
+The quest delivery question mark will be used instead of the unit's model when
 the client doesn't have the model information for the unit.
 
 Examples

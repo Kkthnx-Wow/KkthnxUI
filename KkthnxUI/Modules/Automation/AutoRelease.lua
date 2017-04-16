@@ -11,7 +11,7 @@ local GetCurrentMapAreaID = _G.GetCurrentMapAreaID
 local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
 local HasSoulstone = _G.HasSoulstone
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SetMapToCurrentZone, RepopMe
 
 -- Auto release the spirit in battlegrounds

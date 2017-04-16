@@ -10,7 +10,7 @@ local string_find = string.find
 -- Wow API
 local GetTime = _G.GetTime
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, CreateFrame, GetActionCooldown, GetActionCharges
 
 local ICON_SIZE = 36 -- the normal size for an icon (don't change this)

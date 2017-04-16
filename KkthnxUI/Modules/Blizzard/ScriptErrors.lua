@@ -8,7 +8,7 @@ local UIParent = _G.UIParent
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local LoadAddOn = _G.LoadAddOn
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ScriptErrorsFrame, ScriptErrorsFrameScrollFrameText, EventTraceFrame, FrameStackTooltip
 -- GLOBALS: EventTraceTooltip
 

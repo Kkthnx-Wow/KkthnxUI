@@ -37,7 +37,7 @@ local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CombatLogQuickButtonFrame_Custom, ChatTypeInfo, SLASH_BIGCHAT1, AFK, DND
 -- GLOBALS: RAID_WARNING, ChatFrame1, CHAT_FRAME_TEXTURES, CreateFrame, BNetMover
 -- GLOBALS: HELP_TEXT_SIMPLE, ChatEdit_AddHistory, BNToastFrame, BNToastFrameCloseButton

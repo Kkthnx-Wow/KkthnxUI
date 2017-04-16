@@ -12,7 +12,7 @@ local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local ACTION_PARTY_KILL = _G.ACTION_PARTY_KILL
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: COMBATLOG_OBJECT_CONTROL_PLAYER
 
 local Movers = K.Movers

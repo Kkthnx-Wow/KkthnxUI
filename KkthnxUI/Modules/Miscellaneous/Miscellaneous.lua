@@ -217,10 +217,3 @@ end
 if C.Misc.NoBanner == true then
 	BossBanner.PlayBanner = function() end
 end
-
-local QuestTracking = CreateFrame("Frame")
-QuestTracking:RegisterEvent("GROUP_ROSTER_UPDATE")
-QuestTracking:RegisterEvent("PLAYER_ENTERING_WORLD")
-QuestTracking:SetScript("OnEvent", function(self, event)
-    K:LockCVar("showQuestTrackingTooltips", IsInRaid() and 0 or 1)
-end)

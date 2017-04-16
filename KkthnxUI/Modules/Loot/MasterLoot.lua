@@ -1,12 +1,31 @@
 local K, C, L = unpack(select(2, ...))
 if C.Loot.Enable ~= true then return end
 
-local format = string.format
-local pairs = pairs
-local ipairs = ipairs
-local select = select
-local random = math.random
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
+-- Lua API
+local _G = _G
+
+-- Wow API
+local CLASS_SORT_ORDER = _G.CLASS_SORT_ORDER
+local CUSTOM_CLASS_COLORS	 = _G.CUSTOM_CLASS_COLORS
+local DoMasterLootRoll = _G.DoMasterLootRoll
+local FONT_COLOR_CODE_CLOSE = _G.FONT_COLOR_CODE_CLOSE
+local GetMasterLootCandidate = _G.GetMasterLootCandidate
+local GIVE_LOOT = _G.GIVE_LOOT
+local GiveMasterLoot = _G.GiveMasterLoot
+local IsInRaid = _G.IsInRaid
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+local MASTER_LOOT_THREHOLD = _G.MASTER_LOOT_THREHOLD
+local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
+local MAX_RAID_MEMBERS = _G.MAX_RAID_MEMBERS
+local REQUEST_ROLL = _G.REQUEST_ROLL
+local StaticPopup_Show = _G.StaticPopup_Show
+local UNKNOWN = _G.UNKNOWN
+
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- GLOBALS: LootFrame, MasterLooterFrame, Lib_CloseDropDownMenus, Lib_UIDropDownMenu_CreateInfo
+-- GLOBALS: UIDROPDOWNMENU_MENU_LEVEL, UIDROPDOWNMENU_MENU_VALUE, Lib_UIDropDownMenu_AddButton
+-- GLOBALS: LIB_UIDROPDOWNMENU_MENU_LEVEL,
+
 
 -- MasterLoot module
 local hexColors = {}

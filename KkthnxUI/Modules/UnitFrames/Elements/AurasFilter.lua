@@ -8,7 +8,7 @@ local _G = _G
 local UnitCanAttack = _G.UnitCanAttack
 local UnitPlayerControlled = _G.UnitPlayerControlled
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS:
 
 local blackList = {
@@ -58,24 +58,24 @@ local blackList = {
 	[58539] = true, -- Watcher's Corpse
 	[60023] = true, -- Scourge Banner Aura (Boneguard Commander in Icecrown)
 	[62594] = true, -- Stormwind Champion"s Pennant
-	[62596] = true, -- Stormwind Valiant"s Pennant
-	[63395] = true, -- Gnomeregan Valiant"s Pennant
+	[62596] = true, -- Stormwind Valiant's Pennant
+	[63395] = true, -- Gnomeregan Valiant's Pennant
 	[63396] = true, -- Gnomeregan Champion"s Pennant
-	[63398] = true, -- Sen"jin Valiant"s Pennant
+	[63398] = true, -- Sen"jin Valiant's Pennant
 	[63399] = true, -- Sen"jin Champion"s Pennant
-	[63402] = true, -- Silvermoon Valiant"s Pennant
+	[63402] = true, -- Silvermoon Valiant's Pennant
 	[63403] = true, -- Silvermoon Champion"s Pennant
-	[63405] = true, -- Darnassus Valiant"s Pennant
+	[63405] = true, -- Darnassus Valiant's Pennant
 	[63406] = true, -- Darnassus Champion"s Pennant
-	[63422] = true, -- Exodar Valiant"s Pennant
+	[63422] = true, -- Exodar Valiant's Pennant
 	[63423] = true, -- Exodar Champion"s Pennant
-	[63426] = true, -- Ironforge Valiant"s Pennant
+	[63426] = true, -- Ironforge Valiant's Pennant
 	[63427] = true, -- Ironforge Champion"s Pennant
-	[63429] = true, -- Undercity Valiant"s Pennant
+	[63429] = true, -- Undercity Valiant's Pennant
 	[63430] = true, -- Undercity Champion"s Pennant
-	[63432] = true, -- Orgrimmar Valiant"s Pennant
+	[63432] = true, -- Orgrimmar Valiant's Pennant
 	[63433] = true, -- Orgrimmar Champion"s Pennant
-	[63435] = true, -- Thunder Bluff Valiant"s Pennant
+	[63435] = true, -- Thunder Bluff Valiant's Pennant
 	[63436] = true, -- Thunder Bluff Champion"s Pennant
 	[63501] = true, -- Argent Crusade Champion"s Pennant
 	[71041] = true, -- Dungeon Deserter

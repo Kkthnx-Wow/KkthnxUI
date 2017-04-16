@@ -24,7 +24,7 @@ local UnitHonorMax = _G.UnitHonorMax
 local UnitLevel = _G.UnitLevel
 local UnitPrestige = _G.UnitPrestige
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PVPFrame, PlayerTalentFrame, PVP_TALENTS_TAB, GameTooltip, HONOR, RANK, ToggleTalentFrame
 
 local Bars = 20

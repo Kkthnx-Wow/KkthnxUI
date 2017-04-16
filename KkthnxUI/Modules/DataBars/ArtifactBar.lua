@@ -17,7 +17,7 @@ local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = _G.MainMenuBar_GetNumA
 local ShowUIPanel = _G.ShowUIPanel
 local SocketInventoryItem = _G.SocketInventoryItem
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, ArtifactFrame, C_ArtifactUI, Max, Current
 
 local Bars = 20

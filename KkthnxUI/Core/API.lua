@@ -13,7 +13,7 @@ local CreateFrame = _G.CreateFrame
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: noHover, noPushed, noChecked, bordera
 
 local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale

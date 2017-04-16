@@ -18,7 +18,7 @@ local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UnitOnTaxi = _G.UnitOnTaxi
 local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: KkthnxUIDataPerChar, ActionButton_ShowGrid, VehicleExit, LeaveVehicleButton
 -- GLOBALS: MainMenuBarVehicleLeaveButton_OnEnter, GameTooltip_Hide
 

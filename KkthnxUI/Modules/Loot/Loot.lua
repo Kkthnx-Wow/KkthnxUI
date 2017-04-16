@@ -2,43 +2,51 @@ local K, C, L = unpack(select(2, ...))
 if C.Loot.Enable ~= true then return end
 
 -- WoW Lua
-local format = string.format
-local max = math.max
-local pairs = pairs
-local unpack = unpack
+local _G = _G
+local math_max = math.max
+local string_format = string.format
 
 -- Wow API
-local CursorOnUpdate = CursorOnUpdate
-local CursorUpdate = CursorUpdate
-local GetCursorPosition = GetCursorPosition
-local GetCVar = GetCVar
-local GetLootSlotInfo = GetLootSlotInfo
-local GetLootSlotLink = GetLootSlotLink
-local GetLootSlotType = GetLootSlotType
-local GetNumLootItems = GetNumLootItems
-local GroupLootDropDown = GroupLootDropDown
-local HandleModifiedItemClick = HandleModifiedItemClick
-local IsAltKeyDown = IsAltKeyDown
-local IsControlKeyDown = IsControlKeyDown
-local IsFishingLoot = IsFishingLoot
-local IsModifiedClick = IsModifiedClick
-local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-local LootSlotHasItem = LootSlotHasItem
-local ResetCursor = ResetCursor
-local SendChatMessage = SendChatMessage
-local StaticPopup_Hide = StaticPopup_Hide
-local Lib_ToggleDropDownMenu = Lib_ToggleDropDownMenu
-local Lib_UIDropDownMenu_AddButton = Lib_UIDropDownMenu_AddButton
-local Lib_UIDropDownMenu_Refresh = Lib_UIDropDownMenu_Refresh
-local UnitExists = UnitExists
-local UnitIsDead = UnitIsDead
-local UnitIsFriend = UnitIsFriend
-local UnitIsPlayer = UnitIsPlayer
-local UnitName = UnitName
+local CursorOnUpdate = _G.CursorOnUpdate
+local CursorUpdate = _G.CursorUpdate
+local GetCursorPosition = _G.GetCursorPosition
+local GetCVar = _G.GetCVar
+local GetLootSlotInfo = _G.GetLootSlotInfo
+local GetLootSlotLink = _G.GetLootSlotLink
+local GetLootSlotType = _G.GetLootSlotType
+local GetNumLootItems = _G.GetNumLootItems
+local GroupLootDropDown = _G.GroupLootDropDown
+local HandleModifiedItemClick = _G.HandleModifiedItemClick
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsControlKeyDown = _G.IsControlKeyDown
+local IsFishingLoot = _G.IsFishingLoot
+local IsModifiedClick = _G.IsModifiedClick
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+local LootSlotHasItem = _G.LootSlotHasItem
+local ResetCursor = _G.ResetCursor
+local SendChatMessage = _G.SendChatMessage
+local StaticPopup_Hide = _G.StaticPopup_Hide
+local Lib_ToggleDropDownMenu = _G.Lib_ToggleDropDownMenu
+local Lib_UIDropDownMenu_AddButton = _G.Lib_UIDropDownMenu_AddButton
+local Lib_UIDropDownMenu_Refresh = _G.Lib_UIDropDownMenu_Refresh
+local UnitExists = _G.UnitExists
+local UnitIsDead = _G.UnitIsDead
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitName = _G.UnitName
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: CloseLoot, autoLoot, LOOT, LOOT_SLOT_MONEY, EMPTY, LootFrame, GameTooltip
 -- GLOBALS: LootSlot, CreateFrame
+
+local coinTextureIDs = {
+	[133784] = true,
+	[133785] = true,
+	[133786] = true,
+	[133787] = true,
+	[133788] = true,
+	[133789] = true,
+}
 
 -- Loot frame(Butsu by Haste)
 local _, _NS = ...
@@ -48,27 +56,28 @@ local LDD = CreateFrame("Frame", "ButsuLDD", Butsu, "Lib_UIDropDownMenuTemplate"
 Butsu:Hide()
 
 Butsu:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, event, ...)
+	return self[event] and self[event](self, event, ...)
 end)
 
+Butsu:RegisterEvent("LOOT_OPENED")
 function Butsu:LOOT_OPENED(event, autoloot)
 	self:Show()
 	lb:Show()
 
-	if not self:IsShown() then
+	if (not self:IsShown()) then
 		CloseLoot(not autoLoot)
 	end
 
 	if IsFishingLoot() then
 		self.title:SetText(L.Loot.Fish)
-	elseif not UnitIsFriend("player", "target") and UnitIsDead("target") then
+	elseif (not UnitIsFriend("player", "target") and UnitIsDead"target") then
 		self.title:SetText(UnitName("target"))
 	else
 		self.title:SetText(LOOT)
 	end
 
 	-- Blizzard uses strings here
-	if GetCVar("lootUnderMouse") == "1" then
+	if (GetCVar("lootUnderMouse") == "1") then
 		local x, y = GetCursorPosition()
 		x = x / self:GetEffectiveScale()
 		y = y / self:GetEffectiveScale()
@@ -81,19 +90,18 @@ function Butsu:LOOT_OPENED(event, autoloot)
 
 	local m = 0
 	local items = GetNumLootItems()
-	if items > 0 then
+	if (items > 0) then
 		for i = 1, items do
 			local slot = _NS.slots[i] or _NS.CreateSlot(i)
-			local texture, item, quantity, quality, locked, isQuestItem, questId, isActive = GetLootSlotInfo(i)
-			if texture then
-				local color = ITEM_QUALITY_COLORS[quality]
-				local r, g, b = color.r, color.g, color.b
+			local textureID, item, quantity, quality, _, isQuestItem, questId, isActive = GetLootSlotInfo(i)
+			local color = ITEM_QUALITY_COLORS[quality]
+			local r, g, b = color.r, color.g, color.b
 
-				if GetLootSlotType(i) == LOOT_SLOT_MONEY then
+				if coinTextureIDs[textureID] then
 					item = item:gsub("\n", ", ")
 				end
 
-				if quantity and quantity > 1 then
+				if quality and (quality > 1) then
 					slot.count:SetText(quantity)
 					slot.count:Show()
 				else
@@ -124,23 +132,26 @@ function Butsu:LOOT_OPENED(event, autoloot)
 				if color then
 					slot.name:SetTextColor(r, g, b)
 				end
-				slot.icon:SetTexture(texture)
+				slot.icon:SetTexture(textureID)
 
 				if quality then
-					m = max(m, quality)
+					m = math_max(m, quality)
 				end
 
 				slot:Enable()
 				slot:Show()
 			end
-		end
 	else
 		local slot = _NS.slots[1] or _NS.CreateSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
 		slot.name:SetText(EMPTY)
-		slot.name:SetTextColor(color.r, color.g, color.b)
+		if color then
+			slot.name:SetTextColor(color.r, color.g, color.b)
+		end
 		slot.icon:SetTexture("Interface\\Icons\\INV_Misc_Herb_AncientLichen")
+
+		items = 1
 
 		slot.count:Hide()
 		slot.drop:Hide()
@@ -150,22 +161,22 @@ function Butsu:LOOT_OPENED(event, autoloot)
 	self:AnchorSlots()
 
 	local color = ITEM_QUALITY_COLORS[m]
-	self:SetBackdropBorderColor(color.r, color.g, color.b, 0.9)
+	self:SetBackdropBorderColor(color.r, color.g, color.b, .8)
 
 	self:SetWidth(C.Loot.Width)
 	self.title:SetWidth(C.Loot.Width - 45)
 	self.title:SetHeight(C.Media.Font_Size)
 end
-Butsu:RegisterEvent("LOOT_OPENED")
 
+Butsu:RegisterEvent("LOOT_SLOT_CLEARED")
 function Butsu:LOOT_SLOT_CLEARED(event, slot)
 	if not self:IsShown() then return end
 
 	_NS.slots[slot]:Hide()
 	self:AnchorSlots()
 end
-Butsu:RegisterEvent("LOOT_SLOT_CLEARED")
 
+Butsu:RegisterEvent("LOOT_CLOSED")
 function Butsu:LOOT_CLOSED()
 	StaticPopup_Hide("LOOT_BIND")
 	self:Hide()
@@ -175,17 +186,16 @@ function Butsu:LOOT_CLOSED()
 		v:Hide()
 	end
 end
-Butsu:RegisterEvent("LOOT_CLOSED")
 
+Butsu:RegisterEvent("OPEN_MASTER_LOOT_LIST")
 function Butsu:OPEN_MASTER_LOOT_LIST()
 	Lib_ToggleDropDownMenu(nil, nil, GroupLootDropDown, LootFrame.selectedLootButton, 0, 0)
 end
-Butsu:RegisterEvent("OPEN_MASTER_LOOT_LIST")
 
+Butsu:RegisterEvent("UPDATE_MASTER_LOOT_LIST")
 function Butsu:UPDATE_MASTER_LOOT_LIST()
 	Lib_UIDropDownMenu_Refresh(GroupLootDropDown)
 end
-Butsu:RegisterEvent("UPDATE_MASTER_LOOT_LIST")
 
 do
 	local title = Butsu:CreateFontString(nil, "OVERLAY")
@@ -197,11 +207,11 @@ do
 end
 
 Butsu:SetScript("OnMouseDown", function(self, button)
-    if IsAltKeyDown() then
-        self:StartMoving()
-    elseif IsControlKeyDown() and button == "RightButton" then
-        self:SetPoint(unpack(C.Position.Loot))
-    end
+	if IsAltKeyDown() then
+		self:StartMoving()
+	elseif IsControlKeyDown() and button == "RightButton" then
+		self:SetPoint(unpack(C.Position.Loot))
+	end
 end)
 
 Butsu:SetScript("OnMouseUp", function(self)
@@ -217,14 +227,13 @@ Butsu:SetMovable(true)
 Butsu:RegisterForClicks("AnyUp")
 Butsu:SetParent(UIParent)
 Butsu:SetUserPlaced(true)
-Butsu:SetPoint(unpack(C.Position.Loot))
+Butsu:SetPoint(C.Position.Loot[1], C.Position.Loot[2], C.Position.Loot[3], C.Position.Loot[4], C.Position.Loot[5])
 Butsu:SetBackdrop(K.Backdrop)
 Butsu:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 Butsu:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
 Butsu:SetClampedToScreen(true)
-Butsu:SetFrameStrata("DIALOG")
+Butsu:SetFrameStrata(Butsu:GetFrameStrata())
 Butsu:SetToplevel(true)
-Butsu:SetFrameLevel(10)
 
 local close = CreateFrame("Button", "LootCloseButton", Butsu, "UIPanelCloseButton")
 close:SetSize(26, 26)
@@ -249,7 +258,7 @@ local function Announce(chn)
 			local link = GetLootSlotLink(i)
 			local messlink = "- %s"
 			if GetLootSlotType(i) ~= LOOT_SLOT_MONEY then
-				SendChatMessage(format(messlink, link), chn)
+				SendChatMessage(string_format(messlink, link), chn)
 			end
 		end
 	end
@@ -313,11 +322,11 @@ lb:SetPoint("BOTTOMRIGHT", Butsu, "TOPRIGHT", -21, -18)
 lb:SetFrameStrata("DIALOG")
 lb:RegisterForClicks("RightButtonUp", "LeftButtonUp")
 lb:SetScript("OnClick", function(self, button)
-    if button == "RightButton" then
-        Lib_ToggleDropDownMenu(nil, nil, LDD, lb, 0, 0)
-    else
-        Announce(K.CheckChat())
-    end
+	if button == "RightButton" then
+		Lib_ToggleDropDownMenu(nil, nil, LDD, lb, 0, 0)
+	else
+		Announce(K.CheckChat())
+	end
 end)
 lb:Hide()
 Lib_UIDropDownMenu_Initialize(LDD, LDD_Initialize, "MENU")
@@ -348,6 +357,8 @@ do
 			self.drop:SetVertexColor(1, 1, 0.2)
 		elseif color then
 			self.drop:SetVertexColor(color.r, color.g, color.b)
+		else
+			self.drop:Hide()
 		end
 
 		GameTooltip:Hide()
@@ -379,7 +390,7 @@ do
 
 	function _NS.CreateSlot(id)
 		local frame = CreateFrame("Button", "ButsuSlot"..id, Butsu)
-		frame:SetHeight(max(C.Media.Font_Size, C.Loot.IconSize))
+		frame:SetHeight(math.max(C.Media.Font_Size, C.Loot.IconSize))
 		frame:SetID(id)
 
 		frame:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -440,7 +451,7 @@ do
 	end
 
 	function Butsu:AnchorSlots()
-		local frameSize = max(C.Loot.IconSize, C.Loot.IconSize)
+		local frameSize = math.max(C.Loot.IconSize, C.Loot.IconSize)
 		local shownSlots = 0
 
 		local prevShown
@@ -468,6 +479,4 @@ end
 
 -- Kill the default loot frame
 LootFrame:UnregisterAllEvents()
-
--- Escape the dungeon
 table.insert(UISpecialFrames, "Butsu")

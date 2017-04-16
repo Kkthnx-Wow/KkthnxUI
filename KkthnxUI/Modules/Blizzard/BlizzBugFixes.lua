@@ -4,7 +4,10 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
+local GetCVar = _G.GetCVar
 local HideUIPanel = _G.HideUIPanel
+local InCombatLockdown = _G.InCombatLockdown
+local SetCVar = _G.SetCVar
 local ShowUIPanel = _G.ShowUIPanel
 local ToggleFrame = _G.ToggleFrame
 
@@ -19,6 +22,20 @@ SpellBookTaint:SetScript("OnEvent", function()
 	ToggleFrame(SpellBookFrame)
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
+end)
+
+local floatingCombatText = CreateFrame("Frame")
+floatingCombatText:RegisterEvent("PLAYER_ENTERING_WORLD")
+floatingCombatText:SetScript("OnEvent", function()
+	if (K.CheckAddOn("MikScrollingBattleText")) then return end
+	-- Fix floatingCombatText not being enabled after AddOns like MSBT
+	-- print(GetCVar("floatingCombatTextCombatDamage"))
+	if (GetCVar("floatingCombatTextCombatDamage") ~= 1) and (not InCombatLockdown()) then
+		SetCVar("floatingCombatTextCombatHealing", 1)
+		SetCVar("floatingCombatTextCombatDamage", 1)
+	end
+
+floatingCombatText:UnregisterEvent("PLAYER_ENTERING_WORLD")
 end)
 
 -- Fix SearchLFGLeave() taint

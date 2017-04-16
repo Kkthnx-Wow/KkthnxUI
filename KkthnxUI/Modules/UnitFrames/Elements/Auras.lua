@@ -10,7 +10,7 @@ local CreateFrame = _G.CreateFrame
 local GetTime = _G.GetTime
 local UnitAura = _G.UnitAura
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: DebuffTypeColor
 
 local function CreateAuraTimer(self, elapsed)

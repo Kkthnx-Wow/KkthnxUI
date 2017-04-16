@@ -16,7 +16,7 @@ local GetFactionInfo = _G.GetFactionInfo
 local GetNumFactions = _G.GetNumFactions
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ReputationFrame, ToggleCharacter, GameTooltip, UNKNOWN
 
 local Colors = FACTION_BAR_COLORS

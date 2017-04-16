@@ -48,7 +48,7 @@ local UnitIsAFK = _G.UnitIsAFK
 local UnitLevel = _G.UnitLevel
 local UnitRace = _G.UnitRace
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, date
 -- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME
 

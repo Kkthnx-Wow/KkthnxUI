@@ -33,7 +33,7 @@ local StaticPopup_Show = _G.StaticPopup_Show
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local UIFrameFadeOut = _G.UIFrameFadeOut
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ActionBars, SetActionBarToggles, _G.SLASH_VERSION1, DisableAddOn, KkthnxUIData
 -- GLOBALS: ChatFrame4, DEFAULT_CHAT_FRAME, KkthnxUIDataPerChar, InstallationMessageFrame
 -- GLOBALS: _G.SLASH_CONFIGURE1, _G.SLASH_RESETUI1, ChatFrame1, ChatFrame2, ChatFrame3, UIParent
@@ -178,16 +178,21 @@ end
 
 function KkthnxUIInstall:CVarSetup()
 	SetCVar("alwaysShowActionBars", 1)
+	SetCVar("autoLootDefault", 0)
 	SetCVar("autoOpenLootHistory", 0)
+	SetCVar("autoQuestProgress", 1)
 	SetCVar("autoQuestWatch", 1)
 	SetCVar("cameraDistanceMaxZoomFactor", 2.6)
 	SetCVar("chatMouseScroll", 1)
 	SetCVar("chatStyle", "classic")
+	SetCVar("colorblindMode", 0)
 	SetCVar("countdownForCooldowns", 0)
+	SetCVar("gameTip", 0)
 	SetCVar("lockActionBars", 1)
-	SetCVar("nameplateShowFriendlyNPCs", 1)
+	SetCVar("lootUnderMouse", 0)
 	SetCVar("nameplateShowSelf", 0)
 	SetCVar("removeChatDelay", 1)
+	SetCVar("RotateMinimap", 0)
 	SetCVar("screenshotQuality", 10)
 	SetCVar("showArenaEnemyFrames", 0)
 	SetCVar("ShowClassColorInNameplate", 1)
@@ -195,8 +200,6 @@ function KkthnxUIInstall:CVarSetup()
 	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
 	SetCVar("SpamFilter", 0)
-	SetCVar("statusTextDisplay", "BOTH")
-	SetCVar("threatWarning", 3)
 	SetCVar("UberTooltips", 1)
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")

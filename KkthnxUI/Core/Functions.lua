@@ -27,7 +27,7 @@ local UIParent = _G.UIParent
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIFrameHider, UIHider
 
 -- Backdrop & Borders

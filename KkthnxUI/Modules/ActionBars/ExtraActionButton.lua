@@ -11,7 +11,7 @@ local GetActionCooldown = _G.GetActionCooldown
 local HasExtraActionBar = _G.HasExtraActionBar
 local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ExtraActionBarFrame, ZoneAbilityFrame, SplitBarRight
 
 local Movers = K.Movers

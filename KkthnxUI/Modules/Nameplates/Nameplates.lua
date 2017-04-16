@@ -41,7 +41,7 @@ local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
 
--- Global variables that we don't cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, DebuffTypeColor
 
 -- oUF_Kkthnx Nameplates
@@ -56,35 +56,36 @@ end)
 -- NOTE: We should determine what Vars tend to bug out the nameplates and make sure we always have these defaulted. If not, we fetch the defaulted settings and reset them.
 -- NOTE: This is the safest way to prevent any unknown issues currently.
 
--- These should be defaulted pretty much always
-K:LockCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
-K:LockCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
-K:LockCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
-K:LockCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
-K:LockCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
-K:LockCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+-- Default some CVars, can help when coming from other UIs that also modify these!
+K:LockCVar("nameplateGlobalScale", GetCVarDefault("nameplateGlobalScale"))
 K:LockCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+K:LockCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+K:LockCVar("nameplateMaxAlphaDistance", GetCVarDefault("nameplateMaxAlphaDistance"))
+K:LockCVar("nameplateMaxScaleDistance", GetCVarDefault("nameplateMaxScaleDistance"))
+K:LockCVar("nameplateMinScaleDistance", GetCVarDefault("nameplateMinScaleDistance"))
+K:LockCVar("nameplateMotionSpeed", GetCVarDefault("nameplateMotionSpeed"))
+K:LockCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
+K:LockCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
+K:LockCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+K:LockCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
+K:LockCVar("nameplateSelfAlpha", GetCVarDefault("nameplateSelfAlpha"))
+K:LockCVar("nameplateShowAll", GetCVarDefault("nameplateShowAll"))
+K:LockCVar("nameplateShowFriendlyNPCs", GetCVarDefault("nameplateShowFriendlyNPCs"))
 
 -- Set what we want for the nameplates. Only certain ones will work for oUF.
 local UpdateCVars = {}
 if C.Nameplates.EnhancedThreat == true then
 	UpdateCVars["threatWarning"] = 3
+	-- print(GetCVarDefault("threatWarning")) -- Be sure this is changing as needed.
 end
-UpdateCVars["nameplateGlobalScale"] = 1
 UpdateCVars["nameplateLargerScale"] = 1
 UpdateCVars["nameplateMaxAlpha"] = 1
-UpdateCVars["nameplateMaxAlphaDistance"] = 0
 UpdateCVars["nameplateMaxDistance"] = C.Nameplates.Distance or 40
 UpdateCVars["namePlateMaxScale"] = 1
-UpdateCVars["nameplateMaxScaleDistance"] = 0
 UpdateCVars["nameplateMinAlpha"] = 1
 UpdateCVars["nameplateMinScale"] = 1
-UpdateCVars["nameplateMinScaleDistance"] = 0
-UpdateCVars["nameplateOtherBottomInset"] = C.Nameplates.Clamp and 0.08 or 1
-UpdateCVars["nameplateOtherTopInset"] = C.Nameplates.Clamp and 0.1 or -1
-UpdateCVars["nameplateSelfAlpha"] = 1
-UpdateCVars["nameplateShowAll"] = 1
-UpdateCVars["nameplateShowFriendlyNPCs"] = 1
+UpdateCVars["nameplateOtherBottomInset"] = C.Nameplates.Clamp and 0.1 or -1
+UpdateCVars["nameplateOtherTopInset"] = C.Nameplates.Clamp and 0.08 or -1
 
 KkthnxUINamePlates.UpdateCVars = UpdateCVars
 
@@ -103,12 +104,12 @@ if C.Nameplates.HealerIcon == true then
 		["Alliance"] = 0,
 	}
 	local healerSpecIDs = {
-		105,	-- Druid Restoration
-		270,	-- Monk Mistweaver
-		65,		-- Paladin Holy
-		256,	-- Priest Discipline
-		257,	-- Priest Holy
-		264,	-- Shaman Restoration
+		105, -- Druid Restoration
+		270, -- Monk Mistweaver
+		65, -- Paladin Holy
+		256, -- Priest Discipline
+		257, -- Priest Holy
+		264, -- Shaman Restoration
 	}
 	for _, specID in pairs(healerSpecIDs) do
 		local _, name = GetSpecializationInfoByID(specID)
@@ -755,9 +756,9 @@ local function StyleNamePlates(self, unit)
 	-- Create Healer Icon
 	if C.Nameplates.HealerIcon == true then
 		self.HPHeal = self.Health:CreateFontString(nil, "OVERLAY")
-		self.HPHeal:SetFont(C.Media.Font, 32 * K.NoScaleMult, C.Media.Font_Style)
+		self.HPHeal:SetFont(C.Media.Font, 32, C.Media.Font_Style)
 		self.HPHeal:SetText("|cFFD53333+|r")
-		self.HPHeal:SetPoint("BOTTOM", self.Name, "TOP", 0, C.Nameplates.TrackAuras == true and 13 or 0)
+		self.HPHeal:SetPoint("BOTTOM", self.Name, "TOP", 0, C.Nameplates.TrackAuras == true and 26 or 0)
 	end
 
 	-- Aura tracking
