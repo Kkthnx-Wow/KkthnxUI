@@ -242,12 +242,30 @@ function K.PostCastInterruptible(self, unit)
 	end
 end
 
+function K.PostCastFailed(self)
+	self:SetMinMaxValues(0, 1)
+	self:SetValue(1)
+	self:SetStatusBarColor(1, 0, 0)
+
+	self.Spark:SetPoint("CENTER", self, "RIGHT")
+
+	self.Time:SetText("")
+	if self.Latency then
+		self.Latency:SetText("")
+	end
+end
+
 function K.PostCastInterrupted(self)
 	self:SetMinMaxValues(0, 1)
 	self:SetValue(1)
 	self:SetStatusBarColor(1, 0, 0)
 
 	self.Spark:SetPoint("CENTER", self, "RIGHT")
+
+	self.Time:SetText("")
+	if self.Latency then
+		self.Latency:SetText("")
+	end
 end
 
 function K.PostCastNotInterruptible(self)
@@ -264,6 +282,10 @@ function K.CustomDelayText(self, duration)
 end
 
 function K.CustomTimeText(self, duration)
+	if self.max > 600 then
+		return self.Time:SetText("")
+	end
+
 	if self.channeling then
 		self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
 	else
@@ -353,6 +375,7 @@ function K.CreateCastBar(self)
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
+			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
@@ -424,6 +447,7 @@ function K.CreateCastBar(self)
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
+			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
@@ -489,6 +513,7 @@ function K.CreateCastBar(self)
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
 			CastBar.PostCastInterrupted = K.PostCastInterrupted
+			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
@@ -550,6 +575,8 @@ function K.CreateCastBar(self)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
+			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 
@@ -605,6 +632,8 @@ function K.CreateCastBar(self)
 			CastBar.PostCastStop = K.PostCastStop
 			CastBar.PostChannelStop = K.PostCastStop
 			CastBar.PostChannelUpdate = K.PostChannelUpdate
+			CastBar.PostCastInterrupted = K.PostCastInterrupted
+			CastBar.PostCastFailed = K.PostCastFailed
 			CastBar.PostCastInterruptible = K.PostCastInterruptible
 			CastBar.PostCastNotInterruptible = K.PostCastNotInterruptible
 

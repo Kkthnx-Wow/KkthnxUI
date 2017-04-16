@@ -1,8 +1,47 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Lua API
+local _G = _G
+
+-- Wow API
+local DisableAddOn = _G.DisableAddOn
+local ReloadUI = _G.ReloadUI
+
+-- Prevent users config errors and using other UIs over mine.
 local CheckAddOn = K.CheckAddOn
 
--- Prevent users config errors
+local buttonText, disableText
+if IsAddOnLoaded("ElvUI") then
+	buttonText = "|cff1784d1ElvUI|r"
+	disableText = "ElvUI"
+elseif IsAddOnLoaded("Tukui") then
+	buttonText = "|cffff8000Tukui|r"
+	disableText = "Tukui"
+elseif IsAddOnLoaded("DiabolicUI") then
+	buttonText = "|cff8a0707Diabolic|r|cffffffffUI|r"
+	disableText = "DiabolicUI"
+else
+	-- Fallbacks
+	buttonText = UNKNOWN
+	disableText = UNKNOWN
+end
+
+StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
+	text = "Oh no, you have |cff3c9bedKkthnxUI|r and "..buttonText.." both enabled at the same time. Select an addon to disable to prevent conflicts!",
+	button1 = "|cff3c9bedKkthnxUI|r",
+	button2 = buttonText,
+	OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
+	OnCancel = function() DisableAddOn(disableText) ReloadUI() end,
+	timeout = 0,
+	whileDead = 1,
+	hideOnEscape = false,
+	preferredIndex = 3,
+	showAlert = 1
+}
+
+if IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") then
+	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
+end
 
 -- Actionbars
 if C.ActionBar.RightBars > 3 then
@@ -51,7 +90,7 @@ if CheckAddOn("XPerl") or CheckAddOn("Stuf") or CheckAddOn("PitBull4") or CheckA
 	C.Unitframe.Enable = false
 end
 
-if (CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga")  or CheckAddOn("daftMainBar")) or (CheckAddOn("ConsolePortBar") and CheckAddOn("ConsolePort")) then -- We have to check for main ConsolePort addon too.
+if (CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga") or CheckAddOn("daftMainBar")) or (CheckAddOn("ConsolePortBar") and CheckAddOn("ConsolePort")) then -- We have to check for main ConsolePort addon too.
 	C.ActionBar.Enable = false
 end
 

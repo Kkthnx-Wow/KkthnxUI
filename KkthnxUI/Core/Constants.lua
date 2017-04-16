@@ -74,24 +74,6 @@ for i = 1, GetNumAddOns() do
 	K.AddOns[string_lower(AddOnName)] = GetAddOnEnableState(K.Name, AddOnName) > 0
 end
 
--- Incompatible vs DiabolicUI
-StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
-	text = "Oh no, you have |cff3c9bedKkthnxUI|r and |cff8a0707Diabolic|r|cffffffffUI|r both enabled at the same time. Select an addon to disable to prevent conflicts!",
-	button1 = "|cff3c9bedKkthnxUI|r",
-	button2 = "|cff8a0707Diabolic|r|cffffffffUI|r",
-	OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
-	OnCancel = function() DisableAddOn("DiabolicUI") ReloadUI() end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3,
-	showAlert = 1
-}
-
-if IsAddOnLoaded("DiabolicUI") then
-	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
-end
-
 -- Register events for CheckRole function.
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
