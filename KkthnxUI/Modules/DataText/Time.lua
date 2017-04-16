@@ -97,8 +97,8 @@ local function OnLeave()
 end
 
 local function OnEnter(self)
-	local anchor, panel, xoff, yoff = "ANCHOR_BOTTOMLEFT", self:GetParent(), 0, 5
-	GameTooltip:SetOwner(self, anchor, xoff, yoff)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
 	if(not enteredFrame) then

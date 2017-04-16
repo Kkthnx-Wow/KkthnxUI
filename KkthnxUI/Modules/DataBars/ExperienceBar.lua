@@ -133,8 +133,9 @@ ExperienceBar:SetScript("OnEnter", function(self)
 		return
 	end
 
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	GameTooltip:AddLine("Experience")
 	GameTooltip:AddLine(" ")

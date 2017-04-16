@@ -118,8 +118,9 @@ ArtifactBar:SetScript("OnEnter", function(self)
 	end
 
 	if HasArtifactEquip then
+		GameTooltip:SetOwner(self, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(self))
 		GameTooltip:ClearLines()
-		GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 		GameTooltip:AddLine(ARTIFACT_POWER)
 		GameTooltip:AddLine(" ")

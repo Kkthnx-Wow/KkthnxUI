@@ -19,17 +19,6 @@ local PlaySoundFile = _G.PlaySoundFile
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
 
--- Tooltip code ripped from StatBlockCore by Funkydude
-local function getAnchors(frame)
-	local x, y = frame:GetCenter()
-
-	if not x or not y then return "CENTER" end
-	local hhalf = (x > UIParent:GetWidth()* 2 / 3) and "RIGHT" or (x < UIParent:GetWidth() / 3) and "LEFT" or ""
-	local vhalf = (y > UIParent:GetHeight() / 2) and "TOP" or "BOTTOM"
-
-	return vhalf..hhalf, frame, (vhalf == "TOP" and "BOTTOM" or "TOP")..hhalf
-end
-
 local ToggleBarText = function(i, text, plus, neg)
 	if plus then
 		ToggleBar[i].Text:SetText(text)
@@ -370,7 +359,7 @@ for i = 1, 5 do
 
 		if i == 5 then
 			GameTooltip:SetOwner(ToggleBar[5], "ANCHOR_NONE")
-			GameTooltip:SetPoint(getAnchors(ToggleBar[i]))
+			GameTooltip:SetPoint(K.GetAnchors(ToggleBar[i]))
 			GameTooltip:ClearLines()
 			GameTooltip:AddLine("Toggle")
 			GameTooltip:AddLine(" ")

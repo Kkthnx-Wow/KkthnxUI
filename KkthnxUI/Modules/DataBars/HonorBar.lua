@@ -121,8 +121,9 @@ HonorBar:SetScript("OnEnter", function(self)
 	local LevelMax = GetMaxPlayerHonorLevel()
 	local Prestige = UnitPrestige("player")
 
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR", 0, -4)
 
 	GameTooltip:AddLine(HONOR)
 

@@ -120,8 +120,8 @@ end
 local function OnEnter(self)
 	enteredFrame = true
 	local cpuProfiling = GetCVar("scriptProfile") == "1"
-	local anchor, panel, xoff, yoff = "ANCHOR_BOTTOMLEFT", self:GetParent(), 0, 5
-	GameTooltip:SetOwner(self, anchor, xoff, yoff)
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
 	UpdateMemory()

@@ -2,12 +2,10 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local pairs = pairs
 local string_find = string.find
 local string_format = string.format
 local string_gsub = string.gsub
 local table_insert = table.insert
-local unpack = unpack
 
 -- Wow API
 local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
@@ -15,7 +13,7 @@ local GetSpellInfo = _G.GetSpellInfo
 local ToggleFrame = _G.ToggleFrame
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CopyScroll, C_Timer, RandomRoll, UISpecialFrames, ChatFontNormal, ChatMenu
+-- GLOBALS: CopyScroll, C_Timer, RandomRoll, UISpecialFrames, ChatFontNormal, ChatMenu, GameTooltip
 
 -- COPY CHAT
 local lines = {}
@@ -102,13 +100,14 @@ end
 for i = 1, NUM_CHAT_WINDOWS do
 	local cf = _G[string_format("ChatFrame%d", i)]
 	local button = CreateFrame("Button", string_format("ButtonCF%d", i), cf)
-	button:SetPoint("BOTTOMRIGHT", 3, -2)
+	button:SetPoint("BOTTOMRIGHT", 10, 2)
 	button:SetSize(20, 20)
 	button:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Copy")
 	button:SetAlpha(0)
 	K.CreateBorder(button)
 	button:SetBackdrop(K.BorderBackdrop)
-	button:SetBackdropColor(K.Color.r * 0.3, K.Color.g * 0.3, K.Color.b * 0.3)
+	button:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3], C.Media.Border_Color[4])
+	button:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
 	button:SetScript("OnMouseUp", function(self, btn)
 		if btn == "RightButton" then
@@ -119,8 +118,20 @@ for i = 1, NUM_CHAT_WINDOWS do
 			Copy(cf)
 		end
 	end)
-	button:SetScript("OnEnter", function() button:FadeIn() end)
-	button:SetScript("OnLeave", function() button:FadeOut() end)
+	button:SetScript("OnEnter", function()
+		button:FadeIn()
+		GameTooltip:SetOwner(button, "ANCHOR_NONE")
+		GameTooltip:SetPoint(K.GetAnchors(button))
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine("Copy Chat")
+		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("Copy text from the chat frame.", 0.2, 1, 0.2, 1)
+		GameTooltip:Show()
+	end)
+	button:SetScript("OnLeave", function()
+		button:FadeOut()
+		GameTooltip:Hide()
+	end)
 
 	SlashCmdList.COPY_CHAT = function()
 		Copy(_G["ChatFrame1"])
