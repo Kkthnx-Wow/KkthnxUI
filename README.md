@@ -23,7 +23,7 @@ Bug reports and feature suggestions are all done through GitHub's Issue tracker 
 
 There are thousands of users, but most are content to simply download and use the interface without further ado. If you wish to get more involved though, have some questions you can't find answers to anywhere else or simply just wish to stop by and say hello, we have both a [discord](https://discordapp.com/) server and a facebook page.
 
-* Discord: [Q2KhGY2](https://discord.gg/YUmxqQm)
+* Discord: [YUmxqQm](https://discord.gg/YUmxqQm)
 * Facebook: [@kkthnxui](https://www.facebook.com/kkthnxui)
 * Twitter: [@kkthnxui](https://twitter.com/KkthnxUI)
 
