@@ -162,7 +162,7 @@ L.Install = {
 	Step4Line1 = "Installation is complete.",
 	Step4Line2 = "Please click the 'Finish' button to reload the UI.",
 	Step4Line3 = "",
-	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/Kjyebkf|r",
+	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/YUmxqQm|r",
 	ButtonInstall = "Install",
 	ButtonNext = "Next",
 	ButtonSkip = "Skip",
@@ -266,7 +266,7 @@ L.Welcome = {
 	Line2 = "",
 	Line3 = "Type |cff3c9bed/cfg|r to access the in-game configuration menu.",
 	Line4 = "",
-	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedQ2KhGY2|r"
+	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedYUmxqQm|r"
 }
 
 L.Zone = {

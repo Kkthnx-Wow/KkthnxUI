@@ -596,7 +596,6 @@ function Bags:SlotUpdate(id, button)
 	local Texture, Count, Lock, quality, _, _, _, _, _, ItemID = GetContainerItemInfo(id, button:GetID())
 	local IsNewItem = C_NewItems.IsNewItem(id, button:GetID())
 
-	--if IsNewItem ~= true and button.Animation and button.Animation.playing then
 	if IsNewItem ~= true then
 		K.UIFrameStopFlash(button)
 	end
@@ -626,19 +625,6 @@ function Bags:SlotUpdate(id, button)
 
 	if IsNewItem and NewItem then
 		NewItem:SetAlpha(0)
-
-		-- if not button.Animation then
-		-- 	button.Animation = button:CreateAnimationGroup()
-		-- 	button.Animation:SetLooping("BOUNCE")
-		--
-		-- 	button.FadeOut = button.Animation:CreateAnimation("Alpha")
-		-- 	button.FadeOut:SetFromAlpha(1)
-		-- 	button.FadeOut:SetToAlpha(0)
-		-- 	button.FadeOut:SetDuration(0.40)
-		-- 	button.FadeOut:SetSmoothing("IN_OUT")
-		-- end
-
-		--button.Animation:Play()
 		K.UIFrameFlash(button, 1, true)
 	end
 
@@ -887,8 +873,6 @@ function Bags:CloseAllBankBags()
 end
 
 function Bags:ToggleBags(id)
-	if id and GetContainerNumSlots(id) == 0 then return end -- Closes a bag when inserting a new container..
-
 	if (self.Bag:IsShown() and BankFrame:IsShown()) and (not self.Bank:IsShown()) and (not ReagentBankFrame:IsShown()) then
 		self:OpenAllBankBags()
 
@@ -918,9 +902,6 @@ end
 function Bags:OnEvent(event, ...)
 	if (event == "BAG_UPDATE") then
 		self:BagUpdate(...)
-	elseif (event == "QUEST_ACCEPTED" or event == "QUEST_REMOVED") and self:IsShown() then
-		self:BagUpdate(...) -- self:UpdateAllBags(...)
-		-- print(event, ...)
 	elseif (event == "BAG_CLOSED") then
 		-- This is usually where the client find a bag swap in character or bank slots.
 
@@ -984,6 +965,10 @@ function Bags:Enable()
 	local Bank = BankFrameItem1
 	local BankFrame = BankFrame
 
+	for _, flyin in pairs(BlizzardBags) do
+		flyin:UnregisterEvent("ITEM_PUSH")
+	end
+
 	self:CreateContainer("Bag", unpack(C.Position.Bag))
 	self:CreateContainer("Bank", unpack(C.Position.Bank))
 	self:HideBlizzard()
@@ -1022,8 +1007,7 @@ function Bags:Enable()
 	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
-	self:RegisterEvent("QUEST_ACCEPTED") -- This is new so lets keep an eye on this updating.
-	self:RegisterEvent("QUEST_REMOVED") -- This is new so lets keep an eye on this updating.
+	self:UnregisterEvent("ITEM_PUSH")
 	self:SetScript("OnEvent", self.OnEvent)
 
 	-- Force an update, setting colors

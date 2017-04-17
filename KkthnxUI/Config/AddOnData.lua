@@ -765,6 +765,8 @@ StaticPopupDialogs.SETTINGS_ALL = {
 	button2 = CANCEL,
 	OnAccept = function()
 		if K.CheckAddOn("DBM-Core") then UploadDBM() end
+		if K.CheckAddOn("BugSack") then UploadBugSack() end
+		if K.CheckAddOn("!BugGrabber") then UploadBugGrabber() end
 		if K.CheckAddOn("MikScrollingBattleText") then UploadMSBT() end
 		if K.CheckAddOn("Skada") then UploadSkada() end
 		ReloadUI()

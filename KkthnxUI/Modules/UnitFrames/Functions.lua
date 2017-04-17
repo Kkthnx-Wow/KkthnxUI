@@ -54,19 +54,13 @@ function K.MultiCheck(check, ...)
 	return false
 end
 
-local function UpdatePortraitColor(self, unit, min, max)
+local function UpdatePortraitColor(self, unit)
 	if (not UnitIsConnected(unit)) then
 		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
 	elseif (UnitIsDead(unit)) then
 		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
 	elseif (UnitIsGhost(unit)) then
 		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-	elseif (max == 0 or min/max * 100 < 25) then
-		if (UnitIsPlayer(unit)) then
-			if (unit ~= "player") then
-				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
-			end
-		end
 	else
 		self.Portrait:SetVertexColor(1, 1, 1, 1)
 	end
@@ -125,16 +119,21 @@ do
 		DEFICIT = {TEXT_DEF, TEXT_DEF, TEXT_NONE},
 	}
 
-	function K.PostUpdateHealth(bar, unit, cur, max, min)
+	function K.PostUpdateHealth(bar, unit, cur, max)
 		local self = bar:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
 
 		if (self.Portrait) then
-			UpdatePortraitColor(self, unit, cur, max)
+			UpdatePortraitColor(self, unit)
 		end
 
 		if (self.Name) and (self.Name.Bg) and (self.MatchUnit == "boss") then -- For boss frames
 			self.Name.Bg:SetVertexColor(UnitSelectionColor(unit))
+		end
+
+		if not cur then
+			cur = UnitHealth(unit)
+			max = UnitHealthMax(unit) or 1
 		end
 
 		if (not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit)) then
@@ -159,11 +158,6 @@ do
 			end
 		end
 
-		if (not cur) then
-			cur = UnitHealth(unit)
-			max = UnitHealthMax(unit) or 1
-		end
-
 		if uconfig.HealthTag == "DISABLE" then
 			bar.Value:SetText(nil)
 		elseif self.isMouseOver and bar.Value then
@@ -184,18 +178,15 @@ do
 		MINIMAL	= {TEXT_SHORT, TEXT_PERCENT, TEXT_NONE},
 	}
 
-	function K.PostUpdatePower(bar, unit, cur, max, min)
+	function K.PostUpdatePower(bar, unit, cur, max)
 		local self = bar:GetParent()
 		local uconfig = C.UnitframePlugins[self.MatchUnit]
-		local shown = bar:IsShown()
+
+		if not bar.Value then return end
 
 		if max == 0 then
-			if shown then
-				bar:Hide()
-			end
+			bar.Value:SetText(nil)
 			return
-		elseif not shown then
-			bar:Show()
 		end
 
 		if (not UnitIsConnected(unit) or UnitIsDeadOrGhost(unit)) then
@@ -211,13 +202,6 @@ do
 				end
 				return
 			end
-		end
-
-		if not bar.Value then return end
-
-		if (not cur) then
-			max = UnitPower(unit) or 1
-			cur = UnitPowerMax(unit)
 		end
 
 		if uconfig.PowerTag == "DISABLE" then
