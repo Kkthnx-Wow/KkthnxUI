@@ -1,5 +1,3 @@
-### Note! UI Does currently work for WoW 7.2.0
-
 ![kkthnxuilogo2](https://cloud.githubusercontent.com/assets/1692977/19082420/14dd3d3c-8a2c-11e6-818f-0f6a404678be.png)
 
 KkthnxUI is a simplistic user interface that holds onto the information and functionality, while still keeping most of the good looks.
@@ -19,7 +17,7 @@ Also, make sure the game is closed when moving new files into the addon director
 
 Bug reports and feature suggestions are all done through GitHub's Issue tracker linked below. If you're looking for the current development status of the current or next version of the UI, you can check that out at Kkthnx's GitHub project pages.
 
-* Issues: [github.com/Kkthnx-WoW/KkthnxUI/issues)](https://github.com/Kkthnx-WoW/KkthnxUI/issues)
+* Issues: [BugTracker](https://github.com/Kkthnx-WoW/KkthnxUI/issues)
 
 ## Join the community
 
@@ -29,7 +27,7 @@ There are thousands of users, but most are content to simply download and use th
 * Facebook: [@kkthnxui](https://www.facebook.com/kkthnxui)
 * Twitter: [@kkthnxui](https://twitter.com/KkthnxUI)
 
-## Buy/gift me gametime!
+## Buy/gift me game time!
 
 Making stuff like this takes a lot of time and effort, as this user interface is a one-man project. I do it because I love doing it, because I believe it makes people happy and improves the user experience. But still, a lot of hours is put into it nonetheless.
 
