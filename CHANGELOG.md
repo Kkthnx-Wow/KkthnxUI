@@ -7,6 +7,10 @@ All notable changes to this project will be documented in this file.
 Format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v3.35] - 4/16/2017 - Hotfix
+### Fixed
+- Loot frame returning a nil value on color.
+
 ## [v3.34] - 4/16/2017
 ### Added
 - Actionbar toggle button now has tooltip info.

@@ -3,7 +3,7 @@
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: User Interface replacement AddOn for World of Warcraft.
 ## Author: Josh "Kkthnx" Russell, Shestak
-## Version: 6.34
+## Version: 6.35
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
