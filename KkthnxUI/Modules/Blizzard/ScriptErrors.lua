@@ -63,4 +63,6 @@ end
 
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", ScriptErrors_Init)
+if K.WoWBuild == 24015 then
+	Loading:SetScript("OnEvent", ScriptErrors_Init)
+end

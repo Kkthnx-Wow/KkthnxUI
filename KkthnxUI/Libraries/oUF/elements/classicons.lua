@@ -1,57 +1,63 @@
 --[[ Element: Class Icons
 
-Toggles the visibility of icons depending on the player's class and
-specialization.
+ Toggles the visibility of icons depending on the player's class and
+ specialization.
 
-Widget
+ Widget
 
-ClassIcons - An array consisting of as many UI Textures as the theoretical
-maximum return of `UnitPowerMax`.
+ ClassIcons - An array consisting of as many UI Textures as the theoretical
+ maximum return of `UnitPowerMax`.
 
-Notes
+ Notes
 
-All - Combo Points
-Mage - Arcane Charges
-Monk - Chi Orbs
-Paladin - Holy Power
-Warlock - Soul Shards
+ All     - Combo Points
+ Mage    - Arcane Charges
+ Monk    - Chi Orbs
+ Paladin - Holy Power
+ Warlock - Soul Shards
 
-Examples
+ Examples
 
-local ClassIcons = {}
-for index = 1, 6 do
-	local Icon = self:CreateTexture(nil, 'BACKGROUND')
+   local ClassIcons = {}
+   for index = 1, 6 do
+      local Icon = self:CreateTexture(nil, 'BACKGROUND')
 
-	-- Position and size.
-	Icon:SetSize(16, 16)
-	Icon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * Icon:GetWidth(), 0)
+      -- Position and size.
+      Icon:SetSize(16, 16)
+      Icon:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * Icon:GetWidth(), 0)
 
-	ClassIcons[index] = Icon
-end
+      ClassIcons[index] = Icon
+   end
 
--- Register with oUF
-self.ClassIcons = ClassIcons
+   -- Register with oUF
+   self.ClassIcons = ClassIcons
 
-Hooks
+ Hooks
 
-OverrideVisibility(self) - Used to completely override the internal visibility
-function. Removing the table key entry will make
-	the element fall-back to its internal function
-		again.
-		Override(self) - Used to completely override the internal update
-		function. Removing the table key entry will make the
-			element fall-back to its internal function again.
-				UpdateTexture(element) - Used to completely override the internal function
-					for updating the power icon textures. Removing the
-					table key entry will make the element fall-back to
-					its internal function again.
+ OverrideVisibility(self) - Used to completely override the internal visibility
+                            function. Removing the table key entry will make
+                            the element fall-back to its internal function
+                            again.
+ Override(self)           - Used to completely override the internal update
+                            function. Removing the table key entry will make the
+                            element fall-back to its internal function again.
+ UpdateTexture(element)   - Used to completely override the internal function
+                            for updating the power icon textures. Removing the
+                            table key entry will make the element fall-back to
+                            its internal function again.
 
-						]]
+]]
 
 local parent, ns = ...
 local oUF = ns.oUF
 
 local _, PlayerClass = UnitClass'player'
+
+local SPELL_POWER_CHI = Enum.PowerType and Enum.PowerType.Chi or SPELL_POWER_CHI
+local SPELL_POWER_HOLY_POWER = Enum.PowerType and Enum.PowerType.HolyPower or SPELL_POWER_HOLY_POWER
+local SPELL_POWER_SOUL_SHARDS = Enum.PowerType and Enum.PowerType.SoulShards or SPELL_POWER_SOUL_SHARDS
+local SPELL_POWER_COMBO_POINTS = Enum.PowerType and Enum.PowerType.ComboPoints or SPELL_POWER_COMBO_POINTS
+local SPELL_POWER_ARCANE_CHARGES = Enum.PowerType and Enum.PowerType.ArcaneCharges or SPELL_POWER_ARCANE_CHARGES
 
 -- Holds the class specific stuff.
 local ClassPowerID, ClassPowerType
@@ -72,7 +78,7 @@ end
 
 local Update = function(self, event, unit, powerType)
 	if(not (unit == 'player' and powerType == ClassPowerType
-	or unit == 'vehicle' and powerType == 'COMBO_POINTS')) then
+		or unit == 'vehicle' and powerType == 'COMBO_POINTS')) then
 		return
 	end
 
@@ -80,12 +86,12 @@ local Update = function(self, event, unit, powerType)
 
 	--[[ :PreUpdate()
 
-	Called before the element has been updated
+	 Called before the element has been updated
 
-	Arguments
+	 Arguments
 
-	self - The ClassIcons element
-	event - The event, that the update is being triggered for
+	 self  - The ClassIcons element
+	 event - The event, that the update is being triggered for
 	]]
 	if(element.PreUpdate) then
 		element:PreUpdate(event)
@@ -123,17 +129,17 @@ local Update = function(self, event, unit, powerType)
 	end
 	--[[ :PostUpdate(cur, max, hasMaxChanged, event)
 
-	Called after the element has been updated
+	 Called after the element has been updated
 
-	Arguments
+	 Arguments
 
-	self - The ClassIcons element
-	cur - The current amount of power
-	max - The maximum amount of power
-	hasMaxChanged - Shows if the maximum amount has changed since the last
-	update
-	powerType - The type of power used
-	event - The event, which the update happened for
+	 self          - The ClassIcons element
+	 cur           - The current amount of power
+	 max           - The maximum amount of power
+	 hasMaxChanged - Shows if the maximum amount has changed since the last
+	                 update
+	 powerType     - The type of power used
+	 event         - The event, which the update happened for
 	]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(cur, max, oldMax ~= max, powerType, event)

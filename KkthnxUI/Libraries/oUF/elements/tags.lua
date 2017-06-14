@@ -5,26 +5,26 @@
 local parent, ns = ...
 local oUF = ns.oUF
 
-local CreateFrame = CreateFrame
 local format = string.format
 local tinsert, tremove = table.insert, table.remove
-local UnitExists = UnitExists
 
 local _PATTERN = '%[..-%]+'
 
+local SPELL_POWER_MANA = Enum.PowerType and Enum.PowerType.Mana or SPELL_POWER_MANA
+local SPELL_POWER_SOUL_SHARDS = Enum.PowerType and Enum.PowerType.SoulShards or SPELL_POWER_SOUL_SHARDS
+local SPELL_POWER_HOLY_POWER = Enum.PowerType and Enum.PowerType.HolyPower or SPELL_POWER_HOLY_POWER
+local SPELL_POWER_CHI = Enum.PowerType and Enum.PowerType.Chi or SPELL_POWER_CHI
+local SPELL_POWER_ARCANE_CHARGES = Enum.PowerType and Enum.PowerType.ArcaneCharges or SPELL_POWER_ARCANE_CHARGES
+
 local _ENV = {
 	Hex = function(r, g, b)
-		if(type(r) == 'table') then
-			if(r.r) then
-				r, g, b = r.r, r.g, r.b
-			else
-				r, g, b = unpack(r)
-			end
+		if type(r) == "table" then
+			if r.r then r, g, b = r.r, r.g, r.b else r, g, b = unpack(r) end
 		end
-		if not r or type(r) == "string" then
-			return "|cffFFFFFF"
+		if not r or type(r) == 'string' then --wtf?
+			return '|cffFFFFFF'
 		end
-		return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
+		return format("|cff%02x%02x%02x", r*255, g*255, b*255)
 	end,
 	ColorGradient = oUF.ColorGradient,
 }
@@ -56,7 +56,7 @@ local tagStrings = {
 		end
 	end]],
 
-	["leaderlong"] = [[function(u)
+	["leaderlong"]  = [[function(u)
 		if(UnitIsGroupLeader(u)) then
 			return 'Leader'
 		end
@@ -240,17 +240,15 @@ local tagStrings = {
 	["shortclassification"] = [[function(u)
 		local c = UnitClassification(u)
 		if(c == 'rare') then
-			return '|cffAF5050R |r'
+			return 'R'
 		elseif(c == 'rareelite') then
-			return '|cffAF5050R+ |r'
+			return 'R+'
 		elseif(c == 'elite') then
-			return '|cffAF5050+ |r'
+			return '+'
 		elseif(c == 'worldboss') then
-			return '|cffAF5050B |r'
+			return 'B'
 		elseif(c == 'minus') then
-			return ''
-		elseif(c == 'normal') then
-			return ''
+			return '-'
 		end
 	end]],
 
@@ -278,15 +276,15 @@ local tagStrings = {
 	end]],
 
 	['curmana'] = [[function(unit)
-		return UnitPower(unit, SPELL_POWER_MANA)
+		return UnitPower(unit, Enum.PowerType.Mana)
 	end]],
 
 	['maxmana'] = [[function(unit)
-		return UnitPowerMax(unit, SPELL_POWER_MANA)
+		return UnitPowerMax(unit, Enum.PowerType.Mana)
 	end]],
 
 	['soulshards'] = [[function()
-		local num = UnitPower('player', SPELL_POWER_SOUL_SHARDS)
+		local num = UnitPower('player', Enum.PowerType.SoulShards)
 		if(num > 0) then
 			return num
 		end
@@ -294,7 +292,7 @@ local tagStrings = {
 
 	['holypower'] = [[function()
 		if(GetSpecialization() == SPEC_PALADIN_RETRIBUTION) then
-			local num = UnitPower('player', SPELL_POWER_HOLY_POWER)
+			local num = UnitPower('player', Enum.PowerType.HolyPower)
 			if(num > 0) then
 				return num
 			end
@@ -303,7 +301,7 @@ local tagStrings = {
 
 	['chi'] = [[function()
 		if(GetSpecialization() == SPEC_MONK_WINDWALKER) then
-			local num = UnitPower('player', SPELL_POWER_CHI)
+			local num = UnitPower('player', Enum.PowerType.Chi)
 			if(num > 0) then
 				return num
 			end
@@ -312,7 +310,7 @@ local tagStrings = {
 
 	['arcanecharges'] = [[function()
 		if(GetSpecialization() == SPEC_MAGE_ARCANE) then
-			local num = UnitPower('player', SPELL_POWER_ARCANE_CHARGES)
+			local num = UnitPower('player', Enum.PowerType.ArcaneCharges)
 			if(num > 0) then
 				return num
 			end
@@ -347,86 +345,86 @@ local tagStrings = {
 }
 
 local tags = setmetatable(
-{
-	curhp = UnitHealth,
-	curpp = UnitPower,
-	maxhp = UnitHealthMax,
-	maxpp = UnitPowerMax,
-	class = UnitClass,
-	faction = UnitFactionGroup,
-	race = UnitRace,
-},
+	{
+		curhp = UnitHealth,
+		curpp = UnitPower,
+		maxhp = UnitHealthMax,
+		maxpp = UnitPowerMax,
+		class = UnitClass,
+		faction = UnitFactionGroup,
+		race = UnitRace,
+	},
 
-{
-	__index = function(self, key)
-		local tagFunc = tagStrings[key]
-		if(tagFunc) then
-			local func, err = loadstring('return ' .. tagFunc)
-			if(func) then
-				func = func()
+	{
+		__index = function(self, key)
+			local tagFunc = tagStrings[key]
+			if(tagFunc) then
+				local func, err = loadstring('return ' .. tagFunc)
+				if(func) then
+					func = func()
 
-				-- Want to trigger __newindex, so no rawset.
-				self[key] = func
-				tagStrings[key] = nil
+					-- Want to trigger __newindex, so no rawset.
+					self[key] = func
+					tagStrings[key] = nil
 
-				return func
-			else
-				error(err, 3)
+					return func
+				else
+					error(err, 3)
+				end
 			end
-		end
-	end,
-	__newindex = function(self, key, val)
-		if(type(val) == 'string') then
-			tagStrings[key] = val
-		elseif(type(val) == 'function') then
-			-- So we don't clash with any custom envs.
-			if(getfenv(val) == _G) then
-				setfenv(val, _PROXY)
-			end
+		end,
+		__newindex = function(self, key, val)
+			if(type(val) == 'string') then
+				tagStrings[key] = val
+			elseif(type(val) == 'function') then
+				-- So we don't clash with any custom envs.
+				if(getfenv(val) == _G) then
+					setfenv(val, _PROXY)
+				end
 
-			rawset(self, key, val)
-		end
-	end,
-}
+				rawset(self, key, val)
+			end
+		end,
+	}
 )
 
 _ENV._TAGS = tags
 
 local tagEvents = {
-	["curhp"] = "UNIT_HEALTH",
-	["dead"] = "UNIT_HEALTH",
-	["leader"] = "PARTY_LEADER_CHANGED",
-	["leaderlong"] = "PARTY_LEADER_CHANGED",
-	["level"] = "UNIT_LEVEL PLAYER_LEVEL_UP",
-	["maxhp"] = "UNIT_MAXHEALTH",
-	["missinghp"] = "UNIT_HEALTH UNIT_MAXHEALTH",
-	["name"] = "UNIT_NAME_UPDATE",
-	["perhp"] = "UNIT_HEALTH UNIT_MAXHEALTH",
-	["pvp"] = "UNIT_FACTION",
-	["resting"] = "PLAYER_UPDATE_RESTING",
-	["smartlevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED",
-	["threat"] = "UNIT_THREAT_SITUATION_UPDATE",
-	["threatcolor"] = "UNIT_THREAT_SITUATION_UPDATE",
-	['cpoints'] = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
+	["curhp"]               = "UNIT_HEALTH",
+	["dead"]                = "UNIT_HEALTH",
+	["leader"]              = "PARTY_LEADER_CHANGED",
+	["leaderlong"]          = "PARTY_LEADER_CHANGED",
+	["level"]               = "UNIT_LEVEL PLAYER_LEVEL_UP",
+	["maxhp"]               = "UNIT_MAXHEALTH",
+	["missinghp"]           = "UNIT_HEALTH UNIT_MAXHEALTH",
+	["name"]                = "UNIT_NAME_UPDATE",
+	["perhp"]               = "UNIT_HEALTH UNIT_MAXHEALTH",
+	["pvp"]                 = "UNIT_FACTION",
+	["resting"]             = "PLAYER_UPDATE_RESTING",
+	["smartlevel"]          = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED",
+	["threat"]              = "UNIT_THREAT_SITUATION_UPDATE",
+	["threatcolor"]         = "UNIT_THREAT_SITUATION_UPDATE",
+	['cpoints']             = 'UNIT_COMBO_POINTS PLAYER_TARGET_CHANGED',
 	['affix']				= 'UNIT_CLASSIFICATION_CHANGED',
 	['plus']				= 'UNIT_CLASSIFICATION_CHANGED',
-	['rare'] = 'UNIT_CLASSIFICATION_CHANGED',
-	['classification'] = 'UNIT_CLASSIFICATION_CHANGED',
+	['rare']                = 'UNIT_CLASSIFICATION_CHANGED',
+	['classification']      = 'UNIT_CLASSIFICATION_CHANGED',
 	['shortclassification'] = 'UNIT_CLASSIFICATION_CHANGED',
-	["group"] = "GROUP_ROSTER_UPDATE",
-	["curpp"] = 'UNIT_POWER',
-	["maxpp"] = 'UNIT_MAXPOWER',
-	["missingpp"] = 'UNIT_MAXPOWER UNIT_POWER',
-	["perpp"] = 'UNIT_MAXPOWER UNIT_POWER',
-	["offline"] = "UNIT_HEALTH UNIT_CONNECTION",
-	["status"] = "UNIT_HEALTH PLAYER_UPDATE_RESTING UNIT_CONNECTION",
-	['curmana'] = 'UNIT_POWER UNIT_MAXPOWER',
-	['maxmana'] = 'UNIT_POWER UNIT_MAXPOWER',
-	['soulshards'] = 'UNIT_POWER',
-	['holypower'] = 'UNIT_POWER SPELLS_CHANGED',
-	['chi'] = 'UNIT_POWER SPELLS_CHANGED',
-	['arcanecharges'] = 'UNIT_POWER SPELLS_CHANGED',
-	['powercolor'] = 'UNIT_DISPLAYPOWER',
+	["group"]               = "GROUP_ROSTER_UPDATE",
+	["curpp"]               = 'UNIT_POWER',
+	["maxpp"]               = 'UNIT_MAXPOWER',
+	["missingpp"]           = 'UNIT_MAXPOWER UNIT_POWER',
+	["perpp"]               = 'UNIT_MAXPOWER UNIT_POWER',
+	["offline"]             = "UNIT_HEALTH UNIT_CONNECTION",
+	["status"]              = "UNIT_HEALTH PLAYER_UPDATE_RESTING UNIT_CONNECTION",
+	['curmana']             = 'UNIT_POWER UNIT_MAXPOWER',
+	['maxmana']             = 'UNIT_POWER UNIT_MAXPOWER',
+	['soulshards']          = 'UNIT_POWER',
+	['holypower']           = 'UNIT_POWER SPELLS_CHANGED',
+	['chi']                 = 'UNIT_POWER SPELLS_CHANGED',
+	['arcanecharges']       = 'UNIT_POWER SPELLS_CHANGED',
+	['powercolor']          = 'UNIT_DISPLAYPOWER',
 }
 
 local unitlessEvents = {
@@ -674,8 +672,8 @@ local Tag = function(self, fs, tagstr)
 
 				_ENV._COLORS = parent.colors
 				return self:SetFormattedText(
-				format,
-				args[1](parent.unit, realUnit) or ''
+					format,
+					args[1](parent.unit, realUnit) or ''
 				)
 			end
 		elseif(numTags == 2) then
@@ -689,9 +687,9 @@ local Tag = function(self, fs, tagstr)
 
 				_ENV._COLORS = parent.colors
 				return self:SetFormattedText(
-				format,
-				args[1](unit, realUnit) or '',
-				args[2](unit, realUnit) or ''
+					format,
+					args[1](unit, realUnit) or '',
+					args[2](unit, realUnit) or ''
 				)
 			end
 		elseif(numTags == 3) then
@@ -705,10 +703,10 @@ local Tag = function(self, fs, tagstr)
 
 				_ENV._COLORS = parent.colors
 				return self:SetFormattedText(
-				format,
-				args[1](unit, realUnit) or '',
-				args[2](unit, realUnit) or '',
-				args[3](unit, realUnit) or ''
+					format,
+					args[1](unit, realUnit) or '',
+					args[2](unit, realUnit) or '',
+					args[3](unit, realUnit) or ''
 				)
 			end
 		elseif numTags ~= -1 then

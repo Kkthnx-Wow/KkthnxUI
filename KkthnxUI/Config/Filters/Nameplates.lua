@@ -75,7 +75,7 @@ K.DebuffWhiteList = {
 	[SpellName(192081)] = true, -- ironfur
 	[SpellName(61336)] = true, -- survival instincts
 	[SpellName(22812)] = true, -- barkskin
-	[SpellName(192083)] = true, -- mark of ursol
+	-- [SpellName(192083)] = true, -- mark of ursol
 	[SpellName(213680)] = true, -- guardian of elune
 	-- Helpful
 	[SpellName(774)] = true, -- rejuvenation

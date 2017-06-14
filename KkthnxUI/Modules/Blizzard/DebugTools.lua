@@ -128,5 +128,7 @@ end
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function()
-	UIDebugTools:Initialize()
+	if K.WoWBuild == 24015 then
+		UIDebugTools:Initialize()
+	end
 end)

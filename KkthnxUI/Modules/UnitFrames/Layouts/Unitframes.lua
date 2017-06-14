@@ -330,7 +330,7 @@ local function UpdatePlayerFrame(self, ...)
 
 		if (K.Class == "SHAMAN") then
 		elseif (K.Class == "DRUID") then
-			EclipseBar_UpdateShown(EclipseBarFrame)
+			-- EclipseBar_UpdateShown(EclipseBarFrame)
 		elseif (K.Class == "DEATHKNIGHT") then
 			RuneFrame:Show()
 		elseif (K.Class == "PRIEST") then
