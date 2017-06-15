@@ -302,13 +302,25 @@ local function UpdatePlayerFrame(self, ...)
 
 		TotemFrame:Hide()
 
+		-- ClassFrames
 		if (K.Class == "SHAMAN") then
-		elseif (K.Class == "DRUID") then
-			EclipseBarFrame:Hide()
+			TotemFrame:Hide()
 		elseif (K.Class == "DEATHKNIGHT") then
 			RuneFrame:Hide()
-		elseif (K.Class == "PRIEST") then
-			PriestBarFrame:Hide()
+		elseif (K.Class == "MAGE" and K.Spec == SPEC_MAGE_ARCANE) then
+			MageArcaneChargesFrame:Hide()
+		elseif (K.Class == "MONK") then
+			if (K.Spec == SPEC_MONK_BREWMASTER) then
+				MonkStaggerBar:Hide()
+			elseif (K.Spec == SPEC_MONK_WINDWALKER) then
+				MonkHarmonyBarFrame:Hide()
+			end
+		elseif (K.Class == "PALADIN" and K.Spec == SPEC_PALADIN_RETRIBUTION) then
+			PaladinPowerBarFrame:Hide()
+		elseif (K.Class == "ROGUE") then
+			ComboPointPlayerFrame:Hide()
+		elseif (K.Class == "WARLOCK") then
+			WarlockPowerFrame:Hide()
 		end
 	else
 		self.Name:Hide()
@@ -321,20 +333,25 @@ local function UpdatePlayerFrame(self, ...)
 		self.RaidIcon:SetPoint("CENTER", self.Portrait, "TOP", 0, -1)
 		securecall("PlayerFrame_HideVehicleTexture")
 
-		-- ComboPointPlayerFrame:Show()
-		if (self.classPowerBar) then
-			self.classPowerBar:Setup()
-		end
-
-		TotemFrame_Update()
-
+		-- ClassFrames
 		if (K.Class == "SHAMAN") then
-		elseif (K.Class == "DRUID") then
-			-- EclipseBar_UpdateShown(EclipseBarFrame)
+			TotemFrame:Show()
 		elseif (K.Class == "DEATHKNIGHT") then
 			RuneFrame:Show()
-		elseif (K.Class == "PRIEST") then
-			PriestBarFrame_CheckAndShow()
+		elseif (K.Class == "MAGE" and K.Spec == SPEC_MAGE_ARCANE) then
+			MageArcaneChargesFrame:Show()
+		elseif (K.Class == "MONK") then
+			if (K.Spec == SPEC_MONK_BREWMASTER) then
+				MonkStaggerBar:Show()
+			elseif (K.Spec == SPEC_MONK_WINDWALKER) then
+				MonkHarmonyBarFrame:Show()
+			end
+		elseif (K.Class == "PALADIN" and K.Spec == SPEC_PALADIN_RETRIBUTION) then
+			PaladinPowerBarFrame:Show()
+		elseif (K.Class == "ROGUE") then
+			ComboPointPlayerFrame:Show()
+		elseif (K.Class == "WARLOCK") then
+			WarlockPowerFrame:Show()
 		end
 	end
 end
@@ -586,57 +603,7 @@ local function CreateUnitLayout(self, unit)
 		self.PvP.Prestige:SetSize(50, 52)
 		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
 
-		do
-			self.Absorb = {
-				texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-				tile = true,
-				drawLayer = {"BACKGROUND", 4},
-				colour = {.3, .7, 1},
-				alpha = .5
-			}
-
-			local data = GetData(self.MatchUnit)
-
-			-- Heal Prediction
-			local myBar = CreateFrame("StatusBar", nil, self.Health)
-			myBar:SetStatusBarTexture(C.Media.Texture)
-			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-			myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-			myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-			myBar:SetWidth(data.hpb.w)
-			myBar:SetStatusBarColor(0, 1, .5, .5)
-			myBar:SetMinMaxValues(0, 1)
-			myBar:Hide()
-			myBar.Smooth = C.Unitframe.Smooth
-
-			local otherBar = CreateFrame("StatusBar", nil, self.Health)
-			otherBar:SetStatusBarTexture(C.Media.Texture)
-			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-			otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-			otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-			otherBar:SetWidth(data.hpb.w)
-			otherBar:SetStatusBarColor(0, 1, 0, .5)
-			otherBar:Hide()
-			otherBar.Smooth = C.Unitframe.Smooth
-
-			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
-			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
-			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-			healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-			healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-			healAbsorbBar:SetWidth(data.hpb.w)
-			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
-			healAbsorbBar:Hide()
-			healAbsorbBar.Smooth = C.Unitframe.Smooth
-
-			self.HealPrediction = {
-				myBar = myBar,
-				otherBar = otherBar,
-				healAbsorbBar = healAbsorbBar,
-				maxOverflow = 1,
-				frequentUpdates = true
-			}
-		end
+		K.EnableHealPredictionAndAbsorb(self)
 
 		-- Combat CombatFeedbackText
 		if (C.Unitframe.CombatText) then
@@ -668,56 +635,7 @@ local function CreateUnitLayout(self, unit)
 
 	-- Heal Prediction
 	if (self.IsPartyFrame and C.Unitframe.Party == true) then
-		do
-			self.Absorb = {
-				texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-				tile = true,
-				drawLayer = {"BACKGROUND", 4},
-				colour = {.3, .7, 1},
-				alpha = .5
-			}
-
-			local data = GetData(self.MatchUnit)
-
-			local myBar = CreateFrame("StatusBar", nil, self.Health)
-			myBar:SetStatusBarTexture(C.Media.Texture)
-			myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-			myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-			myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-			myBar:SetWidth(data.hpb.w)
-			myBar:SetStatusBarColor(0, 1, .5, .5)
-			myBar:SetMinMaxValues(0, 1)
-			myBar:Hide()
-			myBar.Smooth = C.Unitframe.Smooth
-
-			local otherBar = CreateFrame("StatusBar", nil, self.Health)
-			otherBar:SetStatusBarTexture(C.Media.Texture)
-			otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-			otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-			otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-			otherBar:SetWidth(data.hpb.w)
-			otherBar:SetStatusBarColor(0, 1, 0, .5)
-			otherBar:Hide()
-			otherBar.Smooth = C.Unitframe.Smooth
-
-			local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
-			healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
-			healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-			healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-			healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-			healAbsorbBar:SetWidth(data.hpb.w)
-			healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
-			healAbsorbBar:Hide()
-			healAbsorbBar.Smooth = C.Unitframe.Smooth
-
-			self.HealPrediction = {
-				myBar = myBar,
-				otherBar = otherBar,
-				healAbsorbBar = healAbsorbBar,
-				maxOverflow = 1,
-				frequentUpdates = true
-			}
-		end
+		K.EnableHealPredictionAndAbsorb(self)
 	end
 
 	-- Portrait Timer
@@ -816,52 +734,80 @@ local function CreateUnitLayout(self, unit)
 	-- Update layout
 	UpdateUnitFrameLayout(self)
 
+	local function CustomTotemFrame_Update()
+		local hasPet = UnitExists("pet")
+		if (K.Class == "WARLOCK") then
+			if (hasPet) then
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -75)
+			else
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, -25)
+			end
+		end
+		if (K.Class == "SHAMAN") then
+			if (hasPet) then
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -75)
+			else
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, -25)
+			end
+
+		end
+		if (K.Class == "PALADIN" or K.Class == "DEATHKNIGHT" or K.Class == "DRUID" or K.Class == "MAGE" or K.Class == "MONK") then
+			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, 0)
+		end
+	end
+	hooksecurefunc("TotemFrame_Update", CustomTotemFrame_Update)
+
 	-- Player Frame
 	if self.MatchUnit == "player" then
 		self:SetSize(data.siz.w, data.siz.h)
 		self:SetScale(C.Unitframe.Scale or 1)
 
-		-- Combo Points
-		ComboPointPlayerFrame:ClearAllPoints()
-		ComboPointPlayerFrame:SetParent(self)
-		ComboPointPlayerFrame:SetPoint("TOP", self, "BOTTOM", 30, 2)
-		ComboPointPlayerFrame.SetPoint = K.Noop
-
-		if C.Blizzard.ColorTextures == true then
-			ComboPointPlayerFrame.Background:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
+		if (K.Class == "WARLOCK") then
+			WarlockPowerFrame:ClearAllPoints()
+			WarlockPowerFrame:SetParent(oUF_KkthnxPlayer)
+			WarlockPowerFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
 		end
 
-		-- Totems
-		if C.UnitframePlugins.TotemsFrame == true and K.Class ~= "DEMONHUNTER" or K.Class ~= "PRIEST" or K.Class ~= "ROGUE" then
-			K.ClassModule:Totems(self)
+		-- Holy Power Bar (Retribution Only)
+		if (K.Class == "PALADIN" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION) then
+			PaladinPowerBarFrame:ClearAllPoints()
+			PaladinPowerBarFrame:SetParent(oUF_KkthnxPlayer)
+			PaladinPowerBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 25, 2)
+			PaladinPowerBarFrame:Show()
 		end
-		-- Alternate Mana Bar
-		if C.UnitframePlugins.AdditionalPower and K.Class == "DRUID" or K.Class == "MONK" or K.Class == "PALADIN" or K.Class == "PRIEST" or K.Class == "SHAMAN" then
-			K.ClassModule:AlternatePowerBar(self)
+
+		-- Monk Chi / Stagger Bar
+		if (K.Class == "MONK") then
+			-- Windwalker Chi
+			MonkHarmonyBarFrame:ClearAllPoints()
+			MonkHarmonyBarFrame:SetParent(oUF_KkthnxPlayer)
+			MonkHarmonyBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, 18)
+
+			-- Brewmaster Stagger Bar
+			MonkStaggerBar:ClearAllPoints()
+			MonkStaggerBar:SetParent(oUF_KkthnxPlayer)
+			MonkStaggerBar:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
 		end
-		-- Deathknight
-		if C.UnitframePlugins.RuneFrame and K.Class == "DEATHKNIGHT" then
-			K.ClassModule:RuneFrame(self)
+
+		-- Deathknight Runebar
+		if (K.Class == "DEATHKNIGHT") then
+			RuneFrame:ClearAllPoints()
+			RuneFrame:SetParent(oUF_KkthnxPlayer)
+			RuneFrame:SetPoint("TOP", self.Power, "BOTTOM", 2, -2)
 		end
-		-- Mage
-		if C.UnitframePlugins.ArcaneCharges and K.Class == "MAGE" then
-			K.ClassModule:ArcaneCharges(self)
+
+		-- Arcane Mage
+		if (K.Class == "MAGE") then
+			MageArcaneChargesFrame:ClearAllPoints()
+			MageArcaneChargesFrame:SetParent(oUF_KkthnxPlayer)
+			MageArcaneChargesFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
 		end
-		-- Monk
-		if (C.UnitframePlugins.HarmonyBar or C.UnitframePlugins.StaggerBar) and K.Class == "MONK" then
-			K.ClassModule:StaggerBar(self)
-		end
-		-- Paladin
-		if C.UnitframePlugins.HolyPowerBar and K.Class == "PALADIN" then
-			K.ClassModule:HolyPowerBar(self)
-		end
-		-- Priest
-		if C.UnitframePlugins.InsanityBar and K.Class == "PRIEST" then
-			K.ClassModule:InsanityBar(self)
-		end
-		-- Warlock
-		if C.UnitframePlugins.ShardsBar and K.Class == "WARLOCK" then
-			K.ClassModule:ShardsBar(self)
+
+		-- Combo Point Frame
+		if (K.Class == "ROGUE" or K.Class == "DRUID") then
+			ComboPointPlayerFrame:ClearAllPoints()
+			ComboPointPlayerFrame:SetParent(oUF_KkthnxPlayer)
+			ComboPointPlayerFrame:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", -3, 2)
 		end
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
@@ -880,7 +826,7 @@ local function CreateUnitLayout(self, unit)
 			self.PowerPrediction.mainBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
 			self.PowerPrediction.mainBar.Smooth = C.Unitframe.Smooth
 
-			if self.AdditionalPower then
+			if self.AdditionalPower and (K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
 				self.PowerPrediction.altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
 				self.PowerPrediction.altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
 				self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
@@ -992,33 +938,46 @@ local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update c
 	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
 end
 
+local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
+	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
+end
+
 -- Spawn our frames.
 oUF:RegisterStyle("oUF_Kkthnx", CreateUnitLayout)
 oUF:SetActiveStyle("oUF_Kkthnx")
 
 local player = oUF:Spawn("player", "oUF_KkthnxPlayer")
 player:SetPoint(unpack(C.Position.UnitFrames.Player))
+player:SetSize(176, 42)
+player:SetScale(C.Unitframe.Scale or 1)
+player:RegisterEvent("UNIT_PET", FixPetUpdate)
 Movers:RegisterFrame(player)
 
 local pet = oUF:Spawn("pet", "oUF_KkthnxPet")
 pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
+pet:SetSize(128, 64)
 Movers:RegisterFrame(pet)
-player:RegisterEvent("UNIT_PET", FixPetUpdate)
 
 local target = oUF:Spawn("target", "oUF_KkthnxTarget")
 target:SetPoint(unpack(C.Position.UnitFrames.Target))
+target:SetSize(176, 42)
+target:SetScale(C.Unitframe.Scale or 1)
 Movers:RegisterFrame(target)
 
 local targettarget = oUF:Spawn("targettarget", "oUF_KkthnxTargetTarget")
 targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
+targettarget:SetSize(86, 20)
 Movers:RegisterFrame(targettarget)
 
 local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
 focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
+focus:SetSize(176, 42)
+focus:SetScale(C.Unitframe.Scale or 1)
 Movers:RegisterFrame(focus)
 
 local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
 focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
+focustarget:SetSize(86, 20)
 Movers:RegisterFrame(focustarget)
 
 if (C.Unitframe.Party) then

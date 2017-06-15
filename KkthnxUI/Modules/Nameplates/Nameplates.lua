@@ -774,55 +774,7 @@ local function StyleNamePlates(self, unit)
 		self.DebuffIcons:EnableMouse(false)
 	end
 
-	do
-		self.Absorb = {
-			texture = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Absorb",
-			tile = true,
-			drawLayer = {"BACKGROUND", 4},
-			colour = {.3, .7, 1},
-			alpha = .5
-		}
-
-		-- Heal Prediction
-		local myBar = CreateFrame("StatusBar", nil, self.Health)
-		myBar:SetStatusBarTexture(C.Media.Texture)
-		myBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 2)
-		myBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		myBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-		myBar:SetWidth(self.Health:GetWidth())
-		myBar:SetStatusBarColor(0, 1, .5, .5)
-		myBar:SetMinMaxValues(0, 1)
-		myBar:Hide()
-		myBar.Smooth = C.Nameplates.Smooth
-
-		local otherBar = CreateFrame("StatusBar", nil, self.Health)
-		otherBar:SetStatusBarTexture(C.Media.Texture)
-		otherBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 3)
-		otherBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		otherBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-		otherBar:SetWidth(self.Health:GetWidth())
-		otherBar:SetStatusBarColor(0, 1, 0, .5)
-		otherBar:Hide()
-		otherBar.Smooth = C.Nameplates.Smooth
-
-		local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
-		healAbsorbBar:SetStatusBarTexture(C.Media.Texture)
-		healAbsorbBar:GetStatusBarTexture():SetDrawLayer("BACKGROUND", 5)
-		healAbsorbBar:SetPoint("TOPLEFT", self.Health:GetStatusBarTexture(), "TOPRIGHT", 0, 0)
-		healAbsorbBar:SetPoint("BOTTOMLEFT", self.Health:GetStatusBarTexture(), "BOTTOMRIGHT", 0, 0)
-		healAbsorbBar:SetWidth(self.Health:GetWidth())
-		healAbsorbBar:SetStatusBarColor(0, 0, 0, .5)
-		healAbsorbBar:Hide()
-		healAbsorbBar.Smooth = C.Nameplates.Smooth
-
-		self.HealPrediction = {
-			myBar = myBar,
-			otherBar = otherBar,
-			healAbsorbBar = healAbsorbBar,
-			maxOverflow = 1,
-			frequentUpdates = true
-		}
-	end
+	K.EnableHealPredictionAndAbsorb(self)
 
 	self.Health:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.Health:RegisterEvent("PLAYER_REGEN_ENABLED")
