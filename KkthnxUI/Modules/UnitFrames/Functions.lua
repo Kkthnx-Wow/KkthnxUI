@@ -216,6 +216,45 @@ do
 	end
 end
 
+function K.EnableHealPredictionAndAbsorb(self)
+	local mhpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
+	mhpb:SetWidth(1)
+	mhpb:SetTexture(C.Media.Blank)
+	mhpb:SetVertexColor(0, 1, 0.5, 0.25)
+
+	local ohpb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
+	ohpb:SetWidth(1)
+	ohpb:SetTexture(C.Media.Blank)
+	ohpb:SetVertexColor(0, 1, 0, 0.25)
+
+	local abb = self.Health:CreateTexture(nil, "BORDER", nil, 5)
+	abb:SetWidth(1)
+	abb:SetTexture(C.Media.Blank)
+	abb:SetVertexColor(.66, 1, 1, .7)
+
+	local abbo = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
+	abbo:SetAllPoints(abb)
+	abbo:SetTexture("Interface\\RaidFrame\\Shield-Overlay", true, true)
+	abbo.tileSize = 32
+
+	local oag = self.Health:CreateTexture(nil, "ARTWORK", nil, 1)
+	oag:SetWidth(15)
+	oag:SetTexture("Interface\\RaidFrame\\Shield-Overshield")
+	oag:SetBlendMode("ADD")
+	oag:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", -5, 3)
+	oag:SetPoint("BOTTOMLEFT", self.Health, "BOTTOMRIGHT", -5, -3)
+
+	self.HealPredictionAndAbsorb = {
+		myBar = mhpb,
+		otherBar = ohpb,
+		absorbBar = abb,
+		absorbBarOverlay = abbo,
+		overAbsorbGlow = oag,
+		maxOverflow = 1,
+		frequentUpdates = true
+	}
+end
+
 -- Mouseover enter
 function K.UnitFrame_OnEnter(self)
 	if self.__owner then
