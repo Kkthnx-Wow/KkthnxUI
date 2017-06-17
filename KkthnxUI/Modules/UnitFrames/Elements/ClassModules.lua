@@ -1,6 +1,9 @@
 local K, C, _ = unpack(select(2, ...))
 if C.Unitframe.Enable ~= true then return end
 
+-- There seems to be an issue with GetSpecialization() not being up on first login. It will work fine once you /reload the ui.
+-- Maybe workaround this with checking if logged in.
+
 local _G = _G
 
 local UnitExists = _G.UnitExists
@@ -12,7 +15,7 @@ local CMS = CreateFrame("Frame")
 -- GLOBALS: WarlockPowerFrame, oUF_KkthnxPet
 
 local function CustomTotemFrame_Update()
-	local hasPet = UnitExists("pet") and oUF_KkthnxPet and oUF_KkthnxPet:IsShown()
+	local hasPet = UnitExists("pet") or oUF_KkthnxPet and oUF_KkthnxPet:IsShown()
 
 	if (K.Class == "WARLOCK") then
 		if (hasPet) then
@@ -50,20 +53,20 @@ function CMS:SetupAlternatePowerBar(self)
 	self:Tag(self.AdditionalPower.Value, "[KkthnxUI:DruidMana]")
 end
 
-function CMS:HideAltResources()
+function CMS:HideAltResources(self)
 	if (K.Class == "SHAMAN") then
 		TotemFrame:Hide()
 	elseif (K.Class == "DEATHKNIGHT") then
 		RuneFrame:Hide()
-	elseif (K.Class == "MAGE" and K.Spec == 1 or SPEC_MAGE_ARCANE) then
+	elseif (K.Class == "MAGE" and K.Spec == SPEC_MAGE_ARCANE) then
 		MageArcaneChargesFrame:Hide()
 	elseif (K.Class == "MONK") then
-		if (K.Spec == 1 or SPEC_MONK_BREWMASTER) then
+		if (K.Spec == SPEC_MONK_BREWMASTER) then
 			MonkStaggerBar:Hide()
-		elseif (K.Spec == 3 or SPEC_MONK_WINDWALKER) then
+		elseif (K.Spec == SPEC_MONK_WINDWALKER) then
 			MonkHarmonyBarFrame:Hide()
 		end
-	elseif (K.Class == "PALADIN" and K.Spec == 3 or SPEC_PALADIN_RETRIBUTION) then
+	elseif (K.Class == "PALADIN" --[[and K.Spec == SPEC_PALADIN_RETRIBUTION]]) then
 		PaladinPowerBarFrame:Hide()
 	elseif (K.Class == "ROGUE") then
 		ComboPointPlayerFrame:Hide()
@@ -72,20 +75,20 @@ function CMS:HideAltResources()
 	end
 end
 
-function CMS:ShowAltResources()
+function CMS:ShowAltResources(self)
 	if (K.Class == "SHAMAN") then
 		TotemFrame:Show()
 	elseif (K.Class == "DEATHKNIGHT") then
 		RuneFrame:Show()
-	elseif (K.Class == "MAGE" and K.Spec == 1 or SPEC_MAGE_ARCANE) then
+	elseif (K.Class == "MAGE" and K.Spec == SPEC_MAGE_ARCANE) then
 		MageArcaneChargesFrame:Show()
 	elseif (K.Class == "MONK") then
-		if (K.Spec == 1 or SPEC_MONK_BREWMASTER) then
+		if (K.Spec == SPEC_MONK_BREWMASTER) then
 			MonkStaggerBar:Show()
-		elseif (K.Spec == 3 or SPEC_MONK_WINDWALKER) then
+		elseif (K.Spec == SPEC_MONK_WINDWALKER) then
 			MonkHarmonyBarFrame:Show()
 		end
-	elseif (K.Class == "PALADIN" and K.Spec == 3 or SPEC_PALADIN_RETRIBUTION) then
+	elseif (K.Class == "PALADIN" --[[and K.Spec == SPEC_PALADIN_RETRIBUTION]]) then
 		PaladinPowerBarFrame:Show()
 	elseif (K.Class == "ROGUE") then
 		ComboPointPlayerFrame:Show()
@@ -108,9 +111,9 @@ function CMS:SetupResources(self)
 	end
 
 	-- Holy Power Bar (Retribution Only)
-	if (K.Class == "PALADIN" and K.Spec == 3 or SPEC_PALADIN_RETRIBUTION) then
+	if (K.Class == "PALADIN" --[[and K.Spec == SPEC_PALADIN_RETRIBUTION]]) then
 		PaladinPowerBarFrame:ClearAllPoints()
-		PaladinPowerBarFrame:SetParent(self)
+		PaladinPowerBarFrame:SetParent(oUF_KkthnxPlayer)
 		PaladinPowerBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 25, 2)
     PaladinPowerBarFrame:Show()
 	end
@@ -157,6 +160,7 @@ function CMS:SetupResources(self)
 	end
 	-- Register the event!
 	self:RegisterEvent("PLAYER_TOTEM_UPDATE", CustomTotemFrame_Update)
+	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CustomTotemFrame_Update) -- I really dont event think we need this.
 end
 
 K.CMS = CMS

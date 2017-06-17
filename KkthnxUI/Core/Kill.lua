@@ -55,13 +55,13 @@ DisableBlizzard:SetScript("OnEvent", function(self, addon)
 	end
 
 	if C.Unitframe.Enable then
-		function _G.PetFrame_Update() end
-		function _G.PlayerFrame_AdjustAttachments() end
-		function _G.PlayerFrame_AnimateOut() end
-		function _G.PlayerFrame_AnimFinished() end
-		function _G.PlayerFrame_ToPlayerArt() end
-		function _G.PlayerFrame_ToVehicleArt() end
-		function _G.TotemFrame_AdjustPetFrame() end
+		_G.PetFrame_Update = K.Noop
+		_G.PlayerFrame_AdjustAttachments = K.Noop
+		_G.PlayerFrame_AnimateOut = K.Noop
+		_G.PlayerFrame_AnimFinished = K.Noop
+		_G.PlayerFrame_ToPlayerArt = K.Noop
+		_G.PlayerFrame_ToVehicleArt = K.Noop
+		_G.TotemFrame_AdjustPetFrame = K.Noop
 
 		for i = 1, MAX_BOSS_FRAMES do
 			local Boss = _G["Boss"..i.."TargetFrame"]

@@ -21,7 +21,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local IsInGroup = _G.IsInGroup
 local IsInRaid = _G.IsInRaid
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
 -- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
 -- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
@@ -282,8 +282,6 @@ local function UpdatePlayerFrame(self, ...)
 		self.PvP:ClearAllPoints()
 	end
 
-	ComboFrame_Update(ComboPointPlayerFrame)
-
 	if UnitHasVehicleUI("player") then
 		self.Name:Show()
 		self.Level:Hide()
@@ -296,7 +294,7 @@ local function UpdatePlayerFrame(self, ...)
 		securecall("PlayerFrame_ShowVehicleTexture")
 
 		-- ClassFrames
-		K.CMS:HideAltResources()
+		K.CMS:HideAltResources(self)
 	else
 		self.Name:Hide()
 		self.Level:Show()
@@ -309,7 +307,7 @@ local function UpdatePlayerFrame(self, ...)
 		securecall("PlayerFrame_HideVehicleTexture")
 
 		-- ClassFrames
-		K.CMS:ShowAltResources()
+		K.CMS:ShowAltResources(self)
 	end
 end
 
@@ -699,33 +697,35 @@ local function CreateUnitLayout(self, unit)
 		K.CMS:SetupResources(self)
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
-		if self.AdditionalPower and (K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
-			self.PowerPrediction.altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
-			self.PowerPrediction.altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-			self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
-			self.PowerPrediction.altBar:SetReverseFill(true)
-			self.PowerPrediction.altBar:SetPoint("TOP")
-			self.PowerPrediction.altBar:SetPoint("BOTTOM")
-			self.PowerPrediction.altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
-			self.PowerPrediction.altBar:SetWidth(self.AdditionalPower:GetWidth())
-			self.PowerPrediction.altBar:SetHeight(self.Power:GetHeight())
-			self.PowerPrediction.altBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
-			self.PowerPrediction.altBar.Smooth = C.Unitframe.Smooth
+		if (C.Unitframe.PowerPredictionBar) and (K.MatchUnit == "player") then
+			self.PowerPrediction = {}
 
-			if C.Unitframe.PowerPredictionBar and self.MatchUnit == "player" then
-				self.PowerPrediction = {}
+			self.PowerPrediction.mainBar = K.CreateStatusBar(self.Power, "$parentPowerCostPrediction")
+			self.PowerPrediction.mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
+			self.PowerPrediction.mainBar:GetStatusBarTexture():SetBlendMode("ADD")
+			self.PowerPrediction.mainBar:SetReverseFill(true)
+			self.PowerPrediction.mainBar:SetPoint("TOP")
+			self.PowerPrediction.mainBar:SetPoint("BOTTOM")
+			self.PowerPrediction.mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
+			self.PowerPrediction.mainBar:SetWidth(self.Power:GetWidth())
+			self.PowerPrediction.mainBar:SetHeight(self.Power:GetHeight())
+			self.PowerPrediction.mainBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
+			self.PowerPrediction.mainBar.Smooth = C.Unitframe.Smooth
+			self.PowerPrediction.mainBar.SmoothSpeed = C.Unitframe.SmoothSpeed * 10
 
-				self.PowerPrediction.mainBar = CreateFrame("StatusBar", "$parentPowerCostPrediction", self.Power)
-				self.PowerPrediction.mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-				self.PowerPrediction.mainBar:GetStatusBarTexture():SetBlendMode("ADD")
-				self.PowerPrediction.mainBar:SetReverseFill(true)
-				self.PowerPrediction.mainBar:SetPoint("TOP")
-				self.PowerPrediction.mainBar:SetPoint("BOTTOM")
-				self.PowerPrediction.mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
-				self.PowerPrediction.mainBar:SetWidth(self.Power:GetWidth())
-				self.PowerPrediction.mainBar:SetHeight(self.Power:GetHeight())
-				self.PowerPrediction.mainBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
-				self.PowerPrediction.mainBar.Smooth = C.Unitframe.Smooth
+			if self.AdditionalPower and (K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
+				self.PowerPrediction.altBar = K.CreateStatusBar(self.AdditionalPower, nil)
+				self.PowerPrediction.altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
+				self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
+				self.PowerPrediction.altBar:SetReverseFill(true)
+				self.PowerPrediction.altBar:SetPoint("TOP")
+				self.PowerPrediction.altBar:SetPoint("BOTTOM")
+				self.PowerPrediction.altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
+				self.PowerPrediction.altBar:SetWidth(self.AdditionalPower:GetWidth())
+				self.PowerPrediction.altBar:SetHeight(self.Power:GetHeight())
+				self.PowerPrediction.altBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
+				self.PowerPrediction.altBar.Smooth = C.Unitframe.Smooth
+				self.PowerPrediction.altBar.SmoothSpeed = C.Unitframe.SmoothSpeed * 10
 			end
 		end
 
@@ -735,6 +735,7 @@ local function CreateUnitLayout(self, unit)
 			self.PvPTimer:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
 			self.PvPTimer:SetTextColor(1, 0.819, 0)
 			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, 2)
+			self.PvPTimer.frequentUpdates = 0.5
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
 
