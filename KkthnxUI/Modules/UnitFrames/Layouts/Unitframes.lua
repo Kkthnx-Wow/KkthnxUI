@@ -293,6 +293,13 @@ local function UpdatePlayerFrame(self, ...)
 		self.RaidIcon:SetPoint("CENTER", self.Portrait, "TOP", 0, -5)
 		securecall("PlayerFrame_ShowVehicleTexture")
 
+		-- ComboPointPlayerFrame:Hide()
+		if (self.classPowerBar) then
+			self.classPowerBar:Hide()
+		end
+
+		TotemFrame:Hide()
+
 		-- ClassFrames
 		K.CMS:HideAltResources(self)
 	else
@@ -689,12 +696,81 @@ local function CreateUnitLayout(self, unit)
 	-- Update layout
 	UpdateUnitFrameLayout(self)
 
+	local function CustomTotemFrame_Update()
+		local hasPet = UnitExists("pet")
+		if (K.Class == "WARLOCK") then
+			if (hasPet) then
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -75)
+			else
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, -25)
+			end
+		end
+		if (K.Class == "SHAMAN") then
+			if (hasPet) then
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -75)
+			else
+				TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, -25)
+			end
+
+		end
+		if (K.Class == "PALADIN" or K.Class == "DEATHKNIGHT" or K.Class == "DRUID" or K.Class == "MAGE" or K.Class == "MONK") then
+			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, 0)
+		end
+	end
+	hooksecurefunc("TotemFrame_Update", CustomTotemFrame_Update)
+
 	-- Player Frame
 	if self.MatchUnit == "player" then
 		self:SetSize(data.siz.w, data.siz.h)
 		self:SetScale(C.Unitframe.Scale or 1)
 
-		K.CMS:SetupResources(self)
+		if (K.Class == "WARLOCK") then
+			WarlockPowerFrame:ClearAllPoints()
+			WarlockPowerFrame:SetParent(oUF_KkthnxPlayer)
+			WarlockPowerFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
+		end
+
+		-- Holy Power Bar (Retribution Only)
+		if (K.Class == "PALADIN" and GetSpecialization() == SPEC_PALADIN_RETRIBUTION) then
+			PaladinPowerBarFrame:ClearAllPoints()
+			PaladinPowerBarFrame:SetParent(oUF_KkthnxPlayer)
+			PaladinPowerBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 25, 2)
+			PaladinPowerBarFrame:Show()
+		end
+
+		-- Monk Chi / Stagger Bar
+		if (K.Class == "MONK") then
+			-- Windwalker Chi
+			MonkHarmonyBarFrame:ClearAllPoints()
+			MonkHarmonyBarFrame:SetParent(oUF_KkthnxPlayer)
+			MonkHarmonyBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, 18)
+
+			-- Brewmaster Stagger Bar
+			MonkStaggerBar:ClearAllPoints()
+			MonkStaggerBar:SetParent(oUF_KkthnxPlayer)
+			MonkStaggerBar:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
+		end
+
+		-- Deathknight Runebar
+		if (K.Class == "DEATHKNIGHT") then
+			RuneFrame:ClearAllPoints()
+			RuneFrame:SetParent(oUF_KkthnxPlayer)
+			RuneFrame:SetPoint("TOP", self.Power, "BOTTOM", 2, -2)
+		end
+
+		-- Arcane Mage
+		if (K.Class == "MAGE") then
+			MageArcaneChargesFrame:ClearAllPoints()
+			MageArcaneChargesFrame:SetParent(oUF_KkthnxPlayer)
+			MageArcaneChargesFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
+		end
+
+		-- Combo Point Frame
+		if (K.Class == "ROGUE" or K.Class == "DRUID") then
+			ComboPointPlayerFrame:ClearAllPoints()
+			ComboPointPlayerFrame:SetParent(oUF_KkthnxPlayer)
+			ComboPointPlayerFrame:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", -3, 2)
+		end
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
 		if (C.Unitframe.PowerPredictionBar) and (K.MatchUnit == "player") then
@@ -703,10 +779,10 @@ local function CreateUnitLayout(self, unit)
 			self.PowerPrediction.mainBar = K.CreateStatusBar(self.Power, "$parentPowerCostPrediction")
 			self.PowerPrediction.mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
 			self.PowerPrediction.mainBar:GetStatusBarTexture():SetBlendMode("ADD")
-			self.PowerPrediction.mainBar:SetReverseFill(true)
 			self.PowerPrediction.mainBar:SetPoint("TOP")
 			self.PowerPrediction.mainBar:SetPoint("BOTTOM")
 			self.PowerPrediction.mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
+			self.PowerPrediction.mainBar:SetReverseFill(true)
 			self.PowerPrediction.mainBar:SetWidth(self.Power:GetWidth())
 			self.PowerPrediction.mainBar:SetHeight(self.Power:GetHeight())
 			self.PowerPrediction.mainBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
@@ -716,16 +792,16 @@ local function CreateUnitLayout(self, unit)
 			if self.AdditionalPower and (K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
 				self.PowerPrediction.altBar = K.CreateStatusBar(self.AdditionalPower, nil)
 				self.PowerPrediction.altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-				self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
 				self.PowerPrediction.altBar:SetReverseFill(true)
+				self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
 				self.PowerPrediction.altBar:SetPoint("TOP")
 				self.PowerPrediction.altBar:SetPoint("BOTTOM")
 				self.PowerPrediction.altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
 				self.PowerPrediction.altBar:SetWidth(self.AdditionalPower:GetWidth())
 				self.PowerPrediction.altBar:SetHeight(self.Power:GetHeight())
-				self.PowerPrediction.altBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
-				self.PowerPrediction.altBar.Smooth = C.Unitframe.Smooth
 				self.PowerPrediction.altBar.SmoothSpeed = C.Unitframe.SmoothSpeed * 10
+				self.PowerPrediction.altBar.Smooth = C.Unitframe.Smooth
+				self.PowerPrediction.altBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
 			end
 		end
 
@@ -821,6 +897,10 @@ local function CreateUnitLayout(self, unit)
 	}
 
 	return self
+end
+
+local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
+	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
 end
 
 local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly

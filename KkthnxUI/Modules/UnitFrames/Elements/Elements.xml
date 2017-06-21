@@ -3,6 +3,5 @@
    <Script file="AurasFilter.lua" />
    <Script file="Auras.lua" />
    <Script file="Castbars.lua" />
-   <Script file="ClassModules.lua" />
    <Script file="Tags.lua" />
 </Ui>
