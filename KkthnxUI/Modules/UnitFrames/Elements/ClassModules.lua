@@ -6,38 +6,54 @@ if C.Unitframe.Enable ~= true then return end
 
 local _G = _G
 
-local UnitExists = _G.UnitExists
+local CAT_FORM = _G.CAT_FORM
+local GetShapeshiftFormID = _G.GetShapeshiftFormID
+local GetSpecialization = _G.GetSpecialization
+local hooksecurefunc = _G.hooksecurefunc
+local MAX_TOTEMS = _G.MAX_TOTEMS
+local SPEC_SHAMAN_RESTORATION = _G.SPEC_SHAMAN_RESTORATION
+local UnitClass = _G.UnitClass
 
 local CMS = CreateFrame("Frame")
 
 -- GLOBALS: oUF_KkthnxPlayer, TotemFrame, RuneFrame, SPEC_MAGE_ARCANE, MageArcaneChargesFrame, SPEC_MONK_BREWMASTER, MonkStaggerBar
+-- GLOBALS: PriestBarFrame_CheckAndShow, InsanityBarFrame, MonkStaggerBar_OnLoad, RuneFrame_OnLoad
 -- GLOBALS: SPEC_MONK_WINDWALKER, MonkHarmonyBarFrame, SPEC_PALADIN_RETRIBUTION, PaladinPowerBarFrame, ComboPointPlayerFrame
--- GLOBALS: WarlockPowerFrame, oUF_KkthnxPet
+-- GLOBALS: WarlockPowerFrame, oUF_KkthnxPet, EclipseBarFrame, PriestBarFrame, TotemFrame_Update, EclipseBar_UpdateShown
 
 local function CustomTotemFrame_Update()
-	local hasPet = UnitExists("pet") or oUF_KkthnxPet and oUF_KkthnxPet:IsShown()
+	local _, class = UnitClass("player")
 
-	if (K.Class == "WARLOCK") then
+	TotemFrame:ClearAllPoints()
+	if (class == "PALADIN" or class == "DEATHKNIGHT") then
+		local hasPet = oUF_KkthnxPet and oUF_KkthnxPet:IsShown()
 		if (hasPet) then
-			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -75)
+			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", -18, -12)
 		else
-			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, -25)
+			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 17, 0)
 		end
-	end
-
-	if (K.Class == "SHAMAN") then
-		if (hasPet) then
-			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -75)
+	elseif (class == "DRUID") then
+		local form = GetShapeshiftFormID()
+		if (form == CAT_FORM) then
+			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 37, -5)
 		else
-			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, -25)
+			TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 57, 0)
 		end
-	end
-
-	if (K.Class == "PALADIN" or K.Class == "DEATHKNIGHT" or K.Class == "DRUID" or K.Class == "MAGE" or K.Class == "MONK") then
-		TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 25, 0)
+	elseif (class == "MAGE") then
+		TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", 0, -12)
+	elseif (class == "MONK") then
+		TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", -18, -12)
+	elseif (class == "SHAMAN") then
+		local form = GetShapeshiftFormID()
+		if ((GetSpecialization() == SPEC_SHAMAN_RESTORATION) or (form == 16)) then -- wolf form
+			TotemFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 27, 2)
+		else
+			TotemFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 27, -10)
+		end
+	elseif (class == "WARLOCK") then
+		TotemFrame:SetPoint("TOPLEFT", oUF_KkthnxPlayer, "BOTTOMLEFT", -18, -12)
 	end
 end
-hooksecurefunc("TotemFrame_Update", CustomTotemFrame_Update)
 
 function CMS:SetupAlternatePowerBar(self)
 	self.AdditionalPower = K.CreateOutsideBar(self, false, 0, 0, 1)
@@ -49,118 +65,132 @@ function CMS:SetupAlternatePowerBar(self)
 	self.AdditionalPower.Value:Hide()
 
 	self.AdditionalPower.Smooth = C.Unitframe.Smooth
-	self.AdditionalPower.SmoothSpeed = C.Unitframe.SmoothSpeed * 10
+	-- self.AdditionalPower.SmoothSpeed = C.Unitframe.SmoothSpeed * 10
 	self:Tag(self.AdditionalPower.Value, "[KkthnxUI:DruidMana]")
 end
 
+function CMS:SetupTotemFrame(self)
+	TotemFrame:ClearAllPoints()
+	TotemFrame:SetParent(self)
+
+	for i = 1, MAX_TOTEMS do
+		local _, totemBorder = _G["TotemFrameTotem"..i]:GetChildren()
+
+		_G["TotemFrameTotem"..i]:SetFrameStrata("LOW")
+		_G["TotemFrameTotem"..i.. "Duration"]:SetParent(totemBorder)
+		_G["TotemFrameTotem"..i.. "Duration"]:SetDrawLayer("OVERLAY")
+		_G["TotemFrameTotem"..i.. "Duration"]:ClearAllPoints()
+		_G["TotemFrameTotem"..i.. "Duration"]:SetPoint("BOTTOM", _G["TotemFrameTotem"..i], 0, 3)
+		_G["TotemFrameTotem"..i.. "Duration"]:SetFont(C.Media.Font, 10, "OUTLINE")
+		_G["TotemFrameTotem"..i.. "Duration"]:SetShadowOffset(0, 0)
+	end
+
+	hooksecurefunc("TotemFrame_Update", CustomTotemFrame_Update)
+	CustomTotemFrame_Update()
+end
+
 function CMS:HideAltResources(self)
-	if (K.Class == "SHAMAN") then
-		TotemFrame:Hide()
-	elseif (K.Class == "DEATHKNIGHT") then
+	local playerClass = select(2, UnitClass("player"))
+
+	if (self.classPowerBar) then
+		self.classPowerBar:Hide()
+	end
+
+	TotemFrame:Hide()
+
+	if (playerClass == "SHAMAN") then
+	elseif (playerClass == "DRUID") then
+		-- EclipseBarFrame:Hide()
+	elseif (playerClass == "DEATHKNIGHT") then
 		RuneFrame:Hide()
-	elseif (K.Class == "MAGE" and K.Spec == SPEC_MAGE_ARCANE) then
-		MageArcaneChargesFrame:Hide()
-	elseif (K.Class == "MONK") then
-		if (K.Spec == SPEC_MONK_BREWMASTER) then
-			MonkStaggerBar:Hide()
-		elseif (K.Spec == SPEC_MONK_WINDWALKER) then
-			MonkHarmonyBarFrame:Hide()
-		end
-	elseif (K.Class == "PALADIN" --[[and K.Spec == SPEC_PALADIN_RETRIBUTION]]) then
-		PaladinPowerBarFrame:Hide()
-	elseif (K.Class == "ROGUE") then
-		ComboPointPlayerFrame:Hide()
-	elseif (K.Class == "WARLOCK") then
-		WarlockPowerFrame:Hide()
+	elseif (playerClass == "PRIEST") then
+		PriestBarFrame:Hide()
 	end
 end
 
 function CMS:ShowAltResources(self)
-	if (K.Class == "SHAMAN") then
-		TotemFrame:Show()
-	elseif (K.Class == "DEATHKNIGHT") then
+	local playerClass = select(2, UnitClass("player"))
+
+	if (self.classPowerBar) then
+		self.classPowerBar:Setup()
+	end
+
+	TotemFrame_Update()
+
+	if (playerClass == "SHAMAN") then
+	elseif (playerClass == "DRUID") then
+		-- EclipseBar_UpdateShown(EclipseBarFrame)
+	elseif (playerClass == "DEATHKNIGHT") then
 		RuneFrame:Show()
-	elseif (K.Class == "MAGE" and K.Spec == SPEC_MAGE_ARCANE) then
-		MageArcaneChargesFrame:Show()
-	elseif (K.Class == "MONK") then
-		if (K.Spec == SPEC_MONK_BREWMASTER) then
-			MonkStaggerBar:Show()
-		elseif (K.Spec == SPEC_MONK_WINDWALKER) then
-			MonkHarmonyBarFrame:Show()
-		end
-	elseif (K.Class == "PALADIN" --[[and K.Spec == SPEC_PALADIN_RETRIBUTION]]) then
-		PaladinPowerBarFrame:Show()
-	elseif (K.Class == "ROGUE") then
-		ComboPointPlayerFrame:Show()
-	elseif (K.Class == "WARLOCK") then
-		WarlockPowerFrame:Show()
+	elseif (playerClass == "PRIEST") then
+		PriestBarFrame_CheckAndShow()
 	end
 end
 
 function CMS:SetupResources(self)
+	local playerClass = select(2, UnitClass("player"))
+
 	-- Alternate Mana Bar
-	if (C.UnitframePlugins.AdditionalPower) and (K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
+	if (C.UnitframePlugins.AdditionalPower) and (playerClass == "DRUID" or playerClass == "SHAMAN" or playerClass == "PRIEST") then
 		K.CMS:SetupAlternatePowerBar(self)
 	end
 
 	-- Warlock Soul Shards
-	if (K.Class == "WARLOCK") then
+	if (playerClass == "WARLOCK") then
+		WarlockPowerFrame:SetParent(self)
 		WarlockPowerFrame:ClearAllPoints()
-		WarlockPowerFrame:SetParent(oUF_KkthnxPlayer)
-		WarlockPowerFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
+		WarlockPowerFrame:SetPoint("TOP", self, "BOTTOM", 29, -2)
+	end
+
+	-- Priest Insanity Bar
+	if (playerClass == "PRIEST") then
+		InsanityBarFrame:SetParent(self)
+		InsanityBarFrame:ClearAllPoints()
+		InsanityBarFrame:SetPoint("BOTTOMRIGHT", self, "TOPLEFT", 52, -50)
 	end
 
 	-- Holy Power Bar (Retribution Only)
-	if (K.Class == "PALADIN" --[[and K.Spec == SPEC_PALADIN_RETRIBUTION]]) then
+	if (playerClass == "PALADIN") then
+		PaladinPowerBarFrame:SetParent(self)
 		PaladinPowerBarFrame:ClearAllPoints()
-		PaladinPowerBarFrame:SetParent(oUF_KkthnxPlayer)
-		PaladinPowerBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 25, 2)
-    PaladinPowerBarFrame:Show()
+		PaladinPowerBarFrame:SetPoint("TOP", self, "BOTTOM", 27, 4)
+		PaladinPowerBarFrame:SetFrameStrata("LOW")
 	end
 
 	-- Monk Chi / Stagger Bar
-	if (K.Class == "MONK") then
+	if (playerClass == "MONK") then
 		-- Windwalker Chi
+		MonkHarmonyBarFrame:SetParent(self)
 		MonkHarmonyBarFrame:ClearAllPoints()
-		MonkHarmonyBarFrame:SetParent(oUF_KkthnxPlayer)
-		MonkHarmonyBarFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, 18)
+		MonkHarmonyBarFrame:SetPoint("TOP", self, "BOTTOM", 31, 18)
 
 		-- Brewmaster Stagger Bar
+		MonkStaggerBar:SetParent(self)
+		MonkStaggerBar_OnLoad(MonkStaggerBar)
 		MonkStaggerBar:ClearAllPoints()
-		MonkStaggerBar:SetParent(oUF_KkthnxPlayer)
-		MonkStaggerBar:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
+		MonkStaggerBar:SetPoint("TOP", self, "BOTTOM", 31, 0)
+		MonkStaggerBar:SetFrameLevel(1)
 	end
 
 	-- Deathknight Runebar
-	if (K.Class == "DEATHKNIGHT") then
+	if (playerClass == "DEATHKNIGHT") then
+		RuneFrame:SetParent(self)
+		RuneFrame_OnLoad(RuneFrame)
+		if K.WoWBuild >= 24367 then --7.2.5
+			RuneFrameMixin.OnLoad(RuneFrame)
+		else
+			RuneFrame_OnLoad(RuneFrame)
+		end
 		RuneFrame:ClearAllPoints()
-		RuneFrame:SetParent(oUF_KkthnxPlayer)
-		RuneFrame:SetPoint("TOP", self.Power, "BOTTOM", 2, -2)
+		RuneFrame:SetPoint("TOP", self, "BOTTOM", 33, -1)
 	end
 
 	-- Arcane Mage
-	if (K.Class == "MAGE") then
+	if (playerClass == "MAGE") then
+		MageArcaneChargesFrame:SetParent(self)
 		MageArcaneChargesFrame:ClearAllPoints()
-		MageArcaneChargesFrame:SetParent(oUF_KkthnxPlayer)
-		MageArcaneChargesFrame:SetPoint("TOP", oUF_KkthnxPlayer, "BOTTOM", 30, -2)
+		MageArcaneChargesFrame:SetPoint("TOP", self, "BOTTOM", 30, -0.5)
 	end
-
-	-- Combo Point Frame
-	if (K.Class == "ROGUE" or K.Class == "DRUID") then
-		ComboPointPlayerFrame:ClearAllPoints()
-		ComboPointPlayerFrame:SetParent(oUF_KkthnxPlayer)
-		ComboPointPlayerFrame:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", -3, 2)
-	end
-
-	-- Finish TotemFrame
-	if (K.Class == "SHAMAN" or K.Class == "WARLOCK" or K.Class == "DRUID" or K.Class == "PALADIN" or K.Class == "DEATHKNIGHT" or K.Class == "MAGE" or K.Class == "MONK") then
-		TotemFrame:SetFrameStrata("LOW")
-		TotemFrame:SetParent(oUF_KkthnxPlayer)
-		CustomTotemFrame_Update()
-	end
-	-- Register the event!
-	self:RegisterEvent("PLAYER_TOTEM_UPDATE", CustomTotemFrame_Update)
-	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", CustomTotemFrame_Update) -- I really dont event think we need this.
 end
 
 K.CMS = CMS
