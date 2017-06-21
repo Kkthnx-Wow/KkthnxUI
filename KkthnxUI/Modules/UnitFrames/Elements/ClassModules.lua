@@ -175,7 +175,6 @@ function CMS:SetupResources(self)
 	-- Deathknight Runebar
 	if (playerClass == "DEATHKNIGHT") then
 		RuneFrame:SetParent(self)
-		RuneFrame_OnLoad(RuneFrame)
 		if K.WoWBuild >= 24367 then --7.2.5
 			RuneFrameMixin.OnLoad(RuneFrame)
 		else
