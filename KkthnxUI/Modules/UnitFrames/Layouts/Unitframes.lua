@@ -696,6 +696,12 @@ local function CreateUnitLayout(self, unit)
 		self:SetSize(data.siz.w, data.siz.h)
 		self:SetScale(C.Unitframe.Scale or 1)
 
+		-- Combo Points
+		ComboPointPlayerFrame:ClearAllPoints()
+		ComboPointPlayerFrame:SetParent(self)
+		ComboPointPlayerFrame:SetPoint("TOP", self, "BOTTOM", 30, 2)
+		ComboPointPlayerFrame.SetPoint = K.Noop
+
 		K.CMS:SetupResources(self)
 
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
