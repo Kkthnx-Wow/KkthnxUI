@@ -440,7 +440,7 @@ function AFK:Initialize()
 	-- Display our UI Name
 	self.AFKMode.bottom.kkthnxui = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.kkthnxui:SetFont(C.Media.Font, 30)
-	self.AFKMode.bottom.kkthnxui:SetText(K.UIName)
+	self.AFKMode.bottom.kkthnxui:SetText(K.Title)
 	self.AFKMode.bottom.kkthnxui:SetPoint("RIGHT", self.AFKMode.bottom, "RIGHT", -25, 8)
 	self.AFKMode.bottom.kkthnxui:SetTextColor(60/255, 155/255, 237/255)
 

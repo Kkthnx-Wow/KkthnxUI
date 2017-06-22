@@ -40,7 +40,7 @@ K.TwoPixelBorder = {bgFile = C.Media.Blank, edgeFile = C.Media.Blank, tile = tru
 K.ShadowBackdrop = {edgeFile = C.Media.Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 
 function K.Print(...)
-	print("|cff3c9bed"..K.UIName.."|r:", ...)
+	print("|cff3c9bed"..K.Title.."|r:", ...)
 end
 
 function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)

@@ -62,9 +62,9 @@ RegisterAddonMessagePrefix("KkthnxUI")
 local OnWhisper = function(self, event, text, name, ...)
 	if (text:lower():match("ui_version")) then
 		if (event == "CHAT_MSG_WHISPER") then
-			SendChatMessage(K.UIName .. " " .. K.Version, "WHISPER", nil, name)
+			SendChatMessage(K.Title .. " " .. K.Version, "WHISPER", nil, name)
 		elseif (event == "CHAT_MSG_BN_WHISPER") then
-			BNSendWhisper(select(11, ...), K.UIName .. " " .. K.Version)
+			BNSendWhisper(select(11, ...), K.Title .. " " .. K.Version)
 		end
 	end
 end
