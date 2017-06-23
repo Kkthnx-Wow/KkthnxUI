@@ -128,18 +128,17 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 			bar.candyBarIconFrame:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		end
 
-		local BigWigsBars = BigWigs:GetPlugin("Bars")
-		BigWigsBars:RegisterBarStyle("KkthnxUI", {
-			apiVersion = 1,
-			version = 1,
-			GetSpacing = function() return 4 end,
-			ApplyStyle = ApplyStyle,
-			BarStopped = FreeStyle,
-			GetStyleName = function() return "KkthnxUI" end,
-		})
-
+		local BigWigsBars = BigWigs:GetPlugin("Bars", true)
 		if BigWigsBars then
-			BigWigsBars.db.profile.barStyle = "KkthnxUI"
+			BigWigsBars:RegisterBarStyle("KkthnxUI", {
+				apiVersion = 1,
+				version = 1,
+				GetSpacing = function() return 4 end,
+				ApplyStyle = ApplyStyle,
+				BarStopped = FreeStyle,
+				GetStyleName = function() return "KkthnxUI" end,
+			})
 		end
+		BigWigsBars.defaultDB.barStyle = "KkthnxUI"
 	end
 end)
