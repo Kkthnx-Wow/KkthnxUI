@@ -552,7 +552,9 @@ function Tooltip:Skin()
 		self.IsSkinned = true
 	end
 
-	Tooltip.SetColor(self)
+	if not self:IsForbidden() then
+ 		Tooltip.SetColor(self)
+ 	end
 end
 
 hooksecurefunc(GameTooltip, "SetUnitAura", function(self, unit, index, filter)
