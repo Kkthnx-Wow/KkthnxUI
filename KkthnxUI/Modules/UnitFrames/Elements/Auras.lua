@@ -171,7 +171,7 @@ elseif (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
 		buffs.initialAnchor = "TOPLEFT"
 		buffs["growth-y"] = "DOWN"
 		buffs["growth-x"] = "RIGHT"
-		buffs.CustomFilter = K.TargetAuraFilter
+		buffs.CustomFilter = K.DefaultAuraFilter
 		buffs.PostCreateIcon = K.PostCreateAura
 		buffs.PostUpdateIcon = K.PostUpdateAura
 		self.Buffs = buffs
@@ -180,7 +180,7 @@ elseif (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
 		debuffs.initialAnchor = "TOPLEFT"
 		debuffs["growth-y"] = "UP"
 		debuffs["growth-x"] = "RIGHT"
-		debuffs.CustomFilter = K.TargetAuraFilter
+		debuffs.CustomFilter = K.DefaultAuraFilter
 		debuffs.PostCreateIcon = K.PostCreateAura
 		debuffs.PostUpdateIcon = K.PostUpdateAura
 		self.Debuffs = debuffs
@@ -206,7 +206,7 @@ elseif (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
 		buffs.initialAnchor = "TOPLEFT"
 		buffs["growth-y"] = "DOWN"
 		buffs["growth-x"] = "RIGHT"
-		buffs.CustomFilter = K.PartyAuraFilter
+		buffs.CustomFilter = K.DefaultAuraFilter
 		buffs.PostCreateIcon = K.PostCreateAura
 		buffs.PostUpdateIcon = K.PostUpdateAura
 		self.Buffs = buffs
@@ -215,7 +215,7 @@ elseif (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
 		debuffs.initialAnchor = "TOPLEFT"
 		debuffs["growth-y"] = "UP"
 		debuffs["growth-x"] = "RIGHT"
-		debuffs.CustomFilter = K.PartyAuraFilter
+		debuffs.CustomFilter = K.DefaultAuraFilter
 		debuffs.PostCreateIcon = K.PostCreateAura
 		debuffs.PostUpdateIcon = K.PostUpdateAura
 		self.Debuffs = debuffs
@@ -255,15 +255,15 @@ elseif (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
 		debuffs.PostUpdateIcon = K.PostUpdateAura
 		self.Debuffs = debuffs
 
-	elseif (self.MatchUnit == "arena") then
-		local buffs = CreateFrame("Frame", nil, self)
+	elseif (self.MatchUnit == "arena") then -- This is already finished on the 7.0.0 alpha. We will merge this later.
+		-- local buffs = CreateFrame("Frame", nil, self)
 		-- local debuffs = CreateFrame("Frame", nil, self)
 
-		buffs:SetHeight(26)
-		buffs:SetWidth(self:GetWidth())
-		buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
-		buffs.size = 26
-		buffs.num = 6
+		-- buffs:SetHeight(26)
+		-- buffs:SetWidth(self:GetWidth())
+		-- buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -7)
+		-- buffs.size = 26
+		-- buffs.num = 6
 
 		-- debuffs:SetHeight(24)
 		-- debuffs:SetWidth(self:GetWidth())
@@ -271,14 +271,14 @@ elseif (self.MatchUnit == "focus") or (self.MatchUnit == "target") then
 		-- debuffs.size = 24
 		-- debuffs.num = 4
 
-		buffs.spacing = 5
-		buffs.initialAnchor = "TOPLEFT"
-		buffs["growth-y"] = "DOWN"
-		buffs["growth-x"] = "RIGHT"
-		buffs.CustomFilter = K.ArenaAuraFilter
-		buffs.PostCreateIcon = K.PostCreateAura
-		buffs.PostUpdateIcon = K.PostUpdateAura
-		self.Buffs = buffs
+		-- buffs.spacing = 5
+		-- buffs.initialAnchor = "TOPLEFT"
+		-- buffs["growth-y"] = "DOWN"
+		-- buffs["growth-x"] = "RIGHT"
+		-- buffs.CustomFilter = K.ArenaAuraFilter
+		-- buffs.PostCreateIcon = K.PostCreateAura
+		-- buffs.PostUpdateIcon = K.PostUpdateAura
+		-- self.Buffs = buffs
 
 		-- debuffs.spacing = 5
 		-- debuffs.initialAnchor = "TOPRIGHT"

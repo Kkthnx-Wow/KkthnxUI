@@ -10,11 +10,9 @@ local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for the mikk's Find Globals script
+-- Global variables that we don"t cache, list them here for the mikk"s Find Globals script
 -- GLOBALS: VendomaticButton, VendomaticButtonIcon, Minimap, BaudErrorFrameMinimapButton
 -- GLOBALS: GarrisonLandingPageMinimapButton
-
-local ModuleCB = LibStub("AceAddon-3.0"):NewAddon("CollectButtons", "AceEvent-3.0", "AceHook-3.0")
 
 local MinimapButtonCollectFrame
 local buttons = {}
@@ -26,58 +24,64 @@ local AcceptedFrames = {
 }
 
 local BlackList = {
-	[1] = "MiniMapTrackingFrame",
-	[2] = "MiniMapMeetingStoneFrame",
-	[3] = "MiniMapMailFrame",
-	[4] = "MiniMapBattlefieldFrame",
-	[5] = "MiniMapWorldMapButton",
-	[6] = "MiniMapPing",
-	[7] = "MinimapBackdrop",
-	[8] = "MinimapZoomIn",
-	[9] = "MinimapZoomOut",
-	[10] = "BookOfTracksFrame",
-	[11] = "GatherNote",
-	[12] = "FishingExtravaganzaMini",
-	[13] = "MiniNotePOI",
-	[14] = "RecipeRadarMinimapIcon",
-	[15] = "FWGMinimapPOI",
-	[16] = "CartographerNotesPOI",
-	[17] = "MBB_MinimapButtonFrame",
-	[18] = "EnhancedFrameMinimapButton",
-	[19] = "GFW_TrackMenuFrame",
-	[20] = "GFW_TrackMenuButton",
-	[21] = "TDial_TrackingIcon",
-	[22] = "TDial_TrackButton",
-	[23] = "MiniMapTracking",
-	[24] = "GatherMatePin",
-	[25] = "HandyNotesPin",
-	[26] = "TimeManagerClockButton",
-	[27] = "GameTimeFrame",
-	[28] = "DA_Minimap",
-	[29] = "KkthnxUIToggleButton",
-	[30] = "MiniMapInstanceDifficulty",
-	[31] = "MinimapZoneTextButton",
-	[32] = "GuildInstanceDifficulty",
-	[33] = "MiniMapVoiceChatFrame",
-	[34] = "MiniMapRecordingButton",
-	[35] = "QueueStatusMinimapButton",
-	[36] = "GatherArchNote",
-	[37] = "ZGVMarker",
-	[38] = "QuestPointerPOI", -- QuestPointer
-	[39] = "poiMinimap", -- QuestPointer
-	[40] = "MiniMapLFGFrame", -- LFG
-	[41] = "PremadeFilter_MinimapButton", -- PreMadeFilter
-	[42] = "GarrisonMinimapButton"
+	"CopyChatButton1",
+	"GarrisonLandingPageMinimapButton",
+	"HelpOpenTicketButton",
+	"MiniMapMailFrame",
+	"MiniMapTrackingFrame",
+	"MiniMapVoiceChatFrame",
+	"ToggleBar5",
+  "BookOfTracksFrame",
+  "CartographerNotesPOI",
+  "DA_Minimap",
+  "EnhancedFrameMinimapButton",
+  "FishingExtravaganzaMini",
+  "FWGMinimapPOI",
+  "GameTimeFrame",
+  "GarrisonMinimapButton",
+  "GatherArchNote",
+  "GatherMatePin",
+  "GatherNote",
+  "GFW_TrackMenuButton",
+  "GFW_TrackMenuFrame",
+  "GuildInstanceDifficulty",
+  "HandyNotesPin",
+  "KkthnxUIToggleButton",
+  "MBB_MinimapButtonFrame",
+  "MinimapBackdrop",
+  "MiniMapBattlefieldFrame",
+  "MiniMapInstanceDifficulty",
+  "MiniMapLFGFrame",
+  "MiniMapMeetingStoneFrame",
+  "MiniMapPing",
+  "MiniMapRecordingButton",
+  "MiniMapTracking",
+  "MiniMapWorldMapButton",
+  "MinimapZoneTextButton",
+  "MinimapZoomIn",
+  "MinimapZoomOut",
+  "MiniNotePOI",
+  "poiMinimap",
+  "PremadeFilter_MinimapButton",
+  "QuestPointerPOI",
+  "QueueStatusMinimapButton",
+  "RecipeRadarMinimapIcon",
+  "TDial_TrackButton",
+  "TDial_TrackingIcon",
+  "TimeManagerClockButton",
+  "ZGVMarker",
 }
 
 local function SetMinimapButton(btn)
 	if (not btn or btn.isSkinned) then return end
 	local name = btn:GetName()
-	for _, button in ipairs(BlackList) do
-		if(string.find(name, button)) then
-			return
-		end
+
+	if not name then return end
+
+	for i = 1, #BlackList do
+		if name == BlackList[i] then return end
 	end
+
 	btn:SetParent("MinimapButtonCollectFrame")
 	if not name == "GarrisonLandingPageMinimapButton" then
 		btn:SetPushedTexture(nil)
@@ -127,6 +131,7 @@ local function SetMinimapButton(btn)
 	btn.preset.FrameStrata = btn:GetFrameStrata()
 	btn.preset.FrameLevel = btn:GetFrameLevel()
 	btn.preset.Scale = btn:GetScale()
+
 	if btn:HasScript("OnDragStart") then
 		btn.preset.DragStart = btn:GetScript("OnDragStart")
 	end
@@ -147,6 +152,7 @@ local function SetMinimapButton(btn)
 		VendomaticButtonIcon:SetTexture("Interface\\Icons\\INV_Misc_Rabbit_2")
 		VendomaticButtonIcon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	end
+
 	btn:SetSize(18, 18)
 	K.CreateBorder(btn)
 	btn:SetBackdrop(K.BorderBackdrop)
@@ -156,6 +162,8 @@ local function SetMinimapButton(btn)
 	else
 		btn:SetBackdropBorderColor(1, 0, 0)
 	end
+
+	btn.isSkinned = true -- We don't want to trying to skin them back to back
 end
 
 local function GrabMinimapButtons()
@@ -174,12 +182,12 @@ local function GrabMinimapButtons()
 	end
 end
 
-function ModuleCB:PositionButton(button)
+function K:PositionButton(button)
 	local line = math.ceil(Minimap:GetWidth() / 20)
 	if button:IsShown() then
 		button:ClearAllPoints()
 		if self.prevButton == nil then
-			button:SetPoint("TOP", MinimapButtonCollectFrame, "TOP", 0, 0)
+			button:SetPoint("TOP", MinimapButtonCollectFrame, "TOP", -2, 0)
 			self.prevButton = button
 		elseif self.prevLineButton then
 			button:SetPoint("TOPRIGHT", self.prevLineButton, "TOPLEFT", -3, 0)
@@ -195,7 +203,7 @@ function ModuleCB:PositionButton(button)
 	end
 end
 
-function ModuleCB:PositionButtonCollector(self)
+function K:PositionButtonCollector(self)
 	MinimapButtonCollectFrame:ClearAllPoints()
 	if BaudErrorFrameMinimapButton then
 		BaudErrorFrameMinimapButton:SetFrameStrata("DIALOG")
@@ -204,29 +212,29 @@ function ModuleCB:PositionButtonCollector(self)
 		BaudErrorFrameMinimapButton.ClearAllPoints = K.Noop
 		BaudErrorFrameMinimapButton.SetPoint = K.Noop
 	end
-	ModuleCB.prevLineButton = nil
-	ModuleCB.prevButton = nil
-	ModuleCB.positioned = 0
+	K.prevLineButton = nil
+	K.prevButton = nil
+	K.positioned = 0
 	for i =1, #buttons do
-		ModuleCB:PositionButton(buttons[i])
+		K:PositionButton(buttons[i])
 		if not buttons[i].hooked then
 			hooksecurefunc(buttons[i], "SetPoint", function(self, _, anchor)
 				if anchor == Minimap or type(anchor) == "number" then
-					ModuleCB:PositionButtonCollector(Minimap)
+					K:PositionButtonCollector(Minimap)
 				end
 			end)
-			buttons[i]:HookScript("OnShow", function() ModuleCB:PositionButtonCollector(Minimap) end)
-			buttons[i]:HookScript("OnHide", function() ModuleCB:PositionButtonCollector(Minimap) end)
+			buttons[i]:HookScript("OnShow", function() K:PositionButtonCollector(Minimap) end)
+			buttons[i]:HookScript("OnHide", function() K:PositionButtonCollector(Minimap) end)
 			buttons[i].hooked = true
 		end
 	end
 	local line = math.ceil(Minimap:GetWidth() / 20)
-	local rows = math.floor(ModuleCB.positioned / line) + 1
+	local rows = math.floor(K.positioned / line) + 1
 	MinimapButtonCollectFrame:SetWidth(rows * 20 + (rows - 1) * 3)
 	MinimapButtonCollectFrame:SetPoint("TOPRIGHT", Minimap, "TOPLEFT", -4, 1)
 end
 
-function ModuleCB:ButtonCollector()
+function K:ButtonCollector()
 	MinimapButtonCollectFrame = CreateFrame("Frame", "MinimapButtonCollectFrame", UIParent)
 	if select(3, Minimap:GetPoint()):upper():find("TOP") then
 		MinimapButtonCollectFrame:SetPoint("BOTTOMLEFT", Minimap, "TOPLEFT", 0, 5)
@@ -242,15 +250,15 @@ function ModuleCB:ButtonCollector()
 	MinimapButtonCollect:RegisterEvent("ADDON_LOADED")
 	MinimapButtonCollect:SetScript("OnEvent", function(self)
 		GrabMinimapButtons()
-		ModuleCB:PositionButtonCollector(Minimap)
+		K:PositionButtonCollector(Minimap)
 	end)
 
 	local Time = 0
 	MinimapButtonCollect:SetScript("OnUpdate", function(self, elasped)
 		Time = Time + elasped
-		if Time > 3 then -- Give it time to catch all minimap buttons.
+		if Time > 4 then -- Give it time to catch all minimap buttons.
 			GrabMinimapButtons()
-			ModuleCB:PositionButtonCollector(Minimap)
+			K:PositionButtonCollector(Minimap)
 			self:SetScript("OnUpdate", nil)
 		end
 	end)
@@ -259,5 +267,5 @@ end
 local Loading = CreateFrame("Frame")
 Loading:RegisterEvent("PLAYER_LOGIN")
 Loading:SetScript("OnEvent", function()
-	ModuleCB:ButtonCollector()
+	K:ButtonCollector()
 end)

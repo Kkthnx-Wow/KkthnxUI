@@ -43,7 +43,7 @@ end
 
 local Anchor = CreateFrame("Frame", "ExperienceAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ExperienceWidth, C.DataBars.ExperienceHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -33)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -34)
 K.Movers:RegisterFrame(Anchor)
 
 local ExperienceBar = CreateFrame("StatusBar", nil, UIParent)
@@ -73,9 +73,8 @@ ExperienceBar.Spark:SetPoint("CENTER", ExperienceBar:GetStatusBarTexture(), "RIG
 ExperienceBar.Spark:SetAlpha(0.6)
 ExperienceBar.Spark:SetBlendMode("ADD")
 
-ExperienceBar.Text = ExperienceBar:CreateFontString(nil, "OVERLAY")
-ExperienceBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
-ExperienceBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+ExperienceBar.Text = K.SetFontString(ExperienceBar, C.Media.Font, C.Media.Font_Size - 1, C.DataBars.Outline and "OUTLINE" or "", "CENTER")
+ExperienceBar.Text:SetShadowOffset(C.DataBars.Outline and 0 or 1.25, C.DataBars.Outline and -0 or -1.25)
 ExperienceBar.Text:SetPoint("CENTER", ExperienceBar, "CENTER", 0, 0)
 ExperienceBar.Text:SetHeight(C.Media.Font_Size)
 ExperienceBar.Text:SetTextColor(1, 1, 1)
@@ -152,14 +151,11 @@ end)
 
 if C.DataBars.ExperienceFade then
 	ExperienceBar:SetAlpha(0)
-	ExperienceBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-	ExperienceBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
+	ExperienceBar:HookScript("OnEnter", function(self) K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1) end)
 	ExperienceBar.Tooltip = true
 end
 
-ExperienceBar:SetScript("OnEvent", function(self, event, ...)
-	return self[event] and self[event](self, event, ...)
-end)
+ExperienceBar:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, event, ...) end)
 function ExperienceBar:PLAYER_LEVEL_UP(level)
 	local maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
 	if (level ~= maxLevel) and C.DataBars.ExperienceEnable then
@@ -169,13 +165,20 @@ function ExperienceBar:PLAYER_LEVEL_UP(level)
 	end
 end
 
+if C.DataBars.ExperienceFade then
+	ExperienceBar:SetAlpha(0)
+	ExperienceBar:HookScript("OnEnter", function(self) K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1) end)
+	ExperienceBar:HookScript("OnLeave", function(self) self:SetAlpha(0) GameTooltip:Hide() end)
+	ExperienceBar.Tooltip = true
+else
+	ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
+end
+
 ExperienceBar:RegisterEvent("PLAYER_LOGIN")
 ExperienceBar:RegisterEvent("PLAYER_XP_UPDATE")
 ExperienceBar:RegisterEvent("DISABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("ENABLE_XP_GAIN")
 ExperienceBar:RegisterEvent("UPDATE_EXHAUSTION")
 ExperienceBar:RegisterEvent("PLAYER_LEVEL_UP")
--- be careful with this.
 ExperienceBar:UnregisterEvent("UPDATE_EXPANSION_LEVEL")
-ExperienceBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ExperienceBar:SetScript("OnEvent", UpdateExperienceBar)

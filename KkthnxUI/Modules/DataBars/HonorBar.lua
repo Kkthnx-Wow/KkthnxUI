@@ -8,6 +8,7 @@ local format = string.format
 -- Wow API
 local CanPrestige = _G.CanPrestige
 local GetMaxPlayerHonorLevel = _G.GetMaxPlayerHonorLevel
+local GUILD_RECRUITMENT_LEVEL = _G.GUILD_RECRUITMENT_LEVEL
 local HideUIPanel = _G.HideUIPanel
 local LoadAddOn = _G.LoadAddOn
 local MAX_HONOR_LEVEL = _G.MAX_HONOR_LEVEL
@@ -54,9 +55,8 @@ K.CreateBorder(HonorBar, -1)
 HonorBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 HonorBar:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
-HonorBar.Text = HonorBar:CreateFontString(nil, "OVERLAY")
-HonorBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
-HonorBar.Text:SetShadowOffset(K.Mult, -K.Mult)
+HonorBar.Text = K.SetFontString(HonorBar, C.Media.Font, C.Media.Font_Size - 1, C.DataBars.Outline and "OUTLINE" or "", "CENTER")
+HonorBar.Text:SetShadowOffset(C.DataBars.Outline and 0 or 1.25, C.DataBars.Outline and -0 or -1.25)
 HonorBar.Text:SetPoint("CENTER", HonorBar, "CENTER", 0, 0)
 HonorBar.Text:SetHeight(C.Media.Font_Size)
 HonorBar.Text:SetTextColor(1, 1, 1)
@@ -66,7 +66,7 @@ if C.Blizzard.ColorTextures == true then
 	HonorBar:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 
-HonorBar:SetScript("OnMouseUp", function()
+HonorBar:SetScript("OnMouseDown", function()
 	ToggleTalentFrame(3) -- 3 is PvP
 end)
 
@@ -74,14 +74,15 @@ local function UpdateHonorBar(event, unit)
 	if event == "HONOR_PRESTIGE_UPDATE" and unit ~= "player" then return end
 	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then return end
 
-	local Current, Max = UnitHonor("player"), UnitHonorMax("player")
-	local Level, LevelMax = UnitHonorLevel("player"), GetMaxPlayerHonorLevel()
 	local ShowHonor = UnitLevel("player") >= MAX_PLAYER_LEVEL
 
 	if not ShowHonor then
 		HonorBar:Hide()
 	else
 		HonorBar:Show()
+
+		local Current, Max = UnitHonor("player"), UnitHonorMax("player")
+		local Level, LevelMax = UnitHonorLevel("player"), GetMaxPlayerHonorLevel()
 
 		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
 		if Max == 0 then Max = 1 end
@@ -109,26 +110,28 @@ local function UpdateHonorBar(event, unit)
 		else
 			HonorBar.Text:SetText("")
 		end
-
-		HonorBar:SetMinMaxValues(0, Max)
-		HonorBar:SetValue(Current)
 	end
 end
 
+local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE..HEADER_COLON
 HonorBar:SetScript("OnEnter", function(self)
 	local Current, Max = UnitHonor("player"), UnitHonorMax("player")
 	local Level = UnitHonorLevel("player")
 	local LevelMax = GetMaxPlayerHonorLevel()
-	local Prestige = UnitPrestige("player")
+	local PrestigeLevel = UnitPrestige("player")
 
 	GameTooltip:SetOwner(self, "ANCHOR_NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
 	GameTooltip:AddLine(HONOR)
-
-	GameTooltip:AddDoubleLine("Current Level:", Level, 1, 1, 1)
 	GameTooltip:AddLine(" ")
+
+	GameTooltip:AddDoubleLine(GUILD_RECRUITMENT_LEVEL..":", Level, 1, 1, 1)
+	GameTooltip:AddDoubleLine(PRESTIGE_TEXT, PrestigeLevel, 1, 1, 1)
+	GameTooltip:AddLine(" ")
+
+	if Max == 0 then Max = 1 end
 
 	if (CanPrestige()) then
 		GameTooltip:AddLine(PVP_HONOR_PRESTIGE_AVAILABLE)
@@ -139,33 +142,22 @@ HonorBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddDoubleLine("Honor Remaining:", format(" %d (%d%% - %d ".."Bars"..")", Max - Current, (Max - Current) / Max * 100, 20 * (Max - Current) / Max), 1, 1, 1)
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(L.DataBars.HonorClick)
+	GameTooltip:AddLine(L["<Left-Click to toggle Honor Window>"])
 
 	GameTooltip:Show()
 end)
 
 if C.DataBars.HonorFade then
 	HonorBar:SetAlpha(0)
-	HonorBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-	HonorBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
+	HonorBar:HookScript("OnEnter", function(self) K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1) end)
+	HonorBar:HookScript("OnLeave", function(self) self:SetAlpha(0) GameTooltip:Hide() end)
 	HonorBar.Tooltip = true
-end
-
-HonorBar:SetScript("OnEvent", function(self, event, ...)
-	return self[event] and self[event](self, event, ...)
-end)
-function HonorBar:PLAYER_LEVEL_UP(level)
-	if (C.DataBars.HonorEnable) then
-		UpdateHonorBar("PLAYER_LEVEL_UP", level)
-	else
-		HonorBar:Hide()
-	end
+else
+	HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 end
 
 HonorBar:RegisterEvent("PLAYER_LOGIN")
 HonorBar:RegisterEvent("HONOR_XP_UPDATE")
 HonorBar:RegisterEvent("HONOR_PRESTIGE_UPDATE")
 HonorBar:RegisterEvent("PLAYER_FLAGS_CHANGED")
-HonorBar:RegisterEvent("PLAYER_LEVEL_UP")
-HonorBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 HonorBar:SetScript("OnEvent", UpdateHonorBar)

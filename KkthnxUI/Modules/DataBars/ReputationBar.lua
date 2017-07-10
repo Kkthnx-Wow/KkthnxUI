@@ -24,7 +24,7 @@ local Movers = K.Movers
 
 local Anchor = CreateFrame("Frame", "ReputationAnchor", UIParent)
 Anchor:SetSize(C.DataBars.ReputationWidth, C.DataBars.ReputationHeight)
-Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, -67)
+Anchor:SetPoint("TOP", Minimap, "BOTTOM", 0, - 67)
 Movers:RegisterFrame(Anchor)
 
 local ReputationBar = CreateFrame("StatusBar", nil, UIParent)
@@ -41,14 +41,13 @@ ReputationBar.Spark:SetAlpha(0.6)
 ReputationBar.Spark:SetBlendMode("ADD")
 
 K.CreateBorder(ReputationBar, -1)
-ReputationBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
+ReputationBar:SetBackdrop({bgFile = C.Media.Blank, insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ReputationBar:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 
-ReputationBar.Text = ReputationBar:CreateFontString(nil, "OVERLAY")
-ReputationBar.Text:SetFont(C.Media.Font, C.Media.Font_Size - 1)
-ReputationBar.Text:SetShadowOffset(K.Mult, -K.Mult)
-ReputationBar.Text:SetPoint("LEFT", ReputationBar, "RIGHT", 0, 0)
-ReputationBar.Text:SetPoint("RIGHT", ReputationBar, "LEFT", 0, 0)
+ReputationBar.Text = K.SetFontString(ReputationBar, C.Media.Font, C.Media.Font_Size - 1, C.DataBars.Outline and "OUTLINE" or "", "CENTER")
+ReputationBar.Text:SetShadowOffset(C.DataBars.Outline and 0 or 1.25, C.DataBars.Outline and - 0 or - 1.25)
+ReputationBar.Text:SetPoint("LEFT", ReputationBar, "RIGHT", -6, 0)
+ReputationBar.Text:SetPoint("RIGHT", ReputationBar, "LEFT", 6, 0)
 ReputationBar.Text:SetHeight(C.Media.Font_Size)
 ReputationBar.Text:SetTextColor(1, 1, 1)
 ReputationBar.Text:SetJustifyH("CENTER")
@@ -57,7 +56,7 @@ if C.Blizzard.ColorTextures == true then
 	ReputationBar:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
 end
 
-ReputationBar:SetScript("OnMouseUp", function()
+ReputationBar:SetScript("OnMouseDown", function()
 	ToggleCharacter("ReputationFrame")
 end)
 
@@ -142,19 +141,29 @@ ReputationBar:SetScript("OnEnter", function(self)
 		GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", Value - Min, Max - Min, (Value - Min) / ((Max - Min == 0) and Max or (Max - Min)) * 100), 1, 1, 1)
 	end
 	GameTooltip:AddLine(" ")
-	GameTooltip:AddLine(L.DataBars.ReputationClick)
+	GameTooltip:AddLine("<Left-Click to toggle Reputation Window>")
 
 	GameTooltip:Show()
+
+	if C.DataBars.ReputationFade then
+		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+		ReputationBar.Tooltip = true
+	end
+end)
+
+ReputationBar:SetScript("OnLeave", function(self)
+	if C.DataBars.ReputationFade then
+		self:SetAlpha(0)
+		GameTooltip:Hide()
+	else
+		GameTooltip:Hide()
+	end
 end)
 
 if C.DataBars.ReputationFade then
 	ReputationBar:SetAlpha(0)
-	ReputationBar:HookScript("OnEnter", function(self) self:SetAlpha(1) end)
-	ReputationBar:HookScript("OnLeave", function(self) self:SetAlpha(0) end)
-	ReputationBar.Tooltip = true
 end
 
 ReputationBar:RegisterEvent("PLAYER_LOGIN")
 ReputationBar:RegisterEvent("UPDATE_FACTION")
-ReputationBar:SetScript("OnLeave", function() GameTooltip:Hide() end)
 ReputationBar:SetScript("OnEvent", UpdateReputationBar)
