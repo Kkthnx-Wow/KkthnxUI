@@ -16,6 +16,7 @@ local UIParent = _G.UIParent
 
 local MinimapButtonCollectFrame
 local buttons = {}
+local buttonNames = {}
 
 local AcceptedFrames = {
 	"BagSync_MinimapButton",
@@ -79,7 +80,7 @@ local function SetMinimapButton(btn)
 	if not name then return end
 
 	for i = 1, #BlackList do
-		if name == BlackList[i] then return end
+		if string.find(name, BlackList[i]) then return end
 	end
 
 	btn:SetParent("MinimapButtonCollectFrame")
@@ -170,15 +171,19 @@ local function GrabMinimapButtons()
 	for i = 1, Minimap:GetNumChildren() do
 		local object = select(i, Minimap:GetChildren())
 		if object then
-			if object:IsObjectType("Button") and object:GetName() then
-				SetMinimapButton(object)
+			if object:IsObjectType("Button") and object:GetName() then				
+				table_insert(buttonNames, object:GetName())
 			end
 			for _, frame in pairs(AcceptedFrames) do
-				if object:IsObjectType("Frame") and object:GetName() == frame then
-					SetMinimapButton(object)
+				if object:IsObjectType("Frame") and object:GetName() == frame then					
+					table_insert(buttonNames, object:GetName())
 				end
 			end
 		end
+	end
+
+	for _, frameName in pairs(buttonNames) do
+		SetMinimapButton(_G[frameName])
 	end
 end
 
