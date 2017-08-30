@@ -1,4 +1,4 @@
-## Interface: 70200
+## Interface: 70300
 ## Name: KkthnxUI
 ## Title: |cff3c9bedKkthnxUI|r
 ## Notes: User Interface replacement AddOn for World of Warcraft.

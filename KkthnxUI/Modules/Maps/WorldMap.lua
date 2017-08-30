@@ -60,8 +60,8 @@ function M:SetLargeWorldMap()
 		SetUIPanelAttribute(WorldMapFrame, "allowOtherPanels", true)
 	end
 
-	WorldMapFrameSizeUpButton:Hide()
-	WorldMapFrameSizeDownButton:Show()
+	WorldMapFrame.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Hide()
+	WorldMapFrame.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Show()
 
 	WorldMapFrame:ClearAllPoints()
 	WorldMapFrame:SetPoint(unpack(C.Position.WorldMap))
@@ -71,18 +71,16 @@ end
 function M:SetSmallWorldMap()
 	if InCombatLockdown() then return end
 
-	WorldMapFrameSizeUpButton:Show()
-	WorldMapFrameSizeDownButton:Hide()
+	WorldMapFrame.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Show()
+	WorldMapFrame.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Hide()
 end
 
 function M:PLAYER_REGEN_ENABLED()
-	WorldMapFrameSizeDownButton:Enable()
-	WorldMapFrameSizeUpButton:Enable()
+	WorldMapFrame.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Enable()
 end
 
 function M:PLAYER_REGEN_DISABLED()
-	WorldMapFrameSizeDownButton:Disable()
-	WorldMapFrameSizeUpButton:Disable()
+	WorldMapFrame.BorderFrame.MaximizeMinimizeFrame.MaximizeButton:Disable()
 end
 
 local inRestrictedArea = false

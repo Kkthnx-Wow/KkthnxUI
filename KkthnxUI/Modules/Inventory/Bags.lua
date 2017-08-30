@@ -387,7 +387,7 @@ function Bags:CreateContainer(storagetype, ...)
 			CloseAllBags()
 			CloseBankBagFrames()
 			CloseBankFrame()
-			PlaySound("igBackPackClose")
+			PlaySound(863)
 		end)
 
 		for _, Button in pairs(BlizzardBags) do
@@ -862,7 +862,7 @@ function Bags:CloseAllBags()
 	end
 
 	CloseAllBags()
-	PlaySound("igBackPackClose")
+	PlaySound(863)
 end
 
 function Bags:CloseAllBankBags()
