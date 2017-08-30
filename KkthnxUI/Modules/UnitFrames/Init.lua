@@ -45,28 +45,28 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 	function oUFKkthnx:PLAYER_FOCUS_CHANGED(event)
 		if UnitExists("focus") then
 			if UnitIsEnemy("focus", "player") then
-				PlaySound("igCreatureAggroSelect")
+				PlaySound(873)
 			elseif UnitIsFriend("player", "focus") then
-				PlaySound("igCharacterNPCSelect")
+				PlaySound(867)
 			else
-				PlaySound("igCreatureNeutralSelect")
+				PlaySound(871)
 			end
 		else
-			PlaySound("INTERFACESOUND_LOSTTARGETUNIT")
+			PlaySound(684)
 		end
 	end
 
 	function oUFKkthnx:PLAYER_TARGET_CHANGED(event)
 		if UnitExists("target") then
 			if UnitIsEnemy("target", "player") then
-				PlaySound("igCreatureAggroSelect")
+				PlaySound(873)
 			elseif UnitIsFriend("player", "target") then
-				PlaySound("igCharacterNPCSelect")
+				PlaySound(867)
 			else
-				PlaySound("igCreatureNeutralSelect")
+				PlaySound(871)
 			end
 		else
-			PlaySound("INTERFACESOUND_LOSTTARGETUNIT")
+			PlaySound(684)
 		end
 	end
 

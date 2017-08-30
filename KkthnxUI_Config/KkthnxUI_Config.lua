@@ -589,7 +589,7 @@ function CreateUIConfig()
 
 	local close = NormalButton("|cffFF0000" .. UIConfigLocal.ConfigCloseButton .. "|r", UIConfigMain)
 	close:SetPoint("TOP", load, "BOTTOM", 0, -8)
-	close:SetScript("OnClick", function(self) PlaySound("igMainMenuOption") UIConfigMain:Hide() end)
+	close:SetScript("OnClick", function(self) PlaySound(852) UIConfigMain:Hide() end)
 
 	local RightButtonsBG = CreateFrame("Frame", "RightButtonsBG", UIConfigMain)
 	RightButtonsBG:SetSize(116, 154)
@@ -633,11 +633,11 @@ end
 do
 	function SlashCmdList.CONFIG(msg, editbox)
 		if not UIConfigMain or not UIConfigMain:IsShown() then
-			PlaySound("igMainMenuOption")
+			PlaySound(852)
 			CreateUIConfig()
 			HideUIPanel(GameMenuFrame)
 		else
-			PlaySound("igMainMenuOption")
+			PlaySound(852)
 			UIConfigMain:Hide()
 		end
 	end
