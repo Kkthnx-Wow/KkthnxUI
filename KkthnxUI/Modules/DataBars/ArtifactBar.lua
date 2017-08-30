@@ -50,7 +50,7 @@ ArtifactBar.Spark:SetPoint("CENTER", ArtifactBar:GetStatusBarTexture(), "RIGHT",
 ArtifactBar.Spark:SetAlpha(0.6)
 ArtifactBar.Spark:SetBlendMode("ADD")
 
-K.CreateBorder(ArtifactBar, 3)
+K.CreateBorder(ArtifactBar, -1)
 ArtifactBar:SetBackdrop({bgFile = C.Media.Blank,insets = {left = -1, right = -1, top = -1, bottom = -1}})
 ArtifactBar:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
 

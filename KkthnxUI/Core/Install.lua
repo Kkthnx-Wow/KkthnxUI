@@ -316,7 +316,7 @@ end)
 
 local StepFour = function()
 	if (GetCVarBool("Sound_EnableMusic")) then
-		PlaySoundKitID(44323)
+		PlaySound(44323)
 	end
 	KkthnxUIDataPerChar.Install = true
 	StatusBar:SetValue(4)

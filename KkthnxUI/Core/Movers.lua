@@ -156,11 +156,11 @@ function Movers:StartOrStopMoving()
 				Frame.DragInfo:SetFrameStrata("HIGH")
 			end
 
-			if Frame.DragInfo:GetHeight() < 15 then
-				Frame.DragInfo:ClearAllPoints()
-				Frame.DragInfo:SetWidth(Frame:GetWidth())
-				Frame.DragInfo:SetHeight(23)
-				Frame.DragInfo:SetPoint("TOP", Frame)
+			if Frame.DragInfo:GetHeight() < 15 then -- Fix this in 7.0 update
+				-- Frame.DragInfo:ClearAllPoints()
+				-- Frame.DragInfo:SetWidth(Frame:GetWidth())
+				-- Frame.DragInfo:SetHeight(23)
+				-- Frame.DragInfo:SetPoint("TOP", Frame)
 			end
 		else
 			if Frame.unit then
