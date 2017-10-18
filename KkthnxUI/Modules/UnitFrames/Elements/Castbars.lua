@@ -514,10 +514,10 @@ function K.CreateCastBar(self, unit)
 
 		if unit == "boss" then
 			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			CastBar:SetPoint("RIGHT", -138, 0)
-			CastBar:SetPoint("LEFT", 0, 10)
-			CastBar:SetPoint("LEFT", -138, 8)
-			CastBar:SetHeight(16)
+			CastBar:SetPoint("LEFT", 4, 0)
+			CastBar:SetPoint("RIGHT", -4, 0)
+			CastBar:SetPoint("TOP", 0, 20)
+			CastBar:SetHeight(18)
 			CastBar:SetStatusBarTexture(CastbarTexture)
 			CastBar:SetClampedToScreen(true)
 

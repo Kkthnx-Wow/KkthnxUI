@@ -175,7 +175,9 @@ end
 function Module:UpdateHonorBar()
     local level = UnitHonorLevel("player")
     local levelmax = GetMaxPlayerHonorLevel()
-    if UnitLevel("player") < MAX_PLAYER_LEVEL or level == levelmax then
+    local isInInstance, instanceType = IsInInstance()
+
+    if UnitLevel("player") < MAX_PLAYER_LEVEL or level == levelmax or not (instanceType == "pvp") or (instanceType == "arena") then -- No need to show this otherwise.
         self:Hide()
     else
         self:Show()
@@ -190,9 +192,9 @@ function Module:UpdateHonorBar()
 
         local exhaustionStateID = GetHonorRestState()
         if (exhaustionStateID == 1) then
-            self:SetStatusBarColor(240/255, 114/255, 65/255) -- I will adjust these later on
+            self:SetStatusBarColor(240/255, 65/255, 73/255)
         else
-            self:SetStatusBarColor(240/255, 114/255, 65/255) -- I will adjust these later on
+            self:SetStatusBarColor(240/255, 114/255, 65/255)
         end
     end
 end
