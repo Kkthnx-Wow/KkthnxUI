@@ -1,8 +1,9 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then return end
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
+if not oUF then return end
 
 -- Lua API
 local _G = _G
@@ -11,6 +12,8 @@ local pairs = pairs
 -- Wow API
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local PlaySound = _G.PlaySound
+local PlaySoundKitID = _G.PlaySoundKitID
+local SOUNDKIT = _G.SOUNDKIT
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitExists = _G.UnitExists
 local UnitIsEnemy = _G.UnitIsEnemy
@@ -19,9 +22,7 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 
 local oUFKkthnx = CreateFrame("Frame", "oUFKkthnx")
-oUFKkthnx:SetScript("OnEvent", function(self, event, ...)
-	return self[event] and self[event](self, event, ...)
-end)
+oUFKkthnx:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, event, ...) end)
 oUFKkthnx:RegisterEvent("ADDON_LOADED")
 
 function oUFKkthnx:ADDON_LOADED(event, addon)
@@ -38,35 +39,35 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 	-- Shift to temporarily show all buffs
 	self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-	if not UnitAffectingCombat("player") then
+	if (not InCombatLockdown()) then
 		self:RegisterEvent("MODIFIER_STATE_CHANGED")
 	end
 
 	function oUFKkthnx:PLAYER_FOCUS_CHANGED(event)
 		if UnitExists("focus") then
 			if UnitIsEnemy("focus", "player") then
-				PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
+				PlaySound(PlaySoundKitID and "igCreatureAggroSelect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 			elseif UnitIsFriend("player", "focus") then
-				PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
+				PlaySound(PlaySoundKitID and "igCharacterNPCSelect" or SOUNDKIT.IG_CHARACTER_NPC_SELECT)
 			else
-				PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
+				PlaySound(PlaySoundKitID and "igCreatureNeutralSelect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 			end
 		else
-			PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
+			PlaySound(PlaySoundKitID and "INTERFACESOUND_LOSTTARGETUNIT" or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 		end
 	end
 
 	function oUFKkthnx:PLAYER_TARGET_CHANGED(event)
 		if UnitExists("target") then
 			if UnitIsEnemy("target", "player") then
-				PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
+				PlaySound(PlaySoundKitID and "igCreatureAggroSelect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 			elseif UnitIsFriend("player", "target") then
-				PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
+				PlaySound(PlaySoundKitID and "igCharacterNPCSelect" or SOUNDKIT.IG_CHARACTER_NPC_SELECT)
 			else
-				PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
+				PlaySound(PlaySoundKitID and "igCreatureNeutralSelect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 			end
 		else
-			PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
+			PlaySound(PlaySoundKitID and "INTERFACESOUND_LOSTTARGETUNIT" or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 		end
 	end
 
@@ -75,7 +76,7 @@ function oUFKkthnx:ADDON_LOADED(event, addon)
 		if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
 			if not announcedPVP then
 				announcedPVP = true
-				PlaySound(SOUNDKIT.IG_PVP_UPDATE)
+				PlaySound(PlaySoundKitID and "igPVPUpdate" or SOUNDKIT.IG_PVP_UPDATE)
 			end
 		else
 			announcedPVP = nil

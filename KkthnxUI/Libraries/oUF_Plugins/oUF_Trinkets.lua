@@ -1,6 +1,6 @@
 local _, ns = ...
-local oUF = ns.oUF or oUF
-assert(oUF, 'oUF not loaded')
+local oUF = ns.oUF
+if not oUF then return end
 
 local trinketSpells = {
 	[208683] = 120,

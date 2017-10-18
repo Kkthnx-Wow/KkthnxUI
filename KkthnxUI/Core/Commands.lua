@@ -6,7 +6,9 @@ local math_ceil = math.ceil
 local math_floor = math.floor
 local string_format = string.format
 local string_lower = string.lower
+local string_split = string.split
 local string_trim = string.trim
+local table_insert = table.insert
 
 -- Wow API
 local AbandonQuest = _G.AbandonQuest
@@ -22,13 +24,20 @@ local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
 local FEATURE_BECOMES_AVAILABLE_AT_LEVEL = _G.FEATURE_BECOMES_AVAILABLE_AT_LEVEL
 local GetCurrentResolution = _G.GetCurrentResolution
 local GetCVarBool = _G.GetCVarBool
+local GetGuildRosterInfo = _G.GetGuildRosterInfo
+local GetGuildRosterLastOnline = _G.GetGuildRosterLastOnline
 local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetNumGuildMembers = _G.GetNumGuildMembers
 local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
 local GetRaidRosterInfo = _G.GetRaidRosterInfo
+local GetRealmName = _G.GetRealmName
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenResolutions = _G.GetScreenResolutions
 local GetScreenWidth = _G.GetScreenWidth
 local GetSpecialization = _G.GetSpecialization
+local GuildControlGetNumRanks = _G.GuildControlGetNumRanks
+local GuildControlGetRankName = _G.GuildControlGetRankName
+local GuildUninvite = _G.GuildUninvite
 local InCombatLockdown = _G.InCombatLockdown
 local IsInInstance = _G.IsInInstance
 local LeaveParty = _G.LeaveParty
@@ -56,79 +65,252 @@ local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitName = _G.UnitName
 
--- Global variables that we don't need to cache, list them here for mikk's FindGlobals script
--- GLOBALS: ToggleHelpFrame, DBM, AchievementFrame, AchievementFrame_LoadUI, AchievementAlertSystem
+-- Global variables that we don"t need to cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: CriteriaAlertSystem, GuildChallengeAlertSystem, InvasionAlertSystem, GarrisonShipFollowerAlertSystem
--- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
+-- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem, GridCreate, KkthnxUIConfig
 -- GLOBALS: ExtraActionBarFrame, ExtraActionButton1, MoneyWonAlertSystem, StorePurchaseAlertSystem
--- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem, GridCreate
+-- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
+-- GLOBALS: KkthnxUIConfigFrame, KkthnxUIData, KkthnxUIConfigPerAccount, KkthnxUI, KkthnxUIConfigShared
+-- GLOBALS: ToggleHelpFrame, DBM, AchievementFrame, AchievementFrame_LoadUI, AchievementAlertSystem
+
+-- TODO: Rewrite these to handle AceConsole-3.0
+
+-- local commands = {}
+
+-- _G.SLASH_KKTHNXUI1 = "/kkthnxui"
+-- _G.SLASH_KKTHNXUI2 = "/kkui"
+-- _G.SLASH_KKTHNXUI3 = "/kui"
+-- _G.SlashCmdList["KKTHNXUI"] = function(msg)
+-- 	msg = string.gsub(msg, "^ +", "")
+-- 	local command, arg = string.split(" ", msg, 2)
+-- 	arg = arg and string.gsub(arg, " ", "")
+
+-- 	if commands[command] then
+-- 		commands[command].func(arg)
+-- 	else
+-- 		K.Print("Unknown command:", command)
+-- 	end
+-- end
+
+-- function K.AddCommand(command, handler, desc)
+-- 	commands[command] = {func = handler, desc = desc or "no description"}
+-- end
+
+-- K.AddCommand("help", function()
+-- 	K.Print(L["LIST_OF_COMMANDS_COLON"])
+
+-- 	for k, v in pairs(commands) do
+-- 		if k ~= "help" and k ~= "" then
+-- 			K.Print("/kkthnxui", k, v.desc)
+-- 		end
+-- 	end
+-- end)
+
+-- ConfigFrame
+function K.KkthnxUIConfig()
+	if (not KkthnxUIConfig) then
+		print(L["KkthnxUI config not found!"])
+		return
+	end
+
+	if (not KkthnxUIConfigFrame) then
+		KkthnxUIConfig:CreateConfigWindow()
+	end
+
+	if KkthnxUIConfigFrame:IsVisible() then
+		KkthnxUIConfigFrame:Hide()
+	else
+		KkthnxUIConfigFrame:Show()
+	end
+end
+K:RegisterChatCommand("cfg", KkthnxUIConfig)
+K:RegisterChatCommand("configui", KkthnxUIConfig)
+
+-- Profiles data/listings
+function SlashCmdList.PROFILES(msg)
+	if (not KkthnxUIData) then return end
+
+	msg = string_lower(msg)
+	if KkthnxUIConfigPerAccount then
+		K.Print(L.Commands.ConfigPerAccount)
+		return
+	end
+	if not msg or msg == "" then
+		K.Print("/profile list")
+		K.Print("/profile #")
+	else
+		if msg == "list" then
+			KkthnxUI.Profiles = {}
+			KkthnxUI.Profiles.Data = {}
+			KkthnxUI.Profiles.Options = {}
+			for Server, Table in pairs(KkthnxUIData) do
+				if not Server then return end
+				for Character, Table in pairs(KkthnxUIData[Server]) do
+					table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
+					table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
+					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."]-["..Character.."]")
+				end
+			end
+		else
+			local CurrentServer = GetRealmName()
+			local CurrentCharacter = UnitName("player")
+			local Profile = tonumber(msg)
+			if not KkthnxUI.Profiles or not KkthnxUI.Profiles.Data[Profile] then
+				K.Print(L.Commands.ProfileNotFound)
+				return
+			end
+			KkthnxUIData[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Data[Profile]
+			KkthnxUIConfigShared[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Options[Profile]
+			ReloadUI()
+		end
+	end
+end
+_G.SLASH_PROFILES1 = "/profile"
+_G.SLASH_PROFILES2 = "/profiles"
+
+function SlashCmdList.MOVEUI(msg)
+	if InCombatLockdown() then
+		print(ERR_NOT_IN_COMBAT)
+		return
+	end
+
+	K.Movers:StartOrStopMoving()
+end
+_G.SLASH_MOVEUI1 = "/moveui"
+_G.SLASH_MOVEUI2 = "/movers"
+
+function SlashCmdList.CLEANGUILD(msg)
+	local minLevel, minDays, minRankIndex = string_split(",", msg)
+	minRankIndex = tonumber(minRankIndex)
+	minLevel = tonumber(minLevel)
+	minDays = tonumber(minDays)
+
+	if not minLevel or not minDays then
+		K.Print("Usage: /cleanguild <minLevel>, <minDays>, [<minRankIndex>]")
+		return
+	end
+
+	if minDays > 31 then
+		K.Print("Maximum days value must be below 32.")
+		return
+	end
+
+	if not minRankIndex then minRankIndex = GuildControlGetNumRanks() - 1 end
+
+	for i = 1, GetNumGuildMembers() do
+		local name, _, rankIndex, level, _, _, note, officerNote, connected, _, classFileName = GetGuildRosterInfo(i)
+		local minLevelx = minLevel
+
+		if classFileName == "DEATHKNIGHT" then
+			minLevelx = minLevelx + 55
+		end
+
+		if not connected then
+			local years, months, days = GetGuildRosterLastOnline(i)
+			if days ~= nil and ((years > 0 or months > 0 or days >= minDays) and rankIndex >= minRankIndex) and note ~= nil and officerNote ~= nil and (level <= minLevelx) then
+				GuildUninvite(name)
+			end
+		end
+	end
+
+	SendChatMessage("Guild Cleanup Results: Removed all guild members below rank "..GuildControlGetRankName(minRankIndex)..", that have a minimal level of "..minLevel..", and have not been online for at least: "..minDays.." days.", "GUILD")
+end
+_G.SLASH_CLEANGUILD1 = "/cleanguild"
+_G.SLASH_CLEANGUILD2 = "/cg"
 
 -- Fixes the issue when the dialog to release spirit does not come up.
-SlashCmdList.RELEASE = function() RetrieveCorpse() RepopMe() end
+SlashCmdList.RELEASE = function()
+	RetrieveCorpse()
+	RepopMe()
+end
 _G.SLASH_RELEASE1 = "/release"
+_G.SLASH_RELEASE2 = "/repop"
 
 -- Ready check
-SlashCmdList.RCSLASH = function() DoReadyCheck() end
+SlashCmdList.RCSLASH = function()
+	DoReadyCheck()
+end
 _G.SLASH_RCSLASH1 = "/rc"
 
 -- Help frame.
-SlashCmdList.TICKET = function() ToggleHelpFrame() end
+SlashCmdList.TICKET = function()
+	ToggleHelpFrame()
+end
 _G.SLASH_TICKET1 = "/gm"
 
+-- Toggle the binding frame incase we unbind esc.
+SlashCmdList.KEYBINDFRAME = function()
+	if not KeyBindingFrame then
+		KeyBindingFrame_LoadUI()
+	end
+	ShowUIPanel(KeyBindingFrame)
+end
+_G.SLASH_KEYBINDFRAME1 = "/binds"
+
+
 -- Fix The CombatLog.
-SlashCmdList.CLEARCOMBAT = function() CombatLogClearEntries() K.Print("|cffff0000Combatlog has been fixed.|r") end
+SlashCmdList["CLEARCOMBAT"] = function()
+	CombatLogClearEntries()
+end
 _G.SLASH_CLEARCOMBAT1 = "/clearcombat"
 _G.SLASH_CLEARCOMBAT2 = "/clfix"
 
 -- Here we can restart wow's engine. could be use for sound issues and more.
-SlashCmdList.GFXENGINE = function() RestartGx() end
+SlashCmdList["GFXENGINE"] = function()
+	RestartGx()
+	StaticPopup_Show("CHANGES_RL")
+end
 _G.SLASH_GFXENGINE1 = "/restartgfx"
 _G.SLASH_GFXENGINE2 = "/fixgfx"
 
 -- Clear all quests in questlog
-SlashCmdList.CLEARQUESTS = function()
-	for i = 1, GetNumQuestLogEntries() do SelectQuestLogEntry(i) SetAbandonQuest() AbandonQuest() end
+SlashCmdList["CLEARQUESTS"] = function()
+	for i = 1, GetNumQuestLogEntries() do
+		SelectQuestLogEntry(i)
+		SetAbandonQuest()
+		AbandonQuest()
+	end
+	print("Quests cleared")
 end
 _G.SLASH_CLEARQUESTS1 = "/clearquests"
-_G.SLASH_CLEARQUESTS2 = "/clquests"
 
 -- KkthnxUI help commands
-SlashCmdList.UIHELP = function()
-	for i, v in ipairs(L.SlashCommand.Help) do print("|cffffff00"..("%s"):format(tostring(v)).."|r") end
+SlashCmdList["UIHELP"] = function()
+	for i, v in ipairs(L.SlashCommand.Help) do
+		print(" ")
+		print("|cffff8000".. L.Help.Title .."|r")
+		print(L.Help.Install)
+		print(L.Help.Datatexts)
+		print(L.Help.Config)
+		print(L.Help.Move)
+		print(L.Help.Test)
+		print(L.Help.Profile)
+		print(" ")
+		print("|cffffff00"..("%s"):format(tostring(v)).."|r")
+		print(" ")
+	end
 end
 _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
-local function SetUIScale()
-	if InCombatLockdown() then return end
+function K.SetUIScale()
+	if InCombatLockdown() or C["General"].AutoScale then return end
 
 	local SetUIScale = GetCVarBool("uiScale")
 	if not SetUIScale then
-		SetCVar("uiScale", 768/string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+		SetCVar("uiScale", 768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+		StaticPopup_Show("CHANGES_RL")
 	end
-
-	ReloadUI()
 end
 
-StaticPopupDialogs.SET_UISCALE = {
-	text = L.Popup.SetUIScale,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = SetUIScale,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3,
-}
-SlashCmdList.SETUISCALE = function()
-	if InCombatLockdown() then return end
-
+SlashCmdList["SETUISCALE"] = function()
 	StaticPopup_Show("SET_UISCALE")
 end
 _G.SLASH_SETUISCALE1 = "/uiscale"
+_G.SLASH_SETUISCALE2 = "/setscale"
 
 -- Disband party or raid (by Monolit)
-function _G.DisbandRaidGroup()
+function K.DisbandRaidGroup()
 	if InCombatLockdown() then return end
 
 	if UnitInRaid("player") then
@@ -141,7 +323,7 @@ function _G.DisbandRaidGroup()
 		end
 	else
 		SendChatMessage(L.Info.Disband, "PARTY")
-		for i = MAX_PARTY_MEMBERS, 1, -1 do
+		for i = MAX_PARTY_MEMBERS, 1, - 1 do
 			if UnitExists("party"..i) then
 				UninviteUnit(UnitName("party"..i))
 			end
@@ -150,32 +332,26 @@ function _G.DisbandRaidGroup()
 	LeaveParty()
 end
 
-StaticPopupDialogs.DISBAND_RAID = {
-	text = L.Popup.DisbandRaid,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = _G.DisbandRaidGroup,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
-
-SlashCmdList.GROUPDISBAND = function()
+SlashCmdList["GROUPDISBAND"] = function()
 	StaticPopup_Show("DISBAND_RAID")
 end
 _G.SLASH_GROUPDISBAND1 = "/rd"
 
+SlashCmdList["DELETELOOMS"] = function(msg)
+	StaticPopup_Show("DELETELOOMS_CONFIRM")
+end
+_G.SLASH_DELETELOOMS1 = "/deletelooms"
+
 -- Enable lua error by command
 function SlashCmdList.LUAERROR(msg)
 	msg = string_lower(msg)
-	if(msg == "on") then
+	if (msg == "on") then
 		DisableAllAddOns()
 		EnableAddOn("KkthnxUI")
 		EnableAddOn("KkthnxUI_Config")
 		SetCVar("scriptErrors", 1)
 		ReloadUI()
-	elseif(msg == "off") then
+	elseif (msg == "off") then
 		SetCVar("scriptErrors", 0)
 		K.Print("|cffff0000Lua errors off.|r")
 	else
@@ -224,8 +400,28 @@ end
 _G.SLASH_SPEC1 = "/ss"
 _G.SLASH_SPEC2 = "/spec"
 
+SlashCmdList.VOLUME = function(value)
+	local numValue = tonumber(value)
+	if numValue and 0 <= numValue and numValue <= 1 then
+		SetCVar("Sound_MasterVolume", numValue)
+	end
+end
+_G.SLASH_VOLUME1 = "/vol"
+
+SlashCmdList.FPS = function(value)
+	local numValue = tonumber(value)
+	if numValue and 0 <= numValue then
+		SetCVar("maxFPS", numValue)
+	end
+end
+_G.SLASH_FPS1 = "/fps"
+
 -- Deadly boss mods testing.
-SlashCmdList.DBMTEST = function() if K.CheckAddOn("DBM-Core") then DBM:DemoMode() end end
+SlashCmdList.DBMTEST = function()
+	if K.IsAddOnEnabled("DBM-Core") then
+		DBM:DemoMode()
+	end
+end
 _G.SLASH_DBMTEST1 = "/dbmtest"
 
 -- Clear chat
@@ -238,12 +434,12 @@ SlashCmdList.CLEARCHAT = function(cmd)
 		end
 	end
 end
-_G.SLASH_CLEARCHAT1 = "/cc"
-_G.SLASH_CLEARCHAT2 = "/clearchat"
+_G.SLASH_CLEARCHAT1 = "/clearchat"
+_G.SLASH_CLEARCHAT2 = "/chatclear"
 
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
-	PlaySound(17316)
+	PlaySound("LFG_Rewards")
 	if not AchievementFrame then
 		AchievementFrame_LoadUI()
 	end
@@ -319,7 +515,7 @@ function GridCreate()
 	Grid.BoxSize = BoxSize
 	Grid:SetAllPoints(UIParent)
 
-	local Size = K.Scale(2)
+	local Size = 2
 	local Width = GetScreenWidth()
 	local Ratio = Width / GetScreenHeight()
 	local Height = GetScreenHeight() * Ratio
@@ -342,36 +538,43 @@ function GridCreate()
 	do
 		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
 		Tx:SetColorTexture(1, 0, 0, 0.5)
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 + Size / 2))
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, - (Height / 2) + (Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, - (Height / 2 + Size / 2))
 	end
 
 	for i = 1, math_floor((Height / 2) / HStep) do
 		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
 		Tx:SetColorTexture(0, 0, 0, 0.5)
 
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2 + i * HStep) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 + i * HStep + Size / 2))
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, - (Height / 2 + i * HStep) + (Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, - (Height / 2 + i * HStep + Size / 2))
 
 		Tx = Grid:CreateTexture(nil, "BACKGROUND")
 		Tx:SetColorTexture(0, 0, 0, 0.5)
 
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, -(Height / 2 - i * HStep) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, -(Height / 2 - i * HStep + Size / 2))
+		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, - (Height / 2 - i * HStep) + (Size / 2))
+		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, - (Height / 2 - i * HStep + Size / 2))
 	end
 end
 
-SlashCmdList.TEST_UI = function(msg)
-	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
-	if C.Unitframe.Enable == true then
+SlashCmdList.TEST_UI = function()
+	if InCombatLockdown() then
+		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+		return
+	end
+
+	if C["Unitframe"].Enable then
 		SlashCmdList.TEST_UF()
 	end
-	if C.Announcements.PullCountdown == true then
+
+	if C["Announcements"].PullCountdown then
 		SlashCmdList.PULLCOUNTDOWN()
 	end
-	if C.Loot.GroupLoot == true then
+
+	if C["Loot"].GroupLoot then
 		SlashCmdList.TESTROLL()
 	end
+
 	SlashCmdList.DBMTEST()
 	SlashCmdList.TEST_EXTRABUTTON()
 	SlashCmdList.TEST_ACHIEVEMENT()
@@ -380,14 +583,13 @@ end
 _G.SLASH_TEST_UI1 = "/testui"
 
 -- Reduce video settings to optimize performance
-local function BoostUI()
+function K.BoostUI()
 	SetCVar("SSAO", 0)
 	SetCVar("ShadowTextureSize", 1024)
 	SetCVar("environmentDetail", 60)
 	SetCVar("farclip", 500)
 	SetCVar("groundeffectdensity", 16)
 	SetCVar("groundeffectdist", 1)
-	SetCVar("hwPCF", 1)
 	SetCVar("hwPCF", 1)
 	SetCVar("reflectionMode", 0)
 	SetCVar("shadowMode", 0)
@@ -396,22 +598,13 @@ local function BoostUI()
 	SetCVar("timingmethod", 1)
 	SetCVar("waterDetail", 0)
 	SetCVar("weatherDensity", 0)
-	RestartGx()
+	StaticPopup_Show("BOOST_UI")
+	StaticPopup_Show("CHANGES_RL")
 end
-
--- Add a warning so we do not piss people off.
-StaticPopupDialogs.BOOST_UI = {
-	text = L.Popup.BoostUI,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = BoostUI,
-	showAlert = true,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
 
 _G.SLASH_BOOSTUI1 = "/boostfps"
 _G.SLASH_BOOSTUI2 = "/boostui"
-SlashCmdList.BOOSTUI = function() StaticPopup_Show("BOOST_UI") end
+SlashCmdList.BOOSTUI = function()
+	StaticPopup_Show("BOOST_UI")
+	StaticPopup_Show("CHANGES_RL")
+end

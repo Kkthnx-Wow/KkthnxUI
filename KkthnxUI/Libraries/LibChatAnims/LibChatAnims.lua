@@ -1,3 +1,4 @@
+
 local MAJOR, MINOR = "LibChatAnims", 2 -- Bump minor on changes
 local LCA = LibStub:NewLibrary(MAJOR, MINOR)
 if not LCA then return end -- No upgrade needed
@@ -195,3 +196,4 @@ FCF_StopAlertFlash = function(chatFrame)
 	FCFTab_UpdateAlpha(chatFrame)
 	FCFDockOverflowButton_UpdatePulseState(GENERAL_CHAT_DOCK.overflowButton)
 end
+

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Chat.MessageFilter ~= true then return end
+if C["Chat"].MessageFilter ~= true then return end
 
 -- Wow Lua
 local _G = _G
@@ -17,6 +17,14 @@ local UnitName = UnitName
 -- GLOBALS: DUEL_WINNER_KNOCKOUT, DUEL_WINNER_RETREAT, DRUNK_MESSAGE_ITEM_OTHER1, DRUNK_MESSAGE_ITEM_OTHER2
 -- GLOBALS: ERR_PET_SPELL_UNLEARNED_S, ERR_LEARN_ABILITY_S, ERR_LEARN_SPELL_S, ERR_LEARN_PASSIVE_S
 -- GLOBALS: ERR_SPELL_UNLEARNED_S, ERR_CHAT_THROTTLED
+
+local REPEAT_EVENTS = {
+	"CHAT_MSG_SAY",
+	"CHAT_MSG_YELL",
+	"CHAT_MSG_CHANNEL",
+	"CHAT_MSG_EMOTE",
+	"CHAT_MSG_TEXT_EMOTE",
+}
 
 -- Main filters
 ChatFrame_AddMessageEventFilter("CHAT_MSG_AFK", function() return true end)
@@ -74,5 +82,8 @@ local function RepeatMessageFilter(self, event, text, sender)
 	self.repeatCount = self.repeatCount + 1
 end
 
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", RepeatMessageFilter)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", RepeatMessageFilter)
+function K:OnEnable()
+	for _, event in ipairs(REPEAT_EVENTS) do
+		ChatFrame_RemoveMessageEventFilter(event, RepeatMessageFilter)
+	end
+end

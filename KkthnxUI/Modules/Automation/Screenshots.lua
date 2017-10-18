@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Automation.ScreenShot ~= true then return end
+if C["Automation"].ScreenShot ~= true then return end
 
 -- Wow API
 local C_Timer_After = C_Timer.After

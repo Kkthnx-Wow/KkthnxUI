@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C.Misc.AFKCamera ~= true then return end
+local AFK = K:NewModule("AFK", "AceEvent-3.0", "AceTimer-3.0")
+
+-- Sourced: ElvUI, BenikUI v3 (Elvz, Benik, Kkthnx)
 
 -- WoW Lua
 local _G = _G
@@ -52,8 +54,6 @@ local UnitRace = _G.UnitRace
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, PVEFrame, ChatTypeInfo, NONE, KkthnxUIAFKPlayerModel, date
 -- GLOBALS: TIMEMANAGER_TOOLTIP_LOCALTIME, TIMEMANAGER_TOOLTIP_REALMTIME
-
-local AFK = LibStub("AceAddon-3.0"):NewAddon("AFK", "AceEvent-3.0", "AceTimer-3.0")
 
 local stats = {
 	60,		-- Total deaths
@@ -123,14 +123,14 @@ local function createTime()
 	local realmTime = string_format("|cffb3b3b3%s|r %d:%02d|cffb3b3b3%s|r", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute, ampm)
 	local realmTime24 = string_format("|cffb3b3b3%s|r %02d:%02d", TIMEMANAGER_TOOLTIP_REALMTIME, sHour, sMinute)
 
-	if C.DataText.LocalTime then
-		if C.DataText.Time24Hr then
+	if C["DataText"].LocalTime then
+		if C["DataText"].Time24Hr then
 			return localTime24
 		else
 			return localTime
 		end
 	else
-		if C.DataText.Time24Hr then
+		if C["DataText"].Time24Hr then
 			return realmTime24
 		else
 			return realmTime
@@ -139,28 +139,28 @@ local function createTime()
 end
 
 local monthAbr = {
-	[1] = L.AFKScreen.Jan,
-	[2] = L.AFKScreen.Feb,
-	[3] = L.AFKScreen.Mar,
-	[4] = L.AFKScreen.Apr,
-	[5] = L.AFKScreen.May,
-	[6] = L.AFKScreen.Jun,
-	[7] = L.AFKScreen.Jul,
-	[8] = L.AFKScreen.Aug,
-	[9] = L.AFKScreen.Sep,
-	[10] = L.AFKScreen.Oct,
-	[11] = L.AFKScreen.Nov,
-	[12] = L.AFKScreen.Dec,
+	[1] = L.Miscellaneous.Jan,
+	[2] = L.Miscellaneous.Feb,
+	[3] = L.Miscellaneous.Mar,
+	[4] = L.Miscellaneous.Apr,
+	[5] = L.Miscellaneous.May,
+	[6] = L.Miscellaneous.Jun,
+	[7] = L.Miscellaneous.Jul,
+	[8] = L.Miscellaneous.Aug,
+	[9] = L.Miscellaneous.Sep,
+	[10] = L.Miscellaneous.Oct,
+	[11] = L.Miscellaneous.Nov,
+	[12] = L.Miscellaneous.Dec,
 }
 
 local daysAbr = {
-	[1] = L.AFKScreen.Sun,
-	[2] = L.AFKScreen.Mon,
-	[3] = L.AFKScreen.Tue,
-	[4] = L.AFKScreen.Wed,
-	[5] = L.AFKScreen.Thu,
-	[6] = L.AFKScreen.Fri,
-	[7] = L.AFKScreen.Sat,
+	[1] = L.Miscellaneous.Sun,
+	[2] = L.Miscellaneous.Mon,
+	[3] = L.Miscellaneous.Tue,
+	[4] = L.Miscellaneous.Wed,
+	[5] = L.Miscellaneous.Thu,
+	[6] = L.Miscellaneous.Fri,
+	[7] = L.Miscellaneous.Sat,
 }
 
 -- Create Date
@@ -171,7 +171,7 @@ end
 
 -- Create Random Stats
 local function createStats()
-	local id = stats[math_random( #stats )]
+	local id = stats[math_random(#stats)]
 	local _, name = GetAchievementInfo(id)
 	local result = GetStatistic(id)
 	if result == "--" then result = NONE end
@@ -199,19 +199,6 @@ function AFK:UpdateStatMessage()
 	local createdStat = createStats()
 	self.AFKMode.statMsg.info:SetText(createdStat)
 	K.UIFrameFadeIn(self.AFKMode.statMsg.info, 1, 0, 1)
-end
-
--- Simple-Timer for Stats
-local showTime = 5
-local total = 0
-local function onUpdate(self, elapsed)
-	total = total + elapsed
-	if total >= showTime then
-		local createdStat = createStats()
-		self:SetText(createdStat)
-		self:FadeIn()
-		total = 0
-	end
 end
 
 local CAMERA_SPEED = 0.035
@@ -261,7 +248,7 @@ function AFK:SetAFK(status)
 			local guildName, guildRankName = GetGuildInfo("player")
 			self.AFKMode.bottom.guild:SetFormattedText("%s - %s", guildName, guildRankName)
 		else
-			self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
+			self.AFKMode.bottom.guild:SetText(L.Miscellaneous.No_Guild)
 		end
 
 		self.AFKMode.bottom.model.curAnimation = "wave"
@@ -333,7 +320,7 @@ function AFK:OnEvent(event, ...)
 end
 
 function AFK:Toggle()
-	if (C.Misc.AFKCamera) then
+	if (C["Misc"].AFKCamera) then
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "OnEvent")
 		self:RegisterEvent("PLAYER_REGEN_DISABLED", "OnEvent")
 		self:RegisterEvent("LFG_PROPOSAL_SHOW", "OnEvent")
@@ -368,7 +355,9 @@ function AFK:LoopAnimations()
 	end
 end
 
-function AFK:Initialize()
+function AFK:OnEnable()
+	if C["Misc"].AFKCamera ~= true then return end
+
 	local level = UnitLevel("player")
 	local race = UnitRace("player")
 	local localizedClass = UnitClass("player")
@@ -386,8 +375,8 @@ function AFK:Initialize()
 	-- Create Top frame
 	self.AFKMode.top = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.top:SetFrameLevel(0)
-	self.AFKMode.top:SetTemplate("Transparent")
-	self.AFKMode.top:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
+	self.AFKMode.top:SetTemplate("Transparent", false)
+	self.AFKMode.top:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	self.AFKMode.top:ClearAllPoints()
 	self.AFKMode.top:SetPoint("TOP", self.AFKMode, "TOP", 0, 2)
 	self.AFKMode.top:SetWidth(GetScreenWidth() + (2 * 2))
@@ -404,7 +393,8 @@ function AFK:Initialize()
 
 	-- Server/Local Time text
 	self.AFKMode.top.time = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.top.time:SetFont(C.Media.Font, 20, C.Media.Font_Style)
+	self.AFKMode.top.time:SetFont(C["Media"].Font, 20, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.top.time:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.top.time:SetText("")
 	self.AFKMode.top.time:SetPoint("RIGHT", self.AFKMode.top, "RIGHT", -20, 0)
 	self.AFKMode.top.time:SetJustifyH("LEFT")
@@ -412,7 +402,8 @@ function AFK:Initialize()
 
 	-- Date text
 	self.AFKMode.top.date = self.AFKMode.top:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.top.date:SetFont(C.Media.Font, 20, C.Media.Font_Style)
+	self.AFKMode.top.date:SetFont(C["Media"].Font, 20, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.top.date:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.top.date:SetText("")
 	self.AFKMode.top.date:SetPoint("LEFT", self.AFKMode.top, "LEFT", 20, 0)
 	self.AFKMode.top.date:SetJustifyH("RIGHT")
@@ -420,8 +411,8 @@ function AFK:Initialize()
 
 	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.bottom:SetFrameLevel(0)
-	self.AFKMode.bottom:SetTemplate("Transparent")
-	self.AFKMode.bottom:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
+	self.AFKMode.bottom:SetTemplate("Transparent", false)
+	self.AFKMode.bottom:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -2)
 	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2))
 	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))
@@ -439,14 +430,16 @@ function AFK:Initialize()
 
 	-- Display our UI Name
 	self.AFKMode.bottom.kkthnxui = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.kkthnxui:SetFont(C.Media.Font, 30)
+	self.AFKMode.bottom.kkthnxui:SetFont(C["Media"].Font, 30, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.bottom.kkthnxui:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.bottom.kkthnxui:SetText(K.Title)
 	self.AFKMode.bottom.kkthnxui:SetPoint("RIGHT", self.AFKMode.bottom, "RIGHT", -25, 8)
-	self.AFKMode.bottom.kkthnxui:SetTextColor(60/255, 155/255, 237/255)
+	self.AFKMode.bottom.kkthnxui:SetTextColor(68/255, 136/255, 255/255)
 
 	-- Display our UI Version
 	self.AFKMode.bottom.ktext = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.ktext:SetFont(C.Media.Font, 17)
+	self.AFKMode.bottom.ktext:SetFont(C["Media"].Font, 17, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.bottom.ktext:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.bottom.ktext:SetFormattedText("v%s", K.Version)
 	self.AFKMode.bottom.ktext:SetPoint("TOP", self.AFKMode.bottom.kkthnxui, "BOTTOM")
 	self.AFKMode.bottom.ktext:SetTextColor(0.7, 0.7, 0.7)
@@ -479,7 +472,8 @@ function AFK:Initialize()
 
 	-- Random stats frame
 	self.AFKMode.statMsg.info = self.AFKMode.statMsg:CreateFontString(nil, 'OVERLAY')
-	self.AFKMode.statMsg.info:SetFont(C.Media.Font, 18, "OUTLINE")
+	self.AFKMode.statMsg.info:SetFont(C["Media"].Font, 18, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.statMsg.info:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.statMsg.info:SetPoint("CENTER", self.AFKMode.statMsg, "CENTER", 0, -2)
 	self.AFKMode.statMsg.info:SetText(string_format("|cffb3b3b3%s|r", PAPERDOLL_SIDEBAR_STATS))
 	self.AFKMode.statMsg.info:SetJustifyH("CENTER")
@@ -501,30 +495,33 @@ function AFK:Initialize()
 	self.AFKMode.bottom.faction:SetSize(size, size)
 
 	self.AFKMode.bottom.name = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.name:SetFont(C.Media.Font, 20)
+	self.AFKMode.bottom.name:SetFont(C["Media"].Font, 20, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.bottom.name:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.bottom.name:SetFormattedText("%s - %s".. "\n" .."%s %s %s %s %s", K.Name, K.Realm, LEVEL, level, race, spec, localizedClass)
 	self.AFKMode.bottom.name:SetPoint("TOP", self.AFKMode.bottom.factionb, "BOTTOM", 0, 5)
 	self.AFKMode.bottom.name:SetTextColor(K.Color.r, K.Color.g, K.Color.b)
 
 	self.AFKMode.bottom.guild = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.guild:SetFont(C.Media.Font, 18)
-	self.AFKMode.bottom.guild:SetText(L.AFKScreen.NoGuild)
+	self.AFKMode.bottom.guild:SetFont(C["Media"].Font, 18, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.bottom.guild:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
+	self.AFKMode.bottom.guild:SetText(L.Miscellaneous.No_Guild)
 	self.AFKMode.bottom.guild:SetPoint("TOP", self.AFKMode.bottom.name, "BOTTOM", 0, -6)
 	self.AFKMode.bottom.guild:SetJustifyH("CENTER")
 	self.AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
 
 	self.AFKMode.bottom.time = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
-	self.AFKMode.bottom.time:SetFont(C.Media.Font, 30)
+	self.AFKMode.bottom.time:SetFont(C["Media"].Font, 30, C["DataText"].Outline and "OUTLINE" or "")
+	self.AFKMode.bottom.time:SetShadowOffset(C["DataText"].Outline and 0 or 1.25, C["DataText"].Outline and -0 or -1.25)
 	self.AFKMode.bottom.time:SetText("00:00")
 	self.AFKMode.bottom.time:SetPoint("LEFT", self.AFKMode.bottom, "LEFT", 25, 0)
-	self.AFKMode.bottom.time:SetTextColor(60/255, 155/255, 237/255)
+	self.AFKMode.bottom.time:SetTextColor(68/255, 136/255, 255/255)
 
 	-- NPC Model
 	self.AFKMode.bottom.npcHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.npcHolder:SetSize(150, 150)
-	self.AFKMode.bottom.npcHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 130)
+	self.AFKMode.bottom.npcHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 220)
 	self.AFKMode.bottom.npc = CreateFrame("PlayerModel", "KkthnxUIAFKNPCModel", self.AFKMode.bottom.npcHolder)
-	self.AFKMode.bottom.npc:SetCreature(85009)
+	self.AFKMode.bottom.npc:SetCreature(34694)
 	self.AFKMode.bottom.npc:SetPoint("CENTER", self.AFKMode.bottom.npcHolder, "CENTER")
 	self.AFKMode.bottom.npc:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
 	self.AFKMode.bottom.npc:SetCamDistanceScale(6)
@@ -539,20 +536,26 @@ function AFK:Initialize()
 	self.AFKMode.bottom.model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) -- YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame
 	self.AFKMode.bottom.model:SetCamDistanceScale(4.5) -- Since the model frame is huge, we need to zoom out quite a bit
 	self.AFKMode.bottom.model:SetFacing(6)
-	self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
-		local timePassed = GetTime() - self.startTime
-		if(timePassed > self.duration) and self.isIdle ~= true then
-			self:SetAnimation(0)
-			self.isIdle = true
-			AFK.animTimer = AFK:ScheduleTimer("LoopAnimations", self.idleDuration)
-		end
-	end)
+	if K.WoWBuild >= 23623 then --7.2
+		self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
+			local timePassed = GetTime() - self.startTime
+			if(timePassed > self.duration) and self.isIdle ~= true then
+				self:SetAnimation(0)
+				self.isIdle = true
+				AFK.animTimer = AFK:ScheduleTimer("LoopAnimations", self.idleDuration)
+			end
+		end)
+	else
+		self.AFKMode.bottom.model:SetScript("OnUpdateModel", function(self)
+			local timePassed = GetTime() - self.startTime
+			if(timePassed > self.duration) and self.isIdle ~= true then
+				self:SetAnimation(0)
+				self.isIdle = true
+				AFK.animTimer = AFK:ScheduleTimer("LoopAnimations", self.idleDuration)
+			end
+		end)
+	end
+
 	self:Toggle()
 	self.isActive = false
 end
-
-local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", function()
-	AFK:Initialize()
-end)

@@ -1,22 +1,29 @@
-local K, C, L = unpack(select(2, ...))
+local _G = _G
+
+local K, C = _G.unpack(_G.select(2, ...))
+
+C["Developer"] = {
+	["Debug"] = false,
+}
 
 -- Actionbar
 C["ActionBar"] = {
-	["BottomBars"] = 3,
-	["ButtonSize"] = 36,
-	["ButtonSpace"] = 4,
+	["AddNewSpells"] = true,
+	["BottomBars"] = 2,
+	["ButtonSize"] = 34,
+	["ButtonSpace"] = 6,
 	["Enable"] = true,
 	["EquipBorder"] = false,
 	["Grid"] = true,
 	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
-	["OutOfMana"] = {25/255, 77/255, 255/255},
-	["OutOfRange"] = {204/255, 26/255, 26/255},
+	["OutOfMana"] = {0.5, 0.5, 1.0},
+	["OutOfRange"] = {0.8, 0.1, 0.1},
 	["PetBarHide"] = false,
 	["PetBarHorizontal"] = false,
 	["PetBarMouseover"] = false,
-	["RightBars"] = 2,
+	["RightBars"] = 1,
 	["RightBarsMouseover"] = true,
 	["SplitBars"] = false,
 	["StanceBarHide"] = false,
@@ -27,59 +34,67 @@ C["ActionBar"] = {
 
 -- Announcements
 C["Announcements"] = {
-	["Interrupt"] = false,
 	["PullCountdown"] = true,
 	["SaySapped"] = false,
+	["Interrupt"] = {
+		["Options"] = {
+			["Disabled"] = "NONE",
+			["Emote Chat"] = "EMOTE",
+			["Party Chat"] = "PARTY",
+			["Raid Chat Only"] = "RAID_ONLY",
+			["Raid Chat"] = "RAID",
+			["Say Chat"] = "SAY",
+		},
+		["Value"] = "PARTY",
+	},
 }
 
 -- Automation
 C["Automation"] = {
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
-	["DeclineDuel"] = false,
-	["Resurrection"] = false,
+	["AutoRelease"] = false,
+	["AutoResurrect"] = false,
+	["AutoResurrectCombat"] = true,
+	["AutoResurrectThank"] = false,
+	["DeclinePetDuel"] = false,
+	["DeclinePvPDuel"] = false,
 	["ScreenShot"] = false,
 }
 
--- Bag
 C["Bags"] = {
-	["ButtonSize"] = 32,
+	["BagSize"] = 32,
+	["BagWidth"] = 406,
+	["BagWidth"] = 406,
+	["BankSize"] = 34,
+	["ClearSearchOnClose"] = true,
+	["CountFontColor"] = {1, 1, 1},
+	["DisableBagSort"] = false,
+	["DisableBankSort"] = false,
 	["Enable"] = true,
-	["InsertLeftToRight"] = true,
-	["ItemsPerRow"] = 11,
-	["SortRightToLeft"] = false,
-	["Spacing"] = 4,
-}
-
--- Blizzard
-C["Blizzard"] = {
-	["ColorTextures"] = false,
-	["RaidTools"] = true,
-	["ReplaceBlizzardFonts"] = true,
-	["TalkingHeadScale"] = 1,
-	["TexturesColor"] = {0.31, 0.31, 0.31},
+	["ItemLevel"] = false,
+	["ItemLevelThreshold"] = 1,
+	["JunkIcon"] = true,
+	["ReverseLoot"] = false,
+	["UpgradeIcon"] = true,
 }
 
 -- Buffs & Debuffs
 C["Auras"] = {
 	["Enable"] = true,
-	["Consolidate"] = false,
-	["Flash"] = false,
-	["HideBuffs"] = false,
-	["HideDebuffs"] = false,
-	["Animation"] = false,
-	["BuffsPerRow"] = 12,
+	["ButtonSize"] = 30,
+	["ButtonSpace"] = 6,
+	["ButtonPerRow"] = 12,
 }
 
 -- Chat
 C["Chat"] = {
-	["BubbleBackdrop"] = false,
-	["DamageMeterSpam"] = false,
 	["Enable"] = true,
 	["Fading"] = true,
+	["WhisperSound"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
-	["Height"] = 150,
+	["Height"] = 140,
 	["LinkBrackets"] = true,
 	["LinkColor"] = {0.08, 1, 0.36},
 	["MessageFilter"] = false,
@@ -88,51 +103,40 @@ C["Chat"] = {
 	["SpamFilter"] = false,
 	["TabsMouseover"] = true,
 	["TabsOutline"] = false,
-	["WhispSound"] = true,
-	["Width"] = 370,
+	["Width"] = 400,
+	["BubbleBackdrop"] = {
+		["Options"] = {
+			["Show Backdrop"] = "Backdrop",
+			["Hide Backdrop"] = "NoBackdrop",
+			["Disabled"] = "Disabled",
+		},
+		["Value"] = "Backdrop",
+	},
 }
 
 -- Cooldown
 C["Cooldown"] = {
+	["Days"] = {0.4, 0.4, 1},
 	["Enable"] = true,
-	["FontSize"] = 18,
+	["Expiring"] = {1, 0, 0},
+	["ExpiringDuration"] = 3.5,
+	["FontSize"] = 17,
+	["Hours"] = {0.4, 1, 1},
+	["Minutes"] = {1, 1, 1},
+	["Seconds"] = {1, 1, 0},
 	["Threshold"] = 3,
 }
 
 -- DataBars
 C["DataBars"] = {
-	-- Artifact
-	["ArtifactColor"] = {.901, .8, .601},
-	["ArtifactEnable"] = true,
-	["ArtifactFade"] = false,
-	["ArtifactHeight"] = 10,
-	["ArtifactWidth"] = 142,
-	-- Experience
-	["ExperienceColor"] = {0, 0.4, 1, .8},
-	["ExperienceEnable"] = true,
-	["ExperienceFade"] = false,
-	["ExperienceHeight"] = 10,
-	["ExperienceRestedColor"] = {1, 0, 1, 0.2},
-	["ExperienceWidth"] = 142,
-	-- Honor
-	["HonorColor"] = {240/255, 114/255, 65/255},
-	["HonorEnable"] = true,
-	["HonorFade"] = false,
-	["HonorHeight"] = 10,
-	["HonorWidth"] = 142,
-	-- Reputation
-	["ReputationEnable"] = true,
-	["ReputationFade"] = false,
-	["ReputationHeight"] = 10,
-	["ReputationWidth"] = 142,
-	-- Info text for all bars
-	["InfoText"] = false,
+
 }
 
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
 	["LocalTime"] = true,
+	["Outline"] = false,
 	["System"] = true,
 	["Time24Hr"] = false,
 }
@@ -148,25 +152,35 @@ C["Error"] = {
 C["General"] = {
 	["AutoScale"] = true,
 	["BubbleFontSize"] = 12,
+	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
+	--["Font"] = "KkthnxUI Font",
 	["FontSize"] = 12,
+	["ReplaceBlizzardFonts"] = true,
 	["SpellTolerance"] = false,
 	["TaintLog"] = false,
+	["TalkingHeadScale"] = 1,
+	-- ["Texture"] = "KkthnxUI Texture",
+	["TexturesColor"] = {0.31, 0.31, 0.31},
 	["ToggleButton"] = true,
 	["UIScale"] = 0.71111111111111,
-	["UseBlizzardFonts"] = false,
-	["UseFlatTextures"] = false,
-	["WelcomeMessage"] = true,
+	["NumberPrefixStyle"] = {
+		["Options"] = {
+			["Metric"] = "METRIC",
+			["Chinese"] = "CHINESE",
+			["Korean"] = "KOREAN",
+			["German"] = "GERMAN",
+			["Default"] = "DEFAULT",
+		},
+		["Value"] = "Default",
+	},
 }
 
 -- Loot
 C["Loot"] = {
-	["ConfirmDisenchant"] = false,
-	["AutoGreed"] = false,
-	["IconSize"] = 30,
+	["AutoRoll"] = false,
 	["Enable"] = true,
 	["GroupLoot"] = true,
-	["Width"] = 222,
 }
 
 -- Minimap
@@ -174,34 +188,31 @@ C["Minimap"] = {
 	["Calendar"] = true,
 	["CollectButtons"] = true,
 	["Enable"] = true,
-	["FadeButtons"] = true,
-	["Garrison"] = true,
+	["InstanceOnlyNumber"] = false,
 	["ResetZoom"] = false,
-	["ResetZoomTime"] = 3,
-	["Size"] = 150,
+	["ResetZoomTime"] = 4,
+	["Size"] = 170,
 }
 
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
 	["AutoRepair"] = true,
-	["AutoSellGrays"] = true,
-	["BGSpam"] = false,
+	["AutoReward"] = false,
+	["AutoSell"] = true,
+	["BattlegroundSpam"] = false,
 	["ColorPicker"] = false,
-	["CombatState"] = false,
 	["EnhancedPvpMessages"] = false,
 	["ItemLevel"] = false,
-	["KillingBlow"] = false,
+	-- ["KillingBlow"] = false,
 	["NoBanner"] = false,
-	["PvPEmote"] = false,
-	["SellMisc"] = true,
+	-- ["PvPEmote"] = false,
 	["SlotDurability"] = false,
-	["UseGuildRepair"] = false,
+	["UseGuildRepairFunds"] = false,
 }
 
 -- Nameplates
 C["Nameplates"] = {
-	["AdditionalSize"] = 4,
 	["AurasSize"] = 26,
 	["BadColor"] = {1, 0, 0},
 	["CastbarName"] = true,
@@ -210,24 +221,27 @@ C["Nameplates"] = {
 	["Distance"] = 40,
 	["Enable"] = true,
 	["EnhancedThreat"] = false,
+	["FontSize"] = 13,
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealerIcon"] = false,
 	["HealthValue"] = true,
-	["Height"] = 16,
+	["Height"] = 18,
 	["NameAbbreviate"] = true,
-	["FontSize"] = 12,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
+	["Outline"] = false,
+	["SelectedScale"] = 1.180,
 	["Smooth"] = false,
+	["SmoothSpeed"] = 3,
 	["TotemIcons"] = false,
 	["TrackAuras"] = true,
-	["Width"] = 130,
+	["Width"] = 140,
 }
 
 -- Skins
 C["Skins"] = {
+	["Bagnon"] = false,
 	["BigWigs"] = false,
-	["ChatBubble"] = true,
 	["DBM"] = false,
 	["Recount"] = false,
 	["Skada"] = false,
@@ -237,28 +251,30 @@ C["Skins"] = {
 
 -- Tooltip
 C["Tooltip"] = {
-	["Cursor"] = false,
+	["CursorAnchor"] = false,
 	["Enable"] = true,
-	["HealthValue"] = true,
-	["ItemCount"] = false,
-	["ItemIcon"] = false,
-	["SpellID"] = false,
-	["Rank"] = true,
-	["Talents"] = false,
+	["FontOutline"] = false,
+	["FontSize"] = 12,
+	["GuildRanks"] = false,
+	["HealthbarHeight"] = 10,
+	["HealthBarText"] = true,
+	["Icons"] = false,
+	["InspectInfo"] = true,
+	["ItemQualityBorder"] = true,
+	["PlayerTitles"] = false,
+	["SpellID"] = true,
 }
 
 -- Unitframe
 C["Unitframe"] = {
-	["CastbarHeight"] = 18,
+	["CastbarHeight"] = 20,
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
 	["CastbarTicks"] = false,
-	["CastbarWidth"] = 210,
+	["CastbarWidth"] = 214,
 	["CastClassColor"] = true,
-	["CastUnitReaction"] = true,
-	["ClassPortraits"] = true,
-	["ColorHealth"] = true,
+	["CastReactionColor"] = true,
 	["CombatText"] = true,
 	["Enable"] = true,
 	["GCDBar"] = false,
@@ -266,69 +282,25 @@ C["Unitframe"] = {
 	["Party"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
-	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
-	["Style"] = "fat",
-	["ThreatGlow"] = true,
-	["ThreatValue"] = false,
+	["SmoothSpeed"] = 3,
+	-- Portrait Styles 3
+	["PortraitStyle"] = {
+		["Options"] = {
+			["3D Portraits"] = "ThreeDPortraits",
+			["Class Portraits"] = "ClassPortraits",
+			["Default Portraits"] = "DefaultPortraits",
+		},
+		["Value"] = "DefaultPortraits",
+	},
 }
 
+-- We keep this private. For now.
 C["UnitframePlugins"] = {
-	["AdditionalPower"] = true,
-	["ArcaneCharges"] = true,
-	["HarmonyBar"] = true,
-	["HolyPowerBar"] = true,
-	["InsanityBar"] = true,
-	["RuneFrame"] = true,
-	["ShardsBar"] = true,
-	["StaggerBar"] = true,
-	["TotemsFrame"] = true,
 	["OORAlpha"] = 0.60,
-	-- Unitframe Text
-	["player"] = {
-		["HealthTag"] = "NUMERIC",
-		["PowerTag"] = "PERCENT",
-	},
-	["pet"] = {
-		["HealthTag"] = "MINIMAL",
-		["PowerTag"] = "DISABLE",
-	},
-	["target"] = {
-		["HealthTag"] = "BOTH",
-		["PowerTag"] = "PERCENT",
-	},
-	["targettarget"] = {
-		["HealthTag"] = "DISABLE",
-	},
-	["focus"] = {
-		["HealthTag"] = "BOTH",
-		["PowerTag"] = "PERCENT",
-	},
-	["focustarget"] = {
-		["HealthTag"] = "DISABLE",
-	},
-	["party"] = {
-		["HealthTag"] = "MINIMAL",
-		["PowerTag"] = "DISABLE",
-	},
-	["boss"] = {
-		["HealthTag"] = "PERCENT",
-		["PowerTag"] = "PERCENT",
-	},
-	["arena"] = {
-		["HealthTag"] = "BOTH",
-		["PowerTag"] = "PERCENT",
-	},
-}
-
-C["Partyframe"] = {
-	["Scale"] = 1,
-	["Enable"] = true,
-	["ShowPlayer"] = true,
-	["RaidAsParty"] = false,
 }
 
 -- Raidframe
@@ -339,17 +311,16 @@ C["Raidframe"] = {
 	["Height"] = 40,
 	["IconSize"] = 22,
 	["MainTankFrames"] = true,
-	["ManabarShow"] = true,
 	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
 	["RaidAsParty"] = false,
+	["RaidTools"] = true,
 	["Scale"] = 1,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
-	["ShowResurrectText"] = true,
 	["ShowRolePrefix"] = false,
-	["ShowThreatText"] = false,
 	["Smooth"] = false,
+	["SmoothSpeed"] = 3,
 	["Width"] = 56,
 }
 

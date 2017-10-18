@@ -6,22 +6,19 @@ local _G = _G
 -- Wow API
 local UIErrorsFrame = _G.UIErrorsFrame
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SLASH_ERROR1
-
 -- Clear UIErrorsFrame(module from Kousei by Haste)
-if C.Error.White == true or C.Error.Black == true then
+if C["Error"].White == true or C["Error"].Black == true then
 	local KkthnxUIErrors = CreateFrame("Frame")
 	KkthnxUIErrors:SetScript("OnEvent", function(self, event, _, text)
-		if C.Error.White == true and C.Error.Black == false then
+		if C["Error"].White == true and C["Error"].Black == false then
 			if K.ErrorWhiteList[text] then
 				UIErrorsFrame:AddMessage(text, 1, .1, .1)
 			else
-				L.Info.Errors = text
+				L["NoErrors"] = text
 			end
-		elseif C.Error.Black == true and C.Error.White == false then
+		elseif C["Error"].Black == true and C["Error"].White == false then
 			if K.ErrorBlackList[text] then
-				L.Info.Errors = text
+				L["NoErrors"] = text
 			else
 				UIErrorsFrame:AddMessage(text, 1, .1, .1)
 			end
@@ -29,7 +26,7 @@ if C.Error.White == true or C.Error.Black == true then
 	end)
 
 	SlashCmdList.ERROR = function()
-		UIErrorsFrame:AddMessage(L.Info.Errors, 1, .1, .1)
+		UIErrorsFrame:AddMessage(L["NoErrors"], 1, .1, .1)
 	end
 
 	_G.SLASH_ERROR1 = "/error"
@@ -38,7 +35,7 @@ if C.Error.White == true or C.Error.Black == true then
 end
 
 -- Clear all UIErrors frame in combat
-if C.Error.Combat == true then
+if C["Error"].Combat == true then
 	local CombatErrors = CreateFrame("Frame")
 	local OnEvent = function(self, event, ...) self[event](self, event, ...) end
 	CombatErrors:SetScript("OnEvent", OnEvent)

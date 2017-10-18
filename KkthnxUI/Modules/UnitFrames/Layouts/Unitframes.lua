@@ -1,967 +1,690 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
-
--- Lua API
-local _G = _G
-local table_insert = table.insert
-
--- Wow API
-local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
-local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GetThreatStatusColor = _G.GetThreatStatusColor
-local InCombatLockdown = _G.InCombatLockdown
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
-local UnitClass = _G.UnitClass
-local UnitClassification = _G.UnitClassification
-local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
-local UnitHasVehicleUI = _G.UnitHasVehicleUI
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
-local IsInGroup = _G.IsInGroup
-local IsInRaid = _G.IsInRaid
-
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: ComboPointPlayerFrame, math, UnitVehicleSkin, ComboFrame_Update, securecall
--- GLOBALS: TotemFrame, EclipseBarFrame, RuneFrame, PriestBarFrame, TotemFrame_Update
--- GLOBALS: EclipseBar_UpdateShown, PriestBarFrame_CheckAndShow, _ENV, UnitPowerBarAlt_Initialize
--- GLOBALS: SetPortraitTexture, oUF_KkthnxPet, SLASH_TEST_UF1
+if C["Unitframe"].Enable ~= true then return end
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
 
-local config = C.UnitframePlugins
-local textPath = "Interface\\AddOns\\KkthnxUI\\Media\\Unitframes\\"
-local pathFat = textPath.."Fat\\"
-local pathNormal = textPath.."Normal\\"
-local Movers = K.Movers
-
--- Frame data
-local DataNormal = {
-	targetTexture = {
-		["elite"] = pathNormal.."Target-Elite",
-		["rareelite"] = pathNormal.."Target-Rare-Elite",
-		["rare"] = pathNormal.."Target-Rare",
-		["worldboss"] = pathNormal.."Target-Elite",
-		["normal"] = pathNormal.."Target",
-	},
-	vehicle = {-- w = width, h = height, x offset, y offset, t=texture, j = justify, s = size, c=Texture Coordinates, p = point
-		siz = {w = 175, h = 42}, -- size
-		tex = {w = 240, h = 121, x = 0, y = -8, t = "Interface\\Vehicles\\UI-Vehicle-Frame", c = {0, 1, 0, 1}}, --texture
-		hpb = {w = 108, h = 9, x = 30, y = 1,}, --Healthbar
-		hpt = {x = 0, y = 1, j = "CENTER", s = 13}, -- Healthtext
-		mpb = {w = 108, h = 9, x = 0, y = 0,}, -- Mana bar
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13}, -- Mana bar text
-		nam = {w = 110, h = 10, x = 0, y = 22, j = "CENTER", s = 12}, -- Name text
-		por = {w = 56, h = 56, x = -64, y = 10,}, -- Portrait
-		glo = {w = 242, h = 92, x = 13, y = 0, t = "Interface\\Vehicles\\UI-VEHICLE-FRAME-FLASH", c = {0, 1, 0, 1}}, -- Glow texture
-	},
-	vehicleorganic = {
-		siz = {w = 175, h = 42},
-		tex = {w = 240, h = 121, x = 0, y = -8, t = "Interface\\Vehicles\\UI-Vehicle-Frame-Organic", c = {0, 1, 0, 1}},
-		hpb = {w = 108, h = 9, x = 30, y = 1,},
-		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-		mpb = {w = 108, h = 9, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		nam = {w = 110, h = 10, x = 0, y = 22, j = "CENTER", s = 12},
-		por = {w = 56, h = 56, x = -64, y = 10,},
-		glo = {w = 242, h = 92, x = 13, y = 0, t = "Interface\\Vehicles\\UI-VEHICLE-FRAME-ORGANIC-FLASH", c = {0, 1, 0, 1}},
-	},
-	player = {
-		siz = {w = 175, h = 42},
-		tex = {w = 232, h = 100, x = -20, y = -7, t = pathNormal.."Target", c = {1, 0.09375, 0, 0.78125}},
-		hpb = {w = 118, h = 19, x = 50, y = 16,},
-		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-		mpb = {w = 118, h = 20, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
-		por = {w = 64, h = 64, x = -41, y = 6,},
-		glo = {w = 242, h = 92, x = 13, y = 0, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
-	},
-	target = {-- and focus
-		siz = {w = 175, h = 42},
-		tex = {w = 230, h = 100, x = 20, y = -7, t = pathNormal.."Target", c = {0.09375, 1, 0, 0.78125}},
-		hpb = {w = 118, h = 19, x = -50, y = 16,},
-		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-		mpb = {w = 118, h = 20, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		nam = {w = 110, h = 10, x = 0, y = 17, j = "CENTER", s = 12},
-		por = {w = 64, h = 64, x = 41, y = 6,},
-		glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
-	},
-	targettarget = {-- and focus target
-		siz = {w = 86, h = 20},
-		tex = {w = 128, h = 64, x = 16, y = -10, t = pathNormal.."TargetOfTarget", c = {0, 1, 0, 1}},
-		hpb = {w = 43, h = 6, x = 2, y = 14,},
-		hpt = {x = -2, y = 0, j = "CENTER", s = 10},
-		mpb = {w = 37, h = 7, x = -1, y = 0,},
-		nam = {w = 65, h = 10, x = 11, y = -18, j = "LEFT", s = 12},
-		por = {w = 40, h = 40, x = -40, y = 10,},
-	},
-	pet = {
-		siz = {w = 110, h = 37},
-		tex = {w = 128, h = 64, x = 4, y = -10, t = pathNormal.."Pet", c = {0, 1, 0, 1}},
-		hpb = {w = 69, h = 8, x = 16, y = 7,},
-		hpt = {x = 1, y = 1, j = "CENTER", s = 10},
-		mpb = {w = 69, h = 8, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		--nam = {w = 110, h = 10, x = 20, y = 15, j = "LEFT", s = 14},
-		por = {w = 37, h = 37, x = -41, y = 10,},
-		glo = {w = 128, h = 64, x = -4, y = 12, t = pathNormal.."Party-Flash", c = {0, 1, 1, 0}},
-	},
-	party = {
-		siz = {w = 115, h = 35},
-		tex = {w = 128, h = 64, x = 2, y = -16, t = pathNormal.."Party", c = {0, 1, 0, 1}},
-		hpb = {w = 69, h = 7, x = 17, y = 17,},
-		hpt = {x = 1, y = 1, j = "CENTER", s = 10},
-		mpb = {w = 70, h = 7, x = 0, y = 0,},
-		mpt = {x = 0, y = -2, j = "CENTER", s = 12},
-		nam = {w = 110, h = 10, x = 0, y = 15, j = "CENTER", s = 12},
-		por = {w = 37, h = 37, x = -39, y = 7,},
-		glo = {w = 128, h = 63, x = -3, y = 4, t = pathNormal.."Party-Flash", c = {0, 1, 0, 1}},
-	},
-	boss = {
-		siz = {w = 132, h = 46},
-		tex = {w = 250, h = 129, x = 31, y = -24, t = pathNormal.."Boss", c = {0, 1, 0, 1}},
-		hpb = {w = 115, h = 9, x = -38, y = 17,},
-		hpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		mpb = {w = 115, h = 8, x = 0, y = -3,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		nam = {w = 110, h = 10, x = 0, y = 16, j = "CENTER", s = 12},
-		glo = {w = 241, h = 100, x = -2, y = 3, t = pathNormal.."Boss-Flash", c = {0.0, 0.945, 0.0, 0.73125}},
-	},
-}
-
-local DataFat = {
-	targetTexture = {
-		["elite"] = pathFat.."Target-Elite",
-		["rareelite"] = pathFat.."Target-Rare-Elite",
-		["rare"] = pathFat.."Target-Rare",
-		["worldboss"] = pathFat.."Target-Elite",
-		["normal"] = pathFat.."Target",
-	},
-	vehicle = DataNormal.vehicle,
-	vehicleorganic = DataNormal.vehicleorganic,
-	player = {
-		siz = {w = 176, h = 42},
-		tex = {w = 232, h = 100, x = -20, y = -7, t = pathFat.."Target", c = {1, 0.09375, 0, 0.78125}},
-		hpb = {w = 118, h = 26, x = 50, y = 13,},
-		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-		mpb = {w = 118, h = 14, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		nam = {w = 110, h = 10, x = 50, y = 19, j = "CENTER", s = 12},
-		por = {w = 64, h = 64, x = -42, y = 7,},
-		glo = {w = 242, h = 92, x = 13, y = -1, t = pathNormal.."Target-Flash", c = {0.945, 0, 0, 0.182}},
-	},
-	target = {
-		siz = {w = 176, h = 42},
-		tex = {w = 230, h = 100, x = 20, y = -7, t = pathFat.."Target", c = {0.09375, 1, 0, 0.78125}},
-		hpb = {w = 118, h = 26, x = -50, y = 13,},
-		hpt = {x = 0, y = 1, j = "CENTER", s = 13},
-		mpb = {w = 118, h = 14, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		nam = {w = 110, h = 10, x = 0, y = 18, j = "CENTER", s = 12},
-		por = {w = 64, h = 64, x = 41, y = 6,},
-		glo = {w = 239, h = 94, x = -24, y = 1, t = pathNormal.."Target-Flash", c = {0, 0.945, 0, 0.182}},
-	},
-	targettarget = DataNormal.targettarget, --same for now
-	pet = {
-		siz = {w = 110, h = 37},
-		tex = {w = 128, h = 64, x = 4, y = -10, t = pathFat.."Pet", c = {0, 1, 0, 1}},
-		hpb = {w = 69, h = 12, x = 16, y = 9,},
-		hpt = {x = 1, y = 1, j = "CENTER", s = 13},
-		mpb = {w = 69, h = 8, x = 0, y = 0,},
-		mpt = {x = 0, y = 0, j = "CENTER", s = 13},
-		-- nam = {w = 110, h = 10, x = 20, y = 15, j = "LEFT", s = 12},
-		por = {w = 37, h = 37, x = -41, y = 10,},
-		glo = {w = 128, h = 64, x = -4, y = 12, t = pathFat.."Party-Flash", c = {0, 1, 1, 0}},
-	},
-	party = {
-		siz = {w = 116, h = 36},
-		tex = {w = 128, h = 64, x = 2, y = -16, t = pathFat.."Party", c = {0, 1, 0, 1}},
-		hpb = {w = 69, h = 12, x = 17, y = 15,},
-		hpt = {x = 0, y = 1, j = "CENTER", s = 10},
-		mpb = {w = 70, h = 7, x = 0, y = 0,},
-		mpt = {x = 0, y = -1, j = "CENTER", s = 12},
-		nam = {w = 110, h = 10, x = 0, y = 15, j = "CENTER", s = 12},
-		por = {w = 37, h = 37, x = -39, y = 7,},
-		glo = {w = 128, h = 63, x = -3, y = 4, t = pathFat.."Party-Flash", c = {0, 1, 0, 1}},
-	},
-	boss = DataNormal.boss,
-}
-
-local function UpdateThreat(self)
-	local isInGroup, isInRaid = IsInGroup(), IsInRaid()
-	local _, status, percent = UnitDetailedThreatSituation("player", "target")
-	if percent and percent > 0 and isInGroup then
-		local red, green, blue = GetThreatStatusColor(status)
-		self.NumericalThreat.bg:SetStatusBarColor(red, green, blue)
-		self.NumericalThreat.value:SetText(math.ceil(percent).."%")
-		if (not self.NumericalThreat:IsVisible()) then
-			self.NumericalThreat:Show()
-		end
-	else
-		if (self.NumericalThreat:IsVisible()) then
-			self.NumericalThreat:Hide()
-		end
-	end
+if not oUF then
+	K.Print("Could not find a vaild instance of oUF. Stopping Unitframes.lua code!")
+	return
 end
 
-local function GetDBUnit(MatchUnit)
-	if MatchUnit == "focus" then
-		return "target"
-	elseif MatchUnit == "focustarget" then
-		return "targettarget"
-	elseif MatchUnit == "player" then -- can player be vehicle? no it cant
-		if UnitHasVehicleUI("player") then
-			if (UnitVehicleSkin("player") == "Natural") then
-				return "vehicleorganic"
-			else
-				return "vehicle"
-			end
-		else
-			return "player"
-		end
-	end
-	return MatchUnit
-end
+local UnitframeFont = K.GetFont(C["General"].Font)
+local UnitframeTexture = K.GetTexture(C["General"].Texture)
 
-local function GetData(MatchUnit)
-	local dbUnit = GetDBUnit(MatchUnit)
-	if (C.Unitframe.Style == "fat") then
-		return DataFat[dbUnit]
-	end
-	return DataNormal[dbUnit]
-end
-
-local function GetTargetTexture(MatchUnit, type)
-	local dbUnit = GetDBUnit(MatchUnit)
-	if dbUnit == "vehicle" or dbUnit == "vehicleorganic" then
-		return GetData(MatchUnit).tex.t
-	end
-
-	-- only "target", "focus" & "player" gets this far
-	local data = C.Unitframe.Style == "normal" and DataNormal.targetTexture or DataFat.targetTexture
-	if data[type] then
-		return data[type]
-	else
-		return data["normal"]
-	end
-end
-
-local function UpdatePlayerFrame(self, ...)
-	local data = GetData(self.MatchUnit)
-	local uconfig = C.UnitframePlugins[self.MatchUnit]
-
-	self.Texture:SetSize(data.tex.w, data.tex.h)
-	self.Texture:SetPoint("CENTER", self, data.tex.x, data.tex.y)
-	self.Texture:SetTexture(GetTargetTexture("player")) -- 1
-	self.Texture:SetTexCoord(unpack(data.tex.c))
-
-	self.Health:SetSize(data.hpb.w, data.hpb.h)
-	self.Health:SetPoint("CENTER", self.Texture, data.hpb.x, data.hpb.y)
-	self.Power:SetSize(data.mpb.w, data.mpb.h)
-	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", data.mpb.x, data.mpb.y)
-
-	self.Health.Value:SetPoint("CENTER", self.Health, data.hpt.x, data.hpt.y)
-	self.Power.Value:SetPoint("CENTER", self.Power, data.mpt.x, data.mpt.y)
-
-	self.Name:SetPoint("TOP", self.Health, data.nam.x, data.nam.y)
-	self.Name:SetSize(data.nam.w, data.nam.h)
-	self.Portrait:SetPoint("CENTER", self.Texture, data.por.x, data.por.y)
-	self.Portrait:SetSize(data.por.w, data.por.h)
-
-	if self.ThreatGlow then
-		self.ThreatGlow:SetSize(data.glo.w, data.glo.h)
-		self.ThreatGlow:SetPoint("TOPLEFT", self.Texture, data.glo.x, data.glo.y)
-		self.ThreatGlow:SetTexture(data.glo.t)
-		self.ThreatGlow:SetTexCoord(unpack(data.glo.c))
-	end
-
-	if (self.PvP) then
-		self.PvP:ClearAllPoints()
-	end
-
-	ComboFrame_Update(ComboPointPlayerFrame)
-
-	if UnitHasVehicleUI("player") then
-		self.Name:Show()
-		self.Level:Hide()
-
-		self.LFDRole:SetAlpha(0)
-		self.PvP:SetPoint("TOPLEFT", self.Texture, 4, -28)
-		self.Leader:SetPoint("TOPLEFT", self.Texture, 23, -14)
-		self.MasterLooter:SetPoint("TOPLEFT", self.Texture, 74, -14)
-		self.RaidIcon:SetPoint("CENTER", self.Portrait, "TOP", 0, -5)
-		securecall("PlayerFrame_ShowVehicleTexture")
-
-		-- ClassFrames
-		K.CMS:HideAltResources(self)
-	else
-		self.Name:Hide()
-		self.Level:Show()
-
-		self.LFDRole:SetAlpha(1)
-		self.PvP:SetPoint("TOPLEFT", self.Texture, 23, -23)
-		self.Leader:SetPoint("TOPLEFT", self.Portrait, 3, 2)
-		self.MasterLooter:SetPoint("TOPRIGHT", self.Portrait, -3, 3)
-		self.RaidIcon:SetPoint("CENTER", self.Portrait, "TOP", 0, -1)
-		securecall("PlayerFrame_HideVehicleTexture")
-
-		-- ClassFrames
-		K.CMS:ShowAltResources(self)
-	end
-end
-
-local function UpdateUnitFrameLayout(frame)
-	local MatchUnit = frame.MatchUnit
-	local data = GetData(MatchUnit)
-	local uconfig = C.UnitframePlugins[MatchUnit]
-
-	-- Player frame, its special
-	if MatchUnit == "player" then
-		return UpdatePlayerFrame(frame)
-	elseif (not data) then
+local function UpdateThreat(self, event, unit)
+	if (unit ~= self.unit) then
 		return
 	end
 
-	-- Frame Size
-	frame:SetSize(data.siz.w, data.siz.h)
-	frame:SetScale(C.Unitframe.Scale or 1)
-
-	-- Texture
-	frame.Texture:SetTexture(data.tex.t)
-	frame.Texture:SetSize(data.tex.w, data.tex.h)
-	frame.Texture:SetPoint("CENTER", frame, data.tex.x, data.tex.y)
-	frame.Texture:SetTexCoord(unpack(data.tex.c))
-
-	-- HealthBar
-	frame.Health:SetSize(data.hpb.w, data.hpb.h)
-	frame.Health:SetPoint("CENTER", frame.Texture, data.hpb.x, data.hpb.y)
-
-	-- ManaBar
-	frame.Power:SetSize(data.mpb.w, data.mpb.h)
-	frame.Power:SetPoint("TOPLEFT", frame.Health, "BOTTOMLEFT", data.mpb.x, data.mpb.y)
-
-	-- HealthText
-	frame.Health.Value:SetPoint("CENTER", frame.Health, data.hpt.x, data.hpt.y)
-
-	-- ManaText - not for tots
-	if frame.Power.Value then
-		frame.Power.Value:SetPoint("CENTER", frame.Power, data.mpt.x, data.mpt.y)
-	end
-
-	-- NameText
-	if frame.Name then
-		frame.Name:SetSize(data.nam.w, data.nam.h)
-		frame.Name:SetPoint("TOP", frame.Health, data.nam.x, data.nam.y)
-	end
-
-	-- Portrait
-	if frame.Portrait then
-		frame.Portrait:SetSize(data.por.w, data.por.h)
-		frame.Portrait:SetPoint("CENTER", frame.Texture, data.por.x, data.por.y)
-	end
-
-	-- Threat Glow -- if enabled
-	if frame.ThreatGlow then
-		frame.ThreatGlow:SetSize(data.glo.w, data.glo.h)
-		frame.ThreatGlow:SetPoint("TOPLEFT", frame.Texture, data.glo.x, data.glo.y)
-		frame.ThreatGlow:SetTexture(data.glo.t)
-		frame.ThreatGlow:SetTexCoord(unpack(data.glo.c))
-	end
-end
-
-function oUFKkthnx:UpdateBaseFrames(optUnit)
-	if InCombatLockdown() then return end
-
-	if optUnit and optUnit:find("%d") then
-		optUnit = optUnit:match("^.%a+")
-	end
-
-	for _, obj in pairs(oUF.objects) do
-		local unit = obj.MatchUnit
-		if unit and (not optUnit or optUnit == unit:match("^.%a+")) then
-			UpdateUnitFrameLayout(obj)
+	local situation = UnitThreatSituation(unit)
+	if (situation and situation > 0) then
+		local r, g, b = GetThreatStatusColor(situation)
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+			self.Portrait:SetBackdropBorderColor(r, g, b, 1)
+		else
+			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
 		end
+		self.Health:SetBackdropBorderColor(r, g, b, 1)
+	elseif C["General"].ColorTextures then
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+			self.Portrait:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3], 1)
+		else
+			self.Portrait.Background:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		end
+		self.Health:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+	else
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+		else
+			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		end
+		self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
 end
 
-local function CreateUnitLayout(self, unit)
-	self.MatchUnit = K.MatchUnit(unit)
-	self.IsMainFrame = K.MultiCheck(self.MatchUnit, "player", "target", "focus")
-	self.IsTargetFrame = K.MultiCheck(self.MatchUnit, "targettarget", "focustarget")
-	self.IsPartyFrame = self.MatchUnit:match("party")
-	self.IsBossFrame = self.MatchUnit:match("boss")
-
-	if (self.IsTargetFrame) then
-		self:SetFrameLevel(4)
-	end
-
-	-- Mouse Interraction
-	self:RegisterForClicks("AnyUp")
-
-	self:HookScript("OnEnter", K.UnitFrame_OnEnter)
-	self:HookScript("OnLeave", K.UnitFrame_OnLeave)
-	self.mouseovers = {}
-
-	if self.MatchUnit == "arena" then
-		return ns.createArenaLayout(self, unit)
-	end
-
-	local uconfig = C.UnitframePlugins[self.MatchUnit]
-	local data = GetData(self.MatchUnit)
-
-	if C.Unitframe.Castbars then
-		K.CreateCastBar(self)
-	end
-
-	-- Textures
-	self.Texture = self:CreateTexture(nil, "BORDER")
-	if C.Blizzard.ColorTextures == true then
-		self.Texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
-	end
-	self.Texture:SetDrawLayer("BORDER", 3)
-
-	-- Healthbar
-	self.Health = K.CreateStatusBar(self, "$parentHealthBar")
-	self.Health:SetFrameLevel(self:GetFrameLevel() - 1)
-	table_insert(self.mouseovers, self.Health)
-
-	if C.Unitframe.ColorHealth then
-		self.Health.colorClass = true
-		self.Health.colorReaction = true
-		self.Health.colorDisconnected = true
-		self.Health.colorTapping = true
+local function UpdateClassPortraits(self, unit)
+	local _, unitClass = UnitClass(unit)
+	if (unitClass and UnitIsPlayer(unit)) then
+		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
+		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
 	else
-		self.Health.colorHealth = true
-		self.Health.colorClass = false
-		self.Health.colorReaction = false
-		self.Health.colorDisconnected = false
-		self.Health.colorTapping = false
+		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 	end
-	self.Health.Smooth = C.Unitframe.Smooth
+end
+
+local function oUF_KkthnxUnitframes(self, unit)
+	unit = unit:match("^(.-)%d+") or unit
+
+	self:RegisterForClicks("AnyUp")
+	self:HookScript("OnEnter", UnitFrame_OnEnter)
+	self:HookScript("OnLeave", UnitFrame_OnLeave)
+
+	-- if unit == "target" then
+	-- 	hooksecurefunc(self, "Show", function(self)
+	-- 		local class = UnitClassification(self.unit)
+	-- 		if class ~= "normal" and class ~= "minus" and class ~= "trivial" then
+	-- 			if class == "worldboss" then
+	-- 				if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+	-- 					self.Portrait:SetBackdropBorderColor(163/255, 53/255, 255/238)
+	-- 				else
+	-- 					self.Portrait.Background:SetBackdropBorderColor(163/255, 53/255, 255/238)
+	-- 				end
+	-- 			elseif class == "rare" or class == "rareelite" then
+	-- 				if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+	-- 					self.Portrait:SetBackdropBorderColor(0/255, 112/255, 221/255)
+	-- 				else
+	-- 					self.Portrait.Background:SetBackdropBorderColor(0/255, 112/255, 221/255)
+	-- 				end
+	-- 			elseif class == "elite" then
+	-- 				if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+	-- 					self.Portrait:SetBackdropBorderColor(0/255, 112/255, 221/255)
+	-- 				else
+	-- 					self.Portrait.Background:SetBackdropBorderColor(0/255, 112/255, 221/255)
+	-- 				end
+	-- 			end
+	-- 		else
+	-- 			if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+	-- 				self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+	-- 			else
+	-- 				self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+	-- 			end
+	-- 		end
+	-- 	end)
+	-- end
+
+	-- Health bar
+	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
+	self.Health:SetTemplate("Transparent")
+	self.Health:SetFrameStrata("LOW")
+	self.Health:SetFrameLevel(1)
+	self.Health:SetStatusBarTexture(C["Media"].Texture)
+
+	if C["General"].ColorTextures and self then
+		self.Health:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+	end
+
+	self.Health.Smooth = C["Unitframe"].Smooth
+	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.Health.colorTapping = true
+	self.Health.colorDisconnected = true
+	self.Health.colorClass = true
+	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 	self.Health.PostUpdate = K.PostUpdateHealth
 
-	-- Health text
-	if self.IsPartyFrame or self.IsTargetFrame then
-		self.Health.Value = K.SetFontString(self, C.Media.Font, 11, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-		self.Health.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-	else
-		self.Health.Value = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-		self.Health.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
+	if (unit == "player") then
+		self.Health:SetSize(130, 26)
+		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
+	elseif (unit == "pet") then
+		self.Health:SetSize(74, 12)
+		self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
+	elseif (unit == "target") then
+		self.Health:SetSize(130, 26)
+		self.Health:SetPoint("CENTER", self, "CENTER", -26, 10)
+	elseif (unit == "focus") then
+		self.Health:SetSize(130, 26)
+		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
+	elseif (unit == "targettarget") then
+		self.Health:SetSize(74, 12)
+		self.Health:SetPoint("CENTER", self, "CENTER", -15, 7)
+	elseif (unit == "focustarget") then
+		self.Health:SetSize(74, 12)
+		self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
+	elseif (unit == "party") then
+		self.Health:SetSize(96, 16)
+		self.Health:SetPoint("CENTER", self, "CENTER", 18, 8)
+	elseif (unit == "boss" or unit == "arena") then
+		self.Health:SetSize(130, 26)
+		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	end
 
-	-- Power bar
-	self.Power = K.CreateStatusBar(self, "$parentPowerBar")
-	self.Power:SetFrameLevel(self:GetFrameLevel() - 1)
-	table_insert(self.mouseovers, self.Power)
+	if (unit == "player") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
+	elseif (unit == "target") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	elseif (unit == "pet") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetTextColor(1.0, 1.0, 1.0)
+		self.Health.Value:SetJustifyH("LEFT")
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+	elseif (unit == "focus") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	elseif (unit == "party") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	elseif (unit == "boss" or unit == "arena") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
+	elseif (unit == "targettarget") then
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+	end
 
+	-- Power Bar
+	self.Power = CreateFrame("StatusBar", nil, self)
+	self.Power:SetTemplate("Transparent")
+	self.Power:SetFrameStrata("LOW")
+	self.Power:SetFrameLevel(1)
+	self.Power:SetStatusBarTexture(C["Media"].Texture)
+
+	if C["General"].ColorTextures and self then
+		self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+	end
+
+	self.Power.Smooth = C["Unitframe"].Smooth
+	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
-	self.Power.colorReaction = true
-	self.Power.colorDisconnected = false
-	self.Power.colorTapping = false
-	self.Power.Smooth = C.Unitframe.Smooth
 	self.Power.frequentUpdates = true
 	self.Power.PostUpdate = K.PostUpdatePower
 
-	-- Power Text
-	if (data.mpt) then
-		if self.IsPartyFrame or self.IsTargetFrame then
-			self.Power.Value = K.SetFontString(self, C.Media.Font, 11, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-			self.Power.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		else
-			self.Power.Value = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-			self.Power.Value:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		end
+	if C["Unitframe"].PowerClass then
+		self.Power.colorClass = true
+		self.Power.colorReaction = true
+	else
+		self.Power.colorPower = true
 	end
 
-	-- Name Text
-	if data.nam then
-		self.Name = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		if C.Unitframe.ColorHealth then
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
-		else
-			self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameMedium]")
-		end
+	-- Power StatusBar
+	if unit == "player" then
+		self.Power:SetSize(130, 14)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif unit == "pet" then
+		self.Power:SetSize(74, 8)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif unit == "target" then
+		self.Power:SetSize(130, 14)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif unit == "focus" then
+		self.Power:SetSize(130, 14)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif (unit == "targettarget") then
+		self.Power:SetSize(74, 8)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif (unit == "focustarget") then
+		self.Power:SetSize(74, 8)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif (unit == "party") then
+		self.Power:SetSize(96, 10)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	elseif (unit == "boss" or unit == "arena") then
+		self.Power:SetSize(130, 14)
+		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	end
 
-	-- Name Text Party
-	if data.nam and self.IsPartyFrame and C.Unitframe.Party == true then
-		self.Name = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		if C.Unitframe.ColorHealth then
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
-		else
-			self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameShort]")
-		end
-		-- Name text targettarget
-	elseif data.nam and self.IsTargetFrame then
-		self.Name = K.SetFontString(self, C.Media.Font, 12, C.Unitframe.Outline and "OUTLINE" or "", "LEFT")
-		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		if C.Unitframe.ColorHealth then
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
-		else
-			self:Tag(self.Name, "[KkthnxUI:NameColor][KkthnxUI:NameShort]")
-		end
-	elseif data.nam and self.IsBossFrame then
-		self.Name = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-		self.Name:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		self:Tag(self.Name, "[KkthnxUI:NameMedium]")
+	-- Power Value
+	if (unit == "player") then
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
+		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
+	elseif (unit == "target") then
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", -2, 0)
+		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
+	elseif (unit == "pet") then
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 10, "CENTER")
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 2, 0)
+	elseif (unit == "boss" or unit == "arena") then
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
+		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	end
 
-	-- Portrait
-	if data.por then
-		self.Portrait = self.Health:CreateTexture(nil, "BACKGROUND")
-		self.Portrait.Override = function(self, event, unit)
-			if (not unit or not UnitIsUnit(self.unit, unit)) then return end
-			local portrait = self.Portrait
-			local _, class = UnitClass(self.unit)
-			if C.Unitframe.ClassPortraits and UnitIsPlayer(unit) and class then
-				portrait:SetTexCoord(unpack(CLASS_ICON_TCOORDS[class]))
-				portrait:SetTexture[[Interface\TargetingFrame\UI-Classes-Circles]]
-			else
-				portrait:SetTexCoord(0, 1, 0, 1)
-				SetPortraitTexture(portrait, unit)
-			end
-		end
+	-- Name Text, The shade is a work in progress.
+	if (unit == "target") then
+		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbreviateMedium]")
+
+		self.Name.Shade = self:CreateTexture()
+		self.Name.Shade:SetDrawLayer("ARTWORK")
+		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
+		self.Name.Shade:SetPoint("TOPLEFT", self.Name, "TOPLEFT", -6, 6)
+		self.Name.Shade:SetPoint("BOTTOMRIGHT", self.Name, "BOTTOMRIGHT", 6, -6)
+		self.Name.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
+		self.Name.Shade:SetAlpha(.5)
+	elseif unit == "focus" then
+		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+	elseif (unit == "targettarget" or unit == "focustarget") then
+		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -17)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+
+		self.Name.Shade = self:CreateTexture()
+		self.Name.Shade:SetDrawLayer("ARTWORK")
+		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
+		self.Name.Shade:SetPoint("TOPLEFT", self.Name, "TOPLEFT", -6, 6)
+		self.Name.Shade:SetPoint("BOTTOMRIGHT", self.Name, "BOTTOMRIGHT", 6, -6)
+		self.Name.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
+		self.Name.Shade:SetAlpha(.5)
+	elseif (unit == "party") then
+		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+
+		self.Name.Shade = self:CreateTexture()
+		self.Name.Shade:SetDrawLayer("ARTWORK")
+		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
+		self.Name.Shade:SetPoint("TOPLEFT", self.Name, "TOPLEFT", -6, 6)
+		self.Name.Shade:SetPoint("BOTTOMRIGHT", self.Name, "BOTTOMRIGHT", 6, -6)
+		self.Name.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
+		self.Name.Shade:SetAlpha(.5)
+	elseif (unit == "boss" or unit == "arena") then
+		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+
+		self.Name.Shade = self:CreateTexture()
+		self.Name.Shade:SetDrawLayer("ARTWORK")
+		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
+		self.Name.Shade:SetPoint("TOPLEFT", self.Name, "TOPLEFT", -6, 6)
+		self.Name.Shade:SetPoint("BOTTOMRIGHT", self.Name, "BOTTOMRIGHT", 6, -6)
+		self.Name.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
+		self.Name.Shade:SetAlpha(.5)
 	end
 
-	-- Afk /offline timer, using frequentUpdates function from oUF tags
-	if (self.IsPartyFrame and C.Raidframe.ShowNotHereTimer) then
-		self.NotHere = self:CreateFontString(nil, "OVERLAY")
-		self.NotHere:SetPoint("CENTER", self.Name, "RIGHT", -4, 0)
-		self.NotHere:SetFont(C.Media.Font, 10, C.Unitframe.Outline and "OUTLINE" or "")
-		self.NotHere:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		self.NotHere:SetTextColor(0, 1, 0)
-		self:Tag(self.NotHere, "[KkthnxUI:StatusTimer]")
-	end
+	-- level Text
+	if (unit == "target") then
+		self.Level = K.SetFontString(self, C["Media"].Font, 16, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
+		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Level:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
+		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
-	-- Threat glow
-	if (C.Unitframe.ThreatGlow) and (data.glo) then
-		self.ThreatGlow = self:CreateTexture(nil, "BACKGROUND")
-	end
-
-	if (self.IsMainFrame) then
-		-- Level text
-		self.Level = self:CreateFontString(nil, "ARTWORK")
-		self.Level:SetFont(C.Media.Font, C.Media.Font_Size, C.Unitframe.Outline and "OUTLINE" or "")
-		self.Level:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-		self.Level:SetPoint("CENTER", self.Texture, (self.MatchUnit == "player" and -63) or 63, -15.5)
+		self.Level.Shade = self:CreateTexture()
+		self.Level.Shade:SetDrawLayer("ARTWORK")
+		self.Level.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
+		self.Level.Shade:SetPoint("TOPLEFT", self.Level, "TOPLEFT", -6, 6)
+		self.Level.Shade:SetPoint("BOTTOMRIGHT", self.Level, "BOTTOMRIGHT", 6, -6)
+		self.Level.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
+		self.Level.Shade:SetAlpha(.5)
+	elseif (unit == "focus") then
+		self.Level = K.SetFontString(self, C["Media"].Font, 16, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
+		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Level:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level]")
+	end
 
-		-- PvP Icon
-		self.PvP = self:CreateTexture(nil, "OVERLAY")
-		self.PvP:SetSize(30, 30)
-		self.PvP:SetPoint("TOPRIGHT", self.Texture, -23, -23)
-		self.PvP.Prestige = self:CreateTexture(nil, "ARTWORK")
-		self.PvP.Prestige:SetSize(50, 52)
-		self.PvP.Prestige:SetPoint("CENTER", self.PvP, "CENTER")
+	-- 3D and such models. We provide 3 choices here.
+	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+		-- Create the portrait globally
+		self.Portrait = CreateFrame("PlayerModel", self:GetName().."_3DPortrait", self)
+		self.Portrait:SetTemplate("Transparent")
+		self.Portrait:SetFrameStrata("BACKGROUND")
+		self.Portrait:SetFrameLevel(1)
 
-		K.EnableHealPredictionAndAbsorb(self)
+		if C["General"].ColorTextures and self then
+			self.Portrait:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		end
 
-		-- Combat CombatFeedbackText
-		if (C.Unitframe.CombatText) then
-			do
-				local CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
-				CombatFeedbackText:SetFont(C.Media.Font, 16, "THINOUTLINE")
-				CombatFeedbackText:SetPoint("CENTER", self.Portrait)
-				CombatFeedbackText.colors = {
-					DAMAGE = {0.69, 0.31, 0.31},
-					CRUSHING = {0.69, 0.31, 0.31},
-					CRITICAL = {0.69, 0.31, 0.31},
-					GLANCING = {0.69, 0.31, 0.31},
-					STANDARD = {0.84, 0.75, 0.65},
-					IMMUNE = {0.84, 0.75, 0.65},
-					ABSORB = {0.84, 0.75, 0.65},
-					BLOCK = {0.84, 0.75, 0.65},
-					RESIST = {0.84, 0.75, 0.65},
-					MISS = {0.84, 0.75, 0.65},
-					HEAL = {0.33, 0.59, 0.33},
-					CRITHEAL = {0.33, 0.59, 0.33},
-					ENERGIZE = {0.31, 0.45, 0.63},
-					CRITENERGIZE = {0.31, 0.45, 0.63},
-				}
+		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
+			self.Portrait:SetSize(46, 46)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+		elseif (unit == "pet") then
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+		elseif (unit == "target") then
+			self.Portrait:SetSize(46, 46)
+			self.Portrait:SetPoint("RIGHT", self, -4, 0)
+		elseif (unit == "targettarget") then
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("RIGHT", self, -4, 0)
+		elseif (unit == "focustarget") then
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+		elseif (unit == "party") then
+			self.Portrait:SetSize(32, 32)
+			self.Portrait:SetPoint("LEFT", self, 2, 0)
+		end
+	elseif C["Unitframe"].PortraitStyle.Value == "DefaultPortraits" or C["Unitframe"].PortraitStyle.Value == "ClassPortraits" then
+		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 7)
+		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 
-				self.CombatFeedbackText = CombatFeedbackText
-			end
+		-- We need to create this for non 3D Ports
+		self.Portrait.Background = CreateFrame("Frame", self:GetName().."_2DPortrait", self)
+		self.Portrait.Background:SetTemplate("Transparent")
+		self.Portrait.Background:SetFrameStrata("LOW")
+		self.Portrait.Background:SetFrameLevel(1)
+
+		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
+			self.Portrait:SetSize(46, 46)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Background:SetSize(46, 46)
+			self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
+		elseif (unit == "pet") then
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Background:SetSize(26, 26)
+			self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
+		elseif (unit == "target") then
+			self.Portrait:SetSize(46, 46)
+			self.Portrait:SetPoint("RIGHT", self, -4, 0)
+			self.Portrait.Background:SetSize(46, 46)
+			self.Portrait.Background:SetPoint("RIGHT", self, -4, 0)
+		elseif (unit == "targettarget") then
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("RIGHT", self, -4, 0)
+			self.Portrait.Background:SetSize(26, 26)
+			self.Portrait.Background:SetPoint("RIGHT", self, -4, 0)
+		elseif (unit == "focustarget") then
+			self.Portrait:SetSize(26, 26)
+			self.Portrait:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Background:SetSize(26, 26)
+			self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
+		elseif (unit == "party") then
+			self.Portrait:SetSize(32, 32)
+			self.Portrait:SetPoint("LEFT", self, 2, 0)
+			self.Portrait.Background:SetSize(32, 32)
+			self.Portrait.Background:SetPoint("LEFT", self, 2, 0)
+		end
+
+		if C["Unitframe"].PortraitStyle.Value == "ClassPortraits" then
+			self.Portrait.PostUpdate = UpdateClassPortraits
 		end
 	end
 
-	-- Heal Prediction
-	if (self.IsPartyFrame and C.Unitframe.Party == true) then
-		K.EnableHealPredictionAndAbsorb(self)
+	self.HealthPrediction = K.CreateHealthPrediction(self)
+
+	-- Auras
+	K.CreateAuras(self, unit)
+
+	-- Alternate Mana Bar
+	if (unit == "player") then
+		K.CreateAlternatePowerBar(self, unit)
+	end
+
+	-- Create our class resource bars, combo and such.
+	if (unit == "player") then
+		K.CreateClassModules(self, unit)
+	end
+
+	-- Castbars
+	K.CreateCastBar(self, unit)
+
+	if (unit ~= "arena") then
+		self.ThreatIndicator = CreateFrame("Frame")
+		self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0) -- so that oUF does not try to replace it
+		self.ThreatIndicator.Override = UpdateThreat
+	end
+
+	-- Status Icons
+	self.LeaderIndicator = self:CreateTexture(nil, "OVERLAY")
+	if (unit == "player" or unit == "focus") then
+		self.LeaderIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT", 13, -6)
+		self.LeaderIndicator:SetSize(16, 16)
+	elseif (unit == "target") then
+		self.LeaderIndicator:SetPoint("BOTTOMLEFT", self.Portrait, "TOPRIGHT", -12, -6)
+		self.LeaderIndicator:SetSize(16, 16)
+	elseif (unit == "focustarget" or unit == "targettarget") then
+		self.LeaderIndicator:SetPoint("BOTTOMLEFT", self.Portrait, "TOPRIGHT", -10, -6)
+		self.LeaderIndicator:SetSize(14, 14)
+	elseif (unit == "party") then
+		self.LeaderIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT", 10, -4)
+		self.LeaderIndicator:SetSize(12, 12)
+	end
+
+	-- Master Looter / Group Role
+	if (unit == "player") then
+		self.MasterLooterIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.MasterLooterIndicator:SetSize(16, 16)
+		self.MasterLooterIndicator:SetPoint("TOP", self, "TOP" , 18, -20)
+
+		self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.GroupRoleIndicator:SetSize(16, 16)
+		self.GroupRoleIndicator:SetPoint("BOTTOMLEFT", self.Portrait, "TOPRIGHT" , -4, -8)
+	end
+
+	-- Group Role Indicator
+	if (unit == "party") then
+		self.GroupRoleIndicatorText = self:CreateFontString(nil, "ARTWORK")
+		self.GroupRoleIndicatorText:SetPoint("TOP", self.Portrait, "BOTTOM", 0, -2)
+		self.GroupRoleIndicatorText:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
+		self.GroupRoleIndicatorText:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
+		self:Tag(self.GroupRoleIndicatorText, "[KkthnxUI:PartyRole]")
+	end
+
+	-- Phase Indicator
+	if (unit == "target") then
+		self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.PhaseIndicator:SetSize(16, 16)
+		self.PhaseIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT", 9, -9)
+	end
+
+	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator:SetSize(16, 16)
+	if unit == "target" then
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 14)
+	elseif (unit == "targettarget") then
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 14)
+	elseif (unit == "focustarget") then
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 14)
+	elseif unit == "player" then
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
+	else
+		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 14)
+	end
+
+	-- PvP Icon
+	self.PvPIndicator = self:CreateTexture(nil, "ARTWORK", nil, 1)
+	self.PvPIndicator:SetSize(30, 30)
+	if unit == "target" then
+		self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 0, 0)
+	elseif unit == "targettarget" then
+		self.PvPIndicator:SetSize(20, 20)
+		self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", 0, 0)
+	elseif (unit == "focustarget") then
+		self.PvPIndicator:SetSize(20, 20)
+		self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", 0, 0)
+	elseif unit == "player" or unit == "focus" then
+		self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", 0, 0)
+	end
+
+	-- Resting Icon for player frame
+	if unit == "player" then
+		-- Resting icon
+		self.RestingIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.RestingIndicator:SetPoint("TOPRIGHT", self, 6, 6)
+		self.RestingIndicator:SetSize(22, 22)
+
+		-- PvP Timer
+		if (self.PvPIndicator) then
+			self.PvPTimer = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+			self.PvPTimer:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			self.PvPTimer:SetTextColor(1, 0.819, 0)
+			self.PvPTimer:SetPoint("BOTTOM", self.PvPIndicator, "TOP", 0, 2)
+			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
+		end
+
+		-- GlobalCooldown spark
+		if (C["Unitframe"].GlobalCooldown) then
+			self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self.Health)
+			self.GCD:SetWidth(self.Health:GetWidth())
+			self.GCD:SetHeight(self.Health:GetHeight() * 1.4)
+			self.GCD:SetFrameStrata("HIGH")
+			self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+			self.GCD.Smooth = C["Unitframe"].Smooth
+			self.GCD.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+			self.GCD.Color = {1, 1, 1}
+			self.GCD.Height = (self.Health:GetHeight() * 1.4)
+			self.GCD.Width = (10)
+		end
+
+		-- Power Prediction Bar (Display estimated cost of spells when casting)
+		if (C["Unitframe"].PowerPredictionBar) then
+			local PowerPrediction = CreateFrame("StatusBar", nil, self.Power)
+			PowerPrediction:SetPoint("RIGHT", self.Power:GetStatusBarTexture())
+			PowerPrediction:SetPoint("BOTTOM")
+			PowerPrediction:SetPoint("TOP")
+			PowerPrediction:SetWidth(self.Power:GetWidth())
+			PowerPrediction:SetHeight(self.Power:GetHeight())
+			PowerPrediction:SetStatusBarTexture(C["Media"].Texture, "BORDER")
+			PowerPrediction:GetStatusBarTexture():SetBlendMode("ADD")
+			PowerPrediction:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
+			PowerPrediction:SetReverseFill(true)
+			PowerPrediction.Smooth = C["Unitframe"].Smooth
+			PowerPrediction.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+			self.PowerPrediction = {
+				mainBar = PowerPrediction
+			}
+		end
+	end
+
+	if (unit == "target") then
+		-- Questmob Icon
+		self.QuestIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.QuestIndicator:SetSize(22, 22)
+		self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT" , 9, -12)
+	end
+
+	if (unit == "player" or unit == "target") then
+		-- Combat CombatFeedbackText
+		if (C["Unitframe"].CombatText) then
+			local CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
+			CombatFeedbackText:SetFontObject(UnitframeFont)
+			CombatFeedbackText:SetFont(CombatFeedbackText:GetFont(), 14, "OUTLINE")
+			CombatFeedbackText:SetShadowOffset(0, -0)
+			CombatFeedbackText:SetPoint("CENTER", self.Portrait)
+			CombatFeedbackText.colors = {
+				DAMAGE = {0.69, 0.31, 0.31},
+				CRUSHING = {0.69, 0.31, 0.31},
+				CRITICAL = {0.69, 0.31, 0.31},
+				GLANCING = {0.69, 0.31, 0.31},
+				STANDARD = {0.84, 0.75, 0.65},
+				IMMUNE = {0.84, 0.75, 0.65},
+				ABSORB = {0.84, 0.75, 0.65},
+				BLOCK = {0.84, 0.75, 0.65},
+				RESIST = {0.84, 0.75, 0.65},
+				MISS = {0.84, 0.75, 0.65},
+				HEAL = {0.33, 0.59, 0.33},
+				CRITHEAL = {0.33, 0.59, 0.33},
+				ENERGIZE = {0.31, 0.45, 0.63},
+				CRITENERGIZE = {0.31, 0.45, 0.63},
+			}
+
+			self.CombatFeedbackText = CombatFeedbackText
+		end
 	end
 
 	-- Portrait Timer
-	if (C.Unitframe.PortraitTimer == true and self.Portrait) then
+	if (C["Unitframe"].PortraitTimer == true and self.Portrait) then
 		self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
 
 		self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")
 		self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
 
-		self.PortraitTimer.Remaining = K.SetFontString(self.PortraitTimer, C.Media.Font, data.por.w / 3, C.Media.Font_Style, "CENTER")
+		self.PortraitTimer.Remaining = K.SetFontString(self.PortraitTimer, C["Media"].Font, self.Portrait:GetSize() / 2, C["Media"].FontStyle, "CENTER")
 		self.PortraitTimer.Remaining:SetShadowOffset(0, 0)
 		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
-		self.PortraitTimer.Remaining:SetTextColor(1, 1, 1)
 	end
 
-	self.RaidIcon = self:CreateTexture(nil, "OVERLAY", self)
-	self.RaidIcon:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcons")
-
-	if self.MatchUnit == "boss" then
-		self.RaidIcon:SetPoint("CENTER", self, "TOPRIGHT", -9, -10)
-		self.RaidIcon:SetSize(26, 26)
-
-		self.Name.Bg = self.Health:CreateTexture(nil, "BACKGROUND")
-		self.Name.Bg:SetHeight(18)
-		self.Name.Bg:SetTexCoord(0.2, 0.8, 0.3, 0.85)
-		self.Name.Bg:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT")
-		self.Name.Bg:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT")
-		self.Name.Bg:SetTexture(C.Media.Texture)
-
-		-- Alt power bar
-		local altbar = _G["Boss"..unit:match("%d").."TargetFramePowerBarAlt"]
-		UnitPowerBarAlt_Initialize(altbar, unit, (1) * 0.5, "INSTANCE_ENCOUNTER_ENGAGE_UNIT")
-		altbar:SetParent(self)
-		altbar:ClearAllPoints()
-		altbar:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, 5)
-	else
-		-- Icons
-		self.RaidIcon:SetPoint("CENTER", self.Portrait, "TOP", 0, -1)
-		self.RaidIcon:SetSize(data.por.w / 2.5, data.por.w / 2.5)
-
-		self.MasterLooter = self:CreateTexture(nil, "OVERLAY", self)
-		self.MasterLooter:SetSize(16, 16)
-		if (self.MatchUnit == "target" or self.MatchUnit == "focus") then
-			self.MasterLooter:SetPoint("TOPLEFT", self.Portrait, 3, 3)
-		elseif (self.IsTargetFrame) then
-			self.MasterLooter:SetPoint("CENTER", self.Portrait, "TOPLEFT", 3, -3)
-		elseif (self.IsPartyFrame) then
-			self.MasterLooter:SetSize(14, 14)
-			self.MasterLooter:SetPoint("TOPLEFT", self.Texture, 29, 0)
-		end
-
-		self.Leader = self:CreateTexture(nil, "OVERLAY", self)
-		self.Leader:SetSize(16, 16)
-		if (self.MatchUnit == "target" or self.MatchUnit == "focus") then
-			self.Leader:SetPoint("TOPRIGHT", self.Portrait, -3, 2)
-		elseif self.IsTargetFrame then
-			self.Leader:SetPoint("TOPLEFT", self.Portrait, -3, 4)
-		elseif self.IsPartyFrame then
-			self.Leader:SetSize(14, 14)
-			self.Leader:SetPoint("CENTER", self.Portrait, "TOPLEFT", 1, -1)
-		end
-
-		if self.IsMainFrame then
-			self.PhaseIcon = self:CreateTexture(nil, "OVERLAY")
-			self.PhaseIcon:SetPoint("CENTER", self.Portrait, "BOTTOM")
-			self.PhaseIcon:SetSize(26, 26)
-		end
-
-		self.OfflineIcon = self:CreateTexture(nil, "OVERLAY")
-		self.OfflineIcon:SetPoint("TOPRIGHT", self.Portrait, 7, 7)
-		self.OfflineIcon:SetPoint("BOTTOMLEFT", self.Portrait, -7, -7)
-
-		if (self.MatchUnit == "player" or self.IsPartyFrame) then
-			self.ReadyCheck = self:CreateTexture(nil, "OVERLAY")
-			self.ReadyCheck:SetPoint("TOPRIGHT", self.Portrait, -7, -7)
-			self.ReadyCheck:SetPoint("TOPRIGHT", self.Portrait, -7, -7)
-			self.ReadyCheck:SetPoint("BOTTOMLEFT", self.Portrait, 7, 7)
-			self.ReadyCheck.delayTime = 2
-			self.ReadyCheck.fadeTime = 0.7
-		end
-
-		if (self.IsPartyFrame or self.MatchUnit == "player" or self.MatchUnit == "target") then
-			self.LFDRole = self:CreateTexture(nil, "OVERLAY")
-			self.LFDRole:SetSize(20, 20)
-
-			if self.MatchUnit == "player" then
-				self.LFDRole:SetPoint("BOTTOMRIGHT", self.Portrait, -2, -3)
-			elseif unit == "target" then
-				self.LFDRole:SetPoint("TOPLEFT", self.Portrait, -10, -2)
-			else
-				self.LFDRole:SetPoint("BOTTOMLEFT", self.Portrait, -5, -5)
-			end
-		end
-	end
-
-	-- Update layout
-	UpdateUnitFrameLayout(self)
-
-	-- Player Frame
-	if self.MatchUnit == "player" then
-		self:SetSize(data.siz.w, data.siz.h)
-		self:SetScale(C.Unitframe.Scale or 1)
-
-		-- Combo Points
-		ComboPointPlayerFrame:ClearAllPoints()
-		ComboPointPlayerFrame:SetParent(self)
-		ComboPointPlayerFrame:SetPoint("TOP", self, "BOTTOM", 30, 2)
-		ComboPointPlayerFrame.SetPoint = K.Noop
-
-		K.CMS:SetupResources(self)
-
-		-- Power Prediction Bar (Display estimated cost of spells when casting)
-		if self.AdditionalPower and (K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
-			self.PowerPrediction = {}
-
-			self.PowerPrediction.altBar = CreateFrame("StatusBar", nil, self.AdditionalPower)
-			self.PowerPrediction.altBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-			self.PowerPrediction.altBar:GetStatusBarTexture():SetBlendMode("ADD")
-			self.PowerPrediction.altBar:SetReverseFill(true)
-			self.PowerPrediction.altBar:SetPoint("TOP")
-			self.PowerPrediction.altBar:SetPoint("BOTTOM")
-			self.PowerPrediction.altBar:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
-			self.PowerPrediction.altBar:SetWidth(self.AdditionalPower:GetWidth())
-			self.PowerPrediction.altBar:SetHeight(self.Power:GetHeight())
-			self.PowerPrediction.altBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
-			self.PowerPrediction.altBar.Smooth = C.Unitframe.Smooth
-
-			if C.Unitframe.PowerPredictionBar and self.MatchUnit == "player" then
-				self.PowerPrediction.mainBar = CreateFrame("StatusBar", "$parentPowerCostPrediction", self.Power)
-				self.PowerPrediction.mainBar:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar-Glow]], "BORDER")
-				self.PowerPrediction.mainBar:GetStatusBarTexture():SetBlendMode("ADD")
-				self.PowerPrediction.mainBar:SetReverseFill(true)
-				self.PowerPrediction.mainBar:SetPoint("TOP")
-				self.PowerPrediction.mainBar:SetPoint("BOTTOM")
-				self.PowerPrediction.mainBar:SetPoint("RIGHT", self.Power:GetStatusBarTexture(), "RIGHT")
-				self.PowerPrediction.mainBar:SetWidth(self.Power:GetWidth())
-				self.PowerPrediction.mainBar:SetHeight(self.Power:GetHeight())
-				self.PowerPrediction.mainBar:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
-				self.PowerPrediction.mainBar.Smooth = C.Unitframe.Smooth
-			end
-		end
-
-		-- PvP Timer
-		if (self.PvP) then
-			self.PvPTimer = K.SetFontString(self, C.Media.Font, 13, C.Unitframe.Outline and "OUTLINE" or "", "CENTER")
-			self.PvPTimer:SetShadowOffset(C.Unitframe.Outline and 0 or K.Mult, C.Unitframe.Outline and -0 or -K.Mult)
-			self.PvPTimer:SetTextColor(1, 0.819, 0)
-			self.PvPTimer:SetPoint("BOTTOM", self.PvP, "TOP", 0, 2)
-			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
-		end
-
-		-- GCD spark
-		if C.Unitframe.GCDBar == true and self.MatchUnit == "player" then
-			self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self.Health)
-			self.GCD:SetWidth(self.Health:GetWidth())
-			self.GCD:SetHeight(self.Health:GetHeight() * 1.6)
-			self.GCD:SetFrameStrata("HIGH")
-			self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
-			self.GCD.Color = {1, 1, 1}
-			self.GCD.Height = (self.Health:GetHeight() * 1.6)
-			self.GCD.Width = 10
-		end
-
-		-- Combat icon
-		self.Combat = self:CreateTexture(nil, "OVERLAY")
-		self.Combat:SetPoint("CENTER", self.Level, 1, 0)
-		self.Combat:SetSize(31, 33)
-
-		-- Resting icon
-		self.Resting = self:CreateTexture(nil, "OVERLAY")
-		self.Resting:SetPoint("CENTER", self.Level, -0.5, 0)
-		self.Resting:SetSize(31, 34)
-
-		-- player frame vehicle/normal update
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE", UpdatePlayerFrame)
-		self:RegisterEvent("UNIT_ENTERING_VEHICLE", UpdatePlayerFrame)
-		self:RegisterEvent("UNIT_EXITING_VEHICLE", UpdatePlayerFrame)
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", UpdatePlayerFrame)
-		self:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR", UpdatePlayerFrame)
-	end
-
-	-- Focus & Target Frame
-	if (self.MatchUnit == "target") then
-		-- Questmob Icon
-		self.QuestIcon = self:CreateTexture(nil, "OVERLAY")
-		self.QuestIcon:SetSize(22, 22)
-		self.QuestIcon:SetPoint("CENTER", self.Health, "TOPRIGHT", 2, 0)
-
-		table_insert(self.__elements, function(self, _, unit)
-			self.Texture:SetTexture(GetTargetTexture(self.MatchUnit, UnitClassification(unit)))
-		end)
-	end
-
-	if (self.MatchUnit == "player") then
-		if C.Unitframe.ThreatValue then
-			self.NumericalThreat = CreateFrame("Frame", nil, self)
-			self.NumericalThreat:SetSize(49, 18)
-			self.NumericalThreat:SetPoint("BOTTOM", self, "TOP", 0, 0)
-			self.NumericalThreat:Hide()
-
-			self.NumericalThreat.value = self.NumericalThreat:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-			self.NumericalThreat.value:SetPoint("TOP", 0, -4)
-
-			self.NumericalThreat.bg = CreateFrame("StatusBar", nil, self.NumericalThreat)
-			self.NumericalThreat.bg:SetStatusBarTexture(C.Media.Texture)
-			self.NumericalThreat.bg:SetFrameStrata("LOW")
-			self.NumericalThreat.bg:SetFrameLevel(2)
-			self.NumericalThreat.bg:SetPoint("TOP", 0, -3)
-			self.NumericalThreat.bg:SetSize(37, 14)
-
-			self.NumericalThreat.texture = self.NumericalThreat:CreateTexture(nil, "ARTWORK")
-			self.NumericalThreat.texture:SetPoint("TOP", 0, 0)
-			self.NumericalThreat.texture:SetTexture("Interface\\TargetingFrame\\NumericThreatBorder")
-			self.NumericalThreat.texture:SetTexCoord(0, 0.765625, 0, 0.5625)
-			self.NumericalThreat.texture:SetSize(49, 18)
-
-			self:RegisterEvent("UNIT_THREAT_LIST_UPDATE", UpdateThreat)
-			self:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", UpdateThreat)
-			self:RegisterEvent("PLAYER_REGEN_DISABLED", UpdateThreat)
-			self:RegisterEvent("PLAYER_REGEN_ENABLED", UpdateThreat)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateThreat)
-		end
-	end
-
-	K.CreateAuras(self)
-
-	-- Range Fader (We use oUF_SpellRange)
 	self.Range = {
 		insideAlpha = 1,
-		outsideAlpha = C.UnitframePlugins.OORAlpha,
+		outsideAlpha = C["UnitframePlugins"].OORAlpha,
 	}
 
 	return self
 end
 
-local function FixPetUpdate(self, event, ...) -- Petframe doesnt always update correctly
-	oUF_KkthnxPet:GetScript("OnAttributeChanged")(oUF_KkthnxPet, "unit", "pet")
-end
+oUF:RegisterStyle("oUF_KkthnxUnitframes", oUF_KkthnxUnitframes)
+oUF:Factory(function(self)
+	oUF:SetActiveStyle("oUF_KkthnxUnitframes")
 
--- Spawn our frames.
-oUF:RegisterStyle("oUF_Kkthnx", CreateUnitLayout)
-oUF:SetActiveStyle("oUF_Kkthnx")
+	local player = self:Spawn("player", "oUF_KkthnxPlayer")
+	player:SetSize(190, 52)
+	player:SetPoint(unpack(C.Position.UnitFrames.Player))
+	K.Movers:RegisterFrame(player)
 
-local player = oUF:Spawn("player", "oUF_KkthnxPlayer")
-player:SetPoint(unpack(C.Position.UnitFrames.Player))
-player:SetSize(176, 42)
-player:SetScale(C.Unitframe.Scale or 1)
-player:RegisterEvent("UNIT_PET", FixPetUpdate)
-Movers:RegisterFrame(player)
+	local pet = self:Spawn("pet", "oUF_KkthnxPet")
+	pet:SetSize(116, 36)
+	pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
+	K.Movers:RegisterFrame(pet)
 
-local pet = oUF:Spawn("pet", "oUF_KkthnxPet")
-pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
-pet:SetSize(128, 64)
-Movers:RegisterFrame(pet)
+	local target = self:Spawn("target", "oUF_KkthnxTarget")
+	target:SetSize(190, 52)
+	target:SetPoint(unpack(C.Position.UnitFrames.Target))
+	K.Movers:RegisterFrame(target)
 
-local target = oUF:Spawn("target", "oUF_KkthnxTarget")
-target:SetPoint(unpack(C.Position.UnitFrames.Target))
-target:SetSize(176, 42)
-target:SetScale(C.Unitframe.Scale or 1)
-Movers:RegisterFrame(target)
+	local targettarget = self:Spawn("targettarget", "oUF_KkthnxTargetTarget")
+	targettarget:SetSize(116, 36)
+	targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
+	K.Movers:RegisterFrame(targettarget)
 
-local targettarget = oUF:Spawn("targettarget", "oUF_KkthnxTargetTarget")
-targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
-targettarget:SetSize(86, 20)
-Movers:RegisterFrame(targettarget)
+	local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
+	focus:SetSize(190, 52)
+	focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
+	K.Movers:RegisterFrame(focus)
 
-local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
-focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
-focus:SetSize(176, 42)
-focus:SetScale(C.Unitframe.Scale or 1)
-Movers:RegisterFrame(focus)
+	local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
+	focustarget:SetSize(116, 36)
+	focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
+	K.Movers:RegisterFrame(focustarget)
 
-local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
-focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
-focustarget:SetSize(86, 20)
-Movers:RegisterFrame(focustarget)
-
-if (C.Unitframe.Party) then
-	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C.Raidframe.RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
+	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
-	"initial-width", K.Scale(105),
-	"initial-height", K.Scale(30),
+	"initial-width", 140,
+	"initial-height", 38,
 	"showSolo", false,
 	"showParty", true,
 	"showRaid", false,
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
-	"showPlayer", C.Unitframe.ShowPlayer, -- Need to add this as an option.
-	"yOffset", K.Scale(-34)
+	"showPlayer", true, -- Need to add this as an option.
+	"yOffset", -40
 	)
-
 	party:SetPoint(unpack(C.Position.UnitFrames.Party))
-	Movers:RegisterFrame(party)
-end
+	K.Movers:RegisterFrame(party)
 
-if C.Unitframe.ShowBoss then
-	local boss = {}
-	for i = 1, MAX_BOSS_FRAMES do
-		boss[i] = oUF:Spawn("boss"..i, "oUF_KkthnxBossFrame"..i)
-		if (i == 1) then
-			boss[i]:SetPoint(unpack(C.Position.UnitFrames.Boss))
-		else
-			boss[i]:SetPoint("TOPLEFT", boss[(i - 1)], "BOTTOMLEFT", 0, -45)
+	if (C["Unitframe"].ShowBoss) then
+		local Boss = {}
+		for i = 1, MAX_BOSS_FRAMES do
+			Boss[i] = self:Spawn("boss"..i, "oUF_KkthnxBossFrame"..i)
+			Boss[i]:SetParent(K.PetBattleHider)
+
+			Boss[i]:SetSize(190, 52)
+			if (i == 1) then
+				Boss[i]:SetPoint(unpack(C.Position.UnitFrames.Boss))
+			else
+				Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -45)
+			end
+			K.Movers:RegisterFrame(Boss[i])
 		end
-
-		Movers:RegisterFrame(boss[i])
 	end
-end
 
-if C.Unitframe.ShowArena then
-	local arena = {}
-	for i = 1, 5 do
-		arena[i] = oUF:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)
-		if (i == 1) then
-			arena[i]:SetPoint(unpack(C.Position.UnitFrames.Arena))
-		else
-			arena[i]:SetPoint("TOPLEFT", arena[i-1], "BOTTOMLEFT", 0, -40)
+	if (C["Unitframe"].ShowArena) then
+		local arena = {}
+		for i = 1, 5 do
+			arena[i] = self:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)
+			arena[i]:SetSize(190, 52)
+			if (i == 1) then
+				arena[i]:SetPoint(unpack(C.Position.UnitFrames.Arena))
+			else
+				arena[i]:SetPoint("TOPLEFT", arena[i-1], "BOTTOMLEFT", 0, -45)
+			end
+			K.Movers:RegisterFrame(arena[i])
 		end
-
-		Movers:RegisterFrame(arena[i])
 	end
-end
-
--- Test the unitframes :D
-local moving = false
-SlashCmdList.TEST_UF = function(msg)
-	if InCombatLockdown() then print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
-	if not moving then
-		for _, frames in pairs({"oUF_KkthnxTarget", "oUF_KkthnxTargetTarget", "oUF_KkthnxPet", "oUF_KkthnxFocus", "oUF_KkthnxFocusTarget"}) do
-			_G[frames].oldunit = _G[frames].unit
-			_G[frames]:SetAttribute("unit", "player")
-		end
-
-		if C.Unitframe.ShowArena == true then
-			for i = 1, 5 do
-				_G["oUF_KkthnxArenaFrame"..i].oldunit = _G["oUF_KkthnxArenaFrame"..i].unit
-				_G["oUF_KkthnxArenaFrame"..i]:SetAttribute("unit", "player")
-			end
-		end
-
-		if C.Unitframe.ShowBoss == true then
-			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_KkthnxBossFrame"..i].oldunit = _G["oUF_KkthnxBossFrame"..i].unit
-				_G["oUF_KkthnxBossFrame"..i]:SetAttribute("unit", "player")
-			end
-		end
-		moving = true
-	else
-		for _, frames in pairs({"oUF_KkthnxTarget", "oUF_KkthnxTargetTarget", "oUF_KkthnxPet", "oUF_KkthnxFocus", "oUF_KkthnxFocusTarget"}) do
-			_G[frames]:SetAttribute("unit", _G[frames].oldunit)
-		end
-
-		if C.Unitframe.ShowArena == true then
-			for i = 1, 5 do
-				_G["oUF_KkthnxArenaFrame"..i]:SetAttribute("unit", _G["oUF_KkthnxArenaFrame"..i].oldunit)
-			end
-		end
-
-		if C.Unitframe.ShowBoss == true then
-			for i = 1, MAX_BOSS_FRAMES do
-				_G["oUF_KkthnxBossFrame"..i]:SetAttribute("unit", _G["oUF_KkthnxBossFrame"..i].oldunit)
-			end
-		end
-		moving = false
-	end
-end
-_G.SLASH_TEST_UF1 = "/testuf"
+end)

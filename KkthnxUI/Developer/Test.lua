@@ -1,34 +1,31 @@
--- So I can test stuff.
+local _G = _G
 
--- Use this file for testing stuff that I do not want in the UI or I am unsure about.
--- This is a good file to mess around with code in for anyone else as well.
+local K, C, L = _G.unpack(_G.select(2, ...))
 
--- CodeName : Code Gone Wild D
+--[[
+So I can test stuff.
 
-local K, C, L = unpack(select(2, ...))
-if not K.IsDeveloper() and not K.IsDeveloperRealm() then return end
+Use this file for testing stuff that I do not want in the UI or I am unsure about.
+This is a good file to mess around with code in for anyone else as well.
 
--- Lua API
-local tostringall = tostringall
-local string_join = string.join
+	CodeName : Code Gone Wild D
+	]]--
 
--- Wow API
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS:
+-- This is the layout we need to follow.
+-- local WelcomeHome = K:NewModule("WelcomeHome", "AceConsole-3.0")
+--
+-- function WelcomeHome:OnInitialize()
+-- -- Called when the addon is loaded
+-- end
+--
+-- function WelcomeHome:OnEnable()
+-- self:Print("Hello World!")
+-- end
+--
+-- function WelcomeHome:OnDisable()
+-- -- Called when the addon is disabled
+-- end
 
--- Always debug our temp code.
-local Debugger
-if tekDebug then
-	Debugger = tekDebug:GetFrame("Test.lua")
-else
-	Debugger = function() end
-end
-
-local function Debug(...)
-	if Debugger then
-		Debugger:AddMessage(string_join(", ", tostringall(...)))
-	end
-end
-
--- Start our temp code here to test.
+------------
+------------

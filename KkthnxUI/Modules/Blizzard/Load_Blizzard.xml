@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Load_Blizzard -->
+    <Script file="AlertFrames.lua" />
+    <Script file="AltPowerBar.lua" />
+    <Script file="BlizzBugFixes.lua" />
+    <Script file="CaptureBar.lua" />
+    <Script file="ColorPicker.lua" />
+    <Script file="ColorTextures.lua" />
+    <Script file="CommandBar.lua" />
+    <Script file="DebugTools.lua" />
+    <Script file="ErrorFilter.lua" />
+    <Script file="Fonts.lua" />
+    <Script file="Mail.lua" />
+    <Script file="MirrorBars.lua" />
+    <Script file="ObjectiveFrame.lua" />
+    <Script file="RaidUtility.lua" />
+    <Script file="ScriptErrors.lua" />
+    <Script file="TalkingHeadFrame.lua" />
+    <Script file="TimerTracker.lua" />
+    <Script file="Vehicle.lua" />
+</Ui>

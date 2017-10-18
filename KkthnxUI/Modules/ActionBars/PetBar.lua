@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
 local _G = _G
@@ -14,7 +14,7 @@ local RegisterStateDriver = _G.RegisterStateDriver
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PetActionBarFrame, PetHolder, RightBarMouseOver, HoverBind, PetBarMouseOver
 
-if C.ActionBar.PetBarHide then PetActionBarAnchor:Hide() return end
+if C["ActionBar"].PetBarHide then PetActionBarAnchor:Hide() return end
 
 -- Create bar
 local PetBar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTemplate")
@@ -41,18 +41,18 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 			local button = _G["PetActionButton"..i]
 			button:ClearAllPoints()
 			button:SetParent(PetHolder)
-			button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+			button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 			if i == 1 then
-				if C.ActionBar.PetBarHorizontal == true then
+				if C["ActionBar"].PetBarHorizontal == true then
 					button:SetPoint("BOTTOMLEFT", 0, 0)
 				else
 					button:SetPoint("TOPLEFT", 0, 0)
 				end
 			else
-				if C.ActionBar.PetBarHorizontal == true then
-					button:SetPoint("LEFT", _G["PetActionButton"..i-1], "RIGHT", C.ActionBar.ButtonSpace, 0)
+				if C["ActionBar"].PetBarHorizontal == true then
+					button:SetPoint("LEFT", _G["PetActionButton"..i-1], "RIGHT", C["ActionBar"].ButtonSpace, 0)
 				else
-					button:SetPoint("TOP", _G["PetActionButton"..i-1], "BOTTOM", 0, -C.ActionBar.ButtonSpace)
+					button:SetPoint("TOP", _G["PetActionButton"..i-1], "BOTTOM", 0, -C["ActionBar"].ButtonSpace)
 				end
 			end
 			button:Show()
@@ -69,7 +69,7 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 end)
 
 -- Mouseover bar
-if C.ActionBar.RightBarsMouseover == true and C.ActionBar.PetBarHorizontal == false then
+if C["ActionBar"].RightBarsMouseover == true and C["ActionBar"].PetBarHorizontal == false then
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local b = _G["PetActionButton"..i]
 		b:SetAlpha(0)
@@ -78,7 +78,7 @@ if C.ActionBar.RightBarsMouseover == true and C.ActionBar.PetBarHorizontal == fa
 	end
 end
 
-if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
+if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local b = _G["PetActionButton"..i]
 		b:SetAlpha(0)

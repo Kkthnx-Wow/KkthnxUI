@@ -135,7 +135,7 @@ local function combat(self, event, unit, eventType, flags, amount, dtype)
 	if text then
 		FeedbackText:SetFont(font,fontHeight,fontFlags)
 		FeedbackText:SetFormattedText(text, arg)
-		FeedbackText:SetTextColor(unpack(color))
+		FeedbackText:SetTextColor(_G.unpack(color))
 		FeedbackText:SetAlpha(0)
 		FeedbackText:Show()
 		feedback[self] = GetTime()

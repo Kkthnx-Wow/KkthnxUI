@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Skins.Recount ~= true or not K.CheckAddOn("Recount") then return end
+if C["Skins"].Recount ~= true or not K.IsAddOnEnabled("Recount") then return end
 
 local _G = _G
 
@@ -17,7 +17,7 @@ local function Recount_AcceptFrame(MainText, Function)
 		AcceptFrame:SetPoint("CENTER", UIParent, "CENTER")
 		AcceptFrame:SetFrameStrata("DIALOG")
 		AcceptFrame.Text = AcceptFrame:CreateFontString(nil, "OVERLAY")
-		AcceptFrame.Text:SetFont(C.Media.Font, 14)
+		AcceptFrame.Text:SetFont(C["Media"].Font, 14)
 		AcceptFrame.Text:SetPoint("TOP", AcceptFrame, "TOP", 0, -10)
 		AcceptFrame.Accept = CreateFrame("Button", nil, AcceptFrame, "OptionsButtonTemplate")
 		AcceptFrame.Accept:SkinButton()

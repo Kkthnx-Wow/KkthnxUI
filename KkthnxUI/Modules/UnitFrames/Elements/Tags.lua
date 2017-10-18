@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true and C.Raidframe.Enable ~= true and C.Nameplates.Enable ~= true then return end
+if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true and C["Nameplates"].Enable ~= true then return end
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -7,7 +7,6 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 -- Lua API
 local _G = _G
-local format = format
 local math_floor = math.floor
 local string_format = string.format
 local string_gsub = string.gsub
@@ -51,9 +50,15 @@ local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
 local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
+local DEFAULT_AFK_MESSAGE = _G.DEFAULT_AFK_MESSAGE
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
+
+local GHOST = GetSpellInfo(8326)
+if GetLocale() == "deDE" then
+	GHOST = "Geist"
+end
 
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
@@ -65,7 +70,7 @@ local function UnitName(unit)
 end
 
 -- KkthnxUI Unitframe Tags
-oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE UNIT_POWER"
+oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_POWER UNIT_FLAGS UNIT_FACTION UNIT_CLASSIFICATION_CHANGED UNIT_NAME_UPDATE UNIT_POWER"
 oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	local unitReaction = UnitReaction(unit, "player")
 	local _, unitClass = UnitClass(unit)
@@ -77,32 +82,26 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 		local reaction = K.Colors.reaction[unitReaction]
 		return Hex(reaction[1], reaction[2], reaction[3])
 	else
-		return "|cffc2c2c2"
+		return Hex(255/255, 255/255, 255/255)
 	end
 end
 
--- We will just use this for now.
-oUF.Tags.Events["KkthnxUI:NameColor"] = "UNIT_NAME_UPDATE UNIT_POWER"
-oUF.Tags.Methods["KkthnxUI:NameColor"] = function(unit)
-	return string_format("|cff%02x%02x%02x", 1 * 255, 1 * 255, 1 * 255)
-end
+oUF.Tags.Events["KkthnxUI:AltPowerCurrent"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
+oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
+	local cur = UnitPower(unit, 0)
+	local max = UnitPowerMax(unit, 0)
 
-oUF.Tags.Events["KkthnxUI:DruidMana"] = "UNIT_POWER UNIT_MAXPOWER"
-oUF.Tags.Methods["KkthnxUI:DruidMana"] = function(unit)
-	local min, max = UnitPower(unit, SPELL_POWER_MANA), UnitPowerMax(unit, SPELL_POWER_MANA)
-	if (min == max) then
-		return K.ShortValue(min)
-	else
-		return K.ShortValue(min).."/"..K.ShortValue(max)
+	if (UnitPowerType(unit) ~= 0 and cur ~= max) then
+		return math.floor(cur / max * 100)
 	end
 end
 
-oUF.Tags.OnUpdateThrottle["KkthnxUI:PvPTimer"] = 1
+oUF.Tags.Events["KkthnxUI:PvPTimer"] = "UNIT_FACTION HONOR_PRESTIGE_UPDATE"
 oUF.Tags.Methods["KkthnxUI:PvPTimer"] = function(unit)
 	if (UnitIsPVPFreeForAll(unit) or UnitIsPVP(unit)) then
 		local pvpTime = (GetPVPTimer() or 0)/1000
 		if (not IsPVPTimerRunning()) or (pvpTime < 1) or (pvpTime > 300) then --999?
-			return ""
+			return " "
 		end
 
 		return K.FormatTime(math_floor(pvpTime))
@@ -141,19 +140,52 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 	return Hex(r, g, b)
 end
 
-oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED"
+oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:ClassificationColor"] = function(unit)
-	local c = UnitClassification(unit)
-	if (c == "rare" or c == "elite") then
+	local classification = UnitClassification(unit)
+	if (classification == "rare" or classification == "elite") then
 		return Hex(0.69, 0.31, 0.31) -- Red
-	elseif (c == "rareelite" or c == "worldboss") then
+	elseif (classification == "rareelite" or classification == "worldboss") then
 		return Hex(0.69, 0.31, 0.31) -- Red
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:HealthCurrent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:HealthCurrent"] = function(unit)
+	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+	if (status) then
+		return status
+	else
+		return K.GetFormattedText("CURRENT", UnitHealth(unit), UnitHealthMax(unit))
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
+	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+
+	if (status) then
+		return status
+	else
+		return K.GetFormattedText("CURRENT_PERCENT", UnitHealth(unit), UnitHealthMax(unit))
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:PowerCurrent"] = "UNIT_DISPLAYPOWER UNIT_POWER_FREQUENT UNIT_MAXPOWER"
+oUF.Tags.Methods["KkthnxUI:PowerCurrent"] = function(unit)
+	local pType = UnitPowerType(unit)
+	local min = UnitPower(unit, pType)
+
+	return min == 0 and " " or K.GetFormattedText("CURRENT", min, UnitPowerMax(unit, pType))
+end
+
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
-	local level = UnitLevel(unit)
+	if not UnitExists(unit) then
+		return
+	end
+
+	local level = UnitEffectiveLevel(unit)
 
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
@@ -164,52 +196,101 @@ oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:SmartLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
+	if not UnitExists(unit) then
+		return
+	end
+
+	local level = UnitLevel(unit)
+	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+		return UnitBattlePetLevel(unit)
+	elseif level == UnitLevel("player") then
+		return ""
+	elseif(level > 0) then
+		return level
+	else
+		return "??"
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:NameAbbreviateLong"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameAbbreviateLong"] = function(unit)
+	local name = UnitName(unit)
+	local returnString = ""
+
+	if name then
+		if name:len() > 20 then
+			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
+		else
+			returnString = name
+		end
+	end
+
+	return returnString
+end
+
+oUF.Tags.Events["KkthnxUI:NameAbbreviateMedium"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameAbbreviateMedium"] = function(unit)
+	local name = UnitName(unit)
+	local returnString = ""
+
+	if name then
+		if name:len() > 18 then
+			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
+		else
+			returnString = name
+		end
+	end
+
+	return returnString
+end
+
+oUF.Tags.Events["KkthnxUI:NameAbbreviateShort"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameAbbreviateShort"] = function(unit)
+	local name = UnitName(unit)
+	local returnString = ""
+
+	if name then
+		if name:len() > 8 then
+			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
+		else
+			returnString = name
+		end
+	end
+
+	return returnString
+end
+
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local NameVeryShort = UnitName(unit) or UNKNOWN
-	return NameVeryShort ~= nil and K.UTF8Sub(NameVeryShort, 5, true) or ""
+	return NameVeryShort ~= nil and K.ShortenString(NameVeryShort, 5, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local NameShort = UnitName(unit) or UNKNOWN
-	return NameShort ~= nil and K.UTF8Sub(NameShort, 8, true) or ""
+	return NameShort ~= nil and K.ShortenString(NameShort, 8, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
 	local NameMedium = UnitName(unit) or UNKNOWN
-	return NameMedium ~= nil and K.UTF8Sub(NameMedium, 15, true) or ""
+	return NameMedium ~= nil and K.ShortenString(NameMedium, 15, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	local NameLong = UnitName(unit) or UNKNOWN
-	return NameLong ~= nil and K.UTF8Sub(NameLong, 20, true) or ""
+	return NameLong ~= nil and K.ShortenString(NameLong, 20, true) or ""
 end
 
-local unitStatus = {}
-oUF.Tags.OnUpdateThrottle["KkthnxUI:StatusTimer"] = 1
-oUF.Tags.Methods["KkthnxUI:StatusTimer"] = function(unit)
-	if not UnitIsPlayer(unit) then return end
-	local guid = UnitGUID(unit)
-	if (UnitIsAFK(unit)) then
-		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "AFK" then
-			unitStatus[guid] = {"AFK", GetTime()}
-		end
-	elseif (UnitIsDND(unit)) then
-		if not unitStatus[guid] or unitStatus[guid] and unitStatus[guid][1] ~= "DND" then
-			unitStatus[guid] = {"DND", GetTime()}
-		end
-	else
-		unitStatus[guid] = nil
-	end
-	if unitStatus[guid] ~= nil then
-		local status = unitStatus[guid][1]
-		local timer = GetTime() - unitStatus[guid][2]
-		local mins = math_floor(timer / 60)
-		local secs = math_floor(timer - (mins * 60))
-		return ("%s (%01.f:%02.f)"):format(status, mins, secs)
+oUF.Tags.Events["KkthnxUI:AFK"] = "PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:AFK"] = function(unit)
+	local isAFK = UnitIsAFK(unit)
+	if isAFK then
+		return ("|cffFFFFFF[|r|cffFF0000%s|r|cFFFFFFFF]|r"):format(DEFAULT_AFK_MESSAGE)
 	else
 		return ""
 	end
@@ -231,11 +312,25 @@ oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:PartyRole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:PartyRole"] = function(unit)
+	local role = UnitGroupRolesAssigned(unit)
+	local string = ""
+
+	if role == "TANK" then
+		string = " |cff0099CC"..TANK.."|r"
+	elseif role == "HEALER" then
+		string = " |cff00FF00"..HEALER.."|r"
+	end
+
+	return string
+end
+
 oUF.Tags.Events["KkthnxUI:ThreatPercent"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
 oUF.Tags.Methods["KkthnxUI:ThreatPercent"] = function(unit)
 	local _, _, percent = UnitDetailedThreatSituation("player", unit)
 	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
-		return format("%.0f%%", percent)
+		return string_format("%.0f%%", percent)
 	else
 		return ""
 	end
@@ -251,9 +346,46 @@ oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
 	end
 end
 
+-- Raid Tags
+oUF.Tags.Events["KkthnxUI:RaidStatus"] = "UNIT_MAXHEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION"
+oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
+    local Offline = not UnitIsConnected(unit) and "offline"
+    if Offline then return Offline end
+
+    local Dead = (UnitIsDead(unit) and "dead") or (UnitIsGhost(unit) and "ghost")
+    if Dead then return Dead end
+
+    local MaxHealth = UnitHealthMax(unit)
+    local CurrentHealth = UnitHealth(unit)
+
+    if CurrentHealth == MaxHealth or CurrentHealth == 0 or MaxHealth == 0 then
+        return
+    elseif UnitIsFriend("player", unit) then
+        return "-"..K.ShortValue(MaxHealth - CurrentHealth)
+    else
+        return string.format("%.1f", CurrentHealth / MaxHealth * 100).."%"
+    end
+end
+
 -- Nameplate Tags
 oUF.Tags.Events["KkthnxUI:NameplateLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
+	if not UnitExists(unit) then
+		return
+	end
+
+	local level = UnitEffectiveLevel(unit)
+	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
+		return UnitBattlePetLevel(unit)
+	elseif (level > 0) then
+		return level
+	else
+		return "??"
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:NameplateSmartLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Methods["KkthnxUI:NameplateSmartLevel"] = function(unit)
 	if not UnitExists(unit) then
 		return
 	end
@@ -263,27 +395,14 @@ oUF.Tags.Methods["KkthnxUI:NameplateLevel"] = function(unit)
 		return UnitBattlePetLevel(unit)
 	elseif level == UnitLevel("player") then
 		return ""
-	elseif (level > 0) then
+	elseif(level > 0) then
 		return level
 	else
 		return "??"
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameplateNameLong"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["KkthnxUI:NameplateNameLong"] = function(unit)
-	local NameplateNameLong = UnitName(unit) or UNKNOWN
-	return NameplateNameLong ~= nil and K.UTF8Sub(NameplateNameLong, 20, true) or ""
-end
-
-oUF.Tags.Events["KkthnxUI:NameplateNameLongAbbrev"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["KkthnxUI:NameplateNameLongAbbrev"] = function(unit)
-	local Name = UnitName(unit) or UNKNOWN
-	local NameLongAbbrev = (string_len(Name) > 18) and string_gsub(Name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or Name
-	return K.UTF8Sub(NameLongAbbrev, 18, false) or ""
-end
-
-oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"
+oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS UNIT_FACTION UNIT_CLASSIFICATION_CHANGED UNIT_NAME_UPDATE UNIT_POWER"
 oUF.Tags.Methods["KkthnxUI:NameplateNameColor"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
 	if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and (reaction and reaction >= 5) then
@@ -300,13 +419,13 @@ oUF.Tags.Methods["KkthnxUI:NameplateNameColor"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH NAME_PLATE_UNIT_ADDED"
+oUF.Tags.Events["KkthnxUI:NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:NameplateHealth"] = function(unit)
-	local health = UnitHealth(unit)
-	local maxhealth = UnitHealthMax(unit)
-	if maxhealth == 0 then
-		return 0
+	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+
+	if (status) then
+		return status
 	else
-		return ("%s - %d%%"):format(K.ShortValue(health), health / maxhealth * 100 + 0.5)
+		return K.GetFormattedText("CURRENT_PERCENT", UnitHealth(unit), UnitHealthMax(unit))
 	end
 end

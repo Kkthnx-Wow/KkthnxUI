@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then return end
 
 -- Wow Lua
 local _G = _G

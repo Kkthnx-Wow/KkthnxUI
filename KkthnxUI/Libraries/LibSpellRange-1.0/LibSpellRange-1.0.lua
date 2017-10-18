@@ -17,8 +17,6 @@ assert(LibStub, format("%s requires LibStub.", major))
 local Lib = LibStub:NewLibrary(major, minor)
 if not Lib then return end
 
-local _G = _G
-
 local tonumber = _G.tonumber
 local strlower = _G.strlower
 local wipe = _G.wipe
@@ -35,7 +33,7 @@ local IsSpellInRange = _G.IsSpellInRange
 local SpellHasRange = _G.SpellHasRange
 
 -- isNumber is basically a tonumber cache for maximum efficiency
-	Lib.isNumber = Lib.isNumber or setmetatable({}, {
+Lib.isNumber = Lib.isNumber or setmetatable({}, {
 	__mode = "kv",
 	__index = function(t, i)
 		local o = tonumber(i) or false
@@ -46,7 +44,7 @@ local isNumber = Lib.isNumber
 
 -- strlower cache for maximum efficiency
 Lib.strlowerCache = Lib.strlowerCache or setmetatable(
-	{}, {
+{}, {
 	__index = function(t, i)
 		if not i then return end
 		local o
@@ -216,4 +214,5 @@ function Lib.SpellHasRange(spellInput)
 
 		return SpellHasRange(spellInput)
 	end
+
 end

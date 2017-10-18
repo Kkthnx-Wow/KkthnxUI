@@ -1,47 +1,64 @@
 local K, C, L = unpack(select(2, ...))
-if C.Raidframe.AuraWatch ~= true or C.Raidframe.Enable ~= true then return end
+if C["Raidframe"].AuraWatch ~= true or C["Raidframe"].Enable ~= true then return end
 
 local _G = _G
 local GetSpellInfo = _G.GetSpellInfo
+local unpack = unpack
+local print = print
 
 K.RaidBuffs = {
 	PRIEST = {
-		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
 		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
 		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
+		{194384, "TOPRIGHT", {1, 0, 0.75}}, -- Atonement
+		{33206, "LEFT", {227/255, 23/255, 13/255}, true}, -- Pain Suppression
+		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
+		{47788, "LEFT", {221/255, 117/255, 0}, true}, -- Guardian Spirit
 	},
 	DRUID = {
-		{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
-		{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
-		{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
-		{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
+		{102351, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (Initial Buff)
+		{102352, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (HoT)
+		{155777, "RIGHT", {0.8, 0.4, 0.8}}, -- Germination
+		{188550, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom T18 4pc
+		{200389, "BOTTOM", {1, 1, 0.4}}, -- Cultivation
+		{207386, "TOP", {0.4, 0.2, 0.8}}, -- Spring Blossoms
+		{33763, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
 		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
+		{774, "TOPRIGHT", {0.8, 0.4, 0.8}}, -- Rejuvenation
+		{8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}}, -- Regrowth
 	},
 	PALADIN = {
-		{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
-		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
-		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
-		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
-		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
-		{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
+		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true},    -- Hand of Protection
+		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},  -- Hand of Freedom
+		{114163, 'BOTTOMLEFT', {0.87, 0.7, 0.03}},   -- Eternal Flame
+		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},       -- Beacon of Faith
+		{53563, "TOPRIGHT", {0.7, 0.3, 0.7}},         -- Beacon of Light
+		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Hand of Sacrifice
 	},
 	SHAMAN = {
-		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
+		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Riptide
 	},
 	MONK = {
-		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
-		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
+		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},   -- Life Cocoon
+		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},    --Renewing Mist
+		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}},  -- Zen Sphere
 		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
-		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
+	},
+	ROGUE = {
+		{57934, "TOPRIGHT", {227/255, 23/255, 13/255}}, -- Tricks of the Trade
+	},
+	WARRIOR = {
+		{114030, "TOPLEFT", {0.2, 0.2, 1}},          -- Vigilance
+		{3411, "TOPRIGHT", {227/255, 23/255, 13/255}}, -- Intervene
 	},
 	ALL = {
 		{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
 	},
-	HUNTER = {},
-	DEMONHUNTER = {},
-	WARLOCK = {},
-	MAGE = {},
 	DEATHKNIGHT = {},
+	DEMONHUNTER = {},
+	HUNTER = {},
+	MAGE = {},
+	WARLOCK = {},
 }
 
 local function SpellName(id)
@@ -73,7 +90,7 @@ K.RaidDebuffs = {
 	[SpellName(215460)] = 6, -- Necrotic Venom
 	[SpellName(215489)] = 6, -- Venomous Pool
 	[SpellName(218519)] = 6, -- Wind Burn (Mythic)
-	-- Il'gynoth, Heart of the Corruption
+	-- Il"gynoth, Heart of the Corruption
 	[SpellName(208697)] = 6, -- Mind Flay
 	[SpellName(208929)] = 6, -- Spew Corruption
 	[SpellName(209469)] = 7, -- Touch of Corruption
@@ -214,7 +231,7 @@ K.RaidDebuffs = {
 	-- Krosus
 	[SpellName(205344)] = 6, -- Orb of Destruction
 	[SpellName(206677)] = 6, -- Searing Brand
-	-- High Botanist Tel'arn
+	-- High Botanist Tel"arn
 	[SpellName(218304)] = 6, -- Parasitic Fetter
 	[SpellName(218342)] = 6, -- Parasitic Fixate
 	[SpellName(218503)] = 6, -- Recursive Strikes (Tank)
@@ -249,7 +266,7 @@ K.RaidDebuffs = {
 	[SpellName(209973)] = 6, -- Ablating Explosion
 	[SpellName(211261)] = 6, -- Permaliative Torment
 	[SpellName(211887)] = 6, -- Ablated
-	-- Gul'dan
+	-- Gul"dan
 	[SpellName(180079)] = 6, -- Felfire Munitions
 	[SpellName(206221)] = 6, -- Empowered Bonds of Fel
 	[SpellName(206840)] = 6, -- Gaze of Vethriz

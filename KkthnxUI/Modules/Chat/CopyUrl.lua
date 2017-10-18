@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Chat.Enable ~= true then return end
+if C["Chat"].Enable ~= true then return end
 
 -- Lua API
 local string_gsub = string.gsub
@@ -10,10 +10,10 @@ local unpack = unpack
 -- GLOBALS: ChatEdit_ChooseBoxForSend,  ChatEdit_ActivateChat
 
 local function PrintURL(url)
-	if C.Chat.LinkBrackets then
-		url = K.RGBToHex(unpack(C.Chat.LinkColor or {0.08, 1, 0.36})).."|Hurl:"..url.."|h["..url.."]|h|r "
+	if C["Chat"].LinkBrackets then
+		url = K.RGBToHex(unpack(C["Chat"].LinkColor or {0.08, 1, 0.36})).."|Hurl:"..url.."|h["..url.."]|h|r "
 	else
-		url = K.RGBToHex(unpack(C.Chat.LinkColor or {0.08, 1, 0.36})).."|Hurl:"..url.."|h"..url.."|h|r "
+		url = K.RGBToHex(unpack(C["Chat"].LinkColor or {0.08, 1, 0.36})).."|Hurl:"..url.."|h"..url.."|h|r "
 	end
 
 	return url

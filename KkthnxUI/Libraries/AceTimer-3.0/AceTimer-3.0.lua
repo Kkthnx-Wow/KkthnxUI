@@ -45,7 +45,7 @@ local function new(self, loop, func, delay, ...)
 	activeTimers[timer] = timer
 
 	-- Create new timer closure to wrap the "timer" object
-	timer.callback = function()
+	timer.callback = function() 
 		if not timer.cancelled then
 			if type(timer.func) == "string" then
 				-- We manually set the unpack count to prevent issues with an arg set that contains nil and ends with nil
@@ -83,11 +83,11 @@ end
 -- MyAddOn = LibStub("AceAddon-3.0"):NewAddon("MyAddOn", "AceTimer-3.0")
 --
 -- function MyAddOn:OnEnable()
--- self:ScheduleTimer("TimerFeedback", 5)
+--   self:ScheduleTimer("TimerFeedback", 5)
 -- end
 --
 -- function MyAddOn:TimerFeedback()
--- print("5 seconds passed")
+--   print("5 seconds passed")
 -- end
 function AceTimer:ScheduleTimer(func, delay, ...)
 	if not func or not delay then
@@ -112,17 +112,17 @@ end
 -- MyAddOn = LibStub("AceAddon-3.0"):NewAddon("MyAddOn", "AceTimer-3.0")
 --
 -- function MyAddOn:OnEnable()
--- self.timerCount = 0
--- self.testTimer = self:ScheduleRepeatingTimer("TimerFeedback", 5)
+--   self.timerCount = 0
+--   self.testTimer = self:ScheduleRepeatingTimer("TimerFeedback", 5)
 -- end
 --
 -- function MyAddOn:TimerFeedback()
--- self.timerCount = self.timerCount + 1
--- print(("%d seconds passed"):format(5 * self.timerCount))
--- -- run 30 seconds in total
--- if self.timerCount == 6 then
--- self:CancelTimer(self.testTimer)
--- end
+--   self.timerCount = self.timerCount + 1
+--   print(("%d seconds passed"):format(5 * self.timerCount))
+--   -- run 30 seconds in total
+--   if self.timerCount == 6 then
+--     self:CancelTimer(self.testTimer)
+--   end
 -- end
 function AceTimer:ScheduleRepeatingTimer(func, delay, ...)
 	if not func or not delay then

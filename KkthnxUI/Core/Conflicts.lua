@@ -1,157 +1,140 @@
-local K, C, L = unpack(select(2, ...))
-
 -- Lua API
 local _G = _G
+local unpack = _G.unpack
+local select = _G.select
+
+local K, C, L = unpack(select(2, ...))
 
 -- Wow API
 local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
 
 -- Prevent users config errors and using other UIs over mine.
-local CheckAddOn = K.CheckAddOn
 
+K.Conflicts = {}
 -- If a UI does not use a color to color their name in their TOC then we will default it to |cffffd100UINAME|r
-local buttonText, disableText
-if K.CheckAddOn("ShestakUI") then
-	buttonText = "|cffffd100ShestakUI|r"
-	disableText = "ShestakUI"
-elseif K.CheckAddOn("ElvUI") then
-	buttonText = "|cff1784d1ElvUI|r"
-	disableText = "ElvUI"
-elseif K.CheckAddOn("Tukui") then
-	buttonText = "|cffff8000Tukui|r"
-	disableText = "Tukui"
-elseif K.CheckAddOn("DiabolicUI") then
-	buttonText = "|cff8a0707Diabolic|r|cffffffffUI|r"
-	disableText = "DiabolicUI"
+if K.IsAddOnEnabled("ShestakUI") then
+	K.Conflicts.ButtonText = "|cffffd100ShestakUI|r"
+	K.Conflicts.DisableText = "ShestakUI"
+elseif K.IsAddOnEnabled("ElvUI") then
+	K.Conflicts.ButtonText = "|cff1784d1ElvUI|r"
+	K.Conflicts.DisableText = "ElvUI"
+elseif K.IsAddOnEnabled("Tukui") then
+	K.Conflicts.ButtonText = "|cffff8000Tukui|r"
+	K.Conflicts.DisableText = "Tukui"
+elseif K.IsAddOnEnabled("DiabolicUI") then
+	K.Conflicts.ButtonText = "|cff8a0707Diabolic|r|cffffffffUI|r"
+	K.Conflicts.DisableText = "DiabolicUI"
 else
 	-- Fallbacks
-	buttonText = UNKNOWN
-	disableText = UNKNOWN
+	K.Conflicts.ButtonText = UNKNOWN
+	K.Conflicts.DisableText = UNKNOWN
 end
 
-StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
-	text = "Oh no, you have |cff3c9bedKkthnxUI|r and "..buttonText.." enabled at the same time. Select an addon to disable to prevent conflicts!",
-	button1 = "|cff3c9bedKkthnxUI|r",
-	button2 = buttonText,
-	OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
-	OnCancel = function() DisableAddOn(disableText) ReloadUI() end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3,
-	showAlert = 1
-}
-
-if K.CheckAddOn("DiabolicUI") or K.CheckAddOn("ElvUI") or K.CheckAddOn("Tukui") or K.CheckAddOn("ShestakUI") then
+if K.IsAddOnEnabled("DiabolicUI") or K.IsAddOnEnabled("ElvUI") or K.IsAddOnEnabled("Tukui") or K.IsAddOnEnabled("ShestakUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
-	return
 end
 
--- Actionbars
-if C.ActionBar.RightBars > 3 then
-	C.ActionBar.RightBars = 3
+-- Actionbar Conflicts
+if C["ActionBar"].RightBars > 3 then
+	C["ActionBar"].RightBars = 3
 end
 
-if C.ActionBar.BottomBars > 3 then
-	C.ActionBar.BottomBars = 3
+if C["ActionBar"].BottomBars > 3 then
+	C["ActionBar"].BottomBars = 3
 end
 
-if C.ActionBar.BottomBars == 3 and C.ActionBar.RightBars == 3 then
-	C.ActionBar.BottomBars = 3
-	C.ActionBar.RightBars = 2
+if C["ActionBar"].BottomBars == 3 and C["ActionBar"].RightBars == 3 then
+	C["ActionBar"].BottomBars = 3
+	C["ActionBar"].RightBars = 2
 end
 
-if C.ActionBar.SplitBars == true then
-	C.ActionBar.BottomBars = 3
-	C.ActionBar.RightBars = 2
+if C["ActionBar"].SplitBars == true then
+	C["ActionBar"].BottomBars = 3
+	C["ActionBar"].RightBars = 2
 end
 
-if C.ActionBar.BottomBars < 1 then
-	C.ActionBar.BottomBars = 1
+if C["ActionBar"].BottomBars < 1 then
+	C["ActionBar"].BottomBars = 1
 end
 
-if C.ActionBar.PetBarHorizontal == true then
-	C.ActionBar.StanceBarHorizontal = false
+if C["ActionBar"].PetBarHorizontal == true then
+	C["ActionBar"].StanceBarHorizontal = false
 end
 
 -- Errors
-if C.Error.Black == true and C.Error.White == true then
-	C.Error.White = false
+if C["Error"].Black == true and C["Error"].White == true then
+	C["Error"].White = false
 end
 
-if C.Error.Combat == true then
-	C.Error.Black = false
-	C.Error.White = false
+if C["Error"].Combat == true then
+	C["Error"].Black = false
+	C["Error"].White = false
 end
 
 -- Auto-overwrite script config is X addon is found
 -- Here we use our own functions to check for addons.
-if CheckAddOn("SexyMap") or CheckAddOn("bdMinimap") or CheckAddOn("BasicMinimap") or CheckAddOn("RicoMiniMap") or CheckAddOn("Chinchilla") then
-	C.Minimap.Enable = false
+if K.IsAddOnEnabled("SexyMap") or K.IsAddOnEnabled("bdMinimap") or K.IsAddOnEnabled("BasicMinimap") or K.IsAddOnEnabled("RicoMiniMap") or K.IsAddOnEnabled("Chinchilla") then
+	C["Minimap"].Enable = false
 end
 
-if CheckAddOn("XPerl") or CheckAddOn("Stuf") or CheckAddOn("PitBull4") or CheckAddOn("ShadowedUnitFrames") or CheckAddOn("oUF_Abu") then
-	C.Unitframe.Enable = false
+if K.IsAddOnEnabled("XPerl") or K.IsAddOnEnabled("Stuf") or K.IsAddOnEnabled("PitBull4") or K.IsAddOnEnabled("ShadowedUnitFrames") or K.IsAddOnEnabled("oUF_Abu") then
+	C["Unitframe"].Enable = false
 end
 
-if (CheckAddOn("Dominos") or CheckAddOn("Bartender4") or CheckAddOn("RazerNaga") or CheckAddOn("daftMainBar")) or (CheckAddOn("ConsolePortBar") and CheckAddOn("ConsolePort")) then -- We have to check for main ConsolePort addon too.
-	C.ActionBar.Enable = false
+if (K.IsAddOnEnabled("Dominos") or K.IsAddOnEnabled("Bartender4") or K.IsAddOnEnabled("RazerNaga") or K.IsAddOnEnabled("daftMainBar")) or (K.IsAddOnEnabled("ConsolePortBar") and K.IsAddOnEnabled("ConsolePort")) then -- We have to check for main ConsolePort addon too.
+	C["ActionBar"].Enable = false
 end
 
-if CheckAddOn("WorldQuestTracker") or CheckAddOn("Mapster") or CheckAddOn("WorldQuestsList") then
-	C.WorldMap.SmallWorldMap = false
+if K.IsAddOnEnabled("WorldQuestTracker") or K.IsAddOnEnabled("Mapster") or K.IsAddOnEnabled("WorldQuestsList") then
+	C["WorldMap"].SmallWorldMap = false
 end
 
-if CheckAddOn("BadBoy") then
-	C.Chat.SpamFilter = false
+if K.IsAddOnEnabled("BadBoy") then
+	C["Chat"].SpamFilter = false
 end
 
-if CheckAddOn("AdiBags") or CheckAddOn("ArkInventory") or CheckAddOn("cargBags_Nivaya") or CheckAddOn("cargBags") or CheckAddOn("Bagnon") or CheckAddOn("Combuctor") or CheckAddOn("TBag") or CheckAddOn("BaudBag") then
-	C.Bags.Enable = false
+if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
+	C["Bags"].Enable = false
 end
 
-if CheckAddOn("Prat-3.0") or CheckAddOn("Chatter") then
-	C.Chat.Enable = false
+if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
+	C["Chat"].Enable = false
 end
 
-if CheckAddOn("TidyPlates") or CheckAddOn("Aloft") or CheckAddOn("Kui_Nameplates") or CheckAddOn("bdNameplates") then
-	C.Nameplates.Enable = false
+if K.IsAddOnEnabled("TidyPlates") or K.IsAddOnEnabled("Aloft") or K.IsAddOnEnabled("Kui_Nameplates") or K.IsAddOnEnabled("bdNameplates") then
+	C["Nameplates"].Enable = false
 end
 
-if CheckAddOn("TipTop") or CheckAddOn("TipTac") or CheckAddOn("FreebTip") or CheckAddOn("bTooltip") or CheckAddOn("PhoenixTooltip") or CheckAddOn("Icetip") or CheckAddOn("rTooltip") then
-	C.Tooltip.Enable = false
+if K.IsAddOnEnabled("TipTop") or K.IsAddOnEnabled("TipTac") or K.IsAddOnEnabled("FreebTip") or K.IsAddOnEnabled("bTooltip") or K.IsAddOnEnabled("PhoenixTooltip") or K.IsAddOnEnabled("Icetip") or K.IsAddOnEnabled("rTooltip") then
+	C["Tooltip"].Enable = false
 end
 
-if CheckAddOn("Pawn") then
-	C.Tooltip.ItemIcon = false
+if K.IsAddOnEnabled("TipTacTalents") then
+	C["Tooltip"].Talents = false
 end
 
-if CheckAddOn("TipTacTalents") then
-	C.Tooltip.Talents = false
+if K.IsAddOnEnabled("ConsolePortBar") then
+	C["DataBars"].Artifact = false
+	C["DataBars"].Experience = false
 end
 
-if CheckAddOn("ConsolePortBar") then
-	C.DataBars.Artifact = false
-	C.DataBars.Experience = false
+if K.IsAddOnEnabled("cInterrupt") then
+	C["Announcements"].Interrupt = false
 end
 
-if CheckAddOn("cInterrupt") then
-	C.Announcements.Interrupt = false
+if K.IsAddOnEnabled("NiceBubbles") then
+	C["Skins"].ChatBubble = false
 end
 
-if CheckAddOn("NiceBubbles") then
-	C.Skins.ChatBubble = false
+if K.IsAddOnEnabled("ChatSounds") then
+	C["Chat"].WhispSound = false
 end
 
-if CheckAddOn("ChatSounds") then
-	C.Chat.WhispSound = false
+if K.IsAddOnEnabled("MBB") or K.IsAddOnEnabled("MinimapButtonFrame") then
+	C["Minimap"].CollectButtons = false
 end
 
-if CheckAddOn("MBB") or CheckAddOn("MinimapButtonFrame") then
-	C.Minimap.CollectButtons = false
-end
-
-if K.CheckAddOn("OmniCC") or K.CheckAddOn("ncCooldown") or K.CheckAddOn("CooldownCount") then
-	C.Cooldown.Enable = false
+if K.IsAddOnEnabled("OmniCC") or K.IsAddOnEnabled("ncCooldown") or K.IsAddOnEnabled("CooldownCount") then
+	C["Cooldown"].Enable = false
 end

@@ -1,214 +1,180 @@
-
 local K, C, L = unpack(select(2, ...))
-if C.Misc.ItemLevel ~= true then return end
+local Module = K:NewModule("ItemLevelCharacter", "AceEvent-3.0", "AceHook-3.0")
 
 -- Lua API
 local _G = _G
-local C_Timer_After = C_Timer.After
-local floor = math.floor
 local pairs = pairs
-local select = select
-local strmatch = string.match
-local strsplit = string.split
-local tonumber = tonumber
+local unpack = unpack
 
--- Wow API
-local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
+-- WoW API
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventorySlotInfo = _G.GetInventorySlotInfo
-local GetItemGem = _G.GetItemGem
 local GetItemInfo = _G.GetItemInfo
-local UnitLevel = _G.UnitLevel
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CharacterFrame, InspectFrame,CreateFrame
+function Module:InitializePaperDoll()
+	local buttonCache = {}
+	local borderCache = {} -- Cache of custom old client borders
 
-local equiped = {} -- Table to store equiped items
+	-- The ItemsFrame was added in Cata when the character frame was upgraded to the big one
+	local paperDoll = _G.PaperDollItemsFrame or _G.PaperDollFrame
 
-local f = CreateFrame("Frame", nil, _G.PaperDollFrame) -- iLvel number frame
-local g -- iLvel number for Inspect frame
-f:RegisterEvent("PLAYER_LOGIN")
-f:RegisterEvent("ADDON_LOADED")
+	for i = 1, select("#", paperDoll:GetChildren()) do
+		local child = select(i, paperDoll:GetChildren())
+		local childName = child:GetName()
 
--- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
-local S_ITEM_LEVEL = "^" .. gsub(ITEM_LEVEL, "%%d", "(%%d+)")
+		if (child:GetObjectType() == "Button") and (childName and childName:find("Slot")) then
 
-local scantip = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTooltipTemplate")
-scantip:SetOwner(UIParent, "ANCHOR_NONE")
+			local itemLevel = child:CreateFontString()
+			itemLevel:SetDrawLayer("OVERLAY")
+			itemLevel:SetPoint("TOPLEFT", 2, -2)
+			itemLevel:SetFontObject(KkthnxUIFontOutline or _G.NumberFontNormal)
 
-local function _getRealItemLevel(slotId, unit)
-	local realItemLevel
-	local hasItem = scantip:SetInventoryItem(unit, slotId)
-	if not hasItem then return nil end -- With this we don't get ilvl for offhand if we equip 2h weapon
+			itemLevel.shade = child:CreateTexture()
+			itemLevel.shade:SetDrawLayer("ARTWORK")
+			itemLevel.shade:SetTexture(K.MediaPath.."Textures\\Shader")
+			itemLevel.shade:SetPoint("TOPLEFT", itemLevel, "TOPLEFT", -6, 6)
+			itemLevel.shade:SetPoint("BOTTOMRIGHT", itemLevel, "BOTTOMRIGHT", 6, -6)
+			itemLevel.shade:SetAlpha(.5)
 
-	for i = 2, scantip:NumLines() do -- Line 1 is always the name so you can skip it.
-		local text = _G["iLvlScanningTooltipTextLeft"..i]:GetText()
-		if text and text ~= "" then
-			realItemLevel = realItemLevel or strmatch(text, S_ITEM_LEVEL)
+			buttonCache[child] = itemLevel
 
-			if realItemLevel then
-				return tonumber(realItemLevel)
+			local iconBorder = child.IconBorder
+			if (not iconBorder) then
+				local iconBorder = child:CreateTexture()
+				iconBorder:SetDrawLayer("ARTWORK")
+				iconBorder:SetTexture([[Interface\Buttons\UI-Quickslot2]])
+				iconBorder:SetAllPoints(normalTexture or child)
+				iconBorder:Hide()
+
+				local iconBorderDoubler = child:CreateTexture()
+				iconBorderDoubler:SetDrawLayer("OVERLAY")
+				iconBorderDoubler:SetAllPoints(iconBorder)
+				iconBorderDoubler:SetTexture(iconBorder:GetTexture())
+				iconBorderDoubler:SetBlendMode("ADD")
+				iconBorderDoubler:Hide()
+
+				hooksecurefunc(iconBorder, "SetVertexColor", function(_, ...) iconBorderDoubler:SetVertexColor(...) end)
+				hooksecurefunc(iconBorder, "Show", function() iconBorderDoubler:Show() end)
+				hooksecurefunc(iconBorder, "Hide", function() iconBorderDoubler:Hide() end)
+
+				borderCache[child] = iconBorder
 			end
 		end
 	end
 
-	return realItemLevel
+	self.buttonCache = buttonCache
+	self.borderCache = borderCache
 end
 
-local function _updateItems(unit, frame)
-	for i = 1, 17 do -- Only check changed player items or items without ilvl text, skip the shirt (4) and always update Inspects
-		local itemLink = GetInventoryItemLink(unit, i)
-		if i ~= 4 and ((frame == f and (equiped[i] ~= itemLink or frame[i]:GetText() == nil)) or frame == g) then
-			if frame == f then
-				equiped[i] = itemLink
-			end
+function Module:UpdateEquippeditemLevels(event, ...)
+    if (event == "UNIT_INVENTORY_CHANGED") then
+		local unit = ...
+		if (unit ~= "player") then
+			return
+		end
+	end
 
-			local delay = false
-			if itemLink then
-				local _, _, quality = GetItemInfo(itemLink)
+	for itemButton, itemLevel in pairs(self.buttonCache) do
+		local normalTexture = _G[itemButton:GetName().."NormalTexture"] or itemButton:GetNormalTexture()
+		if normalTexture then
+			--normalTexture:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+		end
 
-				if (quality == 6) and (i == 16 or i == 17) then
-					local relics = {select(4, strsplit(":", itemLink))}
-					for i = 1, 3 do
-						local relicID = relics[i] ~= "" and relics[i]
-						local relicLink = select(2, GetItemGem(itemLink, i))
-						if relicID and not relicLink then
-							delay = true
-						end
-					end
-					if delay then
-						C_Timer_After(0.1, function()
-							local realItemLevel = _getRealItemLevel(i, unit)
-							realItemLevel = realItemLevel or ""
-							frame[i]:SetText("|cffffff00"..realItemLevel)
-						end)
+		local slotID = itemButton:GetID()
+		local itemLink = GetInventoryItemLink("player", slotID)
+		if itemLink then
+			local _, _, itemRarity, ilvl = GetItemInfo(itemLink)
+			if itemRarity then
+				local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
+				ilvl = effectiveLevel or ilvl
+
+				-- Legion Artifact offhanders report just the base itemLevel, without relic enhancements,
+				-- so we're borrowing the itemLevel from the main hand weapon when this happens.
+				-- *The constants used are defined in FrameXML/Constants.lua
+				if (itemButton:GetID() == _G.INVSLOT_OFFHAND) and (itemRarity == 6) then
+					local mainHandLink = GetInventoryItemLink("player", _G.INVSLOT_MAINHAND)
+					local _, _, mainHandRarity, mainHandLevel = GetItemInfo(mainHandLink)
+					local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(mainHandLink)
+
+					mainHandLevel = effectiveLevel or mainHandLevel
+
+					if (mainHandLevel > ilvl) and (mainHandRarity == 6) then
+						ilvl = mainHandLevel
 					end
 				end
-			end
 
-			local realItemLevel = _getRealItemLevel(i, unit)
-			realItemLevel = realItemLevel or ""
-			if realItemLevel and realItemLevel == 1 then
-				realItemLevel = ""
+				local r, g, b = GetItemQualityColor(itemRarity)
+				itemLevel:SetTextColor(r, g, b)
+				itemLevel.shade:SetVertexColor(r, g, b)
+				itemLevel:SetText(ilvl or "")
+
+				local iconBorder = itemButton.IconBorder
+				if iconBorder then
+					iconBorder:SetTexture([[Interface\Common\WhiteIconFrame]])
+					if itemRarity then
+						if (itemRarity >= (LE_ITEM_QUALITY_COMMON + 1)) and GetItemQualityColor(itemRarity) then
+							iconBorder:Show()
+							iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
+						else
+							iconBorder:Show()
+							iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+						end
+					else
+						iconBorder:Hide()
+					end
+				else
+					iconBorder = self.borderCache[itemButton]
+					if iconBorder then
+						if itemRarity then
+							if (itemRarity >= (LE_ITEM_QUALITY_COMMON + 1)) and GetItemQualityColor(itemRarity) then
+								iconBorder:Show()
+								iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
+							else
+								iconBorder:Show()
+								iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+							end
+						else
+							iconBorder:Hide()
+							iconBorder:Show()
+							iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+						end
+					end
+				end
+
+			else
+				itemLevel:SetTextColor(1, 1, 0)
+				itemLevel.shade:SetVertexColor(1, 1, 0)
 			end
-			frame[i]:SetText("|cffffff00"..realItemLevel)
+			itemLevel:SetText(ilvl or "")
+		else
+			local iconBorder = itemButton.IconBorder
+			if iconBorder then
+				iconBorder:Hide()
+			else
+				iconBorder = self.borderCache[itemButton]
+				if iconBorder then
+					iconBorder:Show()
+					iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+				end
+			end
+			itemLevel:SetText("")
 		end
 	end
+
 end
 
-local function _createStrings()
-	local function _stringFactory(parent)
-		local s = f:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")
-		s:SetPoint("TOP", parent, "TOP", 0, -2)
+function Module:OnEnable()
+	self:InitializePaperDoll()
 
-		return s
-	end
-
-	f:SetFrameLevel(_G.CharacterHeadSlot:GetFrameLevel())
-
-	f[1] = _stringFactory(_G.CharacterHeadSlot)
-	f[2] = _stringFactory(_G.CharacterNeckSlot)
-	f[3] = _stringFactory(_G.CharacterShoulderSlot)
-	f[15] = _stringFactory(_G.CharacterBackSlot)
-	f[5] = _stringFactory(_G.CharacterChestSlot)
-	f[9] = _stringFactory(_G.CharacterWristSlot)
-
-	f[10] = _stringFactory(_G.CharacterHandsSlot)
-	f[6] = _stringFactory(_G.CharacterWaistSlot)
-	f[7] = _stringFactory(_G.CharacterLegsSlot)
-	f[8] = _stringFactory(_G.CharacterFeetSlot)
-	f[11] = _stringFactory(_G.CharacterFinger0Slot)
-	f[12] = _stringFactory(_G.CharacterFinger1Slot)
-	f[13] = _stringFactory(_G.CharacterTrinket0Slot)
-	f[14] = _stringFactory(_G.CharacterTrinket1Slot)
-
-	f[16] = _stringFactory(_G.CharacterMainHandSlot)
-	f[17] = _stringFactory(_G.CharacterSecondaryHandSlot)
-
-	f:Hide()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateEquippeditemLevels")
+	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "UpdateEquippeditemLevels")
+	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE", "UpdateEquippeditemLevels")
+	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM", "UpdateEquippeditemLevels")
 end
 
-local function _createGStrings()
-	local function _stringFactory(parent)
-		local s = g:CreateFontString(nil, "OVERLAY", "SystemFont_Outline_Small")
-		s:SetPoint("TOP", parent, "TOP", 0, -2)
-
-		return s
-	end
-
-	g:SetFrameLevel(_G.InspectHeadSlot:GetFrameLevel())
-
-	g[1] = _stringFactory(_G.InspectHeadSlot)
-	g[2] = _stringFactory(_G.InspectNeckSlot)
-	g[3] = _stringFactory(_G.InspectShoulderSlot)
-	g[15] = _stringFactory(_G.InspectBackSlot)
-	g[5] = _stringFactory(_G.InspectChestSlot)
-	g[9] = _stringFactory(_G.InspectWristSlot)
-
-	g[10] = _stringFactory(_G.InspectHandsSlot)
-	g[6] = _stringFactory(_G.InspectWaistSlot)
-	g[7] = _stringFactory(_G.InspectLegsSlot)
-	g[8] = _stringFactory(_G.InspectFeetSlot)
-	g[11] = _stringFactory(_G.InspectFinger0Slot)
-	g[12] = _stringFactory(_G.InspectFinger1Slot)
-	g[13] = _stringFactory(_G.InspectTrinket0Slot)
-	g[14] = _stringFactory(_G.InspectTrinket1Slot)
-
-	g[16] = _stringFactory(_G.InspectMainHandSlot)
-	g[17] = _stringFactory(_G.InspectSecondaryHandSlot)
-
-	g:Hide()
+function Module:OnDisable()
+    self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+    self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
+    self:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
+    self:UnregisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM")
 end
-
-local function OnEvent(self, event, ...) -- Event handler
-	if event == "ADDON_LOADED" and (...) == "Blizzard_InspectUI" then
-		self:UnregisterEvent(event)
-
-		g = CreateFrame("Frame", nil, _G.InspectPaperDollFrame) -- iLevel number frame for Inspect
-		_createGStrings()
-		_createGStrings = nil
-
-		_G.InspectPaperDollFrame:HookScript("OnShow", function(self)
-			g:SetFrameLevel(_G.InspectHeadSlot:GetFrameLevel())
-			f:RegisterEvent("INSPECT_READY")
-			f:RegisterEvent("UNIT_INVENTORY_CHANGED")
-			_updateItems("target", g)
-			g:Show()
-		end)
-
-		_G.InspectPaperDollFrame:HookScript("OnHide", function(self)
-			f:UnregisterEvent("INSPECT_READY")
-			f:UnregisterEvent("UNIT_INVENTORY_CHANGED")
-			g:Hide()
-		end)
-	elseif event == "PLAYER_LOGIN" then
-		self:UnregisterEvent(event)
-
-		_createStrings()
-		_createStrings = nil
-
-		_G.PaperDollFrame:HookScript("OnShow", function(self)
-			f:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-			f:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
-			f:RegisterEvent("ARTIFACT_UPDATE")
-			_updateItems("player", f)
-			f:Show()
-		end)
-
-		_G.PaperDollFrame:HookScript("OnHide", function(self)
-			f:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-			f:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
-			f:UnregisterEvent("ARTIFACT_UPDATE")
-			f:Hide()
-		end)
-	elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "ITEM_UPGRADE_MASTER_UPDATE" or event == "ARTIFACT_UPDATE" then
-		if (...) == 16 then
-			equiped[16] = nil
-			equiped[17] = nil
-		end
-		_updateItems("player", f)
-	elseif event == "INSPECT_READY" or event == "UNIT_INVENTORY_CHANGED" then
-		_updateItems("target", g)
-	end
-end
-f:SetScript("OnEvent", OnEvent)

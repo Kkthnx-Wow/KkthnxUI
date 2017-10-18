@@ -51,15 +51,15 @@ PlayerPowerBarAlt:UnregisterAllEvents()
 PlayerPowerBarAlt.ignoreFramePositionManager = true
 
 local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
-holder:SetPoint("TOP", UIParent, "TOP", 0, -18)
-holder:SetSize(214, 22)
+holder:SetPoint("TOP", UIParent, "TOP", 0, -24)
+holder:SetSize(220, 22)
 Movers:RegisterFrame(holder)
 
 -- AltPowerBar
 local bar = CreateFrame("Frame", "UIAltPowerBar", UIParent)
-bar:SetSize(220, 26)
-bar:SetPoint("CENTER", AltPowerBarHolder, "CENTER")
-bar:CreateBackdrop(size, 2)
+bar:SetSize(220, 22)
+bar:SetAllPoints(AltPowerBarHolder)
+bar:SetTemplate("Transparent", false)
 
 -- Event handling
 bar:RegisterEvent("UNIT_POWER")
@@ -71,10 +71,6 @@ bar:SetScript("OnEvent", function(self)
 		self:Show()
 	else
 		self:Hide()
-	end
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	end
 end)
 
@@ -94,17 +90,13 @@ bar:SetScript("OnLeave", GameTooltip_Hide)
 -- StatusBar
 local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
 status:SetFrameLevel(bar:GetFrameLevel() + 1)
-status:SetStatusBarTexture(C.Media.Texture)
+status:SetStatusBarTexture(C["Media"].Texture)
 status:SetMinMaxValues(0, 100)
-status:SetPoint("TOPLEFT", bar, "TOPLEFT", 2, -2)
-status:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", -2, 2)
-
-status.bg = status:CreateTexture(nil, "BACKGROUND")
-status.bg:SetAllPoints(status)
-status.bg:SetTexture(C.Media.Blank)
+status:SetAllPoints()
 
 status.text = status:CreateFontString(nil, "OVERLAY")
-status.text:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+status.text:SetFont(C["Media"].Font, C["Media"].FontSize)
+status.text:SetShadowOffset(1.25, -1.25)
 status.text:SetPoint("CENTER", bar, "CENTER", 0, 0)
 
 -- Update Function
@@ -127,9 +119,8 @@ status:SetScript("OnUpdate", function(self, elapsed)
 		end
 		self:SetMinMaxValues(0, mpower)
 		self:SetValue(power)
-		self.text:SetText(power.."/"..mpower)
+		self.text:SetText(power.." / "..mpower)
 		self:SetStatusBarColor(r, g, b)
-		self.bg:SetVertexColor(r * 0.3, g * 0.3, b * 0.3, 0.25)
 		update = 0
 	end
 end)

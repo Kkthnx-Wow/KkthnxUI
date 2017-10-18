@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Load_Skins -->
+    <Include file="Blizzard\ObjectiveTracker.lua" />
+
+    <Include file="Addons\Bagnon.lua" />
+    <Include file="Addons\BigWigs.lua" />
+    <Include file="Addons\DBM.lua" />
+    <Include file="Addons\Recount.lua" />
+    <Include file="Addons\Skada.lua" />
+    <Include file="Addons\Spy.lua" />
+    <Include file="Addons\WeakAuras.lua" />
+</Ui>

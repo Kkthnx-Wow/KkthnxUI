@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Skins.BigWigs ~= true or not K.CheckAddOn("BigWigs") then return end
+if C["Skins"].BigWigs ~= true or not K.IsAddOnEnabled("BigWigs") then return end
 
 local _G = _G
 local table_remove = table.remove
@@ -16,9 +16,9 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 		if BigWigsLoader then
 			BigWigsLoader.RegisterMessage("KkthnxUI", "BigWigs_FrameCreated", function(event, frame, name)
 				if name == "QueueTimer" then
-					frame:SetStatusBarTexture(C.Media.Texture)
+					frame:SetStatusBarTexture(C["Media"].Texture)
 					frame:SetBackdrop(K.BorderBackdrop)
-					frame:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+					frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 					frame:ClearAllPoints()
 					frame:SetPoint("TOP", "$parent", "BOTTOM", 0, -(2 and 2 or 4))
 					frame:SetHeight(16)
@@ -84,7 +84,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 			bg:SetOutside(bar)
 			bg:CreateShadow(1)
 			bg:SetBackdrop(K.BorderBackdrop)
-			bg:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+			bg:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 			bg:Show()
 			bar:Set("bigwigs:KkthnxUI:bg", bg)
 
@@ -108,9 +108,9 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 			bar.candyBarBar:ClearAllPoints()
 			bar.candyBarBar:SetAllPoints(bar)
 			bar.candyBarBar.SetPoint = K.Noop
-			bar.candyBarBar:SetStatusBarTexture(C.Media.Texture)
+			bar.candyBarBar:SetStatusBarTexture(C["Media"].Texture)
 
-			bar.candyBarBackground:SetTexture(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+			bar.candyBarBackground:SetTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			bar.candyBarIconFrame:ClearAllPoints()
 			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -4, 0)

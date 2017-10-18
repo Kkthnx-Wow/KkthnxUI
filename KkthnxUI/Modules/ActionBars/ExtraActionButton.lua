@@ -1,58 +1,42 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+local Module = K:NewModule("ExtraActionButtons", "AceHook-3.0", "AceEvent-3.0")
 
--- Lua Wow
 local _G = _G
 local unpack = unpack
 
---WoW API
-local CreateFrame = _G.CreateFrame
-local GetActionCooldown = _G.GetActionCooldown
-local HasExtraActionBar = _G.HasExtraActionBar
-local UIParent = _G.UIParent
+local CreateFrame = CreateFrame
+local GetActionCooldown = GetActionCooldown
+local HasExtraActionBar = HasExtraActionBar
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ExtraActionBarFrame, ZoneAbilityFrame, SplitBarRight
-
-local Movers = K.Movers
 local ExtraActionBarHolder, ZoneAbilityHolder
 
-local function FixExtraActionCD(cd)
-	local start, duration = GetActionCooldown(cd:GetParent().action)
-	cd:SetHideCountdownNumbers(true)
-end
-
-local function DisableTexture(self, texture, loop)
+local function DisableExtraButtonTexture(self, texture, loop)
 	if loop then
 		return
 	end
 
 	self:SetTexture("", true)
 end
-hooksecurefunc(ExtraActionButton1.style, "SetTexture", DisableTexture)
-hooksecurefunc(ZoneAbilityFrame.SpellButton.Style, "SetTexture", DisableTexture)
 
-local function SetupExtraButton(self)
+local function FixExtraActionCD(cd)
+	local start, duration = GetActionCooldown(cd:GetParent().action)
+	cd:SetHideCountdownNumbers(true)
+	K.Cooldowns:Start(start, duration, 0, 0)
+end
+
+function Module:OnEnable(texture, loop)
 	ExtraActionBarHolder = CreateFrame("Frame", "ExtraActionBarHolder", UIParent)
-	if C.ActionBar.SplitBars then
-		ExtraActionBarHolder:SetPoint(C.Position.ExtraButton[1], SplitBarRight, C.Position.ExtraButton[3], C.Position.ExtraButton[4], C.Position.ExtraButton[5])
-	else
-		ExtraActionBarHolder:SetPoint(unpack(C.Position.ExtraButton))
-	end
-	ExtraActionBarHolder:SetSize(ExtraActionBarFrame:GetWidth() - 14, ExtraActionBarFrame:GetHeight() - 14)
+	ExtraActionBarHolder:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 150)
+	ExtraActionBarHolder:SetSize(ExtraActionButton1:GetWidth(), ExtraActionButton1:GetHeight())
 
 	ExtraActionBarFrame:SetParent(ExtraActionBarHolder)
 	ExtraActionBarFrame:ClearAllPoints()
 	ExtraActionBarFrame:SetPoint("CENTER", ExtraActionBarHolder, "CENTER")
-	ExtraActionBarFrame.ignoreFramePositionManager = true
+	ExtraActionBarFrame.ignoreFramePositionManager  = true
 
 	ZoneAbilityHolder = CreateFrame("Frame", "ZoneAbilityHolder", UIParent)
-	if C.ActionBar.SplitBars then
-		ZoneAbilityHolder:SetPoint(C.Position.ZoneAbility[1], SplitBarRight, C.Position.ZoneAbility[3], C.Position.ZoneAbility[4], C.Position.ZoneAbility[5])
-	else
-		ZoneAbilityHolder:SetPoint(unpack(C.Position.ZoneAbility))
-	end
-	ZoneAbilityHolder:SetSize(ExtraActionBarFrame:GetWidth() - 14, ExtraActionBarFrame:GetHeight() - 14)
+	ZoneAbilityHolder:SetPoint("BOTTOM", ExtraActionBarFrame, "TOP", 0, 2)
+	ZoneAbilityHolder:SetSize(ZoneAbilityFrame.SpellButton:GetWidth(), ZoneAbilityFrame.SpellButton:GetHeight())
 
 	ZoneAbilityFrame:SetParent(ZoneAbilityHolder)
 	ZoneAbilityFrame:ClearAllPoints()
@@ -66,14 +50,14 @@ local function SetupExtraButton(self)
 			button.pushed = true
 			button.checked = true
 
-			self:StyleButton(button, true)
+			button:SetTemplate("ActionButton", true)
 			_G["ExtraActionButton"..i.."Icon"]:SetDrawLayer("ARTWORK")
 			local tex = button:CreateTexture(nil, "OVERLAY")
 			tex:SetColorTexture(0.9, 0.8, 0.1, 0.3)
-			tex:SetInside()
+			tex:SetAllPoints()
 			button:SetCheckedTexture(tex)
 
-			if (button.cooldown) then
+			if (button.cooldown and C["Cooldown"].Enable) then
 				button.cooldown:HookScript("OnShow", FixExtraActionCD)
 			end
 		end
@@ -82,21 +66,21 @@ local function SetupExtraButton(self)
 	local button = ZoneAbilityFrame.SpellButton
 	if button then
 		button:SetNormalTexture("")
-		button:StyleButton(nil, nil, nil, true)
-		button:SetTemplate()
+		-- button:StyleButton(nil, nil, nil, true)
+		button:SetTemplate("ActionButton", true)
 		button.Icon:SetDrawLayer("ARTWORK")
 		button.Icon:SetTexCoord(unpack(K.TexCoords))
-		button.Icon:SetInside()
+		button.Icon:SetAllPoints()
 	end
 
 	if HasExtraActionBar() then
 		ExtraActionBarFrame:Show()
 	end
 
+	local Movers = K["Movers"]
 	Movers:RegisterFrame(ExtraActionBarHolder)
 	Movers:RegisterFrame(ZoneAbilityHolder)
-end
 
-local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", SetupExtraButton)
+	self:SecureHook(ExtraActionButton1.style, "SetTexture", DisableExtraButtonTexture)
+	self:SecureHook(ZoneAbilityFrame.SpellButton.Style, "SetTexture", DisableExtraButtonTexture)
+end

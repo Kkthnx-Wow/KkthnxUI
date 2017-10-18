@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Load_AddOnData -->
+    <Script file="!BugGrabber.lua" />
+    <Script file="AddOnData.lua" />
+    <Script file="Bartender4.lua" />
+    <Script file="BigWigs.lua" />
+    <Script file="BugSack.lua" />
+    <Script file="DeadlyBossMods.lua" />
+    <Script file="Details.lua" />
+    <Script file="Pawn.lua" />
+    <Script file="Recount.lua" />
+    <Script file="Skada.lua" />
+</Ui>

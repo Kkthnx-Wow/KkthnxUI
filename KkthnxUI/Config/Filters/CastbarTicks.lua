@@ -1,10 +1,17 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.CastbarTicks ~= true then return end
+if C["Unitframe"].CastbarTicks ~= true then return end
 
+-- Lua API
 local _G = _G
-local lower = string.lower
+local pairs = pairs
+local print = print
+local select = select
+local string_lower = string.lower
 
+-- Wow API
 local GetSpellInfo = _G.GetSpellInfo
+local UnitClass = _G.UnitClass
+local IsEquippedItem = _G.IsEquippedItem
 
 -- The best way to add or delete spell is to go at www.wowhead.com, search for a spell.
 -- Example: Polymorph -> http://www.wowhead.com/spell=118
@@ -25,7 +32,6 @@ K.ChannelTicks = {
 	--Warlock
 	[SpellName(198590)] = 6, -- "Drain Soul"
 	[SpellName(755)] = 6, -- Health Funnel
-	[SpellName(117952)] = 6, -- Health Funnel
 	--Priest
 	[SpellName(64843)] = 4, -- Divine Hymn
 	[SpellName(15407)] = 4, -- Mind Flay
@@ -36,12 +42,12 @@ K.ChannelTicks = {
 }
 
 local priestTier17 = {115560, 115561, 115562, 115563, 115564}
-local frame = CreateFrame("Frame")
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")
-frame:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
-frame:SetScript("OnEvent", function()
+local CastbarTicks = CreateFrame("Frame")
+CastbarTicks:RegisterEvent("PLAYER_ENTERING_WORLD")
+CastbarTicks:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+CastbarTicks:SetScript("OnEvent", function()
 	local class = select(2, UnitClass("player"))
-	if lower(class) ~= "priest" then return; end
+	if string_lower(class) ~= "priest" then return; end
 
 	local penanceTicks = 3
 	local equippedPriestTier17 = 0
@@ -53,15 +59,15 @@ frame:SetScript("OnEvent", function()
 	if equippedPriestTier17 >= 2 then
 		penanceTicks = 4
 	end
-	K.ChannelTicks[SpellName(47540)] = penanceTicks --Penance
+	K.ChannelTicks[SpellName(47540)] = penanceTicks -- Penance
 end)
 
 K.ChannelTicksSize = {
-	--Warlock
+	-- Warlock
 	[SpellName(198590)] = 1, -- "Drain Soul"
 }
 
---Spells Effected By Haste
+-- Spells Effected By Haste
 K.HastedChannelTicks = {
 	[SpellName(205021)] = true, -- "Ray of Frost"
 }

@@ -1,13 +1,16 @@
 ## Interface: 70300
 ## Name: KkthnxUI Config
-## Title: |cff3c9bedKkthnxUI Config|r
+## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
-## Author: Josh "Kkthnx" Russell, Tohveli
-## Version: 6.39
+## Author: Kkthnx
+## Version: 7.00
 ## DefaultState: Enabled
-## SavedVariables: KkthnxUIConfigAll, KkthnxUIConfigPublic
-## SavedVariablesPerCharacter: KkthnxUIConfigPrivate
+## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
+## SavedVariablesPerCharacter: KkthnxUIConfigNotShared
 ## RequiredDeps: KkthnxUI
+
+# -- Load Core File
+KkthnxUI_Config.lua
 
 # -- Load Locales
 Locales\enUS.lua
@@ -16,6 +19,3 @@ Locales\frFR.lua
 Locales\ruRU.lua
 Locales\zhCN.lua
 Locales\zhTW.lua
-
-# -- Load Core File
-KkthnxUI_Config.lua

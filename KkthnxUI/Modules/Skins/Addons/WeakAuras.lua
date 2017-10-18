@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Skins.WeakAuras ~= true or not K.CheckAddOn("WeakAuras") then return end
+if C["Skins"].WeakAuras ~= true or not K.IsAddOnEnabled("WeakAuras") then return end
 
 local _G = _G
 local pairs = pairs
@@ -28,7 +28,7 @@ WeakAura_Skin:SetScript("OnEvent", function(self, event)
 		end
 
 		if ftype == "aurabar" then
-			frame.Shadow:Hide() -- Want to adjust this to fit better.
+			frame.Shadow:Show() -- Want to adjust this to fit better.
 		end
 	end
 

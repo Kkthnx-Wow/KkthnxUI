@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
 local _G = _G
@@ -19,28 +19,21 @@ local UnitOnTaxi = _G.UnitOnTaxi
 local UIParent = _G.UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: KkthnxUIDataPerChar, ActionButton_ShowGrid, VehicleExit, LeaveVehicleButton
+-- GLOBALS: KkthnxUIData, ActionButton_ShowGrid, VehicleExit, LeaveVehicleButton
 -- GLOBALS: MainMenuBarVehicleLeaveButton_OnEnter, GameTooltip_Hide
 
 local Movers = K.Movers
-
-StaticPopupDialogs["FIX_ACTIONBARS"] = {
-	text = L.Popup.FixActionbars,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = ReloadUI,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
+local Name = UnitName("Player")
+local Realm = GetRealmName()
 
 -- Show empty buttons
 local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
-	local Installed = KkthnxUIDataPerChar.Install
-	if Installed then
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
+	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
+	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
 			SetActionBarToggles(true, true, true, true)
@@ -48,35 +41,52 @@ ActionBars:SetScript("OnEvent", function(self, event)
 		end
 	end
 
-	if C.ActionBar.Grid == true then
+	if C["ActionBar"].Grid == true then
 		if not InCombatLockdown() then
 			SetCVar("alwaysShowActionBars", 1)
 		end
 
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
-			local button = _G[string_format("ActionButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
+			local Button
 
-			button = _G[string_format("MultiBarRightButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
+			Button = _G[string_format("ActionButton%d", i)]
+			Button:SetAttribute("showgrid", 1)
+			Button:SetAttribute("statehidden", true)
+			Button:Show()
+			ActionButton_ShowGrid(Button)
 
-			button = _G[string_format("MultiBarBottomRightButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
+			Button = _G[string_format("MultiBarRightButton%d", i)]
+			Button:SetAttribute("showgrid", 1)
+			Button:SetAttribute("statehidden", true)
+			Button:Show()
+			ActionButton_ShowGrid(Button)
 
-			button = _G[string_format("MultiBarLeftButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
+			Button = _G[string_format("MultiBarLeftButton%d", i)]
+			Button:SetAttribute("showgrid", 1)
+			Button:SetAttribute("statehidden", true)
+			Button:Show()
+			ActionButton_ShowGrid(Button)
 
-			button = _G[string_format("MultiBarBottomLeftButton%d", i)]
-			button:SetAttribute("showgrid", 1)
-			ActionButton_ShowGrid(button)
+			Button = _G[string_format("MultiBarBottomRightButton%d", i)]
+			Button:SetAttribute("showgrid", 1)
+			Button:SetAttribute("statehidden", true)
+			Button:Show()
+			ActionButton_ShowGrid(Button)
+
+			Button = _G[string_format("MultiBarBottomLeftButton%d", i)]
+			Button:SetAttribute("showgrid", 1)
+			Button:SetAttribute("statehidden", true)
+			Button:Show()
+			ActionButton_ShowGrid(Button)
 		end
 	else
 		if not InCombatLockdown() then
+			if event == "PLAYER_REGEN_ENABLED" then
+				self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+			end
 			SetCVar("alwaysShowActionBars", 0)
+		else
+			self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		end
 	end
 end)
@@ -84,8 +94,10 @@ end)
 -- Vehicle button stuff
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 VehicleButtonAnchor:SetPoint(C.Position.VehicleBar[1], C.Position.VehicleBar[2], C.Position.VehicleBar[3], C.Position.VehicleBar[4], C.Position.VehicleBar[5])
-VehicleButtonAnchor:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
-Movers:RegisterFrame(VehicleButtonAnchor)
+VehicleButtonAnchor:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+if VehicleButtonAnchor then
+	Movers:RegisterFrame(VehicleButtonAnchor)
+end
 
 local function Vehicle_OnEvent(self)
 	if (CanExitVehicle()) then
@@ -113,21 +125,20 @@ local function UpdateVehicleLeave()
 
 	button:ClearAllPoints()
 	button:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
-	button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+	button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 end
 
 local function CreateVehicleLeave()
 	local vehicle = CreateFrame("Button", "LeaveVehicleButton", UIParent)
-	vehicle:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+	vehicle:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 	vehicle:SetFrameStrata("HIGH")
 	vehicle:SetPoint("BOTTOMLEFT", VehicleButtonAnchor, "BOTTOMLEFT")
 	vehicle:SetNormalTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Up")
 	vehicle:GetNormalTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
 	vehicle:GetNormalTexture():ClearAllPoints()
-	vehicle:GetNormalTexture():SetPoint("TOPLEFT", 2, -2)
-	vehicle:GetNormalTexture():SetPoint("BOTTOMRIGHT", -2, 2)
-	vehicle:CreateBackdrop(2)
-	vehicle:StyleButton(true)
+	vehicle:GetNormalTexture():SetAllPoints()
+	vehicle:StyleButton()
+	vehicle:SetTemplate("Transparent", true)
 	vehicle:RegisterForClicks("AnyUp")
 
 	vehicle:SetScript("OnClick", Vehicle_OnClick)

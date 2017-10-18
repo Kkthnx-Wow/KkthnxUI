@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+local Module = K:NewModule("DisableBlizzard", "AceEvent-3.0")
 
 -- Lua API
 local _G = _G
@@ -12,40 +13,23 @@ local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: PetFrame_Update, PlayerFrame_AnimateOut
--- GLOBALS: Advanced_UIScaleSlider, Advanced_UseUIScale, BagHelpBox, CollectionsMicroButtonAlert, EJMicroButtonAlert
--- GLOBALS: HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip, PremadeGroupsPvETutorialAlert, ReagentBankHelpBox
--- GLOBALS: InterfaceOptionsActionBarsPanelLockActionBars, InterfaceOptionsActionBarsPanelPickupActionKeyDropDown
--- GLOBALS: InterfaceOptionsActionBarsPanelRight, InterfaceOptionsActionBarsPanelRightTwo, InterfaceOptionsActionBarsPanelAlwaysShowActionBars
--- GLOBALS: InterfaceOptionsCombatPanelTargetOfTarget, InterfaceOptionsActionBarsPanelCountdownCooldowns, PlayerFrame
--- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesMakeLarger, InterfaceOptionsDisplayPanelRotateMinimap
--- GLOBALS: InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy, InterfaceOptionsActionBarsPanelPickupActionKeyDropDownButton
--- GLOBALS: LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, LE_FRAME_TUTORIAL_PET_JOURNAL, LE_FRAME_TUTORIAL_GARRISON_BUILDING
--- GLOBALS: PlayerFrame_AnimFinished, PlayerFrame_ToPlayerArt, PlayerFrame_ToVehicleArt, CompactRaidFrameManager
--- GLOBALS: SpellBookFrameTutorialButton, TalentMicroButtonAlert, TutorialFrameAlertButton, WorldMapFrameTutorialButton
--- GLOBALS: UIFrameHider, CompactUnitFrameProfiles, HidePartyFrame, ShowPartyFrame
-
 -- Kill all stuff on default UI that we don't need
-local DisableBlizzard = CreateFrame("Frame")
-DisableBlizzard:RegisterEvent("ADDON_LOADED")
-DisableBlizzard:SetScript("OnEvent", function(self, addon)
-	self:UnregisterEvent("ADDON_LOADED")
-
+function Module:KillStuff(addon)
 	if addon == "Blizzard_AchievementUI" then
-		if C.Tooltip.Enable then
+		if C["Tooltip"].Enable then
 			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
 		end
 	end
 
-	if C.Raidframe.Enable then
+	if C["Raidframe"].Enable then
 		if not CompactRaidFrameManager_UpdateShown then
 			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 		else
 			K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
 
 			if CompactRaidFrameManager then
-				CompactRaidFrameManager:SetParent(UIFrameHider)
+				CompactRaidFrameManager:UnregisterAllEvents()
+				CompactRaidFrameManager:SetParent(K.UIFrameHider)
 			end
 
 			if CompactUnitFrameProfiles then
@@ -54,15 +38,7 @@ DisableBlizzard:SetScript("OnEvent", function(self, addon)
 		end
 	end
 
-	if C.Unitframe.Enable then
-		_G.PetFrame_Update = K.Noop
-		_G.PlayerFrame_AdjustAttachments = K.Noop
-		_G.PlayerFrame_AnimateOut = K.Noop
-		_G.PlayerFrame_AnimFinished = K.Noop
-		_G.PlayerFrame_ToPlayerArt = K.Noop
-		_G.TotemFrame_AdjustPetFrame = K.Noop
-		_G.PlayerFrame_ToVehicleArt = K.Noop
-
+	if C["Unitframe"].Enable then
 		for i = 1, MAX_BOSS_FRAMES do
 			local Boss = _G["Boss"..i.."TargetFrame"]
 			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
@@ -77,36 +53,41 @@ DisableBlizzard:SetScript("OnEvent", function(self, addon)
 		end
 
 		for i = 1, MAX_PARTY_MEMBERS do
-			local PartyMember = _G["PartyMemberFrame"..i]
+			local PartyMember = _G["PartyMemberFrame" .. i]
 			local Health = _G["PartyMemberFrame"..i.."HealthBar"]
 			local Power = _G["PartyMemberFrame"..i.."ManaBar"]
-			local Pet = _G["PartyMemberFrame"..i.."PetFrame"]
-			local PetHealth = _G["PartyMemberFrame"..i.."PetFrame".."HealthBar"]
+			local Pet = _G["PartyMemberFrame" ..i.."PetFrame"]
+			local PetHealth = _G["PartyMemberFrame" ..i.."PetFrame".."HealthBar"]
 
 			PartyMember:UnregisterAllEvents()
-			PartyMember:SetParent(UIFrameHider)
+			PartyMember:SetParent(K.UIFrameHider)
 			PartyMember:Hide()
 			Health:UnregisterAllEvents()
 			Power:UnregisterAllEvents()
 
 			Pet:UnregisterAllEvents()
-			Pet:SetParent(UIFrameHider)
+			Pet:SetParent(K.UIFrameHider)
 			PetHealth:UnregisterAllEvents()
 
-			HidePartyFrame()
-			_G.ShowPartyFrame = K.Noop
-			_G.HidePartyFrame = K.Noop
+			if (not InCombatLockdown()) then
+				HidePartyFrame()
+				ShowPartyFrame = K.Noop
+				HidePartyFrame = K.Noop
+			end
 		end
+
 	end
 
-	K.KillMenuOption(true, "Advanced_UseUIScale")
-	K.KillMenuOption(true, "Advanced_UIScaleSlider")
+	if C["General"].AutoScale then
+		K.KillMenuOption(true, "Advanced_UseUIScale")
+		K.KillMenuOption(true, "Advanced_UIScaleSlider")
+	end
 
-	if C.Cooldown.Enable then
+	if C["Cooldown"].Enable then
 		K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
 	end
 
-	if C.General.DisableTutorialButtons then
+	if C["General"].DisableTutorialButtons then
 		BagHelpBox:Kill()
 		CollectionsMicroButtonAlert:Kill()
 		EJMicroButtonAlert:Kill()
@@ -121,18 +102,30 @@ DisableBlizzard:SetScript("OnEvent", function(self, addon)
 		WorldMapFrameTutorialButton:Kill()
 	end
 
-	if C.Unitframe.Enable then
+	-- Kill off the game menu button latency display
+	if MainMenuBarPerformanceBar then
+		MainMenuBarPerformanceBar:Hide()
+		MainMenuBarPerformanceBar:SetParent(K.UIFrameHider)
+	end
+
+	if C["Unitframe"].Enable then
 		K.KillMenuOption(true, "InterfaceOptionsCombatPanelTargetOfTarget")
 	end
 
-	if C.Nameplates.Enable then
-		-- Hide the option to rescale, because we will do it from KkthnxUI settings.
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
+	if C["Auras"].Enable then
+		BuffFrame:Kill()
+		TemporaryEnchantFrame:Kill()
+		K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 	end
 
-	if C.ActionBar.Enable then
+	if C["Nameplates"].Enable then
+		-- Hide these options, because we will do it from KkthnxUI settings.
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
+		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
+	end
+
+	if C["ActionBar"].Enable then
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:EnableMouse(false)
 		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
 		InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
@@ -145,7 +138,15 @@ DisableBlizzard:SetScript("OnEvent", function(self, addon)
 		InterfaceOptionsActionBarsPanelRight:SetScale(0.0001)
 	end
 
-	if C.Minimap.Enable then
+	if C["Minimap"].Enable then
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
-end)
+end
+
+function Module:OnEnable()
+	Module:KillStuff()
+end
+
+function Module:OnDisable()
+
+end

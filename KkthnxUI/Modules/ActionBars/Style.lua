@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
 local _G = _G
@@ -45,28 +45,28 @@ local function StyleNormalButton(self)
 
 	count:ClearAllPoints()
 	count:SetPoint("BOTTOMRIGHT", 0, 2)
-	count:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	count:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 	count:SetShadowOffset(0, 0)
 
 	if btname then
-		if C.ActionBar.Macro == true then
+		if C["ActionBar"].Macro == true then
 			btname:ClearAllPoints()
 			btname:SetPoint("BOTTOM", 0, 2)
-			btname:SetFont(C.Media.Font, C.Media.Font_Size - 1, C.Media.Font_Style)
+			btname:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["Media"].FontStyle)
 			btname:SetShadowOffset(0, 0)
-			btname:SetWidth(C.ActionBar.ButtonSize)
+			btname:SetWidth(C["ActionBar"].ButtonSize)
 		else
 			btname:SetText("")
 			btname:Kill()
 		end
 	end
 
-	if C.ActionBar.Hotkey == true then
+	if C["ActionBar"].Hotkey == true then
 		hotkey:ClearAllPoints()
 		hotkey:SetPoint("TOPRIGHT", 0, -2)
-		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+		hotkey:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 		hotkey:SetShadowOffset(0, 0)
-		hotkey:SetWidth(C.ActionBar.ButtonSize - 1)
+		hotkey:SetWidth(C["ActionBar"].ButtonSize - 1)
 		hotkey.ClearAllPoints = K.Noop
 		hotkey.SetPoint = K.Noop
 	else
@@ -75,50 +75,26 @@ local function StyleNormalButton(self)
 	end
 
 	if not button.isSkinned then
-		if self:GetHeight() ~= C.ActionBar.ButtonSize and not InCombatLockdown() and not name:match("ExtraAction") then
-			self:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+		if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not name:match("ExtraAction") then
+			self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 		end
 
 		if (name:match("Extra")) then
 			button.Pushed = true
 		end
 
-		button:CreateBackdrop()
-		button.backdrop:SetOutside()
-
-		button:UnregisterEvent("ACTIONBAR_SHOWGRID")
-		button:UnregisterEvent("ACTIONBAR_HIDEGRID")
-
-		icon:SetTexCoord(unpack(K.TexCoords))
-		icon:SetInside()
-		icon:SetDrawLayer("BACKGROUND", 7)
+		button:SetTemplate("ActionButton", true)
 
 		button.isSkinned = true
 	end
 
 	if border and button.isSkinned then
 		border:SetTexture("")
-		if border:IsShown() and C.ActionBar.EquipBorder then
-			button.backdrop:SetBackdropBorderColor(.08, .70, 0)
+		if border:IsShown() and C["ActionBar"].EquipBorder then
+			button:SetBackdropBorderColor(.08, .70, 0)
 		else
-			button.backdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
+			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		end
-	end
-
-	if C.Blizzard.ColorTextures == true then
-		button.backdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
-	end
-
-	if not button.blizzshadow and button.isSkinned then
-		if button.backdrop then
-			button.backdrop:CreateBlizzShadow()
-		else
-			button:CreateBlizzShadow(6)
-		end
-	end
-
-	if normal and button:GetChecked() then
-		ActionButton_UpdateState(button)
 	end
 
 	if normal then
@@ -144,11 +120,11 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 	flash:SetPoint("TOPLEFT", button, 2, -2)
 	flash:SetPoint("BOTTOMRIGHT", button, -2, 2)
 
-	if C.ActionBar.Hotkey == true then
+	if C["ActionBar"].Hotkey == true then
 		hotkey:ClearAllPoints()
 		hotkey:SetPoint("TOPRIGHT", 0, -2)
-		hotkey:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-		hotkey:SetWidth(C.ActionBar.ButtonSize - 1)
+		hotkey:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+		hotkey:SetWidth(C["ActionBar"].ButtonSize - 1)
 		hotkey.ClearAllPoints = K.Noop
 		hotkey.SetPoint = K.Noop
 	else
@@ -156,37 +132,24 @@ local function StyleSmallButton(normal, button, icon, name, pet)
 	end
 
 	if not button.isSkinned then
-		button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
-		button:CreateBackdrop()
-		button.backdrop:SetOutside()
+		button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 
-		icon:SetTexCoord(unpack(K.TexCoords))
-		icon:ClearAllPoints()
-		icon:SetPoint("TOPLEFT", button, 2, -2)
-		icon:SetPoint("BOTTOMRIGHT", button, -2, 2)
+		button:SetTemplate("ActionButton", true)
 
-		if pet then
+		if (pet) then
 			local autocast = _G[name.."AutoCastable"]
-			autocast:SetSize((C.ActionBar.ButtonSize * 2) - 10, (C.ActionBar.ButtonSize * 2) - 10)
+			autocast:SetSize((C["ActionBar"].ButtonSize * 2) - 10, (C["ActionBar"].ButtonSize * 2) - 10)
 			autocast:ClearAllPoints()
 			autocast:SetPoint("CENTER", button, 0, 0)
 
 			local shine = _G[name.."Shine"]
-			shine:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+			shine:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 
 			local cooldown = _G[name.."Cooldown"]
-			cooldown:SetSize(C.ActionBar.ButtonSize - 2, C.ActionBar.ButtonSize - 2)
+			cooldown:SetSize(C["ActionBar"].ButtonSize - 2, C["ActionBar"].ButtonSize - 2)
 		end
 
 		button.isSkinned = true
-	end
-
-	if not button.blizzshadow and button.isSkinned then
-		if button.backdrop then
-			button.backdrop:CreateBlizzShadow()
-		else
-			button:CreateBlizzShadow(6)
-		end
 	end
 
 	if normal then
@@ -271,7 +234,7 @@ local function SetupFlyoutButton()
 
 		if button and not button.isSkinned then
 			StyleNormalButton(button)
-			button:StyleButton()
+			button:SetTemplate("ActionButton", true)
 
 			if button:GetChecked() then
 				button:SetChecked(nil)
@@ -279,7 +242,7 @@ local function SetupFlyoutButton()
 
 			button.isSkinned = true
 
-			if C.ActionBar.RightBarsMouseover == true then
+			if C["ActionBar"].RightBarsMouseover == true then
 				SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
 				SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
 				button:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
@@ -320,29 +283,14 @@ local function HideHighlightButton(self)
 	end
 end
 
-do
-	for i = 1, 12 do
-		_G["ActionButton"..i]:StyleButton()
-		_G["MultiBarBottomLeftButton"..i]:StyleButton()
-		_G["MultiBarBottomRightButton"..i]:StyleButton()
-		_G["MultiBarLeftButton"..i]:StyleButton()
-		_G["MultiBarRightButton"..i]:StyleButton()
-	end
-
-	for i = 1, 10 do
-		_G["StanceButton"..i]:StyleButton()
-		_G["PetActionButton"..i]:StyleButton()
-	end
-end
-
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
 
-if C.ActionBar.Hotkey == true then
+if C["ActionBar"].Hotkey == true then
 	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...) if event == "PLAYER_ENTERING_WORLD" then ActionButton_UpdateHotkeys(self, self.buttonType) end end)
 	hooksecurefunc("ActionButton_UpdateHotkeys", UpdateHotkey)
 end
 
-if C.ActionBar.HideHightlight == true then
+if C["ActionBar"].HideHightlight == true then
 	hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
 end

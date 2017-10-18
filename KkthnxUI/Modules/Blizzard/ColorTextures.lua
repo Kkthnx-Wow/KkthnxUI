@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Blizzard.ColorTextures ~= true then return end
+if C["General"].ColorTextures ~= true then return end
 
 local pairs = pairs
 local select = select
@@ -110,7 +110,7 @@ function ColorTextures:Style()
 		MinimapBorderTop,
 		MiniMapTrackingButtonBorder,
 	}) do
-		texture:SetVertexColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3] or 0.31, 0.31, 0.31)
+		texture:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3] or 0.31, 0.31, 0.31)
 	end
 end
 

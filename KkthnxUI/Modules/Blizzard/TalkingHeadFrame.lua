@@ -1,4 +1,5 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
+local TalkingHead = K:NewModule("TalkingHead")
 
 local _G = _G
 local ipairs = ipairs
@@ -15,7 +16,7 @@ local Movers = K.Movers
 local isInit = false
 
 -- We set our TalkingHeadFrame scale and position here.
-local function TalkingHead_Init()
+function TalkingHead:OnEnable()
 	if not isInit then
 		local isLoaded = true
 
@@ -24,8 +25,8 @@ local function TalkingHead_Init()
 		end
 
 		if isLoaded then
-			local frameScale = C.Blizzard.TalkingHeadScale or 1
-			local frameAlpha = C.Blizzard.TalkingHeadAlpha or 0.75
+			local frameScale = C["General"].TalkingHeadScale or 1
+			local frameAlpha = C["General"].TalkingHeadAlpha or 0.75
 
 			-- Sanitize
 			if frameScale < 0.5 then
@@ -63,7 +64,3 @@ local function TalkingHead_Init()
 		end
 	end
 end
-
-local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", TalkingHead_Init)

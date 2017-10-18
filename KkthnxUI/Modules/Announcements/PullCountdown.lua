@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Announcements.PullCountdown ~= true then return end
+if C["Announcements"].PullCountdown ~= true then return end
 
 -- Lua API
 local _G = _G
@@ -30,7 +30,7 @@ local function pull(self, elapsed)
 		target = ""
 	end
 	if not firstdone then
-		SendChatMessage(string_format(L.Announce.PCMessage, target, tostring(delay)), K.CheckChat(true))
+		SendChatMessage(string_format(L["Pulling %s in %s.."], target, tostring(delay)), K.CheckChat(true))
 		firstdone = true
 		delay = delay - 1
 	end
@@ -41,7 +41,7 @@ local function pull(self, elapsed)
 			SendChatMessage(tostring(delay).."..", K.CheckChat(true))
 			delay = delay - 1
 		else
-			SendChatMessage(L.Announce.PCGo, K.CheckChat(true))
+			SendChatMessage(L["GO!"], K.CheckChat(true))
 			reset()
 		end
 	end
@@ -51,7 +51,7 @@ function frame.Pull(timer)
 	delay = timer or 3
 	if timerframe:GetScript("OnUpdate") then
 		reset()
-		SendChatMessage(L.Announce.PCAborted, K.CheckChat(true))
+		SendChatMessage(L["Pull ABORTED!"], K.CheckChat(true))
 	else
 		timerframe:SetScript("OnUpdate", pull)
 	end

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Load_Filters -->
+    <Script file="AuraWatch.lua" />
+    <Script file="CastbarTicks.lua" />
+    <Script file="ErrorFilter.lua" />
+    <Script file="SpamFilter.lua" />
+    <Script file="Nameplates.lua" />
+</Ui>

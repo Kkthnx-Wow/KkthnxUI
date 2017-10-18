@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Minimap.Enable ~= true or C.Minimap.CollectButtons ~= true then return end
+if C["Minimap"].Enable ~= true or C["Minimap"].CollectButtons ~= true then return end
 
 -- Lua API
 local table_insert = table.insert
@@ -16,7 +16,6 @@ local UIParent = _G.UIParent
 
 local MinimapButtonCollectFrame
 local buttons = {}
-local buttonNames = {}
 
 local AcceptedFrames = {
 	"BagSync_MinimapButton",
@@ -25,52 +24,52 @@ local AcceptedFrames = {
 }
 
 local BlackList = {
+	"BookOfTracksFrame",
+	"CartographerNotesPOI",
 	"CopyChatButton1",
+	"DA_Minimap",
+	"EnhancedFrameMinimapButton",
+	"FishingExtravaganzaMini",
+	"FWGMinimapPOI",
+	"GameTimeFrame",
 	"GarrisonLandingPageMinimapButton",
+	"GarrisonMinimapButton",
+	"GatherArchNote",
+	"GatherMatePin",
+	"GatherNote",
+	"GFW_TrackMenuButton",
+	"GFW_TrackMenuFrame",
+	"GuildInstanceDifficulty",
+	"HandyNotesPin",
 	"HelpOpenTicketButton",
+	"KkthnxUIToggleButton",
+	"MBB_MinimapButtonFrame",
+	"MinimapBackdrop",
+	"MiniMapBattlefieldFrame",
+	"MiniMapInstanceDifficulty",
+	"MiniMapLFGFrame",
 	"MiniMapMailFrame",
+	"MiniMapMeetingStoneFrame",
+	"MiniMapPing",
+	"MiniMapRecordingButton",
+	"MiniMapTracking",
 	"MiniMapTrackingFrame",
 	"MiniMapVoiceChatFrame",
+	"MiniMapWorldMapButton",
+	"MinimapZoneTextButton",
+	"MinimapZoomIn",
+	"MinimapZoomOut",
+	"MiniNotePOI",
+	"poiMinimap",
+	"PremadeFilter_MinimapButton",
+	"QuestPointerPOI",
+	"QueueStatusMinimapButton",
+	"RecipeRadarMinimapIcon",
+	"TDial_TrackButton",
+	"TDial_TrackingIcon",
+	"TimeManagerClockButton",
 	"ToggleBar5",
-  "BookOfTracksFrame",
-  "CartographerNotesPOI",
-  "DA_Minimap",
-  "EnhancedFrameMinimapButton",
-  "FishingExtravaganzaMini",
-  "FWGMinimapPOI",
-  "GameTimeFrame",
-  "GarrisonMinimapButton",
-  "GatherArchNote",
-  "GatherMatePin",
-  "GatherNote",
-  "GFW_TrackMenuButton",
-  "GFW_TrackMenuFrame",
-  "GuildInstanceDifficulty",
-  "HandyNotesPin",
-  "KkthnxUIToggleButton",
-  "MBB_MinimapButtonFrame",
-  "MinimapBackdrop",
-  "MiniMapBattlefieldFrame",
-  "MiniMapInstanceDifficulty",
-  "MiniMapLFGFrame",
-  "MiniMapMeetingStoneFrame",
-  "MiniMapPing",
-  "MiniMapRecordingButton",
-  "MiniMapTracking",
-  "MiniMapWorldMapButton",
-  "MinimapZoneTextButton",
-  "MinimapZoomIn",
-  "MinimapZoomOut",
-  "MiniNotePOI",
-  "poiMinimap",
-  "PremadeFilter_MinimapButton",
-  "QuestPointerPOI",
-  "QueueStatusMinimapButton",
-  "RecipeRadarMinimapIcon",
-  "TDial_TrackButton",
-  "TDial_TrackingIcon",
-  "TimeManagerClockButton",
-  "ZGVMarker",
+	"ZGVMarker",
 }
 
 local function SetMinimapButton(btn)
@@ -80,7 +79,7 @@ local function SetMinimapButton(btn)
 	if not name then return end
 
 	for i = 1, #BlackList do
-		if string.find(name, BlackList[i]) then return end
+		if name == BlackList[i] then return end
 	end
 
 	btn:SetParent("MinimapButtonCollectFrame")
@@ -155,9 +154,7 @@ local function SetMinimapButton(btn)
 	end
 
 	btn:SetSize(18, 18)
-	K.CreateBorder(btn)
-	btn:SetBackdrop(K.BorderBackdrop)
-	btn:SetBackdropColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
+	btn:SetTemplate("ActionButton", true)
 	if btn:GetName() ~= "BaudErrorFrameMinimapButton" then
 		table_insert(buttons, btn)
 	else
@@ -171,19 +168,15 @@ local function GrabMinimapButtons()
 	for i = 1, Minimap:GetNumChildren() do
 		local object = select(i, Minimap:GetChildren())
 		if object then
-			if object:IsObjectType("Button") and object:GetName() then				
-				table_insert(buttonNames, object:GetName())
+			if object:IsObjectType("Button") and object:GetName() then
+				SetMinimapButton(object)
 			end
 			for _, frame in pairs(AcceptedFrames) do
-				if object:IsObjectType("Frame") and object:GetName() == frame then					
-					table_insert(buttonNames, object:GetName())
+				if object:IsObjectType("Frame") and object:GetName() == frame then
+					SetMinimapButton(object)
 				end
 			end
 		end
-	end
-
-	for _, frameName in pairs(buttonNames) do
-		SetMinimapButton(_G[frameName])
 	end
 end
 
@@ -236,7 +229,7 @@ function K:PositionButtonCollector(self)
 	local line = math.ceil(Minimap:GetWidth() / 20)
 	local rows = math.floor(K.positioned / line) + 1
 	MinimapButtonCollectFrame:SetWidth(rows * 20 + (rows - 1) * 3)
-	MinimapButtonCollectFrame:SetPoint("TOPRIGHT", Minimap, "TOPLEFT", -4, 1)
+	MinimapButtonCollectFrame:SetPoint("TOPRIGHT", Minimap, "TOPLEFT", -4, 0)
 end
 
 function K:ButtonCollector()
@@ -246,7 +239,7 @@ function K:ButtonCollector()
 	else
 		MinimapButtonCollectFrame:SetPoint("TOPRIGHT", Minimap, "BOTTOMRIGHT", 0, -5)
 	end
-	MinimapButtonCollectFrame:SetSize(23, C.Minimap.Size)
+	MinimapButtonCollectFrame:SetSize(23, C["Minimap"].Size)
 	MinimapButtonCollectFrame:SetFrameStrata("BACKGROUND")
 	MinimapButtonCollectFrame:SetFrameLevel(1)
 

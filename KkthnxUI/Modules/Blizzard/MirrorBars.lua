@@ -1,10 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
 
 -- Lua API
 local _G = _G
-
--- WoW API
 local string_format = string.format
 
 local Movers = K.Movers
@@ -32,25 +29,30 @@ end
 
 -- Mirror Timers (Underwater Breath etc.), credit to Azilroka
 for i = 1, MIRRORTIMER_NUMTIMERS do
+	if C["Unitframe"].Enable ~= true then return end
+
 	local mirrorTimer = _G["MirrorTimer"..i]
 	local statusBar = _G["MirrorTimer"..i.."StatusBar"]
 	local text = _G["MirrorTimer"..i.."Text"]
 
 	mirrorTimer:StripTextures()
-	mirrorTimer:SetSize(222, 20)
+	mirrorTimer:SetSize(222, 22)
 	mirrorTimer.label = text
-	statusBar:SetStatusBarTexture(C.Media.Texture)
-	K.CreateBorder(statusBar, -1)
-	statusBar:SetSize(222, 20)
+	statusBar:SetStatusBarTexture(C["Media"].Texture)
+	statusBar:SetTemplate("Transparent")
+	statusBar:SetSize(222, 22)
 	text:Hide()
 
-	local Backdrop = select(1, mirrorTimer:GetRegions())
-	Backdrop:SetTexture(C.Media.Blank)
-	Backdrop:SetVertexColor(C.Media.Backdrop_Color[1], C.Media.Backdrop_Color[2], C.Media.Backdrop_Color[3], C.Media.Backdrop_Color[4])
-	Backdrop:SetAllPoints(statusBar)
+	statusBar.spark = statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
+	statusBar.spark:SetWidth(12)
+	statusBar.spark:SetHeight(statusBar:GetHeight() * 2)
+	statusBar.spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+	statusBar.spark:SetBlendMode("ADD")
+	statusBar.spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
-	TimerText:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	TimerText:SetFont(C["Media"].Font, 13)
+	TimerText:SetShadowOffset(1.25, -1.25)
 	TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
 	mirrorTimer.TimerText = TimerText
 

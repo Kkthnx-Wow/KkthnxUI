@@ -1,7 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 
 local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = ns.oUF
+if not oUF then return end
 
 -- Colors
 oUF.colors.castColor = {0.85, 0.77, 0.36}
@@ -9,13 +10,7 @@ oUF.colors.castNoInterrupt = {1, 0, 0}
 oUF.colors.disconnected = {0.53, 0.54, 0.53}
 oUF.colors.fallback = {1, 1, 0.8}
 oUF.colors.health = {0.29, 0.67, 0.30}
-oUF.colors.interruptible = {0.31, 0.45, 0.63, 0.5}
 oUF.colors.white = {1, 1, 1}
-
-oUF.colors.runes = {
-	["CD"] = {0.7, 0.7, 0.7},
-	["READY"] = {0.31, 0.45, 0.63},
-}
 
 oUF.colors.reaction = {
 	[1] = {0.87, 0.37, 0.37}, -- Hated
@@ -28,6 +23,18 @@ oUF.colors.reaction = {
 	[8] = {0.29, 0.67, 0.30}, -- Exalted
 }
 
+-- This is mainly just for our tooltip
+oUF.colors.factioncolors = {
+	["1"] = {r = 0.87, g = 0.37, b = 0.37}, -- Hated
+	["2"] = {r = 0.87, g = 0.37, b = 0.37}, -- Hostile
+	["3"] = {r = 0.87, g = 0.37, b = 0.37}, -- Unfriendly
+	["4"] = {r = 0.85, g = 0.77, b = 0.36}, -- Neutral
+	["5"] = {r = 0.29, g = 0.67, b = 0.30}, -- Friendly
+	["6"] = {r = 0.29, g = 0.67, b = 0.30}, -- Honored
+	["7"] = {r = 0.29, g = 0.67, b = 0.30}, -- Revered
+	["8"] = {r = 0.29, g = 0.67, b = 0.30}, -- Exalted
+}
+
 oUF.colors.power = {
 	["ALTPOWER"] = {0.00, 1.00, 1.00},
 	["AMMOSLOT"] = {0.80, 0.60, 0.00},
@@ -35,7 +42,7 @@ oUF.colors.power = {
 	["ENERGY"] = {0.65, 0.63, 0.35},
 	["FOCUS"] = {0.71, 0.43, 0.27},
 	["FUEL"] = {0.00, 0.55, 0.50},
-	["FURY"] = {0.78, 0.26, 0.99},
+	["FURY"] = {201/255, 66/255, 253/255},
 	["HOLY_POWER"] = {0.95, 0.90, 0.60},
 	["INSANITY"] = {0.40, 0.00, 0.80},
 	["LUNAR_POWER"] = {0.93, 0.51, 0.93},
@@ -64,13 +71,6 @@ oUF.colors.class = {
 	["SHAMAN"] = {0.16, 0.31, 0.61},
 	["WARLOCK"] = {0.58, 0.51, 0.79},
 	["WARRIOR"] = {0.78, 0.61, 0.43},
-}
-
-oUF.colors.totems = {
-	[1] = oUF.colors.class[K.Class], -- Totem 1
-	[2] = oUF.colors.class[K.Class], -- Totem 2
-	[3] = oUF.colors.class[K.Class], -- Totem 3
-	[4] = oUF.colors.class[K.Class], -- Totem 4
 }
 
 K.Colors = oUF.colors

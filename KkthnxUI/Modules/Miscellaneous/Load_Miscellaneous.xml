@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- Load_Miscellaneous -->
+    <Script file="AFKSpin.lua" />
+    <Script file="AutoRepair.lua" />
+    <Script file="AutoSell.lua" />
+    <Script file="ChatBubble.lua" />
+    <Script file="DropDown.lua" />
+    <Script file="Durability.lua" />
+    <Script file="KillingBlow.lua" />
+    <Script file="LossControl.lua" />
+    <Script file="Miscellaneous.lua" />
+    <Script file="Mounts.lua" />
+    <Script file="MovableFrames.lua" />
+    <Script file="PvPEmote.lua" />
+    <Script file="SlotDurability.lua" />
+    <Script file="SlotItemLevel.lua" />
+    <Script file="SpellTolerance.lua" />
+</Ui>

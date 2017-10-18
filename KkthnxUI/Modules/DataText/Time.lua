@@ -30,15 +30,13 @@ local WINTERGRASP_IN_PROGRESS = _G.WINTERGRASP_IN_PROGRESS
 -- GLOBALS: GameTimeFrame, GameTooltip, ToggleTimeManager
 
 local DataTextTime = CreateFrame("Frame")
-DataTextTime:EnableMouse(true)
-DataTextTime:SetFrameStrata("BACKGROUND")
-DataTextTime:SetFrameLevel(3)
 
-local Font, FontSize, FontStyle = C.Media.Font, C.Media.Font_Size, C.Media.Font_Style
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
-local ValueColor = K.RGBToHex(1, 1, 1)
+local ValueColor = K.RGBToHex(1, 1, 1, 1)
+
 local Text = Minimap:CreateFontString(nil, "OVERLAY")
-Text:SetFont(Font, FontSize, FontStyle)
+Text:SetFont(C["Media"].Font, 13, "")
+Text:SetShadowOffset(1.25, -1.25)
 Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
@@ -64,7 +62,7 @@ end
 
 local function ConvertTime(h, m)
 	local AmPm
-	if C.DataText.Time24Hr == true then
+	if C["DataText"].Time24Hr == true then
 		return h, m, -1
 	else
 		if h >= 12 then
@@ -79,20 +77,22 @@ local function ConvertTime(h, m)
 end
 
 local function CalculateTimeValues(tooltip)
-	if (tooltip and C.DataText.LocalTime) or (not tooltip and not C.DataText.LocalTime) then
+	if (tooltip and C["DataText"].LocalTime) or (not tooltip and not C["DataText"].LocalTime) then
 		return ConvertTime(GetGameTime())
 	else
 		local dateTable = date("*t")
-		return ConvertTime(dateTable.hour, dateTable.min)
+		return ConvertTime(dateTable["hour"], dateTable["min"])
 	end
 end
 
 local function Click(self, btn)
-	if btn == "RightButton" then ToggleTimeManager() else GameTimeFrame:Click() end
+	GameTimeFrame:Click()
 end
 
 local function OnLeave()
-	GameTooltip:Hide()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide()
+	end
 	enteredFrame = false
 end
 
@@ -101,7 +101,7 @@ local function OnEnter(self)
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
 
-	if(not enteredFrame) then
+	if (not enteredFrame) then
 		enteredFrame = true
 		RequestRaidInfo()
 	end
@@ -123,55 +123,55 @@ local function OnEnter(self)
 
 	local lockedInstances = {raids = {}, dungeons = {}}
 	for i = 1, GetNumSavedInstances() do
-		local name, instanceId, _, difficulty, locked, extended, _, isRaid, _, _, _, _ = GetSavedInstanceInfo(i)
+		local name, instanceId, _, difficulty, locked, extended, _, isRaid, _, _, _, _  = GetSavedInstanceInfo(i)
 		if (locked or extended) and name then
 			if isRaid then
-				lockedInstances.raids[instanceId] = {GetSavedInstanceInfo(i)}
+				lockedInstances["raids"][instanceId] = {GetSavedInstanceInfo(i)}
 			elseif not isRaid and difficulty == 23 then
-				lockedInstances.dungeons[instanceId] = {GetSavedInstanceInfo(i)}
+				lockedInstances["dungeons"][instanceId] = {GetSavedInstanceInfo(i)}
 			end
 		end
 	end
 
-	if next(lockedInstances.raids) then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L.DataText.SavedRaids)
+	if next(lockedInstances["raids"]) then
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Saved Raid(s)")
 
-		for pos,instance in pairs(lockedInstances.raids) do
-			name, _, reset, difficultyId, _, extended, _, _, maxPlayers, _, numEncounters, encounterProgress = unpack(instance)
+        for pos,instance in pairs(lockedInstances["raids"]) do
+            name, _, reset, difficultyId, _, extended, _, _, maxPlayers, _, numEncounters, encounterProgress = unpack(instance)
 
-			local lockoutColor = extended and lockoutColorExtended or lockoutColorNormal
-			local _, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficultyId)
-			if (numEncounters and numEncounters > 0) and (encounterProgress and encounterProgress > 0) then
-				GameTooltip:AddDoubleLine(string_format(lockoutInfoFormat, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name, encounterProgress, numEncounters), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
-			else
-				GameTooltip:AddDoubleLine(string_format(lockoutInfoFormatNoEnc, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
-			end
-		end
-	end
+            local lockoutColor = extended and lockoutColorExtended or lockoutColorNormal
+            local _, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficultyId)
+            if (numEncounters and numEncounters > 0) and (encounterProgress and encounterProgress > 0) then
+                GameTooltip:AddDoubleLine(string_format(lockoutInfoFormat, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name, encounterProgress, numEncounters), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
+            else
+                GameTooltip:AddDoubleLine(string_format(lockoutInfoFormatNoEnc, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
+            end
+        end
+    end
 
-	if next(lockedInstances.dungeons) then
-		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(L.DataText.SavedDungeons)
+	if next(lockedInstances["dungeons"]) then
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine("Saved Dungeon(s)")
 
-		for pos,instance in pairs(lockedInstances.dungeons) do
-			name, _, reset, difficultyId, _, extended, _, _, maxPlayers, _, numEncounters, encounterProgress = unpack(instance)
+        for pos,instance in pairs(lockedInstances["dungeons"]) do
+            name, _, reset, difficultyId, _, extended, _, _, maxPlayers, _, numEncounters, encounterProgress = unpack(instance)
 
-			local lockoutColor = extended and lockoutColorExtended or lockoutColorNormal
-			local _, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficultyId)
-			if (numEncounters and numEncounters > 0) and (encounterProgress and encounterProgress > 0) then
-				GameTooltip:AddDoubleLine(string_format(lockoutInfoFormat, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name, encounterProgress, numEncounters), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
-			else
-				GameTooltip:AddDoubleLine(string_format(lockoutInfoFormatNoEnc, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
-			end
-		end
-	end
+            local lockoutColor = extended and lockoutColorExtended or lockoutColorNormal
+            local _, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficultyId)
+            if (numEncounters and numEncounters > 0) and (encounterProgress and encounterProgress > 0) then
+                GameTooltip:AddDoubleLine(string_format(lockoutInfoFormat, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name, encounterProgress, numEncounters), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
+            else
+                GameTooltip:AddDoubleLine(string_format(lockoutInfoFormatNoEnc, maxPlayers, (displayMythic and "M" or (isHeroic or displayHeroic) and "H" or "N"), name), SecondsToTime(reset, false, nil, 3), 1, 1, 1, lockoutColor.r, lockoutColor.g, lockoutColor.b)
+            end
+        end
+    end
 
 	local addedLine = false
 	for i = 1, GetNumSavedWorldBosses() do
 		name, _, reset = GetSavedWorldBossInfo(i)
-		if(reset) then
-			if(not addedLine) then
+		if (reset) then
+			if (not addedLine) then
 				GameTooltip:AddLine(" ")
 				GameTooltip:AddLine(WORLD_BOSSES_TEXT)
 				addedLine = true
@@ -184,10 +184,10 @@ local function OnEnter(self)
 
 	GameTooltip:AddLine(" ")
 	if AmPm == -1 then
-		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
+		GameTooltip:AddDoubleLine(C["DataText"].LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
 		string_format(europeDisplayFormat_nocolor, Hr, Min), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	else
-		GameTooltip:AddDoubleLine(C.DataText.LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
+		GameTooltip:AddDoubleLine(C["DataText"].LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
 		string_format(ukDisplayFormat_nocolor, Hr, Min, APM[AmPm]), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
 	end
 

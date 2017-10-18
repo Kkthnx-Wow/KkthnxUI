@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
 local _G = _G
@@ -21,14 +21,15 @@ ActionBar1:SetAllPoints(ActionBarAnchor)
 
 for i = 1, 12 do
 	local button = _G["ActionButton"..i]
-	button:SetSize(C.ActionBar.ButtonSize, C.ActionBar.ButtonSize)
+	button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+
 	button:ClearAllPoints()
 	button:SetParent(Bar1Holder)
 	if i == 1 then
 		button:SetPoint("BOTTOMLEFT", Bar1Holder, 0, 0)
 	else
 		local previous = _G["ActionButton"..i-1]
-		button:SetPoint("LEFT", previous, "RIGHT", C.ActionBar.ButtonSpace, 0)
+		button:SetPoint("LEFT", previous, "RIGHT", C["ActionBar"].ButtonSpace, 0)
 	end
 end
 
@@ -38,14 +39,24 @@ local Page = {
 	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
-local function GetBar()
+local function GetBar(self, defaultPage)
 	local condition = Page["DEFAULT"]
 	local class = K.Class
 	local page = Page[class]
+
+	if not condition then condition = "" end
+
+	if not page then
+		page = ""
+	elseif page:match("[\n\r]") then
+		page = page:gsub("[\n\r]","")
+	end
+
 	if page then
 		condition = condition.." "..page
 	end
-	condition = condition.." 1"
+	condition = condition.." "..Page["DEFAULT"]
+
 	return condition
 end
 

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Skins.DBM ~= true or not (K.CheckAddOn("DBM-Core") and K.CheckAddOn("DBM-StatusBarTimers")) then return end
+if C["Skins"].DBM ~= true or not (K.IsAddOnEnabled("DBM-Core") and K.IsAddOnEnabled("DBM-StatusBarTimers")) then return end
 
 local DBM_Skin = CreateFrame("Frame")
 DBM_Skin:RegisterEvent("ADDON_LOADED")
@@ -30,15 +30,19 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 						if not icon1.overlay then
 							icon1.overlay = CreateFrame("Frame", "$parentIcon1Overlay", tbar)
 							icon1.overlay:CreateShadow(1)
+							icon1.overlay:SetBackdrop(K.BorderBackdrop)
+							icon1.overlay:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 							icon1.overlay:SetFrameLevel(0)
-							icon1.overlay:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", -(2 and 2 or 3), 0)
+							icon1.overlay:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", -(0 and 0 or 0), 0)
 						end
 
 						if not icon2.overlay then
 							icon2.overlay = CreateFrame("Frame", "$parentIcon2Overlay", tbar)
 							icon2.overlay:CreateShadow(1)
+							icon2.overlay:SetBackdrop(K.BorderBackdrop)
+							icon2.overlay:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 							icon2.overlay:SetFrameLevel(0)
-							icon2.overlay:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", (2 and 2 or 3), 0)
+							icon2.overlay:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", (0 and 0 or 0), 0)
 						end
 
 						icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -55,6 +59,8 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 						tbar:SetInside(frame)
 
 						frame:CreateShadow(1)
+						frame:SetBackdrop(K.BorderBackdrop)
+						frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 						name:ClearAllPoints()
 						name:SetWidth(165)
@@ -70,8 +76,8 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 						name:SetPoint("LEFT", frame, "LEFT", 4, 0)
 						timer:SetPoint("RIGHT", frame, "RIGHT", -4, 0)
 
-						timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-						name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+						timer:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+						name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 
 						if bar.owner.options.IconLeft then icon1.overlay:Show() else icon1.overlay:Hide() end
 						if bar.owner.options.IconRight then icon2.overlay:Show() else icon2.overlay:Hide() end
@@ -101,7 +107,7 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 				background:SetNormalTexture(nil)
 
-				progress:SetStatusBarTexture(C.Media.Texture)
+				progress:SetStatusBarTexture(C["Media"].Texture)
 				progress:ClearAllPoints()
 				progress:SetInside(bar)
 
@@ -122,13 +128,13 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 				local header = {bar:GetParent():GetRegions()}
 				if header and header[1]:IsObjectType("FontString") then
-					header[1]:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+					header[1]:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 					header[1]:SetTextColor(1, 1, 1)
 					header[1]:SetShadowColor(0, 0, 0, 0)
 				end
 
-				name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
-				timer:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+				name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+				timer:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 
 				if DBM.Options.HealthFrameGrowUp then
 					bar:SetPoint(pointa, anchor, pointb, 0, count == 1 and MainOffset or BarOffset)

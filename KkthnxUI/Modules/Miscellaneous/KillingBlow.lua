@@ -1,41 +1,95 @@
-local K, C, L = unpack(select(2, ...))
-if C.Misc.KillingBlow ~= true then return end
+-- local K, C, L = unpack(select(2, ...))
+-- if C["Misc"].KillingBlow ~= true then return end
 
--- Lua API
-local _G = _G
-local bit_band = bit.band
-local select = select
+-- -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
--- Wow API
-local UnitGUID = _G.UnitGUID
-local GetPlayerInfoByGUID = _G.GetPlayerInfoByGUID
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local ACTION_PARTY_KILL = _G.ACTION_PARTY_KILL
+-- local KkthnxUIKillingBlow = K:NewModule("KkthnxUIKillingBlow", "AceHook-3.0", "AceEvent-3.0")
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: COMBATLOG_OBJECT_CONTROL_PLAYER
+-- -- Lua API
+-- local _G = _G
+-- local bit_band = _G.bit.band
+-- local hooksecurefunc = _G.hooksecurefunc
 
-local Movers = K.Movers
+-- local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
+-- local GetBattlefieldScore = _G.GetBattlefieldScore
+-- local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+-- local PlaySound = _G.PlaySound
 
--- Setup message frame
-local MessageFrame = CreateFrame("ScrollingMessageFrame", "KillingBlowMessageFrame", UIParent)
-MessageFrame:SetFont(C.Media.Font, 18, "OUTLINE")
-MessageFrame:SetSize(256, 64)
-MessageFrame:SetPoint("CENTER", 0, 205)
-MessageFrame:SetInsertMode("TOP")
-MessageFrame:SetTimeVisible(3)
-MessageFrame:SetFadeDuration(1.5)
-MessageFrame:SetFrameLevel(0)
-Movers:RegisterFrame(MessageFrame)
+-- -- GLOBALS: COMBATLOG_OBJECT_TYPE_PLAYER, TopBannerManager_Show, BossBanner_BeginAnims
 
-local KillingBlow = CreateFrame("Frame")
-KillingBlow:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-KillingBlow:SetScript("OnEvent", function(self, event, ...)
-	local _, event, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags = ...
-	if (event == "PARTY_KILL") and (sourceGUID == K.GUID) and (bit_band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0) then
-		local destGUID, tname = select(8, ...)
-		local classIndex = select(2, GetPlayerInfoByGUID(destGUID))
-		local color = classIndex and RAID_CLASS_COLORS[classIndex] or {r = 0.2, g = 1, b = 0.2}
-		MessageFrame:AddMessage("|cff33FF33"..ACTION_PARTY_KILL..": |r"..tname, color.r, color.g, color.b)
-	end
-end)
+-- -- We need to check these for overkill damage in cases where
+-- -- PARTY_KILL for some reason refuse to fire.
+-- local damageEvents = {
+-- 	SWING_DAMAGE = true,
+-- 	RANGE_DAMAGE = true,
+-- 	SPELL_DAMAGE = true,
+-- 	SPELL_BUILDING_DAMAGE = true,
+-- 	SPELL_PERIODIC_DAMAGE = true
+-- }
+
+-- local playerGUID = UnitGUID("player")
+-- local unitFilter = COMBATLOG_OBJECT_CONTROL_PLAYER
+-- local FactionToken = UnitFactionGroup("player")
+-- local BG_Opponents = {}
+
+-- function KkthnxUIKillingBlow:OpponentsTable()
+-- 	table.wipe(BG_Opponents)
+-- 	for index = 1, _G.GetNumBattlefieldScores() do
+-- 		local name, _, _, _, _, faction, _, _, classToken = _G.GetBattlefieldScore(index)
+-- 		if (FactionToken == "Horde" and faction == 1) or (FactionToken == "Alliance" and faction == 0) then
+-- 			BG_Opponents[name] = classToken
+-- 		end
+-- 	end
+-- end
+
+-- function KkthnxUIKillingBlow:LogParse(event, ...)
+-- 	local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags = ...
+
+-- 	local mask = bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
+-- 	local isKillingBlow
+
+-- 	-- Note that UnitIsPlayer
+-- 	if ((subEvent == "PARTY_KILL") and (sourceGUID == playerGUID) and (BG_Opponents[destName] or mask > 0) and (bit_band(destFlags, unitFilter) and _G.UnitIsPlayer(destName))) then
+
+-- 		if mask > 0 and BG_Opponents[destName] then
+-- 			destName = "|c"..RAID_CLASS_COLORS[BG_Opponents[destName]].colorStr..destName.."|r"
+-- 		end
+
+-- 		_G.TopBannerManager_Show(_G["BossBanner"], {name = destName, mode = "PVPKILL"})
+-- 		isKillingBlow = true
+
+-- 		-- Workarounds for situations where the PARTY_KILL event won't fire
+-- 	elseif damageEvents[subEvent] then
+-- 		local overkill = _G.select(16, ...)
+-- 		if (overkill and overkill > 0) then
+-- 			if ((sourceGUID == playerGUID) or (sourceGUID == _G.UnitGUID("pet"))) and (bit_band(destFlags, unitFilter) and _G.UnitIsPlayer(destName)) then
+
+-- 				if mask > 0 and BG_Opponents[destName] then
+-- 					destName = "|c"..RAID_CLASS_COLORS[BG_Opponents[destName]].colorStr..destName.."|r"
+-- 				end
+
+-- 				_G.TopBannerManager_Show(_G["BossBanner"], {name = destName, mode = "PVPKILL"})
+-- 				isKillingBlow = true
+-- 			end
+-- 		end
+-- 	end
+-- end
+
+-- function KkthnxUIKillingBlow:OnEnable()
+-- 	_G.hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
+-- 		if data then
+-- 			if isKillingBlow then
+-- 				self.Title:SetText(data.name)
+-- 				self.Title:Show()
+-- 				self.SubTitle:Hide()
+-- 				self:Show()
+
+-- 				BossBanner_BeginAnims(self)
+-- 				PlaySound("UI_Raid_Boss_Defeated")
+-- 			end
+-- 		end
+-- 	end)
+
+-- 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "LogParse")
+-- 	self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", "OpponentsTable")
+-- end

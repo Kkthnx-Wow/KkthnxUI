@@ -1,12 +1,20 @@
 local K, C, L = unpack(select(2, ...))
 
--- Animation Functions
+-- Sourced: ElvUI (Elvz)
+-- Edited: KkthnxUI (Kkthnx)
+
+-- GLOBALS: unpack, select, _G, table
+
+-- luacheck: globals unpack select _G table
 
 -- Lua API
+local _G = _G
 local table_remove = table.remove
+local select = select
+local unpack = unpack
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: UIFrameFade_RemoveFrame
+-- Wow API
+local CreateFrame = _G.CreateFrame
 
 local function SetAnimationGroup(object, type, ...)
 	if not type then type = "Flash" end

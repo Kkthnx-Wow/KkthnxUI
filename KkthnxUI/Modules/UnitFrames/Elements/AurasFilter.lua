@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Unitframe.Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then return end
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -180,7 +180,7 @@ for _, id in next, C_MountJournal_GetMountIDs() do
 	mountFilter[spellID] = true
 end
 
-K.DefaultAuraFilter = function(frame, unit, aura, _, _, _, _, debuffType, duration, _, caster, isStealable, _, spellID, _, isBossAura)
+function K.DefaultAuraFilter(frame, unit, aura, _, _, _, _, debuffType, duration, _, caster, isStealable, _, spellID, _, isBossAura)
 	-- blackList
 	if blackList[spellID] then
 		return false
@@ -236,7 +236,7 @@ K.DefaultAuraFilter = function(frame, unit, aura, _, _, _, _, debuffType, durati
 	return false
 end
 
-K.BossAuraFilter = function(frame, unit, aura, _, _, _, _, _, _, _, caster, _, _, _, _, isBossAura)
+function K.BossAuraFilter(frame, unit, aura, _, _, _, _, debuffType, duration, _, caster, isStealable, _, _, _, isBossAura)
 	local isFriend = UnitIsFriend("player", unit)
 
 	isBossAura = isBossAura or caster and (UnitIsUnit(caster, "boss1") or UnitIsUnit(caster, "boss2") or UnitIsUnit(caster, "boss3") or UnitIsUnit(caster, "boss4") or UnitIsUnit(caster, "boss5"))
@@ -244,6 +244,29 @@ K.BossAuraFilter = function(frame, unit, aura, _, _, _, _, _, _, _, caster, _, _
 	-- boss
 	if isBossAura then
 		return true
+	end
+
+	-- applied by player
+	if aura.isPlayer or (caster and UnitIsUnit(caster, "pet")) then
+		if duration and duration ~= 0 then
+			return true
+		else
+			return true and true
+		end
+	end
+
+	if isFriend then
+		if aura.isDebuff then
+			-- dispellable
+			if debuffType and IsDispellableByMe(debuffType) then
+				return true
+			end
+		end
+	else
+		-- stealable
+		if isStealable then
+			return true
+		end
 	end
 
 	return false

@@ -1,312 +1,197 @@
-local K, C, L = unpack(select(2, ...))
-
+local _, _, L = unpack(select(2, ...))
 -- Localization for enUS & enGB
 
-L.AFKScreen = {
-	NoGuild = "No Guild",
-	Sun = "Sunday",
-	Mon = "Monday",
-	Tue = "Tuesday",
-	Wed = "Wednesday",
-	Thu = "Thursday",
-	Fri = "Friday",
-	Sat = "Saturday",
-	Jan = "January",
-	Feb = "February",
-	Mar = "March",
-	Apr = "April",
-	May = "May",
-	Jun = "June",
-	Jul = "July",
-	Aug = "August",
-	Sep = "September",
-	Oct = "October",
-	Nov = "November",
-	Dec = "December"
+local _G = _G
+
+local GetItemClassInfo = _G.GetItemClassInfo
+local GetItemSubClassInfo = _G.GetItemSubClassInfo
+local LE_ITEM_CLASS_ITEM_ENHANCEMENT = _G.LE_ITEM_CLASS_ITEM_ENHANCEMENT
+local LE_ITEM_CLASS_MISCELLANEOUS = _G.LE_ITEM_CLASS_MISCELLANEOUS
+local LE_ITEM_CLASS_QUESTITEM = _G.LE_ITEM_CLASS_QUESTITEM
+local LE_ITEM_CLASS_TRADEGOODS = _G.LE_ITEM_CLASS_TRADEGOODS
+
+-- Install Localization
+L.Install = {
+	Step_0 = "Thank you for choosing |cff4488ffKkthnxUI|r!|n|nYou will be guided through the installation process in a few simple steps. At each step you can decide whether or not you want to apply or skip the presented settings.",
+	Step_1 = "The first step applies the essential settings. This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings.|n|nClick 'Apply' to apply the settings and 'Next' to continue the install process. If you wish to skip this step just press 'Next'.",
+	Step_2 = "The second step applies the correct chat setup. If you are a new user this step is recommended. If you are an existing user you may want to skip this step.|n|nClick 'Apply' to apply the settings and 'Next' to continue the install process. If you wish to skip this step just press 'Next'.",
+	Step_3 = "Installation is complete. Please click the 'Complete' button to reload the UI. Enjoy KkthnxUI!\n\nVisit us at\n\n|cff7289DADiscord:|r YUmxqQm\n|cff3b5998Facebook:|r @kkthnxui\n|cff00acedTwitter:|r @kkthnxui",
+	Welcome_1 = "Welcome to |cff4488ffKkthnxUI|r v",
+	Welcome_2 = "Type |cffffbb44/cfg|r to access the in-game configuration menu.",
+	Welcome_3 = "If you are in need of support you can visit our Discord |cffffbb44YUmxqQm|r",
 }
 
-L.Announce = {
-	Interrupted = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!",
-	PCAborted = "Pull ABORTED!",
-	PCGo = "GO!",
-	PCMessage = "Pulling %s in %s..",
-	Sapped = "Sapped",
-	SappedBy = "Sapped by: ",
+-- StaticPopups Localization
+L.StaticPopups = {
+	Cant_Buy_Bank = "You Can't buy anymore bank slots!",
+	Changes_Reload = "One or more of the changes you have made require a ReloadUI.",
+	Config_Reload = "One or more of the changes you have made require a ReloadUI.",
+	Delete_Grays = "|cffff2020WARNING!|r\n\nYou are about to delete all your gray items. You will not receive any currency for this. Do you want to continue?\n\nThe net worth of items being deleted displayed below.",
+	KkthnxUI_Update = "KkthnxUI is five or more revisions out of date. You can download the newest version from Curse!",
+	No_Bank_Bags = "Please purchase a bank slot first.",
+	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
 }
 
-L.Auras = {
-	MoveBuffs = "Move Buffs",
-	MoveDebuffs = "Move Debuffs",
+-- Commands Localization
+L.Commands = {
+	ConfigPerAccount = "Your settings are currently set accross toons so you can't use this command!",
+	ProfileNotFound = "Profile not found",
+	ProfileSelection = "Please type a profile to use (example: /profile Stormreaver-Kkthnx)",
 }
 
--- Merchant Localization
-L.Merchant = {
-	NotEnoughMoney = "You don't have enough money to repair!",
-	RepairCost = "Your items have been repaired for",
-	SoldTrash = "Your vendor trash has been sold and you earned"
-}
-
--- Bindings Localization
-L.Bind = {
+-- ActionBars Localization
+L.Actionbars = {
+	All_Binds_Cleared = "All keybindings cleared for",
+	All_Binds_Discarded = "All newly set keybindings were discarded.",
+	All_Binds_Saved = "All keybindings have been saved.",
 	Binding = "Binding",
-	Cleared = "All keybindings cleared for",
-	Discard = "All newly set keybindings were discarded.",
-	Instruct = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
+	Fix_Actionbars = "There seems to be an issue with your actionbars. Would you like to attempt to fix the issue?",
 	Key = "Key",
-	NoSet = "No bindings set",
-	Saved = "All keybindings have been saved.",
-	Trigger = "Trigger"
+	Keybind_Mode = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
+	No_Bindings_Set = "No Bindings Set",
+	Trigger = "Trigger",
 }
 
+-- Announcements Localization
+L.Announcements = {
+
+}
+
+-- Auras Localization
+L.Auras = {
+
+}
+
+-- Automation Localization
+L.Automation = {
+	DuelCanceled_Regular = "Duel request from %s rejected.",
+	DuelCanceled_Pet = "Pet duel request from %s rejected.",
+}
+
+-- Blizzard Localization
+L.Blizzard = {
+
+}
+
+-- Chat Localization
 L.Chat = {
-	AFK = "|cffff0000[AFK]|r",
-	BigChatOff = "Big chat feature deactivated",
-	BigChatOn = "Big chat feature activated",
-	DND = "|cffe7e716[DND]|r",
-	General = "General",
+	AFK = "",
+	DND = "",
 	Guild = "G",
-	GuildRecruitment = "GuildRecruitment",
 	Instance = "I",
-	InstanceLeader = "IL",
-	InvalidTarget = "Invalid Target",
-	LocalDefense = "LocalDefense",
-	LookingForGroup = "LookingForGroup",
+	Instance_Leader = "IL",
+	Invaild_Target = "Invaild Target",
 	Officer = "O",
 	Party = "P",
-	PartyLeader = "P",
+	Party_Leader = "PL",
 	Raid = "R",
-	RaidLeader = "R",
-	RaidWarning = "RW",
-	Says = "says",
+	Raid_Leader = "RL",
+	Raid_Warning = "RW",
+	Says = "S",
 	Trade = "Trade",
-	Whispers = "whispers",
-	Yells = "yells",
+	Whispers = "W",
+	Yells = "Y",
 }
 
--- ToggleButton Localization
-L.ToggleButton = {
-	Config = "Toggle KkthnxUI Config",
-	Functions = "ToggleButton functions:",
-	LeftClick = "Left click:",
-	MiddleClick = "Middle click:",
-	MoveUI = "Toggle Move UI",
-	Recount = "Toggle Recount",
-	RightClick = "Right click:",
-	Skada = "Toggle Skada",
+-- Databars Localization
+L.Databars = {
+	Toggle_Artifact = "<Left-Click to toggle Artifact Window>",
+	Toggle_Honor = "<Left-Click to toggle Honor Window>",
+	Toggle_Reputation = "<Left-Click to toggle Reputation Window>",
 }
 
--- DataBars Localization
-L.DataBars = {
-	ArtifactClick = "Toggle Artifact Frame",
-	HonorClick = "Toggle Honor Frame",
-	ReputationClick = "Toggle Reputation Frame",
+-- Datatext Localization
+L.Datatext = {
+
 }
 
--- DataText Localization
-L.DataText = {
-	Bandwidth = "Bandwidth",
-	BaseAssault = "Bases Assaulted:",
-	BaseDefend = "Bases Defended:",
-	CartControl = "Carts Controlled:",
-	Damage = "Damage: ",
-	DamageDone = "Damage Done:",
-	Death = "Deaths:",
-	DemolisherDestroy = "Demolishers Destroyed:",
-	Download = "Download",
-	FlagCapture = "Flags Captured:",
-	FlagReturn = "Flags Returned:",
-	GateDestroy = "Gates Destroyed:",
-	GraveyardAssault = "Graveyards Assaulted:",
-	GraveyardDefend = "Graveyards Defended:",
-	Healing = "Healing: ",
-	HealingDone = "Healing Done:",
-	HomeLatency = "Home Latency:",
-	Honor = "Honor: ",
-	HonorableKill = "Honorable Kills:",
-	HonorGained = "Honor Gained:",
-	KillingBlow = "Killing Blows: ",
-	MemoryUsage = "(Hold Shift) Memory Usage",
-	OrbPossession = "Orb Possessions:",
-	SavedDungeons = "Saved Dungeon(s)",
-	SavedRaids = "Saved Raid(s)",
-	StatsFor = "Stats for ",
-	TotalCPU = "Total CPU:",
-	TotalMemory = "Total Memory:",
-	TowerAssault = "Towers Assaulted:",
-	TowerDefend = "Towers Defended:",
-	VictoryPts = "Victory Points:"
-}
-
--- headers
-L.Install = {
-	Header1 = "Welcome",
-	Header8 = "1. Essential Settings",
-	Header9 = "2. Social",
-	Header10 = "3. Frames",
-	Header11 = "4. Success!",
-	InitLine1 = "Thank you for choosing KkthnxUI!",
-	InitLine2 = "You will be guided through the installation process in a few simple steps. At each step, you can decide whether or not you want to apply or skip the presented settings.",
-	Step1Line1 = "These steps will apply the correct CVar settings for KkthnxUI.",
-	Step1Line2 = "The first step applies the essential settings.",
-	Step1Line3 = "This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings.",
-	Step1Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step2Line0 = "Another chat addon is found. We will ignore this step. Please press skip to continue installation.",
-	Step2Line1 = "The second step applies the correct chat setup.",
-	Step2Line2 = "If you are a new user, this step is recommended. If you are an existing user, you may want to skip this step.",
-	Step2Line3 = "It is normal that your chat font will appear too big upon applying these settings. It will revert back to normal when you finish with the installation.",
-	Step2Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step3Line1 = "The third and final step applies for the default frame positions.",
-	Step3Line2 = "This step is |cffff0000recommended|r for new users.",
-	Step3Line3 = "",
-	Step3Line4 = "Click 'Continue' to apply the settings, or click 'Skip' if you wish to skip this step.",
-	Step4Line1 = "Installation is complete.",
-	Step4Line2 = "Please click the 'Finish' button to reload the UI.",
-	Step4Line3 = "",
-	Step4Line4 = "Enjoy KkthnxUI! Visit us on Discord @ |cff748BD9discord.gg/YUmxqQm|r",
-	ButtonInstall = "Install",
-	ButtonNext = "Next",
-	ButtonSkip = "Skip",
-	ButtonContinue = "Continue",
-	ButtonFinish = "Finish",
-	ButtonClose = "Close",
-	Complete = "Installation Complete"
-}
-
--- AutoInvite Localization
-L.Invite = {
-	Enable = "Autoinvite enabled: ",
-	Disable = "AutoInvite disabled"
-}
-
--- Info Localization
-L.Info = {
-	Disabnd = "Disbanding group...",
-	Duel = "Declined duel request from ",
-	Errors = "No error yet.",
-	Invite = "Accepted invite from ",
-	NotInstalled = " is not installed.",
-	PetDuel = "Declined pet duel request from ",
-	SettingsALL = "Type /settings all, to apply the settings for all modifications.",
-	SettingsDBM = "Type /settings dbm, to apply the settings DBM.",
-	SettingsMSBT = "Type /settings msbt, to apply the settings MSBT.",
-	SettingsSKADA = "Type /settings skada, to apply the settings Skada.",
-	SkinDisabled1 = "Skin for ",
-	SkinDisabled2 = " is disabled."
+-- Inventory Localization
+L.Inventory = {
+	Filter_Items = "Filter Items",
+	Stack_Hold_Shift = "Hold Shift:",
+	Stack_In_Bags = "Stack items in bags",
+	Stack_To_Bank = "Stack items to bank",
+	Vendor_Grays = "Vendor Grays",
 }
 
 -- Loot Localization
 L.Loot = {
-	Announce = "Announce to",
-	Cannot = "Cannot roll",
-	Chest = ">> Loot from chest",
-	Fish = "Fishing loot",
-	Monster = ">> Loot from ",
-	Random = "Random Player",
-	Self = "Self Loot",
-	ToGuild = " Guild",
-	ToInstance = " Instance",
-	ToParty = " Party",
-	ToRaid = " Raid",
-	ToSay = " Say"
+
 }
 
--- FarmMode Minimap
-L.Minimap = {
-	FarmModeOn = "Farm mode enabled",
-	FarmModeOff = "Farm mode disabled"
+-- Maps Localization
+L.Maps = {
+
 }
 
--- Misc Localization
-L.Misc = {
-	BuyStack = "Alt-Click to buy a stack",
-	Collapse = "The Collapse",
-	CopperShort = "|cffeda55fc|r",
-	GoldShort = "|cffffd700g|r",
-	SilverShort = "|cffc7c7cfs|r",
-	TriedToCall = "%s: %s tried to call the protected function '%s'.",
-	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
-	Undress = "Undress"
+-- Miscellaneous Localization
+L.Miscellaneous = {
+	Apr = "Apr",
+	Aug = "Aug",
+	Config_Not_Found = "KkthnxUI_Config was not found!",
+	Copper_Short = "|cffeda55fc|r",
+	Dec = "Dec",
+	Feb = "Feb",
+	Fri = "Fri",
+	Gold_Short = "|cffffd700g|r",
+	Jan = "Jan",
+	Jul = "Jul",
+	Jun = "Jun",
+	KkthnxUI_Scale_Button = "KkthnxUI Scale Config",
+	Mar = "Mar",
+	May = "May",
+	Mon = "Mon",
+	No_Guild = "No Guild",
+	Nov = "Nov",
+	Oct = "Oct",
+	Sat = "Sat",
+	Sep = "Sept",
+	Silver_Short = "|cffc7c7cfs|r",
+	Sun = "Sun",
+	Thu = "Thurs",
+	Tue = "Tues",
+	Wed = "Wed",
 }
 
-L.Popup = {
-	BlizzardAddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
-	BoostUI = "|cffff0000WARNING|r |n|nThis will optimize your performance by turning down the graphics and tweaking them. Hit accept only if you are having |cffff0000FPS|r issues!|r",
-	DisableUI = "KkthnxUI might not work for this resolution, do you want to disable KkthnxUI? (Cancel if you want to try another resolution)",
-	DisbandRaid = "Are you sure you want to disband the group?",
-	FixActionbars = "There is something wrong with your action bars. Do you want to reload the UI to fix it?",
-	InstallUI = "Thank you for choosing |cff3c9bedKkthnxUI|r! |n|nAccept this installation dialog to apply settings.",
-	ReloadUI = "Installation is complete. Please click the 'Accept' button to reload the UI. Enjoy |cff3c9bedKkthnxUI|r. |n|nVisit me at |cff3c9bedwww.github.com/kkthnx|r.",
-	ResetUI = "Are you sure you want to reset all settings for |cff3c9bedKkthnxUI|r?",
-	ResolutionChanged = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?",
-	SettingsAll = "|cffff0000WARNING|r |n|nThis will apply all the supported addons settings and import them to go with |cff3c9bedKkthnxUI|r. This feature will not do anything if you do not have one of the supported add-ons.",
-	SettingsBW = "Need to change the position of elements BigWigs.",
-	SettingsDBM = "We need to change the bar positions of |cff3c9bedDBM|r.",
-	SetUIScale = "This will set a near 'Pixel Perfect' Scale to your interface. Do you want to proceed?",
+-- Nameplates Localization
+L.Nameplates = {
+
 }
 
--- Raid Utility Localization
-L.Raid = {
-	UtilityDisband = "Disband Group",
-	DisbandRaid = "Are you sure you want to disband the group?"
+-- Panels Localization
+L.Panels = {
+
+}
+
+-- Quests Localization
+L.Quests = {
+
+}
+
+-- Skins Localization
+L.Skins = {
+	Skada_Reset = "Do you want to reset Skada?",
 }
 
 -- Tooltip Localization
 L.Tooltip = {
-	ItemCount = "Item count:",
-	SpellID = "Spell ID:",
-	ToggleBar = "Unlock and lock the action bars using this button. Once you have unlocked the bars, you can hover over them to see the 'toggle bar' feature to toggle more or fewer action bars.",
+	Bank = "Bank",
+	Companion_Pets = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 2),
+	Count = "Count",
+	Item_Enhancement = GetItemClassInfo(LE_ITEM_CLASS_ITEM_ENHANCEMENT),
+	Other = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 4),
+	Quest = GetItemClassInfo(LE_ITEM_CLASS_QUESTITEM),
+	Tradeskill = GetItemClassInfo(LE_ITEM_CLASS_TRADEGOODS),
 }
 
-L.WatchFrame = {
-	WowheadLink = "Wowhead Link"
+-- UnitFrames Localization
+L.Unitframes = {
+
 }
 
-L.Welcome = {
-	Line1 = "Welcome to |cff3c9bedKkthnxUI|r v",
-	Line2 = "",
-	Line3 = "Type |cff3c9bed/cfg|r to access the in-game configuration menu.",
-	Line4 = "",
-	Line5 = "If you are in need of support you can visit our Discord |cff3c9bedYUmxqQm|r"
-}
-
-L.Zone = {
-	ArathiBasin = "Arathi Basin",
-	Gilneas = "The Battle for Gilneas"
-}
-
-L.SlashCommand = {
-	Help = {
-		"",
-		"|cff3c9bedAvailable slash commands:|r",
-		"--------------------------",
-		"/boostui - If you have FPS issues try this command.",
-		"/cfg - Opens interface settings.",
-		"/farmmode - Increase the size of the minimap.",
-		"/frame - Get the info on any frame that can return info.",
-		"/getpoint - Get the point of a frame.",
-		"/gm - Opens GM frame.",
-		"/moveui - Allows the movement of interface elements.",
-		"/patch - Display Wow patch info.",
-		"/rc - Activates a ready check.",
-		"/rd - Disband party or raid.",
-		"/resetconfig - Resets KkthnxUI_Config settings.",
-		"/resetui - Resets general settings to default.",
-		"/rl - Reload interface.",
-		"/settings ADDON_NAME - Applies settings to msbt, dbm, skada, or all addons.",
-		"/spec, /ss - Switches between talent spec's.",
-		"/teleport - Teleportation from random dungeon.",
-		"/testuf - Unit frame test.",
-		"/toraid - Convert to party or raid.",
-		"/tt - Whisper target.",
-		"",
-		"|cff3c9bedAvailable hidden features:|r",
-		"--------------------------",
-		"Right-click minimap for micromenu.",
-		"Middle mouse click minimap for tracking.",
-		"Left click experience bar opens rep frame.",
-		"Left click artifact bar opens artifact frame.",
-		"Hold shift to scroll instantly to end or start of chat.",
-		"Copy button to the bottom right side of chat.",
-		"Middle mouse click copy button to /roll.",
-	}
+-- Config Localization
+L.Config = {
+	CharSettings = "Use Character Settings",
+	ConfigNotFound = "Config not found!",
+	GlobalSettings = "Use Global Settings",
 }

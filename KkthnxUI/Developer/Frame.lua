@@ -10,19 +10,20 @@ local FrameStackTooltip_Toggle = _G.FrameStackTooltip_Toggle
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: SLASH_FRAME1, SLASH_FRAMELIST1, SLASH_TEXLIST1, SLASH_FSTACK1, SLASH_WOWVERSION2
 -- GLOBALS: SLASH_WOWVERSION1, FRAME, ChatFrame1, FrameStackTooltip, UIParentLoadAddOn
--- GLOBALS: CopyFrame, SlashCmdList
+-- GLOBALS: CopyChatFrame, SlashCmdList
 
 --[[
 Command to grab frame information when mouseing over a frame
 
-Frame Name
-Width
-Height
-Strata
-Level
-X Offset
-Y Offset
-Point
+	Frame Name
+	Width
+	Height
+	Strata
+	Level
+	X Offset
+	Y Offset
+	Point
+
 --]]
 
 _G.SLASH_FRAME1 = "/frame"
@@ -65,7 +66,7 @@ end
 
 _G.SLASH_FRAMELIST1 = "/framelist"
 SlashCmdList["FRAMELIST"] = function(msg)
-	if(not FrameStackTooltip) then
+	if (not FrameStackTooltip) then
 		UIParentLoadAddOn("Blizzard_DebugTools")
 	end
 
@@ -88,12 +89,12 @@ SlashCmdList["FRAMELIST"] = function(msg)
 	print("|cffCC0000~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|r")
 
 
-	if CopyFrame then
-		CopyFrame:Hide()
+	if (CopyChatFrame:IsShown()) then
+		CopyChatFrame:Hide()
 	end
 
-	SlashCmdList.COPY_CHAT(ChatFrame1)
-	if(not isPreviouslyShown) then
+	K:GetModule("CopyChat"):CopyText(ChatFrame1)
+	if (not isPreviouslyShown) then
 		FrameStackTooltip_Toggle()
 	end
 end
@@ -101,7 +102,7 @@ end
 local function TextureList(frame)
 	frame = _G[frame] or FRAME
 
-	for i=1, frame:GetNumRegions() do
+	for i = 1, frame:GetNumRegions() do
 		local region = select(i, frame:GetRegions())
 		if(region:GetObjectType() == "Texture") then
 			print(region:GetTexture(), region:GetName(), region:GetDrawLayer())
@@ -124,18 +125,30 @@ local function GetPoint(frame)
 
 	print("|cffffff00"..frameName, point, relativeToName, relativePoint, xOffset, yOffset.."|r")
 end
-
-_G.SLASH_GETPOINT1 = "/getpoint"
 SlashCmdList["GETPOINT"] = GetPoint
+_G.SLASH_GETPOINT1 = "/getpoint"
+
+-- get the frame name
+SlashCmdList["FRAMENAME"] = function() 
+	print(GetMouseFocus():GetName()) 
+end
+SLASH_FRAMENAME1 = "/gn"
+
+-- Get the focus of the mouse
+SlashCmdList["GETPARENT"] = function() 
+	print(GetMouseFocus():GetParent():GetName()) 
+end
+SLASH_GETPARENT1 = "/gp"
 
 -- Frame stack on cyrillic
-_G.SLASH_FSTACK1 = "/fs"
 SlashCmdList["FSTACK"] = function()
 	SlashCmdList.FRAMESTACK(0)
 end
+_G.SLASH_FSTACK1 = "/fs"
 
 -- Inform us of the patch info we play on.
-_G.SLASH_WOWVERSION1, _G.SLASH_WOWVERSION2 = "/patch", "/version"
 SlashCmdList["WOWVERSION"] = function()
 	K.Print("Patch:", K.WoWPatch..", ".. "Build:", K.WoWBuild..", ".. "Released:", K.WoWPatchReleaseDate..", ".. "Interface:", K.TocVersion)
 end
+_G.SLASH_WOWVERSION1 = "/patch"
+_G.SLASH_WOWVERSION2 = "/version"

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true or K.CheckAddOn("ncHoverBind") == true then return end
+if C["ActionBar"].Enable ~= true or K.IsAddOnEnabled("ncHoverBind") == true then return end
 
 -- Lua API
 local _G = _G
@@ -8,6 +8,8 @@ local print = print
 local tonumber = tonumber
 
 -- Wow API
+local APPLY = _G.APPLY
+local CANCEL = _G.CANCEL
 local EnumerateFrames = _G.EnumerateFrames
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetBindingByKey = _G.GetBindingByKey
@@ -25,6 +27,7 @@ local IsShiftKeyDown = _G.IsShiftKeyDown
 local LoadBindings = _G.LoadBindings
 local MAX_ACCOUNT_MACROS = _G.MAX_ACCOUNT_MACROS
 local ReloadUI =_G.ReloadUI
+local RunBinding = _G.RunBinding
 local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
@@ -32,11 +35,11 @@ local StaticPopup_Hide = _G.StaticPopup_Hide
 local StaticPopup_Show = _G.StaticPopup_Show
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: APPLY, CANCEL, StanceButton1, PetActionButton1, ActionButton1
--- GLOBALS: DEFAULT_CHAT_FRAME, RunBinding, RightBarMouseOver, StanceBarMouseOver
+-- GLOBALS: DEFAULT_CHAT_FRAME, RightBarMouseOver, StanceBarMouseOver
 -- GLOBALS: PetBarMouseOver, MacroFrameTab1, MacroFrameTab2, GameTooltip_ShowCompareItem
--- GLOBALS: ShoppingTooltip1, SpellBookFrame, GameTooltip SLASH_MOUSEOVERBIND1, SLASH_MOUSEOVERBIND2
--- GLOBALS: SLASH_MOUSEOVERBIND3, SLASH_MOUSEOVERBIND4, SLASH_MOUSEOVERBIND5, StaticPopupDialogs
+-- GLOBALS: ShoppingTooltip1, SpellBookFrame, GameTooltip
+-- GLOBALS: StanceButton1, PetActionButton1, ActionButton1
+-- GLOBALS: StaticPopupDialogs
 
 -- Binding buttons(ncHoverBind by Nightcracker)
 local bind, oneBind, localmacros = CreateFrame("Frame", "HoverBind", UIParent), true, 0
@@ -57,6 +60,8 @@ SlashCmdList.MOUSEOVERBIND = function()
 
 		local elapsed = 0
 		GameTooltip:HookScript("OnUpdate", function(self, e)
+			if self:IsForbidden() then return end
+
 			elapsed = elapsed + e
 			if elapsed < 0.2 then return else elapsed = 0 end
 			if not self.comparing and IsModifiedClick("COMPAREITEMS") then
@@ -70,7 +75,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end)
 
-		hooksecurefunc(GameTooltip, "Hide", function(self) for _, tt in pairs(self.shoppingTooltips) do tt:Hide() end end)
+		hooksecurefunc(GameTooltip, "Hide", function(self) if not self:IsForbidden() then for _, tt in pairs(self.shoppingTooltips) do tt:Hide() end end end)
 
 		bind:SetScript("OnEvent", function(self) self:Deactivate(false) end)
 		bind:SetScript("OnLeave", function(self) self:HideFrame() end)
@@ -93,7 +98,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				self.button.id = SpellBook_GetSpellBookSlot(self.button)
 				self.button.name = GetSpellBookItemName(self.button.id, SpellBookFrame.bookType)
 
-				GameTooltip:AddLine(L.Bind.Trigger)
+				GameTooltip:AddLine(L.Actionbars.Trigger)
 				GameTooltip:Show()
 				GameTooltip:SetScript("OnHide", function(self)
 					self:SetOwner(bind, "ANCHOR_NONE")
@@ -101,9 +106,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:AddLine(bind.button.name, 1, 1, 1)
 					bind.button.bindings = {GetBindingKey(spellmacro.." "..bind.button.name)}
 					if #bind.button.bindings == 0 then
-						self:AddLine(L.Bind.NoSet, 0.6, 0.6, 0.6)
+						self:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
 					else
-						self:AddDoubleLine(L.Bind.Binding, L.Bind.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+						self:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 						for i = 1, #bind.button.bindings do
 							self:AddDoubleLine(i, bind.button.bindings[i])
 						end
@@ -124,9 +129,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 
 				bind.button.bindings = {GetBindingKey(spellmacro.." "..bind.button.name)}
 				if #bind.button.bindings == 0 then
-					GameTooltip:AddLine(L.Bind.NoSet, 0.6, 0.6, 0.6)
+					GameTooltip:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
 				else
-					GameTooltip:AddDoubleLine(L.Bind.Binding, L.Bind.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+					GameTooltip:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 					for i = 1, #bind.button.bindings do
 						GameTooltip:AddDoubleLine(i, bind.button.bindings[i], 1, 1, 1)
 					end
@@ -144,7 +149,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self.button.bindstring = (spellmacro == "STANCE" and "STANCEBUTTON" or "BONUSACTIONBUTTON")..self.button.id
 				end
 
-				GameTooltip:AddLine(L.Bind.Trigger)
+				GameTooltip:AddLine(L.Actionbars.Trigger)
 				GameTooltip:Show()
 				GameTooltip:SetScript("OnHide", function(self)
 					self:SetOwner(bind, "ANCHOR_NONE")
@@ -152,9 +157,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:AddLine(bind.button.name, 1, 1, 1)
 					bind.button.bindings = {GetBindingKey(bind.button.bindstring)}
 					if #bind.button.bindings == 0 then
-						self:AddLine(L.Bind.NoSet, 0.6, 0.6, 0.6)
+						self:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
 					else
-						self:AddDoubleLine(L.Bind.Binding, L.Bind.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+						self:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 						for i = 1, #bind.button.bindings do
 							self:AddDoubleLine(i, bind.button.bindings[i])
 						end
@@ -186,7 +191,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 					end
 				end
 
-				GameTooltip:AddLine(L.Bind.Trigger)
+				GameTooltip:AddLine(L.Actionbars.Trigger)
 				GameTooltip:Show()
 				bind.button.bindings = {GetBindingKey(bind.button.bindstring)}
 				GameTooltip:SetScript("OnHide", function(self)
@@ -194,9 +199,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:SetPoint("BOTTOM", bind, "TOP", 0, 1)
 					self:AddLine(bind.button.name, 1, 1, 1)
 					if #bind.button.bindings == 0 then
-						self:AddLine(L.Bind.NoSet, 0.6, 0.6, 0.6)
+						self:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
 					else
-						self:AddDoubleLine(L.Bind.Binding, L.Bind.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+						self:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 						for i = 1, #bind.button.bindings do
 							self:AddDoubleLine(i, bind.button.bindings[i])
 						end
@@ -221,15 +226,15 @@ SlashCmdList.MOUSEOVERBIND = function()
 					SetBinding(self.button.bindings[i])
 				end
 				self:Update(self.button, self.spellmacro)
-				if self.spellmacro ~= "MACRO" then GameTooltip:Hide() end
+				if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then GameTooltip:Hide() end
 			end
 			if key == "ESCAPE" or key == "RightButton" then
 				for i = 1, #self.button.bindings do
 					SetBinding(self.button.bindings[i])
 				end
-				print("|cffffff00"..L.Bind.Cleared.."|r".." |cff00ff00"..self.button.name.."|r|cffffff00.|r")
+				print("|cffffff00"..L.Actionbars.All_Binds_Cleared.."|r".." |cff00ff00"..self.button.name.."|r|cffffff00.|r")
 				self:Update(self.button, self.spellmacro)
-				if self.spellmacro ~= "MACRO" then GameTooltip:Hide() end
+				if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then GameTooltip:Hide() end
 				return
 			end
 
@@ -249,25 +254,27 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 			print(alt..ctrl..shift..key.." |cff00ff00bound to |r"..self.button.name..".")
 			self:Update(self.button, self.spellmacro)
-			if self.spellmacro ~= "MACRO" then GameTooltip:Hide() end
+			if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then GameTooltip:Hide() end
 		end
 
 		function bind:HideFrame()
 			self:ClearAllPoints()
 			self:Hide()
-			GameTooltip:Hide()
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
 		end
 
 		function bind:Activate()
 			self.enabled = true
 			self:RegisterEvent("PLAYER_REGEN_DISABLED")
-			if C.ActionBar.RightBarsMouseover == true then
+			if C["ActionBar"].RightBarsMouseover == true then
 				RightBarMouseOver(1)
 			end
-			if C.ActionBar.StanceBarMouseover == true then
+			if C["ActionBar"].StanceBarMouseover == true then
 				StanceBarMouseOver(1)
 			end
-			if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
+			if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
 				PetBarMouseOver(1)
 			end
 		end
@@ -276,28 +283,28 @@ SlashCmdList.MOUSEOVERBIND = function()
 			local which = GetCurrentBindingSet()
 			if save then
 				SaveBindings(which)
-				print("|cffffff00"..L.Bind.Saved.."|r")
+				print("|cffffff00"..L.Actionbars.All_Binds_Saved.."|r")
 			else
 				LoadBindings(which)
-				print("|cffffff00"..L.Bind.Discard.."|r")
+				print("|cffffff00"..L.Actionbars.All_Binds_Discarded.."|r")
 			end
 			self.enabled = false
 			self:HideFrame()
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			StaticPopup_Hide("KEYBIND_MODE")
-			if C.ActionBar.RightBarsMouseover == true then
+			if C["ActionBar"].RightBarsMouseover == true then
 				RightBarMouseOver(0)
 			end
-			if C.ActionBar.StanceBarMouseover == true then
+			if C["ActionBar"].StanceBarMouseover == true then
 				StanceBarMouseOver(0)
 			end
-			if C.ActionBar.PetBarMouseover == true and C.ActionBar.PetBarHorizontal == true then
+			if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
 				PetBarMouseOver(0)
 			end
 		end
 
 		StaticPopupDialogs.KEYBIND_MODE = {
-			text = L.Bind.Instruct,
+			text = L.Actionbars.Keybind_Mode,
 			button1 = APPLY,
 			button2 = CANCEL,
 			OnAccept = function() bind:Deactivate(true) ReloadUI() end,
@@ -363,14 +370,14 @@ SlashCmdList.MOUSEOVERBIND = function()
 	end
 end
 
-SLASH_MOUSEOVERBIND1 = "/bindkey"
-SLASH_MOUSEOVERBIND2 = "/hoverbind"
-SLASH_MOUSEOVERBIND3 = "/bk"
+_G.SLASH_MOUSEOVERBIND1 = "/bindkey"
+_G.SLASH_MOUSEOVERBIND2 = "/hoverbind"
+_G.SLASH_MOUSEOVERBIND3 = "/bk"
 
-if not K.CheckAddOn("Bartender4") and not K.CheckAddOn("Dominos") then
-	SLASH_MOUSEOVERBIND4 = "/kb"
+if not K.IsAddOnEnabled("Bartender4") and not K.IsAddOnEnabled("Dominos") then
+	_G.SLASH_MOUSEOVERBIND4 = "/kb"
 end
 
-if not K.CheckAddOn("HealBot") then
-	SLASH_MOUSEOVERBIND5 = "/hb"
+if not K.IsAddOnEnabled("HealBot") then
+	_G.SLASH_MOUSEOVERBIND5 = "/hb"
 end

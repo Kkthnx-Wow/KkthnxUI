@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-   <Script file="AurasFilter.lua" />
-   <Script file="Auras.lua" />
-   <Script file="Castbars.lua" />
-   <Script file="ClassModules.lua" />
-   <Script file="Tags.lua" />
-</Ui>

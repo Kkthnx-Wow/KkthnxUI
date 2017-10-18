@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Error.White ~= true and C.Error.Black ~= true then return end
+if C["Error"].White ~= true and C["Error"].Black ~= true then return end
 
 -- All errors on http://wowwiki.wikia.com/wiki/WoW_Constants/Errors
 
@@ -11,7 +11,16 @@ K.ErrorWhiteList = {
 	[ERR_LOOT_MASTER_OTHER] = true,
 	[ERR_LOOT_MASTER_UNIQUE_ITEM] = true,
 	[ERR_NOT_ENOUGH_MONEY] = true,
+	[ERR_PARTY_LFG_BOOT_DUNGEON_COMPLETE] = true,
+	[ERR_PARTY_LFG_BOOT_IN_COMBAT] = true,
+	[ERR_PARTY_LFG_BOOT_IN_PROGRESS] = true,
+	[ERR_PARTY_LFG_BOOT_LIMIT] = true,
+	[ERR_PARTY_LFG_BOOT_LOOT_ROLLS] = true,
+	[ERR_PARTY_LFG_TELEPORT_IN_COMBAT] = true,
+	[ERR_PET_SPELL_DEAD] = true,
+	[ERR_PLAYER_DEAD] = true,
 	[ERR_QUEST_LOG_FULL] = true,
+	[ERR_RAID_GROUP_ONLY] = true,
 	[SPELL_FAILED_IN_COMBAT_RES_LIMIT_REACHED] = true,
 }
 
@@ -23,6 +32,7 @@ K.ErrorBlackList = {
 	[ERR_GENERIC_NO_TARGET] = true,
 	[ERR_INVALID_ATTACK_TARGET] = true,
 	[ERR_ITEM_COOLDOWN] = true,
+	[ERR_LOOT_GONE] = true,
 	[ERR_MAIL_DATABASE_ERROR] = true,
 	[ERR_NO_ATTACK_TARGET] = true,
 	[ERR_NOEMOTEWHILERUNNING] = true,

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.Misc.ColorPicker ~= true then return end
+if C["Misc"].ColorPicker ~= true then return end
 
 -- Credit to Jaslm, most of this code is his from the addon ColorPickerPlus
 -- Lua API
@@ -96,7 +96,7 @@ end
 local EnhanceColorPicker = CreateFrame("Frame")
 EnhanceColorPicker:RegisterEvent("PLAYER_LOGIN")
 EnhanceColorPicker:SetScript("OnEvent", function(self, event)
-	if K.CheckAddOn("ColorPickerPlus") then
+	if K.IsAddOnEnabled("ColorPickerPlus") then
 		return
 	end
 	ColorPickerFrame:SetClampedToScreen(true)

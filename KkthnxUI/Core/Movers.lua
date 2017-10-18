@@ -1,12 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 
--- Register a frame with: Movers:RegisterFrame(FrameName)
--- Registered frames need a **GLOBAL Name**
--- Drag values is saved in >> KkthnxUIDataPerChar.Movers SavedVariablesPerCharacter <<
-
 -- Lua API
 local _G = _G
 local table_insert = table.insert
+local unpack = unpack
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
@@ -17,12 +14,14 @@ local print = _G.print
 local UIParent = _G.UIParent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SLASH_MOVING1, KkthnxUIDataPerChar
+-- GLOBALS: KkthnxUIData
 
 local Movers = CreateFrame("Frame")
+local Name = UnitName("Player")
+local Realm = GetRealmName()
+
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
 Movers:RegisterEvent("PLAYER_REGEN_DISABLED")
-
 Movers.Frames = {}
 Movers.Defaults = {}
 
@@ -44,9 +43,9 @@ end
 function Movers:RestoreDefaults(button)
 	local FrameName = self.Parent:GetName()
 	local Data = Movers.Defaults[FrameName]
-	local SavedVariables = KkthnxUIDataPerChar.Movers
+	local SavedVariables = KkthnxUIData[Realm][Name].Movers
 
-	if (button == "RightButton") and (Data) then
+	if IsShiftKeyDown() and (button == "RightButton") and (Data) and not (InCombatLockdown()) then
 		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
 		local Frame = _G[FrameName]
 		local Parent = _G[ParentName]
@@ -63,6 +62,8 @@ function Movers:RestoreDefaults(button)
 end
 
 function Movers:RegisterFrame(frame)
+	if not frame then return end
+
 	local Anchor1, Parent, Anchor2, X, Y = frame:GetPoint()
 
 	table_insert(self.Frames, frame)
@@ -71,13 +72,19 @@ function Movers:RegisterFrame(frame)
 end
 
 function Movers:OnDragStart()
+	if InCombatLockdown() then
+		return K.Print(ERR_NOT_IN_COMBAT)
+	end
 	self:StartMoving()
 end
 
 function Movers:OnDragStop()
+	if InCombatLockdown() then
+		return K.Print(ERR_NOT_IN_COMBAT)
+	end
 	self:StopMovingOrSizing()
 
-	local Data = KkthnxUIDataPerChar.Movers
+	local Data = KkthnxUIData[Realm][Name].Movers
 	local Anchor1, Parent, Anchor2, X, Y = self:GetPoint()
 	local FrameName = self.Parent:GetName()
 	local Frame = self.Parent
@@ -95,21 +102,26 @@ end
 function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
 	self.DragInfo:SetAllPoints(self)
-	K.CreateBorder(self.DragInfo)
-	self.DragInfo:SetBackdrop(K.BorderBackdrop)
-	self.DragInfo:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
-	self.DragInfo:SetFrameLevel(100)
-	self.DragInfo:SetFrameStrata("HIGH")
+	self.DragInfo:SetFrameLevel(self:GetFrameLevel() + 1)
+	self.DragInfo:SetWidth(self:GetWidth())
+	self.DragInfo:SetHeight(self:GetHeight())
 	self.DragInfo:SetMovable(true)
+	self.DragInfo:SetToplevel(true)
 	self.DragInfo:RegisterForDrag("LeftButton")
 	self.DragInfo:SetClampedToScreen(true)
+	self.DragInfo:SetTemplate("Transparent", true)
+	self.DragInfo:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
 	self.DragInfo:Hide()
 	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
-	self.DragInfo:SetScript("OnEnter", function(self) self:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.9) end)
-	self.DragInfo:SetScript("OnLeave", function(self) self:SetBackdropColor(72/255, 133/255, 237/255, 0.6) end)
+	self.DragInfo:SetScript("OnEnter", function(self)
+		self:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.8)
+	end)
+	self.DragInfo:SetScript("OnLeave", function(self)
+		self:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
+	end)
 
 	self.DragInfo.Name = self.DragInfo:CreateFontString(nil, "OVERLAY")
-	self.DragInfo.Name:SetFont(C.Media.Font, C.Media.Font_Size, C.Media.Font_Style)
+	self.DragInfo.Name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 	self.DragInfo.Name:SetPoint("CENTER")
 	self.DragInfo.Name:SetTextColor(1, 1, 1)
 	self.DragInfo.Name:SetText(self:GetName())
@@ -118,7 +130,7 @@ function Movers:CreateDragInfo()
 	self.DragInfo.Parent = self.DragInfo:GetParent()
 end
 
-function Movers:StartOrStopMoving()
+function Movers:StartOrStopMoving(width, height)
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
@@ -156,11 +168,11 @@ function Movers:StartOrStopMoving()
 				Frame.DragInfo:SetFrameStrata("HIGH")
 			end
 
-			if Frame.DragInfo:GetHeight() < 15 then -- Fix this in 7.0 update
-				-- Frame.DragInfo:ClearAllPoints()
-				-- Frame.DragInfo:SetWidth(Frame:GetWidth())
-				-- Frame.DragInfo:SetHeight(23)
-				-- Frame.DragInfo:SetPoint("TOP", Frame)
+			if Frame.DragInfo:GetHeight() < 14 then
+				Frame.DragInfo:ClearAllPoints()
+				Frame.DragInfo:SetWidth(width or Frame:GetWidth())
+				Frame.DragInfo:SetHeight(height or Frame:GetHeight())
+				Frame.DragInfo:SetPoint("TOP", Frame)
 			end
 		else
 			if Frame.unit then
@@ -197,11 +209,11 @@ end
 
 Movers:SetScript("OnEvent", function(self, event)
 	if (event == "PLAYER_ENTERING_WORLD") then
-		if not KkthnxUIDataPerChar.Movers then
-			KkthnxUIDataPerChar.Movers = {}
+		if not KkthnxUIData[Realm][Name].Movers then
+			KkthnxUIData[Realm][Name].Movers = {}
 		end
 
-		local Data = KkthnxUIDataPerChar.Movers
+		local Data = KkthnxUIData[Realm][Name].Movers
 
 		for Frame, Position in pairs(Data) do
 			local Frame = _G[Frame]
@@ -226,12 +238,4 @@ Movers:SetScript("OnEvent", function(self, event)
 	end
 end)
 
-_G.SLASH_MOVING1 = "/moveui"
-SlashCmdList["MOVING"] = function()
-	if InCombatLockdown() then print(ERR_NOT_IN_COMBAT) return end
-
-	local Movers = K.Movers
-	Movers:StartOrStopMoving()
-end
-
-K.Movers = Movers
+K["Movers"] = Movers

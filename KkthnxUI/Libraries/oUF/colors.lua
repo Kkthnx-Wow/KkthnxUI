@@ -10,10 +10,17 @@ local colors = {
 		1, 1, 0,
 		0, 1, 0
 	},
+	health = {49 / 255, 207 / 255, 37 / 255},
 	disconnected = {.6, .6, .6},
-	tapped = {.6,.6,.6},
+	tapped = {.6, .6, .6},
+	runes = {
+		{247 / 255, 65 / 255, 57 / 255}, -- blood
+		{148 / 255, 203 / 255, 247 / 255}, -- frost
+		{173 / 255, 235 / 255, 66 / 255}, -- unholy
+	},
 	class = {},
 	reaction = {},
+	power = {},
 }
 
 -- We do this because people edit the vars directly, and changing the default
@@ -56,6 +63,38 @@ for eclass, color in next, FACTION_BAR_COLORS do
 	colors.reaction[eclass] = {color.r, color.g, color.b}
 end
 
+for power, color in next, PowerBarColor do
+	if (type(power) == 'string') then
+		if(type(select(2, next(color))) == 'table') then
+			colors.power[power] = {}
+
+			for index, color in next, color do
+				colors.power[power][index] = {color.r, color.g, color.b}
+			end
+		else
+			colors.power[power] = {color.r, color.g, color.b, atlas = color.atlas}
+		end
+	end
+end
+
+-- sourced from FrameXML/Constants.lua
+colors.power[0] = colors.power.MANA
+colors.power[1] = colors.power.RAGE
+colors.power[2] = colors.power.FOCUS
+colors.power[3] = colors.power.ENERGY
+colors.power[4] = colors.power.COMBO_POINTS
+colors.power[5] = colors.power.RUNES
+colors.power[6] = colors.power.RUNIC_POWER
+colors.power[7] = colors.power.SOUL_SHARDS
+colors.power[8] = colors.power.LUNAR_POWER
+colors.power[9] = colors.power.HOLY_POWER
+colors.power[11] = colors.power.MAELSTROM
+colors.power[12] = colors.power.CHI
+colors.power[13] = colors.power.INSANITY
+colors.power[16] = colors.power.ARCANE_CHARGES
+colors.power[17] = colors.power.FURY
+colors.power[18] = colors.power.PAIN
+
 local function colorsAndPercent(a, b, ...)
 	if(a <= 0 or b == 0) then
 		return nil, ...
@@ -69,6 +108,18 @@ local function colorsAndPercent(a, b, ...)
 end
 
 -- http://www.wowwiki.com/ColorGradient
+--[[ Colors: oUF:RGBColorGradient(a, b, ...)
+Used to convert a percent value (the quotient of `a` and `b`) into a gradient from 2 or more RGB colors. If more than 2
+colors are passed, the gradient will be between the two colors which perc lies in an evenly divided range. A RGB color
+is a sequence of 3 consecutive RGB percent values (in the range [0-1]). If `a` is negative or `b` is zero then the first
+RGB color (the first 3 RGB values passed to the function) is returned. If `a` is bigger than or equal to `b`, then the
+last 3 RGB values are returned.
+
+* self - the global oUF object
+* a    - value used as numerator to calculate the percentage (number)
+* b    - value used as denominator to calculate the percentage (number)
+* ...  - a list of RGB percent values. At least 6 values should be passed (number [0-1])
+--]]
 local function RGBColorGradient(...)
 	local relperc, r1, g1, b1, r2, g2, b2 = colorsAndPercent(...)
 	if(relperc) then
@@ -83,6 +134,14 @@ local function getY(r, g, b)
 	return 0.299 * r + 0.587 * g + 0.114 * b
 end
 
+--[[ Colors: oUF:RGBToHCY(r, g, b)
+Used to convert a color from RGB to HCY color space.
+
+* self - the global oUF object
+* r    - red color component (number [0-1])
+* g    - green color component (number [0-1])
+* b    - blue color component (number [0-1])
+--]]
 function oUF:RGBToHCY(r, g, b)
 	local min, max = min(r, g, b), max(r, g, b)
 	local chroma = max - min
@@ -101,6 +160,14 @@ function oUF:RGBToHCY(r, g, b)
 end
 
 local math_abs = math.abs
+--[[ Colors: oUF:HCYtoRGB(hue, chroma, luma)
+Used to convert a color from HCY to RGB color space.
+
+* self   - the global oUF object
+* hue    - hue color component (number [0-1])
+* chroma - chroma color component (number [0-1])
+* luma   - luminance color component (number [0-1])
+--]]
 function oUF:HCYtoRGB(hue, chroma, luma)
 	local r, g, b = 0, 0, 0
 	if(hue and luma > 0) then
@@ -134,6 +201,18 @@ function oUF:HCYtoRGB(hue, chroma, luma)
 	return r, g, b
 end
 
+--[[ Colors: oUF:HCYColorGradient(a, b, ...)
+Used to convert a percent value (the quotient of `a` and `b`) into a gradient from 2 or more HCY colors. If more than 2
+colors are passed, the gradient will be between the two colors which perc lies in an evenly divided range. A HCY color
+is a sequence of 3 consecutive values in the range [0-1]. If `a` is negative or `b` is zero then the first
+HCY color (the first 3 HCY values passed to the function) is returned. If `a` is bigger than or equal to `b`, then the
+last 3 HCY values are returned.
+
+* self - the global oUF object
+* a    - value used as numerator to calculate the percentage (number)
+* b    - value used as denominator to calculate the percentage (number)
+* ...  - a list of HCY color values. At least 6 values should be passed (number [0-1])
+--]]
 local function HCYColorGradient(...)
 	local relperc, r1, g1, b1, r2, g2, b2 = colorsAndPercent(...)
 	if(not relperc) then
@@ -160,6 +239,15 @@ local function HCYColorGradient(...)
 
 end
 
+--[[ Colors: oUF:ColorGradient(a, b, ...) or frame:ColorGradient(a, b, ...)
+Used as a proxy to call the proper gradient function depending on the user's preference. If `oUF.useHCYColorGradient` is
+set to true, `:HCYColorGradient` will be called, else `:RGBColorGradient`.
+
+* self - the global oUF object or a unit frame
+* a    - value used as numerator to calculate the percentage (number)
+* b    - value used as denominator to calculate the percentage (number)
+* ...  - a list of color values. At least 6 values should be passed (number [0-1])
+--]]
 local function ColorGradient(...)
 	return (oUF.useHCYColorGradient and HCYColorGradient or RGBColorGradient)(...)
 end

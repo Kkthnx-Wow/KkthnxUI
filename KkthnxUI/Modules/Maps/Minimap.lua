@@ -1,27 +1,13 @@
 local K, C, L = unpack(select(2, ...))
-if C.Minimap.Enable ~= true then return end
+local M = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
--- Lua API
 local _G = _G
-local string_sub = string.sub
+local tinsert = table.insert
+local strsub = strsub
 
--- Wow API
-local C_Timer_After = _G.C_Timer.After
-local GetMinimapShape = _G.GetMinimapShape
-local GetMinimapZoneText = _G.GetMinimapZoneText
-local GetPlayerMapPosition = _G.GetPlayerMapPosition
-local GetZonePVPInfo = _G.GetZonePVPInfo
-local IsInInstance = _G.IsInInstance
-local MinimapZoomIn = _G.MinimapZoomIn
-local MinimapZoomOut = _G.MinimapZoomOut
+local C_Timer_After = C_Timer.After
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: GarrisonLandingPageMinimapButton, Minimap, TimeManagerClockButton, GameTimeFrame
--- GLOBALS: HelpOpenWebTicketButton, FeedbackUIButton, HelpOpenTicketButton
-
-local Movers = K.Movers
-
-local function GetLocTextColor()
+function M:GetLocTextColor()
 	local pvpType = GetZonePVPInfo()
 	if pvpType == "arena" then
 		return 0.84, 0.03, 0.03
@@ -40,35 +26,32 @@ local function GetLocTextColor()
 	end
 end
 
--- Minimap anchor
-local MinimapAnchor = CreateFrame("Frame", "MinimapAnchor", UIParent)
-MinimapAnchor:CreatePanel("Invisible", C.Minimap.Size, C.Minimap.Size, unpack(C.Position.Minimap))
-Movers:RegisterFrame(MinimapAnchor)
-
-local North = _G["MinimapNorthTag"]
-local HiddenFrames = {
-	"MinimapBorder",
-	"MinimapBorderTop",
-	"MinimapCluster",
-	"MinimapNorthTag",
-	"MiniMapTracking",
-	"MiniMapVoiceChatFrame",
-	"MiniMapWorldMapButton",
-	"MinimapZoneTextButton",
-	"MinimapZoomIn",
-	"MinimapZoomOut",
-	"VoiceChatTalkers",
-}
-
-for i, FrameName in pairs(HiddenFrames) do
-	local Frame = _G[FrameName]
-	Frame:Hide()
-
-	if Frame.UnregisterAllEvents then
-		Frame:UnregisterAllEvents()
+function M:ADDON_LOADED(event, addon)
+	if addon == "Blizzard_TimeManager" then
+		TimeManagerClockButton:Kill()
+	elseif addon == "Blizzard_FeedbackUI" then
+		FeedbackUIButton:Kill()
 	end
+end
 
-	North:SetTexture(nil)
+function M:Minimap_OnMouseWheel(d)
+	if d > 0 then
+		_G.MinimapZoomIn:Click()
+	elseif d < 0 then
+		_G.MinimapZoomOut:Click()
+	end
+end
+
+function M:Update_ZoneText()
+	if not C["Minimap"].Enable then return end
+	Minimap.location:SetText(strsub(GetMinimapZoneText(), 1, 46))
+	Minimap.location:SetTextColor(M:GetLocTextColor())
+	Minimap.location:FontTemplate()
+end
+
+function M:PLAYER_REGEN_ENABLED()
+	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	self:UpdateSettings()
 end
 
 local function PositionTicketButtons()
@@ -78,222 +61,246 @@ local function PositionTicketButtons()
 	HelpOpenWebTicketButton:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", 0, 0)
 end
 
--- Hide Game Time
-MinimapAnchor:RegisterEvent("PLAYER_LOGIN")
-MinimapAnchor:RegisterEvent("ADDON_LOADED")
-MinimapAnchor:SetScript("OnEvent", function(_, event, addon)
-	if addon == "Blizzard_TimeManager" then
-		TimeManagerClockButton:Kill()
-	elseif addon == "Blizzard_FeedbackUI" then
-		FeedbackUIButton:Kill()
-	end
-end)
-
-if TimeManagerClockButton then
-	TimeManagerClockButton:Kill()
-end
-
-if FeedbackUIButton then
-	FeedbackUIButton:Kill()
-end
-
--- Hide blob ring
-Minimap:SetArchBlobRingScalar(0)
-Minimap:SetQuestBlobRingScalar(0)
-
--- Parent minimap into our frame
-Minimap:SetParent(MinimapAnchor)
-Minimap:ClearAllPoints()
-Minimap:SetPoint("TOPLEFT", MinimapAnchor, "TOPLEFT", 4, -4)
-Minimap:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -4, 4)
-Minimap:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
--- Backdrop
-MinimapBackdrop:ClearAllPoints()
-MinimapBackdrop:SetPoint("TOPLEFT", MinimapAnchor, "TOPLEFT", 2, -2)
-MinimapBackdrop:SetPoint("BOTTOMRIGHT", MinimapAnchor, "BOTTOMRIGHT", -2, 2)
-MinimapBackdrop:SetSize(MinimapAnchor:GetWidth(), MinimapAnchor:GetWidth())
-
--- Mail
-if MiniMapMailFrame then
-	MiniMapMailFrame:ClearAllPoints()
-	MiniMapMailFrame:SetPoint("BOTTOM", 0, 4)
-	MiniMapMailFrame:SetFrameLevel(Minimap:GetFrameLevel() + 2)
-	MiniMapMailBorder:Hide()
-	MiniMapMailFrame:SetScale(1.2)
-	MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
-end
-
--- QueueStatusMinimapButton
-if QueueStatusMinimapButton then
-	QueueStatusMinimapButton:ClearAllPoints()
-	QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 3, -4)
-	QueueStatusMinimapButton:SetScale(1)
-	QueueStatusFrame:SetScale(1)
-end
-QueueStatusMinimapButtonBorder:Hide()
-QueueStatusFrame:SetClampedToScreen(true)
-
--- Garrison icon
-if GarrisonLandingPageMinimapButton and K.Level > 89 then
-	if C.Minimap.Garrison then
-		GarrisonLandingPageMinimapButton:ClearAllPoints()
-		GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, 1)
-		GarrisonLandingPageMinimapButton:SetAlpha(1)
-		GarrisonLandingPageMinimapButton:SetScale(0.6)
-
-		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim:Stop()
-		GarrisonLandingPageMinimapButton.MinimapLoopPulseAnim.Play = K.Noop
-		GarrisonLandingPageMinimapButton.MinimapAlertAnim:Stop()
-		GarrisonLandingPageMinimapButton.MinimapAlertAnim.Play = K.Noop
-
-		if GarrisonLandingPageTutorialBox then
-			GarrisonLandingPageTutorialBox:Kill()
-		end
-
-		if C.Minimap.FadeButtons then
-			GarrisonLandingPageMinimapButton:SetAlpha(0)
-			GarrisonLandingPageMinimapButton:HookScript("OnEnter", function() GarrisonLandingPageMinimapButton:FadeIn() end)
-			GarrisonLandingPageMinimapButton:HookScript("OnLeave", function() GarrisonLandingPageMinimapButton:FadeOut() end)
-		end
-	end
-end
-
-if C.Minimap.Garrison == false then
-	GarrisonLandingPageMinimapButton:Kill()
-	GarrisonLandingPageMinimapButton.IsShown = function() return true end
-end
-
--- Dungeon info
-if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
-	MiniMapInstanceDifficulty:ClearAllPoints()
-	MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -1)
-	MiniMapInstanceDifficulty:SetScale(1)
-	GuildInstanceDifficulty:ClearAllPoints()
-	GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -1, -1)
-	GuildInstanceDifficulty:SetScale(1)
-end
-MiniMapInstanceDifficulty:SetParent(Minimap)
-GuildInstanceDifficulty:SetParent(Minimap)
-
-if MiniMapChallengeMode then
-	MiniMapChallengeMode:ClearAllPoints()
-	MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 8, -8)
-	MiniMapChallengeMode:SetScale(1)
-end
-MiniMapChallengeMode:SetParent(Minimap)
-
-if HelpOpenTicketButton and HelpOpenWebTicketButton then
-	HelpOpenTicketButton:SetScale(1)
-	HelpOpenWebTicketButton:SetScale(1)
-
-	PositionTicketButtons()
-end
-
-if GameTimeFrame then
-	if C.Minimap.Calendar then
-		GameTimeFrame:SetParent(Minimap)
-		GameTimeFrame:SetScale(0.6)
-		GameTimeFrame:ClearAllPoints()
-		GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -1, -2)
-		GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
-		GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
-		GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
-		GameTimeFrame:SetPushedTexture(nil)
-		GameTimeFrame:SetHighlightTexture (nil)
-
-		local GTFont = GameTimeFrame:GetFontString()
-		GTFont:ClearAllPoints()
-		GTFont:SetPoint("CENTER", 0, -5)
-		GTFont:SetFont(C.Media.Font, 20)
-		GTFont:SetTextColor(0.2, 0.2, 0.1, 0.9)
-		if C.Minimap.FadeButtons then
-			GameTimeFrame:SetAlpha(0)
-			GameTimeFrame:HookScript("OnEnter", function() GameTimeFrame:FadeIn() end)
-			GameTimeFrame:HookScript("OnLeave", function() GameTimeFrame:FadeOut() end)
-		end
-	else
-		GameTimeFrame:Hide()
-	end
-end
-
--- Enable mouse scrolling
-Minimap:EnableMouseWheel()
-local function Minimap_OnMouseWheel(self, d)
-	if d > 0 then
-		MinimapZoomIn:Click()
-	elseif d < 0 then
-		MinimapZoomOut:Click()
-	end
-end
-Minimap:SetScript("OnMouseWheel", Minimap_OnMouseWheel)
-
-local IsResetting
+local isResetting
 local function ResetZoom()
 	Minimap:SetZoom(0)
 	MinimapZoomIn:Enable() -- Reset enabled state of buttons
 	MinimapZoomOut:Disable()
-	IsResetting = false
+	isResetting = false
 end
+
 local function SetupZoomReset()
-	if C.Minimap.ResetZoom and not IsResetting then
-		if not IsResetting then
-			IsResetting = true
-			C_Timer_After(C.Minimap.ResetZoomTime, ResetZoom)
-		end
+	if C["Minimap"].ResetZoom and not isResetting then
+		isResetting = true
+		C_Timer_After(C["Minimap"].ResetZoomTime, ResetZoom)
 	end
 end
 hooksecurefunc(Minimap, "SetZoom", SetupZoomReset)
 
--- For others mods with a minimap button, set minimap buttons position in square mode
-function GetMinimapShape()
-	return "SQUARE"
+function M:UpdateSettings()
+	if InCombatLockdown() then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+	end
+	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or Minimap:GetWidth() + 10
+	K.MinimapWidth = K.MinimapSize
+	K.MinimapHeight = K.MinimapSize
+
+	if C["Minimap"].Enable then
+		Minimap:SetSize(K.MinimapSize, K.MinimapSize)
+	end
+
+	if MMHolder then
+		MMHolder:SetWidth((Minimap:GetWidth() + 1 + 1 * 3))
+	end
+
+	if Minimap.location then
+		Minimap.location:SetWidth(K.MinimapSize)
+		Minimap.location:Hide()
+	end
+
+	-- Stop here if KkthnxUI Minimap is disabled.
+	if not C["Minimap"].Enable then
+		return
+	end
+
+	if GarrisonLandingPageMinimapButton then
+		-- GarrisonLandingPageMinimapButton:ClearAllPoints()
+		-- GarrisonLandingPageMinimapButton:SetParent(Minimap)
+		-- GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -4, 4)
+		-- GarrisonLandingPageMinimapButton:SetSize(36, 36)
+		-- hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
+		-- 	self:SetNormalTexture("")
+		-- 	self:SetPushedTexture("")
+		-- 	self:SetHighlightTexture("")
+
+		-- 	local GarrisonIcon = self:CreateTexture(nil, "OVERLAY", nil, 7)
+		-- 	GarrisonIcon:SetSize(30, 30)
+		-- 	GarrisonIcon:SetPoint("CENTER")
+		-- 	GarrisonIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\GarrisonUp")
+		-- 	GarrisonIcon:SetVertexColor(1, 1, 1)
+		-- 	self.GarrisonIcon = GarrisonIcon
+
+		-- 	if (C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0) then
+		-- 		self.title = GARRISON_LANDING_PAGE_TITLE
+		-- 		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP
+		-- 	else
+		-- 		self.title = ORDER_HALL_LANDING_PAGE_TITLE
+		-- 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP
+		-- 	end
+		-- end)
+
+		-- GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
+		-- 	self.GarrisonIcon:SetVertexColor(1, .8, 0)
+		-- end)
+
+		-- GarrisonLandingPageMinimapButton:SetScript("OnLeave", function(self)
+		-- 	self.GarrisonIcon:SetVertexColor(1, 1, 1)
+		-- end)
+		-- GarrisonMinimapBuilding_ShowPulse = function() end
+
+		-- if GarrisonLandingPageTutorialBox then
+		-- 	GarrisonLandingPageTutorialBox:SetScale(1 / 0.8)
+		-- 	GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+		-- end
+
+		local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
+		GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
+		GarrisonLandingPageMinimapButton:UnregisterAllEvents()
+		GarrisonLandingPageMinimapButton:Show()
+		GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
+	end
+
+	if GameTimeFrame then
+		if C["Minimap"].hideCalendar then
+			GameTimeFrame:Hide()
+		else
+			GameTimeFrame:SetParent(Minimap)
+			GameTimeFrame:SetScale(0.6)
+			GameTimeFrame:ClearAllPoints()
+			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -3)
+			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
+			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
+			GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
+			GameTimeFrame:SetPushedTexture(nil)
+			GameTimeFrame:SetHighlightTexture (nil)
+
+			local GameTimeFont = GameTimeFrame:GetFontString()
+			GameTimeFont:ClearAllPoints()
+			GameTimeFont:SetPoint("CENTER", 0, -7)
+			GameTimeFont:SetFont(C["Media"].Font, 20)
+			GameTimeFont:SetTextColor(0.2, 0.2, 0.1, 1)
+
+			GameTimeFrame:SetAlpha(0)
+			K.UIFrameFadeIn(GameTimeFrame, 0.4, GameTimeFrame:GetAlpha(), 1)
+		end
+	end
+
+	if MiniMapMailFrame then
+		MiniMapMailFrame:ClearAllPoints()
+		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
+		MiniMapMailFrame:SetScale(1.2)
+		MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
+	end
+
+	if QueueStatusMinimapButton then
+		QueueStatusMinimapButton:ClearAllPoints()
+		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
+		QueueStatusMinimapButton:SetScale(1.0)
+	end
+
+	if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
+		MiniMapInstanceDifficulty:ClearAllPoints()
+		MiniMapInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+		GuildInstanceDifficulty:ClearAllPoints()
+		GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+	end
+
+	if HelpOpenTicketButton and HelpOpenWebTicketButton then
+		HelpOpenTicketButton:SetScale(1)
+		HelpOpenWebTicketButton:SetScale(1)
+		PositionTicketButtons()
+	end
 end
 
--- Border
-MinimapBackdrop:SetBackdrop(K.Backdrop)
-MinimapBackdrop:SetBackdropColor(0.05, 0.05, 0.05, 0.0)
-MinimapBackdrop:SetBackdropBorderColor(C.Media.Border_Color[1], C.Media.Border_Color[2], C.Media.Border_Color[3])
-if C.Blizzard.ColorTextures == true then
-	MinimapBackdrop:SetBackdropBorderColor(C.Blizzard.TexturesColor[1], C.Blizzard.TexturesColor[2], C.Blizzard.TexturesColor[3])
+function M:OnInitialize()
+	self:UpdateSettings()
+	if not C["Minimap"].Enable then
+		Minimap:SetMaskTexture("Textures\\MinimapMask")
+		return
+	end
+
+	-- Support for other mods
+	function GetMinimapShape()
+		return "SQUARE"
+	end
+
+	local mmholder = CreateFrame("Frame", "MMHolder", Minimap)
+	mmholder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
+	mmholder:SetWidth(Minimap:GetWidth())
+	mmholder:SetHeight(Minimap:GetHeight())
+
+	Minimap:ClearAllPoints()
+	Minimap:SetPoint("TOPRIGHT", mmholder, "TOPRIGHT", -1, -1)
+	Minimap:SetMaskTexture(C["Media"].Blank)
+	Minimap:SetQuestBlobRingAlpha(0)
+	Minimap:SetArchBlobRingAlpha(0)
+	Minimap:SetTemplate()
+	Minimap:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+	Minimap:HookScript("OnEnter", function(self)
+		self.location:Show()
+	end)
+
+	Minimap:HookScript("OnLeave", function(self)
+		self.location:Hide()
+	end)
+
+	--Fix spellbook taint
+	ShowUIPanel(SpellBookFrame)
+	HideUIPanel(SpellBookFrame)
+
+	Minimap.location = Minimap:CreateFontString(nil, "OVERLAY")
+	Minimap.location:FontTemplate(nil, 13, "OUTLINE")
+	Minimap.location:SetPoint("TOP", Minimap, "TOP", 0, -4)
+	Minimap.location:SetJustifyH("CENTER")
+	Minimap.location:SetJustifyV("MIDDLE")
+	Minimap.location:Hide()
+
+	MinimapBorder:Hide()
+	MinimapBorderTop:Hide()
+
+	MinimapZoomIn:Hide()
+	MinimapZoomOut:Hide()
+	MiniMapVoiceChatFrame:Hide()
+	MinimapNorthTag:Kill()
+	MinimapZoneTextButton:Hide()
+	MiniMapTracking:Hide()
+	MiniMapMailBorder:Hide()
+	MiniMapMailIcon:SetTexture("")
+
+	--Hide the BlopRing on Minimap
+	Minimap:SetArchBlobRingScalar(0)
+	Minimap:SetQuestBlobRingScalar(0)
+
+	if C["Minimap"].hideClassHallReport then
+		GarrisonLandingPageMinimapButton:Kill()
+		GarrisonLandingPageMinimapButton.IsShown = function() return true end
+	end
+
+	QueueStatusMinimapButtonBorder:Hide()
+	QueueStatusFrame:SetClampedToScreen(true)
+
+	MiniMapWorldMapButton:Hide()
+
+	MiniMapInstanceDifficulty:Hide()
+	GuildInstanceDifficulty:Hide()
+	MiniMapInstanceDifficulty.Show = K.Noop
+	GuildInstanceDifficulty.Show = K.Noop
+	MiniMapChallengeMode:GetRegions():SetTexture("")
+
+	if TimeManagerClockButton then
+		TimeManagerClockButton:Kill()
+	end
+
+	if FeedbackUIButton then
+		FeedbackUIButton:Kill()
+	end
+
+	K["Movers"]:RegisterFrame(MMHolder)
+
+	Minimap:EnableMouseWheel(true)
+	Minimap:SetScript("OnMouseWheel", M.Minimap_OnMouseWheel)
+
+	-- Make sure these invisible frames follow the minimap.
+	MinimapCluster:ClearAllPoints()
+	MinimapCluster:SetAllPoints(Minimap)
+	MinimapCluster:EnableMouse(false)
+	MinimapBackdrop:ClearAllPoints()
+	MinimapBackdrop:SetAllPoints(Minimap)
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update_ZoneText")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "Update_ZoneText")
+	self:RegisterEvent("ZONE_CHANGED", "Update_ZoneText")
+	self:RegisterEvent("ZONE_CHANGED_INDOORS", "Update_ZoneText")
+	self:RegisterEvent("ADDON_LOADED")
+	self:UpdateSettings()
 end
-MinimapBackdrop:SetOutside(Minimap, 4, 4)
-
--- Set square map view
-Minimap:SetMaskTexture("Interface\\BUTTONS\\WHITE8X8")
-Minimap:SetArchBlobRingAlpha(0)
-Minimap:SetQuestBlobRingAlpha(0)
-MinimapBorder:Hide()
-
--- Set location font, and position
-local MinimapZone = CreateFrame("Frame", "KkthnxUIMinimapZone", Minimap)
-MinimapZone:SetSize(Minimap:GetWidth() + 4, 19)
-MinimapZone:SetPoint("TOP", Minimap, 0, 2)
-MinimapZone:SetFrameStrata(Minimap:GetFrameStrata())
-MinimapZone:SetAlpha(0)
-MinimapZone:EnableMouse()
-
-local MinimapZoneText = MinimapZone:CreateFontString("KkthnxUIMinimapZoneText", "Overlay")
-MinimapZoneText:SetFont(C.Media.Font, 12, C.Media.Font_Style)
-MinimapZoneText:SetPoint("TOP", 0, -2)
-MinimapZoneText:SetPoint("BOTTOM")
-MinimapZoneText:SetHeight(12)
-MinimapZoneText:SetWidth(MinimapZone:GetWidth() -6)
-
-Minimap:SetScript("OnEnter", function()
-	MinimapZone:SetAlpha(1)
-end)
-
-Minimap:SetScript("OnLeave", function()
-	MinimapZone:SetAlpha(0)
-end)
-
-local function ZoneUpdate()
-	MinimapZoneText:SetText(string_sub(GetMinimapZoneText(), 1, 46))
-	MinimapZoneText:SetTextColor(GetLocTextColor())
-end
-
-MinimapZone:RegisterEvent("PLAYER_ENTERING_WORLD")
-MinimapZone:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-MinimapZone:RegisterEvent("ZONE_CHANGED")
-MinimapZone:RegisterEvent("ZONE_CHANGED_INDOORS")
-MinimapZone:SetScript("OnEvent", ZoneUpdate)

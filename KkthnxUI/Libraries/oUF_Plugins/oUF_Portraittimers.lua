@@ -1,9 +1,11 @@
 local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = ns.oUF
+if not oUF then return end
 
 local _G = _G
 local math_floor = math.floor
 local math_fmod = math.fmod
+local pcall = pcall
 local string_format = string.format
 
 local GetSpellInfo = _G.GetSpellInfo
@@ -151,6 +153,7 @@ end
 
 local function UpdateIcon(self, texture, duration, expires)
 	SetPortraitToTexture(self.Icon, texture)
+	self.Icon:SetTexCoord(.1, .9, .1, .9) -- Make it square.
 
 	self.expires = expires
 	self.duration = duration

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C.ActionBar.Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
 local _G = _G
@@ -13,6 +13,7 @@ local GetPetActionInfo = _G.GetPetActionInfo
 local GetPetActionSlotUsable = _G.GetPetActionSlotUsable
 local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
+local InCombatLockdown = _G.InCombatLockdown
 local IsPetAttackAction = _G.IsPetAttackAction
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
@@ -24,8 +25,9 @@ local SetDesaturation = _G.SetDesaturation
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ShiftHolder, CooldownFrame_Set, StanceBarFrame
 
--- PET AND SHAPESHIFT BARS STYLE FUNCTION
+-- Main functions
 K.ShiftBarUpdate = function(...)
+	if InCombatLockdown() then return end
 	local numForms = GetNumShapeshiftForms()
 	local texture, name, isActive, isCastable
 	local button, icon, cooldown
@@ -109,11 +111,11 @@ K.PetBarUpdate = function(...)
 		end
 
 		if name then
-			if not C.ActionBar.Grid then
+			if not C["ActionBar"].Grid then
 				petActionButton:SetAlpha(1)
 			end
 		else
-			if not C.ActionBar.Grid then
+			if not C["ActionBar"].Grid then
 				petActionButton:SetAlpha(0)
 			end
 		end
