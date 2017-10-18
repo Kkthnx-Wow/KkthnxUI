@@ -189,7 +189,7 @@ end
 do -- Force readycheck warning
 	local ShowReadyCheckHook = function(self, initiator)
 		if initiator ~= "player" then
-			PlaySound("ReadyCheck", "Master")
+			PlaySound(8960, "Master")
 		end
 	end
 	_G.hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
@@ -217,16 +217,16 @@ do -- Force other warnings
 			for i = 1, _G.GetMaxBattlefieldID() do
 				local status = _G.GetBattlefieldStatus(i)
 				if status == "confirm" then
-					_G.PlaySound("PVPTHROUGHQUEUE", "Master")
+					_G.PlaySound(8459, "Master")
 					break
 				end
 			end
 		elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-			PlaySound("PVPTHROUGHQUEUE", "Master")
+			_G.PlaySound(8459, "Master")
 		elseif event == "LFG_PROPOSAL_SHOW" then
-			PlaySound("ReadyCheck", "Master")
+			_G.PlaySound(8960, "Master")
 		elseif event == "RESURRECT_REQUEST" then
-			PlaySoundFile([[Sound\Spells\Resurrection.wav]], "Master")
+			PlaySoundFile(37, "Master")
 		end
 	end)
 end
