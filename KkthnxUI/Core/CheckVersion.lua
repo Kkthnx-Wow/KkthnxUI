@@ -49,8 +49,8 @@ end
 
 RegisterAddonMessagePrefix("KKTHNXUI_VERSION")
 
-local Loading = CreateFrame("Frame")
--- Loading:RegisterEvent("PLAYER_ENTERING_WORLD")
-Loading:RegisterEvent("GROUP_ROSTER_UPDATE")
-Loading:RegisterEvent("CHAT_MSG_ADDON")
-Loading:SetScript("OnEvent", VersionCheck)
+local Module = CreateFrame("Frame")
+Module:RegisterEvent("PLAYER_ENTERING_WORLD")
+Module:RegisterEvent("GROUP_ROSTER_UPDATE")
+Module:RegisterEvent("CHAT_MSG_ADDON")
+Module:SetScript("OnEvent", VersionCheck)

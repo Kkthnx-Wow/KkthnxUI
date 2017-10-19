@@ -337,11 +337,6 @@ SlashCmdList["GROUPDISBAND"] = function()
 end
 _G.SLASH_GROUPDISBAND1 = "/rd"
 
-SlashCmdList["DELETELOOMS"] = function(msg)
-	StaticPopup_Show("DELETELOOMS_CONFIRM")
-end
-_G.SLASH_DELETELOOMS1 = "/deletelooms"
-
 -- Enable lua error by command
 function SlashCmdList.LUAERROR(msg)
 	msg = string_lower(msg)

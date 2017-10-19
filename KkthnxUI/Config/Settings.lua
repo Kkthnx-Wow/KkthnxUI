@@ -315,6 +315,7 @@ C["Raidframe"] = {
 	["Outline"] = false,
 	["RaidAsParty"] = false,
 	["RaidTools"] = true,
+	["RaidUtility"] = true,
 	["Scale"] = 1,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,

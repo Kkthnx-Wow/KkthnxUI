@@ -12,18 +12,19 @@ local GetRealmName = _G.GetRealmName
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
 
-local Name = UnitName("Player")
-local Realm = GetRealmName()
 local Settings
 
-if (not KkthnxUIConfigShared) then KkthnxUIConfigShared = {} or KkthnxUIConfigShared end
-if (not KkthnxUIConfigShared.Account) then KkthnxUIConfigShared.Account = {} or KkthnxUIConfigShared.Account end
-if (not KkthnxUIConfigShared[Realm][Name]) then KkthnxUIConfigShared[Realm][Name] = {} or KkthnxUIConfigShared[Realm][Name] end
+if not KkthnxUIConfigShared then KkthnxUIConfigShared = {} end
+if KkthnxUIConfigShared[K.Realm] == nil then KkthnxUIConfigShared[K.Realm] = {} end
+if KkthnxUIConfigShared[K.Realm][K.Name] == nil then KkthnxUIConfigShared[K.Realm][K.Name] = false end
+
+if KkthnxUIConfigShared[K.Realm][K.Name] == true and not Settings then return end
+if KkthnxUIConfigShared[K.Realm][K.Name] == false and not Settings then return end
 
 if (KkthnxUIConfigPerAccount) then
 	Settings = KkthnxUIConfigShared.Account
 else
-	Settings = KkthnxUIConfigShared[Realm][Name]
+	Settings = KkthnxUIConfigShared[K.Realm][K.Name]
 end
 
 for group, options in pairs(Settings) do

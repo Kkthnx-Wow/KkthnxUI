@@ -23,71 +23,63 @@ local AcceptedFrames = {
 	"MiniMapMailFrame",
 }
 
-local BlackList = {
-	"BookOfTracksFrame",
-	"CartographerNotesPOI",
-	"CopyChatButton1",
-	"DA_Minimap",
-	"EnhancedFrameMinimapButton",
-	"FishingExtravaganzaMini",
-	"FWGMinimapPOI",
+local PartialIgnores = {
+	"Node",
+	"Note",
+	"Pin",
+	"POI",
+}
+
+local ignoreButtons = {
 	"GameTimeFrame",
-	"GarrisonLandingPageMinimapButton",
-	"GarrisonMinimapButton",
-	"GatherArchNote",
+	"HelpOpenTicketButton",
+	"MiniMapVoiceChatFrame",
+	"TimeManagerClockButton",
+}
+
+local GenericIgnores = {
+	"Archy",
 	"GatherMatePin",
 	"GatherNote",
-	"GFW_TrackMenuButton",
-	"GFW_TrackMenuFrame",
-	"GuildInstanceDifficulty",
+	"GuildInstance",
 	"HandyNotesPin",
-	"HelpOpenTicketButton",
-	"KkthnxUIToggleButton",
-	"MBB_MinimapButtonFrame",
-	"MinimapBackdrop",
-	"MiniMapBattlefieldFrame",
-	"MiniMapInstanceDifficulty",
-	"MiniMapLFGFrame",
-	"MiniMapMailFrame",
-	"MiniMapMeetingStoneFrame",
-	"MiniMapPing",
-	"MiniMapRecordingButton",
-	"MiniMapTracking",
-	"MiniMapTrackingFrame",
-	"MiniMapVoiceChatFrame",
-	"MiniMapWorldMapButton",
-	"MinimapZoneTextButton",
-	"MinimapZoomIn",
-	"MinimapZoomOut",
-	"MiniNotePOI",
-	"poiMinimap",
-	"PremadeFilter_MinimapButton",
-	"QuestPointerPOI",
-	"QueueStatusMinimapButton",
-	"RecipeRadarMinimapIcon",
-	"TDial_TrackButton",
-	"TDial_TrackingIcon",
-	"TimeManagerClockButton",
-	"ToggleBar5",
+	"MinimMap",
+	"Spy_MapNoteList_mini",
 	"ZGVMarker",
+	"poiMinimap",
 }
 
 local function SetMinimapButton(btn)
 	if (not btn or btn.isSkinned) then return end
-	local name = btn:GetName()
 
+	local name = btn:GetName()
 	if not name then return end
 
-	for i = 1, #BlackList do
-		if name == BlackList[i] then return end
+	if btn:IsObjectType("Button") then
+		local ValidIcon = false
+
+		if not ValidIcon then
+			for i = 1, #ignoreButtons do
+				if name == ignoreButtons[i] then return end
+			end
+
+			for i = 1, #GenericIgnores do
+				if strsub(name, 1, strlen(GenericIgnores[i])) == GenericIgnores[i] then return end
+			end
+
+			for i = 1, #PartialIgnores do
+				if strfind(name, PartialIgnores[i]) ~= nil then return end
+			end
+		end
+
+		if not name == "GarrisonLandingPageMinimapButton" then
+			btn:SetPushedTexture(nil)
+			btn:SetHighlightTexture(nil)
+			btn:SetDisabledTexture(nil)
+		end
 	end
 
 	btn:SetParent("MinimapButtonCollectFrame")
-	if not name == "GarrisonLandingPageMinimapButton" then
-		btn:SetPushedTexture(nil)
-		btn:SetHighlightTexture(nil)
-		btn:SetDisabledTexture(nil)
-	end
 
 	for i = 1, btn:GetNumRegions() do
 		local region = select(i, btn:GetRegions())
@@ -161,7 +153,7 @@ local function SetMinimapButton(btn)
 		btn:SetBackdropBorderColor(1, 0, 0)
 	end
 
-	btn.isSkinned = true -- We don't want to trying to skin them back to back
+	btn.isSkinned = true -- We don"t want to trying to skin them back to back
 end
 
 local function GrabMinimapButtons()
