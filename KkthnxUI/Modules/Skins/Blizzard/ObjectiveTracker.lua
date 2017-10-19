@@ -16,16 +16,32 @@ end
 
 function Module:OnEnable()
 	ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
-	ObjectiveTrackerBlocksFrame.QuestHeader.Text:FontTemplate()
+	ObjectiveTrackerBlocksFrame.QuestHeader.Text:FontTemplate(nil, 13, "")
+	ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetShadowOffset(1.25, -1.25)
 	ObjectiveTrackerBlocksFrame.AchievementHeader:StripTextures()
-	ObjectiveTrackerBlocksFrame.AchievementHeader.Text:FontTemplate()
+	ObjectiveTrackerBlocksFrame.AchievementHeader.Text:FontTemplate(nil, 13, "")
+	ObjectiveTrackerBlocksFrame.AchievementHeader.Text:SetShadowOffset(1.25, -1.25)
 	ObjectiveTrackerBlocksFrame.ScenarioHeader:StripTextures()
-	ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:FontTemplate()
+	ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:FontTemplate(nil, 13, "")
+	ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:SetShadowOffset(1.25, -1.25)
 
 	BONUS_OBJECTIVE_TRACKER_MODULE.Header:StripTextures()
-	BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:FontTemplate()
+	BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:FontTemplate(nil, 13, "")
+	BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:SetShadowOffset(1.25, -1.25)
 	WORLD_QUEST_TRACKER_MODULE.Header:StripTextures()
-	WORLD_QUEST_TRACKER_MODULE.Header.Text:FontTemplate()
+	WORLD_QUEST_TRACKER_MODULE.Header.Text:FontTemplate(nil, 13, "")
+	WORLD_QUEST_TRACKER_MODULE.Header.Text:SetShadowOffset(1.25, -1.25)
+
+	for _, headerName in next, {"QuestHeader", "AchievementHeader", "ScenarioHeader"} do
+        local header = ObjectiveTrackerBlocksFrame[headerName]
+
+        local background = header:CreateTexture(nil, "ARTWORK")
+        background:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
+        background:SetTexCoord(0, 0.6640625, 0, 0.3125)
+        background:SetVertexColor(K.Color.r * 0.7, K.Color.g * 0.7, K.Color.b * 0.7)
+        background:SetPoint("BOTTOMLEFT", -24, -4)
+        background:SetSize(200, 24)
+    end
 
 	local function ColorProgressBars(self, value)
 		if not (self.Bar and value) then return end

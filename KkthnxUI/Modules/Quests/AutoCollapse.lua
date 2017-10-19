@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = CreateFrame("Frame")
+local Module = K:NewModule("AutoCollapse_ObjectiveTracker", "AceEvent-3.0")
 
 -- Wow Lua
 local _G = _G
@@ -19,13 +19,11 @@ local minimizeButton = _G["ObjectiveTrackerFrame"].HeaderMenu.MinimizeButton
 local statedriver = {
 	["FULL"] = function(frame)
 		ObjectiveTracker_Expand()
-		minimizeButton.text:SetText("-")
 		frame:Show()
 	end,
 
 	["COLLAPSED"] = function(frame)
 		ObjectiveTracker_Collapse()
-		minimizeButton.text:SetText("+")
 		frame:Show()
 	end,
 
@@ -94,6 +92,8 @@ function Module:OnEnable()
 	Module.frame = ObjectiveTrackerFrame
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ChangeState")
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "ChangeState")
+
+	Module:ChangeState()
 end
 
 function Module:OnDisable()

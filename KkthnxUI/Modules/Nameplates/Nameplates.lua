@@ -334,7 +334,7 @@ local function DebuffFilter(name, caster, spellId, nameplateShowPersonal, namepl
 end
 
 local function UpdateAuras(self)
-	if not C["Nameplates"].TrackAuras --[[or UnitIsUnit(self.unit, "player")--]] then return end
+	if not C["Nameplates"].TrackAuras or UnitIsUnit(self.unit, "player") then return end
 	local i = 1
 	local r, g, b
 

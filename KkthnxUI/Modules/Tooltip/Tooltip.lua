@@ -100,7 +100,6 @@ local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
-local S_ITEM_LEVEL = ITEM_LEVEL:gsub( "%%d", "(%%d+)" )
 local playerGUID -- Will be set in Initialize
 local targetList, inspectCache = {}, {}
 local TAPPED_COLOR = { r=.6, g=.6, b=.6 }
@@ -156,7 +155,7 @@ function TT:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (C["Tooltip"].CursorAnchor) then
 			tt:SetOwner(parent, "ANCHOR_CURSOR")
-			if(not GameTooltipStatusBar.anchoredToTop) then
+			if (not GameTooltipStatusBar.anchoredToTop) then
 				GameTooltipStatusBar:ClearAllPoints()
 				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 3, 3)
 				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
@@ -166,7 +165,7 @@ function TT:GameTooltip_SetDefaultAnchor(tt, parent)
 			return
 		else
 			tt:SetOwner(parent, "ANCHOR_NONE")
-			if(GameTooltipStatusBar.anchoredToTop) then
+			if (GameTooltipStatusBar.anchoredToTop) then
 				GameTooltipStatusBar:ClearAllPoints()
 				GameTooltipStatusBar:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT", 3, -3)
 				GameTooltipStatusBar:SetPoint("TOPRIGHT", GameTooltip, "BOTTOMRIGHT", -4, -3)
@@ -223,7 +222,7 @@ function TT:CleanUpTrashLines(tt)
 end
 
 function TT:GetLevelLine(tt, offset)
-	for i=offset, tt:NumLines() do
+	for i = offset, tt:NumLines() do
 		local tipText = _G["GameTooltipTextLeft"..i]
 		if (tipText:GetText() and tipText:GetText():find(LEVEL)) then
 			return tipText
@@ -726,13 +725,4 @@ function TT:OnEnable()
 
 	--Variable is localized at top of file, but setting it right away doesn"t work on first session after opening up WoW
 	playerGUID = UnitGUID("player")
-
-	-- Tooltip Statusbars
-	local function SkinTooltipProgressBar(frame)
-		frame:DisableDrawLayer("ARTWORK")
-		frame:SetStatusBarTexture(TooltipTexture)
-		frame.Label:SetDrawLayer("OVERLAY")
-	end
-	-- SkinTooltipProgressBar(ReputationParagonTooltipStatusBar.Bar)
-	SkinTooltipProgressBar(WorldMapTaskTooltipStatusBar.Bar)
 end
