@@ -428,6 +428,19 @@ function TT:GameTooltip_OnTooltipSetUnit(tt)
 		end
 	end
 
+	local unitTarget = unit.."target"
+	if (unit ~= "player" and UnitExists(unitTarget)) then
+		local targetColor
+		if(UnitIsPlayer(unitTarget) and not UnitHasVehicleUI(unitTarget)) then
+			local _, class = UnitClass(unitTarget)
+			targetColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+		else
+			targetColor = K.Colors.factioncolors[""..UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
+		end
+
+		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
+	end
+
 	if (color) then
 		GameTooltipStatusBar:SetStatusBarColor(color.r, color.g, color.b)
 	else

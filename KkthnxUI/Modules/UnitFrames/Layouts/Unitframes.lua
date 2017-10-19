@@ -60,39 +60,6 @@ local function oUF_KkthnxUnitframes(self, unit)
 	self:HookScript("OnEnter", UnitFrame_OnEnter)
 	self:HookScript("OnLeave", UnitFrame_OnLeave)
 
-	-- if unit == "target" then
-	-- 	hooksecurefunc(self, "Show", function(self)
-	-- 		local class = UnitClassification(self.unit)
-	-- 		if class ~= "normal" and class ~= "minus" and class ~= "trivial" then
-	-- 			if class == "worldboss" then
-	-- 				if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-	-- 					self.Portrait:SetBackdropBorderColor(163/255, 53/255, 255/238)
-	-- 				else
-	-- 					self.Portrait.Background:SetBackdropBorderColor(163/255, 53/255, 255/238)
-	-- 				end
-	-- 			elseif class == "rare" or class == "rareelite" then
-	-- 				if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-	-- 					self.Portrait:SetBackdropBorderColor(0/255, 112/255, 221/255)
-	-- 				else
-	-- 					self.Portrait.Background:SetBackdropBorderColor(0/255, 112/255, 221/255)
-	-- 				end
-	-- 			elseif class == "elite" then
-	-- 				if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-	-- 					self.Portrait:SetBackdropBorderColor(0/255, 112/255, 221/255)
-	-- 				else
-	-- 					self.Portrait.Background:SetBackdropBorderColor(0/255, 112/255, 221/255)
-	-- 				end
-	-- 			end
-	-- 		else
-	-- 			if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-	-- 				self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-	-- 			else
-	-- 				self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-	-- 			end
-	-- 		end
-	-- 	end)
-	-- end
-
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetTemplate("Transparent")
@@ -638,25 +605,27 @@ oUF:Factory(function(self)
 	focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
 	K.Movers:RegisterFrame(focustarget)
 
-	local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
-	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
-	]],
-	"initial-width", 140,
-	"initial-height", 38,
-	"showSolo", false,
-	"showParty", true,
-	"showRaid", false,
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", "GROUP",
-	"showPlayer", true, -- Need to add this as an option.
-	"yOffset", -40
-	)
-	party:SetPoint(unpack(C.Position.UnitFrames.Party))
-	K.Movers:RegisterFrame(party)
+	if (C["Unitframe"].Party) then
+		local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
+		"oUF-initialConfigFunction", [[
+		local header = self:GetParent()
+		self:SetWidth(header:GetAttribute("initial-width"))
+		self:SetHeight(header:GetAttribute("initial-height"))
+		]],
+		"initial-width", 140,
+		"initial-height", 38,
+		"showSolo", false,
+		"showParty", true,
+		"showRaid", false,
+		"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+		"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+		"groupBy", "GROUP",
+		"showPlayer", true, -- Need to add this as an option.
+		"yOffset", -40
+		)
+		party:SetPoint(unpack(C.Position.UnitFrames.Party))
+		K.Movers:RegisterFrame(party)
+	end
 
 	if (C["Unitframe"].ShowBoss) then
 		local Boss = {}

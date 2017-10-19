@@ -39,43 +39,46 @@ function Module:KillStuff(addon)
 	end
 
 	if C["Unitframe"].Enable then
-		for i = 1, MAX_BOSS_FRAMES do
-			local Boss = _G["Boss"..i.."TargetFrame"]
-			local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
-			local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
+		if C["Unitframe"].ShowBoss then
+			for i = 1, MAX_BOSS_FRAMES do
+				local Boss = _G["Boss"..i.."TargetFrame"]
+				local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
+				local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
 
-			Boss:UnregisterAllEvents()
-			Boss.Show = K.Noop
-			Boss:Hide()
+				Boss:UnregisterAllEvents()
+				Boss.Show = K.Noop
+				Boss:Hide()
 
-			Health:UnregisterAllEvents()
-			Power:UnregisterAllEvents()
-		end
-
-		for i = 1, MAX_PARTY_MEMBERS do
-			local PartyMember = _G["PartyMemberFrame" .. i]
-			local Health = _G["PartyMemberFrame"..i.."HealthBar"]
-			local Power = _G["PartyMemberFrame"..i.."ManaBar"]
-			local Pet = _G["PartyMemberFrame" ..i.."PetFrame"]
-			local PetHealth = _G["PartyMemberFrame" ..i.."PetFrame".."HealthBar"]
-
-			PartyMember:UnregisterAllEvents()
-			PartyMember:SetParent(K.UIFrameHider)
-			PartyMember:Hide()
-			Health:UnregisterAllEvents()
-			Power:UnregisterAllEvents()
-
-			Pet:UnregisterAllEvents()
-			Pet:SetParent(K.UIFrameHider)
-			PetHealth:UnregisterAllEvents()
-
-			if (not InCombatLockdown()) then
-				HidePartyFrame()
-				ShowPartyFrame = K.Noop
-				HidePartyFrame = K.Noop
+				Health:UnregisterAllEvents()
+				Power:UnregisterAllEvents()
 			end
 		end
 
+		if C["Unitframe"].Party then
+			for i = 1, MAX_PARTY_MEMBERS do
+				local PartyMember = _G["PartyMemberFrame" .. i]
+				local Health = _G["PartyMemberFrame"..i.."HealthBar"]
+				local Power = _G["PartyMemberFrame"..i.."ManaBar"]
+				local Pet = _G["PartyMemberFrame" ..i.."PetFrame"]
+				local PetHealth = _G["PartyMemberFrame" ..i.."PetFrame".."HealthBar"]
+
+				PartyMember:UnregisterAllEvents()
+				PartyMember:SetParent(K.UIFrameHider)
+				PartyMember:Hide()
+				Health:UnregisterAllEvents()
+				Power:UnregisterAllEvents()
+
+				Pet:UnregisterAllEvents()
+				Pet:SetParent(K.UIFrameHider)
+				PetHealth:UnregisterAllEvents()
+
+				if (not InCombatLockdown()) then
+					HidePartyFrame()
+					ShowPartyFrame = K.Noop
+					HidePartyFrame = K.Noop
+				end
+			end
+		end
 	end
 
 	if C["General"].AutoScale then

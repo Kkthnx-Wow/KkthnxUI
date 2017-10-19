@@ -20,7 +20,7 @@ local buttons = {}
 local AcceptedFrames = {
 	"BagSync_MinimapButton",
 	"VendomaticButtonFrame",
-	"MiniMapMailFrame",
+	-- "MiniMapMailFrame",
 }
 
 local PartialIgnores = {
