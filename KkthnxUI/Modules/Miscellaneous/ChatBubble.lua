@@ -5,7 +5,7 @@ function Module:UpdateBubbleBorder()
     if not self.text then return end
 
     local r, g, b = self.text:GetTextColor()
-    self:SetBackdropBorderColor(r, g, b, .8)
+    self:SetBackdropBorderColor(r, g, b, 1)
 end
 
 function Module:SkinBubble(frame)

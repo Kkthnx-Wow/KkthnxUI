@@ -125,6 +125,7 @@ K.DebuffWhiteList = {
 	[SpellName(117405)] = true, -- binding shot
 	[SpellName(187131)] = true, -- Vulnerable
 	[SpellName(185855)] = true, -- lacerate
+	[SpellName(194279)] = true,	-- Caltrops
 	-- Control
 	[SpellName(5116)] = true, -- concussive shot
 	[SpellName(20736)] = true, -- distracting shot

@@ -13,7 +13,8 @@ local string_find = string.find
 -- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
 -- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
 
-local Movers = K.Movers
+local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.wav"
+local Movers = K["Movers"]
 
 -- Fix UIErrorsFrame framelevel
 UIErrorsFrame:SetFrameLevel(0)
@@ -189,7 +190,7 @@ end
 do -- Force readycheck warning
 	local ShowReadyCheckHook = function(self, initiator)
 		if initiator ~= "player" then
-			PlaySound(8960, "Master")
+			PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
 		end
 	end
 	_G.hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
@@ -222,11 +223,11 @@ do -- Force other warnings
 				end
 			end
 		elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-			_G.PlaySound(8459, "Master")
+			PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
 		elseif event == "LFG_PROPOSAL_SHOW" then
-			_G.PlaySound(8960, "Master")
+			PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
 		elseif event == "RESURRECT_REQUEST" then
-			PlaySoundFile(37, "Master")
+			PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
 		end
 	end)
 end

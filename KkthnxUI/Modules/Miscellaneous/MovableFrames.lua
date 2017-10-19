@@ -1,15 +1,16 @@
 local K, C, L = unpack(select(2, ...))
-local B = K:NewModule("MovableFrames", 'AceHook-3.0', 'AceEvent-3.0')
+local Module = K:NewModule("MovableFrames", "AceHook-3.0", "AceEvent-3.0")
+
 local _G = _G
 
-local EnableMouse = EnableMouse
-local SetMovable = SetMovable
-local SetClampedToScreen = SetClampedToScreen
-local RegisterForDrag = RegisterForDrag
-local StartMoving = StartMoving
-local StopMovingOrSizing = StopMovingOrSizing
+local EnableMouse = _G.EnableMouse
+local RegisterForDrag = _G.RegisterForDrag
+local SetClampedToScreen = _G.SetClampedToScreen
+local SetMovable = _G.SetMovable
+local StartMoving = _G.StartMoving
+local StopMovingOrSizing = _G.StopMovingOrSizing
 
-B.Frames = {
+Module.Frames = {
 	"AddonList",
 	"BankFrame",
 	"CharacterFrame",
@@ -47,7 +48,7 @@ B.Frames = {
 	"WorldMapFrame",
 }
 
-B.AddonsList = {
+Module.AddonsList = {
 	["Blizzard_AchievementUI"] = {"AchievementFrame","AchievementFrameHeader"},
 	["Blizzard_ArchaeologyUI"] = "ArchaeologyFrame",
 	["Blizzard_AuctionUI"] = "AuctionFrame",
@@ -69,7 +70,7 @@ B.AddonsList = {
 	["Blizzard_VoidStorageUI"] = "VoidStorageFrame",
 }
 
-function B:MakeMovable(frame)
+function Module:MakeMovable(frame)
 	if frame then
 		frame:EnableMouse(true)
 		frame:SetMovable(true)
@@ -77,34 +78,34 @@ function B:MakeMovable(frame)
 		frame:RegisterForDrag("LeftButton")
 		frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
 		frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-		if frame.TitleMouseover then B:MakeMovable(frame.TitleMouseover) end
+		if frame.TitleMouseover then Module:MakeMovable(frame.TitleMouseover) end
 	end
 end
 
-function B:Addons(event, addon)
+function Module:Addons(event, addon)
 	local frame
-	addon = B.AddonsList[addon]
+	addon = Module.AddonsList[addon]
 	if not addon then return end
 	if type(addon) == "table" then
 		for i = 1, #addon do
 			frame = _G[addon[i]]
-			B:MakeMovable(frame)
+			Module:MakeMovable(frame)
 		end
 	else
 		frame = _G[addon]
-		B:MakeMovable(frame)
+		Module:MakeMovable(frame)
 	end
-	B.addonCount = B.addonCount + 1
-	if B.addonCount == #B.AddonsList then B:UnregisterEvent(event) end
+	Module.addonCount = Module.addonCount + 1
+	if Module.addonCount == #Module.AddonsList then Module:UnregisterEvent(event) end
 end
 
-function B:OnEnable()
-	B.addonCount = 0
-	--if E.private.sle.module.blizzmove then
-	for i = 1, #B.Frames do
-		local frame = _G[B.Frames[i]]
-		if frame then B:MakeMovable(frame) else K.Print("Doesn't exist: "..B.Frames[i]) end
+function Module:OnEnable()
+	Module.addonCount = 0
+	if C["General"].MoveBlizzardFrames ~= true then return end
+
+	for i = 1, #Module.Frames do
+		local frame = _G[Module.Frames[i]]
+		if frame then Module:MakeMovable(frame) else K.Print("Doesn't exist: "..Module.Frames[i]) end
 	end
 	self:RegisterEvent("ADDON_LOADED", "Addons")
-	--end
 end
