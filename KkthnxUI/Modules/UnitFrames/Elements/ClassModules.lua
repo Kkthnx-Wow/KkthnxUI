@@ -27,23 +27,23 @@ local function PostUpdateClassPower(self, cur, max, diff, powerType)
 			if (max == 3) then
 				Bar:SetWidth(74)
 			elseif (max == 4) then
-				Bar:SetWidth(index > 2 and 40 or 42)
+				Bar:SetWidth(index > 2 and 40 or 43)
 			elseif (max == 5 or max == 10) then
-				Bar:SetWidth((index == 1 or index == 6) and 29 or 30)
+				Bar:SetWidth((index == 1 or index == 6) and 30 or 34)
 			elseif (max == 6) then
-				Bar:SetWidth(35)
+				Bar:SetWidth(27)
 			end
 
 			if (max == 10) then
 				-- Rogue anticipation talent, align > 5 on top of the first 5
 				if (index == 6) then
 					Bar:ClearAllPoints()
-					Bar:SetPoint("LEFT", self[index - 5])
+					Bar:SetPoint("TOP", self[index - 5], "BOTTOM", 0, -6)
 				end
 			else
 				if (index > 1) then
 					Bar:ClearAllPoints()
-					Bar:SetPoint("LEFT", self[index - 1], "RIGHT", 6, 0)
+					Bar:SetPoint("LEFT", self[index - 1], "RIGHT", 4, 0)
 				end
 			end
 		end
@@ -72,7 +72,6 @@ local function UpdateClassPowerColor(self)
 		end
 
 		Bar:SetStatusBarColor(r, g, b)
-		--Bar:SetBackdropColor(r * 1/3, g * 1/3, b * 1/3)
 	end
 end
 
@@ -118,7 +117,7 @@ function K.CreateClassModules(self, unit)
 			end
 
 			if (index > 5) then
-				Bar:SetFrameLevel(Bar:GetFrameLevel() + 1)
+				Bar:SetFrameLevel(Bar:GetFrameLevel() + 2)
 			end
 
 			ClassPower[index] = Bar

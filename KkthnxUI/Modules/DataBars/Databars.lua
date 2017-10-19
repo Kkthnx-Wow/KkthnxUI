@@ -89,7 +89,7 @@ function Module:CreateBar(name, anchorFrame, height)
 end
 
 function Module:CreateExpBar()
-    self.ExpBar = self:CreateBar("KkthnxUIExpBar", Minimap, 10)
+    self.ExpBar = self:CreateBar("KkthnxUIExpBar", Minimap, 12)
     self.ExpBar:SetStatusBarColor(0, 0.4, 1, .8)
 
     self.ExpBar.RestedExpBar = CreateFrame("StatusBar", nil, self.ExpBar)
@@ -165,7 +165,7 @@ end
 
 local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE..HEADER_COLON
 function Module:CreateHonorBar()
-    self.HonorBar = self:CreateBar("KkthnxUIHonorBar", self.ExpBar, 10)
+    self.HonorBar = self:CreateBar("KkthnxUIHonorBar", self.ExpBar, 12)
     self.HonorBar:SetStatusBarColor(240/255, 114/255, 65/255)
     self.HonorBar:SetMinMaxValues(0, 325)
     self.HonorBar:SetScript("OnEvent", self.UpdateHonorBar)
@@ -254,7 +254,7 @@ function Module:UpdateHonorBar(event, unit)
 end
 
 function Module:CreateRepBar()
-    self.RepBar = self:CreateBar("KkthnxUIRepBar", self.HonorBar, 10)
+    self.RepBar = self:CreateBar("KkthnxUIRepBar", self.HonorBar, 12)
     self.RepBar:SetScript("OnEvent", self.UpdateRepBar)
     self.RepBar:RegisterEvent("UPDATE_FACTION")
     self.RepBar:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE")
@@ -359,7 +359,7 @@ function Module:UpdateRepBar(event)
 end
 
 function Module:CreateArtiBar()
-    self.ArtiBar = self:CreateBar("KkthnxUIArtiBar", self.RepBar, 10)
+    self.ArtiBar = self:CreateBar("KkthnxUIArtiBar", self.RepBar, 12)
     self.ArtiBar:SetStatusBarColor(.901, .8, .601)
     self.ArtiBar:Hide()
 
