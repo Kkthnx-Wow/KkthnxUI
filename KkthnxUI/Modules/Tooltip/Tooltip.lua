@@ -115,23 +115,6 @@ local ignoreSubType = {
 	L.Tooltip.Item_Enhancement == true,
 }
 
-local tooltips = {
-	GameTooltip,
-	ItemRefTooltip,
-	ItemRefShoppingTooltip1,
-	ItemRefShoppingTooltip2,
-	ItemRefShoppingTooltip3,
-	AutoCompleteBox,
-	FriendsTooltip,
-	ShoppingTooltip1,
-	ShoppingTooltip2,
-	ShoppingTooltip3,
-	WorldMapTooltip,
-	WorldMapCompareTooltip1,
-	WorldMapCompareTooltip2,
-	WorldMapCompareTooltip3
-}
-
 local classification = {
 	worldboss = format("|cffAF5050 %s|r", BOSS),
 	rareelite = format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
@@ -144,105 +127,6 @@ local SlotName = {
 	"Hands","Waist","Legs","Feet","Finger0","Finger1",
 	"Trinket0","Trinket1","MainHand","SecondaryHand"
 }
-
--- All this does is increase the spacing between tooltips when you compare items
-function Module:GameTooltip_ShowCompareItem(tt, anchorFrame)
-	if (not tt) then
-		tt = GameTooltip
-	end
-
-	if not anchorFrame then
-		anchorFrame = tt.overrideComparisonAnchorFrame or tt
-	end
-
-	if tt.needsReset then
-		tt:ResetSecondaryCompareItem()
-		GameTooltip_AdvanceSecondaryCompareItem(tt)
-		tt.needsReset = false
-	end
-
-	local shoppingTooltip1, shoppingTooltip2 = unpack(tt.shoppingTooltips)
-	local primaryItemShown, secondaryItemShown = shoppingTooltip1:SetCompareItem(shoppingTooltip2, tt)
-	local leftPos = anchorFrame:GetLeft()
-	local rightPos = anchorFrame:GetRight()
-
-	local side
-	local anchorType = tt:GetAnchorType()
-	local totalWidth = 0
-	if primaryItemShown then
-		totalWidth = totalWidth + shoppingTooltip1:GetWidth()
-	end
-	if secondaryItemShown then
-		totalWidth = totalWidth + shoppingTooltip2:GetWidth()
-	end
-	if tt.overrideComparisonAnchorSide then
-		side = tt.overrideComparisonAnchorSide
-	else
-		-- Find correct side
-		local rightDist = 0
-		if not rightPos then
-			rightPos = 0
-		end
-		if not leftPos then
-			leftPos = 0
-		end
-
-		rightDist = GetScreenWidth() - rightPos
-
-		if anchorType and totalWidth < leftPos and (anchorType == "ANCHOR_LEFT" or anchorType == "ANCHOR_TOPLEFT" or anchorType == "ANCHOR_BOTTOMLEFT") then
-			side = "left"
-		elseif anchorType and totalWidth < rightDist and (anchorType == "ANCHOR_RIGHT" or anchorType == "ANCHOR_TOPRIGHT" or anchorType == "ANCHOR_BOTTOMRIGHT") then
-			side = "right"
-		elseif rightDist < leftPos then
-			side = "left"
-		else
-			side = "right"
-		end
-	end
-
-	-- See if we should slide the tooltip
-	if anchorType and anchorType ~= "ANCHOR_PRESERVE" then
-		if (side == "left") and (totalWidth > leftPos) then
-			tt:SetAnchorType(anchorType, (totalWidth - leftPos), 0)
-		elseif (side == "right") and (rightPos + totalWidth) > GetScreenWidth() then
-			tt:SetAnchorType(anchorType, -((rightPos + totalWidth) - GetScreenWidth()), 0)
-		end
-	end
-
-	if secondaryItemShown then
-		shoppingTooltip2:SetOwner(tt, "ANCHOR_NONE")
-		shoppingTooltip2:ClearAllPoints()
-		shoppingTooltip1:SetOwner(tt, "ANCHOR_NONE")
-		shoppingTooltip1:ClearAllPoints()
-
-		if side and side == "left" then
-			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", -7, -10)
-		else
-			shoppingTooltip2:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 7, -10)
-		end
-
-		if side and side == "left" then
-			shoppingTooltip2:SetPoint("TOPRIGHT", shoppingTooltip1, "TOPLEFT", -7, 0)
-		else
-			shoppingTooltip1:SetPoint("TOPLEFT", shoppingTooltip2, "TOPRIGHT", 7, 0)
-		end
-	else
-		shoppingTooltip1:SetOwner(tt, "ANCHOR_NONE")
-		shoppingTooltip1:ClearAllPoints()
-
-		if side and side == "left" then
-			shoppingTooltip1:SetPoint("TOPRIGHT", anchorFrame, "TOPLEFT", -7, -10)
-		else
-			shoppingTooltip1:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 7, -10)
-		end
-
-		shoppingTooltip2:Hide()
-	end
-
-	-- We have to call this again because :SetOwner clears the tooltip.
-	shoppingTooltip1:SetCompareItem(shoppingTooltip2, tt)
-	shoppingTooltip1:Show()
-end
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if tt:IsForbidden() then return end
@@ -257,8 +141,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 			tt:SetOwner(parent, "ANCHOR_CURSOR")
 			if (not GameTooltipStatusBar.anchoredToTop) then
 				GameTooltipStatusBar:ClearAllPoints()
-				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 5)
-				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 5)
+				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 4, 3)
+				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
 				GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 				GameTooltipStatusBar.anchoredToTop = true
 			end
@@ -267,8 +151,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 			tt:SetOwner(parent, "ANCHOR_NONE")
 			if (GameTooltipStatusBar.anchoredToTop) then
 				GameTooltipStatusBar:ClearAllPoints()
-				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 5)
-				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 5)
+				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 4, 3)
+				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
 				GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, -3)
 				GameTooltipStatusBar.anchoredToTop = nil
 			end
@@ -659,21 +543,6 @@ function Module:GameTooltip_ShowStatusBar(tt)
 	end
 end
 
-function Module:SetStyle(tt)
-	if tt:IsForbidden() then return end
-
-	tt:SetBackdrop(nil) -- a reset is needed first, or we'll get weird bugs
-	tt:SetTemplate("Transparent", true)
-	local r, g, b = tt:GetBackdropColor()
-	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
-
-	if C["General"].ColorTextures then
-		tt:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-	else
-		tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-	end
-end
-
 function Module:MODIFIER_STATE_CHANGED(_, key)
 	if ((key == "LSHIFT" or key == "RSHIFT") and UnitExists("mouseover")) then
 		GameTooltip:SetUnit("mouseover")
@@ -727,62 +596,6 @@ function Module:SetItemRef(link)
 	end
 end
 
-function Module:CheckBackdropColor()
-	if GameTooltip:IsForbidden() then return end
-	if not GameTooltip:IsShown() then return end
-
-	local r, g, b = GameTooltip:GetBackdropColor()
-	r = K.Round(r, 1)
-	g = K.Round(g, 1)
-	b = K.Round(b, 1)
-	local red, green, blue = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
-	local alpha = C["Media"].BackdropColor[4]
-
-	if (r ~= red or g ~= green or b ~= blue) then
-		GameTooltip:SetBackdropColor(red, green, blue, alpha)
-	end
-end
-
-function Module:SetTooltipFonts()
-	local font = C["Media"].Font
-	local fontOutline = 12
-	local headerSize = 12
-	local textSize = 12
-	local smallTextSize = 12
-
-	GameTooltipHeaderText:SetFont(font, headerSize, fontOutline)
-	GameTooltipText:SetFont(font, textSize, fontOutline)
-	GameTooltipTextSmall:SetFont(font, smallTextSize, fontOutline)
-	if GameTooltip.hasMoney then
-		for i = 1, GameTooltip.numMoneyFrames do
-			_G["GameTooltipMoneyFrame"..i.."PrefixText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."SuffixText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."GoldButtonText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."SilverButtonText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."CopperButtonText"]:SetFont(font, textSize, fontOutline)
-		end
-	end
-
-	--These show when you compare items ("Currently Equipped", name of item, item level)
-	--Since they appear at the top of the tooltip, we set it to use the header font size.
-	ShoppingTooltip1TextLeft1:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextLeft2:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextLeft3:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextLeft4:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextRight1:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextRight2:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextRight3:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip1TextRight4:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextLeft1:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextLeft2:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextLeft3:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextLeft4:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextRight1:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextRight2:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextRight3:SetFont(font, headerSize, fontOutline)
-	ShoppingTooltip2TextRight4:SetFont(font, headerSize, fontOutline)
-end
-
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
@@ -791,8 +604,8 @@ function Module:OnEnable()
 	GameTooltipStatusBar:CreateShadow()
 	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
 	GameTooltipStatusBar:ClearAllPoints()
-	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 5)
-	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 5)
+	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 4, 3)
+	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 	GameTooltipStatusBar.text:FontTemplate(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline)
@@ -804,15 +617,6 @@ function Module:OnEnable()
 	GameTooltipStatusBarBG:SetBackdrop(K.BorderBackdrop)
 	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	--Tooltip Fonts
-	if not GameTooltip.hasMoney then
-		-- Force creation of the money lines, so we can set font for it
-		SetTooltipMoney(GameTooltip, 1, nil, "", "")
-		SetTooltipMoney(GameTooltip, 1, nil, "", "")
-		GameTooltip_ClearMoney(GameTooltip)
-	end
-	self:SetTooltipFonts()
-
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
 	GameTooltipAnchor:SetPoint(C.Position.Tooltip[1], C.Position.Tooltip[2], C.Position.Tooltip[3], C.Position.Tooltip[4], C.Position.Tooltip[5])
 	GameTooltipAnchor:SetSize(130, 20)
@@ -822,7 +626,6 @@ function Module:OnEnable()
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")
 	self:SecureHook("SetItemRef")
-	self:SecureHook("GameTooltip_ShowCompareItem")
 	self:SecureHook(GameTooltip, "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
@@ -830,17 +633,11 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
-	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
-	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
 
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
-	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
-	for _, tt in pairs(tooltips) do
-		self:SecureHookScript(tt, "OnShow", "SetStyle")
-	end
 
-	--Variable is localized at top of file, but setting it right away doesn"t work on first session after opening up WoW
+	-- Variable is localized at top of file, but setting it right away doesn"t work on first session after opening up WoW
 	playerGUID = UnitGUID("player")
 end
