@@ -1,13 +1,24 @@
 local K, C, L = unpack(select(2, ...))
-local M = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
-local tinsert = table.insert
+local table_insert = table.insert
 local strsub = strsub
 
-local C_Timer_After = C_Timer.After
+local C_Timer_After = _G.C_Timer.After
+local CreateFrame = _G.CreateFrame
+local GameTimeFrame = _G.GameTimeFrame
+local GetMinimapZoneText = _G.GetMinimapZoneText
+local GetZonePVPInfo = _G.GetZonePVPInfo
+local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local Minimap = _G.Minimap
+local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
+local SpellBookFrame = _G.SpellBookFrame
+local UIParent = _G.UIParent
 
-function M:GetLocTextColor()
+function Module:GetLocTextColor()
 	local pvpType = GetZonePVPInfo()
 	if pvpType == "arena" then
 		return 0.84, 0.03, 0.03
@@ -26,7 +37,7 @@ function M:GetLocTextColor()
 	end
 end
 
-function M:ADDON_LOADED(event, addon)
+function Module:ADDON_LOADED(event, addon)
 	if addon == "Blizzard_TimeManager" then
 		TimeManagerClockButton:Kill()
 	elseif addon == "Blizzard_FeedbackUI" then
@@ -34,7 +45,7 @@ function M:ADDON_LOADED(event, addon)
 	end
 end
 
-function M:Minimap_OnMouseWheel(d)
+function Module:Minimap_OnMouseWheel(d)
 	if d > 0 then
 		_G.MinimapZoomIn:Click()
 	elseif d < 0 then
@@ -42,14 +53,14 @@ function M:Minimap_OnMouseWheel(d)
 	end
 end
 
-function M:Update_ZoneText()
+function Module:Update_ZoneText()
 	if not C["Minimap"].Enable then return end
 	Minimap.location:SetText(strsub(GetMinimapZoneText(), 1, 46))
-	Minimap.location:SetTextColor(M:GetLocTextColor())
+	Minimap.location:SetTextColor(Module:GetLocTextColor())
 	Minimap.location:FontTemplate()
 end
 
-function M:PLAYER_REGEN_ENABLED()
+function Module:PLAYER_REGEN_ENABLED()
 	self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	self:UpdateSettings()
 end
@@ -77,7 +88,7 @@ local function SetupZoomReset()
 end
 hooksecurefunc(Minimap, "SetZoom", SetupZoomReset)
 
-function M:UpdateSettings()
+function Module:UpdateSettings()
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	end
@@ -104,45 +115,6 @@ function M:UpdateSettings()
 	end
 
 	if GarrisonLandingPageMinimapButton then
-		-- GarrisonLandingPageMinimapButton:ClearAllPoints()
-		-- GarrisonLandingPageMinimapButton:SetParent(Minimap)
-		-- GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", -4, 4)
-		-- GarrisonLandingPageMinimapButton:SetSize(36, 36)
-		-- hooksecurefunc("GarrisonLandingPageMinimapButton_UpdateIcon", function(self)
-		-- 	self:SetNormalTexture("")
-		-- 	self:SetPushedTexture("")
-		-- 	self:SetHighlightTexture("")
-
-		-- 	local GarrisonIcon = self:CreateTexture(nil, "OVERLAY", nil, 7)
-		-- 	GarrisonIcon:SetSize(30, 30)
-		-- 	GarrisonIcon:SetPoint("CENTER")
-		-- 	GarrisonIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\GarrisonUp")
-		-- 	GarrisonIcon:SetVertexColor(1, 1, 1)
-		-- 	self.GarrisonIcon = GarrisonIcon
-
-		-- 	if (C_Garrison.GetLandingPageGarrisonType() == LE_GARRISON_TYPE_6_0) then
-		-- 		self.title = GARRISON_LANDING_PAGE_TITLE
-		-- 		self.description = MINIMAP_GARRISON_LANDING_PAGE_TOOLTIP
-		-- 	else
-		-- 		self.title = ORDER_HALL_LANDING_PAGE_TITLE
-		-- 		self.description = MINIMAP_ORDER_HALL_LANDING_PAGE_TOOLTIP
-		-- 	end
-		-- end)
-
-		-- GarrisonLandingPageMinimapButton:SetScript("OnEnter", function(self)
-		-- 	self.GarrisonIcon:SetVertexColor(1, .8, 0)
-		-- end)
-
-		-- GarrisonLandingPageMinimapButton:SetScript("OnLeave", function(self)
-		-- 	self.GarrisonIcon:SetVertexColor(1, 1, 1)
-		-- end)
-		-- GarrisonMinimapBuilding_ShowPulse = function() end
-
-		-- if GarrisonLandingPageTutorialBox then
-		-- 	GarrisonLandingPageTutorialBox:SetScale(1 / 0.8)
-		-- 	GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
-		-- end
-
 		local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 		GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
 		GarrisonLandingPageMinimapButton:UnregisterAllEvents()
@@ -202,7 +174,7 @@ function M:UpdateSettings()
 	end
 end
 
-function M:OnInitialize()
+function Module:OnInitialize()
 	self:UpdateSettings()
 	if not C["Minimap"].Enable then
 		Minimap:SetMaskTexture("Textures\\MinimapMask")
@@ -288,7 +260,7 @@ function M:OnInitialize()
 	K["Movers"]:RegisterFrame(MMHolder)
 
 	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", M.Minimap_OnMouseWheel)
+	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 
 	-- Make sure these invisible frames follow the minimap.
 	MinimapCluster:ClearAllPoints()

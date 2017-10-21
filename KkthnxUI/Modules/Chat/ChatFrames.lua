@@ -604,6 +604,7 @@ function Module:AddHooks()
 	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
 	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
 	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
+	self:SecureHook(BNToastFrame, "SetPoint", Module.SkinToastFrame)
 end
 
 function Module:OnEnable()
@@ -612,7 +613,7 @@ function Module:OnEnable()
 	end
 
 	self:Setup()
-	self:SkinToastFrame()
+	-- self:SkinToastFrame() -- This is replaced by line 607
 	self:AddHooks()
 
 	for i = 1, 10 do

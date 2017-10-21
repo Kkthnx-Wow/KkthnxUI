@@ -1,6 +1,11 @@
 local K, C, L = unpack(select(2, ...))
 if C["Nameplates"].Enable ~= true then return end
 
+local _G = _G
+
+local print = print
+local GetSpellInfo = _G.GetSpellInfo
+
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, DebuffTypeColor
 
@@ -20,18 +25,20 @@ K.DebuffWhiteList = {
 	[SpellName(3714)] = true, -- path of frost
 	[SpellName(57330)] = true, -- horn of winter
 	-- Harmful
-	[SpellName(47476)] = true, -- Strangulate
-	[SpellName(43265)] = true, -- death and decay
-	[SpellName(55095)] = true, -- frost fever
-	[SpellName(55078)] = true, -- blood plague
-	[SpellName(194310)] = true, -- festering wound
-	[SpellName(196782)] = true, -- outbreak
 	[SpellName(130736)] = true, -- soul reaper
 	[SpellName(191587)] = true, -- virulent plague
+	[SpellName(194310)] = true, -- festering wound
+	[SpellName(196782)] = true, -- outbreak
+	[SpellName(43265)] = true, -- death and decay
+	[SpellName(47476)] = true, -- Strangulate
+	[SpellName(55078)] = true, -- blood plague
+	[SpellName(55095)] = true, -- frost fever
 	-- Control
-	[SpellName(56222)] = true, -- dark command
-	[SpellName(45524)] = true, -- chains of ice
 	[SpellName(108194)] = true, -- asphyxiate stun
+	[SpellName(207171)] = true, -- winter is coming
+	[SpellName(221562)] = true, -- asphyxiate
+	[SpellName(45524)] = true, -- chains of ice
+	[SpellName(56222)] = true, -- dark command
 
 	-- DemonHunter
 	-- Self
@@ -60,7 +67,7 @@ K.DebuffWhiteList = {
 	[SpellName(211881)] = true, -- fel eruption
 	[SpellName(200166)] = true, -- metamorphosis stun
 	[SpellName(198813)] = true, -- vengeful retreat
-	[SpellName(217932)] = true, -- imprison
+	[SpellName(217832)] = true, -- imprison
 
 	-- Druid
 	-- Self
@@ -97,15 +104,17 @@ K.DebuffWhiteList = {
 	[SpellName(202347)] = true, -- stellar flare
 	[SpellName(197637)] = true, -- stellar empowerment
 	-- Control
-	[SpellName(339)] = true, -- entangling roots
-	[SpellName(6795)] = true, -- growl
+	[SpellName(102359)] = true, -- mass entanglement
+	[SpellName(127797)] = true, -- ursols vortex
 	[SpellName(22570)] = true, -- maim
 	[SpellName(33786)] = true, -- cyclone
-	[SpellName(78675)] = true, -- solar beam silence
-	[SpellName(102359)] = true, -- mass entanglement
-	[SpellName(99)] = true, -- disorienting roar
+	[SpellName(339)] = true, -- entangling roots
 	[SpellName(5211)] = true, -- mighty bash
 	[SpellName(61391)] = true, -- typhoon daze
+	[SpellName(6795)] = true, -- growl
+	[SpellName(78675)] = true, -- solar beam silence
+	[SpellName(81261)] = true, -- solar beam
+	[SpellName(99)] = true, -- disorienting roar
 
 	-- Hunter
 	-- Self
@@ -117,7 +126,6 @@ K.DebuffWhiteList = {
 	-- Helpful
 	[SpellName(34477)] = true, -- misdirection
 	-- Harmful
-	[SpellName(3355)] = true, -- Freezing Trap
 	[SpellName(1130)] = true, -- hunter's arrow
 	[SpellName(118253)] = true, -- serpent sting
 	[SpellName(131894)] = true, -- murder by way of crow
@@ -272,15 +280,16 @@ K.DebuffWhiteList = {
 	[SpellName(214621)] = true, -- schism
 	[SpellName(217673)] = true, -- mind spike
 	-- Control
-	[SpellName(15487)] = true,	-- Silence
-	[SpellName(605)] = true, -- dominate mind
-	[SpellName(8122)] = true, -- psychic scream
-	[SpellName(64044)] = true, -- psychic horror
-	[SpellName(88625)] = true, -- holy word: chastise
-	[SpellName(200200)] = true, -- holy word: chastise
-	[SpellName(9484)] = true, -- shackle undead
 	[SpellName(114404)] = true, -- void tendril root
+	[SpellName(15487)] = true,	-- Silence
+	[SpellName(200200)] = true, -- holy word: chastise
 	[SpellName(204263)] = true, -- shining force
+	[SpellName(205369)] = true, -- mind bomb
+	[SpellName(605)] = true, -- dominate mind
+	[SpellName(64044)] = true, -- psychic horror
+	[SpellName(8122)] = true, -- psychic scream
+	[SpellName(88625)] = true, -- holy word: chastise
+	[SpellName(9484)] = true, -- shackle undead
 
 	-- Rogue
 	-- Self
@@ -336,12 +345,13 @@ K.DebuffWhiteList = {
 	[SpellName(197209)] = true, -- lightning rod
 	[SpellName(61882)] = true, -- earthquake
 	-- Control
-	[SpellName(3600)] = true, -- earthbind totem slow
 	[SpellName(116947)] = true, -- earthbind totem slow again
-	[SpellName(64695)] = true, -- earthgrab totem root
-	[SpellName(51514)] = true, -- hex
-	[SpellName(77505)] = true, -- earthquake stun
+	[SpellName(118905)] = true, -- static charge
+	[SpellName(3600)] = true, -- earthbind totem slow
 	[SpellName(51490)] = true, -- thunderstorm slow
+	[SpellName(51514)] = true, -- hex
+	[SpellName(64695)] = true, -- earthgrab totem root
+	[SpellName(77505)] = true, -- earthquake stun
 
 	-- Warlock
 	[SpellName(5697)] = true, -- unending breath
@@ -418,6 +428,9 @@ K.DebuffWhiteList = {
 	[SpellName(155145)] = true,
 	[SpellName(20549)] = true, -- war stomp
 	[SpellName(107079)] = true, -- quaking palm
+
+	-- Buffs
+	[SpellName(209859)] = true, -- Bolster
 }
 
 K.DebuffBlackList = {

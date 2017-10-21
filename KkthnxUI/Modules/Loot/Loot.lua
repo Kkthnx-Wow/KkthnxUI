@@ -1,43 +1,39 @@
 local K, C, L = unpack(select(2, ...))
 local LM = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
-K.Loot = LM
-local LBG = LibStub("LibButtonGlow-1.0", true)
+local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
-
---Cache global variables
---Lua functions
+local _G = _G
 local unpack, pairs = unpack, pairs
 local tinsert = table.insert
 local max = math.max
 
---WoW API / Variables
-local CloseLoot = CloseLoot
-local CreateFrame = CreateFrame
-local CursorOnUpdate = CursorOnUpdate
-local CursorUpdate = CursorUpdate
-local DoMasterLootRoll = DoMasterLootRoll
-local GetCursorPosition = GetCursorPosition
-local GetCVar = GetCVar
-local GetLootSlotInfo = GetLootSlotInfo
-local GetLootSlotLink = GetLootSlotLink
-local GetNumLootItems = GetNumLootItems
-local GiveMasterLoot = GiveMasterLoot
-local HandleModifiedItemClick = HandleModifiedItemClick
-local IsFishingLoot = IsFishingLoot
-local IsModifiedClick = IsModifiedClick
-local L_ToggleDropDownMenu = L_ToggleDropDownMenu
-local L_UIDropDownMenu_AddButton = L_UIDropDownMenu_AddButton
-local L_L_UIDropDownMenu_CreateInfo = L_L_UIDropDownMenu_CreateInfo
-local LootSlotHasItem = LootSlotHasItem
-local MasterLooterFrame_UpdatePlayers = MasterLooterFrame_UpdatePlayers
-local ResetCursor = ResetCursor
-local StaticPopup_Hide = StaticPopup_Hide
-local UnitIsDead = UnitIsDead
-local UnitIsFriend = UnitIsFriend
-local UnitName = UnitName
-local ITEM_QUALITY_COLORS = ITEM_QUALITY_COLORS
-local LOOT = LOOT
-local TEXTURE_ITEM_QUEST_BANG = TEXTURE_ITEM_QUEST_BANG
+local CloseLoot = _G.CloseLoot
+local CreateFrame = _G.CreateFrame
+local CursorOnUpdate = _G.CursorOnUpdate
+local CursorUpdate = _G.CursorUpdate
+local DoMasterLootRoll = _G.DoMasterLootRoll
+local GetCursorPosition = _G.GetCursorPosition
+local GetCVar = _G.GetCVar
+local GetLootSlotInfo = _G.GetLootSlotInfo
+local GetLootSlotLink = _G.GetLootSlotLink
+local GetNumLootItems = _G.GetNumLootItems
+local GiveMasterLoot = _G.GiveMasterLoot
+local HandleModifiedItemClick = _G.HandleModifiedItemClick
+local IsFishingLoot = _G.IsFishingLoot
+local IsModifiedClick = _G.IsModifiedClick
+local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+local L_ToggleDropDownMenu = _G.L_ToggleDropDownMenu
+local L_UIDropDownMenu_AddButton = _G.L_UIDropDownMenu_AddButton
+local L_UIDropDownMenu_CreateInfo = _G.L_UIDropDownMenu_CreateInfo
+local LOOT = _G.LOOT
+local LootSlotHasItem = _G.LootSlotHasItem
+local MasterLooterFrame_UpdatePlayers = _G.MasterLooterFrame_UpdatePlayers
+local ResetCursor = _G.ResetCursor
+local StaticPopup_Hide = _G.StaticPopup_Hide
+local TEXTURE_ITEM_QUEST_BANG = _G.TEXTURE_ITEM_QUEST_BANG
+local UnitIsDead = _G.UnitIsDead
+local UnitIsFriend = _G.UnitIsFriend
+local UnitName = _G.UnitName
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: GameTooltip, LootFrame, LootSlot, GroupLootDropDown, UISpecialFrames
@@ -47,14 +43,14 @@ local TEXTURE_ITEM_QUEST_BANG = TEXTURE_ITEM_QUEST_BANG
 --This function is copied from FrameXML and modified to use DropDownMenu library function calls
 --Using the regular DropDownMenu code causes taints in various places.
 local function GroupLootDropDown_Initialize()
-	local info = L_L_UIDropDownMenu_CreateInfo()
+	local info = L_UIDropDownMenu_CreateInfo()
 	info.isTitle = 1
 	info.text = MASTER_LOOTER
 	info.fontObject = GameFontNormalLeft
 	info.notCheckable = 1
 	L_UIDropDownMenu_AddButton(info)
 
-	info = L_L_UIDropDownMenu_CreateInfo()
+	info = L_UIDropDownMenu_CreateInfo()
 	info.notCheckable = 1
 	info.text = ASSIGN_LOOT
 	info.func = MasterLooterFrame_Show
@@ -302,17 +298,16 @@ function LM:LOOT_OPENED(event, autoloot)
 			end
 			w = max(w, slot.name:GetStringWidth())
 
-
 			local questTexture = slot.questTexture
 			if ( questId and not isActive ) then
 				questTexture:Show()
-				LBG.ShowOverlayGlow(slot.iconFrame)
+				LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
 			elseif ( questId or isQuestItem ) then
 				questTexture:Hide()
-				LBG.ShowOverlayGlow(slot.iconFrame)
+				LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
 			else
 				questTexture:Hide()
-				LBG.HideOverlayGlow(slot.iconFrame)
+				LibButtonGlow.HideOverlayGlow(slot.iconFrame)
 			end
 
 			slot:Enable()

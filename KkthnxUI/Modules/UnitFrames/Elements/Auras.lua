@@ -1,129 +1,141 @@
 local K, C, L = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then return end
+local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
 local function CreateAuraTimer(self, elapsed)
-	if (self.TimeLeft) then
-		self.Elapsed = (self.Elapsed or 0) + elapsed
+	self.expiration = self.expiration - elapsed
+	if self.nextupdate > 0 then
+		self.nextupdate = self.nextupdate - elapsed
+		return
+	end
 
-		if self.Elapsed >= 0.1 then
-			if not self.First then
-				self.TimeLeft = self.TimeLeft - self.Elapsed
-			else
-				self.TimeLeft = self.TimeLeft - GetTime()
-				self.First = false
-			end
+	if(self.expiration <= 0) then
+		self:SetScript("OnUpdate", nil)
 
-			if self.TimeLeft > 0 then
-				local Time = K.FormatTime(self.TimeLeft)
-				self.Remaining:SetText(Time)
-
-				if self.TimeLeft <= 5 then
-					self.Remaining:SetTextColor(1, 0, 0)
-				else
-					self.Remaining:SetTextColor(255/255, 210/255, 0/255)
-				end
-			else
-				self.Remaining:Hide()
-				self:SetScript("OnUpdate", nil)
-			end
-
-			self.Elapsed = 0
+		if(self.text:GetFont()) then
+			self.text:SetText("")
 		end
+
+		return
+	end
+
+	local timervalue, formatid
+	timervalue, formatid, self.nextupdate = K.GetTimeInfo(self.expiration, 4)
+
+	if self.text:GetFont() then
+		self.text:SetFormattedText(("%s%s|r"):format(K.TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
 	end
 end
 
-local function PostCreateAura(self, button)
-	button:SetTemplate("Transparent", true)
 
-	button.Remaining = button:CreateFontString(nil, "OVERLAY")
-	button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "OUTLINE")
-	button.Remaining:SetPoint("TOP", 1, -1)
+local function PostCreateAura(self, button)
+	button.text = button.cd:CreateFontString(nil, "OVERLAY")
+	button.text:FontTemplate(nil, self.size * 0.46)
+	button.text:SetPoint("CENTER", 1, 1)
+	button.text:SetJustifyH("CENTER")
+
+	button:SetTemplate("Transparent", true)
 
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
-	button.cd:SetReverse()
-	button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
-	button.cd:ClearAllPoints()
-	button.cd:SetInside(button, 1, 1)
+	button.cd:SetReverse(true)
+	button.cd:SetInside()
 	button.cd:SetHideCountdownNumbers(true)
 
-	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	button.icon:SetAllPoints(button)
+	button.icon:SetTexCoord(unpack(K.TexCoords))
 	button.icon:SetDrawLayer("ARTWORK")
 
-	button.count:SetPoint("BOTTOMRIGHT", 3, 0)
+	button.count:FontTemplate(nil, self.size * 0.40)
+	button.count:ClearAllPoints()
+	button.count:SetPoint("BOTTOMRIGHT", 1, 1)
 	button.count:SetJustifyH("RIGHT")
-	button.count:SetFont(C["Media"].Font, self.size * 0.46, "OUTLINE")
-	button.count:SetTextColor(1, 1, 1)
 
-	button.OverlayFrame = CreateFrame("Frame", nil, button, nil)
-	button.OverlayFrame:SetFrameLevel(button.cd:GetFrameLevel() + 1)
-	button.overlay:SetParent(button.OverlayFrame)
-	button.count:SetParent(button.OverlayFrame)
-	button.Remaining:SetParent(button.OverlayFrame)
-
-	button.Animation = button:CreateAnimationGroup()
-	button.Animation:SetLooping("BOUNCE")
-
-	button.Animation.FadeOut = button.Animation:CreateAnimation("Alpha")
-	button.Animation.FadeOut:SetFromAlpha(1)
-	button.Animation.FadeOut:SetToAlpha(0)
-	button.Animation.FadeOut:SetDuration(.6)
-	button.Animation.FadeOut:SetSmoothing("IN_OUT")
+	button.overlay:SetTexture(nil)
+	button.stealable:SetTexture(nil)
 end
 
-local function SortAuras(a, b)
-	if (a:IsShown() and b:IsShown()) then
-		if (a.isDebuff == b.isDebuff) then
-			return a.TimeLeft > b.TimeLeft
-		elseif (not a.isDebuff) then
-			return b.isDebuff
+local function SortAurasByTime(a, b)
+	if (a and b) then
+		if a:IsShown() and b:IsShown() then
+			local aTime = a.expiration or -1
+			local bTime = b.expiration or -1
+			if (aTime and bTime) then
+				return aTime > bTime
+			end
+		elseif a:IsShown() then
+			return true
 		end
-	elseif (a:IsShown()) then
-		return true
 	end
 end
 
 local function PreSetPosition(self)
-	table.sort(self, SortAuras)
+	table.sort(self, SortAurasByTime)
 	return 1, self.createdIcons
 end
 
 local function PostUpdateAura(self, unit, button, index, offset, filter, isDebuff, duration, timeLeft)
-	local _, _, _, _, DType, Duration, ExpirationTime, UnitCaster, IsStealable = UnitAura(unit, index, button.filter)
+	local name, _, _, _, dtype, duration, expiration, _, isStealable = UnitAura(unit, index, button.filter)
+	local isFriend = UnitIsFriend("player", unit)
 
-	if button then
-		if (button.filter == "HARMFUL") then
-			if (not UnitIsFriend("player", unit) and button.caster ~= "player" and button.caster ~= "vehicle") then
-				button.icon:SetDesaturated(true)
-				button:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
-			else
-				local color = DebuffTypeColor[DType] or DebuffTypeColor.none
-				button.icon:SetDesaturated(false)
-				button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
-			end
+	if button.isDebuff then
+		if (not isFriend and button.caster ~= "player" and button.caster ~= "vehicle") then
+			button:SetBackdropBorderColor(0.9, 0.1, 0.1)
+			button.icon:SetDesaturated((unit and not unit:find("arena%d")) and true or false)
 		else
-			if (IsStealable or DType == "Magic") and not UnitIsFriend("player", unit) and not button.Animation.Playing then
-				button.Animation:Play()
-				button.Animation.Playing = true
+			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
+			if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+				button:SetBackdropBorderColor(0.05, 0.85, 0.94)
+				LibButtonGlow.ShowOverlayGlow(button) -- Idk how well this is going to work.
 			else
-				button.Animation:Stop()
-				button.Animation.Playing = false
+				button:SetBackdropBorderColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
 			end
+			button.icon:SetDesaturated(false)
 		end
-
-		if Duration and Duration > 0 then
-			button.Remaining:Show()
+	else
+		if (isStealable) and not isFriend then
+			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
 		else
-			button.Remaining:Hide()
+			button:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
 		end
+	end
 
-		button.Duration = Duration
-		button.TimeLeft = ExpirationTime
-		button.First = true
-		button:SetScript("OnUpdate", CreateAuraTimer)
+	local size = button:GetParent().size
+	if size then
+		button:SetSize(size, size)
+	end
+
+	button.spell = name
+	button.isStealable = isStealable
+	button.duration = duration
+
+	if expiration and duration ~= 0 then
+		if not button:GetScript("OnUpdate") then
+			button.expirationTime = expiration
+			button.expiration = expiration - GetTime()
+			button.nextupdate = -1
+			button:SetScript("OnUpdate", CreateAuraTimer)
+		end
+		if (button.expirationTime ~= expiration) or (button.expiration ~= (expiration - GetTime())) then
+			button.expirationTime = expiration
+			button.expiration = expiration - GetTime()
+			button.nextupdate = -1
+		end
+	end
+
+	if duration == 0 or expiration == 0 then
+		button.expirationTime = nil
+		button.expiration = nil
+		button.priority = nil
+		button.duration = nil
+		button:SetScript("OnUpdate", nil)
+
+		if (button.text:GetFont()) then
+			button.text:SetText("")
+		end
 	end
 end
+
 
 -- We will handle these individually so we can have the up most control of our auras on each unit/frame
 function K.CreateAuras(self, unit)
@@ -164,9 +176,6 @@ function K.CreateAuras(self, unit)
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
-
-		K.Movers:RegisterFrame(Buffs) -- Still thinking about this. :D
-		K.Movers:RegisterFrame(Debuffs) -- Still thinking about this. :D
 	end
 
 	-- Party.
