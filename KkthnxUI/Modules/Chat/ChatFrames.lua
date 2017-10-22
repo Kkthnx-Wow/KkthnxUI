@@ -185,8 +185,16 @@ function Module:NoMouseAlpha()
 end
 
 function Module:SetChatFont()
-	local Font = K.GetFont("KkthnxUI Font")
-	local Path, _, Flag = _G[Font]:GetFont()
+	local Font, FontOutline = K.GetFont("KkthnxUI Font"), K.GetFont("KkthnxUI Font Outline")
+
+	local Path, _, Flag
+
+	if C["Chat"].Outline then
+		Path, _, Flag = _G[FontOutline]:GetFont()
+	else
+		Path, _, Flag = _G[Font]:GetFont()
+	end
+
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
 
 	if (CurrentFont == Path and CurrentFlag == Flag) then

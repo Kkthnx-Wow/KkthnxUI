@@ -1,6 +1,6 @@
 local K, C = unpack(select(2, ...))
 
-local KkthnxUIMedia = CreateFrame("Frame")
+local KkthnxUIMedia = CreateFrame("Frame", "KkthnxUIFonts")
 
 -- Create our own fonts
 local KkthnxUIFont = CreateFont("KkthnxUIFont")

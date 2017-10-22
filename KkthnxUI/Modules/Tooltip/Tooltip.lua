@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Tooltip", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 
--- Global variables that we don't cache
+-- Global variables that we don"t cache
 -- luacheck: globals FriendsTooltip ShoppingTooltip1 ShoppingTooltip2 ShoppingTooltip3 WorldMapTooltip
 -- luacheck: globals ItemRefCloseButton RightChatToggleButton BNToastFrame MMHolder GameTooltipText
 -- luacheck: globals ItemRefShoppingTooltip1 ItemRefShoppingTooltip2 ItemRefShoppingTooltip3 AutoCompleteBox
@@ -23,7 +23,7 @@ local floor = math.floor
 local twipe, tinsert, tconcat = table.wipe, table.insert, table.concat
 local unpack, tonumber, select, pairs = unpack, tonumber, select, pairs
 
-local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
+local C_PetJournal_GetPetInfoByIndex = _G.C_PetJournal.GetPetInfoByIndex
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
 local CanInspect = _G.CanInspect
@@ -109,6 +109,31 @@ local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00".."DND".."|r|cffFFFFFF]|r"
 
 local TooltipFont = K.GetFont(C["General"].Font)
 local TooltipTexture = K.GetTexture(C["General"].Texture)
+
+local tooltips = {
+	AutoCompleteBox,
+	FriendsTooltip,
+	GameTooltip,
+	ItemRefShoppingTooltip1,
+	ItemRefShoppingTooltip2,
+	ItemRefShoppingTooltip3,
+	ItemRefTooltip,
+	ShoppingTooltip1,
+	ShoppingTooltip2,
+	ShoppingTooltip3,
+	WorldMapCompareTooltip1,
+	WorldMapCompareTooltip2,
+	WorldMapCompareTooltip3,
+	WorldMapTooltip,
+}
+
+local tooltipsOnShow = {
+	GameTooltip,
+	ItemRefTooltip,
+	ShoppingTooltip1,
+	ShoppingTooltip2,
+	ShoppingTooltip3,
+}
 
 local ignoreSubType = {
 	L.Tooltip.Other == true,
@@ -501,7 +526,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		if not itemLink then return end
 		tt.currentItem = itemLink
 
-		local name, _, rarity, _, _, type, subType, _, _, _, _, _, _, _, _, _, _ = GetItemInfo(itemLink)
+		local name, _, rarity, _, _, type, subType, _, _, icon, sellPrice = GetItemInfo(itemLink)
 
 		if not rarity then
 			rarity = 0
@@ -513,11 +538,11 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		elseif type == L.Tooltip.TradeSkill and not ignoreSubType[subType] and rarity < 2 then
 			r, g, b = 0.4, 0.73, 1
 		elseif subType == L.Tooltip.Companion_Pets then
-			local _, id = C_PetJournal_FindPetIDByName(name)
-			if id then
-				local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
-				if petQuality then
-					rarity = petQuality - 1
+			local petID, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = C_PetJournal_GetPetInfoByIndex(name)
+			if petID ~= nil then
+				local _, _, _, _, petRarity = C_PetJournal_GetPetStats(petID)
+				if petRarity then
+					rarity = petRarity - 1
 				end
 			end
 		end
@@ -528,8 +553,6 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		if r then
 			tt:SetBackdropBorderColor(r, g, b)
-		else
-			tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		end
 	end
 end
@@ -540,6 +563,34 @@ function Module:GameTooltip_ShowStatusBar(tt)
 	if statusBar and not statusBar.skinned then
 		statusBar:SetStatusBarTexture(TooltipTexture)
 		statusBar.skinned = true
+	end
+end
+
+function Module:SetStyle(tt)
+	if tt:IsForbidden() then return end
+
+	TOOLTIP_DEFAULT_COLOR.r = C["Media"].BorderColor[1]
+	TOOLTIP_DEFAULT_COLOR.g = C["Media"].BorderColor[2]
+	TOOLTIP_DEFAULT_COLOR.b = C["Media"].BorderColor[3]
+
+	TOOLTIP_DEFAULT_BACKGROUND_COLOR.r = C["Media"].BackdropColor[1]
+	TOOLTIP_DEFAULT_BACKGROUND_COLOR.g = C["Media"].BackdropColor[2]
+	TOOLTIP_DEFAULT_BACKGROUND_COLOR.b = C["Media"].BackdropColor[3]
+	TOOLTIP_DEFAULT_BACKGROUND_COLOR.a = C["Media"].BackdropColor[4]
+
+	local backdrop = GameTooltip:GetBackdrop()
+
+	if backdrop.insets.left == 5 then
+		backdrop.insets.left = 3
+		backdrop.insets.right = 3
+		backdrop.insets.top = 3
+		backdrop.insets.bottom = 3
+	end
+
+	for _, tt in pairs({GameTooltip, ItemRefTooltip, ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3, WorldMapTooltip, EventTraceTooltip, FrameStackTooltip}) do
+		tt:SetBackdrop(backdrop)
+		tt:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, TOOLTIP_DEFAULT_BACKGROUND_COLOR.a)
+		tt:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b)
 	end
 end
 
@@ -596,6 +647,24 @@ function Module:SetItemRef(link)
 	end
 end
 
+function Module:CheckBackdropColor()
+	if GameTooltip:IsForbidden() then return end
+	if not GameTooltip:IsShown() then return end
+
+	local r, g, b = GameTooltip:GetBackdropColor()
+
+	r = K.Round(r, 1)
+	g = K.Round(g, 1)
+	b = K.Round(b, 1)
+
+	local red, green, blue = unpack(C["Media"].BackdropColor)
+	local alpha = C["Media"].BackdropColor[4]
+
+	if(r ~= red or g ~= green or b ~= blue) then
+		GameTooltip:SetBackdropColor(red, green, blue, alpha)
+	end
+end
+
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
@@ -615,7 +684,7 @@ function Module:OnEnable()
 	GameTooltipStatusBarBG:SetPoint("TOPLEFT", -2, 2)
 	GameTooltipStatusBarBG:SetPoint("BOTTOMRIGHT", 2, -2)
 	GameTooltipStatusBarBG:SetBackdrop(K.BorderBackdrop)
-	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	GameTooltipStatusBarBG:SetBackdropColor(GameTooltip:GetBackdropColor())
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
 	GameTooltipAnchor:SetPoint(C.Position.Tooltip[1], C.Position.Tooltip[2], C.Position.Tooltip[3], C.Position.Tooltip[4], C.Position.Tooltip[5])
@@ -625,14 +694,18 @@ function Module:OnEnable()
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")
+	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
+	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") -- There has to be a more elegant way of doing this.
+	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
 	self:SecureHook("SetItemRef")
 	self:SecureHook(GameTooltip, "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
-	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
+	for _, tt in pairs(tooltipsOnShow) do self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem") end
+	for _, tt in pairs(tooltips) do self:SecureHookScript(tt, "OnShow", "SetStyle") end
 
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 
