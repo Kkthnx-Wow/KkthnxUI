@@ -85,124 +85,393 @@ KkthnxUIConfig["enUS"] = {
 
 		["Grid"] = {
 			["Name"] = "Enable",
-			["Desc"] = "Toggle the Actionbars. This can be useful if another AddOn is intering with our actionbars",
+			["Desc"] = "Show empty action bar buttons",
 		},
 	},
 	-- Nameplates Local
 	["Nameplates"] = {
-		["UseTargetGlow"] = {
-			["Name"] = "Use Target Glow",
-			["Desc"] = "Show a glow on targeted nameplate",
+		["AurasSize"] = {
+			["Name"] = "Auras Size",
+			["Desc"] = "Size of the auras on Nameplates",
 		},
 
-		["CastbarHeight"] = {
-			["Name"] = "Castbar Height",
-			["Desc"] = "The height of the nameplate castbar.",
+		["BadColor"] = {
+			["Name"] = "Bad Color",
+			["Desc"] = "Description Needed",
 		},
 
-		["PowerBar"] = {
-			["Name"] = "PowerBar",
-			["Desc"] = "Toggle the powerbar on nameplates for healers only.",
+		["CastbarName"] = {
+			["Name"] = "Castbar Name",
+			["Desc"] = "Description Needed",
 		},
 
-		["DisplayStyle"] = {
-			["Name"] = "Display Style",
-			["Desc"] = "Controls which nameplates will be displayed.",
+		["CastUnitReaction"] = {
+			["Name"] = "Cast Unit Reaction",
+			["Desc"] = "Description Needed",
+		},
+
+		["Clamp"] = {
+			["Name"] = "Clamp",
+			["Desc"] = "Description Needed",
+		},
+
+		["Distance"] = {
+			["Name"] = "Distance",
+			["Desc"] = "Description Needed",
 		},
 
 		["Enable"] = {
 			["Name"] = "Enable",
-			["Desc"] = "Toggle the nameplates on/off",
+			["Desc"] = "Description Needed",
 		},
 
-		["EnemyMinions"] = {
-			["Name"] = "Enemy Minions",
-			["Desc"] = OPTION_TOOLTIP_UNIT_NAME_ENEMY_MINIONS,
-		},
-
-		["EnemyMinors"] = {
-			["Name"] = "Enemy Minors",
-			["Desc"] = OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_ENEMY_MINUS,
+		["EnhancedThreat"] = {
+			["Name"] = "Enhanced Threat",
+			["Desc"] = "Description Needed",
 		},
 
 		["FontSize"] = {
 			["Name"] = "Font Size",
-			["Desc"] = "Font size for all nameplate fonts.",
-		},
-
-		["FriendlyMinions"] = {
-			["Name"] = "Friendly Minions",
-			["Desc"] = OPTION_TOOLTIP_UNIT_NAME_FRIENDLY_MINIONS,
-		},
-
-		["HealthbarHeight"] = {
-			["Name"] = "Healthbar Height",
-			["Desc"] = "Base Height for the healthbar",
-		},
-
-		["HealthbarWidth"] = {
-			["Name"] = "Healthbar Width",
-			["Desc"] = "Base Width for the healthbar",
-		},
-
-		["AuraIconSize"] = {
-			["Name"] = "AuraIcon Size",
-			["Desc"] = "Base Size for the Aura Icon",
-		},
-
-		["LowHealthThreshold"] = {
-			["Name"] = "Low Health Threshold",
-			["Desc"] = "Make the nameplate glow yellow when it is below this percent of health, it will glow red when the health value is half of this value.",
-		},
-
-		["MarkHealers"] = {
-			["Name"] = "Mark Healers",
-			["Desc"] = "Display a healer icon over known healers inside battlegrounds or arenas.",
-		},
-
-		["AurasMaxDuration"] = {
-			["Name"] = "Auras Max Duration",
-			["Desc"] = "Max Duration for the Aura timers",
-		},
-
-		["AlwaysShowTargetHealth"] = {
-			["Name"] = "Always Show Target Health",
 			["Desc"] = "Description Needed",
 		},
 
-		["MotionType"] = {
-			["Name"] = "Motion Type",
-			["Desc"] = "Set to either stack nameplates vertically or allow them to overlap.",
+		["GoodColor"] = {
+			["Name"] = "Good Color",
+			["Desc"] = "Description Needed",
 		},
 
-		["NumAuras"] = {
-			["Name"] = "# Displayed Auras",
-			["Desc"] = "Controls how many auras are displayed, this will also affect the size of the auras.",
+		["HealerIcon"] = {
+			["Name"] = "Healer Icon",
+			["Desc"] = "Description Needed",
 		},
 
-		["PowerbarHeight"] = {
-			["Name"] = "Powerbar Height",
-			["Desc"] = "Base Height for the powerbar",
+		["HealthValue"] = {
+			["Name"] = "Health Value",
+			["Desc"] = "Description Needed",
 		},
 
-		["ShowAuras"] = {
-			["Name"] = "Show Auras",
-			["Desc"] = "Toggle the display of auras on/off",
+		["Height"] = {
+			["Name"] = "Height",
+			["Desc"] = "Description Needed",
 		},
 
-		["ShowEnemyCombat"] = {
-			["Name"] = "Show Enemy Combat",
-			["Desc"] = "Control enemy nameplates toggling on or off when in combat.",
+		["NameAbbreviate"] = {
+			["Name"] = "Name Abbreviate",
+			["Desc"] = "Description Needed",
 		},
 
-		["ShowFriendlyCombat"] = {
-			["Name"] = "Show Friendly Combat",
-			["Desc"] = "Control friendly nameplates toggling on or off when in combat.",
+		["NearColor"] = {
+			["Name"] = "Near Color",
+			["Desc"] = "Description Needed",
 		},
 
-		["TargetScale"] = {
-			["Name"] = "Target Scale",
-			["Desc"] = "Scale of the nameplate that is targetted.",
+		["OffTankColor"] = {
+			["Name"] = "Off Tank Color",
+			["Desc"] = "Description Needed",
+		},
+
+		["Outline"] = {
+			["Name"] = "Outline",
+			["Desc"] = "Description Needed",
+		},
+
+		["SelectedScale"] = {
+			["Name"] = "Selected Scale",
+			["Desc"] = "Description Needed",
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth",
+			["Desc"] = "Description Needed",
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "Description Needed",
+		},
+
+		["TotemIcons"] = {
+			["Name"] = "Totem Icons",
+			["Desc"] = "Description Needed",
+		},
+
+		["TrackAuras"] = {
+			["Name"] = "Track Auras",
+			["Desc"] = "Description Needed",
+		},
+
+		["Width"] = {
+			["Name"] = "Width",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- Announcements Local
+	["Announcements"] = {
+		["PullCountdown"] = {
+			["Name"] = "Pull Countdown",
+			["Desc"] = "Description Needed",
+		},
+
+		["SaySapped"] = {
+			["Name"] = "Say Sapped",
+			["Desc"] = "Description Needed",
+		},
+
+		["Interrupt"] = {
+			["Name"] = "Interrupt",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- Automation Local
+	["Automation"] = {
+		["AutoCollapse"] = {
+			["Name"] = "Auto Collapse",
+			["Desc"] = "Description Needed",
+		},
+
+		["AutoInvite"] = {
+			["Name"] = "Auto Invite",
+			["Desc"] = "Description Needed",
+		},
+
+		["AutoRelease"] = {
+			["Name"] = "Auto Release",
+			["Desc"] = "Description Needed",
+		},
+
+		["AutoResurrect"] = {
+			["Name"] = "Auto Resurrect",
+			["Desc"] = "Description Needed",
+		},
+
+		["AutoResurrectCombat"] = {
+			["Name"] = "Auto Resurrect Combat",
+			["Desc"] = "Description Needed",
+		},
+
+		["AutoResurrectThank"] = {
+			["Name"] = "Auto Resurrect Thanks",
+			["Desc"] = "Description Needed",
+		},
+
+		["DeclinePetDuel"] = {
+			["Name"] = "Decline Pet Duels",
+			["Desc"] = "Description Needed",
+		},
+
+		["DeclinePvPDuel"] = {
+			["Name"] = "Decline PvP Duels",
+			["Desc"] = "Description Needed",
+		},
+
+		["ScreenShot"] = {
+			["Name"] = "Screen Shot",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- Auras Local
+	["Auras"] = {
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Description Needed",
+		},
+
+		["ButtonSize"] = {
+			["Name"] = "Button Size",
+			["Desc"] = "Description Needed",
+		},
+
+		["ButtonSpace"] = {
+			["Name"] = "Button Space",
+			["Desc"] = "Description Needed",
+		},
+
+		["ButtonPerRow"] = {
+			["Name"] = "Buttons Per Row",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- Chat Local
+	["Chat"] = {
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Description Needed",
+		},
+
+		["Fading"] = {
+			["Name"] = "Fading",
+			["Desc"] = "Description Needed",
+		},
+
+		["WhisperSound"] = {
+			["Name"] = "Whisper Sound",
+			["Desc"] = "Description Needed",
+		},
+
+		["FadingTimeFading"] = {
+			["Name"] = "Fading Time Fading",
+			["Desc"] = "Description Needed",
+		},
+
+		["FadingTimeVisible"] = {
+			["Name"] = "Fading Time Visible",
+			["Desc"] = "Description Needed",
+		},
+
+		["Height"] = {
+			["Name"] = "Height",
+			["Desc"] = "Description Needed",
+		},
+
+		["LinkBrackets"] = {
+			["Name"] = "Link Brackets",
+			["Desc"] = "Description Needed",
+		},
+
+		["LinkColor"] = {
+			["Name"] = "Link Color",
+			["Desc"] = "Description Needed",
+		},
+
+		["MessageFilter"] = {
+			["Name"] = "Message Filter",
+			["Desc"] = "Description Needed",
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = "Description Needed",
+		},
+
+		["ScrollByX"] = {
+			["Name"] = "Scroll By X",
+			["Desc"] = "Description Needed",
+		},
+
+		["SpamFilter"] = {
+			["Name"] = "Spam Filter",
+			["Desc"] = "Description Needed",
+		},
+
+		["TabsMouseover"] = {
+			["Name"] = "Tabs Mouseover",
+			["Desc"] = "Description Needed",
+		},
+
+		["TabsOutline"] = {
+			["Name"] = "Tabs Outline",
+			["Desc"] = "Description Needed",
+		},
+
+		["Width"] = {
+			["Name"] = "Width",
+			["Desc"] = "Description Needed",
+		},
+
+		["BubbleBackdrop"] = {
+			["Name"] = "Bubble Backdrop",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- Cooldown Local
+	["Cooldown"] = {
+		["Days"] = {
+			["Name"] = "Days",
+			["Desc"] = "Description Needed",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Description Needed",
+		},
+
+		["Expiring"] = {
+			["Name"] = "Expiring",
+			["Desc"] = "Description Needed",
+		},
+
+		["ExpiringDuration"] = {
+			["Name"] = "Expiring Duration",
+			["Desc"] = "Description Needed",
+		},
+
+		["FontSize"] = {
+			["Name"] = "Font Size",
+			["Desc"] = "Description Needed",
+		},
+
+		["Hours"] = {
+			["Name"] = "Hours",
+			["Desc"] = "Description Needed",
+		},
+
+		["Minutes"] = {
+			["Name"] = "Minutes",
+			["Desc"] = "Description Needed",
+		},
+
+		["Seconds"] = {
+			["Name"] = "Seconds",
+			["Desc"] = "Description Needed",
+		},
+
+		["Threshold"] = {
+			["Name"] = "Threshold",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- DataText Local
+	["DataText"] = {
+		["Battleground"] = {
+			["Name"] = "Battleground",
+			["Desc"] = "Description Needed",
+		},
+
+		["LocalTime"] = {
+			["Name"] = "Local Time",
+			["Desc"] = "Description Needed",
+		},
+
+		["Outline"] = {
+			["Name"] = "Outline",
+			["Desc"] = "Description Needed",
+		},
+
+		["System"] = {
+			["Name"] = "System",
+			["Desc"] = "Description Needed",
+		},
+
+		["Time24Hr"] = {
+			["Name"] = "24 Hour Time",
+			["Desc"] = "Description Needed",
+		},
+	},
+	-- Errors Local
+	["Error"] = {
+		["Black"] = {
+			["Name"] = "Black",
+			["Desc"] = "Description Needed",
+		},
+
+		["Combat"] = {
+			["Name"] = "Combat",
+			["Desc"] = "Description Needed",
+		},
+
+		["White"] = {
+			["Name"] = "White",
+			["Desc"] = "Description Needed",
+		},
+
+		["System"] = {
+			["Name"] = "System",
+			["Desc"] = "Description Needed",
+		},
+
+		["Time24Hr"] = {
+			["Name"] = "24 Hour Time",
+			["Desc"] = "Description Needed",
 		},
 	},
 }

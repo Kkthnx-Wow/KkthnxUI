@@ -62,22 +62,9 @@ C["Automation"] = {
 	["ScreenShot"] = false,
 }
 
-C["Bags"] = {
-	["BagSize"] = 32,
-	["BagWidth"] = 406,
-	["BagWidth"] = 406,
-	["BankSize"] = 34,
-	["ClearSearchOnClose"] = true,
-	["CountFontColor"] = {1, 1, 1},
-	["DisableBagSort"] = false,
-	["DisableBankSort"] = false,
-	["Enable"] = true,
-	["ItemLevel"] = false,
-	["ItemLevelThreshold"] = 1,
-	["JunkIcon"] = true,
-	["ReverseLoot"] = false,
-	["UpgradeIcon"] = true,
-}
+--[[C["Inventory"] = {
+
+}--]]
 
 -- Buffs & Debuffs
 C["Auras"] = {
@@ -128,10 +115,10 @@ C["Cooldown"] = {
 }
 
 -- DataBars
-C["DataBars"] = {
+--[[C["DataBars"] = {
 
 }
-
+--]]
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
@@ -204,9 +191,9 @@ C["Misc"] = {
 	["ColorPicker"] = false,
 	["EnhancedPvpMessages"] = false,
 	["ItemLevel"] = false,
-	-- ["KillingBlow"] = false,
+	["KillingBlow"] = false,
 	["NoBanner"] = false,
-	-- ["PvPEmote"] = false,
+	["PvPEmote"] = false,
 	["SlotDurability"] = false,
 	["UseGuildRepairFunds"] = false,
 }

@@ -94,9 +94,9 @@ if K.IsAddOnEnabled("BadBoy") then
 	C["Chat"].SpamFilter = false
 end
 
-if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
-	C["Bags"].Enable = false
-end
+--[[if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
+	C["Inventory"].Enable = false
+end--]]
 
 if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then
 	C["Chat"].Enable = false
