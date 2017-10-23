@@ -39,7 +39,7 @@ local function PostCreateAura(self, button)
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
 	button.cd:SetReverse(true)
-	button.cd:SetInside()
+	button.cd:SetInside(button, 1, 1)
 	button.cd:SetHideCountdownNumbers(true)
 
 	button.icon:SetAllPoints(button)

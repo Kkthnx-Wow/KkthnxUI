@@ -176,7 +176,7 @@ end
 
 function Module:NoMouseAlpha()
 	local Frame = self:GetName()
-	local Tab = _G[Frame .. "Tab"]
+	local Tab = _G[Frame.."Tab"]
 
 	if (Tab.noMouseAlpha == 0.4) or (Tab.noMouseAlpha == 0.2) then
 		Tab:SetAlpha(0)
@@ -185,16 +185,8 @@ function Module:NoMouseAlpha()
 end
 
 function Module:SetChatFont()
-	local Font, FontOutline = K.GetFont("KkthnxUI Font"), K.GetFont("KkthnxUI Font Outline")
-
-	local Path, _, Flag
-
-	if C["Chat"].Outline then
-		Path, _, Flag = _G[FontOutline]:GetFont()
-	else
-		Path, _, Flag = _G[Font]:GetFont()
-	end
-
+	local Font = K.GetFont(C["Chat"].Font)
+	local Path, _, Flag  = _G[Font]:GetFont()
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
 
 	if (CurrentFont == Path and CurrentFlag == Flag) then
@@ -215,7 +207,7 @@ function Module:StyleFrame(frame)
 	local Tab = _G[FrameName.."Tab"]
 	local TabText = _G[FrameName.."TabText"]
 	local EditBox = _G[FrameName.."EditBox"]
-	local GetTabFont = K.GetFont("KkthnxUI Font")
+	local GetTabFont = K.GetFont(C["Chat"].Font)
 	local TabFont, TabFontSize, TabFontFlags = _G[GetTabFont]:GetFont()
 
 	if Tab.conversationIcon then
@@ -351,8 +343,8 @@ function Module:StyleTempFrame()
 	Module:StyleFrame(Frame)
 end
 
-function Module:SkinToastFrame()
-	BNToastFrame:SetTemplate("Transparent", true)
+function Module:SetupToastFrame()
+	BNToastFrame:SetTemplate("Transparent")
 	BNToastFrame:ClearAllPoints()
 	BNToastFrame:SetFrameStrata("Medium")
 	BNToastFrame:SetFrameLevel(20)
@@ -371,29 +363,24 @@ function Module:SetDefaultChatFramesPositions()
 	local Height = C["Chat"].Height
 
 	for i = 1, NUM_CHAT_WINDOWS do
-		local Frame = _G[format("ChatFrame%s", i)]
+		local Frame = _G["ChatFrame"..i]
+		local ID = Frame:GetID()
 
 		-- Set font size and chat frame size
 		Frame:SetSize(Width, Height)
 
 		-- move general bottom left
-		if i == 1 then
+		if ID == 1 then
 			Frame:ClearAllPoints()
 			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 		end
 
-		FCF_SavePositionAndDimensions(Frame)
-		FCF_StopDragging(Frame)
-
-		-- set default KkthnxUI font size
-		FCF_SetChatWindowFontSize(nil, Frame, 12)
-
 		-- rename windows general because moved to chat #3
-		if i == 1 then
+		if ID == 1 then
 			FCF_SetWindowName(Frame, GENERAL)
-		elseif i == 2 then
+		elseif ID == 2 then
 			FCF_SetWindowName(Frame, GUILD_EVENT_LOG)
-		elseif i == 3 then
+		elseif ID == 3 then
 			FCF_SetWindowName(Frame, LOOT.." / "..TRADE)
 		end
 
@@ -543,7 +530,6 @@ function Module:Install()
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255)
 
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
-	self:SetDefaultChatFramesPositions()
 end
 
 function Module:OnMouseWheel(delta)
@@ -566,17 +552,13 @@ function Module:OnMouseWheel(delta)
 	end
 end
 
-function Module:PlayWhisperSound()
-	PlaySoundFile(C["Media"].WhisperSound)
-end
-
 function Module:SwitchSpokenDialect(button)
 	if (IsAltKeyDown() and button == "LeftButton") then
 		ToggleFrame(ChatMenu)
 	end
 end
 
-function Module:Setup()
+function Module:SetupFrame()
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		local Tab = _G["ChatFrame"..i.."Tab"]
@@ -606,23 +588,18 @@ function Module:Setup()
 	QuickJoinToastButton:Kill()
 end
 
-function Module:AddHooks()
-	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
-	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
-	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
-	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
-	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
-	self:SecureHook(BNToastFrame, "SetPoint", Module.SkinToastFrame)
-end
-
 function Module:OnEnable()
 	if (not C["Chat"].Enable) then
 		return
 	end
 
-	self:Setup()
-	-- self:SkinToastFrame() -- This is replaced by line 607
-	self:AddHooks()
+	self:SetupFrame()
+	self:SetupToastFrame()
+	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
+	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
+	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
+	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
+	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
 
 	for i = 1, 10 do
 		local ChatFrame = _G["ChatFrame"..i]

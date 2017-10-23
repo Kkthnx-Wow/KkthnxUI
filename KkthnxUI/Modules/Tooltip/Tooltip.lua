@@ -23,7 +23,7 @@ local floor = math.floor
 local twipe, tinsert, tconcat = table.wipe, table.insert, table.concat
 local unpack, tonumber, select, pairs = unpack, tonumber, select, pairs
 
-local C_PetJournal_GetPetInfoByIndex = _G.C_PetJournal.GetPetInfoByIndex
+local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
 local CanInspect = _G.CanInspect
@@ -538,7 +538,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		elseif type == L.Tooltip.TradeSkill and not ignoreSubType[subType] and rarity < 2 then
 			r, g, b = 0.4, 0.73, 1
 		elseif subType == L.Tooltip.Companion_Pets then
-			local petID, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = C_PetJournal_GetPetInfoByIndex(name)
+			local _, petID = C_PetJournal_FindPetIDByName(name)
 			if petID ~= nil then
 				local _, _, _, _, petRarity = C_PetJournal_GetPetStats(petID)
 				if petRarity then
@@ -569,28 +569,10 @@ end
 function Module:SetStyle(tt)
 	if tt:IsForbidden() then return end
 
-	TOOLTIP_DEFAULT_COLOR.r = C["Media"].BorderColor[1]
-	TOOLTIP_DEFAULT_COLOR.g = C["Media"].BorderColor[2]
-	TOOLTIP_DEFAULT_COLOR.b = C["Media"].BorderColor[3]
-
-	TOOLTIP_DEFAULT_BACKGROUND_COLOR.r = C["Media"].BackdropColor[1]
-	TOOLTIP_DEFAULT_BACKGROUND_COLOR.g = C["Media"].BackdropColor[2]
-	TOOLTIP_DEFAULT_BACKGROUND_COLOR.b = C["Media"].BackdropColor[3]
-	TOOLTIP_DEFAULT_BACKGROUND_COLOR.a = C["Media"].BackdropColor[4]
-
-	local backdrop = GameTooltip:GetBackdrop()
-
-	if backdrop.insets.left == 5 then
-		backdrop.insets.left = 3
-		backdrop.insets.right = 3
-		backdrop.insets.top = 3
-		backdrop.insets.bottom = 3
-	end
-
-	for _, tt in pairs({GameTooltip, ItemRefTooltip, ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3, WorldMapTooltip, EventTraceTooltip, FrameStackTooltip}) do
-		tt:SetBackdrop(backdrop)
-		tt:SetBackdropColor(TOOLTIP_DEFAULT_BACKGROUND_COLOR.r, TOOLTIP_DEFAULT_BACKGROUND_COLOR.g, TOOLTIP_DEFAULT_BACKGROUND_COLOR.b, TOOLTIP_DEFAULT_BACKGROUND_COLOR.a)
-		tt:SetBackdropBorderColor(TOOLTIP_DEFAULT_COLOR.r, TOOLTIP_DEFAULT_COLOR.g, TOOLTIP_DEFAULT_COLOR.b)
+	for _, tt in pairs(tooltips) do
+		tt:SetBackdrop({bgFile = C["Media"].Blank, tileSize = 12, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = false, edgeSize = 12, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}})
+		tt:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
 end
 
@@ -684,7 +666,7 @@ function Module:OnEnable()
 	GameTooltipStatusBarBG:SetPoint("TOPLEFT", -2, 2)
 	GameTooltipStatusBarBG:SetPoint("BOTTOMRIGHT", 2, -2)
 	GameTooltipStatusBarBG:SetBackdrop(K.BorderBackdrop)
-	GameTooltipStatusBarBG:SetBackdropColor(GameTooltip:GetBackdropColor())
+	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
 	GameTooltipAnchor:SetPoint(C.Position.Tooltip[1], C.Position.Tooltip[2], C.Position.Tooltip[3], C.Position.Tooltip[4], C.Position.Tooltip[5])
