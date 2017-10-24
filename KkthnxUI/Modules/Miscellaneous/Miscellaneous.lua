@@ -1,8 +1,8 @@
-local _G = _G
-local K, C, L = _G.unpack(_G.select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Miscellaneous", "AceEvent-3.0")
 
--- WoW Lua
+local _G = _G
+
 local select = select
 local unpack = unpack
 local string_find = string.find
@@ -18,26 +18,6 @@ local Movers = K["Movers"]
 
 -- Fix UIErrorsFrame framelevel
 UIErrorsFrame:SetFrameLevel(0)
-
-do
-	local bug = nil
-	local FixTooltip = CreateFrame("Frame")
-	FixTooltip:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-	FixTooltip:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-	FixTooltip:SetScript("OnEvent", function()
-		if GameTooltip:IsShown() then
-			bug = true
-		end
-	end)
-
-	GameTooltip:HookScript("OnTooltipCleared", function(self)
-		if self:IsForbidden() then return end
-		if bug and self:NumLines() == 0 then
-			self:Hide()
-			bug = false
-		end
-	end)
-end
 
 do
 	function Module:DELETE_ITEM_CONFIRM(...)
@@ -272,24 +252,5 @@ end
 do -- Boss Banner Hider
 	if C["Misc"].NoBanner == true then
 		BossBanner.PlayBanner = function() end
-	end
-end
-
--- Filter out some Felsong stuff I don"t want
-if (K.WoWBuild == 23420) and (K.Realm == "Felsong") then
-	do
-		local serverSpam = {"Autobroadcast", "ARENA ANNOUNCER", "BG Queue Announcer"}
-
-		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
-			if (not msg) then
-				return
-			end
-
-			for _, spam in ipairs(serverSpam) do
-				if string_find(msg, spam) then
-					return true
-				end
-			end
-		end)
 	end
 end

@@ -570,6 +570,8 @@ function Module:SetStyle(tt)
 	if tt:IsForbidden() then return end
 
 	for _, tt in pairs(tooltips) do
+		tt:SetBackdrop(nil)
+		tt:StripTextures(true)
 		tt:SetBackdrop({bgFile = C["Media"].Blank, tileSize = 12, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = false, edgeSize = 12, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}})
 		tt:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 		tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
@@ -629,24 +631,6 @@ function Module:SetItemRef(link)
 	end
 end
 
-function Module:CheckBackdropColor()
-	if GameTooltip:IsForbidden() then return end
-	if not GameTooltip:IsShown() then return end
-
-	local r, g, b = GameTooltip:GetBackdropColor()
-
-	r = K.Round(r, 1)
-	g = K.Round(g, 1)
-	b = K.Round(b, 1)
-
-	local red, green, blue = unpack(C["Media"].BackdropColor)
-	local alpha = C["Media"].BackdropColor[4]
-
-	if(r ~= red or g ~= green or b ~= blue) then
-		GameTooltip:SetBackdropColor(red, green, blue, alpha)
-	end
-end
-
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
@@ -676,19 +660,19 @@ function Module:OnEnable()
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")
-	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
-	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") -- There has to be a more elegant way of doing this.
-	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
 	self:SecureHook("SetItemRef")
+	for _, tt in pairs(tooltips) do
+		self:SecureHookScript(tt, "OnShow", "SetStyle")
+	end
+	for _, tt in pairs(tooltipsOnShow) do
+		self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
+	end
 	self:SecureHook(GameTooltip, "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
-	for _, tt in pairs(tooltipsOnShow) do self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem") end
-	for _, tt in pairs(tooltips) do self:SecureHookScript(tt, "OnShow", "SetStyle") end
-
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
