@@ -2,6 +2,16 @@ local K, C, L = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then return end
 local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
+local _G = _G
+local string_format = string.format
+local table_sort = table.sort
+
+local CreateFrame = _G.CreateFrame
+local DebuffTypeColor = _G.DebuffTypeColor
+local GetTime = _G.GetTime
+local UnitAura = _G.UnitAura
+local UnitIsFriend = _G.UnitIsFriend
+
 local function CreateAuraTimer(self, elapsed)
 	self.expiration = self.expiration - elapsed
 	if self.nextupdate > 0 then
@@ -23,10 +33,9 @@ local function CreateAuraTimer(self, elapsed)
 	timervalue, formatid, self.nextupdate = K.GetTimeInfo(self.expiration, 4)
 
 	if self.text:GetFont() then
-		self.text:SetFormattedText(("%s%s|r"):format(K.TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
+		self.text:SetFormattedText(string_format("%s%s|r", K.TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
 	end
 end
-
 
 local function PostCreateAura(self, button)
 	button.text = button.cd:CreateFontString(nil, "OVERLAY")
@@ -43,7 +52,7 @@ local function PostCreateAura(self, button)
 	button.cd:SetHideCountdownNumbers(true)
 
 	button.icon:SetAllPoints(button)
-	button.icon:SetTexCoord(unpack(K.TexCoords))
+	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	button.icon:SetDrawLayer("ARTWORK")
 
 	button.count:FontTemplate(nil, self.size * 0.40)
@@ -70,7 +79,7 @@ local function SortAurasByTime(a, b)
 end
 
 local function PreSetPosition(self)
-	table.sort(self, SortAurasByTime)
+	table_sort(self, SortAurasByTime)
 	return 1, self.createdIcons
 end
 
@@ -86,7 +95,6 @@ local function PostUpdateAura(self, unit, button, index, offset, filter, isDebuf
 			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
 			if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
 				button:SetBackdropBorderColor(0.05, 0.85, 0.94)
-				LibButtonGlow.ShowOverlayGlow(button) -- Idk how well this is going to work.
 			else
 				button:SetBackdropBorderColor(color.r * 0.6, color.g * 0.6, color.b * 0.6)
 			end
@@ -95,8 +103,9 @@ local function PostUpdateAura(self, unit, button, index, offset, filter, isDebuf
 	else
 		if (isStealable) and not isFriend then
 			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
+			LibButtonGlow.ShowOverlayGlow(button) -- Idk how well this is going to work.
 		else
-			button:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
+			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		end
 	end
 

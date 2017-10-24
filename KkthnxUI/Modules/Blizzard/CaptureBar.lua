@@ -1,12 +1,12 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
+local Module = K:NewModule("CaptureBar", "AceEvent-3.0", "AceHook-3.0");
 
--- Wow Lua
 local _G = _G
 
--- Wow API
+local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: NUM_EXTENDED_UI_FRAMES, hooksecurefunc
 
 local function CaptureUpdate()
@@ -28,8 +28,10 @@ local function CaptureUpdate()
 	end
 end
 
-local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("PLAYER_LOGIN")
-Loading:SetScript("OnEvent", function()
+function Module:PositionCaptureBar()
 	hooksecurefunc("UIParent_ManageFramePositions", CaptureUpdate)
-end)
+end
+
+function Module:OnEnable()
+	self:PositionCaptureBar()
+end

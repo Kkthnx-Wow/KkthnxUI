@@ -344,11 +344,11 @@ function Module:StyleTempFrame()
 end
 
 function Module:SetupToastFrame()
-	BNToastFrame:SetTemplate("Transparent")
+	BNToastFrame:SetTemplate("Transparent", true)
 	BNToastFrame:ClearAllPoints()
 	BNToastFrame:SetFrameStrata("Medium")
 	BNToastFrame:SetFrameLevel(20)
-	BNToastFrame:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 4, 54)
+	BNToastFrame:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 12, 54)
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 2, -2)
    	BNToastFrameCloseButton:SkinCloseButton()
@@ -550,6 +550,10 @@ function Module:OnMouseWheel(delta)
 			end
 		end
 	end
+end
+
+function Module:PlayWhisperSound()
+	PlaySoundFile(C["Media"].Whisper)
 end
 
 function Module:SwitchSpokenDialect(button)

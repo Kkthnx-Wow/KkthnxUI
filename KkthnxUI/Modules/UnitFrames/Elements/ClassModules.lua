@@ -6,6 +6,8 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 
+local _, playerClass = UnitClass("player")
+
 local function PostUpdateTotem(self)
 	local shown = {}
 	for index = 1, MAX_TOTEMS do
@@ -54,20 +56,20 @@ local function UpdateClassPowerColor(self)
 	local r, g, b = 1, 1, 2/5
 
 	if (not UnitHasVehicleUI("player")) then
-		if (K.Class == "MONK") then
+		if (playerClass == "MONK") then
 			r, g, b = 0, 4/5, 3/5
-		elseif (K.Class == "WARLOCK") then
+		elseif (playerClass == "WARLOCK") then
 			r, g, b = 2/3, 1/3, 2/3
-		elseif (K.Class == "PALADIN") then
+		elseif (playerClass == "PALADIN") then
 			r, g, b = 1, 1, 2/5
-		elseif (K.Class == "MAGE") then
+		elseif (playerClass == "MAGE") then
 			r, g, b = 5/6, 1/2, 5/6
 		end
 	end
 
 	for index = 1, #self do
 		local Bar = self[index]
-		if (K.Class == "ROGUE" and self.__max == 10 and index > 5) then
+		if (playerClass == "ROGUE" and self.__max == 10 and index > 5) then
 			r, g, b = 1, 0, 0
 		end
 
@@ -77,7 +79,7 @@ end
 
 function K.CreateAlternatePowerBar(self, unit)
 	-- Additional mana
-	if (unit == "player" and K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
+	if (unit == "player" and playerClass == "DRUID" or playerClass == "SHAMAN" or playerClass == "PRIEST") then
 		self.AdditionalPower = CreateFrame("StatusBar", nil, self)
 		self.AdditionalPower:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
 		self.AdditionalPower:SetStatusBarTexture(C.Media.Texture, "BORDER")
@@ -146,7 +148,7 @@ function K.CreateClassModules(self, unit)
 		end
 		self.Totems = Totems
 
-		if (K.Class == "DEATHKNIGHT") then
+		if (playerClass == "DEATHKNIGHT") then
 			local Runes = {}
 			for index = 1, 6 do
 				local Rune = CreateFrame("StatusBar", nil, self)

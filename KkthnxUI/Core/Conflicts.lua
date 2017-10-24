@@ -1,13 +1,11 @@
--- Lua API
+local K, C = unpack(select(2, ...))
+
 local _G = _G
-local unpack = _G.unpack
-local select = _G.select
 
-local K, C, L = unpack(select(2, ...))
-
--- Wow API
 local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
+local StaticPopup_Show = _G.StaticPopup_Show
+local UNKNOWN = _G.UNKNOWN
 
 -- Prevent users config errors and using other UIs over mine.
 

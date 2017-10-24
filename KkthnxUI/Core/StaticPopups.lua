@@ -125,28 +125,6 @@ StaticPopupDialogs["BOOST_UI"] = {
 	preferredIndex = 3,
 }
 
-StaticPopupDialogs["NO_BANK_BAGS"] = {
-	text = L.StaticPopups.No_Bank_Bags,
-	button1 = ACCEPT,
-	timeout = 0,
-	whileDead = 1,
-}
-
-StaticPopupDialogs["DELETE_GRAYS"] = {
-	text = L.StaticPopups.Delete_Grays,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function() local B = K:GetModule("Bags") B:VendorGrays(true) end,
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, StaticPopupDialogs["DELETE_GRAYS"].Money);
-	end,
-	showAlert = true,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	hasMoneyFrame = 1,
-}
-
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	text = CONFIRM_LOOT_DISTRIBUTION,
 	button1 = YES,
@@ -154,28 +132,6 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	preferredIndex = 3,
-}
-
-StaticPopupDialogs["BUY_BANK_SLOT"] = {
-	text = CONFIRM_BUY_BANK_SLOT,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function()
-		PurchaseSlot()
-	end,
-	OnShow = function(self)
-		MoneyFrame_Update(self.moneyFrame, GetBankSlotCost())
-	end,
-	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1,
-}
-
-StaticPopupDialogs["CANNOT_BUY_BANK_SLOT"] = {
-	text = L.StaticPopups.Cant_Buy_Bank,
-	button1 = ACCEPT,
-	timeout = 0,
-	whileDead = 1,
 }
 
 StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
