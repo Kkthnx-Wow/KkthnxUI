@@ -206,164 +206,28 @@ local function SetVirtualBorder(frame, r, g, b)
 	frame.backdrop:SetBackdropBorderColor(r, g, b)
 end
 
-local CreateAuraTimer = function(self, elapsed)
-	if self.timeLeft then
-		self.elapsed = (self.elapsed or 0) + elapsed
-		if self.elapsed >= .1 then
-			if not self.first then
-				self.timeLeft = self.timeLeft - self.elapsed
-			else
-				self.timeLeft = self.timeLeft - GetTime()
-				self.first = false
-			end
-			if self.timeLeft > 0 then
-				local time = K.FormatTime(self.timeLeft)
-				self.remaining:SetText(time)
-				if self.timeLeft <= 2.5 then
-					self.remaining:SetTextColor(1, 0, 0)
-				else
-					self.remaining:SetTextColor(1, 1, 0)
-				end
-			else
-				self.remaining:Hide()
-				self:SetScript("OnUpdate", nil)
-			end
-			self.elapsed = 0
+local function CreateAuraTimer(self, elapsed)
+	self.expiration = self.expiration - elapsed
+	if self.nextupdate > 0 then
+		self.nextupdate = self.nextupdate - elapsed
+		return
+	end
+
+	if(self.expiration <= 0) then
+		self:SetScript("OnUpdate", nil)
+
+		if(self.text:GetFont()) then
+			self.text:SetText("")
 		end
-	end
-end
 
-local function CreateAuraIcon(parent)
-	local button = CreateFrame("Frame", nil, parent)
-	button:SetSize(C["Nameplates"].AurasSize, C["Nameplates"].AurasSize)
-	button:SetScale(K.NoScaleMult)
-
-	button.backdrop = CreateFrame("Frame", nil , button)
-	button.backdrop:SetFrameLevel(0)
-	button.backdrop:SetBackdrop({
-		bgFile = C["Media"].Blank,
-		edgeFile = C["Media"].Glow,
-		edgeSize = 4 * K.NoScaleMult,
-		insets = {top = 4 * K.NoScaleMult, left = 4 * K.NoScaleMult, bottom = 4 * K.NoScaleMult, right = 4 * K.NoScaleMult}
-	})
-	button.backdrop:SetPoint("TOPLEFT", -2 * K.NoScaleMult, 2 * K.NoScaleMult)
-	button.backdrop:SetPoint("BOTTOMRIGHT", 2 * K.NoScaleMult, -2 * K.NoScaleMult)
-	button.backdrop:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-	button.backdrop:SetBackdropBorderColor(0, 0, 0)
-
-	button.icon = button:CreateTexture(nil, "OVERLAY")
-	button.icon:SetPoint("TOPLEFT", 2, -2)
-	button.icon:SetPoint("BOTTOMRIGHT", -2, 2)
-	button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-
-	button.cd = CreateFrame("Cooldown", "$parentCooldown", button, "CooldownFrameTemplate")
-	button.cd:SetDrawEdge(false)
-	button.cd:SetReverse(true)
-	button.cd:SetPoint("TOPLEFT", button, "TOPLEFT", 2, -2)
-	button.cd:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -2, 2)
-	button.cd.noOCC = true
-	button.cd.noCooldownCount = true
-
-	button.remaining = K.SetFontString(button, C["Media"].Font, C["Nameplates"].FontSize, C["Nameplates"].Outline and "OUTLINE" or "", "CENTER")
-	button.remaining:SetShadowOffset(C["Nameplates"].Outline and 0 or 1, C["Nameplates"].Outline and -0 or -1)
-	button.remaining:SetPoint("CENTER", button, "CENTER", 1, 1)
-	button.remaining:SetJustifyH("CENTER")
-
-	button.count = button:CreateFontString(nil, "OVERLAY")
-	button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 1, 0)
-	button.count:SetJustifyH("RIGHT")
-	button.count:SetFont(C["Media"].Font, C["Nameplates"].FontSize, C["Nameplates"].Outline and "OUTLINE" or "")
-	button.count:SetShadowOffset(C["Nameplates"].Outline and 0 or 1, C["Nameplates"].Outline and -0 or -1)
-
-	button.parent = CreateFrame("Frame", nil, button)
-	button.parent:SetFrameLevel(button.cd:GetFrameLevel() + 1)
-	button.count:SetParent(button.parent)
-	button.remaining:SetParent(button.parent)
-
-	return button
-end
-
-local function UpdateAuraIcon(button, unit, index, filter)
-	local name, _, icon, count, debuffType, duration, expirationTime, _, _, _, spellID = UnitAura(unit, index, filter)
-
-	button:SetSize(C["Nameplates"].AurasSize, C["Nameplates"].AurasSize)
-	button.icon:SetTexture(icon)
-	button.expirationTime = expirationTime
-	button.duration = duration
-	button.spellID = spellID
-	button.cd:SetCooldown(expirationTime - duration, duration)
-	button.cd:Show()
-
-	local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
-	if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
-		button.backdrop:SetBackdropBorderColor(0.05, 0.85, 0.94)
-	else
-		button.backdrop:SetBackdropBorderColor(color.r, color.g, color.b)
+		return
 	end
 
-	if count and count > 1 then
-		button.count:SetText(count)
-	else
-		button.count:SetText("")
-	end
+	local timervalue, formatid
+	timervalue, formatid, self.nextupdate = K.GetTimeInfo(self.expiration, 4)
 
-	if duration and duration > 0 then
-		button.remaining:Show()
-		button.timeLeft = expirationTime
-		button:SetScript("OnUpdate", CreateAuraTimer)
-	else
-		button.remaining:Hide()
-		button.timeLeft = math_huge
-		button:SetScript("OnUpdate", nil)
-	end
-	button.first = true
-
-	button:Show()
-end
-
-local function DebuffFilter(name, caster, spellId, nameplateShowPersonal, nameplateShowAll, unit)
-	if caster == "player" then
-		if ((nameplateShowPersonal or nameplateShowAll) and not K.DebuffBlackList[name]) then
-			return true
-		elseif K.DebuffWhiteList[name] then
-			return true
-		end
-	end
-
-	return false
-end
-
-local function UpdateAuras(self)
-	if not C["Nameplates"].TrackAuras or UnitIsUnit(self.unit, "player") then return end
-	local i = 1
-	local r, g, b
-
-	for index = 1, 40 do
-		if i > C["Nameplates"].Width / C["Nameplates"].AurasSize then return end
-		local name, _, _, _, _, _, _, caster, _, nameplateShowPersonal, spellId, _, _, _, nameplateShowAll = UnitAura(self.unit, index, "HARMFUL")
-
-		local allow, boss = DebuffFilter(name, caster, spellId, nameplateShowPersonal, nameplateShowAll, self.unit)
-		if name and allow then
-			if not self.DebuffIcons[i] then
-				self.DebuffIcons[i] = CreateAuraIcon(self)
-			end
-			UpdateAuraIcon(self.DebuffIcons[i], self.unit, index, "HARMFUL")
-			if boss then
-				self.DebuffIcons[i].icon:SetVertexColor(r, g, b)
-			else
-				self.DebuffIcons[i].icon:SetVertexColor(1, 1, 1)
-			end
-			if i == 1 then
-				self.DebuffIcons[i]:SetPoint("BOTTOMLEFT", self.DebuffIcons, "BOTTOMLEFT")
-			elseif i ~= 1 then
-				self.DebuffIcons[i]:SetPoint("LEFT", self.DebuffIcons[i-1], "RIGHT", 2, 0)
-			end
-			i = i + 1
-		end
-	end
-
-	for index = i, #self.DebuffIcons do
-		self.DebuffIcons[index]:Hide()
+	if self.text:GetFont() then
+		self.text:SetFormattedText(string_format("%s%s|r", K.TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
 	end
 end
 
@@ -702,9 +566,97 @@ local function StyleUpdate(self, unit)
 
 	-- Aura tracking
 	if C["Nameplates"].TrackAuras == true then
-		self.DebuffIcons = CreateFrame("Frame", nil, self)
-		self.DebuffIcons:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0 * K.NoScaleMult, C["Media"].FontSize + 7)
-		self.DebuffIcons:SetSize(20 + C["Nameplates"].Width, C["Nameplates"].AurasSize)
+		self.Auras = CreateFrame("Frame", nil, self)
+		self.Auras:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 4)
+		self.Auras.initialAnchor = "BOTTOMLEFT"
+		self.Auras["growth-y"] = "UP"
+		self.Auras["growth-x"] = "RIGHT"
+		self.Auras.numDebuffs = C["Nameplates"].TrackAuras and 6 or 0
+		self.Auras.numBuffs = C["Nameplates"].TrackAuras and 4 or 0
+		self.Auras:SetSize(20 + C["Nameplates"].Width, C["Nameplates"].AurasSize)
+		self.Auras.spacing = 2
+		self.Auras.size = C["Nameplates"].AurasSize
+
+		self.Auras.CustomFilter = function(_, unit, _, name, _, _, _, _, _, _, caster, _, nameplateShowSelf, _, _, _, _, nameplateShowAll)
+			local allow = false
+
+			if caster == "player" then
+				if UnitIsUnit(unit, "player") then
+					if ((nameplateShowAll or nameplateShowSelf) and not K.BuffBlackList[name]) then
+						allow = true
+					elseif K.BuffWhiteList[name] then
+						allow = true
+					end
+				else
+					if ((nameplateShowAll or nameplateShowSelf) and not K.DebuffBlackList[name]) then
+						allow = true
+					elseif K.DebuffWhiteList[name] then
+						allow = true
+					end
+				end
+			end
+
+			return allow
+		end
+
+		self.Auras.PostCreateIcon = function(self, button)
+			button:SetScale(K.NoScaleMult)
+
+			button.text = button.cd:CreateFontString(nil, "OVERLAY")
+			button.text:FontTemplate(nil, self.size * 0.46)
+			button.text:SetPoint("CENTER", 1, 1)
+			button.text:SetJustifyH("CENTER")
+
+			button:CreateShadow()
+
+			button.cd.noOCC = true
+			button.cd.noCooldownCount = true
+			button.cd:SetReverse(true)
+			button.cd:SetInside()
+			button.cd:SetHideCountdownNumbers(true)
+
+			button.icon:SetAllPoints(button)
+			button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			button.icon:SetDrawLayer("ARTWORK")
+
+			button.count:FontTemplate(nil, self.size * 0.40)
+			button.count:ClearAllPoints()
+			button.count:SetPoint("BOTTOMRIGHT", 1, 1)
+			button.count:SetJustifyH("RIGHT")
+
+			button.overlay:SetTexture(nil)
+			button.stealable:SetTexture(nil)
+		end
+
+		function self.Auras.PostUpdateIcon(icons, unit, button, index, offset, filter, isDebuff, duration, timeLeft)
+			local _, _, _, _, dtype, duration, expiration, _, isStealable = UnitAura(unit, index, button.filter)
+
+			if expiration and duration ~= 0 then
+				if not button:GetScript("OnUpdate") then
+					button.expirationTime = expiration
+					button.expiration = expiration - GetTime()
+					button.nextupdate = -1
+					button:SetScript("OnUpdate", CreateAuraTimer)
+				end
+				if (button.expirationTime ~= expiration) or (button.expiration ~= (expiration - GetTime())) then
+					button.expirationTime = expiration
+					button.expiration = expiration - GetTime()
+					button.nextupdate = -1
+				end
+			end
+
+			if duration == 0 or expiration == 0 then
+				button.expirationTime = nil
+				button.expiration = nil
+				button.priority = nil
+				button.duration = nil
+				button:SetScript("OnUpdate", nil)
+
+				if (button.text:GetFont()) then
+					button.text:SetText("")
+				end
+			end
+		end
 	end
 
 	self.HealthPrediction = K.CreateHealthPrediction(self)
@@ -761,10 +713,6 @@ local function StyleUpdate(self, unit)
 
 	table_insert(self.__elements, UpdateTarget)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTarget)
-
-	table_insert(self.__elements, UpdateAuras)
-	self:RegisterEvent("UNIT_AURA", UpdateAuras)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateAuras)
 end
 
 oUF:RegisterStyle("KkthnxUINamePlates", StyleUpdate)

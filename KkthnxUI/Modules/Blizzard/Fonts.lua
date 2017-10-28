@@ -42,50 +42,50 @@ local function UpdateBlizzardFonts()
 	end
 
 	-- Base fonts
-
 	SetFont(AchievementFont_Small,				NORMAL_FONT, C["General"].FontSize)			 -- Achiev dates
 	SetFont(BossEmoteNormalHuge,				NORMAL_FONT, 24)								 -- Talent Title
 	SetFont(ChatBubbleFont,						BUBBLE_FONT, C["General"].BubbleFontSize)
-	SetFont(CombatTextFont, COMBAT_FONT, 200, "OUTLINE") -- number here just increase the font quality.
+	SetFont(CombatTextFont, 					COMBAT_FONT, 200, "OUTLINE") -- number here just increase the font quality.
 	SetFont(CoreAbilityFont,					NORMAL_FONT, 26)								 -- Core abilities(title)
 	SetFont(DestinyFontHuge,					NORMAL_FONT, 20, nil, SHADOW_COLOR, BIG_OFFSET)	 -- Garrison Mission Report
 	SetFont(Fancy22Font,						NORMAL_FONT, 20)									 -- Talking frame Title font
 	SetFont(Fancy24Font,						NORMAL_FONT, 20)									 -- Artifact frame - weapon name
 	SetFont(FriendsFont_Large, 					NORMAL_FONT, C["General"].FontSize)
-	SetFont(FriendsFont_Normal,			NORMAL_FONT, C["General"].FontSize)
+	SetFont(FriendsFont_Normal,					NORMAL_FONT, C["General"].FontSize)
 	SetFont(FriendsFont_Small, 					NORMAL_FONT, C["General"].FontSize)
 	SetFont(FriendsFont_UserText, 				NORMAL_FONT, C["General"].FontSize)
 	SetFont(Game13FontShadow,					NORMAL_FONT, 14)									 -- InspectPvpFrame
 	SetFont(Game15Font_o1,						NORMAL_FONT, 15)									 -- CharacterStatsPane (ItemLevelFrame)
 	SetFont(Game18Font,							NORMAL_FONT, 18)									 -- MissionUI Bonus Chance
 	SetFont(Game24Font, 						NORMAL_FONT, 24)								 -- Garrison Mission level (in detail frame)
+	SetFont(SystemFont_Shadow_Large2, 			NORMAL_FONT, 17)
 	SetFont(Game30Font,							NORMAL_FONT, 28)									 -- Mission Level
 	SetFont(GameFont_Gigantic,					NORMAL_FONT, 32, nil, SHADOW_COLOR, BIG_OFFSET)		 -- Used at the install steps
 	SetFont(GameFontHighlightMedium,			NORMAL_FONT, 15)								 -- Fix QuestLog Title mouseover
-	SetFont(GameFontHighlightMedium, NORMAL_FONT, 15)
+	SetFont(GameFontHighlightMedium, 			NORMAL_FONT, 15)
 	SetFont(GameFontHighlightSmall2,			NORMAL_FONT, C["General"].FontSize)			 -- Skill or Recipe description on TradeSkill frame
 	SetFont(GameFontNormalHuge2,				NORMAL_FONT, 24)			 					 	 -- Mythic weekly best dungeon name
 	SetFont(GameFontNormalLarge2,				NORMAL_FONT, 15) 								 -- Garrison Follower Names
 	SetFont(GameFontNormalMed2,					NORMAL_FONT, C["General"].FontSize*1.1)		 -- Quest tracker
 	SetFont(GameFontNormalMed3,					NORMAL_FONT, 15)
 	SetFont(GameFontNormalSmall2,				NORMAL_FONT, 12)			 					 	 -- MissionUI Followers names
-	SetFont(GameTooltipHeader, NORMAL_FONT, C["General"].FontSize)
+	SetFont(GameTooltipHeader, 					NORMAL_FONT, C["General"].FontSize)
 	SetFont(InvoiceFont_Med,					NORMAL_FONT, 12)								 -- mail
 	SetFont(InvoiceFont_Small,					NORMAL_FONT, C["General"].FontSize)			 -- mail
 	SetFont(MailFont_Large,						NORMAL_FONT, 14)								 -- mail
-	SetFont(NumberFont_Outline_Huge, NORMAL_FONT, 28, "THICKOUTLINE", 28)
-	SetFont(NumberFont_Outline_Large, NORMAL_FONT, 15, "OUTLINE")
-	SetFont(NumberFont_Outline_Med, NORMAL_FONT, C["General"].FontSize*1.1, "OUTLINE")
+	SetFont(NumberFont_Outline_Huge, 			NORMAL_FONT, 28, "THICKOUTLINE", 28)
+	SetFont(NumberFont_Outline_Large, 			NORMAL_FONT, 15, "OUTLINE")
+	SetFont(NumberFont_Outline_Med, 			NORMAL_FONT, C["General"].FontSize*1.1, "OUTLINE")
 	SetFont(NumberFont_OutlineThick_Mono_Small, NORMAL_FONT, C["General"].FontSize, "OUTLINE")
-	SetFont(NumberFont_Shadow_Med, NORMAL_FONT, C["General"].FontSize) --chat editbox uses this
-	SetFont(NumberFont_Shadow_Small, NORMAL_FONT, C["General"].FontSize)
+	SetFont(NumberFont_Shadow_Med, 				NORMAL_FONT, C["General"].FontSize) --chat editbox uses this
+	SetFont(NumberFont_Shadow_Small, 			NORMAL_FONT, C["General"].FontSize)
 	SetFont(NumberFontNormalSmall,				NORMAL_FONT, 11, "OUTLINE")						 -- Calendar, EncounterJournal
 	SetFont(PVPArenaTextString,					NORMAL_FONT, 22, "OUTLINE")
 	SetFont(PVPInfoTextString,					NORMAL_FONT, 22, "OUTLINE")
-	SetFont(QuestFont, NORMAL_FONT, C["General"].FontSize)
+	SetFont(QuestFont, 							NORMAL_FONT, C["General"].FontSize)
 	SetFont(QuestFont_Enormous, 				NORMAL_FONT, 24, nil, SHADOW_COLOR, NORMAL_OFFSET) -- Garrison Titles
 	SetFont(QuestFont_Huge,						NORMAL_FONT, 15, nil, SHADOW_COLOR, BIG_OFFSET)	 -- Quest rewards title(Rewards)
-	SetFont(QuestFont_Large, NORMAL_FONT, 14)
+	SetFont(QuestFont_Large, 					NORMAL_FONT, 14)
 	SetFont(QuestFont_Shadow_Huge, 				NORMAL_FONT, 15, nil, SHADOW_COLOR, NORMAL_OFFSET) -- Quest Title
 	SetFont(QuestFont_Shadow_Small, 			NORMAL_FONT, 14, nil, SHADOW_COLOR, NORMAL_OFFSET)
 	SetFont(QuestFont_Super_Huge,				NORMAL_FONT, 22, nil, SHADOW_COLOR, BIG_OFFSET)
@@ -94,26 +94,26 @@ local function UpdateBlizzardFonts()
 	SetFont(SubZoneTextString,					NORMAL_FONT, 25, "OUTLINE")
 	SetFont(SystemFont_Huge1, 					NORMAL_FONT, 20)								 -- Garrison Mission XP
 	SetFont(SystemFont_Huge1_Outline, 			NORMAL_FONT, 18, "OUTLINE")			 -- Garrison Mission Chance
-	SetFont(SystemFont_Large, NORMAL_FONT, 15)
-	SetFont(SystemFont_Med1, NORMAL_FONT, C["General"].FontSize)
-	SetFont(SystemFont_Med3, NORMAL_FONT, C["General"].FontSize*1.1)
+	SetFont(SystemFont_Large, 					NORMAL_FONT, 15)
+	SetFont(SystemFont_Med1, 					NORMAL_FONT, C["General"].FontSize)
+	SetFont(SystemFont_Med3, 					NORMAL_FONT, C["General"].FontSize*1.1)
 	SetFont(SystemFont_Outline, 				NORMAL_FONT, 13, "OUTLINE")			 -- Pet level on World map
-	SetFont(SystemFont_Outline_Small, NORMAL_FONT, C["General"].FontSize, "OUTLINE")
-	SetFont(SystemFont_OutlineThick_Huge2, NORMAL_FONT, 20, "THICKOUTLINE")
+	SetFont(SystemFont_Outline_Small, 			NORMAL_FONT, C["General"].FontSize, "OUTLINE")
+	SetFont(SystemFont_OutlineThick_Huge2, 		NORMAL_FONT, 20, "THICKOUTLINE")
 	SetFont(SystemFont_OutlineThick_WTF,		NORMAL_FONT, 32, "OUTLINE")			 -- World Map
 	SetFont(SystemFont_Shadow_Huge1,			NORMAL_FONT, 20, "OUTLINE") -- Raid Warning, Boss emote frame too
-	SetFont(SystemFont_Shadow_Large, NORMAL_FONT, 15)
+	SetFont(SystemFont_Shadow_Large, 			NORMAL_FONT, 15)
 	SetFont(SystemFont_Shadow_Large_Outline,	NORMAL_FONT, 20, "OUTLINE")
-	SetFont(SystemFont_Shadow_Med1, NORMAL_FONT, C["General"].FontSize)
+	SetFont(SystemFont_Shadow_Med1, 			NORMAL_FONT, C["General"].FontSize)
 	SetFont(SystemFont_Shadow_Med2,				NORMAL_FONT, 13 * 1.1)							 -- Shows Order resourses on OrderHallTalentFrame
 	SetFont(SystemFont_Shadow_Med3,				NORMAL_FONT, 13 * 1.1)
-	SetFont(SystemFont_Shadow_Med3, NORMAL_FONT, C["General"].FontSize*1.1)
-	SetFont(SystemFont_Shadow_Outline_Huge2, NORMAL_FONT, 20, "OUTLINE")
-	SetFont(SystemFont_Shadow_Small, NORMAL_FONT, C["General"].FontSize*0.9)
-	SetFont(SystemFont_Small, NORMAL_FONT, C["General"].FontSize)
-	SetFont(SystemFont_Tiny, NORMAL_FONT, C["General"].FontSize)
-	SetFont(Tooltip_Med, NORMAL_FONT, C["General"].FontSize)
-	SetFont(Tooltip_Small, NORMAL_FONT, C["General"].FontSize)
+	SetFont(SystemFont_Shadow_Med3, 			NORMAL_FONT, C["General"].FontSize*1.1)
+	SetFont(SystemFont_Shadow_Outline_Huge2, 	NORMAL_FONT, 20, "OUTLINE")
+	SetFont(SystemFont_Shadow_Small, 			NORMAL_FONT, C["General"].FontSize*0.9)
+	SetFont(SystemFont_Small,					NORMAL_FONT, C["General"].FontSize)
+	SetFont(SystemFont_Tiny, 					NORMAL_FONT, C["General"].FontSize)
+	SetFont(Tooltip_Med, 						NORMAL_FONT, C["General"].FontSize)
+	SetFont(Tooltip_Small, 						NORMAL_FONT, C["General"].FontSize)
 	SetFont(ZoneTextString,						NORMAL_FONT, 32, "OUTLINE")
 
 	-- Sourced: DiabolicUI, (Goldpaw)

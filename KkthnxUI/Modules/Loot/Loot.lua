@@ -18,7 +18,6 @@ local GetLootSlotInfo = _G.GetLootSlotInfo
 local GetLootSlotLink = _G.GetLootSlotLink
 local GetNumLootItems = _G.GetNumLootItems
 local GiveMasterLoot = _G.GiveMasterLoot
-local HandleModifiedItemClick = _G.HandleModifiedItemClick
 local IsFishingLoot = _G.IsFishingLoot
 local IsModifiedClick = _G.IsModifiedClick
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
@@ -76,7 +75,7 @@ local coinTextureIDs = {
 	[133789] = true,
 }
 
---Credit Haste
+-- Credit Haste
 local lootFrame, lootFrameHolder
 local iconSize = 30
 
@@ -173,7 +172,7 @@ local function createSlot(id)
 	frame.icon = icon
 
 	local count = iconFrame:CreateFontString(nil, "OVERLAY")
-	count:SetJustifyH"RIGHT"
+	count:SetJustifyH("RIGHT")
 	count:SetPoint("BOTTOMRIGHT", iconFrame, -2, 2)
 	count:FontTemplate(nil, nil, "OUTLINE")
 	count:SetText(1)
@@ -323,7 +322,6 @@ function LM:LOOT_OPENED(event, autoloot)
 		end
 		slot.icon:SetTexture[[Interface\Icons\INV_Misc_Herb_AncientLichen]]
 
-		items = 1
 		w = max(w, slot.name:GetStringWidth())
 
 		slot.count:Hide()
