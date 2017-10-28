@@ -170,7 +170,7 @@ end
 do -- Force readycheck warning
 	local ShowReadyCheckHook = function(self, initiator)
 		if initiator ~= "player" then
-			PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
+			PlaySound(SOUNDKIT.READY_CHECK, "Master")
 		end
 	end
 	_G.hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
