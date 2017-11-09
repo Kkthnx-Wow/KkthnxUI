@@ -5,8 +5,6 @@ local K, C, L = unpack(select(2, ...))
 
 -- GLOBALS: unpack, select, _G, table
 
--- luacheck: globals unpack select _G table
-
 -- Lua API
 local _G = _G
 local table_remove = table.remove

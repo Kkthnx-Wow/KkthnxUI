@@ -244,7 +244,7 @@ local function ThreatColor(self, forced)
 		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
 	elseif combat then
 		if threatStatus == 3 then -- securely tanking, highest threat
-			if K.GetPlayerRole() == "TANK" then
+			if K.Role == "Tank" then
 				if C["Nameplates"].EnhancedThreat == true then
 					self.Health:SetStatusBarColor(unpack(C["Nameplates"].GoodColor))
 				else
@@ -271,7 +271,7 @@ local function ThreatColor(self, forced)
 			end
 		elseif threatStatus == 0 then -- not tanking, lower threat than tank
 			if C["Nameplates"].EnhancedThreat == true then
-				if K.GetPlayerRole() == "TANK" then
+				if K.Role == "Tank" then
 					self.Health:SetStatusBarColor(unpack(C["Nameplates"].BadColor))
 					if IsInGroup() or IsInRaid() then
 						for i = 1, GetNumGroupMembers() do

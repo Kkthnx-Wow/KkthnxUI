@@ -221,15 +221,50 @@ function K.SetIncompatible(self, ...)
 	end
 end
 
-function K.GetPlayerRole()
-	local assignedRole = UnitGroupRolesAssigned("player")
-	if (assignedRole == "NONE" ) then
-		local spec = GetSpecialization()
-		return GetSpecializationRole(spec)
-	end
+--	Player's role check
+local isCaster = {
+	DEATHKNIGHT = {nil, nil, nil},
+	DEMONHUNTER = {nil, nil},
+	DRUID = {true}, -- Balance
+	HUNTER = {nil, nil, nil},
+	MAGE = {true, true, true},
+	MONK = {nil, nil, nil},
+	PALADIN = {nil, nil, nil},
+	PRIEST = {nil, nil, true}, -- Shadow
+	ROGUE = {nil, nil, nil},
+	SHAMAN = {true}, -- Elemental
+	WARLOCK = {true, true, true},
+	WARRIOR = {nil, nil, nil}
+}
 
-	return assignedRole
+local function CheckRole(self, event, unit)
+	local spec = GetSpecialization()
+	local role = spec and GetSpecializationRole(spec)
+
+	if role == "TANK" then
+		K.Role = "Tank"
+	elseif role == "HEALER" then
+		K.Role = "Healer"
+	elseif role == "DAMAGER" then
+		if isCaster[K.Class][spec] then
+			K.Role = "Caster"
+		else
+			K.Role = "Melee"
+		end
+	end
 end
+local RoleUpdater = CreateFrame("Frame")
+RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
+RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
+RoleUpdater:RegisterEvent("LFG_ROLE_UPDATE")
+RoleUpdater:RegisterEvent("PLAYER_ROLES_ASSIGNED")
+RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
+RoleUpdater:RegisterEvent("PVP_ROLE_UPDATE")
+RoleUpdater:RegisterEvent("ROLE_CHANGED_INFORM")
+RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
+RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+RoleUpdater:SetScript("OnEvent", CheckRole)
 
 -- Chat channel check
 function K.CheckChat(warning)

@@ -9,9 +9,9 @@ local StaticPopup_Show = _G.StaticPopup_Show
 
 local function SetupAddons()
 	-- KkthnxUI
-	if K.IsAddOnEnabled("KkthnxUI") then
+	--[[if K.IsAddOnEnabled("KkthnxUI") then
 		K.LoadKkthnxUIProfile()
-	end
+	end--]]
 
 	-- DBM
 	if K.IsAddOnEnabled("DBM-Core") then
@@ -66,12 +66,12 @@ SlashCmdList.SETTINGS = function(msg)
 			StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."Skada profile loaded".."|r")
 		end
-	elseif msg == "kkthnx" or msg == "kkthnxui" then
+	--[[elseif msg == "kkthnx" or msg == "kkthnxui" then
 		if K.IsAddOnEnabled("KkthnxUI") then
 			K.LoadKkthnxUIProfile()
 			StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."KkthnxUI profile loaded".."|r")
-		end
+		end--]]
 	elseif msg == "dbm" then
 		if K.IsAddOnEnabled("DBM-Core") then
 			K.LoadDBMProfile()

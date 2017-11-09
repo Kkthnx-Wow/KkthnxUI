@@ -553,7 +553,7 @@ function Module:OnMouseWheel(delta)
 end
 
 function Module:PlayWhisperSound()
-	PlaySoundFile(C["Media"].Whisper)
+	PlaySoundFile(C["Media"].WhisperSound)
 end
 
 function Module:SwitchSpokenDialect(button)

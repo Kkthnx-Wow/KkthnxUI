@@ -68,22 +68,27 @@ function Module:ChangeState(event)
 		end
 	end
 
-	if K.IsAddOnEnabled("WorldQuestTracker") then
-		local y = 0
-		for i = 1, #ObjectiveTrackerFrame.MODULES do
-			local module = ObjectiveTrackerFrame.MODULES[i]
-			if (module.Header:IsShown()) then
-				y = y + module.contentsHeight
-			end
-		end
-		if (ObjectiveTrackerFrame.collapsed) then
-			WorldQuestTrackerAddon.TrackerHeight = 20
-		else
-			WorldQuestTrackerAddon.TrackerHeight = y
-		end
+	-- if K.IsAddOnEnabled("WorldQuestTracker") then
 
-		WorldQuestTrackerAddon.RefreshAnchor()
-	end
+	-- 	if (not ObjectiveTrackerFrame.initialized) then
+	-- 		return
+	-- 	end
+
+	-- 	local y = 0
+	-- 	for i = 1, #ObjectiveTrackerFrame.MODULES do
+	-- 		local module = ObjectiveTrackerFrame.MODULES[i]
+	-- 		if (module.Header:IsShown()) then
+	-- 			y = y + module.contentsHeight
+	-- 		end
+	-- 	end
+	-- 	if (ObjectiveTrackerFrame.collapsed) then
+	-- 		WorldQuestTrackerAddon.TrackerHeight = 20
+	-- 	else
+	-- 		WorldQuestTrackerAddon.TrackerHeight = y
+	-- 	end
+
+	-- 	WorldQuestTrackerAddon.RefreshAnchor()
+	-- end
 end
 
 function Module:OnEnable()

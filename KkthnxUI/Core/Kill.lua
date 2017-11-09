@@ -13,74 +13,39 @@ local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local UIParent = _G.UIParent
 
--- Kill all stuff on default UI that we don't need
-function Module:KillStuff(addon)
-	if addon == "Blizzard_AchievementUI" then
-		if C["Tooltip"].Enable then
-			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
-		end
+-- Kill all stuff on default UI that we don"t need
+local function HideRaid()
+	if InCombatLockdown() then return end
+	CompactRaidFrameManager:Kill()
+	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
+	if compact_raid and compact_raid ~= "0" then
+		CompactRaidFrameManager_SetSetting("IsShown", "0")
 	end
+end
 
-	if C["Raidframe"].Enable then
-		if not CompactRaidFrameManager_UpdateShown then
-			StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
-		else
-			K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
-
-			if CompactRaidFrameManager then
-				CompactRaidFrameManager:UnregisterAllEvents()
-				CompactRaidFrameManager:SetParent(K.UIFrameHider)
-			end
-
-			if CompactUnitFrameProfiles then
-				CompactUnitFrameProfiles:UnregisterAllEvents()
-			end
+function Module:DisableBlizzard()
+	if (not C["Unitframe"].Enable) and (not C["Raidframe"].Enable) then return end
+	if not CompactRaidFrameManager_UpdateShown then
+		StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
+	else
+		if not CompactRaidFrameManager.hookedHide then
+			hooksecurefunc("CompactRaidFrameManager_UpdateShown", HideRaid)
+			CompactRaidFrameManager:HookScript("OnShow", HideRaid)
+			CompactRaidFrameManager.hookedHide = true
 		end
+		CompactRaidFrameContainer:UnregisterAllEvents()
+
+		HideRaid()
 	end
+end
 
-	if C["Unitframe"].Enable then
-		if C["Unitframe"].ShowBoss then
-			for i = 1, MAX_BOSS_FRAMES do
-				local Boss = _G["Boss"..i.."TargetFrame"]
-				local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
-				local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
+function Module:ADDON_LOADED(_, addon)
+	if addon ~= "Blizzard_ArenaUI" then return end
+	Module:DisableBlizzard("arena")
+	self:UnregisterEvent("ADDON_LOADED")
+end
 
-				Boss:UnregisterAllEvents()
-				Boss.Show = K.Noop
-				Boss:Hide()
-
-				Health:UnregisterAllEvents()
-				Power:UnregisterAllEvents()
-			end
-		end
-
-		if C["Unitframe"].Party then
-			for i = 1, MAX_PARTY_MEMBERS do
-				local PartyMember = _G["PartyMemberFrame" .. i]
-				local Health = _G["PartyMemberFrame"..i.."HealthBar"]
-				local Power = _G["PartyMemberFrame"..i.."ManaBar"]
-				local Pet = _G["PartyMemberFrame" ..i.."PetFrame"]
-				local PetHealth = _G["PartyMemberFrame" ..i.."PetFrame".."HealthBar"]
-
-				PartyMember:UnregisterAllEvents()
-				PartyMember:SetParent(K.UIFrameHider)
-				PartyMember:Hide()
-				Health:UnregisterAllEvents()
-				Power:UnregisterAllEvents()
-
-				Pet:UnregisterAllEvents()
-				Pet:SetParent(K.UIFrameHider)
-				PetHealth:UnregisterAllEvents()
-
-				if (not InCombatLockdown()) then
-					HidePartyFrame()
-					ShowPartyFrame = K.Noop
-					HidePartyFrame = K.Noop
-				end
-			end
-		end
-	end
-
+function Module:DisableMisc()
 	if C["General"].AutoScale then
 		K.KillMenuOption(true, "Advanced_UseUIScale")
 		K.KillMenuOption(true, "Advanced_UIScaleSlider")
@@ -147,7 +112,30 @@ function Module:KillStuff(addon)
 end
 
 function Module:OnEnable()
-	Module:KillStuff()
+	self:DisableMisc()
+	K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
+
+	if C["Raidframe"].Enable == true then
+		self:DisableBlizzard()
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", "DisableBlizzard")
+		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- This may fuck shit up.. we"ll see...
+	else
+		CompactUnitFrameProfiles:RegisterEvent("VARIABLES_LOADED")
+	end
+
+	if (not C["Unitframe"].Party) and (not C["Raidframe"].Enable) then
+		C["Raidframe"].RaidUtility = false
+	end
+
+	if C["Unitframe"].Arena then
+		self:SecureHook("UnitFrameThreatIndicator_Initialize")
+
+		if not IsAddOnLoaded("Blizzard_ArenaUI") then
+			self:RegisterEvent("ADDON_LOADED")
+		else
+			Module:DisableBlizzard("arena")
+		end
+	end
 end
 
 function Module:OnDisable()

@@ -1,17 +1,28 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Miscellaneous", "AceEvent-3.0")
 
+-- Global variables that we don't cache
+-- GLOBALS: GameMenuFrame GhostFrameContentsFrame GhostFrameContentsFrameIcon GhostFrameContentsFrameText GhostFrameLeft GhostFrameMiddle GhostFrameRight
+-- GLOBALS: GhostFrame LevelUpDisplay BossBanner statusBar UIErrorsFrame RaidNotice_AddMessage
+-- GLOBALS: InterfaceOptionsFrame LFDParentFrame PlaySoundKitID SOUNDKIT StaticPopup1 StaticPopup1Button1 StaticPopup1EditBox VideoOptionsFrame
+-- GLOBALS: RaidBossEmoteFrame ChatTypeInfo DurabilityFrame SaveBindings KkthnxUIConfig KkthnxUIConfigFrame
+-- GLOBALS: SideDressUpModel SideDressUpModelResetButton DressUpModel DressUpFrameResetButton
+-- GLOBALS: TalkingHeadFrame LFDQueueFrame_SetType L_ZONE_ARATHIBASIN L_ZONE_GILNEAS AuctionFrame
+-- GLOBALS: TicketStatusFrame HelpOpenTicketButton HelpOpenWebTicketButton Minimap GMMover UIParent
+
 local _G = _G
 
 local select = select
 local unpack = unpack
 local string_find = string.find
 
--- GLOBALS: GhostFrame, LevelUpDisplay, BossBanner, statusBar, UIErrorsFrame, RaidNotice_AddMessage
--- GLOBALS: RaidBossEmoteFrame, ChatTypeInfo, DurabilityFrame, SaveBindings, KkthnxUIConfig, KkthnxUIConfigFrame
--- GLOBALS: SideDressUpModel, SideDressUpModelResetButton, DressUpModel, DressUpFrameResetButton
--- GLOBALS: TalkingHeadFrame, LFDQueueFrame_SetType, L_ZONE_ARATHIBASIN, L_ZONE_GILNEAS, AuctionFrame
--- GLOBALS: TicketStatusFrame, HelpOpenTicketButton, HelpOpenWebTicketButton, Minimap, GMMover, UIParent
+local CreateFrame = _G.CreateFrame
+local GetCursorInfo = _G.GetCursorInfo
+local GetCVarBool = _G.GetCVarBool
+local InCombatLockdown = _G.InCombatLockdown
+local PlaySound = _G.PlaySound
+local PlaySoundFile = _G.PlaySoundFile
+local SetCVar = _G.SetCVar
 
 local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.wav"
 local Movers = K["Movers"]
@@ -88,20 +99,26 @@ do -- Make InterfaceOptionsFrame moveable.
 	end)
 end
 
+-- skin return to graveyard button
 do
-	GhostFrame:SkinButton(true)
+	GhostFrameMiddle:SetAlpha(0)
+	GhostFrameRight:SetAlpha(0)
+	GhostFrameLeft:SetAlpha(0)
+	GhostFrame:StripTextures()
 	GhostFrame:ClearAllPoints()
-	GhostFrame:SetPoint("TOP", _G.UIParent, "TOP", 0, -270)
-	GhostFrameContentsFrameIcon:SetTexture(nil)
-	local x = _G.CreateFrame("Frame", nil, GhostFrame)
-	x:SetFrameStrata("MEDIUM")
-	x:SetTemplate("Transparent")
-	x:SetOutside(GhostFrameContentsFrameIcon)
-	local tex = x:CreateTexture(nil, "OVERLAY")
-	tex:SetTexture("Interface\\Icons\\spell_holy_guardianspirit")
-	tex:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-	tex:SetAllPoints()
+	GhostFrame:SetPoint("TOP", UIParent, "TOP", 0, -150)
+	GhostFrameContentsFrame:SetTemplate("Transparent")
+	GhostFrameContentsFrameText:SetPoint("TOPLEFT", 53, 0)
+	GhostFrameContentsFrameIcon:SetTexCoord(unpack(K.TexCoords))
+	GhostFrameContentsFrameIcon:SetPoint("RIGHT", GhostFrameContentsFrameText, "LEFT", -12, 0)
+	local b = CreateFrame("Frame", nil, GhostFrameContentsFrameIcon:GetParent())
+	b:SetPoint("TOPLEFT", GhostFrameContentsFrameIcon, -2, 2)
+	b:SetPoint("BOTTOMRIGHT", GhostFrameContentsFrameIcon, 2, -2)
+	GhostFrameContentsFrameIcon:SetSize(37, 38)
+	GhostFrameContentsFrameIcon:SetParent(b)
+	b:SetTemplate("")
 end
+
 
 do -- Move some frames (Elvui)
 	local TicketStatusMover = _G.CreateFrame("Frame", "TicketStatusMoverAnchor", _G.UIParent)

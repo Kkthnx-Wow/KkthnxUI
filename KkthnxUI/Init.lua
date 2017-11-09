@@ -50,6 +50,7 @@ local GetCurrentResolution = _G.GetCurrentResolution
 local GetCVar = _G.GetCVar
 local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
+local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
 local GetScreenResolutions = _G.GetScreenResolutions
 local GetSpecialization = _G.GetSpecialization
@@ -161,7 +162,7 @@ AddOn.MediaPath = "Interface\\AddOns\\KkthnxUI\\Media\\"
 AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 AddOn.OmniCC = select(4, GetAddOnInfo("OmniCC"))
 AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
-AddOn.ScreenWidth, AddOn.ScreenHeight = DecodeResolution(AddOn.Resolution)
+AddOn.ScreenWidth, AddOn.ScreenHeight = GetPhysicalScreenSize()
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}

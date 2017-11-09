@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Tooltip", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 
--- Global variables that we don"t cache
+-- Global variables that we don't cache
 -- luacheck: globals FriendsTooltip ShoppingTooltip1 ShoppingTooltip2 ShoppingTooltip3 WorldMapTooltip
 -- luacheck: globals ItemRefCloseButton RightChatToggleButton BNToastFrame MMHolder GameTooltipText
 -- luacheck: globals ItemRefShoppingTooltip1 ItemRefShoppingTooltip2 ItemRefShoppingTooltip3 AutoCompleteBox
@@ -449,7 +449,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			targetColor = K.Colors.factioncolors[""..UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
 		end
 
-		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget)))
+		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
 	end
 
 	if (color) then
@@ -526,7 +526,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		if not itemLink then return end
 		tt.currentItem = itemLink
 
-		local name, _, rarity, _, _, type, subType, _, _, icon, sellPrice = GetItemInfo(itemLink)
+		local name, _, rarity, _, _, type, subType, _, _, _, _ = GetItemInfo(itemLink)
 
 		if not rarity then
 			rarity = 0
@@ -559,6 +559,7 @@ end
 
 function Module:GameTooltip_ShowStatusBar(tt)
 	if tt:IsForbidden() then return end
+
 	local statusBar = _G[tt:GetName().."StatusBar"..tt.shownStatusBars]
 	if statusBar and not statusBar.skinned then
 		statusBar:SetStatusBarTexture(TooltipTexture)
@@ -571,7 +572,7 @@ function Module:SetStyle(tt)
 
 	for _, tt in pairs(tooltips) do
 		tt:SetBackdrop(nil)
-		tt:StripTextures(true)
+		tt:StripTextures()
 		tt:SetBackdrop({bgFile = C["Media"].Blank, tileSize = 12, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = false, edgeSize = 12, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}})
 		tt:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 		tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
@@ -631,6 +632,22 @@ function Module:SetItemRef(link)
 	end
 end
 
+function Module:CheckBackdropColor()
+	if GameTooltip:IsForbidden() then return end
+	if not GameTooltip:IsShown() then return end
+
+	local r, g, b = GameTooltip:GetBackdropColor()
+	if (r and g and b) then
+		r = K.Round(r, 1)
+		g = K.Round(g, 1)
+		b = K.Round(b, 1)
+		local red, green, blue = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3]
+		if (r ~= red or g ~= green or b ~= blue) then
+			GameTooltip:SetBackdropColor(red, green, blue, C["Media"].BackdropColor[4])
+		end
+	end
+end
+
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
@@ -661,12 +678,14 @@ function Module:OnEnable()
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")
 	self:SecureHook("SetItemRef")
+
 	for _, tt in pairs(tooltips) do
 		self:SecureHookScript(tt, "OnShow", "SetStyle")
 	end
 	for _, tt in pairs(tooltipsOnShow) do
 		self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	end
+
 	self:SecureHook(GameTooltip, "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
@@ -676,6 +695,12 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
+
+	-- Backdrop coloring
+	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
+	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
+	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
+
 
 	-- Variable is localized at top of file, but setting it right away doesn"t work on first session after opening up WoW
 	playerGUID = UnitGUID("player")
