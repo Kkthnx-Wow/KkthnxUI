@@ -429,15 +429,6 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self:Tag(self.GroupRoleIndicatorText, "[KkthnxUI:PartyRole]")
 	end
 
-	-- Group Role Indicator
-	if (unit == "party") then
-		self.GroupRoleIndicatorText = self:CreateFontString(nil, "ARTWORK")
-		self.GroupRoleIndicatorText:SetPoint("TOP", self.Portrait, "BOTTOM", 0, -2)
-		self.GroupRoleIndicatorText:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
-		self.GroupRoleIndicatorText:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
-		self:Tag(self.GroupRoleIndicatorText, "[KkthnxUI:PartyRole]")
-	end
-
 	-- Phase Indicator
 	if (unit == "target") then
 		self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
