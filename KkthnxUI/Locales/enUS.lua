@@ -186,7 +186,8 @@ L.Tooltip = {
 
 -- UnitFrames Localization
 L.Unitframes = {
-
+	Dead = "Dead",
+	Ghost = "Ghost",
 }
 
 -- Config Localization

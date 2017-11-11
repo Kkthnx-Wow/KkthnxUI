@@ -57,9 +57,9 @@ end
 
 local function GetUnitStatus(unit)
 	if (UnitIsDead(unit)) then
-		return DEAD
+		return L.Unitframes.Dead -- local Raidunitframe Dead
 	elseif (UnitIsGhost(unit)) then
-		return GHOST
+		return L.Unitframes.Ghost -- local Raidunitframe Ghost
 	elseif (not UnitIsConnected(unit)) then
 		return PLAYER_OFFLINE
 	else
@@ -162,11 +162,11 @@ local function CreateRaidLayout(self, unit)
 
 	-- Mouseover darklight
 	if (C["Raidframe"].ShowMouseoverHighlight) then
-		self.MouseoverIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-		self.MouseoverIndicator:SetAllPoints(self.Health)
-		self.MouseoverIndicator:SetTexture(C["Media"].Texture)
-		self.MouseoverIndicator:SetVertexColor(0, 0, 0)
-		self.MouseoverIndicator:SetAlpha(0)
+		self.Mouseover = self.Health:CreateTexture(nil, "OVERLAY")
+		self.Mouseover:SetAllPoints(self.Health)
+		self.Mouseover:SetTexture(C.Media.Texture)
+		self.Mouseover:SetVertexColor(0, 0, 0)
+		self.Mouseover:SetAlpha(0)
 	end
 
 	self.RaidStatusIndicator = self.Overlay:CreateFontString(nil, "OVERLAY")
