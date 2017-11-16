@@ -33,16 +33,17 @@ if GetLocale() == "deDE" then
 end
 
 local function UpdateThreat(self, _, unit)
-	if unit ~= self.unit then return end
+    if unit ~= self.unit then return end
     local status = UnitThreatSituation(unit)
-    local threat = self.Threat
+    local threat = self.ThreatIndicator
 
     local r, g, b
     if status and status > 0 then
         r,g,b = GetThreatStatusColor(status)
-        threat:SetBackdropBorderColor(r, g, b, .5)
+        self.Health:SetBackdropBorderColor(r, g, b, 1)
         threat:Show()
     else
+        self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
         threat:Hide()
     end
 end
@@ -110,11 +111,11 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-    self.Threat = CreateFrame("Frame", nil, self.Health)
-    self.Threat:SetTemplate()
-    self.Threat:SetAllPoints()
-    self.Threat:Hide()
-    self.Threat.Override = UpdateThreat
+    -- self.Threat = CreateFrame("Frame", nil, self.Health)
+    -- self.Threat:SetTemplate()
+    -- self.Threat:SetAllPoints()
+    -- self.Threat:Hide()
+    -- self.Threat.Override = UpdateThreat
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
@@ -159,7 +160,12 @@ local function CreateRaidLayout(self, unit)
 		self.AFKIndicator:SetTextColor(0, 1, 0)
 		self:Tag(self.AFKIndicator, "[KkthnxUI:AFK]")
 	end
-
+	
+	-- ThreatIndicator
+    self.ThreatIndicator = CreateFrame("Frame", nil, self.Health)
+    self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0)
+    self.ThreatIndicator.Override = UpdateThreat
+	
 	-- Mouseover darklight
 	if (C["Raidframe"].ShowMouseoverHighlight) then
 		self.Mouseover = self.Health:CreateTexture(nil, "OVERLAY")
