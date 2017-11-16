@@ -62,9 +62,15 @@ C["Automation"] = {
 	["ScreenShot"] = false,
 }
 
---[[C["Inventory"] = {
-
-}--]]
+C["Bags"] = {
+	["ButtonSize"] = 32,
+	["Enable"] = true,
+	["InsertLeftToRight"] = true,
+	["ItemsPerRow"] = 11,
+	["SortRightToLeft"] = false,
+	["Spacing"] = 4,
+	["PulseNewItem"] = true,
+}
 
 -- Buffs & Debuffs
 C["Auras"] = {
