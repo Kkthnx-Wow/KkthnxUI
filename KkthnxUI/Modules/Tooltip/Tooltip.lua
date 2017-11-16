@@ -571,10 +571,9 @@ function Module:SetStyle(tt)
 	if tt:IsForbidden() then return end
 
 	for _, tt in pairs(tooltips) do
-		tt:SetBackdrop(nil)
-		tt:StripTextures()
+		--tt:SetBackdrop(nil)
+		--tt:StripTextures()
 		-- tt:SetBackdrop({bgFile = C["Media"].Blank, tileSize = 12, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = false, edgeSize = 12, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}})
-		tt:CreateBackdrop("Transparent", false)
 		tt:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 		tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
