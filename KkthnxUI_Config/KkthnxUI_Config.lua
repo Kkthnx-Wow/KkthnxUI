@@ -1190,6 +1190,6 @@ do
 	SLASH_CONFIG1 = "/config"
 	SLASH_CONFIG2 = "/cfg"
 	SLASH_CONFIG3 = "/configui"
-	SLASH_CONFIG4 = "/rc"
+	SLASH_CONFIG4 = "/kc"
 	SLASH_CONFIG5 = "/kkthnxui"
 end
