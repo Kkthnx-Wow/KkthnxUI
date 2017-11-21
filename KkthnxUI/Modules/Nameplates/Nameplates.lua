@@ -403,12 +403,12 @@ local function CallbackUpdate(self, event, unit)
 		self.Power:Show()
 		self.Name:Hide()
 		self.Castbar:SetAlpha(0)
-		self.RaidIcon:SetAlpha(0)
+		self.RaidTargetIndicator:SetAlpha(0)
 	else
 		self.Power:Hide()
 		self.Name:Show()
 		self.Castbar:SetAlpha(1)
-		self.RaidIcon:SetAlpha(1)
+		self.RaidTargetIndicator:SetAlpha(1)
 	end
 end
 
@@ -544,9 +544,9 @@ local function StyleUpdate(self, unit)
 	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 18, 8)
 
 	-- Raid Icon
-	self.RaidIcon = self:CreateTexture(nil, "OVERLAY", nil, 7)
-	self.RaidIcon:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
-	self.RaidIcon:SetPoint("BOTTOM", self.Health, "TOP", 0, C["Nameplates"].TrackAuras == true and 38 or 16)
+	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY", nil, 7)
+	self.RaidTargetIndicator:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
+	self.RaidTargetIndicator:SetPoint("BOTTOM", self.Health, "TOP", 0, C["Nameplates"].TrackAuras == true and 38 or 16)
 
 	-- Create Totem Icon
 	if C["Nameplates"].TotemIcons == true then
