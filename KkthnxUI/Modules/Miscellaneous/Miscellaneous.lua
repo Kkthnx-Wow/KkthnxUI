@@ -117,6 +117,14 @@ do
 	GhostFrameContentsFrameIcon:SetSize(37, 38)
 	GhostFrameContentsFrameIcon:SetParent(b)
 	b:SetTemplate("")
+	local x = CreateFrame("Frame", nil, GhostFrame)
+	x:SetFrameStrata("MEDIUM")
+	x:CreateBackdrop()
+	x:SetOutside(GhostFrameContentsFrameIcon)
+	local tex = x:CreateTexture(nil, "OVERLAY")
+	tex:SetTexture("Interface\\Icons\\spell_holy_guardianspirit")
+	tex:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+	tex:SetInside()
 end
 
 
