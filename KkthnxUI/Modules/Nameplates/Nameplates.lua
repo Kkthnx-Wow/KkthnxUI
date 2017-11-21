@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+if C["Nameplates"].Enable ~= true then return end
 
 -- oUF_Kkthnx Nameplates
 local _, ns = ...
