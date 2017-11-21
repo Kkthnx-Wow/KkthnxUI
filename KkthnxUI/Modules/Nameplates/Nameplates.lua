@@ -387,36 +387,33 @@ local function CustomTimeText(self, duration)
 end
 
 local function CallbackUpdate(self, event, unit)
-	local unit = unit or "target"
-	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
-	if not nameplate then return end
-	local self = nameplate.ouf
+	if unit then
+		local name = UnitName(unit)
+		if name and K.PlateBlacklist[name] then
+			self:Hide()
+		else
+			self:Show()
+		end
 
-	local name = UnitName(unit)
-	if name and K.PlateBlacklist[name] then
-		self:Hide()
-	else
-		self:Show()
-	end
-
-	if UnitIsUnit(unit, "player") then
-		self.Power:Show()
-		self.Name:Hide()
-		self.Castbar:SetAlpha(0)
-		self.RaidTargetIndicator:SetAlpha(0)
-	else
-		self.Power:Hide()
-		self.Name:Show()
-		self.Castbar:SetAlpha(1)
-		self.RaidTargetIndicator:SetAlpha(1)
+		if UnitIsUnit(unit, "player") then
+			self.Power:Show()
+			self.Name:Hide()
+			self.Castbar:SetAlpha(0)
+			self.RaidIcon:SetAlpha(0)
+		else
+			self.Power:Hide()
+			self.Name:Show()
+			self.Castbar:SetAlpha(1)
+			self.RaidIcon:SetAlpha(1)
+		end
 	end
 end
 
 local function StyleUpdate(self, unit)
 	local nameplate = C_NamePlate.GetNamePlateForUnit(unit)
 	local main = self
-	nameplate.ouf = self
 	self.unit = unit
+
 	self:SetPoint("CENTER", nameplate, "CENTER")
 	self:SetSize(C["Nameplates"].Width * K.NoScaleMult, C["Nameplates"].Height * K.NoScaleMult)
 
