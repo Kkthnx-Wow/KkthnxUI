@@ -581,31 +581,37 @@ oUF:Factory(function(self)
 
 	local player = self:Spawn("player", "oUF_KkthnxPlayer")
 	player:SetSize(190, 52)
+	player:SetScale(C["Unitframe"].Scale)  
 	player:SetPoint(unpack(C.Position.UnitFrames.Player))
 	K.Movers:RegisterFrame(player)
 
 	local pet = self:Spawn("pet", "oUF_KkthnxPet")
 	pet:SetSize(116, 36)
+	pet:SetScale(C["Unitframe"].Scale)  
 	pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
 	K.Movers:RegisterFrame(pet)
 
 	local target = self:Spawn("target", "oUF_KkthnxTarget")
 	target:SetSize(190, 52)
+	target:SetScale(C["Unitframe"].Scale)  
 	target:SetPoint(unpack(C.Position.UnitFrames.Target))
 	K.Movers:RegisterFrame(target)
 
 	local targettarget = self:Spawn("targettarget", "oUF_KkthnxTargetTarget")
 	targettarget:SetSize(116, 36)
+	targettarget:SetScale(C["Unitframe"].Scale)  
 	targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
 	K.Movers:RegisterFrame(targettarget)
 
 	local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
 	focus:SetSize(190, 52)
+	focus:SetScale(C["Unitframe"].Scale)  
 	focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
 	K.Movers:RegisterFrame(focus)
 
 	local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
 	focustarget:SetSize(116, 36)
+	focustarget:SetScale(C["Unitframe"].Scale)  
 	focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
 	K.Movers:RegisterFrame(focustarget)
 
@@ -628,6 +634,7 @@ oUF:Factory(function(self)
 		"yOffset", -40
 		)
 		party:SetPoint(unpack(C.Position.UnitFrames.Party))
+		party:SetScale(C["Unitframe"].Scale)  
 		K.Movers:RegisterFrame(party)
 	end
 
@@ -638,6 +645,7 @@ oUF:Factory(function(self)
 			Boss[i]:SetParent(K.PetBattleHider)
 
 			Boss[i]:SetSize(190, 52)
+			Boss[i]:SetScale(C["Unitframe"].Scale)  
 			if (i == 1) then
 				Boss[i]:SetPoint(unpack(C.Position.UnitFrames.Boss))
 			else
@@ -652,6 +660,7 @@ oUF:Factory(function(self)
 		for i = 1, 5 do
 			arena[i] = self:Spawn("arena"..i, "oUF_KkthnxArenaFrame"..i)
 			arena[i]:SetSize(190, 52)
+			arena[i]:SetScale(C["Unitframe"].Scale)  
 			if (i == 1) then
 				arena[i]:SetPoint(unpack(C.Position.UnitFrames.Arena))
 			else

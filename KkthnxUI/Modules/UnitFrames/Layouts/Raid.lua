@@ -320,5 +320,6 @@ if C["Raidframe"].MainTankFrames then
 	"template", "oUF_Kkthnx_Raid_MT"
 	)
 	raidtank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+	raidtank:SetScale(C["Raidframe"].Scale)
 	Movers:RegisterFrame(raidtank)
 end

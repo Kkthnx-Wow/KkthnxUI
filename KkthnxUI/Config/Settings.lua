@@ -275,6 +275,7 @@ C["Unitframe"] = {
 	["Party"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
+	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
 	["ShowPlayer"] = true,
@@ -316,6 +317,7 @@ C["Raidframe"] = {
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Width"] = 56,
+	["Scale"] = 1,
 }
 
 -- Worldmap
