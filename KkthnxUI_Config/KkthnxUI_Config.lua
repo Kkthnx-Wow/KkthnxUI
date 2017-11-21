@@ -1174,3 +1174,22 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ConfigFrame:Hide()
 	GameMenuFrame:HookScript("OnShow", function() ConfigFrame:Hide() end)
 end
+
+do
+	function SlashCmdList.CONFIG(msg, editbox)
+		if (not KkthnxUIConfigFrame) then
+			KkthnxUIConfig:CreateConfigWindow()
+		end
+		if KkthnxUIConfigFrame:IsVisible() then
+			KkthnxUIConfigFrame:Hide()
+		else
+			KkthnxUIConfigFrame:Show()
+		end
+			HideUIPanel(GameMenuFrame)
+	end
+	SLASH_CONFIG1 = "/config"
+	SLASH_CONFIG2 = "/cfg"
+	SLASH_CONFIG3 = "/configui"
+	SLASH_CONFIG4 = "/kc"
+	SLASH_CONFIG5 = "/kkthnxui"
+end

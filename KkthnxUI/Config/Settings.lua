@@ -62,9 +62,15 @@ C["Automation"] = {
 	["ScreenShot"] = false,
 }
 
---[[C["Inventory"] = {
-
-}--]]
+C["Bags"] = {
+	["ButtonSize"] = 32,
+	["Enable"] = true,
+	["InsertLeftToRight"] = true,
+	["ItemsPerRow"] = 11,
+	["SortRightToLeft"] = false,
+	["Spacing"] = 4,
+	["PulseNewItem"] = true,
+}
 
 -- Buffs & Debuffs
 C["Auras"] = {
@@ -269,6 +275,7 @@ C["Unitframe"] = {
 	["Party"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
+	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
 	["ShowPlayer"] = true,
@@ -310,6 +317,7 @@ C["Raidframe"] = {
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Width"] = 56,
+	["Scale"] = 1,
 }
 
 -- Worldmap
