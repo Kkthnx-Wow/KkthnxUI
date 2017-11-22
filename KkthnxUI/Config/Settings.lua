@@ -146,6 +146,7 @@ C["General"] = {
 	["AutoScale"] = true,
 	["BubbleFontSize"] = 12,
 	["ColorTextures"] = false,
+	["ConfigButton"] = true,
 	["DisableTutorialButtons"] = false,
 	--["Font"] = "KkthnxUI Font",
 	["FontSize"] = 12,

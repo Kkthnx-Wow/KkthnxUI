@@ -23,6 +23,11 @@ local ToggleFrame = _G.ToggleFrame
 
 local Lines = {}
 local CopyFrame
+local factionGroup = UnitFactionGroup("player")
+
+if factionGroup == "Neutral" then
+		factionGroup = "Panda"
+end
 
 local function RemoveIconFromLine(text)
 	for i= 1, 8 do
@@ -182,7 +187,7 @@ function CopyChat:OnEnable()
 		CopyFrame:Hide()
 	end)
 
-	-- Create copy button
+		-- Create copy button
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G["ChatFrame"..i]
 		local id = frame:GetID()
@@ -198,20 +203,112 @@ function CopyChat:OnEnable()
 		CopyButton:SetScript("OnMouseUp", function(self, button)
 			if button == "RightButton" and id == 1 and not InCombatLockdown() then
 				ToggleFrame(ChatMenu)
-			else
+			elseif button == "MiddleButton" then
+				RandomRoll(1, 100)
+			else 
 				CopyChat:CopyText(self.ChatFrame)
 			end
 		end)
 
-		CopyButton:SetScript("OnEnter", function(self) self:SetAlpha(1) end)
+		CopyButton:SetScript("OnEnter", function(self)
+		self:SetAlpha(1)
+		local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine(L.ConfigButton.Functions)
+		GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, "Copy chat", 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, "Emotions", 1, 1, 1)
+		GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Roll, 1, 1, 1)
+		GameTooltip:Show()
+		end)
 		CopyButton:SetScript("OnLeave", function(self)
 			if _G[self:GetParent():GetName().."TabText"]:IsShown() then
 				self:SetAlpha(0.25)
 			else
 				self:SetAlpha(0)
 			end
+		GameTooltip:Hide()
+		end)
+		
+		-- Create Configbutton
+		if C["General"].ConfigButton == true then
+		local ConfigButton = CreateFrame("Button", string_format("CopyChatButton2%d", id), frame)
+		ConfigButton:EnableMouse(true)
+		ConfigButton:SetSize(22, 24)
+		ConfigButton:SetPoint("TOPRIGHT", 0, -22)
+		ConfigButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\ClassIcons\\FACTION-"..factionGroup)
+		ConfigButton:SetAlpha(0.25)
+		ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+
+		ConfigButton:SetScript("OnMouseUp", function(self, button)
+		if(InCombatLockdown() and not button == "RightButton") then
+			K.Print(ERR_NOT_IN_COMBAT)
+			return
+		end
+
+		if button == "LeftButton" then
+			local Movers = K.Movers
+			Movers:StartOrStopMoving()
+		end
+
+		if button == "RightButton" then
+			if IsAddOnLoaded("Recount") then
+				if Recount_MainWindow:IsShown() then
+					Recount_MainWindow:Hide()
+				else
+					Recount_MainWindow:Show()
+				end
+			end
+			if IsAddOnLoaded("Skada") then
+				Skada:ToggleWindow()
+			end
+			if IsAddOnLoaded("Details") then
+				_detalhes:ToggleWindows()
+			end
+		end
+		if button == "MiddleButton" then
+				if (not KkthnxUIConfigFrame) then
+					KkthnxUIConfig:CreateConfigWindow()
+				end
+				if KkthnxUIConfigFrame:IsVisible() then
+					KkthnxUIConfigFrame:Hide()
+				else
+					KkthnxUIConfigFrame:Show()
+				end
+					HideUIPanel(GameMenuFrame)
+			end
 		end)
 
+		ConfigButton:SetScript("OnEnter", function(self) 
+		self:SetAlpha(1)
+		local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+		GameTooltip:SetOwner(self, anchor, xoff, yoff)
+		GameTooltip:ClearLines()
+		GameTooltip:AddLine(L.ConfigButton.Functions)
+		GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, L.ConfigButton.MoveUI, 1, 1, 1)
+		if IsAddOnLoaded("Recount") then
+			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Recount, 1, 1, 1)
+		end
+		if IsAddOnLoaded("Skada") then
+			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Skada, 1, 1, 1)
+		end
+		if IsAddOnLoaded("Details") then
+			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Details, 1, 1, 1)
+		end
+		GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Config, 1, 1, 1)
+		GameTooltip:Show()
+		end)
+		ConfigButton:SetScript("OnLeave", function(self)
+			if _G[self:GetParent():GetName().."TabText"]:IsShown() then
+				self:SetAlpha(0.25)
+			else
+				self:SetAlpha(0)
+			end
+			GameTooltip:Hide()
+		end)
+		
+		ConfigButton.ChatFrame = frame
+		end
 		CopyButton.ChatFrame = frame
 	end
 end
