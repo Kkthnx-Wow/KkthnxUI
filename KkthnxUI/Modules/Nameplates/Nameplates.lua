@@ -399,12 +399,12 @@ local function CallbackUpdate(self, event, unit)
 			self.Power:Show()
 			self.Name:Hide()
 			self.Castbar:SetAlpha(0)
-			self.RaidIcon:SetAlpha(0)
+			self.RaidTargetIndicator:SetAlpha(0)
 		else
 			self.Power:Hide()
 			self.Name:Show()
 			self.Castbar:SetAlpha(1)
-			self.RaidIcon:SetAlpha(1)
+			self.RaidTargetIndicator:SetAlpha(1)
 		end
 	end
 end
