@@ -93,6 +93,23 @@ L.Chat = {
 	Yells = "Y",
 }
 
+-- Configbutton Localization
+L.ConfigButton = {
+	Functions = "Functions",
+	LeftClick = "Left click:",
+	RightClick = "Right click:",
+	MiddleClick = "Middle click:",
+	ShiftClickl = "Shift + Left click:",
+	ShiftClickr = "Shift + Right click:",
+	AltClickl = "Alt + Left click:",
+	MoveUI = "Move UI elements",
+	Recount = "Show/Hide Recount",
+	Skada = "Show/Hide Skada",
+	Details = "Show/Hide Details",
+	Config = "Open KkthnxUI Configmenu",
+	Roll = "Roll 1-100. You win!",
+}
+
 -- Databars Localization
 L.Databars = {
 	Toggle_Artifact = "<Left-Click to toggle Artifact Window>",
