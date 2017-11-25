@@ -30,7 +30,7 @@ local function pull(self, elapsed)
 		target = ""
 	end
 	if not firstdone then
-		SendChatMessage(string_format(L["Pulling %s in %s.."], target, tostring(delay)), K.CheckChat(true))
+		SendChatMessage(string_format("Pulling %s in %s..", target, tostring(delay)), K.CheckChat(true))
 		firstdone = true
 		delay = delay - 1
 	end
@@ -41,7 +41,7 @@ local function pull(self, elapsed)
 			SendChatMessage(tostring(delay).."..", K.CheckChat(true))
 			delay = delay - 1
 		else
-			SendChatMessage(L["GO!"], K.CheckChat(true))
+			SendChatMessage("GO!", K.CheckChat(true))
 			reset()
 		end
 	end
