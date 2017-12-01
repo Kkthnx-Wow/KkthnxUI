@@ -275,4 +275,194 @@ K.RaidDebuffs = {
 	[SpellName(208802)] = 6, -- Soul Corrosion
 	[SpellName(210339)] = 6, -- Time Dilation
 	[SpellName(212686)] = 6, -- Flames of Sargeras
+	-- Tomb of Sargeras
+	-- Goroth
+	[SpellName(233279)] = 6, -- Shattering Star
+	[SpellName(230345)] = 6, -- Crashing Comet (Dot)
+	[SpellName(232249)] = 6, -- Crashing Comet
+	[SpellName(231363)] = 6, -- Burning Armor
+	[SpellName(234264)] = 6, -- Melted Armor
+	[SpellName(233062)] = 6, -- Infernal Burning
+	[SpellName(230348)] = 6, -- Fel Pool
+	-- Demonic Inquisition
+	[SpellName(233430)] = 6, -- Ubearable Torment
+	[SpellName(233983)] = 6, -- Echoing Anguish
+	[SpellName(248713)] = 6, -- Soul Corruption
+	-- Harjatan
+	[SpellName(231770)] = 6, -- Drenched
+	[SpellName(231998)] = 6, -- Jagged Abrasion
+	[SpellName(231729)] = 6, -- Aqueous Burst
+	[SpellName(234128)] = 6, -- Driven Assault
+	[SpellName(234016)] = 6, -- Driven Assault
+	-- Sisters of the Moon
+	[SpellName(236603)] = 6, -- Rapid Shot
+	[SpellName(236596)] = 6, -- Rapid Shot
+	[SpellName(234995)] = 6, -- Lunar Suffusion
+	[SpellName(234996)] = 6, -- Umbra Suffusion
+	[SpellName(236519)] = 6, -- Moon Burn
+	[SpellName(236697)] = 6, -- Deathly Screech
+	[SpellName(239264)] = 6, -- Lunar Flare (Tank)
+	[SpellName(236712)] = 6, -- Lunar Beacon
+	[SpellName(236304)] = 6, -- Incorporeal Shot
+	[SpellName(236305)] = 6, -- Incorporeal Shot -- (Heroic)
+	[SpellName(236306)] = 6, -- Incorporeal Shot
+	[SpellName(237570)] = 6, -- Incorporeal Shot
+	[SpellName(248911)] = 6, -- Incorporeal Shot
+	[SpellName(236550)] = 6, -- Discorporate (Tank)
+	[SpellName(236330)] = 6, -- Astral Vulnerability
+	[SpellName(236529)] = 6, -- Twilight Glaive
+	[SpellName(236541)] = 6, -- Twilight Glaive
+	[SpellName(237561)] = 6, -- Twilight Glaive -- (Heroic)
+	[SpellName(237633)] = 6, -- Spectral Glaive
+	[SpellName(233263)] = 6, -- Embrace of the Eclipse
+	-- Mistress Sassz'ine
+	[SpellName(230959)] = 6, -- Concealing Murk
+	[SpellName(232732)] = 6, -- Slicing Tornado
+	[SpellName(232913)] = 6, -- Befouling Ink
+	[SpellName(234621)] = 6, -- Devouring Maw
+	[SpellName(230201)] = 6, -- Burden of Pain (Tank)
+	[SpellName(230139)] = 6, -- Hydra Shot
+	[SpellName(232754)] = 6, -- Hydra Acid
+	[SpellName(230920)] = 6, -- Consuming Hunger
+	[SpellName(230358)] = 6, -- Thundering Shock
+	[SpellName(230362)] = 6, -- Thundering Shock
+	-- The Desolate Host
+	[SpellName(236072)] = 6, -- Wailing Souls
+	[SpellName(236449)] = 6, -- Soulbind
+	[SpellName(236515)] = 6, -- Shattering Scream
+	[SpellName(235989)] = 6, -- Tormented Cries
+	[SpellName(236241)] = 6, -- Soul Rot
+	[SpellName(236361)] = 6, -- Spirit Chains
+	[SpellName(235968)] = 6, -- Grasping Darkness
+	-- Maiden of Vigilance
+	[SpellName(235117)] = 6, -- Unstable Soul
+	[SpellName(240209)] = 6, -- Unstable Soul
+	[SpellName(243276)] = 6, -- Unstable Soul
+	[SpellName(249912)] = 6, -- Unstable Soul
+	[SpellName(235534)] = 6, -- Creator's Grace
+	[SpellName(235538)] = 6, -- Demon's Vigor
+	[SpellName(234891)] = 6, -- Wrath of the Creators
+	[SpellName(235569)] = 6, -- Hammer of Creation
+	[SpellName(235573)] = 6, -- Hammer of Obliteration
+	[SpellName(235213)] = 6, -- Light Infusion
+	[SpellName(235240)] = 6, -- Fel Infusion
+	-- Fallen Avatar
+	[SpellName(239058)] = 6, -- Touch of Sargeras
+	[SpellName(239739)] = 6, -- Dark Mark
+	[SpellName(234059)] = 6, -- Unbound Chaos
+	[SpellName(240213)] = 6, -- Chaos Flames
+	[SpellName(236604)] = 6, -- Shadowy Blades
+	[SpellName(236494)] = 6, -- Desolate (Tank)
+	[SpellName(240728)] = 6, -- Tainted Essence
+	-- Kil'jaeden
+	[SpellName(238999)] = 6, -- Darkness of a Thousand Souls
+	[SpellName(239216)] = 6, -- Darkness of a Thousand Souls (Dot)
+	[SpellName(239155)] = 6, -- Gravity Squeeze
+	[SpellName(234295)] = 6, -- Armageddon Rain
+	[SpellName(240908)] = 6, -- Armageddon Blast
+	[SpellName(239932)] = 6, -- Felclaws (Tank)
+	[SpellName(240911)] = 6, -- Armageddon Hail
+	[SpellName(238505)] = 6, -- Focused Dreadflame
+	[SpellName(238429)] = 6, -- Bursting Dreadflame
+	[SpellName(236710)] = 6, -- Shadow Reflection: Erupting
+	[SpellName(241822)] = 6, -- Choking Shadow
+	[SpellName(236555)] = 6, -- Deceiver's Veil
+	[SpellName(234310)] = 6, -- Armageddon Rain
+	-- Antorus, the Burning Throne
+	-- Garothi Worldbreaker
+	[SpellName(244761)] = 6, -- Annihilation
+	[SpellName(246369)] = 6, -- Searing Barrage
+	[SpellName(246848)] = 6, -- Luring Destruction
+	[SpellName(246220)] = 6, -- Fel Bombardment
+	[SpellName(247159)] = 6, -- Luring Destruction
+	[SpellName(244122)] = 6, -- Carnage
+	-- Felhounds of Sargeras
+	[SpellName(245022)] = 6, -- Burning Remnant
+	[SpellName(251445)] = 6, -- Smouldering
+	[SpellName(251448)] = 6, -- Burning Maw
+	[SpellName(244086)] = 6, -- Molten Touch
+	[SpellName(244091)] = 6, -- Singed
+	[SpellName(244768)] = 6, -- Desolate Gaze
+	[SpellName(244767)] = 6, -- Desolate Path
+	[SpellName(244471)] = 6, -- Enflame Corruption
+	[SpellName(248815)] = 6, -- Enflamed
+	[SpellName(244517)] = 6, -- Lingering Flames
+	[SpellName(245098)] = 6, -- Decay
+	[SpellName(251447)] = 6, -- Corrupting Maw
+	[SpellName(244131)] = 6, -- Consuming Sphere
+	[SpellName(245024)] = 6, -- Consumed
+	[SpellName(244071)] = 6, -- Weight of Darkness
+	[SpellName(244578)] = 6, -- Siphon Corruption
+	[SpellName(248819)] = 6, -- Siphoned
+	-- Antoran High Command
+	[SpellName(245121)] = 6, -- Entropic Blast
+	[SpellName(244748)] = 6, -- Shocked
+	[SpellName(244824)] = 6, -- Warp Field
+	[SpellName(244892)] = 6, -- Exploit Weakness
+	[SpellName(244172)] = 6, -- Psychic Assault
+	[SpellName(244388)] = 6, -- Psychic Scarring
+	[SpellName(244420)] = 6, -- Chaos Pulse
+	-- Portal Keeper Hasabel
+	[SpellName(244016)] = 6, -- Reality Tear
+	[SpellName(245157)] = 6, -- Everburning Light
+	[SpellName(245075)] = 6, -- Hungering Gloom
+	[SpellName(245240)] = 6, -- Oppressive Gloom
+	[SpellName(244709)] = 6, -- Fiery Detonation
+	[SpellName(246208)] = 6, -- Acidic Web
+	[SpellName(246075)] = 6, -- Catastrophic Implosion
+	[SpellName(244826)] = 6, -- Fel Miasma
+	[SpellName(246316)] = 6, -- Poison Essence
+	[SpellName(244849)] = 6, -- Caustic Slime
+	[SpellName(245118)] = 6, -- Cloying Shadows
+	[SpellName(245050)] = 6, -- Delusions
+	[SpellName(245040)] = 6, -- Corrupt
+	[SpellName(244926)] = 6, -- Felsilk Wrap
+	[SpellName(244607)] = 6, -- Flames of Xoroth
+	-- Eonar the Life-Binder
+	[SpellName(248326)] = 6, -- Rain of Fel
+	[SpellName(248861)] = 6, -- Spear of Doom
+	[SpellName(249016)] = 6, -- Feedback - Targeted
+	[SpellName(249015)] = 6, -- Feedback - Burning Embers
+	[SpellName(249014)] = 6, -- Feedback - Foul Steps
+	[SpellName(249017)] = 6, -- Feedback - Arcane Singularity
+	-- Imonar the Soulhunter
+	[SpellName(248424)] = 6, -- Gathering Power
+	[SpellName(247552)] = 6, -- Sleep Canister
+	[SpellName(247565)] = 6, -- Slumber Gas
+	[SpellName(250224)] = 6, -- Shocked
+	[SpellName(248252)] = 6, -- Infernal Rockets
+	[SpellName(247687)] = 6, -- Sever
+	[SpellName(247716)] = 6, -- Charged Blasts
+	[SpellName(250255)] = 6, -- Empowered Shock Lance
+	[SpellName(247641)] = 6, -- Stasis Trap
+	-- Kin'garoth
+	[SpellName(233062)] = 6, -- Infernal Burning
+	[SpellName(230345)] = 6, -- Crashing Comet
+	[SpellName(244312)] = 6, -- Forging Strike
+	[SpellName(246840)] = 6, -- Ruiner
+	[SpellName(248061)] = 6, -- Purging Protocol
+	[SpellName(246706)] = 6, -- Demolish
+	-- Varimathras
+	[SpellName(244042)] = 6, -- Marked Prey
+	[SpellName(243961)] = 6, -- Misery
+	[SpellName(248732)] = 6, -- Echoes of Doom
+	[SpellName(244093)] = 6, -- Necrotic Embrace
+	-- The Coven of Shivarra
+	[SpellName(244899)] = 6, -- Fiery Strike
+	[SpellName(245518)] = 6, -- Flashfreeze
+	[SpellName(245586)] = 6, -- Chilled Blood
+	[SpellName(246763)] = 6, -- Fury of Golganneth
+	[SpellName(245674)] = 6, -- Flames of Khaz'goroth
+	[SpellName(245910)] = 6, -- Spectral Army of Norgannon
+	-- Aggramar
+	[SpellName(244291)] = 6, -- Foe Breaker
+	[SpellName(245995)] = 6, -- Scorching Blaze
+	[SpellName(246014)] = 6, -- Searing Tempest
+	[SpellName(244912)] = 6, -- Blazing Eruption
+	[SpellName(247135)] = 6, -- Scorched Earth
+	[SpellName(247091)] = 6, -- Catalyzed
+	[SpellName(245631)] = 6, -- Unchecked Flame
+	[SpellName(245916)] = 6, -- Molten Remnants
+	-- Argus the Unmaker
+	-- [SpellName()] = 6, --
 }

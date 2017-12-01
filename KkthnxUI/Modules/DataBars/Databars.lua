@@ -59,7 +59,7 @@ local function Bar_OnHide(self)
 end
 
 function Module:CreateBar(name, anchorFrame, height)
-    local bar = CreateFrame("StatusBar", name, UIParent)
+    local bar = CreateFrame("StatusBar", name, K.PetBattleHider)
     bar:SetTemplate("Transparent")
     bar:SetFrameStrata("LOW")
     bar:SetHeight(height)
