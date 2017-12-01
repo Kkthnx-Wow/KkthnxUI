@@ -67,7 +67,7 @@ function Module:InitializePaperDoll()
 end
 
 function Module:UpdateEquippeditemLevels(event, ...)
-    if (event == "UNIT_INVENTORY_CHANGED") then
+	if (event == "UNIT_INVENTORY_CHANGED") then
 		local unit = ...
 		if (unit ~= "player") then
 			return
@@ -98,7 +98,7 @@ function Module:UpdateEquippeditemLevels(event, ...)
 
 					mainHandLevel = effectiveLevel or mainHandLevel
 
-					if (mainHandLevel > ilvl) and (mainHandRarity == 6) then
+					if (mainHandLevel and (mainHandLevel > ilvl)) and (mainHandRarity and (mainHandRarity == 6)) then
 						ilvl = mainHandLevel
 					end
 				end
@@ -145,7 +145,13 @@ function Module:UpdateEquippeditemLevels(event, ...)
 				itemLevel:SetTextColor(1, 1, 0)
 				itemLevel.shade:SetVertexColor(1, 1, 0)
 			end
-			itemLevel:SetText(ilvl or "")
+			if ilvl then
+				itemLevel:SetText(ilvl)
+				itemLevel.shade:Show()
+			else
+				itemLevel:SetText("")
+				itemLevel.shade:Hide()
+			end
 		else
 			local iconBorder = itemButton.IconBorder
 			if iconBorder then
@@ -158,6 +164,7 @@ function Module:UpdateEquippeditemLevels(event, ...)
 				end
 			end
 			itemLevel:SetText("")
+			itemLevel.shade:Hide()
 		end
 	end
 
@@ -173,8 +180,8 @@ function Module:OnEnable()
 end
 
 function Module:OnDisable()
-    self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-    self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-    self:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
-    self:UnregisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	self:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
+	self:UnregisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM")
 end
