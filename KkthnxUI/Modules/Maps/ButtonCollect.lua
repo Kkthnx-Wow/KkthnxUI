@@ -225,7 +225,7 @@ function K:PositionButtonCollector(self)
 end
 
 function K:ButtonCollector()
-	MinimapButtonCollectFrame = CreateFrame("Frame", "MinimapButtonCollectFrame", UIParent)
+	MinimapButtonCollectFrame = CreateFrame("Frame", "MinimapButtonCollectFrame", K.PetBattleHider)
 	if select(3, Minimap:GetPoint()):upper():find("TOP") then
 		MinimapButtonCollectFrame:SetPoint("BOTTOMLEFT", Minimap, "TOPLEFT", 0, 5)
 	else
