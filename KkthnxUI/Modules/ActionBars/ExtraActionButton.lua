@@ -21,7 +21,7 @@ end
 local function FixExtraActionCD(cd)
 	local start, duration = GetActionCooldown(cd:GetParent().action)
 	cd:SetHideCountdownNumbers(true)
-	K.Cooldowns:Start(start, duration, 0, 0)
+	--K.Cooldowns:Start(start, duration, 0, 0)
 end
 
 function Module:OnEnable(texture, loop)

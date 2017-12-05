@@ -454,6 +454,7 @@ K.RaidDebuffs = {
 	[SpellName(246763)] = 6, -- Fury of Golganneth
 	[SpellName(245674)] = 6, -- Flames of Khaz'goroth
 	[SpellName(245910)] = 6, -- Spectral Army of Norgannon
+	[SpellName(253520)] = 6, -- Fulminating Pulse
 	-- Aggramar
 	[SpellName(244291)] = 6, -- Foe Breaker
 	[SpellName(245995)] = 6, -- Scorching Blaze
@@ -464,5 +465,14 @@ K.RaidDebuffs = {
 	[SpellName(245631)] = 6, -- Unchecked Flame
 	[SpellName(245916)] = 6, -- Molten Remnants
 	-- Argus the Unmaker
-	-- [SpellName()] = 6, --
+	[SpellName(251815)] = 6, -- Edge of Obliteration
+	[SpellName(248499)] = 6, -- Sweeping Scythe
+	[SpellName(250669)] = 6, -- Soulburst
+	[SpellName(251570)] = 6, -- Soulbomb
+	[SpellName(248396)] = 6, -- Soulblight
+	[SpellName(258039)] = 6, -- Deadly Scythe
+	[SpellName(252729)] = 6, -- Cosmic Ray
+	[SpellName(256899)] = 6, -- Soul Detonation
+	[SpellName(252634)] = 6, -- Cosmic Smash
+	[SpellName(252616)] = 6, -- Cosmic Beacon
 }
