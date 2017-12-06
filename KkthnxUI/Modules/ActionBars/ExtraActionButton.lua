@@ -50,7 +50,7 @@ function Module:OnEnable(texture, loop)
 			tex:SetColorTexture(0.9, 0.8, 0.1, 0.3)
 			tex:SetAllPoints()
 			button:SetCheckedTexture(tex)
-			button.cooldown:SetFrameLevel(button:GetFrameLevel() +2)
+			button.Cooldown:SetFrameLevel(button:GetFrameLevel() +2)
 		end
 	end
 
