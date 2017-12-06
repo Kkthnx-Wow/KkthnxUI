@@ -18,12 +18,6 @@ local function DisableExtraButtonTexture(self, texture, loop)
 	self:SetTexture("", true)
 end
 
-local function FixExtraActionCD(cd)
-	local start, duration = GetActionCooldown(cd:GetParent().action)
-	cd:SetHideCountdownNumbers(true)
-	--K.Cooldowns:Start(start, duration, 0, 0)
-end
-
 function Module:OnEnable(texture, loop)
 	ExtraActionBarHolder = CreateFrame("Frame", "ExtraActionBarHolder", UIParent)
 	ExtraActionBarHolder:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 150)
@@ -56,10 +50,7 @@ function Module:OnEnable(texture, loop)
 			tex:SetColorTexture(0.9, 0.8, 0.1, 0.3)
 			tex:SetAllPoints()
 			button:SetCheckedTexture(tex)
-
-			if (button.cooldown and C["Cooldown"].Enable) then
-				button.cooldown:HookScript("OnShow", FixExtraActionCD)
-			end
+			button.cooldown:SetFrameLevel(button:GetFrameLevel() +2)
 		end
 	end
 
@@ -71,6 +62,7 @@ function Module:OnEnable(texture, loop)
 		button.Icon:SetDrawLayer("ARTWORK")
 		button.Icon:SetTexCoord(unpack(K.TexCoords))
 		button.Icon:SetAllPoints()
+		button.Cooldown:SetFrameLevel(button:GetFrameLevel() +2)
 	end
 
 	if HasExtraActionBar() then
