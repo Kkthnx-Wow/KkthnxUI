@@ -50,7 +50,6 @@ function Module:OnEnable(texture, loop)
 			tex:SetColorTexture(0.9, 0.8, 0.1, 0.3)
 			tex:SetAllPoints()
 			button:SetCheckedTexture(tex)
-			button.Cooldown:SetFrameLevel(button:GetFrameLevel() +2)
 		end
 	end
 
@@ -62,7 +61,6 @@ function Module:OnEnable(texture, loop)
 		button.Icon:SetDrawLayer("ARTWORK")
 		button.Icon:SetTexCoord(unpack(K.TexCoords))
 		button.Icon:SetAllPoints()
-		button.Cooldown:SetFrameLevel(button:GetFrameLevel() +2)
 	end
 
 	if HasExtraActionBar() then
