@@ -370,12 +370,17 @@ K.RaidDebuffs = {
 	[SpellName(234310)] = 6, -- Armageddon Rain
 	-- Antorus, the Burning Throne
 	-- Garothi Worldbreaker
+	[SpellName(244590)] = 6, -- Molten Hot Fel
 	[SpellName(244761)] = 6, -- Annihilation
+	[SpellName(246920)] = 6, -- Haywire Decimation
 	[SpellName(246369)] = 6, -- Searing Barrage
 	[SpellName(246848)] = 6, -- Luring Destruction
 	[SpellName(246220)] = 6, -- Fel Bombardment
 	[SpellName(247159)] = 6, -- Luring Destruction
 	[SpellName(244122)] = 6, -- Carnage
+	[SpellName(244410)] = 6, -- Decimation
+	[SpellName(245294)] = 6, -- Empowered Decimation
+	[SpellName(246368)] = 6, -- Searing Barrage
 	-- Felhounds of Sargeras
 	[SpellName(245022)] = 6, -- Burning Remnant
 	[SpellName(251445)] = 6, -- Smouldering
@@ -394,6 +399,8 @@ K.RaidDebuffs = {
 	[SpellName(244071)] = 6, -- Weight of Darkness
 	[SpellName(244578)] = 6, -- Siphon Corruption
 	[SpellName(248819)] = 6, -- Siphoned
+	[SpellName(254429)] = 6, -- Weight of Darkness
+	[SpellName(244072)] = 6, -- Molten Touch
 	-- Antoran High Command
 	[SpellName(245121)] = 6, -- Entropic Blast
 	[SpellName(244748)] = 6, -- Shocked
@@ -402,6 +409,10 @@ K.RaidDebuffs = {
 	[SpellName(244172)] = 6, -- Psychic Assault
 	[SpellName(244388)] = 6, -- Psychic Scarring
 	[SpellName(244420)] = 6, -- Chaos Pulse
+	[SpellName(254771)] = 6, -- Disruption Field
+	[SpellName(257974)] = 6, -- Chaos Pulse
+	[SpellName(244910)] = 6, -- Felshield
+	[SpellName(244737)] = 6, -- Shock Grenade
 	-- Portal Keeper Hasabel
 	[SpellName(244016)] = 6, -- Reality Tear
 	[SpellName(245157)] = 6, -- Everburning Light
@@ -416,8 +427,11 @@ K.RaidDebuffs = {
 	[SpellName(245118)] = 6, -- Cloying Shadows
 	[SpellName(245050)] = 6, -- Delusions
 	[SpellName(245040)] = 6, -- Corrupt
-	[SpellName(244926)] = 6, -- Felsilk Wrap
 	[SpellName(244607)] = 6, -- Flames of Xoroth
+	[SpellName(244915)] = 6, -- Leech Essence
+	[SpellName(244926)] = 6, -- Felsilk Wrap
+	[SpellName(244949)] = 6, -- Felsilk Wrap
+	[SpellName(244613)] = 6, -- Everburning Flame
 	-- Eonar the Life-Binder
 	[SpellName(248326)] = 6, -- Rain of Fel
 	[SpellName(248861)] = 6, -- Spear of Doom
@@ -425,6 +439,11 @@ K.RaidDebuffs = {
 	[SpellName(249015)] = 6, -- Feedback - Burning Embers
 	[SpellName(249014)] = 6, -- Feedback - Foul Steps
 	[SpellName(249017)] = 6, -- Feedback - Arcane Singularity
+	[SpellName(250693)] = 6, -- Arcane Buildup
+	[SpellName(250691)] = 6, -- Burning Embers
+	[SpellName(248795)] = 6, -- Fel Wake
+	[SpellName(248332)] = 6, -- Rain of Fel
+	[SpellName(250140)] = 6, -- Foul Steps
 	-- Imonar the Soulhunter
 	[SpellName(248424)] = 6, -- Gathering Power
 	[SpellName(247552)] = 6, -- Sleep Canister
@@ -433,30 +452,49 @@ K.RaidDebuffs = {
 	[SpellName(248252)] = 6, -- Infernal Rockets
 	[SpellName(247687)] = 6, -- Sever
 	[SpellName(247716)] = 6, -- Charged Blasts
+	[SpellName(247367)] = 6, -- Shock Lance
 	[SpellName(250255)] = 6, -- Empowered Shock Lance
 	[SpellName(247641)] = 6, -- Stasis Trap
+	[SpellName(255029)] = 6, -- Sleep Canister
+	[SpellName(248321)] = 6, -- Conflagration
+	[SpellName(247932)] = 6, -- Shrapnel Blast
+	[SpellName(248070)] = 6, -- Empowered Shrapnel Blast
+	[SpellName(254183)] = 6, -- Seared Skin
 	-- Kin'garoth
 	[SpellName(233062)] = 6, -- Infernal Burning
 	[SpellName(230345)] = 6, -- Crashing Comet
 	[SpellName(244312)] = 6, -- Forging Strike
 	[SpellName(246840)] = 6, -- Ruiner
 	[SpellName(248061)] = 6, -- Purging Protocol
+	[SpellName(249686)] = 6, -- Reverberating Decimation
 	[SpellName(246706)] = 6, -- Demolish
+	[SpellName(246698)] = 6, -- Demolish
+	[SpellName(245919)] = 6, -- Meteor Swarm
+	[SpellName(245770)] = 6, -- Decimation
 	-- Varimathras
 	[SpellName(244042)] = 6, -- Marked Prey
 	[SpellName(243961)] = 6, -- Misery
 	[SpellName(248732)] = 6, -- Echoes of Doom
+	[SpellName(243973)] = 6, -- Torment of Shadows
+	[SpellName(244005)] = 6, -- Dark Fissure
 	[SpellName(244093)] = 6, -- Necrotic Embrace
+	[SpellName(244094)] = 6, -- Necrotic Embrace
 	-- The Coven of Shivarra
 	[SpellName(244899)] = 6, -- Fiery Strike
 	[SpellName(245518)] = 6, -- Flashfreeze
 	[SpellName(245586)] = 6, -- Chilled Blood
 	[SpellName(246763)] = 6, -- Fury of Golganneth
 	[SpellName(245674)] = 6, -- Flames of Khaz'goroth
+	[SpellName(245671)] = 6, -- Flames of Khaz'goroth
 	[SpellName(245910)] = 6, -- Spectral Army of Norgannon
 	[SpellName(253520)] = 6, -- Fulminating Pulse
+	[SpellName(245634)] = 6, -- Whirling Saber
+	[SpellName(253020)] = 6, -- Storm of Darkness
+	[SpellName(245921)] = 6, -- Spectral Army of Norgannon
+	[SpellName(250757)] = 6, -- Cosmic Glare
 	-- Aggramar
 	[SpellName(244291)] = 6, -- Foe Breaker
+	[SpellName(255060)] = 6, -- Empowered Foe Breaker
 	[SpellName(245995)] = 6, -- Scorching Blaze
 	[SpellName(246014)] = 6, -- Searing Tempest
 	[SpellName(244912)] = 6, -- Blazing Eruption
@@ -464,6 +502,10 @@ K.RaidDebuffs = {
 	[SpellName(247091)] = 6, -- Catalyzed
 	[SpellName(245631)] = 6, -- Unchecked Flame
 	[SpellName(245916)] = 6, -- Molten Remnants
+	[SpellName(245990)] = 6, -- Taeshalach's Reach
+	[SpellName(254452)] = 6, -- Ravenous Blaze
+	[SpellName(244736)] = 6, -- Wake of Flame
+	[SpellName(247079)] = 6, -- Empowered Flame Rend
 	-- Argus the Unmaker
 	[SpellName(251815)] = 6, -- Edge of Obliteration
 	[SpellName(248499)] = 6, -- Sweeping Scythe
@@ -475,4 +517,12 @@ K.RaidDebuffs = {
 	[SpellName(256899)] = 6, -- Soul Detonation
 	[SpellName(252634)] = 6, -- Cosmic Smash
 	[SpellName(252616)] = 6, -- Cosmic Beacon
+	[SpellName(255200)] = 6, -- Aggramar's Boon
+	[SpellName(255199)] = 6, -- Avatar of Aggramar
+	[SpellName(258647)] = 6, -- Gift of the Sea
+	[SpellName(253901)] = 6, -- Strength of the Sea
+	[SpellName(257299)] = 6, -- Ember of Rage
+	[SpellName(248167)] = 6, -- Death Fog
+	[SpellName(258646)] = 6, -- Gift of the Sky
+	[SpellName(253903)] = 6, -- Strength of the Sky
 }

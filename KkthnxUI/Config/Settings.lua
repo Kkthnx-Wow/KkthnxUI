@@ -319,6 +319,7 @@ C["Raidframe"] = {
 	["SmoothSpeed"] = 3,
 	["Width"] = 56,
 	["Scale"] = 1,
+	["ManabarShow"] = false,
 }
 
 -- Worldmap

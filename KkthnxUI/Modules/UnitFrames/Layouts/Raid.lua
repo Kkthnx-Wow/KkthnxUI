@@ -48,6 +48,23 @@ local function UpdateThreat(self, _, unit)
     end
 end
 
+local function UpdatePower(self, _, unit)
+	if (self.unit ~= unit) then
+		return
+	end
+
+	local _, powerToken = UnitPowerType(unit)
+	if (powerToken == "MANA" and UnitHasMana(unit)) then
+		if (not self.Power:IsVisible()) then
+			self.Power:Show()
+		end
+	else
+		if (self.Power:IsVisible()) then
+			self.Power:Hide()
+		end
+	end
+end
+
 local function DeficitValue(self)
 	if (self >= 1000) then
 		return string_format("-%.1f", self/1000)
@@ -150,7 +167,31 @@ local function CreateRaidLayout(self, unit)
 	self.Name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Raidframe"].Outline and "OUTLINE" or "")
 	self.Name:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
 	self:Tag(self.Name, "[KkthnxUI:NameVeryShort]")
-
+	
+	-- Power bar
+	if (C["Raidframe"].ManabarShow) then
+		self.Power = CreateFrame("StatusBar", "$parentPower", self)
+		self.Power:SetFrameStrata("LOW")
+		self.Power:SetFrameLevel(5)
+		self.Power:SetStatusBarTexture(C["Media"].Texture)
+		self.Power:SetHeight(3)
+		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 1, 3)
+		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", -1, 3)
+		
+		if C["General"].ColorTextures and self then
+			self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		end
+		
+		self.Power.Smooth = C["Raidframe"].Smooth
+		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
+		self.Power.colorPower = true
+		self.Power.frequentUpdates = true
+		
+		table_insert(self.__elements, UpdatePower)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
+		UpdatePower(self, _, unit)
+	end
+	
 	-- Afk /offline timer, using frequentUpdates function from oUF tags
 	if (C["Raidframe"].ShowNotHereTimer) then
 		self.AFKIndicator = self.Overlay:CreateFontString(nil, "OVERLAY")
