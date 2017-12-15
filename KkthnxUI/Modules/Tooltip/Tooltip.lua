@@ -652,7 +652,11 @@ function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
-	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
+	if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+		GameTooltipStatusBar:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+		GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
+	end
 	GameTooltipStatusBar:CreateShadow()
 	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
 	GameTooltipStatusBar:ClearAllPoints()

@@ -82,7 +82,11 @@ function K.CreateAlternatePowerBar(self, unit)
 	if (unit == "player" and playerClass == "DRUID" or playerClass == "SHAMAN" or playerClass == "PRIEST") then
 		self.AdditionalPower = CreateFrame("StatusBar", nil, self)
 		self.AdditionalPower:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-		self.AdditionalPower:SetStatusBarTexture(C.Media.Texture, "BORDER")
+		if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+			self.AdditionalPower:SetStatusBarTexture(C["Media"].TextureFlat, "BORDER")
+		elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+			self.AdditionalPower:SetStatusBarTexture(C["Media"].Texture, "BORDER")
+		end
 		self.AdditionalPower:SetSize(self.Health:GetWidth(), 10)
 		self.AdditionalPower.colorPower = true
 		self.AdditionalPower:SetTemplate("Transparent")
@@ -109,7 +113,11 @@ function K.CreateClassModules(self, unit)
 		for index = 1, 11 do -- have to create an extra to force __max to be different from UnitPowerMax
 			local Bar = CreateFrame("StatusBar", nil, self)
 			Bar:SetSize(34, 10)
-			Bar:SetStatusBarTexture(C.Media.Texture)
+			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+				Bar:SetStatusBarTexture(C["Media"].TextureFlat)
+			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+				Bar:SetStatusBarTexture(C["Media"].Texture)
+			end
 			Bar:SetTemplate("Transparent")
 
 			if (index > 1) then
@@ -153,7 +161,11 @@ function K.CreateClassModules(self, unit)
 			for index = 1, 6 do
 				local Rune = CreateFrame("StatusBar", nil, self)
 				Rune:SetSize(25.3, 10)
-				Rune:SetStatusBarTexture(C.Media.Texture)
+				if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+					Rune:SetStatusBarTexture(C["Media"].TextureFlat)
+				elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+					Rune:SetStatusBarTexture(C["Media"].Texture)
+				end
 				Rune:SetTemplate("Transparent")
 
 				if (index == 1) then

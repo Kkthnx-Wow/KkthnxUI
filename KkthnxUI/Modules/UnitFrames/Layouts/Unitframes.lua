@@ -65,7 +65,11 @@ local function oUF_KkthnxUnitframes(self, unit)
 	self.Health:SetTemplate("Transparent")
 	self.Health:SetFrameStrata("LOW")
 	self.Health:SetFrameLevel(1)
-	self.Health:SetStatusBarTexture(C["Media"].Texture)
+	if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+		self.Health:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+		self.Health:SetStatusBarTexture(C["Media"].Texture)
+	end
 
 	if C["General"].ColorTextures and self then
 		self.Health:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
@@ -146,7 +150,11 @@ local function oUF_KkthnxUnitframes(self, unit)
 	self.Power:SetTemplate("Transparent")
 	self.Power:SetFrameStrata("LOW")
 	self.Power:SetFrameLevel(1)
-	self.Power:SetStatusBarTexture(C["Media"].Texture)
+	if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+		self.Power:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+		self.Power:SetStatusBarTexture(C["Media"].Texture)
+	end
 
 	if C["General"].ColorTextures and self then
 		self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])

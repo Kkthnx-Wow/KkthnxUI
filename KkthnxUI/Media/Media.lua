@@ -17,6 +17,7 @@ C["Media"] = {
 	Proc_Sound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
 	Spark = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark.blp]],
 	Texture = [[Interface\TargetingFrame\UI-StatusBar]],
+	TextureFlat = [[Interface\AddOns\KkthnxUI\Media\Textures\Flat.tga]],
 	WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 }

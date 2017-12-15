@@ -209,6 +209,13 @@ C["Misc"] = {
 C["Nameplates"] = {
 	["AurasSize"] = 26,
 	["BadColor"] = {1, 0, 0},
+	["BarsStyle"] = {
+		["Options"] = {
+			["Flat BarsStyle"] = "FlatBarsStyle",
+			["Default BarsStyle"] = "DefaultBarsStyle",
+		},
+		["Value"] = "DefaultBarsStyle",
+	},
 	["CastbarName"] = true,
 	["CastUnitReaction"] = true,
 	["Clamp"] = false,
@@ -291,6 +298,13 @@ C["Unitframe"] = {
 		},
 		["Value"] = "DefaultPortraits",
 	},
+	["BarsStyle"] = {
+		["Options"] = {
+			["Flat BarsStyle"] = "FlatBarsStyle",
+			["Default BarsStyle"] = "DefaultBarsStyle",
+		},
+		["Value"] = "DefaultBarsStyle",
+	},
 }
 
 -- We keep this private. For now.
@@ -301,6 +315,13 @@ C["UnitframePlugins"] = {
 -- Raidframe
 C["Raidframe"] = {
 	["AuraWatch"] = true,
+	["BarsStyle"] = {
+		["Options"] = {
+			["Flat BarsStyle"] = "FlatBarsStyle",
+			["Default BarsStyle"] = "DefaultBarsStyle",
+		},
+		["Value"] = "DefaultBarsStyle",
+	},
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Height"] = 40,

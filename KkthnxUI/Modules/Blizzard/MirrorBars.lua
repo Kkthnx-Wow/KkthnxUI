@@ -38,7 +38,11 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	mirrorTimer:StripTextures()
 	mirrorTimer:SetSize(222, 22)
 	mirrorTimer.label = text
-	statusBar:SetStatusBarTexture(C["Media"].Texture)
+	if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+		statusBar:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+		statusBar:SetStatusBarTexture(NameplateTexture)
+	end
 	statusBar:SetTemplate("Transparent")
 	statusBar:SetSize(222, 22)
 	text:Hide()

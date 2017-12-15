@@ -90,7 +90,11 @@ bar:SetScript("OnLeave", GameTooltip_Hide)
 -- StatusBar
 local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
 status:SetFrameLevel(bar:GetFrameLevel() + 1)
-status:SetStatusBarTexture(C["Media"].Texture)
+if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+	status:SetStatusBarTexture(C["Media"].TextureFlat)
+elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+	status:SetStatusBarTexture(NameplateTexture)
+end
 status:SetMinMaxValues(0, 100)
 status:SetAllPoints()
 
