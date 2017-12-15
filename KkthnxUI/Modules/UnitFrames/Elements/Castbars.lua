@@ -299,9 +299,9 @@ function K.CreateCastBar(self, unit)
 		if unit == "player" then
 			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
 			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-				self.Health:SetStatusBarTexture(C["Media"].TextureFlat)
+				CastBar:SetStatusBarTexture(CastbarTextureFlat)
 			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-				self.Health:SetStatusBarTexture(C["Media"].Texture)
+				CastBar:SetStatusBarTexture(CastbarTexture)
 			end
 			CastBar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 			CastBar:SetPoint(C.Position.UnitFrames.PlayerCastbar[1], C.Position.UnitFrames.PlayerCastbar[2], C.Position.UnitFrames.PlayerCastbar[3], C.Position.UnitFrames.PlayerCastbar[4], C.Position.UnitFrames.PlayerCastbar[5])
