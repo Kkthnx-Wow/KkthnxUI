@@ -465,7 +465,11 @@ function K.CreateCastBar(self, unit)
 			CastBar:SetPoint("RIGHT", -30, 0)
 			CastBar:SetPoint("TOP", 0, 60)
 			CastBar:SetHeight(18)
-			CastBar:SetStatusBarTexture(CastbarTexture)
+			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+				CastBar:SetStatusBarTexture(CastbarTextureFlat)
+			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+				CastBar:SetStatusBarTexture(CastbarTexture)
+			end
 			CastBar:SetClampedToScreen(true)
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
@@ -527,7 +531,11 @@ function K.CreateCastBar(self, unit)
 			CastBar:SetPoint("RIGHT", -4, 0)
 			CastBar:SetPoint("TOP", 0, 20)
 			CastBar:SetHeight(18)
-			CastBar:SetStatusBarTexture(CastbarTexture)
+			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+				CastBar:SetStatusBarTexture(CastbarTextureFlat)
+			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+				CastBar:SetStatusBarTexture(CastbarTexture)
+			end
 			CastBar:SetClampedToScreen(true)
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
