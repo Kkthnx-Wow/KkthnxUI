@@ -420,7 +420,11 @@ local function StyleUpdate(self, unit)
 	-- Health Bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
 	self.Health:SetAllPoints(self)
-	self.Health:SetStatusBarTexture(NameplateTexture)
+	if (C["Nameplates"].BarsStyle.Value == "FlatBarsStyle") then
+		self.Health:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Nameplates"].BarsStyle.Value == "DefaultBarsStyle") then
+		self.Health:SetStatusBarTexture(NameplateTexture)
+	end
 
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
@@ -443,7 +447,11 @@ local function StyleUpdate(self, unit)
 
 	-- Create Player Power bar
 	self.Power = CreateFrame("StatusBar", "$parentPowerBar", self)
-	self.Power:SetStatusBarTexture(NameplateTexture)
+	if (C["Nameplates"].BarsStyle.Value == "FlatBarsStyle") then
+		self.Power:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Nameplates"].BarsStyle.Value == "DefaultBarsStyle") then
+		self.Power:SetStatusBarTexture(NameplateTexture)
+	end
 	self.Power:ClearAllPoints()
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C["Nameplates"].Height * K.NoScaleMult / 2))

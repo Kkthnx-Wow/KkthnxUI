@@ -137,6 +137,11 @@ local function CreateRaidLayout(self, unit)
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
 	self.Health:SetPoints(self)
+	if (C["Raidframe"].BarsStyle.Value == "FlatBarsStyle") then
+		self.Health:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Raidframe"].BarsStyle.Value == "DefaultBarsStyle") then
+		self.Health:SetStatusBarTexture(C["Media"].Texture)
+	end
     self.Health.colorDisconnected = true
     self.Health.colorReaction = true
     self.Health.colorTapping = true
@@ -173,7 +178,11 @@ local function CreateRaidLayout(self, unit)
 		self.Power = CreateFrame("StatusBar", "$parentPower", self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(5)
-		self.Power:SetStatusBarTexture(C["Media"].Texture)
+		if (C["Raidframe"].BarsStyle.Value == "FlatBarsStyle") then
+			self.Power:SetStatusBarTexture(C["Media"].TextureFlat)
+		elseif (C["Raidframe"].BarsStyle.Value == "DefaultBarsStyle") then
+			self.Power:SetStatusBarTexture(C["Media"].Texture)
+		end
 		self.Power:SetHeight(3)
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 1, 3)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", -1, 3)

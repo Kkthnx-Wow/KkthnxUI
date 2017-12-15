@@ -64,7 +64,11 @@ function Module:CreateBar(name, anchorFrame, height)
     bar:SetFrameStrata("LOW")
     bar:SetHeight(height)
     bar.height = height
-    bar:SetStatusBarTexture(C["Media"].Texture)
+    if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
+		bar:SetStatusBarTexture(C["Media"].TextureFlat)
+	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
+		bar:SetStatusBarTexture(C["Media"].Texture)
+	end
     bar.anchorFrame = anchorFrame
     bar:SetScript("OnShow", Bar_OnShow)
     bar:SetScript("OnHide", Bar_OnHide)
