@@ -4,8 +4,9 @@
     <!-- Load_Automation -->
     <Script file="AutoDecline.lua" />
     <Script file="AutoInvite.lua" />
-    <Script file="AutoMerchant.lua" />
     <Script file="AutoRelease.lua" />
+    <Script file="AutoRepair.lua" />
     <Script file="AutoResurrect.lua" />
     <Script file="AutoScreenshot.lua" />
+    <Script file="AutoVendor.lua" />
 </Ui>
