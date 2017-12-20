@@ -23,9 +23,8 @@ local UnitSpellHaste = _G.UnitSpellHaste
 
 local Movers = K.Movers
 
-local CastbarFont = K.GetFont(C["General"].Font)
-local CastbarTexture = K.GetTexture(C["General"].Texture)
-local CastbarTextureFlat = C["Media"].TextureFlat
+local CastbarFont = K.GetFont(C["Unitframe"].Font)
+local CastbarTexture = K.GetTexture(C["Unitframe"].Texture)
 
 -- All unit-frame Cast bar functions
 local ticks = {}
@@ -298,11 +297,7 @@ function K.CreateCastBar(self, unit)
 	if C["Unitframe"].Castbars then
 		if unit == "player" then
 			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTextureFlat)
-			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTexture)
-			end
+			CastBar:SetStatusBarTexture(CastbarTexture)
 			CastBar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 			CastBar:SetPoint(C.Position.UnitFrames.PlayerCastbar[1], C.Position.UnitFrames.PlayerCastbar[2], C.Position.UnitFrames.PlayerCastbar[3], C.Position.UnitFrames.PlayerCastbar[4], C.Position.UnitFrames.PlayerCastbar[5])
 			CastBar:SetClampedToScreen(true)
@@ -312,16 +307,14 @@ function K.CreateCastBar(self, unit)
 			CastBar.Spark:SetBlendMode("ADD")
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Time:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Time:SetFontObject(CastbarFont)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C["Media"].FontSize)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Text:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Text:SetFontObject(CastbarFont)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C["Media"].FontSize)
@@ -348,9 +341,8 @@ function K.CreateCastBar(self, unit)
 				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
 				CastBar.SafeZone:SetTexture(C["Media"].Blank)
 				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
-
-				CastBar.Latency = K.SetFontString(CastBar, C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
-				CastBar.Latency:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+				CastBar.Latency = CastBar:CreateFontString(nil, "OVERLAY")
+				CastBar.Latency:SetFontObject(UnitframeFont)
 				CastBar.Latency:SetTextColor(1, 1, 1)
 				CastBar.Latency:SetPoint("TOPRIGHT", CastBar.Time, "BOTTOMRIGHT", 0, 0)
 				CastBar.Latency:SetJustifyH("RIGHT")
@@ -387,11 +379,7 @@ function K.CreateCastBar(self, unit)
 
 		if unit == "target" then
 			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTextureFlat)
-			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTexture)
-			end
+			CastBar:SetStatusBarTexture(CastbarTexture)
 			CastBar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 			CastBar:SetPoint(C.Position.UnitFrames.TargetCastbar[1], C.Position.UnitFrames.TargetCastbar[2], C.Position.UnitFrames.TargetCastbar[3], C.Position.UnitFrames.TargetCastbar[4], C.Position.UnitFrames.TargetCastbar[5])
 			CastBar:SetClampedToScreen(true)
@@ -405,16 +393,14 @@ function K.CreateCastBar(self, unit)
 			CastBar.Shield:SetPoint("LEFT", CastBar, "RIGHT", -4, 12)
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Time:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Time:SetFontObject(CastbarFont)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C["Media"].FontSize)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Text:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Text:SetFontObject(CastbarFont)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C["Media"].FontSize)
@@ -465,11 +451,7 @@ function K.CreateCastBar(self, unit)
 			CastBar:SetPoint("RIGHT", -30, 0)
 			CastBar:SetPoint("TOP", 0, 60)
 			CastBar:SetHeight(18)
-			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTextureFlat)
-			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTexture)
-			end
+			CastBar:SetStatusBarTexture(CastbarTexture)
 			CastBar:SetClampedToScreen(true)
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
@@ -477,16 +459,14 @@ function K.CreateCastBar(self, unit)
 			CastBar.Spark:SetBlendMode("ADD")
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Time:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Time:SetFontObject(CastbarFont)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C["Media"].FontSize)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Text:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Text:SetFontObject(CastbarFont)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C["Media"].FontSize)
@@ -531,11 +511,7 @@ function K.CreateCastBar(self, unit)
 			CastBar:SetPoint("RIGHT", -4, 0)
 			CastBar:SetPoint("TOP", 0, 20)
 			CastBar:SetHeight(18)
-			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTextureFlat)
-			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-				CastBar:SetStatusBarTexture(CastbarTexture)
-			end
+			CastBar:SetStatusBarTexture(CastbarTexture)
 			CastBar:SetClampedToScreen(true)
 
 			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
@@ -543,16 +519,14 @@ function K.CreateCastBar(self, unit)
 			CastBar.Spark:SetBlendMode("ADD")
 
 			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Time:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Time:SetFontObject(CastbarFont)
 			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
 			CastBar.Time:SetHeight(C["Media"].FontSize)
 			CastBar.Time:SetTextColor(1, 1, 1)
 			CastBar.Time:SetJustifyH("RIGHT")
 
 			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFont(C["Media"].Font, C["Media"].FontSize, C["Unitframe"].Outline and "OUTLINE" or "")
-			CastBar.Text:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			CastBar.Text:SetFontObject(CastbarFont)
 			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
 			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
 			CastBar.Text:SetHeight(C["Media"].FontSize)

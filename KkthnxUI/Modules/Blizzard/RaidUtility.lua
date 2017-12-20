@@ -118,7 +118,6 @@ function Module:OnInitialize()
 	local closeButton = raidUtil:GetFrameRef("RaidUtility_CloseButton")
 	self:Hide()
 	raidUtil:Show()
-
 	local point = self:GetPoint()
 	local raidUtilPoint, closeButtonPoint, yOffset
 	if string.find(point, "BOTTOM") then
@@ -130,9 +129,7 @@ function Module:OnInitialize()
 		closeButtonPoint = "BOTTOM"
 		yOffset = -1
 	end
-
 	yOffset = yOffset * (tonumber(%d))
-
 	raidUtil:ClearAllPoints()
 	closeButton:ClearAllPoints()
 	raidUtil:SetPoint(raidUtilPoint, self, raidUtilPoint)
@@ -191,7 +188,6 @@ function Module:OnInitialize()
 	MainTankButton:SetAttribute("type", "maintank")
 	MainTankButton:SetAttribute("unit", "target")
 	MainTankButton:SetAttribute("action", "toggle")
-
 	-- MainAssist Button
 	self:CreateUtilButton("MainAssistButton", RaidUtilityPanel, "SecureActionButtonTemplate, UIMenuButtonStretchTemplate", (DisbandRaidButton:GetWidth() / 2) - 2, 18, "TOPRIGHT", RoleCheckButton, "BOTTOMRIGHT", 0, -5, MAINASSIST, nil)
 	MainAssistButton:SetAttribute("type", "mainassist")

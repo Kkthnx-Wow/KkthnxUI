@@ -102,11 +102,11 @@ L.ConfigButton = {
 	ShiftClickl = "Shift + Left click:",
 	ShiftClickr = "Shift + Right click:",
 	AltClickl = "Alt + Left click:",
-	MoveUI = "Move UI elements",
-	Recount = "Show/Hide Recount",
-	Skada = "Show/Hide Skada",
-	Details = "Show/Hide Details",
-	Config = "Open KkthnxUI Configmenu",
+	MoveUI = "MoveUI",
+	Recount = "Toggle Recount",
+	Skada = "Toggle Skada",
+	Details = "Toggle Details",
+	Config = "Toggle Config",
 	Roll = "Roll 1-100. You win!",
 }
 

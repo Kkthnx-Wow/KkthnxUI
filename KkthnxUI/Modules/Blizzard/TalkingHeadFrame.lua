@@ -1,66 +1,67 @@
 local K, C = unpack(select(2, ...))
-local TalkingHead = K:NewModule("TalkingHead")
+local Module = K:NewModule("TalkingHead", "AceEvent-3.0")
 
+-- Lua API
 local _G = _G
 local ipairs = ipairs
-local unpack = unpack
+local table_remove = table.remove
 
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local LoadAddOn = _G.LoadAddOn
+-- WoW API
+local AlertFrame = _G.AlertFrame
 
--- No point caching anything here, but list them here for mikk's FindGlobals script
--- GLOBALS: CreateFrame, TalkingHeadFrame, UIPARENT_MANAGED_FRAME_POSITIONS, TalkingHead_LoadUI
--- GLOBALS: Model_ApplyUICamera, AlertFrame
+-- WoW Objects
+local UIParent = _G.UIParent
+local UIPARENT_MANAGED_FRAME_POSITIONS = _G.UIPARENT_MANAGED_FRAME_POSITIONS
 
-local Movers = K.Movers
-local isInit = false
+function Module.InitializeTalkingHead(self)
+	local content = _G.TalkingHeadFrame
 
--- We set our TalkingHeadFrame scale and position here.
-function TalkingHead:OnEnable()
-	if not isInit then
-		local isLoaded = true
+	-- This means the addon hasn't been loaded,
+	-- so we register a listener and return.
+	if (not content) then
+		return self:RegisterEvent("ADDON_LOADED", "WaitForTalkingHead")
+	end
 
-		if not IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-			isLoaded = LoadAddOn("Blizzard_TalkingHeadUI")
-		end
+	-- Put the actual talking head into our /moverui holder
+	content:ClearAllPoints()
+	content:SetPoint("BOTTOM", self.frame, "BOTTOM", 0, 0)
+	content.ignoreFramePositionManager = true
 
-		if isLoaded then
-			local frameScale = C["General"].TalkingHeadScale or 1
-			local frameAlpha = C["General"].TalkingHeadAlpha or 0.75
+	-- Kill off Blizzard's repositioning
+	UIParent:UnregisterEvent("TALKINGHEAD_REQUESTED")
+	UIPARENT_MANAGED_FRAME_POSITIONS["TalkingHeadFrame"] = nil
 
-			-- Sanitize
-			if frameScale < 0.5 then
-				frameScale = 0.5
-			elseif frameScale > 2 then
-				frameScale = 2
-			end
-
-			-- Calculate dirtyWidth/dirtyHeight based on original size and scale
-			-- This way the mover frame will use the right size when we manually trigger "OnSizeChanged"
-			local FrameWidth = TalkingHeadFrame:GetWidth() * frameScale
-			local FrameHeight = TalkingHeadFrame:GetHeight() * frameScale
-			TalkingHeadFrame.dirtyWidth = FrameWidth
-			TalkingHeadFrame.dirtyHeight = FrameHeight
-
-			TalkingHeadFrame.ignoreFramePositionManager = true
-			UIPARENT_MANAGED_FRAME_POSITIONS["TalkingHeadFrame"] = nil
-
-			for i, subSystem in pairs(AlertFrame.alertFrameSubSystems) do
-				if subSystem.anchorFrame and subSystem.anchorFrame == TalkingHeadFrame then
-					table.remove(AlertFrame.alertFrameSubSystems, i)
-				end
-			end
-
-			TalkingHeadFrame:ClearAllPoints()
-			TalkingHeadFrame:SetPoint(C.Position.TalkingHead[1], C.Position.TalkingHead[2], C.Position.TalkingHead[3], C.Position.TalkingHead[4], C.Position.TalkingHead[5])
-			TalkingHeadFrame:SetScale(frameScale)
-			TalkingHeadFrame:SetAlpha(frameAlpha)
-
-			Movers:RegisterFrame(TalkingHeadFrame)
-
-			isInit = true
-
-			return true
+	-- Iterate through all alert subsystems in order to find the one created for TalkingHeadFrame, and then remove it.
+	-- We do this to prevent alerts from anchoring to this frame when it is shown.
+	local AlertFrame = _G.AlertFrame
+	for index, alertFrameSubSystem in ipairs(AlertFrame.alertFrameSubSystems) do
+		if (alertFrameSubSystem.anchorFrame and (alertFrameSubSystem.anchorFrame == content)) then
+			table_remove(AlertFrame.alertFrameSubSystems, index)
 		end
 	end
+
+end
+
+function Module.WaitForTalkingHead(self, event, ...)
+	local addon = ...
+	if (addon ~= "Blizzard_TalkingHeadUI") then
+		return
+	end
+
+	self:InitializeTalkingHead()
+	self:UnregisterEvent("ADDON_LOADED", "WaitForTalkingHead")
+end
+
+function Module.OnInitialize(self)
+	-- Create our container frame
+	self.frame = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
+	self.frame:SetPoint(C.Position.TalkingHead[1], C.Position.TalkingHead[2], C.Position.TalkingHead[3], C.Position.TalkingHead[4], C.Position.TalkingHead[5])
+	self.frame:SetSize(C["General"].TalkingHeadWidth or 570, C["General"].TalkingHeadHeight or 155)
+	self.frame:SetAlpha(C["General"].TalkingHeadAlpha or 0.75)
+
+	K.Movers:RegisterFrame(self.frame)
+end
+
+function Module.OnEnable(self)
+	self:InitializeTalkingHead()
 end

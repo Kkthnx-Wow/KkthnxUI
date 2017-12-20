@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local AutoInvite = K:NewModule("AutoInvite", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("AutoInvite", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Wow Lua
 local _G = _G
@@ -23,7 +23,9 @@ local StaticPopupSpecial_Hide = _G.StaticPopupSpecial_Hide
 -- GLOBALS: QueueStatusMinimapButton, LFGInvitePopup
 
 local hideStatic = false
-function AutoInvite:AutoInvite(event, leaderName)
+function Module:AutoInvite(event, leaderName)
+	if C["Automation"].AutoInvite ~= true then return end
+
 	if event == "PARTY_INVITE_REQUEST" then
 		if QueueStatusMinimapButton:IsShown() then return end -- Prevent losing que inside LFD if someone invites you to group
 		if IsInGroup() then return end
@@ -32,11 +34,14 @@ function AutoInvite:AutoInvite(event, leaderName)
 		-- Update Guild and Friendlist
 		if GetNumFriends() > 0 then ShowFriends() end
 		if IsInGuild() then GuildRoster() end
+
+		local friendName, guildMemberName, memberName, numGameAccounts, isOnline, bnToonName, bnClient, bnRealm, bnAcceptedInvite, _
+		local PLAYER_REALM = gsub(K.Realm,"[%s%-]","")
 		local inGroup = false
 
 		for friendIndex = 1, GetNumFriends() do
-			local friendName = string_gsub(GetFriendInfo(friendIndex), "-.*", "")
-			if friendName == leaderName then
+			friendName = GetFriendInfo(friendIndex) --this is already stripped of your own realm
+			if friendName and (friendName == leaderName) then
 				AcceptGroup()
 				inGroup = true
 				break
@@ -45,8 +50,9 @@ function AutoInvite:AutoInvite(event, leaderName)
 
 		if not inGroup then
 			for guildIndex = 1, GetNumGuildMembers(true) do
-				local guildMemberName = string_gsub(GetGuildRosterInfo(guildIndex), "-.*", "")
-				if guildMemberName == leaderName then
+				guildMemberName = GetGuildRosterInfo(guildIndex)
+				memberName = guildMemberName and gsub(guildMemberName, "%-"..PLAYER_REALM, "")
+				if memberName and (memberName == leaderName) then
 					AcceptGroup()
 					inGroup = true
 					break
@@ -56,29 +62,40 @@ function AutoInvite:AutoInvite(event, leaderName)
 
 		if not inGroup then
 			for bnIndex = 1, BNGetNumFriends() do
-				local _, _, _, _, name = BNGetFriendInfo(bnIndex)
-				leaderName = leaderName:match("(.+)%-.+") or leaderName
-				if name == leaderName then
-					AcceptGroup()
-					break
+				bnAcceptedInvite = false
+				_, _, _, _, _, _, _, isOnline = BNGetFriendInfo(bnIndex)
+				if isOnline then
+					numGameAccounts = BNGetNumFriendGameAccounts(bnIndex)
+					if numGameAccounts > 0 then
+						for toonIndex = 1, numGameAccounts do
+							_, bnToonName, bnClient, bnRealm = BNGetFriendGameAccountInfo(bnIndex, toonIndex)
+							if bnClient == BNET_CLIENT_WOW then
+								if bnRealm and bnRealm ~= "" and bnRealm ~= K.Realm then
+									bnToonName = format("%s-%s", bnToonName, gsub(bnRealm,"[%s%-]",""))
+								end
+								if bnToonName == leaderName then
+									AcceptGroup()
+									bnAcceptedInvite = true
+									break
+								end
+							end
+						end
+						if bnAcceptedInvite then
+							break
+						end
+					end
 				end
 			end
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" and hideStatic == true then
-		StaticPopupSpecial_Hide(LFGInvitePopup) -- New LFD popup when invited in custon created group
+		StaticPopupSpecial_Hide(LFGInvitePopup) --New LFD popup when invited in custon created group
 		StaticPopup_Hide("PARTY_INVITE")
-		StaticPopup_Hide("PARTY_INVITE_XREALM") -- Not sure bout this but whatever, still an invite
+		StaticPopup_Hide("PARTY_INVITE_XREALM") --Not sure bout this but whatever, still an invite
 		hideStatic = false
 	end
 end
 
-function AutoInvite:OnEnable()
-	if C["Automation"].AutoInvite ~= true then return end
+function Module:OnEnable()
 	self:RegisterEvent("PARTY_INVITE_REQUEST", "AutoInvite")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "AutoInvite")
-end
-
-function AutoInvite:OnDisable()
-	self:UnregisterEvent("PARTY_INVITE_REQUEST", "AutoInvite")
-	self:UnregisterEvent("GROUP_ROSTER_UPDATE", "AutoInvite")
 end

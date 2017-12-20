@@ -16,7 +16,7 @@ local UIParent = _G.UIParent
 -- Kill all stuff on default UI that we don"t need
 local function HideRaid()
 	if InCombatLockdown() then return end
-	CompactRaidFrameManager:Kill()
+	CompactRaidFrameManager:SetParent(K.UIFrameHider)
 	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
 	if compact_raid and compact_raid ~= "0" then
 		CompactRaidFrameManager_SetSetting("IsShown", "0")
@@ -56,24 +56,32 @@ function Module:DisableMisc()
 	end
 
 	if C["General"].DisableTutorialButtons then
-		BagHelpBox:Kill()
-		CollectionsMicroButtonAlert:Kill()
-		EJMicroButtonAlert:Kill()
-		HelpOpenTicketButtonTutorial:Kill()
-		HelpPlate:Kill()
-		HelpPlateTooltip:Kill()
-		PremadeGroupsPvETutorialAlert:Kill()
-		ReagentBankHelpBox:Kill()
-		SpellBookFrameTutorialButton:Kill()
-		TalentMicroButtonAlert:Kill()
-		TutorialFrameAlertButton:Kill()
-		WorldMapFrameTutorialButton:Kill()
-	end
+		for i = 1, #MICRO_BUTTONS do
+            if  _G[MICRO_BUTTONS[i]] then
+                _G[MICRO_BUTTONS[i]]:SetParent(K.UIFrameHider)
+            end
+		end
 
-	-- Kill off the game menu button latency display
-	if MainMenuBarPerformanceBar then
-		MainMenuBarPerformanceBar:Hide()
-		MainMenuBarPerformanceBar:SetParent(K.UIFrameHider)
+		if MainMenuBarDownload then
+			MainMenuBarDownload:SetParent(K.UIFrameHider)
+		end
+
+		BagHelpBox:SetParent(K.UIFrameHider)
+		CollectionsMicroButtonAlert:SetParent(K.UIFrameHider)
+		EJMicroButtonAlert:SetParent(K.UIFrameHider)
+		HelpOpenTicketButtonTutorial:SetParent(K.UIFrameHider)
+		HelpPlate:SetParent(K.UIFrameHider)
+		HelpPlateTooltip:SetParent(K.UIFrameHider)
+		MicroButtonPortrait:SetParent(K.UIFrameHider)
+		PremadeGroupsPvETutorialAlert:SetParent(K.UIFrameHider)
+		ReagentBankHelpBox:SetParent(K.UIFrameHider)
+		SpellBookFrameTutorialButton:SetParent(K.UIFrameHider)
+		TalentMicroButtonAlert:SetParent(K.UIFrameHider)
+		TutorialFrameAlertButton:SetParent(K.UIFrameHider)
+		WorldMapFrameTutorialButton:SetParent(K.UIFrameHider)
+        GuildMicroButtonTabard:SetParent(K.UIFrameHider)
+        MainMenuBarPerformanceBar:SetParent(K.UIFrameHider)
+        TalentMicroButtonAlert:SetParent(K.UIFrameHider)
 	end
 
 	if C["Unitframe"].Enable then
@@ -81,8 +89,8 @@ function Module:DisableMisc()
 	end
 
 	if C["Auras"].Enable then
-		BuffFrame:Kill()
-		TemporaryEnchantFrame:Kill()
+		BuffFrame:SetParent(K.UIFrameHider)
+		TemporaryEnchantFrame:SetParent(K.UIFrameHider)
 		K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 	end
 
@@ -136,8 +144,4 @@ function Module:OnEnable()
 			Module:DisableBlizzard("arena")
 		end
 	end
-end
-
-function Module:OnDisable()
-
 end

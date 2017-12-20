@@ -71,11 +71,11 @@ SlashCmdList["FRAMELIST"] = function(msg)
 	end
 
 	local isPreviouslyShown = FrameStackTooltip:IsShown()
-	if(not isPreviouslyShown) then
-		if(msg == tostring(true)) then
-			FrameStackTooltip_Toggle(true)
+	if (not isPreviouslyShown) then
+		if (msg == tostring(true)) then
+			FrameStackTooltip_Toggle(true, true, true)
 		else
-			FrameStackTooltip_Toggle()
+			FrameStackTooltip_Toggle(false, true, true)
 		end
 	end
 
@@ -129,14 +129,14 @@ SlashCmdList["GETPOINT"] = GetPoint
 _G.SLASH_GETPOINT1 = "/getpoint"
 
 -- get the frame name
-SlashCmdList["FRAMENAME"] = function() 
-	print(GetMouseFocus():GetName()) 
+SlashCmdList["FRAMENAME"] = function()
+	print(GetMouseFocus():GetName())
 end
 SLASH_FRAMENAME1 = "/gn"
 
 -- Get the focus of the mouse
-SlashCmdList["GETPARENT"] = function() 
-	print(GetMouseFocus():GetParent():GetName()) 
+SlashCmdList["GETPARENT"] = function()
+	print(GetMouseFocus():GetParent():GetName())
 end
 SLASH_GETPARENT1 = "/gp"
 

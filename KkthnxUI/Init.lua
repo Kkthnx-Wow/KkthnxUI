@@ -80,7 +80,32 @@ _G[AddOnName] = Engine
 local Name = UnitName("Player")
 local Realm = GetRealmName()
 
+AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
+AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
+AddOn.Noop = function() return end
+AddOn.Name = UnitName("player")
+AddOn.GUID = UnitGUID("player")
+AddOn.Class = select(2, UnitClass("player"))
+AddOn.Spec = GetSpecialization() or 0
+AddOn.Race = select(2, UnitRace("player"))
+AddOn.Level = UnitLevel("player")
+AddOn.Client = GetLocale()
+AddOn.Realm = GetRealmName()
+AddOn.MediaPath = "Interface\\AddOns\\KkthnxUI\\Media\\"
+AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
+AddOn.OmniCC = select(4, GetAddOnInfo("OmniCC"))
+AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
+AddOn.ScreenWidth, AddOn.ScreenHeight = GetPhysicalScreenSize()
+AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
+AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
+AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
+AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo()
+-- AddOn.WoWBuild = select(2, GetBuildInfo()) AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
+AddOn.WoWBuild = tonumber((select(2, GetBuildInfo())))
+
 function AddOn:OnInitialize()
+
+	self.GUID = UnitGUID("player")
 	-- Create missing entries in the saved vars if they don"t exist.
 	if (not KkthnxUIData[Realm]) then KkthnxUIData[Realm] = KkthnxUIData[Realm] or {} end
 	if (not KkthnxUIData[Realm][Name]) then KkthnxUIData[Realm][Name] = KkthnxUIData[Realm][Name] or {} end
@@ -97,6 +122,11 @@ function AddOn:OnInitialize()
 	if (not KkthnxUIConfigShared[Realm]) then KkthnxUIConfigShared[Realm] = {} end
 	if (not KkthnxUIConfigShared[Realm][Name]) then KkthnxUIConfigShared[Realm][Name] = {} end
 	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[Realm][Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
+
+	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
+	if (not IsInstalled) then
+		self.Install:Launch()
+	end
 
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
@@ -146,29 +176,6 @@ function AddOn:PositionGameMenuButton()
 		GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, offY)
 	end
 end
-
-AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
-AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
-AddOn.Noop = function() return end
-AddOn.Name = UnitName("player")
-AddOn.GUID = UnitGUID("player")
-AddOn.Class = select(2, UnitClass("player"))
-AddOn.Spec = GetSpecialization() or 0
-AddOn.Race = select(2, UnitRace("player"))
-AddOn.Level = UnitLevel("player")
-AddOn.Client = GetLocale()
-AddOn.Realm = GetRealmName()
-AddOn.MediaPath = "Interface\\AddOns\\KkthnxUI\\Media\\"
-AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
-AddOn.OmniCC = select(4, GetAddOnInfo("OmniCC"))
-AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
-AddOn.ScreenWidth, AddOn.ScreenHeight = GetPhysicalScreenSize()
-AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
-AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
-AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
-AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo()
--- AddOn.WoWBuild = select(2, GetBuildInfo()) AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
-AddOn.WoWBuild = tonumber((select(2, GetBuildInfo())))
 
 -- Matching the pre-MoP return arguments of the Blizzard API call
 function AddOn.GetAddOnInfo(index)

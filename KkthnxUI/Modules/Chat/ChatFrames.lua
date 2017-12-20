@@ -79,25 +79,52 @@ local function ShortChannels(self)
 	return string_format("|Hchannel:%s|h[%s]|h", self, ShortChannelNames[self:upper()] or self:gsub("channel:", ""))
 end
 
-function Module:AddMessage(msg, ...)
-	if msg:find(INTERFACE_ACTION_BLOCKED) then return end
-	local messagestring
-
-	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
-		msg = msg:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannels)
-		msg = msg:gsub("CHANNEL:", "")
-		msg = msg:gsub("^(.-|h) "..L.Chat.Whispers, "%1")
-		msg = msg:gsub("^(.-|h) "..L.Chat.Says, "%1")
-		msg = msg:gsub("^(.-|h) "..L.Chat.Yells, "%1")
-		msg = msg:gsub("<"..String.AFK..">", "[|cffFF0000"..L.Chat.AFK.."|r] ")
-		msg = msg:gsub("<"..String.DND..">", "[|cffE7E716"..L.Chat.DND.."|r] ")
-		msg = msg:gsub("%[BN_CONVERSATION:", "%[1".."")
-		msg = msg:gsub("^%["..String.RAID_WARNING.."%]", "["..L.Chat.Raid_Warning.."]")
+function Module:AddMessage(message, ...)
+	-- Make sure the message is a string before trying to do anything with it.
+	-- Not really sure why it's not ALWAYS a string, but it's not...
+	if type(message) == "string" then
+		-- Find the formatted player link:
+		local link, data, name = string.match(message, "(|Hplayer:(.-)|h%[(.-)%]|h)")
+		if link then
+			-- Found it!
+			-- Strip the server name from the display name only:
+			name = gsub(name, "%-[^|]+", "")
+			-- Make a new link:
+			local newlink = "|Hplayer:" .. data .. "|h[" .. name .. "]|h"
+			-- Replace the original link in the message with the new one:
+			message = gsub(message, link, newlink, 1)
+		end
 	end
 
-	self.OldAddMessage(self, msg, ...)
+	if message:find(INTERFACE_ACTION_BLOCKED) then return end
+
+	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
+		message = message:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannels)
+		message = message:gsub("CHANNEL:", "")
+		message = message:gsub("^(.-|h) "..L.Chat.Whispers, "%1")
+		message = message:gsub("^(.-|h) "..L.Chat.Says, "%1")
+		message = message:gsub("^(.-|h) "..L.Chat.Yells, "%1")
+		message = message:gsub("<"..String.AFK..">", "[|cffFF0000"..L.Chat.AFK.."|r] ")
+		message = message:gsub("<"..String.DND..">", "[|cffE7E716"..L.Chat.DND.."|r] ")
+		message = message:gsub("%[BN_CONVERSATION:", "%[1".."")
+		message = message:gsub("^%["..String.RAID_WARNING.."%]", "["..L.Chat.Raid_Warning.."]")
+	end
+
+	-- Pass everything back to the frame's original AddMessage method:
+	self.OldAddMessage(self, message, ...)
 
 	return true
+end
+
+-- Set up a hook to catch temporary chat windows too, such as
+-- those created when you send a whisper conversation to a new window
+-- or have whispers set to appear in new windows.
+local orig = FCF_OpenTemporaryWindow
+FCF_OpenTemporaryWindow = function(...)
+	local frame = orig(...)
+	Hooks[frame] = frame.AddMessage
+	frame.AddMessage = AddMessage
+	return frame
 end
 
 local function GetGroupDistribution()
@@ -293,11 +320,12 @@ function Module:StyleFrame(frame)
 	B:Kill()
 	C:Kill()
 
+	-- Replace all the chat frames' AddMessage functions:
 	if ID ~= 2 then
-		-- Don"t add timestamps to combat log, they don"t work.
-		-- This usually taints, but LibChatAnims should make sure it doesn"t.
-		Frame.OldAddMessage = Frame.AddMessage
-		Frame.AddMessage = Module.AddMessage
+		-- Store the frame's original function:
+		frame.OldAddMessage = frame.AddMessage
+		-- And replace it with yours:
+		frame.AddMessage = Module.AddMessage
 	end
 
 	-- Mouse Wheel
@@ -319,15 +347,6 @@ function Module:KillPetBattleCombatLog(Frame)
 		return FCF_Close(Frame)
 	end
 end
-
--- Remove player"s realm name
-function Module:RemoveRealmName(event, msg, author, ...)
-	local realm = string_gsub(K.Realm, " ", "")
-	if msg:find("-" .. realm) then
-		return false, string_gsub(msg, "%-"..realm, ""), author, ...
-	end
-end
-ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", Module.RemoveRealmName)
 
 function Module:StyleTempFrame()
 	local Frame = FCF_GetCurrentChatFrame()
