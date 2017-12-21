@@ -53,76 +53,150 @@ local UnitRealmRelationship = _G.UnitRealmRelationship
 -- GLOBALS: ChatFrame_RemoveAllMessageGroups, ChatFrame_AddMessageGroup, ChatFrame_AddChannel, ChatFrame_RemoveChannel, ToggleChatColorNamesByClassGroup
 -- GLOBALS: ChatFrame1, ChatFrame2, ChatFrame3, ChatFrame4, ChatTypeInfo, KkthnxUIFont, CreateAnimationGroup, CHAT_FRAME_TEXTURES, KkthnxUIData
 
-local Hooks = {}
+-- Just testing this first.
+-- Channel Names
+-- Must match the default channel names shown in your game client.
+local Conversation = "Conversation"
+local General = "General"
+local LocalDefense = "LocalDefense"
+local LookingForGroup = "LookingForGroup"
+local Trade = "Trade"
+local WorldDefense = "WorldDefense"
 
-local String = {
-	AFK = _G.AFK,
-	DND = _G.DND,
-	RAID_WARNING = _G.RAID_WARNING,
-	PET_BATTLE_COMBAT_LOG = _G.PET_BATTLE_COMBAT_LOG,
+-- Short Channel Names
+-- Use the shortest abbreviations that make sense in your language.
+local Conversation = "C"
+local General = "G"
+local LocalDefense = "LD"
+local LookingForGroup = "LFG"
+local Trade = "T"
+local WorldDefense = "WD"
+local Guild = "g"
+local InstanceChat = "i"
+local InstanceChatLeader = "I"
+local Officer = "o"
+local Party = "p"
+local PartyGuide = "P"
+local PartyLeader = "P"
+local Raid = "r"
+local RaidLeader = "R"
+local RaidWarning = "W"
+local Say = "s"
+local WhisperIncoming = "w"
+local WhisperOutgoing = "@"
+local Yell = "y"
+
+local hooks = {}
+
+local CUSTOM_CHANNELS = {
+	-- Not case-sensitive. Must be in the format:
+	-- ["mychannel"] = "MC",
 }
 
-local ShortChannelNames = {
-	GUILD = L.Chat.Guild,
-	INSTANCE_CHAT = L.Chat.Instance,
-	INSTANCE_CHAT_LEADER = L.Chat.Instance_Leader,
-	OFFICER = L.Chat.Officer,
-	PARTY = L.Chat.Party,
-	PARTY_LEADER = L.Chat.Party_Leader,
-	RAID = L.Chat.Raid,
-	RAID_LEADER = L.Chat.Raid_Leader,
+local STRING_STYLE = "%s|| "
+-- %s = chat string (eg. "Guild", "2. Trade") (required)
+-- Pipe characters must be escaped by doubling them: | -> ||
+
+local CHANNEL_STYLE = "%d"
+-- %2$d = channel number (optional)
+-- %3$s = channel name (optional)
+-- Will be used with STRING_STYLE for numbered channels.
+
+local PLAYER_STYLE = "%s"
+-- %s = player name (required)
+
+local CHANNEL_LINK = "|Hchannel:%1$s|h" .. string.format(STRING_STYLE, CHANNEL_STYLE) .. "|h"
+
+local PLAYER_LINK = "|Hplayer:%s|h" .. PLAYER_STYLE .. "|h"
+local PLAYER_BN_LINK = "|HBNplayer:%s|h" .. PLAYER_STYLE .. "%s|h"
+
+-- |Hchannel:channel:2|h[2. Trade]|h |Hplayer:Konquered:1281:CHANNEL:2|h|cffbf8cffKonquered|r|h: lf 2s partner
+local CHANNEL_PATTERN = "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?"
+local CHANNEL_PATTERN_PLUS = CHANNEL_PATTERN .. ".+"
+
+local PLAYER_PATTERN = "|Hplayer:(.-)|h%[(.-)%]|h"
+
+-- |HBNplayer:|Kf1|k0000|k:2:893:BN_WHISPER:|Kf1|k0000|k|h[|Kf1|k0000|k]|
+local BNPLAYER_PATTERN = "|HBNplayer:(.-|k:(%d+).-)|h%[(.-)%](.*)|h"
+
+local ChannelNames = {
+	[Conversation] = Conversation,
+	[General] = General,
+	[LocalDefense] 	= LocalDefense,
+	[LookingForGroup] = LookingForGroup,
+	[Trade] = Trade,
+	[WorldDefense] = WorldDefense,
 }
 
-local function ShortChannels(self)
-	return string_format("|Hchannel:%s|h[%s]|h", self, ShortChannelNames[self:upper()] or self:gsub("channel:", ""))
+local ChannelStrings = {
+	CHAT_BN_WHISPER_GET	= format(STRING_STYLE, WhisperIncoming) .. "%s:\32",
+	CHAT_BN_WHISPER_INFORM_GET	= format(STRING_STYLE, WhisperOutgoing) .. "%s:\32",
+	CHAT_GUILD_GET = "|Hchannel:guild|h" .. format(STRING_STYLE, Guild) .. "|h%s:\32",
+	CHAT_INSTANCE_CHAT_GET = "|Hchannel:battleground|h" .. format(STRING_STYLE, InstanceChat) .. "|h%s:\32",
+	CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:battleground|h" .. format(STRING_STYLE, InstanceChatLeader) .. "|h%s:\32",
+	CHAT_OFFICER_GET = "|Hchannel:o|h" .. format(STRING_STYLE, Officer) .. "|h%s:\32",
+	CHAT_PARTY_GET = "|Hchannel:party|h" .. format(STRING_STYLE, Party) .. "|h%s:\32",
+	CHAT_PARTY_GUIDE_GET = "|Hchannel:party|h" .. format(STRING_STYLE, PartyGuide) .. "|h%s:\32",
+	CHAT_PARTY_LEADER_GET = "|Hchannel:party|h" .. format(STRING_STYLE, PartyLeader) .. "|h%s:\32",
+	CHAT_RAID_GET = "|Hchannel:raid|h" .. format(STRING_STYLE, Raid) .. "|h%s:\32",
+	CHAT_RAID_LEADER_GET = "|Hchannel:raid|h" .. format(STRING_STYLE, RaidLeader) .. "|h%s:\32",
+	CHAT_RAID_WARNING_GET = format(STRING_STYLE, RaidWarning) .. "%s:\32",
+	CHAT_SAY_GET = format(STRING_STYLE, Say) .. "%s:\32",
+	CHAT_WHISPER_GET = format(STRING_STYLE, WhisperIncoming) .. "%s:\32",
+	CHAT_WHISPER_INFORM_GET = format(STRING_STYLE, WhisperOutgoing) .. "%s:\32",
+	CHAT_YELL_GET = format(STRING_STYLE, Yell) .. "%s:\32",
+}
+
+for name, abbr in pairs(CUSTOM_CHANNELS) do
+	ChannelNames[string.lower(name)] = abbr
 end
 
-function Module:AddMessage(message, ...)
-	-- Make sure the message is a string before trying to do anything with it.
-	-- Not really sure why it's not ALWAYS a string, but it's not...
+local function escape(str)
+	return gsub(str, "([%%%+%-%.%[%]%*%?])", "%%%1")
+end
+
+local function AddMessage(frame, message, ...)
 	if type(message) == "string" then
-		-- Find the formatted player link:
-		local link, data, name = string.match(message, "(|Hplayer:(.-)|h%[(.-)%]|h)")
-		if link then
-			-- Found it!
-			-- Strip the server name from the display name only:
-			name = gsub(name, "%-[^|]+", "")
-			-- Make a new link:
-			local newlink = "|Hplayer:" .. data .. "|h[" .. name .. "]|h"
-			-- Replace the original link in the message with the new one:
-			message = gsub(message, link, newlink, 1)
+		local channelData, channelID, channelName = strmatch(message, CHANNEL_PATTERN_PLUS)
+		if channelData and C["Chat"].ShortenChannelNames then
+			local shortName = ChannelNames[channelName] or ChannelNames[strlower(channelName)] or strsub(channelName, 1, 2)
+			message = gsub(message, CHANNEL_PATTERN, format(CHANNEL_LINK, channelData, channelID, shortName))
+		end
+
+		local playerData, playerName = strmatch(message, PLAYER_PATTERN)
+		if playerData then
+			if C["Chat"].RemoveRealmNames then
+				if strmatch(playerName, "|cff") then
+					playerName = gsub(playerName, "%-[^|]+", "")
+				else
+					playerName = strmatch(playerName, "[^%-]+")
+				end
+			end
+			message = gsub(message, PLAYER_PATTERN, format(PLAYER_LINK, playerData, playerName))
+		elseif channelID then
+			-- WorldDefense messages don't have a sender; remove the extra colon and space.
+			message = gsub(message, "(|Hchannel:.-|h): ", "%1", 1)
 		end
 	end
-
-	if message:find(INTERFACE_ACTION_BLOCKED) then return end
-
-	if type ~= "EMOTE" and type ~= "TEXT_EMOTE" then
-		message = message:gsub("|Hchannel:(.-)|h%[(.-)%]|h", ShortChannels)
-		message = message:gsub("CHANNEL:", "")
-		message = message:gsub("^(.-|h) "..L.Chat.Whispers, "%1")
-		message = message:gsub("^(.-|h) "..L.Chat.Says, "%1")
-		message = message:gsub("^(.-|h) "..L.Chat.Yells, "%1")
-		message = message:gsub("<"..String.AFK..">", "[|cffFF0000"..L.Chat.AFK.."|r] ")
-		message = message:gsub("<"..String.DND..">", "[|cffE7E716"..L.Chat.DND.."|r] ")
-		message = message:gsub("%[BN_CONVERSATION:", "%[1".."")
-		message = message:gsub("^%["..String.RAID_WARNING.."%]", "["..L.Chat.Raid_Warning.."]")
-	end
-
-	-- Pass everything back to the frame's original AddMessage method:
-	self.OldAddMessage(self, message, ...)
-
-	return true
+	hooks[frame].AddMessage(frame, message, ...)
 end
 
--- Set up a hook to catch temporary chat windows too, such as
--- those created when you send a whisper conversation to a new window
--- or have whispers set to appear in new windows.
-local orig = FCF_OpenTemporaryWindow
-FCF_OpenTemporaryWindow = function(...)
-	local frame = orig(...)
-	Hooks[frame] = frame.AddMessage
-	frame.AddMessage = AddMessage
-	return frame
+function Module:SetShortenChannelNames()
+	if C["Chat"].ShortenChannelNames then
+		if not hooks.CHAT_GUILD_GET then
+			for k, v in pairs(ChannelStrings) do
+				hooks[k] = _G[k]
+				_G[k] = v
+			end
+		end
+	else
+		if hooks.CHAT_GUILD_GET then
+			for k, v in pairs(hooks) do
+				_G[k] = v
+				hooks[k] = nil
+			end
+		end
+	end
 end
 
 local function GetGroupDistribution()
@@ -211,7 +285,7 @@ end
 
 function Module:SetChatFont()
 	local Font = K.GetFont(C["Chat"].Font)
-	local Path, _, Flag  = _G[Font]:GetFont()
+	local Path, _, Flag = _G[Font]:GetFont()
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
 
 	if (CurrentFont == Path and CurrentFlag == Flag) then
@@ -318,12 +392,14 @@ function Module:StyleFrame(frame)
 	B:Kill()
 	C:Kill()
 
-	-- Replace all the chat frames' AddMessage functions:
 	if ID ~= 2 then
-		-- Store the frame's original function:
-		frame.OldAddMessage = frame.AddMessage
-		-- And replace it with yours:
-		frame.AddMessage = Module.AddMessage
+		if not hooks[frame] then
+			hooks[frame] = {}
+		end
+		if not hooks[frame].AddMessage then
+			hooks[frame].AddMessage = frame.AddMessage
+			frame.AddMessage = AddMessage
+		end
 	end
 
 	-- Mouse Wheel
@@ -368,7 +444,7 @@ function Module:SetupToastFrame()
 	BNToastFrame:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 12, 54)
 	BNToastFrame:SetClampedToScreen(true)
 	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 2, -2)
-   	BNToastFrameCloseButton:SkinCloseButton()
+	BNToastFrameCloseButton:SkinCloseButton()
 end
 
 function Module:SetDefaultChatFramesPositions()
@@ -614,6 +690,7 @@ function Module:OnEnable()
 		return
 	end
 
+	self:SetShortenChannelNames()
 	self:SetupFrame()
 	self:SetupToastFrame()
 	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)

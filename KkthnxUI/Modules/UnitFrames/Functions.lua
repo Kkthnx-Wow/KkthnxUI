@@ -122,8 +122,8 @@ function K.CreateAuraWatch(self, unit)
 			local icon = CreateFrame("Frame", nil, auras)
 			icon.spellID = spell[1]
 			icon.anyUnit = spell[4]
-			icon:SetWidth(6)
-			icon:SetHeight(6)
+			icon:SetWidth(C["Raidframe"].AuraWatchIconSize)
+			icon:SetHeight(C["Raidframe"].AuraWatchIconSize)
 			icon:SetPoint(spell[2], 0, 0)
 
 			local tex = icon:CreateTexture(nil, "OVERLAY")
