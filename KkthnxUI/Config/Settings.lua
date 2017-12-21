@@ -302,6 +302,7 @@ C["Unitframe"] = {
 	["CastClassColor"] = true,
 	["CastReactionColor"] = true,
 	["CombatText"] = true,
+	["DebuffsOnTop"] = true,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 13,
