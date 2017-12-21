@@ -27,7 +27,7 @@ L.StaticPopups = {
 	Changes_Reload = "One or more of the changes you have made require a ReloadUI.",
 	Config_Reload = "One or more of the changes you have made require a ReloadUI.",
 	Delete_Grays = "|cffff2020WARNING!|r\n\nYou are about to delete all your gray items. You will not receive any currency for this. Do you want to continue?\n\nThe net worth of items being deleted displayed below.",
-	KkthnxUI_Update = "KkthnxUI is five or more revisions out of date. You can download the newest version from Curse!",
+	KkthnxUI_Update = "KkthnxUI is out of date. You can download the newest version from Curse!",
 	No_Bank_Bags = "Please purchase a bank slot first.",
 	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
 }
