@@ -2,15 +2,14 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Chat", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G
-local unpack = _G.unpack
-local select = _G.select
-local pairs = _G.pairs
-local type = _G.type
-
-local string_format = _G.string.format
-local string_gsub = _G.string.gsub
-local string_len = _G.string.len
-local string_sub = _G.string.sub
+local pairs = pairs
+local select = select
+local string_format = string.format
+local string_gsub = string.gsub
+local string_len = string.len
+local string_sub = string.sub
+local type = type
+local unpack = unpack
 
 local BNGetFriendInfoByID = _G.BNGetFriendInfoByID
 local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
@@ -29,7 +28,6 @@ local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GENERAL = _G.GENERAL
 local GetChannelName = _G.GetChannelName
-local GetGuildRosterMOTD = _G.GetGuildRosterMOTD
 local GetRealmName = _G.GetRealmName
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
@@ -192,7 +190,7 @@ function Module:UpdateEditBoxColor()
 	if (ChatType == "CHANNEL") then
 		local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
 		if ID == 0 then
-			EditBox:SetBackdropBorderColor(unpack(C.Media.BorderColor))
+			EditBox:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 		else
 			EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType..ID].r, ChatTypeInfo[ChatType..ID].g, ChatTypeInfo[ChatType..ID].b)
 		end
@@ -638,7 +636,5 @@ function Module:OnEnable()
 	local Whisper = CreateFrame("Frame")
 	Whisper:RegisterEvent("CHAT_MSG_WHISPER")
 	Whisper:RegisterEvent("CHAT_MSG_BN_WHISPER")
-	Whisper:SetScript("OnEvent", function(self, event)
-		Module:PlayWhisperSound()
-	end)
+	Whisper:SetScript("OnEvent", Module.PlayWhisperSound)
 end

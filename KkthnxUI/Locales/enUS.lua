@@ -167,6 +167,7 @@ L.Miscellaneous = {
 	Sun = "Sun",
 	Thu = "Thurs",
 	Tue = "Tues",
+	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
 	Wed = "Wed",
 }
 

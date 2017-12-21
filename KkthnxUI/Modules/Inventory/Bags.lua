@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 if C["Bags"].Enable ~= true then return end
 
---	Based on Stuffing(by Hungtar, editor Tukz)
+-- Based on Stuffing(by Hungtar, editor Tukz)
 
 -- Bags
 L_BAG_SHOW_BAGS = "Show Bags"
@@ -181,7 +181,7 @@ function Stuffing:SlotUpdate(b)
 
 	-- Set all slot color to default ShestakUI on update
 	if not b.frame.lock then
-		b.frame:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
+		b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 	end
 
 	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
@@ -417,7 +417,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		end)
 
 		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
-			self:GetParent():SetBackdropBorderColor(unpack(C["Media"].BorderColor))
+			self:GetParent():SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 		end)
 
 		ret.slot = slot
@@ -1122,7 +1122,7 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 		if not button then return end
 		local _, _, _, quality = GetContainerItemInfo(-3, i)
 		local clink = GetContainerItemLink(-3, i)
-		button:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
+		button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 
 		if clink then
 			if quality and quality > 1 then
