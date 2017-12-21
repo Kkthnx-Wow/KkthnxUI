@@ -59,17 +59,17 @@ C["Automation"] = {
 	["AutoResurrectThank"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
+	["InviteKeyword"] = "invite",
 	["ScreenShot"] = false,
 }
 
 C["Bags"] = {
-	["ButtonSize"] = 32,
+	["BagColumns"] = 10,
+	["BankColumns"] = 17,
+	["ButtonSize"] = 27,
+	["ButtonSpace"] = 3,
 	["Enable"] = true,
-	["InsertLeftToRight"] = true,
-	["ItemsPerRow"] = 11,
-	["SortRightToLeft"] = false,
-	["Spacing"] = 4,
-	["PulseNewItem"] = true,
+	["ItemLevel"] = false,
 }
 
 -- Buffs & Debuffs
@@ -91,7 +91,7 @@ C["Chat"] = {
 	["LinkBrackets"] = true,
 	["LinkColor"] = {0.08, 1, 0.36},
 	["MessageFilter"] = false,
-	["Font"] = "KkthnxUI Font",
+	["Font"] = "KkthnxUI",
 	["ScrollByX"] = 3,
 	["SpamFilter"] = false,
 	["TabsMouseover"] = true,
@@ -121,10 +121,37 @@ C["Cooldown"] = {
 }
 
 -- DataBars
---[[C["DataBars"] = {
-
+C["DataBars"] = {
+	-- Artifact
+	-- ["ArtifactColor"] = {.901, .8, .601},
+	["ArtifactEnable"] = true,
+	-- ["ArtifactFade"] = false,
+	["ArtifactHeight"] = 12,
+	["ArtifactWidth"] = 164,
+	-- Experience
+	-- ["ExperienceColor"] = {0, 0.4, 1, .8},
+	["ExperienceEnable"] = true,
+	-- ["ExperienceFade"] = false,
+	["ExperienceHeight"] = 12,
+	-- ["ExperienceRestedColor"] = {1, 0, 1, 0.2},
+	["ExperienceWidth"] = 164,
+	-- Honor
+	-- ["HonorColor"] = {240/255, 114/255, 65/255},
+	["HonorEnable"] = true,
+	-- ["HonorFade"] = false,
+	["HonorHeight"] = 12,
+	["HonorWidth"] = 164,
+	-- Reputation
+	["ReputationEnable"] = true,
+	-- ["ReputationFade"] = false,
+	["ReputationHeight"] = 12,
+	["ReputationWidth"] = 164,
+	-- Info text for all bars
+	-- ["InfoText"] = false,
+	["Outline"] = false,
+	["Texture"] = "KkthnxUI",
 }
---]]
+
 -- Datatext
 C["DataText"] = {
 	["Battleground"] = true,
@@ -148,13 +175,14 @@ C["General"] = {
 	["ColorTextures"] = false,
 	["ConfigButton"] = true,
 	["DisableTutorialButtons"] = false,
-	--["Font"] = "KkthnxUI Font",
+	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
 	["ReplaceBlizzardFonts"] = true,
 	["SpellTolerance"] = false,
 	["TaintLog"] = false,
-	["TalkingHeadScale"] = 1,
-	-- ["Texture"] = "KkthnxUI Texture",
+	["TalkingHeadWidth"] = 570,
+	["TalkingHeadHeight"] = 155,
+	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.31, 0.31, 0.31},
 	["ToggleButton"] = true,
 	["UIScale"] = 0.71111111111111,
@@ -175,6 +203,7 @@ C["Loot"] = {
 	["AutoRoll"] = false,
 	["Enable"] = true,
 	["GroupLoot"] = true,
+	["Texture"] = "KkthnxUI",
 }
 
 -- Minimap
@@ -209,13 +238,6 @@ C["Misc"] = {
 C["Nameplates"] = {
 	["AurasSize"] = 26,
 	["BadColor"] = {1, 0, 0},
-	["BarsStyle"] = {
-		["Options"] = {
-			["Flat BarsStyle"] = "FlatBarsStyle",
-			["Default BarsStyle"] = "DefaultBarsStyle",
-		},
-		["Value"] = "DefaultBarsStyle",
-	},
 	["CastbarName"] = true,
 	["CastUnitReaction"] = true,
 	["Clamp"] = false,
@@ -234,6 +256,7 @@ C["Nameplates"] = {
 	["SelectedScale"] = 1.180,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
+	["Texture"] = "KkthnxUI",
 	["TotemIcons"] = false,
 	["TrackAuras"] = true,
 	["Width"] = 140,
@@ -248,6 +271,7 @@ C["Skins"] = {
 	["Skada"] = false,
 	["Spy"] = false,
 	["WeakAuras"] = false,
+	["Texture"] = "KkthnxUI",
 }
 
 -- Tooltip
@@ -264,6 +288,7 @@ C["Tooltip"] = {
 	["ItemQualityBorder"] = true,
 	["PlayerTitles"] = false,
 	["SpellID"] = true,
+	["Texture"] = "KkthnxUI",
 }
 
 -- Unitframe
@@ -277,8 +302,12 @@ C["Unitframe"] = {
 	["CastClassColor"] = true,
 	["CastReactionColor"] = true,
 	["CombatText"] = true,
+	["DebuffsOnTop"] = true,
 	["Enable"] = true,
+	["Font"] = "KkthnxUI",
+	["FontSize"] = 13,
 	["GCDBar"] = false,
+	["OORAlpha"] = 0.40,
 	["Outline"] = false,
 	["Party"] = true,
 	["PortraitTimer"] = true,
@@ -289,21 +318,16 @@ C["Unitframe"] = {
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
+	["Texture"] = "KkthnxUI",
 	-- Portrait Styles 3
 	["PortraitStyle"] = {
 		["Options"] = {
 			["3D Portraits"] = "ThreeDPortraits",
 			["Class Portraits"] = "ClassPortraits",
+			["New Class Portraits"] = "NewClassPortraits",
 			["Default Portraits"] = "DefaultPortraits",
 		},
 		["Value"] = "DefaultPortraits",
-	},
-	["BarsStyle"] = {
-		["Options"] = {
-			["Flat BarsStyle"] = "FlatBarsStyle",
-			["Default BarsStyle"] = "DefaultBarsStyle",
-		},
-		["Value"] = "DefaultBarsStyle",
 	},
 }
 
@@ -315,32 +339,26 @@ C["UnitframePlugins"] = {
 -- Raidframe
 C["Raidframe"] = {
 	["AuraWatch"] = true,
-	["BarsStyle"] = {
-		["Options"] = {
-			["Flat BarsStyle"] = "FlatBarsStyle",
-			["Default BarsStyle"] = "DefaultBarsStyle",
-		},
-		["Value"] = "DefaultBarsStyle",
-	},
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Height"] = 40,
 	["IconSize"] = 22,
 	["MainTankFrames"] = true,
+	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
 	["RaidAsParty"] = false,
 	["RaidTools"] = true,
 	["RaidUtility"] = true,
 	["Scale"] = 1,
+	["Scale"] = 1,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
 	["ShowRolePrefix"] = false,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
+	["Texture"] = "KkthnxUI",
 	["Width"] = 56,
-	["Scale"] = 1,
-	["ManabarShow"] = false,
 }
 
 -- Worldmap

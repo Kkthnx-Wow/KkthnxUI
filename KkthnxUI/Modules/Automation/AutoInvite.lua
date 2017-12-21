@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local AutoInvite = K:NewModule("AutoInvite", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("AutoInvite", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Wow Lua
 local _G = _G
@@ -23,7 +23,9 @@ local StaticPopupSpecial_Hide = _G.StaticPopupSpecial_Hide
 -- GLOBALS: QueueStatusMinimapButton, LFGInvitePopup
 
 local hideStatic = false
-function AutoInvite:AutoInvite(event, leaderName)
+function Module:AutoInvite(event, leaderName)
+	if C["Automation"].AutoInvite ~= true then return end
+
 	if event == "PARTY_INVITE_REQUEST" then
 		if QueueStatusMinimapButton:IsShown() then return end -- Prevent losing que inside LFD if someone invites you to group
 		if IsInGroup() then return end
@@ -32,11 +34,14 @@ function AutoInvite:AutoInvite(event, leaderName)
 		-- Update Guild and Friendlist
 		if GetNumFriends() > 0 then ShowFriends() end
 		if IsInGuild() then GuildRoster() end
+
+		local friendName, guildMemberName, memberName, numGameAccounts, isOnline, bnToonName, bnClient, bnRealm, bnAcceptedInvite, _
+		local PLAYER_REALM = gsub(K.Realm, "[%s%-]", "")
 		local inGroup = false
 
 		for friendIndex = 1, GetNumFriends() do
-			local friendName = string_gsub(GetFriendInfo(friendIndex), "-.*", "")
-			if friendName == leaderName then
+			friendName = GetFriendInfo(friendIndex) --this is already stripped of your own realm
+			if friendName and (friendName == leaderName) then
 				AcceptGroup()
 				inGroup = true
 				break
@@ -45,8 +50,9 @@ function AutoInvite:AutoInvite(event, leaderName)
 
 		if not inGroup then
 			for guildIndex = 1, GetNumGuildMembers(true) do
-				local guildMemberName = string_gsub(GetGuildRosterInfo(guildIndex), "-.*", "")
-				if guildMemberName == leaderName then
+				guildMemberName = GetGuildRosterInfo(guildIndex)
+				memberName = guildMemberName and gsub(guildMemberName, "%-"..PLAYER_REALM, "")
+				if memberName and (memberName == leaderName) then
 					AcceptGroup()
 					inGroup = true
 					break
@@ -56,11 +62,28 @@ function AutoInvite:AutoInvite(event, leaderName)
 
 		if not inGroup then
 			for bnIndex = 1, BNGetNumFriends() do
-				local _, _, _, _, name = BNGetFriendInfo(bnIndex)
-				leaderName = leaderName:match("(.+)%-.+") or leaderName
-				if name == leaderName then
-					AcceptGroup()
-					break
+				bnAcceptedInvite = false
+				_, _, _, _, _, _, _, isOnline = BNGetFriendInfo(bnIndex)
+				if isOnline then
+					numGameAccounts = BNGetNumFriendGameAccounts(bnIndex)
+					if numGameAccounts > 0 then
+						for toonIndex = 1, numGameAccounts do
+							_, bnToonName, bnClient, bnRealm = BNGetFriendGameAccountInfo(bnIndex, toonIndex)
+							if bnClient == BNET_CLIENT_WOW then
+								if bnRealm and bnRealm ~= "" and bnRealm ~= K.Realm then
+									bnToonName = format("%s-%s", bnToonName, gsub(bnRealm,"[%s%-]",""))
+								end
+								if bnToonName == leaderName then
+									AcceptGroup()
+									bnAcceptedInvite = true
+									break
+								end
+							end
+						end
+						if bnAcceptedInvite then
+							break
+						end
+					end
 				end
 			end
 		end
@@ -72,13 +95,40 @@ function AutoInvite:AutoInvite(event, leaderName)
 	end
 end
 
-function AutoInvite:OnEnable()
-	if C["Automation"].AutoInvite ~= true then return end
-	self:RegisterEvent("PARTY_INVITE_REQUEST", "AutoInvite")
-	self:RegisterEvent("GROUP_ROSTER_UPDATE", "AutoInvite")
+function Module:AutoWhisperInvite(event, arg1, arg2, ...)
+	if ((not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and arg1:lower():match(C["Automation"].InviteKeyword)) and KkthnxUIDataPerChar.AutoInvite == true and not QueueStatusMinimapButton:IsShown() then
+		if event == "CHAT_MSG_WHISPER" then
+			InviteUnit(arg2)
+		elseif event == "CHAT_MSG_BN_WHISPER" then
+			local bnetIDAccount = select(11, ...)
+			local bnetIDGameAccount = select(6, BNGetFriendInfoByID(bnetIDAccount))
+			BNInviteFriend(bnetIDGameAccount)
+		end
+	end
 end
 
-function AutoInvite:OnDisable()
-	self:UnregisterEvent("PARTY_INVITE_REQUEST", "AutoInvite")
-	self:UnregisterEvent("GROUP_ROSTER_UPDATE", "AutoInvite")
+function Module:OnEnable()
+	self:RegisterEvent("PARTY_INVITE_REQUEST", "AutoInvite")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "AutoInvite")
+	self:RegisterEvent("CHAT_MSG_WHISPER", "AutoWhisperInvite")
+	self:RegisterEvent("CHAT_MSG_BN_WHISPER", "AutoWhisperInvite")
 end
+
+SlashCmdList["AUTOWHISPERINVITE"] = function(message)
+	local Name = UnitName("Player")
+	local Realm = GetRealmName()
+
+	if message == "off" then
+		KkthnxUIData[Realm][Name].AutoWhisperInvite = false
+		K.Print("|cffffff00".."Autoinvite OFF"..".|r")
+	elseif message == "" then
+		KkthnxUIData[Realm][Name].AutoWhisperInvite = true
+		K.Print("|cffffff00".."Autoinvite ON: "..C["Automation"].InviteKeyword..".|r")
+		C["Automation"].InviteKeyword = C["Automation"].InviteKeyword
+	else
+		KkthnxUIData[Realm][Name].AutoWhisperInvite = true
+		K.Print("|cffffff00".."Autoinvite ON: "..message..".|r")
+		C["Automation"].InviteKeyword = message
+	end
+end
+SLASH_AUTOWHISPERINVITE1 = "/ainv"

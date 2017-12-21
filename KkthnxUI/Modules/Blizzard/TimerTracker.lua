@@ -3,6 +3,9 @@ local K, C, L = unpack(select(2, ...))
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: TimerTracker
 
+local BlizzTimerFont = K.GetFont(C["Unitframe"].Font)
+local BlizzTimerTexture = K.GetTexture(C["Unitframe"].Texture)
+
 -- Timer tracker
 local function SkinIt(bar)
 	for i = 1, bar:GetNumRegions() do
@@ -20,7 +23,7 @@ local function SkinIt(bar)
 	bar:StripTextures()
 	bar:SetBackdrop({bgFile = C["Media"].Blank, insets = {left = 0, right = 0, top = 0, bottom = 0}})
 	bar:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-	bar:SetStatusBarTexture(C["Media"].Texture)
+	bar:SetStatusBarTexture(BlizzTimerTexture)
 	bar:SetStatusBarColor(170/255, 10/255, 10/255)
 	K.CreateBorder(bar, 4)
 

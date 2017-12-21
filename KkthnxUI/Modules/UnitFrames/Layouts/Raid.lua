@@ -32,20 +32,23 @@ if GetLocale() == "deDE" then
 	GHOST = "Geist"
 end
 
-local function UpdateThreat(self, _, unit)
-    if unit ~= self.unit then return end
-    local status = UnitThreatSituation(unit)
-    local threat = self.ThreatIndicator
+local RaidframeFont = K.GetFont(C["Raidframe"].Font)
+local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
 
-    local r, g, b
-    if status and status > 0 then
-        r,g,b = GetThreatStatusColor(status)
-        self.Health:SetBackdropBorderColor(r, g, b, 1)
-        threat:Show()
-    else
-        self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-        threat:Hide()
-    end
+local function UpdateThreat(self, _, unit)
+	if unit ~= self.unit then return end
+	local status = UnitThreatSituation(unit)
+	local threat = self.ThreatIndicator
+
+	local r, g, b
+	if status and status > 0 then
+		r,g,b = GetThreatStatusColor(status)
+		self.Health:SetBackdropBorderColor(r, g, b, 1)
+		threat:Show()
+	else
+		self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		threat:Hide()
+	end
 end
 
 local function UpdatePower(self, _, unit)
@@ -128,26 +131,22 @@ local function CreateRaidLayout(self, unit)
 		end
 	end)
 
-    -- self.Threat = CreateFrame("Frame", nil, self.Health)
-    -- self.Threat:SetTemplate()
-    -- self.Threat:SetAllPoints()
-    -- self.Threat:Hide()
-    -- self.Threat.Override = UpdateThreat
+	-- self.Threat = CreateFrame("Frame", nil, self.Health)
+	-- self.Threat:SetTemplate()
+	-- self.Threat:SetAllPoints()
+	-- self.Threat:Hide()
+	-- self.Threat.Override = UpdateThreat
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
 	self.Health:SetPoints(self)
-	if (C["Raidframe"].BarsStyle.Value == "FlatBarsStyle") then
-		self.Health:SetStatusBarTexture(C["Media"].TextureFlat)
-	elseif (C["Raidframe"].BarsStyle.Value == "DefaultBarsStyle") then
-		self.Health:SetStatusBarTexture(C["Media"].Texture)
-	end
-    self.Health.colorDisconnected = true
-    self.Health.colorReaction = true
-    self.Health.colorTapping = true
-    self.Health.colorClass = true
-    self.Health.PostUpdate = UpdateHealth
-    self.Health.frequentUpdates = true
+	self.Health:SetStatusBarTexture(RaidframeTexture)
+	self.Health.colorDisconnected = true
+	self.Health.colorReaction = true
+	self.Health.colorTapping = true
+	self.Health.colorClass = true
+	self.Health.PostUpdate = UpdateHealth
+	self.Health.frequentUpdates = true
 	self.Health.Smooth = C["Raidframe"].Smooth
 	self.Health.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
 
@@ -155,10 +154,34 @@ local function CreateRaidLayout(self, unit)
 
 	self.HealthPrediction = K.CreateHealthPrediction(self)
 
-	 -- text/high frame overlay
-    self.Overlay = CreateFrame("Frame", nil, self.Health)
-    self.Overlay:SetAllPoints(self.Health)
-    self.Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
+	-- Power bar
+	if (C["Raidframe"].ManabarShow) then
+		self.Power = CreateFrame("StatusBar", "$parentPower", self)
+		self.Power:SetFrameStrata("LOW")
+		self.Power:SetFrameLevel(5)
+		self.Power:SetStatusBarTexture(RaidframeTexture)
+		self.Power:SetHeight(3)
+		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 1, 3)
+		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", -1, 3)
+
+		if C["General"].ColorTextures and self then
+			self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		end
+
+		self.Power.Smooth = C["Raidframe"].Smooth
+		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
+		self.Power.colorPower = true
+		self.Power.frequentUpdates = true
+
+		table_insert(self.__elements, UpdatePower)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
+		UpdatePower(self, _, unit)
+	end
+
+	-- text/high frame overlay
+	self.Overlay = CreateFrame("Frame", nil, self.Health)
+	self.Overlay:SetAllPoints(self.Health)
+	self.Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
 
 	-- Health text
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
@@ -172,35 +195,7 @@ local function CreateRaidLayout(self, unit)
 	self.Name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Raidframe"].Outline and "OUTLINE" or "")
 	self.Name:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
 	self:Tag(self.Name, "[KkthnxUI:NameVeryShort]")
-	
-	-- Power bar
-	if (C["Raidframe"].ManabarShow) then
-		self.Power = CreateFrame("StatusBar", "$parentPower", self)
-		self.Power:SetFrameStrata("LOW")
-		self.Power:SetFrameLevel(5)
-		if (C["Raidframe"].BarsStyle.Value == "FlatBarsStyle") then
-			self.Power:SetStatusBarTexture(C["Media"].TextureFlat)
-		elseif (C["Raidframe"].BarsStyle.Value == "DefaultBarsStyle") then
-			self.Power:SetStatusBarTexture(C["Media"].Texture)
-		end
-		self.Power:SetHeight(3)
-		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 1, 3)
-		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", -1, 3)
-		
-		if C["General"].ColorTextures and self then
-			self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		end
-		
-		self.Power.Smooth = C["Raidframe"].Smooth
-		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
-		self.Power.colorPower = true
-		self.Power.frequentUpdates = true
-		
-		table_insert(self.__elements, UpdatePower)
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
-		UpdatePower(self, _, unit)
-	end
-	
+
 	-- Afk /offline timer, using frequentUpdates function from oUF tags
 	if (C["Raidframe"].ShowNotHereTimer) then
 		self.AFKIndicator = self.Overlay:CreateFontString(nil, "OVERLAY")
@@ -210,12 +205,12 @@ local function CreateRaidLayout(self, unit)
 		self.AFKIndicator:SetTextColor(0, 1, 0)
 		self:Tag(self.AFKIndicator, "[KkthnxUI:AFK]")
 	end
-	
+
 	-- ThreatIndicator
-    self.ThreatIndicator = CreateFrame("Frame", nil, self.Health)
-    self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0)
-    self.ThreatIndicator.Override = UpdateThreat
-	
+	self.ThreatIndicator = CreateFrame("Frame", nil, self.Health)
+	self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0)
+	self.ThreatIndicator.Override = UpdateThreat
+
 	-- Mouseover darklight
 	if (C["Raidframe"].ShowMouseoverHighlight) then
 		self.Mouseover = self.Health:CreateTexture(nil, "OVERLAY")
@@ -311,9 +306,9 @@ local function CreateRaidLayout(self, unit)
 	-- Ressurection icon
 	if (C["Raidframe"].ShowResurrection) then
 		self.ResurrectIcon = self:CreateTexture(nil, "OVERLAY")
-        self.ResurrectIcon:SetPoint("CENTER", 0, 0)
-        self.ResurrectIcon:SetSize(22, 22)
-        self.ResurrectIcon:Hide()
+		self.ResurrectIcon:SetPoint("CENTER", 0, 0)
+		self.ResurrectIcon:SetSize(22, 22)
+		self.ResurrectIcon:Hide()
 	end
 
 	self.Range = {

@@ -2,28 +2,31 @@ local K, C = unpack(select(2, ...))
 
 local CreateFrame = CreateFrame
 
+local PredictionFont = K.GetFont(C["Unitframe"].Font)
+local PredictionTexture = K.GetTexture(C["Unitframe"].Texture)
+
 function K.CreateHealthPrediction(self)
 	local mhpb = CreateFrame("StatusBar", nil, self.Health)
 	mhpb:SetParent(self.Health)
-	mhpb:SetStatusBarTexture(C["Media"].Texture)
+	mhpb:SetStatusBarTexture(PredictionTexture)
 	mhpb:SetStatusBarColor(0, 1, 0.5, 0.25)
 	mhpb:Hide()
 
 	local ohpb = CreateFrame("StatusBar", nil, self.Health)
 	ohpb:SetParent(self.Health)
-	ohpb:SetStatusBarTexture(C["Media"].Texture)
+	ohpb:SetStatusBarTexture(PredictionTexture)
 	ohpb:SetStatusBarColor(0, 1, 0, 0.25)
 	ohpb:Hide()
 
 	local absorbBar = CreateFrame("StatusBar", nil, self.Health)
 	absorbBar:SetParent(self.Health)
-	absorbBar:SetStatusBarTexture(C["Media"].Texture)
+	absorbBar:SetStatusBarTexture(PredictionTexture)
 	absorbBar:SetStatusBarColor(1, 1, 0, 0.25)
 	absorbBar:Hide()
 
 	local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
 	healAbsorbBar:SetParent(self.Health)
-	healAbsorbBar:SetStatusBarTexture(C["Media"].Texture)
+	healAbsorbBar:SetStatusBarTexture(PredictionTexture)
 	healAbsorbBar:SetStatusBarColor(1, 0, 0, 0.25)
 	healAbsorbBar:SetReverseFill(true)
 	healAbsorbBar:Hide()

@@ -2,5 +2,8 @@
 <Ui
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Databars -->
-    <Script file="Databars.lua" />
+    <Script file="ArtifactBar.lua" />
+    <Script file="ExperienceBar.lua" />
+    <Script file="HonorBar.lua" />
+    <Script file="ReputationBar.lua" />
 </Ui>

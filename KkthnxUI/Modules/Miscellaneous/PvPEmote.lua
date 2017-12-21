@@ -79,8 +79,3 @@ function KkthnxUIPvPEmote:OnEnable()
 	self:RegisterEvent("PLAYER_DEAD", "Setup")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "Setup")
 end
-
-function KkthnxUIPvPEmote:OnDisable()
-	self:UnregisterEvent("PLAYER_DEAD")
-	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-end

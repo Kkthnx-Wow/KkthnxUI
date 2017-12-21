@@ -66,7 +66,6 @@ local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
 local LEVEL = _G.LEVEL
 local NotifyInspect = _G.NotifyInspect
-local PET_TYPE_SUFFIX = _G.PET_TYPE_SUFFIX
 local PVP = _G.PVP
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SetTooltipMoney = _G.SetTooltipMoney
@@ -107,8 +106,8 @@ local TAPPED_COLOR = { r=.6, g=.6, b=.6 }
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000".."AFK".."|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00".."DND".."|r|cffFFFFFF]|r"
 
-local TooltipFont = K.GetFont(C["General"].Font)
-local TooltipTexture = K.GetTexture(C["General"].Texture)
+local TooltipFont = K.GetFont(C["Tooltip"].Font)
+local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 
 local tooltips = {
 	AutoCompleteBox,
@@ -290,7 +289,7 @@ function Module:ShowInspectInfo(tt, unit, level, r, g, b, numTries)
 	if (not canInspect or level < 10 or numTries > 1) then return end
 
 	local GUID = UnitGUID(unit)
-	if (GUID == playerGUID) then
+	if (GUID == K.GUID) then
 		tt:AddDoubleLine(SPECIALIZATION, self:GetTalentSpec(unit, true), nil, nil, nil, r, g, b)
 		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, floor(select(2, GetAverageItemLevel())), nil, nil, nil, 1, 1, 1)
 	elseif (inspectCache[GUID]) then
@@ -414,7 +413,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			if (isPetWild or isPetCompanion) then
 				level = UnitBattlePetLevel(unit)
 
-				local petType = PET_TYPE_SUFFIX[UnitBattlePetType(unit)]
+				local petType = _G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)]
 				if creatureType then
 					creatureType = format("%s %s", creatureType, petType)
 				else
@@ -652,11 +651,7 @@ function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
-	if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-		GameTooltipStatusBar:SetStatusBarTexture(C["Media"].TextureFlat)
-	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-		GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
-	end
+	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
 	GameTooltipStatusBar:CreateShadow()
 	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
 	GameTooltipStatusBar:ClearAllPoints()
@@ -704,8 +699,4 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
 	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
 	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
-
-
-	-- Variable is localized at top of file, but setting it right away doesn"t work on first session after opening up WoW
-	playerGUID = UnitGUID("player")
 end

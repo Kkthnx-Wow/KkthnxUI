@@ -5,6 +5,8 @@ local _G = _G
 local string_format = string.format
 
 local Movers = K.Movers
+local MirrorTimerFont = K.GetFont(C["Unitframe"].Font)
+local MirrorTimerTexture = K.GetTexture(C["Unitframe"].Texture)
 
 local function MirrorTimer_OnUpdate(frame, elapsed)
 	if (frame.paused) then
@@ -38,11 +40,7 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	mirrorTimer:StripTextures()
 	mirrorTimer:SetSize(222, 22)
 	mirrorTimer.label = text
-	if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-		statusBar:SetStatusBarTexture(C["Media"].TextureFlat)
-	elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-		statusBar:SetStatusBarTexture(NameplateTexture)
-	end
+	statusBar:SetStatusBarTexture(MirrorTimerTexture)
 	statusBar:SetTemplate("Transparent")
 	statusBar:SetSize(222, 22)
 	text:Hide()
@@ -50,7 +48,7 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	statusBar.spark = statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
 	statusBar.spark:SetWidth(12)
 	statusBar.spark:SetHeight(statusBar:GetHeight() * 2)
-	statusBar.spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+	statusBar.spark:SetTexture(C["Media"].Spark)
 	statusBar.spark:SetBlendMode("ADD")
 	statusBar.spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 

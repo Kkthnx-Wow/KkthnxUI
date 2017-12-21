@@ -93,6 +93,7 @@ Private.frame_metatable = frame_metatable
 for k, v in next, {
 	--[[ frame:EnableElement(name, unit)
 	Used to activate an element for the given unit frame.
+
 	* self - unit frame for which the element should be enabled
 	* name - name of the element to be enabled (string)
 	* unit - unit to be passed to the element's Enable function. Defaults to the frame's unit (string?)
@@ -115,6 +116,7 @@ for k, v in next, {
 
 	--[[ frame:DisableElement(name)
 	Used to deactivate an element for the given unit frame.
+
 	* self - unit frame for which the element should be disabled
 	* name - name of the element to be disabled (string)
 	--]]
@@ -145,6 +147,7 @@ for k, v in next, {
 
 	--[[ frame:IsElementEnabled(name)
 	Used to check if an element is enabled on the given frame.
+
 	* self - unit frame
 	* name - name of the element (string)
 	--]]
@@ -161,6 +164,7 @@ for k, v in next, {
 	--[[ frame:Enable(asState)
 	Used to toggle the visibility of a unit frame based on the existence of its unit. This is a reference to
 	`RegisterUnitWatch`.
+
 	* self    - unit frame
 	* asState - if true, the frame's "state-unitexists" attribute will be set to a boolean value denoting whether the
 	            unit exists; if false, the frame will be shown if its unit exists, and hidden if it does not (boolean)
@@ -168,6 +172,7 @@ for k, v in next, {
 	Enable = RegisterUnitWatch,
 	--[[ frame:Disable()
 	Used to UnregisterUnitWatch for the given frame and hide it.
+
 	* self - unit frame
 	--]]
 	Disable = function(self)
@@ -177,6 +182,7 @@ for k, v in next, {
 
 	--[[ frame:UpdateAllElements(event)
 	Used to update all enabled elements on the given frame.
+
 	* self  - unit frame
 	* event - event name to pass to the elements' update functions (string)
 	--]]
@@ -342,6 +348,7 @@ end
 
 --[[ oUF:RegisterInitCallback(func)
 Used to add a function to a table to be executed upon unit frame/header initialization.
+
 * self - the global oUF object
 * func - function to be added
 --]]
@@ -351,6 +358,7 @@ end
 
 --[[ oUF:RegisterMetaFunction(name, func)
 Used to make a (table of) function(s) available to all unit frames.
+
 * self - the global oUF object
 * name - unique name of the function (string)
 * func - function or a table of functions (function or table)
@@ -368,6 +376,7 @@ end
 
 --[[ oUF:RegisterStyle(name, func)
 Used to register a style with oUF. This will also set the active style if it hasn't been set yet.
+
 * self - the global oUF object
 * name - name of the style
 * func - function(s) defining the style (function or table)
@@ -384,6 +393,7 @@ end
 
 --[[ oUF:SetActiveStyle(name)
 Used to set the active style.
+
 * self - the global oUF object
 * name - name of the style (string)
 --]]
@@ -402,6 +412,7 @@ do
 
 	--[[ oUF:IterateStyles()
 	Returns an iterator over all registered styles.
+
 	* self - the global oUF object
 	--]]
 	function oUF.IterateStyles()
@@ -513,8 +524,10 @@ do
 			-- There's no need to do anything on frames with onlyProcessChildren
 			if(not frame:GetAttribute('oUF-onlyProcessChildren')) then
 				RegisterUnitWatch(frame)
+
 				-- Attempt to guess what the header is set to spawn.
 				local groupFilter = header:GetAttribute('groupFilter')
+
 				if(type(groupFilter) == 'string' and groupFilter:match('MAIN[AT]')) then
 					local role = groupFilter:match('MAIN([AT])')
 					if(role == 'T') then
@@ -527,6 +540,7 @@ do
 				elseif(header:GetAttribute('showParty')) then
 					unit = 'party'
 				end
+
 				local headerType = header:GetAttribute('oUF-headerType')
 				local suffix = frame:GetAttribute('unitsuffix')
 				if(unit and suffix) then
@@ -538,17 +552,21 @@ do
 				elseif(unit and headerType == 'pet') then
 					unit = unit .. headerType
 				end
+
 				frame:SetAttribute('*type1', 'target')
 				frame:SetAttribute('*type2', 'togglemenu')
 				frame:SetAttribute('toggleForVehicle', %d == 1) -- See issue #404
 				frame:SetAttribute('oUF-guessUnit', unit)
 			end
+
 			local body = header:GetAttribute('oUF-initialConfigFunction')
 			if(body) then
 				frame:Run(body, unit)
 			end
 		end
+
 		header:CallMethod('styleFunction', self:GetName())
+
 		local clique = header:GetFrameRef('clickcast_header')
 		if(clique) then
 			clique:SetAttribute('clickcast_button', self)
@@ -561,6 +579,7 @@ do
 
 	--[[ oUF:SpawnHeader(overrideName, template, visibility, ...)
 	Used to create a group header and apply the currently active style to it.
+
 	* self         - the global oUF object
 	* overrideName - unique global name to be used for the header. Defaults to an auto-generated name based on the name
 	                 of the active style and other arguments passed to `:SpawnHeader` (string?)
@@ -569,8 +588,10 @@ do
 	* visibility   - macro conditional(s) which define when to display the header (string).
 	* ...          - further argument pairs. Consult [Group Headers](http://wowprogramming.com/docs/secure_template/Group_Headers)
 	                 for possible values.
+
 	In addition to the standard group headers, oUF implements some of its own attributes. These can be supplied by the
 	layout, but are optional.
+
 	* oUF-initialConfigFunction - can contain code that will be securely run at the end of the initial secure
 	                              configuration (string?)
 	* oUF-onlyProcessChildren   - can be used to force headers to only process children (boolean?)
@@ -687,6 +708,7 @@ end
 
 --[[ oUF:Spawn(unit, overrideName)
 Used to create a single unit frame and apply the currently active style to it.
+
 * self         - the global oUF object
 * unit         - the frame's unit (string)
 * overrideName - unique global name to use for the unit frame. Defaults to an auto-generated name based on the unit
@@ -713,6 +735,7 @@ end
 
 --[[ oUF:SpawnNamePlates(prefix, callback, variables)
 Used to create nameplates and apply the currently active style to them.
+
 * self      - the global oUF object
 * prefix    - prefix for the global name of the nameplate. Defaults to an auto-generated prefix (string?)
 * callback  - function to be called after a nameplate unit or the player's target has changed. The arguments passed to
@@ -808,6 +831,7 @@ end
 
 --[[ oUF:AddElement(name, update, enable, disable)
 Used to register an element with oUF.
+
 * self    - the global oUF object
 * name    - unique name of the element (string)
 * update  - used to update the element (function?)

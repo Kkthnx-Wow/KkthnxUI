@@ -1,33 +1,19 @@
 local K, C, L = unpack(select(2, ...))
 
--- Lua API
-local _G = _G
-local tostring = tostring
-
--- Wow API
-local IsInGroup = _G.IsInGroup
-local IsInGuild = _G.IsInGuild
-local IsInRaid = _G.IsInRaid
-local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
-local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
-local SendAddonMessage = _G.SendAddonMessage
-local StaticPopup_Show = _G.StaticPopup_Show
-local ChatEdit_FocusActiveWindow = _G.ChatEdit_FocusActiveWindow
-
+local KkthnxUIVersion = CreateFrame("Frame")
+local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
 MyName = gsub(MyName, "%s+", "")
 
-local function VersionCheck(_, event, prefix, message, _, sender)
+function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
 	if (event == "CHAT_MSG_ADDON") then
-		if (prefix ~= "KKTHNXUI_VERSION") or (sender == MyName) then -- NOTE: prefix is too long. look into this.
+		if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
 			return
 		end
 
-		if (tonumber(message) ~= nil and tonumber(message) > tonumber(K.Version)) then -- We recieved a higher version, we're outdated. :(
-			K.Print(L.Misc.UIOutdated)
-			if ((tonumber(message) - tonumber(K.Version)) >= 0.05) then
-				StaticPopup_Show("KKTHNXUI_UPDATE")
-			end
+		if (tonumber(message) > Version) then -- We recieved a higher version, we're outdated. :(
+			K.Print(L.Miscellaneous.UIOutdated)
+			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end
 	else
 		-- Tell everyone what version we use.
@@ -42,15 +28,16 @@ local function VersionCheck(_, event, prefix, message, _, sender)
 		end
 
 		if Channel then -- Putting a small delay on the call just to be certain it goes out.
-			K.Delay(2, SendAddonMessage, "KKTHNXUI_VERSION", K.Version, Channel)
+			K.Delay(2, SendAddonMessage, "KkthnxUIVersion", Version, Channel)
 		end
 	end
 end
 
-RegisterAddonMessagePrefix("KKTHNXUI_VERSION")
+KkthnxUIVersion:RegisterEvent("PLAYER_ENTERING_WORLD")
+KkthnxUIVersion:RegisterEvent("GROUP_ROSTER_UPDATE")
+KkthnxUIVersion:RegisterEvent("CHAT_MSG_ADDON")
+KkthnxUIVersion:SetScript("OnEvent", KkthnxUIVersion.Check)
 
-local Module = CreateFrame("Frame")
-Module:RegisterEvent("PLAYER_ENTERING_WORLD")
-Module:RegisterEvent("GROUP_ROSTER_UPDATE")
-Module:RegisterEvent("CHAT_MSG_ADDON")
-Module:SetScript("OnEvent", VersionCheck)
+RegisterAddonMessagePrefix("KkthnxUIVersion")
+
+K["VersionCheck"] = KkthnxUIVersion

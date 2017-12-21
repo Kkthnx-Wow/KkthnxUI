@@ -64,12 +64,11 @@ function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
 	if not fontSize or fontSize < 9 then
 		fontSize = 13
 	end
-	fontSize = fontSize * 1
 
 	local fontString = parent:CreateFontString(nil, "OVERLAY")
 	fontString:SetFont(fontName, fontSize, fontStyle)
 	fontString:SetJustifyH(justify or "CENTER")
-	fontString:SetWordWrap(false)
+	-- fontString:SetWordWrap(Wrap)
 	fontString:SetShadowOffset(K.Mult or 1, - K.Mult or - 1)
 	fontString.baseSize = fontSize
 
@@ -322,21 +321,6 @@ function K.ShortenString(string, numChars, dots)
 	end
 end
 
-function K.AbbreviateString(string, allUpper)
-	local newString = ""
-	local words = {string.split(" ", string)}
-	for _, word in pairs(words) do
-		word = string.utf8sub(word, 1, 1) --get only first letter of each word
-		if(allUpper) then
-			word = word:upper()
-		end
-		newString = newString .. word
-	end
-
-	return newString
-end
-
-
 local LockCVars = CreateFrame("Frame")
 LockCVars:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, event, ...) end)
 LockCVars:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -415,7 +399,6 @@ function K.GetFormattedText(style, min, max)
 		return s
 	end
 end
-
 
 function K.GetScreenQuadrant(frame)
 	local x, y = frame:GetCenter()
@@ -623,29 +606,35 @@ end
 local waitTable = {}
 local waitFrame
 function K.Delay(delay, func, ...)
-	if (type(delay) ~= "number" or type(func) ~= "function") then
+	if(type(delay) ~= "number" or type(func) ~= "function") then
 		return false
 	end
-	if (waitFrame == nil) then
-		waitFrame = CreateFrame("Frame", "WaitFrame", UIParent)
-		waitFrame:SetScript("onUpdate",function (_, elapse)
-			local count = #waitTable
-			local i = 1
-			while(i <= count) do
-				local waitRecord = table_remove(waitTable, i)
-				local d = table_remove(waitRecord, 1)
-				local f = table_remove(waitRecord, 1)
-				local p = table_remove(waitRecord, 1)
-				if (d > elapse) then
-					table_insert(waitTable, i, {d-elapse, f, p})
-					i = i + 1
-				else
-					count = count - 1
-					f(unpack(p))
+	local extend = {...}
+	if not next(extend) then
+		C_Timer.After(delay, func)
+		return true
+	else
+		if(waitFrame == nil) then
+			waitFrame = CreateFrame("Frame", "WaitFrame", UIParent)
+			waitFrame:SetScript("onUpdate", function (_, elapse)
+				local count = #waitTable
+				local i = 1
+				while(i <= count) do
+					local waitRecord = table.remove(waitTable, i)
+					local d = table.remove(waitRecord, 1)
+					local f = table.remove(waitRecord, 1)
+					local p = table.remove(waitRecord, 1)
+					if(d > elapse) then
+					  table.insert(waitTable, i, {d - elapse, f, p})
+					  i = i + 1
+					else
+					  count = count - 1
+					  f(unpack(p))
+					end
 				end
-			end
-		end)
+			end)
+		end
+		table.insert(waitTable, {delay, func, extend})
+		return true
 	end
-	table_insert(waitTable, {delay, func, {...}})
-	return true
 end

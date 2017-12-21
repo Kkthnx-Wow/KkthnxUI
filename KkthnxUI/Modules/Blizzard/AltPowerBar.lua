@@ -14,6 +14,9 @@ local UnitPowerMax = UnitPowerMax
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: GameTooltip, ALTERNATE_POWER_INDEX
 
+local PowerBarAltFont = K.GetFont(C["Unitframe"].Font)
+local PowerBarAltTexture = K.GetTexture(C["Unitframe"].Texture)
+
 -- Skin AltPowerBar(by Tukz)
 local blizzColors = {
 	["INTERFACE\\UNITPOWERBARALT\\AMBER_HORIZONTAL_FILL.BLP"] = {r = 0.97, g = 0.81, b = 0},
@@ -90,11 +93,7 @@ bar:SetScript("OnLeave", GameTooltip_Hide)
 -- StatusBar
 local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
 status:SetFrameLevel(bar:GetFrameLevel() + 1)
-if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-	status:SetStatusBarTexture(C["Media"].TextureFlat)
-elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-	status:SetStatusBarTexture(NameplateTexture)
-end
+status:SetStatusBarTexture(PowerBarAltTexture)
 status:SetMinMaxValues(0, 100)
 status:SetAllPoints()
 

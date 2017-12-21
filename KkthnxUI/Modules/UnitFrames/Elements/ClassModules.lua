@@ -8,6 +8,9 @@ local UIParent = _G.UIParent
 
 local _, playerClass = UnitClass("player")
 
+local ClassModuleFont = K.GetFont(C["Unitframe"].Font)
+local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)
+
 local function PostUpdateTotem(self)
 	local shown = {}
 	for index = 1, MAX_TOTEMS do
@@ -82,11 +85,7 @@ function K.CreateAlternatePowerBar(self, unit)
 	if (unit == "player" and playerClass == "DRUID" or playerClass == "SHAMAN" or playerClass == "PRIEST") then
 		self.AdditionalPower = CreateFrame("StatusBar", nil, self)
 		self.AdditionalPower:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-		if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-			self.AdditionalPower:SetStatusBarTexture(C["Media"].TextureFlat, "BORDER")
-		elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-			self.AdditionalPower:SetStatusBarTexture(C["Media"].Texture, "BORDER")
-		end
+		self.AdditionalPower:SetStatusBarTexture(ClassModuleTexture, "BORDER")
 		self.AdditionalPower:SetSize(self.Health:GetWidth(), 10)
 		self.AdditionalPower.colorPower = true
 		self.AdditionalPower:SetTemplate("Transparent")
@@ -113,11 +112,7 @@ function K.CreateClassModules(self, unit)
 		for index = 1, 11 do -- have to create an extra to force __max to be different from UnitPowerMax
 			local Bar = CreateFrame("StatusBar", nil, self)
 			Bar:SetSize(34, 10)
-			if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-				Bar:SetStatusBarTexture(C["Media"].TextureFlat)
-			elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-				Bar:SetStatusBarTexture(C["Media"].Texture)
-			end
+			Bar:SetStatusBarTexture(ClassModuleTexture)
 			Bar:SetTemplate("Transparent")
 
 			if (index > 1) then
@@ -161,11 +156,7 @@ function K.CreateClassModules(self, unit)
 			for index = 1, 6 do
 				local Rune = CreateFrame("StatusBar", nil, self)
 				Rune:SetSize(25.3, 10)
-				if (C["Unitframe"].BarsStyle.Value == "FlatBarsStyle") then
-					Rune:SetStatusBarTexture(C["Media"].TextureFlat)
-				elseif (C["Unitframe"].BarsStyle.Value == "DefaultBarsStyle") then
-					Rune:SetStatusBarTexture(C["Media"].Texture)
-				end
+				Rune:SetStatusBarTexture(ClassModuleTexture)
 				Rune:SetTemplate("Transparent")
 
 				if (index == 1) then

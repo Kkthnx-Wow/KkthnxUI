@@ -63,8 +63,8 @@ local CVarUpdate = {
 	nameplateSelectedScale = C["Nameplates"].SelectedScale,
 }
 
-local NameplateFont = K.GetFont(C["General"].Font)
-local NameplateTexture = K.GetTexture(C["General"].Texture)
+local NameplateFont = K.GetFont(C["Nameplates"].Font)
+local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
 
 local healList, exClass, healerSpecs = {}, {}, {}
 local testing = false
@@ -420,11 +420,7 @@ local function StyleUpdate(self, unit)
 	-- Health Bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
 	self.Health:SetAllPoints(self)
-	if (C["Nameplates"].BarsStyle.Value == "FlatBarsStyle") then
-		self.Health:SetStatusBarTexture(C["Media"].TextureFlat)
-	elseif (C["Nameplates"].BarsStyle.Value == "DefaultBarsStyle") then
-		self.Health:SetStatusBarTexture(NameplateTexture)
-	end
+	self.Health:SetStatusBarTexture(NameplateTexture)
 
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
@@ -447,11 +443,7 @@ local function StyleUpdate(self, unit)
 
 	-- Create Player Power bar
 	self.Power = CreateFrame("StatusBar", "$parentPowerBar", self)
-	if (C["Nameplates"].BarsStyle.Value == "FlatBarsStyle") then
-		self.Power:SetStatusBarTexture(C["Media"].TextureFlat)
-	elseif (C["Nameplates"].BarsStyle.Value == "DefaultBarsStyle") then
-		self.Power:SetStatusBarTexture(NameplateTexture)
-	end
+	self.Power:SetStatusBarTexture(NameplateTexture)
 	self.Power:ClearAllPoints()
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
 	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C["Nameplates"].Height * K.NoScaleMult / 2))
@@ -468,14 +460,6 @@ local function StyleUpdate(self, unit)
 	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
 
-	self.Name.Shade = self:CreateTexture()
-	self.Name.Shade:SetDrawLayer("ARTWORK")
-	self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
-	self.Name.Shade:SetPoint("TOPLEFT", self.Name, "TOPLEFT", -6, 6)
-	self.Name.Shade:SetPoint("BOTTOMRIGHT", self.Name, "BOTTOMRIGHT", 6, -6)
-	self.Name.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
-	self.Name.Shade:SetAlpha(.5)
-
 	if C["Nameplates"].NameAbbreviate == true then
 		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameAbbreviateMedium]")
 	else
@@ -488,14 +472,6 @@ local function StyleUpdate(self, unit)
 	self.Level:SetShadowOffset(C["Nameplates"].Outline and 0 or 1, C["Nameplates"].Outline and -0 or -1)
 	self.Level:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:NameplateSmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
-
-	self.Level.Shade = self:CreateTexture()
-	self.Level.Shade:SetDrawLayer("ARTWORK")
-	self.Level.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
-	self.Level.Shade:SetPoint("TOPLEFT", self.Level, "TOPLEFT", -6, 6)
-	self.Level.Shade:SetPoint("BOTTOMRIGHT", self.Level, "BOTTOMRIGHT", 6, -6)
-	self.Level.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
-	self.Level.Shade:SetAlpha(.5)
 
 	-- Create Cast Bar
 	self.Castbar = CreateFrame("StatusBar", nil, self)
@@ -607,19 +583,19 @@ local function StyleUpdate(self, unit)
 
 		self.Auras.PostCreateIcon = function(self, button)
 			button:SetScale(K.NoScaleMult)
+			button:CreateShadow()
+			button:EnableMouse(false)
 
 			button.text = button.cd:CreateFontString(nil, "OVERLAY")
 			button.text:FontTemplate(nil, self.size * 0.46)
 			button.text:SetPoint("CENTER", 1, 1)
 			button.text:SetJustifyH("CENTER")
 
-			button:CreateShadow()
-
 			button.cd.noOCC = true
 			button.cd.noCooldownCount = true
 			button.cd:SetReverse(true)
-			button.cd:SetInside()
-			button.cd:SetHideCountdownNumbers(true)
+			button.cd:SetInside(1, 1)
+			-- button.cd:SetHideCountdownNumbers(true)
 
 			button.icon:SetAllPoints(button)
 			button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])

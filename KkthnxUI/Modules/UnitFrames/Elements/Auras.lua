@@ -151,40 +151,65 @@ function K.CreateAuras(self, unit)
 	unit = unit:match("^(.-)%d+") or unit
 
 	if (unit == "target") then
-		local Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
-		local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+		if C["Unitframe"].DebuffsOnTop then
+			local Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+			local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 
-		Buffs:SetHeight(21)
-		Buffs:SetWidth(130)
-		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs.size = 21
-		Buffs.num = 15
+			Buffs:SetHeight(21)
+			Buffs:SetWidth(130)
+			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+			Buffs.size = 21
+			Buffs.num = 15
 
-		Debuffs:SetHeight(28)
-		Debuffs:SetWidth(130)
-		Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
-		Debuffs.size = 28
-		Debuffs.num = 12
+			Debuffs:SetHeight(28)
+			Debuffs:SetWidth(130)
+			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
+			Debuffs.size = 28
+			Debuffs.num = 12
 
-		Buffs.spacing = 6
-		Buffs.initialAnchor = "TOPLEFT"
-		Buffs["growth-y"] = "DOWN"
-		Buffs["growth-x"] = "RIGHT"
-		Buffs.PreSetPosition = PreSetPosition
-		Buffs.CustomFilter = K.DefaultAuraFilter
-		Buffs.PostCreateIcon = PostCreateAura
-		Buffs.PostUpdateIcon = PostUpdateAura
-		self.Buffs = Buffs
+			Buffs.spacing = 6
+			Buffs.initialAnchor = "TOPLEFT"
+			Buffs["growth-y"] = "DOWN"
+			Buffs["growth-x"] = "RIGHT"
+			Buffs.PreSetPosition = PreSetPosition
+			Buffs.CustomFilter = K.DefaultAuraFilter
+			Buffs.PostCreateIcon = PostCreateAura
+			Buffs.PostUpdateIcon = PostUpdateAura
+			self.Buffs = Buffs
 
-		Debuffs.spacing = 6
-		Debuffs.initialAnchor = "TOPLEFT"
-		Debuffs["growth-y"] = "UP"
-		Debuffs["growth-x"] = "RIGHT"
-		Debuffs.PreSetPosition = PreSetPosition
-		Debuffs.CustomFilter = K.DefaultAuraFilter
-		Debuffs.PostCreateIcon = PostCreateAura
-		Debuffs.PostUpdateIcon = PostUpdateAura
-		self.Debuffs = Debuffs
+			Debuffs.spacing = 6
+			Debuffs.initialAnchor = "TOPLEFT"
+			Debuffs["growth-y"] = "UP"
+			Debuffs["growth-x"] = "RIGHT"
+			Debuffs.PreSetPosition = PreSetPosition
+			Debuffs.CustomFilter = K.DefaultAuraFilter
+			Debuffs.PostCreateIcon = PostCreateAura
+			Debuffs.PostUpdateIcon = PostUpdateAura
+			self.Debuffs = Debuffs
+		else
+			local Auras = CreateFrame("Frame", self:GetName().."Auras", self)
+			Auras.gap = true
+			Auras.size = 21
+			Auras:SetHeight(21)
+			Auras:SetWidth(130)
+			Auras:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+			Auras.initialAnchor = "TOPLEFT"
+			Auras["growth-x"] = "RIGHT"
+			Auras["growth-y"] = "DOWN"
+			Auras.numBuffs = 15
+			Auras.numDebuffs = 12
+			-- Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayer
+			Auras.spacing = 6
+			Auras.showStealableBuffs = true
+			--[[Auras.PostUpdateGapIcon = function(self, unit, icon, visibleBuffs)
+				icon:Hide()
+			end--]]
+			Auras.PreSetPosition = PreSetPosition
+			Auras.CustomFilter = K.DefaultAuraFilter
+			Auras.PostCreateIcon = PostCreateAura
+			Auras.PostUpdateIcon = PostUpdateAura
+			self.Auras = Auras
+		end
 	end
 
 	-- Party.

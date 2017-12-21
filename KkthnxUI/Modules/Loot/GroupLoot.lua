@@ -42,6 +42,10 @@ local cancelled_rolls = {}
 local cachedRolls = {}
 local completedRolls = {}
 local FRAME_WIDTH, FRAME_HEIGHT = 328, 28
+
+local GroupLootFont = K.GetFont(C["Loot"].Font)
+local GroupLootTexture = K.GetTexture(C["Loot"].Texture)
+
 GroupLoot.RollBars = {}
 
 local function ClickRoll(frame)
@@ -164,7 +168,7 @@ function GroupLoot:CreateRollFrame()
 	status:SetInside()
 	status:SetScript("OnUpdate", StatusUpdate)
 	status:SetFrameLevel(status:GetFrameLevel()-1)
-	status:SetStatusBarTexture(C["Media"].Texture)
+	status:SetStatusBarTexture(GroupLootTexture)
 	status:SetStatusBarColor(.8, .8, .8, .9)
 	status.parent = frame
 	frame.status = status

@@ -17,11 +17,16 @@ local unpack = unpack
 local string_find = string.find
 
 local CreateFrame = _G.CreateFrame
+local GetBattlefieldInstanceExpiration = _G.GetBattlefieldInstanceExpiration
+local GetBattlefieldStatus = _G.GetBattlefieldStatus
 local GetCursorInfo = _G.GetCursorInfo
 local GetCVarBool = _G.GetCVarBool
+local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
 local InCombatLockdown = _G.InCombatLockdown
+local IsInInstance = _G.IsInInstance
 local PlaySound = _G.PlaySound
 local PlaySoundFile = _G.PlaySoundFile
+local PVPTimerFrame = _G.PVPTimerFrame
 local SetCVar = _G.SetCVar
 
 local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.wav"
@@ -117,7 +122,6 @@ do
 	GhostFrameContentsFrameIcon:SetParent(b)
 	b:SetTemplate("Default", true)
 end
-
 
 do -- Move some frames (Elvui)
 	local TicketStatusMover = _G.CreateFrame("Frame", "TicketStatusMoverAnchor", _G.UIParent)
@@ -269,4 +273,25 @@ do -- Boss Banner Hider
 	if C["Misc"].NoBanner == true then
 		BossBanner.PlayBanner = function() end
 	end
+end
+
+do
+	hooksecurefunc("PVP_UpdateStatus", function()
+		local isInInstance, instanceType = IsInInstance()
+		if (instanceType == "pvp") or (instanceType == "arena") then
+			for i = 1, GetMaxBattlefieldID() do
+				local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i)
+				if (status == "active") then
+					PVPTimerFrame:SetScript("OnUpdate", nil)
+					_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
+				else
+					local kickOutTimer = GetBattlefieldInstanceExpiration()
+					if (kickOutTimer == 0) then
+						PVPTimerFrame:SetScript("OnUpdate", nil)
+						_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
+					end
+				end
+			end
+		end
+	end)
 end

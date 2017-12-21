@@ -10,8 +10,8 @@ local Skada = _G.Skada
 local UIParent = _G.UIParent
 local YES = _G.YES
 
-local SkadaFont = K.GetFont(C["General"].Font)
-local SkadaTexture = K.GetTexture(C["General"].Texture)
+local SkadaFont = K.GetFont(C["Skins"].Font)
+local SkadaTexture = K.GetTexture(C["Skins"].Texture)
 
 function K.AcceptFrame(MainText, Function)
 	if not AcceptFrame then

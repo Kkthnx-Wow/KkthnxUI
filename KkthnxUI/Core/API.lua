@@ -256,7 +256,6 @@ local function Kill(object)
 	object:Hide()
 end
 
-
 -- Removes any textures that the object might have
 local function StripTextures(object, kill)
 	for i = 1, object:GetNumRegions() do

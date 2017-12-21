@@ -56,24 +56,32 @@ function Module:DisableMisc()
 	end
 
 	if C["General"].DisableTutorialButtons then
+		for i = 1, #MICRO_BUTTONS do
+			if _G[MICRO_BUTTONS[i]] then
+				_G[MICRO_BUTTONS[i]]:Kill()
+			end
+		end
+
+		if MainMenuBarDownload then
+			MainMenuBarDownload:Kill()
+		end
+
 		BagHelpBox:Kill()
 		CollectionsMicroButtonAlert:Kill()
 		EJMicroButtonAlert:Kill()
 		HelpOpenTicketButtonTutorial:Kill()
 		HelpPlate:Kill()
 		HelpPlateTooltip:Kill()
+		MicroButtonPortrait:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
 		SpellBookFrameTutorialButton:Kill()
 		TalentMicroButtonAlert:Kill()
 		TutorialFrameAlertButton:Kill()
 		WorldMapFrameTutorialButton:Kill()
-	end
-
-	-- Kill off the game menu button latency display
-	if MainMenuBarPerformanceBar then
-		MainMenuBarPerformanceBar:Hide()
-		MainMenuBarPerformanceBar:SetParent(K.UIFrameHider)
+		GuildMicroButtonTabard:Kill()
+		MainMenuBarPerformanceBar:Kill()
+		TalentMicroButtonAlert:Kill()
 	end
 
 	if C["Unitframe"].Enable then
@@ -91,6 +99,7 @@ function Module:DisableMisc()
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
+		SetCVar("ShowClassColorInNameplate", 1)
 	end
 
 	if C["ActionBar"].Enable then
@@ -108,6 +117,11 @@ function Module:DisableMisc()
 
 	if C["Minimap"].Enable then
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
+	end
+
+	if C["Bags"].Enable then
+		SetSortBagsRightToLeft(true)
+		SetInsertItemsLeftToRight(false)
 	end
 end
 
@@ -136,8 +150,4 @@ function Module:OnEnable()
 			Module:DisableBlizzard("arena")
 		end
 	end
-end
-
-function Module:OnDisable()
-
 end

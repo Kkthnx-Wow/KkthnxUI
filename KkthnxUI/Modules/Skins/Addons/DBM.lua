@@ -1,6 +1,13 @@
 local K, C, L = unpack(select(2, ...))
 if C["Skins"].DBM ~= true or not (K.IsAddOnEnabled("DBM-Core") and K.IsAddOnEnabled("DBM-StatusBarTimers")) then return end
 
+local DBMFont = K.GetFont(C["Skins"].Font)
+local DBMTexture = K.GetTexture(C["Skins"].Texture)
+
+local _G = _G
+
+local hooksecurefunc = hooksecurefunc
+
 local DBM_Skin = CreateFrame("Frame")
 DBM_Skin:RegisterEvent("ADDON_LOADED")
 DBM_Skin:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -107,7 +114,7 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 				background:SetNormalTexture(nil)
 
-				progress:SetStatusBarTexture(C["Media"].Texture)
+				progress:SetStatusBarTexture(DBMTexture)
 				progress:ClearAllPoints()
 				progress:SetInside(bar)
 
