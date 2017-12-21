@@ -43,10 +43,11 @@ Install.Height = 200
 
 function Install:ResetData()
 	KkthnxUIData[Realm][Name] = {}
+	KkthnxUIData[Realm][Name].AutoWhisperInvite = false
 	KkthnxUIData[Realm][Name].BarsLocked = false
-	KkthnxUIData[Realm][Name].SplitBars = true
-	KkthnxUIData[Realm][Name].RightBars = C["ActionBar"].RightBars
 	KkthnxUIData[Realm][Name].BottomBars = C["ActionBar"].BottomBars
+	KkthnxUIData[Realm][Name].RightBars = C["ActionBar"].RightBars
+	KkthnxUIData[Realm][Name].SplitBars = true
 
 	if (KkthnxUIConfigPerAccount) then
 		KkthnxUIConfigShared.Account = {}
@@ -326,23 +327,6 @@ end
 Install:RegisterEvent("ADDON_LOADED")
 Install:SetScript("OnEvent", function(self, event, addon)
 	if (addon ~= "KkthnxUI") then return end
-
-	--[[-- Create missing entries in the saved vars if they don"t exist.
-	if (not KkthnxUIData[Realm]) then KkthnxUIData[Realm] = KkthnxUIData[Realm] or {} end
-	if (not KkthnxUIData[Realm][Name]) then KkthnxUIData[Realm][Name] = KkthnxUIData[Realm][Name] or {} end
-	if (not KkthnxUIData[Realm][Name].BarsLocked) then KkthnxUIData[Realm][Name].BarsLocked = false end
-	if (not KkthnxUIData[Realm][Name].BottomBars) then KkthnxUIData[Realm][Name].BottomBars = C["ActionBar"].BottomBars or 2 end
-	if (not KkthnxUIData[Realm][Name].RightBars) then KkthnxUIData[Realm][Name].RightBars = C["ActionBar"].RightBars or 1 end
-	if (not KkthnxUIData[Realm][Name].SplitBars) then KkthnxUIData[Realm][Name].SplitBars = true end
-	if (KkthnxUIDataPerChar) then KkthnxUIData[Realm][Name] = KkthnxUIDataPerChar KkthnxUIDataPerChar = nil end
-
-	-- Blizzard has too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
-	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[Realm][Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
-	if (not KkthnxUIConfigShared) then KkthnxUIConfigShared = {} end
-	if (not KkthnxUIConfigShared.Account) then KkthnxUIConfigShared.Account = {} end
-	if (not KkthnxUIConfigShared[Realm]) then KkthnxUIConfigShared[Realm] = {} end
-	if (not KkthnxUIConfigShared[Realm][Name]) then KkthnxUIConfigShared[Realm][Name] = {} end
-	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[Realm][Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end--]]
 
 	-- Check if we should disable our UI due to too small of ScreenWidth
 	if K.ScreenWidth < 1024 and GetCVarBool("gxMonitor") == "0" then

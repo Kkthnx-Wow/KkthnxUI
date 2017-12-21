@@ -59,6 +59,7 @@ C["Automation"] = {
 	["AutoResurrectThank"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
+	["InviteKeyword"] = "invite",
 	["ScreenShot"] = false,
 }
 

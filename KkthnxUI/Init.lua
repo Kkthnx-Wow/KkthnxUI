@@ -113,6 +113,7 @@ function AddOn:OnInitialize()
 	if (not KkthnxUIData[Realm][Name].BottomBars) then KkthnxUIData[Realm][Name].BottomBars = Engine[2]["ActionBar"].BottomBars or 2 end
 	if (not KkthnxUIData[Realm][Name].RightBars) then KkthnxUIData[Realm][Name].RightBars = Engine[2]["ActionBar"].RightBars or 1 end
 	if (not KkthnxUIData[Realm][Name].SplitBars) then KkthnxUIData[Realm][Name].SplitBars = true end
+	if (not KkthnxUIData[Realm][Name].AutoInvite) then KkthnxUIData[Realm][Name].AutoInvite = false end
 	if (KkthnxUIDataPerChar) then KkthnxUIData[Realm][Name] = KkthnxUIDataPerChar KkthnxUIDataPerChar = nil end
 
 	-- Blizzard has too many issues with per character saved variables, we now move them (if they exists) to account saved variables.

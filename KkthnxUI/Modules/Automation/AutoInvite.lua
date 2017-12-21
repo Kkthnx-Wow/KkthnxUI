@@ -36,7 +36,7 @@ function Module:AutoInvite(event, leaderName)
 		if IsInGuild() then GuildRoster() end
 
 		local friendName, guildMemberName, memberName, numGameAccounts, isOnline, bnToonName, bnClient, bnRealm, bnAcceptedInvite, _
-		local PLAYER_REALM = gsub(K.Realm,"[%s%-]","")
+		local PLAYER_REALM = gsub(K.Realm, "[%s%-]", "")
 		local inGroup = false
 
 		for friendIndex = 1, GetNumFriends() do
@@ -88,14 +88,47 @@ function Module:AutoInvite(event, leaderName)
 			end
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" and hideStatic == true then
-		StaticPopupSpecial_Hide(LFGInvitePopup) --New LFD popup when invited in custon created group
+		StaticPopupSpecial_Hide(LFGInvitePopup) -- New LFD popup when invited in custon created group
 		StaticPopup_Hide("PARTY_INVITE")
-		StaticPopup_Hide("PARTY_INVITE_XREALM") --Not sure bout this but whatever, still an invite
+		StaticPopup_Hide("PARTY_INVITE_XREALM") -- Not sure bout this but whatever, still an invite
 		hideStatic = false
+	end
+end
+
+function Module:AutoWhisperInvite(event, arg1, arg2, ...)
+	if ((not UnitExists("party1") or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and arg1:lower():match(C["Automation"].InviteKeyword)) and KkthnxUIDataPerChar.AutoInvite == true and not QueueStatusMinimapButton:IsShown() then
+		if event == "CHAT_MSG_WHISPER" then
+			InviteUnit(arg2)
+		elseif event == "CHAT_MSG_BN_WHISPER" then
+			local bnetIDAccount = select(11, ...)
+			local bnetIDGameAccount = select(6, BNGetFriendInfoByID(bnetIDAccount))
+			BNInviteFriend(bnetIDGameAccount)
+		end
 	end
 end
 
 function Module:OnEnable()
 	self:RegisterEvent("PARTY_INVITE_REQUEST", "AutoInvite")
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "AutoInvite")
+	self:RegisterEvent("CHAT_MSG_WHISPER", "AutoWhisperInvite")
+	self:RegisterEvent("CHAT_MSG_BN_WHISPER", "AutoWhisperInvite")
 end
+
+SlashCmdList["AUTOWHISPERINVITE"] = function(message)
+	local Name = UnitName("Player")
+	local Realm = GetRealmName()
+
+	if message == "off" then
+		KkthnxUIData[Realm][Name].AutoWhisperInvite = false
+		K.Print("|cffffff00".."Autoinvite OFF"..".|r")
+	elseif message == "" then
+		KkthnxUIData[Realm][Name].AutoWhisperInvite = true
+		K.Print("|cffffff00".."Autoinvite ON: "..C["Automation"].InviteKeyword..".|r")
+		C["Automation"].InviteKeyword = C["Automation"].InviteKeyword
+	else
+		KkthnxUIData[Realm][Name].AutoWhisperInvite = true
+		K.Print("|cffffff00".."Autoinvite ON: "..message..".|r")
+		C["Automation"].InviteKeyword = message
+	end
+end
+SLASH_AUTOWHISPERINVITE1 = "/ainv"

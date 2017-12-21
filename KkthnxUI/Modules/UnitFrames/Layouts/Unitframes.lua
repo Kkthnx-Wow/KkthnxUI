@@ -625,7 +625,7 @@ oUF:Factory(function(self)
 		"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 		"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 		"groupBy", "GROUP",
-		"showPlayer", true, -- Need to add this as an option.
+		"showPlayer", C["Unitframe"].ShowPlayer, -- Need to add this as an option.
 		"yOffset", -40
 		)
 		party:SetPoint(unpack(C.Position.UnitFrames.Party))
