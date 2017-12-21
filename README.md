@@ -3,7 +3,7 @@
 KkthnxUI is a simplistic user interface that holds onto the information and functionality, while still keeping most of the good looks.
 It can be used for any class or role.
 
-[![Support me on Patreon](https://i.imgur.com/FzTLsYV.png) ](https://www.patreon.com/kkthnx)[![Donate through Paypal](https://i.imgur.com/IkPCLeh.png) ](www.paypal.me/kkthnx)
+[![Support me on Patreon](https://i.imgur.com/FzTLsYV.png) ](https://www.patreon.com/kkthnx)[![Donate through Paypal](https://i.imgur.com/IkPCLeh.png)](https://www.paypal.me/kkthnx)
 
 ## How to install
 
