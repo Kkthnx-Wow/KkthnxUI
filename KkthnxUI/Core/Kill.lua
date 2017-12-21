@@ -16,7 +16,7 @@ local UIParent = _G.UIParent
 -- Kill all stuff on default UI that we don"t need
 local function HideRaid()
 	if InCombatLockdown() then return end
-	CompactRaidFrameManager:SetParent(K.UIFrameHider)
+	CompactRaidFrameManager:Kill()
 	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
 	if compact_raid and compact_raid ~= "0" then
 		CompactRaidFrameManager_SetSetting("IsShown", "0")
@@ -57,31 +57,31 @@ function Module:DisableMisc()
 
 	if C["General"].DisableTutorialButtons then
 		for i = 1, #MICRO_BUTTONS do
-            if  _G[MICRO_BUTTONS[i]] then
-                _G[MICRO_BUTTONS[i]]:SetParent(K.UIFrameHider)
-            end
+			if _G[MICRO_BUTTONS[i]] then
+				_G[MICRO_BUTTONS[i]]:Kill()
+			end
 		end
 
 		if MainMenuBarDownload then
-			MainMenuBarDownload:SetParent(K.UIFrameHider)
+			MainMenuBarDownload:Kill()
 		end
 
-		BagHelpBox:SetParent(K.UIFrameHider)
-		CollectionsMicroButtonAlert:SetParent(K.UIFrameHider)
-		EJMicroButtonAlert:SetParent(K.UIFrameHider)
-		HelpOpenTicketButtonTutorial:SetParent(K.UIFrameHider)
-		HelpPlate:SetParent(K.UIFrameHider)
-		HelpPlateTooltip:SetParent(K.UIFrameHider)
-		MicroButtonPortrait:SetParent(K.UIFrameHider)
-		PremadeGroupsPvETutorialAlert:SetParent(K.UIFrameHider)
-		ReagentBankHelpBox:SetParent(K.UIFrameHider)
-		SpellBookFrameTutorialButton:SetParent(K.UIFrameHider)
-		TalentMicroButtonAlert:SetParent(K.UIFrameHider)
-		TutorialFrameAlertButton:SetParent(K.UIFrameHider)
-		WorldMapFrameTutorialButton:SetParent(K.UIFrameHider)
-        GuildMicroButtonTabard:SetParent(K.UIFrameHider)
-        MainMenuBarPerformanceBar:SetParent(K.UIFrameHider)
-        TalentMicroButtonAlert:SetParent(K.UIFrameHider)
+		BagHelpBox:Kill()
+		CollectionsMicroButtonAlert:Kill()
+		EJMicroButtonAlert:Kill()
+		HelpOpenTicketButtonTutorial:Kill()
+		HelpPlate:Kill()
+		HelpPlateTooltip:Kill()
+		MicroButtonPortrait:Kill()
+		PremadeGroupsPvETutorialAlert:Kill()
+		ReagentBankHelpBox:Kill()
+		SpellBookFrameTutorialButton:Kill()
+		TalentMicroButtonAlert:Kill()
+		TutorialFrameAlertButton:Kill()
+		WorldMapFrameTutorialButton:Kill()
+		GuildMicroButtonTabard:Kill()
+		MainMenuBarPerformanceBar:Kill()
+		TalentMicroButtonAlert:Kill()
 	end
 
 	if C["Unitframe"].Enable then
@@ -89,8 +89,8 @@ function Module:DisableMisc()
 	end
 
 	if C["Auras"].Enable then
-		BuffFrame:SetParent(K.UIFrameHider)
-		TemporaryEnchantFrame:SetParent(K.UIFrameHider)
+		BuffFrame:Kill()
+		TemporaryEnchantFrame:Kill()
 		K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 	end
 
@@ -99,6 +99,7 @@ function Module:DisableMisc()
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
+		SetCVar("ShowClassColorInNameplate", 1)
 	end
 
 	if C["ActionBar"].Enable then
@@ -116,6 +117,11 @@ function Module:DisableMisc()
 
 	if C["Minimap"].Enable then
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
+	end
+
+	if C["Bags"].Enable then
+		SetSortBagsRightToLeft(true)
+		SetInsertItemsLeftToRight(false)
 	end
 end
 
