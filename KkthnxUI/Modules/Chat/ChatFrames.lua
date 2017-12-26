@@ -518,7 +518,8 @@ function Module:SetChatFramePosition()
 		Frame:SetUserPlaced(true)
 		Frame:ClearAllPoints()
 		Frame:SetPoint(Anchor1, UIParent, Anchor2, X, Y)
-		Frame:SetSize(Width, Height)
+		-- Frame:SetSize(Width, Height)
+		Frame:SetSize(C["Chat"].Width, C["Chat"].Height)
 	end
 end
 
