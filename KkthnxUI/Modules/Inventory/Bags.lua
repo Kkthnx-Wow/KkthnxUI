@@ -192,7 +192,19 @@ function Stuffing:SlotUpdate(b)
 	if C["Bags"].ItemLevel == true then
 		b.frame.text:SetText("")
 	end
-
+	
+	-- Pawn'ed thx Wetxius
+	if b.frame.UpgradeIcon then
+		b.frame.UpgradeIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize/2.7, -C["Bags"].ButtonSize/2.7)
+		b.frame.UpgradeIcon:SetSize(C["Bags"].ButtonSize/1.7, C["Bags"].ButtonSize/1.7)
+		local itemIsUpgrade = IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
+		if itemIsUpgrade and itemIsUpgrade == true then
+			b.frame.UpgradeIcon:SetShown(true)
+		else
+			b.frame.UpgradeIcon:SetShown(false)
+		end
+	end
+	
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
