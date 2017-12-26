@@ -70,6 +70,7 @@ C["Bags"] = {
 	["ButtonSpace"] = 3,
 	["Enable"] = true,
 	["ItemLevel"] = false,
+	["PulseNewItem"] = false,
 }
 
 -- Buffs & Debuffs
