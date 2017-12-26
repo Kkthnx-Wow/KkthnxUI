@@ -12,11 +12,9 @@
     <Script file="DebugTools.lua" />
     <Script file="ErrorFilter.lua" />
     <Script file="Fonts.lua" />
-    <Script file="Mail.lua" />
     <Script file="MirrorBars.lua" />
     <Script file="ObjectiveFrame.lua" />
     <Script file="RaidUtility.lua" />
-    <Script file="ScriptErrors.lua" />
     <Script file="TalkingHeadFrame.lua" />
     <Script file="TimerTracker.lua" />
     <Script file="Vehicle.lua" />

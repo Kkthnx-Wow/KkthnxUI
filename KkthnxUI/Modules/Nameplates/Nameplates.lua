@@ -553,10 +553,10 @@ local function StyleUpdate(self, unit)
 		self.Auras.initialAnchor = "BOTTOMLEFT"
 		self.Auras["growth-y"] = "UP"
 		self.Auras["growth-x"] = "RIGHT"
-		self.Auras.numDebuffs = C["Nameplates"].TrackAuras and 6 or 0
-		self.Auras.numBuffs = C["Nameplates"].TrackAuras and 4 or 0
-		self.Auras:SetSize(20 + C["Nameplates"].Width, C["Nameplates"].AurasSize)
-		self.Auras.spacing = 2
+		self.Auras.numDebuffs = C["Nameplates"].TrackAuras and 12
+		self.Auras.numBuffs = C["Nameplates"].TrackAuras and 8
+		self.Auras:SetSize((C["Nameplates"].AurasSize * 2) + 4, C["Nameplates"].AurasSize)
+		self.Auras.spacing = 3
 		self.Auras.size = C["Nameplates"].AurasSize
 
 		self.Auras.CustomFilter = function(_, unit, _, name, _, _, _, _, _, _, caster, _, nameplateShowSelf, _, _, _, _, nameplateShowAll)

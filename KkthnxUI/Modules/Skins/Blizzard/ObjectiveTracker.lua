@@ -14,7 +14,7 @@ local function StatusBarColorGradient(bar, value, max)
     bar:SetStatusBarColor(r, g, b)
 end
 
-function Module:OnEnable()
+function Module:OnInitialize()
 	ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
 	ObjectiveTrackerBlocksFrame.QuestHeader.Text:FontTemplate(nil, 13, "")
 	ObjectiveTrackerBlocksFrame.QuestHeader.Text:SetShadowOffset(1.25, -1.25)

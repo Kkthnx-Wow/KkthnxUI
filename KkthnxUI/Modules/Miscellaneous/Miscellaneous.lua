@@ -87,6 +87,37 @@ do
 	end)
 end
 
+do
+	-- Fix blank tooltip
+	local bug = nil
+	local FixTooltip = CreateFrame("Frame")
+	FixTooltip:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
+	FixTooltip:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
+	FixTooltip:SetScript("OnEvent", function()
+		if GameTooltip:IsShown() then
+			bug = true
+		end
+	end)
+
+	local FixTooltipBags = CreateFrame("Frame")
+	FixTooltipBags:RegisterEvent("BAG_UPDATE_DELAYED")
+	FixTooltipBags:SetScript("OnEvent", function()
+		if StuffingFrameBags and StuffingFrameBags:IsShown() then
+			if GameTooltip:IsShown() then
+				bug = true
+			end
+		end
+	end)
+
+	GameTooltip:HookScript("OnTooltipCleared", function(self)
+		if self:IsForbidden() then return end
+		if bug and self:NumLines() == 0 then
+			self:Hide()
+			bug = false
+		end
+	end)
+end
+
 do -- Make InterfaceOptionsFrame moveable.
 	InterfaceOptionsFrame:SetClampedToScreen(true)
 	InterfaceOptionsFrame:SetMovable(true)
@@ -273,25 +304,4 @@ do -- Boss Banner Hider
 	if C["Misc"].NoBanner == true then
 		BossBanner.PlayBanner = function() end
 	end
-end
-
-do
-	hooksecurefunc("PVP_UpdateStatus", function()
-		local isInInstance, instanceType = IsInInstance()
-		if (instanceType == "pvp") or (instanceType == "arena") then
-			for i = 1, GetMaxBattlefieldID() do
-				local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i)
-				if (status == "active") then
-					PVPTimerFrame:SetScript("OnUpdate", nil)
-					_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
-				else
-					local kickOutTimer = GetBattlefieldInstanceExpiration()
-					if (kickOutTimer == 0) then
-						PVPTimerFrame:SetScript("OnUpdate", nil)
-						_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
-					end
-				end
-			end
-		end
-	end)
 end

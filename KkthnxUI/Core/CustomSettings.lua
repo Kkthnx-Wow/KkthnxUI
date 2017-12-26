@@ -1,8 +1,10 @@
+local K, C = unpack(select(2, ...))
+if not IsAddOnLoaded("KkthnxUI_Config") then
+	print("I could not detect KkthnxUI_Config. Please make sure it is enabled in your addon list. Stopping process...")
+	return
+end
+
 local _G = _G
-
-local K, C = _G.unpack(_G.select(2, ...))
-if not _G.IsAddOnLoaded("KkthnxUI_Config") then return end
-
 local pairs = pairs
 local CreateFrame = CreateFrame
 
