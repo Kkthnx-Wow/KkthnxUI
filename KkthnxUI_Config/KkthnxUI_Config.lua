@@ -1056,7 +1056,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ReloadButton.Text:SetFont(C["Media"].Font, 12)
 	ReloadButton.Text:SetShadowOffset(1.25, -1.25)
 	ReloadButton.Text:SetPoint("CENTER", ReloadButton)
-	ReloadButton.Text:SetText("|cffffd100"..APPLY.."|r")
+	ReloadButton.Text:SetText("|cff00FF00"..APPLY.."|r")
 
 	local GlobalButton = CreateFrame("Button", nil, InfoFrame)
 	GlobalButton:SkinButton()
