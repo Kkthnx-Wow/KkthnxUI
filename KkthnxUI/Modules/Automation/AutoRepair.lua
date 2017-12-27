@@ -21,7 +21,7 @@ function Module:MERCHANT_SHOW()
 		-- Process repair
 		local RepairCost, CanRepair = GetRepairAllCost()
 		if CanRepair then -- If merchant is offering repair
-			if C["Misc"].UseGuildRepairFunds and IsInGuild() then
+			if C["Automation"].UseGuildRepairFunds and IsInGuild() then
 				-- Guilded character and guild repair option is enabled
 				if CanGuildBankRepair() then
 					-- Character has permission to repair so try guild funds but fallback on character funds (if daily gold limit is reached)
@@ -43,7 +43,7 @@ function Module:MERCHANT_SHOW()
 end
 
 function Module:OnEnable()
-	if C["Misc"].AutoRepair ~= true then return end
+	if C["Automation"].AutoRepair ~= true then return end
 	self:RegisterEvent("MERCHANT_SHOW")
 end
 

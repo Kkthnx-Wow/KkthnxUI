@@ -60,16 +60,15 @@ local function StartSelling()
 	-- Stop selling if no items were sold for this iteration or iteration limit was reached
 	if SoldCount == 0 or SellJunkTicker and SellJunkTicker._remainingIterations == 1 then
 		StopSelling()
-		if C["Misc"].SellJunkSummary and totalPrice > 0 then
+		if totalPrice > 0 then
 			local gold, silver, copper = math_floor(totalPrice/10000) or 0, math_floor((totalPrice%10000)/100) or 0, totalPrice%100
 			K.Print("Sold junk for:".." |cffffffff"..gold..L.Miscellaneous.Gold_Short.." |cffffffff"..silver..L.Miscellaneous.Silver_Short.." |cffffffff"..copper..L.Miscellaneous.Copper_Short..".")
-			-- K.Print("Sold junk for" .. " " .. GetCoinText(totalPrice) .. ".")
 		end
 	end
 end
 
 function Module:OnEvent(event)
-	if C["Misc"].AutoSell ~= true then return end
+	if C["Automation"].AutoSell ~= true then return end
 
 	if event == "MERCHANT_SHOW" then
 		-- Reset variables
@@ -99,7 +98,6 @@ function Module:OnEvent(event)
 end
 
 function Module:OnEnable()
-	if C["Misc"].AutoSell ~= true then return end
 	self:RegisterEvent("MERCHANT_SHOW", "OnEvent")
 	self:RegisterEvent("MERCHANT_CLOSED", "OnEvent")
 end

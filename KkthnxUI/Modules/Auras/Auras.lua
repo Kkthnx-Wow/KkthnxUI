@@ -106,8 +106,8 @@ function A:CreateIcon(button)
     -- button.highlight = button:CreateTexture(nil, "HIGHLIGHT")
     -- button.highlight:SetAllPoints(button.texture)
     -- button.highlight:SetVertexColor(1, 1, 1)
-		-- button.highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-		-- button.highlight:SetBlendMode("ADD")
+        -- button.highlight:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
+        -- button.highlight:SetBlendMode("ADD")
 
     button:SetScript("OnAttributeChanged", A.OnAttributeChanged)
 end
@@ -144,7 +144,7 @@ function A:UpdateAura(button, index)
 
         if filter == "HARMFUL" then
             local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
-          	button:SetBackdropBorderColor(color.r, color.g, color.b)
+            button:SetBackdropBorderColor(color.r, color.g, color.b)
             button.texture:SetInside(button, 1, 1)
         end
 
@@ -193,12 +193,12 @@ end
 
 function A:UpdateHeader(header)
     header:SetAttribute("consolidateTo", 0)
-    header:SetAttribute("maxWraps", 1)
+    header:SetAttribute("maxWraps", 3)
     header:SetAttribute("sortMethod", "TIME")
-    header:SetAttribute("sortDirection", "+")
+    header:SetAttribute("sortDirection", "-")
     header:SetAttribute("wrapAfter", buffsperrow)
 
-    header:SetAttribute("minWidth", buttonsize* buffsperrow + spacing* (buffsperrow-1))
+    header:SetAttribute("minWidth", buffsperrow == 1 and 0 or spacing + buttonsize * (buffsperrow))
     header:SetAttribute("minHeight", buttonsize)
     header:SetAttribute("wrapYOffset", -(buttonsize + spacing))
     AurasHolder:SetWidth(header:GetAttribute("minWidth"))
@@ -283,7 +283,7 @@ function A:OnEnable()
     else
       AurasHolder:SetPoint("TOPRIGHT", "Minimap", "TOPLEFT", -8, 0)
     end
-	K.Movers:RegisterFrame(AurasHolder)
+    K.Movers:RegisterFrame(AurasHolder)
 
     self.BuffFrame = self:CreateAuraHeader("HELPFUL")
     self.DebuffFrame = self:CreateAuraHeader("HARMFUL")

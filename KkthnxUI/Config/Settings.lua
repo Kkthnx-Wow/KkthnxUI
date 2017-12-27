@@ -54,13 +54,17 @@ C["Automation"] = {
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
 	["AutoRelease"] = false,
+	["AutoRepair"] = true,
 	["AutoResurrect"] = false,
 	["AutoResurrectCombat"] = true,
 	["AutoResurrectThank"] = false,
+	["AutoReward"] = false,
+	["AutoSell"] = true,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
 	["InviteKeyword"] = "invite",
 	["ScreenShot"] = false,
+	["UseGuildRepairFunds"] = false,
 }
 
 C["Bags"] = {
@@ -223,9 +227,6 @@ C["Minimap"] = {
 -- Miscellaneous
 C["Misc"] = {
 	["AFKCamera"] = false,
-	["AutoRepair"] = true,
-	["AutoReward"] = false,
-	["AutoSell"] = true,
 	["BattlegroundSpam"] = false,
 	["ColorPicker"] = false,
 	["EnhancedPvpMessages"] = false,
@@ -234,7 +235,6 @@ C["Misc"] = {
 	["NoBanner"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
-	["UseGuildRepairFunds"] = false,
 }
 
 -- Nameplates
