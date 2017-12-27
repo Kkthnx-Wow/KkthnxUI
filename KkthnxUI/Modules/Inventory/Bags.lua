@@ -208,7 +208,7 @@ function Stuffing:SlotUpdate(b)
 		b.frame.text:SetText("")
 	end
 
-	-- Pawn'ed thx Wetxius
+	-- Pawn"ed thx Wetxius
 	if b.frame.UpgradeIcon then
 		b.frame.UpgradeIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize / 2.4, -C["Bags"].ButtonSize / 2.4)
 		b.frame.UpgradeIcon:SetSize(C["Bags"].ButtonSize / 1.6, C["Bags"].ButtonSize / 1.6)
@@ -874,9 +874,9 @@ function Stuffing:InitBags()
 	-- Deposit Button
 	f.depositButton = CreateFrame("Button", nil, f)
 	f.depositButton:SetSize(16, 16)
-	f.depositButton:SetTemplate()
+	f.depositButton:SetTemplate("", true)
 	f.depositButton:StyleButton(true)
-	f.depositButton:SetPoint("TOPRIGHT", f, -30, -8)
+	f.depositButton:SetPoint("TOPRIGHT", f, -32, -8)
 	f.depositButton:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
 	f.depositButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
 	f.depositButton:GetNormalTexture():SetAllPoints()
@@ -886,17 +886,45 @@ function Stuffing:InitBags()
 	f.depositButton.ttText = L_BAG_BUTTONS_DEPOSIT
 	f.depositButton:SetScript("OnEnter", tooltip_show)
 	f.depositButton:SetScript("OnLeave", tooltip_hide)
-	f.depositButton:SetScript("OnClick", function(self, btn)
+	f.depositButton:SetScript("OnClick", function()
 		PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
 		DepositReagentBank()
 	end)
 
+	--Toggle Bags Button
+	f.bagsButton = CreateFrame("Button", nil, f)
+	f.bagsButton:SetSize(16, 16)
+	f.bagsButton:SetTemplate("", true)
+	f.bagsButton:SetPoint("RIGHT", f.depositButton, "LEFT", -5, 0)
+	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
+	f.bagsButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	f.bagsButton:GetNormalTexture():SetAllPoints()
+	f.bagsButton:SetPushedTexture("Interface\\Buttons\\Button-Backpack-Up")
+	f.bagsButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	f.bagsButton:GetPushedTexture():SetAllPoints()
+	f.bagsButton:StyleButton(nil, true)
+	f.bagsButton.ttText = "Toggle Bags"
+	f.bagsButton:SetScript("OnEnter", tooltip_show)
+	f.bagsButton:SetScript("OnLeave", tooltip_hide)
+	f.bagsButton:SetScript("OnClick", function()
+		if bag_bars == 1 then
+			bag_bars = 0
+		else
+			bag_bars = 1
+		end
+		Stuffing:Layout()
+		if Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
+			Stuffing:Layout(true)
+		end
+	end)
+
+
 	-- Sort Button
 	f.sortButton = CreateFrame("Button", nil, f)
 	f.sortButton:SetSize(16, 16)
-	f.sortButton:SetTemplate()
+	f.sortButton:SetTemplate("", true)
 	f.sortButton:StyleButton(true)
-	f.sortButton:SetPoint("TOPRIGHT", f.depositButton, -22, 0)
+	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 	f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
 	f.sortButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
 	f.sortButton:GetNormalTexture():SetAllPoints()
@@ -910,7 +938,7 @@ function Stuffing:InitBags()
 	f.sortButton.ttText = L_BAG_BUTTONS_SORT
 	f.sortButton:SetScript("OnEnter", tooltip_show)
 	f.sortButton:SetScript("OnLeave", tooltip_hide)
-	f.sortButton:SetScript("OnMouseUp", function(self, btn)
+	f.sortButton:SetScript("OnMouseUp", function(_, btn)
 		if btn == "RightButton" then
 			SetSortBagsRightToLeft(true)
 			SortBags()
@@ -924,7 +952,7 @@ function Stuffing:InitBags()
 		-- Artifact Button
 		f.ArtifactButton = CreateFrame("Button", nil, f, "BankItemButtonGenericTemplate")
 		f.ArtifactButton:SetSize(16, 16)
-		f.ArtifactButton:SetTemplate()
+		f.ArtifactButton:SetTemplate("", true)
 		f.ArtifactButton:StyleButton(true)
 		f.ArtifactButton:SetPoint("TOPRIGHT", f.sortButton, -22, 0)
 		f.ArtifactButton:SetNormalTexture("Interface\\ICONS\\Achievement_doublejeopardy")
@@ -933,6 +961,10 @@ function Stuffing:InitBags()
 		f.ArtifactButton:SetPushedTexture("Interface\\ICONS\\Achievement_doublejeopardy")
 		f.ArtifactButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
 		f.ArtifactButton:GetPushedTexture():SetAllPoints()
+		f.ArtifactButton:SetDisabledTexture("Interface\\ICONS\\Achievement_doublejeopardy")
+		f.ArtifactButton:GetDisabledTexture():SetTexCoord(unpack(K.TexCoords))
+		f.ArtifactButton:GetDisabledTexture():SetAllPoints()
+		f.ArtifactButton:GetDisabledTexture():SetDesaturated(1)
 		f.ArtifactButton:RegisterForClicks("RightButtonUp")
 		f.ArtifactButton.ttText = L_BAG_BUTTONS_ARTIFACT
 		f.ArtifactButton.UpdateTooltip = nil
@@ -1115,7 +1147,7 @@ function Stuffing:Layout(isBank)
 				end
 
 				xoff = 10 + (x * C["Bags"].ButtonSize) + (x * C["Bags"].ButtonSpace)
-				yoff = off + 10 + (y * C["Bags"].ButtonSize) + ((y) * C["Bags"].ButtonSpace) -- Don't forget you changed this Kkthnx!
+				yoff = off + 10 + (y * C["Bags"].ButtonSize) + ((y) * C["Bags"].ButtonSpace) -- Don"t forget you changed this Kkthnx!
 				yoff = yoff * -1
 
 				b.frame:ClearAllPoints()

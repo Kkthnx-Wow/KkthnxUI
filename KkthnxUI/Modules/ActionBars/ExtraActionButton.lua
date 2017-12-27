@@ -18,7 +18,7 @@ local function DisableExtraButtonTexture(self, texture, loop)
 	self:SetTexture("", true)
 end
 
-function Module:OnEnable(texture, loop)
+function Module:OnInitialize(texture, loop)
 	ExtraActionBarHolder = CreateFrame("Frame", "ExtraActionBarHolder", UIParent)
 	ExtraActionBarHolder:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 150)
 	ExtraActionBarHolder:SetSize(ExtraActionButton1:GetWidth(), ExtraActionButton1:GetHeight())
@@ -56,7 +56,7 @@ function Module:OnEnable(texture, loop)
 	local button = ZoneAbilityFrame.SpellButton
 	if button then
 		button:SetNormalTexture("")
-		-- button:StyleButton(nil, nil, nil, true)
+		button:StyleButton()
 		button:SetTemplate("ActionButton", true)
 		button.Icon:SetDrawLayer("ARTWORK")
 		button.Icon:SetTexCoord(unpack(K.TexCoords))
@@ -67,10 +67,9 @@ function Module:OnEnable(texture, loop)
 		ExtraActionBarFrame:Show()
 	end
 
-	local Movers = K["Movers"]
-	Movers:RegisterFrame(ExtraActionBarHolder)
-	Movers:RegisterFrame(ZoneAbilityHolder)
-
 	self:SecureHook(ExtraActionButton1.style, "SetTexture", DisableExtraButtonTexture)
 	self:SecureHook(ZoneAbilityFrame.SpellButton.Style, "SetTexture", DisableExtraButtonTexture)
+
+	K["Movers"]:RegisterFrame(ExtraActionBarHolder)
+	K["Movers"]:RegisterFrame(ZoneAbilityHolder)
 end
