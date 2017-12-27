@@ -13,7 +13,6 @@ local unpack = unpack
 
 local BNGetFriendInfoByID = _G.BNGetFriendInfoByID
 local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
-local BNToastFrame = _G.BNToastFrame
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local ChatEdit_ParseText = _G.ChatEdit_ParseText
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
@@ -436,17 +435,6 @@ function Module:StyleTempFrame()
 	Module:StyleFrame(Frame)
 end
 
-function Module:SetupToastFrame()
-	BNToastFrame:SetTemplate("Transparent", true)
-	BNToastFrame:ClearAllPoints()
-	BNToastFrame:SetFrameStrata("Medium")
-	BNToastFrame:SetFrameLevel(20)
-	BNToastFrame:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 12, 54)
-	BNToastFrame:SetClampedToScreen(true)
-	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 2, -2)
-	BNToastFrameCloseButton:SkinCloseButton()
-end
-
 function Module:SetDefaultChatFramesPositions()
 	if (not KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
 		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat = {}
@@ -693,7 +681,6 @@ function Module:OnEnable()
 
 	self:SetShortenChannelNames()
 	self:SetupFrame()
-	self:SetupToastFrame()
 	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
 	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)

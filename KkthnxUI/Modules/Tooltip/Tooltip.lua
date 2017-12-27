@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Tooltip", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 
--- Global variables that we don't cache
+-- Global variables that we don"t cache
 -- luacheck: globals FriendsTooltip ShoppingTooltip1 ShoppingTooltip2 ShoppingTooltip3 WorldMapTooltip
 -- luacheck: globals ItemRefCloseButton RightChatToggleButton BNToastFrame MMHolder GameTooltipText
 -- luacheck: globals ItemRefShoppingTooltip1 ItemRefShoppingTooltip2 ItemRefShoppingTooltip3 AutoCompleteBox
@@ -165,8 +165,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 			tt:SetOwner(parent, "ANCHOR_CURSOR")
 			if (not GameTooltipStatusBar.anchoredToTop) then
 				GameTooltipStatusBar:ClearAllPoints()
-				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 4, 3)
-				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
+				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
+				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
 				GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 				GameTooltipStatusBar.anchoredToTop = true
 			end
@@ -175,8 +175,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 			tt:SetOwner(parent, "ANCHOR_NONE")
 			if (GameTooltipStatusBar.anchoredToTop) then
 				GameTooltipStatusBar:ClearAllPoints()
-				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 4, 3)
-				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
+				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
+				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
 				GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, -3)
 				GameTooltipStatusBar.anchoredToTop = nil
 			end
@@ -570,11 +570,9 @@ function Module:SetStyle(tt)
 	if tt:IsForbidden() then return end
 
 	for _, tt in pairs(tooltips) do
-		tt:SetBackdrop(nil)
-		tt:StripTextures()
-		tt:SetBackdrop({bgFile = C["Media"].Blank, tileSize = 12, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = false, edgeSize = 12, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}})
-		tt:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-		tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		tt:SetTemplate("Transparent", true)
+		local r, g, b = tt:GetBackdropColor()
+		tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
 	end
 end
 
@@ -650,13 +648,18 @@ end
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
+	local BNToastHolder = CreateFrame("Frame", "BNToastHolder", UIParent)
+	BNToastHolder:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 350)
+	BNToastHolder:SetWidth((BNToastFrame:GetWidth() + 29))
+	BNToastHolder:SetHeight(BNToastFrame:GetHeight() + 53)
+
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
 	GameTooltipStatusBar:CreateShadow()
 	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
 	GameTooltipStatusBar:ClearAllPoints()
-	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 4, 3)
-	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -4, 3)
+	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
+	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 	GameTooltipStatusBar.text:FontTemplate(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline)
@@ -673,6 +676,9 @@ function Module:OnEnable()
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)
+
+	BNToastFrame:SetPoint("TOPRIGHT", BNToastHolder, "BOTTOMRIGHT", 0, -10);
+	K.Movers:RegisterFrame(BNToastFrame)
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")

@@ -17,5 +17,6 @@
     <Script file="ExtraActionButton.lua" />
     <Script file="Range.lua" />
     <Script file="Others.lua" />
+    <Script file="Vehicle.lua" />
     <Script file="Cooldowns.lua" />
 </Ui>

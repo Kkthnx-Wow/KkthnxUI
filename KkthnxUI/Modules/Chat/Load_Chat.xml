@@ -7,4 +7,5 @@
     <Script file="CopyUrl.lua" />
     <Script file="MessageFilter.lua" />
     <Script file="SpamFilter.lua" />
+    <Script file="QuickJoin.lua" />
 </Ui>

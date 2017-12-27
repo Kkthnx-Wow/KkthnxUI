@@ -2,5 +2,5 @@
 <Ui
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Inventory -->
-    <Script file="Bags.lua" />
+    <Script file="Inventory.lua" />
 </Ui>
