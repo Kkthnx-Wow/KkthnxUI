@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 if C["Bags"].Enable ~= true then return end
 
+local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
+
 -- Based on Stuffing(by Hungtar, editor Tukz)
 
 -- Bags
@@ -8,6 +10,10 @@ L_BAG_SHOW_BAGS = "Show Bags"
 L_BAG_RIGHT_CLICK_SEARCH = "Right-click to search"
 L_BAG_STACK_MENU = "Stack"
 L_BAG_RIGHT_CLICK_CLOSE = "Right-click to open menu"
+
+L_BAG_BUTTONS_DEPOSIT = "Deposit Reagents"
+L_BAG_BUTTONS_SORT = "LM:Cleanup / RM:Blizzard"
+L_BAG_BUTTONS_ARTIFACT = "Right click to use Artifact Power item in bag"
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
@@ -175,25 +181,20 @@ local function _getRealItemLevel(link)
 end
 
 function Stuffing:SlotUpdate(b)
-	local texture, count, locked, quality = GetContainerItemInfo(b.bag, b.slot)
+	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)	
+	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
 	local IsNewItem = C_NewItems.IsNewItem(b.frame:GetParent():GetID(), b.frame:GetID())
 	local NewItem = b.frame.NewItemTexture
-	
-	-- Pulse
-	if C["Bags"].PulseNewItem then
-		if IsNewItem ~= true then
-			K.UIFrameStopFlash(b.frame)
-		end
-	
-		if IsNewItem and NewItem then
-			NewItem:SetAlpha(0)
-			K.UIFrameFlash(b.frame, 1, true)
-		end
+
+	-- New Item Overlay
+	if (IsNewItem) and C["Bags"].PulseNewItem == true then
+		LibButtonGlow.ShowOverlayGlow(b.frame)
+	else
+		LibButtonGlow.HideOverlayGlow(b.frame)
 	end
-	
-	-- Set all slot color to default ShestakUI on update
+
+	-- Set all slot color to default KkthnxUI on update
 	if not b.frame.lock then
 		b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 	end
@@ -206,11 +207,11 @@ function Stuffing:SlotUpdate(b)
 	if C["Bags"].ItemLevel == true then
 		b.frame.text:SetText("")
 	end
-	
+
 	-- Pawn'ed thx Wetxius
 	if b.frame.UpgradeIcon then
-		b.frame.UpgradeIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize/2.7, -C["Bags"].ButtonSize/2.7)
-		b.frame.UpgradeIcon:SetSize(C["Bags"].ButtonSize/1.7, C["Bags"].ButtonSize/1.7)
+		b.frame.UpgradeIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize / 2.4, -C["Bags"].ButtonSize / 2.4)
+		b.frame.UpgradeIcon:SetSize(C["Bags"].ButtonSize / 1.6, C["Bags"].ButtonSize / 1.6)
 		local itemIsUpgrade = IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
 		if itemIsUpgrade and itemIsUpgrade == true then
 			b.frame.UpgradeIcon:SetShown(true)
@@ -218,7 +219,17 @@ function Stuffing:SlotUpdate(b)
 			b.frame.UpgradeIcon:SetShown(false)
 		end
 	end
-	
+
+	if (b.frame.JunkIcon) then
+		b.frame.JunkIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize / 2.4, -C["Bags"].ButtonSize / 2.4)
+		b.frame.JunkIcon:SetSize(C["Bags"].ButtonSize / 1.6, C["Bags"].ButtonSize / 1.6)
+		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) then
+			b.frame.JunkIcon:Show();
+		else
+			b.frame.JunkIcon:Hide()
+		end
+	end
+
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
@@ -298,6 +309,7 @@ function CreateReagentContainer()
 	SwitchBankButton:SkinButton()
 	SwitchBankButton:SetPoint("TOPLEFT", 10, -4)
 	SwitchBankButton:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+	SwitchBankButton.text:SetShadowOffset(0, 0)
 	SwitchBankButton.text:SetPoint("CENTER")
 	SwitchBankButton.text:SetText(BANK)
 	SwitchBankButton:SetScript("OnClick", function()
@@ -311,7 +323,7 @@ function CreateReagentContainer()
 	Deposit:SetParent(Reagent)
 	Deposit:ClearAllPoints()
 	Deposit:SetSize(170, 20)
-	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 3, 0)
+	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 6, 0)
 	Deposit:SkinButton()
 	Deposit:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 	Deposit.text:SetShadowOffset(0, 0)
@@ -375,7 +387,7 @@ function CreateReagentContainer()
 		end
 
 		if i == 1 then
-			button:SetPoint("TOPLEFT", Reagent, "TOPLEFT", 10, -27)
+			button:SetPoint("TOPLEFT", Reagent, "TOPLEFT", 10, -30)
 			LastRowButton = button
 			LastButton = button
 		elseif NumButtons == C["Bags"].BankColumns then
@@ -689,6 +701,7 @@ function Stuffing:CreateBagFrame(w)
 			_G["StuffingFrameBank"]:SetAlpha(0)
 		end)
 		f.b_reagent:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+		f.b_reagent.text:SetShadowOffset(0, 0)
 		f.b_reagent.text:SetPoint("CENTER")
 		f.b_reagent.text:SetText(REAGENT_BANK)
 		f.b_reagent:SetFontString(f.b_reagent.text)
@@ -696,11 +709,12 @@ function Stuffing:CreateBagFrame(w)
 		-- Buy button
 		f.b_purchase = CreateFrame("Button", "StuffingPurchaseButton"..w, f)
 		f.b_purchase:SetSize(80, 20)
-		f.b_purchase:SetPoint("TOPLEFT", f.b_reagent, "TOPRIGHT", 3, 0)
+		f.b_purchase:SetPoint("TOPLEFT", f.b_reagent, "TOPRIGHT", 6, 0)
 		f.b_purchase:RegisterForClicks("AnyUp")
 		f.b_purchase:SkinButton()
 		f.b_purchase:SetScript("OnClick", function(self) StaticPopup_Show("CONFIRM_BUY_BANK_SLOT") end)
 		f.b_purchase:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+		f.b_purchase.text:SetShadowOffset(0, 0)
 		f.b_purchase.text:SetPoint("CENTER")
 		f.b_purchase.text:SetText(BANKSLOTPURCHASE)
 		f.b_purchase:SetFontString(f.b_purchase.text)
@@ -812,7 +826,6 @@ function Stuffing:InitBags()
 
 	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	gold:SetJustifyH("RIGHT")
-	gold:SetPoint("RIGHT", f.b_close, "LEFT", -10, 0)
 
 	f:SetScript("OnEvent", function(self, e)
 		self.gold:SetText(GetCoinTextureString(GetMoney(), 12))
@@ -857,6 +870,110 @@ function Stuffing:InitBags()
 
 	button:SetScript("OnEnter", tooltip_show)
 	button:SetScript("OnLeave", tooltip_hide)
+
+	-- Deposit Button
+	f.depositButton = CreateFrame("Button", nil, f)
+	f.depositButton:SetSize(16, 16)
+	f.depositButton:SetTemplate()
+	f.depositButton:StyleButton(true)
+	f.depositButton:SetPoint("TOPRIGHT", f, -30, -8)
+	f.depositButton:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
+	f.depositButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	f.depositButton:GetNormalTexture():SetAllPoints()
+	f.depositButton:SetPushedTexture("Interface\\ICONS\\misc_arrowdown")
+	f.depositButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	f.depositButton:GetPushedTexture():SetAllPoints()
+	f.depositButton.ttText = L_BAG_BUTTONS_DEPOSIT
+	f.depositButton:SetScript("OnEnter", tooltip_show)
+	f.depositButton:SetScript("OnLeave", tooltip_hide)
+	f.depositButton:SetScript("OnClick", function(self, btn)
+		PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
+		DepositReagentBank()
+	end)
+
+	-- Sort Button
+	f.sortButton = CreateFrame("Button", nil, f)
+	f.sortButton:SetSize(16, 16)
+	f.sortButton:SetTemplate()
+	f.sortButton:StyleButton(true)
+	f.sortButton:SetPoint("TOPRIGHT", f.depositButton, -22, 0)
+	f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
+	f.sortButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	f.sortButton:GetNormalTexture():SetAllPoints()
+	f.sortButton:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
+	f.sortButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	f.sortButton:GetPushedTexture():SetAllPoints()
+	f.sortButton:SetDisabledTexture("Interface\\ICONS\\INV_Pet_Broom")
+	f.sortButton:GetDisabledTexture():SetTexCoord(unpack(K.TexCoords))
+	f.sortButton:GetDisabledTexture():SetAllPoints()
+	f.sortButton:GetDisabledTexture():SetDesaturated(1)
+	f.sortButton.ttText = L_BAG_BUTTONS_SORT
+	f.sortButton:SetScript("OnEnter", tooltip_show)
+	f.sortButton:SetScript("OnLeave", tooltip_hide)
+	f.sortButton:SetScript("OnMouseUp", function(self, btn)
+		if btn == "RightButton" then
+			SetSortBagsRightToLeft(true)
+			SortBags()
+		else
+			Stuffing:SetBagsForSorting("d")
+			Stuffing:SortBags()
+		end
+	end)
+
+	if K.Level >= 100 then
+		-- Artifact Button
+		f.ArtifactButton = CreateFrame("Button", nil, f, "BankItemButtonGenericTemplate")
+		f.ArtifactButton:SetSize(16, 16)
+		f.ArtifactButton:SetTemplate()
+		f.ArtifactButton:StyleButton(true)
+		f.ArtifactButton:SetPoint("TOPRIGHT", f.sortButton, -22, 0)
+		f.ArtifactButton:SetNormalTexture("Interface\\ICONS\\Achievement_doublejeopardy")
+		f.ArtifactButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+		f.ArtifactButton:GetNormalTexture():SetAllPoints()
+		f.ArtifactButton:SetPushedTexture("Interface\\ICONS\\Achievement_doublejeopardy")
+		f.ArtifactButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+		f.ArtifactButton:GetPushedTexture():SetAllPoints()
+		f.ArtifactButton:RegisterForClicks("RightButtonUp")
+		f.ArtifactButton.ttText = L_BAG_BUTTONS_ARTIFACT
+		f.ArtifactButton.UpdateTooltip = nil
+		f.ArtifactButton:SetScript("OnEnter", tooltip_show)
+		f.ArtifactButton:SetScript("OnLeave", tooltip_hide)
+		f.ArtifactButton:SetScript("PreClick", function(self)
+			for bag = 0, 4 do
+				for slot = 1, GetContainerNumSlots(bag) do
+					if IsArtifactPowerItem(GetContainerItemID(bag, slot)) then
+						self:GetParent():SetID(bag)
+						self:SetID(slot)
+						return
+					end
+				end
+			end
+		end)
+		f.ArtifactButton:SetScript("OnEnter", function()
+			local count = 0
+			for bag = 0, 4 do
+				for slot = 1, GetContainerNumSlots(bag) do
+					if IsArtifactPowerItem(GetContainerItemID(bag, slot)) then
+						count = count + 1
+					end
+				end
+			end
+
+			f.ArtifactButton:FadeIn()
+			GameTooltip:SetOwner(f.ArtifactButton, "ANCHOR_LEFT")
+			GameTooltip:AddLine(ARTIFACT_POWER)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Count:".." "..count)
+			GameTooltip:AddLine("Right click to use")
+			GameTooltip:Show()
+		end)
+	end
+
+	if K.Level >= 100 then
+		gold:SetPoint("RIGHT", f.ArtifactButton, "LEFT", -22, 0)
+	else
+		gold:SetPoint("RIGHT", f.sortButton, "LEFT", -22, 0)
+	end
 
 	f.editbox = editbox
 	f.detail = detail
@@ -1274,7 +1391,7 @@ function Stuffing:SortOnUpdate(elapsed)
 
 	for bagIndex in pairs(BS_itemSwapGrid) do
 		for slotIndex in pairs(BS_itemSwapGrid[bagIndex]) do
-			local destinationBag  = BS_itemSwapGrid[bagIndex][slotIndex].destinationBag
+			local destinationBag = BS_itemSwapGrid[bagIndex][slotIndex].destinationBag
 			local destinationSlot = BS_itemSwapGrid[bagIndex][slotIndex].destinationSlot
 
 			local _, _, locked1 = GetContainerItemInfo(bagIndex, slotIndex)
