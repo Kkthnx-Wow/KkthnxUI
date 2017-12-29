@@ -382,72 +382,71 @@ local function StyleButton(button, noHover, noPushed, noChecked)
 	end
 end
 
-local function SkinButton(button, strip)
-	assert(button, "doesn't exist!")
-
-	if button.Left then button.Left:SetAlpha(0) end
-	if button.Middle then button.Middle:SetAlpha(0) end
-	if button.Right then button.Right:SetAlpha(0) end
-	if button.LeftSeparator then button.LeftSeparator:SetAlpha(0) end
-	if button.RightSeparator then button.RightSeparator:SetAlpha(0) end
-
-	if button.SetDisabledTexture then button:SetDisabledTexture("") end
-	if button.SetHighlightTexture then button:SetHighlightTexture("") end
-	if button.SetNormalTexture then button:SetNormalTexture("") end
-	if button.SetPushedTexture then button:SetPushedTexture("") end
-
-	if strip then button:StripTextures() end
-
-	button:SetTemplate("Transparent", true)
-	button:HookScript("OnEnter", function(self)
-		if self.Backdrop then self = self.Backdrop end
+local function SetModifiedBackdrop(self)
+	if self.Backdrop then self = self.Backdrop end
+	if not C["General"].ColorTextures then -- Fix a rare nil error
 		self:SetBackdropBorderColor(color.r, color.g, color.b, 1)
-		self:SetBackdropColor(color.r * .15, color.g * .15, color.b * .15, C["Media"].BackdropColor[4])
-
-		if not C["General"].ColorTextures then -- Fix a rare nil error
-			self:SetBackdropBorderColor(color.r, color.g, color.b, 1)
-		end
-	end)
-
-	button:HookScript("OnLeave", function(self)
-		if self.Backdrop then self = self.Backdrop end
-		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
-		self:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		if not C["General"].ColorTextures then -- Fix a rare nil error
-			self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
-		end
-	end)
+	end
+	self:SetBackdropColor(color.r * .15, color.g * .15, color.b * .15, C["Media"].BackdropColor[4])
 end
 
-local function SkinCloseButton(Button, Reposition)
-	assert(Button, "doesn't exist!")
+local function SetOriginalBackdrop(self)
+	if self.Backdrop then self = self.Backdrop end
+	if not C["General"].ColorTextures then -- Fix a rare nil error
+		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+	end
+	self:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+end
 
-	if Reposition then
-		Button:Point("TOPRIGHT", Reposition, "TOPRIGHT", 2, 2)
+local function SkinButton(f, strip)
+	assert(f, "doesn't exist!")
+
+	if f.Left then f.Left:SetAlpha(0) end
+	if f.Middle then f.Middle:SetAlpha(0) end
+	if f.Right then f.Right:SetAlpha(0) end
+	if f.LeftSeparator then f.LeftSeparator:SetAlpha(0) end
+	if f.RightSeparator then f.RightSeparator:SetAlpha(0) end
+
+	if f.SetNormalTexture then f:SetNormalTexture("") end
+	if f.SetHighlightTexture then f:SetHighlightTexture("") end
+	if f.SetPushedTexture then f:SetPushedTexture("") end
+	if f.SetDisabledTexture then f:SetDisabledTexture("") end
+
+	if strip then f:StripTextures() end
+
+	f:SetTemplate("Transparent", true)
+	f:HookScript("OnEnter", SetModifiedBackdrop)
+	f:HookScript("OnLeave", SetOriginalBackdrop)
+end
+
+local function SkinCloseButton(f, point, text)
+	assert(f, "doesn't exist!")
+
+	f:StripTextures()
+
+	if not f.backdrop then
+		f:CreateBackdrop("Transparent", true)
+		f.Backdrop:SetPoint("TOPLEFT", 7, -8)
+		f.Backdrop:SetPoint("BOTTOMRIGHT", -8, 8)
+		f:HookScript("OnEnter", SetModifiedBackdrop)
+		f:HookScript("OnLeave", SetOriginalBackdrop)
 	end
 
-	if Button.SetDisabledTexture then Button:SetDisabledTexture("") end
-	if Button.SetHighlightTexture then Button:SetHighlightTexture("") end
-	if Button.SetNormalTexture then Button:SetNormalTexture("") end
-	if Button.SetPushedTexture then Button:SetPushedTexture("") end
+	if not text then text = "|cffb0504fx|r" end
 
-	Button.Text = Button:CreateFontString(nil, "OVERLAY")
-	Button.Text:SetFont(C["Media"].Font, 13, "")
-	Button.Text:SetShadowOffset(1.25, -1.25)
-	Button.Text:SetPoint("CENTER", 0, 1)
-	Button.Text:SetText("X")
-	Button.Text:SetTextColor(192/255, 192/255, 192/255)
+	if not f.text then
+		f.text = f:CreateFontString(nil, "OVERLAY")
+		f.text:SetFont(C["Media"].Font, 16, "OUTLINE")
+		f.text:SetShadowOffset(0, 0)
+		f.text:SetText(text)
+		f.text:SetJustifyH("CENTER")
+		f.text:SetPoint("CENTER", f, "CENTER", 0.2, 1)
+	end
 
-	Button:HookScript("OnEnter", function(self)
-		self.Text:SetTextColor(68/255, 136/255, 255/255)
-	end)
-
-	Button:HookScript("OnLeave", function(self)
-		self.Text:SetTextColor(192/255, 192/255, 192/255)
-	end)
+	if point then
+		f:SetPoint("TOPRIGHT", point, "TOPRIGHT", 2, 2)
+	end
 end
-
 
 -- Fade in/out functions
 local function FadeIn(frame)
