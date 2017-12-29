@@ -131,6 +131,9 @@ L.Inventory = {
 	Right_Click_Search = "Right-click to search",
 	Show_Bags = "Show Bags",
 	Stack_Menu = "Stack",
+	Shift_Move = "Hold Shift + Drag",
+	Arti_Count = "Count: ",
+	Arti_Use = "Right click to use",
 }
 
 
