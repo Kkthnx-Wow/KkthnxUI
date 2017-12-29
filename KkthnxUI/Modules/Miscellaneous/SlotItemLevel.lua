@@ -171,6 +171,7 @@ function Module:UpdateEquippeditemLevels(event, ...)
 end
 
 function Module:OnEnable()
+	if C["Misc"].ItemLevel ~= true then return end
 	self:InitializePaperDoll()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateEquippeditemLevels")
