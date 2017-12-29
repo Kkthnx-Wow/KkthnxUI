@@ -110,7 +110,7 @@ end
 
 oUF.Tags.Events["KkthnxUI:DifficultyColor"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
-	local r, g, b = 0.55, 0.57, 0.61
+	local r, g, b
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		local level = UnitBattlePetLevel(unit)
 
