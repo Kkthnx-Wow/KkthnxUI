@@ -124,12 +124,15 @@ L.Datatext = {
 
 -- Inventory Localization
 L.Inventory = {
-	Filter_Items = "Filter Items",
-	Stack_Hold_Shift = "Hold Shift:",
-	Stack_In_Bags = "Stack items in bags",
-	Stack_To_Bank = "Stack items to bank",
-	Vendor_Grays = "Vendor Grays",
+	Buttons_Artifact = "Right click to use Artifact Power item in bag",
+	Buttons_Deposit = "Deposit Reagents",
+	Buttons_Sort = "Left Click: Sort \nRight Click: Blizzard Sort",
+	Right_Click_Close = "Right-click to open menu",
+	Right_Click_Search = "Right-click to search",
+	Show_Bags = "Show Bags",
+	Stack_Menu = "Stack",
 }
+
 
 -- Loot Localization
 L.Loot = {
