@@ -1,19 +1,28 @@
 local K, C, L = unpack(select(2, ...))
 if C["Bags"].Enable ~= true then return end
-
 local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
--- Based on Stuffing(by Hungtar, editor Tukz)
+-- Sorced (by Hungtar, editor Tukz then Kkthnx)
 
--- Bags
-L_BAG_SHOW_BAGS = "Show Bags"
-L_BAG_RIGHT_CLICK_SEARCH = "Right-click to search"
-L_BAG_STACK_MENU = "Stack"
-L_BAG_RIGHT_CLICK_CLOSE = "Right-click to open menu"
+local _G = _G
+local pairs = pairs
+local print = print
+local table = table
+local wipe = wipe
 
-L_BAG_BUTTONS_DEPOSIT = "Deposit Reagents"
-L_BAG_BUTTONS_SORT = "LM:Cleanup / RM:Blizzard"
-L_BAG_BUTTONS_ARTIFACT = "Right click to use Artifact Power item in bag"
+local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
+local CLOSE = _G.CLOSE
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GetContainerItemInfo = _G.GetContainerItemInfo
+local GetItemInfo = _G.GetItemInfo
+local GetNumBankSlots = _G.GetNumBankSlots
+local InCombatLockdown = _G.InCombatLockdown
+local PickupContainerItem = PickupContainerItem
+local SortBags = SortBags
+local SortBankBags = SortBankBags
+local SortReagentBankBags = SortReagentBankBags
+local UIDropDownMenu_AddButton = UIDropDownMenu_AddButton
+local PlaySound = _G.PlaySound
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
@@ -110,7 +119,7 @@ local function Stuffing_OnShow()
 
 	Stuffing:Layout()
 	Stuffing:SearchReset()
-	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+	PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
 	collectgarbage("collect")
 end
 
@@ -119,14 +128,14 @@ local function StuffingBank_OnHide()
 	if Stuffing.frame:IsShown() then
 		Stuffing.frame:Hide()
 	end
-	PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
+	PlaySound(PlaySoundKitID and "igbackpackclose" or SOUNDKIT.IG_BACKPACK_CLOSE)
 end
 
 local function Stuffing_OnHide()
 	if Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
 		Stuffing.bankFrame:Hide()
 	end
-	PlaySound(SOUNDKIT.IG_BACKPACK_CLOSE)
+	PlaySound(PlaySoundKitID and "igbackpackclose" or SOUNDKIT.IG_BACKPACK_CLOSE)
 end
 
 local function Stuffing_Open()
@@ -183,9 +192,12 @@ end
 function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
+	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
 	local IsNewItem = C_NewItems.IsNewItem(b.frame:GetParent():GetID(), b.frame:GetID())
-	local NewItem = b.frame.NewItemTexture
+
+	if (b.frame.questIcon) then
+		b.frame.questIcon:Hide()
+	end
 
 	-- New Item Overlay
 	if (IsNewItem) and C["Bags"].PulseNewItem == true then
@@ -209,7 +221,7 @@ function Stuffing:SlotUpdate(b)
 	end
 
 	-- Pawn"ed thx Wetxius
-	if b.frame.UpgradeIcon then
+	if (b.frame.UpgradeIcon) then
 		b.frame.UpgradeIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize / 2.4, -C["Bags"].ButtonSize / 2.4)
 		b.frame.UpgradeIcon:SetSize(C["Bags"].ButtonSize / 1.6, C["Bags"].ButtonSize / 1.6)
 		local itemIsUpgrade = IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
@@ -221,8 +233,9 @@ function Stuffing:SlotUpdate(b)
 	end
 
 	if (b.frame.JunkIcon) then
-		b.frame.JunkIcon:SetPoint("TOPLEFT", C["Bags"].ButtonSize / 2.4, -C["Bags"].ButtonSize / 2.4)
-		b.frame.JunkIcon:SetSize(C["Bags"].ButtonSize / 1.6, C["Bags"].ButtonSize / 1.6)
+		b.frame.JunkIcon:ClearAllPoints()
+		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Bags"].ButtonSize / 2, C["Bags"].ButtonSize / 2)
+		b.frame.JunkIcon:SetSize(C["Bags"].ButtonSize / 1.8, C["Bags"].ButtonSize / 1.8)
 		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) then
 			b.frame.JunkIcon:Show();
 		else
@@ -230,7 +243,7 @@ function Stuffing:SlotUpdate(b)
 		end
 	end
 
-	if clink then
+	if (clink) then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
 		if C["Bags"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
@@ -247,6 +260,11 @@ function Stuffing:SlotUpdate(b)
 		-- Color slot according to item quality
 		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
+		elseif questId and not isActiveQuest then
+			b.frame:SetBackdropBorderColor(1, 1, 0)
+			if (b.frame.questIcon) then
+				b.frame.questIcon:Show()
+			end
 		elseif isQuestItem or questId then
 			b.frame:SetBackdropBorderColor(1, 1, 0)
 		end
@@ -317,7 +335,7 @@ function CreateReagentContainer()
 		_G["StuffingFrameBank"]:Show()
 		_G["StuffingFrameBank"]:SetAlpha(1)
 		BankFrame_ShowPanel(BANK_PANELS[1].name)
-		PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+		PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
 	end)
 
 	Deposit:SetParent(Reagent)
@@ -333,7 +351,8 @@ function CreateReagentContainer()
 
 	-- Close button
 	local Close = CreateFrame("Button", "StuffingCloseButtonReagent", Reagent, "UIPanelCloseButton")
-	Close:SetSize(15, 15)
+	Close:SkinCloseButton()
+	-- Close:SetSize(15, 15)
 	Close:RegisterForClicks("AnyUp")
 	Close:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
@@ -355,7 +374,7 @@ function CreateReagentContainer()
 	local tooltip_show = function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT", 19, 7)
 		GameTooltip:ClearLines()
-		GameTooltip:SetText(L_BAG_RIGHT_CLICK_CLOSE)
+		GameTooltip:SetText(L.Inventory.Right_Click_Close)
 	end
 
 	Close:HookScript("OnEnter", tooltip_show)
@@ -664,7 +683,7 @@ function Stuffing:CreateBagFrame(w)
 	f:SetMovable(true)
 	f:SetFrameStrata("MEDIUM")
 	f:SetFrameLevel(5)
-	f:RegisterForDrag("LeftButton")
+	f:RegisterForDrag("LeftButton", "RightButton")
 	f:SetScript("OnDragStart", function(self)
 		if IsShiftKeyDown() then
 			self:StartMoving()
@@ -675,6 +694,15 @@ function Stuffing:CreateBagFrame(w)
 		self:StopMovingOrSizing()
 		DragFunction(self, false)
 	end)
+	f:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 4)
+		GameTooltip:ClearLines()
+		GameTooltip:AddDoubleLine("Hold Shift + Drag")
+
+		GameTooltip:Show()
+	end)
+	f:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
 
 	if w == "Bank" then
 		f:SetPoint(unpack(C["Position"].Bank))
@@ -691,7 +719,7 @@ function Stuffing:CreateBagFrame(w)
 		f.b_reagent:SkinButton()
 		f.b_reagent:SetScript("OnClick", function()
 			BankFrame_ShowPanel(BANK_PANELS[2].name)
-			PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+			PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
 			if not ReagentBankFrame.isMade then
 				CreateReagentContainer()
 				ReagentBankFrame.isMade = true
@@ -728,8 +756,8 @@ function Stuffing:CreateBagFrame(w)
 
 	-- Close button
 	f.b_close = CreateFrame("Button", "StuffingCloseButton"..w, f, "UIPanelCloseButton")
-	f.b_close:SetPoint("TOPRIGHT")
-	-- f.b_close:SetSize(15, 15)
+	f.b_close:SetPoint("TOPRIGHT", 0, 1)
+	f.b_close:SkinCloseButton()
 	f.b_close:RegisterForClicks("AnyUp")
 	f.b_close:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
@@ -750,7 +778,7 @@ function Stuffing:CreateBagFrame(w)
 	local tooltip_show = function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_LEFT", 19, 7)
 		GameTooltip:ClearLines()
-		GameTooltip:SetText(L_BAG_RIGHT_CLICK_CLOSE)
+		GameTooltip:SetText(L.Inventory.Right_Click_Close)
 	end
 
 	f.b_close:HookScript("OnEnter", tooltip_show)
@@ -828,11 +856,11 @@ function Stuffing:InitBags()
 	gold:SetJustifyH("RIGHT")
 
 	f:SetScript("OnEvent", function(self, e)
-		self.gold:SetText(GetCoinTextureString(GetMoney(), 12))
+		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
 	end)
 
+	f:RegisterEvent("PLAYER_ENTERING_WORLD")
 	f:RegisterEvent("PLAYER_MONEY")
-	f:RegisterEvent("PLAYER_LOGIN")
 	f:RegisterEvent("PLAYER_TRADE_MONEY")
 	f:RegisterEvent("TRADE_MONEY_CHANGED")
 
@@ -840,7 +868,7 @@ function Stuffing:InitBags()
 	button:EnableMouse(true)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetAllPoints(detail)
-	button.ttText = L_BAG_RIGHT_CLICK_SEARCH
+	button.ttText = L.Inventory.Right_Click_Search
 	button:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			self:GetParent().detail:Hide()
@@ -876,14 +904,14 @@ function Stuffing:InitBags()
 	f.depositButton:SetSize(16, 16)
 	f.depositButton:SetTemplate("", true)
 	f.depositButton:StyleButton(true)
-	f.depositButton:SetPoint("TOPRIGHT", f, -32, -8)
+	f.depositButton:SetPoint("TOPRIGHT", f, -32, -7)
 	f.depositButton:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
-	f.depositButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	f.depositButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.depositButton:GetNormalTexture():SetAllPoints()
 	f.depositButton:SetPushedTexture("Interface\\ICONS\\misc_arrowdown")
-	f.depositButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	f.depositButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.depositButton:GetPushedTexture():SetAllPoints()
-	f.depositButton.ttText = L_BAG_BUTTONS_DEPOSIT
+	f.depositButton.ttText = L.Inventory.Buttons_Deposit
 	f.depositButton:SetScript("OnEnter", tooltip_show)
 	f.depositButton:SetScript("OnLeave", tooltip_hide)
 	f.depositButton:SetScript("OnClick", function()
@@ -897,10 +925,10 @@ function Stuffing:InitBags()
 	f.bagsButton:SetTemplate("", true)
 	f.bagsButton:SetPoint("RIGHT", f.depositButton, "LEFT", -5, 0)
 	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
-	f.bagsButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.bagsButton:GetNormalTexture():SetAllPoints()
 	f.bagsButton:SetPushedTexture("Interface\\Buttons\\Button-Backpack-Up")
-	f.bagsButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	f.bagsButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.bagsButton:GetPushedTexture():SetAllPoints()
 	f.bagsButton:StyleButton(nil, true)
 	f.bagsButton.ttText = "Toggle Bags"
@@ -926,16 +954,16 @@ function Stuffing:InitBags()
 	f.sortButton:StyleButton(true)
 	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 	f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
-	f.sortButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	f.sortButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.sortButton:GetNormalTexture():SetAllPoints()
 	f.sortButton:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
-	f.sortButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	f.sortButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.sortButton:GetPushedTexture():SetAllPoints()
 	f.sortButton:SetDisabledTexture("Interface\\ICONS\\INV_Pet_Broom")
-	f.sortButton:GetDisabledTexture():SetTexCoord(unpack(K.TexCoords))
+	f.sortButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.sortButton:GetDisabledTexture():SetAllPoints()
 	f.sortButton:GetDisabledTexture():SetDesaturated(1)
-	f.sortButton.ttText = L_BAG_BUTTONS_SORT
+	f.sortButton.ttText = L.Inventory.Buttons_Sort
 	f.sortButton:SetScript("OnEnter", tooltip_show)
 	f.sortButton:SetScript("OnLeave", tooltip_hide)
 	f.sortButton:SetScript("OnMouseUp", function(_, btn)
@@ -956,17 +984,17 @@ function Stuffing:InitBags()
 		f.ArtifactButton:StyleButton(true)
 		f.ArtifactButton:SetPoint("TOPRIGHT", f.sortButton, -22, 0)
 		f.ArtifactButton:SetNormalTexture("Interface\\ICONS\\Achievement_doublejeopardy")
-		f.ArtifactButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+		f.ArtifactButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.ArtifactButton:GetNormalTexture():SetAllPoints()
 		f.ArtifactButton:SetPushedTexture("Interface\\ICONS\\Achievement_doublejeopardy")
-		f.ArtifactButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+		f.ArtifactButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.ArtifactButton:GetPushedTexture():SetAllPoints()
 		f.ArtifactButton:SetDisabledTexture("Interface\\ICONS\\Achievement_doublejeopardy")
-		f.ArtifactButton:GetDisabledTexture():SetTexCoord(unpack(K.TexCoords))
+		f.ArtifactButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.ArtifactButton:GetDisabledTexture():SetAllPoints()
 		f.ArtifactButton:GetDisabledTexture():SetDesaturated(1)
 		f.ArtifactButton:RegisterForClicks("RightButtonUp")
-		f.ArtifactButton.ttText = L_BAG_BUTTONS_ARTIFACT
+		f.ArtifactButton.ttText = L.Inventory.Buttons_Artifact
 		f.ArtifactButton.UpdateTooltip = nil
 		f.ArtifactButton:SetScript("OnEnter", tooltip_show)
 		f.ArtifactButton:SetScript("OnLeave", tooltip_hide)
@@ -1002,9 +1030,9 @@ function Stuffing:InitBags()
 	end
 
 	if K.Level >= 100 then
-		gold:SetPoint("RIGHT", f.ArtifactButton, "LEFT", -22, 0)
+		gold:SetPoint("RIGHT", f.ArtifactButton, "LEFT", -8, 0)
 	else
-		gold:SetPoint("RIGHT", f.sortButton, "LEFT", -22, 0)
+		gold:SetPoint("RIGHT", f.sortButton, "LEFT", -8, 0)
 	end
 
 	f.editbox = editbox
@@ -1036,7 +1064,7 @@ function Stuffing:Layout(isBank)
 		f.detail:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 		f.detail:SetShadowOffset(0, 0)
 
-		f.gold:SetText(GetCoinTextureString(GetMoney(), 12))
+		f.gold:SetText(K.FormatMoney(GetMoney(), 12))
 		f.gold:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 		f.gold:SetShadowOffset(0, 0)
 
@@ -1259,10 +1287,10 @@ function Stuffing:ADDON_LOADED(addon)
 	CloseAllBags = Stuffing_Close
 	CloseBackpack = Stuffing_Close
 
-	--BankFrame:UnregisterAllEvents()
-	BankFrame:SetScale(0.00001)
+	BankFrame:SetScale(0.0001)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
+	BankFrame:SetScript("OnShow", nil)
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
@@ -1643,7 +1671,7 @@ function Stuffing.Menu(self, level)
 	UIDropDownMenu_AddButton(info, level)
 
 	wipe(info)
-	info.text = L_BAG_STACK_MENU
+	info.text = L.Inventory.Stack_Menu
 	info.notCheckable = 1
 	info.func = function()
 		if InCombatLockdown() then
@@ -1655,7 +1683,7 @@ function Stuffing.Menu(self, level)
 	UIDropDownMenu_AddButton(info, level)
 
 	wipe(info)
-	info.text = L_BAG_SHOW_BAGS
+	info.text = L.Inventory.Show_Bags
 	info.checked = function()
 		return bag_bars == 1
 	end
