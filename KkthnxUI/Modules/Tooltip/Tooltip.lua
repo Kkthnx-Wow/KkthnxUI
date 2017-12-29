@@ -649,9 +649,14 @@ function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
 	local BNToastHolder = CreateFrame("Frame", "BNToastHolder", UIParent)
-	BNToastHolder:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 350)
-	BNToastHolder:SetWidth((BNToastFrame:GetWidth() + 29))
-	BNToastHolder:SetHeight(BNToastFrame:GetHeight() + 53)
+    BNToastHolder:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 180)
+    BNToastHolder:SetSize(BNToastFrame:GetWidth(), BNToastFrame:GetHeight())
+    K.Movers:RegisterFrame(BNToastHolder)
+    
+    BNToastFrame:HookScript("OnShow", function(self)
+        self:ClearAllPoints()
+        self:SetPoint("TOPLEFT", BNToastHolder, "TOPLEFT", 3, -3)
+    end)
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
@@ -676,9 +681,6 @@ function Module:OnEnable()
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)
-
-	BNToastFrame:SetPoint("TOPRIGHT", BNToastHolder, "BOTTOMRIGHT", 0, -10);
-	K.Movers:RegisterFrame(BNToastFrame)
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")
