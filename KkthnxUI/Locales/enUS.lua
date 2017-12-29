@@ -124,18 +124,14 @@ L.Datatext = {
 
 -- Inventory Localization
 L.Inventory = {
+	Artifact_Count = "Count: ",
+	Artifact_Use = "Right click to use",
 	Buttons_Artifact = "Right click to use Artifact Power item in bag",
-	Buttons_Deposit = "Deposit Reagents",
 	Buttons_Sort = "Left Click: Sort \nRight Click: Blizzard Sort",
-	Right_Click_Close = "Right-click to open menu",
+	Buttons_Stack = "Stack Items",
 	Right_Click_Search = "Right-click to search",
-	Show_Bags = "Show Bags",
-	Stack_Menu = "Stack",
 	Shift_Move = "Hold Shift + Drag",
-	Arti_Count = "Count: ",
-	Arti_Use = "Right click to use",
 }
-
 
 -- Loot Localization
 L.Loot = {
