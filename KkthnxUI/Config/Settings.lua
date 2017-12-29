@@ -80,9 +80,41 @@ C["Bags"] = {
 -- Buffs & Debuffs
 C["Auras"] = {
 	["Enable"] = true,
-	["ButtonSize"] = 30,
-	["ButtonSpace"] = 6,
-	["ButtonPerRow"] = 12,
+	["HorizontalSpacing"] = 6,
+	["MaxWraps"] = 3,
+	["SeperateOwn"] = 1,
+	["Size"] = 32,
+	["VerticalSpacing"] = 16,
+	["WrapAfter"] = 12,
+	["FadeThreshold"] = 5,
+	["GrowthDirection"] = {
+		["Options"] = {
+			["Down Left"] = "DOWN_LEFT",
+			["Down Right"] = "DOWN_RIGHT",
+			["Left Down"] = "LEFT_DOWN",
+			["Left Up"] = "LEFT_UP",
+			["Right Down"] = "RIGHT_DOWN",
+			["Right Up"] = "RIGHT_UP",
+			["Up Left"] = "UP_LEFT",
+			["Up Right"] = "UP_RIGHT",
+		},
+		["Value"] = "LEFT_DOWN",
+	},
+	["SortDir"] = {
+		["Options"] = {
+			["Ascending"] = "+",
+			["Descending"] = "-",
+		},
+		["Value"] = "-",
+	},
+	["SortMethod"] = {
+		["Options"] = {
+			["Index"] = "INDEX",
+			["Time"] = "TIME",
+			["Name"] = "NAME",
+		},
+		["Value"] = "TIME",
+	},
 }
 
 -- Chat
