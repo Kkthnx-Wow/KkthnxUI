@@ -14,7 +14,7 @@ local unpack = unpack
 -- Wow API
 local CreateFrame = _G.CreateFrame
 
-local function SetAnimationGroup(object, type, ...)
+function K.SetAnimationGroup(object, type, ...)
 	if not type then type = "Flash" end
 
 	if type == "Flash" then
@@ -50,7 +50,7 @@ end
 
 function K.UIFrameFlash(object, duration, loop)
 	if not object.anim then
-		SetAnimationGroup(object, loop and "FlashLoop" or "Flash")
+		K.SetAnimationGroup(object, loop and "FlashLoop" or "Flash")
 	end
 
 	if not object.anim.playing then
