@@ -28,7 +28,6 @@ local ST_FISHBAG = 2
 local ST_SPECIAL = 3
 local bag_bars = 0
 local unusable
--- local eventcount = 0
 
 if K.Class == "DEATHKNIGHT" then
 	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_SHIELD}} -- weapons, armor, dual wield
@@ -98,7 +97,7 @@ Stuffing:SetScript("OnEvent", function(this, event, ...)
 	Stuffing[event](this, ...)
 end)
 
-local function Stuffing_OnShow(event)
+local function Stuffing_OnShow()
 	Stuffing:PLAYERBANKSLOTS_CHANGED(29)
 
 	for i = 0, #BAGS_BACKPACK - 1 do
@@ -108,15 +107,9 @@ local function Stuffing_OnShow(event)
 	Stuffing:Layout()
 	Stuffing:SearchReset()
 	PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
-	--[[eventcount = eventcount + 1 -- I really don't think this is needed. We shouldn't call this at all.
-	if (InCombatLockdown() and eventcount > 25000) or (not InCombatLockdown() and eventcount > 10000) then
-		collectgarbage("collect")
-		eventcount = 0
-		print(eventcount, collectgarbage)
-	end--]]
 end
 
-local function StuffingBank_OnHide(event)
+local function StuffingBank_OnHide()
 	CloseBankFrame()
 	if Stuffing.frame:IsShown() then
 		Stuffing.frame:Hide()
