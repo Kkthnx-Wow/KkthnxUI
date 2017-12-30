@@ -131,7 +131,7 @@ function AddOn:OnInitialize()
 
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
-	GameMenuButton:SetText(AddOnName)
+	GameMenuButton:SetText(format("|cff4488ff%s|r", AddOnName))
 	GameMenuButton:SetScript("OnClick", function()
 
 		if (InCombatLockdown()) then

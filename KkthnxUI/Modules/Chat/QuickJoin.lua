@@ -6,7 +6,7 @@ if C["Chat"].Enable ~= true then return end
 -- Credits: Simpy and Merathilis
 -- Edited: KkthnxUI (Kkthnx)
 
-local _G = _G
+--[[local _G = _G
 local difftime = difftime
 local find = string.find
 
@@ -162,4 +162,4 @@ end
 
 function Module:OnDisable()
 	self:UnregisterEvent("SOCIAL_QUEUE_UPDATE")
-end
+end--]]

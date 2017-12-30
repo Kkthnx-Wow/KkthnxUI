@@ -131,6 +131,7 @@ L.Inventory = {
 	Buttons_Stack = "Stack Items",
 	Right_Click_Search = "Right-click to search",
 	Shift_Move = "Hold Shift + Drag",
+	Show_Bags = "Toggle Bags",
 }
 
 -- Loot Localization

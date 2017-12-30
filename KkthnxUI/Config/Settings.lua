@@ -73,6 +73,7 @@ C["Bags"] = {
 	["ButtonSize"] = 32,
 	["ButtonSpace"] = 6,
 	["Enable"] = true,
+	["Enable"] = true,
 	["ItemLevel"] = false,
 	["PulseNewItem"] = false,
 }
