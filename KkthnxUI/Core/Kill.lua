@@ -5,12 +5,12 @@ local Module = K:NewModule("DisableBlizzard", "AceEvent-3.0")
 local _G = _G
 
 -- Wow API
+local CompactRaidFrameManager_GetSetting = _G.CompactRaidFrameManager_GetSetting
+local CompactRaidFrameManager_SetSetting = _G.CompactRaidFrameManager_SetSetting
 local CompactRaidFrameManager_UpdateShown = _G.CompactRaidFrameManager_UpdateShown
-local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
-local StaticPopup_Show = _G.StaticPopup_Show
-local MAX_PARTY_MEMBERS = _G.MAX_PARTY_MEMBERS
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+local InCombatLockdown = _G.InCombatLockdown
+local StaticPopup_Show =_G.StaticPopup_Show
 local UIParent = _G.UIParent
 
 -- Kill all stuff on default UI that we don"t need
@@ -39,13 +39,7 @@ function Module:DisableBlizzard()
 	end
 end
 
-function Module:ADDON_LOADED(_, addon)
-	if addon ~= "Blizzard_ArenaUI" then return end
-	Module:DisableBlizzard("arena")
-	self:UnregisterEvent("ADDON_LOADED")
-end
-
-function Module:DisableMisc()
+function Module:ControlBlizzard()
 	if C["General"].AutoScale then
 		K.KillMenuOption(true, "Advanced_UseUIScale")
 		K.KillMenuOption(true, "Advanced_UIScaleSlider")
@@ -56,12 +50,6 @@ function Module:DisableMisc()
 	end
 
 	if C["General"].DisableTutorialButtons then
-		for i = 1, #MICRO_BUTTONS do
-			if _G[MICRO_BUTTONS[i]] then
-				_G[MICRO_BUTTONS[i]]:Kill()
-			end
-		end
-
 		if MainMenuBarDownload then
 			MainMenuBarDownload:Kill()
 		end
@@ -69,9 +57,11 @@ function Module:DisableMisc()
 		BagHelpBox:Kill()
 		CollectionsMicroButtonAlert:Kill()
 		EJMicroButtonAlert:Kill()
+		GuildMicroButtonTabard:Kill()
 		HelpOpenTicketButtonTutorial:Kill()
 		HelpPlate:Kill()
 		HelpPlateTooltip:Kill()
+		MainMenuBarPerformanceBar:Kill()
 		MicroButtonPortrait:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
@@ -79,9 +69,6 @@ function Module:DisableMisc()
 		TalentMicroButtonAlert:Kill()
 		TutorialFrameAlertButton:Kill()
 		WorldMapFrameTutorialButton:Kill()
-		GuildMicroButtonTabard:Kill()
-		MainMenuBarPerformanceBar:Kill()
-		TalentMicroButtonAlert:Kill()
 	end
 
 	if C["Unitframe"].Enable then
@@ -99,7 +86,6 @@ function Module:DisableMisc()
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
-		SetCVar("ShowClassColorInNameplate", 1)
 	end
 
 	if C["ActionBar"].Enable then
@@ -123,31 +109,22 @@ function Module:DisableMisc()
 		SetSortBagsRightToLeft(true)
 		SetInsertItemsLeftToRight(false)
 	end
+
+	if (not C["Unitframe"].Party) and (not C["Raidframe"].Enable) then
+		C["Raidframe"].RaidUtility = false
+	end
 end
 
-function Module:OnEnable()
-	self:DisableMisc()
+function Module:OnInitialize()
+	self:ControlBlizzard()
 	K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
 
 	if C["Raidframe"].Enable == true then
 		self:DisableBlizzard()
 		self:RegisterEvent("GROUP_ROSTER_UPDATE", "DisableBlizzard")
-		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE") -- This may fuck shit up.. we"ll see...
+		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	else
 		CompactUnitFrameProfiles:RegisterEvent("VARIABLES_LOADED")
-	end
-
-	if (not C["Unitframe"].Party) and (not C["Raidframe"].Enable) then
-		C["Raidframe"].RaidUtility = false
-	end
-
-	if C["Unitframe"].Arena then
-		self:SecureHook("UnitFrameThreatIndicator_Initialize")
-
-		if not IsAddOnLoaded("Blizzard_ArenaUI") then
-			self:RegisterEvent("ADDON_LOADED")
-		else
-			Module:DisableBlizzard("arena")
-		end
+		UIParent:RegisterEvent("GROUP_ROSTER_UPDATE") -- We need to register this if people want to use default blizz raid frames.
 	end
 end
