@@ -140,8 +140,18 @@ local function UpdateBlizzardFonts()
 		end
 	end)
 
-	-- Fix Navbar font button text
+	-- Fix some fonts to follow our font.
 	WorldMapFrameNavBarHomeButton.text:SetFontObject(SystemFont_Shadow_Med1)
+	WorldMapFrame.UIElementsFrame.BountyBoard.BountyName:FontTemplate(nil, 14, "OUTLINE")
+	SplashFrame.Header:FontTemplate(nil, 22)
+	if IsAddOnLoaded("Blizzard_Collections") then
+		WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame.Name:FontTemplate(nil, 16)
+	end
+	LFGListFrame.ApplicationViewer.NameColumnHeader.Label:FontTemplate()
+	LFGListFrame.ApplicationViewer.RoleColumnHeader.Label:FontTemplate()
+	LFGListFrame.ApplicationViewer.ItemLevelColumnHeader.Label:FontTemplate()
+	LFGListFrame.ApplicationViewer.PrivateGroup:FontTemplate()
+	TalentMicroButtonAlert.Text:FontTemplate()
 
 	-- Fix issue with labels not following changes to GameFontNormal as they should
 	local function SetLabelFontObject(self, btnIndex)
@@ -152,15 +162,30 @@ local function UpdateBlizzardFonts()
 	end
 	_G.hooksecurefunc("LFGListCategorySelection_AddButton", SetLabelFontObject)
 
-	-- I have no idea why the channel list is getting fucked up
-	-- but re-setting the font obj seems to fix it
-	for i = 1, MAX_CHANNEL_BUTTONS do
-		_G["ChannelButton"..i.."Text"]:SetFontObject(GameFontNormalSmallLeft)
-	end
+	local function Channel()
+		for i = 1, MAX_DISPLAY_CHANNEL_BUTTONS do
+			local button = _G["ChannelButton"..i]
+			if button then
+				button:StripTextures()
+				button:SetHighlightTexture("Interface\\PaperDollInfoFrame\\UI-Character-Tab-Highlight")
 
-	for _, btn in pairs(PaperDollTitlesPane.buttons) do
-		btn.text:SetFontObject(GameFontHighlightSmallLeft)
+				_G["ChannelButton"..i.."Text"]:FontTemplate(nil, 12)
+			end
+		end
 	end
+	hooksecurefunc("ChannelList_Update", Channel)
+
+	--Titles
+	PaperDollTitlesPane:HookScript("OnShow", function(self)
+		for _, object in pairs(PaperDollTitlesPane.buttons) do
+			object.text:FontTemplate()
+			hooksecurefunc(object.text, "SetFont", function(self, font)
+				if font ~= C["Media"].Font then
+					self:FontTemplate()
+				end
+			end)
+		end
+	end)
 
 	-- Fix help frame category buttons, NFI why they need fixing
 	for i = 1, 6 do
