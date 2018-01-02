@@ -42,24 +42,14 @@ do
 	VehicleSeatMover:SetHeight(VehicleSeatIndicator:GetHeight() - 25)
 
 	function Module:PositionVehicleFrame()
-		local function VehicleSeatIndicator_SetPosition(_,_, parent)
-			if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
-				VehicleSeatIndicator:ClearAllPoints()
+		VehicleSeatIndicator:ClearAllPoints()
+		VehicleSeatIndicator:SetParent(VehicleSeatMover)
+		VehicleSeatIndicator:SetPoint("BOTTOM", 0, K.ScreenHeight / 4)
 
-				if VehicleSeatMover then
-					VehicleSeatIndicator:SetPoint("TOPLEFT", VehicleSeatMover, "TOPLEFT", 0, 0)
-					K.Movers:RegisterFrame(VehicleSeatMover)
-				else
-					VehicleSeatIndicator:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 22, -45)
-					K.Movers:RegisterFrame(VehicleSeatIndicator)
-				end
+		-- This will block UIParent_ManageFramePositions() to be executed
+		VehicleSeatIndicator.IsShown = function() return false end
 
-				VehicleSeatIndicator:SetScale(0.8)
-			end
-		end
-		hooksecurefunc(VehicleSeatIndicator,"SetPoint", VehicleSeatIndicator_SetPosition)
-
-		VehicleSeatIndicator:SetPoint("TOPLEFT", MinimapCluster, "TOPLEFT", 2, 2) -- initialize mover
+		K.Movers:RegisterFrame(VehicleSeatMover)
 	end
 
 	function Module:PositionDurabilityFrame()
