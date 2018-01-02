@@ -417,6 +417,16 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.GroupRoleIndicator:SetSize(16, 16)
 		self.GroupRoleIndicator:SetPoint("BOTTOMLEFT", self.Portrait, "TOPRIGHT" , -4, -8)
 	end
+	
+	if (unit == "target") then
+		self.MasterLooterIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.MasterLooterIndicator:SetSize(16, 16)
+		self.MasterLooterIndicator:SetPoint("TOP", self, "TOP" , -18, -20)
+
+		self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
+		self.GroupRoleIndicator:SetSize(16, 16)
+		self.GroupRoleIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT" , 4, -8)
+	end
 
 	-- Group Role Indicator
 	if (unit == "party") then
