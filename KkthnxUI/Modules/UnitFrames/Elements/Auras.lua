@@ -296,14 +296,12 @@ function K.CreateAuras(self, unit)
 		Buffs:SetHeight(21)
 		Buffs:SetWidth(self.Power:GetWidth())
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs:SetTemplate("Transparent")
 		Buffs.size = 21
 		Buffs.num = 5
 
 		Debuffs:SetHeight(26)
 		Debuffs:SetWidth(self.Health:GetWidth())
 		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
-		Debuffs:SetTemplate("Transparent")
 		Debuffs.size = 26
 		Debuffs.num = 10
 
@@ -329,20 +327,39 @@ function K.CreateAuras(self, unit)
 	end
 
 	if (unit == "arena") then
-		-- local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+		local Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+		local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 
-		-- Debuffs:SetHeight(22)
-		-- Debuffs:SetWidth(120)
-		-- Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -2, 26)
-		-- Debuffs.size = 22
-		-- Debuffs.num = 12
+		Buffs:SetHeight(21)
+		Buffs:SetWidth(self.Power:GetWidth())
+		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		Buffs.size = 21
+		Buffs.num = 5
 
-		-- Debuffs.spacing = 6
-		-- Debuffs.initialAnchor = "TOPLEFT"
-		-- Debuffs["growth-y"] = "UP"
-		-- Debuffs["growth-x"] = "RIGHT"
-		-- Debuffs.PostCreateIcon = PostCreateAura
-		-- Debuffs.PostUpdateIcon = PostUpdateAura
-		-- self.Debuffs = Debuffs
+		Debuffs:SetHeight(26)
+		Debuffs:SetWidth(self.Health:GetWidth())
+		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
+		Debuffs.size = 26
+		Debuffs.num = 10
+
+		Buffs.spacing = 6
+		Buffs.initialAnchor = "LEFT"
+		Buffs["growth-y"] = "DOWN"
+		Buffs["growth-x"] = "RIGHT"
+		Buffs.PreSetPosition = PreSetPosition
+		Buffs.CustomFilter = K.CustomBuffFilter
+		Buffs.PostCreateIcon = PostCreateAura
+		Buffs.PostUpdateIcon = PostUpdateAura
+		self.Buffs = Buffs
+
+		Debuffs.spacing = 6
+		Debuffs.initialAnchor = "RIGHT"
+		Debuffs["growth-y"] = "DOWN"
+		Debuffs["growth-x"] = "LEFT"
+		Debuffs.PreSetPosition = PreSetPosition
+		Debuffs.CustomFilter = K.CustomDebuffFilter
+		Debuffs.PostCreateIcon = PostCreateAura
+		Debuffs.PostUpdateIcon = PostUpdateAura
+		self.Debuffs = Debuffs
 	end
 end
