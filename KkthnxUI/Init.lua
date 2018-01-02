@@ -66,14 +66,15 @@ local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
--- Define the saved variables first. This is important
-if (not KkthnxUIData) then KkthnxUIData = KkthnxUIData or {} end
-
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 
 Engine[1] = AddOn
 Engine[2] = {}
 Engine[3] = {}
+
+function Engine:unpack()
+	return self[1], self[2], self[3], self[4]
+end
 
 _G[AddOnName] = Engine
 
@@ -84,10 +85,9 @@ AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
 AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
 AddOn.Noop = function() return end
 AddOn.Name = UnitName("player")
-AddOn.GUID = UnitGUID("player")
 AddOn.Class = select(2, UnitClass("player"))
-AddOn.Spec = GetSpecialization() or 0
 AddOn.Race = select(2, UnitRace("player"))
+AddOn.Spec = GetSpecialization() or 0
 AddOn.Level = UnitLevel("player")
 AddOn.Client = GetLocale()
 AddOn.Realm = GetRealmName()
@@ -100,12 +100,14 @@ AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo()
--- AddOn.WoWBuild = select(2, GetBuildInfo()) AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
-AddOn.WoWBuild = tonumber((select(2, GetBuildInfo())))
+AddOn.WoWBuild = select(2, GetBuildInfo()) AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
 
 function AddOn:OnInitialize()
-
 	self.GUID = UnitGUID("player")
+
+	-- Define the saved variables first. This is important
+	if (not KkthnxUIData) then KkthnxUIData = KkthnxUIData or {} end
+
 	-- Create missing entries in the saved vars if they don"t exist.
 	if (not KkthnxUIData[Realm]) then KkthnxUIData[Realm] = KkthnxUIData[Realm] or {} end
 	if (not KkthnxUIData[Realm][Name]) then KkthnxUIData[Realm][Name] = KkthnxUIData[Realm][Name] or {} end
