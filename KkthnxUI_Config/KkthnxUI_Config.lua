@@ -19,7 +19,6 @@ local tonumber = tonumber
 local type = type
 local unpack = unpack
 
-
 -- Wow API
 local APPLY = _G.APPLY
 local CLOSE = _G.CLOSE
@@ -91,8 +90,8 @@ KkthnxUIConfig.ColorDefaults = {
 		["OutOfMana"] = {0.5, 0.5, 1.0},
 		["OutOfRange"] = {0.8, 0.1, 0.1},
 	},
-	-- Blizzard
-	["Blizzard"] = {
+	-- General
+	["General"] = {
 		["TexturesColor"] = {0.31, 0.31, 0.31},
 	},
 	-- Chat
@@ -113,10 +112,6 @@ KkthnxUIConfig.ColorDefaults = {
 		["NearColor"] = {1, 1, 0},
 		["OffTankColor"] = {0, 0.5, 1},
 	},
-	-- Bags
-	["Bags"] = {
-		["CountFontColor"] = {1, 1, 1},
-	},
 	-- Cooldown
 	["Cooldown"] = {
 		["Days"] = {0.4, 0.4, 1},
@@ -125,20 +120,6 @@ KkthnxUIConfig.ColorDefaults = {
 		["Minutes"] = {1, 1, 1},
 		["Seconds"] = {1, 1, 0},
 	},
-	-- Nameplates
-	["Nameplates"] = {
-		["BadColor"] = {0.78, 0.25, 0.25},
-		["BadReaction"] = {0.78, 0.25, 0.25},
-		["BadTransition"] = {235/255, 163/255, 40/255},
-		["GoodColor"] = {75/255, 175/255, 76/255},
-		["GoodReaction"] = {75/255, 175/255, 76/255},
-		["GoodTransition"] = {218/255, 197/255, 92/255},
-		["NeutralReaction"] = {218/255, 197/255, 92/255},
-		["OfflineReaction"] = {0.3, 0.3, 0.3},
-		["TankedByTankColor"] = {.8, 0.1, 1},
-		["TappedReaction"] = {0.6, 0.6, 0.6},
-	},
-
 }
 
 function KkthnxUIConfig:UpdateColorDefaults()
@@ -146,7 +127,7 @@ function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.ActionBar.OutOfMana = {0.5, 0.5, 1.0}
 	self.ColorDefaults.ActionBar.OutOfRange = {0.8, 0.1, 0.1}
 	-- Blizzard
-	self.ColorDefaults.Blizzard.TexturesColor = {0.31, 0.31, 0.31}
+	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
 	-- Chat
 	self.ColorDefaults.Chat.LinkColor = {0.08, 1, 0.36}
 	-- DataBars
@@ -159,25 +140,12 @@ function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}
 	self.ColorDefaults.Nameplates.NearColor = {1, 1, 0}
 	self.ColorDefaults.Nameplates.OffTankColor = {0, 0.5, 1}
-	-- Bags
-	self.ColorDefaults.Bags.CountFontColor = {1, 1, 1}
 	-- Cooldown
 	self.ColorDefaults.Cooldown.Days = {0.4, 0.4, 1}
 	self.ColorDefaults.Cooldown.Expiring = {1, 0, 0}
 	self.ColorDefaults.Cooldown.Hours = {0.4, 1, 1}
 	self.ColorDefaults.Cooldown.Minutes = {1, 1, 1}
 	self.ColorDefaults.Cooldown.Seconds = {1, 1, 0}
-	-- Nameplates
-	self.ColorDefaults.Nameplates.BadColor = {0.78, 0.25, 0.25}
-	self.ColorDefaults.Nameplates.BadReaction = {0.78, 0.25, 0.25}
-	self.ColorDefaults.Nameplates.BadTransition = {235/255, 163/255, 40/255}
-	self.ColorDefaults.Nameplates.GoodColor = {75/255, 175/255, 76/255}
-	self.ColorDefaults.Nameplates.GoodReaction = {75/255, 175/255, 76/255}
-	self.ColorDefaults.Nameplates.GoodTransition = {218/255, 197/255, 92/255}
-	self.ColorDefaults.Nameplates.NeutralReaction = {218/255, 197/255, 92/255}
-	self.ColorDefaults.Nameplates.OfflineReaction = {0.3, 0.3, 0.3}
-	self.ColorDefaults.Nameplates.TankedByTankColor = {.8, 0.1, 1}
-	self.ColorDefaults.Nameplates.TappedReaction = {0.6, 0.6, 0.6}
 end
 
 -- Filter unwanted groups
@@ -558,7 +526,7 @@ local function CreateConfigButton(parent, group, option, value)
 	Button.Type = "Button"
 
 	Button.Tex = Button:CreateTexture(nil, "OVERLAY")
-	Button.Tex:SetPoints()
+	Button.Tex:SetAllPoints()
 
 	Button.Check = ButtonCheck
 	Button.Uncheck = ButtonUncheck
@@ -690,7 +658,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	Button.Name:SetText(COLOR)
 
 	Button.Color = Button:CreateTexture(nil, "OVERLAY")
-	Button.Color:SetPoints(Button)
+	Button.Color:SetAllPoints(Button)
 	Button.Color:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
 	Button.Color:SetVertexColor(value[1], value[2], value[3], value[4])
 
