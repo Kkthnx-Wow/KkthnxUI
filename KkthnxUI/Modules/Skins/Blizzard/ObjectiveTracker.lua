@@ -7,13 +7,6 @@ local hooksecurefunc = hooksecurefunc
 -- GLOBALS: ObjectiveTrackerBlocksFrame, ObjectiveTrackerFrame, BonusObjectiveTrackerProgressBar_PlayFlareAnim
 -- GLOBALS: SCENARIO_TRACKER_MODULE, BONUS_OBJECTIVE_TRACKER_MODULE, WORLD_QUEST_TRACKER_MODULE, QUEST_TRACKER_MODULE, DEFAULT_OBJECTIVE_TRACKER_MODULE
 
-local function StatusBarColorGradient(bar, value, max)
-    local current = (not max and value) or (value and max and max ~= 0 and value/max)
-    if not (bar and current) then return end
-    local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-    bar:SetStatusBarColor(r, g, b)
-end
-
 function Module:OnInitialize()
 	ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
 	ObjectiveTrackerBlocksFrame.QuestHeader.Text:FontTemplate(nil, 13, "")
@@ -45,7 +38,7 @@ function Module:OnInitialize()
 
 	local function ColorProgressBars(self, value)
 		if not (self.Bar and value) then return end
-		StatusBarColorGradient(self.Bar, value, 100)
+		K.StatusBarColorGradient(self.Bar, value, 100)
 	end
 
 	BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop

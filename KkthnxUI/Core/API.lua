@@ -165,16 +165,21 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	end
 end
 
--- Creates a textured backdrop anchored to a frame, varargs parameter is used for passing insets to SetPoints function
-local function CreateBackdrop(self, template, ...)
-	if self.Backdrop then return end
+local function CreateBackdrop(f, t, tex, ignoreUpdates)
+	if not t then t = "Default" end
+	if f.Backdrop then return end
 
-	local backdrop = CreateFrame("frame", "$parentBackdrop", self)
-	backdrop:SetPoints(...)
-	backdrop:SetTemplate(template)
-	backdrop:SetFrameLevel(math_max(self:GetFrameLevel() -1, 0))
+	local b = CreateFrame("Frame", "$parentBackdrop", f)
+	b:SetAllPoints()
+	b:SetTemplate(t, tex, ignoreUpdates)
 
-	self.Backdrop = backdrop
+	if f:GetFrameLevel() - 1 >= 0 then
+		b:SetFrameLevel(f:GetFrameLevel() - 1)
+	else
+		b:SetFrameLevel(0)
+	end
+
+	f.Backdrop = b
 end
 
 -- Creates a textured shadow backdrop anchored to a frame
@@ -382,6 +387,15 @@ local function StyleButton(button, noHover, noPushed, noChecked)
 	end
 end
 
+function K.StatusBarColorGradient(bar, value, max, Backdrop)
+    local current = (not max and value) or (value and max and max ~= 0 and value/max)
+    if not (bar and current) then return end
+    local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+    local bg = Backdrop or bar.Backdrop
+    if bg then bg:SetBackdropColor(r * 0.25, g * 0.25, b * 0.25) end
+    bar:SetStatusBarColor(r, g, b)
+end
+
 local function SetModifiedBackdrop(self)
 	if self.Backdrop then self = self.Backdrop end
 	if not C["General"].ColorTextures then -- Fix a rare nil error
@@ -430,6 +444,7 @@ local function SkinCloseButton(f, point, text)
 		f.Backdrop:SetPoint("BOTTOMRIGHT", -8, 8)
 		f:HookScript("OnEnter", SetModifiedBackdrop)
 		f:HookScript("OnLeave", SetOriginalBackdrop)
+		f:SetHitRectInsets(6, 6, 7, 7)
 	end
 
 	if not text then text = "|cffb0504fx|r" end
@@ -440,7 +455,7 @@ local function SkinCloseButton(f, point, text)
 		f.text:SetShadowOffset(0, 0)
 		f.text:SetText(text)
 		f.text:SetJustifyH("CENTER")
-		f.text:SetPoint("CENTER", f, "CENTER", 0.2, 1)
+		f.text:SetPoint("CENTER", f, "CENTER")
 	end
 
 	if point then
