@@ -36,6 +36,19 @@ local Movers = K["Movers"]
 UIErrorsFrame:SetFrameLevel(0)
 
 do
+	function Module:PositionDurabilityFrame()
+		DurabilityFrame:SetFrameStrata("HIGH")
+
+		local function SetPosition(self, _, parent)
+			if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
+				DurabilityFrame:ClearAllPoints()
+				DurabilityFrame:SetPoint("RIGHT", Minimap, "RIGHT")
+				DurabilityFrame:SetScale(0.7)
+			end
+		end
+		hooksecurefunc(DurabilityFrame, "SetPoint", SetPosition)
+	end
+
 	function Module:DELETE_ITEM_CONFIRM(...)
 		if StaticPopup1EditBox:IsShown() then
 			StaticPopup1EditBox:Hide()
@@ -58,7 +71,9 @@ do
 		end)
 	end
 
-	function Module:OnEnable(...)
+	function Module:OnInitialize(...)
+		self:PositionDurabilityFrame()
+
 		self:RegisterEvent("ADDON_LOADED")
 		self:RegisterEvent("DELETE_ITEM_CONFIRM")
 	end
