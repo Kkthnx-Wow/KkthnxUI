@@ -416,8 +416,13 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.GroupRoleIndicator:SetSize(16, 16)
 		self.GroupRoleIndicator:SetPoint("BOTTOMLEFT", self.Portrait, "TOPRIGHT" , -4, -8)
+
+		self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY", 1)
+		self.CombatIndicator:SetSize(24, 24)
+		self.CombatIndicator:SetPoint("LEFT", 0, 0)
+		self.CombatIndicator:SetVertexColor(0.69, 0.31, 0.31)
 	end
-	
+
 	if (unit == "target") then
 		self.MasterLooterIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.MasterLooterIndicator:SetSize(16, 16)
