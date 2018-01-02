@@ -170,12 +170,14 @@ function K.CreateAuras(self, unit)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 21
 			Buffs.num = 15
+			Buffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerTargetBuffs
 
 			Debuffs:SetHeight(28)
 			Debuffs:SetWidth(self.Health:GetWidth())
 			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
 			Debuffs.size = 28
 			Debuffs.num = 12
+			Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerTargetDebuffs
 
 			Buffs.spacing = 6
 			Buffs.initialAnchor = "TOPLEFT"
@@ -207,7 +209,7 @@ function K.CreateAuras(self, unit)
 			Auras["growth-y"] = "DOWN"
 			Auras.numBuffs = 15
 			Auras.numDebuffs = 12
-			-- Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayer
+			Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerAuras
 			Auras.spacing = 6
 			Auras.showStealableBuffs = true
 			Auras.PostUpdateGapIcon = function(self, unit, icon, visibleBuffs)
@@ -306,12 +308,14 @@ function K.CreateAuras(self, unit)
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		Buffs.size = 21
 		Buffs.num = 5
+		Buffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerBossBuffs
 
 		Debuffs:SetHeight(26)
 		Debuffs:SetWidth(self.Health:GetWidth())
 		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
 		Debuffs.size = 26
 		Debuffs.num = 10
+		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerBossDebuffs
 
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "LEFT"
