@@ -12,6 +12,16 @@ local GetTime = _G.GetTime
 local UnitAura = _G.UnitAura
 local UnitIsFriend = _G.UnitIsFriend
 
+local function CustomTargetFilter(...) -- Debuffs
+	local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
+	return owner == "player" or owner == "vehicle" or UnitIsFriend("player", unit) or not owner
+end
+
+local function CustomGroupFilter(...) -- Debuffs
+	local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
+	return id == 160029
+end
+
 local function CreateAuraTimer(self, elapsed)
 	self.expiration = self.expiration - elapsed
 	if self.nextupdate > 0 then
@@ -172,7 +182,6 @@ function K.CreateAuras(self, unit)
 			Buffs["growth-y"] = "DOWN"
 			Buffs["growth-x"] = "RIGHT"
 			Buffs.PreSetPosition = PreSetPosition
-			Buffs.CustomFilter = K.CustomBuffFilter
 			Buffs.PostCreateIcon = PostCreateAura
 			Buffs.PostUpdateIcon = PostUpdateAura
 			self.Buffs = Buffs
@@ -182,7 +191,7 @@ function K.CreateAuras(self, unit)
 			Debuffs["growth-y"] = "UP"
 			Debuffs["growth-x"] = "RIGHT"
 			Debuffs.PreSetPosition = PreSetPosition
-			Debuffs.CustomFilter = K.CustomDebuffFilter
+			Debuffs.CustomFilter = CustomTargetFilter
 			Debuffs.PostCreateIcon = PostCreateAura
 			Debuffs.PostUpdateIcon = PostUpdateAura
 			self.Debuffs = Debuffs
@@ -205,7 +214,7 @@ function K.CreateAuras(self, unit)
 				icon:Hide()
 			end
 			Auras.PreSetPosition = PreSetPosition
-			Auras.CustomFilter = K.CustomDebuffFilter
+			-- Auras.CustomFilter = CustomTargetFilter
 			Auras.PostCreateIcon = PostCreateAura
 			Auras.PostUpdateIcon = PostUpdateAura
 			self.Auras = Auras
@@ -234,7 +243,6 @@ function K.CreateAuras(self, unit)
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
 		Buffs.PreSetPosition = PreSetPosition
-		Buffs.CustomFilter = K.CustomBuffFilter
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 		self.Buffs = Buffs
@@ -244,7 +252,7 @@ function K.CreateAuras(self, unit)
 		Debuffs["growth-y"] = "UP"
 		Debuffs["growth-x"] = "RIGHT"
 		Debuffs.PreSetPosition = PreSetPosition
-		Debuffs.CustomFilter = K.CustomDebuffFilter
+		Debuffs.CustomFilter = CustomGroupFilter
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
@@ -310,7 +318,6 @@ function K.CreateAuras(self, unit)
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
 		Buffs.PreSetPosition = PreSetPosition
-		Buffs.CustomFilter = K.CustomBuffFilter
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 		self.Buffs = Buffs
@@ -320,7 +327,6 @@ function K.CreateAuras(self, unit)
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "LEFT"
 		Debuffs.PreSetPosition = PreSetPosition
-		Debuffs.CustomFilter = K.CustomDebuffFilter
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
@@ -347,7 +353,6 @@ function K.CreateAuras(self, unit)
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
 		Buffs.PreSetPosition = PreSetPosition
-		Buffs.CustomFilter = K.CustomBuffFilter
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 		self.Buffs = Buffs
@@ -357,7 +362,6 @@ function K.CreateAuras(self, unit)
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "LEFT"
 		Debuffs.PreSetPosition = PreSetPosition
-		Debuffs.CustomFilter = K.CustomDebuffFilter
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
