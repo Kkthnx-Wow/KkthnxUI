@@ -1238,7 +1238,6 @@ function Stuffing:ADDON_LOADED(addon)
 	BankFrame:SetScale(0.0001)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
-	BankFrame:SetScript("OnShow", nil)
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
