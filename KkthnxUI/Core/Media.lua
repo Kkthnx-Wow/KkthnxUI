@@ -46,7 +46,7 @@ function K.GetFont(font)
 	if FontTable[font] then
 		return FontTable[font]
 	else
-		return FontTable["KkthnxUI Font"] -- Return something to prevent errors
+		return FontTable["KkthnxUI"] -- Return something to prevent errors
 	end
 end
 
@@ -54,7 +54,7 @@ function K.GetTexture(texture)
 	if TextureTable[texture] then
 		return TextureTable[texture]
 	else
-		return TextureTable["KkthnxUI Texture"] -- Return something to prevent errors
+		return TextureTable["KkthnxUI"] -- Return something to prevent errors
 	end
 end
 
