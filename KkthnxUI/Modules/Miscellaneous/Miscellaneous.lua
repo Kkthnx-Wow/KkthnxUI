@@ -36,6 +36,32 @@ local Movers = K["Movers"]
 UIErrorsFrame:SetFrameLevel(0)
 
 do
+	local VehicleSeatMover = CreateFrame("Frame", "VehicleSeatMover", UIParent)
+	VehicleSeatMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 51, -87)
+	VehicleSeatMover:SetWidth((VehicleSeatIndicator:GetWidth() - 25))
+	VehicleSeatMover:SetHeight(VehicleSeatIndicator:GetHeight() - 25)
+
+	function Module:PositionVehicleFrame()
+		local function VehicleSeatIndicator_SetPosition(_,_, parent)
+			if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
+				VehicleSeatIndicator:ClearAllPoints()
+
+				if VehicleSeatMover then
+					VehicleSeatIndicator:SetPoint("TOPLEFT", VehicleSeatMover, "TOPLEFT", 0, 0)
+					K.Movers:RegisterFrame(VehicleSeatMover)
+				else
+					VehicleSeatIndicator:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 22, -45)
+					K.Movers:RegisterFrame(VehicleSeatIndicator)
+				end
+
+				VehicleSeatIndicator:SetScale(0.8)
+			end
+		end
+		hooksecurefunc(VehicleSeatIndicator,"SetPoint", VehicleSeatIndicator_SetPosition)
+
+		VehicleSeatIndicator:SetPoint("TOPLEFT", MinimapCluster, "TOPLEFT", 2, 2) -- initialize mover
+	end
+
 	function Module:PositionDurabilityFrame()
 		DurabilityFrame:SetFrameStrata("HIGH")
 
@@ -72,6 +98,7 @@ do
 	end
 
 	function Module:OnInitialize(...)
+		self:PositionVehicleFrame()
 		self:PositionDurabilityFrame()
 
 		self:RegisterEvent("ADDON_LOADED")
