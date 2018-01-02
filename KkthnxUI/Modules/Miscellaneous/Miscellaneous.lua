@@ -43,8 +43,8 @@ do
 
 	function Module:PositionVehicleFrame()
 		VehicleSeatIndicator:ClearAllPoints()
-		VehicleSeatIndicator:SetParent(VehicleSeatMover)
-		VehicleSeatIndicator:SetPoint("BOTTOM", 0, K.ScreenHeight / 4)
+		VehicleSeatIndicator:SetPoint("CENTER", VehicleSeatMover, "CENTER", 0, 0)
+		VehicleSeatIndicator:SetScale(0.8)
 
 		-- This will block UIParent_ManageFramePositions() to be executed
 		VehicleSeatIndicator.IsShown = function() return false end
