@@ -7,6 +7,34 @@ All notable changes to this project will be documented in this file.
 Format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v7.03] - 1/03/2018
+### Canges
+- Commits on Jan 3, 2018
+- @Kkthnx
+- Merge pull request #45 from Rav99/master
+
+- @Rav99
+- why not bossframe->percent?
+
+- @Rav99
+- Fix for xpbar rested
+
+- @Rav99
+- Get access to dt time
+
+- Commits on Jan 2, 2018
+- @Kkthnx
+- Fix Auras for UpdateHeader?
+
+- @Kkthnx
+- OnlyShowPlayerAuras Options for Boss / Target Frames
+
+- @Kkthnx
+- Cleanup Last Commit
+
+- @Kkthnx
+- Fix VehicleSeatIndicator Resetting on a Reload.
+
 ## [v3.35] - 4/16/2017 - Hotfix
 ### Fixed
 - Loot frame returning a nil value on color.
