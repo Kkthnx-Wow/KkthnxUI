@@ -211,7 +211,7 @@ function Module:UpdateHeader(header)
     if (not C["Auras"].Enable) then return end
     if header:GetAttribute("filter") == "HELPFUL" then
         header:SetAttribute("consolidateTo", 0)
-        header:SetAttribute("weaponTemplate", ("KkthnxUIAuraTemplate%d"):format(C["Auras"].size))
+        header:SetAttribute("weaponTemplate", ("KkthnxUIAuraTemplate%d"):format(C["Auras"].Size))
     end
 
     header:SetAttribute("separateOwn", C["Auras"].SeperateOwn)

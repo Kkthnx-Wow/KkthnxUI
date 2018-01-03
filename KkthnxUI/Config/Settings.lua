@@ -197,6 +197,7 @@ C["DataText"] = {
 	["LocalTime"] = true,
 	["Outline"] = false,
 	["System"] = true,
+	["Time"] = true,
 	["Time24Hr"] = false,
 }
 
