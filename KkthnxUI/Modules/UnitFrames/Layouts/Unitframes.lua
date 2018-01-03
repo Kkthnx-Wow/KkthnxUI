@@ -133,7 +133,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 	elseif (unit == "boss" or unit == "arena") then
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
-		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "targettarget") then
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
