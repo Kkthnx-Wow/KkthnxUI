@@ -9,30 +9,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v7.03] - 1/03/2018
 ### Canges
-- Commits on Jan 3, 2018
-- @Kkthnx
+### Commits on Jan 3, 2018
+@Kkthnx
 - Merge pull request #45 from Rav99/master
 
-- @Rav99
+@Rav99
 - why not bossframe->percent?
 
-- @Rav99
+@Rav99
 - Fix for xpbar rested
 
-- @Rav99
+@Rav99
 - Get access to dt time
 
-- Commits on Jan 2, 2018
-- @Kkthnx
+### Commits on Jan 2, 2018
+@Kkthnx
 - Fix Auras for UpdateHeader?
 
-- @Kkthnx
+@Kkthnx
 - OnlyShowPlayerAuras Options for Boss / Target Frames
 
-- @Kkthnx
+@Kkthnx
 - Cleanup Last Commit
 
-- @Kkthnx
+@Kkthnx
 - Fix VehicleSeatIndicator Resetting on a Reload.
 
 ## [v3.35] - 4/16/2017 - Hotfix
