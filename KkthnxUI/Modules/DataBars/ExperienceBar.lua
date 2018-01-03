@@ -133,9 +133,9 @@ function Module:OnEnable()
 
 	self.expBar.rested = CreateFrame("StatusBar", nil, self.expBar)
 	self.expBar.rested:SetAllPoints()
-	self.expBar.rested:SetStatusBarTexture(C["Media"].Blank)
+	self.expBar.rested:SetStatusBarTexture(ExperienceTexture)
 	self.expBar.rested:SetStatusBarColor(1, 0, 1, 0.2)
-	self.expBar.rested:SetFrameLevel(self.expBar.statusBar:GetFrameLevel() - 1)
+	self.expBar.rested:SetFrameLevel(self.expBar.statusBar:GetFrameLevel())
 
 	self.expBar.text = self.expBar.statusBar:CreateFontString(nil, "OVERLAY")
 	self.expBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
