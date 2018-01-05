@@ -340,8 +340,8 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 		local needUpdate = false
 		local id = self.Id
 
-		for i = 1, #C["filger_spells"][K.Class][id], 1 do
-			local data = C["filger_spells"][K.Class][id][i]
+		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
+			local data = C["FilgerSpells"][K.Class][id][i]
 			if C["Filger"].DisableCD == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then return end
 			local found = false
 			local name, icon, count, duration, start, spid
@@ -452,17 +452,17 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 	end
 end
 
-if C["filger_spells"] and C["filger_spells"]["ALL"] then
-	if not C["filger_spells"][K.Class] then
-		C["filger_spells"][K.Class] = {}
+if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
+	if not C["FilgerSpells"][K.Class] then
+		C["FilgerSpells"][K.Class] = {}
 	end
 
-	for i = 1, #C["filger_spells"]["ALL"], 1 do
+	for i = 1, #C["FilgerSpells"]["ALL"], 1 do
 		local merge = false
-		local spellListAll = C["filger_spells"]["ALL"][i]
+		local spellListAll = C["FilgerSpells"]["ALL"][i]
 		local spellListClass = nil
-		for j = 1, #C["filger_spells"][K.Class], 1 do
-			spellListClass = C["filger_spells"][K.Class][j]
+		for j = 1, #C["FilgerSpells"][K.Class], 1 do
+			spellListClass = C["FilgerSpells"][K.Class][j]
 			local mergeAll = spellListAll.Merge or false
 			local mergeClass = spellListClass.Merge or false
 			if spellListClass.Name == spellListAll.Name and (mergeAll or mergeClass) then
@@ -471,7 +471,7 @@ if C["filger_spells"] and C["filger_spells"]["ALL"] then
 			end
 		end
 		if not merge or not spellListClass then
-			table.insert(C["filger_spells"][K.Class], C["filger_spells"]["ALL"][i])
+			table.insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
 		else
 			for j = 1, #spellListAll, 1 do
 				table.insert(spellListClass, spellListAll[j])
@@ -482,11 +482,11 @@ end
 
 if K.CustomFilgerSpell then
 	for _, data in pairs(K.CustomFilgerSpell) do
-		for class, _ in pairs(C["filger_spells"]) do
+		for class, _ in pairs(C["FilgerSpells"]) do
 			if class == K.Class then
-				for i = 1, #C["filger_spells"][class], 1 do
-					if C["filger_spells"][class][i]["Name"] == data[1] then
-						table.insert(C["filger_spells"][class][i], data[2])
+				for i = 1, #C["FilgerSpells"][class], 1 do
+					if C["FilgerSpells"][class][i]["Name"] == data[1] then
+						table.insert(C["FilgerSpells"][class][i], data[2])
 					end
 				end
 			end
@@ -494,17 +494,17 @@ if K.CustomFilgerSpell then
 	end
 end
 
-if C["filger_spells"] and C["filger_spells"][K.Class] then
-	for index in pairs(C["filger_spells"]) do
+if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
+	for index in pairs(C["FilgerSpells"]) do
 		if index ~= K.Class then
-			C["filger_spells"][index] = nil
+			C["FilgerSpells"][index] = nil
 		end
 	end
 
 	local idx = {}
-	for i = 1, #C["filger_spells"][K.Class], 1 do
+	for i = 1, #C["FilgerSpells"][K.Class], 1 do
 		local jdx = {}
-		local data = C["filger_spells"][K.Class][i]
+		local data = C["FilgerSpells"][K.Class][i]
 
 		for j = 1, #data, 1 do
 			local spn
@@ -533,11 +533,11 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 	end
 
 	for _, v in ipairs(idx) do
-		table.remove(C["filger_spells"][K.Class], v)
+		table.remove(C["FilgerSpells"][K.Class], v)
 	end
 
-	for i = 1, #C["filger_spells"][K.Class], 1 do
-		local data = C["filger_spells"][K.Class][i]
+	for i = 1, #C["FilgerSpells"][K.Class], 1 do
+		local data = C["FilgerSpells"][K.Class][i]
 		local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, oUF_PetBattleFrameHider)
 		frame.Id = i
 		frame.Name = data.Name
@@ -553,8 +553,8 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 
 		if C["Filger"].TestMode then
 			frame.actives = {}
-			for j = 1, math.min(C["Filger"].MaxTestIcon, #C["filger_spells"][K.Class][i]), 1 do
-				local data = C["filger_spells"][K.Class][i][j]
+			for j = 1, math.min(C["Filger"].MaxTestIcon, #C["FilgerSpells"][K.Class][i]), 1 do
+				local data = C["FilgerSpells"][K.Class][i][j]
 				local name, icon
 				if data.spellID then
 					name, _, icon = GetSpellInfo(data.spellID)
@@ -568,8 +568,8 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 			end
 			Filger.DisplayActives(frame)
 		else
-			for j = 1, #C["filger_spells"][K.Class][i], 1 do
-				local data = C["filger_spells"][K.Class][i][j]
+			for j = 1, #C["FilgerSpells"][K.Class][i], 1 do
+				local data = C["FilgerSpells"][K.Class][i][j]
 				if data.filter == "CD" then
 					frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 					break
