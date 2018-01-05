@@ -106,7 +106,7 @@ end
 
 function K.CreateAlternatePowerBar(self, unit)
 	-- Additional mana
-	if (unit == "player" and playerClass == "DRUID" or playerClass == "SHAMAN" or playerClass == "PRIEST") then
+	if (unit == "player" and K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
 		self.AdditionalPower = CreateFrame("StatusBar", nil, self)
 		self.AdditionalPower:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
 		self.AdditionalPower:SetStatusBarTexture(ClassModuleTexture, "BORDER")
