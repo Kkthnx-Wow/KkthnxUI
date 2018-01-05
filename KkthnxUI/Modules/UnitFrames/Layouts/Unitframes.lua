@@ -16,7 +16,7 @@ local function UpdateThreat(self, event, unit)
 	if (unit ~= self.unit) then
 		return
 	end
-
+	
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
@@ -58,22 +58,22 @@ end
 
 local function oUF_KkthnxUnitframes(self, unit)
 	unit = unit:match("^(.-)%d+") or unit
-
+	
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", UnitFrame_OnEnter)
 	self:HookScript("OnLeave", UnitFrame_OnLeave)
-
+	
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetTemplate("Transparent")
 	self.Health:SetFrameStrata("LOW")
 	self.Health:SetFrameLevel(1)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-
+	
 	if C["General"].ColorTextures and self then
 		self.Health:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 	end
-
+	
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
@@ -82,7 +82,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 	self.Health.PostUpdate = K.PostUpdateHealth
-
+	
 	if (unit == "player") then
 		self.Health:SetSize(130, 26)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
@@ -108,7 +108,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Health:SetSize(130, 26)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	end
-
+	
 	if (unit == "player") then
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
@@ -138,31 +138,31 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	end
-
+	
 	-- Power Bar
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetTemplate("Transparent")
 	self.Power:SetFrameStrata("LOW")
 	self.Power:SetFrameLevel(1)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-
+	
 	if C["General"].ColorTextures and self then
 		self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 	end
-
+	
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = true
 	self.Power.PostUpdate = K.PostUpdatePower
-
+	
 	if C["Unitframe"].PowerClass then
 		self.Power.colorClass = true
 		self.Power.colorReaction = true
 	else
 		self.Power.colorPower = true
 	end
-
+	
 	-- Power StatusBar
 	if unit == "player" then
 		self.Power:SetSize(130, 14)
@@ -189,7 +189,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	end
-
+	
 	-- Power Value
 	if (unit == "player") then
 		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
@@ -207,14 +207,14 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	end
-
+	
 	-- Name Text, The shade is a work in progress.
 	if (unit == "target") then
 		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbreviateMedium]")
-
+		
 		self.Name.Shade = self:CreateTexture()
 		self.Name.Shade:SetDrawLayer("ARTWORK")
 		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
@@ -232,7 +232,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -17)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
-
+		
 		self.Name.Shade = self:CreateTexture()
 		self.Name.Shade:SetDrawLayer("ARTWORK")
 		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
@@ -245,7 +245,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
-
+		
 		self.Name.Shade = self:CreateTexture()
 		self.Name.Shade:SetDrawLayer("ARTWORK")
 		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
@@ -258,7 +258,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 18)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
-
+		
 		self.Name.Shade = self:CreateTexture()
 		self.Name.Shade:SetDrawLayer("ARTWORK")
 		self.Name.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
@@ -267,14 +267,14 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Name.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3])
 		self.Name.Shade:SetAlpha(.5)
 	end
-
+	
 	-- level Text
 	if (unit == "target") then
 		self.Level = K.SetFontString(self, C["Media"].Font, 16, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
-
+		
 		self.Level.Shade = self:CreateTexture()
 		self.Level.Shade:SetDrawLayer("ARTWORK")
 		self.Level.Shade:SetTexture(K.MediaPath.."Textures\\Shader")
@@ -288,7 +288,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Level:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level]")
 	end
-
+	
 	-- 3D and such models. We provide 3 choices here.
 	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
 		-- Create the portrait globally
@@ -296,11 +296,11 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.Portrait:SetTemplate("Transparent")
 		self.Portrait:SetFrameStrata("BACKGROUND")
 		self.Portrait:SetFrameLevel(1)
-
+		
 		if C["General"].ColorTextures and self then
 			self.Portrait:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 		end
-
+		
 		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
 			self.Portrait:SetSize(46, 46)
 			self.Portrait:SetPoint("LEFT", self, 4, 0)
@@ -323,13 +323,13 @@ local function oUF_KkthnxUnitframes(self, unit)
 	elseif C["Unitframe"].PortraitStyle.Value == "DefaultPortraits" or C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 7)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-
+		
 		-- We need to create this for non 3D Ports
 		self.Portrait.Background = CreateFrame("Frame", self:GetName().."_2DPortrait", self)
 		self.Portrait.Background:SetTemplate("Transparent")
 		self.Portrait.Background:SetFrameStrata("LOW")
 		self.Portrait.Background:SetFrameLevel(1)
-
+		
 		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
 			self.Portrait:SetSize(46, 46)
 			self.Portrait:SetPoint("LEFT", self, 4, 0)
@@ -361,36 +361,38 @@ local function oUF_KkthnxUnitframes(self, unit)
 			self.Portrait.Background:SetSize(32, 32)
 			self.Portrait.Background:SetPoint("LEFT", self, 2, 0)
 		end
-
+		
 		if C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
 			self.Portrait.PostUpdate = UpdateClassPortraits
 		end
 	end
-
+	
 	self.HealthPrediction = K.CreateHealthPrediction(self)
-
+	
 	-- Auras
 	K.CreateAuras(self, unit)
-
+	
 	-- Alternate Mana Bar
 	if (unit == "player") then
 		K.CreateAlternatePowerBar(self, unit)
 	end
-
+	
 	-- Create our class resource bars, combo and such.
 	if (unit == "player") then
 		K.CreateClassModules(self, unit)
 	end
-
+	
 	-- Castbars
-	K.CreateCastBar(self, unit)
-
+	if C["Unitframe"].Castbars == true then
+		K.CreateCastBar(self, unit)
+	end
+	
 	if (unit ~= "arena") then
 		self.ThreatIndicator = CreateFrame("Frame")
 		self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0) -- so that oUF does not try to replace it
 		self.ThreatIndicator.Override = UpdateThreat
 	end
-
+	
 	-- Status Icons
 	self.LeaderIndicator = self:CreateTexture(nil, "OVERLAY")
 	if (unit == "player" or unit == "focus") then
@@ -406,33 +408,33 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.LeaderIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT", 10, -4)
 		self.LeaderIndicator:SetSize(12, 12)
 	end
-
+	
 	-- Master Looter / Group Role
 	if (unit == "player") then
 		self.MasterLooterIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.MasterLooterIndicator:SetSize(16, 16)
 		self.MasterLooterIndicator:SetPoint("TOP", self, "TOP" , 18, -20)
-
+		
 		self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.GroupRoleIndicator:SetSize(16, 16)
 		self.GroupRoleIndicator:SetPoint("BOTTOMLEFT", self.Portrait, "TOPRIGHT" , -4, -8)
-
+		
 		self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY", 1)
 		self.CombatIndicator:SetSize(24, 24)
 		self.CombatIndicator:SetPoint("LEFT", 0, 0)
 		self.CombatIndicator:SetVertexColor(0.69, 0.31, 0.31)
 	end
-
+	
 	if (unit == "target") then
 		self.MasterLooterIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.MasterLooterIndicator:SetSize(16, 16)
 		self.MasterLooterIndicator:SetPoint("TOP", self, "TOP" , -18, -20)
-
+		
 		self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.GroupRoleIndicator:SetSize(16, 16)
 		self.GroupRoleIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT" , 4, -8)
 	end
-
+	
 	-- Group Role Indicator
 	if (unit == "party") then
 		self.GroupRoleIndicatorText = self:CreateFontString(nil, "ARTWORK")
@@ -441,14 +443,14 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.GroupRoleIndicatorText:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
 		self:Tag(self.GroupRoleIndicatorText, "[KkthnxUI:PartyRole]")
 	end
-
+	
 	-- Phase Indicator
 	if (unit == "target") then
 		self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.PhaseIndicator:SetSize(16, 16)
 		self.PhaseIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT", 9, -9)
 	end
-
+	
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(16, 16)
 	if unit == "target" then
@@ -462,11 +464,11 @@ local function oUF_KkthnxUnitframes(self, unit)
 	else
 		self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 14)
 	end
-
+	
 	self.ReadyCheckIndicator = self:CreateTexture()
 	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait, "CENTER", 0, 0)
 	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
-
+	
 	-- PvP Icon
 	self.PvPIndicator = self:CreateTexture(nil, "ARTWORK", nil, 1)
 	self.PvPIndicator:SetSize(30, 30)
@@ -481,14 +483,14 @@ local function oUF_KkthnxUnitframes(self, unit)
 	elseif unit == "player" or unit == "focus" then
 		self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT", 0, 0)
 	end
-
+	
 	-- Resting Icon for player frame
 	if unit == "player" then
 		-- Resting icon
 		self.RestingIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.RestingIndicator:SetPoint("TOPRIGHT", self, 6, 6)
 		self.RestingIndicator:SetSize(22, 22)
-
+		
 		-- PvP Timer
 		if (self.PvPIndicator) then
 			self.PvPTimer = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
@@ -497,7 +499,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 			self.PvPTimer:SetPoint("BOTTOM", self.PvPIndicator, "TOP", 0, 2)
 			self:Tag(self.PvPTimer, "[KkthnxUI:PvPTimer]")
 		end
-
+		
 		-- GlobalCooldown spark
 		if (C["Unitframe"].GlobalCooldown) then
 			self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self.Health)
@@ -511,7 +513,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 			self.GCD.Height = (self.Health:GetHeight() * 1.4)
 			self.GCD.Width = (10)
 		end
-
+		
 		-- Power Prediction Bar (Display estimated cost of spells when casting)
 		if (C["Unitframe"].PowerPredictionBar) then
 			local PowerPrediction = CreateFrame("StatusBar", nil, self.Power)
@@ -531,14 +533,14 @@ local function oUF_KkthnxUnitframes(self, unit)
 			}
 		end
 	end
-
+	
 	if (unit == "target") then
 		-- Questmob Icon
 		self.QuestIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.QuestIndicator:SetSize(22, 22)
 		self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT" , 9, -12)
 	end
-
+	
 	if (unit == "player" or unit == "target") then
 		-- Combat CombatFeedbackText
 		if (C["Unitframe"].CombatText) then
@@ -562,11 +564,11 @@ local function oUF_KkthnxUnitframes(self, unit)
 				ENERGIZE = {0.31, 0.45, 0.63},
 				CRITENERGIZE = {0.31, 0.45, 0.63},
 			}
-
+			
 			self.CombatFeedbackText = CombatFeedbackText
 		end
 	end
-
+	
 	-- Portrait Timer
 	if (C["Unitframe"].PortraitTimer == true and self.Portrait) then
 		self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
@@ -576,55 +578,55 @@ local function oUF_KkthnxUnitframes(self, unit)
 		self.PortraitTimer.Remaining:SetShadowOffset(0, 0)
 		self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 	end
-
+	
 	self.Range = {
 		insideAlpha = 1,
 		outsideAlpha = C["Unitframe"].OORAlpha,
 	}
-
+	
 	return self
 end
 
 oUF:RegisterStyle("oUF_KkthnxUnitframes", oUF_KkthnxUnitframes)
 oUF:Factory(function(self)
 	oUF:SetActiveStyle("oUF_KkthnxUnitframes")
-
+	
 	local player = self:Spawn("player", "oUF_KkthnxPlayer")
 	player:SetSize(190, 52)
 	player:SetScale(C["Unitframe"].Scale)
 	player:SetPoint(unpack(C.Position.UnitFrames.Player))
 	K.Movers:RegisterFrame(player)
-
+	
 	local pet = self:Spawn("pet", "oUF_KkthnxPet")
 	pet:SetSize(116, 36)
 	pet:SetScale(C["Unitframe"].Scale)
 	pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
 	K.Movers:RegisterFrame(pet)
-
+	
 	local target = self:Spawn("target", "oUF_KkthnxTarget")
 	target:SetSize(190, 52)
 	target:SetScale(C["Unitframe"].Scale)
 	target:SetPoint(unpack(C.Position.UnitFrames.Target))
 	K.Movers:RegisterFrame(target)
-
+	
 	local targettarget = self:Spawn("targettarget", "oUF_KkthnxTargetTarget")
 	targettarget:SetSize(116, 36)
 	targettarget:SetScale(C["Unitframe"].Scale)
 	targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
 	K.Movers:RegisterFrame(targettarget)
-
+	
 	local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
 	focus:SetSize(190, 52)
 	focus:SetScale(C["Unitframe"].Scale)
 	focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
 	K.Movers:RegisterFrame(focus)
-
+	
 	local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
 	focustarget:SetSize(116, 36)
 	focustarget:SetScale(C["Unitframe"].Scale)
 	focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
 	K.Movers:RegisterFrame(focustarget)
-
+	
 	if (C["Unitframe"].Party) then
 		local party = oUF:SpawnHeader("oUF_KkthnxParty", nil, (C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
 		"oUF-initialConfigFunction", [[
@@ -647,13 +649,13 @@ oUF:Factory(function(self)
 		party:SetScale(C["Unitframe"].Scale)
 		K.Movers:RegisterFrame(party)
 	end
-
+	
 	if (C["Unitframe"].ShowBoss) then
 		local Boss = {}
 		for i = 1, MAX_BOSS_FRAMES do
 			Boss[i] = self:Spawn("boss"..i, "oUF_KkthnxBossFrame"..i)
 			Boss[i]:SetParent(K.PetBattleHider)
-
+			
 			Boss[i]:SetSize(190, 52)
 			Boss[i]:SetScale(C["Unitframe"].Scale)
 			if (i == 1) then
@@ -664,7 +666,7 @@ oUF:Factory(function(self)
 			K.Movers:RegisterFrame(Boss[i])
 		end
 	end
-
+	
 	if (C["Unitframe"].ShowArena) then
 		local arena = {}
 		for i = 1, 5 do
