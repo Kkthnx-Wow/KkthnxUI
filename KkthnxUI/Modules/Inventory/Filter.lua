@@ -18,7 +18,7 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local PickupContainerItem = PickupContainerItem
 
 local Link
-local TrashList = "\n\nTrash List:\n" -- 6.0 localize me
+local TrashList = L.Inventory.TrashList
 
 Module.Trash = {
 	32902, -- Bottled Nethergon Energy

@@ -133,6 +133,7 @@ L.Inventory = {
 	Right_Click_Search = "Right-click to search",
 	Shift_Move = "Hold Shift + Drag",
 	Show_Bags = "Toggle Bags",
+	TrashList = "\n\nTrash List:\n"
 }
 
 -- Loot Localization
