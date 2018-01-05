@@ -154,7 +154,7 @@ function Module:OnEnable()
 	self.HonorBar.statusBar = CreateFrame("StatusBar", nil, self.HonorBar)
 	self.HonorBar.statusBar:SetAllPoints()
 	self.HonorBar.statusBar:SetStatusBarTexture(HonorTexture)
-	self.HonorBar.statusBar:SetStatusBarColor(240/255, 114/255, 65/255)
+	self.HonorBar.statusBar:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
 	self.HonorBar.statusBar:SetMinMaxValues(0, 325)
 	self.HonorBar.statusBar:SetTemplate("Transparent")
 

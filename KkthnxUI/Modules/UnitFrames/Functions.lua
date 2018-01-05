@@ -4,11 +4,8 @@ if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true then return e
 -- Lua API
 local _G = _G
 local pairs = pairs
-local select = select
 local string_format = string.format
 local table_insert = table.insert
-local unpack = unpack
-local utf8len, utf8sub = string.utf8len, string.utf8sub
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
@@ -51,8 +48,27 @@ local function UpdatePortraitColor(self, unit, min, max)
 	end
 end
 
+-- PreUpdateHealth
+function K.PreUpdateHealth(self, unit)
+	--[[if UnitIsEnemy(unit, "player") then
+		self.colorClass = false
+	else
+		self.colorClass = true
+	end--]]
+end
+
 -- PostUpdateHealth
 function K.PostUpdateHealth(self, unit, cur, min, max)
+	--[[if (not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then
+		if (not UnitIsConnected(unit)) then
+			self.Value:SetText(FRIENDS_LIST_OFFLINE)
+		elseif (UnitIsDead(unit)) then
+			self.Value:SetText(DEAD)
+		elseif (UnitIsGhost(unit)) then
+			self.Value:SetText(L.Unitframes.Ghost)
+		end
+	end--]]
+
 	if self.Portrait and not C["Unitframe"].ThreeDPortraits then
 		UpdatePortraitColor(self, unit, cur, max)
 	end
@@ -60,6 +76,24 @@ end
 
 -- PostPower update
 function K.PostUpdatePower(self, unit, cur, min, max)
+	--[[if (not UnitIsPlayer(unit) and not UnitPlayerControlled(unit) or not UnitIsConnected(unit)) then
+		self:SetValue(0)
+		if self.Value then
+			self.Value:SetText()
+		end
+	elseif (UnitIsDead(unit) or UnitIsGhost(unit)) or (max == 0) then
+		self:SetValue(0)
+		if self.Value then
+			self.Value:SetText()
+		end
+	end
+
+	if not self.Value then return end
+
+	if (not cur) then
+        max = UnitPower(unit)
+        cur = UnitPowerMax(unit)
+	end--]]
 end
 
 -- AuraWatch

@@ -1,6 +1,4 @@
-local _G = _G
-
-local K, C = _G.unpack(_G.select(2, ...))
+local _, C = unpack(select(2, ...))
 
 C["Developer"] = {
 	["Debug"] = false,
@@ -75,6 +73,7 @@ C["Bags"] = {
 	["Enable"] = true,
 	["ItemLevel"] = false,
 	["PulseNewItem"] = false,
+	["BagFilter"] = false,
 }
 
 -- Buffs & Debuffs
@@ -162,20 +161,20 @@ C["Cooldown"] = {
 -- DataBars
 C["DataBars"] = {
 	-- Artifact
-	-- ["ArtifactColor"] = {.901, .8, .601},
+	["ArtifactColor"] = {.901, .8, .601},
 	["ArtifactEnable"] = true,
 	-- ["ArtifactFade"] = false,
 	["ArtifactHeight"] = 12,
 	["ArtifactWidth"] = 164,
 	-- Experience
-	-- ["ExperienceColor"] = {0, 0.4, 1, .8},
+	["ExperienceColor"] = {0, 0.4, 1, .8},
 	["ExperienceEnable"] = true,
 	-- ["ExperienceFade"] = false,
 	["ExperienceHeight"] = 12,
-	-- ["ExperienceRestedColor"] = {1, 0, 1, 0.2},
+	["ExperienceRestedColor"] = {1, 0, 1, 0.2},
 	["ExperienceWidth"] = 164,
 	-- Honor
-	-- ["HonorColor"] = {240/255, 114/255, 65/255},
+	["HonorColor"] = {240/255, 114/255, 65/255},
 	["HonorEnable"] = true,
 	-- ["HonorFade"] = false,
 	["HonorHeight"] = 12,
@@ -206,6 +205,17 @@ C["Error"] = {
 	["Black"] = true,
 	["Combat"] = false,
 	["White"] = false,
+}
+
+C["filger"] = {
+	["enable"] = true,
+	["test_mode"] = false,
+	["max_test_icon"] = 5,
+	["show_tooltip"] = false,
+	["disable_cd"] = false,
+	["buffs_size"] = 37,
+	["cooldown_size"] = 30,
+	["pvp_size"] = 60,
 }
 
 -- General

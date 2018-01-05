@@ -234,6 +234,7 @@ function Stuffing:SlotUpdate(b)
 		if C["Bags"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
 			b.itemlevel = _getRealItemLevel(clink) or b.itemlevel
 			b.frame.text:SetText(b.itemlevel)
+			b.frame.text:SetTextColor(GetItemQualityColor(quality))
 		end
 
 		if (IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
@@ -513,7 +514,7 @@ function Stuffing:SlotNew(bag, slot)
 		if C["Bags"].ItemLevel == true then
 			ret.frame:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 			ret.frame.text:SetPoint("TOPLEFT", 1, -1)
-			ret.frame.text:SetTextColor(1, 1, 0)
+			ret.frame.text:SetShadowOffset(0, 0)
 		end
 
 		local Battlepay = _G[ret.frame:GetName()].BattlepayItemTexture
@@ -891,7 +892,6 @@ function Stuffing:InitBags()
 			Stuffing:Layout(true)
 		end
 	end)
-
 
 	-- Sort Button
 	f.sortButton = CreateFrame("Button", nil, f)
