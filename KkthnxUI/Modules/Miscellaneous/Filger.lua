@@ -138,16 +138,16 @@ function Filger:DisplayActives()
 			bar:SetTemplate("Transparent")
 
 			if index == 1 then
-				bar:SetPoint(unpack(self.Position))
+				bar:SetPoint(self.Position[1], self.Position[2], self.Position[3], self.Position[4])
 			else
 				if self.Direction == "UP" then
-					bar:SetPoint("BOTTOM", previous, "TOP", 0, self.Interval)
+					bar:SetPoint("BOTTOM", previous, "TOP", 0, self.Interval + 2)
 				elseif self.Direction == "RIGHT" then
-					bar:SetPoint("LEFT", previous, "RIGHT", self.Mode == "ICON" and self.Interval or (self.BarWidth + self.Interval + 7), 0)
+					bar:SetPoint("LEFT", previous, "RIGHT", self.Mode == "ICON" and self.Interval + 2 or (self.BarWidth + self.Interval + 7), 0)
 				elseif self.Direction == "LEFT" then
-					bar:SetPoint("RIGHT", previous, "LEFT", self.Mode == "ICON" and -self.Interval or -(self.BarWidth + self.Interval + 7), 0)
+					bar:SetPoint("RIGHT", previous, "LEFT", self.Mode == "ICON" and -self.Interval - 2 or -(self.BarWidth + self.Interval + 7), 0)
 				else
-					bar:SetPoint("TOP", previous, "BOTTOM", 0, -self.Interval)
+					bar:SetPoint("TOP", previous, "BOTTOM", 0, -self.Interval - 2)
 				end
 			end
 
