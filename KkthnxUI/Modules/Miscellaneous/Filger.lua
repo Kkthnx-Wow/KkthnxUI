@@ -27,7 +27,7 @@ P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 SPECIAL_P_BUFF_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.SpecialProcIcon))
 SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-T_DEBUFF_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.TargetBuffIcon))
+T_DEBUFF_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.TargetDebuffIcon))
 T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
 T_BUFF_Anchor:SetPoint(unpack(C["Position"].Filger.TargetBuffIcon))
