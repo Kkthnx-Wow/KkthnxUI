@@ -150,7 +150,7 @@ end
 
 -- Filter unwanted groups
 KkthnxUIConfig.Filter = {
-	["filger_spells"] = true,
+	["FilgerSpells"] = true,
 	["Media"] = true,
 	["OrderedIndex"] = true,
 	["Position"] = true,
