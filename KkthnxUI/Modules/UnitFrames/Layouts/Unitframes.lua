@@ -383,7 +383,9 @@ local function oUF_KkthnxUnitframes(self, unit)
 	end
 
 	-- Castbars
-	K.CreateCastBar(self, unit)
+	if C["Unitframe"].Castbars == true then
+        K.CreateCastBar(self, unit)
+    end
 
 	if (unit ~= "arena") then
 		self.ThreatIndicator = CreateFrame("Frame")
