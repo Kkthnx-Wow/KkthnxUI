@@ -207,15 +207,15 @@ C["Error"] = {
 	["White"] = false,
 }
 
-C["filger"] = {
-	["enable"] = true,
-	["test_mode"] = false,
-	["max_test_icon"] = 5,
-	["show_tooltip"] = false,
-	["disable_cd"] = false,
-	["buffs_size"] = 37,
-	["cooldown_size"] = 30,
-	["pvp_size"] = 60,
+C["Filger"] = {
+	["Enable"] = true,
+	["TestMode"] = false,
+	["MaxTestIcon"] = 5,
+	["ShowTooltip"] = false,
+	["DisableCD"] = false,
+	["BuffSize"] = 37,
+	["CooldownSize"] = 30,
+	["PvPSize"] = 60,
 }
 
 -- General

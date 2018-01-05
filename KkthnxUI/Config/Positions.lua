@@ -48,15 +48,15 @@ C["Position"] = {
 		["TargetTarget"] = {"TOPLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", -56, 2},
 	},
 	-- Filger positions
-	filger = {
-		["player_buff_icon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 173},
-		["player_proc_icon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 173},
-		["special_proc_icon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 213},
-		["target_debuff_icon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 213},
-		["target_buff_icon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 253},
-		["pve_debuff"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 253},
-		["pve_cc"] = {"TOPLEFT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -2, -44},
-		["cooldown"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 63, 17},
-		["target_bar"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", 6, -3},
-},
+	Filger = {
+		["Cooldown"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 63, 17},
+		["PlayerBuffIcon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 173},
+		["PlayerProcIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 173},
+		["PVECC"] = {"TOPLEFT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -2, -44},
+		["PVEDebufff"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 253},
+		["SpecialProcIcon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 213},
+		["Targetbar"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", 2, 3},
+		["TargetBuffIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 253},
+		["TargetDebuffIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 213},
+	},
 }

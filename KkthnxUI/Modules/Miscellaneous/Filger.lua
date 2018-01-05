@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true or C.filger.enable ~= true then return end
+if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then return end
 
 local _G = _G
 local format = format
@@ -18,31 +18,31 @@ local UnitBuff = _G.UnitBuff
 local UnitDebuff = _G.UnitDebuff
 
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
-P_BUFF_ICON_Anchor:SetPoint(unpack(C["Position"].filger.player_buff_icon))
-P_BUFF_ICON_Anchor:SetSize(C.filger.buffs_size, C.filger.buffs_size)
+P_BUFF_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.PlayerBuffIcon))
+P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-P_PROC_ICON_Anchor:SetPoint(unpack(C["Position"].filger.player_proc_icon))
-P_PROC_ICON_Anchor:SetSize(C.filger.buffs_size, C.filger.buffs_size)
+P_PROC_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.PlayerProcIcon))
+P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-SPECIAL_P_BUFF_ICON_Anchor:SetPoint(unpack(C["Position"].filger.special_proc_icon))
-SPECIAL_P_BUFF_ICON_Anchor:SetSize(C.filger.buffs_size, C.filger.buffs_size)
+SPECIAL_P_BUFF_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.SpecialProcIcon))
+SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-T_DEBUFF_ICON_Anchor:SetPoint(unpack(C["Position"].filger.target_debuff_icon))
-T_DEBUFF_ICON_Anchor:SetSize(C.filger.buffs_size, C.filger.buffs_size)
+T_DEBUFF_ICON_Anchor:SetPoint(unpack(C["Position"].Filger.TargetBuffIcon))
+T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-T_BUFF_Anchor:SetPoint(unpack(C["Position"].filger.target_buff_icon))
-T_BUFF_Anchor:SetSize(C.filger.pvp_size, C.filger.pvp_size)
+T_BUFF_Anchor:SetPoint(unpack(C["Position"].Filger.TargetBuffIcon))
+T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-PVE_PVP_DEBUFF_Anchor:SetPoint(unpack(C["Position"].filger.pve_debuff))
-PVE_PVP_DEBUFF_Anchor:SetSize(C.filger.pvp_size, C.filger.pvp_size)
+PVE_PVP_DEBUFF_Anchor:SetPoint(unpack(C["Position"].Filger.PVEDebufff))
+PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-PVE_PVP_CC_Anchor:SetPoint(unpack(C["Position"].filger.pve_cc))
+PVE_PVP_CC_Anchor:SetPoint(unpack(C["Position"].Filger.PVECC))
 PVE_PVP_CC_Anchor:SetSize(221, 25)
 
-COOLDOWN_Anchor:SetPoint(unpack(C["Position"].filger.cooldown))
-COOLDOWN_Anchor:SetSize(C.filger.cooldown_size, C.filger.cooldown_size)
+COOLDOWN_Anchor:SetPoint(unpack(C["Position"].Filger.Cooldown))
+COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 
-T_DE_BUFF_BAR_Anchor:SetPoint(unpack(C["Position"].filger.target_bar))
+T_DE_BUFF_BAR_Anchor:SetPoint(unpack(C["Position"].Filger.Targetbar))
 T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
 K.Movers:RegisterFrame(P_BUFF_ICON_Anchor)
@@ -316,13 +316,13 @@ function Filger:DisplayActives()
 			bar:SetScript("OnUpdate", nil)
 		end
 		bar.spellID = value.spid
-		if C.filger.show_tooltip then
+		if C["Filger"].ShowTooltip then
 			bar:EnableMouse(true)
 			bar:SetScript("OnEnter", Filger.TooltipOnEnter)
 			bar:SetScript("OnLeave", Filger.TooltipOnLeave)
 		end
-		bar:SetWidth(self.IconSize or C.filger.buffs_size)
-		bar:SetHeight(self.IconSize or C.filger.buffs_size)
+		bar:SetWidth(self.IconSize or C["Filger"].BuffSize)
+		bar:SetHeight(self.IconSize or C["Filger"].BuffSize)
 		bar:SetAlpha(value.data.opacity or 1)
 		bar:Show()
 		index = index + 1
@@ -342,7 +342,7 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 
 		for i = 1, #C["filger_spells"][K.Class][id], 1 do
 			local data = C["filger_spells"][K.Class][id][i]
-			if C.filger.disable_cd == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then return end
+			if C["Filger"].DisableCD == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then return end
 			local found = false
 			local name, icon, count, duration, start, spid
 			spid = 0
@@ -546,14 +546,14 @@ if C["filger_spells"] and C["filger_spells"][K.Class] then
 		frame.Mode = data.Mode or "ICON"
 		frame.Interval = data.Interval or 3
 		frame:SetAlpha(data.Alpha or 1)
-		frame.IconSize = data.IconSize or C.filger.buffs_size
+		frame.IconSize = data.IconSize or C["Filger"].BuffSize
 		frame.BarWidth = data.BarWidth or 186
 		frame.Position = data.Position or "CENTER"
 		frame:SetPoint(unpack(data.Position))
 
-		if C.filger.test_mode then
+		if C["Filger"].TestMode then
 			frame.actives = {}
-			for j = 1, math.min(C.filger.max_test_icon, #C["filger_spells"][K.Class][i]), 1 do
+			for j = 1, math.min(C["Filger"].MaxTestIcon, #C["filger_spells"][K.Class][i]), 1 do
 				local data = C["filger_spells"][K.Class][i][j]
 				local name, icon
 				if data.spellID then
