@@ -19,7 +19,7 @@ local hooksecurefunc = _G.hooksecurefunc
 -- GLOBALS: GuildChallengeAlertFrame, DigsiteCompleteToastFrame, GarrisonBuildingAlertFrame
 -- GLOBALS: LOOT_WON_ALERT_FRAMES, LOOT_UPGRADE_ALERT_FRAMES, MONEY_WON_ALERT_FRAMES
 
-local AlertFrameHolder = CreateFrame("Frame", "Loot / Alert Frames", UIParent)
+local AlertFrameHolder = CreateFrame("Frame", "AlertFrameHolder", UIParent)
 AlertFrameHolder:SetWidth(180)
 AlertFrameHolder:SetHeight(20)
 AlertFrameHolder:SetPoint("TOP", UIParent, "TOP", 0, -18)

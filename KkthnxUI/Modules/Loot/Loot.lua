@@ -204,7 +204,7 @@ local function createSlot(id)
 	return frame
 end
 
-function LM:LOOT_SLOT_CLEARED(event, slot)
+function LM:LOOT_SLOT_CLEARED(_, slot)
 	if (not lootFrame:IsShown()) then return end
 
 	lootFrame.slots[slot]:Hide()
@@ -228,7 +228,7 @@ function LM:UPDATE_MASTER_LOOT_LIST()
 	MasterLooterFrame_UpdatePlayers()
 end
 
-function LM:LOOT_OPENED(event, autoloot)
+function LM:LOOT_OPENED(_, autoloot)
 	lootFrame:Show()
 
 	if (not lootFrame:IsShown()) then
