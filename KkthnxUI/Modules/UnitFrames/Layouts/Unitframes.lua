@@ -10,14 +10,14 @@ if not oUF then
 end
 
 local _G = _G
-local unpack = unpack
-local select = select
-local UnitClass = UnitClass
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
+local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local GetThreatStatusColor = _G.GetThreatStatusColor
+local InCombatLockdown = _G.InCombatLockdown
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local UnitClass = _G.UnitClass
 local UnitFrame_OnEnter = UnitFrame_OnEnter
 local UnitFrame_OnLeave = UnitFrame_OnLeave
 local UnitIsPlayer = _G.UnitIsPlayer
@@ -25,37 +25,6 @@ local UnitThreatSituation = _G.UnitThreatSituation
 
 local UnitframeFont = K.GetFont(C["Unitframe"].Font)
 local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
-
-local function UpdateThreat(self, event, unit)
-	if (unit ~= self.unit) then
-		return
-	end
-
-	local situation = UnitThreatSituation(unit)
-	if (situation and situation > 0) then
-		local r, g, b = GetThreatStatusColor(situation)
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-			self.Portrait:SetBackdropBorderColor(r, g, b, 1)
-		else
-			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
-		end
-		self.Health:SetBackdropBorderColor(r, g, b, 1)
-	elseif C["General"].ColorTextures then
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-			self.Portrait:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3], 1)
-		else
-			self.Portrait.Background:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		end
-		self.Health:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-	else
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
-		else
-			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-		end
-		self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-	end
-end
 
 local function UpdateClassPortraits(self, unit)
 	local _, unitClass = UnitClass(unit)
@@ -353,6 +322,9 @@ local function oUF_KkthnxUnitframes(self, unit)
 	-- Create our class resource bars, combo and such.
 	if (unit == "player") then
 		K.CreateClassModules(self, 194, 12, 6)
+		if (C["Unitframe"].PowerPredictionBar) then -- Power Prediction Bar (Display estimated cost of spells when casting)
+			K.AddPowerPrediction(self)
+		end
 		if K.Class == "DEATHKNIGHT" then
 			K.CreateClassRunes(self, 194, 12, 6)
 		end
@@ -360,9 +332,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 	end
 
 	if (unit ~= "arena") then
-		self.ThreatIndicator = CreateFrame("Frame")
-		self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0) -- so that oUF does not try to replace it
-		self.ThreatIndicator.Override = UpdateThreat
+		K.AddThreatIndicator(self)
 	end
 
 	-- Status Icons
@@ -440,7 +410,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
 
 	-- Resting Icon for player frame
-	if unit == "player" then
+	if (unit == "player") then
 		-- Resting icon
 		self.RestingIndicator = self:CreateTexture(nil, "OVERLAY")
 		self.RestingIndicator:SetPoint("TOPRIGHT", self, 6, 6)
@@ -467,25 +437,6 @@ local function oUF_KkthnxUnitframes(self, unit)
 			self.GCD.Color = {1, 1, 1}
 			self.GCD.Height = (self.Health:GetHeight() * 1.4)
 			self.GCD.Width = (10)
-		end
-
-		-- Power Prediction Bar (Display estimated cost of spells when casting)
-		if (C["Unitframe"].PowerPredictionBar) then
-			local PowerPrediction = CreateFrame("StatusBar", nil, self.Power)
-			PowerPrediction:SetPoint("RIGHT", self.Power:GetStatusBarTexture())
-			PowerPrediction:SetPoint("BOTTOM")
-			PowerPrediction:SetPoint("TOP")
-			PowerPrediction:SetWidth(self.Power:GetWidth())
-			PowerPrediction:SetHeight(self.Power:GetHeight())
-			PowerPrediction:SetStatusBarTexture(UnitframeTexture, "BORDER")
-			PowerPrediction:GetStatusBarTexture():SetBlendMode("ADD")
-			PowerPrediction:SetStatusBarColor(0.55, 0.75, 0.95, 0.5)
-			PowerPrediction:SetReverseFill(true)
-			PowerPrediction.Smooth = C["Unitframe"].Smooth
-			PowerPrediction.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
-			self.PowerPrediction = {
-				mainBar = PowerPrediction
-			}
 		end
 	end
 
