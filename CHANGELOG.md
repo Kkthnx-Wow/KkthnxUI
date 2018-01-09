@@ -7,6 +7,104 @@ All notable changes to this project will be documented in this file.
 Format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+
+## [v7.04] - 1/09/2018
+### Canges
+
+@Kkthnx
+- Hide Dev settings in config
+
+@Kkthnx
+- Fix minimap not follow the texture colors rule
+
+@Kkthnx
+- Forgot some locals and fixes.
+
+@Kkthnx
+- Pass 2 on locals update for config.
+
+### Commits on Jan 8, 2018
+@Kkthnx
+- Pass 1 on locals update for config
+
+### Commits on Jan 7, 2018
+@Kkthnx
+- Update to the latest oUF 
+
+@Kkthnx
+- More Unitframe Cleanup. Pass 2
+
+Commits on Jan 6, 2018
+
+@Kkthnx
+- Fix GroupLoot Frames. Thanks to dUcK sEa in Discord for This Report!
+
+### Commits on Jan 5, 2018
+@Kkthnx
+- Cleanup and compact unitframe code. First pass
+
+@Kkthnx
+- Update ErrorFilter BlackList!
+
+@Kkthnx
+- Spacing
+
+@Kkthnx
+- Fix wrong position name for T_DEBUFF_ICON_Anchor
+
+@Kkthnx
+- Renamed last commit.
+
+@Kkthnx
+- Consistency 2
+
+@Kkthnx
+- Trash local
+
+@Kkthnx
+- "D'oh!" (/ˈdoʊʔ/ DOH) - Homer Simpson!
+
+@Kkthnx
+- Consistency lmao.
+
+@Kkthnx
+- Hide new option from the config.
+
+@Kkthnx
+- Fix nil error in classbar modules
+
+@Kkthnx
+- Merge in latest changes for skinning off my local build.
+
+@Kkthnx
+- Fix a comma we forgot in locals.
+
+@Kkthnx
+- Add in class module code.
+
+@Kkthnx
+- Work in progress changes and updates. This build might be unstable!
+
+@Rav99
+- Merge pull request #47 from Rav99/master
+
+@Rav99
+- Forgot LuaAutoIndent
+
+@Rav99
+- Fix CastBars
+
+@Rav99
+- Merge pull request #1 from Kkthnx-WoW/master
+
+### Commits on Jan 4, 2018
+@Kkthnx
+- We lived until 2018. I know it is hard to believe.
+
+@Kkthnx
+- Fix Global Cooldown Config Setting. 
+
 ## [v7.03] - 1/03/2018
 ### Canges
 ### Commits on Jan 3, 2018
