@@ -701,7 +701,47 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display 24 time format",
 		},
 	},
-
+	
+	-- Skins Local
+	["Skins"] = {
+		["Bagnon"] = {
+			["Name"] = "Bagnon",
+			["Desc"] = "Bagnon skin",
+		},
+		["BigWigs"] = {
+			["Name"] = "BigWigs",
+			["Desc"] = "BigWigs skin",
+		},
+		["DBM"] = {
+			["Name"] = "Deadly Boss Mods (DBM)",
+			["Desc"] = "Deadly Boss Mods (DBM) skin",
+		},
+		["Recount"] = {
+			["Name"] = "Recount",
+			["Desc"] = "Recount skin",
+		},
+		["Skada"] = {
+			["Name"] = "Skada",
+			["Desc"] = "Skada skin",
+		},
+		["Spy"] = {
+			["Name"] = "Spy",
+			["Desc"] = "Spy skin",
+		},
+		["TalkingHead"] = {
+			["Name"] = "TalkingHead Frame",
+			["Desc"] = "TalkingHead frame skin",
+		},
+		["Texture"] = {
+			["Name"] = "Texture",
+			["Desc"] = "Texture for statusbars",
+		},
+		["WeakAuras"] = {
+			["Name"] = "WeakAuras",
+			["Desc"] = "WeakAuras skin",
+		},
+	}
+	
 	-- Minimap Local
 	C["Minimap"] = {
 		["Calendar"] = {
@@ -769,6 +809,298 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "PvP debuffs size",
 		},
 	},
+	
+	-- Unitframe Local
+	["Unitframe"] = {
+		["CastbarHeight"] = {
+			["Name"] = "Castbar Height",
+			["Desc"] = "Castbar height",
+		},
+		["CastbarIcon"] = {
+			["Name"] = "Castbar Icon",
+			["Desc"] = "Create an icon beside the cast bar",
+		},
+		["CastbarLatency"] = {
+			["Name"] = "Castbar Latency",
+			["Desc"] = "Display your latency on the cast bar",
+		},
+		["Castbars"] = {
+			["Name"] = "Castbars",
+			["Desc"] = "nable cast bar for unit frames",
+		},
+		["CastbarTicks"] = {
+			["Name"] = "Castbar Ticks",
+			["Desc"] = "Display tick marks on the castbar for channelled spells. This will adjust automatically for spells like Drain Soul and add additional ticks based on haste.",
+		},
+		["CastbarWidth"] = {
+			["Name"] = "Castbar Width",
+			["Desc"] = "Castbar Width",
+		},
+		["CastClassColor"] = {
+			["Name"] = "Cast ClassColor",
+			["Desc"] = "Color castbars as classcolor",
+		},
+		["CastReactionColor"] = {
+			["Name"] = "PCastReactionColor",
+			["Desc"] = "Color castbars as reaction to the target",
+		},
+		["CombatText"] = {
+			["Name"] = "CombatText",
+			["Desc"] = "Enable combattext on player and target frames",
+		},
+		["DebuffsOnTop"] = {
+			["Name"] = "Debuffs On Top",
+			["Desc"] = "Display debuffs ontop and buffs on bottom (Affects only Target Frame)",
+		},
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Enable unitframes",
+		},
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = "Pick desired font",
+		},
+		["FontSize"] = {
+			["Name"] = "Font Size",
+			["Desc"] = "Unitframe font size",
+		},
+		["GlobalCooldown"] = {
+			["Name"] = "Global Cooldown",
+			["Desc"] = "Display a global CD on the unitframes healthbar (Only shows for player frame)",
+		},
+		["OnlyShowPlayerAuras"] = {
+			["Name"] = "Only Show Player Auras",
+			["Desc"] = "Only display your auras on the target frame.",
+		},
+		["OnlyShowPlayerBossBuffs"] = {
+			["Name"] = "Only Show Player Boss Buffs",
+			["Desc"] = "Only display your buffs on the boss frame.",
+		},
+		["OnlyShowPlayerBossDebuffs"] = {
+			["Name"] = "Only Show Player Boss Debuffs",
+			["Desc"] = "Only display your debuffs on the boss frame.",
+		},
+		["OnlyShowPlayerTargetBuffs"] = {
+			["Name"] = "Only Show Player Target Buffs",
+			["Desc"] = "Only display your buffs on the target frame. ",
+		},
+		["OnlyShowPlayerTargetDebuffs"] = {
+			["Name"] = "Only Show Player Target Debuffs",
+			["Desc"] = "Only display your debuffs on the target frame. ",
+		},
+		["OORAlpha"] = {
+			["Name"] = "Out of Range Alpha",
+			["Desc"] = "At what distance should your unitframes fade into a transparency",
+		},
+		["Outline"] = {
+			["Name"] = "Outline",
+			["Desc"] = "Apply unitframe font outline",
+		},
+		["Party"] = {
+			["Name"] = "Party Frames",
+			["Desc"] = "Enable those sexy party frames <3",
+		},
+		["PortraitTimer"] = {
+			["Name"] = "Portrait Timer",
+			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Unit Frame Portraits",
+		},
+		["PowerPredictionBar"] = {
+			["Name"] = "PowerPredictionBar",
+			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
+		},
+		["Scale"] = {
+			["Name"] = "Scale",
+			["Desc"] = "Big or small, you pick!",
+		},
+		["ShowArena"] = {
+			["Name"] = "Enable Arena",
+			["Desc"] = "Enable arena frames",
+		},
+		["ShowBoss"] = {
+			["Name"] = "Enable Boss",
+			["Desc"] = "Enable boss frames",
+		},
+		["ShowPlayer"] = {
+			["Name"] = "Show Player In Party",
+			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
+		},
+		["Smooth"] = {
+			["Name"] = "Smooth",
+			["Desc"] = "Bars will transition smoothly.",
+		},
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+		["Texture"] = {
+			["Name"] = "Texture",
+			["Desc"] = "Pick your desired texture",
+		},
+		["PortraitStyle"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "Pick your poison",
+		},
+	}
+	
+	-- Raidframe Local
+	["Raidframe"] = {
+		["AuraWatch"] = {
+			["Name"] = "Aura Watch Timers",
+			["Desc"] = "Display a timer on debuff icons created by Debuff Watch",
+		},
+		["AuraWatchIconSize"] = {
+			["Name"] = "Aura Watch Icon Size",
+			["Desc"] = "Pick your size",
+		},
+		["AuraDebuffIconSize"] = {
+			["Name"] = "Aura Debuff Icon Size",
+			["Desc"] = "Pick your poison",
+		},
+		["DeficitThreshold"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "Pick your poison",
+		},
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Have you tried to turn it off and then on again?",
+		},
+		["Height"] = {
+			["Name"] = "Height",
+			["Desc"] = "Pick your poison",
+		},
+		["MainTankFrames"] = {
+			["Name"] = "Main Tank Frames",
+			["Desc"] = "You know the people who take all the damage?",
+		},
+		["ManabarShow"] = {
+			["Name"] = "Manabar Display",
+			["Desc"] = "Off or on. Its a 50% chance here",
+		},
+		["MaxUnitPerColumn"] = {
+			["Name"] = "Max Unit Per Column",
+			["Desc"] = "How many frame will display per row/column",
+		},
+		["Outline"] = {
+			["Name"] = "Outline",
+			["Desc"] = "Pick your poison",
+		},
+		["RaidAsParty"] = {
+			["Name"] = "Display Party as Raidframes",
+			["Desc"] = "Some people tend to like this kinda stuff.",
+		},
+		["RaidUtility"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "Pick your poison",
+		},
+		["Scale"] = {
+			["Name"] = "Scale",
+			["Desc"] = "Pick your poison",
+		},
+		["ShowMouseoverHighlight"] = {
+			["Name"] = "Show Mouseover Highlight",
+			["Desc"] = "We can see better!",
+		},
+		["ShowNotHereTimer"] = {
+			["Name"] = "Not Here Timer (AFK)",
+			["Desc"] = "Display when someone is AFK in your raid",
+		},
+		["ShowRolePrefix"] = {
+			["Name"] = "Show Role Prefix",
+			["Desc"] = "Display an H for healer or T for tank",
+		},
+		["Smooth"] = {
+			["Name"] = "Smooth",
+			["Desc"] = "Bars will transition smoothly.",
+		},
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+		["Texture"] = {
+			["Name"] = "Texture",
+			["Desc"] = "Pick your poison",
+		},
+		["Width"] = {
+			["Name"] = "Width",
+			["Desc"] = "width",
+		},
+	}
+	
+	-- Worldmap Local
+	["WorldMap"] = {
+		["AlphaWhenMoving"] = {
+			["Name"] = "Alpha When Moving",
+			["Desc"] = "Alpha value at which the map will fade",
+		},
+		["Coordinates"] = {
+			["Name"] = "Coordinates",
+			["Desc"] = "Puts coordinates on the world map.",
+		},
+		["FadeWhenMoving"] = {
+			["Name"] = "Fade When Moving",
+			["Desc"] = "Map Opacity When Moving",
+		},
+		["SmallWorldMap"] = {
+			["Name"] = "Small WorldMap",
+			["Desc"] = "Make the world map smaller.",
+		},
+	}
+	
+	-- Tooltip Local
+	["Tooltip"] = {
+		["CursorAnchor"] = {
+			["Name"] = "Cursor Anchor",
+			["Desc"] = "Anchor the tooltip to the cursor.",
+		},
+		["Enable"] = {
+			["Name"] = "Enable",
+			["Desc"] = "Enable tooltip",
+		},
+		["FontOutline"] = {
+			["Name"] = "Font Outline",
+			["Desc"] = "Apply a font outline to the statusbar",
+		},
+		["FontSize"] = {
+			["Name"] = "Font Size",
+			["Desc"] = "Determine your font size",
+		},
+		["GuildRanks"] = {
+			["Name"] = "Guild Ranks",
+			["Desc"] = "Display players guild ranks",
+		},
+		["HealthbarHeight"] = {
+			["Name"] = "Healthbar Height",
+			["Desc"] = "Height of the health bar",
+		},
+		["HealthBarText"] = {
+			["Name"] = "HealthBar Text",
+			["Desc"] = "Show healthbar text",
+		},
+		["Icons"] = {
+			["Name"] = "Icons",
+			["Desc"] = "Display tooltip icons",
+		},
+		["InspectInfo"] = {
+			["Name"] = "Inspect Info",
+			["Desc"] = "Display a players item level and spec (You need to be holding shift down too)",
+		},
+		["ItemQualityBorder"] = {
+			["Name"] = "ItemQuality Border",
+			["Desc"] = "Display item quality colors on the border",
+		},
+		["PlayerTitles"] = {
+			["Name"] = "Player Titles",
+			["Desc"] = "Display players titles",
+		},
+		["SpellID"] = {
+			["Name"] = "SpellID",
+			["Desc"] = "Display spellid",
+		},
+		["Texture"] = {
+			["Name"] = "Texture",
+			["Desc"] = "Statusbar Texture",
+		},
+	}
 	
 	-- Errors Local
 	["Error"] = {
