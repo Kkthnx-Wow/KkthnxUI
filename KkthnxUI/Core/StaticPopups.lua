@@ -21,7 +21,7 @@ local Name = UnitName("Player")
 local Realm = GetRealmName()
 
 StaticPopupDialogs["CONFIG_RL"] = {
-	text = L.StaticPopups.Config_Reload,
+	text = L["StaticPopups"].Config_Reload,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() K.PixelPerfect.RequireReload = false ReloadUI() end,
@@ -31,7 +31,7 @@ StaticPopupDialogs["CONFIG_RL"] = {
 }
 
 StaticPopupDialogs["CHANGES_RL"] = {
-	text =  L.StaticPopups.Changes_Reload,
+	text =  L["StaticPopups"].Changes_Reload,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() ReloadUI() end,
@@ -41,7 +41,7 @@ StaticPopupDialogs["CHANGES_RL"] = {
 }
 
 StaticPopupDialogs["RESTART_GFX"] = {
-	text = L.StaticPopups.Restart_GFX,
+	text = L["StaticPopups"].Restart_GFX,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() RestartGx() end,
@@ -51,7 +51,7 @@ StaticPopupDialogs["RESTART_GFX"] = {
 }
 
 StaticPopupDialogs["KKTHNXUI_UPDATE"] = {
-	text = L.StaticPopups.KkthnxUI_Update,
+	text = L["StaticPopups"].KkthnxUI_Update,
 	hasEditBox = 1,
 	OnShow = function(self)
 		self.editBox:SetAutoFocus(false)
@@ -91,7 +91,7 @@ StaticPopupDialogs["KKTHNXUI_UPDATE"] = {
 }
 
 StaticPopupDialogs["SET_UISCALE"] = {
-	text = "SET_UISCALE",
+	text = L["StaticPopups"].Set_UI_Scale,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = K.SetUIScale,
@@ -158,7 +158,7 @@ StaticPopupDialogs["DISABLE_UI"] = {
 }
 
 StaticPopupDialogs["RESET_UI"] = {
-	text = "RESET_UI",
+	text = L["StaticPopups"].Reset_UI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function() K.Install:Launch() if UIConfig and UIConfig:IsShown() then UIConfigMain:Hide() end end,
@@ -169,7 +169,7 @@ StaticPopupDialogs["RESET_UI"] = {
 }
 
 StaticPopupDialogs["FIX_ACTIONBARS"] = {
-	text = L.Actionbars.Fix_Actionbars,
+	text = L["Actionbars"].Fix_Actionbars,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = ReloadUI,

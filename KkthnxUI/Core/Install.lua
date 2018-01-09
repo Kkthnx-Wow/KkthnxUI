@@ -98,7 +98,7 @@ function Install:Step1()
 		SetActionBarToggles(true, true, true, true)
 	end
 
-	InstallStepComplete.message = "CVars Set"
+	InstallStepComplete.message = L["Install"].CVars_Set
 	InstallStepComplete:Show()
 end
 
@@ -109,7 +109,7 @@ function Install:Step2()
 		return
 	end
 
-	InstallStepComplete.message = "Chat Set"
+	InstallStepComplete.message = L["Install"].Chat_Set
 	InstallStepComplete:Show()
 
 	Chat:Install()

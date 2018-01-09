@@ -294,11 +294,15 @@ _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
 function K.SetUIScale()
-	if InCombatLockdown() or C["General"].AutoScale then return end
+	if InCombatLockdown() or C["General"].AutoScale then 
+		print("KkthnxUI is already controlling the Auto UI Scale feature!") 
+		return 
+	end
 
 	local SetUIScale = GetCVarBool("uiScale")
 	if not SetUIScale then
 		SetCVar("uiScale", 768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+		print("Successfully set UI scale to "..768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 		StaticPopup_Show("CHANGES_RL")
 	end
 end
@@ -314,7 +318,7 @@ function K.DisbandRaidGroup()
 	if InCombatLockdown() then return end
 
 	if UnitInRaid("player") then
-		SendChatMessage(L.StaticPopups.Disband_Group, "RAID")
+		SendChatMessage(L["StaticPopups"].Disband_Group, "RAID")
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
 			if online and name ~= K.Name then
@@ -322,7 +326,7 @@ function K.DisbandRaidGroup()
 			end
 		end
 	else
-		SendChatMessage(L.StaticPopups.Disband_Group, "PARTY")
+		SendChatMessage(L["StaticPopups"].Disband_Group, "PARTY")
 		for i = MAX_PARTY_MEMBERS, 1, - 1 do
 			if UnitExists("party"..i) then
 				UninviteUnit(UnitName("party"..i))
