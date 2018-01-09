@@ -150,6 +150,7 @@ end
 
 -- Filter unwanted groups
 KkthnxUIConfig.Filter = {
+	["Developer"] = true,
 	["FilgerSpells"] = true,
 	["Media"] = true,
 	["OrderedIndex"] = true,
