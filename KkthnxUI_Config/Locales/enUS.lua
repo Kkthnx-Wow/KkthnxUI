@@ -599,7 +599,7 @@ KkthnxUIConfig["enUS"] = {
 	},
 	
 	-- Databars Local
-	C["DataBars"] = {
+	["DataBars"] = {
 		["ArtifactColor"] = {
 			["Name"] = "Artifact Color",
 			["Desc"] = "Color of the Artifactbar",
@@ -672,7 +672,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Texture",
 			["Desc"] = "Apply selected texture to all databars",
 		},
-	}
+	},
 	
 	-- DataText Local
 	["DataText"] = {
@@ -740,10 +740,10 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "WeakAuras",
 			["Desc"] = "WeakAuras skin",
 		},
-	}
+	},
 	
 	-- Minimap Local
-	C["Minimap"] = {
+	["Minimap"] = {
 		["Calendar"] = {
 			["Name"] = "Calendar",
 			["Desc"] = "Display a small calendar",
@@ -772,7 +772,47 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Size",
 			["Desc"] = "Size of minimap",
 		},
-	}
+	},
+	
+	-- Miscellaneous Local
+	["Misc"] = {
+		["AFKCamera"] = {
+			["Name"] = "AFK Camera",
+			["Desc"] = "Watch yourself dance. (Shame on you!)",
+		},
+		["BattlegroundSpam"] = {
+			["Name"] = "Battleground Spam",
+			["Desc"] = "Remove Boss Emote spam during BG",
+		},
+		["ColorPicker"] = {
+			["Name"] = "Improved Color Picker",
+			["Desc"] = "Improved ColorPicker",
+		},
+		["EnhancedPvpMessages"] = {
+			["Name"] = "Enhanced PvP Messages",
+			["Desc"] = "Display battleground messages in the middle of the screen.",
+		},
+		["ItemLevel"] = {
+			["Name"] = "Item Level",
+			["Desc"] = "Item level on character slot buttons",
+		},
+		["KillingBlow"] = {
+			["Name"] = "KillingBlow",
+			["Desc"] = "Display a message about your killing blow",
+		},
+		["NoBanner"] = {
+			["Name"] = "No Boss Banner",
+			["Desc"] = "This boss banner gets annoying after every boss kill",
+		},
+		["PvPEmote"] = {
+			["Name"] = "PvP Emote",
+			["Desc"] = "Make a silly emote at the player you just killed (Kkthnx spits on you!)",
+		},
+		["SlotDurability"] = {
+			["Name"] = "Slot Durability",
+			["Desc"] = "Durability percentage on character slot buttons",
+		},
+	},
 	
 	-- Filger Local
 	["Filger"] = {
@@ -940,7 +980,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Portrait Style",
 			["Desc"] = "Pick your poison",
 		},
-	}
+	},
 	
 	-- Raidframe Local
 	["Raidframe"] = {
@@ -1024,7 +1064,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Width",
 			["Desc"] = "width",
 		},
-	}
+	},
 	
 	-- Worldmap Local
 	["WorldMap"] = {
@@ -1044,7 +1084,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Small WorldMap",
 			["Desc"] = "Make the world map smaller.",
 		},
-	}
+	},
 	
 	-- Tooltip Local
 	["Tooltip"] = {
@@ -1100,7 +1140,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Texture",
 			["Desc"] = "Statusbar Texture",
 		},
-	}
+	},
 	
 	-- Errors Local
 	["Error"] = {
