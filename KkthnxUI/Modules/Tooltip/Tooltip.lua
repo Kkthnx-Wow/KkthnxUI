@@ -110,8 +110,8 @@ local tooltipsOnShow = {
 }
 
 local ignoreSubType = {
-	L.Tooltip.Other == true,
-	L.Tooltip.Item_Enhancement == true,
+	L["Tooltip"].Other == true,
+	L["Tooltip"].Item_Enhancement == true,
 }
 
 local classification = {
@@ -468,7 +468,7 @@ end
 function Module:GameTooltip_OnTooltipSetItem(tt)
 	if tt:IsForbidden() then return end
 	local ownerName = tt:GetOwner() and tt:GetOwner().GetName and tt:GetOwner():GetName()
-
+	
 	if not tt.itemCleared then
 		local _, link = tt:GetItem()
 		local num = GetItemCount(link)
@@ -476,14 +476,14 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		local left = " "
 		local right = " "
 		local bankCount = " "
-
+		
 		if link ~= nil and C["Tooltip"].SpellID and IsShiftKeyDown() then
 			left = (("|cFFCA3C3C%s|r %s"):format(ID, link)):match(":(%w+)")
 		end
-
-		right = ("|cFFCA3C3C%s|r %d"):format(L.Tooltip.Count, num)
-		bankCount = ("|cFFCA3C3C%s|r %d"):format(L.Tooltip.Bank, (numall - num))
-
+		
+		right = ("|cFFCA3C3C%s|r %d"):format(L["Tooltip"].Count, num)
+		bankCount = ("|cFFCA3C3C%s|r %d"):format(L["Tooltip"].Bank, (numall - num))
+		
 		if left ~= " " or right ~= " " and IsShiftKeyDown() then
 			tt:AddLine(" ")
 			tt:AddDoubleLine(left, right)
@@ -491,40 +491,37 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		if bankCount ~= " " and IsShiftKeyDown() then
 			tt:AddDoubleLine(" ", bankCount)
 		end
-
+		
 		tt.itemCleared = true
 	end
-
+	
 	if C["Tooltip"].ItemQualityBorder then
-		local _, itemLink = tt:GetItem()
-		if not itemLink then return end
-		tt.currentItem = itemLink
-
-		local name, _, rarity, _, _, type, subType, _, _, _, _ = GetItemInfo(itemLink)
-
-		if not rarity then
-			rarity = 0
+		local _, link = tt:GetItem()
+		if not link then return end
+		tt.currentItem = link
+		
+		local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
+		if not quality then
+			quality = 0
 		end
-
+		
 		local r, g, b
-		if type == L.Tooltip.Quest then
+		if type == L["Tooltip"].Quest then
 			r, g, b = 1, 0.82, 0.2
-		elseif type == L.Tooltip.TradeSkill and not ignoreSubType[subType] and rarity < 2 then
+		elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
 			r, g, b = 0.4, 0.73, 1
-		elseif subType == L.Tooltip.Companion_Pets then
-			local _, petID = C_PetJournal_FindPetIDByName(name)
-			if petID ~= nil then
-				local _, _, _, _, petRarity = C_PetJournal_GetPetStats(petID)
-				if petRarity then
-					rarity = petRarity - 1
+		elseif subType == L["Tooltip"].Companion_Pets then
+			local _, id = C_PetJournal_FindPetIDByName(name)
+			if id then
+				local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
+				if petQuality then
+					quality = petQuality - 1
 				end
 			end
 		end
-
-		if rarity > 1 and not r then
-			r, g, b = GetItemQualityColor(rarity)
+		if quality > 1 and not r then
+			r, g, b = GetItemQualityColor(quality)
 		end
-
 		if r then
 			tt:SetBackdropBorderColor(r, g, b)
 		end
