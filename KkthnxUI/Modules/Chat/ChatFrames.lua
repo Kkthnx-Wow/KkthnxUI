@@ -52,39 +52,6 @@ local UnitRealmRelationship = _G.UnitRealmRelationship
 -- GLOBALS: ChatFrame_RemoveAllMessageGroups, ChatFrame_AddMessageGroup, ChatFrame_AddChannel, ChatFrame_RemoveChannel, ToggleChatColorNamesByClassGroup
 -- GLOBALS: ChatFrame1, ChatFrame2, ChatFrame3, ChatFrame4, ChatTypeInfo, KkthnxUIFont, CreateAnimationGroup, CHAT_FRAME_TEXTURES, KkthnxUIData
 
--- Just testing this first.
--- Channel Names
--- Must match the default channel names shown in your game client.
-local Conversation = "Conversation"
-local General = "General"
-local LocalDefense = "LocalDefense"
-local LookingForGroup = "LookingForGroup"
-local Trade = "Trade"
-local WorldDefense = "WorldDefense"
-
--- Short Channel Names
--- Use the shortest abbreviations that make sense in your language.
-local Conversation = "C"
-local General = "G"
-local LocalDefense = "LD"
-local LookingForGroup = "LFG"
-local Trade = "T"
-local WorldDefense = "WD"
-local Guild = "g"
-local InstanceChat = "i"
-local InstanceChatLeader = "I"
-local Officer = "o"
-local Party = "p"
-local PartyGuide = "P"
-local PartyLeader = "P"
-local Raid = "r"
-local RaidLeader = "R"
-local RaidWarning = "W"
-local Say = "s"
-local WhisperIncoming = "w"
-local WhisperOutgoing = "@"
-local Yell = "y"
-
 local hooks = {}
 
 local CUSTOM_CHANNELS = {
@@ -92,58 +59,32 @@ local CUSTOM_CHANNELS = {
 	-- ["mychannel"] = "MC",
 }
 
-local STRING_STYLE = "%s|| "
--- %s = chat string (eg. "Guild", "2. Trade") (required)
--- Pipe characters must be escaped by doubling them: | -> ||
-
-local CHANNEL_STYLE = "%d"
--- %2$d = channel number (optional)
--- %3$s = channel name (optional)
--- Will be used with STRING_STYLE for numbered channels.
-
-local PLAYER_STYLE = "%s"
--- %s = player name (required)
-
-local CHANNEL_LINK = "|Hchannel:%1$s|h" .. string.format(STRING_STYLE, CHANNEL_STYLE) .. "|h"
-
-local PLAYER_LINK = "|Hplayer:%s|h" .. PLAYER_STYLE .. "|h"
-local PLAYER_BN_LINK = "|HBNplayer:%s|h" .. PLAYER_STYLE .. "%s|h"
-
--- |Hchannel:channel:2|h[2. Trade]|h |Hplayer:Konquered:1281:CHANNEL:2|h|cffbf8cffKonquered|r|h: lf 2s partner
-local CHANNEL_PATTERN = "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?"
-local CHANNEL_PATTERN_PLUS = CHANNEL_PATTERN .. ".+"
-
-local PLAYER_PATTERN = "|Hplayer:(.-)|h%[(.-)%]|h"
-
--- |HBNplayer:|Kf1|k0000|k:2:893:BN_WHISPER:|Kf1|k0000|k|h[|Kf1|k0000|k]|
-local BNPLAYER_PATTERN = "|HBNplayer:(.-|k:(%d+).-)|h%[(.-)%](.*)|h"
-
 local ChannelNames = {
-	[Conversation] = Conversation,
-	[General] = General,
-	[LocalDefense] 	= LocalDefense,
-	[LookingForGroup] = LookingForGroup,
-	[Trade] = Trade,
-	[WorldDefense] = WorldDefense,
+	[L["Chat"].Conversation] = L["Chat"].S_Conversation,
+	[L["Chat"].General] = L["Chat"].SCN_General,
+	[L["Chat"].LocalDefense] = L["Chat"].S_LocalDefense,
+	[L["Chat"].LookingForGroup] = L["Chat"].S_LookingForGroup,
+	[L["Chat"].Trade] = L["Chat"].S_Trade,
+	[L["Chat"].WorldDefense] = L["Chat"].S_WorldDefense,
 }
 
 local ChannelStrings = {
-	CHAT_BN_WHISPER_GET	= format(STRING_STYLE, WhisperIncoming) .. "%s:\32",
-	CHAT_BN_WHISPER_INFORM_GET	= format(STRING_STYLE, WhisperOutgoing) .. "%s:\32",
-	CHAT_GUILD_GET = "|Hchannel:guild|h" .. format(STRING_STYLE, Guild) .. "|h%s:\32",
-	CHAT_INSTANCE_CHAT_GET = "|Hchannel:battleground|h" .. format(STRING_STYLE, InstanceChat) .. "|h%s:\32",
-	CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:battleground|h" .. format(STRING_STYLE, InstanceChatLeader) .. "|h%s:\32",
-	CHAT_OFFICER_GET = "|Hchannel:o|h" .. format(STRING_STYLE, Officer) .. "|h%s:\32",
-	CHAT_PARTY_GET = "|Hchannel:party|h" .. format(STRING_STYLE, Party) .. "|h%s:\32",
-	CHAT_PARTY_GUIDE_GET = "|Hchannel:party|h" .. format(STRING_STYLE, PartyGuide) .. "|h%s:\32",
-	CHAT_PARTY_LEADER_GET = "|Hchannel:party|h" .. format(STRING_STYLE, PartyLeader) .. "|h%s:\32",
-	CHAT_RAID_GET = "|Hchannel:raid|h" .. format(STRING_STYLE, Raid) .. "|h%s:\32",
-	CHAT_RAID_LEADER_GET = "|Hchannel:raid|h" .. format(STRING_STYLE, RaidLeader) .. "|h%s:\32",
-	CHAT_RAID_WARNING_GET = format(STRING_STYLE, RaidWarning) .. "%s:\32",
-	CHAT_SAY_GET = format(STRING_STYLE, Say) .. "%s:\32",
-	CHAT_WHISPER_GET = format(STRING_STYLE, WhisperIncoming) .. "%s:\32",
-	CHAT_WHISPER_INFORM_GET = format(STRING_STYLE, WhisperOutgoing) .. "%s:\32",
-	CHAT_YELL_GET = format(STRING_STYLE, Yell) .. "%s:\32",
+	CHAT_BN_WHISPER_GET	= format("%s|| ", L["Chat"].S_WhisperIncoming).."%s:\32",
+	CHAT_BN_WHISPER_INFORM_GET	= format("%s|| ", L["Chat"].S_WhisperOutgoing).."%s:\32",
+	CHAT_GUILD_GET = "|Hchannel:guild|h"..format("%s|| ", L["Chat"].S_Guild).."|h%s:\32",
+	CHAT_INSTANCE_CHAT_GET = "|Hchannel:battleground|h"..format("%s|| ", L["Chat"].S_InstanceChat).."|h%s:\32",
+	CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:battleground|h"..format("%s|| ", L["Chat"].S_InstanceChatLeader).."|h%s:\32",
+	CHAT_OFFICER_GET = "|Hchannel:o|h"..format("%s|| ", L["Chat"].S_Officer).."|h%s:\32",
+	CHAT_PARTY_GET = "|Hchannel:party|h"..format("%s|| ", L["Chat"].S_Party).."|h%s:\32",
+	CHAT_PARTY_GUIDE_GET = "|Hchannel:party|h"..format("%s|| ", L["Chat"].S_PartyGuide).."|h%s:\32",
+	CHAT_PARTY_LEADER_GET = "|Hchannel:party|h"..format("%s|| ", L["Chat"].S_PartyLeader).."|h%s:\32",
+	CHAT_RAID_GET = "|Hchannel:raid|h"..format("%s|| ", L["Chat"].S_Raid).."|h%s:\32",
+	CHAT_RAID_LEADER_GET = "|Hchannel:raid|h"..format("%s|| ", L["Chat"].S_RaidLeader).."|h%s:\32",
+	CHAT_RAID_WARNING_GET = format("%s|| ", L["Chat"].S_RaidWarning).."%s:\32",
+	CHAT_SAY_GET = format("%s|| ", L["Chat"].S_Say).."%s:\32",
+	CHAT_WHISPER_GET = format("%s|| ", L["Chat"].S_WhisperIncoming).."%s:\32",
+	CHAT_WHISPER_INFORM_GET = format("%s|| ", L["Chat"].S_WhisperOutgoing).."%s:\32",
+	CHAT_YELL_GET = format("%s|| ", L["Chat"].S_Yell).."%s:\32",
 }
 
 for name, abbr in pairs(CUSTOM_CHANNELS) do
@@ -156,13 +97,13 @@ end
 
 local function AddMessage(frame, message, ...)
 	if type(message) == "string" then
-		local channelData, channelID, channelName = strmatch(message, CHANNEL_PATTERN_PLUS)
+		local channelData, channelID, channelName = strmatch(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?"..".+")
 		if channelData and C["Chat"].ShortenChannelNames then
 			local shortName = ChannelNames[channelName] or ChannelNames[strlower(channelName)] or strsub(channelName, 1, 2)
-			message = gsub(message, CHANNEL_PATTERN, format(CHANNEL_LINK, channelData, channelID, shortName))
+			message = gsub(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?", format("|Hchannel:%1$s|h"..string.format("%s|| ", "%d").."|h", channelData, channelID, shortName))
 		end
-
-		local playerData, playerName = strmatch(message, PLAYER_PATTERN)
+		
+		local playerData, playerName = strmatch(message, "|Hplayer:(.-)|h%[(.-)%]|h")
 		if playerData then
 			if C["Chat"].RemoveRealmNames then
 				if strmatch(playerName, "|cff") then
@@ -171,7 +112,7 @@ local function AddMessage(frame, message, ...)
 					playerName = strmatch(playerName, "[^%-]+")
 				end
 			end
-			message = gsub(message, PLAYER_PATTERN, format(PLAYER_LINK, playerData, playerName))
+			message = gsub(message, "|Hplayer:(.-)|h%[(.-)%]|h", format("|Hplayer:%s|h".."%s".."|h", playerData, playerName))
 		elseif channelID then
 			-- WorldDefense messages don't have a sender; remove the extra colon and space.
 			message = gsub(message, "(|Hchannel:.-|h): ", "%1", 1)
@@ -214,7 +155,7 @@ end
 
 local function OnTextChanged(self)
 	local text = self:GetText()
-
+	
 	if InCombatLockdown() then
 		local MIN_REPEAT_CHARACTERS = 5
 		if (string_len(text) > MIN_REPEAT_CHARACTERS) then
@@ -231,7 +172,7 @@ local function OnTextChanged(self)
 			end
 		end
 	end
-
+	
 	if text:len() < 5 then
 		if text:sub(1, 4) == "/tt " then
 			local unitname, realm = UnitName("target")
@@ -241,13 +182,13 @@ local function OnTextChanged(self)
 			end
 			ChatFrame_SendTell((unitname or L.Chat.Invaild_Target), ChatFrame1)
 		end
-
+		
 		if text:sub(1, 4) == "/gr " then
-			self:SetText(GetGroupDistribution() .. text:sub(5))
+			self:SetText(GetGroupDistribution()..text:sub(5))
 			ChatEdit_ParseText(self, 0)
 		end
 	end
-
+	
 	local new, found = string_gsub(text, "|Kf(%S+)|k(%S+)%s(%S+)|k", "%2 %3")
 	if found > 0 then
 		new = new:gsub("|", "")
@@ -259,11 +200,11 @@ end
 function Module:UpdateEditBoxColor()
 	local EditBox = ChatEdit_ChooseBoxForSend()
 	local ChatType = EditBox:GetAttribute("chatType")
-
+	
 	if (ChatType == "CHANNEL") then
 		local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
 		if ID == 0 then
-			EditBox:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+			EditBox:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		else
 			EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType..ID].r, ChatTypeInfo[ChatType..ID].g, ChatTypeInfo[ChatType..ID].b)
 		end
@@ -275,7 +216,7 @@ end
 function Module:NoMouseAlpha()
 	local Frame = self:GetName()
 	local Tab = _G[Frame.."Tab"]
-
+	
 	if (Tab.noMouseAlpha == 0.4) or (Tab.noMouseAlpha == 0.2) then
 		Tab:SetAlpha(0)
 		Tab.noMouseAlpha = 0
@@ -286,11 +227,11 @@ function Module:SetChatFont()
 	local Font = K.GetFont(C["Chat"].Font)
 	local Path, _, Flag = _G[Font]:GetFont()
 	local CurrentFont, CurrentSize, CurrentFlag = self:GetFont()
-
+	
 	if (CurrentFont == Path and CurrentFlag == Flag) then
 		return
 	end
-
+	
 	self:SetFont(Path, CurrentSize, Flag)
 end
 
@@ -298,7 +239,7 @@ function Module:StyleFrame(frame)
 	if frame.IsSkinned then
 		return
 	end
-
+	
 	local Frame = frame
 	local ID = frame:GetID()
 	local FrameName = frame:GetName()
@@ -307,90 +248,90 @@ function Module:StyleFrame(frame)
 	local EditBox = _G[FrameName.."EditBox"]
 	local GetTabFont = K.GetFont(C["Chat"].Font)
 	local TabFont, TabFontSize, TabFontFlags = _G[GetTabFont]:GetFont()
-
+	
 	if Tab.conversationIcon then
 		Tab.conversationIcon:Kill()
 	end
-
+	
 	-- Hide editbox every time we click on a tab
 	Tab:HookScript("OnClick", function()
 		EditBox:Hide()
 	end)
-
+	
 	-- Style the tab font
 	TabText:SetFont(TabFont, TabFontSize + 1, TabFontFlags)
 	TabText.SetFont = K.Noop
-
+	
 	Frame:SetClampRectInsets(0, 0, 0, 0)
 	Frame:SetClampedToScreen(false)
 	Frame:SetFading(C["Chat"].Fading)
 	Frame:SetTimeVisible(C["Chat"].FadingTimeVisible)
 	Frame:SetFadeDuration(C["Chat"].FadingTimeFading)
-
+	
 	-- Move the edit box
 	EditBox:ClearAllPoints()
 	EditBox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 2, 26)
 	EditBox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", -2, 26)
-
+	
 	-- Disable alt key usage
 	EditBox:SetAltArrowKeyMode(false)
-
+	
 	-- Hide editbox on login
 	EditBox:Hide()
-
+	
 	-- Hide editbox instead of fading
 	EditBox:HookScript("OnEditFocusLost", function(self)
 		self:Hide()
 	end)
-
+	
 	EditBox:HookScript("OnTextChanged", OnTextChanged)
-
+	
 	-- Create our own texture for edit box
 	EditBox:SetTemplate("Transparent", false)
 	EditBox:SetHeight(22)
-
+	
 	-- Hide textures
 	for i = 1, #CHAT_FRAME_TEXTURES do
 		_G[FrameName..CHAT_FRAME_TEXTURES[i]]:SetTexture(nil)
 	end
-
+	
 	-- Remove default chatframe tab textures
 	_G[string_format("ChatFrame%sTabLeft", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabMiddle", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabRight", ID)]:Kill()
-
+	
 	_G[string_format("ChatFrame%sTabSelectedLeft", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabSelectedMiddle", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabSelectedRight", ID)]:Kill()
-
+	
 	_G[string_format("ChatFrame%sTabHighlightLeft", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabHighlightMiddle", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabHighlightRight", ID)]:Kill()
-
+	
 	_G[string_format("ChatFrame%sTabSelectedLeft", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabSelectedMiddle", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabSelectedRight", ID)]:Kill()
-
+	
 	_G[string_format("ChatFrame%sButtonFrameUpButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrameDownButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrameBottomButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrameMinimizeButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrame", ID)]:Kill()
-
+	
 	_G[string_format("ChatFrame%sEditBoxFocusLeft", ID)]:Kill()
 	_G[string_format("ChatFrame%sEditBoxFocusMid", ID)]:Kill()
 	_G[string_format("ChatFrame%sEditBoxFocusRight", ID)]:Kill()
-
+	
 	_G[string_format("ChatFrame%sEditBoxLeft", ID)]:Kill()
 	_G[string_format("ChatFrame%sEditBoxMid", ID)]:Kill()
 	_G[string_format("ChatFrame%sEditBoxRight", ID)]:Kill()
-
+	
 	-- Kill off editbox artwork
 	local A, B, C = select(6, EditBox:GetRegions())
 	A:Kill()
 	B:Kill()
 	C:Kill()
-
+	
 	if ID ~= 2 then
 		if not hooks[frame] then
 			hooks[frame] = {}
@@ -400,37 +341,37 @@ function Module:StyleFrame(frame)
 			frame.AddMessage = AddMessage
 		end
 	end
-
+	
 	-- Mouse Wheel
 	Frame:SetScript("OnMouseWheel", Module.OnMouseWheel)
-
+	
 	-- Temp Chats
 	if (ID > 10) then
 		self.SetChatFont(Frame)
 	end
-
+	
 	-- Security for font, in case if revert back to WoW default we restore instantly the font.
 	hooksecurefunc(Frame, "SetFont", Module.SetChatFont)
-
+	
 	Frame.IsSkinned = true
 end
 
 function Module:KillPetBattleCombatLog(Frame)
-	if (_G[Frame:GetName().."Tab"]:GetText():match(String.PET_BATTLE_COMBAT_LOG)) then
+	if (_G[Frame:GetName().."Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG)) then
 		return FCF_Close(Frame)
 	end
 end
 
 function Module:StyleTempFrame()
 	local Frame = FCF_GetCurrentChatFrame()
-
+	
 	Module:KillPetBattleCombatLog(Frame)
-
+	
 	-- Make sure it"s not skinned already
 	if Frame.IsSkinned then
 		return
 	end
-
+	
 	-- Pass it on
 	Module:StyleFrame(Frame)
 end
@@ -439,23 +380,23 @@ function Module:SetDefaultChatFramesPositions()
 	if (not KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
 		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat = {}
 	end
-
+	
 	local Width = C["Chat"].Width
 	local Height = C["Chat"].Height
-
+	
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		local ID = Frame:GetID()
-
+		
 		-- Set font size and chat frame size
 		Frame:SetSize(Width, Height)
-
+		
 		-- move general bottom left
 		if ID == 1 then
 			Frame:ClearAllPoints()
 			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 		end
-
+		
 		-- rename windows general because moved to chat #3
 		if ID == 1 then
 			FCF_SetWindowName(Frame, GENERAL)
@@ -464,13 +405,13 @@ function Module:SetDefaultChatFramesPositions()
 		elseif ID == 3 then
 			FCF_SetWindowName(Frame, LOOT.." / "..TRADE)
 		end
-
+		
 		if (not Frame.isLocked) then
 			FCF_SetLocked(Frame, 1)
 		end
-
+		
 		local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame" .. i] = {Anchor1, Anchor2, X, Y, Width, Height}
+		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
 	end
 end
 
@@ -478,31 +419,31 @@ function Module:SaveChatFramePositionAndDimensions()
 	local Anchor1, _, Anchor2, X, Y = self:GetPoint()
 	local Width, Height = self:GetSize()
 	local ID = self:GetID()
-
+	
 	if not (KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
 		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat = {}
 	end
-
-	KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame" .. ID] = {Anchor1, Anchor2, X, Y, Width, Height}
+	
+	KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame"..ID] = {Anchor1, Anchor2, X, Y, Width, Height}
 end
 
 function Module:SetChatFramePosition()
 	if (not KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
 		return
 	end
-
+	
 	local Frame = self
-
+	
 	if not Frame:IsMovable() then
 		return
 	end
-
+	
 	local ID = Frame:GetID()
-	local Settings = KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame" .. ID]
-
+	local Settings = KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame"..ID]
+	
 	if Settings then
 		local Anchor1, Anchor2, X, Y, Width, Height = unpack(Settings)
-
+		
 		Frame:SetUserPlaced(true)
 		Frame:ClearAllPoints()
 		Frame:SetPoint(Anchor1, UIParent, Anchor2, X, Y)
@@ -517,11 +458,11 @@ function Module:Install()
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
-
+	
 	FCF_OpenNewWindow(LOOT)
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
-
+	
 	-- Enable Classcolor
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
@@ -556,8 +497,8 @@ function Module:Install()
 	ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
 	ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
 	ChatFrame_AddMessageGroup(ChatFrame1, "BN_INLINE_TOAST_ALERT")
-
-
+	
+	
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
 	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_FACTION_CHANGE")
 	ChatFrame_AddMessageGroup(ChatFrame3, "SKILL")
@@ -570,12 +511,12 @@ function Module:Install()
 	ChatFrame_AddChannel(ChatFrame1, GENERAL)
 	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.Trade)
 	ChatFrame_AddChannel(ChatFrame3, L.Chat.Trade)
-
-
+	
+	
 	if K.Name == "Kkthnx" and K.Realm == "Felsong" then
 		SetCVar("scriptErrors", 1)
 	end
-
+	
 	-- enable classcolor automatically on login and on each character without doing /configure each time.
 	ToggleChatColorNamesByClassGroup(true, "SAY")
 	ToggleChatColorNamesByClassGroup(true, "EMOTE")
@@ -605,12 +546,12 @@ function Module:Install()
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL9")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL10")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL11")
-
+	
 	-- Adjust Chat Colors
 	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255)
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255)
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255)
-
+	
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 end
 
@@ -648,14 +589,14 @@ function Module:SetupFrame()
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		local Tab = _G["ChatFrame"..i.."Tab"]
-
+		
 		Tab.noMouseAlpha = 0
 		Tab:SetAlpha(0)
 		Tab:HookScript("OnClick", self.SwitchSpokenDialect)
-
+		
 		self:StyleFrame(Frame)
 	end
-
+	
 	-- Remember last channel
 	ChatTypeInfo.BN_WHISPER.sticky = 1
 	ChatTypeInfo.CHANNEL.sticky = 1
@@ -668,7 +609,7 @@ function Module:SetupFrame()
 	ChatTypeInfo.SAY.sticky = 1
 	ChatTypeInfo.WHISPER.sticky = 1
 	ChatTypeInfo.YELL.sticky = 0
-
+	
 	ChatConfigFrameDefaultButton:Kill()
 	ChatFrameMenuButton:Kill()
 	QuickJoinToastButton:Kill()
@@ -678,7 +619,7 @@ function Module:OnEnable()
 	if (not C["Chat"].Enable) then
 		return
 	end
-
+	
 	self:SetShortenChannelNames()
 	self:SetupFrame()
 	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
@@ -686,18 +627,18 @@ function Module:OnEnable()
 	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
 	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
 	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
-
+	
 	for i = 1, 10 do
 		local ChatFrame = _G["ChatFrame"..i]
-
+		
 		self.SetChatFramePosition(ChatFrame)
 		self.SetChatFont(ChatFrame)
 	end
-
+	
 	if (not C["Chat"].WhisperSound) then
 		return
 	end
-
+	
 	local Whisper = CreateFrame("Frame")
 	Whisper:RegisterEvent("CHAT_MSG_WHISPER")
 	Whisper:RegisterEvent("CHAT_MSG_BN_WHISPER")

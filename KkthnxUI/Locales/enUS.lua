@@ -76,27 +76,42 @@ L["Automation"] = {
 
 -- Blizzard Localization
 L["Blizzard"] = {
-
+	No_Errors = "No error yet.",
 }
 
 -- Chat Localization
 L["Chat"] = {
 	AFK = "",
 	DND = "",
-	Guild = "G",
-	Instance = "I",
-	Instance_Leader = "IL",
 	Invaild_Target = "Invaild Target",
-	Officer = "O",
-	Party = "P",
-	Party_Leader = "PL",
-	Raid = "R",
-	Raid_Leader = "RL",
-	Raid_Warning = "RW",
-	Says = "S",
+	-- Channel Names
+	Conversation = "Conversation",
+	General = "General",
+	LocalDefense = "LocalDefense",
+	LookingForGroup = "LookingForGroup",
 	Trade = "Trade",
-	Whispers = "W",
-	Yells = "Y",
+	WorldDefense = "WorldDefense",
+	-- Short Channel Names
+	S_Conversation = "C",
+	S_General = "G",
+	S_Guild = "g",
+	S_InstanceChat = "i",
+	S_InstanceChatLeader = "I",
+	S_LocalDefense = "LD",
+	S_LookingForGroup = "LFG",
+	S_Officer = "o",
+	S_Party = "p",
+	S_PartyGuide = "PG",
+	S_PartyLeader = "PL",
+	S_Raid = "r",
+	S_RaidLeader = "R",
+	S_RaidWarning = "W",
+	S_Say = "s",
+	S_Trade = "T",
+	S_WhisperIncoming = "w",
+	S_WhisperOutgoing = "@",
+	S_WorldDefense = "WD",
+	S_Yell = "y",
 }
 
 -- Configbutton Localization

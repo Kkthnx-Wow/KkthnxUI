@@ -14,11 +14,11 @@ if C["Error"].White == true or C["Error"].Black == true then
 			if K.ErrorWhiteList[text] then
 				UIErrorsFrame:AddMessage(text, 1, .1, .1)
 			else
-				L["NoErrors"] = text
+				L["Blizzard"].No_Errors = text
 			end
 		elseif C["Error"].Black == true and C["Error"].White == false then
 			if K.ErrorBlackList[text] then
-				L["NoErrors"] = text
+				L["Blizzard"].No_Errors = text
 			else
 				UIErrorsFrame:AddMessage(text, 1, .1, .1)
 			end
@@ -26,7 +26,7 @@ if C["Error"].White == true or C["Error"].Black == true then
 	end)
 
 	SlashCmdList.ERROR = function()
-		UIErrorsFrame:AddMessage(L["NoErrors"], 1, .1, .1)
+		UIErrorsFrame:AddMessage(L["Blizzard"].No_Errors, 1, .1, .1)
 	end
 
 	_G.SLASH_ERROR1 = "/error"
