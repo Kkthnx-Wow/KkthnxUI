@@ -30,7 +30,7 @@ local function pull(self, elapsed)
 		target = ""
 	end
 	if not firstdone then
-		SendChatMessage(string_format("Pulling %s in %s..", target, tostring(delay)), K.CheckChat(true))
+		SendChatMessage(string_format(L["Announcements"].Pulling, target, tostring(delay)), K.CheckChat(true))
 		firstdone = true
 		delay = delay - 1
 	end
@@ -51,7 +51,7 @@ function frame.Pull(timer)
 	delay = timer or 3
 	if timerframe:GetScript("OnUpdate") then
 		reset()
-		SendChatMessage(L["Pull ABORTED!"], K.CheckChat(true))
+		SendChatMessage(L["Announcements"].Pull_Aborted, K.CheckChat(true))
 	else
 		timerframe:SetScript("OnUpdate", pull)
 	end

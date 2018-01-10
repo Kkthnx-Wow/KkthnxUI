@@ -5,5 +5,7 @@
     <Script file="Castbars.lua" />
     <Script file="ClassModules.lua" />
     <Script file="HealthPrediction.lua" />
+    <Script file="PowerPrediction.lua" />
+    <Script file="Threat.lua" />
     <Script file="Tags.lua" />
 </Ui>

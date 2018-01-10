@@ -11,7 +11,9 @@ local LE_ITEM_CLASS_QUESTITEM = _G.LE_ITEM_CLASS_QUESTITEM
 local LE_ITEM_CLASS_TRADEGOODS = _G.LE_ITEM_CLASS_TRADEGOODS
 
 -- Install Localization
-L.Install = {
+L["Install"] = {
+	Chat_Set = "Chat Set",
+	CVars_Set = "CVars Set",
 	Step_0 = "Thank you for choosing |cff4488ffKkthnxUI|r!|n|nYou will be guided through the installation process in a few simple steps. At each step you can decide whether or not you want to apply or skip the presented settings.",
 	Step_1 = "The first step applies the essential settings. This is |cffff0000recommended|r for any user unless you want to apply only a specific part of the settings.|n|nClick 'Apply' to apply the settings and 'Next' to continue the install process. If you wish to skip this step just press 'Next'.",
 	Step_2 = "The second step applies the correct chat setup. If you are a new user this step is recommended. If you are an existing user you may want to skip this step.|n|nClick 'Apply' to apply the settings and 'Next' to continue the install process. If you wish to skip this step just press 'Next'.",
@@ -22,25 +24,26 @@ L.Install = {
 }
 
 -- StaticPopups Localization
-L.StaticPopups = {
-	Cant_Buy_Bank = "You Can't buy anymore bank slots!",
+L["StaticPopups"] = {
 	Changes_Reload = "One or more of the changes you have made require a ReloadUI.",
 	Config_Reload = "One or more of the changes you have made require a ReloadUI.",
 	Delete_Grays = "|cffff2020WARNING!|r\n\nYou are about to delete all your gray items. You will not receive any currency for this. Do you want to continue?\n\nThe net worth of items being deleted displayed below.",
+	Disband_Group = "Are you sure you want to disband the group?",
 	KkthnxUI_Update = "KkthnxUI is out of date. You can download the newest version from Curse!",
-	No_Bank_Bags = "Please purchase a bank slot first.",
+	Reset_UI = "Are you sure you want to reset all the settings on this profile?",
 	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
+	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?"
 }
 
 -- Commands Localization
-L.Commands = {
+L["Commands"] = {
 	ConfigPerAccount = "Your settings are currently set accross toons so you can't use this command!",
 	ProfileNotFound = "Profile not found",
 	ProfileSelection = "Please type a profile to use (example: /profile Stormreaver-Kkthnx)",
 }
 
 -- ActionBars Localization
-L.Actionbars = {
+L["Actionbars"] = {
 	All_Binds_Cleared = "All keybindings cleared for",
 	All_Binds_Discarded = "All newly set keybindings were discarded.",
 	All_Binds_Saved = "All keybindings have been saved.",
@@ -53,48 +56,66 @@ L.Actionbars = {
 }
 
 -- Announcements Localization
-L.Announcements = {
-
+L["Announcements"] = {
+	Pull_Aborted = "Pull ABORTED!",
+	Pulling = "Pulling %s in %s..",
+	Sapped = "Sapped!",
+	Sapped_By = "Sapped by: ",
 }
 
 -- Auras Localization
-L.Auras = {
+L["Auras"] = {
 
 }
 
 -- Automation Localization
-L.Automation = {
+L["Automation"] = {
 	DuelCanceled_Regular = "Duel request from %s rejected.",
 	DuelCanceled_Pet = "Pet duel request from %s rejected.",
 }
 
 -- Blizzard Localization
-L.Blizzard = {
-
+L["Blizzard"] = {
+	No_Errors = "No error yet.",
 }
 
 -- Chat Localization
-L.Chat = {
+L["Chat"] = {
 	AFK = "",
 	DND = "",
-	Guild = "G",
-	Instance = "I",
-	Instance_Leader = "IL",
 	Invaild_Target = "Invaild Target",
-	Officer = "O",
-	Party = "P",
-	Party_Leader = "PL",
-	Raid = "R",
-	Raid_Leader = "RL",
-	Raid_Warning = "RW",
-	Says = "S",
+	-- Channel Names
+	Conversation = "Conversation",
+	General = "General",
+	LocalDefense = "LocalDefense",
+	LookingForGroup = "LookingForGroup",
 	Trade = "Trade",
-	Whispers = "W",
-	Yells = "Y",
+	WorldDefense = "WorldDefense",
+	-- Short Channel Names
+	S_Conversation = "C",
+	S_General = "G",
+	S_Guild = "g",
+	S_InstanceChat = "i",
+	S_InstanceChatLeader = "I",
+	S_LocalDefense = "LD",
+	S_LookingForGroup = "LFG",
+	S_Officer = "o",
+	S_Party = "p",
+	S_PartyGuide = "PG",
+	S_PartyLeader = "PL",
+	S_Raid = "r",
+	S_RaidLeader = "R",
+	S_RaidWarning = "W",
+	S_Say = "s",
+	S_Trade = "T",
+	S_WhisperIncoming = "w",
+	S_WhisperOutgoing = "@",
+	S_WorldDefense = "WD",
+	S_Yell = "y",
 }
 
 -- Configbutton Localization
-L.ConfigButton = {
+L["ConfigButton"] = {
 	Functions = "Functions",
 	LeftClick = "Left click:",
 	RightClick = "Right click:",
@@ -111,19 +132,19 @@ L.ConfigButton = {
 }
 
 -- Databars Localization
-L.Databars = {
+L["Databars"] = {
 	Toggle_Artifact = "<Left-Click to toggle Artifact Window>",
 	Toggle_Honor = "<Left-Click to toggle Honor Window>",
 	Toggle_Reputation = "<Left-Click to toggle Reputation Window>",
 }
 
 -- Datatext Localization
-L.Datatext = {
+L["Datatext"] = {
 
 }
 
 -- Inventory Localization
-L.Inventory = {
+L["Inventory"] = {
 	Artifact_Count = "Count: ",
 	Artifact_Use = "Right click to use",
 	Buttons_Artifact = "Right click to use Artifact Power item in bag",
@@ -132,20 +153,21 @@ L.Inventory = {
 	Right_Click_Search = "Right-click to search",
 	Shift_Move = "Hold Shift + Drag",
 	Show_Bags = "Toggle Bags",
+	TrashList = "\n\nTrash List:\n"
 }
 
 -- Loot Localization
-L.Loot = {
+L["Loot"] = {
 
 }
 
 -- Maps Localization
-L.Maps = {
+L["Maps"] = {
 
 }
 
 -- Miscellaneous Localization
-L.Miscellaneous = {
+L["Miscellaneous"] = {
 	Apr = "Apr",
 	Aug = "Aug",
 	Config_Not_Found = "KkthnxUI_Config was not found!",
@@ -175,27 +197,27 @@ L.Miscellaneous = {
 }
 
 -- Nameplates Localization
-L.Nameplates = {
+L["Nameplates"] = {
 
 }
 
 -- Panels Localization
-L.Panels = {
+L["Panels"] = {
 
 }
 
 -- Quests Localization
-L.Quests = {
+L["Quests"] = {
 
 }
 
 -- Skins Localization
-L.Skins = {
+L["Skins"] = {
 	Skada_Reset = "Do you want to reset Skada?",
 }
 
 -- Tooltip Localization
-L.Tooltip = {
+L["Tooltip"] = {
 	Bank = "Bank",
 	Companion_Pets = GetItemSubClassInfo(LE_ITEM_CLASS_MISCELLANEOUS, 2),
 	Count = "Count",
@@ -206,13 +228,13 @@ L.Tooltip = {
 }
 
 -- UnitFrames Localization
-L.Unitframes = {
+L["Unitframes"] = {
 	Dead = "Dead",
 	Ghost = "Ghost",
 }
 
 -- Config Localization
-L.Config = {
+L["Config"] = {
 	CharSettings = "Use Character Settings",
 	ConfigNotFound = "Config not found!",
 	GlobalSettings = "Use Global Settings",

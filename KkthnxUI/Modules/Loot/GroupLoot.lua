@@ -87,7 +87,7 @@ local function LootClick(frame)
 		elseif IsShiftKeyDown() then ChatEdit_InsertLink(frame.link) end
 end
 
-local function OnEvent(frame, event, rollID)
+local function OnEvent(frame, _, rollID)
 	cancelled_rolls[rollID] = true
 	if frame.rollID ~= rollID then return end
 
@@ -131,8 +131,7 @@ end
 function GroupLoot:CreateRollFrame()
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
-	K.CreateBorder(frame, 5)
-	frame:SetBackdrop(K.BorderBackdrop)
+	frame:SetTemplate("Transparent", true)
 	frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 	frame:SetScript("OnEvent", OnEvent)
 	frame:SetFrameStrata("MEDIUM")
@@ -142,9 +141,8 @@ function GroupLoot:CreateRollFrame()
 
 	local button = CreateFrame("Button", nil, frame)
 	button:SetPoint("RIGHT", frame, "LEFT", -(2 * 3), 0)
-	button:SetSize(FRAME_HEIGHT - (2 * 2), FRAME_HEIGHT - (2 * 2))
-	K.CreateBorder(button, 4)
-	button:SetBackdrop(K.BorderBackdrop)
+	button:SetSize(FRAME_HEIGHT + 2, FRAME_HEIGHT)
+	button:SetTemplate("Transparent", true)
 	button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnEnter", SetItemTip)
@@ -165,7 +163,7 @@ function GroupLoot:CreateRollFrame()
 	tfade:SetGradientAlpha("VERTICAL", .1, .1, .1, 0, .1, .1, .1, 0)
 
 	local status = CreateFrame("StatusBar", nil, frame)
-	status:SetInside()
+	status:SetAllPoints()
 	status:SetScript("OnUpdate", StatusUpdate)
 	status:SetFrameLevel(status:GetFrameLevel()-1)
 	status:SetStatusBarTexture(GroupLootTexture)
@@ -210,7 +208,7 @@ function GroupLoot:CreateRollFrame()
 end
 
 local function GetFrame()
-	for i, f in ipairs(GroupLoot.RollBars) do
+	for _, f in ipairs(GroupLoot.RollBars) do
 		if not f.rollID then return f end
 	end
 
@@ -220,11 +218,11 @@ local function GetFrame()
 	else
 		f:SetPoint("BOTTOM", next(GroupLoot.RollBars) and GroupLoot.RollBars[#GroupLoot.RollBars] or AlertFrameHolder, "TOP", 0, 4)
 	end
-	tinsert(GroupLoot.RollBars, f)
+	table.insert(GroupLoot.RollBars, f)
 	return f
 end
 
-function GroupLoot:START_LOOT_ROLL(event, rollID, time)
+function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 	if cancelled_rolls[rollID] then return end
 	local f = GetFrame()
 	f.rollID = rollID
@@ -296,13 +294,13 @@ function GroupLoot:START_LOOT_ROLL(event, rollID, time)
 	end
 end
 
-function GroupLoot:LOOT_HISTORY_ROLL_CHANGED(event, itemIdx, playerIdx)
+function GroupLoot:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)
 	local rollID = C_LootHistoryGetItem(itemIdx)
 	local name, class, rollType = C_LootHistoryGetPlayerInfo(itemIdx, playerIdx)
 
 	local rollIsHidden = true
 	if name and rollType then
-		for _,f in ipairs(GroupLoot.RollBars) do
+		for _, f in ipairs(GroupLoot.RollBars) do
 			if f.rollID == rollID then
 				f.rolls[name] = {rollType, class}
 				f[rolltypes[rollType]]:SetText(tonumber(f[rolltypes[rollType]]:GetText()) + 1)
@@ -341,3 +339,39 @@ function GroupLoot:OnEnable()
 	UIParent:UnregisterEvent("START_LOOT_ROLL")
 	UIParent:UnregisterEvent("CANCEL_LOOT_ROLL")
 end
+
+SlashCmdList.TESTROLL = function()
+	local f = GetFrame()
+	local items = {32837, 34196, 33820, 84004}
+	if f:IsShown() then
+		f:Hide()
+	else
+		local item = items[math.random(1, #items)]
+		local _, _, quality, _, _, _, _, _, _, texture = GetItemInfo(item)
+		local r, g, b = GetItemQualityColor(quality or 1)
+
+		f.button.icon:SetTexture(texture)
+		f.button.icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+
+		f.fsloot:SetText(GetItemInfo(item))
+		f.fsloot:SetVertexColor(r, g, b)
+
+		f.status:SetMinMaxValues(0, 100)
+		f.status:SetValue(math.random(50, 90))
+		f.status:SetStatusBarColor(r, g, b, 0.7)
+		f.status.bg:SetColorTexture(r, g, b)
+
+		f:SetBackdropBorderColor(r, g, b, 0.7)
+		f.button:SetBackdropBorderColor(r, g, b, 0.7)
+
+		f.need:SetText(0)
+		f.greed:SetText(0)
+		f.pass:SetText(0)
+		f.disenchant:SetText(0)
+
+		f.button.link = "item:"..item..":0:0:0:0:0:0:0"
+		f:Show()
+	end
+end
+SLASH_TESTROLL1 = "/testroll"
+SLASH_TESTROLL2 = "/еуыекщдд"

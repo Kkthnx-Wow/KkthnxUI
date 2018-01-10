@@ -3,4 +3,5 @@
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Inventory -->
     <Script file="Inventory.lua" />
+    <Script file="Filter.lua" />
 </Ui>

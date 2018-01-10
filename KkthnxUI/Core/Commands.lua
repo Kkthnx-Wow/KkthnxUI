@@ -132,7 +132,7 @@ function SlashCmdList.PROFILES(msg)
 
 	msg = string_lower(msg)
 	if KkthnxUIConfigPerAccount then
-		K.Print(L.Commands.ConfigPerAccount)
+		K.Print(L.Commands.Config_Per_Account)
 		return
 	end
 	if not msg or msg == "" then
@@ -156,7 +156,7 @@ function SlashCmdList.PROFILES(msg)
 			local CurrentCharacter = UnitName("player")
 			local Profile = tonumber(msg)
 			if not KkthnxUI.Profiles or not KkthnxUI.Profiles.Data[Profile] then
-				K.Print(L.Commands.ProfileNotFound)
+				K.Print(L.Commands.Profile_Not_Found)
 				return
 			end
 			KkthnxUIData[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Data[Profile]
@@ -168,7 +168,7 @@ end
 _G.SLASH_PROFILES1 = "/profile"
 _G.SLASH_PROFILES2 = "/profiles"
 
-function SlashCmdList.MOVEUI(msg)
+function SlashCmdList.MOVEUI()
 	if InCombatLockdown() then
 		print(ERR_NOT_IN_COMBAT)
 		return
@@ -294,11 +294,15 @@ _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
 function K.SetUIScale()
-	if InCombatLockdown() or C["General"].AutoScale then return end
+	if InCombatLockdown() or C["General"].AutoScale then 
+		print("KkthnxUI is already controlling the Auto UI Scale feature!") 
+		return 
+	end
 
 	local SetUIScale = GetCVarBool("uiScale")
 	if not SetUIScale then
 		SetCVar("uiScale", 768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
+		print("Successfully set UI scale to "..768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 		StaticPopup_Show("CHANGES_RL")
 	end
 end
@@ -314,7 +318,7 @@ function K.DisbandRaidGroup()
 	if InCombatLockdown() then return end
 
 	if UnitInRaid("player") then
-		SendChatMessage(L.Info.Disabnd, "RAID")
+		SendChatMessage(L["StaticPopups"].Disband_Group, "RAID")
 		for i = 1, GetNumGroupMembers() do
 			local name, _, _, _, _, _, _, online = GetRaidRosterInfo(i)
 			if online and name ~= K.Name then
@@ -322,7 +326,7 @@ function K.DisbandRaidGroup()
 			end
 		end
 	else
-		SendChatMessage(L.Info.Disband, "PARTY")
+		SendChatMessage(L["StaticPopups"].Disband_Group, "PARTY")
 		for i = MAX_PARTY_MEMBERS, 1, - 1 do
 			if UnitExists("party"..i) then
 				UninviteUnit(UnitName("party"..i))
@@ -434,7 +438,7 @@ _G.SLASH_CLEARCHAT2 = "/chatclear"
 
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
-	PlaySound("LFG_Rewards")
+	PlaySound(PlaySoundKitID and "lfg_rewards" or SOUNDKIT.LFG_REWARDS)
 	if not AchievementFrame then
 		AchievementFrame_LoadUI()
 	end
@@ -563,14 +567,12 @@ SlashCmdList.TEST_UI = function()
 	end
 
 	if C["Announcements"].PullCountdown then
-		SlashCmdList.PULLCOUNTDOWN()
+		--SlashCmdList.PULLCOUNTDOWN()
 	end
 
-	if C["Loot"].GroupLoot then
-		SlashCmdList.TESTROLL()
+	if IsAddOnLoaded("DBM-Core") then
+		SlashCmdList.DBMTEST()
 	end
-
-	SlashCmdList.DBMTEST()
 	SlashCmdList.TEST_EXTRABUTTON()
 	SlashCmdList.TEST_ACHIEVEMENT()
 	SlashCmdList.TOGGLE_GRID()

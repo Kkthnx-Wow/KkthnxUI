@@ -1,5 +1,7 @@
 debugprofilestart()
 
+local AddOnName, Engine = ...
+
 --[[
 	The MIT License (MIT)
 
@@ -30,51 +32,18 @@ debugprofilestart()
 	local K, C, L = unpack(KkthnxUI)
 ]]
 
-local AddOnName, Engine = ...
-
--- GLOBALS: _G, string, debugprofilestart, hooksecurefunc, select, KkthnxUIData, LibStub, CUSTOM_CLASS_COLORS
--- GLOBALS: tonumber, KkthnxUIDataPerChar, KkthnxUIConfigNotShared, KkthnxUIConfigShared, ConsolePort, GameMenuButtonWhatsNew
--- GLOBALS: KkthnxUIConfigFrame, KkthnxUIConfig
-
--- luacheck: globals _G string debugprofilestart hooksecurefunc select KkthnxUIData LibStub CUSTOM_CLASS_COLORS
--- luacheck: globals tonumber KkthnxUIDataPerChar KkthnxUIConfigNotShared KkthnxUIConfigShared ConsolePort GameMenuButtonWhatsNew
--- luacheck: globals KkthnxUIConfigFrame KkthnxUIConfig
-
 -- Lua API
 local _G = _G
-local hooksecurefunc = hooksecurefunc
-local select = select
+local string_format = string.format
 local string_lower = string.lower
 
 -- Wow API
-local CreateFrame = _G.CreateFrame
-local DecodeResolution = _G.DecodeResolution
-local GameMenuButtonAddons = _G.GameMenuButtonAddons
-local GameMenuButtonLogout = _G.GameMenuButtonLogout
-local GameMenuFrame = _G.GameMenuFrame
-local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetBuildInfo = _G.GetBuildInfo
-local GetCurrentResolution = _G.GetCurrentResolution
-local GetCVar = _G.GetCVar
-local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
-local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
-local GetScreenResolutions = _G.GetScreenResolutions
-local GetSpecialization = _G.GetSpecialization
-local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
-local IsAddOnLoaded = _G.IsAddOnLoaded
-local LoadAddOn = _G.LoadAddOn
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local StaticPopup_Show = _G.StaticPopup_Show
-local UnitClass = _G.UnitClass
-local UnitGUID = _G.UnitGUID
-local UnitLevel = _G.UnitLevel
-local UnitName = _G.UnitName
-local UnitRace = _G.UnitRace
 
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 
@@ -83,9 +52,6 @@ Engine[2] = {}
 Engine[3] = {}
 
 _G[AddOnName] = Engine
-
-local Name = UnitName("Player")
-local Realm = GetRealmName()
 
 AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
 AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
@@ -115,33 +81,32 @@ function AddOn:OnInitialize()
 	if (not KkthnxUIData) then KkthnxUIData = KkthnxUIData or {} end
 
 	-- Create missing entries in the saved vars if they don"t exist.
-	if (not KkthnxUIData[Realm]) then KkthnxUIData[Realm] = KkthnxUIData[Realm] or {} end
-	if (not KkthnxUIData[Realm][Name]) then KkthnxUIData[Realm][Name] = KkthnxUIData[Realm][Name] or {} end
-	if (not KkthnxUIData[Realm][Name].BarsLocked) then KkthnxUIData[Realm][Name].BarsLocked = false end
-	if (not KkthnxUIData[Realm][Name].BottomBars) then KkthnxUIData[Realm][Name].BottomBars = Engine[2]["ActionBar"].BottomBars or 2 end
-	if (not KkthnxUIData[Realm][Name].RightBars) then KkthnxUIData[Realm][Name].RightBars = Engine[2]["ActionBar"].RightBars or 1 end
-	if (not KkthnxUIData[Realm][Name].SplitBars) then KkthnxUIData[Realm][Name].SplitBars = true end
-	if (not KkthnxUIData[Realm][Name].AutoInvite) then KkthnxUIData[Realm][Name].AutoInvite = false end
-	if (KkthnxUIDataPerChar) then KkthnxUIData[Realm][Name] = KkthnxUIDataPerChar KkthnxUIDataPerChar = nil end
+	if (not KkthnxUIData[self.Realm]) then KkthnxUIData[self.Realm] = KkthnxUIData[self.Realm] or {} end
+	if (not KkthnxUIData[self.Realm][self.Name]) then KkthnxUIData[self.Realm][self.Name] = KkthnxUIData[self.Realm][self.Name] or {} end
+	if (not KkthnxUIData[self.Realm][self.Name].BarsLocked) then KkthnxUIData[self.Realm][self.Name].BarsLocked = false end
+	if (not KkthnxUIData[self.Realm][self.Name].BottomBars) then KkthnxUIData[self.Realm][self.Name].BottomBars = Engine[2]["ActionBar"].BottomBars or 2 end
+	if (not KkthnxUIData[self.Realm][self.Name].RightBars) then KkthnxUIData[self.Realm][self.Name].RightBars = Engine[2]["ActionBar"].RightBars or 1 end
+	if (not KkthnxUIData[self.Realm][self.Name].SplitBars) then KkthnxUIData[self.Realm][self.Name].SplitBars = true end
+	if (not KkthnxUIData[self.Realm][self.Name].AutoInvite) then KkthnxUIData[self.Realm][self.Name].AutoInvite = false end
+	if (KkthnxUIDataPerChar) then KkthnxUIData[self.Realm][self.Name] = KkthnxUIDataPerChar KkthnxUIDataPerChar = nil end
 
 	-- Blizzard has too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
-	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[Realm][Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
+	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[self.Realm][self.Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
 	if (not KkthnxUIConfigShared) then KkthnxUIConfigShared = {} end
 	if (not KkthnxUIConfigShared.Account) then KkthnxUIConfigShared.Account = {} end
-	if (not KkthnxUIConfigShared[Realm]) then KkthnxUIConfigShared[Realm] = {} end
-	if (not KkthnxUIConfigShared[Realm][Name]) then KkthnxUIConfigShared[Realm][Name] = {} end
-	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[Realm][Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
+	if (not KkthnxUIConfigShared[self.Realm]) then KkthnxUIConfigShared[self.Realm] = {} end
+	if (not KkthnxUIConfigShared[self.Realm][self.Name]) then KkthnxUIConfigShared[self.Realm][self.Name] = {} end
+	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[self.Realm][self.Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
 
-	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
+	local IsInstalled = KkthnxUIData[self.Realm][self.Name].InstallComplete
 	if (not IsInstalled) then
 		self.Install:Launch()
 	end
 
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
-	GameMenuButton:SetText(format("|cff4488ff%s|r", AddOnName))
+	GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
 	GameMenuButton:SetScript("OnClick", function()
-
 		if (InCombatLockdown()) then
 			return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
 		end
@@ -149,11 +114,13 @@ function AddOn:OnInitialize()
 		if (not KkthnxUIConfigFrame) then
 			KkthnxUIConfig:CreateConfigWindow()
 		end
+
 		if KkthnxUIConfigFrame:IsVisible() then
 			KkthnxUIConfigFrame:Hide()
 		else
 			KkthnxUIConfigFrame:Show()
 		end
+
 		HideUIPanel(GameMenuFrame)
 	end)
 	GameMenuFrame[AddOnName] = GameMenuButton
@@ -196,10 +163,10 @@ end
 
 -- Check if an addon exists in the addon listing and loadable on demand
 function AddOn.IsAddOnLoadable(target)
-	local target = strlower(target)
-	for i = 1,GetNumAddOns() do
+	local target = string_lower(target)
+	for i = 1, GetNumAddOns() do
 		local name, title, notes, enabled, loadable, reason, security = AddOn.GetAddOnInfo(i)
-		if strlower(name) == target then
+		if string_lower(name) == target then
 			if loadable then
 				return true
 			end
@@ -209,10 +176,10 @@ end
 
 -- Check if an addon is enabled	in the addon listing
 function AddOn.IsAddOnEnabled(target)
-	local target = strlower(target)
+	local target = string_lower(target)
 	for i = 1, GetNumAddOns() do
 		local name, title, notes, enabled, loadable, reason, security = AddOn.GetAddOnInfo(i)
-		if strlower(name) == target then
+		if string_lower(name) == target then
 			if enabled then
 				return true
 			end

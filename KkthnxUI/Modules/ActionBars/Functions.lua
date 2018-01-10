@@ -26,7 +26,7 @@ local SetDesaturation = _G.SetDesaturation
 -- GLOBALS: ShiftHolder, CooldownFrame_Set, StanceBarFrame
 
 -- Main functions
-K.ShiftBarUpdate = function(...)
+function K.ShiftBarUpdate(...)
 	if InCombatLockdown() then return end
 	local numForms = GetNumShapeshiftForms()
 	local texture, name, isActive, isCastable
@@ -65,7 +65,7 @@ K.ShiftBarUpdate = function(...)
 	end
 end
 
-K.PetBarUpdate = function(...)
+function K.PetBarUpdate(...)
 	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
 		local buttonName = "PetActionButton"..i

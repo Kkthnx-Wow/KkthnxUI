@@ -135,7 +135,7 @@ function Module:OnEnable()
 	self.artifactBar.statusBar = CreateFrame("StatusBar", nil, self.artifactBar)
 	self.artifactBar.statusBar:SetAllPoints()
 	self.artifactBar.statusBar:SetStatusBarTexture(ArtifactTexture)
-	self.artifactBar.statusBar:SetStatusBarColor(.901, .8, .601)
+	self.artifactBar.statusBar:SetStatusBarColor(C["DataBars"].ArtifactColor[1], C["DataBars"].ArtifactColor[2], C["DataBars"].ArtifactColor[3])
 	self.artifactBar.statusBar:SetMinMaxValues(0, 325)
 	self.artifactBar.statusBar:SetTemplate("Transparent")
 

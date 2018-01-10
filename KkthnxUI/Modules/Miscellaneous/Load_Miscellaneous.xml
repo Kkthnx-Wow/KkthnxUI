@@ -5,6 +5,7 @@
     <Script file="AFKSpin.lua" />
     <Script file="ChatBubble.lua" />
     <Script file="DropDown.lua" />
+    <Script file="Filger.lua" />
     <Script file="KillingBlow.lua" />
     <Script file="LossControl.lua" />
     <Script file="Miscellaneous.lua" />

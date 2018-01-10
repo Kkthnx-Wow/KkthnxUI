@@ -1,6 +1,8 @@
 local K, C = unpack(select(2, ...))
 
-local CreateFrame = CreateFrame
+local _G = _G
+
+local CreateFrame = _G.CreateFrame
 
 local PredictionFont = K.GetFont(C["Unitframe"].Font)
 local PredictionTexture = K.GetTexture(C["Unitframe"].Texture)

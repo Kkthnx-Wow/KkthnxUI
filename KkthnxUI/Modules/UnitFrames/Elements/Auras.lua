@@ -12,12 +12,31 @@ local GetTime = _G.GetTime
 local UnitAura = _G.UnitAura
 local UnitIsFriend = _G.UnitIsFriend
 
-local function CustomTargetFilter(...) -- Debuffs
-	local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-	return owner == "player" or owner == "vehicle" or UnitIsFriend("player", unit) or not owner
+local ImportantDebuffs = {
+	[6788] = K.Class == "PRIEST", -- Weakened Soul
+	[25771] = K.Class == "PALADIN", -- Forbearance
+	[212570] = true, -- Surrendered Soul
+}
+
+local function CustomTargetBuffFilter(...) -- Buffs
+	local _, unit, aura, _, _, _, _, _, _, _, caster, _, _, _, _, _, casterIsPlayer = ...
+	if(UnitIsFriend(unit, "player")) then
+		return aura.isPlayer or caster == "pet" or not casterIsPlayer
+	else
+		return true
+	end
 end
 
-local function CustomGroupFilter(...) -- Debuffs
+local function CustomTargetDebuffFilter(...) -- Debuffs
+	local _, unit, aura, _, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, casterIsPlayer = ...
+	if (not UnitIsFriend(unit, "player")) then
+		return aura.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or ImportantDebuffs[spellID]
+	else
+		return true
+	end
+end
+
+local function CustomPartyDebuffFilter(...) -- Debuffs
 	local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
 	return id == 160029
 end
@@ -29,7 +48,7 @@ local function CreateAuraTimer(self, elapsed)
 		return
 	end
 
-	if(self.expiration <= 0) then
+	if (self.expiration <= 0) then
 		self:SetScript("OnUpdate", nil)
 
 		if(self.text:GetFont()) then
@@ -183,6 +202,7 @@ function K.CreateAuras(self, unit)
 			Buffs.initialAnchor = "TOPLEFT"
 			Buffs["growth-y"] = "DOWN"
 			Buffs["growth-x"] = "RIGHT"
+			Buffs.CustomFilter = CustomTargetBuffFilter
 			Buffs.PreSetPosition = PreSetPosition
 			Buffs.PostCreateIcon = PostCreateAura
 			Buffs.PostUpdateIcon = PostUpdateAura
@@ -192,8 +212,8 @@ function K.CreateAuras(self, unit)
 			Debuffs.initialAnchor = "TOPLEFT"
 			Debuffs["growth-y"] = "UP"
 			Debuffs["growth-x"] = "RIGHT"
+			Debuffs.CustomFilter = CustomTargetDebuffFilter
 			Debuffs.PreSetPosition = PreSetPosition
-			Debuffs.CustomFilter = CustomTargetFilter
 			Debuffs.PostCreateIcon = PostCreateAura
 			Debuffs.PostUpdateIcon = PostUpdateAura
 			self.Debuffs = Debuffs
@@ -216,7 +236,6 @@ function K.CreateAuras(self, unit)
 				icon:Hide()
 			end
 			Auras.PreSetPosition = PreSetPosition
-			-- Auras.CustomFilter = CustomTargetFilter
 			Auras.PostCreateIcon = PostCreateAura
 			Auras.PostUpdateIcon = PostUpdateAura
 			self.Auras = Auras
@@ -254,7 +273,7 @@ function K.CreateAuras(self, unit)
 		Debuffs["growth-y"] = "UP"
 		Debuffs["growth-x"] = "RIGHT"
 		Debuffs.PreSetPosition = PreSetPosition
-		Debuffs.CustomFilter = CustomGroupFilter
+		Debuffs.CustomFilter = CustomPartyDebuffFilter
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs

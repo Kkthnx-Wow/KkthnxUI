@@ -47,4 +47,16 @@ C["Position"] = {
 		["TargetCastbar"] = {"BOTTOM", "oUF_KkthnxPlayerCastbar", "TOP", 0, 6},
 		["TargetTarget"] = {"TOPLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", -56, 2},
 	},
+	-- Filger positions
+	Filger = {
+		["Cooldown"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 63, 17},
+		["PlayerBuffIcon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 173},
+		["PlayerProcIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 173},
+		["PVECC"] = {"TOPLEFT", "oUF_KkthnxPlayer", "BOTTOMLEFT", -2, -44},
+		["PVEDebufff"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 253},
+		["SpecialProcIcon"] = {"BOTTOMRIGHT", "oUF_KkthnxPlayer", "TOPRIGHT", 2, 213},
+		["Targetbar"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "BOTTOMRIGHT", 2, 3},
+		["TargetBuffIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 253},
+		["TargetDebuffIcon"] = {"BOTTOMLEFT", "oUF_KkthnxTarget", "TOPLEFT", -2, 213},
+	},
 }

@@ -186,17 +186,17 @@ function Module:OnInitialize()
 		return "SQUARE"
 	end
 
-	local mmholder = CreateFrame("Frame", "MMHolder", Minimap)
-	mmholder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
-	mmholder:SetWidth(Minimap:GetWidth())
-	mmholder:SetHeight(Minimap:GetHeight())
+	local MMHolder = CreateFrame("Frame", "MMHolder", Minimap)
+	MMHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -4, -4)
+	MMHolder:SetWidth(Minimap:GetWidth())
+	MMHolder:SetHeight(Minimap:GetHeight())
 
 	Minimap:ClearAllPoints()
-	Minimap:SetPoint("TOPRIGHT", mmholder, "TOPRIGHT", -1, -1)
+	Minimap:SetPoint("TOPRIGHT", MMHolder, "TOPRIGHT", -1, -1)
 	Minimap:SetMaskTexture(C["Media"].Blank)
 	Minimap:SetQuestBlobRingAlpha(0)
 	Minimap:SetArchBlobRingAlpha(0)
-	Minimap:SetTemplate()
+	Minimap:SetTemplate("Transparent")
 	Minimap:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 	Minimap:HookScript("OnEnter", function(self)
 		self.location:Show()
@@ -206,7 +206,7 @@ function Module:OnInitialize()
 		self.location:Hide()
 	end)
 
-	--Fix spellbook taint
+	-- Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
 
@@ -217,21 +217,18 @@ function Module:OnInitialize()
 	Minimap.location:SetJustifyV("MIDDLE")
 	Minimap.location:Hide()
 
-	MinimapBorder:Hide()
-	MinimapBorderTop:Hide()
-
-	MinimapZoomIn:Hide()
-	MinimapZoomOut:Hide()
-	MiniMapVoiceChatFrame:Hide()
-	MinimapNorthTag:Kill()
-	MinimapZoneTextButton:Hide()
-	MiniMapTracking:Hide()
-	MiniMapMailBorder:Hide()
-	MiniMapMailIcon:SetTexture("")
-
-	--Hide the BlopRing on Minimap
 	Minimap:SetArchBlobRingScalar(0)
 	Minimap:SetQuestBlobRingScalar(0)
+	MinimapBorder:Hide()
+	MinimapBorderTop:Hide()
+	MiniMapMailBorder:Hide()
+	MiniMapMailIcon:SetTexture("")
+	MinimapNorthTag:Kill()
+	MiniMapTracking:Hide()
+	MiniMapVoiceChatFrame:Hide()
+	MinimapZoneTextButton:Hide()
+	MinimapZoomIn:Hide()
+	MinimapZoomOut:Hide()
 
 	if C["Minimap"].hideClassHallReport then
 		GarrisonLandingPageMinimapButton:Kill()
