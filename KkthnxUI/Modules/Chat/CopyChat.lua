@@ -200,6 +200,18 @@ function CopyChat:OnEnable()
 				ToggleFrame(ChatMenu)
 			elseif button == "MiddleButton" then
 				RandomRoll(1, 100)
+			elseif (IsShiftKeyDown() and button == "LeftButton") then
+				if BankFrame:IsShown() then
+					CloseBankBagFrames()
+					CloseBankFrame()
+					CloseAllBags()
+				else
+				if ContainerFrame1:IsShown() then
+					CloseAllBags()
+				else
+					ToggleAllBags()
+				end
+			end	
 			else
 				CopyChat:CopyText(self.ChatFrame)
 			end
@@ -214,6 +226,7 @@ function CopyChat:OnEnable()
 			GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, "Copy chat", 1, 1, 1)
 			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, "Emotions", 1, 1, 1)
 			GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Roll, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClickl, L.ConfigButton.Bags, 1, 1, 1)
 			GameTooltip:Show()
 		end)
 		CopyButton:SetScript("OnLeave", function(self)

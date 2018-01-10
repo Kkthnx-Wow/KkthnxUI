@@ -129,6 +129,7 @@ L["ConfigButton"] = {
 	Details = "Toggle Details",
 	Config = "Toggle Config",
 	Roll = "Roll 1-100. You win!",
+	Bags = "Toggel Bags",
 }
 
 -- Databars Localization
