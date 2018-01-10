@@ -604,6 +604,13 @@ function Module:SetItemRef(link)
 	end
 end
 
+function Module:RepositionBNET(frame, _, anchor)
+	if anchor ~= BNETMover then
+		frame:ClearAllPoints()
+		frame:SetPoint("CENTER", BNETMover, "CENTER")
+	end
+end
+
 function Module:CheckBackdropColor()
 	if GameTooltip:IsForbidden() then return end
 	if not GameTooltip:IsShown() then return end
@@ -623,10 +630,17 @@ end
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
-	local BNToastHolder = CreateFrame("Frame", "BNToastHolder", UIParent)
-	BNToastHolder:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 4, 350)
-	BNToastHolder:SetWidth((BNToastFrame:GetWidth() + 29))
-	BNToastHolder:SetHeight(BNToastFrame:GetHeight() + 53)
+	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
+	BNETMover:SetPoint("TOPRIGHT", MMHolder, "BOTTOMRIGHT", 0, -10)
+	BNETMover:SetWidth(BNToastFrame:GetWidth())
+	BNETMover:SetHeight(BNToastFrame:GetHeight())
+	BNToastFrame:SetTemplate("Transparent", true)
+	BNToastFrameCloseButton:SetSize(32, 32)
+	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 4, 4)
+	BNToastFrameCloseButton:SkinCloseButton()
+
+	K.Movers:RegisterFrame(BNETMover)
+	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
 
 	ItemRefCloseButton:SkinCloseButton()
 
@@ -668,9 +682,6 @@ function Module:OnEnable()
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)
-
-	BNToastFrame:SetPoint("TOPRIGHT", BNToastHolder, "BOTTOMRIGHT", 0, -10);
-	K.Movers:RegisterFrame(BNToastFrame)
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
 	self:SecureHook("GameTooltip_ShowStatusBar")
