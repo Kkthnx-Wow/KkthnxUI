@@ -3,12 +3,7 @@ if C["DataText"].System ~= true then return end
 
 local math_floor = math.floor
 
-<<<<<<< HEAD
 local PerformanceFrame = CreateFrame("Frame")
-=======
-local PerformanceFrame = CreateFrame("Frame", "PerformanceFrame", K.PetBattleHider)
-PerformanceFrame:SetScale(1)
->>>>>>> 215d330... Misc updates.
 
 local Performance = K.SetFontString(PerformanceFrame, C["Media"].Font, K.Scale(9), C["DataText"].Outline and "OUTLINE" or "", "CENTER")
 Performance:SetDrawLayer("ARTWORK")

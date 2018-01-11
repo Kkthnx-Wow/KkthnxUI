@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+
 local Module = K:NewModule("Experience_DataBar", "AceEvent-3.0")
 
 local _G = _G
@@ -60,10 +61,6 @@ function Module:UpdateExperience(event)
 end
 
 function Module:ExperienceBar_OnEnter()
-	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
-	end
-
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
@@ -83,10 +80,6 @@ function Module:ExperienceBar_OnEnter()
 end
 
 function Module:ExperienceBar_OnLeave()
-	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
-	end
-
 	GameTooltip:Hide()
 end
 
@@ -94,12 +87,6 @@ function Module:UpdateExperienceDimensions()
 	self.expBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.expBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.expBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
-
-	if C["DataBars"].MouseOver then
-		self.expBar:SetAlpha(0)
-	else
-		self.expBar:SetAlpha(1)
-	end
 end
 
 function Module:PLAYER_LEVEL_UP(level)
@@ -131,7 +118,7 @@ function Module:EnableDisable_ExperienceBar()
 end
 
 function Module:OnEnable()
-	self.expBar = CreateFrame("Button", "KkthnxUI_ExperienceBar", K.PetBattleHider)
+	self.expBar = CreateFrame("Button", "KkthnxUI_ExperienceBar", UIParent)
 	self.expBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	self.expBar:SetScript("OnEnter", Module.ExperienceBar_OnEnter)
 	self.expBar:SetScript("OnLeave", Module.ExperienceBar_OnLeave)

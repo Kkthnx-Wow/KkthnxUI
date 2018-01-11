@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+
 local Module = K:NewModule("Artifact_DataBar", "AceEvent-3.0")
 
 local _G = _G
@@ -60,10 +61,6 @@ function Module:UpdateArtifact(event, unit)
 end
 
 function Module:ArtifactBar_OnEnter()
-	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
-	end
-
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
@@ -73,12 +70,8 @@ function Module:ArtifactBar_OnEnter()
 	GameTooltip:AddDoubleLine(ARTIFACT_POWER, artifactName, nil, nil, nil, 0.90, 0.80,	0.50)
 	GameTooltip:AddLine(" ")
 
-	-- Damn fishing artifacts and its inconsistent returns
-	if xpForNextPoint <= 0 then
-		xpForNextPoint = xp
-	end
-
 	local remaining = xpForNextPoint - xp
+	local apInBags = self.BagArtifactPower
 
 	GameTooltip:AddDoubleLine("XP:", format(" %s / %s (%d%%)", K.ShortValue(xp), K.ShortValue(xpForNextPoint), xp/xpForNextPoint * 100), 1, 1, 1)
 	GameTooltip:AddDoubleLine("Remaining:", format(" %s (%d%% - %d %s)", K.ShortValue(xpForNextPoint - xp), remaining / xpForNextPoint * 100, 20 * remaining / xpForNextPoint, "Bars"), 1, 1, 1)
@@ -91,10 +84,6 @@ function Module:ArtifactBar_OnEnter()
 end
 
 function Module:ArtifactBar_OnLeave()
-	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
-	end
-
 	GameTooltip:Hide()
 end
 
@@ -110,12 +99,6 @@ function Module:UpdateArtifactDimensions()
 	self.artifactBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.artifactBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
-
-	if C["DataBars"].MouseOver then
-		self.artifactBar:SetAlpha(0)
-	else
-		self.artifactBar:SetAlpha(1)
-	end
 end
 
 function Module:EnableDisable_ArtifactBar()
@@ -141,7 +124,7 @@ function Module:OnEnable()
 		AnchorY = -6
 	end
 
-	self.artifactBar = CreateFrame("Button", "KkthnxUI_ArtifactBar", K.PetBattleHider)
+	self.artifactBar = CreateFrame("Button", "KkthnxUI_ArtifactBar", UIParent)
 	self.artifactBar:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 	self.artifactBar:SetScript("OnEnter", Module.ArtifactBar_OnEnter)
 	self.artifactBar:SetScript("OnLeave", Module.ArtifactBar_OnLeave)
