@@ -106,21 +106,10 @@ local function LoadSkin()
 		end
 	end
 
-	local function SkinFindGroupButton(block)
-		if block.hasGroupFinderButton and block.groupFinderButton then
-			if block.groupFinderButton and not block.groupFinderButton.skinned then
-				block.groupFinderButton:SkinButton()
-				block.groupFinderButton:SetSize(20, 20)
-				block.groupFinderButton.skinned = true
-			end
-		end
-	end
-
 	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Bonus Objective Progress Bar
 	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Quest Progress Bar
 	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Scenario Progress Bar
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton) --[Move]: The eye & quest item to the left of the eye
-	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton) --[Skin]: The eye
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton) --[Skin]: Quest Item Buttons
 	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton) --[Skin]: World Quest Item Buttons
 

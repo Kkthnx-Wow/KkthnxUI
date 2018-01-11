@@ -40,29 +40,6 @@ K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
 
-local function GetTemplate(template)
-	backdropa = C["Media"].BackdropColor[4]
-
-	if template == "ClassColor" then
-		if CUSTOM_CLASS_COLORS then
-			borderr, borderg, borderb = CUSTOM_CLASS_COLORS[K.Class].r, CUSTOM_CLASS_COLORS[K.Class].g, CUSTOM_CLASS_COLORS[K.Class].b
-		else
-			borderr, borderg, borderb = RAID_CLASS_COLORS[K.Class].r, RAID_CLASS_COLORS[K.Class].g, RAID_CLASS_COLORS[K.Class].b
-		end
-		if template ~= "Transparent" then
-			backdropr, backdropg, backdropb = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
-		else
-			backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
-		end
-	elseif template == "Transparent" then
-		borderr, borderg, borderb = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
-		backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
-	else
-		borderr, borderg, borderb = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
-		backdropr, backdropg, backdropb = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
-	end
-end
-
 local function SetOutside(obj, anchor, xOffset, yOffset)
 	xOffset = xOffset or 2
 	yOffset = yOffset or 2
@@ -98,12 +75,6 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	if not template then template = "" end
 	if not strip then self:StripTextures(true) end
 	if template == "None" then self:SetBackdrop(nil) return end
-
-	GetTemplate(template)
-
-	if (template) then
-	   self.template = template
-	end
 
 	K.CreateBorder(self)
 	self:SetBackdrop({bgFile = C["Media"].Blank, tile = false, tileSize = 0, insets = {left = 0, right = 0, top = 0, bottom = 0}})
@@ -194,13 +165,13 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	end
 end
 
-local function CreateBackdrop(f, t, tex)
+local function CreateBackdrop(f, t, tex, ignoreUpdates)
 	if not t then t = "Default" end
 	if f.Backdrop then return end
 
 	local b = CreateFrame("Frame", "$parentBackdrop", f)
-	b:SetOutside(f, 0, 0)
-	b:SetTemplate(t, tex)
+	b:SetAllPoints()
+	b:SetTemplate(t, tex, ignoreUpdates)
 
 	if f:GetFrameLevel() - 1 >= 0 then
 		b:SetFrameLevel(f:GetFrameLevel() - 1)
@@ -447,17 +418,6 @@ local function SkinButton(f, strip)
 	if f.Left then f.Left:SetAlpha(0) end
 	if f.Middle then f.Middle:SetAlpha(0) end
 	if f.Right then f.Right:SetAlpha(0) end
-
-	if f.TopLeft then f.TopLeft:SetAlpha(0) end
-	if f.TopMiddle then f.TopMiddle:SetAlpha(0) end
-	if f.TopRight then f.TopRight:SetAlpha(0) end
-	if f.MiddleLeft then f.MiddleLeft:SetAlpha(0) end
-	if f.MiddleMiddle then f.MiddleMiddle:SetAlpha(0) end
-	if f.MiddleRight then f.MiddleRight:SetAlpha(0) end
-	if f.BottomLeft then f.BottomLeft:SetAlpha(0) end
-	if f.BottomMiddle then f.BottomMiddle:SetAlpha(0) end
-	if f.BottomRight then f.BottomRight:SetAlpha(0) end
-
 	if f.LeftSeparator then f.LeftSeparator:SetAlpha(0) end
 	if f.RightSeparator then f.RightSeparator:SetAlpha(0) end
 

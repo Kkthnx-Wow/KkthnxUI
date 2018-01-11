@@ -1,5 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("BagnonSkin", "AceEvent-3.0")
+if C["Skins"].Bagnon ~= true then return end
 
 if not K.IsAddOnEnabled("Bagnon") then return end
 
@@ -13,7 +14,6 @@ function Module:BagnonSkin(event, addon)
 end
 
 function Module:OnEnable()
-	if C["Skins"].Bagnon ~= true then return end
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "BagnonSkin")
 	self:RegisterEvent("BANKFRAME_OPENED", "BagnonSkin")
 	self:RegisterEvent("GUILDBANKFRAME_OPENED", "BagnonSkin")

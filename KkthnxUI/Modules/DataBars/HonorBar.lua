@@ -74,10 +74,6 @@ end
 
 local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE..HEADER_COLON
 function Module:HonorBar_OnEnter()
-	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
-	end
-
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
@@ -105,10 +101,6 @@ function Module:HonorBar_OnEnter()
 end
 
 function Module:HonorBar_OnLeave()
-	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
-	end
-
 	GameTooltip:Hide()
 end
 
@@ -120,12 +112,6 @@ function Module:UpdateHonorDimensions()
 	self.HonorBar:SetSize(Minimap:GetWidth() or C["DataBars"].HonorWidth, C["DataBars"].HonorHeight)
 	self.HonorBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.HonorBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
-
-	if C["DataBars"].MouseOver then
-		self.HonorBar:SetAlpha(0)
-	else
-		self.HonorBar:SetAlpha(1)
-	end
 end
 
 function Module:PLAYER_LEVEL_UP(level)
@@ -157,7 +143,7 @@ function Module:OnEnable()
 		AnchorY = -42
 	end
 
-	self.HonorBar = CreateFrame("Button", "KkthnxUI_HonorBar", K.PetBattleHider)
+	self.HonorBar = CreateFrame("Button", "KkthnxUI_HonorBar", UIParent)
 	self.HonorBar:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 	self.HonorBar:SetScript("OnEnter", Module.HonorBar_OnEnter)
 	self.HonorBar:SetScript("OnLeave", Module.HonorBar_OnLeave)

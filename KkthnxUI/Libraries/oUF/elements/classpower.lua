@@ -101,21 +101,21 @@ local function Update(self, event, unit, powerType)
 		element:PreUpdate()
 	end
 
-	local cur, max, --[[mod,--]] oldMax
+	local cur, max, mod, oldMax
 	if(event ~= 'ClassPowerDisable') then
 		if(unit == 'vehicle') then
 			-- BUG: UnitPower always returns 0 combo points for vehicles
 			cur = GetComboPoints(unit)
 			max = MAX_COMBO_POINTS
-			-- mod = 1
+			mod = 1
 		else
 			cur = UnitPower('player', ClassPowerID, true)
 			max = UnitPowerMax('player', ClassPowerID)
-			-- mod = UnitPowerDisplayMod(ClassPowerID)
+			mod = UnitPowerDisplayMod(ClassPowerID)
 		end
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
-		-- cur = mod == 0 and 0 or cur / mod
+		cur = mod == 0 and 0 or cur / mod
 
 		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		if(ClassPowerType == 'SOUL_SHARDS' and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then

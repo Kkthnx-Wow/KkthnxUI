@@ -19,7 +19,7 @@ local Movers = K.Movers
 
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", K.PetBattleHider)
 if C["ActionBar"].StanceBarHorizontal == true then
-	ShiftHolder:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167)
+	ShiftHolder:SetPoint(C.Position.StanceBar[1], C.Position.StanceBar[2], C.Position.StanceBar[3], C.Position.StanceBar[4], C.Position.StanceBar[5])
 	ShiftHolder:SetWidth((C["ActionBar"].ButtonSize * 7) + (C["ActionBar"].ButtonSpace * 6))
 	ShiftHolder:SetHeight(C["ActionBar"].ButtonSize)
 else

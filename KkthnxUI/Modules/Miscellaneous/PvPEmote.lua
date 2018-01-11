@@ -1,6 +1,7 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("PvPEmote", "AceHook-3.0", "AceEvent-3.0")
+
 -- Sourced: DiabolicUI, KkthnxUI (Goldpaw, Kkthnx)
+local KkthnxUIPvPEmote = K:NewModule("PvPEmote", "AceHook-3.0", "AceEvent-3.0")
 
 -- Lua API
 local _G = _G
@@ -37,7 +38,7 @@ local damageEvents = {
 local playerGUID = UnitGUID("player")
 local unitFilter = COMBATLOG_OBJECT_CONTROL_PLAYER
 
-function Module:Setup(_, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, ...)
+function KkthnxUIPvPEmote:Setup(_, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags, ...)
 	if not C["Misc"].PvPEmote then return end
 
 	local alreadyHugged
@@ -74,7 +75,7 @@ function Module:Setup(_, subEvent, _, sourceGUID, sourceName, _, _, destGUID, de
 	end
 end
 
-function Module:OnEnable()
+function KkthnxUIPvPEmote:OnEnable()
 	self:RegisterEvent("PLAYER_DEAD", "Setup")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "Setup")
 end

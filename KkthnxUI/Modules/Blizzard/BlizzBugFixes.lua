@@ -15,28 +15,6 @@ local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, SpellBookFrame, LFRBrowseFrame, PVPTimerFrame, BATTLEFIELD_SHUTDOWN_TIMER
 
--- Fix the excessive "Not enough players" spam in Felsong battlegrounds
-function Module:FixNotEnoughPlayers()
-	hooksecurefunc("PVP_UpdateStatus", function()
-		local isInInstance, instanceType = _G.IsInInstance()
-		if (instanceType == "pvp") or (instanceType == "arena") then
-			for i = 1, _G.GetMaxBattlefieldID() do
-				local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i)
-				if (status == "active") then
-					_G.PVPTimerFrame:SetScript("OnUpdate", nil)
-					_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
-				else
-					local kickOutTimer = GetBattlefieldInstanceExpiration()
-					if (kickOutTimer == 0) then
-						_G.PVPTimerFrame:SetScript("OnUpdate", nil)
-						_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
-					end
-				end
-			end
-		end
-	end)
-end
-
 -- Misclicks for some popups
 function Module:FixMisclickPopups()
 	StaticPopupDialogs.RESURRECT.hideOnEscape = nil
@@ -98,7 +76,6 @@ function Module:FixMapBlackOut()
 end
 
 function Module:OnEnable()
-	self:FixNotEnoughPlayers()
 	self:FixMapBlackOut()
 	self:FixMisclickPopups()
 

@@ -19,9 +19,9 @@ local table_remove = table.remove
 local tonumber = tonumber
 local tostring = tostring
 local type = type
+local unpack = unpack
 
 -- Wow API
-local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetCVar = _G.GetCVar
@@ -382,20 +382,20 @@ function K.GetFormattedText(style, min, max)
 		if deficit <= 0 then
 			return ""
 		else
-			return string_format(useStyle, K.ShortValue(deficit))
+			return format(useStyle, K.ShortValue(deficit))
 		end
 	elseif style == "PERCENT" then
-		local s = string_format(useStyle, min / max * 100)
+		local s = format(useStyle, min / max * 100)
 		return s
 	elseif style == "CURRENT" or ((style == "CURRENT_MAX" or style == "CURRENT_MAX_PERCENT" or style == "CURRENT_PERCENT") and min == max) then
-		return string_format(styles["CURRENT"],  K.ShortValue(min))
+		return format(styles["CURRENT"],  K.ShortValue(min))
 	elseif style == "CURRENT_MAX" then
-		return string_format(useStyle,  K.ShortValue(min), K.ShortValue(max))
+		return format(useStyle,  K.ShortValue(min), K.ShortValue(max))
 	elseif style == "CURRENT_PERCENT" then
-		local s = string_format(useStyle, K.ShortValue(min), min / max * 100)
+		local s = format(useStyle, K.ShortValue(min), min / max * 100)
 		return s
 	elseif style == "CURRENT_MAX_PERCENT" then
-		local s = string_format(useStyle, K.ShortValue(min), K.ShortValue(max), min / max * 100)
+		local s = format(useStyle, K.ShortValue(min), K.ShortValue(max), min / max * 100)
 		return s
 	end
 end
@@ -611,7 +611,7 @@ function K.Delay(delay, func, ...)
 	end
 	local extend = {...}
 	if not next(extend) then
-		C_Timer_After(delay, func)
+		C_Timer.After(delay, func)
 		return true
 	else
 		if(waitFrame == nil) then
@@ -620,12 +620,12 @@ function K.Delay(delay, func, ...)
 				local count = #waitTable
 				local i = 1
 				while(i <= count) do
-					local waitRecord = table_remove(waitTable, i)
-					local d = table_remove(waitRecord, 1)
-					local f = table_remove(waitRecord, 1)
-					local p = table_remove(waitRecord, 1)
+					local waitRecord = table.remove(waitTable, i)
+					local d = table.remove(waitRecord, 1)
+					local f = table.remove(waitRecord, 1)
+					local p = table.remove(waitRecord, 1)
 					if(d > elapse) then
-					  table_insert(waitTable, i, {d - elapse, f, p})
+					  table.insert(waitTable, i, {d - elapse, f, p})
 					  i = i + 1
 					else
 					  count = count - 1
@@ -634,7 +634,7 @@ function K.Delay(delay, func, ...)
 				end
 			end)
 		end
-		table_insert(waitTable, {delay, func, extend})
+		table.insert(waitTable, {delay, func, extend})
 		return true
 	end
 end

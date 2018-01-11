@@ -17,7 +17,7 @@ local bonusObjectivePosition = "AUTO"
 local ObjectiveFrameHolder = CreateFrame("Frame", "ObjectiveFrameHolder", UIParent)
 ObjectiveFrameHolder:SetWidth(130)
 ObjectiveFrameHolder:SetHeight(22)
-ObjectiveFrameHolder:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -135, -300)
+ObjectiveFrameHolder:SetPoint(C.Position.ObjectiveTracker[1], C.Position.ObjectiveTracker[2], C.Position.ObjectiveTracker[3], C.Position.ObjectiveTracker[4], C.Position.ObjectiveTracker[5])
 
 function Module:SetObjectiveFrameHeight()
 	local top = ObjectiveTrackerFrame:GetTop() or 0
@@ -45,7 +45,7 @@ function Module:OnEnable()
 	if IsAddOnLoaded("DugisGuideViewerZ") then return end
 
 	K.Movers:RegisterFrame(ObjectiveFrameHolder)
-	ObjectiveFrameHolder:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -135, -300)
+	ObjectiveFrameHolder:SetPoint(C.Position.ObjectiveTracker[1], C.Position.ObjectiveTracker[2], C.Position.ObjectiveTracker[3], C.Position.ObjectiveTracker[4], C.Position.ObjectiveTracker[5])
 
 	ObjectiveTrackerFrame:ClearAllPoints()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")

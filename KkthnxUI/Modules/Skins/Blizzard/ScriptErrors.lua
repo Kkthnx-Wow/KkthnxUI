@@ -11,9 +11,9 @@ function Module:OnInitialize()
 	local ScriptErrorsFrame = _G["ScriptErrorsFrame"]
 	ScriptErrorsFrame:SetParent(UIParent)
 	ScriptErrorsFrame:SetTemplate("Transparent")
-	--ScriptErrorsFrame.ScrollFrame.Text:FontTemplate(nil, 13)
-	--ScriptErrorsFrame.ScrollFrame:CreateBackdrop("Default")
-	--ScriptErrorsFrame.ScrollFrame:SetFrameLevel(ScriptErrorsFrame.ScrollFrame:GetFrameLevel() + 2)
+	ScriptErrorsFrame.ScrollFrame.Text:FontTemplate(nil, 13)
+	ScriptErrorsFrame.ScrollFrame:CreateBackdrop("Default")
+	ScriptErrorsFrame.ScrollFrame:SetFrameLevel(ScriptErrorsFrame.ScrollFrame:GetFrameLevel() + 2)
 	EventTraceFrame:SetTemplate("Transparent")
 
 	local texs = {

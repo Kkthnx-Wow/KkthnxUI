@@ -10,7 +10,6 @@
     <Script file="Colors.lua" />
     <Script file="Conflicts.lua" />
     <Script file="Kill.lua" />
-    <Script file="CustomSettings.lua" />
     <Script file="CheckVersion.lua" />
     <Script file="StaticPopups.lua" />
     <Script file="Movers.lua" />

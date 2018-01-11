@@ -21,7 +21,7 @@ function Module:DeclineDuels(event, name)
 		cancelled = "Pet"
 	end
 	if cancelled then
-		K.Print(string_format(L["Automation"].DuelCanceled_..cancelled, name))
+		K.Print(string_format(L.Automation.DuelCanceled_..cancelled, name))
 	end
 end
 

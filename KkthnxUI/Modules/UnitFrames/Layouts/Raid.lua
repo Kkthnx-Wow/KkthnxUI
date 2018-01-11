@@ -139,7 +139,7 @@ local function CreateRaidLayout(self, unit)
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
-	self.Health:SetAllPoints(self)
+	self.Health:SetPoints(self)
 	self.Health:SetStatusBarTexture(RaidframeTexture)
 	self.Health.colorDisconnected = true
 	self.Health.colorReaction = true
@@ -259,7 +259,7 @@ local function CreateRaidLayout(self, unit)
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
 		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
-		self.RaidDebuffs.icon:SetAllPoints(self.RaidDebuffs)
+		self.RaidDebuffs.icon:SetInside(self.RaidDebuffs)
 
 		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs)
 		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs)
@@ -348,7 +348,7 @@ if not C["Raidframe"].UseHealLayout then
 
 	raid:SetScale(C["Raidframe"].Scale or 1)
 	raid:SetFrameStrata("LOW")
-	raid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -200)
+	raid:SetPoint(C.Position.UnitFrames.Raid[1], C.Position.UnitFrames.Raid[2], C.Position.UnitFrames.Raid[3], C.Position.UnitFrames.Raid[4], C.Position.UnitFrames.Raid[5])
 	Movers:RegisterFrame(raid)
 end
 

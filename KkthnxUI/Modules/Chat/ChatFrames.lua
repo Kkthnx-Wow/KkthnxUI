@@ -261,12 +261,6 @@ function Module:StyleFrame(frame)
 	-- Style the tab font
 	TabText:SetFont(TabFont, TabFontSize + 1, TabFontFlags)
 	TabText.SetFont = K.Noop
-
-	if C["Chat"].TabsMouseover ~= true then
-		-- Tabs Alpha
-		Tab:SetAlpha(1)
-		Tab.SetAlpha = UIFrameFadeRemoveFrame
-	end
 	
 	Frame:SetClampRectInsets(0, 0, 0, 0)
 	Frame:SetClampedToScreen(false)
@@ -400,7 +394,7 @@ function Module:SetDefaultChatFramesPositions()
 		-- move general bottom left
 		if ID == 1 then
 			Frame:ClearAllPoints()
-			Frame:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 3, 3)
+			Frame:SetPoint(C.Position.Chat[1], C.Position.Chat[2], C.Position.Chat[3], C.Position.Chat[4], C.Position.Chat[5])
 		end
 		
 		-- rename windows general because moved to chat #3

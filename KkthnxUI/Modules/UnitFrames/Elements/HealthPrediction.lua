@@ -74,5 +74,5 @@ function K.UpdateHealComm(self, unit, myIncomingHeal, allIncomingHeal, totalAbso
 	K.UpdateFillBar(frame, previousTexture, self.healAbsorbBar, healAbsorb, true)
 	previousTexture = K.UpdateFillBar(frame, previousTexture, self.myBar, myIncomingHeal)
 	previousTexture = K.UpdateFillBar(frame, previousTexture, self.otherBar, allIncomingHeal)
-	K.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
+	previousTexture = K.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
 end

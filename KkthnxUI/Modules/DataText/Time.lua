@@ -35,12 +35,10 @@ local DataTextTime = CreateFrame("Frame")
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1, 1)
 
-DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
-DataTextTime.Text:SetFont(C["Media"].Font, 13, "")
-DataTextTime.Text:SetShadowOffset(1.25, -1.25)
-DataTextTime.Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
-
-DataTextTime:SetAllPoints(DataTextTime.Text)
+local Text = Minimap:CreateFontString(nil, "OVERLAY")
+Text:SetFont(C["Media"].Font, 13, "")
+Text:SetShadowOffset(1.25, -1.25)
+Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
 local APM = {TIMEMANAGER_PM, TIMEMANAGER_AM}
@@ -232,10 +230,12 @@ function Update(self, t)
 	curAmPm = AmPm
 
 	if AmPm == -1 then
-		DataTextTime.Text:SetFormattedText(europeDisplayFormat, ValueColor, Hr, ValueColor, Min)
+		Text:SetFormattedText(europeDisplayFormat, ValueColor, Hr, ValueColor, Min)
 	else
-		DataTextTime.Text:SetFormattedText(ukDisplayFormat, ValueColor, Hr, ValueColor, Min, NameColor, APM[AmPm])
+		Text:SetFormattedText(ukDisplayFormat, ValueColor, Hr, ValueColor, Min, NameColor, APM[AmPm])
 	end
+
+	self:SetAllPoints(Text)
 
 	lastPanel = self
 	int = 5

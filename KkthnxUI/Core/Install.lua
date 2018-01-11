@@ -310,7 +310,6 @@ function Install:Launch()
 	self.CloseButton = CreateFrame("Button", nil, self, "UIPanelCloseButton")
 	self.CloseButton:SetPoint("TOPRIGHT", self.Description, "TOPRIGHT")
 	self.CloseButton:SetScript("OnClick", function() self:Hide() end)
-	self.CloseButton:SetFrameLevel(self:GetFrameLevel() + 2) -- Fix the close button falling behind install frame
 	self.CloseButton:SkinCloseButton()
 
 	self.Text = self.Description:CreateFontString(nil, "OVERLAY")

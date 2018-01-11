@@ -75,9 +75,6 @@ function Module:SetUpOrderHallUI()
 			bar.CurrencyIcon:ClearAllPoints()
 			bar.CurrencyIcon:SetPoint("LEFT", frame, "LEFT", 0, 0)
 
-			bar.CurrencyHitTest:ClearAllPoints()
-			bar.CurrencyHitTest:SetAllPoints(bar.CurrencyIcon)
-
 			bar.Currency:ClearAllPoints()
 			bar.Currency:SetPoint("LEFT", bar.CurrencyIcon, "RIGHT", 5, 0)
 			bar.Currency:SetTextColor(.9, .9, .9)

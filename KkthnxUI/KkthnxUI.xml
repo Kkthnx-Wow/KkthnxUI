@@ -5,13 +5,18 @@
     <Include file="Libraries\Load_Libraries.xml" />
     <!-- Engine -->
     <Script file="Init.lua" />
-    <!-- Settings -->
-    <Script file="Config\Settings.lua" />
+    <!-- Locales -->
+    <Include file="Locales\Load_Locales.xml" />
     <!-- Media -->
     <Script file="Media\Media.lua" />
     <Script file="Core\Media.lua" />
-    <!-- Locales -->
-    <Include file="Locales\Load_Locales.xml" />
+    <Script file="Media\SharedMedia.lua" />
+    <!-- Settings -->
+    <Script file="Config\Settings.lua" />
+    <!-- Custom Settings -->
+    <Script file="Core\CustomSettings.lua" />
+    <!-- Positions -->
+    <Script file="Config\Positions.lua" />
     <!-- UIScale -->
     <Script file="Core\PixelPerfect.lua" />
     <!-- Install -->

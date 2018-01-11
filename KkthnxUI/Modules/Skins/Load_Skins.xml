@@ -6,7 +6,6 @@
 
     <Include file="Blizzard\ObjectiveTracker.lua" />
     <Include file="Blizzard\ScriptErrors.lua" />
-    <Include file="Blizzard\TalkingHead.lua" />
 
     <Include file="Addons\Bagnon.lua" />
     <Include file="Addons\BigWigs.lua" />

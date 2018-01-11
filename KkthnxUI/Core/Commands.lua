@@ -148,7 +148,7 @@ function SlashCmdList.PROFILES(msg)
 				for Character, Table in pairs(KkthnxUIData[Server]) do
 					table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 					table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."]-["..Character.."]")
 				end
 			end
 		else

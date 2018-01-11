@@ -661,7 +661,7 @@ function Stuffing:CreateBagFrame(w)
 	f:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 4)
 		GameTooltip:ClearLines()
-		GameTooltip:AddDoubleLine(L["Inventory"].Shift_Move)
+		GameTooltip:AddDoubleLine(L.Inventory.Shift_Move)
 
 		GameTooltip:Show()
 	end)
@@ -669,9 +669,9 @@ function Stuffing:CreateBagFrame(w)
 
 
 	if w == "Bank" then
-		f:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 4, 204)
+		f:SetPoint(unpack(C["Position"].Bank))
 	else
-		f:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -4, 204)
+		f:SetPoint(unpack(C["Position"].Bag))
 	end
 
 	if w == "Bank" then
@@ -811,7 +811,7 @@ function Stuffing:InitBags()
 	button:EnableMouse(true)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetAllPoints(detail)
-	button.ttText = L["Inventory"].Right_Click_Search
+	button.ttText = L.Inventory.Right_Click_Search
 	button:SetScript("OnClick", function(self, btn)
 		if btn == "RightButton" then
 			self:GetParent().detail:Hide()
@@ -854,7 +854,7 @@ function Stuffing:InitBags()
 	f.restackButton:SetPushedTexture("Interface\\ICONS\\misc_arrowdown")
 	f.restackButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.restackButton:GetPushedTexture():SetAllPoints()
-	f.restackButton.ttText = L["Inventory"].Buttons_Stack
+	f.restackButton.ttText = L.Inventory.Buttons_Stack
 	f.restackButton:SetScript("OnEnter", tooltip_show)
 	f.restackButton:SetScript("OnLeave", tooltip_hide)
 	f.restackButton:SetScript("OnClick", function()
@@ -878,7 +878,7 @@ function Stuffing:InitBags()
 	f.bagsButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.bagsButton:GetPushedTexture():SetAllPoints()
 	f.bagsButton:StyleButton(nil, true)
-	f.bagsButton.ttText = L["Inventory"].Show_Bags
+	f.bagsButton.ttText = L.Inventory.Show_Bags
 	f.bagsButton:SetScript("OnEnter", tooltip_show)
 	f.bagsButton:SetScript("OnLeave", tooltip_hide)
 	f.bagsButton:SetScript("OnClick", function()
@@ -909,7 +909,7 @@ function Stuffing:InitBags()
 	f.sortButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.sortButton:GetDisabledTexture():SetAllPoints()
 	f.sortButton:GetDisabledTexture():SetDesaturated(1)
-	f.sortButton.ttText = L["Inventory"].Buttons_Sort
+	f.sortButton.ttText = L.Inventory.Buttons_Sort
 	f.sortButton:SetScript("OnEnter", tooltip_show)
 	f.sortButton:SetScript("OnLeave", tooltip_hide)
 	f.sortButton:SetScript("OnMouseUp", function(_, btn)
@@ -943,7 +943,7 @@ function Stuffing:InitBags()
 		f.ArtifactButton:GetDisabledTexture():SetAllPoints()
 		f.ArtifactButton:GetDisabledTexture():SetDesaturated(1)
 		f.ArtifactButton:RegisterForClicks("RightButtonUp")
-		f.ArtifactButton.ttText = L["Inventory"].Buttons_Artifact
+		f.ArtifactButton.ttText = L.Inventory.Buttons_Artifact
 		f.ArtifactButton.UpdateTooltip = nil
 		f.ArtifactButton:SetScript("OnEnter", tooltip_show)
 		f.ArtifactButton:SetScript("OnLeave", tooltip_hide)
@@ -972,8 +972,8 @@ function Stuffing:InitBags()
 			GameTooltip:SetOwner(f.ArtifactButton, "ANCHOR_LEFT")
 			GameTooltip:AddLine(ARTIFACT_POWER)
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Inventory"].Artifact_Count.." "..count)
-			GameTooltip:AddLine(L["Inventory"].Artifact_Use)
+			GameTooltip:AddLine(L.Inventory.Artifact_Count.." "..count)
+			GameTooltip:AddLine(L.Inventory.Artifact_Use)
 			GameTooltip:Show()
 		end)
 	end
@@ -1238,7 +1238,6 @@ function Stuffing:ADDON_LOADED(addon)
 	BankFrame:SetScale(0.0001)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
-	BankFrame:SetScript("OnShow", nil)
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()

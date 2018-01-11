@@ -1,0 +1,8 @@
+-- Rewrite the rest of the modules to handle Ace.
+-- Cleanup any left over localization.
+-- Get localization translations.
+-- Finish up new unitframe code. We want to handle each unit in its own file!
+-- Finish localization by coverting fully to handle Ace.
+-- Work on new Media to handle other fonts properly. Giving the user a choice.
+-- We need to make sure licenses are all updated.
+-- Rewrite panels and actionbars, post-release!
