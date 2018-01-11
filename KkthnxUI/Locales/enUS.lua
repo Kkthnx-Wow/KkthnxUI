@@ -116,20 +116,20 @@ L["Chat"] = {
 
 -- Configbutton Localization
 L["ConfigButton"] = {
+	AltClickl = "Alt + Left click:",
+	Toggle_Bags = "Toggle Bags",
+	Config = "Toggle Config",
+	Details = "Toggle Details",
 	Functions = "Functions",
 	LeftClick = "Left click:",
-	RightClick = "Right click:",
 	MiddleClick = "Middle click:",
-	ShiftClickl = "Shift + Left click:",
-	ShiftClickr = "Shift + Right click:",
-	AltClickl = "Alt + Left click:",
 	MoveUI = "MoveUI",
 	Recount = "Toggle Recount",
-	Skada = "Toggle Skada",
-	Details = "Toggle Details",
-	Config = "Toggle Config",
+	Right_Click = "Right click:",
 	Roll = "Roll 1-100. You win!",
-	Bags = "Toggle Bags",
+	Shift_Left_Click = "Shift + Left click:",
+	Shift_Right_Click = "Shift + Right click:",
+	Skada = "Toggle Skada",
 }
 
 -- Databars Localization

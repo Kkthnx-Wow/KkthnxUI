@@ -5,4 +5,5 @@
     <Script file="Battleground.lua" />
     <Script file="System.lua" />
     <Script file="Time.lua" />
+    <Script file="Gold.lua" />
 </Ui>

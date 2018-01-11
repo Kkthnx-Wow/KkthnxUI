@@ -1,9 +1,10 @@
-local _G = _G
-local K, C, L = _G.unpack(_G.select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("KkthnxUI_AutoSell", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Lua WoW
+local _G = _G
 local math_floor = math.floor
+
 local C_Timer_NewTicker = _G.C_Timer.NewTicker
 
 -- Declarations
@@ -62,7 +63,8 @@ local function StartSelling()
 		StopSelling()
 		if totalPrice > 0 then
 			local gold, silver, copper = math_floor(totalPrice/10000) or 0, math_floor((totalPrice%10000)/100) or 0, totalPrice%100
-			K.Print("Sold junk for:".." |cffffffff"..gold..L.Miscellaneous.Gold_Short.." |cffffffff"..silver..L.Miscellaneous.Silver_Short.." |cffffffff"..copper..L.Miscellaneous.Copper_Short..".")
+			K.Print("Sold junk for:".." |cffffffff"..gold..L["Miscellaneous"].Gold_Short.." |cffffffff"..silver..L["Miscellaneous"].Silver_Short.." |cffffffff"..copper..L["Miscellaneous"].Copper_Short..".")
+			-- K.Print("Sold junk for" .. " " .. GetCoinText(totalPrice) .. ".")
 		end
 	end
 end

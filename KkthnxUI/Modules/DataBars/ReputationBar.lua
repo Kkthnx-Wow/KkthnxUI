@@ -5,8 +5,6 @@ local Module = K:NewModule("Reputation_DataBar", "AceEvent-3.0")
 local _G = _G
 local format = format
 
-local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
-local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
 local GetFriendshipReputation = GetFriendshipReputation
 local GetWatchedFactionInfo, GetNumFactions, GetFactionInfo = GetWatchedFactionInfo, GetNumFactions, GetFactionInfo
 local InCombatLockdown = InCombatLockdown
@@ -25,17 +23,6 @@ function Module:UpdateReputation(event)
 
 	local ID, isFriend, friendText, standingLabel
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
-
-	if factionID and C_Reputation_IsFactionParagon(factionID) then
-		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
-		if currentValue and threshold then
-			min, max = 0, threshold
-			value = currentValue % threshold
-			if hasRewardPending then
-				value = value + threshold
-			end
-		end
-	end
 
 	local numFactions = GetNumFactions()
 
@@ -82,21 +69,14 @@ function Module:UpdateReputation(event)
 end
 
 function Module:ReputationBar_OnEnter()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+	end
+
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
-
-	if factionID and C_Reputation_IsFactionParagon(factionID) then
-		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
-		if currentValue and threshold then
-			min, max = 0, threshold
-			value = currentValue % threshold
-			if hasRewardPending then
-				value = value + threshold
-			end
-		end
-	end
 
 	if name then
 		GameTooltip:AddLine(name)
@@ -114,6 +94,10 @@ function Module:ReputationBar_OnEnter()
 end
 
 function Module:ReputationBar_OnLeave()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+	end
+
 	GameTooltip:Hide()
 end
 
@@ -126,6 +110,12 @@ function Module:UpdateReputationDimensions()
 	self.reputationBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.reputationBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.reputationBar.text:SetSize(self.reputationBar:GetWidth() - 4, C["Media"].FontSize - 1)
+
+	if C["DataBars"].MouseOver then
+		self.reputationBar:SetAlpha(0)
+	else
+		self.reputationBar:SetAlpha(1)
+	end
 end
 
 function Module:EnableDisable_ReputationBar()
@@ -139,7 +129,7 @@ function Module:EnableDisable_ReputationBar()
 end
 
 function Module:OnEnable()
-	self.reputationBar = CreateFrame("Button", "KkthnxUI_ReputationBar", UIParent)
+	self.reputationBar = CreateFrame("Button", "KkthnxUI_ReputationBar", K.PetBattleHider)
 	self.reputationBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -24)
 	self.reputationBar:SetScript("OnEnter", Module.ReputationBar_OnEnter)
 	self.reputationBar:SetScript("OnLeave", Module.ReputationBar_OnLeave)

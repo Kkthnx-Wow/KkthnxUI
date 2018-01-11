@@ -31,7 +31,7 @@ local PANEL_HEIGHT = 100
 -- Check if We are Raid Leader or Raid Officer
 local function CheckRaidStatus()
 	local inInstance, instanceType = IsInInstance()
-	if ((IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and not (inInstance and (instanceType == "pvp" or instanceType == "arena")) then
+	if ((IsInGroup() and not IsInRaid()) or UnitIsGroupLeader('player') or UnitIsGroupAssistant("player")) and not (inInstance and (instanceType == "pvp" or instanceType == "arena")) then
 		return true
 	else
 		return false
@@ -56,7 +56,7 @@ function Module:CreateUtilButton(name, parent, template, width, height, point, r
 	b:SetPoint(point, relativeto, point2, xOfs, yOfs)
 	b:HookScript("OnEnter", ButtonEnter)
 	b:HookScript("OnLeave", ButtonLeave)
-	b:SetTemplate("Transparent")
+	b:SkinButton()
 
 	if text then
 		local t = b:CreateFontString(nil,"OVERLAY", b)
@@ -182,17 +182,6 @@ function Module:OnInitialize()
 			InitiateRolePoll()
 		end
 	end)
-
-	--[[-- MainTank Button
-	self:CreateUtilButton("MainTankButton", RaidUtilityPanel, "SecureActionButtonTemplate, UIMenuButtonStretchTemplate", (DisbandRaidButton:GetWidth() / 2) - 2, 18, "TOPLEFT", RoleCheckButton, "BOTTOMLEFT", 0, -5, MAINTANK, nil)
-	MainTankButton:SetAttribute("type", "maintank")
-	MainTankButton:SetAttribute("unit", "target")
-	MainTankButton:SetAttribute("action", "toggle")
-	-- MainAssist Button
-	self:CreateUtilButton("MainAssistButton", RaidUtilityPanel, "SecureActionButtonTemplate, UIMenuButtonStretchTemplate", (DisbandRaidButton:GetWidth() / 2) - 2, 18, "TOPRIGHT", RoleCheckButton, "BOTTOMRIGHT", 0, -5, MAINASSIST, nil)
-	MainAssistButton:SetAttribute("type", "mainassist")
-	MainAssistButton:SetAttribute("unit", "target")
-	MainAssistButton:SetAttribute("action", "toggle")--]]
 
 	-- Ready Check button
 	self:CreateUtilButton("ReadyCheckButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth() * 0.75, 18, "TOPLEFT", RoleCheckButton, "BOTTOMLEFT", 0, -5, READY_CHECK, nil)

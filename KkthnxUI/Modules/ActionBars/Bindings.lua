@@ -98,7 +98,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				self.button.id = SpellBook_GetSpellBookSlot(self.button)
 				self.button.name = GetSpellBookItemName(self.button.id, SpellBookFrame.bookType)
 
-				GameTooltip:AddLine(L.Actionbars.Trigger)
+				GameTooltip:AddLine(L["Actionbars"].Trigger)
 				GameTooltip:Show()
 				GameTooltip:SetScript("OnHide", function(self)
 					self:SetOwner(bind, "ANCHOR_NONE")
@@ -106,9 +106,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:AddLine(bind.button.name, 1, 1, 1)
 					bind.button.bindings = {GetBindingKey(spellmacro.." "..bind.button.name)}
 					if #bind.button.bindings == 0 then
-						self:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
+						self:AddLine(L["Actionbars"].No_Bindings_Set, 0.6, 0.6, 0.6)
 					else
-						self:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+						self:AddDoubleLine(L["Actionbars"].Binding, L["Actionbars"].Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 						for i = 1, #bind.button.bindings do
 							self:AddDoubleLine(i, bind.button.bindings[i])
 						end
@@ -129,9 +129,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 
 				bind.button.bindings = {GetBindingKey(spellmacro.." "..bind.button.name)}
 				if #bind.button.bindings == 0 then
-					GameTooltip:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
+					GameTooltip:AddLine(L["Actionbars"].No_Bindings_Set, 0.6, 0.6, 0.6)
 				else
-					GameTooltip:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+					GameTooltip:AddDoubleLine(L["Actionbars"].Binding, L["Actionbars"].Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 					for i = 1, #bind.button.bindings do
 						GameTooltip:AddDoubleLine(i, bind.button.bindings[i], 1, 1, 1)
 					end
@@ -149,7 +149,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self.button.bindstring = (spellmacro == "STANCE" and "STANCEBUTTON" or "BONUSACTIONBUTTON")..self.button.id
 				end
 
-				GameTooltip:AddLine(L.Actionbars.Trigger)
+				GameTooltip:AddLine(L["Actionbars"].Trigger)
 				GameTooltip:Show()
 				GameTooltip:SetScript("OnHide", function(self)
 					self:SetOwner(bind, "ANCHOR_NONE")
@@ -157,9 +157,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:AddLine(bind.button.name, 1, 1, 1)
 					bind.button.bindings = {GetBindingKey(bind.button.bindstring)}
 					if #bind.button.bindings == 0 then
-						self:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
+						self:AddLine(L["Actionbars"].No_Bindings_Set, 0.6, 0.6, 0.6)
 					else
-						self:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+						self:AddDoubleLine(L["Actionbars"].Binding, L["Actionbars"].Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 						for i = 1, #bind.button.bindings do
 							self:AddDoubleLine(i, bind.button.bindings[i])
 						end
@@ -191,7 +191,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 					end
 				end
 
-				GameTooltip:AddLine(L.Actionbars.Trigger)
+				GameTooltip:AddLine(L["Actionbars"].Trigger)
 				GameTooltip:Show()
 				bind.button.bindings = {GetBindingKey(bind.button.bindstring)}
 				GameTooltip:SetScript("OnHide", function(self)
@@ -199,9 +199,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self:SetPoint("BOTTOM", bind, "TOP", 0, 1)
 					self:AddLine(bind.button.name, 1, 1, 1)
 					if #bind.button.bindings == 0 then
-						self:AddLine(L.Actionbars.No_Bindings_Set, 0.6, 0.6, 0.6)
+						self:AddLine(L["Actionbars"].No_Bindings_Set, 0.6, 0.6, 0.6)
 					else
-						self:AddDoubleLine(L.Actionbars.Binding, L.Actionbars.Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
+						self:AddDoubleLine(L["Actionbars"].Binding, L["Actionbars"].Key, 0.6, 0.6, 0.6, 0.6, 0.6, 0.6)
 						for i = 1, #bind.button.bindings do
 							self:AddDoubleLine(i, bind.button.bindings[i])
 						end
@@ -232,7 +232,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				for i = 1, #self.button.bindings do
 					SetBinding(self.button.bindings[i])
 				end
-				print("|cffffff00"..L.Actionbars.All_Binds_Cleared.."|r".." |cff00ff00"..self.button.name.."|r|cffffff00.|r")
+				print("|cffffff00"..L["Actionbars"].All_Binds_Cleared.."|r".." |cff00ff00"..self.button.name.."|r|cffffff00.|r")
 				self:Update(self.button, self.spellmacro)
 				if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then GameTooltip:Hide() end
 				return
@@ -283,10 +283,10 @@ SlashCmdList.MOUSEOVERBIND = function()
 			local which = GetCurrentBindingSet()
 			if save then
 				SaveBindings(which)
-				print("|cffffff00"..L.Actionbars.All_Binds_Saved.."|r")
+				print("|cffffff00"..L["Actionbars"].All_Binds_Saved.."|r")
 			else
 				LoadBindings(which)
-				print("|cffffff00"..L.Actionbars.All_Binds_Discarded.."|r")
+				print("|cffffff00"..L["Actionbars"].All_Binds_Discarded.."|r")
 			end
 			self.enabled = false
 			self:HideFrame()
@@ -304,7 +304,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 		end
 
 		StaticPopupDialogs.KEYBIND_MODE = {
-			text = L.Actionbars.Keybind_Mode,
+			text = L["Actionbars"].Keybind_Mode,
 			button1 = APPLY,
 			button2 = CANCEL,
 			OnAccept = function() bind:Deactivate(true) ReloadUI() end,

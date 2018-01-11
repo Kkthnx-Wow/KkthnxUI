@@ -13,7 +13,7 @@ local AlertFrame = _G.AlertFrame
 local UIParent = _G.UIParent
 local UIPARENT_MANAGED_FRAME_POSITIONS = _G.UIPARENT_MANAGED_FRAME_POSITIONS
 
-function Module.InitializeTalkingHead(self)
+function Module:InitializeTalkingHead()
 	local content = _G.TalkingHeadFrame
 
 	-- This means the addon hasn't been loaded,
@@ -42,7 +42,7 @@ function Module.InitializeTalkingHead(self)
 
 end
 
-function Module.WaitForTalkingHead(self, event, ...)
+function Module:WaitForTalkingHead(event, ...)
 	local addon = ...
 	if (addon ~= "Blizzard_TalkingHeadUI") then
 		return
@@ -52,16 +52,16 @@ function Module.WaitForTalkingHead(self, event, ...)
 	self:UnregisterEvent("ADDON_LOADED", "WaitForTalkingHead")
 end
 
-function Module.OnInitialize(self)
+function Module:OnInitialize()
 	-- Create our container frame
 	self.frame = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
-	self.frame:SetPoint(C.Position.TalkingHead[1], C.Position.TalkingHead[2], C.Position.TalkingHead[3], C.Position.TalkingHead[4], C.Position.TalkingHead[5])
+	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -21)
 	self.frame:SetSize(C["General"].TalkingHeadWidth or 570, C["General"].TalkingHeadHeight or 155)
 	self.frame:SetAlpha(C["General"].TalkingHeadAlpha or 0.75)
 
 	K.Movers:RegisterFrame(self.frame)
 end
 
-function Module.OnEnable(self)
+function Module:OnEnable()
 	self:InitializeTalkingHead()
 end

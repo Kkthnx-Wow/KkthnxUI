@@ -315,7 +315,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 	end
 
 	-- Auras
-	if unit ~= "player" then
+	if (unit ~= "player") then
 		K.CreateAuras(self, unit)
 	end
 
@@ -492,37 +492,37 @@ oUF:SetActiveStyle("oUF_KkthnxUnitframes")
 local player = oUF:Spawn("player", "oUF_KkthnxPlayer")
 player:SetSize(190, 52)
 player:SetScale(C["Unitframe"].Scale)
-player:SetPoint(unpack(C.Position.UnitFrames.Player))
+player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
 K.Movers:RegisterFrame(player)
 
 local pet = oUF:Spawn("pet", "oUF_KkthnxPet")
 pet:SetSize(116, 36)
 pet:SetScale(C["Unitframe"].Scale)
-pet:SetPoint(unpack(C.Position.UnitFrames.Pet))
+pet:SetPoint("TOPRIGHT", oUF_KkthnxPlayer, "BOTTOMLEFT", 56, 2)
 K.Movers:RegisterFrame(pet)
 
 local target = oUF:Spawn("target", "oUF_KkthnxTarget")
 target:SetSize(190, 52)
 target:SetScale(C["Unitframe"].Scale)
-target:SetPoint(unpack(C.Position.UnitFrames.Target))
+target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
 K.Movers:RegisterFrame(target)
 
 local targettarget = oUF:Spawn("targettarget", "oUF_KkthnxTargetTarget")
 targettarget:SetSize(116, 36)
 targettarget:SetScale(C["Unitframe"].Scale)
-targettarget:SetPoint(unpack(C.Position.UnitFrames.TargetTarget))
+targettarget:SetPoint("TOPLEFT", oUF_KkthnxTarget, "BOTTOMRIGHT", -56, 2)
 K.Movers:RegisterFrame(targettarget)
 
 local focus = oUF:Spawn("focus", "oUF_KkthnxFocus")
 focus:SetSize(190, 52)
 focus:SetScale(C["Unitframe"].Scale)
-focus:SetPoint(unpack(C.Position.UnitFrames.Focus))
+focus:SetPoint("BOTTOMRIGHT", oUF_KkthnxPlayer, "TOPLEFT", -60, 30)
 K.Movers:RegisterFrame(focus)
 
 local focustarget = oUF:Spawn("focustarget", "oUF_KkthnxFocusTarget")
 focustarget:SetSize(116, 36)
 focustarget:SetScale(C["Unitframe"].Scale)
-focustarget:SetPoint(unpack(C.Position.UnitFrames.FocusTarget))
+focustarget:SetPoint("TOPRIGHT", oUF_KkthnxFocus, "BOTTOMLEFT", 56, 2)
 K.Movers:RegisterFrame(focustarget)
 
 if (C["Unitframe"].Party) then
@@ -543,7 +543,7 @@ if (C["Unitframe"].Party) then
 	"showPlayer", C["Unitframe"].ShowPlayer, -- Need to add this as an option.
 	"yOffset", -40
 	)
-	party:SetPoint(unpack(C.Position.UnitFrames.Party))
+	party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 	party:SetScale(C["Unitframe"].Scale)
 	K.Movers:RegisterFrame(party)
 end
@@ -557,7 +557,7 @@ if (C["Unitframe"].ShowBoss) then
 		Boss[i]:SetSize(190, 52)
 		Boss[i]:SetScale(C["Unitframe"].Scale)
 		if (i == 1) then
-			Boss[i]:SetPoint(unpack(C.Position.UnitFrames.Boss))
+			Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 		else
 			Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -45)
 		end
@@ -572,7 +572,7 @@ if (C["Unitframe"].ShowArena) then
 		arena[i]:SetSize(190, 52)
 		arena[i]:SetScale(C["Unitframe"].Scale)
 		if (i == 1) then
-			arena[i]:SetPoint(unpack(C.Position.UnitFrames.Arena))
+			arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 		else
 			arena[i]:SetPoint("TOPLEFT", arena[i-1], "BOTTOMLEFT", 0, -45)
 		end

@@ -37,7 +37,7 @@ function Module:MERCHANT_SHOW()
 			end
 			-- Show cost summary
 			local gold, silver, copper = math_floor(RepairCost / 10000) or 0, math_floor((RepairCost % 10000) / 100) or 0, RepairCost % 100
-			K.Print("Repaired for:".." |cffffffff"..gold..L.Miscellaneous.Gold_Short.." |cffffffff"..silver..L.Miscellaneous.Silver_Short.." |cffffffff"..copper..L.Miscellaneous.Copper_Short..".")
+			K.Print("Repaired for:".." |cffffffff"..gold..L["Miscellaneous"].Gold_Short.." |cffffffff"..silver..L["Miscellaneous"].Silver_Short.." |cffffffff"..copper..L["Miscellaneous"].Copper_Short..".")
 		end
 	end
 end

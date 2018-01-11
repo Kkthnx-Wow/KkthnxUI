@@ -6,8 +6,6 @@ local find = string.find
 local floor = math.floor
 local format = string.format
 local pairs = pairs
-local select = select
-local unpack = unpack
 local sub = string.sub
 
 local C_PetJournal_FindPetIDByName =_G.C_PetJournal.FindPetIDByName
@@ -76,7 +74,7 @@ local UnitRealmRelationship = _G.UnitRealmRelationship
 
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
 local targetList, inspectCache = {}, {}
-local TAPPED_COLOR = { r=.6, g=.6, b=.6 }
+local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000".."AFK".."|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00".."DND".."|r|cffFFFFFF]|r"
 
@@ -675,7 +673,7 @@ function Module:OnEnable()
 	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	GameTooltipAnchor:SetPoint(C.Position.Tooltip[1], C.Position.Tooltip[2], C.Position.Tooltip[3], C.Position.Tooltip[4], C.Position.Tooltip[5])
+	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 20)
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)

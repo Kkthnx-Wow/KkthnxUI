@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Miscellaneous", "AceEvent-3.0")
 
--- Global variables that we don't cache
+-- Global variables that we don"t cache
 -- GLOBALS: GameMenuFrame GhostFrameContentsFrame GhostFrameContentsFrameIcon GhostFrameContentsFrameText GhostFrameLeft GhostFrameMiddle GhostFrameRight
 -- GLOBALS: GhostFrame LevelUpDisplay BossBanner statusBar UIErrorsFrame RaidNotice_AddMessage
 -- GLOBALS: InterfaceOptionsFrame LFDParentFrame PlaySoundKitID SOUNDKIT StaticPopup1 StaticPopup1Button1 StaticPopup1EditBox VideoOptionsFrame
@@ -173,9 +173,9 @@ do
 	GhostFrameRight:SetAlpha(0)
 	GhostFrameLeft:SetAlpha(0)
 	GhostFrame:StripTextures(true)
+	GhostFrame:SkinButton()
 	GhostFrame:ClearAllPoints()
 	GhostFrame:SetPoint("TOP", UIParent, "TOP", 0, -150)
-	GhostFrameContentsFrame:SetTemplate("Transparent", true)
 	GhostFrameContentsFrameText:SetPoint("TOPLEFT", 53, 0)
 	GhostFrameContentsFrameIcon:SetTexCoord(unpack(K.TexCoords))
 	GhostFrameContentsFrameIcon:SetPoint("RIGHT", GhostFrameContentsFrameText, "LEFT", -12, 0)
@@ -183,12 +183,12 @@ do
 	b:SetAllPoints(GhostFrameContentsFrameIcon)
 	GhostFrameContentsFrameIcon:SetSize(37, 38)
 	GhostFrameContentsFrameIcon:SetParent(b)
-	b:SetTemplate("Default", true)
+	b:SetTemplate("", true)
 end
 
 do -- Move some frames (Elvui)
 	local TicketStatusMover = _G.CreateFrame("Frame", "TicketStatusMoverAnchor", _G.UIParent)
-	TicketStatusMover:SetPoint(C.Position.Ticket[1], C.Position.Ticket[2], C.Position.Ticket[3], C.Position.Ticket[4])
+	TicketStatusMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)
 	TicketStatusMover:SetSize(200, 40)
 	Movers:RegisterFrame(TicketStatusMover)
 
@@ -196,12 +196,12 @@ do -- Move some frames (Elvui)
 	TicketFrame:RegisterEvent("PLAYER_LOGIN")
 	TicketFrame:SetScript("OnEvent", function(self, event)
 		TicketStatusFrame:ClearAllPoints()
-		TicketStatusFrame:SetPoint(unpack(C.Position.Ticket))
+		TicketStatusFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)
 		-- Blizzard repositions this frame now in UIParent_UpdateTopFramePositions
 		_G.hooksecurefunc(TicketStatusFrame, "SetPoint", function(self, _, anchor)
 			if anchor == _G.UIParent then
 				TicketStatusFrame:ClearAllPoints()
-				TicketStatusFrame:SetPoint("TOPLEFT", TicketStatusMover, 0, 0)
+				TicketStatusFrame:SetPoint("CENTER", TicketStatusMover, 0, 0)
 			end
 		end)
 	end)
@@ -335,5 +335,24 @@ end
 do -- Boss Banner Hider
 	if C["Misc"].NoBanner == true then
 		BossBanner.PlayBanner = function() end
+	end
+end
+
+-- Filter out some Felsong stuff I don"t want
+if (K.WoWBuild == 23420) and (K.Realm == "Felsong") then
+	do
+		local serverSpam = {"Autobroadcast", "ARENA ANNOUNCER", "BG Queue Announcer"}
+
+		ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(self, event, msg)
+			if (not msg) then
+				return
+			end
+
+			for _, spam in ipairs(serverSpam) do
+				if string_find(msg, spam) then
+					return true
+				end
+			end
+		end)
 	end
 end

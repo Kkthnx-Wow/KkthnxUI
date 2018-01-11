@@ -188,6 +188,7 @@ C["DataBars"] = {
 	-- ["InfoText"] = false,
 	["Outline"] = false,
 	["Texture"] = "KkthnxUI",
+	["MouseOver"] = false,
 }
 
 -- Datatext
@@ -227,14 +228,14 @@ C["General"] = {
 	["DisableTutorialButtons"] = false,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
+	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["SpellTolerance"] = false,
 	["TaintLog"] = false,
-	["TalkingHeadWidth"] = 570,
 	["TalkingHeadHeight"] = 155,
+	["TalkingHeadWidth"] = 570,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.31, 0.31, 0.31},
-	["ToggleButton"] = true,
 	["UIScale"] = 0.71111111111111,
 	["NumberPrefixStyle"] = {
 		["Options"] = {
@@ -316,8 +317,9 @@ C["Skins"] = {
 	["Recount"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
-	["WeakAuras"] = false,
+	["TalkingHead"] = true,
 	["Texture"] = "KkthnxUI",
+	["WeakAuras"] = false,
 }
 
 -- Tooltip

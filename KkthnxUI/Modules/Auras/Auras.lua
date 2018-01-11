@@ -295,7 +295,7 @@ function Module:OnInitialize()
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", Minimap)
     if C["Minimap"].CollectButtons then
-      AurasHolder:SetPoint(C.Position.PlayerBuffs[1], C.Position.PlayerBuffs[2], C.Position.PlayerBuffs[3], C.Position.PlayerBuffs[4], C.Position.PlayerBuffs[5])
+      AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -28, 3)
     else
       AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -3, 3)
     end

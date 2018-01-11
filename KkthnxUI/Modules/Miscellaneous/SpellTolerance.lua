@@ -1,15 +1,21 @@
 local K, C, L = unpack(select(2, ...))
 if C["General"].SpellTolerance ~= true then return end
 
-local AutoLagTolerance = CreateFrame("Frame", "AutoLagTolerance")
-local GetNetStats = GetNetStats
-local min = math.min
-local SetCVar = SetCVar
+-- Lua API
+local _G = _G
+local math_min = math.min
 
-AutoLagTolerance.cache = GetCVar("SpellQueueWindow")
-AutoLagTolerance.timer = 0
+-- Wow API
+local GetNetStats = _G.GetNetStats
+local GetCVar = _G.GetCVar
 
-local function AutoLagTolerance_OnUpdate(self, elapsed)
+local SpellTolerance = CreateFrame("Frame", "AutoLagTolerance")
+SpellTolerance:RegisterEvent("PLAYER_LOGIN")
+
+SpellTolerance.cache = GetCVar("maxSpellStartRecoveryOffset")
+SpellTolerance.timer = 0
+
+local function SpellTolerance_OnUpdate(self, elapsed)
 	self.timer = self.timer + elapsed
 
 	if self.timer < 1.0 then
@@ -18,19 +24,25 @@ local function AutoLagTolerance_OnUpdate(self, elapsed)
 
 	self.timer = 0
 
-	local latency = min(400, select(4, GetNetStats()))
+	local SpellLatency = math_min(400, select(4, GetNetStats()))
 
-	if latency == 0 then
+	if SpellLatency == 0 then
 		return
 	end
 
-	if latency == self.cache then
+	if SpellLatency == self.cache then
 		return
 	end
 
-	SetCVar("SpellQueueWindow", latency)
+	K.LockCVar("maxSpellStartRecoveryOffset", SpellLatency)
+	-- print(SpellLatency)
 
-	self.cache = latency
+	self.cache = SpellLatency
 end
 
-AutoLagTolerance:SetScript("OnUpdate", AutoLagTolerance_OnUpdate)
+local function SpellTolerance_OnEvent(self, event)
+	K.LockCVar("reducedLagTolerance", 1)
+end
+
+SpellTolerance:SetScript("OnUpdate", SpellTolerance_OnUpdate)
+SpellTolerance:SetScript("OnEvent", SpellTolerance_OnEvent)

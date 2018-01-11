@@ -1,25 +1,39 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("ChatBubbles", "AceTimer-3.0")
+local ChatBubbles = K:NewModule("ChatBubbles", "AceEvent-3.0", "AceTimer-3.0")
 
-function Module:UpdateBubbleBorder()
-    if not self.text then return end
+-- Lua Wow
+local select, unpack, type = select, unpack, type
+local strlower, find, format = strlower, string.find, string.format
 
-    local r, g, b = self.text:GetTextColor()
-    self:SetBackdropBorderColor(r, g, b, 1)
+-- WoW API
+local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local WorldFrame = _G.WorldFrame
+
+function ChatBubbles:UpdateBubbleBorder()
+	if not self.text then return end
+
+	if (C["Chat"].BubbleBackdrop.Value == "Backdrop") then
+		if not self.backdrop then
+			self:SetBackdropBorderColor(self.text:GetTextColor())
+		else
+			local r, g, b = self.text:GetTextColor()
+			self:SetBackdropBorderColor(r, g, b)
+		end
+	end
 end
 
-function Module:SkinBubble(frame)
-    local mult = K.Mult * UIParent:GetScale()
-    for i = 1, frame:GetNumRegions() do
-        local region = select(i, frame:GetRegions())
-        if region:GetObjectType() == "Texture" then
-            region:SetTexture(nil)
-        elseif region:GetObjectType() == "FontString" then
-            frame.text = region
-        end
-    end
+function ChatBubbles:SkinBubble(frame)
+	for i = 1, frame:GetNumRegions() do
+		local region = select(i, frame:GetRegions())
+		if region:GetObjectType() == "Texture" then
+			region:SetTexture(nil)
+		elseif region:GetObjectType() == "FontString" then
+			frame.text = region
+		end
+	end
 
-    if (C["Chat"].BubbleBackdrop.Value == "Backdrop") then
+	if (C["Chat"].BubbleBackdrop.Value == "Backdrop") then
 		if not frame.backdrop then
 			frame:SetBackdrop({bgFile = C["Media"].Blank, tileSize = 12, edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", tile = false, edgeSize = 12, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}})
 			frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
@@ -36,30 +50,51 @@ function Module:SkinBubble(frame)
 		frame.text:SetShadowOffset(1.25, 1.25)
 		frame:SetClampedToScreen(false)
 	end
-    frame:SetClampedToScreen(false)
-    frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-    frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-    Module.UpdateBubbleBorder(frame)
-    frame:HookScript("OnShow", Module.UpdateBubbleBorder)
-    frame.isSkinned = true
+
+	frame:HookScript("OnShow", ChatBubbles.UpdateBubbleBorder)
+	frame:SetFrameStrata("DIALOG") -- Doesn't work currently in Legion due to a bug on Blizzards end
+	ChatBubbles.UpdateBubbleBorder(frame)
+	frame.isBubblePowered = true
 end
 
-local function ChatBubble_OnUpdate(self, elapsed)
-	if not Module.lastupdate then
-		Module.lastupdate = -2 -- wait 2 seconds before hooking frames
-	end
-	Module.lastupdate = Module.lastupdate + elapsed
-	if (Module.lastupdate < .1) then return end
-	Module.lastupdate = 0
-	for _, chatBubble in pairs(C_ChatBubbles.GetAllChatBubbles()) do
-		if not chatBubble.isSkinned then
-			Module:SkinBubble(chatBubble)
+function ChatBubbles:IsChatBubble(frame)
+	if not frame:IsForbidden() then
+		for i = 1, frame:GetNumRegions() do
+			local region = select(i, frame:GetRegions())
+
+			if region.GetTexture and region:GetTexture() and type(region:GetTexture() == "string") then
+				if find(strlower(region:GetTexture()), "chatbubble%-background") then
+					return true
+				end
+			end
 		end
 	end
+	return false
 end
 
-function Module:OnInitialize()
-    local frame = CreateFrame("Frame")
+local numChildren = 0
+function ChatBubbles:OnEnable()
 
-    frame:SetScript("OnUpdate", ChatBubble_OnUpdate)
+	local frame = CreateFrame("Frame")
+	frame.lastupdate = -2 -- wait 2 seconds before hooking frames
+
+	if C["Chat"].BubbleBackdrop.Value == "Disabled" then return end
+
+	frame:SetScript("OnUpdate", function(self, elapsed)
+		self.lastupdate = self.lastupdate + elapsed
+		if (self.lastupdate < .1) then return end
+		self.lastupdate = 0
+
+		local count = WorldFrame:GetNumChildren()
+		if(count ~= numChildren) then
+			for i = numChildren + 1, count do
+				local frame = select(i, WorldFrame:GetChildren())
+
+				if ChatBubbles:IsChatBubble(frame) then
+					ChatBubbles:SkinBubble(frame)
+				end
+			end
+			numChildren = count
+		end
+	end)
 end

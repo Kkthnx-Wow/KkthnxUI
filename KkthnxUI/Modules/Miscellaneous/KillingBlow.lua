@@ -1,9 +1,8 @@
 local K, C, L = unpack(select(2, ...))
+local Module = K:NewModule("KillingBlow", "AceHook-3.0", "AceEvent-3.0")
 if C["Misc"].KillingBlow ~= true then return end
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
-
-local KkthnxUIKillingBlow = K:NewModule("KkthnxUIKillingBlow", "AceHook-3.0", "AceEvent-3.0")
 
 -- Lua API
 local _G = _G
@@ -32,7 +31,7 @@ local unitFilter = COMBATLOG_OBJECT_CONTROL_PLAYER
 local FactionToken = UnitFactionGroup("player")
 local BG_Opponents = {}
 
-function KkthnxUIKillingBlow:OpponentsTable()
+function Module:OpponentsTable()
 	table.wipe(BG_Opponents)
 	for index = 1, _G.GetNumBattlefieldScores() do
 		local name, _, _, _, _, faction, _, _, classToken = _G.GetBattlefieldScore(index)
@@ -42,7 +41,7 @@ function KkthnxUIKillingBlow:OpponentsTable()
 	end
 end
 
-function KkthnxUIKillingBlow:LogParse(event, ...)
+function Module:LogParse(event, ...)
 	local _, subEvent, _, sourceGUID, sourceName, _, _, destGUID, destName, destFlags = ...
 
 	local mask = bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
@@ -75,7 +74,7 @@ function KkthnxUIKillingBlow:LogParse(event, ...)
 	end
 end
 
-function KkthnxUIKillingBlow:OnEnable()
+function Module:OnInitialize()
 	_G.hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
 		if data then
 			if isKillingBlow then

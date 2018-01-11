@@ -1,5 +1,3 @@
-debugprofilestart()
-
 local AddOnName, Engine = ...
 
 --[[

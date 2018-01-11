@@ -189,6 +189,7 @@ function K.CreateAuras(self, unit)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 21
 			Buffs.num = 15
+			Buffs.showBuffType = true
 			Buffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerTargetBuffs
 
 			Debuffs:SetHeight(28)
@@ -196,6 +197,7 @@ function K.CreateAuras(self, unit)
 			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
 			Debuffs.size = 28
 			Debuffs.num = 12
+			Debuffs.showDebuffType = true
 			Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerTargetDebuffs
 
 			Buffs.spacing = 6
@@ -227,6 +229,7 @@ function K.CreateAuras(self, unit)
 			Auras.initialAnchor = "TOPLEFT"
 			Auras["growth-x"] = "RIGHT"
 			Auras["growth-y"] = "DOWN"
+			Auras.showType = true
 			Auras.numBuffs = 15
 			Auras.numDebuffs = 12
 			Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerAuras
@@ -252,17 +255,20 @@ function K.CreateAuras(self, unit)
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		Buffs.size = 19
 		Buffs.num = 4
+		Buffs.showBuffType = true
 
 		Debuffs:SetHeight(30)
 		Debuffs:SetWidth(self.Power:GetWidth())
 		Debuffs:SetPoint("LEFT", self, "RIGHT", 3, 0)
 		Debuffs.size = 30
 		Debuffs.num = 4
+		Debuffs.showDebuffType = true
 
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "TOPLEFT"
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
+		Buffs.showDebuffType = true
 		Buffs.PreSetPosition = PreSetPosition
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
@@ -327,6 +333,7 @@ function K.CreateAuras(self, unit)
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		Buffs.size = 21
 		Buffs.num = 5
+		Buffs.showBuffType = true
 		Buffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerBossBuffs
 
 		Debuffs:SetHeight(26)
@@ -334,6 +341,7 @@ function K.CreateAuras(self, unit)
 		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
 		Debuffs.size = 26
 		Debuffs.num = 10
+		Debuffs.showDebuffType = true
 		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerBossDebuffs
 
 		Buffs.spacing = 6
