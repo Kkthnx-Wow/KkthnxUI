@@ -208,7 +208,7 @@ local function ControlOnEnter(self)
 	GameTooltip:SetOwner(self, "NONE")
 	GameTooltip:SetPoint(K.GetAnchors(self))
 	GameTooltip:ClearLines()
-	GameTooltip:AddLine(self.Tooltip, 1, 1, 1, 1, 1)
+	GameTooltip:AddLine(self.Tooltip, nil, nil, nil, 1)
 	GameTooltip:Show()
 end
 
