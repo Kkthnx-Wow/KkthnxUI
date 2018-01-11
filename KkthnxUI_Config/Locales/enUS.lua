@@ -11,6 +11,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Automatically scale the User Interface based on your screen resolution",
 		},
 		
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+
 		["UIScale"] = {
 			["Name"] = "Custom UI Scale",
 			["Desc"] = "Set a custom UI scale",
@@ -25,14 +30,24 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Disable Tutorial Buttons",
 			["Desc"] = "Disables the tutorial buttons found on some frames.",
 		},
+
+		["ColorTextures"] = {
+			["Name"] = "Toggle Border Color",
+			["Desc"] = "Enable this to beable to change the border color your heart desires",
+		},
 		
+		["TexturesColor"] = {
+			["Name"] = "Border Color",
+			["Desc"] = "Main border color of the UI. \n\n|cffFF0000Toggle Border Color has to be enabled for this to work|r",
+		},
+
 		["Font"] = {
-			["Name"] = "General UI Font Texture",
+			["Name"] = "Font",
 			["Desc"] = "Set the font texture for everything in UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, ect..)",
 		},
 		
 		["FontSize"] = {
-			["Name"] = "General UI Font Size",
+			["Name"] = "Font Size",
 			["Desc"] = "Set the font size for everything in UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, ect..)",
 		},
 		
@@ -389,7 +404,12 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Auto Invite",
 			["Desc"] = "Automatically accept invites from guild/friends.",
 		},
-		
+
+		["InviteKeyword"] = {
+			["Name"] = "Invite Keyword",
+			["Desc"] = "Automatically accept invites from from anyone who whispers you the invite keyword",
+		},
+
 		["AutoRelease"] = {
 			["Name"] = "Auto Release",
 			["Desc"] = "Automatically releases your spirit when you die XD.",
