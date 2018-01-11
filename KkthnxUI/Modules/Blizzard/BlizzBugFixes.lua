@@ -15,6 +15,7 @@ local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: UIParent, SpellBookFrame, LFRBrowseFrame, PVPTimerFrame, BATTLEFIELD_SHUTDOWN_TIMER
 
+<<<<<<< HEAD
 -- Fix floatingCombatText not being enabled after AddOns like MSBT
 function Module:FixFloatingCombatText()
 	-- print(GetCVar("floatingCombatTextCombatDamage"))
@@ -22,6 +23,28 @@ function Module:FixFloatingCombatText()
 		K.LockCVar("floatingCombatTextCombatDamage", GetCVarDefault("floatingCombatTextCombatDamage"))
 		K.LockCVar("floatingCombatTextCombatHealing", GetCVarDefault("floatingCombatTextCombatHealing"))
 	end
+=======
+-- Fix the excessive "Not enough players" spam in Felsong battlegrounds
+function Module:FixNotEnoughPlayers()
+	hooksecurefunc("PVP_UpdateStatus", function()
+		local isInInstance, instanceType = _G.IsInInstance()
+		if (instanceType == "pvp") or (instanceType == "arena") then
+			for i = 1, _G.GetMaxBattlefieldID() do
+				local status, mapName, teamSize, registeredMatch = GetBattlefieldStatus(i)
+				if (status == "active") then
+					_G.PVPTimerFrame:SetScript("OnUpdate", nil)
+					_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
+				else
+					local kickOutTimer = GetBattlefieldInstanceExpiration()
+					if (kickOutTimer == 0) then
+						_G.PVPTimerFrame:SetScript("OnUpdate", nil)
+						_G.BATTLEFIELD_SHUTDOWN_TIMER = 0
+					end
+				end
+			end
+		end
+	end)
+>>>>>>> 215d330... Misc updates.
 end
 
 -- Misclicks for some popups
@@ -84,22 +107,14 @@ function Module:FixMapBlackOut()
 	end
 end
 
-function Module:PLAYER_ENTERING_WORLD(event)
-	if (K.IsAddOnEnabled("MikScrollingBattleText")) then
-		return
-	end
-
-	self:FixFloatingCombatText()
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
-end
-
 function Module:OnEnable()
+<<<<<<< HEAD
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 	self:FixFloatingCombatText()
+=======
+	self:FixNotEnoughPlayers()
+>>>>>>> 215d330... Misc updates.
 	self:FixMapBlackOut()
 	self:FixMisclickPopups()
 

@@ -82,6 +82,10 @@ function Module:UpdateReputation(event)
 end
 
 function Module:ReputationBar_OnEnter()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+	end
+
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
@@ -114,6 +118,10 @@ function Module:ReputationBar_OnEnter()
 end
 
 function Module:ReputationBar_OnLeave()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+	end
+
 	GameTooltip:Hide()
 end
 
@@ -126,6 +134,12 @@ function Module:UpdateReputationDimensions()
 	self.reputationBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.reputationBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.reputationBar.text:SetSize(self.reputationBar:GetWidth() - 4, C["Media"].FontSize - 1)
+
+	if C["DataBars"].MouseOver then
+		self.reputationBar:SetAlpha(0)
+	else
+		self.reputationBar:SetAlpha(1)
+	end
 end
 
 function Module:EnableDisable_ReputationBar()
@@ -139,7 +153,7 @@ function Module:EnableDisable_ReputationBar()
 end
 
 function Module:OnEnable()
-	self.reputationBar = CreateFrame("Button", "KkthnxUI_ReputationBar", UIParent)
+	self.reputationBar = CreateFrame("Button", "KkthnxUI_ReputationBar", K.PetBattleHider)
 	self.reputationBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -24)
 	self.reputationBar:SetScript("OnEnter", Module.ReputationBar_OnEnter)
 	self.reputationBar:SetScript("OnLeave", Module.ReputationBar_OnLeave)

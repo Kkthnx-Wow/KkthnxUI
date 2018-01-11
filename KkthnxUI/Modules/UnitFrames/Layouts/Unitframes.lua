@@ -315,7 +315,7 @@ local function oUF_KkthnxUnitframes(self, unit)
 	end
 
 	-- Auras
-	if unit ~= "player" then
+	if (unit ~= "player") then
 		K.CreateAuras(self, unit)
 	end
 

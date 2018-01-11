@@ -188,6 +188,7 @@ C["DataBars"] = {
 	-- ["InfoText"] = false,
 	["Outline"] = false,
 	["Texture"] = "KkthnxUI",
+	["MouseOver"] = false,
 }
 
 -- Datatext
