@@ -261,12 +261,6 @@ function Module:StyleFrame(frame)
 	-- Style the tab font
 	TabText:SetFont(TabFont, TabFontSize + 1, TabFontFlags)
 	TabText.SetFont = K.Noop
-
-	if C["Chat"].TabsMouseover ~= true then
-		-- Tabs Alpha
-		Tab:SetAlpha(1)
-		Tab.SetAlpha = UIFrameFadeRemoveFrame
-	end
 	
 	Frame:SetClampRectInsets(0, 0, 0, 0)
 	Frame:SetClampedToScreen(false)
