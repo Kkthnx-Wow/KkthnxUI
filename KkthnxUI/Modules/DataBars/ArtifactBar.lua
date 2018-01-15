@@ -73,6 +73,10 @@ function Module:ArtifactBar_OnEnter()
 
 	GameTooltip:AddDoubleLine(ARTIFACT_POWER, artifactName, nil, nil, nil, 0.90, 0.80,	0.50)
 	GameTooltip:AddLine(" ")
+	
+	if xpForNextPoint <= 0 then
+		xpForNextPoint = xp
+	end
 
 	local remaining = xpForNextPoint - xp
 	local apInBags = self.BagArtifactPower
