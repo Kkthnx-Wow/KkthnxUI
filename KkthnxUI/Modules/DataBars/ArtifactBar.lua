@@ -51,6 +51,10 @@ function Module:UpdateArtifact(event, unit)
 		local _, _, _, _, totalXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI_GetEquippedArtifactInfo()
 		local _, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP, artifactTier)
 
+		if xpForNextPoint <= 0 then
+			xpForNextPoint = xp
+		end
+
 		bar.statusBar:SetMinMaxValues(0, xpForNextPoint)
 		bar.statusBar:SetValue(xp)
 
