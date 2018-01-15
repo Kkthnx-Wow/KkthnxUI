@@ -113,13 +113,11 @@ function Module:EnableDisable_ArtifactBar()
 	if C["DataBars"].ArtifactEnable then
 		self:RegisterEvent("ARTIFACT_XP_UPDATE", "UpdateArtifact")
 		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateArtifact")
-		self:RegisterEvent("BAG_UPDATE_DELAYED", "UpdateArtifact")
 
 		self:UpdateArtifact()
 	else
 		self:UnregisterEvent("ARTIFACT_XP_UPDATE")
 		self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
-		self:UnregisterEvent("BAG_UPDATE_DELAYED")
 
 		self.artifactBar:Hide()
 	end
