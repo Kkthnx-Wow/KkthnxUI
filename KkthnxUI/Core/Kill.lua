@@ -84,7 +84,7 @@ function Module:ADDON_LOADED(event, addon)
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
 
-	if C["Inventory"].Enable then
+	if C["Bags"].Enable then
 		SetSortBagsRightToLeft(true)
 		SetInsertItemsLeftToRight(false)
 	end
