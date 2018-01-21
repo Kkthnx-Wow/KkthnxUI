@@ -93,7 +93,7 @@ end
 function K.CreatePhaseIndicator(self)
 	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.PhaseIndicator:SetSize(18, 18)
-	self.PhaseIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", 14, -5)
+	self.PhaseIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", 3, -9)
 end
 
 function K.CreateQuestIndicator(self)
