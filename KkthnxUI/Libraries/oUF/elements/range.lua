@@ -25,9 +25,12 @@ do
 		AddSpell(friendlySpells, 17) -- Power Word: Shield (40 yards)
 		AddSpell(resSpells, 2006) -- Resurrection (40 yards)
 	elseif class == "DRUID" then
-		AddSpell(enemySpells, 8921) -- Moonfire (40 yards, all specs, lvl 3)
-		AddSpell(friendlySpells, 8936) -- Regrowth (40 yards, all specs, lvl 5)
-		AddSpell(resSpells, 50769) -- Revive (40 yards, all specs, lvl 14)
+		AddSpell(enemySpells, 339) -- Entangling Roots (35 yards)
+		AddSpell(longEnemySpells, 8921) -- Moonfire (40 yards)
+		AddSpell(friendlySpells, 2782) -- Remove Corruption (Balance/Feral/Guardian) (40 yards)
+		AddSpell(friendlySpells, 88423) -- Nature's Cure (Resto) (40 yards)
+		AddSpell(resSpells, 50769) -- Revive (40 yards)
+		AddSpell(resSpells, 20484) -- Rebirth (40 yards)
 	elseif class == "PALADIN" then
 		AddSpell(enemySpells, 20271) -- Judgement (30 yards)
 		AddSpell(longEnemySpells, 20473) -- Holy Shock (40 yards)
@@ -42,9 +45,7 @@ do
 		AddSpell(resSpells, 2008) -- Ancestral Spirit (40 yards)
 	elseif class == "WARLOCK" then
 		AddSpell(enemySpells, 5782) -- Fear (30 yards)
-		AddSpell(longEnemySpells, 234153) -- Drain Life (40 yards)
-		AddSpell(longEnemySpells, 198590) --Drain Soul (40 yards)
-		AddSpell(longEnemySpells, 232670) --Shadow Bolt (40 yards, lvl 1 spell)
+		AddSpell(longEnemySpells, 689) -- Drain Life (40 yards)
 		AddSpell(petSpells, 755) -- Health Funnel (45 yards)
 		AddSpell(friendlySpells, 20707) -- Soulstone (40 yards)
 	elseif class == "MAGE" then
