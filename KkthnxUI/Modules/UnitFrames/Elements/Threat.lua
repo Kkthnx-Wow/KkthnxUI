@@ -1,8 +1,106 @@
 local K, C = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then return end
 
-local UnitThreatSituation = UnitThreatSituation
-local GetThreatStatusColor = GetThreatStatusColor
+local _G = _G
+
+local UnitThreatSituation = _G.UnitThreatSituation
+local GetThreatStatusColor = _G.GetThreatStatusColor
+local CreateFrame = _G.CreateFrame
+
+function K.CreateCombatText(self)
+	self.CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
+	self.CombatFeedbackText:SetFont(C["Media"].Font, 14, "OUTLINE")
+	self.CombatFeedbackText:SetShadowOffset(0, -0)
+	self.CombatFeedbackText:SetPoint("CENTER", self.Portrait)
+	self.CombatFeedbackText.colors = {
+		DAMAGE = {0.69, 0.31, 0.31},
+		CRUSHING = {0.69, 0.31, 0.31},
+		CRITICAL = {0.69, 0.31, 0.31},
+		GLANCING = {0.69, 0.31, 0.31},
+		STANDARD = {0.84, 0.75, 0.65},
+		IMMUNE = {0.84, 0.75, 0.65},
+		ABSORB = {0.84, 0.75, 0.65},
+		BLOCK = {0.84, 0.75, 0.65},
+		RESIST = {0.84, 0.75, 0.65},
+		MISS = {0.84, 0.75, 0.65},
+		HEAL = {0.33, 0.59, 0.33},
+		CRITHEAL = {0.33, 0.59, 0.33},
+		ENERGIZE = {0.31, 0.45, 0.63},
+		CRITENERGIZE = {0.31, 0.45, 0.63},
+	}
+end
+
+function K.CreateGlobalCooldown(self)
+	self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self.Health)
+	self.GCD:SetWidth(self.Health:GetWidth())
+	self.GCD:SetHeight(self.Health:GetHeight() * 1.4)
+	self.GCD:SetFrameStrata("HIGH")
+	self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+	self.GCD.Smooth = C["Unitframe"].Smooth
+	self.GCD.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.GCD.Color = {1, 1, 1}
+	self.GCD.Height = (self.Health:GetHeight() * 1.4)
+	self.GCD.Width = (10)
+end
+
+-- Portrait Timer
+function K.CreatePortraitTimer(self)
+	self.PortraitTimer = CreateFrame("Frame", nil, self)
+	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")
+	self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
+	self.PortraitTimer.Remaining = K.SetFontString(self.PortraitTimer, C["Media"].Font, self.Portrait:GetSize() / 2, C["Media"].FontStyle, "CENTER")
+	self.PortraitTimer.Remaining:SetShadowOffset(0, 0)
+	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
+end
+
+function K.CreateReadyCheckIndicator(self)
+	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
+	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
+end
+
+function K.CreateRestingIndicator(self)
+	self.AssistantIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetPoint("TOPRIGHT", self, 6, 6)
+	self.AssistantIndicator:SetSize(22, 22)
+end
+
+function K.CreateAssistantIndicator(self)
+	self.AssistantIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetSize(14, 14)
+	self.AssistantIndicator:SetPoint("BOTTOM", self.Portrait, "TOPLEFT", 4, -5)
+end
+
+function K.CreateCombatIndicator(self)
+	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.CombatIndicator:SetSize(24, 24)
+	self.CombatIndicator:SetPoint("LEFT", 0, 0)
+	self.CombatIndicator:SetVertexColor(0.69, 0.31, 0.31)
+end
+
+function K.CreateLeaderIndicator(self)
+	self.LeaderIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator:SetSize(14, 14)
+	self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait, "TOPLEFT", 4, -5)
+end
+
+function K.CreateMasterLooterIndicator(self)
+	self.MasterLooterIndicator = self.Power:CreateTexture(nil, "OVERLAY")
+	self.MasterLooterIndicator:SetSize(14, 14)
+	self.MasterLooterIndicator:SetPoint("BOTTOM", self.Portrait, "TOPLEFT", 14, -5)
+end
+
+function K.CreatePhaseIndicator(self)
+	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.PhaseIndicator:SetSize(18, 18)
+	self.PhaseIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", 14, -5)
+end
+
+function K.CreateQuestIndicator(self)
+	self.QuestIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.QuestIndicator:SetSize(22, 22)
+	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT" , 9, -12)
+end
 
 local function UpdateThreat(self, event, unit)
 	if (self.unit ~= unit) then return end
@@ -15,28 +113,17 @@ local function UpdateThreat(self, event, unit)
 		else
 			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
 		end
-		self.Health:SetBackdropBorderColor(r, g, b, 1)
-	elseif C["General"].ColorTextures then
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-			self.Portrait:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3], 1)
-		else
-			self.Portrait.Background:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		end
-		self.Health:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 	else
 		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
 			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
 		else
-			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
 		end
-		self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
 end
 
-function K.AddThreatIndicator(self)
-	local threat = {}
-	threat.IsObjectType = function() end
-	threat.Override = UpdateThreat
-
-	self.ThreatIndicator = threat
+function K.CreateThreatIndicator(self)
+	self.ThreatIndicator = {}
+	self.ThreatIndicator.IsObjectType = function() end
+	self.ThreatIndicator.Override = UpdateThreat
 end

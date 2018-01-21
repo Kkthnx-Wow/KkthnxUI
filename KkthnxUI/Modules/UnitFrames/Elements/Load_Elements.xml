@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui
-    xmlns="http://www.blizzard.com/wow/ui/">
-    <Script file="Auras.lua" />
-    <Script file="Castbars.lua" />
-    <Script file="ClassModules.lua" />
-    <Script file="HealthPrediction.lua" />
-    <Script file="PowerPrediction.lua" />
-    <Script file="Threat.lua" />
-    <Script file="Tags.lua" />
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Auras.lua"/>
+    <Script file="Castbars.lua"/>
+    <Script file="ClassModules.lua"/>
+    <Script file="Stagger.lua"/>
+    <Script file="AdditionalPower.lua"/>
+    <Script file="AlternativePower.lua"/>
+    <Script file="HealthPrediction.lua"/>
+    <Script file="PowerPrediction.lua"/>
+    <Script file="Threat.lua"/>
+    <Script file="Tags.lua"/>
+    <Script file="Totems.lua"/>
+	<Script file="Custom\Totems.lua"/>
 </Ui>

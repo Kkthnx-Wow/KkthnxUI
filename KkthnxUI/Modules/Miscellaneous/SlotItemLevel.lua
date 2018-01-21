@@ -29,13 +29,6 @@ function Module:InitializePaperDoll()
 			itemLevel:SetPoint("TOPLEFT", 2, -2)
 			itemLevel:SetFontObject(KkthnxUIFontOutline or _G.NumberFontNormal)
 
-			itemLevel.shade = child:CreateTexture()
-			itemLevel.shade:SetDrawLayer("ARTWORK")
-			itemLevel.shade:SetTexture(K.MediaPath.."Textures\\Shader")
-			itemLevel.shade:SetPoint("TOPLEFT", itemLevel, "TOPLEFT", -6, 6)
-			itemLevel.shade:SetPoint("BOTTOMRIGHT", itemLevel, "BOTTOMRIGHT", 6, -6)
-			itemLevel.shade:SetAlpha(.5)
-
 			buttonCache[child] = itemLevel
 
 			local iconBorder = child.IconBorder
@@ -105,7 +98,6 @@ function Module:UpdateEquippeditemLevels(event, ...)
 
 				local r, g, b = GetItemQualityColor(itemRarity)
 				itemLevel:SetTextColor(r, g, b)
-				itemLevel.shade:SetVertexColor(r, g, b)
 				itemLevel:SetText(ilvl or "")
 
 				local iconBorder = itemButton.IconBorder
@@ -143,14 +135,11 @@ function Module:UpdateEquippeditemLevels(event, ...)
 
 			else
 				itemLevel:SetTextColor(1, 1, 0)
-				itemLevel.shade:SetVertexColor(1, 1, 0)
 			end
 			if ilvl then
 				itemLevel:SetText(ilvl)
-				itemLevel.shade:Show()
 			else
 				itemLevel:SetText("")
-				itemLevel.shade:Hide()
 			end
 		else
 			local iconBorder = itemButton.IconBorder
@@ -164,7 +153,6 @@ function Module:UpdateEquippeditemLevels(event, ...)
 				end
 			end
 			itemLevel:SetText("")
-			itemLevel.shade:Hide()
 		end
 	end
 

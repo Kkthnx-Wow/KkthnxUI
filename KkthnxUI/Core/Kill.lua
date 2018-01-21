@@ -23,8 +23,12 @@ function Module:ADDON_LOADED(event, addon)
 	end
 
 	if C["General"].AutoScale then
-		K.KillMenuOption(true, "Advanced_UseUIScale")
-		K.KillMenuOption(true, "Advanced_UIScaleSlider")
+		Advanced_UseUIScale:Disable()
+		Advanced_UIScaleSlider:Disable()
+		getglobal(Advanced_UseUIScale:GetName().."Text"):SetTextColor(1, 0, 0, 1)
+		getglobal(Advanced_UIScaleSlider:GetName().."Text"):SetTextColor(1, 0, 0, 1)
+		getglobal(Advanced_UseUIScale:GetName().."Text"):SetText("'UI Scale' is unavailable while Auto Scale is active. Click the button below for options.")
+		Advanced_UseUIScaleText:SetPoint("LEFT", Advanced_UseUIScale, "LEFT", 4, -40)
 	end
 
 	if C["General"].DisableTutorialButtons then
@@ -84,7 +88,7 @@ function Module:ADDON_LOADED(event, addon)
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
 
-	if C["Bags"].Enable then
+	if C["Inventory"].Enable then
 		SetSortBagsRightToLeft(true)
 		SetInsertItemsLeftToRight(false)
 	end

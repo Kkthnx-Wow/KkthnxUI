@@ -3,7 +3,7 @@ if C["Unitframe"].Enable ~= true then return end
 
 local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
-function K.AddPowerPrediction(self)
+function K.CreatePowerPrediction(self)
   local PowerPrediction = CreateFrame("StatusBar", nil, self.Power)
   PowerPrediction:SetPoint("RIGHT", self.Power:GetStatusBarTexture())
   PowerPrediction:SetPoint("BOTTOM")

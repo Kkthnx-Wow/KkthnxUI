@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui
-    xmlns="http://www.blizzard.com/wow/ui/">
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Unitframes -->
-    <Script file="Functions.lua" />
-    <Include file="Elements\Load_Elements.xml" />
-    <Script file="Layouts\Unitframes.lua" />
-    <Include file="Layouts\Raid.xml" />
-    <Script file="Layouts\Raid.lua" />
+    <Script file="Functions.lua"/>
+    <Include file="Elements\Load_Elements.xml"/>
+    <Script file="Layouts\Unitframes.lua"/>
+    <Include file="Layouts\Raid.xml"/>
+    <Script file="Layouts\Raid.lua"/>
 </Ui>

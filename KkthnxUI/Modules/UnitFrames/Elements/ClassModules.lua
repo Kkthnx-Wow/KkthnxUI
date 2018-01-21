@@ -24,7 +24,7 @@ local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged
 	end
 end
 
-local function UpdateClassPowerColor(self, classPower, powerType)
+local function UpdateClassPowerColor(self)
 	local r, g, b
 
 	if (not UnitHasVehicleUI("player")) then
@@ -102,25 +102,4 @@ function K.CreateClassRunes(self, width, height, spacing)
 
 	runes.colorSpec = true
 	self.Runes = runes
-end
-
-function K.CreateAlternatePowerBar(self, unit)
-	-- Additional mana
-	if (unit == "player" and K.Class == "DRUID" or K.Class == "SHAMAN" or K.Class == "PRIEST") then
-		self.AdditionalPower = CreateFrame("StatusBar", nil, self)
-		self.AdditionalPower:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-		self.AdditionalPower:SetStatusBarTexture(ClassModuleTexture, "BORDER")
-		self.AdditionalPower:SetSize(self.Health:GetWidth(), 10)
-		self.AdditionalPower.colorPower = true
-		self.AdditionalPower:SetTemplate("Transparent")
-		self.AdditionalPower.Smooth = C["Unitframe"].Smooth
-		self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
-
-		self.AdditionalPower.Value = self.AdditionalPower:CreateFontString(nil, "OVERLAY")
-		self.AdditionalPower.Value:SetFont(C.Media.Font, 9)
-		self.AdditionalPower.Value:SetShadowOffset(1, -1)
-		self.AdditionalPower.Value:SetPoint("CENTER", self.AdditionalPower, 0, 0)
-
-		self:Tag(self.AdditionalPower.Value, "[KkthnxUI:AltPowerCurrent]")
-	end
 end

@@ -102,7 +102,7 @@ StaticPopupDialogs["SET_UISCALE"] = {
 }
 
 StaticPopupDialogs["DISBAND_RAID"] = {
-	text = "DISBAND_RAID",
+	text = L["StaticPopups"].Disband_Group,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = K.DisbandRaidGroup,
@@ -110,6 +110,22 @@ StaticPopupDialogs["DISBAND_RAID"] = {
 	whileDead = 1,
 	hideOnEscape = true,
 	preferredIndex = 3,
+}
+
+StaticPopupDialogs["BUY_BANK_SLOT"] = {
+	text = CONFIRM_BUY_BANK_SLOT,
+	button1 = YES,
+	button2 = NO,
+	OnAccept = function(self)
+		PurchaseSlot()
+	end,
+	OnShow = function(self)
+		MoneyFrame_Update(self.moneyFrame, GetBankSlotCost())
+	end,
+	hasMoneyFrame = 1,
+	timeout = 0,
+	hideOnEscape = 1,
+	preferredIndex = 3
 }
 
 -- Add a warning so we do not piss people off.
@@ -169,7 +185,7 @@ StaticPopupDialogs["RESET_UI"] = {
 }
 
 StaticPopupDialogs["FIX_ACTIONBARS"] = {
-	text = L["Actionbars"].Fix_Actionbars,
+	text = L["StaticPopups"].Fix_Actionbars,
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = ReloadUI,
@@ -180,7 +196,7 @@ StaticPopupDialogs["FIX_ACTIONBARS"] = {
 }
 
 StaticPopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
-	text = "WARNING_BLIZZARD_ADDONS",
+	text = L["StaticPopups"].Warning_Blizzard_AddOns,
 	button1 = OKAY,
 	OnAccept = function() EnableAddOn("Blizzard_CompactRaidFrames") ReloadUI() end,
 	timeout = 0,

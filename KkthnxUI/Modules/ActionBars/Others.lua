@@ -31,69 +31,49 @@ local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	SetActionBarToggles(1, 1, 1, 1, 0)
 
 	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
 	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
-			SetActionBarToggles(true, true, true, true)
+			SetActionBarToggles(1, 1, 1, 1, 0)
 			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
 
 	if C["ActionBar"].Grid == true then
-		if not InCombatLockdown() then
-			SetCVar("alwaysShowActionBars", 1)
-		end
+		SetCVar("alwaysShowActionBars", 1)
 
-		for i = 1, NUM_ACTIONBAR_BUTTONS do
-			local Button
+		for i = 1, 12 do
+			local button = _G[format("ActionButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-			Button = _G[string_format("ActionButton%d", i)]
-			Button:SetAttribute("showgrid", 1)
-			Button:SetAttribute("statehidden", true)
-			Button:Show()
-			ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarRightButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-			Button = _G[string_format("MultiBarRightButton%d", i)]
-			Button:SetAttribute("showgrid", 1)
-			Button:SetAttribute("statehidden", true)
-			Button:Show()
-			ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarBottomRightButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-			Button = _G[string_format("MultiBarLeftButton%d", i)]
-			Button:SetAttribute("showgrid", 1)
-			Button:SetAttribute("statehidden", true)
-			Button:Show()
-			ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarLeftButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 
-			Button = _G[string_format("MultiBarBottomRightButton%d", i)]
-			Button:SetAttribute("showgrid", 1)
-			Button:SetAttribute("statehidden", true)
-			Button:Show()
-			ActionButton_ShowGrid(Button)
-
-			Button = _G[string_format("MultiBarBottomLeftButton%d", i)]
-			Button:SetAttribute("showgrid", 1)
-			Button:SetAttribute("statehidden", true)
-			Button:Show()
-			ActionButton_ShowGrid(Button)
+			button = _G[format("MultiBarBottomLeftButton%d", i)]
+			button:SetAttribute("showgrid", 1)
+			ActionButton_ShowGrid(button)
 		end
 	else
-		if not InCombatLockdown() then
-			if event == "PLAYER_REGEN_ENABLED" then
-				self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-			end
-			SetCVar("alwaysShowActionBars", 0)
-		else
-			self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		end
+		SetCVar("alwaysShowActionBars", 0)
 	end
 end)
 
 -- Vehicle button stuff
 local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
-VehicleButtonAnchor:SetPoint(C.Position.VehicleBar[1], C.Position.VehicleBar[2], C.Position.VehicleBar[3], C.Position.VehicleBar[4], C.Position.VehicleBar[5])
+VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -6, 0)
 VehicleButtonAnchor:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 if VehicleButtonAnchor then
 	Movers:RegisterFrame(VehicleButtonAnchor)

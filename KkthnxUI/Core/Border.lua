@@ -23,10 +23,10 @@ local function SetBorderColor(self, r, g, b, a)
 	if not t then return end
 
 	for _, tex in pairs(t) do
-		tex:SetVertexColor(r or C["Media"].BorderColor[1], g or C["Media"].BorderColor[2], b or C["Media"].BorderColor[3])
+		tex:SetVertexColor(r or C["Media"].BorderColor[1], g or C["Media"].BorderColor[2], b or C["Media"].BorderColor[3], a or 1)
 
 		if C["General"].ColorTextures then
-			tex:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+			tex:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3], a or 1)
 		end
 	end
 end
@@ -36,10 +36,10 @@ local function SetBackdropBorderColor(self, r, g, b, a)
 	if not t then return end
 
 	for _, tex in pairs(t) do
-		tex:SetVertexColor(r or C["Media"].BorderColor[1], g or C["Media"].BorderColor[2], b or C["Media"].BorderColor[3])
+		tex:SetVertexColor(r or C["Media"].BorderColor[1], g or C["Media"].BorderColor[2], b or C["Media"].BorderColor[3], a or 1)
 
-		if C["General"].ColorTextures then
-			tex:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+	if C["General"].ColorTextures then
+			tex:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3], a or 1)
 		end
 	end
 end
@@ -124,97 +124,4 @@ function K.CreateBorder(object, offset)
 	end
 
 	CreateBorder(object, offset)
-end
-
-local function SetGlowColor(self, r, g, b, a)
-	local t = self._t
-	if not t then return end
-
-	for _, tex in next, t do
-		tex:SetVertexColor(r or 1, g or 1, b or 1, a or 1)
-	end
-end
-
-local function GetGlowColor(self)
-	return self._t and self._t.TOPLEFT:GetVertexColor()
-end
-
-local function ShowGlow(self)
-	local t = self._t
-	if not t then return end
-
-	for _, tex in next, t do
-		tex:Show()
-	end
-end
-
-local function HideGlow(self)
-	local t = self._t
-	if not t then return end
-
-	for _, tex in next, t do
-		tex:Hide()
-	end
-end
-
-local function CreateBorderGlow(object, offset)
-	local t = {}
-	local thickness = 16
-	local texture = shadow_path
-	local offset = offset or 4
-
-	for i = 1, #sections do
-		local x = object:CreateTexture(nil, "BACKGROUND", nil, -7)
-		x:SetTexture(texture..sections[i])
-		t[sections[i]] = x
-	end
-
-	t.TOPLEFT:SetSize(thickness, thickness)
-	t.TOPLEFT:SetPoint("BOTTOMRIGHT", object, "TOPLEFT", offset, -offset)
-
-	t.TOPRIGHT:SetSize(thickness, thickness)
-	t.TOPRIGHT:SetPoint("BOTTOMLEFT", object, "TOPRIGHT", -offset, -offset)
-
-	t.BOTTOMLEFT:SetSize(thickness, thickness)
-	t.BOTTOMLEFT:SetPoint("TOPRIGHT", object, "BOTTOMLEFT", offset, offset)
-
-	t.BOTTOMRIGHT:SetSize(thickness, thickness)
-	t.BOTTOMRIGHT:SetPoint("TOPLEFT", object, "BOTTOMRIGHT", -offset, offset)
-
-	t.TOP:SetHeight(thickness)
-	t.TOP:SetHorizTile(true)
-	t.TOP:SetPoint("TOPLEFT", t.TOPLEFT, "TOPRIGHT", 0, 0)
-	t.TOP:SetPoint("TOPRIGHT", t.TOPRIGHT, "TOPLEFT", 0, 0)
-
-	t.BOTTOM:SetHeight(thickness)
-	t.BOTTOM:SetHorizTile(true)
-	t.BOTTOM:SetPoint("BOTTOMLEFT", t.BOTTOMLEFT, "BOTTOMRIGHT", 0, 0)
-	t.BOTTOM:SetPoint("BOTTOMRIGHT", t.BOTTOMRIGHT, "BOTTOMLEFT", 0, 0)
-
-	t.LEFT:SetWidth(thickness)
-	t.LEFT:SetVertTile(true)
-	t.LEFT:SetPoint("TOPLEFT", t.TOPLEFT, "BOTTOMLEFT", 0, 0)
-	t.LEFT:SetPoint("BOTTOMLEFT", t.BOTTOMLEFT, "TOPLEFT", 0, 0)
-
-	t.RIGHT:SetWidth(thickness)
-	t.RIGHT:SetVertTile(true)
-	t.RIGHT:SetPoint("TOPRIGHT", t.TOPRIGHT, "BOTTOMRIGHT", 0, 0)
-	t.RIGHT:SetPoint("BOTTOMRIGHT", t.BOTTOMRIGHT, "TOPRIGHT", 0, 0)
-
-	return {
-		_t = t,
-		SetVertexColor = SetGlowColor,
-		GetVertexColor = GetGlowColor,
-		Show = ShowGlow,
-		Hide = HideGlow,
-		IsObjectType = K.Noop,
-	}
-end
-
-function K.CreateBorderGlow(object, offset)
-	if type(object) ~= "table" or not object.CreateTexture then
-		return
-	end
-
-	return CreateBorderGlow(object, offset)
 end

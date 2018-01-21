@@ -75,41 +75,10 @@ local UnitName = _G.UnitName
 
 -- TODO: Rewrite these to handle AceConsole-3.0
 
--- local commands = {}
-
--- _G.SLASH_KKTHNXUI1 = "/kkthnxui"
--- _G.SLASH_KKTHNXUI2 = "/kkui"
--- _G.SLASH_KKTHNXUI3 = "/kui"
--- _G.SlashCmdList["KKTHNXUI"] = function(msg)
--- 	msg = string.gsub(msg, "^ +", "")
--- 	local command, arg = string.split(" ", msg, 2)
--- 	arg = arg and string.gsub(arg, " ", "")
-
--- 	if commands[command] then
--- 		commands[command].func(arg)
--- 	else
--- 		K.Print("Unknown command:", command)
--- 	end
--- end
-
--- function K.AddCommand(command, handler, desc)
--- 	commands[command] = {func = handler, desc = desc or "no description"}
--- end
-
--- K.AddCommand("help", function()
--- 	K.Print(L["LIST_OF_COMMANDS_COLON"])
-
--- 	for k, v in pairs(commands) do
--- 		if k ~= "help" and k ~= "" then
--- 			K.Print("/kkthnxui", k, v.desc)
--- 		end
--- 	end
--- end)
-
 -- ConfigFrame
-function K.KkthnxUIConfig()
+function K.ConfigUI()
 	if (not KkthnxUIConfig) then
-		print(L["KkthnxUI config not found!"])
+		print("KkthnxUI config not found!")
 		return
 	end
 
@@ -123,11 +92,11 @@ function K.KkthnxUIConfig()
 		KkthnxUIConfigFrame:Show()
 	end
 end
-K:RegisterChatCommand("cfg", KkthnxUIConfig)
-K:RegisterChatCommand("configui", KkthnxUIConfig)
+K:RegisterChatCommand("cfg", K.ConfigUI)
+K:RegisterChatCommand("configui", K.ConfigUI)
 
 -- Profiles data/listings
-function SlashCmdList.PROFILES(msg)
+function K.UIProfiles(msg)
 	if (not KkthnxUIData) then return end
 
 	msg = string_lower(msg)
@@ -148,7 +117,7 @@ function SlashCmdList.PROFILES(msg)
 				for Character, Table in pairs(KkthnxUIData[Server]) do
 					table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 					table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."]-["..Character.."]")
+					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
 				end
 			end
 		else
@@ -165,21 +134,21 @@ function SlashCmdList.PROFILES(msg)
 		end
 	end
 end
-_G.SLASH_PROFILES1 = "/profile"
-_G.SLASH_PROFILES2 = "/profiles"
+K:RegisterChatCommand("profile", K.UIProfiles)
+K:RegisterChatCommand("profiles", K.UIProfiles)
 
-function SlashCmdList.MOVEUI()
+function K.MoveUI()
 	if InCombatLockdown() then
 		print(ERR_NOT_IN_COMBAT)
 		return
 	end
 
-	K.Movers:StartOrStopMoving()
+	K["Movers"]:StartOrStopMoving()
 end
-_G.SLASH_MOVEUI1 = "/moveui"
-_G.SLASH_MOVEUI2 = "/movers"
+K:RegisterChatCommand("moveui", K.MoveUI)
+K:RegisterChatCommand("movers", K.MoveUI)
 
-function SlashCmdList.CLEANGUILD(msg)
+function K.CleanupGuild(msg)
 	local minLevel, minDays, minRankIndex = string_split(",", msg)
 	minRankIndex = tonumber(minRankIndex)
 	minLevel = tonumber(minLevel)
@@ -215,38 +184,36 @@ function SlashCmdList.CLEANGUILD(msg)
 
 	SendChatMessage("Guild Cleanup Results: Removed all guild members below rank "..GuildControlGetRankName(minRankIndex)..", that have a minimal level of "..minLevel..", and have not been online for at least: "..minDays.." days.", "GUILD")
 end
-_G.SLASH_CLEANGUILD1 = "/cleanguild"
-_G.SLASH_CLEANGUILD2 = "/cg"
+K:RegisterChatCommand("cleanguild", K.CleanupGuild)
 
 -- Fixes the issue when the dialog to release spirit does not come up.
-SlashCmdList.RELEASE = function()
+function K.FixRelease()
 	RetrieveCorpse()
 	RepopMe()
 end
-_G.SLASH_RELEASE1 = "/release"
-_G.SLASH_RELEASE2 = "/repop"
+K:RegisterChatCommand("release", K.FixRelease)
+K:RegisterChatCommand("repop", K.FixRelease)
 
 -- Ready check
-SlashCmdList.RCSLASH = function()
+function K.ReadyCheck()
 	DoReadyCheck()
 end
-_G.SLASH_RCSLASH1 = "/rc"
+K:RegisterChatCommand("rc", K.ReadyCheck)
 
 -- Help frame.
-SlashCmdList.TICKET = function()
+function K.GMTicket()
 	ToggleHelpFrame()
 end
-_G.SLASH_TICKET1 = "/gm"
+K:RegisterChatCommand("gm", K.GMTicket)
 
 -- Toggle the binding frame incase we unbind esc.
-SlashCmdList.KEYBINDFRAME = function()
+function K.KeyBindFrame()
 	if not KeyBindingFrame then
 		KeyBindingFrame_LoadUI()
 	end
 	ShowUIPanel(KeyBindingFrame)
 end
-_G.SLASH_KEYBINDFRAME1 = "/binds"
-
+K:RegisterChatCommand("binds", K.KeyBindFrame)
 
 -- Fix The CombatLog.
 SlashCmdList["CLEARCOMBAT"] = function()
@@ -294,9 +261,9 @@ _G.SLASH_UIHELP1 = "/uicommands"
 _G.SLASH_UIHELP2 = "/helpui"
 
 function K.SetUIScale()
-	if InCombatLockdown() or C["General"].AutoScale then 
-		print("KkthnxUI is already controlling the Auto UI Scale feature!") 
-		return 
+	if InCombatLockdown() or C["General"].AutoScale then
+		print("KkthnxUI is already controlling the Auto UI Scale feature!")
+		return
 	end
 
 	local SetUIScale = GetCVarBool("uiScale")

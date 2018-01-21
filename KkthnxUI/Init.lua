@@ -1,5 +1,3 @@
-debugprofilestart()
-
 local AddOnName, Engine = ...
 
 --[[
@@ -34,16 +32,29 @@ local AddOnName, Engine = ...
 
 -- Lua API
 local _G = _G
+local select = select
 local string_format = string.format
 local string_lower = string.lower
+local tonumber = tonumber
 
 -- Wow API
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetBuildInfo = _G.GetBuildInfo
+local GetCurrentResolution = _G.GetCurrentResolution
+local GetCVar = _G.GetCVar
+local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
+local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
+local GetScreenResolutions = _G.GetScreenResolutions
+local GetSpecialization = _G.GetSpecialization
 local InCombatLockdown = _G.InCombatLockdown
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UnitLevel = _G.UnitLevel
+local UnitName = _G.UnitName
+local UnitGUID = _G.UnitGUID
 
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 
@@ -73,35 +84,10 @@ AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_CO
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo()
 AddOn.WoWBuild = select(2, GetBuildInfo()) AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
+AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and _G.PlaySound or _G.PlaySoundKitID
 
 function AddOn:OnInitialize()
 	self.GUID = UnitGUID("player")
-
-	-- Define the saved variables first. This is important
-	if (not KkthnxUIData) then KkthnxUIData = KkthnxUIData or {} end
-
-	-- Create missing entries in the saved vars if they don"t exist.
-	if (not KkthnxUIData[self.Realm]) then KkthnxUIData[self.Realm] = KkthnxUIData[self.Realm] or {} end
-	if (not KkthnxUIData[self.Realm][self.Name]) then KkthnxUIData[self.Realm][self.Name] = KkthnxUIData[self.Realm][self.Name] or {} end
-	if (not KkthnxUIData[self.Realm][self.Name].BarsLocked) then KkthnxUIData[self.Realm][self.Name].BarsLocked = false end
-	if (not KkthnxUIData[self.Realm][self.Name].BottomBars) then KkthnxUIData[self.Realm][self.Name].BottomBars = Engine[2]["ActionBar"].BottomBars or 2 end
-	if (not KkthnxUIData[self.Realm][self.Name].RightBars) then KkthnxUIData[self.Realm][self.Name].RightBars = Engine[2]["ActionBar"].RightBars or 1 end
-	if (not KkthnxUIData[self.Realm][self.Name].SplitBars) then KkthnxUIData[self.Realm][self.Name].SplitBars = true end
-	if (not KkthnxUIData[self.Realm][self.Name].AutoInvite) then KkthnxUIData[self.Realm][self.Name].AutoInvite = false end
-	if (KkthnxUIDataPerChar) then KkthnxUIData[self.Realm][self.Name] = KkthnxUIDataPerChar KkthnxUIDataPerChar = nil end
-
-	-- Blizzard has too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
-	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[self.Realm][self.Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
-	if (not KkthnxUIConfigShared) then KkthnxUIConfigShared = {} end
-	if (not KkthnxUIConfigShared.Account) then KkthnxUIConfigShared.Account = {} end
-	if (not KkthnxUIConfigShared[self.Realm]) then KkthnxUIConfigShared[self.Realm] = {} end
-	if (not KkthnxUIConfigShared[self.Realm][self.Name]) then KkthnxUIConfigShared[self.Realm][self.Name] = {} end
-	if (KkthnxUIConfigNotShared) then KkthnxUIConfigShared[self.Realm][self.Name] = KkthnxUIConfigNotShared KkthnxUIConfigNotShared = nil end
-
-	local IsInstalled = KkthnxUIData[self.Realm][self.Name].InstallComplete
-	if (not IsInstalled) then
-		self.Install:Launch()
-	end
 
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")

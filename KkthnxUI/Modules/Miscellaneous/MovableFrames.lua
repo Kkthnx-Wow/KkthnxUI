@@ -109,3 +109,7 @@ function Module:OnEnable()
 	end
 	self:RegisterEvent("ADDON_LOADED", "Addons")
 end
+
+function Module:OnDisable()
+	self:UnregisterEvent("ADDON_LOADED")
+end

@@ -4,6 +4,7 @@ if C["Minimap"].Enable ~= true then return end
 -- Lua API
 local _G = _G
 local string_format = string.format
+local table_insert = table.insert
 
 -- Wow API
 local ClearAllTracking = _G.ClearAllTracking
@@ -16,7 +17,7 @@ local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local L_EasyMenu = _G.L_EasyMenu
-local L_L_UIDropDownMenu_CreateInfo = _G.L_L_UIDropDownMenu_CreateInfo
+local L_UIDropDownMenu_CreateInfo = _G.L_UIDropDownMenu_CreateInfo
 local L_ToggleDropDownMenu = _G.L_ToggleDropDownMenu
 local L_UIDropDownMenu_AddButton = _G.L_UIDropDownMenu_AddButton
 local LoadAddOn = _G.LoadAddOn
@@ -53,7 +54,7 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 	local _, class = UnitClass("player")
 
 	if (level == 1) then
-		info = L_L_UIDropDownMenu_CreateInfo()
+		info = L_UIDropDownMenu_CreateInfo()
 		info.text = MINIMAP_TRACKING_NONE
 		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive
 		info.func = ClearAllTracking
@@ -94,7 +95,7 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 
 	for id = 1, count do
 		name, texture, active, category, nested = GetTrackingInfo(id)
-		info = L_L_UIDropDownMenu_CreateInfo()
+		info = L_UIDropDownMenu_CreateInfo()
 		info.text = name
 		info.checked = MiniMapTrackingDropDownButton_IsActive
 		info.func = MiniMapTracking_SetTracking
@@ -125,12 +126,12 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 end
 
 -- Create the new minimap tracking dropdown frame and initialize it
-local KkthnxUIMiniMapTrackingDropDown = CreateFrame("Frame", "KkthnxUIMiniMapTrackingDropDown", UIParent, "L_UIDropDownMenuTemplate")
-KkthnxUIMiniMapTrackingDropDown:SetID(1)
-KkthnxUIMiniMapTrackingDropDown:SetClampedToScreen(true)
-KkthnxUIMiniMapTrackingDropDown:Hide()
-L_UIDropDownMenu_Initialize(KkthnxUIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
-KkthnxUIMiniMapTrackingDropDown.noResize = true
+local UIMiniMapTrackingDropDown = CreateFrame("Frame", "UIMiniMapTrackingDropDown", UIParent, "L_UIDropDownMenuTemplate")
+UIMiniMapTrackingDropDown:SetID(1)
+UIMiniMapTrackingDropDown:SetClampedToScreen(true)
+UIMiniMapTrackingDropDown:Hide()
+L_UIDropDownMenu_Initialize(UIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
+UIMiniMapTrackingDropDown.noResize = true
 
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
@@ -149,7 +150,7 @@ local micromenu = {
 			end
 			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
 	end},
-	{text = TALENTS_BUTTON, icon = "Interface\\MINIMAP\\TRACKING\\Ammunition", notCheckable = 1, func = function()
+	{text = SPECIALIZATION, icon = "Interface\\MINIMAP\\TRACKING\\Ammunition", notCheckable = 1, func = function()
 			if not PlayerTalentFrame then
 				TalentFrame_LoadUI()
 			end
@@ -250,13 +251,13 @@ local micromenu = {
 
 if GameMenuButtonStore and ((C_StorePublic and not C_StorePublic.IsEnabled()) and not C_StorePublic.IsDisabledByParentalControls()
 or (IsTrialAccount and IsTrialAccount()) or (GameLimitedMode_IsActive and GameLimitedMode_IsActive())) then
-	tinsert(micromenu, {text = BLIZZARD_STORE, icon = "Interface\\MINIMAP\\TRACKING\\None", notCheckable = 1, func = function() StoreMicroButton:Click() end})
+	table_insert(micromenu, {text = BLIZZARD_STORE, icon = "Interface\\MINIMAP\\TRACKING\\None", notCheckable = 1, func = function() StoreMicroButton:Click() end})
 end
 
 if K.Level > 99 then
-	tinsert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, icon = "", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
 elseif K.Level > 89 then
-	tinsert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
 end
 
 Minimap:SetScript("OnMouseUp", function(self, btn)
@@ -268,7 +269,7 @@ Minimap:SetScript("OnMouseUp", function(self, btn)
 			L_EasyMenu(micromenu, menuFrame, "cursor", -160, 0)
 		end
 	elseif btn == "RightButton" then
-		L_ToggleDropDownMenu(1, nil, KkthnxUIMiniMapTrackingDropDown, "cursor")
+		L_ToggleDropDownMenu(1, nil, UIMiniMapTrackingDropDown, "cursor")
 	else
 		Minimap_OnClick(self)
 	end

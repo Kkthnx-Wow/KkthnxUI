@@ -54,16 +54,16 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 						icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 						icon1:ClearAllPoints()
-						icon1:SetInside(icon1.overlay)
+						icon1:SetAllPoints(icon1.overlay)
 
 						icon2:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 						icon2:ClearAllPoints()
-						icon2:SetInside(icon2.overlay)
+						icon2:SetAllPoints(icon2.overlay)
 
 						icon1.overlay:SetSize(bar.owner.options.Height, bar.owner.options.Height)
 						icon2.overlay:SetSize(bar.owner.options.Height, bar.owner.options.Height)
 						BarHeight = bar.owner.options.Height
-						tbar:SetInside(frame)
+						tbar:SetAllPoints(frame)
 
 						frame:CreateShadow(1)
 						frame:SetBackdrop(K.BorderBackdrop)
@@ -116,7 +116,7 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 				progress:SetStatusBarTexture(DBMTexture)
 				progress:ClearAllPoints()
-				progress:SetInside(bar)
+				progress:SetAllPoints(bar)
 
 				name:ClearAllPoints()
 				name:SetJustifyH("LEFT")

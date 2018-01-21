@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui
-    xmlns="http://www.blizzard.com/wow/ui/">
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_ActionBars -->
-    <Script file="Functions.lua" />
-    <Script file="Bindings.lua" />
-    <Script file="Hide.lua" />
-    <Script file="Bar1.lua" />
-    <Script file="Bar2.lua" />
-    <Script file="Bar3.lua" />
-    <Script file="Bar4.lua" />
-    <Script file="Bar5.lua" />
-    <Script file="PetBar.lua" />
-    <Script file="StanceBar.lua" />
-    <Script file="Toggle.lua" />
-    <Script file="Style.lua" />
-    <Script file="ExtraActionButton.lua" />
-    <Script file="Range.lua" />
-    <Script file="Others.lua" />
-    <Script file="Vehicle.lua" />
-    <Script file="Cooldowns.lua" />
+    <Script file="Functions.lua"/>
+    <Script file="Bindings.lua"/>
+    <Script file="Hide.lua"/>
+    <Script file="Bar1.lua"/>
+    <Script file="Bar2.lua"/>
+    <Script file="Bar3.lua"/>
+    <Script file="Bar4.lua"/>
+    <Script file="Bar5.lua"/>
+    <Script file="PetBar.lua"/>
+    <Script file="StanceBar.lua"/>
+    <Script file="Toggle.lua"/>
+    <Script file="Style.lua"/>
+    <Script file="ExtraActionButton.lua"/>
+    <Script file="Range.lua"/>
+    <Script file="Others.lua"/>
+    <Script file="Vehicle.lua"/>
+    <Script file="Cooldowns.lua"/>
 </Ui>

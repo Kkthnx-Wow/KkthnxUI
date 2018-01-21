@@ -30,9 +30,6 @@ local UnitName = _G.UnitName
 -- GLOBALS: KkthnxUIConfigNotShared, KkthnxUIConfigPerAccount
 
 local Install = CreateFrame("Frame", "KkthnxUIInstaller", UIParent)
-local Name = UnitName("Player")
-local Realm = GetRealmName()
-
 local InstallFont = K.GetFont(C["General"].Font)
 local InstallTexture = K.GetTexture(C["General"].Texture)
 
@@ -42,17 +39,17 @@ Install.Width = 500
 Install.Height = 200
 
 function Install:ResetData()
-	KkthnxUIData[Realm][Name] = {}
-	KkthnxUIData[Realm][Name].AutoWhisperInvite = false
-	KkthnxUIData[Realm][Name].BarsLocked = false
-	KkthnxUIData[Realm][Name].BottomBars = C["ActionBar"].BottomBars
-	KkthnxUIData[Realm][Name].RightBars = C["ActionBar"].RightBars
-	KkthnxUIData[Realm][Name].SplitBars = true
+	KkthnxUIData[GetRealmName()][UnitName("player")] = {}
+	KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
+	KkthnxUIData[GetRealmName()][UnitName("player")].BarsLocked = false
+	KkthnxUIData[GetRealmName()][UnitName("player")].BottomBars = C["ActionBar"].BottomBars
+	KkthnxUIData[GetRealmName()][UnitName("player")].RightBars = C["ActionBar"].RightBars
+	KkthnxUIData[GetRealmName()][UnitName("player")].SplitBars = true
 
 	if (KkthnxUIConfigPerAccount) then
 		KkthnxUIConfigShared.Account = {}
 	else
-		KkthnxUIConfigShared[Realm][Name] = {}
+		KkthnxUIConfigShared[GetRealmName()][UnitName("player")] = {}
 	end
 
 	ReloadUI()
@@ -126,7 +123,7 @@ function Install:PrintStep(PageNum)
 	if (not Text) then
 		self:Hide()
 		if (PageNum > self.MaxStepNumber) then
-			KkthnxUIData[Realm][Name].InstallComplete = true
+			KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
 			ReloadUI()
 		end
 		return
@@ -140,7 +137,7 @@ function Install:PrintStep(PageNum)
 		self.MiddleButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
 		self.MiddleButton:SetScript("OnClick", self.ResetData)
 		self.CloseButton:Show()
-		if (KkthnxUIData[Realm][Name].InstallComplete) then
+		if (KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
 			self.MiddleButton:Show()
 		else
 			self.MiddleButton:Hide()
@@ -238,7 +235,7 @@ function Install:Launch()
 		if (event == "PLAYER_REGEN_DISABLED") then
 			Install:Hide()
 		else
-			if (not KkthnxUIData[Realm][Name].InstallComplete) then
+			if (not KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
 				Install:Show()
 			end
 		end
@@ -301,7 +298,7 @@ function Install:Launch()
 	self.MiddleButton.Text:SetPoint("CENTER")
 	self.MiddleButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
 	self.MiddleButton:SetScript("OnClick", self.ResetData)
-	if (KkthnxUIData[Realm][Name].InstallComplete) then
+	if (KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
 		self.MiddleButton:Show()
 	else
 		self.MiddleButton:Hide()
@@ -310,6 +307,7 @@ function Install:Launch()
 	self.CloseButton = CreateFrame("Button", nil, self, "UIPanelCloseButton")
 	self.CloseButton:SetPoint("TOPRIGHT", self.Description, "TOPRIGHT")
 	self.CloseButton:SetScript("OnClick", function() self:Hide() end)
+	self.CloseButton:SetFrameLevel(self:GetFrameLevel() + 2) -- Fix the close button falling behind install frame
 	self.CloseButton:SkinCloseButton()
 
 	self.Text = self.Description:CreateFontString(nil, "OVERLAY")
@@ -325,26 +323,79 @@ end
 
 -- On login function
 Install:RegisterEvent("ADDON_LOADED")
-Install:SetScript("OnEvent", function(self, event, addon)
-	if (addon ~= "KkthnxUI") then return end
+Install:SetScript("OnEvent", function(self, event)
+	local playerName = UnitName("player")
+	local playerRealm = GetRealmName()
 
-	-- Check if we should disable our UI due to too small of ScreenWidth
-	if K.ScreenWidth < 1024 and GetCVarBool("gxMonitor") == "0" then
-		local UseUIScale = GetCVarBool("useUiScale")
-		if not UseUIScale then
-			SetCVar("useUiScale", 0)
-		end
-		StaticPopup_Show("DISABLE_UI")
+	-- Define the saved variables first. This is important
+	if (not KkthnxUIData) then
+		KkthnxUIData = KkthnxUIData or {}
+	end
+
+	-- Create missing entries in the saved vars if they don"t exist.
+	if (not KkthnxUIData[playerRealm]) then
+		KkthnxUIData[playerRealm] = KkthnxUIData[playerRealm] or {}
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName]) then
+		KkthnxUIData[playerRealm][playerName] = KkthnxUIData[playerRealm][playerName] or {}
+	end
+
+	if (KkthnxUIDataPerChar) then
+		KkthnxUIData[playerRealm][playerName] = KkthnxUIDataPerChar
+		KkthnxUIDataPerChar = nil
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].BarsLocked) then
+		KkthnxUIData[playerRealm][playerName].BarsLocked = false
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].BottomBars) then
+		KkthnxUIData[playerRealm][playerName].BottomBars = C["ActionBar"].BottomBars
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].RightBars) then
+		KkthnxUIData[playerRealm][playerName].RightBars = C["ActionBar"].RightBars
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].AutoInvite) then
+		KkthnxUIData[playerRealm][playerName].AutoInvite = false
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].SplitBars) then
+		KkthnxUIData[playerRealm][playerName].SplitBars = true
+	end
+
+	-- Blizzard has too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
+	if (not KkthnxUIConfigShared) then
+		KkthnxUIConfigShared = {}
+	end
+
+	if (not KkthnxUIConfigShared.Account) then
+		KkthnxUIConfigShared.Account = {}
+	end
+
+	if (not KkthnxUIConfigShared[playerRealm]) then
+		KkthnxUIConfigShared[playerRealm] = {}
+	end
+
+	if (not KkthnxUIConfigShared[playerRealm][playerName]) then
+		KkthnxUIConfigShared[playerRealm][playerName] = {}
+	end
+
+	if (KkthnxUIConfigNotShared) then
+		KkthnxUIConfigShared[playerRealm][playerName] = KkthnxUIConfigNotShared
+		KkthnxUIConfigNotShared = nil
 	end
 
 	-- Install default if we never ran KkthnxUI on this character.
-	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
+	local IsInstalled = KkthnxUIData[playerRealm][playerName].InstallComplete
 	if (not IsInstalled) then
 		self:Launch()
 	end
 
 	-- Welcome message
-	if (not KkthnxUIData[Realm][Name].InstallComplete) then
+	if (not KkthnxUIData[playerRealm][playerName].InstallComplete) then
 		print(L.Install.Welcome_1..K.Version.." "..K.Client..", "..string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
 		print(" "..L.Install.Welcome_2)
 		print(" "..L.Install.Welcome_3)

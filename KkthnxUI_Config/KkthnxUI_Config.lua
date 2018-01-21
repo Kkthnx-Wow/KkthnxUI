@@ -437,7 +437,7 @@ local function AddListItems(self, info)
 		local Hover = Button:CreateTexture(nil, "OVERLAY")
 		Hover:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
 		Hover:SetBlendMode("ADD")
-		Hover:SetInside()
+		Hover:SetAllPoints()
 		Button:SetHighlightTexture(Hover)
 
 		Button.Owner = self
@@ -1072,7 +1072,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 				local ScrollFrame = CreateFrame("ScrollFrame", nil, RightWindow)
 				ScrollFrame:SetSize(300, Height)
-				ScrollFrame:SetInside(RightWindow, 0, 4)
+				ScrollFrame:SetAllPoints(RightWindow, 0, 4)
 				ScrollFrame:SetScrollChild(GroupPage)
 				ScrollFrame:SetClipsChildren(true) -- https://www.wowinterface.com/forums/showthread.php?t=55664
 

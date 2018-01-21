@@ -139,7 +139,7 @@ local function CreateRaidLayout(self, unit)
 
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
-	self.Health:SetPoints(self)
+	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(RaidframeTexture)
 	self.Health.colorDisconnected = true
 	self.Health.colorReaction = true
@@ -163,10 +163,6 @@ local function CreateRaidLayout(self, unit)
 		self.Power:SetHeight(3)
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 1, 3)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", -1, 3)
-
-		if C["General"].ColorTextures and self then
-			self.Power:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
-		end
 
 		self.Power.Smooth = C["Raidframe"].Smooth
 		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
@@ -259,7 +255,7 @@ local function CreateRaidLayout(self, unit)
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
 		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
-		self.RaidDebuffs.icon:SetInside(self.RaidDebuffs)
+		self.RaidDebuffs.icon:SetAllPoints(self.RaidDebuffs)
 
 		self.RaidDebuffs.cd = CreateFrame("Cooldown", nil, self.RaidDebuffs)
 		self.RaidDebuffs.cd:SetAllPoints(self.RaidDebuffs)
@@ -319,11 +315,11 @@ local function CreateRaidLayout(self, unit)
 	return self
 end
 
-oUF:RegisterStyle("oUF_KkthnxRaid", CreateRaidLayout)
-oUF:SetActiveStyle("oUF_KkthnxRaid")
+oUF:RegisterStyle("oUF_Raid", CreateRaidLayout)
+oUF:SetActiveStyle("oUF_Raid")
 
 if not C["Raidframe"].UseHealLayout then
-	local raid = oUF:SpawnHeader("oUF_KkthnxRaid", nil, C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] show; hide" or C["Raidframe"].Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid",
+	local raid = oUF:SpawnHeader("oUF_Raid", nil, C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] show; hide" or C["Raidframe"].Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid",
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
@@ -348,13 +344,13 @@ if not C["Raidframe"].UseHealLayout then
 
 	raid:SetScale(C["Raidframe"].Scale or 1)
 	raid:SetFrameStrata("LOW")
-	raid:SetPoint(C.Position.UnitFrames.Raid[1], C.Position.UnitFrames.Raid[2], C.Position.UnitFrames.Raid[3], C.Position.UnitFrames.Raid[4], C.Position.UnitFrames.Raid[5])
+	raid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -200)
 	Movers:RegisterFrame(raid)
 end
 
 -- Main Tank/Assist Frames
 if C["Raidframe"].MainTankFrames then
-	local raidtank = oUF:SpawnHeader("oUF_Kkthnx_Raid_MT", nil, "raid",
+	local raidtank = oUF:SpawnHeader("oUF_Raid_MT", nil, "raid",
 	"oUF-initialConfigFunction", ([[
 	self:SetWidth(70)
 	self:SetHeight(40)
@@ -362,7 +358,7 @@ if C["Raidframe"].MainTankFrames then
 	"showRaid", true,
 	"yOffset", -8,
 	"groupFilter", "MAINTANK",
-	"template", "oUF_Kkthnx_Raid_MT"
+	"template", "oUF_Raid_MT"
 	)
 	raidtank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
 	raidtank:SetScale(C["Raidframe"].Scale)

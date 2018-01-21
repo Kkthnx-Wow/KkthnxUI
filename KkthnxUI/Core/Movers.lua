@@ -75,6 +75,7 @@ function Movers:OnDragStart()
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
+	self.moving = true
 	self:StartMoving()
 end
 
@@ -82,6 +83,7 @@ function Movers:OnDragStop()
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
+	self.moving = nil
 	self:StopMovingOrSizing()
 
 	local Data = KkthnxUIData[Realm][Name].Movers

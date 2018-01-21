@@ -1,33 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then return end
 
--- Lua API
-local _G = _G
-local unpack = unpack
-
--- Wow API
-local AutoCastShine_AutoCastStart = _G.AutoCastShine_AutoCastStart
-local AutoCastShine_AutoCastStop = _G.AutoCastShine_AutoCastStop
-local GetNumShapeshiftForms = _G.GetNumShapeshiftForms
-local GetPetActionInfo = _G.GetPetActionInfo
-local GetPetActionSlotUsable = _G.GetPetActionSlotUsable
-local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
-local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
-local InCombatLockdown = _G.InCombatLockdown
-local IsPetAttackAction = _G.IsPetAttackAction
-local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
-local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
-local PetActionButton_StartFlash = _G.PetActionButton_StartFlash
-local PetActionButton_StopFlash = _G.PetActionButton_StopFlash
-local PetHasActionBar = _G.PetHasActionBar
-local SetDesaturation = _G.SetDesaturation
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ShiftHolder, CooldownFrame_Set, StanceBarFrame
-
 -- Main functions
 function K.ShiftBarUpdate(...)
-	if InCombatLockdown() then return end
 	local numForms = GetNumShapeshiftForms()
 	local texture, name, isActive, isCastable
 	local button, icon, cooldown

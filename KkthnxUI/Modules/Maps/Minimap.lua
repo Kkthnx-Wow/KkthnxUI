@@ -115,7 +115,6 @@ function Module:UpdateSettings()
 	end
 
 	if GarrisonLandingPageMinimapButton then
-		local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 		GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
 		GarrisonLandingPageMinimapButton:UnregisterAllEvents()
 		GarrisonLandingPageMinimapButton:Show()
@@ -157,7 +156,6 @@ function Module:UpdateSettings()
 	if QueueStatusMinimapButton then
 		QueueStatusMinimapButton:ClearAllPoints()
 		QueueStatusMinimapButton:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 2, -2)
-		QueueStatusMinimapButton:SetScale(1.0)
 	end
 
 	if MiniMapInstanceDifficulty and GuildInstanceDifficulty then
@@ -167,9 +165,12 @@ function Module:UpdateSettings()
 		GuildInstanceDifficulty:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
 	end
 
+	if MiniMapChallengeMode then
+		MiniMapChallengeMode:ClearAllPoints()
+		MiniMapChallengeMode:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 8, -8)
+	end
+
 	if HelpOpenTicketButton and HelpOpenWebTicketButton then
-		HelpOpenTicketButton:SetScale(1)
-		HelpOpenWebTicketButton:SetScale(1)
 		PositionTicketButtons()
 	end
 end

@@ -11,7 +11,6 @@ C["ActionBar"] = {
 	["ButtonSize"] = 34,
 	["ButtonSpace"] = 6,
 	["Enable"] = true,
-	["EquipBorder"] = false,
 	["Grid"] = true,
 	["HideHighlight"] = false,
 	["Hotkey"] = true,
@@ -22,12 +21,20 @@ C["ActionBar"] = {
 	["PetBarHorizontal"] = false,
 	["PetBarMouseover"] = false,
 	["RightBars"] = 1,
-	["RightBarsMouseover"] = true,
+	["RightBarsMouseover"] = false,
 	["SplitBars"] = false,
 	["StanceBarHide"] = false,
 	["StanceBarHorizontal"] = true,
-	["StanceBarMouseover"] = true,
+	["StanceBarMouseover"] = false,
 	["ToggleMode"] = true,
+}
+
+C["MinimapButtons"] = {
+	["EnableBar"] = false,
+	["BarMouseOver"] = false,
+	["ButtonSpacing"] = 6,
+	["ButtonsPerRow"] = 1,
+	["IconSize"] = 18,
 }
 
 -- Announcements
@@ -52,28 +59,29 @@ C["Automation"] = {
 	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
 	["AutoRelease"] = false,
-	["AutoRepair"] = true,
 	["AutoResurrect"] = false,
 	["AutoResurrectCombat"] = true,
 	["AutoResurrectThank"] = false,
 	["AutoReward"] = false,
-	["AutoSell"] = true,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
 	["InviteKeyword"] = "invite",
 	["ScreenShot"] = false,
-	["UseGuildRepairFunds"] = false,
 }
 
-C["Bags"] = {
+C["Inventory"] = {
+	["AutoRepair"] = true,
+	["AutoSell"] = true,
+	["AutoSellMisc"] = true,
 	["BagColumns"] = 10,
+	["BagFilter"] = false,
 	["BankColumns"] = 17,
 	["ButtonSize"] = 32,
 	["ButtonSpace"] = 6,
 	["Enable"] = true,
 	["ItemLevel"] = false,
 	["PulseNewItem"] = false,
-	["BagFilter"] = false,
+	["UseGuildRepairFunds"] = false,
 }
 
 -- Buffs & Debuffs
@@ -160,33 +168,24 @@ C["Cooldown"] = {
 
 -- DataBars
 C["DataBars"] = {
-	-- Artifact
 	["ArtifactColor"] = {.901, .8, .601},
 	["ArtifactEnable"] = true,
-	-- ["ArtifactFade"] = false,
 	["ArtifactHeight"] = 12,
 	["ArtifactWidth"] = 164,
-	-- Experience
 	["ExperienceColor"] = {0, 0.4, 1, .8},
 	["ExperienceEnable"] = true,
-	-- ["ExperienceFade"] = false,
 	["ExperienceHeight"] = 12,
 	["ExperienceRestedColor"] = {1, 0, 1, 0.2},
 	["ExperienceWidth"] = 164,
-	-- Honor
 	["HonorColor"] = {240/255, 114/255, 65/255},
 	["HonorEnable"] = true,
-	-- ["HonorFade"] = false,
 	["HonorHeight"] = 12,
 	["HonorWidth"] = 164,
-	-- Reputation
+	["MouseOver"] = false,
+	["Outline"] = false,
 	["ReputationEnable"] = true,
-	-- ["ReputationFade"] = false,
 	["ReputationHeight"] = 12,
 	["ReputationWidth"] = 164,
-	-- Info text for all bars
-	-- ["InfoText"] = false,
-	["Outline"] = false,
 	["Texture"] = "KkthnxUI",
 }
 
@@ -227,15 +226,14 @@ C["General"] = {
 	["DisableTutorialButtons"] = false,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
+	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["SpellTolerance"] = false,
 	["TaintLog"] = false,
-	["TalkingHeadWidth"] = 570,
 	["TalkingHeadHeight"] = 155,
+	["TalkingHeadWidth"] = 570,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.31, 0.31, 0.31},
-	["ToggleButton"] = true,
-	["UIScale"] = 0.71111111111111,
 	["NumberPrefixStyle"] = {
 		["Options"] = {
 			["Metric"] = "METRIC",
@@ -259,9 +257,7 @@ C["Loot"] = {
 -- Minimap
 C["Minimap"] = {
 	["Calendar"] = true,
-	["CollectButtons"] = true,
 	["Enable"] = true,
-	["InstanceOnlyNumber"] = false,
 	["ResetZoom"] = false,
 	["ResetZoomTime"] = 4,
 	["Size"] = 170,
@@ -316,8 +312,9 @@ C["Skins"] = {
 	["Recount"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
-	["WeakAuras"] = false,
+	["TalkingHead"] = true,
 	["Texture"] = "KkthnxUI",
+	["WeakAuras"] = false,
 }
 
 -- Tooltip
@@ -353,11 +350,6 @@ C["Unitframe"] = {
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 13,
 	["GlobalCooldown"] = false,
-	["OnlyShowPlayerAuras"] = false,
-	["OnlyShowPlayerBossBuffs"] = false,
-	["OnlyShowPlayerBossDebuffs"] = false,
-	["OnlyShowPlayerTargetBuffs"] = false,
-	["OnlyShowPlayerTargetDebuffs"] = false,
 	["OORAlpha"] = 0.40,
 	["Outline"] = false,
 	["Party"] = true,
@@ -370,7 +362,6 @@ C["Unitframe"] = {
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
-	-- Portrait Styles 3
 	["PortraitStyle"] = {
 		["Options"] = {
 			["3D Portraits"] = "ThreeDPortraits",

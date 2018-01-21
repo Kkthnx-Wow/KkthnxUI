@@ -29,10 +29,12 @@ L["StaticPopups"] = {
 	Config_Reload = "One or more of the changes you have made require a ReloadUI.",
 	Delete_Grays = "|cffff2020WARNING!|r\n\nYou are about to delete all your gray items. You will not receive any currency for this. Do you want to continue?\n\nThe net worth of items being deleted displayed below.",
 	Disband_Group = "Are you sure you want to disband the group?",
+	Fix_Actionbars = "There seems to be an issue with your actionbars. Would you like to attempt to fix the issue?",
 	KkthnxUI_Update = "KkthnxUI is out of date. You can download the newest version from Curse!",
 	Reset_UI = "Are you sure you want to reset all the settings on this profile?",
 	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
-	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?"
+	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?",
+	Warning_Blizzard_AddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
 }
 
 -- Commands Localization
@@ -116,20 +118,20 @@ L["Chat"] = {
 
 -- Configbutton Localization
 L["ConfigButton"] = {
+	AltClickl = "Alt + Left click:",
+	Toggle_Bags = "Toggle Bags",
+	Config = "Toggle Config",
+	Details = "Toggle Details",
 	Functions = "Functions",
 	LeftClick = "Left click:",
-	RightClick = "Right click:",
 	MiddleClick = "Middle click:",
-	ShiftClickl = "Shift + Left click:",
-	ShiftClickr = "Shift + Right click:",
-	AltClickl = "Alt + Left click:",
 	MoveUI = "MoveUI",
 	Recount = "Toggle Recount",
-	Skada = "Toggle Skada",
-	Details = "Toggle Details",
-	Config = "Toggle Config",
+	Right_Click = "Right click:",
 	Roll = "Roll 1-100. You win!",
-	Bags = "Toggle Bags",
+	Shift_Left_Click = "Shift + Left click:",
+	Shift_Right_Click = "Shift + Right click:",
+	Skada = "Toggle Skada",
 }
 
 -- Databars Localization
@@ -154,7 +156,10 @@ L["Inventory"] = {
 	Right_Click_Search = "Right-click to search",
 	Shift_Move = "Hold Shift + Drag",
 	Show_Bags = "Toggle Bags",
-	TrashList = "\n\nTrash List:\n"
+	TrashList = "\n\nTrash List:\n",
+	NotEnoughMoney = "You don't have enough money to repair!",
+	RepairCost = "Your items have been repaired for",
+	SoldTrash = "Your vendor trash has been sold and you earned",
 }
 
 -- Loot Localization

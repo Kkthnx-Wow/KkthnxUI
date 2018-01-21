@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 if C["Nameplates"].Enable ~= true then return end
 
--- oUF_Kkthnx Nameplates
+-- oUF_Nameplates
 local _, ns = ...
 local oUF = ns.oUF
 
@@ -280,7 +280,7 @@ local function ThreatColor(self, forced)
 		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
 	elseif combat then
 		if threatStatus == 3 then -- securely tanking, highest threat
-			if K.Role == "Tank" then
+			if K.GetPlayerRole() == "TANK" then
 				if C["Nameplates"].EnhancedThreat == true then
 					self.Health:SetStatusBarColor(unpack(C["Nameplates"].GoodColor))
 				else
@@ -307,7 +307,7 @@ local function ThreatColor(self, forced)
 			end
 		elseif threatStatus == 0 then -- not tanking, lower threat than tank
 			if C["Nameplates"].EnhancedThreat == true then
-				if K.Role == "Tank" then
+				if K.GetPlayerRole() == "TANK" then
 					self.Health:SetStatusBarColor(unpack(C["Nameplates"].BadColor))
 					if IsInGroup() or IsInRaid() then
 						for i = 1, GetNumGroupMembers() do
@@ -513,7 +513,7 @@ local function StyleUpdate(self, unit)
 	self.Castbar:SetFrameLevel(3)
 	self.Castbar:SetStatusBarTexture(NameplateTexture)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -3)
-	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C["Nameplates"].Height * K.NoScaleMult))
+	self.Castbar:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3 -(C["Nameplates"].Height * K.NoScaleMult))
 	CreateVirtualFrame(self.Castbar)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
@@ -634,8 +634,8 @@ local function StyleUpdate(self, unit)
 			button.cd.noOCC = true
 			button.cd.noCooldownCount = true
 			button.cd:SetReverse(true)
-			button.cd:SetInside(1, 1)
-			-- button.cd:SetHideCountdownNumbers(true)
+			button.cd:SetAllPoints()
+			button.cd:SetHideCountdownNumbers(true)
 
 			button.icon:SetAllPoints(button)
 			button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])

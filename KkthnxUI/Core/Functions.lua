@@ -19,15 +19,17 @@ local table_remove = table.remove
 local tonumber = tonumber
 local tostring = tostring
 local type = type
-local unpack = unpack
 
 -- Wow API
+local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetCVar = _G.GetCVar
 local GetLocale = _G.GetLocale
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
+local GetSpecialization = _G.GetSpecialization
+local GetSpecializationRole = _G.GetSpecializationRole
 local InCombatLockdown = _G.InCombatLockdown
 local IsEveryoneAssistant = _G.IsEveryoneAssistant
 local IsInGroup = _G.IsInGroup
@@ -220,50 +222,15 @@ function K.SetIncompatible(self, ...)
 	end
 end
 
---	Player's role check
-local isCaster = {
-	DEATHKNIGHT = {nil, nil, nil},
-	DEMONHUNTER = {nil, nil},
-	DRUID = {true}, -- Balance
-	HUNTER = {nil, nil, nil},
-	MAGE = {true, true, true},
-	MONK = {nil, nil, nil},
-	PALADIN = {nil, nil, nil},
-	PRIEST = {nil, nil, true}, -- Shadow
-	ROGUE = {nil, nil, nil},
-	SHAMAN = {true}, -- Elemental
-	WARLOCK = {true, true, true},
-	WARRIOR = {nil, nil, nil}
-}
-
-local function CheckRole(self, event, unit)
-	local spec = GetSpecialization()
-	local role = spec and GetSpecializationRole(spec)
-
-	if role == "TANK" then
-		K.Role = "Tank"
-	elseif role == "HEALER" then
-		K.Role = "Healer"
-	elseif role == "DAMAGER" then
-		if isCaster[K.Class][spec] then
-			K.Role = "Caster"
-		else
-			K.Role = "Melee"
-		end
+function K.GetPlayerRole()
+	local assignedRole = UnitGroupRolesAssigned("player")
+	if (assignedRole == "NONE") then
+		local spec = GetSpecialization()
+		return GetSpecializationRole(spec)
 	end
+
+	return assignedRole
 end
-local RoleUpdater = CreateFrame("Frame")
-RoleUpdater:RegisterEvent("PLAYER_ENTERING_WORLD")
-RoleUpdater:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-RoleUpdater:RegisterEvent("CHARACTER_POINTS_CHANGED")
-RoleUpdater:RegisterEvent("LFG_ROLE_UPDATE")
-RoleUpdater:RegisterEvent("PLAYER_ROLES_ASSIGNED")
-RoleUpdater:RegisterEvent("PLAYER_TALENT_UPDATE")
-RoleUpdater:RegisterEvent("PVP_ROLE_UPDATE")
-RoleUpdater:RegisterEvent("ROLE_CHANGED_INFORM")
-RoleUpdater:RegisterEvent("UNIT_INVENTORY_CHANGED")
-RoleUpdater:RegisterEvent("UPDATE_BONUS_ACTIONBAR")
-RoleUpdater:SetScript("OnEvent", CheckRole)
 
 -- Chat channel check
 function K.CheckChat(warning)
@@ -382,20 +349,20 @@ function K.GetFormattedText(style, min, max)
 		if deficit <= 0 then
 			return ""
 		else
-			return format(useStyle, K.ShortValue(deficit))
+			return string_format(useStyle, K.ShortValue(deficit))
 		end
 	elseif style == "PERCENT" then
-		local s = format(useStyle, min / max * 100)
+		local s = string_format(useStyle, min / max * 100)
 		return s
 	elseif style == "CURRENT" or ((style == "CURRENT_MAX" or style == "CURRENT_MAX_PERCENT" or style == "CURRENT_PERCENT") and min == max) then
-		return format(styles["CURRENT"],  K.ShortValue(min))
+		return string_format(styles["CURRENT"],  K.ShortValue(min))
 	elseif style == "CURRENT_MAX" then
-		return format(useStyle,  K.ShortValue(min), K.ShortValue(max))
+		return string_format(useStyle,  K.ShortValue(min), K.ShortValue(max))
 	elseif style == "CURRENT_PERCENT" then
-		local s = format(useStyle, K.ShortValue(min), min / max * 100)
+		local s = string_format(useStyle, K.ShortValue(min), min / max * 100)
 		return s
 	elseif style == "CURRENT_MAX_PERCENT" then
-		local s = format(useStyle, K.ShortValue(min), K.ShortValue(max), min / max * 100)
+		local s = string_format(useStyle, K.ShortValue(min), K.ShortValue(max), min / max * 100)
 		return s
 	end
 end
@@ -586,19 +553,19 @@ local HALFDAYISH, HALFHOURISH, HALFMINUTEISH = DAY/2 + 0.5, HOUR/2 + 0.5, MINUTE
 function K.GetTimeInfo(s, threshhold)
 	if s < MINUTE then
 		if s >= threshhold then
-			return math.floor(s), 3, 0.51
+			return math_floor(s), 3, 0.51
 		else
 			return s, 4, 0.051
 		end
 	elseif s < HOUR then
-		local minutes = math.floor((s/MINUTE)+.5)
-		return math.ceil(s / MINUTE), 2, minutes > 1 and (s - (minutes*MINUTE - HALFMINUTEISH)) or (s - MINUTEISH)
+		local minutes = math_floor((s/MINUTE)+.5)
+		return math_ceil(s / MINUTE), 2, minutes > 1 and (s - (minutes*MINUTE - HALFMINUTEISH)) or (s - MINUTEISH)
 	elseif s < DAY then
-		local hours = math.floor((s/HOUR)+.5)
-		return math.ceil(s / HOUR), 1, hours > 1 and (s - (hours*HOUR - HALFHOURISH)) or (s - HOURISH)
+		local hours = math_floor((s/HOUR)+.5)
+		return math_ceil(s / HOUR), 1, hours > 1 and (s - (hours*HOUR - HALFHOURISH)) or (s - HOURISH)
 	else
-		local days = math.floor((s/DAY)+.5)
-		return math.ceil(s / DAY), 0, days > 1 and (s - (days*DAY - HALFDAYISH)) or (s - DAYISH)
+		local days = math_floor((s/DAY)+.5)
+		return math_ceil(s / DAY), 0, days > 1 and (s - (days*DAY - HALFDAYISH)) or (s - DAYISH)
 	end
 end
 
@@ -611,7 +578,7 @@ function K.Delay(delay, func, ...)
 	end
 	local extend = {...}
 	if not next(extend) then
-		C_Timer.After(delay, func)
+		C_Timer_After(delay, func)
 		return true
 	else
 		if(waitFrame == nil) then
@@ -620,12 +587,12 @@ function K.Delay(delay, func, ...)
 				local count = #waitTable
 				local i = 1
 				while(i <= count) do
-					local waitRecord = table.remove(waitTable, i)
-					local d = table.remove(waitRecord, 1)
-					local f = table.remove(waitRecord, 1)
-					local p = table.remove(waitRecord, 1)
+					local waitRecord = table_remove(waitTable, i)
+					local d = table_remove(waitRecord, 1)
+					local f = table_remove(waitRecord, 1)
+					local p = table_remove(waitRecord, 1)
 					if(d > elapse) then
-					  table.insert(waitTable, i, {d - elapse, f, p})
+					  table_insert(waitTable, i, {d - elapse, f, p})
 					  i = i + 1
 					else
 					  count = count - 1
@@ -634,7 +601,7 @@ function K.Delay(delay, func, ...)
 				end
 			end)
 		end
-		table.insert(waitTable, {delay, func, extend})
+		table_insert(waitTable, {delay, func, extend})
 		return true
 	end
 end
