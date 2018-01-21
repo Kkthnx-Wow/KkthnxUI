@@ -429,33 +429,18 @@ function Module:OnInitialize()
 
 	-- NPC Pet Model
 	self.AFKMode.bottom.npcPetHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
-	self.AFKMode.bottom.npcPetHolder:SetSize(1, 1)
-	self.AFKMode.bottom.npcPetHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 220)
+	self.AFKMode.bottom.npcPetHolder:SetSize(150, 150)
+	self.AFKMode.bottom.npcPetHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 100)
 	self.AFKMode.bottom.pet = CreateFrame("PlayerModel", "AFKNPCModel", self.AFKMode.bottom.npcPetHolder)
+
 	self.AFKMode.bottom.pet:SetCreature(85009)
 	self.AFKMode.bottom.pet:SetPoint("CENTER", self.AFKMode.bottom.npcPetHolder, "CENTER")
 	self.AFKMode.bottom.pet:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
 	self.AFKMode.bottom.pet:SetCamDistanceScale(6)
-	self.AFKMode.bottom.pet:SetFacing(15 * (math_pi / 180))
-
-	-- Use this frame to control position of the model
-	self.AFKMode.bottom.modelPetHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
-	self.AFKMode.bottom.modelPetHolder:SetSize(1, 1)
-	self.AFKMode.bottom.modelPetHolder:SetPoint("BOTTOMRIGHT", self.AFKMode.bottom, "BOTTOMRIGHT", -200, 220)
-	self.AFKMode.bottom.modelPetHolder:SetFrameLevel(7)
-	self.AFKMode.bottom.modelPet = CreateFrame("PlayerModel", "AFKPlayerModel", self.AFKMode.bottom.modelPetHolder)
-	self.AFKMode.bottom.modelPet:SetPoint("CENTER", self.AFKMode.bottom.modelPetHolder, "CENTER")
-	self.AFKMode.bottom.modelPet:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) -- YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame
-	self.AFKMode.bottom.modelPet:SetCamDistanceScale(4.5) -- Since the model frame is huge, we need to zoom out quite a bit
-	self.AFKMode.bottom.modelPet:SetFacing(6)
-	--[[self.AFKMode.bottom.modelPet:SetScript("OnUpdate", function(self)
-		local timePassed = GetTime() - self.startTime
-		if (timePassed > self.duration) and self.isIdle ~= true then
-			self:SetAnimation(0)
-			self.isIdle = true
-			Module.animTimer = Module:ScheduleTimer("LoopAnimations", self.idleDuration)
-		end
-	end)--]]
+	self.AFKMode.bottom.pet:SetFacing(6.9)
+	self.AFKMode.bottom.pet:SetAnimation(69)
+	self.AFKMode.bottom.pet:SetFrameStrata("HIGH")
+	self.AFKMode.bottom.pet:Show()
 
 	-- Countdown decor
 	self.AFKMode.countd = CreateFrame("Frame", nil, self.AFKMode)
