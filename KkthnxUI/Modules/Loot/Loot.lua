@@ -237,7 +237,7 @@ function LM:LOOT_OPENED(_, autoloot)
 	local items = GetNumLootItems()
 
 	if (IsFishingLoot()) then
-		lootFrame.title:SetText("Fishy Loot")
+		lootFrame.title:SetText(L["Loot"].Fishy_Loot)
 	elseif (not UnitIsFriend("player", "target") and UnitIsDead"target") then
 		lootFrame.title:SetText(UnitName("target"))
 	else
@@ -315,7 +315,7 @@ function LM:LOOT_OPENED(_, autoloot)
 		local slot = lootFrame.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
-		slot.name:SetText("Empty Slot")
+		slot.name:SetText(L["Loot"].Empty_Slot)
 		if color then
 			slot.name:SetTextColor(color.r, color.g, color.b)
 		end

@@ -131,8 +131,6 @@ local function CustomTargetBuffFilter(_, unit, aura, _, _, _, _, _, _, _, caster
 
 	if (UnitIsFriend(unit, "player")) then
 		return aura.isPlayer or caster == "pet" or not casterIsPlayer
-	else
-		return true
 	end
 end
 
@@ -246,10 +244,10 @@ local function PostUpdateAura(self, unit, button, index)
 	else
 		if (isStealable) and not isFriend then
 			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-			LibButtonGlow.ShowOverlayGlow(button) -- Idk how well this is going to work.
+			-- LibButtonGlow.ShowOverlayGlow(button) -- Idk how well this is going to work.
 		else
 			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-			LibButtonGlow.HideOverlayGlow(button)
+			-- LibButtonGlow.HideOverlayGlow(button)
 		end
 	end
 

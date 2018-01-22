@@ -72,13 +72,16 @@ L["Auras"] = {
 
 -- Automation Localization
 L["Automation"] = {
-	DuelCanceled_Regular = "Duel request from %s rejected.",
 	DuelCanceled_Pet = "Pet duel request from %s rejected.",
+	DuelCanceled_Regular = "Duel request from %s rejected.",
+	MovieBlocked = "You've seen this movie before, skipping it.",
 }
 
 -- Blizzard Localization
 L["Blizzard"] = {
+	Disband_Group = "Disband Group",
 	No_Errors = "No error yet.",
+	Raid_Menu = "Raid Menu",
 }
 
 -- Chat Localization
@@ -119,7 +122,6 @@ L["Chat"] = {
 -- Configbutton Localization
 L["ConfigButton"] = {
 	AltClickl = "Alt + Left click:",
-	Toggle_Bags = "Toggle Bags",
 	Config = "Toggle Config",
 	Details = "Toggle Details",
 	Functions = "Functions",
@@ -132,13 +134,23 @@ L["ConfigButton"] = {
 	Shift_Left_Click = "Shift + Left click:",
 	Shift_Right_Click = "Shift + Right click:",
 	Skada = "Toggle Skada",
+	Toggle_Bags = "Toggle Bags",
 }
 
 -- Databars Localization
 L["Databars"] = {
+	AP = "AP:",
+	Bars = "Bars",
+	Current_Level = "Current Level:",
+	Experience = "Experience",
+	Honor_Remaining = "Honor Remaining:",
+	Honor_XP = "Honor XP:",
+	Remaining = "Remaining:",
+	Rested = "Rested:",
 	Toggle_Artifact = "<Left-Click to toggle Artifact Window>",
 	Toggle_Honor = "<Left-Click to toggle Honor Window>",
 	Toggle_Reputation = "<Left-Click to toggle Reputation Window>",
+	XP = "XP:",
 }
 
 -- Datatext Localization
@@ -153,18 +165,19 @@ L["Inventory"] = {
 	Buttons_Artifact = "Right click to use Artifact Power item in bag",
 	Buttons_Sort = "Left Click: Sort \nRight Click: Blizzard Sort",
 	Buttons_Stack = "Stack Items",
+	NotEnoughMoney = "You don't have enough money to repair!",
+	RepairCost = "Your items have been repaired for",
 	Right_Click_Search = "Right-click to search",
 	Shift_Move = "Hold Shift + Drag",
 	Show_Bags = "Toggle Bags",
-	TrashList = "\n\nTrash List:\n",
-	NotEnoughMoney = "You don't have enough money to repair!",
-	RepairCost = "Your items have been repaired for",
 	SoldTrash = "Your vendor trash has been sold and you earned",
+	TrashList = "\n\nTrash List:\n",
 }
 
 -- Loot Localization
 L["Loot"] = {
-
+	Empty_Slot = "Empty Slot",
+	Fishy_Loot = "Fishy Loot",
 }
 
 -- Maps Localization

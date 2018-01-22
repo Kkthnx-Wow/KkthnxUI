@@ -63,6 +63,7 @@ C["Automation"] = {
 	["AutoResurrectCombat"] = true,
 	["AutoResurrectThank"] = false,
 	["AutoReward"] = false,
+	["BlockMovies"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
 	["InviteKeyword"] = "invite",

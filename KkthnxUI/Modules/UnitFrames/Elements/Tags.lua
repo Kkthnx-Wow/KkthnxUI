@@ -337,53 +337,33 @@ oUF.Tags.Methods["KkthnxUI:AFK"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:RaidRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED"
+oUF.Tags.Events["KkthnxUI:GroupRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM"
+oUF.Tags.Methods["KkthnxUI:GroupRole"] = function(unit)
+	local role = UnitGroupRolesAssigned(unit)
+	local roleString = ""
+
+	if role == "TANK" then
+		roleString = "|cff0099CCTANK|r"
+	elseif role == "HEALER" then
+		roleString = "|cff00FF00HEAL|r"
+	end
+
+	return roleString
+end
+
+oUF.Tags.Events["KkthnxUI:RaidRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM"
 oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
-	local string = ""
+	local roleString = ""
 
 	if role then
 		if role == "TANK" then
-			string = "|cff0099CCT|r"
+			roleString = "|cff0099CCT|r"
 		elseif role == "HEALER" then
-			string = "|cff00FF00H|r"
+			roleString = "|cff00FF00H|r"
 		end
 
-		return string
-	end
-end
-
-oUF.Tags.Events["KkthnxUI:PartyRole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:PartyRole"] = function(unit)
-	local role = UnitGroupRolesAssigned(unit)
-	local string = ""
-
-	if role == "TANK" then
-		string = " |cff0099CC"..TANK.."|r"
-	elseif role == "HEALER" then
-		string = " |cff00FF00"..HEALER.."|r"
-	end
-
-	return string
-end
-
-oUF.Tags.Events["KkthnxUI:ThreatPercent"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:ThreatPercent"] = function(unit)
-	local _, _, percent = UnitDetailedThreatSituation("player", unit)
-	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
-		return string_format("%.0f%%", percent)
-	else
-		return ""
-	end
-end
-
-oUF.Tags.Events["KkthnxUI:ThreatColor"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
-	local _, status = UnitDetailedThreatSituation("player", unit)
-	if (status) and (IsInGroup() or UnitExists("pet")) then
-		return Hex(GetThreatStatusColor(status))
-	else
-		return ""
+		return roleString
 	end
 end
 

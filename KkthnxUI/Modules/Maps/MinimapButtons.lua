@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("MinimapButtons", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
+-- Sourced: ProjectAzilroka (Azilroka)
+
 local _G = _G
 
 _G.MinimapButtons = Module

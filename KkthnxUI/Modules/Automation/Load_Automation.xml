@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Automation -->
+    <Script file="AutoBlockMovies.lua"/>
     <Script file="AutoDecline.lua"/>
     <Script file="AutoInvite.lua"/>
     <Script file="AutoRelease.lua"/>

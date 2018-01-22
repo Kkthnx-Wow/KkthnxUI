@@ -39,7 +39,6 @@ DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
 DataTextTime.Text:SetFont(C["Media"].Font, 13, "")
 DataTextTime.Text:SetShadowOffset(1.25, -1.25)
 DataTextTime.Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
-
 DataTextTime:SetAllPoints(DataTextTime.Text)
 
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
@@ -241,10 +240,14 @@ function Update(self, t)
 	int = 5
 end
 
-DataTextTime:RegisterEvent("UPDATE_INSTANCE_INFO")
-DataTextTime:SetScript("OnEvent", OnEvent)
-DataTextTime:SetScript("OnMouseDown", Click)
-DataTextTime:SetScript("OnUpdate", Update)
-DataTextTime:SetScript("OnEnter", OnEnter)
-DataTextTime:SetScript("OnLeave", OnLeave)
-Update(DataTextTime, 1)
+local function DelayDataTextTime()
+	DataTextTime:RegisterEvent("UPDATE_INSTANCE_INFO")
+	DataTextTime:SetScript("OnEvent", OnEvent)
+	DataTextTime:SetScript("OnMouseDown", Click)
+	DataTextTime:SetScript("OnUpdate", Update)
+	DataTextTime:SetScript("OnEnter", OnEnter)
+	DataTextTime:SetScript("OnLeave", OnLeave)
+	Update(DataTextTime, 1)
+end
+
+C_Timer.After(0.6, function() DelayDataTextTime() end)

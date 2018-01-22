@@ -656,7 +656,7 @@ function Module:OnEnable()
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
-	GameTooltipStatusBar:CreateShadow()
+	GameTooltipStatusBar:SetTemplate("Transparent", true)
 	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
 	GameTooltipStatusBar:ClearAllPoints()
 	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
@@ -665,12 +665,12 @@ function Module:OnEnable()
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 	GameTooltipStatusBar.text:FontTemplate(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline)
 
-	local GameTooltipStatusBarBG = CreateFrame("Frame", "GameTooltipStatusBaBG", GameTooltipStatusBar)
+	--[[local GameTooltipStatusBarBG = CreateFrame("Frame", "GameTooltipStatusBaBG", GameTooltipStatusBar)
 	GameTooltipStatusBarBG:SetFrameLevel(GameTooltipStatusBar:GetFrameLevel() - 1)
 	GameTooltipStatusBarBG:SetPoint("TOPLEFT", -2, 2)
 	GameTooltipStatusBarBG:SetPoint("BOTTOMRIGHT", 2, -2)
 	GameTooltipStatusBarBG:SetBackdrop(K.BorderBackdrop)
-	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])--]]
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
 	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 20)

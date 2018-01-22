@@ -53,16 +53,37 @@ function K.CreatePortraitTimer(self)
 	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
 end
 
+function K.CreateGroupRoleIndicator(self)
+	self.GroupTextRoleIndicator = self:CreateFontString(nil, "OVERLAY")
+	self.GroupTextRoleIndicator:SetFont(C["Media"].Font, 10, "")
+	self.GroupTextRoleIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -14)
+	self.GroupTextRoleIndicator:SetShadowOffset(K.Mult, -K.Mult)
+	self:Tag(self.GroupTextRoleIndicator, "[KkthnxUI:GroupRole]")
+end
+
 function K.CreateReadyCheckIndicator(self)
 	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
 end
 
+function K.CreateRaidTargetIndicator(self)
+	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator:SetPoint("CENTER", self.Portrait)
+	self.RaidTargetIndicator:SetPoint("TOP", self.Portrait, "TOP", 0, 14)
+	self.RaidTargetIndicator:SetSize(16, 16)
+end
+
+function K.CreateResurrectIndicator(self)
+	self.ResurrectIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
+	self.ResurrectIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
+end
+
 function K.CreateRestingIndicator(self)
-	self.AssistantIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.AssistantIndicator:SetPoint("TOPRIGHT", self, 6, 6)
-	self.AssistantIndicator:SetSize(22, 22)
+	self.RestingIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.RestingIndicator:SetPoint("TOPRIGHT", self.Health, 10, 8)
+	self.RestingIndicator:SetSize(22, 22)
 end
 
 function K.CreateAssistantIndicator(self)

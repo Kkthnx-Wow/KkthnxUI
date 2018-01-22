@@ -320,7 +320,7 @@ function Module:OnInitialize()
 	end
 
 	-- Disband Raid button
-	self:CreateUtilButton("DisbandRaidButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -5, "Disband Group", nil)
+	self:CreateUtilButton("DisbandRaidButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -5, L["Blizzard"].Disband_Group, nil)
 	DisbandRaidButton:SetScript("OnMouseUp", function()
 		if CheckRaidStatus() then
 			StaticPopup_Show("DISBAND_RAID")
@@ -344,7 +344,7 @@ function Module:OnInitialize()
 	end)
 
 	-- Raid Control Panel
-	self:CreateUtilButton("RaidControlButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth(), 18, "TOPLEFT", ReadyCheckButton, "BOTTOMLEFT", 0, -6, "Raid Menu", nil)
+	self:CreateUtilButton("RaidControlButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth(), 18, "TOPLEFT", ReadyCheckButton, "BOTTOMLEFT", 0, -6, L["Blizzard"].Raid_Menu, nil)
 	RaidControlButton:SetScript("OnMouseUp", function()
 		ToggleFriendsFrame(4)
 	end)

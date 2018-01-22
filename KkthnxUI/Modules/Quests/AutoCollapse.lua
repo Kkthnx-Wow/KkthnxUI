@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("AutoCollapse_ObjectiveTracker", "AceEvent-3.0")
 
+-- Sourced: ElvUI Shadow and Light (Darth_Predator, Repooc)
+
 -- Wow Lua
 local _G = _G
 

@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Vendor", "AceEvent-3.0")
 
+-- Sourced: Tukui (Tukz)
+
 local strmatch = string.match
 local BlizzardMerchantClick = MerchantItemButton_OnModifiedClick
 

@@ -523,29 +523,6 @@ function GridCreate()
 	end
 end
 
-SlashCmdList.TEST_UI = function()
-	if InCombatLockdown() then
-		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
-		return
-	end
-
-	if C["Unitframe"].Enable then
-		SlashCmdList.TEST_UF()
-	end
-
-	if C["Announcements"].PullCountdown then
-		--SlashCmdList.PULLCOUNTDOWN()
-	end
-
-	if IsAddOnLoaded("DBM-Core") then
-		SlashCmdList.DBMTEST()
-	end
-	SlashCmdList.TEST_EXTRABUTTON()
-	SlashCmdList.TEST_ACHIEVEMENT()
-	SlashCmdList.TOGGLE_GRID()
-end
-_G.SLASH_TEST_UI1 = "/testui"
-
 -- Reduce video settings to optimize performance
 function K.BoostUI()
 	SetCVar("SSAO", 0)

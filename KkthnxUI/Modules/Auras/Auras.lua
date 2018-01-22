@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 local _G = _G
 local GetTime = GetTime
 local select, unpack = select, unpack

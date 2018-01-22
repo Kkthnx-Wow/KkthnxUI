@@ -2,7 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Kill", "AceEvent-3.0")
 
 function Module:ADDON_LOADED(event, addon)
-	if addon == "Blizzard_AchievementUI" then
+	if (addon == "Blizzard_AchievementUI") then
 		if C["Tooltip"].Enable then
 			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
 		end
@@ -32,17 +32,59 @@ function Module:ADDON_LOADED(event, addon)
 	end
 
 	if C["General"].DisableTutorialButtons then
-		TutorialFrameAlertButton:Kill()
-		HelpOpenTicketButtonTutorial:Kill()
-		TalentMicroButtonAlert:Kill()
-		CollectionsMicroButtonAlert:Kill()
-		ReagentBankHelpBox:Kill()
 		BagHelpBox:Kill()
+		CollectionsMicroButtonAlert:Kill()
 		EJMicroButtonAlert:Kill()
+		HelpOpenTicketButtonTutorial:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+		ReagentBankHelpBox:Kill()
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_FINISHED, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_INTRO, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CORE_ABILITITES, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE, true)
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GLYPH, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_INVENTORY_FIXUP_CHECK_EXPANSION_LEGION, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_INVENTORY_FIXUP_EXPANSION_LEGION, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPELLBOOK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_VIEWABLE_ARTIFACT, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WRAPPED_COLLECTION_ITEMS, true)
+		TalentMicroButtonAlert:Kill()
+		TutorialFrameAlertButton:Kill()
 	end
 
 	if C["Cooldown"].Enable then
@@ -55,7 +97,7 @@ function Module:ADDON_LOADED(event, addon)
 	end
 
 	if C["Unitframe"].Enable then
-		if K.Class == "DEATHKNIGHT" then
+		if (K.Class == "DEATHKNIGHT") then
 			RuneFrame:Kill()
 		end
 		K.KillMenuOption(true, "InterfaceOptionsCombatPanelTargetOfTarget")
@@ -69,11 +111,11 @@ function Module:ADDON_LOADED(event, addon)
 	end
 
 	if C["ActionBar"].Enable then
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
 		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
 		InterfaceOptionsActionBarsPanelBottomRight:Kill()
 		InterfaceOptionsActionBarsPanelRight:Kill()
 		InterfaceOptionsActionBarsPanelRightTwo:Kill()
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
 	end
 
 	if C["Nameplates"].Enable then

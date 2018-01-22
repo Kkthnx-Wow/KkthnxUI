@@ -82,8 +82,7 @@ AddOn.ScreenWidth, AddOn.ScreenHeight = GetPhysicalScreenSize()
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
-AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo()
-AddOn.WoWBuild = select(2, GetBuildInfo()) AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
+AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo() AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
 AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and _G.PlaySound or _G.PlaySoundKitID
 
 function AddOn:OnInitialize()

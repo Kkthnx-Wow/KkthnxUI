@@ -1,9 +1,12 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Artifact_DataBar", "AceEvent-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 local _G = _G
 local format, gsub, strmatch, strfind = string.format, string.gsub, string.match, string.find
 local tonumber, select, pcall = tonumber, select, pcall
+local math_floor = math.floor
 
 local AP_NAME = format("%s|r", ARTIFACT_POWER)
 local ARTIFACT_POWER = ARTIFACT_POWER
@@ -57,7 +60,7 @@ function Module:UpdateArtifact(event, unit)
 		bar.statusBar:SetMinMaxValues(0, xpForNextPoint)
 		bar.statusBar:SetValue(xp)
 
-		local text = format("%d%%", xp / xpForNextPoint * 100)
+		local text = format("%s%%", math_floor(xp / xpForNextPoint * 100))
 
 		bar.text:SetText(text)
 	end
@@ -83,8 +86,8 @@ function Module:ArtifactBar_OnEnter()
 
 	local remaining = xpForNextPoint - xp
 
-	GameTooltip:AddDoubleLine("XP:", format(" %s / %s (%d%%)", K.ShortValue(xp), K.ShortValue(xpForNextPoint), xp/xpForNextPoint * 100), 1, 1, 1)
-	GameTooltip:AddDoubleLine("Remaining:", format(" %s (%d%% - %d %s)", K.ShortValue(xpForNextPoint - xp), remaining / xpForNextPoint * 100, 20 * remaining / xpForNextPoint, "Bars"), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].AP, format(" %s / %s (%s%%)", K.ShortValue(xp), K.ShortValue(xpForNextPoint), math_floor(xp / xpForNextPoint * 100)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %s (%d%% - %s %s)", K.ShortValue(xpForNextPoint - xp), remaining / xpForNextPoint * 100, math_floor(20 * remaining / xpForNextPoint), L["Databars"].Bars), 1, 1, 1)
 	if (numPointsAvailableToSpend > 0) then
 		GameTooltip:AddLine(" ")
 		GameTooltip:AddLine(format(ARTIFACT_POWER_TOOLTIP_BODY, numPointsAvailableToSpend), nil, nil, nil, true)

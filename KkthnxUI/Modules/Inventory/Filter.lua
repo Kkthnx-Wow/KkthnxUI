@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("BagFilter", "AceEvent-3.0")
 
+-- Sourced: Tukui (Tukz)
+
 local _G = _G
 local select = select
 local tinsert = table.insert
@@ -17,6 +19,7 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local PickupContainerItem = PickupContainerItem
 
 local TrashList = L["Inventory"].TrashList
+local Link
 
 Module.Trash = {
 	32902, -- Bottled Nethergon Energy

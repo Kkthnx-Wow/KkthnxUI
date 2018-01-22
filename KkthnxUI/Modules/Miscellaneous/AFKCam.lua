@@ -63,9 +63,9 @@ function Module:SetAFK(status)
 
 		if(IsInGuild()) then
 			local guildName, guildRankName = GetGuildInfo("player")
-			self.AFKMode.bottom.guild:SetFormattedText("%s-%s", guildName, guildRankName)
+			self.AFKMode.bottom.guild:SetFormattedText("%s - %s", guildName, guildRankName)
 		else
-			self.AFKMode.bottom.guild:SetText(L["No Guild"])
+			self.AFKMode.bottom.guild:SetText("No Guild")
 		end
 
 		self.AFKMode.bottom.model.curAnimation = "wave"
@@ -190,7 +190,7 @@ function Module:OnInitialize()
 
 	self.AFKMode.bottom.logo = self.AFKMode:CreateTexture(nil, "OVERLAY")
 	self.AFKMode.bottom.logo:SetSize(320, 150)
-	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 50)
+	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 54)
 	self.AFKMode.bottom.logo:SetTexture(C["Media"].Logo)
 
 	local factionGroup = UnitFactionGroup("player")
@@ -215,7 +215,7 @@ function Module:OnInitialize()
 
 	self.AFKMode.bottom.guild = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.guild:FontTemplate(nil, 20)
-	self.AFKMode.bottom.guild:SetText(L["No Guild"])
+	self.AFKMode.bottom.guild:SetText("No Guild")
 	self.AFKMode.bottom.guild:SetPoint("TOPLEFT", self.AFKMode.bottom.name, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.guild:SetTextColor(0.7, 0.7, 0.7)
 
@@ -225,7 +225,7 @@ function Module:OnInitialize()
 	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
 
-	-- Use this frame to control position of the model
+	--Use this frame to control position of the model
 	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.modelHolder:SetSize(150, 150)
 	self.AFKMode.bottom.modelHolder:SetPoint("BOTTOMRIGHT", self.AFKMode.bottom, "BOTTOMRIGHT", -200, 220)
@@ -237,7 +237,7 @@ function Module:OnInitialize()
 	self.AFKMode.bottom.model:SetFacing(6)
 	self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
 		local timePassed = GetTime() - self.startTime
-		if (timePassed > self.duration) and self.isIdle ~= true then
+		if(timePassed > self.duration) and self.isIdle ~= true then
 			self:SetAnimation(0)
 			self.isIdle = true
 			Module.animTimer = Module:ScheduleTimer("LoopAnimations", self.idleDuration)

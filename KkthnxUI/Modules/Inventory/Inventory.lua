@@ -817,7 +817,7 @@ function Stuffing:InitBags()
 	detail:SetHeight(13)
 	detail:SetShadowColor(0, 0, 0, 0)
 	detail:SetJustifyH("LEFT")
-	detail:SetText("|cff9999ff"..SEARCH.."|r")
+	detail:SetText("|cff4488ff"..SEARCH.."|r")
 	editbox:SetAllPoints(detail)
 
 	do

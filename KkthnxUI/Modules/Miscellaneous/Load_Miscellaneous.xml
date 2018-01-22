@@ -13,5 +13,4 @@
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>
     <Script file="SpellTolerance.lua"/>
-    <Script file="AFKCamPlugin.lua"/>
 </Ui>

@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local CopyChat = K:NewModule("CopyChat", "AceHook-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 -- Lua API
 local _G = _G
 local string_format = string.format
@@ -18,9 +20,6 @@ local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local ToggleFrame = _G.ToggleFrame
 
--- GLOBALS: CopyChatFrameEditBox, UISpecialFrames, ChatFontNormal, CopyChatScrollFrameScrollBar
--- GLOBALS: CopyChatScrollFrame, CopyChatFrame, ChatMenu
-
 local Lines = {}
 local CopyFrame
 
@@ -35,54 +34,54 @@ end
 local function ColorizeLine(text, r, g, b)
 	local HexCode = K.RGBToHex(r, g, b)
 	local HexReplacement = string_format("|r%s", HexCode)
-	
+
 	text = string_gsub(text, "|r", HexReplacement) -- If the message contains color strings then we need to add message color hex code after every "|r"
 	text = string_format("%s%s|r", HexCode, text) -- Add message color
-	
+
 	return text
 end
 
 function CopyChat:GetLines(frame)
 	local Index = 1
-	
+
 	for i = 1, frame:GetNumMessages() do
 		local Message, R, G, B = frame:GetMessageInfo(i)
-		
+
 		--Set fallback color values
 		R = R or 1
 		G = G or 1
 		B = B or 1
-		
+
 		--Remove icons
 		Message = RemoveIconFromLine(Message)
-		
+
 		--Add text color
 		Message = ColorizeLine(Message, R, G, B)
-		
+
 		Lines[Index] = Message
 		Index = Index + 1
 	end
-	
+
 	return Index - 1
 end
 
 function CopyChat:CopyText(frame)
 	if not CopyChatFrame:IsShown() then
 		local _, Size = FCF_GetChatWindowInfo(frame:GetID())
-		
+
 		if Size < 10 then
 			Size = 12
 		end
-		
+
 		FCF_SetChatWindowFontSize(frame, frame, 0.01)
-		
+
 		CopyChatFrame:Show()
-		
+
 		local LineCount = self:GetLines(frame)
 		local Text = table_concat(Lines, "\n", 1, LineCount)
-		
+
 		FCF_SetChatWindowFontSize(frame, frame, Size)
-		
+
 		CopyChatFrameEditBox:SetText(Text)
 	else
 		CopyChatFrame:Hide()
@@ -101,7 +100,7 @@ local OnMouseUp = function(self)
 	if InCombatLockdown() then
 		return
 	end
-	
+
 	CopyChat:CopyText(self.ChatFrame)
 end
 
@@ -143,7 +142,7 @@ function CopyChat:OnEnable()
 	end)
 	CopyFrame:SetFrameStrata("DIALOG")
 	CopyFrame.Minimized = true
-	
+
 	local ScrollArea = CreateFrame("ScrollFrame", "CopyChatScrollFrame", CopyFrame, "UIPanelScrollFrameTemplate")
 	ScrollArea:SetPoint("TOPLEFT", CopyFrame, "TOPLEFT", 8, -30)
 	ScrollArea:SetPoint("BOTTOMRIGHT", CopyFrame, "BOTTOMRIGHT", -30, 8)
@@ -154,7 +153,7 @@ function CopyChat:OnEnable()
 	ScrollArea:HookScript("OnVerticalScroll", function(self, offset)
 		CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (CopyChatFrameEditBox:GetHeight() - offset - self:GetHeight()))
 	end)
-	
+
 	local EditBox = CreateFrame("EditBox", "CopyChatFrameEditBox", CopyFrame)
 	EditBox:SetMultiLine(true)
 	EditBox:SetMaxLetters(99999)
@@ -174,7 +173,7 @@ function CopyChat:OnEnable()
 			ScrollFrameTemplate_OnMouseWheel(CopyChatScrollFrame, -1)
 		end
 	end)
-	
+
 	local Close = CreateFrame("Button", "CopyChatFrameCloseButton", CopyFrame, "UIPanelCloseButton")
 	Close:SetPoint("TOPRIGHT")
 	Close:SetFrameLevel(Close:GetFrameLevel() + 1)
@@ -182,12 +181,12 @@ function CopyChat:OnEnable()
 	Close:SetScript("OnClick", function()
 		CopyFrame:Hide()
 	end)
-	
+
 	-- Create copy button
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G["ChatFrame"..i]
 		local id = frame:GetID()
-		
+
 		local CopyButton = CreateFrame("Button", string_format("CopyChatButton%d", id), frame)
 		CopyButton:EnableMouse(true)
 		CopyButton:SetSize(22, 24)
@@ -195,7 +194,7 @@ function CopyChat:OnEnable()
 		CopyButton:SetNormalTexture(C["Media"].Copy)
 		CopyButton:SetAlpha(0.25)
 		CopyButton:SetFrameLevel(frame:GetFrameLevel() + 5)
-		
+
 		CopyButton:SetScript("OnMouseUp", function(self, button)
 			if button == "RightButton" and id == 1 and not InCombatLockdown() then
 				ToggleFrame(ChatMenu)
@@ -212,12 +211,12 @@ function CopyChat:OnEnable()
 					else
 						ToggleAllBags()
 					end
-				end	
+				end
 			else
 				CopyChat:CopyText(self.ChatFrame)
 			end
 		end)
-		
+
 		CopyButton:SetScript("OnEnter", function(self)
 			self:SetAlpha(1)
 			local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
@@ -238,7 +237,7 @@ function CopyChat:OnEnable()
 			end
 			GameTooltip:Hide()
 		end)
-		
+
 		-- Create Configbutton
 		if C["General"].ConfigButton == true then
 			local ConfigButton = CreateFrame("Button", string_format("CopyChatButton2%d", id), frame)
@@ -248,18 +247,18 @@ function CopyChat:OnEnable()
 			ConfigButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Config")
 			ConfigButton:SetAlpha(0.25)
 			ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
-			
+
 			ConfigButton:SetScript("OnMouseUp", function(self, button)
 				if(InCombatLockdown() and not button == "RightButton") then
 					K.Print(ERR_NOT_IN_COMBAT)
 					return
 				end
-				
+
 				if button == "LeftButton" then
 					local Movers = K.Movers
 					Movers:StartOrStopMoving()
 				end
-				
+
 				if button == "RightButton" then
 					if IsAddOnLoaded("Recount") then
 						if Recount_MainWindow:IsShown() then
@@ -287,7 +286,7 @@ function CopyChat:OnEnable()
 					HideUIPanel(GameMenuFrame)
 				end
 			end)
-			
+
 			ConfigButton:SetScript("OnEnter", function(self)
 				self:SetAlpha(1)
 				local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
@@ -315,7 +314,7 @@ function CopyChat:OnEnable()
 				end
 				GameTooltip:Hide()
 			end)
-			
+
 			ConfigButton.ChatFrame = frame
 		end
 		CopyButton.ChatFrame = frame

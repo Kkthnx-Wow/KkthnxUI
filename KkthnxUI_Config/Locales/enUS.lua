@@ -25,22 +25,22 @@ KkthnxUIConfig["enUS"] = {
 
 		["ColorTextures"] = {
 			["Name"] = "Toggle Border Color",
-			["Desc"] = "Enable this to beable to change the border color your heart desires",
+			["Desc"] = "Change the color of the main border of the UI",
 		},
 
 		["TexturesColor"] = {
 			["Name"] = "Border Color",
-			["Desc"] = "Main border color of the UI. \n\n|cffFF0000Toggle Border Color has to be enabled for this to work|r",
+			["Desc"] = "Main border color of the UI. \n\n|cffFF0000'Toggle Border Color' has to be enabled for this to work|r",
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = "Set the font texture for everything in UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
+			["Desc"] = "Set the font for most things in the UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
 		},
 
 		["FontSize"] = {
 			["Name"] = "Font Size",
-			["Desc"] = "Set the font size for everything in UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
+			["Desc"] = "Set the font size for most things in the UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
 		},
 
 		["MoveBlizzardFrames"] = {
@@ -443,6 +443,11 @@ KkthnxUIConfig["enUS"] = {
 		["AutoCollapse"] = {
 			["Name"] = "Auto Collapse",
 			["Desc"] = "Auto collapse the objective tracker",
+		},
+
+		["BlockMovies"] = {
+			["Name"] = "Block Movies",
+			["Desc"] = "Boss encounter movies will only be allowed to play once (so you can watch each one) and will then be blocked."
 		},
 
 		["AutoInvite"] = {

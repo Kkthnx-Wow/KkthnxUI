@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Experience_DataBar", "AceEvent-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 local _G = _G
 local format = format
 local min = min
@@ -69,14 +71,14 @@ function Module:ExperienceBar_OnEnter()
 
 	local cur, max = Module:GetXP("player")
 	local rested = GetXPExhaustion()
-	GameTooltip:AddLine("Experience")
+	GameTooltip:AddLine(L["Databars"].Experience)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine("XP:", format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
-	GameTooltip:AddDoubleLine("Remaining:", format(" %d (%d%% - %d ".."Bars"..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine("XP:", format("+%d (%d%%)", rested, rested / max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].XP, format("+%d (%d%%)", rested, rested / max * 100), 1, 1, 1)
 	end
 
 	GameTooltip:Show()

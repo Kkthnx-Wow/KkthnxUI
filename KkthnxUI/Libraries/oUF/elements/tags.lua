@@ -294,7 +294,7 @@ local tagStrings = {
 		elseif(c == 'worldboss') then
 			return 'Boss'
 		elseif(c == 'minus') then
-			return ''
+			return 'Affix'
 		end
 	end]],
 
@@ -309,7 +309,7 @@ local tagStrings = {
 		elseif(c == 'worldboss') then
 			return 'B'
 		elseif(c == 'minus') then
-			return ''
+			return '-'
 		end
 	end]],
 
@@ -381,7 +381,7 @@ local tagStrings = {
 	['affix'] = [[function(u)
 		local c = UnitClassification(u)
 		if(c == 'minus') then
-			return ''
+			return 'Affix'
 		end
 	end]],
 

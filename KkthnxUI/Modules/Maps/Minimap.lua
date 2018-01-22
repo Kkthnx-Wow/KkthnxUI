@@ -100,7 +100,7 @@ function Module:UpdateSettings()
 		Minimap:SetSize(K.MinimapSize, K.MinimapSize)
 	end
 
-	if MMHolder then
+	if (MMHolder) then
 		MMHolder:SetWidth((Minimap:GetWidth() + 1 + 1 * 3))
 	end
 
@@ -240,12 +240,6 @@ function Module:OnInitialize()
 	QueueStatusFrame:SetClampedToScreen(true)
 
 	MiniMapWorldMapButton:Hide()
-
-	MiniMapInstanceDifficulty:Hide()
-	GuildInstanceDifficulty:Hide()
-	MiniMapInstanceDifficulty.Show = K.Noop
-	GuildInstanceDifficulty.Show = K.Noop
-	MiniMapChallengeMode:GetRegions():SetTexture("")
 
 	if TimeManagerClockButton then
 		TimeManagerClockButton:Kill()

@@ -2,11 +2,9 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("SocialQueue", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 if C["Chat"].Enable ~= true then return end
 
--- Sourced: ElvUI (Elvz)
--- Credits: Simpy and Merathilis
--- Edited: KkthnxUI (Kkthnx)
+-- Sourced: ElvUI (Simpy and Merathilis)
 
---[[local _G = _G
+local _G = _G
 local difftime = difftime
 local find = string.find
 
@@ -162,4 +160,4 @@ end
 
 function Module:OnDisable()
 	self:UnregisterEvent("SOCIAL_QUEUE_UPDATE")
-end--]]
+end

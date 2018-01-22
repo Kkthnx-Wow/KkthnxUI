@@ -23,12 +23,6 @@ local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: ChatFrame1, ChatFrame2, ChatFrame3, ChatFrame4, UIConfig, UIConfigMain
--- GLOBALS: InterfaceOptionsActionBarsPanelPickupActionKeyDropDown, SetActionBarToggles
--- GLOBALS: KkthnxUIDataPerChar, KkthnxUIData, KkthnxUIConfigShared, KkthnxUIConfigShared.Account
--- GLOBALS: KkthnxUIConfigNotShared, KkthnxUIConfigPerAccount
-
 local Install = CreateFrame("Frame", "KkthnxUIInstaller", UIParent)
 local InstallFont = K.GetFont(C["General"].Font)
 local InstallTexture = K.GetTexture(C["General"].Texture)
@@ -45,6 +39,7 @@ function Install:ResetData()
 	KkthnxUIData[GetRealmName()][UnitName("player")].BottomBars = C["ActionBar"].BottomBars
 	KkthnxUIData[GetRealmName()][UnitName("player")].RightBars = C["ActionBar"].RightBars
 	KkthnxUIData[GetRealmName()][UnitName("player")].SplitBars = true
+	KkthnxUIData[GetRealmName()][UnitName("player")].WatchedMovies = {}
 
 	if (KkthnxUIConfigPerAccount) then
 		KkthnxUIConfigShared.Account = {}
@@ -360,6 +355,10 @@ Install:SetScript("OnEvent", function(self, event)
 
 	if (not KkthnxUIData[playerRealm][playerName].AutoInvite) then
 		KkthnxUIData[playerRealm][playerName].AutoInvite = false
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].WatchedMovies) then
+		KkthnxUIData[playerRealm][playerName].WatchedMovies = KkthnxUIData[playerRealm][playerName].WatchedMovies or {}
 	end
 
 	if (not KkthnxUIData[playerRealm][playerName].SplitBars) then
