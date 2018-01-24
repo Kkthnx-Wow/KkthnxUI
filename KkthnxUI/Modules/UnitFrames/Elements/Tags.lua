@@ -52,9 +52,6 @@ local UnitReaction = _G.UnitReaction
 local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
 local DEFAULT_AFK_MESSAGE = _G.DEFAULT_AFK_MESSAGE
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
-
 local GHOST = GetLocale() == "deDE" and "Geist" or GetSpellInfo(8326)
 
 local function UnitName(unit)

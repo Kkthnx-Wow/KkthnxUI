@@ -93,7 +93,7 @@ end
 
 local function OnLeave()
 	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
 	end
 	enteredFrame = false
 end

@@ -194,14 +194,15 @@ function Module:OnInitialize()
 	self.AFKMode.bottom.logo:SetTexture(C["Media"].Logo)
 
 	local factionGroup = UnitFactionGroup("player")
-	-- factionGroup = "Alliance"
 	local size, offsetX, offsetY = 140, -20, -16
 	local nameOffsetX, nameOffsetY = -10, -28
+
 	if factionGroup == "Neutral" then
 		factionGroup = "Panda"
 		size, offsetX, offsetY = 90, 15, 10
 		nameOffsetX, nameOffsetY = 20, -5
 	end
+
 	self.AFKMode.bottom.faction = self.AFKMode.bottom:CreateTexture(nil, "OVERLAY")
 	self.AFKMode.bottom.faction:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", offsetX, offsetY)
 	self.AFKMode.bottom.faction:SetTexture("Interface\\Timer\\"..factionGroup.."-Logo")
@@ -209,7 +210,7 @@ function Module:OnInitialize()
 
 	self.AFKMode.bottom.name = self.AFKMode.bottom:CreateFontString(nil, "OVERLAY")
 	self.AFKMode.bottom.name:FontTemplate(nil, 20)
-	self.AFKMode.bottom.name:SetFormattedText("%s-%s", K.Name, K.Realm)
+	self.AFKMode.bottom.name:SetFormattedText("%s - %s", K.Name, K.Realm)
 	self.AFKMode.bottom.name:SetPoint("TOPLEFT", self.AFKMode.bottom.faction, "TOPRIGHT", nameOffsetX, nameOffsetY)
 	self.AFKMode.bottom.name:SetTextColor(classColor.r, classColor.g, classColor.b)
 
@@ -225,15 +226,30 @@ function Module:OnInitialize()
 	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
 
-	--Use this frame to control position of the model
+	-- NPC Pet Model
+	self.AFKMode.bottom.npcPetHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
+	self.AFKMode.bottom.npcPetHolder:SetSize(150, 150)
+	self.AFKMode.bottom.npcPetHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 138)
+	self.AFKMode.bottom.pet = CreateFrame("PlayerModel", "AFKNPCModel", self.AFKMode.bottom.npcPetHolder)
+
+	self.AFKMode.bottom.pet:SetCreature(85009)
+	self.AFKMode.bottom.pet:SetPoint("CENTER", self.AFKMode.bottom.npcPetHolder, "CENTER")
+	self.AFKMode.bottom.pet:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
+	self.AFKMode.bottom.pet:SetCamDistanceScale(6)
+	self.AFKMode.bottom.pet:SetFacing(6.9)
+	self.AFKMode.bottom.pet:SetAnimation(69)
+	self.AFKMode.bottom.pet:SetFrameStrata("HIGH")
+	self.AFKMode.bottom.pet:Show()
+
+	-- Player Model
 	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.modelHolder:SetSize(150, 150)
 	self.AFKMode.bottom.modelHolder:SetPoint("BOTTOMRIGHT", self.AFKMode.bottom, "BOTTOMRIGHT", -200, 220)
 
 	self.AFKMode.bottom.model = CreateFrame("PlayerModel", "AFKPlayerModel", self.AFKMode.bottom.modelHolder)
 	self.AFKMode.bottom.model:SetPoint("CENTER", self.AFKMode.bottom.modelHolder, "CENTER")
-	self.AFKMode.bottom.model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) --YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame.
-	self.AFKMode.bottom.model:SetCamDistanceScale(4.5) --Since the model frame is huge, we need to zoom out quite a bit.
+	self.AFKMode.bottom.model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) -- YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame.
+	self.AFKMode.bottom.model:SetCamDistanceScale(4.5) -- Since the model frame is huge, we need to zoom out quite a bit.
 	self.AFKMode.bottom.model:SetFacing(6)
 	self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
 		local timePassed = GetTime() - self.startTime

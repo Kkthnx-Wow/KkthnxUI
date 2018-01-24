@@ -228,6 +228,7 @@ local function oUF_Unitframes(self, unit)
 		self.Portrait:SetTemplate("Transparent")
 		self.Portrait:SetFrameStrata("BACKGROUND")
 		self.Portrait:SetFrameLevel(1)
+		self.Portrait.PostUpdate = K.PortraitUpdate
 
 		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
 			self.Portrait:SetSize(46, 46)
@@ -325,7 +326,6 @@ local function oUF_Unitframes(self, unit)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 		K.CreateAdditionalPower(self)
-		K.CreateAlternativePower(self)
 		K.CreateClassModules(self, 194, 12, 6)
 		K.CreateClassTotems(self, 194, 12, 6)
 		if (C["Unitframe"].PowerPredictionBar) then
@@ -349,7 +349,6 @@ local function oUF_Unitframes(self, unit)
 		K.CreateRaidTargetIndicator(self)
 		K.CreateResurrectIndicator(self)
 		K.CreatePvPText(self, unit)
-		K.CreatePhaseIndicator(self)
 		K.CreateQuestIndicator(self)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateThreatIndicator(self)
@@ -384,10 +383,7 @@ local function oUF_Unitframes(self, unit)
 		end
 	end)
 
-	self.Range = {
-		insideAlpha = 1,
-		outsideAlpha = C["Unitframe"].OORAlpha,
-	}
+	self.Range = K.CreateRange(self)
 
 	return self
 end

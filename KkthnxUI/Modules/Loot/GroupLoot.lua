@@ -283,13 +283,11 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 		RollOnLoot(rollID, LOOT_ROLL_TYPE_GREED)
 	end
 
-	if C["Loot"].AutoRoll --[[and UnitLevel("player") == MAX_PLAYER_LEVEL--]] and quality == 2 and not bop then
+	if C["Loot"].AutoRoll and UnitLevel("player") == MAX_PLAYER_LEVEL and quality == 2 and not bop then
 		if canDisenchant then
 			RollOnLoot(rollID, 3)
-			UIErrorsFrame:AddMessage("I Rolled for Disenchant" ..name, 0.0, 1.0, 0.0, 80)
 		else
 			RollOnLoot(rollID, 2)
-			UIErrorsFrame:AddMessage("I Rolled for Greed" ..name, 0.0, 1.0, 0.0, 80)
 		end
 	end
 end

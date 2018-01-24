@@ -138,7 +138,7 @@ local function UNIT_SPELLCAST_START(self, event, unit)
 
 		element:SetValue(element.duration)
 	else
-		element:SetValue(0)		
+		element:SetValue(0)
 	end
 	element:SetMinMaxValues(0, element.max)
 
@@ -225,7 +225,7 @@ local UNIT_SPELLCAST_FAILED_QUIET = function(self, event, unit, spellname, _, ca
 		mergeTradeskill = false;
 		castbar.tradeSkillCastId = nil
 	end
-	
+
 	castbar.casting = nil
 	castbar.notInterruptible = nil
 	castbar:SetValue(0)

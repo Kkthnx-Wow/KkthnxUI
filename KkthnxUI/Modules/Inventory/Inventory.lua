@@ -686,7 +686,11 @@ function Stuffing:CreateBagFrame(w)
 
 		GameTooltip:Show()
 	end)
-	f:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	f:SetScript("OnLeave", function()
+		if not GameTooltip:IsForbidden() then -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+			GameTooltip:Hide()
+		end
+	end)
 
 
 	if w == "Bank" then
@@ -884,7 +888,9 @@ function Stuffing:InitBags()
 	end)
 
 	function tooltip_hide()
-		GameTooltip:Hide()
+		if not GameTooltip:IsForbidden() then
+			GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+		end
 	end
 
 	function tooltip_show(self)

@@ -14,8 +14,3 @@ KkthnxUI_Config.lua
 
 # -- Load Locales
 Locales\enUS.lua
-Locales\deDE.lua
-Locales\frFR.lua
-Locales\ruRU.lua
-Locales\zhCN.lua
-Locales\zhTW.lua

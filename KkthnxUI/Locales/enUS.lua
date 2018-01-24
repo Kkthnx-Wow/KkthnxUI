@@ -80,8 +80,10 @@ L["Automation"] = {
 -- Blizzard Localization
 L["Blizzard"] = {
 	Disband_Group = "Disband Group",
+	Lua_Error_Recieved = "|cFFE30000Lua error recieved. You can view the error message when you exit combat.",
 	No_Errors = "No error yet.",
 	Raid_Menu = "Raid Menu",
+	Taint_Error = "%s: %s tried to call the protected function '%s'.",
 }
 
 -- Chat Localization
@@ -154,8 +156,32 @@ L["Databars"] = {
 }
 
 -- Datatext Localization
-L["Datatext"] = {
-
+L["DataText"] = {
+	BaseAssault = "Bases Assaulted:",
+	BaseDefend = "Bases Defended:",
+	CallToArms = "Call to Arms",
+	CartControl = "Carts Controlled:",
+	ControlBy = "Controlled by:",
+	Damage = "Damage: ",
+	DamageDone = "Damage Done:",
+	Death = "Deaths:",
+	DemolisherDestroy = "Demolishers Destroyed:",
+	FlagCapture = "Flags Captured:",
+	FlagReturn = "Flags Returned:",
+	GateDestroy = "Gates Destroyed:",
+	GraveyardAssault = "Graveyards Assaulted:",
+	GraveyardDefend = "Graveyards Defended:",
+	Healing = "Healing: ",
+	HealingDone = "Healing Done:",
+	Honor = "Honor: ",
+	HonorableKill = "Honorable Kills:",
+	HonorGained = "Honor Gained:",
+	KillingBlow = "Killing Blows: ",
+	OrbPossession = "Orb Possessions:",
+	StatsFor = "Stats for ",
+	TowerAssault = "Towers Assaulted:",
+	TowerDefend = "Towers Defended:",
+	VictoryPts = "Victory Points:",
 }
 
 -- Inventory Localization

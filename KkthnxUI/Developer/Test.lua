@@ -1,9 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Testing", "AceEvent-3.0")
 
---[[C["Testing"] = {
+C["Testing"] = {
 
-}--]]
+}
 
 --[[
 						So I can test stuff.

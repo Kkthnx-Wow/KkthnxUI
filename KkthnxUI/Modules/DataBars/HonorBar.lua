@@ -104,7 +104,9 @@ function Module:HonorBar_OnLeave()
 		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
 	end
 
-	GameTooltip:Hide()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+	end
 end
 
 function Module:HonorBar_OnClick()

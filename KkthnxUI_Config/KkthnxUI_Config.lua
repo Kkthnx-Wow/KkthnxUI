@@ -156,6 +156,7 @@ KkthnxUIConfig.Filter = {
 	["OrderedIndex"] = true,
 	["Position"] = true,
 	["UnitframePlugins"] = true,
+	["Test"] = true,
 }
 
 local function GetOrderedIndex(t)

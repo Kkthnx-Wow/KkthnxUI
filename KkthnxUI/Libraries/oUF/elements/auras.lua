@@ -142,12 +142,6 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 		nameplateShowSelf, spellID, canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,
 		timeMod, effect1, effect2, effect3 = UnitAura(unit, index, filter)
 
-	if element.forceShow then
-		spellID = 47540
-		name, rank, texture = GetSpellInfo(spellID)
-		count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, canApplyAura, isBossDebuff = 5, 'Magic', 0, 60, 'player', nil, nil, nil, nil
-	end
-
 	if(name) then
 		local position = visible + offset + 1
 		local button = element[position]
@@ -185,12 +179,9 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 
 		* show - indicates whether the aura button should be shown (boolean)
 		--]]
-		local show = true
-		if not element.forceShow then
-			show = (element.CustomFilter or customFilter) (element, unit, button, name, rank, texture,
-				count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
-				canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
-		end
+		local show = (element.CustomFilter or customFilter) (element, unit, button, name, rank, texture,
+			count, debuffType, duration, expiration, caster, isStealable, nameplateShowSelf, spellID,
+			canApply, isBossDebuff, casterIsPlayer, nameplateShowAll,timeMod, effect1, effect2, effect3)
 
 		if(show) then
 			-- We might want to consider delaying the creation of an actual cooldown

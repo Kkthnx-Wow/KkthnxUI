@@ -91,17 +91,6 @@ local frame_metatable = {
 Private.frame_metatable = frame_metatable
 
 for k, v in next, {
-	UpdateElement = function(self, name)
-		local unit = self.unit
-		if(not unit or not UnitExists(unit)) then return end	
-
-		local element = elements[name]
-		if(not element or not self:IsElementEnabled(name) or not activeElements[self]) then return end
-		if(element.update) then
-			element.update(self, 'OnShow', unit)
-		end
-	end,
-
 	--[[ frame:EnableElement(name, unit)
 	Used to activate an element for the given unit frame.
 
@@ -114,7 +103,7 @@ for k, v in next, {
 		argcheck(unit, 3, 'string', 'nil')
 
 		local element = elements[name]
-		if(not element or self:IsElementEnabled(name) or not activeElements[self]) then return end
+		if(not element or self:IsElementEnabled(name)) then return end
 
 		if(element.enable(self, unit or self.unit)) then
 			activeElements[self][name] = true
@@ -725,14 +714,14 @@ Used to create a single unit frame and apply the currently active style to it.
 * overrideName - unique global name to use for the unit frame. Defaults to an auto-generated name based on the unit
                  (string?)
 --]]
-function oUF:Spawn(unit, overrideName, overrideTemplate)
+function oUF:Spawn(unit, overrideName)
 	argcheck(unit, 2, 'string')
 	if(not style) then return error('Unable to create frame. No styles have been registered.') end
 
 	unit = unit:lower()
 
 	local name = overrideName or generateName(unit)
-	local object = CreateFrame('Button', name, oUF_PetBattleFrameHider, overrideTemplate or 'SecureUnitButtonTemplate')
+	local object = CreateFrame('Button', name, oUF_PetBattleFrameHider, 'SecureUnitButtonTemplate')
 	Private.UpdateUnits(object, unit)
 
 	self:DisableBlizzard(unit)

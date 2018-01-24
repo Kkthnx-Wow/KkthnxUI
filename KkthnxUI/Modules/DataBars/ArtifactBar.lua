@@ -101,7 +101,9 @@ function Module:ArtifactBar_OnLeave()
 		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
 	end
 
-	GameTooltip:Hide()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+	end
 end
 
 function Module:ArtifactBar_OnClick()
@@ -116,6 +118,8 @@ function Module:UpdateArtifactDimensions()
 	self.artifactBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.artifactBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.artifactBar.statusBar:SetRotatesTexture(false)
+
 
 	if C["DataBars"].MouseOver then
 		self.artifactBar:SetAlpha(0)

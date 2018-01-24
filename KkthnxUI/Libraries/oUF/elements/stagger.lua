@@ -91,6 +91,7 @@ local function Update(self, event, unit)
 		element:PreUpdate()
 	end
 
+	-- Blizzard code has nil checks for UnitStagger return
 	local cur = UnitStagger('player') or 0
 	local max = UnitHealthMax('player') or 0
 
@@ -130,27 +131,15 @@ local function Path(self, ...)
 end
 
 local function Visibility(self, event, unit)
-	local isShown = self.Stagger:IsShown()
-	local stateChanged = false
 	if(SPEC_MONK_BREWMASTER ~= GetSpecialization() or UnitHasVehiclePlayerFrameUI('player')) then
-		if(isShown) then
+		if(self.Stagger:IsShown()) then
 			self.Stagger:Hide()
 			self:UnregisterEvent('UNIT_AURA', Path)
-			stateChanged = true
-		end
-
-		if(self.Stagger.PostUpdateVisibility) then
-			self.Stagger.PostUpdateVisibility(self, event, unit, false, stateChanged)
 		end
 	else
-		if(not isShown) then
+		if(not self.Stagger:IsShown()) then
 			self.Stagger:Show()
 			self:RegisterEvent('UNIT_AURA', Path)
-			stateChanged = true
-		end
-		
-		if(self.Stagger.PostUpdateVisibility) then
-			self.Stagger.PostUpdateVisibility(self, event, unit, true, stateChanged)
 		end
 
 		return Path(self, event, unit)

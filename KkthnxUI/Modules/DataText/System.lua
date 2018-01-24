@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["DataText"].System ~= true then return end
 
 local math_floor = math.floor

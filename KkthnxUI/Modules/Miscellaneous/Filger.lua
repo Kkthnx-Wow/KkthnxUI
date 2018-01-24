@@ -17,6 +17,9 @@ local GetTime = _G.GetTime
 local UnitBuff = _G.UnitBuff
 local UnitDebuff = _G.UnitDebuff
 
+local FilgerFont = K.GetFont(C["Filger"].Font)
+local FilgerTexture = K.GetTexture(C["Filger"].Texture)
+
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
 P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
 P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
@@ -45,15 +48,17 @@ COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "BOTTOMRIGHT", 2, 3)
 T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
-K.Movers:RegisterFrame(P_BUFF_ICON_Anchor)
-K.Movers:RegisterFrame(P_PROC_ICON_Anchor)
-K.Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
-K.Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
-K.Movers:RegisterFrame(T_BUFF_Anchor)
-K.Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
-K.Movers:RegisterFrame(PVE_PVP_CC_Anchor)
-K.Movers:RegisterFrame(COOLDOWN_Anchor)
-K.Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
+do
+	K["Movers"]:RegisterFrame(P_BUFF_ICON_Anchor)
+	K["Movers"]:RegisterFrame(P_PROC_ICON_Anchor)
+	K["Movers"]:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
+	K["Movers"]:RegisterFrame(T_DEBUFF_ICON_Anchor)
+	K["Movers"]:RegisterFrame(T_BUFF_Anchor)
+	K["Movers"]:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
+	K["Movers"]:RegisterFrame(PVE_PVP_CC_Anchor)
+	K["Movers"]:RegisterFrame(COOLDOWN_Anchor)
+	K["Movers"]:RegisterFrame(T_DE_BUFF_BAR_Anchor)
+end
 
 SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
 local Filger = {}
@@ -185,7 +190,7 @@ function Filger:DisplayActives()
 					bar.statusbar = CreateFrame("StatusBar", "$parentStatusBar", bar)
 					bar.statusbar:SetWidth(self.BarWidth)
 					bar.statusbar:SetHeight(self.IconSize - 10)
-					bar.statusbar:SetStatusBarTexture(C["Media"].Texture)
+					bar.statusbar:SetStatusBarTexture(FilgerTexture)
 					bar.statusbar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b, 1)
 					if self.IconSide == "LEFT" then
 						bar.statusbar:SetPoint("BOTTOMLEFT", bar, "BOTTOMRIGHT", 5, 2)
@@ -211,8 +216,8 @@ function Filger:DisplayActives()
 				else
 					bar.background = bar.statusbar:CreateTexture(nil, "BACKGROUND")
 					bar.background:SetAllPoints()
-					bar.background:SetTexture(C["Media"].Texture)
-					bar.background:SetVertexColor(K.Color.r, K.Color.g, K.Color.b, 0.2)
+					bar.background:SetTexture(C["Media"].Blank)
+					bar.background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 				end
 
 				if bar.time then

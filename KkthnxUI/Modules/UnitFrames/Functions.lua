@@ -96,6 +96,25 @@ function K.PostUpdatePower(self, unit, cur, min, max)
 	end--]]
 end
 
+function K.PortraitUpdate(self, unit, event, shouldUpdate)
+	if (shouldUpdate) then
+		local rotation = 0
+		local camDistanceScale = 1
+		local xOffset, yOffset = 0, 0
+
+		if self:GetFacing() ~= (rotation / 60) then
+			self:SetFacing(rotation / 60)
+		end
+
+		self:SetCamDistanceScale(camDistanceScale)
+		self:SetPosition(0, xOffset, yOffset)
+
+		-- Refresh model to fix incorrect display issues
+		self:ClearModel()
+		self:SetUnit(unit)
+	end
+end
+
 -- AuraWatch
 local RaidBuffsPosition = {
 	TOPLEFT = {6, 1},

@@ -79,14 +79,7 @@ local CVarUpdate = {
 	nameplateSelfAlpha = 1,
 	nameplateSelfScale = 1,
 	nameplateShowAll = 1,
-	-- nameplateShowDebuffsOnFriendly = 0,
-	-- nameplateShowOnlyNames = 0,
 }
-
---[[if (C["Nameplates"].FriendlyNameHack) then
-	CVarUpdate["nameplateShowOnlyNames"] = 1
-	CVarUpdate["nameplateShowDebuffsOnFriendly"] = 1
-end--]]
 
 if (not InCombatLockdown()) then
 	for k, v in pairs(CVarUpdate) do
@@ -216,7 +209,7 @@ local totemData = {
 
 local function CreateVirtualFrame(frame, point)
 	if point == nil then point = frame end
-	if point.backdrop then return end
+	if point.backdrop or frame.backdrop then return end
 
 	frame.backdrop = CreateFrame("Frame", nil , frame)
 	frame.backdrop:SetAllPoints()
@@ -229,7 +222,7 @@ local function CreateVirtualFrame(frame, point)
 	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
 	frame.backdrop:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-	frame.backdrop:SetBackdropBorderColor(0, 0, 0)
+	frame.backdrop:SetBackdropBorderColor(0, 0, 0, 1)
 
 	if frame:GetFrameLevel() - 1 > 0 then
 		frame.backdrop:SetFrameLevel(frame:GetFrameLevel() - 1)

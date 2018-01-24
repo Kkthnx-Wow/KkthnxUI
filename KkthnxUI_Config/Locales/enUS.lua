@@ -1,5 +1,8 @@
 -- Localization for enUS & enGB clients
 
+local PerformanceIncrease = "\n\nDisabling this may slightly increase performance|r" -- For semi-high CPU options
+local RestoreDefault = "\n\nRight-click to restore to default" -- For color pickers
+
 KkthnxUIConfig["enUS"] = {
 	-- General Local
 	["General"] = {
@@ -11,6 +14,11 @@ KkthnxUIConfig["enUS"] = {
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+
+		["ConfigButton"] = {
+			["Name"] = "Config Button",
+			["Desc"] = "Display a button above the copy chat button with muitplue go to functions (Move, Bags, Skada, ect.)",
 		},
 
 		["BubbleFontSize"] = {
@@ -30,7 +38,12 @@ KkthnxUIConfig["enUS"] = {
 
 		["TexturesColor"] = {
 			["Name"] = "Border Color",
-			["Desc"] = "Main border color of the UI. \n\n|cffFF0000'Toggle Border Color' has to be enabled for this to work|r",
+			["Desc"] = "Main border color of the UI. \n\n|cffFF0000'Toggle Border Color' has to be enabled for this to work|r"..RestoreDefault,
+		},
+
+		["Texture"] = {
+			["Name"] = "Texture",
+			["Desc"] = "Set the texture for some things in the UI that are not covered in other config sections.",
 		},
 
 		["Font"] = {
@@ -238,12 +251,12 @@ KkthnxUIConfig["enUS"] = {
 
 		["OutOfMana"] = {
 			["Name"] = "Out Of Mana",
-			["Desc"] = "Out of Mana color",
+			["Desc"] = "Out of Mana color"..RestoreDefault,
 		},
 
 		["OutOfRange"] = {
 			["Name"] = "Out Of Range",
-			["Desc"] = "Out of Range color",
+			["Desc"] = "Out of Range color"..RestoreDefault,
 		},
 
 		["PetBarHide"] = {
@@ -311,7 +324,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["BadColor"] = {
 			["Name"] = "Bad Color",
-			["Desc"] = "Bad threat color, varies depending if your a tank or dps/heal",
+			["Desc"] = "Bad threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
 		["CastbarName"] = {
@@ -321,7 +334,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["CastUnitReaction"] = {
 			["Name"] = "Cast Unit Reaction",
-			["Desc"] = "Reaction castbar colors",
+			["Desc"] = "Reaction castbar colors"..RestoreDefault,
 		},
 
 		["Clamp"] = {
@@ -336,7 +349,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable",
-			["Desc"] = "Enable nameplates",
+			["Desc"] = "Enable nameplates"..PerformanceIncrease,
 		},
 
 		["EnhancedThreat"] = {
@@ -351,7 +364,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["GoodColor"] = {
 			["Name"] = "Good Color",
-			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal",
+			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
 		["HealerIcon"] = {
@@ -376,12 +389,12 @@ KkthnxUIConfig["enUS"] = {
 
 		["NearColor"] = {
 			["Name"] = "Near Color",
-			["Desc"] = "Losing/Gaining threat color",
+			["Desc"] = "Losing/Gaining threat color"..RestoreDefault,
 		},
 
 		["OffTankColor"] = {
 			["Name"] = "Off Tank Color",
-			["Desc"] = "Offtank threat color",
+			["Desc"] = "Offtank threat color"..RestoreDefault,
 		},
 
 		["Outline"] = {
@@ -396,7 +409,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Smooth"] = {
 			["Name"] = "Smooth",
-			["Desc"] = "Bars will transition smoothly.",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
 
 		["SmoothSpeed"] = {
@@ -443,6 +456,11 @@ KkthnxUIConfig["enUS"] = {
 		["AutoCollapse"] = {
 			["Name"] = "Auto Collapse",
 			["Desc"] = "Auto collapse the objective tracker",
+		},
+
+		["AutoReward"] = {
+			["Name"] = "Auto Reward",
+			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
 
 		["BlockMovies"] = {
@@ -603,7 +621,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["LinkColor"] = {
 			["Name"] = "Link Color",
-			["Desc"] = "Color links in chat",
+			["Desc"] = "Color links in chat"..RestoreDefault,
 		},
 
 		["MessageFilter"] = {
@@ -643,7 +661,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["BubbleBackdrop"] = {
 			["Name"] = "Bubble Backdrop",
-			["Desc"] = "If you choose to have one of NOT",
+			["Desc"] = "If you choose to have a backdrop or not!",
 		},
 	},
 
@@ -651,7 +669,7 @@ KkthnxUIConfig["enUS"] = {
 	["Cooldown"] = {
 		["Days"] = {
 			["Name"] = "Days",
-			["Desc"] = "Description Needed",
+			["Desc"] = "Description Needed"..RestoreDefault,
 		},
 
 		["Enable"] = {
@@ -661,7 +679,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Expiring"] = {
 			["Name"] = "Expiring",
-			["Desc"] = "Description Needed",
+			["Desc"] = "Description Needed"..RestoreDefault,
 		},
 
 		["ExpiringDuration"] = {
@@ -676,17 +694,17 @@ KkthnxUIConfig["enUS"] = {
 
 		["Hours"] = {
 			["Name"] = "Hours",
-			["Desc"] = "Description Needed",
+			["Desc"] = "Description Needed"..RestoreDefault,
 		},
 
 		["Minutes"] = {
 			["Name"] = "Minutes",
-			["Desc"] = "Description Needed",
+			["Desc"] = "Description Needed"..RestoreDefault,
 		},
 
 		["Seconds"] = {
 			["Name"] = "Seconds",
-			["Desc"] = "Description Needed",
+			["Desc"] = "Description Needed"..RestoreDefault,
 		},
 
 		["Threshold"] = {
@@ -699,7 +717,12 @@ KkthnxUIConfig["enUS"] = {
 	["DataBars"] = {
 		["ArtifactColor"] = {
 			["Name"] = "Artifact Color",
-			["Desc"] = "Color of the Artifactbar",
+			["Desc"] = "Color of the Artifactbar"..RestoreDefault,
+		},
+
+		["MouseOver"] = {
+			["Name"] = "Mouseover",
+			["Desc"] = "The bars are not shown unless you mouse over the them."
 		},
 
 		["ArtifactEnable"] = {
@@ -719,7 +742,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["ExperienceColor"] = {
 			["Name"] = "Experience Color",
-			["Desc"] = "Color of the Experiencebar",
+			["Desc"] = "Color of the Experiencebar"..RestoreDefault,
 		},
 
 		["ExperienceEnable"] = {
@@ -734,7 +757,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["ExperienceRestedColor"] = {
 			["Name"] = "Experience Rested Color",
-			["Desc"] = "Color of the rested experiencebar",
+			["Desc"] = "Color of the rested experiencebar"..RestoreDefault,
 		},
 
 		["ExperienceWidth"] = {
@@ -744,7 +767,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["HonorColor"] = {
 			["Name"] = "Honor Color",
-			["Desc"] = "Color of the honorbar",
+			["Desc"] = "Color of the honorbar"..RestoreDefault,
 		},
 
 		["HonorEnable"] = {
@@ -881,11 +904,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Enable minimap",
 		},
 
-		["InstanceOnlyNumber"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Display instance only numbers (5, 10, 25...)",
-		},
-
 		["ResetZoom"] = {
 			["Name"] = "Reset Zoom",
 			["Desc"] = "Reset Zoom",
@@ -954,7 +972,7 @@ KkthnxUIConfig["enUS"] = {
 	["Filger"] = {
 		["Enable"] = {
 			["Name"] = "Enable",
-			["Desc"] = "Timers (Filger)",
+			["Desc"] = "Timers (Filger)"..PerformanceIncrease,
 		},
 
 		["TestMode"] = {
@@ -1050,41 +1068,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Enable unit frames",
 		},
 
-		["FilterBoss"] = {
-			["Name"] = "Boss Auras",
-			["Desc"] = "Show buffs cast by the boss.",
-		},
-
-		["FilterDispellable"] = {
-			["Name"] = "Dispellable Auras",
-			["Desc"] = "Show auras you can dispel from your target.",
-		},
-
-		["FilterMount"] = {
-			["Name"] = "Mount Auras",
-			["Desc"] = "Show mount auras.",
-		},
-
-		["FilterPlayer"] = {
-			["Name"] = "Self Auras",
-			["Desc"] = "Show auras cast by oneself.",
-		},
-
-		["FilterPlayerPermanent"] = {
-			["Name"] = "Perma Self Auras",
-			["Desc"] = "Show permanent auras cast by oneself.",
-		},
-
-		["FilterSelfCast"] = {
-			["Name"] = "Castable Auras",
-			["Desc"] = "Show auras cast by yourself.",
-		},
-
-		["FilterSelfCastPermanent"] = {
-			["Name"] = "Perma Self Auras",
-			["Desc"] = "Show permanent auras cast by yourself.",
-		},
-
 		["Font"] = {
 			["Name"] = "Font",
 			["Desc"] = "Pick desired font",
@@ -1146,7 +1129,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 		["Smooth"] = {
 			["Name"] = "Smooth",
-			["Desc"] = "Bars will transition smoothly.",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
 
 		["SmoothSpeed"] = {
@@ -1175,6 +1158,11 @@ KkthnxUIConfig["enUS"] = {
 		["AuraWatchIconSize"] = {
 			["Name"] = "Aura Watch Icon Size",
 			["Desc"] = "Pick your size",
+		},
+
+		["RaidTools"] = {
+			["Name"] = "Raid Utility",
+			["Desc"] = "Enables the 'Raid Control' utility panel",
 		},
 
 		["AuraDebuffIconSize"] = {
@@ -1249,7 +1237,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Smooth"] = {
 			["Name"] = "Smooth",
-			["Desc"] = "Bars will transition smoothly.",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
 
 		["SmoothSpeed"] = {

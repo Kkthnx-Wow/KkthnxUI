@@ -208,14 +208,15 @@ C["Error"] = {
 }
 
 C["Filger"] = {
-	["Enable"] = true,
-	["TestMode"] = false,
-	["MaxTestIcon"] = 5,
-	["ShowTooltip"] = false,
-	["DisableCD"] = false,
 	["BuffSize"] = 37,
 	["CooldownSize"] = 30,
+	["DisableCD"] = false,
+	["Enable"] = true,
+	["MaxTestIcon"] = 5,
 	["PvPSize"] = 60,
+	["ShowTooltip"] = false,
+	["TestMode"] = false,
+	["Texture"] = "KkthnxUI",
 }
 
 -- General
