@@ -744,8 +744,10 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton:SetScript("OnClick", function()
 			local _, full = GetNumBankSlots()
 			if (full) then
+				f.purchaseBagButton:Hide()
 				StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
 			else
+				f.purchaseBagButton:Show()
 				StaticPopup_Show("BUY_BANK_SLOT")
 			end
 		end)
@@ -946,7 +948,7 @@ function Stuffing:InitBags()
 	f.bagsButton:SetScript("OnEnter", tooltip_show)
 	f.bagsButton:SetScript("OnLeave", tooltip_hide)
 	f.bagsButton:SetScript("OnClick", function()
-		-- PlaySound(852) --IG_MAINMENU_OPTION
+		PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
 		if bag_bars == 1 then
 			bag_bars = 0
 		else
