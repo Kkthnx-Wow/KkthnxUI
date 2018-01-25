@@ -47,7 +47,7 @@ function Module:UpdateArtifact(event, unit)
 
 	if not showArtifact then
 		bar:Hide()
-	elseif showArtifact and not InCombatLockdown() then
+	elseif showArtifact then
 		bar:Show()
 
 		local _, _, _, _, totalXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI_GetEquippedArtifactInfo()
