@@ -727,24 +727,28 @@ function Stuffing:CreateBagFrame(w)
 			_G["StuffingFrameBank"]:SetAlpha(0)
 		end)
 
-		-- Buy button
-		f.b_purchase = CreateFrame("Button", "StuffingPurchaseButton"..w, f)
-		f.b_purchase:SetSize(80, 20)
-		f.b_purchase:SetPoint("TOPLEFT", f.b_reagent, "TOPRIGHT", 6, 0)
-		f.b_purchase:RegisterForClicks("AnyUp")
-		f.b_purchase:SkinButton()
-		f.b_purchase:SetScript("OnClick", function(self) StaticPopup_Show("BUY_BANK_SLOT") end) -- Fix this.
-		f.b_purchase:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-		f.b_purchase.text:SetShadowOffset(0, 0)
-		f.b_purchase.text:SetPoint("CENTER")
-		f.b_purchase.text:SetText(BANKSLOTPURCHASE)
-		f.b_purchase:SetFontString(f.b_purchase.text)
-		local _, full = GetNumBankSlots()
-		if full then
-			f.b_purchase:Hide()
-		else
-			f.b_purchase:Show()
-		end
+		f.purchaseBagButton = CreateFrame("Button", "StuffingPurchaseButton"..w, f)
+		f.purchaseBagButton:SetSize(16, 16)
+		f.purchaseBagButton:SetTemplate()
+		f.purchaseBagButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
+		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
+		f.purchaseBagButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+		f.purchaseBagButton:GetNormalTexture():SetAllPoints()
+		f.purchaseBagButton:SetPushedTexture("Interface\\ICONS\\INV_Misc_Coin_01")
+		f.purchaseBagButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+		f.purchaseBagButton:GetPushedTexture():SetAllPoints()
+		f.purchaseBagButton:StyleButton(nil, true)
+		f.purchaseBagButton.ttText = L["Inventory"].Purchase_Slot
+		f.purchaseBagButton:SetScript("OnEnter", tooltip_show)
+		f.purchaseBagButton:SetScript("OnLeave", tooltip_hide)
+		f.purchaseBagButton:SetScript("OnClick", function()
+			local _, full = GetNumBankSlots()
+			if (full) then
+				StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
+			else
+				StaticPopup_Show("BUY_BANK_SLOT")
+			end
+		end)
 	end
 
 	-- Close button
@@ -942,6 +946,7 @@ function Stuffing:InitBags()
 	f.bagsButton:SetScript("OnEnter", tooltip_show)
 	f.bagsButton:SetScript("OnLeave", tooltip_hide)
 	f.bagsButton:SetScript("OnClick", function()
+		-- PlaySound(852) --IG_MAINMENU_OPTION
 		if bag_bars == 1 then
 			bag_bars = 0
 		else

@@ -112,6 +112,13 @@ StaticPopupDialogs["DISBAND_RAID"] = {
 	preferredIndex = 3,
 }
 
+StaticPopupDialogs["CANNOT_BUY_BANK_SLOT"] = {
+	text = L["Inventory"].Cant_Buy_Slot,
+	button1 = ACCEPT,
+	timeout = 0,
+	whileDead = 1,
+}
+
 StaticPopupDialogs["BUY_BANK_SLOT"] = {
 	text = CONFIRM_BUY_BANK_SLOT,
 	button1 = YES,
