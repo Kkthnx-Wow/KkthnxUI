@@ -1028,9 +1028,14 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display your latency on the cast bar",
 		},
 
+		["OnlyShowPlayerDebuff"] = {
+			["Name"] = "Only Show Player Debuffs",
+			["Desc"] = "Only show your debuffs on frames (This affects your Target and Boss frames)",
+		},
+
 		["Castbars"] = {
 			["Name"] = "Castbars",
-			["Desc"] = "nable cast bar for unit frames",
+			["Desc"] = "Enable cast bar for unit frames",
 		},
 
 		["CastbarTicks"] = {

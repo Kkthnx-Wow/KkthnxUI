@@ -83,6 +83,14 @@ function K.CreateClassModules(self, width, height, spacing)
 	self.ClassPower = classPower
 end
 
+local function PostUpdateRune(_, rune, _, _, _, isReady)
+	if (isReady) then
+		rune:SetAlpha(1)
+	else
+		rune:SetAlpha(0.5)
+	end
+end
+
 function K.CreateClassRunes(self, width, height, spacing)
 	local runes = {}
 	local maxRunes = 6
@@ -101,5 +109,6 @@ function K.CreateClassRunes(self, width, height, spacing)
 	end
 
 	runes.colorSpec = true
+	runes.PostUpdate = PostUpdateRune
 	self.Runes = runes
 end

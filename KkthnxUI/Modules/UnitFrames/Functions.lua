@@ -59,16 +59,6 @@ end
 
 -- PostUpdateHealth
 function K.PostUpdateHealth(self, unit, cur, min, max)
-	--[[if (not UnitIsConnected(unit) or UnitIsDead(unit) or UnitIsGhost(unit)) then
-		if (not UnitIsConnected(unit)) then
-			self.Value:SetText(FRIENDS_LIST_OFFLINE)
-		elseif (UnitIsDead(unit)) then
-			self.Value:SetText(DEAD)
-		elseif (UnitIsGhost(unit)) then
-			self.Value:SetText(L.Unitframes.Ghost)
-		end
-	end--]]
-
 	if self.Portrait and not C["Unitframe"].ThreeDPortraits then
 		UpdatePortraitColor(self, unit, cur, max)
 	end
@@ -76,24 +66,7 @@ end
 
 -- PostPower update
 function K.PostUpdatePower(self, unit, cur, min, max)
-	--[[if (not UnitIsPlayer(unit) and not UnitPlayerControlled(unit) or not UnitIsConnected(unit)) then
-		self:SetValue(0)
-		if self.Value then
-			self.Value:SetText()
-		end
-	elseif (UnitIsDead(unit) or UnitIsGhost(unit)) or (max == 0) then
-		self:SetValue(0)
-		if self.Value then
-			self.Value:SetText()
-		end
-	end
 
-	if not self.Value then return end
-
-	if (not cur) then
-        max = UnitPower(unit)
-        cur = UnitPowerMax(unit)
-	end--]]
 end
 
 function K.PortraitUpdate(self, unit, event, shouldUpdate)
@@ -146,7 +119,7 @@ function K.CreateAuraWatchIcon(icon)
 	end
 end
 
-function K.CreateAuraWatch(self, unit)
+function K.CreateAuraWatch(self)
 	local auras = CreateFrame("Frame", nil, self)
 	auras:SetPoint("TOPLEFT", self.Health, 2, -2)
 	auras:SetPoint("BOTTOMRIGHT", self.Health, -2, 2)

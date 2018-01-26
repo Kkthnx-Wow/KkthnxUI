@@ -39,6 +39,7 @@ function K.CreateHealthPrediction(self)
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
 		maxOverflow = 1,
+		frequentUpdates = self.Health.frequentUpdates,
 		PostUpdate = K.UpdateHealComm
 	}
 	HealthPrediction.parent = self

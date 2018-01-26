@@ -296,13 +296,9 @@ local function oUF_Unitframes(self, unit)
 		end
 	end
 
-	if (unit ~= "player") then
-		K.CreateAuras(self, unit)
-	end
-
 	if (unit == "player") then
 		if C["Unitframe"].Castbars then
-			K.CreateCastBar(self, unit)
+			K.CreateCastBar(self, "player")
 		end
 		if (C["Unitframe"].CombatText) then
 			K.CreateCombatText(self)
@@ -313,20 +309,20 @@ local function oUF_Unitframes(self, unit)
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
-		K.CreateRaidTargetIndicator(self)
-		K.CreateResurrectIndicator(self)
-		K.CreatePvPText(self, unit)
+		K.CreateAdditionalPower(self)
 		K.CreateAssistantIndicator(self)
+		K.CreateClassModules(self, 194, 12, 6)
+		K.CreateClassTotems(self, 194, 12, 6)
 		K.CreateCombatIndicator(self)
 		K.CreateLeaderIndicator(self)
 		K.CreateMasterLooterIndicator(self)
+		K.CreatePvPText(self, unit)
+		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateRestingIndicator(self)
+		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
-		K.CreateAdditionalPower(self)
-		K.CreateClassModules(self, 194, 12, 6)
-		K.CreateClassTotems(self, 194, 12, 6)
 		if (C["Unitframe"].PowerPredictionBar) then
 			K.CreatePowerPrediction(self)
 		end
@@ -337,7 +333,7 @@ local function oUF_Unitframes(self, unit)
 		end
 	elseif (unit == "target") then
 		if C["Unitframe"].Castbars then
-			K.CreateCastBar(self, unit)
+			K.CreateCastBar(self, "target")
 		end
 		if (C["Unitframe"].CombatText) then
 			K.CreateCombatText(self)
@@ -345,25 +341,43 @@ local function oUF_Unitframes(self, unit)
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
-		K.CreateRaidTargetIndicator(self)
-		K.CreateResurrectIndicator(self)
+		K.CreateAuras(self, "target")
 		K.CreatePvPText(self, unit)
 		K.CreateQuestIndicator(self)
+		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
+		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
+	elseif (unit == "focus") then
+		if (C["Unitframe"].PortraitTimer) then
+			K.CreatePortraitTimer(self)
+		end
+		if C["Unitframe"].Castbars then
+			K.CreateCastBar(self, "focus")
+		end
+		K.CreateAuras(self, "focus")
+	elseif (unit == "boss") then
+		if (C["Unitframe"].PortraitTimer) then
+			K.CreatePortraitTimer(self)
+		end
+		if C["Unitframe"].Castbars then
+			K.CreateCastBar(self, unit)
+		end
+		K.CreateAuras(self, "boss")
 	elseif (unit == "party") then
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
-		K.CreateRaidTargetIndicator(self)
-		K.CreateGroupRoleIndicator(self)
-		K.CreateResurrectIndicator(self)
+		K.CreateAuras(self, "party")
 		K.CreateAssistantIndicator(self)
+		K.CreateGroupRoleIndicator(self)
 		K.CreateLeaderIndicator(self)
 		K.CreateMasterLooterIndicator(self)
 		K.CreatePhaseIndicator(self)
+		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
+		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 	end

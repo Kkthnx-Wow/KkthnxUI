@@ -3,7 +3,7 @@
 ## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Kkthnx
-## Version: 7.06
+## Version: 7.07
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
 ## SavedVariablesPerCharacter: KkthnxUIConfigNotShared
@@ -14,3 +14,13 @@ KkthnxUI_Config.lua
 
 # -- Load Locales
 Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\esMX.lua
+Locales\frFR.lua
+Locales\itIT.lua
+Locales\koKR.lua
+Locales\ptBR.lua
+Locales\ruRU.lua
+Locales\zhCN.lua
+Locales\zhTW.lua

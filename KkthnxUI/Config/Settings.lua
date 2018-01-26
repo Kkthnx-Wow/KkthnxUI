@@ -348,6 +348,7 @@ C["Unitframe"] = {
 	["CastReactionColor"] = true,
 	["CombatText"] = true,
 	["DebuffsOnTop"] = true,
+	["OnlyShowPlayerDebuff"] = false,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 13,

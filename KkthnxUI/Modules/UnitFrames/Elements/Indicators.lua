@@ -65,6 +65,8 @@ function K.CreateReadyCheckIndicator(self)
 	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
 	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
+	self.ReadyCheckIndicator.finishedTime = 5
+	self.ReadyCheckIndicator.fadeTime = 3
 end
 
 function K.CreateRaidTargetIndicator(self)
@@ -96,7 +98,7 @@ function K.CreateCombatIndicator(self)
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(24, 24)
 	self.CombatIndicator:SetPoint("LEFT", 0, 0)
-	self.CombatIndicator:SetVertexColor(0.69, 0.31, 0.31)
+	self.CombatIndicator:SetVertexColor(0.84, 0.75, 0.65)
 end
 
 function K.CreateLeaderIndicator(self)

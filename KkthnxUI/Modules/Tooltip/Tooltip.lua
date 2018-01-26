@@ -82,29 +82,20 @@ local TooltipFont = K.GetFont(C["Tooltip"].Font)
 local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 
 local tooltips = {
-	AutoCompleteBox,
-	FriendsTooltip,
 	GameTooltip,
+	ItemRefTooltip,
 	ItemRefShoppingTooltip1,
 	ItemRefShoppingTooltip2,
 	ItemRefShoppingTooltip3,
-	ItemRefTooltip,
+	AutoCompleteBox,
+	FriendsTooltip,
 	ShoppingTooltip1,
 	ShoppingTooltip2,
 	ShoppingTooltip3,
+	WorldMapTooltip,
 	WorldMapCompareTooltip1,
 	WorldMapCompareTooltip2,
 	WorldMapCompareTooltip3,
-	WorldMapTooltip,
-
-}
-
-local tooltipsOnShow = {
-	GameTooltip,
-	ItemRefTooltip,
-	ShoppingTooltip1,
-	ShoppingTooltip2,
-	ShoppingTooltip3,
 }
 
 local ignoreSubType = {
@@ -492,6 +483,26 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		tt.itemCleared = true
 	end
+end
+
+function Module:GameTooltip_ShowStatusBar(tt)
+	if tt:IsForbidden() then return end
+
+	local statusBar = _G[tt:GetName().."StatusBar"..tt.shownStatusBars]
+	if statusBar and not statusBar.skinned then
+		statusBar:SetStatusBarTexture(TooltipTexture)
+		statusBar.skinned = true
+	end
+end
+
+function Module:SetStyle(tt)
+	if tt:IsForbidden() then return end
+
+	for _, tt in pairs(tooltips) do
+		tt:SetTemplate("Transparent", true)
+		local r, g, b = tt:GetBackdropColor()
+		tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
+	end
 
 	if C["Tooltip"].ItemQualityBorder then
 		local _, link = tt:GetItem()
@@ -523,26 +534,6 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		if r then
 			tt:SetBackdropBorderColor(r, g, b)
 		end
-	end
-end
-
-function Module:GameTooltip_ShowStatusBar(tt)
-	if tt:IsForbidden() then return end
-
-	local statusBar = _G[tt:GetName().."StatusBar"..tt.shownStatusBars]
-	if statusBar and not statusBar.skinned then
-		statusBar:SetStatusBarTexture(TooltipTexture)
-		statusBar.skinned = true
-	end
-end
-
-function Module:SetStyle(tt)
-	if tt:IsForbidden() then return end
-
-	for _, tt in pairs(tooltips) do
-		tt:SetTemplate("Transparent", true)
-		local r, g, b = tt:GetBackdropColor()
-		tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
 	end
 end
 
@@ -622,6 +613,46 @@ function Module:CheckBackdropColor()
 	end
 end
 
+function Module:SetTooltipFonts()
+	local font = C["Media"].Font
+	local fontOutline = ""
+	local headerSize = 12
+	local textSize = 12
+	local smallTextSize = 12
+
+	GameTooltipHeaderText:SetFont(font, headerSize, fontOutline)
+	GameTooltipText:SetFont(font, textSize, fontOutline)
+	GameTooltipTextSmall:SetFont(font, smallTextSize, fontOutline)
+	if GameTooltip.hasMoney then
+		for i = 1, GameTooltip.numMoneyFrames do
+			_G["GameTooltipMoneyFrame"..i.."PrefixText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame"..i.."SuffixText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame"..i.."GoldButtonText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame"..i.."SilverButtonText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame"..i.."CopperButtonText"]:SetFont(font, textSize, fontOutline)
+		end
+	end
+
+	-- These show when you compare items ("Currently Equipped", name of item, item level)
+	-- Since they appear at the top of the tooltip, we set it to use the header font size.
+	ShoppingTooltip1TextLeft1:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextLeft2:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextLeft3:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextLeft4:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextRight1:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextRight2:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextRight3:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip1TextRight4:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextLeft1:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextLeft2:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextLeft3:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextLeft4:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextRight1:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextRight2:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextRight3:SetFont(font, headerSize, fontOutline)
+	ShoppingTooltip2TextRight4:SetFont(font, headerSize, fontOutline)
+end
+
 function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
@@ -637,7 +668,54 @@ function Module:OnEnable()
 	K.Movers:RegisterFrame(BNETMover)
 	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
 
+	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
+	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
+	GameTooltipStatusBar:SetTemplate("Transparent", true)
+	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
+	GameTooltipStatusBar:ClearAllPoints()
+	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
+	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
+	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
+	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
+	GameTooltipStatusBar.text:FontTemplate(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline)
+
+	-- Tooltip Fonts
+	if not GameTooltip.hasMoney then
+		 --Force creation of the money lines, so we can set font for it
+		SetTooltipMoney(GameTooltip, 1, nil, "", "")
+		SetTooltipMoney(GameTooltip, 1, nil, "", "")
+		GameTooltip_ClearMoney(GameTooltip)
+	end
+	self:SetTooltipFonts()
+
+	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
+	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 20)
+	GameTooltipAnchor:SetSize(130, 20)
+	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
+	K.Movers:RegisterFrame(GameTooltipAnchor)
+
+	self:SecureHook("GameTooltip_SetDefaultAnchor")
+	self:SecureHook("GameTooltip_ShowStatusBar")
+	self:SecureHook("SetItemRef")
+	self:SecureHook(GameTooltip, "SetUnitAura")
+	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
+	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
+	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
+	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
+	self:SecureHookScript(GameTooltip, 'OnTooltipSetItem', 'GameTooltip_OnTooltipSetItem')
+	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
+
+	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
+	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
+
+	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
+
+	self:RegisterEvent("MODIFIER_STATE_CHANGED")
+	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
 	ItemRefCloseButton:SkinCloseButton()
+	for _, tt in pairs(tooltips) do
+		self:SecureHookScript(tt, "OnShow", "SetStyle")
+	end
 
 	-- World Quest Reward Icon
 	WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
@@ -653,54 +731,4 @@ function Module:OnEnable()
 	WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(3)
 	WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
 	WorldMapTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WorldMapTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
-
-	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
-	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
-	GameTooltipStatusBar:SetTemplate("Transparent", true)
-	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
-	GameTooltipStatusBar:ClearAllPoints()
-	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
-	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
-	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
-	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
-	GameTooltipStatusBar.text:FontTemplate(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline)
-
-	--[[local GameTooltipStatusBarBG = CreateFrame("Frame", "GameTooltipStatusBaBG", GameTooltipStatusBar)
-	GameTooltipStatusBarBG:SetFrameLevel(GameTooltipStatusBar:GetFrameLevel() - 1)
-	GameTooltipStatusBarBG:SetPoint("TOPLEFT", -2, 2)
-	GameTooltipStatusBarBG:SetPoint("BOTTOMRIGHT", 2, -2)
-	GameTooltipStatusBarBG:SetBackdrop(K.BorderBackdrop)
-	GameTooltipStatusBarBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])--]]
-
-	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 20)
-	GameTooltipAnchor:SetSize(130, 20)
-	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
-	K.Movers:RegisterFrame(GameTooltipAnchor)
-
-	self:SecureHook("GameTooltip_SetDefaultAnchor")
-	self:SecureHook("GameTooltip_ShowStatusBar")
-	self:SecureHook("SetItemRef")
-
-	for _, tt in pairs(tooltips) do
-		self:SecureHookScript(tt, "OnShow", "SetStyle")
-	end
-	for _, tt in pairs(tooltipsOnShow) do
-		self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
-	end
-
-	self:SecureHook(GameTooltip, "SetUnitAura")
-	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
-	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
-	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
-	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
-	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
-	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
-
-	self:RegisterEvent("MODIFIER_STATE_CHANGED")
-
-	-- Backdrop coloring
-	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
-	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
-	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
 end
