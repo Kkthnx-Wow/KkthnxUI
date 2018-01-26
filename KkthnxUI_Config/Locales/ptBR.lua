@@ -1260,6 +1260,11 @@ KkthnxUIConfig["ptBR"] = {
 			["Desc"] = "Pick your poison",
 		},
 
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = "Pick desired font",
+		},
+
 		["Width"] = {
 			["Name"] = "Width",
 			["Desc"] = "width",

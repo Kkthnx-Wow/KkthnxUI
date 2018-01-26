@@ -48,14 +48,12 @@ local function UpdatePower(self, _, unit)
 	local _, powerToken = UnitPowerType(unit)
 	if (powerToken == "MANA" and UnitHasMana(unit)) then
 		if (not self.Power:IsVisible()) then
-			self.Health:ClearAllPoints()
-			self.Health:SetPoint('BOTTOMLEFT', self, 0, 5)
-			self.Health:SetPoint('TOPRIGHT', self)
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
+			self.Health:SetPoint("TOPRIGHT", self)
 			self.Power:Show()
 		end
 	else
 		if (self.Power:IsVisible()) then
-			self.Health:ClearAllPoints()
 			self.Health:SetAllPoints(self)
 			self.Power:Hide()
 		end
@@ -132,8 +130,7 @@ local function CreateRaidLayout(self)
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
 	self.Health:SetFrameStrata("LOW")
 	self.Health:SetFrameLevel(self:GetFrameLevel() - 0)
-	self.Health:SetPoint("TOPLEFT")
-	self.Health:SetPoint("TOPRIGHT")
+	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(RaidframeTexture)
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY", 1)
@@ -162,6 +159,11 @@ local function CreateRaidLayout(self)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
+		self.Power.frequentUpdates = true
+		self.Power.colorPower = true
+		self.Power.Smooth = C["Raidframe"].Smooth
+		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
+
 		self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 		self.Power.Background:SetAllPoints(self.Power)
 		self.Power.Background:SetColorTexture(.2, .2, .2)
@@ -170,11 +172,6 @@ local function CreateRaidLayout(self)
 		table_insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
 		UpdatePower(self, _, unit)
-
-		self.Power.frequentUpdates = true
-		self.Power.colorPower = true
-		self.Power.Smooth = C["Raidframe"].Smooth
-		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
 	end
 
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY", 1)
@@ -182,7 +179,12 @@ local function CreateRaidLayout(self)
 	self.Name:SetFontObject(RaidframeFont)
 	self:Tag(self.Name, "[KkthnxUI:NameVeryShort]")
 
-	self.ReadyCheckIndicator = self.Power:CreateTexture(nil, "OVERLAY", 2)
+	-- We need this to overlay self
+	self.Overlay = CreateFrame("Frame", nil, self.Health)
+	self.Overlay:SetAllPoints(self.Health)
+	self.Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
+
+	self.ReadyCheckIndicator = self.Health:CreateTexture(nil, "OVERLAY", 2)
 	self.ReadyCheckIndicator:SetSize(12, 12)
 	self.ReadyCheckIndicator:SetPoint("CENTER")
 
@@ -194,14 +196,9 @@ local function CreateRaidLayout(self)
 		self:Tag(self.RaidRoleText, "[KkthnxUI:RaidRole]")
 	end
 
-	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.RaidTargetIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(16, 16)
 	self.RaidTargetIndicator:SetPoint("TOP", self, 0, 8)
-
-	-- We need this to overlay self
-	self.Overlay = CreateFrame("Frame", nil, self.Health)
-	self.Overlay:SetAllPoints(self.Health)
-	self.Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
 
 	self.ResurrectIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(30, 30)
