@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local CopyChat = K:NewModule("CopyChat", "AceHook-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 -- Lua API
 local _G = _G
 local string_format = string.format
@@ -17,9 +19,6 @@ local InCombatLockdown = _G.InCombatLockdown
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local ToggleFrame = _G.ToggleFrame
-
--- GLOBALS: CopyChatFrameEditBox, UISpecialFrames, ChatFontNormal, CopyChatScrollFrameScrollBar
--- GLOBALS: CopyChatScrollFrame, CopyChatFrame, ChatMenu
 
 local Lines = {}
 local CopyFrame
@@ -178,6 +177,7 @@ function CopyChat:OnEnable()
 	local Close = CreateFrame("Button", "CopyChatFrameCloseButton", CopyFrame, "UIPanelCloseButton")
 	Close:SetPoint("TOPRIGHT")
 	Close:SetFrameLevel(Close:GetFrameLevel() + 1)
+	Close:SkinCloseButton()
 	Close:SetScript("OnClick", function()
 		CopyFrame:Hide()
 	end)
@@ -206,12 +206,12 @@ function CopyChat:OnEnable()
 					CloseBankFrame()
 					CloseAllBags()
 				else
-				if ContainerFrame1:IsShown() then
-					CloseAllBags()
-				else
-					ToggleAllBags()
+					if ContainerFrame1:IsShown() then
+						CloseAllBags()
+					else
+						ToggleAllBags()
+					end
 				end
-			end	
 			else
 				CopyChat:CopyText(self.ChatFrame)
 			end
@@ -222,11 +222,11 @@ function CopyChat:OnEnable()
 			local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
-			GameTooltip:AddLine(L.ConfigButton.Functions)
-			GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, "Copy chat", 1, 1, 1)
-			GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, "Emotions", 1, 1, 1)
-			GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Roll, 1, 1, 1)
-			GameTooltip:AddDoubleLine(L.ConfigButton.ShiftClickl, L.ConfigButton.Bags, 1, 1, 1)
+			GameTooltip:AddLine(L["ConfigButton"].Functions)
+			GameTooltip:AddDoubleLine(L["ConfigButton"].LeftClick, "Copy chat", 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, "Emotions", 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["ConfigButton"].Shift_Left_Click, L["ConfigButton"].Toggle_Bags, 1, 1, 1)
 			GameTooltip:Show()
 		end)
 		CopyButton:SetScript("OnLeave", function(self)
@@ -292,18 +292,18 @@ function CopyChat:OnEnable()
 				local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 				GameTooltip:SetOwner(self, anchor, xoff, yoff)
 				GameTooltip:ClearLines()
-				GameTooltip:AddLine(L.ConfigButton.Functions)
-				GameTooltip:AddDoubleLine(L.ConfigButton.LeftClick, L.ConfigButton.MoveUI, 1, 1, 1)
+				GameTooltip:AddLine(L["ConfigButton"].Functions)
+				GameTooltip:AddDoubleLine(L["ConfigButton"].LeftClick, L["ConfigButton"].MoveUI, 1, 1, 1)
 				if IsAddOnLoaded("Recount") then
-					GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Recount, 1, 1, 1)
+					GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, L["ConfigButton"].Recount, 1, 1, 1)
 				end
 				if IsAddOnLoaded("Skada") then
-					GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Skada, 1, 1, 1)
+					GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, L["ConfigButton"].Skada, 1, 1, 1)
 				end
 				if IsAddOnLoaded("Details") then
-					GameTooltip:AddDoubleLine(L.ConfigButton.RightClick, L.ConfigButton.Details, 1, 1, 1)
+					GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, L["ConfigButton"].Details, 1, 1, 1)
 				end
-				GameTooltip:AddDoubleLine(L.ConfigButton.MiddleClick, L.ConfigButton.Config, 1, 1, 1)
+				GameTooltip:AddDoubleLine(L["ConfigButton"].MiddleClick, L["ConfigButton"].Config, 1, 1, 1)
 				GameTooltip:Show()
 			end)
 			ConfigButton:SetScript("OnLeave", function(self)

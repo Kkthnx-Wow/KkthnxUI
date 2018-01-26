@@ -17,26 +17,27 @@ Also, make sure the game is closed when moving new files into the addon director
 
 Bug reports and feature suggestions are all done through GitHub's Issue tracker linked below. If you're looking for the current development status of the current or next version of the UI, you can check that out at Kkthnx's GitHub project pages.
 
-* Issues: [BugTracker](https://github.com/Kkthnx-WoW/KkthnxUI/issues)
+* [BugTracker](https://github.com/Kkthnx-WoW/KkthnxUI/issues)
 
 ## Join the community
 
 There are thousands of users, but most are content to simply download and use the interface without further ado. If you wish to get more involved though, have some questions you can't find answers to anywhere else or simply just wish to stop by and say hello, we have both a [discord](https://discordapp.com/) server and a facebook page.
 
-* Discord: [YUmxqQm](https://discord.gg/YUmxqQm)
-* Facebook: [@kkthnxui](https://www.facebook.com/kkthnxui)
-* Twitter: [@kkthnxui](https://twitter.com/KkthnxUI)
+* [Discord](https://discord.gg/YUmxqQm)
+* [Facebook](https://www.facebook.com/kkthnxui)
+* [Twitter](https://twitter.com/KkthnxUI)
 
-## Buy/gift me game time!
+## Buy me a coffee!
 
 Making stuff like this takes a lot of time and effort, as this user interface is a one-man project. I do it because I love doing it, because I believe it makes people happy and improves the user experience. But still, a lot of hours is put into it nonetheless.
 
 It is in no way required, since my UI has been and always will be free and fully available to everybody without restrictions. But if you truly wish to support my hard work, a donation goes a long way!
 
-* PayPal: [paypal@kkthnxui.org](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=XC5463FDLTKSE&lc=US&item_name=KkthnxUI&item_number=55846984&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) (click to go straight to PayPal)
-* PayPal Me: [www.paypal.me/kkthnx](https://www.paypal.me/kkthnx)
-* Patreon: [www.patreon.com/kkthnx](https://www.patreon.com/kkthnx)
-* Steam: [My Steam Trade URL](https://steamcommunity.com/tradeoffer/new/?partner=21318157&token=hTlU3SPa)
+* [PayPal](https://www.paypal.me/kkthnx)
+* [Patreon](https://www.patreon.com/kkthnx)
+* [Steam Trade](https://steamcommunity.com/tradeoffer/new/?partner=21318157&token=hTlU3SPa)
 
 Regards
 Josh *"Kkthnx"* Russell
+
+![wowscrnshot_011018_040955](https://user-images.githubusercontent.com/1692977/34911602-e000123a-f89b-11e7-8198-576bab206226.jpg)

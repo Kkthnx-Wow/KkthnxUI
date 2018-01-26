@@ -68,6 +68,9 @@ in the `oUF.Tags.SharedEvents` table as follows: `oUF.Tags.SharedEvents.EVENT_NA
 local _, ns = ...
 local oUF = ns.oUF
 
+local format = string.format
+local tinsert, tremove = table.insert, table.remove
+
 local _PATTERN = '%[..-%]+'
 
 local _ENV = {
@@ -78,6 +81,9 @@ local _ENV = {
 			else
 				r, g, b = unpack(r)
 			end
+		end
+		if not r or type(r) == 'string' then --wtf?
+			return '|cffFFFFFF'
 		end
 		return string.format('|cff%02x%02x%02x', r * 255, g * 255, b * 255)
 	end,
@@ -288,7 +294,7 @@ local tagStrings = {
 		elseif(c == 'worldboss') then
 			return 'Boss'
 		elseif(c == 'minus') then
-			return 'Affix'
+			return ''
 		end
 	end]],
 
@@ -303,7 +309,7 @@ local tagStrings = {
 		elseif(c == 'worldboss') then
 			return 'B'
 		elseif(c == 'minus') then
-			return '-'
+			return ''
 		end
 	end]],
 
@@ -331,15 +337,15 @@ local tagStrings = {
 	end]],
 
 	['curmana'] = [[function(unit)
-		return UnitPower(unit, SPELL_POWER_MANA)
+		return UnitPower(unit, Enum.PowerType.Mana)
 	end]],
 
 	['maxmana'] = [[function(unit)
-		return UnitPowerMax(unit, SPELL_POWER_MANA)
+		return UnitPowerMax(unit, Enum.PowerType.Mana)
 	end]],
 
 	['soulshards'] = [[function()
-		local num = UnitPower('player', SPELL_POWER_SOUL_SHARDS)
+		local num = UnitPower('player', Enum.PowerType.SoulShards)
 		if(num > 0) then
 			return num
 		end
@@ -347,7 +353,7 @@ local tagStrings = {
 
 	['holypower'] = [[function()
 		if(GetSpecialization() == SPEC_PALADIN_RETRIBUTION) then
-			local num = UnitPower('player', SPELL_POWER_HOLY_POWER)
+			local num = UnitPower('player', Enum.PowerType.HolyPower)
 			if(num > 0) then
 				return num
 			end
@@ -356,7 +362,7 @@ local tagStrings = {
 
 	['chi'] = [[function()
 		if(GetSpecialization() == SPEC_MONK_WINDWALKER) then
-			local num = UnitPower('player', SPELL_POWER_CHI)
+			local num = UnitPower('player', Enum.PowerType.Chi)
 			if(num > 0) then
 				return num
 			end
@@ -365,7 +371,7 @@ local tagStrings = {
 
 	['arcanecharges'] = [[function()
 		if(GetSpecialization() == SPEC_MAGE_ARCANE) then
-			local num = UnitPower('player', SPELL_POWER_ARCANE_CHARGES)
+			local num = UnitPower('player', Enum.PowerType.ArcaneCharges)
 			if(num > 0) then
 				return num
 			end
@@ -375,7 +381,7 @@ local tagStrings = {
 	['affix'] = [[function(u)
 		local c = UnitClassification(u)
 		if(c == 'minus') then
-			return 'Affix'
+			return ''
 		end
 	end]],
 
@@ -549,7 +555,7 @@ local function registerEvent(fontstr, event)
 	if(not events[event]) then events[event] = {} end
 
 	frame:RegisterEvent(event)
-	table.insert(events[event], fontstr)
+	tinsert(events[event], fontstr)
 end
 
 local function registerEvents(fontstr, tagstr)
@@ -578,9 +584,28 @@ local function unregisterEvents(fontstr)
 	end
 end
 
+local OnEnter = function(self)
+	for _, fs in pairs(self.__mousetags) do
+		fs:SetAlpha(1)
+	end
+end
+
+local OnLeave = function(self)
+	for _, fs in pairs(self.__mousetags) do
+		fs:SetAlpha(0)
+	end
+end
+
+local onUpdateDelay = {}
 local tagPool = {}
 local funcPool = {}
 local tmp = {}
+local escapeSequences = {
+	["||c"] = "|c",
+	["||r"] = "|r",
+	["||T"] = "|T",
+	["||t"] = "|t",
+}
 
 --[[ Tags: frame:Tag(fs, tagstr)
 Used to register a tag on a unit frame.
@@ -594,6 +619,7 @@ local function Tag(self, fs, tagstr)
 
 	if(not self.__tags) then
 		self.__tags = {}
+		self.__mousetags = {}
 		table.insert(self.__elements, onShow)
 	else
 		-- Since people ignore everything that's good practice - unregister the tag
@@ -608,6 +634,38 @@ local function Tag(self, fs, tagstr)
 	end
 
 	fs.parent = self
+
+	for escapeSequence, replacement in pairs(escapeSequences) do
+		while tagstr:find(escapeSequence) do
+			tagstr = tagstr:gsub(escapeSequence, replacement)
+		end
+	end
+
+	if tagstr:find('%[mouseover%]') then
+		tinsert(self.__mousetags, fs)
+		fs:SetAlpha(0)
+		if not self.__HookFunc then
+			self:HookScript('OnEnter', OnEnter)
+			self:HookScript('OnLeave', OnLeave)
+			self.__HookFunc = true;
+		end
+		tagstr = tagstr:gsub('%[mouseover%]', '')
+	else
+		for index, fontString in pairs(self.__mousetags) do
+			if fontString == fs then
+				self.__mousetags[index] = nil;
+				fs:SetAlpha(1)
+			end
+		end
+	end
+
+	local containsOnUpdate
+	for tag in tagstr:gmatch(_PATTERN) do
+		tag = getTagName(tag)
+		if not tagEvents[tag] then
+			containsOnUpdate = onUpdateDelay[tag] or 0.15;
+		end
+	end
 
 	local func = tagPool[tagstr]
 	if(not func) then
@@ -661,7 +719,10 @@ local function Tag(self, fs, tagstr)
 			if(tagFunc) then
 				table.insert(args, tagFunc)
 			else
-				return error(string.format('Attempted to use invalid tag %s.', bracket), 3)
+				numTags = -1
+				func = function(self)
+					return self:SetText(bracket)
+				end
 			end
 		end
 
@@ -712,7 +773,7 @@ local function Tag(self, fs, tagstr)
 					args[3](unit, realUnit) or ''
 				)
 			end
-		else
+		elseif numTags ~= -1 then
 			func = function(self)
 				local parent = self.parent
 				local unit = parent.unit
@@ -731,28 +792,32 @@ local function Tag(self, fs, tagstr)
 			end
 		end
 
-		tagPool[tagstr] = func
+		if numTags ~= -1 then
+			tagPool[tagstr] = func
+		end
 	end
 	fs.UpdateTag = func
 
 	local unit = self.unit
-	if(self.__eventless or fs.frequentUpdates) then
+	if(self.__eventless or fs.frequentUpdates) or containsOnUpdate then
 		local timer
 		if(type(fs.frequentUpdates) == 'number') then
 			timer = fs.frequentUpdates
+		elseif containsOnUpdate then
+			timer = containsOnUpdate
 		else
 			timer = .5
 		end
 
 		if(not eventlessUnits[timer]) then eventlessUnits[timer] = {} end
-		table.insert(eventlessUnits[timer], fs)
+		tinsert(eventlessUnits[timer], fs)
 
 		createOnUpdate(timer)
 	else
 		registerEvents(fs, tagstr)
 	end
 
-	table.insert(self.__tags, fs)
+	tinsert(self.__tags, fs)
 end
 
 --[[ Tags: frame:Untag(fs)
@@ -786,6 +851,7 @@ oUF.Tags = {
 	Methods = tags,
 	Events = tagEvents,
 	SharedEvents = unitlessEvents,
+	OnUpdateThrottle = onUpdateDelay,
 }
 
 oUF:RegisterMetaFunction('Tag', Tag)

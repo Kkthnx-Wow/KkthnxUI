@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("WorldMap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 local _G = _G
 local string_find = string.find
 

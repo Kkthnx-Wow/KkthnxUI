@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui
-    xmlns="http://www.blizzard.com/wow/ui/">
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_DataText -->
-    <Script file="Battleground.lua" />
-    <Script file="System.lua" />
-    <Script file="Time.lua" />
+    <Script file="Battleground.lua"/>
+    <Script file="System.lua"/>
+    <Script file="Time.lua"/>
 </Ui>

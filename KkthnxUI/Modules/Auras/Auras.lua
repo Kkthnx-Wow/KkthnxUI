@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
 
+-- Sourced: ElvUI (Elvz)
+
 local _G = _G
 local GetTime = GetTime
 local select, unpack = select, unpack
@@ -295,7 +297,7 @@ function Module:OnInitialize()
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", Minimap)
     if C["Minimap"].CollectButtons then
-      AurasHolder:SetPoint(C.Position.PlayerBuffs[1], C.Position.PlayerBuffs[2], C.Position.PlayerBuffs[3], C.Position.PlayerBuffs[4], C.Position.PlayerBuffs[5])
+      AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -28, 3)
     else
       AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -3, 3)
     end

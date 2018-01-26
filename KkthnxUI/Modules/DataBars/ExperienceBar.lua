@@ -1,6 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-
 local Module = K:NewModule("Experience_DataBar", "AceEvent-3.0")
+
+-- Sourced: ElvUI (Elvz)
 
 local _G = _G
 local format = format
@@ -61,32 +62,48 @@ function Module:UpdateExperience(event)
 end
 
 function Module:ExperienceBar_OnEnter()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+	end
+
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
 	local cur, max = Module:GetXP("player")
 	local rested = GetXPExhaustion()
-	GameTooltip:AddLine("Experience")
+	GameTooltip:AddLine(L["Databars"].Experience)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine("XP:", format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
-	GameTooltip:AddDoubleLine("Remaining:", format(" %d (%d%% - %d ".."Bars"..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine("XP:", format("+%d (%d%%)", rested, rested / max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].XP, format("+%d (%d%%)", rested, rested / max * 100), 1, 1, 1)
 	end
 
 	GameTooltip:Show()
 end
 
 function Module:ExperienceBar_OnLeave()
-	GameTooltip:Hide()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+	end
+
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+	end
 end
 
 function Module:UpdateExperienceDimensions()
 	self.expBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.expBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.expBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+
+	if C["DataBars"].MouseOver then
+		self.expBar:SetAlpha(0)
+	else
+		self.expBar:SetAlpha(1)
+	end
 end
 
 function Module:PLAYER_LEVEL_UP(level)
@@ -118,7 +135,7 @@ function Module:EnableDisable_ExperienceBar()
 end
 
 function Module:OnEnable()
-	self.expBar = CreateFrame("Button", "KkthnxUI_ExperienceBar", UIParent)
+	self.expBar = CreateFrame("Button", "KkthnxUI_ExperienceBar", K.PetBattleHider)
 	self.expBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	self.expBar:SetScript("OnEnter", Module.ExperienceBar_OnEnter)
 	self.expBar:SetScript("OnLeave", Module.ExperienceBar_OnLeave)

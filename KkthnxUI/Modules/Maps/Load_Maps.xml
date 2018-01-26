@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui
-    xmlns="http://www.blizzard.com/wow/ui/">
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Maps -->
-    <Script file="MiniMap.lua" />
-    <Script file="WorldMap.lua" />
-    <Script file="ButtonCollect.lua" />
-    <Script file="FarmMode.lua" />
-    <Script file="InstanceDifficulty.lua" />
-    <Script file="MicroMenu.lua" />
+    <Script file="MiniMap.lua"/>
+    <Script file="MicroMenu.lua"/>
+    <Script file="MinimapButtons.lua"/>
+    <Script file="WorldMap.lua"/>
 </Ui>

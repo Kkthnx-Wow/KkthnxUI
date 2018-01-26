@@ -1,6 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("BagFilter", "AceEvent-3.0", "AceHook-3.0")
-if C["Bags"].BagFilter ~= true then return end
+local Module = K:NewModule("BagFilter", "AceEvent-3.0")
+
+-- Sourced: Tukui (Tukz)
 
 local _G = _G
 local select = select
@@ -17,8 +18,8 @@ local GetLocale = _G.GetLocale
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local PickupContainerItem = PickupContainerItem
 
+local TrashList = L["Inventory"].TrashList
 local Link
-local TrashList = L.Inventory.TrashList
 
 Module.Trash = {
 	32902, -- Bottled Nethergon Energy
@@ -47,31 +48,29 @@ function Module:UpdateConfigDescription()
 	end
 
 	local Locale = GetLocale()
-	local Group = KkthnxUIConfig[Locale]["Bags"]["BagFilter"]
+	local Group = KkthnxUIConfig[Locale]["Inventory"]["BagFilter"]
 
 	if Group then
 		local Desc = Group.Default
-		local Items = Desc .. TrashList -- 6.0 localize me
+		local Items = Desc..TrashList -- 6.0 localize me
 
 		for i = 1, #self.Trash do
 			local Name, Link = GetItemInfo(self.Trash[i])
 
 			if (Name and Link) then
 				if i == 1 then
-					Items = Items .. "" .. Link
+					Items = Items..""..Link
 				else
-					Items = Items .. ", " .. Link
+					Items = Items..", "..Link
 				end
 			end
 		end
-
-		KkthnxUIConfig[Locale]["Bags"]["BagFilter"]["Desc"] = Items
+		KkthnxUIConfig[Locale]["Inventory"]["BagFilter"]["Desc"] = Items
 	end
 end
 
 function Module:AddItem(id)
 	tinsert(self.Trash, id)
-
 	self:UpdateConfigDescription()
 end
 
@@ -80,13 +79,13 @@ function Module:RemoveItem(id)
 		if (self.Trash[i] == id) then
 			tremove(self.Trash, i)
 			self:UpdateConfigDescription()
-
 			break
 		end
 	end
 end
 
 function Module:OnEnable()
+	if C["Inventory"].BagFilter ~= true then return end
 	self:RegisterEvent("CHAT_MSG_LOOT", "GetTrash")
 end
 

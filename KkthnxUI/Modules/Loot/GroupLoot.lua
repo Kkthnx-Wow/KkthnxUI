@@ -41,7 +41,7 @@ local pos = "TOP"
 local cancelled_rolls = {}
 local cachedRolls = {}
 local completedRolls = {}
-local FRAME_WIDTH, FRAME_HEIGHT = 328, 28
+local FRAME_WIDTH, FRAME_HEIGHT = 328, 26
 
 local GroupLootFont = K.GetFont(C["Loot"].Font)
 local GroupLootTexture = K.GetTexture(C["Loot"].Texture)
@@ -176,7 +176,7 @@ function GroupLoot:CreateRollFrame()
 	status.bg:SetAllPoints()
 	status.bg:SetDrawLayer("BACKGROUND", 2)
 	local spark = frame:CreateTexture(nil, "OVERLAY")
-	spark:SetSize(14, FRAME_HEIGHT)
+	spark:SetSize(14, FRAME_HEIGHT * 1.8)
 	spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
 	spark:SetBlendMode("ADD")
 	status.spark = spark
@@ -256,7 +256,7 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 	local color = ITEM_QUALITY_COLORS[quality]
 	f.fsloot:SetText(name)
 	f.status:SetStatusBarColor(color.r, color.g, color.b, .7)
-	f.status.bg:SetColorTexture(color.r, color.g, color.b)
+	f.status.bg:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	f.status:SetMinMaxValues(0, time)
 	f.status:SetValue(time)
@@ -283,13 +283,11 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 		RollOnLoot(rollID, LOOT_ROLL_TYPE_GREED)
 	end
 
-	if C["Loot"].AutoRoll --[[and UnitLevel("player") == MAX_PLAYER_LEVEL--]] and quality == 2 and not bop then
+	if C["Loot"].AutoRoll and UnitLevel("player") == MAX_PLAYER_LEVEL and quality == 2 and not bop then
 		if canDisenchant then
 			RollOnLoot(rollID, 3)
-			UIErrorsFrame:AddMessage("I Rolled for Disenchant" ..name, 0.0, 1.0, 0.0, 80)
 		else
 			RollOnLoot(rollID, 2)
-			UIErrorsFrame:AddMessage("I Rolled for Greed" ..name, 0.0, 1.0, 0.0, 80)
 		end
 	end
 end

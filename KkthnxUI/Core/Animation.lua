@@ -8,8 +8,6 @@ local K, C, L = unpack(select(2, ...))
 -- Lua API
 local _G = _G
 local table_remove = table.remove
-local select = select
-local unpack = unpack
 
 -- Wow API
 local CreateFrame = _G.CreateFrame

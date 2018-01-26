@@ -1,30 +1,33 @@
 local K, C, L = unpack(select(2, ...))
+
 -- Application Programming Interface for KkthnxUI (API)
 
--- Lua API
 local _G = _G
 local getmetatable = getmetatable
 local math_floor = math.floor
-local select = select
 local string_match = string.match
-local math_max = math.max
 local type = type
-local unpack = unpack
 
--- Wow API
 local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local EnumerateFrames = _G.EnumerateFrames
+local GetCurrentResolution = _G.GetCurrentResolution
+local GetScreenResolutions = _G.GetScreenResolutions
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local RegisterStateDriver = _G.RegisterStateDriver
+local RegisterStateDriver = _G.RegisterStateDriver
+local UIParent = _G.UIParent
+local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: noHover, noPushed, noChecked, bordera, KkthnxUIFont
-
 -- Preload
-K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
-function K.Scale(x) return K.Mult * math_floor(x / K.Mult + 0.5) end
-K.NoScaleMult = K.Mult * C["General"].UIScale
+K.Mult = 1
+function K.Scale(x) return
+	K.Mult * math_floor(x / K.Mult + 0.5)
+end
+K.NoScaleMult = 768 / string_match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)")
 
-local color = RAID_CLASS_COLORS[K.Class]
+local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 local backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
 local borderr, borderg, borderb = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
 
@@ -39,37 +42,6 @@ K.PetBattleHider = CreateFrame("Frame", "KkthnxUI_PetBattleHider", UIParent, "Se
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
-
-local function SetOutside(obj, anchor, xOffset, yOffset)
-	xOffset = xOffset or 2
-	yOffset = yOffset or 2
-	anchor = anchor or obj:GetParent()
-
-	if obj:GetPoint() then obj:ClearAllPoints() end
-
-	obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", -xOffset, yOffset)
-	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", xOffset, -yOffset)
-end
-
-local function SetInside(obj, anchor, xOffset, yOffset)
-	xOffset = xOffset or 2
-	yOffset = yOffset or 2
-	anchor = anchor or obj:GetParent()
-
-	if obj:GetPoint() then obj:ClearAllPoints() end
-
-	obj:SetPoint("TOPLEFT", anchor, "TOPLEFT", xOffset, -yOffset)
-	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
-end
-
-local function TrimIcon(self, customTrim)
-	if self.SetTexCoord then
-		local trim = customTrim or .08
-		self:SetTexCoord(trim, 1 -trim, trim, 1 -trim)
-	else
-		K.Print("function SetTexCoord does not exist for", self:GetName() or self)
-	end
-end
 
 local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	if not template then template = "" end
@@ -88,15 +60,9 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 		bordercolor = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
 
 		if string_match(template, "Action") then
-			local cooldown = self:GetName() and _G[self:GetName().."Cooldown"] or self.cooldown
-			if cooldown then
-				cooldown:SetAllPoints()
-				if not self.cooldown then self.cooldown = cooldown end
-			end
-
 			if self.icon then
 				self.icon:TrimIcon()
-				self.icon:SetDrawLayer("BACKGROUND", 1)
+				self.icon:SetDrawLayer("BACKGROUND", 7)
 			end
 		end
 
@@ -104,51 +70,8 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 			self:SetNormalTexture("")
 		end
 
-		if self.SetHighlightTexture and not self.hover and not noHover then
-			local hover = self:CreateTexture()
-			hover:SetVertexColor(1, 1, 1)
-			hover:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-			hover:SetBlendMode("ADD")
-			hover:SetAllPoints()
-			self.hover = hover
-			self:SetHighlightTexture(hover)
-		end
+		self:StyleButton()
 
-		if self.SetPushedTexture and not self.pushed and not noPushed then
-			local pushed = self:CreateTexture()
-			pushed:SetVertexColor(1.0, 0.82, 0.0)
-			pushed:SetTexture("Interface\\Buttons\\ButtonHilight-Square")
-			pushed:SetBlendMode("ADD")
-			pushed:SetDesaturated(true)
-			pushed:SetAllPoints()
-			self.pushed = pushed
-			self:SetPushedTexture(pushed)
-		end
-
-		if self.SetCheckedTexture and not self.checked and not noChecked then
-			local checked = self:CreateTexture()
-			checked:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-			checked:SetBlendMode("ADD")
-			checked:SetAllPoints()
-			self.checked = checked
-			self:SetCheckedTexture(checked)
-		end
-
-		local cooldown = self:GetName() and _G[self:GetName().."Cooldown"]
-		if cooldown and self:IsObjectType("Frame") then
-			cooldown:ClearAllPoints()
-			cooldown:SetPoint("TOPLEFT", 1, -1)
-			cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
-			cooldown:SetDrawEdge(false)
-			cooldown:SetSwipeColor(0, 0, 0, 1)
-		end
-
-		if self.SetNormalFontObject then
-			self:SetNormalFontObject(KkthnxUIFont)
-			self:SetHighlightFontObject(KkthnxUIFont)
-			self:SetDisabledFontObject(KkthnxUIFont)
-			self:SetPushedTextOffset(0, 0)
-		end
 	elseif template == "Transparent" then
 		backdropcolor = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
 		bordercolor = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
@@ -162,16 +85,20 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	else
 		self:SetBackdrop(nil)
+		if C["General"].ColorTextures and self then -- We need this here to be sure they get colored and picked up
+			self:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+		end
 	end
 end
 
-local function CreateBackdrop(f, t, tex, ignoreUpdates)
+local function CreateBackdrop(f, t, tex)
 	if not t then t = "Default" end
 	if f.Backdrop then return end
 
 	local b = CreateFrame("Frame", "$parentBackdrop", f)
-	b:SetAllPoints()
-	b:SetTemplate(t, tex, ignoreUpdates)
+	b:SetPoint("TOPLEFT", 0, -0)
+	b:SetPoint("BOTTOMRIGHT", -0, 0)
+	b:SetTemplate(t, tex)
 
 	if f:GetFrameLevel() - 1 >= 0 then
 		b:SetFrameLevel(f:GetFrameLevel() - 1)
@@ -195,7 +122,8 @@ local function CreateShadow(self, size, strip, backdrop)
 	local shadow = CreateFrame("Frame", "$parentShadow", self)
 	shadow:SetFrameLevel(1)
 	shadow:SetFrameStrata(self:GetFrameStrata())
-	shadow:SetOutside(self, size, size)
+	shadow:SetPoint("TOPLEFT", -size, size)
+	shadow:SetPoint("BOTTOMRIGHT", size, -size)
 	if backdrop then
 		shadow:SetBackdrop({bgFile = C["Media"].Blank, edgeFile = C["Media"].Glow, edgeSize = 3, tile = false, tileSize = 0, insets = {left = 3, right = 3, top = 3, bottom = 3}})
 	else
@@ -279,39 +207,6 @@ local function StripTextures(object, kill)
 	end
 end
 
--- More advanced version of SetAllPoints, this allows you to pass up to 4 additional arguments that dictate the offsets:
--- One single value applies to all four sides.
--- wo values apply first to top and bottom, the second one to left and right.
--- hree values apply first to top, second to left and right and third to bottom.
--- Four values apply to top, right, bottom and left in that order (clockwise).
-local function SetPoints(object, ...)
-	local offsets, parent
-	if ... and type(select(1, ...)) ~= "number" then
-		offsets = {select(2, ...)}
-		parent = ...
-	else
-		offsets = {...}
-		parent = object:GetParent()
-	end
-
-	object:ClearAllPoints()
-	if #offsets == 0 then
-		object:SetAllPoints()
-	elseif #offsets == 1 then
-		object:SetPoint("TOPLEFT", parent, offsets[1], -offsets[1])
-		object:SetPoint("BOTTOMRIGHT", parent, -offsets[1], offsets[1])
-	elseif #offsets == 2 then
-		object:SetPoint("TOPLEFT", parent, offsets[2], -offsets[1])
-		object:SetPoint("BOTTOMRIGHT", parent, -offsets[2], offsets[1])
-	elseif #offsets == 3 then
-		object:SetPoint("TOPLEFT", parent, offsets[2], -offsets[1])
-		object:SetPoint("BOTTOMRIGHT", parent, -offsets[2], offsets[3])
-	else
-		object:SetPoint("TOPLEFT", parent, offsets[4], -offsets[1])
-		object:SetPoint("BOTTOMRIGHT", parent, -offsets[2], offsets[3])
-	end
-end
-
 local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	local fs = parent:CreateFontString(nil, "OVERLAY")
 	fs:SetFont(fontName, fontHeight, fontStyle)
@@ -385,23 +280,30 @@ local function StyleButton(button, noHover, noPushed, noChecked)
 		cooldown:SetDrawEdge(false)
 		cooldown:SetSwipeColor(0, 0, 0, 1)
 	end
+
+	if button.SetNormalFontObject then
+		button:SetNormalFontObject(KkthnxUIFont)
+		button:SetHighlightFontObject(KkthnxUIFont)
+		button:SetDisabledFontObject(KkthnxUIFont)
+		button:SetPushedTextOffset(0, 0)
+	end
 end
 
-function K.StatusBarColorGradient(bar, value, max, Backdrop)
-    local current = (not max and value) or (value and max and max ~= 0 and value/max)
-    if not (bar and current) then return end
-    local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-    local bg = Backdrop or bar.Backdrop
-    if bg then bg:SetBackdropColor(r * 0.25, g * 0.25, b * 0.25) end
-    bar:SetStatusBarColor(r, g, b)
+local function SetStatusBarColorGradient(bar, value, max, Backdrop)
+	local current = (not max and value) or (value and max and max ~= 0 and value/max)
+	if not (bar and current) then return end
+	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+	local bg = Backdrop or bar.Backdrop
+	if bg then bg:SetBackdropColor(r * 0.25, g * 0.25, b * 0.25) end
+	bar:SetStatusBarColor(r, g, b)
 end
 
 local function SetModifiedBackdrop(self)
 	if self.Backdrop then self = self.Backdrop end
 	if not C["General"].ColorTextures then -- Fix a rare nil error
-		self:SetBackdropBorderColor(color.r, color.g, color.b, 1)
+		self:SetBackdropBorderColor(classColor.r, classColor.g, classColor.b, 1)
 	end
-	self:SetBackdropColor(color.r * .15, color.g * .15, color.b * .15, C["Media"].BackdropColor[4])
+	self:SetBackdropColor(classColor.r * .15, classColor.g * .15, classColor.b * .15, C["Media"].BackdropColor[4])
 end
 
 local function SetOriginalBackdrop(self)
@@ -412,12 +314,41 @@ local function SetOriginalBackdrop(self)
 	self:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 end
 
+local function SkinIcon(icon, parent)
+	parent = parent or icon:GetParent();
+
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	parent:SetTemplate("Transparent", true)
+	icon:SetParent(parent)
+	parent:SetAllPoints(icon)
+end
+
+local function TrimIcon(self, customTrim)
+	if self.SetTexCoord then
+		local trim = customTrim or .08
+		self:SetTexCoord(trim, 1 -trim, trim, 1 -trim)
+	else
+		K.Print("function SetTexCoord does not exist for", self:GetName() or self)
+	end
+end
+
 local function SkinButton(f, strip)
 	assert(f, "doesn't exist!")
 
 	if f.Left then f.Left:SetAlpha(0) end
 	if f.Middle then f.Middle:SetAlpha(0) end
 	if f.Right then f.Right:SetAlpha(0) end
+
+	if f.TopLeft then f.TopLeft:SetAlpha(0) end
+	if f.TopMiddle then f.TopMiddle:SetAlpha(0) end
+	if f.TopRight then f.TopRight:SetAlpha(0) end
+	if f.MiddleLeft then f.MiddleLeft:SetAlpha(0) end
+	if f.MiddleMiddle then f.MiddleMiddle:SetAlpha(0) end
+	if f.MiddleRight then f.MiddleRight:SetAlpha(0) end
+	if f.BottomLeft then f.BottomLeft:SetAlpha(0) end
+	if f.BottomMiddle then f.BottomMiddle:SetAlpha(0) end
+	if f.BottomRight then f.BottomRight:SetAlpha(0) end
+
 	if f.LeftSeparator then f.LeftSeparator:SetAlpha(0) end
 	if f.RightSeparator then f.RightSeparator:SetAlpha(0) end
 
@@ -484,10 +415,8 @@ local function AddAPI(object)
 	if not object.FontString then mt.FontString = FontString end
 	if not object.FontTemplate then mt.FontTemplate = FontTemplate end
 	if not object.Kill then mt.Kill = Kill end
-	if not object.SetInside then mt.SetInside = SetInside end
-	if not object.SetOutside then mt.SetOutside = SetOutside end
-	if not object.SetPoints then mt.SetPoints = SetPoints end
 	if not object.SetTemplate then mt.SetTemplate = SetTemplate end
+	if not object.SetStatusBarColorGradient then mt.SetStatusBarColorGradient = SetStatusBarColorGradient end
 	if not object.SkinButton then mt.SkinButton = SkinButton end
 	if not object.StripTextures then mt.StripTextures = StripTextures end
 	if not object.StyleButton then mt.StyleButton = StyleButton end
@@ -511,6 +440,6 @@ while Object do
 	Object = EnumerateFrames(Object)
 end
 
---Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the "Frame" widget
+-- Hacky fix for issue on 7.1 PTR where scroll frames no longer seem to inherit the methods from the "Frame" widget
 local ScrollFrame = CreateFrame("ScrollFrame")
 AddAPI(ScrollFrame)

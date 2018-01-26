@@ -2,7 +2,23 @@
 <Ui
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Developer -->
-    <Script file="Frame.lua" />
-    <Script file="ReloadUI.lua" />
-    <Script file="Test.lua" />
+    <Script file="Frame.lua"/>
+    <Script file="ReloadUI.lua"/>
+    <Script file="Test.lua"/>
+
+    <Frame name="TitleDragAreaTemplate" virtual="true">
+        <Scripts>
+            <OnLoad>
+                self:RegisterForDrag("LeftButton")
+            </OnLoad>
+            <OnDragStart>
+                self:GetParent().moving = true
+                self:GetParent():StartMoving()
+            </OnDragStart>
+            <OnDragStop>
+                self:GetParent().moving = nil
+                self:GetParent():StopMovingOrSizing()
+            </OnDragStop>
+        </Scripts>
+    </Frame>
 </Ui>

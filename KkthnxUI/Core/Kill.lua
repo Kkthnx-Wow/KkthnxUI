@@ -1,78 +1,107 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("DisableBlizzard", "AceEvent-3.0")
+local Module = K:NewModule("Kill", "AceEvent-3.0")
 
--- Lua API
-local _G = _G
-
--- Wow API
-local CompactRaidFrameManager_GetSetting = _G.CompactRaidFrameManager_GetSetting
-local CompactRaidFrameManager_SetSetting = _G.CompactRaidFrameManager_SetSetting
-local CompactRaidFrameManager_UpdateShown = _G.CompactRaidFrameManager_UpdateShown
-local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
-local StaticPopup_Show =_G.StaticPopup_Show
-local UIParent = _G.UIParent
-
--- Kill all stuff on default UI that we don"t need
-local function HideRaid()
-	if InCombatLockdown() then return end
-	CompactRaidFrameManager:Kill()
-	local compact_raid = CompactRaidFrameManager_GetSetting("IsShown")
-	if compact_raid and compact_raid ~= "0" then
-		CompactRaidFrameManager_SetSetting("IsShown", "0")
-	end
-end
-
-function Module:DisableBlizzard()
-	if (not C["Unitframe"].Enable) and (not C["Raidframe"].Enable) then return end
-	if not CompactRaidFrameManager_UpdateShown then
-		StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
-	else
-		if not CompactRaidFrameManager.hookedHide then
-			hooksecurefunc("CompactRaidFrameManager_UpdateShown", HideRaid)
-			CompactRaidFrameManager:HookScript("OnShow", HideRaid)
-			CompactRaidFrameManager.hookedHide = true
+function Module:ADDON_LOADED(event, addon)
+	if (addon == "Blizzard_AchievementUI") then
+		if C["Tooltip"].Enable then
+			hooksecurefunc("AchievementFrameCategories_DisplayButton", function(button) button.showTooltipFunc = nil end)
 		end
-		CompactRaidFrameContainer:UnregisterAllEvents()
-
-		HideRaid()
 	end
-end
 
-function Module:ControlBlizzard()
+	if C["Raidframe"].Enable then
+		InterfaceOptionsFrameCategoriesButton10:SetScale(0.00001)
+		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
+		if not InCombatLockdown() then
+			CompactRaidFrameManager:Kill()
+			CompactRaidFrameContainer:Kill()
+		end
+		ShowPartyFrame = K.Noop
+		HidePartyFrame = K.Noop
+		CompactUnitFrameProfiles_ApplyProfile = K.Noop
+		CompactRaidFrameManager_UpdateShown = K.Noop
+		CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
+	end
+
 	if C["General"].AutoScale then
-		K.KillMenuOption(true, "Advanced_UseUIScale")
-		K.KillMenuOption(true, "Advanced_UIScaleSlider")
-	end
-
-	if C["Cooldown"].Enable then
-		K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
+		Advanced_UseUIScale:Disable()
+		Advanced_UIScaleSlider:Disable()
+		getglobal(Advanced_UseUIScale:GetName().."Text"):SetTextColor(1, 0, 0, 1)
+		getglobal(Advanced_UIScaleSlider:GetName().."Text"):SetTextColor(1, 0, 0, 1)
+		getglobal(Advanced_UseUIScale:GetName().."Text"):SetText("'UI Scale' is unavailable while Auto Scale is active. Click the button below for options.")
+		Advanced_UseUIScaleText:SetPoint("LEFT", Advanced_UseUIScale, "LEFT", 4, -40)
 	end
 
 	if C["General"].DisableTutorialButtons then
-		if MainMenuBarDownload then
-			MainMenuBarDownload:Kill()
-		end
-
 		BagHelpBox:Kill()
 		CollectionsMicroButtonAlert:Kill()
 		EJMicroButtonAlert:Kill()
-		GuildMicroButtonTabard:Kill()
 		HelpOpenTicketButtonTutorial:Kill()
-		HelpPlate:Kill()
-		HelpPlateTooltip:Kill()
-		MainMenuBarPerformanceBar:Kill()
-		MicroButtonPortrait:Kill()
 		PremadeGroupsPvETutorialAlert:Kill()
 		ReagentBankHelpBox:Kill()
-		SpellBookFrameTutorialButton:Kill()
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_APPEARANCE_TAB, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_KNOWLEDGE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_ARTIFACT_RELIC_MATCH, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BAG_SETTINGS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BONUS_ROLL_ENCOUNTER_JOURNAL_LINK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOOSTED_SPELL_BOOK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_FINISHED, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_BOUNTY_INTRO, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CLEAN_UP_BAGS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CORE_ABILITITES, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_FRIENDS_LIST_QUICK_JOIN, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GAME_TIME_AUCTION_HOUSE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_LANDING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_LIST, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_MISSION_PAGE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_ZONE_ABILITY, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GLYPH, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_LEVEL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HEIRLOOM_JOURNAL_TAB, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_FIRST_TALENT, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_HONOR_LEVELS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HONOR_TALENT_PRESTIGE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_IGNORE_QUEST, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_INVENTORY_FIXUP_CHECK_EXPANSION_LEGION, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_INVENTORY_FIXUP_EXPANSION_LEGION, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_LFG_LIST, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PROFESSIONS, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_REAGENT_BANK_UNLOCK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPEC, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_SPELLBOOK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_FAVORITE, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TOYBOX_MOUSEWHEEL_PAGING, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_JOURNAL_TAB, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_MODEL_CLICK, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_OUTFIT_DROPDOWN, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TRANSMOG_SPECS_BUTTON, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_VIEWABLE_ARTIFACT, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WHAT_HAS_CHANGED, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
+		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WRAPPED_COLLECTION_ITEMS, true)
 		TalentMicroButtonAlert:Kill()
 		TutorialFrameAlertButton:Kill()
-		WorldMapFrameTutorialButton:Kill()
+	end
+
+	if C["Cooldown"].Enable then
+		SetCVar("countdownForCooldowns", 0)
+		K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
+	end
+
+	if C["Chat"].Enable then
+		SetCVar("chatStyle", "im")
 	end
 
 	if C["Unitframe"].Enable then
+		if (K.Class == "DEATHKNIGHT") then
+			RuneFrame:Kill()
+		end
 		K.KillMenuOption(true, "InterfaceOptionsCombatPanelTargetOfTarget")
+		SetCVar("showPartyBackground", 0)
 	end
 
 	if C["Auras"].Enable then
@@ -81,31 +110,27 @@ function Module:ControlBlizzard()
 		K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 	end
 
+	if C["ActionBar"].Enable then
+		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
+		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
+		InterfaceOptionsActionBarsPanelBottomRight:Kill()
+		InterfaceOptionsActionBarsPanelRight:Kill()
+		InterfaceOptionsActionBarsPanelRightTwo:Kill()
+	end
+
 	if C["Nameplates"].Enable then
+		SetCVar("ShowClassColorInNameplate", 1)
 		-- Hide these options, because we will do it from KkthnxUI settings.
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
 		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
 	end
 
-	if C["ActionBar"].Enable then
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:EnableMouse(false)
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:SetAlpha(0)
-		InterfaceOptionsActionBarsPanelBottomRight:SetAlpha(0)
-		InterfaceOptionsActionBarsPanelBottomRight:SetScale(0.0001)
-		InterfaceOptionsActionBarsPanelBottomLeft:SetAlpha(0)
-		InterfaceOptionsActionBarsPanelBottomLeft:SetScale(0.0001)
-		InterfaceOptionsActionBarsPanelRightTwo:SetAlpha(0)
-		InterfaceOptionsActionBarsPanelRightTwo:SetScale(0.0001)
-		InterfaceOptionsActionBarsPanelRight:SetAlpha(0)
-		InterfaceOptionsActionBarsPanelRight:SetScale(0.0001)
-	end
-
 	if C["Minimap"].Enable then
 		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
 	end
 
-	if C["Bags"].Enable then
+	if C["Inventory"].Enable then
 		SetSortBagsRightToLeft(true)
 		SetInsertItemsLeftToRight(false)
 	end
@@ -116,15 +141,5 @@ function Module:ControlBlizzard()
 end
 
 function Module:OnInitialize()
-	self:ControlBlizzard()
-	K.KillMenuPanel(10, "InterfaceOptionsFrameCategoriesButton")
-
-	if C["Raidframe"].Enable == true then
-		self:DisableBlizzard()
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", "DisableBlizzard")
-		UIParent:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	else
-		CompactUnitFrameProfiles:RegisterEvent("VARIABLES_LOADED")
-		UIParent:RegisterEvent("GROUP_ROSTER_UPDATE") -- We need to register this if people want to use default blizz raid frames.
-	end
+	self:RegisterEvent("ADDON_LOADED")
 end

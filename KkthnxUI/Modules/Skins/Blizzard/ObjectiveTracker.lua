@@ -3,9 +3,6 @@ local K, C, L = unpack(select(2, ...))
 local unpack = unpack
 local hooksecurefunc = hooksecurefunc
 
--- GLOBALS: ObjectiveTrackerBlocksFrame, ObjectiveTrackerFrame, BonusObjectiveTrackerProgressBar_PlayFlareAnim
--- GLOBALS: SCENARIO_TRACKER_MODULE, BONUS_OBJECTIVE_TRACKER_MODULE, WORLD_QUEST_TRACKER_MODULE, QUEST_TRACKER_MODULE, DEFAULT_OBJECTIVE_TRACKER_MODULE
-
 local function LoadSkin()
 	ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
 	ObjectiveTrackerBlocksFrame.QuestHeader.Text:FontTemplate(nil, 13, "OUTLINE")
@@ -68,7 +65,7 @@ local function LoadSkin()
 
 	local function ColorProgressBars(self, value)
 		if not (self.Bar and value) then return end
-		K.StatusBarColorGradient(self.Bar, value, 100)
+		self.Bar:SetStatusBarColorGradient(value, 100)
 	end
 
 	local function SkinItemButton(self, block)
@@ -80,7 +77,8 @@ local function LoadSkin()
 			item:SetNormalTexture(nil)
 			item.icon:SetTexCoord(unpack(K.TexCoords))
 			item.icon:SetAllPoints()
-			--item.Cooldown:SetInside()
+			item.Cooldown:SetPoint("TOPLEFT", 1, -1)
+			item.Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 			item.Count:ClearAllPoints()
 			item.Count:SetPoint("TOPLEFT", 1, -1)
 			item.Count:SetFont(C["Media"].Font, 14, "OUTLINE")
@@ -106,10 +104,21 @@ local function LoadSkin()
 		end
 	end
 
+	local function SkinFindGroupButton(block)
+		if block.hasGroupFinderButton and block.groupFinderButton then
+			if block.groupFinderButton and not block.groupFinderButton.skinned then
+				block.groupFinderButton:SkinButton()
+				block.groupFinderButton:SetSize(20, 20)
+				block.groupFinderButton.skinned = true
+			end
+		end
+	end
+
 	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Bonus Objective Progress Bar
 	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Quest Progress Bar
 	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Scenario Progress Bar
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton) --[Move]: The eye & quest item to the left of the eye
+	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton) --[Skin]: The eye
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton) --[Skin]: Quest Item Buttons
 	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton) --[Skin]: World Quest Item Buttons
 

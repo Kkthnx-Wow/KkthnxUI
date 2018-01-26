@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-
-local D = K:NewModule("DebugTools", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:NewModule("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
 if K.WoWBuild < 24015 then return end
 
@@ -11,7 +10,7 @@ local InCombatLockdown = InCombatLockdown
 local GetCVarBool = GetCVarBool
 local StaticPopup_Hide = StaticPopup_Hide
 
-function D:ModifyErrorFrame()
+function Module:ModifyErrorFrame()
 	ScriptErrorsFrame.ScrollFrame.Text.cursorOffset = 0
 	ScriptErrorsFrame.ScrollFrame.Text.cursorHeight = 0
 	ScriptErrorsFrame.ScrollFrame.Text:SetScript("OnEditFocusGained", nil)
@@ -19,7 +18,7 @@ function D:ModifyErrorFrame()
 	local function ScriptErrors_UnHighlightText()
 		ScriptErrorsFrame.ScrollFrame.Text:HighlightText(0, 0)
 	end
-	hooksecurefunc(ScriptErrorsFrame, 'Update', ScriptErrors_UnHighlightText)
+	hooksecurefunc(ScriptErrorsFrame, "Update", ScriptErrors_UnHighlightText)
 
 	-- Unhighlight text when focus is hit
 	local function UnHighlightText(self)
@@ -59,7 +58,7 @@ function D:ModifyErrorFrame()
 	ScriptErrorsFrame.lastButton = lastButton
 end
 
-function D:ScriptErrorsFrame_UpdateButtons()
+function Module:ScriptErrorsFrame_UpdateButtons()
 	local numErrors = #ScriptErrorsFrame.order
 	local index = ScriptErrorsFrame.index
 	if (index == 0) then
@@ -76,44 +75,44 @@ function D:ScriptErrorsFrame_UpdateButtons()
 	end
 end
 
-function D:ScriptErrorsFrame_OnError(_, _, keepHidden)
-	if keepHidden or D.MessagePrinted or not InCombatLockdown() or GetCVarBool('scriptErrors') ~= true then return end
+function Module:ScriptErrorsFrame_OnError(_, _, keepHidden)
+	if keepHidden or Module.MessagePrinted or not InCombatLockdown() or GetCVarBool("scriptErrors") ~= true then return end
 
-	K.Print(L["|cFFE30000Lua error recieved. You can view the error message when you exit combat."])
-	D.MessagePrinted = true
+	K.Print(L["Blizzard"].Lua_Error_Recieved)
+	Module.MessagePrinted = true
 end
 
-function D:PLAYER_REGEN_ENABLED()
+function Module:PLAYER_REGEN_ENABLED()
 	ScriptErrorsFrame:SetParent(UIParent)
-	D.MessagePrinted = nil
+	Module.MessagePrinted = nil
 end
 
-function D:PLAYER_REGEN_DISABLED()
+function Module:PLAYER_REGEN_DISABLED()
 	ScriptErrorsFrame:SetParent(K.UIFrameHider)
 end
 
-function D:TaintError(event, addonName, addonFunc)
-	if GetCVarBool('scriptErrors') ~= true or C["General"].TaintLog ~= true then return end
-	ScriptErrorsFrame:OnError(L["%s: %s tried to call the protected function '%s'."]:format(event, addonName or "<name>", addonFunc or "<func>"), false, false)
+function Module:TaintError(event, addonName, addonFunc)
+	if GetCVarBool("scriptErrors") ~= true or C["General"].TaintLog ~= true then return end
+	ScriptErrorsFrame:OnError(L["Blizzard"].Taint_Error:format(event, addonName or "<name>", addonFunc or "<func>"), false, false)
 end
 
-function D:StaticPopup_Show(name)
+function Module:StaticPopup_Show(name)
 	if(name == "ADDON_ACTION_FORBIDDEN") then
 		StaticPopup_Hide(name)
 	end
 end
 
-function D:OnEnable()
+function Module:OnEnable()
 	if (not IsAddOnLoaded("Blizzard_DebugTools")) then
 		LoadAddOn("Blizzard_DebugTools")
 	end
 
 	self:ModifyErrorFrame()
-	self:SecureHook(ScriptErrorsFrame, 'UpdateButtons', D.ScriptErrorsFrame_UpdateButtons)
-	self:SecureHook(ScriptErrorsFrame, 'OnError', D.ScriptErrorsFrame_OnError)
-	self:SecureHook('StaticPopup_Show')
-	self:RegisterEvent('PLAYER_REGEN_DISABLED')
-	self:RegisterEvent('PLAYER_REGEN_ENABLED')
+	self:SecureHook(ScriptErrorsFrame, "UpdateButtons", Module.ScriptErrorsFrame_UpdateButtons)
+	self:SecureHook(ScriptErrorsFrame, "OnError", Module.ScriptErrorsFrame_OnError)
+	self:SecureHook("StaticPopup_Show")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self:RegisterEvent("ADDON_ACTION_BLOCKED", "TaintError")
 	self:RegisterEvent("ADDON_ACTION_FORBIDDEN", "TaintError")
 end

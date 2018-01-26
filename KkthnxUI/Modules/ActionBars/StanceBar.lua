@@ -19,7 +19,7 @@ local Movers = K.Movers
 
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", K.PetBattleHider)
 if C["ActionBar"].StanceBarHorizontal == true then
-	ShiftHolder:SetPoint(C.Position.StanceBar[1], C.Position.StanceBar[2], C.Position.StanceBar[3], C.Position.StanceBar[4], C.Position.StanceBar[5])
+	ShiftHolder:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167)
 	ShiftHolder:SetWidth((C["ActionBar"].ButtonSize * 7) + (C["ActionBar"].ButtonSpace * 6))
 	ShiftHolder:SetHeight(C["ActionBar"].ButtonSize)
 else
@@ -41,15 +41,24 @@ local StanceBar = CreateFrame("Frame", "UIShapeShift", ShiftHolder, "SecureHandl
 StanceBar:ClearAllPoints()
 StanceBar:SetAllPoints(ShiftHolder)
 
+local States = {
+	["DEATHKNIGHT"] = "show",
+	["DRUID"] = "show",
+	["MONK"] = "show",
+	["PALADIN"] = "show",
+	["PRIEST"] = "show",
+	["ROGUE"] = "show",
+	["WARLOCK"] = "show",
+	["WARRIOR"] = "show",
+}
+
 StanceBar:RegisterEvent("PLAYER_LOGIN")
 StanceBar:RegisterEvent("PLAYER_ENTERING_WORLD")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-StanceBar:RegisterEvent("PLAYER_TALENT_UPDATE")
 StanceBar:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-StanceBar:RegisterEvent("SPELLS_CHANGED")
 StanceBar:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_STANCE_SLOTS do
@@ -77,9 +86,8 @@ StanceBar:SetScript("OnEvent", function(self, event, ...)
 				button:Hide()
 			end
 		end
-		RegisterStateDriver(self, "visibility", "[vehicleui][petbattle] hide; show")
-
-		local movestance = function()
+		RegisterStateDriver(self, "visibility", States[K.Class] or "hide")
+		local function movestance()
 			if not InCombatLockdown() then
 				if C["ActionBar"].StanceBarHorizontal == true then
 					StanceButton1:SetPoint("BOTTOMLEFT", ShiftHolder, "BOTTOMLEFT", 0, 0)

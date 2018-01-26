@@ -1,12 +1,10 @@
 local K, C, L = unpack(select(2, ...))
-
 local Module = K:NewModule("Honor_DataBar", "AceEvent-3.0")
 
---Cache global variables
---Lua functions
+-- Sourced: ElvUI (Elvz)
+
 local _G = _G
 local format = format
---WoW API / Variables
 local CanPrestige = CanPrestige
 local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
 local ToggleTalentFrame = ToggleTalentFrame
@@ -20,9 +18,6 @@ local PVP_HONOR_PRESTIGE_AVAILABLE = PVP_HONOR_PRESTIGE_AVAILABLE
 local HONOR = HONOR
 local MAX_HONOR_LEVEL = MAX_HONOR_LEVEL
 local InCombatLockdown = InCombatLockdown
-
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: GameTooltip, RightChatPanel, CreateFrame
 
 local HonorFont = K.GetFont(C["DataBars"].Font)
 local HonorTexture = K.GetTexture(C["DataBars"].Texture)
@@ -74,6 +69,10 @@ end
 
 local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE..HEADER_COLON
 function Module:HonorBar_OnEnter()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+	end
+
 	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 
@@ -85,7 +84,7 @@ function Module:HonorBar_OnEnter()
 
 	GameTooltip:AddLine(HONOR)
 
-	GameTooltip:AddDoubleLine("Current Level:", level, 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Current_Level, level, 1, 1, 1)
 	GameTooltip:AddDoubleLine(PRESTIGE_TEXT, prestigeLevel, 1, 1, 1)
 	GameTooltip:AddLine(" ")
 
@@ -94,14 +93,20 @@ function Module:HonorBar_OnEnter()
 	elseif (level == levelmax) then
 		GameTooltip:AddLine(MAX_HONOR_LEVEL)
 	else
-		GameTooltip:AddDoubleLine("Honor XP:", format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
-		GameTooltip:AddDoubleLine("Honor Remaining:", format(" %d (%d%% - %d ".."Bars"..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
 	end
 	GameTooltip:Show()
 end
 
 function Module:HonorBar_OnLeave()
-	GameTooltip:Hide()
+	if C["DataBars"].MouseOver then
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+	end
+
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+	end
 end
 
 function Module:HonorBar_OnClick()
@@ -112,6 +117,12 @@ function Module:UpdateHonorDimensions()
 	self.HonorBar:SetSize(Minimap:GetWidth() or C["DataBars"].HonorWidth, C["DataBars"].HonorHeight)
 	self.HonorBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.HonorBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+
+	if C["DataBars"].MouseOver then
+		self.HonorBar:SetAlpha(0)
+	else
+		self.HonorBar:SetAlpha(1)
+	end
 end
 
 function Module:PLAYER_LEVEL_UP(level)
@@ -128,6 +139,7 @@ function Module:EnableDisable_HonorBar()
 	if C["DataBars"].HonorEnable then
 		self:RegisterEvent("HONOR_XP_UPDATE", "UpdateHonor")
 		self:RegisterEvent("HONOR_PRESTIGE_UPDATE", "UpdateHonor")
+		self:RegisterEvent("HONOR_LEVEL_UPDATE", "UpdateHonor")
 		self:UpdateHonor()
 	else
 		self:UnregisterEvent("HONOR_XP_UPDATE")
@@ -143,7 +155,7 @@ function Module:OnEnable()
 		AnchorY = -42
 	end
 
-	self.HonorBar = CreateFrame("Button", "KkthnxUI_HonorBar", UIParent)
+	self.HonorBar = CreateFrame("Button", "KkthnxUI_HonorBar", K.PetBattleHider)
 	self.HonorBar:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 	self.HonorBar:SetScript("OnEnter", Module.HonorBar_OnEnter)
 	self.HonorBar:SetScript("OnLeave", Module.HonorBar_OnLeave)

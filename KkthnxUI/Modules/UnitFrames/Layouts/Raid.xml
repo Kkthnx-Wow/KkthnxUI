@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- MT/MTT/MTTT Template -->
-   <Button name="oUF_Kkthnx_Raid_MT" inherits="SecureUnitButtonTemplate" virtual="true">
+   <Button name="oUF_Raid_MT" inherits="SecureUnitButtonTemplate" virtual="true">
       <Frames>
          <Button name="$parentTarget" inherits="SecureUnitButtonTemplate">
             <Anchors>
@@ -20,7 +20,7 @@
          </Button>
       </Frames>
    </Button>
-   <Button name="oUF_Kkthnx_Raid_MTTT" inherits="SecureUnitButtonTemplate" virtual="true">
+   <Button name="oUF_Raid_MTTT" inherits="SecureUnitButtonTemplate" virtual="true">
       <Frames>
          <Button name="$parentTarget" inherits="SecureUnitButtonTemplate">
             <Anchors>

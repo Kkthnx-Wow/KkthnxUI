@@ -54,7 +54,7 @@ function Movers:RestoreDefaults(button)
 		Frame:SetPoint(Anchor1, Parent, Anchor2, X, Y)
 
 		Frame.DragInfo:ClearAllPoints()
-		Frame.DragInfo:SetAllPoints(Frame)
+		Frame.DragInfo:SetPoint("CENTER", Frame)
 
 		-- Delete Saved Variable
 		SavedVariables[FrameName] = nil
@@ -75,6 +75,7 @@ function Movers:OnDragStart()
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
+	self.moving = true
 	self:StartMoving()
 end
 
@@ -82,6 +83,7 @@ function Movers:OnDragStop()
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
+	self.moving = nil
 	self:StopMovingOrSizing()
 
 	local Data = KkthnxUIData[Realm][Name].Movers
@@ -101,7 +103,7 @@ end
 
 function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
-	self.DragInfo:SetAllPoints(self)
+	self.DragInfo:SetPoint("CENTER", self)
 	self.DragInfo:SetFrameLevel(self:GetFrameLevel() + 1)
 	self.DragInfo:SetWidth(self:GetWidth())
 	self.DragInfo:SetHeight(self:GetHeight())
@@ -113,9 +115,11 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
 	self.DragInfo:Hide()
 	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
+
 	self.DragInfo:SetScript("OnEnter", function(self)
 		self:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.8)
 	end)
+
 	self.DragInfo:SetScript("OnLeave", function(self)
 		self:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
 	end)
@@ -130,7 +134,7 @@ function Movers:CreateDragInfo()
 	self.DragInfo.Parent = self.DragInfo:GetParent()
 end
 
-function Movers:StartOrStopMoving(width, height)
+function Movers:StartOrStopMoving()
 	if InCombatLockdown() then
 		return K.Print(ERR_NOT_IN_COMBAT)
 	end
@@ -168,11 +172,11 @@ function Movers:StartOrStopMoving(width, height)
 				Frame.DragInfo:SetFrameStrata("HIGH")
 			end
 
-			if Frame.DragInfo:GetHeight() < 14 then
+			if Frame.DragInfo:GetHeight() < 12 then
 				Frame.DragInfo:ClearAllPoints()
-				Frame.DragInfo:SetWidth(width or Frame:GetWidth())
-				Frame.DragInfo:SetHeight(height or Frame:GetHeight())
-				Frame.DragInfo:SetPoint("TOP", Frame)
+				Frame.DragInfo:SetWidth(Frame:GetWidth())
+				Frame.DragInfo:SetHeight(12)
+				Frame.DragInfo:SetPoint("CENTER", Frame)
 			end
 		else
 			if Frame.unit then
@@ -188,7 +192,7 @@ function Movers:StartOrStopMoving(width, height)
 
 				if Frame.DragInfo.CurrentHeight then
 					Frame.DragInfo:ClearAllPoints()
-					Frame.DragInfo:SetAllPoints(Frame)
+					Frame.DragInfo:SetPoint("CENTER", Frame)
 				end
 			end
 		end

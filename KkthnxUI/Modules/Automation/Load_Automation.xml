@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui
-    xmlns="http://www.blizzard.com/wow/ui/">
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Automation -->
-    <Script file="AutoDecline.lua" />
-    <Script file="AutoInvite.lua" />
-    <Script file="AutoRelease.lua" />
-    <Script file="AutoRepair.lua" />
-    <Script file="AutoResurrect.lua" />
-    <Script file="AutoScreenshot.lua" />
-    <Script file="AutoVendor.lua" />
+    <Script file="AutoBlockMovies.lua"/>
+    <Script file="AutoDecline.lua"/>
+    <Script file="AutoInvite.lua"/>
+    <Script file="AutoRelease.lua"/>
+    <Script file="AutoResurrect.lua"/>
+    <Script file="AutoScreenshot.lua"/>
 </Ui>

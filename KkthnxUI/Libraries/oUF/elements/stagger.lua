@@ -51,7 +51,7 @@ local STAGGER_RED_INDEX = STAGGER_RED_INDEX or 3
 
 local function UpdateColor(element, cur, max)
 	local colors = element.__owner.colors.power[BREWMASTER_POWER_BAR_NAME]
-	local perc = cur / max
+	local perc = max > 0 and (cur / max) or 0
 
 	local t
 	if(perc >= STAGGER_RED_TRANSITION) then
@@ -93,7 +93,7 @@ local function Update(self, event, unit)
 
 	-- Blizzard code has nil checks for UnitStagger return
 	local cur = UnitStagger('player') or 0
-	local max = UnitHealthMax('player')
+	local max = UnitHealthMax('player') or 0
 
 	element:SetMinMaxValues(0, max)
 	element:SetValue(cur)

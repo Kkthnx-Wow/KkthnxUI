@@ -144,7 +144,7 @@ local function anchorSlots(self)
 end
 
 local function createSlot(id)
-	local iconsize = iconSize-2
+	local iconsize = iconSize - 4
 	local frame = CreateFrame("Button", "KkthnxLootSlot"..id, lootFrame)
 	frame:SetPoint("LEFT", 8, 0)
 	frame:SetPoint("RIGHT", -8, 0)
@@ -162,13 +162,12 @@ local function createSlot(id)
 	iconFrame:SetHeight(iconsize)
 	iconFrame:SetWidth(iconsize)
 	iconFrame:SetPoint("RIGHT", frame)
-	-- iconFrame:SetTemplate("Default")
-	K.CreateBorder(iconFrame, 5)
+	iconFrame:SetTemplate("Transparent", true)
 	frame.iconFrame = iconFrame
 
 	local icon = iconFrame:CreateTexture(nil, "ARTWORK")
 	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	icon:SetInside()
+	icon:SetAllPoints()
 	frame.icon = icon
 
 	local count = iconFrame:CreateFontString(nil, "OVERLAY")
@@ -195,7 +194,7 @@ local function createSlot(id)
 	frame.drop = drop
 
 	local questTexture = iconFrame:CreateTexture(nil, "OVERLAY")
-	questTexture:SetInside()
+	questTexture:SetAllPoints()
 	questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
 	questTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	frame.questTexture = questTexture
@@ -238,7 +237,7 @@ function LM:LOOT_OPENED(_, autoloot)
 	local items = GetNumLootItems()
 
 	if (IsFishingLoot()) then
-		lootFrame.title:SetText("Fishy Loot")
+		lootFrame.title:SetText(L["Loot"].Fishy_Loot)
 	elseif (not UnitIsFriend("player", "target") and UnitIsDead"target") then
 		lootFrame.title:SetText(UnitName("target"))
 	else
@@ -316,11 +315,11 @@ function LM:LOOT_OPENED(_, autoloot)
 		local slot = lootFrame.slots[1] or createSlot(1)
 		local color = ITEM_QUALITY_COLORS[0]
 
-		slot.name:SetText("Empty Slot")
+		slot.name:SetText(L["Loot"].Empty_Slot)
 		if color then
 			slot.name:SetTextColor(color.r, color.g, color.b)
 		end
-		slot.icon:SetTexture[[Interface\Icons\INV_Misc_Herb_AncientLichen]]
+		slot.icon:SetTexture([[Interface\Icons\INV_Misc_Herb_AncientLichen]])
 
 		w = max(w, slot.name:GetStringWidth())
 

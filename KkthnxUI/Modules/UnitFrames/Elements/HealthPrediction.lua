@@ -39,6 +39,7 @@ function K.CreateHealthPrediction(self)
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
 		maxOverflow = 1,
+		frequentUpdates = self.Health.frequentUpdates,
 		PostUpdate = K.UpdateHealComm
 	}
 	HealthPrediction.parent = self
@@ -74,5 +75,5 @@ function K.UpdateHealComm(self, unit, myIncomingHeal, allIncomingHeal, totalAbso
 	K.UpdateFillBar(frame, previousTexture, self.healAbsorbBar, healAbsorb, true)
 	previousTexture = K.UpdateFillBar(frame, previousTexture, self.myBar, myIncomingHeal)
 	previousTexture = K.UpdateFillBar(frame, previousTexture, self.otherBar, allIncomingHeal)
-	previousTexture = K.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
+	K.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
 end

@@ -11,35 +11,7 @@ local DebuffTypeColor = _G.DebuffTypeColor
 local GetTime = _G.GetTime
 local UnitAura = _G.UnitAura
 local UnitIsFriend = _G.UnitIsFriend
-
-local ImportantDebuffs = {
-	[6788] = K.Class == "PRIEST", -- Weakened Soul
-	[25771] = K.Class == "PALADIN", -- Forbearance
-	[212570] = true, -- Surrendered Soul
-}
-
-local function CustomTargetBuffFilter(...) -- Buffs
-	local _, unit, aura, _, _, _, _, _, _, _, caster, _, _, _, _, _, casterIsPlayer = ...
-	if(UnitIsFriend(unit, "player")) then
-		return aura.isPlayer or caster == "pet" or not casterIsPlayer
-	else
-		return true
-	end
-end
-
-local function CustomTargetDebuffFilter(...) -- Debuffs
-	local _, unit, aura, _, _, _, _, _, _, _, caster, _, _, spellID, _, isBossDebuff, casterIsPlayer = ...
-	if (not UnitIsFriend(unit, "player")) then
-		return aura.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or ImportantDebuffs[spellID]
-	else
-		return true
-	end
-end
-
-local function CustomPartyDebuffFilter(...) -- Debuffs
-	local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
-	return id == 160029
-end
+local UnitCanAttack = _G.UnitCanAttack
 
 local function CreateAuraTimer(self, elapsed)
 	self.expiration = self.expiration - elapsed
@@ -77,7 +49,8 @@ local function PostCreateAura(self, button)
 	button.cd.noOCC = true
 	button.cd.noCooldownCount = true
 	button.cd:SetReverse(true)
-	button.cd:SetInside(button, 1, 1)
+	button.cd:SetPoint("TOPLEFT", 1, -1)
+	button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
 	button.cd:SetHideCountdownNumbers(true)
 
 	button.icon:SetAllPoints(button)
@@ -112,16 +85,16 @@ local function PreSetPosition(self)
 	return 1, self.createdIcons
 end
 
-local function PostUpdateAura(self, unit, button, index, offset, filter, isDebuff, duration, timeLeft)
-	local name, _, _, _, dtype, duration, expiration, _, isStealable = UnitAura(unit, index, button.filter)
-	local isFriend = UnitIsFriend("player", unit)
+local function PostUpdateAura(self, unit, button, index)
+	local name, _, _, _, debuffType, duration, expiration, _, isStealable = UnitAura(unit, index, button.filter)
+	local isFriend = UnitIsFriend("player", unit) and not UnitCanAttack("player", unit)
 
 	if button.isDebuff then
 		if (not isFriend and button.caster ~= "player" and button.caster ~= "vehicle") then
 			button:SetBackdropBorderColor(0.9, 0.1, 0.1)
 			button.icon:SetDesaturated((unit and not unit:find("arena%d")) and true or false)
 		else
-			local color = DebuffTypeColor[dtype] or DebuffTypeColor.none
+			local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
 			if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
 				button:SetBackdropBorderColor(0.05, 0.85, 0.94)
 			else
@@ -189,21 +162,18 @@ function K.CreateAuras(self, unit)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 21
 			Buffs.num = 15
-			Buffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerTargetBuffs
 
 			Debuffs:SetHeight(28)
 			Debuffs:SetWidth(self.Health:GetWidth())
 			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
 			Debuffs.size = 28
 			Debuffs.num = 12
-			Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerTargetDebuffs
 
 			Buffs.spacing = 6
 			Buffs.initialAnchor = "TOPLEFT"
 			Buffs["growth-y"] = "DOWN"
 			Buffs["growth-x"] = "RIGHT"
-			Buffs.CustomFilter = CustomTargetBuffFilter
-			Buffs.PreSetPosition = PreSetPosition
+			Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 			Buffs.PostCreateIcon = PostCreateAura
 			Buffs.PostUpdateIcon = PostUpdateAura
 			self.Buffs = Buffs
@@ -212,8 +182,67 @@ function K.CreateAuras(self, unit)
 			Debuffs.initialAnchor = "TOPLEFT"
 			Debuffs["growth-y"] = "UP"
 			Debuffs["growth-x"] = "RIGHT"
-			Debuffs.CustomFilter = CustomTargetDebuffFilter
-			Debuffs.PreSetPosition = PreSetPosition
+			Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+			Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
+			Debuffs.PostCreateIcon = PostCreateAura
+			Debuffs.PostUpdateIcon = PostUpdateAura
+			self.Debuffs = Debuffs
+		else
+			local Auras = CreateFrame("Frame", self:GetName().."Auras", self)
+			Auras.gap = true
+			Auras.size = 21
+			Auras:SetHeight(21)
+			Auras:SetWidth(130)
+			Auras:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+			Auras.initialAnchor = "TOPLEFT"
+			Auras["growth-x"] = "RIGHT"
+			Auras["growth-y"] = "DOWN"
+			Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+			Auras.numBuffs = 15
+			Auras.numDebuffs = 12
+			Auras.spacing = 6
+			Auras.showStealableBuffs = true
+			function Auras.PostUpdateGapIcon(self, unit, icon, visibleBuffs)
+				icon:Hide()
+			end
+			Auras.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
+			Auras.PostCreateIcon = PostCreateAura
+			Auras.PostUpdateIcon = PostUpdateAura
+			self.Auras = Auras
+		end
+	end
+
+	if (unit == "focus") then
+		if C["Unitframe"].DebuffsOnTop then
+			local Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
+			local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+
+			Buffs:SetHeight(21)
+			Buffs:SetWidth(self.Power:GetWidth())
+			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+			Buffs.size = 21
+			Buffs.num = 15
+
+			Debuffs:SetHeight(28)
+			Debuffs:SetWidth(self.Health:GetWidth())
+			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
+			Debuffs.size = 28
+			Debuffs.num = 12
+
+			Buffs.spacing = 6
+			Buffs.initialAnchor = "TOPLEFT"
+			Buffs["growth-y"] = "DOWN"
+			Buffs["growth-x"] = "RIGHT"
+			Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
+			Buffs.PostCreateIcon = PostCreateAura
+			Buffs.PostUpdateIcon = PostUpdateAura
+			self.Buffs = Buffs
+
+			Debuffs.spacing = 6
+			Debuffs.initialAnchor = "TOPLEFT"
+			Debuffs["growth-y"] = "UP"
+			Debuffs["growth-x"] = "RIGHT"
+			Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 			Debuffs.PostCreateIcon = PostCreateAura
 			Debuffs.PostUpdateIcon = PostUpdateAura
 			self.Debuffs = Debuffs
@@ -229,13 +258,12 @@ function K.CreateAuras(self, unit)
 			Auras["growth-y"] = "DOWN"
 			Auras.numBuffs = 15
 			Auras.numDebuffs = 12
-			Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerAuras
 			Auras.spacing = 6
 			Auras.showStealableBuffs = true
 			Auras.PostUpdateGapIcon = function(self, unit, icon, visibleBuffs)
 				icon:Hide()
 			end
-			Auras.PreSetPosition = PreSetPosition
+			Auras.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 			Auras.PostCreateIcon = PostCreateAura
 			Auras.PostUpdateIcon = PostUpdateAura
 			self.Auras = Auras
@@ -247,23 +275,23 @@ function K.CreateAuras(self, unit)
 		local Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 		local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 
-		Buffs:SetHeight(19)
+		Buffs:SetHeight(20)
 		Buffs:SetWidth(self:GetWidth())
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs.size = 19
+		Buffs.size = 20
 		Buffs.num = 4
 
-		Debuffs:SetHeight(30)
+		Debuffs:SetHeight(28)
 		Debuffs:SetWidth(self.Power:GetWidth())
 		Debuffs:SetPoint("LEFT", self, "RIGHT", 3, 0)
-		Debuffs.size = 30
-		Debuffs.num = 4
+		Debuffs.size = 28
+		Debuffs.num = 3
 
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "TOPLEFT"
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
-		Buffs.PreSetPosition = PreSetPosition
+		Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 		self.Buffs = Buffs
@@ -272,8 +300,7 @@ function K.CreateAuras(self, unit)
 		Debuffs.initialAnchor = "TOPLEFT"
 		Debuffs["growth-y"] = "UP"
 		Debuffs["growth-x"] = "RIGHT"
-		Debuffs.PreSetPosition = PreSetPosition
-		Debuffs.CustomFilter = CustomPartyDebuffFilter
+		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
@@ -292,7 +319,7 @@ function K.CreateAuras(self, unit)
 		Debuffs.initialAnchor = "LEFT"
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "RIGHT"
-		Debuffs.PreSetPosition = PreSetPosition
+		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
@@ -311,7 +338,7 @@ function K.CreateAuras(self, unit)
 		Debuffs.initialAnchor = "RIGHT"
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "LEFT"
-		Debuffs.PreSetPosition = PreSetPosition
+		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
@@ -327,20 +354,18 @@ function K.CreateAuras(self, unit)
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		Buffs.size = 21
 		Buffs.num = 5
-		Buffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerBossBuffs
 
 		Debuffs:SetHeight(26)
 		Debuffs:SetWidth(self.Health:GetWidth())
 		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
 		Debuffs.size = 26
 		Debuffs.num = 10
-		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerBossDebuffs
 
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "LEFT"
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
-		Buffs.PreSetPosition = PreSetPosition
+		Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 		self.Buffs = Buffs
@@ -349,7 +374,8 @@ function K.CreateAuras(self, unit)
 		Debuffs.initialAnchor = "RIGHT"
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "LEFT"
-		Debuffs.PreSetPosition = PreSetPosition
+		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
+		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs
@@ -375,7 +401,7 @@ function K.CreateAuras(self, unit)
 		Buffs.initialAnchor = "LEFT"
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
-		Buffs.PreSetPosition = PreSetPosition
+		Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 		self.Buffs = Buffs
@@ -384,7 +410,7 @@ function K.CreateAuras(self, unit)
 		Debuffs.initialAnchor = "RIGHT"
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "LEFT"
-		Debuffs.PreSetPosition = PreSetPosition
+		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 		self.Debuffs = Debuffs

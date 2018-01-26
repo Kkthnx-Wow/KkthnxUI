@@ -29,10 +29,12 @@ L["StaticPopups"] = {
 	Config_Reload = "One or more of the changes you have made require a ReloadUI.",
 	Delete_Grays = "|cffff2020WARNING!|r\n\nYou are about to delete all your gray items. You will not receive any currency for this. Do you want to continue?\n\nThe net worth of items being deleted displayed below.",
 	Disband_Group = "Are you sure you want to disband the group?",
+	Fix_Actionbars = "There seems to be an issue with your actionbars. Would you like to attempt to fix the issue?",
 	KkthnxUI_Update = "KkthnxUI is out of date. You can download the newest version from Curse!",
 	Reset_UI = "Are you sure you want to reset all the settings on this profile?",
 	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
-	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?"
+	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?",
+	Warning_Blizzard_AddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
 }
 
 -- Commands Localization
@@ -70,13 +72,18 @@ L["Auras"] = {
 
 -- Automation Localization
 L["Automation"] = {
-	DuelCanceled_Regular = "Duel request from %s rejected.",
 	DuelCanceled_Pet = "Pet duel request from %s rejected.",
+	DuelCanceled_Regular = "Duel request from %s rejected.",
+	MovieBlocked = "You've seen this movie before, skipping it.",
 }
 
 -- Blizzard Localization
 L["Blizzard"] = {
+	Disband_Group = "Disband Group",
+	Lua_Error_Recieved = "|cFFE30000Lua error recieved. You can view the error message when you exit combat.",
 	No_Errors = "No error yet.",
+	Raid_Menu = "Raid Menu",
+	Taint_Error = "%s: %s tried to call the protected function '%s'.",
 }
 
 -- Chat Localization
@@ -116,32 +123,65 @@ L["Chat"] = {
 
 -- Configbutton Localization
 L["ConfigButton"] = {
+	AltClickl = "Alt + Left click:",
+	Config = "Toggle Config",
+	Details = "Toggle Details",
 	Functions = "Functions",
 	LeftClick = "Left click:",
-	RightClick = "Right click:",
 	MiddleClick = "Middle click:",
-	ShiftClickl = "Shift + Left click:",
-	ShiftClickr = "Shift + Right click:",
-	AltClickl = "Alt + Left click:",
 	MoveUI = "MoveUI",
 	Recount = "Toggle Recount",
-	Skada = "Toggle Skada",
-	Details = "Toggle Details",
-	Config = "Toggle Config",
+	Right_Click = "Right click:",
 	Roll = "Roll 1-100. You win!",
-	Bags = "Toggle Bags",
+	Shift_Left_Click = "Shift + Left click:",
+	Shift_Right_Click = "Shift + Right click:",
+	Skada = "Toggle Skada",
+	Toggle_Bags = "Toggle Bags",
 }
 
 -- Databars Localization
 L["Databars"] = {
+	AP = "AP:",
+	Bars = "Bars",
+	Current_Level = "Current Level:",
+	Experience = "Experience",
+	Honor_Remaining = "Honor Remaining:",
+	Honor_XP = "Honor XP:",
+	Remaining = "Remaining:",
+	Rested = "Rested:",
 	Toggle_Artifact = "<Left-Click to toggle Artifact Window>",
 	Toggle_Honor = "<Left-Click to toggle Honor Window>",
 	Toggle_Reputation = "<Left-Click to toggle Reputation Window>",
+	XP = "XP:",
 }
 
 -- Datatext Localization
-L["Datatext"] = {
-
+L["DataText"] = {
+	BaseAssault = "Bases Assaulted:",
+	BaseDefend = "Bases Defended:",
+	CallToArms = "Call to Arms",
+	CartControl = "Carts Controlled:",
+	ControlBy = "Controlled by:",
+	Damage = "Damage: ",
+	DamageDone = "Damage Done:",
+	Death = "Deaths:",
+	DemolisherDestroy = "Demolishers Destroyed:",
+	FlagCapture = "Flags Captured:",
+	FlagReturn = "Flags Returned:",
+	GateDestroy = "Gates Destroyed:",
+	GraveyardAssault = "Graveyards Assaulted:",
+	GraveyardDefend = "Graveyards Defended:",
+	Healing = "Healing: ",
+	HealingDone = "Healing Done:",
+	Honor = "Honor: ",
+	HonorableKill = "Honorable Kills:",
+	HonorGained = "Honor Gained:",
+	KillingBlow = "Killing Blows: ",
+	OrbPossession = "Orb Possessions:",
+	StatsFor = "Stats for ",
+	TowerAssault = "Towers Assaulted:",
+	TowerDefend = "Towers Defended:",
+	VictoryPts = "Victory Points:",
 }
 
 -- Inventory Localization
@@ -151,15 +191,21 @@ L["Inventory"] = {
 	Buttons_Artifact = "Right click to use Artifact Power item in bag",
 	Buttons_Sort = "Left Click: Sort \nRight Click: Blizzard Sort",
 	Buttons_Stack = "Stack Items",
+	Cant_Buy_Slot = "Can't buy anymore slots!",
+	NotEnoughMoney = "You don't have enough money to repair!",
+	Purchase_Slot = "Purchase Bags Slot",
+	RepairCost = "Your items have been repaired for",
 	Right_Click_Search = "Right-click to search",
 	Shift_Move = "Hold Shift + Drag",
 	Show_Bags = "Toggle Bags",
-	TrashList = "\n\nTrash List:\n"
+	SoldTrash = "Your vendor trash has been sold and you earned",
+	TrashList = "\n\nTrash List:\n",
 }
 
 -- Loot Localization
 L["Loot"] = {
-
+	Empty_Slot = "Empty Slot",
+	Fishy_Loot = "Fishy Loot",
 }
 
 -- Maps Localization

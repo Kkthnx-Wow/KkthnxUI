@@ -52,20 +52,49 @@ local UnitReaction = _G.UnitReaction
 local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
 local DEFAULT_AFK_MESSAGE = _G.DEFAULT_AFK_MESSAGE
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: SPELL_POWER_MANA, UNKNOWN, Hex, Role, _TAGS, r, g, b, u
-
-local GHOST = GetSpellInfo(8326)
-if GetLocale() == "deDE" then
-	GHOST = "Geist"
-end
+local GHOST = GetLocale() == "deDE" and "Geist" or GetSpellInfo(8326)
 
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
 	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
-		name = UNITNAME_SUMMON_TITLE17:format(_G.UnitName("player"))
+		name = UNITNAME_SUMMON_TITLE17:format(UnitName("player"))
 	else
 		return name, realm
+	end
+end
+
+local function GetPvPStatus(unit)
+	local prestige = UnitPrestige(unit)
+	local status
+	local color
+
+	if (UnitIsPVPFreeForAll(unit)) then
+		status = "FFA"
+		color = ORANGE_FONT_COLOR_CODE
+	elseif (UnitIsPVP(unit)) then
+		status = "PvP"
+		color = RED_FONT_COLOR_CODE
+	end
+
+	if (status) then
+		if (prestige and prestige > 0) then
+			status = format("%s %d", status, prestige)
+		end
+
+		return format("%s%s|r", color, status)
+	end
+end
+
+local GetPVPTimer = GetPVPTimer
+local pvpElapsed = 0
+local function UpdatePvPTimer(self, elapsed)
+	pvpElapsed = pvpElapsed + elapsed
+	if (pvpElapsed > 0.5) then
+		pvpElapsed = 0
+		local timer = GetPVPTimer() / 1000
+		if (timer > 0 and timer < 300) then
+			self.PvP:SetText(string_format("%d:%02d", math_floor(timer / 60), timer % 60))
+		end
 	end
 end
 
@@ -96,15 +125,27 @@ oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:PvPTimer"] = "UNIT_FACTION HONOR_PRESTIGE_UPDATE"
-oUF.Tags.Methods["KkthnxUI:PvPTimer"] = function(unit)
-	if (UnitIsPVPFreeForAll(unit) or UnitIsPVP(unit)) then
-		local pvpTime = (GetPVPTimer() or 0)/1000
-		if (not IsPVPTimerRunning()) or (pvpTime < 1) or (pvpTime > 300) then --999?
-			return " "
-		end
+oUF.Tags.OnUpdateThrottle["KkthnxUI:PvPStatus"] = 1
+oUF.Tags.Methods["KkthnxUI:PvPStatus"] = GetPvPStatus
+oUF.Tags.Events["KkthnxUI:PvPStatus"] = "UNIT_FACTION HONOR_PRESTIGE_UPDATE"
+function K.CreatePvPText(self, unit)
+	self.PvP = self:CreateFontString(nil, "OVERLAY")
+	self.PvP:SetFont(C["Media"].Font, 13, "")
+	self.PvP:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
+	self.PvP:SetTextColor(0.69, 0.31, 0.31)
+	self.PvP:SetShadowOffset(K.Mult, -K.Mult)
+	self:Tag(self.PvP, "[KkthnxUI:PvPStatus]")
 
-		return K.FormatTime(math_floor(pvpTime))
+	if (unit == "player") then
+		self:HookScript("OnEnter", function()
+			if (UnitIsPVP("player")) then
+				self:SetScript("OnUpdate", UpdatePvPTimer)
+			end
+		end)
+		self:HookScript("OnLeave", function()
+			self:SetScript("OnUpdate", nil)
+			self.PvP:UpdateTag()
+		end)
 	end
 end
 
@@ -181,19 +222,16 @@ end
 
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
-	if not UnitExists(unit) then
-		return
+	if (UnitClassification(unit) == 'worldboss') then return end
+
+	local level = UnitBattlePetLevel(unit)
+	if (not level or level == 0) then
+		level = UnitEffectiveLevel(unit)
 	end
 
-	local level = UnitEffectiveLevel(unit)
-
-	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
-		return UnitBattlePetLevel(unit)
-	elseif (level > 0) then
-		return level
-	else
-		return "??"
-	end
+	if (level == UnitEffectiveLevel('player')) then return end
+	if (level < 0) then return '??' end
+	return level
 end
 
 oUF.Tags.Events["KkthnxUI:SmartLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
@@ -296,75 +334,55 @@ oUF.Tags.Methods["KkthnxUI:AFK"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:RaidRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED"
+oUF.Tags.Events["KkthnxUI:GroupRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM"
+oUF.Tags.Methods["KkthnxUI:GroupRole"] = function(unit)
+	local role = UnitGroupRolesAssigned(unit)
+	local roleString = ""
+
+	if role == "TANK" then
+		roleString = "|cff0099CCTANK|r"
+	elseif role == "HEALER" then
+		roleString = "|cff00FF00HEAL|r"
+	end
+
+	return roleString
+end
+
+oUF.Tags.Events["KkthnxUI:RaidRole"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM"
 oUF.Tags.Methods["KkthnxUI:RaidRole"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
-	local string = ""
+	local roleString = ""
 
 	if role then
 		if role == "TANK" then
-			string = "|cff0099CCT|r"
+			roleString = "|cff0099CCT|r"
 		elseif role == "HEALER" then
-			string = "|cff00FF00H|r"
+			roleString = "|cff00FF00H|r"
 		end
 
-		return string
-	end
-end
-
-oUF.Tags.Events["KkthnxUI:PartyRole"] = "PLAYER_ROLES_ASSIGNED GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:PartyRole"] = function(unit)
-	local role = UnitGroupRolesAssigned(unit)
-	local string = ""
-
-	if role == "TANK" then
-		string = " |cff0099CC"..TANK.."|r"
-	elseif role == "HEALER" then
-		string = " |cff00FF00"..HEALER.."|r"
-	end
-
-	return string
-end
-
-oUF.Tags.Events["KkthnxUI:ThreatPercent"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:ThreatPercent"] = function(unit)
-	local _, _, percent = UnitDetailedThreatSituation("player", unit)
-	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
-		return string_format("%.0f%%", percent)
-	else
-		return ""
-	end
-end
-
-oUF.Tags.Events["KkthnxUI:ThreatColor"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
-oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
-	local _, status = UnitDetailedThreatSituation("player", unit)
-	if (status) and (IsInGroup() or UnitExists("pet")) then
-		return Hex(GetThreatStatusColor(status))
-	else
-		return ""
+		return roleString
 	end
 end
 
 -- Raid Tags
 oUF.Tags.Events["KkthnxUI:RaidStatus"] = "UNIT_MAXHEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION"
 oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
-    local Offline = not UnitIsConnected(unit) and "offline"
-    if Offline then return Offline end
+	local Offline = not UnitIsConnected(unit) and "offline"
+	if Offline then return Offline end
 
-    local Dead = (UnitIsDead(unit) and "dead") or (UnitIsGhost(unit) and "ghost")
-    if Dead then return Dead end
+	local Dead = (UnitIsDead(unit) and "dead") or (UnitIsGhost(unit) and "ghost")
+	if Dead then return Dead end
 
-    local MaxHealth = UnitHealthMax(unit)
-    local CurrentHealth = UnitHealth(unit)
+	local MaxHealth = UnitHealthMax(unit)
+	local CurrentHealth = UnitHealth(unit)
 
-    if CurrentHealth == MaxHealth or CurrentHealth == 0 or MaxHealth == 0 then
-        return
-    elseif UnitIsFriend("player", unit) then
-        return "-"..K.ShortValue(MaxHealth - CurrentHealth)
-    else
-        return string.format("%.1f", CurrentHealth / MaxHealth * 100).."%"
-    end
+	if CurrentHealth == MaxHealth or CurrentHealth == 0 or MaxHealth == 0 then
+		return
+	elseif UnitIsFriend("player", unit) then
+		return "-"..K.ShortValue(MaxHealth - CurrentHealth)
+	else
+		return string.format("%.1f", CurrentHealth / MaxHealth * 100).."%"
+	end
 end
 
 -- Nameplate Tags

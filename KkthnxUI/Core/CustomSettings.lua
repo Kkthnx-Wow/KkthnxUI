@@ -1,32 +1,44 @@
 local K, C = unpack(select(2, ...))
+
 if not IsAddOnLoaded("KkthnxUI_Config") then
 	print("I could not detect KkthnxUI_Config. Please make sure it is enabled in your addon list. Stopping process...")
 	return
 end
 
-local _G = _G
-local pairs = pairs
-local CreateFrame = CreateFrame
+local playerName = UnitName("player")
+local playerRealm = GetRealmName()
 
-local UnitName = _G.UnitName
-local GetRealmName = _G.GetRealmName
+-- Fuck you nil error. Im about sick of your shit. XD
+if not KkthnxUIConfigShared then
+	KkthnxUIConfigShared = {}
+end
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
+if (not KkthnxUIConfigShared.Account) then
+	KkthnxUIConfigShared.Account = {}
+end
+
+if KkthnxUIConfigShared[playerRealm] == nil then
+	KkthnxUIConfigShared[playerRealm] = {}
+end
+
+if KkthnxUIConfigShared[playerRealm][playerName] == nil then
+	KkthnxUIConfigShared[playerRealm][playerName] = false
+end
+
+if KkthnxUIConfigShared[playerRealm][playerName] == true and not KkthnxUIConfigNotShared then
+	return
+end
+
+if KkthnxUIConfigShared[playerRealm][playerName] == false and not KkthnxUIConfigPerAccount then
+	return
+end
 
 local Settings
-
-if not KkthnxUIConfigShared then KkthnxUIConfigShared = {} end
-if KkthnxUIConfigShared[K.Realm] == nil then KkthnxUIConfigShared[K.Realm] = {} end
-if KkthnxUIConfigShared[K.Realm][K.Name] == nil then KkthnxUIConfigShared[K.Realm][K.Name] = false end
-
-if KkthnxUIConfigShared[K.Realm][K.Name] == true and not Settings then return end
-if KkthnxUIConfigShared[K.Realm][K.Name] == false and not Settings then return end
 
 if (KkthnxUIConfigPerAccount) then
 	Settings = KkthnxUIConfigShared.Account
 else
-	Settings = KkthnxUIConfigShared[K.Realm][K.Name]
+	Settings = KkthnxUIConfigShared[playerRealm][playerName]
 end
 
 for group, options in pairs(Settings) do

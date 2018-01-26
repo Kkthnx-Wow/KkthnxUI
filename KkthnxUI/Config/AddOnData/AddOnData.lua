@@ -24,7 +24,7 @@ local function SetupAddons()
 	end
 
 	-- BugSack
-	if K.IsAddOnEnabled("DBugSack") then
+	if K.IsAddOnEnabled("BugSack") then
 		K.LoadBugSackProfile()
 	end
 
@@ -77,6 +77,12 @@ SlashCmdList.SETTINGS = function(msg)
 			K.LoadDBMProfile()
 			StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."DBM profile loaded".."|r")
+		end
+	elseif msg == "bigwigs" then
+		if K.IsAddOnEnabled("BigWigs") then
+			K.LoadBigWigsProfile()
+			StaticPopup_Show("CHANGES_RL")
+			print("|cffffff00".."BigWigs profile loaded".."|r")
 		end
 	elseif msg == "pawn" then
 		if K.IsAddOnEnabled("Pawn") then

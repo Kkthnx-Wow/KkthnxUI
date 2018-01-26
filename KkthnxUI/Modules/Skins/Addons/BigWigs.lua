@@ -9,6 +9,9 @@ local UIParent = _G.UIParent
 
 -- GLOBALS: BigWigs, BigWigsLoader
 
+local BigWigsFont = K.GetFont(C["Skins"].Font)
+local BigWigsTexture = K.GetTexture(C["Skins"].Texture)
+
 local BigWigs_Skin = CreateFrame("Frame")
 BigWigs_Skin:RegisterEvent("ADDON_LOADED")
 BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
@@ -16,9 +19,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 		if BigWigsLoader then
 			BigWigsLoader.RegisterMessage("KkthnxUI", "BigWigs_FrameCreated", function(event, frame, name)
 				if name == "QueueTimer" then
-					frame:SetStatusBarTexture(C["Media"].Texture)
-					frame:SetBackdrop(K.BorderBackdrop)
-					frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+					frame:SetStatusBarTexture(BigWigsTexture)
 					frame:ClearAllPoints()
 					frame:SetPoint("TOP", "$parent", "BOTTOM", 0, -(2 and 2 or 4))
 					frame:SetHeight(16)
@@ -35,7 +36,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 
 		local CreateBG = function()
 			local BG = CreateFrame("Frame")
-			BG:CreateShadow(1)
+			BG:SetTemplate("Transparent", true)
 			return BG
 		end
 
@@ -79,12 +80,11 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 
 			bg:SetParent(bar)
 			bg:SetFrameStrata(bar:GetFrameStrata())
-			bg:SetFrameLevel(bar:GetFrameLevel() - 1)
+			bg:SetFrameLevel(bar:GetFrameLevel() + 1)
 			bg:ClearAllPoints()
-			bg:SetOutside(bar)
-			bg:CreateShadow(1)
-			bg:SetBackdrop(K.BorderBackdrop)
-			bg:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+			bg:SetPoint("TOPLEFT", bar, "TOPLEFT")
+			bg:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT")
+			bg:SetTemplate("Transparent", true)
 			bg:Show()
 			bar:Set("bigwigs:KkthnxUI:bg", bg)
 
@@ -97,10 +97,11 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 				end
 				ibg:SetParent(bar)
 				ibg:SetFrameStrata(bar:GetFrameStrata())
-				ibg:SetFrameLevel(bar:GetFrameLevel() - 1)
+				ibg:SetFrameLevel(bar:GetFrameLevel())
 				ibg:ClearAllPoints()
-				ibg:SetOutside(bar.candyBarIconFrame)
-				ibg:SetBackdropColor(0, 0, 0, 0)
+				ibg:SetPoint("TOPLEFT", bar.candyBarIconFrame, "TOPLEFT")
+				ibg:SetPoint("BOTTOMRIGHT", bar.candyBarIconFrame, "BOTTOMRIGHT")
+				ibg:SetTemplate("Transparent", true)
 				ibg:Show()
 				bar:Set("bigwigs:KkthnxUI:ibg", ibg)
 			end
@@ -108,12 +109,12 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 			bar.candyBarBar:ClearAllPoints()
 			bar.candyBarBar:SetAllPoints(bar)
 			bar.candyBarBar.SetPoint = K.Noop
-			bar.candyBarBar:SetStatusBarTexture(C["Media"].Texture)
+			bar.candyBarBar:SetStatusBarTexture(BigWigsTexture)
 
 			bar.candyBarBackground:SetTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			bar.candyBarIconFrame:ClearAllPoints()
-			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -4, 0)
+			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -6, 0)
 			bar.candyBarIconFrame:SetSize(buttonsize, buttonsize)
 			bar.candyBarIconFrame.SetWidth = K.Noop
 

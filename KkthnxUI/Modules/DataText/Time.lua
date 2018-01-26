@@ -35,10 +35,11 @@ local DataTextTime = CreateFrame("Frame")
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1, 1)
 
-local Text = Minimap:CreateFontString(nil, "OVERLAY")
-Text:SetFont(C["Media"].Font, 13, "")
-Text:SetShadowOffset(1.25, -1.25)
-Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
+DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
+DataTextTime.Text:SetFont(C["Media"].Font, 13, "")
+DataTextTime.Text:SetShadowOffset(1.25, -1.25)
+DataTextTime.Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
+DataTextTime:SetAllPoints(DataTextTime.Text)
 
 local WORLD_BOSSES_TEXT = RAID_INFO_WORLD_BOSS.."(s)"
 local APM = {TIMEMANAGER_PM, TIMEMANAGER_AM}
@@ -92,7 +93,7 @@ end
 
 local function OnLeave()
 	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
+		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
 	end
 	enteredFrame = false
 end
@@ -230,21 +231,23 @@ function Update(self, t)
 	curAmPm = AmPm
 
 	if AmPm == -1 then
-		Text:SetFormattedText(europeDisplayFormat, ValueColor, Hr, ValueColor, Min)
+		DataTextTime.Text:SetFormattedText(europeDisplayFormat, ValueColor, Hr, ValueColor, Min)
 	else
-		Text:SetFormattedText(ukDisplayFormat, ValueColor, Hr, ValueColor, Min, NameColor, APM[AmPm])
+		DataTextTime.Text:SetFormattedText(ukDisplayFormat, ValueColor, Hr, ValueColor, Min, NameColor, APM[AmPm])
 	end
-
-	self:SetAllPoints(Text)
 
 	lastPanel = self
 	int = 5
 end
 
-DataTextTime:RegisterEvent("UPDATE_INSTANCE_INFO")
-DataTextTime:SetScript("OnEvent", OnEvent)
-DataTextTime:SetScript("OnMouseDown", Click)
-DataTextTime:SetScript("OnUpdate", Update)
-DataTextTime:SetScript("OnEnter", OnEnter)
-DataTextTime:SetScript("OnLeave", OnLeave)
-Update(DataTextTime, 1)
+local function DelayDataTextTime()
+	DataTextTime:RegisterEvent("UPDATE_INSTANCE_INFO")
+	DataTextTime:SetScript("OnEvent", OnEvent)
+	DataTextTime:SetScript("OnMouseDown", Click)
+	DataTextTime:SetScript("OnUpdate", Update)
+	DataTextTime:SetScript("OnEnter", OnEnter)
+	DataTextTime:SetScript("OnLeave", OnLeave)
+	Update(DataTextTime, 1)
+end
+
+C_Timer.After(0.6, function() DelayDataTextTime() end)

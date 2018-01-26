@@ -1,4 +1,4 @@
--- $Id: LibUIDropDownMenu.lua 19 2017-07-02 13:34:55Z arith $
+-- $Id: LibUIDropDownMenu.lua 25 2017-08-31 14:21:05Z arith $
 -- ----------------------------------------------------------------------------
 -- Localized Lua globals.
 -- ----------------------------------------------------------------------------
@@ -14,8 +14,8 @@ local tinsert = table.insert
 local CreateFrame, GetCursorPosition, GetCVar, GetScreenHeight, GetScreenWidth, OpenColorPicker, PlaySound = CreateFrame, GetCursorPosition, GetCVar, GetScreenHeight, GetScreenWidth, OpenColorPicker, PlaySound
 
 -- ----------------------------------------------------------------------------
-local MAJOR_VERSION = "LibUIDropDownMenu-1.04.7030024484"
-local MINOR_VERSION = 90000 + tonumber(("$Rev: 19 $"):match("%d+"))
+local MAJOR_VERSION = "LibUIDropDownMenu-1.07.7030024931"
+local MINOR_VERSION = 90000 + tonumber(("$Rev: 25 $"):match("%d+"))
 
 local LibStub = _G.LibStub
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
@@ -223,7 +223,7 @@ local UIDropDownMenu_SecureInfo = {};
 
 --local wipe = table.wipe;
 
-function L_L_UIDropDownMenu_CreateInfo()
+function L_UIDropDownMenu_CreateInfo()
 	-- Reuse the same table to prevent memory churn
 
 --	if ( issecure() ) then
@@ -504,7 +504,7 @@ function L_UIDropDownMenu_AddButton(info, level)
 	end
 
 
-	if not info.notCheckable then 
+	if not info.notCheckable then
 		if ( info.disabled ) then
 			_G[listFrameName.."Button"..index.."Check"]:SetDesaturated(true);
 			_G[listFrameName.."Button"..index.."Check"]:SetAlpha(0.5);
@@ -544,7 +544,7 @@ function L_UIDropDownMenu_AddButton(info, level)
 	else
 		_G[listFrameName.."Button"..index.."Check"]:Hide();
 		_G[listFrameName.."Button"..index.."UnCheck"]:Hide();
-	end	
+	end
 	button.checked = info.checked;
 
 	-- If has a colorswatch, show it and vertex color it
@@ -621,7 +621,7 @@ end
 function L_UIDropDownMenu_Refresh(frame, useValue, dropdownLevel)
 	local button, checked, checkImage, uncheckImage, normalText, width;
 	local maxWidth = 0;
-	local somethingChecked = nil; 
+	local somethingChecked = nil;
 	if ( not dropdownLevel ) then
 		dropdownLevel = L_UIDROPDOWNMENU_MENU_LEVEL;
 	end
@@ -822,7 +822,8 @@ function L_UIDropDownMenuButton_OnClick(self)
 	end
 
 	if ( playSound ) then
-		PlaySound(PlaySoundKitID and "UChatScrollButton" or SOUNDKIT.U_CHAT_SCROLL_BUTTON); 
+		-- PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+		PlaySound(PlaySoundKitID and "uchatscrollbutton" or SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 	end
 end
 

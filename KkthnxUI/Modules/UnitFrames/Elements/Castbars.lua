@@ -292,277 +292,96 @@ local function CustomTimeText(self, duration)
 	end
 end
 
--- Create CastBars
 function K.CreateCastBar(self, unit)
-	if C["Unitframe"].Castbars then
-		if unit == "player" then
-			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			CastBar:SetStatusBarTexture(CastbarTexture)
-			CastBar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
-			CastBar:SetPoint(C.Position.UnitFrames.PlayerCastbar[1], C.Position.UnitFrames.PlayerCastbar[2], C.Position.UnitFrames.PlayerCastbar[3], C.Position.UnitFrames.PlayerCastbar[4], C.Position.UnitFrames.PlayerCastbar[5])
-			CastBar:SetClampedToScreen(true)
+	local castbar = CreateFrame("StatusBar", "$parentCastbar", self)
+	castbar:SetStatusBarTexture(CastbarTexture)
+	castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
+	castbar:SetClampedToScreen(true)
+	castbar:SetTemplate("Transparent", true)
 
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			CastBar.Spark:SetTexture(C["Media"].Spark)
-			CastBar.Spark:SetBlendMode("ADD")
+	local spark = castbar:CreateTexture(nil, "OVERLAY")
+	spark:SetTexture(C["Media"].Spark)
+	spark:SetBlendMode("ADD")
+	castbar.Spark = spark
 
-			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFontObject(CastbarFont)
-			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
-			CastBar.Time:SetHeight(C["Media"].FontSize)
-			CastBar.Time:SetTextColor(1, 1, 1)
-			CastBar.Time:SetJustifyH("RIGHT")
+	local shield = castbar:CreateTexture(nil, "OVERLAY")
+	shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
+	shield:SetPoint("LEFT", castbar, "RIGHT", -4, 12)
+	castbar.Shield = shield
 
-			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFontObject(CastbarFont)
-			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
-			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
-			CastBar.Text:SetHeight(C["Media"].FontSize)
-			CastBar.Text:SetTextColor(1, 1, 1)
-			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar:SetTemplate("Transparent", true)
-
-			if (C["Unitframe"].CastbarIcon) then
-				CastBar.Button = CreateFrame("Frame", nil, CastBar)
-				CastBar.Button:SetSize(26, 26)
-
-				CastBar.Button:SetTemplate("Transparent")
-
-				CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
-				CastBar.Icon:SetPoint("RIGHT", CastBar, "LEFT", -6, 0)
-				CastBar.Icon:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
-				CastBar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-				CastBar.Button:SetAllPoints(CastBar.Icon)
-			end
-
-			if (C["Unitframe"].CastbarLatency) then
-				CastBar.SafeZone = CastBar:CreateTexture(nil, "ARTWORK")
-				CastBar.SafeZone:SetTexture(C["Media"].Blank)
-				CastBar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
-				CastBar.Latency = CastBar:CreateFontString(nil, "OVERLAY")
-				CastBar.Latency:SetFontObject(UnitframeFont)
-				CastBar.Latency:SetTextColor(1, 1, 1)
-				CastBar.Latency:SetPoint("TOPRIGHT", CastBar.Time, "BOTTOMRIGHT", 0, 0)
-				CastBar.Latency:SetJustifyH("RIGHT")
-
-				self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED", function(self, event, caster)
-					if (caster == "player" or caster == "vehicle") then
-						CastBar.castSent = GetTime()
-					end
-				end)
-			end
-
-			CastBar.CustomDelayText = CustomCastDelayText
-			CastBar.CustomTimeText = CustomTimeText
-			CastBar.PostCastStart = PostCastStart
-			CastBar.PostChannelStart = PostCastStart
-			CastBar.PostCastStop = PostCastStop
-			CastBar.PostChannelStop = PostCastStop
-			CastBar.PostCastFailed = PostCastFailed
-			CastBar.PostCastInterrupted = PostCastFailed
-			CastBar.PostChannelUpdate = PostChannelUpdate
-			CastBar.PostCastInterruptible = PostCastInterruptible
-			CastBar.PostCastNotInterruptible = PostCastNotInterruptible
-
-			CastBar.timeToHold = 0.4
-
-			Movers:RegisterFrame(CastBar)
-
-			-- Set to castbar.Icon
-			self.Castbar = CastBar
-			self.Castbar.Icon = CastBar.Icon
-
-			return self.Castbar
-		end
-
-		if unit == "target" then
-			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			CastBar:SetStatusBarTexture(CastbarTexture)
-			CastBar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
-			CastBar:SetPoint(C.Position.UnitFrames.TargetCastbar[1], C.Position.UnitFrames.TargetCastbar[2], C.Position.UnitFrames.TargetCastbar[3], C.Position.UnitFrames.TargetCastbar[4], C.Position.UnitFrames.TargetCastbar[5])
-			CastBar:SetClampedToScreen(true)
-
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			CastBar.Spark:SetTexture(C["Media"].Spark)
-			CastBar.Spark:SetBlendMode("ADD")
-
-			CastBar.Shield = CastBar:CreateTexture(nil, "OVERLAY")
-			CastBar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
-			CastBar.Shield:SetPoint("LEFT", CastBar, "RIGHT", -4, 12)
-
-			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFontObject(CastbarFont)
-			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
-			CastBar.Time:SetHeight(C["Media"].FontSize)
-			CastBar.Time:SetTextColor(1, 1, 1)
-			CastBar.Time:SetJustifyH("RIGHT")
-
-			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFontObject(CastbarFont)
-			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
-			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
-			CastBar.Text:SetHeight(C["Media"].FontSize)
-			CastBar.Text:SetTextColor(1, 1, 1)
-			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar:SetTemplate("Transparent", true)
-
-			if (C["Unitframe"].CastbarIcon) then
-				CastBar.Button = CreateFrame("Frame", nil, CastBar)
-				CastBar.Button:SetSize(26, 26)
-				CastBar.Button:SetTemplate("Transparent")
-
-				CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
-				CastBar.Icon:SetPoint("RIGHT", CastBar, "LEFT", -6, 0)
-				CastBar.Icon:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
-				CastBar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-				CastBar.Button:SetAllPoints(CastBar.Icon)
-			end
-
-			CastBar.CustomDelayText = CustomCastDelayText
-			CastBar.CustomTimeText = CustomTimeText
-			CastBar.PostCastStart = PostCastStart
-			CastBar.PostChannelStart = PostCastStart
-			CastBar.PostCastStop = PostCastStop
-			CastBar.PostChannelStop = PostCastStop
-			CastBar.PostCastFailed = PostCastFailed
-			CastBar.PostCastInterrupted = PostCastFailed
-			CastBar.PostChannelUpdate = PostChannelUpdate
-			CastBar.PostCastInterruptible = PostCastInterruptible
-			CastBar.PostCastNotInterruptible = PostCastNotInterruptible
-
-			CastBar.timeToHold = 0.4
-
-			Movers:RegisterFrame(CastBar)
-
-			-- Set to castbar.Icon
-			self.Castbar = CastBar
-			self.Castbar.Icon = CastBar.Icon
-
-			return self.Castbar
-		end
-
-		if unit == "focus" then
-			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			CastBar:SetPoint("LEFT", 4, 0)
-			CastBar:SetPoint("RIGHT", -30, 0)
-			CastBar:SetPoint("TOP", 0, 60)
-			CastBar:SetHeight(18)
-			CastBar:SetStatusBarTexture(CastbarTexture)
-			CastBar:SetClampedToScreen(true)
-
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			CastBar.Spark:SetTexture(C["Media"].Spark)
-			CastBar.Spark:SetBlendMode("ADD")
-
-			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFontObject(CastbarFont)
-			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
-			CastBar.Time:SetHeight(C["Media"].FontSize)
-			CastBar.Time:SetTextColor(1, 1, 1)
-			CastBar.Time:SetJustifyH("RIGHT")
-
-			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFontObject(CastbarFont)
-			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
-			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
-			CastBar.Text:SetHeight(C["Media"].FontSize)
-			CastBar.Text:SetTextColor(1, 1, 1)
-			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar.Button = CreateFrame("Frame", nil, CastBar)
-			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
-			CastBar.Button:SetPoint("LEFT", CastBar, "RIGHT", 8, 0)
-
-			CastBar:SetTemplate("Transparent", true)
-			CastBar.Button:SetTemplate("Transparent")
-
-			CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
-			CastBar.Icon:SetAllPoints()
-			CastBar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-			CastBar.CustomDelayText = CustomCastDelayText
-			CastBar.CustomTimeText = CustomTimeText
-			CastBar.PostCastStart = PostCastStart
-			CastBar.PostChannelStart = PostCastStart
-			CastBar.PostCastStop = PostCastStop
-			CastBar.PostChannelStop = PostCastStop
-			CastBar.PostCastFailed = PostCastFailed
-			CastBar.PostCastInterrupted = PostCastFailed
-			CastBar.PostChannelUpdate = PostChannelUpdate
-			CastBar.PostCastInterruptible = PostCastInterruptible
-			CastBar.PostCastNotInterruptible = PostCastNotInterruptible
-
-			CastBar.timeToHold = 0.4
-
-			-- Set to castbar.Icon
-			self.Castbar = CastBar
-			self.Castbar.Icon = CastBar.Icon
-
-			return self.Castbar
-		end
-
-		if unit == "boss" then
-			local CastBar = CreateFrame("StatusBar", "$parentCastbar", self)
-			CastBar:SetPoint("LEFT", 4, 0)
-			CastBar:SetPoint("RIGHT", -4, 0)
-			CastBar:SetPoint("TOP", 0, 20)
-			CastBar:SetHeight(18)
-			CastBar:SetStatusBarTexture(CastbarTexture)
-			CastBar:SetClampedToScreen(true)
-
-			CastBar.Spark = CastBar:CreateTexture(nil, "OVERLAY")
-			CastBar.Spark:SetTexture(C["Media"].Spark)
-			CastBar.Spark:SetBlendMode("ADD")
-
-			CastBar.Time = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Time:SetFontObject(CastbarFont)
-			CastBar.Time:SetPoint("RIGHT", CastBar, "RIGHT", -4, 0)
-			CastBar.Time:SetHeight(C["Media"].FontSize)
-			CastBar.Time:SetTextColor(1, 1, 1)
-			CastBar.Time:SetJustifyH("RIGHT")
-
-			CastBar.Text = CastBar:CreateFontString(nil, "OVERLAY")
-			CastBar.Text:SetFontObject(CastbarFont)
-			CastBar.Text:SetPoint("LEFT", CastBar, "LEFT", 2, 0)
-			CastBar.Text:SetPoint("RIGHT", CastBar.Time, "LEFT", -1, 0)
-			CastBar.Text:SetHeight(C["Media"].FontSize)
-			CastBar.Text:SetTextColor(1, 1, 1)
-			CastBar.Text:SetJustifyH("LEFT")
-
-			CastBar.Button = CreateFrame("Frame", nil, CastBar)
-			CastBar.Button:SetSize(CastBar:GetHeight(), CastBar:GetHeight())
-			CastBar.Button:SetPoint("RIGHT", CastBar, "LEFT", -8, 0)
-
-			CastBar:SetTemplate("Transparent", true)
-			CastBar.Button:SetTemplate("Transparent")
-
-			CastBar.Icon = CastBar.Button:CreateTexture(nil, "ARTWORK")
-			CastBar.Icon:SetAllPoints()
-			CastBar.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-
-			CastBar.CustomDelayText = CustomCastDelayText
-			CastBar.CustomTimeText = CustomTimeText
-			CastBar.PostCastStart = PostCastStart
-			CastBar.PostChannelStart = PostCastStart
-			CastBar.PostCastStop = PostCastStop
-			CastBar.PostChannelStop = PostCastStop
-			CastBar.PostCastFailed = PostCastFailed
-			CastBar.PostCastInterrupted = PostCastFailed
-			CastBar.PostChannelUpdate = PostChannelUpdate
-			CastBar.PostCastInterruptible = PostCastInterruptible
-			CastBar.PostCastNotInterruptible = PostCastNotInterruptible
-
-			CastBar.timeToHold = 0.4
-
-			-- Set to castbar.Icon
-			self.Castbar = CastBar
-			self.Castbar.Icon = CastBar.Icon
-
-			return self.Castbar
-		end
+	if unit == "player" then
+		castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 203)
+		K.Movers:RegisterFrame(castbar)
+	elseif unit == "target" then
+		castbar:SetPoint("BOTTOM", "oUF_PlayerCastbar", "TOP", 0, 6)
+		K.Movers:RegisterFrame(castbar)
+	elseif unit == "focus" or unit == "boss" then
+		castbar:SetPoint("LEFT", 4, 0)
+		castbar:SetPoint("RIGHT", -28, 0)
+		castbar:SetPoint("TOP", 0, 20)
+		castbar:SetHeight(18)
 	end
+
+	if (unit == "player") then
+		local safeZone = castbar:CreateTexture(nil, "OVERLAY")
+		safeZone:SetTexture(CastbarTexture)
+		safeZone:SetVertexColor(0.69, 0.31, 0.31)
+		castbar.SafeZone = safeZone
+	end
+
+	if (unit == "player" or unit == "target" or unit == "focus") then
+		local time = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
+		time:SetPoint("RIGHT", -3.5, 0)
+		if K.Class == "PRIEST" then
+			time:SetTextColor(0.84, 0.75, 0.65)
+		end
+		time:SetJustifyH("RIGHT")
+		castbar.Time = time
+
+		castbar.CustomTimeText = CustomTimeText
+		castbar.CustomDelayText = CustomCastDelayText
+
+		local text = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
+		text:SetPoint("LEFT", 3.5, 0)
+		text:SetPoint("RIGHT", time, "LEFT", -3.5, 0)
+		if K.Class == "PRIEST" then
+			text:SetTextColor(0.84, 0.75, 0.65)
+		end
+		text:SetJustifyH("LEFT")
+		text:SetWordWrap(false)
+		castbar.Text = text
+	end
+
+	if (unit ~= "pet") then
+		local button = CreateFrame("Frame", nil, castbar)
+		button:SetSize(20, 20)
+		button:SetTemplate("Transparent", true)
+
+		local icon = button:CreateTexture(nil, "ARTWORK")
+		icon:SetSize(castbar:GetHeight(), castbar:GetHeight())
+		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+		button:SetAllPoints(icon)
+		if (unit == "player") then
+			icon:SetPoint("LEFT", castbar, "RIGHT", 6, 0)
+		elseif (unit == "target") then
+			icon:SetPoint("RIGHT", castbar, "LEFT", -6, 0)
+		else
+			icon:SetPoint("LEFT", castbar, "RIGHT", 6, 0)
+		end
+
+		castbar.Icon = icon
+	end
+
+	castbar.timeToHold = 0.4
+	castbar.PostCastStart = PostCastStart
+	castbar.PostChannelStart = PostCastStart
+	castbar.PostCastStop = PostCastStop
+	castbar.PostChannelStop = PostCastStop
+	castbar.PostCastFailed = PostCastFailed
+	castbar.PostCastInterrupted = PostCastFailed
+	castbar.PostChannelUpdate = PostChannelUpdate
+	castbar.PostCastInterruptible = PostCastInterruptible
+	castbar.PostCastNotInterruptible = PostCastNotInterruptible
+
+	self.Castbar = castbar
 end

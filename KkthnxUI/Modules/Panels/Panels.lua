@@ -45,7 +45,7 @@ Movers:RegisterFrame(BottomBarAnchor)
 
 -- Right bars anchor
 local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", K.PetBattleHider)
-RightBarAnchor:CreatePanel("Invisible", 1, 1, unpack(C.Position.RightBars))
+RightBarAnchor:CreatePanel("Invisible", 1, 1, "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 330)
 RightBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 12) + (C["ActionBar"].ButtonSpace * 11))
 if C["ActionBar"].RightBars == 1 then
 	RightBarAnchor:SetWidth(C["ActionBar"].ButtonSize)
@@ -73,14 +73,14 @@ end
 -- Pet bar anchor
 local PetBarAnchor = CreateFrame("Frame", "PetActionBarAnchor", K.PetBattleHider)
 if C["ActionBar"].PetBarHorizontal == true then
-	PetBarAnchor:CreatePanel("Invisible", (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), (C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace), unpack(C.Position.PetHorizontal))
+	PetBarAnchor:CreatePanel("Invisible", (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), (C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace),"BOTTOMRIGHT", UIParent, "BOTTOM", -175, 167)
 elseif C["ActionBar"].RightBars > 0 then
 	PetBarAnchor:CreatePanel("Invisible", C["ActionBar"].ButtonSize + 6, (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), "RIGHT", RightBarAnchor, "LEFT", 0, 0)
 else
-	PetBarAnchor:CreatePanel("Invisible", (C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace), (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), unpack(C.Position.RightBars))
+	PetBarAnchor:CreatePanel("Invisible", (C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace), (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 330)
 end
 PetBarAnchor:SetFrameStrata("LOW")
-RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show hide")
+RegisterStateDriver(PetBarAnchor, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
 Movers:RegisterFrame(PetBarAnchor)
 
 -- Stance bar anchor
