@@ -483,26 +483,6 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		tt.itemCleared = true
 	end
-end
-
-function Module:GameTooltip_ShowStatusBar(tt)
-	if tt:IsForbidden() then return end
-
-	local statusBar = _G[tt:GetName().."StatusBar"..tt.shownStatusBars]
-	if statusBar and not statusBar.skinned then
-		statusBar:SetStatusBarTexture(TooltipTexture)
-		statusBar.skinned = true
-	end
-end
-
-function Module:SetStyle(tt)
-	if tt:IsForbidden() then return end
-
-	for _, tt in pairs(tooltips) do
-		tt:SetTemplate("Transparent", true)
-		local r, g, b = tt:GetBackdropColor()
-		tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
-	end
 
 	if C["Tooltip"].ItemQualityBorder then
 		local _, link = tt:GetItem()
@@ -534,6 +514,26 @@ function Module:SetStyle(tt)
 		if r then
 			tt:SetBackdropBorderColor(r, g, b)
 		end
+	end
+end
+
+function Module:GameTooltip_ShowStatusBar(tt)
+	if tt:IsForbidden() then return end
+
+	local statusBar = _G[tt:GetName().."StatusBar"..tt.shownStatusBars]
+	if statusBar and not statusBar.skinned then
+		statusBar:SetStatusBarTexture(TooltipTexture)
+		statusBar.skinned = true
+	end
+end
+
+function Module:SetStyle(tt)
+	if tt:IsForbidden() then return end
+
+	for _, tt in pairs(tooltips) do
+		tt:SetTemplate("Transparent", true)
+		local r, g, b = tt:GetBackdropColor()
+		tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
 	end
 end
 
@@ -681,7 +681,7 @@ function Module:OnEnable()
 
 	-- Tooltip Fonts
 	if not GameTooltip.hasMoney then
-		 --Force creation of the money lines, so we can set font for it
+		--Force creation of the money lines, so we can set font for it
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")
 		GameTooltip_ClearMoney(GameTooltip)
