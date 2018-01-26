@@ -29,14 +29,14 @@ if GetLocale() == "deDE" then
 end
 
 local function UpdateThreat(self, event, unit)
-	if unit ~= self.unit then return end
+	if (self.unit ~= unit) then return end
 
-	local status = UnitThreatSituation(unit)
-
-	if status and status > 0 then
-		self.Health:SetBackdropBorderColor(1, 0, 0)
+	local situation = UnitThreatSituation(unit)
+	if (situation and situation > 0) then
+		local r, g, b = GetThreatStatusColor(situation)
+		self:SetBackdropBorderColor(1, 0, 0)
 	else
-		self.Health:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
 end
 
@@ -277,8 +277,8 @@ local function CreateRaidLayout(self)
 	end
 
 	-- ThreatIndicator
-	self.ThreatIndicator = CreateFrame("Frame", nil, self.Health)
-	self.ThreatIndicator:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 0)
+	self.ThreatIndicator = {}
+	self.ThreatIndicator.IsObjectType = function() end
 	self.ThreatIndicator.Override = UpdateThreat
 
 	if (C["Raidframe"].ShowMouseoverHighlight) then
