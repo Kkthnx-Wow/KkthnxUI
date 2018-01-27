@@ -359,6 +359,7 @@ C["Unitframe"] = {
 	["Party"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
+	["PvPText"] = true,
 	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,

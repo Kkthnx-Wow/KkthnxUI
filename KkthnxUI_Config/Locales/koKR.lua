@@ -1122,6 +1122,11 @@ KkthnxUIConfig["koKR"] = {
 			["Name"] = "Power Prediction Bar",
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
 		},
+		
+		["PvPText"] = {
+			["Name"] = "Set PVP Text",
+			["Desc"] = "Toggle the PvP Text",
+		},
 
 		["Scale"] = {
 			["Name"] = "Scale",
