@@ -138,6 +138,7 @@ C["Chat"] = {
 	["LinkBrackets"] = true,
 	["LinkColor"] = {0.08, 1, 0.36},
 	["MessageFilter"] = false,
+	["QuickJoin"] = false,
 	["Font"] = "KkthnxUI",
 	["ScrollByX"] = 3,
 	["SpamFilter"] = false,
