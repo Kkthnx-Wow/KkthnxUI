@@ -316,7 +316,9 @@ local function oUF_Unitframes(self, unit)
 		K.CreateCombatIndicator(self)
 		K.CreateLeaderIndicator(self)
 		K.CreateMasterLooterIndicator(self)
-		K.CreatePvPText(self, unit)
+		if C["Unitframe"].PvPText then
+			K.CreatePvPText(self, unit)
+		end
 		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateRestingIndicator(self)
@@ -342,7 +344,9 @@ local function oUF_Unitframes(self, unit)
 			K.CreatePortraitTimer(self)
 		end
 		K.CreateAuras(self, "target")
-		K.CreatePvPText(self, unit)
+		if C["Unitframe"].PvPText then
+			K.CreatePvPText(self, unit)
+		end
 		K.CreateQuestIndicator(self)
 		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
