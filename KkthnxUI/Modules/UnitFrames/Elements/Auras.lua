@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then return end
-local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
 local _G = _G
 local string_format = string.format
@@ -105,10 +104,8 @@ local function PostUpdateAura(self, unit, button, index)
 	else
 		if (isStealable) and not isFriend then
 			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-			LibButtonGlow.ShowOverlayGlow(button) -- Idk how well this is going to work.
 		else
 			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-			LibButtonGlow.HideOverlayGlow(button)
 		end
 	end
 

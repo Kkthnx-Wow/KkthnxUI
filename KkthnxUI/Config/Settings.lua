@@ -383,11 +383,12 @@ C["UnitframePlugins"] = {
 
 -- Raidframe
 C["Raidframe"] = {
+	["AuraDebuffIconSize"] = 22,
 	["AuraWatch"] = true,
 	["AuraWatchIconSize"] = 6,
-	["AuraDebuffIconSize"] = 22,
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
+	["Font"] = "KkthnxUI",
 	["Height"] = 40,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
