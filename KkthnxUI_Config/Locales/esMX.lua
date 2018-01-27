@@ -633,6 +633,11 @@ KkthnxUIConfig["esMX"] = {
 			["Name"] = "Message Filter",
 			["Desc"] = "Filter messages in chat.",
 		},
+		
+		["QuickJoin"] = {
+			["Name"] = "QuickJoin",
+			["Desc"] = "Toggle QuickJoin messages in chat.",
+		},
 
 		["Font"] = {
 			["Name"] = "Font",
