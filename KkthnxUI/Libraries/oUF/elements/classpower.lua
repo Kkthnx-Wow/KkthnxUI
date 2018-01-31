@@ -1,45 +1,30 @@
 --[[
 # Element: ClassPower
-
 Handles the visibility and updating of the player's class resources (like Chi Orbs or Holy Power) and combo points.
-
 ## Widget
-
 ClassPower - An `table` consisting of as many StatusBars as the theoretical maximum return of [UnitPowerMax](http://wowprogramming.com/docs/api/UnitPowerMax).
-
 ## Sub-Widgets
-
 .bg - A `Texture` used as a background. It will inherit the color of the main StatusBar.
-
 ## Sub-Widget Options
-
 .multiplier - Used to tint the background based on the widget's R, G and B values. Defaults to 1 (number)[0-1]
-
 ## Notes
-
 A default texture will be applied if the sub-widgets are StatusBars and don't have a texture set.
 If the sub-widgets are StatusBars, their minimum and maximum values will be set to 0 and 1 respectively.
-
 Supported class powers:
   - All     - Combo Points
   - Mage    - Arcane Charges
   - Monk    - Chi Orbs
   - Paladin - Holy Power
   - Warlock - Soul Shards
-
 ## Examples
-
     local ClassPower = {}
     for index = 1, 10 do
         local Bar = CreateFrame('StatusBar', nil, self)
-
         -- Position and size.
         Bar:SetSize(16, 16)
         Bar:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', (index - 1) * Bar:GetWidth(), 0)
-
         ClassPower[index] = Bar
     end
-
     -- Register with oUF
     self.ClassPower = ClassPower
 --]]
@@ -94,7 +79,6 @@ local function Update(self, event, unit, powerType)
 
 	--[[ Callback: ClassPower:PreUpdate(event)
 	Called before the element has been updated.
-
 	* self  - the ClassPower element
 	]]
 	if(element.PreUpdate) then
@@ -107,15 +91,15 @@ local function Update(self, event, unit, powerType)
 			-- BUG: UnitPower always returns 0 combo points for vehicles
 			cur = GetComboPoints(unit)
 			max = MAX_COMBO_POINTS
-			-- mod = 1
+			mod = 1
 		else
 			cur = UnitPower('player', ClassPowerID, true)
 			max = UnitPowerMax('player', ClassPowerID)
-			-- mod = UnitPowerDisplayMod(ClassPowerID)
+			mod = UnitPowerDisplayMod(ClassPowerID)
 		end
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
-		-- cur = mod == 0 and 0 or cur / mod
+		cur = mod == 0 and 0 or cur / mod
 
 		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		if(ClassPowerType == 'SOUL_SHARDS' and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then
@@ -147,7 +131,6 @@ local function Update(self, event, unit, powerType)
 	end
 	--[[ Callback: ClassPower:PostUpdate(cur, max, hasMaxChanged, powerType)
 	Called after the element has been updated.
-
 	* self          - the ClassPower element
 	* cur           - the current amount of power (number)
 	* max           - the maximum amount of power (number)
@@ -162,7 +145,6 @@ end
 local function Path(self, ...)
 	--[[ Override: ClassPower.Override(self, event, unit, ...)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
@@ -199,7 +181,6 @@ local function Visibility(self, event, unit)
 	if(shouldEnable) then
 		--[[ Override: ClassPower:UpdateColor(powerType)
 		Used to completely override the internal function for updating the widgets' colors.
-
 		* self      - the ClassPower element
 		* powerType - the active power type (string)
 		--]]
@@ -218,7 +199,6 @@ end
 local function VisibilityPath(self, ...)
 	--[[ Override: ClassPower.OverrideVisibility(self, event, unit)
 	Used to completely override the internal visibility function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)
