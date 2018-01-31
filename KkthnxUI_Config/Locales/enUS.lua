@@ -633,11 +633,6 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Message Filter",
 			["Desc"] = "Filter messages in chat.",
 		},
-		
-		["QuickJoin"] = {
-			["Name"] = "QuickJoin",
-			["Desc"] = "Toggle QuickJoin messages in chat.",
-		},
 
 		["QuickJoin"] = {
 			["Name"] = "Quick Join",
@@ -1126,11 +1121,6 @@ KkthnxUIConfig["enUS"] = {
 		["PowerPredictionBar"] = {
 			["Name"] = "Power Prediction Bar",
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
-		},
-		
-		["PvPText"] = {
-			["Name"] = "Set PVP Text",
-			["Desc"] = "Toggle the PvP Text",
 		},
 
 		["PvPText"] = {
