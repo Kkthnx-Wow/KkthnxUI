@@ -1,5 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then return end
+local Module = K:NewModule("DisableJunk", "AceHook-3.0", "AceEvent-3.0")
 
 -- Lua API
 local _G = _G
@@ -14,43 +15,40 @@ local OverrideActionBar = _G.OverrideActionBar
 local PetActionBarFrame = _G.PetActionBarFrame
 local PossessBarFrame = _G.PossessBarFrame
 
--- Global variables that we don't need to cache, list them here for mikk's FindGlobals script
--- GLOBALS: ActionBarController, MainMenuExpBar, ReputationWatchBar
--- GLOBALS: CollectionsMicroButtonAlert, EJMicroButtonAlert, TalentMicroButtonAlert
--- GLOBALS: HoverBind, K.UIFrameHider, RightActionBarAnchor, StanceBarFrame
--- GLOBALS: IconIntroTracker, MultiCastActionBarFrame, RightBarMouseOver, PetBarMouseOver
--- GLOBALS: MultiBarBottomRight, MultiBarLeft, MultiBarRight, StanceBarMouseOver
--- GLOBALS: PetActionBarAnchor, ShapeShiftBarAnchor
--- GLOBALS: PlayerTalentFrame, ArtifactWatchBar, HonorWatchBar
--- GLOBALS: ShiftHolder, PetHolder, MainMenuBarMaxLevelBar
+function Module:BlizzardOptionsPanel_OnEvent()
+	InterfaceOptionsActionBarsPanelBottomRight.Text:SetFormattedText("Remove Bar %d Action Page", 2)
+	InterfaceOptionsActionBarsPanelBottomLeft.Text:SetFormattedText("Remove Bar %d Action Page", 3)
+	InterfaceOptionsActionBarsPanelRightTwo.Text:SetFormattedText("Remove Bar %d Action Page", 4)
+	InterfaceOptionsActionBarsPanelRight.Text:SetFormattedText("Remove Bar %d Action Page", 5)
 
-local DisableBlizzard = CreateFrame("Frame")
-DisableBlizzard:RegisterEvent("PLAYER_ENTERING_WORLD")
-DisableBlizzard:SetScript("OnEvent", function(self, event)
+	InterfaceOptionsActionBarsPanelBottomRight:SetScript("OnEnter", nil)
+	InterfaceOptionsActionBarsPanelBottomLeft:SetScript("OnEnter", nil)
+	InterfaceOptionsActionBarsPanelRightTwo:SetScript("OnEnter", nil)
+	InterfaceOptionsActionBarsPanelRight:SetScript("OnEnter", nil)
+end
+
+function Module:IconIntroTracker_Toggle()
+	if C["ActionBar"].AddNewSpells then
+		IconIntroTracker:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR")
+		IconIntroTracker:Show()
+		IconIntroTracker:SetParent(UIParent)
+	else
+		IconIntroTracker:UnregisterAllEvents()
+		IconIntroTracker:Hide()
+		IconIntroTracker:SetParent(K.UIFrameHider)
+	end
+end
+
+function Module:DisableBlizzard()
+	-- Look into what this does
 	ArtifactWatchBar:SetParent(K.UIFrameHider)
 	HonorWatchBar:SetParent(K.UIFrameHider)
 
-	for i = 1, 6 do
-		local button = _G["OverrideActionBarButton"..i]
-
-		button:UnregisterAllEvents()
-		button:SetAttribute("statehidden", true)
-		button:SetAttribute("showgrid", 1)
-	end
-
 	ActionBarController:UnregisterAllEvents()
-	ActionBarController:RegisterEvent("PLAYER_ENTERING_WORLD")
-	ActionBarController:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
-	ActionBarController:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
-	ActionBarController:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
 	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
-	ActionBarController:HookScript("OnEvent", function(self, event)
-		if event == "PLAYER_ENTERING_WORLD" then
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
-	end)
 
 	MainMenuBar:EnableMouse(false)
+	MainMenuBar:UnregisterAllEvents()
 	MainMenuBar:SetAlpha(0)
 	MainMenuBar:SetScale(0.00001)
 
@@ -60,7 +58,16 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 	MainMenuExpBar:SetAlpha(0)
 	MainMenuExpBar:SetScale(0.00001)
 	MainMenuExpBar:SetParent(K.UIFrameHider)
-	MainMenuExpBar:SetScript("OnShow", function(self) self:Hide() end)
+
+	-- Trying to work around a bug sometimes happening
+	-- on level 20 starter edition characters.
+	MainMenuExpBar:SetScript("OnShow", nil)
+	MainMenuExpBar:SetScript("OnHide", nil)
+	MainMenuExpBar:SetScript("OnEvent", nil)
+	MainMenuExpBar:SetScript("OnUpdate", nil)
+	MainMenuExpBar:SetScript("OnEnter", nil)
+	MainMenuExpBar:SetScript("OnLeave", nil)
+	MainMenuExpBar:SetScript("OnValueChanged", nil)
 
 	for i = 1, MainMenuBar:GetNumChildren() do
 		local child = select(i, MainMenuBar:GetChildren())
@@ -71,47 +78,89 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 		end
 	end
 
-	MainMenuBarMaxLevelBar:SetParent(K.UIFrameHider)
-	MainMenuBarMaxLevelBar:Hide()
-
-	if C["ActionBar"].AddNewSpells then
-		IconIntroTracker:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR")
-		IconIntroTracker:Show()
-		IconIntroTracker:SetParent(UIParent)
-	else
-		IconIntroTracker:UnregisterAllEvents()
-		IconIntroTracker:Hide()
-		IconIntroTracker:SetParent(K.UIFrameHider)
+	for i = 1, 6 do
+		_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
+		_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
+		_G["OverrideActionBarButton"..i]:EnableMouse(false) -- just in case it's still there
 	end
 
 	ReputationWatchBar:UnregisterAllEvents()
 	ReputationWatchBar:Hide()
 	ReputationWatchBar:SetParent(K.UIFrameHider)
-	ReputationWatchBar:SetScript("OnShow", function(self) self:Hide() end)
 
 	MainMenuBarArtFrame:UnregisterAllEvents()
+	MainMenuBarArtFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	MainMenuBarArtFrame:Hide()
+	MainMenuBarArtFrame:SetAlpha(0)
 	MainMenuBarArtFrame:SetParent(K.UIFrameHider)
 
+	StanceBarFrame:EnableMouse(false)
 	StanceBarFrame:UnregisterAllEvents()
 	StanceBarFrame:Hide()
-	StanceBarFrame:SetParent(K.UIFrameHider)
+	StanceBarFrame:SetAlpha(0)
 
-	OverrideActionBar:UnregisterAllEvents()
-	OverrideActionBar:Hide()
 	OverrideActionBar:SetParent(K.UIFrameHider)
+	OverrideActionBar:EnableMouse(false)
+	OverrideActionBar:SetScale(0.00001)
+	OverrideActionBar:UnregisterAllEvents()
 
 	PossessBarFrame:UnregisterAllEvents()
 	PossessBarFrame:Hide()
+	PossessBarFrame:SetAlpha(0)
 	PossessBarFrame:SetParent(K.UIFrameHider)
 
+	PetActionBarFrame:EnableMouse(false)
 	PetActionBarFrame:UnregisterAllEvents()
-	PetActionBarFrame:Hide()
 	PetActionBarFrame:SetParent(K.UIFrameHider)
+	PetActionBarFrame:Hide()
+	PetActionBarFrame:SetAlpha(0)
 
 	MultiCastActionBarFrame:UnregisterAllEvents()
 	MultiCastActionBarFrame:Hide()
 	MultiCastActionBarFrame:SetParent(K.UIFrameHider)
+
+	MainMenuBarMaxLevelBar:SetParent(K.UIFrameHider)
+	MainMenuBarMaxLevelBar:Hide()
+
+	TalentMicroButtonAlert:UnregisterAllEvents()
+	TalentMicroButtonAlert:SetParent(K.UIFrameHider)
+
+	CollectionsMicroButtonAlert:UnregisterAllEvents()
+	CollectionsMicroButtonAlert:SetParent(K.UIFrameHider)
+	CollectionsMicroButtonAlert:Hide()
+
+	EJMicroButtonAlert:UnregisterAllEvents()
+	EJMicroButtonAlert:SetParent(K.UIFrameHider)
+	EJMicroButtonAlert:Hide()
+
+	LFDMicroButtonAlert:UnregisterAllEvents()
+	LFDMicroButtonAlert:SetParent(K.UIFrameHider)
+	LFDMicroButtonAlert:Hide()
+
+	UIPARENT_MANAGED_FRAME_POSITIONS["ExtraActionBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MainMenuBar"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomRight"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarLeft"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarRight"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MULTICASTACTIONBAR_YPOS"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiCastActionBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["PossessBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["StanceBarFrame"] = nil
+
+	-- Enable/disable functionality to automatically put spells on the actionbar.
+	self:IconIntroTracker_Toggle()
+
+	MainMenuBar.slideOut.IsPlaying = function()
+		return true
+	end
+
+	MainMenuBar.slideOut:GetAnimations():SetOffset(0, 0)
+	OverrideActionBar.slideOut:GetAnimations():SetOffset(0, 0)
+
+	self:SecureHook("BlizzardOptionsPanel_OnEvent")
 
 	if PlayerTalentFrame then
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
@@ -120,25 +169,11 @@ DisableBlizzard:SetScript("OnEvent", function(self, event)
 			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 		end)
 	end
+end
 
-	hooksecurefunc("ActionButton_OnEvent", function(self, event)
-		if (event == "PLAYER_ENTERING_WORLD") then
-			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
-			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
-	end)
-
-	MainMenuBar.slideOut.IsPlaying = function()
-		return true
-	end
-
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	else
-		self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	end
-end)
+function Module:OnEnable()
+	self:DisableBlizzard()
+end
 
 -- Mouseover stuff
 function RightBarMouseOver(alpha)

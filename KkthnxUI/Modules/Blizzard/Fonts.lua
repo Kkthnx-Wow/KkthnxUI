@@ -44,7 +44,7 @@ local function UpdateBlizzardFonts()
 	-- Base fonts
 	SetFont(AchievementFont_Small,				NORMAL_FONT, C["General"].FontSize)			 -- Achiev dates
 	SetFont(BossEmoteNormalHuge,				NORMAL_FONT, 24)								 -- Talent Title
-	SetFont(ChatBubbleFont,						BUBBLE_FONT, C["General"].BubbleFontSize)
+	SetFont(ChatBubbleFont,						BUBBLE_FONT, C["Chat"].BubbleFontSize)
 	SetFont(CombatTextFont, 					COMBAT_FONT, 200, "OUTLINE") -- number here just increase the font quality.
 	SetFont(CoreAbilityFont,					NORMAL_FONT, 26)								 -- Core abilities(title)
 	SetFont(DestinyFontHuge,					NORMAL_FONT, 20, nil, SHADOW_COLOR, BIG_OFFSET)	 -- Garrison Mission Report
@@ -73,7 +73,7 @@ local function UpdateBlizzardFonts()
 	SetFont(InvoiceFont_Med,					NORMAL_FONT, 12)								 -- mail
 	SetFont(InvoiceFont_Small,					NORMAL_FONT, C["General"].FontSize)			 -- mail
 	SetFont(MailFont_Large,						NORMAL_FONT, 14)								 -- mail
-	SetFont(NumberFont_Outline_Huge, 			NORMAL_FONT, 28, "THICKOUTLINE", 28)
+	SetFont(NumberFont_Outline_Huge, 			NORMAL_FONT, 28, "THINOUTLINE", 28)
 	SetFont(NumberFont_Outline_Large, 			NORMAL_FONT, 15, "OUTLINE")
 	SetFont(NumberFont_Outline_Med, 			NORMAL_FONT, C["General"].FontSize*1.1, "OUTLINE")
 	SetFont(NumberFont_OutlineThick_Mono_Small, NORMAL_FONT, C["General"].FontSize, "OUTLINE")
@@ -99,7 +99,8 @@ local function UpdateBlizzardFonts()
 	SetFont(SystemFont_Med3, 					NORMAL_FONT, C["General"].FontSize*1.1)
 	SetFont(SystemFont_Outline, 				NORMAL_FONT, 13, "OUTLINE")			 -- Pet level on World map
 	SetFont(SystemFont_Outline_Small, 			NORMAL_FONT, C["General"].FontSize, "OUTLINE")
-	SetFont(SystemFont_OutlineThick_Huge2, 		NORMAL_FONT, 20, "THICKOUTLINE")
+	SetFont(SystemFont_Shadow_Huge3,            NORMAL_FONT, 22, nil, SHADOW_COLOR, BIG_OFFSET) -- FlightMap
+	SetFont(SystemFont_OutlineThick_Huge2, 		NORMAL_FONT, 20, "THINOUTLINE")
 	SetFont(SystemFont_OutlineThick_WTF,		NORMAL_FONT, 32, "OUTLINE")			 -- World Map
 	SetFont(SystemFont_Shadow_Huge1,			NORMAL_FONT, 20, "OUTLINE") -- Raid Warning, Boss emote frame too
 	SetFont(SystemFont_Shadow_Large, 			NORMAL_FONT, 15)
@@ -116,37 +117,15 @@ local function UpdateBlizzardFonts()
 	SetFont(Tooltip_Small, 						NORMAL_FONT, C["General"].FontSize)
 	SetFont(ZoneTextString,						NORMAL_FONT, 32, "OUTLINE")
 
-	-- Sourced: DiabolicUI, (Goldpaw)
-	_G.hooksecurefunc("PaperDollFrame_SetArmor", function(frame, unit)
-		if unit ~= "player" then
-			return
-		end
-
-		PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, unit)
-		CharacterStatsPane.ItemLevelCategory:Show()
-		CharacterStatsPane.ItemLevelFrame:Show()
-		CharacterStatsPane.AttributesCategory:SetPoint("TOP", CharacterStatsPane.ItemLevelFrame, "BOTTOM", 0, -10)
-		local msg = CharacterStatsPane.ItemLevelFrame.Value
-
-		local total, equip = _G.GetAverageItemLevel()
-		if total > 0 then
-			if equip == total then
-				msg:SetFormattedText("|cffffeeaa%.1f|r", equip)
-			else
-				msg:SetFormattedText("|cffffeeaa%.1f / %.1f|r", equip, total)
-			end
-		else
-			msg:SetFormattedText("|cffffeeaa%s|r", _G.NONE)
-		end
-	end)
-
 	-- Fix some fonts to follow our font.
 	WorldMapFrameNavBarHomeButton.text:SetFontObject(SystemFont_Shadow_Med1)
 	WorldMapFrame.UIElementsFrame.BountyBoard.BountyName:FontTemplate(nil, 14, "OUTLINE")
 	SplashFrame.Header:FontTemplate(nil, 22)
+
 	if IsAddOnLoaded("Blizzard_Collections") then
 		WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame.Name:FontTemplate(nil, 16)
 	end
+
 	LFGListFrame.ApplicationViewer.NameColumnHeader.Label:FontTemplate()
 	LFGListFrame.ApplicationViewer.RoleColumnHeader.Label:FontTemplate()
 	LFGListFrame.ApplicationViewer.ItemLevelColumnHeader.Label:FontTemplate()
@@ -174,18 +153,6 @@ local function UpdateBlizzardFonts()
 		end
 	end
 	hooksecurefunc("ChannelList_Update", Channel)
-
-	--Titles
-	PaperDollTitlesPane:HookScript("OnShow", function(self)
-		for _, object in pairs(PaperDollTitlesPane.buttons) do
-			object.text:FontTemplate()
-			hooksecurefunc(object.text, "SetFont", function(self, font)
-				if font ~= C["Media"].Font then
-					self:FontTemplate()
-				end
-			end)
-		end
-	end)
 
 	-- Fix help frame category buttons, NFI why they need fixing
 	for i = 1, 6 do

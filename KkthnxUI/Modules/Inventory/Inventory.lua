@@ -90,7 +90,7 @@ local function IsItemUnusable(...)
 	end
 end
 
-Stuffing = CreateFrame("Frame", nil, UIParent)
+local Stuffing = CreateFrame("Frame", nil, UIParent) -- Dont leak this out!
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
 Stuffing:SetScript("OnEvent", function(this, event, ...)
@@ -440,6 +440,18 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		ret.frame = CreateFrame("CheckButton", "StuffingBBag"..slot.."Slot", p, "BankItemButtonBagTemplate")
 		ret.frame:StripTextures()
 		ret.frame:SetID(slot)
+
+		hooksecurefunc(ret.frame.IconBorder, "SetVertexColor", function(self, r, g, b)
+			if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
+				self:GetParent():SetBackdropBorderColor(r, g, b)
+			end
+			self:SetTexture("")
+		end)
+
+		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
+			self:GetParent():SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+		end)
+
 		table.insert(self.bagframe_buttons, ret)
 
 		BankFrameItemButton_Update(ret.frame)
@@ -692,7 +704,6 @@ function Stuffing:CreateBagFrame(w)
 		end
 	end)
 
-
 	if w == "Bank" then
 		f:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 4, 204)
 	else
@@ -727,10 +738,37 @@ function Stuffing:CreateBagFrame(w)
 			_G["StuffingFrameBank"]:SetAlpha(0)
 		end)
 
+		-- Toggle Bags Button
+		f.bagsButton = CreateFrame("Button", nil, f)
+		f.bagsButton:SetSize(16, 16)
+		f.bagsButton:SetTemplate("", true)
+		f.bagsButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
+		f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
+		f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		f.bagsButton:GetNormalTexture():SetAllPoints()
+		f.bagsButton:SetPushedTexture("Interface\\Buttons\\Button-Backpack-Up")
+		f.bagsButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		f.bagsButton:GetPushedTexture():SetAllPoints()
+		f.bagsButton:StyleButton(nil, true)
+		f.bagsButton.ttText = L["Inventory"].Show_Bags
+		f.bagsButton:SetScript("OnEnter", tooltip_show)
+		f.bagsButton:SetScript("OnLeave", tooltip_hide)
+		f.bagsButton:SetScript("OnClick", function()
+			PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
+			if bag_bars == 1 then
+				bag_bars = 0
+			else
+				bag_bars = 1
+			end
+			if Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
+				Stuffing:Layout(true)
+			end
+		end)
+
 		f.purchaseBagButton = CreateFrame("Button", "StuffingPurchaseButton"..w, f)
 		f.purchaseBagButton:SetSize(16, 16)
 		f.purchaseBagButton:SetTemplate()
-		f.purchaseBagButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
+		f.purchaseBagButton:SetPoint("RIGHT", f.bagsButton, "LEFT", -5, 0)
 		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
 		f.purchaseBagButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
 		f.purchaseBagButton:GetNormalTexture():SetAllPoints()
@@ -744,10 +782,10 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton:SetScript("OnClick", function()
 			local _, full = GetNumBankSlots()
 			if (full) then
-				f.purchaseBagButton:Hide()
+				f.purchaseBagButton:Disable()
 				StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
 			else
-				f.purchaseBagButton:Show()
+				f.purchaseBagButton:Enable()
 				StaticPopup_Show("BUY_BANK_SLOT")
 			end
 		end)
@@ -827,7 +865,7 @@ function Stuffing:InitBags()
 	detail:SetHeight(13)
 	detail:SetShadowColor(0, 0, 0, 0)
 	detail:SetJustifyH("LEFT")
-	detail:SetText("|cff4488ff"..SEARCH.."|r")
+	detail:SetText("|cffD6BFA6"..SEARCH.."|r")
 	editbox:SetAllPoints(detail)
 
 	do
@@ -954,9 +992,8 @@ function Stuffing:InitBags()
 		else
 			bag_bars = 1
 		end
-		Stuffing:Layout()
-		if Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
-			Stuffing:Layout(true)
+		if Stuffing.frame and Stuffing.frame:IsShown() then
+			Stuffing:Layout()
 		end
 	end)
 
@@ -1302,6 +1339,7 @@ function Stuffing:ADDON_LOADED(addon)
 	CloseAllBags = Stuffing_Close
 	CloseBackpack = Stuffing_Close
 
+	BankFrame:UnregisterAllEvents()
 	BankFrame:SetScale(0.0001)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
@@ -1643,11 +1681,13 @@ end
 
 function Stuffing:PLAYERBANKBAGSLOTS_CHANGED()
 	if not StuffingPurchaseButtonBank then return end
+
 	local _, full = GetNumBankSlots()
+
 	if full then
-		StuffingPurchaseButtonBank:Hide()
+		StuffingPurchaseButtonBank:Disable()
 	else
-		StuffingPurchaseButtonBank:Show()
+		StuffingPurchaseButtonBank:Enable()
 	end
 end
 

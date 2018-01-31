@@ -1,9 +1,5 @@
 local _, C = unpack(select(2, ...))
 
-C["Developer"] = {
-	["Debug"] = false,
-}
-
 -- Actionbar
 C["ActionBar"] = {
 	["AddNewSpells"] = true,
@@ -127,22 +123,24 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
+	["BubbleFontSize"] = 12,
 	["Enable"] = true,
 	["Fading"] = true,
-	["WhisperSound"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
-	["ShortenChannelNames"] = true,
-	["RemoveRealmNames"] = true,
+	["Font"] = "KkthnxUI",
 	["Height"] = 140,
 	["LinkBrackets"] = true,
 	["LinkColor"] = {0.08, 1, 0.36},
 	["MessageFilter"] = false,
-	["Font"] = "KkthnxUI",
+	["QuickJoin"] = false,
+	["RemoveRealmNames"] = true,
 	["ScrollByX"] = 3,
+	["ShortenChannelNames"] = true,
 	["SpamFilter"] = false,
 	["TabsMouseover"] = true,
 	["TabsOutline"] = false,
+	["WhisperSound"] = true,
 	["Width"] = 400,
 	["BubbleBackdrop"] = {
 		["Options"] = {
@@ -222,7 +220,6 @@ C["Filger"] = {
 -- General
 C["General"] = {
 	["AutoScale"] = true,
-	["BubbleFontSize"] = 12,
 	["ColorTextures"] = false,
 	["ConfigButton"] = true,
 	["DisableTutorialButtons"] = false,
@@ -232,20 +229,8 @@ C["General"] = {
 	["ReplaceBlizzardFonts"] = true,
 	["SpellTolerance"] = false,
 	["TaintLog"] = false,
-	["TalkingHeadHeight"] = 155,
-	["TalkingHeadWidth"] = 570,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.31, 0.31, 0.31},
-	["NumberPrefixStyle"] = {
-		["Options"] = {
-			["Metric"] = "METRIC",
-			["Chinese"] = "CHINESE",
-			["Korean"] = "KOREAN",
-			["German"] = "GERMAN",
-			["Default"] = "DEFAULT",
-		},
-		["Value"] = "Default",
-	},
 }
 
 -- Loot
@@ -280,7 +265,7 @@ C["Misc"] = {
 
 -- Nameplates
 C["Nameplates"] = {
-	["AurasSize"] = 26,
+	["AurasSize"] = 24,
 	["BadColor"] = {1, 0, 0},
 	["CastbarName"] = true,
 	["CastUnitReaction"] = true,
@@ -292,18 +277,20 @@ C["Nameplates"] = {
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealerIcon"] = false,
 	["HealthValue"] = true,
-	["Height"] = 18,
+	["Height"] = 16,
 	["NameAbbreviate"] = true,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
+	["OORAlpha"] = 0.40,
 	["Outline"] = false,
-	["SelectedScale"] = 1.180,
+	["SelectedScale"] = 1.1,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
+	["ThreatPercent"] = false,
 	["TotemIcons"] = false,
 	["TrackAuras"] = true,
-	["Width"] = 140,
+	["Width"] = 132,
 }
 
 -- Skins
@@ -317,6 +304,8 @@ C["Skins"] = {
 	["TalkingHead"] = true,
 	["Texture"] = "KkthnxUI",
 	["WeakAuras"] = false,
+	["TalkingHeadHeight"] = 155,
+	["TalkingHeadWidth"] = 570,
 }
 
 -- Tooltip
@@ -338,6 +327,7 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
+	["AuraFiltering"] = false,
 	["CastbarHeight"] = 20,
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,
@@ -348,16 +338,17 @@ C["Unitframe"] = {
 	["CastReactionColor"] = true,
 	["CombatText"] = true,
 	["DebuffsOnTop"] = true,
-	["OnlyShowPlayerDebuff"] = false,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 13,
 	["GlobalCooldown"] = false,
+	["OnlyShowPlayerDebuff"] = false,
 	["OORAlpha"] = 0.40,
 	["Outline"] = false,
 	["Party"] = true,
 	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
+	["PvPText"] = true,
 	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
@@ -374,11 +365,16 @@ C["Unitframe"] = {
 		},
 		["Value"] = "DefaultPortraits",
 	},
-}
-
--- We keep this private. For now.
-C["UnitframePlugins"] = {
-	["OORAlpha"] = 0.60,
+	["NumberPrefixStyle"] = {
+		["Options"] = {
+			["Metric"] = "METRIC",
+			["Chinese"] = "CHINESE",
+			["Korean"] = "KOREAN",
+			["German"] = "GERMAN",
+			["Default"] = "DEFAULT",
+		},
+		["Value"] = "Default",
+	},
 }
 
 -- Raidframe
@@ -394,7 +390,6 @@ C["Raidframe"] = {
 	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
-	["RaidAsParty"] = false,
 	["RaidTools"] = true,
 	["RaidUtility"] = true,
 	["Scale"] = 1,
@@ -405,6 +400,14 @@ C["Raidframe"] = {
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
 	["Width"] = 56,
+	["GroupBy"] = {
+		["Options"] = {
+			["Group"] = "GROUP",
+			["Class"] = "CLASS",
+			["Role"] = "ROLE",
+		},
+		["Value"] = "GROUP",
+	},
 }
 
 -- Worldmap

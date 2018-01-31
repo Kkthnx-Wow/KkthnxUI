@@ -50,11 +50,18 @@ local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
 local GetScreenResolutions = _G.GetScreenResolutions
 local GetSpecialization = _G.GetSpecialization
+local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local LibStub = _G.LibStub
+local PlaySound = _G.PlaySound
+local PlaySoundKitID = _G.PlaySoundKitID
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UnitClass = _G.UnitClass
+local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
-local UnitGUID = _G.UnitGUID
+local UnitRace = _G.UnitRace
 
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 
@@ -83,7 +90,7 @@ AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo() AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
-AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and _G.PlaySound or _G.PlaySoundKitID
+AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and PlaySound or PlaySoundKitID
 
 function AddOn:OnInitialize()
 	self.GUID = UnitGUID("player")

@@ -5,6 +5,7 @@ if C["Raidframe"].Enable ~= true then return end
 local _G = _G
 local string_format = string.format
 local table_insert = table.insert
+local math_ceil = math.ceil
 
 -- Wow API
 local GetThreatStatusColor = _G.GetThreatStatusColor
@@ -290,44 +291,44 @@ local function CreateRaidLayout(self)
 	end
 end
 
-oUF:RegisterStyle("oUF_Raid", CreateRaidLayout)
-oUF:SetActiveStyle("oUF_Raid")
+oUF:RegisterStyle("oUF_KkthnxUI_Raidframes", CreateRaidLayout)
+oUF:SetActiveStyle("oUF_KkthnxUI_Raidframes")
 
-	local raid = oUF:SpawnHeader("oUF_Raid", nil, C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] show; hide" or C["Raidframe"].Enable and "custom [@raid6, exists] show; hide" or "solo, party, raid",
-	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
-	]],
-	"showParty", true,
-	"showRaid", true,
-	"showPlayer", true,
-	"showSolo", false,
-	"point", "TOP",
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", "GROUP", -- C.Raid.GroupByValue
-	"maxColumns", math.ceil(40 / 5),
-	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn,
-	"columnAnchorPoint", "LEFT",
-	"initial-width", C["Raidframe"].Width,
-	"initial-height", C["Raidframe"].Height,
-	"columnSpacing", 6,
-	"yOffset", -6,
-	"xOffset", 6)
+local raid = oUF:SpawnHeader("oUF_Raid", nil, C["Raidframe"].Enable and "custom [@raid6,exists] show; hide" or "solo, party, raid",
+"oUF-initialConfigFunction", [[
+local header = self:GetParent()
+self:SetWidth(header:GetAttribute("initial-width"))
+self:SetHeight(header:GetAttribute("initial-height"))
+]],
+"initial-width", C["Raidframe"].Width,
+"initial-height", C["Raidframe"].Height,
+"showParty", true,
+"showRaid", true,
+"showPlayer", true,
+"showSolo", false,
+"yOffset", -6,
+"xOffset", 6,
+"point", "TOP",
+"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+"groupBy", C["Raidframe"].GroupBy.Value,
+"maxColumns", math_ceil(40 / 5),
+"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn,
+"columnSpacing", 6,
+"columnAnchorPoint", "LEFT")
 
-	raid:SetScale(C["Raidframe"].Scale or 1)
-	raid:SetFrameStrata("LOW")
-	raid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -200)
-	Movers:RegisterFrame(raid)
+raid:SetScale(C["Raidframe"].Scale or 1)
+raid:SetFrameStrata("LOW")
+raid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -200)
+Movers:RegisterFrame(raid)
 
 -- Main Tank/Assist Frames
 if C["Raidframe"].MainTankFrames then
 	local raidtank = oUF:SpawnHeader("oUF_Raid_MT", nil, "raid",
-	"oUF-initialConfigFunction", ([[
+	"oUF-initialConfigFunction", [[
 	self:SetWidth(70)
 	self:SetHeight(40)
-	]]),
+	]],
 	"showRaid", true,
 	"yOffset", -8,
 	"groupFilter", "MAINTANK",

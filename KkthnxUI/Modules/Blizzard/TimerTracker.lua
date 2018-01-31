@@ -20,17 +20,14 @@ local function SkinIt(bar)
 	end
 
 	bar:SetSize(222, 24)
-	bar:StripTextures()
-	bar:SetBackdrop({bgFile = C["Media"].Blank, insets = {left = 0, right = 0, top = 0, bottom = 0}})
-	bar:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 	bar:SetStatusBarTexture(BlizzTimerTexture)
 	bar:SetStatusBarColor(170/255, 10/255, 10/255)
-	K.CreateBorder(bar, 4)
+	bar:SetTemplate("Transparent", true)
 
-	bar.spark = bar:CreateTexture(nil, "ARTWORK", nil, 1)
-	bar.spark:SetWidth(12)
-	bar.spark:SetHeight(bar:GetHeight() * 3.2)
-	bar.spark:SetTexture(C["Media"].Spark)
+	bar.spark = bar:CreateTexture(nil, "OVERLAY")
+	bar.spark:SetWidth(128)
+	bar.spark:SetHeight(bar:GetHeight())
+	bar.spark:SetTexture(C["Media"].Spark_128)
 	bar.spark:SetBlendMode("ADD")
 	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 end

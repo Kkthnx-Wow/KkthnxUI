@@ -29,7 +29,7 @@ else
 	K.Conflicts.DisableText = UNKNOWN
 end
 
-if K.IsAddOnEnabled("DiabolicUI") or K.IsAddOnEnabled("ElvUI") or K.IsAddOnEnabled("Tukui") or K.IsAddOnEnabled("ShestakUI") then
+if IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") or IsAddOnLoaded("ShestakUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 end
 
@@ -93,7 +93,7 @@ if K.IsAddOnEnabled("BadBoy") then
 end
 
 if K.IsAddOnEnabled("AdiBags") or K.IsAddOnEnabled("ArkInventory") or K.IsAddOnEnabled("cargBags_Nivaya") or K.IsAddOnEnabled("cargBags") or K.IsAddOnEnabled("Bagnon") or K.IsAddOnEnabled("Combuctor") or K.IsAddOnEnabled("TBag") or K.IsAddOnEnabled("BaudBag") then
-	C["Bags"].Enable = false
+	C["Inventory"].Enable = false
 end
 
 if K.IsAddOnEnabled("Prat-3.0") or K.IsAddOnEnabled("Chatter") then

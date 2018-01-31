@@ -175,9 +175,10 @@ function GroupLoot:CreateRollFrame()
 	status.bg:SetAlpha(0.1)
 	status.bg:SetAllPoints()
 	status.bg:SetDrawLayer("BACKGROUND", 2)
+
 	local spark = frame:CreateTexture(nil, "OVERLAY")
-	spark:SetSize(14, FRAME_HEIGHT * 1.8)
-	spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
+	spark:SetSize(128, FRAME_HEIGHT)
+	spark:SetTexture(C["Media"].Spark_128)
 	spark:SetBlendMode("ADD")
 	status.spark = spark
 

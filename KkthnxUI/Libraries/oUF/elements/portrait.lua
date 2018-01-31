@@ -1,33 +1,23 @@
 --[[
 # Element: Portraits
-
 Handles the updating of the unit's portrait.
-
 ## Widget
-
 Portrait - A `PlayerModel` or a `Texture` used to represent the unit's portrait.
-
 ## Notes
-
 A question mark model will be used if the widget is a PlayerModel and the client doesn't have the model information for
 the unit.
-
 ## Examples
-
     -- 3D Portrait
     -- Position and size
     local Portrait = CreateFrame('PlayerModel', nil, self)
     Portrait:SetSize(32, 32)
     Portrait:SetPoint('RIGHT', self, 'LEFT')
-
     -- Register it with oUF
     self.Portrait = Portrait
-
     -- 2D Portrait
     local Portrait = self:CreateTexture(nil, 'OVERLAY')
     Portrait:SetSize(32, 32)
     Portrait:SetPoint('RIGHT', self, 'LEFT')
-
     -- Register it with oUF
     self.Portrait = Portrait
 --]]
@@ -42,13 +32,11 @@ local function Update(self, event, unit)
 
 	--[[ Callback: Portrait:PreUpdate(unit)
 	Called before the element has been updated.
-
 	* self - the Portrait element
 	* unit - the unit for which the update has been triggered (string)
 	--]]
 	if(element.PreUpdate) then element:PreUpdate(unit) end
 
-	local modelUpdated = false
 	local guid = UnitGUID(unit)
 	local isAvailable = UnitIsConnected(unit) and UnitIsVisible(unit)
 	if(event ~= 'OnUpdate' or element.guid ~= guid or element.state ~= isAvailable) then
@@ -59,14 +47,12 @@ local function Update(self, event, unit)
 				element:SetPosition(0, 0, 0.25)
 				element:ClearModel()
 				element:SetModel([[Interface\Buttons\TalkToMeQuestionMark.m2]])
-				modelUpdated = true
 			else
 				element:SetCamDistanceScale(1)
 				element:SetPortraitZoom(1)
 				element:SetPosition(0, 0, 0)
 				element:ClearModel()
 				element:SetUnit(unit)
-				modelUpdated = true
 			end
 		else
 			SetPortraitTexture(element, unit)
@@ -78,19 +64,17 @@ local function Update(self, event, unit)
 
 	--[[ Callback: Portrait:PostUpdate(unit)
 	Called after the element has been updated.
-
 	* self - the Portrait element
 	* unit - the unit for which the update has been triggered (string)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(unit, event, modelUpdated)
+		return element:PostUpdate(unit)
 	end
 end
 
 local function Path(self, ...)
 	--[[ Override: Portrait.Override(self, event, unit)
 	Used to completely override the internal update function.
-
 	* self  - the parent object
 	* event - the event triggering the update (string)
 	* unit  - the unit accompanying the event (string)

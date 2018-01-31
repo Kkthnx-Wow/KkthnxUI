@@ -34,27 +34,27 @@ local function HideTicks()
 	end
 end
 
-local function SetCastTicks(self, numTicks, extraTickRatio)
+local function SetCastTicks(castbar, numTicks, extraTickRatio)
 	-- Adjust tick heights
-	self.tickHeight = self:GetHeight()
+	castbar.tickHeight = castbar:GetHeight()
 
 	extraTickRatio = extraTickRatio or 0
 	HideTicks()
 	if numTicks and numTicks <= 0 then return end
-	local w = self:GetWidth()
+	local w = castbar:GetWidth()
 	local d = w / (numTicks + extraTickRatio)
 	for i = 1, numTicks do
 		if not ticks[i] then
-			ticks[i] = self:CreateTexture(nil, "OVERLAY")
+			ticks[i] = castbar:CreateTexture(nil, "OVERLAY")
 			ticks[i]:SetTexture(CastbarTexture)
 			ticks[i]:SetVertexColor(0, 0, 0, 0.8)
 			ticks[i]:SetWidth(2) -- We could use 1
 		end
 
-		ticks[i]:SetHeight(self.tickHeight)
+		ticks[i]:SetHeight(castbar.tickHeight)
 
 		ticks[i]:ClearAllPoints()
-		ticks[i]:SetPoint("RIGHT", self, "LEFT", d * i, 0)
+		ticks[i]:SetPoint("RIGHT", castbar, "LEFT", d * i, 0)
 		ticks[i]:Show()
 	end
 end
@@ -62,39 +62,42 @@ end
 local MageSpellName = GetSpellInfo(5143) -- Arcane Missiles
 local MageBuffName = GetSpellInfo(166872) -- 4p T17 bonus proc for arcane
 
-local function PostCastStart(self, unit, name)
+local function PostCastStart(castbar, unit, name)
 	if unit == "vehicle" then unit = "player" end
 
-	self.Text:SetText(name)
+	local text = castbar.Text
+	if (text) then
+		castbar.Text:SetText(name)
+	end
 
 	-- Get length of Time, then calculate available length for Text
-	local timeWidth = self.Time:GetStringWidth()
-	local textWidth = self:GetWidth() - timeWidth - 10
-	local textStringWidth = self.Text:GetStringWidth()
+	local timeWidth = castbar.Time:GetStringWidth()
+	local textWidth = castbar:GetWidth() - timeWidth - 10
+	local textStringWidth = castbar.Text:GetStringWidth()
 
 	if timeWidth == 0 or textStringWidth == 0 then
 		K.Delay(0.05, function() -- Delay may need tweaking
-			textWidth = self:GetWidth() - self.Time:GetStringWidth() - 10
-			textStringWidth = self.Text:GetStringWidth()
-			if textWidth > 0 then self.Text:SetWidth(math_min(textWidth, textStringWidth)) end
+			textWidth = castbar:GetWidth() - castbar.Time:GetStringWidth() - 10
+			textStringWidth = castbar.Text:GetStringWidth()
+			if textWidth > 0 then castbar.Text:SetWidth(math_min(textWidth, textStringWidth)) end
 		end)
 	else
-		self.Text:SetWidth(math_min(textWidth, textStringWidth))
+		castbar.Text:SetWidth(math_min(textWidth, textStringWidth))
 	end
 
-	self.Spark:SetSize(14, self:GetHeight() * 3.2)
+	castbar.Spark:SetSize(128, castbar:GetHeight())
 
-	self.unit = unit
+	castbar.unit = unit
 
 	if C["Unitframe"].CastbarTicks and unit == "player" then
 		local baseTicks = K.ChannelTicks[name]
 
 		-- Detect channeling spell and if it"s the same as the previously channeled one
-		if baseTicks and name == self.prevSpellCast then
-			self.chainChannel = true
+		if baseTicks and name == castbar.prevSpellCast then
+			castbar.chainChannel = true
 		elseif baseTicks then
-			self.chainChannel = nil
-			self.prevSpellCast = name
+			castbar.chainChannel = nil
+			castbar.prevSpellCast = name
 		end
 
 		if baseTicks and K.ChannelTicksSize[name] and K.HastedChannelTicks[name] then
@@ -116,24 +119,24 @@ local function PostCastStart(self, unit, name)
 
 			local baseTickSize = K.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
+			local extraTick = castbar.max - hastedTickSize * (baseTicks + bonusTicks)
 			local extraTickRatio = extraTick / hastedTickSize
 
-			SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
+			SetCastTicks(castbar, baseTicks + bonusTicks, extraTickRatio)
 		elseif baseTicks and K.ChannelTicksSize[name] then
 			local curHaste = UnitSpellHaste("player") * 0.01
 			local baseTickSize = K.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks)
+			local extraTick = castbar.max - hastedTickSize * (baseTicks)
 			local extraTickRatio = extraTick / hastedTickSize
 
-			SetCastTicks(self, baseTicks, extraTickRatio)
+			SetCastTicks(castbar, baseTicks, extraTickRatio)
 		elseif baseTicks then
 			local hasBuff = UnitBuff("player", MageBuffName)
 			if name == MageSpellName and hasBuff then
 				baseTicks = baseTicks + 5
 			end
-			SetCastTicks(self, baseTicks)
+			SetCastTicks(castbar, baseTicks)
 		else
 			HideTicks()
 		end
@@ -156,29 +159,35 @@ local function PostCastStart(self, unit, name)
 		r, g, b = t[1], t[2], t[3]
 	end
 
-	if self.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
+	if castbar.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
 		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
 	end
 
-	self:SetStatusBarColor(r, g, b)
+	castbar:SetStatusBarColor(r, g, b)
 end
 
-local function PostCastStop(self)
-	self.chainChannel = nil
-	self.prevSpellCast = nil
+local function PostCastStop(castbar)
+	castbar.chainChannel = nil
+	castbar.prevSpellCast = nil
 end
 
-local function PostCastFailed(self)
-	self:SetMinMaxValues(0, 1)
-	self:SetValue(1)
-	self:SetStatusBarColor(1, 0, 0)
+local function PostCastFailedOrInterrupted(castbar, unit, name, castID)
+	castbar:SetStatusBarColor(1, 0, 0)
+	castbar:SetValue(castbar.max)
 
-	self.Spark:SetPoint("CENTER", self, "RIGHT")
+	local spark = castbar.Spark
+	if (spark) then
+		spark:SetPoint("CENTER", castbar, "RIGHT")
+		spark:SetWidth(0.001) -- This should hide it without an issue.
+	end
 
-	self.Time:SetText("")
+	local time = castbar.Time
+	if (time) then
+		time:SetText("")
+	end
 end
 
-local function PostChannelUpdate(self, unit, name)
+local function PostChannelUpdate(castbar, unit, name)
 	if not (unit == "player" or unit == "vehicle") then return end
 
 	if C["Unitframe"].CastbarTicks then
@@ -203,33 +212,33 @@ local function PostChannelUpdate(self, unit, name)
 
 			local baseTickSize = K.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
-			if self.chainChannel then
-				self.extraTickRatio = extraTick / hastedTickSize
-				self.chainChannel = nil
+			local extraTick = castbar.max - hastedTickSize * (baseTicks + bonusTicks)
+			if castbar.chainChannel then
+				castbar.extraTickRatio = extraTick / hastedTickSize
+				castbar.chainChannel = nil
 			end
 
-			SetCastTicks(self, baseTicks + bonusTicks, self.extraTickRatio)
+			SetCastTicks(castbar, baseTicks + bonusTicks, castbar.extraTickRatio)
 		elseif baseTicks and K.ChannelTicksSize[name] then
 			local curHaste = UnitSpellHaste("player") * 0.01
 			local baseTickSize = K.ChannelTicksSize[name]
 			local hastedTickSize = baseTickSize / (1 + curHaste)
-			local extraTick = self.max - hastedTickSize * (baseTicks)
-			if self.chainChannel then
-				self.extraTickRatio = extraTick / hastedTickSize
-				self.chainChannel = nil
+			local extraTick = castbar.max - hastedTickSize * (baseTicks)
+			if castbar.chainChannel then
+				castbar.extraTickRatio = extraTick / hastedTickSize
+				castbar.chainChannel = nil
 			end
 
-			SetCastTicks(self, baseTicks, self.extraTickRatio)
+			SetCastTicks(castbar, baseTicks, castbar.extraTickRatio)
 		elseif baseTicks then
 			local hasBuff = UnitBuff("player", MageBuffName)
 			if name == MageSpellName and hasBuff then
 				baseTicks = baseTicks + 5
 			end
-			if self.chainChannel then
+			if castbar.chainChannel then
 				baseTicks = baseTicks + 1
 			end
-			SetCastTicks(self, baseTicks)
+			SetCastTicks(castbar, baseTicks)
 		else
 			HideTicks()
 		end
@@ -238,7 +247,7 @@ local function PostChannelUpdate(self, unit, name)
 	end
 end
 
-local function PostCastInterruptible(self, unit)
+local function PostCastInterruptible(castbar, unit)
 	if unit == "vehicle" or unit == "player" then return end
 
 	local colors = K.Colors
@@ -256,39 +265,39 @@ local function PostCastInterruptible(self, unit)
 		r, g, b = t[1], t[2], t[3]
 	end
 
-	if self.notInterruptible and UnitCanAttack("player", unit) then
+	if castbar.notInterruptible and UnitCanAttack("player", unit) then
 		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
 	end
 
-	self:SetStatusBarColor(r, g, b)
+	castbar:SetStatusBarColor(r, g, b)
 end
 
-local function PostCastNotInterruptible(self)
+local function PostCastNotInterruptible(castbar)
 	local colors = K.Colors
-	self:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
+	castbar:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
 end
 
-local function CustomCastDelayText(self, duration)
-	if self.casting then
-		duration = self.max - duration
+local function CustomCastDelayText(castbar, duration)
+	if castbar.casting then
+		duration = castbar.max - duration
 	end
 
-	if self.channeling then
-		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(duration, self.delay))
+	if castbar.channeling then
+		castbar.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(duration, castbar.delay))
 	else
-		self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(math_abs(duration - self.max), "+", self.delay))
+		castbar.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(math_abs(duration - castbar.max), "+", castbar.delay))
 	end
 end
 
-local function CustomTimeText(self, duration)
-	if self.max > 600 then
-		return self.Time:SetText("")
+local function CustomTimeText(castbar, duration)
+	if castbar.max > 600 then
+		return castbar.Time:SetText("")
 	end
 
-	if self.channeling then
-		self.Time:SetText(("%.1f"):format(duration))
+	if castbar.channeling then
+		castbar.Time:SetText(("%.1f"):format(duration))
 	else
-		self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
+		castbar.Time:SetText(("%.1f"):format(math_abs(duration - castbar.max)))
 	end
 end
 
@@ -300,22 +309,24 @@ function K.CreateCastBar(self, unit)
 	castbar:SetTemplate("Transparent", true)
 
 	local spark = castbar:CreateTexture(nil, "OVERLAY")
-	spark:SetTexture(C["Media"].Spark)
+	spark:SetTexture(C["Media"].Spark_128)
 	spark:SetBlendMode("ADD")
 	castbar.Spark = spark
 
-	local shield = castbar:CreateTexture(nil, "OVERLAY")
-	shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
-	shield:SetPoint("LEFT", castbar, "RIGHT", -4, 12)
-	castbar.Shield = shield
+	if (unit == "target") then
+		local shield = castbar:CreateTexture(nil, "ARTWORK")
+		shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
+		shield:SetPoint("RIGHT", castbar, "LEFT", 34, 12)
+		castbar.Shield = shield
+	end
 
-	if unit == "player" then
+	if (unit == "player") then
 		castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 203)
 		K.Movers:RegisterFrame(castbar)
 	elseif unit == "target" then
 		castbar:SetPoint("BOTTOM", "oUF_PlayerCastbar", "TOP", 0, 6)
 		K.Movers:RegisterFrame(castbar)
-	elseif unit == "focus" or unit == "boss" then
+	elseif (unit == "focus" or unit == "boss") then
 		castbar:SetPoint("LEFT", 4, 0)
 		castbar:SetPoint("RIGHT", -28, 0)
 		castbar:SetPoint("TOP", 0, 20)
@@ -323,18 +334,19 @@ function K.CreateCastBar(self, unit)
 	end
 
 	if (unit == "player") then
-		local safeZone = castbar:CreateTexture(nil, "OVERLAY")
+		local safeZone = castbar:CreateTexture(nil, "ARTWORK")
 		safeZone:SetTexture(CastbarTexture)
+		safeZone:SetPoint("RIGHT")
+		safeZone:SetPoint("TOP")
+		safeZone:SetPoint("BOTTOM")
 		safeZone:SetVertexColor(0.69, 0.31, 0.31)
+		safeZone:SetWidth(0.0001)
 		castbar.SafeZone = safeZone
 	end
 
-	if (unit == "player" or unit == "target" or unit == "focus") then
+	if (unit == "player" or unit == "target" or unit == "focus" or unit == "boss") then
 		local time = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
 		time:SetPoint("RIGHT", -3.5, 0)
-		if K.Class == "PRIEST" then
-			time:SetTextColor(0.84, 0.75, 0.65)
-		end
 		time:SetJustifyH("RIGHT")
 		castbar.Time = time
 
@@ -344,9 +356,6 @@ function K.CreateCastBar(self, unit)
 		local text = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
 		text:SetPoint("LEFT", 3.5, 0)
 		text:SetPoint("RIGHT", time, "LEFT", -3.5, 0)
-		if K.Class == "PRIEST" then
-			text:SetTextColor(0.84, 0.75, 0.65)
-		end
 		text:SetJustifyH("LEFT")
 		text:SetWordWrap(false)
 		castbar.Text = text
@@ -362,9 +371,9 @@ function K.CreateCastBar(self, unit)
 		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 		button:SetAllPoints(icon)
 		if (unit == "player") then
-			icon:SetPoint("LEFT", castbar, "RIGHT", 6, 0)
-		elseif (unit == "target") then
 			icon:SetPoint("RIGHT", castbar, "LEFT", -6, 0)
+		elseif (unit == "target") then
+			icon:SetPoint("LEFT", castbar, "RIGHT", 6, 0)
 		else
 			icon:SetPoint("LEFT", castbar, "RIGHT", 6, 0)
 		end
@@ -377,11 +386,11 @@ function K.CreateCastBar(self, unit)
 	castbar.PostChannelStart = PostCastStart
 	castbar.PostCastStop = PostCastStop
 	castbar.PostChannelStop = PostCastStop
-	castbar.PostCastFailed = PostCastFailed
-	castbar.PostCastInterrupted = PostCastFailed
 	castbar.PostChannelUpdate = PostChannelUpdate
 	castbar.PostCastInterruptible = PostCastInterruptible
 	castbar.PostCastNotInterruptible = PostCastNotInterruptible
+	castbar.PostCastFailed = PostCastFailedOrInterrupted
+	castbar.PostCastInterrupted = PostCastFailedOrInterrupted
 
 	self.Castbar = castbar
 end

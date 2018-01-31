@@ -39,6 +39,7 @@ local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
 local UnitAffectingCombat = _G.UnitAffectingCombat
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
@@ -57,6 +58,33 @@ K.BorderBackdropTwo = {bgFile = C["Media"].Blank, insets = {top = -K.Mult, left 
 K.PixelBorder = {edgeFile = C["Media"].Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
 K.ShadowBackdrop = {edgeFile = C["Media"].Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
 K.TwoPixelBorder = {bgFile = C["Media"].Blank, edgeFile = C["Media"].Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
+
+K.DispelClasses = {
+	["PRIEST"] = {
+		["Magic"] = true,
+		["Disease"] = true
+	},
+	["SHAMAN"] = {
+		["Magic"] = false,
+		["Curse"] = true
+	},
+	["PALADIN"] = {
+		["Poison"] = true,
+		["Magic"] = false,
+		["Disease"] = true
+	},
+	["DRUID"] = {
+		["Magic"] = false,
+		["Curse"] = true,
+		["Poison"] = true,
+		["Disease"] = false,
+	},
+	["MONK"] = {
+		["Magic"] = false,
+		["Disease"] = true,
+		["Poison"] = true
+	}
+}
 
 function K.Print(...)
 	print("|cff3c9bed"..K.Title.."|r:", ...)
@@ -78,9 +106,8 @@ function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
 end
 
 -- Return short value of a number
-local shortValueFormat
 function K.ShortValue(v)
-	if C["General"].NumberPrefixStyle.Value == "METRIC" then
+	if C["Unitframe"].NumberPrefixStyle.Value == "METRIC" then
 		if math_abs(v) >= 1e9 then
 			return string_format("%.1fG", v / 1e9)
 		elseif math_abs(v) >= 1e6 then
@@ -90,7 +117,7 @@ function K.ShortValue(v)
 		else
 			return string_format("%d", v)
 		end
-	elseif C["General"].NumberPrefixStyle.Value == "CHINESE" then
+	elseif C["Unitframe"].NumberPrefixStyle.Value == "CHINESE" then
 		if math_abs(v) >= 1e8 then
 			return string_format("%.1fY", v / 1e8)
 		elseif math_abs(v) >= 1e4 then
@@ -98,7 +125,7 @@ function K.ShortValue(v)
 		else
 			return string_format("%d", v)
 		end
-	elseif C["General"].NumberPrefixStyle.Value == "KOREAN" then
+	elseif C["Unitframe"].NumberPrefixStyle.Value == "KOREAN" then
 		if math_abs(v) >= 1e8 then
 			return string_format("%.1f억", v / 1e8)
 		elseif math_abs(v) >= 1e4 then
@@ -108,7 +135,7 @@ function K.ShortValue(v)
 		else
 			return string_format("%d", v)
 		end
-	elseif C["General"].NumberPrefixStyle.Value == "GERMAN" then
+	elseif C["Unitframe"].NumberPrefixStyle.Value == "GERMAN" then
 		if math_abs(v) >= 1e9 then
 			return string_format("%.1fMrd", v / 1e9)
 		elseif math_abs(v) >= 1e6 then
@@ -118,7 +145,7 @@ function K.ShortValue(v)
 		else
 			return string_format("%d", v)
 		end
-	elseif C["General"].NumberPrefixStyle.Value == "DEFAULT" then
+	elseif C["Unitframe"].NumberPrefixStyle.Value == "DEFAULT" then
 		if math_abs(v) >= 1e9 then
 			return string_format("%.1fB", v / 1e9)
 		elseif math_abs(v) >= 1e6 then
@@ -230,6 +257,14 @@ function K.GetPlayerRole()
 	end
 
 	return assignedRole
+end
+
+function K.IsDispellableByMe(debuffType)
+	if not K.DispelClasses[K.Class] then return; end
+
+	if K.DispelClasses[K.Class][debuffType] then
+		return true
+	end
 end
 
 -- Chat channel check
