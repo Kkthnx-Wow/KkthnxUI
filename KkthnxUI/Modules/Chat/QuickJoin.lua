@@ -1,6 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("SocialQueue", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
-if C["Chat"].Enable ~= true or C["Chat"].QuickJoin ~= true then return end
+if C["Chat"].Enable ~= true and C["Chat"].QuickJoin ~=true then return end
 
 -- Sourced: ElvUI (Simpy and Merathilis)
 
