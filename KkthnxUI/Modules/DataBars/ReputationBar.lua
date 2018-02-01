@@ -6,13 +6,13 @@ local Module = K:NewModule("Reputation_DataBar", "AceEvent-3.0")
 local _G = _G
 local format = format
 
-local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
-local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
-local GetFriendshipReputation = GetFriendshipReputation
-local GetWatchedFactionInfo, GetNumFactions, GetFactionInfo = GetWatchedFactionInfo, GetNumFactions, GetFactionInfo
-local InCombatLockdown = InCombatLockdown
-local FACTION_BAR_COLORS = FACTION_BAR_COLORS
-local REPUTATION, STANDING = REPUTATION, STANDING
+local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
+local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
+local GetFriendshipReputation = _G.GetFriendshipReputation
+local GetWatchedFactionInfo, GetNumFactions, GetFactionInfo = _G.GetWatchedFactionInfo, _G.GetNumFactions, _G.GetFactionInfo
+local InCombatLockdown = _G.InCombatLockdown
+local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
+local REPUTATION, STANDING = _G.REPUTATION, _G.STANDING
 
 local ReputationFont = K.GetFont(C["DataBars"].Font)
 local ReputationTexture = K.GetTexture(C["DataBars"].Texture)
@@ -137,6 +137,7 @@ function Module:UpdateReputationDimensions()
 	self.reputationBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.reputationBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.reputationBar.text:SetSize(self.reputationBar:GetWidth() - 4, C["Media"].FontSize - 1)
+	self.reputationBar.spark:SetSize(16, self.reputationBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
 		self.reputationBar:SetAlpha(0)
@@ -175,10 +176,8 @@ function Module:OnEnable()
 	self.reputationBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.reputationBar.text:SetPoint("CENTER")
 
-	self.reputationBar.spark = self.reputationBar.statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	self.reputationBar.spark:SetWidth(12)
-	self.reputationBar.spark:SetHeight(self.reputationBar.statusBar:GetHeight() * 3)
-	self.reputationBar.spark:SetTexture(C["Media"].Spark)
+	self.reputationBar.spark = self.reputationBar.statusBar:CreateTexture(nil, "OVERLAY")
+	self.reputationBar.spark:SetTexture(C["Media"].Spark_16)
 	self.reputationBar.spark:SetBlendMode("ADD")
 	self.reputationBar.spark:SetPoint("CENTER", self.reputationBar.statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 

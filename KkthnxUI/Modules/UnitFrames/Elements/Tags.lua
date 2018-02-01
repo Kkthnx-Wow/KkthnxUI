@@ -447,3 +447,24 @@ oUF.Tags.Methods["KkthnxUI:NameplateHealth"] = function(unit)
 		return K.GetFormattedText("CURRENT_PERCENT", UnitHealth(unit), UnitHealthMax(unit))
 	end
 end
+
+oUF.Tags.Events["KkthnxUI:NameplateThreatColor"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameplateThreatColor"] = function(unit)
+	local _, status = UnitDetailedThreatSituation("player", unit)
+	if (status) and (IsInGroup() or UnitExists("pet")) then
+		return Hex(GetThreatStatusColor(status))
+	else
+		return ""
+	end
+end
+
+
+oUF.Tags.Events["KkthnxUI:NameplateThreat"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameplateThreat"] = function(unit)
+	local _, _, percent = UnitDetailedThreatSituation("player", unit)
+	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
+		return string_format("%.0f%%", percent)
+	else
+		return ""
+	end
+end

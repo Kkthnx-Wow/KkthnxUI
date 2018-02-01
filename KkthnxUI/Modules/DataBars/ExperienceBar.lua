@@ -98,6 +98,7 @@ function Module:UpdateExperienceDimensions()
 	self.expBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.expBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.expBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.expBar.spark:SetSize(16, self.expBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
 		self.expBar:SetAlpha(0)
@@ -159,10 +160,8 @@ function Module:OnEnable()
 	self.expBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.expBar.text:SetPoint("CENTER")
 
-	self.expBar.spark = self.expBar.statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	self.expBar.spark:SetWidth(12)
-	self.expBar.spark:SetHeight(self.expBar.statusBar:GetHeight() * 3)
-	self.expBar.spark:SetTexture(C["Media"].Spark)
+	self.expBar.spark = self.expBar.statusBar:CreateTexture(nil, "OVERLAY")
+	self.expBar.spark:SetTexture(C["Media"].Spark_16)
 	self.expBar.spark:SetBlendMode("ADD")
 	self.expBar.spark:SetPoint("CENTER", self.expBar.statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 

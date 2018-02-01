@@ -1,18 +1,18 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Testing", "AceEvent-3.0")
 
-C["Testing"] = {
+-- C["Testing"] = {
 
-}
+-- }
 
 --[[
-						So I can test stuff.
+So I can test stuff.
 
 Use this file for testing stuff that I do not want in the UI or I am unsure about.
 This is a good file to mess around with code in for anyone else as well.
 
-			((------ CodeName: Code Gone Wild :D ------))
-]]
+	((------ CodeName: Code Gone Wild :D ------))
+	]]
 
 --[[
 This is the layout we need to follow.
@@ -23,7 +23,7 @@ function WelcomeHome:OnInitialize()
 end
 
 function WelcomeHome:OnEnable()
-	self:Print("Hello World!")
+	self:RewardPrint("Hello World!")
 end
 
 function WelcomeHome:OnDisable()

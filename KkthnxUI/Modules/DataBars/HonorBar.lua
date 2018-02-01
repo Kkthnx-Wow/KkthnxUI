@@ -117,6 +117,7 @@ function Module:UpdateHonorDimensions()
 	self.HonorBar:SetSize(Minimap:GetWidth() or C["DataBars"].HonorWidth, C["DataBars"].HonorHeight)
 	self.HonorBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.HonorBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.HonorBar.spark:SetSize(16, self.HonorBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
 		self.HonorBar:SetAlpha(0)
@@ -175,10 +176,8 @@ function Module:OnEnable()
 	self.HonorBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.HonorBar.text:SetPoint("CENTER")
 
-	self.HonorBar.spark = self.HonorBar.statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	self.HonorBar.spark:SetWidth(12)
-	self.HonorBar.spark:SetHeight(self.HonorBar.statusBar:GetHeight() * 3)
-	self.HonorBar.spark:SetTexture(C["Media"].Spark)
+	self.HonorBar.spark = self.HonorBar.statusBar:CreateTexture(nil, "OVERLAY")
+	self.HonorBar.spark:SetTexture(C["Media"].Spark_16)
 	self.HonorBar.spark:SetBlendMode("ADD")
 	self.HonorBar.spark:SetPoint("CENTER", self.HonorBar.statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 

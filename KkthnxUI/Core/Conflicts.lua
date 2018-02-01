@@ -29,7 +29,7 @@ else
 	K.Conflicts.DisableText = UNKNOWN
 end
 
-if K.IsAddOnEnabled("DiabolicUI") or K.IsAddOnEnabled("ElvUI") or K.IsAddOnEnabled("Tukui") or K.IsAddOnEnabled("ShestakUI") then
+if IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("Tukui") or IsAddOnLoaded("ShestakUI") then
 	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 end
 

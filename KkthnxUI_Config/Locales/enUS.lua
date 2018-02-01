@@ -357,6 +357,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Enable threat feature, automatically changes by your role",
 		},
 
+		["ThreatPercent"] = {
+			["Name"] = "Threat Percent",
+			["Desc"] = "Enable threat percent on the nameplates",
+		},
+
 		["FontSize"] = {
 			["Name"] = "Font Size",
 			["Desc"] = "Font size on the nameplates",
@@ -628,9 +633,9 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Message Filter",
 			["Desc"] = "Filter messages in chat.",
 		},
-		
+
 		["QuickJoin"] = {
-			["Name"] = "QuickJoin",
+			["Name"] = "Quick Join",
 			["Desc"] = "Toggle QuickJoin messages in chat.",
 		},
 
@@ -1117,7 +1122,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Power Prediction Bar",
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
 		},
-		
+
 		["PvPText"] = {
 			["Name"] = "Set PVP Text",
 			["Desc"] = "Toggle the PvP Text",
@@ -1218,11 +1223,6 @@ KkthnxUIConfig["enUS"] = {
 		["Outline"] = {
 			["Name"] = "Outline",
 			["Desc"] = "Pick your poison",
-		},
-
-		["RaidAsParty"] = {
-			["Name"] = "Display Party as Raidframes",
-			["Desc"] = "Some people tend to like this kinda stuff.",
 		},
 
 		["RaidUtility"] = {

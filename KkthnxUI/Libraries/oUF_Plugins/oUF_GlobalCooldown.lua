@@ -8,7 +8,7 @@ local GetTime = GetTime
 
 local playerClass = select(2, UnitClass("player"))
 
-local spells = {
+--[[local spells = {
 	["DEATHKNIGHT"] = 50977,
 	["DEMONHUNTER"] = 204157,
 	["DRUID"] = 8921,
@@ -21,7 +21,7 @@ local spells = {
 	["SHAMAN"] = 403,
 	["WARLOCK"] = 686,
 	["WARRIOR"] = 57755,
-}
+}--]]
 
 local Enable = function(self)
 	if not self.GCD then return end
@@ -29,12 +29,13 @@ local Enable = function(self)
 	local width = bar:GetWidth()
 	bar:Hide()
 
-	bar.spark = bar:CreateTexture(nil, "DIALOG")
-	bar.spark:SetTexture("Interface\\CastingBar\\UI-CastingBar-Spark")
-	bar.spark:SetVertexColor(unpack(bar.Color))
-	bar.spark:SetHeight(bar.Height)
-	bar.spark:SetWidth(bar.Width)
+	bar.spark = bar:CreateTexture(nil, "OVERLAY")
+	bar.spark:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\Spark_128")
+	--bar.spark:SetVertexColor(unpack(bar.Color))
+	bar.spark:SetHeight(self.Health:GetHeight())
+	bar.spark:SetWidth(128)
 	bar.spark:SetBlendMode("ADD")
+	bar.spark:SetAlpha(0.8)
 
 	local function OnUpdateSpark()
 		bar.spark:ClearAllPoints()
@@ -47,16 +48,13 @@ local Enable = function(self)
 		end
 	end
 
-	local function Init()
-		local isKnown = IsSpellKnown(spells[playerClass])
-		if isKnown then
-			spellid = spells[playerClass]
-		end
+	--[[local function Init()
+		spellid = 61304
 		if spellid == nil then
 			return
 		end
 		return spellid
-	end
+	end--]]
 
 	local function OnHide()
 		bar:SetScript("OnUpdate", nil)
@@ -68,12 +66,12 @@ local Enable = function(self)
 	end
 
 	local function UpdateGCD()
-		if spellid == nil then
+		--[[if spellid == nil then
 			if Init() == nil then
 				return
 			end
-		end
-		local start, dur = GetSpellCooldown(spellid)
+		end--]]
+		local start, dur = GetSpellCooldown(61304)
 		if dur and dur > 0 and dur <= 2 then
 			usingspell = 1
 			starttime = start

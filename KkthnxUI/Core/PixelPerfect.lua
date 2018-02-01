@@ -17,14 +17,14 @@ local SetCVar = _G.SetCVar
 
 -- Optimize graphic after we enter world
 local PixelPerfect = CreateFrame("Frame")
-PixelPerfect:RegisterEvent("PLAYER_LOGIN")
-PixelPerfect:RegisterEvent("VARIABLES_LOADED")
-PixelPerfect:RegisterEvent("CINEMATIC_STOP")
-PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
+PixelPerfect:RegisterEvent("ADDON_LOADED")
+PixelPerfect:RegisterEvent("PLAYER_REGEN_ENABLED")
+PixelPerfect:RegisterEvent("PLAYER_REGEN_DISABLED")
+PixelPerfect:RegisterEvent("LOADING_SCREEN_DISABLED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
-	if C["General"].AutoScale == true then
+	if (C["General"] and C["General"].AutoScale) then
 		if not InCombatLockdown() then
-			local InterfaceScale = 768 / string_match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)")
+			local InterfaceScale = 768 / K.ScreenHeight
 			if (InterfaceScale < 0.64) then
 				C["General"].AutoScale = false
 				UIParent:SetScale(InterfaceScale)

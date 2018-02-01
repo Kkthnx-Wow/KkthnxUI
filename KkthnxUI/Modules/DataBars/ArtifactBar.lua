@@ -118,7 +118,7 @@ function Module:UpdateArtifactDimensions()
 	self.artifactBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.artifactBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
 	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
-	self.artifactBar.statusBar:SetRotatesTexture(false)
+	self.artifactBar.spark:SetSize(16, self.artifactBar:GetHeight())
 
 
 	if C["DataBars"].MouseOver then
@@ -169,10 +169,8 @@ function Module:OnEnable()
 	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
 	self.artifactBar.text:SetPoint("CENTER")
 
-	self.artifactBar.spark = self.artifactBar.statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	self.artifactBar.spark:SetWidth(12)
-	self.artifactBar.spark:SetHeight(self.artifactBar.statusBar:GetHeight() * 3)
-	self.artifactBar.spark:SetTexture(C["Media"].Spark)
+	self.artifactBar.spark = self.artifactBar.statusBar:CreateTexture(nil, "OVERLAY")
+	self.artifactBar.spark:SetTexture(C["Media"].Spark_16)
 	self.artifactBar.spark:SetBlendMode("ADD")
 	self.artifactBar.spark:SetPoint("CENTER", self.artifactBar.statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 

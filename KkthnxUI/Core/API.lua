@@ -21,7 +21,7 @@ local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 
 -- Preload
-K.Mult = 1
+K.Mult = 768 / K.ScreenHeight / UIParent:GetScale()
 function K.Scale(x) return
 	K.Mult * math_floor(x / K.Mult + 0.5)
 end
@@ -32,13 +32,14 @@ local backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], 
 local borderr, borderg, borderb = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
 
 -- frame to securely hide items (Goldpaw)
-K.UIFrameHider = CreateFrame("Frame", "KkthnxUI_FrameHider", UIParent)
+K.UIFrameHider = CreateFrame("Frame", "UIFrameHider", UIParent)
 K.UIFrameHider:Hide()
 K.UIFrameHider:SetAllPoints()
+K.UIFrameHider.children = {}
 RegisterStateDriver(K.UIFrameHider, "visibility", "hide")
 
 -- Petbattle frame to hide items when in petbattles
-K.PetBattleHider = CreateFrame("Frame", "KkthnxUI_PetBattleHider", UIParent, "SecureHandlerStateTemplate")
+K.PetBattleHider = CreateFrame("Frame", "PetBattleHider", UIParent, "SecureHandlerStateTemplate")
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
@@ -91,17 +92,17 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	end
 end
 
-local function CreateBackdrop(f, t, tex)
-	if not t then t = "Default" end
+local function CreateBackdrop(f, template)
+	if not template then template = "Transparent" end
 	if f.Backdrop then return end
 
 	local b = CreateFrame("Frame", "$parentBackdrop", f)
 	b:SetPoint("TOPLEFT", 0, -0)
 	b:SetPoint("BOTTOMRIGHT", -0, 0)
-	b:SetTemplate(t, tex)
+	b:SetTemplate(template)
 
 	if f:GetFrameLevel() - 1 >= 0 then
-		b:SetFrameLevel(f:GetFrameLevel() - 1)
+		b:SetFrameLevel(f:GetFrameLevel())
 	else
 		b:SetFrameLevel(0)
 	end

@@ -45,10 +45,10 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	statusBar:SetSize(222, 22)
 	text:Hide()
 
-	statusBar.spark = statusBar:CreateTexture(nil, "ARTWORK", nil, 1)
-	statusBar.spark:SetWidth(12)
-	statusBar.spark:SetHeight(statusBar:GetHeight() * 3.2)
-	statusBar.spark:SetTexture(C["Media"].Spark)
+	statusBar.spark = statusBar:CreateTexture(nil, "OVERLAY")
+	statusBar.spark:SetWidth(128)
+	statusBar.spark:SetHeight(statusBar:GetHeight())
+	statusBar.spark:SetTexture(C["Media"].Spark_128)
 	statusBar.spark:SetBlendMode("ADD")
 	statusBar.spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 

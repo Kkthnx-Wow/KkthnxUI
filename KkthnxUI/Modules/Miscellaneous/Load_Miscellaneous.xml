@@ -5,6 +5,7 @@
     <Script file="ChatBubble.lua"/>
     <Script file="ColorTextures.lua"/>
     <Script file="DropDown.lua"/>
+    <Script file="Durability.lua"/>
     <Script file="Filger.lua"/>
     <Script file="KillingBlow.lua"/>
     <Script file="Miscellaneous.lua"/>

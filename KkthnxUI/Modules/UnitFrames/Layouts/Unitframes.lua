@@ -39,7 +39,7 @@ local function UpdateClassPortraits(self, unit)
 	end
 end
 
-local function oUF_Unitframes(self, unit)
+local function CreateUnitframeLayout(self, unit)
 	unit = unit:match("^(.-)%d+") or unit
 
 	self:RegisterForClicks("AnyUp")
@@ -228,7 +228,6 @@ local function oUF_Unitframes(self, unit)
 		self.Portrait:SetTemplate("Transparent")
 		self.Portrait:SetFrameStrata("BACKGROUND")
 		self.Portrait:SetFrameLevel(1)
-		self.Portrait.PostUpdate = K.PortraitUpdate
 
 		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
 			self.Portrait:SetSize(46, 46)
@@ -333,7 +332,9 @@ local function oUF_Unitframes(self, unit)
 		elseif (K.Class == "MONK") then
 			K.CreateStagger(self)
 		end
-	elseif (unit == "target") then
+	end
+
+	if (unit == "target") then
 		if C["Unitframe"].Castbars then
 			K.CreateCastBar(self, "target")
 		end
@@ -353,7 +354,9 @@ local function oUF_Unitframes(self, unit)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
-	elseif (unit == "focus") then
+	end
+
+	if (unit == "focus") then
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
@@ -361,7 +364,9 @@ local function oUF_Unitframes(self, unit)
 			K.CreateCastBar(self, "focus")
 		end
 		K.CreateAuras(self, "focus")
-	elseif (unit == "boss") then
+	end
+
+	if (unit == "boss") then
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
@@ -369,7 +374,9 @@ local function oUF_Unitframes(self, unit)
 			K.CreateCastBar(self, unit)
 		end
 		K.CreateAuras(self, "boss")
-	elseif (unit == "party") then
+	end
+
+	if (unit == "party") then
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
@@ -405,8 +412,8 @@ local function oUF_Unitframes(self, unit)
 	return self
 end
 
-oUF:RegisterStyle("oUF_Unitframes", oUF_Unitframes)
-oUF:SetActiveStyle("oUF_Unitframes")
+oUF:RegisterStyle("oUF_KkthnxUI_Unitframes", CreateUnitframeLayout)
+oUF:SetActiveStyle("oUF_KkthnxUI_Unitframes")
 
 local player = oUF:Spawn("player", "oUF_Player")
 player:SetSize(190, 52)
@@ -449,25 +456,24 @@ focustarget:SetPoint("TOPRIGHT", oUF_Focus, "BOTTOMLEFT", 56, 2)
 K.Movers:RegisterFrame(focustarget)
 
 if (C["Unitframe"].Party) then
-	local party = oUF:SpawnHeader("oUF_Party", nil, (C["Raidframe"].RaidAsParty and "custom [group:party][group:raid] hide;show") or "custom [@raid6, exists] hide; show",
+	local party = oUF:SpawnHeader("oUF_Party", nil, "custom [@raid6, exists] hide; show",
 	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
+		local header = self:GetParent()
+		self:SetWidth(header:GetAttribute("initial-width"))
+		self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 	"initial-width", 140,
 	"initial-height", 38,
 	"showSolo", false,
 	"showParty", true,
+	"showPlayer", C["Unitframe"].ShowPlayer,
 	"showRaid", false,
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
-	"showPlayer", C["Unitframe"].ShowPlayer, -- Need to add this as an option.
-	"yOffset", -44
-	)
+	"yOffset", -44)
 	party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
-	party:SetScale(C["Unitframe"].Scale)
+	party:SetScale(C["Unitframe"].Scale or 1)
 	K.Movers:RegisterFrame(party)
 end
 

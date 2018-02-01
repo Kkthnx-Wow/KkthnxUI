@@ -56,8 +56,8 @@ function Module:OnInitialize()
 	-- Create our container frame
 	self.frame = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
 	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -21)
-	self.frame:SetSize(C["General"].TalkingHeadWidth or 570, C["General"].TalkingHeadHeight or 155)
-	self.frame:SetAlpha(C["General"].TalkingHeadAlpha or 0.75)
+	self.frame:SetSize(C["Skins"].TalkingHeadWidth or 570, C["Skins"].TalkingHeadHeight or 155)
+	self.frame:SetAlpha(C["Skins"].TalkingHeadAlpha or 0.75)
 
 	K.Movers:RegisterFrame(self.frame)
 end

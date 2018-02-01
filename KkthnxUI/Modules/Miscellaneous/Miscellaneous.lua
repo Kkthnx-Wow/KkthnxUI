@@ -36,35 +36,6 @@ local Movers = K["Movers"]
 UIErrorsFrame:SetFrameLevel(0)
 
 do
-	local VehicleSeatMover = CreateFrame("Frame", "VehicleSeatMover", UIParent)
-	VehicleSeatMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 51, -87)
-	VehicleSeatMover:SetWidth((VehicleSeatIndicator:GetWidth() - 25))
-	VehicleSeatMover:SetHeight(VehicleSeatIndicator:GetHeight() - 25)
-
-	function Module:PositionVehicleFrame()
-		VehicleSeatIndicator:ClearAllPoints()
-		VehicleSeatIndicator:SetPoint("CENTER", VehicleSeatMover, "CENTER", 0, 0)
-		VehicleSeatIndicator:SetScale(0.8)
-
-		-- This will block UIParent_ManageFramePositions() to be executed
-		VehicleSeatIndicator.IsShown = function() return false end
-
-		K.Movers:RegisterFrame(VehicleSeatMover)
-	end
-
-	function Module:PositionDurabilityFrame()
-		DurabilityFrame:SetFrameStrata("HIGH")
-
-		local function SetPosition(self, _, parent)
-			if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
-				DurabilityFrame:ClearAllPoints()
-				DurabilityFrame:SetPoint("RIGHT", Minimap, "RIGHT")
-				DurabilityFrame:SetScale(0.7)
-			end
-		end
-		hooksecurefunc(DurabilityFrame, "SetPoint", SetPosition)
-	end
-
 	function Module:DELETE_ITEM_CONFIRM(...)
 		if StaticPopup1EditBox:IsShown() then
 			StaticPopup1EditBox:Hide()
@@ -88,9 +59,6 @@ do
 	end
 
 	function Module:OnInitialize(...)
-		self:PositionVehicleFrame()
-		self:PositionDurabilityFrame()
-
 		self:RegisterEvent("ADDON_LOADED")
 		self:RegisterEvent("DELETE_ITEM_CONFIRM")
 	end
@@ -152,7 +120,7 @@ do
 	end)
 end
 
-do -- Make InterfaceOptionsFrame moveable.
+--[[do -- Make InterfaceOptionsFrame moveable.
 	InterfaceOptionsFrame:SetClampedToScreen(true)
 	InterfaceOptionsFrame:SetMovable(true)
 	InterfaceOptionsFrame:EnableMouse(true)
@@ -167,7 +135,7 @@ do -- Make InterfaceOptionsFrame moveable.
 		self:StopMovingOrSizing()
 		self.isMoving = false
 	end)
-end
+end--]]
 
 -- skin return to graveyard button
 do
@@ -209,35 +177,6 @@ do -- Move some frames (Elvui)
 	end)
 end
 
-do -- LevelUp + BossBanner Mover
-	local LBBMover = _G.CreateFrame("Frame", "LevelUpBossBannerHolder", _G.UIParent)
-	LBBMover:SetSize(200, 20)
-	LBBMover:SetPoint("TOP", _G.UIParent, "TOP", 0, -120)
-
-	local LevelUpBossBanner = _G.CreateFrame("Frame")
-	LevelUpBossBanner:RegisterEvent("PLAYER_LOGIN")
-	LevelUpBossBanner:SetScript("OnEvent", function(self, event)
-		Movers:RegisterFrame(LBBMover)
-
-		local function Reanchor(frame, _, anchor)
-			if anchor ~= LBBMover then
-				frame:ClearAllPoints()
-				frame:SetPoint("TOP", LBBMover)
-			end
-		end
-
-		-- Level Up Display
-		LevelUpDisplay:ClearAllPoints()
-		LevelUpDisplay:SetPoint("TOP", LBBMover)
-		_G.hooksecurefunc(LevelUpDisplay, "SetPoint", Reanchor)
-
-		-- Boss Banner
-		BossBanner:ClearAllPoints()
-		BossBanner:SetPoint("TOP", LBBMover)
-		_G.hooksecurefunc(BossBanner, "SetPoint", Reanchor)
-	end)
-end
-
 do -- Display battleground messages in the middle of the screen.
 	local PVPMessageEnhancement = _G.CreateFrame("Frame")
 	PVPMessageEnhancement:RegisterEvent("CHAT_MSG_BG_SYSTEM_HORDE")
@@ -255,7 +194,7 @@ end
 do -- Force readycheck warning
 	local ShowReadyCheckHook = function(self, initiator)
 		if initiator ~= "player" then
-			PlaySound(SOUNDKIT.READY_CHECK, "Master")
+			PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK, "Master")
 		end
 	end
 	_G.hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)

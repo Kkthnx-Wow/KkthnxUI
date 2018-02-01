@@ -28,6 +28,28 @@ local oUF = ns.oUF or oUF
 if not oUF then return end
 local colors = K.Colors
 
+-- AuraWatch
+local RaidBuffsPosition = {
+	TOPLEFT = {6, 1},
+	TOPRIGHT = {-6, 1},
+	BOTTOMLEFT = {6, 1},
+	BOTTOMRIGHT = {-6, 1},
+	LEFT = {6, 1},
+	RIGHT = {-6, 1},
+	TOP = {0, 0},
+	BOTTOM = {0, 0},
+}
+
+function K.MultiCheck(check, ...)
+    for i = 1, select("#", ...) do
+        if (check == select(i, ...)) then
+            return true
+        end
+    end
+
+    return false
+end
+
 local function UpdatePortraitColor(self, unit, min, max)
 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then return end
 
@@ -48,57 +70,12 @@ local function UpdatePortraitColor(self, unit, min, max)
 	end
 end
 
--- PreUpdateHealth
-function K.PreUpdateHealth(self, unit)
-	--[[if UnitIsEnemy(unit, "player") then
-		self.colorClass = false
-	else
-		self.colorClass = true
-	end--]]
-end
-
 -- PostUpdateHealth
 function K.PostUpdateHealth(self, unit, cur, min, max)
 	if self.Portrait and not C["Unitframe"].ThreeDPortraits then
 		UpdatePortraitColor(self, unit, cur, max)
 	end
 end
-
--- PostPower update
-function K.PostUpdatePower(self, unit, cur, min, max)
-
-end
-
-function K.PortraitUpdate(self, unit, event, shouldUpdate)
-	if (shouldUpdate) then
-		local rotation = 0
-		local camDistanceScale = 1
-		local xOffset, yOffset = 0, 0
-
-		if self:GetFacing() ~= (rotation / 60) then
-			self:SetFacing(rotation / 60)
-		end
-
-		self:SetCamDistanceScale(camDistanceScale)
-		self:SetPosition(0, xOffset, yOffset)
-
-		-- Refresh model to fix incorrect display issues
-		self:ClearModel()
-		self:SetUnit(unit)
-	end
-end
-
--- AuraWatch
-local RaidBuffsPosition = {
-	TOPLEFT = {6, 1},
-	TOPRIGHT = {-6, 1},
-	BOTTOMLEFT = {6, 1},
-	BOTTOMRIGHT = {-6, 1},
-	LEFT = {6, 1},
-	RIGHT = {-6, 1},
-	TOP = {0, 0},
-	BOTTOM = {0, 0},
-}
 
 function K.CreateAuraWatchIcon(icon)
 	if icon.icon and not icon.hideIcon then

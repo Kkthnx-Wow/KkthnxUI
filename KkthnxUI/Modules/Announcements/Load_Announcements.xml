@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Announcements -->
-    <Script file="AnnounceCountdown.lua"/>
-    <Script file="AnnounceInterrupt.lua"/>
-    <Script file="AnnounceSapped.lua"/>
+    <Script file="Countdown.lua"/>
+    <Script file="Interrupt.lua"/>
+    <Script file="Sapped.lua"/>
 </Ui>

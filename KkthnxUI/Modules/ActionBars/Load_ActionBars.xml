@@ -11,11 +11,11 @@
     <Script file="Bar5.lua"/>
     <Script file="PetBar.lua"/>
     <Script file="StanceBar.lua"/>
+    <Script file="LeaveVehicle.lua"/>
     <Script file="Toggle.lua"/>
     <Script file="Style.lua"/>
     <Script file="ExtraActionButton.lua"/>
     <Script file="Range.lua"/>
     <Script file="Others.lua"/>
-    <Script file="Vehicle.lua"/>
     <Script file="Cooldowns.lua"/>
 </Ui>

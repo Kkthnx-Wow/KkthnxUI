@@ -201,6 +201,12 @@ function Filger:DisplayActives()
 				bar.statusbar:SetMinMaxValues(0, 1)
 				bar.statusbar:SetValue(0)
 
+				bar.statusbar.spark = bar.statusbar:CreateTexture(nil, "OVERLAY")
+				bar.statusbar.spark:SetTexture(C["Media"].Spark_16)
+				bar.statusbar.spark:SetBlendMode("ADD")
+				bar.statusbar.spark:SetPoint("CENTER", bar.statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+				bar.statusbar.spark:SetSize(16, bar.statusbar:GetHeight())
+
 				if bar.bg then
 					bar.bg = _G[bar.bg:GetName()]
 				else

@@ -330,7 +330,7 @@ local function UpdateTarget(self)
 		self.Castbar.Icon:SetSize(C["Nameplates"].Height * 2 * K.NoScaleMult + 3, C["Nameplates"].Height * 2 * K.NoScaleMult + 3)
 		self.Castbar.Icon:SetPoint("TOPLEFT", self.Health, "TOPRIGHT", 4, 0)
 		if (UnitExists("target") and not UnitIsUnit(self.unit, "player")) then
-			self:SetAlpha(C.UnitframePlugins.OORAlpha)
+			self:SetAlpha(C["Nameplates"].OORAlpha)
 		else
 			self:SetAlpha(1)
 		end
@@ -510,8 +510,8 @@ local function StyleUpdate(self, unit)
 	CreateVirtualFrame(self.Castbar)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Spark:SetSize(14, self:GetHeight() * 3.2)
-	self.Castbar.Spark:SetTexture(C["Media"].Spark)
+	self.Castbar.Spark:SetSize(128, self:GetHeight())
+	self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
 	self.Castbar.Spark:SetBlendMode("ADD")
 
 	-- Create Cast Time Text
@@ -548,9 +548,17 @@ local function StyleUpdate(self, unit)
 	CreateVirtualFrame(self.Castbar, self.Castbar.Icon)
 
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
-	self.Castbar.Shield:SetTexture[[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]]
+	self.Castbar.Shield:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]])
 	self.Castbar.Shield:SetSize(40, 40)
 	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 18, 8)
+
+	if C["Nameplates"].ThreatPercent == true then
+		self.ThreatPercentText = self.Health:CreateFontString(nil, "OVERLAY")
+		self.ThreatPercentText:SetPoint("RIGHT", self.Health, "LEFT", -4, 14)
+		self.ThreatPercentText:SetFont(C["Media"].Font, C["Nameplates"].FontSize * K.NoScaleMult - 1, C["Nameplates"].Outline and "OUTLINE" or "")
+		self.ThreatPercentText:SetShadowOffset(C["Nameplates"].Outline and 0 or 1, C["Nameplates"].Outline and -0 or -1)
+		self:Tag(self.ThreatPercentText, "[KkthnxUI:NameplateThreatColor][KkthnxUI:NameplateThreat]")
+	end
 
 	-- Raid Icon
 	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY", nil, 7)

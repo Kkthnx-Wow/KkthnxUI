@@ -150,13 +150,10 @@ end
 
 -- Filter unwanted groups
 KkthnxUIConfig.Filter = {
-	["Developer"] = true,
 	["FilgerSpells"] = true,
 	["Media"] = true,
 	["OrderedIndex"] = true,
-	["Position"] = true,
 	["UnitframePlugins"] = true,
-	["Test"] = true,
 }
 
 local function GetOrderedIndex(t)
