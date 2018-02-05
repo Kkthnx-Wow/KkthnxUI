@@ -46,7 +46,6 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: K.UIFrameHider, UIHider
 
-K.Incompats = {}
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
@@ -177,28 +176,6 @@ function K.Round(num, idp)
 	return math_floor(num + 0.5)
 end
 
--- Better split function
-function K.Split(str, del)
-	local t = {}
-	local index = 0
-	while (string_find(str, del)) do
-		local s, e = string_find(str, del)
-		t[index] = string_sub(str, 1, s - 1)
-		str = string_sub(str, s + #del)
-		index = index + 1
-	end
-	table_insert(t, str)
-	return t
-end
-
--- lua doesn"t have a good function for finding a value in a table
-function K.InTable (e, t)
-	for _, v in pairs(t) do
-		if (v == e) then return true end
-	end
-	return false
-end
-
 -- RGB to Hex
 function K.RGBToHex(r, g, b)
 	r = r <= 1 and r >= 0 and r or 0
@@ -207,46 +184,8 @@ function K.RGBToHex(r, g, b)
 	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
-function K.IsIncompatible(self)
-	if (not K.Incompats[self]) then
-		return false
-	end
-	for addonName, condition in pairs(K.Incompats[self]) do
-		if (type(condition) == "function") then
-			if K.IsAddOnEnabled(addonName) then
-				return condition(self)
-			end
-		else
-			if K.IsAddOnEnabled(addonName) then
-				return true
-			end
-		end
-	end
-	return false
-end
-
-function K.SetIncompatible(self, ...)
-	if (not K.Incompats[self]) then
-		K.Incompats[self] = {}
-	end
-	local numArgs = select("#", ...)
-	local currentArg = 1
-
-	while currentArg <= numArgs do
-		local addonName = select(currentArg, ...)
-		self.Check(addonName, currentArg, "string")
-
-		local condition
-		if (numArgs > currentArg) then
-			local nextArg = select(currentArg + 1, ...)
-			if (type(nextArg) == "function") then
-				condition = nextArg
-				currentArg = currentArg + 1
-			end
-		end
-		currentArg = currentArg + 1
-		K.Incompats[self][addonName] = condition and condition or true
-	end
+function K.CheckAddOnState(addon)
+	return K.AddOns[string_lower(addon)] or false
 end
 
 function K.GetPlayerRole()

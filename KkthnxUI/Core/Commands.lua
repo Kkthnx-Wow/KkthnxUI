@@ -384,7 +384,7 @@ _G.SLASH_FPS1 = "/fps"
 
 -- Deadly boss mods testing.
 SlashCmdList.DBMTEST = function()
-	if K.IsAddOnEnabled("DBM-Core") then
+	if K.CheckAddOnState("DBM-Core") then
 		DBM:DemoMode()
 	end
 end

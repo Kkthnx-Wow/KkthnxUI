@@ -3,7 +3,7 @@ local Module = K:NewModule("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
 if K.WoWBuild < 24015 then return end
 
---WoW API
+-- WoW API
 local hooksecurefunc = hooksecurefunc
 local CreateFrame = CreateFrame
 local InCombatLockdown = InCombatLockdown
@@ -97,7 +97,7 @@ function Module:TaintError(event, addonName, addonFunc)
 end
 
 function Module:StaticPopup_Show(name)
-	if(name == "ADDON_ACTION_FORBIDDEN") then
+	if (name == "ADDON_ACTION_FORBIDDEN") then
 		StaticPopup_Hide(name)
 	end
 end

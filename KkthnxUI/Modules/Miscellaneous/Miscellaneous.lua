@@ -137,25 +137,6 @@ end
 	end)
 end--]]
 
--- skin return to graveyard button
-do
-	GhostFrameMiddle:SetAlpha(0)
-	GhostFrameRight:SetAlpha(0)
-	GhostFrameLeft:SetAlpha(0)
-	GhostFrame:StripTextures(true)
-	GhostFrame:SkinButton()
-	GhostFrame:ClearAllPoints()
-	GhostFrame:SetPoint("TOP", UIParent, "TOP", 0, -150)
-	GhostFrameContentsFrameText:SetPoint("TOPLEFT", 53, 0)
-	GhostFrameContentsFrameIcon:SetTexCoord(unpack(K.TexCoords))
-	GhostFrameContentsFrameIcon:SetPoint("RIGHT", GhostFrameContentsFrameText, "LEFT", -12, 0)
-	local b = CreateFrame("Frame", nil, GhostFrameContentsFrameIcon:GetParent())
-	b:SetAllPoints(GhostFrameContentsFrameIcon)
-	GhostFrameContentsFrameIcon:SetSize(37, 38)
-	GhostFrameContentsFrameIcon:SetParent(b)
-	b:SetTemplate("", true)
-end
-
 do -- Move some frames (Elvui)
 	local TicketStatusMover = _G.CreateFrame("Frame", "TicketStatusMoverAnchor", _G.UIParent)
 	TicketStatusMover:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 250, -6)

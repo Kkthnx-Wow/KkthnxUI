@@ -3,7 +3,6 @@
     <!-- Load_Core -->
     <Script file="Media.lua"/>
     <Script file="API.lua"/>
-    <Script file="Conflicts.lua"/>
     <Script file="StaticPopups.lua"/>
     <Script file="PixelPerfect.lua"/>
     <Script file="Functions.lua"/>
@@ -13,6 +12,7 @@
     <Script file="Install.lua"/>
     <Script file="Border.lua"/>
     <Script file="Kill.lua"/>
+    <Script file="Conflicts.lua"/>
     <Script file="CheckVersion.lua"/>
     <Script file="Movers.lua"/>
     <Script file="CustomSettings.lua"/>

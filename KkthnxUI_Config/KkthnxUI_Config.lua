@@ -597,6 +597,9 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 
+	local ConfigFont = K.GetFont(C["General"].Font)
+	local ConfigTexture = K.GetTexture(C["General"].Texture)
+
 	local Button = CreateFrame("Button", nil, parent)
 	Button:SetTemplate("Transparent")
 	Button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
@@ -659,7 +662,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 
 	Button.Color = Button:CreateTexture(nil, "OVERLAY")
 	Button.Color:SetAllPoints(Button)
-	Button.Color:SetTexture("Interface\\TargetingFrame\\UI-StatusBar")
+	Button.Color:SetTexture(ConfigTexture)
 	Button.Color:SetVertexColor(value[1], value[2], value[3], value[4])
 
 	Button.Label = Button:CreateFontString(nil, "OVERLAY")

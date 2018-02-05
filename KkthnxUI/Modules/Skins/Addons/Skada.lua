@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C["Skins"].Skada ~= true or not K.IsAddOnEnabled("Skada") then return end
+if C["Skins"].Skada ~= true or not K.CheckAddOnState("Skada") then return end
 
 local _G = _G
 

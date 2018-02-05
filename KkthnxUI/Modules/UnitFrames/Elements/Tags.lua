@@ -274,7 +274,7 @@ oUF.Tags.Methods["KkthnxUI:NameAbbreviateMedium"] = function(unit)
 	local returnString = ""
 
 	if name then
-		if name:len() > 18 then
+		if name:len() > 15 then
 			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
 		else
 			returnString = name
@@ -290,7 +290,7 @@ oUF.Tags.Methods["KkthnxUI:NameAbbreviateShort"] = function(unit)
 	local returnString = ""
 
 	if name then
-		if name:len() > 8 then
+		if name:len() > 10 then
 			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
 		else
 			returnString = name
@@ -309,7 +309,7 @@ end
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local NameShort = UnitName(unit) or UNKNOWN
-	return NameShort ~= nil and K.ShortenString(NameShort, 8, true) or ""
+	return NameShort ~= nil and K.ShortenString(NameShort, 10, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"

@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("BagnonSkin", "AceEvent-3.0")
 
-if not K.IsAddOnEnabled("Bagnon") then return end
+if not K.CheckAddOnState("Bagnon") then return end
 
 function Module:BagnonSkin(event, addon)
 	for k, frame in Bagnon:IterateFrames() do

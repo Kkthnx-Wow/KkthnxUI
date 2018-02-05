@@ -7,6 +7,7 @@ local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 local _G = _G
 local pairs = pairs
 local print = print
+local table_insert = tinsert
 
 local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
 local CLOSE = _G.CLOSE
@@ -19,6 +20,11 @@ local PickupContainerItem = PickupContainerItem
 local SortBags = SortBags
 local SortBankBags = SortBankBags
 local SortReagentBankBags = SortReagentBankBags
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetItemQualityColor = _G.GetItemQualityColor
+local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
+local GetContainerItemLink = _G.GetContainerItemLink
 local PlaySound = _G.PlaySound
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 
@@ -146,51 +152,56 @@ end
 -- Bag slot stuff
 local trashButton = {}
 local trashBag = {}
-local ItemDB = {}
+
+-- Tooltip used for scanning
+local scanner = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTooltipTemplate")
+local scannerName = scanner:GetName()
 
 -- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
 local S_ITEM_LEVEL = "^" .. gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
 
-local scantip = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTooltipTemplate")
-scantip:SetOwner(UIParent, "ANCHOR_NONE")
-
-local function _getRealItemLevel(link)
+local ItemDB = {}
+local function _getRealItemLevel(link, owner, bag, slot)
 	if ItemDB[link] then return ItemDB[link] end
 
 	local realItemLevel
-	scantip:SetHyperlink(link)
 
-	for i = 2, scantip:NumLines() do -- Line 1 is always the name so you can skip it.
-		local text = _G["iLvlScanningTooltipTextLeft"..i]:GetText()
-		if text and text ~= "" then
-			realItemLevel = realItemLevel or strmatch(text, S_ITEM_LEVEL)
+	scanner.owner = owner
+	scanner:SetOwner(owner, "ANCHOR_NONE")
+	scanner:SetBagItem(bag, slot)
 
-			if realItemLevel then
-				ItemDB[link] = tonumber(realItemLevel)
-				return tonumber(realItemLevel)
+	local line = _G[scannerName.."TextLeft2"]
+	if line then
+		local msg = line:GetText()
+		if msg and string.find(msg, S_ITEM_LEVEL) then
+			local itemLevel = string.match(msg, S_ITEM_LEVEL)
+			if itemLevel and (tonumber(itemLevel) > 0) then
+				realItemLevel = itemLevel
+			end
+		else
+			-- Check line 3, some artifacts have the ilevel there
+			line = _G[scannerName.."TextLeft3"]
+			if line then
+				local msg = line:GetText()
+				if msg and string.find(msg, S_ITEM_LEVEL) then
+					local itemLevel = string.match(msg, S_ITEM_LEVEL)
+					if itemLevel and (tonumber(itemLevel) > 0) then
+						realItemLevel = itemLevel
+					end
+				end
 			end
 		end
 	end
 
+	ItemDB[link] = tonumber(realItemLevel)
 	return realItemLevel
 end
 
 function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
-	local IsNewItem = C_NewItems.IsNewItem(b.frame:GetParent():GetID(), b.frame:GetID())
-
-	if (b.frame.questIcon) then
-		b.frame.questIcon:Hide()
-	end
-
-	-- New Item Overlay
-	if (IsNewItem) and C["Inventory"].PulseNewItem == true then
-		LibButtonGlow.ShowOverlayGlow(b.frame)
-	else
-		LibButtonGlow.HideOverlayGlow(b.frame)
-	end
+	local IsNewItem = C_NewItems.IsNewItem(b.bag, b.slot)
+	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
 
 	-- Set all slot color to default KkthnxUI on update
 	if not b.frame.lock then
@@ -202,11 +213,18 @@ function Stuffing:SlotUpdate(b)
 		CooldownFrame_Set(b.cooldown, start, duration, enable)
 	end
 
+	-- New Item Overlay
+	if (IsNewItem) and C["Inventory"].PulseNewItem == true then
+		LibButtonGlow.ShowOverlayGlow(b.frame)
+	else
+		LibButtonGlow.HideOverlayGlow(b.frame)
+	end
+
 	if C["Inventory"].ItemLevel == true then
 		b.frame.text:SetText("")
 	end
 
-	-- Pawn"ed thx Wetxius
+	-- Pawn'ed thx Wetxius
 	if (b.frame.UpgradeIcon) then
 		b.frame.UpgradeIcon:SetPoint("TOPLEFT", C["Inventory"].ButtonSize / 2.4, -C["Inventory"].ButtonSize / 2.4)
 		b.frame.UpgradeIcon:SetSize(C["Inventory"].ButtonSize / 1.6, C["Inventory"].ButtonSize / 1.6)
@@ -223,7 +241,7 @@ function Stuffing:SlotUpdate(b)
 		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Inventory"].ButtonSize / 2, C["Inventory"].ButtonSize / 2)
 		b.frame.JunkIcon:SetSize(C["Inventory"].ButtonSize / 1.8, C["Inventory"].ButtonSize / 1.8)
 		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) then
-			b.frame.JunkIcon:Show();
+			b.frame.JunkIcon:Show()
 		else
 			b.frame.JunkIcon:Hide()
 		end
@@ -233,7 +251,7 @@ function Stuffing:SlotUpdate(b)
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
 		if C["Inventory"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
-			b.itemlevel = _getRealItemLevel(clink) or b.itemlevel
+			b.itemlevel = _getRealItemLevel(clink, self, b.bag, b.slot) or b.itemlevel
 			b.frame.text:SetText(b.itemlevel)
 			b.frame.text:SetTextColor(GetItemQualityColor(quality))
 		end
@@ -247,16 +265,8 @@ function Stuffing:SlotUpdate(b)
 		-- Color slot according to item quality
 		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
-		elseif questId and not isActiveQuest then
-			b.frame:SetBackdropBorderColor(1, 1, 0)
-			if (b.frame.questIcon) then
-				b.frame.questIcon:Show()
-			end
 		elseif isQuestItem or questId then
 			b.frame:SetBackdropBorderColor(1, 1, 0)
-			if (b.frame.questIcon) then
-				b.frame.questIcon:Show()
-			end
 		end
 	else
 		b.name, b.level = nil, nil
@@ -717,10 +727,10 @@ function Stuffing:CreateBagFrame(w)
 		f.reagentToggle:SetTemplate()
 		f.reagentToggle:SetPoint("TOPRIGHT", f, -32, -7)
 		f.reagentToggle:SetNormalTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
-		f.reagentToggle:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+		f.reagentToggle:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.reagentToggle:GetNormalTexture():SetAllPoints()
 		f.reagentToggle:SetPushedTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
-		f.reagentToggle:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+		f.reagentToggle:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.reagentToggle:GetPushedTexture():SetAllPoints()
 		f.reagentToggle:StyleButton(nil, true)
 		f.reagentToggle.ttText = "Show/Hide Reagents"
@@ -770,10 +780,10 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton:SetTemplate()
 		f.purchaseBagButton:SetPoint("RIGHT", f.bagsButton, "LEFT", -5, 0)
 		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
-		f.purchaseBagButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+		f.purchaseBagButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.purchaseBagButton:GetNormalTexture():SetAllPoints()
 		f.purchaseBagButton:SetPushedTexture("Interface\\ICONS\\INV_Misc_Coin_01")
-		f.purchaseBagButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+		f.purchaseBagButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		f.purchaseBagButton:GetPushedTexture():SetAllPoints()
 		f.purchaseBagButton:StyleButton(nil, true)
 		f.purchaseBagButton.ttText = L["Inventory"].Purchase_Slot
@@ -857,7 +867,7 @@ function Stuffing:InitBags()
 	editbox:SetScript("OnEditFocusLost", editbox.Hide)
 	editbox:SetScript("OnEditFocusGained", editbox.HighlightText)
 	editbox:SetScript("OnTextChanged", updateSearch)
-	editbox:SetText(SEARCH)
+	--editbox:SetText(SEARCH)
 
 	local detail = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	detail:SetPoint("TOPLEFT", f, 11, -10)
@@ -865,7 +875,7 @@ function Stuffing:InitBags()
 	detail:SetHeight(13)
 	detail:SetShadowColor(0, 0, 0, 0)
 	detail:SetJustifyH("LEFT")
-	detail:SetText("|cffD6BFA6"..SEARCH.."|r")
+	detail:SetText(SEARCH)
 	editbox:SetAllPoints(detail)
 
 	do
@@ -1328,8 +1338,8 @@ function Stuffing:ADDON_LOADED(addon)
 
 	self:InitBags()
 
-	tinsert(UISpecialFrames, "StuffingFrameBags")
-	tinsert(UISpecialFrames, "StuffingFrameReagent")
+	table_insert(UISpecialFrames, "StuffingFrameBags")
+	table_insert(UISpecialFrames, "StuffingFrameReagent")
 
 	ToggleBackpack = Stuffing_Toggle
 	ToggleBag = Stuffing_Toggle
@@ -1587,7 +1597,7 @@ function Stuffing:SortBags()
 
 					newItem.sort = q..c1..c2..rL..n..iL..Sl
 
-					tinsert(group.itemList, newItem)
+					table_insert(group.itemList, newItem)
 
 					BS_itemSwapGrid[bagSlot][itemSlot] = newItem
 					newItem.startBag = bagSlot
@@ -1692,7 +1702,7 @@ function Stuffing:PLAYERBANKBAGSLOTS_CHANGED()
 end
 
 -- Kill Blizzard functions
-LootWonAlertFrame_OnClick = K.Noop
-LootUpgradeFrame_OnClick = K.Noop
-StorePurchaseAlertFrame_OnClick = K.Noop
 LegendaryItemAlertFrame_OnClick = K.Noop
+LootUpgradeFrame_OnClick = K.Noop
+LootWonAlertFrame_OnClick = K.Noop
+StorePurchaseAlertFrame_OnClick = K.Noop

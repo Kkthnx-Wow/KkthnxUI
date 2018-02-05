@@ -2,13 +2,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Skins -->
     <Include file="Core.lua"/>
-    <Include file="Blizzard\Character.lua"/>
-    <Include file="Blizzard\Inspect.lua"/>
+
+    <Include file="Blizzard\Collectables.lua"/>
     <Include file="Blizzard\LossControl.lua"/>
+    <Include file="Blizzard\Miscellaneous.lua"/>
     <Include file="Blizzard\ObjectiveTracker.lua"/>
+    <Include file="Blizzard\PetBattle.lua"/>
     <Include file="Blizzard\ScriptErrors.lua"/>
-    <Include file="Blizzard\Spellbook.lua"/>
-    <Include file="Blizzard\TalkingHead.lua"/>
+    <Include file="Blizzard\Worldmap.lua"/>
+
     <Include file="Addons\Bagnon.lua"/>
     <Include file="Addons\BigWigs.lua"/>
     <Include file="Addons\DBM.lua"/>

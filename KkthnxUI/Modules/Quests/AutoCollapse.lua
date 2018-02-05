@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("AutoCollapse_ObjectiveTracker", "AceEvent-3.0")
+local Module = K:NewModule("AutoCollapse", "AceEvent-3.0")
 
--- Sourced: ElvUI Shadow and Light (Darth_Predator, Repooc)
+-- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
 -- Wow Lua
 local _G = _G
@@ -13,19 +13,18 @@ local IsInInstance = _G.IsInInstance
 local IsResting = _G.IsResting
 local ObjectiveTracker_Expand, ObjectiveTracker_Collapse = _G.ObjectiveTracker_Expand, _G.ObjectiveTracker_Collapse
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: ObjectiveTrackerFrame, WorldQuestTrackerAddon
-
 local minimizeButton = _G["ObjectiveTrackerFrame"].HeaderMenu.MinimizeButton
 
 local statedriver = {
 	["FULL"] = function(frame)
 		ObjectiveTracker_Expand()
+		minimizeButton.text:SetText("-")
 		frame:Show()
 	end,
 
 	["COLLAPSED"] = function(frame)
 		ObjectiveTracker_Collapse()
+		minimizeButton.text:SetText("+")
 		frame:Show()
 	end,
 
@@ -35,78 +34,51 @@ local statedriver = {
 }
 
 function Module:ChangeState(event)
-	if InCombatLockdown() then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED", "ChangeState")
+	if InCombatLockdown() and event ~= "PLAYER_REGEN_DISABLED" then
 		return
 	end
 
-	if event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
-	end
+	local inCombat = event == "PLAYER_REGEN_DISABLED" and true or false
 
-	if C_Garrison_IsPlayerInGarrison(2) then
-		statedriver["FULL"](Module.frame)
-		-- here be order halls
-	elseif C_Garrison_IsPlayerInGarrison(3) then
-		statedriver["FULL"](Module.frame)
+	if inCombat and C["Quests"].Combat.Value ~= "NONE" then
+		statedriver[C["Quests"].Combat.Value](Module.frame)
+	elseif C_Garrison_IsPlayerInGarrison(2) then
+		statedriver[C["Quests"].Garrison.Value](Module.frame)
+	elseif C_Garrison_IsPlayerInGarrison(3) then --here be order halls
+		statedriver[C["Quests"].Orderhall.Value](Module.frame)
 	elseif IsResting() then
-		statedriver["FULL"](Module.frame)
+		statedriver[C["Quests"].Rested.Value](Module.frame)
 	else
 		local instance, instanceType = IsInInstance()
 		if instance then
 			if instanceType == "pvp" then
-				statedriver["COLLAPSED"](Module.frame)
+				statedriver[C["Quests"].Battleground.Value](Module.frame)
 			elseif instanceType == "arena" then
-				statedriver["COLLAPSED"](Module.frame)
+				statedriver[C["Quests"].Arena.Value](Module.frame)
 			elseif instanceType == "party" then
-				statedriver["FULL"](Module.frame)
+				statedriver[C["Quests"].Dungeon.Value](Module.frame)
 			elseif instanceType == "scenario" then
-				statedriver["FULL"](Module.frame)
+				statedriver[C["Quests"].Scenario.Value](Module.frame)
 			elseif instanceType == "raid" then
-				statedriver["COLLAPSED"](Module.frame)
+				statedriver[C["Quests"].Raid.Value](Module.frame)
 			end
 		else
 			statedriver["FULL"](Module.frame)
 		end
 	end
-
-	-- if K.IsAddOnEnabled("WorldQuestTracker") then
-
-	-- 	if (not ObjectiveTrackerFrame.initialized) then
-	-- 		return
-	-- 	end
-
-	-- 	local y = 0
-	-- 	for i = 1, #ObjectiveTrackerFrame.MODULES do
-	-- 		local module = ObjectiveTrackerFrame.MODULES[i]
-	-- 		if (module.Header:IsShown()) then
-	-- 			y = y + module.contentsHeight
-	-- 		end
-	-- 	end
-	-- 	if (ObjectiveTrackerFrame.collapsed) then
-	-- 		WorldQuestTrackerAddon.TrackerHeight = 20
-	-- 	else
-	-- 		WorldQuestTrackerAddon.TrackerHeight = y
-	-- 	end
-
-	-- 	WorldQuestTrackerAddon.RefreshAnchor()
-	-- end
 end
 
 function Module:OnEnable()
-	if C["Automation"].AutoCollapse ~= true then return end
+	if C["Quests"].AutoCollapse ~= true then return end
 
 	Module.frame = ObjectiveTrackerFrame
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ChangeState")
+	self:RegisterEvent("LOADING_SCREEN_DISABLED", "ChangeState")
 	self:RegisterEvent("PLAYER_UPDATE_RESTING", "ChangeState")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ChangeState")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED", "ChangeState")
+	self:RegisterEvent("PLAYER_REGEN_DISABLED", "ChangeState")
 
 	Module:ChangeState()
-end
-
-function Module:OnDisable()
-	Module.frame = nil
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	self:UnregisterEvent("PLAYER_UPDATE_RESTING")
 end
 
 K["AutoCollapse"] = Module

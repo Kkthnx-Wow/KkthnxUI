@@ -6,12 +6,27 @@ local Module = K:NewModule("ItemLevelCharacter", "AceEvent-3.0", "AceHook-3.0")
 -- Lua API
 local _G = _G
 local pairs = pairs
+local string_find = string.find
+local string_gsub = string.gsub
+local string_match = string.match
+local tonumber = tonumber
 local unpack = unpack
 
 -- WoW API
+local GetAchievementInfo = _G.GetAchievementInfo
+local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventorySlotInfo = _G.GetInventorySlotInfo
 local GetItemInfo = _G.GetItemInfo
+
+local CRUCIBLE = select(4, GetAchievementInfo(12072))
+
+-- Tooltip used for scanning
+local scannerTip = CreateFrame("GameTooltip", "PaperDollScannerTooltip", WorldFrame, "GameTooltipTemplate")
+local scannerName = scannerTip:GetName()
+
+-- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
+local S_ITEM_LEVEL = "^" .. string_gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
 
 function Module:InitializePaperDoll()
 	local buttonCache = {}
@@ -38,7 +53,7 @@ function Module:InitializePaperDoll()
 				local iconBorder = child:CreateTexture()
 				iconBorder:SetDrawLayer("ARTWORK")
 				iconBorder:SetTexture([[Interface\Buttons\UI-Quickslot2]])
-				iconBorder:SetAllPoints(normalTexture or child)
+				iconBorder:SetAllPoints(child)
 				iconBorder:Hide()
 
 				local iconBorderDoubler = child:CreateTexture()
@@ -61,6 +76,68 @@ function Module:InitializePaperDoll()
 	self.borderCache = borderCache
 end
 
+function Module:GetInventorySlotItemData(slotID)
+	local itemLink = GetInventoryItemLink("player", slotID)
+	if itemLink then
+		local _, _, itemRarity, ilvl = GetItemInfo(itemLink)
+		if itemRarity then
+
+			-- Special checks are needed for artifact weapons in Legion
+			if (itemRarity == 6) and ((slotID == _G.INVSLOT_MAINHAND) or (slotID == _G.INVSLOT_OFFHAND)) then
+
+				-- Legion Artifact offhanders report just the base itemLevel, without relic enhancements,
+				-- so we're borrowing the itemLevel from the main hand weapon when this happens.
+				-- *The constants used are defined in FrameXML/Constants.lua
+				if (slotID == _G.INVSLOT_OFFHAND) then
+					local _, _, ilvl = self:GetInventorySlotItemData(_G.INVSLOT_MAINHAND)
+					return itemLink, itemRarity, ilvl
+				end
+
+				-- If we're in patch 7.3.0 with the upgraded relic item levels,
+				-- we need to scan the tooltip for the proper item level,
+				-- since it otherwise can't be properly scanned without being at the forge.
+				local crucibleLevel
+				if (slotID == _G.INVSLOT_MAINHAND) and CRUCIBLE then
+
+					scannerTip.owner = self
+					scannerTip:SetOwner(UIParent, "ANCHOR_NONE")
+					scannerTip:SetInventoryItem("player", slotID)
+
+					local line = _G[scannerName.."TextLeft2"]
+					if line then
+						local msg = line:GetText()
+						if msg and string_find(msg, S_ITEM_LEVEL) then
+							local iLevel = string_match(msg, S_ITEM_LEVEL)
+							if iLevel and (tonumber(iLevel) > 0) then
+								return itemLink, itemRarity, iLevel
+							end
+						else
+							-- Check line 3, some artifacts have the ilevel there.
+							-- *an example is demon hunter artifacts, which have their names on 2 lines
+							line = _G[scannerName.."TextLeft3"]
+							if line then
+								local msg = line:GetText()
+								if msg and string_find(msg, S_ITEM_LEVEL) then
+									local iLevel = string_match(msg, S_ITEM_LEVEL)
+									if iLevel and (tonumber(iLevel) > 0) then
+										return itemLink, itemRarity, iLevel
+									end
+								end
+							end
+						end
+					end
+				end
+
+			end
+
+			-- We're probably still in patch 7.1.5 or not in Legion at all if we made it to this point, so normal checks will suffice
+			local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
+			ilvl = effectiveLevel or ilvl
+		end
+		return itemLink, itemRarity, ilvl
+	end
+end
+
 function Module:UpdateEquippeditemLevels(event, ...)
 	if (event == "UNIT_INVENTORY_CHANGED") then
 		local unit = ...
@@ -71,32 +148,9 @@ function Module:UpdateEquippeditemLevels(event, ...)
 
 	for itemButton, itemLevel in pairs(self.buttonCache) do
 		local normalTexture = _G[itemButton:GetName().."NormalTexture"] or itemButton:GetNormalTexture()
-		if normalTexture then
-			--normalTexture:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
-		end
-
-		local slotID = itemButton:GetID()
-		local itemLink = GetInventoryItemLink("player", slotID)
+		local itemLink, itemRarity, ilvl = self:GetInventorySlotItemData(itemButton:GetID())
 		if itemLink then
-			local _, _, itemRarity, ilvl = GetItemInfo(itemLink)
 			if itemRarity then
-				local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
-				ilvl = effectiveLevel or ilvl
-
-				-- Legion Artifact offhanders report just the base itemLevel, without relic enhancements,
-				-- so we're borrowing the itemLevel from the main hand weapon when this happens.
-				-- *The constants used are defined in FrameXML/Constants.lua
-				if (itemButton:GetID() == _G.INVSLOT_OFFHAND) and (itemRarity == 6) then
-					local mainHandLink = GetInventoryItemLink("player", _G.INVSLOT_MAINHAND)
-					local _, _, mainHandRarity, mainHandLevel = GetItemInfo(mainHandLink)
-					local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(mainHandLink)
-
-					mainHandLevel = effectiveLevel or mainHandLevel
-
-					if (mainHandLevel and (mainHandLevel > ilvl)) and (mainHandRarity and (mainHandRarity == 6)) then
-						ilvl = mainHandLevel
-					end
-				end
 
 				local r, g, b = GetItemQualityColor(itemRarity)
 				itemLevel:SetTextColor(r, g, b)
@@ -120,7 +174,7 @@ function Module:UpdateEquippeditemLevels(event, ...)
 					iconBorder = self.borderCache[itemButton]
 					if iconBorder then
 						if itemRarity then
-							if (itemRarity >= (LE_ITEM_QUALITY_COMMON + 1)) and GetItemQualityColor(itemRarity) then
+							if (itemRarity >= (LE_ITEM_QUALITY_COMMON + 1)) and (GetItemQualityColor(itemRarity)) then
 								iconBorder:Show()
 								iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
 							else
@@ -134,7 +188,6 @@ function Module:UpdateEquippeditemLevels(event, ...)
 						end
 					end
 				end
-
 			else
 				itemLevel:SetTextColor(1, 1, 0)
 			end
@@ -157,22 +210,29 @@ function Module:UpdateEquippeditemLevels(event, ...)
 			itemLevel:SetText("")
 		end
 	end
-
 end
 
-function Module:OnEnable()
+function Module:CrucibleAchievementListener(event, id)
+	if (id == 12072) then
+		CRUCIBLE = true
+		self:UnregisterEvent("ACHIEVEMENT_EARNED", "CrucibleAchievementListener")
+		self:UpdateEquippeditemLevels()
+	end
+end
+
+function Module:OnInitialize()
 	if C["Misc"].ItemLevel ~= true then return end
+
 	self:InitializePaperDoll()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateEquippeditemLevels")
 	self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "UpdateEquippeditemLevels")
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_UPDATE", "UpdateEquippeditemLevels")
 	self:RegisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM", "UpdateEquippeditemLevels")
-end
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateEquippeditemLevels")
 
-function Module:OnDisable()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	self:UnregisterEvent("ITEM_UPGRADE_MASTER_UPDATE")
-	self:UnregisterEvent("ITEM_UPGRADE_MASTER_SET_ITEM")
+	-- Adding in compatibility with the 7.3.0 upgraded artifact relic itemlevels
+	if (not CRUCIBLE) then
+		self:RegisterEvent("ACHIEVEMENT_EARNED", "CrucibleAchievementListener")
+	end
 end

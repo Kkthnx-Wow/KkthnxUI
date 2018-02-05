@@ -127,8 +127,8 @@ function Module:SkinMinimapButton(Button)
 				end
 				Region:ClearAllPoints()
 				Region:SetAllPoints()
-				Region:SetTexCoord(unpack(K.TexCoords))
-				Button:HookScript("OnLeave", function() Region:SetTexCoord(unpack(K.TexCoords)) end)
+				Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+				Button:HookScript("OnLeave", function() Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4]) end)
 				Region:SetDrawLayer("ARTWORK")
 				Region.SetPoint = function() return end
 			end

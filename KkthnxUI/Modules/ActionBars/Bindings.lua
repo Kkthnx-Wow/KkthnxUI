@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true or K.IsAddOnEnabled("ncHoverBind") == true then return end
+if C["ActionBar"].Enable ~= true or K.CheckAddOnState("ncHoverBind") == true then return end
 
 -- Lua API
 local _G = _G
@@ -374,10 +374,10 @@ _G.SLASH_MOUSEOVERBIND1 = "/bindkey"
 _G.SLASH_MOUSEOVERBIND2 = "/hoverbind"
 _G.SLASH_MOUSEOVERBIND3 = "/bk"
 
-if not K.IsAddOnEnabled("Bartender4") and not K.IsAddOnEnabled("Dominos") then
+if not K.CheckAddOnState("Bartender4") and not K.CheckAddOnState("Dominos") then
 	_G.SLASH_MOUSEOVERBIND4 = "/kb"
 end
 
-if not K.IsAddOnEnabled("HealBot") then
+if not K.CheckAddOnState("HealBot") then
 	_G.SLASH_MOUSEOVERBIND5 = "/hb"
 end

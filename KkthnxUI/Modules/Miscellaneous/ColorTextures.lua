@@ -11,7 +11,7 @@ local string_split = string.split
 local unpack = unpack
 
 -- Ignore the container frames if one of our standalone bag addons are loaded
-local Backpacker = not(K.IsAddOnEnabled("Backpacker") or K.IsAddOnEnabled("BlizzardBagsPlus")) or nil
+local Backpacker = not(K.CheckAddOnState("Backpacker") or K.CheckAddOnState("BlizzardBagsPlus")) or nil
 
 -- List of elements to be styled
 local elements = {

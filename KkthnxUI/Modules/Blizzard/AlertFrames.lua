@@ -140,7 +140,7 @@ local function AlertSubSystem_AdjustPosition(alertFrameSubSystem)
 end
 
 function AlertFrames:OnEnable()
-	if K.IsAddOnEnabled("MoveAnything") then return end
+	if K.CheckAddOnState("MoveAnything") then return end
 
 	UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
 	K.Movers:RegisterFrame(AlertFrameHolder)

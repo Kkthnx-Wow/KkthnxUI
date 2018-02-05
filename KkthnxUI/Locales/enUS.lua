@@ -35,6 +35,7 @@ L["StaticPopups"] = {
 	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
 	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?",
 	Warning_Blizzard_AddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
+	WoWHeadLink = "Wowhead Link",
 }
 
 -- Commands Localization

@@ -26,6 +26,12 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local UnitframeFont = K.GetFont(C["Unitframe"].Font)
 local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
+function K.UpdateAllElements(frame)
+	for _, v in ipairs(frame.__elements) do
+		v(frame, "UpdateElement", frame.unit)
+	end
+end
+
 local function UpdateClassPortraits(self, unit)
 	local _, unitClass = UnitClass(unit)
 	if (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "ClassPortraits" then
@@ -59,8 +65,7 @@ local function CreateUnitframeLayout(self, unit)
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-	self.Health.frequentUpdates = true
-	self.Health.PreUpdate = K.PreUpdateHealth
+	self.Health.frequentUpdates = unit == "player" or unit == "target" or unit == "party" -- Less usage this way!
 	self.Health.PostUpdate = K.PostUpdateHealth
 
 	if (unit == "player") then
@@ -128,7 +133,6 @@ local function CreateUnitframeLayout(self, unit)
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = unit == "player" or unit == "target" -- Less usage this way!
-	self.Power.PostUpdate = K.PostUpdatePower
 
 	if C["Unitframe"].PowerClass then
 		self.Power.colorClass = true
@@ -316,7 +320,7 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateLeaderIndicator(self)
 		K.CreateMasterLooterIndicator(self)
 		if C["Unitframe"].PvPText then
-			K.CreatePvPText(self, unit)
+			K.CreatePvPText(self, "player")
 		end
 		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
@@ -346,7 +350,7 @@ local function CreateUnitframeLayout(self, unit)
 		end
 		K.CreateAuras(self, "target")
 		if C["Unitframe"].PvPText then
-			K.CreatePvPText(self, unit)
+			K.CreatePvPText(self, "target")
 		end
 		K.CreateQuestIndicator(self)
 		K.CreateRaidTargetIndicator(self)
@@ -354,6 +358,15 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
+	end
+
+	if (unit == "pet" or unit == "targettarget") then
+		if (C["Unitframe"].PortraitTimer) then
+			K.CreatePortraitTimer(self)
+		end
+		K.CreateAuras(self, unit)
+		K.CreateRaidTargetIndicator(self)
+		K.CreateThreatIndicator(self)
 	end
 
 	if (unit == "focus") then
@@ -371,7 +384,7 @@ local function CreateUnitframeLayout(self, unit)
 			K.CreatePortraitTimer(self)
 		end
 		if C["Unitframe"].Castbars then
-			K.CreateCastBar(self, unit)
+			K.CreateCastBar(self, "boss")
 		end
 		K.CreateAuras(self, "boss")
 	end
@@ -380,8 +393,8 @@ local function CreateUnitframeLayout(self, unit)
 		if (C["Unitframe"].PortraitTimer) then
 			K.CreatePortraitTimer(self)
 		end
-		K.CreateAuras(self, "party")
 		K.CreateAssistantIndicator(self)
+		K.CreateAuras(self, "party")
 		K.CreateGroupRoleIndicator(self)
 		K.CreateLeaderIndicator(self)
 		K.CreateMasterLooterIndicator(self)
@@ -391,23 +404,12 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
+		self:HookScript("OnShow", K.UpdateAllElements)
 	end
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", function()
-		if (UnitExists("target")) then
-			if (UnitIsEnemy("target", "player")) then
-				PlaySound(PlaySoundKitID and "Igcreatureaggroselect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
-			elseif (UnitIsFriend("target", "player")) then
-				PlaySound(PlaySoundKitID and "Igcharacternpcselect" or SOUNDKIT.IG_CHARACTER_NPC_SELECT)
-			else
-				PlaySound(PlaySoundKitID and "Igcreatureneutralselect" or SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
-			end
-		else
-			PlaySound(PlaySoundKitID and "igcreatureaggrodeselect" or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
-		end
-	end)
-
-	self.Range = K.CreateRange(self)
+	if (unit ~= "player") then
+		self.Range = K.CreateRange(self)
+	end
 
 	return self
 end

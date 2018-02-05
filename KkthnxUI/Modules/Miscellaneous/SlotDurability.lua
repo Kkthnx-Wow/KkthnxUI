@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-
-local KkthnxUIDurability = K:NewModule("KkthnxUIDurability", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:NewModule("SlotDurability", "AceEvent-3.0", "AceHook-3.0")
 
 local SlotDurStrs = {}
 local Slots = {
@@ -38,7 +37,7 @@ function GetThresholdColour(percent)
 	end
 end
 
-function KkthnxUIDurability:UpdateDurability()
+function Module:UpdateDurability()
 	for _, item in ipairs(Slots) do
 		local id, _ = GetInventorySlotInfo(item.."Slot")
 		local v1, v2 = GetInventoryItemDurability(id)
@@ -59,21 +58,21 @@ function KkthnxUIDurability:UpdateDurability()
 	end
 end
 
-function KkthnxUIDurability:OnEnable()
+function Module:OnEnable()
 	if not C["Misc"].SlotDurability then return end
 
 	self:SecureHookScript(CharacterFrame, "OnShow", "CharacterFrame_OnShow")
 	self:SecureHookScript(CharacterFrame, "OnHide", "CharacterFrame_OnHide")
 end
 
-function KkthnxUIDurability:CharacterFrame_OnShow()
+function Module:CharacterFrame_OnShow()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateDurability")
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateDurability")
 	self:RegisterEvent("UPDATE_INVENTORY_DURABILITY", "UpdateDurability")
 	self:UpdateDurability()
 end
 
-function KkthnxUIDurability:CharacterFrame_OnHide()
+function Module:CharacterFrame_OnHide()
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
 	self:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")

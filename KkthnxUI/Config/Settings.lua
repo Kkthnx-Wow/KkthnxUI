@@ -52,13 +52,11 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
-	["AutoCollapse"] = true,
 	["AutoInvite"] = false,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
 	["AutoResurrectCombat"] = true,
 	["AutoResurrectThank"] = false,
-	["AutoReward"] = false,
 	["BlockMovies"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
@@ -294,6 +292,86 @@ C["Nameplates"] = {
 }
 
 -- Skins
+C["Quests"] = {
+	["AutoCollapse"] = false,
+	["AutoReward"] = false,
+	["WoWheadLink"] = true,
+	["Arena"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED",
+	},
+	["Raid"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED",
+	},
+	["Orderhall"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL",
+	},
+	["Garrison"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL",
+	},
+	["Dungeon"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED",
+	},
+	["Combat"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+			[NONE] = "NONE",
+		},
+		["Value"] = "COLLAPSED",
+	},
+	["Battleground"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED",
+	},
+	["Scenario"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL",
+	},
+	["Rested"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL",
+	},
+}
+
+-- Skins
 C["Skins"] = {
 	["Bagnon"] = false,
 	["BigWigs"] = false,
@@ -327,7 +405,6 @@ C["Tooltip"] = {
 
 -- Unitframe
 C["Unitframe"] = {
-	["AuraFiltering"] = false,
 	["CastbarHeight"] = 20,
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,

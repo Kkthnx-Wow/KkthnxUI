@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-if K.IsAddOnEnabled("OmniCC") or K.IsAddOnEnabled("ncCooldown") or K.IsAddOnEnabled("CooldownCount") or C["Cooldown"].Enable ~= true then return end
+if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") or C["Cooldown"].Enable ~= true then return end
 local Module = K:NewModule("Cooldowns", "AceEvent-3.0", "AceHook-3.0")
 
 -- luacheck: globals _G tonumber COOLDOWN_TYPE_LOSS_OF_CONTROL maxCharges

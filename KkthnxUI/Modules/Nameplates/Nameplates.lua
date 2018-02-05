@@ -209,16 +209,20 @@ local totemData = {
 
 local function CreateVirtualFrame(frame, point)
 	if point == nil then point = frame end
-	if point.backdrop or frame.backdrop then return end
+	if point.backdrop then return end
 
-	frame.backdrop = CreateFrame("Frame", nil , frame)
+	frame.backdrop = CreateFrame("Frame", nil, frame)
 	frame.backdrop:SetAllPoints()
 	frame.backdrop:SetBackdrop({
 		bgFile = C["Media"].Blank,
 		edgeFile = C["Media"].Glow,
 		edgeSize = 3 * K.NoScaleMult,
-		insets = {top = 3 * K.NoScaleMult, left = 3 * K.NoScaleMult, bottom = 3 * K.NoScaleMult, right = 3 * K.NoScaleMult}
-	})
+		insets = {
+			top = 3 * K.NoScaleMult,
+			left = 3 * K.NoScaleMult,
+			bottom = 3 * K.NoScaleMult,
+			right = 3 * K.NoScaleMult
+	}})
 	frame.backdrop:SetPoint("TOPLEFT", point, -3 * K.NoScaleMult, 3 * K.NoScaleMult)
 	frame.backdrop:SetPoint("BOTTOMRIGHT", point, 3 * K.NoScaleMult, -3 * K.NoScaleMult)
 	frame.backdrop:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
@@ -231,8 +235,11 @@ local function CreateVirtualFrame(frame, point)
 	end
 end
 
-local function SetVirtualBorder(frame, r, g, b)
-	frame.backdrop:SetBackdropBorderColor(r, g, b)
+local function SetVirtualBorder(frame, r, g, b, a)
+	if not a then
+		a = 1
+	end
+	frame.backdrop:SetBackdropBorderColor(r, g, b, a)
 end
 
 local function CreateAuraTimer(self, elapsed)
@@ -371,7 +378,74 @@ local function UpdateName(self)
 	end
 end
 
-local function PostCastInterruptible(self, unit)
+local function PostCastStart(castbar, unit, name)
+	if unit == "vehicle" then unit = "player" end
+
+	local text = castbar.Text
+	if (text) then
+		castbar.Text:SetText(name)
+	end
+
+	-- Get length of Time, then calculate available length for Text
+	local timeWidth = castbar.Time:GetStringWidth()
+	local textWidth = castbar:GetWidth() - timeWidth - 10
+	local textStringWidth = castbar.Text:GetStringWidth()
+
+	if timeWidth == 0 or textStringWidth == 0 then
+		K.Delay(0.05, function() -- Delay may need tweaking
+			textWidth = castbar:GetWidth() - castbar.Time:GetStringWidth() - 10
+			textStringWidth = castbar.Text:GetStringWidth()
+			if textWidth > 0 then castbar.Text:SetWidth(math.min(textWidth, textStringWidth)) end
+		end)
+	else
+		castbar.Text:SetWidth(math.min(textWidth, textStringWidth))
+	end
+
+	castbar.Spark:SetSize(128, castbar:GetHeight())
+
+	castbar.unit = unit
+
+	local colors = K.Colors
+	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
+
+	local t
+	if C["Nameplates"].CastUnitReaction and UnitReaction(unit, "player") then
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
+	end
+
+	if(t) then
+		r, g, b = t[1], t[2], t[3]
+	end
+
+	if castbar.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
+		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
+	end
+
+	castbar:SetStatusBarColor(r, g, b)
+end
+
+local function PostCastStop(castbar)
+	castbar.chainChannel = nil
+	castbar.prevSpellCast = nil
+end
+
+local function PostCastFailedOrInterrupted(castbar, unit, name, castID)
+	castbar:SetStatusBarColor(1, 0, 0)
+	castbar:SetValue(castbar.max)
+
+	local spark = castbar.Spark
+	if (spark) then
+		spark:SetPoint("CENTER", castbar, "RIGHT")
+		spark:SetWidth(0.001) -- This should hide it without an issue.
+	end
+
+	local time = castbar.Time
+	if (time) then
+		time:SetText("")
+	end
+end
+
+local function PostCastInterruptible(castbar, unit)
 	if unit == "vehicle" or unit == "player" then return end
 
 	local colors = K.Colors
@@ -386,31 +460,39 @@ local function PostCastInterruptible(self, unit)
 		r, g, b = t[1], t[2], t[3]
 	end
 
-	if self.notInterruptible and UnitCanAttack("player", unit) then
+	if castbar.notInterruptible and UnitCanAttack("player", unit) then
 		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
 	end
 
-	self:SetStatusBarColor(r, g, b)
+	castbar:SetStatusBarColor(r, g, b)
 end
 
-local function PostCastNotInterruptible(self)
+local function PostCastNotInterruptible(castbar)
 	local colors = K.Colors
-	self:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
+	castbar:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
 end
 
-local function CustomCastDelayText(self, duration)
-	if self.channeling then
-		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(duration, self.delay))
+local function CustomCastDelayText(castbar, duration)
+	if castbar.casting then
+		duration = castbar.max - duration
+	end
+
+	if castbar.channeling then
+		castbar.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(duration, castbar.delay))
 	else
-		self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(math_abs(duration - self.max), "+", self.delay))
+		castbar.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(math_abs(duration - castbar.max), "+", castbar.delay))
 	end
 end
 
-local function CustomTimeText(self, duration)
-	if self.channeling then
-		self.Time:SetText(("%.1f"):format(duration))
+local function CustomTimeText(castbar, duration)
+	if castbar.max > 600 then
+		return castbar.Time:SetText("")
+	end
+
+	if castbar.channeling then
+		castbar.Time:SetText(("%.1f"):format(duration))
 	else
-		self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
+		castbar.Time:SetText(("%.1f"):format(math_abs(duration - castbar.max)))
 	end
 end
 
@@ -519,14 +601,15 @@ local function StyleUpdate(self, unit)
 	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, 0)
 	self.Castbar.Time:SetFont(C["Media"].Font, C["Nameplates"].FontSize * K.NoScaleMult, C["Nameplates"].Outline and "OUTLINE" or "")
 
-	self.Castbar.CustomDelayText = CustomCastDelayText
-	self.Castbar.CustomTimeText = CustomTimeText
+	self.Castbar.timeToHold = 0.4
+	self.Castbar.PostCastStart = PostCastStart
+	self.Castbar.PostChannelStart = PostCastStart
+	self.Castbar.PostCastStop = PostCastStop
+	self.Castbar.PostChannelStop = PostCastStop
 	self.Castbar.PostCastInterruptible = PostCastInterruptible
 	self.Castbar.PostCastNotInterruptible = PostCastNotInterruptible
-	self.Castbar.PostCastStart = PostCastInterruptible
-	self.Castbar.PostChannelStart = PostCastInterruptible
-
-	self.Castbar.timeToHold = 0.4
+	self.Castbar.PostCastFailed = PostCastFailedOrInterrupted
+	self.Castbar.PostCastInterrupted = PostCastFailedOrInterrupted
 
 	-- Create Cast Name Text
 	if C["Nameplates"].CastbarName == true then
@@ -587,6 +670,50 @@ local function StyleUpdate(self, unit)
 	self.QuestIndicator:SetSize(14, 14)
 	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -7, 7)
 
+	local function CreateAuraTimer(self, elapsed)
+		self.expiration = self.expiration - elapsed
+		if self.nextupdate > 0 then
+			self.nextupdate = self.nextupdate - elapsed
+			return
+		end
+
+		if (self.expiration <= 0) then
+			self:SetScript("OnUpdate", nil)
+
+			if(self.text:GetFont()) then
+				self.text:SetText("")
+			end
+
+			return
+		end
+
+		local timervalue, formatid
+		timervalue, formatid, self.nextupdate = K.GetTimeInfo(self.expiration, 4)
+
+		if self.text:GetFont() then
+			self.text:SetFormattedText(string_format("%s%s|r", K.TimeColors[formatid], K.TimeFormats[formatid][2]), timervalue)
+		end
+	end
+
+	local function SortAurasByTime(a, b)
+		if (a and b) then
+			if a:IsShown() and b:IsShown() then
+				local aTime = a.expiration or -1
+				local bTime = b.expiration or -1
+				if (aTime and bTime) then
+					return aTime > bTime
+				end
+			elseif a:IsShown() then
+				return true
+			end
+		end
+	end
+
+	local function PreSetPosition(self)
+		table.sort(self, SortAurasByTime)
+		return 1, self.createdIcons
+	end
+
 	-- Aura tracking
 	if C["Nameplates"].TrackAuras == true then
 		self.Auras = CreateFrame("Frame", nil, self)
@@ -594,13 +721,15 @@ local function StyleUpdate(self, unit)
 		self.Auras.initialAnchor = "BOTTOMLEFT"
 		self.Auras["growth-y"] = "UP"
 		self.Auras["growth-x"] = "RIGHT"
-		self.Auras.numDebuffs = C["Nameplates"].TrackAuras and 6 or 0
-		self.Auras.numBuffs = C["Nameplates"].TrackAuras and 4 or 0
-		self.Auras:SetSize(20 + C["Nameplates"].Width, C["Nameplates"].AurasSize)
+		self.Auras.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
+		self.Auras.numDebuffs = self.Health:GetWidth() * 2
+		self.Auras.numBuffs = self.Health:GetWidth() * 2
+		self.Auras:SetSize(self.Health:GetWidth(), C["Nameplates"].AurasSize)
 		self.Auras.spacing = 3
 		self.Auras.size = C["Nameplates"].AurasSize
+		self.Auras:EnableMouse(false)
 
-		self.Auras.CustomFilter = function(_, unit, _, name, _, _, _, _, _, _, caster, _, nameplateShowSelf, _, _, _, _, nameplateShowAll)
+		function self.Auras.CustomFilter(_, unit, _, name, _, _, _, _, _, _, caster, _, nameplateShowSelf, _, _, _, _, nameplateShowAll)
 			local allow = false
 
 			if caster == "player" then
@@ -622,10 +751,10 @@ local function StyleUpdate(self, unit)
 			return allow
 		end
 
-		self.Auras.PostCreateIcon = function(self, button)
+		function self.Auras.PostCreateIcon(self, button)
 			button:SetScale(K.NoScaleMult)
 			button:CreateShadow()
-			button:EnableMouse(false)
+			CreateVirtualFrame(button)
 
 			button.text = button.cd:CreateFontString(nil, "OVERLAY")
 			button.text:FontTemplate(nil, self.size * 0.46)
@@ -651,8 +780,34 @@ local function StyleUpdate(self, unit)
 			button.stealable:SetTexture(nil)
 		end
 
-		function self.Auras.PostUpdateIcon(icons, unit, button, index, offset, filter, isDebuff, duration, timeLeft)
-			local _, _, _, _, dtype, duration, expiration, _, isStealable = UnitAura(unit, index, button.filter)
+		function self.Auras.PostUpdateIcon(self, unit, button, index)
+			local name, _, _, _, debuffType, duration, expiration, caster = UnitAura(unit, index, button.filter)
+			local isFriend = unit and UnitIsFriend("player", unit) and not UnitCanAttack("player", unit)
+
+			if button.isDebuff then
+				if (not isFriend and button.caster ~= "player" and button.caster ~= "vehicle") then
+					SetVirtualBorder(button, 0.9, 0.1, 0.1)
+					button.icon:SetDesaturated((unit and not unit:find("arena%d")) and true or false)
+				else
+					local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
+					if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+						SetVirtualBorder(button, 0.05, 0.85, 0.94)
+					else
+						SetVirtualBorder(button, color.r, color.g, color.b)
+					end
+					button.icon:SetDesaturated(false)
+				end
+			else
+				SetVirtualBorder(button, 0, 0, 0)
+			end
+
+			local size = button:GetParent().size
+			if size then
+				button:SetSize(size, size)
+			end
+
+			button.spell = name
+			button.duration = duration
 
 			if expiration and duration ~= 0 then
 				if not button:GetScript("OnUpdate") then

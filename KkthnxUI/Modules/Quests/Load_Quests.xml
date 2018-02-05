@@ -3,4 +3,5 @@
     <!-- Load_Quests -->
     <Script file="AutoCollapse.lua"/>
     <Script file="AutoReward.lua"/>
+    <Script file="WoWheadLink.lua"/>
 </Ui>

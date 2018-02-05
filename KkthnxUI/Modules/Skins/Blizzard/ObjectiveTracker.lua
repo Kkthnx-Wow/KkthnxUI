@@ -1,5 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 
+if K.CheckAddOnState("!KalielsTracker") then
+	return
+end
+
 local unpack = unpack
 local hooksecurefunc = hooksecurefunc
 
@@ -75,7 +79,7 @@ local function LoadSkin()
 			item:SetTemplate("ActionButton", true)
 			item:StyleButton()
 			item:SetNormalTexture(nil)
-			item.icon:SetTexCoord(unpack(K.TexCoords))
+			item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			item.icon:SetAllPoints()
 			item.Cooldown:SetPoint("TOPLEFT", 1, -1)
 			item.Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)

@@ -104,16 +104,15 @@ function Module:UpdateConfigDescription()
 
 	if Group then
 		local Desc = Group.Default
-		local Items = Desc..VendorList -- 6.0 localize me
+		local Items = Desc..L["Inventory"].TrashList
 
-		for i = 1, #self.VendorFilter do
-			local Name, Link = GetItemInfo(self.VendorFilter[i])
-
+		for itemID in pairs(self.VendorFilter) do
+			local Name, Link = GetItemInfo(itemID)
 			if (Name and Link) then
-				if i == 1 then
+				if itemID == 1 then
 					Items = Items..""..Link
 				else
-					Items = Items..", "..Link
+					Items = Items.."\n"..Link
 				end
 			end
 		end
@@ -121,20 +120,14 @@ function Module:UpdateConfigDescription()
 	end
 end
 
-function Module:AddItem(id)
-	tinsert(self.VendorFilter, id)
+function Module:AddItem(itemID)
+	self.VendorFilter[itemID] = true
 	self:UpdateConfigDescription()
 end
 
-function Module:RemoveItem(id)
-	for i = 1, #self.VendorFilter do
-		if (self.VendorFilter[i] == id) then
-			tremove(self.VendorFilter, i)
-			self:UpdateConfigDescription()
-
-			break
-		end
-	end
+function Module:RemoveItem(itemID)
+	self.VendorFilter[itemID] = nil
+	self:UpdateConfigDescription()
 end
 
 function Module:MerchantClick(...)

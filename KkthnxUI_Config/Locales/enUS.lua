@@ -458,16 +458,6 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Automation Local
 	["Automation"] = {
-		["AutoCollapse"] = {
-			["Name"] = "Auto Collapse",
-			["Desc"] = "Auto collapse the objective tracker",
-		},
-
-		["AutoReward"] = {
-			["Name"] = "Auto Reward",
-			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
-		},
-
 		["BlockMovies"] = {
 			["Name"] = "Block Movies",
 			["Desc"] = "Boss encounter movies will only be allowed to play once (so you can watch each one) and will then be blocked."
@@ -821,6 +811,69 @@ KkthnxUIConfig["enUS"] = {
 		},
 	},
 
+	-- Quests Local
+	["Quests"] = {
+		["AutoCollapse"] = {
+			["Name"] = "Auto Collapse",
+			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
+		},
+
+		["AutoReward"] = {
+			["Name"] = "Auto Reward",
+			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
+		},
+
+		["WoWheadLink"] = {
+			["Name"] = "WoWhead Link",
+			["Desc"] = "Add WoWhead link in objectivetracker dropdown",
+		},
+
+		["Arena"] = {
+			["Name"] = "Arena",
+			["Desc"] = "Auto collapse tracker in arena",
+		},
+
+		["Raid"] = {
+			["Name"] = "Raid",
+			["Desc"] = "Auto collapse tracker in raid",
+		},
+
+		["Orderhall"] = {
+			["Name"] = "Orderhall",
+			["Desc"] = "Auto collapse tracker in orderhall",
+		},
+
+		["Garrison"] = {
+			["Name"] = "Garrison",
+			["Desc"] = "Auto collapse tracker in garrison",
+		},
+
+		["Dungeon"] = {
+			["Name"] = "Dungeon",
+			["Desc"] = "Auto collapse tracker in dungeon",
+		},
+
+		["Combat"] = {
+			["Name"] = "Combat",
+			["Desc"] = "Auto collapse tracker in combat",
+		},
+
+		["Battleground"] = {
+			["Name"] = "Battleground",
+			["Desc"] = "Auto collapse tracker in battleground",
+		},
+
+		["Scenario"] = {
+			["Name"] = "Scenario",
+			["Desc"] = "Auto collapse tracker in scenario",
+		},
+
+		["Rested"] = {
+			["Name"] = "Rested",
+			["Desc"] = "Auto collapse tracker in rested arenas",
+		},
+	},
+
 	-- DataText Local
 	["DataText"] = {
 		["Battleground"] = {
@@ -1044,12 +1097,12 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Castbars"] = {
-			["Name"] = "Castbars",
+			["Name"] = "Enable Castbars",
 			["Desc"] = "Enable cast bar for unit frames",
 		},
 
 		["CastbarTicks"] = {
-			["Name"] = "Castbar Ticks",
+			["Name"] = "Show Castbar Ticks",
 			["Desc"] = "Display tick marks on the castbar for channelled spells. This will adjust automatically for spells like Drain Soul and add additional ticks based on haste.",
 		},
 
@@ -1059,17 +1112,17 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["CastClassColor"] = {
-			["Name"] = "Cast Classcolor",
+			["Name"] = "Castbar Classcolor",
 			["Desc"] = "Color cast bars as class color",
 		},
 
 		["CastReactionColor"] = {
-			["Name"] = "Cast Reaction Color",
+			["Name"] = "Castbar Reaction Color",
 			["Desc"] = "Color cast bars as reaction to the target",
 		},
 
 		["CombatText"] = {
-			["Name"] = "CombatText",
+			["Name"] = "Portrait Combat Text",
 			["Desc"] = "Enable combat text on player and target frames",
 		},
 
@@ -1079,7 +1132,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
+			["Name"] = "Enable Unitframes",
 			["Desc"] = "Enable unit frames",
 		},
 
@@ -1104,7 +1157,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Outline"] = {
-			["Name"] = "Outline",
+			["Name"] = "Font Outline",
 			["Desc"] = "Apply unit frame font outline",
 		},
 
@@ -1129,7 +1182,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Scale"] = {
-			["Name"] = "Scale",
+			["Name"] = "Unitframe Scale",
 			["Desc"] = "Big or small, you pick!",
 		},
 
@@ -1147,8 +1200,9 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Show Player In Party",
 			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
 		},
+
 		["Smooth"] = {
-			["Name"] = "Smooth",
+			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
 
@@ -1158,7 +1212,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Unitframe Texture",
 			["Desc"] = "Pick your desired texture",
 		},
 

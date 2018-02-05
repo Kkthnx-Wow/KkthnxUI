@@ -39,6 +39,7 @@ local tonumber = tonumber
 
 -- Wow API
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
 local GetAddOnMetadata = _G.GetAddOnMetadata
 local GetBuildInfo = _G.GetBuildInfo
@@ -145,36 +146,9 @@ function AddOn:PositionGameMenuButton()
 	end
 end
 
--- Matching the pre-MoP return arguments of the Blizzard API call
-function AddOn.GetAddOnInfo(index)
-	local name, title, notes, enabled, loadable, reason, security
-	name, title, notes, enabled, loadable, reason, security = GetAddOnInfo(index)
+AddOn.AddOns = {}
 
-	return name, title, notes, enabled, loadable, reason, security
-end
-
--- Check if an addon exists in the addon listing and loadable on demand
-function AddOn.IsAddOnLoadable(target)
-	local target = string_lower(target)
-	for i = 1, GetNumAddOns() do
-		local name, title, notes, enabled, loadable, reason, security = AddOn.GetAddOnInfo(i)
-		if string_lower(name) == target then
-			if loadable then
-				return true
-			end
-		end
-	end
-end
-
--- Check if an addon is enabled	in the addon listing
-function AddOn.IsAddOnEnabled(target)
-	local target = string_lower(target)
-	for i = 1, GetNumAddOns() do
-		local name, title, notes, enabled, loadable, reason, security = AddOn.GetAddOnInfo(i)
-		if string_lower(name) == target then
-			if enabled then
-				return true
-			end
-		end
-	end
+for i = 1, GetNumAddOns() do
+	local Name = GetAddOnInfo(i)
+	AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) > 0
 end

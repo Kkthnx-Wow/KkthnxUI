@@ -7,7 +7,7 @@ local CreateFrame = CreateFrame
 local SpySkin = CreateFrame("Frame")
 SpySkin:RegisterEvent("PLAYER_LOGIN")
 SpySkin:SetScript("OnEvent", function(self, event)
-	if not K.IsAddOnEnabled("Spy") then return end
+	if not K.CheckAddOnState("Spy") then return end
 
 	Spy_MainWindow:SetTemplate("Transparent")
 	Spy_AlertWindow:SetTemplate("Transparent")

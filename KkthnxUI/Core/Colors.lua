@@ -10,6 +10,7 @@ oUF.colors.castNoInterrupt = {1, 0, 0}
 oUF.colors.disconnected = {0.53, 0.54, 0.53}
 oUF.colors.fallback = {1, 1, 0.8}
 oUF.colors.health = {0.29, 0.67, 0.30}
+oUF.colors.tapped = {.6, .6, .6}
 oUF.colors.white = {1, 1, 1}
 
 oUF.colors.reaction = {

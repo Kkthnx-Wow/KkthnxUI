@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C["Skins"].BigWigs ~= true or not K.IsAddOnEnabled("BigWigs") then return end
+if C["Skins"].BigWigs ~= true or not K.CheckAddOnState("BigWigs") then return end
 
 local _G = _G
 local table_remove = table.remove

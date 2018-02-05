@@ -551,6 +551,7 @@ function Module:SetUnitAura(tt, unit, index, filter)
 			local name = UnitName(caster)
 			local _, class = UnitClass(caster)
 			local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+			if not color then color = RAID_CLASS_COLORS["PRIEST"] end
 			tt:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(ID, id), format("|c%s%s|r", color.colorStr, name))
 		else
 			tt:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
@@ -718,13 +719,13 @@ function Module:OnEnable()
 	end
 
 	-- World Quest Reward Icon
-	WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
+	WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
 		self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
 		self:SetTexture("")
 	end)
 	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "Hide", function(self)
-		self:GetParent().Backdrop:SetBackdropBorderColor(unpack(C.Media.BorderColor))
+		self:GetParent().Backdrop:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end)
 	WorldMapTooltip.ItemTooltip:CreateBackdrop()
 	WorldMapTooltip.ItemTooltip.Backdrop:SetAllPoints(WorldMapTooltip.ItemTooltip.Icon)

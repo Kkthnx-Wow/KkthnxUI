@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-if C["Skins"].Recount ~= true or not K.IsAddOnEnabled("Recount") then return end
+if C["Skins"].Recount ~= true or not K.CheckAddOnState("Recount") then return end
 
 local _G = _G
 

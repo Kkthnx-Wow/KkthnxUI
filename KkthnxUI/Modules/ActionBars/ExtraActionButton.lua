@@ -18,7 +18,7 @@ local function DisableExtraButtonTexture(self, texture, loop)
 	self:SetTexture("", true)
 end
 
-function Module:OnInitialize(texture, loop)
+function Module:SetupExtraButton(texture, loop)
 	ExtraActionBarHolder = CreateFrame("Frame", "ExtraActionBarHolder", UIParent)
 	ExtraActionBarHolder:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 150)
 	ExtraActionBarHolder:SetSize(ExtraActionButton1:GetWidth(), ExtraActionButton1:GetHeight())
@@ -26,7 +26,7 @@ function Module:OnInitialize(texture, loop)
 	ExtraActionBarFrame:SetParent(ExtraActionBarHolder)
 	ExtraActionBarFrame:ClearAllPoints()
 	ExtraActionBarFrame:SetPoint("CENTER", ExtraActionBarHolder, "CENTER")
-	ExtraActionBarFrame.ignoreFramePositionManager  = true
+	ExtraActionBarFrame.ignoreFramePositionManager = true
 
 	ZoneAbilityHolder = CreateFrame("Frame", "ZoneAbilityHolder", UIParent)
 	ZoneAbilityHolder:SetPoint("BOTTOM", ExtraActionBarFrame, "TOP", 0, 2)
@@ -59,7 +59,7 @@ function Module:OnInitialize(texture, loop)
 		button:StyleButton()
 		button:SetTemplate("ActionButton", true)
 		button.Icon:SetDrawLayer("ARTWORK")
-		button.Icon:SetTexCoord(unpack(K.TexCoords))
+		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		button.Icon:SetAllPoints()
 	end
 
@@ -72,4 +72,8 @@ function Module:OnInitialize(texture, loop)
 
 	K["Movers"]:RegisterFrame(ExtraActionBarHolder)
 	K["Movers"]:RegisterFrame(ZoneAbilityHolder)
+end
+
+function Module:OnEnable()
+	self:SetupExtraButton()
 end

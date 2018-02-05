@@ -14,7 +14,7 @@ local GetContainerItemLink = _G.GetContainerItemLink
 local DeleteCursorItem = _G.DeleteCursorItem
 local PickupContainerItem = _G.PickupContainerItem
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: Install, UIConfig, UIConfigMain, KkthnxUIData
 
 local Name = UnitName("Player")
@@ -48,6 +48,29 @@ StaticPopupDialogs["RESTART_GFX"] = {
 	hideOnEscape = false,
 	whileDead = 1,
 	preferredIndex = 3
+}
+
+StaticPopupDialogs["WATCHFRAME_URL"] = {
+	text = L["StaticPopups"].WoWHeadLink,
+	button1 = OKAY,
+	timeout = 0,
+	whileDead = true,
+	hasEditBox = true,
+	hideOnEscape = 1,
+	editBoxWidth = 325,
+	OnShow = function(self, ...)
+		self.editBox:SetAutoFocus(true)
+		self.editBox.width = self.editBox:GetWidth()
+		self.editBox:SetWidth(325)
+		self.editBox:HighlightText()
+	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	preferredIndex = 3,
 }
 
 StaticPopupDialogs["KKTHNXUI_UPDATE"] = {
@@ -155,19 +178,6 @@ StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	timeout = 0,
 	hideOnEscape = 1,
 	preferredIndex = 3,
-}
-
-StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
-	text = "Oh no, you have |cff4488ffKkthnxUI|r and "..K.Conflicts.ButtonText.." enabled at the same time. Select an addon to disable to prevent conflicts!",
-	button1 = "|cff4488ffKkthnxUI|r",
-	button2 = K.Conflicts.ButtonText,
-	OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
-	OnCancel = function() DisableAddOn(K.Conflicts.DisableText) ReloadUI() end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3,
-	showAlert = 1
 }
 
 StaticPopupDialogs["DISABLE_UI"] = {

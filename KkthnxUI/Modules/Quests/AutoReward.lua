@@ -10,6 +10,7 @@ function Module:SelectQuestReward(index)
 	if (button.type == "choice") then
 		QuestInfoItemHighlight:ClearAllPoints()
 		QuestInfoItemHighlight:SetAllPoints(button.Icon)
+		QuestInfoItemHighlight:SetPoint("TOPLEFT", button, "TOPLEFT", -8, 7)
 		QuestInfoItemHighlight:Show()
 
 		-- set choice
@@ -18,7 +19,7 @@ function Module:SelectQuestReward(index)
 end
 
 function Module:QUEST_COMPLETE()
-	if not C["Automation"].AutoReward then return end
+	if not C["Quests"].AutoReward then return end
 	local choice, highest = 1, 0
 	local num = GetNumQuestChoices()
 
@@ -38,7 +39,7 @@ function Module:QUEST_COMPLETE()
 	Module:SelectQuestReward(choice)
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	self:RegisterEvent("QUEST_COMPLETE")
 end
 
