@@ -41,20 +41,20 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 						if not icon1.overlay then
 							icon1.overlay = CreateFrame("Frame", "$parentIcon1Overlay", tbar)
-							icon1.overlay:CreateShadow(3, false, false)
-							--icon1.overlay:SetBackdrop(K.BorderBackdrop)
-							--icon1.overlay:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+							icon1.overlay:CreateShadow(1)
+							icon1.overlay:SetBackdrop(K.BorderBackdrop)
+							icon1.overlay:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 							icon1.overlay:SetFrameLevel(0)
-							icon1.overlay:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", -2, 0)
+							icon1.overlay:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", -(0 and 0 or 0), 0)
 						end
 
 						if not icon2.overlay then
 							icon2.overlay = CreateFrame("Frame", "$parentIcon2Overlay", tbar)
-							icon2.overlay:CreateShadow(3, false, false)
-							--icon2.overlay:SetBackdrop(K.BorderBackdrop)
-							--icon2.overlay:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+							icon2.overlay:CreateShadow(1)
+							icon2.overlay:SetBackdrop(K.BorderBackdrop)
+							icon2.overlay:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 							icon2.overlay:SetFrameLevel(0)
-							icon2.overlay:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 2, 0)
+							icon2.overlay:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", (0 and 0 or 0), 0)
 						end
 
 						icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -70,9 +70,9 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 						BarHeight = bar.owner.options.Height
 						tbar:SetAllPoints(frame)
 
-						frame:CreateShadow(3, false, true)
-						--frame:SetBackdrop(K.BorderBackdrop)
-						--frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+						frame:CreateShadow(1)
+						frame:SetBackdrop(K.BorderBackdrop)
+						frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 						name:ClearAllPoints()
 						name:SetWidth(165)
