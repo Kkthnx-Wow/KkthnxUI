@@ -1,5 +1,10 @@
 local K, C, L = unpack(select(2, ...))
-if C["Skins"].DBM ~= true or not (K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("DBM-StatusBarTimers")) then return end
+if not (C["Skins"].DBM and K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("DBM-StatusBarTimers") and K.CheckAddOnState("DBM-DefaultSkin")) then
+	if C["Skins"].DBM == true then
+		C["Skins"].DBM = false
+	end
+	return
+end
 
 local DBMFont = K.GetFont(C["Skins"].Font)
 local DBMTexture = K.GetTexture(C["Skins"].Texture)
