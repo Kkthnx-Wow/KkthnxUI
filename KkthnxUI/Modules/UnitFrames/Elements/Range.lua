@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true then return end
 local SpellRange = LibStub("SpellRange-1.0")
 
 local _G = _G
