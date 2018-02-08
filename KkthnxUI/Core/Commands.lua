@@ -216,30 +216,37 @@ end
 K:RegisterChatCommand("binds", K.KeyBindFrame)
 
 -- Fix The CombatLog.
-SlashCmdList["CLEARCOMBAT"] = function()
+function K.ClearCombatLog()
 	CombatLogClearEntries()
 end
-_G.SLASH_CLEARCOMBAT1 = "/clearcombat"
-_G.SLASH_CLEARCOMBAT2 = "/clfix"
+K:RegisterChatCommand("clearcombat", K.ClearCombatLog)
+K:RegisterChatCommand("clfix", K.ClearCombatLog)
 
 -- Here we can restart wow's engine. could be use for sound issues and more.
-SlashCmdList["GFXENGINE"] = function()
+function K.FixGFXEngine()
 	RestartGx()
 	StaticPopup_Show("CHANGES_RL")
 end
-_G.SLASH_GFXENGINE1 = "/restartgfx"
-_G.SLASH_GFXENGINE2 = "/fixgfx"
+K:RegisterChatCommand("restartgfx", K.FixGFXEngine)
+K:RegisterChatCommand("fixgfx", K.FixGFXEngine)
 
 -- Clear all quests in questlog
-SlashCmdList["CLEARQUESTS"] = function()
-	for i = 1, GetNumQuestLogEntries() do
-		SelectQuestLogEntry(i)
-		SetAbandonQuest()
-		AbandonQuest()
+function K.AbandonQuests()
+	local numEntries, numQuests = GetNumQuestLogEntries()
+	for questLogIndex = 1, numEntries do
+		local questTitle, level, suggestedGroup, isHeader, isCollapsed, isComplete, frequency, questID = GetQuestLogTitle(questLogIndex)
+		if (not isHeader) then
+			SelectQuestLogEntry(questLogIndex)
+			SetAbandonQuest()
+			AbandonQuest()
+		end
 	end
-	print("Quests cleared")
+	print("All quests have been abandoned!")
 end
-_G.SLASH_CLEARQUESTS1 = "/clearquests"
+if not K.CheckAddOnState("Felsong_Companion") then
+	K:RegisterChatCommand("killquests", K.AbandonQuests)
+end
+K:RegisterChatCommand("clearquests", K.AbandonQuests)
 
 -- KkthnxUI help commands
 function K.UICommandsHelp()

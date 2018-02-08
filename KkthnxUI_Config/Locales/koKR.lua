@@ -150,17 +150,22 @@ KkthnxUIConfig["koKR"] = {
 
 		["Enable"] = {
 			["Name"] = "Enable",
-			["Desc"] = "Enable bags",
+			["Desc"] = "Enable/Disable the all-in-one bag.",
 		},
 
 		["ItemLevel"] = {
 			["Name"] = "Item Level",
-			["Desc"] = "Show item level for weapons and armor",
+			["Desc"] = "Displays item level on equippable items.",
 		},
 
 		["PulseNewItem"] = {
 			["Name"] = "Pulse New Items",
 			["Desc"] = "Flash new items in the bags",
+		},
+
+		["JunkIcon"] = {
+			["Name"] = "Junk Icon",
+			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
 		},
 
 		["AutoRepair"] = {

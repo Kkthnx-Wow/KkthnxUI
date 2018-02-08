@@ -233,7 +233,7 @@ function Stuffing:SlotUpdate(b)
 	local battlePayTexture = b.frame.BattlepayItemTexture
 	local flashAnim = b.frame.flashAnim
 	local newItemAnim = b.frame.newitemglowAnim
-	if newItemTexture then
+	if newItemTexture and C["Inventory"].PulseNewItem then
 		if C_NewItems.IsNewItem(b.bag, b.slot) then
 			if IsBattlePayItem(b.bag, b.slot) then
 				newItemTexture:Hide()
@@ -264,7 +264,7 @@ function Stuffing:SlotUpdate(b)
 		newItemTexture:SetSize(b.frame:GetSize())
 	end
 
-	if (b.frame.JunkIcon) then
+	if (b.frame.JunkIcon and C["Inventory"].JunkIcon) then
 		b.frame.JunkIcon:ClearAllPoints()
 		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Inventory"].ButtonSize / 2, C["Inventory"].ButtonSize / 2)
 		b.frame.JunkIcon:SetSize(C["Inventory"].ButtonSize / 1.8, C["Inventory"].ButtonSize / 1.8)

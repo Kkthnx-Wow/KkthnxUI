@@ -75,6 +75,7 @@ C["Inventory"] = {
 	["ButtonSpace"] = 6,
 	["Enable"] = true,
 	["ItemLevel"] = false,
+	["JunkIcon"] = true,
 	["PulseNewItem"] = false,
 	["UseGuildRepairFunds"] = false,
 }
