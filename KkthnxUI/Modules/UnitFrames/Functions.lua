@@ -40,6 +40,12 @@ local RaidBuffsPosition = {
 	BOTTOM = {0, 0},
 }
 
+function K.UpdateAllElements(frame)
+	for _, v in ipairs(frame.__elements) do
+		v(frame, "UpdateElement", frame.unit)
+	end
+end
+
 function K.MultiCheck(check, ...)
     for i = 1, select("#", ...) do
         if (check == select(i, ...)) then
@@ -72,7 +78,7 @@ end
 
 -- PostUpdateHealth
 function K.PostUpdateHealth(self, unit, cur, min, max)
-	if self.Portrait and not C["Unitframe"].ThreeDPortraits then
+	if self.Portrait and not C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
 		UpdatePortraitColor(self, unit, cur, max)
 	end
 end

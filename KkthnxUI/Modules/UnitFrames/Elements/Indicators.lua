@@ -43,16 +43,6 @@ function K.CreateGlobalCooldown(self)
 	self.GCD.Width = (10)
 end
 
--- Portrait Timer
-function K.CreatePortraitTimer(self)
-	self.PortraitTimer = CreateFrame("Frame", nil, self)
-	self.PortraitTimer.Icon = self.PortraitTimer:CreateTexture(nil, "BACKGROUND")
-	self.PortraitTimer.Icon:SetAllPoints(self.Portrait)
-	self.PortraitTimer.Remaining = K.SetFontString(self.PortraitTimer, C["Media"].Font, self.Portrait:GetSize() / 2, C["Media"].FontStyle, "CENTER")
-	self.PortraitTimer.Remaining:SetShadowOffset(0, 0)
-	self.PortraitTimer.Remaining:SetPoint("CENTER", self.PortraitTimer.Icon)
-end
-
 function K.CreateGroupRoleIndicator(self)
 	self.GroupTextRoleIndicator = self:CreateFontString(nil, "OVERLAY")
 	self.GroupTextRoleIndicator:SetFont(C["Media"].Font, 10, "")

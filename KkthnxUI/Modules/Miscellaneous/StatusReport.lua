@@ -119,7 +119,7 @@ local function GetResolution()
 	return (({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution"))
 end
 
-function K:CreateStatusFrame()
+function K.CreateStatusFrame()
 	local function CreateSection(width, height, parent, anchor1, anchorTo, anchor2, yOffset)
 		local section = CreateFrame("Frame", nil, parent)
 		section:SetSize(width, height)
@@ -282,17 +282,17 @@ local function UpdateDynamicValues()
 	K.StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 end
 
-function K:ShowStatusReport()
-	if not self.StatusFrame then
-		self:CreateStatusFrame()
+function K.ShowStatusReport()
+	if not K.StatusFrame then
+		K.CreateStatusFrame()
 	end
 
-	if not self.StatusFrame:IsShown() then
+	if not K.StatusFrame:IsShown() then
 		UpdateDynamicValues()
-		self.StatusFrame:Raise() -- Set framelevel above everything else
-		self.StatusFrame:SetShown(true)
+		K.StatusFrame:Raise() -- Set framelevel above everything else
+		K.StatusFrame:SetShown(true)
 	else
-		self.StatusFrame:SetShown(false)
+		K.StatusFrame:SetShown(false)
 	end
 end
 

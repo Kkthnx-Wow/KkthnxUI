@@ -11,6 +11,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Automatically scale the User Interface based on your screen resolution",
 		},
 
+		["UIScale"] = {
+			["Name"] = "UI Scale",
+			["Desc"] = "Set a custom UI scale",
+		},
+
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
@@ -1164,11 +1169,6 @@ KkthnxUIConfig["enUS"] = {
 		["Party"] = {
 			["Name"] = "Party Frames",
 			["Desc"] = "Enable those sexy party frames <3",
-		},
-
-		["PortraitTimer"] = {
-			["Name"] = "Portrait Timer",
-			["Desc"] = "Displays important PVP buffs/debuffs with timers on your Unit Frame Portraits",
 		},
 
 		["PowerPredictionBar"] = {

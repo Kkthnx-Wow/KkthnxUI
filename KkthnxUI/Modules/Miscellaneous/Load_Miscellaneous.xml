@@ -5,7 +5,9 @@
     <Script file="ChatBubble.lua"/>
     <Script file="ColorTextures.lua"/>
     <Script file="Durability.lua"/>
+    <Script file="EnchantScroll.lua"/>
     <Script file="Filger.lua"/>
+    <Script file="GrabMail.lua"/>
     <Script file="KillingBlow.lua"/>
     <Script file="Miscellaneous.lua"/>
     <Script file="MovableFrames.lua"/>

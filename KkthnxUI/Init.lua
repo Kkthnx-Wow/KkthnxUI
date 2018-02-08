@@ -1,4 +1,8 @@
 local AddOnName, Engine = ...
+local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
+local Windowed = Display_DisplayModeDropDown:windowedmode()
+local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
+
 
 --[[
 	The MIT License (MIT)
@@ -35,6 +39,7 @@ local _G = _G
 local select = select
 local string_format = string.format
 local string_lower = string.lower
+local string_match = string.match
 local tonumber = tonumber
 
 -- Wow API
@@ -85,8 +90,9 @@ AddOn.Realm = GetRealmName()
 AddOn.MediaPath = "Interface\\AddOns\\KkthnxUI\\Media\\"
 AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 AddOn.OmniCC = select(4, GetAddOnInfo("OmniCC"))
-AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
-AddOn.ScreenWidth, AddOn.ScreenHeight = GetPhysicalScreenSize()
+AddOn.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
+AddOn.ScreenHeight = tonumber(string_match(AddOn.Resolution, "%d+x(%d+)"))
+AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}

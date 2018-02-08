@@ -16,6 +16,11 @@ KkthnxUIConfig["ruRU"] = {
 			["Desc"] = "Automatically scale the User Interface based on your screen resolution",
 		},
 
+		["UIScale"] = {
+			["Name"] = "UI Scale",
+			["Desc"] = "Set a custom UI scale",
+		},
+
 		["NumberPrefixStyle"] = {
 			["Name"] = "Unit Prefix Style",
 			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
@@ -832,6 +837,51 @@ KkthnxUIConfig["ruRU"] = {
 			["Name"] = "WoWhead Link",
 			["Desc"] = "Add WoWhead link in objectivetracker dropdown",
 		},
+
+		["Arena"] = {
+			["Name"] = "Arena",
+			["Desc"] = "Auto collapse tracker in arena",
+		},
+
+		["Raid"] = {
+			["Name"] = "Raid",
+			["Desc"] = "Auto collapse tracker in raid",
+		},
+
+		["Orderhall"] = {
+			["Name"] = "Orderhall",
+			["Desc"] = "Auto collapse tracker in orderhall",
+		},
+
+		["Garrison"] = {
+			["Name"] = "Garrison",
+			["Desc"] = "Auto collapse tracker in garrison",
+		},
+
+		["Dungeon"] = {
+			["Name"] = "Dungeon",
+			["Desc"] = "Auto collapse tracker in dungeon",
+		},
+
+		["Combat"] = {
+			["Name"] = "Combat",
+			["Desc"] = "Auto collapse tracker in combat",
+		},
+
+		["Battleground"] = {
+			["Name"] = "Battleground",
+			["Desc"] = "Auto collapse tracker in battleground",
+		},
+
+		["Scenario"] = {
+			["Name"] = "Scenario",
+			["Desc"] = "Auto collapse tracker in scenario",
+		},
+
+		["Rested"] = {
+			["Name"] = "Rested",
+			["Desc"] = "Auto collapse tracker in rested arenas",
+		},
 	},
 
 	-- DataText Local
@@ -1124,11 +1174,6 @@ KkthnxUIConfig["ruRU"] = {
 		["Party"] = {
 			["Name"] = "Party Frames",
 			["Desc"] = "Enable those sexy party frames <3",
-		},
-
-		["PortraitTimer"] = {
-			["Name"] = "Portrait Timer",
-			["Desc"] = "Displays important PVP buffs/debuffs with timers on your Unit Frame Portraits",
 		},
 
 		["PowerPredictionBar"] = {

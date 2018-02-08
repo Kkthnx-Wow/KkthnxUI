@@ -231,7 +231,7 @@ end
 function Module:OnInitialize()
 	self.Bar = CreateFrame("Frame", "MinimapButtonBar", UIParent)
 	self.Bar:Hide()
-	self.Bar:SetPoint("RIGHT", UIParent, "RIGHT", -46, 0)
+	self.Bar:SetPoint("RIGHT", UIParent, "RIGHT", -86, 0)
 	self.Bar:SetFrameStrata("LOW")
 	self.Bar:SetClampedToScreen(true)
 	self.Bar:SetMovable(true)

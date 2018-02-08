@@ -23,6 +23,60 @@ local ToggleFrame = _G.ToggleFrame
 local Lines = {}
 local CopyFrame
 
+local menuFrame = CreateFrame("Frame", "ConfigRightClickMenu", UIParent, "L_UIDropDownMenuTemplate")
+local menuList = {
+	{text = OPTIONS_MENU, isTitle = true, notCheckable = true},
+	{text = "", notClickable = true, notCheckable = true},
+	{text = STATUS, notCheckable = true, func = function()
+			K.ShowStatusReport()
+	end},
+	{text = "Install", notCheckable = true, func = function()
+			K.Install:Launch()
+	end},
+	{text = "Move UI", notCheckable = true, func = function()
+			K.MoveUI()
+	end},
+	{text = "Toggle Config", notCheckable = true, func = function()
+			K.ConfigUI()
+	end},
+	{text = "Profiles", notCheckable = true, func = function()
+			K.UIProfiles("list")
+	end},
+	{text = "UI Help", notCheckable = true, func = function()
+			K.UICommandsHelp()
+	end},
+	{text = RELOADUI, notCheckable = true, func = function()
+			ReloadUI()
+	end},
+	{text = "Toggle Bags", notCheckable = true, func = function()
+			if BankFrame:IsShown() then
+				CloseBankBagFrames()
+				CloseBankFrame()
+				CloseAllBags()
+			else
+				if ContainerFrame1:IsShown() then
+					CloseAllBags()
+				else
+					ToggleAllBags()
+				end
+			end
+	end},
+	{text = "Click Me", notCheckable = true, func = function()
+			SendChatMessage("I love KkthnxUI! KkhnxUI is life!", "YELL", nil, nil)
+	end},
+	{text = "No Life", notCheckable = true, func = function()
+			RequestTimePlayed()
+			print("|cfff0f8ffI just wanted you to see how you are spending your life! |cfffa8072<3|r |cfff0f8ffKkthnx|r")
+	end},
+	{text = "Damage Meters", hasArrow = true, notCheckable=true,
+		menuList = {
+			{text = "Skada", notCheckable = true, func = function() if IsAddOnLoaded("Skada") then Skada:ToggleWindow() end end},
+			{text = "Recount", notCheckable = true, func = function() if IsAddOnLoaded("Recount") then if Recount_MainWindow:IsShown() then Recount_MainWindow:Hide() else Recount_MainWindow:Show() end end end},
+			{text = "Details", notCheckable = true, func = function() if IsAddOnLoaded("Details") then _detalhes:ToggleWindows() end end},
+		},
+	},
+}
+
 local function RemoveIconFromLine(text)
 	for i= 1, 8 do
 		text = string_gsub(text, "|TInterface\\TargetingFrame\\UI%-RaidTargetingIcon_"..i..":0|t", "{"..string_lower(_G["RAID_TARGET_"..i]).."}")
@@ -200,18 +254,6 @@ function CopyChat:OnEnable()
 				ToggleFrame(ChatMenu)
 			elseif button == "MiddleButton" then
 				RandomRoll(1, 100)
-			elseif (IsShiftKeyDown() and button == "LeftButton") then
-				if BankFrame:IsShown() then
-					CloseBankBagFrames()
-					CloseBankFrame()
-					CloseAllBags()
-				else
-					if ContainerFrame1:IsShown() then
-						CloseAllBags()
-					else
-						ToggleAllBags()
-					end
-				end
 			else
 				CopyChat:CopyText(self.ChatFrame)
 			end
@@ -229,6 +271,7 @@ function CopyChat:OnEnable()
 			GameTooltip:AddDoubleLine(L["ConfigButton"].Shift_Left_Click, L["ConfigButton"].Toggle_Bags, 1, 1, 1)
 			GameTooltip:Show()
 		end)
+
 		CopyButton:SetScript("OnLeave", function(self)
 			if _G[self:GetParent():GetName().."TabText"]:IsShown() then
 				self:SetAlpha(0.25)
@@ -240,83 +283,38 @@ function CopyChat:OnEnable()
 
 		-- Create Configbutton
 		if C["General"].ConfigButton == true then
-			local ConfigButton = CreateFrame("Button", string_format("CopyChatButton2%d", id), frame)
+			local frame = _G["ChatFrame"..i]
+			local id = frame:GetID()
+			local ConfigButton = CreateFrame("Button", string.format("ConfigChatButton%d", id), frame)
 			ConfigButton:EnableMouse(true)
 			ConfigButton:SetSize(26, 26)
+			ConfigButton:SetHitRectInsets(6, 6, 7, 7)
 			ConfigButton:SetPoint("TOPRIGHT", 2, 23)
 			ConfigButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Config")
 			ConfigButton:SetAlpha(0.25)
 			ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
-			ConfigButton:SetScript("OnMouseUp", function(self, button)
-				if(InCombatLockdown() and not button == "RightButton") then
-					K.Print(ERR_NOT_IN_COMBAT)
-					return
-				end
-
-				if button == "LeftButton" then
-					local Movers = K.Movers
-					Movers:StartOrStopMoving()
-				end
-
-				if button == "RightButton" then
-					if IsAddOnLoaded("Recount") then
-						if Recount_MainWindow:IsShown() then
-							Recount_MainWindow:Hide()
-						else
-							Recount_MainWindow:Show()
-						end
-					end
-					if IsAddOnLoaded("Skada") then
-						Skada:ToggleWindow()
-					end
-					if IsAddOnLoaded("Details") then
-						_detalhes:ToggleWindows()
-					end
-				end
-				if button == "MiddleButton" then
-					if (not KkthnxUIConfigFrame) then
-						KkthnxUIConfig:CreateConfigWindow()
-					end
-					if KkthnxUIConfigFrame:IsVisible() then
-						KkthnxUIConfigFrame:Hide()
-					else
-						KkthnxUIConfigFrame:Show()
-					end
-					HideUIPanel(GameMenuFrame)
+			ConfigButton:SetScript("OnMouseUp", function(self, btn)
+				if btn == "LeftButton" or btn == "RightButton" then
+					L_EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
 				end
 			end)
 
 			ConfigButton:SetScript("OnEnter", function(self)
 				self:SetAlpha(1)
-				local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
-				GameTooltip:SetOwner(self, anchor, xoff, yoff)
-				GameTooltip:ClearLines()
-				GameTooltip:AddLine(L["ConfigButton"].Functions)
-				GameTooltip:AddDoubleLine(L["ConfigButton"].LeftClick, L["ConfigButton"].MoveUI, 1, 1, 1)
-				if IsAddOnLoaded("Recount") then
-					GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, L["ConfigButton"].Recount, 1, 1, 1)
-				end
-				if IsAddOnLoaded("Skada") then
-					GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, L["ConfigButton"].Skada, 1, 1, 1)
-				end
-				if IsAddOnLoaded("Details") then
-					GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, L["ConfigButton"].Details, 1, 1, 1)
-				end
-				GameTooltip:AddDoubleLine(L["ConfigButton"].MiddleClick, L["ConfigButton"].Config, 1, 1, 1)
-				GameTooltip:Show()
 			end)
+
 			ConfigButton:SetScript("OnLeave", function(self)
 				if _G[self:GetParent():GetName().."TabText"]:IsShown() then
 					self:SetAlpha(0.25)
 				else
 					self:SetAlpha(0)
 				end
-				GameTooltip:Hide()
 			end)
 
 			ConfigButton.ChatFrame = frame
 		end
+
 		CopyButton.ChatFrame = frame
 	end
 end

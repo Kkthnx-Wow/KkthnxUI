@@ -3,7 +3,7 @@
 ## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Kkthnx
-## Version: 7.08
+## Version: 7.09
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
 ## SavedVariablesPerCharacter: KkthnxUIConfigNotShared

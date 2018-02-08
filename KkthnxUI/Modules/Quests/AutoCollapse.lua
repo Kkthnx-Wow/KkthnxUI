@@ -44,7 +44,7 @@ function Module:ChangeState(event)
 		statedriver[C["Quests"].Combat.Value](Module.frame)
 	elseif C_Garrison_IsPlayerInGarrison(2) then
 		statedriver[C["Quests"].Garrison.Value](Module.frame)
-	elseif C_Garrison_IsPlayerInGarrison(3) then --here be order halls
+	elseif C_Garrison_IsPlayerInGarrison(3) then -- here be order halls
 		statedriver[C["Quests"].Orderhall.Value](Module.frame)
 	elseif IsResting() then
 		statedriver[C["Quests"].Rested.Value](Module.frame)

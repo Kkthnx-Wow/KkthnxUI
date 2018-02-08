@@ -43,15 +43,20 @@ local function StyleNormalButton(self)
 		float = K.Noop
 	end
 
-	if border then
-		border:Hide()
-		border = K.Noop
-	end
-
 	count:ClearAllPoints()
 	count:SetPoint("BOTTOMRIGHT", 0, 2)
 	count:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 	count:SetShadowOffset(0, 0)
+
+	if border and button.isSkinned then
+		-- border:SetTexture("")
+		if border:IsShown() then
+			button:SetBackdropBorderColor(0.08, 0.70, 0)
+		else
+			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		end
+	end
+
 
 	if btname then
 		if C["ActionBar"].Macro == true then

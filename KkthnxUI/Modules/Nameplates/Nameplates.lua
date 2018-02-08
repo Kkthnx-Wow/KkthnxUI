@@ -567,8 +567,8 @@ local function StyleUpdate(self, unit)
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetFont(C["Media"].Font, C["Nameplates"].FontSize * K.NoScaleMult, C["Nameplates"].Outline and "OUTLINE" or "")
 	self.Name:SetShadowOffset(C["Nameplates"].Outline and 0 or 1, C["Nameplates"].Outline and -0 or -1)
-	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 4)
-	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 4)
+	self.Name:SetPoint("BOTTOMLEFT", self, "TOPLEFT", -3, 2)
+	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 2)
 
 	if C["Nameplates"].NameAbbreviate == true then
 		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameAbbreviateMedium]")
@@ -633,7 +633,7 @@ local function StyleUpdate(self, unit)
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Shield:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]])
 	self.Castbar.Shield:SetSize(40, 40)
-	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 18, 8)
+	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 20, 8)
 
 	if C["Nameplates"].ThreatPercent == true then
 		self.ThreatPercentText = self.Health:CreateFontString(nil, "OVERLAY")
@@ -722,9 +722,9 @@ local function StyleUpdate(self, unit)
 		self.Auras["growth-y"] = "UP"
 		self.Auras["growth-x"] = "RIGHT"
 		self.Auras.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
-		self.Auras.numDebuffs = self.Health:GetWidth() * 2
-		self.Auras.numBuffs = self.Health:GetWidth() * 2
-		self.Auras:SetSize(self.Health:GetWidth(), C["Nameplates"].AurasSize)
+		self.Auras.numDebuffs = 8
+		self.Auras.numBuffs = 8
+		self.Auras:SetSize(C["Nameplates"].Width + 4, C["Nameplates"].AurasSize)
 		self.Auras.spacing = 3
 		self.Auras.size = C["Nameplates"].AurasSize
 		self.Auras:EnableMouse(false)

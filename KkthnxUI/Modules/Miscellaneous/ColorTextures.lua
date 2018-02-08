@@ -147,7 +147,8 @@ local elements = {
 	["PlayerTalentFrameSpecializationSpecButton3"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton4"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationLearnButton"] = "Blizzard_TalentUI",
-	["PlayerTalentFrameTalents"] = "Blizzard_TalentUI"
+	["PlayerTalentFrameTalents"] = "Blizzard_TalentUI",
+	["TradeSkillFrame"] = "Blizzard_TradeSkillUI"
 }
 
 -- Elements we won't skin

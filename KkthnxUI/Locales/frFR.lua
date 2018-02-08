@@ -36,6 +36,7 @@ L["StaticPopups"] = {
 	Fix_Actionbars = "There seems to be an issue with your actionbars. Would you like to attempt to fix the issue?",
 	KkthnxUI_Update = "KkthnxUI is out of date. You can download the newest version from Curse!",
 	Reset_UI = "Are you sure you want to reset all the settings on this profile?",
+	Resolution_Changed = "We detected a resolution change on your World of Warcraft client. We HIGHLY RECOMMEND restarting your game. Do you want to proceed?",
 	Restart_GFX = "One or more of the changes you have made require a restart of the graphics engine.",
 	Set_UI_Scale = "Automatically scale the User Interface based on your screen resolution?",
 	Warning_Blizzard_AddOns = "It appears one of your AddOns have disabled the AddOn Blizzard_CompactRaidFrames. This can cause errors and other issues. The AddOn will now be re-enabled.",
@@ -44,9 +45,15 @@ L["StaticPopups"] = {
 
 -- Commands Localization
 L["Commands"] = {
+	Config = "'|cff00ff00/config|r' : Display in-game configuration window.",
 	ConfigPerAccount = "Your settings are currently set accross toons so you can't use this command!",
+	Install = "'|cff00ff00/install|r' or '|cff00ff00/reset|r' : Install or reset KkthnxUI to default settings.",
+	Move = "'|cff00ff00/moveui|r' : Move Frames.",
+	Profile = "'|cff00ff00/profile|r' : Use KkthnxUI settings (existing profile) from another character.",
 	ProfileNotFound = "Profile not found",
 	ProfileSelection = "Please type a profile to use (example: /profile Stormreaver-Kkthnx)",
+	Test = "'|cff00ff00/testui|r' : Test Unit Frames.",
+	Title = "KkthnxUI Commands:",
 }
 
 -- ActionBars Localization

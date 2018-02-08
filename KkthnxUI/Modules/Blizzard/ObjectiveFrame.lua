@@ -2,8 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ObjectiveFrame", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
-
-local min = math.min
+local math_min = math.min
 
 local hooksecurefunc = _G.hooksecurefunc
 local GetScreenWidth = _G.GetScreenWidth
@@ -17,14 +16,14 @@ local bonusObjectivePosition = "AUTO"
 local ObjectiveFrameHolder = CreateFrame("Frame", "ObjectiveFrameHolder", UIParent)
 ObjectiveFrameHolder:SetWidth(130)
 ObjectiveFrameHolder:SetHeight(22)
-ObjectiveFrameHolder:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -135, -300)
+ObjectiveFrameHolder:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -138, -273)
 
 function Module:SetObjectiveFrameHeight()
 	local top = ObjectiveTrackerFrame:GetTop() or 0
 	local screenHeight = GetScreenHeight()
 	local gapFromTop = screenHeight - top
 	local maxHeight = screenHeight - gapFromTop
-	local objectiveFrameHeight = min(maxHeight, 480)
+	local objectiveFrameHeight = math_min(maxHeight, 480)
 
 	ObjectiveTrackerFrame:SetHeight(objectiveFrameHeight)
 end
@@ -45,7 +44,7 @@ function Module:OnEnable()
 	if IsAddOnLoaded("DugisGuideViewerZ") then return end
 
 	K.Movers:RegisterFrame(ObjectiveFrameHolder)
-	ObjectiveFrameHolder:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -135, -300)
+	ObjectiveFrameHolder:SetPoint("TOPRIGHT", "UIParent", "TOPRIGHT", -138, -273)
 
 	ObjectiveTrackerFrame:ClearAllPoints()
 	ObjectiveTrackerFrame:SetPoint("TOP", ObjectiveFrameHolder, "TOP")

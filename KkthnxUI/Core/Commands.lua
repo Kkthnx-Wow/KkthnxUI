@@ -242,23 +242,17 @@ end
 _G.SLASH_CLEARQUESTS1 = "/clearquests"
 
 -- KkthnxUI help commands
-SlashCmdList["UIHELP"] = function()
-	for i, v in ipairs(L.SlashCommand.Help) do
-		print(" ")
-		print("|cffff8000".. L.Help.Title .."|r")
-		print(L.Help.Install)
-		print(L.Help.Datatexts)
-		print(L.Help.Config)
-		print(L.Help.Move)
-		print(L.Help.Test)
-		print(L.Help.Profile)
-		print(" ")
-		print("|cffffff00"..("%s"):format(tostring(v)).."|r")
-		print(" ")
-	end
+function K.UICommandsHelp()
+	print(" ")
+	print("|cff4488ff"..L["Commands"].Title.."|r")
+	print(L["Commands"].Install)
+	print(L["Commands"].Config)
+	print(L["Commands"].Move)
+	print(L["Commands"].Test)
+	print(L["Commands"].Profile)
+	print(" ")
 end
-_G.SLASH_UIHELP1 = "/uicommands"
-_G.SLASH_UIHELP2 = "/helpui"
+K:RegisterChatCommand("helpui", K.UICommandsHelp)
 
 function K.SetUIScale()
 	if InCombatLockdown() or C["General"].AutoScale then

@@ -229,6 +229,7 @@ C["General"] = {
 	["TaintLog"] = false,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.31, 0.31, 0.31},
+	["UIScale"] = 0.69,
 }
 
 -- Loot
@@ -423,7 +424,6 @@ C["Unitframe"] = {
 	["OORAlpha"] = 0.40,
 	["Outline"] = false,
 	["Party"] = true,
-	["PortraitTimer"] = true,
 	["PowerPredictionBar"] = true,
 	["PvPText"] = true,
 	["Scale"] = 1,

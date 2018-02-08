@@ -1,45 +1,89 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Big thanks to Goldpaw for failproofing this badass script some more.
+
 -- Lua API
 local _G = _G
+local math_max = math.max
+local math_min = math.min
+local string_format = string.format
 local string_match = string.match
 
 -- Wow API
-local CreateFrame = _G.CreateFrame
+local CanCancelScene = _G.CanCancelScene
+local CanExitVehicle = _G.CanExitVehicle
+local CinematicFrame = _G.CinematicFrame
+local GetCVar = _G.GetCVar
+local GetCVarBool = _G.GetCVarBool
+local InCinematic = _G.InCinematic
 local InCombatLockdown = _G.InCombatLockdown
-local GetScreenResolutions = _G.GetScreenResolutions
-local GetCurrentResolution = _G.GetCurrentResolution
-local UIParent = _G.UIParent
+local ReloadUI = _G.ReloadUI
 local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ForceQuit, WorldMapFrame, UIParent, StaticPopup_Show
 
+local Lock = false
+K.RequireReload = false
+
 -- Optimize graphic after we enter world
 local PixelPerfect = CreateFrame("Frame")
-PixelPerfect:RegisterEvent("ADDON_LOADED")
-PixelPerfect:RegisterEvent("PLAYER_REGEN_ENABLED")
-PixelPerfect:RegisterEvent("PLAYER_REGEN_DISABLED")
-PixelPerfect:RegisterEvent("LOADING_SCREEN_DISABLED")
+PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
+PixelPerfect:RegisterEvent("CINEMATIC_STOP")
+PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
+PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
-	if (C["General"] and C["General"].AutoScale) then
-		if not InCombatLockdown() then
-			local InterfaceScale = 768 / K.ScreenHeight
-			if (InterfaceScale < 0.64) then
-				C["General"].AutoScale = false
-				UIParent:SetScale(InterfaceScale)
-			else
-				self:UnregisterEvent("UI_SCALE_CHANGED")
-				SetCVar("uiScale", InterfaceScale)
-			end
-		else
-			self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		end
+	-- Prevent a C stack overflow
+	if Lock then
+		return
+	end
+	Lock = true
 
-		if event == "PLAYER_REGEN_ENABLED" then
-			self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	if InCombatLockdown() then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED")
+		return
+	end
+
+	if event ~= "CINEMATIC_STOP" and InCinematic() then
+		return
+	end
+
+	if InCinematic() and not(CinematicFrame.isRealCinematic or CanCancelScene() or CanExitVehicle()) then
+		return
+	end
+
+	-- Make sure that UI scaling is turned on
+	local UseUIScale = GetCVarBool("useUiScale")
+	if not UseUIScale then
+		SetCVar("useUiScale", 1)
+	end
+
+	-- Automatically change the scale if auto scaling is activated
+	if C["General"].AutoScale then
+		C["General"].UIScale = math_min(2, math_max(0.32, 768 / string_match(K.Resolution, "%d+x(%d+)")))
+	end
+
+	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C["General"].UIScale)) then
+		SetCVar("uiScale", C["General"].UIScale)
+		if not K.RequireReload or K.RequireReload == false then
+			if C["General"].UIScale >= 0.64 then
+				StaticPopup_Show("CLIENT_RESTART")
+				K.RequireReload = true -- We want to force a restart here since the user goes below the standard scale.
+			end
 		end
 	end
-end)
 
-K["PixelPerfect"] = PixelPerfect
+	-- Allow 4K and WQHD resolution to have an uiScale lower than 0.64, which is
+	-- The lowest value of UIParent scale by default
+	if (C["General"].UIScale < 0.64) then
+		UIParent:SetScale(C["General"].UIScale)
+	end
+
+	if event == "PLAYER_ENTERING_WORLD" then
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	end
+
+	Lock = false
+end)

@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 if C["Inventory"].Enable ~= true then return end
-local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
 -- Sorced (by Hungtar, editor Tukz then Kkthnx)
 
@@ -201,7 +200,7 @@ function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
 	local IsNewItem = C_NewItems.IsNewItem(b.bag, b.slot)
-	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
+	local isQuestItem, questId, isActiveQuest =	GetContainerItemQuestInfo(b.bag, b.slot)
 
 	-- Set all slot color to default KkthnxUI on update
 	if not b.frame.lock then
@@ -211,13 +210,6 @@ function Stuffing:SlotUpdate(b)
 	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
 		local start, duration, enable = GetContainerItemCooldown(b.bag, b.slot)
 		CooldownFrame_Set(b.cooldown, start, duration, enable)
-	end
-
-	-- New Item Overlay
-	if (IsNewItem) and C["Inventory"].PulseNewItem == true then
-		LibButtonGlow.ShowOverlayGlow(b.frame)
-	else
-		LibButtonGlow.HideOverlayGlow(b.frame)
 	end
 
 	if C["Inventory"].ItemLevel == true then
@@ -236,18 +228,66 @@ function Stuffing:SlotUpdate(b)
 		end
 	end
 
+	-- New item code from Blizzard's ContainerFrame.lua
+	local newItemTexture = b.frame.NewItemTexture
+	local battlePayTexture = b.frame.BattlepayItemTexture
+	local flashAnim = b.frame.flashAnim
+	local newItemAnim = b.frame.newitemglowAnim
+	if newItemTexture then
+		if C_NewItems.IsNewItem(b.bag, b.slot) then
+			if IsBattlePayItem(b.bag, b.slot) then
+				newItemTexture:Hide()
+				battlePayTexture:Show()
+			else
+				if quality and NEW_ITEM_ATLAS_BY_QUALITY[quality] then
+					newItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[quality])
+				else
+					newItemTexture:SetAtlas("bags-glow-white")
+				end
+				newItemTexture:Show()
+				battlePayTexture:Hide()
+			end
+			if not flashAnim:IsPlaying() and not newItemAnim:IsPlaying() then
+				flashAnim:Play()
+				newItemAnim:Play()
+			end
+		else
+			newItemTexture:Hide()
+			battlePayTexture:Hide()
+			if flashAnim:IsPlaying() or newItemAnim:IsPlaying() then
+				flashAnim:Stop()
+				newItemAnim:Stop()
+			end
+		end
+		-- Make sure that the textures are the same size as the itemframe.
+		battlePayTexture:SetSize(b.frame:GetSize())
+		newItemTexture:SetSize(b.frame:GetSize())
+	end
+
 	if (b.frame.JunkIcon) then
 		b.frame.JunkIcon:ClearAllPoints()
 		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Inventory"].ButtonSize / 2, C["Inventory"].ButtonSize / 2)
 		b.frame.JunkIcon:SetSize(C["Inventory"].ButtonSize / 1.8, C["Inventory"].ButtonSize / 1.8)
-		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) then
+		if (quality == LE_ITEM_QUALITY_POOR and not noValue) then
 			b.frame.JunkIcon:Show()
 		else
 			b.frame.JunkIcon:Hide()
 		end
 	end
 
-	if (clink) then
+	-- Quest Item code from Blizzard's ContainerFrame.lua
+	local questTexture = _G[b.frame:GetName().."IconQuestTexture"]
+	if questTexture then
+		questTexture:SetSize(b.frame:GetSize())
+		if questId and not isActiveQuest then
+			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
+			questTexture:Show()
+		else
+			questTexture:Hide()
+		end
+	end
+
+	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
 		if C["Inventory"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
@@ -262,11 +302,15 @@ function Stuffing:SlotUpdate(b)
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
-		-- Color slot according to item quality
-		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
+		-- color slot according to item quality
+		if questId and not isActiveQuest then
+			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
+		elseif questId or isQuestItem then
+			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
+		elseif not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
-		elseif isQuestItem or questId then
-			b.frame:SetBackdropBorderColor(1, 1, 0)
+		else
+			b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 		end
 	else
 		b.name, b.level = nil, nil
@@ -867,12 +911,11 @@ function Stuffing:InitBags()
 	editbox:SetScript("OnEditFocusLost", editbox.Hide)
 	editbox:SetScript("OnEditFocusGained", editbox.HighlightText)
 	editbox:SetScript("OnTextChanged", updateSearch)
-	--editbox:SetText(SEARCH)
 
 	local detail = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	detail:SetPoint("TOPLEFT", f, 11, -10)
 	detail:SetPoint("RIGHT", f, -140, -10)
-	detail:SetHeight(13)
+	detail:SetHeight(14)
 	detail:SetShadowColor(0, 0, 0, 0)
 	detail:SetJustifyH("LEFT")
 	detail:SetText(SEARCH)

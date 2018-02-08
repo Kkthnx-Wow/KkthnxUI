@@ -11,17 +11,6 @@ local GetTime = _G.GetTime
 local UnitIsFriend = _G.UnitIsFriend
 local UnitCanAttack = _G.UnitCanAttack
 
-local function FilterTargetDebuffs(...)
-	local _, unit, _, _, _, _, _, _, _, _, owner, _, _, id = ...
-	return owner == "player" or owner == "vehicle" or UnitIsFriend("player", unit) or not owner
-end
-
-local function FilterGroupDebuffs(...)
-	local _, _, _, _, _, _, _, _, _, _, _, _, _, id = ...
-	return id == 160029
-end
-
-
 local function CreateAuraTimer(self, elapsed)
 	self.expiration = self.expiration - elapsed
 	if self.nextupdate > 0 then
@@ -189,7 +178,6 @@ function K.CreateAuras(self, unit)
 			Debuffs.initialAnchor = "TOPLEFT"
 			Debuffs["growth-y"] = "UP"
 			Debuffs["growth-x"] = "RIGHT"
-			Debuffs.CustomFilter = FilterTargetDebuffs
 			Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 			Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 			Debuffs.PostCreateIcon = PostCreateAura
@@ -308,7 +296,6 @@ function K.CreateAuras(self, unit)
 		Debuffs.initialAnchor = "TOPLEFT"
 		Debuffs["growth-y"] = "UP"
 		Debuffs["growth-x"] = "RIGHT"
-		Debuffs.CustomFilter = FilterGroupDebuffs
 		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura

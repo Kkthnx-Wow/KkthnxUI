@@ -21,11 +21,14 @@ local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 
 -- Preload
-K.Mult = 768 / K.ScreenHeight / UIParent:GetScale()
-function K.Scale(x) return
-	K.Mult * math_floor(x / K.Mult + 0.5)
+local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
+local Scale = function(x)
+	return Mult * math_floor(x / Mult + 0.5)
 end
-K.NoScaleMult = 768 / string_match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)")
+
+K.Scale = function(x) return Scale(x) end
+K.Mult = Mult
+K.NoScaleMult = K.Mult * C["General"].UIScale
 
 local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 local backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
