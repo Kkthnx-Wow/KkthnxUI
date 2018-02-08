@@ -3,14 +3,14 @@
 ## Title: |cff4488ffKkthnxUI|r
 ## Notes: |cff666666By Josh "Kkthnx" Russell|r |n|n|cffffffffA simple User Interface replacement |nAddOn for World of Warcraft.|r|r|n|n|cff4488ffThis addon supports:|r|nLegion |cff666666Patch: 7.3.5, Build: 25881|r|n|n|cff4488ffPayPal.Me|r|cffffffff:|r|n|cffffffffwww.paypal.me/kkthnx|r|n|n|cff4488ffPatreon|r|cffffffff:|r |n|cffffffffwww.patreon.com/kkthnx|r|n|n
 ## Author: Kkthnx
-## Version: 7.09
+## Version: 7.10
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIData
 ## SavedVariablesPerCharacter: KkthnxUIDataPerChar
 ## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, Skada, DBM, Recount, WeakAuras
 ## X-Category: Interface Enhancements
 ## X-Credits: Alza, Azilroka, Caellian, Caith, Elv, Goldpaw, Haleth, Haste, Hungtar, Hydra, Ishtara, KkthnxUI_Community, LightSpark, Magicnachos, Nightcracker, P3lim, Roth, Shestak, Sticklord, Tekkub, Tohveli, Tukz, Tulla, Tuller, oUF_Team
-## X-Curse-Packaged-Version: 7.09
+## X-Curse-Packaged-Version: 7.10
 ## X-Curse-Project-ID: 95528
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Discord: https://discord.gg/YUmxqQm
