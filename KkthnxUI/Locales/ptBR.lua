@@ -227,32 +227,18 @@ L["Maps"] = {
 
 -- Miscellaneous Localization
 L["Miscellaneous"] = {
-	Apr = "Apr",
-	Aug = "Aug",
 	Config_Not_Found = "KkthnxUI_Config was not found!",
 	Copper_Short = "|cffeda55fc|r",
-	Dec = "Dec",
-	Feb = "Feb",
-	Fri = "Fri",
 	Gold_Short = "|cffffd700g|r",
-	Jan = "Jan",
-	Jul = "Jul",
-	Jun = "Jun",
 	KkthnxUI_Scale_Button = "KkthnxUI Scale Config",
-	Mar = "Mar",
-	May = "May",
-	Mon = "Mon",
-	No_Guild = "No Guild",
-	Nov = "Nov",
-	Oct = "Oct",
-	Sat = "Sat",
-	Sep = "Sept",
+	Mail_Complete = "All done.",
+	Mail_Messages = "messages",
+	Mail_Need = "Need a mailbox.",
+	Mail_Stopped = "Stopped, inventory is full.",
+	Mail_Unique = "Stopped. Found a duplicate unique item in bag or in bank.",
+	Repair = "Warning! You need to do a repair of your equipment as soon as possible!",
 	Silver_Short = "|cffc7c7cfs|r",
-	Sun = "Sun",
-	Thu = "Thurs",
-	Tue = "Tues",
 	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
-	Wed = "Wed",
 }
 
 -- Nameplates Localization

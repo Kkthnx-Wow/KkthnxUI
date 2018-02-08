@@ -227,9 +227,14 @@ L["Miscellaneous"] = {
 	Copper_Short = "|cffeda55fc|r",
 	Gold_Short = "|cffffd700g|r",
 	KkthnxUI_Scale_Button = "KkthnxUI Scale Config",
+	Mail_Complete = "All done.",
+	Mail_Messages = "messages",
+	Mail_Need = "Need a mailbox.",
+	Mail_Stopped = "Stopped, inventory is full.",
+	Mail_Unique = "Stopped. Found a duplicate unique item in bag or in bank.",
+	Repair = "Warning! You need to do a repair of your equipment as soon as possible!",
 	Silver_Short = "|cffc7c7cfs|r",
 	UIOutdated = "Your version of KkthnxUI is out of date. You can download the newest version from Curse.com. Get the Curse app and have KkthnxUI automatically updated with the Client!",
-	Repair = "Warning! You need to do a repair of your equipment as soon as possible!"
 }
 
 -- Nameplates Localization

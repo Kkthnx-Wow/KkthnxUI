@@ -1,19 +1,34 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("GrabMail", "AceConsole-3.0", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
-local L_MAIL_STOPPED = "Stopped, inventory is full."
-local L_MAIL_UNIQUE = "Stopped. Found a duplicate unique item in bag or in bank."
-local L_MAIL_COMPLETE = "All done."
-local L_MAIL_NEED = "Need a mailbox."
-local L_MAIL_MESSAGES = "messages"
+local _G = _G
+local print = print
+local string_format = string.format
+
+local ALL = _G.ALL
+local CreateFrame = _G.CreateFrame
+local ERR_INV_FULL = _G.ERR_INV_FULL
+local ERR_ITEM_MAX_COUNT = _G.ERR_ITEM_MAX_COUNT
+local GameTooltip = _G.GameTooltip
+local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
+local GetInboxNumItems = _G.GetInboxNumItems
+local MONEY = _G.MONEY
+local TakeInboxItem = _G.TakeInboxItem
+local TakeInboxMoney = _G.TakeInboxMoney
 
 local deletedelay, t = 0.5, 0
 local takingOnlyCash = false
-local button, button2, waitForMail, openAll, openAllCash, openMail, lastopened, stopOpening, onEvent, needsToWait, copper_to_pretty_money, total_cash
+local button, button2, waitForMail, openAll, openAllCash, openMail, lastopened, stopOpening, onEvent, needsToWait, total_cash
 local baseInboxFrame_OnClick
 
+if OpenAllMail then
+	OpenAllMail:Hide()
+	OpenAllMail:UnregisterAllEvents()
+end
+
 function openAll()
-	if GetInboxNumItems() == 0 then return end
+	if GetInboxNumItems() == 0 then
+		return
+	end
 	button:SetScript("OnClick", nil)
 	button2:SetScript("OnClick", nil)
 	baseInboxFrame_OnClick = InboxFrame_OnClick
@@ -28,8 +43,16 @@ function openAllCash()
 end
 
 function openMail(index)
-	if not InboxFrame:IsVisible() then return stopOpening("|cffffff00"..L_MAIL_NEED) end
-	if index == 0 then MiniMapMailFrame:Hide() return stopOpening("|cffffff00"..L_MAIL_COMPLETE) end
+	if not InboxFrame:IsVisible() then
+		return
+		stopOpening("|cffffff00"..L["Miscellaneous"].Mail_Need)
+	end
+
+	if index == 0 then MiniMapMailFrame:Hide()
+		return
+		stopOpening("|cffffff00"..L["Miscellaneous"].Mail_Complete)
+	end
+
 	local _, _, _, _, money, COD, _, numItems = GetInboxHeaderInfo(index)
 	if money > 0 then
 		TakeInboxMoney(index)
@@ -39,13 +62,14 @@ function openMail(index)
 		TakeInboxItem(index)
 		needsToWait = true
 	end
+
 	local items = GetInboxNumItems()
 	if (numItems and numItems > 1) or (items > 1 and index <= items) then
 		lastopened = index
 		t = 0
 		button:SetScript("OnUpdate", waitForMail)
 	else
-		stopOpening("|cffffff00"..L_MAIL_COMPLETE)
+		stopOpening("|cffffff00"..L["Miscellaneous"].Mail_Complete)
 		MiniMapMailFrame:Hide()
 	end
 end
@@ -80,20 +104,10 @@ end
 function onEvent(frame, event, arg1, arg2, arg3, arg4)
 	if event == "UI_ERROR_MESSAGE" then
 		if arg1 == ERR_INV_FULL then
-			stopOpening("|cffffff00"..L_MAIL_STOPPED)
+			stopOpening("|cffffff00"..L["Miscellaneous"].Mail_Stopped)
 		elseif arg1 == ERR_ITEM_MAX_COUNT then
-			stopOpening("|cffffff00"..L_MAIL_UNIQUE)
+			stopOpening("|cffffff00"..L["Miscellaneous"].Mail_Unique)
 		end
-	end
-end
-
-function copper_to_pretty_money(c)
-	if c > 10000 then
-		return ("%d|cffffd700"..GOLD_AMOUNT_SYMBOL.."|r %d|cffc7c7cf"..SILVER_AMOUNT_SYMBOL.."|r %d|cffeda55f"..COPPER_AMOUNT_SYMBOL.."|r"):format(c / 10000, (c / 100) % 100, c % 100)
-	elseif c > 100 then
-		return ("%d|cffc7c7cf"..SILVER_AMOUNT_SYMBOL.."|r %d|cffeda55f"..COPPER_AMOUNT_SYMBOL.."|r"):format((c / 100) % 100, c % 100)
-	else
-		return ("%d|cffeda55f"..COPPER_AMOUNT_SYMBOL.."|r"):format(c % 100)
 	end
 end
 
@@ -111,10 +125,15 @@ button:SetScript("OnClick", openAll)
 button:SetScript("OnEvent", onEvent)
 button:SetScript("OnEnter", function()
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
-	GameTooltip:AddLine(string.format("%d "..L_MAIL_MESSAGES, GetInboxNumItems()), 1, 1, 1)
+	GameTooltip:AddLine(string_format("%d "..L["Miscellaneous"].Mail_Messages, GetInboxNumItems()), 1, 1, 1)
 	GameTooltip:Show()
 end)
-button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+button:SetScript("OnLeave", function()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide()
+	end
+end)
 
 button2 = makeButton("OpenAllButton2", MONEY, 70, 25, 18, -398)
 button2:SetScript("OnClick", openAllCash)
@@ -127,10 +146,12 @@ button2:SetScript("OnEnter", function()
 		end
 	end
 	GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
-	GameTooltip:AddLine(copper_to_pretty_money(total_cash), 1, 1, 1)
+	GameTooltip:AddLine(K.FormatMoney(total_cash), 1, 1, 1)
 	GameTooltip:Show()
 end)
-button2:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-OpenAllMail:Hide()
-OpenAllMail:UnregisterAllEvents()
+button2:SetScript("OnLeave", function()
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:Hide()
+	end
+end)
