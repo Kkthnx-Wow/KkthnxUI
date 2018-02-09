@@ -303,6 +303,7 @@ function Timer:ShouldShow()
 end
 
 function Timer:New(cooldown)
+	if cooldown:IsForbidden() then return end
 	cooldown:SetHideCountdownNumbers(true)
 
 	local timer = setmetatable(CreateFrame("Frame", nil, cooldown:GetParent()), {__index = Timer})
@@ -365,6 +366,7 @@ function Module:Cooldown_CanShow(cooldown, start, duration)
 end
 
 function Module:OnSetCooldown(cooldown, ...)
+	if cooldown:IsForbidden() then return end
 	cooldown:SetHideCountdownNumbers(true)
 
 	if self:Cooldown_CanShow(cooldown, ...) then
