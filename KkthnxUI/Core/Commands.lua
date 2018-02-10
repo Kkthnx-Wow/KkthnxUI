@@ -97,21 +97,23 @@ K:RegisterChatCommand("configui", K.ConfigUI)
 
 -- Profiles data/listings
 function K.UIProfiles(msg)
-	if (not KkthnxUIData) then return end
+	if not KkthnxUIData then return end
 
-	msg = string_lower(msg)
 	if KkthnxUIConfigPerAccount then
-		K.Print(L.Commands.Config_Per_Account)
+		K.Print(L["Commands"].ConfigPerAccount)
 		return
 	end
+
 	if not msg or msg == "" then
 		K.Print("/profile list")
 		K.Print("/profile #")
+		print("")
 	else
-		if msg == "list" then
+		if msg == "list" or msg == "l" then
 			KkthnxUI.Profiles = {}
 			KkthnxUI.Profiles.Data = {}
 			KkthnxUI.Profiles.Options = {}
+
 			for Server, Table in pairs(KkthnxUIData) do
 				if not Server then return end
 				for Character, Table in pairs(KkthnxUIData[Server]) do
@@ -124,12 +126,15 @@ function K.UIProfiles(msg)
 			local CurrentServer = GetRealmName()
 			local CurrentCharacter = UnitName("player")
 			local Profile = tonumber(msg)
+
 			if not KkthnxUI.Profiles or not KkthnxUI.Profiles.Data[Profile] then
-				K.Print(L.Commands.Profile_Not_Found)
+				K.Print(L["Commands"].ProfileNotFound)
 				return
 			end
+
 			KkthnxUIData[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Data[Profile]
 			KkthnxUIConfigShared[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Options[Profile]
+
 			ReloadUI()
 		end
 	end
