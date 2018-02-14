@@ -20,9 +20,9 @@ MyName = gsub(MyName, "%s+", "")
 
 function Module:CheckIt(event, prefix, message, channel, sender)
 	if (event == "CHAT_MSG_ADDON") then
-		--[[if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
-		return
-	end--]]
+		if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
+			return
+		end
 
 		if (tonumber(message) > Version) then -- We recieved a higher version, we're outdated. :(
 			K.Print(L["Miscellaneous"].UIOutdated)
