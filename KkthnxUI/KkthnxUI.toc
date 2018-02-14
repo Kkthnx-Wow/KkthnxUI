@@ -10,7 +10,7 @@
 ## OptionalDeps: KkthnxUI_Config, Blizzard_DebugTools, Skada, DBM, Recount, WeakAuras
 ## X-Category: Interface Enhancements
 ## X-Credits: Alza, Azilroka, Caellian, Caith, Elv, Goldpaw, Haleth, Haste, Hungtar, Hydra, Ishtara, KkthnxUI_Community, LightSpark, Magicnachos, Nightcracker, P3lim, Roth, Shestak, Sticklord, Tekkub, Tohveli, Tukz, Tulla, Tuller, oUF_Team
-## X-Curse-Packaged-Version: 7.10
+## X-Curse-Packaged-Version: 7.11
 ## X-Curse-Project-ID: 95528
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Discord: https://discord.gg/YUmxqQm
