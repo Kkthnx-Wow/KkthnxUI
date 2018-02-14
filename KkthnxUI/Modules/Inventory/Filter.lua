@@ -81,7 +81,7 @@ function Module:RemoveItem(itemID)
 end
 
 function Module:OnEnable()
-    if K.CheckAddOnState("Felsong_Companion") or C["Inventory"].BagFilter ~= true then
+    if C["Inventory"].BagFilter ~= true then
         return
     end
 	self:RegisterEvent("CHAT_MSG_LOOT", "GetTrash")

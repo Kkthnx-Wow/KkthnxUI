@@ -263,9 +263,7 @@ function K.AbandonQuests()
 	end
 	print("All quests have been abandoned!")
 end
-if not K.CheckAddOnState("Felsong_Companion") then
-	K:RegisterChatCommand("killquests", K.AbandonQuests)
-end
+K:RegisterChatCommand("killquests", K.AbandonQuests)
 K:RegisterChatCommand("clearquests", K.AbandonQuests)
 
 -- KkthnxUI help commands
