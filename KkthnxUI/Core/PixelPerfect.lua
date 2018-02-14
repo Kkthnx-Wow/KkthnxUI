@@ -65,7 +65,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C["General"].UIScale)) then
 		SetCVar("uiScale", C["General"].UIScale)
-		if not K.RequireReload or K.RequireReload == false then
+		if not K.RequireReload then
 			if C["General"].UIScale >= 0.64 then
 				StaticPopup_Show("CLIENT_RESTART")
 				K.RequireReload = true -- We want to force a restart here since the user goes below the standard scale.
