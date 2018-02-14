@@ -7,10 +7,13 @@
     <Script file="Durability.lua"/>
     <Script file="EnchantScroll.lua"/>
     <Script file="Filger.lua"/>
-    <Script file="GrabMail.lua"/>
+    <Script file="OpenAllMail.lua"/>
     <Script file="KillingBlow.lua"/>
+    <Script file="MerchantItemLevel.lua"/>
     <Script file="Miscellaneous.lua"/>
     <Script file="MovableFrames.lua"/>
+    <Script file="ProfessionTabs.lua"/>
+    <Script file="ProfessionTrainAll.lua"/>
     <Script file="PvPEmote.lua"/>
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>

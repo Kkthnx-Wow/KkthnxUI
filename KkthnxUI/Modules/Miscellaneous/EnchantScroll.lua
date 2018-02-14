@@ -99,6 +99,8 @@ function Module:OnEvent(event, ...)
 end
 
 function Module:OnInitialize()
+	-- if C["Misc"].EnchantScroll ~= true then return end
+
 	if IsAddOnLoaded("Blizzard_TradeSkillUI") then
 		self:EnableScrollButton()
 	else

@@ -41,7 +41,7 @@ local function Update(self, event, unit)
 	local isAvailable = UnitIsConnected(unit) and UnitIsVisible(unit)
 	if(event ~= 'OnUpdate' or element.guid ~= guid or element.state ~= isAvailable) then
 		if(element:IsObjectType('PlayerModel')) then
-			if(not isAvailable) then
+			if (not isAvailable) then
 				element:SetCamDistanceScale(0.25)
 				element:SetPortraitZoom(0)
 				element:SetPosition(0, 0, 0.25)

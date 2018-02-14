@@ -1,18 +1,31 @@
 local K, C, L = unpack(select(2, ...))
+local Module = K:NewModule("VersionCheck", "AceEvent-3.0")
 
-local KkthnxUIVersion = CreateFrame("Frame")
+local _G = _G
+local gsub = gsub
+local tonumber = tonumber
+
+local GetAddOnMetadata = _G.GetAddOnMetadata
+local GetRealmName = _G.GetRealmName
+local IsInGroup = _G.IsInGroup
+local IsInGuild = _G.IsInGuild
+local IsInRaid = _G.IsInRaid
+local RegisterAddonMessagePrefix = _G.RegisterAddonMessagePrefix
+local SendAddonMessage = _G.SendAddonMessage
+local UnitName = _G.UnitName
+
 local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
 MyName = gsub(MyName, "%s+", "")
 
-function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
+function Module:CheckIt(event, prefix, message, channel, sender)
 	if (event == "CHAT_MSG_ADDON") then
-		if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
-			return
-		end
+		--[[if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
+		return
+	end--]]
 
 		if (tonumber(message) > Version) then -- We recieved a higher version, we're outdated. :(
-			K.Print(L.Miscellaneous.UIOutdated)
+			K.Print(L["Miscellaneous"].UIOutdated)
 			self:UnregisterEvent("CHAT_MSG_ADDON")
 		end
 	else
@@ -33,11 +46,10 @@ function KkthnxUIVersion:Check(event, prefix, message, channel, sender)
 	end
 end
 
-KkthnxUIVersion:RegisterEvent("PLAYER_ENTERING_WORLD")
-KkthnxUIVersion:RegisterEvent("GROUP_ROSTER_UPDATE")
-KkthnxUIVersion:RegisterEvent("CHAT_MSG_ADDON")
-KkthnxUIVersion:SetScript("OnEvent", KkthnxUIVersion.Check)
+function Module:OnInitialize()
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "CheckIt")
+	self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckIt")
+	self:RegisterEvent("CHAT_MSG_ADDON", "CheckIt")
 
-RegisterAddonMessagePrefix("KkthnxUIVersion")
-
-K["VersionCheck"] = KkthnxUIVersion
+	RegisterAddonMessagePrefix("KkthnxUIVersion")
+end

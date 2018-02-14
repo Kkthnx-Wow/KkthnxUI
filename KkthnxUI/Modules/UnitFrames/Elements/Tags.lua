@@ -130,7 +130,7 @@ oUF.Tags.Methods["KkthnxUI:PvPStatus"] = GetPvPStatus
 oUF.Tags.Events["KkthnxUI:PvPStatus"] = "UNIT_FACTION HONOR_PRESTIGE_UPDATE"
 function K.CreatePvPText(self, unit)
 	self.PvP = self:CreateFontString(nil, "OVERLAY")
-	self.PvP:SetFont(C["Media"].Font, 13, "")
+	self.PvP:SetFont(C["Media"].Font, 12, "")
 	self.PvP:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
 	self.PvP:SetTextColor(0.69, 0.31, 0.31)
 	self.PvP:SetShadowOffset(K.Mult, -K.Mult)
@@ -222,15 +222,24 @@ end
 
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
-	if (UnitClassification(unit) == 'worldboss') then return end
+	if (UnitClassification(unit) == "worldboss") then
+		return
+	end
 
 	local level = UnitBattlePetLevel(unit)
+
 	if (not level or level == 0) then
 		level = UnitEffectiveLevel(unit)
 	end
 
-	if (level == UnitEffectiveLevel('player')) then return end
-	if (level < 0) then return '??' end
+	if (level == UnitEffectiveLevel("player")) then
+		return
+	end
+
+	if (level < 0) then
+		return "??"
+	end
+
 	return level
 end
 

@@ -361,7 +361,7 @@ function K.CreateCastBar(self, unit)
 		castbar.Text = text
 	end
 
-	if (unit ~= "pet") then
+	if (unit ~= "pet" and C["Unitframe"].CastbarIcon) then
 		local button = CreateFrame("Frame", nil, castbar)
 		button:SetSize(20, 20)
 		button:SetTemplate("Transparent", true)

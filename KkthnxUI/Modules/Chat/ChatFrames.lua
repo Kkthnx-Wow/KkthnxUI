@@ -219,8 +219,8 @@ function Module:NoMouseAlpha()
 	local Tab = _G[Frame.."Tab"]
 
 	if (Tab.noMouseAlpha == 0.4) or (Tab.noMouseAlpha == 0.2) then
-		Tab:SetAlpha(0)
-		Tab.noMouseAlpha = 0
+		Tab:SetAlpha(0.25)
+		Tab.noMouseAlpha = 0.25
 	end
 end
 
@@ -260,13 +260,13 @@ function Module:StyleFrame(frame)
 	end)
 
 	-- Style the tab font
-	TabText:SetFont(TabFont, TabFontSize + 1, TabFontFlags)
+	TabText:SetFont(TabFont, TabFontSize, TabFontFlags)
 	TabText.SetFont = K.Noop
 
 	if C["Chat"].TabsMouseover ~= true then
 		-- Tabs Alpha
 		Tab:SetAlpha(1)
-		Tab.SetAlpha = UIFrameFadeRemoveFrame
+		Tab.SetAlpha = _G.UIFrameFadeRemoveFrame
 	end
 
 	Frame:SetClampRectInsets(0, 0, 0, 0)
@@ -407,9 +407,13 @@ function Module:SetDefaultChatFramesPositions()
 		-- rename windows general because moved to chat #3
 		if ID == 1 then
 			FCF_SetWindowName(Frame, GENERAL)
-		elseif ID == 2 then
+		end
+
+		if ID == 2 then
 			FCF_SetWindowName(Frame, GUILD_EVENT_LOG)
-		elseif ID == 3 then
+		end
+
+		if ID == 3 then
 			FCF_SetWindowName(Frame, LOOT.." / "..TRADE)
 		end
 
@@ -465,10 +469,10 @@ function Module:Install()
 	FCF_SetLocked(ChatFrame1, 1)
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
-
 	FCF_OpenNewWindow(LOOT)
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
+	ChatFrame3:Show()
 
 	-- Enable Classcolor
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
@@ -599,8 +603,8 @@ function Module:SetupFrame()
 		local Frame = _G["ChatFrame"..i]
 		local Tab = _G["ChatFrame"..i.."Tab"]
 
-		Tab.noMouseAlpha = 0
-		Tab:SetAlpha(0)
+		Tab.noMouseAlpha = 0.25
+		Tab:SetAlpha(0.25)
 		Tab:HookScript("OnClick", self.SwitchSpokenDialect)
 
 		self:StyleFrame(Frame)

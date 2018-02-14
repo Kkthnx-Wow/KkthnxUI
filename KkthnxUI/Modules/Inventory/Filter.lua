@@ -1,5 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("BagFilter", "AceEvent-3.0")
+if C["Inventory"].BagFilter ~= true then
+    return
+end
 
 -- Sourced: Tukui (Tukz)
 -- Modified: KkthnxUI (Kkthnx)
@@ -22,9 +25,11 @@ local PickupContainerItem = PickupContainerItem
 local Link
 
 Module.Trash = {
+	-- Dungeon/Raid items
+    -- TBC
+    [32897] = true, -- Mark of the Illidari
     [32902] = true, -- Bottled Nethergon Energy
     [32905] = true, -- Bottled Nethergon Vapor
-    [32897] = true, -- Mark of the Illidari
 }
 
 function Module:GetTrash(event)
@@ -73,6 +78,17 @@ end
 function Module:RemoveItem(itemID)
     self.Trash[itemID] = nil
     self:UpdateConfigDescription()
+end
+
+function Module:OnEnable()
+    if K.CheckAddOnState("Felsong_Companion") or C["Inventory"].BagFilter ~= true then
+        return
+    end
+	self:RegisterEvent("CHAT_MSG_LOOT", "GetTrash")
+end
+
+function Module:OnDisable()
+	self:UnregisterEvent("CHAT_MSG_LOOT")
 end
 
 Module:UpdateConfigDescription()

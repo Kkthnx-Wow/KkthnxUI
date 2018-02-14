@@ -77,17 +77,18 @@ function Install:Step1()
 	SetCVar("showTutorials", 0)
 	SetCVar("showVKeyCastbar", 1)
 	SetCVar("SpamFilter", 0)
+	SetCVar("statusTextDisplay", "BOTH")
+	SetCVar("threatWarning", 3)
 	SetCVar("UberTooltips", 1)
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("worldpreloadnoncritical", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
 
 	if (ActionBars) then
-		SetActionBarToggles(true, true, true, true)
+		SetActionBarToggles(1, 1, 1, 1)
 	end
 
 	InstallStepComplete.message = L["Install"].CVars_Set

@@ -23,13 +23,13 @@ local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	SetActionBarToggles(1, 1, 1, 1, 0)
+	SetActionBarToggles(1, 1, 1, 1)
 
 	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
 	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
-			SetActionBarToggles(1, 1, 1, 1, 0)
+			SetActionBarToggles(1, 1, 1, 1)
 			StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end

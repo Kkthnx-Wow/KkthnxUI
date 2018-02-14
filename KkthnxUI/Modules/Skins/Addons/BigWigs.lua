@@ -12,6 +12,11 @@ local UIParent = _G.UIParent
 local BigWigsFont = K.GetFont(C["Skins"].Font)
 local BigWigsTexture = K.GetTexture(C["Skins"].Texture)
 
+-- Textures
+local BLANK_TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
+local BUBBLE_TEXTURE = [[Interface\Tooltips\ChatBubble-Background]]
+local TOOLTIP_BORDER = [[Interface\Tooltips\UI-Tooltip-Border]]
+
 local BigWigs_Skin = CreateFrame("Frame")
 BigWigs_Skin:RegisterEvent("ADDON_LOADED")
 BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
@@ -36,7 +41,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 
 		local CreateBG = function()
 			local BG = CreateFrame("Frame")
-			BG:SetTemplate("Transparent", true)
+			BG:CreateShadow(3, false, true)
 			return BG
 		end
 
@@ -84,7 +89,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 			bg:ClearAllPoints()
 			bg:SetPoint("TOPLEFT", bar, "TOPLEFT")
 			bg:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT")
-			bg:SetTemplate("Transparent", true)
+			bg:CreateShadow(3, false, true)
 			bg:Show()
 			bar:Set("bigwigs:KkthnxUI:bg", bg)
 
@@ -101,7 +106,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 				ibg:ClearAllPoints()
 				ibg:SetPoint("TOPLEFT", bar.candyBarIconFrame, "TOPLEFT")
 				ibg:SetPoint("BOTTOMRIGHT", bar.candyBarIconFrame, "BOTTOMRIGHT")
-				ibg:SetTemplate("Transparent", true)
+				ibg:CreateShadow(3, false, true)
 				ibg:Show()
 				bar:Set("bigwigs:KkthnxUI:ibg", ibg)
 			end
@@ -114,7 +119,7 @@ BigWigs_Skin:SetScript("OnEvent", function(_, event, addon)
 			bar.candyBarBackground:SetTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			bar.candyBarIconFrame:ClearAllPoints()
-			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -6, 0)
+			bar.candyBarIconFrame:SetPoint("BOTTOMRIGHT", bar, "BOTTOMLEFT", -4, 0)
 			bar.candyBarIconFrame:SetSize(buttonsize, buttonsize)
 			bar.candyBarIconFrame.SetWidth = K.Noop
 

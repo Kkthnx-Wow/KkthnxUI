@@ -6,9 +6,6 @@ local _G = _G
 local print = print
 local GetSpellInfo = _G.GetSpellInfo
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: C_NamePlate, ShowUIPanel, GameTooltip, UnitAura, DebuffTypeColor
-
 local function SpellName(id)
 	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
 	if not name then

@@ -66,7 +66,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetSize(130, 26)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 		-- Health Value
-		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
 	elseif (unit == "pet") then
@@ -81,14 +81,14 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetSize(130, 26)
 		self.Health:SetPoint("CENTER", self, "CENTER", -26, 10)
 		-- Health Value
-		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "focus") then
 		self.Health:SetSize(130, 26)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 		-- Health Value
-		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "targettarget") then
@@ -111,7 +111,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetSize(130, 26)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 		-- Health Value
-		self.Health.Value = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	end
@@ -257,22 +257,22 @@ local function CreateUnitframeLayout(self, unit)
 
 	-- Name Text
 	if (unit == "target") then
-		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbreviateMedium]")
 		-- Level Text
-		self.Level = K.SetFontString(self, C["Media"].Font, 16, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
+		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 	elseif unit == "focus" then
-		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 		-- Level Text
-		self.Level = K.SetFontString(self, C["Media"].Font, 16, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
+		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level]")
@@ -282,17 +282,17 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -16)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 	elseif (unit == "party") then
-		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 		-- Level Text
-		self.Level = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
+		self.Level = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel]")
 	elseif (unit == "boss" or unit == "arena") then
-		self.Name = K.SetFontString(self, C["Media"].Font, 13, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
@@ -389,7 +389,7 @@ local function CreateUnitframeLayout(self, unit)
 		self:HookScript("OnShow", K.UpdateAllElements)
 	end
 
-	if (unit ~= "player") then
+	if (unit ~= "player" and unit ~= "arena") then
 		self.Range = K.CreateRange(self)
 	end
 
@@ -440,7 +440,7 @@ focustarget:SetPoint("TOPRIGHT", oUF_Focus, "BOTTOMLEFT", 56, 2)
 K.Movers:RegisterFrame(focustarget)
 
 if (C["Unitframe"].Party) then
-	local party = oUF:SpawnHeader("oUF_Party", nil, "custom [@raid6, exists] hide; show",
+	local party = oUF:SpawnHeader("oUF_Party", nil, "custom [group:party,nogroup:raid] show; hide",
 	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))

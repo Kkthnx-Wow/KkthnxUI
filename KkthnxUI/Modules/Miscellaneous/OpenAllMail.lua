@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+-- if C["Misc"].OpenAllMail ~= true then return end
 
 local _G = _G
 local print = print

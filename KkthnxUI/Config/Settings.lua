@@ -122,7 +122,6 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
-	["BubbleFontSize"] = 12,
 	["Enable"] = true,
 	["Fading"] = true,
 	["FadingTimeFading"] = 3,
@@ -141,14 +140,6 @@ C["Chat"] = {
 	["TabsOutline"] = false,
 	["WhisperSound"] = true,
 	["Width"] = 400,
-	["BubbleBackdrop"] = {
-		["Options"] = {
-			["Show Backdrop"] = "Backdrop",
-			["Hide Backdrop"] = "NoBackdrop",
-			["Disabled"] = "Disabled",
-		},
-		["Value"] = "Backdrop",
-	},
 }
 
 -- Cooldown
@@ -220,7 +211,6 @@ C["Filger"] = {
 C["General"] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
-	["ConfigButton"] = true,
 	["DisableTutorialButtons"] = false,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
@@ -273,7 +263,7 @@ C["Nameplates"] = {
 	["Distance"] = 40,
 	["Enable"] = true,
 	["EnhancedThreat"] = false,
-	["FontSize"] = 13,
+	["FontSize"] = 12,
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealerIcon"] = false,
 	["HealthValue"] = true,
@@ -381,11 +371,8 @@ C["Skins"] = {
 	["Recount"] = false,
 	["Skada"] = false,
 	["Spy"] = false,
-	["TalkingHead"] = true,
 	["Texture"] = "KkthnxUI",
 	["WeakAuras"] = false,
-	["TalkingHeadHeight"] = 155,
-	["TalkingHeadWidth"] = 570,
 }
 
 -- Tooltip
@@ -419,7 +406,7 @@ C["Unitframe"] = {
 	["DebuffsOnTop"] = true,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["FontSize"] = 13,
+	["FontSize"] = 12,
 	["GlobalCooldown"] = false,
 	["OnlyShowPlayerDebuff"] = false,
 	["OORAlpha"] = 0.40,

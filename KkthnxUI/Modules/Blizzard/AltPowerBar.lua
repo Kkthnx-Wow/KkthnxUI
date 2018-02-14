@@ -62,7 +62,7 @@ Movers:RegisterFrame(holder)
 local bar = CreateFrame("Frame", "UIAltPowerBar", UIParent)
 bar:SetSize(220, 22)
 bar:SetAllPoints(AltPowerBarHolder)
-bar:SetTemplate("Transparent", false)
+bar:SetTemplate("Transparent", true)
 
 -- Event handling
 bar:RegisterEvent("UNIT_POWER")
@@ -92,7 +92,7 @@ bar:SetScript("OnLeave", GameTooltip_Hide)
 
 -- StatusBar
 local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
-status:SetFrameLevel(bar:GetFrameLevel() + 1)
+status:SetFrameLevel(bar:GetFrameLevel())
 status:SetStatusBarTexture(PowerBarAltTexture)
 status:SetMinMaxValues(0, 100)
 status:SetAllPoints()

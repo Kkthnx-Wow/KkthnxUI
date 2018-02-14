@@ -12,12 +12,19 @@ local CreateFrame = _G.CreateFrame
 local DEAD = _G.DEAD
 local GetSpellInfo = _G.GetSpellInfo
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
+local PlaySound = _G.PlaySound
+local PlaySound = _G.PlaySound
+local UnitExists = _G.UnitExists
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitIsEnemy = _G.UnitIsEnemy
+local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
+local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitSelectionColor = _G.UnitSelectionColor
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
@@ -27,6 +34,11 @@ local _, ns = ...
 local oUF = ns.oUF or oUF
 if not oUF then return end
 local colors = K.Colors
+
+local Module = CreateFrame("Frame")
+Module:SetScript("OnEvent", function(self, event, ...)
+	return self[event] and self[event](self, event, ...)
+end)
 
 -- AuraWatch
 local RaidBuffsPosition = {
@@ -47,13 +59,13 @@ function K.UpdateAllElements(frame)
 end
 
 function K.MultiCheck(check, ...)
-    for i = 1, select("#", ...) do
-        if (check == select(i, ...)) then
-            return true
-        end
-    end
+	for i = 1, select("#", ...) do
+		if (check == select(i, ...)) then
+			return true
+		end
+	end
 
-    return false
+	return false
 end
 
 local function UpdatePortraitColor(self, unit, min, max)
@@ -156,16 +168,15 @@ function K.CreateAuraWatch(self)
 	self.AuraWatch = auras
 end
 
-local Module = CreateFrame("Frame")
-Module:SetScript("OnEvent", function(self, event, ...)
-	self[event](self, ...)
-end)
+Module:RegisterEvent("PLAYER_TARGET_CHANGED")
+Module:RegisterEvent("PLAYER_FOCUS_CHANGED")
+Module:RegisterUnitEvent("UNIT_FACTION", "player")
 
-function Module:PLAYER_TARGET_CHANGED()
-	if (UnitExists("target")) then
-		if (UnitIsEnemy("target", "player")) then
+local function CreateTargetSound(unit)
+	if UnitExists(unit) then
+		if UnitIsEnemy(unit, "player") then
 			PlaySound(PlaySoundKitID and "Igcreatureaggroselect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
-		elseif (UnitIsFriend("target", "player")) then
+		elseif UnitIsFriend("player", unit) then
 			PlaySound(PlaySoundKitID and "Igcharacternpcselect" or SOUNDKIT.IG_CHARACTER_NPC_SELECT)
 		else
 			PlaySound(PlaySoundKitID and "Igcreatureneutralselect" or SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
@@ -174,4 +185,23 @@ function Module:PLAYER_TARGET_CHANGED()
 		PlaySound(PlaySoundKitID and "igcreatureaggrodeselect" or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 	end
 end
-Module:RegisterEvent("PLAYER_TARGET_CHANGED")
+
+function Module:PLAYER_FOCUS_CHANGED(event)
+	CreateTargetSound("focus")
+end
+
+function Module:PLAYER_TARGET_CHANGED(event)
+	CreateTargetSound("target")
+end
+
+local announcedPVP
+function Module:UNIT_FACTION(event, unit)
+	if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
+		if not announcedPVP then
+			announcedPVP = true
+			PlaySound(PlaySoundKitID and "IgPVPUpdate" or SOUNDKIT.IG_PVP_UPDATE)
+		end
+	else
+		announcedPVP = nil
+	end
+end

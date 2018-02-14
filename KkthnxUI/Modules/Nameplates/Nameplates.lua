@@ -50,46 +50,27 @@ local UnitName = _G.UnitName
 local UnitReaction = _G.UnitReaction
 local UnitSelectionColor = _G.UnitSelectionColor
 
-SetCVar("nameplateMotionSpeed", .1)
-
--- these should be defaulted pretty much always
-SetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
-SetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
-SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
-SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
-
 local CVarUpdate = {
-	-- important, strongly recommend to set these to 1
-	nameplateGlobalScale = 1,
-	namePlateHorizontalScale = 1,
-	namePlateVerticalScale = 1,
-	-- optional, you may use any values thats in range.
-	nameplateLargerScale = 1,
-	nameplateMaxAlpha = 1,
-	nameplateMaxAlphaDistance = 0,
-	nameplateMaxDistance = C["Nameplates"].Distance + 6 or 40 + 6,
-	nameplateMaxScale = 1,
-	nameplateMaxScaleDistance = 0,
-	nameplateMinAlpha = 1,
-	nameplateMinScale = 1,
-	nameplateMinScaleDistance = 0,
-	nameplateOtherBottomInset = C["Nameplates"].Clamp and 0.1 or -1,
-	nameplateOtherTopInset = C["Nameplates"].Clamp and 0.08 or -1,
-	nameplateSelectedScale = C["Nameplates"].SelectedScale,
-	nameplateSelfAlpha = 1,
-	nameplateSelfScale = 1,
-	nameplateShowAll = 1,
+	nameplateMaxDistance 		= C["Nameplates"].Distance or 40,
+	nameplateMinScale         	= 1,
+	nameplateOtherBottomInset	= C["Nameplates"].Clamp and 0.1 or -1,
+	nameplateOtherTopInset 		= C["Nameplates"].Clamp and 0.08 or -1,
+	nameplateSelectedAlpha 		= 1,
+  	nameplateGlobalScale      	= 1,
+  	NamePlateHorizontalScale  	= 1,
+  	nameplateLargerScale      	= 1.2,
+  	nameplateMaxAlpha         	= 0.5,
+  	nameplateMaxAlphaDistance 	= 40,
+  	nameplateMaxScale         	= 1,
+  	nameplateMaxScaleDistance 	= 40,
+  	nameplateMinAlpha         	= 0.5,
+  	nameplateMinAlphaDistance 	= 0,
+  	nameplateMinScaleDistance 	= 0,
+  	nameplateSelectedScale    	= 1,
+  	nameplateSelfScale        	= 1,
+  	nameplateShowFriendlyNPCs 	= 0,
+  	NamePlateVerticalScale    	= 1,
 }
-
-if (not InCombatLockdown()) then
-	for k, v in pairs(CVarUpdate) do
-		local current = tonumber(GetCVar(k))
-		if (current ~= tonumber(v)) then
-			SetCVar(k, v)
-			print(SetCVar(k, v))
-		end
-	end
-end
 
 local NameplateFont = K.GetFont(C["Nameplates"].Font)
 local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)

@@ -658,9 +658,8 @@ function Module:OnEnable()
 	if C["Tooltip"].Enable ~= true then return end
 
 	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
-	BNETMover:SetPoint("TOPRIGHT", MMHolder, "BOTTOMRIGHT", 0, -10)
-	BNETMover:SetWidth(BNToastFrame:GetWidth())
-	BNETMover:SetHeight(BNToastFrame:GetHeight())
+	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
+	BNETMover:SetSize(250, 64)
 	BNToastFrame:SetTemplate("Transparent", true)
 	BNToastFrameCloseButton:SetSize(32, 32)
 	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 4, 4)

@@ -137,7 +137,9 @@ function Timer:Start(start, duration, modRate, charges)
 
 	local parent = self.cooldown:GetParent()
 	self.cooldown._parent = parent
-	if parent and parent.GetCharges then charges, maxCharges = parent:GetCharges() end
+	if parent and parent.GetCharges then
+		charges, maxCharges = parent:GetCharges()
+	end
 	charges = charges or 0
 	self.charging = charges > 0
 
@@ -303,7 +305,6 @@ function Timer:ShouldShow()
 end
 
 function Timer:New(cooldown)
-	if cooldown:IsForbidden() then return end
 	cooldown:SetHideCountdownNumbers(true)
 
 	local timer = setmetatable(CreateFrame("Frame", nil, cooldown:GetParent()), {__index = Timer})
@@ -366,7 +367,11 @@ function Module:Cooldown_CanShow(cooldown, start, duration)
 end
 
 function Module:OnSetCooldown(cooldown, ...)
-	if cooldown:IsForbidden() then return end
+	if cooldown:IsForbidden() then
+		print(cooldown:IsForbidden())
+		return
+	end
+
 	cooldown:SetHideCountdownNumbers(true)
 
 	if self:Cooldown_CanShow(cooldown, ...) then
@@ -386,7 +391,9 @@ function Module:Cooldown_Setup(cooldown)
 	end
 
 	local parent = cooldown:GetParent()
-	if parent and (parent.action or parent.slotID) then Anim:Setup(cooldown) end
+	if parent and (parent.action or parent.slotID) then
+		Anim:Setup(cooldown)
+	end
 end
 
 function Anim:Run(cooldown)

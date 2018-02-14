@@ -178,7 +178,7 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(nil, 12, "OUTLINE")
+					bar.count:FontTemplate(C["Media"].Font, 12, "OUTLINE")
 					bar.count:SetShadowOffset(0, 0)
 					bar.count:SetPoint("BOTTOMRIGHT", 1, -2)
 					bar.count:SetJustifyH("RIGHT")
@@ -230,7 +230,7 @@ function Filger:DisplayActives()
 					bar.time = _G[bar.time:GetName()]
 				else
 					bar.time = bar.statusbar:CreateFontString("$parentTime", "OVERLAY")
-					bar.time:FontTemplate(nil, 12, "OUTLINE")
+					bar.time:FontTemplate(C["Media"].Font, 12, "OUTLINE")
 					bar.time:SetShadowOffset(0, 0)
 					bar.time:SetPoint("RIGHT", bar.statusbar, 0, 0)
 					bar.time:SetJustifyH("RIGHT")
@@ -240,7 +240,7 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(nil, 12, "OUTLINE")
+					bar.count:FontTemplate(C["Media"].Font, 12, "OUTLINE")
 					bar.count:SetShadowOffset(0, 0)
 					bar.count:SetPoint("BOTTOMRIGHT", 1, 0)
 					bar.count:SetJustifyH("RIGHT")
@@ -250,7 +250,7 @@ function Filger:DisplayActives()
 					bar.spellname = _G[bar.spellname:GetName()]
 				else
 					bar.spellname = bar.statusbar:CreateFontString("$parentSpellName", "OVERLAY")
-					bar.spellname:FontTemplate(nil, 12, "OUTLINE")
+					bar.spellname:FontTemplate(C["Media"].Font, 12, "OUTLINE")
 					bar.spellname:SetShadowOffset(0, 0)
 					bar.spellname:SetPoint("LEFT", bar.statusbar, 2, 0)
 					bar.spellname:SetPoint("RIGHT", bar.time, "LEFT")

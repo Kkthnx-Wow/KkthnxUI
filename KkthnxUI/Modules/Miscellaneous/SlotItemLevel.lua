@@ -82,28 +82,23 @@ function Module:GetInventorySlotItemData(slotID)
 		local _, _, itemRarity, ilvl = GetItemInfo(itemLink)
 		if itemRarity then
 
-			-- Special checks are needed for artifact weapons in Legion
-			if (itemRarity == 6) and ((slotID == _G.INVSLOT_MAINHAND) or (slotID == _G.INVSLOT_OFFHAND)) then
+			local scannerLevel
+			scannerTip.owner = self
+			scannerTip:SetOwner(UIParent, "ANCHOR_NONE")
+			scannerTip:SetInventoryItem("player", slotID)
 
-				-- Legion Artifact offhanders report just the base itemLevel, without relic enhancements,
-				-- so we're borrowing the itemLevel from the main hand weapon when this happens.
-				-- *The constants used are defined in FrameXML/Constants.lua
-				if (slotID == _G.INVSLOT_OFFHAND) then
-					local _, _, ilvl = self:GetInventorySlotItemData(_G.INVSLOT_MAINHAND)
-					return itemLink, itemRarity, ilvl
-				end
-
-				-- If we're in patch 7.3.0 with the upgraded relic item levels,
-				-- we need to scan the tooltip for the proper item level,
-				-- since it otherwise can't be properly scanned without being at the forge.
-				local crucibleLevel
-				if (slotID == _G.INVSLOT_MAINHAND) and CRUCIBLE then
-
-					scannerTip.owner = self
-					scannerTip:SetOwner(UIParent, "ANCHOR_NONE")
-					scannerTip:SetInventoryItem("player", slotID)
-
-					local line = _G[scannerName.."TextLeft2"]
+			local line = _G[scannerName.."TextLeft2"]
+			if line then
+				local msg = line:GetText()
+				if msg and string_find(msg, S_ITEM_LEVEL) then
+					local iLevel = string_match(msg, S_ITEM_LEVEL)
+					if iLevel and (tonumber(iLevel) > 0) then
+						return itemLink, itemRarity, iLevel
+					end
+				else
+					-- Check line 3, some artifacts have the ilevel there.
+					-- *an example is demon hunter artifacts, which have their names on 2 lines
+					line = _G[scannerName.."TextLeft3"]
 					if line then
 						local msg = line:GetText()
 						if msg and string_find(msg, S_ITEM_LEVEL) then
@@ -111,28 +106,14 @@ function Module:GetInventorySlotItemData(slotID)
 							if iLevel and (tonumber(iLevel) > 0) then
 								return itemLink, itemRarity, iLevel
 							end
-						else
-							-- Check line 3, some artifacts have the ilevel there.
-							-- *an example is demon hunter artifacts, which have their names on 2 lines
-							line = _G[scannerName.."TextLeft3"]
-							if line then
-								local msg = line:GetText()
-								if msg and string_find(msg, S_ITEM_LEVEL) then
-									local iLevel = string_match(msg, S_ITEM_LEVEL)
-									if iLevel and (tonumber(iLevel) > 0) then
-										return itemLink, itemRarity, iLevel
-									end
-								end
-							end
 						end
 					end
 				end
-
 			end
 
 			-- We're probably still in patch 7.1.5 or not in Legion at all if we made it to this point, so normal checks will suffice
-			local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
-			ilvl = effectiveLevel or ilvl
+			-- local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
+			-- ilvl = effectiveLevel or ilvl
 		end
 		return itemLink, itemRarity, ilvl
 	end

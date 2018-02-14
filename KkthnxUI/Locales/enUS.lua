@@ -42,7 +42,7 @@ L["StaticPopups"] = {
 -- Commands Localization
 L["Commands"] = {
 	Config = "'|cff00ff00/config|r' : Display in-game configuration window.",
-	ConfigPerAccount = "Your settings are currently set accross toons so you can't use this command!",
+	ConfigPerAccount = "Your settings are currently set across all your characters! You can't use this command!",
 	Install = "'|cff00ff00/install|r' or '|cff00ff00/reset|r' : Install or reset KkthnxUI to default settings.",
 	Move = "'|cff00ff00/moveui|r' : Move Frames.",
 	Profile = "'|cff00ff00/profile|r' : Use KkthnxUI settings (existing profile) from another character.",

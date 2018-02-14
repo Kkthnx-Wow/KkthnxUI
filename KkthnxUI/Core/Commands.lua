@@ -199,6 +199,21 @@ end
 K:RegisterChatCommand("release", K.FixRelease)
 K:RegisterChatCommand("repop", K.FixRelease)
 
+-- Fixes the issue when players get stuck in party on felsong.
+function K.FixParty()
+	LeaveParty()
+	print(" ")
+	print("|cff4488ff".."If you are still stuck in party, try the following".."|r")
+	print(" ")
+	print("|cff00ff001.|r Invite someone to a group and have them accept.")
+	print("|cff00ff002.|r Convert your group to a raid.")
+	print("|cff00ff003.|r Use the previous leave party command again.")
+	print("|cff00ff004.|r Invite your friend back to a group.")
+	print(" ")
+end
+K:RegisterChatCommand("killparty", K.FixParty)
+K:RegisterChatCommand("leaveparty", K.FixParty)
+
 -- Ready check
 function K.ReadyCheck()
 	DoReadyCheck()

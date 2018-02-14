@@ -76,16 +76,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Send ADDON_ACTION_BLOCKED errors to the Lua Error frame. These errors are less important in most cases and will not effect your game performance. Also, a lot of these errors cannot be fixed. Please only report these errors if you notice a Defect in gameplay.",
 		},
 
-		["TalkingHeadHeight"] = {
-			["Name"] = "Talking Head Height",
-			["Desc"] = "Adjust Talking Heads Height",
-		},
-
-		["TalkingHeadWidth"] = {
-			["Name"] = "Talking Head Width",
-			["Desc"] = "Adjust Talking Heads Width",
-		},
-
 		["ReplaceBlizzardFonts"] = {
 			["Name"] = "Replace Blizzard Fonts",
 			["Desc"] = "Change some of the default Blizzard fonts to match the UI",
@@ -944,11 +934,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Spy skin",
 		},
 
-		["TalkingHead"] = {
-			["Name"] = "TalkingHead Frame",
-			["Desc"] = "TalkingHead frame skin",
-		},
-
 		["Texture"] = {
 			["Name"] = "Texture",
 			["Desc"] = "Texture for statusbars",
@@ -1086,6 +1071,12 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["AuraBuffFilter"] = {
+			["Name"] = "Aura Buff Filter",
+			["Desc"] = "Automatically filters pointless buffs we do not need to see",
+			["Default"] = "Automatically filters pointless buffs we do not need to see",
+		},
+
 		["CastbarHeight"] = {
 			["Name"] = "Castbar Height",
 			["Desc"] = "Castbar height",

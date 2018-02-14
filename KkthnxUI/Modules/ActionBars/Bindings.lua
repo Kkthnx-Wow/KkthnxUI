@@ -75,7 +75,13 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end)
 
-		hooksecurefunc(GameTooltip, "Hide", function(self) if not self:IsForbidden() then for _, tt in pairs(self.shoppingTooltips) do tt:Hide() end end end)
+		hooksecurefunc(GameTooltip, "Hide", function(self)
+			if not self:IsForbidden() then
+				for _, tt in pairs(self.shoppingTooltips) do
+					tt:Hide()
+				end
+			end
+		end)
 
 		bind:SetScript("OnEvent", function(self) self:Deactivate(false) end)
 		bind:SetScript("OnLeave", function(self) self:HideFrame() end)
@@ -98,7 +104,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 				self.button.id = SpellBook_GetSpellBookSlot(self.button)
 				self.button.name = GetSpellBookItemName(self.button.id, SpellBookFrame.bookType)
 
-				GameTooltip:AddLine(L["Actionbars"].Trigger)
 				GameTooltip:Show()
 				GameTooltip:SetScript("OnHide", function(self)
 					self:SetOwner(bind, "ANCHOR_NONE")
@@ -119,7 +124,9 @@ SlashCmdList.MOUSEOVERBIND = function()
 			elseif spellmacro == "MACRO" then
 				self.button.id = self.button:GetID()
 
-				if localmacros == 1 then self.button.id = self.button.id + 120 end
+				if floor(0.5 + select(2, MacroFrameTab1Text:GetTextColor()) * 10) / 10 == 0.8 then
+					self.button.id = self.button.id + MAX_ACCOUNT_MACROS
+				end
 
 				self.button.name = GetMacroInfo(self.button.id)
 
@@ -149,7 +156,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 					self.button.bindstring = (spellmacro == "STANCE" and "STANCEBUTTON" or "BONUSACTIONBUTTON")..self.button.id
 				end
 
-				GameTooltip:AddLine(L["Actionbars"].Trigger)
 				GameTooltip:Show()
 				GameTooltip:SetScript("OnHide", function(self)
 					self:SetOwner(bind, "ANCHOR_NONE")
@@ -191,7 +197,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 					end
 				end
 
-				GameTooltip:AddLine(L["Actionbars"].Trigger)
 				GameTooltip:Show()
 				bind.button.bindings = {GetBindingKey(bind.button.bindstring)}
 				GameTooltip:SetScript("OnHide", function(self)

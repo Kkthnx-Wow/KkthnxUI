@@ -24,29 +24,30 @@ local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged
 	end
 end
 
-local function UpdateClassPowerColor(self)
-	local r, g, b
-
+local function UpdateClassPowerColor(classPower)
+	local r, g, b = 1, 1, 2/5
 	if (not UnitHasVehicleUI("player")) then
 		if (K.Class == "MONK") then
 			r, g, b = 0, 4/5, 3/5
-		elseif (K.Class == "WARLOCK") then
-			r, g, b = 2/3, 1/3, 2/3
 		elseif (K.Class == "PALADIN") then
-			r, g, b = 1, 1, 2/5
+			r, g, b = 228/255, 225/255, 16/255
+		elseif (K.Class == "DEATHKNIGHT") then
+			r, g, b = 0, 1, 1
 		elseif (K.Class == "MAGE") then
-			r, g, b = 5/6, 1/2, 5/6
-		else
-			r, g, b = 1, 1, 2/5
+			r, g, b = 0, 157/255, 255/255
+		elseif (K.Class == "WARLOCK") then
+			r, g, b = 148/255, 130/255, 201/255
 		end
 	end
 
-	for index = 1, #self do
-		local bar = self[index]
-		if (index > 5 and K.Class == "ROGUE" and UnitPowerMax("player", 4) == 10) then
+	local isAnticipationRogue = K.Class == "ROGUE" and UnitPowerMax("player", SPELL_POWER_COMBO_POINTS) == 10
+
+	for i = 1, #classPower do
+		if (i > 5 and isAnticipationRogue) then
 			r, g, b = 1, 0, 0
 		end
 
+		local bar = classPower[i]
 		bar:SetStatusBarColor(r, g, b)
 	end
 end
@@ -81,34 +82,4 @@ function K.CreateClassModules(self, width, height, spacing)
 	classPower.UpdateColor = UpdateClassPowerColor
 
 	self.ClassPower = classPower
-end
-
-local function PostUpdateRune(_, rune, _, _, _, isReady)
-	if (isReady) then
-		rune:SetAlpha(1)
-	else
-		rune:SetAlpha(0.5)
-	end
-end
-
-function K.CreateClassRunes(self, width, height, spacing)
-	local runes = {}
-	local maxRunes = 6
-
-	width = (width - (maxRunes + 1) * spacing) / maxRunes
-	spacing = width + spacing
-
-	for i = 1, maxRunes do
-		local rune = CreateFrame("StatusBar", nil, self)
-		rune:SetSize(width, height)
-		rune:SetPoint("BOTTOMLEFT", (i - 1) * spacing + 4, -14)
-		rune:SetStatusBarTexture(ClassModuleTexture)
-		rune:SetTemplate("Transparent")
-
-		runes[i] = rune
-	end
-
-	runes.colorSpec = true
-	runes.PostUpdate = PostUpdateRune
-	self.Runes = runes
 end

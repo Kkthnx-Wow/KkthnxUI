@@ -85,46 +85,6 @@ StaticPopupDialogs["WATCHFRAME_URL"] = {
 	preferredIndex = 3,
 }
 
-StaticPopupDialogs["KKTHNXUI_UPDATE"] = {
-	text = L["StaticPopups"].KkthnxUI_Update,
-	hasEditBox = 1,
-	OnShow = function(self)
-		self.editBox:SetAutoFocus(false)
-		self.editBox.width = self.editBox:GetWidth()
-		self.editBox:SetWidth(220)
-		self.editBox:SetText("https://mods.curse.com/addons/wow/kkthnxui")
-		self.editBox:HighlightText()
-		ChatEdit_FocusActiveWindow()
-	end,
-	OnHide = function(self)
-		self.editBox:SetWidth(self.editBox.width or 50)
-		self.editBox.width = nil
-	end,
-	hideOnEscape = 1,
-	button1 = OKAY,
-	OnAccept = K.Noop,
-	EditBoxOnEnterPressed = function(self)
-		ChatEdit_FocusActiveWindow()
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		ChatEdit_FocusActiveWindow()
-		self:GetParent():Hide()
-	end,
-	EditBoxOnTextChanged = function(self)
-		if(self:GetText() ~= "https://mods.curse.com/addons/wow/kkthnxui") then
-			self:SetText("https://mods.curse.com/addons/wow/kkthnxui")
-		end
-		self:HighlightText()
-		self:ClearFocus()
-		ChatEdit_FocusActiveWindow()
-	end,
-	OnEditFocusGained = function(self)
-		self:HighlightText()
-	end,
-	showAlert = 1,
-}
-
 StaticPopupDialogs["SET_UISCALE"] = {
 	text = L["StaticPopups"].Set_UI_Scale,
 	button1 = ACCEPT,
@@ -206,7 +166,10 @@ StaticPopupDialogs["RESET_UI"] = {
 	text = L["StaticPopups"].Reset_UI,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function() K.Install:Launch() if UIConfig and UIConfig:IsShown() then UIConfigMain:Hide() end end,
+	OnAccept = function() K.Install:Launch() if UIConfig and UIConfig:IsShown() then
+		UIConfigMain:Hide()
+		end
+	end,
 	OnCancel = function() KkthnxUIData[Realm][Name].InstallComplete = true end,
 	hideOnEscape = false,
 	whileDead = 1,

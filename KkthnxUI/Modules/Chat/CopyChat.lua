@@ -30,6 +30,9 @@ local menuList = {
 	{text = STATUS, notCheckable = true, func = function()
 			K.ShowStatusReport()
 	end},
+	{text = "Toggle".." "..PVP, notCheckable = true, func = function()
+			TogglePVP()
+	end},
 	{text = "Install", notCheckable = true, func = function()
 			K.Install:Launch()
 	end},
@@ -236,7 +239,7 @@ function CopyChat:OnEnable()
 		CopyFrame:Hide()
 	end)
 
-	-- Create copy button
+	-- Create copy/config button
 	for i = 1, NUM_CHAT_WINDOWS do
 		local frame = _G["ChatFrame"..i]
 		local id = frame:GetID()
@@ -244,6 +247,7 @@ function CopyChat:OnEnable()
 		local CopyButton = CreateFrame("Button", string_format("CopyChatButton%d", id), frame)
 		CopyButton:EnableMouse(true)
 		CopyButton:SetSize(22, 24)
+		CopyButton:SetHitRectInsets(5, 5, 4, 4)
 		CopyButton:SetPoint("TOPRIGHT")
 		CopyButton:SetNormalTexture(C["Media"].Copy)
 		CopyButton:SetAlpha(0.25)
@@ -260,7 +264,7 @@ function CopyChat:OnEnable()
 		end)
 
 		CopyButton:SetScript("OnEnter", function(self)
-			self:SetAlpha(1)
+			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 			local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
@@ -268,53 +272,41 @@ function CopyChat:OnEnable()
 			GameTooltip:AddDoubleLine(L["ConfigButton"].LeftClick, "Copy chat", 1, 1, 1)
 			GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, "Emotions", 1, 1, 1)
 			GameTooltip:AddDoubleLine(L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["ConfigButton"].Shift_Left_Click, L["ConfigButton"].Toggle_Bags, 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
 		CopyButton:SetScript("OnLeave", function(self)
-			if _G[self:GetParent():GetName().."TabText"]:IsShown() then
-				self:SetAlpha(0.25)
-			else
-				self:SetAlpha(0)
+			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+			if not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
 			end
-			GameTooltip:Hide()
 		end)
 
 		-- Create Configbutton
-		if C["General"].ConfigButton == true then
-			local frame = _G["ChatFrame"..i]
-			local id = frame:GetID()
-			local ConfigButton = CreateFrame("Button", string.format("ConfigChatButton%d", id), frame)
-			ConfigButton:EnableMouse(true)
-			ConfigButton:SetSize(26, 26)
-			ConfigButton:SetHitRectInsets(6, 6, 7, 7)
-			ConfigButton:SetPoint("TOPRIGHT", 2, 23)
-			ConfigButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Config")
-			ConfigButton:SetAlpha(0.25)
-			ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
+		local ConfigButton = CreateFrame("Button", string.format("ConfigChatButton%d", id), frame)
+		ConfigButton:EnableMouse(true)
+		ConfigButton:SetSize(26, 26)
+		ConfigButton:SetHitRectInsets(6, 6, 7, 7)
+		ConfigButton:SetPoint("TOPRIGHT", 2, 23)
+		ConfigButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Chat\\Config")
+		ConfigButton:SetAlpha(0.25)
+		ConfigButton:SetFrameLevel(frame:GetFrameLevel() + 5)
 
-			ConfigButton:SetScript("OnMouseUp", function(self, btn)
-				if btn == "LeftButton" or btn == "RightButton" then
-					L_EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
-				end
-			end)
+		ConfigButton:SetScript("OnMouseUp", function(self, btn)
+			if btn == "LeftButton" or btn == "RightButton" then
+				L_EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
+			end
+		end)
 
-			ConfigButton:SetScript("OnEnter", function(self)
-				self:SetAlpha(1)
-			end)
+		ConfigButton:SetScript("OnEnter", function(self)
+			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
+		end)
 
-			ConfigButton:SetScript("OnLeave", function(self)
-				if _G[self:GetParent():GetName().."TabText"]:IsShown() then
-					self:SetAlpha(0.25)
-				else
-					self:SetAlpha(0)
-				end
-			end)
+		ConfigButton:SetScript("OnLeave", function(self)
+			K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
+		end)
 
-			ConfigButton.ChatFrame = frame
-		end
-
+		ConfigButton.ChatFrame = frame
 		CopyButton.ChatFrame = frame
 	end
 end

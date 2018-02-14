@@ -36,7 +36,7 @@ local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1, 1)
 
 DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
-DataTextTime.Text:SetFont(C["Media"].Font, 13, "")
+DataTextTime.Text:SetFont(C["Media"].Font, 12, "")
 DataTextTime.Text:SetShadowOffset(1.25, -1.25)
 DataTextTime.Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 DataTextTime:SetAllPoints(DataTextTime.Text)

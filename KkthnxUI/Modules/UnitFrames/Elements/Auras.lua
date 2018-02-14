@@ -8,8 +8,27 @@ local table_sort = table.sort
 local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
 local GetTime = _G.GetTime
-local UnitIsFriend = _G.UnitIsFriend
+local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitCanAttack = _G.UnitCanAttack
+local UnitIsFriend = _G.UnitIsFriend
+
+local function FilterSharedBuffs(...)
+	local _, _, _, name = ...
+	if K.UnImportantBuffs[name] then
+		return false
+	else
+		return true
+	end
+end
+
+local function FilterGroupDebuffs(...)
+	local _, unit, aura, name, _, _, _, _, _, _, caster, _, _, _, _, isBossDebuff, casterIsPlayer = ...
+	if (not UnitIsFriend("player", unit)) then
+		return aura.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or K.ImportantDebuffs[name]
+	else
+		return true
+	end
+end
 
 local function CreateAuraTimer(self, elapsed)
 	self.expiration = self.expiration - elapsed
@@ -172,6 +191,7 @@ function K.CreateAuras(self, unit)
 			Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 			Buffs.PostCreateIcon = PostCreateAura
 			Buffs.PostUpdateIcon = PostUpdateAura
+			Buffs.CustomFilter = FilterSharedBuffs
 			self.Buffs = Buffs
 
 			Debuffs.spacing = 6
@@ -232,6 +252,7 @@ function K.CreateAuras(self, unit)
 			Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 			Buffs.PostCreateIcon = PostCreateAura
 			Buffs.PostUpdateIcon = PostUpdateAura
+			Buffs.CustomFilter = FilterSharedBuffs
 			self.Buffs = Buffs
 
 			Debuffs.spacing = 6
@@ -290,6 +311,7 @@ function K.CreateAuras(self, unit)
 		Buffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
+		Buffs.CustomFilter = FilterSharedBuffs
 		self.Buffs = Buffs
 
 		Debuffs.spacing = 6
@@ -299,6 +321,7 @@ function K.CreateAuras(self, unit)
 		Debuffs.PreSetPosition = (not self:GetScript("OnUpdate")) and PreSetPosition or nil
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
+		Debuffs.CustomFilter = FilterGroupDebuffs
 		self.Debuffs = Debuffs
 	end
 

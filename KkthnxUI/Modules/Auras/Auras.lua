@@ -1,5 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
+if (not C["Auras"].Enable) then
+    return
+end
 
 -- Sourced: ElvUI (Elvz)
 
@@ -103,22 +106,22 @@ function Module:CreateIcon(button)
     button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 
     local ButtonData = {
-        FloatingBG = nil,
-        Icon = button.texture,
-        Cooldown = nil,
-        Flash = nil,
-        Pushed = nil,
-        Normal = nil,
-        Disabled = nil,
-        Checked = nil,
-        Border = nil,
+        AutoCast = nil,
         AutoCastable = nil,
+        Border = nil,
+        Checked = nil,
+        Cooldown = nil,
+        Count = false,
+        Disabled = nil,
+        Duration = false,
+        Flash = nil,
+        FloatingBG = nil,
         Highlight = nil,
         HotKey = nil,
-        Count = false,
+        Icon = button.texture,
         Name = nil,
-        Duration = false,
-        AutoCast = nil,
+        Normal = nil,
+        Pushed = nil,
     }
 
     local header = button:GetParent()
@@ -293,7 +296,9 @@ function Module:CreateAuraHeader(filter)
 end
 
 function Module:OnInitialize()
-    if (not C["Auras"].Enable) then return end
+    if (not C["Auras"].Enable) then
+        return
+    end
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", Minimap)
     if C["Minimap"].CollectButtons then

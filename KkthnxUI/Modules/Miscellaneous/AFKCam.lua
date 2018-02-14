@@ -4,8 +4,8 @@ local Module = K:NewModule("AFKCam", "AceEvent-3.0", "AceTimer-3.0")
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-
-local math_floor = floor
+local math_floor = math.floor
+local math_random = math.random
 
 local CinematicFrame = _G.CinematicFrame
 local CloseAllWindows = _G.CloseAllWindows
@@ -19,6 +19,7 @@ local GetScreenWidth = _G.GetScreenWidth
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
+local IsMacClient = _G.IsMacClient
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local MoveViewLeftStart = _G.MoveViewLeftStart
 local MoveViewLeftStop = _G.MoveViewLeftStop
@@ -35,7 +36,6 @@ local UnitIsAFK = _G.UnitIsAFK
 -- GLOBALS: UIParent, PVEFrame, AFKPlayerModel
 -- GLOBALS: CUSTOM_CLASS_COLORS
 
-local CAMERA_SPEED = 0.035
 local ignoreKeys = {
 	LALT = true,
 	LSHIFT = true,
@@ -55,13 +55,12 @@ function Module:UpdateTimer()
 end
 
 function Module:SetAFK(status)
-	if(status) then
-		MoveViewLeftStart(CAMERA_SPEED)
+	if (status) then
 		self.AFKMode:Show()
 		CloseAllWindows()
 		UIParent:Hide()
 
-		if(IsInGuild()) then
+		if (IsInGuild()) then
 			local guildName, guildRankName = GetGuildInfo("player")
 			self.AFKMode.bottom.guild:SetFormattedText("%s - %s", guildName, guildRankName)
 		else
@@ -160,7 +159,7 @@ local function OnKeyDown(self, key)
 end
 
 function Module:LoopAnimations()
-	if(AFKPlayerModel.curAnimation == "wave") then
+	if (AFKPlayerModel.curAnimation == "wave") then
 		AFKPlayerModel:SetAnimation(69)
 		AFKPlayerModel.curAnimation = "dance"
 		AFKPlayerModel.startTime = GetTime()
@@ -170,7 +169,7 @@ function Module:LoopAnimations()
 	end
 end
 
-function Module:OnEnable()
+function Module:OnInitialize()
 	local classColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class]
 
 	self.AFKMode = CreateFrame("Frame", "AFKFrame")
@@ -192,6 +191,12 @@ function Module:OnEnable()
 	self.AFKMode.bottom.logo:SetSize(320, 150)
 	self.AFKMode.bottom.logo:SetPoint("CENTER", self.AFKMode.bottom, "CENTER", 0, 54)
 	self.AFKMode.bottom.logo:SetTexture(C["Media"].Logo)
+
+	self.AFKMode.bottom.version = self.AFKMode:CreateFontString(nil, "OVERLAY")
+	self.AFKMode.bottom.version:FontTemplate(nil, 20)
+	self.AFKMode.bottom.version:SetText("v"..K.Version)
+	self.AFKMode.bottom.version:SetPoint("TOP", self.AFKMode.bottom.logo, "BOTTOM", 0, 4)
+	self.AFKMode.bottom.version:SetTextColor(0.7, 0.7, 0.7)
 
 	local factionGroup = UnitFactionGroup("player")
 	local size, offsetX, offsetY = 140, -20, -16
@@ -226,22 +231,6 @@ function Module:OnEnable()
 	self.AFKMode.bottom.time:SetPoint("TOPLEFT", self.AFKMode.bottom.guild, "BOTTOMLEFT", 0, -6)
 	self.AFKMode.bottom.time:SetTextColor(0.7, 0.7, 0.7)
 
-	-- NPC Pet Model
-	self.AFKMode.bottom.npcPetHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
-	self.AFKMode.bottom.npcPetHolder:SetSize(150, 150)
-	self.AFKMode.bottom.npcPetHolder:SetPoint("BOTTOMLEFT", self.AFKMode.bottom, "BOTTOMLEFT", 200, 138)
-	self.AFKMode.bottom.pet = CreateFrame("PlayerModel", "AFKNPCModel", self.AFKMode.bottom.npcPetHolder)
-
-	self.AFKMode.bottom.pet:SetCreature(85009)
-	self.AFKMode.bottom.pet:SetPoint("CENTER", self.AFKMode.bottom.npcPetHolder, "CENTER")
-	self.AFKMode.bottom.pet:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2)
-	self.AFKMode.bottom.pet:SetCamDistanceScale(6)
-	self.AFKMode.bottom.pet:SetFacing(6.9)
-	self.AFKMode.bottom.pet:SetAnimation(69)
-	self.AFKMode.bottom.pet:SetFrameStrata("HIGH")
-	self.AFKMode.bottom.pet:Show()
-
-	-- Player Model
 	self.AFKMode.bottom.modelHolder = CreateFrame("Frame", nil, self.AFKMode.bottom)
 	self.AFKMode.bottom.modelHolder:SetSize(150, 150)
 	self.AFKMode.bottom.modelHolder:SetPoint("BOTTOMRIGHT", self.AFKMode.bottom, "BOTTOMRIGHT", -200, 220)
@@ -249,11 +238,11 @@ function Module:OnEnable()
 	self.AFKMode.bottom.model = CreateFrame("PlayerModel", "AFKPlayerModel", self.AFKMode.bottom.modelHolder)
 	self.AFKMode.bottom.model:SetPoint("CENTER", self.AFKMode.bottom.modelHolder, "CENTER")
 	self.AFKMode.bottom.model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) -- YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame.
-	self.AFKMode.bottom.model:SetCamDistanceScale(4.5) -- Since the model frame is huge, we need to zoom out quite a bit.
+	self.AFKMode.bottom.model:SetCamDistanceScale(4) -- Since the model frame is huge, we need to zoom out quite a bit.
 	self.AFKMode.bottom.model:SetFacing(6)
 	self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
 		local timePassed = GetTime() - self.startTime
-		if(timePassed > self.duration) and self.isIdle ~= true then
+		if (timePassed > self.duration) and self.isIdle ~= true then
 			self:SetAnimation(0)
 			self.isIdle = true
 			Module.animTimer = Module:ScheduleTimer("LoopAnimations", self.idleDuration)

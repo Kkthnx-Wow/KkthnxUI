@@ -9,7 +9,7 @@ local CreateFrame = _G.CreateFrame
 
 function K.CreateCombatText(self)
 	self.CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
-	self.CombatFeedbackText:SetFont(C["Media"].Font, 14, "OUTLINE")
+	self.CombatFeedbackText:SetFont(C["Media"].Font, 12, "OUTLINE")
 	self.CombatFeedbackText:SetShadowOffset(0, -0)
 	self.CombatFeedbackText:SetPoint("CENTER", self.Portrait)
 	self.CombatFeedbackText.colors = {

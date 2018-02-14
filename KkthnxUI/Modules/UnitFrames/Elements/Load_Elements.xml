@@ -3,7 +3,8 @@
     <Script file="Auras.lua"/>
     <Script file="Castbars.lua"/>
     <Script file="Range.lua"/>
-    <Script file="ClassModules.lua"/>
+    <Script file="ClassPower.lua"/>
+    <Script file="Runes.lua"/>
     <Script file="Stagger.lua"/>
     <Script file="AdditionalPower.lua"/>
     <Script file="HealthPrediction.lua"/>

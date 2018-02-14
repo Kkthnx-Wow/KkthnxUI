@@ -8,23 +8,19 @@ local pairs = pairs
 local print = print
 local table_insert = tinsert
 
-local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
-local CLOSE = _G.CLOSE
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GetContainerItemInfo = _G.GetContainerItemInfo
-local GetItemInfo = _G.GetItemInfo
-local GetNumBankSlots = _G.GetNumBankSlots
-local InCombatLockdown = _G.InCombatLockdown
-local PickupContainerItem = PickupContainerItem
-local SortBags = SortBags
-local SortBankBags = SortBankBags
-local SortReagentBankBags = SortReagentBankBags
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local GetContainerItemLink = _G.GetContainerItemLink
-local GetItemQualityColor = _G.GetItemQualityColor
-local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
-local GetContainerItemLink = _G.GetContainerItemLink
-local PlaySound = _G.PlaySound
+--local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
+--local CLOSE = _G.CLOSE
+--local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+--local GetContainerItemInfo = _G.GetContainerItemInfo
+--local GetItemInfo = _G.GetItemInfo
+--local GetNumBankSlots = _G.GetNumBankSlots
+--local InCombatLockdown = _G.InCombatLockdown
+--local GetContainerNumSlots = _G.GetContainerNumSlots
+--local GetContainerItemLink = _G.GetContainerItemLink
+--local GetItemQualityColor = _G.GetItemQualityColor
+--local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
+--local GetContainerItemLink = _G.GetContainerItemLink
+--local PlaySound = _G.PlaySound
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
@@ -95,12 +91,12 @@ local function IsItemUnusable(...)
 	end
 end
 
-local Stuffing = CreateFrame("Frame", nil, UIParent) -- Dont leak this out!
+local Stuffing = CreateFrame("Frame")
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
-Stuffing:SetScript("OnEvent", function(this, event, ...)
-	if IsAddOnLoaded("AdiBags") or IsAddOnLoaded("ArkInventory") or IsAddOnLoaded("cargBags_Nivaya") or IsAddOnLoaded("cargBags") or IsAddOnLoaded("Bagnon") or IsAddOnLoaded("Combuctor") or IsAddOnLoaded("TBag") or IsAddOnLoaded("BaudBag") then return end
-	Stuffing[event](this, ...)
+Stuffing:SetScript("OnEvent", function(self, event, ...)
+	if K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or K.CheckAddOnState("cargBags_Nivaya") or K.CheckAddOnState("cargBags") or K.CheckAddOnState("Bagnon") or K.CheckAddOnState("Combuctor") or K.CheckAddOnState("TBag") or K.CheckAddOnState("BaudBag") then return end
+	self[event](self, ...)
 end)
 
 local function Stuffing_OnShow()
@@ -113,6 +109,8 @@ local function Stuffing_OnShow()
 	Stuffing:Layout()
 	Stuffing:SearchReset()
 	PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
+
+	collectgarbage("collect")
 end
 
 local function StuffingBank_OnHide()
@@ -157,7 +155,7 @@ local scanner = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTool
 local scannerName = scanner:GetName()
 
 -- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
-local S_ITEM_LEVEL = "^" .. gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
+local S_ITEM_LEVEL = "^"..gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
 
 local ItemDB = {}
 local function _getRealItemLevel(link, owner, bag, slot)
@@ -207,7 +205,7 @@ function Stuffing:SlotUpdate(b)
 		b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 	end
 
-	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
+	if b.cooldown then
 		local start, duration, enable = GetContainerItemCooldown(b.bag, b.slot)
 		CooldownFrame_Set(b.cooldown, start, duration, enable)
 	end
@@ -335,12 +333,12 @@ function Stuffing:BagSlotUpdate(bag)
 	end
 end
 
-function Stuffing:UpdateCooldowns(b)
+--[[function Stuffing:UpdateCooldowns(b)
 	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
 		local start, duration, enable = GetContainerItemCooldown(b.bag, b.slot)
 		CooldownFrame_Set(b.cooldown, start, duration, enable)
 	end
-end
+end--]]
 
 function CreateReagentContainer()
 	ReagentBankFrame:StripTextures()
@@ -1377,7 +1375,7 @@ function Stuffing:ADDON_LOADED(addon)
 	self:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED")
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
-	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
+	-- self:RegisterEvent("BAG_UPDATE_COOLDOWN")
 
 	self:InitBags()
 
@@ -1516,11 +1514,11 @@ function Stuffing:BAG_CLOSED(id)
 	end
 end
 
-function Stuffing:BAG_UPDATE_COOLDOWN()
+--[[function Stuffing:BAG_UPDATE_COOLDOWN()
 	for i, v in pairs(self.buttons) do
 		self:UpdateCooldowns(v)
 	end
-end
+end--]]
 
 local function InBags(x)
 	if not Stuffing.bags[x] then

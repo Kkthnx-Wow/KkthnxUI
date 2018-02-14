@@ -115,8 +115,13 @@ end
 
 -- Creates a textured shadow backdrop anchored to a frame
 local function CreateShadow(self, size, strip, backdrop)
-	if self.Shadow then return end
-	if not size then size = 3 end
+	if self.Shadow then
+		return
+	end
+
+	if not size then
+		size = 3
+	end
 
 	backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
 	borderr, borderg, borderb = 0, 0, 0

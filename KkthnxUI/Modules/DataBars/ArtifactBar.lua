@@ -102,7 +102,7 @@ function Module:ArtifactBar_OnLeave()
 	end
 
 	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+		GameTooltip:Hide()
 	end
 end
 
