@@ -5,7 +5,8 @@ local Module = K:NewModule("Experience_DataBar", "AceEvent-3.0")
 
 local _G = _G
 local format = format
-local min = min
+local math_floor = math.floor
+local math_min = math.min
 
 local GetPetExperience, UnitXP, UnitXPMax = GetPetExperience, UnitXP, UnitXPMax
 local UnitLevel = UnitLevel
@@ -47,7 +48,7 @@ function Module:UpdateExperience(event)
 
 		if rested and rested > 0 then
 			bar.rested:SetMinMaxValues(0, max)
-			bar.rested:SetValue(min(cur + rested, max))
+			bar.rested:SetValue(math_min(cur + rested, max))
 
 			text = format("%d%% R:%d%%", cur / max * 100, rested / max * 100)
 		else
@@ -71,14 +72,14 @@ function Module:ExperienceBar_OnEnter()
 
 	local cur, max = Module:GetXP("player")
 	local rested = GetXPExhaustion()
-	GameTooltip:AddLine(L["Databars"].Experience)
+	GameTooltip:AddDoubleLine(L["Databars"].Experience, K.Name, nil, nil, nil, K.Color.r, K.Color.g, K.Color.b)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine(L["Databars"].XP, format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, format(" %s / %s (%s%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), 20 * math_floor((max - cur) / max)), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine(L["Databars"].XP, format("+%d (%d%%)", rested, rested / max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].XP, format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 	end
 
 	GameTooltip:Show()

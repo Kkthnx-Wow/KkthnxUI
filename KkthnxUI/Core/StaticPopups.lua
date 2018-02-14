@@ -44,7 +44,7 @@ StaticPopupDialogs["CLIENT_RESTART"] = {
 	text = L["StaticPopups"].Resolution_Changed,
 	button1 = "Restart Client",
 	button2 = RELOADUI,
-	OnAccept = function(self) K.RequireReload = false ForceQuit() end,
+	OnAccept = function(self) K.RequireReload = false Logout() end, -- Because Blizzard cant quit fucking with stuff!
 	OnCancel = function(self) K.RequireReload = false ReloadUI() end,
 	timeout = 0,
 	whileDead = 1,
