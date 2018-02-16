@@ -82,7 +82,6 @@ local GetNetStats = GetNetStats
 local GetTime = GetTime
 local UnitCastingInfo = UnitCastingInfo
 local UnitChannelInfo = UnitChannelInfo
-local tradeskillCurrent, tradeskillTotal, mergeTradeskill = 0, 0, false
 
 local function updateSafeZone(self)
 	local safeZone = self.SafeZone
@@ -97,20 +96,11 @@ local function updateSafeZone(self)
 	safeZone:SetWidth(width * safeZoneRatio)
 end
 
-local UNIT_SPELLCAST_SENT = function (self, event, unit, spell, rank, target, castid)
-	local castbar = self.Castbar
-	castbar.curTarget = (target and target ~= "") and target or nil
-
-	if castbar.isTradeSkill then
-		castbar.tradeSkillCastId = castid
-	end
-end
-
 local function UNIT_SPELLCAST_START(self, event, unit)
 	if(self.unit ~= unit and self.realUnit ~= unit) then return end
 
 	local element = self.Castbar
-	local name, _, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible, spellID = UnitCastingInfo(unit)
+	local name, _, text, texture, startTime, endTime, _, castID, notInterruptible, spellID = UnitCastingInfo(unit)
 	if(not name) then
 		return element:Hide()
 	end
@@ -126,21 +116,9 @@ local function UNIT_SPELLCAST_START(self, event, unit)
 	element.casting = true
 	element.notInterruptible = notInterruptible
 	element.holdTime = 0
-	element.isTradeSkill = isTradeSkill
 
-	if(mergeTradeskill and isTradeSkill and UnitIsUnit(unit, "player")) then
-		element.duration = element.duration + (element.max * tradeskillCurrent);
-		element.max = max * tradeskillTotal;
-
-		if(unit == "player") then
-			tradeskillCurrent = tradeskillCurrent + 1;
-		end
-
-		element:SetValue(element.duration)
-	else
-		element:SetValue(0)
-	end
-	element:SetMinMaxValues(0, element.max)
+	element:SetMinMaxValues(0, max)
+	element:SetValue(0)
 
 	if(element.Text) then element.Text:SetText(text) end
 	if(element.Icon) then element.Icon:SetTexture(texture) end
@@ -185,11 +163,6 @@ local function UNIT_SPELLCAST_FAILED(self, event, unit, spellname, _, castID, sp
 		return
 	end
 
-	if(mergeTradeskill and UnitIsUnit(unit, "player")) then
-		mergeTradeskill = false;
-		element.tradeSkillCastId = nil
-	end
-
 	local text = element.Text
 	if(text) then
 		text:SetText(FAILED)
@@ -211,25 +184,6 @@ local function UNIT_SPELLCAST_FAILED(self, event, unit, spellname, _, castID, sp
 	if(element.PostCastFailed) then
 		return element:PostCastFailed(unit, spellname, castID, spellID)
 	end
-end
-
-local UNIT_SPELLCAST_FAILED_QUIET = function(self, event, unit, spellname, _, castid)
-	if(self.unit ~= unit and self.realUnit ~= unit) then return end
-
-	local castbar = self.Castbar
-	if (castbar.castID ~= castid) and (castbar.tradeSkillCastId ~= castid) then
-		return
-	end
-
-	if(mergeTradeskill and UnitIsUnit(unit, "player")) then
-		mergeTradeskill = false;
-		castbar.tradeSkillCastId = nil
-	end
-
-	castbar.casting = nil
-	castbar.notInterruptible = nil
-	castbar:SetValue(0)
-	castbar:Hide()
 end
 
 local function UNIT_SPELLCAST_INTERRUPTED(self, event, unit, spellname, _, castID, spellID)
@@ -282,7 +236,6 @@ local function UNIT_SPELLCAST_INTERRUPTIBLE(self, event, unit)
 	--]]
 	if(element.PostCastInterruptible) then
 		return element:PostCastInterruptible(unit)
-
 	end
 end
 
@@ -345,14 +298,8 @@ local function UNIT_SPELLCAST_STOP(self, event, unit, spellname, _, castID, spel
 		return
 	end
 
-	if(mergeTradeskill and UnitIsUnit(unit, "player")) then
-		if(tradeskillCurrent == tradeskillTotal) then
-			mergeTradeskill = false;
-		end
-	else
-		element.casting = nil
-		element.notInterruptible = nil
-	end
+	element.casting = nil
+	element.notInterruptible = nil
 
 	--[[ Callback: Castbar:PostCastStop(unit, name, castID, spellID)
 	Called after the element has been updated when a spell cast has finished.
@@ -385,9 +332,6 @@ local function UNIT_SPELLCAST_CHANNEL_START(self, event, unit, _, _, _, spellID)
 	element.duration = duration
 	element.max = max
 	element.delay = 0
-	element.startTime = startTime
-	element.endTime = endTime
-	element.extraTickRatio = 0
 	element.channeling = true
 	element.notInterruptible = notInterruptible
 	element.holdTime = 0
@@ -449,8 +393,6 @@ local function UNIT_SPELLCAST_CHANNEL_UPDATE(self, event, unit, _, _, _, spellID
 	element.delay = element.delay + element.duration - duration
 	element.duration = duration
 	element.max = (endTime - startTime) / 1000
-	element.startTime = startTime / 1000
-	element.endTime = endTime / 1000
 
 	element:SetMinMaxValues(0, element.max)
 	element:SetValue(duration)
@@ -608,8 +550,6 @@ local function Enable(self, unit)
 			self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_START', UNIT_SPELLCAST_CHANNEL_START)
 			self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', UNIT_SPELLCAST_CHANNEL_UPDATE)
 			self:RegisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', UNIT_SPELLCAST_CHANNEL_STOP)
-			self:RegisterEvent('UNIT_SPELLCAST_SENT', UNIT_SPELLCAST_SENT, true)
-			self:RegisterEvent("UNIT_SPELLCAST_FAILED_QUIET", UNIT_SPELLCAST_FAILED_QUIET)
 		end
 
 		element.horizontal = element:GetOrientation() == 'HORIZONTAL'
@@ -666,17 +606,9 @@ local function Disable(self)
 		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_START', UNIT_SPELLCAST_CHANNEL_START)
 		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_UPDATE', UNIT_SPELLCAST_CHANNEL_UPDATE)
 		self:UnregisterEvent('UNIT_SPELLCAST_CHANNEL_STOP', UNIT_SPELLCAST_CHANNEL_STOP)
-		self:UnregisterEvent("UNIT_SPELLCAST_SENT", UNIT_SPELLCAST_SENT)
-		self:UnregisterEvent("UNIT_SPELLCAST_FAILED_QUIET", UNIT_SPELLCAST_FAILED_QUIET)
 
 		element:SetScript('OnUpdate', nil)
 	end
 end
-
-hooksecurefunc(C_TradeSkillUI, "CraftRecipe", function(_, num)
-	tradeskillCurrent = 0
-	tradeskillTotal = num or 1
-	mergeTradeskill = true
-end)
 
 oUF:AddElement('Castbar', Update, Enable, Disable)

@@ -496,7 +496,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		local r, g, b
 		if type == L["Tooltip"].Quest then
-			r, g, b = 1, 0.82, 0.2
+			r, g, b = 1.0, 0.3, 0.3
 		elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
 			r, g, b = 0.4, 0.73, 1
 		elseif subType == L["Tooltip"].Companion_Pets then

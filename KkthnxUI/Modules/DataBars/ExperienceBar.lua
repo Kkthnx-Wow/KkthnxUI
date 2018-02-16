@@ -79,7 +79,7 @@ function Module:ExperienceBar_OnEnter()
 	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), 20 * math_floor((max - cur) / max)), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine(L["Databars"].XP, format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Rested, format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 	end
 
 	GameTooltip:Show()

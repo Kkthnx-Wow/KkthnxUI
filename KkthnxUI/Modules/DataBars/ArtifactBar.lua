@@ -38,10 +38,6 @@ function Module:UpdateArtifact(event, unit)
 		return
 	end
 
-	if (event == "PLAYER_ENTERING_WORLD") then
-		self.artifactBar.eventFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	end
-
 	local bar = self.artifactBar
 	local showArtifact = HasArtifactEquipped()
 
@@ -132,12 +128,10 @@ function Module:EnableDisable_ArtifactBar()
 	if C["DataBars"].ArtifactEnable then
 		self:RegisterEvent("ARTIFACT_XP_UPDATE", "UpdateArtifact")
 		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateArtifact")
-
 		self:UpdateArtifact()
 	else
 		self:UnregisterEvent("ARTIFACT_XP_UPDATE")
 		self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
-
 		self.artifactBar:Hide()
 	end
 end
@@ -173,13 +167,6 @@ function Module:OnEnable()
 	self.artifactBar.spark:SetTexture(C["Media"].Spark_16)
 	self.artifactBar.spark:SetBlendMode("ADD")
 	self.artifactBar.spark:SetPoint("CENTER", self.artifactBar.statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
-
-	self.artifactBar.eventFrame = CreateFrame("Frame")
-	self.artifactBar.eventFrame:Hide()
-	self.artifactBar.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
-	self.artifactBar.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self.artifactBar.eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self.artifactBar.eventFrame:SetScript("OnEvent", function(self, event) Module:UpdateArtifact(event) end)
 
 	self:UpdateArtifactDimensions()
 	K.Movers:RegisterFrame(self.artifactBar)

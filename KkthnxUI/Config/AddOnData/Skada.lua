@@ -15,6 +15,7 @@ function K.LoadSkadaProfile()
 		["profiles"] = {
 			["Default"] = {
 				["showself"] = false,
+				["autostop"] = true,
 				["modules"] = {
 					["notankwarnings"] = true,
 				},

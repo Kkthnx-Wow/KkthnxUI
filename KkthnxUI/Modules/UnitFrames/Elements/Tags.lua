@@ -125,7 +125,6 @@ oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	end
 end
 
-oUF.Tags.OnUpdateThrottle["KkthnxUI:PvPStatus"] = 1
 oUF.Tags.Methods["KkthnxUI:PvPStatus"] = GetPvPStatus
 oUF.Tags.Events["KkthnxUI:PvPStatus"] = "UNIT_FACTION HONOR_PRESTIGE_UPDATE"
 function K.CreatePvPText(self, unit)

@@ -192,7 +192,7 @@ local function CreateUnitframeLayout(self, unit)
 		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
 			self.Portrait:SetSize(46, 46)
 			self.Portrait:SetPoint("LEFT", self, 4, 0)
-		elseif (unit == "pet") then
+		elseif (unit == "pet" or unit == "focustarget") then
 			self.Portrait:SetSize(26, 26)
 			self.Portrait:SetPoint("LEFT", self, 4, 0)
 		elseif (unit == "target") then
@@ -201,9 +201,6 @@ local function CreateUnitframeLayout(self, unit)
 		elseif (unit == "targettarget") then
 			self.Portrait:SetSize(26, 26)
 			self.Portrait:SetPoint("RIGHT", self, -4, 0)
-		elseif (unit == "focustarget") then
-			self.Portrait:SetSize(26, 26)
-			self.Portrait:SetPoint("LEFT", self, 4, 0)
 		elseif (unit == "party") then
 			self.Portrait:SetSize(32, 32)
 			self.Portrait:SetPoint("LEFT", self, 2, 0)
@@ -385,15 +382,13 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
-
-		self:HookScript("OnShow", K.UpdateAllElements)
 	end
 
 	if (unit ~= "player" and unit ~= "arena") then
 		self.Range = K.CreateRange(self)
 	end
 
-	return self
+	--return self
 end
 
 oUF:RegisterStyle("oUF_KkthnxUI_Unitframes", CreateUnitframeLayout)

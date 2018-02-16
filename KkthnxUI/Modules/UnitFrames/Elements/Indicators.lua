@@ -121,15 +121,15 @@ local function UpdateThreat(self, event, unit)
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
 			self.Portrait:SetBackdropBorderColor(r, g, b, 1)
-		else
+		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
 			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
 		end
 	else
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
 			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
-		else
+		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
 			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
 		end
 	end

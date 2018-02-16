@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 -- Big thanks to Goldpaw for failproofing this badass script some more.
 
@@ -23,7 +23,7 @@ local SetCVar = _G.SetCVar
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ForceQuit, WorldMapFrame, UIParent, StaticPopup_Show
 
-local Lock = false
+K.IsLocked = false
 K.RequireReload = false
 
 -- Optimize graphic after we enter world
@@ -34,10 +34,10 @@ PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
 PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Prevent a C stack overflow
-	if Lock then
+	if K.IsLocked then
 		return
 	end
-	Lock = true
+	K.IsLocked = true
 
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -85,5 +85,5 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
-	Lock = false
+	K.IsLocked = false
 end)

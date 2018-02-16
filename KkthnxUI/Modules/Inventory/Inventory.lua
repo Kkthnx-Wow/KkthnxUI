@@ -919,35 +919,6 @@ function Stuffing:InitBags()
 	detail:SetText(SEARCH)
 	editbox:SetAllPoints(detail)
 
-	do
-		Token2:ClearAllPoints()
-		Token2:SetPoint("BOTTOM", f, "BOTTOM", 0, -20)
-		Token3:ClearAllPoints()
-		Token3:SetPoint("LEFT", Token2, "RIGHT", 10, 0)
-		Token1:ClearAllPoints()
-		Token1:SetPoint("RIGHT", Token2, "LEFT", -10, 0)
-	end
-
-	for i = 1, 3 do
-		local Token = _G["BackpackTokenFrameToken"..i]
-		local Icon = _G["BackpackTokenFrameToken"..i.."Icon"]
-		local Count = _G["BackpackTokenFrameToken"..i.."Count"]
-
-		Token:SetParent(f)
-		Token:SetFrameStrata("LOW")
-		Token:SetFrameLevel(0)
-		Token:SetScale(1)
-		Token:CreateBackdrop("", true)
-		Token.Backdrop:SetAllPoints(Icon)
-
-		Icon:SetSize(12, 12)
-		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		Icon:SetPoint("LEFT", Token, "RIGHT", -10, 1)
-
-		Count:SetFont(C.Media.Font, 12, "OUTLINE")
-		Count:SetShadowOffset(0, 0)
-	end
-
 	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	gold:SetJustifyH("RIGHT")
 
@@ -959,6 +930,35 @@ function Stuffing:InitBags()
 	f:RegisterEvent("PLAYER_MONEY")
 	f:RegisterEvent("PLAYER_TRADE_MONEY")
 	f:RegisterEvent("TRADE_MONEY_CHANGED")
+
+	do
+		Token3:ClearAllPoints()
+		Token3:SetPoint("BOTTOM", f, "TOP", -70, 4)
+		Token2:ClearAllPoints()
+		Token2:SetPoint("LEFT", Token3, "RIGHT", 10, 0)
+		Token1:ClearAllPoints()
+		Token1:SetPoint("LEFT", Token2, "RIGHT", 10, 0)
+	end
+
+	for i = 1, 3 do
+		local Token = _G["BackpackTokenFrameToken"..i]
+		local Icon = _G["BackpackTokenFrameToken"..i.."Icon"]
+		local Count = _G["BackpackTokenFrameToken"..i.."Count"]
+
+		Token:SetParent(f)
+		Token:SetFrameStrata("HIGH")
+		Token:SetFrameLevel(5)
+		Token:SetScale(1)
+		Token:CreateBackdrop("", true)
+		Token.Backdrop:SetAllPoints(Icon)
+
+		Icon:SetSize(12, 12)
+		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		Icon:SetPoint("LEFT", Token, "RIGHT", -8, 2)
+
+		Count:SetFont(C.Media.Font, 12, "OUTLINE")
+		Count:SetShadowOffset(0, 0)
+	end
 
 	local button = CreateFrame("Button", nil, f)
 	button:EnableMouse(true)

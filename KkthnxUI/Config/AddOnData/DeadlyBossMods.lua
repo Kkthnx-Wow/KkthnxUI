@@ -11,15 +11,15 @@ local DBT_AllPersistentOptions = _G.DBT_AllPersistentOptions
 -- GLOBALS: DBM
 
 function K.LoadDBMProfile()
-  if DBM_AllSavedOptions then
-    table_wipe(DBM_AllSavedOptions)
-  end
+	if DBM_AllSavedOptions then
+		table_wipe(DBM_AllSavedOptions)
+	end
 
-  if DBT_AllPersistentOptions then
-    table_wipe(DBT_AllPersistentOptions)
-  end
+	if DBT_AllPersistentOptions then
+		table_wipe(DBT_AllPersistentOptions)
+	end
 
-  DBM:CreateProfile("KkthnxUI")
+	DBM:CreateProfile("KkthnxUI")
 
 	-- Warnings
 	DBM_AllSavedOptions["KkthnxUI"]["WarningFont"] = "Interface\\AddOns\\KkthnxUI\\Media\\Fonts\\Normal.ttf"
@@ -33,6 +33,8 @@ function K.LoadDBMProfile()
 	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["Scale"] = 1
 	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["FontSize"] = 12
 	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["HugeScale"] = 1
+	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["BarYOffset"] = 4
+	DBT_AllPersistentOptions["KkthnxUI"]["DBM"]["HugeBarYOffset"] = 4
 
 	DBM:ApplyProfile("KkthnxUI")
 end
