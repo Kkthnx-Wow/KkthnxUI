@@ -5,8 +5,8 @@ local oUF = ns.oUF
 if not oUF then return end
 
 -- Colors
-oUF.colors.castColor = {0.85, 0.77, 0.36}
-oUF.colors.castNoInterrupt = {1, 0, 0}
+oUF.colors.castColor = {0.31, 0.45, 0.63, 0.5}
+oUF.colors.castNoInterrupt = {1, 0, 0, 0.5}
 oUF.colors.disconnected = {0.53, 0.54, 0.53}
 oUF.colors.fallback = {1, 1, 0.8}
 oUF.colors.health = {0.29, 0.67, 0.30}

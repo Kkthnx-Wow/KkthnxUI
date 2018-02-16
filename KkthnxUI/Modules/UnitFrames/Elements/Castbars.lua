@@ -26,7 +26,10 @@ local Movers = K.Movers
 local CastbarFont = K.GetFont(C["Unitframe"].Font)
 local CastbarTexture = K.GetTexture(C["Unitframe"].Texture)
 
--- All unit-frame Cast bar functions
+local MageSpellName = GetSpellInfo(5143) -- Arcane Missiles
+local MageBuffName = GetSpellInfo(166872) -- 4p T17 bonus proc for arcane
+
+-- All unitframe Cast bar functions
 local ticks = {}
 local function HideTicks()
 	for i = 1, #ticks do
@@ -59,10 +62,9 @@ local function SetCastTicks(castbar, numTicks, extraTickRatio)
 	end
 end
 
-local MageSpellName = GetSpellInfo(5143) -- Arcane Missiles
-local MageBuffName = GetSpellInfo(166872) -- 4p T17 bonus proc for arcane
-
 local function PostCastStart(castbar, unit, name)
+	if not C["Unitframe"].Castbars then return end
+
 	if unit == "vehicle" then unit = "player" end
 
 	local text = castbar.Text
@@ -155,7 +157,7 @@ local function PostCastStart(castbar, unit, name)
 		t = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 
-	if(t) then
+	if (t) then
 		r, g, b = t[1], t[2], t[3]
 	end
 
@@ -164,11 +166,6 @@ local function PostCastStart(castbar, unit, name)
 	end
 
 	castbar:SetStatusBarColor(r, g, b)
-end
-
-local function PostCastStop(castbar)
-	castbar.chainChannel = nil
-	castbar.prevSpellCast = nil
 end
 
 local function PostCastFailedOrInterrupted(castbar, unit, name, castID)
@@ -185,6 +182,11 @@ local function PostCastFailedOrInterrupted(castbar, unit, name, castID)
 	if (time) then
 		time:SetText("")
 	end
+end
+
+local function PostCastStop(castbar)
+	castbar.chainChannel = nil
+	castbar.prevSpellCast = nil
 end
 
 local function PostChannelUpdate(castbar, unit, name)
@@ -308,18 +310,6 @@ function K.CreateCastBar(self, unit)
 	castbar:SetClampedToScreen(true)
 	castbar:SetTemplate("Transparent", true)
 
-	local spark = castbar:CreateTexture(nil, "OVERLAY")
-	spark:SetTexture(C["Media"].Spark_128)
-	spark:SetBlendMode("ADD")
-	castbar.Spark = spark
-
-	if (unit == "target") then
-		local shield = castbar:CreateTexture(nil, "ARTWORK")
-		shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
-		shield:SetPoint("RIGHT", castbar, "LEFT", 34, 12)
-		castbar.Shield = shield
-	end
-
 	if (unit == "player") then
 		castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 203)
 		K.Movers:RegisterFrame(castbar)
@@ -333,13 +323,36 @@ function K.CreateCastBar(self, unit)
 		castbar:SetHeight(18)
 	end
 
+	castbar.timeToHold = 0.4
+	castbar.PostCastStart = PostCastStart
+	castbar.PostChannelStart = PostCastStart
+	castbar.PostCastStop = PostCastStop
+	castbar.PostChannelStop = PostCastStop
+	castbar.PostChannelUpdate = PostChannelUpdate
+	castbar.PostCastInterruptible = PostCastInterruptible
+	castbar.PostCastNotInterruptible = PostCastNotInterruptible
+	castbar.PostCastFailed = PostCastFailedOrInterrupted
+	castbar.PostCastInterrupted = PostCastFailedOrInterrupted
+
+	local spark = castbar:CreateTexture(nil, "OVERLAY")
+	spark:SetTexture(C["Media"].Spark_128)
+	spark:SetBlendMode("ADD")
+	castbar.Spark = spark
+
+	if (unit == "target") then
+		local shield = castbar:CreateTexture(nil, "ARTWORK")
+		shield:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CastBorderShield")
+		shield:SetPoint("RIGHT", castbar, "LEFT", 34, 12)
+		castbar.Shield = shield
+	end
+
 	if (unit == "player") then
 		local safeZone = castbar:CreateTexture(nil, "ARTWORK")
 		safeZone:SetTexture(CastbarTexture)
 		safeZone:SetPoint("RIGHT")
 		safeZone:SetPoint("TOP")
 		safeZone:SetPoint("BOTTOM")
-		safeZone:SetVertexColor(0.69, 0.31, 0.31)
+		safeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
 		safeZone:SetWidth(0.0001)
 		castbar.SafeZone = safeZone
 	end
@@ -347,6 +360,7 @@ function K.CreateCastBar(self, unit)
 	if (unit == "player" or unit == "target" or unit == "focus" or unit == "boss") then
 		local time = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
 		time:SetPoint("RIGHT", -3.5, 0)
+		time:SetTextColor(0.84, 0.75, 0.65)
 		time:SetJustifyH("RIGHT")
 		castbar.Time = time
 
@@ -356,6 +370,7 @@ function K.CreateCastBar(self, unit)
 		local text = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
 		text:SetPoint("LEFT", 3.5, 0)
 		text:SetPoint("RIGHT", time, "LEFT", -3.5, 0)
+		text:SetTextColor(0.84, 0.75, 0.65)
 		text:SetJustifyH("LEFT")
 		text:SetWordWrap(false)
 		castbar.Text = text
@@ -380,17 +395,6 @@ function K.CreateCastBar(self, unit)
 
 		castbar.Icon = icon
 	end
-
-	castbar.timeToHold = 0.4
-	castbar.PostCastStart = PostCastStart
-	castbar.PostChannelStart = PostCastStart
-	castbar.PostCastStop = PostCastStop
-	castbar.PostChannelStop = PostCastStop
-	castbar.PostChannelUpdate = PostChannelUpdate
-	castbar.PostCastInterruptible = PostCastInterruptible
-	castbar.PostCastNotInterruptible = PostCastNotInterruptible
-	castbar.PostCastFailed = PostCastFailedOrInterrupted
-	castbar.PostCastInterrupted = PostCastFailedOrInterrupted
 
 	self.Castbar = castbar
 end

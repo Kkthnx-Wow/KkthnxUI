@@ -5,6 +5,8 @@ local UnitframeFont = K.GetFont(C["Unitframe"].Font)
 local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 function K.CreateStagger(self)
+	if K.Class ~= "MONK" then return end
+
 	local stagger = CreateFrame("StatusBar", nil, self)
 	stagger:SetPoint("LEFT")
 	stagger:SetPoint("RIGHT")

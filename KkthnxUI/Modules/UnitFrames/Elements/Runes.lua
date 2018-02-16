@@ -13,6 +13,8 @@ local function PostUpdateRune(_, rune, _, _, _, isReady)
 end
 
 function K.CreateClassRunes(self, width, height, spacing)
+	if K.Class ~= "DEATHKNIGHT" then return end
+
 	local runes = {}
 	local maxRunes = 6
 
