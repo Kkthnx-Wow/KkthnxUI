@@ -32,7 +32,7 @@ local function FilterGroupDebuffs(_, unit, button, name, _, _, _, _, _, _, caste
 	end
 
 	if (not UnitIsFriend("player", unit)) then
-		return button.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or K.ImportantDebuffs[name]
+		return isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or K.ImportantDebuffs[name]
 	else
 		return true
 	end
@@ -112,21 +112,13 @@ local function PostUpdateAura(self, unit, button, index)
 	local isPlayer = (caster == "player" or caster == "vehicle")
 	local isFriend = unit and UnitIsFriend("player", unit) and not UnitCanAttack("player", unit)
 
-	button.isPlayer = isPlayer
-	button.isFriend = isFriend
-	button.isStealable = isStealable
-	button.debuffType = debuffType
-	button.duration = duration
-	button.expiration = expiration
-	button.name = name
-
 	if button.isDebuff then
-		if (not button.isFriend and not button.isPlayer and not C["Unitframe"].OnlyShowPlayerDebuff) then
+		if (not isFriend and not isPlayer and not C["Unitframe"].OnlyShowPlayerDebuff) then
 			button:SetBackdropBorderColor(0.9, 0.1, 0.1)
 			button.icon:SetDesaturated((unit and not unit:find("arena%d")) and true or false)
 		else
-			local color = DebuffTypeColor[button.debuffType] or DebuffTypeColor.none
-			if (button.name == "Unstable Affliction" or button.name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+			local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
+			if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
 				button:SetBackdropBorderColor(0.05, 0.85, 0.94)
 			else
 				button:SetBackdropBorderColor(color.r, color.g, color.b)
@@ -134,7 +126,7 @@ local function PostUpdateAura(self, unit, button, index)
 			button.icon:SetDesaturated(false)
 		end
 	else
-		if (button.isStealable) and not button.isFriend then
+		if (isStealable) and not isFriend then
 			button:SetBackdropBorderColor(1, 0.85, 0)
 		else
 			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
@@ -146,22 +138,22 @@ local function PostUpdateAura(self, unit, button, index)
 		button:SetSize(size, size)
 	end
 
-	if button.expiration and button.duration and (button.duration ~= 0) then
+	if expiration and duration and (duration ~= 0) then
 		local getTime = GetTime()
 		if not button:GetScript("OnUpdate") then
-			button.expirationTime = button.expiration
-			button.expirationSaved = button.expiration - getTime
+			button.expirationTime = expiration
+			button.expirationSaved = expiration - getTime
 			button.nextupdate = -1
 			button:SetScript("OnUpdate", CreateAuraTimer)
 		end
-		if (button.expirationTime ~= button.expiration) or (button.expirationSaved ~= (button.expiration - getTime)) then
-			button.expirationTime = button.expiration
-			button.expirationSaved = button.expiration - getTime
+		if (button.expirationTime ~= expiration) or (button.expirationSaved ~= (expiration - getTime)) then
+			button.expirationTime = expiration
+			button.expirationSaved = expiration - getTime
 			button.nextupdate = -1
 		end
 	end
 
-	if button.expiration and button.duration and (button.duration == 0 or button.expiration <= 0) then
+	if expiration and duration and (duration == 0 or expiration <= 0) then
 		button.expirationTime = nil
 		button.expirationSaved = nil
 		button:SetScript("OnUpdate", nil)

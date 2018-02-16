@@ -707,12 +707,15 @@ local function StyleUpdate(self, unit)
 		local name, _, _, _, debuffType, duration, expiration, caster = UnitAura(unit, index, button.filter)
 
 		if button.isDebuff then
-			local color = DebuffTypeColor[button.debuffType] or DebuffTypeColor.none
-			if (button.name == "Unstable Affliction" or button.name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+			local color = DebuffTypeColor[debuffType] or DebuffTypeColor.none
+			if (name == "Unstable Affliction" or name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
 				SetVirtualBorder(button, 0.05, 0.85, 0.94)
 			else
 				SetVirtualBorder(button, color.r, color.g, color.b)
 			end
+			button.icon:SetDesaturated(false)
+		else
+			SetVirtualBorder(button, 0, 0, 0)
 		end
 
 		local size = button:GetParent().size
@@ -720,27 +723,22 @@ local function StyleUpdate(self, unit)
 			button:SetSize(size, size)
 		end
 
-		button.debuffType = debuffType
-		button.duration = duration
-		button.expiration = expiration
-		button.name = name
-
-		if button.expiration and button.duration and (button.duration ~= 0) then
+		if expiration and duration and (duration ~= 0) then
 			local getTime = GetTime()
 			if not button:GetScript("OnUpdate") then
-				button.expirationTime = button.expiration
-				button.expirationSaved = button.expiration - getTime
+				button.expirationTime = expiration
+				button.expirationSaved = expiration - getTime
 				button.nextupdate = -1
 				button:SetScript("OnUpdate", CreateAuraTimer)
 			end
-			if (button.expirationTime ~= button.expiration) or (button.expirationSaved ~= (button.expiration - getTime)) then
-				button.expirationTime = button.expiration
-				button.expirationSaved = button.expiration - getTime
+			if (button.expirationTime ~= expiration) or (button.expirationSaved ~= (expiration - getTime)) then
+				button.expirationTime = expiration
+				button.expirationSaved = expiration - getTime
 				button.nextupdate = -1
 			end
 		end
 
-		if button.expiration and button.duration and (button.duration == 0 or button.expiration <= 0) then
+		if expiration and duration and (duration == 0 or expiration <= 0) then
 			button.expirationTime = nil
 			button.expirationSaved = nil
 			button:SetScript("OnUpdate", nil)
