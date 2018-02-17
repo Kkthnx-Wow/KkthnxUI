@@ -159,7 +159,7 @@ RevealBox:SetPoint("TOPRIGHT", -130, 0)
 RevealBox:SetSize(24, 24)
 RevealBox.f = RevealBox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 RevealBox.f:SetPoint("LEFT", 24, 0)
-RevealBox.f:SetText("Reveal")
+RevealBox.f:SetText(L["Maps"].Reveal)
 RevealBox:SetHitRectInsets(0, 0 - RevealBox.f:GetWidth(), 0, 0)
 
 -- Reposition checkbox so the label fits with translations

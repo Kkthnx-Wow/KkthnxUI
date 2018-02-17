@@ -218,7 +218,7 @@ L["Loot"] = {
 
 -- Maps Localization
 L["Maps"] = {
-
+	Reveal = "Reveal"
 }
 
 -- Miscellaneous Localization

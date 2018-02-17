@@ -20,6 +20,10 @@ local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
 local ToggleFrame = _G.ToggleFrame
 
+local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
+local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
+local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "
+
 local Lines = {}
 local CopyFrame
 
@@ -269,9 +273,10 @@ function CopyChat:OnEnable()
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
 			GameTooltip:AddLine(L["ConfigButton"].Functions)
-			GameTooltip:AddDoubleLine(L["ConfigButton"].LeftClick, "Copy chat", 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["ConfigButton"].Right_Click, "Emotions", 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddDoubleLine(leftButtonString..L["ConfigButton"].LeftClick, "Copy chat", 1, 1, 1)
+			GameTooltip:AddDoubleLine(rightButtonString..L["ConfigButton"].Right_Click, "Emotions", 1, 1, 1)
+			GameTooltip:AddDoubleLine(middleButtonString..L["ConfigButton"].MiddleClick, L["ConfigButton"].Roll, 1, 1, 1)
 			GameTooltip:Show()
 		end)
 
