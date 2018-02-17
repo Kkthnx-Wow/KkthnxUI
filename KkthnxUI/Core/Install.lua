@@ -37,6 +37,7 @@ function Install:ResetData()
 	KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
 	KkthnxUIData[GetRealmName()][UnitName("player")].BarsLocked = false
 	KkthnxUIData[GetRealmName()][UnitName("player")].BottomBars = C["ActionBar"].BottomBars
+	KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
 	KkthnxUIData[GetRealmName()][UnitName("player")].RightBars = C["ActionBar"].RightBars
 	KkthnxUIData[GetRealmName()][UnitName("player")].SplitBars = true
 	KkthnxUIData[GetRealmName()][UnitName("player")].WatchedMovies = {}
@@ -352,6 +353,10 @@ Install:SetScript("OnEvent", function(self, event)
 
 	if (not KkthnxUIData[playerRealm][playerName].RightBars) then
 		KkthnxUIData[playerRealm][playerName].RightBars = C["ActionBar"].RightBars
+	end
+
+	if (not KkthnxUIData[playerRealm][playerName].RevealWorldMap) then
+		KkthnxUIData[playerRealm][playerName].RevealWorldMap = false
 	end
 
 	if (not KkthnxUIData[playerRealm][playerName].AutoInvite) then

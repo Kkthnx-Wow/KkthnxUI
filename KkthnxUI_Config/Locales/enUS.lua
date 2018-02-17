@@ -16,21 +16,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Set a custom UI scale",
 		},
 
-		["NumberPrefixStyle"] = {
-			["Name"] = "Unit Prefix Style",
-			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
-		},
-
-		["ConfigButton"] = {
-			["Name"] = "Config Button",
-			["Desc"] = "Display a button above the copy chat button with muitplue go to functions (Move, Bags, Skada, ect.)",
-		},
-
-		["BubbleFontSize"] = {
-			["Name"] = "Bubble Font Size",
-			["Desc"] = "Set a custom chat bubble font size",
-		},
-
 		["DisableTutorialButtons"] = {
 			["Name"] = "Disable Tutorial Buttons",
 			["Desc"] = "Disables the tutorial buttons found on some frames.",
@@ -405,11 +390,6 @@ KkthnxUIConfig["enUS"] = {
 		["Outline"] = {
 			["Name"] = "Outline",
 			["Desc"] = "Apply an outline to the font",
-		},
-
-		["SelectedScale"] = {
-			["Name"] = "Selected Scale",
-			["Desc"] = "Scale of the nameplate that is targetted.",
 		},
 
 		["Smooth"] = {
@@ -1216,6 +1196,11 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Portrait Style",
 			["Desc"] = "Pick your poison",
 		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
 	},
 
 	-- Raidframe Local
@@ -1346,6 +1331,11 @@ KkthnxUIConfig["enUS"] = {
 		["SmallWorldMap"] = {
 			["Name"] = "Small WorldMap",
 			["Desc"] = "Make the world map smaller.",
+		},
+
+		["RevealWorldMap"] = {
+			["Name"] = "Show Reveal Box",
+			["Desc"] = "If checked, a checkbox will be shown at the top of the map which will allow you to toggle unexplored areas directly from the map frame.",
 		},
 	},
 

@@ -273,7 +273,6 @@ C["Nameplates"] = {
 	["OffTankColor"] = {0, 0.5, 1},
 	["OORAlpha"] = 0.40,
 	["Outline"] = false,
-	["SelectedScale"] = 1.1,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
@@ -326,7 +325,7 @@ C["Quests"] = {
 			[MINIMIZE] = "COLLAPSED",
 			[HIDE] = "HIDE",
 		},
-		["Value"] = "COLLAPSED",
+		["Value"] = "FULL",
 	},
 	["Combat"] = {
 		["Options"] = {
@@ -335,7 +334,7 @@ C["Quests"] = {
 			[HIDE] = "HIDE",
 			[NONE] = "NONE",
 		},
-		["Value"] = "COLLAPSED",
+		["Value"] = "NONE",
 	},
 	["Battleground"] = {
 		["Options"] = {
@@ -438,7 +437,7 @@ C["Unitframe"] = {
 			["German"] = "GERMAN",
 			["Default"] = "DEFAULT",
 		},
-		["Value"] = "Default",
+		["Value"] = "DEFAULT",
 	},
 }
 
@@ -481,4 +480,5 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["SmallWorldMap"] = true,
+	["RevealWorldMap"] = false,
 }
