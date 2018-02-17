@@ -85,9 +85,15 @@ SlashCmdList.MOUSEOVERBIND = function()
 
 		bind:SetScript("OnEvent", function(self) self:Deactivate(false) end)
 		bind:SetScript("OnLeave", function(self) self:HideFrame() end)
-		bind:SetScript("OnKeyUp", function(self, key) self:Listener(key) end)
-		bind:SetScript("OnMouseUp", function(self, key) self:Listener(key) end)
-		bind:SetScript("OnMouseWheel", function(self, delta) if delta > 0 then self:Listener("MOUSEWHEELUP") else self:Listener("MOUSEWHEELDOWN") end end)
+		bind:SetScript("OnKeyDown", function(self, key) self:Listener(key) end)
+		bind:SetScript("OnMouseDown", function(self, key) self:Listener(key) end)
+		bind:SetScript("OnMouseWheel", function(self, delta)
+			if delta > 0 then
+				self:Listener("MOUSEWHEELUP")
+			else
+				self:Listener("MOUSEWHEELDOWN")
+			end
+		end)
 
 		function bind:Update(b, spellmacro)
 			if not self.enabled or InCombatLockdown() then return end
@@ -194,6 +200,8 @@ SlashCmdList.MOUSEOVERBIND = function()
 						self.button.bindstring = "MULTIACTIONBAR4BUTTON"..modact
 					elseif self.button.action < 37 and self.button.action > 24 then
 						self.button.bindstring = "MULTIACTIONBAR3BUTTON"..modact
+					elseif self.button.action < 25 and self.button.action > 12 then
+						self.button.bindstring = "CLICK "..self.button.name..":LeftButton"
 					end
 				end
 
