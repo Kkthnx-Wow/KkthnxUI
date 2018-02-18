@@ -3,17 +3,12 @@ if C["Unitframe"].Enable ~= true or C["Unitframe"].Castbars ~= true then return 
 
 local _G = _G
 local math_abs = math.abs
-local pairs = pairs
-local select = select
-local tonumber = tonumber
-local unpack = unpack
 local math_min = math.min
+local tonumber = tonumber
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
-local GetNetStats = _G.GetNetStats
 local GetSpellInfo = _G.GetSpellInfo
-local GetTime = _G.GetTime
 local UnitBuff = _G.UnitBuff
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass

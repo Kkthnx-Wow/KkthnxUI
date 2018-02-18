@@ -1,10 +1,13 @@
 local _, ns = ...
 local oUF = ns.oUF or oUF
+assert(oUF, "KkthnxUI was unable to locate oUF.")
 
-if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Stopping Custom Totems.lua code!")
-	return
-end
+local _G = _G
+
+local GameTooltip = _G.GameTooltip
+local GetTotemInfo = _G.GetTotemInfo
+local GetTime = _G.GetTime
+local tonumber = _G.tonumber
 
 local function UpdateTooltip(totem)
 	GameTooltip:SetTotem(totem:GetID())

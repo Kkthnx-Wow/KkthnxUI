@@ -5,6 +5,8 @@ local _G = _G
 
 local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
+local UnitHasVehicleUI = _G.UnitHasVehicleUI
+local UnitPowerMax = _G.UnitPowerMax
 
 local ClassModuleFont = K.GetFont(C["Unitframe"].Font)
 local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)

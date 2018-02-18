@@ -1,38 +1,36 @@
 local K, C, L = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true then return end
 
+local _, ns = ...
+local oUF = ns.oUF or oUF
+if not oUF then return end
+
 -- Lua API
 local _G = _G
 local pairs = pairs
-local string_format = string.format
 local table_insert = table.insert
+local select = select
+local ipairs = ipairs
+local unpack = unpack
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
 local DEAD = _G.DEAD
-local GetSpellInfo = _G.GetSpellInfo
-local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
-local PlaySound = _G.PlaySound
 local PlaySound = _G.PlaySound
 local UnitExists = _G.UnitExists
 local UnitHealth = _G.UnitHealth
-local UnitHealthMax = _G.UnitHealthMax
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
-local UnitSelectionColor = _G.UnitSelectionColor
+local UnitIsPlayer = _G.UnitIsPlayer
 
 -- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
 
-local _, ns = ...
-local oUF = ns.oUF or oUF
-if not oUF then return end
 local colors = K.Colors
 
 local Module = CreateFrame("Frame")
