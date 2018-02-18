@@ -8,8 +8,8 @@ local oUF = ns.oUF
 -- Lua API
 local _G = _G
 local math_abs = math.abs
-local math_floor = math.floor
-local math_huge = math.huge
+local math_min = math.min
+local pairs = pairs
 local string_format = string.format
 local table_insert = table.insert
 local table_sort = table.sort
@@ -18,33 +18,26 @@ local unpack = unpack
 -- Wow API
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local CreateFrame = _G.CreateFrame
+local DebuffTypeColor = _G.DebuffTypeColor
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetBattlefieldScore = _G.GetBattlefieldScore
-local GetCVarDefault = _G.GetCVarDefault
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
-local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
-local SetCVar = _G.SetCVar
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitAura = _G.UnitAura
 local UnitCanAttack = _G.UnitCanAttack
-local UnitClass = _G.UnitClass
-local UnitDebuff = _G.UnitDebuff
 local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitHealth = _G.UnitHealth
-local UnitHealthMax = _G.UnitHealthMax
-local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsPVPSanctuary = _G.UnitIsPVPSanctuary
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
@@ -261,45 +254,45 @@ local function ThreatColor(self, forced)
 		if threatStatus == 3 then -- securely tanking, highest threat
 			if K.GetPlayerRole() == "TANK" then
 				if C["Nameplates"].EnhancedThreat == true then
-					self.Health:SetStatusBarColor(unpack(C["Nameplates"].GoodColor))
+					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 				else
-					SetVirtualBorder(self.Health, unpack(C["Nameplates"].BadColor))
+					SetVirtualBorder(self.Health, C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 				end
 			else
 				if C["Nameplates"].EnhancedThreat == true then
-					self.Health:SetStatusBarColor(unpack(C["Nameplates"].BadColor))
+					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 				else
-					SetVirtualBorder(self.Health, unpack(C["Nameplates"].BadColor))
+					SetVirtualBorder(self.Health, C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 				end
 			end
 		elseif threatStatus == 2 then -- insecurely tanking, another unit have higher threat but not tanking
 			if C["Nameplates"].EnhancedThreat == true then
-				self.Health:SetStatusBarColor(unpack(C["Nameplates"].NearColor))
+				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
 			else
-				SetVirtualBorder(self.Health, unpack(C["Nameplates"].NearColor))
+				SetVirtualBorder(self.Health, C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
 			end
 		elseif threatStatus == 1 then -- not tanking, higher threat than tank
 			if C["Nameplates"].EnhancedThreat == true then
-				self.Health:SetStatusBarColor(unpack(C["Nameplates"].NearColor))
+				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
 			else
-				SetVirtualBorder(self.Health, unpack(C["Nameplates"].NearColor))
+				SetVirtualBorder(self.Health, C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
 			end
 		elseif threatStatus == 0 then -- not tanking, lower threat than tank
 			if C["Nameplates"].EnhancedThreat == true then
 				if K.GetPlayerRole() == "TANK" then
-					self.Health:SetStatusBarColor(unpack(C["Nameplates"].BadColor))
+					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 					if IsInGroup() or IsInRaid() then
 						for i = 1, GetNumGroupMembers() do
 							if UnitExists("raid"..i) and not UnitIsUnit("raid"..i, "player") then
 								local isTanking = UnitDetailedThreatSituation("raid"..i, self.unit)
 								if isTanking and UnitGroupRolesAssigned("raid"..i) == "TANK" then
-									self.Health:SetStatusBarColor(unpack(C["Nameplates"].OffTankColor))
+									self.Health:SetStatusBarColor(C["Nameplates"].OffTankColor[1], C["Nameplates"].OffTankColor[2], C["Nameplates"].OffTankColor[3])
 								end
 							end
 						end
 					end
 				else
-					self.Health:SetStatusBarColor(unpack(C["Nameplates"].GoodColor))
+					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 				end
 			end
 		end
@@ -374,10 +367,10 @@ local function PostCastStart(castbar, unit, name)
 		K.Delay(0.05, function() -- Delay may need tweaking
 			textWidth = castbar:GetWidth() - castbar.Time:GetStringWidth() - 10
 			textStringWidth = castbar.Text:GetStringWidth()
-			if textWidth > 0 then castbar.Text:SetWidth(math.min(textWidth, textStringWidth)) end
+			if textWidth > 0 then castbar.Text:SetWidth(math_min(textWidth, textStringWidth)) end
 		end)
 	else
-		castbar.Text:SetWidth(math.min(textWidth, textStringWidth))
+		castbar.Text:SetWidth(math_min(textWidth, textStringWidth))
 	end
 
 	castbar.Spark:SetSize(128, castbar:GetHeight())
