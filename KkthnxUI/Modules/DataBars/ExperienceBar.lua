@@ -4,16 +4,15 @@ local Module = K:NewModule("Experience_DataBar", "AceEvent-3.0")
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local format = format
 local math_floor = math.floor
 local math_min = math.min
+local string_format = string.format
 
-local GetPetExperience, UnitXP, UnitXPMax = GetPetExperience, UnitXP, UnitXPMax
-local UnitLevel = UnitLevel
-local IsXPUserDisabled, GetXPExhaustion = IsXPUserDisabled, GetXPExhaustion
-local GetExpansionLevel = GetExpansionLevel
+local GetExpansionLevel = _G.GetExpansionLevel
+local GetPetExperience, UnitXP, UnitXPMax = _G.GetPetExperience, _G.UnitXP, _G.UnitXPMax
+local IsXPUserDisabled, GetXPExhaustion = _G.IsXPUserDisabled, _G.GetXPExhaustion
 local MAX_PLAYER_LEVEL_TABLE = MAX_PLAYER_LEVEL_TABLE
-local InCombatLockdown = InCombatLockdown
+local UnitLevel = _G.UnitLevel
 
 local ExperienceFont = K.GetFont(C["DataBars"].Font)
 local ExperienceTexture = K.GetTexture(C["DataBars"].Texture)
@@ -50,12 +49,12 @@ function Module:UpdateExperience(event)
 			bar.rested:SetMinMaxValues(0, max)
 			bar.rested:SetValue(math_min(cur + rested, max))
 
-			text = format("%d%% R:%d%%", cur / max * 100, rested / max * 100)
+			text = string_format("%d%% R:%d%%", cur / max * 100, rested / max * 100)
 		else
 			bar.rested:SetMinMaxValues(0, 1)
 			bar.rested:SetValue(0)
 
-			text = format("%d%%", cur / max * 100)
+			text = string_format("%d%%", cur / max * 100)
 		end
 
 		bar.text:SetText(text)
@@ -75,11 +74,11 @@ function Module:ExperienceBar_OnEnter()
 	GameTooltip:AddDoubleLine(L["Databars"].Experience, K.Name, nil, nil, nil, K.Color.r, K.Color.g, K.Color.b)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine(L["Databars"].XP, format(" %s / %s (%s%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), 20 * math_floor((max - cur) / max)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format(" %s / %s (%s%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), 20 * math_floor((max - cur) / max)), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine(L["Databars"].Rested, format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 	end
 
 	GameTooltip:Show()
@@ -91,7 +90,7 @@ function Module:ExperienceBar_OnLeave()
 	end
 
 	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+		GameTooltip:Hide()
 	end
 end
 
