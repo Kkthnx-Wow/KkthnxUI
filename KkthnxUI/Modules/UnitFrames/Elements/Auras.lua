@@ -8,9 +8,9 @@ local table_sort = table.sort
 local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
 local GetTime = _G.GetTime
-local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitCanAttack = _G.UnitCanAttack
 local UnitIsFriend = _G.UnitIsFriend
+local UnitAura = _G.UnitAura
 
 local function FilterSharedBuffs(_, _, _, name)
 	if not name then
@@ -32,12 +32,12 @@ local function FilterGroupDebuffs(_, unit, button, name, _, _, _, _, _, _, caste
 	end
 
 	if (not UnitIsFriend("player", unit)) then
-		return isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or K.ImportantDebuffs[name]
+		return button.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or K.ImportantDebuffs[name]
 	else
 		return true
 	end
 
-	return false
+	return true
 end
 
 local function CreateAuraTimer(self, elapsed)
@@ -258,7 +258,6 @@ function K.CreateAuras(self, unit)
 			Debuffs.PostUpdateIcon = PostUpdateAura
 			self.Debuffs = Debuffs
 		else
-			local Auras = CreateFrame("Frame", self:GetName().."Auras", self)
 			Auras.gap = true
 			Auras.size = 21
 			Auras:SetHeight(21)
