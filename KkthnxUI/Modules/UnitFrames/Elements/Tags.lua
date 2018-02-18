@@ -9,20 +9,23 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 local _G = _G
 local math_floor = math.floor
 local string_format = string.format
-local string_gsub = string.gsub
-local string_len = string.len
 
 -- Wow API
 local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
+local DEAD = _G.DEAD
+local DEFAULT_AFK_MESSAGE = _G.DEFAULT_AFK_MESSAGE
+local GetLocale = _G.GetLocale
 local GetPVPTimer = _G.GetPVPTimer
-local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 local GetQuestGreenRange = _G.GetQuestGreenRange
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
+local GetSpellInfo = _G.GetSpellInfo
 local GetThreatStatusColor = _G.GetThreatStatusColor
-local GetTime = _G.GetTime
+local GHOST = GetLocale() == "deDE" and "Geist" or GetSpellInfo(8326)
 local IsInGroup = _G.IsInGroup
-local IsPVPTimerRunning = _G.IsPVPTimerRunning
+local ORANGE_FONT_COLOR_CODE = _G.ORANGE_FONT_COLOR_CODE
+local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local QuestDifficultyColors = _G.QuestDifficultyColors
+local RED_FONT_COLOR_CODE = _G.RED_FONT_COLOR_CODE
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
@@ -30,14 +33,14 @@ local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitEffectiveLevel = _G.UnitEffectiveLevel
 local UnitExists = _G.UnitExists
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
-local UnitGUID = _G.UnitGUID
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsConnected = _G.UnitIsConnected
-local UnitIsCorpse = _G.UnitIsCorpse
-local UnitIsDND = _G.UnitIsDND
+local UnitIsDead = _G.UnitIsDead
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
@@ -48,11 +51,10 @@ local UnitName = _G.UnitName
 local UNITNAME_SUMMON_TITLE17 = _G.UNITNAME_SUMMON_TITLE17
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
+local UnitPowerType = _G.UnitPowerType
+local UnitPrestige = _G.UnitPrestige
 local UnitReaction = _G.UnitReaction
-local UnitThreatPercentageOfLead = _G.UnitThreatPercentageOfLead
-local DEFAULT_AFK_MESSAGE = _G.DEFAULT_AFK_MESSAGE
-
-local GHOST = GetLocale() == "deDE" and "Geist" or GetSpellInfo(8326)
+local UNKNOWN = _G.UNKNOWN
 
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
@@ -78,10 +80,10 @@ local function GetPvPStatus(unit)
 
 	if (status) then
 		if (prestige and prestige > 0) then
-			status = format("%s %d", status, prestige)
+			status = string_format("%s %d", status, prestige)
 		end
 
-		return format("%s%s|r", color, status)
+		return string_format("%s%s|r", color, status)
 	end
 end
 
@@ -121,7 +123,7 @@ oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	local max = UnitPowerMax(unit, 0)
 
 	if (UnitPowerType(unit) ~= 0 and cur ~= max) then
-		return math.floor(cur / max * 100)
+		return math_floor(cur / max * 100)
 	end
 end
 
@@ -389,7 +391,7 @@ oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
 	elseif UnitIsFriend("player", unit) then
 		return "-"..K.ShortValue(MaxHealth - CurrentHealth)
 	else
-		return string.format("%.1f", CurrentHealth / MaxHealth * 100).."%"
+		return string_format("%.1f", CurrentHealth / MaxHealth * 100).."%"
 	end
 end
 
