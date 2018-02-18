@@ -726,7 +726,7 @@ function Module:OnEnable()
 	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "Hide", function(self)
 		self:GetParent().Backdrop:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end)
-	WorldMapTooltip.ItemTooltip:CreateBackdrop()
+	WorldMapTooltip.ItemTooltip:CreateBackdrop("") -- No backdrop needs to happen, only a border.
 	WorldMapTooltip.ItemTooltip.Backdrop:SetAllPoints(WorldMapTooltip.ItemTooltip.Icon)
 	WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(3)
 	WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
