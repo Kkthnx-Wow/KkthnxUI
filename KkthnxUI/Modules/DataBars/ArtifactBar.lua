@@ -4,24 +4,14 @@ local Module = K:NewModule("Artifact_DataBar", "AceEvent-3.0")
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local format, gsub, strmatch, strfind = string.format, string.gsub, string.match, string.find
-local tonumber, select, pcall = tonumber, select, pcall
+local string_format = string.format
 local math_floor = math.floor
 
-local AP_NAME = format("%s|r", ARTIFACT_POWER)
 local ARTIFACT_POWER = ARTIFACT_POWER
 local ARTIFACT_POWER_TOOLTIP_BODY = ARTIFACT_POWER_TOOLTIP_BODY
-local BreakUpLargeNumbers = BreakUpLargeNumbers
 local C_ArtifactUI_GetEquippedArtifactInfo = C_ArtifactUI.GetEquippedArtifactInfo
-local GetContainerItemInfo = GetContainerItemInfo
-local GetContainerItemLink = GetContainerItemLink
-local GetContainerNumSlots = GetContainerNumSlots
-local GetItemSpell = GetItemSpell
-local GetSpellInfo = GetSpellInfo
 local HasArtifactEquipped = HasArtifactEquipped
 local HideUIPanel = HideUIPanel
-local InCombatLockdown = InCombatLockdown
-local IsArtifactPowerItem = IsArtifactPowerItem
 local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
 local ShowUIPanel = ShowUIPanel
 local SocketInventoryItem = SocketInventoryItem
@@ -56,7 +46,7 @@ function Module:UpdateArtifact(event, unit)
 		bar.statusBar:SetMinMaxValues(0, xpForNextPoint)
 		bar.statusBar:SetValue(xp)
 
-		local text = format("%s%%", math_floor(xp / xpForNextPoint * 100))
+		local text = string_format("%s%%", math_floor(xp / xpForNextPoint * 100))
 
 		bar.text:SetText(text)
 	end
@@ -82,11 +72,11 @@ function Module:ArtifactBar_OnEnter()
 
 	local remaining = xpForNextPoint - xp
 
-	GameTooltip:AddDoubleLine(L["Databars"].AP, format(" %s / %s (%s%%)", K.ShortValue(xp), K.ShortValue(xpForNextPoint), math_floor(xp / xpForNextPoint * 100)), 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %s (%d%% - %s %s)", K.ShortValue(xpForNextPoint - xp), remaining / xpForNextPoint * 100, math_floor(20 * remaining / xpForNextPoint), L["Databars"].Bars), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].AP, string_format(" %s / %s (%s%%)", K.ShortValue(xp), K.ShortValue(xpForNextPoint), math_floor(xp / xpForNextPoint * 100)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %s (%d%% - %s %s)", K.ShortValue(xpForNextPoint - xp), remaining / xpForNextPoint * 100, math_floor(20 * remaining / xpForNextPoint), L["Databars"].Bars), 1, 1, 1)
 	if (numPointsAvailableToSpend > 0) then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(format(ARTIFACT_POWER_TOOLTIP_BODY, numPointsAvailableToSpend), nil, nil, nil, true)
+		GameTooltip:AddLine(string_format(ARTIFACT_POWER_TOOLTIP_BODY, numPointsAvailableToSpend), nil, nil, nil, true)
 	end
 
 	GameTooltip:Show()
