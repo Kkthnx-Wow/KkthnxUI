@@ -89,6 +89,11 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Texture",
 			["Desc"] = "Group loot status bar texture",
 		},
+
+		["FastLoot"] = {
+			["Name"] = "Fast Loot",
+			["Desc"] = "The amount of time it takes to auto loot creatures will be significantly reduced.|n|n|cffFF0000Requires AutoLoot to be enabled!",
+		},
 	},
 
 	-- Bags Local
