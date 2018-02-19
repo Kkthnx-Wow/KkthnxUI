@@ -1,24 +1,44 @@
 local K, C, L = unpack(select(2, ...))
-if C["WorldMap"].RevealWorldMap ~= true then return end
+local Module = K:NewModule("WorldMapPlus", "AceHook-3.0", "AceEvent-3.0")
+if C["WorldMap"].WorldMapPlus ~= true then return end
 
--- Reveal WorldMap Data
--- Sourced: LeatrixPlus, Leatrix
+-- Sourced: LeatrixPlus (Leatrix)
 
+-- Lua API
 local _G = _G
-local hooksecurefunc = hooksecurefunc
 local math_ceil = math.ceil
-local next = next
+local setmetatable = setmetatable
 local string_format = string.format
+local string_match = string.match
 local string_split = string.split
 
+-- WoW API
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
+local GetAchievementLink = _G.GetAchievementLink
+local GetAreaMapInfo = _G.GetAreaMapInfo
 local GetCurrentMapAreaID = _G.GetCurrentMapAreaID
-local GetMapInfo = _G.GetMapInfo
+local GetLocale = _G.GetLocale
 local GetRealmName = _G.GetRealmName
+local hooksecurefunc = _G.hooksecurefunc
+local QuestMapFrame = _G.QuestMapFrame
 local RefreshWorldMap = _G.RefreshWorldMap
 local SetMapByID = _G.SetMapByID
 local UnitName = _G.UnitName
+local WorldMapDetailFrame = _G.WorldMapDetailFrame
 
-local ZoneMapData = {
+-- Add wowhead link by Goldpaw "Lars" Norberg
+local subDomain = (setmetatable({
+	ruRU = "ru",
+	frFR = "fr", deDE = "de",
+	esES = "es", esMX = "es",
+	ptBR = "pt", ptPT = "pt", itIT = "it",
+	koKR = "ko", zhTW = "cn", zhCN = "cn"
+}, { __index = function(t,v) return "www" end }))[GetLocale()]
+
+local wowheadLoc = subDomain..".wowhead.com"
+
+local zones = {
 	-- Eastern Kingdoms
 	["Arathi"] = {"CirecleofOuterBinding:215:188:332:273", "CircleofWestBinding:220:287:85:24", "NorthfoldManor:227:268:132:105", "Bouldergor:249:278:171:123", "StromgardeKeep:284:306:21:269", "FaldirsCove:273:268:77:400", "CircleofInnerBinding:228:227:201:312", "ThandolSpan:237:252:261:416", "BoulderfistHall:252:258:327:367", "RefugePoint:196:270:293:145", "WitherbarkVillage:260:220:476:359", "GoShekFarm:306:248:430:249", "DabyriesFarmstead:210:227:404:144", "CircleofEastBinding:183:238:506:126", "Hammerfall:270:271:581:118", "GalensFall:212:305:0:144"},
 	["Badlands"] = {"AgmondsEnd:342:353:230:315", "AngorFortress:285:223:230:68", "ApocryphansRest:252:353:0:66", "CampBoff:274:448:407:220", "CampCagg:339:347:0:281", "CampKosh:236:260:504:19", "DeathwingScar:328:313:175:178", "HammertoesDigsite:209:196:411:116", "LethlorRavine:469:613:533:55", "TheDustbowl:214:285:144:99", "Uldaman:266:210:336:0",},
@@ -143,143 +163,486 @@ local ZoneMapData = {
 	["Valsharah"] = {"Andutalah:241:240:587:250", "BlackrookHold:250:253:262:175", "BradensBrook:311:244:259:275", "DreamGrove:294:364:283:0",	"GloamingReef:239:301:136:274",	"GroveOfCenarius:171:150:457:351", "Lorlathil:177:156:467:413",	"MoonclawVale:254:281:549:380",	"Shalanir:326:360:419:0", "Smolderhide:341:188:324:480", "TempleOfElune:216:219:459:240", "Thastalah:218:168:342:416",},
 	["ArgusCore"] = {"DefiledPath:626:385:293:0", "FelfireArmory:660:668:0:0", "Terminus:467:430:535:238",},
 	["ArgusMacAree"] = {"Conservatory:313:353:498:111", "RuinsOfOronaar:265:310:278:284", "SeatOfTriumvirate:463:519:265:54", "Shadowguard:498:461:0:0", "Triumvirates:284:264:410:375", "UpperTerrace:701:323:0:0",},
-	["ArgusSurface"] = {"AnnihilanPits:296:336:371:178", "KrokulHovel:307:304:428:364", "Nathraxas:835:422:167:0", "PetrifiedForest:445:379:557:289", "ShatteredFields:498:530:37:138",},
+	["ArgusSurface"] = {"AnnihilanPits:296:336:371:178", "KrokulHovel:307:304:428:364", "Nathraxas:835:422:167:0", "PetrifiedForest:445:379:557:289", "ShatteredFields:498:530:37:138",}
 }
 
--- Initialise counters
-local createdtex = 0
-local texcount = 0
-
--- Create local texture table
-local MapTex = {}
-
-local RevealBox = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-RevealBox:ClearAllPoints()
-RevealBox:SetPoint("TOPRIGHT", -130, 0)
-RevealBox:SetSize(24, 24)
-RevealBox.f = RevealBox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-RevealBox.f:SetPoint("LEFT", 24, 0)
-RevealBox.f:SetText(L["Maps"].Reveal)
-RevealBox:SetHitRectInsets(0, 0 - RevealBox.f:GetWidth(), 0, 0)
-
--- Reposition checkbox so the label fits with translations
-RevealBox:ClearAllPoints()
-RevealBox:SetPoint("TOPRIGHT", WorldMapFrame.BorderFrame, "TOPRIGHT", -RevealBox.f:GetStringWidth()-87, 0)
-
--- Handle clicks
-RevealBox:SetScript("OnClick", function()
-	if RevealBox:GetChecked() == true then
-		KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = true
-		if WorldMapFrame:IsShown() then
-			local futuremap = GetCurrentMapAreaID()
-			RefreshWorldMap()
-			SetMapByID(futuremap)
+function Module:SetUpAchievementLinks()
+	-- Create editbox
+	local aEB = CreateFrame("EditBox", nil, AchievementFrame)
+	aEB:ClearAllPoints()
+	aEB:SetPoint("BOTTOMRIGHT", -50, 1)
+	aEB:SetHeight(16)
+	aEB:SetFontObject("GameFontNormalSmall")
+	aEB:SetBlinkSpeed(0)
+	aEB:SetJustifyH("RIGHT")
+	aEB:SetAutoFocus(false)
+	aEB:EnableKeyboard(false)
+	aEB:SetHitRectInsets(90, 0, 0, 0)
+	aEB:SetScript("OnKeyDown", function() end)
+	aEB:SetScript("OnMouseUp", function()
+		if aEB:IsMouseOver() then
+			aEB:HighlightText()
+		else
+			aEB:HighlightText(0, 0)
 		end
-	else
-		KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
-		if texcount > 0 then
-			for i = 1, texcount do MapTex[i]:Hide() end
-			texcount = 0
-			if WorldMapFrame:IsShown() then
-				RefreshWorldMap()
+	end)
+
+	-- Create hidden font string (used for setting width of editbox)
+	aEB.z = aEB:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	aEB.z:Hide()
+
+	-- Store last link in case editbox is cleared
+	local lastAchievementLink
+
+	-- Function to set editbox value
+	hooksecurefunc("AchievementFrameAchievements_SelectButton", function(self)
+		local achievementID = self.id or nil
+		if achievementID then
+			-- Set editbox text
+			aEB:SetText("https://" .. wowheadLoc .. "/achievement=" .. achievementID)
+			lastAchievementLink = aEB:GetText()
+			-- Set hidden fontstring then resize editbox to match
+			aEB.z:SetText(aEB:GetText())
+			aEB:SetWidth(aEB.z:GetStringWidth() + 90)
+			-- Get achievement title for tooltip
+			local achievementLink = GetAchievementLink(self.id)
+			if achievementLink then
+				aEB.tiptext = string_match(achievementLink, "%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
 			end
+			-- Show the editbox
+			aEB:Show()
 		end
-	end
-end)
+	end)
 
--- Set checkbox state
-RevealBox:SetScript("OnShow", function()
-	if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == true then
-		RevealBox:SetChecked(true)
-	else
-		RevealBox:SetChecked(false)
-	end
-end)
-
--- Update map
-hooksecurefunc("WorldMapFrame_Update", function()
-	-- If map isn"t shown, may as well not process anything
-	if not WorldMapFrame:IsShown() or KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == false then
-		return
-	end
-
-	-- Hide textures from previous map
-	if texcount > 0 then
-		for i = 1, texcount do
-			MapTex[i]:Hide()
+	-- Create tooltip
+	aEB:HookScript("OnEnter", function()
+		aEB:HighlightText()
+		aEB:SetFocus()
+		if GameTooltip:IsForbidden() then
+			return
 		end
-		texcount = 0
-	end
+		GameTooltip:SetOwner(aEB, "ANCHOR_TOP", 0, 10)
+		GameTooltip:SetText(aEB.tiptext, nil, nil, nil, nil, true)
+		GameTooltip:Show()
+	end)
 
-	-- Get current map
-	local filename, _, _, _, sub = GetMapInfo()
-	if sub then return end
-	if not filename then return end
+	aEB:HookScript("OnLeave", function()
+		-- Set link text again if it's changed since it was set
+		if aEB:GetText() ~= lastAchievementLink then aEB:SetText(lastAchievementLink) end
+		aEB:HighlightText(0, 0)
+		aEB:ClearFocus()
+		if GameTooltip:IsForbidden() then
+			return
+		end
+		GameTooltip:Hide()
+	end)
 
-	local texpath = string_format([[Interface\WorldMap\%s\]], filename)
-	local zone = ZoneMapData[filename] or {}
+	-- Hide editbox when achievement is deselected
+	hooksecurefunc("AchievementFrameAchievements_ClearSelection", function(self) aEB:Hide()	end)
+	hooksecurefunc("AchievementCategoryButton_OnClick", function(self) aEB:Hide() end)
+end
 
-	-- Create new textures for current map
-	for _, num in next, zone do
-		local tname, texwidth, texheight, offsetx, offsety = string_split(":", num)
-		local texturename = texpath..tname
-		local numtexwide, numtextall = math_ceil(texwidth / 256), math_ceil(texheight / 256)
+function Module:SetUpEJLinks()
+	-- Hide the title bar
+	EncounterJournalTitleText:Hide()
 
-		-- Work out how many textures are needed to fill the map
-		local neededtex = texcount + numtextall * numtexwide
+	-- Create editbox
+	local eEB = CreateFrame("EditBox", nil, EncounterJournal)
+	eEB:ClearAllPoints()
+	eEB:SetPoint("TOPLEFT", 70, -4)
+	eEB:SetHeight(16)
+	eEB:SetFontObject("GameFontNormal")
+	eEB:SetBlinkSpeed(0)
+	eEB:SetAutoFocus(false)
+	eEB:EnableKeyboard(false)
+	eEB:SetHitRectInsets(0, 90, 0, 0)
+	eEB:SetScript("OnKeyDown", function() end)
+	eEB:SetScript("OnMouseUp", function()
+		if eEB:IsMouseOver() then
+			eEB:HighlightText()
+		else
+			eEB:HighlightText(0, 0)
+		end
+	end)
 
-		-- Create the textures
-		if neededtex > createdtex then
-			for j = createdtex + 1, neededtex do
-				MapTex[j] = WorldMapDetailFrame:CreateTexture(nil, "ARTWORK")
+	-- Create hidden font string (used for setting width of editbox)
+	eEB.z = eEB:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	eEB.z:Hide()
+
+	-- Store last link in case user clears editbox
+	local lastEJLink
+
+	-- Function to set editbox value
+	hooksecurefunc("EncounterJournal_DisplayInstance", function()
+		local void, void, void, void, void, void, dungeonAreaMapID, link = EJ_GetInstanceInfo()
+		local mapID, areaID = GetAreaMapInfo(dungeonAreaMapID)
+		if areaID then
+			-- Set editbox text
+			eEB:SetText("https://" .. wowheadLoc .. "/zone=" .. areaID)
+			lastEJLink = eEB:GetText()
+			-- Set hidden fontstring then resize editbox to match
+			eEB.z:SetText(eEB:GetText())
+			eEB:SetWidth(eEB.z:GetStringWidth() + 90)
+			-- Get achievement title for tooltip
+			if link then
+				eEB.tiptext = string_match(link, "%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
 			end
-			createdtex = neededtex
+			-- Show the editbox
+			eEB:Show()
 		end
+	end)
 
-		-- Process textures
-		for j = 1, numtextall do
-			local texturepxheight, texturefileheight
-			if j < numtextall then
-				texturepxheight = 256
-				texturefileheight = 256
+	-- Create tooltip
+	eEB:HookScript("OnEnter", function()
+		eEB:HighlightText()
+		eEB:SetFocus()
+		if GameTooltip:IsForbidden() then
+			return
+		end
+		GameTooltip:SetOwner(eEB, "ANCHOR_BOTTOM", 0, -10)
+		GameTooltip:SetText(eEB.tiptext, nil, nil, nil, nil, true)
+		GameTooltip:Show()
+	end)
+
+	eEB:HookScript("OnLeave", function()
+		-- Set link text again if it's changed since it was set
+		if eEB:GetText() ~= lastEJLink then eEB:SetText(lastEJLink) end
+		eEB:HighlightText(0, 0)
+		eEB:ClearFocus()
+		if GameTooltip:IsForbidden() then
+			return
+		end
+		GameTooltip:Hide()
+	end)
+
+	-- Hide editbox when instance list is shown
+	hooksecurefunc("EncounterJournal_ListInstances", function()
+		eEB:Hide()
+	end)
+
+end
+
+function Module:SetUpQuestLinks()
+	-- Hide the title text
+	WorldMapFrameTitleText:Hide()
+
+	-- Create editbox
+	local mEB = CreateFrame("EditBox", nil, WorldMapFrame.BorderFrame)
+	mEB:ClearAllPoints()
+	mEB:SetPoint("TOPLEFT", 100, -4)
+	mEB:SetHeight(16)
+	mEB:SetFontObject("GameFontNormal")
+	mEB:SetBlinkSpeed(0)
+	mEB:SetAutoFocus(false)
+	mEB:EnableKeyboard(false)
+	mEB:SetHitRectInsets(0, 90, 0, 0)
+	mEB:SetScript("OnKeyDown", function() end)
+	mEB:SetScript("OnMouseUp", function()
+		if mEB:IsMouseOver() then
+			mEB:HighlightText()
+		else
+			mEB:HighlightText(0, 0)
+		end
+	end)
+
+	-- Create hidden font string (used for setting width of editbox)
+	mEB.z = mEB:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	mEB.z:Hide()
+
+	-- Function to set editbox value
+	local function SetQuestInBox()
+		local questID
+		if QuestMapFrame.DetailsFrame:IsShown() then
+			-- Get quest ID from currently showing quest in details panel
+			questID = QuestMapFrame_GetDetailQuestID()
+		else
+			-- Get quest ID from currently selected quest on world map
+			questID = GetSuperTrackedQuestID()
+		end
+		if questID then
+			-- Hide editbox if quest ID is invalid
+			if questID == 0 then mEB:Hide() else mEB:Show() end
+			-- Set editbox text
+			mEB:SetText("https://" .. wowheadLoc .. "/quest=" .. questID)
+			-- Set hidden fontstring then resize editbox to match
+			mEB.z:SetText(mEB:GetText())
+			mEB:SetWidth(mEB.z:GetStringWidth() + 90)
+			-- Get quest title for tooltip
+			local questLink = GetQuestLink(questID) or nil
+			if questLink then
+				mEB.tiptext = string_match(questLink, "%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
 			else
-				texturepxheight = texheight % 256
-				if texturepxheight == 0 then
-					texturepxheight = 256
-				end
-				texturefileheight = 16
-				while texturefileheight < texturepxheight do
-					texturefileheight = texturefileheight * 2
-				end
-			end
-
-			for k = 1, numtexwide do
-				if texcount > createdtex then return end
-				texcount = texcount + 1
-				local texture = MapTex[texcount]
-				local texturepxwidth
-				local texturefilewidth
-				if k < numtexwide then
-					texturepxwidth = 256
-					texturefilewidth = 256
-				else
-					texturepxwidth = texwidth % 256
-					if texturepxwidth == 0 then
-						texturepxwidth = 256
-					end
-					texturefilewidth = 16
-					while texturefilewidth < texturepxwidth do
-						texturefilewidth = texturefilewidth * 2
-					end
-				end
-				texture:SetWidth(texturepxwidth)
-				texture:SetHeight(texturepxheight)
-				texture:SetTexCoord(0, texturepxwidth / texturefilewidth, 0, texturepxheight / texturefileheight)
-				texture:ClearAllPoints()
-				texture:SetPoint("TOPLEFT", "WorldMapDetailFrame", "TOPLEFT", offsetx + (256 * (k - 1)), -(offsety + (256 * (j - 1))))
-				texture:SetTexture(texturename..(((j - 1) * numtexwide) + k))
-				texture:Show()
+				mEB.tiptext = ""
+				if mEB:IsMouseOver() and WorldMapTooltip:IsShown() then WorldMapTooltip:Hide() end
 			end
 		end
 	end
-end)
+
+	-- Set URL when super tracked quest changes and on startup
+	mEB:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED")
+	mEB:SetScript("OnEvent", SetQuestInBox)
+	SetQuestInBox()
+
+	-- Set URL when quest details frame is shown or hidden
+	hooksecurefunc("QuestMapFrame_ShowQuestDetails", SetQuestInBox)
+	hooksecurefunc("QuestMapFrame_CloseQuestDetails", SetQuestInBox)
+
+	-- Create tooltip
+	mEB:HookScript("OnEnter", function()
+		mEB:HighlightText()
+		mEB:SetFocus()
+		WorldMapTooltip:SetOwner(mEB, "ANCHOR_BOTTOM", 0, -10)
+		WorldMapTooltip:SetText(mEB.tiptext, nil, nil, nil, nil, true)
+		WorldMapTooltip:Show()
+	end)
+
+	mEB:HookScript("OnLeave", function()
+		mEB:HighlightText(0, 0)
+		mEB:ClearFocus()
+		WorldMapTooltip:Hide()
+		SetQuestInBox()
+	end)
+end
+
+function Module:SetUpFogOfWar()
+	-- Initialise counters
+	local createdtex = 0
+	local texcount = 0
+
+	-- Create local texture table
+	local MapTex = {}
+
+	-- Create reveal checkbox
+	local revealBox = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
+	revealBox:ClearAllPoints();
+	revealBox:SetPoint("TOPRIGHT", -130, 0)
+	revealBox:SetSize(24, 24)
+	revealBox.font = revealBox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	revealBox.font:SetPoint("LEFT", 24, 0)
+	revealBox.font:SetText(L["Maps"].Reveal)
+	revealBox:SetHitRectInsets(0, 0 - revealBox.font:GetWidth(), 0, 0)
+
+	-- Reposition checkbox so the label fits with translations
+	revealBox:ClearAllPoints()
+	revealBox:SetPoint("TOPRIGHT", WorldMapFrame.BorderFrame, "TOPRIGHT", -revealBox.font:GetStringWidth() -87, 0)
+
+	function revealBox.UpdateTooltip(self)
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+		GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 10)
+
+		local r, g, b = 0.2, 1.0, 0.2
+		-- local r2, g2, b2 =
+
+		if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap then
+			GameTooltip:AddLine(L["Maps"].HideUnDiscovered)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(L["Maps"].DisableToHide, r, g, b)
+		else
+			GameTooltip:AddLine(L["Maps"].RevealHidden)
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine(L["Maps"].EnableToShow, r, g, b)
+		end
+
+		GameTooltip:Show()
+	end
+
+	revealBox:HookScript("OnEnter", function(self)
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+		self:UpdateTooltip()
+	end)
+
+	revealBox:HookScript("OnLeave", function(self)
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+		GameTooltip:Hide()
+	end)
+
+	-- Handle clicks
+	revealBox:SetScript("OnClick", function()
+		if revealBox:GetChecked() == true then
+			KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = true
+			if WorldMapFrame:IsShown() then
+				local futuremap = GetCurrentMapAreaID()
+				RefreshWorldMap()
+				SetMapByID(futuremap)
+			end
+		else
+			KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap = false
+			if texcount > 0 then
+				for i = 1, texcount do MapTex[i]:Hide() end
+				texcount = 0
+				if WorldMapFrame:IsShown() then
+					RefreshWorldMap()
+				end
+			end
+		end
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+		if (GameTooltip:GetOwner() == self) then
+			self:UpdateTooltip()
+		end
+	end)
+
+	-- Set checkbox state
+	revealBox:SetScript("OnShow", function()
+		if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == true then
+			revealBox:SetChecked(true)
+		else
+			revealBox:SetChecked(false)
+		end
+	end)
+
+	-- Update map
+	hooksecurefunc("WorldMapFrame_Update", function()
+		-- If map isn't shown, may as well not process anything
+		if not WorldMapFrame:IsShown() or KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap == false then
+			return
+		end
+
+		-- Hide textures from previous map
+		if texcount > 0 then
+			for i = 1, texcount do
+				MapTex[i]:Hide()
+			end
+			texcount = 0
+		end
+
+		-- Get current map
+		local filename, _, _, _, sub = GetMapInfo()
+		if sub then return end
+		if not filename then return end
+
+		local texpath = string_format([[Interface\WorldMap\%s\]], filename)
+		local zone = zones[filename] or {}
+
+		-- Create new textures for current map
+		for _, num in next, zone do
+			local tname, texwidth, texheight, offsetx, offsety = string_split(":", num)
+			local texturename = texpath..tname
+			local numtexwide, numtextall = math_ceil(texwidth / 256), math_ceil(texheight / 256)
+
+			-- Work out how many textures are needed to fill the map
+			local neededtex = texcount + numtextall * numtexwide
+
+			-- Create the textures
+			if neededtex > createdtex then
+				for j = createdtex + 1, neededtex do
+					MapTex[j] = WorldMapDetailFrame:CreateTexture(nil, "ARTWORK")
+				end
+				createdtex = neededtex
+			end
+
+			-- Process textures
+			for j = 1, numtextall do
+				local texturepxheight, texturefileheight
+				if j < numtextall then
+					texturepxheight = 256
+					texturefileheight = 256
+				else
+					texturepxheight = texheight % 256
+					if texturepxheight == 0 then
+						texturepxheight = 256
+					end
+					texturefileheight = 16
+					while texturefileheight < texturepxheight do
+						texturefileheight = texturefileheight * 2
+					end
+				end
+
+				for k = 1, numtexwide do
+					if texcount > createdtex then return end
+					texcount = texcount + 1
+					local texture = MapTex[texcount]
+					local texturepxwidth
+					local texturefilewidth
+					if k < numtexwide then
+						texturepxwidth = 256
+						texturefilewidth = 256
+					else
+						texturepxwidth = texwidth % 256
+						if texturepxwidth == 0 then
+							texturepxwidth = 256
+						end
+						texturefilewidth = 16
+						while texturefilewidth < texturepxwidth do
+							texturefilewidth = texturefilewidth * 2
+						end
+					end
+					texture:SetWidth(texturepxwidth)
+					texture:SetHeight(texturepxheight)
+					texture:SetTexCoord(0, texturepxwidth / texturefilewidth, 0, texturepxheight / texturefileheight)
+					texture:ClearAllPoints()
+					texture:SetPoint("TOPLEFT", WorldMapDetailFrame, "TOPLEFT", offsetx + (256 * (k - 1)), -(offsety + (256 * (j - 1))))
+					texture:SetTexture(texturename..(((j - 1) * numtexwide) + k))
+					texture:Show()
+				end
+			end
+		end
+	end)
+end
+
+function Module:SetUpWorldMap()
+	local overlayTexture = WorldMapDetailFrame:CreateTexture(nil, "OVERLAY")
+	overlayTexture:SetAllPoints()
+	overlayTexture:SetColorTexture(.15,.1,.05,.40)
+
+	hooksecurefunc("WorldMapFrame_Update", function()
+		local questMapID, isContinent = GetCurrentMapAreaID()
+		if ((not questMapID) or (questMapID == -1)) and (not isContinent) then
+			overlayTexture:Hide()
+		else
+			overlayTexture:Show()
+		end
+	end)
+end
+
+function Module:OnEvent(event, ...)
+	if (event == "ADDON_LOADED") then
+		local arg = ...
+		if (arg == "Blizzard_AchievementUI") then
+			self:SetUpAchievementLinks()
+			self.addonCount = self.addonCount - 1
+		elseif (arg == "Blizzard_EncounterJournal") then
+			self:SetUpEJLinks()
+			self.addonCount = self.addonCount - 1
+		end
+		if (self.addonCount == 0) then
+			self:UnregisterEvent("ADDON_LOADED", "OnEvent")
+		end
+	end
+end
+
+function Module:OnEnable()
+	if C["WorldMap"].WorldMapPlus ~= true then return end
+	-- Kill off the black background around the fullscreen worldmap,
+	-- so that we can see at least a little of what's going on.
+	if (BlackoutWorld and not C["WorldMap"].Enable) then
+		BlackoutWorld:SetAlpha(0)
+	end
+
+	-- self:SetUpWorldMap()
+	self:SetUpFogOfWar()
+	self:SetUpQuestLinks()
+
+	if IsAddOnLoaded("Blizzard_EncounterJournal") then
+		self:SetUpEJLinks()
+	else
+		self.addonCount = (self.addonCount or 0) + 1
+	end
+
+	if IsAddOnLoaded("Blizzard_AchievementUI") then
+		self:SetUpAchievementLinks()
+	else
+		self.addonCount = (self.addonCount or 0) + 1
+	end
+
+	if (self.addonCount) then
+		self:RegisterEvent("ADDON_LOADED", "OnEvent")
+	end
+end

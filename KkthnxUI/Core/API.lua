@@ -20,6 +20,8 @@ local UIParent = _G.UIParent
 local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 
+local closeButton_32 = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
+
 -- Preload
 local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
 local Scale = function(x)
@@ -342,7 +344,7 @@ local function TrimIcon(self, customTrim)
 end
 
 local function SkinButton(f, strip)
-	assert(f, "doesn't exist!")
+	assert(f, "doesnt exist!")
 
 	if f.Left then f.Left:SetAlpha(0) end
 	if f.Middle then f.Middle:SetAlpha(0) end
@@ -373,29 +375,30 @@ local function SkinButton(f, strip)
 	f:HookScript("OnLeave", SetOriginalBackdrop)
 end
 
-local function SkinCloseButton(f, point, text)
-	assert(f, "doesn't exist!")
+local function SkinCloseButton(f, point, texture)
+	assert(f, "doesnt exist!")
 
 	f:StripTextures()
 
 	if not f.backdrop then
 		f:CreateBackdrop("Transparent", true)
-		f.Backdrop:SetPoint("TOPLEFT", 7, -8)
+		f.Backdrop:SetPoint("TOPLEFT", 8, -8)
 		f.Backdrop:SetPoint("BOTTOMRIGHT", -8, 8)
 		f:HookScript("OnEnter", SetModifiedBackdrop)
 		f:HookScript("OnLeave", SetOriginalBackdrop)
 		f:SetHitRectInsets(6, 6, 7, 7)
 	end
 
-	if not text then text = "|cffb0504fx|r" end
+	if not texture then
+		texture = closeButton_32
+	end
 
-	if not f.text then
-		f.text = f:CreateFontString(nil, "OVERLAY")
-		f.text:SetFont(C["Media"].Font, 16, "OUTLINE")
-		f.text:SetShadowOffset(0, 0)
-		f.text:SetText(text)
-		f.text:SetJustifyH("CENTER")
-		f.text:SetPoint("CENTER", f, "CENTER")
+	if not f.button then
+		f.button = f:CreateTexture(nil, "OVERLAY")
+		f.button:SetSize(16, 16)
+		f.button:SetTexture(texture)
+		-- f.button:SetVertexColor(230/255, 80/255, 79/255)
+		f.button:SetPoint("CENTER", f, "CENTER")
 	end
 
 	if point then

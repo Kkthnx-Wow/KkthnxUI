@@ -1,7 +1,8 @@
 -- Localization for enUS & enGB clients
 
-local PerformanceIncrease = "\n\nDisabling this may slightly increase performance|r" -- For semi-high CPU options
-local RestoreDefault = "\n\nRight-click to restore to default" -- For color pickers
+local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
+local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
+local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
 
 KkthnxUIConfig["enUS"] = {
 	-- General Local
@@ -28,7 +29,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["TexturesColor"] = {
 			["Name"] = "Border Color",
-			["Desc"] = "Main border color of the UI. \n\n|cffFF0000'Toggle Border Color' has to be enabled for this to work|r"..RestoreDefault,
+			["Desc"] = "Main border color of the UI. |n|n|cffFF0000'Toggle Border Color' has to be enabled for this to work|r"..RestoreDefault,
 		},
 
 		["Texture"] = {
@@ -803,11 +804,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
 
-		["WoWheadLink"] = {
-			["Name"] = "WoWhead Link",
-			["Desc"] = "Add WoWhead link in objectivetracker dropdown",
-		},
-
 		["Arena"] = {
 			["Name"] = "Arena",
 			["Desc"] = "Auto collapse tracker in arena",
@@ -1333,9 +1329,9 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Make the world map smaller.",
 		},
 
-		["RevealWorldMap"] = {
-			["Name"] = "Show Reveal Box",
-			["Desc"] = "If checked, a checkbox will be shown at the top of the map which will allow you to toggle unexplored areas directly from the map frame.",
+		["WorldMapPlus"] = {
+			["Name"] = "WorldMap Plus",
+			["Desc"] = "If checked, a checkbox/quest URLs will be shown at the top of the map which will allow you to toggle unexplored areas and obtain quest/arena link info directly."..SupportedFrames,
 		},
 	},
 

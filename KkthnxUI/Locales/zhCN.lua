@@ -222,7 +222,12 @@ L["Loot"] = {
 
 -- Maps Localization
 L["Maps"] = {
-	Reveal = "Reveal"
+	DisableToHide = "Disable to hide areas|nyou have not yet discovered.",
+	EnableToShow = "Enable to show hidden area|nyou have not yet discovered.",
+	HideUnDiscovered = "Hide Undiscovered Areas",
+	PressToCopy = "Press CTRL/C to copy.",
+	Reveal = "Reveal",
+	RevealHidden = "Reveal Hidden Areas",
 }
 
 -- Miscellaneous Localization

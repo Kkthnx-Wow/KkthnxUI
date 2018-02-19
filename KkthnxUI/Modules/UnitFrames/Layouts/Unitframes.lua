@@ -40,8 +40,6 @@ local function UpdateClassPortraits(self, unit)
 end
 
 local function CreateUnitframeLayout(self, unit)
-	unit = unit:match("^(.-)%d+") or unit
-
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", UnitFrame_OnEnter)
 	self:HookScript("OnLeave", UnitFrame_OnLeave)
@@ -74,7 +72,6 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
-		self.Health.Value:SetTextColor(1.0, 1.0, 1.0)
 		self.Health.Value:SetJustifyH("LEFT")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	elseif (unit == "target") then
@@ -126,7 +123,7 @@ local function CreateUnitframeLayout(self, unit)
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
-	self.Power.frequentUpdates = unit == "player" or unit == "target" -- Less usage this way!
+	self.Power.frequentUpdates = unit == "player" or unit == "target" or unit == "party" -- Less usage this way!
 
 	if C["Unitframe"].PowerClass then
 		self.Power.colorClass = true

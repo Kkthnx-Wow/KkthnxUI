@@ -286,7 +286,6 @@ C["Nameplates"] = {
 C["Quests"] = {
 	["AutoCollapse"] = false,
 	["AutoReward"] = false,
-	["WoWheadLink"] = true,
 	["Arena"] = {
 		["Options"] = {
 			[DEFAULT] = "FULL",
@@ -480,5 +479,5 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["SmallWorldMap"] = true,
-	["RevealWorldMap"] = false,
+	["WorldMapPlus"] = false,
 }

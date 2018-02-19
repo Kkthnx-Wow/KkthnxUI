@@ -7,6 +7,8 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local CreateFrame = _G.CreateFrame
 
+local spiritHealer_280 = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\SpiritHealer"
+
 function K.CreateCombatText(self)
 	self.CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
 	self.CombatFeedbackText:SetFont(C["Media"].Font, 12, "OUTLINE")
@@ -67,9 +69,10 @@ function K.CreateRaidTargetIndicator(self)
 end
 
 function K.CreateResurrectIndicator(self)
-	self.ResurrectIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait)
-	self.ResurrectIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
+	self.ResurrectIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ResurrectIndicator:SetTexture(spiritHealer_280)
+	self.ResurrectIndicator:SetPoint("CENTER")
+	self.ResurrectIndicator:SetSize(16, 16)
 end
 
 function K.CreateRestingIndicator(self)

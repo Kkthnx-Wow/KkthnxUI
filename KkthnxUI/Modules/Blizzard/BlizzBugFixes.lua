@@ -62,17 +62,8 @@ function Module:FixMisclickPopups()
 	end
 end
 
-function Module:FixMapBlackOut()
-	-- Don't black out the world with the full screen WorldMap,
-	-- we want to see what's going on in the background in case of danger!
-	if (BlackoutWorld and not C["WorldMap"].Enable) then
-		BlackoutWorld:SetAlpha(0)
-	end
-end
-
 function Module:OnEnable()
 	self:CollectGarbage()
-	self:FixMapBlackOut()
 	self:FixMisclickPopups()
 
 	CreateFrame("Frame"):SetScript("OnUpdate", function(self)
