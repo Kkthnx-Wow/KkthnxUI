@@ -370,7 +370,8 @@ function Module:SetUpQuestLinks()
 			-- Get quest title for tooltip
 			local questLink = GetQuestLink(questID) or nil
 			if questLink then
-				mEB.tiptext = string_match(questLink, "%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
+                local title = QuestInfoTitleHeader:GetText() or string_match(questLink, "%[(.-)%]")
+                mEB.tiptext = title .. "|n" .. L["Maps"].PressToCopy
 			else
 				mEB.tiptext = ""
 				if mEB:IsMouseOver() and WorldMapTooltip:IsShown() then WorldMapTooltip:Hide() end
@@ -590,7 +591,7 @@ end
 function Module:SetUpWorldMap()
 	local overlayTexture = WorldMapDetailFrame:CreateTexture(nil, "OVERLAY")
 	overlayTexture:SetAllPoints()
-	overlayTexture:SetColorTexture(.15,.1,.05,.40)
+	overlayTexture:SetColorTexture(0.15, 0.1, 0.05, 0.40)
 
 	hooksecurefunc("WorldMapFrame_Update", function()
 		local questMapID, isContinent = GetCurrentMapAreaID()
@@ -623,7 +624,7 @@ function Module:OnEnable()
 	-- Kill off the black background around the fullscreen worldmap,
 	-- so that we can see at least a little of what's going on.
 	if (BlackoutWorld and not C["WorldMap"].Enable) then
-		BlackoutWorld:SetAlpha(0)
+		BlackoutWorld:SetTexture(nil)
 	end
 
 	-- self:SetUpWorldMap()
