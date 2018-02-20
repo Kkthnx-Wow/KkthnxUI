@@ -424,7 +424,7 @@ function Module:SetUpFogOfWar()
 
 	-- Create reveal checkbox
 	local revealBox = CreateFrame("CheckButton", nil, WorldMapFrame.BorderFrame, "OptionsCheckButtonTemplate")
-	revealBox:ClearAllPoints();
+	revealBox:ClearAllPoints()
 	revealBox:SetPoint("TOPRIGHT", -130, 0)
 	revealBox:SetSize(24, 24)
 	revealBox.font = revealBox:CreateFontString(nil, "OVERLAY", "GameFontNormal")
@@ -443,7 +443,6 @@ function Module:SetUpFogOfWar()
 		GameTooltip:SetOwner(self, "ANCHOR_TOP", 0, 10)
 
 		local r, g, b = 0.2, 1.0, 0.2
-		-- local r2, g2, b2 =
 
 		if KkthnxUIData[GetRealmName()][UnitName("player")].RevealWorldMap then
 			GameTooltip:AddLine(L["Maps"].HideUnDiscovered)
@@ -628,7 +627,7 @@ function Module:OnEvent(event, ...)
 	end
 end
 
-function Module:OnEnable()
+function Module:OnInitialize()
 	if C["WorldMap"].WorldMapPlus ~= true then return end
 	-- Kill off the black background around the fullscreen worldmap,
 	-- so that we can see at least a little of what's going on.
