@@ -15,7 +15,7 @@ local SetCVar = _G.SetCVar
 local StaticPopup_Show =_G.StaticPopup_Show
 local UIParent = _G.UIParent
 
-local Name = UnitName("Player")
+local Name = UnitName("player")
 local Realm = GetRealmName()
 
 -- Show empty buttons

@@ -17,7 +17,7 @@ local RestartGx = _G.RestartGx
 local UnitName = _G.UnitName
 local YES = _G.YES
 
-local Name = UnitName("Player")
+local Name = UnitName("player")
 local Realm = GetRealmName()
 
 StaticPopupDialogs["CONFIG_RL"] = {

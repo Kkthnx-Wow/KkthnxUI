@@ -377,8 +377,8 @@ function Module:StyleTempFrame()
 end
 
 function Module:SetDefaultChatFramesPositions()
-	if (not KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
-		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat = {}
+	if (not KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
+		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
 	end
 
 	local Width = C["Chat"].Width
@@ -415,7 +415,7 @@ function Module:SetDefaultChatFramesPositions()
 		end
 
 		local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
+		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
 	end
 end
 
@@ -424,15 +424,15 @@ function Module:SaveChatFramePositionAndDimensions()
 	local Width, Height = self:GetSize()
 	local ID = self:GetID()
 
-	if not (KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
-		KkthnxUIData[GetRealmName()][UnitName("Player")].Chat = {}
+	if not (KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
+		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
 	end
 
-	KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame"..ID] = {Anchor1, Anchor2, X, Y, Width, Height}
+	KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..ID] = {Anchor1, Anchor2, X, Y, Width, Height}
 end
 
 function Module:SetChatFramePosition()
-	if (not KkthnxUIData[GetRealmName()][UnitName("Player")].Chat) then
+	if (not KkthnxUIData[GetRealmName()][UnitName("player")].Chat) then
 		return
 	end
 
@@ -443,7 +443,7 @@ function Module:SetChatFramePosition()
 	end
 
 	local ID = Frame:GetID()
-	local Settings = KkthnxUIData[GetRealmName()][UnitName("Player")].Chat["Frame"..ID]
+	local Settings = KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..ID]
 
 	if Settings then
 		local Anchor1, Anchor2, X, Y, Width, Height = unpack(Settings)
