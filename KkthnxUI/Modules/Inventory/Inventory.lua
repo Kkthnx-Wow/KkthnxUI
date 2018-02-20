@@ -333,10 +333,10 @@ function Stuffing:BagSlotUpdate(bag)
 end
 
 --[[function Stuffing:UpdateCooldowns(b)
-	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
-		local start, duration, enable = GetContainerItemCooldown(b.bag, b.slot)
-		CooldownFrame_Set(b.cooldown, start, duration, enable)
-	end
+if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
+	local start, duration, enable = GetContainerItemCooldown(b.bag, b.slot)
+	CooldownFrame_Set(b.cooldown, start, duration, enable)
+end
 end--]]
 
 function CreateReagentContainer()
@@ -743,6 +743,7 @@ function Stuffing:CreateBagFrame(w)
 		DragFunction(self, false)
 	end)
 	f:SetScript("OnEnter", function(self)
+		if GameTooltip:IsForbidden() then return end
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 4)
 		GameTooltip:ClearLines()
 		GameTooltip:AddDoubleLine(L["Inventory"].Shift_Move)
@@ -750,7 +751,7 @@ function Stuffing:CreateBagFrame(w)
 		GameTooltip:Show()
 	end)
 	f:SetScript("OnLeave", function()
-		if not GameTooltip:IsForbidden() then -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+		if not GameTooltip:IsForbidden() then
 			GameTooltip:Hide()
 		end
 	end)
@@ -988,6 +989,7 @@ function Stuffing:InitBags()
 	end
 
 	function tooltip_show(self)
+		if GameTooltip:IsForbidden() then return end
 		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", -12, 11)
 		GameTooltip:ClearLines()
 		GameTooltip:SetText(self.ttText)
@@ -1097,9 +1099,8 @@ function Stuffing:InitBags()
 		f.ArtifactButton:GetDisabledTexture():SetAllPoints()
 		f.ArtifactButton:GetDisabledTexture():SetDesaturated(1)
 		f.ArtifactButton:RegisterForClicks("RightButtonUp")
-		f.ArtifactButton.ttText = L["Inventory"].Buttons_Artifact
-		f.ArtifactButton.UpdateTooltip = nil
-		f.ArtifactButton:SetScript("OnEnter", tooltip_show)
+		--f.ArtifactButton.ttText = L["Inventory"].Buttons_Artifact
+		--f.ArtifactButton:SetScript("OnEnter", tooltip_show)
 		f.ArtifactButton:SetScript("OnLeave", tooltip_hide)
 		f.ArtifactButton:SetScript("PreClick", function(self)
 			for bag = 0, 4 do
@@ -1112,7 +1113,22 @@ function Stuffing:InitBags()
 				end
 			end
 		end)
-		f.ArtifactButton:SetScript("OnEnter", function()
+		f.ArtifactButton:SetScript("OnEnter", function(self)
+			self:UpdateTooltip()
+		end)
+		f.ArtifactButton:HookScript("OnClick", function(self)
+			if GameTooltip:IsForbidden() then
+				return
+			end
+			if GameTooltip:GetOwner() == self then
+				self:UpdateTooltip()
+			end
+		end)
+		f.ArtifactButton.UpdateTooltip = function(self)
+			if GameTooltip:IsForbidden() then
+				return
+			end
+
 			local count = 0
 			for bag = 0, 4 do
 				for slot = 1, GetContainerNumSlots(bag) do
@@ -1122,14 +1138,11 @@ function Stuffing:InitBags()
 				end
 			end
 
-			f.ArtifactButton:FadeIn()
-			GameTooltip:SetOwner(f.ArtifactButton, "ANCHOR_LEFT")
-			GameTooltip:AddLine(ARTIFACT_POWER)
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine(L["Inventory"].Artifact_Count.." "..count)
+			GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+			GameTooltip:AddLine(ARTIFACT_POWER..": "..count)
 			GameTooltip:AddLine(L["Inventory"].Artifact_Use)
 			GameTooltip:Show()
-		end)
+		end
 	end
 
 	if K.Level >= 100 then
@@ -1514,9 +1527,9 @@ function Stuffing:BAG_CLOSED(id)
 end
 
 --[[function Stuffing:BAG_UPDATE_COOLDOWN()
-	for i, v in pairs(self.buttons) do
-		self:UpdateCooldowns(v)
-	end
+for i, v in pairs(self.buttons) do
+	self:UpdateCooldowns(v)
+end
 end--]]
 
 local function InBags(x)

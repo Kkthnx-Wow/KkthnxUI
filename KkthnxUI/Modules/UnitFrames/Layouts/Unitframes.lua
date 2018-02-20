@@ -412,7 +412,7 @@ K.Movers:RegisterFrame(player)
 local pet = oUF:Spawn("pet", "oUF_Pet")
 pet:SetSize(116, 36)
 pet:SetScale(C["Unitframe"].Scale)
-if (K.Class == "WARLOCK") then
+if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
 	pet:SetPoint("TOPRIGHT", oUF_Player, "BOTTOMLEFT", 56, -14)
 else
 	pet:SetPoint("TOPRIGHT", oUF_Player, "BOTTOMLEFT", 56, 2)

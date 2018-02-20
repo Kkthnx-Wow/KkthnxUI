@@ -10,16 +10,27 @@ local pairs = pairs
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local InCombatLockdown = _G.InCombatLockdown
+local Name = _G.UnitName("player")
+local Realm = _G.GetRealmName()
 local UIParent = _G.UIParent
 
 local Movers = CreateFrame("Frame")
-local Name = UnitName("Player")
-local Realm = GetRealmName()
-
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
 Movers:RegisterEvent("PLAYER_REGEN_DISABLED")
 Movers.Frames = {}
 Movers.Defaults = {}
+
+local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
+
+local function SetModifiedBackdrop(self)
+	if self.Backdrop then self = self.Backdrop end
+	self:SetBackdropColor(classColor.r * .15, classColor.g * .15, classColor.b * .15, C["Media"].BackdropColor[4])
+end
+
+local function SetOriginalBackdrop(self)
+	if self.Backdrop then self = self.Backdrop end
+	self:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+end
 
 function Movers:SaveDefaults(frame, a1, p, a2, x, y)
 	if not a1 then
@@ -41,7 +52,7 @@ function Movers:RestoreDefaults(button)
 	local Data = Movers.Defaults[FrameName]
 	local SavedVariables = KkthnxUIData[Realm][Name].Movers
 
-	if IsShiftKeyDown() and (button == "RightButton") and (Data) and not (InCombatLockdown()) then
+	if (button == "RightButton") and (Data) then
 		local Anchor1, ParentName, Anchor2, X, Y = unpack(Data)
 		local Frame = _G[FrameName]
 		local Parent = _G[ParentName]
@@ -50,7 +61,7 @@ function Movers:RestoreDefaults(button)
 		Frame:SetPoint(Anchor1, Parent, Anchor2, X, Y)
 
 		Frame.DragInfo:ClearAllPoints()
-		Frame.DragInfo:SetPoint("CENTER", Frame)
+		Frame.DragInfo:SetAllPoints(Frame)
 
 		-- Delete Saved Variable
 		SavedVariables[FrameName] = nil
@@ -58,8 +69,6 @@ function Movers:RestoreDefaults(button)
 end
 
 function Movers:RegisterFrame(frame)
-	if not frame then return end
-
 	local Anchor1, Parent, Anchor2, X, Y = frame:GetPoint()
 
 	table_insert(self.Frames, frame)
@@ -68,18 +77,10 @@ function Movers:RegisterFrame(frame)
 end
 
 function Movers:OnDragStart()
-	if InCombatLockdown() then
-		return K.Print(ERR_NOT_IN_COMBAT)
-	end
-	self.moving = true
 	self:StartMoving()
 end
 
 function Movers:OnDragStop()
-	if InCombatLockdown() then
-		return K.Print(ERR_NOT_IN_COMBAT)
-	end
-	self.moving = nil
 	self:StopMovingOrSizing()
 
 	local Data = KkthnxUIData[Realm][Name].Movers
@@ -99,33 +100,21 @@ end
 
 function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
-	self.DragInfo:SetPoint("CENTER", self)
-	self.DragInfo:SetFrameLevel(self:GetFrameLevel() + 1)
-	self.DragInfo:SetWidth(self:GetWidth())
-	self.DragInfo:SetHeight(self:GetHeight())
+	self.DragInfo:SetAllPoints(self)
+	self.DragInfo:SetTemplate("Transparent")
+	self.DragInfo:SetBackdropBorderColor(72/255, 133/255, 237/255)
+	self.DragInfo:FontString("Text", C["Media"].Font, 12)
+	self.DragInfo.Text:SetText(self:GetName())
+	self.DragInfo.Text:SetPoint("CENTER")
+	self.DragInfo.Text:SetTextColor(72/255, 133/255, 237/255)
+	self.DragInfo:SetFrameLevel(100)
+	self.DragInfo:SetFrameStrata("HIGH")
 	self.DragInfo:SetMovable(true)
-	self.DragInfo:SetToplevel(true)
 	self.DragInfo:RegisterForDrag("LeftButton")
-	self.DragInfo:SetClampedToScreen(true)
-	self.DragInfo:SetTemplate("Transparent", true)
-	self.DragInfo:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
 	self.DragInfo:Hide()
 	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
-
-	self.DragInfo:SetScript("OnEnter", function(self)
-		self:SetBackdropColor(K.Color.r, K.Color.g, K.Color.b, 0.8)
-	end)
-
-	self.DragInfo:SetScript("OnLeave", function(self)
-		self:SetBackdropColor(72/255, 133/255, 237/255, 0.6)
-	end)
-
-	self.DragInfo.Name = self.DragInfo:CreateFontString(nil, "OVERLAY")
-	self.DragInfo.Name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-	self.DragInfo.Name:SetPoint("CENTER")
-	self.DragInfo.Name:SetTextColor(1, 1, 1)
-	self.DragInfo.Name:SetText(self:GetName())
-	self.DragInfo.Name:SetWidth(self:GetWidth() - 4)
+	self.DragInfo:HookScript("OnEnter", SetModifiedBackdrop)
+	self.DragInfo:HookScript("OnLeave", SetOriginalBackdrop)
 
 	self.DragInfo.Parent = self.DragInfo:GetParent()
 end
@@ -172,7 +161,7 @@ function Movers:StartOrStopMoving()
 				Frame.DragInfo:ClearAllPoints()
 				Frame.DragInfo:SetWidth(Frame:GetWidth())
 				Frame.DragInfo:SetHeight(12)
-				Frame.DragInfo:SetPoint("CENTER", Frame)
+				Frame.DragInfo:SetPoint("TOP", Frame)
 			end
 		else
 			if Frame.unit then
@@ -188,7 +177,7 @@ function Movers:StartOrStopMoving()
 
 				if Frame.DragInfo.CurrentHeight then
 					Frame.DragInfo:ClearAllPoints()
-					Frame.DragInfo:SetPoint("CENTER", Frame)
+					Frame.DragInfo:SetAllPoints(Frame)
 				end
 			end
 		end
@@ -230,10 +219,9 @@ Movers:SetScript("OnEvent", function(self, event)
 				Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
 			end
 		end
-		if (event == "PLAYER_REGEN_DISABLED") then
-			if self.IsEnabled then
-				self:StartOrStopMoving()
-			end
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		if self.IsEnabled then
+			self:StartOrStopMoving()
 		end
 	end
 end)
