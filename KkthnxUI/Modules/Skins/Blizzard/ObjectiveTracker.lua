@@ -4,8 +4,16 @@ if K.CheckAddOnState("!KalielsTracker") then
 	return
 end
 
+local _G = _G
 local unpack = unpack
 local hooksecurefunc = hooksecurefunc
+local next = next
+local select = select
+
+local GetNumQuestWatches = _G.GetNumQuestWatches
+local GetQuestWatchInfo = _G.GetQuestWatchInfo
+local GetQuestLogTitle = _G.GetQuestLogTitle
+local GetQuestDifficultyColor = _G.GetQuestDifficultyColor
 
 local function LoadSkin()
 	ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
@@ -68,7 +76,9 @@ local function LoadSkin()
 	end
 
 	local function ColorProgressBars(self, value)
-		if not (self.Bar and value) then return end
+		if not (self.Bar and value) then
+			return
+		end
 		self.Bar:SetStatusBarColorGradient(value, 100)
 	end
 
@@ -77,8 +87,7 @@ local function LoadSkin()
 		if item and not item.skinned then
 			item:SetSize(24, 24)
 			item:SetTemplate("ActionButton", true)
-			item:StyleButton()
-			item:SetBackdropBorderColor(1.0, 0.3, 0.3)
+			item:SetBackdropBorderColor(1, 0.82, 0.2)
 			item:SetNormalTexture(nil)
 			item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			item.icon:SetAllPoints()
@@ -86,13 +95,43 @@ local function LoadSkin()
 			item.Cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 			item.Count:ClearAllPoints()
 			item.Count:SetPoint("TOPLEFT", 1, -1)
-			item.Count:SetFont(C["Media"].Font, 14, "OUTLINE")
+			item.Count:SetFont(C["Media"].Font, 12, "OUTLINE")
 			item.Count:SetShadowOffset(5, -5)
 			item.skinned = true
 		end
 	end
 
 	BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
+
+	local function SetQuestDifficultyColor()
+	for i = 1, GetNumQuestWatches() do
+		local questID, _, questIndex = GetQuestWatchInfo(i)
+		if not questID then
+			break
+		end
+		local _, level = GetQuestLogTitle(questIndex)
+		local col = GetQuestDifficultyColor(level)
+		local block = QUEST_TRACKER_MODULE:GetExistingBlock(questID)
+		if block then
+				block.HeaderText:SetTextColor(col.r, col.g, col.b)
+				block.HeaderText.col = col
+			end
+		end
+	end
+
+	local function SetAchievementColor(block)
+		if block.module == ACHIEVEMENT_TRACKER_MODULE then
+			block.HeaderText:SetTextColor(0.75, 0.61, 0)
+			block.HeaderText.col = nil
+		end
+	end
+
+	local function ObjectiveTrackerOnLeave(self)
+		local block = self:GetParent()
+		if block.HeaderText.col then
+			block.HeaderText:SetTextColor(block.HeaderText.col.r, block.HeaderText.col.g, block.HeaderText.col.b)
+		end
+	end
 
 	local function PositionFindGroupButton(block, button)
 		if button and button.GetPoint then
@@ -119,14 +158,16 @@ local function LoadSkin()
 		end
 	end
 
-	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Bonus Objective Progress Bar
-	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Quest Progress Bar
-	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars) --[Color]: Scenario Progress Bar
-	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton) --[Move]: The eye & quest item to the left of the eye
-	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton) --[Skin]: The eye
-	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton) --[Skin]: Quest Item Buttons
-	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton) --[Skin]: World Quest Item Buttons
-
+	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Bonus Objective Progress Bar
+	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Quest Progress Bar
+	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Scenario Progress Bar
+	hooksecurefunc(QUEST_TRACKER_MODULE, "Update", SetQuestDifficultyColor) -- [Color]: ObjectiveTrackerFrame lines
+	hooksecurefunc(DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddObjective", SetAchievementColor) -- [Color]: Achievements
+	hooksecurefunc("ObjectiveTrackerBlockHeader_OnLeave", ObjectiveTrackerOnLeave) -- [Color]: OnLeave
+	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton) -- [Move]: The eye & quest item to the left of the eye
+	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton) -- [Skin]: The eye
+	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton) -- [Skin]: Quest Item Buttons
+	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton) -- [Skin]: World Quest Item Buttons
 end
 
 tinsert(K.SkinFuncs["KkthnxUI"], LoadSkin)

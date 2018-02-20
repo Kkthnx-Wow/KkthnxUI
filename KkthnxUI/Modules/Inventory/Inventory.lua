@@ -19,7 +19,6 @@ local table_insert = tinsert
 --local GetContainerItemLink = _G.GetContainerItemLink
 --local GetItemQualityColor = _G.GetItemQualityColor
 --local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
---local GetContainerItemLink = _G.GetContainerItemLink
 --local PlaySound = _G.PlaySound
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 
@@ -295,16 +294,16 @@ function Stuffing:SlotUpdate(b)
 		end
 
 		if (IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
-			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
+			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1.0, 0.3, 0.3)
 		else
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
 		-- color slot according to item quality
 		if questId and not isActiveQuest then
-			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
+			b.frame:SetBackdropBorderColor(1, 0.82, 0.2)
 		elseif questId or isQuestItem then
-			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
+			b.frame:SetBackdropBorderColor(1, 0.82, 0.2)
 		elseif not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
 		else
@@ -693,7 +692,7 @@ function Stuffing:SearchUpdate(str)
 				b.frame:SetAlpha(0.2)
 			else
 				if IsItemUnusable(b.name) or minLevel > K.Level then
-					_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
+					_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1.0, 0.3, 0.3)
 				end
 				SetItemButtonDesaturated(b.frame, false)
 				b.frame:SetAlpha(1)
@@ -705,7 +704,7 @@ end
 function Stuffing:SearchReset()
 	for _, b in ipairs(self.buttons) do
 		if IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
-			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
+			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1.0, 0.3, 0.3)
 		end
 		b.frame:SetAlpha(1)
 		SetItemButtonDesaturated(b.frame, false)
