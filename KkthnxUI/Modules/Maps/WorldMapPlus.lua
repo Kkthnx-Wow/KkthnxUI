@@ -34,7 +34,7 @@ local subDomain = (setmetatable({
 	esES = "es", esMX = "es",
 	ptBR = "pt", ptPT = "pt", itIT = "it",
 	koKR = "ko", zhTW = "cn", zhCN = "cn"
-}, { __index = function(t,v) return "www" end }))[GetLocale()]
+}, { __index = function() return "www" end }))[GetLocale()]
 
 local wowheadLoc = subDomain..".wowhead.com"
 
@@ -207,12 +207,14 @@ function Module:SetUpAchievementLinks()
 			-- Get achievement title for tooltip
 			local achievementLink = GetAchievementLink(self.id)
 			if achievementLink then
-				aEB.tiptext = string_match(achievementLink, "%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
+				aEB.tiptext = string_match(achievementLink, "%[(.-)%]")
 			end
 			-- Show the editbox
 			aEB:Show()
 		end
 	end)
+
+	local r, g, b = 0.2, 1.0, 0.2
 
 	-- Create tooltip
 	aEB:HookScript("OnEnter", function()
@@ -222,7 +224,8 @@ function Module:SetUpAchievementLinks()
 			return
 		end
 		GameTooltip:SetOwner(aEB, "ANCHOR_TOP", 0, 10)
-		GameTooltip:SetText(aEB.tiptext, nil, nil, nil, nil, true)
+		GameTooltip:AddLine(aEB.tiptext)
+		GameTooltip:AddLine(L["Maps"].PressToCopy, r, g, b)
 		GameTooltip:Show()
 	end)
 
@@ -285,12 +288,14 @@ function Module:SetUpEJLinks()
 			eEB:SetWidth(eEB.z:GetStringWidth() + 90)
 			-- Get achievement title for tooltip
 			if link then
-				eEB.tiptext = string_match(link, "%[(.-)%]") .. "|n" .. L["Maps"].PressToCopy
+				eEB.tiptext = string_match(link, "%[(.-)%]")
 			end
 			-- Show the editbox
 			eEB:Show()
 		end
 	end)
+
+	local r, g, b = 0.2, 1.0, 0.2
 
 	-- Create tooltip
 	eEB:HookScript("OnEnter", function()
@@ -300,7 +305,8 @@ function Module:SetUpEJLinks()
 			return
 		end
 		GameTooltip:SetOwner(eEB, "ANCHOR_BOTTOM", 0, -10)
-		GameTooltip:SetText(eEB.tiptext, nil, nil, nil, nil, true)
+		GameTooltip:AddLine(eEB.tiptext)
+		GameTooltip:AddLine(L["Maps"].PressToCopy, r, g, b)
 		GameTooltip:Show()
 	end)
 
@@ -370,8 +376,8 @@ function Module:SetUpQuestLinks()
 			-- Get quest title for tooltip
 			local questLink = GetQuestLink(questID) or nil
 			if questLink then
-                local title = QuestInfoTitleHeader:GetText() or string_match(questLink, "%[(.-)%]")
-                mEB.tiptext = title .. "|n" .. L["Maps"].PressToCopy
+				local title = QuestInfoTitleHeader:GetText() or string_match(questLink, "%[(.-)%]")
+				mEB.tiptext = title
 			else
 				mEB.tiptext = ""
 				if mEB:IsMouseOver() and WorldMapTooltip:IsShown() then WorldMapTooltip:Hide() end
@@ -388,12 +394,15 @@ function Module:SetUpQuestLinks()
 	hooksecurefunc("QuestMapFrame_ShowQuestDetails", SetQuestInBox)
 	hooksecurefunc("QuestMapFrame_CloseQuestDetails", SetQuestInBox)
 
+	local r, g, b = 0.2, 1.0, 0.2
+
 	-- Create tooltip
 	mEB:HookScript("OnEnter", function()
 		mEB:HighlightText()
 		mEB:SetFocus()
 		WorldMapTooltip:SetOwner(mEB, "ANCHOR_BOTTOM", 0, -10)
-		WorldMapTooltip:SetText(mEB.tiptext, nil, nil, nil, nil, true)
+		WorldMapTooltip:AddLine(mEB.tiptext)
+		WorldMapTooltip:AddLine(L["Maps"].PressToCopy, r, g, b)
 		WorldMapTooltip:Show()
 	end)
 

@@ -294,7 +294,17 @@ local blackList = {
 	["PlayerTalentFrameSpecializationSpecButton1Glow"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton2Glow"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton3Glow"] = "Blizzard_TalentUI",
-	["PlayerTalentFrameSpecializationSpecButton4Glow"] = "Blizzard_TalentUI"
+	["PlayerTalentFrameSpecializationSpecButton4Glow"] = "Blizzard_TalentUI",
+
+	["TradeSkillFrame.DetailsFrame.CreateButton.LeftSeparator"] = "Blizzard_TradeSkillUI",
+	["TradeSkillFrame.DetailsFrame.ExitButton.LeftSeparator"] = "Blizzard_TradeSkillUI",
+	["TradeSkillCreateScrollButton_LeftSeparator"] = "Blizzard_TradeSkillUI",
+	["TradeSkillCreateScrollButton_RightSeparator"] = "Blizzard_TradeSkillUI",
+
+	["MerchantExtraCurrencyBg"] = true,
+	["MerchantExtraCurrencyInset"] = true,
+	["MerchantMoneyBg"] = true,
+	["MerchantMoneyInset"] = true,
 }
 
 -- Frames that'll have nameless child elements styled too.
@@ -477,7 +487,7 @@ function Module:OnEvent(event, ...)
 	end
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	local UIHider -- define this, but don't create it until we need it
 	local unstyledAddonFrames = 0 -- Count how many addon elements we were unable to style
 	local unhiddenAddonFrames = 0 -- Count how many elements we were unable to hide
@@ -489,7 +499,7 @@ function Module:OnInitialize()
 			elements[frameName] = nil
 		else
 			if (addonName == true) then -- is the element from normal frameXML or an addon?
-				blackList[frameName] = nil -- remove the entry since it's probably a frameXML reference from another expansion
+				elements[frameName] = nil -- remove the entry since it's probably a frameXML reference from another expansion
 			else
 				unstyledAddonFrames = unstyledAddonFrames + 1
 			end
