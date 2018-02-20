@@ -219,7 +219,7 @@ C["General"] = {
 	["SpellTolerance"] = false,
 	["TaintLog"] = false,
 	["Texture"] = "KkthnxUI",
-	["TexturesColor"] = {0.31, 0.31, 0.31},
+	["TexturesColor"] = {0.9, 0.9, 0.9},
 	["UIScale"] = 0.69,
 }
 
@@ -227,6 +227,7 @@ C["General"] = {
 C["Loot"] = {
 	["AutoRoll"] = false,
 	["Enable"] = true,
+	["FastLoot"] = false,
 	["GroupLoot"] = true,
 	["Texture"] = "KkthnxUI",
 }
@@ -268,7 +269,7 @@ C["Nameplates"] = {
 	["HealerIcon"] = false,
 	["HealthValue"] = true,
 	["Height"] = 16,
-	["NameAbbreviate"] = true,
+	["NameAbbreviate"] = false,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
 	["OORAlpha"] = 0.40,
@@ -406,6 +407,7 @@ C["Unitframe"] = {
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
 	["GlobalCooldown"] = false,
+	["NameAbbreviate"] = false,
 	["OnlyShowPlayerDebuff"] = false,
 	["OORAlpha"] = 0.40,
 	["Outline"] = false,
