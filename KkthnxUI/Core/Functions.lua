@@ -10,10 +10,8 @@ local mod = mod
 local pairs = pairs
 local print = print
 local select = select
-local string_find = string.find
 local string_format = string.format
 local string_lower = string.lower
-local string_sub = string.sub
 local table_insert = table.insert
 local table_remove = table.remove
 local tonumber = tonumber
@@ -23,9 +21,7 @@ local type = type
 -- Wow API
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetCVar = _G.GetCVar
-local GetLocale = _G.GetLocale
 local GetScreenHeight = _G.GetScreenHeight
 local GetScreenWidth = _G.GetScreenWidth
 local GetSpecialization = _G.GetSpecialization
@@ -38,13 +34,9 @@ local LE_PARTY_CATEGORY_HOME = _G.LE_PARTY_CATEGORY_HOME
 local LE_PARTY_CATEGORY_INSTANCE = _G.LE_PARTY_CATEGORY_INSTANCE
 local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
-local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
-
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: K.UIFrameHider, UIHider
 
 K.LockedCVars = {}
 K.IgnoredCVars = {}
@@ -547,7 +539,7 @@ end
 local waitTable = {}
 local waitFrame
 function K.Delay(delay, func, ...)
-	if(type(delay) ~= "number" or type(func) ~= "function") then
+	if (type(delay) ~= "number" or type(func) ~= "function") then
 		return false
 	end
 	local extend = {...}

@@ -166,10 +166,6 @@ function K.CreateAuraWatch(self)
 	self.AuraWatch = auras
 end
 
-Module:RegisterEvent("PLAYER_TARGET_CHANGED")
-Module:RegisterEvent("PLAYER_FOCUS_CHANGED")
-Module:RegisterUnitEvent("UNIT_FACTION", "player")
-
 local function CreateTargetSound(unit)
 	if UnitExists(unit) then
 		if UnitIsEnemy(unit, "player") then
@@ -203,3 +199,7 @@ function Module:UNIT_FACTION(event, unit)
 		announcedPVP = nil
 	end
 end
+
+Module:RegisterEvent("PLAYER_TARGET_CHANGED")
+Module:RegisterEvent("PLAYER_FOCUS_CHANGED")
+Module:RegisterUnitEvent("UNIT_FACTION", "player")

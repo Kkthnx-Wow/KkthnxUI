@@ -7,16 +7,16 @@ local select = select
 local string_format = string.format
 local string_gsub = string.gsub
 local string_len = string.len
+local string_lower = string.lower
+local string_match = string.match
 local string_sub = string.sub
 local type = type
 local unpack = unpack
 
-local BNGetFriendInfoByID = _G.BNGetFriendInfoByID
-local BNGetGameAccountInfo = _G.BNGetGameAccountInfo
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local ChatEdit_ParseText = _G.ChatEdit_ParseText
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
-local ChatFrame_SystemEventHandler = _G.ChatFrame_SystemEventHandler
+local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
 local FCF_Close = _G.FCF_Close
 local FCF_DockFrame = _G.FCF_DockFrame
@@ -30,15 +30,12 @@ local GetChannelName = _G.GetChannelName
 local GetRealmName = _G.GetRealmName
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
-local INTERFACE_ACTION_BLOCKED = _G.INTERFACE_ACTION_BLOCKED
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
-local LOCALIZED_CLASS_NAMES_FEMALE = _G.LOCALIZED_CLASS_NAMES_FEMALE
-local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local LOOT = _G.LOOT
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
@@ -47,10 +44,6 @@ local TRADE = _G.TRADE
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
-
--- GLOBALS: ChangeChatColor, DEFAULT_CHAT_FRAME, ChatMenu, ChatConfigFrameDefaultButton, ChatFrameMenuButton, QuickJoinToastButton
--- GLOBALS: ChatFrame_RemoveAllMessageGroups, ChatFrame_AddMessageGroup, ChatFrame_AddChannel, ChatFrame_RemoveChannel, ToggleChatColorNamesByClassGroup
--- GLOBALS: ChatFrame1, ChatFrame2, ChatFrame3, ChatFrame4, ChatTypeInfo, KkthnxUIFont, CreateAnimationGroup, CHAT_FRAME_TEXTURES, KkthnxUIData
 
 local hooks = {}
 
@@ -69,53 +62,53 @@ local ChannelNames = {
 }
 
 local ChannelStrings = {
-	CHAT_BN_WHISPER_GET	= format("%s|| ", L["Chat"].S_WhisperIncoming).."%s:\32",
-	CHAT_BN_WHISPER_INFORM_GET	= format("%s|| ", L["Chat"].S_WhisperOutgoing).."%s:\32",
-	CHAT_GUILD_GET = "|Hchannel:guild|h"..format("%s|| ", L["Chat"].S_Guild).."|h%s:\32",
-	CHAT_INSTANCE_CHAT_GET = "|Hchannel:battleground|h"..format("%s|| ", L["Chat"].S_InstanceChat).."|h%s:\32",
-	CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:battleground|h"..format("%s|| ", L["Chat"].S_InstanceChatLeader).."|h%s:\32",
-	CHAT_OFFICER_GET = "|Hchannel:o|h"..format("%s|| ", L["Chat"].S_Officer).."|h%s:\32",
-	CHAT_PARTY_GET = "|Hchannel:party|h"..format("%s|| ", L["Chat"].S_Party).."|h%s:\32",
-	CHAT_PARTY_GUIDE_GET = "|Hchannel:party|h"..format("%s|| ", L["Chat"].S_PartyGuide).."|h%s:\32",
-	CHAT_PARTY_LEADER_GET = "|Hchannel:party|h"..format("%s|| ", L["Chat"].S_PartyLeader).."|h%s:\32",
-	CHAT_RAID_GET = "|Hchannel:raid|h"..format("%s|| ", L["Chat"].S_Raid).."|h%s:\32",
-	CHAT_RAID_LEADER_GET = "|Hchannel:raid|h"..format("%s|| ", L["Chat"].S_RaidLeader).."|h%s:\32",
-	CHAT_RAID_WARNING_GET = format("%s|| ", L["Chat"].S_RaidWarning).."%s:\32",
-	CHAT_SAY_GET = format("%s|| ", L["Chat"].S_Say).."%s:\32",
-	CHAT_WHISPER_GET = format("%s|| ", L["Chat"].S_WhisperIncoming).."%s:\32",
-	CHAT_WHISPER_INFORM_GET = format("%s|| ", L["Chat"].S_WhisperOutgoing).."%s:\32",
-	CHAT_YELL_GET = format("%s|| ", L["Chat"].S_Yell).."%s:\32",
+	CHAT_BN_WHISPER_GET	= string_format("%s|| ", L["Chat"].S_WhisperIncoming).."%s:\32",
+	CHAT_BN_WHISPER_INFORM_GET	= string_format("%s|| ", L["Chat"].S_WhisperOutgoing).."%s:\32",
+	CHAT_GUILD_GET = "|Hchannel:guild|h"..string_format("%s|| ", L["Chat"].S_Guild).."|h%s:\32",
+	CHAT_INSTANCE_CHAT_GET = "|Hchannel:battleground|h"..string_format("%s|| ", L["Chat"].S_InstanceChat).."|h%s:\32",
+	CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:battleground|h"..string_format("%s|| ", L["Chat"].S_InstanceChatLeader).."|h%s:\32",
+	CHAT_OFFICER_GET = "|Hchannel:o|h"..string_format("%s|| ", L["Chat"].S_Officer).."|h%s:\32",
+	CHAT_PARTY_GET = "|Hchannel:party|h"..string_format("%s|| ", L["Chat"].S_Party).."|h%s:\32",
+	CHAT_PARTY_GUIDE_GET = "|Hchannel:party|h"..string_format("%s|| ", L["Chat"].S_PartyGuide).."|h%s:\32",
+	CHAT_PARTY_LEADER_GET = "|Hchannel:party|h"..string_format("%s|| ", L["Chat"].S_PartyLeader).."|h%s:\32",
+	CHAT_RAID_GET = "|Hchannel:raid|h"..string_format("%s|| ", L["Chat"].S_Raid).."|h%s:\32",
+	CHAT_RAID_LEADER_GET = "|Hchannel:raid|h"..string_format("%s|| ", L["Chat"].S_RaidLeader).."|h%s:\32",
+	CHAT_RAID_WARNING_GET = string_format("%s|| ", L["Chat"].S_RaidWarning).."%s:\32",
+	CHAT_SAY_GET = string_format("%s|| ", L["Chat"].S_Say).."%s:\32",
+	CHAT_WHISPER_GET = string_format("%s|| ", L["Chat"].S_WhisperIncoming).."%s:\32",
+	CHAT_WHISPER_INFORM_GET = string_format("%s|| ", L["Chat"].S_WhisperOutgoing).."%s:\32",
+	CHAT_YELL_GET = string_format("%s|| ", L["Chat"].S_Yell).."%s:\32",
 }
 
 for name, abbr in pairs(CUSTOM_CHANNELS) do
-	ChannelNames[string.lower(name)] = abbr
+	ChannelNames[string_lower(name)] = abbr
 end
 
 local function escape(str)
-	return gsub(str, "([%%%+%-%.%[%]%*%?])", "%%%1")
+	return string_gsub(str, "([%%%+%-%.%[%]%*%?])", "%%%1")
 end
 
 local function AddMessage(frame, message, ...)
 	if type(message) == "string" then
-		local channelData, channelID, channelName = strmatch(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?"..".+")
+		local channelData, channelID, channelName = string_match(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?"..".+")
 		if channelData and C["Chat"].ShortenChannelNames then
-			local shortName = ChannelNames[channelName] or ChannelNames[strlower(channelName)] or strsub(channelName, 1, 2)
-			message = gsub(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?", format("|Hchannel:%1$s|h"..string.format("%s|| ", "%d").."|h", channelData, channelID, shortName))
+			local shortName = ChannelNames[channelName] or ChannelNames[string_lower(channelName)] or string_gsub(channelName, 1, 2)
+			message = string_gsub(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?", string_format("|Hchannel:%1$s|h"..string_format("%s|| ", "%d").."|h", channelData, channelID, shortName))
 		end
 
-		local playerData, playerName = strmatch(message, "|Hplayer:(.-)|h%[(.-)%]|h")
+		local playerData, playerName = string_match(message, "|Hplayer:(.-)|h%[(.-)%]|h")
 		if playerData then
 			if C["Chat"].RemoveRealmNames then
-				if strmatch(playerName, "|cff") then
-					playerName = gsub(playerName, "%-[^|]+", "")
+				if string_match(playerName, "|cff") then
+					playerName = string_gsub(playerName, "%-[^|]+", "")
 				else
-					playerName = strmatch(playerName, "[^%-]+")
+					playerName = string_match(playerName, "[^%-]+")
 				end
 			end
-			message = gsub(message, "|Hplayer:(.-)|h%[(.-)%]|h", format("|Hplayer:%s|h".."%s".."|h", playerData, playerName))
+			message = string_gsub(message, "|Hplayer:(.-)|h%[(.-)%]|h", string_format("|Hplayer:%s|h".."%s".."|h", playerData, playerName))
 		elseif channelID then
 			-- WorldDefense messages don't have a sender; remove the extra colon and space.
-			message = gsub(message, "(|Hchannel:.-|h): ", "%1", 1)
+			message = string_gsub(message, "(|Hchannel:.-|h): ", "%1", 1)
 		end
 	end
 	hooks[frame].AddMessage(frame, message, ...)

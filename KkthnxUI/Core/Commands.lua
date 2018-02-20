@@ -65,14 +65,6 @@ local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitName = _G.UnitName
 
--- Global variables that we don"t need to cache, list them here for mikk"s FindGlobals script
--- GLOBALS: CriteriaAlertSystem, GuildChallengeAlertSystem, InvasionAlertSystem, GarrisonShipFollowerAlertSystem
--- GLOBALS: DigsiteCompleteAlertSystem, NewRecipeLearnedAlertSystem, GridCreate, KkthnxUIConfig
--- GLOBALS: ExtraActionBarFrame, ExtraActionButton1, MoneyWonAlertSystem, StorePurchaseAlertSystem
--- GLOBALS: GarrisonBuildingAlertSystem, LegendaryItemAlertSystem, LootAlertSystem, LootUpgradeAlertSystem
--- GLOBALS: KkthnxUIConfigFrame, KkthnxUIData, KkthnxUIConfigPerAccount, KkthnxUI, KkthnxUIConfigShared
--- GLOBALS: ToggleHelpFrame, DBM, AchievementFrame, AchievementFrame_LoadUI, AchievementAlertSystem
-
 -- TODO: Rewrite these to handle AceConsole-3.0
 
 -- ConfigFrame
@@ -263,7 +255,9 @@ function K.AbandonQuests()
 	end
 	print("All quests have been abandoned!")
 end
-K:RegisterChatCommand("killquests", K.AbandonQuests)
+if not K.CheckAddOnState("Felsong_Companion") then
+	K:RegisterChatCommand("killquests", K.AbandonQuests)
+end
 K:RegisterChatCommand("clearquests", K.AbandonQuests)
 
 -- KkthnxUI help commands

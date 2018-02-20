@@ -4,18 +4,18 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 
 -- Wow API
-local ChatEdit_FocusActiveWindow = _G.ChatEdit_FocusActiveWindow
+local ACCEPT = _G.ACCEPT
+local CANCEL = _G.CANCEL
 local DisableAddOn = _G.DisableAddOn
 local EnableAddOn = _G.EnableAddOn
+local GetRealmName = _G.GetRealmName
+local NO = _G.NO
+local OKAY = _G.OKAY
 local ReloadUI = _G.ReloadUI
+local RELOADUI = _G.RELOADUI
 local RestartGx = _G.RestartGx
-local GetContainerNumSlots = _G.GetContainerNumSlots
-local GetContainerItemLink = _G.GetContainerItemLink
-local DeleteCursorItem = _G.DeleteCursorItem
-local PickupContainerItem = _G.PickupContainerItem
-
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: Install, UIConfig, UIConfigMain, KkthnxUIData
+local UnitName = _G.UnitName
+local YES = _G.YES
 
 local Name = UnitName("Player")
 local Realm = GetRealmName()
@@ -44,7 +44,7 @@ StaticPopupDialogs["CLIENT_RESTART"] = {
 	text = L["StaticPopups"].Resolution_Changed,
 	button1 = "Restart Client",
 	button2 = RELOADUI,
-	OnAccept = function(self) K.RequireReload = false Logout() end, -- Because Blizzard cant quit fucking with stuff!
+	OnAccept = function(self) K.RequireReload = false ReloadUI() end, -- Yah, whatever Blizzard
 	OnCancel = function(self) K.RequireReload = false ReloadUI() end,
 	timeout = 0,
 	whileDead = 1,

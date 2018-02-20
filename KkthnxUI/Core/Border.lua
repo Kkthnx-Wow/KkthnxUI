@@ -3,16 +3,10 @@ local K, C = unpack(select(2, ...))
 -- Sourced: oUF_Phanx (Phanx)
 -- Edited: KkthnxUI (Kkthnx)
 
--- GLOBALS: unpack, select, _G, next, pairs, type
-
--- luacheck: globals unpack select _G next pairs type
-
 -- WoW API
 local next = next
 local pairs = pairs
-local select = select
 local type = type
-local unpack = unpack
 
 local border_path = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_"
 local shadow_path = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\border-thick-glow-"

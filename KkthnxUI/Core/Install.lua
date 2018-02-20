@@ -121,6 +121,7 @@ function Install:PrintStep(PageNum)
 		self:Hide()
 		if (PageNum > self.MaxStepNumber) then
 			KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete = true
+			PlaySoundFile("Sound\\Creature\\Illidan\\BLACK_Illidan_04.ogg") -- People will be like wtf?
 			ReloadUI()
 		end
 		return

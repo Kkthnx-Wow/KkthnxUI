@@ -15,10 +15,20 @@ local table_insert = table.insert
 local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
 local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
+local GameTooltip = _G.GameTooltip
 local InCombatLockdown = _G.InCombatLockdown
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
+local PVP = _G.PVP
+local RandomRoll = _G.RandomRoll
+local ReloadUI = _G.ReloadUI
+local RELOADUI = _G.RELOADUI
+local RequestTimePlayed = _G.RequestTimePlayed
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
+local SendChatMessage = _G.SendChatMessage
+local STATUS = _G.STATUS
 local ToggleFrame = _G.ToggleFrame
+local TogglePVP = _G.TogglePVP
 
 local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
@@ -288,7 +298,7 @@ function CopyChat:OnEnable()
 		end)
 
 		-- Create Configbutton
-		local ConfigButton = CreateFrame("Button", string.format("ConfigChatButton%d", id), frame)
+		local ConfigButton = CreateFrame("Button", string_format("ConfigChatButton%d", id), frame)
 		ConfigButton:EnableMouse(true)
 		ConfigButton:SetSize(26, 26)
 		ConfigButton:SetHitRectInsets(6, 6, 7, 7)

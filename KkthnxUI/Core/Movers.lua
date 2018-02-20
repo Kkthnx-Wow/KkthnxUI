@@ -4,17 +4,13 @@ local K, C, L = unpack(select(2, ...))
 local _G = _G
 local table_insert = table.insert
 local unpack = unpack
+local pairs = pairs
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local InCombatLockdown = _G.InCombatLockdown
-local pairs = _G.pairs
-local print = _G.print
 local UIParent = _G.UIParent
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: KkthnxUIData
 
 local Movers = CreateFrame("Frame")
 local Name = UnitName("Player")
