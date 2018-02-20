@@ -66,6 +66,17 @@ function Module:ADDON_LOADED(event, addon)
 		ReagentBankHelpBox:Kill()
 		TutorialFrameAlertButton:Kill()
 		SpellBookFrameTutorialButton:Kill()
+		WorldMapFrameTutorialButton:Kill()
+		if PetJournalTutorialButton then
+			PetJournalTutorialButton:Kill()
+		end
+		if PlayerTalentFrame then
+			PlayerTalentFrameSpecializationTutorialButton:Kill()
+			PlayerTalentFrameTalentsTutorialButton:Kill()
+			PlayerTalentFramePetSpecializationTutorialButton:Kill()
+		end
+		HelpPlate:Kill()
+		HelpPlateTooltip:Kill()
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
 		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
