@@ -267,19 +267,26 @@ end
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local NameVeryShort = UnitName(unit) or UNKNOWN
-	return NameVeryShort ~= nil and K.ShortenString(NameVeryShort, 5, true) or ""
+	return NameVeryShort ~= nil and K.ShortenString(NameVeryShort, 6, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local NameShort = UnitName(unit) or UNKNOWN
-	return NameShort ~= nil and K.ShortenString(NameShort, 10, true) or ""
+	return NameShort ~= nil and K.ShortenString(NameShort, 11, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
 	local NameMedium = UnitName(unit) or UNKNOWN
-	return NameMedium ~= nil and K.ShortenString(NameMedium, 15, true) or ""
+	return NameMedium ~= nil and K.ShortenString(NameMedium, 16, true) or ""
+end
+
+oUF.Tags.Events["KkthnxUI:NameMediumAbbrev"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameMediumAbbrev"] = function(unit)
+	local NameMediumAbbrev = UnitName(unit) or UNKNOWN
+	local newname = (string_len(NameMediumAbbrev) > 16) and string_gsub(NameMediumAbbrev, "%s?(.[\128-\191]*)%S+%s", "%1. ") or NameMediumAbbrev
+	return K.ShortenString(newname, 16, false)
 end
 
 oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
@@ -290,8 +297,8 @@ end
 
 oUF.Tags.Events["KkthnxUI:NameLongAbbrev"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLongAbbrev"] = function(unit)
-	local name = UnitName(unit)
-	local newname = (string_len(name) > 20) and string_gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	local NameLongAbbrev = UnitName(unit) or UNKNOWN
+	local newname = (string_len(NameLongAbbrev) > 20) and string_gsub(NameLongAbbrev, "%s?(.[\128-\191]*)%S+%s", "%1. ") or NameLongAbbrev
 	return K.ShortenString(newname, 20, false)
 end
 

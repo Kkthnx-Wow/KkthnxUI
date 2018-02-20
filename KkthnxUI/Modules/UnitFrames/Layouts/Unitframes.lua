@@ -255,9 +255,9 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		if C["Unitframe"].NameAbbreviate == true then
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLongAbbrev]")
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMediumAbbrev]")
 		else
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLong]")
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 		end
 		-- Level Text
 		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
@@ -269,9 +269,9 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		if C["Unitframe"].NameAbbreviate == true then
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLongAbbrev]")
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMediumAbbrev]")
 		else
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLong]")
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 		end
 		-- Level Text
 		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
@@ -298,9 +298,9 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
 		if C["Unitframe"].NameAbbreviate == true then
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLongAbbrev]")
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMediumAbbrev]")
 		else
-			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLong]")
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 		end
 	end
 
