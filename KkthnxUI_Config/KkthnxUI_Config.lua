@@ -53,7 +53,7 @@ end
 function KkthnxUIConfig:SetOption(group, option, value)
 	local C
 	local Realm = GetRealmName()
-	local Name = UnitName("Player")
+	local Name = UnitName("player")
 
 	if (KkthnxUIConfigPerAccount) then
 		C = KkthnxUIConfigShared.Account
