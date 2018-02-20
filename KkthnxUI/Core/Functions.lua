@@ -481,20 +481,6 @@ function K.FormatMoney(amount, style)
 	return str
 end
 
-function K.AbbreviateString(string, allUpper)
-	local newString = ""
-	local words = {string.split(" ", string)}
-	for _, word in pairs(words) do
-		word = string.utf8sub(word, 1, 1) -- Get only first letter of each word
-		if (allUpper) then
-			word = word:upper()
-		end
-		newString = newString .. word
-	end
-
-	return newString
-end
-
 -- aura time colors for days, hours, minutes, seconds, fadetimer
 K.TimeColors = {
 	[0] = "|cffeeeeee",

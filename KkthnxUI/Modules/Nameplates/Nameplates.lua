@@ -545,7 +545,7 @@ local function StyleUpdate(self, unit)
 	self.Name:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 3, 2)
 
 	if C["Nameplates"].NameAbbreviate == true then
-		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameAbbreviateMedium]")
+		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameLongAbbrev]")
 	else
 		self:Tag(self.Name, "[KkthnxUI:NameplateNameColor][KkthnxUI:NameLong]")
 	end

@@ -254,7 +254,11 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameAbbreviateMedium]")
+		if C["Unitframe"].NameAbbreviate == true then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLongAbbrev]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLong]")
+		end
 		-- Level Text
 		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
@@ -264,7 +268,11 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		if C["Unitframe"].NameAbbreviate == true then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLongAbbrev]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLong]")
+		end
 		-- Level Text
 		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
@@ -289,7 +297,11 @@ local function CreateUnitframeLayout(self, unit)
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		if C["Unitframe"].NameAbbreviate == true then
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLongAbbrev]")
+		else
+			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameLong]")
+		end
 	end
 
 	if (unit == "player") then

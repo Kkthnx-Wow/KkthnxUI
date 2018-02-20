@@ -9,6 +9,8 @@ assert(oUF, "KkthnxUI was unable to locate oUF.")
 local _G = _G
 local math_floor = math.floor
 local string_format = string.format
+local string_gsub = string.gsub
+local string_len = string.len
 
 -- Wow API
 local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
@@ -262,54 +264,6 @@ oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameAbbreviateLong"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["KkthnxUI:NameAbbreviateLong"] = function(unit)
-	local name = UnitName(unit)
-	local returnString = ""
-
-	if name then
-		if name:len() > 20 then
-			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
-		else
-			returnString = name
-		end
-	end
-
-	return returnString
-end
-
-oUF.Tags.Events["KkthnxUI:NameAbbreviateMedium"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["KkthnxUI:NameAbbreviateMedium"] = function(unit)
-	local name = UnitName(unit)
-	local returnString = ""
-
-	if name then
-		if name:len() > 15 then
-			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
-		else
-			returnString = name
-		end
-	end
-
-	return returnString
-end
-
-oUF.Tags.Events["KkthnxUI:NameAbbreviateShort"] = "UNIT_NAME_UPDATE"
-oUF.Tags.Methods["KkthnxUI:NameAbbreviateShort"] = function(unit)
-	local name = UnitName(unit)
-	local returnString = ""
-
-	if name then
-		if name:len() > 10 then
-			returnString = name:gsub("(%S+) ", function(t) return t:sub(1, 1)..". " end)
-		else
-			returnString = name
-		end
-	end
-
-	return returnString
-end
-
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local NameVeryShort = UnitName(unit) or UNKNOWN
@@ -332,6 +286,13 @@ oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	local NameLong = UnitName(unit) or UNKNOWN
 	return NameLong ~= nil and K.ShortenString(NameLong, 20, true) or ""
+end
+
+oUF.Tags.Events["KkthnxUI:NameLongAbbrev"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameLongAbbrev"] = function(unit)
+	local name = UnitName(unit)
+	local newname = (string_len(name) > 20) and string_gsub(name, "%s?(.[\128-\191]*)%S+%s", "%1. ") or name
+	return K.ShortenString(newname, 20, false)
 end
 
 oUF.Tags.Events["KkthnxUI:AFK"] = "PLAYER_FLAGS_CHANGED"

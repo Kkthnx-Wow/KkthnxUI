@@ -385,7 +385,7 @@ KkthnxUIConfig["zhCN"] = {
 
 		["NameAbbreviate"] = {
 			["Name"] = "Name Abbreviate",
-			["Desc"] = "Display abbreviated names",
+			["Desc"] = "Display abbreviated names that are over 20 characters long",
 		},
 
 		["NearColor"] = {
@@ -1070,6 +1070,11 @@ KkthnxUIConfig["zhCN"] = {
 		["CastbarIcon"] = {
 			["Name"] = "Castbar Icon",
 			["Desc"] = "Create an icon beside the cast bar",
+		},
+
+		["NameAbbreviate"] = {
+			["Name"] = "Name Abbreviate",
+			["Desc"] = "Display abbreviated names that are over 20 characters long",
 		},
 
 		["CastbarLatency"] = {
