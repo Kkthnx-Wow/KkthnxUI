@@ -103,7 +103,7 @@ local function UpdatePvPTimer(self, elapsed)
 end
 
 -- KkthnxUI Unitframe Tags
-oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_POWER UNIT_FLAGS UNIT_FACTION UNIT_CLASSIFICATION_CHANGED UNIT_NAME_UPDATE UNIT_POWER"
+oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	local unitReaction = UnitReaction(unit, "player")
 	local _, unitClass = UnitClass(unit)
@@ -119,7 +119,7 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:AltPowerCurrent"] = "UNIT_POWER_FREQUENT UNIT_MAXPOWER UNIT_DISPLAYPOWER"
+oUF.Tags.Events["KkthnxUI:AltPowerCurrent"] = "UNIT_POWER UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	local cur = UnitPower(unit, 0)
 	local max = UnitPowerMax(unit, 0)
@@ -184,7 +184,7 @@ oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 	return Hex(r, g, b)
 end
 
-oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:ClassificationColor"] = "UNIT_CLASSIFICATION_CHANGED"
 oUF.Tags.Methods["KkthnxUI:ClassificationColor"] = function(unit)
 	local classification = UnitClassification(unit)
 	if (classification == "rare" or classification == "elite") then
@@ -262,6 +262,12 @@ oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 	else
 		return "??"
 	end
+end
+
+oUF.Tags.Events["KkthnxUI:NameRaidShort"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Methods["KkthnxUI:NameRaidShort"] = function(unit)
+	local NameRaidShort = UnitName(unit) or UNKNOWN
+	return NameRaidShort ~= nil and K.ShortenString(NameRaidShort, 5, true) or ""
 end
 
 oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
@@ -398,9 +404,10 @@ oUF.Tags.Methods["KkthnxUI:NameplateSmartLevel"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS UNIT_FACTION UNIT_CLASSIFICATION_CHANGED UNIT_NAME_UPDATE UNIT_POWER"
+oUF.Tags.Events["KkthnxUI:NameplateNameColor"] = "UNIT_POWER UNIT_FLAGS"
 oUF.Tags.Methods["KkthnxUI:NameplateNameColor"] = function(unit)
 	local reaction = UnitReaction(unit, "player")
+	local r, g, b = 0.33, 0.59, 0.33
 	if not UnitIsUnit("player", unit) and UnitIsPlayer(unit) and (reaction and reaction >= 5) then
 		local color = K.Colors.power["MANA"]
 		return string_format("|cff%02x%02x%02x", color[1] * 255, color[2] * 255, color[3] * 255)
@@ -410,23 +417,16 @@ oUF.Tags.Methods["KkthnxUI:NameplateNameColor"] = function(unit)
 		local color = K.Colors.reaction[reaction]
 		return string_format("|cff%02x%02x%02x", color[1] * 255, color[2] * 255, color[3] * 255)
 	else
-		r, g, b = 0.33, 0.59, 0.33
 		return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["KkthnxUI:NameplateHealth"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH NAME_PLATE_UNIT_ADDED"
 oUF.Tags.Methods["KkthnxUI:NameplateHealth"] = function(unit)
-	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
-
-	if (status) then
-		return status
-	else
-		return K.GetFormattedText("CURRENT_PERCENT", UnitHealth(unit), UnitHealthMax(unit))
-	end
+	return K.GetFormattedText("CURRENT_PERCENT", UnitHealth(unit), UnitHealthMax(unit))
 end
 
-oUF.Tags.Events["KkthnxUI:NameplateThreatColor"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameplateThreatColor"] = "UNIT_THREAT_LIST_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameplateThreatColor"] = function(unit)
 	local _, status = UnitDetailedThreatSituation("player", unit)
 	if (status) and (IsInGroup() or UnitExists("pet")) then
@@ -436,8 +436,7 @@ oUF.Tags.Methods["KkthnxUI:NameplateThreatColor"] = function(unit)
 	end
 end
 
-
-oUF.Tags.Events["KkthnxUI:NameplateThreat"] = "UNIT_THREAT_LIST_UPDATE GROUP_ROSTER_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameplateThreat"] = "UNIT_THREAT_LIST_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameplateThreat"] = function(unit)
 	local _, _, percent = UnitDetailedThreatSituation("player", unit)
 	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then

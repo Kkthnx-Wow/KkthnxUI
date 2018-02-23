@@ -69,10 +69,10 @@ function K.CreateRaidTargetIndicator(self)
 end
 
 function K.CreateResurrectIndicator(self)
-	self.ResurrectIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ResurrectIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetTexture(spiritHealer_280)
-	self.ResurrectIndicator:SetPoint("CENTER")
-	self.ResurrectIndicator:SetSize(16, 16)
+	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait, "CENTER", 0, -12)
+	self.ResurrectIndicator:SetSize(64, 32)
 end
 
 function K.CreateRestingIndicator(self)

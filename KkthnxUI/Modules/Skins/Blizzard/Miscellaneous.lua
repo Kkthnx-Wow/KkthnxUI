@@ -95,7 +95,7 @@ local function LoadSkin()
 		"RaidUtilityShowButton",
 	}
 
-	if C["General"].RaidTools == true then
+	if C["Raidframe"].RaidUtility == true then
 		table_insert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
 	end
 

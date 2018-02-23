@@ -3,16 +3,14 @@ local K, C = unpack(select(2, ...))
 -- Sourced: oUF_Phanx (Phanx)
 -- Edited: KkthnxUI (Kkthnx)
 
--- WoW API
-local next = next
-local pairs = pairs
-local type = type
+local _G = _G
+local next = _G.next
+local pairs = _G.pairs
+local type = _G.type
 
-local border_path = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_"
-local shadow_path = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\border-thick-glow-"
 local sections = {"TOPLEFT", "TOP", "TOPRIGHT", "RIGHT", "BOTTOMRIGHT", "BOTTOM", "BOTTOMLEFT", "LEFT"}
 
-local function SetBorderColor(self, r, g, b, a)
+local function CreateBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if not t then return end
 
@@ -25,7 +23,7 @@ local function SetBorderColor(self, r, g, b, a)
 	end
 end
 
-local function SetBackdropBorderColor(self, r, g, b, a)
+local function CreateBackdropBorderColor(self, r, g, b, a)
 	local t = self.borderTextures
 	if not t then return end
 
@@ -62,9 +60,9 @@ end
 
 local function CreateBorder(object, offset)
 	local t = {}
-	local thickness = 16
-	local texture = border_path
-	local offset = offset or 4
+	local thickness = K.Scale(16)
+	local texture = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_"
+	local offset = offset or K.Scale(4)
 
 	for i = 1, #sections do
 		local x = object:CreateTexture(nil, "OVERLAY", nil, 1)
@@ -85,28 +83,24 @@ local function CreateBorder(object, offset)
 	t.BOTTOMRIGHT:SetPoint("TOPLEFT", object, "BOTTOMRIGHT", -offset, offset)
 
 	t.TOP:SetHeight(thickness)
-	t.TOP:SetHorizTile(true)
 	t.TOP:SetPoint("TOPLEFT", t.TOPLEFT, "TOPRIGHT", 0, 0)
 	t.TOP:SetPoint("TOPRIGHT", t.TOPRIGHT, "TOPLEFT", 0, 0)
 
 	t.BOTTOM:SetHeight(thickness)
-	t.BOTTOM:SetHorizTile(true)
 	t.BOTTOM:SetPoint("BOTTOMLEFT", t.BOTTOMLEFT, "BOTTOMRIGHT", 0, 0)
 	t.BOTTOM:SetPoint("BOTTOMRIGHT", t.BOTTOMRIGHT, "BOTTOMLEFT", 0, 0)
 
 	t.LEFT:SetWidth(thickness)
-	t.LEFT:SetVertTile(true)
 	t.LEFT:SetPoint("TOPLEFT", t.TOPLEFT, "BOTTOMLEFT", 0, 0)
 	t.LEFT:SetPoint("BOTTOMLEFT", t.BOTTOMLEFT, "TOPLEFT", 0, 0)
 
 	t.RIGHT:SetWidth(thickness)
-	t.RIGHT:SetVertTile(true)
 	t.RIGHT:SetPoint("TOPRIGHT", t.TOPRIGHT, "BOTTOMRIGHT", 0, 0)
 	t.RIGHT:SetPoint("BOTTOMRIGHT", t.BOTTOMRIGHT, "TOPRIGHT", 0, 0)
 
 	object.borderTextures = t
-	object.SetBorderColor = SetBorderColor
-	object.SetBackdropBorderColor = SetBackdropBorderColor
+	object.SetBorderColor = CreateBorderColor
+	object.SetBackdropBorderColor = CreateBackdropBorderColor
 	object.GetBorderColor = GetBorderColor
 	object.ShowBorder = ShowBorder
 	object.HideBorder = HideBorder

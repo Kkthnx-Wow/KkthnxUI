@@ -15,22 +15,13 @@ local GetCurrentResolution = _G.GetCurrentResolution
 local GetScreenResolutions = _G.GetScreenResolutions
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local RegisterStateDriver = _G.RegisterStateDriver
-local RegisterStateDriver = _G.RegisterStateDriver
-local UIParent = _G.UIParent
 local UIParent = _G.UIParent
 local UnitClass = _G.UnitClass
 
-local closeButton_32 = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
-
 -- Preload
-local Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C["General"].UIScale
-local Scale = function(x)
-	return Mult * math_floor(x / Mult + 0.5)
-end
-
-K.Scale = function(x) return Scale(x) end
-K.Mult = Mult
+K.Mult = 768/ K.ScreenHeight / C["General"].UIScale
 K.NoScaleMult = K.Mult * C["General"].UIScale
+function K.Scale(x) return K.Mult * math_floor(x / K.Mult + 0.5) end
 
 local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 local backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
@@ -48,6 +39,8 @@ K.PetBattleHider = CreateFrame("Frame", "PetBattleHider", UIParent, "SecureHandl
 K.PetBattleHider:SetAllPoints()
 K.PetBattleHider:SetFrameStrata("LOW")
 RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
+
+local closeButton_32 = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
 local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	if not template then template = "" end
@@ -138,7 +131,7 @@ local function CreateShadow(self, size, strip, backdrop)
 	if backdrop then
 		shadow:SetBackdrop({bgFile = C["Media"].Blank, edgeFile = C["Media"].Glow, edgeSize = 3, tile = false, tileSize = 0, insets = {left = 3, right = 3, top = 3, bottom = 3}})
 	else
-		shadow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = K.Scale(3), insets = {left = K.Scale(5), right = K.Scale(5), top = K.Scale(5), bottom = K.Scale(5)}})
+		shadow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}})
 	end
 	shadow:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
 	shadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.9)

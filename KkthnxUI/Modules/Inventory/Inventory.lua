@@ -8,18 +8,18 @@ local pairs = pairs
 local print = print
 local table_insert = tinsert
 
---local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
---local CLOSE = _G.CLOSE
---local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
---local GetContainerItemInfo = _G.GetContainerItemInfo
---local GetItemInfo = _G.GetItemInfo
---local GetNumBankSlots = _G.GetNumBankSlots
---local InCombatLockdown = _G.InCombatLockdown
---local GetContainerNumSlots = _G.GetContainerNumSlots
---local GetContainerItemLink = _G.GetContainerItemLink
---local GetItemQualityColor = _G.GetItemQualityColor
---local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
---local PlaySound = _G.PlaySound
+local BAG_FILTER_CLEANUP = _G.BAG_FILTER_CLEANUP
+local CLOSE = _G.CLOSE
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GetContainerItemInfo = _G.GetContainerItemInfo
+local GetContainerItemLink = _G.GetContainerItemLink
+local GetContainerNumFreeSlots = _G.GetContainerNumFreeSlots
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetItemInfo = _G.GetItemInfo
+local GetItemQualityColor = _G.GetItemQualityColor
+local GetNumBankSlots = _G.GetNumBankSlots
+local InCombatLockdown = _G.InCombatLockdown
+local PlaySound = _G.PlaySound
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
@@ -28,67 +28,6 @@ local ST_NORMAL = 1
 local ST_FISHBAG = 2
 local ST_SPECIAL = 3
 local bag_bars = 0
-local unusable
-
-if K.Class == "DEATHKNIGHT" then
-	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_SHIELD}} -- weapons, armor, dual wield
-elseif K.Class == "DEMONHUNTER" then
-	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
-elseif K.Class == "DRUID" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
-elseif K.Class == "HUNTER" then
-	unusable = {{LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
-elseif K.Class == "MAGE" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD,}, true}
-elseif K.Class == "MONK" then
-	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
-elseif K.Class == "PALADIN" then
-	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {}, true}
-elseif K.Class == "PRIEST" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
-elseif K.Class == "ROGUE" then
-	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
-elseif K.Class == "SHAMAN" then
-	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATEM}}
-elseif K.Class == "WARLOCK" then
-	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
-elseif K.Class == "WARRIOR" then
-	unusable = {{LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_WAND}, {}}
-else
-	unusable = {{}, {}}
-end
-
-local subs = {}
-for k = 0, 20 do
-	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, k)
-end
-
-for i, subclass in ipairs(unusable[1]) do
-	unusable[subs[subclass+1]] = true
-end
-
-subs = {}
-for k = 0, 11 do
-	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, k)
-end
-
-for i, subclass in ipairs(unusable[2]) do
-	unusable[subs[subclass + 1]] = true
-end
-
-
-local function IsClassUnusable(subclass, slot)
-	if subclass then
-		return slot ~= "" and unusable[subclass] or slot == "INVTYPE_WEAPONOFFHAND" and unusable[3]
-	end
-end
-
-local function IsItemUnusable(...)
-	if ... then
-		local subclass, _, slot = select(7, GetItemInfo(...))
-		return IsClassUnusable(subclass, slot)
-	end
-end
 
 local Stuffing = CreateFrame("Frame")
 Stuffing:RegisterEvent("ADDON_LOADED")
@@ -293,17 +232,17 @@ function Stuffing:SlotUpdate(b)
 			b.frame.text:SetTextColor(GetItemQualityColor(quality))
 		end
 
-		if (IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
-			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1.0, 0.3, 0.3)
+		if (b.level and b.level > K.Level) and not locked then
+			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		else
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
 		-- color slot according to item quality
 		if questId and not isActiveQuest then
-			b.frame:SetBackdropBorderColor(1, 0.82, 0.2)
+			b.frame:SetBackdropBorderColor(1, 1, 0)
 		elseif questId or isQuestItem then
-			b.frame:SetBackdropBorderColor(1, 0.82, 0.2)
+			b.frame:SetBackdropBorderColor(1, 1, 0)
 		elseif not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
 		else
@@ -331,13 +270,6 @@ function Stuffing:BagSlotUpdate(bag)
 		end
 	end
 end
-
---[[function Stuffing:UpdateCooldowns(b)
-if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
-	local start, duration, enable = GetContainerItemCooldown(b.bag, b.slot)
-	CooldownFrame_Set(b.cooldown, start, duration, enable)
-end
-end--]]
 
 function CreateReagentContainer()
 	ReagentBankFrame:StripTextures()
@@ -685,14 +617,14 @@ function Stuffing:SearchUpdate(str)
 			local minLevel = select(5, GetItemInfo(ilink))
 			equipSlot = _G[equipSlot] or ""
 			if not string.find(string.lower(b.name), str) and not string.find(string.lower(setName), str) and not string.find(string.lower(class), str) and not string.find(string.lower(subclass), str) and not string.find(string.lower(equipSlot), str) then
-				if IsItemUnusable(b.name) or minLevel > K.Level then
+				if minLevel > K.Level then
 					_G[b.frame:GetName().."IconTexture"]:SetVertexColor(0.5, 0.5, 0.5)
 				end
 				SetItemButtonDesaturated(b.frame, true)
 				b.frame:SetAlpha(0.2)
 			else
-				if IsItemUnusable(b.name) or minLevel > K.Level then
-					_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1.0, 0.3, 0.3)
+				if minLevel > K.Level then
+					_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 				end
 				SetItemButtonDesaturated(b.frame, false)
 				b.frame:SetAlpha(1)
@@ -703,8 +635,8 @@ end
 
 function Stuffing:SearchReset()
 	for _, b in ipairs(self.buttons) do
-		if IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
-			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1.0, 0.3, 0.3)
+		if (b.level and b.level > K.Level) then
+			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		end
 		b.frame:SetAlpha(1)
 		SetItemButtonDesaturated(b.frame, false)
@@ -946,8 +878,6 @@ function Stuffing:InitBags()
 		local Count = _G["BackpackTokenFrameToken"..i.."Count"]
 
 		Token:SetParent(f)
-		Token:SetFrameStrata("HIGH")
-		Token:SetFrameLevel(5)
 		Token:SetScale(1)
 		Token:CreateBackdrop("", true)
 		Token.Backdrop:SetAllPoints(Icon)

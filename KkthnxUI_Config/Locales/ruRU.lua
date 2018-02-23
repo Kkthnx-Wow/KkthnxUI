@@ -5,6 +5,9 @@ if (Locale ~= "ruRU") then
 	return
 end
 
+local ModuleFont = "Pick a font from the provided fonts for this module."
+local ModuleTexture = "Pick a texture from the provided textures for this module."
+local ModuleToggle = "Enable or disable this module based on your preference."
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
 local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
@@ -39,12 +42,12 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Texture"] = {
 			["Name"] = "Texture",
-			["Desc"] = "Set the texture for some things in the UI that are not covered in other config sections.",
+			["Desc"] = ModuleTexture,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = "Set the font for most things in the UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
+			["Desc"] = ModuleFont
 		},
 
 		["FontSize"] = {
@@ -81,8 +84,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable the group loot module",
+			["Name"] = "Enable Loot",
+			["Desc"] = ModuleToggle,
 		},
 
 		["GroupLoot"] = {
@@ -92,7 +95,7 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Texture"] = {
 			["Name"] = "Texture",
-			["Desc"] = "Group loot status bar texture",
+			["Desc"] = ModuleTexture,
 		},
 
 		["FastLoot"] = {
@@ -130,8 +133,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable/Disable the all-in-one bag.",
+			["Name"] = "Enable Inventory",
+			["Desc"] = ModuleToggle,
 		},
 
 		["ItemLevel"] = {
@@ -221,8 +224,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Toggle the Actionbars. This can be useful if another AddOn is intering with our actionbars",
+			["Name"] = "Enable Actionbars",
+			["Desc"] = ModuleToggle
 		},
 
 		["Grid"] = {
@@ -344,8 +347,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable nameplates"..PerformanceIncrease,
+			["Name"] = "Enable Nameplates",
+			["Desc"] = ModuleToggle..PerformanceIncrease,
 		},
 
 		["EnhancedThreat"] = {
@@ -503,8 +506,8 @@ KkthnxUIConfig["ruRU"] = {
 	-- Auras Local
 	["Auras"] = {
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable auras",
+			["Name"] = "Enable Auras",
+			["Desc"] = ModuleToggle,
 		},
 
 		["HorizontalSpacing"] = {
@@ -561,8 +564,8 @@ KkthnxUIConfig["ruRU"] = {
 	-- Chat Local
 	["Chat"] = {
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable Chat",
+			["Name"] = "Enable Chat",
+			["Desc"] = ModuleToggle,
 		},
 
 		["Fading"] = {
@@ -622,7 +625,7 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = "Chat font",
+			["Desc"] = ModuleFont
 		},
 
 		["ScrollByX"] = {
@@ -664,8 +667,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Description Needed",
+			["Name"] = "Enable Cooldowns",
+			["Desc"] = ModuleToggle,
 		},
 
 		["Expiring"] = {
@@ -722,12 +725,12 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["ArtifactHeight"] = {
-			["Name"] = "Threshold",
+			["Name"] = "Artifact Height",
 			["Desc"] = "Description Needed",
 		},
 
 		["ArtifactWidth"] = {
-			["Name"] = "Threshold",
+			["Name"] = "Artifact Width",
 			["Desc"] = "Description Needed",
 		},
 
@@ -742,7 +745,7 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["ExperienceHeight"] = {
-			["Name"] = "Threshold",
+			["Name"] = "Experience Height",
 			["Desc"] = "Experiencebar height",
 		},
 
@@ -752,7 +755,7 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["ExperienceWidth"] = {
-			["Name"] = "Threshold",
+			["Name"] = "Experience Width",
 			["Desc"] = "Description Needed",
 		},
 
@@ -798,7 +801,7 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Texture"] = {
 			["Name"] = "Texture",
-			["Desc"] = "Apply selected texture to all databars",
+			["Desc"] = ModuleTexture,
 		},
 	},
 
@@ -812,11 +815,6 @@ KkthnxUIConfig["ruRU"] = {
 		["AutoReward"] = {
 			["Name"] = "Auto Reward",
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
-		},
-
-		["WoWheadLink"] = {
-			["Name"] = "WoWhead Link",
-			["Desc"] = "Add WoWhead link in objectivetracker dropdown",
 		},
 
 		["Arena"] = {
@@ -927,7 +925,7 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Texture"] = {
 			["Name"] = "Texture",
-			["Desc"] = "Texture for statusbars",
+			["Desc"] = ModuleTexture,
 		},
 
 		["WeakAuras"] = {
@@ -949,8 +947,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable minimap",
+			["Name"] = "Enable Minimap",
+			["Desc"] = ModuleToggle,
 		},
 
 		["ResetZoom"] = {
@@ -1020,8 +1018,8 @@ KkthnxUIConfig["ruRU"] = {
 	-- Filger Local
 	["Filger"] = {
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Timers (Filger)"..PerformanceIncrease,
+			["Name"] = "Enable Filger",
+			["Desc"] = ModuleToggle..PerformanceIncrease,
 		},
 
 		["TestMode"] = {
@@ -1088,12 +1086,12 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Castbars"] = {
-			["Name"] = "Castbars",
+			["Name"] = "Enable Castbars",
 			["Desc"] = "Enable cast bar for unit frames",
 		},
 
 		["CastbarTicks"] = {
-			["Name"] = "Castbar Ticks",
+			["Name"] = "Show Castbar Ticks",
 			["Desc"] = "Display tick marks on the castbar for channelled spells. This will adjust automatically for spells like Drain Soul and add additional ticks based on haste.",
 		},
 
@@ -1103,17 +1101,17 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["CastClassColor"] = {
-			["Name"] = "Cast Classcolor",
+			["Name"] = "Castbar Classcolor",
 			["Desc"] = "Color cast bars as class color",
 		},
 
 		["CastReactionColor"] = {
-			["Name"] = "Cast Reaction Color",
+			["Name"] = "Castbar Reaction Color",
 			["Desc"] = "Color cast bars as reaction to the target",
 		},
 
 		["CombatText"] = {
-			["Name"] = "CombatText",
+			["Name"] = "Portrait Combat Text",
 			["Desc"] = "Enable combat text on player and target frames",
 		},
 
@@ -1123,13 +1121,13 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable unit frames",
+			["Name"] = "Enable Unitframes",
+			["Desc"] = ModuleToggle,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = "Pick desired font",
+			["Desc"] = ModuleFont
 		},
 
 		["FontSize"] = {
@@ -1148,13 +1146,18 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Outline"] = {
-			["Name"] = "Outline",
+			["Name"] = "Font Outline",
 			["Desc"] = "Apply unit frame font outline",
 		},
 
 		["Party"] = {
 			["Name"] = "Party Frames",
 			["Desc"] = "Enable those sexy party frames <3",
+		},
+
+		["PartyAsRaid"] = {
+			["Name"] = "Party as Raid Frames",
+			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
 		},
 
 		["PowerPredictionBar"] = {
@@ -1168,7 +1171,7 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Scale"] = {
-			["Name"] = "Scale",
+			["Name"] = "Unitframe Scale",
 			["Desc"] = "Big or small, you pick!",
 		},
 
@@ -1186,8 +1189,9 @@ KkthnxUIConfig["ruRU"] = {
 			["Name"] = "Show Player In Party",
 			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
 		},
+
 		["Smooth"] = {
-			["Name"] = "Smooth",
+			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
 		},
 
@@ -1197,8 +1201,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
-			["Desc"] = "Pick your desired texture",
+			["Name"] = "Unitframe Texture",
+			["Desc"] = ModuleTexture,
 		},
 
 		["PortraitStyle"] = {
@@ -1240,8 +1244,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Have you tried to turn it off and then on again?",
+			["Name"] = "Enable Raidframes",
+			["Desc"] = ModuleToggle,
 		},
 
 		["Height"] = {
@@ -1306,12 +1310,12 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Texture"] = {
 			["Name"] = "Texture",
-			["Desc"] = "Pick your poison",
+			["Desc"] = ModuleTexture,
 		},
 
 		["Font"] = {
 			["Name"] = "Font",
-			["Desc"] = "Pick desired font",
+			["Desc"] = ModuleFont
 		},
 
 		["Width"] = {
@@ -1356,8 +1360,8 @@ KkthnxUIConfig["ruRU"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable",
-			["Desc"] = "Enable tooltip",
+			["Name"] = "Enable Tooltip",
+			["Desc"] = ModuleToggle,
 		},
 
 		["FontOutline"] = {
@@ -1412,7 +1416,7 @@ KkthnxUIConfig["ruRU"] = {
 
 		["Texture"] = {
 			["Name"] = "Texture",
-			["Desc"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
 		},
 	},
 

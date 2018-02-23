@@ -165,6 +165,8 @@ end
 
 -- We will handle these individually so we can have the up most control of our auras on each unit/frame
 function K.CreateAuras(self, unit)
+	unit = unit:match("^(%a-)%d+") or unit
+
 	local Buffs = CreateFrame("Frame", self:GetName().."Buffs", self)
 	local Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	local Auras = CreateFrame("Frame", self:GetName().."Auras", self)

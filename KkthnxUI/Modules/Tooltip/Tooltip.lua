@@ -670,7 +670,7 @@ function Module:OnEnable()
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
-	GameTooltipStatusBar:SetTemplate("Transparent", true)
+	GameTooltipStatusBar:SetTemplate("Transparent")
 	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
 	GameTooltipStatusBar:ClearAllPoints()
 	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)

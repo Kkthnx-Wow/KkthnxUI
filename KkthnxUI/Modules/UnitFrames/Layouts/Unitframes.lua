@@ -393,11 +393,9 @@ local function CreateUnitframeLayout(self, unit)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 	end
 
-	if (unit ~= "player" and unit ~= "arena") then
+	if (unit ~= "player") then
 		self.Range = K.CreateRange(self)
 	end
-
-	--return self
 end
 
 oUF:RegisterStyle("oUF_KkthnxUI_Unitframes", CreateUnitframeLayout)
@@ -443,15 +441,15 @@ focustarget:SetScale(C["Unitframe"].Scale)
 focustarget:SetPoint("TOPRIGHT", oUF_Focus, "BOTTOMLEFT", 56, 2)
 K.Movers:RegisterFrame(focustarget)
 
-if (C["Unitframe"].Party) then
-	local party = oUF:SpawnHeader("oUF_Party", nil, "custom [group:party,nogroup:raid] show; hide",
+if C["Unitframe"].Party then
+	local party = oUF:SpawnHeader("oUF_Party", nil, C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide",
 	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
+		local header = self:GetParent()
+		self:SetWidth(header:GetAttribute("initial-width"))
+		self:SetHeight(header:GetAttribute("initial-height"))
 	]],
-	"initial-width", 140,
-	"initial-height", 38,
+	"initial-width", K.Scale(140),
+	"initial-height", K.Scale(38),
 	"showSolo", false,
 	"showParty", true,
 	"showPlayer", C["Unitframe"].ShowPlayer,
@@ -459,7 +457,8 @@ if (C["Unitframe"].Party) then
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
-	"yOffset", -44)
+	"yOffset", K.Scale(-44))
+
 	party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 	party:SetScale(C["Unitframe"].Scale or 1)
 	K.Movers:RegisterFrame(party)

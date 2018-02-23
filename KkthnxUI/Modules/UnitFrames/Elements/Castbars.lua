@@ -164,8 +164,10 @@ local function PostCastStart(castbar, unit, name)
 end
 
 local function PostCastFailedOrInterrupted(castbar, unit, name, castID)
+	castbar:SetMinMaxValues(0, 1)
+	castbar:SetValue(1)
 	castbar:SetStatusBarColor(1, 0, 0)
-	castbar:SetValue(castbar.max)
+	-- castbar:SetValue(castbar.max)
 
 	local spark = castbar.Spark
 	if (spark) then
@@ -299,6 +301,8 @@ local function CustomTimeText(castbar, duration)
 end
 
 function K.CreateCastBar(self, unit)
+	unit = unit:match("^(%a-)%d+") or unit
+
 	local castbar = CreateFrame("StatusBar", "$parentCastbar", self)
 	castbar:SetStatusBarTexture(CastbarTexture)
 	castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)

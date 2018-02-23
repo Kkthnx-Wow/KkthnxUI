@@ -69,13 +69,12 @@ function K.CreateClassModules(self, width, height, spacing)
 	for i = 1, maxPower do
 		local bar = CreateFrame("StatusBar", nil, self)
 		bar:SetStatusBarTexture(ClassModuleTexture)
+		bar:SetTemplate("Transparent")
 
 		-- combo points 6-10 will be stacked on top of 1-5 for rogues with the anticipation talent
 		if (i > 5) then
 			bar:SetFrameLevel(bar:GetFrameLevel() + 1)
 		end
-
-		bar:SetTemplate("Transparent")
 
 		classPower[i] = bar
 	end

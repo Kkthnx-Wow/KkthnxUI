@@ -59,7 +59,6 @@ function Module:OnEvent()
 
 		if (Cost > 0) then
 			local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
-
 			DEFAULT_CHAT_FRAME:AddMessage(L["Inventory"].SoldTrash.." |cffffffff"..Gold..L["Miscellaneous"].Gold_Short.." |cffffffff"..Silver..L["Miscellaneous"].Silver_Short.." |cffffffff"..Copper..L["Miscellaneous"].Copper_Short..".", 255, 255, 0)
 		end
 	end
@@ -81,10 +80,7 @@ function Module:OnEvent()
 
 				if Possible then
 					RepairAllItems()
-
-					local Copper = Cost % 100
-					local Silver = math.floor((Cost % 10000) / 100)
-					local Gold = math.floor(Cost / 10000)
+					local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
 					DEFAULT_CHAT_FRAME:AddMessage(L["Inventory"].RepairCost.." |cffffffff"..Gold..L["Miscellaneous"].Gold_Short.." |cffffffff"..Silver..L["Miscellaneous"].Silver_Short.." |cffffffff"..Copper..L["Miscellaneous"].Copper_Short..".", 255, 255, 0)
 				else
 					DEFAULT_CHAT_FRAME:AddMessage(L["Inventory"].NotEnoughMoney, 255, 0, 0)
