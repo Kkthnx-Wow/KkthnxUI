@@ -34,19 +34,16 @@ local function LoadSkin()
 	WORLD_QUEST_TRACKER_MODULE.Header.Text:SetShadowOffset(0, -0)
 
 	local MinimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
-	MinimizeButton:SkinButton()
-	MinimizeButton.text = MinimizeButton:CreateFontString(nil, "OVERLAY")
-	MinimizeButton.text:FontTemplate()
-	MinimizeButton.text:SetPoint("CENTER", MinimizeButton, "CENTER", 1, 0)
-	MinimizeButton.text:SetText("-")
-	MinimizeButton.text:SetJustifyH("CENTER")
-	MinimizeButton.text:SetJustifyV("MIDDLE")
-	MinimizeButton:HookScript('OnClick', function(self)
-		local textObject = self.text
+	MinimizeButton:SetSize(22, 22)
+	MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
+	MinimizeButton:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
+	MinimizeButton:SetHighlightTexture(false or "")
+	MinimizeButton:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButtonDisabled")
+	MinimizeButton:HookScript("OnClick", function(self)
 		if ObjectiveTrackerFrame.collapsed then
-			textObject:SetText("+")
+			MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 		else
-			textObject:SetText("-")
+			MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 		end
 	end)
 
@@ -87,7 +84,7 @@ local function LoadSkin()
 		if item and not item.skinned then
 			item:SetSize(24, 24)
 			item:SetTemplate("ActionButton", true)
-			item:SetBackdropBorderColor(1, 0.82, 0.2)
+			item:SetBackdropBorderColor(1, 1, 0)
 			item:SetNormalTexture(nil)
 			item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			item.icon:SetAllPoints()
@@ -119,20 +116,6 @@ local function LoadSkin()
 		end
 	end
 
-	local function SetAchievementColor(block)
-		if block.module == ACHIEVEMENT_TRACKER_MODULE then
-			block.HeaderText:SetTextColor(0.75, 0.61, 0)
-			block.HeaderText.col = nil
-		end
-	end
-
-	local function ObjectiveTrackerOnLeave(self)
-		local block = self:GetParent()
-		if block.HeaderText.col then
-			block.HeaderText:SetTextColor(block.HeaderText.col.r, block.HeaderText.col.g, block.HeaderText.col.b)
-		end
-	end
-
 	local function PositionFindGroupButton(block, button)
 		if button and button.GetPoint then
 			local a, b, c, d, e = button:GetPoint()
@@ -148,24 +131,10 @@ local function LoadSkin()
 		end
 	end
 
-	local function SkinFindGroupButton(block)
-		if block.hasGroupFinderButton and block.groupFinderButton then
-			if block.groupFinderButton and not block.groupFinderButton.skinned then
-				block.groupFinderButton:SkinButton()
-				block.groupFinderButton:SetSize(20, 20)
-				block.groupFinderButton.skinned = true
-			end
-		end
-	end
-
 	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Bonus Objective Progress Bar
 	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Quest Progress Bar
 	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Scenario Progress Bar
-	hooksecurefunc(QUEST_TRACKER_MODULE, "Update", SetQuestDifficultyColor) -- [Color]: ObjectiveTrackerFrame lines
-	hooksecurefunc(DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddObjective", SetAchievementColor) -- [Color]: Achievements
-	hooksecurefunc("ObjectiveTrackerBlockHeader_OnLeave", ObjectiveTrackerOnLeave) -- [Color]: OnLeave
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton) -- [Move]: The eye & quest item to the left of the eye
-	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton) -- [Skin]: The eye
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton) -- [Skin]: Quest Item Buttons
 	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton) -- [Skin]: World Quest Item Buttons
 end

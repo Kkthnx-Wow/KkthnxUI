@@ -60,9 +60,9 @@ end
 
 local function CreateBorder(object, offset)
 	local t = {}
-	local thickness = K.Scale(16)
+	local thickness = 16
 	local texture = "Interface\\AddOns\\KkthnxUI\\Media\\Border\\Border_"
-	local offset = offset or K.Scale(4)
+	local offset = offset or 4
 
 	for i = 1, #sections do
 		local x = object:CreateTexture(nil, "OVERLAY", nil, 1)

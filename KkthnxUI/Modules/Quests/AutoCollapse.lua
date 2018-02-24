@@ -18,13 +18,13 @@ local minimizeButton = _G["ObjectiveTrackerFrame"].HeaderMenu.MinimizeButton
 local statedriver = {
 	["FULL"] = function(frame)
 		ObjectiveTracker_Expand()
-		minimizeButton.text:SetText("-")
+		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 		frame:Show()
 	end,
 
 	["COLLAPSED"] = function(frame)
 		ObjectiveTracker_Collapse()
-		minimizeButton.text:SetText("+")
+		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 		frame:Show()
 	end,
 

@@ -12,7 +12,6 @@ local math_min = math.min
 local pairs = pairs
 local string_format = string.format
 local table_insert = table.insert
-local table_sort = table.sort
 local unpack = unpack
 
 -- Wow API
@@ -670,8 +669,6 @@ local function StyleUpdate(self, unit)
 		CreateVirtualFrame(button)
 		button:SetScale(K.NoScaleMult)
 
-		button:EnableMouse(false)
-
 		button.text = button.cd:CreateFontString(nil, "OVERLAY")
 		button.text:FontTemplate(nil, self.size * 0.46)
 		button.text:SetPoint("CENTER", 1, 1)
@@ -691,9 +688,6 @@ local function StyleUpdate(self, unit)
 		button.count:ClearAllPoints()
 		button.count:SetPoint("BOTTOMRIGHT", 1, 1)
 		button.count:SetJustifyH("RIGHT")
-
-		button.overlay:SetTexture(nil)
-		button.stealable:SetTexture(nil)
 	end
 
 	local function PostUpdateAura(self, unit, button, index)
@@ -709,11 +703,6 @@ local function StyleUpdate(self, unit)
 			button.icon:SetDesaturated(false)
 		else
 			SetVirtualBorder(button, 0, 0, 0)
-		end
-
-		local size = button:GetParent().size
-		if size then
-			button:SetSize(size, size)
 		end
 
 		if expiration and duration and (duration ~= 0) then
@@ -741,34 +730,15 @@ local function StyleUpdate(self, unit)
 		end
 	end
 
-	local function SortAurasByTime(a, b)
-		if a:IsShown() and b:IsShown() then
-			local aTime = a.expiration or -1
-			local bTime = b.expiration or -1
-			if (aTime and bTime) then
-				return aTime < bTime
-			end
-		elseif a:IsShown() then
-			return true
-		end
-	end
-
-	local function SortAuras(self)
-		table_sort(self, SortAurasByTime)
-		return 1, self.createdIcons
-	end
-
 	-- Aura tracking
 	if C["Nameplates"].TrackAuras == true then
 		local Auras = CreateFrame("Frame", self:GetName().."Auras", self)
 		Auras:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 3)
-		Auras:EnableMouse(false)
 		Auras.initialAnchor = "BOTTOMLEFT"
 		Auras["growth-y"] = "UP"
 		Auras["growth-x"] = "RIGHT"
 		Auras.numDebuffs = 8
 		Auras.numBuffs = 8
-		Auras.PreSetPosition = (not self:GetScript("OnUpdate")) and SortAuras or nil
 		Auras.PostCreateIcon = PostCreateAura
 		Auras.PostUpdateIcon = PostUpdateAura
 		Auras.CustomFilter = CustomFilterList
