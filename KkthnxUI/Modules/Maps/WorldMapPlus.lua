@@ -247,7 +247,9 @@ end
 
 function Module:SetUpEJLinks()
 	-- Hide the title bar
-	EncounterJournalTitleText:Hide()
+	if EncounterJournalTitleText then
+		EncounterJournalTitleText:Hide()
+	end
 
 	-- Create editbox
 	local eEB = CreateFrame("EditBox", nil, EncounterJournal)
@@ -328,7 +330,7 @@ function Module:SetUpEJLinks()
 
 end
 
-function Module:SetUpQuestLinks()
+function Module:SetUpWorldMapLinks()
 	-- Hide the title text
 	WorldMapFrameTitleText:Hide()
 
@@ -411,6 +413,88 @@ function Module:SetUpQuestLinks()
 		mEB:ClearFocus()
 		WorldMapTooltip:Hide()
 		SetQuestInBox()
+	end)
+end
+
+function Module:SetUpQuestDetailLinks()
+	-- Create editbox
+	local qDL = CreateFrame("EditBox", nil, QuestLogPopupDetailFrame)
+	qDL:ClearAllPoints()
+	qDL:SetPoint("TOPLEFT", 65, -3)
+	qDL:SetHeight(16)
+	qDL:SetFontObject("GameFontNormal")
+	qDL:SetBlinkSpeed(0)
+	qDL:SetAutoFocus(false)
+	qDL:EnableKeyboard(false)
+	qDL:SetHitRectInsets(0, 90, 0, 0)
+	qDL:SetScript("OnKeyDown", function() end)
+	qDL:SetScript("OnMouseUp", function()
+		if qDL:IsMouseOver() then
+			qDL:HighlightText()
+		else
+			qDL:HighlightText(0, 0)
+		end
+	end)
+
+	-- Create hidden font string (used for setting width of editbox)
+	qDL.z = qDL:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	qDL.z:Hide()
+
+	-- Function to set editbox value
+	local function SetQuestInBox()
+		local questID
+		if QuestLogPopupDetailFrame:IsShown() and QuestLogPopupDetailFrame.questID then
+			-- Get quest ID from currently showing quest in details panel
+			questID = QuestLogPopupDetailFrame.questID
+		end
+		if questID then
+			-- Hide editbox if quest ID is invalid
+			if questID == 0 then qDL:Hide() else qDL:Show() end
+			-- Set editbox text
+			qDL:SetText("https://" .. wowheadLoc .. "/quest=" .. questID)
+			-- Set hidden fontstring then resize editbox to match
+			qDL.z:SetText(qDL:GetText())
+			qDL:SetWidth(qDL.z:GetStringWidth() + 90)
+			-- Get quest title for tooltip
+			local questLink = GetQuestLink(questID) or nil
+			if questLink then
+				local title = QuestInfoTitleHeader:GetText() or string_match(questLink, "%[(.-)%]")
+				qDL.tiptext = title
+			else
+				qDL.tiptext = ""
+			end
+		end
+	end
+
+	-- Set URL when super tracked quest changes and on startup
+	qDL:RegisterEvent("SUPER_TRACKED_QUEST_CHANGED")
+	qDL:SetScript("OnEvent", SetQuestInBox)
+	SetQuestInBox()
+
+	-- Set URL when quest details frame is shown or hidden
+	hooksecurefunc("QuestLogPopupDetailFrame_Show", SetQuestInBox)
+	hooksecurefunc("QuestLogPopupDetailFrame_Update", SetQuestInBox)
+
+	local r, g, b = 0.2, 1.0, 0.2
+
+	-- Create tooltip
+	qDL:HookScript("OnEnter", function()
+		qDL:HighlightText()
+		qDL:SetFocus()
+		GameTooltip:SetOwner(qDL, "ANCHOR_BOTTOM", 0, -10)
+		GameTooltip:AddLine(qDL.tiptext)
+		GameTooltip:AddLine(L["Maps"].PressToCopy, r, g, b)
+		GameTooltip:Show()
+	end)
+
+	qDL:HookScript("OnLeave", function()
+		qDL:HighlightText(0, 0)
+		qDL:ClearFocus()
+		SetQuestInBox()
+		if (GameTooltip:IsForbidden()) then
+			return
+		end
+		GameTooltip:Hide()
 	end)
 end
 
@@ -637,7 +721,8 @@ function Module:OnInitialize()
 
 	-- self:SetUpWorldMap()
 	self:SetUpFogOfWar()
-	self:SetUpQuestLinks()
+	self:SetUpWorldMapLinks()
+	self:SetUpQuestDetailLinks()
 
 	if IsAddOnLoaded("Blizzard_EncounterJournal") then
 		self:SetUpEJLinks()

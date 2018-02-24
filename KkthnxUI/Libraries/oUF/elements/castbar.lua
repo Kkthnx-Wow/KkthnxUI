@@ -282,6 +282,7 @@ local function UNIT_SPELLCAST_INTERRUPTIBLE(self, event, unit)
 	--]]
 	if(element.PostCastInterruptible) then
 		return element:PostCastInterruptible(unit)
+
 	end
 end
 

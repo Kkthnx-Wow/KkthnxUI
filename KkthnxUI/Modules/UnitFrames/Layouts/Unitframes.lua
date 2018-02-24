@@ -40,6 +40,8 @@ local function UpdateClassPortraits(self, unit)
 end
 
 local function CreateUnitframeLayout(self, unit)
+	unit = unit:match("^(%a-)%d+") or unit
+
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", UnitFrame_OnEnter)
 	self:HookScript("OnLeave", UnitFrame_OnLeave)
@@ -448,8 +450,8 @@ if C["Unitframe"].Party then
 		self:SetWidth(header:GetAttribute("initial-width"))
 		self:SetHeight(header:GetAttribute("initial-height"))
 	]],
-	"initial-width", K.Scale(140),
-	"initial-height", K.Scale(38),
+	"initial-width", 140,
+	"initial-height", 38,
 	"showSolo", false,
 	"showParty", true,
 	"showPlayer", C["Unitframe"].ShowPlayer,
@@ -457,7 +459,7 @@ if C["Unitframe"].Party then
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", "GROUP",
-	"yOffset", K.Scale(-44))
+	"yOffset", -44)
 
 	party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 	party:SetScale(C["Unitframe"].Scale or 1)
@@ -475,7 +477,7 @@ if (C["Unitframe"].ShowBoss) then
 		if (i == 1) then
 			Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 		else
-			Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -45)
+			Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -48)
 		end
 		K.Movers:RegisterFrame(Boss[i])
 	end
@@ -490,7 +492,7 @@ if (C["Unitframe"].ShowArena) then
 		if (i == 1) then
 			arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 		else
-			arena[i]:SetPoint("TOPLEFT", arena[i-1], "BOTTOMLEFT", 0, -45)
+			arena[i]:SetPoint("TOPLEFT", arena[i-1], "BOTTOMLEFT", 0, -48)
 		end
 		K.Movers:RegisterFrame(arena[i])
 	end

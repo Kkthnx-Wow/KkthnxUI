@@ -179,7 +179,7 @@ local function CreateRaidLayout(self)
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY", 1)
 	self.Name:SetPoint("TOP", 0, -2)
 	self.Name:SetFontObject(RaidframeFont)
-	self:Tag(self.Name, "[KkthnxUI:NameVeryShort]")
+	self:Tag(self.Name, "[KkthnxUI:NameRaidShort]")
 
 	-- We need this to overlay self
 	self.Overlay = CreateFrame("Frame", nil, self.Health)
@@ -192,8 +192,8 @@ local function CreateRaidLayout(self)
 
 	if (C["Raidframe"].ShowRolePrefix) then
 		self.RaidRoleText = self.Health:CreateFontString(nil, "OVERLAY")
-		self.RaidRoleText:SetPoint("BOTTOMLEFT", self.Health, 1, 0)
-		self.RaidRoleText:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
+		self.RaidRoleText:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
+		self.RaidRoleText:SetFont(C["Media"].Font, 11, C["Raidframe"].Outline and "OUTLINE" or "")
 		self.RaidRoleText:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
 		self:Tag(self.RaidRoleText, "[KkthnxUI:RaidRole]")
 	end
@@ -239,7 +239,7 @@ local function CreateRaidLayout(self)
 		self.RaidDebuffs:SetWidth(C["Raidframe"].AuraDebuffIconSize)
 		self.RaidDebuffs:SetPoint("CENTER", self.Health)
 		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-		K.CreateBorder(self.RaidDebuffs, 5)
+		K.CreateBorder(self.RaidDebuffs, 4)
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
 		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
@@ -308,15 +308,15 @@ if (C["Raidframe"].Enable) then
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"yOffset", K.Scale(-6),
-	"xOffset", K.Scale(6),
+	"yOffset", -6,
+	"xOffset", 6,
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raidframe"].GroupBy.Value,
-	"maxColumns", K.Scale(5),
+	"maxColumns", 5,
 	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn or 1,
-	"columnSpacing", K.Scale(6),
+	"columnSpacing", 6,
 	"columnAnchorPoint", "LEFT")
 
 	raid:SetScale(C["Raidframe"].Scale or 1)
@@ -333,7 +333,7 @@ if C["Raidframe"].MainTankFrames then
 		self:SetHeight(40)
 	]],
 	"showRaid", true,
-	"yOffset", K.Scale(-8),
+	"yOffset", -8,
 	"groupFilter", "MAINTANK",
 	"template", "oUF_Raid_MT"
 	)
