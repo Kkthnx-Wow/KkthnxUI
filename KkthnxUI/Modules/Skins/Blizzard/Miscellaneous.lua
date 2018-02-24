@@ -81,32 +81,6 @@ local function LoadSkin()
 		GhostFrameContentsFrameIcon:SetParent(b)
 		b:SetTemplate("", true)
 	end
-
-	-- Reskin buttons
-	local BlizzardButtons = {
-		"RaidUtilityCloseButton",
-		"RaidUtilityConvertButton",
-		"RaidUtilityDisbandButton",
-		"RaidUtilityMainAssistButton",
-		"RaidUtilityMainTankButton",
-		"RaidUtilityRaidControlButton",
-		"RaidUtilityReadyCheckButton",
-		"RaidUtilityRoleButton",
-		"RaidUtilityShowButton",
-	}
-
-	if C["Raidframe"].RaidUtility == true then
-		table_insert(BlizzardButtons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
-	end
-
-	for i = 1, getn(BlizzardButtons) do
-		local buttons = _G[BlizzardButtons[i]]
-		if buttons and not buttons.isSkinned then
-			if buttons.isSkinned then return end
-			buttons:SkinButton()
-			buttons.isSkinned = true
-		end
-	end
 end
 
 tinsert(K.SkinFuncs["KkthnxUI"], LoadSkin)
