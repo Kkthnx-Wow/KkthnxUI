@@ -5,6 +5,8 @@ if (not C_TradeSkillUI) then
 	return
 end
 
+if K.CheckAddOnState("OneClickEnchantScroll") then return end
+
 -- Lua API
 local _G = _G
 local setmetatable = setmetatable
@@ -37,7 +39,7 @@ local SCROLL_TEXT = (setmetatable({
 	koKR = "두루마리",
 	zhCN = "卷轴",
 	zhTW = "卷軸"
-}, { __index = function(t,v) return "Scroll" end}))[(GetLocale())]
+}, { __index = function(t, v) return "Scroll" end}))[(GetLocale())]
 
 
 function Module:EnableScrollButton()

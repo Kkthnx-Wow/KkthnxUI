@@ -121,20 +121,20 @@ do
 end
 
 --[[do -- Make InterfaceOptionsFrame moveable.
-	InterfaceOptionsFrame:SetClampedToScreen(true)
-	InterfaceOptionsFrame:SetMovable(true)
-	InterfaceOptionsFrame:EnableMouse(true)
-	InterfaceOptionsFrame:RegisterForDrag("LeftButton", "RightButton")
-	InterfaceOptionsFrame:SetScript("OnDragStart", function(self)
-		if InCombatLockdown() then return end
-		self:StartMoving()
-		self.isMoving = true
-	end)
+InterfaceOptionsFrame:SetClampedToScreen(true)
+InterfaceOptionsFrame:SetMovable(true)
+InterfaceOptionsFrame:EnableMouse(true)
+InterfaceOptionsFrame:RegisterForDrag("LeftButton", "RightButton")
+InterfaceOptionsFrame:SetScript("OnDragStart", function(self)
+	if InCombatLockdown() then return end
+	self:StartMoving()
+	self.isMoving = true
+end)
 
-	InterfaceOptionsFrame:SetScript("OnDragStop", function(self)
-		self:StopMovingOrSizing()
-		self.isMoving = false
-	end)
+InterfaceOptionsFrame:SetScript("OnDragStop", function(self)
+	self:StopMovingOrSizing()
+	self.isMoving = false
+end)
 end--]]
 
 do -- Move some frames (Elvui)
@@ -235,11 +235,28 @@ end
 
 do -- Remove boss emote spam during bg(ArathiBasin SpamFix by Partha)
 	if C["Misc"].BattlegroundSpam == true then
+		-- Remove Boss Emote spam during BG
+		local BATTLEGROUNDS = {
+			["Wintergrasp"] = true,
+			["Tol Barad"] = true,
+			["Isle of Conquest"] = true,
+			["Strand of the Ancients"] = true,
+			["Alterac Valley"] = true,
+			["Warsong Gulch"] = true,
+			["Twin Peaks"] = true,
+			["Arathi Basin"] = true,
+			["Eye of the Storm"] = true,
+			["Battle for Gilneas"] = true,
+			["Deepwind Gorge"] = true,
+			["Silvershard Mines"] = true,
+			["The Battle for Gilneas"] = true,
+			["Temple of Kotmogu"] = true,
+		}
+
 		local Fixer = _G.CreateFrame("Frame")
 		local RaidBossEmoteFrame, spamDisabled = _G.RaidBossEmoteFrame
-
-		local function DisableSpam()
-			if _G.GetZoneText() == _G.L_ZONE_ARATHIBASIN or _G.GetZoneText() == _G.L_ZONE_GILNEAS then
+		local function ToggleBossEmotes()
+			if BATTLEGROUNDS[GetZoneText()] then
 				RaidBossEmoteFrame:UnregisterEvent("RAID_BOSS_EMOTE")
 				spamDisabled = true
 			elseif spamDisabled then
@@ -250,7 +267,7 @@ do -- Remove boss emote spam during bg(ArathiBasin SpamFix by Partha)
 
 		Fixer:RegisterEvent("PLAYER_ENTERING_WORLD")
 		Fixer:RegisterEvent("ZONE_CHANGED_NEW_AREA")
-		Fixer:SetScript("OnEvent", DisableSpam)
+		Fixer:SetScript("OnEvent", ToggleBossEmotes)
 	end
 end
 

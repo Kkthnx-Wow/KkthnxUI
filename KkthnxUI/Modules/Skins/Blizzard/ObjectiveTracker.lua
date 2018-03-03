@@ -131,10 +131,34 @@ local function LoadSkin()
 		end
 	end
 
+	local function SkinFindGroupButton(block)
+		if block.hasGroupFinderButton and block.groupFinderButton then
+			if block.groupFinderButton and not block.groupFinderButton.skinned then
+				block.groupFinderButton:SetNormalTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
+				block.groupFinderButton:GetNormalTexture():ClearAllPoints()
+				block.groupFinderButton:GetNormalTexture():SetPoint("CENTER", block.groupFinderButton:GetNormalTexture():GetParent())
+				block.groupFinderButton:GetNormalTexture():SetSize(32, 32)
+				block.groupFinderButton:GetNormalTexture():SetTexCoord(0.500, 0.625, 0.375, 0.5)
+				block.groupFinderButton:SetHighlightTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
+				block.groupFinderButton:GetHighlightTexture():ClearAllPoints()
+				block.groupFinderButton:GetHighlightTexture():SetPoint("CENTER", block.groupFinderButton:GetHighlightTexture():GetParent())
+				block.groupFinderButton:GetHighlightTexture():SetSize(32, 32)
+				block.groupFinderButton:GetHighlightTexture():SetTexCoord(0.625, 0.750, 0.875, 1)
+				block.groupFinderButton:SetPushedTexture("Interface/WorldMap/UI-QuestPoi-NumberIcons")
+				block.groupFinderButton:GetPushedTexture():ClearAllPoints()
+				block.groupFinderButton:GetPushedTexture():SetPoint("CENTER", block.groupFinderButton:GetPushedTexture():GetParent())
+				block.groupFinderButton:GetPushedTexture():SetSize(32, 32)
+				block.groupFinderButton:GetPushedTexture():SetTexCoord(0.375, 0.500, 0.375, 0.5)
+				block.groupFinderButton.skinned = true
+			end
+		end
+	end
+
 	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Bonus Objective Progress Bar
 	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Quest Progress Bar
 	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars) -- [Color]: Scenario Progress Bar
 	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton) -- [Move]: The eye & quest item to the left of the eye
+	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton) -- [Skin]: The eye
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton) -- [Skin]: Quest Item Buttons
 	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton) -- [Skin]: World Quest Item Buttons
 end

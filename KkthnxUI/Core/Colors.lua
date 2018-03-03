@@ -5,13 +5,13 @@ local oUF = ns.oUF
 if not oUF then return end
 
 -- Colors
-oUF.colors.castColor = {0.31, 0.45, 0.63, 0.5}
-oUF.colors.castNoInterrupt = {1, 0, 0, 0.5}
+oUF.colors.castColor = {1.0, 0.7, 0.0}
+oUF.colors.castNoInterrupt = {1.0, 0, 0}
 oUF.colors.disconnected = {0.53, 0.54, 0.53}
-oUF.colors.fallback = {1, 1, 0.8}
+oUF.colors.fallback = {1.0, 1.0, 0.8}
 oUF.colors.health = {0.29, 0.67, 0.30}
-oUF.colors.tapped = {.6, .6, .6}
-oUF.colors.white = {1, 1, 1}
+oUF.colors.tapped = {0.6, 0.6, 0.6}
+oUF.colors.white = {1.0, 1.0, 1.0}
 
 oUF.colors.reaction = {
 	[1] = {0.87, 0.37, 0.37}, -- Hated
@@ -24,7 +24,6 @@ oUF.colors.reaction = {
 	[8] = {0.29, 0.67, 0.30}, -- Exalted
 }
 
--- This is mainly just for our tooltip
 oUF.colors.factioncolors = {
 	["1"] = {r = 0.87, g = 0.37, b = 0.37}, -- Hated
 	["2"] = {r = 0.87, g = 0.37, b = 0.37}, -- Hostile
@@ -63,7 +62,6 @@ oUF.colors.power = {
 	["SOUL_SHARDS"] = {0.50, 0.32, 0.55},
 }
 
--- To change class colors use a custom class color addon like Class Colors
 oUF.colors.class = {
 	["DEATHKNIGHT"] = {0.77, 0.12, 0.24},
 	["DEMONHUNTER"] = {0.64, 0.19, 0.79},
@@ -80,10 +78,10 @@ oUF.colors.class = {
 }
 
 oUF.colors.totems = {
-	{0.71, 0.29, 0.13}, -- red 181 / 73 / 33
-	{0.26, 0.71, 0.13}, -- green 67 / 181 / 33
 	{0.13, 0.55, 0.71}, -- blue 33 / 141 / 181
+	{0.26, 0.71, 0.13}, -- green 67 / 181 / 33
 	{0.58, 0.13, 0.71}, -- violet 147 / 33 / 181
+	{0.71, 0.29, 0.13}, -- red 181 / 73 / 33
 	{0.71, 0.58, 0.13}, -- yellow 181 / 147 / 33
 }
 

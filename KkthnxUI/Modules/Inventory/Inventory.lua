@@ -204,19 +204,17 @@ function Stuffing:SlotUpdate(b)
 		b.frame.JunkIcon:ClearAllPoints()
 		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Inventory"].ButtonSize / 2, C["Inventory"].ButtonSize / 2)
 		b.frame.JunkIcon:SetSize(C["Inventory"].ButtonSize / 1.8, C["Inventory"].ButtonSize / 1.8)
-		if (quality == LE_ITEM_QUALITY_POOR and not noValue) then
-			b.frame.JunkIcon:Show()
-		else
-			b.frame.JunkIcon:Hide()
-		end
+		b.frame.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue)
 	end
 
 	-- Quest Item code from Blizzard's ContainerFrame.lua
 	local questTexture = _G[b.frame:GetName().."IconQuestTexture"]
 	if questTexture then
-		questTexture:SetSize(b.frame:GetSize())
+		questTexture:SetAllPoints()
 		if questId and not isActiveQuest then
+			--questTexture:SetAllPoints()
 			questTexture:SetTexture(TEXTURE_ITEM_QUEST_BANG)
+			questTexture:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			questTexture:Show()
 		else
 			questTexture:Hide()

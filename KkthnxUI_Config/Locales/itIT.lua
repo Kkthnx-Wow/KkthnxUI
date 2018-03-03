@@ -22,7 +22,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["UIScale"] = {
 			["Name"] = "UI Scale",
-			["Desc"] = "Set a custom UI scale",
+			["Desc"] = "Set a custom UI scale |n|n|cffFF0000'Auto Scale' has to be disabled for this to work|r",
 		},
 
 		["DisableTutorialButtons"] = {
@@ -130,6 +130,11 @@ KkthnxUIConfig["itIT"] = {
 		["ButtonSpace"] = {
 			["Name"] = "Button Space",
 			["Desc"] = "Buttons space",
+		},
+
+		["DetailedReport"] = {
+			["Name"] = "Detailed Report",
+			["Desc"] = "Displays a detailed report of every item sold when enabled. Disabled to just show the profit or expenses as a total.",
 		},
 
 		["Enable"] = {
@@ -901,6 +906,11 @@ KkthnxUIConfig["itIT"] = {
 		["BigWigs"] = {
 			["Name"] = "BigWigs",
 			["Desc"] = "BigWigs skin",
+		},
+
+		["ChatBubbles"] = {
+			["Name"] = "Chat Bubbles",
+			["Desc"] = "ChatBubbles skin",
 		},
 
 		["DBM"] = {

@@ -68,11 +68,15 @@ function K.CreateRaidTargetIndicator(self)
 	self.RaidTargetIndicator:SetSize(16, 16)
 end
 
-function K.CreateResurrectIndicator(self)
+function K.CreateResurrectIndicator(self, unit)
 	self.ResurrectIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetTexture(spiritHealer_280)
-	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait, "CENTER", 0, -12)
-	self.ResurrectIndicator:SetSize(64, 32)
+	self.ResurrectIndicator:SetPoint("CENTER", self.Health, 0, -12)
+	if unit ~= "party" then
+		self.ResurrectIndicator:SetSize(180, 102)
+	else
+		self.ResurrectIndicator:SetSize(100, 52)
+	end
 end
 
 function K.CreateRestingIndicator(self)
@@ -114,8 +118,8 @@ end
 
 function K.CreateQuestIndicator(self)
 	self.QuestIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.QuestIndicator:SetSize(22, 22)
-	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait, "TOPLEFT" , 9, -12)
+	self.QuestIndicator:SetSize(20, 20)
+	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT" , 11, -11)
 end
 
 local function UpdateThreat(self, event, unit)

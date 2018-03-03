@@ -73,6 +73,7 @@ C["Inventory"] = {
 	["BankColumns"] = 17,
 	["ButtonSize"] = 32,
 	["ButtonSpace"] = 6,
+	["DetailedReport"] = false,
 	["Enable"] = true,
 	["ItemLevel"] = false,
 	["JunkIcon"] = true,
@@ -283,7 +284,7 @@ C["Nameplates"] = {
 	["Width"] = 132,
 }
 
--- Skins
+-- Quests
 C["Quests"] = {
 	["AutoCollapse"] = false,
 	["AutoReward"] = false,
@@ -366,6 +367,7 @@ C["Quests"] = {
 C["Skins"] = {
 	["Bagnon"] = false,
 	["BigWigs"] = false,
+	["ChatBubbles"] = true,
 	["DBM"] = false,
 	["Recount"] = false,
 	["Skada"] = false,

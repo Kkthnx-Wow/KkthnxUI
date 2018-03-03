@@ -1,36 +1,31 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("BagFilter", "AceEvent-3.0")
-if C["Inventory"].BagFilter ~= true then
-    return
-end
 
 -- Sourced: Tukui (Tukz)
 -- Modified: KkthnxUI (Kkthnx)
 
 local _G = _G
 local select = select
-local tinsert = table.insert
-local tremove = table.remove
+local table_insert = table.insert
+local table_remove = table.remove
 local unpack = unpack
 
-local CreateFrame = CreateFrame
-local DeleteCursorItem = DeleteCursorItem
+local CreateFrame = _G.CreateFrame
 local GetContainerItemInfo = _G.GetContainerItemInfo
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetItemInfo = _G.GetItemInfo
 local GetLocale = _G.GetLocale
 local IsAddOnLoaded = _G.IsAddOnLoaded
-local PickupContainerItem = PickupContainerItem
-
-local Link
+local GetContainerItemID = _G.GetContainerItemID
 
 Module.Trash = {
-	-- Dungeon/Raid items
-    -- TBC
+    -- TBC - Dungeon/Raid items
     [32897] = true, -- Mark of the Illidari
     [32902] = true, -- Bottled Nethergon Energy
     [32905] = true, -- Bottled Nethergon Vapor
 }
+
+local Link
 
 function Module:GetTrash(event)
     for bag = 0, 4 do
@@ -81,16 +76,15 @@ function Module:RemoveItem(itemID)
 end
 
 function Module:OnEnable()
-    if C["Inventory"].BagFilter ~= true then
+    if K.CheckAddOnState("Felsong_Companion") or C["Inventory"].BagFilter ~= true then
         return
     end
-	self:RegisterEvent("CHAT_MSG_LOOT", "GetTrash")
+    self:RegisterEvent("CHAT_MSG_LOOT", "GetTrash")
 end
 
 function Module:OnDisable()
-	self:UnregisterEvent("CHAT_MSG_LOOT")
+    self:UnregisterEvent("CHAT_MSG_LOOT")
 end
-
 Module:UpdateConfigDescription()
 
 K["BagFilter"] = Module

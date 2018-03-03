@@ -416,6 +416,84 @@ end
 _G.SLASH_CLEARCHAT1 = "/clearchat"
 _G.SLASH_CLEARCHAT2 = "/chatclear"
 
+local BLIZZARD_ADDONS = {
+	"Blizzard_AchievementUI",
+	"Blizzard_AdventureMap",
+	"Blizzard_ArchaeologyUI",
+	"Blizzard_ArenaUI",
+	"Blizzard_ArtifactUI",
+	"Blizzard_AuctionUI",
+	"Blizzard_AuthChallengeUI",
+	"Blizzard_BarbershopUI",
+	"Blizzard_BattlefieldMinimap",
+	"Blizzard_BindingUI",
+	"Blizzard_BlackMarketUI",
+	"Blizzard_BoostTutorial",
+	"Blizzard_Calendar",
+	"Blizzard_ChallengesUI",
+	"Blizzard_ClassTrial",
+	"Blizzard_ClientSavedVariables",
+	"Blizzard_Collections",
+	"Blizzard_CombatLog",
+	"Blizzard_CombatText",
+	"Blizzard_CompactRaidFrames",
+	"Blizzard_CUFProfiles",
+	"Blizzard_DeathRecap",
+	"Blizzard_DebugTools",
+	"Blizzard_EncounterJournal",
+	"Blizzard_FlightMap",
+	"Blizzard_GarrisonTemplates",
+	"Blizzard_GarrisonUI",
+	"Blizzard_GlyphUI",
+	"Blizzard_GMChatUI",
+	"Blizzard_GMSurveyUI",
+	"Blizzard_GuildBankUI",
+	"Blizzard_GuildControlUI",
+	"Blizzard_GuildUI",
+	"Blizzard_InspectUI",
+	"Blizzard_ItemSocketingUI",
+	"Blizzard_ItemUpgradeUI",
+	"Blizzard_LookingForGuildUI",
+	"Blizzard_MacroUI",
+	"Blizzard_MapCanvas",
+	"Blizzard_MovePad",
+	"Blizzard_NamePlates",
+	"Blizzard_ObjectiveTracker",
+	"Blizzard_ObliterumUI",
+	"Blizzard_OrderHallUI",
+	"Blizzard_PetBattleUI",
+	"Blizzard_PVPUI",
+	"Blizzard_QuestChoice",
+	"Blizzard_RaidUI",
+	"Blizzard_SecureTransferUI",
+	"Blizzard_SharedMapDataProviders",
+	"Blizzard_SocialUI",
+	"Blizzard_StoreUI",
+	"Blizzard_TalentUI",
+	"Blizzard_TalkingHeadUI",
+	"Blizzard_TimeManager",
+	"Blizzard_TokenUI",
+	"Blizzard_TradeSkillUI",
+	"Blizzard_TrainerUI",
+	"Blizzard_Tutorial",
+	"Blizzard_TutorialTemplates",
+	"Blizzard_VoidStorageUI",
+	"Blizzard_WowTokenUI",
+}
+
+function K.EnableBlizzardAddOns()
+	for _, addon in pairs(BLIZZARD_ADDONS) do
+		local reason = select(5, GetAddOnInfo(addon))
+		if reason == "DISABLED" then
+			EnableAddOn(addon)
+			K.Print("The following addon was re-enabled:", addon)
+		end
+	end
+end
+K:RegisterChatCommand("enableblizz", K.EnableBlizzardAddOns)
+K:RegisterChatCommand("fixblizz", K.EnableBlizzardAddOns)
+
+
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
 	PlaySound(PlaySoundKitID and "lfg_rewards" or SOUNDKIT.LFG_REWARDS)

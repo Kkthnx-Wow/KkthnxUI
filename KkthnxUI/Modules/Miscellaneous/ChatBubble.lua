@@ -1,5 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ChatBubbles", "AceEvent-3.0", "AceTimer-3.0")
+if C["Skins"].ChatBubbles ~= true then return end -- Some people hate on the bubbles. Oh Well?
 
 if K.CheckAddOnState("NiceBubbles") then return end -- Allow the user to use the stand-alone instead
 
@@ -14,10 +15,10 @@ local select = select
 local tostring = tostring
 
 -- WoW API
- local CreateFrame = _G.CreateFrame
- local IsInInstance = _G.IsInInstance
- local SetCVar = _G.SetCVar
- local WorldFrame = _G.WorldFrame
+local CreateFrame = _G.CreateFrame
+local IsInInstance = _G.IsInInstance
+local SetCVar = _G.SetCVar
+local WorldFrame = _G.WorldFrame
 
 -- Bubble Data
 local bubbles = {} -- local bubble registry
@@ -28,9 +29,7 @@ local minsize, maxsize, fontsize = 12, 16, 12 -- bubble font size
 local offsetX, offsetY = 0, -100 -- bubble offset from its original position
 
 -- Textures
-local BLANK_TEXTURE = [[Interface\ChatFrame\ChatFrameBackground]]
 local BUBBLE_TEXTURE = [[Interface\Tooltips\ChatBubble-Background]]
-local TOOLTIP_BORDER = [[Interface\Tooltips\UI-Tooltip-Border]]
 
 -- Client version constant
 -- Patch versions: http://wow.gamepedia.com/Public_client_builds

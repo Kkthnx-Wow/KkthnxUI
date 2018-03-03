@@ -1,151 +1,108 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Vendor", "AceEvent-3.0")
 
--- Sourced: Tukui (Tukz)
+-- Sourced: gUI4 (Goldpaw)
 
-local strmatch = string.match
-local BlizzardMerchantClick = MerchantItemButton_OnModifiedClick
+-- Lua API
+local _G = _G
+local min, max, abs = math.min, math.max, math.abs
+local print = print
+local select = select
 
-local VendorList = "\n\nVendor List:\n"
+-- WoW API
+local BuyMerchantItem = _G.BuyMerchantItem
+local CanMerchantRepair = _G.CanMerchantRepair
+local GetContainerItemID = _G.GetContainerItemID
+local GetContainerItemInfo = _G.GetContainerItemInfo
+local GetContainerNumSlots = _G.GetContainerNumSlots
+local GetGuildBankMoney = _G.GetGuildBankMoney
+local GetGuildBankWithdrawMoney = _G.GetGuildBankWithdrawMoney
+local GetItemInfo = _G.GetItemInfo
+local GetMerchantItemLink = _G.GetMerchantItemLink
+local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
+local GetMoney = _G.GetMoney
+local GetRepairAllCost = _G.GetRepairAllCost
+local IsAltKeyDown = _G.IsAltKeyDown
+local IsInGuild = _G.IsInGuild
+local MerchantGuildBankRepairButton = _G.MerchantGuildBankRepairButton
+local RepairAllItems = _G.RepairAllItems
+local UseContainerItem = _G.UseContainerItem
 
-Module.VendorFilter = {
-	[41808] = true, -- Bonescale Snapper
-	[42336] = true, -- Bloodstone Band
-	[42337] = true, -- Sun Rock Ring
-	[43244] = true, -- Crystal Citrine Necklace
-	[43571] = true, -- Sewer Carp
-	[43572] = true, -- Magic Eater
-	[6289] = true, -- Raw Longjaw Mud Snapper
-	[6291] = true, -- Raw Brilliant Smallfish
-	[6308] = true, -- Raw Bristle Whisker Catfish
-	[6309] = true, -- 17 Pound Catfish
-	[6310] = true, -- 19 Pound Catfish
-}
+local _MerchantItemButton_OnModifiedClick = _G.MerchantItemButton_OnModifiedClick -- We NEED this to be a local!
+function _G.MerchantItemButton_OnModifiedClick(self, ...)
+	if IsAltKeyDown() then
+		local ID = self:GetID()
+		if ID then
+			local max = select(8, GetItemInfo(GetMerchantItemLink(ID)))
+			if max and max > 1 then
+				BuyMerchantItem(ID, GetMerchantItemMaxStack(ID))
+			end
+		end
+	end
+	_MerchantItemButton_OnModifiedClick(self, ...)
+end
 
-function Module:OnEvent()
-	if C["Inventory"].AutoSell or C["Inventory"].AutoSellMisc then
-		local Cost = 0
+_G.ITEM_VENDOR_STACK_BUY = _G.ITEM_VENDOR_STACK_BUY.."|n".."<Alt-Click to buy the maximum amount>"
 
-		for Bag = 0, 4 do
-			for Slot = 1, GetContainerNumSlots(Bag) do
-				local Link, ID = GetContainerItemLink(Bag, Slot), GetContainerItemID(Bag, Slot)
+function Module:UpdateMerchant()
+	local gain, sold = 0, 0
+	local repaired = false
+	local useGuildFunds = IsInGuild() and C["Inventory"].UseGuildRepairFunds
+	local usedGuildFunds = false
+	local yourGuildFunds = min((GetGuildBankWithdrawMoney() ~= -1) and GetGuildBankWithdrawMoney() or GetGuildBankMoney(), GetGuildBankMoney())
+	local repairCost = select(1, GetRepairAllCost()) or 0
+	local itemID, count, link, rarity, price, stack
 
-				if (Link and ID and type(Link) == "string") then
-					if (strmatch(Link, "battlepet:") or strmatch(Link, "keystone:")) then
-						-- Do nothing, never sell/destroy pets or keystones
-					else
-						local Price = 0
-						local Mult1, Mult2 = select(11, GetItemInfo(Link)), select(2, GetContainerItemInfo(Bag, Slot))
-
-						if (Mult1 and Mult2) then
-							Price = Mult1 * Mult2
+	if C["Inventory"].AutoSell and not(_G.ZygorGuidesViewer and _G.ZygorGuidesViewer.db.profile.autosell) then -- let zygor handle it if available
+		for bag = 0, 4, 1 do
+			for slot = 1, GetContainerNumSlots(bag), 1 do
+				itemID = GetContainerItemID(bag, slot)
+				if itemID then
+					count = select(2, GetContainerItemInfo(bag, slot))
+					_, link, rarity, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
+					if rarity == 0 then
+						stack = (price or 0) * (count or 1)
+						sold = sold + stack
+						if C["Inventory"].DetailedReport then
+							K.Print(("-%s|cFF00DDDDx%d|r %s"):format(link, count, K.FormatMoney(stack)))
 						end
-
-						if (C["Inventory"].AutoSell and select(3, GetItemInfo(Link)) == 0 and Price > 0) then
-							UseContainerItem(Bag, Slot)
-							PickupMerchantItem()
-							Cost = Cost + Price
-						end
-
-						if C["Inventory"].AutoSellMisc and self.VendorFilter[ID] then
-							UseContainerItem(Bag, Slot)
-							PickupMerchantItem()
-							Cost = Cost + Price
-						end
+						UseContainerItem(bag, slot)
 					end
 				end
 			end
 		end
-
-		if (Cost > 0) then
-			local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
-			DEFAULT_CHAT_FRAME:AddMessage(L["Inventory"].SoldTrash.." |cffffffff"..Gold..L["Miscellaneous"].Gold_Short.." |cffffffff"..Silver..L["Miscellaneous"].Silver_Short.." |cffffffff"..Copper..L["Miscellaneous"].Copper_Short..".", 255, 255, 0)
-		end
+		gain = gain + sold
 	end
-
-	if (not IsShiftKeyDown()) then
-		if (CanMerchantRepair() and C["Inventory"].AutoRepair) then
-			local Cost, Possible = GetRepairAllCost()
-
-			if (Cost > 0) then
-				if (IsInGuild() and C["Inventory"].UseGuildRepairFunds) then
-					local CanGuildRepair = (CanGuildBankRepair() and (Cost <= GetGuildBankWithdrawMoney()))
-
-					if CanGuildRepair then
-						RepairAllItems(1)
-
-						return
-					end
-				end
-
-				if Possible then
-					RepairAllItems()
-					local Gold, Silver, Copper = math.floor(Cost / 10000) or 0, math.floor((Cost % 10000) / 100) or 0, Cost % 100
-					DEFAULT_CHAT_FRAME:AddMessage(L["Inventory"].RepairCost.." |cffffffff"..Gold..L["Miscellaneous"].Gold_Short.." |cffffffff"..Silver..L["Miscellaneous"].Silver_Short.." |cffffffff"..Copper..L["Miscellaneous"].Copper_Short..".", 255, 255, 0)
-				else
-					DEFAULT_CHAT_FRAME:AddMessage(L["Inventory"].NotEnoughMoney, 255, 0, 0)
-				end
+	--[[
+	if sold > 0 then
+		K.Print(("Earned %s"):format(K.FormatMoney(sold))) -- We dont need to know what our profit was 2 times. We already handle this on line 101
+	end
+	--]]
+	if C["Inventory"].AutoRepair and CanMerchantRepair() and repairCost > 0 then
+		if max(GetMoney(), yourGuildFunds) > repairCost then
+			if (useGuildFunds and (yourGuildFunds > repairCost)) and MerchantGuildBankRepairButton:IsEnabled() and MerchantGuildBankRepairButton:IsShown() then
+				RepairAllItems(1)
+				usedGuildFunds = true
+				repaired = true
+				K.Print(("You repaired your items for %s using Guild Bank funds"):format(("|cffff0000%s|r"):format(K.FormatMoney(repairCost))))
+			elseif GetMoney() > repairCost then
+				RepairAllItems()
+				repaired = true
+				K.Print(("You repaired your items for %s"):format(("|cffff0000%s|r"):format(K.FormatMoney(repairCost))))
+				gain = gain - repairCost
 			end
-		end
-	end
-end
-
-function Module:UpdateConfigDescription()
-	if (not IsAddOnLoaded("KkthnxUI_Config")) then
-		return
-	end
-
-	local Locale = GetLocale()
-	local Group = KkthnxUIConfig[Locale]["Inventory"]["AutoSellMisc"]
-
-	if Group then
-		local Desc = Group.Default
-		local Items = Desc..L["Inventory"].TrashList
-
-		for itemID in pairs(self.VendorFilter) do
-			local Name, Link = GetItemInfo(itemID)
-			if (Name and Link) then
-				if itemID == 1 then
-					Items = Items..""..Link
-				else
-					Items = Items.."\n"..Link
-				end
-			end
-		end
-		KkthnxUIConfig[Locale]["Inventory"]["AutoSellMisc"]["Desc"] = Items
-	end
-end
-
-function Module:AddItem(itemID)
-	self.VendorFilter[itemID] = true
-	self:UpdateConfigDescription()
-end
-
-function Module:RemoveItem(itemID)
-	self.VendorFilter[itemID] = nil
-	self:UpdateConfigDescription()
-end
-
-function Module:MerchantClick(...)
-	if (IsAltKeyDown()) then
-		local MaxStack = select(8, GetItemInfo(GetMerchantItemLink(self:GetID())))
-
-		if (MaxStack and MaxStack > 1) then
-			BuyMerchantItem(self:GetID(), GetMerchantItemMaxStack(self:GetID()))
+		else
+			K.Print("You haven't got enough available funds to repair!")
 		end
 	end
 
-	BlizzardMerchantClick(self, ...)
+	if gain > 0 then
+		K.Print(("Your profit is %s"):format(K.FormatMoney(gain)))
+	elseif gain < 0 then
+		K.Print(("Your expenses are %s"):format(("|cffff0000%s|r"):format(K.FormatMoney(abs(gain)))))
+	end
 end
 
-function Module:OnEnable()
-	self:RegisterEvent("MERCHANT_SHOW", "OnEvent")
-	MerchantItemButton_OnModifiedClick = self.MerchantClick
+function Module:OnInitialize()
+	self:RegisterEvent("MERCHANT_SHOW", "UpdateMerchant")
 end
-
-function Module:OnDisable()
-	self:UnregisterEvent("MERCHANT_SHOW")
-	MerchantItemButton_OnModifiedClick = BlizzardMerchantClick
-end
-
-Module:UpdateConfigDescription()

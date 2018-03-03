@@ -40,18 +40,6 @@ StaticPopupDialogs["CHANGES_RL"] = {
 	preferredIndex = 3
 }
 
-StaticPopupDialogs["CLIENT_RESTART"] = {
-	text = L["StaticPopups"].Resolution_Changed,
-	button1 = "Restart Client",
-	button2 = RELOADUI,
-	OnAccept = function(self) K.RequireReload = false ReloadUI() end, -- Yah, whatever Blizzard
-	OnCancel = function(self) K.RequireReload = false ReloadUI() end,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3
-}
-
 StaticPopupDialogs["RESTART_GFX"] = {
 	text = L["StaticPopups"].Restart_GFX,
 	button1 = ACCEPT,

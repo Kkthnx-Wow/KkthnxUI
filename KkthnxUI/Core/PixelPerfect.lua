@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 
 -- Big thanks to Goldpaw for failproofing this badass script some more.
 
@@ -23,21 +23,18 @@ local SetCVar = _G.SetCVar
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: ForceQuit, WorldMapFrame, UIParent, StaticPopup_Show
 
-K.IsLocked = false
-K.RequireReload = false
+local IsLocked = false
 
 -- Optimize graphic after we enter world
 local PixelPerfect = CreateFrame("Frame")
 PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
 PixelPerfect:RegisterEvent("CINEMATIC_STOP")
-PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
-PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Prevent a C stack overflow
-	if K.IsLocked then
+	if IsLocked then
 		return
 	end
-	K.IsLocked = true
+	IsLocked = true
 
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -65,12 +62,6 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	if (string_format("%.2f", GetCVar("uiScale")) ~= string_format("%.2f", C["General"].UIScale)) then
 		SetCVar("uiScale", C["General"].UIScale)
-		if not K.RequireReload then
-			if C["General"].UIScale >= 0.64 then
-				StaticPopup_Show("CLIENT_RESTART")
-				K.RequireReload = true -- We want to force a restart here since the user goes below the standard scale.
-			end
-		end
 	end
 
 	-- Allow 4K and WQHD resolution to have an uiScale lower than 0.64, which is
@@ -85,5 +76,5 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 
-	K.IsLocked = false
+	IsLocked = false
 end)

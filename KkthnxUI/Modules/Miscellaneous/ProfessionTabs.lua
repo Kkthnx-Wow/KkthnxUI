@@ -1,7 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ProfessionTabs", "AceEvent-3.0")
+
 if K.CheckAddOnState("TradeSkillMaster_Crafting") then return end
--- if C["Misc"].ProfessionTabs ~= true then return end
 
 local _G = _G
 local next = next

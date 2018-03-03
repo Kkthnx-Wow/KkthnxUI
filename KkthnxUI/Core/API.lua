@@ -46,8 +46,15 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	if not strip then self:StripTextures(true) end
 	if template == "None" then self:SetBackdrop(nil) return end
 
-	K.CreateBorder(self)
-	self:SetBackdrop({bgFile = C["Media"].Blank, tile = false, tileSize = 0, insets = {left = 0, right = 0, top = 0, bottom = 0}})
+	self:SetBackdrop({
+		bgFile = C["Media"].Blank,
+		tile = false, tileSize = 0, edgeSize = K.Mult,
+	})
+
+	if not self.isCreateBorder then
+		K.CreateBorder(self)
+		self.isCreateBorder = true
+	end
 
 	local backdropcolor, bordercolor
 	if string_match(template, "Black") then
