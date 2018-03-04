@@ -368,7 +368,7 @@ end
 
 function Module:OnSetCooldown(cooldown, ...)
 	if cooldown:IsForbidden() then
-		print(cooldown:IsForbidden())
+		-- print(cooldown:IsForbidden())
 		return
 	end
 
