@@ -6,9 +6,9 @@ local RunesModuleTexture = K.GetTexture(C["Unitframe"].Texture)
 
 local function PostUpdateRune(_, rune, _, _, _, isReady)
 	if (isReady) then
-		rune:SetAlpha(1)
+		rune:GetStatusBarTexture():SetAlpha(1.0)
 	else
-		rune:SetAlpha(0.5)
+		rune:GetStatusBarTexture():SetAlpha(0.3)
 	end
 end
 
