@@ -90,7 +90,7 @@ KkthnxUIConfig["deDE"] = {
 
 		["GroupLoot"] = {
 			["Name"] = "GroupLoot",
-			["Desc"] = "The amount of bars to display on the bottom. Note: Value can only be 1-3",
+			["Desc"] = "Toggle the loot roll frame.",
 		},
 
 		["Texture"] = {
@@ -130,11 +130,6 @@ KkthnxUIConfig["deDE"] = {
 		["ButtonSpace"] = {
 			["Name"] = "Button Space",
 			["Desc"] = "Buttons space",
-		},
-
-		["DetailedReport"] = {
-			["Name"] = "Detailed Report",
-			["Desc"] = "Displays a detailed report of every item sold when enabled. Disabled to just show the profit or expenses as a total.",
 		},
 
 		["DetailedReport"] = {

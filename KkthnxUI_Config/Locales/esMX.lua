@@ -90,7 +90,7 @@ KkthnxUIConfig["esMX"] = {
 
 		["GroupLoot"] = {
 			["Name"] = "GroupLoot",
-			["Desc"] = "The amount of bars to display on the bottom. Note: Value can only be 1-3",
+			["Desc"] = "Toggle the loot roll frame.",
 		},
 
 		["Texture"] = {
