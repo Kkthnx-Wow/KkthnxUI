@@ -677,11 +677,12 @@ function Module:OnEnable()
 	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
-	GameTooltipStatusBar.text:FontTemplate(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline)
+	GameTooltipStatusBar.text:SetFont(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline and "OUTLINE" or "")
+	GameTooltipStatusBar.text:SetShadowOffset(C["Tooltip"].FontOutline and 0 or 1, C["Tooltip"].FontOutline and -0 or -1)
 
 	-- Tooltip Fonts
 	if not GameTooltip.hasMoney then
-		--Force creation of the money lines, so we can set font for it
+		-- Force creation of the money lines, so we can set font for it
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")
 		GameTooltip_ClearMoney(GameTooltip)
