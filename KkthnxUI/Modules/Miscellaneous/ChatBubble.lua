@@ -59,7 +59,7 @@ local Updater = CreateFrame("Frame", nil, WorldFrame)
 Updater:SetFrameStrata("TOOLTIP")
 
 -- check whether the given frame is a bubble or not
-Updater.IsBubble = K.PrivateBuild and function(self, bubble)
+Updater.IsBubble = K.Legion720 and function(self, bubble)
   if (bubble.IsForbidden and bubble:IsForbidden()) then
     return
   end
@@ -223,7 +223,7 @@ Updater.IsBubble = K.PrivateBuild and function(self, bubble)
     -- Just kill off the chat bubbles within instances in 7.2.5,
     -- as these have become forbidden to change.
     -- The original Blizzard bubbles are screen covering spam, and suck.
-    if K.RetailBuild then
+    if K.Legion725 then
       self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateBubbleDisplay")
     end
 
@@ -233,7 +233,7 @@ Updater.IsBubble = K.PrivateBuild and function(self, bubble)
 
   function Module:UpdateBubbleDisplay()
     local _, instanceType = IsInInstance()
-    if K.PrivateBuild then
+    if K.Legion720 then
       if (instanceType == "none") then
         SetCVar("chatBubbles", 1)
         self.Updater:SetScript("OnUpdate", self.Updater.OnUpdate)

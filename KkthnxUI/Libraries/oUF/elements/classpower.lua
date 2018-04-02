@@ -48,7 +48,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local _, PlayerClass = UnitClass('player')
-local RetailBuild = tonumber((select(2, GetBuildInfo()))) >= 26124
+local Legion730 = tonumber((select(2, GetBuildInfo()))) >= 24500
 
 -- sourced from FrameXML/Constants.lua
 local SPEC_MAGE_ARCANE = SPEC_MAGE_ARCANE or 1
@@ -112,11 +112,11 @@ local function Update(self, event, unit, powerType)
 		else
 			cur = UnitPower('player', ClassPowerID, true)
 			max = UnitPowerMax('player', ClassPowerID)
-			mod = RetailBuild and UnitPowerDisplayMod(ClassPowerID)
+			mod = Legion730 and UnitPowerDisplayMod(ClassPowerID)
 		end
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
-		if RetailBuild then
+		if Legion730 then
 			cur = mod == 0 and 0 or cur / mod
 		end
 

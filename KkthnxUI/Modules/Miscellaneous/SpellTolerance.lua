@@ -13,14 +13,14 @@ local _, _, _, lag = GetNetStats()
 local function LatencyUpdate(self, elapsed)
   int = int - elapsed
   if int < 0 then
-    if K.PrivateBuild then
+    if K.Legion715 then
       if GetCVar("reducedLagTolerance") ~= tostring(1) then
         SetCVar("reducedLagTolerance", tostring(1))
       end
     end
 
     if lag ~= 0 and lag <= 400 then
-      if K.RetailBuild then
+      if K.Legion730 then
         SetCVar("SpellQueueWindow", tostring(lag))
       else
         SetCVar("maxSpellStartRecoveryOffset", tostring(lag))

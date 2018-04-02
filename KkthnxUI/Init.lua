@@ -100,8 +100,14 @@ AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_CO
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo() AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
 AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and PlaySound or PlaySoundKitID
-AddOn.RetailBuild = AddOn.WoWBuild >= 26124
-AddOn.PrivateBuild = AddOn.WoWBuild == 23360
+-- Retrive the current game client version
+AddOn.Build = tonumber((select(2, GetBuildInfo())))
+-- Client version constant
+-- Patch versions: http://wow.gamepedia.com/Public_client_builds
+AddOn.Legion715 = AddOn.Build >= 23360
+AddOn.Legion720 = AddOn.Build >= 23436
+AddOn.Legion725 = AddOn.Build >= 24461
+AddOn.Legion730 = AddOn.Build >= 24500
 
 if (About) then
   AddOn.optionsFrame = About.new(nil, "KkthnxUI")

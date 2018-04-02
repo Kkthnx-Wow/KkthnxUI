@@ -6,8 +6,8 @@ local Module = K:NewModule("Reputation_DataBar", "AceEvent-3.0")
 local _G = _G
 local format = format
 
-local C_Reputation_GetFactionParagonInfo = K.RetailBuild and _G.C_Reputation.GetFactionParagonInfo
-local C_Reputation_IsFactionParagon = K.RetailBuild and _G.C_Reputation.IsFactionParagon
+local C_Reputation_GetFactionParagonInfo = K.Legion730 and _G.C_Reputation.GetFactionParagonInfo
+local C_Reputation_IsFactionParagon = K.Legion730 and _G.C_Reputation.IsFactionParagon
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetWatchedFactionInfo, GetNumFactions, GetFactionInfo = _G.GetWatchedFactionInfo, _G.GetNumFactions, _G.GetFactionInfo
 local InCombatLockdown = _G.InCombatLockdown
@@ -27,7 +27,7 @@ function Module:UpdateReputation(event)
 	local ID, isFriend, friendText, standingLabel
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
-	if K.RetailBuild then
+	if K.Legion730 then
 		if factionID and C_Reputation_IsFactionParagon(factionID) then
 			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 			if currentValue and threshold then
@@ -94,7 +94,7 @@ function Module:ReputationBar_OnEnter()
 
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
-	if K.RetailBuild then
+	if K.Legion730 then
 		if factionID and C_Reputation_IsFactionParagon(factionID) then
 			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
 			if currentValue and threshold then
