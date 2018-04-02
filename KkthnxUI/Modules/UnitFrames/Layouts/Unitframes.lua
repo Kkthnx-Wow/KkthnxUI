@@ -71,6 +71,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
 	elseif (unit == "pet") then
@@ -78,6 +79,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetJustifyH("LEFT")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	elseif (unit == "target") then
@@ -85,6 +87,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", -26, 10)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "focus") then
@@ -92,6 +95,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "targettarget") then
@@ -99,6 +103,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", -15, 7)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	elseif (unit == "focustarget") then
 		self.Health:SetSize(74, 12)
@@ -108,6 +113,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 18, 8)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "boss" or unit == "arena") then
@@ -115,6 +121,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	end
@@ -143,27 +150,31 @@ local function CreateUnitframeLayout(self, unit)
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power Value
-		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Power.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	elseif unit == "pet" then
 		self.Power:SetSize(74, 8)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power Value
-		self.Power.Value = K.SetFontString(self, C["Media"].Font, 10, "CENTER")
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Power.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 	elseif unit == "target" then
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power value
-		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Power.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	elseif unit == "focus" then
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power value
-		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Power.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	elseif (unit == "targettarget") then
@@ -179,7 +190,8 @@ local function CreateUnitframeLayout(self, unit)
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power value
-		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
+		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Power.Value:SetShadowOffset(C["Unitframe"].Outline and 0, -0 or 1.25, -1.25)
 		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	end
