@@ -213,13 +213,14 @@ function Module:GetTalentSpec(unit, isPlayer)
 		if (not isPlayer) then
 			local role = GetSpecializationRoleByID(spec)
 			if (role ~= nil) then
-				local _, name = GetSpecializationInfoByID(spec)
-				return name
+				local _, name, _, icon = GetSpecializationInfoByID(spec)
+				icon = icon and "|T"..icon..":16:16:0:0:64:64:5:59:5:59|t " or ""
+				return name and icon..name
 			end
 		else
-			local _, name = GetSpecializationInfo(spec)
-
-			return name
+			local _, name, _, icon = GetSpecializationInfo(spec)
+			icon = icon and "|T"..icon..":16:16:0:0:64:64:5:59:5:59|t " or ""
+			return name and icon..name
 		end
 	end
 end
@@ -703,7 +704,7 @@ function Module:OnEnable()
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
-	self:SecureHookScript(GameTooltip, 'OnTooltipSetItem', 'GameTooltip_OnTooltipSetItem')
+	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", 'GameTooltip_OnTooltipSetItem')
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 
 	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")

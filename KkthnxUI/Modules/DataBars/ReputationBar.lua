@@ -6,8 +6,8 @@ local Module = K:NewModule("Reputation_DataBar", "AceEvent-3.0")
 local _G = _G
 local format = format
 
-local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
-local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
+local C_Reputation_GetFactionParagonInfo = K.RetailBuild and _G.C_Reputation.GetFactionParagonInfo
+local C_Reputation_IsFactionParagon = K.RetailBuild and _G.C_Reputation.IsFactionParagon
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetWatchedFactionInfo, GetNumFactions, GetFactionInfo = _G.GetWatchedFactionInfo, _G.GetNumFactions, _G.GetFactionInfo
 local InCombatLockdown = _G.InCombatLockdown
@@ -27,13 +27,15 @@ function Module:UpdateReputation(event)
 	local ID, isFriend, friendText, standingLabel
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
-	if factionID and C_Reputation_IsFactionParagon(factionID) then
-		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
-		if currentValue and threshold then
-			min, max = 0, threshold
-			value = currentValue % threshold
-			if hasRewardPending then
-				value = value + threshold
+	if K.RetailBuild then
+		if factionID and C_Reputation_IsFactionParagon(factionID) then
+			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
+			if currentValue and threshold then
+				min, max = 0, threshold
+				value = currentValue % threshold
+				if hasRewardPending then
+					value = value + threshold
+				end
 			end
 		end
 	end
@@ -84,7 +86,7 @@ end
 
 function Module:ReputationBar_OnEnter()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 	end
 
 	GameTooltip:ClearLines()
@@ -92,13 +94,15 @@ function Module:ReputationBar_OnEnter()
 
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
-	if factionID and C_Reputation_IsFactionParagon(factionID) then
-		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
-		if currentValue and threshold then
-			min, max = 0, threshold
-			value = currentValue % threshold
-			if hasRewardPending then
-				value = value + threshold
+	if K.RetailBuild then
+		if factionID and C_Reputation_IsFactionParagon(factionID) then
+			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
+			if currentValue and threshold then
+				min, max = 0, threshold
+				value = currentValue % threshold
+				if hasRewardPending then
+					value = value + threshold
+				end
 			end
 		end
 	end
@@ -112,7 +116,7 @@ function Module:ReputationBar_OnEnter()
 			friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
 		end
 
-		GameTooltip:AddDoubleLine(STANDING..':', (friendID and friendTextLevel) or _G['FACTION_STANDING_LABEL'..reaction], 1, 1, 1)
+		GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL"..reaction], 1, 1, 1)
 		GameTooltip:AddDoubleLine(REPUTATION..":", format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 	end
 	GameTooltip:Show()
@@ -120,11 +124,11 @@ end
 
 function Module:ReputationBar_OnLeave()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 	end
 
 	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide() -- WHY??? BECAUSE FUCK GAMETOOLTIP, THATS WHY!!
+		GameTooltip:Hide()
 	end
 end
 
@@ -140,7 +144,7 @@ function Module:UpdateReputationDimensions()
 	self.reputationBar.spark:SetSize(16, self.reputationBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
-		self.reputationBar:SetAlpha(0)
+		self.reputationBar:SetAlpha(0.25)
 	else
 		self.reputationBar:SetAlpha(1)
 	end
@@ -162,7 +166,7 @@ function Module:OnEnable()
 	self.reputationBar:SetScript("OnEnter", Module.ReputationBar_OnEnter)
 	self.reputationBar:SetScript("OnLeave", Module.ReputationBar_OnLeave)
 	self.reputationBar:SetScript("OnClick", Module.ReputationBar_OnClick)
-	self.reputationBar:SetFrameStrata('LOW')
+	self.reputationBar:SetFrameStrata("LOW")
 	self.reputationBar:Hide()
 
 	self.reputationBar.statusBar = CreateFrame("StatusBar", nil, self.reputationBar)

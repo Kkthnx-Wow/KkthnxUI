@@ -1,6 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 
--- Sourced: ElvUI (Elvz)
+-- Sourced: ElvUI (Elvz, Blazeflack)
 
 local _G = _G
 local math_max = math.max

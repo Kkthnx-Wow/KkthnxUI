@@ -1,25 +1,12 @@
-----------------------------------------------------------------
---=-----=-- ((This is the layout we need to follow)) --=-----=--
-----------------------------------------------------------------
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Testing", "AceEvent-3.0", "AceHook-3.0")
 
--- C["Testing"] = {}
+local _G = _G
 
---[[
-function Module:OnInitialize()
+local COOLDOWN_TYPE_LOSS_OF_CONTROL = _G.COOLDOWN_TYPE_LOSS_OF_CONTROL
+local hooksecurefunc = _G.hooksecurefunc
 
-end
-
-function Module:OnEnable()
-
-end
-
-function Module:OnDisable()
-
-end
---]]
-
-----------------------------------------------------
---=-----=-- ((CodeName: Code Gone Wild)) --=-----=--
-----------------------------------------------------
+hooksecurefunc("CooldownFrame_Set", function(self)
+  if self.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL then
+    self:SetCooldown(0, 0)
+  end
+end)

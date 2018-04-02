@@ -85,10 +85,6 @@ if K.CheckAddOnState("WorldQuestTracker") or K.CheckAddOnState("Mapster") or K.C
 	C["WorldMap"].SmallWorldMap = false
 end
 
-if K.CheckAddOnState("BadBoy") then
-	C["Chat"].SpamFilter = false
-end
-
 if K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or K.CheckAddOnState("cargBags_Nivaya") or K.CheckAddOnState("cargBags") or K.CheckAddOnState("Bagnon") or K.CheckAddOnState("Combuctor") or K.CheckAddOnState("TBag") or K.CheckAddOnState("BaudBag") then
 	C["Inventory"].Enable = false
 end

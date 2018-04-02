@@ -17,7 +17,6 @@ local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
 local InCinematic = _G.InCinematic
 local InCombatLockdown = _G.InCombatLockdown
-local ReloadUI = _G.ReloadUI
 local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
@@ -29,6 +28,8 @@ local IsLocked = false
 local PixelPerfect = CreateFrame("Frame")
 PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
 PixelPerfect:RegisterEvent("CINEMATIC_STOP")
+PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
+PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Prevent a C stack overflow
 	if IsLocked then
@@ -45,7 +46,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		return
 	end
 
-	if InCinematic() and not(CinematicFrame.isRealCinematic or CanCancelScene() or CanExitVehicle()) then
+	if InCinematic() and not (CinematicFrame.isRealCinematic or CanCancelScene() or CanExitVehicle()) then
 		return
 	end
 

@@ -42,25 +42,27 @@ RegisterStateDriver(K.PetBattleHider, "visibility", "[petbattle] hide; show")
 local closeButton_32 = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 
 local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
-	if not template then template = "" end
-	if not strip then self:StripTextures(true) end
-	if template == "None" then self:SetBackdrop(nil) return end
+	if not template then
+		template = ""
+	end
 
-	self:SetBackdrop({
-		bgFile = C["Media"].Blank,
-		tile = false, tileSize = 0, edgeSize = K.Mult,
-	})
+	if not strip then
+		self:StripTextures(true)
+	end
+
+	if template == "None" then
+		self:SetBackdrop(nil)
+		return
+	end
 
 	if not self.isCreateBorder then
 		K.CreateBorder(self)
+		self:SetBackdrop({bgFile = C["Media"].Blank, tile = false, tileSize = 0})
 		self.isCreateBorder = true
 	end
 
 	local backdropcolor, bordercolor
-	if string_match(template, "Black") then
-		backdropcolor = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1
-		bordercolor = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
-	elseif string_match(template, "Button") then
+	if string_match(template, "Button") then
 		backdropcolor = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
 		bordercolor = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
 
@@ -79,9 +81,6 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 
 	elseif template == "Transparent" then
 		backdropcolor = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
-		bordercolor = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
-	elseif template == "Black" then
-		backdropcolor = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1
 		bordercolor = C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3]
 	end
 
@@ -136,11 +135,12 @@ local function CreateShadow(self, size, strip, backdrop)
 	shadow:SetPoint("BOTTOMRIGHT", size, -size)
 	if backdrop then
 		shadow:SetBackdrop({bgFile = C["Media"].Blank, edgeFile = C["Media"].Glow, edgeSize = 3, tile = false, tileSize = 0, insets = {left = 3, right = 3, top = 3, bottom = 3}})
+		shadow:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
+		shadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.9)
 	else
 		shadow:SetBackdrop({edgeFile = C["Media"].Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}})
+		shadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.9)
 	end
-	shadow:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
-	shadow:SetBackdropBorderColor(borderr, borderg, borderb, 0.9)
 
 	self.Shadow = shadow
 end
@@ -173,6 +173,8 @@ local function CreatePanel(f, t, w, h, a1, p, a2, x, y)
 
 	if t == "Transparent" then
 		f:SetTemplate("Transparent", false)
+	elseif t == "Shadow" then
+		f:CreateShadow()
 	elseif t == "CreateBackdrop" then
 		f:CreateBackdrop()
 	elseif t == "Invisible" then

@@ -1,262 +1,519 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("CopyURL", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 if C["Chat"].Enable ~= true then return end
+local Module = K:NewModule("ChatURLCopy", "AceHook-3.0")
+local Dialog = LibStub("LibDialog-1.0")
 
-local msgList, msgCount, msgTime = {}, {}, {}
-local PLAYER_REALM = gsub(K.Realm, "[%s%-]", "")
-local PLAYER_NAME = K.Name.."-"..PLAYER_REALM
+local _G = _G
+local ipairs = ipairs
+local pairs = pairs
+local select = select
+local string_format = string.format
+local string_gsub = string.gsub
+local string_lower = string.lower
+local string_split = string.split
+local string_sub = string.sub
+local table_insert = table.insert
 
-local hyperlinkTypes = {
-	["item"] = true,
-	["spell"] = true,
-	["unit"] = true,
-	["quest"] = true,
-	["enchant"] = true,
-	["achievement"] = true,
-	["instancelock"] = true,
-	["talent"] = true,
-	["glyph"] = true,
-	["currency"] = true,
+local UnitName = _G.UnitName
+local CLOSE = _G.CLOSE
+
+local tlds
+local style = K.RGBToHex(unpack(C["Chat"].LinkColor or {0.08, 1, 0.36})).."|Hurl:%s|h[%s]|h|r "
+
+local function Link(link, ...)
+	if link == nil then
+		return ""
+	end
+
+	return Module:RegisterMatch(string_format(style, link, link))
+end
+
+local function Link_TLD(link, tld, ...)
+	if link == nil or tld == nil then
+		return ""
+	end
+
+	if tlds[tld:upper()] then
+        return Module:RegisterMatch(string_format(style, link, link))
+    else
+        return Module:RegisterMatch(link)
+    end
+end
+
+local patterns = {
+	-- X://Y url
+	{pattern = "^(%a[%w%.+-]+://%S+)", matchfunc = Link},
+	{pattern = "%f[%S](%a[%w%.+-]+://%S+)", matchfunc = Link},
+	-- www.X.Y url
+	{pattern = "^(www%.[-%w_%%]+%.%S+)", matchfunc = Link},
+	{pattern = "%f[%S](www%.[-%w_%%]+%.%S+)", matchfunc = Link},
+	-- "W X"@Y.Z email (this is seriously a valid email)
+	-- {pattern = '^(%"[^%"]+%"@[-%w_%%%.]+%.(%a%a+))', matchfunc = Link_TLD},
+	-- {pattern = '%f[%S](%"[^%"]+%"@[-%w_%%%.]+%.(%a%a+))', matchfunc = Link_TLD},
+	-- X@Y.Z email
+	{pattern = "(%S+@[-%w_%%%.]+%.(%a%a+))", matchfunc = Link_TLD},
+	-- XXX.YYY.ZZZ.WWW:VVVV/UUUUU IPv4 address with port and path
+	{pattern = "^([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d:[0-6]?%d?%d?%d?%d/%S+)", matchfunc = Link},
+	{pattern = "%f[%S]([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d:[0-6]?%d?%d?%d?%d/%S+)", matchfunc = Link},
+	-- XXX.YYY.ZZZ.WWW:VVVV IPv4 address with port (IP of ts server for example)
+	{pattern = "^([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d:[0-6]?%d?%d?%d?%d)%f[%D]", matchfunc = Link},
+	{pattern = "%f[%S]([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d:[0-6]?%d?%d?%d?%d)%f[%D]", matchfunc = Link},
+	-- XXX.YYY.ZZZ.WWW/VVVVV IPv4 address with path
+	{pattern = "^([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%/%S+)", matchfunc = Link},
+	{pattern = "%f[%S]([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%/%S+)", matchfunc = Link},
+	-- XXX.YYY.ZZZ.WWW IPv4 address
+	{pattern = "^([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%)%f[%D]", matchfunc = Link},
+	{pattern = "%f[%S]([0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%.[0-2]?%d?%d%)%f[%D]", matchfunc = Link},
+	-- X.Y.Z:WWWW/VVVVV url with port and path
+	{pattern = "^([-%w_%%%.]+[-%w_%%]%.(%a%a+):[0-6]?%d?%d?%d?%d/%S+)", matchfunc = Link_TLD},
+	{pattern = "%f[%S]([-%w_%%%.]+[-%w_%%]%.(%a%a+):[0-6]?%d?%d?%d?%d/%S+)", matchfunc = Link_TLD},
+	-- X.Y.Z:WWWW url with port (ts server for example)
+	{pattern = "^([-%w_%%%.]+[-%w_%%]%.(%a%a+):[0-6]?%d?%d?%d?%d)%f[%D]", matchfunc = Link_TLD},
+	{pattern = "%f[%S]([-%w_%%%.]+[-%w_%%]%.(%a%a+):[0-6]?%d?%d?%d?%d)%f[%D]", matchfunc = Link_TLD},
+	-- X.Y.Z/WWWWW url with path
+	{pattern = "^([-%w_%%%.]+[-%w_%%]%.(%a%a+)/%S+)", matchfunc = Link_TLD},
+	{pattern = "%f[%S]([-%w_%%%.]+[-%w_%%]%.(%a%a+)/%S+)", matchfunc = Link_TLD},
+	-- X.Y.Z url
+	{pattern = "^([-%w_%%%.]+[-%w_%%]%.(%a%a+))", matchfunc = Link_TLD},
+	{pattern = "%f[%S]([-%w_%%%.]+[-%w_%%]%.(%a%a+))", matchfunc = Link_TLD},
 }
 
-function Module:ThrottleSound()
-	self.SoundPlayed = nil
-end
+do
+	local events = {
+		"CHAT_MSG_CHANNEL",
+		"CHAT_MSG_EMOTE",
+		"CHAT_MSG_GUILD",
+		"CHAT_MSG_OFFICER",
+		"CHAT_MSG_PARTY",
+		"CHAT_MSG_RAID",
+		"CHAT_MSG_RAID_LEADER",
+		"CHAT_MSG_RAID_WARNING",
+		"CHAT_MSG_PARTY_LEADER",
+		"CHAT_MSG_SAY",
+		"CHAT_MSG_WHISPER","CHAT_MSG_BN_WHISPER",
+		"CHAT_MSG_WHISPER_INFORM",
+		"CHAT_MSG_YELL",
+		"CHAT_MSG_BN_WHISPER_INFORM",
+		"CHAT_MSG_BN_INLINE_TOAST_BROADCAST"
+	}
 
-function Module:PrintURL(url)
-	return "|cFFFFFFFF[|Hurl:"..url.."|h"..url.."|h]|r "
-end
-
-function Module:FindURL(event, msg, ...)
-	local text, tag = msg, strmatch(msg, "{(.-)}")
-	if tag and ICON_TAG_LIST[strlower(tag)] then
-		text = gsub(gsub(text, "(%S)({.-})", "%1 %2"), "({.-})(%S)", "%1 %2")
+	function Module:OnInitialize()
+		Dialog:Register("ChatterUrlCopyDialog", {
+			text = "URL Copy",
+			width = 500,
+			editboxes = {
+				{width = 484,
+					on_escape_pressed = function(self, data) self:GetParent():Hide() end,
+				},
+			},
+			on_show = function(self, data)
+				self.editboxes[1]:SetText(data.url)
+				self.editboxes[1]:HighlightText()
+				self.editboxes[1]:SetFocus()
+			end,
+			buttons = {
+				{text = CLOSE,},
+			},
+			show_while_dead = true,
+			hide_on_escape = true,
+		})
 	end
 
-	text = gsub(gsub(text, "(%S)(|c.-|H.-|h.-|h|r)", "%1 %2"), "(|c.-|H.-|h.-|h|r)(%S)", "%1 %2")
-	-- http://example.com
-	local newMsg, found = gsub(text, "(%a+)://(%S+)%s?", Module:PrintURL("%1://%2"))
-	if found > 0 then return false, newMsg, ... end
-	-- www.example.com
-	newMsg, found = gsub(text, "www%.([_A-Za-z0-9-]+)%.(%S+)%s?", Module:PrintURL("www.%1.%2"))
-	if found > 0 then return false, newMsg, ... end
-	-- example@example.com
-	newMsg, found = gsub(text, "([_A-Za-z0-9-%.]+)@([_A-Za-z0-9-]+)(%.+)([_A-Za-z0-9-%.]+)%s?", Module:PrintURL("%1@%2%3%4"))
-	if found > 0 then return false, newMsg, ... end
-	-- IP address with port 1.1.1.1:1
-	newMsg, found = gsub(text, "(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)(:%d+)%s?", Module:PrintURL("%1.%2.%3.%4%5"))
-	if found > 0 then return false, newMsg, ... end
-	-- IP address 1.1.1.1
-	newMsg, found = gsub(text, "(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%s?", Module:PrintURL("%1.%2.%3.%4"))
-	if found > 0 then return false, newMsg, ... end
+	function Module:OnEnable()
+		for _,event in ipairs(events) do
+			ChatFrame_AddMessageEventFilter(event, self.filterFunc)
+		end
 
-	return false, msg, ...
+		self:RawHook(_G.ItemRefTooltip, "SetHyperlink", true)
+	end
+
+	function Module:OnDisable()
+		for _,event in ipairs(events) do
+			ChatFrame_RemoveMessageEventFilter(event, self.filterFunc)
+		end
+	end
 end
 
-local function SetChatEditBoxMessage(message)
-	local ChatFrameEditBox = ChatEdit_ChooseBoxForSend()
-	local editBoxShown = ChatFrameEditBox:IsShown()
-	local editBoxText = ChatFrameEditBox:GetText()
-	if not editBoxShown then
-		ChatEdit_ActivateChat(ChatFrameEditBox)
+do
+	local tokennum, matchTable = 1, {}
+	Module.filterFunc = function(frame, event, msg, ...)
+		if not msg then return false, msg, ... end
+		for i, v in ipairs(patterns) do
+			msg = string_gsub(msg, v.pattern, v.matchfunc)
+		end
+		for k,v in pairs(matchTable) do
+			msg = string_gsub(msg, k, v)
+			matchTable[k] = nil
+		end
+
+		return false, msg, ...
 	end
-	if editBoxText and editBoxText ~= "" then
-		ChatFrameEditBox:SetText("")
+	function Module:RegisterMatch(text)
+		local token = "\255\254\253"..tokennum.."\253\254\255"
+		matchTable[token] = string_gsub(text, "%%", "%%%%")
+		tokennum = tokennum + 1
+
+		return token
 	end
-	ChatFrameEditBox:Insert(message)
-	ChatFrameEditBox:HighlightText()
 end
 
-local function HyperLinkedCPL(data)
-	if strsub(data, 1, 3) == "cpl" then
-		local chatID = strsub(data, 5)
-		local chat = _G[format("ChatFrame%d", chatID)]
-		if not chat then return end
-		local scale = chat:GetEffectiveScale() --blizzard does this with `scale = UIParent:GetScale()`
-		local cursorX, cursorY = GetCursorPosition()
-		cursorX, cursorY = (cursorX / scale), (cursorY / scale)
-		local _, lineIndex = chat:FindCharacterAndLineIndexAtCoordinate(cursorX, cursorY)
-		if lineIndex then
-			local visibleLine = chat.visibleLines and chat.visibleLines[lineIndex]
-			local message = visibleLine and visibleLine.messageInfo and visibleLine.messageInfo.message
-			if message and message ~= "" then
-				message = gsub(message, "|c%x%x%x%x%x%x%x%x(.-)|r", "%1")
-				message = strtrim(removeIconFromLine(message))
-				SetChatEditBoxMessage(message)
+local mangleLinkForVoiceChat
+do
+	--[[
+	mumble://192.168.1.102:50008?version=1.2.0
+	mumble://foo:bar@192.168.1.102:50008?version=1.2.0
+	mumble://:bar@192.168.1.102:50008?version=1.2.0
+	]]--
+
+	-- Messes with Mumble links to inject our own username. Nifty magical!
+	local function injectCharacterNameForMumble(scheme, connstr)
+		local pre, post = string_split("@", connstr, 2)
+		local new
+		if post then
+			local user, password = string_split(":", pre, 2)
+			if password then
+				new = UnitName("player")..":"..password
+			else
+				new = UnitName("player")
+			end
+			new = new.."@"..post
+		else
+			new = UnitName("player").."@"..pre
+		end
+		return scheme..new
+	end
+
+	local buff = {}
+	local function addTS3Nickname(...)
+		wipe(buff)
+		local gotName = false
+		for i = 1, select("#", ...) do
+			local chunk = select(i, ...)
+			local key, val = string_split("=", chunk, 2)
+			if val then
+				if string_lower(key) ~= "nickname" then
+					table_insert(buff, chunk)
+					gotName = true
+				end
 			end
 		end
-		return
-	end
-end
 
-local function HyperLinkedSQU(data)
-	if strsub(data, 1, 3) == "squ" then
-		if not QuickJoinFrame:IsShown() then
-			ToggleQuickJoinPanel()
+		if not gotName then
+			local nick = "nickname="..UnitName("player")
+			table_insert(buff, nick)
 		end
-		local guid = strsub(data, 5)
-		if guid and guid ~= "" then
-			QuickJoinFrame:SelectGroup(guid)
-			QuickJoinFrame:ScrollToGroup(guid)
+		return table.concat(buff, "&")
+	end
+
+	--[[
+		ts3server://ts3.hoster.com
+		ts3server://ts3.hoster.com?
+		ts3server://ts3.hoster.com?port=9987&
+		ts3server://ts3.hoster.com?port=9987&nickname=UserNickname&password=serverPassword
+	]]--
+
+	local function injectCharacterNameForTeamspeak(scheme, connstr)
+		local url, query = string_split("?", connstr, 2)
+		if query then
+			query = addTS3Nickname(string_split("&", query))
+		else
+			query = "nickname="..UnitName("player")
 		end
-		return
+		return scheme..url.."?"..query
+	end
+
+	function mangleLinkForVoiceChat(text)
+		text = text:gsub("^(mumble://)([^/?]+)", injectCharacterNameForMumble)
+		text = text:gsub("^(ts3server://)(.+)", injectCharacterNameForTeamspeak)
+		return text
 	end
 end
 
-local function HyperLinkedURL(data)
-	if strsub(data, 1, 3) == "url" then
-		local currentLink = strsub(data, 5)
-		if currentLink and currentLink ~= "" then
-			SetChatEditBoxMessage(currentLink)
+function Module:SetHyperlink(frame, link, ...)
+	if string_sub(link, 1, 3) == "url" then
+		local currentLink = string_sub(link, 5)
+		currentLink = mangleLinkForVoiceChat(currentLink)
+		if Dialog:ActiveDialog("ChatterUrlCopyDialog") then
+			Dialog:Dismiss("ChatterUrlCopyDialog")
 		end
-		return
+		Dialog:Spawn("ChatterUrlCopyDialog", {url=currentLink})
+		return ...
 	end
+	return self.hooks[frame].SetHyperlink(frame, link, text, button, ...)
 end
 
-local SetHyperlink = ItemRefTooltip.SetHyperlink
-function ItemRefTooltip:SetHyperlink(data, ...)
-	if strsub(data, 1, 3) == "cpl" then
-		HyperLinkedCPL(data)
-	elseif strsub(data, 1, 3) == "squ" then
-		HyperLinkedSQU(data)
-	elseif strsub(data, 1, 3) == "url" then
-		HyperLinkedURL(data)
-	else
-		SetHyperlink(self, data, ...)
-	end
-end
-
-local hyperLinkEntered
-function Module:OnHyperlinkEnter(frame, refString)
-	if InCombatLockdown() then return end
-	local linkToken = strmatch(refString, "^([^:]+)")
-	if hyperlinkTypes[linkToken] then
-		ShowUIPanel(GameTooltip)
-		GameTooltip:SetOwner(frame, "ANCHOR_CURSOR")
-		GameTooltip:SetHyperlink(refString)
-		hyperLinkEntered = frame
-		GameTooltip:Show()
-	end
-end
-
-function Module:OnHyperlinkLeave(frame, refString)
-	if hyperLinkEntered then
-		HideUIPanel(GameTooltip)
-		hyperLinkEntered = nil
-	end
-end
-
-function Module:EnableHyperlink()
-	for _, frameName in pairs(CHAT_FRAMES) do
-		local frame = _G[frameName]
-		if (not self.hooks or not self.hooks[frame] or not self.hooks[frame].OnHyperlinkEnter) then
-			self:HookScript(frame, "OnHyperlinkEnter")
-			self:HookScript(frame, "OnHyperlinkLeave")
-		end
-	end
-end
-
-function Module:DisableHyperlink()
-	for _, frameName in pairs(CHAT_FRAMES) do
-		local frame = _G[frameName]
-		if self.hooks and self.hooks[frame] and self.hooks[frame].OnHyperlinkEnter then
-			self:Unhook(frame, "OnHyperlinkEnter")
-			self:Unhook(frame, "OnHyperlinkLeave")
-		end
-	end
-end
-
-local function PrepareMessage(author, message)
-	return format("%s%s", strupper(author), message)
-end
-
-function Module:CHAT_MSG_CHANNEL(event, message, author, ...)
-	local blockFlag = false
-	local msg = PrepareMessage(author, message)
-
-	-- ignore player messages
-	if author == PLAYER_NAME then return Module.FindURL(self, event, message, author, ...) end
-	if msgList[msg] and 45 ~= 0 then
-		if difftime(time(), msgTime[msg]) <= 45 then
-			blockFlag = true
-		end
-	end
-
-	if blockFlag then
-		return true;
-	else
-		if 45 ~= 0 then
-			msgTime[msg] = time()
-		end
-
-		return Module.FindURL(self, event, message, author, ...)
-	end
-end
-
-function Module:CHAT_MSG_YELL(event, message, author, ...)
-	local blockFlag = false
-	local msg = PrepareMessage(author, message)
-
-	if msg == nil then return Module.FindURL(self, event, message, author, ...) end
-
-	-- ignore player messages
-	if author == PLAYER_NAME then return Module.FindURL(self, event, message, author, ...) end
-	if msgList[msg] and msgCount[msg] > 1 and 45 ~= 0 then
-		if difftime(time(), msgTime[msg]) <= 45 then
-			blockFlag = true
-		end
-	end
-
-	if blockFlag then
-		return true;
-	else
-		if 45 ~= 0 then
-			msgTime[msg] = time()
-		end
-
-		return Module.FindURL(self, event, message, author, ...)
-	end
-end
-
-function Module:CHAT_MSG_SAY(event, message, author, ...)
-	return Module.FindURL(self, event, message, author, ...)
-end
-
-local FindURL_Events = {
-	"CHAT_MSG_AFK",
-	"CHAT_MSG_BN_INLINE_TOAST_BROADCAST",
-	"CHAT_MSG_BN_WHISPER",
-	"CHAT_MSG_BN_WHISPER_INFORM",
-	"CHAT_MSG_CHANNEL",
-	"CHAT_MSG_DND",
-	"CHAT_MSG_EMOTE",
-	"CHAT_MSG_GUILD",
-	"CHAT_MSG_GUILD_ACHIEVEMENT",
-	"CHAT_MSG_INSTANCE_CHAT",
-	"CHAT_MSG_INSTANCE_CHAT_LEADER",
-	"CHAT_MSG_OFFICER",
-	"CHAT_MSG_PARTY",
-	"CHAT_MSG_PARTY_LEADER",
-	"CHAT_MSG_RAID",
-	"CHAT_MSG_RAID_LEADER",
-	"CHAT_MSG_RAID_WARNING",
-	"CHAT_MSG_SAY",
-	"CHAT_MSG_WHISPER",
-	"CHAT_MSG_WHISPER_INFORM",
-	"CHAT_MSG_YELL",
+-- Copied from http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+-- Version 2008041301, Last Updated Mon Apr 21 08:07:00 2008 UTC
+tlds = {
+	ONION = true,
+	AC = true,
+	AD = true,
+	AE = true,
+	AERO = true,
+	AF = true,
+	AG = true,
+	AI = true,
+	AL = true,
+	AM = true,
+	AN = true,
+	AO = true,
+	AQ = true,
+	AR = true,
+	ARPA = true,
+	AS = true,
+	ASIA = true,
+	AT = true,
+	AU = true,
+	AW = true,
+	AX = true,
+	AZ = true,
+	BA = true,
+	BB = true,
+	BD = true,
+	BE = true,
+	BF = true,
+	BG = true,
+	BH = true,
+	BI = true,
+	BIZ = true,
+	BJ = true,
+	BM = true,
+	BN = true,
+	BO = true,
+	BR = true,
+	BS = true,
+	BT = true,
+	BV = true,
+	BW = true,
+	BY = true,
+	BZ = true,
+	CA = true,
+	CAT = true,
+	CC = true,
+	CD = true,
+	CF = true,
+	CG = true,
+	CH = true,
+	CI = true,
+	CK = true,
+	CL = true,
+	CM = true,
+	CN = true,
+	CO = true,
+	COM = true,
+	COOP = true,
+	CR = true,
+	CU = true,
+	CV = true,
+	CX = true,
+	CY = true,
+	CZ = true,
+	DE = true,
+	DJ = true,
+	DK = true,
+	DM = true,
+	DO = true,
+	DZ = true,
+	EC = true,
+	EDU = true,
+	EE = true,
+	EG = true,
+	ER = true,
+	ES = true,
+	ET = true,
+	EU = true,
+	FI = true,
+	FJ = true,
+	FK = true,
+	FM = true,
+	FO = true,
+	FR = true,
+	GA = true,
+	GB = true,
+	GD = true,
+	GE = true,
+	GF = true,
+	GG = true,
+	GH = true,
+	GI = true,
+	GL = true,
+	GM = true,
+	GN = true,
+	GOV = true,
+	GP = true,
+	GQ = true,
+	GR = true,
+	GS = true,
+	GT = true,
+	GU = true,
+	GW = true,
+	GY = true,
+	HK = true,
+	HM = true,
+	HN = true,
+	HR = true,
+	HT = true,
+	HU = true,
+	ID = true,
+	IE = true,
+	IL = true,
+	IM = true,
+	IN = true,
+	INFO = true,
+	INT = true,
+	IO = true,
+	IQ = true,
+	IR = true,
+	IS = true,
+	IT = true,
+	JE = true,
+	JM = true,
+	JO = true,
+	JOBS = true,
+	JP = true,
+	KE = true,
+	KG = true,
+	KH = true,
+	KI = true,
+	KM = true,
+	KN = true,
+	KP = true,
+	KR = true,
+	KW = true,
+	KY = true,
+	KZ = true,
+	LA = true,
+	LB = true,
+	LC = true,
+	LI = true,
+	LK = true,
+	LR = true,
+	LS = true,
+	LT = true,
+	LU = true,
+	LV = true,
+	LY = true,
+	MA = true,
+	MC = true,
+	MD = true,
+	ME = true,
+	MG = true,
+	MH = true,
+	MIL = true,
+	MK = true,
+	ML = true,
+	MM = true,
+	MN = true,
+	MO = true,
+	MOBI = true,
+	MP = true,
+	MQ = true,
+	MR = true,
+	MS = true,
+	MT = true,
+	MU = true,
+	MUSEUM = true,
+	MV = true,
+	MW = true,
+	MX = true,
+	MY = true,
+	MZ = true,
+	NA = true,
+	NAME = true,
+	NC = true,
+	NE = true,
+	NET = true,
+	NF = true,
+	NG = true,
+	NI = true,
+	NL = true,
+	NO = true,
+	NP = true,
+	NR = true,
+	NU = true,
+	NZ = true,
+	OM = true,
+	ORG = true,
+	PA = true,
+	PE = true,
+	PF = true,
+	PG = true,
+	PH = true,
+	PK = true,
+	PL = true,
+	PM = true,
+	PN = true,
+	PR = true,
+	PRO = true,
+	PS = true,
+	PT = true,
+	PW = true,
+	PY = true,
+	QA = true,
+	RE = true,
+	RO = true,
+	RS = true,
+	RU = true,
+	RW = true,
+	SA = true,
+	SB = true,
+	SC = true,
+	SD = true,
+	SE = true,
+	SG = true,
+	SH = true,
+	SI = true,
+	SJ = true,
+	SK = true,
+	SL = true,
+	SM = true,
+	SN = true,
+	SO = true,
+	SR = true,
+	ST = true,
+	SU = true,
+	SV = true,
+	SY = true,
+	SZ = true,
+	TC = true,
+	TD = true,
+	TEL = true,
+	TF = true,
+	TG = true,
+	TH = true,
+	TJ = true,
+	TK = true,
+	TL = true,
+	TM = true,
+	TN = true,
+	TO = true,
+	TP = true,
+	TR = true,
+	TRAVEL = true,
+	TT = true,
+	TV = true,
+	TW = true,
+	TZ = true,
+	UA = true,
+	UG = true,
+	UK = true,
+	UM = true,
+	US = true,
+	UY = true,
+	UZ = true,
+	VA = true,
+	VC = true,
+	VE = true,
+	VG = true,
+	VI = true,
+	VN = true,
+	VU = true,
+	WF = true,
+	WS = true,
+	YE = true,
+	YT = true,
+	YU = true,
+	ZA = true,
+	ZM = true,
+	ZW = true,
 }
-
-function Module:OnInitialize()
-	self:EnableHyperlink()
-
-	if WIM then
-		WIM.RegisterWidgetTrigger("chat_display", "whisper, chat, w2w, demo", "OnHyperlinkClick", function(self) Module.clickedframe = self end);
-		WIM.RegisterItemRefHandler("url", HyperLinkedURL)
-		WIM.RegisterItemRefHandler("squ", HyperLinkedSQU)
-		WIM.RegisterItemRefHandler("cpl", HyperLinkedCPL)
-	end
-
-	for _, event in pairs(FindURL_Events) do
-		ChatFrame_AddMessageEventFilter(event, Module[event] or Module.FindURL)
-	end
-end

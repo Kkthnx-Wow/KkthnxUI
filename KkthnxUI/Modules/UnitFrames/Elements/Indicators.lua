@@ -7,42 +7,66 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local CreateFrame = _G.CreateFrame
 
-local spiritHealer_280 = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\SpiritHealer"
+local function UpdateThreatBorderColor(self)
+	local threat = self.threatLevel
 
-function K.CreateCombatText(self)
-	self.CombatFeedbackText = self:CreateFontString(nil, "OVERLAY", 7)
-	self.CombatFeedbackText:SetFont(C["Media"].Font, 12, "OUTLINE")
-	self.CombatFeedbackText:SetShadowOffset(0, -0)
-	self.CombatFeedbackText:SetPoint("CENTER", self.Portrait)
-	self.CombatFeedbackText.colors = {
-		DAMAGE = {0.69, 0.31, 0.31},
-		CRUSHING = {0.69, 0.31, 0.31},
-		CRITICAL = {0.69, 0.31, 0.31},
-		GLANCING = {0.69, 0.31, 0.31},
-		STANDARD = {0.84, 0.75, 0.65},
-		IMMUNE = {0.84, 0.75, 0.65},
-		ABSORB = {0.84, 0.75, 0.65},
-		BLOCK = {0.84, 0.75, 0.65},
-		RESIST = {0.84, 0.75, 0.65},
-		MISS = {0.84, 0.75, 0.65},
-		HEAL = {0.33, 0.59, 0.33},
-		CRITHEAL = {0.33, 0.59, 0.33},
-		ENERGIZE = {0.31, 0.45, 0.63},
-		CRITENERGIZE = {0.31, 0.45, 0.63},
-	}
+	local color
+	if threat and threat > 1 then
+		color = colors.threat[threat]
+	elseif threat and threat > 0 then
+		color = colors.threat[threat]
+	end
+
+	if color then
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
+			self.Portrait:SetBackdropBorderColor(r, g, b, 1)
+		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
+			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
+		end
+	else
+		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
+			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
+			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+		end
+	end
+end
+
+function K.CreateThreatIndicator(self, event, unit)
+	if unit ~= self.unit then return end
+
+	local status = UnitThreatSituation(unit or self.unit) or 0
+	status = status > 1 and 3 or 0
+
+	if self.threatLevel == status then return end
+
+	self.threatLevel = status
+	UpdateThreatBorderColor()
+end
+
+function K.CreateTrinkets(self)
+	self.Trinket = CreateFrame("Frame", nil, self)
+	self.Trinket:SetSize(self.Portrait:GetWidth(), self.Portrait:GetHeight())
+	self.Trinket:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 0)
+	self.Trinket:SetTemplate("Transparent", true)
+end
+
+function K.CreateCombatFeedback(self)
+	self.CombatText = self:CreateFontString(nil, "OVERLAY")
+	self.CombatText:SetFont(C["Media"].Font, 20, "")
+	self.CombatText:SetShadowOffset(1.25, -1.25)
+	self.CombatText:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
 end
 
 function K.CreateGlobalCooldown(self)
-	self.GCD = CreateFrame("Frame", self:GetName().."_GCD", self.Health)
-	self.GCD:SetWidth(self.Health:GetWidth())
-	self.GCD:SetHeight(self.Health:GetHeight() * 1.4)
-	self.GCD:SetFrameStrata("HIGH")
-	self.GCD:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
-	self.GCD.Smooth = C["Unitframe"].Smooth
-	self.GCD.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
-	self.GCD.Color = {1, 1, 1}
-	self.GCD.Height = (self.Health:GetHeight() * 1.4)
-	self.GCD.Width = (10)
+	self.GlobalCooldown = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self.Health)
+	self.GlobalCooldown:SetWidth(self.Health:GetWidth())
+	self.GlobalCooldown:SetHeight(self.Health:GetHeight() * 1.4)
+	self.GlobalCooldown:SetFrameStrata("HIGH")
+	self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
+	self.GlobalCooldown.Color = {1, 1, 1}
+	self.GlobalCooldown.Height = (self.Health:GetHeight() * 1.4)
+	self.GlobalCooldown.Width = (10)
 end
 
 function K.CreateGroupRoleIndicator(self)
@@ -56,7 +80,7 @@ end
 function K.CreateReadyCheckIndicator(self)
 	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
-	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 2, self.Portrait:GetHeight() - 2)
+	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() / 3.5, self.Portrait:GetHeight() / 3.5)
 	self.ReadyCheckIndicator.finishedTime = 5
 	self.ReadyCheckIndicator.fadeTime = 3
 end
@@ -68,15 +92,19 @@ function K.CreateRaidTargetIndicator(self)
 	self.RaidTargetIndicator:SetSize(16, 16)
 end
 
-function K.CreateResurrectIndicator(self, unit)
-	self.ResurrectIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.ResurrectIndicator:SetTexture(spiritHealer_280)
-	self.ResurrectIndicator:SetPoint("CENTER", self.Health, 0, -12)
-	if unit ~= "party" then
-		self.ResurrectIndicator:SetSize(180, 102)
-	else
-		self.ResurrectIndicator:SetSize(100, 52)
-	end
+function K.CreateResurrectIndicator(self)
+	self.ResInfo = self:CreateFontString(nil, "OVERLAY")
+	self.ResInfo:SetFont(C["Media"].Font, self.Portrait:GetWidth() / 3.5, "")
+	self.ResInfo:SetShadowOffset(K.Mult, -K.Mult)
+	self.ResInfo:SetPoint("CENTER", self.Portrait, "CENTER", 0, 0)
+end
+
+function K.CreateAFKIndicator(self)
+	self.AFK = self:CreateFontString(nil, "OVERLAY")
+	self.AFK:SetFont(C["Media"].Font, 10, "")
+	self.AFK:SetPoint("BOTTOM", self.Health, 0, -8)
+	self.AFK:SetShadowOffset(K.Mult, -K.Mult)
+	self.AFK.fontFormat = "AFK %s:%s"
 end
 
 function K.CreateRestingIndicator(self)
@@ -120,30 +148,4 @@ function K.CreateQuestIndicator(self)
 	self.QuestIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.QuestIndicator:SetSize(20, 20)
 	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT" , 11, -11)
-end
-
-local function UpdateThreat(self, event, unit)
-	if (self.unit ~= unit) then return end
-
-	local situation = UnitThreatSituation(unit)
-	if (situation and situation > 0) then
-		local r, g, b = GetThreatStatusColor(situation)
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
-			self.Portrait:SetBackdropBorderColor(r, g, b, 1)
-		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
-			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
-		end
-	else
-		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
-			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
-		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
-			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
-		end
-	end
-end
-
-function K.CreateThreatIndicator(self)
-	self.ThreatIndicator = {}
-	self.ThreatIndicator.IsObjectType = function() end
-	self.ThreatIndicator.Override = UpdateThreat
 end

@@ -149,20 +149,19 @@ end
 local function OnTextChanged(self)
 	local text = self:GetText()
 
-	if InCombatLockdown() then
-		local MIN_REPEAT_CHARACTERS = 5
-		if (string_len(text) > MIN_REPEAT_CHARACTERS) then
-			local repeatChar = true
-			for i = 1, MIN_REPEAT_CHARACTERS, 1 do
-				if (string_sub(text,(0 - i), (0 - i)) ~= string_sub(text,(-1 - i),(-1 - i))) then
-					repeatChar = false
-					break
-				end
+	local maxRepeats = UnitAffectingCombat("player") and 5 or 10
+	if (strlen(text) > maxRepeats) then
+		local stuck = true
+		for i = 1, maxRepeats, 1 do
+			if (strsub(text, 0 - i, 0 - i) ~= strsub(text, (-1 - i), (-1 - i))) then
+				stuck = false
+				break
 			end
-			if (repeatChar) then
-				self:Hide()
-				return
-			end
+		end
+		if stuck then
+			self:SetText("")
+			self:Hide()
+			return
 		end
 	end
 
@@ -173,7 +172,7 @@ local function OnTextChanged(self)
 			if unitname and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
 				unitname = string_format("%s-%s", unitname, string_gsub(realm, " ", ""))
 			end
-			ChatFrame_SendTell((unitname or L.Chat.Invaild_Target), ChatFrame1)
+			ChatFrame_SendTell((unitname or L["Chat"].Invaild_Target), ChatFrame1)
 		end
 
 		if text:sub(1, 4) == "/gr " then
@@ -381,15 +380,12 @@ function Module:SetDefaultChatFramesPositions()
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat = {}
 	end
 
-	local Width = C["Chat"].Width
-	local Height = C["Chat"].Height
-
 	for i = 1, NUM_CHAT_WINDOWS do
 		local Frame = _G["ChatFrame"..i]
 		local ID = Frame:GetID()
 
 		-- Set font size and chat frame size
-		Frame:SetSize(Width, Height)
+		Frame:SetSize(C["Chat"].Width, C["Chat"].Height)
 
 		-- move general bottom left
 		if ID == 1 then
@@ -415,7 +411,7 @@ function Module:SetDefaultChatFramesPositions()
 		end
 
 		local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, Width, Height}
+		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, C["Chat"].Width, C["Chat"].Height}
 	end
 end
 
@@ -446,12 +442,12 @@ function Module:SetChatFramePosition()
 	local Settings = KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..ID]
 
 	if Settings then
-		local Anchor1, Anchor2, X, Y, Width, Height = unpack(Settings)
+		local Anchor1, Anchor2, X, Y = unpack(Settings)
 
 		Frame:SetUserPlaced(true)
 		Frame:ClearAllPoints()
 		Frame:SetPoint(Anchor1, UIParent, Anchor2, X, Y)
-		Frame:SetSize(Width, Height)
+		Frame:SetSize(C["Chat"].Width, C["Chat"].Height)
 	end
 end
 
@@ -464,7 +460,6 @@ function Module:Install()
 	FCF_OpenNewWindow(LOOT)
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
-	ChatFrame3:Show()
 
 	-- Enable Classcolor
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
@@ -512,12 +507,17 @@ function Module:Install()
 	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_GUILD_XP_GAIN")
 	ChatFrame_AddMessageGroup(ChatFrame3, "CURRENCY")
 	ChatFrame_AddChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, L.Chat.Trade)
-	ChatFrame_AddChannel(ChatFrame3, L.Chat.Trade)
+	ChatFrame_RemoveChannel(ChatFrame1, L["Chat"].Trade)
+	ChatFrame_AddChannel(ChatFrame3, L["Chat"].Trade)
 
-
-	if K.Name == "Kkthnx" and K.Realm == "Felsong" then
+	if K.Realm == "Felsong" then
 		SetCVar("scriptErrors", 1)
+		ChatFrame_RemoveChannel(ChatFrame1, "global_en")
+		ChatFrame_RemoveChannel(ChatFrame3, "global_en")
+		ChatFrame_AddChannel(ChatFrame3, "global_en")
+		ChatFrame_RemoveChannel(ChatFrame1, "CHANNEL4")
+		ChatFrame_RemoveChannel(ChatFrame3, "CHANNEL4")
+		ChatFrame_AddChannel(ChatFrame3, "CHANNEL4")
 	end
 
 	-- enable classcolor automatically on login and on each character without doing /configure each time.
@@ -550,10 +550,18 @@ function Module:Install()
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL10")
 	ToggleChatColorNamesByClassGroup(true, "CHANNEL11")
 
-	-- Adjust Chat Colors
+	-- Adjust Chat Channel Colors
+	ChangeChatColor("RAID", 1, .28, .04)
+	ChangeChatColor("RAID_LEADER", 1.0, 0.82, 0.0)
+	ChangeChatColor("BATTLEGROUND", 1, .28, .04)
+	ChangeChatColor("BATTLEGROUND_LEADER", 1.0, 0.82, 0.0)
+	ChangeChatColor("INSTANCE_CHAT", 1, .28, .04)
+	ChangeChatColor("INSTANCE_CHAT_LEADER", 1.0, 0.82, 0.0)
+
 	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255)
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255)
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255)
+	ChangeChatColor("CHANNEL4", 232/255, 158/255, 121/255)
 
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 
@@ -620,7 +628,7 @@ function Module:SetupFrame()
 	QuickJoinToastButton:Kill()
 end
 
-function Module:OnEnable()
+function Module:OnInitialize()
 	if (not C["Chat"].Enable) then
 		return
 	end

@@ -20,7 +20,6 @@ local ArtifactFont = K.GetFont(C["DataBars"].Font)
 local ArtifactTexture = K.GetTexture(C["DataBars"].Texture)
 
 local AnchorY
-
 function Module:UpdateArtifact(event, unit)
 	if not C["DataBars"].ArtifactEnable then return end
 
@@ -31,9 +30,17 @@ function Module:UpdateArtifact(event, unit)
 	local bar = self.artifactBar
 	local showArtifact = HasArtifactEquipped()
 
-	if not showArtifact then
+	if showArtifact then
+		local _, _, _, _, _, pointsSpent = C_ArtifactUI_GetEquippedArtifactInfo()
+		local maxArtifact = (K.RetailBuild and C_ArtifactUI.IsEquippedArtifactMaxed()) or ((not K.RetailBuild) and (pointsSpent >= 54))
+	end
+
+	-- First load into the world this above does error with a nil comapre number. Why?
+	if not showArtifact or maxArtifact then
+		-- print("Hide", pointsSpent, showArtifact, maxArtifact) -- DEBUG.
 		bar:Hide()
-	elseif showArtifact then
+	elseif showArtifact and not maxArtifact then
+		-- print("Show", pointsSpent, showArtifact, maxArtifact) -- DEBUG.
 		bar:Show()
 
 		local _, _, _, _, totalXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI_GetEquippedArtifactInfo()
@@ -54,7 +61,7 @@ end
 
 function Module:ArtifactBar_OnEnter()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 	end
 
 	GameTooltip:ClearLines()
@@ -63,7 +70,7 @@ function Module:ArtifactBar_OnEnter()
 	local _, _, artifactName, _, totalXP, pointsSpent, _, _, _, _, _, _, artifactTier = C_ArtifactUI_GetEquippedArtifactInfo()
 	local numPointsAvailableToSpend, xp, xpForNextPoint = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP(pointsSpent, totalXP, artifactTier)
 
-	GameTooltip:AddDoubleLine(ARTIFACT_POWER, artifactName, nil, nil, nil, 0.90, 0.80,	0.50)
+	GameTooltip:AddDoubleLine(ARTIFACT_POWER, artifactName, nil, nil, nil, 0.90, 0.80, 0.50)
 	GameTooltip:AddLine(" ")
 
 	if xpForNextPoint <= 0 then
@@ -84,7 +91,7 @@ end
 
 function Module:ArtifactBar_OnLeave()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 	end
 
 	if not GameTooltip:IsForbidden() then
@@ -103,12 +110,12 @@ end
 function Module:UpdateArtifactDimensions()
 	self.artifactBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
 	self.artifactBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and - 0 or - 1.25)
 	self.artifactBar.spark:SetSize(16, self.artifactBar:GetHeight())
 
 
 	if C["DataBars"].MouseOver then
-		self.artifactBar:SetAlpha(0)
+		self.artifactBar:SetAlpha(0.25)
 	else
 		self.artifactBar:SetAlpha(1)
 	end
@@ -116,21 +123,23 @@ end
 
 function Module:EnableDisable_ArtifactBar()
 	if C["DataBars"].ArtifactEnable then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateArtifact")
 		self:RegisterEvent("ARTIFACT_XP_UPDATE", "UpdateArtifact")
 		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateArtifact")
 		self:UpdateArtifact()
 	else
+		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 		self:UnregisterEvent("ARTIFACT_XP_UPDATE")
 		self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
 		self.artifactBar:Hide()
 	end
 end
 
-function Module:OnEnable()
-	if K.Level ~= MAX_PLAYER_LEVEL then
-		AnchorY = -24
+function Module:OnEnable(event)
+	if K.Level ~= MAX_PLAYER_LEVEL or K.Level <= 99 and event == "PLAYER_LEVEL_UP" then
+	AnchorY = -24
 	else
-		AnchorY = -6
+	AnchorY = -6
 	end
 
 	self.artifactBar = CreateFrame("Button", "KkthnxUI_ArtifactBar", K.PetBattleHider)
@@ -150,7 +159,7 @@ function Module:OnEnable()
 
 	self.artifactBar.text = self.artifactBar.statusBar:CreateFontString(nil, "OVERLAY")
 	self.artifactBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and - 0 or - 1.25)
 	self.artifactBar.text:SetPoint("CENTER")
 
 	self.artifactBar.spark = self.artifactBar.statusBar:CreateTexture(nil, "OVERLAY")

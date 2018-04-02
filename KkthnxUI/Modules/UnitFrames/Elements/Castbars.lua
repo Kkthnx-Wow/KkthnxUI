@@ -142,7 +142,7 @@ local function PostCastStart(castbar, unit, name)
 	end
 
 	local colors = K.Colors
-	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
 
 	local t
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
@@ -157,7 +157,7 @@ local function PostCastStart(castbar, unit, name)
 	end
 
 	if castbar.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
-		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
 	end
 
 	castbar:SetStatusBarColor(r, g, b)
@@ -248,7 +248,7 @@ local function PostCastInterruptible(castbar, unit)
 	if unit == "vehicle" or unit == "player" then return end
 
 	local colors = K.Colors
-	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
 
 	local t
 	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
@@ -263,7 +263,7 @@ local function PostCastInterruptible(castbar, unit)
 	end
 
 	if castbar.notInterruptible and UnitCanAttack("player", unit) then
-		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
 	end
 
 	castbar:SetStatusBarColor(r, g, b)
@@ -271,7 +271,7 @@ end
 
 local function PostCastNotInterruptible(castbar)
 	local colors = K.Colors
-	castbar:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
+	castbar:SetStatusBarColor(colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3])
 end
 
 local function CustomCastDelayText(castbar, duration)
@@ -313,7 +313,7 @@ function K.CreateCastBar(self, unit)
 	elseif unit == "target" then
 		castbar:SetPoint("BOTTOM", "oUF_PlayerCastbar", "TOP", 0, 6)
 		K.Movers:RegisterFrame(castbar)
-	elseif (unit == "focus" or unit == "boss") then
+	elseif (unit == "focus" or unit == "arena" or unit == "boss") then
 		castbar:SetPoint("LEFT", 4, 0)
 		castbar:SetPoint("RIGHT", -28, 0)
 		castbar:SetPoint("TOP", 0, 20)
@@ -354,7 +354,7 @@ function K.CreateCastBar(self, unit)
 		castbar.SafeZone = safeZone
 	end
 
-	if (unit == "player" or unit == "target" or unit == "focus" or unit == "boss") then
+	if (unit == "player" or unit == "target" or unit == "focus" or unit == "arena" or unit == "boss") then
 		local time = castbar:CreateFontString(nil, "OVERLAY", CastbarFont)
 		time:SetPoint("RIGHT", -3.5, 0)
 		time:SetTextColor(0.84, 0.75, 0.65)

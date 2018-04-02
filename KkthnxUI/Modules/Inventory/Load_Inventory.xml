@@ -2,6 +2,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Inventory -->
     <Script file="Inventory.lua"/>
+    <Script file="Sort.lua"/>
     <Script file="Filter.lua"/>
     <Script file="Vendor.lua"/>
 </Ui>

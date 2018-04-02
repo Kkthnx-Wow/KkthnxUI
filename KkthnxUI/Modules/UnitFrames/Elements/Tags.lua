@@ -133,10 +133,10 @@ oUF.Tags.Methods["KkthnxUI:PvPStatus"] = GetPvPStatus
 oUF.Tags.Events["KkthnxUI:PvPStatus"] = "UNIT_FACTION HONOR_PRESTIGE_UPDATE"
 function K.CreatePvPText(self, unit)
 	self.PvP = self:CreateFontString(nil, "OVERLAY")
-	self.PvP:SetFont(C["Media"].Font, 12, "")
-	self.PvP:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
+	self.PvP:SetFont(C["Media"].Font, 10, "")
+	self.PvP:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, 0)
 	self.PvP:SetTextColor(0.69, 0.31, 0.31)
-	self.PvP:SetShadowOffset(K.Mult, -K.Mult)
+	self.PvP:SetShadowOffset(1.25, -1.25)
 	self:Tag(self.PvP, "[KkthnxUI:PvPStatus]")
 
 	if (unit == "player") then

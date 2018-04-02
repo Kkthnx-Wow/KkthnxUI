@@ -178,15 +178,16 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(C["Media"].Font, 12, "OUTLINE")
-					bar.count:SetShadowOffset(0, 0)
+					bar.count:FontTemplate(C["Media"].Font, 12, "NONE")
 					bar.count:SetPoint("BOTTOMRIGHT", 1, -2)
 					bar.count:SetJustifyH("RIGHT")
 				end
 			else
+				if C["Filger"].Bars ~= true then return end
 				if bar.statusbar then
 					bar.statusbar = _G[bar.statusbar:GetName()]
 				else
+					if C["Filger"].Bars ~= true then return end
 					bar.statusbar = CreateFrame("StatusBar", "$parentStatusBar", bar)
 					bar.statusbar:SetWidth(self.BarWidth)
 					bar.statusbar:SetHeight(self.IconSize - 10)
@@ -230,8 +231,7 @@ function Filger:DisplayActives()
 					bar.time = _G[bar.time:GetName()]
 				else
 					bar.time = bar.statusbar:CreateFontString("$parentTime", "OVERLAY")
-					bar.time:FontTemplate(C["Media"].Font, 12, "OUTLINE")
-					bar.time:SetShadowOffset(0, 0)
+					bar.time:FontTemplate(C["Media"].Font, 12, "NONE")
 					bar.time:SetPoint("RIGHT", bar.statusbar, 0, 0)
 					bar.time:SetJustifyH("RIGHT")
 				end
@@ -240,9 +240,7 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(C["Media"].Font, 12, "OUTLINE")
-					bar.count:SetShadowOffset(0, 0)
-					bar.count:SetPoint("BOTTOMRIGHT", 1, 0)
+					bar.count:FontTemplate(C["Media"].Font, 12, "NONE")
 					bar.count:SetJustifyH("RIGHT")
 				end
 
@@ -250,8 +248,7 @@ function Filger:DisplayActives()
 					bar.spellname = _G[bar.spellname:GetName()]
 				else
 					bar.spellname = bar.statusbar:CreateFontString("$parentSpellName", "OVERLAY")
-					bar.spellname:FontTemplate(C["Media"].Font, 12, "OUTLINE")
-					bar.spellname:SetShadowOffset(0, 0)
+					bar.spellname:FontTemplate(C["Media"].Font, 12, "NONE")
 					bar.spellname:SetPoint("LEFT", bar.statusbar, 2, 0)
 					bar.spellname:SetPoint("RIGHT", bar.time, "LEFT")
 					bar.spellname:SetJustifyH("LEFT")

@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+local Dialog = LibStub("LibDialog-1.0")
 
 -- Lua API
 local _G = _G
@@ -40,96 +41,114 @@ StaticPopupDialogs["CHANGES_RL"] = {
 	preferredIndex = 3
 }
 
-StaticPopupDialogs["RESTART_GFX"] = {
+Dialog:Register("RESTART_GFX", {
 	text = L["StaticPopups"].Restart_GFX,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = function() RestartGx() end,
-	hideOnEscape = false,
-	whileDead = 1,
-	preferredIndex = 3
-}
+	buttons = {
+		{
+			text = ACCEPT,
+			on_click = function(self, mouseButton, down)
+				RestartGx()
+			end,
+		},
+		{
+			text = CANCEL,
+			on_click = function(self, mouseButton, down)
+				print("You have canceled this dialog.")
+			end,
+		},
+	},
+	show_while_dead = true,
+	hide_on_escape = true,
+})
 
-StaticPopupDialogs["WATCHFRAME_URL"] = {
-	text = L["StaticPopups"].WoWHeadLink,
-	button1 = OKAY,
-	timeout = 0,
-	whileDead = true,
-	hasEditBox = true,
-	hideOnEscape = 1,
-	editBoxWidth = 325,
-	OnShow = function(self, ...)
-		self.editBox:SetAutoFocus(true)
-		self.editBox.width = self.editBox:GetWidth()
-		self.editBox:SetWidth(325)
-		self.editBox:HighlightText()
-	end,
-	EditBoxOnEnterPressed = function(self)
-		self:GetParent():Hide()
-	end,
-	EditBoxOnEscapePressed = function(self)
-		self:GetParent():Hide()
-	end,
-	preferredIndex = 3,
-}
-
-StaticPopupDialogs["SET_UISCALE"] = {
+Dialog:Register("SET_UISCALE", {
 	text = L["StaticPopups"].Set_UI_Scale,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = K.SetUIScale,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = false,
-	preferredIndex = 3,
-}
+	buttons = {
+		{
+			text = ACCEPT,
+			on_click = function(self, mouseButton, down)
+				K.SetUIScale()
+			end,
+		},
+		{
+			text = CANCEL,
+			on_click = function(self, mouseButton, down)
+				print("You have canceled this dialog.")
+			end,
+		},
+	},
+	showwhiledead = true,
+	hideonescape = true,
+})
 
-StaticPopupDialogs["DISBAND_RAID"] = {
+Dialog:Register("DISBAND_RAID", {
 	text = L["StaticPopups"].Disband_Group,
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = K.DisbandRaidGroup,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
+	buttons = {
+		{
+			text = ACCEPT,
+			on_click = function(self, mouseButton, down)
+				K.DisbandRaidGroup()
+			end,
+		},
+		{
+			text = CANCEL,
+			on_click = function(self, mouseButton, down)
+				print("You have canceled this dialog.")
+			end,
+		},
+	},
+	showwhiledead = true,
+	hideonescape = true,
+})
 
-StaticPopupDialogs["CANNOT_BUY_BANK_SLOT"] = {
+Dialog:Register("CANNOT_BUY_BANK_SLOT", {
 	text = L["Inventory"].Cant_Buy_Slot,
-	button1 = ACCEPT,
-	timeout = 0,
-	whileDead = 1,
-}
+	buttons = {
+		{
+			text = OKAY,
+		},
+	},
+	showwhiledead = true,
+	hideonescape = false,
+})
 
-StaticPopupDialogs["BUY_BANK_SLOT"] = {
+
+Dialog:Register("BUY_BANK_SLOT", {
 	text = CONFIRM_BUY_BANK_SLOT,
-	button1 = YES,
-	button2 = NO,
-	OnAccept = function(self)
-		PurchaseSlot()
-	end,
-	OnShow = function(self)
+	on_show = function(self)
 		MoneyFrame_Update(self.moneyFrame, GetBankSlotCost())
 	end,
-	hasMoneyFrame = 1,
-	timeout = 0,
-	hideOnEscape = 1,
-	preferredIndex = 3
-}
+	buttons = {
+		{
+			text = YES,
+			on_click = function(self, mouseButton, down)
+				PurchaseSlot()
+			end,
+		},
+		{
+			text = NO,
+		},
+	},
+	showwhiledead = false,
+	hideonescape = true,
+})
 
--- Add a warning so we do not piss people off.
-StaticPopupDialogs["BOOST_UI"] = {
+Dialog:Register("BOOST_UI", {
 	text = "BOOST_UI",
-	button1 = ACCEPT,
-	button2 = CANCEL,
-	OnAccept = K.BoostUI,
-	showAlert = true,
-	timeout = 0,
-	whileDead = 1,
-	hideOnEscape = true,
-	preferredIndex = 3,
-}
+	buttons = {
+		{
+			text = ACCEPT,
+			on_click = function(self, mouseButton, down)
+				K.BoostUI()
+			end,
+		},
+		{
+			text = CANCEL,
+		},
+	},
+	showwhiledead = true,
+	hideonescape = true,
+})
 
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
 	text = CONFIRM_LOOT_DISTRIBUTION,

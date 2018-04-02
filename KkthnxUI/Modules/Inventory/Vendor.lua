@@ -73,22 +73,22 @@ function Module:UpdateMerchant()
 		end
 		gain = gain + sold
 	end
-	--[[
+
 	if sold > 0 then
-		K.Print(("Earned %s"):format(K.FormatMoney(sold))) -- We dont need to know what our profit was 2 times. We already handle this on line 101
+		K.Print(("Earned %s"):format(K.FormatMoney(sold)))
 	end
-	--]]
+
 	if C["Inventory"].AutoRepair and CanMerchantRepair() and repairCost > 0 then
 		if max(GetMoney(), yourGuildFunds) > repairCost then
 			if (useGuildFunds and (yourGuildFunds > repairCost)) and MerchantGuildBankRepairButton:IsEnabled() and MerchantGuildBankRepairButton:IsShown() then
 				RepairAllItems(1)
 				usedGuildFunds = true
 				repaired = true
-				K.Print(("You repaired your items for %s using Guild Bank funds"):format(("|cffff0000%s|r"):format(K.FormatMoney(repairCost))))
+				K.Print(("You repaired your items for %s using Guild Bank funds"):format(K.FormatMoney(repairCost)))
 			elseif GetMoney() > repairCost then
 				RepairAllItems()
 				repaired = true
-				K.Print(("You repaired your items for %s"):format(("|cffff0000%s|r"):format(K.FormatMoney(repairCost))))
+				K.Print(("You repaired your items for %s"):format(K.FormatMoney(repairCost)))
 				gain = gain - repairCost
 			end
 		else
@@ -99,7 +99,7 @@ function Module:UpdateMerchant()
 	if gain > 0 then
 		K.Print(("Your profit is %s"):format(K.FormatMoney(gain)))
 	elseif gain < 0 then
-		K.Print(("Your expenses are %s"):format(("|cffff0000%s|r"):format(K.FormatMoney(abs(gain)))))
+		K.Print(("Your expenses are %s"):format(K.FormatMoney(abs(gain))))
 	end
 end
 

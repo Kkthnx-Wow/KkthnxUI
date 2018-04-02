@@ -148,6 +148,7 @@ local function CreateRaidLayout(self)
 	self.Health.colorReaction = true
 	self.Health.colorTapping = true
 	self.Health.colorClass = true
+	self.Health.Cutaway = true
 	self.Health.Smooth = C["Raidframe"].Smooth
 	self.Health.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
 
@@ -155,7 +156,7 @@ local function CreateRaidLayout(self)
 	if (C["Raidframe"].ManabarShow) then
 		self.Power = CreateFrame("StatusBar", "$parentPower", self)
 		self.Power:SetFrameStrata("LOW")
-		self.Power:SetFrameLevel(self:GetFrameLevel() - 0)
+		self.Power:SetFrameLevel(self:GetFrameLevel())
 		self.Power:SetHeight(3)
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)

@@ -76,8 +76,10 @@ C["Inventory"] = {
 	["DetailedReport"] = false,
 	["Enable"] = true,
 	["ItemLevel"] = false,
+	["ItemLevelThreshold"] = 10,
 	["JunkIcon"] = true,
 	["PulseNewItem"] = false,
+	["SortInverted"] = true,
 	["UseGuildRepairFunds"] = false,
 }
 
@@ -123,12 +125,14 @@ C["Auras"] = {
 
 -- Chat
 C["Chat"] = {
+	["Background"] = false,
+	["BackgroundAlpha"] = 0.25,
 	["Enable"] = true,
 	["Fading"] = true,
 	["FadingTimeFading"] = 3,
 	["FadingTimeVisible"] = 20,
 	["Font"] = "KkthnxUI",
-	["Height"] = 140,
+	["Height"] = 149,
 	["LinkBrackets"] = true,
 	["LinkColor"] = {0.08, 1, 0.36},
 	["MessageFilter"] = false,
@@ -136,11 +140,10 @@ C["Chat"] = {
 	["RemoveRealmNames"] = true,
 	["ScrollByX"] = 3,
 	["ShortenChannelNames"] = true,
-	["SpamFilter"] = false,
 	["TabsMouseover"] = true,
 	["TabsOutline"] = false,
 	["WhisperSound"] = true,
-	["Width"] = 400,
+	["Width"] = 410,
 }
 
 -- Cooldown
@@ -197,6 +200,7 @@ C["Error"] = {
 }
 
 C["Filger"] = {
+	["Bars"] = false,
 	["BuffSize"] = 37,
 	["CooldownSize"] = 30,
 	["DisableCD"] = false,
@@ -247,10 +251,8 @@ C["Misc"] = {
 	["AFKCamera"] = false,
 	["BattlegroundSpam"] = false,
 	["ColorPicker"] = false,
-	["EnhancedPvpMessages"] = false,
 	["ItemLevel"] = false,
 	["KillingBlow"] = false,
-	["NoBanner"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
 }
@@ -453,7 +455,7 @@ C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["Height"] = 40,
+	["Height"] = 42,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
@@ -466,7 +468,7 @@ C["Raidframe"] = {
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
-	["Width"] = 56,
+	["Width"] = 58,
 	["GroupBy"] = {
 		["Options"] = {
 			["Group"] = "GROUP",

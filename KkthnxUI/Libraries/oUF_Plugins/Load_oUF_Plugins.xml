@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Unitframe oUF Plugins -->
+   <Script file="oUF_AFK.lua"/>
    <Script file="oUF_AuraWatch.lua"/>
    <Script file="oUF_CombatFeedback.lua"/>
+   <Script file="oUF_CutAway.lua"/>
    <Script file="oUF_GlobalCooldown.lua"/>
    <Script file="oUF_RaidDebuffs.lua"/>
+   <Script file="oUF_ResInfo.lua"/>
    <Script file="oUF_Smooth.lua"/>
+   <Script file="oUF_Trinkets.lua"/>
 </Ui>

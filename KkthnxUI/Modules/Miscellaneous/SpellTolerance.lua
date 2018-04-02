@@ -1,36 +1,34 @@
 local K, C, L = unpack(select(2, ...))
 if C["General"].SpellTolerance ~= true then return end
 
-local AutoLagTolerance = CreateFrame("Frame", "AutoLagTolerance")
-local GetNetStats = GetNetStats
-local min = math.min
-local SetCVar = SetCVar
+local tostring = tostring
 
-AutoLagTolerance.cache = GetCVar("SpellQueueWindow")
-AutoLagTolerance.timer = 0
+local GetCVar = _G.GetCVar
+local SetCVar = _G.SetCVar
 
-local function AutoLagTolerance_OnUpdate(self, elapsed)
-	self.timer = self.timer + elapsed
+local SpellTolerance = CreateFrame("Frame")
+local int = 5
 
-	if self.timer < 1.0 then
-		return
-	end
+local _, _, _, lag = GetNetStats()
+local function LatencyUpdate(self, elapsed)
+  int = int - elapsed
+  if int < 0 then
+    if K.PrivateBuild then
+      if GetCVar("reducedLagTolerance") ~= tostring(1) then
+        SetCVar("reducedLagTolerance", tostring(1))
+      end
+    end
 
-	self.timer = 0
-
-	local latency = min(400, select(4, GetNetStats()))
-
-	if latency == 0 then
-		return
-	end
-
-	if latency == self.cache then
-		return
-	end
-
-	SetCVar("SpellQueueWindow", latency)
-
-	self.cache = latency
+    if lag ~= 0 and lag <= 400 then
+      if K.RetailBuild then
+        SetCVar("SpellQueueWindow", tostring(lag))
+      else
+        SetCVar("maxSpellStartRecoveryOffset", tostring(lag))
+      end
+    end
+    int = 5
+  end
 end
 
-AutoLagTolerance:SetScript("OnUpdate", AutoLagTolerance_OnUpdate)
+SpellTolerance:SetScript("OnUpdate", LatencyUpdate)
+LatencyUpdate(SpellTolerance, 10)

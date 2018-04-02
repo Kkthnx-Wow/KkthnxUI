@@ -296,23 +296,23 @@ function K.CreateAuras(self, unit)
 
 		self.Debuffs = Debuffs
 	elseif (unit == "boss") then
-		Buffs:SetHeight(21)
+		Buffs:SetHeight(self.Power:GetHeight())
 		Buffs:SetWidth(self.Power:GetWidth())
-		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs.size = 21
-		Buffs.num = 5
+		Buffs:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMLEFT", -6, 0)
+		Buffs.size = self.Power:GetHeight()
+		Buffs.num = 4
 		Buffs.spacing = 6
-		Buffs.initialAnchor = "LEFT"
+		Buffs.initialAnchor = "RIGHT"
 		Buffs["growth-y"] = "DOWN"
-		Buffs["growth-x"] = "RIGHT"
+		Buffs["growth-x"] = "LEFT"
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 
-		Debuffs:SetHeight(26)
+		Debuffs:SetHeight(self.Health:GetHeight())
 		Debuffs:SetWidth(self.Health:GetWidth())
-		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
-		Debuffs.size = 26
-		Debuffs.num = 10
+		Debuffs:SetPoint("TOPRIGHT", self.Portrait, "TOPLEFT", -6, 0)
+		Debuffs.size = self.Health:GetHeight()
+		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "RIGHT"
 		Debuffs["growth-y"] = "DOWN"
@@ -324,27 +324,28 @@ function K.CreateAuras(self, unit)
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 	elseif (unit == "arena") then
-		Buffs:SetHeight(21)
+		Buffs:SetHeight(self.Power:GetHeight())
 		Buffs:SetWidth(self.Power:GetWidth())
-		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs.size = 21
-		Buffs.num = 5
+		Buffs:SetPoint("BOTTOMRIGHT", self.Trinket, "BOTTOMLEFT", -6, 0)
+		Buffs.size = self.Power:GetHeight()
+		Buffs.num = 4
 		Buffs.spacing = 6
-		Buffs.initialAnchor = "LEFT"
+		Buffs.initialAnchor = "RIGHT"
 		Buffs["growth-y"] = "DOWN"
-		Buffs["growth-x"] = "RIGHT"
+		Buffs["growth-x"] = "LEFT"
 		Buffs.PostCreateIcon = PostCreateAura
 		Buffs.PostUpdateIcon = PostUpdateAura
 
-		Debuffs:SetHeight(26)
+		Debuffs:SetHeight(self.Health:GetHeight())
 		Debuffs:SetWidth(self.Health:GetWidth())
-		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 10)
-		Debuffs.size = 26
-		Debuffs.num = 10
+		Debuffs:SetPoint("TOPRIGHT", self.Trinket, "TOPLEFT", -6, 0)
+		Debuffs.size = self.Health:GetHeight()
+		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "RIGHT"
 		Debuffs["growth-y"] = "DOWN"
 		Debuffs["growth-x"] = "LEFT"
+		Debuffs.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
 		Debuffs.PostCreateIcon = PostCreateAura
 		Debuffs.PostUpdateIcon = PostUpdateAura
 

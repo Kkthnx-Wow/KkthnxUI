@@ -1,64 +1,138 @@
 local K, C, L = unpack(select(2, ...))
-if C["Chat"].SpamFilter ~= true then return end
+local Module = K:NewModule("StopTheSpam", "AceEvent-3.0", "AceHook-3.0")
 
-local _G = _G
+-- Concepts taken from !StopTheSpam
 
-local TRADE = L["Chat"].Trade
-local reqLatin = not strmatch(GetLocale(), "^[rkz][uoh]")
+local ALLOW = 1
+local DENY = 0
 
-local strmatch, strlower, type = string.match, string.lower, type
+-- Filter
+Module.ruleset = {
+	order = {
+		-- Allowed addons.
+		"warmup",
+		"buggrabber",
+		-- Global deny.
+		-- Denied addons.
+		-- Late loading denied addons.
+		"ace",
+		"dkptable",
+		-- Uncommon denies.
+		"timeplayed",
+		"skinner",
+		-- Default fallthrough.
+		"default"
+	},
+	-- The order of the rules here does not matter.
+	rules = {
+		["warmup"] = {
+			test = function (msg, id, frame) return _G.WarmupFrame and frame == _G.WarmupFrame end,
+			invalidate = true,
+			action = ALLOW
+		},
+		["buggrabber"] = {
+			test = function (msg, id, frame) return _G.BugGrabber and frame == _G.BugGrabber end,
+			invalidate = true,
+			action = ALLOW
+		},
+		["ace"] = {
+			test = function (msg, id, frame) return _G.AceEventFrame and frame == _G.AceEventFrame end,
+			invalidate = true,
+			action = DENY
+		},
+		["dkptable"] = {
+			test = function (msg, id, frame) return _G.DKPT_Main_Frame and frame == _G.DKPT_Main_Frame end,
+			expire = 1,
+			action = DENY
+		},
+		["timeplayed"] = {
+			test = function (msg, id, frame) return msg:lower():find(_G.TIME_PLAYED_MSG:lower()) end,
+			action = DENY
+		},
+		["skinner"] = {
+			test = function (msg, id, frame) return msg:lower():find(("skinner:"):lower()) end,
+			action = DENY
+		},
+		["default"] = {
+			action = ALLOW
+		}
+	}
+}
 
-local prevID, result
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", function(_, _, message, sender, arg3, arg4, arg5, flag, channelID, arg8, channelName, arg10, lineID, senderGUID, ...)
-	if lineID == prevID then
-		if result == true then
-			return true
-		else
-			return false, result, sender, arg3, arg4, arg5, flag, channelID, arg8, channelName, arg10, lineID, senderGUID, ...
-		end
-	end
-	prevID, result = lineID, true
+function Module:Release()
+	self:Unhook(_G.ChatFrame1, "AddMessage")
+	self:Unhook(_G.ChatFrame2, "AddMessage")
+	self.ruleset = nil
+end
 
-	-- Don't filter custom channels
-	if channelID == 0 or type(channelID) ~= "number" then return end
+function Module:End(event)
+	self:UnregisterEvent(event)
+	self:Release()
+end
 
-	local search = strlower(message)
+-- Determine if message is spam
+function Module:IsMessageSpam(msg, id, frame)
+	local ruleset = self.ruleset
 
-	-- Hide ASCII art crap
-	if reqLatin and not strmatch(search, "[a-z]") then
-		--print("No letters")
-		return true
-	end
+	if not msg then return end
 
-	local blacklist = K.ChatBlacklist
-	for i = 1, #blacklist do
-		if strmatch(search, blacklist[i]) then
-			--print("Blacklisted:", blacklist[i])
-			--print("  ", search)
-			return true
-		end
-	end
+	for i, name in ipairs(ruleset.order) do
+		local rule = ruleset.rules[name]
+		-- If the rule tests true then there is a match. The absence of a test implies a positive match.
+		local match = not rule.test or rule.test(msg, id, frame)
 
-	-- Remove extra spaces
-	message = strtrim(gsub(message, "%s%s+", " "))
+		-- The rule matches but it may not actually be spam.
+		if match then
+			-- Update the expiration count and handle expired rules if necessary.
+			if rule.expire then
+				if rule.expire <= 1 then
+					_G.table.remove(ruleset.order, i)
+				else
+					rule.expire = rule.expire - 1
+				end
+			end
 
-	local whitelist = K.ChatWhitelist
-	local pass = #whitelist == 0 or not strmatch(channelName, TRADE)
-	if not pass then
-		for i = 1, #whitelist do
-			if strmatch(search, whitelist[i]) then
-				--print("Whitelisted:", whitelist[i])
-				pass = true
-				break
+			-- If this is a deny rule, then this message is spam.
+			return rule.action == DENY
+			-- If the rule returned nil, then it is invalid.
+		elseif match == nil then -- Must explicitly test for nil!
+			-- If the rule is set to invalidate then it should be removed from further tests.
+			if rule.invalidate then
+				_G.table.remove(ruleset.order, i)
 			end
 		end
 	end
-	if pass then
-		--print("Passed")
-		result = message
-		return false, message, sender, arg3, arg4, arg5, flag, channelID, arg8, channelName, arg10, lineID, senderGUID, ...
-	end
+end
 
-	--print("Other:", channelID, search)
-	return true
-end)
+-- Filter out messages
+function Module:AddMessage(obj, msg, r, g, b, id)
+	if not self:IsMessageSpam(msg, id, obj) then
+		-- Let the message pass through.
+		self.hooks[obj].AddMessage(obj, msg, r, g, b, id)
+	end
+end
+
+-- Basic Filter
+local function ChatFilter(self, event, arg1)
+	if arg1:find(_G.ERR_SPELL_UNLEARNED_S:sub(1, _G.ERR_SPELL_UNLEARNED_S:len() - 3)) or
+	arg1:find(_G.ERR_LEARN_SPELL_S:sub(1, _G.ERR_LEARN_SPELL_S:len() - 3)) or
+	arg1:find(_G.ERR_LEARN_ABILITY_S:sub(1, _G.ERR_LEARN_ABILITY_S:len() - 3)) or
+	arg1:find(_G.ERR_PET_SPELL_UNLEARNED_S:sub(1, _G.ERR_PET_SPELL_UNLEARNED_S:len() - 3)) then
+		return true
+	end
+end
+
+-- Hook Chat and register End event
+function Module:OnInitialize()
+	-- Hook the default chat frame's AddMessage method.
+	self:RawHook(_G.ChatFrame1, "AddMessage", true)
+
+	-- Hook the combat log frame's AddMessage method to catch Gatherer.
+	self:RawHook(_G.ChatFrame2, "AddMessage", true)
+
+	-- Register for a late-firing event that happens on startup or reload.
+	self:RegisterEvent("UPDATE_PENDING_MAIL", "End")
+
+	-- Set up basic chat filter
+	_G.ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", ChatFilter)
+end

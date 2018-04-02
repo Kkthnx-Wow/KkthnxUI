@@ -63,7 +63,7 @@ end
 
 function Module:ExperienceBar_OnEnter()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 	end
 
 	GameTooltip:ClearLines()
@@ -71,14 +71,14 @@ function Module:ExperienceBar_OnEnter()
 
 	local cur, max = Module:GetXP("player")
 	local rested = GetXPExhaustion()
-	GameTooltip:AddDoubleLine(L["Databars"].Experience, K.Name, nil, nil, nil, K.Color.r, K.Color.g, K.Color.b)
+	GameTooltip:AddDoubleLine(L["Databars"].Experience)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format(" %s / %s (%s%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), 20 * math_floor((max - cur) / max)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format('+%d (%d%%)', rested, rested / max * 100), 1, 1, 1)
 	end
 
 	GameTooltip:Show()
@@ -86,7 +86,7 @@ end
 
 function Module:ExperienceBar_OnLeave()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 	end
 
 	if not GameTooltip:IsForbidden() then
@@ -101,7 +101,7 @@ function Module:UpdateExperienceDimensions()
 	self.expBar.spark:SetSize(16, self.expBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
-		self.expBar:SetAlpha(0)
+		self.expBar:SetAlpha(0.25)
 	else
 		self.expBar:SetAlpha(1)
 	end

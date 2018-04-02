@@ -7,16 +7,18 @@ local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 function K.CreateAdditionalPower(self)
 	-- Additional mana
 	local addPower = CreateFrame("StatusBar", nil, self)
-	addPower:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
+	addPower:SetPoint("LEFT", 4, 0)
+	addPower:SetPoint("RIGHT", -4, 0)
+	addPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
+	addPower:SetHeight(12)
 	addPower:SetStatusBarTexture(UnitframeTexture, "BORDER")
-	addPower:SetSize(self.Health:GetWidth(), 10)
 	addPower.colorPower = true
 	addPower:SetTemplate("Transparent")
 	addPower.Smooth = C["Unitframe"].Smooth
 	addPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 
 	addPower.Value = addPower:CreateFontString(nil, "OVERLAY")
-	addPower.Value:SetFont(C.Media.Font, 9)
+	addPower.Value:SetFont(C.Media.Font, 10)
 	addPower.Value:SetShadowOffset(1, -1)
 	addPower.Value:SetPoint("CENTER", addPower, 0, 0)
 

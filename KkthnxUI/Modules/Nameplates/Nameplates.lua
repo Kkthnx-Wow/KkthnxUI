@@ -377,7 +377,7 @@ local function PostCastStart(castbar, unit, name)
 	castbar.unit = unit
 
 	local colors = K.Colors
-	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
 
 	local t
 	if C["Nameplates"].CastUnitReaction and UnitReaction(unit, "player") then
@@ -389,7 +389,7 @@ local function PostCastStart(castbar, unit, name)
 	end
 
 	if castbar.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
-		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
 	end
 
 	castbar:SetStatusBarColor(r, g, b)
@@ -420,7 +420,7 @@ local function PostCastInterruptible(castbar, unit)
 	if unit == "vehicle" or unit == "player" then return end
 
 	local colors = K.Colors
-	local r, g, b = colors.castColor[1], colors.castColor[2], colors.castColor[3]
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
 
 	local t
 	if C["Nameplates"].CastUnitReaction and UnitReaction(unit, 'player') then
@@ -432,7 +432,7 @@ local function PostCastInterruptible(castbar, unit)
 	end
 
 	if castbar.notInterruptible and UnitCanAttack("player", unit) then
-		r, g, b = colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3]
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
 	end
 
 	castbar:SetStatusBarColor(r, g, b)
@@ -440,7 +440,7 @@ end
 
 local function PostCastNotInterruptible(castbar)
 	local colors = K.Colors
-	castbar:SetStatusBarColor(colors.castNoInterrupt[1], colors.castNoInterrupt[2], colors.castNoInterrupt[3])
+	castbar:SetStatusBarColor(colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3])
 end
 
 local function CustomCastDelayText(castbar, duration)
@@ -508,6 +508,7 @@ local function StyleUpdate(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.colorHealth = true
+	self.Health.Cutaway = true
 	self.Health.Smooth = C["Nameplates"].Smooth
 	self.Health.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 	self.Health.frequentUpdates = true
@@ -610,7 +611,7 @@ local function StyleUpdate(self, unit)
 
 	if C["Nameplates"].ThreatPercent == true then
 		self.ThreatPercentText = self.Health:CreateFontString(nil, "OVERLAY")
-		self.ThreatPercentText:SetPoint("RIGHT", self.Health, "LEFT", -4, 14)
+		self.ThreatPercentText:SetPoint("RIGHT", self.Health, "LEFT", -4, 12)
 		self.ThreatPercentText:SetFont(C["Media"].Font, C["Nameplates"].FontSize * K.NoScaleMult - 1, C["Nameplates"].Outline and "OUTLINE" or "")
 		self.ThreatPercentText:SetShadowOffset(C["Nameplates"].Outline and 0 or 1, C["Nameplates"].Outline and -0 or -1)
 		self:Tag(self.ThreatPercentText, "[KkthnxUI:NameplateThreatColor][KkthnxUI:NameplateThreat]")
@@ -701,8 +702,7 @@ local function StyleUpdate(self, unit)
 				SetVirtualBorder(button, color.r, color.g, color.b)
 			end
 			button.icon:SetDesaturated(false)
-		else
-			SetVirtualBorder(button, 0, 0, 0)
+			button:EnableMouse(false)
 		end
 
 		if expiration and duration and (duration ~= 0) then

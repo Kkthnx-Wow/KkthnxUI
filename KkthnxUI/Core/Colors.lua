@@ -1,17 +1,23 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
 local _, ns = ...
 local oUF = ns.oUF
 if not oUF then return end
 
--- Colors
-oUF.colors.castColor = {1.0, 0.7, 0.0}
-oUF.colors.castNoInterrupt = {1.0, 0, 0}
-oUF.colors.disconnected = {0.53, 0.54, 0.53}
-oUF.colors.fallback = {1.0, 1.0, 0.8}
-oUF.colors.health = {0.29, 0.67, 0.30}
-oUF.colors.tapped = {0.6, 0.6, 0.6}
-oUF.colors.white = {1.0, 1.0, 1.0}
+oUF.colors.status = {
+	castColor = {1.0, 0.7, 0.0},
+	castNoInterrupt = {1.0, 0, 0},
+}
+
+-- aura coloring
+oUF.colors.debuff = {
+	none = {204/255, 0/255, 0/255},
+	Magic = {51/255, 153/255, 255/255},
+	Curse = {204/255, 0/255, 255/255},
+	Disease = {153/255, 102/255, 0/255},
+	Poison = {0/255, 153/255, 0/255},
+	[""] = {0/255, 0/255, 0/255},
+}
 
 oUF.colors.reaction = {
 	[1] = {0.87, 0.37, 0.37}, -- Hated
@@ -37,11 +43,14 @@ oUF.colors.factioncolors = {
 
 oUF.colors.power = {
 	["ALTPOWER"] = {0.00, 1.00, 1.00},
-	["AMMOSLOT"] = {0.80, 0.60, 0.00},
+	["AMMOSLOT"] = {204/255, 153/255, 0/255},
+	["ARCANE_CHARGES"] = {121/255, 152/255, 192/255},
+	["BURNING_EMBERS"] = {151/255, 45/255, 24/255},
 	["CHI"] = {0.71, 1.00, 0.92},
+	["DEMONIC_FURY"] = {105/255, 53/255, 142/255},
 	["ENERGY"] = {0.65, 0.63, 0.35},
 	["FOCUS"] = {0.71, 0.43, 0.27},
-	["FUEL"] = {0.00, 0.55, 0.50},
+	["FUEL"] = {0/255, 140/255, 127/255},
 	["FURY"] = {201/255, 66/255, 253/255},
 	["HAPPINESS"] = {0/255, 255/255, 255/255},
 	["HOLY_POWER"] = {0.95, 0.90, 0.60},
@@ -54,8 +63,8 @@ oUF.colors.power = {
 	["POWER_TYPE_FEL_ENERGY"] = {224/255, 250/255, 0/255},
 	["POWER_TYPE_HEAT"] = {255/255, 125/255, 0/255},
 	["POWER_TYPE_OOZE"] = {193/255, 255/255, 0/255},
-	["POWER_TYPE_PYRITE"] = {0.60, 0.09, 0.17},
-	["POWER_TYPE_STEAM"] = {0.55, 0.57, 0.61},
+	["POWER_TYPE_PYRITE"] = {0/255, 202/255, 255/255},
+	["POWER_TYPE_STEAM"] = {242/255, 242/255, 242/255},
 	["RAGE"] = {0.69, 0.31, 0.31},
 	["RUNES"] = {0.55, 0.57, 0.61},
 	["RUNIC_POWER"] = {0.00, 0.82, 1.00},
@@ -65,6 +74,7 @@ oUF.colors.power = {
 		{255/255, 250/255, 183/255},
 		{255/255, 107/255, 107/255}
 	},
+	["UNUSED"] = {195/255, 202/255, 217/255},
 }
 
 oUF.colors.class = {
@@ -83,11 +93,11 @@ oUF.colors.class = {
 }
 
 oUF.colors.totems = {
-	{0.13, 0.55, 0.71}, -- blue 33 / 141 / 181
-	{0.26, 0.71, 0.13}, -- green 67 / 181 / 33
-	{0.58, 0.13, 0.71}, -- violet 147 / 33 / 181
-	{0.71, 0.29, 0.13}, -- red 181 / 73 / 33
-	{0.71, 0.58, 0.13}, -- yellow 181 / 147 / 33
+	{0.13, 0.55, 0.71}, -- Blue
+	{0.26, 0.71, 0.13}, -- Green
+	{0.58, 0.13, 0.71}, -- Violet
+	{0.71, 0.29, 0.13}, -- Red
+	{0.71, 0.58, 0.13}, -- Yellow
 }
 
-K.Colors = oUF.colors
+K["Colors"] = oUF.colors

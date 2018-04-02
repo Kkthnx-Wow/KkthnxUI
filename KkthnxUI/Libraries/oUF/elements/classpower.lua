@@ -48,6 +48,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local _, PlayerClass = UnitClass('player')
+local RetailBuild = tonumber((select(2, GetBuildInfo()))) >= 26124
 
 -- sourced from FrameXML/Constants.lua
 local SPEC_MAGE_ARCANE = SPEC_MAGE_ARCANE or 1
@@ -111,11 +112,13 @@ local function Update(self, event, unit, powerType)
 		else
 			cur = UnitPower('player', ClassPowerID, true)
 			max = UnitPowerMax('player', ClassPowerID)
-			mod = UnitPowerDisplayMod(ClassPowerID)
+			mod = RetailBuild and UnitPowerDisplayMod(ClassPowerID)
 		end
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
-		cur = mod == 0 and 0 or cur / mod
+		if RetailBuild then
+			cur = mod == 0 and 0 or cur / mod
+		end
 
 		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		if(ClassPowerType == 'SOUL_SHARDS' and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then

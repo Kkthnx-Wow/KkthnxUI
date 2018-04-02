@@ -191,7 +191,9 @@ function K.GetPlayerRole()
 end
 
 function K.IsDispellableByMe(debuffType)
-	if not K.DispelClasses[K.Class] then return; end
+	if not K.DispelClasses[K.Class] then
+		return
+	end
 
 	if K.DispelClasses[K.Class][debuffType] then
 		return true
@@ -525,7 +527,7 @@ end
 local waitTable = {}
 local waitFrame
 function K.Delay(delay, func, ...)
-	if (type(delay) ~= "number" or type(func) ~= "function") then
+	if (type(delay) ~= "number") or (type(func) ~= "function") then
 		return false
 	end
 	local extend = {...}
@@ -533,22 +535,22 @@ function K.Delay(delay, func, ...)
 		C_Timer_After(delay, func)
 		return true
 	else
-		if(waitFrame == nil) then
+		if waitFrame == nil then
 			waitFrame = CreateFrame("Frame", "WaitFrame", UIParent)
-			waitFrame:SetScript("onUpdate", function (_, elapse)
-				local count = #waitTable
-				local i = 1
-				while(i <= count) do
-					local waitRecord = table_remove(waitTable, i)
-					local d = table_remove(waitRecord, 1)
-					local f = table_remove(waitRecord, 1)
-					local p = table_remove(waitRecord, 1)
-					if(d > elapse) then
-					  table_insert(waitTable, i, {d - elapse, f, p})
-					  i = i + 1
+			waitFrame:SetScript("onUpdate",function (_, elapse)
+				local waitRecord, waitDelay, waitFunc, waitParams
+				local i, count = 1, #waitTable
+				while i <= count do
+					waitRecord = table_remove(waitTable, i)
+					waitDelay = table_remove(waitRecord, 1)
+					waitFunc = table_remove(waitRecord, 1)
+					waitParams = table_remove(waitRecord, 1)
+					if waitDelay > elapse then
+						table_insert(waitTable, i, {waitDelay - elapse, waitFunc, waitParams})
+						i = i + 1
 					else
-					  count = count - 1
-					  f(unpack(p))
+						count = count - 1
+						waitFunc(unpack(waitParams))
 					end
 				end
 			end)

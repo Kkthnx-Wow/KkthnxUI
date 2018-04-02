@@ -16,8 +16,8 @@ end
 
 local function SmoothBar(bar)
 	if not bar.SetValue_ then
-		bar.SetValue_ = bar.SetValue;
-		bar.SetValue = Smooth;
+		bar.SetValue_ = bar.SetValue
+		bar.SetValue = Smooth
 	end
 end
 
@@ -25,9 +25,11 @@ local function hook(frame)
 	if frame.Health then
 		SmoothBar(frame.Health)
 	end
+
 	if frame.Power then
 		SmoothBar(frame.Power)
 	end
+
 	if frame.AdditionalPower then
 		SmoothBar(frame.AdditionalPower)
 	end
@@ -39,11 +41,11 @@ oUF:RegisterInitCallback(hook)
 local f, min, max = CreateFrame('Frame'), math.min, math.max
 f:SetScript('OnUpdate', function()
 	local rate = GetFramerate()
-	local limit = 30/rate
+	local limit = 30 / rate
 
 	for bar, value in pairs(smoothing) do
 		local cur = bar:GetValue()
-		local new = cur + min((value-cur)/bar.SmoothSpeed or 3, max(value-cur, limit))
+		local new = cur + min((value-cur) / bar.SmoothSpeed or 3, max(value - cur, limit))
 		if new ~= new then
 			-- Mad hax to prevent QNAN.
 			new = value

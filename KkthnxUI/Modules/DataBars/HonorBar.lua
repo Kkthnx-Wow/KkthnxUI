@@ -70,7 +70,7 @@ end
 local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE..HEADER_COLON
 function Module:HonorBar_OnEnter()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeIn(self, 0.4, self:GetAlpha(), 1)
+		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
 	end
 
 	GameTooltip:ClearLines()
@@ -101,7 +101,7 @@ end
 
 function Module:HonorBar_OnLeave()
 	if C["DataBars"].MouseOver then
-		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
+		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0.25)
 	end
 
 	if not GameTooltip:IsForbidden() then
@@ -120,7 +120,7 @@ function Module:UpdateHonorDimensions()
 	self.HonorBar.spark:SetSize(16, self.HonorBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
-		self.HonorBar:SetAlpha(0)
+		self.HonorBar:SetAlpha(0.25)
 	else
 		self.HonorBar:SetAlpha(1)
 	end

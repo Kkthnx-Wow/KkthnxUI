@@ -103,3 +103,15 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end)
+
+if C["Chat"].Background then
+	local chatBG = CreateFrame("Frame", "ChatBackground", UIParent)
+	chatBG:SetBackdrop({bgFile = C["Media"].Blank, edgeFile = C["Media"].Glow, edgeSize = 3, insets = {left = 3, right = 3, top = 3, bottom = 3}})
+	chatBG:SetFrameLevel(1)
+	chatBG:SetFrameStrata("BACKGROUND")
+	chatBG:SetSize(C["Chat"].Width + 7, C["Chat"].Height + 9)
+	chatBG:ClearAllPoints()
+	chatBG:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -4, 5)
+	chatBG:SetBackdropBorderColor(0, 0, 0, C["Chat"].BackgroundAlpha or 0.25)
+	chatBG:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Chat"].BackgroundAlpha or 0.25)
+end

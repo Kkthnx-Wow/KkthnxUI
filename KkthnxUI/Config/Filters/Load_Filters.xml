@@ -6,6 +6,5 @@
     <Script file="ErrorFilter.lua"/>
     <Script file="FilgerSpells.lua"/>
     <Script file="Nameplates.lua"/>
-    <Script file="SpamFilter.lua"/>
     <Script file="Unitframes.lua"/>
 </Ui>

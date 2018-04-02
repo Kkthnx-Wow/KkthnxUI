@@ -638,11 +638,6 @@ KkthnxUIConfig["itIT"] = {
 			["Desc"] = "Scroll Chat Lines By #",
 		},
 
-		["SpamFilter"] = {
-			["Name"] = "Spam Filter",
-			["Desc"] = "Go away spam meanies",
-		},
-
 		["TabsMouseover"] = {
 			["Name"] = "Tabs Mouseover",
 			["Desc"] = "Mouseover chat tabs",
@@ -994,11 +989,6 @@ KkthnxUIConfig["itIT"] = {
 			["Desc"] = "Improved ColorPicker",
 		},
 
-		["EnhancedPvpMessages"] = {
-			["Name"] = "Enhanced PVP Messages",
-			["Desc"] = "Display battleground messages in the middle of the screen.",
-		},
-
 		["ItemLevel"] = {
 			["Name"] = "Item Level",
 			["Desc"] = "Item level on character slot buttons",
@@ -1007,11 +997,6 @@ KkthnxUIConfig["itIT"] = {
 		["KillingBlow"] = {
 			["Name"] = "KillingBlow",
 			["Desc"] = "Display a message about your killing blow",
-		},
-
-		["NoBanner"] = {
-			["Name"] = "No Boss Banner",
-			["Desc"] = "This boss banner gets annoying after every boss kill",
 		},
 
 		["PvPEmote"] = {

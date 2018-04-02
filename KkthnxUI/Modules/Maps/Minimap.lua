@@ -54,7 +54,9 @@ function Module:Minimap_OnMouseWheel(d)
 end
 
 function Module:Update_ZoneText()
-	if not C["Minimap"].Enable then return end
+	if not C["Minimap"].Enable then
+		return
+	end
 	Minimap.location:SetText(strsub(GetMinimapZoneText(), 1, 46))
 	Minimap.location:SetTextColor(Module:GetLocTextColor())
 	Minimap.location:FontTemplate()
@@ -92,7 +94,7 @@ function Module:UpdateSettings()
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	end
-	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or Minimap:GetWidth() + 10
+	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
 	K.MinimapWidth = K.MinimapSize
 	K.MinimapHeight = K.MinimapSize
 
@@ -100,8 +102,8 @@ function Module:UpdateSettings()
 		Minimap:SetSize(K.MinimapSize, K.MinimapSize)
 	end
 
-	if (MMHolder) then
-		MMHolder:SetWidth((Minimap:GetWidth() + 1 + 1 * 3))
+	if MMHolder then
+		MMHolder:SetWidth(Minimap:GetWidth())
 	end
 
 	if Minimap.location then
@@ -115,6 +117,8 @@ function Module:UpdateSettings()
 	end
 
 	if GarrisonLandingPageMinimapButton then
+		-- ugly hack to keep the keybind functioning
+		local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 		GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
 		GarrisonLandingPageMinimapButton:UnregisterAllEvents()
 		GarrisonLandingPageMinimapButton:Show()
@@ -122,7 +126,7 @@ function Module:UpdateSettings()
 	end
 
 	if GameTimeFrame then
-		if C["Minimap"].hideCalendar then
+		if not C["Minimap"].Calendar then
 			GameTimeFrame:Hide()
 		else
 			GameTimeFrame:SetParent(Minimap)
@@ -140,9 +144,6 @@ function Module:UpdateSettings()
 			GameTimeFont:SetPoint("CENTER", 0, -7)
 			GameTimeFont:SetFont(C["Media"].Font, 20)
 			GameTimeFont:SetTextColor(0.2, 0.2, 0.1, 1)
-
-			GameTimeFrame:SetAlpha(0)
-			K.UIFrameFadeIn(GameTimeFrame, 0.4, GameTimeFrame:GetAlpha(), 1)
 		end
 	end
 
@@ -150,7 +151,6 @@ function Module:UpdateSettings()
 		MiniMapMailFrame:ClearAllPoints()
 		MiniMapMailFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 4)
 		MiniMapMailFrame:SetScale(1.2)
-		MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 	end
 
 	if QueueStatusMinimapButton then
@@ -193,7 +193,7 @@ function Module:OnInitialize()
 	MMHolder:SetHeight(Minimap:GetHeight())
 
 	Minimap:ClearAllPoints()
-	Minimap:SetPoint("TOPRIGHT", MMHolder, "TOPRIGHT", -1, -1)
+	Minimap:SetPoint("CENTER", MMHolder, "CENTER", 0, 0)
 	Minimap:SetMaskTexture(C["Media"].Blank)
 	Minimap:SetQuestBlobRingAlpha(0)
 	Minimap:SetArchBlobRingAlpha(0)
@@ -207,10 +207,6 @@ function Module:OnInitialize()
 		self.location:Hide()
 	end)
 
-	-- Fix spellbook taint
-	ShowUIPanel(SpellBookFrame)
-	HideUIPanel(SpellBookFrame)
-
 	Minimap.location = Minimap:CreateFontString(nil, "OVERLAY")
 	Minimap.location:FontTemplate(nil, 13, "OUTLINE")
 	Minimap.location:SetPoint("TOP", Minimap, "TOP", 0, -4)
@@ -218,28 +214,29 @@ function Module:OnInitialize()
 	Minimap.location:SetJustifyV("MIDDLE")
 	Minimap.location:Hide()
 
-	Minimap:SetArchBlobRingScalar(0)
-	Minimap:SetQuestBlobRingScalar(0)
 	MinimapBorder:Hide()
 	MinimapBorderTop:Hide()
-	MiniMapMailBorder:Hide()
-	MiniMapMailIcon:SetTexture("")
-	MinimapNorthTag:Kill()
-	MiniMapTracking:Hide()
-	MiniMapVoiceChatFrame:Hide()
-	MinimapZoneTextButton:Hide()
 	MinimapZoomIn:Hide()
 	MinimapZoomOut:Hide()
+	MiniMapVoiceChatFrame:Hide()
+	MinimapNorthTag:Kill()
+	MinimapZoneTextButton:Hide()
+	MiniMapTracking:Hide()
+	MiniMapMailBorder:Hide()
+	MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
-	if C["Minimap"].hideClassHallReport then
-		GarrisonLandingPageMinimapButton:Kill()
-		GarrisonLandingPageMinimapButton.IsShown = function() return true end
-	end
+	-- Hide the BlopRing on Minimap
+	Minimap:SetArchBlobRingScalar(0)
+	Minimap:SetQuestBlobRingScalar(0)
 
 	QueueStatusMinimapButtonBorder:Hide()
 	QueueStatusFrame:SetClampedToScreen(true)
 
 	MiniMapWorldMapButton:Hide()
+
+	MiniMapInstanceDifficulty:SetParent(Minimap)
+	GuildInstanceDifficulty:SetParent(Minimap)
+	MiniMapChallengeMode:SetParent(Minimap)
 
 	if TimeManagerClockButton then
 		TimeManagerClockButton:Kill()
@@ -250,16 +247,21 @@ function Module:OnInitialize()
 	end
 
 	K["Movers"]:RegisterFrame(MMHolder)
-
-	Minimap:EnableMouseWheel(true)
-	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
-
 	-- Make sure these invisible frames follow the minimap.
+	MinimapBackdrop:SetMovable(true)
+	MinimapBackdrop:SetUserPlaced(true)
+	MinimapBackdrop:SetParent(Minimap)
+	MinimapBackdrop:ClearAllPoints()
+	MinimapBackdrop:SetPoint("CENTER")
+
+	MinimapCluster:SetMovable(true)
+	MinimapCluster:SetUserPlaced(true)
 	MinimapCluster:ClearAllPoints()
 	MinimapCluster:SetAllPoints(Minimap)
 	MinimapCluster:EnableMouse(false)
-	MinimapBackdrop:ClearAllPoints()
-	MinimapBackdrop:SetAllPoints(Minimap)
+
+	Minimap:EnableMouseWheel(true)
+	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update_ZoneText")
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "Update_ZoneText")

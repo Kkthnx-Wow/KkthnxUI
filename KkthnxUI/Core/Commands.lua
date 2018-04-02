@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+local Dialog = LibStub("LibDialog-1.0")
 
 -- Lua API
 local _G = _G
@@ -183,6 +184,42 @@ function K.CleanupGuild(msg)
 end
 K:RegisterChatCommand("cleanguild", K.CleanupGuild)
 
+-- Support for slash commands, which must be passed in a list starting at 1
+local result
+function K.QuestCheck(msg)
+	if tonumber(msg) ~= nil then
+		arg = tonumber(msg)
+		if arg then
+			result = _G.IsQuestFlaggedCompleted(arg)
+			if result then
+				K.Print("QuestID ("..arg..")\124cff22ff22 is completed.")
+			else
+				K.Print("QuestID ("..arg..")\124cffff0000 is not completed.")
+			end
+		else
+			K.Print("\124cffff0000[QuestCheck Error] QuestID ("..arg..") is not a valid quest id.")
+		end
+	else
+		K.Print('Usage: /questcheck [questID number]')
+	end
+end
+K:RegisterChatCommand("questcheck", K.QuestCheck)
+K:RegisterChatCommand("qck", K.QuestCheck)
+
+function K.CleanupHerilooms()
+	for bag = 0, 4 do
+		for slot = 1, GetContainerNumSlots(bag) do
+			local name = GetContainerItemLink(bag, slot)
+			if name and string.find(name, "00ccff") then
+				print(name)
+				PickupContainerItem(bag, slot)
+				DeleteCursorItem()
+			end
+		end
+	end
+end
+K:RegisterChatCommand("cleanboa", K.CleanupHerilooms)
+
 -- Fixes the issue when the dialog to release spirit does not come up.
 function K.FixRelease()
 	RetrieveCorpse()
@@ -205,6 +242,15 @@ function K.FixParty()
 end
 K:RegisterChatCommand("killparty", K.FixParty)
 K:RegisterChatCommand("leaveparty", K.FixParty)
+
+-- Fixes the issue when players get stuck in party on felsong.
+function K.FixGlobalChat()
+	ChatFrame_RemoveChannel(ChatFrame1, "global_en")
+	ChatFrame_RemoveChannel(ChatFrame3, "global_en")
+	ChatFrame_AddChannel(ChatFrame3, "global_en")
+end
+K:RegisterChatCommand("killglobal", K.FixGlobalChat)
+K:RegisterChatCommand("leaveglobal", K.FixGlobalChat)
 
 -- Ready check
 function K.ReadyCheck()
@@ -236,8 +282,10 @@ K:RegisterChatCommand("clfix", K.ClearCombatLog)
 
 -- Here we can restart wow's engine. could be use for sound issues and more.
 function K.FixGFXEngine()
-	RestartGx()
-	StaticPopup_Show("CHANGES_RL")
+	if Dialog:ActiveDialog("RESTART_GFX") then
+		Dialog:Dismiss("RESTART_GFX")
+	end
+	Dialog:Spawn("RESTART_GFX")
 end
 K:RegisterChatCommand("restartgfx", K.FixGFXEngine)
 K:RegisterChatCommand("fixgfx", K.FixGFXEngine)
@@ -637,6 +685,8 @@ end
 _G.SLASH_BOOSTUI1 = "/boostfps"
 _G.SLASH_BOOSTUI2 = "/boostui"
 SlashCmdList.BOOSTUI = function()
-	StaticPopup_Show("BOOST_UI")
-	StaticPopup_Show("CHANGES_RL")
+	if Dialog:ActiveDialog("BOOST_UI") then
+		Dialog:Dismiss("BOOST_UI")
+	end
+	Dialog:Spawn("BOOST_UI")
 end

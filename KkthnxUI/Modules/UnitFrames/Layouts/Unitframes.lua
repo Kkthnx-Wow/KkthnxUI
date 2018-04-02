@@ -14,6 +14,9 @@ local _G = _G
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local InCombatLockdown = _G.InCombatLockdown
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
@@ -53,6 +56,7 @@ local function CreateUnitframeLayout(self, unit)
 	self.Health:SetFrameLevel(1)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
+	self.Health.Cutaway = true
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true
@@ -147,20 +151,20 @@ local function CreateUnitframeLayout(self, unit)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power Value
 		self.Power.Value = K.SetFontString(self, C["Media"].Font, 10, "CENTER")
-		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 2, 0)
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 	elseif unit == "target" then
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power value
 		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
-		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", -2, 0)
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	elseif unit == "focus" then
 		self.Power:SetSize(130, 14)
 		self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 		-- Power value
 		self.Power.Value = K.SetFontString(self, C["Media"].Font, 11, "CENTER")
-		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", -2, 0)
+		self.Power.Value:SetPoint("CENTER", self.Power, "CENTER", 0, 0)
 		self:Tag(self.Power.Value, "[KkthnxUI:PowerCurrent]")
 	elseif (unit == "targettarget") then
 		self.Power:SetSize(74, 8)
@@ -255,7 +259,8 @@ local function CreateUnitframeLayout(self, unit)
 	if (unit == "target") then
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
-		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
+		self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -3, 4)
+		self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 3, 4)
 		if C["Unitframe"].NameAbbreviate == true then
 			self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMediumAbbrev]")
 		else
@@ -266,6 +271,12 @@ local function CreateUnitframeLayout(self, unit)
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
+
+		-- Threat Text
+		self.ThreatPercentText = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
+		self.ThreatPercentText:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.ThreatPercentText:SetPoint("RIGHT", self.Power, "LEFT", -4, 0)
+		self:Tag(self.ThreatPercentText, "[KkthnxUI:NameplateThreatColor][KkthnxUI:NameplateThreat]")
 	elseif unit == "focus" then
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
@@ -306,12 +317,19 @@ local function CreateUnitframeLayout(self, unit)
 		end
 	end
 
+	if (unit == "arena") then
+		self.Trinket = CreateFrame("Frame", nil, self)
+		self.Trinket:SetSize(self.Portrait:GetWidth(), self.Portrait:GetHeight())
+		self.Trinket:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 0)
+		self.Trinket:SetTemplate("Transparent", true)
+	end
+
 	if (unit == "player") then
 		if C["Unitframe"].Castbars then
 			K.CreateCastBar(self, "player")
 		end
 		if (C["Unitframe"].CombatText) then
-			K.CreateCombatText(self)
+			K.CreateCombatFeedback(self)
 		end
 		if (C["Unitframe"].GlobalCooldown) then
 			K.CreateGlobalCooldown(self)
@@ -326,10 +344,10 @@ local function CreateUnitframeLayout(self, unit)
 		if C["Unitframe"].PvPText then
 			K.CreatePvPText(self, "player")
 		end
+		K.CreateAFKIndicator(self)
 		K.CreateRaidTargetIndicator(self)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateRestingIndicator(self)
-		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 		if (C["Unitframe"].PowerPredictionBar) then
@@ -347,7 +365,7 @@ local function CreateUnitframeLayout(self, unit)
 			K.CreateCastBar(self, "target")
 		end
 		if (C["Unitframe"].CombatText) then
-			K.CreateCombatText(self)
+			K.CreateCombatFeedback(self)
 		end
 		K.CreateAuras(self, "target")
 		if C["Unitframe"].PvPText then
@@ -381,7 +399,16 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateAuras(self, "boss")
 	end
 
+	if (unit == "arena") then
+		if C["Unitframe"].Castbars then
+			K.CreateCastBar(self, "arena")
+		end
+		K.CreateAuras(self, "arena")
+		K.CreateTrinkets(self)
+	end
+
 	if (unit == "party") then
+		K.CreateAFKIndicator(self)
 		K.CreateAssistantIndicator(self)
 		K.CreateAuras(self, "party")
 		K.CreateGroupRoleIndicator(self)
@@ -394,6 +421,12 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 	end
+
+	self.Threat = {
+		Hide = K.Noop, -- oUF stahp
+		IsObjectType = K.Noop,
+		Override = K.CreateThreatIndicator,
+	}
 
 	if (unit ~= "player") then
 		self.Range = K.CreateRange(self)
@@ -446,9 +479,9 @@ K.Movers:RegisterFrame(focustarget)
 if C["Unitframe"].Party then
 	local party = oUF:SpawnHeader("oUF_Party", nil, C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide",
 	"oUF-initialConfigFunction", [[
-		local header = self:GetParent()
-		self:SetWidth(header:GetAttribute("initial-width"))
-		self:SetHeight(header:GetAttribute("initial-height"))
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 	"initial-width", 140,
 	"initial-height", 38,
@@ -496,6 +529,74 @@ if (C["Unitframe"].ShowArena) then
 		end
 		K.Movers:RegisterFrame(arena[i])
 	end
+end
+
+if (C["Unitframe"].ShowArena) then
+	local arenaprep = {}
+	for i = 1, 5 do
+		arenaprep[i] = CreateFrame("Frame", "oUF_ArenaPrep"..i, UIParent)
+		arenaprep[i]:SetAllPoints(_G["oUF_ArenaFrame"..i])
+		arenaprep[i]:SetFrameStrata("BACKGROUND")
+
+		arenaprep[i].Health = CreateFrame("StatusBar", nil, arenaprep[i])
+		arenaprep[i].Health:SetAllPoints()
+		arenaprep[i].Health:SetStatusBarTexture(C["Media"].Texture)
+		arenaprep[i].Health:SetTemplate("Transparent", true)
+
+		arenaprep[i].Spec = K.SetFontString(arenaprep[i].Health, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		arenaprep[i].Spec:SetPoint("CENTER")
+		arenaprep[i]:Hide()
+	end
+
+	local arenaprepupdate = CreateFrame("Frame")
+	arenaprepupdate:RegisterEvent("PLAYER_LOGIN")
+	arenaprepupdate:RegisterEvent("PLAYER_ENTERING_WORLD")
+	arenaprepupdate:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+	arenaprepupdate:RegisterEvent("ARENA_OPPONENT_UPDATE")
+	arenaprepupdate:SetScript("OnEvent", function(self, event)
+		if event == "PLAYER_LOGIN" then
+			for i = 1, 5 do
+				arenaprep[i]:SetAllPoints(_G["oUF_ArenaFrame"..i])
+			end
+		elseif event == "ARENA_OPPONENT_UPDATE" then
+			for i = 1, 5 do
+				arenaprep[i]:Hide()
+			end
+		else
+			local numOpps = GetNumArenaOpponentSpecs()
+			if numOpps > 0 then
+				for i = 1, 5 do
+					local f = arenaprep[i]
+
+					if i <= numOpps then
+						local s = GetArenaOpponentSpec(i)
+						local _, spec, class = nil, "UNKNOWN", "UNKNOWN"
+
+						if s and s > 0 then
+							_, spec, _, _, _, class = GetSpecializationInfoByID(s)
+						end
+
+						if class and spec then
+							local color = (_G.CUSTOM_CLASS_COLORS or _G.RAID_CLASS_COLORS)[class]
+							if color then
+								f.Health:SetStatusBarColor(color.r, color.g, color.b)
+							else
+								f.Health:SetStatusBarColor(0.4, 0.4, 0.4)
+							end
+							f.Spec:SetText(spec)
+							f:Show()
+						end
+					else
+						f:Hide()
+					end
+				end
+			else
+				for i = 1, 5 do
+					arenaprep[i]:Hide()
+				end
+			end
+		end
+	end)
 end
 
 -- Test UnitFrames(by community)

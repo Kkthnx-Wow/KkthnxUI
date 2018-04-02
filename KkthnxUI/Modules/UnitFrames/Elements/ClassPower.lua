@@ -26,30 +26,26 @@ local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged
 	end
 end
 
-local function UpdateClassPowerColor(classPower)
+local function UpdateClassPowerColor(element)
 	local r, g, b = 1, 1, 2/5
 	if (not UnitHasVehicleUI("player")) then
 		if (K.Class == "MONK") then
 			r, g, b = 0, 4/5, 3/5
-		elseif (K.Class == "PALADIN") then
-			r, g, b = 228/255, 225/255, 16/255
-		elseif (K.Class == "DEATHKNIGHT") then
-			r, g, b = 0, 1, 1
-		elseif (K.Class == "MAGE") then
-			r, g, b = 0, 157/255, 255/255
 		elseif (K.Class == "WARLOCK") then
-			r, g, b = 148/255, 130/255, 201/255
+			r, g, b = 2/3, 1/3, 2/3
+		elseif (K.Class == "PALADIN") then
+			r, g, b = 1, 1, 2/5
+		elseif (K.Class == "MAGE") then
+			r, g, b = 5/6, 1/2, 5/6
 		end
 	end
 
-	local isAnticipationRogue = K.Class == "ROGUE" and UnitPowerMax("player", SPELL_POWER_COMBO_POINTS) == 10
-
-	for i = 1, #classPower do
-		if (i > 5 and isAnticipationRogue) then
+	for index = 1, #element do
+		local bar = element[index]
+		if (K.Class == "ROGUE" and UnitPowerMax("player", SPELL_POWER_COMBO_POINTS) == 10 and index > 5) then
 			r, g, b = 1, 0, 0
 		end
 
-		local bar = classPower[i]
 		bar:SetStatusBarColor(r, g, b)
 	end
 end

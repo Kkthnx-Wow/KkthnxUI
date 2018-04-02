@@ -2,6 +2,10 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("KillingBlow", "AceHook-3.0", "AceEvent-3.0")
 if C["Misc"].KillingBlow ~= true then return end
 
+---------------------------------------------------------------------
+-- Fix the events not firing all the time. DO NOT FORGET TO FIX THIS!
+---------------------------------------------------------------------
+
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
 -- Lua API

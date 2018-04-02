@@ -1,89 +1,144 @@
 local K, C, L = unpack(select(2, ...))
 if C["Chat"].MessageFilter ~= true then return end
 
--- Wow Lua
-local _G = _G
-
--- Wow API
-local IsResting = IsResting
-local UnitIsInMyGuild = UnitIsInMyGuild
-local UnitName = UnitName
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: DRUNK_MESSAGE_ITEM_OTHER3, DRUNK_MESSAGE_ITEM_OTHER4, DRUNK_MESSAGE_OTHER1, DRUNK_MESSAGE_OTHER2
--- GLOBALS: DRUNK_MESSAGE_ITEM_SELF3, DRUNK_MESSAGE_ITEM_SELF4, DRUNK_MESSAGE_SELF1, DRUNK_MESSAGE_SELF2
--- GLOBALS: DRUNK_MESSAGE_OTHER3, DRUNK_MESSAGE_OTHER4, DRUNK_MESSAGE_ITEM_SELF1, DRUNK_MESSAGE_ITEM_SELF2
--- GLOBALS: DRUNK_MESSAGE_SELF3, DRUNK_MESSAGE_SELF4, ERR_PET_LEARN_ABILITY_S, ERR_PET_LEARN_SPELL_S
--- GLOBALS: DUEL_WINNER_KNOCKOUT, DUEL_WINNER_RETREAT, DRUNK_MESSAGE_ITEM_OTHER1, DRUNK_MESSAGE_ITEM_OTHER2
--- GLOBALS: ERR_PET_SPELL_UNLEARNED_S, ERR_LEARN_ABILITY_S, ERR_LEARN_SPELL_S, ERR_LEARN_PASSIVE_S
--- GLOBALS: ERR_SPELL_UNLEARNED_S, ERR_CHAT_THROTTLED
-
-local REPEAT_EVENTS = {
-	"CHAT_MSG_SAY",
-	"CHAT_MSG_YELL",
-	"CHAT_MSG_CHANNEL",
-	"CHAT_MSG_EMOTE",
-	"CHAT_MSG_TEXT_EMOTE",
-}
-
--- Main filters
-ChatFrame_AddMessageEventFilter("CHAT_MSG_AFK", function() return true end)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_JOIN", function() return true end)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_LEAVE", function() return true end)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL_NOTICE", function() return true end)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_DND", function() return true end)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_SAY", function() if IsResting() then return true end end)
-ChatFrame_AddMessageEventFilter("CHAT_MSG_MONSTER_YELL", function() if IsResting() then return true end end)
-
-_G.DRUNK_MESSAGE_ITEM_OTHER1 = ""
-_G.DRUNK_MESSAGE_ITEM_OTHER2 = ""
-_G.DRUNK_MESSAGE_ITEM_OTHER3 = ""
-_G.DRUNK_MESSAGE_ITEM_OTHER4 = ""
-_G.DRUNK_MESSAGE_ITEM_SELF1 = ""
-_G.DRUNK_MESSAGE_ITEM_SELF2 = ""
-_G.DRUNK_MESSAGE_ITEM_SELF3 = ""
-_G.DRUNK_MESSAGE_ITEM_SELF4 = ""
-_G.DRUNK_MESSAGE_OTHER1 = ""
-_G.DRUNK_MESSAGE_OTHER2 = ""
-_G.DRUNK_MESSAGE_OTHER3 = ""
-_G.DRUNK_MESSAGE_OTHER4 = ""
-_G.DRUNK_MESSAGE_SELF1 = ""
-_G.DRUNK_MESSAGE_SELF2 = ""
-_G.DRUNK_MESSAGE_SELF3 = ""
-_G.DRUNK_MESSAGE_SELF4 = ""
-_G.DUEL_WINNER_KNOCKOUT = ""
-_G.DUEL_WINNER_RETREAT = ""
-_G.ERR_CHAT_THROTTLED = ""
-_G.ERR_LEARN_ABILITY_S = ""
-_G.ERR_LEARN_PASSIVE_S = ""
-_G.ERR_LEARN_SPELL_S = ""
-_G.ERR_PET_LEARN_ABILITY_S = ""
-_G.ERR_PET_LEARN_SPELL_S = ""
-_G.ERR_PET_SPELL_UNLEARNED_S = ""
-_G.ERR_SPELL_UNLEARNED_S = ""
-
--- Repeat filter
-local lastMessage
-local function RepeatMessageFilter(self, event, text, sender)
-	if sender == K.Name or UnitIsInMyGuild(sender) then return end
-
-	if not self.repeatMessages or self.repeatCount > 100 then
-		self.repeatCount = 0
-		self.repeatMessages = {}
-	end
-
-	lastMessage = self.repeatMessages[sender]
-
-	if lastMessage == text then
-		return true
-	end
-
-	self.repeatMessages[sender] = text
-	self.repeatCount = self.repeatCount + 1
+local function setPattern(str)
+	if not str then return "" end
+	str = string.gsub(str, "([%(%)])", "%%%1")
+	str = string.gsub(str, "%%%d?$?[cs]", "(.+)")
+	str = string.gsub(str, "%%%d?$?d", "(%%d+)")
+	return str
 end
 
-function K:OnEnable()
-	for _, event in ipairs(REPEAT_EVENTS) do
-		ChatFrame_RemoveMessageEventFilter(event, RepeatMessageFilter)
+local function isFriend(name)
+	if not name then
+		return
 	end
+	if UnitIsInMyGuild(name) or UnitInRaid(name) or UnitInParty(name) then
+		return true
+	end
+	for i = 1, GetNumFriends() do
+		if GetFriendInfo(i) == name then
+			return true
+		end
+	end
+	local _, numBNFriends = BNGetNumFriends()
+	for i = 1, numBNFriends do
+		for j = 1, BNGetNumFriendToons(i) do
+			local _, toonName = BNGetFriendToonInfo(i, j)
+			if toonName == name then
+				return true
+			end
+		end
+	end
+end
+
+-- Hide public messages containing Cyrillic or CJK characters
+-- Based on BlockChinese, by Ketho
+-- https://www.curseforge.com/wow/addons/blockchinese
+-- https://www.wowinterface.com/downloads/info20488-BlockChinese.html
+-- 208 : Cyrillic
+-- 227 : Japanese katakana / hiragana
+-- 228 - 233 : Chinese characters and Japanese kanji
+-- 234 - 237 : Korean characters
+do
+	local function filter(frame, event, message)
+		if string.find(message, "[\227-\237]") then
+			return true
+		end
+	end
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", filter)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_EMOTE", filter)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", filter)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_YELL", filter)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_WHISPER", filter)
+end
+
+-- Hide repeated AFK and DND auto-responses.
+-- Based on FilterAFK by Tsigo, and DontBugMe by Moonsorrow and Gnarfoz
+-- https://www.wowinterface.com/downloads/info14574.html
+do
+	local seen = {}
+	local when = {}
+
+	local function filter(_, _, message, sender, ...)
+		if seen[frame] and seen[frame][sender] and seen[frame][sender] == message and GetTime() - when[sender] < 60 then
+			when[sender] = GetTime()
+			return true
+		end
+
+		if seen[frame] then
+			seen[frame][sender] = message
+		else
+			seen[frame] = { [sender] = message }
+		end
+
+		when[sender] = GetTime()
+	end
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_AFK", filter)
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_DND", filter)
+end
+
+-- Hide crafting spam from non-friend/guild
+do
+	local spam = setPattern(TRADESKILL_LOG_THIRDPERSON)
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_TRADESKILLS", function(_, _, message)
+		local who, what = string.match(message, spam)
+		if who and what and not isFriend(who) then
+			return true
+		end
+	end)
+end
+
+-- Hide achievements from non-friend/guild
+do
+	local spam = setPattern(ACHIEVEMENT_BROADCAST)
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", function(_, _, message)
+		local who, what = string.match(message, spam)
+		if who and what and not isFriend(string.match(who, "%[(.-)%]")) then
+			return true
+		end
+	end)
+end
+
+-- Hide spammy system messages
+do
+	local patterns = {
+		-- Auction expired
+		setPattern(ERR_AUCTION_EXPIRED_S),
+		-- Complaint registered
+		setPattern(COMPLAINT_ADDED),
+		-- Duel info
+		setPattern(DUEL_WINNER_KNOCKOUT),
+		setPattern(DUEL_WINNER_RETREAT),
+		-- Other people are drunk
+		setPattern(DRUNK_MESSAGE_ITEM_OTHER1),
+		setPattern(DRUNK_MESSAGE_ITEM_OTHER2),
+		setPattern(DRUNK_MESSAGE_ITEM_OTHER3),
+		setPattern(DRUNK_MESSAGE_ITEM_OTHER4),
+		setPattern(DRUNK_MESSAGE_OTHER1),
+		setPattern(DRUNK_MESSAGE_OTHER2),
+		setPattern(DRUNK_MESSAGE_OTHER3),
+		setPattern(DRUNK_MESSAGE_OTHER4),
+		-- Quest verbosity
+		setPattern(ERR_QUEST_REWARD_EXP_I),
+		setPattern(ERR_QUEST_REWARD_MONEY_S),
+		-- Other
+		setPattern(ERR_LEARN_TRANSMOG_S),
+		setPattern(ERR_ZONE_EXPLORED),
+		setPattern(ERR_ZONE_EXPLORED_XP),
+	}
+
+	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, message, ...)
+		for i = 1, #patterns do
+			if string.match(message, patterns[i]) then
+				return true
+			end
+		end
+		message = string.gsub(message, "([^,:|%[%]%s%.]+)%-[^,:|%[%]%s%.]+", "%1") -- remove realm names
+		return false, message, ...
+	end)
 end

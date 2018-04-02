@@ -555,7 +555,7 @@ local function CreateConfigEditBox(parent, group, option, value, max)
 
 	local EditBox = CreateFrame("Frame", nil, parent)
 	EditBox:SetSize(50, 18)
-	EditBox:SetTemplate("Black")
+	EditBox:SetTemplate("Transparent")
 	EditBox:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
 	EditBox.Type = "EditBox"
 
@@ -680,7 +680,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local DropDown = CreateFrame("Button", nil, parent)
 	DropDown:SetSize(150, 20)
-	DropDown:SetTemplate("Black")
+	DropDown:SetTemplate("Transparent")
 	DropDown.Type = type
 	DropDown._Group = group
 	DropDown._Option = option
@@ -717,7 +717,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local Button = CreateFrame("Button", nil, DropDown)
 	Button:SetSize(16, 16)
-	Button:SetTemplate("Black")
+	Button:SetTemplate("Transparent")
 	Button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
 	Button:SetPoint("RIGHT", DropDown, -2, 0)
 	Button.Owner = DropDown
@@ -736,7 +736,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local List = CreateFrame("Frame", nil, UIParent)
 	List:SetPoint("TOPLEFT", DropDown, "BOTTOMLEFT", 0, -4)
-	List:SetTemplate("Black")
+	List:SetTemplate("Transparent")
 	List:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1) -- Fix this later in API
 	List:Hide()
 	List:SetWidth(150)

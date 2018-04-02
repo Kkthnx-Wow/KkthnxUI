@@ -4,7 +4,8 @@ C["Media"] = {
 	BackdropColor = {.04, .04, .04, 0.9},
 	Blank = [[Interface\BUTTONS\WHITE8X8]],
 	BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
-	Border = [[Interface\Tooltips\UI-Tooltip-Border]],
+	Border = [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]],
+	BorderTick = [[Interface\AddOns\KkthnxUI\Media\Border\Borderick.tga]],
 	BorderColor = {1, 1, 1},
 	BorderShadow = [[Interface\AddOns\KkthnxUI\Media\Border\Border_Shadow.tga]],
 	CombatFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]],
@@ -38,6 +39,7 @@ if K.LSM == nil then
 end
 
 -- LibSharedMedia Stuff
+K.LSM:Register("border", "KkthnxUI_Border", [[Interface\AddOns\KkthnxUI\Media\Border\Border.tga]])
 K.LSM:Register("border", "KkthnxUI_GlowTex", [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex]])
 K.LSM:Register("font", "KkthnxUI_Damage", [[Interface\AddOns\KkthnxUI\Media\Fonts\Damage.ttf]], K.LSM.LOCALE_BIT_ruRU + K.LSM.LOCALE_BIT_western)
 K.LSM:Register("font", "KkthnxUI_Normal", [[Interface\AddOns\KkthnxUI\Media\Fonts\Normal.ttf]], K.LSM.LOCALE_BIT_ruRU + K.LSM.LOCALE_BIT_western)
