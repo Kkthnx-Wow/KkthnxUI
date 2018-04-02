@@ -38,7 +38,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local IsArtifactPowerItem = _G.IsArtifactPowerItem
 local IsBattlePayItem = _G.IsBattlePayItem
-local IsContainerItemAnUpgrade = _G.IsContainerItemAnUpgrade
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
 local NEW_ITEM_ATLAS_BY_QUALITY = _G.NEW_ITEM_ATLAS_BY_QUALITY
@@ -52,7 +51,7 @@ local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFram
 local CreateFrame = _G.CreateFrame
 
 -- GLOBALS: StuffingFrameBags, ReagentBankFrameItem1, ReagentBankFrame, BankFrame, ToggleBackpack, ToggleAllBags, OpenAllBags
--- GLOBALS: ToggleBag,
+-- GLOBALS: ToggleBag, IsContainerItemAnUpgrade
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
