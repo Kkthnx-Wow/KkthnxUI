@@ -104,7 +104,7 @@ AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and PlaySound or PlaySoundKitID
 AddOn.Build = tonumber((select(2, GetBuildInfo())))
 -- Client version constant
 -- Patch versions: http://wow.gamepedia.com/Public_client_builds
-AddOn.Legion715 = AddOn.Build >= 23360
+AddOn.Legion715 = AddOn.Build == 23360
 AddOn.Legion720 = AddOn.Build >= 23436
 AddOn.Legion725 = AddOn.Build >= 24461
 AddOn.Legion730 = AddOn.Build >= 24500
