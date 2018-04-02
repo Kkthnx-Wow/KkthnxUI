@@ -20,7 +20,7 @@ local function LatencyUpdate(self, elapsed)
     end
 
     if lag ~= 0 and lag <= 400 then
-      if K.Legion730 then
+      if K.Legion735 then
         SetCVar("SpellQueueWindow", tostring(lag))
       else
         SetCVar("maxSpellStartRecoveryOffset", tostring(lag))

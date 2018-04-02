@@ -211,10 +211,10 @@ function Stuffing:SlotUpdate(b)
 		b.frame.UpgradeIcon:SetSize(C["Inventory"].ButtonSize / 1.4, C["Inventory"].ButtonSize / 1.4)
 		b.frame.UpgradeIcon:SetTexCoord(0, 1, 0, 1)
 		local itemIsUpgrade = IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
-		if itemIsUpgrade == nil then
+		if not itemIsUpgrade or itemIsUpgrade == nil then
 			b.frame.UpgradeIcon:SetShown(false)
 		else
-			b.frame.UpgradeIcon:SetShown(itemIsUpgrade)
+			b.frame.UpgradeIcon:SetShown(itemIsUpgrade or true)
 		end
 	end
 

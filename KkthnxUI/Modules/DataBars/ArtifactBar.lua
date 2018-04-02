@@ -32,7 +32,7 @@ function Module:UpdateArtifact(event, unit)
 
 	if showArtifact then
 		local _, _, _, _, _, pointsSpent = C_ArtifactUI_GetEquippedArtifactInfo()
-		local maxArtifact = (K.Legion730 and C_ArtifactUI.IsEquippedArtifactMaxed()) or ((not K.Legion730) and (pointsSpent >= 54))
+		local maxArtifact = (K.Legion735 and C_ArtifactUI.IsEquippedArtifactMaxed()) or ((not K.Legion735) and (pointsSpent >= 54))
 	end
 
 	-- First load into the world this above does error with a nil comapre number. Why?

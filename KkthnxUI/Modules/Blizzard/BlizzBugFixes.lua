@@ -61,30 +61,11 @@ function Module:FixMisclickPopups()
 	end
 end
 
--- Fix Drag Collections taint
-function Module:CollectionsTaint(event, addon)
-	if event == "ADDON_LOADED" and addon == "Blizzard_Collections" then
-		CollectionsJournal:HookScript("OnShow", function()
-			if not self.init then
-				if InCombatLockdown() then
-					self:RegisterEvent("PLAYER_REGEN_ENABLED")
-				else
-					self:UnregisterAllEvents()
-				end
-				self.init = true
-			end
-		end)
-	elseif event == "PLAYER_REGEN_ENABLED" then
-		self:UnregisterAllEvents()
-	end
-end
-
 function Module:OnInitialize()
 	-- Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
 
-	self:CollectionsTaint()
 	self:CollectGarbage()
 	self:FixMisclickPopups()
 

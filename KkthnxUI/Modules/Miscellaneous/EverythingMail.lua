@@ -1,6 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("OpenMail", "AceEvent-3.0")
-if K.Legion730 then
+if K.Legion735 then
 	return
 end
 
