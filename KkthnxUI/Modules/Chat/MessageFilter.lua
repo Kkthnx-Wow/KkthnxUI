@@ -1,11 +1,27 @@
 local K, C, L = unpack(select(2, ...))
 if C["Chat"].MessageFilter ~= true then return end
 
+local _G = _G
+local string_match = string.match
+local string_gsub = string.gsub
+
+local BNGetFriendGameAccountInfo = _G.BNGetFriendGameAccountInfo
+local BNGetNumFriendGameAccounts = _G.BNGetNumFriendGameAccounts
+local BNGetNumFriends = _G.BNGetNumFriends
+local GetFriendInfo = _G.GetFriendInfo
+local GetNumFriends = _G.GetNumFriends
+local GetTime = _G.GetTime
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
+local UnitIsInMyGuild = _G.UnitIsInMyGuild
+
 local function setPattern(str)
-	if not str then return "" end
-	str = string.gsub(str, "([%(%)])", "%%%1")
-	str = string.gsub(str, "%%%d?$?[cs]", "(.+)")
-	str = string.gsub(str, "%%%d?$?d", "(%%d+)")
+	if not str then
+		return ""
+	end
+	str = string_gsub(str, "([%(%)])", "%%%1")
+	str = string_gsub(str, "%%%d?$?[cs]", "(.+)")
+	str = string_gsub(str, "%%%d?$?d", "(%%d+)")
 	return str
 end
 
@@ -23,8 +39,8 @@ local function isFriend(name)
 	end
 	local _, numBNFriends = BNGetNumFriends()
 	for i = 1, numBNFriends do
-		for j = 1, BNGetNumFriendToons(i) do
-			local _, toonName = BNGetFriendToonInfo(i, j)
+		for j = 1, BNGetNumFriendGameAccounts(i) do
+			local _, toonName = BNGetFriendGameAccountInfo(i, j)
 			if toonName == name then
 				return true
 			end
@@ -97,8 +113,8 @@ do
 	local spam = setPattern(ACHIEVEMENT_BROADCAST)
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_ACHIEVEMENT", function(_, _, message)
-		local who, what = string.match(message, spam)
-		if who and what and not isFriend(string.match(who, "%[(.-)%]")) then
+		local who, what = string_match(message, spam)
+		if who and what and not isFriend(string_match(who, "%[(.-)%]")) then
 			return true
 		end
 	end)
@@ -134,11 +150,11 @@ do
 
 	ChatFrame_AddMessageEventFilter("CHAT_MSG_SYSTEM", function(_, _, message, ...)
 		for i = 1, #patterns do
-			if string.match(message, patterns[i]) then
+			if string_match(message, patterns[i]) then
 				return true
 			end
 		end
-		message = string.gsub(message, "([^,:|%[%]%s%.]+)%-[^,:|%[%]%s%.]+", "%1") -- remove realm names
+		message = string_gsub(message, "([^,:|%[%]%s%.]+)%-[^,:|%[%]%s%.]+", "%1") -- remove realm names
 		return false, message, ...
 	end)
 end
