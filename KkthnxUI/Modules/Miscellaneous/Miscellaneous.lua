@@ -125,7 +125,7 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 		for i = 1, GetMaxBattlefieldID() do
 			local status = GetBattlefieldStatus(i)
 			if status == "confirm" then
-				PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE", "Master" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
+				PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
 				break
 			end
 		end
@@ -134,7 +134,7 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 	elseif event == "LFG_PROPOSAL_SHOW" then
 		PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySound(PlaySoundKitID and "resurrection", "Master" or RESURRECTION_REQUEST_SOUND, "Master")
+		PlaySound(PlaySoundKitID and "resurrection" or RESURRECTION_REQUEST_SOUND, "Master")
 	end
 end)
 
