@@ -124,14 +124,6 @@ do
 			ChatFrame_AddMessageEventFilter(event, self.filterFunc)
 		end
 
-		if WIM then
-			WIM.RegisterWidgetTrigger("chat_display", "whisper, chat, w2w, demo", "OnHyperlinkClick", function(self)
-					Module.clickedframe = self
-			end)
-			WIM.RegisterItemRefHandler("url", SetHyperlink)
-			WIM.RegisterItemRefHandler("squ", SetHyperlink)
-		end
-
 		self:RawHook(_G.ItemRefTooltip, "SetHyperlink", true)
 	end
 
