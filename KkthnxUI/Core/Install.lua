@@ -13,6 +13,7 @@ local CreateAnimationGroup = _G.CreateAnimationGroup
 local CreateFrame = _G.CreateFrame
 local GetCVar = _G.GetCVar
 local GetCVarBool = _G.GetCVarBool
+local GetCVarDefault = _G.GetCVarDefault
 local GetRealmName = _G.GetRealmName
 local NEXT = _G.NEXT
 local PREVIOUS = _G.PREVIOUS
@@ -84,7 +85,7 @@ function Install:Step1()
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("worldPreloadNonCritical", 0)
+	SetCVar("worldPreloadNonCritical", GetCVarDefault("worldPreloadNonCritical")) -- No long going to mess with this.
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()

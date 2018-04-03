@@ -1,8 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 if not (C["Skins"].DBM and K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("DBM-StatusBarTimers") and K.CheckAddOnState("DBM-DefaultSkin")) then
-	if C["Skins"].DBM == true then
-		C["Skins"].DBM = false
-	end
 	return
 end
 
