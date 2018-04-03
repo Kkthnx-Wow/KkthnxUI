@@ -285,10 +285,12 @@ local function CreateUnitframeLayout(self, unit)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
 		-- Threat Text
-		self.ThreatPercentText = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
-		self.ThreatPercentText:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
-		self.ThreatPercentText:SetPoint("RIGHT", self.Power, "LEFT", -4, 0)
-		self:Tag(self.ThreatPercentText, "[KkthnxUI:NameplateThreatColor][KkthnxUI:NameplateThreat]")
+		if C["Unitframe"].ThreatPercent == true then
+			self.ThreatPercentText = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
+			self.ThreatPercentText:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+			self.ThreatPercentText:SetPoint("RIGHT", self.Power, "LEFT", -4, 0)
+			self:Tag(self.ThreatPercentText, "[KkthnxUI:NameplateThreatColor][KkthnxUI:NameplateThreat]")
+		end
 	elseif unit == "focus" then
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)

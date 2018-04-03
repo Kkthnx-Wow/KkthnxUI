@@ -379,6 +379,34 @@ function CreateReagentContainer()
 		PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
 	end)
 
+	-- Sort Button
+	local SortReagentButton = CreateFrame("Button", nil, Reagent)
+	SortReagentButton:SetSize(16, 16)
+	SortReagentButton:SetTemplate("", true)
+	SortReagentButton:StyleButton(true)
+	SortReagentButton:SetPoint("TOPRIGHT", SwitchBankButton, -22, 0)
+	SortReagentButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
+	SortReagentButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	SortReagentButton:GetNormalTexture():SetAllPoints()
+	SortReagentButton:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
+	SortReagentButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	SortReagentButton:GetPushedTexture():SetAllPoints()
+	SortReagentButton:SetDisabledTexture("Interface\\ICONS\\INV_Pet_Broom")
+	SortReagentButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	SortReagentButton:GetDisabledTexture():SetAllPoints()
+	SortReagentButton:GetDisabledTexture():SetDesaturated(1)
+	SortReagentButton.ttText = BAG_FILTER_CLEANUP
+	SortReagentButton:SetScript("OnEnter", TooltipShow)
+	SortReagentButton:SetScript("OnLeave", TooltipHide)
+	SortReagentButton:SetScript("OnMouseUp", function(_, btn)
+		if InCombatLockdown() then
+			print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
+		end
+		if StuffingFrameReagent:IsShown() then
+			SortReagentBankBags()
+		end
+	end)
+
 	Deposit:SetParent(Reagent)
 	Deposit:ClearAllPoints()
 	Deposit:SetText("")
@@ -810,7 +838,6 @@ function Stuffing:CreateBagFrame(w)
 			end
 		end)
 
-
 		-- Sort Button
 		f.sortButton = CreateFrame("Button", nil, f)
 		f.sortButton:SetSize(16, 16)
@@ -837,8 +864,6 @@ function Stuffing:CreateBagFrame(w)
 			if Stuffing.frame:IsShown() then
 				local Module = K:GetModule("InventorySort")
 				Module:CommandDecorator(Module.SortBags, "bank")()
-			else
-				SortReagentBankBags()
 			end
 		end)
 
@@ -962,7 +987,7 @@ function Stuffing:InitBags()
 
 	do
 		Token3:ClearAllPoints()
-		Token3:SetPoint("BOTTOM", f, "TOP", -70, 4)
+		Token3:SetPoint("TOP", f, "BOTTOM", -70, -8)
 		Token2:ClearAllPoints()
 		Token2:SetPoint("LEFT", Token3, "RIGHT", 10, 0)
 		Token1:ClearAllPoints()

@@ -628,7 +628,7 @@ function Module:SetupFrame()
 	QuickJoinToastButton:Kill()
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	if (not C["Chat"].Enable) then
 		return
 	end

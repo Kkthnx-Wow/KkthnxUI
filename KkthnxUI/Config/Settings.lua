@@ -353,6 +353,7 @@ C["Unitframe"] = {
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
+	["ThreatPercent"] = false,
 	["PortraitStyle"] = {
 		["Options"] = {
 			["3D Portraits"] = "ThreeDPortraits",

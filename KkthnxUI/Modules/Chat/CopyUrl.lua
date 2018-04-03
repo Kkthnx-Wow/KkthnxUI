@@ -98,7 +98,7 @@ do
 	}
 
 	function Module:OnInitialize()
-		Dialog:Register("ChatterUrlCopyDialog", {
+		Dialog:Register("UrlCopyDialog", {
 			text = "URL Copy",
 			width = 500,
 			editboxes = {
@@ -120,15 +120,23 @@ do
 	end
 
 	function Module:OnEnable()
-		for _,event in ipairs(events) do
+		for _, event in ipairs(events) do
 			ChatFrame_AddMessageEventFilter(event, self.filterFunc)
+		end
+
+		if WIM then
+			WIM.RegisterWidgetTrigger("chat_display", "whisper, chat, w2w, demo", "OnHyperlinkClick", function(self)
+					Module.clickedframe = self
+			end)
+			WIM.RegisterItemRefHandler("url", SetHyperlink)
+			WIM.RegisterItemRefHandler("squ", SetHyperlink)
 		end
 
 		self:RawHook(_G.ItemRefTooltip, "SetHyperlink", true)
 	end
 
 	function Module:OnDisable()
-		for _,event in ipairs(events) do
+		for _, event in ipairs(events) do
 			ChatFrame_RemoveMessageEventFilter(event, self.filterFunc)
 		end
 	end
@@ -230,15 +238,25 @@ do
 end
 
 function Module:SetHyperlink(frame, link, ...)
-	if string_sub(link, 1, 3) == "url" then
+	if string_sub(link, 1, 3) == "squ" then
+		if not QuickJoinFrame:IsShown() then
+			ToggleQuickJoinPanel()
+		end
+		local guid = string_sub(link, 5)
+		if guid and guid ~= "" then
+			QuickJoinFrame:SelectGroup(guid)
+			QuickJoinFrame:ScrollToGroup(guid)
+		end
+	elseif string_sub(link, 1, 3) == "url" then
 		local currentLink = string_sub(link, 5)
 		currentLink = mangleLinkForVoiceChat(currentLink)
-		if Dialog:ActiveDialog("ChatterUrlCopyDialog") then
-			Dialog:Dismiss("ChatterUrlCopyDialog")
+		if Dialog:ActiveDialog("UrlCopyDialog") then
+			Dialog:Dismiss("UrlCopyDialog")
 		end
-		Dialog:Spawn("ChatterUrlCopyDialog", {url=currentLink})
+		Dialog:Spawn("UrlCopyDialog", {url=currentLink})
 		return ...
 	end
+
 	return self.hooks[frame].SetHyperlink(frame, link, text, button, ...)
 end
 
