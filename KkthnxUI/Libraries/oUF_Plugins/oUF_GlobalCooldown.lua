@@ -1,12 +1,18 @@
--- Based on oUF_GCD(by ALZA)
-
 local _, ns = ...
 local oUF = ns.oUF
 if not oUF then return end
 
-local starttime, duration, usingspell, spellid
-local GetTime = GetTime
+-- Based on oUF_GCD(by ALZA)
 
+local _G = _G
+local select = select
+
+local GetTime = _G.GetTime
+local IsSpellKnown = _G.IsSpellKnown
+local UnitClass = _G.UnitClass
+local GetSpellCooldown = _G.GetSpellCooldown
+
+local starttime, duration, usingspell, spellid
 local playerClass = select(2, UnitClass("player"))
 
 local spells = {
@@ -24,9 +30,11 @@ local spells = {
 	["WARRIOR"] = 57755,
 }
 
-local Enable = function(self)
-	if not self.GCD then return end
-	local bar = self.GCD
+local function Enable(self)
+	if not self.GlobalCooldown then
+		return
+	end
+	local bar = self.GlobalCooldown
 	local width = bar:GetWidth()
 	bar:Hide()
 
@@ -50,12 +58,15 @@ local Enable = function(self)
 	end
 
 	local function Init()
-		spellid = 61304
+		local isKnown = IsSpellKnown(spells[playerClass])
+		if isKnown then
+			spellid = spells[playerClass]
+		end
 		if spellid == nil then
 			return
 		end
 		return spellid
-	end
+end
 
 	local function OnHide()
 		bar:SetScript("OnUpdate", nil)
@@ -66,13 +77,13 @@ local Enable = function(self)
 		bar:SetScript("OnUpdate", OnUpdateSpark)
 	end
 
-	local function UpdateGCD()
+	local function UpdateGlobalCooldown()
 		if spellid == nil then
 			if Init() == nil then
 				return
 			end
 		end
-		local start, dur = GetSpellCooldown(61304)
+		local start, dur = GetSpellCooldown(spellid)
 		if dur and dur > 0 and dur <= 2 then
 			usingspell = 1
 			starttime = start
@@ -87,7 +98,7 @@ local Enable = function(self)
 	bar:SetScript("OnShow", OnShow)
 	bar:SetScript("OnHide", OnHide)
 
-	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", UpdateGCD)
+	self:RegisterEvent("ACTIONBAR_UPDATE_COOLDOWN", UpdateGlobalCooldown)
 end
 
-oUF:AddElement("GCD", UpdateGCD, Enable)
+oUF:AddElement("GlobalCooldown", UpdateGlobalCooldown, Enable)

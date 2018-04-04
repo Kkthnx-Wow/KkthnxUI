@@ -508,7 +508,7 @@ local function StyleUpdate(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.colorHealth = true
-	self.Health.Cutaway = true
+	self.Health.Cutaway = C["Nameplates"].Cutaway
 	self.Health.Smooth = C["Nameplates"].Smooth
 	self.Health.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 	self.Health.frequentUpdates = true

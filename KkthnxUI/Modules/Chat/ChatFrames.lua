@@ -10,12 +10,20 @@ local string_len = string.len
 local string_lower = string.lower
 local string_match = string.match
 local string_sub = string.sub
+local table_insert = table.insert
+local table_remove = table.remove
 local type = type
 local unpack = unpack
 
+local ChangeChatColor = _G.ChangeChatColor
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local ChatEdit_ParseText = _G.ChatEdit_ParseText
+local ChatFrame_AddChannel = _G.ChatFrame_AddChannel
+local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
+local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
+local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
+local ChatFrame_SystemEventHandler = _G.ChatFrame_SystemEventHandler
 local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
 local FCF_Close = _G.FCF_Close
@@ -27,6 +35,7 @@ local FCF_SetLocked = _G.FCF_SetLocked
 local FCF_SetWindowName = _G.FCF_SetWindowName
 local GENERAL = _G.GENERAL
 local GetChannelName = _G.GetChannelName
+local GetGuildRosterMOTD = _G.GetGuildRosterMOTD
 local GetRealmName = _G.GetRealmName
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
@@ -39,9 +48,11 @@ local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
 local LOOT = _G.LOOT
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
+local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local ToggleFrame = _G.ToggleFrame
 local TRADE = _G.TRADE
 local UIParent = _G.UIParent
+local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
@@ -107,7 +118,7 @@ local function AddMessage(frame, message, ...)
 			end
 			message = string_gsub(message, "|Hplayer:(.-)|h%[(.-)%]|h", string_format("|Hplayer:%s|h".."%s".."|h", playerData, playerName))
 		elseif channelID then
-			-- WorldDefense messages don't have a sender; remove the extra colon and space.
+			-- WorldDefense messages don"t have a sender; remove the extra colon and space.
 			message = string_gsub(message, "(|Hchannel:.-|h): ", "%1", 1)
 		end
 	end
@@ -150,10 +161,10 @@ local function OnTextChanged(self)
 	local text = self:GetText()
 
 	local maxRepeats = UnitAffectingCombat("player") and 5 or 10
-	if (strlen(text) > maxRepeats) then
+	if (string_len(text) > maxRepeats) then
 		local stuck = true
 		for i = 1, maxRepeats, 1 do
-			if (strsub(text, 0 - i, 0 - i) ~= strsub(text, (-1 - i), (-1 - i))) then
+			if (string_sub(text, 0 - i, 0 - i) ~= string_sub(text, (-1 - i), (-1 - i))) then
 				stuck = false
 				break
 			end
@@ -628,7 +639,38 @@ function Module:SetupFrame()
 	QuickJoinToastButton:Kill()
 end
 
+-- Sourced: ElvUI (Simpy)
+table_remove(ChatTypeGroup["GUILD"], 2)
+function Module:DelayGuildMOTD()
+	local delay, checks, delayFrame, chat = 0, 0, CreateFrame("Frame")
+	table_insert(ChatTypeGroup["GUILD"], 2, "GUILD_MOTD")
+	delayFrame:SetScript("OnUpdate", function(df, elapsed)
+		delay = delay + elapsed
+		if delay < 5 then
+			return
+		end
+		local msg = GetGuildRosterMOTD()
+		if msg and string_len(msg) > 0 then
+			for _, frame in pairs(_G.CHAT_FRAMES) do
+				chat = _G[frame]
+				if chat and chat:IsEventRegistered("CHAT_MSG_GUILD") then
+					ChatFrame_SystemEventHandler(chat, "GUILD_MOTD", msg)
+					chat:RegisterEvent("GUILD_MOTD")
+				end
+			end
+			df:SetScript("OnUpdate", nil)
+		else -- 5 seconds can be too fast for the API response. let's try once every 5 seconds (max 5 checks).
+			delay, checks = 0, checks + 1
+			if checks >= 5 then
+				df:SetScript("OnUpdate", nil)
+			end
+		end
+	end)
+end
+
 function Module:OnEnable()
+	self:DelayGuildMOTD() -- Keep this before `C["Chat"].Enable` check
+
 	if (not C["Chat"].Enable) then
 		return
 	end

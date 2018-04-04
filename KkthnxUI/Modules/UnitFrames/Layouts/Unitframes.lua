@@ -56,7 +56,7 @@ local function CreateUnitframeLayout(self, unit)
 	self.Health:SetFrameLevel(1)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
-	self.Health.Cutaway = true
+	self.Health.Cutaway = C["Unitframe"].Cutaway
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Health.colorTapping = true

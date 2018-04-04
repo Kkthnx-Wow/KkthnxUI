@@ -357,6 +357,11 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Clamp nameplates to the top of the screen when outside of view",
 		},
 
+		["Cutaway"] = {
+			["Name"] = "Cutaway Bars",
+			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
+		},
+
 		["Distance"] = {
 			["Name"] = "Distance",
 			["Desc"] = "Show nameplates for units within this range",
@@ -1149,6 +1154,11 @@ KkthnxUIConfig["deDE"] = {
 		["CombatText"] = {
 			["Name"] = "Portrait Combat Text",
 			["Desc"] = "Enable combat text on player and target frames",
+		},
+
+		["Cutaway"] = {
+			["Name"] = "Cutaway Bars",
+			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
 		},
 
 		["DebuffsOnTop"] = {
