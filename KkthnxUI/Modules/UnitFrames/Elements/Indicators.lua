@@ -7,21 +7,18 @@ local UnitThreatSituation = _G.UnitThreatSituation
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local CreateFrame = _G.CreateFrame
 
-local function UpdateThreatBorderColor(self)
-	local threat = self.threatLevel
-
-	local color
-	if threat and threat > 1 then
-		color = colors.threat[threat]
-	elseif threat and threat > 0 then
-		color = colors.threat[threat]
+local function UpdateThreat(self, event, unit)
+	if (self.unit ~= unit) then
+		return
 	end
 
-	if color then
+	local status = UnitThreatSituation(unit)
+	if (status and status > 0) then
+		local r, g, b = GetThreatStatusColor(status)
 		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
-			self.Portrait:SetBackdropBorderColor(r, g, b, 1)
+			self.Portrait:SetBackdropBorderColor(r, g, b)
 		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" and self.Portrait.Background) then
-			self.Portrait.Background:SetBackdropBorderColor(r, g, b, 1)
+			self.Portrait.Background:SetBackdropBorderColor(r, g, b)
 		end
 	else
 		if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" and self.Portrait) then
@@ -32,16 +29,12 @@ local function UpdateThreatBorderColor(self)
 	end
 end
 
-function K.CreateThreatIndicator(self, event, unit)
-	if unit ~= self.unit then return end
+function K.CreateThreatIndicator(self)
+	local threat = {}
+	threat.IsObjectType = function() end
+	threat.Override = UpdateThreat
 
-	local status = UnitThreatSituation(unit or self.unit) or 0
-	status = status > 1 and 3 or 0
-
-	if self.threatLevel == status then return end
-
-	self.threatLevel = status
-	UpdateThreatBorderColor()
+	self.ThreatIndicator = threat
 end
 
 function K.CreateTrinkets(self)
