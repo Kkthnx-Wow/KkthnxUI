@@ -1,6 +1,7 @@
 -- Localization for enUS & enGB clients
 
 local ModuleFont = "Pick a font from the provided fonts for this module."
+local ModuleFontOutline = "Apply a font outline for this module"
 local ModuleTexture = "Pick a texture from the provided textures for this module."
 local ModuleToggle = "Enable or disable this module based on your preference."
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
@@ -36,7 +37,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 
@@ -89,7 +90,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 
@@ -142,6 +143,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Displays item level on equippable items.",
 		},
 
+		["ItemLevelThreshold"] = {
+			["Name"] = "Item Level Threshold",
+			["Desc"] = "The minimum item level required for it to be shown.",
+		},
+
 		["PulseNewItem"] = {
 			["Name"] = "Pulse New Items",
 			["Desc"] = "Flash new items in the bags",
@@ -166,6 +172,11 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Sell Misc Items",
 			["Desc"] = "Automatically sells useless items that are not gray quality",
 			["Default"] = "Automatically sells useless items that are not gray quality",
+		},
+
+		["SortInverted"] = {
+			["Name"] = "Sort Inverted",
+			["Desc"] = "Direction the bag sorting will use to allocate the items.",
 		},
 
 		["UseGuildRepairFunds"] = {
@@ -401,9 +412,14 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Offtank threat color"..RestoreDefault,
 		},
 
+		["OORAlpha"] = {
+			["Name"] = "OOR Alpha",
+			["Desc"] = "The alpha to set units that are out of range to.",
+		},
+
 		["Outline"] = {
 			["Name"] = "Outline",
-			["Desc"] = "Apply an outline to the font",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["Smooth"] = {
@@ -563,6 +579,16 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Chat Local
 	["Chat"] = {
+		["Background"] = {
+			["Name"] = "Chat Background",
+			["Desc"] = "Add a chat background",
+		},
+
+		["BackgroundAlpha"] = {
+			["Name"] = "Chat Background Alpha",
+			["Desc"] = "Control the alpha of the chat background (0 - 100)",
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Chat",
 			["Desc"] = ModuleToggle,
@@ -640,7 +666,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["TabsOutline"] = {
 			["Name"] = "Tabs Outline",
-			["Desc"] = "Outline chat tabs",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["Width"] = {
@@ -791,11 +817,11 @@ KkthnxUIConfig["enUS"] = {
 
 		["Outline"] = {
 			["Name"] = "Outline",
-			["Desc"] = "Apply an outline to all databar fonts",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 	},
@@ -872,12 +898,17 @@ KkthnxUIConfig["enUS"] = {
 
 		["Outline"] = {
 			["Name"] = "Outline",
-			["Desc"] = "Outline datatext",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["System"] = {
 			["Name"] = "System",
 			["Desc"] = "Display FPS-MS at the bottom right corner of the screen",
+		},
+
+		["Time"] = {
+			["Name"] = "Enable Time Datatext",
+			["Desc"] = "Display a clock on the bottom of the minimap",
 		},
 
 		["Time24Hr"] = {
@@ -924,7 +955,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 
@@ -1007,6 +1038,11 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Filger Local
 	["Filger"] = {
+		["Bars"] = {
+			["Name"] = "Enable HoTs/Dots bars",
+			["Desc"] = ModuleToggle..PerformanceIncrease,
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Filger",
 			["Desc"] = ModuleToggle..PerformanceIncrease,
@@ -1045,6 +1081,11 @@ KkthnxUIConfig["enUS"] = {
 		["PvPSize"] = {
 			["Name"] = "PVP Size",
 			["Desc"] = "PVP debuffs size",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
 		},
 	},
 
@@ -1131,13 +1172,13 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["OORAlpha"] = {
-			["Name"] = "Out of Range Alpha",
-			["Desc"] = "At what distance should your unit frames fade into a transparency",
+			["Name"] = "OOR Alpha",
+			["Desc"] = "The alpha to set units that are out of range to.",
 		},
 
 		["Outline"] = {
 			["Name"] = "Font Outline",
-			["Desc"] = "Apply unit frame font outline",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["Party"] = {
@@ -1191,13 +1232,18 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Unitframe Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
+		},
+
+		["ThreatPercent"] = {
+			["Name"] = "Threat Percent",
+			["Desc"] = "Enable threat percent on the nameplates",
 		},
 
 		["PortraitStyle"] = {
 			["Name"] = "Portrait Style",
-			["Desc"] = "Pick your poison",
+			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
 		},
 
 		["NumberPrefixStyle"] = {
@@ -1260,7 +1306,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Outline"] = {
 			["Name"] = "Outline",
-			["Desc"] = "Pick your poison",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["RaidUtility"] = {
@@ -1299,7 +1345,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 
@@ -1311,6 +1357,11 @@ KkthnxUIConfig["enUS"] = {
 		["Width"] = {
 			["Name"] = "Width",
 			["Desc"] = "width",
+		},
+
+		["GroupBy"] = {
+			["Name"] = "Group By",
+			["Desc"] = "Set the order that the group will sort.",
 		},
 	},
 
@@ -1356,7 +1407,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["FontOutline"] = {
 			["Name"] = "Font Outline",
-			["Desc"] = "Apply a font outline to the status bar",
+			["Desc"] = ModuleFontOutline,
 		},
 
 		["FontSize"] = {
@@ -1405,7 +1456,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Texture"] = {
-			["Name"] = "Texture",
+			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 	},
