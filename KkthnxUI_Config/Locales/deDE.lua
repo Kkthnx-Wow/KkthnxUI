@@ -1279,6 +1279,11 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Pick your size",
 		},
 
+		["Cutaway"] = {
+			["Name"] = "Cutaway Bars",
+			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
+		},
+
 		["RaidTools"] = {
 			["Name"] = "Raid Utility",
 			["Desc"] = "Enables the 'Raid Control' utility panel",

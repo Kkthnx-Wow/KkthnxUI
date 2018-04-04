@@ -533,6 +533,7 @@ local function StyleUpdate(self, unit)
 	self.Power:SetPoint("BOTTOMRIGHT", self.Health, "BOTTOMRIGHT", 0, -3-(C["Nameplates"].Height * K.NoScaleMult / 2))
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
+	self.Power.Cutaway = C["Nameplates"].Cutaway
 	self.Power.Smooth = C["Nameplates"].Smooth
 	self.Power.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 	CreateVirtualFrame(self.Power)

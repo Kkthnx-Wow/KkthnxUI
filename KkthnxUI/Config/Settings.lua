@@ -382,6 +382,7 @@ C["Raidframe"] = {
 	["AuraDebuffIconSize"] = 22,
 	["AuraWatch"] = true,
 	["AuraWatchIconSize"] = 6,
+	["Cutaway"] = false,
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",

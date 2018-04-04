@@ -148,7 +148,7 @@ local function CreateRaidLayout(self)
 	self.Health.colorReaction = true
 	self.Health.colorTapping = true
 	self.Health.colorClass = true
-	self.Health.Cutaway = true
+	self.Health.Cutaway = C["Raidframe"].Cutaway
 	self.Health.Smooth = C["Raidframe"].Smooth
 	self.Health.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
 
@@ -163,6 +163,7 @@ local function CreateRaidLayout(self)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
 
 		self.Power.frequentUpdates = true
+		self.Power.Cutaway = C["Raidframe"].Cutaway
 		self.Power.colorPower = true
 		self.Power.Smooth = C["Raidframe"].Smooth
 		self.Power.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10

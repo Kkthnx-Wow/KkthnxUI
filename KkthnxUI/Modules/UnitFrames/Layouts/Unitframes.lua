@@ -133,6 +133,7 @@ local function CreateUnitframeLayout(self, unit)
 	self.Power:SetFrameLevel(1)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 
+	self.Power.Cutaway = C["Nameplates"].Cutaway
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.Power.colorPower = true
