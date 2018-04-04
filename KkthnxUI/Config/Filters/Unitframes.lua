@@ -7,9 +7,12 @@ local print = print
 local GetSpellInfo = _G.GetSpellInfo
 
 local function SpellName(id)
+	if K.Legion735 then
+		return
+	end
 	local name, _, _, _, _, _, _, _, _ = GetSpellInfo(id)
 	if not name then
-		print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
+		-- print("|cff3c9bedKkthnxUI:|r SpellID is not valid: "..id..". Please check for an updated version, if none exists report to KkthnxUI author.")
 		return "Impale"
 	else
 		return name
