@@ -1,14 +1,17 @@
 local K, C = unpack(select(2, ...))
 if C["DataText"].System ~= true then return end
 
+local _G = _G
 local math_floor = math.floor
 
-local PerformanceFrame = CreateFrame("Frame", "PerformanceFrame", K.PetBattleHider)
-PerformanceFrame:SetScale(1)
+local PerformanceFrame = CreateFrame("Frame", "SystemDT", K.PetBattleHider)
+PerformanceFrame:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -2, 2)
+PerformanceFrame:SetSize(90, 13)
+K["Movers"]:RegisterFrame(PerformanceFrame)
 
 local Performance = K.SetFontString(PerformanceFrame, C["Media"].Font, 12, C["DataText"].Outline and "OUTLINE" or "", "CENTER")
 Performance:SetDrawLayer("ARTWORK")
-Performance:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -2, 2)
+Performance:SetAllPoints(PerformanceFrame)
 
 PerformanceFrame.Performance = Performance
 
@@ -20,8 +23,8 @@ local FPS_ABBR = FPS_ABBR
 PerformanceFrame:SetScript("OnUpdate", function(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 	if self.elapsed > performance_hz then
-		local _, _, chat_latency, cast_latency = GetNetStats()
-		local fps = math_floor(GetFramerate())
+		local _, _, chat_latency, cast_latency = _G.GetNetStats()
+		local fps = math_floor(_G.GetFramerate())
 		if not cast_latency or cast_latency == 0 then
 			cast_latency = chat_latency
 		end
