@@ -7,18 +7,19 @@ local select = select
 local CreateFrame = _G.CreateFrame
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
 local GetCVarBool = _G.GetCVarBool
+local GetLFGDungeonInfo = _G.GetLFGDungeonInfo
 local GetLFGDungeonRewards = _G.GetLFGDungeonRewards
 local GetLFGRandomDungeonInfo = _G.GetLFGRandomDungeonInfo
 local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
 local GetNumRandomDungeons = _G.GetNumRandomDungeons
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
+local PlaySoundFile = _G.PlaySoundFile
 local SetCVar = _G.SetCVar
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local StaticPopupDialogs = _G.StaticPopupDialogs
-local GetLFGDungeonInfo = _G.GetLFGDungeonInfo
 
-local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.wav"
+local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.ogg"
 local BATTLEGROUNDS = {
 	["Wintergrasp"] = true,
 	["Tol Barad"] = true,
@@ -134,7 +135,7 @@ ForceWarning:SetScript("OnEvent", function(self, event)
 	elseif event == "LFG_PROPOSAL_SHOW" then
 		PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySound(PlaySoundKitID and "resurrection" or RESURRECTION_REQUEST_SOUND, "Master")
+		PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
 	end
 end)
 
