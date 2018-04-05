@@ -139,9 +139,7 @@ function Module:OnInitialize()
 		show_while_dead = true,
 		hide_on_escape = true,
 	})
-end
 
-function Module:OnEnable()
 	if WIM then
 		WIM.RegisterWidgetTrigger("chat_display", "whisper, chat, w2w, demo", "OnHyperlinkClick", function(self)
 			Module.clickedframe = self
@@ -149,7 +147,9 @@ function Module:OnEnable()
 		WIM.RegisterItemRefHandler("url", HyperLinkedURL)
 		WIM.RegisterItemRefHandler("squ", HyperLinkedSQU)
 	end
+end
 
+function Module:OnEnable()
 	for _, event in pairs(FindURL_Events) do
 		ChatFrame_AddMessageEventFilter(event, Module[event] or Module.FindURL)
 	end
