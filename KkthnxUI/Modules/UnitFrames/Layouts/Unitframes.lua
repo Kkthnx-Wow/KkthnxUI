@@ -305,7 +305,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Level = K.SetFontString(self, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "RIGHT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
-		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:Level]")
+		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 	elseif (unit == "targettarget" or unit == "focustarget") then
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
