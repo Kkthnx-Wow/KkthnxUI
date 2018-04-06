@@ -1,4 +1,5 @@
 local K, C = unpack(select(2, ...))
+
 -- Prevent users config errors and using other UIs over mine.
 
 local _G = _G
@@ -26,8 +27,7 @@ if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI"
 		end,
 	}
 
-	_G.StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
-
+	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 	return
 end
 

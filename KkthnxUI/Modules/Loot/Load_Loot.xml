@@ -3,5 +3,6 @@
     <!-- Load_Loot -->
     <Script file="Loot.lua"/>
     <Script file="GroupLoot.lua"/>
+    <Script file="LootConfirm.lua"/>
     <Script file="FastLoot.lua"/>
 </Ui>

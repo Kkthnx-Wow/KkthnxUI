@@ -230,11 +230,13 @@ C["General"] = {
 
 -- Loot
 C["Loot"] = {
-	["AutoRoll"] = false,
 	["Enable"] = true,
 	["FastLoot"] = false,
 	["GroupLoot"] = true,
 	["Texture"] = "KkthnxUI",
+	["AutoGreed"] = false,
+	["AutoDisenchant"] = false,
+	["AutoGreedLevel"] = MAX_PLAYER_LEVEL,
 }
 
 -- Minimap

@@ -37,10 +37,17 @@ function K.CreateThreatIndicator(self)
 	self.ThreatIndicator = threat
 end
 
+function K.CreateSpecIcons(self)
+	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
+	self.PVPSpecIcon:SetSize(46, 46)
+	self.PVPSpecIcon:SetPoint("LEFT", self, 4, 0)
+	self.PVPSpecIcon:SetTemplate("Transparent", true)
+end
+
 function K.CreateTrinkets(self)
 	self.Trinket = CreateFrame("Frame", nil, self)
-	self.Trinket:SetSize(self.Portrait:GetWidth(), self.Portrait:GetHeight())
-	self.Trinket:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 0)
+	self.Trinket:SetSize(46, 46)
+	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -6, 0)
 	self.Trinket:SetTemplate("Transparent", true)
 end
 

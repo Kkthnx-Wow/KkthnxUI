@@ -74,11 +74,6 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Loot Local
 	["Loot"] = {
-		["AutoRoll"] = {
-			["Name"] = "Auto Roll",
-			["Desc"] = "Automatically roll on items",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable Loot",
 			["Desc"] = ModuleToggle,
@@ -92,6 +87,22 @@ KkthnxUIConfig["enUS"] = {
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
+		},
+
+		["AutoGreed"] = {
+			["Name"] = "Auto Greed",
+			["Desc"] = "Automatically greed",
+			["Default"] = "Automatically greed",
+		},
+
+		["AutoDisenchant"] = {
+			["Name"] = "Auto Disenchant",
+			["Desc"] = "Automatically disenchant",
+		},
+
+		["AutoGreedLevel"] = {
+			["Name"] = "Auto Greed Level",
+			["Desc"] = "Level to start auto-rolling from",
 		},
 
 		["FastLoot"] = {

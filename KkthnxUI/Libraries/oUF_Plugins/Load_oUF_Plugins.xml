@@ -9,5 +9,6 @@
    <Script file="oUF_RaidDebuffs.lua"/>
    <Script file="oUF_ResInfo.lua"/>
    <Script file="oUF_Smooth.lua"/>
+   <Script file="oUF_PVPSpecIcons.lua"/>
    <Script file="oUF_Trinkets.lua"/>
 </Ui>

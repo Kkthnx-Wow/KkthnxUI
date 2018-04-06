@@ -280,17 +280,13 @@ function GroupLoot:START_LOOT_ROLL(_, rollID, time)
 		end
 	end
 
-	if itemID == 43102 or itemID == 52078 then
-		RollOnLoot(rollID, LOOT_ROLL_TYPE_GREED)
-	end
-
-	if C["Loot"].AutoRoll and UnitLevel("player") == MAX_PLAYER_LEVEL and quality == 2 and not bop then
-		if canDisenchant then
-			RollOnLoot(rollID, 3)
-		else
-			RollOnLoot(rollID, 2)
-		end
-	end
+	-- if C["Loot"].AutoRoll and UnitLevel("player") == MAX_PLAYER_LEVEL and quality == 2 and not bop then
+	-- 	if canDisenchant then
+	-- 		RollOnLoot(rollID, 3)
+	-- 	else
+	-- 		RollOnLoot(rollID, 2)
+	-- 	end
+	-- end
 end
 
 function GroupLoot:LOOT_HISTORY_ROLL_CHANGED(_, itemIdx, playerIdx)

@@ -85,7 +85,7 @@ function Install:Step1()
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
-	SetCVar("worldPreloadNonCritical", GetCVarDefault("worldPreloadNonCritical")) -- No long going to mess with this.
+	SetCVar("worldPreloadNonCritical", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()

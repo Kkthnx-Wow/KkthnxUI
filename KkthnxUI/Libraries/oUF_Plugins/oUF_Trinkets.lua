@@ -4,8 +4,9 @@ assert(oUF, 'oUF not loaded')
 
 local trinketSpells = {
 	[208683] = 120,
-	[42292] = 120,
+	[195710] = 180,
 	[59752] = 120,
+	[42292] = 120,
 	[7744] = 45,
 }
 
@@ -54,8 +55,9 @@ local Enable = function(self)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", Update, true)
 
 		if not self.Trinket.cooldownFrame then
-			self.Trinket.cooldownFrame = CreateFrame("Cooldown", nil, self.Trinket)
+			self.Trinket.cooldownFrame = CreateFrame("Cooldown", nil, self.Trinket, "CooldownFrameTemplate")
 			self.Trinket.cooldownFrame:SetAllPoints(self.Trinket)
+			self.Trinket.cooldownFrame:SetHideCountdownNumbers(true)
 		end
 
 		if not self.Trinket.Icon then

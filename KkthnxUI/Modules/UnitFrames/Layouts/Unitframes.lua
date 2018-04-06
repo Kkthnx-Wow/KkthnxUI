@@ -205,7 +205,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Portrait:SetFrameStrata("BACKGROUND")
 		self.Portrait:SetFrameLevel(1)
 
-		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
+		if (unit == "player" or unit == "focus" or unit == "boss") then
 			self.Portrait:SetSize(46, 46)
 			self.Portrait:SetPoint("LEFT", self, 4, 0)
 		elseif (unit == "pet" or unit == "focustarget") then
@@ -231,7 +231,7 @@ local function CreateUnitframeLayout(self, unit)
 		self.Portrait.Background:SetFrameStrata("LOW")
 		self.Portrait.Background:SetFrameLevel(1)
 
-		if (unit == "player" or unit == "focus" or unit == "boss" or unit == "arena") then
+		if (unit == "player" or unit == "focus" or unit == "boss") then
 			self.Portrait:SetSize(46, 46)
 			self.Portrait:SetPoint("LEFT", self, 4, 0)
 			self.Portrait.Background:SetSize(46, 46)
@@ -332,13 +332,6 @@ local function CreateUnitframeLayout(self, unit)
 		end
 	end
 
-	if (unit == "arena") then
-		self.Trinket = CreateFrame("Frame", nil, self)
-		self.Trinket:SetSize(self.Portrait:GetWidth(), self.Portrait:GetHeight())
-		self.Trinket:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 0)
-		self.Trinket:SetTemplate("Transparent", true)
-	end
-
 	if (unit == "player") then
 		if C["Unitframe"].Castbars then
 			K.CreateCastBar(self, "player")
@@ -419,6 +412,7 @@ local function CreateUnitframeLayout(self, unit)
 			K.CreateCastBar(self, "arena")
 		end
 		K.CreateAuras(self, "arena")
+		K.CreateSpecIcons(self)
 		K.CreateTrinkets(self)
 	end
 
