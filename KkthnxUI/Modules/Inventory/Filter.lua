@@ -9,6 +9,7 @@ local select = select
 local table_insert = table.insert
 local table_remove = table.remove
 local unpack = unpack
+local pairs = pairs
 
 local CreateFrame = _G.CreateFrame
 local GetContainerItemInfo = _G.GetContainerItemInfo
@@ -26,7 +27,6 @@ Module.Trash = {
 }
 
 local Link
-
 function Module:GetTrash(event)
     for bag = 0, 4 do
         for slot = 1, GetContainerNumSlots(bag) do

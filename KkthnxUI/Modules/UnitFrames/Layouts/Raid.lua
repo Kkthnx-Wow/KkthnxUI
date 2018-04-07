@@ -8,18 +8,15 @@ local oUF = ns.oUF or oUF
 local _G = _G
 local string_format = string.format
 local table_insert = table.insert
-local math_ceil = math.ceil
 
 -- Wow API
 local GetThreatStatusColor = _G.GetThreatStatusColor
-local UnitHasIncomingResurrection = _G.UnitHasIncomingResurrection
 local UnitHasMana = _G.UnitHasMana
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
 local UnitThreatSituation = _G.UnitThreatSituation
 

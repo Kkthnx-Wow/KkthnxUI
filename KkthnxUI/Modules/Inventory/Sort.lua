@@ -2,11 +2,21 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("InventorySort", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
-local band = bit.band
-local floor = math.floor
-local ipairs, pairs, tonumber, select, unpack, pcall = ipairs, pairs, tonumber, select, unpack, pcall
-local match, gmatch, find = string.match, string.gmatch, string.find
-local tinsert, tremove, tsort, twipe = table.insert, table.remove, table.sort, table.wipe
+local bit_band = bit.band
+local math_floor = math.floor
+local ipairs = ipairs
+local pairs = pairs
+local tonumber = tonumber
+local select = select
+local unpack = unpack
+local pcall = pcall
+local string_match = string.match
+local string_gmatch = string.gmatch
+local string_find = string.find
+local table_insert = table.insert
+local table_remove = table.remove
+local table_sort =  table.sort
+local table_wipe = table.wipe
 
 local C_PetJournalGetPetInfoBySpeciesID = _G.C_PetJournal.GetPetInfoBySpeciesID
 local C_Timer_After = _G.C_Timer.After
@@ -39,24 +49,24 @@ local bankBags = {BANK_CONTAINER}
 local MAX_MOVE_TIME = 1.25
 
 for i = NUM_BAG_SLOTS + 1, NUM_BAG_SLOTS + NUM_BANKBAGSLOTS do
-	tinsert(bankBags, i)
+	table_insert(bankBags, i)
 end
 
 local playerBags = {}
 for i = 0, NUM_BAG_SLOTS do
-	tinsert(playerBags, i)
+	table_insert(playerBags, i)
 end
 
 local allBags = {}
 for _, i in ipairs(playerBags) do
-	tinsert(allBags, i)
+	table_insert(allBags, i)
 end
 for _, i in ipairs(bankBags) do
-	tinsert(allBags, i)
+	table_insert(allBags, i)
 end
 
 for _, i in ipairs(guildBags) do
-	tinsert(allBags, i)
+	table_insert(allBags, i)
 end
 
 local coreGroups = {
@@ -315,7 +325,7 @@ end
 function Module:GetItemID(bag, slot)
 	if IsGuildBankBag(bag) then
 		local link = self:GetItemLink(bag, slot)
-		return link and tonumber(match(link, "item:(%d+)"))
+		return link and tonumber(string_match(link, "item:(%d+)"))
 	else
 		return GetContainerItemID(bag, slot)
 	end
@@ -370,12 +380,12 @@ end
 local function ConvertLinkToID(link)
 	if not link then return end
 
-	if tonumber(match(link, "item:(%d+)")) then
-		return tonumber(match(link, "item:(%d+)"))
-	elseif tonumber(match(link, "keystone:(%d+)")) then
-		return tonumber(match(link, "keystone:(%d+)")), nil, true
+	if tonumber(string_match(link, "item:(%d+)")) then
+		return tonumber(string_match(link, "item:(%d+)"))
+	elseif tonumber(string_match(link, "keystone:(%d+)")) then
+		return tonumber(string_match(link, "keystone:(%d+)")), nil, true
 	else
-		return tonumber(match(link, "battlepet:(%d+)")), true
+		return tonumber(string_match(link, "battlepet:(%d+)")), true
 	end
 end
 
@@ -388,7 +398,7 @@ function Module:Encode_BagSlot(bag, slot)
 end
 
 function Module:Decode_BagSlot(int)
-	return floor(int/100), int % 100
+	return math_floor(int/100), int % 100
 end
 
 function Module:IsPartial(bag, slot)
@@ -401,7 +411,7 @@ function Module:EncodeMove(source, target)
 end
 
 function Module:DecodeMove(move)
-	local s = floor(move / 10000)
+	local s = math_floor(move / 10000)
 	local t = move % 10000
 	s = (t > 9000) and (s + 1) or s
 	t = (t > 9000) and (t - 10000) or t
@@ -410,7 +420,7 @@ end
 
 function Module:AddMove(source, destination)
 	UpdateLocation(source, destination)
-	tinsert(moves, 1, Module:EncodeMove(source, destination))
+	table_insert(moves, 1, Module:EncodeMove(source, destination))
 end
 
 function Module:ScanBags()
@@ -476,7 +486,7 @@ function Module:CanItemGoInBag(bag, slot, targetBag)
 	end
 	local bagFamily = select(2, GetContainerNumFreeSlots(targetBag))
 	if itemFamily then
-		return (bagFamily == 0) or band(itemFamily, bagFamily) > 0
+		return (bagFamily == 0) or bit_band(itemFamily, bagFamily) > 0
 	else
 		return false
 	end
@@ -497,7 +507,7 @@ function Module.Stack(sourceBags, targetBags, canMove)
 
 		if itemID and (bagStacks[bagSlot] ~= bagMaxStacks[bagSlot]) then
 			targetItems[itemID] = (targetItems[itemID] or 0) + 1
-			tinsert(targetSlots, bagSlot)
+			table_insert(targetSlots, bagSlot)
 		end
 	end
 
@@ -524,9 +534,9 @@ function Module.Stack(sourceBags, targetBags, canMove)
 		end
 	end
 
-	twipe(targetItems)
-	twipe(targetSlots)
-	twipe(sourceUsed)
+	table_wipe(targetItems)
+	table_wipe(targetSlots)
+	table_wipe(sourceUsed)
 end
 
 function Module.Sort(bags, sorter, invertDirection)
@@ -536,10 +546,10 @@ function Module.Sort(bags, sorter, invertDirection)
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
 
 		initialOrder[bagSlot] = i
-		tinsert(bagSorted, bagSlot)
+		table_insert(bagSorted, bagSlot)
 	end
 
-	tsort(bagSorted, sorter)
+	table_sort(bagSorted, sorter)
 
 	local passNeeded = true
 	while passNeeded do
@@ -561,18 +571,18 @@ function Module.Sort(bags, sorter, invertDirection)
 			end
 			i = i + 1
 		end
-		twipe(bagLocked)
+		table_wipe(bagLocked)
 	end
 
-	twipe(bagSorted)
-	twipe(initialOrder)
+	table_wipe(bagSorted)
+	table_wipe(initialOrder)
 end
 
 function Module.FillBags(from, to)
 	Module.Stack(from, to)
 	for _, bag in ipairs(to) do
 		if Module:IsSpecialtyBag(bag) then
-			tinsert(specialtyBags, bag)
+			table_insert(specialtyBags, bag)
 		end
 	end
 	if #specialtyBags > 0 then
@@ -580,7 +590,7 @@ function Module.FillBags(from, to)
 	end
 
 	Module.Fill(from, to)
-	twipe(specialtyBags)
+	table_wipe(specialtyBags)
 end
 
 function Module.Fill(sourceBags, targetBags, reverse, canMove)
@@ -589,7 +599,7 @@ function Module.Fill(sourceBags, targetBags, reverse, canMove)
 	for _, bag, slot in Module.IterateBags(targetBags, reverse, "deposit") do
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
 		if not bagIDs[bagSlot] then
-			tinsert(emptySlots, bagSlot)
+			table_insert(emptySlots, bagSlot)
 		end
 	end
 
@@ -600,10 +610,10 @@ function Module.Fill(sourceBags, targetBags, reverse, canMove)
 		local link = Module:GetItemLink(bag, slot)
 
 		if bagIDs[bagSlot] and Module:CanItemGoInBag(bag, slot, targetBag) and canMove(bagIDs[bagSlot], bag, slot) then
-			Module:AddMove(bagSlot, tremove(emptySlots, 1))
+			Module:AddMove(bagSlot, table_remove(emptySlots, 1))
 		end
 	end
-	twipe(emptySlots)
+	table_wipe(emptySlots)
 end
 
 function Module.SortBags(...)
@@ -613,7 +623,7 @@ function Module.SortBags(...)
 			local bagType = Module:IsSpecialtyBag(slotNum)
 			if bagType == false then bagType = "Normal" end
 			if not bagCache[bagType] then bagCache[bagType] = {} end
-			tinsert(bagCache[bagType], slotNum)
+			table_insert(bagCache[bagType], slotNum)
 		end
 
 		for bagType, sortedBags in pairs(bagCache) do
@@ -622,27 +632,27 @@ function Module.SortBags(...)
 				Module.Stack(bagCache["Normal"], sortedBags)
 				Module.Fill(bagCache["Normal"], sortedBags, C["Inventory"].SortInverted)
 				Module.Sort(sortedBags, nil, C["Inventory"].SortInverted)
-				twipe(sortedBags)
+				table_wipe(sortedBags)
 			end
 		end
 
 		if bagCache["Normal"] then
 			Module.Stack(bagCache["Normal"], bagCache["Normal"], Module.IsPartial)
 			Module.Sort(bagCache["Normal"], nil, C["Inventory"].SortInverted)
-			twipe(bagCache["Normal"])
+			table_wipe(bagCache["Normal"])
 		end
-		twipe(bagCache)
-		twipe(bagGroups)
+		table_wipe(bagCache)
+		table_wipe(bagGroups)
 	end
 end
 
 function Module:StartStacking()
-	twipe(bagMaxStacks)
-	twipe(bagStacks)
-	twipe(bagIDs)
-	twipe(bagQualities)
-	twipe(bagPetIDs)
-	twipe(moveTracker)
+	table_wipe(bagMaxStacks)
+	table_wipe(bagStacks)
+	table_wipe(bagIDs)
+	table_wipe(bagQualities)
+	table_wipe(bagPetIDs)
+	table_wipe(moveTracker)
 
 	if #moves > 0 then
 		self.SortUpdateTimer:Show()
@@ -663,8 +673,8 @@ end
 --end
 
 function Module:StopStacking(message, noUpdate)
-	twipe(moves)
-	twipe(moveTracker)
+	table_wipe(moves)
+	table_wipe(moveTracker)
 	moveRetries, lastItemID, lockStop, lastDestination, lastMove = 0, nil, nil, nil, nil
 
 	self.SortUpdateTimer:Hide()
@@ -790,7 +800,7 @@ function Module:DoMoves()
 	end
 
 	lastItemID, lockStop, lastDestination, lastMove = nil, nil, nil, nil
-	twipe(moveTracker)
+	table_wipe(moveTracker)
 
 	local success, moveID, targetID, moveSource, moveTarget, wasGuild
 	if #moves > 0 then
@@ -806,7 +816,7 @@ function Module:DoMoves()
 			lastDestination = moveTarget
 			lastMove = moves[i]
 			lastItemID = moveID
-			tremove(moves, i)
+			table_remove(moves, i)
 
 			if moves[i-1] then
 				WAIT_TIME = wasGuild and 0.3 or 0
@@ -818,10 +828,10 @@ function Module:DoMoves()
 end
 
 function Module:GetGroup(id)
-	if match(id, "^[-%d,]+$") then
+	if string_match(id, "^[-%d,]+$") then
 		local bags = {}
-		for b in gmatch(id, "-?%d+") do
-			tinsert(bags, tonumber(b))
+		for b in string_gmatch(id, "-?%d+") do
+			table_insert(bags, tonumber(b))
 		end
 		return bags
 	end
@@ -837,7 +847,7 @@ function Module:CommandDecorator(func, groupsDefaults)
 			return
 		end
 
-		twipe(bagGroups)
+		table_wipe(bagGroups)
 		if not groups or #groups == 0 then
 			groups = groupsDefaults
 		end
@@ -845,12 +855,12 @@ function Module:CommandDecorator(func, groupsDefaults)
 			if bags == "guild" then
 				bags = Module:GetGroup(bags)
 				if bags then
-					tinsert(bagGroups, {bags[GetCurrentGuildBankTab()]})
+					table_insert(bagGroups, {bags[GetCurrentGuildBankTab()]})
 				end
 			else
 				bags = Module:GetGroup(bags)
 				if bags then
-					tinsert(bagGroups, bags)
+					table_insert(bagGroups, bags)
 				end
 			end
 		end
@@ -859,7 +869,7 @@ function Module:CommandDecorator(func, groupsDefaults)
 		if func(unpack(bagGroups)) == false then
 			return
 		end
-		twipe(bagGroups)
+		table_wipe(bagGroups)
 		Module:StartStacking()
 	end
 end

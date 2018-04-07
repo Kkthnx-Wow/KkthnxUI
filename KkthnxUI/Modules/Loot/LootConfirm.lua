@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("LootConfirm", "AceEvent-3.0")
 
 local _G = _G
+local pairs = pairs
 
 local GetLocale = _G.GetLocale
 local GetItemInfo = _G.GetItemInfo
@@ -11,6 +12,8 @@ local UIParent = _G.UIParent
 local RollOnLoot = _G.RollOnLoot
 local StaticPopup_OnClick = _G.StaticPopup_OnClick
 local GetLootRollItemInfo = _G.GetLootRollItemInfo
+
+-- GLOBALS: KkthnxUIConfig
 
 Module.NeedLoot = {
 	[124124] = true,

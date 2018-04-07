@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local LM = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
 local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
 local _G = _G
@@ -186,7 +186,7 @@ local function createSlot(id)
 	frame.name = name
 
 	local drop = frame:CreateTexture(nil, "ARTWORK")
-	drop:SetTexture"Interface\\QuestFrame\\UI-QuestLogTitleHighlight"
+	drop:SetTexture("Interface\\QuestFrame\\UI-QuestLogTitleHighlight")
 	drop:SetPoint("LEFT", icon, "RIGHT", 0, 0)
 	drop:SetPoint("RIGHT", frame)
 	drop:SetAllPoints(frame)
@@ -203,14 +203,14 @@ local function createSlot(id)
 	return frame
 end
 
-function LM:LOOT_SLOT_CLEARED(_, slot)
+function Module:LOOT_SLOT_CLEARED(_, slot)
 	if (not lootFrame:IsShown()) then return end
 
 	lootFrame.slots[slot]:Hide()
 	anchorSlots(lootFrame)
 end
 
-function LM:LOOT_CLOSED()
+function Module:LOOT_CLOSED()
 	StaticPopup_Hide("LOOT_BIND")
 	lootFrame:Hide()
 
@@ -219,15 +219,15 @@ function LM:LOOT_CLOSED()
 	end
 end
 
-function LM:OPEN_MASTER_LOOT_LIST()
+function Module:OPEN_MASTER_LOOT_LIST()
 	L_ToggleDropDownMenu(1, nil, KkthnxUIGroupLootDropDown, lootFrame.slots[ss], 0, 0)
 end
 
-function LM:UPDATE_MASTER_LOOT_LIST()
+function Module:UPDATE_MASTER_LOOT_LIST()
 	MasterLooterFrame_UpdatePlayers()
 end
 
-function LM:LOOT_OPENED(_, autoloot)
+function Module:LOOT_OPENED(_, autoloot)
 	lootFrame:Show()
 
 	if (not lootFrame:IsShown()) then
@@ -297,15 +297,18 @@ function LM:LOOT_OPENED(_, autoloot)
 			w = max(w, slot.name:GetStringWidth())
 
 			local questTexture = slot.questTexture
-			if ( questId and not isActive ) then
+			if (questId and not isActive) then
 				questTexture:Show()
-				LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
-			elseif ( questId or isQuestItem ) then
+				--LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
+				slot:SetBackdropBorderColor(1, 1, 0)
+			elseif (questId or isQuestItem) then
 				questTexture:Hide()
-				LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
+				--LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
+				slot:SetBackdropBorderColor(1, 1, 0)
 			else
 				questTexture:Hide()
-				LibButtonGlow.HideOverlayGlow(slot.iconFrame)
+				--LibButtonGlow.HideOverlayGlow(slot.iconFrame)
+				slot:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 			end
 
 			slot:Enable()
@@ -338,7 +341,7 @@ function LM:LOOT_OPENED(_, autoloot)
 	lootFrame:SetWidth(max(w, t))
 end
 
-function LM:OnEnable()
+function Module:OnEnable()
 	if C["Loot"].Enable ~= true then return end
 
 	lootFrameHolder = CreateFrame("Frame", "KkthnxLootFrameHolder", UIParent)

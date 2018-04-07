@@ -16,8 +16,7 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitReaction = _G.UnitReaction
 local UnitSpellHaste = _G.UnitSpellHaste
 
-local Movers = K.Movers
-
+local Movers = K["Movers"]
 local CastbarFont = K.GetFont(C["Unitframe"].Font)
 local CastbarTexture = K.GetTexture(C["Unitframe"].Texture)
 

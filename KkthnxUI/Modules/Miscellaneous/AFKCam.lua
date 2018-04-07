@@ -33,8 +33,7 @@ local UnitCastingInfo = _G.UnitCastingInfo
 local UnitFactionGroup = _G.UnitFactionGroup
 local UnitIsAFK = _G.UnitIsAFK
 
--- GLOBALS: UIParent, PVEFrame, AFKPlayerModel
--- GLOBALS: CUSTOM_CLASS_COLORS
+-- GLOBALS: UIParent, PVEFrame, AFKPlayerModel, CUSTOM_CLASS_COLORS
 
 local ignoreKeys = {
 	LALT = true,

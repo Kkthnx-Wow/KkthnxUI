@@ -28,7 +28,6 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsPlayer = _G.UnitIsPlayer
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local colors = K.Colors

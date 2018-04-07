@@ -29,6 +29,7 @@ local SendChatMessage = _G.SendChatMessage
 local STATUS = _G.STATUS
 local ToggleFrame = _G.ToggleFrame
 local TogglePVP = _G.TogglePVP
+local UnitIsPVP = _G.UnitIsPVP
 
 local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
@@ -36,16 +37,12 @@ local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0
 
 local Lines = {}
 local CopyFrame
-
-local menuFrame = CreateFrame("Frame", "ConfigRightClickMenu", UIParent, "L_UIDropDownMenuTemplate")
+local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "L_UIDropDownMenuTemplate")
 local menuList = {
 	{text = OPTIONS_MENU, isTitle = true, notCheckable = true},
 	{text = "", notClickable = true, notCheckable = true},
 	{text = STATUS, notCheckable = true, func = function()
 			K.ShowStatusReport()
-	end},
-	{text = "Toggle".." "..PVP, notCheckable = true, func = function()
-			TogglePVP()
 	end},
 	{text = "Install", notCheckable = true, func = function()
 			K.Install:Launch()
@@ -56,7 +53,7 @@ local menuList = {
 	{text = "Toggle Config", notCheckable = true, func = function()
 			K.ConfigUI()
 	end},
-	{text = "Profiles", notCheckable = true, func = function()
+	{text = "Profile List", notCheckable = true, func = function()
 			K.UIProfiles("list")
 	end},
 	{text = "UI Help", notCheckable = true, func = function()
@@ -64,26 +61,6 @@ local menuList = {
 	end},
 	{text = RELOADUI, notCheckable = true, func = function()
 			ReloadUI()
-	end},
-	{text = "Toggle Bags", notCheckable = true, func = function()
-			if BankFrame:IsShown() then
-				CloseBankBagFrames()
-				CloseBankFrame()
-				CloseAllBags()
-			else
-				if ContainerFrame1:IsShown() then
-					CloseAllBags()
-				else
-					ToggleAllBags()
-				end
-			end
-	end},
-	{text = "Click Me", notCheckable = true, func = function()
-			SendChatMessage("I love KkthnxUI! KkhnxUI is life!", "YELL", nil, nil)
-	end},
-	{text = "No Life", notCheckable = true, func = function()
-			RequestTimePlayed()
-			print("|cfff0f8ffI just wanted you to see how you are spending your life! |cfffa8072<3|r |cfff0f8ffKkthnx|r")
 	end},
 	{text = "Damage Meters", hasArrow = true, notCheckable=true,
 		menuList = {

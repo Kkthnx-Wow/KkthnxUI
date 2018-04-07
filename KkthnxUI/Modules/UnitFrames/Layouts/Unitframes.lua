@@ -10,6 +10,9 @@ if not oUF then
 end
 
 local _G = _G
+local pairs = pairs
+local print = print
+local unpack = unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
@@ -17,14 +20,10 @@ local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
-local GetThreatStatusColor = _G.GetThreatStatusColor
 local InCombatLockdown = _G.InCombatLockdown
 local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
 local UnitClass = _G.UnitClass
-local UnitFrame_OnEnter = UnitFrame_OnEnter
-local UnitFrame_OnLeave = UnitFrame_OnLeave
 local UnitIsPlayer = _G.UnitIsPlayer
-local UnitThreatSituation = _G.UnitThreatSituation
 
 local UnitframeFont = K.GetFont(C["Unitframe"].Font)
 local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)

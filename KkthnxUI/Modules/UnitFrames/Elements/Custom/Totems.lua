@@ -9,6 +9,8 @@ local GetTotemInfo = _G.GetTotemInfo
 local GetTime = _G.GetTime
 local tonumber = _G.tonumber
 
+-- GLOBALS: TotemFrame
+
 local function UpdateTooltip(totem)
 	GameTooltip:SetTotem(totem:GetID())
 end

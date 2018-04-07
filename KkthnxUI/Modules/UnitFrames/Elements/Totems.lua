@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then 
+	return
+end
 
 local UnitframeFont = K.GetFont(C["Unitframe"].Font)
 local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)

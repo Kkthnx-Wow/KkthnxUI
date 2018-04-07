@@ -38,7 +38,6 @@ local GetChannelName = _G.GetChannelName
 local GetGuildRosterMOTD = _G.GetGuildRosterMOTD
 local GetRealmName = _G.GetRealmName
 local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
 local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
@@ -57,7 +56,6 @@ local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
 local hooks = {}
-
 local CUSTOM_CHANNELS = {
 	-- Not case-sensitive. Must be in the format:
 	-- ["mychannel"] = "MC",
@@ -65,7 +63,7 @@ local CUSTOM_CHANNELS = {
 
 local ChannelNames = {
 	[L["Chat"].Conversation] = L["Chat"].S_Conversation,
-	[L["Chat"].General] = L["Chat"].SCN_General,
+	[L["Chat"].General] = L["Chat"].S_General,
 	[L["Chat"].LocalDefense] = L["Chat"].S_LocalDefense,
 	[L["Chat"].LookingForGroup] = L["Chat"].S_LookingForGroup,
 	[L["Chat"].Trade] = L["Chat"].S_Trade,

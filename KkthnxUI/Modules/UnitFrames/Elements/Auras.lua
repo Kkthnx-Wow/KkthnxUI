@@ -5,11 +5,12 @@ local _G = _G
 local string_format = string.format
 
 local CreateFrame = _G.CreateFrame
-local DebuffTypeColor = _G.DebuffTypeColor
 local GetTime = _G.GetTime
 local UnitCanAttack = _G.UnitCanAttack
 local UnitIsFriend = _G.UnitIsFriend
 local UnitAura = _G.UnitAura
+
+-- GLOBALS: DebuffTypeColor
 
 local function FilterSharedBuffs(_, _, _, name)
 	if (K.UnImportantBuffs[name]) then
