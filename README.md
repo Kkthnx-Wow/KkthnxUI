@@ -1,6 +1,6 @@
 ![h4fl1au](https://user-images.githubusercontent.com/1692977/31845157-13107948-b5cc-11e7-926d-67e669b8ca69.png)
 
-[![Support me on Patreon](https://i.imgur.com/FzTLsYV.png) ](https://www.patreon.com/kkthnx)[![Donate through Paypal](https://i.imgur.com/IkPCLeh.png)](https://www.paypal.me/kkthnx) ![Say Thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)
+[![Support me on Patreon](https://i.imgur.com/FzTLsYV.png) ](https://www.patreon.com/kkthnx)[![Donate through Paypal](https://i.imgur.com/IkPCLeh.png)](https://www.paypal.me/kkthnx) [![Say Thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/Kkthnx)
 
 KkthnxUI is a simplistic user interface that holds onto the information and functionality, while still keeping most of the good looks.
 It can be used for any class or role.
