@@ -2,8 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Minimap", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
-local table_insert = table.insert
-local strsub = strsub
+local string_sub = string.sub
 
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
@@ -15,7 +14,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local Minimap = _G.Minimap
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
-local SpellBookFrame = _G.SpellBookFrame
 local UIParent = _G.UIParent
 
 function Module:GetLocTextColor()
@@ -57,7 +55,7 @@ function Module:Update_ZoneText()
 	if not C["Minimap"].Enable then
 		return
 	end
-	Minimap.location:SetText(strsub(GetMinimapZoneText(), 1, 46))
+	Minimap.location:SetText(string_sub(GetMinimapZoneText(), 1, 46))
 	Minimap.location:SetTextColor(Module:GetLocTextColor())
 	Minimap.location:FontTemplate()
 end

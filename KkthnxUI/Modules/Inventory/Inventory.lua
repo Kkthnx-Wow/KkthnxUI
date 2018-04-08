@@ -9,16 +9,17 @@ end
 -- Sorced (by Hungtar, editor Tukz then Kkthnx)
 
 local _G = _G
-local table_remove = table.remove
-local ipairs = ipairs
 local bit_band = bit.band
+local ipairs = ipairs
 local math_floor = math.floor
 local pairs = pairs
 local print = print
-local table_insert = table.insert
+local select = select
 local string_find = string.find
 local string_lower = string.lower
-local select = select
+local string_match = string.match
+local table_insert = table.insert
+local table_remove = table.remove
 local tonumber = tonumber
 
 local ManageBackpackTokenFrame = _G.ManageBackpackTokenFrame
@@ -165,7 +166,7 @@ local function IsRealItemLevel(link, owner, bag, slot)
 	if line then
 		local msg = line:GetText()
 		if msg and string_find(msg, S_ITEM_LEVEL) then
-			local itemLevel = string_find(msg, S_ITEM_LEVEL)
+			local itemLevel = string_match(msg, S_ITEM_LEVEL)
 			if itemLevel and (tonumber(itemLevel) > 0) then
 				realItemLevel = itemLevel
 			end
@@ -175,7 +176,7 @@ local function IsRealItemLevel(link, owner, bag, slot)
 			if line then
 				local msg = line:GetText()
 				if msg and string_find(msg, S_ITEM_LEVEL) then
-					local itemLevel = string_find(msg, S_ITEM_LEVEL)
+					local itemLevel = string_match(msg, S_ITEM_LEVEL)
 					if itemLevel and (tonumber(itemLevel) > 0) then
 						realItemLevel = itemLevel
 					end
@@ -192,10 +193,8 @@ local function IsItemEligibleForItemLevelDisplay(classID, subClassID, equipLoc, 
 	if ((classID == 3 and subClassID == 11) -- Artifact Relics
 	or (equipLoc ~= nil and equipLoc ~= "" and equipLoc ~= "INVTYPE_BAG" and equipLoc ~= "INVTYPE_QUIVER" and equipLoc ~= "INVTYPE_TABARD"))
 	and (rarity and rarity > 1) then
-
 		return true
 	end
-
 	return false
 end
 

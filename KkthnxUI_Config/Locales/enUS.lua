@@ -84,25 +84,39 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Toggle the loot roll frame.",
 		},
 
+		["AutoQuality"] = {
+			["Name"] = "Loot Quality",
+			["Desc"] = "Sets the auto greed/disenchant quality\n\nUncommon: Rolls on Uncommon only\nRare: Rolls on Rares & Uncommon",
+		},
+
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
 		},
 
+		["AutoConfirm"] = {
+			["Name"] = "Auto Confirm",
+			["Desc"] = "Automatically click OK on BOP items",
+		},
+
 		["AutoGreed"] = {
 			["Name"] = "Auto Greed",
-			["Desc"] = "Automatically greed",
-			["Default"] = "Automatically greed",
+			["Desc"] = "Automatically greed uncommon (green) quality items at max level",
 		},
 
 		["AutoDisenchant"] = {
 			["Name"] = "Auto Disenchant",
-			["Desc"] = "Automatically disenchant",
+			["Desc"] = "Automatically disenchant uncommon (green) quality items at max level",
 		},
 
-		["AutoGreedLevel"] = {
-			["Name"] = "Auto Greed Level",
+		["Level"] = {
+			["Name"] = "Level",
 			["Desc"] = "Level to start auto-rolling from",
+		},
+
+		["ByLevel"] = {
+			["Name"] = "Roll Based On Level.",
+			["Desc"] = "This will auto-roll if you are above the given level if: You cannot equip the item being rolled on, or the iLevel of your equipped item is higher than the item being rolled on or you have an heirloom equipped in that slot",
 		},
 
 		["FastLoot"] = {

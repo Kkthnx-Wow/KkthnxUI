@@ -230,13 +230,23 @@ C["General"] = {
 
 -- Loot
 C["Loot"] = {
+	["AutoConfirm"] = false,
+	["AutoDisenchant"] = false,
+	["AutoGreed"] = false,
+	["ByLevel"] = false,
 	["Enable"] = true,
 	["FastLoot"] = false,
 	["GroupLoot"] = true,
+	["Level"] = MAX_PLAYER_LEVEL,
 	["Texture"] = "KkthnxUI",
-	["AutoGreed"] = false,
-	["AutoDisenchant"] = false,
-	["AutoGreedLevel"] = MAX_PLAYER_LEVEL,
+	["AutoQuality"] = {
+		["Options"] = {
+			["|cffA335EE"..ITEM_QUALITY4_DESC.."|r"] = ITEM_QUALITY4_DESC,
+			["|cff0070DD"..ITEM_QUALITY3_DESC.."|r"] = ITEM_QUALITY3_DESC,
+			["|cff1EFF00"..ITEM_QUALITY2_DESC.."|r"] = ITEM_QUALITY2_DESC,
+		},
+		["Value"] = ITEM_QUALITY2_DESC,
+	},
 }
 
 -- Minimap

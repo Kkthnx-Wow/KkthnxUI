@@ -221,19 +221,6 @@ local function SplitBars()
 	end
 end
 
-local function LockCheck(i)
-	if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
-		ToggleBar[i].Text:SetText("U")
-		ToggleBar[i].Text:SetTextColor(0.33, 0.59, 0.33)
-	elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
-		ToggleBar[i].Text:SetText("L")
-		ToggleBar[i].Text:SetTextColor(0.85, 0.27, 0.27)
-	else
-		ToggleBar[i].Text:SetText("L")
-		ToggleBar[i].Text:SetTextColor(0.85, 0.27, 0.27)
-	end
-end
-
 for i = 1, 5 do
 	ToggleBar[i] = CreateFrame("Frame", "ToggleBar"..i, ToggleBar)
 	ToggleBar[i]:EnableMouse(true)
@@ -311,27 +298,6 @@ for i = 1, 5 do
 			ToggleBarText(i, ">\n>", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarLeft:GetFrameLevel() + 1)
 		end
-	elseif i == 5 then
-		ToggleBar[i]:CreatePanel("Invisible", 18, 18, "BOTTOMRIGHT", Minimap, "BOTTOMLEFT", -7, -2)
-		ToggleBar[i]:SetTemplate("Transparent")
-		ToggleBar[i].Text:SetPoint("CENTER", 0, 0)
-
-		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then return end
-
-			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
-				KkthnxUIData[K.Realm][K.Name].BarsLocked = false
-				PlaySoundFile("Sound/Interface/Iuiinterfacebuttona.Ogg")
-				print(UNLOCK)
-			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
-				KkthnxUIData[K.Realm][K.Name].BarsLocked = true
-				PlaySoundFile("Sound/Interface/Iuiinterfacebuttona.Ogg")
-				print(LOCK)
-			end
-
-			LockCheck(i)
-		end)
-		ToggleBar[i]:SetScript("OnEvent", function() LockCheck(i) end)
 	end
 
 	if i == 3 or i == 4 then
@@ -353,22 +319,8 @@ for i = 1, 5 do
 	ToggleBar[i]:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 	ToggleBar[i]:SetScript("OnEnter", function()
-		if InCombatLockdown() then return end
-
-		if i == 5 then
-			GameTooltip:SetOwner(ToggleBar[5], "ANCHOR_NONE")
-			GameTooltip:SetPoint(K.GetAnchors(ToggleBar[i]))
-			GameTooltip:ClearLines()
-			GameTooltip:AddLine(BINDING_NAME_TOGGLEACTIONBARLOCK, 0.2, 1, 0.2, 1)
-			GameTooltip:AddLine(" ")
-			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
-				GameTooltip:AddLine("Bars are Locked")
-			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
-				GameTooltip:AddLine("Bars are Unlocked")
-			else
-				GameTooltip:AddLine("Im confused? Reload your UI!") -- Fallback
-			end
-			GameTooltip:Show()
+		if InCombatLockdown() then
+			return
 		end
 
 		if i == 2 then

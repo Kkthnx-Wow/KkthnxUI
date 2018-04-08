@@ -50,6 +50,19 @@ local menuList = {
 	{text = "Move UI", notCheckable = true, func = function()
 			K.MoveUI()
 	end},
+	{text = "Actionbar Lock", notCheckable = true, func = function()
+			if InCombatLockdown() then
+				return
+			end
+
+			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
+				KkthnxUIData[K.Realm][K.Name].BarsLocked = false
+				print("Actionbars are now |CFF008000UnLocked|r")
+			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
+				KkthnxUIData[K.Realm][K.Name].BarsLocked = true
+				print("Actionbars are now |CFFFF0000Locked|r")
+			end
+	end},
 	{text = "Toggle Config", notCheckable = true, func = function()
 			K.ConfigUI()
 	end},
