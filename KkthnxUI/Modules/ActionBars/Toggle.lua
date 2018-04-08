@@ -7,19 +7,17 @@ local _G = _G
 -- Wow API
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local InCombatLockdown = _G.InCombatLockdown
-local LOCK = _G.LOCK
 local UIParent = _G.UIParent
-local UNLOCK = _G.UNLOCK
 local PlaySoundFile = _G.PlaySoundFile
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: Bar2Holder, Bar5Holder, RightActionBarAnchor, Bar3Holder, Bar4Holder, SplitBarRight
 -- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIData, ActionBarAnchor
--- GLOBALS: SplitBarLeft, RightBarMouseOver, GameTooltip
+-- GLOBALS: SplitBarLeft, RightBarMouseOver
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
 
-local ToggleBarText = function(i, text, plus, neg)
+local function ToggleBarText(i, text, plus, neg)
 	if plus then
 		ToggleBar[i].Text:SetText(text)
 		ToggleBar[i].Text:SetTextColor(0.33, 0.59, 0.33)
@@ -234,7 +232,10 @@ for i = 1, 5 do
 		ToggleBarText(i, "- - -", false, true)
 
 		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+			if InCombatLockdown() then
+				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+				return
+			end
 			KkthnxUIData[K.Realm][K.Name].BottomBars = KkthnxUIData[K.Realm][K.Name].BottomBars + 1
 
 			if C["ActionBar"].RightBars > 2 then
@@ -264,7 +265,10 @@ for i = 1, 5 do
 		ToggleBarText(i, "> > >", false, true)
 
 		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+			if InCombatLockdown() then
+				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+				return
+			end
 			KkthnxUIData[K.Realm][K.Name].RightBars = KkthnxUIData[K.Realm][K.Name].RightBars - 1
 
 			if C["ActionBar"].RightBars > 2 then
@@ -302,7 +306,10 @@ for i = 1, 5 do
 
 	if i == 3 or i == 4 then
 		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return end
+			if InCombatLockdown() then
+				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
+				return
+			end
 
 			if KkthnxUIData[K.Realm][K.Name].SplitBars == false then
 				KkthnxUIData[K.Realm][K.Name].SplitBars = true
@@ -311,6 +318,7 @@ for i = 1, 5 do
 			end
 			SplitBars()
 		end)
+
 		ToggleBar[i]:SetScript("OnEvent", SplitBars)
 	end
 
@@ -341,10 +349,6 @@ for i = 1, 5 do
 	end)
 
 	ToggleBar[i]:SetScript("OnLeave", function()
-		if i == 5 then
-			GameTooltip:Hide()
-		end
-
 		if i == 2 then
 			if C["ActionBar"].RightBarsMouseover == true then
 				ToggleBar[i]:SetAlpha(0)

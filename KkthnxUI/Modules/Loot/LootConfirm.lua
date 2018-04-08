@@ -82,7 +82,7 @@ function Module:HandleRoll(event, id)
 		end
 	end
 
-	if quality <= C["Loot"].AutoQuality then
+	if quality <= C["Loot"].AutoQuality.Value then
 		if C["Loot"].AutoDisenchant and disenchant then
 			RollOnLoot(id, 3)
 		else
