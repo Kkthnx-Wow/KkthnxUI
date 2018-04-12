@@ -215,6 +215,17 @@ oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:HealthDeficit"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:HealthDeficit"] = function(unit)
+	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+
+	if (status) then
+		return status
+	else
+		return K.GetFormattedText("DEFICIT", UnitHealth(unit), UnitHealthMax(unit))
+	end
+end
+
 oUF.Tags.Events["KkthnxUI:PowerCurrent"] = "UNIT_DISPLAYPOWER UNIT_POWER_FREQUENT UNIT_MAXPOWER"
 oUF.Tags.Methods["KkthnxUI:PowerCurrent"] = function(unit)
 	local pType = UnitPowerType(unit)

@@ -18,6 +18,8 @@ local GetThreatStatusColor = _G.GetThreatStatusColor
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
+local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
+local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitHasMana = _G.UnitHasMana
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
@@ -29,7 +31,9 @@ local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 
-local Movers = K.Movers
+local RaidframeFont = K.GetFont(C["Raidframe"].Font)
+local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
+local Movers = K["Movers"]
 
 local GHOST = GetSpellInfo(8326)
 if GetLocale() == "deDE" then
@@ -37,7 +41,9 @@ if GetLocale() == "deDE" then
 end
 
 local function UpdateThreat(self, event, unit)
-	if (self.unit ~= unit) then return end
+	if (self.unit ~= unit) then
+		return
+	end
 
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
@@ -68,56 +74,7 @@ local function UpdatePower(self, _, unit)
 	end
 end
 
-local function DeficitValue(self)
-	if (self >= 1000) then
-		return string_format("-%.1f", self/1000)
-	else
-		return self
-	end
-end
-
-local function GetUnitStatus(unit)
-	if (UnitIsDead(unit)) then
-		return L.Unitframes.Dead -- local Raidunitframe Dead
-	elseif (UnitIsGhost(unit)) then
-		return L.Unitframes.Ghost -- local Raidunitframe Ghost
-	elseif (not UnitIsConnected(unit)) then
-		return PLAYER_OFFLINE
-	else
-		return ""
-	end
-end
-
-local function GetHealthText(unit, cur, max)
-	local healthString
-	if (UnitIsDeadOrGhost(unit) or not UnitIsConnected(unit)) then
-		healthString = GetUnitStatus(unit)
-	else
-		if ((cur / max) < C["Raidframe"].DeficitThreshold) then
-			healthString = string_format("|cff%02x%02x%02x%s|r", 0.9 * 255, 0 * 255, 0 * 255, DeficitValue(max-cur))
-		else
-			healthString = ""
-		end
-	end
-
-	return healthString
-end
-
-local function UpdateHealth(self, unit, cur, max)
-	if (not cur) or (not max) then return end
-
-	if (not UnitIsPlayer(unit)) then
-		local r, g, b = K.ColorGradient(cur / max, 0, 0.8, 0, 0.8, 0.8, 0, 0.8, 0, 0)
-		self:SetStatusBarColor(r, g, b)
-	end
-
-	self.Value:SetText(GetHealthText(unit, cur, max))
-end
-
 local function CreateRaidLayout(self, unit)
-	local RaidframeFont = K.GetFont(C["Raidframe"].Font)
-	local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
-
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
 		UnitFrame_OnEnter(self)
@@ -146,8 +103,7 @@ local function CreateRaidLayout(self, unit)
 	self.Health.Value:SetPoint("CENTER", self.Health, 0, -5)
 	self.Health.Value:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
 	self.Health.Value:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
-
-	self.Health.PostUpdate = UpdateHealth
+	self:Tag(self.Health.Value, "[KkthnxUI:HealthDeficit]")
 
 	self.Health.frequentUpdates = true
 	self.Health.colorDisconnected = true
@@ -273,7 +229,7 @@ local function CreateRaidLayout(self, unit)
 
 		self.RaidDebuffs.PostUpdate = function(self)
 			local button = self.RaidDebuffs
-			-- we don"t want those "1""s cluttering up the display
+			-- we don't want those "1"'s cluttering up the display
 			if button then
 				local count = tonumber(button.count:GetText())
 				if count and count > 1 then
@@ -411,7 +367,7 @@ if C["Raidframe"].Enable then
 else
 	local raid = {}
 	for i = 1, C["Raidframe"].RaidGroups do
-		local raidgroup = oUF:SpawnHeader("oUF_RaidDPS"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
+		local raidgroup = oUF:SpawnHeader("oUF_RaidDamage"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
 		"oUF-initialConfigFunction", [[
 		local header = self:GetParent()
 		self:SetWidth(header:GetAttribute("initial-width"))
@@ -446,8 +402,8 @@ end
 if C["Raidframe"].MainTankFrames then
 	local raidtank = oUF:SpawnHeader("oUF_Raid_MT", nil, "raid",
 	"oUF-initialConfigFunction", [[
-	self:SetWidth(60)
-	self:SetHeight(30)
+	self:SetWidth(62)
+	self:SetHeight(34)
 	]],
 	"showRaid", true,
 	"yOffset", -8,
