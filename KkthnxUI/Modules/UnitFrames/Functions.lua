@@ -65,32 +65,34 @@ function K.MultiCheck(check, ...)
 	return false
 end
 
-local function UpdatePortraitColor(self, unit, min, max)
-	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then return end
-
-	if (not UnitIsConnected(unit)) then
-		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
-	elseif (UnitIsDead(unit)) then
-		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
-	elseif (UnitIsGhost(unit)) then
-		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
-	elseif (max == 0 or min/max * 100 < 25) then
-		if (UnitIsPlayer(unit)) then
-			if (unit ~= "player") then
-				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
-			end
-		end
-	else
-		self.Portrait:SetVertexColor(1, 1, 1, 1)
-	end
-end
-
--- PostUpdateHealth
-function K.PostUpdateHealth(self, unit, cur, min, max)
-	if self.Portrait and not C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
-		UpdatePortraitColor(self, unit, cur, max)
-	end
-end
+-- local function UpdatePortraitColor(self, unit, min, max)
+-- 	if C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits" then
+-- 		return
+-- 	end
+--
+-- 	if (not UnitIsConnected(unit)) then
+-- 		self.Portrait:SetVertexColor(0.5, 0.5, 0.5, 0.7)
+-- 	elseif (UnitIsDead(unit)) then
+-- 		self.Portrait:SetVertexColor(0.35, 0.35, 0.35, 0.7)
+-- 	elseif (UnitIsGhost(unit)) then
+-- 		self.Portrait:SetVertexColor(0.3, 0.3, 0.9, 0.7)
+-- 	elseif (max == 0 or min / max * 100 < 25) then
+-- 		if (UnitIsPlayer(unit)) then
+-- 			if (unit ~= "player") then
+-- 				self.Portrait:SetVertexColor(1, 0, 0, 0.7)
+-- 			end
+-- 		end
+-- 	else
+-- 		self.Portrait:SetVertexColor(1, 1, 1, 1)
+-- 	end
+-- end
+--
+-- -- PostUpdateHealth
+-- function K.PostUpdateHealth(self, unit, cur, min, max)
+--     if self.__owner.Portrait and C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+--         UpdatePortraitColor(self.__owner, unit, cur, max)
+--     end
+-- end
 
 function K.CreateAuraWatchIcon(icon)
 	if icon.icon and not icon.hideIcon then

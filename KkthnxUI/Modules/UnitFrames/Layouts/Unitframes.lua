@@ -65,7 +65,7 @@ local function CreateUnitframeLayout(self, unit)
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = unit == "player" or unit == "target" or unit == "party" -- Less usage this way!
-	self.Health.PostUpdate = K.PostUpdateHealth
+	-- self.Health.PostUpdate = K.PostUpdateHealth
 
 	if (unit == "player") then
 		self.Health:SetSize(130, 26)
@@ -111,6 +111,14 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
 	elseif (unit == "party") then
 		self.Health:SetSize(98, 16)
+		self.Health:SetPoint("CENTER", self, "CENTER", 18, 8)
+		-- Health Value
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+	elseif (unit == "partytarget") then
+		self.Health:SetSize(30, 27)
 		self.Health:SetPoint("CENTER", self, "CENTER", 18, 8)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
@@ -322,6 +330,16 @@ local function CreateUnitframeLayout(self, unit)
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 		self.Level:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
 		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel]")
+	elseif (unit == "partytarget") then
+		self.Name = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		-- Level Text
+		self.Level = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
+		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Level:SetPoint("TOP", self.Portrait, "TOP", 0, 16)
+		self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel]")
 	elseif (unit == "boss" or unit == "arena") then
 		self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
@@ -446,6 +464,10 @@ local function CreateUnitframeLayout(self, unit)
 	end
 end
 
+-- local function FixPartyFrame_Update(self, event, ...) -- PartyFrame doesnt always update correctly
+--
+-- end
+
 oUF:RegisterStyle("oUF_KkthnxUI_Unitframes", CreateUnitframeLayout)
 oUF:SetActiveStyle("oUF_KkthnxUI_Unitframes")
 
@@ -503,6 +525,29 @@ if C["Unitframe"].Party then
 
 	party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 	K.Movers:RegisterFrame(party)
+end
+
+if C["Unitframe"].Party then
+	local partytarget = oUF:SpawnHeader("oUF_PartyTarget", nil, C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide",
+	"oUF-initialConfigFunction", [[
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
+	self:SetAttribute("unitsuffix", "target")
+	]],
+	"initial-width", 30,
+	"initial-height", 27,
+	"showSolo", false,
+	"showPlayer", C["Unitframe"].ShowPlayer,
+	"groupBy", "ASSIGNEDROLE",
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"sortMethod", "NAME",
+	"showParty", true,
+	"showRaid", false,
+	"yOffset", 28,
+	"point", "BOTTOM"
+	)
+	partytarget:SetPoint("TOPLEFT", oUF_Party, "TOPRIGHT", 7, 0)
 end
 
 if (C["Unitframe"].ShowBoss) then
