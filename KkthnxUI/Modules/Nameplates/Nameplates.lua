@@ -13,6 +13,7 @@ local pairs = pairs
 local string_format = string.format
 local table_insert = table.insert
 local unpack = unpack
+local string_gsub = string.gsub
 
 -- Wow API
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
@@ -20,6 +21,7 @@ local CreateFrame = _G.CreateFrame
 local DebuffTypeColor = _G.DebuffTypeColor
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetBattlefieldScore = _G.GetBattlefieldScore
+local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
@@ -110,8 +112,7 @@ if C["Nameplates"].HealerIcon == true then
 				local name, _, _, _, _, faction, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
 
 				if name and healerSpecs[talentSpec] and EventFrame.Factions[UnitFactionGroup("player")] == faction then
-					--	name = name:match("(.+)%-.+") or name
-					name = string.gsub(name, "%-"..string.gsub(K.Realm, "[%s%-]", ""), "")
+					name = string_gsub(name, "%-"..string_gsub(K.Realm, "[%s%-]", ""), "")
 					healList[name] = talentSpec
 				end
 			end

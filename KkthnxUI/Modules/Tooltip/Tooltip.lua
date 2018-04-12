@@ -3,11 +3,16 @@ local Module = K:NewModule("Tooltip", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3
 
 local _G = _G
 local find = string.find
-local floor = math.floor
+local math_floor = math.floor
 local format = string.format
 local pairs = pairs
 local sub = string.sub
+local select = select
 
+local SetTooltipMoney = _G.SetTooltipMoney
+local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
+local hooksecurefunc = _G.hooksecurefunc
+local CanInspect = _G.CanInspect
 local C_PetJournal_FindPetIDByName =_G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
@@ -71,6 +76,7 @@ local UnitPVPName = _G.UnitPVPName
 local UnitRace = _G.UnitRace
 local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
+local NotifyInspect = _G.NotifyInspect
 
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
 local targetList, inspectCache = {}, {}
@@ -177,7 +183,7 @@ function Module:GetItemLvL(unit)
 		return
 	end
 
-	return floor(total / item)
+	return math_floor(total / item)
 end
 
 function Module:CleanUpTrashLines(tt)
@@ -256,7 +262,7 @@ function Module:ShowInspectInfo(tt, unit, level, r, g, b, numTries)
 	local GUID = UnitGUID(unit)
 	if (GUID == K.GUID) then
 		tt:AddDoubleLine(SPECIALIZATION, self:GetTalentSpec(unit, true), nil, nil, nil, r, g, b)
-		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, floor(select(2, GetAverageItemLevel())), nil, nil, nil, 1, 1, 1)
+		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, math_floor(select(2, GetAverageItemLevel())), nil, nil, nil, 1, 1, 1)
 	elseif (inspectCache[GUID]) then
 		local talent = inspectCache[GUID].talent
 		local itemLevel = inspectCache[GUID].itemLevel
@@ -441,7 +447,7 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 
 	local _, max = tt:GetMinMaxValues()
 	if (value > 0 and max == 1) then
-		tt.text:SetFormattedText("%d%%", floor(value * 100))
+		tt.text:SetFormattedText("%d%%", math_floor(value * 100))
 		tt:SetStatusBarColor(TAPPED_COLOR.r, TAPPED_COLOR.g, TAPPED_COLOR.b) --most effeciant?
 	elseif (value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
 		tt.text:SetText(DEAD)

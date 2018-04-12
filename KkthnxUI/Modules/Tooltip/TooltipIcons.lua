@@ -6,7 +6,9 @@ local TT = K:GetModule("Tooltip")
 -- (Tipachu by Tuller)
 
 local _G = _G
+local select = select
 local string_match = string.match
+local type = type
 
 local GetAchievementInfo = _G.GetAchievementInfo
 local GetItemIcon = _G.GetItemIcon

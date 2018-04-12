@@ -17,6 +17,8 @@ local unpack = unpack
 local CreateFrame = _G.CreateFrame
 local DEAD = _G.DEAD
 local PlaySound = _G.PlaySound
+local PlaySoundKitID = _G.PlaySoundKitID
+local SOUNDKIT = _G.SOUNDKIT
 local UnitExists = _G.UnitExists
 local UnitHealth = _G.UnitHealth
 local UnitIsConnected = _G.UnitIsConnected
@@ -24,11 +26,9 @@ local UnitIsDead = _G.UnitIsDead
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
+local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
-local UnitIsPlayer = _G.UnitIsPlayer
-
--- GLOBALS: UnitFrame_OnLeave, UnitFrame_OnEnter
 
 local colors = K.Colors
 

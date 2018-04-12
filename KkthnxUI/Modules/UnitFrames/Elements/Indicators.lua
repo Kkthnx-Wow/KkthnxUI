@@ -46,7 +46,7 @@ function K.CreateThreatIndicator(self)
 end
 
 function K.CreatePartyTargetGlow(self)
-	-- if (C["Unitframe"].TargetHighlight) then
+	if (C["Unitframe"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self)
 		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
 		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -7, 7)
@@ -86,7 +86,7 @@ function K.CreatePartyTargetGlow(self)
 		table_insert(self.__elements, UpdateTargetGlow)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTargetGlow)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateTargetGlow)
-	-- end
+	end
 end
 
 function K.CreateSpecIcons(self)

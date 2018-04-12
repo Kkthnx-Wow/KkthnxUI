@@ -16,13 +16,15 @@ local unpack = unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
-local ERR_NOT_IN_COMBAT = ERR_NOT_IN_COMBAT
+local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local InCombatLockdown = _G.InCombatLockdown
-local MAX_BOSS_FRAMES = MAX_BOSS_FRAMES
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local UnitClass = _G.UnitClass
+local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
+local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitIsPlayer = _G.UnitIsPlayer
 
 local UnitframeFont = K.GetFont(C["Unitframe"].Font)
@@ -51,8 +53,8 @@ local function CreateUnitframeLayout(self, unit)
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetTemplate("Transparent")
-	self.Health:SetFrameStrata("BACKGROUND")
-	self.Health:SetFrameLevel(0)
+	self.Health:SetFrameStrata("LOW")
+	self.Health:SetFrameLevel(1)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
 	self.Health.Cutaway = C["Unitframe"].Cutaway
@@ -427,7 +429,7 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
-		K.CreatePartyTargetGlow(self)
+		--K.CreatePartyTargetGlow(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 	end
 

@@ -15,13 +15,17 @@ local string_split = string.split
 
 -- WoW API
 local CreateFrame = _G.CreateFrame
+local EJ_GetInstanceInfo = _G.EJ_GetInstanceInfo
 local GameTooltip = _G.GameTooltip
 local GetAchievementLink = _G.GetAchievementLink
 local GetAreaMapInfo = _G.GetAreaMapInfo
 local GetCurrentMapAreaID = _G.GetCurrentMapAreaID
 local GetLocale = _G.GetLocale
+local GetQuestLink = _G.GetQuestLink
 local GetRealmName = _G.GetRealmName
+local GetSuperTrackedQuestID = _G.GetSuperTrackedQuestID
 local hooksecurefunc = _G.hooksecurefunc
+local IsAddOnLoaded = _G.IsAddOnLoaded
 local QuestMapFrame = _G.QuestMapFrame
 local RefreshWorldMap = _G.RefreshWorldMap
 local SetMapByID = _G.SetMapByID

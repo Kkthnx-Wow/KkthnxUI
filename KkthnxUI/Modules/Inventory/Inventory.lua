@@ -22,6 +22,7 @@ local table_insert = table.insert
 local table_remove = table.remove
 local tonumber = tonumber
 
+local MoneyFrame_Update = _G.MoneyFrame_Update
 local ManageBackpackTokenFrame = _G.ManageBackpackTokenFrame
 local OpenBackpack = _G.OpenBackpack
 local CloseAllBags = _G.CloseAllBags
