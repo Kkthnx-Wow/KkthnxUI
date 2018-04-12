@@ -429,7 +429,9 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
-		--K.CreatePartyTargetGlow(self)
+		if (C["Unitframe"].TargetHighlight) then
+			K.CreatePartyTargetGlow(self)
+		end
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 	end
 
