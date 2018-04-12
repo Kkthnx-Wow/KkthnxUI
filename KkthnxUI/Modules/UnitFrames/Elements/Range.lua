@@ -41,7 +41,9 @@ do
 		AddSpell(friendlySpells, 8936) -- Regrowth (40 yards, all specs, lvl 5)
 		AddSpell(resSpells, 50769) -- Revive (40 yards, all specs, lvl 14)
 	elseif class == "PALADIN" then
+		AddSpell(enemySpells, 183218) -- Hand of Hindrance (30 yards)
 		AddSpell(enemySpells, 20271) -- Judgement (30 yards)
+		AddSpell(enemySpells, 62124) -- Hand of Reckoning (30 yards)
 		AddSpell(friendlySpells, 19750) -- Flash of Light (40 yards)
 		AddSpell(longEnemySpells, 20473) -- Holy Shock (40 yards)
 		AddSpell(resSpells, 7328) -- Redemption (40 yards)

@@ -12,6 +12,7 @@ local GetLFGDungeonRewards = _G.GetLFGDungeonRewards
 local GetLFGRandomDungeonInfo = _G.GetLFGRandomDungeonInfo
 local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
 local GetNumRandomDungeons = _G.GetNumRandomDungeons
+local GetZoneText = _G.GetZoneText
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
 local PlaySoundFile = _G.PlaySoundFile
@@ -47,15 +48,6 @@ function Module:REPLACE_ENCHANT()
 		StaticPopup_Hide("REPLACE_ENCHANT")
 	end
 end
-
--- Make summon and invite popups escape-proof
-StaticPopupDialogs.PARTY_INVITE.hideOnEscape = false
-StaticPopupDialogs.CONFIRM_SUMMON.hideOnEscape = false
--- Remove the editbox for deleting "good" items
-StaticPopupDialogs.DELETE_ITEM.enterClicksFirstButton = true
-StaticPopupDialogs.DELETE_GOOD_ITEM = StaticPopupDialogs.DELETE_ITEM
--- Use the enter key to purchase items from currencies
-StaticPopupDialogs.CONFIRM_PURCHASE_TOKEN_ITEM.enterClicksFirstButton = true
 
 hooksecurefunc("StaticPopup_Show", function(popup, _, _, data)
 	if (popup == "CONFIRM_LEARN_SPEC" and (not data.previewSpecCost or data.previewSpecCost <= 0)) then
@@ -166,12 +158,12 @@ function Module:ToggleBossEmotes()
 	end
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	self:RegisterEvent("REPLACE_ENCHANT")
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL")
-	if C["Misc"].BattlegroundSpam ~= true then
-		return
+
+	if C["Misc"].BattlegroundSpam == true then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
 	end
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
 end

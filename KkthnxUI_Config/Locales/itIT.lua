@@ -7,8 +7,10 @@ end
 
 local ModuleFont = "Pick a font from the provided fonts for this module."
 local ModuleFontOutline = "Apply a font outline for this module"
+local ModuleHeight = "Pick the perfect Height for this module"
 local ModuleTexture = "Pick a texture from the provided textures for this module."
 local ModuleToggle = "Enable or disable this module based on your preference."
+local ModuleWidth = "Pick the perfect Width for this module"
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
 local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
@@ -79,11 +81,6 @@ KkthnxUIConfig["itIT"] = {
 
 	-- Loot Local
 	["Loot"] = {
-		["AutoRoll"] = {
-			["Name"] = "Auto Roll",
-			["Desc"] = "Automatically roll on items",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable Loot",
 			["Desc"] = ModuleToggle,
@@ -94,9 +91,39 @@ KkthnxUIConfig["itIT"] = {
 			["Desc"] = "Toggle the loot roll frame.",
 		},
 
+		["AutoQuality"] = {
+			["Name"] = "Loot Quality",
+			["Desc"] = "Sets the auto greed/disenchant quality\n\nUncommon: Rolls on Uncommon only\nRare: Rolls on Rares & Uncommon",
+		},
+
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
+		},
+
+		["AutoConfirm"] = {
+			["Name"] = "Auto Confirm",
+			["Desc"] = "Automatically click OK on BOP items",
+		},
+
+		["AutoGreed"] = {
+			["Name"] = "Auto Greed",
+			["Desc"] = "Automatically greed uncommon (green) quality items at max level",
+		},
+
+		["AutoDisenchant"] = {
+			["Name"] = "Auto Disenchant",
+			["Desc"] = "Automatically disenchant uncommon (green) quality items at max level",
+		},
+
+		["Level"] = {
+			["Name"] = "Level",
+			["Desc"] = "Level to start auto-rolling from",
+		},
+
+		["ByLevel"] = {
+			["Name"] = "Roll Based On Level",
+			["Desc"] = "This will auto-roll if you are above the given level if: You cannot equip the item being rolled on, or the iLevel of your equipped item is higher than the item being rolled on or you have an heirloom equipped in that slot",
 		},
 
 		["FastLoot"] = {
@@ -404,7 +431,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["Height"] = {
 			["Name"] = "Height",
-			["Desc"] = "Nameplates height",
+			["Desc"] = ModuleHeight,
 		},
 
 		["NameAbbreviate"] = {
@@ -454,7 +481,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["Width"] = {
 			["Name"] = "Width",
-			["Desc"] = "Nameplates width",
+			["Desc"] = ModuleWidth,
 		},
 	},
 
@@ -636,7 +663,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["Height"] = {
 			["Name"] = "Height",
-			["Desc"] = "Chat Height",
+			["Desc"] = ModuleHeight,
 		},
 
 		["LinkBrackets"] = {
@@ -681,7 +708,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["Width"] = {
 			["Name"] = "Width",
-			["Desc"] = "Chat Width",
+			["Desc"] = ModuleWidth,
 		},
 
 		["BubbleBackdrop"] = {
@@ -757,12 +784,12 @@ KkthnxUIConfig["itIT"] = {
 
 		["ArtifactHeight"] = {
 			["Name"] = "Artifact Height",
-			["Desc"] = "Description Needed",
+			["Desc"] = ModuleHeight,
 		},
 
 		["ArtifactWidth"] = {
 			["Name"] = "Artifact Width",
-			["Desc"] = "Description Needed",
+			["Desc"] = ModuleWidth,
 		},
 
 		["ExperienceColor"] = {
@@ -777,7 +804,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["ExperienceHeight"] = {
 			["Name"] = "Experience Height",
-			["Desc"] = "Experiencebar height",
+			["Desc"] = ModuleHeight,
 		},
 
 		["ExperienceRestedColor"] = {
@@ -787,7 +814,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["ExperienceWidth"] = {
 			["Name"] = "Experience Width",
-			["Desc"] = "Description Needed",
+			["Desc"] = ModuleWidth,
 		},
 
 		["HonorColor"] = {
@@ -802,12 +829,12 @@ KkthnxUIConfig["itIT"] = {
 
 		["HonorHeight"] = {
 			["Name"] = "Honor Height",
-			["Desc"] = "Honorbar height",
+			["Desc"] = ModuleHeight,
 		},
 
 		["HonorWidth"] = {
 			["Name"] = "Honor Width",
-			["Desc"] = "Honorbar width",
+			["Desc"] = ModuleWidth,
 		},
 
 		["ReputationEnable"] = {
@@ -817,12 +844,12 @@ KkthnxUIConfig["itIT"] = {
 
 		["ReputationHeight"] = {
 			["Name"] = "Reputation Height",
-			["Desc"] = "reputationbar height",
+			["Desc"] = ModuleHeight,
 		},
 
 		["ReputationWidth"] = {
 			["Name"] = "Reputation Width",
-			["Desc"] = "reputationbar width",
+			["Desc"] = ModuleWidth,
 		},
 
 		["Outline"] = {
@@ -1103,7 +1130,7 @@ KkthnxUIConfig["itIT"] = {
 	["Unitframe"] = {
 		["CastbarHeight"] = {
 			["Name"] = "Castbar Height",
-			["Desc"] = "Castbar height",
+			["Desc"] = ModuleHeight,
 		},
 
 		["CastbarIcon"] = {
@@ -1138,7 +1165,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
-			["Desc"] = "Castbar Width",
+			["Desc"] = ModuleWidth,
 		},
 
 		["CastClassColor"] = {
@@ -1201,6 +1228,11 @@ KkthnxUIConfig["itIT"] = {
 			["Desc"] = "Enable those sexy party frames <3",
 		},
 
+		["TargetHighlight"] = {
+			["Name"] = "Target Highlight",
+			["Desc"] = "Highlight your current selected party target",
+		},
+
 		["PartyAsRaid"] = {
 			["Name"] = "Party as Raid Frames",
 			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
@@ -1214,11 +1246,6 @@ KkthnxUIConfig["itIT"] = {
 		["PvPText"] = {
 			["Name"] = "Set PVP Text",
 			["Desc"] = "Toggle the PvP Text",
-		},
-
-		["Scale"] = {
-			["Name"] = "Unitframe Scale",
-			["Desc"] = "Big or small, you pick!",
 		},
 
 		["ShowArena"] = {
@@ -1289,6 +1316,16 @@ KkthnxUIConfig["itIT"] = {
 			["Desc"] = "Enables the 'Raid Control' utility panel",
 		},
 
+		["RaidLayout"] = {
+			["Name"] = "Raid Layout",
+			["Desc"] = "Choose between a Healer or Damage raidframe layout"
+		},
+
+		["TargetHighlight"] = {
+			["Name"] = "Target Highlight",
+			["Desc"] = "Highlight your current selected raid target"
+		},
+
 		["AuraDebuffIconSize"] = {
 			["Name"] = "Aura Debuff Icon Size",
 			["Desc"] = "Pick your poison",
@@ -1302,11 +1339,6 @@ KkthnxUIConfig["itIT"] = {
 		["Enable"] = {
 			["Name"] = "Enable Raidframes",
 			["Desc"] = ModuleToggle,
-		},
-
-		["Height"] = {
-			["Name"] = "Height",
-			["Desc"] = "Pick your poison",
 		},
 
 		["MainTankFrames"] = {
@@ -1331,11 +1363,6 @@ KkthnxUIConfig["itIT"] = {
 
 		["RaidUtility"] = {
 			["Name"] = "Portrait Style",
-			["Desc"] = "Pick your poison",
-		},
-
-		["Scale"] = {
-			["Name"] = "Scale",
 			["Desc"] = "Pick your poison",
 		},
 
@@ -1372,11 +1399,6 @@ KkthnxUIConfig["itIT"] = {
 		["Font"] = {
 			["Name"] = "Font",
 			["Desc"] = ModuleFont
-		},
-
-		["Width"] = {
-			["Name"] = "Width",
-			["Desc"] = "width",
 		},
 
 		["GroupBy"] = {
@@ -1442,7 +1464,7 @@ KkthnxUIConfig["itIT"] = {
 
 		["HealthbarHeight"] = {
 			["Name"] = "Healthbar Height",
-			["Desc"] = "Height of the health bar",
+			["Desc"] = ModuleHeight,
 		},
 
 		["HealthBarText"] = {

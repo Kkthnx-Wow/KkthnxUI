@@ -2,10 +2,18 @@ local K, C = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then return end
 
 local _G = _G
+local table_insert = table.insert
 
-local UnitThreatSituation = _G.UnitThreatSituation
-local GetThreatStatusColor = _G.GetThreatStatusColor
 local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
+local GetThreatStatusColor = _G.GetThreatStatusColor
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UnitClass = _G.UnitClass
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
+local UnitReaction = _G.UnitReaction
+local UnitThreatSituation = _G.UnitThreatSituation
 
 local function UpdateThreat(self, event, unit)
 	if (self.unit ~= unit) then
@@ -35,6 +43,50 @@ function K.CreateThreatIndicator(self)
 	threat.Override = UpdateThreat
 
 	self.ThreatIndicator = threat
+end
+
+function K.CreatePartyTargetGlow(self)
+	-- if (C["Unitframe"].TargetHighlight) then
+		self.TargetHighlight = CreateFrame("Frame", nil, self)
+		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
+		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -7, 7)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 7, -7)
+		self.TargetHighlight:SetFrameStrata("BACKGROUND")
+		self.TargetHighlight:SetFrameLevel(0)
+		self.TargetHighlight:Hide()
+
+		local function UpdateTargetGlow(self)
+			if not self.unit then
+				return
+			end
+			local unit = self.unit
+
+			if (UnitIsUnit("target", self.unit)) then
+				self.TargetHighlight:Show()
+				local reaction = UnitReaction(unit, "player")
+				if UnitIsPlayer(unit) then
+					local _, class = UnitClass(unit)
+					if class then
+						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+						self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+					else
+						self.TargetHighlight:SetBackdropBorderColor(1, 1, 1)
+					end
+				elseif reaction then
+					local color = FACTION_BAR_COLORS[reaction]
+					self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+				else
+					self.TargetHighlight:SetBackdropBorderColor(1, 1, 1)
+				end
+			else
+				self.TargetHighlight:Hide()
+			end
+		end
+
+		table_insert(self.__elements, UpdateTargetGlow)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTargetGlow)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateTargetGlow)
+	-- end
 end
 
 function K.CreateSpecIcons(self)

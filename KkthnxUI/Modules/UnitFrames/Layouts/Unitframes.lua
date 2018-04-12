@@ -51,8 +51,8 @@ local function CreateUnitframeLayout(self, unit)
 	-- Health bar
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetTemplate("Transparent")
-	self.Health:SetFrameStrata("LOW")
-	self.Health:SetFrameLevel(1)
+	self.Health:SetFrameStrata("BACKGROUND")
+	self.Health:SetFrameLevel(0)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
 	self.Health.Cutaway = C["Unitframe"].Cutaway
@@ -427,6 +427,7 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateReadyCheckIndicator(self)
 		K.CreateResurrectIndicator(self)
 		K.CreateThreatIndicator(self)
+		K.CreatePartyTargetGlow(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
 	end
 
@@ -446,13 +447,11 @@ oUF:SetActiveStyle("oUF_KkthnxUI_Unitframes")
 
 local player = oUF:Spawn("player", "oUF_Player")
 player:SetSize(190, 52)
-player:SetScale(C["Unitframe"].Scale)
 player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
 K.Movers:RegisterFrame(player)
 
 local pet = oUF:Spawn("pet", "oUF_Pet")
 pet:SetSize(116, 36)
-pet:SetScale(C["Unitframe"].Scale)
 if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
 	pet:SetPoint("TOPRIGHT", oUF_Player, "BOTTOMLEFT", 56, -14)
 else
@@ -462,25 +461,21 @@ K.Movers:RegisterFrame(pet)
 
 local target = oUF:Spawn("target", "oUF_Target")
 target:SetSize(190, 52)
-target:SetScale(C["Unitframe"].Scale)
 target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
 K.Movers:RegisterFrame(target)
 
 local targettarget = oUF:Spawn("targettarget", "oUF_TargetTarget")
 targettarget:SetSize(116, 36)
-targettarget:SetScale(C["Unitframe"].Scale)
 targettarget:SetPoint("TOPLEFT", oUF_Target, "BOTTOMRIGHT", -56, 2)
 K.Movers:RegisterFrame(targettarget)
 
 local focus = oUF:Spawn("focus", "oUF_Focus")
 focus:SetSize(190, 52)
-focus:SetScale(C["Unitframe"].Scale)
 focus:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPLEFT", -60, 30)
 K.Movers:RegisterFrame(focus)
 
 local focustarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
 focustarget:SetSize(116, 36)
-focustarget:SetScale(C["Unitframe"].Scale)
 focustarget:SetPoint("TOPRIGHT", oUF_Focus, "BOTTOMLEFT", 56, 2)
 K.Movers:RegisterFrame(focustarget)
 
@@ -498,12 +493,11 @@ if C["Unitframe"].Party then
 	"showPlayer", C["Unitframe"].ShowPlayer,
 	"showRaid", false,
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", "GROUP",
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"groupBy", "ASSIGNEDROLE",
 	"yOffset", -44)
 
 	party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
-	party:SetScale(C["Unitframe"].Scale or 1)
 	K.Movers:RegisterFrame(party)
 end
 
@@ -514,7 +508,6 @@ if (C["Unitframe"].ShowBoss) then
 		Boss[i]:SetParent(K.PetBattleHider)
 
 		Boss[i]:SetSize(190, 52)
-		Boss[i]:SetScale(C["Unitframe"].Scale)
 		if (i == 1) then
 			Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 		else
@@ -529,7 +522,6 @@ if (C["Unitframe"].ShowArena) then
 	for i = 1, 5 do
 		arena[i] = oUF:Spawn("arena"..i, "oUF_ArenaFrame"..i)
 		arena[i]:SetSize(190, 52)
-		arena[i]:SetScale(C["Unitframe"].Scale)
 		if (i == 1) then
 			arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 		else

@@ -77,9 +77,9 @@ exClass.ROGUE = true
 exClass.WARLOCK = true
 exClass.WARRIOR = true
 if C["Nameplates"].HealerIcon == true then
-	local t = CreateFrame("Frame")
+	local EventFrame = CreateFrame("Frame")
 
-	t.factions = {
+	EventFrame.Factions = {
 		["Horde"] = 1,
 		["Alliance"] = 0,
 	}
@@ -100,17 +100,18 @@ if C["Nameplates"].HealerIcon == true then
 		end
 	end
 
-	local lastCheck = 20
+	local lastCheck = 3
 	local function CheckHealers(self, elapsed)
 		lastCheck = lastCheck + elapsed
-		if lastCheck > 25 then
+		if lastCheck > 8 then
 			lastCheck = 0
 			healList = {}
 			for i = 1, GetNumBattlefieldScores() do
 				local name, _, _, _, _, faction, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
 
-				if name and healerSpecs[talentSpec] and t.factions[UnitFactionGroup("player")] == faction then
-					name = name:match("(.+)%-.+") or name
+				if name and healerSpecs[talentSpec] and EventFrame.Factions[UnitFactionGroup("player")] == faction then
+					--	name = name:match("(.+)%-.+") or name
+					name = string.gsub(name, "%-"..string.gsub(K.Realm, "[%s%-]", ""), "")
 					healList[name] = talentSpec
 				end
 			end
@@ -118,8 +119,13 @@ if C["Nameplates"].HealerIcon == true then
 	end
 
 	local function CheckArenaHealers(self, elapsed)
+		local numOpps = GetNumArenaOpponentSpecs()
+		if not (numOpps > 1) then
+			return
+		end
+
 		lastCheck = lastCheck + elapsed
-		if lastCheck > 25 then
+		if lastCheck > 8 then
 			lastCheck = 0
 			healList = {}
 			for i = 1, 5 do
@@ -135,23 +141,24 @@ if C["Nameplates"].HealerIcon == true then
 		end
 	end
 
-	local function CheckLoc(self, event)
-		if event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_ENTERING_BATTLEGROUND" then
-			local _, instanceType = IsInInstance()
-			if instanceType == "pvp" then
-				t:SetScript("OnUpdate", CheckHealers)
-			elseif instanceType == "arena" then
-				t:SetScript("OnUpdate", CheckArenaHealers)
-			else
-				healList = {}
-				t:SetScript("OnUpdate", nil)
-			end
+	local function CheckHealerLoc(self, event)
+		local _, instanceType = IsInInstance()
+		if instanceType == "pvp" then
+			EventFrame:SetScript("OnUpdate", CheckHealers)
+		elseif instanceType == "arena" then
+			self:RegisterEvent("UNIT_NAME_UPDATE", "CheckArenaHealers")
+			self:RegisterEvent("ARENA_OPPONENT_UPDATE", "CheckArenaHealers")
+			EventFrame:SetScript("OnUpdate", CheckArenaHealers)
+		else
+			self:UnregisterEvent("UNIT_NAME_UPDATE")
+			self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+			healList = {}
+			EventFrame:SetScript("OnUpdate", nil)
 		end
 	end
 
-	t:RegisterEvent("PLAYER_ENTERING_WORLD")
-	t:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
-	t:SetScript("OnEvent", CheckLoc)
+	EventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	EventFrame:SetScript("OnEvent", CheckHealerLoc)
 end
 
 local totemData = {
@@ -423,7 +430,7 @@ local function PostCastInterruptible(castbar, unit)
 	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
 
 	local t
-	if C["Nameplates"].CastUnitReaction and UnitReaction(unit, 'player') then
+	if C["Nameplates"].CastUnitReaction and UnitReaction(unit, "player") then
 		t = K.Colors.reaction[UnitReaction(unit, "player")]
 	end
 

@@ -1,17 +1,15 @@
 -- Sourced: Tukui (Tukz)
 -- Edited: KkthnxUI (Kkthnx)
 
--- GLOBALS: KkthnxUIConfigShared, _G, tonumber, math, select, string, table, type, unpack, OpacitySliderFrame
--- GLOBALS: pairs, KkthnxUIConfigFrameTitle, KkthnxUI, ColorPickerFrame, KkthnxUIConfigPerAccount, CUSTOM_CLASS_COLORS
-
--- luacheck: globals KkthnxUIConfigShared _G tonumber math select string table type unpack OpacitySliderFrame
--- luacheck: globals pairs KkthnxUIConfigFrameTitle KkthnxUI ColorPickerFrame KkthnxUIConfigPerAccount CUSTOM_CLASS_COLORS
+-- GLOBALS: KkthnxUIConfigShared, KkthnxUIConfigFrame, OpacitySliderFrame, SLASH_CONFIG1, SLASH_CONFIG2, SLASH_CONFIG3, SLASH_CONFIG4
+-- GLOBALS: pairs, KkthnxUIConfigFrameTitle, KkthnxUI, ColorPickerFrame, KkthnxUIConfigPerAccount, CUSTOM_CLASS_COLORS, SLASH_CONFIG5
 
 -- Lua API
 local _G = _G
 local math_floor = math.floor
 local select = select
 local string_find = string.find
+local string_format = string.format
 local string_lower = string.lower
 local table_insert = table.insert
 local table_sort = table.sort
@@ -123,29 +121,23 @@ KkthnxUIConfig.ColorDefaults = {
 }
 
 function KkthnxUIConfig:UpdateColorDefaults()
-	-- ActionBar
 	self.ColorDefaults.ActionBar.OutOfMana = {0.5, 0.5, 1.0}
 	self.ColorDefaults.ActionBar.OutOfRange = {0.8, 0.1, 0.1}
-	-- Blizzard
-	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
-	-- Chat
 	self.ColorDefaults.Chat.LinkColor = {0.08, 1, 0.36}
-	-- DataBars
-	self.ColorDefaults.DataBars.ArtifactColor = {.901, .8, .601}
-	self.ColorDefaults.DataBars.ExperienceColor = {0, 0.4, 1, .8}
-	self.ColorDefaults.DataBars.ExperienceRestedColor = {1, 0, 1, 0.2}
-	self.ColorDefaults.DataBars.HonorColor = {240/255, 114/255, 65/255}
-	-- Nameplates
-	self.ColorDefaults.Nameplates.BadColor = {1, 0, 0}
-	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}
-	self.ColorDefaults.Nameplates.NearColor = {1, 1, 0}
-	self.ColorDefaults.Nameplates.OffTankColor = {0, 0.5, 1}
-	-- Cooldown
 	self.ColorDefaults.Cooldown.Days = {0.4, 0.4, 1}
 	self.ColorDefaults.Cooldown.Expiring = {1, 0, 0}
 	self.ColorDefaults.Cooldown.Hours = {0.4, 1, 1}
 	self.ColorDefaults.Cooldown.Minutes = {1, 1, 1}
 	self.ColorDefaults.Cooldown.Seconds = {1, 1, 0}
+	self.ColorDefaults.DataBars.ArtifactColor = {.901, .8, .601}
+	self.ColorDefaults.DataBars.ExperienceColor = {0, 0.4, 1, .8}
+	self.ColorDefaults.DataBars.ExperienceRestedColor = {1, 0, 1, 0.2}
+	self.ColorDefaults.DataBars.HonorColor = {240/255, 114/255, 65/255}
+	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
+	self.ColorDefaults.Nameplates.BadColor = {1, 0, 0}
+	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}
+	self.ColorDefaults.Nameplates.NearColor = {1, 1, 0}
+	self.ColorDefaults.Nameplates.OffTankColor = {0, 0.5, 1}
 end
 
 -- Filter unwanted groups
@@ -279,9 +271,9 @@ local function EditBoxOnMouseWheel(self, delta)
 	local Number = tonumber(self:GetText())
 
 	if (delta > 0) then
-		Number = Number + 1
+		Number = Number + 2
 	else
-		Number = Number - 1
+		Number = Number - 2
 	end
 
 	self:SetText(Number)
@@ -290,7 +282,7 @@ end
 local function ButtonOnClick(self)
 	if self.Toggled then
 		self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-		self.Tex:SetAlpha(0.6)
+		self.Tex:SetAlpha(0.25)
 		self.Toggled = false
 	else
 		self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
@@ -310,7 +302,7 @@ end
 local function ButtonUncheck(self)
 	self.Toggled = false
 	self.Tex:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
-	self.Tex:SetAlpha(0.6)
+	self.Tex:SetAlpha(0.25)
 end
 
 local function ResetColor(self)
@@ -999,7 +991,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	InfoFrame.Text = InfoFrame:CreateFontString(nil, "OVERLAY")
 	InfoFrame.Text:SetFont(C["Media"].Font, 14)
 	InfoFrame.Text:SetShadowOffset(1.25, -1.25)
-	InfoFrame.Text:SetText("Welcome to |cff4488ffKkthnxUI|r v"..K.Version.." "..K.Client..", "..string.format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
+	InfoFrame.Text:SetText("Welcome to |cff4488ffKkthnxUI|r v"..K.Version.." "..K.Client..", "..string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
 	InfoFrame.Text:SetPoint("CENTER", InfoFrame, 0, 0)
 
 	local CloseButton = CreateFrame("Button", nil, InfoFrame)

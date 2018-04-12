@@ -67,7 +67,6 @@ C["Automation"] = {
 C["Inventory"] = {
 	["AutoRepair"] = true,
 	["AutoSell"] = true,
-	["AutoSellMisc"] = true,
 	["BagColumns"] = 10,
 	["BagFilter"] = false,
 	["BankColumns"] = 17,
@@ -116,8 +115,8 @@ C["Auras"] = {
 	["SortMethod"] = {
 		["Options"] = {
 			["Index"] = "INDEX",
-			["Time"] = "TIME",
 			["Name"] = "NAME",
+			["Time"] = "TIME",
 		},
 		["Value"] = "TIME",
 	},
@@ -201,7 +200,7 @@ C["Error"] = {
 
 C["Filger"] = {
 	["Bars"] = false,
-	["BuffSize"] = 37,
+	["BuffSize"] = 36,
 	["CooldownSize"] = 30,
 	["DisableCD"] = false,
 	["Enable"] = true,
@@ -241,11 +240,11 @@ C["Loot"] = {
 	["Texture"] = "KkthnxUI",
 	["AutoQuality"] = {
 		["Options"] = {
-			["|cffA335EE"..ITEM_QUALITY4_DESC.."|r"] = ITEM_QUALITY4_DESC,
-			["|cff0070DD"..ITEM_QUALITY3_DESC.."|r"] = ITEM_QUALITY3_DESC,
-			["|cff1EFF00"..ITEM_QUALITY2_DESC.."|r"] = ITEM_QUALITY2_DESC,
+			["|cffA335EE"..ITEM_QUALITY4_DESC.."|r"] = 4,
+			["|cff0070DD"..ITEM_QUALITY3_DESC.."|r"] = 3,
+			["|cff1EFF00"..ITEM_QUALITY2_DESC.."|r"] = 2,
 		},
-		["Value"] = ITEM_QUALITY2_DESC,
+		["Value"] = 2,
 	},
 }
 
@@ -360,12 +359,12 @@ C["Unitframe"] = {
 	["PartyAsRaid"] = false,
 	["PowerPredictionBar"] = true,
 	["PvPText"] = true,
-	["Scale"] = 1,
 	["ShowArena"] = true,
 	["ShowBoss"] = true,
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
+	["TargetHighlight"] = false,
 	["Texture"] = "KkthnxUI",
 	["ThreatPercent"] = false,
 	["PortraitStyle"] = {
@@ -398,20 +397,25 @@ C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["Height"] = 42,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
-	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
+	["RaidGroups"] = 5,
 	["RaidUtility"] = true,
-	["Scale"] = 1,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
 	["ShowRolePrefix"] = false,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
+	["TargetHighlight"] = false,
 	["Texture"] = "KkthnxUI",
-	["Width"] = 58,
+	["RaidLayout"] = {
+		["Options"] = {
+			[DAMAGE] = "Damage",
+			[HEALER] = "Healer",
+		},
+		["Value"] = "Damage",
+	},
 	["GroupBy"] = {
 		["Options"] = {
 			["Group"] = "GROUP",

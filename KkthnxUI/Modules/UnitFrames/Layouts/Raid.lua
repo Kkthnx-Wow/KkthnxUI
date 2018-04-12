@@ -8,16 +8,25 @@ local oUF = ns.oUF or oUF
 local _G = _G
 local string_format = string.format
 local table_insert = table.insert
+local tonumber = tonumber
 
 -- Wow API
+local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetThreatStatusColor = _G.GetThreatStatusColor
+local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UnitClass = _G.UnitClass
 local UnitHasMana = _G.UnitHasMana
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
+local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 
 local Movers = K.Movers
@@ -105,7 +114,7 @@ local function UpdateHealth(self, unit, cur, max)
 	self.Value:SetText(GetHealthText(unit, cur, max))
 end
 
-local function CreateRaidLayout(self)
+local function CreateRaidLayout(self, unit)
 	local RaidframeFont = K.GetFont(C["Raidframe"].Font)
 	local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
 
@@ -172,7 +181,7 @@ local function CreateRaidLayout(self)
 
 		table_insert(self.__elements, UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
-		UpdatePower(self, _, unit)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdatePower)
 	end
 
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY", 1)
@@ -192,7 +201,7 @@ local function CreateRaidLayout(self)
 	if (C["Raidframe"].ShowRolePrefix) then
 		self.RaidRoleText = self.Health:CreateFontString(nil, "OVERLAY")
 		self.RaidRoleText:SetPoint("BOTTOMLEFT", self.Health, 2, 2)
-		self.RaidRoleText:SetFont(C["Media"].Font, 11, C["Raidframe"].Outline and "OUTLINE" or "")
+		self.RaidRoleText:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
 		self.RaidRoleText:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
 		self:Tag(self.RaidRoleText, "[KkthnxUI:RaidRole]")
 	end
@@ -289,47 +298,156 @@ local function CreateRaidLayout(self)
 		self.Mouseover:SetVertexColor(0, 0, 0)
 		self.Mouseover:SetAlpha(0)
 	end
+
+	if (C["Raidframe"].TargetHighlight) then
+		self.TargetHighlight = CreateFrame("Frame", nil, self)
+		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
+		self.TargetHighlight:SetPoint("TOPLEFT", -7, 7)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", 7, -7)
+		self.TargetHighlight:SetFrameStrata("BACKGROUND")
+		self.TargetHighlight:SetFrameLevel(0)
+		self.TargetHighlight:Hide()
+
+		local function UpdateTargetGlow(self)
+			if not self.unit then
+				return
+			end
+			local unit = self.unit
+
+			if (UnitIsUnit("target", self.unit)) then
+				self.TargetHighlight:Show()
+				local reaction = UnitReaction(unit, 'player')
+				if UnitIsPlayer(unit) then
+					local _, class = UnitClass(unit)
+					if class then
+						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+						self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+					else
+						self.TargetHighlight:SetBackdropBorderColor(1, 1, 1)
+					end
+				elseif reaction then
+					local color = FACTION_BAR_COLORS[reaction]
+					self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+				else
+					self.TargetHighlight:SetBackdropBorderColor(1, 1, 1)
+				end
+			else
+				self.TargetHighlight:Hide()
+			end
+		end
+
+		table_insert(self.__elements, UpdateTargetGlow)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTargetGlow)
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateTargetGlow)
+	end
 end
 
 oUF:RegisterStyle("oUF_KkthnxUI_Raidframes", CreateRaidLayout)
 oUF:SetActiveStyle("oUF_KkthnxUI_Raidframes")
-
-if (C["Raidframe"].Enable) then
-	local raid = oUF:SpawnHeader("oUF_Raid", nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
-	"oUF-initialConfigFunction", [[
+if C["Raidframe"].Enable then
+	if C["Raidframe"].RaidLayout.Value == "Healer" then
+		local raid = {}
+		for i = 1, C["Raidframe"].RaidGroups do
+			local raidgroup = oUF:SpawnHeader("oUF_RaidHealer"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
+			"oUF-initialConfigFunction", [[
+			local header = self:GetParent()
+			self:SetWidth(header:GetAttribute("initial-width"))
+			self:SetHeight(header:GetAttribute("initial-height"))
+			]],
+			"initial-width", 60,
+			"initial-height", 26,
+			"showRaid", true,
+			"groupFilter", tostring(i),
+			"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
+			"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
+			"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
+			"point", "LEFT",
+			"maxColumns", 5,
+			"unitsPerColumn", 1,
+			"columnSpacing", 6,
+			"columnAnchorPoint", "LEFT"
+			)
+			if i == 1 then
+				raidgroup:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 86, -12)
+			else
+				raidgroup:SetPoint("TOPLEFT", raid[i-1], "BOTTOMLEFT", 0, -7)
+			end
+			Movers:RegisterFrame(raidgroup)
+			raid[i] = raidgroup
+		end
+	elseif C["Raidframe"].RaidLayout.Value == "Damage" then
+		local raid = {}
+		for i = 1, C["Raidframe"].RaidGroups do
+			local raidgroup = oUF:SpawnHeader("oUF_RaidDamage"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
+			"oUF-initialConfigFunction", [[
+			local header = self:GetParent()
+			self:SetWidth(header:GetAttribute("initial-width"))
+			self:SetHeight(header:GetAttribute("initial-height"))
+			]],
+			"initial-width", 60,
+			"initial-height", 30,
+			"showRaid", true,
+			"yOffset", -6,
+			"point", "TOPLEFT",
+			"groupFilter", tostring(i),
+			"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
+			"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
+			"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
+			"maxColumns", 5,
+			"unitsPerColumn", 1,
+			"columnSpacing", 6,
+			"columnAnchorPoint", "TOP")
+			if i == 1 then
+				raidgroup:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -24)
+			elseif i == 5 then
+				raidgroup:SetPoint("TOPLEFT", raid[1], "TOPRIGHT", 7, 0)
+			else
+				raidgroup:SetPoint("TOPLEFT", raid[i-1], "BOTTOMLEFT", 0, -7)
+			end
+			Movers:RegisterFrame(raidgroup)
+			raid[i] = raidgroup
+		end
+	end
+else
+	local raid = {}
+	for i = 1, C["Raidframe"].RaidGroups do
+		local raidgroup = oUF:SpawnHeader("oUF_RaidDPS"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
+		"oUF-initialConfigFunction", [[
 		local header = self:GetParent()
 		self:SetWidth(header:GetAttribute("initial-width"))
 		self:SetHeight(header:GetAttribute("initial-height"))
-	]],
-	"initial-width", C["Raidframe"].Width,
-	"initial-height", C["Raidframe"].Height,
-	"showParty", true,
-	"showRaid", true,
-	"showPlayer", true,
-	"showSolo", false,
-	"yOffset", -6,
-	"xOffset", 6,
-	"point", "TOP",
-	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupBy", C["Raidframe"].GroupBy.Value,
-	"maxColumns", 5,
-	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn or 1,
-	"columnSpacing", 6,
-	"columnAnchorPoint", "LEFT")
-
-	raid:SetScale(C["Raidframe"].Scale or 1)
-	raid:SetFrameStrata("LOW")
-	raid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 8, -200)
-	Movers:RegisterFrame(raid)
+		]],
+		"initial-width", 60,
+		"initial-height", 30,
+		"showRaid", true,
+		"yOffset", -6,
+		"point", "TOPLEFT",
+		"groupFilter", tostring(i),
+		"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
+		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
+		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
+		"maxColumns", 5,
+		"unitsPerColumn", 1,
+		"columnSpacing", 6,
+		"columnAnchorPoint", "TOP")
+		if i == 1 then
+			raidgroup:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -24)
+		elseif i == 5 then
+			raidgroup:SetPoint("TOPLEFT", raid[1], "TOPRIGHT", 7, 0)
+		else
+			raidgroup:SetPoint("TOPLEFT", raid[i-1], "BOTTOMLEFT", 0, -7)
+		end
+		Movers:RegisterFrame(raidgroup)
+		raid[i] = raidgroup
+	end
 end
 
 -- Main Tank/Assist Frames
 if C["Raidframe"].MainTankFrames then
 	local raidtank = oUF:SpawnHeader("oUF_Raid_MT", nil, "raid",
 	"oUF-initialConfigFunction", [[
-		self:SetWidth(70)
-		self:SetHeight(40)
+	self:SetWidth(60)
+	self:SetHeight(30)
 	]],
 	"showRaid", true,
 	"yOffset", -8,
@@ -337,6 +455,5 @@ if C["Raidframe"].MainTankFrames then
 	"template", "oUF_Raid_MT"
 	)
 	raidtank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-	raidtank:SetScale(C["Raidframe"].Scale or 1)
 	Movers:RegisterFrame(raidtank)
 end

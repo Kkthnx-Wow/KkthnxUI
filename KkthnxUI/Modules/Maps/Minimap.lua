@@ -92,7 +92,7 @@ function Module:UpdateSettings()
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	end
-	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
+	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170 
 	K.MinimapWidth = K.MinimapSize
 	K.MinimapHeight = K.MinimapSize
 

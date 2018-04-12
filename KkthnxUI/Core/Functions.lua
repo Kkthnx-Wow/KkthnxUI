@@ -2,11 +2,13 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
+local assert = assert
 local math_abs = math.abs
 local math_ceil = math.ceil
 local math_floor = math.floor
-local math_modf = math.modf
 local mod = mod
+local math_modf = math.modf
+local next = next
 local pairs = pairs
 local print = print
 local select = select
@@ -14,9 +16,8 @@ local string_format = string.format
 local string_lower = string.lower
 local table_insert = table.insert
 local table_remove = table.remove
-local tonumber = tonumber
-local tostring = tostring
 local type = type
+local unpack = unpack
 
 -- Wow API
 local C_Timer_After = _G.C_Timer.After

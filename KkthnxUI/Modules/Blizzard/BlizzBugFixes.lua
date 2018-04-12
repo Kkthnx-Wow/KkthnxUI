@@ -1,19 +1,19 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("BlizzardFixes", "AceEvent-3.0")
+local Module = K:NewModule("BlizzardFixes", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
 
-local BlackoutWorld = _G.BlackoutWorld
 local collectgarbage = _G.collectgarbage
 local CreateFrame = _G.CreateFrame
 local PVPReadyDialog = _G.PVPReadyDialog
+local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
 
 local blizzardCollectgarbage = collectgarbage
 
 -- Garbage collection is being overused and misused,
--- and it's causing lag and performance drops.
+-- and it"s causing lag and performance drops.
 blizzardCollectgarbage("setpause", 110)
 blizzardCollectgarbage("setstepmul", 200)
 function Module:CollectGarbage(opt, arg)
@@ -45,14 +45,17 @@ end
 UpdateAddOnMemoryUsage = function() end
 
 -- Misclicks for some popups
-function Module:FixMisclickPopups()
-	StaticPopupDialogs.RESURRECT.hideOnEscape = nil
-	StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = nil
-	StaticPopupDialogs.PARTY_INVITE.hideOnEscape = nil
-	StaticPopupDialogs.CONFIRM_SUMMON.hideOnEscape = nil
-	StaticPopupDialogs.ADDON_ACTION_FORBIDDEN.button1 = nil
-	StaticPopupDialogs.TOO_MANY_LUA_ERRORS.button1 = nil
-	PetBattleQueueReadyFrame.hideOnEscape = nil
+function Module:MisclickPopups()
+	StaticPopupDialogs.RESURRECT.hideOnEscape = false
+	StaticPopupDialogs.AREA_SPIRIT_HEAL.hideOnEscape = false
+	StaticPopupDialogs.PARTY_INVITE.hideOnEscape = false
+	StaticPopupDialogs.CONFIRM_SUMMON.hideOnEscape = false
+	StaticPopupDialogs.ADDON_ACTION_FORBIDDEN.button1 = false
+	StaticPopupDialogs.TOO_MANY_LUA_ERRORS.button1 = false
+	StaticPopupDialogs.DELETE_ITEM.enterClicksFirstButton = true
+	StaticPopupDialogs.DELETE_GOOD_ITEM = StaticPopupDialogs.DELETE_ITEM
+	StaticPopupDialogs.CONFIRM_PURCHASE_TOKEN_ITEM.enterClicksFirstButton = true
+	PetBattleQueueReadyFrame.hideOnEscape = false
 	if (PVPReadyDialog) then
 		PVPReadyDialog.leaveButton:Hide()
 		PVPReadyDialog.enterButton:ClearAllPoints()
@@ -61,13 +64,46 @@ function Module:FixMisclickPopups()
 	end
 end
 
-function Module:OnInitialize()
+-- Fix blank tooltip
+local bug = nil
+function Module:FixTooltip()
+	if GameTooltip:IsShown() then
+		bug = true
+	end
+end
+
+function Module:BAG_UPDATE_DELAYED()
+	if StuffingFrameBags and StuffingFrameBags:IsShown() then
+		if GameTooltip:IsShown() then
+			bug = true
+		end
+	end
+end
+
+function Module:BugTooltipCleared(tt)
+	if tt:IsForbidden() then
+		return
+	end
+
+	if bug and tt:NumLines() == 0 then
+		tt:Hide()
+		bug = false
+	end
+end
+
+function Module:OnEnable()
+	self:CollectGarbage()
+	self:MisclickPopups()
+
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "FixTooltip")
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltip")
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
+
+	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "BugTooltipCleared")
+
 	-- Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
-
-	self:CollectGarbage()
-	self:FixMisclickPopups()
 
 	CreateFrame("Frame"):SetScript("OnUpdate", function(self)
 		if LFRBrowseFrame.timeToClear then
