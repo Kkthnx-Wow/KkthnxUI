@@ -3,8 +3,10 @@ if C["ActionBar"].Enable ~= true or K.CheckAddOnState("ncHoverBind") == true the
 
 -- Lua API
 local _G = _G
+local math_floor = math.floor
 local pairs = pairs
 local print = print
+local select = select
 local tonumber = tonumber
 
 -- Wow API
@@ -130,7 +132,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			elseif spellmacro == "MACRO" then
 				self.button.id = self.button:GetID()
 
-				if floor(0.5 + select(2, MacroFrameTab1Text:GetTextColor()) * 10) / 10 == 0.8 then
+				if math_floor(0.5 + select(2, MacroFrameTab1Text:GetTextColor()) * 10) / 10 == 0.8 then
 					self.button.id = self.button.id + MAX_ACCOUNT_MACROS
 				end
 

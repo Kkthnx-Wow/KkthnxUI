@@ -344,6 +344,7 @@ C["Unitframe"] = {
 	["CastbarWidth"] = 214,
 	["CastClassColor"] = true,
 	["CastReactionColor"] = true,
+	["CombatFade"] = false,
 	["CombatText"] = true,
 	["Cutaway"] = false,
 	["DebuffsOnTop"] = true,

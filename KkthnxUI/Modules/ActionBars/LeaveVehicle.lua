@@ -1,17 +1,30 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then
+	return
+end
 local Module = K:NewModule("LeaveVehicle", "AceEvent-3.0")
 
 local _G = _G
 
-local UnitOnTaxi = _G.UnitOnTaxi
-local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
-local VehicleExit = _G.VehicleExit
 local CanExitVehicle = _G.CanExitVehicle
 local CreateFrame = _G.CreateFrame
+local GameTooltip_Hide = _G.GameTooltip_Hide
+local InCombatLockdown = _G.InCombatLockdown
+local MainMenuBarVehicleLeaveButton_OnEnter = _G.MainMenuBarVehicleLeaveButton_OnEnter
+local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UIParent = _G.UIParent
+local UnitOnTaxi = _G.UnitOnTaxi
+local VehicleExit = _G.VehicleExit
 
-local function Vehicle_OnEvent(self)
+local Vehicle_CallOnEvent -- so we can call the local function inside of itself
+local function Vehicle_OnEvent(self, event)
+	if event == "PLAYER_REGEN_ENABLED" then
+		self:UnregisterEvent(event)
+	elseif InCombatLockdown() then
+		self:RegisterEvent("PLAYER_REGEN_ENABLED", Vehicle_CallOnEvent)
+		return
+	end
+
 	if (CanExitVehicle()) then
 		self:Show()
 		self:GetNormalTexture():SetVertexColor(1, 1, 1)
@@ -20,6 +33,7 @@ local function Vehicle_OnEvent(self)
 		self:Hide()
 	end
 end
+Vehicle_CallOnEvent = Vehicle_OnEvent
 
 local function Vehicle_OnClick(self)
 	if (UnitOnTaxi("player")) then
@@ -40,7 +54,7 @@ function Module:UpdateVehicleLeave()
 	button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 end
 
-function Module:CreateVehicleLeave()
+function Module:OnInitialize()
 	local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 	VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -6, 0)
 	VehicleButtonAnchor:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
@@ -76,8 +90,4 @@ function Module:CreateVehicleLeave()
 	self:UpdateVehicleLeave()
 
 	vehicle:Hide()
-end
-
-function Module:OnInitialize()
-	self:CreateVehicleLeave()
 end

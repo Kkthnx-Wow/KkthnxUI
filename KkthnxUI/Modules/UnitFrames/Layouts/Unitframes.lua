@@ -64,8 +64,9 @@ local function CreateUnitframeLayout(self, unit)
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
-	self.Health.frequentUpdates = unit == "player" or unit == "target" or unit == "party" -- Less usage this way!
-	-- self.Health.PostUpdate = K.PostUpdateHealth
+	self.Health.frequentUpdates = unit == "player" or unit == "target" or unit == "party"
+	self.Health.PostUpdate = K.PostUpdateHealth
+	self.CombatFade = C["Unitframe"].CombatFade and unit == "player" or unit == "pet"
 
 	if (unit == "player") then
 		self.Health:SetSize(130, 26)
@@ -118,8 +119,8 @@ local function CreateUnitframeLayout(self, unit)
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	elseif (unit == "partytarget") then
-		self.Health:SetSize(30, 27)
-		self.Health:SetPoint("CENTER", self, "CENTER", 18, 8)
+		self.Health:SetSize(74, 12)
+		self.Health:SetPoint("CENTER", self, "CENTER", 0, 0)
 		-- Health Value
 		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
@@ -333,8 +334,8 @@ local function CreateUnitframeLayout(self, unit)
 	elseif (unit == "partytarget") then
 		self.Name = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
 		self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
-		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 16)
-		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+		self.Name:SetPoint("TOP", self.Health, "TOP", 0, 14)
+		self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 		-- Level Text
 		self.Level = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "LEFT")
 		self.Level:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
@@ -464,10 +465,6 @@ local function CreateUnitframeLayout(self, unit)
 	end
 end
 
--- local function FixPartyFrame_Update(self, event, ...) -- PartyFrame doesnt always update correctly
---
--- end
-
 oUF:RegisterStyle("oUF_KkthnxUI_Unitframes", CreateUnitframeLayout)
 oUF:SetActiveStyle("oUF_KkthnxUI_Unitframes")
 
@@ -535,19 +532,18 @@ if C["Unitframe"].Party then
 	self:SetHeight(header:GetAttribute("initial-height"))
 	self:SetAttribute("unitsuffix", "target")
 	]],
-	"initial-width", 30,
-	"initial-height", 27,
+	"initial-width", 74,
+	"initial-height", 14,
 	"showSolo", false,
+	"showParty", true,
 	"showPlayer", C["Unitframe"].ShowPlayer,
+	"showRaid", false,
 	"groupBy", "ASSIGNEDROLE",
 	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
 	"sortMethod", "NAME",
-	"showParty", true,
-	"showRaid", false,
-	"yOffset", 28,
-	"point", "BOTTOM"
-	)
-	partytarget:SetPoint("TOPLEFT", oUF_Party, "TOPRIGHT", 7, 0)
+	"yOffset", -68)
+
+	partytarget:SetPoint("TOPLEFT", oUF_Party, "TOPRIGHT", 4, 16)
 end
 
 if (C["Unitframe"].ShowBoss) then

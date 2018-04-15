@@ -2,7 +2,7 @@ local K, C, L = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then return end
 
 -- Main functions
-function K.ShiftBarUpdate(...)
+function K.ShiftBarUpdate()
 	local numForms = GetNumShapeshiftForms()
 	local texture, name, isActive, isCastable
 	local button, icon, cooldown
@@ -40,7 +40,7 @@ function K.ShiftBarUpdate(...)
 	end
 end
 
-function K.PetBarUpdate(...)
+function K.PetBarUpdate(self, event)
 	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
 		local buttonName = "PetActionButton"..i

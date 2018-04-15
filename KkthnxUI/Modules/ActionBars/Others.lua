@@ -23,7 +23,7 @@ local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	SetActionBarToggles(1, 1, 1, 1)
+	SetActionBarToggles(1, 1, 1, 1, 0)
 
 	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
 	if IsInstalled then

@@ -1148,6 +1148,11 @@ KkthnxUIConfig["ruRU"] = {
 			["Desc"] = "Display your latency on the cast bar",
 		},
 
+		["CombatFade"] = {
+			["Name"] = "Combat Fade",
+			["Desc"] = "Fade the unitframe when out of combat, not casting or no target exists. (This affects your Player and Pet frame)",
+		},
+
 		["OnlyShowPlayerDebuff"] = {
 			["Name"] = "Only Show Player Debuffs",
 			["Desc"] = "Only show your debuffs on frames (This affects your Target and Boss frames)",
