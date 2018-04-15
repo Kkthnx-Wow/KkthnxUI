@@ -66,7 +66,6 @@ local function CreateUnitframeLayout(self, unit)
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = unit == "player" or unit == "target" or unit == "party"
 	self.Health.PostUpdate = K.PostUpdateHealth
-	self.CombatFade = C["Unitframe"].CombatFade and unit == "player" or unit == "pet"
 
 	if (unit == "player") then
 		self.Health:SetSize(130, 26)
@@ -378,6 +377,7 @@ local function CreateUnitframeLayout(self, unit)
 		K.CreateRestingIndicator(self)
 		K.CreateThreatIndicator(self)
 		self.HealthPrediction = K.CreateHealthPrediction(self)
+		self.CombatFade = C["Unitframe"].CombatFade
 		if (C["Unitframe"].PowerPredictionBar) then
 			K.CreatePowerPrediction(self)
 		end
