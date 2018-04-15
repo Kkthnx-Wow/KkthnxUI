@@ -480,6 +480,9 @@ if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
 else
 	pet:SetPoint("TOPRIGHT", oUF_Player, "BOTTOMLEFT", 56, 2)
 end
+if C["Unitframe"].CombatFade and oUF_Player and not InCombatLockdown() then
+	pet:SetParent(oUF_Player)
+end
 K.Movers:RegisterFrame(pet)
 
 local target = oUF:Spawn("target", "oUF_Target")
