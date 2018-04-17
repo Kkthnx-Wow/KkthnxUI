@@ -12,9 +12,12 @@ if not oUF then
 end
 
 local _G = _G
+local tostring = tostring
 
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local InCombatLockdown = _G.InCombatLockdown
+
+local Movers = K["Movers"]
 
 function Module:GetPartyFramesAttributes()
 	local PartyProperties = C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
@@ -65,6 +68,119 @@ function Module:GetPartyTargetFramesAttributes()
 	"yOffset", -68
 end
 
+function Module:GetDamageRaidFramesAttributes()
+	local Raid = {}
+	for i = 1, C["Raidframe"].RaidGroups do
+		local RaidDamage = oUF:SpawnHeader("oUF_RaidDamage"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
+		"oUF-initialConfigFunction", [[
+		local header = self:GetParent()
+		self:SetWidth(header:GetAttribute("initial-width"))
+		self:SetHeight(header:GetAttribute("initial-height"))
+		]],
+		"initial-width", 60,
+		"initial-height", 30,
+		"showParty", true,
+		"showRaid", true,
+		"showPlayer", true,
+		"showSolo", false,
+		"yOffset", -6,
+		"point", "TOPLEFT",
+		"groupFilter", tostring(i),
+		"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
+		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
+		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
+		"maxColumns", 5,
+		"unitsPerColumn", 1,
+		"columnSpacing", 6,
+		"columnAnchorPoint", "TOP")
+		if i == 1 then
+			RaidDamage:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -24)
+		elseif i == 5 then
+			RaidDamage:SetPoint("TOPLEFT", Raid[1], "TOPRIGHT", 7, 0)
+		else
+			RaidDamage:SetPoint("TOPLEFT", Raid[i-1], "BOTTOMLEFT", 0, -7)
+		end
+		Movers:RegisterFrame(RaidDamage)
+		Raid[i] = RaidDamage
+	end
+end
+
+function Module:GetHealerRaidFramesAttributes()
+	local Raid = {}
+	for i = 1, C["Raidframe"].RaidGroups do
+		local RaidHealer = oUF:SpawnHeader("oUF_RaidHealer"..i, nil, C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
+		"oUF-initialConfigFunction", [[
+		local header = self:GetParent()
+		self:SetWidth(header:GetAttribute("initial-width"))
+		self:SetHeight(header:GetAttribute("initial-height"))
+		]],
+		"initial-width", 60,
+		"initial-height", 26,
+		"showParty", true,
+		"showRaid", true,
+		"showPlayer", true,
+		"showSolo", false,
+		"groupFilter", tostring(i),
+		"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
+		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
+		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
+		"point", "LEFT",
+		"maxColumns", 5,
+		"unitsPerColumn", 1,
+		"columnSpacing", 6,
+		"columnAnchorPoint", "LEFT")
+		if i == 1 then
+			RaidHealer:SetPoint("TOPLEFT", oUF_Player, "BOTTOMRIGHT", 86, -12)
+		else
+			RaidHealer:SetPoint("TOPLEFT", Raid[i-1], "BOTTOMLEFT", 0, -7)
+		end
+		Movers:RegisterFrame(RaidHealer)
+		Raid[i] = RaidHealer
+	end
+end
+
+function Module:GetMainTankAttributes()
+	return
+	"oUF_MainTank",
+	nil,
+	"solo, party, raid",
+	"oUF-initialConfigFunction", [[
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
+	]],
+	"initial-width", 62,
+	"initial-height", 34,
+	"showParty", false,
+	"showRaid", true,
+	"showPlayer", false,
+	"showSolo", false,
+	"groupFilter", "MAINTANK",
+	"yOffset", -8,
+	"template", "oUF_MainTank"
+end
+
+function Module:GetMainTankTargetAttributes()
+	return
+	"oUF_MainTankTarget",
+	nil,
+	"solo, party, raid",
+	"oUF-initialConfigFunction", [[
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
+	]],
+	"initial-width", 62,
+	"initial-height", 34,
+	"showParty", false,
+	"showRaid", true,
+	"showPlayer", false,
+	"showSolo", false,
+	"groupFilter", "MAINTANK",
+	"yOffset", -8,
+	"template", "oUF_MainTankTarget"
+end
+
 function Module:CreateStyle(unit)
 	if (not unit) then
 		return
@@ -90,14 +206,14 @@ function Module:CreateStyle(unit)
 		K.CreateBoss(self, "boss")
 	elseif (unit == "party") then
 		K.CreateParty(self, "party")
+	elseif (unit == "raid") then
+		K.CreateRaid(self, "raid")
 	end
 
 	return self
 end
 
 function Module:CreateUnits()
-	local Movers = K["Movers"]
-
 	local Player = oUF:Spawn("player", "oUF_Player")
 	Player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
 	Player:SetParent(K.PetBattleHider)
@@ -177,6 +293,22 @@ function Module:CreateUnits()
 		local PartyTarget = oUF:SpawnHeader(Module:GetPartyTargetFramesAttributes())
 		PartyTarget:SetParent(K.PetBattleHider)
 		PartyTarget:SetPoint("TOPLEFT", oUF_Party, "TOPRIGHT", 4, 16)
+	end
+
+	if (C["Raidframe"].Enable) then
+		if C["Raidframe"].RaidLayout.Value == "Healer" then
+			Module:GetHealerRaidFramesAttributes()
+		elseif C["Raidframe"].RaidLayout.Value == "Damage" then
+			Module:GetDamageRaidFramesAttributes()
+		else
+			Module:GetDamageRaidFramesAttributes()
+		end
+
+		-- local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
+		-- MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+		-- Movers:RegisterFrame(MainTank)
+
+		-- local MainTankTarget = oUF:SpawnHeader(Module:GetMainTankTargetAttributes())
 	end
 
 	Movers:RegisterFrame(Player)
