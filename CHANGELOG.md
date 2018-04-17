@@ -23,3 +23,4 @@ Added a config check for new `TargetHighlight` feature.
 Updated Animation file.  
 Removed Lib LibButtonGlow-1.0.   
 Updated Filger anchors.   
+___
