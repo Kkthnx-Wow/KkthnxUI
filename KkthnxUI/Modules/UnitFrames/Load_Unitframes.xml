@@ -2,8 +2,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Unitframes -->
     <Script file="Functions.lua"/>
+    <Script file="Core.lua"/>
     <Include file="Elements\Load_Elements.xml"/>
-    <Script file="Layouts\Unitframes.lua"/>
-    <Include file="Layouts\Raid.xml"/>
-    <Script file="Layouts\Raid.lua"/>
+    <Include file="Units\Load_Units.xml"/>
+    <Include file="Groups\Load_Groups.xml"/>
 </Ui>

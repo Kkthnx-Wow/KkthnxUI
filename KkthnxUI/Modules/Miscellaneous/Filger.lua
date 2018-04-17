@@ -21,31 +21,31 @@ local FilgerFont = K.GetFont(C["Filger"].Font)
 local FilgerTexture = K.GetTexture(C["Filger"].Texture)
 
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
-P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
+P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 2, 169)
 P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169)
+P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "TOPLEFT", -2, 169)
 P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211)
+SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 2, 211)
 SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211)
+T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "TOPLEFT", -2, 211)
 T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253)
+T_BUFF_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "TOPLEFT", -2, 253)
 T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253)
+PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 2, 253)
 PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44)
+PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", oUF_Player, "BOTTOMLEFT", -2, -44)
 PVE_PVP_CC_Anchor:SetSize(221, 25)
 
-COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17)
+COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 63, 17)
 COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 
-T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "BOTTOMRIGHT", 2, 3)
+T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "BOTTOMRIGHT", 2, 3)
 T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
 do

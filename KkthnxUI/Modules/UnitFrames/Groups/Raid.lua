@@ -74,7 +74,7 @@ local function UpdatePower(self, _, unit)
 	end
 end
 
-local function CreateRaidLayout(self, unit)
+local function CreateRaid(self, unit)
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
 		UnitFrame_OnEnter(self)
@@ -298,8 +298,9 @@ local function CreateRaidLayout(self, unit)
 	end
 end
 
-oUF:RegisterStyle("oUF_KkthnxUI_Raidframes", CreateRaidLayout)
-oUF:SetActiveStyle("oUF_KkthnxUI_Raidframes")
+oUF:RegisterStyle("oUF_KkthnxUI_Raid", CreateRaid)
+oUF:SetActiveStyle("oUF_KkthnxUI_Raid")
+
 if C["Raidframe"].Enable then
 	if C["Raidframe"].RaidLayout.Value == "Healer" then
 		local raid = {}

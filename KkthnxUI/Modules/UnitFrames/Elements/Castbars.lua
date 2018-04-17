@@ -306,11 +306,12 @@ function K.CreateCastBar(self, unit)
 	castbar:SetClampedToScreen(true)
 	castbar:SetTemplate("Transparent", true)
 
+	castbar:ClearAllPoints()
 	if (unit == "player") then
-		castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 203)
+		castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 203)
 		K.Movers:RegisterFrame(castbar)
-	elseif unit == "target" then
-		castbar:SetPoint("BOTTOM", "oUF_PlayerCastbar", "TOP", 0, 6)
+	elseif (unit == "target") then
+		castbar:SetPoint("BOTTOM", oUF_PlayerCastbar, "TOP", 0, 6)
 		K.Movers:RegisterFrame(castbar)
 	elseif (unit == "focus" or unit == "arena" or unit == "boss") then
 		castbar:SetPoint("LEFT", 4, 0)

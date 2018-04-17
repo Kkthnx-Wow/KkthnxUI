@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
-local LibButtonGlow = LibStub("LibButtonGlow-1.0", true)
 
 local _G = _G
 local unpack, pairs = unpack, pairs
@@ -299,16 +298,13 @@ function Module:LOOT_OPENED(_, autoloot)
 			local questTexture = slot.questTexture
 			if (questId and not isActive) then
 				questTexture:Show()
-				--LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
-				slot:SetBackdropBorderColor(1, 1, 0)
+				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
-				--LibButtonGlow.ShowOverlayGlow(slot.iconFrame)
-				slot:SetBackdropBorderColor(1, 1, 0)
+				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
 			else
 				questTexture:Hide()
-				--LibButtonGlow.HideOverlayGlow(slot.iconFrame)
-				slot:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+				slot.iconFrame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 			end
 
 			slot:Enable()

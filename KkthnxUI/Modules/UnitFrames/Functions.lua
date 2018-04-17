@@ -1,9 +1,15 @@
 local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true then return end
+local Module = K:NewModule("Unitframe_Functions", "AceEvent-3.0")
+if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true then
+	return
+end
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
-if not oUF then return end
+if not oUF then
+	K.Print("Could not find a vaild instance of oUF. Stopping oUF Functions.lua code!")
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -14,11 +20,16 @@ local ipairs = ipairs
 local unpack = unpack
 
 -- Wow API
+local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local DEAD = _G.DEAD
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local PlaySound = _G.PlaySound
 local PlaySoundKitID = _G.PlaySoundKitID
 local SOUNDKIT = _G.SOUNDKIT
+local UnitClass = _G.UnitClass
 local UnitExists = _G.UnitExists
 local UnitHealth = _G.UnitHealth
 local UnitIsConnected = _G.UnitIsConnected
@@ -30,39 +41,32 @@ local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 
-local colors = K.Colors
 
-local Module = CreateFrame("Frame")
-Module:SetScript("OnEvent", function(self, event, ...)
-	return self[event] and self[event](self, event, ...)
-end)
+local colors = K["Colors"]
 
 -- AuraWatch
 local RaidBuffsPosition = {
-	TOPLEFT = {6, 1},
-	TOPRIGHT = {-6, 1},
+	BOTTOM = {0, 0},
 	BOTTOMLEFT = {6, 1},
 	BOTTOMRIGHT = {-6, 1},
 	LEFT = {6, 1},
 	RIGHT = {-6, 1},
 	TOP = {0, 0},
-	BOTTOM = {0, 0},
+	TOPLEFT = {6, 1},
+	TOPRIGHT = {-6, 1},
 }
 
-function K.UpdateAllElements(frame)
-	for _, v in ipairs(frame.__elements) do
-		v(frame, "UpdateElement", frame.unit)
+function K.UpdateClassPortraits(self, unit)
+	local _, unitClass = UnitClass(unit)
+	if (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "ClassPortraits" then
+		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
+		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+	elseif (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
+		self:SetTexture(C["Media"].NewClassPortraits)
+		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+	else
+		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 	end
-end
-
-function K.MultiCheck(check, ...)
-	for i = 1, select("#", ...) do
-		if (check == select(i, ...)) then
-			return true
-		end
-	end
-
-	return false
 end
 
 local function UpdatePortraitColor(self, unit, min, max)
@@ -89,9 +93,9 @@ end
 
 -- PostUpdateHealth
 function K.PostUpdateHealth(self, unit, cur, max)
-    if self.__owner.Portrait and C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
-        UpdatePortraitColor(self.__owner, unit, cur, max)
-    end
+	if self.__owner.Portrait and C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits" then
+		UpdatePortraitColor(self.__owner, unit, cur, max)
+	end
 end
 
 function K.CreateAuraWatchIcon(icon)
@@ -167,6 +171,76 @@ function K.CreateAuraWatch(self)
 	self.AuraWatch = auras
 end
 
+function K.CreateArenaPrep()
+	if (C["Unitframe"].ShowArena) then
+		local arenaprep = {}
+		for i = 1, 5 do
+			arenaprep[i] = CreateFrame("Frame", "oUF_ArenaPrep"..i, UIParent)
+			arenaprep[i]:SetAllPoints(_G["oUF_ArenaFrame"..i])
+			arenaprep[i]:SetFrameStrata("BACKGROUND")
+
+			arenaprep[i].Health = CreateFrame("StatusBar", nil, arenaprep[i])
+			arenaprep[i].Health:SetAllPoints()
+			arenaprep[i].Health:SetStatusBarTexture(C["Media"].Texture)
+			arenaprep[i].Health:SetTemplate("Transparent", true)
+
+			arenaprep[i].Spec = K.SetFontString(arenaprep[i].Health, C["Media"].Font, 14, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+			arenaprep[i].Spec:SetPoint("CENTER")
+			arenaprep[i]:Hide()
+		end
+
+		local arenaprepupdate = CreateFrame("Frame")
+		arenaprepupdate:RegisterEvent("PLAYER_LOGIN")
+		arenaprepupdate:RegisterEvent("PLAYER_ENTERING_WORLD")
+		arenaprepupdate:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS")
+		arenaprepupdate:RegisterEvent("ARENA_OPPONENT_UPDATE")
+		arenaprepupdate:SetScript("OnEvent", function(self, event)
+			if event == "PLAYER_LOGIN" then
+				for i = 1, 5 do
+					arenaprep[i]:SetAllPoints(_G["oUF_ArenaFrame"..i])
+				end
+			elseif event == "ARENA_OPPONENT_UPDATE" then
+				for i = 1, 5 do
+					arenaprep[i]:Hide()
+				end
+			else
+				local numOpps = GetNumArenaOpponentSpecs()
+				if numOpps > 0 then
+					for i = 1, 5 do
+						local f = arenaprep[i]
+
+						if i <= numOpps then
+							local s = GetArenaOpponentSpec(i)
+							local _, spec, class = nil, "UNKNOWN", "UNKNOWN"
+
+							if s and s > 0 then
+								_, spec, _, _, _, class = GetSpecializationInfoByID(s)
+							end
+
+							if class and spec then
+								local color = (_G.CUSTOM_CLASS_COLORS or _G.RAID_CLASS_COLORS)[class]
+								if color then
+									f.Health:SetStatusBarColor(color.r, color.g, color.b)
+								else
+									f.Health:SetStatusBarColor(0.4, 0.4, 0.4)
+								end
+								f.Spec:SetText(spec)
+								f:Show()
+							end
+						else
+							f:Hide()
+						end
+					end
+				else
+					for i = 1, 5 do
+						arenaprep[i]:Hide()
+					end
+				end
+			end
+		end)
+	end
+end
+
 local function CreateTargetSound(unit)
 	if UnitExists(unit) then
 		if UnitIsEnemy(unit, "player") then
@@ -201,6 +275,12 @@ function Module:UNIT_FACTION(event, unit)
 	end
 end
 
-Module:RegisterEvent("PLAYER_TARGET_CHANGED")
-Module:RegisterEvent("PLAYER_FOCUS_CHANGED")
-Module:RegisterUnitEvent("UNIT_FACTION", "player")
+function Module:OnEanble()
+	if C["Unitframe"].Enable ~= true then
+		return
+	end
+
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	self:RegisterUnitEvent("UNIT_FACTION", "player")
+end
