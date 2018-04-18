@@ -746,14 +746,13 @@ local function StyleUpdate(self, unit)
 		Auras.initialAnchor = "BOTTOMLEFT"
 		Auras["growth-y"] = "UP"
 		Auras["growth-x"] = "RIGHT"
-		Auras.numDebuffs = 6
-		Auras.numBuffs = 6
+		Auras.numDebuffs = 6 or 0
+		Auras.numBuffs = 4 or 0
 		Auras.PostCreateIcon = PostCreateAura
 		Auras.PostUpdateIcon = PostUpdateAura
 		Auras.CustomFilter = CustomFilterList
-		--Auras:SetSize(C["Nameplates"].Width + 4, C["Nameplates"].AurasSize)
-		Auras:SetSize((C["Nameplates"].Width * (C["Nameplates"].AurasSize + 9)) / 1, (C["Nameplates"].AurasSize + 9) * 1)
-		Auras.spacing = 3
+		Auras:SetSize(18 + C["Nameplates"].Width, C["Nameplates"].AurasSize)
+		Auras.spacing = 4
 		Auras.size = C["Nameplates"].AurasSize
 
 		self.Auras = Auras

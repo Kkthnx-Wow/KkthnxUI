@@ -701,11 +701,6 @@ KkthnxUIConfig["itIT"] = {
 			["Desc"] = "Mouseover chat tabs",
 		},
 
-		["TabsOutline"] = {
-			["Name"] = "Tabs Outline",
-			["Desc"] = ModuleFontOutline,
-		},
-
 		["Width"] = {
 			["Name"] = "Width",
 			["Desc"] = ModuleWidth,

@@ -130,7 +130,7 @@ function Module:GetHealerRaidFramesAttributes()
 		"columnSpacing", 6,
 		"columnAnchorPoint", "LEFT")
 		if i == 1 then
-			RaidHealer:SetPoint("TOPLEFT", oUF_Player, "BOTTOMRIGHT", 86, -12)
+			RaidHealer:SetPoint("TOPLEFT", oUF_Player, "BOTTOMRIGHT", 11, -12)
 		else
 			RaidHealer:SetPoint("TOPLEFT", Raid[i-1], "BOTTOMLEFT", 0, -7)
 		end
@@ -143,42 +143,15 @@ function Module:GetMainTankAttributes()
 	return
 	"oUF_MainTank",
 	nil,
-	"solo, party, raid",
+	"raid",
 	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
+	self:SetWidth(60)
+	self:SetHeight(26)
 	]],
-	"initial-width", 62,
-	"initial-height", 34,
-	"showParty", false,
 	"showRaid", true,
-	"showPlayer", false,
-	"showSolo", false,
 	"groupFilter", "MAINTANK",
 	"yOffset", -8,
 	"template", "oUF_MainTank"
-end
-
-function Module:GetMainTankTargetAttributes()
-	return
-	"oUF_MainTankTarget",
-	nil,
-	"solo, party, raid",
-	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
-	]],
-	"initial-width", 62,
-	"initial-height", 34,
-	"showParty", false,
-	"showRaid", true,
-	"showPlayer", false,
-	"showSolo", false,
-	"groupFilter", "MAINTANK",
-	"yOffset", -8,
-	"template", "oUF_MainTankTarget"
 end
 
 function Module:CreateStyle(unit)
@@ -304,11 +277,11 @@ function Module:CreateUnits()
 			Module:GetDamageRaidFramesAttributes()
 		end
 
-		-- local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
-		-- MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-		-- Movers:RegisterFrame(MainTank)
-
-		-- local MainTankTarget = oUF:SpawnHeader(Module:GetMainTankTargetAttributes())
+		if C["Raidframe"].MainTankFrames then
+			local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
+			MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 10, 18)
+			Movers:RegisterFrame(MainTank)
+		end
 	end
 
 	Movers:RegisterFrame(Player)
