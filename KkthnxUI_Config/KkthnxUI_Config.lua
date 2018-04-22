@@ -460,9 +460,22 @@ local function CloseOtherLists(self)
 		local Menu = DropDownMenus[i]
 		local List = Menu.List
 
-		if (self ~= Menu and List:IsVisible()) then
+		if (self ~= Menu and List:IsShown()) then
 			List:Hide()
 			SetIconUp(Menu.Button.Tex)
+		end
+	end
+end
+
+local function CloseList(self)
+	for i = 1, #DropDownMenus do
+		local Menu = DropDownMenus[i]
+		local List = Menu.List
+
+		if (self == List and self:IsShown()) then
+			self:Hide()
+			SetIconUp(Menu.Button.Tex)
+			return
 		end
 	end
 end
@@ -726,7 +739,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	Label:SetShadowOffset(1.25, -1.25)
 	Label:SetPoint("LEFT", DropDown, "RIGHT", 5, 0)
 
-	local List = CreateFrame("Frame", nil, UIParent)
+	local List = CreateFrame("Frame", nil, DropDown)
 	List:SetPoint("TOPLEFT", DropDown, "BOTTOMLEFT", 0, -4)
 	List:SetTemplate("Transparent")
 	List:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1) -- Fix this later in API
@@ -735,6 +748,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	List:SetFrameLevel(DropDown:GetFrameLevel() + 3)
 	List:SetFrameStrata("HIGH")
 	List:EnableMouse(true)
+	List:HookScript("OnHide", CloseList)
 	List.Owner = DropDown
 
 	if (type == "Custom") then
