@@ -965,8 +965,6 @@ function KkthnxUIConfig:CreateConfigWindow()
 		end
 	end
 
-	NumGroups = NumGroups
-
 	local Height = (12 + (NumGroups * 20) + ((NumGroups - 1) * 4)) -- Padding + (NumButtons * ButtonSize) + ((NumButtons - 1) * ButtonSpacing)
 
 	local ConfigFrame = CreateFrame("Frame", "KkthnxUIConfigFrame", UIParent)
@@ -1135,6 +1133,16 @@ function KkthnxUIConfig:CreateConfigWindow()
 			Button.Text:SetShadowOffset(1.25, -1.25)
 			Button.Text:SetPoint("CENTER", Button)
 			Button.Text:SetText(Group)
+
+			Button.Active = Button:CreateTexture(nil, "ARTWORK")
+			Button.Active:SetVertexColor(Colors.r, Colors.g, Colors.b, 0.2)
+			Button.Active:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
+			Button.Active:SetBlendMode("ADD")
+			Button.Active:SetAllPoints()
+			Button.Active:Hide()
+
+			GroupPage:HookScript("OnShow", function() Button.Active:Show() end)
+			GroupPage:HookScript("OnHide", function() Button.Active:Hide() end)
 
 			if (ButtonCount == 0) then
 				Button:SetPoint("TOP", LeftWindow, 0, -6)
