@@ -42,7 +42,10 @@ local Page = {
 local function GetBar(self, defaultPage)
 	local condition = Page["DEFAULT"]
 	local class = K.Class
-	local page = Page[class]
+ 
+	if not C["DisableStancePages"] then
+		local page = Page[class]
+	end
 
 	if not condition then condition = "" end
 
