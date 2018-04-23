@@ -301,6 +301,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Hide pet bar",
 		},
 
+		["DisableStancePages"] = {
+			["Name"] = "Disable Stance Pages",
+			["Desc"] = "Disables automatic page-switching depending on the players stance. (Only affects rogues and druids, has no effect on other classes)",
+		},
+
 		["PetBarHorizontal"] = {
 			["Name"] = "Petbar Horizontal",
 			["Desc"] = "Enable horizontal pet bar",
@@ -350,6 +355,7 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Auto Add New Spells",
 			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
 		},
+
 	},
 
 	-- Nameplates Local
