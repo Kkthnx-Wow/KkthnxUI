@@ -131,10 +131,13 @@ function Module:GetHealerRaidFramesAttributes()
 		"columnAnchorPoint", "LEFT")
 		if i == 1 then
 			RaidHealer:SetPoint("TOPLEFT", oUF_Player, "BOTTOMRIGHT", 11, -12)
+			Movers:RegisterFrame(RaidHealer)
 		else
-			RaidHealer:SetPoint("TOPLEFT", Raid[i-1], "BOTTOMLEFT", 0, -7)
+			-- Changing this to use CENTER for its own anchoring point, 
+			-- to avoid headers with no units and zero width being positioned wrongly.
+			RaidHealer:SetPoint("CENTER", Raid[i-1], "CENTER", 0, -(7 + 26))
 		end
-		Movers:RegisterFrame(RaidHealer)
+		Movers:RegisterFrame(RaidHealer, i > 1 and Raid[1])
 		Raid[i] = RaidHealer
 	end
 end
