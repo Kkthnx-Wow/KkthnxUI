@@ -9,6 +9,8 @@ local pairs = pairs
 -- Wow API
 local CreateFrame = _G.CreateFrame
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local GetScreenHeight = _G.GetScreenHeight
+local GetScreenWidth = _G.GetScreenWidth
 local InCombatLockdown = _G.InCombatLockdown
 local Name = _G.UnitName("player")
 local Realm = _G.GetRealmName()
@@ -17,10 +19,9 @@ local UIParent = _G.UIParent
 local Movers = CreateFrame("Frame")
 Movers:RegisterEvent("PLAYER_ENTERING_WORLD")
 Movers:RegisterEvent("PLAYER_REGEN_DISABLED")
-Movers.Frames = {}
 Movers.Defaults = {}
-
-local SizeReferenceFrames = {}
+Movers.Frames = {}
+Movers.SizeReferenceFrames = {}
 
 local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
@@ -37,73 +38,73 @@ end
 -- Generate a human readable name without prefixes
 local function GenerateName(name)
 	return name and name:gsub("^oUF_",""):gsub("^KkthnxUI_",""):gsub("^KkthnxUI",""):gsub("^Kkthnx_",""):gsub("^Kkthnx","") or UNKNOWNOBJECT
-end 
+end
 
--- Generate a proper on-screen point depending on which part of the screen it is in, 
--- also taking the frame size into consideration. 
+-- Generate a proper on-screen point depending on which part of the screen it is in,
+-- also taking the frame size into consideration.
 local function GeneratePoints(frame)
 	local width, height = GetScreenWidth(), GetScreenHeight() -- screen size
 	local w, h = frame:GetSize() -- frame size
 
 	-- Center point relative to the bottom left corner of the screen
 	-- By using this as a reference, frame size (or the lack of) won't affect positioning!
-	local centerX, centerY = frame:GetCenter() 
-	
-	-- Split the screen into 3x3 areas, 
+	local centerX, centerY = frame:GetCenter()
+
+	-- Split the screen into 3x3 areas,
 	-- and create different points based on that.
 	local point, x, y
 
 	-- left side of the screen
-	if centerX < width/3 then 
-		if centerY > height*2/3 then 
+	if centerX < width / 3 then
+		if centerY > height * 2 / 3 then
 			point = "TOPLEFT"
 			x = centerX
 			y = centerY - height
-		elseif centerY < height/3 then 
+		elseif centerY < height / 3 then
 			point = "BOTTOMLEFT"
 			x = centerX
 			y = centerY
-		else 
+		else
 			point = "LEFT"
 			x = centerX
-			y = centerY - height/2
-		end 
+			y = centerY - height / 2
+		end
 
-	-- right side of the screen 
-	elseif centerX > width*2/3 then 
-		if centerY > height*2/3 then 
+	-- right side of the screen
+	elseif centerX > width * 2 / 3 then
+		if centerY > height * 2 / 3 then
 			point = "TOPRIGHT"
 			x = centerX - width
 			y = centerY - height
-		elseif centerY < height/3 then 
+		elseif centerY < height / 3 then
 			point = "BOTTOMRIGHT"
 			x = centerX - width
 			y = centerY
-		else 
+		else
 			point = "RIGHT"
 			x = centerX - width
-			y = centerY - height/2
-		end 
+			y = centerY - height / 2
+		end
 
 	-- center of the screen
-	else 
-		if centerY > height*2/3 then 
+	else
+		if centerY > height * 2 / 3 then
 			point = "TOP"
-			x = centerX - width/2
+			x = centerX - width / 2
 			y = centerY - height
-		elseif centerY < height/3 then 
+		elseif centerY < height / 3 then
 			point = "BOTTOM"
-			x = centerX - width/2
+			x = centerX - width / 2
 			y = centerY
-		else 
+		else
 			point = "CENTER"
-			x = centerX - width/2
-			y = centerY - height/2
-		end 
-	end 
+			x = centerX - width / 2
+			y = centerY - height / 2
+		end
+	end
 
 	return "CENTER", UIParent, point, x, y
-end 
+end
 
 function Movers:SaveDefaults(frame, a1, p, a2, x, y)
 	if not a1 then
@@ -133,14 +134,14 @@ function Movers:RestoreDefaults(button)
 		Frame:ClearAllPoints()
 		Frame:SetPoint(Anchor1, Parent, Anchor2, X, Y)
 
-		if SizeReferenceFrames[Frame] and (Frame:GetWidth() < 1 or Frame:GetHeight() < 1) then 
-			Frame.DragInfo:SetSize(SizeReferenceFrames[Frame]:GetSize())
+		if Movers.SizeReferenceFrames[Frame] and (Frame:GetWidth() < 1 or Frame:GetHeight() < 1) then
+			Frame.DragInfo:SetSize(Movers.SizeReferenceFrames[Frame]:GetSize())
 			Frame.DragInfo:ClearAllPoints()
 			Frame.DragInfo:SetPoint(Anchor1, Frame, Anchor1, 0, 0)
 		else
 			Frame.DragInfo:ClearAllPoints()
 			Frame.DragInfo:SetAllPoints(Frame)
-		end 
+		end
 
 		-- Delete Saved Variable
 		SavedVariables[FrameName] = nil
@@ -150,11 +151,11 @@ end
 function Movers:RegisterFrame(frame, referenceFrame)
 	local Anchor1, Parent, Anchor2, X, Y = frame:GetPoint()
 
-	-- If this is a frame that sometimes has a zero width or height, 
-	-- and thus require another frame to reference its mover size by. 
-	if referenceFrame then 
-		SizeReferenceFrames[frame] = referenceFrame
-	end 
+	-- If this is a frame that sometimes has a zero width or height,
+	-- and thus require another frame to reference its mover size by.
+	if referenceFrame then
+		Movers.SizeReferenceFrames[frame] = referenceFrame
+	end
 
 	table_insert(self.Frames, frame)
 
@@ -238,20 +239,20 @@ function Movers:StartOrStopMoving()
 				Frame.DragInfo:SetFrameStrata("HIGH")
 			end
 
-			if SizeReferenceFrames[Frame] and (Frame:GetWidth() < 1 or Frame:GetHeight() < 1) then 
+			if Movers.SizeReferenceFrames[Frame] and (Frame:GetWidth() < 1 or Frame:GetHeight() < 1) then
 				local Data = KkthnxUIData[Realm][Name].Movers
 				local Position = Data and Data[Frame:GetName()]
-				if (not Position) then 
+				if (not Position) then
 					Data = Movers.Defaults
 					Position = Data and Data[Frame:GetName()]
-				end 
-				if Position then 
+				end
+				if Position then
 					local Anchor1, Parent, Anchor2, X, Y = unpack(Position)
 					Frame.DragInfo:ClearAllPoints()
 					Frame.DragInfo:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
-					Frame.DragInfo:SetSize(SizeReferenceFrames[Frame]:GetSize())
-				end 
-			end 
+					Frame.DragInfo:SetSize(Movers.SizeReferenceFrames[Frame]:GetSize())
+				end
+			end
 		else
 			if Frame.unit then
 				Frame.unit = Frame.oldunit
