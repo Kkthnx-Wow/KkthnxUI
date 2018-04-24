@@ -90,7 +90,7 @@ ActionBar1:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		for i, button in ipairs(button) do
-			Button:SetAttribute("actionpage", tonumber(newstate))
+			button:SetAttribute("actionpage", tonumber(newstate))
 		end
 		]])
 
