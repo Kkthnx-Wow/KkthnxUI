@@ -43,8 +43,9 @@ local function GetBar(self, defaultPage)
 	local condition = Page["DEFAULT"]
 	local class = K.Class
  
-	if not C["DisableStancePages"] then
-		local page = Page[class]
+ 	local page= nil
+	if not C["ActionBar"].DisableStancePages then
+		page = Page[class]
 	end
 
 	if not condition then condition = "" end
