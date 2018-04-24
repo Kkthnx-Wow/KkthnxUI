@@ -360,7 +360,6 @@ KkthnxUIConfig["deDE"] = {
 			["Name"] = "Auto Add New Spells",
 			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
 		},
-
 	},
 
 	-- Nameplates Local

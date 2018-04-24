@@ -296,14 +296,14 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Out of Range color"..RestoreDefault,
 		},
 
+		["DisableStancePages"] = {
+			["Name"] = "Disable Stance Pages",
+			["Desc"] = "Disables automatic page-switching depending on the players stance. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
+		},
+
 		["PetBarHide"] = {
 			["Name"] = "Petbar toggle",
 			["Desc"] = "Hide pet bar",
-		},
-
-		["DisableStancePages"] = {
-			["Name"] = "Disable Stance Pages",
-			["Desc"] = "Disables automatic page-switching depending on the players stance. (Only affects rogues and druids, has no effect on other classes)",
 		},
 
 		["PetBarHorizontal"] = {
@@ -355,7 +355,6 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Auto Add New Spells",
 			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
 		},
-
 	},
 
 	-- Nameplates Local

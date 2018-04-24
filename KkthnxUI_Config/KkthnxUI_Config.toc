@@ -6,7 +6,7 @@
 ## Version: 7.16
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
-## SavedVariablesPerCharacter: KkthnxUIConfigNotShared
+## SavedVariablesPerCharacter: KkthnxUIConfigNotShared 
 ## RequiredDeps: KkthnxUI
 
 # -- Load Core File

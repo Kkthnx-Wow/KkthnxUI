@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Artifact_DataBar", "AceEvent-3.0")
+local Module = K:NewModule("Artifact", "AceEvent-3.0")
 
 -- Sourced: ElvUI (Elvz)
 
@@ -142,7 +142,7 @@ function Module:OnEnable(event)
 	AnchorY = -6
 	end
 
-	self.artifactBar = CreateFrame("Button", "KkthnxUI_ArtifactBar", K.PetBattleHider)
+	self.artifactBar = CreateFrame("Button", "Artifact", K.PetBattleHider)
 	self.artifactBar:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 	self.artifactBar:SetScript("OnEnter", Module.ArtifactBar_OnEnter)
 	self.artifactBar:SetScript("OnLeave", Module.ArtifactBar_OnLeave)

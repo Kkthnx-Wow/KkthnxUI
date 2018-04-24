@@ -87,7 +87,6 @@ KkthnxUIConfig.ColorDefaults = {
 	["ActionBar"] = {
 		["OutOfMana"] = {0.5, 0.5, 1.0},
 		["OutOfRange"] = {0.8, 0.1, 0.1},
-		["DisableStancePages"] = false,
 	},
 	-- General
 	["General"] = {

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Reputation_DataBar", "AceEvent-3.0")
+local Module = K:NewModule("Reputation", "AceEvent-3.0")
 
 -- Sourced: ElvUI (Elvz)
 
@@ -161,7 +161,7 @@ function Module:EnableDisable_ReputationBar()
 end
 
 function Module:OnEnable()
-	self.reputationBar = CreateFrame("Button", "KkthnxUI_ReputationBar", K.PetBattleHider)
+	self.reputationBar = CreateFrame("Button", "Reputation", K.PetBattleHider)
 	self.reputationBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -24)
 	self.reputationBar:SetScript("OnEnter", Module.ReputationBar_OnEnter)
 	self.reputationBar:SetScript("OnLeave", Module.ReputationBar_OnLeave)

@@ -216,7 +216,7 @@ function Module:UpdateHeader(header)
     if (not C["Auras"].Enable) then return end
     if header:GetAttribute("filter") == "HELPFUL" then
         header:SetAttribute("consolidateTo", 0)
-        header:SetAttribute("weaponTemplate", ("KkthnxUIAuraTemplate%d"):format(C["Auras"].Size))
+        header:SetAttribute("weaponTemplate", ("AuraTemplate%d"):format(C["Auras"].Size))
     end
 
     header:SetAttribute("separateOwn", C["Auras"].SeperateOwn)
@@ -243,7 +243,7 @@ function Module:UpdateHeader(header)
         header:SetAttribute("wrapYOffset", 0)
     end
 
-    header:SetAttribute("template", ("KkthnxUIAuraTemplate%d"):format(C["Auras"].Size))
+    header:SetAttribute("template", ("AuraTemplate%d"):format(C["Auras"].Size))
     local index = 1
     local child = select(index, header:GetChildren())
     while(child) do
@@ -272,9 +272,9 @@ function Module:UpdateHeader(header)
 end
 
 function Module:CreateAuraHeader(filter)
-    local name = "KkthnxUIPlayerDebuffs"
+    local name = "PlayerDebuffs"
     if filter == "HELPFUL" then
-        name = "KkthnxUIPlayerBuffs"
+        name = "PlayerBuffs"
     end
 
     local header = CreateFrame("Frame", name, UIParent, "SecureAuraHeaderTemplate")
