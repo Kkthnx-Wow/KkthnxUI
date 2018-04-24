@@ -14,10 +14,8 @@ end
 local _G = _G
 local tostring = tostring
 
-local ActionBarAnchor = _G.ActionBarAnchor
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
 local InCombatLockdown = _G.InCombatLockdown
-local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
-local UIParent = _G.UIParent
 
 local Movers = K["Movers"]
 
@@ -91,12 +89,12 @@ function Module:GetDamageRaidFramesAttributes()
 		"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
 		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
 		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
-		"maxColumns", C["Raidframe"].RaidGroups or 5,
-		"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn or 1,
+		"maxColumns", 5,
+		"unitsPerColumn", 1,
 		"columnSpacing", 6,
 		"columnAnchorPoint", "TOP")
 		if i == 1 then
-			RaidDamage:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -90)
+			RaidDamage:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -24)
 		elseif i == 5 then
 			RaidDamage:SetPoint("TOPLEFT", Raid[1], "TOPRIGHT", 7, 0)
 		else
@@ -127,16 +125,19 @@ function Module:GetHealerRaidFramesAttributes()
 		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
 		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
 		"point", "LEFT",
-		"maxColumns", C["Raidframe"].RaidGroups or 5,
-		"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn or 1,
+		"maxColumns", 5,
+		"unitsPerColumn", 1,
 		"columnSpacing", 6,
 		"columnAnchorPoint", "LEFT")
 		if i == 1 then
-			RaidHealer:SetPoint("TOPLEFT", AnchorPlayer, "BOTTOMRIGHT", 11, -12)
+			RaidHealer:SetPoint("TOPLEFT", oUF_Player, "BOTTOMRIGHT", 11, -12)
+			Movers:RegisterFrame(RaidHealer)
 		else
-			RaidHealer:SetPoint("TOPLEFT", Raid[i-1], "BOTTOMLEFT", 0, -7)
+			-- Changing this to use CENTER for its own anchoring point, 
+			-- to avoid headers with no units and zero width being positioned wrongly.
+			RaidHealer:SetPoint("CENTER", Raid[i-1], "CENTER", 0, -(7 + 26))
 		end
-		Movers:RegisterFrame(RaidHealer)
+		Movers:RegisterFrame(RaidHealer, i > 1 and Raid[1])
 		Raid[i] = RaidHealer
 	end
 end
@@ -147,14 +148,12 @@ function Module:GetMainTankAttributes()
 	nil,
 	"raid",
 	"oUF-initialConfigFunction", [[
-	self:SetWidth(70)
-	self:SetHeight(32)
+	self:SetWidth(60)
+	self:SetHeight(26)
 	]],
 	"showRaid", true,
+	"groupFilter", "MAINTANK",
 	"yOffset", -8,
-	"groupFilter", "MAINTANK, MAINASSIST",
-	"groupBy", "ROLE",
-	"groupingOrder", "MAINTANK, MAINASSIST",
 	"template", "oUF_MainTank"
 end
 
@@ -185,63 +184,61 @@ function Module:CreateStyle(unit)
 		K.CreateParty(self, "party")
 	elseif (unit == "raid") then
 		K.CreateRaid(self, "raid")
-	elseif (unit == "maintank" or unit == "maintanktarget") then
-		K.CreateRaid(self, "maintank")
 	end
 
 	return self
 end
 
 function Module:CreateUnits()
-	local Player = oUF:Spawn("player")
-	Player:SetParent(K.PetBattleHider)
+	local Player = oUF:Spawn("player", "oUF_Player")
 	Player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
+	Player:SetParent(K.PetBattleHider)
 	Player:SetSize(190, 52)
 
-	local Target = oUF:Spawn("target")
-	Target:SetParent(K.PetBattleHider)
+	local Target = oUF:Spawn("target", "oUF_Target")
 	Target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
+	Target:SetParent(K.PetBattleHider)
 	Target:SetSize(190, 52)
 
-	local TargetOfTarget = oUF:Spawn("targettarget")
+	local TargetOfTarget = oUF:Spawn("targettarget", "oUF_TargetTarget")
+	TargetOfTarget:SetPoint("TOPLEFT", oUF_Target, "BOTTOMRIGHT", -56, 2)
 	TargetOfTarget:SetParent(K.PetBattleHider)
-	TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
 	TargetOfTarget:SetSize(116, 36)
 
-	local Pet = oUF:Spawn("pet")
-	if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
-		Pet:SetParent(Player)
+	local Pet = oUF:Spawn("pet", "oUF_Pet")
+	if C["Unitframe"].CombatFade and oUF_Player and not InCombatLockdown() then
+		Pet:SetParent(oUF_Player)
 	else
 		Pet:SetParent(K.PetBattleHider)
 	end
 	if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
-		Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -14)
+		Pet:SetPoint("TOPRIGHT", oUF_Player, "BOTTOMLEFT", 56, -14)
 	else
-		Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, 2)
+		Pet:SetPoint("TOPRIGHT", oUF_Player, "BOTTOMLEFT", 56, 2)
 	end
 	Pet:SetSize(116, 36)
 
-	local Focus = oUF:Spawn("focus")
+	local Focus = oUF:Spawn("focus", "oUF_Focus")
+	Focus:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPLEFT", -60, 30)
 	Focus:SetParent(K.PetBattleHider)
-	Focus:SetPoint("BOTTOMRIGHT", Player, "TOPLEFT", -60, 30)
 	Focus:SetSize(190, 52)
 
-	local FocusTarget = oUF:Spawn("focustarget")
+	local FocusTarget = oUF:Spawn("focustarget", "oUF_FocusTarget")
+	FocusTarget:SetPoint("TOPRIGHT", oUF_Focus, "BOTTOMLEFT", 56, 2)
 	FocusTarget:SetParent(K.PetBattleHider)
-	FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 	FocusTarget:SetSize(116, 36)
 
 	if (C["Unitframe"].ShowArena) then
 		local Arena = {}
 		for i = 1, 5 do
-			Arena[i] = oUF:Spawn("arena"..i)
+			Arena[i] = oUF:Spawn("arena"..i, "oUF_ArenaFrame"..i)
 			Arena[i]:SetSize(190, 52)
 			if (i == 1) then
 				Arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 			else
 				Arena[i]:SetPoint("TOPLEFT", Arena[i-1], "BOTTOMLEFT", 0, -48)
 			end
-			Movers:RegisterFrame(Arena[i])
+			K.Movers:RegisterFrame(Arena[i])
 		end
 
 		K.CreateArenaPrep()
@@ -250,15 +247,16 @@ function Module:CreateUnits()
 	if (C["Unitframe"].ShowBoss) then
 		local Boss = {}
 		for i = 1, MAX_BOSS_FRAMES do
-			Boss[i] = oUF:Spawn("boss"..i)
+			Boss[i] = oUF:Spawn("boss"..i, "oUF_BossFrame"..i)
 			Boss[i]:SetParent(K.PetBattleHider)
+
+			Boss[i]:SetSize(190, 52)
 			if (i == 1) then
 				Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 			else
 				Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -48)
 			end
-			Boss[i]:SetSize(190, 52)
-			Movers:RegisterFrame(Boss[i])
+			K.Movers:RegisterFrame(Boss[i])
 		end
 	end
 
@@ -266,12 +264,11 @@ function Module:CreateUnits()
 		local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
 		Party:SetParent(K.PetBattleHider)
 		Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
+		Movers:RegisterFrame(Party)
 
 		local PartyTarget = oUF:SpawnHeader(Module:GetPartyTargetFramesAttributes())
 		PartyTarget:SetParent(K.PetBattleHider)
-		PartyTarget:SetPoint("TOPLEFT", Party, "TOPRIGHT", 4, 16)
-
-		Movers:RegisterFrame(Party)
+		PartyTarget:SetPoint("TOPLEFT", oUF_Party, "TOPRIGHT", 4, 16)
 	end
 
 	if (C["Raidframe"].Enable) then
@@ -285,13 +282,7 @@ function Module:CreateUnits()
 
 		if C["Raidframe"].MainTankFrames then
 			local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
-			if C["Raidframe"].RaidLayout.Value == "Healer" then
-				MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 6, 2)
-			elseif C["Raidframe"].RaidLayout.Value == "Damage" then
-				MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-			else
-				MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-			end
+			MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 10, 18)
 			Movers:RegisterFrame(MainTank)
 		end
 	end
@@ -309,8 +300,8 @@ function Module:OnEnable()
 		return
 	end
 
-	oUF:RegisterStyle(" ", Module.CreateStyle)
-	oUF:SetActiveStyle(" ")
+	oUF:RegisterStyle("oUF_KkthnxUI", Module.CreateStyle)
+	oUF:SetActiveStyle("oUF_KkthnxUI")
 
 	self:CreateUnits()
 end
