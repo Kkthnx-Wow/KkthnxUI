@@ -58,10 +58,10 @@ local function GetBar(self, defaultPage)
 	local page = Page[class]
 
 	if page then
-		condition = condition .. " " .. page
+		condition = condition.." "..page
 	end
 
-	condition = condition .. " [form] 1; 1"
+	condition = condition.." [form] 1; 1"
 
 	return condition
 end
@@ -78,9 +78,9 @@ ActionBar1:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		self:Execute([[
-		Button = table.new()
+		button = table.new()
 		for i = 1, 12 do
-			table.insert(Button, self:GetFrameRef("ActionButton"..i))
+			table.insert(button, self:GetFrameRef("ActionButton"..i))
 		end
 		]])
 
@@ -89,8 +89,8 @@ ActionBar1:SetScript("OnEvent", function(self, event, ...)
 			newstate = GetTempShapeshiftBarIndex() or newstate
 		end
 
-		for i, Button in ipairs(Button) do
-			Button:SetAttribute("actionpage", tonumber(newstate))
+		for i, button in ipairs(button) do
+			button:SetAttribute("actionpage", tonumber(newstate))
 		end
 		]])
 
