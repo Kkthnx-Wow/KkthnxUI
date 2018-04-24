@@ -1,8 +1,13 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then
+	return
+end
+
+-- Sourced Old Tukui (Tukz)
 
 -- Lua API
 local _G = _G
+local select = select
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
@@ -11,11 +16,14 @@ local HasVehicleActionBar = _G.HasVehicleActionBar
 local InCombatLockdown = _G.InCombatLockdown
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
+local UnitClass = _G.UnitClass
+local MainMenuBar_OnEvent = _G.MainMenuBar_OnEvent
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ActionButton_Update, MainMenuBar_OnEvent
+-- GLOBALS: ActionButton_Update
 
--- ActionBar(by Tukz)
+local PageDRUID, PageROGUE = "", ""
+
 local ActionBar1 = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar1:SetAllPoints(ActionBarAnchor)
 
@@ -33,33 +41,27 @@ for i = 1, 12 do
 	end
 end
 
+if (not C["ActionBar"].DisableStancePages) then
+	PageROGUE = "[bonusbar:1] 7;"
+	PageDRUID = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
+end
+
 local Page = {
-	["DRUID"] = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;",
-	["ROGUE"] = "[bonusbar:1] 7;",
-	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
+	["DRUID"] = PageDRUID,
+	["ROGUE"] = PageROGUE,
+	["DEFAULT"] = "[vehicleui:12] 12; [possessbar] 11; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local function GetBar(self, defaultPage)
 	local condition = Page["DEFAULT"]
-	local class = K.Class
- 
- 	local page= nil
-	if not C["ActionBar"].DisableStancePages then
-		page = Page[class]
-	end
-
-	if not condition then condition = "" end
-
-	if not page then
-		page = ""
-	elseif page:match("[\n\r]") then
-		page = page:gsub("[\n\r]","")
-	end
+	local class = select(2, UnitClass("player"))
+	local page = Page[class]
 
 	if page then
-		condition = condition.." "..page
+		condition = condition .. " " .. page
 	end
-	condition = condition.." "..Page["DEFAULT"]
+
+	condition = condition .. " [form] 1; 1"
 
 	return condition
 end
@@ -76,15 +78,19 @@ ActionBar1:SetScript("OnEvent", function(self, event, ...)
 		end
 
 		self:Execute([[
-		buttons = table.new()
+		Button = table.new()
 		for i = 1, 12 do
-			table.insert(buttons, self:GetFrameRef("ActionButton"..i))
+			table.insert(Button, self:GetFrameRef("ActionButton"..i))
 		end
 		]])
 
 		self:SetAttribute("_onstate-page", [[
-		for i, button in ipairs(buttons) do
-			button:SetAttribute("actionpage", tonumber(newstate))
+		if HasTempShapeshiftActionBar() then
+			newstate = GetTempShapeshiftBarIndex() or newstate
+		end
+
+		for i, Button in ipairs(Button) do
+			Button:SetAttribute("actionpage", tonumber(newstate))
 		end
 		]])
 
