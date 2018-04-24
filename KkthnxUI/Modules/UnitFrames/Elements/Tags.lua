@@ -109,7 +109,9 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	local _, unitClass = UnitClass(unit)
 	if (UnitIsPlayer(unit)) then
 		local class = K.Colors.class[unitClass]
-		if not class then return "" end
+		if not class then
+			return nil
+		end
 		return Hex(class[1], class[2], class[3])
 	elseif (unitReaction) then
 		local reaction = K.Colors.reaction[unitReaction]
@@ -138,7 +140,6 @@ function K.CreatePvPText(self, unit)
 	self.PvP:SetTextColor(0.69, 0.31, 0.31)
 	self.PvP:SetShadowOffset(1.25, -1.25)
 	self:Tag(self.PvP, "[KkthnxUI:PvPStatus]")
-
 	if (unit == "player") then
 		self:HookScript("OnEnter", function()
 			if (UnitIsPVP("player")) then
@@ -207,7 +208,6 @@ end
 oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
 	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
-
 	if (status) then
 		return status
 	else
@@ -218,7 +218,6 @@ end
 oUF.Tags.Events["KkthnxUI:HealthDeficit"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthDeficit"] = function(unit)
 	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
-
 	if (status) then
 		return status
 	else
@@ -231,7 +230,7 @@ oUF.Tags.Methods["KkthnxUI:PowerCurrent"] = function(unit)
 	local pType = UnitPowerType(unit)
 	local min = UnitPower(unit, pType)
 
-	return min == 0 and " " or K.GetFormattedText("CURRENT", min, UnitPowerMax(unit, pType))
+	return min == 0 and nil or K.GetFormattedText("CURRENT", min, UnitPowerMax(unit, pType))
 end
 
 oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
@@ -241,7 +240,6 @@ oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
 	end
 
 	local level = UnitBattlePetLevel(unit)
-
 	if (not level or level == 0) then
 		level = UnitEffectiveLevel(unit)
 	end
@@ -267,7 +265,7 @@ oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
 	elseif level == UnitLevel("player") then
-		return ""
+		return nil
 	elseif(level > 0) then
 		return level
 	else
@@ -325,7 +323,7 @@ oUF.Tags.Methods["KkthnxUI:AFK"] = function(unit)
 	if isAFK then
 		return ("|cffFFFFFF[|r|cffFF0000%s|r|cFFFFFFFF]|r"):format(DEFAULT_AFK_MESSAGE)
 	else
-		return ""
+		return nil
 	end
 end
 
@@ -335,9 +333,9 @@ oUF.Tags.Methods["KkthnxUI:GroupRole"] = function(unit)
 	local roleString = ""
 
 	if role == "TANK" then
-		roleString = "|cff0099CCTANK|r"
+		roleString = "|cff0099CCTank|r"
 	elseif role == "HEALER" then
-		roleString = "|cff00FF00HEAL|r"
+		roleString = "|cff00FF00Heal|r"
 	end
 
 	return roleString
@@ -407,8 +405,8 @@ oUF.Tags.Methods["KkthnxUI:NameplateSmartLevel"] = function(unit)
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
 		return UnitBattlePetLevel(unit)
 	elseif level == UnitLevel("player") then
-		return ""
-	elseif(level > 0) then
+		return nil
+	elseif (level > 0) then
 		return level
 	else
 		return "??"
@@ -443,7 +441,7 @@ oUF.Tags.Methods["KkthnxUI:NameplateThreatColor"] = function(unit)
 	if (status) and (IsInGroup() or UnitExists("pet")) then
 		return Hex(GetThreatStatusColor(status))
 	else
-		return ""
+		return nil
 	end
 end
 
@@ -453,6 +451,6 @@ oUF.Tags.Methods["KkthnxUI:NameplateThreat"] = function(unit)
 	if (percent and percent > 0) and (IsInGroup() or UnitExists("pet")) then
 		return string_format("%.0f%%", percent)
 	else
-		return ""
+		return nil
 	end
 end

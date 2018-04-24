@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
+	return
+end
 
 local _G = _G
 local format = format
@@ -17,47 +19,48 @@ local GetTime = _G.GetTime
 local UnitBuff = _G.UnitBuff
 local UnitDebuff = _G.UnitDebuff
 
+local Movers = K["Movers"]
 local FilgerFont = K.GetFont(C["Filger"].Font)
 local FilgerTexture = K.GetTexture(C["Filger"].Texture)
 
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
-P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 2, 169)
-P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "TOPLEFT", -2, 169)
-P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 2, 211)
-SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "TOPLEFT", -2, 211)
-T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-T_BUFF_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "TOPLEFT", -2, 253)
-T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
-
-PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 2, 253)
-PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
-
-PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", oUF_Player, "BOTTOMLEFT", -2, -44)
-PVE_PVP_CC_Anchor:SetSize(221, 25)
-
-COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", oUF_Player, "TOPRIGHT", 63, 17)
-COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
-
-T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", oUF_Target, "BOTTOMRIGHT", 2, 3)
-T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
-
 do
-	K["Movers"]:RegisterFrame(P_BUFF_ICON_Anchor)
-	K["Movers"]:RegisterFrame(P_PROC_ICON_Anchor)
-	K["Movers"]:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
-	K["Movers"]:RegisterFrame(T_DEBUFF_ICON_Anchor)
-	K["Movers"]:RegisterFrame(T_BUFF_Anchor)
-	K["Movers"]:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
-	K["Movers"]:RegisterFrame(PVE_PVP_CC_Anchor)
-	K["Movers"]:RegisterFrame(COOLDOWN_Anchor)
-	K["Movers"]:RegisterFrame(T_DE_BUFF_BAR_Anchor)
+	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 169)
+	P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 169)
+	P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 211)
+	SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 211)
+	T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 253)
+	T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+
+	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 253)
+	PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+
+	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", AnchorPlayer, "BOTTOMLEFT", -2, -44)
+	PVE_PVP_CC_Anchor:SetSize(221, 25)
+
+	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 63, 17)
+	COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
+
+	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "BOTTOMRIGHT", 2, 3)
+	T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
+
+	Movers:RegisterFrame(P_BUFF_ICON_Anchor)
+	Movers:RegisterFrame(P_PROC_ICON_Anchor)
+	Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
+	Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
+	Movers:RegisterFrame(T_BUFF_Anchor)
+	Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
+	Movers:RegisterFrame(PVE_PVP_CC_Anchor)
+	Movers:RegisterFrame(COOLDOWN_Anchor)
+	Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
 end
 
 SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
@@ -129,8 +132,12 @@ function Filger:UpdateCD()
 end
 
 function Filger:DisplayActives()
-	if not self.actives then return end
-	if not self.bars then self.bars = {} end
+	if not self.actives then
+		return
+	end
+	if not self.bars then
+		self.bars = {}
+	end
 	local id = self.Id
 	local index = 1
 	local previous = nil
@@ -178,16 +185,21 @@ function Filger:DisplayActives()
 					bar.count = _G[bar.count:GetName()]
 				else
 					bar.count = bar:CreateFontString("$parentCount", "OVERLAY")
-					bar.count:FontTemplate(C["Media"].Font, 12, "NONE")
-					bar.count:SetPoint("BOTTOMRIGHT", 1, -2)
+					bar.count:FontTemplate(C["Media"].Font, 13, "OUTLINE")
+					bar.count:SetShadowOffset(0, -0)
+					bar.count:SetPoint("BOTTOMRIGHT")
 					bar.count:SetJustifyH("RIGHT")
 				end
 			else
-				if C["Filger"].Bars ~= true then return end
+				if C["Filger"].Bars ~= true then
+					return
+				end
 				if bar.statusbar then
 					bar.statusbar = _G[bar.statusbar:GetName()]
 				else
-					if C["Filger"].Bars ~= true then return end
+					if C["Filger"].Bars ~= true then
+						return
+					end
 					bar.statusbar = CreateFrame("StatusBar", "$parentStatusBar", bar)
 					bar.statusbar:SetWidth(self.BarWidth)
 					bar.statusbar:SetHeight(self.IconSize - 10)

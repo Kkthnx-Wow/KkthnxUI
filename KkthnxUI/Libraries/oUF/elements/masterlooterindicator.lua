@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
-    -- Position and size
-    local MasterLooterIndicator = self:CreateTexture(nil, 'OVERLAY')
-    MasterLooterIndicator:SetSize(16, 16)
-    MasterLooterIndicator:SetPoint('TOPRIGHT', self)
+-- Position and size
+local MasterLooterIndicator = self:CreateTexture(nil, 'OVERLAY')
+MasterLooterIndicator:SetSize(16, 16)
+MasterLooterIndicator:SetPoint('TOPRIGHT', self)
 
-    -- Register it with oUF
-    self.MasterLooterIndicator = MasterLooterIndicator
+-- Register it with oUF
+self.MasterLooterIndicator = MasterLooterIndicator
 --]]
 
 local _, ns = ...
@@ -53,9 +53,7 @@ local function Update(self, event)
 				mlUnit = 'raid' .. raidIndex
 			end
 
-			if(UnitIsUnit(unit, mlUnit)) then
-				isShown = true
-			end
+			isShown = mlUnit and UnitIsUnit(unit, mlUnit)
 		end
 	end
 
@@ -64,7 +62,7 @@ local function Update(self, event)
 	--[[ Callback: MasterLooterIndicator:PostUpdate(isShown)
 	Called after the element has been updated.
 
-	* self    - the MasterLooterIndicator element
+	* self - the MasterLooterIndicator element
 	* isShown - indicates whether the element is shown (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -76,10 +74,10 @@ local function Path(self, ...)
 	--[[ Override: MasterLooterIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* ... - the arguments accompanying the event
+		--]]
 	return (self.MasterLooterIndicator.Override or Update) (self, ...)
 end
 

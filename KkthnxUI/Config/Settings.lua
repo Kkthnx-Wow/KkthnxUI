@@ -6,6 +6,7 @@ C["ActionBar"] = {
 	["BottomBars"] = 2,
 	["ButtonSize"] = 34,
 	["ButtonSpace"] = 6,
+	["DisableStancePages"] = false,
 	["Enable"] = true,
 	["Grid"] = true,
 	["HideHighlight"] = false,

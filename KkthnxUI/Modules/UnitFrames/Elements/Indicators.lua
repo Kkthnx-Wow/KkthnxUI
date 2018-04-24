@@ -15,6 +15,30 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 
+local roleIconTextures = {
+	TANK = [[Interface\AddOns\KkthnxUI\Media\Unitframes\tank.tga]],
+	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]],
+}
+
+local function UpdateGroupRole(self, event)
+	local lfdrole = self.GroupRoleIndicator
+	if (lfdrole.PreUpdate) then
+		lfdrole:PreUpdate()
+	end
+
+	local role = _G.UnitGroupRolesAssigned(self.unit)
+	if (_G.UnitIsConnected(self.unit)) and (role == "HEALER") or (role == "TANK") then
+		lfdrole:SetTexture(roleIconTextures[role])
+		lfdrole:Show()
+	else
+		lfdrole:Hide()
+	end
+
+	if (lfdrole.PostUpdate) then
+		return lfdrole:PostUpdate(role)
+	end
+end
+
 local function UpdateThreat(self, event, unit)
 	if (self.unit ~= unit) then
 		return
@@ -43,6 +67,16 @@ function K.CreateThreatIndicator(self)
 	threat.Override = UpdateThreat
 
 	self.ThreatIndicator = threat
+end
+
+function K.CreateGroupRoleIndicator(self, unit)
+	if (unit == "party") then
+		local GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
+		GroupRoleIndicator:SetPoint("RIGHT", self.Name, "LEFT", 0, 0)
+		GroupRoleIndicator:SetSize(16, 16)
+		GroupRoleIndicator.Override = UpdateGroupRole
+		self.GroupRoleIndicator = GroupRoleIndicator
+	end
 end
 
 function K.CreatePartyTargetGlow(self)
@@ -121,18 +155,10 @@ function K.CreateGlobalCooldown(self)
 	self.GlobalCooldown.Width = (10)
 end
 
-function K.CreateGroupRoleIndicator(self)
-	self.GroupTextRoleIndicator = self:CreateFontString(nil, "OVERLAY")
-	self.GroupTextRoleIndicator:SetFont(C["Media"].Font, 10, "")
-	self.GroupTextRoleIndicator:SetPoint("BOTTOM", self.Portrait, "BOTTOM", 0, -14)
-	self.GroupTextRoleIndicator:SetShadowOffset(K.Mult, -K.Mult)
-	self:Tag(self.GroupTextRoleIndicator, "[KkthnxUI:GroupRole]")
-end
-
 function K.CreateReadyCheckIndicator(self)
 	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
-	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() / 3.5, self.Portrait:GetHeight() / 3.5)
+	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 4, self.Portrait:GetHeight() - 4)
 	self.ReadyCheckIndicator.finishedTime = 5
 	self.ReadyCheckIndicator.fadeTime = 3
 end

@@ -107,6 +107,12 @@ if (About) then
   AddOn.optionsFrame = About.new(nil, "KkthnxUI")
 end
 
+-- AdiDebug Support
+AddOn.Debug = function() end
+if (AdiDebug) then
+	AddOn.Debug = AdiDebug:Embed({}, AddOnName)
+end
+
 function AddOn:OnInitialize()
   self.GUID = UnitGUID("player")
 

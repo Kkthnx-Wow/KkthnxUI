@@ -296,6 +296,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Out of Range color"..RestoreDefault,
 		},
 
+		["DisableStancePages"] = {
+			["Name"] = "Disable Stance Pages",
+			["Desc"] = "Disables automatic page-switching depending on the players stance. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
+		},
+
 		["PetBarHide"] = {
 			["Name"] = "Petbar toggle",
 			["Desc"] = "Hide pet bar",

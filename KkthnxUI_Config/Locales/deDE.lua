@@ -306,6 +306,11 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Hide pet bar",
 		},
 
+		["DisableStancePages"] = {
+			["Name"] = "Deaktiviere Haltungs-Seiten",
+			["Desc"] = "Deaktiviere das automatische Umschalten der Leistenseite bei Haltungsweches. (Betrifft nur Schurken und Druiden, keine Auswirkungen bei anderen Klassen)",
+		},
+
 		["PetBarHorizontal"] = {
 			["Name"] = "Petbar Horizontal",
 			["Desc"] = "Enable horizontal pet bar",

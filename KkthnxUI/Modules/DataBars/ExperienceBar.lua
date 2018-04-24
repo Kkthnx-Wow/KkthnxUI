@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Experience_DataBar", "AceEvent-3.0")
+local Module = K:NewModule("Experience", "AceEvent-3.0")
 
 -- Sourced: ElvUI (Elvz)
 
@@ -136,7 +136,7 @@ function Module:EnableDisable_ExperienceBar()
 end
 
 function Module:OnEnable()
-	self.expBar = CreateFrame("Button", "KkthnxUI_ExperienceBar", K.PetBattleHider)
+	self.expBar = CreateFrame("Button", "Experience", K.PetBattleHider)
 	self.expBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	self.expBar:SetScript("OnEnter", Module.ExperienceBar_OnEnter)
 	self.expBar:SetScript("OnLeave", Module.ExperienceBar_OnLeave)

@@ -1,5 +1,5 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Honor_DataBar", "AceEvent-3.0")
+local Module = K:NewModule("Honor", "AceEvent-3.0")
 
 -- Sourced: ElvUI (Elvz)
 
@@ -156,7 +156,7 @@ function Module:OnEnable()
 		AnchorY = -42
 	end
 
-	self.HonorBar = CreateFrame("Button", "KkthnxUI_HonorBar", K.PetBattleHider)
+	self.HonorBar = CreateFrame("Button", "Honor", K.PetBattleHider)
 	self.HonorBar:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 	self.HonorBar:SetScript("OnEnter", Module.HonorBar_OnEnter)
 	self.HonorBar:SetScript("OnLeave", Module.HonorBar_OnLeave)

@@ -23,16 +23,16 @@ local UIParent = _G.UIParent
 -- GLOBALS: Skada, UIConfigMain, CreateUIConfig, HideUIPanel, Menu, GameTooltip
 -- GLOBALS: UIErrorsFrame, ERR_NOT_IN_COMBAT, Lib_EasyMenu, Recount_MainWindow
 
-local Movers = K.Movers
+local Movers = K["Movers"]
 
 -- Bottom bars anchor
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", K.PetBattleHider)
 BottomBarAnchor:CreatePanel("Invisible", 1, 1, "BOTTOM", "UIParent", "BOTTOM", 0, 4)
 BottomBarAnchor:SetWidth((C["ActionBar"].ButtonSize * 12) + (C["ActionBar"].ButtonSpace * 11))
-if C["ActionBar"].BottomBars == 2 then
+if (C["ActionBar"].BottomBars == 2) then
 	BottomBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace)
-elseif C["ActionBar"].BottomBars == 3 then
-	if C["ActionBar"].SplitBars == true then
+elseif (C["ActionBar"].BottomBars == 3) then
+	if (C["ActionBar"].SplitBars == true) then
 		BottomBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace)
 	else
 		BottomBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 3) + (C["ActionBar"].ButtonSpace * 2))
@@ -47,11 +47,11 @@ Movers:RegisterFrame(BottomBarAnchor)
 local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", K.PetBattleHider)
 RightBarAnchor:CreatePanel("Invisible", 1, 1, "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 330)
 RightBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 12) + (C["ActionBar"].ButtonSpace * 11))
-if C["ActionBar"].RightBars == 1 then
+if (C["ActionBar"].RightBars == 1) then
 	RightBarAnchor:SetWidth(C["ActionBar"].ButtonSize)
-elseif C["ActionBar"].RightBars == 2 then
+elseif (C["ActionBar"].RightBars == 2) then
 	RightBarAnchor:SetWidth((C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace)
-elseif C["ActionBar"].RightBars == 3 then
+elseif (C["ActionBar"].RightBars == 3) then
 	RightBarAnchor:SetWidth((C["ActionBar"].ButtonSize * 3) + (C["ActionBar"].ButtonSpace * 2))
 else
 	RightBarAnchor:Hide()
@@ -60,7 +60,7 @@ RightBarAnchor:SetFrameStrata("LOW")
 Movers:RegisterFrame(RightBarAnchor)
 
 -- Split bar anchor
-if C["ActionBar"].SplitBars == true then
+if (C["ActionBar"].SplitBars == true) then
 	local SplitBarLeft = CreateFrame("Frame", "SplitBarLeft", K.PetBattleHider)
 	SplitBarLeft:CreatePanel("Invisible", (C["ActionBar"].ButtonSize * 3) + (C["ActionBar"].ButtonSpace * 2), (C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace, "BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
 	SplitBarLeft:SetFrameStrata("LOW")
@@ -72,9 +72,9 @@ end
 
 -- Pet bar anchor
 local PetBarAnchor = CreateFrame("Frame", "PetActionBarAnchor", K.PetBattleHider)
-if C["ActionBar"].PetBarHorizontal == true then
+if (C["ActionBar"].PetBarHorizontal == true) then
 	PetBarAnchor:CreatePanel("Invisible", (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), (C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace),"BOTTOMRIGHT", UIParent, "BOTTOM", -175, 167)
-elseif C["ActionBar"].RightBars > 0 then
+elseif (C["ActionBar"].RightBars > 0) then
 	PetBarAnchor:CreatePanel("Invisible", C["ActionBar"].ButtonSize + 6, (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), "RIGHT", RightBarAnchor, "LEFT", 0, 0)
 else
 	PetBarAnchor:CreatePanel("Invisible", (C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace), (C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9), "BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -5, 330)
@@ -91,8 +91,8 @@ ShiftAnchor:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
 ShiftAnchor:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
 ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 	local Forms = GetNumShapeshiftForms()
-	if Forms > 0 then
-		if C["ActionBar"].StanceBarHorizontal ~= true then
+	if (Forms > 0) then
+		if (C["ActionBar"].StanceBarHorizontal ~= true) then
 			ShiftAnchor:SetWidth(C["ActionBar"].ButtonSize + 3)
 			ShiftAnchor:SetHeight((C["ActionBar"].ButtonSize * Forms) + ((C["ActionBar"].ButtonSpace * Forms) - 3))
 			ShiftAnchor:SetPoint("TOPLEFT", _G["StanceButton1"], "TOPLEFT")
@@ -104,7 +104,18 @@ ShiftAnchor:SetScript("OnEvent", function(self, event, ...)
 	end
 end)
 
-if C["Chat"].Background then
+-- Used for Filger
+if (C["Filger"].Enable == true) then
+	local AnchorPlayer = CreateFrame("Frame", "AnchorPlayer", UIParent)
+	AnchorPlayer:SetSize(190, 52)
+	AnchorPlayer:SetPoint("BOTTOMRIGHT", BottomBarAnchor, "TOPLEFT", -10, 200)
+
+	local AnchorTarget = CreateFrame("Frame", "AnchorTarget", UIParent)
+	AnchorTarget:SetSize(190, 52)
+	AnchorTarget:SetPoint("BOTTOMLEFT", BottomBarAnchor, "TOPRIGHT", 10, 200)
+end
+
+if (C["Chat"].Background == true) then
 	local chatBG = CreateFrame("Frame", "ChatBackground", UIParent)
 	chatBG:SetBackdrop({bgFile = C["Media"].Blank, edgeFile = C["Media"].Glow, edgeSize = 3, insets = {left = 3, right = 3, top = 3, bottom = 3}})
 	chatBG:SetFrameLevel(1)
