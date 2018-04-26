@@ -71,7 +71,11 @@ local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
+AddOn.callbacks = AddOn.callbacks or LibStub("CallbackHandler-1.0")
 local About = LibStub:GetLibrary("LibAboutPanel", true)
+
+AddOn.oUF = Engine.oUF or oUF
+local oUF = AddOn.oUF
 
 Engine[1] = AddOn
 Engine[2] = {}
@@ -105,12 +109,6 @@ AddOn.Legion735 = AddOn.WoWBuild >= 26124
 
 if (About) then
   AddOn.optionsFrame = About.new(nil, "KkthnxUI")
-end
-
--- AdiDebug Support
-AddOn.Debug = function() end
-if (AdiDebug) then
-	AddOn.Debug = AdiDebug:Embed({}, AddOnName)
 end
 
 function AddOn:OnInitialize()

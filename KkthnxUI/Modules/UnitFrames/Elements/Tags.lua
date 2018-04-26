@@ -1,9 +1,14 @@
 local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true and C["Nameplates"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true and C["Nameplates"].Enable ~= true then
+	return
+end
 
-local _, ns = ...
-local oUF = ns.oUF or oUF
-assert(oUF, "KkthnxUI was unable to locate oUF.")
+local oUF = oUF or K.oUF
+
+if not oUF then
+	K.Print("Could not find a vaild instance of oUF. Tags.lua code!")
+	return
+end
 
 -- Lua API
 local _G = _G

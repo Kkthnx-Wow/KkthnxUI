@@ -3,8 +3,7 @@ local Module = K:NewModule("Unitframes", "AceEvent-3.0")
 
 -- This file ended up looking fucking horrible. This looked way better in my head.
 
-local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = oUF or K.oUF
 
 if not oUF then
 	K.Print("Could not find a vaild instance of oUF. Stopping Core.lua code!")

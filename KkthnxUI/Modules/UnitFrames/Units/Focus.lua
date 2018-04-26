@@ -1,8 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then return end
 
-local _, ns = ...
-local oUF = ns.oUF or oUF
+local oUF = oUF or K.oUF
 
 if not oUF then
 	K.Print("Could not find a vaild instance of oUF. Stopping Focus.lua code!")
