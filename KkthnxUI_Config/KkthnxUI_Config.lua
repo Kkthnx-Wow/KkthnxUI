@@ -739,7 +739,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	Label:SetShadowOffset(1.25, -1.25)
 	Label:SetPoint("LEFT", DropDown, "RIGHT", 5, 0)
 
-	local List = CreateFrame("Frame", nil, DropDown)
+	local List = CreateFrame("Frame", nil, UIParent)
 	List:SetPoint("TOPLEFT", DropDown, "BOTTOMLEFT", 0, -4)
 	List:SetTemplate("Transparent")
 	List:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1) -- Fix this later in API
@@ -747,6 +747,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	List:SetWidth(150)
 	List:SetFrameLevel(DropDown:GetFrameLevel() + 3)
 	List:SetFrameStrata("HIGH")
+	List:SetFrameLevel(100)
 	List:EnableMouse(true)
 	List:HookScript("OnHide", CloseList)
 	List.Owner = DropDown
@@ -761,6 +762,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	DropDown.Button = Button
 	DropDown.Current = Current
 	DropDown.List = List
+	DropDown:HookScript("OnHide", function() List:Hide() end)
 
 	Button.Tex = ButtonTex
 	Button:SetScript("OnClick", DropDownButtonOnClick)
