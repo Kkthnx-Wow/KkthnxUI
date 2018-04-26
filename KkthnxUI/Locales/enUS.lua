@@ -61,8 +61,10 @@ L["Actionbars"] = {
 	Fix_Actionbars = "There seems to be an issue with your actionbars. Would you like to attempt to fix the issue?",
 	Key = "Key",
 	Keybind_Mode = "Hover, your mouse over any action button, to bind it. Press the escape key or right click to clear the current action button's keybinding.",
+	Locked = "|CFFFF0000Locked|r",
 	No_Bindings_Set = "No Bindings Set",
 	Trigger = "Trigger",
+	Unlocked = "|CFF008000Unlocked|r",
 }
 
 -- Announcements Localization

@@ -57,10 +57,10 @@ local menuList = {
 
 			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
 				KkthnxUIData[K.Realm][K.Name].BarsLocked = false
-				print("Actionbars are now |CFF008000UnLocked|r")
+				K.Print("Actionbars are now "..L["Actionbars"].Unlocked)
 			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
 				KkthnxUIData[K.Realm][K.Name].BarsLocked = true
-				print("Actionbars are now |CFFFF0000Locked|r")
+				K.Print("Actionbars are now "..L["Actionbars"].Locked)
 			end
 	end},
 	{text = "Toggle Config", notCheckable = true, func = function()
