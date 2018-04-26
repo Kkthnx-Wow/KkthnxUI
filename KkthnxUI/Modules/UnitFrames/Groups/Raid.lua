@@ -101,7 +101,7 @@ end
 function K.CreateRaid(self, unit)
 	unit = unit:match("^(%a-)%d+") or unit
 
-	if (unit == "raid") then
+	if (unit == "raid" or unit == "maintank" or unit == "maintanktarget") then
 		self:RegisterForClicks("AnyUp")
 		self:SetScript("OnEnter", function(self)
 			UnitFrame_OnEnter(self)

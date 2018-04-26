@@ -14,6 +14,7 @@ end
 local _G = _G
 local tostring = tostring
 
+local ActionBarAnchor = _G.ActionBarAnchor
 local InCombatLockdown = _G.InCombatLockdown
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local UIParent = _G.UIParent
@@ -187,8 +188,10 @@ function Module:CreateStyle(unit)
 		K.CreateParty(self, "party")
 	elseif (unit == "raid") then
 		K.CreateRaid(self, "raid")
-	elseif (unit == "maintank" or unit == "maintanktarget") then
+	elseif (unit == "maintank") then
 		K.CreateRaid(self, "maintank")
+	elseif (unit == "maintanktarget") then
+		K.CreateRaid(self, "maintanktarget")
 	end
 
 	return self
