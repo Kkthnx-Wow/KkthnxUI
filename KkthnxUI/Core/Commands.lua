@@ -185,8 +185,8 @@ end
 K:RegisterChatCommand("cleanguild", K.CleanupGuild)
 
 -- Support for slash commands, which must be passed in a list starting at 1
-local result
-function K.QuestCheck(msg)
+local result = ""
+function K.QuestCheck(msg, arg)
 	if tonumber(msg) ~= nil then
 		arg = tonumber(msg)
 		if arg then

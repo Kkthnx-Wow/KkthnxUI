@@ -3,10 +3,10 @@
 ## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI
 ## Author: Kkthnx
-## Version: 7.16
+## Version: 7.17
 ## DefaultState: Enabled
 ## SavedVariables: KkthnxUIConfigShared, KkthnxUIConfigPerAccount
-## SavedVariablesPerCharacter: KkthnxUIConfigNotShared 
+## SavedVariablesPerCharacter: KkthnxUIConfigNotShared
 ## RequiredDeps: KkthnxUI
 
 # -- Load Core File
