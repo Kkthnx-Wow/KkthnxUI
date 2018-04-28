@@ -116,7 +116,7 @@ Dialog:Register("CANNOT_BUY_BANK_SLOT", {
 Dialog:Register("BUY_BANK_SLOT", {
 	text = CONFIRM_BUY_BANK_SLOT,
 	on_show = function(self)
-		MoneyFrame_Update(self.moneyFrame, GetBankSlotCost())
+		--MoneyFrame_Update(self.moneyFrame, GetBankSlotCost())
 	end,
 	buttons = {
 		{

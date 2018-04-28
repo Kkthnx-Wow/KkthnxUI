@@ -3,6 +3,8 @@ if C["Chat"].Enable ~= true then return end
 local Module = K:NewModule("ChatURLCopy", "AceHook-3.0")
 local Dialog = LibStub("LibDialog-1.0")
 
+local _G = _G
+
 -- Lua API
 local string_gsub = string.gsub
 local string_lower = string.lower

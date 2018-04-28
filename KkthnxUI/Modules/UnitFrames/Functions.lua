@@ -176,7 +176,7 @@ function K.CreateArenaPrep()
 		local arenaprep = {}
 		for i = 1, 5 do
 			arenaprep[i] = CreateFrame("Frame", "oUF_ArenaPrep"..i, UIParent)
-			arenaprep[i]:SetAllPoints(_G["oUF_ArenaFrame"..i])
+			arenaprep[i]:SetAllPoints(_G["oUF_Arena"..i])
 			arenaprep[i]:SetFrameStrata("BACKGROUND")
 
 			arenaprep[i].Health = CreateFrame("StatusBar", nil, arenaprep[i])
