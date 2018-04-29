@@ -114,6 +114,8 @@ end
 function AddOn:OnInitialize()
   self.GUID = UnitGUID("player")
 
+  self.CreateStaticPopups()
+
   -- KkthnxUI GameMenu Button.
   local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
   GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))

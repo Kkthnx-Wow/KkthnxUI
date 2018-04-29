@@ -1,7 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 if C["Chat"].Enable ~= true then return end
 local Module = K:NewModule("ChatURLCopy", "AceHook-3.0")
-local Dialog = LibStub("LibDialog-1.0")
 
 local _G = _G
 
@@ -99,10 +98,7 @@ local function HyperLinkedURL(data)
 	if string_sub(data, 1, 3) == "url" then
 		local CurrentLink = string_sub(data, 5)
 		if CurrentLink and CurrentLink ~= "" then
-			if Dialog:ActiveDialog("URLCopy") then
-				Dialog:Dismiss("URLCopy")
-			end
-			Dialog:Spawn("URLCopy", {url = CurrentLink})
+			K.StaticPopup_Show("URL_COPY", CurrentLink)
 		end
 		return
 	end
@@ -120,27 +116,46 @@ function ItemRefTooltip:SetHyperlink(data, ...)
 end
 
 function Module:OnInitialize()
-	Dialog:Register("URLCopy", {
+	K.PopupDialogs["URL_COPY"] = { -- Still need to finish this.
+		hasEditBox = 1,
 		text = "URL Copy",
-		width = 340,
-		editboxes = {
-			{width = 318,
-				on_escape_pressed = function(self, data)
-					self:GetParent():Hide()
-				end,
-			},
-		},
-		on_show = function(self, data)
-			self.editboxes[1]:SetText(data.url)
-			self.editboxes[1]:HighlightText()
-			self.editboxes[1]:SetFocus()
+		OnShow = function(self, data)
+			self.editBox:SetAutoFocus(false)
+			self.editBox.width = self.editBox:GetWidth()
+			self.editBox:SetWidth(220)
+			self.editBox:SetText(data.url)
+			self.editBox:HighlightText()
+			ChatEdit_FocusActiveWindow()
 		end,
-		buttons = {
-			{text = _G.CLOSE,},
-		},
-		show_while_dead = true,
-		hide_on_escape = true,
-	})
+		OnHide = function(self)
+			self.editBox:SetWidth(self.editBox.width or 50)
+			self.editBox.width = nil
+		end,
+		timeout = 0,
+		hideOnEscape = 1,
+		button1 = _G.CLOSE,
+		OnAccept = K.Noop,
+		showAlert = 1,
+		EditBoxOnEnterPressed = function(self)
+			ChatEdit_FocusActiveWindow()
+			self:GetParent():Hide()
+		end,
+		EditBoxOnEscapePressed = function(self)
+			ChatEdit_FocusActiveWindow()
+			self:GetParent():Hide()
+		end,
+		EditBoxOnTextChanged = function(self, data)
+			if (self:GetText() ~= data.url) then
+				self:SetText(data.url)
+			end
+			self:HighlightText()
+			self:ClearFocus()
+			ChatEdit_FocusActiveWindow()
+		end,
+		OnEditFocusGained = function(self)
+			self:HighlightText()
+		end,
+	}
 
 	if WIM then
 		WIM.RegisterWidgetTrigger("chat_display", "whisper, chat, w2w, demo", "OnHyperlinkClick", function(self)

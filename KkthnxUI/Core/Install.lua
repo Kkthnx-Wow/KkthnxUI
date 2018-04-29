@@ -20,7 +20,6 @@ local PREVIOUS = _G.PREVIOUS
 local ReloadUI = _G.ReloadUI
 local RESET_TO_DEFAULT = _G.RESET_TO_DEFAULT
 local SetCVar = _G.SetCVar
-local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 
@@ -419,12 +418,12 @@ end
 
 _G.SLASH_RESETUI1 = "/reset"
 SlashCmdList["RESETUI"] = function()
-	StaticPopup_Show("RESET_UI")
+	K.StaticPopup_Show("RESET_UI")
 end
 
 _G.SLASH_DISABLEUI1 = "/disable"
 SlashCmdList["DISABLEUI"] = function()
-	StaticPopup_Show("DISABLE_UI")
+	K.StaticPopup_Show("DISABLE_UI")
 end
 
 K["Install"] = Install

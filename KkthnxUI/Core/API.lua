@@ -95,9 +95,13 @@ local function SetTemplate(self, template, strip, noHover, noPushed, noChecked)
 	end
 end
 
-local function CreateBackdrop(f, template)
+local function CreateBackdrop(f, template, strip)
 	if not template then template = "Transparent" end
 	if f.Backdrop then return end
+
+	if strip then
+		f:StripTextures()
+	end
 
 	local b = CreateFrame("Frame", "$parentBackdrop", f)
 	b:SetPoint("TOPLEFT", 0, -0)
@@ -126,7 +130,9 @@ local function CreateShadow(self, size, strip, backdrop)
 	backdropr, backdropg, backdropb, backdropa = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4]
 	borderr, borderg, borderb = 0, 0, 0
 
-	if strip then self:StripTextures() end
+	if strip then
+		self:StripTextures()
+	end
 
 	local shadow = CreateFrame("Frame", "$parentShadow", self)
 	shadow:SetFrameLevel(1)

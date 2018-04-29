@@ -4,7 +4,6 @@ local _G = _G
 local print = print
 
 local ReloadUI = _G.ReloadUI
-local StaticPopup_Show = _G.StaticPopup_Show
 
 -- GLOBALS: InstallStepComplete
 
@@ -59,7 +58,7 @@ function K.AddOnSettings(msg)
 	if msg == "skada" then
 		if K.CheckAddOnState("Skada") then
 			K.LoadSkadaProfile(true)
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."Skada profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn Skada is not loaded!|r")
@@ -67,7 +66,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "dbm" then
 		if K.CheckAddOnState("DBM-Core") then
 			K.LoadDBMProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."DBM profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn DeadlyBossMods is not loaded!|r")
@@ -75,7 +74,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "bigwigs" then
 		if K.CheckAddOnState("BigWigs") then
 			K.LoadBigWigsProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."BigWigs profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn BigWigs is not loaded!|r")
@@ -83,7 +82,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "pawn" then
 		if K.CheckAddOnState("Pawn") then
 			K.LoadPawnProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."Pawn profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn Pawn is not loaded!|r")
@@ -91,7 +90,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "msbt" then
 		if K.CheckAddOnState("MikScrollingBattleText") then
 			K.LoadMSBTProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."MikScrollingBattleText profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn MikScrollingBattleText is not loaded!|r")
@@ -99,7 +98,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "bugsack" then
 		if K.CheckAddOnState("BugSack") then
 			K.LoadBugSackProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."BugSack profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn BugSack is not loaded!|r")
@@ -107,7 +106,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "buggrabber" then
 		if K.CheckAddOnState("!BugGrabber") then
 			K.LoadBugGrabberProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."BugSack profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn !BugGrabber is not loaded!|r")
@@ -115,7 +114,7 @@ function K.AddOnSettings(msg)
 	elseif msg == "bt4" or msg == "bartender" then
 		if K.CheckAddOnState("Bartender4") then
 			K.LoadBartenderProfile()
-			StaticPopup_Show("CHANGES_RL")
+			K.StaticPopup_Show("CHANGES_RL")
 			print("|cffffff00".."Bartender4 profile loaded".."|r")
 		else
 			print("|CFFFF0000AddOn Bartender4 is not loaded!|r")

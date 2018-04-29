@@ -1,5 +1,4 @@
 local K, C, L = unpack(select(2, ...))
-local Dialog = LibStub("LibDialog-1.0")
 
 -- Lua API
 local _G = _G
@@ -57,7 +56,6 @@ local SetCVar = _G.SetCVar
 local SetSpecialization = _G.SetSpecialization
 local SHOW_TALENT_LEVEL = _G.SHOW_TALENT_LEVEL
 local SlashCmdList = _G.SlashCmdList
-local StaticPopup_Show = _G.StaticPopup_Show
 local UIParent = _G.UIParent
 local UninviteUnit = _G.UninviteUnit
 local UnitExists = _G.UnitExists
@@ -282,10 +280,7 @@ K:RegisterChatCommand("clfix", K.ClearCombatLog)
 
 -- Here we can restart wow's engine. could be use for sound issues and more.
 function K.FixGFXEngine()
-	if Dialog:ActiveDialog("RESTART_GFX") then
-		Dialog:Dismiss("RESTART_GFX")
-	end
-	Dialog:Spawn("RESTART_GFX")
+	K.StaticPopup_Show("RESTART_GFX")
 end
 K:RegisterChatCommand("restartgfx", K.FixGFXEngine)
 K:RegisterChatCommand("fixgfx", K.FixGFXEngine)
@@ -331,12 +326,12 @@ function K.SetUIScale()
 	if not SetUIScale then
 		SetCVar("uiScale", 768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
 		print("Successfully set UI scale to "..768 / string.match(({GetScreenResolutions()})[GetCurrentResolution()], "%d+x(%d+)"))
-		StaticPopup_Show("CHANGES_RL")
+		K.StaticPopup_Show("CHANGES_RL")
 	end
 end
 
 SlashCmdList["SETUISCALE"] = function()
-	StaticPopup_Show("SET_UISCALE")
+	K.StaticPopup_Show("SET_UISCALE")
 end
 _G.SLASH_SETUISCALE1 = "/uiscale"
 _G.SLASH_SETUISCALE2 = "/setscale"
@@ -365,7 +360,7 @@ function K.DisbandRaidGroup()
 end
 
 SlashCmdList["GROUPDISBAND"] = function()
-	StaticPopup_Show("DISBAND_RAID")
+	K.StaticPopup_Show("DISBAND_RAID")
 end
 _G.SLASH_GROUPDISBAND1 = "/rd"
 
@@ -678,15 +673,12 @@ function K.BoostUI()
 	SetCVar("timingmethod", 1)
 	SetCVar("waterDetail", 0)
 	SetCVar("weatherDensity", 0)
-	StaticPopup_Show("BOOST_UI")
-	StaticPopup_Show("CHANGES_RL")
+	K.StaticPopup_Show("BOOST_UI")
+	K.StaticPopup_Show("CHANGES_RL")
 end
 
 _G.SLASH_BOOSTUI1 = "/boostfps"
 _G.SLASH_BOOSTUI2 = "/boostui"
 SlashCmdList.BOOSTUI = function()
-	if Dialog:ActiveDialog("BOOST_UI") then
-		Dialog:Dismiss("BOOST_UI")
-	end
-	Dialog:Spawn("BOOST_UI")
+	K.StaticPopup_Show("BOOST_UI")
 end

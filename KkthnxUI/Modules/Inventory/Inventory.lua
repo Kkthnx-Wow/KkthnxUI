@@ -1,6 +1,5 @@
 local K, C, L = unpack(select(2, ...))
 local Unfit = LibStub("Unfit-1.0")
-local Dialog = LibStub("LibDialog-1.0")
 if C["Inventory"].Enable ~= true or K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or K.CheckAddOnState("cargBags_Nivaya")
 or K.CheckAddOnState("cargBags") or K.CheckAddOnState("Bagnon") or K.CheckAddOnState("Combuctor") or K.CheckAddOnState("TBag") or K.CheckAddOnState("BaudBag") then
 	return
@@ -921,15 +920,9 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton:SetScript("OnClick", function()
 			local _, full = GetNumBankSlots()
 			if (full) then
-				if Dialog:ActiveDialog("CANNOT_BUY_BANK_SLOT") then
-					Dialog:Dismiss("CANNOT_BUY_BANK_SLOT")
-				end
-				Dialog:Spawn("CANNOT_BUY_BANK_SLOT")
+				K.StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
 			else
-				if Dialog:ActiveDialog("BUY_BANK_SLOT") then
-					Dialog:Dismiss("BUY_BANK_SLOT")
-				end
-				Dialog:Spawn("BUY_BANK_SLOT")
+				K.StaticPopup_Show("BUY_BANK_SLOT")
 			end
 		end)
 	end
