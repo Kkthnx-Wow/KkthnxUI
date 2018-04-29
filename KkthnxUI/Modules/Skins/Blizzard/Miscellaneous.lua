@@ -6,14 +6,17 @@ local _G = _G
 local table_insert = table.insert
 local getn = getn
 
+local hooksecurefunc = _G.hooksecurefunc
+
 local function LoadSkin()
-	if K.CheckAddOnState("Skinner") or K.CheckAddOnState("Aurora") then return end
+	if K.CheckAddOnState("Skinner") or K.CheckAddOnState("Aurora") then
+		return
+	end
 
 	local Skins = {
 		"QueueStatusFrame",
 		"DropDownList1Backdrop",
 		"DropDownList1MenuBackdrop",
-
 		-- DropDownMenu library support
 		"L_DropDownList1Backdrop",
 		"L_DropDownList1MenuBackdrop"
@@ -26,7 +29,7 @@ local function LoadSkin()
 	end
 
 	-- DropDownMenu
-	_G.hooksecurefunc("UIDropDownMenu_CreateFrames", function(level, index)
+	hooksecurefunc("UIDropDownMenu_CreateFrames", function(level, index)
 		if not _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent", true)
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent", true)
@@ -34,7 +37,7 @@ local function LoadSkin()
 	end)
 
 	-- LibUIDropDownMenu
-	_G.hooksecurefunc("L_UIDropDownMenu_CreateFrames", function(level, index)
+	hooksecurefunc("L_UIDropDownMenu_CreateFrames", function(level, index)
 		if not _G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
 			_G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent", true)
 			_G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent", true)
@@ -83,4 +86,4 @@ local function LoadSkin()
 	end
 end
 
-tinsert(K.SkinFuncs["KkthnxUI"], LoadSkin)
+table_insert(K.SkinFuncs["KkthnxUI"], LoadSkin)
