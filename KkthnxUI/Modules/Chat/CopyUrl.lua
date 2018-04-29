@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["Chat"].Enable ~= true then return end
+if C["Chat"].Enable ~= true then
+	return
+end
 local Module = K:NewModule("ChatURLCopy", "AceHook-3.0")
 
 local _G = _G
