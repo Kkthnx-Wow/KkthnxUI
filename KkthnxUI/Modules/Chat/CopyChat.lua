@@ -85,10 +85,10 @@ local menuList = {
 }
 
 local function RemoveIconFromLine(text)
-	for i= 1, 8 do
-		text = string_gsub(text, "|TInterface\\TargetingFrame\\UI%-RaidTargetingIcon_"..i..":0|t", "{"..string_lower(_G["RAID_TARGET_"..i]).."}")
+	for i = 1, 8 do
+		text = gsub(text, "|TInterface\\TargetingFrame\\UI%-RaidTargetingIcon_"..i..":0|t", "{"..string_lower(_G["RAID_TARGET_"..i]).."}")
 	end
-	text = string_gsub(text, "|TInterface(.-)|t", "")
+	text = gsub(text, "|TInterface(.-)|t", "")
 	return text
 end
 

@@ -100,7 +100,7 @@ local function HyperLinkedURL(data)
 	if string_sub(data, 1, 3) == "url" then
 		local CurrentLink = string_sub(data, 5)
 		if CurrentLink and CurrentLink ~= "" then
-			K.StaticPopup_Show("URL_COPY", {url = CurrentLink})
+			K.StaticPopup_Show("URL_COPY", CurrentLink, nil, {url = CurrentLink})
 		end
 		return
 	end
@@ -144,9 +144,9 @@ function Module:OnInitialize()
 			self:GetParent():Hide()
 		end,
 		EditBoxOnTextChanged = function(self, data)
-			if (self:GetText() ~= data.url) then
-				self:SetText(data.url)
-			end
+			if (self:GetText() ~= self:GetParent().data.url) then
+          self:SetText(self:GetParent().data.url)
+      end
 			self:HighlightText()
 			self:ClearFocus()
 			ChatEdit_FocusActiveWindow()
