@@ -3,6 +3,23 @@
 What makes unicorns cry?
 All notable changes to this project will be documented in this file.
 
+**Version 7.18 [April 29th 2018]**
+
+**New:**   
+CreateBackdrop now supports the strip arg.   
+CODE_OF_CONDUCT.md added to files on GitHub.
+
+**Fixes:**   
+Fixed CopyURL not applying URL into editbox.  
+Fixed issue #94 by Mcbooze. (bank slot purchase issue)   
+Fix Arena prep frames using wrong parent.
+
+**Miscellaneous:**   
+Cleanup numerous files.   
+Removed LibDialog-1.0 completely.
+
+___   
+
 **Version 7.17 [April 27th 2018]**
 
 **New:**   
