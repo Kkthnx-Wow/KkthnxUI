@@ -6,7 +6,6 @@ local _G = _G
 
 local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
-local StaticPopup_Show = _G.StaticPopup_Show
 local UNKNOWN = _G.UNKNOWN
 
 -- Force user to disable KkthnxUI if another AddOn is enabled with it!
@@ -27,7 +26,7 @@ if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI"
 		end,
 	}
 
-	StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
+	K.StaticPopup_Show("KKTHNXUI_INCOMPATIBLE")
 	return
 end
 

@@ -33,8 +33,6 @@ local RunBinding = _G.RunBinding
 local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
-local StaticPopup_Hide = _G.StaticPopup_Hide
-local StaticPopup_Show = _G.StaticPopup_Show
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: DEFAULT_CHAT_FRAME, RightBarMouseOver, StanceBarMouseOver
@@ -306,7 +304,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			self.enabled = false
 			self:HideFrame()
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
-			StaticPopup_Hide("KEYBIND_MODE")
+			K.StaticPopup_Hide("KEYBIND_MODE")
 			if C["ActionBar"].RightBarsMouseover == true then
 				RightBarMouseOver(0)
 			end
@@ -318,16 +316,20 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end
 
-		StaticPopupDialogs.KEYBIND_MODE = {
+		K.PopupDialogs["KEYBIND_MODE"] = {
 			text = L["Actionbars"].Keybind_Mode,
 			button1 = APPLY,
 			button2 = CANCEL,
-			OnAccept = function() bind:Deactivate(true) ReloadUI() end,
-			OnCancel = function() bind:Deactivate(false) end,
+			OnAccept = function()
+				bind:Deactivate(true)
+				ReloadUI()
+			end,
+			OnCancel = function()
+				bind:Deactivate(false)
+			end,
 			timeout = 0,
 			whileDead = 1,
 			hideOnEscape = false,
-			preferredIndex = 3,
 		}
 
 		-- Registering
@@ -381,7 +383,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 	end
 	if not bind.enabled then
 		bind:Activate()
-		StaticPopup_Show("KEYBIND_MODE")
+		K.StaticPopup_Show("KEYBIND_MODE")
 	end
 end
 

@@ -240,13 +240,13 @@ function K.StaticPopup_CollapseTable()
 	end
 end
 
-function K.StaticPopup_SetUpPosition(dialog)
+function K.StaticPopup_SetUpPosition(_, dialog)
 	if (not tContains(K.StaticPopup_DisplayedFrames, dialog)) then
 		local lastFrame = K.StaticPopup_DisplayedFrames[#K.StaticPopup_DisplayedFrames]
 		if (lastFrame) then
 			dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4)
 		else
-			dialog:SetPoint("TOP", UIParent, "TOP", 0, -100)
+			dialog:SetPoint("TOP", _G.UIParent, "TOP", 0, -100)
 		end
 		table_insert(K.StaticPopup_DisplayedFrames, dialog)
 	end
@@ -755,7 +755,7 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 	editBox.addHighlightedText = true
 
 	-- Finally size and show the dialog
-	K.StaticPopup_SetUpPosition(dialog)
+	K.StaticPopup_SetUpPosition(_, dialog)
 	dialog:Show()
 
 	K.StaticPopup_Resize(dialog, which)
@@ -794,32 +794,6 @@ function K.CreateStaticPopups()
 				K.StaticPopup_OnClick(self:GetParent(), self:GetID())
 			end)
 		end
-
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnEscapePressed", K.StaticPopup_EditBoxOnEscapePressed)
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnTextChanged", K.StaticPopup_EditBoxOnTextChanged)
-
-		--Skin
-		K.StaticPopupFrames[index]:SetTemplate("Transparent")
-
-		for i = 1, 3 do
-			_G["KkthnxUI_StaticPopup"..index.."Button"..i]:SkinButton()
-		end
-
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetFrameLevel(_G["KkthnxUI_StaticPopup"..index.."EditBox"]:GetFrameLevel() + 1)
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:CreateBackdrop("Transparent", true)
-		_G["KkthnxUI_StaticPopup"..index.."MoneyInputFrameGold"]:SetTemplate("Transparent")
-		_G["KkthnxUI_StaticPopup"..index.."MoneyInputFrameSilver"]:SetTemplate("Transparent")
-		_G["KkthnxUI_StaticPopup"..index.."MoneyInputFrameCopper"]:SetTemplate("Transparent")
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"].Backdrop:SetPoint("TOPLEFT", -2, -4)
-		_G["KkthnxUI_StaticPopup"..index.."EditBox"].Backdrop:SetPoint("BOTTOMRIGHT", 2, 4)
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrameNameFrame"]:Kill()
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrame"]:GetNormalTexture():Kill()
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrame"]:SetTemplate("Transparent")
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrame"]:StyleButton()
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrameIconTexture"]:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrameIconTexture"]:SetPoint("TOPLEFT", -2, 2)
-		_G["KkthnxUI_StaticPopup"..index.."ItemFrameIconTexture"]:SetPoint("BOTTOMRIGHT", 2, -2)
 	end
 
 	K:SecureHook("StaticPopup_SetUpPosition")

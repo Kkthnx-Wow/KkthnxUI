@@ -70,7 +70,7 @@ function K.CreateClassModules(self, width, height, spacing)
 
 		-- combo points 6-10 will be stacked on top of 1-5 for rogues with the anticipation talent
 		if (i > 5) then
-			bar:SetFrameLevel(bar:GetFrameLevel() + 1)
+			bar:SetFrameLevel(bar:GetFrameLevel() + 2)
 		end
 
 		classPower[i] = bar

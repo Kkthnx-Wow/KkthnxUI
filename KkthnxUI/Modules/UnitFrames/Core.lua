@@ -198,25 +198,20 @@ end
 
 function Module:CreateUnits()
 	local Player = oUF:Spawn("player")
-	Player:SetParent(K.PetBattleHider)
 	Player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
 	Player:SetSize(190, 52)
 
 	local Target = oUF:Spawn("target")
-	Target:SetParent(K.PetBattleHider)
 	Target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
 	Target:SetSize(190, 52)
 
 	local TargetOfTarget = oUF:Spawn("targettarget")
-	TargetOfTarget:SetParent(K.PetBattleHider)
 	TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
 	TargetOfTarget:SetSize(116, 36)
 
 	local Pet = oUF:Spawn("pet")
 	if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
 		Pet:SetParent(Player)
-	else
-		Pet:SetParent(K.PetBattleHider)
 	end
 	if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
 		Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -14)
@@ -226,12 +221,10 @@ function Module:CreateUnits()
 	Pet:SetSize(116, 36)
 
 	local Focus = oUF:Spawn("focus")
-	Focus:SetParent(K.PetBattleHider)
 	Focus:SetPoint("BOTTOMRIGHT", Player, "TOPLEFT", -60, 30)
 	Focus:SetSize(190, 52)
 
 	local FocusTarget = oUF:Spawn("focustarget")
-	FocusTarget:SetParent(K.PetBattleHider)
 	FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 	FocusTarget:SetSize(116, 36)
 
@@ -255,7 +248,6 @@ function Module:CreateUnits()
 		local Boss = {}
 		for i = 1, MAX_BOSS_FRAMES do
 			Boss[i] = oUF:Spawn("boss"..i)
-			Boss[i]:SetParent(K.PetBattleHider)
 			if (i == 1) then
 				Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 			else
@@ -268,11 +260,9 @@ function Module:CreateUnits()
 
 	if (C["Unitframe"].Party) then
 		local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
-		Party:SetParent(K.PetBattleHider)
 		Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 
 		local PartyTarget = oUF:SpawnHeader(Module:GetPartyTargetFramesAttributes())
-		PartyTarget:SetParent(K.PetBattleHider)
 		PartyTarget:SetPoint("TOPLEFT", Party, "TOPRIGHT", 4, 16)
 
 		Movers:RegisterFrame(Party)

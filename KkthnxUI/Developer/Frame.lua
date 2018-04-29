@@ -128,6 +128,15 @@ end
 SlashCmdList["GETPOINT"] = GetPoint
 _G.SLASH_GETPOINT1 = "/getpoint"
 
+local function GetKids()
+    local kids = {GetMouseFocus():GetChildren()}
+    for _, child in ipairs(kids) do
+        DEFAULT_CHAT_FRAME:AddMessage(child:GetName())
+    end
+end
+SlashCmdList["GETKIDS"] = GetKids
+_G.SLASH_GETKIDS1 = "/getkids"
+
 -- get the frame name
 SlashCmdList["FRAMENAME"] = function()
 	print(GetMouseFocus():GetName())

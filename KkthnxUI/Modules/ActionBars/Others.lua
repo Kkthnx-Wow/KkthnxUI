@@ -12,7 +12,6 @@ local InCombatLockdown = _G.InCombatLockdown
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
-local StaticPopup_Show =_G.StaticPopup_Show
 local UIParent = _G.UIParent
 
 local Name = UnitName("player")
@@ -30,7 +29,7 @@ ActionBars:SetScript("OnEvent", function(self, event)
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
 			SetActionBarToggles(1, 1, 1, 1)
-			StaticPopup_Show("FIX_ACTIONBARS")
+			K.StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
 
