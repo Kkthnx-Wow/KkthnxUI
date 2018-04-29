@@ -323,7 +323,7 @@ function Module:OnInitialize()
 	self:CreateUtilButton("DisbandRaidButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -5, L["Blizzard"].Disband_Group, nil)
 	DisbandRaidButton:SetScript("OnMouseUp", function()
 		if CheckRaidStatus() then
-			StaticPopup_Show("DISBAND_RAID")
+			K.StaticPopup_Show("DISBAND_RAID")
 		end
 	end)
 
@@ -376,7 +376,7 @@ function Module:OnInitialize()
 
 		tinsert(buttons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
 	else
-		StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
+		K.StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 	end
 
 	--Reskin Stuff

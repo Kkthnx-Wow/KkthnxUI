@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["Chat"].Enable ~= true then return end
+if C["Chat"].Enable ~= true then
+	return
+end
 local Module = K:NewModule("ChatURLCopy", "AceHook-3.0")
 
 local _G = _G
@@ -98,7 +100,7 @@ local function HyperLinkedURL(data)
 	if string_sub(data, 1, 3) == "url" then
 		local CurrentLink = string_sub(data, 5)
 		if CurrentLink and CurrentLink ~= "" then
-			K.StaticPopup_Show("URL_COPY", CurrentLink)
+			K.StaticPopup_Show("URL_COPY", {url = CurrentLink})
 		end
 		return
 	end
@@ -117,8 +119,8 @@ end
 
 function Module:OnInitialize()
 	K.PopupDialogs["URL_COPY"] = { -- Still need to finish this.
-		hasEditBox = 1,
 		text = "URL Copy",
+		hasEditBox = 1,
 		OnShow = function(self, data)
 			self.editBox:SetAutoFocus(false)
 			self.editBox.width = self.editBox:GetWidth()
@@ -131,11 +133,8 @@ function Module:OnInitialize()
 			self.editBox:SetWidth(self.editBox.width or 50)
 			self.editBox.width = nil
 		end,
-		timeout = 0,
 		hideOnEscape = 1,
-		button1 = _G.CLOSE,
-		OnAccept = K.Noop,
-		showAlert = 1,
+		button1 = CLOSE,
 		EditBoxOnEnterPressed = function(self)
 			ChatEdit_FocusActiveWindow()
 			self:GetParent():Hide()
@@ -155,6 +154,7 @@ function Module:OnInitialize()
 		OnEditFocusGained = function(self)
 			self:HighlightText()
 		end,
+		showAlert = 1,
 	}
 
 	if WIM then

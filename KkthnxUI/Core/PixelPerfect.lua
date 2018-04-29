@@ -20,7 +20,7 @@ local InCombatLockdown = _G.InCombatLockdown
 local SetCVar = _G.SetCVar
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ForceQuit, WorldMapFrame, UIParent, StaticPopup_Show
+-- GLOBALS: ForceQuit, WorldMapFrame, UIParent
 
 local IsLocked = false
 

@@ -1,12 +1,6 @@
 local _, ns = ...
-local oUF = ns.oUF or oUF
-assert(oUF, "CombatFade element requires oUF")
 
 -- Sourced: ElvUI (Elvz)
-
-local frames = {}
-local allFrames = {}
-local showStatus
 
 local _G = _G
 local pairs = pairs
@@ -22,6 +16,10 @@ local UnitHealthMax = _G.UnitHealthMax
 
 -- GLOBALS: KkthnxUI
 
+local oUF = ns.oUF or oUF
+local frames, allFrames = {}, {}
+local showStatus
+
 local function CheckForReset()
 	for frame, unit in pairs(allFrames) do
 		if frame.fadeInfo and frame.fadeInfo.reset then
@@ -36,12 +34,12 @@ local function FadeFramesInOut(fade, unit)
 	for frame, unit in pairs(frames) do
 		if not UnitExists(unit) then return end
 		if fade then
-			if frame:GetAlpha() ~= 1 or (frame.fadeInfo and frame.fadeInfo.endAlpha == 0.25) then
-				K.UIFrameFadeIn(frame, 0.25)
+			if frame:GetAlpha() ~= 1 or (frame.fadeInfo and frame.fadeInfo.endAlpha == 0) then
+				K.UIFrameFadeIn(frame, 0.15)
 			end
 		else
-			if frame:GetAlpha() ~= 0.25 then
-				K.UIFrameFadeOut(frame, 0.25)
+			if frame:GetAlpha() ~= 0 then
+				K.UIFrameFadeOut(frame, 0.15)
 				frame.fadeInfo.finishedFunc = CheckForReset
 			else
 				showStatus = false
@@ -66,7 +64,7 @@ local function Update(self, arg1, arg2)
 	local K = unpack(KkthnxUI)
 
 	if not frames[self] then
-		K.UIFrameFadeIn(self, 0.25)
+		K.UIFrameFadeIn(self, 0.15)
 		self.fadeInfo.reset = true
 		return
 	end

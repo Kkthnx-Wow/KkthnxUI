@@ -3,8 +3,6 @@ local K, C, L = unpack(select(2, ...))
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
 
--- GLOBALS: unpack, select, _G, table
-
 -- Lua API
 local _G = _G
 local table_remove = table.remove
@@ -66,7 +64,9 @@ function K.SetAnimationGroup(object, type, ...)
 		object[customName].in1:SetOffset(K.Scale(x), K.Scale(y))
 		object[customName].in2:SetOffset(K.Scale(-x), K.Scale(-y))
 		object[customName].out2:SetOffset(K.Scale(x), K.Scale(y))
-		object[customName].out1:SetScript("OnFinished", function() object:Hide() end)
+		object[customName].out1:SetScript("OnFinished", function()
+			object:Hide()
+		end)
 	end
 end
 
@@ -88,6 +88,32 @@ function K.UIFrameStopFlash(object)
 		object.anim:Stop()
 		object.anim.playing = nil
 	end
+end
+
+function K.SlideIn(object, customName)
+	if not customName then
+		customName = "anim"
+	end
+	if not object[customName] then
+		return
+	end
+
+	object[customName].out1:Stop()
+	object:Show()
+	object[customName]:Play()
+end
+
+function K.SlideOut(object, customName)
+	if not customName then
+		customName = "anim"
+	end
+	if not object[customName] then
+		return
+	end
+
+	object[customName]:Finish()
+	object[customName]:Stop()
+	object[customName].out1:Play()
 end
 
 local frameFadeManager = CreateFrame("FRAME")
