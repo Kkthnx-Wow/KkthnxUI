@@ -357,7 +357,7 @@ function Module:OnEnable()
 	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0,  4)
 	lootFrame.slots = {}
 	lootFrame:SetScript("OnHide", function()
-		StaticPopup_Hide"CONFIRM_LOOT_DISTRIBUTION"
+		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
 		CloseLoot()
 	end)
 
@@ -375,7 +375,7 @@ function Module:OnEnable()
 	LootFrame:UnregisterAllEvents()
 	tinsert(UISpecialFrames, "KkthnxLootFrame")
 
-	StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(self, data)
+	K.PopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(self, data)
 		GiveMasterLoot(ss, data)
 	end
 end
