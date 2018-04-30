@@ -13,7 +13,6 @@ end
 local _G = _G
 local tostring = tostring
 
-local ActionBarAnchor = _G.ActionBarAnchor
 local InCombatLockdown = _G.InCombatLockdown
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local UIParent = _G.UIParent
@@ -78,8 +77,8 @@ function Module:GetDamageRaidFramesAttributes()
 		self:SetWidth(header:GetAttribute("initial-width"))
 		self:SetHeight(header:GetAttribute("initial-height"))
 		]],
-		"initial-width", 60,
-		"initial-height", 30,
+		"initial-width", C["Raidframe"].Width,
+		"initial-height", C["Raidframe"].Height,
 		"showParty", true,
 		"showRaid", true,
 		"showPlayer", true,
@@ -115,8 +114,8 @@ function Module:GetHealerRaidFramesAttributes()
 		self:SetWidth(header:GetAttribute("initial-width"))
 		self:SetHeight(header:GetAttribute("initial-height"))
 		]],
-		"initial-width", 60,
-		"initial-height", 26,
+		"initial-width", C["Raidframe"].Width,
+		"initial-height", C["Raidframe"].Height,
 		"showParty", true,
 		"showRaid", true,
 		"showPlayer", true,
@@ -274,7 +273,7 @@ function Module:CreateUnits()
 		elseif C["Raidframe"].RaidLayout.Value == "Damage" then
 			Module:GetDamageRaidFramesAttributes()
 		else
-			Module:GetDamageRaidFramesAttributes()
+			Module:GetDamageRaidFramesAttributes() -- Return DAMAGER layout if nothing else.
 		end
 
 		if C["Raidframe"].MainTankFrames then

@@ -1341,6 +1341,21 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = ModuleToggle,
 		},
 
+		["Height"] = {
+			["Name"] = "Raid Height",
+			["Desc"] = ModuleHeight,
+		},
+
+		["RaidGroups"] = {
+			["Name"] = "Raid Groups",
+			["Desc"] = "Number of groups in the raid",
+		},
+
+		["Width"] = {
+			["Name"] = "Raid Width",
+			["Desc"] = ModuleWidth,
+		},
+
 		["MainTankFrames"] = {
 			["Name"] = "Main Tank Frames",
 			["Desc"] = "You know the people who take all the damage?",
