@@ -10,11 +10,17 @@ local UNKNOWN = _G.UNKNOWN
 
 -- Force user to disable KkthnxUI if another AddOn is enabled with it!
 if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ShestakUI") then
-	StaticPopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
+	K.PopupDialogs["KKTHNXUI_INCOMPATIBLE"] = {
 		text = "Oh no, you have |cff4488ffKkthnxUI|r and another UserInterface enabled at the same time. Disable KkthnxUI!",
 		button1 = "Disable KkthnxUI",
-		OnAccept = function() DisableAddOn("KkthnxUI") ReloadUI() end,
-		OnCancel = function() DisableAddOn("KkthnxUI") ReloadUI() end,
+		OnAccept = function()
+			DisableAddOn("KkthnxUI")
+			ReloadUI()
+		end,
+		OnCancel = function()
+			DisableAddOn("KkthnxUI")
+			ReloadUI()
+		end,
 		timeout = 0,
 		hasEditBox = 1,
 		whileDead = 1,
@@ -22,7 +28,8 @@ if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI"
 		showAlert = 1,
 		maxLetters = 38,
 		EditBoxOnEscapePressed = function(self)
-			DisableAddOn("KkthnxUI") ReloadUI()
+			DisableAddOn("KkthnxUI")
+			ReloadUI()
 		end,
 	}
 

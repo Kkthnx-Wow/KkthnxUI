@@ -3,8 +3,9 @@ local Module = K:NewModule("AutoInvite", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Wow Lua
 local _G = _G
-local string_gsub = string.gsub
+local select = select
 local string_format = string.format
+local string_gsub = string.gsub
 
 -- Wow API
 local AcceptGroup = _G.AcceptGroup
@@ -142,4 +143,4 @@ SlashCmdList.AUTOINVITE = function(msg)
 		C["Automation"].InviteKeyword = msg
 	end
 end
-SLASH_AUTOINVITE1 = "/ainv"
+_G.SLASH_AUTOINVITE1 = "/ainv"

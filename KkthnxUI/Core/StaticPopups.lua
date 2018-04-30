@@ -1,23 +1,35 @@
-local K, C, L = unpack(select(2, ...))
+local K, _, L = unpack(select(2, ...))
 
 -- Lua functions
 local _G = _G
-local pairs, type, unpack, assert = pairs, type, unpack, assert
-local table_remove, tContains, table_insert, table_wipe = table.remove, tContains, table.insert, table.wipe
+local assert = assert
+local pairs = pairs
+local table_contains = tContains
+local table_insert = table.insert
+local table_remove = table.remove
+local table_wipe = table.wipe
+local type = type
+local unpack = unpack
+
 -- WoW API / Variables
 local AutoCompleteEditBox_OnEnterPressed = _G.AutoCompleteEditBox_OnEnterPressed
 local AutoCompleteEditBox_OnTextChanged = _G.AutoCompleteEditBox_OnTextChanged
-local ChatEdit_FocusActiveWindow = _G.ChatEdit_FocusActiveWindow
 local CreateFrame = _G.CreateFrame
-local GetBindingFromClick, RunBinding = _G.GetBindingFromClick, _G.RunBinding
+local DisableAddOn = _G.DisableAddOn
+local EnableAddOn = _G.EnableAddOn
+local GetBankSlotCost = _G.GetBankSlotCost
+local GetBindingFromClick = _G.GetBindingFromClick
+local InCinematic = _G.InCinematic
 local MoneyFrame_Update = _G.MoneyFrame_Update
-local PurchaseSlot, GetBankSlotCost = _G.PurchaseSlot, _G.GetBankSlotCost
-local ReloadUI, PlaySound, StopMusic = _G.ReloadUI, _G.PlaySound, _G.StopMusic
-local SetCVar, EnableAddOn, DisableAddOn = _G.SetCVar, _G.EnableAddOn, _G.DisableAddOn
+local PlaySound = _G.PlaySound
+local PurchaseSlot = _G.PurchaseSlot
+local ReloadUI = _G.ReloadUI
+local RunBinding = _G.RunBinding
 local StaticPopup_Resize = _G.StaticPopup_Resize
 local STATICPOPUP_TEXTURE_ALERT = _G.STATICPOPUP_TEXTURE_ALERT
 local STATICPOPUP_TEXTURE_ALERTGEAR = _G.STATICPOPUP_TEXTURE_ALERTGEAR
-local UnitIsDeadOrGhost, InCinematic = _G.UnitIsDeadOrGhost, _G.InCinematic
+local UIParent = _G.UIParent
+local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 
 local Name = UnitName("player")
 local Realm = GetRealmName()
@@ -29,7 +41,10 @@ K.PopupDialogs["CONFIG_RL"] = {
 	text = L["StaticPopups"].Config_Reload,
 	button1 = ACCEPT,
 	button2 = CANCEL,
-	OnAccept = function() K.PixelPerfect.RequireReload = false ReloadUI() end,
+	OnAccept = function()
+		K.PixelPerfect.RequireReload = false
+		ReloadUI()
+	end,
 	hideOnEscape = false,
 	whileDead = 1,
 	preferredIndex = 3
@@ -241,12 +256,12 @@ function K.StaticPopup_CollapseTable()
 end
 
 function K.StaticPopup_SetUpPosition(_, dialog)
-	if (not tContains(K.StaticPopup_DisplayedFrames, dialog)) then
+	if (not table_contains(K.StaticPopup_DisplayedFrames, dialog)) then
 		local lastFrame = K.StaticPopup_DisplayedFrames[#K.StaticPopup_DisplayedFrames]
 		if (lastFrame) then
 			dialog:SetPoint("TOP", lastFrame, "BOTTOM", 0, -4)
 		else
-			dialog:SetPoint("TOP", _G.UIParent, "TOP", 0, -100)
+			dialog:SetPoint("TOP", UIParent, "TOP", 0, -100)
 		end
 		table_insert(K.StaticPopup_DisplayedFrames, dialog)
 	end
