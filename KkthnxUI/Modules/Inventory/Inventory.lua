@@ -120,6 +120,15 @@ local function Stuffing_OnHide()
 		bag_bars = 0
 	end
 
+	-- for i = 1, NUM_BAG_FRAMES do
+	-- 	CloseBag(i)
+	-- end
+	--
+	-- -- hide new item glow on bag 0 fix [note: closebag handles the others correctly]
+	-- for slotID = 1, GetContainerNumSlots(0) do
+	-- 	C_NewItems.RemoveNewItem(0, slotID)
+	-- end
+
 	PlaySound(PlaySoundKitID and "igbackpackclose" or SOUNDKIT.IG_BACKPACK_CLOSE)
 end
 

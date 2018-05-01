@@ -1,7 +1,22 @@
 # KkthnxUI Change Log
 
 What makes unicorns cry?
-All notable changes to this project will be documented in this file.
+All notable changes to this project will be documented in this file.   
+   
+**Version 7.19 [April 30th 2018]**
+
+**New:**   
+Raid frames have a width and height config now. This applies tio DAMAGER and HEALER layout together.   
+Locales added for 3 new options for raid frames. (Width, Height and RaidGroups)   
+
+**Fixes:**   
+Fix issue #95. This error was caused because of a missing arg before the second arg.   
+Fixed ROGUE combo points if they were to have the talent to give more than 5 combopoints.   
+
+**Miscellaneous:**   
+5 Files cleaned up throughout the UI.   
+
+___   
 
 **Version 7.18 [April 29th 2018]**
 
