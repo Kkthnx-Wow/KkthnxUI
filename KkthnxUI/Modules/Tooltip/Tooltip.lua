@@ -78,6 +78,12 @@ local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
 local NotifyInspect = _G.NotifyInspect
 
+-- GLOBALS: GameTooltipAnchor, InspectFrame, GameTooltipTextLeft2, ItemRefTooltip, BNETMover, GameTooltipHeaderText, GameTooltipText
+-- GLOBALS: GameTooltipTextSmall, ShoppingTooltip1TextLeft1, ShoppingTooltip1TextLeft2, ShoppingTooltip1TextLeft3, ShoppingTooltip1TextLeft4
+-- GLOBALS: ShoppingTooltip1TextRight1, ShoppingTooltip1TextRight2, ShoppingTooltip1TextRight3, ShoppingTooltip1TextRight4, ShoppingTooltip2TextLeft1
+-- GLOBALS: ShoppingTooltip2TextLeft2, ShoppingTooltip2TextLeft3, ShoppingTooltip2TextLeft4, ShoppingTooltip2TextRight1, ShoppingTooltip2TextRight2
+-- GLOBALS: ShoppingTooltip2TextRight3, ShoppingTooltip2TextRight4, BNToastFrame, BNToastFrameCloseButton, ItemRefCloseButton, WorldMapTooltip
+
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
 local targetList, inspectCache = {}, {}
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}

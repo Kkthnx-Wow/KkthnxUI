@@ -9,7 +9,9 @@ local GetMerchantItemLink = _G.GetMerchantItemLink
 local GetMerchantNumItems = _G.GetMerchantNumItems
 local hooksecurefunc = _G.hooksecurefunc
 
---	Show item level for weapons and armor in merchant
+-- GLOBALS: MERCHANT_ITEMS_PER_PAGE, MerchantFrame, LE_ITEM_CLASS_WEAPON, LE_ITEM_CLASS_ARMOR
+
+-- Show item level for weapons and armor in merchant
 local function MerchantItemlevel()
 	local numItems = GetMerchantNumItems()
 

@@ -14,7 +14,7 @@ local unpack = unpack
 
 -- WoW API
 local GetAchievementInfo = _G.GetAchievementInfo
-local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
+-- local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetInventorySlotInfo = _G.GetInventorySlotInfo
 local GetItemInfo = _G.GetItemInfo

@@ -1,5 +1,6 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("OpenMail", "AceEvent-3.0")
+
 if K.Legion735 then
 	return
 end
@@ -11,6 +12,10 @@ local CheckInbox = _G.CheckInbox
 local GetInboxHeaderInfo = _G.GetInboxHeaderInfo
 local GetInboxNumItems = _G.GetInboxNumItems
 local MONEY = _G.MONEY
+
+-- GLOBALS: SendMailNameEditBox, SendMailNameEditBox, ERR_MAIL_INVALID_ATTACHMENT_SLOT, messageID
+-- GLOBALS: SendMailMailButton, SendMailSubjectEditBox, SendMailSubjectEditBox, TakeInboxMoney
+-- GLOBALS: AutoLootMailItem, DeleteInboxItem
 
 local lastReceipient
 function Module:MAIL_SEND_SUCCESS()

@@ -70,6 +70,8 @@ local CreateFrame = _G.CreateFrame
 
 -- GLOBALS: StuffingFrameBags, ReagentBankFrameItem1, ReagentBankFrame, BankFrame, ToggleBackpack, ToggleAllBags, OpenAllBags
 -- GLOBALS: ToggleBag, IsContainerItemAnUpgrade, UISpecialFrames, StuffingFrameReagent, BAG_FILTER_CLEANUP
+-- GLOBALS: InspectFrame, WorldMapTooltip, BankFrame_ShowPanel, BANK_PANELS, REAGENTBANK_DEPOSIT
+-- GLOBALS: DepositReagentBank, ReagentBankFrameUnlockInfo, ReagentBankFrameUnlockInfoPurchaseButton
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
@@ -163,7 +165,9 @@ local S_ITEM_LEVEL = "^"..gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
 
 local ItemDB = {}
 local function IsRealItemLevel(link, owner, bag, slot)
-	if ItemDB[link] then return ItemDB[link] end
+	if ItemDB[link] then
+		return ItemDB[link]
+	end
 
 	local realItemLevel
 

@@ -69,6 +69,10 @@ local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
+local print = _G.print
+
+-- GLOBALS: GameMenuFrame, KkthnxUIConfigFrame, KkthnxUIConfig, GameMenuButtonLogout
+-- GLOBALS: GameMenuButtonAddons, ConsolePort, GameMenuButtonWhatsNew
 
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 AddOn.callbacks = AddOn.callbacks or LibStub("CallbackHandler-1.0")
