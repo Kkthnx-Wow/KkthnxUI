@@ -129,21 +129,30 @@ function K.CreateRaid(self, unit)
 		self.Health:SetAllPoints(self)
 		self.Health:SetStatusBarTexture(RaidframeTexture)
 
-		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY", 4)
-		self.Health.Value:SetFontObject(RaidframeFont)
-		self.Health.Value:SetPoint("CENTER", self.Health, 0, -7)
-		self.Health.Value:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
-		self.Health.Value:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
-		self:Tag(self.Health.Value, "[KkthnxUI:HealthDeficit]")
+		if C["Raidframe"].HealthDeficit then
+			self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY", 4)
+			self.Health.Value:SetFontObject(RaidframeFont)
+			self.Health.Value:SetPoint("CENTER", self.Health, 0, -7)
+			self.Health.Value:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
+			self.Health.Value:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
+			self:Tag(self.Health.Value, "[KkthnxUI:HealthDeficit]")
+		end
 
-		self.Health.frequentUpdates = true
-		self.Health.colorDisconnected = true
-		self.Health.colorReaction = true
-		self.Health.colorTapping = true
-		self.Health.colorClass = true
 		self.Health.Cutaway = C["Raidframe"].Cutaway
 		self.Health.Smooth = C["Raidframe"].Smooth
 		self.Health.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
+		self.Health.colorDisconnected = true
+		self.Health.colorTapping = true
+		if C["Raidframe"].ColorHealthByValue then
+			self.Health.colorSmooth = true
+			self.Health.colorClass = false
+			self.Health.colorReaction = false
+		else
+			self.Health.colorSmooth = false
+			self.Health.colorClass = true
+			self.Health.colorReaction = true
+		end
+		self.Health.frequentUpdates = true
 
 		-- Power
 		if (C["Raidframe"].ManabarShow) then

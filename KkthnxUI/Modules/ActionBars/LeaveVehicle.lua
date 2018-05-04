@@ -1,8 +1,8 @@
 local K, C, L = unpack(select(2, ...))
+local Module = K:NewModule("LeaveVehicle", "AceEvent-3.0")
 if C["ActionBar"].Enable ~= true then
 	return
 end
-local Module = K:NewModule("LeaveVehicle", "AceEvent-3.0")
 
 local _G = _G
 
@@ -15,6 +15,8 @@ local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UIParent = _G.UIParent
 local UnitOnTaxi = _G.UnitOnTaxi
 local VehicleExit = _G.VehicleExit
+
+-- GLOBALS: LeaveVehicleButton, VehicleButtonAnchor
 
 local Vehicle_CallOnEvent -- so we can call the local function inside of itself
 local function Vehicle_OnEvent(self, event)

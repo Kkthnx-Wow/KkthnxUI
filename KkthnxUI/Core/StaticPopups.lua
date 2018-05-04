@@ -4,6 +4,7 @@ local K, _, L = unpack(select(2, ...))
 local _G = _G
 local assert = assert
 local pairs = pairs
+local print = print
 local table_contains = tContains
 local table_insert = table.insert
 local table_remove = table.remove
@@ -22,14 +23,19 @@ local GetBindingFromClick = _G.GetBindingFromClick
 local InCinematic = _G.InCinematic
 local MoneyFrame_Update = _G.MoneyFrame_Update
 local PlaySound = _G.PlaySound
+local PlaySoundKitID = _G.PlaySoundKitID
 local PurchaseSlot = _G.PurchaseSlot
 local ReloadUI = _G.ReloadUI
+local RestartGx = _G.RestartGx
 local RunBinding = _G.RunBinding
+local SOUNDKIT = _G.SOUNDKIT
 local StaticPopup_Resize = _G.StaticPopup_Resize
 local STATICPOPUP_TEXTURE_ALERT = _G.STATICPOPUP_TEXTURE_ALERT
 local STATICPOPUP_TEXTURE_ALERTGEAR = _G.STATICPOPUP_TEXTURE_ALERTGEAR
 local UIParent = _G.UIParent
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+
+-- GLOBALS: UIConfig, UIConfigMain, KkthnxUIData
 
 local Name = UnitName("player")
 local Realm = GetRealmName()

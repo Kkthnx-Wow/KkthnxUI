@@ -63,6 +63,8 @@ local UnitPrestige = _G.UnitPrestige
 local UnitReaction = _G.UnitReaction
 local UNKNOWN = _G.UNKNOWN
 
+-- GLOBALS: Hex, _TAGS
+
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
 	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
@@ -207,6 +209,16 @@ oUF.Tags.Methods["KkthnxUI:HealthCurrent"] = function(unit)
 		return status
 	else
 		return K.GetFormattedText("CURRENT", UnitHealth(unit), UnitHealthMax(unit))
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:HealthPercent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
+	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+	if (status) then
+		return status
+	else
+		return K.GetFormattedText("PERCENT", UnitHealth(unit), UnitHealthMax(unit))
 	end
 end
 

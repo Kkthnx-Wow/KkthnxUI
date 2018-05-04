@@ -41,8 +41,15 @@ function K.CreateTarget(self, unit)
 		self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 		self.Health.colorTapping = true
 		self.Health.colorDisconnected = true
-		self.Health.colorClass = true
-		self.Health.colorReaction = true
+		if C["Unitframe"].ColorHealthByValue then
+			self.Health.colorSmooth = true
+			self.Health.colorClass = false
+			self.Health.colorReaction = false
+		else
+			self.Health.colorSmooth = false
+			self.Health.colorClass = true
+			self.Health.colorReaction = true
+		end
 		self.Health.frequentUpdates = true
 		self.Health.PostUpdate = K.PostUpdateHealth
 

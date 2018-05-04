@@ -6,6 +6,7 @@ local _G = _G
 local string_format = string.format
 
 -- Wow API
+local ActionButton_ShowGrid = _G.ActionButton_ShowGrid
 local CreateFrame = _G.CreateFrame
 local GetActionBarToggles = _G.GetActionBarToggles
 local InCombatLockdown = _G.InCombatLockdown
@@ -13,6 +14,8 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
+
+-- GLOBALS: KkthnxUIData
 
 local Name = UnitName("player")
 local Realm = GetRealmName()
@@ -22,7 +25,6 @@ local ActionBars = CreateFrame("Frame")
 ActionBars:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBars:SetScript("OnEvent", function(self, event)
 	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	SetActionBarToggles(1, 1, 1, 1, 0)
 
 	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
 	if IsInstalled then
@@ -35,25 +37,24 @@ ActionBars:SetScript("OnEvent", function(self, event)
 
 	if C["ActionBar"].Grid == true then
 		SetCVar("alwaysShowActionBars", 1)
-
-		for i = 1, 12 do
-			local button = _G[format("ActionButton%d", i)]
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
+			local button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarRightButton%d", i)]
+			button = _G[string_format("MultiBarRightButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarBottomRightButton%d", i)]
+			button = _G[string_format("MultiBarBottomRightButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarLeftButton%d", i)]
+			button = _G[string_format("MultiBarLeftButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 
-			button = _G[format("MultiBarBottomLeftButton%d", i)]
+			button = _G[string_format("MultiBarBottomLeftButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			ActionButton_ShowGrid(button)
 		end

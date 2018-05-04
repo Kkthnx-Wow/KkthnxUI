@@ -14,7 +14,10 @@ local RegisterStateDriver = _G.RegisterStateDriver
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: PetActionBarFrame, PetHolder, RightBarMouseOver, HoverBind, PetBarMouseOver
 
-if C["ActionBar"].PetBarHide then PetActionBarAnchor:Hide() return end
+if C["ActionBar"].PetBarHide then
+	PetActionBarAnchor:Hide()
+	return
+end
 
 -- Create bar
 local PetBar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTemplate")
@@ -50,9 +53,9 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 				end
 			else
 				if C["ActionBar"].PetBarHorizontal == true then
-					button:SetPoint("LEFT", _G["PetActionButton"..i-1], "RIGHT", C["ActionBar"].ButtonSpace, 0)
+					button:SetPoint("LEFT", _G["PetActionButton"..i - 1], "RIGHT", C["ActionBar"].ButtonSpace, 0)
 				else
-					button:SetPoint("TOP", _G["PetActionButton"..i-1], "BOTTOM", 0, -C["ActionBar"].ButtonSpace)
+					button:SetPoint("TOP", _G["PetActionButton"..i - 1], "BOTTOM", 0, -C["ActionBar"].ButtonSpace)
 				end
 			end
 			button:Show()
@@ -73,8 +76,14 @@ if C["ActionBar"].RightBarsMouseover == true and C["ActionBar"].PetBarHorizontal
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local b = _G["PetActionButton"..i]
 		b:SetAlpha(0)
-		b:HookScript("OnEnter", function() RightBarMouseOver(1) end)
-		b:HookScript("OnLeave", function() if not HoverBind.enabled then RightBarMouseOver(0) end end)
+		b:HookScript("OnEnter", function()
+			RightBarMouseOver(1)
+		end)
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				RightBarMouseOver(0)
+			end
+		end)
 	end
 end
 
@@ -82,7 +91,12 @@ if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal ==
 	for i = 1, NUM_PET_ACTION_SLOTS do
 		local b = _G["PetActionButton"..i]
 		b:SetAlpha(0)
-		b:HookScript("OnEnter", function() PetBarMouseOver(1) end)
-		b:HookScript("OnLeave", function() if not HoverBind.enabled then PetBarMouseOver(0) end end)
+		b:HookScript("OnEnter", function()
+			PetBarMouseOver(1) end)
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				PetBarMouseOver(0)
+			end
+		end)
 	end
 end

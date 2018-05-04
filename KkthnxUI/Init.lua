@@ -4,16 +4,16 @@ local Windowed = Display_DisplayModeDropDown:windowedmode()
 local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
 
 --[[
-	The MIT License (MIT)
+The MIT License (MIT)
 
-	Copyright (c) 2012 - 2018 Kkthnx (Joshua Russell) kkthnxui@gmail.com
+Copyright (c) 2012 - 2018 Kkthnx (Joshua Russell) kkthnxui@gmail.com
 
-	Permission is hereby granted, free of charge, to any person obtaining
-	a copy of this software and associated documentation files (the "Software"),
-	to deal in the Software without restriction, including without limitation the
-	rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is furnished
-	to do so, subject to the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is furnished
+to do so, subject to the following conditions:
 
 	The above copyright notice and this permission notice shall be included in all
 	copies or substantial portions of the Software.
@@ -23,14 +23,14 @@ local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
 	PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR
 	ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-]]
+	]]
 
 --[[
-	This should be at the top of every file inside of the KkthnxUI AddOn:
-	local K, C, L = unpack(select(2, ...))
+This should be at the top of every file inside of the KkthnxUI AddOn:
+local K, C, L = unpack(select(2, ...))
 
-	This is how another addon imports the KkthnxUI engine:
-	local K, C, L = unpack(KkthnxUI)
+This is how another addon imports the KkthnxUI engine:
+local K, C, L = unpack(KkthnxUI)
 ]]
 
 -- Lua API
@@ -63,13 +63,13 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 local LibStub = _G.LibStub
 local PlaySound = _G.PlaySound
 local PlaySoundKitID = _G.PlaySoundKitID
+local print = _G.print
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
-local print = _G.print
 
 -- GLOBALS: GameMenuFrame, KkthnxUIConfigFrame, KkthnxUIConfig, GameMenuButtonLogout
 -- GLOBALS: GameMenuButtonAddons, ConsolePort, GameMenuButtonWhatsNew
@@ -106,72 +106,75 @@ AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
+-- Wow Build Info and Version Checks
 AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo() AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
-AddOn.PlaySoundKitID = AddOn.WoWBuild == 24500 and PlaySound or PlaySoundKitID
-AddOn.Legion715 = AddOn.WoWBuild == 23360
+-- Legion
+AddOn.Legion715 = AddOn.WoWBuild == 23360 -- 7.1.5, 23420, nil, 70100
 AddOn.Legion735 = AddOn.WoWBuild >= 26124
+-- Battle for Azeroth
+AddOn.BFA801 = AddOn.WoWBuild >= 26557 -- 8.0.1, 26557, May 3, 2018, 80000
 
 if (About) then
-  AddOn.optionsFrame = About.new(nil, "KkthnxUI")
+	AddOn.optionsFrame = About.new(nil, "KkthnxUI")
 end
 
 function AddOn:OnInitialize()
-  self.GUID = UnitGUID("player")
+	self.GUID = UnitGUID("player")
 
-  self.CreateStaticPopups()
+	self.CreateStaticPopups()
 
-  -- KkthnxUI GameMenu Button.
-  local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
-  GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
-  GameMenuButton:SetScript("OnClick", function()
-    if (InCombatLockdown()) then
-    return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
-  end
+	-- KkthnxUI GameMenu Button.
+	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
+	GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
+	GameMenuButton:SetScript("OnClick", function()
+		if (InCombatLockdown()) then
+			return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
+		end
 
-  if (not KkthnxUIConfigFrame) then
-    KkthnxUIConfig:CreateConfigWindow()
-  end
+		if (not KkthnxUIConfigFrame) then
+			KkthnxUIConfig:CreateConfigWindow()
+		end
 
-  if KkthnxUIConfigFrame:IsVisible() then
-    KkthnxUIConfigFrame:Hide()
-  else
-    KkthnxUIConfigFrame:Show()
-  end
+		if KkthnxUIConfigFrame:IsVisible() then
+			KkthnxUIConfigFrame:Hide()
+		else
+			KkthnxUIConfigFrame:Show()
+		end
 
-  HideUIPanel(GameMenuFrame)
-end)
-GameMenuFrame[AddOnName] = GameMenuButton
+		HideUIPanel(GameMenuFrame)
+	end)
+	GameMenuFrame[AddOnName] = GameMenuButton
 
-if not IsAddOnLoaded("ConsolePort") then
-  GameMenuButton:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
-  GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, - 1)
-  hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.PositionGameMenuButton)
-else
-  if GameMenuButton.Middle then
-    GameMenuButton.Middle:Hide()
-    GameMenuButton.Left:Hide()
-    GameMenuButton.Right:Hide()
-  end
-  ConsolePort:GetData().Atlas.SetFutureButtonStyle(GameMenuButton, nil, nil, true)
-  GameMenuButton:SetSize(240, 46)
-  GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, - 1)
-  GameMenuFrame:SetSize(530, 576)
-end
+	if not IsAddOnLoaded("ConsolePort") then
+		GameMenuButton:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
+		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, - 1)
+		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.PositionGameMenuButton)
+	else
+		if GameMenuButton.Middle then
+			GameMenuButton.Middle:Hide()
+			GameMenuButton.Left:Hide()
+			GameMenuButton.Right:Hide()
+		end
+		ConsolePort:GetData().Atlas.SetFutureButtonStyle(GameMenuButton, nil, nil, true)
+		GameMenuButton:SetSize(240, 46)
+		GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, - 1)
+		GameMenuFrame:SetSize(530, 576)
+	end
 end
 
 function AddOn:PositionGameMenuButton()
-GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight())
-local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
-if relTo ~= GameMenuFrame[AddOnName] then
-  GameMenuFrame[AddOnName]:ClearAllPoints()
-  GameMenuFrame[AddOnName]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, - 1)
-  GameMenuButtonLogout:ClearAllPoints()
-  GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, offY)
-end
+	GameMenuFrame:SetHeight(GameMenuFrame:GetHeight() + GameMenuButtonLogout:GetHeight())
+	local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
+	if relTo ~= GameMenuFrame[AddOnName] then
+		GameMenuFrame[AddOnName]:ClearAllPoints()
+		GameMenuFrame[AddOnName]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, - 1)
+		GameMenuButtonLogout:ClearAllPoints()
+		GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, offY)
+	end
 end
 
 AddOn.AddOns = {}
 for i = 1, GetNumAddOns() do
-local Name = GetAddOnInfo(i)
-AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) > 0
+	local Name = GetAddOnInfo(i)
+	AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) > 0
 end

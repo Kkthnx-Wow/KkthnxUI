@@ -39,12 +39,24 @@ function K.CreateFocusTarget(self, unit)
 		self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 		self.Health.colorTapping = true
 		self.Health.colorDisconnected = true
-		self.Health.colorClass = true
-		self.Health.colorReaction = true
+		if C["Unitframe"].ColorHealthByValue then
+			self.Health.colorSmooth = true
+			self.Health.colorClass = false
+			self.Health.colorReaction = false
+		else
+			self.Health.colorSmooth = false
+			self.Health.colorClass = true
+			self.Health.colorReaction = true
+		end
 		self.Health.frequentUpdates = false
 
 		self.Health:SetSize(74, 12)
 		self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
+		-- Health Value
+		self.Health.Value = K.SetFontString(self, C["Media"].Font, 10, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
+		self.Health.Value:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
+		self:Tag(self.Health.Value, "[KkthnxUI:HealthPercent]")
 
 		-- Power Bar
 		self.Power = CreateFrame("StatusBar", nil, self)

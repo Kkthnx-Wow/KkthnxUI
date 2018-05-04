@@ -1,6 +1,31 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Kill", "AceEvent-3.0")
 
+local _G = _G
+
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local LE_FRAME_TUTORIAL_GARRISON_BUILDING = _G.LE_FRAME_TUTORIAL_GARRISON_BUILDING
+local LE_FRAME_TUTORIAL_PET_JOURNAL = _G.LE_FRAME_TUTORIAL_PET_JOURNAL
+local LE_FRAME_TUTORIAL_WORLD_MAP_FRAME = _G.LE_FRAME_TUTORIAL_WORLD_MAP_FRAME
+local SetCVar = _G.SetCVar
+local SetCVarBitfield = _G.SetCVarBitfield
+local SetInsertItemsLeftToRight = _G.SetInsertItemsLeftToRight
+local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
+
+-- GLOBALS: Advanced_UseUIScale, Advanced_UIScaleSlider, RuneFrame,PartyMemberBackground
+-- GLOBALS: BagHelpBox, BuffFrame, HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip
+-- GLOBALS: CompactRaidFrameManager_UpdateShown, CompactRaidFrameManager_UpdateOptionsFlowContainer
+-- GLOBALS: CompactRaidFrameManager, CompactRaidFrameContainer, CompactUnitFrameProfiles_ApplyProfile
+-- GLOBALS: InterfaceOptionsActionBarsPanelAlwaysShowActionBars, InterfaceOptionsActionBarsPanelBottomLeft
+-- GLOBALS: InterfaceOptionsActionBarsPanelBottomRight, InterfaceOptionsActionBarsPanelRight
+-- GLOBALS: InterfaceOptionsActionBarsPanelRightTwo, PetJournalTutorialButton, PlayerTalentFrame
+-- GLOBALS: InterfaceOptionsUnitFramePanelPartyBackground, WorldMapFrameTutorialButton
+-- GLOBALS: PlayerTalentFramePetSpecializationTutorialButton, PlayerTalentFrameSpecializationTutorialButton
+-- GLOBALS: PlayerTalentFrameTalentsTutorialButton, PremadeGroupsPvETutorialAlert, ReagentBankHelpBox
+-- GLOBALS: ShowPartyFrame, HidePartyFrame, InterfaceOptionsFrameCategoriesButton10
+-- GLOBALS: SpellBookFrameTutorialButton, TemporaryEnchantFrame, TutorialFrameAlertButton
+
 function Module:ADDON_LOADED(event, addon)
 	if (addon == "Blizzard_AchievementUI") then
 		if C["Tooltip"].Enable then
@@ -22,14 +47,8 @@ function Module:ADDON_LOADED(event, addon)
 		CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
 	end
 
-	if C["General"].AutoScale then
-		Advanced_UseUIScale:Disable()
-		Advanced_UIScaleSlider:Disable()
-		getglobal(Advanced_UseUIScale:GetName().."Text"):SetTextColor(1, 0, 0, 1)
-		getglobal(Advanced_UIScaleSlider:GetName().."Text"):SetTextColor(1, 0, 0, 1)
-		getglobal(Advanced_UseUIScale:GetName().."Text"):SetText("'UI Scale' is unavailable while Auto Scale is active. Click the button below for options.")
-		Advanced_UseUIScaleText:SetPoint("LEFT", Advanced_UseUIScale, "LEFT", 4, -40)
-	end
+	Advanced_UseUIScale:Kill()
+	Advanced_UIScaleSlider:Kill()
 
 	if C["Cooldown"].Enable then
 		SetCVar("countdownForCooldowns", 0)

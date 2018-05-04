@@ -40,7 +40,7 @@ local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
-
+local UIParent = _G.UIParent
 
 local colors = K["Colors"]
 
@@ -265,6 +265,10 @@ end
 
 local announcedPVP
 function Module:UNIT_FACTION(event, unit)
+	if (unit ~= "player") then
+		return
+	end
+
 	if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
 		if not announcedPVP then
 			announcedPVP = true
@@ -275,12 +279,12 @@ function Module:UNIT_FACTION(event, unit)
 	end
 end
 
-function Module:OnEanble()
+function Module:OnEnable()
 	if C["Unitframe"].Enable ~= true then
 		return
 	end
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	self:RegisterUnitEvent("UNIT_FACTION", "player")
+	self:RegisterEvent("UNIT_FACTION")
 end

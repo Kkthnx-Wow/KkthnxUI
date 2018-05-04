@@ -3,6 +3,7 @@
     <!-- Load_Skins -->
     <Include file="Core.lua"/>
 
+    <Include file="Blizzard\BattlegroundMap.lua"/>
     <Include file="Blizzard\Collectables.lua"/>
     <Include file="Blizzard\LossControl.lua"/>
     <Include file="Blizzard\Miscellaneous.lua"/>
