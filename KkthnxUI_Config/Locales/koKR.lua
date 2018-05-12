@@ -1183,6 +1183,11 @@ KkthnxUIConfig["koKR"] = {
 			["Desc"] = "Color cast bars as reaction to the target",
 		},
 
+		["ColorHealthByValue"] = {
+			["Name"] = "Health By Value",
+			["Desc"] = "Color health by amount remaining.",
+		},
+
 		["CombatText"] = {
 			["Name"] = "Portrait Combat Text",
 			["Desc"] = "Enable combat text on player and target frames",
@@ -1337,8 +1342,13 @@ KkthnxUIConfig["koKR"] = {
 		},
 
 		["DeficitThreshold"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "Pick your poison",
+			["Name"] = "Deficit Threshold",
+			["Desc"] = "Show health deficit when it's more than displayed value",
+		},
+
+		["ColorHealthByValue"] = {
+			["Name"] = "Health By Value",
+			["Desc"] = "Color health by amount remaining.",
 		},
 
 		["Enable"] = {
@@ -1382,8 +1392,8 @@ KkthnxUIConfig["koKR"] = {
 		},
 
 		["RaidUtility"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "Pick your poison",
+			["Name"] = RAID_CONTROL,
+			["Desc"] = "Enables the custom Raid Control panel.",
 		},
 
 		["ShowMouseoverHighlight"] = {

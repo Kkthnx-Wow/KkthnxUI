@@ -135,7 +135,7 @@ function Module:GetHealerRaidFramesAttributes()
 		else
 			-- Changing this to use CENTER for its own anchoring point,
 			-- to avoid headers with no units and zero width being positioned wrongly.
-			RaidHealer:SetPoint("CENTER", Raid[i-1], "CENTER", 0, -(7 + 26))
+			RaidHealer:SetPoint("CENTER", Raid[i-1], "CENTER", 0, -(7 + 28))
 		end
 		Movers:RegisterFrame(RaidHealer, i > 1 and Raid[1])
 		Raid[i] = RaidHealer

@@ -20,9 +20,9 @@ local GiveMasterLoot = _G.GiveMasterLoot
 local IsFishingLoot = _G.IsFishingLoot
 local IsModifiedClick = _G.IsModifiedClick
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
-local L_ToggleDropDownMenu = _G.L_ToggleDropDownMenu
-local L_UIDropDownMenu_AddButton = _G.L_UIDropDownMenu_AddButton
-local L_UIDropDownMenu_CreateInfo = _G.L_UIDropDownMenu_CreateInfo
+local ToggleDropDownMenu = _G.ToggleDropDownMenu
+local UIDropDownMenu_AddButton = _G.UIDropDownMenu_AddButton
+local UIDropDownMenu_CreateInfo = _G.UIDropDownMenu_CreateInfo
 local LOOT = _G.LOOT
 local LootSlotHasItem = _G.LootSlotHasItem
 local MasterLooterFrame_UpdatePlayers = _G.MasterLooterFrame_UpdatePlayers
@@ -41,28 +41,28 @@ local UnitName = _G.UnitName
 --This function is copied from FrameXML and modified to use DropDownMenu library function calls
 --Using the regular DropDownMenu code causes taints in various places.
 local function GroupLootDropDown_Initialize()
-	local info = L_UIDropDownMenu_CreateInfo()
+	local info = UIDropDownMenu_CreateInfo()
 	info.isTitle = 1
 	info.text = MASTER_LOOTER
 	info.fontObject = GameFontNormalLeft
 	info.notCheckable = 1
-	L_UIDropDownMenu_AddButton(info)
+	UIDropDownMenu_AddButton(info)
 
-	info = L_UIDropDownMenu_CreateInfo()
+	info = UIDropDownMenu_CreateInfo()
 	info.notCheckable = 1
 	info.text = ASSIGN_LOOT
 	info.func = MasterLooterFrame_Show
-	L_UIDropDownMenu_AddButton(info)
+	UIDropDownMenu_AddButton(info)
 	info.text = REQUEST_ROLL
 	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot) end
-	L_UIDropDownMenu_AddButton(info)
+	UIDropDownMenu_AddButton(info)
 end
 
 -- Create the new group loot dropdown frame and initialize it
-local KkthnxUIGroupLootDropDown = CreateFrame("Frame", "KkthnxUIGroupLootDropDown", UIParent, "L_UIDropDownMenuTemplate")
+local KkthnxUIGroupLootDropDown = CreateFrame("Frame", "KkthnxUIGroupLootDropDown", UIParent, "UIDropDownMenuTemplate")
 KkthnxUIGroupLootDropDown:SetID(1)
 KkthnxUIGroupLootDropDown:Hide()
-L_UIDropDownMenu_Initialize(KkthnxUIGroupLootDropDown, nil, "MENU")
+UIDropDownMenu_Initialize(KkthnxUIGroupLootDropDown, nil, "MENU")
 KkthnxUIGroupLootDropDown.initialize = GroupLootDropDown_Initialize
 
 local coinTextureIDs = {
@@ -219,7 +219,7 @@ function Module:LOOT_CLOSED()
 end
 
 function Module:OPEN_MASTER_LOOT_LIST()
-	L_ToggleDropDownMenu(1, nil, KkthnxUIGroupLootDropDown, lootFrame.slots[ss], 0, 0)
+	ToggleDropDownMenu(1, nil, KkthnxUIGroupLootDropDown, lootFrame.slots[ss], 0, 0)
 end
 
 function Module:UPDATE_MASTER_LOOT_LIST()

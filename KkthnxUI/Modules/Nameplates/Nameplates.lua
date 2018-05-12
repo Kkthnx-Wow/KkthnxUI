@@ -189,28 +189,6 @@ local totemData = {
 	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
 }
 
-local function CustomFilterList(_, unit, _, name, _, _, _, _, _, _, caster, _, nameplateShowSelf, _, _, _, _, nameplateShowAll)
-	local allow = false
-
-	if caster == "player" then
-		if UnitIsUnit(unit, "player") then
-			if ((nameplateShowAll or nameplateShowSelf) and not K.BuffBlackList[name]) then
-				allow = true
-			elseif K.BuffWhiteList[name] then
-				allow = true
-			end
-		else
-			if ((nameplateShowAll or nameplateShowSelf) and not K.DebuffBlackList[name]) then
-				allow = true
-			elseif K.DebuffWhiteList[name] then
-				allow = true
-			end
-		end
-	end
-
-	return allow
-end
-
 local function CreateVirtualFrame(frame, point)
 	if point == nil then point = frame end
 	if point.backdrop then return end
@@ -741,21 +719,41 @@ local function StyleUpdate(self, unit)
 
 	-- Aura tracking
 	if C["Nameplates"].TrackAuras == true then
-		local Auras = CreateFrame("Frame", self:GetName().."Auras", self)
-		Auras:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 3)
-		Auras.initialAnchor = "BOTTOMLEFT"
-		Auras["growth-y"] = "UP"
-		Auras["growth-x"] = "RIGHT"
-		Auras.numDebuffs = 6 or 0
-		Auras.numBuffs = 4 or 0
-		Auras:SetSize(C["Nameplates"].Width + 10, C["Nameplates"].AurasSize)
-		Auras.spacing = 4
-		Auras.size = C["Nameplates"].AurasSize
-		Auras.PostCreateIcon = PostCreateAura
-		Auras.PostUpdateIcon = PostUpdateAura
-		Auras.CustomFilter = CustomFilterList
+		if UnitIsUnit(unit, "player") then
+			self.Buffs = CreateFrame("Frame", self:GetName()..'Debuffs', self)
+			self.Buffs:SetHeight(C["Nameplates"].Height)
+			self.Buffs:SetWidth(self:GetWidth())
+			self.Buffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 3)
+			self.Buffs.size = C["Nameplates"].AurasSize
+			self.Buffs.num = 36
+			self.Buffs.numRow = 9
 
-		self.Auras = Auras
+			self.Buffs.spacing = 2
+			self.Buffs.initialAnchor = "BOTTOMLEFT"
+			self.Buffs["growth-y"] = "UP"
+			self.Buffs["growth-x"] = "RIGHT"
+			self.Buffs.PostCreateIcon = PostCreateAura
+			self.Buffs.PostUpdateIcon = PostUpdateAura
+			self.Buffs.filter = "HELPFUL|PLAYER"
+			self.Buffs.onlyShowPlayer = true
+		else
+			self.Debuffs = CreateFrame("Frame", self:GetName()..'Debuffs', self)
+			self.Debuffs:SetHeight(C["Nameplates"].Height)
+			self.Debuffs:SetWidth(self:GetWidth())
+			self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 3)
+			self.Debuffs.size = C["Nameplates"].AurasSize
+			self.Debuffs.num = 36
+			self.Debuffs.numRow = 9
+
+			self.Debuffs.spacing = 2
+			self.Debuffs.initialAnchor = "BOTTOMLEFT"
+			self.Debuffs["growth-y"] = "UP"
+			self.Debuffs["growth-x"] = "RIGHT"
+			self.Debuffs.PostCreateIcon = PostCreateAura
+			self.Debuffs.PostUpdateIcon = PostUpdateAura
+			self.Debuffs.filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY"
+			self.Debuffs.onlyShowPlayer = true
+		end
 	end
 
 	self.Health:RegisterEvent("PLAYER_REGEN_DISABLED")

@@ -6,7 +6,17 @@ local _G = _G
 local table_insert = table.insert
 local getn = getn
 
+local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
+local L_DropDownList1Backdrop = _G.L_DropDownList1Backdrop
+local L_DropDownList1MenuBackdrop = _G.L_DropDownList1MenuBackdrop
+local L_UIDROPDOWNMENU_MAXLEVELS = _G.L_UIDROPDOWNMENU_MAXLEVELS
+local LibStub = _G.LibStub
+local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
+local UIParent = _G.UIParent
+
+-- GLOBALS: QueueStatusFrame, ChatFrame1, GhostFrameMiddle, GhostFrameRight, GhostFrameLeft
+-- GLOBALS: GhostFrame, GhostFrameContentsFrameText, GhostFrameContentsFrameIcon
 
 local function LoadSkin()
 	if K.CheckAddOnState("Skinner") or K.CheckAddOnState("Aurora") then
@@ -17,9 +27,6 @@ local function LoadSkin()
 		"QueueStatusFrame",
 		"DropDownList1Backdrop",
 		"DropDownList1MenuBackdrop",
-		-- DropDownMenu library support
-		"L_DropDownList1Backdrop",
-		"L_DropDownList1MenuBackdrop"
 	}
 
 	QueueStatusFrame:StripTextures()
@@ -33,14 +40,6 @@ local function LoadSkin()
 		if not _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent", true)
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent", true)
-		end
-	end)
-
-	-- LibUIDropDownMenu
-	hooksecurefunc("L_UIDropDownMenu_CreateFrames", function(level, index)
-		if not _G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
-			_G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent", true)
-			_G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent", true)
 		end
 	end)
 

@@ -521,12 +521,6 @@ function Module:Install()
 
 	if K.Realm == "Felsong" then
 		SetCVar("scriptErrors", 1)
-		ChatFrame_RemoveChannel(ChatFrame1, "global_en")
-		ChatFrame_RemoveChannel(ChatFrame3, "global_en")
-		ChatFrame_AddChannel(ChatFrame3, "global_en")
-		ChatFrame_RemoveChannel(ChatFrame1, "CHANNEL4")
-		ChatFrame_RemoveChannel(ChatFrame3, "CHANNEL4")
-		ChatFrame_AddChannel(ChatFrame3, "CHANNEL4")
 	end
 
 	-- enable classcolor automatically on login and on each character without doing /configure each time.

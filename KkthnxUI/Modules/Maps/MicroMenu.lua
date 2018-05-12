@@ -16,10 +16,10 @@ local HUNTER_TRACKING_TEXT = _G.HUNTER_TRACKING_TEXT
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local L_EasyMenu = _G.L_EasyMenu
-local L_UIDropDownMenu_CreateInfo = _G.L_UIDropDownMenu_CreateInfo
-local L_ToggleDropDownMenu = _G.L_ToggleDropDownMenu
-local L_UIDropDownMenu_AddButton = _G.L_UIDropDownMenu_AddButton
+local EasyMenu = _G.EasyMenu
+local UIDropDownMenu_CreateInfo = _G.UIDropDownMenu_CreateInfo
+local ToggleDropDownMenu = _G.ToggleDropDownMenu
+local UIDropDownMenu_AddButton = _G.UIDropDownMenu_AddButton
 local LoadAddOn = _G.LoadAddOn
 local MINIMAP_TRACKING_NONE = _G.MINIMAP_TRACKING_NONE
 local MiniMapTracking_SetTracking = _G.MiniMapTracking_SetTracking
@@ -35,12 +35,12 @@ local UIErrorsFrame = _G.UIErrorsFrame
 local UnitClass = _G.UnitClass
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CalendarFrame, SocialPostFrame, C_Social, Social_SetShown, L_UIDROPDOWNMENU_MENU_VALUE
+-- GLOBALS: CalendarFrame, SocialPostFrame, C_Social, Social_SetShown, UIDROPDOWNMENU_MENU_VALUE
 -- GLOBALS: FEATURE_BECOMES_AVAILABLE_AT_LEVEL, ToggleQuestLog, ToggleGuildFrame, Calendar_Toggle
 -- GLOBALS: GuildFrame_TabClicked, GuildFrameTab2, ToggleFriendsFrame, SHOW_PVP_LEVEL
 -- GLOBALS: MiniMapTrackingDropDown, ToggleDropDownMenu, Minimap_OnClick, ToggleCharacter
 -- GLOBALS: SpellBookFrame, PlayerTalentFrame, TalentFrame_LoadUI, SHOW_TALENT_LEVEL
--- GLOBALS: StoreMicroButton, L_EasyMenu, GarrisonLandingPage_Toggle, MinimapAnchor
+-- GLOBALS: StoreMicroButton, EasyMenu, GarrisonLandingPage_Toggle, MinimapAnchor
 -- GLOBALS: ToggleEncounterJournal, FEATURE_NOT_YET_AVAILABLE, ToggleCollectionsJournal
 -- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap, LootHistoryFrame
 -- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal, HideUIPanel
@@ -54,7 +54,7 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 	local _, class = UnitClass("player")
 
 	if (level == 1) then
-		info = L_UIDropDownMenu_CreateInfo()
+		info = UIDropDownMenu_CreateInfo()
 		info.text = MINIMAP_TRACKING_NONE
 		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive
 		info.func = ClearAllTracking
@@ -62,7 +62,7 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 		info.arg1 = nil
 		info.isNotRadio = true
 		info.keepShownOnClick = true
-		L_UIDropDownMenu_AddButton(info, level)
+		UIDropDownMenu_AddButton(info, level)
 
 		if (class == "HUNTER") then -- only show hunter dropdown for hunters
 			numTracking = 0
@@ -80,7 +80,7 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 				info.keepShownOnClick = false
 				info.hasArrow = true
 				info.value = HUNTER_TRACKING
-				L_UIDropDownMenu_AddButton(info, level)
+				UIDropDownMenu_AddButton(info, level)
 			end
 		end
 
@@ -90,12 +90,12 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 		info.keepShownOnClick = false
 		info.hasArrow = true
 		info.value = TOWNSFOLK
-		L_UIDropDownMenu_AddButton(info, level)
+		UIDropDownMenu_AddButton(info, level)
 	end
 
 	for id = 1, count do
 		name, texture, active, category, nested = GetTrackingInfo(id)
-		info = L_UIDropDownMenu_CreateInfo()
+		info = UIDropDownMenu_CreateInfo()
 		info.text = name
 		info.checked = MiniMapTrackingDropDownButton_IsActive
 		info.func = MiniMapTracking_SetTracking
@@ -118,19 +118,19 @@ local function MiniMapTrackingDropDown_Initialize(self, level)
 		(nested < 0 or -- this tracking shouldn't be nested
 		(nested == HUNTER_TRACKING and class ~= "HUNTER") or
 		(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-			L_UIDropDownMenu_AddButton(info, level)
-		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == L_UIDROPDOWNMENU_MENU_VALUE) then
-			L_UIDropDownMenu_AddButton(info, level)
+			UIDropDownMenu_AddButton(info, level)
+		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
+			UIDropDownMenu_AddButton(info, level)
 		end
 	end
 end
 
 -- Create the new minimap tracking dropdown frame and initialize it
-local UIMiniMapTrackingDropDown = CreateFrame("Frame", "UIMiniMapTrackingDropDown", UIParent, "L_UIDropDownMenuTemplate")
+local UIMiniMapTrackingDropDown = CreateFrame("Frame", "UIMiniMapTrackingDropDown", UIParent, "UIDropDownMenuTemplate")
 UIMiniMapTrackingDropDown:SetID(1)
 UIMiniMapTrackingDropDown:SetClampedToScreen(true)
 UIMiniMapTrackingDropDown:Hide()
-L_UIDropDownMenu_Initialize(UIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
+UIDropDownMenu_Initialize(UIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
 UIMiniMapTrackingDropDown.noResize = true
 
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
@@ -264,12 +264,12 @@ Minimap:SetScript("OnMouseUp", function(self, btn)
 	local position = self:GetPoint()
 	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
 		if position:match("LEFT") then
-			L_EasyMenu(micromenu, menuFrame, "cursor")
+			EasyMenu(micromenu, menuFrame, "cursor")
 		else
-			L_EasyMenu(micromenu, menuFrame, "cursor", -160, 0)
+			EasyMenu(micromenu, menuFrame, "cursor", -160, 0)
 		end
 	elseif btn == "RightButton" then
-		L_ToggleDropDownMenu(1, nil, UIMiniMapTrackingDropDown, "cursor")
+		ToggleDropDownMenu(1, nil, UIMiniMapTrackingDropDown, "cursor")
 	else
 		Minimap_OnClick(self)
 	end

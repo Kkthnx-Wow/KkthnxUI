@@ -1,7 +1,4 @@
 local AddOnName, Engine = ...
-local Resolution = GetCurrentResolution() > 0 and select(GetCurrentResolution(), GetScreenResolutions()) or nil
-local Windowed = Display_DisplayModeDropDown:windowedmode()
-local Fullscreen = Display_DisplayModeDropDown:fullscreenmode()
 
 --[[
 The MIT License (MIT)
@@ -60,11 +57,14 @@ local HideUIPanel = _G.HideUIPanel
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
+local issecurevariable = _G.issecurevariable
 local LibStub = _G.LibStub
 local PlaySound = _G.PlaySound
 local PlaySoundKitID = _G.PlaySoundKitID
 local print = _G.print
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local UIDROPDOWNMENU_MAXBUTTONS = _G.UIDROPDOWNMENU_MAXBUTTONS
+local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
 local UnitClass = _G.UnitClass
 local UnitGUID = _G.UnitGUID
 local UnitLevel = _G.UnitLevel
@@ -72,7 +72,7 @@ local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
 -- GLOBALS: GameMenuFrame, KkthnxUIConfigFrame, KkthnxUIConfig, GameMenuButtonLogout
--- GLOBALS: GameMenuButtonAddons, ConsolePort, GameMenuButtonWhatsNew
+-- GLOBALS: GameMenuButtonAddons, ConsolePort, GameMenuButtonWhatsNew, UIDROPDOWNMENU_VALUE_PATCH_VERSION
 
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 AddOn.callbacks = AddOn.callbacks or LibStub("CallbackHandler-1.0")
@@ -97,25 +97,21 @@ AddOn.Spec = GetSpecialization() or 0
 AddOn.Level = UnitLevel("player")
 AddOn.Client = GetLocale()
 AddOn.Realm = GetRealmName()
-AddOn.MediaPath = "Interface\\AddOns\\KkthnxUI\\Media\\"
+AddOn.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
-AddOn.OmniCC = select(4, GetAddOnInfo("OmniCC"))
-AddOn.Resolution = Resolution or (Windowed and GetCVar("gxWindowedResolution")) or GetCVar("gxFullscreenResolution")
+AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
 AddOn.ScreenHeight = tonumber(string_match(AddOn.Resolution, "%d+x(%d+)"))
 AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
--- Wow Build Info and Version Checks
-AddOn.WoWPatch, AddOn.WoWBuild, AddOn.WoWPatchReleaseDate, AddOn.TocVersion = GetBuildInfo() AddOn.WoWBuild = tonumber(AddOn.WoWBuild)
--- Legion
-AddOn.Legion715 = AddOn.WoWBuild == 23360 -- 7.1.5, 23420, nil, 70100
-AddOn.Legion735 = AddOn.WoWBuild >= 26124
--- Battle for Azeroth
-AddOn.BFA801 = AddOn.WoWBuild >= 26557 -- 8.0.1, 26557, May 3, 2018, 80000
+AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo() AddOn.WowBuild = tonumber(AddOn.WowBuild)
+AddOn.Legion715 = AddOn.WowBuild == 23360
+AddOn.Legion735 = AddOn.WowBuild >= 26124
+AddOn.BFA801 = AddOn.WowBuild >= 26557
 
 if (About) then
-	AddOn.optionsFrame = About.new(nil, "KkthnxUI")
+	AddOn.optionsFrame = About.new(nil, AddOnName)
 end
 
 function AddOn:OnInitialize()
@@ -177,4 +173,25 @@ AddOn.AddOns = {}
 for i = 1, GetNumAddOns() do
 	local Name = GetAddOnInfo(i)
 	AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) > 0
+end
+
+-- Sourced: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
+if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
+	UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
+	hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
+		if UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then
+			return
+		end
+		for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+			for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
+				local b = _G["DropDownList"..i.."Button"..j]
+				if not (issecurevariable(b, "value") or b:IsShown()) then
+					b.value = nil
+					repeat
+						j, b["fx"..j] = j + 1
+					until issecurevariable(b, "value")
+				end
+			end
+		end
+	end)
 end

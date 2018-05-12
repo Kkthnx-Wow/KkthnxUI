@@ -1053,7 +1053,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["KillingBlow"] = {
-			["Name"] = "KillingBlow",
+			["Name"] = "Killing Blow",
 			["Desc"] = "Display a message about your killing blow",
 		},
 
@@ -1176,6 +1176,11 @@ KkthnxUIConfig["enUS"] = {
 		["CastReactionColor"] = {
 			["Name"] = "Castbar Reaction Color",
 			["Desc"] = "Color cast bars as reaction to the target",
+		},
+
+		["ColorHealthByValue"] = {
+			["Name"] = "Health By Value",
+			["Desc"] = "Color health by amount remaining.",
 		},
 
 		["CombatText"] = {
@@ -1332,8 +1337,13 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["DeficitThreshold"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "Pick your poison",
+			["Name"] = "Deficit Threshold",
+			["Desc"] = "Show health deficit when it's more than displayed value",
+		},
+
+		["ColorHealthByValue"] = {
+			["Name"] = "Health By Value",
+			["Desc"] = "Color health by amount remaining.",
 		},
 
 		["Enable"] = {
@@ -1377,8 +1387,8 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["RaidUtility"] = {
-			["Name"] = "Portrait Style",
-			["Desc"] = "Pick your poison",
+			["Name"] = RAID_CONTROL,
+			["Desc"] = "Enables the custom Raid Control panel.",
 		},
 
 		["ShowMouseoverHighlight"] = {

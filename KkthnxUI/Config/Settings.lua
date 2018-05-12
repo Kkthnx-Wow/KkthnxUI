@@ -400,7 +400,6 @@ C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["HealthDeficit"] = true,
 	["Height"] = 30,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
