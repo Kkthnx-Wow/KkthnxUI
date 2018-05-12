@@ -43,18 +43,6 @@ local function LoadSkin()
 		end
 	end)
 
-	-- DropDownMenu library support
-	if LibStub("LibUIDropDownMenu", true) then
-		L_DropDownList1Backdrop:SetTemplate("Transparent")
-		L_DropDownList1MenuBackdrop:SetTemplate("Transparent")
-		hooksecurefunc("L_UIDropDownMenu_CreateFrames", function()
-			if not _G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
-				_G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent", true)
-				_G["L_DropDownList"..L_UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent", true)
-			end
-		end)
-	end
-
 	-- Reskin menu
 	local ChatMenus = {
 		"ChatMenu",
