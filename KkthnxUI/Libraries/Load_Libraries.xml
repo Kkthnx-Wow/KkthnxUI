@@ -18,6 +18,5 @@
     <Include file="UTF8\UTF8.xml"/>
     <Script file="LibChatAnims\LibChatAnims.lua"/>
     <Script file="LibAnim-2.01\LibAnim-2.01.lua"/>
-    <Include file="LibUIDropDownMenu\LibUIDropDownMenu.xml"/>
     <Script file="LibAboutPanel\LibAboutPanel.lua"/>
 </Ui>

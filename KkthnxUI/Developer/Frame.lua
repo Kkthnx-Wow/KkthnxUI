@@ -157,7 +157,7 @@ _G.SLASH_FSTACK1 = "/fs"
 
 -- Inform us of the patch info we play on.
 SlashCmdList["WOWVERSION"] = function()
-	K.Print("Patch:", K.WoWPatch..", ".. "Build:", K.WoWBuild..", ".. "Released:", K.WoWPatchReleaseDate..", ".. "Interface:", K.TocVersion)
+	K.Print("Patch:", K.WowPatch..", ".. "Build:", K.WowBuild..", ".. "Released:", K.WowRelease..", ".. "Interface:", K.TocVersion)
 end
 _G.SLASH_WOWVERSION1 = "/patch"
 _G.SLASH_WOWVERSION2 = "/version"

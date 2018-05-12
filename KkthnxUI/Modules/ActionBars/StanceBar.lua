@@ -34,7 +34,10 @@ end
 Movers:RegisterFrame(ShiftHolder)
 
 -- HIDE BAR
-if C["ActionBar"].StanceBarHide then ShiftHolder:Hide() return end
+if C["ActionBar"].StanceBarHide then
+	ShiftHolder:Hide()
+	return
+end
 
 -- CREATE BAR
 local StanceBar = CreateFrame("Frame", "UIShapeShift", ShiftHolder, "SecureHandlerStateTemplate")

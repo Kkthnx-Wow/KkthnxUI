@@ -129,14 +129,14 @@ function K.CreateRaid(self, unit)
 		self.Health:SetAllPoints(self)
 		self.Health:SetStatusBarTexture(RaidframeTexture)
 
-		if C["Raidframe"].HealthDeficit then
+		-- if C["Raidframe"].HealthDeficit then -- Cant do this just yet. Need to seperate the status too from the Health Value!
 			self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY", 4)
 			self.Health.Value:SetFontObject(RaidframeFont)
 			self.Health.Value:SetPoint("CENTER", self.Health, 0, -7)
 			self.Health.Value:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
 			self.Health.Value:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
 			self:Tag(self.Health.Value, "[KkthnxUI:HealthDeficit]")
-		end
+		-- end
 
 		self.Health.Cutaway = C["Raidframe"].Cutaway
 		self.Health.Smooth = C["Raidframe"].Smooth

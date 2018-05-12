@@ -1,7 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("DebugTools", "AceEvent-3.0", "AceHook-3.0")
 
-if K.WoWBuild < 24015 then return end
+if K.WowBuild < 24015 then
+	return
+end
 
 -- WoW API
 local hooksecurefunc = hooksecurefunc

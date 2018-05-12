@@ -9,15 +9,15 @@ local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local IsAltKeyDown = _G.IsAltKeyDown
-local L_ToggleDropDownMenu = _G.L_ToggleDropDownMenu
-local L_UIDropDownMenu_AddButton = _G.L_UIDropDownMenu_AddButton
-local L_UIDropDownMenu_CreateInfo = _G.L_UIDropDownMenu_CreateInfo
-local L_UIDropDownMenu_Initialize = _G.L_UIDropDownMenu_Initialize
+local ToggleDropDownMenu = _G.ToggleDropDownMenu
+local UIDropDownMenu_AddButton = _G.UIDropDownMenu_AddButton
+local UIDropDownMenu_CreateInfo = _G.UIDropDownMenu_CreateInfo
+local UIDropDownMenu_Initialize = _G.UIDropDownMenu_Initialize
 
 -- GLOBALS: UIParent, SHOW_BATTLEFIELDMINIMAP_PLAYERS, LOCK_BATTLEFIELDMINIMAP, BATTLEFIELDMINIMAP_OPACITY_LABEL
 -- GLOBALS: BattlefieldMinimapTabDropDown_TogglePlayers, BattlefieldMinimapTabDropDown_ToggleLock
 -- GLOBALS: BattlefieldMinimapTabDropDown_ShowOpacity, BattlefieldMinimap_UpdateOpacity
--- GLOBALS: L_UIDROPDOWNMENU_MENU_LEVEL, BattlefieldMinimapCloseButton, BattlefieldMinimapOptions
+-- GLOBALS: UIDROPDOWNMENU_MENU_LEVEL, BattlefieldMinimapCloseButton, BattlefieldMinimapOptions
 -- GLOBALS: BattlefieldMinimapCorner, BattlefieldMinimapBackground, BattlefieldMinimapTab, BattlefieldMinimapTabLeft
 -- GLOBALS: BattlefieldMinimapTabMiddle, BattlefieldMinimapTabRight, OpacityFrame
 
@@ -72,33 +72,33 @@ local function LoadSkin()
 
 	-- Custom dropdown to avoid using regular DropDownMenu code (taints)
 	local function BattlefieldMinimapTabDropDown_Initialize()
-		local info = L_UIDropDownMenu_CreateInfo()
+		local info = UIDropDownMenu_CreateInfo()
 
 		-- Show battlefield players
 		info.text = SHOW_BATTLEFIELDMINIMAP_PLAYERS
 		info.func = BattlefieldMinimapTabDropDown_TogglePlayers
 		info.checked = BattlefieldMinimapOptions and BattlefieldMinimapOptions.showPlayers or false
 		info.isNotRadio = true
-		L_UIDropDownMenu_AddButton(info, L_UIDROPDOWNMENU_MENU_LEVEL)
+		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL)
 
 		-- Battlefield minimap lock
 		info.text = LOCK_BATTLEFIELDMINIMAP
 		info.func = BattlefieldMinimapTabDropDown_ToggleLock
 		info.checked = BattlefieldMinimapOptions and BattlefieldMinimapOptions.locked or false
 		info.isNotRadio = true
-		L_UIDropDownMenu_AddButton(info, L_UIDROPDOWNMENU_MENU_LEVEL)
+		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL)
 
 		-- Opacity
 		info.text = BATTLEFIELDMINIMAP_OPACITY_LABEL
 		info.func = BattlefieldMinimapTabDropDown_ShowOpacity
 		info.notCheckable = true
-		L_UIDropDownMenu_AddButton(info, L_UIDROPDOWNMENU_MENU_LEVEL)
+		UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL)
 	end
 
-	local UIBattlefieldMinimapTabDropDown = CreateFrame("Frame", "UIBattlefieldMinimapTabDropDown", UIParent, "L_UIDropDownMenuTemplate")
+	local UIBattlefieldMinimapTabDropDown = CreateFrame("Frame", "UIBattlefieldMinimapTabDropDown", UIParent, "UIDropDownMenuTemplate")
 	UIBattlefieldMinimapTabDropDown:SetID(1)
 	UIBattlefieldMinimapTabDropDown:Hide()
-	L_UIDropDownMenu_Initialize(UIBattlefieldMinimapTabDropDown, BattlefieldMinimapTabDropDown_Initialize, "MENU")
+	UIDropDownMenu_Initialize(UIBattlefieldMinimapTabDropDown, BattlefieldMinimapTabDropDown_Initialize, "MENU")
 
 	BattlefieldMinimap:SetScript("OnMouseUp", function(self, btn)
 		if btn == "LeftButton" then
@@ -106,7 +106,7 @@ local function LoadSkin()
 			BattlefieldMinimapTab:SetUserPlaced(true)
 			if OpacityFrame:IsShown() then OpacityFrame:Hide() end -- seem to be a bug with default ui in 4.0, we hide it on next click
 		elseif btn == "RightButton" then
-			L_ToggleDropDownMenu(1, nil, UIBattlefieldMinimapTabDropDown, self:GetName(), 0, -4)
+			ToggleDropDownMenu(1, nil, UIBattlefieldMinimapTabDropDown, self:GetName(), 0, -4)
 			if OpacityFrame:IsShown() then OpacityFrame:Hide() end -- seem to be a bug with default ui in 4.0, we hide it on next click
 		end
 	end)
