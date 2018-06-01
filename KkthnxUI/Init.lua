@@ -1,5 +1,7 @@
 local AddOnName, Engine = ...
 
+-- Test for bitbucket.org
+
 --[[
 The MIT License (MIT)
 
