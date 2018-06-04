@@ -13,13 +13,16 @@ local type = type
 local unpack = unpack
 
 -- WoW API / Variables
+local ACCEPT = _G.ACCEPT
 local AutoCompleteEditBox_OnEnterPressed = _G.AutoCompleteEditBox_OnEnterPressed
 local AutoCompleteEditBox_OnTextChanged = _G.AutoCompleteEditBox_OnTextChanged
+local CANCEL = _G.CANCEL
 local CreateFrame = _G.CreateFrame
 local DisableAddOn = _G.DisableAddOn
 local EnableAddOn = _G.EnableAddOn
 local GetBankSlotCost = _G.GetBankSlotCost
 local GetBindingFromClick = _G.GetBindingFromClick
+local GetRealmName = _G.GetRealmName
 local InCinematic = _G.InCinematic
 local MoneyFrame_Update = _G.MoneyFrame_Update
 local PlaySound = _G.PlaySound
@@ -34,6 +37,7 @@ local STATICPOPUP_TEXTURE_ALERT = _G.STATICPOPUP_TEXTURE_ALERT
 local STATICPOPUP_TEXTURE_ALERTGEAR = _G.STATICPOPUP_TEXTURE_ALERTGEAR
 local UIParent = _G.UIParent
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
+local UnitName = _G.UnitName
 
 -- GLOBALS: UIConfig, UIConfigMain, KkthnxUIData
 

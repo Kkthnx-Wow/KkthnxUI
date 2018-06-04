@@ -1,11 +1,13 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
 
 local _G = _G
+local table_insert = table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 
-local function LoadSkin()
-	QuestMapFrame.QuestsFrame.StoryTooltip:SetTemplate("Transparent", true)
+local function SkinWorldMapStuff()
+	QuestMapFrame.QuestsFrame.StoryTooltip:SetTemplate("Transparent")
 
 	WorldMapFrame.UIElementsFrame.BountyBoard.BountyName:FontTemplate(nil, 14, "OUTLINE")
 
@@ -20,4 +22,4 @@ local function LoadSkin()
 	WorldMapZoneInfo:SetShadowOffset(2, -2)
 end
 
-tinsert(K.SkinFuncs["KkthnxUI"], LoadSkin)
+table_insert(Module.SkinFuncs["KkthnxUI"], SkinWorldMapStuff)

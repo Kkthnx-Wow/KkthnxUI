@@ -1,9 +1,10 @@
-local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
 -- Lua API
 local _G = _G
-local string_gsub = string.gsub
 
 -- Wow API
 local GetFlyoutID = _G.GetFlyoutID
@@ -13,9 +14,10 @@ local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
+local GetActionText = _G.GetActionText
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: SpellFlyout, RightBarMouseOver, ActionButton_UpdateState, KEY_MOUSEWHEELDOWN
+-- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- GLOBALS: SpellFlyout, ActionButton_UpdateState, KEY_MOUSEWHEELDOWN
 -- GLOBALS: KEY_MOUSEWHEELUP, KEY_BUTTON3, KEY_BUTTON4, KEY_BUTTON5, KEY_NUMPAD0, KEY_NUMPAD1
 -- GLOBALS: KEY_NUMPAD2, KEY_NUMPAD3, KEY_NUMPAD4, KEY_NUMPAD5, KEY_NUMPAD6, KEY_NUMPAD7
 -- GLOBALS: KEY_NUMPAD8, KEY_NUMPAD9, KEY_NUMPADDECIMAL, KEY_NUMPADDIVIDE, KEY_NUMPADMINUS
@@ -23,288 +25,331 @@ local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 -- GLOBALS: KEY_HOME, KEY_DELETE, KEY_INSERT_MAC, SpellFlyoutHorizontalBackground, SpellFlyoutVerticalBackground
 -- GLOBALS: SpellFlyoutBackgroundEnd, ActionButton_HideOverlayGlow, ActionButton_UpdateHotkeys
 
+local FlyoutButtons = 0
 local function StyleNormalButton(self)
-	local name = self:GetName()
-	local button = self
-	local icon = _G[name.."Icon"]
-	local count = _G[name.."Count"]
-	local flash = _G[name.."Flash"]
-	local hotkey = _G[name.."HotKey"]
-	local border = _G[name.."Border"]
-	local btname = _G[name.."Name"]
-	local normal = _G[name.."NormalTexture"]
-	local float = _G[name.."FloatingBG"]
+	local Name = self:GetName()
+	local Action = self.action
+	local Button = self
+	local Icon = _G[Name.."Icon"]
+	local Count = _G[Name.."Count"]
+	local Flash	 = _G[Name.."Flash"]
+	local HotKey = _G[Name.."HotKey"]
+	local Border = _G[Name.."Border"]
+	local Btname = _G[Name.."Name"]
+	local Normal = _G[Name.."NormalTexture"]
+	local BtnBG = _G[Name.."FloatingBG"]
+	local Font = K.GetFont(C["ActionBar"].Font)
 
-	flash:SetTexture("")
-	button:SetNormalTexture("")
+	Flash:SetTexture("")
+	Button:SetNormalTexture("")
 
-	if float then
-		float:Hide()
-		float = K.Noop
-	end
+	Count:ClearAllPoints()
+	Count:SetPoint("BOTTOMRIGHT", 0, 2)
 
-	count:ClearAllPoints()
-	count:SetPoint("BOTTOMRIGHT", 0, 2)
-	count:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-	count:SetShadowOffset(0, 0)
+	HotKey:ClearAllPoints()
+	HotKey:SetPoint("TOPRIGHT", 0, -3)
 
-	if border and button.isSkinned then
-		-- border:SetTexture("")
-		if border:IsShown() then
-			button:SetBackdropBorderColor(0.08, 0.70, 0)
+	K.UpdateHotkey(Button)
+
+	if Border and Button.isSkinned then
+		Border:SetTexture("")
+		if Border:IsShown() and C["ActionBar"].EquipBorder then
+			Button:SetBackdropBorderColor(.08, .70, 0)
 		else
-			button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			Button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		end
 	end
 
+	if (Btname and Normal and C["ActionBar"].Macro) then
+		local String = GetActionText(Action)
 
-	if btname then
-		if C["ActionBar"].Macro == true then
-			btname:ClearAllPoints()
-			btname:SetPoint("BOTTOM", 0, 2)
-			btname:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["Media"].FontStyle)
-			btname:SetShadowOffset(0, 0)
-			btname:SetWidth(C["ActionBar"].ButtonSize)
-		else
-			btname:Kill()
+		if String then
+			local Text
+			if string.byte(String, 1) > 223 then
+				Text = string.sub(String, 1, 9)
+			else
+				Text = string.sub(String, 1, 4)
+			end
+			Btname:SetText(Text)
 		end
 	end
 
-	if C["ActionBar"].Hotkey == true then
-		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPRIGHT", 0, -2)
-		hotkey:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-		hotkey:SetShadowOffset(0, 0)
-		hotkey:SetWidth(C["ActionBar"].ButtonSize - 1)
-		hotkey.ClearAllPoints = K.Noop
-		hotkey.SetPoint = K.Noop
+	if (Button.isSkinned) then
+		return
+	end
+
+	Count:SetFontObject(Font)
+
+	if (Btname) then
+		if (C["ActionBar"].Macro) then
+			Btname:SetFontObject(Font)
+			Btname:ClearAllPoints()
+			Btname:SetPoint("BOTTOM", 1, 1)
+		else
+			Btname:SetText("")
+			Btname:Kill()
+		end
+	end
+
+	if (BtnBG) then
+		BtnBG:Kill()
+	end
+
+	if (C["ActionBar"].Hotkey) then
+		HotKey:SetFontObject(Font)
+		HotKey.ClearAllPoints = K.Noop
+		HotKey.SetPoint = K.Noop
 	else
-		hotkey:Kill()
+		HotKey:SetText("")
+		HotKey:Kill()
 	end
 
-	if not button.isSkinned then
-		if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not name:match("ExtraAction") then
-			self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+	if (Name:match("Extra")) then
+		Button.Pushed = true
+	end
+
+	if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not Name:match("Extra") then
+		self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+	end
+	Button:SetTemplate("Transparent", true)
+	Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
+	Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
+
+	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	Icon:SetAllPoints()
+	Icon:SetDrawLayer("BACKGROUND", 7)
+
+
+	if (Normal) then
+		Normal:ClearAllPoints()
+		Normal:SetPoint("TOPLEFT")
+		Normal:SetPoint("BOTTOMRIGHT")
+
+		if (Button:GetChecked()) then
+			ActionButton_UpdateState(Button)
 		end
-		button:SetTemplate("ActionButton", true)
-
-		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		icon:SetAllPoints(button)
-
-		button.isSkinned = true
 	end
 
-	if normal and button:GetChecked() then
-		ActionButton_UpdateState(button)
-	end
-
-	if normal then
-		normal:ClearAllPoints()
-		normal:SetPoint("TOPLEFT")
-		normal:SetPoint("BOTTOMRIGHT")
-	end
+	Button:StyleButton()
+	Button.isSkinned = true
 end
 
-local function StyleSmallButton(normal, button, icon, name, pet)
-	local flash = _G[name.."Flash"]
-	local hotkey = _G[name.."HotKey"]
+local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
+	if Button.isSkinned then
+		return
+	end
 
-	button:SetNormalTexture("")
+	local PetSize = C["ActionBar"].ButtonSize
+	local HotKey = _G[Button:GetName().."HotKey"]
+	local Flash = _G[Name.."Flash"]
+	local Font = K.GetFont(C["ActionBar"].Font)
 
-	hooksecurefunc(button, "SetNormalTexture", function(self, texture)
-		if texture and texture ~= "" then
-			self:SetNormalTexture("")
-		end
-	end)
+	Button:SetSize(PetSize, PetSize)
+	Button:SetTemplate("Transparent", true)
 
-	flash:SetColorTexture(0.8, 0.8, 0.8, 0.5)
-	flash:SetAllPoints(button)
-
-	if C["ActionBar"].Hotkey == true then
-		hotkey:ClearAllPoints()
-		hotkey:SetPoint("TOPRIGHT", 0, -2)
-		hotkey:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-		hotkey:SetWidth(C["ActionBar"].ButtonSize - 1)
-		hotkey.ClearAllPoints = K.Noop
-		hotkey.SetPoint = K.Noop
+	if (C["ActionBar"].Hotkey) then
+		HotKey:SetFontObject(Font)
+		HotKey:ClearAllPoints()
+		HotKey:SetPoint("TOPRIGHT", 0, -3)
 	else
-		hotkey:Kill()
+		HotKey:SetText("")
+		HotKey:Kill()
 	end
 
-	if not button.isSkinned then
-		button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-		button:SetTemplate("ActionButton", true)
+	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+	Icon:SetAllPoints()
+	Icon:SetDrawLayer('BACKGROUND', 7)
 
-		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
-		icon:ClearAllPoints()
-		icon:SetAllPoints(button)
-
-		if (pet) then
-			local autocast = _G[name.."AutoCastable"]
-			autocast:SetSize((C["ActionBar"].ButtonSize * 2) - 10, (C["ActionBar"].ButtonSize * 2) - 10)
-			autocast:ClearAllPoints()
-			autocast:SetPoint("CENTER", button, 0, 0)
-
-			local shine = _G[name.."Shine"]
-			shine:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-
-			local cooldown = _G[name.."Cooldown"]
-			cooldown:SetSize(C["ActionBar"].ButtonSize - 2, C["ActionBar"].ButtonSize - 2)
+	if (Pet) then
+		if (PetSize < 30) then
+			local AutoCast = _G[Name.."AutoCastable"]
+			AutoCast:SetAlpha(0)
 		end
-		button.isSkinned = true
+
+		local Shine = _G[Name.."Shine"]
+		Shine:SetSize(PetSize, PetSize)
+		Shine:ClearAllPoints()
+		Shine:SetPoint("CENTER", Button, 0, 0)
+
+		K.UpdateHotkey(Button)
 	end
 
-	if normal then
-		normal:ClearAllPoints()
-		normal:SetPoint("TOPLEFT")
-		normal:SetPoint("BOTTOMRIGHT")
+	Button:SetNormalTexture("")
+	Button.SetNormalTexture = K.Noop
+
+	Flash:SetTexture("")
+
+	if Normal then
+		Normal:ClearAllPoints()
+		Normal:SetPoint("TOPLEFT")
+		Normal:SetPoint("BOTTOMRIGHT")
 	end
+
+	Button:StyleButton()
+	Button.isSkinned = true
 end
 
 function K.StyleShift()
 	for i = 1, NUM_STANCE_SLOTS do
-		local name = "StanceButton"..i
-		local button = _G[name]
-		local icon = _G[name.."Icon"]
-		local normal = _G[name.."NormalTexture"]
-		StyleSmallButton(normal, button, icon, name)
+		local Name = "StanceButton"..i
+		local Button = _G[Name]
+		local Icon = _G[Name.."Icon"]
+		local Normal = _G[Name.."NormalTexture"]
+
+		StyleSmallButton(Normal, Button, Icon, Name, false)
 	end
 end
 
 function K.StylePet()
 	for i = 1, NUM_PET_ACTION_SLOTS do
-		local name = "PetActionButton"..i
-		local button = _G[name]
-		local icon = _G[name.."Icon"]
-		local normal = _G[name.."NormalTexture2"]
-		StyleSmallButton(normal, button, icon, name, true)
+		local Name = "PetActionButton"..i
+		local Button = _G[Name]
+		local Icon = _G[Name.."Icon"]
+		local Normal = _G[Name.."NormalTexture2"] -- ?? 2
+
+		StyleSmallButton(Normal, Button, Icon, Name, true)
 	end
 end
 
-local function UpdateHotkey(self, btype)
-	local hotkey = _G[self:GetName().."HotKey"]
-	local text = hotkey:GetText()
+function K.UpdateHotkey(self)
+	local HotKey = _G[self:GetName() .. "HotKey"]
+	local Text = HotKey:GetText()
 	local Indicator = _G["RANGE_INDICATOR"]
 
-	if (not text) then
+	if (not Text) then
 		return
 	end
 
-	text = string_gsub(text, "(s%-)", "S")
-	text = string_gsub(text, "(a%-)", "A")
-	text = string_gsub(text, "(c%-)", "C")
-	text = string_gsub(text, KEY_MOUSEWHEELDOWN , "MDn")
-	text = string_gsub(text, KEY_MOUSEWHEELUP , "MUp")
-	text = string_gsub(text, KEY_BUTTON3, "M3")
-	text = string_gsub(text, KEY_BUTTON4, "M4")
-	text = string_gsub(text, KEY_BUTTON5, "M5")
-	text = string_gsub(text, KEY_MOUSEWHEELUP, "MU")
-	text = string_gsub(text, KEY_MOUSEWHEELDOWN, "MD")
-	text = string_gsub(text, KEY_NUMPAD0, "N0")
-	text = string_gsub(text, KEY_NUMPAD1, "N1")
-	text = string_gsub(text, KEY_NUMPAD2, "N2")
-	text = string_gsub(text, KEY_NUMPAD3, "N3")
-	text = string_gsub(text, KEY_NUMPAD4, "N4")
-	text = string_gsub(text, KEY_NUMPAD5, "N5")
-	text = string_gsub(text, KEY_NUMPAD6, "N6")
-	text = string_gsub(text, KEY_NUMPAD7, "N7")
-	text = string_gsub(text, KEY_NUMPAD8, "N8")
-	text = string_gsub(text, KEY_NUMPAD9, "N9")
-	text = string_gsub(text, KEY_NUMPADDECIMAL, "N.")
-	text = string_gsub(text, KEY_NUMPADDIVIDE, "N/")
-	text = string_gsub(text, KEY_NUMPADMINUS, "N-")
-	text = string_gsub(text, KEY_NUMPADMULTIPLY, "N*")
-	text = string_gsub(text, KEY_NUMPADPLUS, "N+")
-	text = string_gsub(text, KEY_PAGEUP, "PU")
-	text = string_gsub(text, KEY_PAGEDOWN, "PD")
-	text = string_gsub(text, KEY_SPACE, "SpB")
-	text = string_gsub(text, KEY_INSERT, "Ins")
-	text = string_gsub(text, KEY_HOME, "Hm")
-	text = string_gsub(text, KEY_DELETE, "Del")
-	text = string_gsub(text, KEY_INSERT_MAC, "Hlp") -- MAC
+	Text = string.gsub(Text, "(s%-)", "S")
+	Text = string.gsub(Text, "(a%-)", "A")
+	Text = string.gsub(Text, "(c%-)", "C")
+	Text = string.gsub(Text, KEY_MOUSEWHEELDOWN , "MDn")
+	Text = string.gsub(Text, KEY_MOUSEWHEELUP , "MUp")
+	Text = string.gsub(Text, KEY_BUTTON3, "M3")
+	Text = string.gsub(Text, KEY_BUTTON4, "M4")
+	Text = string.gsub(Text, KEY_BUTTON5, "M5")
+	Text = string.gsub(Text, KEY_MOUSEWHEELUP, "MU")
+	Text = string.gsub(Text, KEY_MOUSEWHEELDOWN, "MD")
+	Text = string.gsub(Text, KEY_NUMPAD0, "N0")
+	Text = string.gsub(Text, KEY_NUMPAD1, "N1")
+	Text = string.gsub(Text, KEY_NUMPAD2, "N2")
+	Text = string.gsub(Text, KEY_NUMPAD3, "N3")
+	Text = string.gsub(Text, KEY_NUMPAD4, "N4")
+	Text = string.gsub(Text, KEY_NUMPAD5, "N5")
+	Text = string.gsub(Text, KEY_NUMPAD6, "N6")
+	Text = string.gsub(Text, KEY_NUMPAD7, "N7")
+	Text = string.gsub(Text, KEY_NUMPAD8, "N8")
+	Text = string.gsub(Text, KEY_NUMPAD9, "N9")
+	Text = string.gsub(Text, KEY_NUMPADDECIMAL, "N.")
+	Text = string.gsub(Text, KEY_NUMPADDIVIDE, "N/")
+	Text = string.gsub(Text, KEY_NUMPADMINUS, "N-")
+	Text = string.gsub(Text, KEY_NUMPADMULTIPLY, "N*")
+	Text = string.gsub(Text, KEY_NUMPADPLUS, "N+")
+	Text = string.gsub(Text, KEY_PAGEUP, "PU")
+	Text = string.gsub(Text, KEY_PAGEDOWN, "PD")
+	Text = string.gsub(Text, KEY_SPACE, "SpB")
+	Text = string.gsub(Text, KEY_INSERT, "Ins")
+	Text = string.gsub(Text, KEY_HOME, "Hm")
+	Text = string.gsub(Text, KEY_DELETE, "Del")
+	Text = string.gsub(Text, KEY_INSERT_MAC, "Hlp") -- mac
 
-	if hotkey:GetText() == Indicator then
-		hotkey:SetText("")
+	if HotKey:GetText() == Indicator then
+		HotKey:SetText("")
 	else
-		hotkey:SetText(text)
+		HotKey:SetText(Text)
 	end
 end
 
-local buttons = 0
 local function SetupFlyoutButton()
-	for i = 1, buttons do
-		if _G["SpellFlyoutButton"..i] then
-			StyleNormalButton(_G["SpellFlyoutButton"..i])
-			_G["SpellFlyoutButton"..i]:StyleButton()
+	for i = 1, FlyoutButtons do
+		local Button = _G["SpellFlyoutButton"..i]
 
-			if _G["SpellFlyoutButton"..i]:GetChecked() then
-				_G["SpellFlyoutButton"..i]:SetChecked(false)
+		if Button and not Button.IsSkinned then
+			Button:StyleButton()
+
+			if Button:GetChecked() then
+				Button:SetChecked(nil)
 			end
 
-			if C["ActionBar"].RightBarsMouseover == true then
-				SpellFlyout:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-				SpellFlyout:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
-				_G["SpellFlyoutButton"..i]:HookScript("OnEnter", function(self) RightBarMouseOver(1) end)
-				_G["SpellFlyoutButton"..i]:HookScript("OnLeave", function(self) RightBarMouseOver(0) end)
-			end
+			Button.IsSkinned = true
 		end
 	end
 end
-SpellFlyout:HookScript("OnShow", SetupFlyoutButton)
 
 local function StyleFlyoutButton(self)
+	if not self.FlyoutArrow then
+		return
+	end
+
+	local HB = SpellFlyoutHorizontalBackground
+	local VB = SpellFlyoutVerticalBackground
+	local BE = SpellFlyoutBackgroundEnd
+
 	if self.FlyoutBorder then
 		self.FlyoutBorder:SetAlpha(0)
-	end
-	if self.FlyoutBorderShadow then
 		self.FlyoutBorderShadow:SetAlpha(0)
 	end
 
-	SpellFlyoutHorizontalBackground:SetAlpha(0)
-	SpellFlyoutVerticalBackground:SetAlpha(0)
-	SpellFlyoutBackgroundEnd:SetAlpha(0)
+	HB:SetAlpha(0)
+	VB:SetAlpha(0)
+	BE:SetAlpha(0)
 
 	for i = 1, GetNumFlyouts() do
-		local x = GetFlyoutID(i)
-		local _, _, numSlots, isKnown = GetFlyoutInfo(x)
-		if isKnown then
-			if numSlots > buttons then
-				buttons = numSlots
-			end
+		local ID = GetFlyoutID(i)
+		local _, _, NumSlots, IsKnown = GetFlyoutInfo(ID)
+		if IsKnown then
+			FlyoutButtons = NumSlots
+			break
 		end
 	end
+
+	SetupFlyoutButton()
 end
 
-local function HideHighlightButton(self)
+local function StartButtonHighlight(self)
 	if self.overlay then
 		self.overlay:Hide()
 		ActionButton_HideOverlayGlow(self)
 	end
-end
 
-do
-	for i = 1, 12 do
-		_G["ActionButton"..i]:StyleButton()
-		_G["MultiBarBottomLeftButton"..i]:StyleButton()
-		_G["MultiBarBottomRightButton"..i]:StyleButton()
-		_G["MultiBarLeftButton"..i]:StyleButton()
-		_G["MultiBarRightButton"..i]:StyleButton()
+	if not self.Animation then
+		local NewProc = self:CreateTexture()
+		NewProc:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+		NewProc:SetBlendMode("ADD")
+		NewProc:SetAlpha(1)
+		NewProc:SetAllPoints(self)
+
+		self.NewProc = NewProc
+
+		local Animation = self.NewProc:CreateAnimationGroup()
+		Animation:SetLooping("BOUNCE")
+
+		local FadeOut = Animation:CreateAnimation("Alpha")
+		FadeOut:SetFromAlpha(1)
+		FadeOut:SetToAlpha(0)
+		FadeOut:SetDuration(0.40)
+		FadeOut:SetSmoothing("IN_OUT")
+
+		self.Animation = Animation
 	end
 
-	for i = 1, 10 do
-		_G["StanceButton"..i]:StyleButton()
-		_G["PetActionButton"..i]:StyleButton()
+	if not self.Animation:IsPlaying() then
+		self.Animation:Play()
+		self.NewProc:Show()
+	end
+end
+
+local function StopButtonHighlight(self)
+	if self.Animation and self.Animation:IsPlaying() then
+		self.Animation:Stop()
+		self.NewProc:Hide()
 	end
 end
 
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
-
-if C["ActionBar"].Hotkey == true then
-	hooksecurefunc("ActionButton_OnEvent", function(self, event, ...) if event == "PLAYER_ENTERING_WORLD" then ActionButton_UpdateHotkeys(self, self.buttonType) end end)
-	hooksecurefunc("ActionButton_UpdateHotkeys", UpdateHotkey)
-end
-
-if C["ActionBar"].HideHightlight == true then
-	hooksecurefunc("ActionButton_ShowOverlayGlow", HideHighlightButton)
-end
+hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
+hooksecurefunc("ActionButton_ShowOverlayGlow", StartButtonHighlight)
+hooksecurefunc("ActionButton_HideOverlayGlow", StopButtonHighlight)
+hooksecurefunc("ActionButton_UpdateHotkeys", K.UpdateHotkey)
+hooksecurefunc("PetActionButton_SetHotkeys", K.UpdateHotkey)

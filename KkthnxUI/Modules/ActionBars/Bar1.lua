@@ -1,15 +1,11 @@
-local K, C, L = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then
 	return
 end
 
--- Sourced Old Tukui (Tukz)
-
--- Lua API
 local _G = _G
 local select = select
 
--- Wow API
 local CreateFrame = _G.CreateFrame
 local HasOverrideActionBar = _G.HasOverrideActionBar
 local HasVehicleActionBar = _G.HasVehicleActionBar
@@ -19,9 +15,6 @@ local RegisterStateDriver = _G.RegisterStateDriver
 local UnitClass = _G.UnitClass
 local MainMenuBar_OnEvent = _G.MainMenuBar_OnEvent
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: ActionButton_Update
-
 local PageDRUID, PageROGUE = "", ""
 
 local ActionBar1 = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
@@ -30,9 +23,9 @@ ActionBar1:SetAllPoints(ActionBarAnchor)
 for i = 1, 12 do
 	local button = _G["ActionButton"..i]
 	button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-
 	button:ClearAllPoints()
 	button:SetParent(Bar1Holder)
+
 	if i == 1 then
 		button:SetPoint("BOTTOMLEFT", Bar1Holder, 0, 0)
 	else
@@ -52,7 +45,7 @@ local Page = {
 	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
-local function GetBar(self, defaultPage)
+local function GetBar()
 	local condition = Page["DEFAULT"]
 	local class = select(2, UnitClass("player"))
 	local page = Page[class]
@@ -66,31 +59,29 @@ local function GetBar(self, defaultPage)
 	return condition
 end
 
-ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
+ActionBar1:RegisterEvent("PLAYER_LOGIN")
+ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
+ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 ActionBar1:RegisterEvent("BAG_UPDATE")
-ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
-	if event == "PLAYER_ENTERING_WORLD" then
+ActionBar1:SetScript("OnEvent", function(self, event, ...)
+	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G["ActionButton"..i]
 			self:SetFrameRef("ActionButton"..i, button)
 		end
 
 		self:Execute([[
-		button = table.new()
-		for i = 1, 12 do
-			table.insert(button, self:GetFrameRef("ActionButton"..i))
-		end
+			buttons = table.new()
+			for i = 1, 12 do
+				table.insert(buttons, self:GetFrameRef("ActionButton"..i))
+			end
 		]])
 
 		self:SetAttribute("_onstate-page", [[
-		if HasTempShapeshiftActionBar() then
-			newstate = GetTempShapeshiftBarIndex() or newstate
-		end
-
-		for i, button in ipairs(button) do
-			button:SetAttribute("actionpage", tonumber(newstate))
-		end
+			for i, button in ipairs(buttons) do
+				button:SetAttribute("actionpage", tonumber(newstate))
+			end
 		]])
 
 		RegisterStateDriver(self, "page", GetBar())
@@ -98,7 +89,7 @@ ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
 		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
 				local button = _G["ActionButton"..i]
-				ActionButton_Update(button)
+				_G.ActionButton_Update(button)
 			end
 		end
 	else

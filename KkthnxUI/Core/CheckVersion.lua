@@ -18,7 +18,7 @@ local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
 MyName = gsub(MyName, "%s+", "")
 
-function Module:CheckIt(event, prefix, message, channel, sender)
+function Module:CheckIt(event, prefix, message, _, sender)
 	if (event == "CHAT_MSG_ADDON") then
 		if (prefix ~= "KkthnxUIVersion") or (sender == MyName) then
 			return

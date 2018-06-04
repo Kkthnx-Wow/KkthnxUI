@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("InventorySort", "AceHook-3.0", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
@@ -9,17 +9,14 @@ local pairs = pairs
 local tonumber = tonumber
 local select = select
 local unpack = unpack
-local pcall = pcall
 local string_match = string.match
 local string_gmatch = string.gmatch
-local string_find = string.find
 local table_insert = table.insert
 local table_remove = table.remove
 local table_sort =  table.sort
 local table_wipe = table.wipe
 
 local C_PetJournalGetPetInfoBySpeciesID = _G.C_PetJournal.GetPetInfoBySpeciesID
-local C_Timer_After = _G.C_Timer.After
 local ContainerIDToInventoryID = _G.ContainerIDToInventoryID
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
@@ -44,7 +41,7 @@ local QueryGuildBankTab = _G.QueryGuildBankTab
 local SplitContainerItem = _G.SplitContainerItem
 local SplitGuildBankItem = _G.SplitGuildBankItem
 
-local guildBags = {51,52,53,54,55,56,57,58}
+local guildBags = {51, 52, 53, 54, 55, 56, 57, 58}
 local bankBags = {BANK_CONTAINER}
 local MAX_MOVE_TIME = 1.25
 
@@ -133,7 +130,7 @@ local safe = {
 
 local frame = CreateFrame("Frame")
 local t, WAIT_TIME = 0, 0.05
-frame:SetScript("OnUpdate", function(self, elapsed)
+frame:SetScript("OnUpdate", function(_, elapsed)
 	t = t + (elapsed or 0.01)
 	if t > WAIT_TIME then
 		t = 0
@@ -365,7 +362,9 @@ end
 
 function Module:GetNumSlots(bag, role)
 	if IsGuildBankBag(bag) then
-		if not role then role = "deposit" end
+		if not role then
+			role = "deposit"
+		end
 		local name, _, canView, canDeposit, numWithdrawals = GetGuildBankTabInfo(bag - 50)
 		if name and canView then
 			return 98
@@ -607,7 +606,7 @@ function Module.Fill(sourceBags, targetBags, reverse, canMove)
 		if #emptySlots == 0 then break end
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
 		local targetBag = Module:Decode_BagSlot(emptySlots[1])
-		local link = Module:GetItemLink(bag, slot)
+		-- local link = Module:GetItemLink(bag, slot) -- Where is link?
 
 		if bagIDs[bagSlot] and Module:CanItemGoInBag(bag, slot, targetBag) and canMove(bagIDs[bagSlot], bag, slot) then
 			Module:AddMove(bagSlot, table_remove(emptySlots, 1))
@@ -661,29 +660,12 @@ function Module:StartStacking()
 	end
 end
 
---local function RegisterUpdateDelayed()
---	for _, Stuffing in pairs(Stuffing.frame) do
---		if Stuffing.registerUpdate then
---			-- call update and re-register BAG_UPDATE event
---			Stuffing.registerUpdate = nil
---			Stuffing:UpdateAllSlots()
---			Stuffing:RegisterEvent("BAG_UPDATE")
---		end
---	end
---end
-
-function Module:StopStacking(message, noUpdate)
+function Module:StopStacking(message)
 	table_wipe(moves)
 	table_wipe(moveTracker)
 	moveRetries, lastItemID, lockStop, lastDestination, lastMove = 0, nil, nil, nil, nil
 
 	self.SortUpdateTimer:Hide()
-
-	--if not noUpdate then
-	--	--Add a delayed update call, as BAG_UPDATE fires slightly delayed
-	--	-- and we don"t want the last few unneeded updates to be catched
-	--	C_Timer_After(0.6, RegisterUpdateDelayed)
-	--end
 
 	if message then
 		K.Print(message)

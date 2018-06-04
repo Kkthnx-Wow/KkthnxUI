@@ -74,6 +74,10 @@ function Module:SetupExtraButton(texture, loop)
 	K["Movers"]:RegisterFrame(ZoneAbilityHolder)
 end
 
-function Module:OnEnable()
+function Module:OnInitialize()
+	if InCombatLockdown() then -- Avoid a taint when the user reloads their UI in combat. Idk why someone would so such a thing!
+		return
+	end
+
 	self:SetupExtraButton()
 end

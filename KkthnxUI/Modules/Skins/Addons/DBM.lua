@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if not (C["Skins"].DBM and K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("DBM-StatusBarTimers") and K.CheckAddOnState("DBM-DefaultSkin")) then
 	return
 end
@@ -7,16 +7,16 @@ local DBMFont = K.GetFont(C["Skins"].Font)
 local DBMTexture = K.GetTexture(C["Skins"].Texture)
 
 local _G = _G
+local string_gsub = string.gsub
 
-local hooksecurefunc = hooksecurefunc
+local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
 
 local DBM_Skin = CreateFrame("Frame")
 DBM_Skin:RegisterEvent("ADDON_LOADED")
 DBM_Skin:RegisterEvent("PLAYER_ENTERING_WORLD")
-DBM_Skin:SetScript("OnEvent", function(self, event, addon)
+DBM_Skin:SetScript("OnEvent", function(_, event)
 	if event == "PLAYER_ENTERING_WORLD" then
-		local croprwicons = true
-		local BarHeight
 		local function SkinBars(self)
 			for bar in self:GetBarIterator() do
 				if not bar.injected then
@@ -28,6 +28,7 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 						local a, b, c, d = spark:GetPoint()
 						spark:SetPoint(a, b, c, d, 0)
 					end)
+
 					hooksecurefunc(bar, "ApplyStyle", function()
 						local frame = bar.frame
 						local tbar = _G[frame:GetName().."Bar"]
@@ -38,16 +39,24 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 						if not icon1.overlay then
 							icon1.overlay = CreateFrame("Frame", "$parentIcon1Overlay", tbar)
-							icon1.overlay:CreateShadow(3, false, false)
+							icon1.overlay:CreateShadow()
 							icon1.overlay:SetFrameLevel(0)
 							icon1.overlay:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", -4, 0)
+
+							icon1.overlay.background = icon1.overlay:CreateTexture(nil, "BORDER")
+							icon1.overlay.background:SetAllPoints()
+							icon1.overlay.background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 						end
 
 						if not icon2.overlay then
 							icon2.overlay = CreateFrame("Frame", "$parentIcon2Overlay", tbar)
-							icon2.overlay:CreateShadow(3, false, false)
+							icon2.overlay:CreateShadow()
 							icon2.overlay:SetFrameLevel(0)
 							icon2.overlay:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 4, 0)
+
+							icon2.overlay.background = icon2.overlay:CreateTexture(nil, "BORDER")
+							icon2.overlay.background:SetAllPoints()
+							icon2.overlay.background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 						end
 
 						icon1:SetTexCoord(0.1, 0.9, 0.1, 0.9)
@@ -60,10 +69,14 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 
 						icon1.overlay:SetSize(bar.owner.options.Height, bar.owner.options.Height)
 						icon2.overlay:SetSize(bar.owner.options.Height, bar.owner.options.Height)
-						BarHeight = bar.owner.options.Height
+
 						tbar:SetAllPoints(frame)
 
-						frame:CreateShadow(3, false, true)
+						frame:CreateShadow()
+
+						frame.background = frame:CreateTexture(nil, "BORDER")
+						frame.background:SetAllPoints()
+						frame.background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 						name:ClearAllPoints()
 						name:SetWidth(165)
@@ -82,8 +95,17 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 						timer:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 						name:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 
-						if bar.owner.options.IconLeft then icon1.overlay:Show() else icon1.overlay:Hide() end
-						if bar.owner.options.IconRight then icon2.overlay:Show() else icon2.overlay:Hide() end
+						if bar.owner.options.IconLeft then
+							icon1.overlay:Show()
+						else
+							icon1.overlay:Hide()
+						end
+
+						if bar.owner.options.IconRight then
+							icon2.overlay:Show()
+						else
+							icon2.overlay:Hide()
+						end
 
 						bar.injected = true
 					end)
@@ -92,16 +114,20 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 			end
 		end
 
-		local function SkinRange(self, range, filter, forceshow, redCircleNumPlayers)
-			if DBM.Options.DontShowRangeFrame and not forceshow then return end
+		local function SkinRange(_, _, _, forceshow)
+			if DBM.Options.DontShowRangeFrame and not forceshow then
+				return
+			end
 			if DBMRangeCheck then
 				DBMRangeCheck:CreateShadow()
 				DBMRangeCheckRadar:CreateShadow()
 			end
 		end
 
-		local function SkinInfo(self, maxLines, event, ...)
-			if DBM.Options.DontShowInfoFrame and (event or 0) ~= "test" then return end
+		local function SkinInfo(_, _, event)
+			if DBM.Options.DontShowInfoFrame and (event or 0) ~= "test" then
+				return
+			end
 			if DBMInfoFrame then
 				DBMInfoFrame:CreateShadow()
 				DBMInfoFrame.Shadow:SetAllPoints()
@@ -112,14 +138,12 @@ DBM_Skin:SetScript("OnEvent", function(self, event, addon)
 		hooksecurefunc(DBM.RangeCheck, "Show", SkinRange)
 		hooksecurefunc(DBM.InfoFrame, "Show", SkinInfo)
 
-		if croprwicons then
-			local RaidNotice_AddMessage_ = RaidNotice_AddMessage
-			RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo, displayTime)
-				if textString:find("|T") then
-					textString = gsub(textString,"(:12:12)",":18:18:0:0:64:64:5:59:5:59")
-				end
-				return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo, displayTime)
+		local RaidNotice_AddMessage_ = RaidNotice_AddMessage
+		RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo, displayTime)
+			if textString:find("|T") then
+				textString = string_gsub(textString,"(:12:12)",":18:18:0:0:64:64:5:59:5:59")
 			end
+			return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo, displayTime)
 		end
 	end
 end)

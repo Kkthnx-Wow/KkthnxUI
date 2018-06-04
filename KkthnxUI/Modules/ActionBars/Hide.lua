@@ -1,29 +1,26 @@
-local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
-local Module = K:NewModule("DisableJunk", "AceHook-3.0", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
--- Lua API
+local Module = K:NewModule("DisableBlizzard", "AceHook-3.0", "AceEvent-3.0")
+
 local _G = _G
 
--- Wow API
 local hooksecurefunc = _G.hooksecurefunc
 local MainMenuBar = _G.MainMenuBar
 local MainMenuBarArtFrame = _G.MainMenuBarArtFrame
-local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
-local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
-local OverrideActionBar = _G.OverrideActionBar
+local MainMenuBarMaxLevelBar = _G.MainMenuBarMaxLevelBar
+local MainMenuExpBar = _G.MainMenuExpBar
 local PetActionBarFrame = _G.PetActionBarFrame
 local PossessBarFrame = _G.PossessBarFrame
-
-local Frames = {
-	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
-	PossessBarFrame, PetActionBarFrame, IconIntroTracker,
-	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
-	TalentMicroButtonAlert, CollectionsMicroButtonAlert, EJMicroButtonAlert
-}
+local ReputationWatchBar = _G.ReputationWatchBar
+local StreamingIcon = _G.StreamingIcon
+local TutorialFrameAlertButton = _G.TutorialFrameAlertButton
+local UIPARENT_MANAGED_FRAME_POSITIONS = _G.UIPARENT_MANAGED_FRAME_POSITIONS
 
 function Module:IconIntroTracker_Toggle()
-	if C["ActionBar"].AddNewSpells then
+	if (C["ActionBar"].AddNewSpells) then
 		IconIntroTracker:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR")
 		IconIntroTracker:Show()
 		IconIntroTracker:SetParent(UIParent)
@@ -35,209 +32,138 @@ function Module:IconIntroTracker_Toggle()
 end
 
 function Module:DisableBlizzard()
-	local Hider = K.UIFrameHider
+	local UIHider = K["UIFrameHider"]
 
-	SetCVar("alwaysShowActionBars", 1)
+	MainMenuBar:EnableMouse(false)
+	MainMenuBar:UnregisterAllEvents()
+	MainMenuBar:SetAlpha(0)
+	MainMenuBar:SetScale(0.00001)
 
-	for _, frame in pairs(Frames) do
-		frame:UnregisterAllEvents()
-		frame.ignoreFramePositionManager = true
-		frame:SetParent(Hider)
+	MainMenuBarArtFrame:UnregisterAllEvents()
+	MainMenuBarArtFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+	MainMenuBarArtFrame:Hide()
+	MainMenuBarArtFrame:SetAlpha(0)
+	MainMenuBarArtFrame:SetParent(UIHider)
+
+	MainMenuExpBar:EnableMouse(false)
+	MainMenuExpBar:UnregisterAllEvents()
+	MainMenuExpBar:Hide()
+	MainMenuExpBar:SetAlpha(0)
+	MainMenuExpBar:SetScale(0.00001)
+	MainMenuExpBar:SetParent(UIHider)
+
+	-- Trying to work around a bug sometimes happening
+	-- on level 20 starter edition characters.
+	MainMenuExpBar:SetScript("OnShow", nil)
+	MainMenuExpBar:SetScript("OnHide", nil)
+	MainMenuExpBar:SetScript("OnEvent", nil)
+	MainMenuExpBar:SetScript("OnUpdate", nil)
+	MainMenuExpBar:SetScript("OnEnter", nil)
+	MainMenuExpBar:SetScript("OnLeave", nil)
+	MainMenuExpBar:SetScript("OnValueChanged", nil)
+
+	-- Not strictly certain when they added this,
+	-- so we're going with the most recent expansion only.
+	-- Chances are this is the only place starter edition accounts exist.
+	K.LockCVar("xpBarText", 0)
+
+	PossessBarFrame:UnregisterAllEvents()
+	PossessBarFrame:Hide()
+	PossessBarFrame:SetAlpha(0)
+	PossessBarFrame:SetParent(UIHider)
+
+	PetActionBarFrame:EnableMouse(false)
+	PetActionBarFrame:UnregisterAllEvents()
+	PetActionBarFrame:SetParent(UIHider)
+	PetActionBarFrame:Hide()
+	PetActionBarFrame:SetAlpha(0)
+
+	TutorialFrameAlertButton:UnregisterAllEvents()
+	TutorialFrameAlertButton:Hide()
+
+	MainMenuBarMaxLevelBar:SetParent(UIHider)
+	MainMenuBarMaxLevelBar:Hide()
+
+	ReputationWatchBar:SetParent(UIHider)
+
+	StreamingIcon:SetParent(UIHider)
+
+	local TalentMicroButtonAlert = _G.TalentMicroButtonAlert
+	TalentMicroButtonAlert:UnregisterAllEvents()
+	TalentMicroButtonAlert:SetParent(UIHider)
+
+	local StanceBarFrame = _G.StanceBarFrame
+	local StanceBarLeft = _G.StanceBarLeft
+	local StanceBarMiddle = _G.StanceBarMiddle
+	local StanceBarRight = _G.StanceBarRight
+	local OverrideActionBar = _G.OverrideActionBar
+
+	StanceBarFrame:EnableMouse(false)
+	StanceBarFrame:UnregisterAllEvents()
+	StanceBarFrame:Hide()
+	StanceBarFrame:SetAlpha(0)
+
+	StanceBarLeft:Hide()
+	StanceBarLeft:SetAlpha(0)
+
+	StanceBarMiddle:Hide()
+	StanceBarMiddle:SetAlpha(0)
+
+	StanceBarRight:Hide()
+	StanceBarRight:SetAlpha(0)
+
+	-- If I'm not hiding this, it will become visible (though transparent)
+	-- and cover our own custom vehicle/possess action bar.
+	OverrideActionBar:SetParent(UIHider)
+	OverrideActionBar:EnableMouse(false)
+	OverrideActionBar:UnregisterAllEvents()
+
+	MainMenuBar.slideOut:GetAnimations():SetOffset(0,0)
+	OverrideActionBar.slideOut:GetAnimations():SetOffset(0,0)
+
+	for i = 1,6 do
+		_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
+		_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
+		_G["OverrideActionBarButton"..i]:EnableMouse(false) -- just in case it's still there
 	end
 
-	for i = 1, 6 do
-		local Button = _G["OverrideActionBarButton"..i]
+	local CollectionsMicroButtonAlert = _G.CollectionsMicroButtonAlert
+	local EJMicroButtonAlert = _G.EJMicroButtonAlert
+	local LFDMicroButtonAlert = _G.LFDMicroButtonAlert
 
-		Button:UnregisterAllEvents()
-		Button:SetAttribute("statehidden", true)
-		Button:SetAttribute("showgrid", 1)
+	CollectionsMicroButtonAlert:UnregisterAllEvents()
+	CollectionsMicroButtonAlert:SetParent(UIHider)
+	CollectionsMicroButtonAlert:Hide()
+
+	EJMicroButtonAlert:UnregisterAllEvents()
+	EJMicroButtonAlert:SetParent(UIHider)
+	EJMicroButtonAlert:Hide()
+
+	LFDMicroButtonAlert:UnregisterAllEvents()
+	LFDMicroButtonAlert:SetParent(UIHider)
+	LFDMicroButtonAlert:Hide()
+
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarRight"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarLeft"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomRight"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MainMenuBar"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["PossessBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiCastActionBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MULTICASTACTIONBAR_YPOS"] = nil
+
+	if _G.PlayerTalentFrame then
+		_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function() _G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED") end)
 	end
-
-	hooksecurefunc("TalentFrame_LoadUI", function()
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
-
-	hooksecurefunc("ActionButton_OnEvent", function(self, event)
-		if (event == "PLAYER_ENTERING_WORLD") then
-			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
-			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		end
-	end)
 
 	-- Enable/disable functionality to automatically put spells on the actionbar.
 	self:IconIntroTracker_Toggle()
-
-	MainMenuBar.slideOut.IsPlaying = function()
-		return true
-	end
 end
 
 function Module:OnEnable()
 	self:DisableBlizzard()
-end
-
--- Mouseover stuff
-function RightBarMouseOver(alpha)
-	RightActionBarAnchor:SetAlpha(alpha)
-	PetActionBarAnchor:SetAlpha(alpha)
-	ShapeShiftBarAnchor:SetAlpha(alpha)
-
-	if MultiBarLeft:IsShown() then
-		for i = 1, 12 do
-			local pb = _G["MultiBarLeftButton"..i]
-			pb:SetAlpha(alpha)
-			local f = _G["MultiBarLeftButton"..i.."Cooldown"]
-			K.HideSpiral(f, alpha)
-		end
-		MultiBarLeft:SetAlpha(alpha)
-	end
-
-	if C["ActionBar"].RightBars > 2 then
-		if MultiBarBottomRight:IsShown() then
-			for i = 1, 12 do
-				local pb = _G["MultiBarBottomRightButton"..i]
-				pb:SetAlpha(alpha)
-				local d = _G["MultiBarBottomRightButton"..i.."Cooldown"]
-				K.HideSpiral(d, alpha)
-			end
-			MultiBarBottomRight:SetAlpha(alpha)
-		end
-	end
-
-	if MultiBarRight:IsShown() then
-		for i = 1, 12 do
-			local pb = _G["MultiBarRightButton"..i]
-			pb:SetAlpha(alpha)
-			local g = _G["MultiBarRightButton"..i.."Cooldown"]
-			K.HideSpiral(g, alpha)
-		end
-		MultiBarRight:SetAlpha(alpha)
-	end
-
-	if C["ActionBar"].PetBarHorizontal == false and C["ActionBar"].PetBarHide == false then
-		if PetHolder:IsShown() then
-			for i = 1, NUM_PET_ACTION_SLOTS do
-				local pb = _G["PetActionButton"..i]
-				pb:SetAlpha(alpha)
-				local f = _G["PetActionButton"..i.."Cooldown"]
-				K.HideSpiral(f, alpha)
-			end
-			PetHolder:SetAlpha(alpha)
-		end
-	end
-
-	if C["ActionBar"].StanceBarHorizontal == false and C["ActionBar"].StanceBarHide == false then
-		if ShiftHolder:IsShown() then
-			for i = 1, NUM_STANCE_SLOTS do
-				local pb = _G["StanceButton"..i]
-				pb:SetAlpha(alpha)
-				local f = _G["StanceButton"..i.."Cooldown"]
-				K.HideSpiral(f, alpha)
-			end
-			ShiftHolder:SetAlpha(alpha)
-		end
-	end
-end
-
-function StanceBarMouseOver(alpha)
-	for i = 1, NUM_STANCE_SLOTS do
-		local pb = _G["StanceButton"..i]
-		pb:SetAlpha(alpha)
-		local f = _G["StanceButton"..i.."Cooldown"]
-		K.HideSpiral(f, alpha)
-	end
-	ShapeShiftBarAnchor:SetAlpha(alpha)
-end
-
-function PetBarMouseOver(alpha)
-	for i = 1, NUM_PET_ACTION_SLOTS do
-		local pb = _G["PetActionButton"..i]
-		pb:SetAlpha(alpha)
-		local f = _G["PetActionButton"..i.."Cooldown"]
-		K.HideSpiral(f, alpha)
-	end
-	PetHolder:SetAlpha(alpha)
-end
-
--- Fix cooldown spiral alpha
-function K.HideSpiral(f, alpha)
-	f:SetSwipeColor(0, 0, 0, alpha * 0.8)
-	f:SetDrawBling(alpha == 1)
-end
-
-local EventSpiral = CreateFrame("Frame")
-EventSpiral:RegisterEvent("PLAYER_ENTERING_WORLD")
-EventSpiral:SetScript("OnEvent", function()
-	if C["ActionBar"].RightBarsMouseover == true then
-		RightBarMouseOver(0)
-	end
-
-	if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true and C["ActionBar"].PetBarHide ~= true then
-		PetBarMouseOver(0)
-	end
-
-	if C["ActionBar"].StanceBarMouseover == true and C["ActionBar"].StanceBarHorizontal == true then
-		StanceBarMouseOver(0)
-	end
-end)
-
-if (C["ActionBar"].RightBarsMouseover == true and C["ActionBar"].PetBarHorizontal == false and C["ActionBar"].PetBarHide == false) or (C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true and C["ActionBar"].PetBarHide == false) then
-	local EventPetSpiral = CreateFrame("Frame")
-	EventPetSpiral:RegisterEvent("PET_BAR_UPDATE_COOLDOWN")
-	EventPetSpiral:SetScript("OnEvent", function()
-		for i = 1, NUM_PET_ACTION_SLOTS do
-			local f = _G["PetActionButton"..i.."Cooldown"]
-			K.HideSpiral(f, 0)
-		end
-		EventPetSpiral:UnregisterEvent("PET_BAR_UPDATE_COOLDOWN")
-	end)
-end
-
-do
-	if C["ActionBar"].RightBarsMouseover == true then
-		RightActionBarAnchor:SetAlpha(0)
-		RightActionBarAnchor:SetScript("OnEnter", function()
-			RightBarMouseOver(1)
-		end)
-		RightActionBarAnchor:SetScript("OnLeave", function()
-			if not HoverBind.enabled then
-				RightBarMouseOver(0)
-			end
-		end)
-		if C["ActionBar"].PetBarHorizontal == false then
-			PetActionBarAnchor:SetAlpha(0)
-			PetActionBarAnchor:SetScript("OnEnter", function()
-				if PetHolder:IsShown() then
-					RightBarMouseOver(1)
-				end
-			end)
-			PetActionBarAnchor:SetScript("OnLeave", function()
-				if not HoverBind.enabled then
-					RightBarMouseOver(0)
-				end
-			end)
-		end
-		if C["ActionBar"].StanceBarHorizontal == false and C["ActionBar"].StanceBarHide == false then
-			ShapeShiftBarAnchor:SetAlpha(0)
-			ShapeShiftBarAnchor:SetScript("OnEnter", function()
-				RightBarMouseOver(1)
-			end)
-			ShapeShiftBarAnchor:SetScript("OnLeave", function()
-				if not HoverBind.enabled then
-					RightBarMouseOver(0)
-				end
-			end)
-		end
-	end
-	if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
-		PetActionBarAnchor:SetAlpha(0)
-		PetActionBarAnchor:SetScript("OnEnter", function()
-		PetBarMouseOver(1) end)
-		PetActionBarAnchor:SetScript("OnLeave", function()
-			if not HoverBind.enabled then
-				PetBarMouseOver(0)
-			end
-		end)
-	end
 end

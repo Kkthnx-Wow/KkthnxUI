@@ -1,21 +1,24 @@
 local K, C = unpack(select(2, ...))
-if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") or C["Cooldown"].Enable ~= true then return end
-local Module = K:NewModule("Cooldowns", "AceEvent-3.0", "AceHook-3.0")
+if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") or C["Cooldown"].Enable ~= true then
+	return
+end
 
--- luacheck: globals _G tonumber COOLDOWN_TYPE_LOSS_OF_CONTROL maxCharges
+local Module = K:NewModule("Cooldowns", "AceEvent-3.0", "AceHook-3.0")
 
 -- Lua API
 local _G = _G
 local math_floor = math.floor
-local tonumber = tonumber
 local setmetatable = setmetatable
+local tonumber = tonumber
 
 -- Wow API
+local COOLDOWN_TYPE_LOSS_OF_CONTROL = _G.COOLDOWN_TYPE_LOSS_OF_CONTROL
 local CreateFrame = _G.CreateFrame
 local GetActionCharges = _G.GetActionCharges
 local GetActionCooldown = _G.GetActionCooldown
 local GetSpellCooldown = _G.GetSpellCooldown
 local GetTime = _G.GetTime
+local STANDARD_TEXT_FONT = _G.STANDARD_TEXT_FONT
 local UIParent = _G.UIParent
 
 local DAY, HOUR, MINUTE = 86400, 3600, 60 -- Formatting text
@@ -127,7 +130,7 @@ function ScriptUpdater:Cleanup()
 	self.delay = nil
 end
 
-function Timer:Start(start, duration, modRate, charges)
+function Timer:Start(start, duration, _, charges)
 	self.start, self.duration = start, duration
 	self.controlled = self.cooldown.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL
 	self.visible = self.cooldown:IsVisible()
@@ -138,7 +141,7 @@ function Timer:Start(start, duration, modRate, charges)
 	local parent = self.cooldown:GetParent()
 	self.cooldown._parent = parent
 	if parent and parent.GetCharges then
-		charges, maxCharges = parent:GetCharges()
+		charges = parent:GetCharges()
 	end
 	charges = charges or 0
 	self.charging = charges > 0
@@ -368,7 +371,6 @@ end
 
 function Module:OnSetCooldown(cooldown, ...)
 	if cooldown:IsForbidden() then
-		-- print(cooldown:IsForbidden())
 		return
 	end
 
@@ -493,12 +495,16 @@ function Anim:CreateShineAnimation()
 end
 
 local visible, hooked = {}, {}
-function Module:RegisterCooldown(button, action, cooldown)
+function Module:RegisterCooldown(_, action, cooldown)
 	cooldown.occAction = action
 
 	if not hooked[cooldown] then
-		cooldown:HookScript("OnShow", function(self) visible[self] = true end)
-		cooldown:HookScript("OnHide", function(self) visible[self] = nil end)
+		cooldown:HookScript("OnShow", function(self)
+			visible[self] = true
+		end)
+		cooldown:HookScript("OnHide", function(self)
+			visible[self] = nil
+		end)
 
 		self:Cooldown_Setup(cooldown)
 		hooked[cooldown] = true

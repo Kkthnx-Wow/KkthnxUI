@@ -1,10 +1,13 @@
-local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
+if C["Unitframe"].Enable ~= true then
+	return
+end
 
-local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+local Module = K:GetModule("Unitframes")
 
-function K.CreateStagger(self)
+function Module:CreateStagger()
+	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+
 	local stagger = CreateFrame("StatusBar", nil, self)
 	stagger:SetPoint("LEFT", 4, 0)
 	stagger:SetPoint("RIGHT", -4, 0)

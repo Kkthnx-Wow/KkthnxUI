@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then return end
 
 local _G = _G
@@ -24,14 +24,14 @@ local SetDesaturation = _G.SetDesaturation
 -- Main functions
 function K.ShiftBarUpdate()
 	local numForms = GetNumShapeshiftForms()
-	local texture, name, isActive, isCastable
+	local texture, _, isActive, isCastable
 	local button, icon, cooldown
 	local start, duration, enable
 	for i = 1, NUM_STANCE_SLOTS do
 		button = _G["StanceButton"..i]
 		icon = _G["StanceButton"..i.."Icon"]
 		if i <= numForms then
-			texture, name, isActive, isCastable = GetShapeshiftFormInfo(i)
+			texture, _, isActive, isCastable = GetShapeshiftFormInfo(i)
 			icon:SetTexture(texture)
 
 			cooldown = _G["StanceButton"..i.."Cooldown"]
@@ -60,7 +60,7 @@ function K.ShiftBarUpdate()
 	end
 end
 
-function K.PetBarUpdate(self, event)
+function K.PetBarUpdate()
 	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
 		local buttonName = "PetActionButton"..i

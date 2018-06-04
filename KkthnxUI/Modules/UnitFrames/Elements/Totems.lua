@@ -1,12 +1,13 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then
 	return
 end
 
-local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+local Module = K:GetModule("Unitframes")
 
-function K.CreateClassTotems(self, width, height, spacing)
+function Module:CreateClassTotems(width, height, spacing)
+	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+
 	local totems = {}
 	local maxTotems = 5
 

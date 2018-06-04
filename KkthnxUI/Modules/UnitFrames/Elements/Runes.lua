@@ -1,8 +1,9 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then
+	return
+end
 
-local RunesModuleFont = K.GetFont(C["Unitframe"].Font)
-local RunesModuleTexture = K.GetTexture(C["Unitframe"].Texture)
+local Module = K:GetModule("Unitframes")
 
 local function PostUpdateRune(_, rune, _, _, _, isReady)
 	if (isReady) then
@@ -12,10 +13,12 @@ local function PostUpdateRune(_, rune, _, _, _, isReady)
 	end
 end
 
-function K.CreateClassRunes(self, width, height, spacing)
+function Module:CreateClassRunes(width, height, spacing)
 	if K.Class ~= "DEATHKNIGHT" then
 		return
 	end
+
+	local RunesModuleTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	local runes = {}
 	local maxRunes = 6

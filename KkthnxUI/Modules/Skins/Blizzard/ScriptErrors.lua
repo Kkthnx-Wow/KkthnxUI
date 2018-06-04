@@ -1,12 +1,9 @@
 local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
 
-local _G = _G
+local table_insert = table.insert
 
-local UIParent = UIParent
-local IsAddOnLoaded = IsAddOnLoaded
-local LoadAddOn = LoadAddOn
-
-local function LoadSkin()
+local function SkinScriptErrors()
 	EventTraceFrame:SetTemplate("Transparent")
 
 	FrameStackTooltip:HookScript("OnShow", function(self)
@@ -17,7 +14,7 @@ local function LoadSkin()
 
 	EventTraceTooltip:HookScript("OnShow", function(self)
 		if not self.template then
-			self:SetTemplate("Transparent", true) -- ignore updates
+			self:SetTemplate("Transparent")
 		else
 			self:SetBackdropBorderColor( C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 			self:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
@@ -25,4 +22,4 @@ local function LoadSkin()
 	end)
 end
 
-tinsert(K.SkinFuncs["KkthnxUI"], LoadSkin)
+table_insert(Module.SkinFuncs["KkthnxUI"], SkinScriptErrors)

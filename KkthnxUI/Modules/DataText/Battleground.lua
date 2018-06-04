@@ -34,7 +34,10 @@ local DG = 935
 local ASH = 978
 
 local DataTextBG = CreateFrame("Frame", nil, UIParent)
-DataTextBG:CreatePanel("Invisible", 300, 13, "TOPLEFT", UIParent, "TOPLEFT", 0, -4)
+DataTextBG:SetSize(300, 13)
+DataTextBG:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 0, -4)
+DataTextBG:SetFrameLevel(0)
+DataTextBG:SetFrameStrata("BACKGROUND")
 DataTextBG:EnableMouse(true)
 
 local function OnEnter(self)
@@ -101,7 +104,7 @@ local function OnLeave()
 end
 
 local int = 2
-local function OnUpdate(self, t)
+local function OnUpdate(_, t)
 	int = int - t
 
 	if (int < 0) then

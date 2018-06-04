@@ -85,7 +85,7 @@ local NotifyInspect = _G.NotifyInspect
 -- GLOBALS: ShoppingTooltip2TextRight3, ShoppingTooltip2TextRight4, BNToastFrame, BNToastFrameCloseButton, ItemRefCloseButton, WorldMapTooltip
 
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
-local targetList, inspectCache = {}, {}
+local inspectCache = {}
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000".."AFK".."|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00".."DND".."|r|cffFFFFFF]|r"
@@ -129,33 +129,22 @@ local SlotName = {
 }
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
-	if tt:IsForbidden() then return end
-	if C["Tooltip"].Enable ~= true then return end
+	if tt:IsForbidden() then
+		return
+	end
 
-	if (tt:GetAnchorType() ~= "ANCHOR_NONE") then return end
-
-	local ownerName = tt:GetOwner() and tt:GetOwner().GetName and tt:GetOwner():GetName()
+	if C["Tooltip"].Enable ~= true then
+		return
+	end
 
 	if (parent) then
-		if (C["Tooltip"].CursorAnchor) then
-			tt:SetOwner(parent, "ANCHOR_CURSOR")
-			if (not GameTooltipStatusBar.anchoredToTop) then
-				GameTooltipStatusBar:ClearAllPoints()
-				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
-				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
-				GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
-				GameTooltipStatusBar.anchoredToTop = true
-			end
-			return
-		else
-			tt:SetOwner(parent, "ANCHOR_NONE")
-			if (GameTooltipStatusBar.anchoredToTop) then
-				GameTooltipStatusBar:ClearAllPoints()
-				GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
-				GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
-				GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, -3)
-				GameTooltipStatusBar.anchoredToTop = nil
-			end
+		tt:SetOwner(parent, "ANCHOR_NONE")
+		if (GameTooltipStatusBar.anchoredToTop) then
+			GameTooltipStatusBar:ClearAllPoints()
+			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
+			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
+			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, -3)
+			GameTooltipStatusBar.anchoredToTop = nil
 		end
 	end
 
@@ -683,19 +672,20 @@ function Module:OnEnable()
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
-	GameTooltipStatusBar:SetTemplate("Transparent")
-	GameTooltipStatusBar:SetScript("OnValueChanged", self.OnValueChanged)
+	GameTooltipStatusBar:CreateShadow()
+	GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BORDER")
+	GameTooltipStatusBar.Background:SetAllPoints()
+	GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	GameTooltipStatusBar:SetScript("OnValueChanged", nil)
 	GameTooltipStatusBar:ClearAllPoints()
-	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
-	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
+	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
+	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 	GameTooltipStatusBar.text:SetFont(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline and "OUTLINE" or "")
 	GameTooltipStatusBar.text:SetShadowOffset(C["Tooltip"].FontOutline and 0 or 1, C["Tooltip"].FontOutline and -0 or -1)
 
-	-- Tooltip Fonts
 	if not GameTooltip.hasMoney then
-		-- Force creation of the money lines, so we can set font for it
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")
 		GameTooltip_ClearMoney(GameTooltip)
@@ -718,7 +708,6 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", 'GameTooltip_OnTooltipSetItem')
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
-
 	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
 	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
 

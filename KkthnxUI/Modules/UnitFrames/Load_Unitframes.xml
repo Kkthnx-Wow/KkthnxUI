@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Unitframes -->
-    <Script file="Functions.lua"/>
     <Script file="Core.lua"/>
     <Include file="Elements\Load_Elements.xml"/>
     <Include file="Units\Load_Units.xml"/>

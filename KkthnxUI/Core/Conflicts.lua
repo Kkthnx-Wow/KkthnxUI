@@ -27,7 +27,7 @@ if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI"
 		hideOnEscape = 1,
 		showAlert = 1,
 		maxLetters = 38,
-		EditBoxOnEscapePressed = function(self)
+		EditBoxOnEscapePressed = function()
 			DisableAddOn("KkthnxUI")
 			ReloadUI()
 		end,
@@ -62,16 +62,6 @@ end
 
 if C["ActionBar"].PetBarHorizontal == true then
 	C["ActionBar"].StanceBarHorizontal = false
-end
-
--- Errors
-if C["Error"].Black == true and C["Error"].White == true then
-	C["Error"].White = false
-end
-
-if C["Error"].Combat == true then
-	C["Error"].Black = false
-	C["Error"].White = false
 end
 
 -- Auto-overwrite script config is X addon is found. Here we use our own functions to check for addons.

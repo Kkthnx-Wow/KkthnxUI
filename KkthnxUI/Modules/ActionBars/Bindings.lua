@@ -35,8 +35,8 @@ local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: DEFAULT_CHAT_FRAME, RightBarMouseOver, StanceBarMouseOver
--- GLOBALS: PetBarMouseOver, MacroFrameTab1, MacroFrameTab2, GameTooltip_ShowCompareItem
+-- GLOBALS: DEFAULT_CHAT_FRAME
+-- GLOBALS: MacroFrameTab1, MacroFrameTab2, GameTooltip_ShowCompareItem
 -- GLOBALS: ShoppingTooltip1, SpellBookFrame, GameTooltip
 -- GLOBALS: StanceButton1, PetActionButton1, ActionButton1
 -- GLOBALS: StaticPopupDialogs
@@ -281,15 +281,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 		function bind:Activate()
 			self.enabled = true
 			self:RegisterEvent("PLAYER_REGEN_DISABLED")
-			if C["ActionBar"].RightBarsMouseover == true then
-				RightBarMouseOver(1)
-			end
-			if C["ActionBar"].StanceBarMouseover == true then
-				StanceBarMouseOver(1)
-			end
-			if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
-				PetBarMouseOver(1)
-			end
 		end
 
 		function bind:Deactivate(save)
@@ -305,15 +296,6 @@ SlashCmdList.MOUSEOVERBIND = function()
 			self:HideFrame()
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			K.StaticPopup_Hide("KEYBIND_MODE")
-			if C["ActionBar"].RightBarsMouseover == true then
-				RightBarMouseOver(0)
-			end
-			if C["ActionBar"].StanceBarMouseover == true then
-				StanceBarMouseOver(0)
-			end
-			if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
-				PetBarMouseOver(0)
-			end
 		end
 
 		K.PopupDialogs["KEYBIND_MODE"] = {

@@ -300,6 +300,17 @@ function Module:OnInitialize()
         return
     end
 
+    BuffFrame:SetScript("OnLoad", nil)
+    BuffFrame:SetScript("OnUpdate", nil)
+    BuffFrame:SetScript("OnEvent", nil)
+    BuffFrame:SetParent(K["UIFrameHider"])
+    BuffFrame:UnregisterAllEvents()
+
+    TemporaryEnchantFrame:SetScript("OnUpdate", nil)
+    TemporaryEnchantFrame:SetParent(K["UIFrameHider"])
+
+    K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
+
     local AurasHolder = CreateFrame("Frame", "AurasHolder", Minimap)
     if C["Minimap"].CollectButtons then
       AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -28, 3)

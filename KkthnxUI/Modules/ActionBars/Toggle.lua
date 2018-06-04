@@ -13,7 +13,7 @@ local PlaySoundFile = _G.PlaySoundFile
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
 -- GLOBALS: Bar2Holder, Bar5Holder, RightActionBarAnchor, Bar3Holder, Bar4Holder, SplitBarRight
 -- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIData, ActionBarAnchor
--- GLOBALS: SplitBarLeft, RightBarMouseOver
+-- GLOBALS: SplitBarLeft
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
 
@@ -228,7 +228,9 @@ for i = 1, 5 do
 	ToggleBar[i].Text:SetPoint("CENTER", 2, 0)
 
 	if i == 1 then
-		ToggleBar[i]:CreatePanel("Transparent", ActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5, "BOTTOM", ActionBarAnchor, "TOP", 0, C["ActionBar"].ButtonSpace)
+		ToggleBar[i]:SetSize(ActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5)
+		ToggleBar[i]:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, C["ActionBar"].ButtonSpace)
+		ToggleBar[i]:SetTemplate("Transparent")
 		ToggleBarText(i, "- - -", false, true)
 
 		ToggleBar[i]:SetScript("OnMouseDown", function()
@@ -260,7 +262,9 @@ for i = 1, 5 do
 		end)
 		ToggleBar[i]:SetScript("OnEvent", MainBars)
 	elseif i == 2 then
-		ToggleBar[i]:CreatePanel("Transparent", RightActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5, "TOPRIGHT", RightActionBarAnchor, "BOTTOMRIGHT", 0, -C["ActionBar"].ButtonSpace)
+		ToggleBar[i]:SetSize(RightActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5)
+		ToggleBar[i]:SetPoint("TOPRIGHT", RightActionBarAnchor, "BOTTOMRIGHT", 0, -C["ActionBar"].ButtonSpace)
+		ToggleBar[i]:SetTemplate("Transparent")
 		ToggleBar[i]:SetFrameStrata("LOW")
 		ToggleBarText(i, "> > >", false, true)
 
@@ -332,34 +336,24 @@ for i = 1, 5 do
 		end
 
 		if i == 2 then
-			if C["ActionBar"].RightBarsMouseover == true then
-				ToggleBar[i]:SetAlpha(1)
-				RightBarMouseOver(1)
-			else
-				ToggleBar[i]:FadeIn()
-			end
+			ToggleBar[i]:SetFadeIn()
 		elseif i == 3 or i == 4 then
-			ToggleBar[3]:FadeIn()
-			ToggleBar[4]:FadeIn()
+			ToggleBar[3]:SetFadeIn()
+			ToggleBar[4]:SetFadeIn()
 			VehicleButtonAnchor:ClearAllPoints()
 			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
 		else
-			ToggleBar[i]:FadeIn()
+			ToggleBar[i]:SetFadeIn()
 		end
 	end)
 
 	ToggleBar[i]:SetScript("OnLeave", function()
 		if i == 2 then
-			if C["ActionBar"].RightBarsMouseover == true then
-				ToggleBar[i]:SetAlpha(0)
-				RightBarMouseOver(0)
-			else
-				ToggleBar[i]:FadeOut()
-			end
+			ToggleBar[i]:SetFadeOut()
 		elseif i == 3 or i == 4 then
 			if InCombatLockdown() then return end
-			ToggleBar[3]:FadeOut()
-			ToggleBar[4]:FadeOut()
+			ToggleBar[3]:SetFadeOut()
+			ToggleBar[4]:SetFadeOut()
 			VehicleButtonAnchor:ClearAllPoints()
 			if KkthnxUIData[K.Realm][K.Name].SplitBars == true then
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
@@ -367,7 +361,7 @@ for i = 1, 5 do
 				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
 			end
 		else
-			ToggleBar[i]:FadeOut()
+			ToggleBar[i]:SetFadeOut()
 		end
 	end)
 

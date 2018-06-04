@@ -1,8 +1,9 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
 
 local _G = _G
 
-local function LoadSkin()
+local function SkinPetJournalTooltip()
 	local tt = _G.PetJournalPrimaryAbilityTooltip
 	tt.Background:SetTexture(nil)
 
@@ -19,7 +20,7 @@ local function LoadSkin()
 	tt.BorderBottom:SetTexture(nil)
 	tt.BorderBottomRight:SetTexture(nil)
 	tt.BorderBottomLeft:SetTexture(nil)
-	tt:SetTemplate("Transparent", true)
+	tt:SetTemplate("Transparent")
 end
 
-K.SkinFuncs["Blizzard_Collections"] = LoadSkin
+Module.SkinFuncs["Blizzard_Collections"] = SkinPetJournalTooltip

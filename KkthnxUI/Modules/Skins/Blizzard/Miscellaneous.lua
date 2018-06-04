@@ -1,4 +1,5 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
 
 local _G = _G
 
@@ -8,17 +9,13 @@ local getn = getn
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
-local L_DropDownList1Backdrop = _G.L_DropDownList1Backdrop
-local L_DropDownList1MenuBackdrop = _G.L_DropDownList1MenuBackdrop
-local L_UIDROPDOWNMENU_MAXLEVELS = _G.L_UIDROPDOWNMENU_MAXLEVELS
-local LibStub = _G.LibStub
 local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
 local UIParent = _G.UIParent
 
 -- GLOBALS: QueueStatusFrame, ChatFrame1, GhostFrameMiddle, GhostFrameRight, GhostFrameLeft
 -- GLOBALS: GhostFrame, GhostFrameContentsFrameText, GhostFrameContentsFrameIcon
 
-local function LoadSkin()
+local function SkinMiscStuff()
 	if K.CheckAddOnState("Skinner") or K.CheckAddOnState("Aurora") then
 		return
 	end
@@ -32,14 +29,14 @@ local function LoadSkin()
 	QueueStatusFrame:StripTextures()
 
 	for i = 1, getn(Skins) do
-		_G[Skins[i]]:SetTemplate("Transparent", true)
+		_G[Skins[i]]:SetTemplate("Transparent")
 	end
 
 	-- DropDownMenu
-	hooksecurefunc("UIDropDownMenu_CreateFrames", function(level, index)
+	hooksecurefunc("UIDropDownMenu_CreateFrames", function()
 		if not _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent", true)
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent", true)
+			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent")
+			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:SetTemplate("Transparent")
 		end
 	end)
 
@@ -54,13 +51,13 @@ local function LoadSkin()
 	for i = 1, getn(ChatMenus) do
 		if _G[ChatMenus[i]] == _G["ChatMenu"] then
 			_G[ChatMenus[i]]:HookScript("OnShow", function(self)
-				self:SetTemplate("Transparent", true)
+				self:SetTemplate("Transparent")
 				self:ClearAllPoints()
 				self:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 0, 30)
 			end)
 		else
 			_G[ChatMenus[i]]:HookScript("OnShow", function(self)
-				self:SetTemplate("Transparent", true)
+				self:SetTemplate("Transparent")
 			end)
 		end
 	end
@@ -81,8 +78,8 @@ local function LoadSkin()
 		b:SetAllPoints(GhostFrameContentsFrameIcon)
 		GhostFrameContentsFrameIcon:SetSize(37, 38)
 		GhostFrameContentsFrameIcon:SetParent(b)
-		b:SetTemplate("", true)
+		b:SetTemplate()
 	end
 end
 
-table_insert(K.SkinFuncs["KkthnxUI"], LoadSkin)
+table_insert(Module.SkinFuncs["KkthnxUI"], SkinMiscStuff)

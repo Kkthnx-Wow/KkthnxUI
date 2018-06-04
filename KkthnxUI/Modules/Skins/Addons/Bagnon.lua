@@ -1,10 +1,12 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("BagnonSkin", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
+if not K.CheckAddOnState("Bagnon") then
+	return
+end
 
-if not K.CheckAddOnState("Bagnon") then return end
+local Module = K:GetModule("Skins")
 
-function Module:BagnonSkin(event, addon)
-	for k, frame in Bagnon:IterateFrames() do
+function Module:BagnonSkin()
+	for _, frame in Bagnon:IterateFrames() do
 		if frame and not frame.isSkinned then
 			frame:SetTemplate("Transparent")
 			frame.isSkinned = true
@@ -13,7 +15,10 @@ function Module:BagnonSkin(event, addon)
 end
 
 function Module:OnEnable()
-	if C["Skins"].Bagnon ~= true then return end
+	if C["Skins"].Bagnon ~= true then
+		return
+	end
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "BagnonSkin")
 	self:RegisterEvent("BANKFRAME_OPENED", "BagnonSkin")
 	self:RegisterEvent("GUILDBANKFRAME_OPENED", "BagnonSkin")

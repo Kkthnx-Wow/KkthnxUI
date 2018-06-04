@@ -3,11 +3,12 @@ local K, C, L = unpack(select(2, ...))
 -- Lua API
 local _G = _G
 local assert = assert
+local hooksecurefunc = hooksecurefunc
 local math_abs = math.abs
 local math_ceil = math.ceil
 local math_floor = math.floor
-local mod = mod
 local math_modf = math.modf
+local mod = mod
 local next = next
 local pairs = pairs
 local print = print
@@ -42,15 +43,6 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 K.LockedCVars = {}
 K.IgnoredCVars = {}
 
--- Backdrop & Borders
-K.Backdrop = {bgFile = C["Media"].Blank, edgeFile = C["Media"].Border, edgeSize = 14, insets = {left = 2.5, right = 2.5, top = 2.5, bottom = 2.5}}
-K.Border = {edgeFile = C["Media"].Border, edgeSize = 14}
-K.BorderBackdrop = {bgFile = C["Media"].Blank, insets = {left = 2, right = 2, top = 2, bottom = 2}}
-K.BorderBackdropTwo = {bgFile = C["Media"].Blank, insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult}}
-K.PixelBorder = {edgeFile = C["Media"].Blank, edgeSize = K.Mult, insets = {left = K.Mult, right = K.Mult, top = K.Mult, bottom = K.Mult}}
-K.ShadowBackdrop = {edgeFile = C["Media"].Glow, edgeSize = 3, insets = {left = 5, right = 5, top = 5, bottom = 5}}
-K.TwoPixelBorder = {bgFile = C["Media"].Blank, edgeFile = C["Media"].Blank, tile = true, tileSize = 16, edgeSize = 2, insets = {left = 2, right = 2, top = 2, bottom = 2}}
-
 K.DispelClasses = {
 	["PRIEST"] = {
 		["Magic"] = true,
@@ -83,79 +75,76 @@ function K.Print(...)
 end
 
 function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
-	if not fontSize or fontSize < 9 then
-		fontSize = 13
+	if not fontSize then
+		fontSize = 12
 	end
 
 	local fontString = parent:CreateFontString(nil, "OVERLAY")
 	fontString:SetFont(fontName, fontSize, fontStyle)
 	fontString:SetJustifyH(justify or "CENTER")
-	-- fontString:SetWordWrap(Wrap)
-	fontString:SetShadowOffset(K.Mult or 1, - K.Mult or - 1)
+	fontString:SetWordWrap(false)
+	fontString:SetShadowOffset(K.Mult or 1, -K.Mult or - 1)
 	fontString.baseSize = fontSize
 
 	return fontString
 end
 
--- Return short value of a number
+local shortValueDec
 function K.ShortValue(v)
+	shortValueDec = string_format("%%.%df", C["Unitframe"].DecimalLength or 1)
 	if C["Unitframe"].NumberPrefixStyle.Value == "METRIC" then
-		if math_abs(v) >= 1e9 then
-			return string_format("%.1fG", v / 1e9)
+		if math_abs(v) >= 1e12 then
+			return string_format(shortValueDec.."T", v / 1e12)
+		elseif math_abs(v) >= 1e9 then
+			return string_format(shortValueDec.."G", v / 1e9)
 		elseif math_abs(v) >= 1e6 then
-			return string_format("%.1fM", v / 1e6)
+			return string_format(shortValueDec.."M", v / 1e6)
 		elseif math_abs(v) >= 1e3 then
-			return string_format("%.1fk", v / 1e3)
+			return string_format(shortValueDec.."k", v / 1e3)
 		else
-			return string_format("%d", v)
+			return string_format("%s", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "CHINESE" then
 		if math_abs(v) >= 1e8 then
-			return string_format("%.1fY", v / 1e8)
+			return string_format(shortValueDec.."Y", v / 1e8)
 		elseif math_abs(v) >= 1e4 then
-			return string_format("%.1fW", v / 1e4)
+			return string_format(shortValueDec.."W", v / 1e4)
 		else
-			return string_format("%d", v)
+			return string_format("%s", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "KOREAN" then
 		if math_abs(v) >= 1e8 then
-			return string_format("%.1f억", v / 1e8)
+			return string_format(shortValueDec.."억", v / 1e8)
 		elseif math_abs(v) >= 1e4 then
-			return string_format("%.1f만", v / 1e4)
+			return string_format(shortValueDec.."만", v / 1e4)
 		elseif math_abs(v) >= 1e3 then
-			return string_format("%.1f천", v / 1e3)
+			return string_format(shortValueDec.."천", v / 1e3)
 		else
-			return string_format("%d", v)
+			return string_format("%s", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "GERMAN" then
-		if math_abs(v) >= 1e9 then
-			return string_format("%.1fMrd", v / 1e9)
+		if math_abs(v) >= 1e12 then
+			return string_format(shortValueDec.."Bio", v / 1e12)
+		elseif math_abs(v) >= 1e9 then
+			return string_format(shortValueDec.."Mrd", v / 1e9)
 		elseif math_abs(v) >= 1e6 then
-			return string_format("%.1fMio", v / 1e6)
+			return string_format(shortValueDec.."Mio", v / 1e6)
 		elseif math_abs(v) >= 1e3 then
-			return string_format("%.1fTsd", v / 1e3)
+			return string_format(shortValueDec.."Tsd", v / 1e3)
 		else
-			return string_format("%d", v)
+			return string_format("%s", v)
 		end
-	elseif C["Unitframe"].NumberPrefixStyle.Value == "DEFAULT" then
-		if math_abs(v) >= 1e9 then
-			return string_format("%.1fB", v / 1e9)
+	else
+		if math_abs(v) >= 1e12 then
+			return string_format(shortValueDec.."T", v / 1e12)
+		elseif math_abs(v) >= 1e9 then
+			return string_format(shortValueDec.."B", v / 1e9)
 		elseif math_abs(v) >= 1e6 then
-			return string_format("%.1fM", v / 1e6)
+			return string_format(shortValueDec.."M", v / 1e6)
 		elseif math_abs(v) >= 1e3 then
-			return string_format("%.1fK", v / 1e3)
+			return string_format(shortValueDec.."K", v / 1e3)
 		else
-			return string_format("%d", v)
-		end
-	else -- So it has something to return if nothing. DEFAULT
-		if math_abs(v) >= 1e9 then
-			return string_format("%.1fB", v / 1e9)
-		elseif math_abs(v) >= 1e6 then
-			return string_format("%.1fM", v / 1e6)
-		elseif math_abs(v) >= 1e3 then
-			return string_format("%.1fK", v / 1e3)
-		else
-			return string_format("%d", v)
+			return string_format("%s", v)
 		end
 	end
 end
@@ -281,8 +270,8 @@ local function CVAR_UPDATE(cvarName, value)
 		SetCVar(cvarName, K.LockedCVars[cvarName])
 	end
 end
-
 hooksecurefunc("SetCVar", CVAR_UPDATE)
+
 function K.LockCVar(cvarName, value)
 	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
@@ -296,43 +285,46 @@ function K.IgnoreCVar(cvarName, ignore)
 end
 
 local styles = {
+	-- keep percents in this table with `PERCENT` in the key, and `%.1f%%` in the value somewhere.
+	-- we use these two things to follow our setting for decimal length. they need to be EXACT.
 	["CURRENT"] = "%s",
 	["CURRENT_MAX"] = "%s - %s",
-	["CURRENT_PERCENT"] =  "%s - %.1f%%",
+	["CURRENT_PERCENT"] = "%s - %.1f%%",
 	["CURRENT_MAX_PERCENT"] = "%s - %s | %.1f%%",
 	["PERCENT"] = "%.1f%%",
 	["DEFICIT"] = "-%s"
 }
 
+local gftDec, gftUseStyle, gftDeficit
 function K.GetFormattedText(style, min, max)
 	assert(styles[style], "Invalid format style: "..style)
 	assert(min, "You need to provide a current value. Usage: K.GetFormattedText(style, min, max)")
 	assert(max, "You need to provide a maximum value. Usage: K.GetFormattedText(style, min, max)")
 
-	if max == 0 then max = 1 end
+	if max == 0 then
+		max = 1
+	end
 
-	local useStyle = styles[style]
+	gftDec = (C["Unitframe"].DecimalLength or 1)
+	if (gftDec ~= 1) and style:find("PERCENT") then
+		gftUseStyle = styles[style]:gsub("%%%.1f%%%%", "%%."..gftDec.."f%%%%")
+	else
+		gftUseStyle = styles[style]
+	end
 
 	if style == "DEFICIT" then
-		local deficit = max - min
-		if deficit <= 0 then
-			return ""
-		else
-			return string_format(useStyle, K.ShortValue(deficit))
-		end
+		gftDeficit = max - min
+		return ((gftDeficit > 0) and string_format(gftUseStyle, K.ShortValue(gftDeficit))) or ""
 	elseif style == "PERCENT" then
-		local s = string_format(useStyle, min / max * 100)
-		return s
+		return string_format(gftUseStyle, min / max * 100)
 	elseif style == "CURRENT" or ((style == "CURRENT_MAX" or style == "CURRENT_MAX_PERCENT" or style == "CURRENT_PERCENT") and min == max) then
-		return string_format(styles["CURRENT"],  K.ShortValue(min))
+		return string_format(styles["CURRENT"], K.ShortValue(min))
 	elseif style == "CURRENT_MAX" then
-		return string_format(useStyle,  K.ShortValue(min), K.ShortValue(max))
+		return string_format(gftUseStyle, K.ShortValue(min), K.ShortValue(max))
 	elseif style == "CURRENT_PERCENT" then
-		local s = string_format(useStyle, K.ShortValue(min), min / max * 100)
-		return s
+		return string_format(gftUseStyle, K.ShortValue(min), min / max * 100)
 	elseif style == "CURRENT_MAX_PERCENT" then
-		local s = string_format(useStyle, K.ShortValue(min), K.ShortValue(max), min / max * 100)
-		return s
+		return string_format(gftUseStyle, K.ShortValue(min), K.ShortValue(max), min / max * 100)
 	end
 end
 
@@ -346,21 +338,21 @@ function K.GetScreenQuadrant(frame)
 		return "UNKNOWN", frame:GetName()
 	end
 
-	if (x > (screenWidth / 3) and x < (screenWidth / 3)*2) and y > (screenHeight / 3)*2 then
+	if (x > (screenWidth / 3) and x < (screenWidth / 3) * 2) and y > (screenHeight / 3) * 2 then
 		point = "TOP"
 	elseif x < (screenWidth / 3) and y > (screenHeight / 3)*2 then
 		point = "TOPLEFT"
-	elseif x > (screenWidth / 3)*2 and y > (screenHeight / 3)*2 then
+	elseif x > (screenWidth / 3) * 2 and y > (screenHeight / 3) * 2 then
 		point = "TOPRIGHT"
-	elseif (x > (screenWidth / 3) and x < (screenWidth / 3)*2) and y < (screenHeight / 3) then
+	elseif (x > (screenWidth / 3) and x < (screenWidth / 3) * 2) and y < (screenHeight / 3) then
 		point = "BOTTOM"
 	elseif x < (screenWidth / 3) and y < (screenHeight / 3) then
 		point = "BOTTOMLEFT"
-	elseif x > (screenWidth / 3)*2 and y < (screenHeight / 3) then
+	elseif x > (screenWidth / 3) * 2 and y < (screenHeight / 3) then
 		point = "BOTTOMRIGHT"
-	elseif x < (screenWidth / 3) and (y > (screenHeight / 3) and y < (screenHeight / 3)*2) then
+	elseif x < (screenWidth / 3) and (y > (screenHeight / 3) and y < (screenHeight / 3) * 2) then
 		point = "LEFT"
-	elseif x > (screenWidth / 3)*2 and y < (screenHeight / 3)*2 and y > (screenHeight / 3) then
+	elseif x > (screenWidth / 3) * 2 and y < (screenHeight / 3) * 2 and y > (screenHeight / 3) then
 		point = "RIGHT"
 	else
 		point = "CENTER"
@@ -368,19 +360,32 @@ function K.GetScreenQuadrant(frame)
 
 	return point
 end
+
 -- http://www.wowwiki.com/ColorGradient
-function K.ColorGradient(perc, ...)
-	if perc >= 1 then
-		return select(select("#", ...) - 2, ...)
-	elseif perc <= 0 then
-		return ...
+function K.ColorGradient(a, b, ...)
+	local Percent
+
+	if (b == 0) then
+		Percent = 0
+	else
+		Percent = a / b
 	end
 
-	local num = select("#", ...) / 3
-	local segment, relperc = math_modf(perc * (num - 1))
-	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
+	if (Percent >= 1) then
+		local R, G, B = select(select("#", ...) - 2, ...)
 
-	return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1)*relperc
+		return R, G, B
+	elseif (Percent <= 0) then
+		local R, G, B = ...
+
+		return R, G, B
+	end
+
+	local Num = (select("#", ...) / 3)
+	local Segment, RelPercent = math_modf(Percent * (Num - 1))
+	local R1, G1, B1, R2, G2, B2 = select((Segment * 3) + 1, ...)
+
+	return R1 + (R2 - R1) * RelPercent, G1 + (G2 - G1) * RelPercent, B1 + (B2 - B1) * RelPercent
 end
 
 -- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")
@@ -438,7 +443,6 @@ end
 
 -- Format seconds to min/hour/day
 local Day, Hour, Minute = 86400, 3600, 60
-
 function K.FormatTime(time)
 	if (time >= Day) then
 		return string_format("%dd", math_ceil(time / Day))
@@ -453,15 +457,7 @@ function K.FormatTime(time)
 	return string_format("%.1f", time)
 end
 
--- Money text formatting, code taken from Scrooge by thelibrarian (http://www.wowace.com/addons/scrooge/)
-local COLOR_COPPER = "|cffeda55f"
-local COLOR_GOLD = "|cffffd700"
-local COLOR_SILVER = "|cffc7c7cf"
-local ICON_COPPER = "|TInterface\\MoneyFrame\\UI-CopperIcon:12:12|t"
-local ICON_GOLD = "|TInterface\\MoneyFrame\\UI-GoldIcon:12:12|t"
-local ICON_SILVER = "|TInterface\\MoneyFrame\\UI-SilverIcon:12:12|t"
-
-function K.FormatMoney(amount, style)
+function K.FormatMoney(amount)
 	local coppername = "|cffeda55fc|r"
 	local silvername = "|cffc7c7cfs|r"
 	local goldname = "|cffffd700g|r"

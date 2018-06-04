@@ -9,4 +9,5 @@
   	<Script file="FocusTarget.lua"/>
   	<Script file="Arena.lua"/>
   	<Script file="Boss.lua"/>
+    <Script file="Nameplates.lua"/>
 </Ui>

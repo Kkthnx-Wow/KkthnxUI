@@ -214,7 +214,6 @@ end
 function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local IsNewItem = C_NewItems_IsNewItem(b.bag, b.slot)
 	local isQuestItem, questId, isActiveQuest =	GetContainerItemQuestInfo(b.bag, b.slot)
 
 	-- Set all slot color to default KkthnxUI on update
@@ -528,7 +527,9 @@ local function Stuffing_CreateReagentContainer()
 		count:SetShadowOffset(0, 0)
 		count:SetPoint("BOTTOMRIGHT", 1, 1)
 
-		LastButton = button
+		if (LastButton ~= button) then
+			LastButton = button
+		end
 	end
 	Reagent:SetHeight(((C["Inventory"].ButtonSize + C["Inventory"].ButtonSpace) * (NumRows + 1) + 40) - C["Inventory"].ButtonSpace)
 
@@ -700,7 +701,7 @@ function Stuffing:BagType(bag)
 end
 
 function Stuffing:BagNew(bag, f)
-	for i, v in pairs(self.bags) do
+	for _, v in pairs(self.bags) do
 		if v:GetID() == bag then
 			v.bagType = self:BagType(bag)
 			return v
@@ -906,7 +907,7 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton.ttText = BAG_FILTER_CLEANUP
 		f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.sortButton:SetScript("OnMouseUp", function(_, btn)
+		f.sortButton:SetScript("OnMouseUp", function()
 			if InCombatLockdown() then
 				print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 			end
@@ -945,7 +946,7 @@ function Stuffing:CreateBagFrame(w)
 	f.b_close:SetPoint("TOPRIGHT", 0, 1)
 	f.b_close:SkinCloseButton()
 	f.b_close:RegisterForClicks("AnyUp")
-	f.b_close:SetScript("OnClick", function(self, btn)
+	f.b_close:SetScript("OnClick", function(self)
 		self:GetParent():Hide()
 	end)
 
@@ -1021,7 +1022,7 @@ function Stuffing:InitBags()
 	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	gold:SetJustifyH("RIGHT")
 
-	f:SetScript("OnEvent", function(self, e)
+	f:SetScript("OnEvent", function(self)
 		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
 	end)
 
@@ -1046,8 +1047,9 @@ function Stuffing:InitBags()
 
 		Token:SetParent(f)
 		Token:SetScale(1)
-		Token:CreateBackdrop("", true)
+		Token:CreateBackdrop()
 		Token.Backdrop:SetAllPoints(Icon)
+		Token.Backdrop:SetFrameLevel(Token:GetFrameLevel())
 
 		Icon:SetSize(12, 12)
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1156,7 +1158,7 @@ function Stuffing:InitBags()
 	f.sortButton.ttText = BAG_FILTER_CLEANUP
 	f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	f.sortButton:SetScript("OnMouseUp", function(_, btn)
+	f.sortButton:SetScript("OnMouseUp", function()
 		if InCombatLockdown() then
 			print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 		end
@@ -1182,8 +1184,6 @@ function Stuffing:InitBags()
 		f.ArtifactButton:GetDisabledTexture():SetAllPoints()
 		f.ArtifactButton:GetDisabledTexture():SetDesaturated(1)
 		f.ArtifactButton:RegisterForClicks("RightButtonUp")
-		--f.ArtifactButton.ttText = L["Inventory"].Buttons_Artifact
-		--f.ArtifactButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.ArtifactButton:SetScript("OnLeave", Stuffing_TooltipHide)
 		f.ArtifactButton:SetScript("PreClick", function(self)
 			for bag = 0, 4 do
@@ -1313,7 +1313,7 @@ function Stuffing:Layout(isBank)
 				local bag
 				if isBank then bag = v else bag = v + 1 end
 
-				for ind, val in ipairs(btns) do
+				for _, val in ipairs(btns) do
 					if val.bag == bag then
 						val.frame:SetAlpha(1)
 					else
@@ -1596,7 +1596,7 @@ function Stuffing:BAG_CLOSED(id)
 end
 
 function Stuffing:BAG_UPDATE_COOLDOWN()
-	for i, v in pairs(self.buttons) do
+	for _, v in pairs(self.buttons) do
 		self:UpdateCooldowns(v)
 	end
 end

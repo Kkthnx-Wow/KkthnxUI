@@ -1,7 +1,5 @@
 local AddOnName, Engine = ...
 
--- Test for bitbucket.org
-
 --[[
 The MIT License (MIT)
 
@@ -51,7 +49,6 @@ local GetCurrentResolution = _G.GetCurrentResolution
 local GetCVar = _G.GetCVar
 local GetLocale = _G.GetLocale
 local GetNumAddOns = _G.GetNumAddOns
-local GetPhysicalScreenSize = _G.GetPhysicalScreenSize
 local GetRealmName = _G.GetRealmName
 local GetScreenResolutions = _G.GetScreenResolutions
 local GetSpecialization = _G.GetSpecialization
@@ -61,8 +58,6 @@ local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local issecurevariable = _G.issecurevariable
 local LibStub = _G.LibStub
-local PlaySound = _G.PlaySound
-local PlaySoundKitID = _G.PlaySoundKitID
 local print = _G.print
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UIDROPDOWNMENU_MAXBUTTONS = _G.UIDROPDOWNMENU_MAXBUTTONS

@@ -1,13 +1,15 @@
 local K, C = unpack(select(2, ...))
 
+local Module = K:GetModule("Unitframes")
+
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
 
-local PredictionFont = K.GetFont(C["Unitframe"].Font)
-local PredictionTexture = K.GetTexture(C["Unitframe"].Texture)
+function Module:CreateHealthPrediction()
+	local PredictionFont = K.GetFont(C["Unitframe"].Font)
+	local PredictionTexture = K.GetTexture(C["Unitframe"].Texture)
 
-function K.CreateHealthPrediction(self)
 	local mhpb = CreateFrame("StatusBar", nil, self.Health)
 	mhpb:SetParent(self.Health)
 	mhpb:SetStatusBarTexture(PredictionTexture)
@@ -39,15 +41,14 @@ function K.CreateHealthPrediction(self)
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
 		maxOverflow = 1,
-		frequentUpdates = self.Health.frequentUpdates,
-		PostUpdate = K.UpdateHealComm
+		PostUpdate = Module.UpdateHealComm
 	}
 	HealthPrediction.parent = self
 
 	return HealthPrediction
 end
 
-function K.UpdateFillBar(self, previousTexture, bar, amount, inverted)
+function Module:UpdateFillBar(previousTexture, bar, amount, inverted)
 	if (amount == 0) then
 		bar:Hide()
 		return previousTexture
@@ -68,12 +69,12 @@ function K.UpdateFillBar(self, previousTexture, bar, amount, inverted)
 	return bar:GetStatusBarTexture()
 end
 
-function K.UpdateHealComm(self, unit, myIncomingHeal, allIncomingHeal, totalAbsorb, healAbsorb)
+function Module:UpdateHealComm(unit, myIncomingHeal, allIncomingHeal, totalAbsorb, healAbsorb)
 	local frame = self.parent
 	local previousTexture = frame.Health:GetStatusBarTexture()
 
-	K.UpdateFillBar(frame, previousTexture, self.healAbsorbBar, healAbsorb, true)
-	previousTexture = K.UpdateFillBar(frame, previousTexture, self.myBar, myIncomingHeal)
-	previousTexture = K.UpdateFillBar(frame, previousTexture, self.otherBar, allIncomingHeal)
-	K.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
+	Module.UpdateFillBar(frame, previousTexture, self.healAbsorbBar, healAbsorb, true)
+	previousTexture = Module.UpdateFillBar(frame, previousTexture, self.myBar, myIncomingHeal)
+	previousTexture = Module.UpdateFillBar(frame, previousTexture, self.otherBar, allIncomingHeal)
+	Module.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
 end

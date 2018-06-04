@@ -1,12 +1,15 @@
 local K, C = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
 
 local _G = _G
+local table_insert = table.insert
 
 local hooksecurefunc = _G.hooksecurefunc
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
+local UIParent = _G.UIParent
 
-local function LoadSkin()
-	local function SkinPetTooltip(tt)
+local function SkinPetTooltip()
+	local function SetPetTooltip(tt)
 		tt.Background:SetTexture(nil)
 		if tt.Delimiter1 then
 			tt.Delimiter1:SetTexture(nil)
@@ -23,11 +26,11 @@ local function LoadSkin()
 		tt:SetTemplate("Transparent", true)
 	end
 
-	SkinPetTooltip(PetBattlePrimaryAbilityTooltip)
-	SkinPetTooltip(PetBattlePrimaryUnitTooltip)
-	SkinPetTooltip(BattlePetTooltip)
-	SkinPetTooltip(FloatingBattlePetTooltip)
-	SkinPetTooltip(FloatingPetBattleAbilityTooltip)
+	SetPetTooltip(PetBattlePrimaryAbilityTooltip)
+	SetPetTooltip(PetBattlePrimaryUnitTooltip)
+	SetPetTooltip(BattlePetTooltip)
+	SetPetTooltip(FloatingBattlePetTooltip)
+	SetPetTooltip(FloatingPetBattleAbilityTooltip)
 
 	hooksecurefunc("BattlePetToolTip_Show", function(_, _, rarity)
 		local quality = rarity and ITEM_QUALITY_COLORS[rarity]
@@ -45,4 +48,4 @@ local function LoadSkin()
 	end)
 end
 
-tinsert(K.SkinFuncs["KkthnxUI"], LoadSkin)
+table_insert(Module.SkinFuncs["KkthnxUI"], SkinPetTooltip)

@@ -12,7 +12,7 @@ local PetActionBar_UpdateCooldowns = _G.PetActionBar_UpdateCooldowns
 local RegisterStateDriver = _G.RegisterStateDriver
 
 -- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: PetActionBarFrame, PetHolder, RightBarMouseOver, HoverBind, PetBarMouseOver
+-- GLOBALS: PetActionBarFrame, PetHolder, HoverBind
 
 if C["ActionBar"].PetBarHide then
 	PetActionBarAnchor:Hide()
@@ -70,33 +70,3 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 		PetActionBar_UpdateCooldowns()
 	end
 end)
-
--- Mouseover bar
-if C["ActionBar"].RightBarsMouseover == true and C["ActionBar"].PetBarHorizontal == false then
-	for i = 1, NUM_PET_ACTION_SLOTS do
-		local b = _G["PetActionButton"..i]
-		b:SetAlpha(0)
-		b:HookScript("OnEnter", function()
-			RightBarMouseOver(1)
-		end)
-		b:HookScript("OnLeave", function()
-			if not HoverBind.enabled then
-				RightBarMouseOver(0)
-			end
-		end)
-	end
-end
-
-if C["ActionBar"].PetBarMouseover == true and C["ActionBar"].PetBarHorizontal == true then
-	for i = 1, NUM_PET_ACTION_SLOTS do
-		local b = _G["PetActionButton"..i]
-		b:SetAlpha(0)
-		b:HookScript("OnEnter", function()
-			PetBarMouseOver(1) end)
-		b:HookScript("OnLeave", function()
-			if not HoverBind.enabled then
-				PetBarMouseOver(0)
-			end
-		end)
-	end
-end

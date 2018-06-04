@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["Skins"].Skada ~= true or not K.CheckAddOnState("Skada") then return end
+if C["Skins"].Skada ~= true or not K.CheckAddOnState("Skada") then
+	return
+end
 
 local _G = _G
 
@@ -50,7 +52,7 @@ end
 local barmod = Skada.displays["bar"]
 
 barmod.ApplySettings_ = barmod.ApplySettings
-barmod.ApplySettings = function(self, win)
+function barmod.ApplySettings(self, win)
 	barmod.ApplySettings_(self, win)
 
 	local skada = win.bargroup

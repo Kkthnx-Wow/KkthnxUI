@@ -1,4 +1,5 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
+local Module = K:GetModule("Skins")
 
 -- Lua
 local _G = _G
@@ -24,7 +25,7 @@ local UIDropDownMenu_Initialize = _G.UIDropDownMenu_Initialize
 local scale = 1.0
 local min, max = 0.5, 3.0
 
-local function LoadSkin()
+local function SkinBattlefieldMinimap()
 	local BattlefieldMinimap = _G["BattlefieldMinimap"]
 
 	BattlefieldMinimap:SetClampedToScreen(true)
@@ -37,6 +38,7 @@ local function LoadSkin()
 
 	BattlefieldMinimap:CreateBackdrop("Transparent")
 	BattlefieldMinimap.Backdrop:SetPoint("BOTTOMRIGHT", -6, 4)
+	BattlefieldMinimap.Backdrop:SetFrameLevel(BattlefieldMinimap:GetFrameLevel()) -- ??
 	BattlefieldMinimap:SetFrameStrata("LOW")
 	BattlefieldMinimapCloseButton:ClearAllPoints()
 	BattlefieldMinimapCloseButton:SetPoint("TOPRIGHT", -4, 0)
@@ -148,4 +150,4 @@ local function LoadSkin()
 	end)
 end
 
-K.SkinFuncs["Blizzard_BattlefieldMinimap"] = LoadSkin
+Module.SkinFuncs["Blizzard_BattlefieldMinimap"] = SkinBattlefieldMinimap

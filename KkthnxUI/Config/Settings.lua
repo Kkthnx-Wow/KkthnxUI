@@ -16,14 +16,12 @@ C["ActionBar"] = {
 	["OutOfRange"] = {0.8, 0.1, 0.1},
 	["PetBarHide"] = false,
 	["PetBarHorizontal"] = false,
-	["PetBarMouseover"] = false,
 	["RightBars"] = 1,
-	["RightBarsMouseover"] = false,
 	["SplitBars"] = false,
 	["StanceBarHide"] = false,
 	["StanceBarHorizontal"] = true,
-	["StanceBarMouseover"] = false,
 	["ToggleMode"] = true,
+	["Font"] = "KkthnxUI Outline",
 }
 
 C["MinimapButtons"] = {
@@ -190,13 +188,6 @@ C["DataText"] = {
 	["Time24Hr"] = false,
 }
 
--- Errors
-C["Error"] = {
-	["Black"] = true,
-	["Combat"] = false,
-	["White"] = false,
-}
-
 C["Filger"] = {
 	["Bars"] = false,
 	["BuffSize"] = 36,
@@ -269,32 +260,22 @@ C["Misc"] = {
 
 -- Nameplates
 C["Nameplates"] = {
-	["AurasSize"] = 24,
 	["BadColor"] = {1, 0, 0},
-	["CastbarName"] = true,
-	["CastUnitReaction"] = true,
+	["CastHeight"] = 6,
 	["Clamp"] = false,
-	["Cutaway"] = false,
 	["Distance"] = 40,
 	["Enable"] = true,
-	["EnhancedThreat"] = false,
-	["FontSize"] = 12,
+	["Font"] = "KkthnxUI",
 	["GoodColor"] = {0.2, 0.8, 0.2},
-	["HealerIcon"] = false,
 	["HealthValue"] = true,
-	["Height"] = 16,
-	["NameAbbreviate"] = false,
+	["Height"] = 22,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
-	["OORAlpha"] = 0.40,
-	["Outline"] = false,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
-	["ThreatPercent"] = false,
-	["TotemIcons"] = false,
-	["TrackAuras"] = true,
-	["Width"] = 132,
+	["Threat"] = false,
+	["Width"] = 146,
 }
 
 -- Quests
@@ -339,23 +320,17 @@ C["Unitframe"] = {
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,
 	["Castbars"] = true,
-	["CastbarTicks"] = false,
 	["CastbarWidth"] = 214,
-	["CastClassColor"] = true,
-	["CastReactionColor"] = true,
-	["ColorHealthByValue"] = false,
 	["CombatFade"] = false,
 	["CombatText"] = true,
-	["Cutaway"] = false,
 	["DebuffsOnTop"] = true,
+	["DecimalLength"] = 1,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
 	["GlobalCooldown"] = false,
-	["NameAbbreviate"] = false,
 	["OnlyShowPlayerDebuff"] = false,
 	["OORAlpha"] = 0.40,
-	["Outline"] = false,
 	["Party"] = true,
 	["PartyAsRaid"] = false,
 	["PowerPredictionBar"] = true,
@@ -389,13 +364,15 @@ C["Unitframe"] = {
 	},
 }
 
+C["Partyframe"] = {
+	["TESTING"] = 0,
+}
+
 -- Raidframe
 C["Raidframe"] = {
 	["AuraDebuffIconSize"] = 22,
 	["AuraWatch"] = true,
 	["AuraWatchIconSize"] = 6,
-	["ColorHealthByValue"] = false,
-	["Cutaway"] = false,
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",

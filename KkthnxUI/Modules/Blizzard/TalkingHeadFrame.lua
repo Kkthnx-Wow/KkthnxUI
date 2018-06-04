@@ -6,9 +6,6 @@ local _G = _G
 local ipairs = ipairs
 local table_remove = table.remove
 
--- WoW API
-local AlertFrame = _G.AlertFrame
-
 -- WoW Objects
 local UIParent = _G.UIParent
 local UIPARENT_MANAGED_FRAME_POSITIONS = _G.UIPARENT_MANAGED_FRAME_POSITIONS
@@ -42,7 +39,7 @@ function Module:InitializeTalkingHead()
 
 end
 
-function Module:WaitForTalkingHead(event, ...)
+function Module:WaitForTalkingHead(_, ...)
 	local addon = ...
 	if (addon ~= "Blizzard_TalkingHeadUI") then
 		return

@@ -31,13 +31,3 @@ end
 if C["ActionBar"].RightBars < 2 then
 	ActionBar3:Hide()
 end
-
--- Mouseover bar
-if C["ActionBar"].RightBarsMouseover == true then
-	for i = 1, 12 do
-		local b = _G["MultiBarLeftButton"..i]
-		b:SetAlpha(0)
-		b:HookScript("OnEnter", function() RightBarMouseOver(1) end)
-		b:HookScript("OnLeave", function() if not HoverBind.enabled then RightBarMouseOver(0) end end)
-	end
-end

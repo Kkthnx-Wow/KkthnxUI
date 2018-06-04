@@ -1,4 +1,7 @@
-local K, C, L = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -6,13 +9,13 @@ local unpack = unpack
 
 -- Wow API
 local ActionHasRange = _G.ActionHasRange
+local hooksecurefunc = _G.hooksecurefunc
 local IsActionInRange = _G.IsActionInRange
 local IsUsableAction = _G.IsUsableAction
 local TOOLTIP_UPDATE_TIME = _G.TOOLTIP_UPDATE_TIME
 
 local function RangeUpdate(self)
 	local Icon = self.icon
-	local NormalTexture = self.NormalTexture
 	local ID = self.action
 
 	if not ID then return end
@@ -38,7 +41,7 @@ local function RangeUpdate(self)
 	end
 end
 
-local function RangeOnUpdate(self, elapsed)
+local function RangeOnUpdate(self)
 	if (not self.rangeTimer) then
 		return
 	end
@@ -47,8 +50,6 @@ local function RangeOnUpdate(self, elapsed)
 		RangeUpdate(self)
 	end
 end
-
-if C["ActionBar"].Enable ~= true then return end
 
 hooksecurefunc("ActionButton_OnUpdate", RangeOnUpdate)
 hooksecurefunc("ActionButton_Update", RangeUpdate)

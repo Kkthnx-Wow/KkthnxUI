@@ -1,18 +1,16 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("ChatBubbles", "AceEvent-3.0", "AceTimer-3.0")
-if C["Skins"].ChatBubbles ~= true then return end -- Some people hate on the bubbles. Oh Well?
+local K, C = unpack(select(2, ...))
+if C["Skins"].ChatBubbles ~= true or K.CheckAddOnState("NiceBubbles") then
+  return
+end
 
-if K.CheckAddOnState("NiceBubbles") then return end -- Allow the user to use the stand-alone instead
+local Module = K:NewModule("ChatBubbles", "AceEvent-3.0", "AceTimer-3.0")
 
 -- Lua API
 local _G = _G
-
-local ipairs = ipairs
 local math_abs = math.abs
 local math_floor = math.floor
 local pairs = pairs
 local select = select
-local tostring = tostring
 
 -- WoW API
 local CreateFrame = _G.CreateFrame
@@ -44,12 +42,12 @@ local function getBackdrop(scale)
   return {
     bgFile = C["Media"].Blank,
     edgeFile = C["Media"].Glow,
-    edgeSize = 3 * scale,
+    edgeSize = 4 * scale,
     insets = {
-      left = 3 * scale,
-      right = 3 * scale,
-      top = 3 * scale,
-      bottom = 3 * scale
+      left = 4 * scale,
+      right = 4 * scale,
+      top = 4 * scale,
+      bottom = 4 * scale
     }
   }
 end
@@ -188,7 +186,6 @@ Updater.IsBubble = K.Legion735 and function(self, bubble)
     bubbles[bubble].text = bubbles[bubble]:CreateFontString()
     bubbles[bubble].text:SetPoint("BOTTOMLEFT", space, space)
     bubbles[bubble].text:SetFontObject(ChatFont)
-    --bubbles[bubble].text:SetFont(ChatFontNormal:GetFont(), fontsize + 1, "")
     bubbles[bubble].text:SetShadowOffset(-.75, - .75)
     bubbles[bubble].text:SetShadowColor(0, 0, 0, 1)
 

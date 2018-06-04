@@ -36,7 +36,7 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local FFA_ICON = [[Interface\TargetingFrame\UI-PVP-FFA]]
-local FACTION_ICON = [[Interface\TargetingFrame\UI-PVP-]]
+local FACTION_ICON = [[Interface\AddOns\KkthnxUI\Media\Unitframes\UI-PVP-]]
 
 local function Update(self, event, unit)
 	if(unit ~= self.unit) then return end

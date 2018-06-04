@@ -1,6 +1,8 @@
 local K, C = unpack(select(2, ...))
 local SpellRange = LibStub("SpellRange-1.0")
 
+local Module = K:GetModule("Unitframes")
+
 local _G = _G
 local ipairs = ipairs
 
@@ -15,7 +17,7 @@ local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsUnit = _G.UnitIsUnit
 local UnitClass = _G.UnitClass
 
-function K.CreateRange()
+function Module:CreateRange()
 	local Range = {insideAlpha = 1, outsideAlpha = C["Unitframe"].OORAlpha}
 	Range.Override = K.UpdateRange
 
@@ -191,7 +193,7 @@ local function enemyIsInLongRange(unit)
 	return false
 end
 
-function K.UpdateRange(self)
+function Module:UpdateRange()
 	local range = self.Range
 	local unit = self.unit
 	if (unit) then

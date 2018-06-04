@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
@@ -21,6 +21,6 @@ for i = 1, 12 do
 end
 
 -- Hide bar
-if C["ActionBar"].BottomBars == 1 then
+if (C["ActionBar"].BottomBars == 1) then
 	ActionBar2:Hide()
 end

@@ -11,14 +11,13 @@ local CLOSE = _G.CLOSE
 local COMPLETE = _G.COMPLETE
 local CreateAnimationGroup = _G.CreateAnimationGroup
 local CreateFrame = _G.CreateFrame
-local GetCVar = _G.GetCVar
-local GetCVarBool = _G.GetCVarBool
-local GetCVarDefault = _G.GetCVarDefault
 local GetRealmName = _G.GetRealmName
 local NEXT = _G.NEXT
+local PlaySoundFile = _G.PlaySoundFile
 local PREVIOUS = _G.PREVIOUS
 local ReloadUI = _G.ReloadUI
 local RESET_TO_DEFAULT = _G.RESET_TO_DEFAULT
+local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local UIParent = _G.UIParent
 local UnitName = _G.UnitName
@@ -116,7 +115,7 @@ function Install:PrintStep(PageNum)
 
 	local ExecuteScript = self["Step" .. PageNum]
 	local Text = L.Install["Step_" .. PageNum]
-	local r, g, b = K.ColorGradient(PageNum, self.MaxStepNumber, 1, 0, 0, 1, 1, 0, 0, 1, 0)
+	local r, g, b = K.ColorGradient(PageNum, self.MaxStepNumber, 1, 0.2, 0.2, 1, 1, 0, 0.2, 1, 0.2)
 
 	if (not Text) then
 		self:Hide()
@@ -177,7 +176,7 @@ function Install:Launch()
 		return
 	end
 
-	if not InstallStepComplete then
+	if (not InstallStepComplete) then
 		local imsg = CreateFrame("Frame", "InstallStepComplete", UIParent)
 		imsg:SetSize(418, 72)
 		imsg:SetPoint("TOP", 0, -190)
@@ -230,7 +229,7 @@ function Install:Launch()
 	self.Description:SetTemplate("Transparent")
 	self.Description:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.Description:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self.Description:SetScript("OnEvent", function(self, event)
+	self.Description:SetScript("OnEvent", function(_, event)
 		if (event == "PLAYER_REGEN_DISABLED") then
 			Install:Hide()
 		else
@@ -314,7 +313,7 @@ function Install:Launch()
 	self.Text:SetJustifyH("LEFT")
 	self.Text:SetJustifyV("TOP")
 	self.Text:SetFontObject(InstallFont)
-	self.Text:SetPoint("TOPLEFT", 20, - 40)
+	self.Text:SetPoint("TOPLEFT", 20, -40)
 	self.Text:SetText(L.Install.Step_0)
 
 	self:SetAllPoints(UIParent)
@@ -322,7 +321,7 @@ end
 
 -- On login function
 Install:RegisterEvent("ADDON_LOADED")
-Install:SetScript("OnEvent", function(self, event)
+Install:SetScript("OnEvent", function(self)
 	local playerName = UnitName("player")
 	local playerRealm = GetRealmName()
 
@@ -373,7 +372,7 @@ Install:SetScript("OnEvent", function(self, event)
 		KkthnxUIData[playerRealm][playerName].SplitBars = true
 	end
 
-	-- Blizzard has too many issues with per character saved variables, we now move them (if they exists) to account saved variables.
+	-- Blizzard has too many issues with per character saved variables.
 	if (not KkthnxUIConfigShared) then
 		KkthnxUIConfigShared = {}
 	end

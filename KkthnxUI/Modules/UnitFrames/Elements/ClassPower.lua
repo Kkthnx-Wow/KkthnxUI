@@ -1,5 +1,9 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then
+	return
+end
+
+local Module = K:GetModule("Unitframes")
 
 local _G = _G
 
@@ -8,9 +12,6 @@ local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitPowerMax = _G.UnitPowerMax
 
 -- GLOBALS: SPELL_POWER_COMBO_POINTS
-
-local ClassModuleFont = K.GetFont(C["Unitframe"].Font)
-local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)
 
 local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged)
 	if (not maxPower or not maxPowerChanged) then return end
@@ -51,7 +52,10 @@ local function UpdateClassPowerColor(element)
 	end
 end
 
-function K.CreateClassModules(self, width, height, spacing)
+function Module:CreateClassModules(width, height, spacing)
+	local ClassModuleFont = K.GetFont(C["Unitframe"].Font)
+	local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)
+
 	local classPower = {}
 
 	classPower.width = width

@@ -1,8 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes", "AceEvent-3.0")
 
--- This file ended up looking fucking horrible. This looked way better in my head.
-
 local oUF = oUF or K.oUF
 
 if not oUF then
@@ -11,13 +9,405 @@ if not oUF then
 end
 
 local _G = _G
+local string_format = string.format
+local table_insert = table.insert
 local tostring = tostring
+local unpack = unpack
+local pairs = pairs
+local select = _G.select
 
+local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
+local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
+local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
+local IsInGroup = _G.IsInGroup
+local IsInInstance = _G.IsInInstance
+local IsInRaid = _G.IsInRaid
+local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
+local PlaySound = _G.PlaySound
+local PlaySoundKitID = _G.PlaySoundKitID
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
+local UnitAffectingCombat = _G.UnitAffectingCombat
+local UnitAura = _G.UnitAura
+local UnitCanAttack = _G.UnitCanAttack
+local UnitClass = _G.UnitClass
+local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
+local UnitExists = _G.UnitExists
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitIsEnemy = _G.UnitIsEnemy
+local UnitIsFriend = _G.UnitIsFriend
+local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
+local UnitIsTapDenied = _G.UnitIsTapDenied
+local UnitIsUnit = _G.UnitIsUnit
+local UnitPlayerControlled = _G.UnitPlayerControlled
+local UnitReaction = _G.UnitReaction
 
 local Movers = K["Movers"]
+
+Module.RaidBuffsTrackingPosition = {
+	TOPLEFT = {6, 1},
+	TOPRIGHT = {-6, 1},
+	BOTTOMLEFT = {6, 1},
+	BOTTOMRIGHT = {-6, 1},
+	LEFT = {6, 1},
+	RIGHT = {-6, 1},
+	TOP = {0, 0},
+	BOTTOM = {0, 0},
+}
+
+function Module:UpdateClassPortraits(unit)
+	local _, unitClass = UnitClass(unit)
+	if (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "ClassPortraits" then
+		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
+		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+	elseif (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
+		self:SetTexture(C["Media"].NewClassPortraits)
+		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+	else
+		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+	end
+end
+
+function Module:ThreatPlate(forced)
+	if C["Nameplates"].Threat ~= true then
+		return
+	end
+
+	if UnitIsPlayer(self.unit) then
+		return
+	end
+
+	local combat = UnitAffectingCombat("player")
+	if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
+		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
+	elseif combat then
+		local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
+		if threatStatus then
+			if (threatStatus == 3) then
+				if (K.GetPlayerRole() == "TANK") then
+					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
+				else
+					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
+				end
+			elseif (threatStatus == 2) then
+				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
+			elseif (threatStatus == 1) then
+				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
+			elseif (threatStatus == 0) then
+				if (K.GetPlayerRole() == "TANK") then
+					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
+					if IsInGroup() or IsInRaid() then
+						for i = 1, GetNumGroupMembers() do
+							if UnitExists("raid"..i) and not UnitIsUnit("raid"..i, "player") then
+								local isTanking = UnitDetailedThreatSituation("raid"..i, self.unit)
+								if isTanking and UnitGroupRolesAssigned("raid"..i) == "TANK" then
+									self.Health:SetStatusBarColor(C["Nameplates"].OffTankColor[1], C["Nameplates"].OffTankColor[2], C["Nameplates"].OffTankColor[3])
+								end
+							end
+						end
+					end
+				else
+					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
+				end
+			end
+		end
+	end
+	if (not forced and self.Health.ForceUpdate) then
+		self.Health:ForceUpdate()
+	end
+end
+
+function Module:HighlightPlate()
+	local Shadow = self.Health.Shadow
+
+	local unit = self.unit
+	if (UnitIsUnit("target", self.unit)) then
+		local reaction = UnitReaction(unit, "player")
+		if UnitIsPlayer(unit) then
+			local _, class = UnitClass(unit)
+			if class then
+				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+				Shadow:SetBackdropBorderColor(color.r, color.g, color.b)
+			else
+				Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+			end
+		elseif reaction then
+			local color = FACTION_BAR_COLORS[reaction]
+			Shadow:SetBackdropBorderColor(color.r, color.g, color.b)
+		else
+			Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+		end
+	else
+		Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+	end
+end
+
+function Module:CustomCastTimeText(duration)
+	local Value = string_format("%.1f / %.1f", self.channeling and duration or self.max - duration, self.max)
+
+	self.Time:SetText(Value)
+end
+
+function Module:CustomCastDelayText(duration)
+	local Value = string_format("%.1f |cffaf5050%s %.1f|r", self.channeling and duration or self.max - duration, self.channeling and "- " or "+", self.delay)
+
+	self.Time:SetText(Value)
+end
+
+function Module:CheckInterrupt(unit)
+	if (unit == "vehicle") then
+		unit = "player"
+	end
+
+	local colors = K.Colors
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
+
+	local t
+	if UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		t = K.Colors.class[class]
+	elseif UnitReaction(unit, "player") then
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
+	end
+
+	if (t) then
+		r, g, b = t[1], t[2], t[3]
+	end
+
+	if self.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
+	end
+
+	self:SetStatusBarColor(r, g, b)
+end
+
+function Module:CheckCast(unit)
+	Module.CheckInterrupt(self, unit)
+end
+
+function Module:CheckChannel(unit)
+	Module.CheckInterrupt(self, unit)
+end
+
+function Module:CreateAuraTimer(elapsed)
+	if (self.TimeLeft) then
+		self.Elapsed = (self.Elapsed or 0) + elapsed
+
+		if self.Elapsed >= 0.1 then
+			if not self.First then
+				self.TimeLeft = self.TimeLeft - self.Elapsed
+			else
+				self.TimeLeft = self.TimeLeft - GetTime()
+				self.First = false
+			end
+
+			if self.TimeLeft > 0 then
+				local Time = K.FormatTime(self.TimeLeft)
+				self.Remaining:SetText(Time)
+
+				if self.TimeLeft <= 5 then
+					self.Remaining:SetTextColor(1, 0, 0)
+				else
+					self.Remaining:SetTextColor(1, 1, 1)
+				end
+			else
+				self.Remaining:Hide()
+				self:SetScript("OnUpdate", nil)
+			end
+
+			self.Elapsed = 0
+		end
+	end
+end
+
+function Module:PostCreateAura(button)
+	if button:GetName():match("NamePlate") then
+		button:CreateShadow()
+
+		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
+		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.Remaining:SetPoint("CENTER", 1, 0)
+
+		button.cd.noOCC = true
+		button.cd.noCooldownCount = true
+		button.cd:SetReverse(true)
+		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
+		button.cd:ClearAllPoints()
+		button.cd:SetAllPoints()
+		button.cd:SetHideCountdownNumbers(true)
+
+		button.icon:SetAllPoints()
+		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.icon:SetDrawLayer("ARTWORK")
+
+		button.count:SetPoint("BOTTOMRIGHT", 3, 3)
+		button.count:SetJustifyH("RIGHT")
+		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.count:SetTextColor(0.84, 0.75, 0.65)
+	else
+		button:SetTemplate("Transparent", true)
+
+		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
+		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.Remaining:SetPoint("CENTER", 1, 0)
+
+		button.cd.noOCC = true
+		button.cd.noCooldownCount = true
+		button.cd:SetReverse(true)
+		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
+		button.cd:ClearAllPoints()
+		button.cd:SetPoint("TOPLEFT", 1, -1)
+		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
+		button.cd:SetHideCountdownNumbers(true)
+
+		button.icon:SetAllPoints()
+		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.icon:SetDrawLayer("ARTWORK")
+
+		button.count:SetPoint("BOTTOMRIGHT", 3, 3)
+		button.count:SetJustifyH("RIGHT")
+		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.count:SetTextColor(0.84, 0.75, 0.65)
+
+		button.OverlayFrame = CreateFrame("Frame", nil, button, nil)
+		button.OverlayFrame:SetFrameLevel(button.cd:GetFrameLevel() + 1)
+		button.overlay:SetParent(button.OverlayFrame)
+		button.count:SetParent(button.OverlayFrame)
+		button.Remaining:SetParent(button.OverlayFrame)
+
+		button.Animation = button:CreateAnimationGroup()
+		button.Animation:SetLooping("BOUNCE")
+
+		button.Animation.FadeOut = button.Animation:CreateAnimation("Alpha")
+		button.Animation.FadeOut:SetFromAlpha(1)
+		button.Animation.FadeOut:SetToAlpha(0)
+		button.Animation.FadeOut:SetDuration(.6)
+		button.Animation.FadeOut:SetSmoothing("IN_OUT")
+	end
+end
+
+function Module:PostUpdateAura(unit, button, index)
+	local _, _, _, _, DType, Duration, ExpirationTime, _, IsStealable = UnitAura(unit, index, button.filter)
+
+	if button then
+		if (button.filter == "HARMFUL") then
+			if (not UnitIsFriend("player", unit) and not button.isPlayer) then
+				button.icon:SetDesaturated(true)
+				button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			else
+				local color = DebuffTypeColor[DType] or DebuffTypeColor.none
+				button.icon:SetDesaturated(false)
+				button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+			end
+		else
+			if button.Animation then
+				if (IsStealable or DType == "Magic") and not UnitIsFriend("player", unit) and not button.Animation.Playing then
+					button.Animation:Play()
+					button.Animation.Playing = true
+				else
+					button.Animation:Stop()
+					button.Animation.Playing = false
+				end
+			end
+		end
+
+		if button.Remaining then
+			if Duration and Duration > 0 then
+				button.Remaining:Show()
+			else
+				button.Remaining:Hide()
+			end
+
+			button:SetScript("OnUpdate", Module.CreateAuraTimer)
+		end
+
+		button.Duration = Duration
+		button.TimeLeft = ExpirationTime
+		button.First = true
+	end
+end
+
+function Module:CreateAuraWatchIcon(icon)
+	icon:CreateShadow()
+	icon.icon:SetPoint("TOPLEFT", 1, -1)
+	icon.icon:SetPoint("BOTTOMRIGHT", -1, 1)
+	icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+	icon.icon:SetDrawLayer("ARTWORK")
+
+	if (icon.cd) then
+		icon.cd:SetHideCountdownNumbers(true)
+		icon.cd:SetReverse(true)
+	end
+
+	icon.overlay:SetTexture()
+end
+
+function Module:CreateAuraWatch(frame)
+	local buffs = {}
+	local Class = select(2, UnitClass("player"))
+
+	local Auras = CreateFrame("Frame", nil, frame)
+	Auras:SetPoint("TOPLEFT", frame.Health, 2, -2)
+	Auras:SetPoint("BOTTOMRIGHT", frame.Health, -2, 2)
+	Auras.presentAlpha = 1
+	Auras.missingAlpha = 0
+	Auras.icons = {}
+	Auras.PostCreateIcon = Module.CreateAuraWatchIcon
+	Auras.strictMatching = true
+
+	if (Module.RaidBuffsTracking["ALL"]) then
+		for _, value in pairs(Module.RaidBuffsTracking["ALL"]) do
+			table_insert(buffs, value)
+		end
+	end
+
+	if (Module.RaidBuffsTracking[Class]) then
+		for _, value in pairs(Module.RaidBuffsTracking[Class]) do
+			table_insert(buffs, value)
+		end
+	end
+
+	if (buffs) then
+		for _, spell in pairs(buffs) do
+			local Icon = CreateFrame("Frame", nil, Auras)
+			Icon.spellID = spell[1]
+			Icon.anyUnit = spell[4]
+			Icon:SetWidth(6)
+			Icon:SetHeight(6)
+			Icon:SetPoint(spell[2], 0, 0)
+
+			local Texture = Icon:CreateTexture(nil, "OVERLAY")
+			Texture:SetAllPoints(Icon)
+			Texture:SetTexture(C["Media"].Blank)
+
+			if (spell[3]) then
+				Texture:SetVertexColor(unpack(spell[3]))
+			else
+				Texture:SetVertexColor(0.8, 0.8, 0.8)
+			end
+
+			local Count = Icon:CreateFontString(nil, "OVERLAY")
+			Count:SetFont(C["Media"].Font, 8, "THINOUTLINE")
+			Count:SetPoint("CENTER", unpack(Module.RaidBuffsTrackingPosition[spell[2]]))
+			Icon.count = Count
+
+			Auras.icons[spell[1]] = Icon
+		end
+	end
+
+	frame.AuraWatch = Auras
+end
 
 function Module:GetPartyFramesAttributes()
 	local PartyProperties = C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
@@ -41,31 +431,6 @@ function Module:GetPartyFramesAttributes()
 	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
 	"groupBy", "ASSIGNEDROLE",
 	"yOffset", -44
-end
-
-function Module:GetPartyTargetFramesAttributes()
-	local PartyTargetProperties = C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
-
-	return
-	"oUF_PartyTarget",
-	nil,
-	PartyTargetProperties,
-	"oUF-initialConfigFunction", [[
-	local header = self:GetParent()
-	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
-	self:SetAttribute("unitsuffix", "target")
-	]],
-	"initial-width", 74,
-	"initial-height", 14,
-	"showSolo", false,
-	"showParty", true,
-	"showPlayer", C["Unitframe"].ShowPlayer,
-	"showRaid", false,
-	"groupBy", "ASSIGNEDROLE",
-	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
-	"sortMethod", "NAME",
-	"yOffset", -68
 end
 
 function Module:GetDamageRaidFramesAttributes()
@@ -164,137 +529,257 @@ function Module:CreateStyle(unit)
 		return
 	end
 
-	unit = unit:match("^(%a-)%d+") or unit
+	local Parent = self:GetParent():GetName()
 
 	if (unit == "player") then
-		K.CreatePlayer(self, "player")
+		Module.CreatePlayer(self)
 	elseif (unit == "target") then
-		K.CreateTarget(self, "target")
+		Module.CreateTarget(self)
 	elseif (unit == "targettarget") then
-		K.CreateTargetOfTarget(self, "targettarget")
+		Module.CreateTargetOfTarget(self)
 	elseif (unit == "pet") then
-		K.CreatePet(self, "pet")
+		Module.CreatePet(self)
 	elseif (unit == "focus") then
-		K.CreateFocus(self, "focus")
+		Module.CreateFocus(self)
 	elseif (unit == "focustarget") then
-		K.CreateFocusTarget(self, "focustarget")
-	elseif (unit == "arena") then
-		K.CreateArena(self, "arena")
-	elseif (unit == "boss") then
-		K.CreateBoss(self, "boss")
-	elseif (unit == "party") then
-		K.CreateParty(self, "party")
-	elseif (unit == "raid") then
-		K.CreateRaid(self, "raid")
-	elseif (unit == "maintank") then
-		K.CreateRaid(self, "maintank")
-	elseif (unit == "maintanktarget") then
-		K.CreateRaid(self, "maintanktarget")
+		Module.CreateFocusTarget(self)
+	elseif unit:find("arena%d") then
+		Module.CreateArena(self)
+	elseif unit:find("boss%d") then
+		Module.CreateBoss(self)
+	elseif (unit:find("party") or unit:find("raid")) then
+		if Parent:match("Party") then
+			Module.CreateParty(self)
+		else
+			Module.CreateRaid(self)
+		end
+	elseif unit:match("nameplate") then
+		Module.CreateNameplates(self)
 	end
 
 	return self
 end
 
 function Module:CreateUnits()
-	local Player = oUF:Spawn("player")
-	Player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
-	Player:SetSize(190, 52)
+	if (C["Unitframe"].Enable) then
+		local Player = oUF:Spawn("player")
+		Player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
+		Player:SetSize(190, 52)
 
-	local Target = oUF:Spawn("target")
-	Target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
-	Target:SetSize(190, 52)
+		local Target = oUF:Spawn("target")
+		Target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
+		Target:SetSize(190, 52)
 
-	local TargetOfTarget = oUF:Spawn("targettarget")
-	TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
-	TargetOfTarget:SetSize(116, 36)
+		local TargetOfTarget = oUF:Spawn("targettarget")
+		TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
+		TargetOfTarget:SetSize(116, 36)
 
-	local Pet = oUF:Spawn("pet")
-	if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
-		Pet:SetParent(Player)
-	end
-	if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
-		Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -14)
-	else
-		Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, 2)
-	end
-	Pet:SetSize(116, 36)
-
-	local Focus = oUF:Spawn("focus")
-	Focus:SetPoint("BOTTOMRIGHT", Player, "TOPLEFT", -60, 30)
-	Focus:SetSize(190, 52)
-
-	local FocusTarget = oUF:Spawn("focustarget")
-	FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
-	FocusTarget:SetSize(116, 36)
-
-	if (C["Unitframe"].ShowArena) then
-		local Arena = {}
-		for i = 1, 5 do
-			Arena[i] = oUF:Spawn("arena"..i)
-			Arena[i]:SetSize(190, 52)
-			if (i == 1) then
-				Arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
-			else
-				Arena[i]:SetPoint("TOPLEFT", Arena[i-1], "BOTTOMLEFT", 0, -48)
-			end
-			Movers:RegisterFrame(Arena[i])
+		local Pet = oUF:Spawn("pet")
+		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
+			Pet:SetParent(Player)
 		end
-
-		K.CreateArenaPrep()
-	end
-
-	if (C["Unitframe"].ShowBoss) then
-		local Boss = {}
-		for i = 1, MAX_BOSS_FRAMES do
-			Boss[i] = oUF:Spawn("boss"..i)
-			if (i == 1) then
-				Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
-			else
-				Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -48)
-			end
-			Boss[i]:SetSize(190, 52)
-			Movers:RegisterFrame(Boss[i])
-		end
-	end
-
-	if (C["Unitframe"].Party) then
-		local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
-		Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
-
-		local PartyTarget = oUF:SpawnHeader(Module:GetPartyTargetFramesAttributes())
-		PartyTarget:SetPoint("TOPLEFT", Party, "TOPRIGHT", 4, 16)
-
-		Movers:RegisterFrame(Party)
-	end
-
-	if (C["Raidframe"].Enable) then
-		if C["Raidframe"].RaidLayout.Value == "Healer" then
-			Module:GetHealerRaidFramesAttributes()
-		elseif C["Raidframe"].RaidLayout.Value == "Damage" then
-			Module:GetDamageRaidFramesAttributes()
+		if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
+			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -14)
 		else
-			Module:GetDamageRaidFramesAttributes() -- Return DAMAGER layout if nothing else.
+			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, 2)
+		end
+		Pet:SetSize(116, 36)
+
+		local Focus = oUF:Spawn("focus")
+		Focus:SetPoint("BOTTOMRIGHT", Player, "TOPLEFT", -60, 30)
+		Focus:SetSize(190, 52)
+
+		local FocusTarget = oUF:Spawn("focustarget")
+		FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
+		FocusTarget:SetSize(116, 36)
+
+		if (C["Unitframe"].ShowArena) then
+			local Arena = {}
+			for i = 1, 5 do
+				Arena[i] = oUF:Spawn("arena"..i)
+				Arena[i]:SetSize(190, 52)
+				if (i == 1) then
+					Arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
+				else
+					Arena[i]:SetPoint("TOPLEFT", Arena[i-1], "BOTTOMLEFT", 0, -48)
+				end
+				Movers:RegisterFrame(Arena[i])
+			end
+			Module.Arena = Arena
+			Module.CreateArenaPreparationFrames()
 		end
 
-		if C["Raidframe"].MainTankFrames then
-			local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
-			if C["Raidframe"].RaidLayout.Value == "Healer" then
-				MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 6, 2)
-			elseif C["Raidframe"].RaidLayout.Value == "Damage" then
-				MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-			else
-				MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+		if (C["Unitframe"].ShowBoss) then
+			local Boss = {}
+			for i = 1, MAX_BOSS_FRAMES do
+				Boss[i] = oUF:Spawn("boss"..i)
+				if (i == 1) then
+					Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
+				else
+					Boss[i]:SetPoint("TOPLEFT", Boss[i-1], "BOTTOMLEFT", 0, -48)
+				end
+				Boss[i]:SetSize(190, 52)
+				Movers:RegisterFrame(Boss[i])
 			end
-			Movers:RegisterFrame(MainTank)
 		end
+
+		if (C["Unitframe"].Party) then
+			local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
+			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
+			Movers:RegisterFrame(Party)
+		end
+
+		if (C["Raidframe"].Enable) then
+			if C["Raidframe"].RaidLayout.Value == "Healer" then
+				Module:GetHealerRaidFramesAttributes()
+			elseif C["Raidframe"].RaidLayout.Value == "Damage" then
+				Module:GetDamageRaidFramesAttributes()
+			else
+				Module:GetDamageRaidFramesAttributes() -- Return DAMAGER layout if nothing else.
+			end
+
+			if C["Raidframe"].MainTankFrames then
+				local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
+				if C["Raidframe"].RaidLayout.Value == "Healer" then
+					MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 6, 2)
+				elseif C["Raidframe"].RaidLayout.Value == "Damage" then
+					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+				else
+					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+				end
+				Movers:RegisterFrame(MainTank)
+			end
+		end
+
+		Movers:RegisterFrame(Player)
+		Movers:RegisterFrame(Target)
+		Movers:RegisterFrame(TargetOfTarget)
+		Movers:RegisterFrame(Pet)
+		Movers:RegisterFrame(Focus)
+		Movers:RegisterFrame(FocusTarget)
 	end
 
-	Movers:RegisterFrame(Player)
-	Movers:RegisterFrame(Target)
-	Movers:RegisterFrame(TargetOfTarget)
-	Movers:RegisterFrame(Pet)
-	Movers:RegisterFrame(Focus)
-	Movers:RegisterFrame(FocusTarget)
+	if C["Nameplates"].Enable then
+		Module.NameplatesVars = {
+			nameplateMaxDistance = C["Nameplates"].Distance or 40,
+			nameplateMinScale = 1,
+			nameplateOtherBottomInset = C["Nameplates"].Clamp and 0.1 or -1,
+			nameplateOtherTopInset = C["Nameplates"].Clamp and 0.08 or -1,
+			nameplateSelectedAlpha = 1,
+			nameplateGlobalScale = 1,
+			NamePlateHorizontalScale = 1,
+			nameplateLargerScale = 1.2,
+			nameplateMaxAlpha = 0.5,
+			nameplateMaxAlphaDistance = 40,
+			nameplateMaxScale = 1,
+			nameplateMaxScaleDistance = 40,
+			nameplateMinAlpha = 0.5,
+			nameplateMinAlphaDistance = 0,
+			nameplateMinScaleDistance = 0,
+			nameplateSelectedScale = 1,
+			nameplateSelfScale = 1,
+			nameplateShowFriendlyNPCs = 0,
+			nameplateVerticalScale = 1,
+		}
+
+		oUF:SpawnNamePlates(nil, nil, Module.NameplatesVars)
+	end
+end
+
+function Module:ShowArenaPreparation()
+	local NumOpps = GetNumArenaOpponentSpecs()
+
+	for i = 1, 5 do
+		local Frame = self.ArenaPreparation[i]
+
+		if (i <= NumOpps) then
+			local SpecID = GetArenaOpponentSpec(i)
+
+			if (SpecID and SpecID > 0) then
+				local _, Spec, _, _, _, Class = GetSpecializationInfoByID(SpecID)
+
+				if (Class) then
+					Frame.SpecClass:SetText(Spec.." - "..LOCALIZED_CLASS_NAMES_MALE[Class])
+
+					local Color = self.Arena[i].colors.class[Class]
+					Frame.Health:SetStatusBarColor(unpack(Color))
+				end
+
+				Frame:Show()
+			else
+				Frame:Hide()
+			end
+		else
+			Frame:Hide()
+		end
+	end
+end
+
+function Module:HideArenaPreparation()
+	for i = 1, 5 do
+		local Frame = self.ArenaPreparation[i]
+		Frame:Hide()
+	end
+end
+
+function Module:OnEvent(event)
+	if (event == "ARENA_OPPONENT_UPDATE") then
+		self:HideArenaPreparation()
+	else
+		self:ShowArenaPreparation()
+	end
+end
+
+function Module:UpdateRaidDebuffIndicator()
+	local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
+
+	if (ORD) then
+		ORD:ResetDebuffData()
+		local _, InstanceType = IsInInstance()
+		if (InstanceType == "party" or InstanceType == "raid") then
+			ORD:RegisterDebuffs(Module.DebuffsTracking.RaidDebuffs.spells)
+		else
+			ORD:RegisterDebuffs(Module.DebuffsTracking.CCDebuffs.spells)
+		end
+	end
+end
+
+local function CreateTargetSound(unit)
+	if UnitExists(unit) then
+		if UnitIsEnemy(unit, "player") then
+			PlaySound(PlaySoundKitID and "Igcreatureaggroselect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
+		elseif UnitIsFriend("player", unit) then
+			PlaySound(PlaySoundKitID and "Igcharacternpcselect" or SOUNDKIT.IG_CHARACTER_NPC_SELECT)
+		else
+			PlaySound(PlaySoundKitID and "Igcreatureneutralselect" or SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
+		end
+	else
+		PlaySound(PlaySoundKitID and "igcreatureaggrodeselect" or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
+	end
+end
+
+function Module:PLAYER_FOCUS_CHANGED()
+	CreateTargetSound("focus")
+end
+
+function Module:PLAYER_TARGET_CHANGED()
+	CreateTargetSound("target")
+end
+
+local announcedPVP
+function Module:UNIT_FACTION(_, unit)
+	if (unit ~= "player") then
+		return
+	end
+
+	if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
+		if not announcedPVP then
+			announcedPVP = true
+			PlaySound(PlaySoundKitID and "IgPVPUpdate" or SOUNDKIT.IG_PVP_UPDATE)
+		end
+	else
+		announcedPVP = nil
+	end
 end
 
 function Module:OnEnable()
@@ -302,8 +787,36 @@ function Module:OnEnable()
 		return
 	end
 
+	self.Backdrop = {
+		bgFile = C["Media"].Blank,
+		insets = {top = -K.Mult, left = -K.Mult, bottom = -K.Mult, right = -K.Mult},
+	}
+
 	oUF:RegisterStyle(" ", Module.CreateStyle)
 	oUF:SetActiveStyle(" ")
 
 	self:CreateUnits()
+
+	if (C["Unitframe"].Enable and C["Unitframe"].ShowArena) then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
+		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "OnEvent")
+		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "OnEvent")
+	end
+
+	if (C["Unitframe"].RaidDebuffs) then
+		local RaidDebuffs = CreateFrame("Frame")
+		RaidDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
+		RaidDebuffs:SetScript("OnEvent", Module.UpdateRaidDebuffIndicator)
+
+		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
+		if (ORD) then
+			ORD.ShowDispellableDebuff = true
+			ORD.FilterDispellableDebuff = true
+			ORD.MatchBySpellName = false
+		end
+	end
+
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+	self:RegisterEvent("UNIT_FACTION")
 end

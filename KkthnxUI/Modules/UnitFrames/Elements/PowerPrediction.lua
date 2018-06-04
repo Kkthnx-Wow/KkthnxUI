@@ -1,9 +1,13 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then 
+  return
+end
 
-local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+local Module = K:GetModule("Unitframes")
 
-function K.CreatePowerPrediction(self)
+function Module:CreatePowerPrediction()
+  local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+
   local PowerPrediction = CreateFrame("StatusBar", nil, self.Power)
   PowerPrediction:SetPoint("RIGHT", self.Power:GetStatusBarTexture())
   PowerPrediction:SetPoint("BOTTOM")

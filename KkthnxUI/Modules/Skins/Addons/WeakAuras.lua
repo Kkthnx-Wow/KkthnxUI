@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["Skins"].WeakAuras ~= true or not K.CheckAddOnState("WeakAuras") then return end
 
 local _G = _G

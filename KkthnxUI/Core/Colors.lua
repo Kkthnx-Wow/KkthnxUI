@@ -1,8 +1,11 @@
 local K = unpack(select(2, ...))
 
-local _, ns = ...
-local oUF = ns.oUF
-if not oUF then return end
+local oUF = oUF or K.oUF
+
+if (not oUF) then
+	K.Print("Could not find a vaild instance of oUF. Stopping Colors.lua code!")
+	return
+end
 
 oUF.colors.status = {
 	castColor = {1.0, 0.7, 0.0},

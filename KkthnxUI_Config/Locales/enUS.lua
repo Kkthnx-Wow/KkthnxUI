@@ -250,11 +250,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "The spacing between buttons.",
 		},
 
-		["PetBarMouseover"] = {
-			["Name"] = "Petbar Mouseover",
-			["Desc"] = "Display the Petbar while mousing over it.",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable Actionbars",
 			["Desc"] = ModuleToggle
@@ -305,19 +300,9 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Enable horizontal pet bar",
 		},
 
-		["PetBarMouseover"] = {
-			["Name"] = "Petbar Mouseover",
-			["Desc"] = "Petbar on mouseover (only for horizontal petbar)",
-		},
-
 		["RightBars"] = {
 			["Name"] = "Rightbars",
 			["Desc"] = "Number of action bars on right (0, 1, 2 or 3)",
-		},
-
-		["RightBarsMouseover"] = {
-			["Name"] = "Rightbars Mouseover",
-			["Desc"] = "Right bars on mouseover",
 		},
 
 		["SplitBars"] = {
@@ -333,11 +318,6 @@ KkthnxUIConfig["enUS"] = {
 		["StanceBarHorizontal"] = {
 			["Name"] = "Stancebar Horizontal",
 			["Desc"] = "Enable horizontal stance bar",
-		},
-
-		["StanceBarMouseover"] = {
-			["Name"] = "Stancebar Mouseover",
-			["Desc"] = "Stance bar on mouseover",
 		},
 
 		["ToggleMode"] = {

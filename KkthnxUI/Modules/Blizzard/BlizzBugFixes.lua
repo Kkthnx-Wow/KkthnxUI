@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:NewModule("BlizzardFixes", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
@@ -8,7 +8,6 @@ local CreateFrame = _G.CreateFrame
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
-local UpdateAddOnMemoryUsage = _G.UpdateAddOnMemoryUsage
 
 local blizzardCollectgarbage = collectgarbage
 
@@ -42,7 +41,7 @@ end
 -- Memory usage is unrelated to performance, and tracking memory usage does not track "bad" addons.
 -- Developers can uncomment this line to enable the functionality when looking for memory leaks,
 -- but for the average end-user this is a completely pointless thing to track.
-UpdateAddOnMemoryUsage = function() end
+_G.UpdateAddOnMemoryUsage = function() end
 
 -- Misclicks for some popups
 function Module:MisclickPopups()
@@ -55,7 +54,7 @@ function Module:MisclickPopups()
 	StaticPopupDialogs.DELETE_ITEM.enterClicksFirstButton = true
 	StaticPopupDialogs.DELETE_GOOD_ITEM = StaticPopupDialogs.DELETE_ITEM
 	StaticPopupDialogs.CONFIRM_PURCHASE_TOKEN_ITEM.enterClicksFirstButton = true
-	PetBattleQueueReadyFrame.hideOnEscape = false
+	_G.PetBattleQueueReadyFrame.hideOnEscape = false
 	if (PVPReadyDialog) then
 		PVPReadyDialog.leaveButton:Hide()
 		PVPReadyDialog.enterButton:ClearAllPoints()
@@ -67,7 +66,7 @@ end
 -- Fix blank tooltip
 local bug = nil
 function Module:FixTooltip()
-	if GameTooltip:IsShown() then
+	if _G.GameTooltip:IsShown() then
 		bug = true
 	end
 end
@@ -105,7 +104,7 @@ function Module:OnEnable()
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
 
-	CreateFrame("Frame"):SetScript("OnUpdate", function(self)
+	CreateFrame("Frame"):SetScript("OnUpdate", function()
 		if LFRBrowseFrame.timeToClear then
 			LFRBrowseFrame.timeToClear = nil
 		end

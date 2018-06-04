@@ -1,11 +1,14 @@
 local K, C, L = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true then return end
+if C["Unitframe"].Enable ~= true then
+	return
+end
 
-local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+local Module = K:GetModule("Unitframes")
 
-function K.CreateAdditionalPower(self)
-	-- Additional mana
+function Module:CreateAdditionalPower()
+	local UnitframeFont = K.GetFont(C["Unitframe"].Font)
+	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+
 	local addPower = CreateFrame("StatusBar", nil, self)
 	addPower:SetPoint("LEFT", 4, 0)
 	addPower:SetPoint("RIGHT", -4, 0)
