@@ -717,33 +717,21 @@ local function StyleUpdate(self, unit)
 		end
 	end
 
+	-- Custom filter for nameplate debuffs
+	local function CustomFilterDebuffs(...)
+  	local _, _, _, _, _, _, _, _, _, caster, _, _, _, _, _, _, nameplateShowAll = ...
+  	return (caster == "player" or caster == "pet" or caster == "vehicle")
+	end
+
 	-- Aura tracking
 	if C["Nameplates"].TrackAuras == true then
-		if UnitIsUnit(unit, "player") then
-			self.Buffs = CreateFrame("Frame", self:GetName()..'Debuffs', self)
-			self.Buffs:SetHeight(C["Nameplates"].Height)
-			self.Buffs:SetWidth(self:GetWidth())
-			self.Buffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 3)
-			self.Buffs.size = C["Nameplates"].AurasSize
-			self.Buffs.num = 36
-			self.Buffs.numRow = 9
-
-			self.Buffs.spacing = 2
-			self.Buffs.initialAnchor = "BOTTOMLEFT"
-			self.Buffs["growth-y"] = "UP"
-			self.Buffs["growth-x"] = "RIGHT"
-			self.Buffs.PostCreateIcon = PostCreateAura
-			self.Buffs.PostUpdateIcon = PostUpdateAura
-			self.Buffs.filter = "HELPFUL|PLAYER"
-			self.Buffs.onlyShowPlayer = true
-		else
-			self.Debuffs = CreateFrame("Frame", self:GetName()..'Debuffs', self)
+			self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 			self.Debuffs:SetHeight(C["Nameplates"].Height)
-			self.Debuffs:SetWidth(self:GetWidth())
+			self.Debuffs:SetWidth(self:GetWidth() + 24)
 			self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 2 * K.NoScaleMult, C["Nameplates"].FontSize + 3)
 			self.Debuffs.size = C["Nameplates"].AurasSize
-			self.Debuffs.num = 36
-			self.Debuffs.numRow = 9
+			self.Debuffs.num = 10
+			self.Debuffs.numRow = 2
 
 			self.Debuffs.spacing = 2
 			self.Debuffs.initialAnchor = "BOTTOMLEFT"
@@ -752,8 +740,7 @@ local function StyleUpdate(self, unit)
 			self.Debuffs.PostCreateIcon = PostCreateAura
 			self.Debuffs.PostUpdateIcon = PostUpdateAura
 			self.Debuffs.filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY"
-			self.Debuffs.onlyShowPlayer = true
-		end
+			self.Debuffs.CustomFilter = CustomFilterDebuffs
 	end
 
 	self.Health:RegisterEvent("PLAYER_REGEN_DISABLED")

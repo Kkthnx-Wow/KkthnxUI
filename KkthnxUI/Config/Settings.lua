@@ -69,7 +69,6 @@ C["Inventory"] = {
 	["AutoRepair"] = true,
 	["AutoSell"] = true,
 	["BagColumns"] = 10,
-	["BagFilter"] = false,
 	["BankColumns"] = 17,
 	["ButtonSize"] = 32,
 	["ButtonSpace"] = 6,

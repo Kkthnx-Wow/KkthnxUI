@@ -3,6 +3,5 @@
     <!-- Load_Inventory -->
     <Script file="Inventory.lua"/>
     <Script file="Sort.lua"/>
-    <Script file="Filter.lua"/>
     <Script file="Vendor.lua"/>
 </Ui>

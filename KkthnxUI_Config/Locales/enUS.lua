@@ -129,12 +129,6 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Bags Local
 	["Inventory"] = {
-		["BagFilter"] = {
-			["Name"] = "Enable Bag filter",
-			["Desc"] = "Automatically deletes useless items from your bags when looted",
-			["Default"] = "Automatically deletes useless items from your bags when looted",
-		},
-
 		["BagColumns"] = {
 			["Name"] = "BagColumns",
 			["Desc"] = "Number of columns in the main bags",

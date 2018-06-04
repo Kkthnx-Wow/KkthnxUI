@@ -66,12 +66,11 @@ local function GetBar(self, defaultPage)
 	return condition
 end
 
-ActionBar1:RegisterEvent("PLAYER_LOGIN")
-ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
-ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
+ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
 ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-ActionBar1:SetScript("OnEvent", function(self, event, ...)
-	if event == "PLAYER_LOGIN" then
+ActionBar1:RegisterEvent("BAG_UPDATE")
+ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
+	if event == "PLAYER_ENTERING_WORLD" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G["ActionButton"..i]
 			self:SetFrameRef("ActionButton"..i, button)
