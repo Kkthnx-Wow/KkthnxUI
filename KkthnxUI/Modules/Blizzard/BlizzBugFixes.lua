@@ -90,6 +90,18 @@ function Module:BugTooltipCleared(tt)
 	end
 end
 
+function Module:HideFireStormHead(event, addon)
+	if K.Realm == "Sylvanas" then
+		if addon == "Blizzard_TalkingHeadUI" then
+			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
+				TalkingHeadFrame:Hide()
+			end)
+
+			self:UnregisterEvent(event)
+		end
+	end
+end
+
 function Module:OnEnable()
 	self:CollectGarbage()
 	self:MisclickPopups()
@@ -97,6 +109,10 @@ function Module:OnEnable()
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "FixTooltip")
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltip")
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
+
+	if K.Realm == "Sylvanas" then
+		self:RegisterEvent("ADDON_LOADED", "HideFireStormHead")
+	end
 
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "BugTooltipCleared")
 

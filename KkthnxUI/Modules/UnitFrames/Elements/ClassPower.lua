@@ -24,7 +24,7 @@ local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged
 
 	for i = 1, maxPower do
 		classPower[i]:SetSize(width, height)
-		classPower[i]:SetPoint("BOTTOMLEFT", ((i - 1) % maxIndex) * spacing + 4, -14)
+		classPower[i]:SetPoint("BOTTOMLEFT", ((i - 1) % maxIndex) * spacing + 4, -15)
 	end
 end
 

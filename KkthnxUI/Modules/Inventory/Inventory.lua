@@ -22,10 +22,6 @@ local table_remove = table.remove
 local tonumber = tonumber
 
 local MoneyFrame_Update = _G.MoneyFrame_Update
-local ManageBackpackTokenFrame = _G.ManageBackpackTokenFrame
-local OpenBackpack = _G.OpenBackpack
-local CloseAllBags = _G.CloseAllBags
-local CloseBackpack = _G.CloseBackpack
 local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
 local SortReagentBankBags = _G.SortReagentBankBags
@@ -36,7 +32,6 @@ local SEARCH = _G.SEARCH
 local ARTIFACT_POWER = _G.ARTIFACT_POWER
 local BANK = _G.BANK
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
-local CLOSE = _G.CLOSE
 local CooldownFrame_Set = _G.CooldownFrame_Set
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetContainerItemCooldown = _G.GetContainerItemCooldown
@@ -122,14 +117,14 @@ local function Stuffing_OnHide()
 		bag_bars = 0
 	end
 
-	-- for i = 1, NUM_BAG_FRAMES do
-	-- 	CloseBag(i)
-	-- end
-	--
-	-- -- hide new item glow on bag 0 fix [note: closebag handles the others correctly]
-	-- for slotID = 1, GetContainerNumSlots(0) do
-	-- 	C_NewItems.RemoveNewItem(0, slotID)
-	-- end
+	 for i = 1, NUM_BAG_FRAMES do
+	 	CloseBag(i)
+	 end
+
+	 -- hide new item glow on bag 0 fix [note: closebag handles the others correctly]
+	 for slotID = 1, GetContainerNumSlots(0) do
+	 	C_NewItems.RemoveNewItem(0, slotID)
+	 end
 
 	PlaySound(PlaySoundKitID and "igbackpackclose" or SOUNDKIT.IG_BACKPACK_CLOSE)
 end

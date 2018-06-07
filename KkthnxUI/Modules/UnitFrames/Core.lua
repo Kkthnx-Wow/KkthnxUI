@@ -275,7 +275,7 @@ function Module:PostCreateAura(button)
 		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		button.icon:SetDrawLayer("ARTWORK")
 
-		button.count:SetPoint("BOTTOMRIGHT", 3, 3)
+		button.count:SetPoint("BOTTOMRIGHT", 1, 1)
 		button.count:SetJustifyH("RIGHT")
 		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
 		button.count:SetTextColor(0.84, 0.75, 0.65)

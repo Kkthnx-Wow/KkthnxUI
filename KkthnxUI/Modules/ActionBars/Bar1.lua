@@ -89,7 +89,7 @@ ActionBar1:SetScript("OnEvent", function(self, event, ...)
 		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
 				local button = _G["ActionButton"..i]
-				_G.ActionButton_Update(button)
+				ActionButton_Update(button)
 			end
 		end
 	else

@@ -657,7 +657,9 @@ function Module:SetTooltipFonts()
 end
 
 function Module:OnEnable()
-	if C["Tooltip"].Enable ~= true then return end
+	if C["Tooltip"].Enable ~= true then
+		return
+	end
 
 	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)

@@ -53,17 +53,20 @@ function Module:CreateNameplates()
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	end
 
-	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 4)
-	self.Name:SetFontObject(Font)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
-	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
-
 	self.Level = self.Health:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("LEFT", self.Health, "RIGHT", 2, 0)
+	self.Level:SetJustifyH("RIGHT")
+	self.Level:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Level:SetFontObject(Font)
 	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
+
+	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
+	self.Name:SetJustifyH("LEFT")
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Level, "BOTTOMLEFT")
+	self.Name:SetFontObject(Font)
+	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
+	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
 	self.Power:SetFrameStrata(self:GetFrameStrata())
@@ -85,7 +88,8 @@ function Module:CreateNameplates()
 	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
 	self.Debuffs:SetHeight(C["Nameplates"].Height)
 	self.Debuffs:SetWidth(self:GetWidth())
-	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 18)
+	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 18)
+	self.Debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 18)
 	self.Debuffs.size = C["Nameplates"].Height
 	self.Debuffs.num = 36
 	self.Debuffs.numRow = 9
@@ -118,7 +122,9 @@ function Module:CreateNameplates()
 	self.Castbar.Spark:SetBlendMode("ADD")
 
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
-	self.Castbar.Time:SetPoint("RIGHT", self.Castbar, "RIGHT", 0, -9)
+	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", 0, -2)
+	self.Castbar.Time:SetJustifyH("RIGHT")
+	self.Castbar.Time:SetJustifyV("TOP")
 	self.Castbar.Time:SetFontObject(Font)
 	self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 12, select(3, self.Castbar.Time:GetFont()))
 
@@ -137,11 +143,12 @@ function Module:CreateNameplates()
 	self.Castbar.Shield:SetPoint("LEFT", self.Castbar, "RIGHT", 0, 10)
 
 	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
-	self.Castbar.Text:SetPoint("LEFT", self.Castbar, "LEFT", 0, -9)
-	self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -1, 0)
+	self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "BOTTOMLEFT", 0, -2)
+	self.Castbar.Text:SetPoint("TOPRIGHT", self.Castbar.Time, "TOPLEFT")
+	self.Castbar.Text:SetJustifyH("LEFT")
+	self.Castbar.Text:SetJustifyV("TOP")
 	self.Castbar.Text:SetFontObject(Font)
 	self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 12, select(3, self.Castbar.Text:GetFont()))
-	self.Castbar.Text:SetJustifyH("LEFT")
 
 	self.Castbar.PostCastStart = Module.CheckInterrupt
 	self.Castbar.PostCastInterruptible = Module.CheckInterrupt
