@@ -5,6 +5,7 @@ local _G = _G
 
 local collectgarbage = _G.collectgarbage
 local CreateFrame = _G.CreateFrame
+local hooksecurefunc = _G.hooksecurefunc
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
@@ -91,7 +92,7 @@ function Module:BugTooltipCleared(tt)
 end
 
 function Module:HideFireStormHead(event, addon)
-	if K.Realm == "Sylvanas" then
+	if K.Realm == "Sylvanas" and K.Name == "Superfreak" or K.Name == "Kkthnx" and K.WoWBuild <= 26365 then
 		if addon == "Blizzard_TalkingHeadUI" then
 			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
 				TalkingHeadFrame:Hide()
@@ -110,7 +111,7 @@ function Module:OnEnable()
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltip")
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 
-	if K.Realm == "Sylvanas" then
+	if K.Realm == "Sylvanas" and K.Name == "Superfreak" or K.Name == "Kkthnx" and K.WoWBuild <= 26365 then
 		self:RegisterEvent("ADDON_LOADED", "HideFireStormHead")
 	end
 

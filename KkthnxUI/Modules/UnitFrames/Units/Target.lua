@@ -93,7 +93,10 @@ function Module:CreateTarget()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOM", self.Health, "TOP", 0, 4)
+	self.Name:SetPoint("TOP", self.Health, 0, 16)
+	self.Name:SetSize(130, 24)
+	self.Name:SetJustifyV("TOP")
+	self.Name:SetJustifyH("CENTER")
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
