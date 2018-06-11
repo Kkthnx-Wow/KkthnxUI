@@ -3,7 +3,6 @@ local CopyChat = K:NewModule("CopyChat", "AceHook-3.0")
 
 -- Sourced: ElvUI (Elvz)
 
--- Lua API
 local _G = _G
 local string_format = string.format
 local string_gsub = string.gsub
@@ -11,7 +10,6 @@ local string_lower = string.lower
 local table_concat = table.concat
 local table_insert = table.insert
 
--- Wow API
 local CreateFrame, UIParent = _G.CreateFrame, _G.UIParent
 local FCF_GetChatWindowInfo = _G.FCF_GetChatWindowInfo
 local FCF_SetChatWindowFontSize = _G.FCF_SetChatWindowFontSize
@@ -19,17 +17,12 @@ local GameTooltip = _G.GameTooltip
 local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
-local PVP = _G.PVP
 local RandomRoll = _G.RandomRoll
 local ReloadUI = _G.ReloadUI
 local RELOADUI = _G.RELOADUI
-local RequestTimePlayed = _G.RequestTimePlayed
 local ScrollFrameTemplate_OnMouseWheel = _G.ScrollFrameTemplate_OnMouseWheel
-local SendChatMessage = _G.SendChatMessage
 local STATUS = _G.STATUS
 local ToggleFrame = _G.ToggleFrame
-local TogglePVP = _G.TogglePVP
-local UnitIsPVP = _G.UnitIsPVP
 
 local middleButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "
 local leftButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "
@@ -39,7 +32,7 @@ local Lines = {}
 local CopyFrame
 local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "UIDropDownMenuTemplate")
 local menuList = {
-	{text = OPTIONS_MENU, isTitle = true, notCheckable = true},
+	{text = _G.OPTIONS_MENU, isTitle = true, notCheckable = true},
 	{text = "", notClickable = true, notCheckable = true},
 	{text = STATUS, notCheckable = true, func = function()
 			K.ShowStatusReport()
@@ -149,22 +142,6 @@ function CopyChat:CopyText(frame)
 	end
 end
 
-local OnEnter = function(self)
-	self:SetAlpha(1)
-end
-
-local OnLeave = function(self)
-	self:SetAlpha(0.25)
-end
-
-local OnMouseUp = function(self)
-	if InCombatLockdown() then
-		return
-	end
-
-	CopyChat:CopyText(self.ChatFrame)
-end
-
 function CopyChat:OnEnable()
 	CopyFrame = CreateFrame("Frame", "CopyChatFrame", UIParent)
 	table_insert(UISpecialFrames, "CopyChatFrame")
@@ -269,7 +246,7 @@ function CopyChat:OnEnable()
 
 		CopyButton:SetScript("OnEnter", function(self)
 			K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
-			local anchor, panel, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
+			local anchor, _, xoff, yoff = "ANCHOR_TOPLEFT", self:GetParent(), 10, 5
 			GameTooltip:SetOwner(self, anchor, xoff, yoff)
 			GameTooltip:ClearLines()
 			GameTooltip:AddLine(L["ConfigButton"].Functions)

@@ -76,7 +76,7 @@ local function SetTemplate(f, t, tex)
 	end
 
 	local borderr, borderg, borderb = C.Media.BorderColor[1], C.Media.BorderColor[2], C.Media.BorderColor[3]
-	local backdropr, backdropg, backdropb = C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4]
+	local backdropr, backdropg, backdropb = C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3]
 	local backdropa = balpha
 	local texture = C.Media.Blank
 
@@ -132,8 +132,7 @@ local function CreateShadow(f)
 	shadow:SetPoint("BOTTOMRIGHT", 4, -4)
 
 	shadow:SetBackdrop( {
-		edgeFile = C.Media.Glow, edgeSize = K.Scale(4),
-		insets = {left = K.Scale(4), right = K.Scale(4), top = K.Scale(4), bottom = K.Scale(4)},
+		edgeFile = C.Media.Glow, edgeSize = K.Scale(4)
 	})
 
 	shadow:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])

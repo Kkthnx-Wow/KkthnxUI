@@ -63,11 +63,6 @@ local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 local CreateFrame = _G.CreateFrame
 
--- GLOBALS: StuffingFrameBags, ReagentBankFrameItem1, ReagentBankFrame, BankFrame, ToggleBackpack, ToggleAllBags, OpenAllBags
--- GLOBALS: ToggleBag, IsContainerItemAnUpgrade, UISpecialFrames, StuffingFrameReagent, BAG_FILTER_CLEANUP
--- GLOBALS: InspectFrame, WorldMapTooltip, BankFrame_ShowPanel, BANK_PANELS, REAGENTBANK_DEPOSIT
--- GLOBALS: DepositReagentBank, ReagentBankFrameUnlockInfo, ReagentBankFrameUnlockInfoPurchaseButton
-
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
 local ST_NORMAL = 1
@@ -374,7 +369,7 @@ local function Stuffing_CreateReagentContainer()
 
 	local Reagent = CreateFrame("Frame", "StuffingFrameReagent", UIParent)
 	local SwitchBankButton = CreateFrame("Button", nil, Reagent)
-	local NumButtons = ReagentBankFrame.size
+	-- local NumButtons = ReagentBankFrame.size
 	local NumRows, LastRowButton, NumButtons, LastButton = 0, ReagentBankFrameItem1, 1, ReagentBankFrameItem1
 	local Deposit = ReagentBankFrame.DespositButton
 
@@ -432,10 +427,10 @@ local function Stuffing_CreateReagentContainer()
 	SortReagentButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	SortReagentButton:GetDisabledTexture():SetAllPoints()
 	SortReagentButton:GetDisabledTexture():SetDesaturated(1)
-	SortReagentButton.ttText = BAG_FILTER_CLEANUP
+	SortReagentButton.ttText = _G.BAG_FILTER_CLEANUP
 	SortReagentButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	SortReagentButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	SortReagentButton:SetScript("OnMouseUp", function(_, btn)
+	SortReagentButton:SetScript("OnMouseUp", function()
 		if InCombatLockdown() then
 			print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 		end
@@ -470,7 +465,7 @@ local function Stuffing_CreateReagentContainer()
 	Close:SetPoint("TOPRIGHT", 0, 1)
 	Close:SkinCloseButton()
 	Close:RegisterForClicks("AnyUp")
-	Close:SetScript("OnClick", function(self, btn)
+	Close:SetScript("OnClick", function()
 		StuffingBank_OnHide()
 	end)
 
@@ -1304,7 +1299,7 @@ function Stuffing:Layout(isBank)
 			b.frame:SetSize(bsize, bsize)
 
 			local btns = self.buttons
-			b.frame:HookScript("OnEnter", function(self)
+			b.frame:HookScript("OnEnter", function()
 				local bag
 				if isBank then bag = v else bag = v + 1 end
 
@@ -1317,7 +1312,7 @@ function Stuffing:Layout(isBank)
 				end
 			end)
 
-			b.frame:HookScript("OnLeave", function(self)
+			b.frame:HookScript("OnLeave", function()
 				for _, btn in ipairs(btns) do
 					btn.frame:SetAlpha(1)
 				end
@@ -1579,7 +1574,7 @@ function Stuffing:BAG_CLOSED(id)
 				table_insert(trashButton, #trashButton + 1, v.frame)
 				table_remove(self.buttons, i)
 
-				v = nil
+				-- v = nil
 				changed = true
 			end
 		end

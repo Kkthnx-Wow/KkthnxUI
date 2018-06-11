@@ -1,137 +1,63 @@
-local K, C, L = unpack(select(2, ...))
-if C["Minimap"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
+if C["Minimap"].Enable ~= true then
+	return
+end
 
--- Lua API
 local _G = _G
 local string_format = string.format
 local table_insert = table.insert
 
--- Wow API
-local ClearAllTracking = _G.ClearAllTracking
+local ACHIEVEMENT_BUTTON = _G.ACHIEVEMENT_BUTTON
+local ACHIEVEMENTS_GUILD_TAB = _G.ACHIEVEMENTS_GUILD_TAB
+local ADVENTURE_JOURNAL = _G.ADVENTURE_JOURNAL
+local BATTLEFIELD_MINIMAP = _G.BATTLEFIELD_MINIMAP
+local BLIZZARD_STORE = _G.BLIZZARD_STORE
+local C_AdventureJournal_CanBeShown = _G.C_AdventureJournal.CanBeShown
+local C_Social_IsSocialEnabled = _G.C_Social.IsSocialEnabled
+local C_StorePublic = _G.C_StorePublic
+local C_StorePublic_IsDisabledByParentalControls = _G.C_StorePublic.IsDisabledByParentalControls
+local C_StorePublic_IsEnabled = _G.C_StorePublic.IsEnabled
+local CALENDAR_VIEW_EVENT = _G.CALENDAR_VIEW_EVENT
+local CHARACTER_BUTTON = _G.CHARACTER_BUTTON
+local COLLECTIONS = _G.COLLECTIONS
+local CreateFrame = _G.CreateFrame
+local DUNGEONS_BUTTON = _G.DUNGEONS_BUTTON
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
-local GetNumTrackingTypes = _G.GetNumTrackingTypes
-local GetTrackingInfo = _G.GetTrackingInfo
-local HUNTER_TRACKING = _G.HUNTER_TRACKING
-local HUNTER_TRACKING_TEXT = _G.HUNTER_TRACKING_TEXT
+local FEATURE_BECOMES_AVAILABLE_AT_LEVEL = _G.FEATURE_BECOMES_AVAILABLE_AT_LEVEL
+local FEATURE_NOT_YET_AVAILABLE = _G.FEATURE_NOT_YET_AVAILABLE
+local GameLimitedMode_IsActive = _G.GameLimitedMode_IsActive
+local GARRISON_LANDING_PAGE_TITLE = _G.GARRISON_LANDING_PAGE_TITLE
+local HEIRLOOMS = _G.HEIRLOOMS
+local HELP_BUTTON = _G.HELP_BUTTON
+local HideUIPanel = _G.HideUIPanel
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
-local EasyMenu = _G.EasyMenu
-local UIDropDownMenu_CreateInfo = _G.UIDropDownMenu_CreateInfo
-local ToggleDropDownMenu = _G.ToggleDropDownMenu
-local UIDropDownMenu_AddButton = _G.UIDropDownMenu_AddButton
+local IsTrialAccount = _G.IsTrialAccount
 local LoadAddOn = _G.LoadAddOn
-local MINIMAP_TRACKING_NONE = _G.MINIMAP_TRACKING_NONE
-local MiniMapTracking_SetTracking = _G.MiniMapTracking_SetTracking
-local MiniMapTrackingDropDown_IsNoTrackingActive = _G.MiniMapTrackingDropDown_IsNoTrackingActive
-local MiniMapTrackingDropDownButton_IsActive = _G.MiniMapTrackingDropDownButton_IsActive
+local LOOKINGFORGUILD = _G.LOOKINGFORGUILD
+local LOOT_ROLLS = _G.LOOT_ROLLS
+local MAINMENU_BUTTON = _G.MAINMENU_BUTTON
+local ORDER_HALL_LANDING_PAGE_TITLE = _G.ORDER_HALL_LANDING_PAGE_TITLE
+local PLAYER_V_PLAYER = _G.PLAYER_V_PLAYER
+local QUESTLOG_BUTTON = _G.QUESTLOG_BUTTON
+local SHOW_LFD_LEVEL = _G.SHOW_LFD_LEVEL
+local SHOW_PVP_LEVEL = _G.SHOW_PVP_LEVEL
+local SHOW_TALENT_LEVEL = _G.SHOW_TALENT_LEVEL
 local ShowUIPanel = _G.ShowUIPanel
+local SOCIAL_BUTTON = _G.SOCIAL_BUTTON
 local SOCIAL_TWITTER_TWEET_NOT_LINKED = _G.SOCIAL_TWITTER_TWEET_NOT_LINKED
-local ToggleAchievementFrame = _G.ToggleAchievementFrame
-local ToggleFrame = _G.ToggleFrame
-local TOWNSFOLK = _G.TOWNSFOLK
-local TOWNSFOLK_TRACKING_TEXT = _G.TOWNSFOLK_TRACKING_TEXT
+local SPECIALIZATION = _G.SPECIALIZATION
+local SPELLBOOK_ABILITIES_BUTTON = _G.SPELLBOOK_ABILITIES_BUTTON
 local UIErrorsFrame = _G.UIErrorsFrame
-local UnitClass = _G.UnitClass
+local UIParent = _G.UIParent
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: CalendarFrame, SocialPostFrame, C_Social, Social_SetShown, UIDROPDOWNMENU_MENU_VALUE
--- GLOBALS: FEATURE_BECOMES_AVAILABLE_AT_LEVEL, ToggleQuestLog, ToggleGuildFrame, Calendar_Toggle
--- GLOBALS: GuildFrame_TabClicked, GuildFrameTab2, ToggleFriendsFrame, SHOW_PVP_LEVEL
--- GLOBALS: MiniMapTrackingDropDown, ToggleDropDownMenu, Minimap_OnClick, ToggleCharacter
--- GLOBALS: SpellBookFrame, PlayerTalentFrame, TalentFrame_LoadUI, SHOW_TALENT_LEVEL
--- GLOBALS: StoreMicroButton, EasyMenu, GarrisonLandingPage_Toggle, MinimapAnchor
--- GLOBALS: ToggleEncounterJournal, FEATURE_NOT_YET_AVAILABLE, ToggleCollectionsJournal
--- GLOBALS: ToggleHelpFrame, ToggleCalendar, ToggleBattlefieldMinimap, LootHistoryFrame
--- GLOBALS: TogglePVPUI, SHOW_LFD_LEVEL, PVEFrame_ToggleFrame, C_AdventureJournal, HideUIPanel
-
--- This function is copied from FrameXML and modified to use DropDownMenu library function calls
--- Using the regular DropDownMenu code causes taints in various places.
-local function MiniMapTrackingDropDown_Initialize(self, level)
-	local name, texture, active, category, nested, numTracking
-	local count = GetNumTrackingTypes()
-	local info
-	local _, class = UnitClass("player")
-
-	if (level == 1) then
-		info = UIDropDownMenu_CreateInfo()
-		info.text = MINIMAP_TRACKING_NONE
-		info.checked = MiniMapTrackingDropDown_IsNoTrackingActive
-		info.func = ClearAllTracking
-		info.icon = nil
-		info.arg1 = nil
-		info.isNotRadio = true
-		info.keepShownOnClick = true
-		UIDropDownMenu_AddButton(info, level)
-
-		if (class == "HUNTER") then -- only show hunter dropdown for hunters
-			numTracking = 0
-			-- make sure there are at least two options in dropdown
-			for id = 1, count do
-				name, texture, active, category, nested = GetTrackingInfo(id)
-				if (nested == HUNTER_TRACKING and category == "spell") then
-					numTracking = numTracking + 1
-				end
-			end
-			if (numTracking > 1) then
-				info.text = HUNTER_TRACKING_TEXT
-				info.func = nil
-				info.notCheckable = true
-				info.keepShownOnClick = false
-				info.hasArrow = true
-				info.value = HUNTER_TRACKING
-				UIDropDownMenu_AddButton(info, level)
-			end
-		end
-
-		info.text = TOWNSFOLK_TRACKING_TEXT
-		info.func = nil
-		info.notCheckable = true
-		info.keepShownOnClick = false
-		info.hasArrow = true
-		info.value = TOWNSFOLK
-		UIDropDownMenu_AddButton(info, level)
-	end
-
-	for id = 1, count do
-		name, texture, active, category, nested = GetTrackingInfo(id)
-		info = UIDropDownMenu_CreateInfo()
-		info.text = name
-		info.checked = MiniMapTrackingDropDownButton_IsActive
-		info.func = MiniMapTracking_SetTracking
-		info.icon = texture
-		info.arg1 = id
-		info.isNotRadio = true
-		info.keepShownOnClick = true
-		if (category == "spell") then
-			info.tCoordLeft = 0.0625
-			info.tCoordRight = 0.9
-			info.tCoordTop = 0.0625
-			info.tCoordBottom = 0.9
-		else
-			info.tCoordLeft = 0
-			info.tCoordRight = 1
-			info.tCoordTop = 0
-			info.tCoordBottom = 1
-		end
-		if (level == 1 and
-		(nested < 0 or -- this tracking shouldn't be nested
-		(nested == HUNTER_TRACKING and class ~= "HUNTER") or
-		(numTracking == 1 and category == "spell"))) then -- this is a hunter tracking ability, but you only have one
-			UIDropDownMenu_AddButton(info, level)
-		elseif (level == 2 and (nested == TOWNSFOLK or (nested == HUNTER_TRACKING and class == "HUNTER")) and nested == UIDROPDOWNMENU_MENU_VALUE) then
-			UIDropDownMenu_AddButton(info, level)
-		end
-	end
-end
-
--- Create the new minimap tracking dropdown frame and initialize it
-local UIMiniMapTrackingDropDown = CreateFrame("Frame", "UIMiniMapTrackingDropDown", UIParent, "UIDropDownMenuTemplate")
-UIMiniMapTrackingDropDown:SetID(1)
-UIMiniMapTrackingDropDown:SetClampedToScreen(true)
-UIMiniMapTrackingDropDown:Hide()
-UIDropDownMenu_Initialize(UIMiniMapTrackingDropDown, MiniMapTrackingDropDown_Initialize, "MENU")
-UIMiniMapTrackingDropDown.noResize = true
+local MiniMapTrackingMenu = CreateFrame("Frame", "MiniMapTrackingMenu", UIParent, "UIDropDownMenuTemplate")
+MiniMapTrackingMenu:SetID(1)
+MiniMapTrackingMenu:SetClampedToScreen(true)
+MiniMapTrackingMenu:Hide()
+UIDropDownMenu_Initialize(MiniMapTrackingMenu, MiniMapTrackingDropDown_Initialize, "MENU")
+MiniMapTrackingMenu.noResize = true
 
 local guildText = IsInGuild() and ACHIEVEMENTS_GUILD_TAB or LOOKINGFORGUILD
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
@@ -148,7 +74,11 @@ local micromenu = {
 			if InCombatLockdown() then
 				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
 			end
-			if not SpellBookFrame:IsShown() then ShowUIPanel(SpellBookFrame) else HideUIPanel(SpellBookFrame) end
+			if not SpellBookFrame:IsShown() then
+				ShowUIPanel(SpellBookFrame)
+			else
+				HideUIPanel(SpellBookFrame)
+			end
 	end},
 	{text = SPECIALIZATION, icon = "Interface\\MINIMAP\\TRACKING\\Ammunition", notCheckable = 1, func = function()
 			if not PlayerTalentFrame then
@@ -157,11 +87,7 @@ local micromenu = {
 			if K.Level >= SHOW_TALENT_LEVEL then
 				ShowUIPanel(PlayerTalentFrame)
 			else
-				if C["Error"].White == false then
-					UIErrorsFrame:AddMessage(string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL), 1, 0.1, 0.1)
-				else
-					K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
-				end
+				K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_TALENT_LEVEL).."|r")
 			end
 	end},
 	{text = ACHIEVEMENT_BUTTON, icon = "Interface\\cursor\\Directions", notCheckable = 1, func = function()
@@ -183,33 +109,21 @@ local micromenu = {
 			if K.Level >= SHOW_PVP_LEVEL then
 				TogglePVPUI()
 			else
-				if C["Error"].White == false then
-					UIErrorsFrame:AddMessage(string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL), 1, 0.1, 0.1)
-				else
-					K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
-				end
+				K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_PVP_LEVEL).."|r")
 			end
 	end},
 	{text = DUNGEONS_BUTTON, icon = "Interface\\LFGFRAME\\BattleNetWorking0", notCheckable = 1, func = function()
 			if K.Level >= SHOW_LFD_LEVEL then
 				PVEFrame_ToggleFrame("GroupFinderFrame", nil)
 			else
-				if C["Error"].White == false then
-					UIErrorsFrame:AddMessage(string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL), 1, 0.1, 0.1)
-				else
-					K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
-				end
+				K.Print("|cffffff00"..string_format(FEATURE_BECOMES_AVAILABLE_AT_LEVEL, SHOW_LFD_LEVEL).."|r")
 			end
 	end},
 	{text = ADVENTURE_JOURNAL, icon = "Interface\\MINIMAP\\TRACKING\\Profession", notCheckable = 1, func = function()
-			if C_AdventureJournal.CanBeShown() then
+			if C_AdventureJournal_CanBeShown() then
 				ToggleEncounterJournal()
 			else
-				if C["Error"].White == false then
-					UIErrorsFrame:AddMessage(FEATURE_NOT_YET_AVAILABLE, 1, 0.1, 0.1)
-				else
-					K.Print("|cffffff00"..FEATURE_NOT_YET_AVAILABLE.."|r")
-				end
+				K.Print("|cffffff00"..FEATURE_NOT_YET_AVAILABLE.."|r")
 			end
 	end},
 	{text = HEIRLOOMS, icon = "Interface\\PaperDollInfoFrame\\UI-EquipmentManager-Toggle", notCheckable = 1, func = function()
@@ -240,7 +154,7 @@ local micromenu = {
 			if not SocialPostFrame then
 				LoadAddOn("Blizzard_SocialUI")
 			end
-			local IsTwitterEnabled = C_Social.IsSocialEnabled()
+			local IsTwitterEnabled = C_Social_IsSocialEnabled()
 			if IsTwitterEnabled then
 				Social_SetShown(true)
 			else
@@ -249,27 +163,34 @@ local micromenu = {
 	end},
 }
 
-if GameMenuButtonStore and ((C_StorePublic and not C_StorePublic.IsEnabled()) and not C_StorePublic.IsDisabledByParentalControls()
+if GameMenuButtonStore and ((C_StorePublic and not C_StorePublic_IsEnabled()) and not C_StorePublic_IsDisabledByParentalControls()
 or (IsTrialAccount and IsTrialAccount()) or (GameLimitedMode_IsActive and GameLimitedMode_IsActive())) then
-	table_insert(micromenu, {text = BLIZZARD_STORE, icon = "Interface\\MINIMAP\\TRACKING\\None", notCheckable = 1, func = function() StoreMicroButton:Click() end})
+	table_insert(micromenu, {text = BLIZZARD_STORE, icon = "Interface\\MINIMAP\\TRACKING\\None", notCheckable = 1, func = function()
+			StoreMicroButton:Click()
+	end})
 end
 
 if K.Level > 99 then
-	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+	table_insert(micromenu, {text = ORDER_HALL_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function()
+			GarrisonLandingPage_Toggle()
+	end})
 elseif K.Level > 89 then
-	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function() GarrisonLandingPage_Toggle() end})
+	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function()
+			GarrisonLandingPage_Toggle()
+	end})
 end
 
-Minimap:SetScript("OnMouseUp", function(self, btn)
+Minimap:SetScript("OnMouseUp", function(self, button)
 	local position = self:GetPoint()
-	if btn == "MiddleButton" or (btn == "RightButton" and IsShiftKeyDown()) then
-		if position:match("LEFT") then
+
+	if (button == "MiddleButton") or (button == "RightButton" and IsShiftKeyDown()) then
+		if (position:match("LEFT")) then
 			EasyMenu(micromenu, menuFrame, "cursor")
 		else
 			EasyMenu(micromenu, menuFrame, "cursor", -160, 0)
 		end
-	elseif btn == "RightButton" then
-		ToggleDropDownMenu(1, nil, UIMiniMapTrackingDropDown, "cursor")
+	elseif (button == "RightButton") then
+		ToggleDropDownMenu(1, nil, MiniMapTrackingMenu, "cursor")
 	else
 		Minimap_OnClick(self)
 	end

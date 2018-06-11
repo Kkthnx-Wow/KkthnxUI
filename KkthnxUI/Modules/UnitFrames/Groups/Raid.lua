@@ -13,46 +13,30 @@ end
 
 -- Lua API
 local _G = _G
-local string_format = string.format
 local table_insert = table.insert
-local tonumber = tonumber
 
 -- Wow API
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetThreatStatusColor = _G.GetThreatStatusColor
-local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 local UnitHasMana = _G.UnitHasMana
-local UnitIsConnected = _G.UnitIsConnected
-local UnitIsDead = _G.UnitIsDead
-local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
-local UnitIsGhost = _G.UnitIsGhost
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
 
-local RaidframeFont = K.GetFont(C["Raidframe"].Font)
-local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
-local Movers = K["Movers"]
-
-local GHOST = GetSpellInfo(8326)
-if GetLocale() == "deDE" then
-	GHOST = "Geist"
-end
-
 local roleIconTextures = {
 	TANK = [[Interface\AddOns\KkthnxUI\Media\Unitframes\tank.tga]],
 	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]],
 }
 
-local function UpdateGroupRole(self, event)
+local function UpdateGroupRole(self)
 	local lfdrole = self.GroupRoleIndicator
 	if (lfdrole.PreUpdate) then
 		lfdrole:PreUpdate()
@@ -71,7 +55,7 @@ local function UpdateGroupRole(self, event)
 	end
 end
 
-local function UpdateThreat(self, event, unit)
+local function UpdateThreat(self, _, unit)
 	if (self.unit ~= unit) then
 		return
 	end
@@ -79,7 +63,7 @@ local function UpdateThreat(self, event, unit)
 	local situation = UnitThreatSituation(unit)
 	if (situation and situation > 0) then
 		local r, g, b = GetThreatStatusColor(situation)
-		self:SetBackdropBorderColor(1, 0, 0)
+		self:SetBackdropBorderColor(r, g, b)
 	else
 		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
@@ -93,7 +77,7 @@ local function UpdatePower(self, _, unit)
 	local _, powerToken = UnitPowerType(unit)
 	if (powerToken == "MANA" and UnitHasMana(unit)) then
 		if (not self.Power:IsVisible()) then
-			self.Health:SetPoint("BOTTOMLEFT", self, 0, 5)
+			self.Health:SetPoint("BOTTOMLEFT", self, 0, 7)
 			self.Health:SetPoint("TOPRIGHT", self)
 			self.Power:Show()
 		end
@@ -106,6 +90,9 @@ local function UpdatePower(self, _, unit)
 end
 
 function Module:CreateRaid()
+	local RaidframeFont = K.GetFont(C["Raidframe"].Font)
+	local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
+
 	self:RegisterForClicks("AnyUp")
 	self:SetScript("OnEnter", function(self)
 		UnitFrame_OnEnter(self)
@@ -129,31 +116,26 @@ function Module:CreateRaid()
 	self.Health:SetAllPoints(self)
 	self.Health:SetStatusBarTexture(RaidframeTexture)
 
-	-- if C["Raidframe"].HealthDeficit then -- Cant do this just yet. Need to seperate the status too from the Health Value!
-	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY", 4)
+	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
+	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
 	self.Health.Value:SetFontObject(RaidframeFont)
-	self.Health.Value:SetPoint("CENTER", self.Health, 0, -7)
-	self.Health.Value:SetFont(C["Media"].Font, 10, C["Raidframe"].Outline and "OUTLINE" or "")
-	self.Health.Value:SetShadowOffset(C["Raidframe"].Outline and 0 or K.Mult, C["Raidframe"].Outline and -0 or -K.Mult)
+	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthDeficit]")
-	-- end
 
-	self.Health.Cutaway = C["Raidframe"].Cutaway
 	self.Health.Smooth = C["Raidframe"].Smooth
 	self.Health.SmoothSpeed = C["Raidframe"].SmoothSpeed * 10
-	self.Health.colorDisconnected = true
 	self.Health.colorTapping = true
+	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 
-	-- Power
 	if (C["Raidframe"].ManabarShow) then
-		self.Power = CreateFrame("StatusBar", "$parentPower", self)
+		self.Power = CreateFrame("StatusBar", nil, self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(self:GetFrameLevel())
-		self.Power:SetHeight(3)
+		self.Power:SetHeight(5)
 		self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -1)
 		self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -1)
 		self.Power:SetStatusBarTexture(RaidframeTexture)
@@ -169,16 +151,20 @@ function Module:CreateRaid()
 		self.Power.Background.multiplier = 0.3
 
 		table_insert(self.__elements, UpdatePower)
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdatePower)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
+		self:RegisterEvent("UNIT_POWER_FREQUENT", UpdatePower)
+		self:RegisterEvent("UNIT_MAXPOWER", UpdatePower)
 	end
 
-	self.Name = self.Health:CreateFontString(nil, "OVERLAY", 1)
-	self.Name:SetPoint("TOP", 0, -2)
+	self.Name = self:CreateFontString(nil, "OVERLAY")
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 3, -15)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
-	self:Tag(self.Name, "[KkthnxUI:Role][KkthnxUI:NameVeryShort]")
+	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
+	self.Name:SetWordWrap(false)
+	self:Tag(self.Name, "[KkthnxUI:Role][KkthnxUI:NameShort]")
 
-	-- We need this to overlay self
 	self.Overlay = CreateFrame("Frame", nil, self)
 	self.Overlay:SetAllPoints(self.Health)
 	self.Overlay:SetFrameLevel(self:GetFrameLevel() + 4)
@@ -197,31 +183,23 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetSize(30, 30)
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
-	-- Masterlooter icons
 	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.MasterLooterIndicator:SetSize(11, 11)
 	self.MasterLooterIndicator:SetPoint("TOPLEFT", 8, 6)
 	self.MasterLooterIndicator:Show()
 
-	-- Leader icons
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
 	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)
 
-	-- Afk /offline timer, using frequentUpdates function from oUF tags
 	if (C["Raidframe"].ShowNotHereTimer) then
-		self.AFKIndicator = self.Overlay:CreateFontString(nil, "OVERLAY")
-		self.AFKIndicator:SetPoint("CENTER", self, "BOTTOM", 0, 6)
-		self.AFKIndicator:SetFont(C["Media"].Font, 9, "THINOUTLINE")
-		self.AFKIndicator:SetShadowOffset(0, 0)
-		self.AFKIndicator:SetTextColor(0, 1, 0)
+		self.AFKIndicator = self:CreateFontString(nil, "OVERLAY")
+		self.AFKIndicator:SetPoint("CENTER", self.Overlay, "BOTTOM", 0, 6)
+		self.AFKIndicator:SetFontObject(RaidframeFont)
+		self.AFKIndicator:SetFont(select(1, self.AFKIndicator:GetFont()), 12, select(3, self.AFKIndicator:GetFont()))
 		self:Tag(self.AFKIndicator, "[KkthnxUI:AFK]")
 	end
 
-	self.Range = Module.CreateRange(self)
-	self.HealthPrediction = Module.CreateHealthPrediction(self)
-
-	-- AuraWatch (corner and center icon)
 	if (C["Raidframe"].AuraWatch == true) then
 		Module:CreateAuraWatch(self)
 
@@ -257,7 +235,6 @@ function Module:CreateRaid()
 		self.RaidDebuffs.count:SetTextColor(1, .9, 0)
 	end
 
-	-- ThreatIndicator
 	self.ThreatIndicator = {}
 	self.ThreatIndicator.IsObjectType = function() end
 	self.ThreatIndicator.Override = UpdateThreat
@@ -310,4 +287,7 @@ function Module:CreateRaid()
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTargetGlow)
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdateTargetGlow)
 	end
+
+	self.Range = Module.CreateRange(self)
+	self.HealthPrediction = Module.CreateHealthPrediction(self)
 end

@@ -1,6 +1,15 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("BlockMovies", "AceEvent-3.0")
 
+local _G = _G
+
+local GetCurrentMapDungeonLevel = _G.GetCurrentMapDungeonLevel
+local GetItemCooldown = _G.GetItemCooldown
+local CreateFrame = _G.CreateFrame
+local GetCurrentMapAreaID = _G.GetCurrentMapAreaID
+local C_Scenario_GetCriteriaInfoByStep = _G.C_Scenario.GetCriteriaInfoByStep
+local SetMapToCurrentZone = _G.SetMapToCurrentZone
+
 local playerName = UnitName("player")
 local playerRealm = GetRealmName()
 
@@ -59,13 +68,15 @@ end
 function Module:SiegeOfOrgrimmarCinematics()
 	local hasItem
 	for i = 105930, 105935 do -- Vision of Time items
-		local _, _, cd = GetItemCooldown(i)
-		if cd > 0 then hasItem = true end -- Item is found in our inventory
+		local cd = GetItemCooldown(i)
+		if cd > 0 then
+			hasItem = true
+		end -- Item is found in our inventory
 	end
 	if hasItem and not self.SiegeOfOrgrimmarCinematicsFrame then
 		local tbl = {[149370] = true, [149371] = true, [149372] = true, [149373] = true, [149374] = true, [149375] = true}
 		self.SiegeOfOrgrimmarCinematicsFrame = CreateFrame("Frame")
-		self.SiegeOfOrgrimmarCinematicsFrame:SetScript("OnEvent", function(_, _, _, _, _, _, spellId)
+		self.SiegeOfOrgrimmarCinematicsFrame:SetScript("OnEvent", function(spellId)
 			if tbl[spellId] then
 				Module:UnregisterEvent("CINEMATIC_START")
 				Module:ScheduleTimer("RegisterEvent", 10, "CINEMATIC_START")
@@ -84,9 +95,11 @@ function Module:CINEMATIC_START()
 
 		if cinematicZones[id] then
 			if type(cinematicZones[id]) == "table" then -- For zones with more than 1 cinematic per floor
-				if type(KkthnxUIData[playerRealm][playerName].WatchedMovies[id]) ~= "table" then KkthnxUIData[playerRealm][playerName].WatchedMovies[id] = {} end
+				if type(KkthnxUIData[playerRealm][playerName].WatchedMovies[id]) ~= "table" then
+					KkthnxUIData[playerRealm][playerName].WatchedMovies[id] = {}
+				end
 				for i=#cinematicZones[id], 1, -1 do -- In reverse so for example: we don't trigger off the first boss when at the third boss
-					local _, _, done = C_Scenario.GetCriteriaInfoByStep(1,i)
+					local _, _, done = C_Scenario_GetCriteriaInfoByStep(1, i)
 					if done == cinematicZones[id][i] then
 						if KkthnxUIData[playerRealm][playerName].WatchedMovies[id][i] then
 							K.Print(L["Automation"].MovieBlocked)
@@ -110,7 +123,9 @@ function Module:CINEMATIC_START()
 end
 
 function Module:OnEnable()
-	if C["Automation"].BlockMovies ~= true then return end
+	if C["Automation"].BlockMovies ~= true then
+		return
+	end
 
 	self:RegisterEvent("CINEMATIC_START")
 	self:RegisterEvent("PLAY_MOVIE")

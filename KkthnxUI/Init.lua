@@ -30,7 +30,6 @@ This is how another addon imports the KkthnxUI engine:
 local K, C, L = unpack(KkthnxUI)
 ]]
 
--- Lua API
 local _G = _G
 local select = select
 local string_format = string.format
@@ -38,7 +37,6 @@ local string_lower = string.lower
 local string_match = string.match
 local tonumber = tonumber
 
--- Wow API
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local GetAddOnEnableState = _G.GetAddOnEnableState
@@ -68,11 +66,7 @@ local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
--- GLOBALS: GameMenuFrame, KkthnxUIConfigFrame, KkthnxUIConfig, GameMenuButtonLogout
--- GLOBALS: GameMenuButtonAddons, ConsolePort, GameMenuButtonWhatsNew, UIDROPDOWNMENU_VALUE_PATCH_VERSION
-
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
-AddOn.callbacks = AddOn.callbacks or LibStub("CallbackHandler-1.0")
 local About = LibStub:GetLibrary("LibAboutPanel", true)
 
 AddOn.oUF = Engine.oUF or oUF

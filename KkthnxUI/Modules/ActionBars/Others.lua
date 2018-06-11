@@ -1,19 +1,17 @@
-local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
--- Lua API
 local _G = _G
 local string_format = string.format
 
--- Wow API
 local ActionButton_ShowGrid = _G.ActionButton_ShowGrid
 local CreateFrame = _G.CreateFrame
 local GetActionBarToggles = _G.GetActionBarToggles
-local InCombatLockdown = _G.InCombatLockdown
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
-local UIParent = _G.UIParent
 
 -- GLOBALS: KkthnxUIData
 

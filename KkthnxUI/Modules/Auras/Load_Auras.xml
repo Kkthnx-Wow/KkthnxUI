@@ -7,13 +7,15 @@
         </Attributes>
         <Scripts>
             <OnLoad>KkthnxUI[1]:GetModule("Auras"):CreateIcon(self)
-                self:RegisterForClicks("RightButtonUp")</OnLoad>
+                self:RegisterForClicks("RightButtonUp")
+            </OnLoad>
             <OnEnter>GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", -5, -5)
                 if(self:GetAttribute"index") then
                     GameTooltip:SetUnitAura(SecureButton_GetUnit(self:GetParent()), self:GetID(), self:GetParent():GetAttribute("filter"))
                 elseif(self:GetAttribute"target-slot") then
                     GameTooltip:SetInventoryItem("player", self:GetID())
-                end</OnEnter>
+                end
+            </OnEnter>
             <OnLeave function="GameTooltip_Hide"/>
         </Scripts>
     </Button>
@@ -87,5 +89,6 @@
     <Button name="AuraTemplate60" inherits="AuraTemplate" virtual="true">
         <Size x="60" y="60"/>
     </Button>
+
     <Script file="auras.lua"/>
 </Ui>

@@ -102,7 +102,7 @@ function K.ShortValue(v)
 		elseif math_abs(v) >= 1e3 then
 			return string_format(shortValueDec.."k", v / 1e3)
 		else
-			return string_format("%s", v)
+			return string_format("%.0f", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "CHINESE" then
 		if math_abs(v) >= 1e8 then
@@ -110,7 +110,7 @@ function K.ShortValue(v)
 		elseif math_abs(v) >= 1e4 then
 			return string_format(shortValueDec.."W", v / 1e4)
 		else
-			return string_format("%s", v)
+			return string_format("%.0f", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "KOREAN" then
 		if math_abs(v) >= 1e8 then
@@ -120,7 +120,7 @@ function K.ShortValue(v)
 		elseif math_abs(v) >= 1e3 then
 			return string_format(shortValueDec.."천", v / 1e3)
 		else
-			return string_format("%s", v)
+			return string_format("%.0f", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "GERMAN" then
 		if math_abs(v) >= 1e12 then
@@ -132,7 +132,7 @@ function K.ShortValue(v)
 		elseif math_abs(v) >= 1e3 then
 			return string_format(shortValueDec.."Tsd", v / 1e3)
 		else
-			return string_format("%s", v)
+			return string_format("%.0f", v)
 		end
 	else
 		if math_abs(v) >= 1e12 then
@@ -361,31 +361,18 @@ function K.GetScreenQuadrant(frame)
 	return point
 end
 
--- http://www.wowwiki.com/ColorGradient
-function K.ColorGradient(a, b, ...)
-	local Percent
-
-	if (b == 0) then
-		Percent = 0
-	else
-		Percent = a / b
+function K.ColorGradient(perc, ...)
+	if perc >= 1 then
+		return select(select("#", ...) - 2, ...)
+	elseif perc <= 0 then
+		return ...
 	end
 
-	if (Percent >= 1) then
-		local R, G, B = select(select("#", ...) - 2, ...)
+	local num = select("#", ...) / 3
+	local segment, relperc = math.modf(perc*(num - 1))
+	local r1, g1, b1, r2, g2, b2 = select((segment * 3) + 1, ...)
 
-		return R, G, B
-	elseif (Percent <= 0) then
-		local R, G, B = ...
-
-		return R, G, B
-	end
-
-	local Num = (select("#", ...) / 3)
-	local Segment, RelPercent = math_modf(Percent * (Num - 1))
-	local R1, G1, B1, R2, G2, B2 = select((Segment * 3) + 1, ...)
-
-	return R1 + (R2 - R1) * RelPercent, G1 + (G2 - G1) * RelPercent, B1 + (B2 - B1) * RelPercent
+	return r1 + (r2-r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
 end
 
 -- Example: killMenuOption(true, "InterfaceOptionsCombatPanelEnemyCastBarsOnPortrait")

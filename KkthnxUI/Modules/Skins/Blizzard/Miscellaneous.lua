@@ -3,17 +3,12 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
--- Lua API
 local table_insert = table.insert
-local getn = getn
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
 local UIParent = _G.UIParent
-
--- GLOBALS: QueueStatusFrame, ChatFrame1, GhostFrameMiddle, GhostFrameRight, GhostFrameLeft
--- GLOBALS: GhostFrame, GhostFrameContentsFrameText, GhostFrameContentsFrameIcon
 
 local function SkinMiscStuff()
 	if K.CheckAddOnState("Skinner") or K.CheckAddOnState("Aurora") then
@@ -28,11 +23,10 @@ local function SkinMiscStuff()
 
 	QueueStatusFrame:StripTextures()
 
-	for i = 1, getn(Skins) do
+	for i = 1, #Skins do
 		_G[Skins[i]]:SetTemplate("Transparent")
 	end
 
-	-- DropDownMenu
 	hooksecurefunc("UIDropDownMenu_CreateFrames", function()
 		if not _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].template then
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:SetTemplate("Transparent")
@@ -40,7 +34,6 @@ local function SkinMiscStuff()
 		end
 	end)
 
-	-- Reskin menu
 	local ChatMenus = {
 		"ChatMenu",
 		"EmoteMenu",
@@ -48,7 +41,7 @@ local function SkinMiscStuff()
 		"VoiceMacroMenu"
 	}
 
-	for i = 1, getn(ChatMenus) do
+	for i = 1, #ChatMenus do
 		if _G[ChatMenus[i]] == _G["ChatMenu"] then
 			_G[ChatMenus[i]]:HookScript("OnShow", function(self)
 				self:SetTemplate("Transparent")
@@ -62,7 +55,6 @@ local function SkinMiscStuff()
 		end
 	end
 
-	-- skin return to graveyard button
 	do
 		GhostFrameMiddle:SetAlpha(0)
 		GhostFrameRight:SetAlpha(0)

@@ -1,5 +1,14 @@
 local _, C = unpack(select(2, ...))
 
+local _G = _G
+
+local DAMAGE = _G.DAMAGE
+local HEALER = _G.HEALER
+local ITEM_QUALITY2_DESC = _G.ITEM_QUALITY2_DESC
+local ITEM_QUALITY3_DESC = _G.ITEM_QUALITY3_DESC
+local ITEM_QUALITY4_DESC = _G.ITEM_QUALITY4_DESC
+local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
+
 -- Actionbar
 C["ActionBar"] = {
 	["AddNewSpells"] = true,
@@ -59,7 +68,6 @@ C["Automation"] = {
 	["BlockMovies"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
-	["InviteKeyword"] = "invite",
 	["ScreenShot"] = false,
 }
 
@@ -376,9 +384,10 @@ C["Raidframe"] = {
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["Height"] = 30,
+	["Height"] = 40,
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
+	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
 	["RaidGroups"] = 5,
 	["RaidUtility"] = true,
@@ -389,7 +398,7 @@ C["Raidframe"] = {
 	["SmoothSpeed"] = 3,
 	["TargetHighlight"] = false,
 	["Texture"] = "KkthnxUI",
-	["Width"] = 60,
+	["Width"] = 66,
 	["RaidLayout"] = {
 		["Options"] = {
 			[DAMAGE] = "Damage",

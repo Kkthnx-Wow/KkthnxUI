@@ -2,7 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
-local unpack, pairs = unpack, pairs
+local pairs = pairs
 local tinsert = table.insert
 local max = math.max
 
@@ -32,14 +32,10 @@ local TEXTURE_ITEM_QUEST_BANG = _G.TEXTURE_ITEM_QUEST_BANG
 local UnitIsDead = _G.UnitIsDead
 local UnitIsFriend = _G.UnitIsFriend
 local UnitName = _G.UnitName
+local REQUEST_ROLL = _G.REQUEST_ROLL
+local ASSIGN_LOOT = _G.ASSIGN_LOOT
+local MASTER_LOOTER = _G.MASTER_LOOTER
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: GameTooltip, LootFrame, LootSlot, GroupLootDropDown, UISpecialFrames
--- GLOBALS: UIParent, GameFontNormalLeft, MasterLooterFrame_Show, MASTER_LOOTER
--- GLOBALS: ASSIGN_LOOT, REQUEST_ROLL
-
---This function is copied from FrameXML and modified to use DropDownMenu library function calls
---Using the regular DropDownMenu code causes taints in various places.
 local function GroupLootDropDown_Initialize()
 	local info = UIDropDownMenu_CreateInfo()
 	info.isTitle = 1
@@ -54,7 +50,9 @@ local function GroupLootDropDown_Initialize()
 	info.func = MasterLooterFrame_Show
 	UIDropDownMenu_AddButton(info)
 	info.text = REQUEST_ROLL
-	info.func = function() DoMasterLootRoll(LootFrame.selectedSlot) end
+	info.func = function()
+		DoMasterLootRoll(LootFrame.selectedSlot)
+	end
 	UIDropDownMenu_AddButton(info)
 end
 
@@ -103,7 +101,7 @@ local OnLeave = function(self)
 	ResetCursor()
 end
 
-local OnClick = function(self)
+local function OnClick(self)
 	LootFrame.selectedQuality = self.quality
 	LootFrame.selectedItemName = self.name:GetText()
 	LootFrame.selectedSlot = self:GetID()
@@ -119,7 +117,7 @@ local OnClick = function(self)
 	end
 end
 
-local OnShow = function(self)
+local function OnShow(self)
 	if (GameTooltip:IsOwned(self)) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetLootItem(self:GetID())
@@ -375,7 +373,7 @@ function Module:OnEnable()
 	LootFrame:UnregisterAllEvents()
 	tinsert(UISpecialFrames, "KkthnxLootFrame")
 
-	K.PopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(self, data)
+	K.PopupDialogs["CONFIRM_LOOT_DISTRIBUTION"].OnAccept = function(_, data)
 		GiveMasterLoot(ss, data)
 	end
 end

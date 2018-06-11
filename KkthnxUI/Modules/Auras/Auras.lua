@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
 if (not C["Auras"].Enable) then
     return
@@ -7,8 +7,7 @@ end
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local GetTime = GetTime
-local select, unpack = select, unpack
+local select = select
 local floor = math.floor
 
 local CreateFrame = _G.CreateFrame
@@ -105,25 +104,6 @@ function Module:CreateIcon(button)
 
     button:SetScript("OnAttributeChanged", Module.OnAttributeChanged)
 
-    local ButtonData = {
-        AutoCast = nil,
-        AutoCastable = nil,
-        Border = nil,
-        Checked = nil,
-        Cooldown = nil,
-        Count = false,
-        Disabled = nil,
-        Duration = false,
-        Flash = nil,
-        FloatingBG = nil,
-        Highlight = nil,
-        HotKey = nil,
-        Icon = button.texture,
-        Name = nil,
-        Normal = nil,
-        Pushed = nil,
-    }
-
     local header = button:GetParent()
     local auraType = header:GetAttribute("filter")
 
@@ -141,7 +121,7 @@ function Module:UpdateAura(button, index)
 
     if (name) then
         if (duration > 0 and expirationTime) then
-            local timeLeft = expirationTime - GetTime()
+            local timeLeft = expirationTime - _G.GetTime()
             if (not button.timeLeft) then
                 button.timeLeft = timeLeft
                 button:SetScript("OnUpdate", Module.UpdateTime)
@@ -164,7 +144,7 @@ function Module:UpdateAura(button, index)
         end
 
         if filter == "HARMFUL" then
-            local color = DebuffTypeColor[dtype or ""]
+            local color = _G.DebuffTypeColor[dtype or ""]
             button:SetBackdropBorderColor(color.r, color.g, color.b)
         else
             button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])

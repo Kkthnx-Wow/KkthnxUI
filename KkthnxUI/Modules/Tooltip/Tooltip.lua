@@ -78,19 +78,12 @@ local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
 local NotifyInspect = _G.NotifyInspect
 
--- GLOBALS: GameTooltipAnchor, InspectFrame, GameTooltipTextLeft2, ItemRefTooltip, BNETMover, GameTooltipHeaderText, GameTooltipText
--- GLOBALS: GameTooltipTextSmall, ShoppingTooltip1TextLeft1, ShoppingTooltip1TextLeft2, ShoppingTooltip1TextLeft3, ShoppingTooltip1TextLeft4
--- GLOBALS: ShoppingTooltip1TextRight1, ShoppingTooltip1TextRight2, ShoppingTooltip1TextRight3, ShoppingTooltip1TextRight4, ShoppingTooltip2TextLeft1
--- GLOBALS: ShoppingTooltip2TextLeft2, ShoppingTooltip2TextLeft3, ShoppingTooltip2TextLeft4, ShoppingTooltip2TextRight1, ShoppingTooltip2TextRight2
--- GLOBALS: ShoppingTooltip2TextRight3, ShoppingTooltip2TextRight4, BNToastFrame, BNToastFrameCloseButton, ItemRefCloseButton, WorldMapTooltip
-
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
 local inspectCache = {}
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000".."AFK".."|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00".."DND".."|r|cffFFFFFF]|r"
 
-local TooltipFont = K.GetFont(C["Tooltip"].Font)
 local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 
 local tooltips = {
@@ -458,7 +451,6 @@ end
 
 function Module:GameTooltip_OnTooltipSetItem(tt)
 	if tt:IsForbidden() then return end
-	local ownerName = tt:GetOwner() and tt:GetOwner().GetName and tt:GetOwner():GetName()
 
 	if not tt.itemCleared then
 		local _, link = tt:GetItem()

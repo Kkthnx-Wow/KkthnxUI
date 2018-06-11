@@ -13,7 +13,6 @@ local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local Minimap = _G.Minimap
-local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local UIParent = _G.UIParent
 
 function Module:GetLocTextColor()
@@ -35,7 +34,7 @@ function Module:GetLocTextColor()
 	end
 end
 
-function Module:ADDON_LOADED(event, addon)
+function Module:ADDON_LOADED(_, addon)
 	if addon == "Blizzard_TimeManager" then
 		TimeManagerClockButton:Kill()
 	elseif addon == "Blizzard_FeedbackUI" then
@@ -92,7 +91,7 @@ function Module:UpdateSettings()
 	if InCombatLockdown() then
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 	end
-	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170 
+	K.MinimapSize = C["Minimap"].Enable and C["Minimap"].Size or 170
 	K.MinimapWidth = K.MinimapSize
 	K.MinimapHeight = K.MinimapSize
 
@@ -197,6 +196,7 @@ function Module:OnInitialize()
 	Minimap:SetArchBlobRingAlpha(0)
 	Minimap:SetTemplate("Transparent")
 	Minimap:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+
 	Minimap:HookScript("OnEnter", function(self)
 		self.location:Show()
 	end)
@@ -245,7 +245,6 @@ function Module:OnInitialize()
 	end
 
 	K["Movers"]:RegisterFrame(MMHolder)
-	-- Make sure these invisible frames follow the minimap.
 	MinimapBackdrop:SetMovable(true)
 	MinimapBackdrop:SetUserPlaced(true)
 	MinimapBackdrop:SetParent(Minimap)

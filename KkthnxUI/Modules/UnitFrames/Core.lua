@@ -231,7 +231,26 @@ function Module:CreateAuraTimer(elapsed)
 	end
 end
 
+function Module:CancelPlayerBuff(index)
+	if InCombatLockdown() then
+		return
+	end
+
+	CancelUnitBuff("player", self.index)
+end
+
+
 function Module:PostCreateAura(button)
+	local isCancellable = button:GetParent().isCancellable
+
+	if isCancellable then
+		local Name = button:GetName()
+		local Index = tonumber(Name:gsub("%D",""))
+
+		button.index = Index
+		button:SetScript("OnMouseUp", Module.CancelPlayerBuff)
+	end
+
 	if button:GetName():match("NamePlate") then
 		button:CreateShadow()
 
@@ -454,8 +473,8 @@ function Module:GetDamageRaidFramesAttributes()
 		"groupBy", C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
 		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
 		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
-		"maxColumns", C["Raidframe"].RaidGroups or 5,
-		"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn or 1,
+		"maxColumns", 10,
+		"unitsPerColumn", 1,
 		"columnSpacing", 6,
 		"columnAnchorPoint", "TOP")
 		if i == 1 then
@@ -490,8 +509,8 @@ function Module:GetHealerRaidFramesAttributes()
 		"groupingOrder", C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
 		"sortMethod", C["Raidframe"].GroupBy.Value and "NAME",
 		"point", "LEFT",
-		"maxColumns", C["Raidframe"].RaidGroups or 5,
-		"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn or 1,
+		"maxColumns", 10,
+		"unitsPerColumn", 1,
 		"columnSpacing", 6,
 		"columnAnchorPoint", "LEFT")
 		if i == 1 then

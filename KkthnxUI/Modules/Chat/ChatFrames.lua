@@ -93,10 +93,6 @@ for name, abbr in pairs(CUSTOM_CHANNELS) do
 	ChannelNames[string_lower(name)] = abbr
 end
 
-local function escape(str)
-	return string_gsub(str, "([%%%+%-%.%[%]%*%?])", "%%%1")
-end
-
 local function AddMessage(frame, message, ...)
 	if type(message) == "string" then
 		local channelData, channelID, channelName = string_match(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?"..".+")
@@ -365,7 +361,7 @@ function Module:StyleFrame(frame)
 end
 
 function Module:KillPetBattleCombatLog(Frame)
-	if (_G[Frame:GetName().."Tab"]:GetText():match(PET_BATTLE_COMBAT_LOG)) then
+	if (_G[Frame:GetName().."Tab"]:GetText():match(_G.PET_BATTLE_COMBAT_LOG)) then
 		return FCF_Close(Frame)
 	end
 end
@@ -408,7 +404,7 @@ function Module:SetDefaultChatFramesPositions()
 		end
 
 		if ID == 2 then
-			FCF_SetWindowName(Frame, GUILD_EVENT_LOG)
+			FCF_SetWindowName(Frame, _G.GUILD_EVENT_LOG)
 		end
 
 		if ID == 3 then
@@ -419,7 +415,7 @@ function Module:SetDefaultChatFramesPositions()
 			FCF_SetLocked(Frame, 1)
 		end
 
-		local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
+		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame"..i] = {Anchor1, Anchor2, X, Y, C["Chat"].Width, C["Chat"].Height}
 	end
 end
@@ -689,7 +685,7 @@ function Module:OnEnable()
 	local Whisper = CreateFrame("Frame")
 	Whisper:RegisterEvent("CHAT_MSG_WHISPER")
 	Whisper:RegisterEvent("CHAT_MSG_BN_WHISPER")
-	Whisper:SetScript("OnEvent", function(self, event)
+	Whisper:SetScript("OnEvent", function()
 		Module:PlayWhisperSound()
 	end)
 end

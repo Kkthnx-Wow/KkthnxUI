@@ -35,7 +35,7 @@ local MINUTES_FORMAT = K.RGBToHex(C["Cooldown"].Minutes[1], C["Cooldown"].Minute
 local HOURS_FORMAT = K.RGBToHex(C["Cooldown"].Hours[1], C["Cooldown"].Hours[2], C["Cooldown"].Hours[3]).."%dh|r" -- Timers that have hours remaining
 local DAYS_FORMAT = K.RGBToHex(C["Cooldown"].Days[1], C["Cooldown"].Days[2], C["Cooldown"].Days[3]).."%dd|r" -- Timers that have days remaining
 
-K.Cooldowns = Module
+local visible, hooked = {}, {}
 
 local styles = {
 	controlled = {scale = 1},
@@ -268,24 +268,20 @@ end
 function Timer:GetNextUpdate(remain)
 	if remain < EXPIRING_DURATION then
 		return 0.051
-
 	elseif remain < MINUTEISH then
 		return remain - K.Round(remain) + 0.51
-
 	elseif remain < HOURISH then
 		local minutes = K.Round(remain / MINUTE)
 		if minutes > 1 then
 			return remain - (minutes * MINUTE - HALFMINUTEISH)
 		end
 		return remain - MINUTEISH + 0.01
-
 	elseif remain < DAYISH then
 		local hours = K.Round(remain / HOUR)
 		if hours > 1 then
 			return remain - (hours * HOUR - HALFHOURISH)
 		end
 		return remain - HOURISH + 0.01
-
 	else
 		local days = K.Round(remain / DAY)
 		if days > 1 then
@@ -301,6 +297,11 @@ function Timer:ShouldShow()
 	end
 
 	if self.duration < MIN_DURATION then
+		return false
+	end
+
+	if self:IsForbidden() then
+		print("false, cooldowns are IsForbidden")
 		return false
 	end
 
@@ -494,7 +495,6 @@ function Anim:CreateShineAnimation()
 	return group
 end
 
-local visible, hooked = {}, {}
 function Module:RegisterCooldown(_, action, cooldown)
 	cooldown.occAction = action
 

@@ -1,6 +1,7 @@
-local K, C, L = unpack(select(2, ...))
-if C["Tooltip"].Enable ~= true or C["Tooltip"].Icons ~= true then return end
-local TT = K:GetModule("Tooltip")
+local _, C = unpack(select(2, ...))
+if C["Tooltip"].Enable ~= true or C["Tooltip"].Icons ~= true then
+	return
+end
 
 -- Adds an Icon to the Tooltip (Spell, Item)
 -- (Tipachu by Tuller)
@@ -25,8 +26,8 @@ end
 
 -- Icon for Items
 local function hookItem(tip)
-	tip:HookScript("OnTooltipSetItem", function(self, ...)
-		local name, link = self:GetItem()
+	tip:HookScript("OnTooltipSetItem", function(self)
+		local link = self:GetItem()
 		local icon = link and GetItemIcon(link)
 		AddIcon(self, icon)
 	end)
@@ -38,8 +39,8 @@ hookItem(_G["ShoppingTooltip2"])
 
 -- Icon for Spells
 local function hookSpell(tip)
-	tip:HookScript("OnTooltipSetSpell", function(self, ...)
-		local _, _, id = self:GetSpell()
+	tip:HookScript("OnTooltipSetSpell", function(self)
+		local id = self:GetSpell()
 		if id then
 			AddIcon(self, select(3, GetSpellInfo(id)))
 		end
@@ -53,7 +54,7 @@ hooksecurefunc(GameTooltip, "SetHyperlink", function(self, link)
 	if type(link) ~= "string" then return end
 	local linkType, id = string_match(link, "^([^:]+):(%d+)")
 	if linkType == "achievement" then
-		local id, name, _, accountCompleted, month, day, year, _, _, icon, _, isGuild, characterCompleted, whoCompleted = GetAchievementInfo(id)
+		local icon = GetAchievementInfo(id)
 		AddIcon(self, icon)
 	end
 end)

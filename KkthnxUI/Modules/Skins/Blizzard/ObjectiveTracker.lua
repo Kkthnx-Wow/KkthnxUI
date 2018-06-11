@@ -20,18 +20,56 @@ local QUEST_TRACKER_MODULE = _G.QUEST_TRACKER_MODULE
 local SCENARIO_TRACKER_MODULE = _G.SCENARIO_TRACKER_MODULE
 local WORLD_QUEST_TRACKER_MODULE = _G.WORLD_QUEST_TRACKER_MODULE
 
-local function SkinObjectiveTracker()
-	ObjectiveTrackerBlocksFrame.QuestHeader:StripTextures()
-	ObjectiveTrackerBlocksFrame.QuestHeader.Text:FontTemplate(nil, 14)
-	ObjectiveTrackerBlocksFrame.AchievementHeader:StripTextures()
-	ObjectiveTrackerBlocksFrame.AchievementHeader.Text:FontTemplate(nil, 14)
-	ObjectiveTrackerBlocksFrame.ScenarioHeader:StripTextures()
-	ObjectiveTrackerBlocksFrame.ScenarioHeader.Text:FontTemplate(nil, 14)
+local function SetStatusBarColor(bar, value, max)
+	local current = (not max and value) or (value and max and max ~= 0 and value/max)
 
-	BONUS_OBJECTIVE_TRACKER_MODULE.Header:StripTextures()
-	BONUS_OBJECTIVE_TRACKER_MODULE.Header.Text:FontTemplate(nil, 14)
-	WORLD_QUEST_TRACKER_MODULE.Header:StripTextures()
-	WORLD_QUEST_TRACKER_MODULE.Header.Text:FontTemplate(nil, 14)
+	if not (bar and current) then
+		return
+	end
+
+	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+	bar:SetStatusBarColor(r, g, b)
+end
+
+local function SkinObjectiveTracker()
+	local ObjectiveTrackerFrame = _G["ObjectiveTrackerFrame"]
+
+	local function SkinOjectiveTrackerHeaders()
+		local frame = ObjectiveTrackerFrame.MODULES
+
+		if frame then
+			for i = 1, #frame do
+				local modules = frame[i]
+				if modules then
+					local header = modules.Header
+
+					local background = modules.Header.Background
+					background:SetAtlas(nil)
+
+					local text = modules.Header.Text
+					text:FontTemplate()
+					text:SetParent(header)
+
+					if not (modules.IsSkinned) then
+						local headerPanel = _G.CreateFrame("Frame", nil, header)
+						headerPanel:SetFrameLevel(header:GetFrameLevel() - 1)
+						headerPanel:SetFrameStrata("BACKGROUND")
+						headerPanel:SetPoint("TOPLEFT", 1, 1)
+						headerPanel:SetPoint("BOTTOMRIGHT", 1, 1)
+
+						local headerBar = headerPanel:CreateTexture(nil, "ARTWORK")
+						headerBar:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
+						headerBar:SetTexCoord(0, 0.6640625, 0, 0.3125)
+						headerBar:SetVertexColor(K.Colors.class[K.Class][1], K.Colors.class[K.Class][2], K.Colors.class[K.Class][3], K.Colors.class[K.Class][4])
+						headerBar:SetPoint("CENTER", headerPanel, -20, -4)
+						headerBar:SetSize(232, 30)
+
+						modules.IsSkinned = true
+					end
+				end
+			end
+		end
+	end
 
 	local MinimizeButton = ObjectiveTrackerFrame.HeaderMenu.MinimizeButton
 	MinimizeButton:SetSize(22, 22)
@@ -47,12 +85,12 @@ local function SkinObjectiveTracker()
 		end
 	end)
 
-	local function ColorProgressBars(self, min)
-		if (self.bar and min) then
-			local r, g, b = K.ColorGradient(min, 100, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-
-			self.bar:SetStatusBarColor(r, g, b)
+	local function ColorProgressBars(self, value)
+		if not (self.Bar and self.isSkinned and value) then
+			return
 		end
+
+		SetStatusBarColor(self.Bar, value, 100)
 	end
 
 	local function SkinItemButton(_, block)
@@ -84,7 +122,7 @@ local function SkinObjectiveTracker()
 		local icon = bar.Icon
 		local label = bar.Label
 
-		if not progressBar.isSkinned then
+		if not bar.isSkinned then
 			if bar.BarFrame then
 				bar.BarFrame:Hide()
 			end
@@ -150,45 +188,10 @@ local function SkinObjectiveTracker()
 			end
 
 			_G.BonusObjectiveTrackerProgressBar_PlayFlareAnim = K.Noop
-			progressBar.isSkinned = true
+
+			bar.isSkinned = true
 		elseif icon and progressBar.Backdrop then
 			progressBar.Backdrop:SetShown(icon:IsShown())
-		end
-	end
-
-	local function SkinHeaderPanels()
-		local Frame = ObjectiveTrackerFrame.MODULES
-
-		if (Frame) then
-			for i = 1, #Frame do
-
-				local Modules = Frame[i]
-				if (Modules) then
-					local Header = Modules.Header
-					Header:SetFrameStrata("HIGH")
-					Header:SetFrameLevel(10)
-
-					local Background = Modules.Header.Background
-					Background:SetAtlas(nil)
-
-					if not (Modules.IsSkinned) then
-						local HeaderPanel = _G.CreateFrame("Frame", nil, Header)
-						HeaderPanel:SetFrameLevel(Header:GetFrameLevel() - 1)
-						HeaderPanel:SetFrameStrata("BACKGROUND")
-						HeaderPanel:SetPoint("TOPLEFT", 1, 1)
-						HeaderPanel:SetPoint("BOTTOMRIGHT", 1, 1)
-
-						local HeaderBar = HeaderPanel:CreateTexture(nil, "ARTWORK")
-						HeaderBar:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
-						HeaderBar:SetTexCoord(0, 0.6640625, 0, 0.3125)
-						HeaderBar:SetVertexColor(K.Colors.class[K.Class][1], K.Colors.class[K.Class][2], K.Colors.class[K.Class][3], K.Colors.class[K.Class][4])
-						HeaderBar:SetPoint("CENTER", HeaderPanel, -20, -4)
-						HeaderBar:SetSize(232, 30)
-
-						Modules.IsSkinned = true
-					end
-				end
-			end
 		end
 	end
 
@@ -271,7 +274,7 @@ local function SkinObjectiveTracker()
 		end
 	end
 
-	hooksecurefunc("ObjectiveTracker_Update", SkinHeaderPanels)
+	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)
 	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)
 	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)
 	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)

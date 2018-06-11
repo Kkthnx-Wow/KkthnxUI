@@ -6,7 +6,6 @@ local Module = K:NewModule("Vendor", "AceEvent-3.0")
 -- Lua API
 local _G = _G
 local min, max, abs = math.min, math.max, math.abs
-local print = print
 local select = select
 
 -- WoW API
@@ -59,7 +58,7 @@ function Module:UpdateMerchant()
 				itemID = GetContainerItemID(bag, slot)
 				if itemID then
 					count = select(2, GetContainerItemInfo(bag, slot))
-					_, link, rarity, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
+					link, rarity, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
 					if rarity == 0 then
 						stack = (price or 0) * (count or 1)
 						sold = sold + stack
