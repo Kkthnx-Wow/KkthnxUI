@@ -21,7 +21,7 @@ local SCENARIO_TRACKER_MODULE = _G.SCENARIO_TRACKER_MODULE
 local WORLD_QUEST_TRACKER_MODULE = _G.WORLD_QUEST_TRACKER_MODULE
 
 local function SetStatusBarColor(bar, value, max)
-	local current = (not max and value) or (value and max and max ~= 0 and value/max)
+	local current = (not max and value) or (value and max and max ~= 0 and value / max)
 
 	if not (bar and current) then
 		return
@@ -60,7 +60,12 @@ local function SkinObjectiveTracker()
 						local headerBar = headerPanel:CreateTexture(nil, "ARTWORK")
 						headerBar:SetTexture("Interface\\LFGFrame\\UI-LFG-SEPARATOR")
 						headerBar:SetTexCoord(0, 0.6640625, 0, 0.3125)
-						headerBar:SetVertexColor(K.Colors.class[K.Class][1], K.Colors.class[K.Class][2], K.Colors.class[K.Class][3], K.Colors.class[K.Class][4])
+						headerBar:SetVertexColor(
+							K.Colors.class[K.Class][1],
+							K.Colors.class[K.Class][2],
+							K.Colors.class[K.Class][3],
+							K.Colors.class[K.Class][4]
+						)
 						headerBar:SetPoint("CENTER", headerPanel, -20, -4)
 						headerBar:SetSize(232, 30)
 
@@ -77,13 +82,16 @@ local function SkinObjectiveTracker()
 	MinimizeButton:SetPushedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 	MinimizeButton:SetHighlightTexture(false or "")
 	MinimizeButton:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButtonDisabled")
-	MinimizeButton:HookScript("OnClick", function()
-		if ObjectiveTrackerFrame.collapsed then
-			MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
-		else
-			MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
+	MinimizeButton:HookScript(
+		"OnClick",
+		function()
+			if ObjectiveTrackerFrame.collapsed then
+				MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
+			else
+				MinimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
+			end
 		end
-	end)
+	)
 
 	local function ColorProgressBars(self, value)
 		if not (self.Bar and self.isSkinned and value) then
@@ -205,7 +213,7 @@ local function SkinObjectiveTracker()
 			elseif b == block and block.groupFinderButton and button == block.groupFinderButton then
 				-- this fires when there is a group finder button
 				-- we push the group finder button down slightly
-				button:SetPoint(a, b, c, d, e-(3 and 2 or -1))
+				button:SetPoint(a, b, c, d, e - (3 and 2 or -1))
 			end
 		end
 	end
@@ -232,12 +240,12 @@ local function SkinObjectiveTracker()
 				if block.lines then
 					for _, line in pairs(block.lines) do
 						if frequency == LE_QUEST_FREQUENCY_DAILY then
-							local red, green, blue = 1/4, 6/9, 1
+							local red, green, blue = 1 / 4, 6 / 9, 1
 
 							line.Dash:SetText("- ")
 							line.Dash:SetVertexColor(red, green, blue)
 						elseif frequency == LE_QUEST_FREQUENCY_WEEKLY then
-							local red, green, blue = 0, 252/255, 177/255
+							local red, green, blue = 0, 252 / 255, 177 / 255
 
 							line.Dash:SetText("- ")
 							line.Dash:SetVertexColor(red, green, blue)
@@ -267,7 +275,7 @@ local function SkinObjectiveTracker()
 				local title, level = GetQuestLogTitle(questLogIndex)
 				local color = GetQuestDifficultyColor(level)
 				local hex = K.RGBToHex(color.r, color.g, color.b) or OBJECTIVE_TRACKER_COLOR["Header"]
-				local text = hex.."["..level.."]|r "..title
+				local text = hex .. "[" .. level .. "]|r " .. title
 
 				block.HeaderText:SetText(text)
 			end
@@ -285,7 +293,7 @@ local function SkinObjectiveTracker()
 	hooksecurefunc(DEFAULT_OBJECTIVE_TRACKER_MODULE, "AddProgressBar", SkinProgressBars)
 	hooksecurefunc(SCENARIO_TRACKER_MODULE, "AddProgressBar", SkinProgressBars)
 	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton)
-	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE,"AddObjective", SkinItemButton)
+	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton)
 	hooksecurefunc(QUEST_TRACKER_MODULE, "Update", AddBlockDash)
 	hooksecurefunc(QUEST_TRACKER_MODULE, "Update", ShowObjectiveTrackerLevel)
 end

@@ -23,21 +23,34 @@ Movers.Defaults = {}
 Movers.Frames = {}
 Movers.SizeReferenceFrames = {}
 
-local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
+local classColor =
+	K.Class == "PRIEST" and K.PriestColors or
+	(CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
 local function SetModifiedBackdrop(self)
-	if self.Backdrop then self = self.Backdrop end
+	if self.Backdrop then
+		self = self.Backdrop
+	end
 	self:SetBackdropColor(classColor.r * .15, classColor.g * .15, classColor.b * .15, C["Media"].BackdropColor[4])
 end
 
 local function SetOriginalBackdrop(self)
-	if self.Backdrop then self = self.Backdrop end
-	self:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	if self.Backdrop then
+		self = self.Backdrop
+	end
+	self:SetBackdropColor(
+		C["Media"].BackdropColor[1],
+		C["Media"].BackdropColor[2],
+		C["Media"].BackdropColor[3],
+		C["Media"].BackdropColor[4]
+	)
 end
 
 -- Generate a human readable name without prefixes
 local function GenerateName(name)
-	return name and name:gsub("^oUF_",""):gsub("^KkthnxUI_",""):gsub("^KkthnxUI",""):gsub("^Kkthnx_",""):gsub("^Kkthnx","") or UNKNOWNOBJECT
+	return name and
+		name:gsub("^oUF_", ""):gsub("^KkthnxUI_", ""):gsub("^KkthnxUI", ""):gsub("^Kkthnx_", ""):gsub("^Kkthnx", "") or
+		UNKNOWNOBJECT
 end
 
 -- Generate a proper on-screen point depending on which part of the screen it is in,
@@ -56,6 +69,7 @@ local function GeneratePoints(frame)
 
 	-- left side of the screen
 	if centerX < width / 3 then
+		-- right side of the screen
 		if centerY > height * 2 / 3 then
 			point = "TOPLEFT"
 			x = centerX
@@ -69,9 +83,8 @@ local function GeneratePoints(frame)
 			x = centerX
 			y = centerY - height / 2
 		end
-
-	-- right side of the screen
 	elseif centerX > width * 2 / 3 then
+		-- center of the screen
 		if centerY > height * 2 / 3 then
 			point = "TOPRIGHT"
 			x = centerX - width
@@ -85,8 +98,6 @@ local function GeneratePoints(frame)
 			x = centerX - width
 			y = centerY - height / 2
 		end
-
-	-- center of the screen
 	else
 		if centerY > height * 2 / 3 then
 			point = "TOP"
@@ -184,11 +195,11 @@ function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
 	self.DragInfo:SetAllPoints(self)
 	self.DragInfo:SetTemplate("Transparent")
-	self.DragInfo:SetBackdropBorderColor(72/255, 133/255, 237/255)
+	self.DragInfo:SetBackdropBorderColor(72 / 255, 133 / 255, 237 / 255)
 	self.DragInfo:FontString("Text", C["Media"].Font, 12)
 	self.DragInfo.Text:SetText(GenerateName(self:GetName()))
 	self.DragInfo.Text:SetPoint("CENTER")
-	self.DragInfo.Text:SetTextColor(72/255, 133/255, 237/255)
+	self.DragInfo.Text:SetTextColor(72 / 255, 133 / 255, 237 / 255)
 	self.DragInfo:SetFrameLevel(100)
 	self.DragInfo:SetFrameStrata("HIGH")
 	self.DragInfo:SetMovable(true)
@@ -286,34 +297,37 @@ function Movers:IsRegisteredFrame(frame)
 	return Match
 end
 
-Movers:SetScript("OnEvent", function(self, event)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		if not KkthnxUIData[Realm][Name].Movers then
-			KkthnxUIData[Realm][Name].Movers = {}
-		end
+Movers:SetScript(
+	"OnEvent",
+	function(self, event)
+		if (event == "PLAYER_ENTERING_WORLD") then
+			if not KkthnxUIData[Realm][Name].Movers then
+				KkthnxUIData[Realm][Name].Movers = {}
+			end
 
-		local Data = KkthnxUIData[Realm][Name].Movers
+			local Data = KkthnxUIData[Realm][Name].Movers
 
-		for Frame, Position in pairs(Data) do
-			-- local Frame = _G[Frame] -- Was already defined as a loop above.
-			local IsRegistered = self:IsRegisteredFrame(Frame)
+			for Frame, Position in pairs(Data) do
+				-- local Frame = _G[Frame] -- Was already defined as a loop above.
+				local IsRegistered = self:IsRegisteredFrame(Frame)
 
-			if Frame and IsRegistered then
-				local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
+				if Frame and IsRegistered then
+					local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
 
-				self:SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
+					self:SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
 
-				Anchor1, Parent, Anchor2, X, Y = unpack(Position)
+					Anchor1, Parent, Anchor2, X, Y = unpack(Position)
 
-				Frame:ClearAllPoints()
-				Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
+					Frame:ClearAllPoints()
+					Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
+				end
+			end
+		elseif (event == "PLAYER_REGEN_DISABLED") then
+			if self.IsEnabled then
+				self:StartOrStopMoving()
 			end
 		end
-	elseif (event == "PLAYER_REGEN_DISABLED") then
-		if self.IsEnabled then
-			self:StartOrStopMoving()
-		end
 	end
-end)
+)
 
 K["Movers"] = Movers

@@ -107,7 +107,7 @@ function Module:GroupLootContainer_Update()
 
 	for i = 1, self.maxIndex do
 		local frame = self.rollFrames[i]
-		local prevFrame = self.rollFrames[i-1]
+		local prevFrame = self.rollFrames[i - 1]
 		if (frame) then
 			frame:ClearAllPoints()
 			if prevFrame and not (prevFrame == frame) then
@@ -152,9 +152,13 @@ function Module:OnEnable()
 	end
 
 	-- This should catch any alert systems that are created by other addons
-	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(alertFrameSubSystem)
-		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
-	end)
+	hooksecurefunc(
+		AlertFrame,
+		"AddAlertFrameSubSystem",
+		function(alertFrameSubSystem)
+			AlertSubSystem_AdjustPosition(alertFrameSubSystem)
+		end
+	)
 
 	self:SecureHook(AlertFrame, "UpdateAnchors", Module.PostAlertMove)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)

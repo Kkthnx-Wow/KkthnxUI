@@ -39,18 +39,21 @@ function Module:HandleEvent(event, ...)
 		ConfirmLootRoll(arg1, arg2)
 	elseif event == "LOOT_OPENED" or event == "LOOT_BIND_CONFIRM" then
 		local count = GetNumLootItems()
-		if count == 0 then CloseLoot() return end
+		if count == 0 then
+			CloseLoot()
+			return
+		end
 		for numslot = 1, count do
 			ConfirmLootSlot(numslot)
 		end
 	end
 end
 
-function Module:PLAYER_LEVEL_UP(event, level)
+function Module:PLAYER_LEVEL_UP(_, level)
 	Module.PlayerLevel = level
 end
 
-function Module:HandleRoll(event, id)
+function Module:HandleRoll(_, id)
 	if not (C["Loot"].AutoGreed or C["Loot"].AutoDisenchant) then
 		return
 	end
@@ -101,7 +104,11 @@ function Module:OnEnable()
 	self:RegisterEvent("CONFIRM_LOOT_ROLL", "HandleEvent")
 	self:RegisterEvent("LOOT_OPENED", "HandleEvent")
 	self:RegisterEvent("LOOT_BIND_CONFIRM", "HandleEvent")
-	hooksecurefunc(GroupLoot, "START_LOOT_ROLL", function(self, event, id)
-		Module:HandleRoll(event, id)
-	end)
+	hooksecurefunc(
+		GroupLoot,
+		"START_LOOT_ROLL",
+		function(self, event, id)
+			Module:HandleRoll(event, id)
+		end
+	)
 end

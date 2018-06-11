@@ -36,7 +36,6 @@ function Module:InitializeTalkingHead()
 			table_remove(AlertFrame.alertFrameSubSystems, index)
 		end
 	end
-
 end
 
 function Module:WaitForTalkingHead(_, ...)

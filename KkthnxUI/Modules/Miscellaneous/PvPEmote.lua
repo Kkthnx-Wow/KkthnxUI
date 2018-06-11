@@ -14,17 +14,59 @@ local DoEmote = _G.DoEmote
 local GetAchievementInfo = _G.GetAchievementInfo
 
 local PVPEmotes = {
-	"BARK", "BECKON", "BYE", "BITE", "BONK",
-	"CACKLE", "CALM", "CHUCKLE", "COMFORT", "CUDDLE", "CURTSEY", "FLEX",
-	"GIGGLE", "GLOAT", "GRIN", "GROWL", "GUFFAW", "INSULT", "LAUGH", "LICK",
-	"MOCK", "MOO", "MOON", "MOURN", "NO", "PITY", "RASP", "ROAR", "ROFL", "RUDE",
-	"SCRATCH", "SHOO", "SIGH", "SLAP", "SMIRK", "SNARL", "SNICKER", "SNIFF", "SNUB", "SOOTHE",
-	"TAP", "TAUNT", "TEASE", "THANK", "TICKLE", "VETO", "VIOLIN", "YAWN"
+	"BARK",
+	"BECKON",
+	"BITE",
+	"BONK",
+	"BYE",
+	"CACKLE",
+	"CALM",
+	"CHUCKLE",
+	"COMFORT",
+	"CUDDLE",
+	"CURTSEY",
+	"FLEX",
+	"GIGGLE",
+	"GLOAT",
+	"GRIN",
+	"GROWL",
+	"GUFFAW",
+	"INSULT",
+	"LAUGH",
+	"LICK",
+	"MOCK",
+	"MOO",
+	"MOON",
+	"MOURN",
+	"NO",
+	"PITY",
+	"RASP",
+	"ROAR",
+	"ROFL",
+	"RUDE",
+	"SCRATCH",
+	"SHOO",
+	"SIGH",
+	"SLAP",
+	"SMIRK",
+	"SNARL",
+	"SNICKER",
+	"SNIFF",
+	"SNUB",
+	"SOOTHE",
+	"TAP",
+	"TAUNT",
+	"TEASE",
+	"THANK",
+	"TICKLE",
+	"VETO",
+	"VIOLIN",
+	"YAWN"
 }
 
 local unitFilter = COMBATLOG_OBJECT_CONTROL_PLAYER
-function Module:COMBAT_LOG_EVENT_UNFILTERED(event, ...)
-	local _, _, _, sourceGUID, _, _, _, _, destName,  destFlags = ...
+function Module:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
+	local _, _, subEvent, sourceGUID, _, _, _, _, destName, destFlags = ...
 
 	local alreadyHugged
 	if (subEvent == "PARTY_KILL") and (sourceGUID == K.GUID) and (bit_band(destFlags, unitFilter) > 0) then

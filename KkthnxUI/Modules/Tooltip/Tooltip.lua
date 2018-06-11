@@ -13,7 +13,7 @@ local SetTooltipMoney = _G.SetTooltipMoney
 local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
 local hooksecurefunc = _G.hooksecurefunc
 local CanInspect = _G.CanInspect
-local C_PetJournal_FindPetIDByName =_G.C_PetJournal.FindPetIDByName
+local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
 local CreateFrame = _G.CreateFrame
@@ -81,8 +81,8 @@ local NotifyInspect = _G.NotifyInspect
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
 local inspectCache = {}
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
-local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000".."AFK".."|r|cffFFFFFF]|r"
-local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00".."DND".."|r|cffFFFFFF]|r"
+local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
+local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
 
 local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 
@@ -100,12 +100,12 @@ local tooltips = {
 	WorldMapTooltip,
 	WorldMapCompareTooltip1,
 	WorldMapCompareTooltip2,
-	WorldMapCompareTooltip3,
+	WorldMapCompareTooltip3
 }
 
 local ignoreSubType = {
 	L["Tooltip"].Other == true,
-	L["Tooltip"].Item_Enhancement == true,
+	L["Tooltip"].Item_Enhancement == true
 }
 
 local classification = {
@@ -116,9 +116,22 @@ local classification = {
 }
 
 local SlotName = {
-	"Head","Neck","Shoulder","Back","Chest","Wrist",
-	"Hands","Waist","Legs","Feet","Finger0","Finger1",
-	"Trinket0","Trinket1","MainHand","SecondaryHand"
+	"Head",
+	"Neck",
+	"Shoulder",
+	"Back",
+	"Chest",
+	"Wrist",
+	"Hands",
+	"Waist",
+	"Legs",
+	"Feet",
+	"Finger0",
+	"Finger1",
+	"Trinket0",
+	"Trinket1",
+	"MainHand",
+	"SecondaryHand"
 }
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
@@ -175,9 +188,11 @@ function Module:GetItemLvL(unit)
 end
 
 function Module:CleanUpTrashLines(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 	for i = 3, tt:NumLines() do
-		local tiptext = _G["GameTooltipTextLeft"..i]
+		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
 
 		if (linetext == PVP or linetext == FACTION_ALLIANCE or linetext == FACTION_HORDE) then
@@ -189,7 +204,7 @@ end
 
 function Module:GetLevelLine(tt, offset)
 	for i = offset, tt:NumLines() do
-		local tipText = _G["GameTooltipTextLeft"..i]
+		local tipText = _G["GameTooltipTextLeft" .. i]
 		if (tipText:GetText() and tipText:GetText():find(LEVEL)) then
 			return tipText
 		end
@@ -208,19 +223,21 @@ function Module:GetTalentSpec(unit, isPlayer)
 			local role = GetSpecializationRoleByID(spec)
 			if (role ~= nil) then
 				local _, name, _, icon = GetSpecializationInfoByID(spec)
-				icon = icon and "|T"..icon..":16:16:0:0:64:64:5:59:5:59|t " or ""
-				return name and icon..name
+				icon = icon and "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " or ""
+				return name and icon .. name
 			end
 		else
 			local _, name, _, icon = GetSpecializationInfo(spec)
-			icon = icon and "|T"..icon..":16:16:0:0:64:64:5:59:5:59|t " or ""
-			return name and icon..name
+			icon = icon and "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " or ""
+			return name and icon .. name
 		end
 	end
 end
 
 function Module:INSPECT_READY(_, GUID)
-	if (self.lastGUID ~= GUID) then return end
+	if (self.lastGUID ~= GUID) then
+		return
+	end
 
 	local unit = "mouseover"
 	if (UnitExists(unit)) then
@@ -242,10 +259,14 @@ function Module:INSPECT_READY(_, GUID)
 end
 
 function Module:ShowInspectInfo(tt, unit, level, r, g, b, numTries)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 
 	local canInspect = CanInspect(unit)
-	if (not canInspect or level < 10 or numTries > 1) then return end
+	if (not canInspect or level < 10 or numTries > 1) then
+		return
+	end
 
 	local GUID = UnitGUID(unit)
 	if (GUID == K.GUID) then
@@ -264,7 +285,9 @@ function Module:ShowInspectInfo(tt, unit, level, r, g, b, numTries)
 		tt:AddDoubleLine(SPECIALIZATION, talent, nil, nil, nil, r, g, b)
 		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, itemLevel, nil, nil, nil, 1, 1, 1)
 	else
-		if (not canInspect) or (InspectFrame and InspectFrame:IsShown()) then return end
+		if (not canInspect) or (InspectFrame and InspectFrame:IsShown()) then
+			return
+		end
 		self.lastGUID = GUID
 		NotifyInspect(unit)
 		self:RegisterEvent("INSPECT_READY")
@@ -272,7 +295,9 @@ function Module:ShowInspectInfo(tt, unit, level, r, g, b, numTries)
 end
 
 function Module:GameTooltip_OnTooltipSetUnit(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 
 	local unit = select(2, tt:GetUnit())
 
@@ -297,7 +322,9 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		local guildName, guildRankName, _, guildRealm = GetGuildInfo(unit)
 		local pvpName = UnitPVPName(unit)
 		local relationship = UnitRealmRelationship(unit)
-		if not localeClass or not class then return end
+		if not localeClass or not class then
+			return
+		end
 		color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 
 		if (C["Tooltip"].PlayerTitles and pvpName) then
@@ -306,18 +333,18 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 
 		if (realm and realm ~= "") then
 			if (isShiftKeyDown) then
-				name = name.."-"..realm
+				name = name .. "-" .. realm
 			elseif (relationship == LE_REALM_RELATION_COALESCED) then
-				name = name..FOREIGN_SERVER_LABEL
+				name = name .. FOREIGN_SERVER_LABEL
 			elseif (relationship == LE_REALM_RELATION_VIRTUAL) then
-				name = name..INTERACTIVE_SERVER_LABEL
+				name = name .. INTERACTIVE_SERVER_LABEL
 			end
 		end
 
 		if (UnitIsAFK(unit)) then
-			name = name..AFK_LABEL
+			name = name .. AFK_LABEL
 		elseif (UnitIsDND(unit)) then
-			name = name..DND_LABEL
+			name = name .. DND_LABEL
 		end
 
 		_G["GameTooltipTextLeft1"]:SetFormattedText("|c%s%s|r", color.colorStr, name)
@@ -325,7 +352,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		local lineOffset = 2
 		if (guildName) then
 			if (guildRealm and isShiftKeyDown) then
-				guildName = guildName.."-"..guildRealm
+				guildName = guildName .. "-" .. guildRealm
 			end
 
 			if (C["Tooltip"].GuildRanks) and IsShiftKeyDown() then
@@ -342,9 +369,18 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			local race, englishRace = UnitRace(unit)
 			local _, factionGroup = UnitFactionGroup(unit)
 			if (factionGroup and englishRace == "Pandaren") then
-				race = factionGroup.." "..race
+				race = factionGroup .. " " .. race
 			end
-			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r %s |c%s%s|r", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", race or "", color.colorStr, localeClass)
+			levelLine:SetFormattedText(
+				"|cff%02x%02x%02x%s|r %s |c%s%s|r",
+				diffColor.r * 255,
+				diffColor.g * 255,
+				diffColor.b * 255,
+				level > 0 and level or "??",
+				race or "",
+				color.colorStr,
+				localeClass
+			)
 		end
 
 		-- High CPU usage, restricting it to shift key down only.
@@ -372,7 +408,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			if (isPetWild or isPetCompanion) then
 				level = UnitBattlePetLevel(unit)
 
-				local petType = _G["BATTLE_PET_NAME_"..UnitBattlePetType(unit)]
+				local petType = _G["BATTLE_PET_NAME_" .. UnitBattlePetType(unit)]
 				if creatureType then
 					creatureType = format("%s %s", creatureType, petType)
 				else
@@ -393,21 +429,41 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 				pvpFlag = format(" (%s)", PVP)
 			end
 
-			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r%s %s%s", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", classification[creatureClassification] or "", creatureType or "", pvpFlag)
+			levelLine:SetFormattedText(
+				"|cff%02x%02x%02x%s|r%s %s%s",
+				diffColor.r * 255,
+				diffColor.g * 255,
+				diffColor.b * 255,
+				level > 0 and level or "??",
+				classification[creatureClassification] or "",
+				creatureType or "",
+				pvpFlag
+			)
 		end
 	end
 
-	local unitTarget = unit.."target"
+	local unitTarget = unit .. "target"
 	if (unit ~= "player" and UnitExists(unitTarget)) then
 		local targetColor
-		if(UnitIsPlayer(unitTarget) and not UnitHasVehicleUI(unitTarget)) then
+		if (UnitIsPlayer(unitTarget) and not UnitHasVehicleUI(unitTarget)) then
 			local _, class = UnitClass(unitTarget)
 			targetColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 		else
-			targetColor = K.Colors.factioncolors[""..UnitReaction(unitTarget, "player")] or FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
+			targetColor =
+				K.Colors.factioncolors["" .. UnitReaction(unitTarget, "player")] or
+				FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
 		end
 
-		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
+		GameTooltip:AddDoubleLine(
+			format("%s:", TARGET),
+			format(
+				"|cff%02x%02x%02x%s|r",
+				targetColor.r * 255,
+				targetColor.g * 255,
+				targetColor.b * 255,
+				UnitName(unitTarget, true)
+			)
+		)
 	end
 
 	if (color) then
@@ -423,8 +479,12 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 end
 
 function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
-	if tt:IsForbidden() then return end
-	if not value or not C["Tooltip"].HealthBarText or not tt.text then return end
+	if tt:IsForbidden() then
+		return
+	end
+	if not value or not C["Tooltip"].HealthBarText or not tt.text then
+		return
+	end
 	local unit = select(2, tt:GetParent():GetUnit())
 	if (not unit) then
 		local GMF = GetMouseFocus()
@@ -440,17 +500,21 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	elseif (value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
 		tt.text:SetText(DEAD)
 	else
-		tt.text:SetText(K.ShortValue(value).." / "..K.ShortValue(max))
+		tt.text:SetText(K.ShortValue(value) .. " / " .. K.ShortValue(max))
 	end
 end
 
 function Module:GameTooltip_OnTooltipCleared(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 	tt.itemCleared = nil
 end
 
 function Module:GameTooltip_OnTooltipSetItem(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 
 	if not tt.itemCleared then
 		local _, link = tt:GetItem()
@@ -480,7 +544,9 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 	if C["Tooltip"].ItemQualityBorder then
 		local _, link = tt:GetItem()
-		if not link then return end
+		if not link then
+			return
+		end
 		tt.currentItem = link
 
 		local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
@@ -512,9 +578,11 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 end
 
 function Module:GameTooltip_ShowStatusBar(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 
-	local statusBar = _G[tt:GetName().."StatusBar"..tt.shownStatusBars]
+	local statusBar = _G[tt:GetName() .. "StatusBar" .. tt.shownStatusBars]
 	if statusBar and not statusBar.skinned then
 		statusBar:SetStatusBarTexture(TooltipTexture)
 		statusBar.skinned = true
@@ -522,7 +590,9 @@ function Module:GameTooltip_ShowStatusBar(tt)
 end
 
 function Module:SetStyle(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 
 	for _, tt in pairs(tooltips) do
 		tt:SetTemplate("Transparent", true)
@@ -538,14 +608,18 @@ function Module:MODIFIER_STATE_CHANGED(_, key)
 end
 
 function Module:SetUnitAura(tt, unit, index, filter)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 	local _, _, _, _, _, _, _, caster, _, _, id = UnitAura(unit, index, filter)
 	if id and C["Tooltip"].SpellID then
 		if caster then
 			local name = UnitName(caster)
 			local _, class = UnitClass(caster)
 			local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-			if not color then color = RAID_CLASS_COLORS["PRIEST"] end
+			if not color then
+				color = RAID_CLASS_COLORS["PRIEST"]
+			end
 			tt:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(ID, id), format("|c%s%s|r", color.colorStr, name))
 		else
 			tt:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
@@ -556,9 +630,13 @@ function Module:SetUnitAura(tt, unit, index, filter)
 end
 
 function Module:GameTooltip_OnTooltipSetSpell(tt)
-	if tt:IsForbidden() then return end
+	if tt:IsForbidden() then
+		return
+	end
 	local id = select(3, tt:GetSpell())
-	if not id or not C["Tooltip"].SpellID then return end
+	if not id or not C["Tooltip"].SpellID then
+		return
+	end
 
 	local displayString = ("|cFFCA3C3C%s|r %d"):format(ID, id)
 	local lines = tt:NumLines()
@@ -593,8 +671,12 @@ function Module:RepositionBNET(frame, _, anchor)
 end
 
 function Module:CheckBackdropColor()
-	if GameTooltip:IsForbidden() then return end
-	if not GameTooltip:IsShown() then return end
+	if GameTooltip:IsForbidden() then
+		return
+	end
+	if not GameTooltip:IsShown() then
+		return
+	end
 
 	local r, g, b = GameTooltip:GetBackdropColor()
 	if (r and g and b) then
@@ -620,11 +702,11 @@ function Module:SetTooltipFonts()
 	GameTooltipTextSmall:SetFont(font, smallTextSize, fontOutline)
 	if GameTooltip.hasMoney then
 		for i = 1, GameTooltip.numMoneyFrames do
-			_G["GameTooltipMoneyFrame"..i.."PrefixText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."SuffixText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."GoldButtonText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."SilverButtonText"]:SetFont(font, textSize, fontOutline)
-			_G["GameTooltipMoneyFrame"..i.."CopperButtonText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame" .. i .. "PrefixText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame" .. i .. "SuffixText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame" .. i .. "GoldButtonText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame" .. i .. "SilverButtonText"]:SetFont(font, textSize, fontOutline)
+			_G["GameTooltipMoneyFrame" .. i .. "CopperButtonText"]:SetFont(font, textSize, fontOutline)
 		end
 	end
 
@@ -669,7 +751,12 @@ function Module:OnEnable()
 	GameTooltipStatusBar:CreateShadow()
 	GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BORDER")
 	GameTooltipStatusBar.Background:SetAllPoints()
-	GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	GameTooltipStatusBar.Background:SetColorTexture(
+		C["Media"].BackdropColor[1],
+		C["Media"].BackdropColor[2],
+		C["Media"].BackdropColor[3],
+		C["Media"].BackdropColor[4]
+	)
 	GameTooltipStatusBar:SetScript("OnValueChanged", nil)
 	GameTooltipStatusBar:ClearAllPoints()
 	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
@@ -700,7 +787,7 @@ function Module:OnEnable()
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
-	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", 'GameTooltip_OnTooltipSetItem')
+	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
 	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
@@ -716,13 +803,25 @@ function Module:OnEnable()
 
 	-- World Quest Reward Icon
 	WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
-		self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
-		self:SetTexture("")
-	end)
-	hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "Hide", function(self)
-		self:GetParent().Backdrop:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-	end)
+	hooksecurefunc(
+		WorldMapTooltip.ItemTooltip.IconBorder,
+		"SetVertexColor",
+		function(self, r, g, b)
+			self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
+			self:SetTexture("")
+		end
+	)
+	hooksecurefunc(
+		WorldMapTooltip.ItemTooltip.IconBorder,
+		"Hide",
+		function(self)
+			self:GetParent().Backdrop:SetBackdropBorderColor(
+				C["Media"].BorderColor[1],
+				C["Media"].BorderColor[2],
+				C["Media"].BorderColor[3]
+			)
+		end
+	)
 	WorldMapTooltip.ItemTooltip:CreateBackdrop("") -- No backdrop needs to happen, only a border.
 	WorldMapTooltip.ItemTooltip.Backdrop:SetAllPoints(WorldMapTooltip.ItemTooltip.Icon)
 	WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(3)

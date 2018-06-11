@@ -87,7 +87,9 @@ function Module:CreatePlayer()
 		self.Portrait.Background:SetFrameLevel(1)
 		self.Portrait.Background:SetSize(46, 46)
 		self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
-		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
+		if
+			(C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits")
+		 then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
@@ -138,6 +140,6 @@ function Module:CreatePlayer()
 	self.Threat = {
 		Hide = K.Noop,
 		IsObjectType = K.Noop,
-		Override = Module.CreateThreatIndicator,
+		Override = Module.CreateThreatIndicator
 	}
 end

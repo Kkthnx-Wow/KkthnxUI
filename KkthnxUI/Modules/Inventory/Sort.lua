@@ -13,7 +13,7 @@ local string_match = string.match
 local string_gmatch = string.gmatch
 local table_insert = table.insert
 local table_remove = table.remove
-local table_sort =  table.sort
+local table_sort = table.sort
 local table_wipe = table.wipe
 
 local C_PetJournalGetPetInfoBySpeciesID = _G.C_PetJournal.GetPetInfoBySpeciesID
@@ -70,7 +70,7 @@ local coreGroups = {
 	guild = guildBags,
 	bank = bankBags,
 	bags = playerBags,
-	all = allBags,
+	all = allBags
 }
 
 local bagCache = {}
@@ -120,7 +120,7 @@ local inventorySlots = {
 	INVTYPE_THROWN = 22,
 	INVTYPE_RANGEDRIGHT = 23,
 	INVTYPE_RELIC = 24,
-	INVTYPE_TABARD = 25,
+	INVTYPE_TABARD = 25
 }
 
 local safe = {
@@ -130,13 +130,16 @@ local safe = {
 
 local frame = CreateFrame("Frame")
 local t, WAIT_TIME = 0, 0.05
-frame:SetScript("OnUpdate", function(_, elapsed)
-	t = t + (elapsed or 0.01)
-	if t > WAIT_TIME then
-		t = 0
-		Module:DoMoves()
+frame:SetScript(
+	"OnUpdate",
+	function(_, elapsed)
+		t = t + (elapsed or 0.01)
+		if t > WAIT_TIME then
+			t = 0
+			Module:DoMoves()
+		end
 	end
-end)
+)
 frame:Hide()
 Module.SortUpdateTimer = frame
 
@@ -185,7 +188,9 @@ local function DefaultSort(a, b)
 	local aID = bagIDs[a]
 	local bID = bagIDs[b]
 
-	if (not aID) or (not bID) then return aID end
+	if (not aID) or (not bID) then
+		return aID
+	end
 
 	if bagPetIDs[a] and bagPetIDs[b] then
 		local aName, _, aType = C_PetJournalGetPetInfoBySpeciesID(aID)
@@ -216,7 +221,6 @@ local function DefaultSort(a, b)
 	local _, _, _, _, _, _, _, _, bEquipLoc, _, _, bItemClassId, bItemSubClassId = GetItemInfo(bID)
 
 	local aRarity, bRarity = bagQualities[a], bagQualities[b]
-
 
 	if bagPetIDs[a] then
 		aRarity = 1
@@ -267,10 +271,16 @@ local function UpdateSorted(source, destination)
 end
 
 local function ShouldMove(source, destination)
-	if destination == source then return end
+	if destination == source then
+		return
+	end
 
-	if not bagIDs[source] then return end
-	if bagIDs[source] == bagIDs[destination] and bagStacks[source] == bagStacks[destination] then return end
+	if not bagIDs[source] then
+		return
+	end
+	if bagIDs[source] == bagIDs[destination] and bagStacks[source] == bagStacks[destination] then
+		return
+	end
 
 	return true
 end
@@ -303,7 +313,7 @@ local function IterateBackwards(bagList, i)
 		if i > slots + step then
 			step = step + slots
 		else
-			for slot=slots, 1, -1 do
+			for slot = slots, 1, -1 do
 				if step == i then
 					return i, bag, slot
 				end
@@ -365,7 +375,7 @@ function Module:GetNumSlots(bag, role)
 		if not role then
 			role = "deposit"
 		end
-		local name, _, canView, canDeposit, numWithdrawals = GetGuildBankTabInfo(bag - 50)
+		local name, _, canView = GetGuildBankTabInfo(bag - 50)
 		if name and canView then
 			return 98
 		end
@@ -377,7 +387,9 @@ function Module:GetNumSlots(bag, role)
 end
 
 local function ConvertLinkToID(link)
-	if not link then return end
+	if not link then
+		return
+	end
 
 	if tonumber(string_match(link, "item:(%d+)")) then
 		return tonumber(string_match(link, "item:(%d+)"))
@@ -393,11 +405,11 @@ local function DefaultCanMove()
 end
 
 function Module:Encode_BagSlot(bag, slot)
-	return (bag*100) + slot
+	return (bag * 100) + slot
 end
 
 function Module:Decode_BagSlot(int)
-	return math_floor(int/100), int % 100
+	return math_floor(int / 100), int % 100
 end
 
 function Module:IsPartial(bag, slot)
@@ -458,8 +470,8 @@ function Module:IsSpecialtyBag(bagID)
 	end
 
 	local bag = GetInventoryItemLink("player", inventorySlot)
-	if not bag then return
-		false
+	if not bag then
+		return false
 	end
 
 	local family = GetItemFamily(bag)
@@ -471,8 +483,8 @@ function Module:IsSpecialtyBag(bagID)
 end
 
 function Module:CanItemGoInBag(bag, slot, targetBag)
-	if IsGuildBankBag(targetBag) then return
-		true
+	if IsGuildBankBag(targetBag) then
+		return true
 	end
 
 	local item = bagIDs[Module:Encode_BagSlot(bag, slot)]
@@ -499,7 +511,9 @@ function Module.Compress(...)
 end
 
 function Module.Stack(sourceBags, targetBags, canMove)
-	if not canMove then canMove = DefaultCanMove end
+	if not canMove then
+		canMove = DefaultCanMove
+	end
 	for _, bag, slot in Module.IterateBags(targetBags, nil, "deposit") do
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
 		local itemID = bagIDs[bagSlot]
@@ -516,7 +530,11 @@ function Module.Stack(sourceBags, targetBags, canMove)
 		if itemID and targetItems[itemID] and canMove(itemID, bag, slot) then
 			for i = #targetSlots, 1, -1 do
 				local targetedSlot = targetSlots[i]
-				if bagIDs[sourceSlot] and bagIDs[targetedSlot] == itemID and targetedSlot ~= sourceSlot and not (bagStacks[targetedSlot] == bagMaxStacks[targetedSlot]) and not sourceUsed[targetedSlot] then
+				if
+					bagIDs[sourceSlot] and bagIDs[targetedSlot] == itemID and targetedSlot ~= sourceSlot and
+						not (bagStacks[targetedSlot] == bagMaxStacks[targetedSlot]) and
+						not sourceUsed[targetedSlot]
+				 then
 					Module:AddMove(sourceSlot, targetedSlot)
 					sourceUsed[sourceSlot] = true
 
@@ -527,7 +545,9 @@ function Module.Stack(sourceBags, targetBags, canMove)
 						targetItems[itemID] = (targetItems[itemID] > 1) and (targetItems[itemID] - 1) or nil
 						break
 					end
-					if not targetItems[itemID] then break end
+					if not targetItems[itemID] then
+						break
+					end
 				end
 			end
 		end
@@ -539,7 +559,9 @@ function Module.Stack(sourceBags, targetBags, canMove)
 end
 
 function Module.Sort(bags, sorter, invertDirection)
-	if not sorter then sorter = invertDirection and ReverseSort or DefaultSort end
+	if not sorter then
+		sorter = invertDirection and ReverseSort or DefaultSort
+	end
 
 	for i, bag, slot in Module.IterateBags(bags, nil, "both") do
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
@@ -593,7 +615,9 @@ function Module.FillBags(from, to)
 end
 
 function Module.Fill(sourceBags, targetBags, reverse, canMove)
-	if not canMove then canMove = DefaultCanMove end
+	if not canMove then
+		canMove = DefaultCanMove
+	end
 
 	for _, bag, slot in Module.IterateBags(targetBags, reverse, "deposit") do
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
@@ -603,10 +627,11 @@ function Module.Fill(sourceBags, targetBags, reverse, canMove)
 	end
 
 	for _, bag, slot in Module.IterateBags(sourceBags, not reverse, "withdraw") do
-		if #emptySlots == 0 then break end
+		if #emptySlots == 0 then
+			break
+		end
 		local bagSlot = Module:Encode_BagSlot(bag, slot)
 		local targetBag = Module:Decode_BagSlot(emptySlots[1])
-		-- local link = Module:GetItemLink(bag, slot) -- Where is link?
 
 		if bagIDs[bagSlot] and Module:CanItemGoInBag(bag, slot, targetBag) and canMove(bagIDs[bagSlot], bag, slot) then
 			Module:AddMove(bagSlot, table_remove(emptySlots, 1))
@@ -620,8 +645,12 @@ function Module.SortBags(...)
 		local bags = select(i, ...)
 		for _, slotNum in ipairs(bags) do
 			local bagType = Module:IsSpecialtyBag(slotNum)
-			if bagType == false then bagType = "Normal" end
-			if not bagCache[bagType] then bagCache[bagType] = {} end
+			if bagType == false then
+				bagType = "Normal"
+			end
+			if not bagCache[bagType] then
+				bagCache[bagType] = {}
+			end
 			table_insert(bagCache[bagType], slotNum)
 		end
 
@@ -766,9 +795,7 @@ function Module:DoMoves()
 						moveTracker[moveSource] = targetID
 						moveTracker[moveTarget] = moveID
 						lastDestination = moveTarget
-						-- lastMove = moves[i] --Where does "i" come from???
 						lastItemID = moveID
-						-- tremove(moves, i) --Where does "i" come from???
 						return
 					end
 
@@ -800,7 +827,7 @@ function Module:DoMoves()
 			lastItemID = moveID
 			table_remove(moves, i)
 
-			if moves[i-1] then
+			if moves[i - 1] then
 				WAIT_TIME = wasGuild and 0.3 or 0
 				return
 			end

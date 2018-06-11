@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("FastLoot", "AceEvent-3.0")
-if C["Loot"].FastLoot ~= true then return end
+if C["Loot"].FastLoot ~= true then
+	return
+end
 
 -- Sourced: LeatrixPlus (Leatrix)
 
@@ -27,6 +29,8 @@ function Module:OnEvent()
 end
 
 function Module:OnEnable()
-	if C["Loot"].FastLoot ~= true then return end
+	if C["Loot"].FastLoot ~= true then
+		return
+	end
 	self:RegisterEvent("LOOT_READY", "OnEvent")
 end

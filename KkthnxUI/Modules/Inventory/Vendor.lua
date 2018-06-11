@@ -41,24 +41,25 @@ function _G.MerchantItemButton_OnModifiedClick(self, ...)
 	_MerchantItemButton_OnModifiedClick(self, ...)
 end
 
-_G.ITEM_VENDOR_STACK_BUY = _G.ITEM_VENDOR_STACK_BUY.."|n".."<Alt-Click to buy the maximum amount>"
+_G.ITEM_VENDOR_STACK_BUY = _G.ITEM_VENDOR_STACK_BUY .. "|n" .. "<Alt-Click to buy the maximum amount>"
 
 function Module:UpdateMerchant()
 	local gain, sold = 0, 0
 	local repaired = false
 	local useGuildFunds = IsInGuild() and C["Inventory"].UseGuildRepairFunds
 	local usedGuildFunds = false
-	local yourGuildFunds = min((GetGuildBankWithdrawMoney() ~= -1) and GetGuildBankWithdrawMoney() or GetGuildBankMoney(), GetGuildBankMoney())
+	local yourGuildFunds =
+		min((GetGuildBankWithdrawMoney() ~= -1) and GetGuildBankWithdrawMoney() or GetGuildBankMoney(), GetGuildBankMoney())
 	local repairCost = select(1, GetRepairAllCost()) or 0
 	local itemID, count, link, rarity, price, stack
 
-	if C["Inventory"].AutoSell and not(_G.ZygorGuidesViewer and _G.ZygorGuidesViewer.db.profile.autosell) then -- let zygor handle it if available
+	if C["Inventory"].AutoSell and not (_G.ZygorGuidesViewer and _G.ZygorGuidesViewer.db.profile.autosell) then -- let zygor handle it if available
 		for bag = 0, 4, 1 do
 			for slot = 1, GetContainerNumSlots(bag), 1 do
 				itemID = GetContainerItemID(bag, slot)
 				if itemID then
 					count = select(2, GetContainerItemInfo(bag, slot))
-					link, rarity, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
+					_, link, rarity, _, _, _, _, _, _, _, price = GetItemInfo(itemID)
 					if rarity == 0 then
 						stack = (price or 0) * (count or 1)
 						sold = sold + stack
@@ -79,7 +80,10 @@ function Module:UpdateMerchant()
 
 	if C["Inventory"].AutoRepair and CanMerchantRepair() and repairCost > 0 then
 		if max(GetMoney(), yourGuildFunds) > repairCost then
-			if (useGuildFunds and (yourGuildFunds > repairCost)) and MerchantGuildBankRepairButton:IsEnabled() and MerchantGuildBankRepairButton:IsShown() then
+			if
+				(useGuildFunds and (yourGuildFunds > repairCost)) and MerchantGuildBankRepairButton:IsEnabled() and
+					MerchantGuildBankRepairButton:IsShown()
+			 then
 				RepairAllItems(1)
 				usedGuildFunds = true
 				repaired = true

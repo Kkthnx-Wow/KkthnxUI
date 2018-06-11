@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["General"].SpellTolerance ~= true then return end
+if C["General"].SpellTolerance ~= true then
+  return
+end
 
 local tostring = tostring
 

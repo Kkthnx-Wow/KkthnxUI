@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("KillingBlow", "AceHook-3.0", "AceEvent-3.0")
-if C["Misc"].KillingBlow ~= true then return end
+if C["Misc"].KillingBlow ~= true then
+	return
+end
 
 ---------------------------------------------------------------------
 -- Fix the events not firing all the time. DO NOT FORGET TO FIX THIS!
@@ -52,23 +54,26 @@ function Module:LogParse(event, ...)
 	local isKillingBlow
 
 	-- Note that UnitIsPlayer
-	if ((subEvent == "PARTY_KILL") and (sourceGUID == playerGUID) and (BG_Opponents[destName] or mask > 0) and (bit_band(destFlags, unitFilter) and _G.UnitIsPlayer(destName))) then
-
+	if
+		((subEvent == "PARTY_KILL") and (sourceGUID == playerGUID) and (BG_Opponents[destName] or mask > 0) and
+			(bit_band(destFlags, unitFilter) and _G.UnitIsPlayer(destName)))
+	 then
+		-- Workarounds for situations where the PARTY_KILL event won't fire
 		if mask > 0 and BG_Opponents[destName] then
-			destName = "|c"..RAID_CLASS_COLORS[BG_Opponents[destName]].colorStr..destName.."|r"
+			destName = "|c" .. RAID_CLASS_COLORS[BG_Opponents[destName]].colorStr .. destName .. "|r"
 		end
 
 		_G.TopBannerManager_Show(_G["BossBanner"], {name = destName, mode = "PVPKILL"})
 		isKillingBlow = true
-
-		-- Workarounds for situations where the PARTY_KILL event won't fire
 	elseif damageEvents[subEvent] then
 		local overkill = _G.select(16, ...)
 		if (overkill and overkill > 0) then
-			if ((sourceGUID == playerGUID) or (sourceGUID == _G.UnitGUID("pet"))) and (bit_band(destFlags, unitFilter) and _G.UnitIsPlayer(destName)) then
-
+			if
+				((sourceGUID == playerGUID) or (sourceGUID == _G.UnitGUID("pet"))) and
+					(bit_band(destFlags, unitFilter) and _G.UnitIsPlayer(destName))
+			 then
 				if mask > 0 and BG_Opponents[destName] then
-					destName = "|c"..RAID_CLASS_COLORS[BG_Opponents[destName]].colorStr..destName.."|r"
+					destName = "|c" .. RAID_CLASS_COLORS[BG_Opponents[destName]].colorStr .. destName .. "|r"
 				end
 
 				_G.TopBannerManager_Show(_G["BossBanner"], {name = destName, mode = "PVPKILL"})
@@ -79,19 +84,23 @@ function Module:LogParse(event, ...)
 end
 
 function Module:OnInitialize()
-	_G.hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
-		if data then
-			if isKillingBlow then
-				self.Title:SetText(data.name)
-				self.Title:Show()
-				self.SubTitle:Hide()
-				self:Show()
+	_G.hooksecurefunc(
+		_G["BossBanner"],
+		"PlayBanner",
+		function(self, data)
+			if data then
+				if isKillingBlow then
+					self.Title:SetText(data.name)
+					self.Title:Show()
+					self.SubTitle:Hide()
+					self:Show()
 
-				BossBanner_BeginAnims(self)
-				PlaySound("UI_Raid_Boss_Defeated")
+					BossBanner_BeginAnims(self)
+					PlaySound("UI_Raid_Boss_Defeated")
+				end
 			end
 		end
-	end)
+	)
 
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "LogParse")
 	self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE", "OpponentsTable")

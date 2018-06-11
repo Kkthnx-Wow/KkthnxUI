@@ -69,7 +69,7 @@ local coinTextureIDs = {
 	[133786] = true,
 	[133787] = true,
 	[133788] = true,
-	[133789] = true,
+	[133789] = true
 }
 
 -- Credit Haste
@@ -142,7 +142,7 @@ end
 
 local function createSlot(id)
 	local iconsize = iconSize - 4
-	local frame = CreateFrame("Button", "KkthnxLootSlot"..id, lootFrame)
+	local frame = CreateFrame("Button", "KkthnxLootSlot" .. id, lootFrame)
 	frame:SetPoint("LEFT", 8, 0)
 	frame:SetPoint("RIGHT", -8, 0)
 	frame:SetHeight(iconsize)
@@ -201,7 +201,9 @@ local function createSlot(id)
 end
 
 function Module:LOOT_SLOT_CLEARED(_, slot)
-	if (not lootFrame:IsShown()) then return end
+	if (not lootFrame:IsShown()) then
+		return
+	end
 
 	lootFrame.slots[slot]:Hide()
 	anchorSlots(lootFrame)
@@ -235,7 +237,7 @@ function Module:LOOT_OPENED(_, autoloot)
 
 	if (IsFishingLoot()) then
 		lootFrame.title:SetText(L["Loot"].Fishy_Loot)
-	elseif (not UnitIsFriend("player", "target") and UnitIsDead"target") then
+	elseif (not UnitIsFriend("player", "target") and UnitIsDead "target") then
 		lootFrame.title:SetText(UnitName("target"))
 	else
 		lootFrame.title:SetText(LOOT)
@@ -302,7 +304,12 @@ function Module:LOOT_OPENED(_, autoloot)
 				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
 			else
 				questTexture:Hide()
-				slot.iconFrame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+				slot.iconFrame:SetBackdropBorderColor(
+					C["Media"].BorderColor[1],
+					C["Media"].BorderColor[2],
+					C["Media"].BorderColor[3],
+					C["Media"].BorderColor[4]
+				)
 			end
 
 			slot:Enable()
@@ -336,7 +343,9 @@ function Module:LOOT_OPENED(_, autoloot)
 end
 
 function Module:OnEnable()
-	if C["Loot"].Enable ~= true then return end
+	if C["Loot"].Enable ~= true then
+		return
+	end
 
 	lootFrameHolder = CreateFrame("Frame", "KkthnxLootFrameHolder", UIParent)
 	lootFrameHolder:SetPoint("TOPLEFT", 36, -195)
@@ -352,12 +361,15 @@ function Module:OnEnable()
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
 	lootFrame.title:FontTemplate(nil, nil, "OUTLINE")
-	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0,  4)
+	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 4)
 	lootFrame.slots = {}
-	lootFrame:SetScript("OnHide", function()
-		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
-		CloseLoot()
-	end)
+	lootFrame:SetScript(
+		"OnHide",
+		function()
+			StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
+			CloseLoot()
+		end
+	)
 
 	self:RegisterEvent("LOOT_OPENED")
 	self:RegisterEvent("LOOT_SLOT_CLEARED")

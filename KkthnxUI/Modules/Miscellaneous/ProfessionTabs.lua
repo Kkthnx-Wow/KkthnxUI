@@ -1,7 +1,9 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ProfessionTabs", "AceEvent-3.0")
 
-if K.CheckAddOnState("TradeSkillMaster_Crafting") then return end
+if K.CheckAddOnState("TradeSkillMaster_Crafting") then
+	return
+end
 
 local _G = _G
 local next = next
@@ -23,23 +25,22 @@ local tabs, spells = {}, {}
 
 local defaults = {
 	-- Primary Professions
-	[164] = {true, false},	-- Blacksmithing
-	[165] = {true, false},	-- Leatherworking
-	[171] = {true, false},	-- Alchemy
-	[182] = {false, false},	-- Herbalism
-	[186] = {true, false},	-- Mining
-	[197] = {true, false},	-- Tailoring
-	[202] = {true, false},	-- Engineering
-	[333] = {true, true},	-- Enchanting
-	[393] = {false, false},	-- Skinning
-	[755] = {true, true},	-- Jewelcrafting
-	[773] = {true, true},	-- Inscription
-
+	[164] = {true, false}, -- Blacksmithing
+	[165] = {true, false}, -- Leatherworking
+	[171] = {true, false}, -- Alchemy
+	[182] = {false, false}, -- Herbalism
+	[186] = {true, false}, -- Mining
+	[197] = {true, false}, -- Tailoring
+	[202] = {true, false}, -- Engineering
+	[333] = {true, true}, -- Enchanting
+	[393] = {false, false}, -- Skinning
+	[755] = {true, true}, -- Jewelcrafting
+	[773] = {true, true}, -- Inscription
 	-- Secondary Professions
-	[129] = {true, false},	-- First Aid
-	[185] = {true, true},	-- Cooking
-	[356] = {false, false},	-- Fishing
-	[794] = {false, false},	-- Archaeology
+	[129] = {true, false}, -- First Aid
+	[185] = {true, true}, -- Cooking
+	[356] = {false, false}, -- Fishing
+	[794] = {false, false} -- Archaeology
 }
 
 if K.Class == "DEATHKNIGHT" then
@@ -51,11 +52,11 @@ if K.Class == "ROGUE" then
 end
 
 local function UpdateSelectedTabs(object)
-    Module:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
-    for index = 1, #tabs[object] do
-        local tab = tabs[object][index]
-        tab:SetChecked(IsCurrentSpell(tab.name))
-    end
+	Module:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
+	for index = 1, #tabs[object] do
+		local tab = tabs[object][index]
+		tab:SetChecked(IsCurrentSpell(tab.name))
+	end
 end
 
 local function ResetTabs(object)
@@ -68,7 +69,14 @@ end
 
 local function UpdateTab(object, name, rank, texture, hat)
 	local index = tabs[object].index + 1
-	local tab = tabs[object][index] or CreateFrame("CheckButton", "ProTabs"..tabs[object].index, object, "SpellBookSkillLineTabTemplate SecureActionButtonTemplate")
+	local tab =
+		tabs[object][index] or
+		CreateFrame(
+			"CheckButton",
+			"ProTabs" .. tabs[object].index,
+			object,
+			"SpellBookSkillLineTabTemplate SecureActionButtonTemplate"
+		)
 
 	tab:ClearAllPoints()
 

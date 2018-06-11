@@ -40,7 +40,6 @@ function Module:InitializePaperDoll()
 		local childName = child:GetName()
 
 		if (child:GetObjectType() == "Button") and (childName and childName:find("Slot")) then
-
 			local itemLevel = child:CreateFontString()
 			itemLevel:SetDrawLayer("OVERLAY")
 			itemLevel:SetPoint("TOPLEFT", 2, -2)
@@ -63,9 +62,27 @@ function Module:InitializePaperDoll()
 				iconBorderDoubler:SetBlendMode("ADD")
 				iconBorderDoubler:Hide()
 
-				hooksecurefunc(iconBorder, "SetVertexColor", function(_, ...) iconBorderDoubler:SetVertexColor(...) end)
-				hooksecurefunc(iconBorder, "Show", function() iconBorderDoubler:Show() end)
-				hooksecurefunc(iconBorder, "Hide", function() iconBorderDoubler:Hide() end)
+				hooksecurefunc(
+					iconBorder,
+					"SetVertexColor",
+					function(_, ...)
+						iconBorderDoubler:SetVertexColor(...)
+					end
+				)
+				hooksecurefunc(
+					iconBorder,
+					"Show",
+					function()
+						iconBorderDoubler:Show()
+					end
+				)
+				hooksecurefunc(
+					iconBorder,
+					"Hide",
+					function()
+						iconBorderDoubler:Hide()
+					end
+				)
 
 				borderCache[child] = iconBorder
 			end
@@ -81,13 +98,12 @@ function Module:GetInventorySlotItemData(slotID)
 	if itemLink then
 		local _, _, itemRarity, ilvl = GetItemInfo(itemLink)
 		if itemRarity then
-
 			local scannerLevel
 			scannerTip.owner = self
 			scannerTip:SetOwner(UIParent, "ANCHOR_NONE")
 			scannerTip:SetInventoryItem("player", slotID)
 
-			local line = _G[scannerName.."TextLeft2"]
+			local line = _G[scannerName .. "TextLeft2"]
 			if line then
 				local msg = line:GetText()
 				if msg and string_find(msg, S_ITEM_LEVEL) then
@@ -98,7 +114,7 @@ function Module:GetInventorySlotItemData(slotID)
 				else
 					-- Check line 3, some artifacts have the ilevel there.
 					-- *an example is demon hunter artifacts, which have their names on 2 lines
-					line = _G[scannerName.."TextLeft3"]
+					line = _G[scannerName .. "TextLeft3"]
 					if line then
 						local msg = line:GetText()
 						if msg and string_find(msg, S_ITEM_LEVEL) then
@@ -111,9 +127,9 @@ function Module:GetInventorySlotItemData(slotID)
 				end
 			end
 
-			-- We're probably still in patch 7.1.5 or not in Legion at all if we made it to this point, so normal checks will suffice
-			-- local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
-			-- ilvl = effectiveLevel or ilvl
+		-- We're probably still in patch 7.1.5 or not in Legion at all if we made it to this point, so normal checks will suffice
+		-- local effectiveLevel, previewLevel, origLevel = GetDetailedItemLevelInfo and GetDetailedItemLevelInfo(itemLink)
+		-- ilvl = effectiveLevel or ilvl
 		end
 		return itemLink, itemRarity, ilvl
 	end
@@ -128,11 +144,10 @@ function Module:UpdateEquippeditemLevels(event, ...)
 	end
 
 	for itemButton, itemLevel in pairs(self.buttonCache) do
-		local normalTexture = _G[itemButton:GetName().."NormalTexture"] or itemButton:GetNormalTexture()
+		local normalTexture = _G[itemButton:GetName() .. "NormalTexture"] or itemButton:GetNormalTexture()
 		local itemLink, itemRarity, ilvl = self:GetInventorySlotItemData(itemButton:GetID())
 		if itemLink then
 			if itemRarity then
-
 				local r, g, b = GetItemQualityColor(itemRarity)
 				itemLevel:SetTextColor(r, g, b)
 				itemLevel:SetText(ilvl or "")
@@ -146,7 +161,12 @@ function Module:UpdateEquippeditemLevels(event, ...)
 							iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
 						else
 							iconBorder:Show()
-							iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+							iconBorder:SetVertexColor(
+								C["Media"].BorderColor[1],
+								C["Media"].BorderColor[2],
+								C["Media"].BorderColor[3],
+								C["Media"].BorderColor[4]
+							)
 						end
 					else
 						iconBorder:Hide()
@@ -160,12 +180,22 @@ function Module:UpdateEquippeditemLevels(event, ...)
 								iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
 							else
 								iconBorder:Show()
-								iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+								iconBorder:SetVertexColor(
+									C["Media"].BorderColor[1],
+									C["Media"].BorderColor[2],
+									C["Media"].BorderColor[3],
+									C["Media"].BorderColor[4]
+								)
 							end
 						else
 							iconBorder:Hide()
 							iconBorder:Show()
-							iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+							iconBorder:SetVertexColor(
+								C["Media"].BorderColor[1],
+								C["Media"].BorderColor[2],
+								C["Media"].BorderColor[3],
+								C["Media"].BorderColor[4]
+							)
 						end
 					end
 				end
@@ -185,7 +215,12 @@ function Module:UpdateEquippeditemLevels(event, ...)
 				iconBorder = self.borderCache[itemButton]
 				if iconBorder then
 					iconBorder:Show()
-					iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
+					iconBorder:SetVertexColor(
+						C["Media"].BorderColor[1],
+						C["Media"].BorderColor[2],
+						C["Media"].BorderColor[3],
+						C["Media"].BorderColor[4]
+					)
 				end
 			end
 			itemLevel:SetText("")
@@ -202,7 +237,9 @@ function Module:CrucibleAchievementListener(event, id)
 end
 
 function Module:OnInitialize()
-	if C["Misc"].ItemLevel ~= true then return end
+	if C["Misc"].ItemLevel ~= true then
+		return
+	end
 
 	self:InitializePaperDoll()
 

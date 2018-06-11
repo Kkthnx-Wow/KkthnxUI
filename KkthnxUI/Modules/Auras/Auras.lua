@@ -27,7 +27,7 @@ local DIRECTION_TO_POINT = {
     RIGHT_DOWN = "TOPLEFT",
     RIGHT_UP = "BOTTOMLEFT",
     LEFT_DOWN = "TOPRIGHT",
-    LEFT_UP = "BOTTOMRIGHT",
+    LEFT_UP = "BOTTOMRIGHT"
 }
 
 local DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER = {
@@ -38,7 +38,7 @@ local DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER = {
     RIGHT_DOWN = 1,
     RIGHT_UP = 1,
     LEFT_DOWN = -1,
-    LEFT_UP = -1,
+    LEFT_UP = -1
 }
 
 local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
@@ -49,14 +49,14 @@ local DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER = {
     RIGHT_DOWN = -1,
     RIGHT_UP = 1,
     LEFT_DOWN = -1,
-    LEFT_UP = 1,
+    LEFT_UP = 1
 }
 
 local IS_HORIZONTAL_GROWTH = {
     RIGHT_DOWN = true,
     RIGHT_UP = true,
     LEFT_DOWN = true,
-    LEFT_UP = true,
+    LEFT_UP = true
 }
 
 function Module:UpdateTime(elapsed)
@@ -147,7 +147,11 @@ function Module:UpdateAura(button, index)
             local color = _G.DebuffTypeColor[dtype or ""]
             button:SetBackdropBorderColor(color.r, color.g, color.b)
         else
-            button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+            button:SetBackdropBorderColor(
+                C["Media"].BorderColor[1],
+                C["Media"].BorderColor[2],
+                C["Media"].BorderColor[3]
+            )
         end
 
         button.texture:SetTexture(texture)
@@ -193,7 +197,9 @@ function Module:OnAttributeChanged(attribute, value)
 end
 
 function Module:UpdateHeader(header)
-    if (not C["Auras"].Enable) then return end
+    if (not C["Auras"].Enable) then
+        return
+    end
     if header:GetAttribute("filter") == "HELPFUL" then
         header:SetAttribute("consolidateTo", 0)
         header:SetAttribute("weaponTemplate", ("AuraTemplate%d"):format(C["Auras"].Size))
@@ -208,25 +214,47 @@ function Module:UpdateHeader(header)
     header:SetAttribute("point", DIRECTION_TO_POINT[C["Auras"].GrowthDirection.Value])
 
     if (IS_HORIZONTAL_GROWTH[C["Auras"].GrowthDirection.Value]) then
-        header:SetAttribute("minWidth", ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].HorizontalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter)
+        header:SetAttribute(
+            "minWidth",
+            ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].HorizontalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter
+        )
         header:SetAttribute("minHeight", (C["Auras"].VerticalSpacing + C["Auras"].Size) * C["Auras"].MaxWraps)
-        header:SetAttribute("xOffset", DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].HorizontalSpacing + C["Auras"].Size))
+        header:SetAttribute(
+            "xOffset",
+            DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
+                (C["Auras"].HorizontalSpacing + C["Auras"].Size)
+        )
         header:SetAttribute("yOffset", 0)
         header:SetAttribute("wrapXOffset", 0)
-        header:SetAttribute("wrapYOffset", DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].VerticalSpacing + C["Auras"].Size))
+        header:SetAttribute(
+            "wrapYOffset",
+            DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
+                (C["Auras"].VerticalSpacing + C["Auras"].Size)
+        )
     else
         header:SetAttribute("minWidth", (C["Auras"].HorizontalSpacing + C["Auras"].Size) * C["Auras"].MaxWraps)
-        header:SetAttribute("minHeight", ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].VerticalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter)
+        header:SetAttribute(
+            "minHeight",
+            ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].VerticalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter
+        )
         header:SetAttribute("xOffset", 0)
-        header:SetAttribute("yOffset", DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].VerticalSpacing + C["Auras"].Size))
-        header:SetAttribute("wrapXOffset", DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].HorizontalSpacing + C["Auras"].Size))
+        header:SetAttribute(
+            "yOffset",
+            DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
+                (C["Auras"].VerticalSpacing + C["Auras"].Size)
+        )
+        header:SetAttribute(
+            "wrapXOffset",
+            DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
+                (C["Auras"].HorizontalSpacing + C["Auras"].Size)
+        )
         header:SetAttribute("wrapYOffset", 0)
     end
 
     header:SetAttribute("template", ("AuraTemplate%d"):format(C["Auras"].Size))
     local index = 1
     local child = select(index, header:GetChildren())
-    while(child) do
+    while (child) do
         if ((floor(child:GetWidth() * 100 + 0.5) / 100) ~= C["Auras"].Size) then
             child:SetSize(C["Auras"].Size, C["Auras"].Size)
         end
@@ -293,9 +321,9 @@ function Module:OnInitialize()
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", Minimap)
     if C["Minimap"].CollectButtons then
-      AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -28, 3)
+        AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -28, 3)
     else
-      AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -3, 3)
+        AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -3, 3)
     end
     AurasHolder:SetWidth((Minimap:GetWidth() + 29))
     AurasHolder:SetHeight(Minimap:GetHeight() + 53)

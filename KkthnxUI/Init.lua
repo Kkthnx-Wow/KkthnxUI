@@ -21,7 +21,6 @@ to do so, subject to the following conditions:
 	ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	]]
-
 --[[
 This should be at the top of every file inside of the KkthnxUI AddOn:
 local K, C, L = unpack(select(2, ...))
@@ -29,7 +28,6 @@ local K, C, L = unpack(select(2, ...))
 This is how another addon imports the KkthnxUI engine:
 local K, C, L = unpack(KkthnxUI)
 ]]
-
 local _G = _G
 local select = select
 local string_format = string.format
@@ -66,7 +64,8 @@ local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
-local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
+local AddOn =
+	LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 local About = LibStub:GetLibrary("LibAboutPanel", true)
 
 AddOn.oUF = Engine.oUF or oUF
@@ -80,7 +79,9 @@ _G[AddOnName] = Engine
 
 AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
 AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
-AddOn.Noop = function() return end
+AddOn.Noop = function()
+	return
+end
 AddOn.Name = UnitName("player")
 AddOn.Class = select(2, UnitClass("player"))
 AddOn.Race = select(2, UnitRace("player"))
@@ -94,9 +95,12 @@ AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar
 AddOn.ScreenHeight = tonumber(string_match(AddOn.Resolution, "%d+x(%d+)"))
 AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
-AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
+AddOn.Color =
+	AddOn.Class == "PRIEST" and AddOn.PriestColors or
+	(CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
-AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo() AddOn.WowBuild = tonumber(AddOn.WowBuild)
+AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
+AddOn.WowBuild = tonumber(AddOn.WowBuild)
 AddOn.Legion715 = AddOn.WowBuild == 23360
 AddOn.Legion735 = AddOn.WowBuild >= 26124
 AddOn.BFA801 = AddOn.WowBuild >= 26557
@@ -113,28 +117,31 @@ function AddOn:OnInitialize()
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
 	GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
-	GameMenuButton:SetScript("OnClick", function()
-		if (InCombatLockdown()) then
-			return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
-		end
+	GameMenuButton:SetScript(
+		"OnClick",
+		function()
+			if (InCombatLockdown()) then
+				return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
+			end
 
-		if (not KkthnxUIConfigFrame) then
-			KkthnxUIConfig:CreateConfigWindow()
-		end
+			if (not KkthnxUIConfigFrame) then
+				KkthnxUIConfig:CreateConfigWindow()
+			end
 
-		if KkthnxUIConfigFrame:IsVisible() then
-			KkthnxUIConfigFrame:Hide()
-		else
-			KkthnxUIConfigFrame:Show()
-		end
+			if KkthnxUIConfigFrame:IsVisible() then
+				KkthnxUIConfigFrame:Hide()
+			else
+				KkthnxUIConfigFrame:Show()
+			end
 
-		HideUIPanel(GameMenuFrame)
-	end)
+			HideUIPanel(GameMenuFrame)
+		end
+	)
 	GameMenuFrame[AddOnName] = GameMenuButton
 
 	if not IsAddOnLoaded("ConsolePort") then
 		GameMenuButton:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
-		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, - 1)
+		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
 		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.PositionGameMenuButton)
 	else
 		if GameMenuButton.Middle then
@@ -144,7 +151,7 @@ function AddOn:OnInitialize()
 		end
 		ConsolePort:GetData().Atlas.SetFutureButtonStyle(GameMenuButton, nil, nil, true)
 		GameMenuButton:SetSize(240, 46)
-		GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, - 1)
+		GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, -1)
 		GameMenuFrame:SetSize(530, 576)
 	end
 end
@@ -154,7 +161,7 @@ function AddOn:PositionGameMenuButton()
 	local _, relTo, _, _, offY = GameMenuButtonLogout:GetPoint()
 	if relTo ~= GameMenuFrame[AddOnName] then
 		GameMenuFrame[AddOnName]:ClearAllPoints()
-		GameMenuFrame[AddOnName]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, - 1)
+		GameMenuFrame[AddOnName]:SetPoint("TOPLEFT", relTo, "BOTTOMLEFT", 0, -1)
 		GameMenuButtonLogout:ClearAllPoints()
 		GameMenuButtonLogout:SetPoint("TOPLEFT", GameMenuFrame[AddOnName], "BOTTOMLEFT", 0, offY)
 	end
@@ -169,20 +176,23 @@ end
 -- Sourced: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
 if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 	UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
-	hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
-		if UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then
-			return
-		end
-		for i = 1, UIDROPDOWNMENU_MAXLEVELS do
-			for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
-				local b = _G["DropDownList"..i.."Button"..j]
-				if not (issecurevariable(b, "value") or b:IsShown()) then
-					b.value = nil
-					repeat
-						j, b["fx"..j] = j + 1
-					until issecurevariable(b, "value")
+	hooksecurefunc(
+		"UIDropDownMenu_InitializeHelper",
+		function()
+			if UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then
+				return
+			end
+			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+				for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
+					local b = _G["DropDownList" .. i .. "Button" .. j]
+					if not (issecurevariable(b, "value") or b:IsShown()) then
+						b.value = nil
+						repeat
+							j, b["fx" .. j] = j + 1
+						until issecurevariable(b, "value")
+					end
 				end
 			end
 		end
-	end)
+	)
 end

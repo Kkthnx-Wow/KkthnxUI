@@ -42,7 +42,8 @@ end
 -- Memory usage is unrelated to performance, and tracking memory usage does not track "bad" addons.
 -- Developers can uncomment this line to enable the functionality when looking for memory leaks,
 -- but for the average end-user this is a completely pointless thing to track.
-_G.UpdateAddOnMemoryUsage = function() end
+_G.UpdateAddOnMemoryUsage = function()
+end
 
 -- Misclicks for some popups
 function Module:MisclickPopups()
@@ -94,9 +95,12 @@ end
 function Module:HideFireStormHead(event, addon)
 	if K.Realm == "Sylvanas" and K.Name == "Superfreak" or K.Name == "Kkthnx" and K.WoWBuild <= 26365 then
 		if addon == "Blizzard_TalkingHeadUI" then
-			hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-				TalkingHeadFrame:Hide()
-			end)
+			hooksecurefunc(
+				"TalkingHeadFrame_PlayCurrent",
+				function()
+					TalkingHeadFrame:Hide()
+				end
+			)
 
 			self:UnregisterEvent(event)
 		end
@@ -121,9 +125,12 @@ function Module:OnEnable()
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
 
-	CreateFrame("Frame"):SetScript("OnUpdate", function()
-		if LFRBrowseFrame.timeToClear then
-			LFRBrowseFrame.timeToClear = nil
+	CreateFrame("Frame"):SetScript(
+		"OnUpdate",
+		function()
+			if LFRBrowseFrame.timeToClear then
+				LFRBrowseFrame.timeToClear = nil
+			end
 		end
-	end)
+	)
 end

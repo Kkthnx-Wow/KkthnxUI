@@ -21,7 +21,7 @@ local UnitThreatSituation = _G.UnitThreatSituation
 
 local roleIconTextures = {
 	TANK = [[Interface\AddOns\KkthnxUI\Media\Unitframes\tank.tga]],
-	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]],
+	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]]
 }
 
 local function UpdateGroupRole(self)
@@ -59,33 +59,46 @@ local function UpdateThreat(self, _, unit)
 				self.Portrait.Background:SetBackdropBorderColor(r, g, b)
 			end
 		elseif (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-			self.Portrait:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+			self.Portrait:SetBackdropBorderColor(
+				C["Media"].BorderColor[1],
+				C["Media"].BorderColor[2],
+				C["Media"].BorderColor[3],
+				1
+			)
 		elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
-			self.Portrait.Background:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+			self.Portrait.Background:SetBackdropBorderColor(
+				C["Media"].BorderColor[1],
+				C["Media"].BorderColor[2],
+				C["Media"].BorderColor[3],
+				1
+			)
 		end
 	end
 end
 
 function Module:CreateThreatIndicator()
 	local threat = {}
-	threat.IsObjectType = function() end
+	threat.IsObjectType = function()
+	end
 	threat.Override = UpdateThreat
 
 	self.ThreatIndicator = threat
 end
 
 function Module:CreateGroupRoleIndicator()
-		local GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
-		GroupRoleIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", 0, -6)
-		GroupRoleIndicator:SetSize(16, 16)
-		GroupRoleIndicator.Override = UpdateGroupRole
-		self.GroupRoleIndicator = GroupRoleIndicator
+	local GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
+	GroupRoleIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", 0, -6)
+	GroupRoleIndicator:SetSize(16, 16)
+	GroupRoleIndicator.Override = UpdateGroupRole
+	self.GroupRoleIndicator = GroupRoleIndicator
 end
 
 function Module:CreatePartyTargetGlow()
 	if (C["Unitframe"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self)
-		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
+		self.TargetHighlight:SetBackdrop(
+			{edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10}
+		)
 		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -7, 7)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 7, -7)
 		self.TargetHighlight:SetFrameStrata("BACKGROUND")
@@ -148,7 +161,7 @@ function Module:CreateCombatFeedback()
 end
 
 function Module:CreateGlobalCooldown()
-	self.GlobalCooldown = CreateFrame("Frame", self:GetName().."_GlobalCooldown", self.Health)
+	self.GlobalCooldown = CreateFrame("Frame", self:GetName() .. "_GlobalCooldown", self.Health)
 	self.GlobalCooldown:SetWidth(self.Health:GetWidth())
 	self.GlobalCooldown:SetHeight(self.Health:GetHeight() * 1.4)
 	self.GlobalCooldown:SetFrameStrata("HIGH")
@@ -188,18 +201,18 @@ function Module:CreateAFKIndicator()
 end
 
 function Module:CreatePvPIndicator(unit)
-    self.PvPIndicator = self:CreateTexture(nil, "ARTWORK")
-    self.PvPIndicator:SetSize(30, 30)
-    self.PvPIndicator:ClearAllPoints()
-    if (unit == "player") then
+	self.PvPIndicator = self:CreateTexture(nil, "ARTWORK")
+	self.PvPIndicator:SetSize(30, 30)
+	self.PvPIndicator:ClearAllPoints()
+	if (unit == "player") then
 		self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT")
 	else
 		self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT")
 	end
 
-    self.PvPIndicator.Prestige = self:CreateTexture(nil, "ARTWORK")
-    self.PvPIndicator.Prestige:SetSize(50, 52)
-    self.PvPIndicator.Prestige:SetPoint("CENTER", self.PvPIndicator, "CENTER")
+	self.PvPIndicator.Prestige = self:CreateTexture(nil, "ARTWORK")
+	self.PvPIndicator.Prestige:SetSize(50, 52)
+	self.PvPIndicator.Prestige:SetPoint("CENTER", self.PvPIndicator, "CENTER")
 end
 
 function Module:CreateRestingIndicator()
@@ -242,5 +255,5 @@ end
 function Module:CreateQuestIndicator()
 	self.QuestIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.QuestIndicator:SetSize(20, 20)
-	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT" , 11, -11)
+	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT", 11, -11)
 end

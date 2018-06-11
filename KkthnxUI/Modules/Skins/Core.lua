@@ -13,9 +13,9 @@ Module.SkinFuncs["KkthnxUI"] = {}
 
 -- DropDownMenu library support
 function Module:SkinLibDropDownMenu(prefix)
-	if _G[prefix.."_UIDropDownMenu_CreateFrames"] and not Module[prefix.."_UIDropDownMenuSkinned"] then
-		local bd = _G[prefix.."_DropDownList1Backdrop"]
-		local mbd = _G[prefix.."_DropDownList1MenuBackdrop"]
+	if _G[prefix .. "_UIDropDownMenu_CreateFrames"] and not Module[prefix .. "_UIDropDownMenuSkinned"] then
+		local bd = _G[prefix .. "_DropDownList1Backdrop"]
+		local mbd = _G[prefix .. "_DropDownList1MenuBackdrop"]
 		if bd and not bd.template then
 			bd:SetTemplate("Transparent")
 		end
@@ -23,18 +23,21 @@ function Module:SkinLibDropDownMenu(prefix)
 			mbd:SetTemplate("Transparent")
 		end
 
-		Module[prefix.."_UIDropDownMenuSkinned"] = true
-		hooksecurefunc(prefix.."_UIDropDownMenu_CreateFrames", function()
-			local lvls = _G[(prefix == "Lib" and "LIB" or prefix).."_UIDROPDOWNMENU_MAXLEVELS"]
-			local ddbd = lvls and _G[prefix.."_DropDownList"..lvls.."Backdrop"]
-			local ddmbd = lvls and _G[prefix.."_DropDownList"..lvls.."MenuBackdrop"]
-			if ddbd and not ddbd.template then
-				ddbd:SetTemplate("Transparent")
+		Module[prefix .. "_UIDropDownMenuSkinned"] = true
+		hooksecurefunc(
+			prefix .. "_UIDropDownMenu_CreateFrames",
+			function()
+				local lvls = _G[(prefix == "Lib" and "LIB" or prefix) .. "_UIDROPDOWNMENU_MAXLEVELS"]
+				local ddbd = lvls and _G[prefix .. "_DropDownList" .. lvls .. "Backdrop"]
+				local ddmbd = lvls and _G[prefix .. "_DropDownList" .. lvls .. "MenuBackdrop"]
+				if ddbd and not ddbd.template then
+					ddbd:SetTemplate("Transparent")
+				end
+				if ddmbd and not ddmbd.template then
+					ddmbd:SetTemplate("Transparent")
+				end
 			end
-			if ddmbd and not ddmbd.template then
-				ddmbd:SetTemplate("Transparent")
-			end
-		end)
+		)
 	end
 end
 
