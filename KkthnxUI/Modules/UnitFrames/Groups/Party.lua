@@ -86,8 +86,8 @@ function Module:CreateParty()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -4, 4)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 4)
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -4, 2)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 2)
 	self.Name:SetSize(98, 14)
 	self.Name:SetJustifyV("TOP")
 	self.Name:SetJustifyH("CENTER")

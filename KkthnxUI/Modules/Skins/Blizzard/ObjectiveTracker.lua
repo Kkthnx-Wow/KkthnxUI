@@ -47,7 +47,7 @@ local function SkinObjectiveTracker()
 					background:SetAtlas(nil)
 
 					local text = modules.Header.Text
-					text:FontTemplate()
+					text:FontTemplate(nil, 14)
 					text:SetParent(header)
 
 					if not (modules.IsSkinned) then

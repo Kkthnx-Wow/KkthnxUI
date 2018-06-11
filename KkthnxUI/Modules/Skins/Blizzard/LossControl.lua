@@ -3,7 +3,6 @@ local Module = K:GetModule("Skins")
 
 -- Sourced: ElvUI (Elvz)
 -- Edited: KkthnxUI (Kkthnx)
-
 local _G = _G
 local table_insert = table.insert
 
@@ -14,7 +13,7 @@ local function SkinLossOfControl()
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
 	IconBackdrop:SetTemplate()
 	IconBackdrop:SetAllPoints(LossOfControlFrame.Icon)
-	IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel() + 1)
+	-- IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel() + 1)
 	IconBackdrop:SetBackdropBorderColor(1, 0, 0, 1)
 
 	LossOfControlFrame.Icon:SetTexCoord(.1, .9, .1, .9)

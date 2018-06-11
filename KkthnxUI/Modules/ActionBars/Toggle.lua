@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true or C["ActionBar"].ToggleMode ~= true then return end
+if C["ActionBar"].Enable ~= true or C["ActionBar"].ToggleMode ~= true then
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -8,12 +10,6 @@ local _G = _G
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local InCombatLockdown = _G.InCombatLockdown
 local UIParent = _G.UIParent
-local PlaySoundFile = _G.PlaySoundFile
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: Bar2Holder, Bar5Holder, RightActionBarAnchor, Bar3Holder, Bar4Holder, SplitBarRight
--- GLOBALS: PetActionBarAnchor, VehicleButtonAnchor, KkthnxUIData, ActionBarAnchor
--- GLOBALS: SplitBarLeft
 
 local ToggleBar = CreateFrame("Frame", "ToggleActionbar", UIParent)
 
@@ -63,12 +59,12 @@ local function MainBars()
 			ToggleBar[3]:SetHeight(C["ActionBar"].ButtonSize)
 			ToggleBar[4]:SetHeight(C["ActionBar"].ButtonSize)
 			for i = 1, 3 do
-				local b = _G["MultiBarBottomRightButton"..i]
+				local b = _G["MultiBarBottomRightButton" .. i]
 				b:SetAlpha(0)
 				b:SetScale(0.000001)
 			end
 			for i = 7, 9 do
-				local b = _G["MultiBarBottomRightButton"..i]
+				local b = _G["MultiBarBottomRightButton" .. i]
 				b:SetAlpha(0)
 				b:SetScale(0.000001)
 			end
@@ -79,12 +75,12 @@ local function MainBars()
 			ToggleBar[3]:SetHeight(C["ActionBar"].ButtonSize * 2 + C["ActionBar"].ButtonSpace)
 			ToggleBar[4]:SetHeight(C["ActionBar"].ButtonSize * 2 + C["ActionBar"].ButtonSpace)
 			for i = 1, 3 do
-				local b = _G["MultiBarBottomRightButton"..i]
+				local b = _G["MultiBarBottomRightButton" .. i]
 				b:SetAlpha(1)
 				b:SetScale(1)
 			end
 			for i = 7, 9 do
-				local b = _G["MultiBarBottomRightButton"..i]
+				local b = _G["MultiBarBottomRightButton" .. i]
 				b:SetAlpha(1)
 				b:SetScale(1)
 			end
@@ -220,7 +216,7 @@ local function SplitBars()
 end
 
 for i = 1, 5 do
-	ToggleBar[i] = CreateFrame("Frame", "ToggleBar"..i, ToggleBar)
+	ToggleBar[i] = CreateFrame("Frame", "ToggleBar" .. i, ToggleBar)
 	ToggleBar[i]:EnableMouse(true)
 	ToggleBar[i]:SetAlpha(0)
 	ToggleBar[i].Text = ToggleBar[i]:CreateFontString(nil, "OVERLAY")
@@ -233,33 +229,36 @@ for i = 1, 5 do
 		ToggleBar[i]:SetTemplate("Transparent")
 		ToggleBarText(i, "- - -", false, true)
 
-		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then
-				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
-				return
-			end
-			KkthnxUIData[K.Realm][K.Name].BottomBars = KkthnxUIData[K.Realm][K.Name].BottomBars + 1
+		ToggleBar[i]:SetScript(
+			"OnMouseDown",
+			function()
+				if InCombatLockdown() then
+					K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+					return
+				end
+				KkthnxUIData[K.Realm][K.Name].BottomBars = KkthnxUIData[K.Realm][K.Name].BottomBars + 1
 
-			if C["ActionBar"].RightBars > 2 then
-				if KkthnxUIData[K.Realm][K.Name].BottomBars > 2 then
-					KkthnxUIData[K.Realm][K.Name].BottomBars = 1
+				if C["ActionBar"].RightBars > 2 then
+					if KkthnxUIData[K.Realm][K.Name].BottomBars > 2 then
+						KkthnxUIData[K.Realm][K.Name].BottomBars = 1
+					end
+				elseif C["ActionBar"].RightBars < 3 and C["ActionBar"].SplitBars ~= true then
+					if KkthnxUIData[K.Realm][K.Name].BottomBars > 3 then
+						KkthnxUIData[K.Realm][K.Name].BottomBars = 1
+					elseif KkthnxUIData[K.Realm][K.Name].BottomBars > 2 then
+						KkthnxUIData[K.Realm][K.Name].BottomBars = 3
+					elseif KkthnxUIData[K.Realm][K.Name].BottomBars < 1 then
+						KkthnxUIData[K.Realm][K.Name].BottomBars = 3
+					end
+				elseif C["ActionBar"].RightBars < 3 and C["ActionBar"].SplitBars == true then
+					if KkthnxUIData[K.Realm][K.Name].BottomBars > 2 then
+						KkthnxUIData[K.Realm][K.Name].BottomBars = 1
+					end
 				end
-			elseif C["ActionBar"].RightBars < 3 and C["ActionBar"].SplitBars ~= true then
-				if KkthnxUIData[K.Realm][K.Name].BottomBars > 3 then
-					KkthnxUIData[K.Realm][K.Name].BottomBars = 1
-				elseif KkthnxUIData[K.Realm][K.Name].BottomBars > 2 then
-					KkthnxUIData[K.Realm][K.Name].BottomBars = 3
-				elseif KkthnxUIData[K.Realm][K.Name].BottomBars < 1 then
-					KkthnxUIData[K.Realm][K.Name].BottomBars = 3
-				end
-			elseif C["ActionBar"].RightBars < 3 and C["ActionBar"].SplitBars == true then
-				if KkthnxUIData[K.Realm][K.Name].BottomBars > 2 then
-					KkthnxUIData[K.Realm][K.Name].BottomBars = 1
-				end
-			end
 
-			MainBars()
-		end)
+				MainBars()
+			end
+		)
 		ToggleBar[i]:SetScript("OnEvent", MainBars)
 	elseif i == 2 then
 		ToggleBar[i]:SetSize(RightActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5)
@@ -268,60 +267,70 @@ for i = 1, 5 do
 		ToggleBar[i]:SetFrameStrata("LOW")
 		ToggleBarText(i, "> > >", false, true)
 
-		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then
-				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
-				return
-			end
-			KkthnxUIData[K.Realm][K.Name].RightBars = KkthnxUIData[K.Realm][K.Name].RightBars - 1
-
-			if C["ActionBar"].RightBars > 2 then
-				if KkthnxUIData[K.Realm][K.Name].RightBars > 3 then
-					KkthnxUIData[K.Realm][K.Name].RightBars = 2
-				elseif KkthnxUIData[K.Realm][K.Name].RightBars > 2 then
-					KkthnxUIData[K.Realm][K.Name].RightBars = 1
-				elseif KkthnxUIData[K.Realm][K.Name].RightBars < 0 then
-					KkthnxUIData[K.Realm][K.Name].RightBars = 3
+		ToggleBar[i]:SetScript(
+			"OnMouseDown",
+			function()
+				if InCombatLockdown() then
+					K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+					return
 				end
-			elseif C["ActionBar"].RightBars < 3 then
-				if KkthnxUIData[K.Realm][K.Name].RightBars > 2 then
-					KkthnxUIData[K.Realm][K.Name].RightBars = 1
-				elseif KkthnxUIData[K.Realm][K.Name].RightBars < 0 then
-					KkthnxUIData[K.Realm][K.Name].RightBars = 2
-				end
-			end
+				KkthnxUIData[K.Realm][K.Name].RightBars = KkthnxUIData[K.Realm][K.Name].RightBars - 1
 
-			RightBars()
-		end)
+				if C["ActionBar"].RightBars > 2 then
+					if KkthnxUIData[K.Realm][K.Name].RightBars > 3 then
+						KkthnxUIData[K.Realm][K.Name].RightBars = 2
+					elseif KkthnxUIData[K.Realm][K.Name].RightBars > 2 then
+						KkthnxUIData[K.Realm][K.Name].RightBars = 1
+					elseif KkthnxUIData[K.Realm][K.Name].RightBars < 0 then
+						KkthnxUIData[K.Realm][K.Name].RightBars = 3
+					end
+				elseif C["ActionBar"].RightBars < 3 then
+					if KkthnxUIData[K.Realm][K.Name].RightBars > 2 then
+						KkthnxUIData[K.Realm][K.Name].RightBars = 1
+					elseif KkthnxUIData[K.Realm][K.Name].RightBars < 0 then
+						KkthnxUIData[K.Realm][K.Name].RightBars = 2
+					end
+				end
+
+				RightBars()
+			end
+		)
 		ToggleBar[i]:SetScript("OnEvent", RightBars)
 	elseif i == 3 then
 		if C["ActionBar"].SplitBars == true and C["ActionBar"].RightBars ~= 3 then
-			ToggleBar[i]:CreatePanel("Transparent", C["ActionBar"].ButtonSize / 1.5, ActionBarAnchor:GetHeight(), "BOTTOMLEFT", SplitBarRight, "BOTTOMRIGHT", C["ActionBar"].ButtonSpace, 0)
+			ToggleBar[i]:SetSize(C["ActionBar"].ButtonSize / 1.5, ActionBarAnchor:GetHeight())
+			ToggleBar[i]:SetPoint("BOTTOMLEFT", SplitBarRight, "BOTTOMRIGHT", C["ActionBar"].ButtonSpace, 0)
+			ToggleBar[i]:SetTemplate("Transparent")
 			ToggleBarText(i, "<\n<", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarRight:GetFrameLevel() + 1)
 		end
 	elseif i == 4 then
 		if C["ActionBar"].SplitBars == true and C["ActionBar"].RightBars ~= 3 then
-			ToggleBar[i]:CreatePanel("Transparent", C["ActionBar"].ButtonSize / 1.5, ActionBarAnchor:GetHeight(), "BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
+			ToggleBar[i]:SetSize(C["ActionBar"].ButtonSize / 1.5, ActionBarAnchor:GetHeight())
+			ToggleBar[i]:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
+			ToggleBar[i]:SetTemplate("Transparent")
 			ToggleBarText(i, ">\n>", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarLeft:GetFrameLevel() + 1)
 		end
 	end
 
 	if i == 3 or i == 4 then
-		ToggleBar[i]:SetScript("OnMouseDown", function()
-			if InCombatLockdown() then
-				K.Print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r")
-				return
-			end
+		ToggleBar[i]:SetScript(
+			"OnMouseDown",
+			function()
+				if InCombatLockdown() then
+					K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+					return
+				end
 
-			if KkthnxUIData[K.Realm][K.Name].SplitBars == false then
-				KkthnxUIData[K.Realm][K.Name].SplitBars = true
-			elseif KkthnxUIData[K.Realm][K.Name].SplitBars == true then
-				KkthnxUIData[K.Realm][K.Name].SplitBars = false
+				if KkthnxUIData[K.Realm][K.Name].SplitBars == false then
+					KkthnxUIData[K.Realm][K.Name].SplitBars = true
+				elseif KkthnxUIData[K.Realm][K.Name].SplitBars == true then
+					KkthnxUIData[K.Realm][K.Name].SplitBars = false
+				end
+				SplitBars()
 			end
-			SplitBars()
-		end)
+		)
 
 		ToggleBar[i]:SetScript("OnEvent", SplitBars)
 	end
@@ -330,51 +339,64 @@ for i = 1, 5 do
 	ToggleBar[i]:RegisterEvent("PLAYER_REGEN_DISABLED")
 	ToggleBar[i]:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-	ToggleBar[i]:SetScript("OnEnter", function()
-		if InCombatLockdown() then
-			return
-		end
+	ToggleBar[i]:SetScript(
+		"OnEnter",
+		function()
+			if InCombatLockdown() then
+				return
+			end
 
-		if i == 2 then
-			ToggleBar[i]:SetFadeIn()
-		elseif i == 3 or i == 4 then
-			ToggleBar[3]:SetFadeIn()
-			ToggleBar[4]:SetFadeIn()
-			VehicleButtonAnchor:ClearAllPoints()
-			VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
-		else
-			ToggleBar[i]:SetFadeIn()
-		end
-	end)
-
-	ToggleBar[i]:SetScript("OnLeave", function()
-		if i == 2 then
-			ToggleBar[i]:SetFadeOut()
-		elseif i == 3 or i == 4 then
-			if InCombatLockdown() then return end
-			ToggleBar[3]:SetFadeOut()
-			ToggleBar[4]:SetFadeOut()
-			VehicleButtonAnchor:ClearAllPoints()
-			if KkthnxUIData[K.Realm][K.Name].SplitBars == true then
-				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
+			if i == 2 then
+				ToggleBar[i]:SetFadeIn()
+			elseif i == 3 or i == 4 then
+				ToggleBar[3]:SetFadeIn()
+				ToggleBar[4]:SetFadeIn()
+				VehicleButtonAnchor:ClearAllPoints()
+				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ToggleBar[4], "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
 			else
-				VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
+				ToggleBar[i]:SetFadeIn()
 			end
-		else
-			ToggleBar[i]:SetFadeOut()
 		end
-	end)
+	)
 
-	ToggleBar[i]:SetScript("OnUpdate", function()
-		if InCombatLockdown() then return end
-		if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
-			for i = 1, 4 do
-				ToggleBar[i]:EnableMouse(false)
-			end
-		elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
-			for i = 1, 4 do
-				ToggleBar[i]:EnableMouse(true)
+	ToggleBar[i]:SetScript(
+		"OnLeave",
+		function()
+			if i == 2 then
+				ToggleBar[i]:SetFadeOut()
+			elseif i == 3 or i == 4 then
+				if InCombatLockdown() then
+					return
+				end
+				ToggleBar[3]:SetFadeOut()
+				ToggleBar[4]:SetFadeOut()
+				VehicleButtonAnchor:ClearAllPoints()
+				if KkthnxUIData[K.Realm][K.Name].SplitBars == true then
+					VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
+				else
+					VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
+				end
+			else
+				ToggleBar[i]:SetFadeOut()
 			end
 		end
-	end)
+	)
+
+	ToggleBar[i]:SetScript(
+		"OnUpdate",
+		function()
+			if InCombatLockdown() then
+				return
+			end
+			if KkthnxUIData[K.Realm][K.Name].BarsLocked == true then
+				for i = 1, 4 do
+					ToggleBar[i]:EnableMouse(false)
+				end
+			elseif KkthnxUIData[K.Realm][K.Name].BarsLocked == false then
+				for i = 1, 4 do
+					ToggleBar[i]:EnableMouse(true)
+				end
+			end
+		end
+	)
 end

@@ -11,7 +11,6 @@ end
 local _G = _G
 local string_format = string.format
 local table_insert = table.insert
-local tostring = tostring
 local unpack = unpack
 local pairs = pairs
 local select = _G.select
@@ -97,35 +96,35 @@ function Module:ThreatPlate(forced)
 			if (threatStatus == 3) then
 				if (K.GetPlayerRole() == "TANK") then
 					self.Health:SetStatusBarColor(
-						C["Nameplates"].GoodColor[1],
-						C["Nameplates"].GoodColor[2],
-						C["Nameplates"].GoodColor[3]
+					C["Nameplates"].GoodColor[1],
+					C["Nameplates"].GoodColor[2],
+					C["Nameplates"].GoodColor[3]
 					)
 				else
 					self.Health:SetStatusBarColor(
-						C["Nameplates"].BadColor[1],
-						C["Nameplates"].BadColor[2],
-						C["Nameplates"].BadColor[3]
+					C["Nameplates"].BadColor[1],
+					C["Nameplates"].BadColor[2],
+					C["Nameplates"].BadColor[3]
 					)
 				end
 			elseif (threatStatus == 2) then
 				self.Health:SetStatusBarColor(
-					C["Nameplates"].NearColor[1],
-					C["Nameplates"].NearColor[2],
-					C["Nameplates"].NearColor[3]
+				C["Nameplates"].NearColor[1],
+				C["Nameplates"].NearColor[2],
+				C["Nameplates"].NearColor[3]
 				)
 			elseif (threatStatus == 1) then
 				self.Health:SetStatusBarColor(
-					C["Nameplates"].NearColor[1],
-					C["Nameplates"].NearColor[2],
-					C["Nameplates"].NearColor[3]
+				C["Nameplates"].NearColor[1],
+				C["Nameplates"].NearColor[2],
+				C["Nameplates"].NearColor[3]
 				)
 			elseif (threatStatus == 0) then
 				if (K.GetPlayerRole() == "TANK") then
 					self.Health:SetStatusBarColor(
-						C["Nameplates"].BadColor[1],
-						C["Nameplates"].BadColor[2],
-						C["Nameplates"].BadColor[3]
+					C["Nameplates"].BadColor[1],
+					C["Nameplates"].BadColor[2],
+					C["Nameplates"].BadColor[3]
 					)
 					if IsInGroup() or IsInRaid() then
 						for i = 1, GetNumGroupMembers() do
@@ -133,9 +132,9 @@ function Module:ThreatPlate(forced)
 								local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit)
 								if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
 									self.Health:SetStatusBarColor(
-										C["Nameplates"].OffTankColor[1],
-										C["Nameplates"].OffTankColor[2],
-										C["Nameplates"].OffTankColor[3]
+									C["Nameplates"].OffTankColor[1],
+									C["Nameplates"].OffTankColor[2],
+									C["Nameplates"].OffTankColor[3]
 									)
 								end
 							end
@@ -143,9 +142,9 @@ function Module:ThreatPlate(forced)
 					end
 				else
 					self.Health:SetStatusBarColor(
-						C["Nameplates"].GoodColor[1],
-						C["Nameplates"].GoodColor[2],
-						C["Nameplates"].GoodColor[3]
+					C["Nameplates"].GoodColor[1],
+					C["Nameplates"].GoodColor[2],
+					C["Nameplates"].GoodColor[3]
 					)
 				end
 			end
@@ -189,11 +188,11 @@ end
 
 function Module:CustomCastDelayText(duration)
 	local Value =
-		string_format(
-		"%.1f |cffaf5050%s %.1f|r",
-		self.channeling and duration or self.max - duration,
-		self.channeling and "- " or "+",
-		self.delay
+	string_format(
+	"%.1f |cffaf5050%s %.1f|r",
+	self.channeling and duration or self.max - duration,
+	self.channeling and "- " or "+",
+	self.delay
 	)
 
 	self.Time:SetText(Value)
@@ -265,25 +264,7 @@ function Module:CreateAuraTimer(elapsed)
 	end
 end
 
-function Module:CancelPlayerBuff()
-	if InCombatLockdown() then
-		return
-	end
-
-	CancelUnitBuff("player", self.index)
-end
-
 function Module:PostCreateAura(button)
-	local isCancellable = button:GetParent().isCancellable
-
-	if isCancellable then
-		local Name = button:GetName()
-		local Index = tonumber(Name:gsub("%D", ""))
-
-		button.index = Index
-		button:SetScript("OnMouseUp", Module.CancelPlayerBuff)
-	end
-
 	if button:GetName():match("NamePlate") then
 		button:CreateShadow()
 
@@ -462,140 +443,95 @@ function Module:CreateAuraWatch(frame)
 end
 
 function Module:GetPartyFramesAttributes()
-	local PartyProperties =
-		C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
+	local PartyProperties = C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
 
-	return "oUF_Party", nil, PartyProperties, "oUF-initialConfigFunction", [[
+	return
+	"oUF_Party", nil, PartyProperties,
+	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))
-	]], "initial-width", 140, "initial-height", 38, "showSolo", false, "showParty", true, "showPlayer", C[
-		"Unitframe"
-	].ShowPlayer, "showRaid", false, "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8", "groupingOrder", "TANK, HEALER, DAMAGER, NONE", "groupBy", "ASSIGNEDROLE", "yOffset", -44
+	self:SetHeight(header:GetAttribute("initial-height"))]],
+	"initial-width", 140,
+	"initial-height", 38,
+	"showSolo", false,
+	"showParty", true,
+	"showPlayer", C["Unitframe"].ShowPlayer,
+	"showRaid", false,
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"groupBy",
+	"ASSIGNEDROLE",
+	"yOffset", -44
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local Raid = {}
-	for i = 1, C["Raidframe"].RaidGroups do
-		local RaidDamage =
-			oUF:SpawnHeader(
-			"oUF_RaidDamage" .. i,
-			nil,
-			C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
-			"oUF-initialConfigFunction",
-			[[
-		local header = self:GetParent()
-		self:SetWidth(header:GetAttribute("initial-width"))
-		self:SetHeight(header:GetAttribute("initial-height"))
-		]],
-			"initial-width",
-			C["Raidframe"].Width,
-			"initial-height",
-			C["Raidframe"].Height,
-			"showParty",
-			true,
-			"showRaid",
-			true,
-			"showPlayer",
-			true,
-			"showSolo",
-			false,
-			"yOffset",
-			-6,
-			"point",
-			"TOPLEFT",
-			"groupFilter",
-			tostring(i),
-			"groupBy",
-			C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
-			"groupingOrder",
-			C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
-			"sortMethod",
-			C["Raidframe"].GroupBy.Value and "NAME",
-			"maxColumns",
-			10,
-			"unitsPerColumn",
-			1,
-			"columnSpacing",
-			6,
-			"columnAnchorPoint",
-			"TOP"
-		)
-		if i == 1 then
-			RaidDamage:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -90)
-		elseif i == 5 then
-			RaidDamage:SetPoint("TOPLEFT", Raid[1], "TOPRIGHT", 7, 0)
-		else
-			RaidDamage:SetPoint("TOPLEFT", Raid[i - 1], "BOTTOMLEFT", 0, -7)
-		end
-		Movers:RegisterFrame(RaidDamage)
-		Raid[i] = RaidDamage
-	end
+	local DamageRaidProperties = C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
+
+	return
+	"DamageRaid", nil, DamageRaidProperties,
+	"oUF-initialConfigFunction", [[
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
+	]],
+	"initial-width", K.Scale(66),
+	"initial-height", K.Scale(50),
+	"showParty", true,
+	"showRaid", true,
+	"showPlayer", true,
+	"showSolo", false,
+	"xoffset", K.Scale(4),
+	"yOffset", K.Scale(-4),
+	"point", "TOP",
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupBy", C["Raidframe"].GroupBy.Value,
+	"maxColumns", math.ceil(40 / 5),
+	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn,
+	"columnSpacing", K.Scale(4),
+	"columnAnchorPoint", "LEFT"
 end
 
 function Module:GetHealerRaidFramesAttributes()
-	local Raid = {}
-	for i = 1, C["Raidframe"].RaidGroups do
-		local RaidHealer =
-			oUF:SpawnHeader(
-			"oUF_RaidHealer" .. i,
-			nil,
-			C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide",
-			"oUF-initialConfigFunction",
-			[[
-		local header = self:GetParent()
-		self:SetWidth(header:GetAttribute("initial-width"))
-		self:SetHeight(header:GetAttribute("initial-height"))
-		]],
-			"initial-width",
-			C["Raidframe"].Width,
-			"initial-height",
-			C["Raidframe"].Height,
-			"showParty",
-			true,
-			"showRaid",
-			true,
-			"showPlayer",
-			true,
-			"showSolo",
-			false,
-			"groupFilter",
-			tostring(i),
-			"groupBy",
-			C["Raidframe"].GroupBy.Value and "ASSIGNEDROLE",
-			"groupingOrder",
-			C["Raidframe"].GroupBy.Value and "TANK, HEALER, DAMAGER, NONE",
-			"sortMethod",
-			C["Raidframe"].GroupBy.Value and "NAME",
-			"point",
-			"LEFT",
-			"maxColumns",
-			10,
-			"unitsPerColumn",
-			1,
-			"columnSpacing",
-			6,
-			"columnAnchorPoint",
-			"LEFT"
-		)
-		if i == 1 then
-			RaidHealer:SetPoint("TOPLEFT", AnchorPlayer, "BOTTOMRIGHT", 11, -12)
-			Movers:RegisterFrame(RaidHealer)
-		else
-			-- Changing this to use CENTER for its own anchoring point,
-			-- to avoid headers with no units and zero width being positioned wrongly.
-			RaidHealer:SetPoint("CENTER", Raid[i - 1], "CENTER", 0, -(7 + 28))
-		end
-		Movers:RegisterFrame(RaidHealer, i > 1 and Raid[1])
-		Raid[i] = RaidHealer
-	end
+	local HealerRaidProperties = C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
+
+	return "HealerRaid", nil, HealerRaidProperties,
+	"oUF-initialConfigFunction", [[
+	local header = self:GetParent()
+	self:SetWidth(header:GetAttribute("initial-width"))
+	self:SetHeight(header:GetAttribute("initial-height"))
+	]],
+	"initial-width", K.Scale(66),
+	"initial-height", K.Scale(50),
+	"showParty", true,
+	"showRaid", true,
+	"showPlayer", true,
+	"showSolo", false,
+	"xoffset", K.Scale(4),
+	"yOffset", K.Scale(-4),
+	"point", "TOP",
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupBy", C["Raidframe"].GroupBy.Value,
+	"maxColumns", math.ceil(40 / 5),
+	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn,
+	"columnSpacing", K.Scale(4),
+	"columnAnchorPoint", "LEFT"
 end
 
 function Module:GetMainTankAttributes()
-	return "oUF_MainTank", nil, "raid", "oUF-initialConfigFunction", [[
+	return
+	"oUF_MainTank", nil, "raid",
+	"oUF-initialConfigFunction", [[
 	self:SetWidth(70)
 	self:SetHeight(32)
-	]], "showRaid", true, "yOffset", -8, "groupFilter", "MAINTANK, MAINASSIST", "groupBy", "ROLE", "groupingOrder", "MAINTANK, MAINASSIST", "template", "oUF_MainTank"
+	]],
+	"showRaid", true,
+	"yOffset", -8,
+	"groupFilter", "MAINTANK, MAINASSIST",
+	"groupBy", "ROLE",
+	"groupingOrder", "MAINTANK, MAINASSIST",
+	"template", "oUF_MainTank"
 end
 
 function Module:CreateStyle(unit)
@@ -704,12 +640,15 @@ function Module:CreateUnits()
 		end
 
 		if (C["Raidframe"].Enable) then
+			local DamageRaid = oUF:SpawnHeader(Module:GetDamageRaidFramesAttributes())
+			local HealerRaid = oUF:SpawnHeader(Module:GetHealerRaidFramesAttributes())
+
 			if C["Raidframe"].RaidLayout.Value == "Healer" then
-				Module:GetHealerRaidFramesAttributes()
+				HealerRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			elseif C["Raidframe"].RaidLayout.Value == "Damage" then
-				Module:GetDamageRaidFramesAttributes()
+				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			else
-				Module:GetDamageRaidFramesAttributes() -- Return DAMAGER layout if nothing else.
+				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			end
 
 			if C["Raidframe"].MainTankFrames then
@@ -723,6 +662,9 @@ function Module:CreateUnits()
 				end
 				Movers:RegisterFrame(MainTank)
 			end
+
+			Movers:RegisterFrame(DamageRaid)
+			Movers:RegisterFrame(HealerRaid)
 		end
 
 		Movers:RegisterFrame(Player)
