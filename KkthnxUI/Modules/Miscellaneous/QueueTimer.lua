@@ -1,6 +1,8 @@
-local K, C, L = unpack(select(2, ...))
-if K.CheckAddOnState("DBM-Core") or K.CheckAddOnState("BigWigs") then return end
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("QueueTimer", "AceEvent-3.0")
+if K.CheckAddOnState("DBM-Core") or K.CheckAddOnState("BigWigs") then
+	return
+end
 
 -- Sourced: LFG_ProposalTime (Freebaser)
 
@@ -26,7 +28,12 @@ function Module:LFG_PROPOSAL_SHOW()
 
 		local bg = timerBar:CreateTexture(nil, "BACKGROUND")
 		bg:SetAllPoints(timerBar)
-		bg:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		bg:SetColorTexture(
+			C["Media"].BackdropColor[1],
+			C["Media"].BackdropColor[2],
+			C["Media"].BackdropColor[3],
+			C["Media"].BackdropColor[4]
+		)
 
 		local spark = timerBar:CreateTexture(nil, "OVERLAY")
 		spark:SetTexture(C["Media"].Spark_128)
@@ -54,13 +61,16 @@ function Module:LFG_PROPOSAL_SHOW()
 		end
 		self:LFG_PROPOSAL_SHOW()
 
-		timerBar:SetScript("OnUpdate", function(f)
-			local timeLeft = prev - GetTime()
-			if timeLeft > 0 then
-				f:SetValue(timeLeft)
-				f.text:SetFormattedText("%.1f", timeLeft)
+		timerBar:SetScript(
+			"OnUpdate",
+			function(f)
+				local timeLeft = prev - GetTime()
+				if timeLeft > 0 then
+					f:SetValue(timeLeft)
+					f.text:SetFormattedText("%.1f", timeLeft)
+				end
 			end
-		end)
+		)
 	end
 end
 

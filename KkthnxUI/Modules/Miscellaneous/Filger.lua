@@ -20,7 +20,6 @@ local UnitBuff = _G.UnitBuff
 local UnitDebuff = _G.UnitDebuff
 
 local Movers = K["Movers"]
-local FilgerFont = K.GetFont(C["Filger"].Font)
 local FilgerTexture = K.GetTexture(C["Filger"].Texture)
 
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
@@ -84,8 +83,20 @@ end
 function Filger:UnitBuff(unitID, inSpellID, spn, absID)
 	if absID then
 		for i = 1, 40, 1 do
-			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID = UnitBuff(unitID, i)
-			if not name then break end
+			local name,
+				rank,
+				icon,
+				count,
+				debuffType,
+				duration,
+				expirationTime,
+				unitCaster,
+				isStealable,
+				shouldConsolidate,
+				spellID = UnitBuff(unitID, i)
+			if not name then
+				break
+			end
 			if inSpellID == spellID then
 				return name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
 			end
@@ -99,8 +110,20 @@ end
 function Filger:UnitDebuff(unitID, inSpellID, spn, absID)
 	if absID then
 		for i = 1, 40, 1 do
-			local name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID = UnitDebuff(unitID, i)
-			if not name then break end
+			local name,
+				rank,
+				icon,
+				count,
+				debuffType,
+				duration,
+				expirationTime,
+				unitCaster,
+				isStealable,
+				shouldConsolidate,
+				spellID = UnitDebuff(unitID, i)
+			if not name then
+				break
+			end
 			if inSpellID == spellID then
 				return name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
 			end
@@ -145,7 +168,7 @@ function Filger:DisplayActives()
 	for _, _ in pairs(self.actives) do
 		local bar = self.bars[index]
 		if not bar then
-			bar = CreateFrame("Frame", "FilgerAnchor"..id.."Frame"..index, self)
+			bar = CreateFrame("Frame", "FilgerAnchor" .. id .. "Frame" .. index, self)
 			bar:SetScale(1)
 			bar:SetTemplate("Transparent")
 
@@ -155,9 +178,21 @@ function Filger:DisplayActives()
 				if self.Direction == "UP" then
 					bar:SetPoint("BOTTOM", previous, "TOP", 0, self.Interval + 2)
 				elseif self.Direction == "RIGHT" then
-					bar:SetPoint("LEFT", previous, "RIGHT", self.Mode == "ICON" and self.Interval + 2 or (self.BarWidth + self.Interval + 7), 0)
+					bar:SetPoint(
+						"LEFT",
+						previous,
+						"RIGHT",
+						self.Mode == "ICON" and self.Interval + 2 or (self.BarWidth + self.Interval + 7),
+						0
+					)
 				elseif self.Direction == "LEFT" then
-					bar:SetPoint("RIGHT", previous, "LEFT", self.Mode == "ICON" and -self.Interval - 2 or -(self.BarWidth + self.Interval + 7), 0)
+					bar:SetPoint(
+						"RIGHT",
+						previous,
+						"LEFT",
+						self.Mode == "ICON" and -self.Interval - 2 or -(self.BarWidth + self.Interval + 7),
+						0
+					)
 				else
 					bar:SetPoint("TOP", previous, "BOTTOM", 0, -self.Interval - 2)
 				end
@@ -236,7 +271,12 @@ function Filger:DisplayActives()
 					bar.background = bar.statusbar:CreateTexture(nil, "BACKGROUND")
 					bar.background:SetAllPoints()
 					bar.background:SetTexture(C["Media"].Blank)
-					bar.background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+					bar.background:SetVertexColor(
+						C["Media"].BackdropColor[1],
+						C["Media"].BackdropColor[2],
+						C["Media"].BackdropColor[3],
+						C["Media"].BackdropColor[4]
+					)
 				end
 
 				if bar.time then
@@ -273,18 +313,22 @@ function Filger:DisplayActives()
 		index = index + 1
 	end
 
-	if not self.sortedIndex then self.sortedIndex = {} end
+	if not self.sortedIndex then
+		self.sortedIndex = {}
+	end
 
 	for n in pairs(self.sortedIndex) do
 		self.sortedIndex[n] = 999
 	end
 
 	local activeCount = 1
-	local limit = (C["ActionBar"].ButtonSize * 12)/self.IconSize
+	local limit = (C["ActionBar"].ButtonSize * 12) / self.IconSize
 	for n in pairs(self.actives) do
 		self.sortedIndex[activeCount] = n
 		activeCount = activeCount + 1
-		if activeCount > limit then activeCount = limit end
+		if activeCount > limit then
+			activeCount = limit
+		end
 	end
 	table.sort(self.sortedIndex)
 
@@ -355,14 +399,21 @@ function Filger:DisplayActives()
 end
 
 function Filger:OnEvent(event, unit, _, _, _, spellID)
-	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_AURA" and (unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
+	if
+		event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or
+			event == "PLAYER_ENTERING_WORLD" or
+			event == "UNIT_AURA" and (unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or
+			(event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player")
+	 then
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
 
 		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
 			local data = C["FilgerSpells"][K.Class][id][i]
-			if C["Filger"].DisableCD == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then return end
+			if C["Filger"].DisableCD == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then
+				return
+			end
 			local found = false
 			local name, icon, count, duration, start, spid
 			spid = 0
@@ -371,7 +422,8 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 				local caster, spn, expirationTime
 				spn, _, _ = GetSpellInfo(data.spellID)
 				if spn then
-					name, _, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitBuff(data.unitID, data.spellID, spn, data.absID)
+					name, _, icon, count, _, duration, expirationTime, caster, _, _, spid =
+						Filger:UnitBuff(data.unitID, data.spellID, spn, data.absID)
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						if not data.count or count >= data.count then
 							start = expirationTime - duration
@@ -383,7 +435,8 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 				local caster, spn, expirationTime
 				spn, _, _ = GetSpellInfo(data.spellID)
 				if spn then
-					name, _, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitDebuff(data.unitID, data.spellID, spn, data.absID)
+					name, _, icon, count, _, duration, expirationTime, caster, _, _, spid =
+						Filger:UnitDebuff(data.unitID, data.spellID, spn, data.absID)
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						start = expirationTime - duration
 						found = true
@@ -442,15 +495,28 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 			end
 
 			if found then
-				if not self.actives then self.actives = {} end
+				if not self.actives then
+					self.actives = {}
+				end
 				if not self.actives[i] then
-					self.actives[i] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid}
+					self.actives[i] = {
+						data = data,
+						name = name,
+						icon = icon,
+						count = count,
+						start = start,
+						duration = duration,
+						spid = spid
+					}
 					needUpdate = true
 					if K.Class == "DEATHKNIGHT" and self.actives[i].duration == 10 and data.filter == "CD" then
 						self.actives[i] = nil
 					end
 				else
-					if data.filter ~= "ICD" and (self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration) then
+					if
+						data.filter ~= "ICD" and
+							(self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration)
+					 then
 						self.actives[i].count = count
 						self.actives[i].start = start
 						self.actives[i].duration = duration
@@ -459,7 +525,9 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 				end
 			else
 				if data.filter ~= "ICD" and self.actives and self.actives[i] then
-					if event == "UNIT_SPELLCAST_SUCCEEDED" then return end
+					if event == "UNIT_SPELLCAST_SUCCEEDED" then
+						return
+					end
 					self.actives[i] = nil
 					needUpdate = true
 				end
@@ -547,7 +615,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 		end
 
 		if #data == 0 then
-			print("|cffff0000WARNING: section ["..data.Name.."] is empty! Report this to Kkthnx.|r")
+			print("|cffff0000WARNING: section [" .. data.Name .. "] is empty! Report this to Kkthnx.|r")
 			table.insert(idx, i)
 		end
 	end
@@ -558,7 +626,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 
 	for i = 1, #C["FilgerSpells"][K.Class], 1 do
 		local data = C["FilgerSpells"][K.Class][i]
-		local frame = CreateFrame("Frame", "FilgerFrame"..i.."_"..data.Name, oUF_PetBattleFrameHider)
+		local frame = CreateFrame("Frame", "FilgerFrame" .. i .. "_" .. data.Name, oUF_PetBattleFrameHider)
 		frame.Id = i
 		frame.Name = data.Name
 		frame.Direction = data.Direction or "DOWN"
@@ -584,7 +652,15 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 						name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
 					end
 				end
-				frame.actives[j] = {data = data, name = name, icon = icon, count = 9, start = 0, duration = 0, spid = data.spellID or data.slotID}
+				frame.actives[j] = {
+					data = data,
+					name = name,
+					icon = icon,
+					count = 9,
+					start = 0,
+					duration = 0,
+					spid = data.spellID or data.slotID
+				}
 			end
 			Filger.DisplayActives(frame)
 		else

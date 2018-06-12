@@ -26,7 +26,7 @@ function Module:CreateClassTotems(width, height, spacing)
 		totem:EnableMouse(true)
 
 		local icon = totem:CreateTexture(nil, "ARTWORK")
-		icon:SetSize(width -5, width -5)
+		icon:SetSize(width - 5, width - 5)
 		icon:SetPoint("TOP", totem, "BOTTOM", 0, -6)
 		icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 		icon:Hide()

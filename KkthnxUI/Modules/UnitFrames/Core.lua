@@ -474,21 +474,21 @@ function Module:GetDamageRaidFramesAttributes()
 	self:SetWidth(header:GetAttribute("initial-width"))
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
-	"initial-width", K.Scale(66),
-	"initial-height", K.Scale(50),
+	"initial-width", K.Scale(C["Raidframe"].Width),
+	"initial-height", K.Scale(C["Raidframe"].Height),
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"xoffset", K.Scale(4),
-	"yOffset", K.Scale(-4),
+	"xoffset", K.Scale(6),
+	"yOffset", K.Scale(-6),
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raidframe"].GroupBy.Value,
 	"maxColumns", math.ceil(40 / 5),
 	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn,
-	"columnSpacing", K.Scale(4),
+	"columnSpacing", K.Scale(6),
 	"columnAnchorPoint", "LEFT"
 end
 
@@ -501,21 +501,21 @@ function Module:GetHealerRaidFramesAttributes()
 	self:SetWidth(header:GetAttribute("initial-width"))
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
-	"initial-width", K.Scale(66),
-	"initial-height", K.Scale(50),
+	"initial-width", K.Scale(C["Raidframe"].Width),
+	"initial-height", K.Scale(C["Raidframe"].Height),
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"xoffset", K.Scale(4),
-	"yOffset", K.Scale(-4),
+	"xoffset", K.Scale(6),
+	"yOffset", K.Scale(-6),
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raidframe"].GroupBy.Value,
 	"maxColumns", math.ceil(40 / 5),
 	"unitsPerColumn", C["Raidframe"].MaxUnitPerColumn,
-	"columnSpacing", K.Scale(4),
+	"columnSpacing", K.Scale(6),
 	"columnAnchorPoint", "LEFT"
 end
 

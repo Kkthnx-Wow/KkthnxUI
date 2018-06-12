@@ -56,6 +56,17 @@ local UNKNOWN = _G.UNKNOWN
 
 -- GLOBALS: Hex, _TAGS
 
+local function Hex(r, g, b)
+	if (type(r) == "table") then
+		if (r.r) then
+			r, g, b = r.r, r.g, r.b
+		else
+			r, g, b = unpack(r)
+		end
+	end
+	return ("|cff%02x%02x%02x"):format(r * 255, g * 255, b * 255)
+end
+
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
 	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
@@ -80,7 +91,7 @@ oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 		local reaction = K.Colors.reaction[unitReaction]
 		return Hex(reaction[1], reaction[2], reaction[3])
 	else
-		return Hex(255/255, 255/255, 255/255)
+		return Hex(255 / 255, 255 / 255, 255 / 255)
 	end
 end
 
@@ -94,7 +105,7 @@ oUF.Tags.Methods["KkthnxUI:AltPowerCurrent"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:DifficultyColor"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Events["KkthnxUI:DifficultyColor"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CONNECTION"
 oUF.Tags.Methods["KkthnxUI:DifficultyColor"] = function(unit)
 	local r, g, b
 	if (UnitIsWildBattlePet(unit) or UnitIsBattlePetCompanion(unit)) then
@@ -138,7 +149,9 @@ end
 
 oUF.Tags.Events["KkthnxUI:HealthCurrent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent"] = function(unit)
-	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+	local status =
+		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -148,7 +161,9 @@ end
 
 oUF.Tags.Events["KkthnxUI:HealthPercent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
-	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+	local status =
+		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -156,9 +171,12 @@ oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] =
+	"UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
-	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+	local status =
+		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -168,7 +186,9 @@ end
 
 oUF.Tags.Events["KkthnxUI:HealthDeficit"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthDeficit"] = function(unit)
-	local status = UnitIsDead(unit) and "|cffFFFFFF"..DEAD.."|r" or UnitIsGhost(unit) and "|cffFFFFFF"..GHOST.."|r" or not UnitIsConnected(unit) and "|cffFFFFFF"..PLAYER_OFFLINE.."|r"
+	local status =
+		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -184,7 +204,7 @@ oUF.Tags.Methods["KkthnxUI:PowerCurrent"] = function(unit)
 	return min == 0 and nil or K.GetFormattedText("CURRENT", min, UnitPowerMax(unit, pType))
 end
 
-oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Events["KkthnxUI:Level"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CONNECTION"
 oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
 	if (UnitClassification(unit) == "worldboss") then
 		return
@@ -206,7 +226,7 @@ oUF.Tags.Methods["KkthnxUI:Level"] = function(unit)
 	return level
 end
 
-oUF.Tags.Events["KkthnxUI:SmartLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP"
+oUF.Tags.Events["KkthnxUI:SmartLevel"] = "UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CONNECTION"
 oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 	if not UnitExists(unit) then
 		return
@@ -217,32 +237,32 @@ oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 		return UnitBattlePetLevel(unit)
 	elseif level == UnitLevel("player") then
 		return nil
-	elseif(level > 0) then
+	elseif (level > 0) then
 		return level
 	else
 		return "??"
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local NameVeryShort = UnitName(unit) or UNKNOWN
 	return NameVeryShort ~= nil and K.ShortenString(NameVeryShort, 5, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local NameShort = UnitName(unit) or UNKNOWN
 	return NameShort ~= nil and K.ShortenString(NameShort, 10, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
 	local NameMedium = UnitName(unit) or UNKNOWN
 	return NameMedium ~= nil and K.ShortenString(NameMedium, 15, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	local NameLong = UnitName(unit) or UNKNOWN
 	return NameLong ~= nil and K.ShortenString(NameLong, 20, true) or ""
@@ -300,10 +320,14 @@ end
 oUF.Tags.Events["KkthnxUI:RaidStatus"] = "UNIT_MAXHEALTH UNIT_HEALTH_FREQUENT UNIT_CONNECTION"
 oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
 	local Offline = not UnitIsConnected(unit) and "offline"
-	if Offline then return Offline end
+	if Offline then
+		return Offline
+	end
 
 	local Dead = (UnitIsDead(unit) and "dead") or (UnitIsGhost(unit) and "ghost")
-	if Dead then return Dead end
+	if Dead then
+		return Dead
+	end
 
 	local MaxHealth = UnitHealthMax(unit)
 	local CurrentHealth = UnitHealth(unit)
@@ -311,8 +335,8 @@ oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
 	if CurrentHealth == MaxHealth or CurrentHealth == 0 or MaxHealth == 0 then
 		return
 	elseif UnitIsFriend("player", unit) then
-		return "-"..K.ShortValue(MaxHealth - CurrentHealth)
+		return "-" .. K.ShortValue(MaxHealth - CurrentHealth)
 	else
-		return string_format("%.1f", CurrentHealth / MaxHealth * 100).."%"
+		return string_format("%.1f", CurrentHealth / MaxHealth * 100) .. "%"
 	end
 end

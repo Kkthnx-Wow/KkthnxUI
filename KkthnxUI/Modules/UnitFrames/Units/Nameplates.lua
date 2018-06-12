@@ -163,6 +163,8 @@ function Module:CreateNameplates()
 	self.QuestIndicator:SetSize(14, 14)
 	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -7, 7)
 
+	Module.CreateClassModules(self, 194, 12, 6)
+
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)

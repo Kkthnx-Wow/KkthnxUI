@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["Announcements"].PullCountdown ~= true then return end
+if C["Announcements"].PullCountdown ~= true then
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -22,7 +24,7 @@ local function reset()
 	lastupdate = 0
 end
 
-local function pull(self, elapsed)
+local function pull(_, elapsed)
 	local tname = UnitName("target")
 	if tname then
 		target = tname
@@ -38,7 +40,7 @@ local function pull(self, elapsed)
 	if lastupdate >= interval then
 		lastupdate = 0
 		if delay > 0 then
-			SendChatMessage(tostring(delay).."..", K.CheckChat(true))
+			SendChatMessage(tostring(delay) .. "..", K.CheckChat(true))
 			delay = delay - 1
 		else
 			SendChatMessage("GO!", K.CheckChat(true))

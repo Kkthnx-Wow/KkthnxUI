@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Groups -->
     <Script file="Party.lua"/>
     <Include file="Raid.xml"/>

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local Module = K:NewModule("DurabilityFrame")
 
 local _G = _G
@@ -6,7 +6,7 @@ local _G = _G
 function Module:PositionDurabilityFrame()
 	DurabilityFrame:SetFrameStrata("HIGH")
 
-	local function SetPosition(self, _, parent)
+	local function SetPosition(_, _, parent)
 		if (parent == "MinimapCluster") or (parent == _G["MinimapCluster"]) then
 			DurabilityFrame:ClearAllPoints()
 			DurabilityFrame:SetPoint("RIGHT", Minimap, "RIGHT")

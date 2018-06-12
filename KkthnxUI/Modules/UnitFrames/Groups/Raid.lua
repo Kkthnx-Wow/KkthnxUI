@@ -33,7 +33,7 @@ local UnitThreatSituation = _G.UnitThreatSituation
 
 local roleIconTextures = {
 	TANK = [[Interface\AddOns\KkthnxUI\Media\Unitframes\tank.tga]],
-	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]],
+	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]]
 }
 
 local function UpdateGroupRole(self)
@@ -94,19 +94,25 @@ function Module:CreateRaid()
 	local RaidframeTexture = K.GetTexture(C["Raidframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:SetScript("OnEnter", function(self)
-		UnitFrame_OnEnter(self)
-		if (self.Mouseover) then
-			self.Mouseover:SetAlpha(0.2)
+	self:SetScript(
+		"OnEnter",
+		function(self)
+			UnitFrame_OnEnter(self)
+			if (self.Mouseover) then
+				self.Mouseover:SetAlpha(0.2)
+			end
 		end
-	end)
+	)
 
-	self:SetScript("OnLeave", function(self)
-		UnitFrame_OnLeave(self)
-		if (self.Mouseover) then
-			self.Mouseover:SetAlpha(0)
+	self:SetScript(
+		"OnLeave",
+		function(self)
+			UnitFrame_OnLeave(self)
+			if (self.Mouseover) then
+				self.Mouseover:SetAlpha(0)
+			end
 		end
-	end)
+	)
 
 	self:SetTemplate("Transparent", true)
 
@@ -236,7 +242,8 @@ function Module:CreateRaid()
 	end
 
 	self.ThreatIndicator = {}
-	self.ThreatIndicator.IsObjectType = function() end
+	self.ThreatIndicator.IsObjectType = function()
+	end
 	self.ThreatIndicator.Override = UpdateThreat
 
 	if (C["Raidframe"].ShowMouseoverHighlight) then
@@ -249,7 +256,9 @@ function Module:CreateRaid()
 
 	if (C["Raidframe"].TargetHighlight) then
 		self.TargetHighlight = CreateFrame("Frame", nil, self)
-		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
+		self.TargetHighlight:SetBackdrop(
+			{edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10}
+		)
 		self.TargetHighlight:SetPoint("TOPLEFT", -7, 7)
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", 7, -7)
 		self.TargetHighlight:SetFrameStrata("BACKGROUND")
@@ -264,7 +273,7 @@ function Module:CreateRaid()
 
 			if (UnitIsUnit("target", self.unit)) then
 				self.TargetHighlight:Show()
-				local reaction = UnitReaction(unit, 'player')
+				local reaction = UnitReaction(unit, "player")
 				if UnitIsPlayer(unit) then
 					local _, class = UnitClass(unit)
 					if class then

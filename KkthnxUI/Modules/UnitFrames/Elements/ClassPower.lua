@@ -13,8 +13,10 @@ local UnitPowerMax = _G.UnitPowerMax
 
 -- GLOBALS: SPELL_POWER_COMBO_POINTS
 
-local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged)
-	if (not maxPower or not maxPowerChanged) then return end
+local function PostUpdateClassPower(classPower, _, maxPower, maxPowerChanged)
+	if (not maxPower or not maxPowerChanged) then
+		return
+	end
 
 	local maxIndex = maxPower ~= 10 and maxPower or 5
 	local height = classPower.height
@@ -29,16 +31,16 @@ local function PostUpdateClassPower(classPower, power, maxPower, maxPowerChanged
 end
 
 local function UpdateClassPowerColor(element)
-	local r, g, b = 1, 1, 2/5
+	local r, g, b = 1, 1, 2 / 5
 	if (not UnitHasVehicleUI("player")) then
 		if (K.Class == "MONK") then
-			r, g, b = 0, 4/5, 3/5
+			r, g, b = 0, 4 / 5, 3 / 5
 		elseif (K.Class == "WARLOCK") then
-			r, g, b = 2/3, 1/3, 2/3
+			r, g, b = 2 / 3, 1 / 3, 2 / 3
 		elseif (K.Class == "PALADIN") then
-			r, g, b = 1, 1, 2/5
+			r, g, b = 1, 1, 2 / 5
 		elseif (K.Class == "MAGE") then
-			r, g, b = 5/6, 1/2, 5/6
+			r, g, b = 5 / 6, 1 / 2, 5 / 6
 		end
 	end
 

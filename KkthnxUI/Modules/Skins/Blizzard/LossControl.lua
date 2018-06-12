@@ -13,7 +13,7 @@ local function SkinLossOfControl()
 	local IconBackdrop = CreateFrame("Frame", nil, LossOfControlFrame)
 	IconBackdrop:SetTemplate()
 	IconBackdrop:SetAllPoints(LossOfControlFrame.Icon)
-	-- IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel() + 1)
+	IconBackdrop:SetFrameLevel(LossOfControlFrame:GetFrameLevel())
 	IconBackdrop:SetBackdropBorderColor(1, 0, 0, 1)
 
 	LossOfControlFrame.Icon:SetTexCoord(.1, .9, .1, .9)

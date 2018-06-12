@@ -62,7 +62,7 @@ function Module:CreateParty()
 	self.Power.frequentUpdates = true
 
 	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-		self.Portrait = CreateFrame("PlayerModel", self:GetName().."_3DPortrait", self)
+		self.Portrait = CreateFrame("PlayerModel", self:GetName() .. "_3DPortrait", self)
 		self.Portrait:SetTemplate("Transparent")
 		self.Portrait:SetFrameStrata("BACKGROUND")
 		self.Portrait:SetFrameLevel(1)
@@ -74,7 +74,7 @@ function Module:CreateParty()
 		self.Portrait:SetSize(32, 32)
 		self.Portrait:SetPoint("LEFT", self, 2, 0)
 
-		self.Portrait.Background = CreateFrame("Frame", self:GetName().."_2DPortrait", self)
+		self.Portrait.Background = CreateFrame("Frame", self:GetName() .. "_2DPortrait", self)
 		self.Portrait.Background:SetTemplate("Transparent")
 		self.Portrait.Background:SetFrameStrata("LOW")
 		self.Portrait.Background:SetFrameLevel(1)
@@ -99,7 +99,10 @@ function Module:CreateParty()
 	self.Level:SetPoint("BOTTOM", self.Portrait, "TOP", 0, 4)
 	self.Level:SetFontObject(UnitframeFont)
 	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
-	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
+	self:Tag(
+		self.Level,
+		"[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]"
+	)
 
 	Module.CreateAFKIndicator(self)
 	Module.CreateAssistantIndicator(self)
@@ -121,7 +124,7 @@ function Module:CreateParty()
 	self.Threat = {
 		Hide = K.Noop,
 		IsObjectType = K.Noop,
-		Override = Module.CreateThreatIndicator,
+		Override = Module.CreateThreatIndicator
 	}
 
 	self.Range = Module.CreateRange(self)

@@ -102,14 +102,14 @@ end
 local function getUnit(unit)
 	if not unit:find("party") or not unit:find("raid") then
 		for i = 1, 4 do
-			if UnitIsUnit(unit, "party"..i) then
-				return "party"..i
+			if UnitIsUnit(unit, "party" .. i) then
+				return "party" .. i
 			end
 		end
 
 		for i = 1, 40 do
-			if UnitIsUnit(unit, "raid"..i) then
-				return "raid"..i
+			if UnitIsUnit(unit, "raid" .. i) then
+				return "raid" .. i
 			end
 		end
 	else

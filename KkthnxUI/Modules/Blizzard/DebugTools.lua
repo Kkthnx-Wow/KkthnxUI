@@ -41,10 +41,13 @@ function Module:ModifyErrorFrame()
 	firstButton:SetText("First")
 	firstButton:SetHeight(BUTTON_HEIGHT)
 	firstButton:SetWidth(BUTTON_WIDTH)
-	firstButton:SetScript("OnClick", function()
-		ScriptErrorsFrame.index = 1
-		ScriptErrorsFrame:Update()
-	end)
+	firstButton:SetScript(
+		"OnClick",
+		function()
+			ScriptErrorsFrame.index = 1
+			ScriptErrorsFrame:Update()
+		end
+	)
 	ScriptErrorsFrame.firstButton = firstButton
 
 	-- Also add a Last button for errors
@@ -53,10 +56,13 @@ function Module:ModifyErrorFrame()
 	lastButton:SetHeight(BUTTON_HEIGHT)
 	lastButton:SetWidth(BUTTON_WIDTH)
 	lastButton:SetText("Last")
-	lastButton:SetScript("OnClick", function()
-		ScriptErrorsFrame.index = #(ScriptErrorsFrame.order)
-		ScriptErrorsFrame:Update()
-	end)
+	lastButton:SetScript(
+		"OnClick",
+		function()
+			ScriptErrorsFrame.index = #(ScriptErrorsFrame.order)
+			ScriptErrorsFrame:Update()
+		end
+	)
 	ScriptErrorsFrame.lastButton = lastButton
 end
 
@@ -67,7 +73,7 @@ function Module:ScriptErrorsFrame_UpdateButtons()
 		ScriptErrorsFrame.lastButton:Disable()
 		ScriptErrorsFrame.firstButton:Disable()
 	else
-		if ( numErrors == 1 ) then
+		if (numErrors == 1) then
 			ScriptErrorsFrame.lastButton:Disable()
 			ScriptErrorsFrame.firstButton:Disable()
 		else
@@ -78,7 +84,9 @@ function Module:ScriptErrorsFrame_UpdateButtons()
 end
 
 function Module:ScriptErrorsFrame_OnError(_, _, keepHidden)
-	if keepHidden or Module.MessagePrinted or not InCombatLockdown() or GetCVarBool("scriptErrors") ~= true then return end
+	if keepHidden or Module.MessagePrinted or not InCombatLockdown() or GetCVarBool("scriptErrors") ~= true then
+		return
+	end
 
 	K.Print(L["Blizzard"].Lua_Error_Recieved)
 	Module.MessagePrinted = true
@@ -94,8 +102,14 @@ function Module:PLAYER_REGEN_DISABLED()
 end
 
 function Module:TaintError(event, addonName, addonFunc)
-	if GetCVarBool("scriptErrors") ~= true or C["General"].TaintLog ~= true then return end
-	ScriptErrorsFrame:OnError(L["Blizzard"].Taint_Error:format(event, addonName or "<name>", addonFunc or "<func>"), false, false)
+	if GetCVarBool("scriptErrors") ~= true or C["General"].TaintLog ~= true then
+		return
+	end
+	ScriptErrorsFrame:OnError(
+		L["Blizzard"].Taint_Error:format(event, addonName or "<name>", addonFunc or "<func>"),
+		false,
+		false
+	)
 end
 
 function Module:StaticPopup_Show(name)

@@ -1,6 +1,8 @@
-local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("VehicleSeat", "AceEvent-3.0")
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
 -- Wow Lua
 local _G = _G
@@ -20,7 +22,9 @@ function Module:PositionVehicleFrame()
 	VehicleSeatIndicator:SetScale(0.8)
 
 	-- This will block UIParent_ManageFramePositions() to be executed
-	VehicleSeatIndicator.IsShown = function() return false end
+	VehicleSeatIndicator.IsShown = function()
+		return false
+	end
 
 	K.Movers:RegisterFrame(VehicleSeatMover)
 end

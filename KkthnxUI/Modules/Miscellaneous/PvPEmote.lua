@@ -1,7 +1,7 @@
-local K = unpack(select(2, ...))
---if C.Misc.PvPEmote ~= true then
---	return
---end
+local K, C = unpack(select(2, ...))
+if C.Misc.PvPEmote ~= true then
+	return
+end
 
 local Module = K:NewModule("PvPEmote", "AceEvent-3.0")
 
@@ -12,6 +12,7 @@ local select = select
 
 local DoEmote = _G.DoEmote
 local GetAchievementInfo = _G.GetAchievementInfo
+local unitFilter = _G.COMBATLOG_OBJECT_CONTROL_PLAYER
 
 local PVPEmotes = {
 	"BARK",
@@ -64,9 +65,8 @@ local PVPEmotes = {
 	"YAWN"
 }
 
-local unitFilter = COMBATLOG_OBJECT_CONTROL_PLAYER
 function Module:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
-	local _, _, subEvent, sourceGUID, _, _, _, _, destName, destFlags = ...
+	local _, subEvent, _, sourceGUID, _, _, _, _, destName, destFlags = ...
 
 	local alreadyHugged
 	if (subEvent == "PARTY_KILL") and (sourceGUID == K.GUID) and (bit_band(destFlags, unitFilter) > 0) then
@@ -84,6 +84,6 @@ function Module:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 	end
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 end

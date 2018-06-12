@@ -1,13 +1,13 @@
-local K, C, L = unpack(select(2, ...))
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: TimerTracker
-
-local BlizzTimerFont = K.GetFont(C["Unitframe"].Font)
-local BlizzTimerTexture = K.GetTexture(C["Unitframe"].Texture)
+local K, C = unpack(select(2, ...))
+local Module = K:NewModule("TimerTracker", "AceEvent-3.0")
+if C["Unitframe"].Enable ~= true then
+	return
+end
 
 -- Timer tracker
 local function SkinIt(bar)
+	local BlizzTimerTexture = K.GetTexture(C["Unitframe"].Texture)
+
 	for i = 1, bar:GetNumRegions() do
 		local region = select(i, bar:GetRegions())
 
@@ -21,7 +21,7 @@ local function SkinIt(bar)
 
 	bar:SetSize(222, 24)
 	bar:SetStatusBarTexture(BlizzTimerTexture)
-	bar:SetStatusBarColor(170/255, 10/255, 10/255)
+	bar:SetStatusBarColor(170 / 255, 10 / 255, 10 / 255)
 	bar:SetTemplate("Transparent", true)
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
@@ -33,7 +33,9 @@ local function SkinIt(bar)
 end
 
 local function SkinBlizzTimer()
-	if C["Unitframe"].Enable ~= true then return end
+	if C["Unitframe"].Enable ~= true then
+		return
+	end
 
 	for _, b in pairs(TimerTracker.timerList) do
 		if b["bar"] and not b["bar"].skinned then
@@ -43,6 +45,6 @@ local function SkinBlizzTimer()
 	end
 end
 
-local Loading = CreateFrame("Frame")
-Loading:RegisterEvent("START_TIMER")
-Loading:SetScript("OnEvent", SkinBlizzTimer)
+function Module:OnEnable()
+	self:RegisterEvent("START_TIMER", SkinBlizzTimer)
+end

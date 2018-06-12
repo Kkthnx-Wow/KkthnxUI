@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<Ui
+xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Tracking.lua"/>
     <Script file="Auras.lua"/>
     <Script file="Castbars.lua"/>
@@ -13,5 +14,5 @@
     <Script file="Indicators.lua"/>
     <Script file="Tags.lua"/>
     <Script file="Totems.lua"/>
-	<Script file="Custom\Totems.lua"/>
+    <Script file="Custom\Totems.lua"/>
 </Ui>

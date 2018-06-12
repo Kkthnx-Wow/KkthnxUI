@@ -35,7 +35,7 @@ local BATTLEGROUNDS = {
 	["Deepwind Gorge"] = true,
 	["Silvershard Mines"] = true,
 	["The Battle for Gilneas"] = true,
-	["Temple of Kotmogu"] = true,
+	["Temple of Kotmogu"] = true
 }
 
 -- Fix UIErrorsFrame framelevel
@@ -49,17 +49,20 @@ function Module:REPLACE_ENCHANT()
 	end
 end
 
-hooksecurefunc("StaticPopup_Show", function(popup, _, _, data)
-	if (popup == "CONFIRM_LEARN_SPEC" and (not data.previewSpecCost or data.previewSpecCost <= 0)) then
-		-- Auto-confirm changing specs
-		StaticPopup_Hide(popup)
-		SetSpecialization(data.previewSpec, data.isPet)
-	elseif (popup == "ABANDON_QUEST") then
-		-- Avoid having to click abandon twice
-		StaticPopup_Hide(popup)
-		StaticPopupDialogs[popup].OnAccept()
+hooksecurefunc(
+	"StaticPopup_Show",
+	function(popup, _, _, data)
+		if (popup == "CONFIRM_LEARN_SPEC" and (not data.previewSpecCost or data.previewSpecCost <= 0)) then
+			-- Auto-confirm changing specs
+			StaticPopup_Hide(popup)
+			SetSpecialization(data.previewSpec, data.isPet)
+		elseif (popup == "ABANDON_QUEST") then
+			-- Avoid having to click abandon twice
+			StaticPopup_Hide(popup)
+			StaticPopupDialogs[popup].OnAccept()
+		end
 	end
-end)
+)
 
 function Module:MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL()
 	StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL")
@@ -70,23 +73,26 @@ if C["General"].AutoScale then
 	local scaleBtn = CreateFrame("Button", "KkthnxUIScaleBtn", Advanced_, "UIPanelButtonTemplate")
 	scaleBtn:SetSize(200, 24)
 	scaleBtn:SetText(L["Miscellaneous"].KkthnxUI_Scale_Button)
-	scaleBtn:SetPoint("LEFT", Advanced_UseUIScale, "LEFT",4, -70)
-	scaleBtn:SetScript("OnClick", function()
-		if (not KkthnxUIConfig) then
-			K.Print(L["Miscellaneous"].Config_Not_Found)
-			return
+	scaleBtn:SetPoint("LEFT", Advanced_UseUIScale, "LEFT", 4, -70)
+	scaleBtn:SetScript(
+		"OnClick",
+		function()
+			if (not KkthnxUIConfig) then
+				K.Print(L["Miscellaneous"].Config_Not_Found)
+				return
+			end
+			if (not KkthnxUIConfigFrame) then
+				KkthnxUIConfig:CreateConfigWindow()
+			end
+			if KkthnxUIConfigFrame:IsVisible() then
+				KkthnxUIConfigFrame:Hide()
+			else
+				HideUIPanel(VideoOptionsFrame)
+				HideUIPanel(GameMenuFrame)
+				KkthnxUIConfigFrame:Show()
+			end
 		end
-		if (not KkthnxUIConfigFrame) then
-			KkthnxUIConfig:CreateConfigWindow()
-		end
-		if KkthnxUIConfigFrame:IsVisible() then
-			KkthnxUIConfigFrame:Hide()
-		else
-			HideUIPanel(VideoOptionsFrame)
-			HideUIPanel(GameMenuFrame)
-			KkthnxUIConfigFrame:Show()
-		end
-	end)
+	)
 end
 
 -- Force readycheck warning
@@ -101,11 +107,14 @@ hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
 local ForceActionBarCVar = CreateFrame("Frame")
 ForceActionBarCVar:RegisterEvent("PLAYER_ENTERING_WORLD")
 ForceActionBarCVar:RegisterEvent("CVAR_UPDATE")
-ForceActionBarCVar:SetScript("OnEvent", function(self, event)
-	if not GetCVarBool("lockActionBars") and C["ActionBar"].Enable then
-		K.LockCVar("lockActionBars", 1)
+ForceActionBarCVar:SetScript(
+	"OnEvent",
+	function()
+		if not GetCVarBool("lockActionBars") and C["ActionBar"].Enable then
+			K.LockCVar("lockActionBars", 1)
+		end
 	end
-end)
+)
 
 -- Force other warnings
 local ForceWarning = CreateFrame("Frame")
@@ -113,38 +122,44 @@ ForceWarning:RegisterEvent("UPDATE_BATTLEFIELD_STATUS")
 ForceWarning:RegisterEvent("PET_BATTLE_QUEUE_PROPOSE_MATCH")
 ForceWarning:RegisterEvent("LFG_PROPOSAL_SHOW")
 ForceWarning:RegisterEvent("RESURRECT_REQUEST")
-ForceWarning:SetScript("OnEvent", function(self, event)
-	if event == "UPDATE_BATTLEFIELD_STATUS" then
-		for i = 1, GetMaxBattlefieldID() do
-			local status = GetBattlefieldStatus(i)
-			if status == "confirm" then
-				PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
-				break
+ForceWarning:SetScript(
+	"OnEvent",
+	function(_, event)
+		if event == "UPDATE_BATTLEFIELD_STATUS" then
+			for i = 1, GetMaxBattlefieldID() do
+				local status = GetBattlefieldStatus(i)
+				if status == "confirm" then
+					PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
+					break
+				end
 			end
+		elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
+			PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
+		elseif event == "LFG_PROPOSAL_SHOW" then
+			PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
+		elseif event == "RESURRECT_REQUEST" then
+			PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
 		end
-	elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-		PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
-	elseif event == "LFG_PROPOSAL_SHOW" then
-		PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
-	elseif event == "RESURRECT_REQUEST" then
-		PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
 	end
-end)
+)
 
 -- Auto select current event boss from LFD tool(EventBossAutoSelect by Nathanyel)
 local firstLFD
-LFDParentFrame:HookScript("OnShow", function()
-	if not firstLFD then
-		firstLFD = 1
-		for i = 1, GetNumRandomDungeons() do
-			local id = GetLFGRandomDungeonInfo(i)
-			local isHoliday = select(15, GetLFGDungeonInfo(id))
-			if isHoliday and not GetLFGDungeonRewards(id) then
-				LFDQueueFrame_SetType(id)
+LFDParentFrame:HookScript(
+	"OnShow",
+	function()
+		if not firstLFD then
+			firstLFD = 1
+			for i = 1, GetNumRandomDungeons() do
+				local id = GetLFGRandomDungeonInfo(i)
+				local isHoliday = select(15, GetLFGDungeonInfo(id))
+				if isHoliday and not GetLFGDungeonRewards(id) then
+					LFDQueueFrame_SetType(id)
+				end
 			end
 		end
 	end
-end)
+)
 
 -- Remove boss emote spam during battlegrounds (ArathiBasin SpamFix by Partha)
 local RaidBossEmoteFrame, spamDisabled = RaidBossEmoteFrame

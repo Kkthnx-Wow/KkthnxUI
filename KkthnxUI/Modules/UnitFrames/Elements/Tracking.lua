@@ -36,7 +36,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[240443] = Defaults(), -- Bursting
 		[196376] = Defaults(), -- Grievous Tear
 		[200227] = Defaults(), -- Tangled Web
-
 		-- The Emerald Nightmare (RAID)
 		-- Nythendra
 		[204504] = Defaults(), -- Infested
@@ -45,7 +44,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[204463] = Defaults(), -- Volatile Rot
 		[203045] = Defaults(), -- Infested Ground
 		[203646] = Defaults(), -- Burst of Corruption
-
 		-- Elerethe Renferal
 		[210228] = Defaults(), -- Dripping Fangs
 		[215307] = Defaults(), -- Web of Pain
@@ -55,14 +53,12 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[210850] = Defaults(), -- Twisting Shadows
 		[215489] = Defaults(), -- Venomous Pool
 		[218519] = Defaults(), -- Wind Burn (Mythic)
-
 		-- Il'gynoth, Heart of the Corruption
 		[208929] = Defaults(), -- Spew Corruption
 		[210984] = Defaults(), -- Eye of Fate
 		[209469] = Defaults(5), -- Touch of Corruption
 		[208697] = Defaults(), -- Mind Flay
 		[215143] = Defaults(), -- Cursed Blood
-
 		-- Ursoc
 		[198108] = Defaults(), -- Unbalanced
 		[197943] = Defaults(), -- Overwhelm
@@ -70,7 +66,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[205611] = Defaults(), -- Miasma
 		[198006] = Defaults(), -- Focused Gaze
 		[197980] = Defaults(), -- Nightmarish Cacophony
-
 		-- Dragons of Nightmare
 		[203102] = Defaults(), -- Mark of Ysondre
 		[203121] = Defaults(), -- Mark of Taerar
@@ -82,7 +77,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[205341] = Defaults(5), -- Sleeping Fog
 		[203770] = Defaults(5), -- Defiled Vines
 		[203787] = Defaults(5), -- Volatile Infection
-
 		-- Cenarius
 		[210279] = Defaults(), -- Creeping Nightmares
 		[213162] = Defaults(), -- Nightmare Blast
@@ -92,7 +86,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[211471] = Defaults(), -- Scorned Touch
 		[211612] = Defaults(), -- Replenishing Roots
 		[216516] = Defaults(), -- Ancient Dream
-
 		-- Xavius
 		[206005] = Defaults(), -- Dream Simulacrum
 		[206651] = Defaults(), -- Darkening Soul
@@ -105,7 +98,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[207409] = Defaults(), -- Madness
 		[211634] = Defaults(), -- The Infinite Dark
 		[208385] = Defaults(), -- Tainted Discharge
-
 		-- Trial of Valor (RAID)
 		-- Odyn
 		[227959] = Defaults(), -- Storm of Justice
@@ -121,7 +113,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[227499] = Defaults(), -- Branded
 		[227500] = Defaults(), -- Branded
 		[231297] = Defaults(), -- Runic Brand (Mythic Only)
-
 		-- Guarm
 		[228228] = Defaults(), -- Flame Lick
 		[228248] = Defaults(), -- Frost Lick
@@ -129,7 +120,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[227539] = Defaults(), -- Fiery Phlegm
 		[227566] = Defaults(), -- Salty Spittle
 		[227570] = Defaults(), -- Dark Discharge
-
 		-- Helya
 		[228883] = Defaults(5), -- Unholy Reckoning (Trash)
 		[227903] = Defaults(), -- Orb of Corruption
@@ -141,7 +131,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[228519] = Defaults(), -- Anchor Slam
 		[202476] = Defaults(), -- Rabid
 		[232450] = Defaults(), -- Corrupted Axion
-
 		-- The Nighthold (RAID)
 		-- Skorpyron
 		[204766] = Defaults(), -- Energy Surge
@@ -151,7 +140,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[204275] = Defaults(), -- Arcanoslash (Tank)
 		[211659] = Defaults(), -- Arcane Tether (Tank debuff)
 		[204483] = Defaults(), -- Focused Blast (Stun)
-
 		-- Chronomatic Anomaly
 		[206607] = Defaults(), -- Chronometric Particles (Tank stack debuff)
 		[206609] = Defaults(), -- Time Release (Heal buff/debuff)
@@ -161,7 +149,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[205653] = Defaults(), -- Passage of Time
 		[207871] = Defaults(), -- Vortex (Mythic)
 		[212099] = Defaults(), -- Temporal Charge
-
 		-- Trilliax
 		[206488] = Defaults(), -- Arcane Seepage
 		[206641] = Defaults(), -- Arcane Spear (Tank)
@@ -171,7 +158,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[214583] = Defaults(), -- Sterilize
 		[208910] = Defaults(), -- Arcing Bonds
 		[206838] = Defaults(), -- Succulent Feast
-
 		-- Spellblade Aluriel
 		[212492] = Defaults(), -- Annihilate (Tank)
 		[212494] = Defaults(), -- Annihilated (Main Tank debuff)
@@ -187,7 +173,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[213166] = Defaults(), -- Searing Brand
 		[213278] = Defaults(), -- Burning Ground
 		[213504] = Defaults(), -- Arcane Fog
-
 		-- Tichondrius
 		[206480] = Defaults(), -- Carrion Plague
 		[215988] = Defaults(), -- Carrion Nightmare
@@ -201,11 +186,9 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[216039] = Defaults(), -- Fel Storm
 		[216726] = Defaults(), -- Ring of Shadows
 		[216040] = Defaults(), -- Burning Soul
-
 		-- Krosus
 		[206677] = Defaults(), -- Searing Brand
 		[205344] = Defaults(), -- Orb of Destruction
-
 		-- High Botanist Tel'arn
 		[218503] = Defaults(), -- Recursive Strikes (Tank)
 		[219235] = Defaults(), -- Toxic Spores
@@ -213,7 +196,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[218342] = Defaults(), -- Parasitic Fixate
 		[218304] = Defaults(), -- Parasitic Fetter
 		[218780] = Defaults(), -- Plasma Explosion
-
 		-- Star Augur Etraeus
 		[205984] = Defaults(), -- Gravitaional Pull
 		[214167] = Defaults(), -- Gravitaional Pull
@@ -230,7 +212,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[206603] = Defaults(), -- Frozen Solid
 		[207720] = Defaults(), -- Witness the Void
 		[216697] = Defaults(), -- Frigid Pulse
-
 		-- Grand Magistrix Elisande
 		[209166] = Defaults(), -- Fast Time
 		[211887] = Defaults(), -- Ablated
@@ -243,7 +224,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[209549] = Defaults(), -- Lingering Burn
 		[211261] = Defaults(), -- Permaliative Torment
 		[208659] = Defaults(), -- Arcanetic Ring
-
 		-- Gul'dan
 		[210339] = Defaults(), -- Time Dilation
 		[180079] = Defaults(), -- Felfire Munitions
@@ -253,7 +233,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[206221] = Defaults(), -- Empowered Bonds of Fel
 		[208802] = Defaults(), -- Soul Corrosion
 		[212686] = Defaults(), -- Flames of Sargeras
-
 		-- Tomb of Sargeras (RAID)
 		-- Goroth
 		[233279] = Defaults(), -- Shattering Star
@@ -263,19 +242,16 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[234264] = Defaults(), -- Melted Armor
 		[233062] = Defaults(), -- Infernal Burning
 		[230348] = Defaults(), -- Fel Pool
-
 		-- Demonic Inquisition
 		[233430] = Defaults(), -- Ubearable Torment
 		[233983] = Defaults(), -- Echoing Anguish
 		[248713] = Defaults(), -- Soul Corruption
-
 		-- Harjatan
 		[231770] = Defaults(), -- Drenched
 		[231998] = Defaults(), -- Jagged Abrasion
 		[231729] = Defaults(), -- Aqueous Burst
 		[234128] = Defaults(), -- Driven Assault
 		[234016] = Defaults(), -- Driven Assault
-
 		-- Sisters of the Moon
 		[236603] = Defaults(), -- Rapid Shot
 		[236596] = Defaults(), -- Rapid Shot
@@ -297,7 +273,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[237561] = Defaults(), -- Twilight Glaive (Heroic)
 		[237633] = Defaults(), -- Spectral Glaive
 		[233263] = Defaults(), -- Embrace of the Eclipse
-
 		-- Mistress Sassz'ine
 		[230959] = Defaults(), -- Concealing Murk
 		[232732] = Defaults(), -- Slicing Tornado
@@ -309,7 +284,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[230920] = Defaults(), -- Consuming Hunger
 		[230358] = Defaults(), -- Thundering Shock
 		[230362] = Defaults(), -- Thundering Shock
-
 		-- The Desolate Host
 		[236072] = Defaults(), -- Wailing Souls
 		[236449] = Defaults(), -- Soulbind
@@ -319,7 +293,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[236241] = Defaults(), -- Soul Rot
 		[236361] = Defaults(), -- Spirit Chains
 		[235968] = Defaults(), -- Grasping Darkness
-
 		-- Maiden of Vigilance
 		[235117] = Defaults(), -- Unstable Soul
 		[240209] = Defaults(), -- Unstable Soul
@@ -332,7 +305,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[235573] = Defaults(), -- Hammer of Obliteration
 		[235213] = Defaults(), -- Light Infusion
 		[235240] = Defaults(), -- Fel Infusion
-
 		-- Fallen Avatar
 		[239058] = Defaults(), -- Touch of Sargeras
 		[239739] = Defaults(), -- Dark Mark
@@ -341,7 +313,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[236604] = Defaults(), -- Shadowy Blades
 		[236494] = Defaults(), -- Desolate (Tank)
 		[240728] = Defaults(), -- Tainted Essence
-
 		-- Kil'jaeden
 		[238999] = Defaults(), -- Darkness of a Thousand Souls
 		[239216] = Defaults(), -- Darkness of a Thousand Souls (Dot)
@@ -356,7 +327,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[241822] = Defaults(), -- Choking Shadow
 		[236555] = Defaults(), -- Deceiver's Veil
 		[234310] = Defaults(), -- Armageddon Rain
-
 		-- Antorus, the Burning Throne (RAID)
 		-- Garothi Worldbreaker
 		[244590] = Defaults(), -- Molten Hot Fel
@@ -370,7 +340,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[244410] = Defaults(), -- Decimation
 		[245294] = Defaults(), -- Empowered Decimation
 		[246368] = Defaults(), -- Searing Barrage
-
 		-- Felhounds of Sargeras
 		[245022] = Defaults(), -- Burning Remnant
 		[251445] = Defaults(), -- Smouldering
@@ -391,7 +360,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[248819] = Defaults(), -- Siphoned
 		[254429] = Defaults(), -- Weight of Darkness
 		[244072] = Defaults(), -- Molten Touch
-
 		-- Antoran High Command
 		[245121] = Defaults(), -- Entropic Blast
 		[244748] = Defaults(), -- Shocked
@@ -404,7 +372,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[257974] = Defaults(), -- Chaos Pulse
 		[244910] = Defaults(), -- Felshield
 		[244737] = Defaults(), -- Shock Grenade
-
 		-- Portal Keeper Hasabel
 		[244016] = Defaults(), -- Reality Tear
 		[245157] = Defaults(), -- Everburning Light
@@ -424,7 +391,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[244926] = Defaults(), -- Felsilk Wrap
 		[244949] = Defaults(), -- Felsilk Wrap
 		[244613] = Defaults(), -- Everburning Flames
-
 		-- Eonar the Life-Binder
 		[248326] = Defaults(), -- Rain of Fel
 		[248861] = Defaults(), -- Spear of Doom
@@ -437,7 +403,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[248795] = Defaults(), -- Fel Wake
 		[248332] = Defaults(), -- Rain of Fel
 		[250140] = Defaults(), -- Foul Steps
-
 		-- Imonar the Soulhunter
 		[248424] = Defaults(), -- Gathering Power
 		[247552] = Defaults(), -- Sleep Canister
@@ -454,7 +419,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[247932] = Defaults(), -- Shrapnel Blast
 		[248070] = Defaults(), -- Empowered Shrapnel Blast
 		[254183] = Defaults(), -- Seared Skin
-
 		-- Kin'garoth
 		[244312] = Defaults(), -- Forging Strike
 		[246840] = Defaults(), -- Ruiner
@@ -464,7 +428,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[246698] = Defaults(), -- Demolish
 		[245919] = Defaults(), -- Meteor Swarm
 		[245770] = Defaults(), -- Decimation
-
 		-- Varimathras
 		[244042] = Defaults(), -- Marked Prey
 		[243961] = Defaults(), -- Misery
@@ -473,7 +436,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[244005] = Defaults(), -- Dark Fissure
 		[244093] = Defaults(), -- Necrotic Embrace
 		[244094] = Defaults(), -- Necrotic Embrace
-
 		-- The Coven of Shivarra
 		[244899] = Defaults(), -- Fiery Strike
 		[245518] = Defaults(), -- Flashfreeze
@@ -487,7 +449,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[253020] = Defaults(), -- Storm of Darkness
 		[245921] = Defaults(), -- Spectral Army of Norgannon
 		[250757] = Defaults(), -- Cosmic Glare
-
 		-- Aggramar
 		[244291] = Defaults(), -- Foe Breaker
 		[255060] = Defaults(), -- Empowered Foe Breaker
@@ -502,7 +463,6 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[254452] = Defaults(), -- Ravenous Blaze
 		[244736] = Defaults(), -- Wake of Flame
 		[247079] = Defaults(), -- Empowered Flame Rend
-
 		-- Argus the Unmaker
 		[251815] = Defaults(), -- Edge of Obliteration
 		[248499] = Defaults(), -- Sweeping Scythe
@@ -521,8 +481,8 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 		[257299] = Defaults(), -- Ember of Rage
 		[248167] = Defaults(), -- Death Fog
 		[258646] = Defaults(), -- Gift of the Sky
-		[253903] = Defaults(), -- Strength of the Sky
-	},
+		[253903] = Defaults() -- Strength of the Sky
+	}
 }
 
 -- CC DEBUFFS (TRACKING LIST)
@@ -545,7 +505,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[91800] = Defaults(4), -- Gnaw (Pet)
 		[91797] = Defaults(4), -- Monstrous Blow (Pet)
 		[210141] = Defaults(3), -- Zombie Explosion
-
 		-- Demon Hunter
 		[207685] = Defaults(4), -- Sigil of Misery
 		[217832] = Defaults(3), -- Imprison
@@ -558,7 +517,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[213491] = Defaults(4), -- Demonic Trample (it's this one or the other)
 		[208645] = Defaults(4), -- Demonic Trample
 		[200166] = Defaults(4), -- Metamorphosis
-
 		-- Druid
 		[81261] = Defaults(2), -- Solar Beam
 		[5211] = Defaults(4), -- Mighty Bash
@@ -571,7 +529,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[45334] = Defaults(1), -- Immobilized
 		[102359] = Defaults(1), -- Mass Entanglement
 		[339] = Defaults(1), -- Entangling Roots
-
 		-- Hunter
 		[202933] = Defaults(2), -- Spider Sting (it's this one or the other)
 		[233022] = Defaults(2), -- Spider Sting
@@ -588,7 +545,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[162480] = Defaults(1), -- Steel Trap
 		[212638] = Defaults(1), -- Tracker's Net
 		[200108] = Defaults(1), -- Ranger's Net
-
 		-- Mage
 		[61721] = Defaults(3), -- Rabbit (Poly)
 		[61305] = Defaults(3), -- Black Cat (Poly)
@@ -605,7 +561,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[157997] = Defaults(1), -- Ice Nova
 		[228600] = Defaults(1), -- Glacial Spike
 		[198121] = Defaults(1), -- Forstbite
-
 		-- Monk
 		[119381] = Defaults(4), -- Leg Sweep
 		[202346] = Defaults(4), -- Double Barrel
@@ -616,7 +571,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[123407] = Defaults(1), -- Spinning Fire Blossom
 		[116706] = Defaults(1), -- Disable
 		[232055] = Defaults(4), -- Fists of Fury (it's this one or the other)
-
 		-- Paladin
 		[853] = Defaults(3), -- Hammer of Justice
 		[20066] = Defaults(3), -- Repentance
@@ -624,7 +578,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[31935] = Defaults(2), -- Avenger's Shield
 		[217824] = Defaults(2), -- Shield of Virtue
 		[205290] = Defaults(3), -- Wake of Ashes
-
 		-- Priest
 		[9484] = Defaults(3), -- Shackle Undead
 		[200196] = Defaults(4), -- Holy Word: Chastise
@@ -634,7 +587,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[8122] = Defaults(3), -- Psychic Scream
 		[15487] = Defaults(2), -- Silence
 		[199683] = Defaults(2), -- Last Word
-
 		-- Rogue
 		[2094] = Defaults(4), -- Blind
 		[6770] = Defaults(4), -- Sap
@@ -647,7 +599,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[1833] = Defaults(4), -- Cheap Shot
 		[207736] = Defaults(5), -- Shadowy Duel (Smoke effect)
 		[212182] = Defaults(5), -- Smoke Bomb
-
 		-- Shaman
 		[51514] = Defaults(3), -- Hex
 		[211015] = Defaults(3), -- Hex (Cockroach)
@@ -662,7 +613,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[204437] = Defaults(3), -- Lightning Lasso
 		[157375] = Defaults(4), -- Gale Force
 		[64695] = Defaults(1), -- Earthgrab
-
 		-- Warlock
 		[710] = Defaults(5), -- Banish
 		[6789] = Defaults(3), -- Mortal Coil
@@ -674,7 +624,6 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[30283] = Defaults(3), -- Shadowfury
 		[89766] = Defaults(4), -- Axe Toss
 		[233582] = Defaults(1), -- Entrenched in Flame
-
 		-- Warrior
 		[5246] = Defaults(4), -- Intimidating Shout
 		[7922] = Defaults(4), -- Warbringer
@@ -683,12 +632,11 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[199085] = Defaults(4), -- Warpath
 		[105771] = Defaults(1), -- Charge
 		[199042] = Defaults(1), -- Thunderstruck
-
 		-- Racials
 		[155145] = Defaults(2), -- Arcane Torrent
 		[20549] = Defaults(4), -- War Stomp
-		[107079] = Defaults(4), -- Quaking Palm
-	},
+		[107079] = Defaults(4) -- Quaking Palm
+	}
 }
 
 -- RAID BUFFS (SQUARED AURA TRACKING LIST)
@@ -696,47 +644,42 @@ Module.RaidBuffsTracking = {
 	PRIEST = {
 		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
 		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
-		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true}, -- Power Word: Shield
+		{17, "TOPLEFT", {0.81, 0.85, 0.1}, true} -- Power Word: Shield
 	},
-
 	DRUID = {
 		{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
 		{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
 		{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
 		{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
+		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}} -- Wild Growth
 	},
-
 	PALADIN = {
-		{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
-		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
-		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
-		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
-		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
-		{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true},	 -- Eternal Flame
+		{53563, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Beacon of Light
+		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Faith
+		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, -- Hand of Protection
+		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true}, -- Hand of Freedom
+		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Hand of Sacrifice
+		{114163, "BOTTOMLEFT", {0.81, 0.85, 0.1}, true} -- Eternal Flame
 	},
-
 	SHAMAN = {
-		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
+		{61295, "TOPLEFT", {0.7, 0.3, 0.7}} -- Riptide
 	},
-
 	MONK = {
-		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
-		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
+		{119611, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Renewing Mist
+		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Life Cocoon
 		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
-		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
+		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}} -- Zen Sphere
 	},
-
 	ALL = {
-		{14253, "RIGHT", {0, 1, 0}}, -- Abolish Poison
-	},
+		{14253, "RIGHT", {0, 1, 0}} -- Abolish Poison
+	}
 }
 
 -- Stuff we need to see.
 Module.ImportantDebuffs = {
 	[SpellName(212570)] = true, -- Surrendered Soul
 	[SpellName(25771)] = K.Class == "PALADIN", -- Forbearance
-	[SpellName(6788)] = K.Class == "PRIEST", -- Weakened Soul
+	[SpellName(6788)] = K.Class == "PRIEST" -- Weakened Soul
 }
 
 -- Filter this. Pointless to see.
@@ -835,5 +778,5 @@ Module.UnImportantBuffs = {
 	[SpellName(95809)] = true, -- Insanity debuff (hunter pet heroism: ancient hysteria)
 	[SpellName(97340)] = true, -- Guild Champion
 	[SpellName(97341)] = true, -- Guild Champion
-	[SpellName(97821)] = true, -- Void-Touched
+	[SpellName(97821)] = true -- Void-Touched
 }

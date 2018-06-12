@@ -1,6 +1,8 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("ColorTextures", "AceEvent-3.0")
-if C["General"].ColorTextures ~= true then return end
+if C["General"].ColorTextures ~= true then
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -8,10 +10,9 @@ local pairs = pairs
 local select = select
 local string_find = string.find
 local string_split = string.split
-local unpack = unpack
 
 -- Ignore the container frames if one of our standalone bag addons are loaded
-local Backpacker = not(K.CheckAddOnState("Backpacker") or K.CheckAddOnState("BlizzardBagsPlus")) or nil
+local Backpacker = not (K.CheckAddOnState("Backpacker") or K.CheckAddOnState("BlizzardBagsPlus")) or nil
 
 -- List of elements to be styled
 local elements = {
@@ -80,7 +81,6 @@ local elements = {
 	["PlayerStatFrameRightDropDownButton"] = true,
 	["PlayerTitleFrame"] = true,
 	["PlayerTitleFrameButton"] = true,
-
 	["PVEFrame"] = true,
 	["PVEFrame.shadows"] = true,
 	["PVEFrameLeftInset"] = true,
@@ -104,12 +104,10 @@ local elements = {
 	["SpellBookSkillLineTab8"] = true,
 	["WorldMapFrame"] = true,
 	["WorldMapFrame.BorderFrame"] = true,
-
 	["ConquestFrame"] = "Blizzard_PVPUI",
 	["ConquestFrame.Inset"] = "Blizzard_PVPUI",
 	["ConquestFrame.RoleInset"] = "Blizzard_PVPUI",
 	["ConquestJoinButton"] = "Blizzard_PVPUI",
-
 	["HonorFrame"] = "Blizzard_PVPUI",
 	["HonorFrame.Inset"] = "Blizzard_PVPUI",
 	["HonorFrame.RoleInset"] = "Blizzard_PVPUI",
@@ -119,7 +117,6 @@ local elements = {
 	["PVPQueueFrameCategoryButton2"] = "Blizzard_PVPUI",
 	["PVPQueueFrameCategoryButton3"] = "Blizzard_PVPUI",
 	["PVPQueueFrameCategoryButton4"] = "Blizzard_PVPUI",
-
 	["WarGamesFrame"] = "Blizzard_PVPUI",
 	["WarGamesFrame.HorizontalBar"] = "Blizzard_PVPUI",
 	["WarGamesFrame.RightInset"] = "Blizzard_PVPUI",
@@ -130,7 +127,6 @@ local elements = {
 	["WarGamesFrameScrollFrameScrollBarScrollUpButton"] = "Blizzard_PVPUI",
 	["WarGamesFrameScrollFrameScrollBarScrollDownButton"] = "Blizzard_PVPUI",
 	["WarGameStartButton"] = "Blizzard_PVPUI",
-
 	["PlayerTalentFrame"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameTab1"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameTab2"] = "Blizzard_TalentUI",
@@ -181,7 +177,6 @@ local elements = {
 	["TradeSkillFrameScrollDownButton"] = "Blizzard_TradeSkillUI",
 	["TradeSkillFrameScrollUpButton"] = "Blizzard_TradeSkillUI",
 	["TradeSkillCreateScrollButton"] = "Blizzard_TradeSkillUI",
-
 	["GarrisonCapacitiveDisplayFrame"] = "Blizzard_GarrisonUI",
 	["GarrisonCapacitiveDisplayFrameInset"] = "Blizzard_GarrisonUI",
 	["GarrisonCapacitiveDisplayFrame.CapacitiveDisplay.ShipmentIconFrame.Follower"] = "Blizzard_GarrisonUI",
@@ -193,7 +188,6 @@ local elements = {
 	["GarrisonCapacitiveDisplayFrame.Count"] = "Blizzard_GarrisonUI",
 	["GarrisonCapacitiveDisplayFrame.IncrementButton"] = "Blizzard_GarrisonUI",
 	["GarrisonCapacitiveDisplayFrame.DecrementButton"] = "Blizzard_GarrisonUI",
-
 	["MerchantFrame"] = true,
 	["MerchantFrameInset"] = true,
 	["MerchantFrameLootFilter"] = true,
@@ -234,7 +228,7 @@ local elements = {
 	["MerchantGuildBankRepairButton"] = true,
 	["MerchantBuyBackItem"] = true,
 	["MerchantNextPageButton"] = true,
-	["MerchantPrevPageButton"] = true,
+	["MerchantPrevPageButton"] = true
 }
 
 -- Elements we won't skin
@@ -250,7 +244,6 @@ local whiteList = {
 	["RaidFinderFrameRoleBackground"] = true,
 	["SpellBookPage1"] = true,
 	["SpellBookPage2"] = true,
-
 	["PlayerTalentFramePortrait"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationLearnButtonText"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpellScrollFrameScrollChild.gradient"] = "Blizzard_TalentUI",
@@ -262,7 +255,6 @@ local whiteList = {
 	["PlayerTalentFrameSpecializationSpecButton2SpecIcon"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton3SpecIcon"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton4SpecIcon"] = "Blizzard_TalentUI",
-
 	["ConquestFrame.RoleInset.Background"] = "Blizzard_PVPUI",
 	["ConquestJoinButtonText"] = "Blizzard_PVPUI",
 	["HonorFrame.RoleInset.Background"] = "Blizzard_PVPUI",
@@ -284,27 +276,23 @@ local blackList = {
 	["LFGListFrame.SearchPanel.SignUpButton.LeftSeparator"] = true,
 	["RaidFinderFrameFindRaidButton_LeftSeparator"] = true,
 	["RaidFinderFrameFindRaidButton_RightSeparator"] = true,
-
 	["ConquestJoinButton_LeftSeparator"] = "Blizzard_PVPUI",
 	["ConquestJoinButton_RightSeparator"] = "Blizzard_PVPUI",
 	["HonorFrameQueueButton_LeftSeparator"] = "Blizzard_PVPUI",
 	["HonorFrameQueueButton_RightSeparator"] = "Blizzard_PVPUI",
 	["WarGameStartButton_LeftSeparator"] = "Blizzard_PVPUI",
-
 	["PlayerTalentFrameSpecializationSpecButton1Glow"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton2Glow"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton3Glow"] = "Blizzard_TalentUI",
 	["PlayerTalentFrameSpecializationSpecButton4Glow"] = "Blizzard_TalentUI",
-
 	["TradeSkillFrame.DetailsFrame.CreateButton.LeftSeparator"] = "Blizzard_TradeSkillUI",
 	["TradeSkillFrame.DetailsFrame.ExitButton.LeftSeparator"] = "Blizzard_TradeSkillUI",
 	["TradeSkillCreateScrollButton_LeftSeparator"] = "Blizzard_TradeSkillUI",
 	["TradeSkillCreateScrollButton_RightSeparator"] = "Blizzard_TradeSkillUI",
-
 	["MerchantExtraCurrencyBg"] = true,
 	["MerchantExtraCurrencyInset"] = true,
 	["MerchantMoneyBg"] = true,
-	["MerchantMoneyInset"] = true,
+	["MerchantMoneyInset"] = true
 }
 
 -- Frames that'll have nameless child elements styled too.
@@ -320,7 +308,6 @@ do
 	-- The ItemsFrame was added in Cata when the character frame was upgraded to the big one
 	local paperDoll = _G.PaperDollItemsFrame or _G.PaperDollFrame
 	for i = 1, select("#", paperDoll:GetChildren()) do
-
 		local child = select(i, paperDoll:GetChildren())
 		local childName = child:GetName()
 
@@ -345,33 +332,33 @@ do
 end
 
 -- Talent Frame
-for row = 1,7 do
-	elements["PlayerTalentFrameTalentsTalentRow"..row] = "Blizzard_TalentUI"
-	for talent = 1,3 do
-		elements["PlayerTalentFrameTalentsTalentRow"..row.."Talent"..talent] = "Blizzard_TalentUI"
-		whiteList["PlayerTalentFrameTalentsTalentRow"..row.."Talent"..talent.."IconTexture"] = "Blizzard_TalentUI"
+for row = 1, 7 do
+	elements["PlayerTalentFrameTalentsTalentRow" .. row] = "Blizzard_TalentUI"
+	for talent = 1, 3 do
+		elements["PlayerTalentFrameTalentsTalentRow" .. row .. "Talent" .. talent] = "Blizzard_TalentUI"
+		whiteList["PlayerTalentFrameTalentsTalentRow" .. row .. "Talent" .. talent .. "IconTexture"] = "Blizzard_TalentUI"
 		--whiteList["PlayerTalentFrameTalentsTalentRow"..row.."Talent"..talent.."Name"] = "Blizzard_TalentUI"
-		whiteList["PlayerTalentFrameTalentsTalentRow"..row.."Talent"..talent.."Slot"] = "Blizzard_TalentUI"
-		whiteList["PlayerTalentFrameTalentsTalentRow"..row.."Talent"..talent.."Selection"] = "Blizzard_TalentUI"
+		whiteList["PlayerTalentFrameTalentsTalentRow" .. row .. "Talent" .. talent .. "Slot"] = "Blizzard_TalentUI"
+		whiteList["PlayerTalentFrameTalentsTalentRow" .. row .. "Talent" .. talent .. "Selection"] = "Blizzard_TalentUI"
 	end
 end
 
 -- PvP Talent Frame
-for row = 1,6 do
-	elements["PlayerTalentFramePVPTalents.Talents.Tier"..row] = "Blizzard_TalentUI"
-	for talent = 1,3 do
-		elements["PlayerTalentFramePVPTalents.Talents.Tier"..row..".Talent"..talent] = "Blizzard_TalentUI"
-		whiteList["PlayerTalentFramePVPTalents.Talents.Tier"..row..".Talent"..talent..".Cover"] = "Blizzard_TalentUI"
-		whiteList["PlayerTalentFramePVPTalents.Talents.Tier"..row..".Talent"..talent..".Icon"] = "Blizzard_TalentUI"
-		whiteList["PlayerTalentFramePVPTalents.Talents.Tier"..row..".Talent"..talent..".Slot"] = "Blizzard_TalentUI"
+for row = 1, 6 do
+	elements["PlayerTalentFramePVPTalents.Talents.Tier" .. row] = "Blizzard_TalentUI"
+	for talent = 1, 3 do
+		elements["PlayerTalentFramePVPTalents.Talents.Tier" .. row .. ".Talent" .. talent] = "Blizzard_TalentUI"
+		whiteList["PlayerTalentFramePVPTalents.Talents.Tier" .. row .. ".Talent" .. talent .. ".Cover"] = "Blizzard_TalentUI"
+		whiteList["PlayerTalentFramePVPTalents.Talents.Tier" .. row .. ".Talent" .. talent .. ".Icon"] = "Blizzard_TalentUI"
+		whiteList["PlayerTalentFramePVPTalents.Talents.Tier" .. row .. ".Talent" .. talent .. ".Slot"] = "Blizzard_TalentUI"
 	end
 end
 
 -- WarGames Frame
-for i = 1,32 do -- overkill
-	elements["WarGamesFrameScrollFrameButton"..i] = "Blizzard_PVPUI"
-	elements["WarGamesFrameScrollFrameButton"..i..".Entry"] = "Blizzard_PVPUI"
-	whiteList["WarGamesFrameScrollFrameButton"..i..".Entry.Icon"] = "Blizzard_PVPUI"
+for i = 1, 32 do -- overkill
+	elements["WarGamesFrameScrollFrameButton" .. i] = "Blizzard_PVPUI"
+	elements["WarGamesFrameScrollFrameButton" .. i .. ".Entry"] = "Blizzard_PVPUI"
+	whiteList["WarGamesFrameScrollFrameButton" .. i .. ".Entry.Icon"] = "Blizzard_PVPUI"
 end
 
 local styled = {}
@@ -379,7 +366,7 @@ local styled = {}
 -- Translate strings into keyed children
 function Module:GetObject(objectName)
 	if string_find(objectName, ".") then
-		local tree = { string_split(".", objectName) }
+		local tree = {string_split(".", objectName)}
 		local object = _G[tree[1]]
 		if object then
 			for i = 2, #tree do
@@ -413,7 +400,7 @@ function Module:StyleRegion(region)
 	if (objectType == "Texture") then
 		region:SetVertexColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
 	elseif (objectType == "FontString") then
-		region:SetTextColor(255/255, 234/255, 137/255)
+		region:SetTextColor(255 / 255, 234 / 255, 137 / 255)
 	end
 end
 
@@ -437,7 +424,6 @@ function Module:StyleFrame(frame)
 			end
 		end
 	end
-
 end
 
 function Module:StyleObject(object)
@@ -488,7 +474,7 @@ function Module:OnEvent(event, ...)
 end
 
 function Module:OnEnable()
-	local UIHider -- define this, but don't create it until we need it
+	local UIHider  -- define this, but don't create it until we need it
 	local unstyledAddonFrames = 0 -- Count how many addon elements we were unable to style
 	local unhiddenAddonFrames = 0 -- Count how many elements we were unable to hide
 

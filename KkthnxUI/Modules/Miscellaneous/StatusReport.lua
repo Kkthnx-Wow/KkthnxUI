@@ -69,7 +69,7 @@ local EnglishClassName = {
 	["ROGUE"] = "Rogue",
 	["SHAMAN"] = "Shaman",
 	["WARLOCK"] = "Warlock",
-	["WARRIOR"] = "Warrior",
+	["WARRIOR"] = "Warrior"
 }
 
 local EnglishSpecName = {
@@ -108,7 +108,7 @@ local EnglishSpecName = {
 	[70] = "Retribution",
 	[71] = "Arms",
 	[72] = "Fury",
-	[73] = "Protection",
+	[73] = "Protection"
 }
 
 local function GetSpecName()
@@ -157,7 +157,7 @@ function K.CreateStatusFrame()
 	local function CreateContentLines(num, parent, anchorTo)
 		local content = CreateFrame("Frame", nil, parent)
 		content:SetSize(240, (num * 16) + ((num - 1) * 5)) -- 20 height and 5 spacing
-		content:SetPoint("TOP", anchorTo, "BOTTOM",0 , -5)
+		content:SetPoint("TOP", anchorTo, "BOTTOM", 0, -5)
 		for i = 1, num do
 			local line = CreateFrame("Frame", nil, content)
 			line:SetSize(240, 20)
@@ -165,12 +165,12 @@ function K.CreateStatusFrame()
 			line.Text:SetAllPoints()
 			line.Text:SetJustifyH("LEFT")
 			line.Text:SetJustifyV("MIDDLE")
-			content["Line"..i] = line
+			content["Line" .. i] = line
 
 			if i == 1 then
-				content["Line"..i]:SetPoint("TOP", content, "TOP")
+				content["Line" .. i]:SetPoint("TOP", content, "TOP")
 			else
-				content["Line"..i]:SetPoint("TOP", content["Line"..(i-1)], "BOTTOM", 0, -5)
+				content["Line" .. i]:SetPoint("TOP", content["Line" .. (i - 1)], "BOTTOM", 0, -5)
 			end
 		end
 
@@ -191,9 +191,12 @@ function K.CreateStatusFrame()
 	StatusFrame.CloseButton:SetPoint("TOPRIGHT", 0, 1)
 	StatusFrame.CloseButton:SkinCloseButton()
 	StatusFrame.CloseButton:RegisterForClicks("AnyUp")
-	StatusFrame.CloseButton:SetScript("OnClick", function(self)
-		self:GetParent():Hide()
-	end)
+	StatusFrame.CloseButton:SetScript(
+		"OnClick",
+		function(self)
+			self:GetParent():Hide()
+		end
+	)
 
 	--Title logo (drag to move frame)
 	StatusFrame.TitleLogoFrame = CreateFrame("Frame", nil, StatusFrame, "TitleDragAreaTemplate")
@@ -207,7 +210,12 @@ function K.CreateStatusFrame()
 	StatusFrame.TitleLogoFrame.Shade:SetTexture(C["Media"].Shader)
 	StatusFrame.TitleLogoFrame.Shade:SetPoint("TOPLEFT", StatusFrame.TitleLogoFrame.Texture, "TOPLEFT", -6, 6)
 	StatusFrame.TitleLogoFrame.Shade:SetPoint("BOTTOMRIGHT", StatusFrame.TitleLogoFrame.Texture, "BOTTOMRIGHT", 6, -6)
-	StatusFrame.TitleLogoFrame.Shade:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	StatusFrame.TitleLogoFrame.Shade:SetVertexColor(
+		C["Media"].BackdropColor[1],
+		C["Media"].BackdropColor[2],
+		C["Media"].BackdropColor[3],
+		C["Media"].BackdropColor[4]
+	)
 
 	-- Player Model
 	StatusFrame.ModelHolder = CreateFrame("Frame", nil, StatusFrame)
@@ -244,15 +252,31 @@ function K.CreateStatusFrame()
 
 	--Content lines
 	StatusFrame.Section1.Content.Line1.Text:SetFormattedText("Version of KkthnxUI: |cff4beb2c%s|r", K.Version)
-	StatusFrame.Section1.Content.Line2.Text:SetFormattedText("Other AddOns Enabled: |cff4beb2c%s|r", AreOtherAddOnsEnabled())
-	StatusFrame.Section1.Content.Line3.Text:SetFormattedText("Auto Scale Enabled: |cff4beb2c%s|r", (C["General"].AutoScale == true and "Yes" or "No"))
+	StatusFrame.Section1.Content.Line2.Text:SetFormattedText(
+		"Other AddOns Enabled: |cff4beb2c%s|r",
+		AreOtherAddOnsEnabled()
+	)
+	StatusFrame.Section1.Content.Line3.Text:SetFormattedText(
+		"Auto Scale Enabled: |cff4beb2c%s|r",
+		(C["General"].AutoScale == true and "Yes" or "No")
+	)
 	StatusFrame.Section1.Content.Line4.Text:SetFormattedText("UI Scale Is: |cff4beb2c%.4f|r", GetUiScale())
-	StatusFrame.Section2.Content.Line1.Text:SetFormattedText("Version of WoW: |cff4beb2c%s (build %s)|r", K.WoWPatch, K.WoWBuild)
+	StatusFrame.Section2.Content.Line1.Text:SetFormattedText(
+		"Version of WoW: |cff4beb2c%s (build %s)|r",
+		K.WoWPatch,
+		K.WoWBuild
+	)
 	StatusFrame.Section2.Content.Line2.Text:SetFormattedText("Client Language: |cff4beb2c%s|r", GetLocale())
 	StatusFrame.Section2.Content.Line3.Text:SetFormattedText("Display Mode: |cff4beb2c%s|r", GetDisplayMode())
 	StatusFrame.Section2.Content.Line4.Text:SetFormattedText("Resolution: |cff4beb2c%s|r", GetResolution())
-	StatusFrame.Section2.Content.Line5.Text:SetFormattedText("Using Mac Client: |cff4beb2c%s|r", (IsMacClient() == true and "Yes" or "No"))
-	StatusFrame.Section3.Content.Line1.Text:SetFormattedText("Faction: |cff4beb2c%s|r", select(2, UnitFactionGroup('player')))
+	StatusFrame.Section2.Content.Line5.Text:SetFormattedText(
+		"Using Mac Client: |cff4beb2c%s|r",
+		(IsMacClient() == true and "Yes" or "No")
+	)
+	StatusFrame.Section3.Content.Line1.Text:SetFormattedText(
+		"Faction: |cff4beb2c%s|r",
+		select(2, UnitFactionGroup("player"))
+	)
 	StatusFrame.Section3.Content.Line2.Text:SetFormattedText("Race: |cff4beb2c%s|r", K.Race)
 	StatusFrame.Section3.Content.Line3.Text:SetFormattedText("Class: |cff4beb2c%s|r", EnglishClassName[K.Class])
 	StatusFrame.Section3.Content.Line4.Text:SetFormattedText("Specialization: |cff4beb2c%s|r", GetSpecName())
@@ -260,12 +284,14 @@ function K.CreateStatusFrame()
 	StatusFrame.Section3.Content.Line6.Text:SetFormattedText("Zone: |cff4beb2c%s|r", GetRealZoneText())
 
 	--Export buttons
-	StatusFrame.Section4.Content.Button1 = CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
+	StatusFrame.Section4.Content.Button1 =
+		CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
 	StatusFrame.Section4.Content.Button1:SetSize(100, 23)
 	StatusFrame.Section4.Content.Button1:SetPoint("LEFT", StatusFrame.Section4.Content, "LEFT")
 	StatusFrame.Section4.Content.Button1:SetText("|cff7289DADiscord")
 	StatusFrame.Section4.Content.Button1:SkinButton()
-	StatusFrame.Section4.Content.Button2 = CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
+	StatusFrame.Section4.Content.Button2 =
+		CreateFrame("Button", nil, StatusFrame.Section4.Content, "UIPanelButtonTemplate")
 	StatusFrame.Section4.Content.Button2:SetSize(100, 23)
 	StatusFrame.Section4.Content.Button2:SetPoint("RIGHT", StatusFrame.Section4.Content, "RIGHT")
 	StatusFrame.Section4.Content.Button2:SetText("|cff6e5494Github")

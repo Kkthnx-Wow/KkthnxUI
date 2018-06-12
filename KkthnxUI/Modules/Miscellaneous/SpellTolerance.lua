@@ -7,12 +7,13 @@ local tostring = tostring
 
 local GetCVar = _G.GetCVar
 local SetCVar = _G.SetCVar
+local GetNetStats = _G.GetNetStats
 
 local SpellTolerance = CreateFrame("Frame")
 local int = 5
 
 local _, _, _, lag = GetNetStats()
-local function LatencyUpdate(self, elapsed)
+local function LatencyUpdate(_, elapsed)
   int = int - elapsed
   if int < 0 then
     if K.Legion715 then
