@@ -57,7 +57,6 @@ end
 -- also taking the frame size into consideration.
 local function GeneratePoints(frame)
 	local width, height = GetScreenWidth(), GetScreenHeight() -- screen size
-	local w, h = frame:GetSize() -- frame size
 
 	-- Center point relative to the bottom left corner of the screen
 	-- By using this as a reference, frame size (or the lack of) won't affect positioning!
@@ -308,7 +307,7 @@ Movers:SetScript(
 			local Data = KkthnxUIData[Realm][Name].Movers
 
 			for Frame, Position in pairs(Data) do
-				-- local Frame = _G[Frame] -- Was already defined as a loop above.
+				local Frame = _G[Frame] -- Was already defined as a loop above.
 				local IsRegistered = self:IsRegisteredFrame(Frame)
 
 				if Frame and IsRegistered then
