@@ -5,13 +5,11 @@ local _G = _G
 local find = string.find
 local math_floor = math.floor
 local format = string.format
-local pairs = pairs
 local sub = string.sub
 local select = select
 
 local SetTooltipMoney = _G.SetTooltipMoney
 local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
-local hooksecurefunc = _G.hooksecurefunc
 local CanInspect = _G.CanInspect
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
@@ -85,23 +83,6 @@ local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
 
 local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
-
-local tooltips = {
-	GameTooltip,
-	ItemRefTooltip,
-	ItemRefShoppingTooltip1,
-	ItemRefShoppingTooltip2,
-	ItemRefShoppingTooltip3,
-	AutoCompleteBox,
-	FriendsTooltip,
-	ShoppingTooltip1,
-	ShoppingTooltip2,
-	ShoppingTooltip3,
-	WorldMapTooltip,
-	WorldMapCompareTooltip1,
-	WorldMapCompareTooltip2,
-	WorldMapCompareTooltip3
-}
 
 local ignoreSubType = {
 	L["Tooltip"].Other == true,
@@ -478,6 +459,46 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 	end
 end
 
+function Module:SetQualityBorderColor()
+	if C["Tooltip"].ItemQualityBorder and not GameTooltip:IsForbidden() then
+		local _, link = GameTooltip:GetItem()
+
+		if not link then
+			return
+		end
+
+		self.currentItem = link
+
+		local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
+		if not quality then
+			quality = 0
+		end
+
+		local r, g, b
+		if type == L["Tooltip"].Quest then
+			r, g, b = 1, 1, 0
+		elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
+			r, g, b = 0.4, 0.73, 1
+		elseif subType == L["Tooltip"].Companion_Pets then
+			local _, id = C_PetJournal_FindPetIDByName(name)
+			if id then
+				local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
+				if petQuality then
+					quality = petQuality - 1
+				end
+			end
+		end
+
+		if quality > 1 and not r then
+			r, g, b = GetItemQualityColor(quality)
+		end
+
+		if r then
+			self:SetBackdropBorderColor(r, g, b)
+		end
+	end
+end
+
 function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	if tt:IsForbidden() then
 		return
@@ -541,40 +562,6 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		tt.itemCleared = true
 	end
-
-	if C["Tooltip"].ItemQualityBorder then
-		local _, link = tt:GetItem()
-		if not link then
-			return
-		end
-		tt.currentItem = link
-
-		local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
-		if not quality then
-			quality = 0
-		end
-
-		local r, g, b
-		if type == L["Tooltip"].Quest then
-			r, g, b = 1, 1, 0
-		elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
-			r, g, b = 0.4, 0.73, 1
-		elseif subType == L["Tooltip"].Companion_Pets then
-			local _, id = C_PetJournal_FindPetIDByName(name)
-			if id then
-				local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
-				if petQuality then
-					quality = petQuality - 1
-				end
-			end
-		end
-		if quality > 1 and not r then
-			r, g, b = GetItemQualityColor(quality)
-		end
-		if r then
-			tt:SetBackdropBorderColor(r, g, b)
-		end
-	end
 end
 
 function Module:GameTooltip_ShowStatusBar(tt)
@@ -594,11 +581,11 @@ function Module:SetStyle(tt)
 		return
 	end
 
-	for _, tt in pairs(tooltips) do
-		tt:SetTemplate("Transparent", true)
-		local r, g, b = tt:GetBackdropColor()
-		tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
-	end
+	tt:SetTemplate("Transparent")
+	local r, g, b = tt:GetBackdropColor()
+	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
+
+	Module.SetQualityBorderColor(tt)
 end
 
 function Module:MODIFIER_STATE_CHANGED(_, key)
@@ -738,7 +725,7 @@ function Module:OnEnable()
 	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
-	BNToastFrame:SetTemplate("Transparent", true)
+	BNToastFrame:SetTemplate("Transparent")
 	BNToastFrameCloseButton:SetSize(32, 32)
 	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 4, 4)
 	BNToastFrameCloseButton:SkinCloseButton()
@@ -747,20 +734,7 @@ function Module:OnEnable()
 	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
 
 	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
-	GameTooltipStatusBar:SetStatusBarTexture(TooltipTexture)
-	GameTooltipStatusBar:CreateShadow()
-	GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BORDER")
-	GameTooltipStatusBar.Background:SetAllPoints()
-	GameTooltipStatusBar.Background:SetColorTexture(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
-	GameTooltipStatusBar:SetScript("OnValueChanged", nil)
-	GameTooltipStatusBar:ClearAllPoints()
-	GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
-	GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
+	GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 	GameTooltipStatusBar.text:SetFont(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline and "OUTLINE" or "")
@@ -780,7 +754,6 @@ function Module:OnEnable()
 	K.Movers:RegisterFrame(GameTooltipAnchor)
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")
-	self:SecureHook("GameTooltip_ShowStatusBar")
 	self:SecureHook("SetItemRef")
 	self:SecureHook(GameTooltip, "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
@@ -789,42 +762,6 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
-	self:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
-	self:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") --There has to be a more elegant way of doing this.
-
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
-
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
-	self:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
-	ItemRefCloseButton:SkinCloseButton()
-	for _, tt in pairs(tooltips) do
-		self:SecureHookScript(tt, "OnShow", "SetStyle")
-	end
-
-	-- World Quest Reward Icon
-	WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	hooksecurefunc(
-		WorldMapTooltip.ItemTooltip.IconBorder,
-		"SetVertexColor",
-		function(self, r, g, b)
-			self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
-			self:SetTexture("")
-		end
-	)
-	hooksecurefunc(
-		WorldMapTooltip.ItemTooltip.IconBorder,
-		"Hide",
-		function(self)
-			self:GetParent().Backdrop:SetBackdropBorderColor(
-				C["Media"].BorderColor[1],
-				C["Media"].BorderColor[2],
-				C["Media"].BorderColor[3]
-			)
-		end
-	)
-	WorldMapTooltip.ItemTooltip:CreateBackdrop("") -- No backdrop needs to happen, only a border.
-	WorldMapTooltip.ItemTooltip.Backdrop:SetAllPoints(WorldMapTooltip.ItemTooltip.Icon)
-	WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(3)
-	WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
-	WorldMapTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WorldMapTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
 end

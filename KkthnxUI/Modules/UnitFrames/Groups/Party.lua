@@ -67,19 +67,19 @@ function Module:CreateParty()
 		self.Portrait:SetFrameStrata("BACKGROUND")
 		self.Portrait:SetFrameLevel(1)
 		self.Portrait:SetSize(32, 32)
-		self.Portrait:SetPoint("LEFT", self, 2, 0)
+		self.Portrait:SetPoint("LEFT", self, 1, 0)
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 7)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(32, 32)
-		self.Portrait:SetPoint("LEFT", self, 2, 0)
+		self.Portrait:SetPoint("LEFT", self, 1, 0)
 
 		self.Portrait.Background = CreateFrame("Frame", self:GetName() .. "_2DPortrait", self)
 		self.Portrait.Background:SetTemplate("Transparent")
 		self.Portrait.Background:SetFrameStrata("LOW")
 		self.Portrait.Background:SetFrameLevel(1)
 		self.Portrait.Background:SetSize(32, 32)
-		self.Portrait.Background:SetPoint("LEFT", self, 2, 0)
+		self.Portrait.Background:SetPoint("LEFT", self, 1, 0)
 		if C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end

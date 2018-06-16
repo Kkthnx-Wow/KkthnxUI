@@ -20,17 +20,6 @@ local QUEST_TRACKER_MODULE = _G.QUEST_TRACKER_MODULE
 local SCENARIO_TRACKER_MODULE = _G.SCENARIO_TRACKER_MODULE
 local WORLD_QUEST_TRACKER_MODULE = _G.WORLD_QUEST_TRACKER_MODULE
 
-local function SetStatusBarColor(bar, value, max)
-	local current = (not max and value) or (value and max and max ~= 0 and value / max)
-
-	if not (bar and current) then
-		return
-	end
-
-	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-	bar:SetStatusBarColor(r, g, b)
-end
-
 local function SkinObjectiveTracker()
 	local ObjectiveTrackerFrame = _G["ObjectiveTrackerFrame"]
 
@@ -98,7 +87,7 @@ local function SkinObjectiveTracker()
 			return
 		end
 
-		SetStatusBarColor(self.Bar, value, 100)
+		Module:StatusBarColorGradient(self.Bar, value, 100)
 	end
 
 	local function SkinItemButton(_, block)

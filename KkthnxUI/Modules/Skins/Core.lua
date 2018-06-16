@@ -11,6 +11,17 @@ local IsAddOnLoaded = _G.IsAddOnLoaded
 Module.SkinFuncs = {}
 Module.SkinFuncs["KkthnxUI"] = {}
 
+function Module:StatusBarColorGradient(bar, value, max)
+	local current = (not max and value) or (value and max and max ~= 0 and value / max)
+
+	if not (bar and current) then
+		return
+	end
+
+	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+	bar:SetStatusBarColor(r, g, b)
+end
+
 -- DropDownMenu library support
 function Module:SkinLibDropDownMenu(prefix)
 	if _G[prefix .. "_UIDropDownMenu_CreateFrames"] and not Module[prefix .. "_UIDropDownMenuSkinned"] then

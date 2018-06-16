@@ -48,10 +48,10 @@
   <Include file="Modules\Miscellaneous\Load_Miscellaneous.xml"/>
   <!-- Quests -->
   <Include file="Modules\Quests\Load_Quests.xml"/>
-  <!-- Skins -->
-  <Include file="Modules\Skins\Load_Skins.xml"/>
   <!-- Tooltip -->
   <Include file="Modules\Tooltip\Load_Tooltip.xml"/>
+  <!-- Skins -->
+  <Include file="Modules\Skins\Load_Skins.xml"/>
   <!-- Debug -->
   <Script file="Developer\Debug.lua"/>
 </Ui>

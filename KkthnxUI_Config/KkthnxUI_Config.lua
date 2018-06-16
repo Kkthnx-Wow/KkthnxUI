@@ -604,62 +604,60 @@ local function CreateConfigColorPicker(parent, group, option, value)
 
 	local Button = CreateFrame("Button", nil, parent)
 	Button:SetTemplate("Transparent")
-	Button:SetFrameLevel(parent:GetFrameLevel())
 	Button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
 	Button:SetSize(50, 18)
 	Button.Colors = value
 	Button.Type = "Color"
 	Button.Group = group
 	Button.Option = option
-
 	Button:RegisterForClicks("AnyUp")
 	Button:SetScript(
-		"OnClick",
-		function(self, button)
-			if (button == "RightButton") then
-				ResetColor(self)
-			else
-				if ColorPickerFrame:IsShown() then
+	"OnClick",
+	function(self, button)
+		if (button == "RightButton") then
+			ResetColor(self)
+		else
+			if ColorPickerFrame:IsShown() then
+				return
+			end
+
+			local OldR, OldG, OldB, OldA = unpack(value)
+
+			local function ShowColorPicker(r, g, b, a, changedCallback, sameCallback)
+				HideUIPanel(ColorPickerFrame)
+				ColorPickerFrame.button = self
+				ColorPickerFrame:SetColorRGB(r, g, b)
+				ColorPickerFrame.hasOpacity = (a ~= nil and a < 1)
+				ColorPickerFrame.opacity = a
+				ColorPickerFrame.previousValues = {OldR, OldG, OldB, OldA}
+				ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc =
+				changedCallback,
+				changedCallback,
+				sameCallback
+				ShowUIPanel(ColorPickerFrame)
+			end
+
+			local function ColorCallback(restore)
+				if (restore ~= nil or self ~= ColorPickerFrame.button) then
 					return
 				end
 
-				local OldR, OldG, OldB, OldA = unpack(value)
+				local NewA, NewR, NewG, NewB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
 
-				local function ShowColorPicker(r, g, b, a, changedCallback, sameCallback)
-					HideUIPanel(ColorPickerFrame)
-					ColorPickerFrame.button = self
-					ColorPickerFrame:SetColorRGB(r, g, b)
-					ColorPickerFrame.hasOpacity = (a ~= nil and a < 1)
-					ColorPickerFrame.opacity = a
-					ColorPickerFrame.previousValues = {OldR, OldG, OldB, OldA}
-					ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc =
-						changedCallback,
-						changedCallback,
-						sameCallback
-					ShowUIPanel(ColorPickerFrame)
-				end
-
-				local function ColorCallback(restore)
-					if (restore ~= nil or self ~= ColorPickerFrame.button) then
-						return
-					end
-
-					local NewA, NewR, NewG, NewB = OpacitySliderFrame:GetValue(), ColorPickerFrame:GetColorRGB()
-
-					value = {NewR, NewG, NewB, NewA}
-					KkthnxUIConfig:SetOption(group, option, value)
-					self.Color:SetVertexColor(NewR, NewG, NewB, NewA)
-				end
-
-				local function SameColorCallback()
-					value = {OldR, OldG, OldB, OldA}
-					KkthnxUIConfig:SetOption(group, option, value)
-					self.Color:SetVertexColor(OldR, OldG, OldB, OldA)
-				end
-
-				ShowColorPicker(OldR, OldG, OldB, OldA, ColorCallback, SameColorCallback)
+				value = {NewR, NewG, NewB, NewA}
+				KkthnxUIConfig:SetOption(group, option, value)
+				self.Color:SetVertexColor(NewR, NewG, NewB, NewA)
 			end
+
+			local function SameColorCallback()
+				value = {OldR, OldG, OldB, OldA}
+				KkthnxUIConfig:SetOption(group, option, value)
+				self.Color:SetVertexColor(OldR, OldG, OldB, OldA)
+			end
+
+			ShowColorPicker(OldR, OldG, OldB, OldA, ColorCallback, SameColorCallback)
 		end
+	end
 	)
 
 	Button.Name = Button:CreateFontString(nil, "OVERLAY")
@@ -767,10 +765,10 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	DropDown.Current = Current
 	DropDown.List = List
 	DropDown:HookScript(
-		"OnHide",
-		function()
-			List:Hide()
-		end
+	"OnHide",
+	function()
+		List:Hide()
+	end
 	)
 
 	Button.Tex = ButtonTex
@@ -963,7 +961,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 	local L = KkthnxUI[3]
-	local SettingText = KkthnxUIConfigPerAccount and L.Config.CharSettings or L.Config.GlobalSettings
+	local SettingText = KkthnxUIConfigPerAccount and L["Config"].CharSettings or L["Config"].GlobalSettings
 
 	self:UpdateColorDefaults()
 
@@ -1015,11 +1013,11 @@ function KkthnxUIConfig:CreateConfigWindow()
 	InfoFrame.Text:SetFont(C["Media"].Font, 14)
 	InfoFrame.Text:SetShadowOffset(1.25, -1.25)
 	InfoFrame.Text:SetText(
-		"Welcome to |cff4488ffKkthnxUI|r v" ..
-			K.Version ..
-				" " ..
-					K.Client ..
-						", " .. string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)
+	"Welcome to |cff4488ffKkthnxUI|r v" ..
+	K.Version ..
+	" " ..
+	K.Client ..
+	", " .. string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)
 	)
 	InfoFrame.Text:SetPoint("CENTER", InfoFrame, 0, 0)
 
@@ -1027,10 +1025,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 	CloseButton:SkinButton()
 	CloseButton:SetSize(138, 22)
 	CloseButton:SetScript(
-		"OnClick",
-		function()
-			ConfigFrame:Hide()
-		end
+	"OnClick",
+	function()
+		ConfigFrame:Hide()
+	end
 	)
 	CloseButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	CloseButton:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 0, -27)
@@ -1046,10 +1044,10 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ReloadButton:SkinButton()
 	ReloadButton:SetSize(148, 22)
 	ReloadButton:SetScript(
-		"OnClick",
-		function()
-			ReloadUI()
-		end
+	"OnClick",
+	function()
+		ReloadUI()
+	end
 	)
 	ReloadButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ReloadButton:SetPoint("LEFT", CloseButton, "RIGHT", 5, 0)
@@ -1064,16 +1062,16 @@ function KkthnxUIConfig:CreateConfigWindow()
 	GlobalButton:SkinButton()
 	GlobalButton:SetSize(148, 22)
 	GlobalButton:SetScript(
-		"OnClick",
-		function()
-			if not KkthnxUIConfigPerAccount then
-				KkthnxUIConfigPerAccount = true
-			else
-				KkthnxUIConfigPerAccount = false
-			end
-
-			ReloadUI()
+	"OnClick",
+	function()
+		if not KkthnxUIConfigPerAccount then
+			KkthnxUIConfigPerAccount = true
+		else
+			KkthnxUIConfigPerAccount = false
 		end
+
+		ReloadUI()
+	end
 	)
 	GlobalButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	GlobalButton:SetPoint("LEFT", ReloadButton, "RIGHT", 5, 0)
@@ -1148,8 +1146,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 			Button:SetScript("OnClick", GroupButtonOnClick)
 			Button:SetFrameLevel(LeftWindow:GetFrameLevel() + 1)
 
-			local noHover
-			if Button.SetHighlightTexture and not Button.Hover and not noHover then
+			if Button.SetHighlightTexture and not Button.Hover then
 				Button.Hover = Button:CreateTexture(nil, "ARTWORK")
 				Button.Hover:SetVertexColor(Colors.r, Colors.g, Colors.b, 0.8)
 				Button.Hover:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
@@ -1172,16 +1169,16 @@ function KkthnxUIConfig:CreateConfigWindow()
 			Button.Active:Hide()
 
 			GroupPage:HookScript(
-				"OnShow",
-				function()
-					Button.Active:Show()
-				end
+			"OnShow",
+			function()
+				Button.Active:Show()
+			end
 			)
 			GroupPage:HookScript(
-				"OnHide",
-				function()
-					Button.Active:Hide()
-				end
+			"OnHide",
+			function()
+				Button.Active:Hide()
+			end
 			)
 
 			if (ButtonCount == 0) then
@@ -1198,15 +1195,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ShowGroup("General") -- Show General options by default
 	ConfigFrame:Hide()
 	GameMenuFrame:HookScript(
-		"OnShow",
-		function()
-			ConfigFrame:Hide()
-		end
+	"OnShow",
+	function()
+		ConfigFrame:Hide()
+	end
 	)
 end
 
 do
-	function SlashCmdList.CONFIG()
+	SlashCmdList["CONFIG"] = function()
 		if (not KkthnxUIConfigFrame) then
 			KkthnxUIConfig:CreateConfigWindow()
 		end

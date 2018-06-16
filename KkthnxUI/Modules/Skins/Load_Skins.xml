@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
+<Ui
+    xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Skins -->
     <Include file="Core.lua"/>
-
-    <Include file="Blizzard\BattlegroundMap.lua"/>
-    <Include file="Blizzard\Collectables.lua"/>
-    <Include file="Blizzard\Contribution.lua"/>
-    <Include file="Blizzard\LossControl.lua"/>
-    <Include file="Blizzard\Miscellaneous.lua"/>
-    <Include file="Blizzard\ObjectiveTracker.lua"/>
-    <Include file="Blizzard\PetBattle.lua"/>
-    <Include file="Blizzard\ScriptErrors.lua"/>
-    <Include file="Blizzard\Worldmap.lua"/>
-
     <Include file="Addons\Bagnon.lua"/>
     <Include file="Addons\BigWigs.lua"/>
     <Include file="Addons\DBM.lua"/>
@@ -21,4 +11,16 @@
     <Include file="Addons\Skada.lua"/>
     <Include file="Addons\Spy.lua"/>
     <Include file="Addons\WeakAuras.lua"/>
+
+    <Include file="Blizzard\BattlegroundMap.lua"/>
+    <Include file="Blizzard\Collectables.lua"/>
+    <Include file="Blizzard\Contribution.lua"/>
+    <Include file="Blizzard\DeathRecap.lua"/>
+    <Include file="Blizzard\LossControl.lua"/>
+    <Include file="Blizzard\Miscellaneous.lua"/>
+    <Include file="Blizzard\ObjectiveTracker.lua"/>
+    <Include file="Blizzard\PetBattle.lua"/>
+    <Include file="Blizzard\ScriptErrors.lua"/>
+    <Include file="Blizzard\Tooltip.lua"/>
+    <Include file="Blizzard\Worldmap.lua"/>
 </Ui>

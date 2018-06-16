@@ -14,8 +14,25 @@ end
 local _G = _G
 local select = select
 
-local UIParent = _G.UIParent
 local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
+local UnitIsUnit = _G.UnitIsUnit
+
+function Module:Callback(_, unit)
+	if unit then
+		if UnitIsUnit(unit, "player") then
+			self.Power:Show()
+			self.Name:Hide()
+			self.Castbar:SetAlpha(0)
+			self.RaidTargetIndicator:SetAlpha(0)
+		else
+			self.Power:Show()
+			self.Name:Show()
+			self.Castbar:SetAlpha(1)
+			self.RaidTargetIndicator:SetAlpha(1)
+		end
+	end
+end
 
 function Module:CreateNameplates()
 	local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
@@ -35,7 +52,12 @@ function Module:CreateNameplates()
 
 	self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	self.Health.Background:SetColorTexture(
+		C["Media"].BackdropColor[1],
+		C["Media"].BackdropColor[2],
+		C["Media"].BackdropColor[3],
+		C["Media"].BackdropColor[4]
+	)
 
 	self.Health.frequentUpdates = true
 	self.Health.colorReaction = true
@@ -49,7 +71,11 @@ function Module:CreateNameplates()
 		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self.Health.Value:SetFontObject(Font)
-		self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), self.Health:GetHeight() - 2, select(3, self.Health.Value:GetFont()))
+		self.Health.Value:SetFont(
+			select(1, self.Health.Value:GetFont()),
+			self.Health:GetHeight() - 2,
+			select(3, self.Health.Value:GetFont())
+		)
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	end
 
@@ -58,7 +84,10 @@ function Module:CreateNameplates()
 	self.Level:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Level:SetFontObject(Font)
 	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
-	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
+	self:Tag(
+		self.Level,
+		"[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]"
+	)
 
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Name:SetJustifyH("LEFT")
@@ -78,14 +107,19 @@ function Module:CreateNameplates()
 
 	self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	self.Power.Background:SetColorTexture(
+		C["Media"].BackdropColor[1],
+		C["Media"].BackdropColor[2],
+		C["Media"].BackdropColor[3],
+		C["Media"].BackdropColor[4]
+	)
 
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
 	self.Power.Smooth = C["Nameplates"].Smooth
 	self.Power.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 
-	self.Debuffs = CreateFrame("Frame", self:GetName().."Debuffs", self)
+	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs:SetHeight(C["Nameplates"].Height)
 	self.Debuffs:SetWidth(self:GetWidth())
 	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 18)
@@ -114,7 +148,12 @@ function Module:CreateNameplates()
 	self.Castbar.Background = self.Castbar:CreateTexture(nil, "BORDER")
 	self.Castbar.Background:SetAllPoints(self.Castbar)
 	self.Castbar.Background:SetTexture(NameplateTexture)
-	self.Castbar.Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	self.Castbar.Background:SetVertexColor(
+		C["Media"].BackdropColor[1],
+		C["Media"].BackdropColor[2],
+		C["Media"].BackdropColor[3],
+		C["Media"].BackdropColor[4]
+	)
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetSize(32, self:GetHeight())
@@ -163,8 +202,6 @@ function Module:CreateNameplates()
 	self.QuestIndicator:SetSize(14, 14)
 	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -7, 7)
 
-	Module.CreateClassModules(self, 194, 12, 6)
-
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
@@ -174,9 +211,12 @@ function Module:CreateNameplates()
 	self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
 	self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
 
-	self.Health:SetScript("OnEvent", function()
-		Module.ThreatPlate(self)
-	end)
+	self.Health:SetScript(
+		"OnEvent",
+		function()
+			Module.ThreatPlate(self)
+		end
+	)
 
 	self.Health.PostUpdate = function()
 		Module.ThreatPlate(self, true)

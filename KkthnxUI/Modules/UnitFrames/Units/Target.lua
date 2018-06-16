@@ -102,7 +102,7 @@ function Module:CreateTarget()
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("BOTTOM", self.Portrait, "TOP", 0, 4)
+	self.Level:SetPoint("TOP", self.Portrait, 0, 16)
 	self.Level:SetFontObject(UnitframeFont)
 	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")

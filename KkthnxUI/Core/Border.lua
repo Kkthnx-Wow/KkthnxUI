@@ -13,7 +13,7 @@ local type = _G.type
 -- Default border values
 local borderOffset = 4
 local borderSize = 16
-local borderPath = [[Interface\AddOns\]]..ADDON..[[\Media\Border\Border.tga]]
+local borderPath = [[Interface\AddOns\]] .. ADDON .. [[\Media\Border\Border.tga]]
 
 -- Local cache of our borders
 -- *We don't expose these directly to the modules,
@@ -25,7 +25,6 @@ local borderCache = {}
 -- when border has been created in the first place,
 -- so there's no need for any additional existence checks.
 local BorderTemplate = {
-
 	-- Set or update the border color and alpha.
 	SetBorderColor = function(self, r, g, b, a)
 		local borderColor = C["Media"].BorderColor
@@ -51,14 +50,12 @@ local BorderTemplate = {
 			cache[id]:SetVertexColor(r, g, b, a)
 		end
 	end,
-
 	-- Retrieve the current border color and alpha.
 	GetBorderColor = function(self)
 		-- All textures have the same vertex color,
 		-- so just retrieve it from the first one
 		return borderCache[self][1]:GetVertexColor()
 	end,
-
 	-- Show the border
 	ShowBorder = function(self)
 		local cache = borderCache[self]
@@ -66,7 +63,6 @@ local BorderTemplate = {
 			cache[id]:Show()
 		end
 	end,
-
 	-- Hide the border
 	HideBorder = function(self)
 		local cache = borderCache[self]
@@ -101,63 +97,63 @@ function K.CreateBorder(object, offset, size, path)
 
 	-- First create the corners
 	local topLeft = object:CreateTexture()
-	topLeft:SetDrawLayer("OVERLAY")
+	topLeft:SetDrawLayer("OVERLAY", 7)
 	topLeft:SetPoint("TOPLEFT", object, "TOPLEFT", offset - size, -offset + size)
 	topLeft:SetSize(size, size)
 	topLeft:SetTexture(path)
-	topLeft:SetTexCoord(4/8, 5/8, 0, 1)
+	topLeft:SetTexCoord(4 / 8, 5 / 8, 0, 1)
 
 	local topRight = object:CreateTexture()
-	topRight:SetDrawLayer("OVERLAY")
+	topRight:SetDrawLayer("OVERLAY", 7)
 	topRight:SetPoint("TOPRIGHT", object, "TOPRIGHT", -offset + size, -offset + size)
 	topRight:SetSize(size, size)
 	topRight:SetTexture(path)
-	topRight:SetTexCoord(5/8, 6/8, 0, 1)
+	topRight:SetTexCoord(5 / 8, 6 / 8, 0, 1)
 
 	local bottomLeft = object:CreateTexture()
-	bottomLeft:SetDrawLayer("OVERLAY")
+	bottomLeft:SetDrawLayer("OVERLAY", 7)
 	bottomLeft:SetPoint("BOTTOMLEFT", object, "BOTTOMLEFT", offset - size, offset - size)
 	bottomLeft:SetSize(size, size)
 	bottomLeft:SetTexture(path)
-	bottomLeft:SetTexCoord(6/8, 7/8, 0, 1)
+	bottomLeft:SetTexCoord(6 / 8, 7 / 8, 0, 1)
 
 	local bottomRight = object:CreateTexture()
-	bottomRight:SetDrawLayer("OVERLAY")
+	bottomRight:SetDrawLayer("OVERLAY", 7)
 	bottomRight:SetPoint("BOTTOMRIGHT", object, "BOTTOMRIGHT", -offset + size, offset - size)
 	bottomRight:SetSize(size, size)
 	bottomRight:SetTexture(path)
-	bottomRight:SetTexCoord(7/8, 8/8, 0, 1)
+	bottomRight:SetTexCoord(7 / 8, 8 / 8, 0, 1)
 
 	-- Then create the sides, which are connected to the corners
 	local left = object:CreateTexture()
-	left:SetDrawLayer("OVERLAY")
+	left:SetDrawLayer("OVERLAY", 7)
 	left:SetPoint("TOPLEFT", topLeft, "BOTTOMLEFT")
 	left:SetPoint("BOTTOMRIGHT", bottomLeft, "TOPRIGHT")
 	left:SetTexture(path)
-	left:SetTexCoord(0/8, 1/8, 0, 1)
+	left:SetTexCoord(0 / 8, 1 / 8, 0, 1)
 
 	local right = object:CreateTexture()
-	right:SetDrawLayer("OVERLAY")
+	right:SetDrawLayer("OVERLAY", 7)
 	right:SetPoint("TOPRIGHT", topRight, "BOTTOMRIGHT")
 	right:SetPoint("BOTTOMLEFT", bottomRight, "TOPLEFT")
 	right:SetTexture(path)
-	right:SetTexCoord(1/8, 2/8, 0, 1)
+	right:SetTexCoord(1 / 8, 2 / 8, 0, 1)
 
 	-- top and bottom needs to be rotated 90 degrees clockwise,
-	-- so we need to use the (ULx,ULy,LLx,LLy,URx,URy,LRx,LRy) version of texcoord here.
+	-- so we need to use the (ULx, ULy, LLx, LLy, URx, URy, LRx, LRy) version of texcoord here.
 	local top = object:CreateTexture()
-	top:SetDrawLayer("OVERLAY")
+	top:SetDrawLayer("OVERLAY", 7)
 	top:SetPoint("TOPLEFT", topLeft, "TOPRIGHT")
 	top:SetPoint("BOTTOMRIGHT", topRight, "BOTTOMLEFT")
 	top:SetTexture(path)
-	top:SetTexCoord(2/8,1, 3/8,1, 2/8,0, 3/8,0)
+	top:SetTexCoord(2 / 8, 1, 3 / 8, 1, 2 / 8, 0, 3 / 8, 0)
 
 	local bottom = object:CreateTexture()
-	bottom:SetDrawLayer("OVERLAY")
+	bottom:SetDrawLayer("OVERLAY", 7)
 	bottom:SetPoint("BOTTOMLEFT", bottomLeft, "BOTTOMRIGHT")
 	bottom:SetPoint("TOPRIGHT", bottomRight, "TOPLEFT")
 	bottom:SetTexture(path)
-	bottom:SetTexCoord(3/8,1, 4/8,1, 3/8,0, 4/8,0)
+	bottom:SetTexCoord(3 / 8, 1, 4 / 8, 1, 3 / 8, 0, 4 / 8, 0)
 
 	-- Store the border textures in our local cache,
 	-- without directly exposing the textures to the modules.
@@ -165,7 +161,7 @@ function K.CreateBorder(object, offset, size, path)
 
 	-- Embed our custom border template methods into the frame,
 	-- and replace some standard Blizzard API calls for compatibility.
-	for name,func in pairs(BorderTemplate) do
+	for name, func in pairs(BorderTemplate) do
 		object[name] = func
 	end
 end
