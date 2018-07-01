@@ -6,7 +6,7 @@ local _G = _G
 
 local DisableAddOn = _G.DisableAddOn
 local ReloadUI = _G.ReloadUI
-local UNKNOWN = _G.UNKNOWN
+local IsAddOnLoaded = _G.IsAddOnLoaded
 
 -- Force user to disable KkthnxUI if another AddOn is enabled with it!
 if IsAddOnLoaded("KkthnxUI") and IsAddOnLoaded("Tukui") or IsAddOnLoaded("ElvUI") or IsAddOnLoaded("DiabolicUI") or IsAddOnLoaded("ShestakUI") then

@@ -5,7 +5,6 @@ local _G = _G
 local string_format = string.format
 
 local Movers = K.Movers
-local MirrorTimerFont = K.GetFont(C["Unitframe"].Font)
 local MirrorTimerTexture = K.GetTexture(C["Unitframe"].Texture)
 
 local function MirrorTimer_OnUpdate(frame, elapsed)
@@ -41,9 +40,16 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	mirrorTimer:SetSize(222, 22)
 	mirrorTimer.label = text
 	statusBar:SetStatusBarTexture(MirrorTimerTexture)
-	statusBar:SetTemplate("Transparent")
 	statusBar:SetSize(222, 22)
 	text:Hide()
+
+	statusBar.Background = statusBar:CreateTexture(nil, "BACKGROUND", -1)
+	statusBar.Background:SetAllPoints()
+	statusBar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	statusBar.Border = CreateFrame("Frame", nil, statusBar)
+	statusBar.Border:SetAllPoints()
+	K.CreateBorder(statusBar.Border)
 
 	statusBar.spark = statusBar:CreateTexture(nil, "OVERLAY")
 	statusBar.spark:SetWidth(128)

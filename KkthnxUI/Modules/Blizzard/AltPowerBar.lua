@@ -1,20 +1,16 @@
-local K, C, L = unpack(select(2, ...))
-if IsAddOnLoaded("SimplePowerBar") then return end
+local K, C = unpack(select(2, ...))
+if IsAddOnLoaded("SimplePowerBar") then
+	return
+end
 
--- Lua API
 local select = select
 local strupper = string.upper
 
--- Wow API
 local UnitAlternatePowerInfo = UnitAlternatePowerInfo
 local UnitAlternatePowerTextureInfo = UnitAlternatePowerTextureInfo
 local UnitPower = UnitPower
 local UnitPowerMax = UnitPowerMax
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: GameTooltip, ALTERNATE_POWER_INDEX
-
-local PowerBarAltFont = K.GetFont(C["Unitframe"].Font)
 local PowerBarAltTexture = K.GetTexture(C["Unitframe"].Texture)
 
 -- Skin AltPowerBar(by Tukz)
@@ -62,7 +58,14 @@ Movers:RegisterFrame(holder)
 local bar = CreateFrame("Frame", "UIAltPowerBar", UIParent)
 bar:SetSize(220, 22)
 bar:SetAllPoints(AltPowerBarHolder)
-bar:SetTemplate("Transparent", true)
+
+bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
+bar.Background:SetAllPoints()
+bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+bar.Border = CreateFrame("Frame", nil, bar)
+bar.Border:SetAllPoints()
+K.CreateBorder(bar.Border)
 
 -- Event handling
 bar:RegisterEvent("UNIT_POWER")

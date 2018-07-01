@@ -159,7 +159,15 @@ local function createSlot(id)
 	iconFrame:SetHeight(iconsize)
 	iconFrame:SetWidth(iconsize)
 	iconFrame:SetPoint("RIGHT", frame)
-	iconFrame:SetTemplate("Transparent", true)
+
+	iconFrame.Backgrounds = iconFrame:CreateTexture(nil, "BACKGROUND", -1)
+	iconFrame.Backgrounds:SetAllPoints()
+	iconFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	iconFrame.Borders = CreateFrame("Frame", nil, iconFrame)
+	iconFrame.Borders:SetAllPoints()
+	K.CreateBorder(iconFrame.Borders)
+
 	frame.iconFrame = iconFrame
 
 	local icon = iconFrame:CreateTexture(nil, "ARTWORK")
@@ -287,6 +295,7 @@ function Module:LOOT_OPENED(_, autoloot)
 			slot.name:SetText(item)
 			if color then
 				slot.name:SetTextColor(color.r, color.g, color.b)
+				slot.iconFrame.Borders:SetBackdropBorderColor(color.r, color.g, color.b)
 			end
 			slot.icon:SetTexture(textureID)
 
@@ -298,18 +307,15 @@ function Module:LOOT_OPENED(_, autoloot)
 			local questTexture = slot.questTexture
 			if (questId and not isActive) then
 				questTexture:Show()
-				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
+				slot.iconFrame.Borders:SetBackdropBorderColor(1, 1, 0)
+				slot.name:SetTextColor(1, 1, 0)
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
-				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
+				slot.iconFrame.Borders:SetBackdropBorderColor(1, 1, 0)
+				slot.name:SetTextColor(1, 1, 0)
 			else
 				questTexture:Hide()
-				slot.iconFrame:SetBackdropBorderColor(
-					C["Media"].BorderColor[1],
-					C["Media"].BorderColor[2],
-					C["Media"].BorderColor[3],
-					C["Media"].BorderColor[4]
-				)
+				slot.iconFrame.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 			end
 
 			slot:Enable()
@@ -356,20 +362,25 @@ function Module:OnEnable()
 	lootFrame:SetClampedToScreen(true)
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
-	lootFrame:SetTemplate("Transparent")
+
+	lootFrame.Backgrounds = lootFrame:CreateTexture(nil, "BACKGROUND", -1)
+	lootFrame.Backgrounds:SetAllPoints()
+	lootFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	lootFrame.Borders = CreateFrame("Frame", nil, lootFrame)
+	lootFrame.Borders:SetAllPoints()
+	K.CreateBorder(lootFrame.Borders)
+
 	lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")
 	lootFrame.title:FontTemplate(nil, nil, "OUTLINE")
 	lootFrame.title:SetPoint("BOTTOMLEFT", lootFrame, "TOPLEFT", 0, 4)
 	lootFrame.slots = {}
-	lootFrame:SetScript(
-		"OnHide",
-		function()
-			StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
-			CloseLoot()
-		end
-	)
+	lootFrame:SetScript("OnHide", function()
+		StaticPopup_Hide("CONFIRM_LOOT_DISTRIBUTION")
+		CloseLoot()
+	end)
 
 	self:RegisterEvent("LOOT_OPENED")
 	self:RegisterEvent("LOOT_SLOT_CLEARED")
@@ -381,7 +392,6 @@ function Module:OnEnable()
 		K.Movers:RegisterFrame(lootFrameHolder)
 	end
 
-	-- Fuzz
 	LootFrame:UnregisterAllEvents()
 	tinsert(UISpecialFrames, "KkthnxLootFrame")
 

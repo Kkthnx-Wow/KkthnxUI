@@ -15,7 +15,7 @@ local Slots = {
 	"SecondaryHand"
 }
 
-function GetDurStrings(name)
+local function GetDurStrings(name)
 	if (not SlotDurStrs[name]) then
 		local slot = _G["Character"..name.."Slot"]
 		SlotDurStrs[name] = slot:CreateFontString("ARTWORK")
@@ -25,7 +25,7 @@ function GetDurStrings(name)
 	return SlotDurStrs[name]
 end
 
-function GetThresholdColour(percent)
+local function GetThresholdColour(percent)
 	if percent < 0 then
 		return 1, 0, 0
 	elseif percent <= 0.5 then
@@ -59,7 +59,9 @@ function Module:UpdateDurability()
 end
 
 function Module:OnEnable()
-	if not C["Misc"].SlotDurability then return end
+	if not C["Misc"].SlotDurability then
+		return
+	end
 
 	self:SecureHookScript(CharacterFrame, "OnShow", "CharacterFrame_OnShow")
 	self:SecureHookScript(CharacterFrame, "OnHide", "CharacterFrame_OnHide")

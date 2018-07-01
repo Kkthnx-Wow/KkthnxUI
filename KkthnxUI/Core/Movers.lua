@@ -23,34 +23,19 @@ Movers.Defaults = {}
 Movers.Frames = {}
 Movers.SizeReferenceFrames = {}
 
-local classColor =
-	K.Class == "PRIEST" and K.PriestColors or
-	(CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
+local classColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
 local function SetModifiedBackdrop(self)
-	if self.Backdrop then
-		self = self.Backdrop
-	end
-	self:SetBackdropColor(classColor.r * .15, classColor.g * .15, classColor.b * .15, C["Media"].BackdropColor[4])
+	self.Backgrounds:SetColorTexture(classColor.r * .15, classColor.g * .15, classColor.b * .15, C["Media"].BackdropColor[4])
 end
 
 local function SetOriginalBackdrop(self)
-	if self.Backdrop then
-		self = self.Backdrop
-	end
-	self:SetBackdropColor(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+	self.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
 end
 
 -- Generate a human readable name without prefixes
 local function GenerateName(name)
-	return name and
-		name:gsub("^oUF_", ""):gsub("^KkthnxUI_", ""):gsub("^KkthnxUI", ""):gsub("^Kkthnx_", ""):gsub("^Kkthnx", "") or
-		UNKNOWNOBJECT
+	return name and name:gsub("^oUF_", ""):gsub("^KkthnxUI_", ""):gsub("^KkthnxUI", ""):gsub("^Kkthnx_", ""):gsub("^Kkthnx", "") or UNKNOWNOBJECT
 end
 
 -- Generate a proper on-screen point depending on which part of the screen it is in,
@@ -193,7 +178,13 @@ end
 function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
 	self.DragInfo:SetAllPoints(self)
-	self.DragInfo:SetTemplate("Transparent")
+
+	self.DragInfo.Backgrounds = self.DragInfo:CreateTexture(nil, "BACKGROUND", -2)
+	self.DragInfo.Backgrounds:SetAllPoints()
+	self.DragInfo.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.DragInfo)
+
 	self.DragInfo:SetBackdropBorderColor(72 / 255, 133 / 255, 237 / 255)
 	self.DragInfo:FontString("Text", C["Media"].Font, 12)
 	self.DragInfo.Text:SetText(GenerateName(self:GetName()))

@@ -21,6 +21,7 @@ to do so, subject to the following conditions:
 	ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 	ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	]]
+
 --[[
 This should be at the top of every file inside of the KkthnxUI AddOn:
 local K, C, L = unpack(select(2, ...))
@@ -28,6 +29,7 @@ local K, C, L = unpack(select(2, ...))
 This is how another addon imports the KkthnxUI engine:
 local K, C, L = unpack(KkthnxUI)
 ]]
+
 local _G = _G
 local select = select
 local string_format = string.format
@@ -64,8 +66,7 @@ local UnitLevel = _G.UnitLevel
 local UnitName = _G.UnitName
 local UnitRace = _G.UnitRace
 
-local AddOn =
-	LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
+local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 local About = LibStub:GetLibrary("LibAboutPanel", true)
 
 AddOn.oUF = Engine.oUF or oUF
@@ -95,9 +96,7 @@ AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar
 AddOn.ScreenHeight = tonumber(string_match(AddOn.Resolution, "%d+x(%d+)"))
 AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
-AddOn.Color =
-	AddOn.Class == "PRIEST" and AddOn.PriestColors or
-	(CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
+AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
@@ -117,26 +116,23 @@ function AddOn:OnInitialize()
 	-- KkthnxUI GameMenu Button.
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
 	GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
-	GameMenuButton:SetScript(
-		"OnClick",
-		function()
-			if (InCombatLockdown()) then
-				return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
-			end
-
-			if (not KkthnxUIConfigFrame) then
-				KkthnxUIConfig:CreateConfigWindow()
-			end
-
-			if KkthnxUIConfigFrame:IsVisible() then
-				KkthnxUIConfigFrame:Hide()
-			else
-				KkthnxUIConfigFrame:Show()
-			end
-
-			HideUIPanel(GameMenuFrame)
+	GameMenuButton:SetScript("OnClick", function()
+		if (InCombatLockdown()) then
+			return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
 		end
-	)
+
+		if (not KkthnxUIConfigFrame) then
+			KkthnxUIConfig:CreateConfigWindow()
+		end
+
+		if KkthnxUIConfigFrame:IsVisible() then
+			KkthnxUIConfigFrame:Hide()
+		else
+			KkthnxUIConfigFrame:Show()
+		end
+
+		HideUIPanel(GameMenuFrame)
+	end)
 	GameMenuFrame[AddOnName] = GameMenuButton
 
 	if not IsAddOnLoaded("ConsolePort") then
@@ -176,23 +172,20 @@ end
 -- Sourced: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
 if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 	UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
-	hooksecurefunc(
-		"UIDropDownMenu_InitializeHelper",
-		function()
-			if UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then
-				return
-			end
-			for i = 1, UIDROPDOWNMENU_MAXLEVELS do
-				for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
-					local b = _G["DropDownList" .. i .. "Button" .. j]
-					if not (issecurevariable(b, "value") or b:IsShown()) then
-						b.value = nil
-						repeat
-							j, b["fx" .. j] = j + 1
-						until issecurevariable(b, "value")
-					end
+	hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
+		if UIDROPDOWNMENU_VALUE_PATCH_VERSION ~= 2 then
+			return
+		end
+		for i = 1, UIDROPDOWNMENU_MAXLEVELS do
+			for j = 1, UIDROPDOWNMENU_MAXBUTTONS do
+				local b = _G["DropDownList" .. i .. "Button" .. j]
+				if not (issecurevariable(b, "value") or b:IsShown()) then
+					b.value = nil
+					repeat
+						j, b["fx" .. j] = j + 1
+					until issecurevariable(b, "value")
 				end
 			end
 		end
-	)
+	end)
 end

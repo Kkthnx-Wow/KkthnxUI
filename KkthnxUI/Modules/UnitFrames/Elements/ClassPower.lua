@@ -8,10 +8,7 @@ local Module = K:GetModule("Unitframes")
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
-local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitPowerMax = _G.UnitPowerMax
-
--- GLOBALS: SPELL_POWER_COMBO_POINTS
 
 local function PostUpdateClassPower(classPower, _, maxPower, maxPowerChanged)
 	if (not maxPower or not maxPowerChanged) then
@@ -30,32 +27,23 @@ local function PostUpdateClassPower(classPower, _, maxPower, maxPowerChanged)
 	end
 end
 
-local function UpdateClassPowerColor(element)
-	local r, g, b = 1, 1, 2 / 5
-	if (not UnitHasVehicleUI("player")) then
-		if (K.Class == "MONK") then
-			r, g, b = 0, 4 / 5, 3 / 5
-		elseif (K.Class == "WARLOCK") then
-			r, g, b = 2 / 3, 1 / 3, 2 / 3
-		elseif (K.Class == "PALADIN") then
-			r, g, b = 1, 1, 2 / 5
-		elseif (K.Class == "MAGE") then
-			r, g, b = 5 / 6, 1 / 2, 5 / 6
-		end
-	end
+local function UpdateClassPowerColor(classPower, powerType)
+	local color = classPower.__owner.colors.power[powerType]
+	local r, g, b = color[1], color[2], color[3]
 
-	for index = 1, #element do
-		local bar = element[index]
-		if (K.Class == "ROGUE" and UnitPowerMax("player", SPELL_POWER_COMBO_POINTS) == 10 and index > 5) then
+	local isAnticipationRogue = K.Class == "ROGUE" and UnitPowerMax("player", _G.SPELL_POWER_COMBO_POINTS) == 10
+
+	for i = 1, #classPower do
+		if (i > 5 and isAnticipationRogue) then
 			r, g, b = 1, 0, 0
 		end
 
+		local bar = classPower[i]
 		bar:SetStatusBarColor(r, g, b)
 	end
 end
 
 function Module:CreateClassModules(width, height, spacing)
-	local ClassModuleFont = K.GetFont(C["Unitframe"].Font)
 	local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	local classPower = {}
@@ -72,9 +60,14 @@ function Module:CreateClassModules(width, height, spacing)
 	for i = 1, maxPower do
 		local bar = CreateFrame("StatusBar", nil, self)
 		bar:SetStatusBarTexture(ClassModuleTexture)
-		bar:SetTemplate("Transparent")
 
-		-- combo points 6-10 will be stacked on top of 1-5 for rogues with the anticipation talent
+		bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
+		bar.Background:SetAllPoints()
+		bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(bar)
+
+		-- 6-10 will be stacked on top of 1-5 for rogues with the anticipation talent
 		if (i > 5) then
 			bar:SetFrameLevel(bar:GetFrameLevel() + 2)
 		end

@@ -31,7 +31,14 @@ function Module:CreateClassRunes(width, height, spacing)
 		rune:SetSize(width, height)
 		rune:SetPoint("BOTTOMLEFT", (i - 1) * spacing + 4, -14)
 		rune:SetStatusBarTexture(RunesModuleTexture)
-		rune:SetTemplate("Transparent")
+
+		rune.Background = rune:CreateTexture(nil, "BACKGROUND", -1)
+		rune.Background:SetAllPoints()
+		rune.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		rune.Border = CreateFrame("Frame", nil, rune)
+		rune.Border:SetAllPoints()
+		K.CreateBorder(rune.Border)
 
 		runes[i] = rune
 	end

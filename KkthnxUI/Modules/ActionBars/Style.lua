@@ -3,10 +3,8 @@ if C["ActionBar"].Enable ~= true then
 	return
 end
 
--- Lua API
 local _G = _G
 
--- Wow API
 local GetFlyoutID = _G.GetFlyoutID
 local GetFlyoutInfo = _G.GetFlyoutInfo
 local GetNumFlyouts = _G.GetNumFlyouts
@@ -16,28 +14,20 @@ local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local GetActionText = _G.GetActionText
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
--- GLOBALS: SpellFlyout, ActionButton_UpdateState, KEY_MOUSEWHEELDOWN
--- GLOBALS: KEY_MOUSEWHEELUP, KEY_BUTTON3, KEY_BUTTON4, KEY_BUTTON5, KEY_NUMPAD0, KEY_NUMPAD1
--- GLOBALS: KEY_NUMPAD2, KEY_NUMPAD3, KEY_NUMPAD4, KEY_NUMPAD5, KEY_NUMPAD6, KEY_NUMPAD7
--- GLOBALS: KEY_NUMPAD8, KEY_NUMPAD9, KEY_NUMPADDECIMAL, KEY_NUMPADDIVIDE, KEY_NUMPADMINUS
--- GLOBALS: KEY_NUMPADMULTIPLY, KEY_NUMPADPLUS, KEY_PAGEUP, KEY_PAGEDOWN, KEY_SPACE, KEY_INSERT
--- GLOBALS: KEY_HOME, KEY_DELETE, KEY_INSERT_MAC, SpellFlyoutHorizontalBackground, SpellFlyoutVerticalBackground
--- GLOBALS: SpellFlyoutBackgroundEnd, ActionButton_HideOverlayGlow, ActionButton_UpdateHotkeys
-
 local FlyoutButtons = 0
+
 local function StyleNormalButton(self)
 	local Name = self:GetName()
 	local Action = self.action
 	local Button = self
-	local Icon = _G[Name.."Icon"]
-	local Count = _G[Name.."Count"]
-	local Flash	 = _G[Name.."Flash"]
-	local HotKey = _G[Name.."HotKey"]
-	local Border = _G[Name.."Border"]
-	local Btname = _G[Name.."Name"]
-	local Normal = _G[Name.."NormalTexture"]
-	local BtnBG = _G[Name.."FloatingBG"]
+	local Icon = _G[Name .. "Icon"]
+	local Count = _G[Name .. "Count"]
+	local Flash	 = _G[Name .. "Flash"]
+	local HotKey = _G[Name .. "HotKey"]
+	local Border = _G[Name .. "Border"]
+	local Btname = _G[Name .. "Name"]
+	local Normal = _G[Name .. "NormalTexture"]
+	local BtnBG = _G[Name .. "FloatingBG"]
 	local Font = K.GetFont(C["ActionBar"].Font)
 
 	Flash:SetTexture("")
@@ -111,14 +101,18 @@ local function StyleNormalButton(self)
 	if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not Name:match("Extra") then
 		self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 	end
-	Button:SetTemplate("Transparent", true)
-	Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
-	Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
+
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints(Button)
+	K.CreateBorder(Button.Borders)
 
 	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	Icon:SetAllPoints()
 	Icon:SetDrawLayer("BACKGROUND", 7)
-
 
 	if (Normal) then
 		Normal:ClearAllPoints()
@@ -140,12 +134,19 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 	end
 
 	local PetSize = C["ActionBar"].ButtonSize
-	local HotKey = _G[Button:GetName().."HotKey"]
-	local Flash = _G[Name.."Flash"]
+	local HotKey = _G[Button:GetName() .. "HotKey"]
+	local Flash = _G[Name .. "Flash"]
 	local Font = K.GetFont(C["ActionBar"].Font)
 
 	Button:SetSize(PetSize, PetSize)
-	Button:SetTemplate("Transparent", true)
+
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints(Button)
+	K.CreateBorder(Button.Borders)
 
 	if (C["ActionBar"].Hotkey) then
 		HotKey:SetFontObject(Font)
@@ -162,11 +163,11 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 
 	if (Pet) then
 		if (PetSize < 30) then
-			local AutoCast = _G[Name.."AutoCastable"]
+			local AutoCast = _G[Name .. "AutoCastable"]
 			AutoCast:SetAlpha(0)
 		end
 
-		local Shine = _G[Name.."Shine"]
+		local Shine = _G[Name .. "Shine"]
 		Shine:SetSize(PetSize, PetSize)
 		Shine:ClearAllPoints()
 		Shine:SetPoint("CENTER", Button, 0, 0)
@@ -205,7 +206,7 @@ function K.StylePet()
 		local Name = "PetActionButton"..i
 		local Button = _G[Name]
 		local Icon = _G[Name.."Icon"]
-		local Normal = _G[Name.."NormalTexture2"] -- ?? 2
+		local Normal = _G[Name.."NormalTexture2"]
 
 		StyleSmallButton(Normal, Button, Icon, Name, true)
 	end
@@ -223,8 +224,6 @@ function K.UpdateHotkey(self)
 	Text = string.gsub(Text, "(s%-)", "S")
 	Text = string.gsub(Text, "(a%-)", "A")
 	Text = string.gsub(Text, "(c%-)", "C")
-	Text = string.gsub(Text, KEY_MOUSEWHEELDOWN , "MDn")
-	Text = string.gsub(Text, KEY_MOUSEWHEELUP , "MUp")
 	Text = string.gsub(Text, KEY_BUTTON3, "M3")
 	Text = string.gsub(Text, KEY_BUTTON4, "M4")
 	Text = string.gsub(Text, KEY_BUTTON5, "M5")
@@ -262,10 +261,16 @@ end
 
 local function SetupFlyoutButton()
 	for i = 1, FlyoutButtons do
-		local Button = _G["SpellFlyoutButton"..i]
+		local Button = _G["SpellFlyoutButton" .. i]
 
 		if Button and not Button.IsSkinned then
 			Button:StyleButton()
+
+			Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+			Button.Backgrounds:SetAllPoints()
+			Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(Button)
 
 			if Button:GetChecked() then
 				Button:SetChecked(nil)
@@ -281,18 +286,18 @@ local function StyleFlyoutButton(self)
 		return
 	end
 
-	local HB = SpellFlyoutHorizontalBackground
-	local VB = SpellFlyoutVerticalBackground
-	local BE = SpellFlyoutBackgroundEnd
+	local SpellFlyoutHB = SpellFlyoutHorizontalBackground
+	local SpellFlyoutVB = SpellFlyoutVerticalBackground
+	local SpellFlyoutBE = SpellFlyoutBackgroundEnd
 
 	if self.FlyoutBorder then
 		self.FlyoutBorder:SetAlpha(0)
 		self.FlyoutBorderShadow:SetAlpha(0)
 	end
 
-	HB:SetAlpha(0)
-	VB:SetAlpha(0)
-	BE:SetAlpha(0)
+	SpellFlyoutHB:SetAlpha(0)
+	SpellFlyoutVB:SetAlpha(0)
+	SpellFlyoutBE:SetAlpha(0)
 
 	for i = 1, GetNumFlyouts() do
 		local ID = GetFlyoutID(i)

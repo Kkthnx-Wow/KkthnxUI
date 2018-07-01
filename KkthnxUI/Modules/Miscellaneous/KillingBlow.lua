@@ -1,8 +1,9 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("KillingBlow", "AceHook-3.0", "AceEvent-3.0")
 if C["Misc"].KillingBlow ~= true then
 	return
 end
+
+local Module = K:NewModule("KillingBlow", "AceEvent-3.0")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
 
@@ -34,34 +35,32 @@ end
 
 function Module:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 	local _, subevent, _, _, Caster, _, _, _, TargetName, TargetFlags = ...
+
 	if subevent == "PARTY_KILL" then
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)
 		if Caster == K.Name and (BG_Opponents[TargetName] or mask > 0) then
 			if mask > 0 and BG_Opponents[TargetName] then
 				TargetName = "|c" .. RAID_CLASS_COLORS[BG_Opponents[TargetName]].colorStr .. TargetName .. "|r"
 			end
+
 			TopBannerManager_Show(_G["BossBanner"], {name = TargetName, mode = "PVPKILL"})
 		end
 	end
 end
 
 function Module:OnEnable()
-	hooksecurefunc(
-		_G["BossBanner"],
-		"PlayBanner",
-		function(self, data)
-			if (data) then
-				if (data.mode == "PVPKILL") then
-					self.Title:SetText(data.name)
-					self.Title:Show()
-					self.SubTitle:Hide()
-					self:Show()
-					BossBanner_BeginAnims(self)
-					PlaySound(PlaySoundKitID and "UI_Raid_Boss_Defeated" or SOUNDKIT.UI_RAID_BOSS_DEFEATED)
-				end
+	hooksecurefunc(_G["BossBanner"], "PlayBanner", function(self, data)
+		if (data) then
+			if (data.mode == "PVPKILL") then
+				self.Title:SetText(data.name)
+				self.Title:Show()
+				self.SubTitle:Hide()
+				self:Show()
+				BossBanner_BeginAnims(self)
+				PlaySound(PlaySoundKitID and "UI_Raid_Boss_Defeated" or SOUNDKIT.UI_RAID_BOSS_DEFEATED)
 			end
 		end
-	)
+	end)
 
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("UPDATE_BATTLEFIELD_SCORE")

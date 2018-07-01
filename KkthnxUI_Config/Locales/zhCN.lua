@@ -378,8 +378,8 @@ KkthnxUIConfig["zhCN"] = {
 			["Desc"] = ModuleToggle..PerformanceIncrease,
 		},
 
-		["EnhancedThreat"] = {
-			["Name"] = "Enhanced Threat",
+		["Threat"] = {
+			["Name"] = "Threat",
 			["Desc"] = "Enable threat feature, automatically changes by your role",
 		},
 

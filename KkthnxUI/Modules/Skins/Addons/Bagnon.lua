@@ -8,7 +8,13 @@ local Module = K:GetModule("Skins")
 function Module:BagnonSkin()
 	for _, frame in Bagnon:IterateFrames() do
 		if frame and not frame.isSkinned then
-			frame:SetTemplate("Transparent")
+
+			frame.Backgrounds = frame:CreateTexture(nil, "BACKGROUND", -2)
+			frame.Backgrounds:SetAllPoints()
+			frame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(frame)
+
 			frame.isSkinned = true
 		end
 	end

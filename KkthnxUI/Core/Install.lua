@@ -31,6 +31,56 @@ Install.CurrentStep = 0
 Install.Width = 500
 Install.Height = 200
 
+do
+	if (not InstallStepComplete) then
+		local imsg = CreateFrame("Frame", "InstallStepComplete", UIParent)
+		imsg:SetSize(418, 72)
+		imsg:SetPoint("TOP", 0, -190)
+		imsg:Hide()
+		imsg:SetScript("OnShow", function(self)
+			if self.message then
+				PlaySoundFile([[Sound\Interface\LevelUp.wav]])
+				self.text:SetText(self.message)
+				UIFrameFadeOut(self, 3.5, 1, 0)
+				K.Delay(4, function()
+					self:Hide()
+				end)
+				self.message = nil
+			else
+				self:Hide()
+			end
+		end)
+
+		imsg.firstShow = false
+
+		imsg.bg = imsg:CreateTexture(nil, "BACKGROUND")
+		imsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
+		imsg.bg:SetPoint("BOTTOM")
+		imsg.bg:SetSize(326, 103)
+		imsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
+		imsg.bg:SetVertexColor(1, 1, 1, 0.6)
+
+		imsg.lineTop = imsg:CreateTexture(nil, "BACKGROUND")
+		imsg.lineTop:SetDrawLayer("BACKGROUND", 2)
+		imsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
+		imsg.lineTop:SetPoint("TOP")
+		imsg.lineTop:SetSize(418, 7)
+		imsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+		imsg.lineBottom = imsg:CreateTexture(nil, "BACKGROUND")
+		imsg.lineBottom:SetDrawLayer("BACKGROUND", 2)
+		imsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
+		imsg.lineBottom:SetPoint("BOTTOM")
+		imsg.lineBottom:SetSize(418, 7)
+		imsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
+
+		imsg.text = imsg:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
+		imsg.text:SetPoint("BOTTOM", 0, 12)
+		imsg.text:SetTextColor(1, 0.82, 0)
+		imsg.text:SetJustifyH("CENTER")
+	end
+end
+
 function Install:ResetData()
 	KkthnxUIData[GetRealmName()][UnitName("player")] = {}
 	KkthnxUIData[GetRealmName()][UnitName("player")].AutoInvite = false
@@ -83,7 +133,7 @@ function Install:Step1()
 	SetCVar("violenceLevel", 5)
 	SetCVar("WhisperMode", "inline")
 	SetCVar("WholeChatWindowClickable", 0)
-	-- SetCVar("worldPreloadNonCritical", 0)
+	SetCVar("worldPreloadNonCritical", 0)
 
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:SetValue("SHIFT")
 	InterfaceOptionsActionBarsPanelPickupActionKeyDropDown:RefreshValue()
@@ -115,7 +165,7 @@ function Install:PrintStep(PageNum)
 
 	local ExecuteScript = self["Step" .. PageNum]
 	local Text = L.Install["Step_" .. PageNum]
-	local r, g, b = K.ColorGradient(PageNum, self.MaxStepNumber, 1, 0.2, 0.2, 1, 1, 0, 0.2, 1, 0.2)
+	local r, g, b = K.ColorGradient(PageNum / self.MaxStepNumber, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 
 	if (not Text) then
 		self:Hide()
@@ -176,57 +226,17 @@ function Install:Launch()
 		return
 	end
 
-	if (not InstallStepComplete) then
-		local imsg = CreateFrame("Frame", "InstallStepComplete", UIParent)
-		imsg:SetSize(418, 72)
-		imsg:SetPoint("TOP", 0, -190)
-		imsg:Hide()
-		imsg:SetScript("OnShow", function(self)
-			if self.message then
-				PlaySoundFile([[Sound\Interface\LevelUp.wav]])
-				self.text:SetText(self.message)
-				UIFrameFadeOut(self, 3.5, 1, 0)
-				K.Delay(4, function() self:Hide() end)
-				self.message = nil
-			else
-				self:Hide()
-			end
-		end)
-
-		imsg.firstShow = false
-
-		imsg.bg = imsg:CreateTexture(nil, "BACKGROUND")
-		imsg.bg:SetTexture([[Interface\LevelUp\LevelUpTex]])
-		imsg.bg:SetPoint("BOTTOM")
-		imsg.bg:SetSize(326, 103)
-		imsg.bg:SetTexCoord(0.00195313, 0.63867188, 0.03710938, 0.23828125)
-		imsg.bg:SetVertexColor(1, 1, 1, 0.6)
-
-		imsg.lineTop = imsg:CreateTexture(nil, "BACKGROUND")
-		imsg.lineTop:SetDrawLayer("BACKGROUND", 2)
-		imsg.lineTop:SetTexture([[Interface\LevelUp\LevelUpTex]])
-		imsg.lineTop:SetPoint("TOP")
-		imsg.lineTop:SetSize(418, 7)
-		imsg.lineTop:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
-
-		imsg.lineBottom = imsg:CreateTexture(nil, "BACKGROUND")
-		imsg.lineBottom:SetDrawLayer("BACKGROUND", 2)
-		imsg.lineBottom:SetTexture([[Interface\LevelUp\LevelUpTex]])
-		imsg.lineBottom:SetPoint("BOTTOM")
-		imsg.lineBottom:SetSize(418, 7)
-		imsg.lineBottom:SetTexCoord(0.00195313, 0.81835938, 0.01953125, 0.03320313)
-
-		imsg.text = imsg:CreateFontString(nil, "ARTWORK", "GameFont_Gigantic")
-		imsg.text:SetPoint("BOTTOM", 0, 12)
-		imsg.text:SetTextColor(1, 0.82, 0)
-		imsg.text:SetJustifyH("CENTER")
-	end
-
 	local r, g, b = K.ColorGradient(0, self.MaxStepNumber, 1, 0, 0, 1, 1, 0, 0, 1, 0)
 	self.Description = CreateFrame("Frame", nil, self)
 	self.Description:SetSize(self.Width, self.Height)
 	self.Description:SetPoint("CENTER", self, "CENTER")
-	self.Description:SetTemplate("Transparent")
+
+	self.Description.Backgrounds = self.Description:CreateTexture(nil, "BACKGROUND", -1)
+	self.Description.Backgrounds:SetAllPoints()
+	self.Description.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.Description)
+
 	self.Description:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.Description:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self.Description:SetScript("OnEvent", function(_, event)
@@ -244,10 +254,15 @@ function Install:Launch()
 	self.StatusBar:SetPoint("BOTTOM", self.Description, "TOP", 0, 6)
 	self.StatusBar:SetHeight(20)
 	self.StatusBar:SetWidth(self.Description:GetWidth())
-	self.StatusBar:SetTemplate("Transparent")
 	self.StatusBar:SetStatusBarColor(r, g, b)
 	self.StatusBar:SetMinMaxValues(0, self.MaxStepNumber)
 	self.StatusBar:SetValue(0)
+
+	self.StatusBar.Backgrounds = self.StatusBar:CreateTexture(nil, "BACKGROUND", -1)
+	self.StatusBar.Backgrounds:SetAllPoints()
+	self.StatusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.StatusBar)
 
 	self.StatusBar.Anim = CreateAnimationGroup(self.StatusBar):CreateAnimation("Progress")
 	self.StatusBar.Anim:SetDuration(0.3)

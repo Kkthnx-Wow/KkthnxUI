@@ -145,7 +145,15 @@ end
 function CopyChat:OnEnable()
 	CopyFrame = CreateFrame("Frame", "CopyChatFrame", UIParent)
 	table_insert(UISpecialFrames, "CopyChatFrame")
-	CopyFrame:SetTemplate("Transparent")
+
+	CopyFrame.Backgrounds = CopyFrame:CreateTexture(nil, "BACKGROUND", -1)
+	CopyFrame.Backgrounds:SetAllPoints()
+	CopyFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	CopyFrame.Borders = CreateFrame("Frame", nil, CopyFrame)
+	CopyFrame.Borders:SetAllPoints()
+	K.CreateBorder(CopyFrame.Borders)
+
 	CopyFrame:SetSize(700, 200)
 	CopyFrame:SetPoint("BOTTOM", UIParent, 0, 4)
 	CopyFrame:Hide()

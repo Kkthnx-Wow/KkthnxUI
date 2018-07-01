@@ -3,7 +3,7 @@ if C["Skins"].ChatBubbles ~= true or K.CheckAddOnState("NiceBubbles") then
   return
 end
 
-local Module = K:NewModule("ChatBubbles", "AceEvent-3.0", "AceTimer-3.0")
+local Module = K:NewModule("ChatBubbles", "AceEvent-3.0", "AceHook-3.0")
 
 -- Lua API
 local _G = _G

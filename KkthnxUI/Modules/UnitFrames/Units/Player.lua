@@ -27,12 +27,15 @@ function Module:CreatePlayer()
 	self:HookScript("OnLeave", UnitFrame_OnLeave)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetTemplate("Transparent")
-	self.Health:SetFrameStrata("LOW")
-	self.Health:SetFrameLevel(1)
 	self.Health:SetSize(130, 26)
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
+
+	self.Health.Background = self.Health:CreateTexture(nil, "BACKGROUND", -1)
+	self.Health.Background:SetAllPoints()
+	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.Health)
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -50,12 +53,15 @@ function Module:CreatePlayer()
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetTemplate("Transparent")
-	self.Power:SetFrameStrata("LOW")
-	self.Power:SetFrameLevel(1)
 	self.Power:SetSize(130, 14)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
+
+	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
+	self.Power.Background:SetAllPoints()
+	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.Power)
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -70,33 +76,133 @@ function Module:CreatePlayer()
 
 	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
-		self.Portrait:SetTemplate("Transparent")
-		self.Portrait:SetFrameStrata("BACKGROUND")
-		self.Portrait:SetFrameLevel(1)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
+
+		self.Portrait.Background = self.Portrait:CreateTexture(nil, "BACKGROUND", -1)
+		self.Portrait.Background:SetAllPoints()
+		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		self.Portrait.Borders = CreateFrame("Frame", nil, self.Portrait)
+		self.Portrait.Borders:SetAllPoints(self.Portrait)
+		K.CreateBorder(self.Portrait.Borders)
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
-		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 7)
+		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Background = CreateFrame("Frame", nil, self)
-		self.Portrait.Background:SetTemplate("Transparent")
-		self.Portrait.Background:SetFrameStrata("LOW")
-		self.Portrait.Background:SetFrameLevel(1)
-		self.Portrait.Background:SetSize(46, 46)
+		self.Portrait.Background = self:CreateTexture(nil, "BACKGROUND", -1)
 		self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
-		if
-			(C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits")
-		 then
+		self.Portrait.Background:SetSize(46, 46)
+		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		K.CreateBorder(self.Portrait.Borders)
+
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end
 
 	if (C["Unitframe"].Castbars) then
-		Module.CreateCastBar(self, "player")
+		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
+		self.Castbar:SetStatusBarTexture(UnitframeTexture)
+		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
+		self.Castbar:SetClampedToScreen(true)
+
+		self.Castbar.Background = self.Castbar:CreateTexture(nil, "BACKGROUND", -1)
+		self.Castbar.Background:SetAllPoints()
+		self.Castbar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(self.Castbar)
+
+		self.Castbar:ClearAllPoints()
+		self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 203)
+
+		self.Castbar.PostCastStart = Module.CheckCast
+		self.Castbar.PostChannelStart = Module.CheckChannel
+
+		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
+		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
+		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
+		self.Castbar.Spark:SetBlendMode("ADD")
+
+		self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
+		self.Castbar.SafeZone:SetTexture(UnitframeTexture)
+		self.Castbar.SafeZone:SetPoint("RIGHT")
+		self.Castbar.SafeZone:SetPoint("TOP")
+		self.Castbar.SafeZone:SetPoint("BOTTOM")
+		self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+		self.Castbar.SafeZone:SetWidth(0.0001)
+
+		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
+		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
+		self.Castbar.Time:SetJustifyH("RIGHT")
+
+		self.Castbar.CustomTimeText = Module.CustomCastTimeText
+		self.Castbar.CustomDelayText = Module.CustomCastDelayText
+
+		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
+		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
+		self.Castbar.Text:SetPoint("RIGHT", self.Castbar.Time, "LEFT", -3.5, 0)
+		self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
+		self.Castbar.Text:SetJustifyH("LEFT")
+		self.Castbar.Text:SetWordWrap(false)
+
+		if (C["Unitframe"].CastbarIcon) then
+			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
+			self.Castbar.Button:SetSize(20, 20)
+
+			self.Castbar.Button.Backgrounds = self.Castbar.Button:CreateTexture(nil, "BACKGROUND", -1)
+			self.Castbar.Button.Backgrounds:SetAllPoints(self.Castbar.Button)
+			self.Castbar.Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			self.Castbar.Button.Borders = CreateFrame("Frame", nil, self.Castbar.Button)
+			self.Castbar.Button.Borders:SetAllPoints(self.Castbar.Button)
+			K.CreateBorder(self.Castbar.Button.Borders)
+
+			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
+			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
+			self.Castbar.Icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
+
+			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+		end
+
+		K.Movers:RegisterFrame(self.Castbar)
 	end
+
+	self.AdditionalPower = CreateFrame("StatusBar", nil, self.Health)
+	self.AdditionalPower:SetFrameStrata(self:GetFrameStrata())
+	self.AdditionalPower:SetHeight(12)
+	self.AdditionalPower:SetPoint("LEFT", 4, 0)
+	self.AdditionalPower:SetPoint("RIGHT", -4, 0)
+	self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
+	self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
+	self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
+
+	self.AdditionalPower.Smooth = C["Unitframe"].Smooth
+	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.AdditionalPower.frequentUpdates = true
+
+	self.AdditionalPower.Backgrounds = self.AdditionalPower:CreateTexture(nil, "BACKGROUND", -1)
+    self.AdditionalPower.Backgrounds:SetAllPoints()
+	self.AdditionalPower.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.AdditionalPower)
+
+	self.AdditionalPower.Prediction = CreateFrame("StatusBar", nil, self.AdditionalPower)
+	self.AdditionalPower.Prediction:SetReverseFill(true)
+	self.AdditionalPower.Prediction:SetPoint("TOP")
+	self.AdditionalPower.Prediction:SetPoint("BOTTOM")
+	self.AdditionalPower.Prediction:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
+	self.AdditionalPower.Prediction:SetHeight(12)
+	self.AdditionalPower.Prediction:SetStatusBarTexture(UnitframeTexture)
+	self.AdditionalPower.Prediction:SetStatusBarColor(1, 1, 1, .3)
 
 	Module.CreateClassModules(self, 194, 12, 6)
 
@@ -105,8 +211,6 @@ function Module:CreatePlayer()
 	elseif (K.Class == "MONK") then
 		Module.CreateStagger(self)
 	end
-
-	Module.CreateAdditionalPower(self)
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 

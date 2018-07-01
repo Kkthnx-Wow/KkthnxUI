@@ -10,10 +10,10 @@ local CreateFrame = _G.CreateFrame
 local HasOverrideActionBar = _G.HasOverrideActionBar
 local HasVehicleActionBar = _G.HasVehicleActionBar
 local InCombatLockdown = _G.InCombatLockdown
+-- local MainMenuBar_OnEvent = _G.MainMenuBar_OnEvent
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UnitClass = _G.UnitClass
-local MainMenuBar_OnEvent = _G.MainMenuBar_OnEvent
 
 local PageDRUID, PageROGUE = "", ""
 
@@ -42,7 +42,7 @@ end
 local Page = {
 	["DRUID"] = PageDRUID,
 	["ROGUE"] = PageROGUE,
-	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;"
+	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local function GetBar()
@@ -54,7 +54,7 @@ local function GetBar()
 		condition = condition .. " " .. page
 	end
 
-	condition = condition .. " [form] 1; 1"
+	condition = condition .. " 1"
 
 	return condition
 end
@@ -63,33 +63,25 @@ ActionBar1:RegisterEvent("PLAYER_LOGIN")
 ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
 ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
 ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
-ActionBar1:RegisterEvent("BAG_UPDATE")
-ActionBar1:SetScript(
-"OnEvent",
-function(self, event, ...)
+ActionBar1:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G["ActionButton" .. i]
 			self:SetFrameRef("ActionButton" .. i, button)
 		end
 
-		self:Execute(
-		[[
-		buttons = table.new()
-		for i = 1, 12 do
-			table.insert(buttons, self:GetFrameRef("ActionButton"..i))
-		end
-		]]
-		)
+		self:Execute([[
+			buttons = table.new()
+			for i = 1, 12 do
+				table.insert(buttons, self:GetFrameRef("ActionButton"..i))
+			end
+		]])
 
-		self:SetAttribute(
-		"_onstate-page",
-		[[
-		for i, button in ipairs(buttons) do
-			button:SetAttribute("actionpage", tonumber(newstate))
-		end
-		]]
-		)
+		self:SetAttribute("_onstate-page", [[
+			for i, button in ipairs(buttons) do
+				button:SetAttribute("actionpage", tonumber(newstate))
+			end
+		]])
 
 		RegisterStateDriver(self, "page", GetBar())
 	elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
@@ -102,5 +94,4 @@ function(self, event, ...)
 	else
 		MainMenuBar_OnEvent(self, event, ...)
 	end
-end
-)
+end)

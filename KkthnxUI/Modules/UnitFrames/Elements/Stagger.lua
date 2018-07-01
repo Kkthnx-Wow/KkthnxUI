@@ -14,7 +14,14 @@ function Module:CreateStagger()
 	stagger:SetPoint("BOTTOM", self, "TOP", 0, 3)
 	stagger:SetHeight(12)
 	stagger:SetStatusBarTexture(UnitframeTexture)
-	stagger:SetTemplate("Transparent")
+
+	stagger.Background = stagger:CreateTexture(nil, "BACKGROUND", -1)
+	stagger.Background:SetAllPoints()
+	stagger.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	stagger.Border = CreateFrame("Frame", nil, stagger)
+	stagger.Border:SetAllPoints()
+	K.CreateBorder(stagger.Border)
 
 	self.Stagger = stagger
 end

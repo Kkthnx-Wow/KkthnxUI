@@ -7,17 +7,14 @@ local _G = _G
 local string_format = string.format
 local math_floor = math.floor
 
-local ARTIFACT_POWER = ARTIFACT_POWER
-local ARTIFACT_POWER_TOOLTIP_BODY = ARTIFACT_POWER_TOOLTIP_BODY
-local C_ArtifactUI_GetEquippedArtifactInfo = C_ArtifactUI.GetEquippedArtifactInfo
-local HasArtifactEquipped = HasArtifactEquipped
-local HideUIPanel = HideUIPanel
-local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
-local ShowUIPanel = ShowUIPanel
-local SocketInventoryItem = SocketInventoryItem
-
-local ArtifactFont = K.GetFont(C["DataBars"].Font)
-local ArtifactTexture = K.GetTexture(C["DataBars"].Texture)
+local ARTIFACT_POWER = _G.ARTIFACT_POWER
+local ARTIFACT_POWER_TOOLTIP_BODY = _G.ARTIFACT_POWER_TOOLTIP_BODY
+local C_ArtifactUI_GetEquippedArtifactInfo = _G.C_ArtifactUI.GetEquippedArtifactInfo
+local HasArtifactEquipped = _G.HasArtifactEquipped
+local HideUIPanel = _G.HideUIPanel
+local MainMenuBar_GetNumArtifactTraitsPurchasableFromXP = _G.MainMenuBar_GetNumArtifactTraitsPurchasableFromXP
+local ShowUIPanel = _G.ShowUIPanel
+local SocketInventoryItem = _G.SocketInventoryItem
 
 local AnchorY
 function Module:UpdateArtifact(event, unit)
@@ -136,10 +133,13 @@ function Module:EnableDisable_ArtifactBar()
 end
 
 function Module:OnEnable(event)
+	local ArtifactFont = K.GetFont(C["DataBars"].Font)
+	local ArtifactTexture = K.GetTexture(C["DataBars"].Texture)
+
 	if K.Level ~= MAX_PLAYER_LEVEL or K.Level <= 99 and event == "PLAYER_LEVEL_UP" then
-	AnchorY = -24
+		AnchorY = -24
 	else
-	AnchorY = -6
+		AnchorY = -6
 	end
 
 	self.artifactBar = CreateFrame("Button", "Artifact", K.PetBattleHider)
@@ -155,11 +155,16 @@ function Module:OnEnable(event)
 	self.artifactBar.statusBar:SetStatusBarTexture(ArtifactTexture)
 	self.artifactBar.statusBar:SetStatusBarColor(C["DataBars"].ArtifactColor[1], C["DataBars"].ArtifactColor[2], C["DataBars"].ArtifactColor[3])
 	self.artifactBar.statusBar:SetMinMaxValues(0, 325)
-	self.artifactBar.statusBar:SetTemplate("Transparent")
+
+	self.artifactBar.statusBar.Backgrounds = self.artifactBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
+	self.artifactBar.statusBar.Backgrounds:SetAllPoints()
+	self.artifactBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.artifactBar.statusBar)
 
 	self.artifactBar.text = self.artifactBar.statusBar:CreateFontString(nil, "OVERLAY")
-	self.artifactBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.artifactBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and - 0 or - 1.25)
+	self.artifactBar.text:SetFontObject(ArtifactFont)
+	self.artifactBar.text:SetFont(select(1, self.artifactBar.text:GetFont()), 11, select(3, self.artifactBar.text:GetFont()))
 	self.artifactBar.text:SetPoint("CENTER")
 
 	self.artifactBar.spark = self.artifactBar.statusBar:CreateTexture(nil, "OVERLAY")

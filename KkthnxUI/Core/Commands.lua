@@ -2,11 +2,8 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
-local math_ceil = math.ceil
-local math_floor = math.floor
 local string_format = string.format
 local string_lower = string.lower
-local string_split = string.split
 local string_trim = string.trim
 local table_insert = table.insert
 
@@ -15,7 +12,6 @@ local AbandonQuest = _G.AbandonQuest
 local CombatLogClearEntries = _G.CombatLogClearEntries
 local ConvertToParty = _G.ConvertToParty
 local ConvertToRaid = _G.ConvertToRaid
-local CreateFrame = _G.CreateFrame
 local DisableAllAddOns = _G.DisableAllAddOns
 local DoReadyCheck = _G.DoReadyCheck
 local EnableAddOn = _G.EnableAddOn
@@ -24,20 +20,12 @@ local ERR_NOT_IN_GROUP = _G.ERR_NOT_IN_GROUP
 local FEATURE_BECOMES_AVAILABLE_AT_LEVEL = _G.FEATURE_BECOMES_AVAILABLE_AT_LEVEL
 local GetCurrentResolution = _G.GetCurrentResolution
 local GetCVarBool = _G.GetCVarBool
-local GetGuildRosterInfo = _G.GetGuildRosterInfo
-local GetGuildRosterLastOnline = _G.GetGuildRosterLastOnline
 local GetNumGroupMembers = _G.GetNumGroupMembers
-local GetNumGuildMembers = _G.GetNumGuildMembers
 local GetNumQuestLogEntries = _G.GetNumQuestLogEntries
 local GetRaidRosterInfo = _G.GetRaidRosterInfo
 local GetRealmName = _G.GetRealmName
-local GetScreenHeight = _G.GetScreenHeight
 local GetScreenResolutions = _G.GetScreenResolutions
-local GetScreenWidth = _G.GetScreenWidth
 local GetSpecialization = _G.GetSpecialization
-local GuildControlGetNumRanks = _G.GuildControlGetNumRanks
-local GuildControlGetRankName = _G.GuildControlGetRankName
-local GuildUninvite = _G.GuildUninvite
 local InCombatLockdown = _G.InCombatLockdown
 local IsInInstance = _G.IsInInstance
 local LeaveParty = _G.LeaveParty
@@ -47,7 +35,6 @@ local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySound = _G.PlaySound
 local ReloadUI = _G.ReloadUI
 local RepopMe = _G.RepopMe
-local RestartGx = _G.RestartGx
 local RetrieveCorpse = _G.RetrieveCorpse
 local SelectQuestLogEntry = _G.SelectQuestLogEntry
 local SendChatMessage = _G.SendChatMessage
@@ -56,15 +43,12 @@ local SetCVar = _G.SetCVar
 local SetSpecialization = _G.SetSpecialization
 local SHOW_TALENT_LEVEL = _G.SHOW_TALENT_LEVEL
 local SlashCmdList = _G.SlashCmdList
-local UIParent = _G.UIParent
 local UninviteUnit = _G.UninviteUnit
 local UnitExists = _G.UnitExists
 local UnitInParty = _G.UnitInParty
 local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitName = _G.UnitName
-
--- TODO: Rewrite these to handle AceConsole-3.0
 
 -- ConfigFrame
 function K.ConfigUI()
@@ -144,80 +128,6 @@ end
 K:RegisterChatCommand("moveui", K.MoveUI)
 K:RegisterChatCommand("movers", K.MoveUI)
 
-function K.CleanupGuild(msg)
-	local minLevel, minDays, minRankIndex = string_split(",", msg)
-	minRankIndex = tonumber(minRankIndex)
-	minLevel = tonumber(minLevel)
-	minDays = tonumber(minDays)
-
-	if not minLevel or not minDays then
-		K.Print("Usage: /cleanguild <minLevel>, <minDays>, [<minRankIndex>]")
-		return
-	end
-
-	if minDays > 31 then
-		K.Print("Maximum days value must be below 32.")
-		return
-	end
-
-	if not minRankIndex then minRankIndex = GuildControlGetNumRanks() - 1 end
-
-	for i = 1, GetNumGuildMembers() do
-		local name, _, rankIndex, level, _, _, note, officerNote, connected, _, classFileName = GetGuildRosterInfo(i)
-		local minLevelx = minLevel
-
-		if classFileName == "DEATHKNIGHT" then
-			minLevelx = minLevelx + 55
-		end
-
-		if not connected then
-			local years, months, days = GetGuildRosterLastOnline(i)
-			if days ~= nil and ((years > 0 or months > 0 or days >= minDays) and rankIndex >= minRankIndex) and note ~= nil and officerNote ~= nil and (level <= minLevelx) then
-				GuildUninvite(name)
-			end
-		end
-	end
-
-	SendChatMessage("Guild Cleanup Results: Removed all guild members below rank "..GuildControlGetRankName(minRankIndex)..", that have a minimal level of "..minLevel..", and have not been online for at least: "..minDays.." days.", "GUILD")
-end
-K:RegisterChatCommand("cleanguild", K.CleanupGuild)
-
--- Support for slash commands, which must be passed in a list starting at 1
-local result = ""
-function K.QuestCheck(msg, arg)
-	if tonumber(msg) ~= nil then
-		arg = tonumber(msg)
-		if arg then
-			result = _G.IsQuestFlaggedCompleted(arg)
-			if result then
-				K.Print("QuestID ("..arg..")\124cff22ff22 is completed.")
-			else
-				K.Print("QuestID ("..arg..")\124cffff0000 is not completed.")
-			end
-		else
-			K.Print("\124cffff0000[QuestCheck Error] QuestID ("..arg..") is not a valid quest id.")
-		end
-	else
-		K.Print('Usage: /questcheck [questID number]')
-	end
-end
-K:RegisterChatCommand("questcheck", K.QuestCheck)
-K:RegisterChatCommand("qck", K.QuestCheck)
-
-function K.CleanupHerilooms()
-	for bag = 0, 4 do
-		for slot = 1, GetContainerNumSlots(bag) do
-			local name = GetContainerItemLink(bag, slot)
-			if name and string.find(name, "00ccff") then
-				print(name)
-				PickupContainerItem(bag, slot)
-				DeleteCursorItem()
-			end
-		end
-	end
-end
-K:RegisterChatCommand("cleanboa", K.CleanupHerilooms)
-
 -- Fixes the issue when the dialog to release spirit does not come up.
 function K.FixRelease()
 	RetrieveCorpse()
@@ -241,15 +151,6 @@ end
 K:RegisterChatCommand("killparty", K.FixParty)
 K:RegisterChatCommand("leaveparty", K.FixParty)
 
--- Fixes the issue when players get stuck in party on felsong.
-function K.FixGlobalChat()
-	ChatFrame_RemoveChannel(ChatFrame1, "global_en")
-	ChatFrame_RemoveChannel(ChatFrame3, "global_en")
-	ChatFrame_AddChannel(ChatFrame3, "global_en")
-end
-K:RegisterChatCommand("killglobal", K.FixGlobalChat)
-K:RegisterChatCommand("leaveglobal", K.FixGlobalChat)
-
 -- Ready check
 function K.ReadyCheck()
 	DoReadyCheck()
@@ -267,6 +168,7 @@ function K.KeyBindFrame()
 	if not KeyBindingFrame then
 		KeyBindingFrame_LoadUI()
 	end
+
 	ShowUIPanel(KeyBindingFrame)
 end
 K:RegisterChatCommand("binds", K.KeyBindFrame)
@@ -536,7 +438,6 @@ end
 K:RegisterChatCommand("enableblizz", K.EnableBlizzardAddOns)
 K:RegisterChatCommand("fixblizz", K.EnableBlizzardAddOns)
 
-
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
 	PlaySound(PlaySoundKitID and "lfg_rewards" or SOUNDKIT.LFG_REWARDS)
@@ -574,88 +475,6 @@ SlashCmdList.TEST_EXTRABUTTON = function()
 	end
 end
 _G.SLASH_TEST_EXTRABUTTON1 = "/teb"
-
--- Grid on screen
-local Grid
-local BoxSize = 32
-
-local function Grid_Show()
-	if not Grid then
-		GridCreate()
-	elseif Grid.BoxSize ~= BoxSize then
-		Grid:Hide()
-		GridCreate()
-	else
-		Grid:Show()
-	end
-end
-
-local function GridHide()
-	if Grid then
-		Grid:Hide()
-	end
-end
-
-local isAligning = false
-_G.SLASH_TOGGLE_GRID1 = "/align"
-SlashCmdList.TOGGLE_GRID = function(arg)
-	if isAligning then
-		GridHide()
-		isAligning = false
-	else
-		BoxSize = (math_ceil((tonumber(arg) or BoxSize) / 32) * 32)
-		if BoxSize > 256 then BoxSize = 256 end
-		Grid_Show()
-		isAligning = true
-	end
-end
-
-function GridCreate()
-	Grid = CreateFrame("Frame", nil, UIParent)
-	Grid.BoxSize = BoxSize
-	Grid:SetAllPoints(UIParent)
-
-	local Size = 2
-	local Width = GetScreenWidth()
-	local Ratio = Width / GetScreenHeight()
-	local Height = GetScreenHeight() * Ratio
-
-	local WStep = Width / BoxSize
-	local HStep = Height / BoxSize
-
-	for i = 0, BoxSize do
-		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		if i == BoxSize / 2 then
-			Tx:SetColorTexture(1, 0, 0, 0.5)
-		else
-			Tx:SetColorTexture(0, 0, 0, 0.5)
-		end
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", i * WStep - (Size / 2), 0)
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "BOTTOMLEFT", i * WStep + (Size / 2), 0)
-	end
-	Height = GetScreenHeight()
-
-	do
-		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		Tx:SetColorTexture(1, 0, 0, 0.5)
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, - (Height / 2) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, - (Height / 2 + Size / 2))
-	end
-
-	for i = 1, math_floor((Height / 2) / HStep) do
-		local Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		Tx:SetColorTexture(0, 0, 0, 0.5)
-
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, - (Height / 2 + i * HStep) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, - (Height / 2 + i * HStep + Size / 2))
-
-		Tx = Grid:CreateTexture(nil, "BACKGROUND")
-		Tx:SetColorTexture(0, 0, 0, 0.5)
-
-		Tx:SetPoint("TOPLEFT", Grid, "TOPLEFT", 0, - (Height / 2 - i * HStep) + (Size / 2))
-		Tx:SetPoint("BOTTOMRIGHT", Grid, "TOPRIGHT", 0, - (Height / 2 - i * HStep + Size / 2))
-	end
-end
 
 -- Reduce video settings to optimize performance
 function K.BoostUI()

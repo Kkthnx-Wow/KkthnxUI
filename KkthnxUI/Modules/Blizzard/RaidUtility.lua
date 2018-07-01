@@ -28,16 +28,13 @@ K["RaidUtility"] = Module
 
 local PANEL_HEIGHT = 100
 local CLASS_COLOR =
-	K.Class == "PRIEST" and K.PriestColors or
-	(CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
+K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[K.Class] or RAID_CLASS_COLORS[K.Class])
 
---Check if We are Raid Leader or Raid Officer
+-- Check if We are Raid Leader or Raid Officer
 local function CheckRaidStatus()
 	local inInstance, instanceType = IsInInstance()
-	if
-		((IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and
-			not (inInstance and (instanceType == "pvp" or instanceType == "arena"))
-	 then
+	if ((IsInGroup() and not IsInRaid()) or UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")) and not (inInstance and (instanceType == "pvp" or instanceType == "arena"))
+	then
 		return true
 	else
 		return false
@@ -45,51 +42,29 @@ local function CheckRaidStatus()
 end
 
 local function ButtonEnter(self)
-	if self.Backdrop then
-		self = self.Backdrop
-	end
 	if not C["General"].ColorTextures then -- Fix a rare nil error
-		self:SetBackdropBorderColor(CLASS_COLOR.r, CLASS_COLOR.g, CLASS_COLOR.b, 1)
+		self.Borders:SetBackdropBorderColor(CLASS_COLOR.r, CLASS_COLOR.g, CLASS_COLOR.b, 1)
 	end
-	self:SetBackdropColor(CLASS_COLOR.r * .15, CLASS_COLOR.g * .15, CLASS_COLOR.b * .15, C["Media"].BackdropColor[4])
+
+	self.Background:SetColorTexture(CLASS_COLOR.r * .15, CLASS_COLOR.g * .15, CLASS_COLOR.b * .15, C["Media"].BackdropColor[4])
 end
 
 local function ButtonLeave(self)
-	if self.Backdrop then
-		self = self.Backdrop
-	end
 	if not C["General"].ColorTextures then -- Fix a rare nil error
-		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+		self.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
 	end
-	self:SetBackdropColor(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+
+	self.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 end
 
 -- Function to create buttons in this module
-function Module:CreateUtilButton(
-	name,
-	parent,
-	template,
-	width,
-	height,
-	point,
-	relativeto,
-	point2,
-	xOfs,
-	yOfs,
-	text,
-	texture)
+function Module:CreateUtilButton(name, parent, template, width, height, point, relativeto, point2, xOfs, yOfs, text, texture)
 	local b = CreateFrame("Button", name, parent, template)
 	b:SetWidth(width)
 	b:SetHeight(height)
 	b:SetPoint(point, relativeto, point2, xOfs, yOfs)
 	b:HookScript("OnEnter", ButtonEnter)
 	b:HookScript("OnLeave", ButtonLeave)
-	b:SetTemplate("Transparent")
 
 	if text then
 		local t = b:CreateFontString(nil, "OVERLAY", b)
@@ -160,9 +135,7 @@ local function onEnter(self)
 	for i = 1, GetNumGroupMembers() do
 		name, _, group, _, _, class, _, _, _, _, _, groupRole = GetRaidRosterInfo(i)
 		if name and groupRole == role then
-			color =
-				class == "PRIEST" and K.PriestColors or
-				(CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class])
+			color = class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class])
 			coloredName = ("|cff%02x%02x%02x%s"):format(color.r * 255, color.g * 255, color.b * 255, name:gsub("%-.+", "*"))
 			tinsert(roleIconRoster[group], coloredName)
 		end
@@ -193,7 +166,7 @@ end
 local count = {}
 local function UpdateIcons(self)
 	local raid = IsInRaid()
-	local party  --= IsInGroup() --We could have this in party :thinking:
+	local party --= IsInGroup() --We could have this in party :thinking:
 
 	if not (raid or party) then
 		self:Hide()
@@ -226,13 +199,12 @@ local function UpdateIcons(self)
 end
 
 function Module:OnInitialize()
-	if C["Raidframe"].RaidUtility == false then
+	if C["Raid"].RaidUtility == false then
 		return
 	end
 
 	--Create main frame
 	local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", UIParent, "SecureHandlerClickTemplate")
-	RaidUtilityPanel:SetTemplate("Transparent")
 	RaidUtilityPanel:SetWidth(230)
 	RaidUtilityPanel:SetHeight(PANEL_HEIGHT)
 	RaidUtilityPanel:SetPoint("TOP", UIParent, "TOP", -400, 1)
@@ -240,123 +212,95 @@ function Module:OnInitialize()
 	RaidUtilityPanel.toggled = false
 	RaidUtilityPanel:SetFrameStrata("HIGH")
 
+	RaidUtilityPanel.Background = RaidUtilityPanel:CreateTexture(nil, "BACKGROUND", -1)
+	RaidUtilityPanel.Background:SetAllPoints()
+	RaidUtilityPanel.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	RaidUtilityPanel.Borders = CreateFrame("Frame", nil, RaidUtilityPanel)
+	RaidUtilityPanel.Borders:SetAllPoints(RaidUtilityPanel)
+	K.CreateBorder(RaidUtilityPanel.Borders)
+
 	--Show Button
-	self:CreateUtilButton(
-		"RaidUtility_ShowButton",
-		UIParent,
-		"UIMenuButtonStretchTemplate, SecureHandlerClickTemplate",
-		136,
-		18,
-		"TOP",
-		UIParent,
-		"TOP",
-		-400,
-		4,
-		RAID_CONTROL,
-		nil
-	)
+	self:CreateUtilButton("RaidUtility_ShowButton", UIParent, "UIMenuButtonStretchTemplate, SecureHandlerClickTemplate", 136, 18, "TOP", UIParent, "TOP", -400, 4, RAID_CONTROL, nil )
 	RaidUtility_ShowButton:SetFrameRef("RaidUtilityPanel", RaidUtilityPanel)
-	RaidUtility_ShowButton:SetAttribute(
-		"_onclick",
-		([=[
-		local raidUtil = self:GetFrameRef("RaidUtilityPanel")
-		local closeButton = raidUtil:GetFrameRef("RaidUtility_CloseButton")
+	RaidUtility_ShowButton:SetAttribute("_onclick", ([=[
+	local raidUtil = self:GetFrameRef("RaidUtilityPanel")
+	local closeButton = raidUtil:GetFrameRef("RaidUtility_CloseButton")
 
-		self:Hide()
-		raidUtil:Show()
+	self:Hide()
+	raidUtil:Show()
 
-		local point = self:GetPoint()
-		local raidUtilPoint, closeButtonPoint, yOffset
+	local point = self:GetPoint()
+	local raidUtilPoint, closeButtonPoint, yOffset
 
-		if string.find(point, "BOTTOM") then
-			raidUtilPoint = "BOTTOM"
-			closeButtonPoint = "TOP"
-			yOffset = 1
-		else
-			raidUtilPoint = "TOP"
-			closeButtonPoint = "BOTTOM"
-			yOffset = -1
-		end
+	if string.find(point, "BOTTOM") then
+		raidUtilPoint = "BOTTOM"
+		closeButtonPoint = "TOP"
+		yOffset = 1
+	else
+		raidUtilPoint = "TOP"
+		closeButtonPoint = "BOTTOM"
+		yOffset = -1
+	end
 
-		yOffset = yOffset * (tonumber(%d))
+	yOffset = yOffset * (tonumber(%d))
 
-		raidUtil:ClearAllPoints()
-		closeButton:ClearAllPoints()
-		raidUtil:SetPoint(raidUtilPoint, self, raidUtilPoint)
-		closeButton:SetPoint(raidUtilPoint, raidUtil, closeButtonPoint, 0, yOffset)
-	]=]):format(
-			-6 + 4 * 3
-		)
-	)
-	RaidUtility_ShowButton:SetScript(
-		"OnMouseUp",
-		function()
-			RaidUtilityPanel.toggled = true
-			RaidUtility_PositionRoleIcons()
-		end
-	)
+	raidUtil:ClearAllPoints()
+	closeButton:ClearAllPoints()
+	raidUtil:SetPoint(raidUtilPoint, self, raidUtilPoint)
+	closeButton:SetPoint(raidUtilPoint, raidUtil, closeButtonPoint, 0, yOffset)
+	]=]):format(-6 + 4 * 3))
+
+	RaidUtility_ShowButton:SetScript("OnMouseUp", function()
+		RaidUtilityPanel.toggled = true
+		RaidUtility_PositionRoleIcons()
+	end)
+
 	RaidUtility_ShowButton:SetMovable(true)
 	RaidUtility_ShowButton:SetClampedToScreen(true)
 	RaidUtility_ShowButton:SetClampRectInsets(0, 0, -1, 1)
 	RaidUtility_ShowButton:RegisterForDrag("RightButton")
 	RaidUtility_ShowButton:SetFrameStrata("HIGH")
-	RaidUtility_ShowButton:SetScript(
-		"OnDragStart",
-		function(self)
-			self:StartMoving()
-		end
-	)
+	RaidUtility_ShowButton:SetScript("OnDragStart", function(self)
+		self:StartMoving()
+	end)
 
-	RaidUtility_ShowButton:SetScript(
-		"OnDragStop",
-		function(self)
-			self:StopMovingOrSizing()
-			local point = self:GetPoint()
-			local xOffset = self:GetCenter()
-			local screenWidth = UIParent:GetWidth() / 2
-			xOffset = xOffset - screenWidth
-			self:ClearAllPoints()
-			if find(point, "BOTTOM") then
-				self:SetPoint("BOTTOM", UIParent, "BOTTOM", xOffset, -1)
-			else
-				self:SetPoint("TOP", UIParent, "TOP", xOffset, 1)
-			end
+	RaidUtility_ShowButton:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		local point = self:GetPoint()
+		local xOffset = self:GetCenter()
+		local screenWidth = UIParent:GetWidth() / 2
+		xOffset = xOffset - screenWidth
+		self:ClearAllPoints()
+		if find(point, "BOTTOM") then
+			self:SetPoint("BOTTOM", UIParent, "BOTTOM", xOffset, -1)
+		else
+			self:SetPoint("TOP", UIParent, "TOP", xOffset, 1)
 		end
-	)
+	end)
 
 	-- Close Button
-	self:CreateUtilButton(
-		"RaidUtility_CloseButton",
-		RaidUtilityPanel,
-		"UIMenuButtonStretchTemplate, SecureHandlerClickTemplate",
-		136,
-		18,
-		"TOP",
-		RaidUtilityPanel,
-		"BOTTOM",
-		0,
-		-1,
-		CLOSE,
-		nil
-	)
+	self:CreateUtilButton("RaidUtility_CloseButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate, SecureHandlerClickTemplate", 136, 18, "TOP", RaidUtilityPanel, "BOTTOM", 0, -1, CLOSE, nil )
 	RaidUtility_CloseButton:SetFrameRef("RaidUtility_ShowButton", RaidUtility_ShowButton)
-	RaidUtility_CloseButton:SetAttribute(
-		"_onclick",
-		[=[self:GetParent():Hide(); self:GetFrameRef("RaidUtility_ShowButton"):Show();]=]
-	)
-	RaidUtility_CloseButton:SetScript(
-		"OnMouseUp",
-		function()
-			RaidUtilityPanel.toggled = false
-		end
-	)
+	RaidUtility_CloseButton:SetAttribute("_onclick", [=[self:GetParent():Hide() self:GetFrameRef("RaidUtility_ShowButton"):Show()]=] )
+	RaidUtility_CloseButton:SetScript("OnMouseUp", function()
+		RaidUtilityPanel.toggled = false
+	end)
 	RaidUtilityPanel:SetFrameRef("RaidUtility_CloseButton", RaidUtility_CloseButton)
 
 	-- Role Icons
 	local RoleIcons = CreateFrame("Frame", "RaidUtilityRoleIcons", RaidUtilityPanel)
 	RoleIcons:SetPoint("LEFT", RaidUtilityPanel, "RIGHT", 6, 0)
 	RoleIcons:SetSize(36, PANEL_HEIGHT)
-	RoleIcons:SetTemplate("Transparent")
+
+	RoleIcons.Background = RoleIcons:CreateTexture(nil, "BACKGROUND", -1)
+	RoleIcons.Background:SetAllPoints()
+	RoleIcons.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	RoleIcons.Borders = CreateFrame("Frame", nil, RoleIcons)
+	RoleIcons.Borders:SetAllPoints(RoleIconsb)
+	K.CreateBorder(RoleIcons.Borders)
+
 	RoleIcons:RegisterEvent("PLAYER_ENTERING_WORLD")
 	RoleIcons:RegisterEvent("GROUP_ROSTER_UPDATE")
 	RoleIcons:SetScript("OnEvent", UpdateIcons)
@@ -398,98 +342,34 @@ function Module:OnInitialize()
 	end
 
 	-- Disband Raid button
-	self:CreateUtilButton(
-		"DisbandRaidButton",
-		RaidUtilityPanel,
-		"UIMenuButtonStretchTemplate",
-		RaidUtilityPanel:GetWidth() * 0.8,
-		18,
-		"TOP",
-		RaidUtilityPanel,
-		"TOP",
-		0,
-		-5,
-		L["Blizzard"].Disband_Group,
-		nil
-	)
-	DisbandRaidButton:SetScript(
-		"OnMouseUp",
-		function()
-			if CheckRaidStatus() then
-				K.StaticPopup_Show("DISBAND_RAID")
-			end
+	self:CreateUtilButton("DisbandRaidButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", RaidUtilityPanel, "TOP", 0, -5, L["Blizzard"].Disband_Group, nil )
+	DisbandRaidButton:SetScript("OnMouseUp", function()
+		if CheckRaidStatus() then
+			K.StaticPopup_Show("DISBAND_RAID")
 		end
-	)
+	end)
 
 	-- Role Check button
-	self:CreateUtilButton(
-		"RoleCheckButton",
-		RaidUtilityPanel,
-		"UIMenuButtonStretchTemplate",
-		RaidUtilityPanel:GetWidth() * 0.8,
-		18,
-		"TOP",
-		DisbandRaidButton,
-		"BOTTOM",
-		0,
-		-6,
-		ROLE_POLL,
-		nil
-	)
-	RoleCheckButton:SetScript(
-		"OnMouseUp",
-		function()
-			if CheckRaidStatus() then
-				InitiateRolePoll()
-			end
+	self:CreateUtilButton("RoleCheckButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RaidUtilityPanel:GetWidth() * 0.8, 18, "TOP", DisbandRaidButton, "BOTTOM", 0, -6, ROLE_POLL, nil )
+	RoleCheckButton:SetScript("OnMouseUp", function()
+		if CheckRaidStatus() then
+			InitiateRolePoll()
 		end
-	)
+	end)
 
 	-- Ready Check button
-	self:CreateUtilButton(
-		"ReadyCheckButton",
-		RaidUtilityPanel,
-		"UIMenuButtonStretchTemplate",
-		RoleCheckButton:GetWidth() * 0.75,
-		18,
-		"TOPLEFT",
-		RoleCheckButton,
-		"BOTTOMLEFT",
-		0,
-		-6,
-		READY_CHECK,
-		nil
-	)
-	ReadyCheckButton:SetScript(
-		"OnMouseUp",
-		function()
-			if CheckRaidStatus() then
-				DoReadyCheck()
-			end
+	self:CreateUtilButton("ReadyCheckButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth() * 0.75, 18, "TOPLEFT", RoleCheckButton, "BOTTOMLEFT", 0, -6, READY_CHECK, nil )
+	ReadyCheckButton:SetScript("OnMouseUp", function()
+		if CheckRaidStatus() then
+			DoReadyCheck()
 		end
-	)
+	end)
 
 	-- Raid Control Panel
-	self:CreateUtilButton(
-		"RaidControlButton",
-		RaidUtilityPanel,
-		"UIMenuButtonStretchTemplate",
-		RoleCheckButton:GetWidth(),
-		18,
-		"TOPLEFT",
-		ReadyCheckButton,
-		"BOTTOMLEFT",
-		0,
-		-6,
-		L["Blizzard"].Raid_Menu,
-		nil
-	)
-	RaidControlButton:SetScript(
-		"OnMouseUp",
-		function()
-			ToggleFriendsFrame(4)
-		end
-	)
+	self:CreateUtilButton("RaidControlButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth(), 18, "TOPLEFT", ReadyCheckButton, "BOTTOMLEFT", 0, -6, L["Blizzard"].Raid_Menu, nil )
+	RaidControlButton:SetScript("OnMouseUp", function()
+		ToggleFriendsFrame(4)
+	end)
 
 	local buttons = {
 		"DisbandRaidButton",
@@ -503,55 +383,25 @@ function Module:OnInitialize()
 	if CompactRaidFrameManager then
 		-- Reposition/Resize and Reuse the World Marker Button
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:ClearAllPoints()
-		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetPoint(
-			"TOPRIGHT",
-			RoleCheckButton,
-			"BOTTOMRIGHT",
-			0,
-			-6
-		)
+		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetPoint("TOPRIGHT", RoleCheckButton, "BOTTOMRIGHT", 0, -6 )
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetParent("RaidUtilityPanel")
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetHeight(18)
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton:SetWidth(RoleCheckButton:GetWidth() * 0.22)
 
 		-- Put other stuff back
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:ClearAllPoints()
-		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:SetPoint(
-			"BOTTOMLEFT",
-			CompactRaidFrameManagerDisplayFrameLockedModeToggle,
-			"TOPLEFT",
-			0,
-			1
-		)
-		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:SetPoint(
-			"BOTTOMRIGHT",
-			CompactRaidFrameManagerDisplayFrameHiddenModeToggle,
-			"TOPRIGHT",
-			0,
-			1
-		)
+		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:SetPoint("BOTTOMLEFT", CompactRaidFrameManagerDisplayFrameLockedModeToggle, "TOPLEFT", 0, 1 )
+		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck:SetPoint("BOTTOMRIGHT", CompactRaidFrameManagerDisplayFrameHiddenModeToggle, "TOPRIGHT", 0, 1 )
 		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateRolePoll:ClearAllPoints()
-		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateRolePoll:SetPoint(
-			"BOTTOMLEFT",
-			CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck,
-			"TOPLEFT",
-			0,
-			1
-		)
-		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateRolePoll:SetPoint(
-			"BOTTOMRIGHT",
-			CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck,
-			"TOPRIGHT",
-			0,
-			1
-		)
+		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateRolePoll:SetPoint("BOTTOMLEFT", CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck, "TOPLEFT", 0, 1 )
+		CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateRolePoll:SetPoint("BOTTOMRIGHT", CompactRaidFrameManagerDisplayFrameLeaderOptionsInitiateReadyCheck, "TOPRIGHT", 0, 1 )
 
 		tinsert(buttons, "CompactRaidFrameManagerDisplayFrameLeaderOptionsRaidWorldMarkerButton")
 	else
 		K.StaticPopup_Show("WARNING_BLIZZARD_ADDONS")
 	end
 
-	--Reskin Stuff
+	-- Reskin Stuff
 	for _, button in pairs(buttons) do
 		local f = _G[button]
 		f.BottomLeft:SetAlpha(0)
@@ -568,7 +418,14 @@ function Module:OnInitialize()
 		f:SetDisabledTexture("")
 		f:HookScript("OnEnter", ButtonEnter)
 		f:HookScript("OnLeave", ButtonLeave)
-		f:SetTemplate("Transparent", true)
+
+		f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
+		f.Background:SetAllPoints()
+		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		f.Borders = CreateFrame("Frame", nil, f)
+		f.Borders:SetAllPoints(f)
+		K.CreateBorder(f.Borders)
 	end
 
 	-- Automatically show/hide the frame if we have RaidLeader or RaidOfficer

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes", "AceEvent-3.0")
 
 local oUF = oUF or K.oUF
@@ -66,16 +66,22 @@ Module.RaidBuffsTrackingPosition = {
 }
 
 function Module:UpdateClassPortraits(unit)
-	local _, unitClass = UnitClass(unit)
-	if (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "ClassPortraits" then
-		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
-		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
-	elseif (unitClass and UnitIsPlayer(unit)) and C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
-		self:SetTexture(C["Media"].NewClassPortraits)
-		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
-	else
-		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
-	end
+    local _, unitClass = UnitClass(unit)
+	local isPlayer = unitClass and UnitIsPlayer(unit)
+
+	local PValue = C["Party"].PortraitStyle.Value
+	local BValue = C["Boss"].PortraitStyle.Value
+	local UFValue = C["Unitframe"].PortraitStyle.Value
+
+    if isPlayer and PValue == "ClassPortraits" or BValue == "ClassPortraits" or UFValue == "ClassPortraits" then
+        self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
+        self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+    elseif isPlayer and PValue == "NewClassPortraits" or BValue == "NewClassPortraits" or UFValue == "NewClassPortraits" then
+        self:SetTexture(C["Media"].NewClassPortraits)
+        self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+    else
+        self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+    end
 end
 
 function Module:ThreatPlate(forced)
@@ -92,64 +98,37 @@ function Module:ThreatPlate(forced)
 		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
 	elseif combat then
 		local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
-		if threatStatus then
+		if (threatStatus and threatStatus > 0) and (IsInGroup() or UnitExists("pet")) then
 			if (threatStatus == 3) then
 				if (K.GetPlayerRole() == "TANK") then
-					self.Health:SetStatusBarColor(
-						C["Nameplates"].GoodColor[1],
-						C["Nameplates"].GoodColor[2],
-						C["Nameplates"].GoodColor[3]
-					)
+					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 				else
-					self.Health:SetStatusBarColor(
-						C["Nameplates"].BadColor[1],
-						C["Nameplates"].BadColor[2],
-						C["Nameplates"].BadColor[3]
-					)
+					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 				end
 			elseif (threatStatus == 2) then
-				self.Health:SetStatusBarColor(
-					C["Nameplates"].NearColor[1],
-					C["Nameplates"].NearColor[2],
-					C["Nameplates"].NearColor[3]
-				)
+				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
 			elseif (threatStatus == 1) then
-				self.Health:SetStatusBarColor(
-					C["Nameplates"].NearColor[1],
-					C["Nameplates"].NearColor[2],
-					C["Nameplates"].NearColor[3]
-				)
+				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
 			elseif (threatStatus == 0) then
 				if (K.GetPlayerRole() == "TANK") then
-					self.Health:SetStatusBarColor(
-						C["Nameplates"].BadColor[1],
-						C["Nameplates"].BadColor[2],
-						C["Nameplates"].BadColor[3]
-					)
+					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 					if IsInGroup() or IsInRaid() then
 						for i = 1, GetNumGroupMembers() do
 							if UnitExists("raid" .. i) and not UnitIsUnit("raid" .. i, "player") then
 								local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit)
 								if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
-									self.Health:SetStatusBarColor(
-										C["Nameplates"].OffTankColor[1],
-										C["Nameplates"].OffTankColor[2],
-										C["Nameplates"].OffTankColor[3]
-									)
+									self.Health:SetStatusBarColor(C["Nameplates"].OffTankColor[1], C["Nameplates"].OffTankColor[2], C["Nameplates"].OffTankColor[3])
 								end
 							end
 						end
 					end
 				else
-					self.Health:SetStatusBarColor(
-						C["Nameplates"].GoodColor[1],
-						C["Nameplates"].GoodColor[2],
-						C["Nameplates"].GoodColor[3]
-					)
+					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 				end
 			end
 		end
 	end
+
 	if (not forced and self.Health.ForceUpdate) then
 		self.Health:ForceUpdate()
 	end
@@ -157,6 +136,10 @@ end
 
 function Module:HighlightPlate()
 	local Shadow = self.Health.Shadow
+
+	if UnitIsPlayer(self.unit) then
+		return
+	end
 
 	local unit = self.unit
 	if (UnitIsUnit("target", self.unit)) then
@@ -187,14 +170,7 @@ function Module:CustomCastTimeText(duration)
 end
 
 function Module:CustomCastDelayText(duration)
-	local Value =
-		string_format(
-		"%.1f |cffaf5050%s %.1f|r",
-		self.channeling and duration or self.max - duration,
-		self.channeling and "- " or "+",
-		self.delay
-	)
-
+	local Value = string_format("%.1f |cffaf5050%s %.1f|r", self.channeling and duration or self.max - duration, self.channeling and "- " or "+", self.delay)
 	self.Time:SetText(Value)
 end
 
@@ -265,7 +241,7 @@ function Module:CreateAuraTimer(elapsed)
 end
 
 function Module:PostCreateAura(button)
-	if button:GetName():match("NamePlate") then
+	if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
 		button:CreateShadow()
 
 		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
@@ -289,7 +265,11 @@ function Module:PostCreateAura(button)
 		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
 		button.count:SetTextColor(0.84, 0.75, 0.65)
 	else
-		button:SetTemplate("Transparent", true)
+		button.Backgrounds = button:CreateTexture(nil, "BACKGROUND", -1)
+		button.Backgrounds:SetAllPoints()
+		button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(button)
 
 		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
 		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
@@ -337,11 +317,19 @@ function Module:PostUpdateAura(unit, button, index)
 		if (button.filter == "HARMFUL") then
 			if (not UnitIsFriend("player", unit) and not button.isPlayer) then
 				button.icon:SetDesaturated(true)
-				button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
+					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+				else
+					button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				end
 			else
-				local color = DebuffTypeColor[DType] or DebuffTypeColor.none
+				local color = _G.DebuffTypeColor[DType] or _G.DebuffTypeColor.none
 				button.icon:SetDesaturated(false)
-				button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+				if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
+					button.Shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+				else
+					button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+				end
 			end
 		else
 			if button.Animation then
@@ -443,60 +431,97 @@ function Module:CreateAuraWatch(frame)
 end
 
 function Module:GetPartyFramesAttributes()
-	local PartyProperties =
-		C["Unitframe"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
+	local PartyProperties = C["Party"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
 
-	return "oUF_Party", nil, PartyProperties, "oUF-initialConfigFunction", [[
+	return "oUF_Party", nil, PartyProperties,
+	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
-	self:SetHeight(header:GetAttribute("initial-height"))]], "initial-width", 140, "initial-height", 38, "showSolo", false, "showParty", true, "showPlayer", C[
-		"Unitframe"
-	].ShowPlayer, "showRaid", false, "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8", "groupingOrder", "TANK, HEALER, DAMAGER, NONE", "groupBy", "ASSIGNEDROLE", "yOffset", -44
+	self:SetHeight(header:GetAttribute("initial-height"))
+	]],
+
+	"initial-width", 140,
+	"initial-height", 38,
+	"showSolo", false,
+	"showParty", true,
+	"showPlayer", C["Party"].ShowPlayer,
+	"showRaid", false,
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
+	"groupBy", "ASSIGNEDROLE",
+	"yOffset", -44
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local DamageRaidProperties =
-		C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
+	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
 
-	return "DamageRaid", nil, DamageRaidProperties, "oUF-initialConfigFunction", [[
+	return "DamageRaid", nil, DamageRaidProperties,
+	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
 	self:SetHeight(header:GetAttribute("initial-height"))
-	]], "initial-width", K.Scale(
-		C["Raidframe"].Width
-	), "initial-height", K.Scale(C["Raidframe"].Height), "showParty", true, "showRaid", true, "showPlayer", true, "showSolo", false, "xoffset", K.Scale(
-		6
-	), "yOffset", K.Scale(-6), "point", "TOP", "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8", "groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8", "groupBy", C[
-		"Raidframe"
-	].GroupBy.Value, "maxColumns", math.ceil(40 / 5), "unitsPerColumn", C["Raidframe"].MaxUnitPerColumn, "columnSpacing", K.Scale(
-		6
-	), "columnAnchorPoint", "LEFT"
+	]],
+
+	"initial-width", K.Scale(C["Raid"].Width),
+	"initial-height", K.Scale(C["Raid"].Height),
+	"showParty", true,
+	"showRaid", true,
+	"showPlayer", true,
+	"showSolo", false,
+	"xoffset", K.Scale(6),
+	"yOffset", K.Scale(-6),
+	"point", "TOP",
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupBy", C["Raid"].GroupBy.Value,
+	"maxColumns", math.ceil(40 / 5),
+	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
+	"columnSpacing", K.Scale(6),
+	"columnAnchorPoint", "LEFT"
 end
 
 function Module:GetHealerRaidFramesAttributes()
-	local HealerRaidProperties =
-		C["Unitframe"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
+	local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
 
-	return "HealerRaid", nil, HealerRaidProperties, "oUF-initialConfigFunction", [[
+	return "HealerRaid", nil, HealerRaidProperties,
+	"oUF-initialConfigFunction", [[
 	local header = self:GetParent()
 	self:SetWidth(header:GetAttribute("initial-width"))
 	self:SetHeight(header:GetAttribute("initial-height"))
-	]], "initial-width", K.Scale(
-		C["Raidframe"].Width
-	), "initial-height", K.Scale(C["Raidframe"].Height), "showParty", true, "showRaid", true, "showPlayer", true, "showSolo", false, "xoffset", K.Scale(
-		6
-	), "yOffset", K.Scale(-6), "point", "TOP", "groupFilter", "1, 2, 3, 4, 5, 6, 7, 8", "groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8", "groupBy", C[
-		"Raidframe"
-	].GroupBy.Value, "maxColumns", math.ceil(40 / 5), "unitsPerColumn", C["Raidframe"].MaxUnitPerColumn, "columnSpacing", K.Scale(
-		6
-	), "columnAnchorPoint", "LEFT"
+	]],
+
+	"initial-width", K.Scale(C["Raid"].Width),
+	"initial-height", K.Scale(C["Raid"].Height),
+	"showParty", true,
+	"showRaid", true,
+	"showPlayer", true,
+	"showSolo", false,
+	"xoffset", K.Scale(6),
+	"yOffset", K.Scale(-6),
+	"point", "TOP",
+	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupBy", C["Raid"].GroupBy.Value,
+	"maxColumns", math.ceil(40 / 5),
+	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
+	"columnSpacing", K.Scale(6),
+	"columnAnchorPoint", "LEFT"
 end
 
 function Module:GetMainTankAttributes()
-	return "oUF_MainTank", nil, "raid", "oUF-initialConfigFunction", [[
+	return "oUF_MainTank", nil, "raid",
+	"oUF-initialConfigFunction", [[
 	self:SetWidth(70)
 	self:SetHeight(32)
-	]], "showRaid", true, "yOffset", -8, "groupFilter", "MAINTANK, MAINASSIST", "groupBy", "ROLE", "groupingOrder", "MAINTANK, MAINASSIST", "template", "oUF_MainTank"
+	]],
+
+	"showRaid", true,
+	"yOffset", -8,
+	"groupFilter",
+	"MAINTANK, MAINASSIST",
+	"groupBy", "ROLE",
+	"groupingOrder", "MAINTANK, MAINASSIST",
+	"template", "oUF_MainTank"
 end
 
 function Module:CreateStyle(unit)
@@ -554,7 +579,7 @@ function Module:CreateUnits()
 			Pet:SetParent(Player)
 		end
 		if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
-			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -15)
+			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -16)
 		else
 			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, 2)
 		end
@@ -568,7 +593,7 @@ function Module:CreateUnits()
 		FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 		FocusTarget:SetSize(116, 36)
 
-		if (C["Unitframe"].ShowArena) then
+		if (C["Arena"].Enable) then
 			local Arena = {}
 			for i = 1, 5 do
 				Arena[i] = oUF:Spawn("arena" .. i)
@@ -584,7 +609,7 @@ function Module:CreateUnits()
 			Module.CreateArenaPreparationFrames()
 		end
 
-		if (C["Unitframe"].ShowBoss) then
+		if (C["Boss"].Enable) then
 			local Boss = {}
 			for i = 1, MAX_BOSS_FRAMES do
 				Boss[i] = oUF:Spawn("boss" .. i)
@@ -598,29 +623,29 @@ function Module:CreateUnits()
 			end
 		end
 
-		if (C["Unitframe"].Party) then
+		if (C["Party"].Enable) then
 			local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
 			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 			Movers:RegisterFrame(Party)
 		end
 
-		if (C["Raidframe"].Enable) then
+		if (C["Raid"].Enable) then
 			local DamageRaid = oUF:SpawnHeader(Module:GetDamageRaidFramesAttributes())
 			local HealerRaid = oUF:SpawnHeader(Module:GetHealerRaidFramesAttributes())
 
-			if C["Raidframe"].RaidLayout.Value == "Healer" then
+			if C["Raid"].RaidLayout.Value == "Healer" then
 				HealerRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
-			elseif C["Raidframe"].RaidLayout.Value == "Damage" then
+			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			else
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			end
 
-			if C["Raidframe"].MainTankFrames then
+			if C["Raid"].MainTankFrames then
 				local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
-				if C["Raidframe"].RaidLayout.Value == "Healer" then
+				if C["Raid"].RaidLayout.Value == "Healer" then
 					MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 6, 2)
-				elseif C["Raidframe"].RaidLayout.Value == "Damage" then
+				elseif C["Raid"].RaidLayout.Value == "Damage" then
 					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
 				else
 					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
@@ -641,30 +666,42 @@ function Module:CreateUnits()
 	end
 
 	if C["Nameplates"].Enable then
+		local GetCVarDefault = _G.GetCVarDefault
+		local SetCVar = _G.SetCVar
+
+		SetCVar("nameplateMotionSpeed", .1)
+		SetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
+		SetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
+		SetCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
+		SetCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
+		SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
+		SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
+
 		Module.NameplatesVars = {
-			nameplateMaxDistance = C["Nameplates"].Distance or 40,
+			NamePlateHorizontalScale = 1,
+			nameplateGlobalScale = 1,
+			nameplateLargerScale = 1.2,
+			nameplateMaxAlpha = 1,
+			nameplateMaxAlphaDistance = 0,
+			nameplateMaxDistance = C["Nameplates"].Distance + 6 or 46, -- for some reason there is a 6yd diff
+			nameplateMaxScale = 1,
+			nameplateMaxScaleDistance = 0,
+			nameplateMinAlpha = 1,
+			nameplateMinAlphaDistance = 0,
 			nameplateMinScale = 1,
+			nameplateMinScaleDistance = 0,
 			nameplateOtherBottomInset = C["Nameplates"].Clamp and 0.1 or -1,
 			nameplateOtherTopInset = C["Nameplates"].Clamp and 0.08 or -1,
 			nameplateSelectedAlpha = 1,
-			nameplateGlobalScale = 1,
-			NamePlateHorizontalScale = 1,
-			nameplateLargerScale = 1.2,
-			nameplateMaxAlpha = 0.5,
-			nameplateMaxAlphaDistance = 40,
-			nameplateMaxScale = 1,
-			nameplateMaxScaleDistance = 40,
-			nameplateMinAlpha = 0.5,
-			nameplateMinAlphaDistance = 0,
-			nameplateMinScaleDistance = 0,
 			nameplateSelectedScale = 1,
+			nameplateSelfAlpha = 1,
 			nameplateSelfScale = 1,
+			nameplateShowAll = 1,
 			nameplateShowFriendlyNPCs = 0,
-			nameplateVerticalScale = 1
+			nameplateVerticalScale = 1,
 		}
 
-		oUF:RegisterStyle("oUF_", Module.NameplatesVars)
-		oUF:SpawnNamePlates("oUF_", Module.Callback)
+		oUF:SpawnNamePlates(nil, Module.NameplatesCallback, Module.NameplatesVars)
 	end
 end
 
@@ -765,7 +802,7 @@ function Module:UNIT_FACTION(_, unit)
 end
 
 function Module:OnEnable()
-	if C["Unitframe"].Enable ~= true then
+	if C["Unitframe"].Enable ~= true and C["Party"].Enable ~= true and C["Raid"].Enable ~= true then
 		return
 	end
 
@@ -779,13 +816,13 @@ function Module:OnEnable()
 
 	self:CreateUnits()
 
-	if (C["Unitframe"].Enable and C["Unitframe"].ShowArena) then
+	if (C["Arena"].Enable) then
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
 		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "OnEvent")
 		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "OnEvent")
 	end
 
-	if (C["Unitframe"].RaidDebuffs) then
+	if (C["Raid"].RaidDebuffs) then
 		local RaidDebuffs = CreateFrame("Frame")
 		RaidDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
 		RaidDebuffs:SetScript("OnEvent", Module.UpdateRaidDebuffIndicator)

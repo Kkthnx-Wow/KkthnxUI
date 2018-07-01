@@ -3,10 +3,8 @@ if C["ActionBar"].Enable ~= true then
 	return
 end
 
--- Lua API
 local _G = _G
 
--- MultiBarBottomLeft(by Tukz)
 local ActionBar2 = CreateFrame("Frame", "Bar2Holder", ActionBarAnchor)
 ActionBar2:SetAllPoints(ActionBarAnchor)
 MultiBarBottomLeft:SetParent(ActionBar2)

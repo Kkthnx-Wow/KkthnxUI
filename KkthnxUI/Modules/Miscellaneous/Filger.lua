@@ -170,7 +170,14 @@ function Filger:DisplayActives()
 		if not bar then
 			bar = CreateFrame("Frame", "FilgerAnchor" .. id .. "Frame" .. index, self)
 			bar:SetScale(1)
-			bar:SetTemplate("Transparent")
+
+			bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
+			bar.Background:SetAllPoints()
+			bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			bar.Border = CreateFrame("Frame", nil, bar)
+			bar.Border:SetAllPoints()
+			K.CreateBorder(bar.Border)
 
 			if index == 1 then
 				bar:SetPoint(self.Position[1], self.Position[2], self.Position[3], self.Position[4])
@@ -261,8 +268,14 @@ function Filger:DisplayActives()
 					bar.bg = CreateFrame("Frame", "$parentBG", bar.statusbar)
 					bar.bg:SetFrameLevel(4)
 					bar.bg:SetAllPoints()
-					--bar.bg:SetFrameStrata("BACKGROUND")
-					bar.bg:SetTemplate("Transparent")
+
+					bar.bg.Background = bar.bg:CreateTexture(nil, "BACKGROUND", -1)
+					bar.bg.Background:SetAllPoints()
+					bar.bg.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+					bar.bg.Border = CreateFrame("Frame", nil, bar)
+					bar.bg.Border:SetAllPoints()
+					K.CreateBorder(bar.bg.Border)
 				end
 
 				if bar.background then

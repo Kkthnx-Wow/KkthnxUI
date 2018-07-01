@@ -5,31 +5,37 @@ local Module = K:NewModule("Honor", "AceEvent-3.0")
 
 local _G = _G
 local format = format
-local CanPrestige = CanPrestige
-local GetMaxPlayerHonorLevel = GetMaxPlayerHonorLevel
-local ToggleTalentFrame = ToggleTalentFrame
-local UnitHonor = UnitHonor
-local UnitHonorLevel = UnitHonorLevel
-local UnitHonorMax = UnitHonorMax
-local UnitIsPVP = UnitIsPVP
-local UnitLevel = UnitLevel
-local MAX_PLAYER_LEVEL = MAX_PLAYER_LEVEL
-local PVP_HONOR_PRESTIGE_AVAILABLE = PVP_HONOR_PRESTIGE_AVAILABLE
-local HONOR = HONOR
-local MAX_HONOR_LEVEL = MAX_HONOR_LEVEL
-local InCombatLockdown = InCombatLockdown
 
-local HonorFont = K.GetFont(C["DataBars"].Font)
-local HonorTexture = K.GetTexture(C["DataBars"].Texture)
+local CanPrestige = _G.CanPrestige
+local GetMaxPlayerHonorLevel = _G.GetMaxPlayerHonorLevel
+local HONOR = _G.HONOR
+local IsInInstance = _G.IsInInstance
+local MAX_HONOR_LEVEL = _G.MAX_HONOR_LEVEL
+local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
+local PVP_HONOR_PRESTIGE_AVAILABLE = _G.PVP_HONOR_PRESTIGE_AVAILABLE
+local ToggleTalentFrame = _G.ToggleTalentFrame
+local UnitHonor = _G.UnitHonor
+local UnitHonorLevel = _G.UnitHonorLevel
+local UnitHonorMax = _G.UnitHonorMax
+local UnitLevel = _G.UnitLevel
+local UnitPrestige = _G.UnitPrestige
 
 function Module:UpdateHonor(event, unit)
-	if not C["DataBars"].HonorEnable then return end
-	if event == "HONOR_PRESTIGE_UPDATE" and unit ~= "player" then return end
-	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then return end
+	if not C["DataBars"].HonorEnable then
+		return
+	end
+
+	if event == "HONOR_PRESTIGE_UPDATE" and unit ~= "player" then
+		return
+	end
+
+	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then
+		return
+	end
 
 	local bar = self.HonorBar
 	local showHonor = UnitLevel("player") >= MAX_PLAYER_LEVEL
-	local isInInstance, instanceType = IsInInstance()
+	local _, instanceType = IsInInstance()
 
 	if not showHonor or not (instanceType == "pvp") or (instanceType == "arena") then
 		bar:Hide()
@@ -53,7 +59,7 @@ function Module:UpdateHonor(event, unit)
 			bar.statusBar:SetValue(current)
 		end
 
-		local text = ""
+		local text
 
 		if (CanPrestige()) then
 			text = PVP_HONOR_PRESTIGE_AVAILABLE
@@ -67,7 +73,7 @@ function Module:UpdateHonor(event, unit)
 	end
 end
 
-local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE..HEADER_COLON
+local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE .. HEADER_COLON
 function Module:HonorBar_OnEnter()
 	if C["DataBars"].MouseOver then
 		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
@@ -93,7 +99,7 @@ function Module:HonorBar_OnEnter()
 	elseif (level == levelmax) then
 		GameTooltip:AddLine(MAX_HONOR_LEVEL)
 	else
-		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, format(" %d / %d (%d%%)", current, max, current / max * 100), 1, 1, 1)
 		GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
 	end
 	GameTooltip:Show()
@@ -150,6 +156,9 @@ end
 
 local AnchorY
 function Module:OnEnable()
+	local HonorFont = K.GetFont(C["DataBars"].Font)
+	local HonorTexture = K.GetTexture(C["DataBars"].Texture)
+
 	if K.Level <= 99 then
 		AnchorY = -24
 	else
@@ -161,7 +170,7 @@ function Module:OnEnable()
 	self.HonorBar:SetScript("OnEnter", Module.HonorBar_OnEnter)
 	self.HonorBar:SetScript("OnLeave", Module.HonorBar_OnLeave)
 	self.HonorBar:SetScript("OnClick", Module.HonorBar_OnClick)
-	self.HonorBar:SetFrameStrata('LOW')
+	self.HonorBar:SetFrameStrata("LOW")
 	self.HonorBar:Hide()
 
 	self.HonorBar.statusBar = CreateFrame("StatusBar", nil, self.HonorBar)
@@ -169,11 +178,16 @@ function Module:OnEnable()
 	self.HonorBar.statusBar:SetStatusBarTexture(HonorTexture)
 	self.HonorBar.statusBar:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
 	self.HonorBar.statusBar:SetMinMaxValues(0, 325)
-	self.HonorBar.statusBar:SetTemplate("Transparent")
+
+	self.HonorBar.statusBar.Backgrounds = self.HonorBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
+	self.HonorBar.statusBar.Backgrounds:SetAllPoints()
+	self.HonorBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.HonorBar.statusBar)
 
 	self.HonorBar.text = self.HonorBar.statusBar:CreateFontString(nil, "OVERLAY")
-	self.HonorBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.HonorBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.HonorBar.text:SetFontObject(HonorFont)
+	self.HonorBar.text:SetFont(select(1, self.HonorBar.text:GetFont()), 11, select(3, self.HonorBar.text:GetFont()))
 	self.HonorBar.text:SetPoint("CENTER")
 
 	self.HonorBar.spark = self.HonorBar.statusBar:CreateTexture(nil, "OVERLAY")
@@ -186,7 +200,9 @@ function Module:OnEnable()
 	self.HonorBar.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.HonorBar.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 	self.HonorBar.eventFrame:RegisterEvent("PLAYER_FLAGS_CHANGED")
-	self.HonorBar.eventFrame:SetScript("OnEvent", function(self, event, unit) Module:UpdateHonor(event, unit) end)
+	self.HonorBar.eventFrame:SetScript("OnEvent", function(_, event, unit)
+		Module:UpdateHonor(event, unit)
+	end)
 
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 

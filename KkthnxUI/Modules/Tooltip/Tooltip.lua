@@ -112,7 +112,7 @@ local SlotName = {
 	"Trinket0",
 	"Trinket1",
 	"MainHand",
-	"SecondaryHand"
+	"SecondaryHand",
 }
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
@@ -145,12 +145,12 @@ function Module:GetItemLvL(unit)
 		local itemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(SlotName[i])))
 		if (itemLink ~= nil) then
 			local _, _, rarity, _, _, _, _, _, equipLoc = GetItemInfo(itemLink)
-			--Check if we have an artifact equipped in main hand
+			-- Check if we have an artifact equipped in main hand
 			if (equipLoc and equipLoc == "INVTYPE_WEAPONMAINHAND" and rarity and rarity == 6) then
 				artifactEquipped = true
 			end
 
-			--If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
 			if (not artifactEquipped or (artifactEquipped and equipLoc and equipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
 				local itemLevel = GetDetailedItemLevelInfo(itemLink)
 				if (itemLevel and itemLevel > 0) then
@@ -352,16 +352,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			if (factionGroup and englishRace == "Pandaren") then
 				race = factionGroup .. " " .. race
 			end
-			levelLine:SetFormattedText(
-				"|cff%02x%02x%02x%s|r %s |c%s%s|r",
-				diffColor.r * 255,
-				diffColor.g * 255,
-				diffColor.b * 255,
-				level > 0 and level or "??",
-				race or "",
-				color.colorStr,
-				localeClass
-			)
+			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r %s |c%s%s|r", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", race or "", color.colorStr, localeClass)
 		end
 
 		-- High CPU usage, restricting it to shift key down only.
@@ -410,16 +401,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 				pvpFlag = format(" (%s)", PVP)
 			end
 
-			levelLine:SetFormattedText(
-				"|cff%02x%02x%02x%s|r%s %s%s",
-				diffColor.r * 255,
-				diffColor.g * 255,
-				diffColor.b * 255,
-				level > 0 and level or "??",
-				classification[creatureClassification] or "",
-				creatureType or "",
-				pvpFlag
-			)
+			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r%s %s%s", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", classification[creatureClassification] or "", creatureType or "", pvpFlag)
 		end
 	end
 
@@ -431,20 +413,11 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			targetColor = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 		else
 			targetColor =
-				K.Colors.factioncolors["" .. UnitReaction(unitTarget, "player")] or
-				FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
+			K.Colors.factioncolors["" .. UnitReaction(unitTarget, "player")] or
+			FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
 		end
 
-		GameTooltip:AddDoubleLine(
-			format("%s:", TARGET),
-			format(
-				"|cff%02x%02x%02x%s|r",
-				targetColor.r * 255,
-				targetColor.g * 255,
-				targetColor.b * 255,
-				UnitName(unitTarget, true)
-			)
-		)
+		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
 	end
 
 	if (color) then
@@ -460,8 +433,12 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 end
 
 function Module:SetQualityBorderColor()
-	if C["Tooltip"].ItemQualityBorder and not GameTooltip:IsForbidden() then
-		local _, link = GameTooltip:GetItem()
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
+	if C["Tooltip"].ItemQualityBorder then
+		local _, link = self:GetItem()
 
 		if not link then
 			return
@@ -470,6 +447,7 @@ function Module:SetQualityBorderColor()
 		self.currentItem = link
 
 		local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
+
 		if not quality then
 			quality = 0
 		end
@@ -491,6 +469,7 @@ function Module:SetQualityBorderColor()
 
 		if quality > 1 and not r then
 			r, g, b = GetItemQualityColor(quality)
+			self:SetBackdropBorderColor(r, g, b)
 		end
 
 		if r then
@@ -503,9 +482,11 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	if tt:IsForbidden() then
 		return
 	end
+
 	if not value or not C["Tooltip"].HealthBarText or not tt.text then
 		return
 	end
+
 	local unit = select(2, tt:GetParent():GetUnit())
 	if (not unit) then
 		local GMF = GetMouseFocus()
@@ -529,6 +510,7 @@ function Module:GameTooltip_OnTooltipCleared(tt)
 	if tt:IsForbidden() then
 		return
 	end
+
 	tt.itemCleared = nil
 end
 
@@ -581,11 +563,24 @@ function Module:SetStyle(tt)
 		return
 	end
 
-	tt:SetTemplate("Transparent")
+	if (not tt.IsSkinned) then
+		tt:StripTextures()
+
+		tt.Backgrounds = tt:CreateTexture(nil, "BACKGROUND", -1)
+		tt.Backgrounds:SetAllPoints()
+		tt.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(tt)
+
+		tt.IsSkinned = true
+	end
+
 	local r, g, b = tt:GetBackdropColor()
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
 
-	Module.SetQualityBorderColor(tt)
+	for _, tt in ipairs({GameTooltip, ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3, ItemRefTooltip}) do
+		Module.SetQualityBorderColor(tt)
+	end
 end
 
 function Module:MODIFIER_STATE_CHANGED(_, key)
@@ -598,6 +593,7 @@ function Module:SetUnitAura(tt, unit, index, filter)
 	if tt:IsForbidden() then
 		return
 	end
+
 	local _, _, _, _, _, _, _, caster, _, _, id = UnitAura(unit, index, filter)
 	if id and C["Tooltip"].SpellID then
 		if caster then
@@ -670,6 +666,7 @@ function Module:CheckBackdropColor()
 		r = K.Round(r, 1)
 		g = K.Round(g, 1)
 		b = K.Round(b, 1)
+
 		local red, green, blue = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3]
 		if (r ~= red or g ~= green or b ~= blue) then
 			GameTooltip:SetBackdropColor(red, green, blue, C["Media"].BackdropColor[4])
@@ -725,7 +722,13 @@ function Module:OnEnable()
 	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
-	BNToastFrame:SetTemplate("Transparent")
+
+	BNToastFrame.Backgrounds = BNToastFrame:CreateTexture(nil, "BACKGROUND", -1)
+	BNToastFrame.Backgrounds:SetAllPoints()
+	BNToastFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(BNToastFrame)
+
 	BNToastFrameCloseButton:SetSize(32, 32)
 	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 4, 4)
 	BNToastFrameCloseButton:SkinCloseButton()

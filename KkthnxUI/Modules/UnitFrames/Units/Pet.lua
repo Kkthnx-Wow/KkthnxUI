@@ -26,12 +26,15 @@ function Module:CreatePet()
 	self:HookScript("OnLeave", UnitFrame_OnLeave)
 
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
-	self.Health:SetTemplate("Transparent")
-	self.Health:SetFrameStrata("LOW")
-	self.Health:SetFrameLevel(1)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:SetSize(74, 12)
 	self.Health:SetPoint("CENTER", self, "CENTER", 15, 7)
+
+	self.Health.Background = self.Health:CreateTexture(nil, "BACKGROUND", -1)
+	self.Health.Background:SetAllPoints()
+	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.Health)
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -49,12 +52,15 @@ function Module:CreatePet()
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthPercent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetTemplate("Transparent")
-	self.Power:SetFrameStrata("LOW")
-	self.Power:SetFrameLevel(1)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:SetSize(74, 8)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+
+	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
+	self.Power.Background:SetAllPoints()
+	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.Power)
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -62,25 +68,33 @@ function Module:CreatePet()
 	self.Power.frequentUpdates = false
 
 	if (C["Unitframe"].PortraitStyle.Value == "ThreeDPortraits") then
-		self.Portrait = CreateFrame("PlayerModel", self:GetName().."_3DPortrait", self)
-		self.Portrait:SetTemplate("Transparent")
-		self.Portrait:SetFrameStrata("BACKGROUND")
-		self.Portrait:SetFrameLevel(1)
+		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(26, 26)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
+
+		self.Portrait.Background = self.Portrait:CreateTexture(nil, "BACKGROUND", -1)
+		self.Portrait.Background:SetAllPoints()
+		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		self.Portrait.Borders = CreateFrame("Frame", nil, self.Portrait)
+		self.Portrait.Borders:SetAllPoints(self.Portrait)
+		K.CreateBorder(self.Portrait.Borders)
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
-		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 7)
+		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(26, 26)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Background = CreateFrame("Frame", self:GetName().."_2DPortrait", self)
-		self.Portrait.Background:SetTemplate("Transparent")
-		self.Portrait.Background:SetFrameStrata("LOW")
-		self.Portrait.Background:SetFrameLevel(1)
-		self.Portrait.Background:SetSize(26, 26)
+		self.Portrait.Background = self:CreateTexture(nil, "BACKGROUND", -1)
 		self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
-		if C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits" then
+		self.Portrait.Background:SetSize(26, 26)
+		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+		self.Portrait.Borders:SetSize(26, 26)
+		K.CreateBorder(self.Portrait.Borders)
+		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
 	end

@@ -1,10 +1,7 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["Tooltip"].Enable ~= true or C["Tooltip"].Icons ~= true then
 	return
 end
-
--- Adds an Icon to the Tooltip (Spell, Item)
--- (Tipachu by Tuller)
 
 local _G = _G
 local select = select
@@ -24,10 +21,9 @@ local function AddIcon(self, icon)
 	end
 end
 
--- Icon for Items
 local function hookItem(tip)
 	tip:HookScript("OnTooltipSetItem", function(self)
-		local link = self:GetItem()
+		local _, link = self:GetItem()
 		local icon = link and GetItemIcon(link)
 		AddIcon(self, icon)
 	end)
@@ -37,7 +33,6 @@ hookItem(_G["ItemRefTooltip"])
 hookItem(_G["ShoppingTooltip1"])
 hookItem(_G["ShoppingTooltip2"])
 
--- Icon for Spells
 local function hookSpell(tip)
 	tip:HookScript("OnTooltipSetSpell", function(self)
 		local id = self:GetSpell()
@@ -49,9 +44,11 @@ end
 hookSpell(_G["GameTooltip"])
 hookSpell(_G["ItemRefTooltip"])
 
--- Icon for Achievements (only GameTooltip)
 hooksecurefunc(GameTooltip, "SetHyperlink", function(self, link)
-	if type(link) ~= "string" then return end
+	if type(link) ~= "string" then
+		return
+	end
+
 	local linkType, id = string_match(link, "^([^:]+):(%d+)")
 	if linkType == "achievement" then
 		local icon = GetAchievementInfo(id)

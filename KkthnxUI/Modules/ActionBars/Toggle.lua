@@ -226,12 +226,18 @@ for i = 1, 5 do
 	if i == 1 then
 		ToggleBar[i]:SetSize(ActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5)
 		ToggleBar[i]:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, C["ActionBar"].ButtonSpace)
-		ToggleBar[i]:SetTemplate("Transparent")
+
+		ToggleBar[i].Background = ToggleBar[i]:CreateTexture(nil, "BACKGROUND", -1)
+		ToggleBar[i].Background:SetAllPoints()
+		ToggleBar[i].Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		ToggleBar[i].Border = CreateFrame("Frame", nil, ToggleBar[i])
+		ToggleBar[i].Border:SetAllPoints()
+		K.CreateBorder(ToggleBar[i].Border)
+
 		ToggleBarText(i, "- - -", false, true)
 
-		ToggleBar[i]:SetScript(
-			"OnMouseDown",
-			function()
+		ToggleBar[i]:SetScript("OnMouseDown", function()
 				if InCombatLockdown() then
 					K.Print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
 					return
@@ -263,8 +269,16 @@ for i = 1, 5 do
 	elseif i == 2 then
 		ToggleBar[i]:SetSize(RightActionBarAnchor:GetWidth(), C["ActionBar"].ButtonSize / 1.5)
 		ToggleBar[i]:SetPoint("TOPRIGHT", RightActionBarAnchor, "BOTTOMRIGHT", 0, -C["ActionBar"].ButtonSpace)
-		ToggleBar[i]:SetTemplate("Transparent")
 		ToggleBar[i]:SetFrameStrata("LOW")
+
+		ToggleBar[i].Background = ToggleBar[i]:CreateTexture(nil, "BACKGROUND", -1)
+		ToggleBar[i].Background:SetAllPoints()
+		ToggleBar[i].Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		ToggleBar[i].Border = CreateFrame("Frame", nil, ToggleBar[i])
+		ToggleBar[i].Border:SetAllPoints()
+		K.CreateBorder(ToggleBar[i].Border)
+
 		ToggleBarText(i, "> > >", false, true)
 
 		ToggleBar[i]:SetScript(
@@ -300,7 +314,13 @@ for i = 1, 5 do
 		if C["ActionBar"].SplitBars == true and C["ActionBar"].RightBars ~= 3 then
 			ToggleBar[i]:SetSize(C["ActionBar"].ButtonSize / 1.5, ActionBarAnchor:GetHeight())
 			ToggleBar[i]:SetPoint("BOTTOMLEFT", SplitBarRight, "BOTTOMRIGHT", C["ActionBar"].ButtonSpace, 0)
-			ToggleBar[i]:SetTemplate("Transparent")
+
+			ToggleBar[i].Backgrounds = ToggleBar[i]:CreateTexture(nil, "BACKGROUND", -2)
+			ToggleBar[i].Backgrounds:SetAllPoints()
+			ToggleBar[i].Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(ToggleBar[i])
+
 			ToggleBarText(i, "<\n<", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarRight:GetFrameLevel() + 1)
 		end
@@ -308,7 +328,13 @@ for i = 1, 5 do
 		if C["ActionBar"].SplitBars == true and C["ActionBar"].RightBars ~= 3 then
 			ToggleBar[i]:SetSize(C["ActionBar"].ButtonSize / 1.5, ActionBarAnchor:GetHeight())
 			ToggleBar[i]:SetPoint("BOTTOMRIGHT", SplitBarLeft, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
-			ToggleBar[i]:SetTemplate("Transparent")
+
+			ToggleBar[i].Backgrounds = ToggleBar[i]:CreateTexture(nil, "BACKGROUND", -2)
+			ToggleBar[i].Backgrounds:SetAllPoints()
+			ToggleBar[i].Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(ToggleBar[i])
+
 			ToggleBarText(i, ">\n>", false, true)
 			ToggleBar[i]:SetFrameLevel(SplitBarLeft:GetFrameLevel() + 1)
 		end

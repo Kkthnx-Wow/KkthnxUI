@@ -1,8 +1,9 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("ColorTextures", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
 if C["General"].ColorTextures ~= true then
 	return
 end
+
+local Module = K:NewModule("AFKCam", "AceEvent-3.0")
 
 -- Lua API
 local _G = _G

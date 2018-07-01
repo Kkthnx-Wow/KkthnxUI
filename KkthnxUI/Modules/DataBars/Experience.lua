@@ -4,29 +4,27 @@ local Module = K:NewModule("Experience", "AceEvent-3.0")
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local math_floor = math.floor
 local math_min = math.min
 local string_format = string.format
 
 local GetExpansionLevel = _G.GetExpansionLevel
 local GetPetExperience, UnitXP, UnitXPMax = _G.GetPetExperience, _G.UnitXP, _G.UnitXPMax
 local IsXPUserDisabled, GetXPExhaustion = _G.IsXPUserDisabled, _G.GetXPExhaustion
-local MAX_PLAYER_LEVEL_TABLE = MAX_PLAYER_LEVEL_TABLE
+local MAX_PLAYER_LEVEL_TABLE = _G.MAX_PLAYER_LEVEL_TABLE
 local UnitLevel = _G.UnitLevel
 
-local ExperienceFont = K.GetFont(C["DataBars"].Font)
-local ExperienceTexture = K.GetTexture(C["DataBars"].Texture)
-
 function Module:GetXP(unit)
-	if(unit == "pet") then
+	if (unit == "pet") then
 		return GetPetExperience()
 	else
 		return UnitXP(unit), UnitXPMax(unit)
 	end
 end
 
-function Module:UpdateExperience(event)
-	if C["DataBars"].ExperienceEnable ~= true then return end
+function Module:UpdateExperience()
+	if C["DataBars"].ExperienceEnable ~= true then
+		return
+	end
 
 	local bar = self.expBar
 	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
@@ -37,13 +35,16 @@ function Module:UpdateExperience(event)
 		bar:Show()
 
 		local cur, max = self:GetXP("player")
-		if max <= 0 then max = 1 end
+		if max <= 0 then
+			max = 1
+		end
+
 		bar.statusBar:SetMinMaxValues(0, max)
 		bar.statusBar:SetValue(cur - 1 >= 0 and cur - 1 or 0)
 		bar.statusBar:SetValue(cur)
 
 		local rested = GetXPExhaustion()
-		local text = ""
+		local text
 
 		if rested and rested > 0 then
 			bar.rested:SetMinMaxValues(0, max)
@@ -74,11 +75,11 @@ function Module:ExperienceBar_OnEnter()
 	GameTooltip:AddDoubleLine(L["Databars"].Experience)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format(" %d / %d (%d%%)", cur, max, cur/max * 100), 1, 1, 1)
-	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - cur, (max - cur) / max * 100, 20 * (max - cur) / max), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%s%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur),  math.floor((max - cur) / max * 100),  math.floor(20 * (max - cur) / max)), 1, 1, 1)
 
 	if rested then
-		GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format('+%d (%d%%)', rested, rested / max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math.floor(rested / max * 100)), 1, 1, 1)
 	end
 
 	GameTooltip:Show()
@@ -95,9 +96,11 @@ function Module:ExperienceBar_OnLeave()
 end
 
 function Module:UpdateExperienceDimensions()
+	local ExperienceFont = K.GetFont(C["DataBars"].Font)
+
 	self.expBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
-	self.expBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.expBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.expBar.text:SetFontObject(ExperienceFont)
+	self.expBar.text:SetFont(select(1, self.expBar.text:GetFont()), 11, select(3, self.expBar.text:GetFont()))
 	self.expBar.spark:SetSize(16, self.expBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
@@ -136,6 +139,9 @@ function Module:EnableDisable_ExperienceBar()
 end
 
 function Module:OnEnable()
+	local ExperienceFont = K.GetFont(C["DataBars"].Font)
+	local ExperienceTexture = K.GetTexture(C["DataBars"].Texture)
+
 	self.expBar = CreateFrame("Button", "Experience", K.PetBattleHider)
 	self.expBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	self.expBar:SetScript("OnEnter", Module.ExperienceBar_OnEnter)
@@ -147,7 +153,12 @@ function Module:OnEnable()
 	self.expBar.statusBar:SetAllPoints()
 	self.expBar.statusBar:SetStatusBarTexture(ExperienceTexture)
 	self.expBar.statusBar:SetStatusBarColor(C["DataBars"].ExperienceColor[1], C["DataBars"].ExperienceColor[2], C["DataBars"].ExperienceColor[3], C["DataBars"].ExperienceColor[4])
-	self.expBar.statusBar:SetTemplate("Transparent")
+
+	self.expBar.statusBar.Backgrounds = self.expBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
+	self.expBar.statusBar.Backgrounds:SetAllPoints()
+	self.expBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.expBar.statusBar)
 
 	self.expBar.rested = CreateFrame("StatusBar", nil, self.expBar)
 	self.expBar.rested:SetAllPoints()
@@ -156,8 +167,8 @@ function Module:OnEnable()
 	self.expBar.rested:SetFrameLevel(self.expBar.statusBar:GetFrameLevel())
 
 	self.expBar.text = self.expBar.statusBar:CreateFontString(nil, "OVERLAY")
-	self.expBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.expBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.expBar.text:SetFontObject(ExperienceFont)
+	self.expBar.text:SetFont(select(1, self.expBar.text:GetFont()), 11, select(3, self.expBar.text:GetFont()))
 	self.expBar.text:SetPoint("CENTER")
 
 	self.expBar.spark = self.expBar.statusBar:CreateTexture(nil, "OVERLAY")
@@ -169,7 +180,9 @@ function Module:OnEnable()
 	self.expBar.eventFrame:Hide()
 	self.expBar.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.expBar.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self.expBar.eventFrame:SetScript("OnEvent", function(self, event) Module:UpdateExperience(event) end)
+	self.expBar.eventFrame:SetScript("OnEvent", function(_, event)
+		Module:UpdateExperience(event)
+	end)
 
 	self:UpdateExperienceDimensions()
 

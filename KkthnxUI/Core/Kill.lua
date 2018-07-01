@@ -27,7 +27,7 @@ local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 -- GLOBALS: SpellBookFrameTutorialButton, TemporaryEnchantFrame, TutorialFrameAlertButton
 
 function Module:ADDON_LOADED(_, addon)
-	if (C["Raidframe"].Enable) then
+	if (C["Raid"].Enable) then
 		InterfaceOptionsFrameCategoriesButton10:SetScale(0.00001)
 		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
 		if not InCombatLockdown() then
@@ -120,8 +120,8 @@ function Module:ADDON_LOADED(_, addon)
 		SetInsertItemsLeftToRight(false)
 	end
 
-	if (not C["Unitframe"].Party) and (not C["Raidframe"].Enable) then
-		C["Raidframe"].RaidUtility = false
+	if (not C["Unitframe"].Party) and (not C["Raid"].Enable) then
+		C["Raid"].RaidUtility = false
 	end
 end
 

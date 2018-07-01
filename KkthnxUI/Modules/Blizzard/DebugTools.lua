@@ -5,12 +5,13 @@ if K.WowBuild < 24015 then
 	return
 end
 
--- WoW API
-local hooksecurefunc = hooksecurefunc
-local CreateFrame = CreateFrame
-local InCombatLockdown = InCombatLockdown
-local GetCVarBool = GetCVarBool
-local StaticPopup_Hide = StaticPopup_Hide
+local _G = _G
+
+local hooksecurefunc = _G.hooksecurefunc
+local CreateFrame = _G.CreateFrame
+local InCombatLockdown = _G.InCombatLockdown
+local GetCVarBool = _G.GetCVarBool
+local StaticPopup_Hide = _G.StaticPopup_Hide
 
 function Module:ModifyErrorFrame()
 	ScriptErrorsFrame.ScrollFrame.Text.cursorOffset = 0
@@ -41,13 +42,10 @@ function Module:ModifyErrorFrame()
 	firstButton:SetText("First")
 	firstButton:SetHeight(BUTTON_HEIGHT)
 	firstButton:SetWidth(BUTTON_WIDTH)
-	firstButton:SetScript(
-		"OnClick",
-		function()
-			ScriptErrorsFrame.index = 1
-			ScriptErrorsFrame:Update()
-		end
-	)
+	firstButton:SetScript("OnClick", function()
+		ScriptErrorsFrame.index = 1
+		ScriptErrorsFrame:Update()
+	end)
 	ScriptErrorsFrame.firstButton = firstButton
 
 	-- Also add a Last button for errors
@@ -56,17 +54,21 @@ function Module:ModifyErrorFrame()
 	lastButton:SetHeight(BUTTON_HEIGHT)
 	lastButton:SetWidth(BUTTON_WIDTH)
 	lastButton:SetText("Last")
-	lastButton:SetScript(
-		"OnClick",
-		function()
-			ScriptErrorsFrame.index = #(ScriptErrorsFrame.order)
-			ScriptErrorsFrame:Update()
-		end
-	)
+	lastButton:SetScript("OnClick", function()
+		ScriptErrorsFrame.index = #(ScriptErrorsFrame.order)
+		ScriptErrorsFrame:Update()
+	end)
 	ScriptErrorsFrame.lastButton = lastButton
+	Module:ScriptErrorsFrame_UpdateButtons()
+	Module:Unhook(ScriptErrorsFrame, 'OnShow')
+
 end
 
 function Module:ScriptErrorsFrame_UpdateButtons()
+	if not ScriptErrorsFrame.firstButton then
+		return
+	end
+
 	local numErrors = #ScriptErrorsFrame.order
 	local index = ScriptErrorsFrame.index
 	if (index == 0) then
@@ -105,11 +107,8 @@ function Module:TaintError(event, addonName, addonFunc)
 	if GetCVarBool("scriptErrors") ~= true or C["General"].TaintLog ~= true then
 		return
 	end
-	ScriptErrorsFrame:OnError(
-		L["Blizzard"].Taint_Error:format(event, addonName or "<name>", addonFunc or "<func>"),
-		false,
-		false
-	)
+
+	ScriptErrorsFrame:OnError(L["Blizzard"].Taint_Error:format(event, addonName or "<name>", addonFunc or "<func>"), false, false)
 end
 
 function Module:StaticPopup_Show(name)
@@ -119,11 +118,7 @@ function Module:StaticPopup_Show(name)
 end
 
 function Module:OnEnable()
-	if (not IsAddOnLoaded("Blizzard_DebugTools")) then
-		LoadAddOn("Blizzard_DebugTools")
-	end
-
-	self:ModifyErrorFrame()
+	self:SecureHookScript(ScriptErrorsFrame, "OnShow", Module.ModifyErrorFrame)
 	self:SecureHook(ScriptErrorsFrame, "UpdateButtons", Module.ScriptErrorsFrame_UpdateButtons)
 	self:SecureHook(ScriptErrorsFrame, "OnError", Module.ScriptErrorsFrame_OnError)
 	self:SecureHook("StaticPopup_Show")

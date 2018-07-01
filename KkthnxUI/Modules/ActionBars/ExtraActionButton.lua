@@ -10,7 +10,7 @@ local HasExtraActionBar = HasExtraActionBar
 
 local ExtraActionBarHolder, ZoneAbilityHolder
 
-local function DisableExtraButtonTexture(self, texture, loop)
+local function DisableExtraButtonTexture(self, _, loop)
 	if loop then
 		return
 	end
@@ -18,7 +18,7 @@ local function DisableExtraButtonTexture(self, texture, loop)
 	self:SetTexture("", true)
 end
 
-function Module:SetupExtraButton(texture, loop)
+function Module:SetupExtraButton()
 	ExtraActionBarHolder = CreateFrame("Frame", "ExtraActionBarHolder", UIParent)
 	ExtraActionBarHolder:SetPoint("BOTTOM", UIParent, "BOTTOM", 0, 150)
 	ExtraActionBarHolder:SetSize(ExtraActionButton1:GetWidth(), ExtraActionButton1:GetHeight())
@@ -44,7 +44,14 @@ function Module:SetupExtraButton(texture, loop)
 			button.pushed = true
 			button.checked = true
 
-			button:SetTemplate("ActionButton", true)
+			button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
+			button.Background:SetAllPoints()
+			button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			button.Border = CreateFrame("Frame", nil, button)
+			button.Border:SetAllPoints(button)
+			K.CreateBorder(button.Border)
+
 			_G["ExtraActionButton"..i.."Icon"]:SetDrawLayer("ARTWORK")
 			local tex = button:CreateTexture(nil, "OVERLAY")
 			tex:SetColorTexture(0.9, 0.8, 0.1, 0.3)
@@ -57,7 +64,15 @@ function Module:SetupExtraButton(texture, loop)
 	if button then
 		button:SetNormalTexture("")
 		button:StyleButton()
-		button:SetTemplate("ActionButton", true)
+
+		button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
+		button.Background:SetAllPoints()
+		button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		button.Border = CreateFrame("Frame", nil, button)
+		button.Border:SetAllPoints(button)
+		K.CreateBorder(button.Border)
+
 		button.Icon:SetDrawLayer("ARTWORK")
 		button.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		button.Icon:SetAllPoints()
@@ -74,10 +89,6 @@ function Module:SetupExtraButton(texture, loop)
 	K["Movers"]:RegisterFrame(ZoneAbilityHolder)
 end
 
-function Module:OnInitialize()
-	if InCombatLockdown() then -- Avoid a taint when the user reloads their UI in combat. Idk why someone would so such a thing!
-		return
-	end
-
+function Module:OnEnable()
 	self:SetupExtraButton()
 end

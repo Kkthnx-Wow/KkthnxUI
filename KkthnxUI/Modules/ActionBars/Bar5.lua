@@ -1,13 +1,10 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
--- Lua API
 local _G = _G
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: RightBarMouseOver, HoverBind
-
--- MultiBarBottomRight(by Tukz)
 local ActionBar5 = CreateFrame("Frame", "Bar5Holder", K.PetBattleHider)
 if C["ActionBar"].RightBars < 3 then
 	if C["ActionBar"].SplitBars == true then
@@ -22,8 +19,8 @@ MultiBarBottomRight:SetParent(ActionBar5)
 ActionBar5:SetFrameStrata("LOW")
 
 for i = 1, 12 do
-	local b = _G["MultiBarBottomRightButton"..i]
-	local b2 = _G["MultiBarBottomRightButton"..i-1]
+	local b = _G["MultiBarBottomRightButton" .. i]
+	local b2 = _G["MultiBarBottomRightButton" .. i - 1]
 	b:ClearAllPoints()
 	if C["ActionBar"].SplitBars == true and C["ActionBar"].RightBars < 3 then
 		if i == 1 then
@@ -54,7 +51,6 @@ for i = 1, 12 do
 	end
 end
 
--- Hide bar
 if C["ActionBar"].RightBars < 3 and C["ActionBar"].BottomBars < 3 then
 	ActionBar5:Hide()
 end

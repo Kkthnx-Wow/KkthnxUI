@@ -108,9 +108,25 @@ function Module:CreateIcon(button)
     local auraType = header:GetAttribute("filter")
 
     if auraType == "HELPFUL" then
-        button:SetTemplate("ActionButton", true)
+        button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
+	    button.Background:SetAllPoints()
+	    button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	    button.Borders = CreateFrame("Frame", nil, button)
+	    button.Borders:SetAllPoints(button)
+        K.CreateBorder(button.Borders)
+
+        button:StyleButton()
     elseif auraType == "HARMFUL" then
-        button:SetTemplate("ActionButton", true)
+        button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
+	    button.Background:SetAllPoints()
+	    button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	    button.Borders = CreateFrame("Frame", nil, button)
+	    button.Borders:SetAllPoints(button)
+        K.CreateBorder(button.Borders)
+
+        button:StyleButton()
     end
 end
 
@@ -145,9 +161,9 @@ function Module:UpdateAura(button, index)
 
         if filter == "HARMFUL" then
             local color = _G.DebuffTypeColor[dtype or ""]
-            button:SetBackdropBorderColor(color.r, color.g, color.b)
+            button.Borders:SetBackdropBorderColor(color.r, color.g, color.b)
         else
-            button:SetBackdropBorderColor(
+            button.Borders:SetBackdropBorderColor(
                 C["Media"].BorderColor[1],
                 C["Media"].BorderColor[2],
                 C["Media"].BorderColor[3]
@@ -171,7 +187,7 @@ function Module:UpdateTempEnchant(button, index)
     end
 
     if (quality) then
-        button:SetBackdropBorderColor(GetItemQualityColor(quality))
+        button.Borders:SetBackdropBorderColor(GetItemQualityColor(quality))
     end
 
     local expirationTime = select(offset, GetWeaponEnchantInfo())

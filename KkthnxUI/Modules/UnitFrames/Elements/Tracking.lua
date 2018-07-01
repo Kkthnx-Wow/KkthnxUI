@@ -1,7 +1,4 @@
-local K, C, L = unpack(select(2, ...))
-if C["Raidframe"].AuraWatch ~= true or C["Raidframe"].Enable ~= true then
-	return
-end
+local K = unpack(select(2, ...))
 
 local Module = K:GetModule("Unitframes")
 

@@ -18,7 +18,7 @@ local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local UnitIsUnit = _G.UnitIsUnit
 
-function Module:Callback(_, unit)
+function Module:NameplatesCallback(_, unit)
 	if unit then
 		if UnitIsUnit(unit, "player") then
 			self.Power:Show()
@@ -38,7 +38,7 @@ function Module:CreateNameplates()
 	local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
 	local Font = K.GetFont(C["Nameplates"].Font)
 
-	self:SetScale(UIParent:GetEffectiveScale())
+	self:SetScale(UIParent:GetEffectiveScale() * 1)
 	self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
 	self:SetPoint("CENTER", 0, 0)
 
@@ -52,12 +52,7 @@ function Module:CreateNameplates()
 
 	self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
 	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	self.Health.frequentUpdates = true
 	self.Health.colorReaction = true
@@ -71,11 +66,7 @@ function Module:CreateNameplates()
 		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self.Health.Value:SetFontObject(Font)
-		self.Health.Value:SetFont(
-			select(1, self.Health.Value:GetFont()),
-			self.Health:GetHeight() - 2,
-			select(3, self.Health.Value:GetFont())
-		)
+		self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), self.Health:GetHeight() - 2, select(3, self.Health.Value:GetFont()))
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	end
 
@@ -84,10 +75,7 @@ function Module:CreateNameplates()
 	self.Level:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Level:SetFontObject(Font)
 	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
-	self:Tag(
-		self.Level,
-		"[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]"
-	)
+	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Name:SetJustifyH("LEFT")
@@ -107,12 +95,7 @@ function Module:CreateNameplates()
 
 	self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
 	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
 
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
@@ -122,8 +105,8 @@ function Module:CreateNameplates()
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs:SetHeight(C["Nameplates"].Height)
 	self.Debuffs:SetWidth(self:GetWidth())
-	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 18)
-	self.Debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 18)
+	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 20)
+	self.Debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 20)
 	self.Debuffs.size = C["Nameplates"].Height
 	self.Debuffs.num = 36
 	self.Debuffs.numRow = 9
@@ -148,12 +131,7 @@ function Module:CreateNameplates()
 	self.Castbar.Background = self.Castbar:CreateTexture(nil, "BORDER")
 	self.Castbar.Background:SetAllPoints(self.Castbar)
 	self.Castbar.Background:SetTexture(NameplateTexture)
-	self.Castbar.Background:SetVertexColor(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+	self.Castbar.Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetSize(32, self:GetHeight())
@@ -170,7 +148,7 @@ function Module:CreateNameplates()
 	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 	self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
 	self.Castbar.Button:CreateShadow()
-	self.Castbar.Button:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+	self.Castbar.Button:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 	self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 	self.Castbar.Icon:SetAllPoints()
@@ -178,8 +156,8 @@ function Module:CreateNameplates()
 
 	self.Castbar.Shield = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Shield:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\CastBorderShield]])
-	self.Castbar.Shield:SetSize(self:GetHeight(), self:GetHeight())
-	self.Castbar.Shield:SetPoint("LEFT", self.Castbar, "RIGHT", 0, 10)
+	self.Castbar.Shield:SetSize(50, 50)
+	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 26, 12)
 
 	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
 	self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "BOTTOMLEFT", 0, -2)
@@ -207,16 +185,16 @@ function Module:CreateNameplates()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
+	self:RegisterEvent("UNIT_FACTION", Module.HighlightPlate)
+
+	Module.HighlightPlate(self)
 
 	self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
 	self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
 
-	self.Health:SetScript(
-		"OnEvent",
-		function()
-			Module.ThreatPlate(self)
-		end
-	)
+	self.Health:SetScript("OnEvent", function()
+		Module.ThreatPlate(self)
+	end)
 
 	self.Health.PostUpdate = function()
 		Module.ThreatPlate(self, true)

@@ -172,7 +172,14 @@ function Module:OnEnable()
 	self.reputationBar.statusBar = CreateFrame("StatusBar", nil, self.reputationBar)
 	self.reputationBar.statusBar:SetAllPoints()
 	self.reputationBar.statusBar:SetStatusBarTexture(ReputationTexture)
-	self.reputationBar.statusBar:SetTemplate("Transparent")
+
+	self.reputationBar.statusBar.Backgrounds = self.reputationBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
+	self.reputationBar.statusBar.Backgrounds:SetAllPoints()
+	self.reputationBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	self.reputationBar.statusBar.Borders = CreateFrame("Frame", nil, self.reputationBar.statusBar)
+	self.reputationBar.statusBar.Borders:SetAllPoints()
+	K.CreateBorder(self.reputationBar.statusBar.Borders)
 
 	self.reputationBar.text = self.reputationBar.statusBar:CreateFontString(nil, "OVERLAY")
 	self.reputationBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")

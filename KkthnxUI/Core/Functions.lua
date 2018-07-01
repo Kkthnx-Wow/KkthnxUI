@@ -247,7 +247,9 @@ function K.ShortenString(string, numChars, dots)
 end
 
 local LockCVars = CreateFrame("Frame")
-LockCVars:SetScript("OnEvent", function(self, event, ...) return self[event] and self[event](self, event, ...) end)
+LockCVars:SetScript("OnEvent", function(self, event, ...)
+	return self[event] and self[event](self, event, ...)
+end)
 LockCVars:RegisterEvent("PLAYER_REGEN_ENABLED")
 function LockCVars:PLAYER_REGEN_ENABLED(_)
 	if (self.CVarUpdate) then

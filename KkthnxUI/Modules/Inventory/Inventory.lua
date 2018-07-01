@@ -1,14 +1,14 @@
 local K, C, L = unpack(select(2, ...))
 local Unfit = LibStub("Unfit-1.0")
 if
-	C["Inventory"].Enable ~= true or K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or
-		K.CheckAddOnState("cargBags_Nivaya") or
-		K.CheckAddOnState("cargBags") or
-		K.CheckAddOnState("Bagnon") or
-		K.CheckAddOnState("Combuctor") or
-		K.CheckAddOnState("TBag") or
-		K.CheckAddOnState("BaudBag")
- then
+C["Inventory"].Enable ~= true or K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or
+K.CheckAddOnState("cargBags_Nivaya") or
+K.CheckAddOnState("cargBags") or
+K.CheckAddOnState("Bagnon") or
+K.CheckAddOnState("Combuctor") or
+K.CheckAddOnState("TBag") or
+K.CheckAddOnState("BaudBag")
+then
 	return
 end
 
@@ -81,10 +81,10 @@ local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
 Stuffing:SetScript(
-	"OnEvent",
-	function(self, event, ...)
-		self[event](self, ...)
-	end
+"OnEvent",
+function(self, event, ...)
+	self[event](self, ...)
+end
 )
 
 local function Stuffing_OnShow()
@@ -193,15 +193,11 @@ local function IsRealItemLevel(link, owner, bag, slot)
 	return realItemLevel
 end
 
-local function IsItemEligibleForItemLevelDisplay(classID, subClassID, equipLoc, rarity)
-	if
-		((classID == 3 and subClassID == 11) or -- Artifact Relics
-			(equipLoc ~= nil and equipLoc ~= "" and equipLoc ~= "INVTYPE_BAG" and equipLoc ~= "INVTYPE_QUIVER" and
-				equipLoc ~= "INVTYPE_TABARD")) and
-			(rarity and rarity > 1)
-	 then
+local function IsItemEligibleForItemLevelDisplay(classID, subClassID)
+	if (classID == 3 and subClassID == 11) then
 		return true
 	end
+
 	return false
 end
 
@@ -210,14 +206,8 @@ function Stuffing:SlotUpdate(b)
 	local clink = GetContainerItemLink(b.bag, b.slot)
 	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
 
-	-- Set all slot color to default KkthnxUI on update
 	if not b.frame.lock then
-		b.frame:SetBackdropBorderColor(
-			C["Media"].BorderColor[1],
-			C["Media"].BorderColor[2],
-			C["Media"].BorderColor[3],
-			C["Media"].BorderColor[4]
-		)
+		b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 	end
 
 	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
@@ -229,14 +219,13 @@ function Stuffing:SlotUpdate(b)
 		b.frame.text:SetText("")
 	end
 
-	-- Pawn'ed thx Wetxius
 	if (b.frame.UpgradeIcon) then
 		b.frame.UpgradeIcon:ClearAllPoints()
 		b.frame.UpgradeIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\UpgradeIcon")
 		b.frame.UpgradeIcon:SetPoint("BOTTOMRIGHT", 6, -3)
 		b.frame.UpgradeIcon:SetSize(C["Inventory"].ButtonSize / 1.4, C["Inventory"].ButtonSize / 1.4)
 		b.frame.UpgradeIcon:SetTexCoord(0, 1, 0, 1)
-		local itemIsUpgrade = IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
+		local itemIsUpgrade = _G.IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
 		if not itemIsUpgrade or itemIsUpgrade == nil then
 			b.frame.UpgradeIcon:SetShown(false)
 		else
@@ -244,7 +233,6 @@ function Stuffing:SlotUpdate(b)
 		end
 	end
 
-	-- New item code from Blizzard's ContainerFrame.lua
 	local newItemTexture = b.frame.NewItemTexture
 	local battlePayTexture = b.frame.BattlepayItemTexture
 	local flashAnim = b.frame.flashAnim
@@ -275,7 +263,7 @@ function Stuffing:SlotUpdate(b)
 				newItemAnim:Stop()
 			end
 		end
-		-- Make sure that the textures are the same size as the itemframe.
+
 		battlePayTexture:SetSize(b.frame:GetSize())
 		newItemTexture:SetSize(b.frame:GetSize())
 	end
@@ -287,7 +275,6 @@ function Stuffing:SlotUpdate(b)
 		b.frame.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue)
 	end
 
-	-- Quest Item code from Blizzard"s ContainerFrame.lua
 	local questTexture = _G[b.frame:GetName() .. "IconQuestTexture"]
 	if questTexture then
 		questTexture:ClearAllPoints()
@@ -304,12 +291,9 @@ function Stuffing:SlotUpdate(b)
 
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, b.itemEquipLoc, _, _, b.itemClassID, b.itemSubClassID =
-			GetItemInfo(clink)
+		GetItemInfo(clink)
 
-		if
-			b.itemlevel and C["Inventory"].ItemLevel and
-				IsItemEligibleForItemLevelDisplay(b.itemClassID, b.itemSubClassID, b.itemEquipLoc, quality)
-		 then
+		if b.itemlevel and C["Inventory"].ItemLevel and IsItemEligibleForItemLevelDisplay(b.itemClassID, b.itemSubClassID, b.itemEquipLoc, quality) then
 			if (b.itemlevel >= C["Inventory"].ItemLevelThreshold) then
 				b.itemlevel = IsRealItemLevel(clink, self, b.bag, b.slot) or b.itemlevel
 				b.frame.text:SetText(b.itemlevel)
@@ -323,7 +307,6 @@ function Stuffing:SlotUpdate(b)
 			_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
-		-- color slot according to item quality
 		if questId and not isActiveQuest then
 			b.frame:SetBackdropBorderColor(1, 1, 0)
 		elseif questId or isQuestItem then
@@ -331,12 +314,7 @@ function Stuffing:SlotUpdate(b)
 		elseif not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
 		else
-			b.frame:SetBackdropBorderColor(
-				C["Media"].BorderColor[1],
-				C["Media"].BorderColor[2],
-				C["Media"].BorderColor[3],
-				C["Media"].BorderColor[4]
-			)
+			b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1],C["Media"].BorderColor[2],C["Media"].BorderColor[3])
 		end
 	else
 		b.name, b.level = nil, nil
@@ -387,32 +365,40 @@ local function Stuffing_CreateReagentContainer()
 
 	local Reagent = CreateFrame("Frame", "StuffingFrameReagent", UIParent)
 	local SwitchBankButton = CreateFrame("Button", nil, Reagent)
-	-- local NumButtons = ReagentBankFrame.size
+	local NumButtons = ReagentBankFrame.size
 	local NumRows, LastRowButton, NumButtons, LastButton = 0, ReagentBankFrameItem1, 1, ReagentBankFrameItem1
 	local Deposit = ReagentBankFrame.DespositButton
 
 	Reagent:SetWidth(((C["Inventory"].ButtonSize + C["Inventory"].ButtonSpace) * C["Inventory"].BankColumns) + 17)
 	Reagent:SetPoint("TOPLEFT", _G["StuffingFrameBank"], "TOPLEFT", 0, 0)
-	Reagent:SetTemplate("Transparent", true)
+
+	Reagent.Background = Reagent:CreateTexture(nil, "BACKGROUND", -1)
+	Reagent.Background:SetAllPoints(Reagent)
+	Reagent.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(Reagent)
+
 	Reagent:SetFrameStrata(_G["StuffingFrameBank"]:GetFrameStrata())
 	Reagent:SetFrameLevel(_G["StuffingFrameBank"]:GetFrameLevel() + 5)
 	Reagent:EnableMouse(true)
 	Reagent:SetMovable(true)
 	Reagent:SetClampedToScreen(true)
 	Reagent:SetClampRectInsets(0, 0, 0, -20)
-	Reagent:SetScript(
-		"OnMouseDown",
-		function(self, button)
-			if IsShiftKeyDown() and button == "LeftButton" then
-				self:StartMoving()
-			end
+	Reagent:SetScript("OnMouseDown", function(self, button)
+		if IsShiftKeyDown() and button == "LeftButton" then
+			self:StartMoving()
 		end
-	)
+	end)
 	Reagent:SetScript("OnMouseUp", Reagent.StopMovingOrSizing)
 
-	-- Stack Button
 	SwitchBankButton:SetSize(16, 16)
-	SwitchBankButton:SetTemplate("", true)
+
+	SwitchBankButton.Background = SwitchBankButton:CreateTexture(nil, "BACKGROUND", -1)
+	SwitchBankButton.Background:SetAllPoints(SwitchBankButton)
+	SwitchBankButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(SwitchBankButton)
+
 	SwitchBankButton:StyleButton(true)
 	SwitchBankButton:SetPoint("TOPRIGHT", -54, -7)
 	SwitchBankButton:SetNormalTexture("Interface\\ICONS\\achievement_guildperk_mobilebanking")
@@ -424,21 +410,23 @@ local function Stuffing_CreateReagentContainer()
 	SwitchBankButton.ttText = BANK
 	SwitchBankButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	SwitchBankButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	SwitchBankButton:SetScript(
-		"OnClick",
-		function()
-			Reagent:Hide()
-			_G["StuffingFrameBank"]:Show()
-			_G["StuffingFrameBank"]:SetAlpha(1)
-			BankFrame_ShowPanel(BANK_PANELS[1].name)
-			PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
-		end
-	)
+	SwitchBankButton:SetScript("OnClick", function()
+		Reagent:Hide()
+		_G["StuffingFrameBank"]:Show()
+		_G["StuffingFrameBank"]:SetAlpha(1)
+		BankFrame_ShowPanel(BANK_PANELS[1].name)
+		PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_BACKPACK_OPEN)
+	end)
 
-	-- Sort Button
 	local SortReagentButton = CreateFrame("Button", nil, Reagent)
 	SortReagentButton:SetSize(16, 16)
-	SortReagentButton:SetTemplate("", true)
+
+	SortReagentButton.Background = SortReagentButton:CreateTexture(nil, "BACKGROUND", -1)
+	SortReagentButton.Background:SetAllPoints(SortReagentButton)
+	SortReagentButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(SortReagentButton)
+
 	SortReagentButton:StyleButton(true)
 	SortReagentButton:SetPoint("TOPRIGHT", SwitchBankButton, -22, 0)
 	SortReagentButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -454,24 +442,28 @@ local function Stuffing_CreateReagentContainer()
 	SortReagentButton.ttText = _G.BAG_FILTER_CLEANUP
 	SortReagentButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	SortReagentButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	SortReagentButton:SetScript(
-		"OnMouseUp",
-		function()
-			if InCombatLockdown() then
-				print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-				return
-			end
-			if StuffingFrameReagent:IsShown() then
-				SortReagentBankBags()
-			end
+	SortReagentButton:SetScript("OnMouseUp", function()
+		if InCombatLockdown() then
+			print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+			return
 		end
-	)
+
+		if StuffingFrameReagent:IsShown() then
+			SortReagentBankBags()
+		end
+	end)
 
 	Deposit:SetParent(Reagent)
 	Deposit:ClearAllPoints()
 	Deposit:SetText("")
 	Deposit:SetSize(16, 16)
-	Deposit:SetTemplate("")
+
+	Deposit.Background = Deposit:CreateTexture(nil, "BACKGROUND", -1)
+	Deposit.Background:SetAllPoints(Deposit)
+	Deposit.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(Deposit)
+
 	Deposit:StyleButton(true)
 	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 6, 0)
 	Deposit:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
@@ -480,28 +472,21 @@ local function Stuffing_CreateReagentContainer()
 	Deposit:SetPushedTexture("Interface\\ICONS\\misc_arrowdown")
 	Deposit:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	Deposit:GetPushedTexture():SetAllPoints()
-	Deposit.ttText = REAGENTBANK_DEPOSIT
+	Deposit.ttText = _G.REAGENTBANK_DEPOSIT
 	Deposit:SetScript("OnEnter", Stuffing_TooltipShow)
 	Deposit:SetScript("OnLeave", Stuffing_TooltipHide)
-	Deposit:SetScript(
-		"OnClick",
-		function()
-			PlaySound(PlaySoundKitID and "Igmainmenuoption" or SOUNDKIT.IG_MAINMENU_OPTION)
-			DepositReagentBank()
-		end
-	)
+	Deposit:SetScript("OnClick", function()
+		PlaySound(PlaySoundKitID and "Igmainmenuoption" or SOUNDKIT.IG_MAINMENU_OPTION)
+		DepositReagentBank()
+	end)
 
-	-- Close button
 	local Close = CreateFrame("Button", "StuffingCloseButtonReagent", Reagent, "UIPanelCloseButton")
 	Close:SetPoint("TOPRIGHT", 0, 1)
 	Close:SkinCloseButton()
 	Close:RegisterForClicks("AnyUp")
-	Close:SetScript(
-		"OnClick",
-		function()
-			StuffingBank_OnHide()
-		end
-	)
+	Close:SetScript("OnClick", function()
+		StuffingBank_OnHide()
+	end)
 
 	for i = 1, 98 do
 		local button = _G["ReagentBankFrameItem" .. i]
@@ -513,7 +498,17 @@ local function Stuffing_CreateReagentContainer()
 		ReagentBankFrame:SetAllPoints()
 
 		button:StyleButton()
-		button:SetTemplate("Transparent", true)
+
+		if not button.isSkinned then
+			button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
+			button.Background:SetAllPoints(button)
+			button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(button)
+
+			button.isSkinned = true
+		end
+
 		button:SetNormalTexture(nil)
 		button.IconBorder:SetAlpha(0)
 
@@ -534,13 +529,7 @@ local function Stuffing_CreateReagentContainer()
 			LastButton = button
 		elseif NumButtons == C["Inventory"].BankColumns then
 			button:SetPoint("TOPRIGHT", LastRowButton, "TOPRIGHT", 0, -(C["Inventory"].ButtonSpace + C["Inventory"].ButtonSize))
-			button:SetPoint(
-				"BOTTOMLEFT",
-				LastRowButton,
-				"BOTTOMLEFT",
-				0,
-				-(C["Inventory"].ButtonSpace + C["Inventory"].ButtonSize)
-			)
+			button:SetPoint("BOTTOMLEFT", LastRowButton, "BOTTOMLEFT", 0, -(C["Inventory"].ButtonSpace + C["Inventory"].ButtonSize))
 			LastRowButton = button
 			NumRows = NumRows + 1
 			NumButtons = 1
@@ -561,14 +550,18 @@ local function Stuffing_CreateReagentContainer()
 			LastButton = button
 		end
 	end
-	Reagent:SetHeight(
-		((C["Inventory"].ButtonSize + C["Inventory"].ButtonSpace) * (NumRows + 1) + 40) - C["Inventory"].ButtonSpace
-	)
+	Reagent:SetHeight(((C["Inventory"].ButtonSize + C["Inventory"].ButtonSpace) * (NumRows + 1) + 40) - C["Inventory"].ButtonSpace)
 
 	MoneyFrame_Update(ReagentBankFrame.UnlockInfo.CostMoneyFrame, GetReagentBankCost())
 	ReagentBankFrameUnlockInfo:StripTextures()
 	ReagentBankFrameUnlockInfo:SetAllPoints(Reagent)
-	ReagentBankFrameUnlockInfo:SetTemplate("Transparent", true)
+
+	ReagentBankFrameUnlockInfo.Background = ReagentBankFrameUnlockInfo:CreateTexture(nil, "BACKGROUND", -1)
+	ReagentBankFrameUnlockInfo.Background:SetAllPoints()
+	ReagentBankFrameUnlockInfo.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(ReagentBankFrameUnlockInfo)
+
 	ReagentBankFrameUnlockInfo:SetFrameStrata("FULLSCREEN")
 	ReagentBankFrameUnlockInfoPurchaseButton:SkinButton()
 end
@@ -589,29 +582,17 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		ret.frame:StripTextures()
 		ret.frame:SetID(slot)
 
-		hooksecurefunc(
-			ret.frame.IconBorder,
-			"SetVertexColor",
-			function(self, r, g, b)
-				if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
-					self:GetParent():SetBackdropBorderColor(r, g, b)
-				end
-				self:SetTexture("")
+		hooksecurefunc(ret.frame.IconBorder, "SetVertexColor", function(self, r, g, b)
+			if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
+				self:GetParent():SetBackdropBorderColor(r, g, b)
 			end
-		)
 
-		hooksecurefunc(
-			ret.frame.IconBorder,
-			"Hide",
-			function(self)
-				self:GetParent():SetBackdropBorderColor(
-					C["Media"].BorderColor[1],
-					C["Media"].BorderColor[2],
-					C["Media"].BorderColor[3],
-					C["Media"].BorderColor[4]
-				)
-			end
-		)
+			self:SetTexture("")
+		end)
+
+		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
+			self:GetParent():SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		end)
 
 		table_insert(self.bagframe_buttons, ret)
 
@@ -624,35 +605,31 @@ function Stuffing:BagFrameSlotNew(p, slot)
 	else
 		ret.frame = CreateFrame("CheckButton", "StuffingFBag" .. slot .. "Slot", p, "BagSlotButtonTemplate")
 
-		hooksecurefunc(
-			ret.frame.IconBorder,
-			"SetVertexColor",
-			function(self, r, g, b)
-				if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
-					self:GetParent():SetBackdropBorderColor(r, g, b)
-				end
-				self:SetTexture("")
+		hooksecurefunc(ret.frame.IconBorder, "SetVertexColor", function(self, r, g, b)
+			if r ~= 0.65882 and g ~= 0.65882 and b ~= 0.65882 then
+				self:GetParent():SetBackdropBorderColor(r, g, b)
 			end
-		)
 
-		hooksecurefunc(
-			ret.frame.IconBorder,
-			"Hide",
-			function(self)
-				self:GetParent():SetBackdropBorderColor(
-					C["Media"].BorderColor[1],
-					C["Media"].BorderColor[2],
-					C["Media"].BorderColor[3],
-					C["Media"].BorderColor[4]
-				)
-			end
-		)
+			self:SetTexture("")
+		end)
+
+		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
+			self:GetParent():SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		end)
 
 		ret.slot = slot
 		table_insert(self.bagframe_buttons, ret)
 	end
 
-	ret.frame:SetTemplate("Transparent", true)
+	if not ret.frame.isSkinned then
+		ret.frame.Background = ret.frame:CreateTexture(nil, "BACKGROUND", -1)
+		ret.frame.Background:SetAllPoints(ret.frame)
+		ret.frame.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(ret.frame)
+		ret.frame.isSkinned = true
+	end
+
 	ret.frame:StyleButton()
 	ret.frame:SetNormalTexture("")
 	ret.frame:SetCheckedTexture("")
@@ -705,8 +682,18 @@ function Stuffing:SlotNew(bag, slot)
 
 	if not ret.frame then
 		ret.frame = CreateFrame("Button", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
+
+		if not ret.frame.isSkinned then
+			ret.frame.Background = ret.frame:CreateTexture(nil, "BACKGROUND", -1)
+			ret.frame.Background:SetAllPoints(ret.frame)
+			ret.frame.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(ret.frame)
+			ret.frame.isSkinned = true
+		end
+
 		ret.frame:StyleButton()
-		ret.frame:SetTemplate("Transparent", true)
+
 		ret.frame:SetNormalTexture(nil)
 
 		ret.icon = _G[ret.frame:GetName() .. "IconTexture"]
@@ -742,7 +729,6 @@ function Stuffing:SlotNew(bag, slot)
 	return ret, true
 end
 
--- From OneBag
 local BAGTYPE_PROFESSION = 0x0008 + 0x0010 + 0x0020 + 0x0040 + 0x0080 + 0x0200 + 0x0400 + 0x10000
 local BAGTYPE_FISHING = 32768
 
@@ -807,21 +793,18 @@ function Stuffing:SearchUpdate(str)
 			local class, subclass, _, equipSlot = select(6, GetItemInfo(ilink))
 			local minLevel = select(5, GetItemInfo(ilink))
 			equipSlot = _G[equipSlot] or ""
-			if
-				not string_find(string_lower(b.name), str) and not string_find(string_lower(setName), str) and
-					not string_find(string_lower(class), str) and
-					not string_find(string_lower(subclass), str) and
-					not string_find(string_lower(equipSlot), str)
-			 then
+			if not string_find(string_lower(b.name), str) and not string_find(string_lower(setName), str) and not string_find(string_lower(class), str) and not string_find(string_lower(subclass), str) and not string_find(string_lower(equipSlot), str) then
 				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(0.5, 0.5, 0.5)
 				end
+
 				SetItemButtonDesaturated(b.frame, true)
 				b.frame:SetAlpha(0.2)
 			else
 				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 				end
+
 				SetItemButtonDesaturated(b.frame, false)
 				b.frame:SetAlpha(1)
 			end
@@ -834,6 +817,7 @@ function Stuffing:SearchReset()
 		if Unfit:IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
 			_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		end
+
 		b.frame:SetAlpha(1)
 		SetItemButtonDesaturated(b.frame, false)
 	end
@@ -860,47 +844,35 @@ function Stuffing:CreateBagFrame(w)
 	f:SetFrameStrata("MEDIUM")
 	f:SetFrameLevel(5)
 	f:RegisterForDrag("LeftButton", "RightButton")
-	f:SetScript(
-		"OnDragStart",
-		function(self)
-			if IsShiftKeyDown() then
-				self:StartMoving()
-				DragFunction(self, true)
-			end
+	f:SetScript("OnDragStart", function(self)
+		if IsShiftKeyDown() then
+			self:StartMoving()
+			DragFunction(self, true)
 		end
-	)
+	end)
 
-	f:SetScript(
-		"OnDragStop",
-		function(self)
-			self:StopMovingOrSizing()
-			DragFunction(self, false)
+	f:SetScript("OnDragStop", function(self)
+		self:StopMovingOrSizing()
+		DragFunction(self, false)
+	end)
+
+	f:SetScript("OnEnter", function(self)
+		if GameTooltip:IsForbidden() then
+			return
 		end
-	)
 
-	f:SetScript(
-		"OnEnter",
-		function(self)
-			if GameTooltip:IsForbidden() then
-				return
-			end
+		GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 4)
+		GameTooltip:ClearLines()
+		GameTooltip:AddDoubleLine(L["Inventory"].Shift_Move)
 
-			GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", 0, 4)
-			GameTooltip:ClearLines()
-			GameTooltip:AddDoubleLine(L["Inventory"].Shift_Move)
+		GameTooltip:Show()
+	end)
 
-			GameTooltip:Show()
+	f:SetScript("OnLeave", function()
+		if not GameTooltip:IsForbidden() then
+			GameTooltip:Hide()
 		end
-	)
-
-	f:SetScript(
-		"OnLeave",
-		function()
-			if not GameTooltip:IsForbidden() then
-				GameTooltip:Hide()
-			end
-		end
-	)
+	end)
 
 	if w == "Bank" then
 		f:SetPoint("BOTTOMLEFT", "UIParent", "BOTTOMLEFT", 4, 204)
@@ -909,10 +881,15 @@ function Stuffing:CreateBagFrame(w)
 	end
 
 	if w == "Bank" then
-		-- Reagent button
 		f.reagentToggle = CreateFrame("Button", "StuffingReagentButton" .. w, f)
 		f.reagentToggle:SetSize(16, 16)
-		f.reagentToggle:SetTemplate()
+
+		f.reagentToggle.Background = f.reagentToggle:CreateTexture(nil, "BACKGROUND", -1)
+		f.reagentToggle.Background:SetAllPoints(f.reagentToggle)
+		f.reagentToggle.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(f.reagentToggle)
+
 		f.reagentToggle:SetPoint("TOPRIGHT", f, -32, -7)
 		f.reagentToggle:SetNormalTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
 		f.reagentToggle:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -924,25 +901,28 @@ function Stuffing:CreateBagFrame(w)
 		f.reagentToggle.ttText = "Show/Hide Reagents"
 		f.reagentToggle:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.reagentToggle:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.reagentToggle:SetScript(
-			"OnClick",
-			function()
-				BankFrame_ShowPanel(BANK_PANELS[2].name)
-				PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_CHARACTER_INFO_TAB)
-				if not ReagentBankFrame.isMade then
-					Stuffing_CreateReagentContainer()
-					ReagentBankFrame.isMade = true
-				else
-					_G["StuffingFrameReagent"]:Show()
-				end
-				_G["StuffingFrameBank"]:SetAlpha(0)
+		f.reagentToggle:SetScript("OnClick", function()
+			BankFrame_ShowPanel(BANK_PANELS[2].name)
+			PlaySound(PlaySoundKitID and "igbackpackopen" or SOUNDKIT.IG_CHARACTER_INFO_TAB)
+			if not ReagentBankFrame.isMade then
+				Stuffing_CreateReagentContainer()
+				ReagentBankFrame.isMade = true
+			else
+				_G["StuffingFrameReagent"]:Show()
 			end
-		)
 
-		-- Toggle Bags Button
+			_G["StuffingFrameBank"]:SetAlpha(0)
+		end)
+
 		f.bagsButton = CreateFrame("Button", nil, f)
 		f.bagsButton:SetSize(16, 16)
-		f.bagsButton:SetTemplate("", true)
+
+		f.bagsButton.Background = f.bagsButton:CreateTexture(nil, "BACKGROUND", -1)
+		f.bagsButton.Background:SetAllPoints(f.bagsButton)
+		f.bagsButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(f.bagsButton)
+
 		f.bagsButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
 		f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
 		f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -954,25 +934,28 @@ function Stuffing:CreateBagFrame(w)
 		f.bagsButton.ttText = L["Inventory"].Show_Bags
 		f.bagsButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.bagsButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.bagsButton:SetScript(
-			"OnClick",
-			function()
-				PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
-				if bag_bars == 1 then
-					bag_bars = 0
-				else
-					bag_bars = 1
-				end
-				if Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
-					Stuffing:Layout(true)
-				end
+		f.bagsButton:SetScript("OnClick", function()
+			PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
+			if bag_bars == 1 then
+				bag_bars = 0
+			else
+				bag_bars = 1
 			end
-		)
 
-		-- Sort Button
+			if Stuffing.bankFrame and Stuffing.bankFrame:IsShown() then
+				Stuffing:Layout(true)
+			end
+		end)
+
 		f.sortButton = CreateFrame("Button", nil, f)
 		f.sortButton:SetSize(16, 16)
-		f.sortButton:SetTemplate("", true)
+
+		f.sortButton.Background = f.bagsButton:CreateTexture(nil, "BACKGROUND", -1)
+		f.sortButton.Background:SetAllPoints(f.bagsButton)
+		f.sortButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(f.sortButton)
+
 		f.sortButton:StyleButton(true)
 		f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 		f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -988,23 +971,27 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton.ttText = BAG_FILTER_CLEANUP
 		f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.sortButton:SetScript(
-			"OnMouseUp",
-			function()
-				if InCombatLockdown() then
-					print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-					return
-				end
-				if Stuffing.frame:IsShown() then
-					local Module = K:GetModule("InventorySort")
-					Module:CommandDecorator(Module.SortBags, "bank")()
-				end
+		f.sortButton:SetScript("OnMouseUp", function()
+			if InCombatLockdown() then
+				print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+				return
 			end
-		)
+
+			if Stuffing.frame:IsShown() then
+				local Module = K:GetModule("InventorySort")
+				Module:CommandDecorator(Module.SortBags, "bank")()
+			end
+		end)
 
 		f.purchaseBagButton = CreateFrame("Button", "StuffingPurchaseButton" .. w, f)
 		f.purchaseBagButton:SetSize(16, 16)
-		f.purchaseBagButton:SetTemplate()
+
+		f.purchaseBagButton.Background = f.bagsButton:CreateTexture(nil, "BACKGROUND", -1)
+		f.purchaseBagButton.Background:SetAllPoints(f.bagsButton)
+		f.purchaseBagButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(f.purchaseBagButton)
+
 		f.purchaseBagButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
 		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
 		f.purchaseBagButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1016,32 +1003,24 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton.ttText = L["Inventory"].Purchase_Slot
 		f.purchaseBagButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.purchaseBagButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.purchaseBagButton:SetScript(
-			"OnClick",
-			function()
-				local _, full = GetNumBankSlots()
-				if (full) then
-					K.StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
-				else
-					K.StaticPopup_Show("BUY_BANK_SLOT")
-				end
+		f.purchaseBagButton:SetScript("OnClick", function()
+			local _, full = GetNumBankSlots()
+			if (full) then
+				K.StaticPopup_Show("CANNOT_BUY_BANK_SLOT")
+			else
+				K.StaticPopup_Show("BUY_BANK_SLOT")
 			end
-		)
+		end)
 	end
 
-	-- Close button
 	f.b_close = CreateFrame("Button", "StuffingCloseButton" .. w, f, "UIPanelCloseButton")
 	f.b_close:SetPoint("TOPRIGHT", 0, 1)
 	f.b_close:SkinCloseButton()
 	f.b_close:RegisterForClicks("AnyUp")
-	f.b_close:SetScript(
-		"OnClick",
-		function(self)
-			self:GetParent():Hide()
-		end
-	)
+	f.b_close:SetScript("OnClick", function(self)
+		self:GetParent():Hide()
+	end)
 
-	-- Create the bags frame
 	local fb = CreateFrame("Frame", n .. "BagsFrame", f)
 	fb:SetPoint("BOTTOMLEFT", f, "TOPLEFT", 0, 6)
 	fb:SetFrameStrata("MEDIUM")
@@ -1073,14 +1052,20 @@ function Stuffing:InitBags()
 	f:SetScript("OnShow", Stuffing_OnShow)
 	f:SetScript("OnHide", Stuffing_OnHide)
 
-	-- Search editbox (tekKonfigAboutPanel.lua)
 	local editbox = CreateFrame("EditBox", nil, f)
 	editbox:Hide()
 	editbox:SetAutoFocus(true)
 	editbox:SetHeight(32)
-	editbox:CreateBackdrop("Transparent")
-	editbox.Backdrop:SetPoint("TOPLEFT", -2, 2)
-	editbox.Backdrop:SetPoint("BOTTOMRIGHT", 2, -2)
+
+	editbox.Background = editbox:CreateTexture(nil, "BACKGROUND", -1)
+	editbox.Background:SetPoint("TOPLEFT", -2, 2)
+	editbox.Background:SetPoint("BOTTOMRIGHT", 2, -2)
+	editbox.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	editbox.Borders = CreateFrame("Frame", nil, editbox)
+	editbox.Borders:SetPoint("TOPLEFT", -2, 2)
+	editbox.Borders:SetPoint("BOTTOMRIGHT", 2, -2)
+	K.CreateBorder(editbox.Borders)
 
 	local function resetAndClear(self)
 		self:GetParent().detail:Show()
@@ -1113,12 +1098,9 @@ function Stuffing:InitBags()
 	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	gold:SetJustifyH("RIGHT")
 
-	f:SetScript(
-		"OnEvent",
-		function(self)
-			self.gold:SetText(K.FormatMoney(GetMoney(), 12))
-		end
-	)
+	f:SetScript("OnEvent", function(self)
+		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
+	end)
 
 	f:RegisterEvent("PLAYER_ENTERING_WORLD")
 	f:RegisterEvent("PLAYER_MONEY")
@@ -1141,9 +1123,16 @@ function Stuffing:InitBags()
 
 		Token:SetParent(f)
 		Token:SetScale(1)
-		Token:CreateBackdrop()
-		Token.Backdrop:SetAllPoints(Icon)
-		Token.Backdrop:SetFrameLevel(Token:GetFrameLevel())
+
+		Token.Background = Token:CreateTexture(nil, "BACKGROUND", -1)
+		Token.Background:SetAllPoints()
+		Token.Background:SetOutside(Icon)
+		Token.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		Token.Borders = CreateFrame("Frame", nil, Token)
+		Token.Borders:SetAllPoints()
+		Token.Borders:SetOutside(Icon)
+		K.CreateBorder(Token.Borders)
 
 		Icon:SetSize(12, 12)
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1158,61 +1147,35 @@ function Stuffing:InitBags()
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 	button:SetAllPoints(detail)
 	button.ttText = L["Inventory"].Right_Click_Search
-	button:SetScript(
-		"OnClick",
-		function(self, btn)
-			if btn == "RightButton" then
-				self:GetParent().detail:Hide()
-				self:GetParent().gold:Hide()
-				self:GetParent().editbox:Show()
-				self:GetParent().editbox:HighlightText()
-			else
-				if self:GetParent().editbox:IsShown() then
-					self:GetParent().editbox:Hide()
-					self:GetParent().editbox:ClearFocus()
-					self:GetParent().detail:Show()
-					self:GetParent().gold:Show()
-					Stuffing:SearchReset()
-				end
+	button:SetScript("OnClick", function(self, btn)
+		if btn == "RightButton" then
+			self:GetParent().detail:Hide()
+			self:GetParent().gold:Hide()
+			self:GetParent().editbox:Show()
+			self:GetParent().editbox:HighlightText()
+		else
+			if self:GetParent().editbox:IsShown() then
+				self:GetParent().editbox:Hide()
+				self:GetParent().editbox:ClearFocus()
+				self:GetParent().detail:Show()
+				self:GetParent().gold:Show()
+				Stuffing:SearchReset()
 			end
 		end
-	)
+	end)
 
 	button:SetScript("OnEnter", Stuffing_TooltipShow)
 	button:SetScript("OnLeave", Stuffing_TooltipHide)
 
-	---- Stack Button
-	--f.restackButton = CreateFrame("Button", nil, f)
-	--f.restackButton:SetSize(16, 16)
-	--f.restackButton:SetTemplate("")
-	--f.restackButton:StyleButton(true)
-	--f.restackButton:SetPoint("TOPRIGHT", f, -32, -7)
-	--f.restackButton:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
-	--f.restackButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	--f.restackButton:GetNormalTexture():SetAllPoints()
-	--f.restackButton:SetPushedTexture("Interface\\ICONS\\misc_arrowdown")
-	--f.restackButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	--f.restackButton:GetPushedTexture():SetAllPoints()
-	--f.restackButton.ttText = L["Inventory"].Buttons_Stack
-	--f.restackButton:SetScript("OnEnter", Stuffing_TooltipShow)
-	--f.restackButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	--f.restackButton:SetScript("OnClick", function()
-	--	if InCombatLockdown() then
-	--		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
-	--	end
-	--	PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
-	--	local Module = K:GetModule("InventorySort")
-	--	if IsShiftKeyDown() then
-	--		Module:CommandDecorator(Module.Stack, "bags")()
-	--	else
-	--		Module:CommandDecorator(Module.Compress, "bank")()
-	--	end
-	--end)
-
-	-- Toggle Bags Button
 	f.bagsButton = CreateFrame("Button", nil, f)
 	f.bagsButton:SetSize(16, 16)
-	f.bagsButton:SetTemplate("", true)
+
+	f.bagsButton.Background = f.bagsButton:CreateTexture(nil, "BACKGROUND", -1)
+	f.bagsButton.Background:SetAllPoints(f.bagsButton)
+	f.bagsButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(f.bagsButton)
+
 	f.bagsButton:SetPoint("TOPRIGHT", f, -32, -7)
 	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
 	f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1224,26 +1187,29 @@ function Stuffing:InitBags()
 	f.bagsButton.ttText = L["Inventory"].Show_Bags
 	f.bagsButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.bagsButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	f.bagsButton:SetScript(
-		"OnClick",
-		function()
-			PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
-			if bag_bars == 1 then
-				bag_bars = 0
-			else
-				bag_bars = 1
-			end
-			if Stuffing.frame and Stuffing.frame:IsShown() then
-				Stuffing:Layout()
-			end
+	f.bagsButton:SetScript("OnClick", function()
+		PlaySound(PlaySoundKitID and "igMainMenuOption" or SOUNDKIT.IG_MAINMENU_OPTION)
+		if bag_bars == 1 then
+			bag_bars = 0
+		else
+			bag_bars = 1
 		end
-	)
 
-	-- Sort Button
+		if Stuffing.frame and Stuffing.frame:IsShown() then
+			Stuffing:Layout()
+		end
+	end)
+
 	f.sortButton = CreateFrame("Button", nil, f)
 	f.sortButton:SetSize(16, 16)
-	f.sortButton:SetTemplate("", true)
-	f.sortButton:StyleButton(true)
+
+	f.sortButton.Background = f.sortButton:CreateTexture(nil, "BACKGROUND", -1)
+	f.sortButton.Background:SetAllPoints()
+	f.sortButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(f.sortButton)
+
+	f.sortButton:StyleButton(nil, true)
 	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 	f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
 	f.sortButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1255,26 +1221,29 @@ function Stuffing:InitBags()
 	f.sortButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	f.sortButton:GetDisabledTexture():SetAllPoints()
 	f.sortButton:GetDisabledTexture():SetDesaturated(1)
-	f.sortButton.ttText = BAG_FILTER_CLEANUP
+	f.sortButton.ttText = _G.BAG_FILTER_CLEANUP
 	f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	f.sortButton:SetScript(
-		"OnMouseUp",
-		function()
-			if InCombatLockdown() then
-				print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-				return
-			end
-			local Module = K:GetModule("InventorySort")
-			Module:CommandDecorator(Module.SortBags, "bags")()
+	f.sortButton:SetScript("OnMouseUp", function()
+		if InCombatLockdown() then
+			print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
+			return
 		end
-	)
+
+		local Module = K:GetModule("InventorySort")
+		Module:CommandDecorator(Module.SortBags, "bags")()
+	end)
 
 	if K.Level >= 100 then
-		-- Artifact Button
 		f.ArtifactButton = CreateFrame("Button", nil, f, "BankItemButtonGenericTemplate")
 		f.ArtifactButton:SetSize(16, 16)
-		f.ArtifactButton:SetTemplate("", true)
+
+		f.ArtifactButton.Background = f.ArtifactButton:CreateTexture(nil, "BACKGROUND", -1)
+		f.ArtifactButton.Background:SetAllPoints()
+		f.ArtifactButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(f.ArtifactButton)
+
 		f.ArtifactButton:StyleButton(true)
 		f.ArtifactButton:SetPoint("TOPRIGHT", f.sortButton, -22, 0)
 		f.ArtifactButton:SetNormalTexture("Interface\\ICONS\\Achievement_doublejeopardy")
@@ -1289,37 +1258,31 @@ function Stuffing:InitBags()
 		f.ArtifactButton:GetDisabledTexture():SetDesaturated(1)
 		f.ArtifactButton:RegisterForClicks("RightButtonUp")
 		f.ArtifactButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.ArtifactButton:SetScript(
-			"PreClick",
-			function(self)
-				for bag = 0, 4 do
-					for slot = 1, GetContainerNumSlots(bag) do
-						if IsArtifactPowerItem(GetContainerItemID(bag, slot)) then
-							self:GetParent():SetID(bag)
-							self:SetID(slot)
-							return
-						end
+		f.ArtifactButton:SetScript("PreClick", function(self)
+			for bag = 0, 4 do
+				for slot = 1, GetContainerNumSlots(bag) do
+					if IsArtifactPowerItem(GetContainerItemID(bag, slot)) then
+						self:GetParent():SetID(bag)
+						self:SetID(slot)
+						return
 					end
 				end
 			end
-		)
-		f.ArtifactButton:SetScript(
-			"OnEnter",
-			function(self)
+		end)
+
+		f.ArtifactButton:SetScript("OnEnter", function(self)
+			self:UpdateTooltip()
+		end)
+
+		f.ArtifactButton:HookScript("OnClick", function(self)
+			if GameTooltip:IsForbidden() then
+				return
+			end
+
+			if GameTooltip:GetOwner() == self then
 				self:UpdateTooltip()
 			end
-		)
-		f.ArtifactButton:HookScript(
-			"OnClick",
-			function(self)
-				if GameTooltip:IsForbidden() then
-					return
-				end
-				if GameTooltip:GetOwner() == self then
-					self:UpdateTooltip()
-				end
-			end
-		)
+		end)
 		f.ArtifactButton.UpdateTooltip = function(self)
 			if GameTooltip:IsForbidden() then
 				return
@@ -1386,13 +1349,29 @@ function Stuffing:Layout(isBank)
 	end
 
 	f:SetClampedToScreen(1)
-	f:SetTemplate("Transparent", true)
 
-	-- Bag frame stuff
+	if not f.isSkinned then
+		f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
+		f.Background:SetAllPoints(f)
+		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(f)
+		f.isSkinned = true
+	end
+
 	local fb = f.bags_frame
 	if bag_bars == 1 then
 		fb:SetClampedToScreen(1)
-		fb:SetTemplate("Transparent", true)
+
+		if not fb.isSkinned then
+			fb.Background = fb:CreateTexture(nil, "BACKGROUND", -1)
+			fb.Background:SetAllPoints(fb)
+			fb.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(fb)
+
+			fb.isSkinned = true
+		end
 
 		local bsize = C["Inventory"].ButtonSize
 
@@ -1422,34 +1401,28 @@ function Stuffing:Layout(isBank)
 			b.frame:SetSize(bsize, bsize)
 
 			local btns = self.buttons
-			b.frame:HookScript(
-				"OnEnter",
-				function()
-					local bag
-					if isBank then
-						bag = v
+			b.frame:HookScript("OnEnter", function()
+				local bag
+				if isBank then
+					bag = v
+				else
+					bag = v + 1
+				end
+
+				for _, val in ipairs(btns) do
+					if val.bag == bag then
+						val.frame:SetAlpha(1)
 					else
-						bag = v + 1
-					end
-
-					for _, val in ipairs(btns) do
-						if val.bag == bag then
-							val.frame:SetAlpha(1)
-						else
-							val.frame:SetAlpha(0.2)
-						end
+						val.frame:SetAlpha(0.2)
 					end
 				end
-			)
+			end)
 
-			b.frame:HookScript(
-				"OnLeave",
-				function()
-					for _, btn in ipairs(btns) do
-						btn.frame:SetAlpha(1)
-					end
+			b.frame:HookScript("OnLeave", function()
+				for _, btn in ipairs(btns) do
+					btn.frame:SetAlpha(1)
 				end
-			)
+			end)
 
 			b.frame:SetScript("OnClick", nil)
 
@@ -1497,7 +1470,7 @@ function Stuffing:Layout(isBank)
 				end
 
 				xoff = 10 + (x * C["Inventory"].ButtonSize) + (x * C["Inventory"].ButtonSpace)
-				yoff = off + 10 + (y * C["Inventory"].ButtonSize) + ((y) * C["Inventory"].ButtonSpace) -- Don"t forget you changed this Kkthnx!
+				yoff = off + 10 + (y * C["Inventory"].ButtonSize) + ((y) * C["Inventory"].ButtonSpace)
 				yoff = yoff * -1
 
 				b.frame:ClearAllPoints()
@@ -1529,6 +1502,7 @@ function Stuffing:Layout(isBank)
 					end
 					b.frame.lock = true
 				end
+
 				self:SlotUpdate(b)
 				idx = idx + 1
 			end
@@ -1573,9 +1547,12 @@ end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
 	Stuffing:UnregisterEvent("PLAYER_ENTERING_WORLD")
+
 	ToggleBackpack()
 	ToggleBackpack()
-	function ManageBackpackTokenFrame()
+
+	function
+		ManageBackpackTokenFrame()
 	end
 end
 
@@ -1604,14 +1581,10 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 		if not button then
 			return
 		end
+
 		local _, _, _, quality = GetContainerItemInfo(-3, i)
 		local clink = GetContainerItemLink(-3, i)
-		button:SetBackdropBorderColor(
-			C["Media"].BorderColor[1],
-			C["Media"].BorderColor[2],
-			C["Media"].BorderColor[3],
-			C["Media"].BorderColor[4]
-		)
+		button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 
 		if clink then
 			if quality and quality > 1 then
@@ -1629,6 +1602,7 @@ function Stuffing:ITEM_LOCK_CHANGED(bag, slot)
 	if slot == nil then
 		return
 	end
+
 	for _, v in ipairs(self.buttons) do
 		if v.bag == bag and v.slot == slot then
 			self:SlotUpdate(v)
@@ -1655,6 +1629,7 @@ function Stuffing:BANKFRAME_CLOSED()
 	if StuffingFrameReagent then
 		StuffingFrameReagent:Hide()
 	end
+
 	if self.bankFrame then
 		self.bankFrame:Hide()
 	end
@@ -1662,35 +1637,6 @@ end
 
 function Stuffing:GUILDBANKFRAME_OPENED()
 	Stuffing_Open()
-
-	-- -- Sort Button
-	-- guildSortButton = CreateFrame("Button", "GuildSortButton", GuildBankFrame, "UIPanelButtonTemplate")
-	-- guildSortButton:SetSize(16, 16)
-	-- guildSortButton:SetTemplate("", true)
-	-- guildSortButton:StyleButton(true)
-	-- guildSortButton:SetPoint("RIGHT", GuildBankFrame.CloseButton, "LEFT", 2, 0)
-	-- guildSortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
-	-- guildSortButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- guildSortButton:GetNormalTexture():SetAllPoints()
-	-- guildSortButton:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
-	-- guildSortButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- guildSortButton:GetPushedTexture():SetAllPoints()
-	-- guildSortButton:SetDisabledTexture("Interface\\ICONS\\INV_Pet_Broom")
-	-- guildSortButton:GetDisabledTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	-- guildSortButton:GetDisabledTexture():SetAllPoints()
-	-- guildSortButton:GetDisabledTexture():SetDesaturated(1)
-	-- guildSortButton.ttText = BAG_FILTER_CLEANUP
-	-- guildSortButton:SetScript("OnEnter", Stuffing_TooltipShow)
-	-- guildSortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	-- guildSortButton:SetScript("OnMouseUp", function(_, btn)
-	-- 	if InCombatLockdown() then
-	-- 		print("|cffffff00"..ERR_NOT_IN_COMBAT.."|r") return
-	-- 	end
-	-- 	if Stuffing.frame:IsShown() then
-	-- 		local Module = K:GetModule("InventorySort")
-	-- 		Module:CommandDecorator(Module.SortBags, "guild")()
-	-- 	end
-	-- end)
 end
 
 function Stuffing:GUILDBANKFRAME_CLOSED()

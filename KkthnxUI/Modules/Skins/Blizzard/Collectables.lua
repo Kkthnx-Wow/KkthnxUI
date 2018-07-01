@@ -1,4 +1,4 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 local _G = _G
@@ -20,7 +20,15 @@ local function SkinPetJournalTooltip()
 	tt.BorderBottom:SetTexture(nil)
 	tt.BorderBottomRight:SetTexture(nil)
 	tt.BorderBottomLeft:SetTexture(nil)
-	tt:SetTemplate("Transparent")
+
+	if not tt.IsSkinned then
+		tt.Backgrounds = tt:CreateTexture(nil, "BACKGROUND", -2)
+		tt.Backgrounds:SetAllPoints()
+		tt.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+		K.CreateBorder(tt)
+		tt.IsSkinned = true
+	end
 end
 
 Module.SkinFuncs["Blizzard_Collections"] = SkinPetJournalTooltip

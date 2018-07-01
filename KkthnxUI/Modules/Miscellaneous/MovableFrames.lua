@@ -1,14 +1,7 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("MovableFrames", "AceHook-3.0", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:NewModule("MoveableFrames", "AceEvent-3.0")
 
 local _G = _G
-
-local EnableMouse = _G.EnableMouse
-local RegisterForDrag = _G.RegisterForDrag
-local SetClampedToScreen = _G.SetClampedToScreen
-local SetMovable = _G.SetMovable
-local StartMoving = _G.StartMoving
-local StopMovingOrSizing = _G.StopMovingOrSizing
 
 Module.Frames = {
 	"AddonList",
@@ -76,16 +69,28 @@ function Module:MakeMovable(frame)
 		frame:SetMovable(true)
 		frame:SetClampedToScreen(true)
 		frame:RegisterForDrag("LeftButton")
-		frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
-		frame:SetScript("OnDragStop", function(self) self:StopMovingOrSizing() end)
-		if frame.TitleMouseover then Module:MakeMovable(frame.TitleMouseover) end
+		frame:SetScript("OnDragStart", function(self)
+			self:StartMoving()
+		end)
+
+		frame:SetScript("OnDragStop", function(self)
+			self:StopMovingOrSizing()
+		end)
+
+		if frame.TitleMouseover then
+			Module:MakeMovable(frame.TitleMouseover)
+		end
 	end
 end
 
 function Module:Addons(event, addon)
 	local frame
 	addon = Module.AddonsList[addon]
-	if not addon then return end
+
+	if not addon then
+		return
+	end
+
 	if type(addon) == "table" then
 		for i = 1, #addon do
 			frame = _G[addon[i]]
@@ -95,13 +100,16 @@ function Module:Addons(event, addon)
 		frame = _G[addon]
 		Module:MakeMovable(frame)
 	end
+
 	Module.addonCount = Module.addonCount + 1
 	if Module.addonCount == #Module.AddonsList then Module:UnregisterEvent(event) end
 end
 
 function Module:OnEnable()
 	Module.addonCount = 0
-	if C["General"].MoveBlizzardFrames ~= true then return end
+	if C["General"].MoveBlizzardFrames ~= true then
+		return
+	end
 
 	for i = 1, #Module.Frames do
 		local frame = _G[Module.Frames[i]]

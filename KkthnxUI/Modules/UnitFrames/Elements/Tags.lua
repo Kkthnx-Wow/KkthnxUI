@@ -1,7 +1,7 @@
 local K, C = unpack(select(2, ...))
-if C["Unitframe"].Enable ~= true and C["Raidframe"].Enable ~= true and C["Nameplates"].Enable ~= true then
-	return
-end
+-- if C["Unitframe"].Enable ~= true and C["Raid"].Enable ~= true and C["Nameplates"].Enable ~= true then
+-- 	return
+-- end
 
 local Module = K:GetModule("Unitframes")
 local oUF = oUF or K.oUF
@@ -54,19 +54,6 @@ local UnitPowerType = _G.UnitPowerType
 local UnitReaction = _G.UnitReaction
 local UNKNOWN = _G.UNKNOWN
 
--- GLOBALS: Hex, _TAGS
-
-local function Hex(r, g, b)
-	if (type(r) == "table") then
-		if (r.r) then
-			r, g, b = r.r, r.g, r.b
-		else
-			r, g, b = unpack(r)
-		end
-	end
-	return ("|cff%02x%02x%02x"):format(r * 255, g * 255, b * 255)
-end
-
 local function UnitName(unit)
 	local name, realm = _G.UnitName(unit)
 	if name == UNKNOWN and K.Class == "MONK" and UnitIsUnit(unit, "pet") then
@@ -77,7 +64,7 @@ local function UnitName(unit)
 end
 
 -- KkthnxUI Unitframe Tags
-oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE"
+oUF.Tags.Events["KkthnxUI:GetNameColor"] = "UNIT_NAME_UPDATE UNIT_FACTION"
 oUF.Tags.Methods["KkthnxUI:GetNameColor"] = function(unit)
 	local unitReaction = UnitReaction(unit, "player")
 	local _, unitClass = UnitClass(unit)
@@ -244,25 +231,25 @@ oUF.Tags.Methods["KkthnxUI:SmartLevel"] = function(unit)
 	end
 end
 
-oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameVeryShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameVeryShort"] = function(unit)
 	local NameVeryShort = UnitName(unit) or UNKNOWN
 	return NameVeryShort ~= nil and K.ShortenString(NameVeryShort, 5, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameShort"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameShort"] = function(unit)
 	local NameShort = UnitName(unit) or UNKNOWN
 	return NameShort ~= nil and K.ShortenString(NameShort, 10, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameMedium"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameMedium"] = function(unit)
 	local NameMedium = UnitName(unit) or UNKNOWN
 	return NameMedium ~= nil and K.ShortenString(NameMedium, 15, true) or ""
 end
 
-oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE UNIT_HEALTH UNIT_CONNECTION UNIT_THREAT_SITUATION_UPDATE"
+oUF.Tags.Events["KkthnxUI:NameLong"] = "UNIT_NAME_UPDATE"
 oUF.Tags.Methods["KkthnxUI:NameLong"] = function(unit)
 	local NameLong = UnitName(unit) or UNKNOWN
 	return NameLong ~= nil and K.ShortenString(NameLong, 20, true) or ""
@@ -272,7 +259,7 @@ oUF.Tags.Events["KkthnxUI:AFK"] = "PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:AFK"] = function(unit)
 	local isAFK = UnitIsAFK(unit)
 	if isAFK then
-		return CHAT_FLAG_AFK
+		return _G.CHAT_FLAG_AFK
 	else
 		return nil
 	end

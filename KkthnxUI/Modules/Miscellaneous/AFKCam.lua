@@ -1,5 +1,5 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("AFKCam", "AceEvent-3.0", "AceTimer-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:NewModule("AFKCam", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Sourced: ElvUI (Elvz)
 
@@ -149,7 +149,7 @@ function Module:Toggle()
 	end
 end
 
-local function OnKeyDown(self, key)
+local function OnKeyDown(_, key)
 	if (ignoreKeys[key]) then
 		return
 	end
@@ -185,7 +185,13 @@ function Module:OnInitialize()
 
 	self.AFKMode.bottom = CreateFrame("Frame", nil, self.AFKMode)
 	self.AFKMode.bottom:SetFrameLevel(0)
-	self.AFKMode.bottom:SetTemplate("Transparent")
+
+	self.AFKMode.bottom.Background = self.AFKMode.bottom:CreateTexture(nil, "BACKGROUND", -1)
+	self.AFKMode.bottom.Background:SetAllPoints()
+	self.AFKMode.bottom.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(self.AFKMode.bottom)
+
 	self.AFKMode.bottom:SetPoint("BOTTOM", self.AFKMode, "BOTTOM", 0, -2) -- Might be 2
 	self.AFKMode.bottom:SetWidth(GetScreenWidth() + (2 * 2)) -- Might be 2
 	self.AFKMode.bottom:SetHeight(GetScreenHeight() * (1 / 10))
@@ -243,17 +249,14 @@ function Module:OnInitialize()
 	self.AFKMode.bottom.model:SetSize(GetScreenWidth() * 2, GetScreenHeight() * 2) -- YES, double screen size. This prevents clipping of models. Position is controlled with the helper frame.
 	self.AFKMode.bottom.model:SetCamDistanceScale(4) -- Since the model frame is huge, we need to zoom out quite a bit.
 	self.AFKMode.bottom.model:SetFacing(6)
-	self.AFKMode.bottom.model:SetScript(
-		"OnUpdate",
-		function(self)
-			local timePassed = GetTime() - self.startTime
-			if (timePassed > self.duration) and self.isIdle ~= true then
-				self:SetAnimation(0)
-				self.isIdle = true
-				Module.animTimer = Module:ScheduleTimer("LoopAnimations", self.idleDuration)
-			end
+	self.AFKMode.bottom.model:SetScript("OnUpdate", function(self)
+		local timePassed = GetTime() - self.startTime
+		if (timePassed > self.duration) and self.isIdle ~= true then
+			self:SetAnimation(0)
+			self.isIdle = true
+			Module.animTimer = Module:ScheduleTimer("LoopAnimations", self.idleDuration)
 		end
-	)
+	end)
 
 	self:Toggle()
 	self.isActive = false

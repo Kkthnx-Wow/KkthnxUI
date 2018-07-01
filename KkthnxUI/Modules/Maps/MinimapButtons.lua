@@ -138,15 +138,34 @@ function Module:SkinMinimapButton(Button)
 
 	Button:SetFrameLevel(Minimap:GetFrameLevel() + 5)
 	Button:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-	Button:SetTemplate("Transparent", true)
+
+	Button.Background = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Background:SetAllPoints()
+	Button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints(Button)
+	K.CreateBorder(Button.Borders)
+
 	Button:HookScript("OnEnter", function(self)
 		self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 		if Module.Bar:IsShown() then
 			UIFrameFadeIn(Module.Bar, 0.2, Module.Bar:GetAlpha(), 1)
 		end
 	end)
+
 	Button:HookScript("OnLeave", function(self)
-		self:SetTemplate("Transparent", true)
+		if not self.isSkinned then
+			self.Background = self:CreateTexture(nil, "BACKGROUND", -1)
+			self.Background:SetAllPoints()
+			self.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			self.Borders = CreateFrame("Frame", nil, self)
+			self.Borders:SetAllPoints(self)
+			K.CreateBorder(self.Borders)
+			self.isSkinned = true
+		end
+
 		if Module.Bar:IsShown() and C["MinimapButtons"].BarMouseOver then
 			UIFrameFadeOut(Module.Bar, 0.2, Module.Bar:GetAlpha(), 0)
 		end
@@ -199,14 +218,16 @@ function Module:Update()
 
 			Module:UnlockButton(Button)
 
-			Button:SetTemplate("Transparent", true)
+			Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -2)
+			Button.Backgrounds:SetAllPoints()
+			Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			K.CreateBorder(Button)
+
 			Button:SetParent(self.Bar)
 			Button:ClearAllPoints()
 			Button:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", (Spacing + ((Size + Spacing) * (AnchorX - 1))), (- Spacing - ((Size + Spacing) * (AnchorY - 1))))
 			Button:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-			Button:SetScale(1)
-			Button:SetFrameStrata("LOW")
-			Button:SetFrameLevel(self.Bar:GetFrameLevel() + 1)
 			Button:SetScript("OnDragStart", nil)
 			Button:SetScript("OnDragStop", nil)
 
@@ -238,7 +259,14 @@ function Module:OnInitialize()
 	self.Bar:SetMovable(true)
 	self.Bar:EnableMouse(true)
 	self.Bar:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-	self.Bar:SetTemplate("Transparent", true)
+
+	self.Bar.Background = self.Bar:CreateTexture(nil, "BACKGROUND", -1)
+	self.Bar.Background:SetAllPoints()
+	self.Bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	self.Bar.Borders = CreateFrame("Frame", nil, self.Bar)
+	self.Bar.Borders:SetAllPoints(self.Bar)
+	K.CreateBorder(self.Bar.Borders)
 
 	self.Bar:SetScript("OnEnter", function(self)
 		UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)

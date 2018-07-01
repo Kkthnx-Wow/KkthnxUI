@@ -1,8 +1,9 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("EnchantScrollButton", "AceEvent-3.0")
+local K = unpack(select(2, ...))
 if K.CheckAddOnState("OneClickEnchantScroll") or (not C_TradeSkillUI) then
 	return
 end
+
+local Module = K:NewModule("EnchantScroll", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
 local setmetatable = setmetatable

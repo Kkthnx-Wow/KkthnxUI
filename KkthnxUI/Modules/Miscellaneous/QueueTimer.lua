@@ -1,8 +1,9 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("QueueTimer", "AceEvent-3.0")
 if K.CheckAddOnState("DBM-Core") or K.CheckAddOnState("BigWigs") then
 	return
 end
+
+local Module = K:NewModule("QueueTimer", "AceEvent-3.0")
 
 -- Sourced: LFG_ProposalTime (Freebaser)
 

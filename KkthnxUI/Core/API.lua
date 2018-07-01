@@ -23,12 +23,11 @@ local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseBu
 local CustomNoop = K.Noop
 
 -- Preload
-K.Mult= 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
+K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 K.NoScaleMult = K.Mult * C.General.UIScale
 
 function K.Scale(x)
-	return
-	K.Mult * math_floor(x / K.Mult + .5)
+	return K.Mult * math_floor(x / K.Mult + .5)
 end
 
 K.UIFrameHider = CreateFrame("Frame", "UIFrameHider", UIParent)
@@ -68,58 +67,6 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
-local function SetTemplate(f, t, tex)
-	local balpha = C.Media.BackdropColor[4]
-
-	if (t == "Transparent") then
-		balpha = C.Media.BackdropColor[4] or 0.9
-	end
-
-	local borderr, borderg, borderb = C.Media.BorderColor[1], C.Media.BorderColor[2], C.Media.BorderColor[3]
-	local backdropr, backdropg, backdropb = C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3]
-	local backdropa = balpha
-	local texture = C.Media.Blank
-
-	if (tex) then
-		texture = C.Media.Blank
-	end
-
-	if (not f.isCreateBorder) then
-		K.CreateBorder(f)
-		f.isCreateBorder = true
-	end
-
-	f:SetBackdrop({
-		bgFile = texture,
-		tile = false, tileSize = 0,
-	})
-
-	f:SetBackdropColor(backdropr, backdropg, backdropb, backdropa)
-	f:SetBackdropBorderColor(borderr, borderg, borderb)
-end
-
-local function CreateBackdrop(f, t, tex)
-	if f.Backdrop then
-		return
-	end
-
-	if not t then
-		t = "Default"
-	end
-
-	local b = CreateFrame("Frame", nil, f)
-	b:SetOutside(f)
-	b:SetTemplate(t, tex)
-
-	if f:GetFrameLevel() - 1 >= 0 then
-		b:SetFrameLevel(f:GetFrameLevel() - 1)
-	else
-		b:SetFrameLevel(0)
-	end
-
-	f.Backdrop = b
-end
-
 local function CreateShadow(f)
 	if f.Shadow then
 		return
@@ -131,9 +78,7 @@ local function CreateShadow(f)
 	shadow:SetPoint("TOPLEFT", -4, 4)
 	shadow:SetPoint("BOTTOMRIGHT", 4, -4)
 
-	shadow:SetBackdrop( {
-		edgeFile = C.Media.Glow, edgeSize = K.Scale(4)
-	})
+	shadow:SetBackdrop({edgeFile = C.Media.Glow, edgeSize = K.Scale(4)})
 
 	shadow:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
 	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
@@ -226,7 +171,7 @@ local function StyleButton(button, noHover, noPushed, noChecked)
 		button:SetCheckedTexture(checked)
 	end
 
-	local cooldown = button:GetName() and _G[button:GetName().."Cooldown"]
+	local cooldown = button:GetName() and _G[button:GetName() .. "Cooldown"]
 	if cooldown and button:IsObjectType("Frame") then
 		cooldown:ClearAllPoints()
 		cooldown:SetPoint("TOPLEFT", 1, -1)
@@ -243,45 +188,20 @@ local function StyleButton(button, noHover, noPushed, noChecked)
 	end
 end
 
-local function SetStatusBarColorGradient(bar, value, max, Backdrop)
-	local current = (not max and value) or (value and max and max ~= 0 and value/max)
-
-	if not (bar and current) then
-		return
-	end
-
-	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-	local bg = Backdrop or bar.Backdrop
-
-	if bg then
-		bg:SetBackdropColor(r * 0.25, g * 0.25, b * 0.25)
-	end
-
-	bar:SetStatusBarColor(r, g, b)
-end
-
 local function SetModifiedBackdrop(self)
-	if self.Backdrop then
-		self = self.Backdrop
-	end
-
 	if not C["General"].ColorTextures then
-		self:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
+		self.Borders:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
 	end
 
-	self:SetBackdropColor(CustomClassColor.r * .15, CustomClassColor.g * .15, CustomClassColor.b * .15, C.Media.BackdropColor[4])
+	self.Background:SetColorTexture(CustomClassColor.r * .15, CustomClassColor.g * .15, CustomClassColor.b * .15, C.Media.BackdropColor[4])
 end
 
 local function SetOriginalBackdrop(self)
-	if self.Backdrop then
-		self = self.Backdrop
-	end
-
 	if not C["General"].ColorTextures then
-		self:SetBackdropBorderColor(C.Media.BorderColor[1], C.Media.BorderColor[2], C.Media.BorderColor[3], 1)
+		self.Borders:SetBackdropBorderColor(C.Media.BorderColor[1], C.Media.BorderColor[2], C.Media.BorderColor[3], 1)
 	end
 
-	self:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
+	self.Background:SetColorTexture(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
 end
 
 local function SkinButton(f, strip)
@@ -363,7 +283,14 @@ local function SkinButton(f, strip)
 		f:StripTextures()
 	end
 
-	f:SetTemplate("Transparent", true)
+	f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
+	f.Background:SetAllPoints(f)
+	f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	f.Borders = CreateFrame("Frame", nil, f)
+	f.Borders:SetAllPoints(f)
+	K.CreateBorder(f.Borders)
+
 	f:HookScript("OnEnter", SetModifiedBackdrop)
 	f:HookScript("OnLeave", SetOriginalBackdrop)
 end
@@ -373,10 +300,17 @@ local function SkinCloseButton(f, point, texture)
 
 	f:StripTextures()
 
-	if not f.backdrop then
-		f:CreateBackdrop("Transparent", true)
-		f.Backdrop:SetPoint("TOPLEFT", 8, -8)
-		f.Backdrop:SetPoint("BOTTOMRIGHT", -8, 8)
+	if not f.Background then
+		f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
+		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		f.Background:SetPoint("TOPLEFT", 8, -8)
+		f.Background:SetPoint("BOTTOMRIGHT", -8, 8)
+
+	    f.Borders = CreateFrame("Frame", nil, f)
+		f.Borders:SetPoint("TOPLEFT", 8, -8)
+		f.Borders:SetPoint("BOTTOMRIGHT", -8, 8)
+		K.CreateBorder(f.Borders)
+
 		f:HookScript("OnEnter", SetModifiedBackdrop)
 		f:HookScript("OnLeave", SetOriginalBackdrop)
 		f:SetHitRectInsets(6, 6, 7, 7)
@@ -417,10 +351,6 @@ local function AddCustomAPI(object)
 		MetaTable.SetInside = SetInside
 	end
 
-	if not object.CreateBackdrop then
-		MetaTable.CreateBackdrop = CreateBackdrop
-	end
-
 	if not object.CreateShadow then
 		MetaTable.CreateShadow = CreateShadow
 	end
@@ -443,14 +373,6 @@ local function AddCustomAPI(object)
 
 	if not object.Kill then
 		MetaTable.Kill = Kill
-	end
-
-	if not object.SetTemplate then
-		MetaTable.SetTemplate = SetTemplate
-	end
-
-	if not object.SetStatusBarColorGradient then
-		MetaTable.SetStatusBarColorGradient = SetStatusBarColorGradient
 	end
 
 	if not object.SkinButton then

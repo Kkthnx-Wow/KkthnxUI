@@ -520,10 +520,19 @@ local function SliderOnMouseWheel(self, delta)
 end
 
 local function CreateConfigButton(parent, group, option, value)
+	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 
 	local Button = CreateFrame("Button", nil, parent)
-	Button:SetTemplate("Transparent")
+
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints()
+	K.CreateBorder(Button.Borders)
+
 	Button:SetSize(18, 18)
 	Button.Toggled = false
 	Button:SetScript("OnClick", ButtonOnClick)
@@ -554,12 +563,20 @@ local function CreateConfigButton(parent, group, option, value)
 end
 
 local function CreateConfigEditBox(parent, group, option, value, max)
+	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 
 	local EditBox = CreateFrame("Frame", nil, parent)
 	EditBox:SetSize(50, 18)
-	EditBox:SetTemplate("Transparent")
-	EditBox:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
+
+	EditBox.Backgrounds = EditBox:CreateTexture(nil, "BACKGROUND", -1)
+	EditBox.Backgrounds:SetAllPoints()
+	EditBox.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	EditBox.Borders = CreateFrame("Frame", nil, EditBox)
+	EditBox.Borders:SetAllPoints()
+	K.CreateBorder(EditBox.Borders)
+
 	EditBox.Type = "EditBox"
 
 	EditBox.Box = CreateFrame("EditBox", nil, EditBox)
@@ -603,8 +620,15 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	local ConfigTexture = K.GetTexture(C["General"].Texture)
 
 	local Button = CreateFrame("Button", nil, parent)
-	Button:SetTemplate("Transparent")
-	Button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
+
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints()
+	K.CreateBorder(Button.Borders)
+
 	Button:SetSize(50, 18)
 	Button.Colors = value
 	Button.Type = "Color"
@@ -687,7 +711,15 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local DropDown = CreateFrame("Button", nil, parent)
 	DropDown:SetSize(150, 20)
-	DropDown:SetTemplate("Transparent")
+
+	DropDown.Backgrounds = DropDown:CreateTexture(nil, "BACKGROUND", -1)
+	DropDown.Backgrounds:SetAllPoints()
+	DropDown.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	DropDown.Borders = CreateFrame("Frame", nil, DropDown)
+	DropDown.Borders:SetAllPoints()
+	K.CreateBorder(DropDown.Borders)
+
 	DropDown.Type = type
 	DropDown._Group = group
 	DropDown._Option = option
@@ -724,8 +756,15 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local Button = CreateFrame("Button", nil, DropDown)
 	Button:SetSize(16, 16)
-	Button:SetTemplate("Transparent")
-	Button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1)
+
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints()
+	K.CreateBorder(Button.Borders)
+
 	Button:SetPoint("RIGHT", DropDown, -2, 0)
 	Button.Owner = DropDown
 
@@ -743,8 +782,15 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local List = CreateFrame("Frame", nil, UIParent)
 	List:SetPoint("TOPLEFT", DropDown, "BOTTOMLEFT", 0, -4)
-	List:SetTemplate("Transparent")
-	List:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], 1) -- Fix this later in API
+
+	List.Backgrounds = List:CreateTexture(nil, "BACKGROUND", -1)
+	List.Backgrounds:SetAllPoints()
+	List.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	List.Borders = CreateFrame("Frame", nil, List)
+	List.Borders:SetAllPoints()
+	K.CreateBorder(List.Borders)
+
 	List:Hide()
 	List:SetWidth(150)
 	List:SetFrameLevel(DropDown:GetFrameLevel() + 3)
@@ -982,19 +1028,43 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ConfigFrame:SetFrameStrata("HIGH")
 
 	local LeftWindow = CreateFrame("Frame", "KkthnxUIConfigFrameLeft", ConfigFrame)
-	LeftWindow:SetTemplate("Transparent")
+
+	LeftWindow.Backgrounds = LeftWindow:CreateTexture(nil, "BACKGROUND", -1)
+	LeftWindow.Backgrounds:SetAllPoints()
+	LeftWindow.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	LeftWindow.Borders = CreateFrame("Frame", nil, LeftWindow)
+	LeftWindow.Borders:SetAllPoints()
+	K.CreateBorder(LeftWindow.Borders)
+
 	LeftWindow:SetSize(139, Height)
 	LeftWindow:SetPoint("LEFT", ConfigFrame, 4, 0)
 	LeftWindow:EnableMouse(true)
 
 	local RightWindow = CreateFrame("Frame", "KkthnxUIConfigFrameRight", ConfigFrame)
-	RightWindow:SetTemplate("Transparent")
+
+	RightWindow.Backgrounds = RightWindow:CreateTexture(nil, "BACKGROUND", -1)
+	RightWindow.Backgrounds:SetAllPoints()
+	RightWindow.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	RightWindow.Borders = CreateFrame("Frame", nil, RightWindow)
+	RightWindow.Borders:SetAllPoints()
+	K.CreateBorder(RightWindow.Borders)
+
 	RightWindow:SetSize(300, Height)
 	RightWindow:SetPoint("RIGHT", ConfigFrame, 0, 0)
 	RightWindow:EnableMouse(true)
 
 	local TitleFrame = CreateFrame("Frame", "KkthnxUIConfigFrameTitle", ConfigFrame)
-	TitleFrame:SetTemplate("Transparent")
+
+	TitleFrame.Backgrounds = TitleFrame:CreateTexture(nil, "BACKGROUND", -1)
+	TitleFrame.Backgrounds:SetAllPoints()
+	TitleFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	TitleFrame.Borders = CreateFrame("Frame", nil, TitleFrame)
+	TitleFrame.Borders:SetAllPoints()
+	K.CreateBorder(TitleFrame.Borders)
+
 	TitleFrame:SetSize(444, 24)
 	TitleFrame:SetPoint("BOTTOM", ConfigFrame, "TOP", 2, 5)
 
@@ -1005,7 +1075,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 	TitleFrame.Text:SetShadowOffset(1.25, -1.25)
 
 	local InfoFrame = CreateFrame("Frame", "KkthnxUIConfigFrameCredit", ConfigFrame)
-	InfoFrame:SetTemplate("Transparent")
+
+	InfoFrame.Backgrounds = InfoFrame:CreateTexture(nil, "BACKGROUND", -1)
+	InfoFrame.Backgrounds:SetAllPoints()
+	InfoFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	InfoFrame.Borders = CreateFrame("Frame", nil, InfoFrame)
+	InfoFrame.Borders:SetAllPoints()
+	K.CreateBorder(InfoFrame.Borders)
+
 	InfoFrame:SetSize(444, 24)
 	InfoFrame:SetPoint("TOP", ConfigFrame, "BOTTOM", 2, -5)
 
@@ -1038,7 +1116,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	CloseButton.Text:SetShadowOffset(1.25, -1.25)
 	CloseButton.Text:SetPoint("CENTER", CloseButton)
 	CloseButton.Text:SetTextColor(1, 0, 0)
-	CloseButton.Text:SetText("|cffde5e5e" .. CLOSE .. "|r")
+	CloseButton.Text:SetText("|cffFF0000" .. CLOSE .. "|r")
 
 	local ReloadButton = CreateFrame("Button", nil, InfoFrame)
 	ReloadButton:SkinButton()
@@ -1082,6 +1160,55 @@ function KkthnxUIConfig:CreateConfigWindow()
 	GlobalButton.Text:SetPoint("CENTER", GlobalButton)
 	GlobalButton.Text:SetText("|cffffd100" .. SettingText .. "|r")
 
+	local ResetCVarsButton = CreateFrame("Button", nil, InfoFrame)
+	ResetCVarsButton:SkinButton()
+	ResetCVarsButton:SetSize(138, 22)
+	ResetCVarsButton:SetScript("OnClick", K["Install"].Step1)
+	ResetCVarsButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
+	ResetCVarsButton:SetPoint("TOP", CloseButton, "BOTTOM", 0, -5)
+
+	ResetCVarsButton.Text = ResetCVarsButton:CreateFontString(nil, "OVERLAY")
+	ResetCVarsButton.Text:SetFont(C["Media"].Font, 12)
+	ResetCVarsButton.Text:SetShadowOffset(1.25, -1.25)
+	ResetCVarsButton.Text:SetPoint("CENTER", ResetCVarsButton)
+	ResetCVarsButton.Text:SetText("|cffffd100" .. "Reset CVars" .. "|r")
+
+	local ResetChatButton = CreateFrame("Button", nil, InfoFrame)
+	ResetChatButton:SkinButton()
+	ResetChatButton:SetSize(148, 22)
+	ResetChatButton:SetScript("OnClick", K["Install"].Step2)
+	ResetChatButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
+	ResetChatButton:SetPoint("TOP", ReloadButton, "BOTTOM", 0, -5)
+
+	ResetChatButton.Text = ResetChatButton:CreateFontString(nil, "OVERLAY")
+	ResetChatButton.Text:SetFont(C["Media"].Font, 12)
+	ResetChatButton.Text:SetShadowOffset(1.25, -1.25)
+	ResetChatButton.Text:SetPoint("CENTER", ResetChatButton)
+	ResetChatButton.Text:SetText("|cffffd100" .. "Reset Chat" .. "|r")
+
+	local ResetButton = CreateFrame("Button", nil, InfoFrame)
+	ResetButton:SkinButton()
+	ResetButton:SetSize(148, 22)
+	ResetButton:SetScript("OnClick", K["Install"].ResetData)
+	ResetButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
+	ResetButton:SetPoint("LEFT", ResetChatButton, "RIGHT", 5, 0)
+
+	ResetButton.Text = ResetButton:CreateFontString(nil, "OVERLAY")
+	ResetButton.Text:SetFont(C["Media"].Font, 12)
+	ResetButton.Text:SetShadowOffset(1.25, -1.25)
+	ResetButton.Text:SetPoint("CENTER", ResetButton)
+	ResetButton.Text:SetText("|cffFF0000"..RESET_TO_DEFAULT.."|r")
+
+	if (KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete) then
+		ResetButton:Show()
+		ResetCVarsButton:Show()
+		ResetChatButton:Show()
+	else
+		ResetButton:Hide()
+		ResetCVarsButton:Hide()
+		ResetChatButton:Hide()
+	end
+
 	local LastButton
 	local ButtonCount = 0
 
@@ -1116,7 +1243,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 				Slider:SetThumbTexture(C["Media"].Texture)
 				Slider:SetOrientation("VERTICAL")
 				Slider:SetValueStep(1)
-				Slider:SetTemplate("Transparent", true) -- Preserve our textures here or the knob will look kokoooo
+
+				Slider.Backgrounds = Slider:CreateTexture(nil, "BACKGROUND", -1)
+				Slider.Backgrounds:SetAllPoints()
+				Slider.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+				Slider.Borders = CreateFrame("Frame", nil, Slider)
+				Slider.Borders:SetAllPoints()
+				K.CreateBorder(Slider.Borders)
+
 				Slider:SetMinMaxValues(0, 1)
 				Slider:SetValue(0)
 				Slider.ScrollFrame = ScrollFrame

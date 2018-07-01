@@ -1,5 +1,5 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("ItemLevelCharacter", "AceEvent-3.0", "AceHook-3.0")
+local K, C = unpack(select(2, ...))
+local Module = K:NewModule("SlotItemLevel", "AceEvent-3.0", "AceHook-3.0")
 
 -- Sourced: DiabolicUI (Goldpaw)
 
@@ -10,13 +10,11 @@ local string_find = string.find
 local string_gsub = string.gsub
 local string_match = string.match
 local tonumber = tonumber
-local unpack = unpack
 
 -- WoW API
 local GetAchievementInfo = _G.GetAchievementInfo
 -- local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetInventorySlotInfo = _G.GetInventorySlotInfo
 local GetItemInfo = _G.GetItemInfo
 
 local CRUCIBLE = select(4, GetAchievementInfo(12072))

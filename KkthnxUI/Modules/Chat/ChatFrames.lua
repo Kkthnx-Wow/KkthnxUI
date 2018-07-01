@@ -214,16 +214,16 @@ function Module:UpdateEditBoxColor()
 		local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
 
 		if ID == 0 then
-			EditBox:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			EditBox.Border:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		else
-			EditBox:SetBackdropBorderColor(
+			EditBox.Border:SetBackdropBorderColor(
 				ChatTypeInfo[ChatType .. ID].r,
 				ChatTypeInfo[ChatType .. ID].g,
 				ChatTypeInfo[ChatType .. ID].b
 			)
 		end
 	else
-		EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b)
+		EditBox.Border:SetBackdropBorderColor(ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b)
 	end
 end
 
@@ -313,8 +313,15 @@ function Module:StyleFrame(frame)
 	EditBox:HookScript("OnTextChanged", OnTextChanged)
 
 	-- Create our own texture for edit box
-	EditBox:SetTemplate("Transparent", false)
 	EditBox:SetHeight(22)
+
+	EditBox.Background = EditBox:CreateTexture(nil, "BACKGROUND", -1)
+	EditBox.Background:SetAllPoints()
+	EditBox.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	EditBox.Border = CreateFrame("Frame", nil, EditBox)
+	EditBox.Border:SetAllPoints()
+	K.CreateBorder(EditBox.Border)
 
 	-- Hide textures
 	for i = 1, #CHAT_FRAME_TEXTURES do

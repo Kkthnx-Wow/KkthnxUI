@@ -2,7 +2,10 @@
 <Ui
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Miscellaneous -->
+    <Script file="Core.lua"/>
+
     <Script file="AFKCam.lua"/>
+    <Script file="AlignGrid.lua"/>
     <Script file="ChatBubble.lua"/>
     <Script file="ColorTextures.lua"/>
     <Script file="Durability.lua"/>
@@ -10,7 +13,6 @@
     <Script file="Filger.lua"/>
     <Script file="FriendsListPlus.lua"/>
     <Script file="KillingBlow.lua"/>
-    <Script file="Miscellaneous.lua"/>
     <Script file="MovableFrames.lua"/>
     <Script file="ProfessionTabs.lua"/>
     <Script file="PvPEmote.lua"/>

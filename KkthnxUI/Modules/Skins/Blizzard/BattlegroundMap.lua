@@ -1,11 +1,9 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
--- Lua
 local _G = _G
 local print = print
 
--- API
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
@@ -14,13 +12,6 @@ local ToggleDropDownMenu = _G.ToggleDropDownMenu
 local UIDropDownMenu_AddButton = _G.UIDropDownMenu_AddButton
 local UIDropDownMenu_CreateInfo = _G.UIDropDownMenu_CreateInfo
 local UIDropDownMenu_Initialize = _G.UIDropDownMenu_Initialize
-
--- GLOBALS: UIParent, SHOW_BATTLEFIELDMINIMAP_PLAYERS, LOCK_BATTLEFIELDMINIMAP, BATTLEFIELDMINIMAP_OPACITY_LABEL
--- GLOBALS: BattlefieldMinimapTabDropDown_TogglePlayers, BattlefieldMinimapTabDropDown_ToggleLock
--- GLOBALS: BattlefieldMinimapTabDropDown_ShowOpacity, BattlefieldMinimap_UpdateOpacity
--- GLOBALS: UIDROPDOWNMENU_MENU_LEVEL, BattlefieldMinimapCloseButton, BattlefieldMinimapOptions
--- GLOBALS: BattlefieldMinimapCorner, BattlefieldMinimapBackground, BattlefieldMinimapTab, BattlefieldMinimapTabLeft
--- GLOBALS: BattlefieldMinimapTabMiddle, BattlefieldMinimapTabRight, OpacityFrame
 
 local scale = 1.0
 local min, max = 0.5, 3.0
@@ -36,9 +27,18 @@ local function SkinBattlefieldMinimap()
 	BattlefieldMinimapTabMiddle:Kill()
 	BattlefieldMinimapTabRight:Kill()
 
-	BattlefieldMinimap:CreateBackdrop("Transparent")
-	BattlefieldMinimap.Backdrop:SetPoint("BOTTOMRIGHT", -6, 4)
-	BattlefieldMinimap.Backdrop:SetFrameLevel(BattlefieldMinimap:GetFrameLevel()) -- ??
+	BattlefieldMinimap.Backgrounds = BattlefieldMinimap:CreateTexture(nil, "BACKGROUND", -2)
+	BattlefieldMinimap.Backgrounds:SetAllPoints()
+	BattlefieldMinimap.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	BattlefieldMinimap.Borders = CreateFrame("Frame", nil, BattlefieldMinimap)
+	BattlefieldMinimap.Borders:SetFrameLevel(BattlefieldMinimap:GetFrameLevel() + 1)
+	BattlefieldMinimap.Borders:SetAllPoints()
+
+	K.CreateBorder(BattlefieldMinimap.Borders)
+
+	BattlefieldMinimap.Backgrounds:SetPoint("BOTTOMRIGHT", -6, 4)
+	BattlefieldMinimap.Borders:SetPoint("BOTTOMRIGHT", -6, 4)
 	BattlefieldMinimap:SetFrameStrata("LOW")
 	BattlefieldMinimapCloseButton:ClearAllPoints()
 	BattlefieldMinimapCloseButton:SetPoint("TOPRIGHT", -4, 0)
@@ -49,7 +49,7 @@ local function SkinBattlefieldMinimap()
 	BattlefieldMinimap:SetMovable(true)
 	BattlefieldMinimap:EnableMouseWheel(true)
 
-	BattlefieldMinimap:SetScript("OnMouseWheel", function(frame, delta)
+	BattlefieldMinimap:SetScript("OnMouseWheel", function(_, delta)
 		if not IsAltKeyDown() or InCombatLockdown() then
 			print("You are either in combat or not holding down alt when try to scale the BattlefieldMinimap!")
 			return
@@ -106,22 +106,27 @@ local function SkinBattlefieldMinimap()
 		if btn == "LeftButton" then
 			BattlefieldMinimapTab:StopMovingOrSizing()
 			BattlefieldMinimapTab:SetUserPlaced(true)
-			if OpacityFrame:IsShown() then OpacityFrame:Hide() end -- seem to be a bug with default ui in 4.0, we hide it on next click
+			if OpacityFrame:IsShown() then
+				OpacityFrame:Hide()
+			end -- seem to be a bug with default ui in 4.0, we hide it on next click
 		elseif btn == "RightButton" then
 			ToggleDropDownMenu(1, nil, UIBattlefieldMinimapTabDropDown, self:GetName(), 0, -4)
-			if OpacityFrame:IsShown() then OpacityFrame:Hide() end -- seem to be a bug with default ui in 4.0, we hide it on next click
+			if OpacityFrame:IsShown() then
+				OpacityFrame:Hide()
+			end -- seem to be a bug with default ui in 4.0, we hide it on next click
 		end
 	end)
 
-	BattlefieldMinimap:SetScript("OnMouseDown", function(self, btn)
+	BattlefieldMinimap:SetScript("OnMouseDown", function(_, btn)
 		if btn == "LeftButton" and (BattlefieldMinimapOptions and not BattlefieldMinimapOptions.locked) then
 			BattlefieldMinimapTab:StartMoving()
 		end
 	end)
 
 	hooksecurefunc("BattlefieldMinimap_UpdateOpacity", function()
-		local alpha = 1.0 - (BattlefieldMinimapOptions and BattlefieldMinimapOptions.opacity or 0);
-		BattlefieldMinimap.Backdrop:SetAlpha(alpha)
+		local alpha = 1.0 - (BattlefieldMinimapOptions and BattlefieldMinimapOptions.opacity or 0)
+		BattlefieldMinimap.Backgrounds:SetAlpha(alpha)
+		BattlefieldMinimap.Borders:SetAlpha(alpha)
 	end)
 
 	local oldAlpha

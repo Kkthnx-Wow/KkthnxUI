@@ -1,22 +1,25 @@
 local K = unpack(select(2, ...))
-local Module = K:NewModule("BlizzardFixes", "AceEvent-3.0", "AceHook-3.0")
+local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
 
-local collectgarbage = _G.collectgarbage
 local CreateFrame = _G.CreateFrame
-local hooksecurefunc = _G.hooksecurefunc
+local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
+local blizzardCollectgarbage = _G.collectgarbage
+local hooksecurefunc = _G.hooksecurefunc
+local GameTooltip = _G.GameTooltip
 
-local blizzardCollectgarbage = collectgarbage
+local TooltipBagBug = false
 
 -- Garbage collection is being overused and misused,
--- and it"s causing lag and performance drops.
+-- and it's causing lag and performance drops.
 blizzardCollectgarbage("setpause", 110)
 blizzardCollectgarbage("setstepmul", 200)
-function Module:CollectGarbage(opt, arg)
+
+function _G.collectgarbage(opt, arg)
 	if (opt == "collect") or (opt == nil) then
 	elseif (opt == "count") then
 		return blizzardCollectgarbage(opt, arg)
@@ -42,8 +45,7 @@ end
 -- Memory usage is unrelated to performance, and tracking memory usage does not track "bad" addons.
 -- Developers can uncomment this line to enable the functionality when looking for memory leaks,
 -- but for the average end-user this is a completely pointless thing to track.
-_G.UpdateAddOnMemoryUsage = function()
-end
+_G.UpdateAddOnMemoryUsage = function() end
 
 -- Misclicks for some popups
 function Module:MisclickPopups()
@@ -56,7 +58,9 @@ function Module:MisclickPopups()
 	StaticPopupDialogs.DELETE_ITEM.enterClicksFirstButton = true
 	StaticPopupDialogs.DELETE_GOOD_ITEM = StaticPopupDialogs.DELETE_ITEM
 	StaticPopupDialogs.CONFIRM_PURCHASE_TOKEN_ITEM.enterClicksFirstButton = true
+
 	_G.PetBattleQueueReadyFrame.hideOnEscape = false
+
 	if (PVPReadyDialog) then
 		PVPReadyDialog.leaveButton:Hide()
 		PVPReadyDialog.enterButton:ClearAllPoints()
@@ -66,17 +70,24 @@ function Module:MisclickPopups()
 end
 
 -- Fix blank tooltip
-local bug = nil
 function Module:FixTooltip()
-	if _G.GameTooltip:IsShown() then
-		bug = true
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
+	if GameTooltip:IsShown() then
+		TooltipBagBug = true
 	end
 end
 
 function Module:BAG_UPDATE_DELAYED()
+	if GameTooltip:IsForbidden() then
+		return
+	end
+
 	if StuffingFrameBags and StuffingFrameBags:IsShown() then
 		if GameTooltip:IsShown() then
-			bug = true
+			TooltipBagBug = true
 		end
 	end
 end
@@ -86,51 +97,54 @@ function Module:BugTooltipCleared(tt)
 		return
 	end
 
-	if bug and tt:NumLines() == 0 then
+	if TooltipBagBug and tt:NumLines() == 0 then
 		tt:Hide()
-		bug = false
+		TooltipBagBug = false
 	end
 end
 
-function Module:HideFireStormHead(event, addon)
-	if K.Realm == "Sylvanas" and K.Name == "Superfreak" or K.Name == "Kkthnx" and K.WoWBuild <= 26365 then
-		if addon == "Blizzard_TalkingHeadUI" then
-			hooksecurefunc(
-				"TalkingHeadFrame_PlayCurrent",
-				function()
-					TalkingHeadFrame:Hide()
-				end
-			)
-
+function Module:HideTalkingHead()
+	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
+			TalkingHeadFrame:Hide()
+		end)
+	else
+		local ForceLoad = CreateFrame("Frame")
+		ForceLoad:RegisterEvent("PLAYER_ENTERING_WORLD")
+		ForceLoad:SetScript("OnEvent", function(self, event)
 			self:UnregisterEvent(event)
-		end
+			TalkingHead_LoadUI()
+		end)
 	end
 end
 
 function Module:OnEnable()
-	self:CollectGarbage()
 	self:MisclickPopups()
 
 	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "FixTooltip")
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltip")
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 
-	if K.Realm == "Sylvanas" and K.Name == "Superfreak" or K.Name == "Kkthnx" and K.WoWBuild <= 26365 then
-		self:RegisterEvent("ADDON_LOADED", "HideFireStormHead")
-	end
-
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "BugTooltipCleared")
+
+	if K.Realm == "Sylvanas" and K.Level == MAX_PLAYER_LEVEL and K.Legion735 then
+		self:RegisterEvent("ADDON_LOADED", "HideTalkingHead")
+	end
 
 	-- Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)
 	HideUIPanel(SpellBookFrame)
 
-	CreateFrame("Frame"):SetScript(
-		"OnUpdate",
-		function()
-			if LFRBrowseFrame.timeToClear then
-				LFRBrowseFrame.timeToClear = nil
-			end
+	CreateFrame("Frame"):SetScript("OnUpdate", function()
+		if LFRBrowseFrame.timeToClear then
+			LFRBrowseFrame.timeToClear = nil
 		end
-	)
+	end)
+end
+
+function Module:OnDisable()
+	self:UnregisterEvent("UPDATE_BONUS_ACTIONBAR")
+	self:UnregisterEvent("ACTIONBAR_PAGE_CHANGED")
+	self:UnregisterEvent("BAG_UPDATE_DELAYED")
+	self:UnregisterEvent("ADDON_LOADED")
 end

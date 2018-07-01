@@ -155,13 +155,14 @@ end
 function GroupLoot:CreateRollFrame()
 	local frame = CreateFrame("Frame", nil, UIParent)
 	frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
-	frame:SetTemplate("Transparent", true)
-	frame:SetBackdropColor(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+
+	frame.Backgrounds = frame:CreateTexture(nil, "BACKGROUND", -2)
+	frame.Backgrounds:SetAllPoints()
+	frame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(frame)
+
+	frame:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
 	frame:SetScript("OnEvent", OnEvent)
 	frame:SetFrameStrata("MEDIUM")
 	frame:SetFrameLevel(10)
@@ -171,13 +172,14 @@ function GroupLoot:CreateRollFrame()
 	local button = CreateFrame("Button", nil, frame)
 	button:SetPoint("RIGHT", frame, "LEFT", -(2 * 3), 0)
 	button:SetSize(FRAME_HEIGHT + 2, FRAME_HEIGHT)
-	button:SetTemplate("Transparent", true)
-	button:SetBackdropColor(
-		C["Media"].BackdropColor[1],
-		C["Media"].BackdropColor[2],
-		C["Media"].BackdropColor[3],
-		C["Media"].BackdropColor[4]
-	)
+
+	button.Backgrounds = button:CreateTexture(nil, "BACKGROUND", -2)
+	button.Backgrounds:SetAllPoints()
+	button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(button)
+
+	button:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnEnter", SetItemTip)
 	button:SetScript("OnLeave", HideTip2)

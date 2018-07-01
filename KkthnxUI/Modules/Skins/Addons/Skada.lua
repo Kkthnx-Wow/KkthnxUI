@@ -1,75 +1,83 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
+local ModuleSkins = K:GetModule("Skins")
 if C["Skins"].Skada ~= true or not K.CheckAddOnState("Skada") then
 	return
 end
 
 local _G = _G
+local table_insert = table.insert
 
-local AcceptFrame = _G.AcceptFrame
 local CreateFrame = _G.CreateFrame
-local NO = _G.NO
-local Skada = _G.Skada
-local UIParent = _G.UIParent
-local YES = _G.YES
+local hooksecurefunc = _G.hooksecurefunc
 
-local SkadaFont = K.GetFont(C["Skins"].Font)
-local SkadaTexture = K.GetTexture(C["Skins"].Texture)
-
-function K.AcceptFrame(MainText, Function)
-	if not AcceptFrame then
-		AcceptFrame = CreateFrame("Frame", "AcceptFrame", UIParent)
-		AcceptFrame:SetTemplate("Transparent")
-		AcceptFrame:SetPoint("CENTER", UIParent, "CENTER")
-		AcceptFrame:SetFrameStrata("DIALOG")
-		AcceptFrame.Text = AcceptFrame:CreateFontString(nil, "OVERLAY")
-		AcceptFrame.Text:SetFont(C["Media"].Font, 14)
-		AcceptFrame.Text:SetPoint("TOP", AcceptFrame, "TOP", 0, -10)
-		AcceptFrame.Accept = CreateFrame("Button", nil, AcceptFrame, "OptionsButtonTemplate")
-		AcceptFrame.Accept:SkinButton()
-		AcceptFrame.Accept:SetSize(70, 24)
-		AcceptFrame.Accept:SetPoint("RIGHT", AcceptFrame, "BOTTOM", -10, 20)
-		AcceptFrame.Accept:SetFormattedText("|cFFFFFFFF%s|r", YES)
-		AcceptFrame.Close = CreateFrame("Button", nil, AcceptFrame, "OptionsButtonTemplate")
-		AcceptFrame.Close:SkinButton()
-		AcceptFrame.Close:SetSize(70, 24)
-		AcceptFrame.Close:SetPoint("LEFT", AcceptFrame, "BOTTOM", 10, 20)
-		AcceptFrame.Close:SetScript("OnClick", function(self) self:GetParent():Hide() end)
-		AcceptFrame.Close:SetFormattedText("|cFFFFFFFF%s|r", NO)
+local function SkinSkada()
+	function Skada:ShowPopup()
+		ModuleSkins:AcceptFrame("Do you want to reset Skada?", function(self)
+			Skada:Reset()
+			self:GetParent():Hide()
+		end)
 	end
-	AcceptFrame.Text:SetText(MainText)
-	AcceptFrame:SetSize(AcceptFrame.Text:GetStringWidth() + 100, AcceptFrame.Text:GetStringHeight() + 60)
-	AcceptFrame.Accept:SetScript("OnClick", Function)
-	AcceptFrame:Show()
-end
 
-function Skada:ShowPopup()
-	K.AcceptFrame(L.Skins.Skada_Reset, function(self)
-		Skada:Reset()
-		self:GetParent():Hide()
+	local SkadaDisplayBar = Skada.displays["bar"]
+
+	hooksecurefunc(SkadaDisplayBar, "AddDisplayOptions", function(_, _, options)
+		options.baroptions.args.barspacing = nil
+		options.titleoptions.args.texture = nil
+		options.titleoptions.args.bordertexture = nil
+		options.titleoptions.args.thickness = nil
+		options.titleoptions.args.margin = nil
+		options.titleoptions.args.color = nil
+		options.windowoptions = nil
+	end)
+
+	hooksecurefunc(SkadaDisplayBar, "ApplySettings", function(_, win)
+		local skada = win.bargroup
+		skada:SetSpacing(1)
+		skada:SetFrameLevel(5)
+		skada:SetBackdrop(nil)
+		if win.db.enabletitle then
+			if not skada.button.isSkinned then
+				skada.button.Background = skada.button:CreateTexture(nil, "BACKGROUND", -1)
+				skada.button.Background:SetAllPoints(skada.button)
+				skada.button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+				skada.button.isSkinned = true
+			end
+
+			local color = win.db.title.color
+			skada.button:SetBackdropColor(color.r, color.g, color.b, color.a or 1)
+		end
+		if not skada.Background then
+			skada.Background = skada:CreateTexture(nil, "BACKGROUND", -1)
+			skada.Background:SetAllPoints(skada)
+			skada.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+			skada.Borders = CreateFrame("Frame", nil, skada)
+			skada.Borders:SetAllPoints(skada)
+			K.CreateBorder(skada.Borders)
+		end
+		if skada.Background then
+			skada.Background:ClearAllPoints()
+			if win.db.reversegrowth then
+				skada.Background:SetPoint("TOPLEFT", skada, "TOPLEFT", -1, 1)
+				skada.Background:SetPoint("BOTTOMRIGHT", win.db.enabletitle and skada.button or skada, "BOTTOMRIGHT", 1, -1)
+
+				skada.Borders:SetPoint("TOPLEFT", skada, "TOPLEFT"-1, 1)
+				skada.Borders:SetPoint("BOTTOMRIGHT", win.db.enabletitle and skada.button or skada, "BOTTOMRIGHT", 1, -1)
+			else
+				skada.Background:SetPoint("TOPLEFT", win.db.enabletitle and skada.button or skada, "TOPLEFT", -1, 1)
+				skada.Background:SetPoint("BOTTOMRIGHT", skada, "BOTTOMRIGHT", 1, -1)
+
+				skada.Borders:SetPoint("TOPLEFT", win.db.enabletitle and skada.button or skada, "TOPLEFT", -1, 1)
+				skada.Borders:SetPoint("BOTTOMRIGHT", skada, "BOTTOMRIGHT", 1, -1)
+			end
+		end
 	end)
 end
 
-local barmod = Skada.displays["bar"]
+-- table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
 
-barmod.ApplySettings_ = barmod.ApplySettings
-function barmod.ApplySettings(self, win)
-	barmod.ApplySettings_(self, win)
-
-	local skada = win.bargroup
-
-	skada:SetTexture(SkadaTexture)
-	skada:SetSpacing(1, 1)
-
-	skada:SetBackdrop(nil)
-	skada.borderFrame:SetBackdrop(nil)
-
-	if not skada.border then
-		skada.border = CreateFrame("Frame", "KkthnxUI"..skada:GetName().."Skin", skada)
-		skada.border:SetAllPoints(skada.borderFrame)
-		skada.border:SetTemplate("Transparent")
-	end
-end
-
-for _, window in ipairs(Skada:GetWindows()) do
-	window:UpdateDisplay()
+if IsAddOnLoaded("Skada") then
+	table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
+else
+	Module.SkinFuncs["Skada"] = SkinSkada
 end

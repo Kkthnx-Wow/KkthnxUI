@@ -75,8 +75,15 @@ function Module:OnInitialize()
 	vehicle:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 	vehicle:GetPushedTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
 	vehicle:GetPushedTexture():SetAllPoints()
-	vehicle:SetTemplate("Transparent", true)
 	vehicle:RegisterForClicks("AnyUp")
+
+	vehicle.Background = vehicle:CreateTexture(nil, "BACKGROUND", -1)
+	vehicle.Background:SetAllPoints()
+	vehicle.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	vehicle.Border = CreateFrame("Frame", nil, vehicle)
+	vehicle.Border:SetAllPoints(vehicle)
+	K.CreateBorder(vehicle.Border)
 
 	vehicle:SetScript("OnClick", Vehicle_OnClick)
 	vehicle:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)

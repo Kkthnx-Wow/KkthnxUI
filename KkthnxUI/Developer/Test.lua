@@ -18,11 +18,14 @@ local hooksecurefunc = _G.hooksecurefunc
 local ResetCPUUsage = _G.ResetCPUUsage
 local UpdateAddOnCPUUsage = _G.UpdateAddOnCPUUsage
 
-hooksecurefunc("CooldownFrame_Set", function(self)
-	if self.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL then
-		self:SetCooldown(0, 0)
+hooksecurefunc(
+	"CooldownFrame_Set",
+	function(self)
+		if self.currentCooldownType == COOLDOWN_TYPE_LOSS_OF_CONTROL then
+			self:SetCooldown(0, 0)
+		end
 	end
-end)
+)
 
 -- CPU Stuff
 local CPU_USAGE = {}
@@ -42,7 +45,10 @@ local function CompareCPUDiff(showall, minCalls)
 			newUsage, calls = GetFunctionCPUUsage(mod[newFunc], true)
 			differance = newUsage - oldUsage
 			if showall and (calls > minCalls) then
-				K.Print("Name("..name..") Calls("..calls..") Diff("..(differance > 0 and string_format("%.3f", differance) or 0)..")")
+				K.Print(
+					"Name(" ..
+						name .. ") Calls(" .. calls .. ") Diff(" .. (differance > 0 and string_format("%.3f", differance) or 0) .. ")"
+				)
 			end
 			if (differance > greatestDiff) and calls > minCalls then
 				greatestName, greatestUsage, greatestCalls, greatestDiff = name, newUsage, calls, differance
@@ -51,7 +57,12 @@ local function CompareCPUDiff(showall, minCalls)
 	end
 
 	if greatestName then
-		K.Print(greatestName.. " had the CPU usage difference of: "..(greatestUsage > 0 and string_format("%.3f", greatestUsage) or 0).."ms. And has been called ".. greatestCalls.." times.")
+		K.Print(
+			greatestName ..
+				" had the CPU usage difference of: " ..
+					(greatestUsage > 0 and string_format("%.3f", greatestUsage) or 0) ..
+						"ms. And has been called " .. greatestCalls .. " times."
+		)
 	else
 		K.Print("CPU Usage: No CPU Usage differences found.")
 	end
@@ -61,7 +72,9 @@ end
 
 function K:GetTopCPUFunc(msg)
 	if not GetCVarBool("scriptProfile") then
-		K.Print("For `/cpuusage` to work, you need to enable script profiling via: `/console scriptProfile 1` then reload. Disable after testing by setting it back to 0.")
+		K.Print(
+			"For `/cpuusage` to work, you need to enable script profiling via: `/console scriptProfile 1` then reload. Disable after testing by setting it back to 0."
+		)
 		return
 	end
 
@@ -77,7 +90,7 @@ function K:GetTopCPUFunc(msg)
 		for moduName, modu in pairs(self.modules) do
 			for funcName, func in pairs(modu) do
 				if (funcName ~= "GetModule") and (type(func) == "function") then
-					CPU_USAGE[moduName..":"..funcName] = GetFunctionCPUUsage(func, true)
+					CPU_USAGE[moduName .. ":" .. funcName] = GetFunctionCPUUsage(func, true)
 				end
 			end
 		end
@@ -85,7 +98,7 @@ function K:GetTopCPUFunc(msg)
 		if not checkCore then
 			mod = self:GetModule(module, true)
 			if not mod then
-				self:Print(module.." not found, falling back to checking core.")
+				self:Print(module .. " not found, falling back to checking core.")
 				mod, checkCore = self, "K"
 			end
 		else
@@ -93,13 +106,17 @@ function K:GetTopCPUFunc(msg)
 		end
 		for name, func in pairs(mod) do
 			if (name ~= "GetModule") and type(func) == "function" then
-				CPU_USAGE[(checkCore or module)..":"..name] = GetFunctionCPUUsage(func, true)
+				CPU_USAGE[(checkCore or module) .. ":" .. name] = GetFunctionCPUUsage(func, true)
 			end
 		end
 	end
 
 	self:Delay(delay, CompareCPUDiff, showall, minCalls)
-	self:Print("Calculating CPU Usage differences (module: "..(checkCore or module)..", showall: "..tostring(showall)..", minCalls: "..tostring(minCalls)..", delay: "..tostring(delay)..")")
+	self:Print(
+		"Calculating CPU Usage differences (module: " ..
+			(checkCore or module) ..
+				", showall: " .. tostring(showall) .. ", minCalls: " .. tostring(minCalls) .. ", delay: " .. tostring(delay) .. ")"
+	)
 end
 
 local num_frames = 0
@@ -114,7 +131,9 @@ f:SetScript("OnUpdate", OnUpdate)
 local toggleMode, debugTimer = false, 0
 function K:GetCPUImpact()
 	if not GetCVarBool("scriptProfile") then
-		K.Print("For `/cpuimpact` to work, you need to enable script profiling via: `/console scriptProfile 1` then reload. Disable after testing by setting it back to 0.")
+		K.Print(
+			"For `/cpuimpact` to work, you need to enable script profiling via: `/console scriptProfile 1` then reload. Disable after testing by setting it back to 0."
+		)
 		return
 	end
 
@@ -128,8 +147,15 @@ function K:GetCPUImpact()
 		local ms_passed = debugprofilestop() - debugTimer
 		UpdateAddOnCPUUsage()
 
-		local per, passed = ((num_frames == 0 and 0) or (GetAddOnCPUUsage("KkthnxUI") / num_frames)), ((num_frames == 0 and 0) or (ms_passed / num_frames))
-		self:Print("Consumed "..(per and per > 0 and string_format("%.3f", per) or 0).."ms per frame. Each frame took "..(passed and passed > 0 and string_format("%.3f", passed) or 0).."ms to render.")
+		local per, passed =
+			((num_frames == 0 and 0) or (GetAddOnCPUUsage("KkthnxUI") / num_frames)),
+			((num_frames == 0 and 0) or (ms_passed / num_frames))
+		self:Print(
+			"Consumed " ..
+				(per and per > 0 and string_format("%.3f", per) or 0) ..
+					"ms per frame. Each frame took " ..
+						(passed and passed > 0 and string_format("%.3f", passed) or 0) .. "ms to render."
+		)
 		toggleMode = false
 	end
 end

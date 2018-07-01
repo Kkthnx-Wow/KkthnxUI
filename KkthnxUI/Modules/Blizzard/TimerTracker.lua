@@ -22,7 +22,12 @@ local function SkinIt(bar)
 	bar:SetSize(222, 24)
 	bar:SetStatusBarTexture(BlizzTimerTexture)
 	bar:SetStatusBarColor(170 / 255, 10 / 255, 10 / 255)
-	bar:SetTemplate("Transparent", true)
+
+	bar.Backgrounds = bar:CreateTexture(nil, "BACKGROUND", -2)
+	bar.Backgrounds:SetAllPoints()
+	bar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(bar)
 
 	bar.spark = bar:CreateTexture(nil, "OVERLAY")
 	bar.spark:SetWidth(128)
