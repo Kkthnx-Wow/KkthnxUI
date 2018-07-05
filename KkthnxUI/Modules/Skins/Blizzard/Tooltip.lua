@@ -70,6 +70,7 @@ local function SkinTooltip()
 
     local GameTooltip = _G["GameTooltip"]
     local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
+
     local tooltips = {
         AutoCompleteBox,
         FriendsTooltip,
@@ -99,10 +100,9 @@ local function SkinTooltip()
 
     GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", -1)
 	GameTooltipStatusBar.Background:SetAllPoints()
-	GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
+    GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
 
     Module:SecureHook("GameTooltip_ShowStatusBar", "GameTooltip_ShowStatusBar")
-
     Module:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
     Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
     Module:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")

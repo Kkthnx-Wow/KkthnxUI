@@ -140,20 +140,12 @@ function Module:CreateRaidTargetIndicator()
 	self.RaidTargetIndicator:SetSize(16, 16)
 end
 
-function Module:CreateResurrectIndicator()
-	self.ResInfo = self.Portrait.Borders:CreateFontString(nil, "OVERLAY")
-	self.ResInfo:SetFont(C["Media"].Font, self.Portrait:GetWidth() / 3.5, "")
-	self.ResInfo:SetShadowOffset(K.Mult, -K.Mult)
-	self.ResInfo:SetPoint("CENTER", self.Portrait, "CENTER", 0, 0)
-end
-
-function Module:CreateAFKIndicator()
-	self.AFK = self.Health:CreateFontString(nil, "OVERLAY")
-	self.AFK:SetFont(C["Media"].Font, 11, "")
-	self.AFK:SetPoint("BOTTOM", 0, -8)
-	self.AFK:SetShadowOffset(1.25, -1.25)
-	self.AFK.fontFormat = "AFK %s:%s"
-end
+-- function Module:CreateResurrectIndicator()
+-- 	self.ResInfo = self.Portrait.Borders:CreateFontString(nil, "OVERLAY")
+-- 	self.ResInfo:SetFont(C["Media"].Font, self.Portrait:GetWidth() / 3.5, "")
+-- 	self.ResInfo:SetShadowOffset(K.Mult, -K.Mult)
+-- 	self.ResInfo:SetPoint("CENTER", self.Portrait, "CENTER", 0, 0)
+-- end
 
 function Module:CreatePvPIndicator(unit)
 	self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")

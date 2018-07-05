@@ -29,7 +29,6 @@ local PixelPerfect = CreateFrame("Frame")
 PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
 PixelPerfect:RegisterEvent("CINEMATIC_STOP")
 PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
-PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
 PixelPerfect:SetScript("OnEvent", function(self, event)
 	-- Prevent a C stack overflow
 	if IsLocked then
@@ -67,8 +66,8 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 
 	-- Allow 4K and WQHD resolution to have an uiScale lower than 0.64, which is
 	-- The lowest value of UIParent scale by default
-	if (C["General"].UIScale < 0.64) then
-		UIParent:SetScale(C["General"].UIScale)
+	if C["General"].UIScale < 0.64 then
+		C["General"].UIScale = C["General"].UIScale + (C["General"].UIScale / 3)
 	end
 
 	if event == "PLAYER_ENTERING_WORLD" then
@@ -76,6 +75,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED")
 
 	IsLocked = false
 end)

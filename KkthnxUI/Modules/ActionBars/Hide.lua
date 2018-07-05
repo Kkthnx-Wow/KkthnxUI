@@ -1,6 +1,21 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("HideBlizzard", "AceHook-3.0", "AceEvent-3.0")
 
+local _G = _G
+
+local MainMenuBar, MainMenuBarArtFrame = _G.MainMenuBar, _G.MainMenuBarArtFrame
+local OverrideActionBar = _G.OverrideActionBar
+local PossessBarFrame = _G.PossessBarFrame
+local PetActionBarFrame = _G.PetActionBarFrame
+local ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight = _G.ShapeshiftBarLeft, _G.ShapeshiftBarMiddle, _G.ShapeshiftBarRight
+
+Module.BarFrames = {
+	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
+	PossessBarFrame, PetActionBarFrame, EJMicroButtonAlert,
+	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
+	TalentMicroButtonAlert, CollectionsMicroButtonAlert
+}
+
 function Module:IconIntroTracker_Toggle()
 	if C["ActionBar"].AddNewSpells then
 		IconIntroTracker:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR")
@@ -14,86 +29,62 @@ function Module:IconIntroTracker_Toggle()
 end
 
 function Module:DisableBlizzard()
-	local UIHider = K.UIFrameHider
+	local Hider = K.UIFrameHider
 
-	UIPARENT_MANAGED_FRAME_POSITIONS["MULTICASTACTIONBAR_YPOS"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MainMenuBar"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomLeft"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarBottomRight"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarLeft"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MultiBarRight"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MultiCastActionBarFrame"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["PossessBarFrame"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["ShapeshiftBarFrame"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["StanceBarFrame"] = nil
-
-	ArtifactWatchBar:SetParent(UIHider)
-	HonorWatchBar:SetParent(UIHider)
-
-	for i = 1, 12 do
-		if _G["OverrideActionBarButton"..i] then
-			_G["OverrideActionBarButton"..i]:Hide()
-			_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
-			_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
-		end
+	MainMenuBarRightEndCap.GetRight = function()
+		return 0
 	end
 
-	ActionBarController:UnregisterAllEvents()
-	ActionBarController:RegisterEvent("UPDATE_EXTRA_ACTIONBAR")
-
-	MainMenuBar:EnableMouse(false)
-	MainMenuBar:SetAlpha(0)
-	MainMenuExpBar:UnregisterAllEvents()
-	MainMenuExpBar:Hide()
-	MainMenuExpBar:SetParent(UIHider)
-
-	for i = 1, MainMenuBar:GetNumChildren() do
-		local child = select(i, MainMenuBar:GetChildren())
-		if child then
-			child:UnregisterAllEvents()
-			child:Hide()
-			child:SetParent(UIHider)
-		end
+	MainMenuBar.ChangeMenuBarSizeAndPosition = function()
+		return
 	end
 
-	ReputationWatchBar:UnregisterAllEvents()
-	ReputationWatchBar:Hide()
-	ReputationWatchBar:SetParent(UIHider)
+	MinimapCluster.GetBottom = function()
+		return 999999999
+	end
 
-	MainMenuBarArtFrame:UnregisterEvent("ACTIONBAR_PAGE_CHANGED")
-	MainMenuBarArtFrame:UnregisterEvent("ADDON_LOADED")
-	MainMenuBarArtFrame:Hide()
-	MainMenuBarArtFrame:SetParent(UIHider)
+	SetCVar("alwaysShowActionBars", 1)
 
-	StanceBarFrame:UnregisterAllEvents()
-	StanceBarFrame:Hide()
-	StanceBarFrame:SetParent(UIHider)
+	for _, frame in pairs(Module.BarFrames) do
+		frame:UnregisterAllEvents()
+		frame.ignoreFramePositionManager = true
+		frame:SetParent(Hider)
+	end
 
-	OverrideActionBar:UnregisterAllEvents()
-	OverrideActionBar:Hide()
-	OverrideActionBar:SetParent(UIHider)
+	for i = 1, 6 do
+		local Button = _G["OverrideActionBarButton"..i]
 
-	PossessBarFrame:UnregisterAllEvents()
-	PossessBarFrame:Hide()
-	PossessBarFrame:SetParent(UIHider)
+		Button:UnregisterAllEvents()
+		Button:SetAttribute("statehidden", true)
+		Button:SetAttribute("showgrid", 1)
+	end
 
-	PetActionBarFrame:UnregisterAllEvents()
-	PetActionBarFrame:Hide()
-	PetActionBarFrame:SetParent(UIHider)
+	hooksecurefunc("TalentFrame_LoadUI", function()
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	end)
+
+	hooksecurefunc("ActionButton_OnEvent", function(self, event)
+		if (event == "PLAYER_ENTERING_WORLD") then
+			self:UnregisterEvent("ACTIONBAR_SHOWGRID")
+			self:UnregisterEvent("ACTIONBAR_HIDEGRID")
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+		end
+	end)
+
+	MainMenuBar.slideOut.IsPlaying = function()
+		return true
+	end
 
 	self:IconIntroTracker_Toggle()
 
-	if PlayerTalentFrame then
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
-			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		end)
-	end
+	-- Avoid Hiding Buttons on open/close spellbook
+	MultiActionBar_HideAllGrids = function() end
+	MultiActionBar_ShowAllGrids = function() end
+
+	ActionBarButtonEventsFrame:UnregisterEvent("ACTIONBAR_HIDEGRID")
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	if C["ActionBar"].Enable ~= true then
 		return
 	end

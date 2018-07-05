@@ -208,7 +208,7 @@ function Module:CreateTarget()
 	Module.CreateQuestIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
-	Module.CreateResurrectIndicator(self)
+	-- Module.CreateResurrectIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "target")
 

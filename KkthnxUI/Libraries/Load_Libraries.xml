@@ -4,7 +4,6 @@
     <Script file="LibStub\LibStub.lua"/>
     <Script file="CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
     <Script file="LibSpellRange-1.0\LibSpellRange-1.0.lua"/>
-    <Script file="LibResInfo-1.0\LibResInfo-1.0.lua"/>
     <Script file="Unfit-1.0\Unfit-1.0.lua"/>
     <Script file="AceAddon-3.0\AceAddon-3.0.lua"/>
     <Script file="AceHook-3.0\AceHook-3.0.lua"/>

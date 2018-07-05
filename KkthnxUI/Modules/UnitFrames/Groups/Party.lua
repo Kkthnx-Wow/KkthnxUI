@@ -169,7 +169,6 @@ function Module:CreateParty()
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", UpdateTargetGlow)
 	end
 
-	Module.CreateAFKIndicator(self)
 	Module.CreateAssistantIndicator(self)
 	Module.CreateAuras(self, "party")
 	Module.CreateLeaderIndicator(self, "party")
@@ -177,7 +176,7 @@ function Module:CreateParty()
 	Module.CreatePhaseIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
-	Module.CreateResurrectIndicator(self)
+	-- Module.CreateResurrectIndicator(self)
 	Module.CreateThreatIndicator(self)
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)

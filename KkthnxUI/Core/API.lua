@@ -22,13 +22,7 @@ local CustomClassColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
 local CustomNoop = K.Noop
 
--- Preload
 K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
-K.NoScaleMult = K.Mult * C.General.UIScale
-
-function K.Scale(x)
-	return K.Mult * math_floor(x / K.Mult + .5)
-end
 
 K.UIFrameHider = CreateFrame("Frame", "UIFrameHider", UIParent)
 K.UIFrameHider:Hide()
@@ -78,7 +72,7 @@ local function CreateShadow(f)
 	shadow:SetPoint("TOPLEFT", -4, 4)
 	shadow:SetPoint("BOTTOMRIGHT", 4, -4)
 
-	shadow:SetBackdrop({edgeFile = C.Media.Glow, edgeSize = K.Scale(4)})
+	shadow:SetBackdrop({edgeFile = C.Media.Glow, edgeSize = 4})
 
 	shadow:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
 	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
@@ -121,7 +115,7 @@ local function FontTemplate(fs, font, fontSize, fontStyle)
 	else
 		fs:SetShadowColor(0, 0, 0, 1)
 	end
-	fs:SetShadowOffset((K.Mult or 1), -(K.Mult or 1))
+	fs:SetShadowOffset(1, -1)
 end
 
 local function FontString(parent, name, fontName, fontHeight, fontStyle)
@@ -129,7 +123,7 @@ local function FontString(parent, name, fontName, fontHeight, fontStyle)
 	fs:SetFont(fontName, fontHeight, fontStyle)
 	fs:SetJustifyH("LEFT")
 	fs:SetShadowColor(0, 0, 0)
-	fs:SetShadowOffset(K.Mult, -K.Mult)
+	fs:SetShadowOffset(1, -1)
 
 	if not name then
 		parent.Text = fs

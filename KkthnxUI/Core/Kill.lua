@@ -1,130 +1,173 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Kill", "AceEvent-3.0")
 
 local _G = _G
 
-local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
-local LE_FRAME_TUTORIAL_GARRISON_BUILDING = _G.LE_FRAME_TUTORIAL_GARRISON_BUILDING
-local LE_FRAME_TUTORIAL_PET_JOURNAL = _G.LE_FRAME_TUTORIAL_PET_JOURNAL
-local LE_FRAME_TUTORIAL_WORLD_MAP_FRAME = _G.LE_FRAME_TUTORIAL_WORLD_MAP_FRAME
 local SetCVar = _G.SetCVar
-local SetCVarBitfield = _G.SetCVarBitfield
 local SetInsertItemsLeftToRight = _G.SetInsertItemsLeftToRight
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 
--- GLOBALS: Advanced_UseUIScale, Advanced_UIScaleSlider, RuneFrame,PartyMemberBackground
--- GLOBALS: BagHelpBox, BuffFrame, HelpOpenTicketButtonTutorial, HelpPlate, HelpPlateTooltip
--- GLOBALS: CompactRaidFrameManager_UpdateShown, CompactRaidFrameManager_UpdateOptionsFlowContainer
--- GLOBALS: CompactRaidFrameManager, CompactRaidFrameContainer, CompactUnitFrameProfiles_ApplyProfile
--- GLOBALS: InterfaceOptionsActionBarsPanelAlwaysShowActionBars, InterfaceOptionsActionBarsPanelBottomLeft
--- GLOBALS: InterfaceOptionsActionBarsPanelBottomRight, InterfaceOptionsActionBarsPanelRight
--- GLOBALS: InterfaceOptionsActionBarsPanelRightTwo, PetJournalTutorialButton, PlayerTalentFrame
--- GLOBALS: InterfaceOptionsUnitFramePanelPartyBackground, WorldMapFrameTutorialButton
--- GLOBALS: PlayerTalentFramePetSpecializationTutorialButton, PlayerTalentFrameSpecializationTutorialButton
--- GLOBALS: PlayerTalentFrameTalentsTutorialButton, PremadeGroupsPvETutorialAlert, ReagentBankHelpBox
--- GLOBALS: ShowPartyFrame, HidePartyFrame, InterfaceOptionsFrameCategoriesButton10
--- GLOBALS: SpellBookFrameTutorialButton, TemporaryEnchantFrame, TutorialFrameAlertButton
+local KillBlizzy = CreateFrame("Frame")
+KillBlizzy:RegisterEvent("PLAYER_LOGIN")
+KillBlizzy:RegisterEvent("ADDON_LOADED")
+KillBlizzy:SetScript("OnEvent", function(_, event)
+	if (event == "PLAYER_LOGIN") then
+		if (C["Raid"].Enable) then
+			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
+			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
 
-function Module:ADDON_LOADED(_, addon)
-	if (C["Raid"].Enable) then
-		InterfaceOptionsFrameCategoriesButton10:SetScale(0.00001)
-		InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
-		if not InCombatLockdown() then
-			CompactRaidFrameManager:Kill()
-			CompactRaidFrameContainer:Kill()
-		end
-		ShowPartyFrame = K.Noop
-		HidePartyFrame = K.Noop
-		CompactUnitFrameProfiles_ApplyProfile = K.Noop
-		CompactRaidFrameManager_UpdateShown = K.Noop
-		CompactRaidFrameManager_UpdateOptionsFlowContainer = K.Noop
-	end
+			if CompactRaidFrameManager then
+				CompactRaidFrameManager:SetParent(K.UIFrameHider)
+			end
 
-	Advanced_UseUIScale:Kill()
-	Advanced_UIScaleSlider:Kill()
+			if CompactUnitFrameProfiles then
+				CompactUnitFrameProfiles:UnregisterAllEvents()
+			end
 
-	if (C["Cooldown"].Enable) then
-		SetCVar("countdownForCooldowns", 0)
-		K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
-	end
+			for i = 1, MAX_PARTY_MEMBERS do
+				local PartyMember = _G["PartyMemberFrame" .. i]
+				local Health = _G["PartyMemberFrame" .. i .. "HealthBar"]
+				local Power = _G["PartyMemberFrame" .. i .. "ManaBar"]
+				local Pet = _G["PartyMemberFrame" .. i .."PetFrame"]
+				local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
 
-	if (C["Unitframe"].Enable) then
-		if (K.Class == "DEATHKNIGHT") then
-			RuneFrame:Kill()
-		end
+				PartyMember:UnregisterAllEvents()
+				PartyMember:SetParent(K.UIFrameHider)
+				PartyMember:Hide()
+				Health:UnregisterAllEvents()
+				Power:UnregisterAllEvents()
 
-		K.KillMenuOption(true, "InterfaceOptionsCombatPanelTargetOfTarget")
+				Pet:UnregisterAllEvents()
+				Pet:SetParent(K.UIFrameHider)
+				PetHealth:UnregisterAllEvents()
 
-		if (InterfaceOptionsUnitFramePanelPartyBackground) then
-			InterfaceOptionsUnitFramePanelPartyBackground:Hide()
-			InterfaceOptionsUnitFramePanelPartyBackground:SetAlpha(0)
+				HidePartyFrame()
+				ShowPartyFrame = K.Noop
+				HidePartyFrame = K.Noop
+			end
 		end
 
-		if (PartyMemberBackground) then
-			PartyMemberBackground:SetParent(K.UIFrameHide)
-			PartyMemberBackground:Hide()
-			PartyMemberBackground:SetAlpha(0)
+		if (C["Unitframe"].Enable) then
+			for i = 1, MAX_BOSS_FRAMES do
+				local Boss = _G["Boss"..i.."TargetFrame"]
+				local Health = _G["Boss"..i.."TargetFrame".."HealthBar"]
+				local Power = _G["Boss"..i.."TargetFrame".."ManaBar"]
+
+				Boss:UnregisterAllEvents()
+				Boss.Show = K.Noop
+				Boss:Hide()
+
+				Health:UnregisterAllEvents()
+				Power:UnregisterAllEvents()
+			end
+
+			K.KillMenuOption(true, "InterfaceOptionsCombatPanelTargetOfTarget")
+
+			if (InterfaceOptionsUnitFramePanelPartyBackground) then
+				InterfaceOptionsUnitFramePanelPartyBackground:Hide()
+				InterfaceOptionsUnitFramePanelPartyBackground:SetAlpha(0)
+			end
+
+			if (PartyMemberBackground) then
+				PartyMemberBackground:SetParent(K.UIFrameHide)
+				PartyMemberBackground:Hide()
+				PartyMemberBackground:SetAlpha(0)
+			end
+		end
+
+		if C["General"].AutoScale then
+			Advanced_UseUIScale:Kill()
+			Advanced_UIScaleSlider:Kill()
+		end
+
+		if (C["Cooldown"].Enable) then
+			SetCVar("countdownForCooldowns", 0)
+			K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
+		end
+
+		if (C["General"].DisableTutorialButtons) then
+			BagHelpBox:UnregisterAllEvents()
+			BagHelpBox:SetParent(K.UIFrameHider)
+			BagHelpBox:Hide()
+
+			HelpOpenTicketButtonTutorial:UnregisterAllEvents()
+			HelpOpenTicketButtonTutorial:SetParent(K.UIFrameHider)
+			HelpOpenTicketButtonTutorial:Hide()
+
+			PremadeGroupsPvETutorialAlert:UnregisterAllEvents()
+			PremadeGroupsPvETutorialAlert:SetParent(K.UIFrameHider)
+			PremadeGroupsPvETutorialAlert:Hide()
+
+			ReagentBankHelpBox:UnregisterAllEvents()
+			ReagentBankHelpBox:SetParent(K.UIFrameHider)
+			ReagentBankHelpBox:Hide()
+
+			TutorialFrameAlertButton:UnregisterAllEvents()
+			TutorialFrameAlertButton:SetParent(K.UIFrameHider)
+			TutorialFrameAlertButton:Hide()
+
+			SpellBookFrameTutorialButton:UnregisterAllEvents()
+			SpellBookFrameTutorialButton:SetParent(K.UIFrameHider)
+			SpellBookFrameTutorialButton:Hide()
+
+			WorldMapFrameTutorialButton:UnregisterAllEvents()
+			WorldMapFrameTutorialButton:SetParent(K.UIFrameHider)
+			WorldMapFrameTutorialButton:Hide()
+
+			if PetJournalTutorialButton then
+				PetJournalTutorialButton:UnregisterAllEvents()
+				PetJournalTutorialButton:SetParent(K.UIFrameHider)
+				PetJournalTutorialButton:Hide()
+			end
+
+			HelpPlate:UnregisterAllEvents()
+			HelpPlate:SetParent(K.UIFrameHider)
+			HelpPlate:Hide()
+
+			HelpPlateTooltip:UnregisterAllEvents()
+			HelpPlateTooltip:SetParent(K.UIFrameHider)
+			HelpPlateTooltip:Hide()
+
+			if (PlayerTalentFrame) then
+				PlayerTalentFrameSpecializationTutorialButton:UnregisterAllEvents()
+				PlayerTalentFrameSpecializationTutorialButton:SetParent(K.UIFrameHider)
+				PlayerTalentFrameSpecializationTutorialButton:Hide()
+
+				PlayerTalentFrameTalentsTutorialButton:UnregisterAllEvents()
+				PlayerTalentFrameTalentsTutorialButton:SetParent(K.UIFrameHider)
+				PlayerTalentFrameTalentsTutorialButton:Hide()
+
+				PlayerTalentFramePetSpecializationTutorialButton:UnregisterAllEvents()
+				PlayerTalentFramePetSpecializationTutorialButton:SetParent(K.UIFrameHider)
+				PlayerTalentFramePetSpecializationTutorialButton:Hide()
+			end
+		end
+
+		if (C["ActionBar"].Enable) then
+			InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
+			InterfaceOptionsActionBarsPanelBottomLeft:Kill()
+			InterfaceOptionsActionBarsPanelBottomRight:Kill()
+			InterfaceOptionsActionBarsPanelRight:Kill()
+			InterfaceOptionsActionBarsPanelRightTwo:Kill()
+		end
+
+		if (C["Nameplates"].Enable) then
+			SetCVar("ShowClassColorInNameplate", 1)
+			K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
+			K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
+			K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
+		end
+
+		if (C["Minimap"].Enable) then
+			K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
+		end
+
+		if (C["Inventory"].Enable) then
+			SetSortBagsRightToLeft(true)
+			SetInsertItemsLeftToRight(false)
+		end
+
+		if not C["Party"].Enable and not C["Raid"].Enable then
+			C["Raid"].RaidUtility = false
 		end
 	end
-
-	if (C["General"].DisableTutorialButtons) then
-		BagHelpBox:Kill()
-		HelpOpenTicketButtonTutorial:Kill()
-		PremadeGroupsPvETutorialAlert:Kill()
-		ReagentBankHelpBox:Kill()
-		TutorialFrameAlertButton:Kill()
-		SpellBookFrameTutorialButton:Kill()
-		WorldMapFrameTutorialButton:Kill()
-
-		if PetJournalTutorialButton then
-			PetJournalTutorialButton:Kill()
-		end
-
-		if (PlayerTalentFrame) then
-			PlayerTalentFrameSpecializationTutorialButton:Kill()
-			PlayerTalentFrameTalentsTutorialButton:Kill()
-			PlayerTalentFramePetSpecializationTutorialButton:Kill()
-		end
-
-		HelpPlate:Kill()
-		HelpPlateTooltip:Kill()
-
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_WORLD_MAP_FRAME, true)
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_PET_JOURNAL, true)
-		SetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_GARRISON_BUILDING, true)
-	end
-
-	if (C["ActionBar"].Enable) then
-		InterfaceOptionsActionBarsPanelAlwaysShowActionBars:Kill()
-		InterfaceOptionsActionBarsPanelBottomLeft:Kill()
-		InterfaceOptionsActionBarsPanelBottomRight:Kill()
-		InterfaceOptionsActionBarsPanelRight:Kill()
-		InterfaceOptionsActionBarsPanelRightTwo:Kill()
-	end
-
-	if (C["Nameplates"].Enable) then
-		SetCVar("ShowClassColorInNameplate", 1)
-		-- Hide these options, because we will do it from KkthnxUI settings.
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
-		K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
-	end
-
-	if (C["Minimap"].Enable) then
-		K.KillMenuOption(true, "InterfaceOptionsDisplayPanelRotateMinimap")
-	end
-
-	if (C["Inventory"].Enable) then
-		SetSortBagsRightToLeft(true)
-		SetInsertItemsLeftToRight(false)
-	end
-
-	if (not C["Unitframe"].Party) and (not C["Raid"].Enable) then
-		C["Raid"].RaidUtility = false
-	end
-end
-
-function Module:OnInitialize()
-	self:RegisterEvent("ADDON_LOADED")
-end
+end)

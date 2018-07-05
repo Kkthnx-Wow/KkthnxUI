@@ -115,6 +115,16 @@ local SlotName = {
 	"SecondaryHand",
 }
 
+local QualityTooltips = {
+	GameTooltip,
+	ItemRefShoppingTooltip1,
+	ItemRefShoppingTooltip2,
+	ItemRefTooltip,
+	ShoppingTooltip1,
+	ShoppingTooltip2,
+	WorldMapTooltip,
+}
+
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if tt:IsForbidden() then
 		return
@@ -432,52 +442,6 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 	end
 end
 
-function Module:SetQualityBorderColor()
-	if GameTooltip:IsForbidden() then
-		return
-	end
-
-	if C["Tooltip"].ItemQualityBorder then
-		local _, link = self:GetItem()
-
-		if not link then
-			return
-		end
-
-		self.currentItem = link
-
-		local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
-
-		if not quality then
-			quality = 0
-		end
-
-		local r, g, b
-		if type == L["Tooltip"].Quest then
-			r, g, b = 1, 1, 0
-		elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
-			r, g, b = 0.4, 0.73, 1
-		elseif subType == L["Tooltip"].Companion_Pets then
-			local _, id = C_PetJournal_FindPetIDByName(name)
-			if id then
-				local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
-				if petQuality then
-					quality = petQuality - 1
-				end
-			end
-		end
-
-		if quality > 1 and not r then
-			r, g, b = GetItemQualityColor(quality)
-			self:SetBackdropBorderColor(r, g, b)
-		end
-
-		if r then
-			self:SetBackdropBorderColor(r, g, b)
-		end
-	end
-end
-
 function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	if tt:IsForbidden() then
 		return
@@ -544,6 +508,48 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 
 		tt.itemCleared = true
 	end
+
+	if C["Tooltip"].ItemQualityBorder then
+		local _, link = tt:GetItem()
+
+		if link ~= nil then
+			tt.currentItem = link
+
+			local name, _, quality, _, _, type, subType, _, _, _, _ = GetItemInfo(link)
+
+			if not quality then
+				quality = 0
+			end
+
+			local r, g, b
+			if type == L["Tooltip"].Quest then
+				r, g, b = 1, 1, 0
+			elseif type == L["Tooltip"].Tradeskill and not ignoreSubType[subType] and quality < 2 then
+				r, g, b = 0.4, 0.73, 1
+			elseif subType == L["Tooltip"].Companion_Pets then
+				local _, id = C_PetJournal_FindPetIDByName(name)
+				if id then
+					local _, _, _, _, petQuality = C_PetJournal_GetPetStats(id)
+					if petQuality then
+						quality = petQuality - 1
+					end
+				end
+			end
+
+			if quality > 1 and not r then
+				r, g, b = GetItemQualityColor(quality)
+				tt:SetBackdropBorderColor(r, g, b)
+			end
+
+			if r then
+				tt:SetBackdropBorderColor(r, g, b)
+			end
+		else
+			if tt == ItemRefTooltip then
+				tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			end
+		end
+	end
 end
 
 function Module:GameTooltip_ShowStatusBar(tt)
@@ -566,9 +572,9 @@ function Module:SetStyle(tt)
 	if (not tt.IsSkinned) then
 		tt:StripTextures()
 
-		tt.Backgrounds = tt:CreateTexture(nil, "BACKGROUND", -1)
-		tt.Backgrounds:SetAllPoints()
+		tt.Backgrounds = tt:CreateTexture(nil, "BACKGROUND", 0)
 		tt.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		tt.Backgrounds:SetAllPoints()
 
 		K.CreateBorder(tt)
 
@@ -577,10 +583,6 @@ function Module:SetStyle(tt)
 
 	local r, g, b = tt:GetBackdropColor()
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
-
-	for _, tt in ipairs({GameTooltip, ShoppingTooltip1, ShoppingTooltip2, ShoppingTooltip3, ItemRefTooltip}) do
-		Module.SetQualityBorderColor(tt)
-	end
 end
 
 function Module:MODIFIER_STATE_CHANGED(_, key)
@@ -616,6 +618,7 @@ function Module:GameTooltip_OnTooltipSetSpell(tt)
 	if tt:IsForbidden() then
 		return
 	end
+
 	local id = select(3, tt:GetSpell())
 	if not id or not C["Tooltip"].SpellID then
 		return
@@ -763,7 +766,9 @@ function Module:OnEnable()
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
-	self:SecureHookScript(GameTooltip, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
+	for _, tt in pairs(QualityTooltips) do
+		self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
+	end
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
