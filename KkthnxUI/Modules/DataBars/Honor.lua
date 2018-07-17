@@ -6,26 +6,19 @@ local Module = K:NewModule("Honor", "AceEvent-3.0")
 local _G = _G
 local format = format
 
-local CanPrestige = _G.CanPrestige
 local GetMaxPlayerHonorLevel = _G.GetMaxPlayerHonorLevel
 local HONOR = _G.HONOR
 local IsInInstance = _G.IsInInstance
 local MAX_HONOR_LEVEL = _G.MAX_HONOR_LEVEL
 local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
-local PVP_HONOR_PRESTIGE_AVAILABLE = _G.PVP_HONOR_PRESTIGE_AVAILABLE
 local ToggleTalentFrame = _G.ToggleTalentFrame
 local UnitHonor = _G.UnitHonor
 local UnitHonorLevel = _G.UnitHonorLevel
 local UnitHonorMax = _G.UnitHonorMax
 local UnitLevel = _G.UnitLevel
-local UnitPrestige = _G.UnitPrestige
 
 function Module:UpdateHonor(event, unit)
 	if not C["DataBars"].HonorEnable then
-		return
-	end
-
-	if event == "HONOR_PRESTIGE_UPDATE" and unit ~= "player" then
 		return
 	end
 
@@ -44,36 +37,23 @@ function Module:UpdateHonor(event, unit)
 
 		local current = UnitHonor("player")
 		local max = UnitHonorMax("player")
-		local level = UnitHonorLevel("player")
-		local levelmax = GetMaxPlayerHonorLevel()
 
-		--Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
-		if max == 0 then max = 1 end
-
-		if (level == levelmax) then
-			-- Force the bar to full for the max level
-			bar.statusBar:SetMinMaxValues(0, 1)
-			bar.statusBar:SetValue(1)
-		else
-			bar.statusBar:SetMinMaxValues(0, max)
-			bar.statusBar:SetValue(current)
+		-- Guard against division by zero, which appears to be an issue when zoning in/out of dungeons
+		if max == 0 then
+			max = 1
 		end
+
+		bar.statusBar:SetMinMaxValues(0, max)
+		bar.statusBar:SetValue(current)
 
 		local text
 
-		if (CanPrestige()) then
-			text = PVP_HONOR_PRESTIGE_AVAILABLE
-		elseif (level == levelmax) then
-			text = MAX_HONOR_LEVEL
-		else
-			text = format("%d%%", current / max * 100)
-		end
+		text = format("%d%%", current / max * 100)
 
 		bar.text:SetText(text)
 	end
 end
 
-local PRESTIGE_TEXT = PVP_PRESTIGE_RANK_UP_TITLE .. HEADER_COLON
 function Module:HonorBar_OnEnter()
 	if C["DataBars"].MouseOver then
 		K.UIFrameFadeIn(self, 0.25, self:GetAlpha(), 1)
@@ -86,17 +66,13 @@ function Module:HonorBar_OnEnter()
 	local max = UnitHonorMax("player")
 	local level = UnitHonorLevel("player")
 	local levelmax = GetMaxPlayerHonorLevel()
-	local prestigeLevel = UnitPrestige("player")
 
 	GameTooltip:AddLine(HONOR)
 
 	GameTooltip:AddDoubleLine(L["Databars"].Current_Level, level, 1, 1, 1)
-	GameTooltip:AddDoubleLine(PRESTIGE_TEXT, prestigeLevel, 1, 1, 1)
 	GameTooltip:AddLine(" ")
 
-	if (CanPrestige()) then
-		GameTooltip:AddLine(PVP_HONOR_PRESTIGE_AVAILABLE)
-	elseif (level == levelmax) then
+	if (level == levelmax) then
 		GameTooltip:AddLine(MAX_HONOR_LEVEL)
 	else
 		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, format(" %d / %d (%d%%)", current, max, current / max * 100), 1, 1, 1)
@@ -133,8 +109,6 @@ function Module:UpdateHonorDimensions()
 end
 
 function Module:PLAYER_LEVEL_UP(level)
-	local maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-
 	if (C["DataBars"].HonorEnable) then
 		self:UpdateHonor("PLAYER_LEVEL_UP", level)
 	else
@@ -145,7 +119,6 @@ end
 function Module:EnableDisable_HonorBar()
 	if C["DataBars"].HonorEnable then
 		self:RegisterEvent("HONOR_XP_UPDATE", "UpdateHonor")
-		self:RegisterEvent("HONOR_PRESTIGE_UPDATE", "UpdateHonor")
 		self:RegisterEvent("HONOR_LEVEL_UPDATE", "UpdateHonor")
 		self:UpdateHonor()
 	else

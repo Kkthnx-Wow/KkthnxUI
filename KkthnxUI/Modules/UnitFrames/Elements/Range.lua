@@ -96,7 +96,7 @@ do
 		AddSpell(longEnemySpells, 355) -- Taunt (30 yards)
 	elseif class == "MONK" then
 		AddSpell(enemySpells, 115546) -- Provoke (30 yards)
-		AddSpell(friendlySpells, 116694) -- Effuse (40 yards)
+		AddSpell(friendlySpells, 116670) -- Effuse (40 yards)
 		AddSpell(longEnemySpells, 117952) -- Crackling Jade Lightning (40 yards)
 		AddSpell(resSpells, 115178) -- Resuscitate (40 yards)
 	elseif class == "DEMONHUNTER" then

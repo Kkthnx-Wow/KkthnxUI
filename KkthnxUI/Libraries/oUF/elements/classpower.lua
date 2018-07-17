@@ -5,7 +5,7 @@ Handles the visibility and updating of the player's class resources (like Chi Or
 
 ## Widget
 
-ClassPower - An `table` consisting of as many StatusBars as the theoretical maximum return of [UnitPowerMax](http://wowprogramming.com/docs/api/UnitPowerMax).
+ClassPower - An `table` consisting of as many StatusBars as the theoretical maximum return of [UnitPowerMax](http://wowprogramming.com/docs/api/UnitPowerMax.html).
 
 ## Sub-Widgets
 
@@ -48,19 +48,18 @@ local _, ns = ...
 local oUF = ns.oUF
 
 local _, PlayerClass = UnitClass('player')
-local Legion735 = tonumber((select(2, GetBuildInfo()))) >= 24500
 
 -- sourced from FrameXML/Constants.lua
 local SPEC_MAGE_ARCANE = SPEC_MAGE_ARCANE or 1
 local SPEC_MONK_WINDWALKER = SPEC_MONK_WINDWALKER or 3
 local SPEC_PALADIN_RETRIBUTION = SPEC_PALADIN_RETRIBUTION or 3
 local SPEC_WARLOCK_DESTRUCTION = SPEC_WARLOCK_DESTRUCTION or 3
-local SPELL_POWER_ENERGY = SPELL_POWER_ENERGY or 3
-local SPELL_POWER_COMBO_POINTS = SPELL_POWER_COMBO_POINTS or 4
-local SPELL_POWER_SOUL_SHARDS = SPELL_POWER_SOUL_SHARDS or 7
-local SPELL_POWER_HOLY_POWER = SPELL_POWER_HOLY_POWER or 9
-local SPELL_POWER_CHI = SPELL_POWER_CHI or 12
-local SPELL_POWER_ARCANE_CHARGES = SPELL_POWER_ARCANE_CHARGES or 16
+local SPELL_POWER_ENERGY = Enum.PowerType.Energy or 3
+local SPELL_POWER_COMBO_POINTS = Enum.PowerType.ComboPoints or 4
+local SPELL_POWER_SOUL_SHARDS = Enum.PowerType.SoulShards or 7
+local SPELL_POWER_HOLY_POWER = Enum.PowerType.HolyPower or 9
+local SPELL_POWER_CHI = Enum.PowerType.Chi or 12
+local SPELL_POWER_ARCANE_CHARGES = Enum.PowerType.ArcaneCharges or 16
 
 -- sourced from FrameXML/TargetFrame.lua
 local MAX_COMBO_POINTS = MAX_COMBO_POINTS or 5
@@ -112,13 +111,11 @@ local function Update(self, event, unit, powerType)
 		else
 			cur = UnitPower('player', ClassPowerID, true)
 			max = UnitPowerMax('player', ClassPowerID)
-			mod = Legion735 and UnitPowerDisplayMod(ClassPowerID)
+			mod = UnitPowerDisplayMod(ClassPowerID)
 		end
 
 		-- mod should never be 0, but according to Blizz code it can actually happen
-		if Legion735 then
-			cur = mod == 0 and 0 or cur / mod
-		end
+		cur = mod == 0 and 0 or cur / mod
 
 		-- BUG: Destruction is supposed to show partial soulshards, but Affliction and Demonology should only show full ones
 		if(ClassPowerType == 'SOUL_SHARDS' and GetSpecialization() ~= SPEC_WARLOCK_DESTRUCTION) then

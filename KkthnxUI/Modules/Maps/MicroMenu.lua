@@ -26,7 +26,7 @@ local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local FEATURE_BECOMES_AVAILABLE_AT_LEVEL = _G.FEATURE_BECOMES_AVAILABLE_AT_LEVEL
 local FEATURE_NOT_YET_AVAILABLE = _G.FEATURE_NOT_YET_AVAILABLE
 local GameLimitedMode_IsActive = _G.GameLimitedMode_IsActive
-local GARRISON_LANDING_PAGE_TITLE = _G.GARRISON_LANDING_PAGE_TITLE
+local GARRISON_TYPE_8_0_LANDING_PAGE_TITLE = _G.GARRISON_TYPE_8_0_LANDING_PAGE_TITLE
 local HEIRLOOMS = _G.HEIRLOOMS
 local HELP_BUTTON = _G.HELP_BUTTON
 local HideUIPanel = _G.HideUIPanel
@@ -175,7 +175,7 @@ if K.Level > 99 then
 			GarrisonLandingPage_Toggle()
 	end})
 elseif K.Level > 89 then
-	table_insert(micromenu, {text = GARRISON_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function()
+	table_insert(micromenu, {text = GARRISON_TYPE_8_0_LANDING_PAGE_TITLE, icon = "Interface\\Buttons/UI-HomeButton", notCheckable = 1, func = function()
 			GarrisonLandingPage_Toggle()
 	end})
 end

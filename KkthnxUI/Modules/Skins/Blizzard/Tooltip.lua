@@ -68,10 +68,25 @@ local function SkinTooltip()
     end
     hooksecurefunc("GameTooltip_AddQuestRewardsToTooltip", QuestRewardsBarColor)
 
+    local function SetBackdropStyle(self)
+        if not self or self:IsForbidden() then
+            return
+        end
+
+        if self.IsSkinned then
+            self:SetBackdrop(nil)
+        end
+    end
+    hooksecurefunc("GameTooltip_SetBackdropStyle", SetBackdropStyle)
+
     local GameTooltip = _G["GameTooltip"]
     local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
 
+    local StoryTooltip = QuestScrollFrame.StoryTooltip
+	StoryTooltip:SetFrameLevel(4)
+
     local tooltips = {
+		EmbeddedItemTooltip,
         AutoCompleteBox,
         FriendsTooltip,
         GameTooltip,
@@ -79,13 +94,15 @@ local function SkinTooltip()
         ItemRefShoppingTooltip2,
         ItemRefShoppingTooltip3,
         ItemRefTooltip,
+        ReputationParagonTooltip,
         ShoppingTooltip1,
         ShoppingTooltip2,
         ShoppingTooltip3,
+        StoryTooltip,
         WorldMapCompareTooltip1,
         WorldMapCompareTooltip2,
         WorldMapCompareTooltip3,
-        WorldMapTooltip
+        WorldMapTooltip,
     }
 
     for _, tt in pairs(tooltips) do
@@ -100,12 +117,13 @@ local function SkinTooltip()
 
     GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", -1)
 	GameTooltipStatusBar.Background:SetAllPoints()
-    GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
+	GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
 
-    Module:SecureHook("GameTooltip_ShowStatusBar", "GameTooltip_ShowStatusBar")
-    Module:SecureHookScript(GameTooltip, "OnSizeChanged", "CheckBackdropColor")
-    Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
-    Module:RegisterEvent("CURSOR_UPDATE", "CheckBackdropColor")
+    Module:SecureHook("GameTooltip_ShowStatusBar")
+    Module:SecureHook("GameTooltip_UpdateStyle", "SetStyle")
+    
+    -- [Backdrop coloring] There has to be a more elegant way of doing this.
+	Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
 end
 
 table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinTooltip)

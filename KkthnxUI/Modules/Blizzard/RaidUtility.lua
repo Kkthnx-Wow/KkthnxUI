@@ -204,7 +204,7 @@ function Module:OnInitialize()
 	end
 
 	--Create main frame
-	local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", UIParent, "SecureHandlerClickTemplate")
+	local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", UIParent, "SecureHandlerBaseTemplate")
 	RaidUtilityPanel:SetWidth(230)
 	RaidUtilityPanel:SetHeight(PANEL_HEIGHT)
 	RaidUtilityPanel:SetPoint("TOP", UIParent, "TOP", -400, 1)

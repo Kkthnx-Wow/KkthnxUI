@@ -1,4 +1,4 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then return end
 
 -- Lua API
@@ -7,6 +7,8 @@ local _G = _G
 local ActionBar3 = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
 ActionBar3:SetAllPoints(RightActionBarAnchor)
 MultiBarLeft:SetParent(ActionBar3)
+MultiBarLeft:SetScale(1)
+MultiBarLeft.SetScale = K.Noop
 
 for i = 1, 12 do
 	local b = _G["MultiBarLeftButton"..i]

@@ -31,11 +31,11 @@ end
 function Module:DisableBlizzard()
 	local Hider = K.UIFrameHider
 
-	MainMenuBarRightEndCap.GetRight = function()
+	MainMenuBarArtFrame.RightEndCap.GetRight = function()
 		return 0
 	end
 
-	MainMenuBar.ChangeMenuBarSizeAndPosition = function()
+	MainMenuBarMixin.ChangeMenuBarSizeAndPosition = function()
 		return
 	end
 

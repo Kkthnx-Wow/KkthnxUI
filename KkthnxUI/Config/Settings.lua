@@ -168,10 +168,10 @@ C["Cooldown"] = {
 
 -- DataBars
 C["DataBars"] = {
-	["ArtifactColor"] = {.901, .8, .601},
-	["ArtifactEnable"] = true,
-	["ArtifactHeight"] = 12,
-	["ArtifactWidth"] = 164,
+	["AzeriteColor"] = {.901, .8, .601},
+	["AzeriteEnable"] = true,
+	["AzeriteHeight"] = 12,
+	["AzeriteWidth"] = 164,
 	["ExperienceColor"] = {0, 0.4, 1, .8},
 	["ExperienceEnable"] = true,
 	["ExperienceHeight"] = 12,
@@ -499,5 +499,4 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["SmallWorldMap"] = true,
-	["WorldMapPlus"] = false
 }

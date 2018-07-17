@@ -183,7 +183,7 @@ function Module:CreatePlayer()
 	self.AdditionalPower:SetPoint("RIGHT")
 	self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
 	self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
-	self.AdditionalPower:SetStatusBarColor(K.Colors.power["MANA"][1], K.Colors.power["MANA"][2], K.Colors.power["MANA"][3])
+	self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
 
 	self.AdditionalPower.Smooth = C["Unitframe"].Smooth
 	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -195,14 +195,14 @@ function Module:CreatePlayer()
 
 	K.CreateBorder(self.AdditionalPower)
 
-	-- self.AdditionalPower.Prediction = CreateFrame("StatusBar", nil, self.AdditionalPower)
-	-- self.AdditionalPower.Prediction:SetReverseFill(true)
-	-- self.AdditionalPower.Prediction:SetPoint("BOTTOM")
-	-- self.AdditionalPower.Prediction:SetPoint("TOP")
-	-- self.AdditionalPower.Prediction:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
-	-- self.AdditionalPower.Prediction:SetHeight(12)
-	-- self.AdditionalPower.Prediction:SetStatusBarTexture(UnitframeTexture)
-	-- self.AdditionalPower.Prediction:SetStatusBarColor(1, 1, 1, .3)
+	self.AdditionalPower.Prediction = CreateFrame("StatusBar", nil, self.AdditionalPower)
+	self.AdditionalPower.Prediction:SetReverseFill(true)
+	self.AdditionalPower.Prediction:SetPoint("TOP")
+	self.AdditionalPower.Prediction:SetPoint("BOTTOM")
+	self.AdditionalPower.Prediction:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
+	self.AdditionalPower.Prediction:SetHeight(12)
+	self.AdditionalPower.Prediction:SetStatusBarTexture(UnitframeTexture)
+	self.AdditionalPower.Prediction:SetStatusBarColor(1, 1, 1, .3)
 
 	Module.CreateClassModules(self, 194, 12, 6)
 
@@ -220,11 +220,9 @@ function Module:CreatePlayer()
 
 	Module.CreateClassTotems(self, 194, 12, 6)
 
-	-- Module.CreateAFKIndicator(self)
 	Module.CreateAssistantIndicator(self)
 	Module.CreateCombatIndicator(self)
 	Module.CreateLeaderIndicator(self)
-	Module.CreateMasterLooterIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateRestingIndicator(self)

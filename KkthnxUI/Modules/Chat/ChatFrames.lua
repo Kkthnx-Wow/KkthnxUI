@@ -205,6 +205,9 @@ local function OnTextChanged(self)
 	end
 end
 
+-- Set default position for Voice Activation Alert
+Module.VoiceAlertPosition = {"TOP", ConfigButton, "BOTTOM", 0, 6}
+
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
 	local EditBox = ChatEdit_ChooseBoxForSend()
@@ -216,11 +219,7 @@ function Module:UpdateEditBoxColor()
 		if ID == 0 then
 			EditBox.Border:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		else
-			EditBox.Border:SetBackdropBorderColor(
-				ChatTypeInfo[ChatType .. ID].r,
-				ChatTypeInfo[ChatType .. ID].g,
-				ChatTypeInfo[ChatType .. ID].b
-			)
+			EditBox.Border:SetBackdropBorderColor(ChatTypeInfo[ChatType .. ID].r, ChatTypeInfo[ChatType .. ID].g, ChatTypeInfo[ChatType .. ID].b)
 		end
 	else
 		EditBox.Border:SetBackdropBorderColor(ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b)
@@ -259,6 +258,9 @@ function Module:StyleFrame(frame)
 	local FrameName = frame:GetName()
 	local Tab = _G[FrameName .. "Tab"]
 	local TabText = _G[FrameName .. "TabText"]
+	local Scroll = frame.ScrollBar
+	local ScrollBottom = frame.ScrollToBottomButton
+	local ScrollTex = _G[FrameName .. "ThumbTexture"]
 	local EditBox = _G[FrameName .. "EditBox"]
 	local GetTabFont = K.GetFont(C["Chat"].Font)
 	local TabFont, TabFontSize, TabFontFlags = _G[GetTabFont]:GetFont()
@@ -268,12 +270,16 @@ function Module:StyleFrame(frame)
 	end
 
 	-- Hide editbox every time we click on a tab
-	Tab:HookScript(
-		"OnClick",
-		function()
-			EditBox:Hide()
-		end
-	)
+	Tab:HookScript("OnClick", function()
+		EditBox:Hide()
+	end)
+
+	-- Kill Scroll Bars
+	if Scroll then
+		Scroll:Kill()
+		ScrollBottom:Kill()
+		ScrollTex:Kill()
+	end
 
 	-- Style the tab font
 	TabText:SetFont(TabFont, TabFontSize, TabFontFlags)
@@ -345,9 +351,9 @@ function Module:StyleFrame(frame)
 	_G[string_format("ChatFrame%sTabSelectedMiddle", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabSelectedRight", ID)]:Kill()
 
-	_G[string_format("ChatFrame%sButtonFrameUpButton", ID)]:Kill()
-	_G[string_format("ChatFrame%sButtonFrameDownButton", ID)]:Kill()
-	_G[string_format("ChatFrame%sButtonFrameBottomButton", ID)]:Kill()
+	-- _G[string_format("ChatFrame%sButtonFrameUpButton", ID)]:Kill()
+	-- _G[string_format("ChatFrame%sButtonFrameDownButton", ID)]:Kill()
+	-- _G[string_format("ChatFrame%sButtonFrameBottomButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrameMinimizeButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrame", ID)]:Kill()
 
@@ -369,6 +375,7 @@ function Module:StyleFrame(frame)
 		if not hooks[frame] then
 			hooks[frame] = {}
 		end
+
 		if not hooks[frame].AddMessage then
 			hooks[frame].AddMessage = frame.AddMessage
 			frame.AddMessage = AddMessage
@@ -445,14 +452,7 @@ function Module:SetDefaultChatFramesPositions()
 		end
 
 		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
-		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame" .. i] = {
-			Anchor1,
-			Anchor2,
-			X,
-			Y,
-			C["Chat"].Width,
-			C["Chat"].Height
-		}
+		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame" .. i] = {Anchor1, Anchor2, X, Y, C["Chat"].Width, C["Chat"].Height }
 	end
 end
 
@@ -660,6 +660,19 @@ function Module:SetupFrame()
 	ChatConfigFrameDefaultButton:Kill()
 	ChatFrameMenuButton:Kill()
 	QuickJoinToastButton:Kill()
+
+	-- VoiceChatPromptActivateChannel:SetTemplate()
+	VoiceChatPromptActivateChannel.Background = VoiceChatPromptActivateChannel:CreateTexture(nil, "BACKGROUND", -1)
+	VoiceChatPromptActivateChannel.Background:SetAllPoints()
+	VoiceChatPromptActivateChannel.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+	K.CreateBorder(VoiceChatPromptActivateChannel)
+
+	VoiceChatPromptActivateChannel.AcceptButton:SkinButton()
+	VoiceChatPromptActivateChannel.CloseButton:SkinCloseButton()
+	VoiceChatPromptActivateChannel:SetPoint(unpack(Module.VoiceAlertPosition))
+	VoiceChatPromptActivateChannel.ClearAllPoints = K.Noop
+	VoiceChatPromptActivateChannel.SetPoint = K.Noop
 end
 
 -- Sourced: ElvUI (Simpy)
@@ -667,13 +680,13 @@ table_remove(ChatTypeGroup["GUILD"], 2)
 function Module:DelayGuildMOTD()
 	local delay, checks, delayFrame, chat = 0, 0, CreateFrame("Frame")
 	table_insert(ChatTypeGroup["GUILD"], 2, "GUILD_MOTD")
-	delayFrame:SetScript(
-		"OnUpdate",
-		function(df, elapsed)
+
+	delayFrame:SetScript("OnUpdate", function(df, elapsed)
 			delay = delay + elapsed
 			if delay < 5 then
 				return
 			end
+
 			local msg = GetGuildRosterMOTD()
 			if msg and string_len(msg) > 0 then
 				for _, frame in pairs(_G.CHAT_FRAMES) do
@@ -683,6 +696,7 @@ function Module:DelayGuildMOTD()
 						chat:RegisterEvent("GUILD_MOTD")
 					end
 				end
+
 				df:SetScript("OnUpdate", nil)
 			else -- 5 seconds can be too fast for the API response. let's try once every 5 seconds (max 5 checks).
 				delay, checks = 0, checks + 1
@@ -690,8 +704,7 @@ function Module:DelayGuildMOTD()
 					df:SetScript("OnUpdate", nil)
 				end
 			end
-		end
-	)
+		end)
 end
 
 function Module:OnEnable()
@@ -723,10 +736,9 @@ function Module:OnEnable()
 	local Whisper = CreateFrame("Frame")
 	Whisper:RegisterEvent("CHAT_MSG_WHISPER")
 	Whisper:RegisterEvent("CHAT_MSG_BN_WHISPER")
-	Whisper:SetScript(
-		"OnEvent",
-		function()
-			Module:PlayWhisperSound()
-		end
-	)
+	Whisper:SetScript("OnEvent", function()
+		Module:PlayWhisperSound()
+	end)
+
+	FCF_UpdateButtonSide = function() end
 end

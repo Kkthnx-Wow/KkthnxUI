@@ -9,7 +9,6 @@ local _G = _G
 
 local CreateFrame = _G.CreateFrame
 local UnitPowerMax = _G.UnitPowerMax
-local UnitHasVehicleUI = _G.UnitHasVehicleUI
 
 local function PostUpdateClassPower(classPower, _, maxPower, maxPowerChanged)
 	if (not maxPower or not maxPowerChanged) then
@@ -43,14 +42,15 @@ local function UpdateClassPowerColor(classPower)
 	end
 
 	for index = 1, #classPower do
-		local Bar = classPower[index]
+		local bar = classPower[index]
 		if (K.Class == "ROGUE" and UnitPowerMax("player", SPELL_POWER_COMBO_POINTS) == 10 and index > 5) then
 			r, g, b = 1, 0, 0
 		end
 
-		Bar:SetStatusBarColor(r, g, b)
+		bar:SetStatusBarColor(r, g, b)
 	end
 end
+
 
 function Module:CreateClassModules(width, height, spacing)
 	local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)
@@ -70,13 +70,11 @@ function Module:CreateClassModules(width, height, spacing)
 		local bar = CreateFrame("StatusBar", nil, self)
 		bar:SetStatusBarTexture(ClassModuleTexture)
 
-		if (i < 6) then -- We do not want to create a border of skinned for 5+
-			bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
-			bar.Background:SetAllPoints()
-			bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
+		bar.Background:SetAllPoints()
+		bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-			K.CreateBorder(bar)
-		end
+		K.CreateBorder(bar)
 
 		-- 6-10 will be stacked on top of 1-5 for rogues with the anticipation talent
 		if (i > 5) then

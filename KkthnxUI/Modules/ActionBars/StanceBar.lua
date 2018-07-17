@@ -62,7 +62,7 @@ StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_USABLE")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_COOLDOWN")
 StanceBar:RegisterEvent("UPDATE_SHAPESHIFT_FORM")
 StanceBar:RegisterEvent("ACTIONBAR_PAGE_CHANGED")
-StanceBar:SetScript("OnEvent", function(self, event, ...)
+StanceBar:SetScript("OnEvent", function(self, event)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_STANCE_SLOTS do
 			local button = _G["StanceButton"..i]
@@ -101,7 +101,9 @@ StanceBar:SetScript("OnEvent", function(self, event, ...)
 		end
 		hooksecurefunc("StanceBar_Update", movestance)
 	elseif event == "UPDATE_SHAPESHIFT_FORMS" then
-		if InCombatLockdown() then return end
+		if InCombatLockdown() then
+			return
+		end
 		for i = 1, NUM_STANCE_SLOTS do
 			local button = _G["StanceButton"..i]
 			local _, name = GetShapeshiftFormInfo(i)

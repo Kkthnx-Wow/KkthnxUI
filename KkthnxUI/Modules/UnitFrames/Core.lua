@@ -241,46 +241,64 @@ function Module:CreateAuraTimer(elapsed)
 end
 
 function Module:PostCreateAura(button)
-
 	if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
 		button:CreateShadow()
+
+		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
+		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.Remaining:SetPoint("CENTER", 1, 0)
+
+		button.cd.noOCC = true
+		button.cd.noCooldownCount = true
+		button.cd:SetReverse(true)
+		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
+		button.cd:ClearAllPoints()
+		button.cd:SetAllPoints()
+		button.cd:SetHideCountdownNumbers(true)
+
+		button.icon:SetAllPoints()
+		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.icon:SetDrawLayer("ARTWORK")
+
+		button.count:SetPoint("BOTTOMRIGHT", 3, 3)
+		button.count:SetJustifyH("RIGHT")
+		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.count:SetTextColor(0.84, 0.75, 0.65)
 	else
 		button.Backgrounds = button:CreateTexture(nil, "BACKGROUND", -1)
 		button.Backgrounds:SetAllPoints()
 		button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(button)
-	end
 
-	button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
-	button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
-	button.Remaining:SetPoint("CENTER", 1, 0)
+		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
+		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.Remaining:SetPoint("CENTER", 1, 0)
 
-	button.cd.noOCC = true
-	button.cd.noCooldownCount = true
-	button.cd:SetReverse(true)
-	button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
-	button.cd:ClearAllPoints()
-	button.cd:SetPoint("TOPLEFT", 1, -1)
-	button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
-	button.cd:SetHideCountdownNumbers(true)
+		button.cd.noOCC = true
+		button.cd.noCooldownCount = true
+		button.cd:SetReverse(true)
+		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
+		button.cd:ClearAllPoints()
+		button.cd:SetPoint("TOPLEFT", 1, -1)
+		button.cd:SetPoint("BOTTOMRIGHT", -1, 1)
+		button.cd:SetHideCountdownNumbers(true)
 
-	button.icon:SetAllPoints()
-	button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	button.icon:SetDrawLayer("ARTWORK")
+		button.icon:SetAllPoints()
+		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+		button.icon:SetDrawLayer("ARTWORK")
 
-	button.count:SetPoint("BOTTOMRIGHT", 1, 1)
-	button.count:SetJustifyH("RIGHT")
-	button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
-	button.count:SetTextColor(0.84, 0.75, 0.65)
+		button.count:SetPoint("BOTTOMRIGHT", 1, 1)
+		button.count:SetJustifyH("RIGHT")
+		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.count:SetTextColor(0.84, 0.75, 0.65)
 
-	button.OverlayFrame = CreateFrame("Frame", nil, button, nil)
-	button.OverlayFrame:SetFrameLevel(button.cd:GetFrameLevel() + 1)
-	button.overlay:SetParent(button.OverlayFrame)
-	button.count:SetParent(button.OverlayFrame)
-	button.Remaining:SetParent(button.OverlayFrame)
+		button.OverlayFrame = CreateFrame("Frame", nil, button, nil)
+		button.OverlayFrame:SetFrameLevel(button.cd:GetFrameLevel() + 1)
+		button.overlay:SetParent(button.OverlayFrame)
+		button.count:SetParent(button.OverlayFrame)
+		button.Remaining:SetParent(button.OverlayFrame)
 
-	if not button:GetName():match("NamePlate") then
 		button.Animation = button:CreateAnimationGroup()
 		button.Animation:SetLooping("BOUNCE")
 
@@ -293,17 +311,25 @@ function Module:PostCreateAura(button)
 end
 
 function Module:PostUpdateAura(unit, button, index)
-	local _, _, _, _, DType, Duration, ExpirationTime, _, IsStealable = UnitAura(unit, index, button.filter)
+	local _, _, _, DType, Duration, ExpirationTime, _, IsStealable = UnitAura(unit, index, button.filter)
 
 	if button then
 		if (button.filter == "HARMFUL") then
 			if (not UnitIsFriend("player", unit) and not button.isPlayer) then
 				button.icon:SetDesaturated(true)
-				button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
+					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+				else
+					button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				end
 			else
 				local color = _G.DebuffTypeColor[DType] or _G.DebuffTypeColor.none
 				button.icon:SetDesaturated(false)
-				button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+				if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
+					button.Shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+				else
+					button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
+				end
 			end
 		else
 			if button.Animation then
@@ -436,21 +462,21 @@ function Module:GetDamageRaidFramesAttributes()
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 
-	"initial-width", C["Raid"].Width,
-	"initial-height", C["Raid"].Height,
+	"initial-width", K.Scale(C["Raid"].Width),
+	"initial-height", K.Scale(C["Raid"].Height),
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"xoffset", 6,
-	"yOffset", -6,
+	"xoffset", K.Scale(6),
+	"yOffset", K.Scale(-6),
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raid"].GroupBy.Value,
 	"maxColumns", math.ceil(40 / 5),
 	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
-	"columnSpacing", 6,
+	"columnSpacing", K.Scale(6),
 	"columnAnchorPoint", "LEFT"
 end
 
@@ -464,21 +490,21 @@ function Module:GetHealerRaidFramesAttributes()
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 
-	"initial-width", C["Raid"].Width,
-	"initial-height", C["Raid"].Height,
+	"initial-width", K.Scale(C["Raid"].Width),
+	"initial-height", K.Scale(C["Raid"].Height),
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"xoffset", 6,
-	"yOffset", -6,
+	"xoffset", K.Scale(6),
+	"yOffset", K.Scale(-6),
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raid"].GroupBy.Value,
 	"maxColumns", math.ceil(40 / 5),
 	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
-	"columnSpacing", 6,
+	"columnSpacing", K.Scale(6),
 	"columnAnchorPoint", "LEFT"
 end
 

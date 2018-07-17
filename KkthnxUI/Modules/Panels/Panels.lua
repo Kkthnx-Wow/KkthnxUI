@@ -101,13 +101,14 @@ ShiftAnchor:SetScript("OnEvent", function()
 end)
 
 if C["Filger"].Enable then
-	local AnchorPlayer = CreateFrame("Frame", "AnchorPlayer", UIParent)
+	local AnchorPlayer = CreateFrame("Frame", "AnchorPlayer", K.PetBattleHider)
 	AnchorPlayer:SetSize(190, 52)
 	AnchorPlayer:SetPoint("BOTTOMRIGHT", BottomBarAnchor, "TOPLEFT", -10, 200)
 	AnchorPlayer:SetFrameLevel(0)
 	AnchorPlayer:SetFrameStrata("BACKGROUND")
 
-	local AnchorTarget = CreateFrame("Frame", "AnchorTarget", UIParent)
+
+	local AnchorTarget = CreateFrame("Frame", "AnchorTarget", K.PetBattleHider)
 	AnchorTarget:SetSize(190, 52)
 	AnchorTarget:SetPoint("BOTTOMLEFT", BottomBarAnchor, "TOPRIGHT", 10, 200)
 	AnchorTarget:SetFrameLevel(0)

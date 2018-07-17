@@ -10,9 +10,9 @@ local GetRealmName = _G.GetRealmName
 local IsInGroup = _G.IsInGroup
 local IsInGuild = _G.IsInGuild
 local IsInRaid = _G.IsInRaid
-local RegisterAddonMessagePrefix = _G.RegisterAddonMessagePrefix
-local SendAddonMessage = _G.SendAddonMessage
+local C_ChatInfo_SendAddonMessage = _G.C_ChatInfo.SendAddonMessage
 local UnitName = _G.UnitName
+local C_ChatInfo_RegisterAddonMessagePrefix = _G.C_ChatInfo.RegisterAddonMessagePrefix
 
 local Version = tonumber(GetAddOnMetadata("KkthnxUI", "Version"))
 local MyName = UnitName("player") .. "-" .. GetRealmName()
@@ -41,7 +41,7 @@ function Module:CheckIt(event, prefix, message, _, sender)
 		end
 
 		if Channel then -- Putting a small delay on the call just to be certain it goes out.
-			K.Delay(2, SendAddonMessage, "KkthnxUIVersion", Version, Channel)
+			K.Delay(2, C_ChatInfo_SendAddonMessage, "KkthnxUIVersion", Version, Channel)
 		end
 	end
 end
@@ -51,5 +51,5 @@ function Module:OnInitialize()
 	self:RegisterEvent("GROUP_ROSTER_UPDATE", "CheckIt")
 	self:RegisterEvent("CHAT_MSG_ADDON", "CheckIt")
 
-	RegisterAddonMessagePrefix("KkthnxUIVersion")
+	C_ChatInfo_RegisterAddonMessagePrefix("KkthnxUIVersion")
 end

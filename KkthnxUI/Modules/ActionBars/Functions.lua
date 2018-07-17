@@ -1,5 +1,7 @@
 local K, C = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
 local _G = _G
 
@@ -24,14 +26,14 @@ local SetDesaturation = _G.SetDesaturation
 -- Main functions
 function K.ShiftBarUpdate()
 	local numForms = GetNumShapeshiftForms()
-	local texture, _, isActive, isCastable
+	local texture, isActive, isCastable
 	local button, icon, cooldown
 	local start, duration, enable
 	for i = 1, NUM_STANCE_SLOTS do
 		button = _G["StanceButton"..i]
 		icon = _G["StanceButton"..i.."Icon"]
 		if i <= numForms then
-			texture, _, isActive, isCastable = GetShapeshiftFormInfo(i)
+			texture, isActive, isCastable = GetShapeshiftFormInfo(i)
 			icon:SetTexture(texture)
 
 			cooldown = _G["StanceButton"..i.."Cooldown"]
@@ -68,7 +70,8 @@ function K.PetBarUpdate()
 		petActionIcon = _G[buttonName.."Icon"]
 		petAutoCastableTexture = _G[buttonName.."AutoCastable"]
 		petAutoCastShine = _G[buttonName.."Shine"]
-		local name, subtext, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
+
+		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
 
 		if not isToken then
 			petActionIcon:SetTexture(texture)
@@ -79,7 +82,6 @@ function K.PetBarUpdate()
 		end
 
 		petActionButton.isToken = isToken
-		petActionButton.tooltipSubtext = subtext
 
 		if isActive and name ~= "PET_ACTION_FOLLOW" then
 			petActionButton:SetChecked(true)

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:GetModule("Skins")
+local ModuleSkins = K:GetModule("Skins")
 if C["Skins"].Skada ~= true or not K.CheckAddOnState("Skada") then
 	return
 end
@@ -12,7 +12,7 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local function SkinSkada()
 	function Skada:ShowPopup()
-		Module:AcceptFrame("Do you want to reset Skada?", function(self)
+		ModuleSkins:AcceptFrame("Do you want to reset Skada?", function(self)
 			Skada:Reset()
 			self:GetParent():Hide()
 		end)
@@ -74,8 +74,10 @@ local function SkinSkada()
 	end)
 end
 
+-- table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
+
 if IsAddOnLoaded("Skada") then
-	table_insert(Module.SkinFuncs["KkthnxUI"], SkinSkada)
+	table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
 else
 	Module.SkinFuncs["Skada"] = SkinSkada
 end

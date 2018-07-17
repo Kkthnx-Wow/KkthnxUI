@@ -153,30 +153,24 @@ local function UpdateBlizzardFonts()
 	)
 
 	-- Titles
-	PaperDollTitlesPane:HookScript(
-		"OnShow",
-		function()
+	PaperDollTitlesPane:HookScript("OnShow", function()
 			for _, object in pairs(PaperDollTitlesPane.buttons) do
 				object.BgTop:SetTexture(nil)
 				object.BgBottom:SetTexture(nil)
 				object.BgMiddle:SetTexture(nil)
 				object.text:FontTemplate(NORMAL_FONT, 11, "")
-				hooksecurefunc(
-					object.text,
-					"SetFont",
+				hooksecurefunc(object.text, "SetFont",
 					function(self, font)
 						if font ~= NORMAL_FONT then
 							self:FontTemplate(NORMAL_FONT, 11, "")
 						end
-					end
-				)
-			end
-		end
-	)
+					end)
+				end
+			end)
 
 	-- Fix some fonts to follow our font.
-	WorldMapFrameNavBarHomeButton.text:SetFontObject(SystemFont_Shadow_Med1)
-	WorldMapFrame.UIElementsFrame.BountyBoard.BountyName:FontTemplate(nil, 14, "OUTLINE")
+	-- WorldMapFrameNavBarHomeButton.text:SetFontObject(SystemFont_Shadow_Med1)
+	-- WorldMapFrame.UIElementsFrame.BountyBoard.BountyName:FontTemplate(nil, 14, "OUTLINE")
 	SplashFrame.Header:FontTemplate(nil, 22)
 
 	if IsAddOnLoaded("Blizzard_Collections") then
@@ -209,7 +203,7 @@ local function UpdateBlizzardFonts()
 			end
 		end
 	end
-	hooksecurefunc("ChannelList_Update", Channel)
+	-- hooksecurefunc("ChannelList_Update", Channel)
 
 	-- Fix help frame category buttons, NFI why they need fixing
 	for i = 1, 6 do

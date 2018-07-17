@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Databars -->
-    <Script file="Artifact.lua"/>
+    <Script file="Azerite.lua"/>
     <Script file="Experience.lua"/>
     <Script file="Honor.lua"/>
     <Script file="Reputation.lua"/>

@@ -83,22 +83,12 @@ end
 function Filger:UnitBuff(unitID, inSpellID, spn, absID)
 	if absID then
 		for i = 1, 40, 1 do
-			local name,
-				rank,
-				icon,
-				count,
-				debuffType,
-				duration,
-				expirationTime,
-				unitCaster,
-				isStealable,
-				shouldConsolidate,
-				spellID = UnitBuff(unitID, i)
+			local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID = UnitBuff(unitID, i)
 			if not name then
 				break
 			end
 			if inSpellID == spellID then
-				return name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
+				return name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
 			end
 		end
 	else
@@ -110,22 +100,12 @@ end
 function Filger:UnitDebuff(unitID, inSpellID, spn, absID)
 	if absID then
 		for i = 1, 40, 1 do
-			local name,
-				rank,
-				icon,
-				count,
-				debuffType,
-				duration,
-				expirationTime,
-				unitCaster,
-				isStealable,
-				shouldConsolidate,
-				spellID = UnitDebuff(unitID, i)
+			local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID = UnitDebuff(unitID, i)
 			if not name then
 				break
 			end
 			if inSpellID == spellID then
-				return name, rank, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
+				return name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
 			end
 		end
 	else
@@ -158,9 +138,11 @@ function Filger:DisplayActives()
 	if not self.actives then
 		return
 	end
+
 	if not self.bars then
 		self.bars = {}
 	end
+
 	local id = self.Id
 	local index = 1
 	local previous = nil
@@ -169,15 +151,13 @@ function Filger:DisplayActives()
 		local bar = self.bars[index]
 		if not bar then
 			bar = CreateFrame("Frame", "FilgerAnchor" .. id .. "Frame" .. index, self)
-			bar:SetScale(1)
+			bar:SetScale(UIParent:GetEffectiveScale() * 1) -- We will just keep this until I can fix this properly.
 
 			bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
 			bar.Background:SetAllPoints()
 			bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-			bar.Border = CreateFrame("Frame", nil, bar)
-			bar.Border:SetAllPoints()
-			K.CreateBorder(bar.Border)
+			K.CreateBorder(bar)
 
 			if index == 1 then
 				bar:SetPoint(self.Position[1], self.Position[2], self.Position[3], self.Position[4])
@@ -185,21 +165,9 @@ function Filger:DisplayActives()
 				if self.Direction == "UP" then
 					bar:SetPoint("BOTTOM", previous, "TOP", 0, self.Interval + 2)
 				elseif self.Direction == "RIGHT" then
-					bar:SetPoint(
-						"LEFT",
-						previous,
-						"RIGHT",
-						self.Mode == "ICON" and self.Interval + 2 or (self.BarWidth + self.Interval + 7),
-						0
-					)
+					bar:SetPoint("LEFT", previous, "RIGHT", self.Mode == "ICON" and self.Interval + 2 or (self.BarWidth + self.Interval + 7), 0)
 				elseif self.Direction == "LEFT" then
-					bar:SetPoint(
-						"RIGHT",
-						previous,
-						"LEFT",
-						self.Mode == "ICON" and -self.Interval - 2 or -(self.BarWidth + self.Interval + 7),
-						0
-					)
+					bar:SetPoint("RIGHT", previous, "LEFT", self.Mode == "ICON" and -self.Interval - 2 or -(self.BarWidth + self.Interval + 7), 0 )
 				else
 					bar:SetPoint("TOP", previous, "BOTTOM", 0, -self.Interval - 2)
 				end
@@ -242,11 +210,22 @@ function Filger:DisplayActives()
 					if C["Filger"].Bars ~= true then
 						return
 					end
+
 					bar.statusbar = CreateFrame("StatusBar", "$parentStatusBar", bar)
 					bar.statusbar:SetWidth(self.BarWidth)
 					bar.statusbar:SetHeight(self.IconSize - 10)
 					bar.statusbar:SetStatusBarTexture(FilgerTexture)
 					bar.statusbar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b, 1)
+
+					bar.statusbar.Background = bar.statusbar:CreateTexture(nil, "BACKGROUND", -2)
+					bar.statusbar.Background:SetAllPoints()
+					bar.statusbar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
+					bar.statusbar.Borders = CreateFrame("Frame", nil, bar.statusbar)
+					bar.statusbar.Borders:SetFrameLevel(bar.statusbar:GetFrameLevel() + 2)
+					bar.statusbar.Borders:SetAllPoints()
+       				K.CreateBorder(bar.statusbar.Borders)
+
 					if self.IconSide == "LEFT" then
 						bar.statusbar:SetPoint("BOTTOMLEFT", bar, "BOTTOMRIGHT", 5, 2)
 					elseif self.IconSide == "RIGHT" then
@@ -269,11 +248,12 @@ function Filger:DisplayActives()
 					bar.bg:SetFrameLevel(4)
 					bar.bg:SetAllPoints()
 
-					bar.bg.Background = bar.bg:CreateTexture(nil, "BACKGROUND", -1)
+					bar.bg.Background = bar.bg:CreateTexture(nil, "BACKGROUND", -2)
 					bar.bg.Background:SetAllPoints()
 					bar.bg.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 					bar.bg.Border = CreateFrame("Frame", nil, bar)
+					bar.bg.Border:SetFrameLevel(bar.bg:GetFrameLevel() + 2)
 					bar.bg.Border:SetAllPoints()
 					K.CreateBorder(bar.bg.Border)
 				end
@@ -284,12 +264,7 @@ function Filger:DisplayActives()
 					bar.background = bar.statusbar:CreateTexture(nil, "BACKGROUND")
 					bar.background:SetAllPoints()
 					bar.background:SetTexture(C["Media"].Blank)
-					bar.background:SetVertexColor(
-						C["Media"].BackdropColor[1],
-						C["Media"].BackdropColor[2],
-						C["Media"].BackdropColor[3],
-						C["Media"].BackdropColor[4]
-					)
+					bar.background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
 				end
 
 				if bar.time then
@@ -319,9 +294,11 @@ function Filger:DisplayActives()
 					bar.spellname:SetJustifyH("LEFT")
 				end
 			end
+
 			bar.spellID = 0
 			self.bars[index] = bar
 		end
+
 		previous = bar
 		index = index + 1
 	end
@@ -351,13 +328,17 @@ function Filger:DisplayActives()
 		if n >= activeCount then
 			break
 		end
+
 		local activeIndex = self.sortedIndex[n]
 		local value = self.actives[activeIndex]
 		local bar = self.bars[index]
+
 		bar.spellName = GetSpellInfo(value.spid)
+
 		if self.Mode == "BAR" then
 			bar.spellname:SetText(bar.spellName)
 		end
+
 		bar.icon:SetTexture(value.icon)
 		if value.count and value.count > 1 then
 			bar.count:SetText(value.count)
@@ -365,6 +346,7 @@ function Filger:DisplayActives()
 		else
 			bar.count:Hide()
 		end
+
 		if value.duration and value.duration > 0 then
 			if self.Mode == "ICON" then
 				CooldownFrame_Set(bar.cooldown, value.start, value.duration, 1)
@@ -390,14 +372,17 @@ function Filger:DisplayActives()
 				bar.statusbar:SetValue(1)
 				bar.time:SetText("")
 			end
+
 			bar:SetScript("OnUpdate", nil)
 		end
+
 		bar.spellID = value.spid
 		if C["Filger"].ShowTooltip then
 			bar:EnableMouse(true)
 			bar:SetScript("OnEnter", Filger.TooltipOnEnter)
 			bar:SetScript("OnLeave", Filger.TooltipOnLeave)
 		end
+
 		bar:SetWidth(self.IconSize or C["Filger"].BuffSize)
 		bar:SetHeight(self.IconSize or C["Filger"].BuffSize)
 		bar:SetAlpha(value.data.opacity or 1)
@@ -412,12 +397,9 @@ function Filger:DisplayActives()
 end
 
 function Filger:OnEvent(event, unit, _, _, _, spellID)
-	if
-		event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or
-			event == "PLAYER_ENTERING_WORLD" or
-			event == "UNIT_AURA" and (unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or
-			(event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player")
-	 then
+	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED"
+	or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_AURA" and (unit == "target" or unit == "player"
+	or unit == "pet" or unit == "focus") or (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
@@ -435,8 +417,7 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 				local caster, spn, expirationTime
 				spn, _, _ = GetSpellInfo(data.spellID)
 				if spn then
-					name, _, icon, count, _, duration, expirationTime, caster, _, _, spid =
-						Filger:UnitBuff(data.unitID, data.spellID, spn, data.absID)
+					name, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitBuff(data.unitID, data.spellID, data.spellID, true)
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						if not data.count or count >= data.count then
 							start = expirationTime - duration
@@ -448,8 +429,7 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 				local caster, spn, expirationTime
 				spn, _, _ = GetSpellInfo(data.spellID)
 				if spn then
-					name, _, icon, count, _, duration, expirationTime, caster, _, _, spid =
-						Filger:UnitDebuff(data.unitID, data.spellID, spn, data.absID)
+					name, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitDebuff(data.unitID, data.spellID, data.spellID, true)
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						start = expirationTime - duration
 						found = true
@@ -482,13 +462,13 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 					local spn
 					spn, _, icon = GetSpellInfo(data.spellID)
 					if spn then
-						name, _, _, _, _, _, _, _, _, _, spid = Filger:UnitBuff("player", data.spellID, spn, data.absID)
+						name, _, _, _, _, _, _, _, _, spid = Filger:UnitBuff("player", data.spellID, data.spellID, true)
 					end
 				elseif data.trigger == "DEBUFF" then
 					local spn
 					spn, _, icon = GetSpellInfo(data.spellID)
 					if spn then
-						name, _, _, _, _, _, _, _, _, _, spid = Filger:UnitDebuff("player", data.spellID, spn, data.absID)
+						name, _, _, _, _, _, _, _, _, spid = Filger:UnitDebuff("player", data.spellID, data.spellID, true)
 					end
 				elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
 					if spellID == data.spellID then
@@ -512,15 +492,7 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 					self.actives = {}
 				end
 				if not self.actives[i] then
-					self.actives[i] = {
-						data = data,
-						name = name,
-						icon = icon,
-						count = count,
-						start = start,
-						duration = duration,
-						spid = spid
-					}
+					self.actives[i] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid }
 					needUpdate = true
 					if K.Class == "DEATHKNIGHT" and self.actives[i].duration == 10 and data.filter == "CD" then
 						self.actives[i] = nil
@@ -665,15 +637,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 						name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
 					end
 				end
-				frame.actives[j] = {
-					data = data,
-					name = name,
-					icon = icon,
-					count = 9,
-					start = 0,
-					duration = 0,
-					spid = data.spellID or data.slotID
-				}
+				frame.actives[j] = {data = data, name = name, icon = icon, count = 9, start = 0, duration = 0, spid = data.spellID or data.slotID}
 			end
 			Filger.DisplayActives(frame)
 		else
@@ -687,6 +651,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 					break
 				end
 			end
+
 			frame:RegisterEvent("UNIT_AURA")
 			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			frame:RegisterEvent("PLAYER_TARGET_CHANGED")

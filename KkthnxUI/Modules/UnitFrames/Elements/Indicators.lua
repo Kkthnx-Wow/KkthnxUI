@@ -147,6 +147,14 @@ end
 -- 	self.ResInfo:SetPoint("CENTER", self.Portrait, "CENTER", 0, 0)
 -- end
 
+-- function Module:CreateAFKIndicator()
+-- 	self.AFK = self.Health:CreateFontString(nil, "OVERLAY")
+-- 	self.AFK:SetFont(C["Media"].Font, 11, "")
+-- 	self.AFK:SetPoint("BOTTOM", 0, -8)
+-- 	self.AFK:SetShadowOffset(1.25, -1.25)
+-- 	self.AFK.fontFormat = "AFK %s:%s"
+-- end
+
 function Module:CreatePvPIndicator(unit)
 	self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.PvPIndicator:SetSize(30, 30)
@@ -191,12 +199,6 @@ function Module:CreateLeaderIndicator(unit)
 		self.LeaderIndicator:SetSize(16, 16)
 	end
 	self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait, "TOPLEFT", 5, 1)
-end
-
-function Module:CreateMasterLooterIndicator()
-	self.MasterLooterIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.MasterLooterIndicator:SetSize(16, 16)
-	self.MasterLooterIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", -5, 2)
 end
 
 function Module:CreatePhaseIndicator()

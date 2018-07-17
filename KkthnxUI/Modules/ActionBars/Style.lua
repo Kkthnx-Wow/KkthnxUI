@@ -102,11 +102,13 @@ local function StyleNormalButton(self)
 		self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 	end
 
-	K.CreateBorder(Button)
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	Button.BG = Button:CreateTexture(nil, "BACKGROUND", nil, 0)
-	Button.BG:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-	Button.BG:SetAllPoints()
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints(Button)
+	K.CreateBorder(Button.Borders)
 
 	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	Icon:SetAllPoints()
@@ -138,11 +140,13 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 
 	Button:SetSize(PetSize, PetSize)
 
-	K.CreateBorder(Button)
+	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+	Button.Backgrounds:SetAllPoints()
+	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	Button.BG = Button:CreateTexture(nil, "BACKGROUND", nil, 0)
-	Button.BG:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-	Button.BG:SetAllPoints()
+	Button.Borders = CreateFrame("Frame", nil, Button)
+	Button.Borders:SetAllPoints(Button)
+	K.CreateBorder(Button.Borders)
 
 	if (C["ActionBar"].Hotkey) then
 		HotKey:SetFontObject(Font)
@@ -262,11 +266,11 @@ local function SetupFlyoutButton()
 		if Button and not Button.IsSkinned then
 			Button:StyleButton()
 
-			K.CreateBorder(Button)
+			Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+			Button.Backgrounds:SetAllPoints()
+			Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-			Button.BG = Button:CreateTexture(nil, "BACKGROUND", nil, 0)
-			Button.BG:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-			Button.BG:SetAllPoints()
+			K.CreateBorder(Button)
 
 			if Button:GetChecked() then
 				Button:SetChecked(nil)
@@ -350,7 +354,7 @@ end
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
 hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
--- hooksecurefunc("ActionButton_ShowOverlayGlow", StartButtonHighlight)
--- hooksecurefunc("ActionButton_HideOverlayGlow", StopButtonHighlight)
+hooksecurefunc("ActionButton_ShowOverlayGlow", StartButtonHighlight)
+hooksecurefunc("ActionButton_HideOverlayGlow", StopButtonHighlight)
 hooksecurefunc("ActionButton_UpdateHotkeys", K.UpdateHotkey)
 hooksecurefunc("PetActionButton_SetHotkeys", K.UpdateHotkey)

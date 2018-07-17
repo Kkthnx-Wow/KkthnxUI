@@ -68,7 +68,7 @@ bar.Border:SetAllPoints()
 K.CreateBorder(bar.Border)
 
 -- Event handling
-bar:RegisterEvent("UNIT_POWER")
+bar:RegisterEvent("UNIT_POWER_UPDATE")
 bar:RegisterEvent("UNIT_POWER_BAR_SHOW")
 bar:RegisterEvent("UNIT_POWER_BAR_HIDE")
 bar:RegisterEvent("PLAYER_ENTERING_WORLD")

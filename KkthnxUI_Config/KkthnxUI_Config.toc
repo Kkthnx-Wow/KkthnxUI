@@ -1,4 +1,4 @@
-## Interface: 70300
+## Interface: 80000
 ## Name: KkthnxUI Config
 ## Title: |cff4488ffKkthnxUI Config|r
 ## Notes: Options for KkthnxUI

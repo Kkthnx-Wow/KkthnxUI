@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local _G = _G
 
@@ -109,9 +109,9 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 			SpellBookFrameTutorialButton:SetParent(K.UIFrameHider)
 			SpellBookFrameTutorialButton:Hide()
 
-			WorldMapFrameTutorialButton:UnregisterAllEvents()
-			WorldMapFrameTutorialButton:SetParent(K.UIFrameHider)
-			WorldMapFrameTutorialButton:Hide()
+			-- WorldMapFrameTutorialButton:UnregisterAllEvents()
+			-- WorldMapFrameTutorialButton:SetParent(K.UIFrameHider)
+			-- WorldMapFrameTutorialButton:Hide()
 
 			if PetJournalTutorialButton then
 				PetJournalTutorialButton:UnregisterAllEvents()
@@ -126,6 +126,10 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 			HelpPlateTooltip:UnregisterAllEvents()
 			HelpPlateTooltip:SetParent(K.UIFrameHider)
 			HelpPlateTooltip:Hide()
+
+			PaperDollItemsFrame.UnspentAzeriteHelpBox:UnregisterAllEvents()
+			PaperDollItemsFrame.UnspentAzeriteHelpBox:SetParent(K.UIFrameHider)
+			PaperDollItemsFrame.UnspentAzeriteHelpBox:Hide()
 
 			if (PlayerTalentFrame) then
 				PlayerTalentFrameSpecializationTutorialButton:UnregisterAllEvents()

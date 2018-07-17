@@ -4,6 +4,7 @@
    <Script file="oUF_AuraWatch.lua"/>
    <Script file="oUF_CombatFader.lua"/>
    <Script file="oUF_CombatFeedback.lua"/>
+   <Script file="oUF_CutAway.lua"/>
    <Script file="oUF_GlobalCooldown.lua"/>
    <Script file="oUF_PVPSpecIcons.lua"/>
    <Script file="oUF_RaidDebuffs.lua"/>

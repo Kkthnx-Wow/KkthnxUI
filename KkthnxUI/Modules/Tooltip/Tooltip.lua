@@ -553,30 +553,46 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 end
 
 function Module:GameTooltip_ShowStatusBar(tt)
-	if tt:IsForbidden() then
+	if not tt or tt:IsForbidden() then
 		return
 	end
 
-	local statusBar = _G[tt:GetName() .. "StatusBar" .. tt.shownStatusBars]
+	local statusBar = _G[tt:GetName() .. "StatusBar"]
 	if statusBar and not statusBar.skinned then
 		statusBar:SetStatusBarTexture(TooltipTexture)
 		statusBar.skinned = true
 	end
 end
 
+function Module:CheckBackdropColor(tt)
+	if (not tt) or tt:IsForbidden() or (tt:NumLines() ~= 1) then 
+		return 
+	end
+
+	local r, g, b = tt:GetBackdropColor()
+	if r and g and b then
+		r, g, b = K.Round(r, 1), K.Round(g, 1), K.Round(b, 1)
+
+		local red, green, blue = unpack(C["Media"].BackdropColor)
+		if r ~= red or g ~= green or b ~= blue then
+			tt:SetBackdropColor(red, green, blue, C["Media"].BackdropColor[4])
+		end
+	end
+end
+
 function Module:SetStyle(tt)
-	if tt:IsForbidden() then
+	if not tt or tt:IsForbidden() then
 		return
 	end
 
 	if (not tt.IsSkinned) then
-		tt:StripTextures()
-
-		tt.Backgrounds = tt:CreateTexture(nil, "BACKGROUND", 0)
-		tt.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-		tt.Backgrounds:SetAllPoints()
+		tt:StripTextures(true)
 
 		K.CreateBorder(tt)
+
+		tt.bg = tt:CreateTexture(nil, "BACKGROUND", 0)
+		tt.bg:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		tt.bg:SetAllPoints()
 
 		tt.IsSkinned = true
 	end
@@ -596,7 +612,7 @@ function Module:SetUnitAura(tt, unit, index, filter)
 		return
 	end
 
-	local _, _, _, _, _, _, _, caster, _, _, id = UnitAura(unit, index, filter)
+	local _, _, _, _, _, _, caster, _, _, id = UnitAura(unit, index, filter)
 	if id and C["Tooltip"].SpellID then
 		if caster then
 			local name = UnitName(caster)
@@ -619,7 +635,7 @@ function Module:GameTooltip_OnTooltipSetSpell(tt)
 		return
 	end
 
-	local id = select(3, tt:GetSpell())
+	local id = select(2, tt:GetSpell())
 	if not id or not C["Tooltip"].SpellID then
 		return
 	end
@@ -653,27 +669,6 @@ function Module:RepositionBNET(frame, _, anchor)
 	if anchor ~= BNETMover then
 		frame:ClearAllPoints()
 		frame:SetPoint("CENTER", BNETMover, "CENTER")
-	end
-end
-
-function Module:CheckBackdropColor()
-	if GameTooltip:IsForbidden() then
-		return
-	end
-	if not GameTooltip:IsShown() then
-		return
-	end
-
-	local r, g, b = GameTooltip:GetBackdropColor()
-	if (r and g and b) then
-		r = K.Round(r, 1)
-		g = K.Round(g, 1)
-		b = K.Round(b, 1)
-
-		local red, green, blue = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3]
-		if (r ~= red or g ~= green or b ~= blue) then
-			GameTooltip:SetBackdropColor(red, green, blue, C["Media"].BackdropColor[4])
-		end
 	end
 end
 
@@ -732,9 +727,9 @@ function Module:OnEnable()
 
 	K.CreateBorder(BNToastFrame)
 
-	BNToastFrameCloseButton:SetSize(32, 32)
-	BNToastFrameCloseButton:SetPoint("TOPRIGHT", 4, 4)
-	BNToastFrameCloseButton:SkinCloseButton()
+	BNToastFrame.CloseButton:SetSize(32, 32)
+	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
+	BNToastFrame.CloseButton:SkinCloseButton()
 
 	K.Movers:RegisterFrame(BNETMover)
 	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")

@@ -36,9 +36,7 @@ function Module:CreateClassRunes(width, height, spacing)
 		rune.Background:SetAllPoints()
 		rune.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-		rune.Border = CreateFrame("Frame", nil, rune)
-		rune.Border:SetAllPoints()
-		K.CreateBorder(rune.Border)
+		K.CreateBorder(rune)
 
 		runes[i] = rune
 	end

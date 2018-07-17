@@ -42,7 +42,7 @@ end
 local Page = {
 	["DRUID"] = PageDRUID,
 	["ROGUE"] = PageROGUE,
-	["DEFAULT"] = "[vehicleui][possessbar] 12; [shapeshift] 13; [overridebar] 14; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
+	["DEFAULT"] = "[vehicleui:12] 12; [possessbar] 11; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local function GetBar()
@@ -62,7 +62,6 @@ end
 ActionBar1:RegisterEvent("PLAYER_LOGIN")
 ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
 ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
-ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 ActionBar1:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
@@ -92,6 +91,6 @@ ActionBar1:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 	else
-		MainMenuBar_OnEvent(self, event, ...)
+		MainMenuBarMixin:OnEvent(event, ...)
 	end
 end)
