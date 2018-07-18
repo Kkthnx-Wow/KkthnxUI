@@ -43,7 +43,7 @@ C["FilgerSpells"] = {
 			-- Dancing Rune Weapon
 			{spellID = 81256, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Lichborne
-			{spellID = 49039, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 49039, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Rune Tap
 			{spellID = 194679, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Pillar of Frost
@@ -251,7 +251,7 @@ C["FilgerSpells"] = {
 			-- Breath of Sindragosa
 			{spellID = 152279, filter = "CD"},
 			-- Lichborne
-			{spellID = 49039, filter = "CD"},
+			-- {spellID = 49039, filter = "CD"},
 			-- Desecrated Ground
 			{spellID = 108201, filter = "CD"},
 			-- Death Pact
@@ -325,7 +325,7 @@ C["FilgerSpells"] = {
 			-- Metamorphosis
 			{spellID = 187827, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Empower Wards
-			{spellID = 218256, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 218256, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Darkness
 			{spellID = 196718, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Immolation Aura
@@ -337,7 +337,7 @@ C["FilgerSpells"] = {
 			-- Blur
 			{spellID = 212800, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Chaos Blades
-			{spellID = 211048, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 211048, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Netherwalk
 			{spellID = 196555, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Nether Bond
@@ -524,7 +524,7 @@ C["FilgerSpells"] = {
 			-- Sigil of Misery
 			{spellID = 207684, filter = "CD"},
 			-- Empower Wards
-			{spellID = 218256, filter = "CD"},
+			-- {spellID = 218256, filter = "CD"},
 			-- Spectral Sight
 			{spellID = 188501, filter = "CD"},
 			-- Fiery Brand
@@ -550,7 +550,7 @@ C["FilgerSpells"] = {
 			-- Netherwalk
 			{spellID = 196555, filter = "CD"},
 			-- Chaos Blades
-			{spellID = 211048, filter = "CD"},
+			-- {spellID = 211048, filter = "CD"},
 			-- Nemesis
 			{spellID = 206491, filter = "CD"},
 			-- Metamorphosis
@@ -998,7 +998,7 @@ C["FilgerSpells"] = {
 			-- Beast Cleave
 			{spellID = 118455, unitID = "pet", caster = "player", filter = "BUFF"},
 			-- Marking Targets
-			{spellID = 223138, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 223138, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Frenzy
 			{spellID = 19615, unitID = "player", caster = "player", filter = "BUFF", absID = true},
 			-- Mend Pet
@@ -1078,9 +1078,9 @@ C["FilgerSpells"] = {
 			-- A Murder of Crows
 			{spellID = 131894, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Vulnerable
-			{spellID = 187131, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- {spellID = 187131, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Hunter's Mark
-			{spellID = 185365, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- {spellID = 185365, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Narrow Escape
 			{spellID = 136634, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Entrapment
@@ -1296,7 +1296,7 @@ C["FilgerSpells"] = {
 			-- Glacial Spike!
 			{spellID = 199844, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Arcane Missiles!
-			{spellID = 79683, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 79683, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hot Streak!
 			{spellID = 48108, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Kael'thas's Ultimate Ability
@@ -1354,13 +1354,13 @@ C["FilgerSpells"] = {
 			-- Nether Tempest
 			{spellID = 114923, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Frost Bomb
-			{spellID = 112948, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- {spellID = 112948, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Pyroblast
 			{spellID = 11366, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Freeze (Pet)
 			{spellID = 33395, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Water Jet (Pet)
-			{spellID = 135029, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- {spellID = 135029, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Frostbite
 			{spellID = 198121, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Frost Nova
@@ -1427,7 +1427,7 @@ C["FilgerSpells"] = {
 			-- Cone of Cold
 			{spellID = 120, filter = "CD"},
 			-- Water Jet (Pet)
-			{spellID = 135029, filter = "CD"},
+			-- {spellID = 135029, filter = "CD"},
 			-- Comet Storm
 			{spellID = 153595, filter = "CD"},
 			-- Ice Floes
@@ -1863,7 +1863,7 @@ C["FilgerSpells"] = {
 			-- Speed of Light
 			{spellID = 85499, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Eternal Flame
-			{spellID = 114163, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 114163, unitID = "player", caster = "player", filter = "BUFF"},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -2043,7 +2043,7 @@ C["FilgerSpells"] = {
 			-- Divine Protection
 			{spellID = 498, filter = "CD", absID = true},
 			-- Execution Sentence
-			{spellID = 213757, filter = "CD"},
+			-- {spellID = 213757, filter = "CD"},
 			-- Light's Hammer
 			{spellID = 114158, filter = "CD"},
 			-- Blinding Light
@@ -2244,7 +2244,7 @@ C["FilgerSpells"] = {
 			-- Pain Suppression
 			{spellID = 33206, unitID = "target", caster = "player", filter = "BUFF"},
 			-- Void Entropy
-			{spellID = 155361, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- {spellID = 155361, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Vampiric Touch
 			{spellID = 34914, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Shadow Word: Pain
@@ -2623,7 +2623,7 @@ C["FilgerSpells"] = {
 			-- Crimson Vial
 			{spellID = 185311, filter = "CD"},
 			-- Cannonball Barrage
-			{spellID = 185767, filter = "CD"},
+			-- {spellID = 185767, filter = "CD"},
 			-- Garrote
 			{spellID = 703, filter = "CD"},
 			-- Exsanguinate
@@ -3260,11 +3260,11 @@ C["FilgerSpells"] = {
 			-- Raging Blow!
 			{spellID = 131116, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Ultimatum
-			{spellID = 122510, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 122510, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Meat Cleaver
 			{spellID = 85739, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Unyielding Strikes
-			{spellID = 169686, unitID = "player", caster = "player", filter = "BUFF"},
+			-- {spellID = 169686, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Enrage
 			{spellID = 184362, unitID = "player", caster = "player", filter = "BUFF"},
 
@@ -3392,7 +3392,7 @@ C["FilgerSpells"] = {
 			-- Spell Reflection
 			{spellID = 23920, filter = "CD"},
 			-- Intervene
-			{spellID = 3411, filter = "CD"},
+			-- {spellID = 3411, filter = "CD"},
 			-- Berserker Rage
 			{spellID = 18499, filter = "CD"},
 			-- Heroic Leap
@@ -3615,7 +3615,7 @@ C["FilgerSpells"] = {
 			-- Grounding Totem
 			{spellID = 8178, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Mass Spell Reflection
-			{spellID = 114028, unitID = "player", caster = "all", filter = "BUFF"},
+			-- {spellID = 114028, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Tiger's Lust
 			{spellID = 116841, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Body and Soul
@@ -3807,7 +3807,7 @@ C["FilgerSpells"] = {
 			-- Debilitate (Terrorguard)
 			{spellID = 170996, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Staggering Shout
-			{spellID = 107566, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- {spellID = 107566, unitID = "player", caster = "all", filter = "DEBUFF"},
 
 			-- Slows
 			-- Infected Wounds
@@ -4128,7 +4128,7 @@ C["FilgerSpells"] = {
 			-- Desecrated Ground
 			{spellID = 115018, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Lichborne
-			{spellID = 49039, unitID = "target", caster = "all", filter = "BUFF"},
+			-- {spellID = 49039, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Icebound Fortitude
 			{spellID = 48792, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Pillar of Frost
@@ -4370,7 +4370,7 @@ C["FilgerSpells"] = {
 			-- Spell Reflection
 			{spellID = 23920, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Mass Spell Reflection
-			{spellID = 114028, unitID = "target", caster = "all", filter = "BUFF"},
+			-- {spellID = 114028, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Shield Wall
 			{spellID = 871, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Die by the Sword

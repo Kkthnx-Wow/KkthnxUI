@@ -565,7 +565,7 @@ function Module:GameTooltip_ShowStatusBar(tt)
 end
 
 function Module:CheckBackdropColor(tt)
-	if (not tt) or tt:IsForbidden() or (tt:NumLines() ~= 1) then 
+	if (not tt) or tt:IsForbidden() then 
 		return 
 	end
 

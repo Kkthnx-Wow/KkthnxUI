@@ -590,7 +590,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				end
 			end
 			if not spn and not data[j].slotID then
-				-- print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
+				print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
 				table.insert(jdx, j)
 			end
 		end

@@ -2,7 +2,7 @@ local K, C, L, _ = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 local function SkinTalkingHead()
-	TalkingHeadFrame:StripTextures()
+	TalkingHeadFrame:StripTextures(true)
 
     TalkingHeadFrame.Backgrounds = TalkingHeadFrame:CreateTexture(nil, "BACKGROUND", -2)
     TalkingHeadFrame.Backgrounds:SetAllPoints()
@@ -16,9 +16,9 @@ local function SkinTalkingHead()
     TalkingHeadFrame.Borders:SetPoint("BOTTOMRIGHT", -35, 11)
 	K.CreateBorder(TalkingHeadFrame.Borders)
 
-	TalkingHeadFrame.MainFrame:StripTextures()
-	TalkingHeadFrame.PortraitFrame:StripTextures()
-	TalkingHeadFrame.BackgroundFrame:StripTextures()
+	TalkingHeadFrame.MainFrame:StripTextures(true)
+	TalkingHeadFrame.PortraitFrame:StripTextures(true)
+	TalkingHeadFrame.BackgroundFrame:StripTextures(true)
 
     TalkingHeadFrame.MainFrame.Model.Backgrounds = TalkingHeadFrame.MainFrame.Model:CreateTexture(nil, "BACKGROUND", -2)
     TalkingHeadFrame.MainFrame.Model.Backgrounds:SetAllPoints()

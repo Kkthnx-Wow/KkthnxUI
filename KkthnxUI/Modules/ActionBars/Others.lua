@@ -15,55 +15,45 @@ local SetActionBarToggles = _G.SetActionBarToggles
 local Name = UnitName("player")
 local Realm = GetRealmName()
 
-local AB_ShowGrid = CreateFrame("Frame")
-AB_ShowGrid:RegisterEvent("PLAYER_LOGIN")
-AB_ShowGrid:RegisterEvent("ADDON_LOADED")
-AB_ShowGrid:SetScript("OnEvent", function()
+local FixActionBarToggles = CreateFrame("Frame")
+FixActionBarToggles:RegisterEvent("PLAYER_ENTERING_WORLD")
+FixActionBarToggles:SetScript("OnEvent", function()
 	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
 	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
 		if (not b1 or not b2 or not b3 or not b4) then
-			SetActionBarToggles(1, 1, 1, 1)
+			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+			SetActionBarToggles(1, 1, 1, 1, 0)
 			K.StaticPopup_Show("FIX_ACTIONBARS")
 		end
 	end
-
-	for i = 1, NUM_ACTIONBAR_BUTTONS do
-		local Button
-
-		Button = _G[string_format("ActionButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button.noGrid = false
-		Button:Show()
-		ActionButton_ShowGrid(Button)
-
-		Button = _G[string_format("MultiBarRightButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button.noGrid = false
-		Button:Show()
-		ActionButton_ShowGrid(Button)
-
-		Button = _G[string_format("MultiBarBottomRightButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button.noGrid = false
-		Button:Show()
-		ActionButton_ShowGrid(Button)
-
-		Button = _G[string_format("MultiBarLeftButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button.noGrid = false
-		Button:Show()
-		ActionButton_ShowGrid(Button)
-
-		Button = _G[string_format("MultiBarBottomLeftButton%d", i)]
-		Button:SetAttribute("showgrid", 1)
-		Button:SetAttribute("statehidden", true)
-		Button.noGrid = false
-		Button:Show()
-		ActionButton_ShowGrid(Button)
+	
+	SetCVar("alwaysShowActionBars", 1)
+	
+	for i = 1, 12 do
+		local button = _G[format("ActionButton%d", i)]
+		button.noGrid = nil
+		button:SetAttribute("showgrid", 1)
+		ActionButton_ShowGrid(button)
+		
+		button = _G[format("MultiBarRightButton%d", i)]
+		button.noGrid = nil
+		button:SetAttribute("showgrid", 1)
+		ActionButton_ShowGrid(button)
+		
+		button = _G[format("MultiBarBottomRightButton%d", i)]
+		button.noGrid = nil
+		button:SetAttribute("showgrid", 1)
+		ActionButton_ShowGrid(button)
+		
+		button = _G[format("MultiBarLeftButton%d", i)]
+		button.noGrid = nil
+		button:SetAttribute("showgrid", 1)
+		ActionButton_ShowGrid(button)
+		
+		button = _G[format("MultiBarBottomLeftButton%d", i)]
+		button.noGrid = nil
+		button:SetAttribute("showgrid", 1)
+		ActionButton_ShowGrid(button)
 	end
 end)
