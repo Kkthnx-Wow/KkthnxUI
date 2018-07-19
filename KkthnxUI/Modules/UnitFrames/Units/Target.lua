@@ -133,7 +133,7 @@ function Module:CreateTarget()
 	Module.CreateAuras(self, "target")
 
 	if (C["Unitframe"].Castbars) then
-		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
+		self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)

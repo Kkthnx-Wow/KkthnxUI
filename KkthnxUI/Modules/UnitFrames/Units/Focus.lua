@@ -114,7 +114,7 @@ function Module:CreateFocus()
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	if (C["Unitframe"].Castbars) then
-		self.Castbar = CreateFrame("StatusBar", "PlayerCastbar", self)
+		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)

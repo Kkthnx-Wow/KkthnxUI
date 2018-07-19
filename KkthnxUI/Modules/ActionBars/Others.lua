@@ -17,7 +17,7 @@ local Realm = GetRealmName()
 
 local FixActionBarToggles = CreateFrame("Frame")
 FixActionBarToggles:RegisterEvent("PLAYER_ENTERING_WORLD")
-FixActionBarToggles:SetScript("OnEvent", function()
+FixActionBarToggles:SetScript("OnEvent", function(self, event)
 	local IsInstalled = KkthnxUIData[Realm][Name].InstallComplete
 	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
