@@ -65,19 +65,15 @@ function Module:HonorBar_OnEnter()
 	local current = UnitHonor("player")
 	local max = UnitHonorMax("player")
 	local level = UnitHonorLevel("player")
-	local levelmax = GetMaxPlayerHonorLevel()
 
 	GameTooltip:AddLine(HONOR)
 
 	GameTooltip:AddDoubleLine(L["Databars"].Current_Level, level, 1, 1, 1)
 	GameTooltip:AddLine(" ")
 
-	if (level == levelmax) then
-		GameTooltip:AddLine(MAX_HONOR_LEVEL)
-	else
-		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, format(" %d / %d (%d%%)", current, max, current / max * 100), 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
-	end
+	GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, format(" %d / %d (%d%%)", current, max, current / max * 100), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+
 	GameTooltip:Show()
 end
 

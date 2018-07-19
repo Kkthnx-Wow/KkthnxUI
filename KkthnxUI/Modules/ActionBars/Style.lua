@@ -311,50 +311,8 @@ local function StyleFlyoutButton(self)
 	SetupFlyoutButton()
 end
 
-local function StartButtonHighlight(self)
-	if self.overlay then
-		self.overlay:Hide()
-		ActionButton_HideOverlayGlow(self)
-	end
-
-	if not self.Animation then
-		local NewProc = self:CreateTexture()
-		NewProc:SetTexture("Interface\\Buttons\\CheckButtonHilight")
-		NewProc:SetBlendMode("ADD")
-		NewProc:SetAlpha(1)
-		NewProc:SetAllPoints(self)
-
-		self.NewProc = NewProc
-
-		local Animation = self.NewProc:CreateAnimationGroup()
-		Animation:SetLooping("BOUNCE")
-
-		local FadeOut = Animation:CreateAnimation("Alpha")
-		FadeOut:SetFromAlpha(1)
-		FadeOut:SetToAlpha(0)
-		FadeOut:SetDuration(0.40)
-		FadeOut:SetSmoothing("IN_OUT")
-
-		self.Animation = Animation
-	end
-
-	if not self.Animation:IsPlaying() then
-		self.Animation:Play()
-		self.NewProc:Show()
-	end
-end
-
-local function StopButtonHighlight(self)
-	if self.Animation and self.Animation:IsPlaying() then
-		self.Animation:Stop()
-		self.NewProc:Hide()
-	end
-end
-
 hooksecurefunc("ActionButton_Update", StyleNormalButton)
 hooksecurefunc("ActionButton_UpdateFlyout", StyleFlyoutButton)
 hooksecurefunc("SpellButton_OnClick", StyleFlyoutButton)
-hooksecurefunc("ActionButton_ShowOverlayGlow", StartButtonHighlight)
-hooksecurefunc("ActionButton_HideOverlayGlow", StopButtonHighlight)
 hooksecurefunc("ActionButton_UpdateHotkeys", K.UpdateHotkey)
 hooksecurefunc("PetActionButton_SetHotkeys", K.UpdateHotkey)

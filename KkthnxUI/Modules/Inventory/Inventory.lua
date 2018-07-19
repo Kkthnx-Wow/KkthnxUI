@@ -1,18 +1,20 @@
 local K, C, L = unpack(select(2, ...))
 local Unfit = LibStub("Unfit-1.0")
-if
-C["Inventory"].Enable ~= true or K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or
-K.CheckAddOnState("cargBags_Nivaya") or
-K.CheckAddOnState("cargBags") or
-K.CheckAddOnState("Bagnon") or
-K.CheckAddOnState("Combuctor") or
-K.CheckAddOnState("TBag") or
-K.CheckAddOnState("BaudBag")
+
+if C["Inventory"].Enable ~= true
+	or K.CheckAddOnState("AdiBags") 
+	or K.CheckAddOnState("ArkInventory")
+	or K.CheckAddOnState("cargBags_Nivaya")
+	or K.CheckAddOnState("cargBags")
+	or K.CheckAddOnState("Bagnon")
+	or K.CheckAddOnState("Combuctor")
+	or K.CheckAddOnState("TBag")
+	or K.CheckAddOnState("BaudBag")
 then
 	return
 end
 
--- Sorced (by Hungtar, editor Tukz then Kkthnx)
+-- Sourced (by Hungtar, editor Tukz then Kkthnx)
 
 local _G = _G
 local bit_band = bit.band
@@ -81,11 +83,9 @@ local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
 Stuffing:SetScript(
-"OnEvent",
-function(self, event, ...)
+"OnEvent", function(self, event, ...)
 	self[event](self, ...)
-end
-)
+end)
 
 local function Stuffing_OnShow()
 	Stuffing:PLAYERBANKSLOTS_CHANGED(29)
@@ -193,8 +193,13 @@ local function IsRealItemLevel(link, owner, bag, slot)
 	return realItemLevel
 end
 
-local function IsItemEligibleForItemLevelDisplay(classID, subClassID)
-	if (classID == 3 and subClassID == 11) then
+local function IsItemEligibleForItemLevelDisplay(classID, subClassID, equipLoc, rarity)
+	if ((classID == 3 and subClassID == 11) 
+		or (equipLoc ~= nil and equipLoc ~= "" 
+		and equipLoc ~= "INVTYPE_BAG" 
+		and equipLoc ~= "INVTYPE_QUIVER" 
+		and equipLoc ~= "INVTYPE_TABARD"))
+		and (rarity and rarity > 1) then
 		return true
 	end
 
@@ -225,6 +230,7 @@ function Stuffing:SlotUpdate(b)
 		b.frame.UpgradeIcon:SetPoint("BOTTOMRIGHT", 6, -3)
 		b.frame.UpgradeIcon:SetSize(C["Inventory"].ButtonSize / 1.4, C["Inventory"].ButtonSize / 1.4)
 		b.frame.UpgradeIcon:SetTexCoord(0, 1, 0, 1)
+
 		local itemIsUpgrade = _G.IsContainerItemAnUpgrade(b.frame:GetParent():GetID(), b.frame:GetID())
 		if not itemIsUpgrade or itemIsUpgrade == nil then
 			b.frame.UpgradeIcon:SetShown(false)
@@ -685,7 +691,7 @@ function Stuffing:SlotNew(bag, slot)
 
 		if not ret.frame.isSkinned then
 			ret.frame.Background = ret.frame:CreateTexture(nil, "BACKGROUND", -1)
-			ret.frame.Background:SetAllPoints(ret.frame)
+			ret.frame.Background:SetAllPoints()
 			ret.frame.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			K.CreateBorder(ret.frame)
