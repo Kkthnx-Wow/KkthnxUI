@@ -2,7 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Unfit = LibStub("Unfit-1.0")
 
 if C["Inventory"].Enable ~= true
-	or K.CheckAddOnState("AdiBags") 
+	or K.CheckAddOnState("AdiBags")
 	or K.CheckAddOnState("ArkInventory")
 	or K.CheckAddOnState("cargBags_Nivaya")
 	or K.CheckAddOnState("cargBags")
@@ -194,10 +194,10 @@ local function IsRealItemLevel(link, owner, bag, slot)
 end
 
 local function IsItemEligibleForItemLevelDisplay(classID, subClassID, equipLoc, rarity)
-	if ((classID == 3 and subClassID == 11) 
-		or (equipLoc ~= nil and equipLoc ~= "" 
-		and equipLoc ~= "INVTYPE_BAG" 
-		and equipLoc ~= "INVTYPE_QUIVER" 
+	if ((classID == 3 and subClassID == 11)
+		or (equipLoc ~= nil and equipLoc ~= ""
+		and equipLoc ~= "INVTYPE_BAG"
+		and equipLoc ~= "INVTYPE_QUIVER"
 		and equipLoc ~= "INVTYPE_TABARD"))
 		and (rarity and rarity > 1) then
 		return true
@@ -1549,6 +1549,8 @@ function Stuffing:ADDON_LOADED(addon)
 	BankFrame:SetScale(0.0001)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
+
+	function ManageBackpackTokenFrame() end
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
@@ -1556,10 +1558,6 @@ function Stuffing:PLAYER_ENTERING_WORLD()
 
 	ToggleBackpack()
 	ToggleBackpack()
-
-	function
-		ManageBackpackTokenFrame()
-	end
 end
 
 function Stuffing:PLAYERBANKSLOTS_CHANGED(id)

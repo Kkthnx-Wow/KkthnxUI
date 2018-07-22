@@ -43,8 +43,6 @@ function Module:DisableBlizzard()
 		return 999999999
 	end
 
-	SetCVar("alwaysShowActionBars", 1)
-
 	for _, frame in pairs(Module.BarFrames) do
 		frame:UnregisterAllEvents()
 		frame.ignoreFramePositionManager = true
@@ -56,7 +54,6 @@ function Module:DisableBlizzard()
 
 		Button:UnregisterAllEvents()
 		Button:SetAttribute("statehidden", true)
-		Button:SetAttribute("showgrid", 1)
 	end
 
 	hooksecurefunc("TalentFrame_LoadUI", function()
@@ -80,8 +77,6 @@ function Module:DisableBlizzard()
 	-- Avoid Hiding Buttons on open/close spellbook
 	MultiActionBar_HideAllGrids = function() end
 	MultiActionBar_ShowAllGrids = function() end
-
-	ActionBarButtonEventsFrame:UnregisterEvent("ACTIONBAR_HIDEGRID")
 end
 
 function Module:OnEnable()

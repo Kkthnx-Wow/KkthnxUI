@@ -16,4 +16,5 @@
     <Script file="CheckVersion.lua"/>
     <Script file="Movers.lua"/>
     <Script file="CustomSettings.lua"/>
+    <Script file="MapInfo.lua"/>
 </Ui>

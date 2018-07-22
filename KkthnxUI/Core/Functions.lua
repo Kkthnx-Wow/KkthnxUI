@@ -1,13 +1,11 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
--- Lua API
 local _G = _G
 local assert = assert
 local hooksecurefunc = hooksecurefunc
 local math_abs = math.abs
 local math_ceil = math.ceil
 local math_floor = math.floor
-local math_modf = math.modf
 local mod = mod
 local next = next
 local pairs = pairs
@@ -20,7 +18,6 @@ local table_remove = table.remove
 local type = type
 local unpack = unpack
 
--- Wow API
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local GetCVar = _G.GetCVar
@@ -39,9 +36,6 @@ local UIParent = _G.UIParent
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
-
-K.LockedCVars = {}
-K.IgnoredCVars = {}
 
 K.DispelClasses = {
 	["PRIEST"] = {
@@ -246,25 +240,28 @@ function K.ShortenString(string, numChars, dots)
 	end
 end
 
-local LockCVars = CreateFrame("Frame")
-LockCVars:SetScript("OnEvent", function(self, event, ...)
-	return self[event] and self[event](self, event, ...)
-end)
-LockCVars:RegisterEvent("PLAYER_REGEN_ENABLED")
-function LockCVars:PLAYER_REGEN_ENABLED(_)
+function K:PLAYER_ENTERING_WORLD()
+	self:MapInfo_Update()
+end
+
+K.LockedCVars = {}
+K.IgnoredCVars = {}
+
+function K:PLAYER_REGEN_ENABLED(_)
 	if (self.CVarUpdate) then
-		for cvarName, value in pairs(self.LockedCVars) do
-			if (not self.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
+		for cvarName, value in pairs(K.LockedCVars) do
+			if (not K.IgnoredCVars[cvarName] and (GetCVar(cvarName) ~= value)) then
 				SetCVar(cvarName, value)
 			end
 		end
+
 		self.CVarUpdate = nil
 	end
 end
 
 local function CVAR_UPDATE(cvarName, value)
 	if (not K.IgnoredCVars[cvarName] and K.LockedCVars[cvarName] and K.LockedCVars[cvarName] ~= value) then
-		if (InCombatLockdown()) then
+		if(InCombatLockdown()) then
 			K.CVarUpdate = true
 			return
 		end
@@ -272,17 +269,18 @@ local function CVAR_UPDATE(cvarName, value)
 		SetCVar(cvarName, K.LockedCVars[cvarName])
 	end
 end
-hooksecurefunc("SetCVar", CVAR_UPDATE)
 
+hooksecurefunc("SetCVar", CVAR_UPDATE)
 function K.LockCVar(cvarName, value)
 	if (GetCVar(cvarName) ~= value) then
 		SetCVar(cvarName, value)
 	end
+
 	K.LockedCVars[cvarName] = value
 end
 
 function K.IgnoreCVar(cvarName, ignore)
-	ignore = not not ignore -- cast to bool, just in case
+	ignore = not not ignore -- Cast to bool, just in case
 	K.IgnoredCVars[cvarName] = ignore
 end
 

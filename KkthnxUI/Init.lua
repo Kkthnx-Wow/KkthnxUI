@@ -98,6 +98,7 @@ AddOn.ScreenWidth = tonumber(string_match(AddOn.Resolution, "(%d+)x+%d"))
 AddOn.PriestColors = {r = 0.86, g = 0.92, b = 0.98, colorStr = "dbebfa"}
 AddOn.Color = AddOn.Class == "PRIEST" and AddOn.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[AddOn.Class] or RAID_CLASS_COLORS[AddOn.Class])
 AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
+AddOn.Welcome = "|cff4488ffKkthnxUI "..AddOn.Version.." "..AddOn.Client.."|r - /helpui"
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
 AddOn.Legion715 = AddOn.WowBuild == 23360
@@ -149,6 +150,14 @@ function AddOn:OnInitialize()
 		GameMenuButton:SetSize(240, 46)
 		GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, -1)
 		GameMenuFrame:SetSize(530, 576)
+	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_REGEN_ENABLED")
+
+	if not self.isCollected then
+		collectgarbage("collect")
+		self.isCollected = true
 	end
 end
 

@@ -108,11 +108,11 @@ function K.PetBarUpdate()
 		end
 
 		if name then
-			if not C["ActionBar"].Grid then
+			if not C["ActionBar"].ShowGrid then
 				petActionButton:SetAlpha(1)
 			end
 		else
-			if not C["ActionBar"].Grid then
+			if not C["ActionBar"].ShowGrid then
 				petActionButton:SetAlpha(0)
 			end
 		end

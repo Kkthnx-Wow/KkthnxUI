@@ -417,12 +417,15 @@ Install:SetScript("OnEvent", function(self)
 
 	-- Welcome message
 	if (not KkthnxUIData[playerRealm][playerName].InstallComplete) then
-		print(L.Install.Welcome_1..K.Version.." "..K.Client..", "..string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
-		print(" "..L.Install.Welcome_2)
-		print(" "..L.Install.Welcome_3)
+		print(K.Welcome)
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")
+
+	if not self.isCollected then
+		collectgarbage("collect")
+		self.isCollected = true
+	end
 end)
 
 _G.SLASH_INSTALLUI1 = "/install"

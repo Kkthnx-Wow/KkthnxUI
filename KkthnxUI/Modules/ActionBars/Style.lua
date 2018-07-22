@@ -20,33 +20,99 @@ local function StyleNormalButton(self)
 	local Name = self:GetName()
 	local Action = self.action
 	local Button = self
-	local Icon = _G[Name .. "Icon"]
-	local Count = _G[Name .. "Count"]
-	local Flash	 = _G[Name .. "Flash"]
-	local HotKey = _G[Name .. "HotKey"]
-	local Border = _G[Name .. "Border"]
-	local Btname = _G[Name .. "Name"]
-	local Normal = _G[Name .. "NormalTexture"]
-	local BtnBG = _G[Name .. "FloatingBG"]
+	local Icon = _G[Name.."Icon"]
+	local Count = _G[Name.."Count"]
+	local Flash	 = _G[Name.."Flash"]
+	local HotKey = _G[Name.."HotKey"]
+	local Border = _G[Name.."Border"]
+	local Btname = _G[Name.."Name"]
+	local Normal = _G[Name.."NormalTexture"]
+	local BtnBG = _G[Name.."FloatingBG"]
 	local Font = K.GetFont(C["ActionBar"].Font)
 
-	Flash:SetTexture("")
-	Button:SetNormalTexture("")
+	if not Button.IsSkinned then
+		Flash:SetTexture("")
+		Button:SetNormalTexture("")
 
-	Count:ClearAllPoints()
-	Count:SetPoint("BOTTOMRIGHT", 0, 2)
+		Count:ClearAllPoints()
+		Count:SetPoint("BOTTOMRIGHT", 0, 2)
 
-	HotKey:ClearAllPoints()
-	HotKey:SetPoint("TOPRIGHT", 0, -3)
+		HotKey:ClearAllPoints()
+		HotKey:SetPoint("TOPRIGHT", 0, -3)
+
+		Count:SetFontObject(Font)
+
+		if (Btname) then
+			if (C["ActionBar"].Macro) then
+				Btname:SetFontObject(Font)
+				Btname:ClearAllPoints()
+				Btname:SetPoint("BOTTOM", 1, 1)
+			else
+				Btname:SetText("")
+				Btname:Kill()
+			end
+		end
+
+		if (BtnBG) then
+			BtnBG:Kill()
+		end
+
+		if (C["ActionBar"].Hotkey) then
+			HotKey:SetFontObject(Font)
+			HotKey.ClearAllPoints = K.Noop
+			HotKey.SetPoint = K.Noop
+		else
+			--HotKey:SetText("")
+			HotKey:Kill()
+		end
+
+		if (Name:match("Extra")) then
+			Button.Pushed = true
+		end
+
+		if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not Name:match("Extra") then
+			self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+		end
+
+		Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
+		Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+		Button.Backgrounds:SetAllPoints()
+
+		Button.Borders = CreateFrame("Frame", nil, Button)
+		Button.Borders:SetAllPoints(Button)
+		K.CreateBorder(Button.Borders)
+
+		Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
+		Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
+
+		Icon:SetTexCoord(unpack(K.TexCoords))
+		Icon:SetDrawLayer('BACKGROUND', 7)
+
+		if (Normal) then
+			Normal:ClearAllPoints()
+			Normal:SetPoint("TOPLEFT")
+			Normal:SetPoint("BOTTOMRIGHT")
+
+			if (Button:GetChecked()) then
+				ActionButton_UpdateState(Button)
+			end
+		end
+
+		if (Border) then
+			Border:SetTexture("")
+		end
+
+		Button:StyleButton()
+		Button.IsSkinned = true
+	end
 
 	K.UpdateHotkey(Button)
 
-	if Border and Button.isSkinned then
-		Border:SetTexture("")
-		if Border:IsShown() and C["ActionBar"].EquipBorder then
-			Button:SetBackdropBorderColor(.08, .70, 0)
+	if (Border and C["ActionBar"].EquipBorder) then
+		if (Border:IsShown()) then
+			Button.Borders:SetBackdropBorderColor(.08, .70, 0)
 		else
-			Button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			Button.Borders:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
 		end
 	end
 
@@ -55,81 +121,20 @@ local function StyleNormalButton(self)
 
 		if String then
 			local Text
+
 			if string.byte(String, 1) > 223 then
 				Text = string.sub(String, 1, 9)
 			else
 				Text = string.sub(String, 1, 4)
 			end
+
 			Btname:SetText(Text)
 		end
 	end
-
-	if (Button.isSkinned) then
-		return
-	end
-
-	Count:SetFontObject(Font)
-
-	if (Btname) then
-		if (C["ActionBar"].Macro) then
-			Btname:SetFontObject(Font)
-			Btname:ClearAllPoints()
-			Btname:SetPoint("BOTTOM", 1, 1)
-		else
-			Btname:SetText("")
-			Btname:Kill()
-		end
-	end
-
-	if (BtnBG) then
-		BtnBG:Kill()
-	end
-
-	if (C["ActionBar"].Hotkey) then
-		HotKey:SetFontObject(Font)
-		HotKey.ClearAllPoints = K.Noop
-		HotKey.SetPoint = K.Noop
-	else
-		HotKey:SetText("")
-		HotKey:Kill()
-	end
-
-	if (Name:match("Extra")) then
-		Button.Pushed = true
-	end
-
-	if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not Name:match("Extra") then
-		self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-	end
-
-	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Backgrounds:SetAllPoints()
-	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	Button.Borders = CreateFrame("Frame", nil, Button)
-	Button.Borders:SetAllPoints(Button)
-	K.CreateBorder(Button.Borders)
-
-	Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-	Icon:SetAllPoints()
-	Icon:SetDrawLayer("BACKGROUND", 7)
-
-	if (Normal) then
-		Normal:ClearAllPoints()
-		Normal:SetPoint("TOPLEFT")
-		Normal:SetPoint("BOTTOMRIGHT")
-
-		if (Button:GetChecked()) then
-			ActionButton_UpdateState(Button)
-		end
-	end
-
-	Button:StyleButton()
-	Button.isSkinned = true
 end
 
 local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
-	if Button.isSkinned then
+	if Button.IsSkinned then
 		return
 	end
 
@@ -141,8 +146,8 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 	Button:SetSize(PetSize, PetSize)
 
 	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Backgrounds:SetAllPoints()
 	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	Button.Backgrounds:SetAllPoints()
 
 	Button.Borders = CreateFrame("Frame", nil, Button)
 	Button.Borders:SetAllPoints(Button)
@@ -187,7 +192,7 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 	end
 
 	Button:StyleButton()
-	Button.isSkinned = true
+	Button.IsSkinned = true
 end
 
 function K.StyleShift()
@@ -265,10 +270,6 @@ local function SetupFlyoutButton()
 
 		if Button and not Button.IsSkinned then
 			Button:StyleButton()
-
-			Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-			Button.Backgrounds:SetAllPoints()
-			Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			K.CreateBorder(Button)
 

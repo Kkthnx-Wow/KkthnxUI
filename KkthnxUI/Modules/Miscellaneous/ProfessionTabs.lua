@@ -1,5 +1,5 @@
-local K, C, L = unpack(select(2, ...))
-if K.CheckAddOnState("TradeSkillMaster_Crafting") then
+local K = unpack(select(2, ...))
+if K.CheckAddOnState("TradeSkillMaster") then
 	return
 end
 

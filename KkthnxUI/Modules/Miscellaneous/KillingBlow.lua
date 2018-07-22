@@ -33,8 +33,8 @@ function Module:UPDATE_BATTLEFIELD_SCORE()
 	end
 end
 
-function Module:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
-	local _, subevent, _, _, Caster, _, _, _, TargetName, TargetFlags = ...
+function Module:COMBAT_LOG_EVENT_UNFILTERED()
+	local _, subevent, _, _, Caster, _, _, _, TargetName, TargetFlags = CombatLogGetCurrentEventInfo()
 
 	if subevent == "PARTY_KILL" then
 		local mask = bit_band(TargetFlags, COMBATLOG_OBJECT_TYPE_PLAYER)

@@ -109,9 +109,9 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 			SpellBookFrameTutorialButton:SetParent(K.UIFrameHider)
 			SpellBookFrameTutorialButton:Hide()
 
-			-- WorldMapFrameTutorialButton:UnregisterAllEvents()
-			-- WorldMapFrameTutorialButton:SetParent(K.UIFrameHider)
-			-- WorldMapFrameTutorialButton:Hide()
+			WorldMapFrame.BorderFrame.Tutorial:UnregisterAllEvents()
+			WorldMapFrame.BorderFrame.Tutorial:SetParent(K.UIFrameHider)
+			WorldMapFrame.BorderFrame.Tutorial:Hide()
 
 			if PetJournalTutorialButton then
 				PetJournalTutorialButton:UnregisterAllEvents()

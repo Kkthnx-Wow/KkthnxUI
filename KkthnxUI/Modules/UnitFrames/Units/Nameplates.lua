@@ -187,6 +187,12 @@ function Module:CreateNameplates()
 	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
 	self:RegisterEvent("UNIT_FACTION", Module.HighlightPlate)
 
+	self:EnableMouse(false)
+	self.Health:EnableMouse(false)
+	self.Power:EnableMouse(false)
+	self.Castbar:EnableMouse(false)
+	self.Debuffs:EnableMouse(false)
+
 	Module.HighlightPlate(self)
 
 	self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)

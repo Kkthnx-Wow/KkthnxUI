@@ -7,12 +7,9 @@ local select = select
 local string_format = string.format
 local string_gsub = string.gsub
 local string_len = string.len
-local string_lower = string.lower
-local string_match = string.match
 local string_sub = string.sub
 local table_insert = table.insert
 local table_remove = table.remove
-local type = type
 local unpack = unpack
 
 local ChangeChatColor = _G.ChangeChatColor
@@ -54,98 +51,6 @@ local UIParent = _G.UIParent
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
-
-local hooks = {}
-local CUSTOM_CHANNELS = {}
-
-local ChannelNames = {
-	[L["Chat"].Conversation] = L["Chat"].S_Conversation,
-	[L["Chat"].General] = L["Chat"].S_General,
-	[L["Chat"].LocalDefense] = L["Chat"].S_LocalDefense,
-	[L["Chat"].LookingForGroup] = L["Chat"].S_LookingForGroup,
-	[L["Chat"].Trade] = L["Chat"].S_Trade,
-	[L["Chat"].WorldDefense] = L["Chat"].S_WorldDefense
-}
-
-local ChannelStrings = {
-	CHAT_BN_WHISPER_GET = string_format("%s|| ", L["Chat"].S_WhisperIncoming) .. "%s:\32",
-	CHAT_BN_WHISPER_INFORM_GET = string_format("%s|| ", L["Chat"].S_WhisperOutgoing) .. "%s:\32",
-	CHAT_GUILD_GET = "|Hchannel:guild|h" .. string_format("%s|| ", L["Chat"].S_Guild) .. "|h%s:\32",
-	CHAT_INSTANCE_CHAT_GET = "|Hchannel:battleground|h" .. string_format("%s|| ", L["Chat"].S_InstanceChat) .. "|h%s:\32",
-	CHAT_INSTANCE_CHAT_LEADER_GET = "|Hchannel:battleground|h" ..
-		string_format("%s|| ", L["Chat"].S_InstanceChatLeader) .. "|h%s:\32",
-	CHAT_OFFICER_GET = "|Hchannel:o|h" .. string_format("%s|| ", L["Chat"].S_Officer) .. "|h%s:\32",
-	CHAT_PARTY_GET = "|Hchannel:party|h" .. string_format("%s|| ", L["Chat"].S_Party) .. "|h%s:\32",
-	CHAT_PARTY_GUIDE_GET = "|Hchannel:party|h" .. string_format("%s|| ", L["Chat"].S_PartyGuide) .. "|h%s:\32",
-	CHAT_PARTY_LEADER_GET = "|Hchannel:party|h" .. string_format("%s|| ", L["Chat"].S_PartyLeader) .. "|h%s:\32",
-	CHAT_RAID_GET = "|Hchannel:raid|h" .. string_format("%s|| ", L["Chat"].S_Raid) .. "|h%s:\32",
-	CHAT_RAID_LEADER_GET = "|Hchannel:raid|h" .. string_format("%s|| ", L["Chat"].S_RaidLeader) .. "|h%s:\32",
-	CHAT_RAID_WARNING_GET = string_format("%s|| ", L["Chat"].S_RaidWarning) .. "%s:\32",
-	CHAT_SAY_GET = string_format("%s|| ", L["Chat"].S_Say) .. "%s:\32",
-	CHAT_WHISPER_GET = string_format("%s|| ", L["Chat"].S_WhisperIncoming) .. "%s:\32",
-	CHAT_WHISPER_INFORM_GET = string_format("%s|| ", L["Chat"].S_WhisperOutgoing) .. "%s:\32",
-	CHAT_YELL_GET = string_format("%s|| ", L["Chat"].S_Yell) .. "%s:\32"
-}
-
-for name, abbr in pairs(CUSTOM_CHANNELS) do
-	ChannelNames[string_lower(name)] = abbr
-end
-
-local function AddMessage(frame, message, ...)
-	if type(message) == "string" then
-		local channelData, channelID, channelName =
-			string_match(message, "|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?" .. ".+")
-		if channelData and C["Chat"].ShortenChannelNames then
-			local shortName =
-				ChannelNames[channelName] or ChannelNames[string_lower(channelName)] or string_gsub(channelName, 1, 2)
-			message =
-				string_gsub(
-				message,
-				"|Hchannel:(.-)|h%[(%d+)%.%s?([^:%-%]]+)%s?[:%-]?%s?[^|%]]*%]|h%s?",
-				string_format("|Hchannel:%1$s|h" .. string_format("%s|| ", "%d") .. "|h", channelData, channelID, shortName)
-			)
-		end
-
-		local playerData, playerName = string_match(message, "|Hplayer:(.-)|h%[(.-)%]|h")
-		if playerData then
-			if C["Chat"].RemoveRealmNames then
-				if string_match(playerName, "|cff") then
-					playerName = string_gsub(playerName, "%-[^|]+", "")
-				else
-					playerName = string_match(playerName, "[^%-]+")
-				end
-			end
-			message =
-				string_gsub(
-				message,
-				"|Hplayer:(.-)|h%[(.-)%]|h",
-				string_format("|Hplayer:%s|h" .. "%s" .. "|h", playerData, playerName)
-			)
-		elseif channelID then
-			-- WorldDefense messages don"t have a sender; remove the extra colon and space.
-			message = string_gsub(message, "(|Hchannel:.-|h): ", "%1", 1)
-		end
-	end
-	hooks[frame].AddMessage(frame, message, ...)
-end
-
-function Module:SetShortenChannelNames()
-	if C["Chat"].ShortenChannelNames then
-		if not hooks.CHAT_GUILD_GET then
-			for k, v in pairs(ChannelStrings) do
-				hooks[k] = _G[k]
-				_G[k] = v
-			end
-		end
-	else
-		if hooks.CHAT_GUILD_GET then
-			for k, v in pairs(hooks) do
-				_G[k] = v
-				hooks[k] = nil
-			end
-		end
-	end
-end
 
 local function GetGroupDistribution()
 	local inInstance, kind = IsInInstance()
@@ -285,8 +190,8 @@ function Module:StyleFrame(frame)
 	TabText:SetFont(TabFont, TabFontSize, TabFontFlags)
 	TabText.SetFont = K.Noop
 
+	-- Tabs Alpha
 	if C["Chat"].TabsMouseover ~= true then
-		-- Tabs Alpha
 		Tab:SetAlpha(1)
 		Tab.SetAlpha = _G.UIFrameFadeRemoveFrame
 	end
@@ -309,12 +214,9 @@ function Module:StyleFrame(frame)
 	EditBox:Hide()
 
 	-- Hide editbox instead of fading
-	EditBox:HookScript(
-		"OnEditFocusLost",
-		function(self)
-			self:Hide()
-		end
-	)
+	EditBox:HookScript("OnEditFocusLost", function(self)
+		self:Hide()
+	end)
 
 	EditBox:HookScript("OnTextChanged", OnTextChanged)
 
@@ -351,9 +253,6 @@ function Module:StyleFrame(frame)
 	_G[string_format("ChatFrame%sTabSelectedMiddle", ID)]:Kill()
 	_G[string_format("ChatFrame%sTabSelectedRight", ID)]:Kill()
 
-	-- _G[string_format("ChatFrame%sButtonFrameUpButton", ID)]:Kill()
-	-- _G[string_format("ChatFrame%sButtonFrameDownButton", ID)]:Kill()
-	-- _G[string_format("ChatFrame%sButtonFrameBottomButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrameMinimizeButton", ID)]:Kill()
 	_G[string_format("ChatFrame%sButtonFrame", ID)]:Kill()
 
@@ -366,21 +265,10 @@ function Module:StyleFrame(frame)
 	_G[string_format("ChatFrame%sEditBoxRight", ID)]:Kill()
 
 	-- Kill off editbox artwork
-	local A, B, C = select(6, EditBox:GetRegions())
-	A:Kill()
-	B:Kill()
-	C:Kill()
-
-	if ID ~= 2 then
-		if not hooks[frame] then
-			hooks[frame] = {}
-		end
-
-		if not hooks[frame].AddMessage then
-			hooks[frame].AddMessage = frame.AddMessage
-			frame.AddMessage = AddMessage
-		end
-	end
+	local RegionA, RegionB, RegionC = select(6, EditBox:GetRegions())
+	RegionA:Kill()
+	RegionB:Kill()
+	RegionC:Kill()
 
 	-- Mouse Wheel
 	Frame:SetScript("OnMouseWheel", Module.OnMouseWheel)
@@ -502,87 +390,33 @@ function Module:Install()
 	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
 
-	-- Enable Classcolor
+	-- keys taken from `ChatTypeGroup` but doesnt add: "OPENING", "TRADESKILLS", "PET_INFO", "COMBAT_MISC_INFO", "COMMUNITIES_CHANNEL", "PET_BATTLE_COMBAT_LOG", "PET_BATTLE_INFO", "TARGETICONS"
+	local chatGroup = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT"}
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
-	ChatFrame_AddMessageGroup(ChatFrame1, "SAY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "YELL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD")
-	ChatFrame_AddMessageGroup(ChatFrame1, "OFFICER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "GUILD_ACHIEVEMENT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_SAY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_YELL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "MONSTER_BOSS_EMOTE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY")
-	ChatFrame_AddMessageGroup(ChatFrame1, "PARTY_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "RAID_WARNING")
-	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "INSTANCE_CHAT_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BATTLEGROUND")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BATTLEGROUND_LEADER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_HORDE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_ALLIANCE")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BG_NEUTRAL")
-	ChatFrame_AddMessageGroup(ChatFrame1, "SYSTEM")
-	ChatFrame_AddMessageGroup(ChatFrame1, "ERRORS")
-	ChatFrame_AddMessageGroup(ChatFrame1, "AFK")
-	ChatFrame_AddMessageGroup(ChatFrame1, "DND")
-	ChatFrame_AddMessageGroup(ChatFrame1, "IGNORED")
-	ChatFrame_AddMessageGroup(ChatFrame1, "ACHIEVEMENT")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BN_WHISPER")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BN_CONVERSATION")
-	ChatFrame_AddMessageGroup(ChatFrame1, "BN_INLINE_TOAST_ALERT")
-
-	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_FACTION_CHANGE")
-	ChatFrame_AddMessageGroup(ChatFrame3, "SKILL")
-	ChatFrame_AddMessageGroup(ChatFrame3, "LOOT")
-	ChatFrame_AddMessageGroup(ChatFrame3, "MONEY")
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_XP_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_HONOR_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame3, "COMBAT_GUILD_XP_GAIN")
-	ChatFrame_AddMessageGroup(ChatFrame3, "CURRENCY")
-	ChatFrame_AddChannel(ChatFrame1, GENERAL)
-	ChatFrame_RemoveChannel(ChatFrame1, L["Chat"].Trade)
-	ChatFrame_AddChannel(ChatFrame3, L["Chat"].Trade)
-
-	if K.Realm == "Felsong" then
-		SetCVar("scriptErrors", 1)
+	for _, v in ipairs(chatGroup) do
+		ChatFrame_AddMessageGroup(ChatFrame1, v)
 	end
 
-	-- enable classcolor automatically on login and on each character without doing /configure each time.
-	ToggleChatColorNamesByClassGroup(true, "SAY")
-	ToggleChatColorNamesByClassGroup(true, "EMOTE")
-	ToggleChatColorNamesByClassGroup(true, "YELL")
-	ToggleChatColorNamesByClassGroup(true, "GUILD")
-	ToggleChatColorNamesByClassGroup(true, "OFFICER")
-	ToggleChatColorNamesByClassGroup(true, "GUILD_ACHIEVEMENT")
-	ToggleChatColorNamesByClassGroup(true, "ACHIEVEMENT")
-	ToggleChatColorNamesByClassGroup(true, "WHISPER")
-	ToggleChatColorNamesByClassGroup(true, "PARTY")
-	ToggleChatColorNamesByClassGroup(true, "PARTY_LEADER")
-	ToggleChatColorNamesByClassGroup(true, "RAID")
-	ToggleChatColorNamesByClassGroup(true, "RAID_LEADER")
-	ToggleChatColorNamesByClassGroup(true, "RAID_WARNING")
-	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND")
-	ToggleChatColorNamesByClassGroup(true, "BATTLEGROUND_LEADER")
-	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT")
-	ToggleChatColorNamesByClassGroup(true, "INSTANCE_CHAT_LEADER")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL1")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL2")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL3")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL4")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL5")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL6")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL7")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL8")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL9")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL10")
-	ToggleChatColorNamesByClassGroup(true, "CHANNEL11")
+	-- keys taken from `ChatTypeGroup` which weren't added above to ChatFrame1
+	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
+	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
+	for _, v in ipairs(chatGroup) do
+		ChatFrame_AddMessageGroup(ChatFrame3, v)
+	end
+
+	ChatFrame_AddChannel(ChatFrame1, GENERAL)
+	ChatFrame_RemoveChannel(ChatFrame1, TRADE)
+	ChatFrame_AddChannel(ChatFrame3, TRADE)
+
+	-- set the chat groups names in class color to enabled for all chat groups which players names appear
+	chatGroup = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
+	for i = 1, MAX_WOW_CHAT_CHANNELS do
+		tinsert(chatGroup, "CHANNEL"..i)
+	end
+
+	for _, v in ipairs(chatGroup) do
+		ToggleChatColorNamesByClassGroup(true, v)
+	end
 
 	-- Adjust Chat Channel Colors
 	ChangeChatColor("RAID", 1, .28, .04)
@@ -597,8 +431,11 @@ function Module:Install()
 	ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255)
 	ChangeChatColor("CHANNEL4", 232 / 255, 158 / 255, 121 / 255)
 
-	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
+	if K.Name == "Kkthnxx" and K.Realm == "Stormreaver" then
+		SetCVar("scriptErrors", 1)
+	end
 
+	DEFAULT_CHAT_FRAME:SetUserPlaced(true)
 	self:SetDefaultChatFramesPositions()
 end
 
@@ -642,6 +479,18 @@ function Module:SetupFrame()
 		Tab:HookScript("OnClick", self.SwitchSpokenDialect)
 
 		self:StyleFrame(Frame)
+
+		if i == 2 then
+			--CombatLogQuickButtonFrame_Custom:StripTextures()
+		else
+			if C["Chat"].ShortenChannelNames then
+				local am = Frame.AddMessage
+
+				Frame.AddMessage = function(frame, text, ...)
+					return am(frame, text:gsub("|h%[(%d+)%. .-%]|h", "|h%1|h"), ...)
+				end
+			end
+		end
 	end
 
 	-- Remember last channel
@@ -673,6 +522,41 @@ function Module:SetupFrame()
 	VoiceChatPromptActivateChannel:SetPoint(unpack(Module.VoiceAlertPosition))
 	VoiceChatPromptActivateChannel.ClearAllPoints = K.Noop
 	VoiceChatPromptActivateChannel.SetPoint = K.Noop
+
+	if C["Chat"].ShortenChannelNames then
+		-- Guild
+		_G.CHAT_GUILD_GET = "|Hchannel:GUILD|hG|h %s "
+		_G.CHAT_OFFICER_GET = "|Hchannel:OFFICER|hO|h %s "
+
+		-- Raid
+		_G.CHAT_RAID_GET = "|Hchannel:RAID|hR|h %s "
+		_G.CHAT_RAID_WARNING_GET = "RW %s "
+		_G.CHAT_RAID_LEADER_GET = "|Hchannel:RAID|hRL|h %s "
+
+		-- Party
+		_G.CHAT_PARTY_GET = "|Hchannel:PARTY|hP|h %s "
+		_G.CHAT_PARTY_LEADER_GET ="|Hchannel:PARTY|hPL|h %s "
+		_G.CHAT_PARTY_GUIDE_GET ="|Hchannel:PARTY|hPG|h %s "
+
+		-- Battleground
+		_G.CHAT_BATTLEGROUND_GET = "|Hchannel:BATTLEGROUND|hB|h %s "
+		_G.CHAT_BATTLEGROUND_LEADER_GET = "|Hchannel:BATTLEGROUND|hBL|h %s "
+
+		-- Whisper
+		_G.CHAT_WHISPER_INFORM_GET = "to %s "
+		_G.CHAT_WHISPER_GET = "from %s "
+		_G.CHAT_BN_WHISPER_INFORM_GET = "to %s "
+		_G.CHAT_BN_WHISPER_GET = "from %s "
+
+		-- Say / Yell
+		_G.CHAT_SAY_GET = "%s "
+		_G.CHAT_YELL_GET = "%s "
+
+		-- Flags
+		_G.CHAT_FLAG_AFK = "[AFK] "
+		_G.CHAT_FLAG_DND = "[DND] "
+		_G.CHAT_FLAG_GM = "[GM] "
+	end
 end
 
 -- Sourced: ElvUI (Simpy)
@@ -682,29 +566,29 @@ function Module:DelayGuildMOTD()
 	table_insert(ChatTypeGroup["GUILD"], 2, "GUILD_MOTD")
 
 	delayFrame:SetScript("OnUpdate", function(df, elapsed)
-			delay = delay + elapsed
-			if delay < 5 then
-				return
+		delay = delay + elapsed
+		if delay < 5 then
+			return
+		end
+
+		local msg = GetGuildRosterMOTD()
+		if msg and string_len(msg) > 0 then
+			for _, frame in pairs(_G.CHAT_FRAMES) do
+				chat = _G[frame]
+				if chat and chat:IsEventRegistered("CHAT_MSG_GUILD") then
+					ChatFrame_SystemEventHandler(chat, "GUILD_MOTD", msg)
+					chat:RegisterEvent("GUILD_MOTD")
+				end
 			end
 
-			local msg = GetGuildRosterMOTD()
-			if msg and string_len(msg) > 0 then
-				for _, frame in pairs(_G.CHAT_FRAMES) do
-					chat = _G[frame]
-					if chat and chat:IsEventRegistered("CHAT_MSG_GUILD") then
-						ChatFrame_SystemEventHandler(chat, "GUILD_MOTD", msg)
-						chat:RegisterEvent("GUILD_MOTD")
-					end
-				end
-
+			df:SetScript("OnUpdate", nil)
+		else -- 5 seconds can be too fast for the API response. let's try once every 5 seconds (max 5 checks).
+			delay, checks = 0, checks + 1
+			if checks >= 5 then
 				df:SetScript("OnUpdate", nil)
-			else -- 5 seconds can be too fast for the API response. let's try once every 5 seconds (max 5 checks).
-				delay, checks = 0, checks + 1
-				if checks >= 5 then
-					df:SetScript("OnUpdate", nil)
-				end
 			end
-		end)
+		end
+	end)
 end
 
 function Module:OnEnable()
@@ -714,7 +598,6 @@ function Module:OnEnable()
 		return
 	end
 
-	self:SetShortenChannelNames()
 	self:SetupFrame()
 	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)

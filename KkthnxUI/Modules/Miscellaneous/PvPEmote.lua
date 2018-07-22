@@ -65,8 +65,8 @@ local PVPEmotes = {
 	"YAWN"
 }
 
-function Module:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
-	local _, subEvent, _, sourceGUID, _, _, _, _, destName, destFlags = ...
+function Module:COMBAT_LOG_EVENT_UNFILTERED()
+	local _, subEvent, _, sourceGUID, _, _, _, _, destName, destFlags = CombatLogGetCurrentEventInfo()
 
 	local alreadyHugged
 	if (subEvent == "PARTY_KILL") and (sourceGUID == K.GUID) and (bit_band(destFlags, unitFilter) > 0) then
