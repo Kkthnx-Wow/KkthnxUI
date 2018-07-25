@@ -1,21 +1,39 @@
 --[=[
-.icon [texture]
-.count [fontstring]
-.cd [cooldown]
+	.icon                   [texture]
+	.count                  [fontstring]
+	.cd                     [cooldown]
 
-.ShowBossDebuff [boolean]
-.BossDebuffPriority [number]
+	.ShowBossDebuff         [boolean]
+	.BossDebuffPriority     [number]
 
-.ShowDispelableDebuff [boolean]
-.DispelPriority [table] { [type] = prio }
-.DispelFilter [table] { [type] = true }
-.DebuffTypeColor [table] { [type] = { r, g, b } }
+	.ShowDispelableDebuff   [boolean]
+	.DispelPriority         [table]     { [type] = prio }
+	.DispelFilter           [table]     { [type] = true }
+	.DebuffTypeColor        [table]     { [type] = { r, g, b } }
 
-.Debuffs [table] { [name(string)|id(number)] = prio(number) }
-.MatchBySpellName [boolean]
+	.Debuffs                [table]     { [name(string)|id(number)] = prio(number) }
+	.MatchBySpellName       [boolean]
 
-.SetDebuffTypeColor [function] function(r, g, b) end
+	.SetDebuffTypeColor     [function]  function(r, g, b) end
 --]=]
+
+--local K, C, L = unpack(KkthnxUI)
+
+-- Format seconds to min/hour/day
+local Day, Hour, Minute = 86400, 3600, 60
+local function SetFormatTime(time)
+	if (time >= Day) then
+		return string.format("%dd", math.ceil(time / Day))
+	elseif (time >= Hour) then
+		return string.format("%dh", math.ceil(time / Hour))
+	elseif (time >= Minute) then
+		return string.format("%dm", math.ceil(time / Minute))
+	elseif (time >= Minute / 12) then
+		return math.floor(time)
+	end
+
+	return string.format("%.1f", time)
+end
 
 local _, ns = ...
 local oUF = ns.oUF or oUF
@@ -156,14 +174,13 @@ local function CheckSpec(self, event, levels)
 end
 
 local function OnUpdate(self, elapsed)
-	local K = KkthnxUI[1]
 	self.elapsed = (self.elapsed or 0) + elapsed
 
 	if (self.elapsed >= 0.1) then
 		local timeLeft = self.endTime - GetTime()
 
 		if (timeLeft > 0) then
-			local text = K.FormatTime(timeLeft)
+			local text = SetFormatTime(timeLeft)
 			self.time:SetText(text)
 		else
 			self:SetScript('OnUpdate', nil)

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
 	return
 end
@@ -80,36 +80,24 @@ function Filger:TooltipOnLeave()
 	GameTooltip:Hide()
 end
 
-function Filger:UnitBuff(unitID, inSpellID, spn, absID)
-	if absID then
-		for i = 1, 40, 1 do
-			local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID = UnitBuff(unitID, i)
-			if not name then
-				break
-			end
-			if inSpellID == spellID then
-				return name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
-			end
+function Filger:UnitBuff(unitID, inSpellID, spell, absID)
+	for i = 1, 40 do
+		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitBuff(unitID, i)
+		if not name then break end
+		if (absID and spellID == inSpellID) or (not absID and name == spell) then
+			return name, spellID, icon, count, duration, expirationTime, unitCaster
 		end
-	else
-		return UnitBuff(unitID, spn)
 	end
 	return nil
 end
 
-function Filger:UnitDebuff(unitID, inSpellID, spn, absID)
-	if absID then
-		for i = 1, 40, 1 do
-			local name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID = UnitDebuff(unitID, i)
-			if not name then
-				break
-			end
-			if inSpellID == spellID then
-				return name, icon, count, debuffType, duration, expirationTime, unitCaster, isStealable, shouldConsolidate, spellID
-			end
+function Filger:UnitDebuff(unitID, inSpellID, spell, absID)
+	for i = 1, 40 do
+		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitDebuff(unitID, i)
+		if not name then break end
+		if (absID and spellID == inSpellID) or (not absID and name == spell) then
+			return name, spellID, icon, count, duration, expirationTime, unitCaster
 		end
-	else
-		return UnitDebuff(unitID, spn)
 	end
 	return nil
 end
@@ -151,7 +139,7 @@ function Filger:DisplayActives()
 		local bar = self.bars[index]
 		if not bar then
 			bar = CreateFrame("Frame", "FilgerAnchor" .. id .. "Frame" .. index, self)
-			bar:SetScale(UIParent:GetEffectiveScale() * 1) -- We will just keep this until I can fix this properly.
+			bar:SetScale(UIParent:GetEffectiveScale() * 1)
 
 			bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
 			bar.Background:SetAllPoints()
@@ -224,7 +212,7 @@ function Filger:DisplayActives()
 					bar.statusbar.Borders = CreateFrame("Frame", nil, bar.statusbar)
 					bar.statusbar.Borders:SetFrameLevel(bar.statusbar:GetFrameLevel() + 2)
 					bar.statusbar.Borders:SetAllPoints()
-       				K.CreateBorder(bar.statusbar.Borders)
+					K.CreateBorder(bar.statusbar.Borders)
 
 					if self.IconSide == "LEFT" then
 						bar.statusbar:SetPoint("BOTTOMLEFT", bar, "BOTTOMRIGHT", 5, 2)
@@ -414,10 +402,10 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 			spid = 0
 
 			if data.filter == "BUFF" and (not data.spec or data.spec == ptt) then
-				local caster, spn, expirationTime
-				spn, _, _ = GetSpellInfo(data.spellID)
-				if spn then
-					name, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitBuff(data.unitID, data.spellID, data.spellID, true)
+				local caster, spell, expirationTime
+				spell = GetSpellInfo(data.spellID)
+				if spell then
+					name, spid, icon, count, duration, expirationTime, caster = Filger:UnitBuff(data.unitID, data.spellID, spell, data.absID)
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						if not data.count or count >= data.count then
 							start = expirationTime - duration
@@ -426,10 +414,10 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 					end
 				end
 			elseif data.filter == "DEBUFF" and (not data.spec or data.spec == ptt) then
-				local caster, spn, expirationTime
-				spn, _, _ = GetSpellInfo(data.spellID)
-				if spn then
-					name, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitDebuff(data.unitID, data.spellID, data.spellID, true)
+				local caster, spell, expirationTime
+				spell = GetSpellInfo(data.spellID)
+				if spell then
+					name, spid, icon, count, duration, expirationTime, caster = Filger:UnitDebuff(data.unitID, data.spellID, spell, data.absID)
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						start = expirationTime - duration
 						found = true
@@ -459,16 +447,16 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 				end
 			elseif data.filter == "ICD" and (not data.spec or data.spec == ptt) then
 				if data.trigger == "BUFF" then
-					local spn
-					spn, _, icon = GetSpellInfo(data.spellID)
-					if spn then
-						name, _, _, _, _, _, _, _, _, spid = Filger:UnitBuff("player", data.spellID, data.spellID, true)
+					local spell
+					spell, _, icon = GetSpellInfo(data.spellID)
+					if spell then
+						name, spid = Filger:UnitBuff(data.unitID, data.spellID, spell, data.absID)
 					end
 				elseif data.trigger == "DEBUFF" then
-					local spn
-					spn, _, icon = GetSpellInfo(data.spellID)
-					if spn then
-						name, _, _, _, _, _, _, _, _, spid = Filger:UnitDebuff("player", data.spellID, data.spellID, true)
+					local spell
+					spell, _, icon = GetSpellInfo(data.spellID)
+					if spell then
+						name, spid = Filger:UnitDebuff("player", data.spellID, spell, data.absID)
 					end
 				elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
 					if spellID == data.spellID then
@@ -499,9 +487,9 @@ function Filger:OnEvent(event, unit, _, _, _, spellID)
 					end
 				else
 					if
-						data.filter ~= "ICD" and
-							(self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration)
-					 then
+					data.filter ~= "ICD" and
+					(self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration)
+					then
 						self.actives[i].count = count
 						self.actives[i].start = start
 						self.actives[i].duration = duration
@@ -580,16 +568,16 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 		local data = C["FilgerSpells"][K.Class][i]
 
 		for j = 1, #data, 1 do
-			local spn
+			local spell
 			if data[j].spellID then
-				spn = GetSpellInfo(data[j].spellID)
+				spell = GetSpellInfo(data[j].spellID)
 			else
 				local slotLink = GetInventoryItemLink("player", data[j].slotID)
 				if slotLink then
-					spn = GetItemInfo(slotLink)
+					spell = GetItemInfo(slotLink)
 				end
 			end
-			if not spn and not data[j].slotID then
+			if not spell and not data[j].slotID then
 				print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
 				table.insert(jdx, j)
 			end

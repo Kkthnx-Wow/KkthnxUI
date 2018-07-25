@@ -1,9 +1,9 @@
 local K, C, L = unpack(select(2, ...))
-if C["Automation"].AutoResurrect ~= true then 
-	return 
+if C["Automation"].AutoResurrect ~= true then
+	return
 end
 
-local Module = K:NewModule("AutoRelease", "AceEvent-3.0")
+local Module = K:NewModule("AutoResurrect", "AceEvent-3.0")
 
 local _G = _G
 
@@ -13,10 +13,12 @@ local C_Timer_After = _G.C_Timer.After
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local DoEmote = _G.DoEmote
 
-function Module:RESURRECT_REQUEST()
+local GameLocale = GetLocale()
+
+function Module:RESURRECT_REQUEST(arg1)
 	-- Exclude pylon and brazier requests
 	local pylonLoc
-	
+
 	-- Exclude Failure Detection Pylon
 	pylonLoc = "Failure Detection Pylon"
 	if GameLocale == "zhCN" then pylonLoc = "故障检测晶塔"
@@ -30,11 +32,11 @@ function Module:RESURRECT_REQUEST()
 	elseif GameLocale == "frFR" then pylonLoc = "Pylône de détection des échecs"
 	elseif GameLocale == "itIT" then pylonLoc = "Pilone d'Individuazione Fallimenti"
 	end
-	
-	if arg1 == pylonLoc then 
-		return	
+
+	if arg1 == pylonLoc then
+		return
 	end
-	
+
 	-- Exclude Brazier of Awakening
 	pylonLoc = "Brazier of Awakening"
 	if GameLocale == "zhCN" then pylonLoc = "觉醒火盆"
@@ -48,11 +50,11 @@ function Module:RESURRECT_REQUEST()
 	elseif GameLocale == "frFR" then pylonLoc = "Brasero de l'Éveil"
 	elseif GameLocale == "itIT" then pylonLoc = "Braciere del Risveglio"
 	end
-	
-	if arg1 == pylonLoc then 
-		return	
+
+	if arg1 == pylonLoc then
+		return
 	end
-	
+
 	-- Manage other resurrection requests
 	if not UnitAffectingCombat(arg1) then
 		AcceptResurrect()
