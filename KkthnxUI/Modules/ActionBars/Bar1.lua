@@ -42,7 +42,7 @@ end
 local Page = {
 	["DRUID"] = PageDRUID,
 	["ROGUE"] = PageROGUE,
-	["DEFAULT"] = "[vehicleui:12] 12; [possessbar] 11; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
+	["DEFAULT"] = "[vehicleui:12] 12; [possessbar] 12; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local function GetBar()

@@ -1,9 +1,6 @@
 -- Sourced: Tukui (Tukz)
 -- Edited: KkthnxUI (Kkthnx)
 
--- GLOBALS: KkthnxUIConfigShared, KkthnxUIConfigFrame, OpacitySliderFrame, SLASH_CONFIG1, SLASH_CONFIG2, SLASH_CONFIG3, SLASH_CONFIG4
--- GLOBALS: pairs, KkthnxUIConfigFrameTitle, KkthnxUI, ColorPickerFrame, KkthnxUIConfigPerAccount, CUSTOM_CLASS_COLORS, SLASH_CONFIG5
-
 -- Lua API
 local _G = _G
 local math_floor = math.floor
@@ -145,7 +142,6 @@ KkthnxUIConfig.Filter = {
 	["FilgerSpells"] = true,
 	["Media"] = true,
 	["OrderedIndex"] = true,
-	["UnitframePlugins"] = true
 }
 
 local function GetOrderedIndex(t)

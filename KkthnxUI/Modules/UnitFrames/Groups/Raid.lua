@@ -104,7 +104,6 @@ function Module:CreateRaid()
 
 	self.Health.Smooth = C["Raid"].Smooth
 	self.Health.SmoothSpeed = C["Raid"].SmoothSpeed * 10
-	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true

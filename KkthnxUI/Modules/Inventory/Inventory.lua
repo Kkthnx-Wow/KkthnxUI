@@ -1522,6 +1522,7 @@ function Stuffing:ADDON_LOADED(addon)
 	end
 
 	self:RegisterEvent("BAG_UPDATE")
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	self:RegisterEvent("ITEM_LOCK_CHANGED")
 	self:RegisterEvent("BANKFRAME_OPENED")
 	self:RegisterEvent("BANKFRAME_CLOSED")
@@ -1596,6 +1597,10 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 			end
 		end
 	end
+end
+
+function Stuffing:CURRENCY_DISPLAY_UPDATE()
+	BackpackTokenFrame_Update()
 end
 
 function Stuffing:BAG_UPDATE(id)

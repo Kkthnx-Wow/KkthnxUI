@@ -56,7 +56,6 @@ function Module:CreateNameplates()
 
 	self.Health.frequentUpdates = true
 	self.Health.colorReaction = true
-	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
 	self.Health.Smooth = C["Nameplates"].Smooth

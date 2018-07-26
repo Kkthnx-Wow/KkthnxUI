@@ -38,7 +38,6 @@ function Module:CreateArena()
 
 	self.Health.Smooth = C["Arena"].Smooth
 	self.Health.SmoothSpeed = C["Arena"].SmoothSpeed * 10
-	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true

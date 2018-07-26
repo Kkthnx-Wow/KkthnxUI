@@ -255,9 +255,14 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = ModuleToggle
 		},
 
-		["Grid"] = {
+		["ShowGrid"] = {
 			["Name"] = "Toggle Actionbar Grid",
 			["Desc"] = "Show empty action bar buttons",
+		},
+
+		["EquipBorder"] = {
+			["Name"] = "Equipped Item Border",
+			["Desc"] = "Display Green Border on Equipped Items",
 		},
 
 		["HideHighlight"] = {
@@ -328,6 +333,11 @@ KkthnxUIConfig["enUS"] = {
 		["AddNewSpells"] = {
 			["Name"] = "Auto Add New Spells",
 			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
+		},
+
+		["Font"] = {
+			["Name"] = "Actionbar font",
+			["Desc"] = "Set a font for the action bars",
 		},
 	},
 
@@ -1265,6 +1275,87 @@ KkthnxUIConfig["enUS"] = {
 		["PortraitStyle"] = {
 			["Name"] = "Portrait Style",
 			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+	},
+
+	-- Arena Local
+	["Arena"] = {
+		["Castbars"] = {
+			["Name"] = "Enable Castbars",
+			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable Arena",
+			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+	},
+
+	-- Arena Local
+	["Party"] = {
+		["Castbars"] = {
+			["Name"] = "Enable Castbars",
+			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["Enable"] = {
+			["Name"] = "Enable Arena",
+			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+
+		["TargetHighlight"] = {
+			["Name"] = "Target Highlight",
+			["Desc"] = "Highlight your current selected party target",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
 		},
 
 		["NumberPrefixStyle"] = {

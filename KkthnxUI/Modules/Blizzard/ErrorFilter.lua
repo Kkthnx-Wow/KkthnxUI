@@ -185,7 +185,7 @@ Module.Filter = {
 	[TOO_FAR_TO_LOOT] = true -- "You are too far away to loot that corpse!"; -- The player is too far away to loot a corpse
 }
 
-function Module:OnEvent(_, msg)
+function Module:OnEvent(_, _, msg)
 	if self.Filter[msg] then
 		UIErrorsFrame:AddMessage(msg, 1, 0, 0)
 	end
