@@ -14,7 +14,7 @@ Also, make sure the game is closed when moving new files into the addon director
 ## Report bugs, suggest features, development progress
 Bug reports and feature suggestions are all done through GitHub's Issue tracker linked below. If you're looking for the current development status of the current or next version of the UI, you can check that out at Kkthnx's GitHub project pages.
 
-* [BugTracker](https://bitbucket.org/Kkthnx/kkthnxui/issues/new)
+* [BugTracker](https://github.com/Kkthnx/KkthnxUI/issues/new)
 
 ## Join the community
 There are thousands of users, but most are content to simply download and use the interface without further ado. If you wish to get more involved though, have some questions you can't find answers to anywhere else or simply just wish to stop by and say hello, we have both a [discord](https://discordapp.com/) server and a facebook page.
