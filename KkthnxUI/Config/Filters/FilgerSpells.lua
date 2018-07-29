@@ -53,7 +53,7 @@ C["FilgerSpells"] = {
 			-- Unholy Blight
 			{spellID = 115989, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Summon Gargoyle
-			{spellID = 49206, filter = "ICD", trigger = "NONE", duration = 40},
+			{spellID = 49206, filter = "ICD", trigger = "NONE", duration = 30},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -438,6 +438,8 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
+			-- Dark Slash
+			{spellID = 258860, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Nemesis
 			{spellID = 206491, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Sigil of Flame
@@ -944,6 +946,8 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
+			-- Coordinated Assault
+			{spellID = 266779, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Aspect of the Turtle
 			{spellID = 186265, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Bestial Wrath
@@ -987,6 +991,16 @@ C["FilgerSpells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
+			-- Viper's Venom
+			{spellID = 268552, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Trick Shots
+			{spellID = 257622, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Lethal Shots
+			{spellID = 260395, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Precise Shots
+			{spellID = 260242, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Frenzy
+			{spellID = 272790, unitID = "pet", caster = "player", filter = "BUFF"},
 			-- Steady Focus
 			{spellID = 193533, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Lock and Load
@@ -1077,6 +1091,8 @@ C["FilgerSpells"] = {
 			{spellID = 185855, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- A Murder of Crows
 			{spellID = 131894, unitID = "target", caster = "player", filter = "DEBUFF"},
+			-- Hunter's Mark
+			{spellID = 257284, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Vulnerable
 			-- {spellID = 187131, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Hunter's Mark
@@ -1259,7 +1275,7 @@ C["FilgerSpells"] = {
 			-- Combustion
 			{spellID = 190319, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Rune of Power
-			{spellID = 116014, filter = "ICD", trigger = "NONE", duration = 10},
+			-- {spellID = 116014, filter = "ICD", trigger = "NONE", duration = 10},
 			-- Pyretic Incantation
 			{spellID = 194329, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Blazing Barrier
@@ -1695,6 +1711,8 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
+			-- Touch of Death
+			{spellID = 115080, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Heavy Stagger
 			{spellID = 124273, unitID = "player", caster = "player", filter = "DEBUFF"},
 			-- Keg Smash
@@ -1840,6 +1858,8 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
+			-- Inquisition
+			{spellID = 84963, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Shield of Vengeance
 			{spellID = 184662, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Eye for an Eye
@@ -1879,6 +1899,8 @@ C["FilgerSpells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
+			-- Righteous Verdict
+			{spellID = 267611, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Infusion of Light
 			{spellID = 54149, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Selfless Healer
@@ -1991,6 +2013,8 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", T_DEBUFF_ICON_Anchor},
 
+			-- Execution Sentence
+			{spellID = 267799, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Eye of Tyr
 			{spellID = 209202, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Forbearance
@@ -2223,6 +2247,9 @@ C["FilgerSpells"] = {
 			Alpha = 1,
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", T_DEBUFF_ICON_Anchor},
+
+			-- Schism
+			{spellID = 214621, unitID = "target", caster = "player", filter = "DEBUFF"},
 
 			-- Trinket Effects
 			-- Mark of Doom [Prophecy of Fear]
@@ -2469,6 +2496,8 @@ C["FilgerSpells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
+			-- Shuriken Combo
+			{spellID = 245640, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Jolly Roger
 			{spellID = 199603, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Grand Melee
@@ -2703,7 +2732,7 @@ C["FilgerSpells"] = {
 			-- Unleash Life
 			{spellID = 73685, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Healing Stream Totem
-			{spellID = 5394, filter = "ICD", trigger = "NONE", duration = 15},
+			-- {spellID = 5394, filter = "ICD", trigger = "NONE", duration = 15},
 			-- Doom Winds
 			{spellID = 204945, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Landslide

@@ -408,15 +408,15 @@ function Module:CreateAuraWatch(frame)
 			Icon:SetHeight(6)
 			Icon:SetPoint(spell[2], 0, 0)
 
-			local Texture = Icon:CreateTexture(nil, "OVERLAY")
-			Texture:SetAllPoints(Icon)
-			Texture:SetTexture(C["Media"].Blank)
+			--local Texture = Icon:CreateTexture(nil, "OVERLAY")
+			--Texture:SetAllPoints(Icon)
+			--Texture:SetTexture(C["Media"].Blank)
 
-			if (spell[3]) then
-				Texture:SetVertexColor(unpack(spell[3]))
-			else
-				Texture:SetVertexColor(0.8, 0.8, 0.8)
-			end
+			--if (spell[3]) then
+			--	Texture:SetVertexColor(unpack(spell[3]))
+			--else
+			--	Texture:SetVertexColor(0.8, 0.8, 0.8)
+			--end
 
 			local Count = Icon:CreateFontString(nil, "OVERLAY")
 			Count:SetFont(C["Media"].Font, 8, "THINOUTLINE")
@@ -429,6 +429,45 @@ function Module:CreateAuraWatch(frame)
 
 	frame.AuraWatch = Auras
 end
+
+function Module:DisplayNameplatePowerAndCastBar(unit, cur, min, max)
+	if not unit then
+		unit = self:GetParent().unit
+	end
+
+	if not cur then
+		cur, max = UnitPower(unit), UnitPowerMax(unit)
+	end
+
+	local CurrentPower = cur
+	local MaxPower = max
+	local Nameplate = self:GetParent()
+	local PowerBar = Nameplate.Power
+	local CastBar = Nameplate.Castbar
+	local Health = Nameplate.Health
+	local IsPowerHidden = PowerBar.IsHidden
+
+	if (not CastBar:IsShown()) and (CurrentPower and CurrentPower == 0) and (MaxPower and MaxPower == 0) then
+		if (not IsPowerHidden) then
+			Health:ClearAllPoints()
+			Health:SetAllPoints()
+
+			PowerBar:Hide()
+			PowerBar.IsHidden = true
+		end
+	else
+		if IsPowerHidden then
+			Health:ClearAllPoints()
+			Health:SetPoint("TOPLEFT")
+			Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight - 1)
+			Health:SetWidth(Nameplate:GetWidth())
+
+			PowerBar:Show()
+			PowerBar.IsHidden = false
+		end
+	end
+end
+
 
 function Module:GetPartyFramesAttributes()
 	local PartyProperties = C["Party"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
@@ -689,11 +728,9 @@ function Module:CreateUnits()
 			end
 		end
 
-		SetCVar("nameplateMotionSpeed", .1)
+		-- Default these unless we end up changing them below.
 		SetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
 		SetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
-		SetCVar("nameplateOtherTopInset", GetCVarDefault("nameplateOtherTopInset"))
-		SetCVar("nameplateOtherBottomInset", GetCVarDefault("nameplateOtherBottomInset"))
 		SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
 		SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
 
@@ -703,7 +740,7 @@ function Module:CreateUnits()
 			nameplateLargerScale = 1.2,
 			nameplateMaxAlpha = 1,
 			nameplateMaxAlphaDistance = 0,
-			nameplateMaxDistance = C["Nameplates"].Distance or 46, -- for some reason there is a 6yd diff
+			nameplateMaxDistance = C["Nameplates"].Distance or 46,
 			nameplateMaxScale = 1,
 			nameplateMaxScaleDistance = 0,
 			nameplateMinAlpha = 1,
@@ -719,6 +756,7 @@ function Module:CreateUnits()
 			nameplateShowAll = 1,
 			nameplateShowFriendlyNPCs = 0,
 			nameplateVerticalScale = 1,
+			nameplateMotion = 0,
 		}
 
 		oUF:SpawnNamePlates(nil, Module.NameplatesCallback, Module.NameplatesVars)

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("MinimapButtons", "AceEvent-3.0", "AceHook-3.0", "AceTimer-3.0")
 
 -- Sourced: ProjectAzilroka (Azilroka)
@@ -56,10 +56,6 @@ local PartialIgnores = {
 local AcceptedFrames = {
 	"BagSync_MinimapButton",
 	"VendomaticButtonFrame",
-}
-
-local AddButtonsToBar = {
-	"SmartBuff_MiniMapButton",
 }
 
 local ButtonFunctions = {
@@ -176,13 +172,16 @@ function Module:SkinMinimapButton(Button)
 end
 
 function Module:GrabMinimapButtons()
-	if (InCombatLockdown() or C_PetBattles.IsInBattle()) then return end
+	if (InCombatLockdown() or C_PetBattles.IsInBattle()) then
+		return
+	end
 
-	for _, Frame in pairs({Minimap, MinimapBackdrop}) do
+	for _, Frame in pairs({ Minimap, MinimapBackdrop}) do
 		for i = 1, Frame:GetNumChildren() do
 			local object = select(i, Frame:GetChildren())
 			if object then
-				if object:IsObjectType("Button") and object:GetName() then
+				local name = object:GetName()
+				if name and (object:IsObjectType('Button') or object:IsObjectType('Frame') and tContains(AcceptedFrames, name)) then
 					self:SkinMinimapButton(object)
 				end
 			end
@@ -193,7 +192,9 @@ function Module:GrabMinimapButtons()
 end
 
 function Module:Update()
-	if not C["MinimapButtons"].EnableBar then return end
+	if not C["MinimapButtons"].EnableBar then
+		return
+	end
 
 	local AnchorX, AnchorY, MaxX = 0, 1, C["MinimapButtons"].ButtonsPerRow
 	local ButtonsPerRow = C["MinimapButtons"].ButtonsPerRow

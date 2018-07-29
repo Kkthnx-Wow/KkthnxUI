@@ -7,12 +7,12 @@ local _G = _G
 local pairs = pairs
 local find = string.find
 
-local CreateFrame = CreateFrame
-local GetCursorPosition = GetCursorPosition
-local SetCVar = SetCVar
-local SetUIPanelAttribute = SetUIPanelAttribute
-local MOUSE_LABEL = MOUSE_LABEL:gsub("|T.-|t","")
-local PLAYER = PLAYER
+local CreateFrame = _G.CreateFrame
+local GetCursorPosition = _G.GetCursorPosition
+local SetCVar = _G.SetCVar
+local SetUIPanelAttribute = _G.SetUIPanelAttribute
+local MOUSE_LABEL = _G.MOUSE_LABEL:gsub("|T.-|t","")
+local PLAYER = _G.PLAYER
 
 local WorldMapCoordinates = {
 	["enable"] = true,
@@ -38,7 +38,6 @@ local tooltips = {
 }
 
 local smallerMapScale = 0.8
-
 function Module:SetLargeWorldMap()
 	WorldMapFrame:SetParent(UIParent)
 	WorldMapFrame:SetScale(1)
@@ -83,19 +82,18 @@ function Module:SetSmallWorldMap()
 end
 
 local inRestrictedArea = false
-function Module:PLAYER_ENTERING_WORLD()
+function Module:UpdateRestrictedArea()
 	K:MapInfo_Update()
 
 	if K.MapInfo.x and K.MapInfo.y then
 		inRestrictedArea = false
-		CoordsHolder.playerCoords:SetFormattedText("%s: %.2f, %.2f", PLAYER, (K.MapInfo.xText or 0), (K.MapInfo.yText or 0))
 	else
 		inRestrictedArea = true
-		CoordsHolder.playerCoords:SetFormattedText("%s: %s", PLAYER, "N/A")
+		CoordsHolder.playerCoords:SetFormattedText("%s:   %s", PLAYER, "N/A")
 	end
 end
 
-function Module:UpdateCoords()
+function Module:UpdateCoords(OnShow)
 	if not WorldMapFrame:IsShown() then
 		return
 	end
@@ -121,11 +119,11 @@ function Module:UpdateCoords()
 		CoordsHolder.mouseCoords:SetText("")
 	end
 
-	if not inRestrictedArea and K.MapInfo.coordsWatching then
+	if not inRestrictedArea and (OnShow or K.MapInfo.coordsWatching) then
 		if K.MapInfo.x and K.MapInfo.y then
 			CoordsHolder.playerCoords:SetFormattedText("%s: %.2f, %.2f", PLAYER, (K.MapInfo.xText or 0), (K.MapInfo.yText or 0))
 		else
-			CoordsHolder.playerCoords:SetText("")
+			CoordsHolder.playerCoords:SetFormattedText("%s:   %s", PLAYER, "N/A")
 		end
 	end
 end
@@ -137,8 +135,13 @@ function Module:PositionCoords()
 	local yOffset = db.yOffset
 
 	local x, y = 5, 5
-	if find(position, "RIGHT") then	x = -5 end
-	if find(position, "TOP") then y = -5 end
+	if find(position, "RIGHT") then
+		x = -5
+	end
+
+	if find(position, "TOP") then
+		y = -5
+	end
 
 	CoordsHolder.playerCoords:ClearAllPoints()
 	CoordsHolder.playerCoords:SetPoint(position, WorldMapFrame.BorderFrame, position, x + xOffset, y + yOffset)
@@ -162,6 +165,7 @@ function Module:OnInitialize()
 
 		WorldMapFrame:HookScript("OnShow", function()
 			if not Module.CoordsTimer then
+				Module:UpdateCoords(true)
 				Module.CoordsTimer = Module:ScheduleRepeatingTimer("UpdateCoords", 0.1)
 			end
 		end)
@@ -173,7 +177,9 @@ function Module:OnInitialize()
 
 		Module:PositionCoords()
 
-		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "UpdateRestrictedArea")
+		self:RegisterEvent("ZONE_CHANGED_INDOORS", "UpdateRestrictedArea")
+		self:RegisterEvent("ZONE_CHANGED", "UpdateRestrictedArea")
 	end
 
 	if (C["WorldMap"].SmallWorldMap) then

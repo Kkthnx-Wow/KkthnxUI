@@ -135,13 +135,19 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	end
 
 	if (parent) then
-		tt:SetOwner(parent, "ANCHOR_NONE")
-		if (GameTooltipStatusBar.anchoredToTop) then
+		if (not GameTooltipStatusBar.anchoredToTop) then
 			GameTooltipStatusBar:ClearAllPoints()
 			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
 			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
-			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, -3)
-			GameTooltipStatusBar.anchoredToTop = nil
+			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
+			GameTooltipStatusBar.anchoredToTop = true
+		end
+
+		if (C["Tooltip"].CursorAnchor) then
+			tt:SetOwner(parent, "ANCHOR_CURSOR")
+			return
+		else
+			tt:SetOwner(parent, "ANCHOR_NONE")
 		end
 	end
 
@@ -565,8 +571,8 @@ function Module:GameTooltip_ShowStatusBar(tt)
 end
 
 function Module:CheckBackdropColor(tt)
-	if (not tt) or tt:IsForbidden() then 
-		return 
+	if (not tt) or tt:IsForbidden() then
+		return
 	end
 
 	local r, g, b = tt:GetBackdropColor()

@@ -96,10 +96,12 @@ function Module:CreateNameplates()
 	self.Power.Background:SetAllPoints()
 	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
 
+	self.Power.IsHidden = false
 	self.Power.frequentUpdates = true
 	self.Power.colorPower = true
 	self.Power.Smooth = C["Nameplates"].Smooth
 	self.Power.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
+	self.Power.PostUpdate = Module.DisplayNameplatePowerAndCastBar
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	self.Debuffs:SetHeight(C["Nameplates"].Height)
@@ -170,6 +172,9 @@ function Module:CreateNameplates()
 	self.Castbar.PostCastInterruptible = Module.CheckInterrupt
 	self.Castbar.PostCastNotInterruptible = Module.CheckInterrupt
 	self.Castbar.PostChannelStart = Module.CheckInterrupt
+
+	self.Castbar:SetScript("OnShow", Module.DisplayNameplatePowerAndCastBar)
+	self.Castbar:SetScript("OnHide", Module.DisplayNameplatePowerAndCastBar)
 
 	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(self:GetHeight(), self:GetHeight())
