@@ -10,7 +10,6 @@
     <Script file="ColorTextures.lua"/>
     <Script file="Durability.lua"/>
     <Script file="EnchantScroll.lua"/>
-    <Script file="Filger.lua"/>
     <Script file="FriendsListPlus.lua"/>
     <Script file="KillingBlow.lua"/>
     <Script file="MovableFrames.lua"/>
@@ -19,6 +18,6 @@
     <Script file="QueueTimer.lua"/>
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>
-    <Script file="SpellTolerance.lua"/>
     <Script file="StatusReport.lua"/>
+    <Script file="UIErrorFilter.lua"/>
 </Ui>

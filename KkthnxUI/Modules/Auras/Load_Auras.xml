@@ -90,5 +90,6 @@
         <Size x="60" y="60"/>
     </Button>
 
-    <Script file="auras.lua"/>
+    <Script file="Auras.lua"/>
+    <Script file="Filger.lua"/>
 </Ui>

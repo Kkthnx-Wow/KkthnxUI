@@ -383,6 +383,7 @@ local function Stuffing_CreateReagentContainer()
 	Reagent.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(Reagent)
+	Reagent:SetBorderColor()
 
 	Reagent:SetFrameStrata(_G["StuffingFrameBank"]:GetFrameStrata())
 	Reagent:SetFrameLevel(_G["StuffingFrameBank"]:GetFrameLevel() + 5)
@@ -404,6 +405,7 @@ local function Stuffing_CreateReagentContainer()
 	SwitchBankButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(SwitchBankButton)
+	SwitchBankButton:SetBorderColor()
 
 	SwitchBankButton:StyleButton(true)
 	SwitchBankButton:SetPoint("TOPRIGHT", -54, -7)
@@ -432,6 +434,7 @@ local function Stuffing_CreateReagentContainer()
 	SortReagentButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(SortReagentButton)
+	SortReagentButton:SetBorderColor()
 
 	SortReagentButton:StyleButton(true)
 	SortReagentButton:SetPoint("TOPRIGHT", SwitchBankButton, -22, 0)
@@ -469,6 +472,7 @@ local function Stuffing_CreateReagentContainer()
 	Deposit.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(Deposit)
+	Deposit:SetBorderColor()
 
 	Deposit:StyleButton(true)
 	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 6, 0)
@@ -511,6 +515,7 @@ local function Stuffing_CreateReagentContainer()
 			button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			K.CreateBorder(button)
+			button:SetBorderColor()
 
 			button.isSkinned = true
 		end
@@ -567,6 +572,7 @@ local function Stuffing_CreateReagentContainer()
 	ReagentBankFrameUnlockInfo.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(ReagentBankFrameUnlockInfo)
+	ReagentBankFrameUnlockInfo:SetBorderColor()
 
 	ReagentBankFrameUnlockInfo:SetFrameStrata("FULLSCREEN")
 	ReagentBankFrameUnlockInfoPurchaseButton:SkinButton()
@@ -633,6 +639,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		ret.frame.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(ret.frame)
+		ret.frame:SetBorderColor()
 		ret.frame.isSkinned = true
 	end
 
@@ -695,6 +702,7 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			K.CreateBorder(ret.frame)
+			ret.frame:SetBorderColor()
 			ret.frame.isSkinned = true
 		end
 
@@ -895,6 +903,7 @@ function Stuffing:CreateBagFrame(w)
 		f.reagentToggle.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(f.reagentToggle)
+		f.reagentToggle:SetBorderColor()
 
 		f.reagentToggle:SetPoint("TOPRIGHT", f, -32, -7)
 		f.reagentToggle:SetNormalTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
@@ -928,6 +937,7 @@ function Stuffing:CreateBagFrame(w)
 		f.bagsButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(f.bagsButton)
+		f.bagsButton:SetBorderColor()
 
 		f.bagsButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
 		f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
@@ -961,6 +971,7 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(f.sortButton)
+		f.sortButton:SetBorderColor()
 
 		f.sortButton:StyleButton(true)
 		f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
@@ -997,6 +1008,7 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(f.purchaseBagButton)
+		f.purchaseBagButton:SetBorderColor()
 
 		f.purchaseBagButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
 		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
@@ -1072,6 +1084,7 @@ function Stuffing:InitBags()
 	editbox.Borders:SetPoint("TOPLEFT", -2, 2)
 	editbox.Borders:SetPoint("BOTTOMRIGHT", 2, -2)
 	K.CreateBorder(editbox.Borders)
+	editbox.Borders:SetBorderColor()
 
 	local function resetAndClear(self)
 		self:GetParent().detail:Show()
@@ -1139,6 +1152,7 @@ function Stuffing:InitBags()
 		Token.Borders:SetAllPoints()
 		Token.Borders:SetOutside(Icon)
 		K.CreateBorder(Token.Borders)
+		Token.Borders:SetBorderColor()
 
 		Icon:SetSize(12, 12)
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1181,6 +1195,7 @@ function Stuffing:InitBags()
 	f.bagsButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(f.bagsButton)
+	f.bagsButton:SetBorderColor()
 
 	f.bagsButton:SetPoint("TOPRIGHT", f, -32, -7)
 	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
@@ -1214,6 +1229,7 @@ function Stuffing:InitBags()
 	f.sortButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(f.sortButton)
+	f.sortButton:SetBorderColor()
 
 	f.sortButton:StyleButton(nil, true)
 	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
@@ -1249,6 +1265,7 @@ function Stuffing:InitBags()
 		f.ArtifactButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(f.ArtifactButton)
+		f.ArtifactButton:SetBorderColor()
 
 		f.ArtifactButton:StyleButton(true)
 		f.ArtifactButton:SetPoint("TOPRIGHT", f.sortButton, -22, 0)
@@ -1362,6 +1379,7 @@ function Stuffing:Layout(isBank)
 		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		K.CreateBorder(f)
+		f:SetBorderColor()
 		f.isSkinned = true
 	end
 
@@ -1375,6 +1393,7 @@ function Stuffing:Layout(isBank)
 			fb.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 			K.CreateBorder(fb)
+			fb:SetBorderColor()
 
 			fb.isSkinned = true
 		end

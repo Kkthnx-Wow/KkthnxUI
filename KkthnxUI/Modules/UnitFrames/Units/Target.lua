@@ -18,6 +18,8 @@ local CreateFrame = _G.CreateFrame
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
+local Ticks = {}
+
 function Module:CreateTarget()
 	local UnitframeFont = K.GetFont(C["Unitframe"].Font)
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)

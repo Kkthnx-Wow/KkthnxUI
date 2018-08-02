@@ -202,6 +202,7 @@ function Module:OnInitialize()
 	Minimap.Borders = CreateFrame("Frame", nil, Minimap)
 	Minimap.Borders:SetAllPoints(Minimap)
 	K.CreateBorder(Minimap.Borders)
+	Minimap.Borders:SetBorderColor()
 	Minimap:SetFrameLevel(Minimap:GetFrameLevel() + 2)
 
 	Minimap:HookScript("OnEnter", function(self)

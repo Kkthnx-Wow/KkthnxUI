@@ -53,6 +53,7 @@ local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitReaction = _G.UnitReaction
 
 local Movers = K["Movers"]
+Module.ticks = {}
 
 Module.RaidBuffsTrackingPosition = {
 	TOPLEFT = {6, 1},
@@ -201,12 +202,159 @@ function Module:CheckInterrupt(unit)
 	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:CheckCast(unit)
-	Module.CheckInterrupt(self, unit)
+function Module:HideTicks()
+	for i = 1, #Module.ticks do
+		Module.ticks[i]:Hide()
+	end
 end
 
-function Module:CheckChannel(unit)
+function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
+	local CastTicksTexture = K.GetTexture(C["Unitframe"].Texture)
+
+	extraTickRatio = extraTickRatio or 0
+	Module:HideTicks()
+
+	if numTicks and numTicks <= 0 then
+		return
+	end
+
+	local w = castbar:GetWidth()
+	local d = w / (numTicks + extraTickRatio)
+
+	for i = 1, numTicks do
+		if not Module.ticks[i] then
+			Module.ticks[i] = castbar:CreateTexture(nil, "OVERLAY")
+			Module.ticks[i]:SetTexture(CastTicksTexture)
+			Module.ticks[i]:SetVertexColor(castbar.tickColor[1], castbar.tickColor[2], castbar.tickColor[3], castbar.tickColor[4])
+			Module.ticks[i]:SetWidth(castbar.tickWidth)
+		end
+
+		Module.ticks[i]:SetHeight(castbar.tickHeight)
+		Module.ticks[i]:ClearAllPoints()
+		Module.ticks[i]:SetPoint("RIGHT", castbar, "LEFT", d * i, 0)
+		Module.ticks[i]:Show()
+	end
+end
+
+function Module:CheckCast(unit, name)
 	Module.CheckInterrupt(self, unit)
+
+	if unit == "vehicle" then
+		unit = "player"
+	end
+
+	if C["Unitframe"].CastbarTicks and unit == "player" then
+		local baseTicks = Module.ChannelTicks[name]
+
+		-- Detect channeling spell and if it"s the same as the previously channeled one
+		if baseTicks and name == self.prevSpellCast then
+			self.chainChannel = true
+		elseif baseTicks then
+			self.chainChannel = nil
+			self.prevSpellCast = name
+		end
+
+		if baseTicks and Module.ChannelTicksSize[name] and Module.HastedChannelTicks[name] then
+			local tickIncRate = 1 / baseTicks
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local firstTickInc = tickIncRate / 2
+			local bonusTicks = 0
+			if curHaste >= firstTickInc then
+				bonusTicks = bonusTicks + 1
+			end
+
+			local x = tonumber(K.Round(firstTickInc + tickIncRate, 2))
+			while curHaste >= x do
+				x = tonumber(K.Round(firstTickInc + (tickIncRate * bonusTicks), 2))
+				if curHaste >= x then
+					bonusTicks = bonusTicks + 1
+				end
+			end
+
+			local baseTickSize = Module.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
+			local extraTickRatio = extraTick / hastedTickSize
+
+			Module:SetCastTicks(self, baseTicks + bonusTicks, extraTickRatio)
+		elseif baseTicks and Module.ChannelTicksSize[name] then
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local baseTickSize = Module.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 +  curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks)
+			local extraTickRatio = extraTick / hastedTickSize
+
+			Module:SetCastTicks(self, baseTicks, extraTickRatio)
+		elseif baseTicks then
+			Module:SetCastTicks(self, baseTicks)
+		else
+			Module:HideTicks()
+		end
+	elseif unit == "player" then
+		Module:HideTicks()
+	end
+
+end
+
+function Module:CheckChannel(unit, name)
+	Module.CheckInterrupt(self, unit)
+
+	if not (unit == "player" or unit == "vehicle") then
+		return
+	end
+
+	if C["Unitframe"].CastbarTicks then
+		local baseTicks = Module.ChannelTicks[name]
+
+		if baseTicks and Module.ChannelTicksSize[name] and Module.HastedChannelTicks[name] then
+			local tickIncRate = 1 / baseTicks
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local firstTickInc = tickIncRate / 2
+			local bonusTicks = 0
+			if curHaste >= firstTickInc then
+				bonusTicks = bonusTicks + 1
+			end
+
+			local x = tonumber(K.Round(firstTickInc + tickIncRate, 2))
+			while curHaste >= x do
+				x = tonumber(K.Round(firstTickInc + (tickIncRate * bonusTicks), 2))
+				if curHaste >= x then
+					bonusTicks = bonusTicks + 1
+				end
+			end
+
+			local baseTickSize = Module.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks + bonusTicks)
+
+			if self.chainChannel then
+				self.extraTickRatio = extraTick / hastedTickSize
+				self.chainChannel = nil
+			end
+
+			Module:SetCastTicks(self, baseTicks + bonusTicks, self.extraTickRatio)
+		elseif baseTicks and Module.ChannelTicksSize[name] then
+			local curHaste = UnitSpellHaste("player") * 0.01
+			local baseTickSize = Module.ChannelTicksSize[name]
+			local hastedTickSize = baseTickSize / (1 + curHaste)
+			local extraTick = self.max - hastedTickSize * (baseTicks)
+			if self.chainChannel then
+				self.extraTickRatio = extraTick / hastedTickSize
+				self.chainChannel = nil
+			end
+
+			Module:SetCastTicks(self, baseTicks, self.extraTickRatio)
+		elseif baseTicks then
+			if self.chainChannel then
+				baseTicks = baseTicks + 1
+			end
+			Module:SetCastTicks(self, baseTicks)
+		else
+			Module:HideTicks()
+		end
+	else
+		Module:HideTicks()
+	end
 end
 
 function Module:CreateAuraTimer(elapsed)
@@ -430,9 +578,13 @@ function Module:CreateAuraWatch(frame)
 	frame.AuraWatch = Auras
 end
 
-function Module:DisplayNameplatePowerAndCastBar(unit, cur, min, max)
+function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
 	if not unit then
 		unit = self:GetParent().unit
+	end
+
+	if not unit then
+		return
 	end
 
 	if not cur then
@@ -467,7 +619,6 @@ function Module:DisplayNameplatePowerAndCastBar(unit, cur, min, max)
 		end
 	end
 end
-
 
 function Module:GetPartyFramesAttributes()
 	local PartyProperties = C["Party"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
@@ -676,8 +827,6 @@ function Module:CreateUnits()
 				HealerRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
-			else
-				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			end
 
 			if C["Raid"].MainTankFrames then
@@ -692,8 +841,11 @@ function Module:CreateUnits()
 				Movers:RegisterFrame(MainTank)
 			end
 
-			Movers:RegisterFrame(DamageRaid)
-			Movers:RegisterFrame(HealerRaid)
+			if C["Raid"].RaidLayout.Value == "Healer" then
+				Movers:RegisterFrame(HealerRaid)
+			elseif C["Raid"].RaidLayout.Value == "Damage" then
+				Movers:RegisterFrame(DamageRaid)
+			end
 		end
 
 		Movers:RegisterFrame(Player)

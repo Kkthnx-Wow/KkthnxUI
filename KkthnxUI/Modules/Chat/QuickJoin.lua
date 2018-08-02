@@ -18,7 +18,7 @@ local C_SocialQueue_GetGroupMembers = _G.C_SocialQueue.GetGroupMembers
 local C_SocialQueue_GetGroupQueues = _G.C_SocialQueue.GetGroupQueues
 local LFG_LIST_AND_MORE = _G.LFG_LIST_AND_MORE
 local SOCIAL_QUEUE_QUEUED_FOR = _G.SOCIAL_QUEUE_QUEUED_FOR:gsub(":%s?$","") -- some language have `:` on end
-local SocialQueueUtil_GetNameAndColor = _G.SocialQueueUtil_GetNameAndColor
+local SocialQueueUtil_GetRelationshipInfo = _G.SocialQueueUtil_GetRelationshipInfo
 local SocialQueueUtil_GetQueueName = _G.SocialQueueUtil_GetQueueName
 local SocialQueueUtil_SortGroupMembers = _G.SocialQueueUtil_SortGroupMembers
 local UNKNOWN = _G.UNKNOWN
@@ -94,7 +94,7 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 
 	if members then
 		local firstMember, numMembers, extraCount = members[1], #members, ""
-		playerName, nameColor = SocialQueueUtil_GetNameAndColor(firstMember)
+		playerName, nameColor = SocialQueueUtil_GetRelationshipInfo(firstMember.guid, nil, firstMember.clubId)
 		if numMembers > 1 then
 			extraCount = format(" +%s", numMembers - 1)
 		end

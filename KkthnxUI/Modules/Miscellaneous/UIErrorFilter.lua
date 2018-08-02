@@ -1,6 +1,10 @@
 local K = unpack(select(2, ...))
 local Module = K:NewModule("UIErrorFilter", "AceEvent-3.0")
 
+local _G = _G
+local ipairs = ipairs
+
+local geterrorhandler = _G.geterrorhandler
 
 -- unregister LUA_WARNING from other addons (ie. UIParent and possibly !BugGrabber)
 local Frames = {GetFramesRegisteredForEvent("LUA_WARNING")}
@@ -21,5 +25,5 @@ function Module:OnEnable()
 		self.UnregisterEvent(Frame, "LUA_WARNING")
 	end
 
-	self:RegisterEvent("LUA_WARNING")
+	self:RegisterEvent("LUA_WARNING", "OnEvent")
 end

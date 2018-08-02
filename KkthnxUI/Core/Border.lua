@@ -50,12 +50,14 @@ local BorderTemplate = {
 			cache[id]:SetVertexColor(r, g, b, a)
 		end
 	end,
+
 	-- Retrieve the current border color and alpha.
 	GetBorderColor = function(self)
 		-- All textures have the same vertex color,
 		-- so just retrieve it from the first one
 		return borderCache[self][1]:GetVertexColor()
 	end,
+
 	-- Show the border
 	ShowBorder = function(self)
 		local cache = borderCache[self]
@@ -63,6 +65,7 @@ local BorderTemplate = {
 			cache[id]:Show()
 		end
 	end,
+
 	-- Hide the border
 	HideBorder = function(self)
 		local cache = borderCache[self]
@@ -72,9 +75,11 @@ local BorderTemplate = {
 	end
 }
 
--- Redirecting WoW API calls to our own
-BorderTemplate.SetBackdropBorderColor = BorderTemplate.SetBorderColor
-BorderTemplate.GetBackdropBorderColor = BorderTemplate.GetBorderColor
+if BorderTemplate then
+	-- Redirecting WoW API calls to our own
+	BorderTemplate.SetBackdropBorderColor = BorderTemplate.SetBorderColor
+	BorderTemplate.GetBackdropBorderColor = BorderTemplate.GetBorderColor
+end
 
 -- Usage:
 -- K.CreateBorder(object, [offset], [size], [path])

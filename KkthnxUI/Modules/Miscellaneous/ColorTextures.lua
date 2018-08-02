@@ -3,7 +3,7 @@ if C["General"].ColorTextures ~= true then
 	return
 end
 
-local Module = K:NewModule("AFKCam", "AceEvent-3.0")
+local Module = K:NewModule("ColorTextures", "AceEvent-3.0")
 
 -- Lua API
 local _G = _G

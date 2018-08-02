@@ -36,6 +36,7 @@ function Module:CreatePlayer()
 	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(self.Health)
+	self.Health:SetBorderColor()
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -61,6 +62,7 @@ function Module:CreatePlayer()
 	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(self.Power)
+	self.Power:SetBorderColor()
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -170,6 +172,20 @@ function Module:CreatePlayer()
 			self.Castbar.Icon:SetPoint("RIGHT", self.Castbar, "LEFT", -6, 0)
 
 			self.Castbar.Button:SetAllPoints(self.Castbar.Icon)
+		end
+
+		-- Adjust tick heights
+		self.Castbar.tickHeight = self.Castbar:GetHeight()
+
+		if C["Unitframe"].CastbarTicks then -- Only player unitframe has this
+			-- Set tick width and color
+			self.Castbar.tickWidth = C["Unitframe"].CastbarTicksWidth
+			self.Castbar.tickColor = C["Unitframe"].CastbarTicksColor
+
+			for i = 1, #Module.ticks do
+				Module.ticks[i]:SetVertexColor(self.Castbar.tickColor[1], self.Castbar.tickColor[2], self.Castbar.tickColor[3], self.Castbar.tickColor[4])
+				Module.ticks[i]:SetWidth(self.Castbar.tickWidth)
+			end
 		end
 
 		K.Movers:RegisterFrame(self.Castbar)
