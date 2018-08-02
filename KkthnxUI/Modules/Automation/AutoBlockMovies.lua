@@ -3,12 +3,8 @@ local Module = K:NewModule("BlockMovies", "AceEvent-3.0")
 
 local _G = _G
 
-local GetCurrentMapDungeonLevel = _G.GetCurrentMapDungeonLevel
 local GetItemCooldown = _G.GetItemCooldown
 local CreateFrame = _G.CreateFrame
-local GetCurrentMapAreaID = _G.GetCurrentMapAreaID
-local C_Scenario_GetCriteriaInfoByStep = _G.C_Scenario.GetCriteriaInfoByStep
-local SetMapToCurrentZone = _G.SetMapToCurrentZone
 
 local playerName = UnitName("player")
 local playerRealm = GetRealmName()
@@ -74,13 +70,13 @@ function Module:SiegeOfOrgrimmarCinematics()
 	if hasItem and not self.SiegeOfOrgrimmarCinematicsFrame then
 		local tbl = {[149370] = true, [149371] = true, [149372] = true, [149373] = true, [149374] = true, [149375] = true}
 		self.SiegeOfOrgrimmarCinematicsFrame = CreateFrame("Frame")
-		-- frame:UNIT_SPELLCAST_SUCCEEDED:player:Vision of Time Scene 2::227:149371:
 		self.SiegeOfOrgrimmarCinematicsFrame:SetScript("OnEvent", function(_, _, _, _, _, _, spellId)
 			if tbl[spellId] then
-				plugin:UnregisterEvent("CINEMATIC_START")
-				plugin:ScheduleTimer("RegisterEvent", 10, "CINEMATIC_START")
+				Module:UnregisterEvent("CINEMATIC_START")
+				Module:ScheduleTimer("RegisterEvent", 10, "CINEMATIC_START")
 			end
 		end)
+
 		self.SiegeOfOrgrimmarCinematicsFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
 	end
 end
