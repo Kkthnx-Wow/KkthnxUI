@@ -278,7 +278,7 @@ function Module:OnInitialize()
 		end
 	end)
 
-	K["Movers"]:RegisterFrame(self.Bar)
-
 	self:ScheduleRepeatingTimer("GrabMinimapButtons", 5)
+
+	K["Movers"]:RegisterFrame(self.Bar)
 end

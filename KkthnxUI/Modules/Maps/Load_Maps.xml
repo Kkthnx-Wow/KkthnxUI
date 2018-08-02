@@ -5,4 +5,5 @@
     <Script file="MicroMenu.lua"/>
     <Script file="MinimapButtons.lua"/>
     <Script file="WorldMap.lua"/>
+    <Script file="WorldMapPlus.lua"/>
 </Ui>

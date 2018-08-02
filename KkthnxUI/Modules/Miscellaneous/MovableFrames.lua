@@ -15,7 +15,7 @@ local Frames = {
 	"BonusRollFrame",
 	"BonusRollLootWonFrame",
 	"BonusRollMoneyWonFrame",
-	"CharacterFrame",
+	-- "CharacterFrame",
 	"DressUpFrame",
 	"FriendsFrame",
 	"FriendsFriendsFrame",
@@ -37,7 +37,7 @@ local Frames = {
 	"PetitionFrame",
 	"PetStableFrame",
 	"PVEFrame",
-	"PVPReadyDialog",
+	-- "PVPReadyDialog",
 	"QuestFrame",
 	"QuestLogPopupDetailFrame",
 	"RaidBrowserFrame",
@@ -65,7 +65,6 @@ local Frames = {
 local AddOnFrames = {
 	["Blizzard_AchievementUI"] = { "AchievementFrame" },
 	["Blizzard_ArchaeologyUI"] = { "ArchaeologyFrame" },
-	["Blizzard_ArtifactUI"] = { "ArtifactRelicForgeFrame" },
 	["Blizzard_AuctionUI"] = { "AuctionFrame" },
 	["Blizzard_BarberShopUI"] = { "BarberShopFrame" },
 	["Blizzard_BindingUI"] = { "KeyBindingFrame" },
@@ -138,7 +137,7 @@ function Module:MakeMovable(Name)
 	Frame.ignoreFramePositionManager = true
 	if UIPanelWindows[Name] then
 		for Key in pairs(UIPanelWindows[Name]) do
-			if Key == "area" or Key == "pushable" then
+			if Key == "pushable" then
 				UIPanelWindows[Name][Key] = nil
 			end
 		end
