@@ -44,12 +44,14 @@ UIMiniMapTrackingMenu.noResize = true
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
 local menuList = {
 	{text = CHARACTER_BUTTON,
+		icon = "Interface\\PaperDollInfoFrame\\UI-EquipmentManager-Toggle",
 		func = function()
 			ToggleCharacter("PaperDollFrame")
 		end,
 	notCheckable = true},
 
 	{text = SPELLBOOK_ABILITIES_BUTTON,
+		icon = "Interface\\MINIMAP\\TRACKING\\Class",
 		func = function()
 			if not SpellBookFrame:IsShown() then
 				ShowUIPanel(SpellBookFrame)
@@ -86,6 +88,7 @@ local menuList = {
 	notCheckable = true},
 
 	{text = MOUNTS,
+		icon = "Interface\\MINIMAP\\TRACKING\\StableMaster",
 		func = function()
 			ToggleCollectionsJournal(1)
 		end,
@@ -98,16 +101,19 @@ local menuList = {
 	notCheckable = true},
 
 	{text = PETS,
+		icon = "Interface\\MINIMAP\\TRACKING\\StableMaster",
 		func = function()
 			ToggleCollectionsJournal(2)
 		end,
 	notCheckable = true},
 
 	{text = TOY_BOX,
+		icon = "Interface\\MINIMAP\\TRACKING\\Reagents",
 		func = function() ToggleCollectionsJournal(3) end,
 	notCheckable = true},
 
 	{text = HEIRLOOMS,
+		icon = "Interface\\PaperDollInfoFrame\\UI-EquipmentManager-Toggle",
 		func = function()
 			ToggleCollectionsJournal(4)
 		end,
@@ -120,6 +126,7 @@ local menuList = {
 	notCheckable = true},
 
 	{text = COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVE.." / "..COMPACT_UNIT_FRAME_PROFILE_AUTOACTIVATEPVP,
+		icon = "Interface\\MINIMAP\\TRACKING\\BattleMaster",
 		func = function()
 			PVEFrame_ToggleFrame()
 		end,
@@ -156,12 +163,14 @@ local menuList = {
 	notCheckable = true},
 
 	{text = RAID,
+		icon = "Interface\\TARGETINGFRAME\\UI-TargetingFrame-Skull",
 		func = function()
 			ToggleFriendsFrame(3)
 		end,
 	notCheckable = true},
 
 	{text = HELP_BUTTON,
+		icon = "Interface\\CHATFRAME\\UI-ChatIcon-Blizz",
 		func = function()
 			ToggleHelpFrame()
 		end,
@@ -178,6 +187,7 @@ local menuList = {
 	notCheckable = true},
 
 	{text = ENCOUNTER_JOURNAL,
+		icon = "Interface\\MINIMAP\\TRACKING\\Profession",
 		func = function()
 			if not IsAddOnLoaded("Blizzard_EncounterJournal") then
 				EncounterJournal_LoadUI()

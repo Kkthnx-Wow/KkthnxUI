@@ -46,7 +46,7 @@ local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local ToggleFrame = _G.ToggleFrame
-local TRADE = _G.TRADE
+local TRADE = TRADE
 local UIParent = _G.UIParent
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitName = _G.UnitName
@@ -325,19 +325,15 @@ function Module:SetDefaultChatFramesPositions()
 		-- rename windows general because moved to chat #3
 		if ID == 1 then
 			FCF_SetWindowName(Frame, GENERAL)
-		end
-
-		if ID == 2 then
+		elseif ID == 2 then
 			FCF_SetWindowName(Frame, _G.GUILD_EVENT_LOG)
-		end
-
-		if ID == 3 then
+		elseif ID == 3 then
 			FCF_SetWindowName(Frame, LOOT .. " / " .. TRADE)
 		end
 
-		if (not Frame.isLocked) then
-			FCF_SetLocked(Frame, 1)
-		end
+		--if (not Frame.isLocked) then -- We really do not need this.
+		--	FCF_SetLocked(Frame, 1)
+		--end
 
 		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame" .. i] = {Anchor1, Anchor2, X, Y, C["Chat"].Width, C["Chat"].Height }
@@ -387,18 +383,19 @@ function Module:Install()
 	FCF_DockFrame(ChatFrame2)
 	FCF_SetLocked(ChatFrame2, 1)
 	FCF_OpenNewWindow(LOOT)
-	FCF_SetLocked(ChatFrame3, 1)
 	FCF_DockFrame(ChatFrame3)
+	FCF_SetLocked(ChatFrame3, 1)
+	ChatFrame3:Show()
 
 	-- keys taken from `ChatTypeGroup` but doesnt add: "OPENING", "TRADESKILLS", "PET_INFO", "COMBAT_MISC_INFO", "COMMUNITIES_CHANNEL", "PET_BATTLE_COMBAT_LOG", "PET_BATTLE_INFO", "TARGETICONS"
-	local chatGroup = {"SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT"}
+	local chatGroup = { "SYSTEM", "CHANNEL", "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "MONSTER_SAY", "MONSTER_YELL", "MONSTER_EMOTE", "MONSTER_WHISPER", "MONSTER_BOSS_EMOTE", "MONSTER_BOSS_WHISPER", "ERRORS", "AFK", "DND", "IGNORED", "BG_HORDE", "BG_ALLIANCE", "BG_NEUTRAL", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "BN_WHISPER", "BN_INLINE_TOAST_ALERT" }
 	ChatFrame_RemoveAllMessageGroups(ChatFrame1)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(ChatFrame1, v)
 	end
 
 	-- keys taken from `ChatTypeGroup` which weren't added above to ChatFrame1
-	chatGroup = {"COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY"}
+	chatGroup = { "COMBAT_XP_GAIN", "COMBAT_HONOR_GAIN", "COMBAT_FACTION_CHANGE", "SKILL", "LOOT", "CURRENCY", "MONEY" }
 	ChatFrame_RemoveAllMessageGroups(ChatFrame3)
 	for _, v in ipairs(chatGroup) do
 		ChatFrame_AddMessageGroup(ChatFrame3, v)
@@ -409,27 +406,18 @@ function Module:Install()
 	ChatFrame_AddChannel(ChatFrame3, TRADE)
 
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
-	chatGroup = {"SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
+	chatGroup = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
 	for i = 1, MAX_WOW_CHAT_CHANNELS do
 		tinsert(chatGroup, "CHANNEL"..i)
 	end
-
 	for _, v in ipairs(chatGroup) do
 		ToggleChatColorNamesByClassGroup(true, v)
 	end
 
-	-- Adjust Chat Channel Colors
-	ChangeChatColor("RAID", 1, .28, .04)
-	ChangeChatColor("RAID_LEADER", 1.0, 0.82, 0.0)
-	ChangeChatColor("BATTLEGROUND", 1, .28, .04)
-	ChangeChatColor("BATTLEGROUND_LEADER", 1.0, 0.82, 0.0)
-	ChangeChatColor("INSTANCE_CHAT", 1, .28, .04)
-	ChangeChatColor("INSTANCE_CHAT_LEADER", 1.0, 0.82, 0.0)
-
-	ChangeChatColor("CHANNEL1", 195 / 255, 230 / 255, 232 / 255)
-	ChangeChatColor("CHANNEL2", 232 / 255, 158 / 255, 121 / 255)
-	ChangeChatColor("CHANNEL3", 232 / 255, 228 / 255, 121 / 255)
-	ChangeChatColor("CHANNEL4", 232 / 255, 158 / 255, 121 / 255)
+	-- Adjust Chat Colors
+	ChangeChatColor("CHANNEL1", 195/255, 230/255, 232/255) -- General
+	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
+	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 
 	if K.Name == "Kkthnxx" and K.Realm == "Stormreaver" then
 		SetCVar("scriptErrors", 1)
@@ -537,6 +525,10 @@ function Module:SetupFrame()
 		_G.CHAT_PARTY_GET = "|Hchannel:PARTY|hP|h %s "
 		_G.CHAT_PARTY_LEADER_GET ="|Hchannel:PARTY|hPL|h %s "
 		_G.CHAT_PARTY_GUIDE_GET ="|Hchannel:PARTY|hPG|h %s "
+
+		-- Instance
+		_G.CHAT_INSTANCE_GET = "|Hchannel:INSTANCE|hI|h %s "
+		_G.CHAT_INSTANCE_CHAT_GET ="|Hchannel:INSTANCE|hIL|h %s "
 
 		-- Battleground
 		_G.CHAT_BATTLEGROUND_GET = "|Hchannel:BATTLEGROUND|hB|h %s "

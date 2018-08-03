@@ -727,6 +727,8 @@ function Module:OnEnable()
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
 
+	BNToastFrame:StripTextures(false)
+
 	BNToastFrame.Backgrounds = BNToastFrame:CreateTexture(nil, "BACKGROUND", -1)
 	BNToastFrame.Backgrounds:SetAllPoints()
 	BNToastFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])

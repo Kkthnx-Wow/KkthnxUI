@@ -7,10 +7,6 @@ local _G = _G
 local select = select
 
 local CreateFrame = _G.CreateFrame
-local HasOverrideActionBar = _G.HasOverrideActionBar
-local HasVehicleActionBar = _G.HasVehicleActionBar
-local InCombatLockdown = _G.InCombatLockdown
--- local MainMenuBar_OnEvent = _G.MainMenuBar_OnEvent
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UnitClass = _G.UnitClass
@@ -59,38 +55,27 @@ local function GetBar()
 	return condition
 end
 
-ActionBar1:RegisterEvent("PLAYER_LOGIN")
-ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
-ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
-ActionBar1:SetScript("OnEvent", function(self, event, ...)
-	if event == "PLAYER_LOGIN" then
+ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
+ActionBar1:SetScript("OnEvent", function(self, event)
+	if event == "PLAYER_ENTERING_WORLD" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G["ActionButton" .. i]
 			self:SetFrameRef("ActionButton" .. i, button)
 		end
 
 		self:Execute([[
-			buttons = table.new()
-			for i = 1, 12 do
-				table.insert(buttons, self:GetFrameRef("ActionButton"..i))
-			end
+		buttons = table.new()
+		for i = 1, 12 do
+			table.insert(buttons, self:GetFrameRef("ActionButton"..i))
+		end
 		]])
 
 		self:SetAttribute("_onstate-page", [[
-			for i, button in ipairs(buttons) do
-				button:SetAttribute("actionpage", tonumber(newstate))
-			end
+		for i, button in ipairs(buttons) do
+			button:SetAttribute("actionpage", tonumber(newstate))
+		end
 		]])
 
 		RegisterStateDriver(self, "page", GetBar())
-	elseif event == "UPDATE_VEHICLE_ACTIONBAR" or event == "UPDATE_OVERRIDE_ACTIONBAR" then
-		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
-			for i = 1, NUM_ACTIONBAR_BUTTONS do
-				local button = _G["ActionButton" .. i]
-				ActionButton_Update(button)
-			end
-		end
-	else
-		MainMenuBarMixin:OnEvent(event, ...)
 	end
 end)
