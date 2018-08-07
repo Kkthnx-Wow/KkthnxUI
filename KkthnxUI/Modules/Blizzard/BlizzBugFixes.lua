@@ -4,12 +4,10 @@ local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
-local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
 local blizzardCollectgarbage = _G.collectgarbage
-local hooksecurefunc = _G.hooksecurefunc
 local GameTooltip = _G.GameTooltip
 
 local TooltipBagBug = false
@@ -103,21 +101,6 @@ function Module:BugTooltipCleared(tt)
 	end
 end
 
-function Module:HideTalkingHead()
-	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-		hooksecurefunc("TalkingHeadFrame_PlayCurrent", function()
-			TalkingHeadFrame:Hide()
-		end)
-	else
-		local ForceLoad = CreateFrame("Frame")
-		ForceLoad:RegisterEvent("PLAYER_ENTERING_WORLD")
-		ForceLoad:SetScript("OnEvent", function(self, event)
-			self:UnregisterEvent(event)
-			TalkingHead_LoadUI()
-		end)
-	end
-end
-
 function Module:OnEnable()
 	self:MisclickPopups()
 
@@ -126,10 +109,6 @@ function Module:OnEnable()
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "BugTooltipCleared")
-
-	if K.Realm == "Sylvanas" and K.Level == MAX_PLAYER_LEVEL and K.Legion735 then
-		self:RegisterEvent("ADDON_LOADED", "HideTalkingHead")
-	end
 
 	-- Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)

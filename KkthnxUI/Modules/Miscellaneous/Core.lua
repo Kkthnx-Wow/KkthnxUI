@@ -91,9 +91,9 @@ if C["General"].AutoScale then
 end
 
 -- Force readycheck warning
-local function ShowReadyCheckHook(self, initiator)
+local function ShowReadyCheckHook(_, initiator)
 	if initiator ~= "player" then
-		PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK, "Master")
+		PlaySound(SOUNDKIT.READY_CHECK, "Master")
 	end
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
@@ -119,14 +119,14 @@ ForceWarning:SetScript("OnEvent", function(_, event)
 		for i = 1, GetMaxBattlefieldID() do
 			local status = GetBattlefieldStatus(i)
 			if status == "confirm" then
-				PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
+				PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
 				break
 			end
 		end
 	elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-		PlaySound(PlaySoundKitID and "PVPTHROUGHQUEUE" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
+		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
 	elseif event == "LFG_PROPOSAL_SHOW" then
-		PlaySound(PlaySoundKitID and "ReadyCheck" or SOUNDKIT.READY_CHECK)
+		PlaySound(SOUNDKIT.READY_CHECK)
 	elseif event == "RESURRECT_REQUEST" then
 		PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
 	end

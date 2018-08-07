@@ -78,28 +78,20 @@ function Module:CreateBoss()
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Background = self.Portrait:CreateTexture(nil, "BACKGROUND", -1)
-		self.Portrait.Background:SetAllPoints()
-		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		self.Portrait.Borders = CreateFrame("Frame", nil, self.Portrait)
-		self.Portrait.Borders:SetAllPoints(self.Portrait)
-		K.CreateBorder(self.Portrait.Borders)
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		self.Portrait.Borders:CreateBorder()
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Background = self:CreateTexture(nil, "BACKGROUND", -1)
-		self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Background:SetSize(46, 46)
-		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
 		self.Portrait.Borders:SetSize(46, 46)
-		K.CreateBorder(self.Portrait.Borders)
+		self.Portrait.Borders:CreateBorder()
 
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits

@@ -77,7 +77,8 @@ local function Update(self, event, unit)
 			element.Badge:SetAtlas('honorsystem-portrait-' .. factionGroup, false)
 			element.Badge:Show()
 		else
-			element:SetTexture([[Interface\TargetingFrame\UI-PVP-]] .. status)
+			-- element:SetTexture([[Interface\TargetingFrame\UI-PVP-]] .. status)
+			element:SetTexture([[Interface\AddOns\KkthnxUI\Media\Unitframes\UI-PVP-]] .. status)
 			element:SetTexCoord(0, 0.65625, 0, 0.65625)
 
 			if(element.Badge) then

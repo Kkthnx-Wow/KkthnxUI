@@ -26,7 +26,6 @@ local GetRealmName = _G.GetRealmName
 local InCinematic = _G.InCinematic
 local MoneyFrame_Update = _G.MoneyFrame_Update
 local PlaySound = _G.PlaySound
-local PlaySoundKitID = _G.PlaySoundKitID
 local PurchaseSlot = _G.PurchaseSlot
 local ReloadUI = _G.ReloadUI
 local RestartGx = _G.RestartGx
@@ -214,7 +213,7 @@ K.PopupDialogs["WARNING_BLIZZARD_ADDONS"] = {
 
 local MAX_STATIC_POPUPS = 4
 function K.StaticPopup_OnShow(self)
-	PlaySound(PlaySoundKitID and "IgMainMenuOpen" or SOUNDKIT.IG_MAINMENU_OPEN)
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN)
 
 	local dialog = K.PopupDialogs[self.which]
 	local OnShow = dialog.OnShow
@@ -332,7 +331,7 @@ function K.StaticPopup_OnKeyDown(self, key)
 end
 
 function K.StaticPopup_OnHide(self)
-	PlaySound(PlaySoundKitID and "IgMainMenuClose" or SOUNDKIT.IG_MAINMENU_CLOSE)
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE)
 
 	K.StaticPopup_CollapseTable()
 

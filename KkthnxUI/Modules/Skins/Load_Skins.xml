@@ -3,6 +3,7 @@
     xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Skins -->
     <Include file="Core.lua"/>
+
     <Include file="Addons\Bagnon.lua"/>
     <Include file="Addons\BigWigs.lua"/>
     <Include file="Addons\DBM.lua"/>
@@ -22,6 +23,7 @@
     <Include file="Blizzard\ObjectiveTracker.lua"/>
     <Include file="Blizzard\PetBattle.lua"/>
     <Include file="Blizzard\ScriptErrors.lua"/>
+    <Include file="Blizzard\SpellBook.lua"/>
     <Include file="Blizzard\TalkingHead.lua"/>
     <Include file="Blizzard\Tooltip.lua"/>
     <Include file="Blizzard\Worldmap.lua"/>

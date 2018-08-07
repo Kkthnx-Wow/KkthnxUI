@@ -31,12 +31,7 @@ function Module:CreatePlayer()
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
-	self.Health.Background = self.Health:CreateTexture(nil, "BACKGROUND", -1)
-	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Health)
-	self.Health:SetBorderColor()
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -57,12 +52,7 @@ function Module:CreatePlayer()
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 
-	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
-	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Power)
-	self.Power:SetBorderColor()
+	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -80,28 +70,20 @@ function Module:CreatePlayer()
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Background = self.Portrait:CreateTexture(nil, "BACKGROUND", -1)
-		self.Portrait.Background:SetAllPoints()
-		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		self.Portrait.Borders = CreateFrame("Frame", nil, self.Portrait)
-		self.Portrait.Borders:SetAllPoints(self.Portrait)
-		K.CreateBorder(self.Portrait.Borders)
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		self.Portrait.Borders:CreateBorder()
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Background = self:CreateTexture(nil, "BACKGROUND", -1)
-		self.Portrait.Background:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Background:SetSize(46, 46)
-		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
 		self.Portrait.Borders:SetSize(46, 46)
-		K.CreateBorder(self.Portrait.Borders)
+		self.Portrait.Borders:CreateBorder()
 
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
@@ -114,11 +96,7 @@ function Module:CreatePlayer()
 		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
 
-		self.Castbar.Background = self.Castbar:CreateTexture(nil, "BACKGROUND", -1)
-		self.Castbar.Background:SetAllPoints()
-		self.Castbar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		K.CreateBorder(self.Castbar)
+		self.Castbar:CreateBorder()
 
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 203)
@@ -158,13 +136,8 @@ function Module:CreatePlayer()
 			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 			self.Castbar.Button:SetSize(20, 20)
 
-			self.Castbar.Button.Backgrounds = self.Castbar.Button:CreateTexture(nil, "BACKGROUND", -1)
-			self.Castbar.Button.Backgrounds:SetAllPoints(self.Castbar.Button)
-			self.Castbar.Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			self.Castbar.Button.Borders = CreateFrame("Frame", nil, self.Castbar.Button)
-			self.Castbar.Button.Borders:SetAllPoints(self.Castbar.Button)
-			K.CreateBorder(self.Castbar.Button.Borders)
+			self.Castbar.Button:CreateBackdrop()
+			self.Castbar.Button.Backdrop:SetFrameLevel(4)
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -208,7 +181,7 @@ function Module:CreatePlayer()
     self.AdditionalPower.Backgrounds:SetAllPoints()
 	self.AdditionalPower.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	K.CreateBorder(self.AdditionalPower)
+	self.AdditionalPower:CreateBorder()
 
 	self.AdditionalPower.Prediction = CreateFrame("StatusBar", nil, self.AdditionalPower)
 	self.AdditionalPower.Prediction:SetReverseFill(true)

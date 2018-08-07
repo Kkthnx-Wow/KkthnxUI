@@ -853,51 +853,6 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Auto Reward",
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
-
-		["Arena"] = {
-			["Name"] = "Arena",
-			["Desc"] = "Auto collapse tracker in arena",
-		},
-
-		["Raid"] = {
-			["Name"] = "Raid",
-			["Desc"] = "Auto collapse tracker in raid",
-		},
-
-		["Orderhall"] = {
-			["Name"] = "Orderhall",
-			["Desc"] = "Auto collapse tracker in orderhall",
-		},
-
-		["Garrison"] = {
-			["Name"] = "Garrison",
-			["Desc"] = "Auto collapse tracker in garrison",
-		},
-
-		["Dungeon"] = {
-			["Name"] = "Dungeon",
-			["Desc"] = "Auto collapse tracker in dungeon",
-		},
-
-		["Combat"] = {
-			["Name"] = "Combat",
-			["Desc"] = "Auto collapse tracker in combat",
-		},
-
-		["Battleground"] = {
-			["Name"] = "Battleground",
-			["Desc"] = "Auto collapse tracker in battleground",
-		},
-
-		["Scenario"] = {
-			["Name"] = "Scenario",
-			["Desc"] = "Auto collapse tracker in scenario",
-		},
-
-		["Rested"] = {
-			["Name"] = "Rested",
-			["Desc"] = "Auto collapse tracker in rested arenas",
-		},
 	},
 
 	-- DataText Local
@@ -1222,11 +1177,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Highlight your current selected party target",
 		},
 
-		["PartyAsRaid"] = {
-			["Name"] = "Party as Raid Frames",
-			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
-		},
-
 		["PowerPredictionBar"] = {
 			["Name"] = "Power Prediction Bar",
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
@@ -1235,21 +1185,6 @@ KkthnxUIConfig["enUS"] = {
 		["PvPText"] = {
 			["Name"] = "Set PVP Text",
 			["Desc"] = "Toggle the PvP Text",
-		},
-
-		["ShowArena"] = {
-			["Name"] = "Enable Arena",
-			["Desc"] = "Enable arena frames",
-		},
-
-		["ShowBoss"] = {
-			["Name"] = "Enable Boss",
-			["Desc"] = "Enable boss frames",
-		},
-
-		["ShowPlayer"] = {
-			["Name"] = "Show Player In Party",
-			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
 		},
 
 		["Smooth"] = {
@@ -1286,12 +1221,12 @@ KkthnxUIConfig["enUS"] = {
 	-- Arena Local
 	["Arena"] = {
 		["Castbars"] = {
-			["Name"] = "Enable Castbars",
+			["Name"] = "Toggle Castbars",
 			["Desc"] = "Enable cast bar for unit frames",
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Arena",
+			["Name"] = "Toggle Arena Frames",
 			["Desc"] = ModuleToggle,
 		},
 
@@ -1323,14 +1258,24 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Arena Local
 	["Party"] = {
-		["Castbars"] = {
-			["Name"] = "Enable Castbars",
-			["Desc"] = "Enable cast bar for unit frames",
+		["Enable"] = {
+			["Name"] = "Toggle Party Frames",
+			["Desc"] = ModuleToggle,
 		},
 
-		["Enable"] = {
-			["Name"] = "Enable Arena",
-			["Desc"] = ModuleToggle,
+		["OORAlpha"] = {
+			["Name"] = "OOR Alpha",
+			["Desc"] = "The alpha to set units that are out of range to.",
+		},
+
+		["PartyAsRaid"] = {
+			["Name"] = "Party as Raid Frames",
+			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
+		},
+
+		["ShowPlayer"] = {
+			["Name"] = "Show Player In Party",
+			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
 		},
 
 		["Font"] = {
@@ -1340,7 +1285,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
-			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+			["Desc"] = "Bars will transition smoothly." .. PerformanceIncrease,
 		},
 
 		["SmoothSpeed"] = {
@@ -1356,6 +1301,11 @@ KkthnxUIConfig["enUS"] = {
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
+		},
+
+		["PortraitStyle"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
 		},
 
 		["NumberPrefixStyle"] = {
@@ -1378,7 +1328,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["Cutaway"] = {
 			["Name"] = "Cutaway Bars",
-			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
+			["Desc"] = "Bars will transition in a cutaway style when health is lost." .. PerformanceIncrease,
 		},
 
 		["RaidTools"] = {

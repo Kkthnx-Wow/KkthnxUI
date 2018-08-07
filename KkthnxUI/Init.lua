@@ -101,9 +101,6 @@ AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.Welcome = "|cff4488ffKkthnxUI "..AddOn.Version.." "..AddOn.Client.."|r - /helpui"
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
-AddOn.Legion715 = AddOn.WowBuild == 23360
-AddOn.Legion735 = AddOn.WowBuild >= 26124
-AddOn.BFA801 = AddOn.WowBuild >= 26557
 
 if (About) then
 	AddOn.optionsFrame = About.new(nil, AddOnName)
@@ -118,10 +115,6 @@ function AddOn:OnInitialize()
 	local GameMenuButton = CreateFrame("Button", nil, GameMenuFrame, "GameMenuButtonTemplate")
 	GameMenuButton:SetText(string_format("|cff4488ff%s|r", AddOnName))
 	GameMenuButton:SetScript("OnClick", function()
-		if (InCombatLockdown()) then
-			return print("|cff4488ffKkthnxUI Config|r: Can only be toggled out of combat!")
-		end
-
 		if (not KkthnxUIConfigFrame) then
 			KkthnxUIConfig:CreateConfigWindow()
 		end
@@ -136,20 +129,10 @@ function AddOn:OnInitialize()
 	end)
 	GameMenuFrame[AddOnName] = GameMenuButton
 
-	if not IsAddOnLoaded("ConsolePort") then
+	if not IsAddOnLoaded("ConsolePortUI_Menu") then
 		GameMenuButton:SetSize(GameMenuButtonLogout:GetWidth(), GameMenuButtonLogout:GetHeight())
 		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
 		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.PositionGameMenuButton)
-	else
-		if GameMenuButton.Middle then
-			GameMenuButton.Middle:Hide()
-			GameMenuButton.Left:Hide()
-			GameMenuButton.Right:Hide()
-		end
-		ConsolePort:GetData().Atlas.SetFutureButtonStyle(GameMenuButton, nil, nil, true)
-		GameMenuButton:SetSize(240, 46)
-		GameMenuButton:SetPoint("TOP", GameMenuButtonWhatsNew, "BOTTOMLEFT", 0, -1)
-		GameMenuFrame:SetSize(530, 576)
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")

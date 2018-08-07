@@ -56,26 +56,26 @@ local Updater = CreateFrame("Frame", nil, WorldFrame)
 Updater:SetFrameStrata("TOOLTIP")
 
 -- check whether the given frame is a bubble or not
-Updater.IsBubble = K.Legion735 and function(_, bubble)
-    if (bubble.IsForbidden and bubble:IsForbidden()) then
-      return
-    end
-    local name = bubble.GetName and bubble:GetName()
-    local region = bubble.GetRegions and bubble:GetRegions()
-    if name or not region then
-      return
-    end
-    local texture = region.GetTexture and region:GetTexture()
-    return texture and texture == BUBBLE_TEXTURE
-  end or function(_, bubble)
-    local name = bubble.GetName and bubble:GetName()
-    local region = bubble.GetRegions and bubble:GetRegions()
-    if name or not region then
-      return
-    end
-    local texture = region.GetTexture and region:GetTexture()
-    return texture and texture == BUBBLE_TEXTURE
+Updater.IsBubble = function(_, bubble)
+  if (bubble.IsForbidden and bubble:IsForbidden()) then
+    return
   end
+  local name = bubble.GetName and bubble:GetName()
+  local region = bubble.GetRegions and bubble:GetRegions()
+  if name or not region then
+    return
+  end
+  local texture = region.GetTexture and region:GetTexture()
+  return texture and texture == BUBBLE_TEXTURE
+  end or function(_, bubble)
+  local name = bubble.GetName and bubble:GetName()
+  local region = bubble.GetRegions and bubble:GetRegions()
+  if name or not region then
+    return
+  end
+  local texture = region.GetTexture and region:GetTexture()
+  return texture and texture == BUBBLE_TEXTURE
+end
 
 function Updater:OnUpdate()
   local children = select("#", WorldFrame:GetChildren())
@@ -136,12 +136,7 @@ function Updater:OnUpdate()
           bubbles[bubble]:ClearAllPoints()
           bubbles[bubble]:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", ourX, ourY)
         end
-        bubbles[bubble]:SetBackdropColor(
-          C["Media"].BackdropColor[1],
-          C["Media"].BackdropColor[2],
-          C["Media"].BackdropColor[3],
-          C["Media"].BackdropColor[4]
-        )
+        bubbles[bubble]:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
         bubbles[bubble]:SetBackdropBorderColor(r * 0.5, g * 0.5, b * 0.5, 0.9)
         bubbles[bubble]:Show() -- show the bubble again
       end
@@ -223,9 +218,7 @@ function Module:OnInitialize()
   -- Just kill off the chat bubbles within instances in 7.2.5,
   -- as these have become forbidden to change.
   -- The original Blizzard bubbles are screen covering spam, and suck.
-  if K.Legion735 then
-    self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateBubbleDisplay")
-  end
+  self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateBubbleDisplay")
 
   -- Enforcing this now
   SetCVar("chatBubbles", 1)
@@ -233,20 +226,15 @@ end
 
 function Module:UpdateBubbleDisplay()
   local _, instanceType = IsInInstance()
-  if K.Legion735 then
-    if (instanceType == "none") then
-      SetCVar("chatBubbles", 1)
-      self.Updater:SetScript("OnUpdate", self.Updater.OnUpdate)
-    else
-      self.Updater:SetScript("OnUpdate", nil)
-      SetCVar("chatBubbles", 0)
-      for bubble in pairs(bubbles) do
-        bubbles[bubble]:Hide()
-      end
-    end
-  else
+  if (instanceType == "none") then
     SetCVar("chatBubbles", 1)
     self.Updater:SetScript("OnUpdate", self.Updater.OnUpdate)
+  else
+    self.Updater:SetScript("OnUpdate", nil)
+    SetCVar("chatBubbles", 0)
+    for bubble in pairs(bubbles) do
+      bubbles[bubble]:Hide()
+    end
   end
 end
 

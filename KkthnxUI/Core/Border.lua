@@ -75,11 +75,9 @@ local BorderTemplate = {
 	end
 }
 
-if BorderTemplate then
-	-- Redirecting WoW API calls to our own
-	BorderTemplate.SetBackdropBorderColor = BorderTemplate.SetBorderColor
-	BorderTemplate.GetBackdropBorderColor = BorderTemplate.GetBorderColor
-end
+-- Redirecting WoW API calls to our own
+BorderTemplate.SetBackdropBorderColor = BorderTemplate.SetBorderColor
+BorderTemplate.GetBackdropBorderColor = BorderTemplate.GetBorderColor
 
 -- Usage:
 -- K.CreateBorder(object, [offset], [size], [path])

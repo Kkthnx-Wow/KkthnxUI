@@ -111,7 +111,7 @@ local function OnTextChanged(self)
 end
 
 -- Set default position for Voice Activation Alert
-Module.VoiceAlertPosition = {"TOP", ConfigButton, "BOTTOM", 0, 6}
+Module.VoiceAlertPosition = {"TOP", ConfigChatButton1, "BOTTOM", 0, 6}
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
@@ -469,7 +469,7 @@ function Module:SetupFrame()
 		self:StyleFrame(Frame)
 
 		if i == 2 then
-			--CombatLogQuickButtonFrame_Custom:StripTextures()
+			-- CombatLogQuickButtonFrame_Custom:StripTextures()
 		else
 			if C["Chat"].ShortenChannelNames then
 				local am = Frame.AddMessage
@@ -496,15 +496,15 @@ function Module:SetupFrame()
 
 	ChatConfigFrameDefaultButton:Kill()
 	ChatFrameMenuButton:Kill()
-	QuickJoinToastButton:Kill()
 
-	-- VoiceChatPromptActivateChannel:SetTemplate()
-	VoiceChatPromptActivateChannel.Background = VoiceChatPromptActivateChannel:CreateTexture(nil, "BACKGROUND", -1)
-	VoiceChatPromptActivateChannel.Background:SetAllPoints()
-	VoiceChatPromptActivateChannel.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	QuickJoinToastButton:ClearAllPoints()
+	QuickJoinToastButton:SetPoint("BOTTOMLEFT", UIParent, "TOPLEFT", -1, -18)
+	QuickJoinToastButton:EnableMouse(false)
+	QuickJoinToastButton.ClearAllPoints = K.Noop
+	QuickJoinToastButton.SetPoint = K.Noop
+	QuickJoinToastButton:SetAlpha(0)
 
-	K.CreateBorder(VoiceChatPromptActivateChannel)
-
+	VoiceChatPromptActivateChannel:CreateBorder()
 	VoiceChatPromptActivateChannel.AcceptButton:SkinButton()
 	VoiceChatPromptActivateChannel.CloseButton:SkinCloseButton()
 	VoiceChatPromptActivateChannel:SetPoint(unpack(Module.VoiceAlertPosition))
@@ -527,8 +527,8 @@ function Module:SetupFrame()
 		_G.CHAT_PARTY_GUIDE_GET ="|Hchannel:PARTY|hPG|h %s "
 
 		-- Instance
-		_G.CHAT_INSTANCE_GET = "|Hchannel:INSTANCE|hI|h %s "
-		_G.CHAT_INSTANCE_CHAT_GET ="|Hchannel:INSTANCE|hIL|h %s "
+		_G.CHAT_INSTANCE_CHAT_GET = "|Hchannel:INSTANCE|hI|h %s "
+		_G.CHAT_INSTANCE_CHAT_LEADER_GET ="|Hchannel:INSTANCE|hIL|h %s "
 
 		-- Battleground
 		_G.CHAT_BATTLEGROUND_GET = "|Hchannel:BATTLEGROUND|hB|h %s "

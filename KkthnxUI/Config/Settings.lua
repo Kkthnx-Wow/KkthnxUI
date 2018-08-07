@@ -284,15 +284,15 @@ C["Nameplates"] = {
 	["Font"] = "KkthnxUI",
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealthValue"] = true,
-	["Height"] = 22,
+	["Height"] = 20,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
-	["SelectedScale"] = 1.2,
+	["SelectedScale"] = 1,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
-	["Width"] = 146
+	["Width"] = 138
 }
 
 -- Quests
@@ -471,7 +471,7 @@ C["Raid"] = {
 	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
-	["RaidGroups"] = 5,
+	["RaidGroups"] = 14,
 	["RaidUtility"] = true,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
@@ -504,4 +504,5 @@ C["WorldMap"] = {
 	["Coordinates"] = true,
 	["FadeWhenMoving"] = true,
 	["SmallWorldMap"] = true,
+	["WorldMapPlus"] = false,
 }

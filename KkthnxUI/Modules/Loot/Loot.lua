@@ -10,31 +10,22 @@ local CloseLoot = _G.CloseLoot
 local CreateFrame = _G.CreateFrame
 local CursorOnUpdate = _G.CursorOnUpdate
 local CursorUpdate = _G.CursorUpdate
-local DoMasterLootRoll = _G.DoMasterLootRoll
 local GetCursorPosition = _G.GetCursorPosition
 local GetCVar = _G.GetCVar
 local GetLootSlotInfo = _G.GetLootSlotInfo
 local GetLootSlotLink = _G.GetLootSlotLink
 local GetNumLootItems = _G.GetNumLootItems
-local GiveMasterLoot = _G.GiveMasterLoot
 local IsFishingLoot = _G.IsFishingLoot
 local IsModifiedClick = _G.IsModifiedClick
 local ITEM_QUALITY_COLORS = _G.ITEM_QUALITY_COLORS
-local ToggleDropDownMenu = _G.ToggleDropDownMenu
-local UIDropDownMenu_AddButton = _G.UIDropDownMenu_AddButton
-local UIDropDownMenu_CreateInfo = _G.UIDropDownMenu_CreateInfo
 local LOOT = _G.LOOT
 local LootSlotHasItem = _G.LootSlotHasItem
-local MasterLooterFrame_UpdatePlayers = _G.MasterLooterFrame_UpdatePlayers
 local ResetCursor = _G.ResetCursor
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local TEXTURE_ITEM_QUEST_BANG = _G.TEXTURE_ITEM_QUEST_BANG
 local UnitIsDead = _G.UnitIsDead
 local UnitIsFriend = _G.UnitIsFriend
 local UnitName = _G.UnitName
-local REQUEST_ROLL = _G.REQUEST_ROLL
-local ASSIGN_LOOT = _G.ASSIGN_LOOT
-local MASTER_LOOTER = _G.MASTER_LOOTER
 
 local coinTextureIDs = {
 	[133784] = true,
@@ -48,7 +39,7 @@ local coinTextureIDs = {
 -- Credit Haste
 local iconSize, lootFrame, lootFrameHolder = 30
 
-local OnEnter = function(self)
+local function OnEnter(self)
 	local slot = self:GetID()
 	if LootSlotHasItem(slot) then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -60,7 +51,7 @@ local OnEnter = function(self)
 	self.drop:SetVertexColor(1, 1, 0)
 end
 
-local OnLeave = function(self)
+local function OnLeave(self)
 	if self.quality and (self.quality > 1) then
 		local color = ITEM_QUALITY_COLORS[self.quality]
 		self.drop:SetVertexColor(color.r, color.g, color.b)
@@ -110,7 +101,7 @@ local function anchorSlots(self)
 end
 
 local function createSlot(id)
-	local iconsize = (iconSize - 2)
+	local iconsize = (iconSize - 4)
 
 	local frame = CreateFrame("Button", "KkthnxLootSlot"..id, lootFrame)
 	frame:SetPoint("LEFT", 8, 0)
@@ -130,13 +121,7 @@ local function createSlot(id)
 	iconFrame:SetWidth(iconsize)
 	iconFrame:SetPoint("RIGHT", frame)
 
-	iconFrame.Backgrounds = iconFrame:CreateTexture(nil, "BACKGROUND", -1)
-	iconFrame.Backgrounds:SetAllPoints()
-	iconFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	iconFrame.Borders = CreateFrame("Frame", nil, iconFrame)
-	iconFrame.Borders:SetAllPoints()
-	K.CreateBorder(iconFrame.Borders)
+	iconFrame:CreateBorder()
 
 	frame.iconFrame = iconFrame
 
@@ -257,7 +242,7 @@ function Module:LOOT_OPENED(_, autoloot)
 			slot.name:SetText(item)
 			if color then
 				slot.name:SetTextColor(color.r, color.g, color.b)
-				slot.iconFrame.Borders:SetBackdropBorderColor(color.r, color.g, color.b)
+				slot.iconFrame:SetBackdropBorderColor(color.r, color.g, color.b)
 			end
 			slot.icon:SetTexture(textureID)
 
@@ -269,15 +254,15 @@ function Module:LOOT_OPENED(_, autoloot)
 			local questTexture = slot.questTexture
 			if (questId and not isActive) then
 				questTexture:Show()
-				slot.iconFrame.Borders:SetBackdropBorderColor(1, 1, 0)
+				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
 				slot.name:SetTextColor(1, 1, 0)
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
-				slot.iconFrame.Borders:SetBackdropBorderColor(1, 1, 0)
+				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
 				slot.name:SetTextColor(1, 1, 0)
 			else
 				questTexture:Hide()
-				slot.iconFrame.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				slot.iconFrame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 			end
 
 			slot:Enable()
@@ -325,13 +310,7 @@ function Module:OnEnable()
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
 
-	lootFrame.Backgrounds = lootFrame:CreateTexture(nil, "BACKGROUND", -1)
-	lootFrame.Backgrounds:SetAllPoints()
-	lootFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	lootFrame.Borders = CreateFrame("Frame", nil, lootFrame)
-	lootFrame.Borders:SetAllPoints()
-	K.CreateBorder(lootFrame.Borders)
+	lootFrame:CreateBorder()
 
 	lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
 	lootFrame:SetToplevel(true)

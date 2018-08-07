@@ -113,6 +113,9 @@ if C["Filger"].Enable then
 	AnchorTarget:SetPoint("BOTTOMLEFT", BottomBarAnchor, "TOPRIGHT", 10, 200)
 	AnchorTarget:SetFrameLevel(0)
 	AnchorTarget:SetFrameStrata("BACKGROUND")
+
+	K.AnchorPlayer = AnchorPlayer
+	K.AnchorTarget = AnchorTarget
 end
 
 if C["Chat"].Background then

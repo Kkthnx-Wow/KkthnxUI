@@ -67,6 +67,45 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
+local function CreateBorder(f, _, bLayer, bOffset, bPoints)
+	bLayer = bLayer or 0
+	bOffset = bOffset or 4
+	bPoints = bPoints or 0
+
+	K.CreateBorder(f, bOffset)
+
+	f.Backgrounds = f:CreateTexture(nil, "BACKGROUND")
+	f.Backgrounds:SetDrawLayer("BACKGROUND", bLayer)
+	f.Backgrounds:SetPoint("TOPLEFT", f ,"TOPLEFT", bPoints, -bPoints)
+	f.Backgrounds:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -bPoints, bPoints)
+
+	f.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	f:SetBorderColor()
+end
+
+local function CreateBackdrop(f, t)
+	if f.Backdrop then
+		return
+	end
+
+	if not t then
+		t = "Default"
+	end
+
+	local b = CreateFrame("Frame", nil, f)
+	b:SetOutside()
+	b:CreateBorder(t, -7)
+
+	if f:GetFrameLevel() - 1 >= 0 then
+		b:SetFrameLevel(f:GetFrameLevel() - 1)
+	else
+		b:SetFrameLevel(0)
+	end
+
+	f.Backdrop = b
+end
+
+
 local function CreateShadow(f)
 	if f.Shadow then
 		return
@@ -349,6 +388,14 @@ local function AddCustomAPI(object)
 
 	if not object.SetInside then
 		MetaTable.SetInside = SetInside
+	end
+
+	if not object.CreateBorder then
+		MetaTable.CreateBorder = CreateBorder
+	end
+
+	if not object.CreateBackdrop then
+		MetaTable.CreateBackdrop = CreateBackdrop
 	end
 
 	if not object.CreateShadow then

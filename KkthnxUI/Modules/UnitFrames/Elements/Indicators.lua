@@ -6,18 +6,11 @@ end
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
-local table_insert = table.insert
 
 local CreateFrame = _G.CreateFrame
-local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
-local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetThreatStatusColor = _G.GetThreatStatusColor
-local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
-local UnitClass = _G.UnitClass
-local UnitIsPlayer = _G.UnitIsPlayer
-local UnitIsUnit = _G.UnitIsUnit
-local UnitReaction = _G.UnitReaction
 local UnitThreatSituation = _G.UnitThreatSituation
+local UnitIsConnected = _G.UnitIsConnected
 
 local roleIconTextures = {
 	TANK = [[Interface\AddOns\KkthnxUI\Media\Unitframes\tank.tga]],
@@ -31,7 +24,7 @@ local function UpdateGroupRole(self)
 	end
 
 	local role = _G.UnitGroupRolesAssigned(self.unit)
-	if (_G.UnitIsConnected(self.unit)) and (role == "HEALER") or (role == "TANK") then
+	if (UnitIsConnected(self.unit)) and (role == "HEALER") or (role == "TANK") then
 		lfdrole:SetTexture(roleIconTextures[role])
 		lfdrole:Show()
 	else
@@ -48,7 +41,7 @@ local function UpdateThreat(self, _, unit)
 		return
 	end
 
-	if (self.Portrait or self.Portrait.Borders) then
+	if (self.Portrait.Borders) then
 		local Status = UnitThreatSituation(unit)
 
 		if (Status and Status > 0) then
@@ -70,11 +63,10 @@ function Module:CreateThreatIndicator()
 end
 
 function Module:CreateGroupRoleIndicator()
-	local GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
-	GroupRoleIndicator:SetPoint("BOTTOM", self.Portrait, "TOPRIGHT", 0, -6)
-	GroupRoleIndicator:SetSize(16, 16)
-	GroupRoleIndicator.Override = UpdateGroupRole
-	self.GroupRoleIndicator = GroupRoleIndicator
+	self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.GroupRoleIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPRIGHT", 0, -6)
+	self.GroupRoleIndicator:SetSize(16, 16)
+	self.GroupRoleIndicator.Override = UpdateGroupRole
 end
 
 function Module:CreateSpecIcons()
@@ -88,7 +80,7 @@ function Module:CreateSpecIcons()
 
 	self.PVPSpecIcon.Borders = CreateFrame("Frame", nil, self.PVPSpecIcon)
 	self.PVPSpecIcon.Borders:SetAllPoints()
-	K.CreateBorder(self.PVPSpecIcon.Borders)
+	self.PVPSpecIcon.Borders:CreateBorder()
 end
 
 function Module:CreateTrinkets()
@@ -112,7 +104,7 @@ function Module:CreateCombatFeedback()
 	self.CombatText = self.Portrait.Borders:CreateFontString(nil, "OVERLAY")
 	self.CombatText:SetFont(C["Media"].Font, 20, "")
 	self.CombatText:SetShadowOffset(1.25, -1.25)
-	self.CombatText:SetPoint("CENTER", self.Portrait, "CENTER", 0, -1)
+	self.CombatText:SetPoint("CENTER", self.Portrait.Borders, "CENTER", 0, -1)
 end
 
 function Module:CreateGlobalCooldown()
@@ -128,32 +120,18 @@ end
 
 function Module:CreateReadyCheckIndicator()
 	self.ReadyCheckIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait)
-	self.ReadyCheckIndicator:SetSize(self.Portrait:GetWidth() - 4, self.Portrait:GetHeight() - 4)
+	self.ReadyCheckIndicator:SetPoint("CENTER", self.Portrait.Borders)
+	self.ReadyCheckIndicator:SetSize(self.Portrait.Borders:GetWidth() - 4, self.Portrait.Borders:GetHeight() - 4)
 	self.ReadyCheckIndicator.finishedTime = 5
 	self.ReadyCheckIndicator.fadeTime = 3
 end
 
 function Module:CreateRaidTargetIndicator()
-	self.RaidTargetIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self.Portrait, "TOPLEFT", 4, 5)
+	self.RaidTargetIndicator = self:CreateTexture()
+	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self.Portrait.Borders, "TOPLEFT", 4, 5)
+	self.RaidTargetIndicator:SetDrawLayer("OVERLAY", 7)
 	self.RaidTargetIndicator:SetSize(16, 16)
 end
-
--- function Module:CreateResurrectIndicator()
--- 	self.ResInfo = self.Portrait.Borders:CreateFontString(nil, "OVERLAY")
--- 	self.ResInfo:SetFont(C["Media"].Font, self.Portrait:GetWidth() / 3.5, "")
--- 	self.ResInfo:SetShadowOffset(K.Mult, -K.Mult)
--- 	self.ResInfo:SetPoint("CENTER", self.Portrait, "CENTER", 0, 0)
--- end
-
--- function Module:CreateAFKIndicator()
--- 	self.AFK = self.Health:CreateFontString(nil, "OVERLAY")
--- 	self.AFK:SetFont(C["Media"].Font, 11, "")
--- 	self.AFK:SetPoint("BOTTOM", 0, -8)
--- 	self.AFK:SetShadowOffset(1.25, -1.25)
--- 	self.AFK.fontFormat = "AFK %s:%s"
--- end
 
 function Module:CreatePvPIndicator(unit)
 	self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
@@ -161,9 +139,9 @@ function Module:CreatePvPIndicator(unit)
 	self.PvPIndicator:ClearAllPoints()
 
 	if (unit == "player") then
-		self.PvPIndicator:SetPoint("RIGHT", self.Portrait, "LEFT")
+		self.PvPIndicator:SetPoint("RIGHT", self.Portrait.Borders, "LEFT")
 	else
-		self.PvPIndicator:SetPoint("LEFT", self.Portrait, "RIGHT")
+		self.PvPIndicator:SetPoint("LEFT", self.Portrait.Borders, "RIGHT")
 	end
 
 	self.PvPIndicator.Prestige = self:CreateTexture(nil, "OVERLAY")
@@ -181,7 +159,7 @@ end
 function Module:CreateAssistantIndicator()
 	self.AssistantIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY")
 	self.AssistantIndicator:SetSize(14, 14)
-	self.AssistantIndicator:SetPoint("BOTTOM", self.Portrait, "TOPLEFT", 4, -5)
+	self.AssistantIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPLEFT", 4, -5)
 end
 
 function Module:CreateCombatIndicator()
@@ -192,13 +170,13 @@ function Module:CreateCombatIndicator()
 end
 
 function Module:CreateLeaderIndicator(unit)
-	self.LeaderIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY")
 	if unit == "party" then
 		self.LeaderIndicator:SetSize(13, 13)
 	else
 		self.LeaderIndicator:SetSize(16, 16)
 	end
-	self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait, "TOPLEFT", 5, 1)
+	self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPLEFT", 5, 1)
 end
 
 function Module:CreatePhaseIndicator()
@@ -210,5 +188,5 @@ end
 function Module:CreateQuestIndicator()
 	self.QuestIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY")
 	self.QuestIndicator:SetSize(20, 20)
-	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Health, "TOPLEFT", 11, -11)
+	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait.Borders, "TOPLEFT", 11, -11)
 end

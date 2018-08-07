@@ -12,7 +12,6 @@ local _G = _G
 local string_format = string.format
 local table_insert = table.insert
 local unpack = unpack
-local pairs = pairs
 local select = _G.select
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
@@ -31,7 +30,6 @@ local IsInRaid = _G.IsInRaid
 local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local PlaySound = _G.PlaySound
-local PlaySoundKitID = _G.PlaySoundKitID
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
@@ -50,6 +48,8 @@ local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPlayerControlled = _G.UnitPlayerControlled
+local UnitPower = _G.UnitPower
+local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
 
 local Movers = K["Movers"]
@@ -652,21 +652,21 @@ function Module:GetDamageRaidFramesAttributes()
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 
-	"initial-width", K.Scale(C["Raid"].Width),
+	"initial-width", C["Raid"].Width,
 	"initial-height", K.Scale(C["Raid"].Height),
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"xoffset", K.Scale(6),
-	"yOffset", K.Scale(-6),
+	"xoffset", 6,
+	"yOffset", -6,
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raid"].GroupBy.Value,
 	"maxColumns", math.ceil(40 / 5),
 	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
-	"columnSpacing", K.Scale(6),
+	"columnSpacing", 6,
 	"columnAnchorPoint", "LEFT"
 end
 
@@ -680,21 +680,21 @@ function Module:GetHealerRaidFramesAttributes()
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 
-	"initial-width", K.Scale(C["Raid"].Width),
-	"initial-height", K.Scale(C["Raid"].Height),
+	"initial-width", C["Raid"].Width - 3.6,
+	"initial-height", C["Raid"].Height - 4,
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
 	"showSolo", false,
-	"xoffset", K.Scale(6),
-	"yOffset", K.Scale(-6),
+	"xoffset", 6,
+	"yOffset", -6,
 	"point", "TOP",
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raid"].GroupBy.Value,
-	"maxColumns", math.ceil(40 / 5),
-	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
-	"columnSpacing", K.Scale(6),
+	"maxColumns", 7,
+	"unitsPerColumn", 4,
+	"columnSpacing", 6,
 	"columnAnchorPoint", "LEFT"
 end
 
@@ -824,7 +824,7 @@ function Module:CreateUnits()
 			local HealerRaid = oUF:SpawnHeader(Module:GetHealerRaidFramesAttributes())
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
-				HealerRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
+				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 11, -12)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			end
@@ -902,7 +902,7 @@ function Module:CreateUnits()
 			nameplateOtherBottomInset = C["Nameplates"].Clamp and 0.1 or -1,
 			nameplateOtherTopInset = C["Nameplates"].Clamp and 0.08 or -1,
 			nameplateSelectedAlpha = 1,
-			nameplateSelectedScale = C["Nameplates"].SelectedScale or 1.2,
+			nameplateSelectedScale = C["Nameplates"].SelectedScale or 1,
 			nameplateSelfAlpha = 1,
 			nameplateSelfScale = 1,
 			nameplateShowAll = 1,
@@ -976,14 +976,14 @@ end
 local function CreateTargetSound(unit)
 	if UnitExists(unit) then
 		if UnitIsEnemy(unit, "player") then
-			PlaySound(PlaySoundKitID and "Igcreatureaggroselect" or SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
+			PlaySound(SOUNDKIT.IG_CREATURE_AGGRO_SELECT)
 		elseif UnitIsFriend("player", unit) then
-			PlaySound(PlaySoundKitID and "Igcharacternpcselect" or SOUNDKIT.IG_CHARACTER_NPC_SELECT)
+			PlaySound(SOUNDKIT.IG_CHARACTER_NPC_SELECT)
 		else
-			PlaySound(PlaySoundKitID and "Igcreatureneutralselect" or SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
+			PlaySound(SOUNDKIT.IG_CREATURE_NEUTRAL_SELECT)
 		end
 	else
-		PlaySound(PlaySoundKitID and "igcreatureaggrodeselect" or SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
+		PlaySound(SOUNDKIT.INTERFACE_SOUND_LOST_TARGET_UNIT)
 	end
 end
 
@@ -1004,7 +1004,7 @@ function Module:UNIT_FACTION(_, unit)
 	if UnitIsPVPFreeForAll("player") or UnitIsPVP("player") then
 		if not announcedPVP then
 			announcedPVP = true
-			PlaySound(PlaySoundKitID and "IgPVPUpdate" or SOUNDKIT.IG_PVP_UPDATE)
+			PlaySound(SOUNDKIT.IG_PVP_UPDATE)
 		end
 	else
 		announcedPVP = nil

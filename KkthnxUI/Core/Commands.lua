@@ -440,7 +440,7 @@ K:RegisterChatCommand("fixblizz", K.EnableBlizzardAddOns)
 
 -- Test blizzard alert frames
 SlashCmdList.TEST_ACHIEVEMENT = function()
-	PlaySound(PlaySoundKitID and "lfg_rewards" or SOUNDKIT.LFG_REWARDS)
+	PlaySound(SOUNDKIT.LFG_REWARDS)
 	if not AchievementFrame then
 		AchievementFrame_LoadUI()
 	end

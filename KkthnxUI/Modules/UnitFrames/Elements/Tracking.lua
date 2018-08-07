@@ -791,7 +791,7 @@ Module.RaidBuffsTracking = {
 	},
 	WARRIOR = {
 		{114030, "TOPLEFT", {0.2, 0.2, 1}}, 	 -- Vigilance
-		{3411, "TOPRIGHT", {0.89, 0.09, 0.05}}, 	 -- Intervene
+		{147833, "TOPRIGHT", {0.89, 0.09, 0.05}}, 	 -- Intervene
 	},
 	PET = {
 		-- Warlock Pets

@@ -32,7 +32,6 @@ local function SkinMiscStuff()
 		_G[Skins[i]].Borders = CreateFrame("Frame", nil, _G[Skins[i]])
 		_G[Skins[i]].Borders:SetAllPoints(_G[Skins[i]])
 		K.CreateBorder(_G[Skins[i]].Borders)
-		_G[Skins[i]].Borders:SetBorderColor()
 	end
 
 	hooksecurefunc("UIDropDownMenu_CreateFrames", function()
@@ -45,7 +44,6 @@ local function SkinMiscStuff()
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].Borders = CreateFrame("Frame", nil, _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"])
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].Borders:SetAllPoints(_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"])
 			K.CreateBorder(_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].Borders)
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].Borders:SetBorderColor()
 
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:StripTextures()
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"].Background = _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:CreateTexture(nil, "BACKGROUND", -1)
@@ -55,7 +53,6 @@ local function SkinMiscStuff()
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"].Borders = CreateFrame("Frame", nil, _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"])
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"].Borders:SetAllPoints(_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"])
 			K.CreateBorder(_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"].Borders)
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"].Borders:SetBorderColor()
 
 			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].isSkinned = true
 		end
@@ -79,7 +76,6 @@ local function SkinMiscStuff()
 				self.Borders = CreateFrame("Frame", nil, self)
 				self.Borders:SetAllPoints(self)
 				K.CreateBorder(self.Borders)
-				self.Borders:SetBorderColor()
 
 				self:ClearAllPoints()
 				self:SetPoint("BOTTOMRIGHT", ChatFrame1, "BOTTOMRIGHT", 0, 30)
@@ -94,7 +90,6 @@ local function SkinMiscStuff()
 				self.Borders = CreateFrame("Frame", nil, self)
 				self.Borders:SetAllPoints(self)
 				K.CreateBorder(self.Borders)
-				self.Borders:SetBorderColor()
 			end)
 		end
 	end
@@ -122,7 +117,6 @@ local function SkinMiscStuff()
 		b.Borders = CreateFrame("Frame", nil, b)
 		b.Borders:SetAllPoints(b)
 		K.CreateBorder(b.Borders)
-		b.Borders:SetBorderColor()
 	end
 end
 

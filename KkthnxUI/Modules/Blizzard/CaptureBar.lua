@@ -6,7 +6,7 @@ local _G = _G
 local hooksecurefunc = _G.hooksecurefunc
 local UIParent = _G.UIParent
 
--- Global variables that we don"t cache, list them here for mikk"s FindGlobals script
+-- Global variables that we don't cache, list them here for mikk"s FindGlobals script
 -- GLOBALS: NUM_EXTENDED_UI_FRAMES, hooksecurefunc
 
 local function CaptureUpdate()

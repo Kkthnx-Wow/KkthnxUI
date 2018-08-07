@@ -159,7 +159,6 @@ function Module:OnEnable()
 	self.expBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	K.CreateBorder(self.expBar.statusBar)
-	self.expBar.statusBar:SetBorderColor()
 
 	self.expBar.rested = CreateFrame("StatusBar", nil, self.expBar)
 	self.expBar.rested:SetAllPoints()

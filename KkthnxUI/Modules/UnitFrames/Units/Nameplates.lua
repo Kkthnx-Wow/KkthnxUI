@@ -26,7 +26,7 @@ function Module:NameplatesCallback(_, unit)
 			self.Castbar:SetAlpha(0)
 			self.RaidTargetIndicator:SetAlpha(0)
 		else
-			self.Power:Show()
+			--self.Power:Show()
 			self.Name:Show()
 			self.Castbar:SetAlpha(1)
 			self.RaidTargetIndicator:SetAlpha(1)
@@ -38,7 +38,7 @@ function Module:CreateNameplates()
 	local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
 	local Font = K.GetFont(C["Nameplates"].Font)
 
-	self:SetScale(UIParent:GetEffectiveScale() * 1)
+	self:SetScale(UIParent:GetEffectiveScale())
 	self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
 	self:SetPoint("CENTER", 0, 0)
 
@@ -65,7 +65,7 @@ function Module:CreateNameplates()
 		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self.Health.Value:SetFontObject(Font)
-		self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), self.Health:GetHeight() - 2, select(3, self.Health.Value:GetFont()))
+		self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
 		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 	end
 
@@ -175,6 +175,7 @@ function Module:CreateNameplates()
 
 	self.Castbar:SetScript("OnShow", Module.DisplayNameplatePowerAndCastBar)
 	self.Castbar:SetScript("OnHide", Module.DisplayNameplatePowerAndCastBar)
+	self.Castbar:SetScript("OnUpdate", Module.DisplayNameplatePowerAndCastBar)
 
 	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(self:GetHeight(), self:GetHeight())

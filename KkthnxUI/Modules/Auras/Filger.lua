@@ -4,8 +4,13 @@ if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
 end
 
 local _G = _G
-local format = format
+local pairs = pairs
+local string_format = string.format
+local table_insert = table.insert
+local table_remove = table.remove
+local table_sort = table.sort
 
+local AuraUtil_FindAuraByName = _G.AuraUtil.FindAuraByName
 local CooldownFrame_Set = _G.CooldownFrame_Set
 local CreateFrame = _G.CreateFrame
 local GameTooltip = _G.GameTooltip
@@ -16,37 +21,40 @@ local GetSpecialization = _G.GetSpecialization
 local GetSpellCooldown = _G.GetSpellCooldown
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
+local UnitAura = _G.UnitAura
 
+local Filger = {}
+local MyUnits = {player = true, vehicle = true, pet = true}
 local Movers = K["Movers"]
 local FilgerTexture = K.GetTexture(C["Filger"].Texture)
 
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
 do
-	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 169)
+	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 2, 169)
 	P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 169)
+	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "TOPLEFT", -2, 169)
 	P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 211)
+	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 2, 211)
 	SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 211)
+	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "TOPLEFT", -2, 211)
 	T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 253)
+	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "TOPLEFT", -2, 253)
 	T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 253)
+	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 2, 253)
 	PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", AnchorPlayer, "BOTTOMLEFT", -2, -44)
+	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", K.AnchorPlayer, "BOTTOMLEFT", -2, -44)
 	PVE_PVP_CC_Anchor:SetSize(221, 25)
 
-	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 63, 17)
+	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 63, 17)
 	COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 
-	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "BOTTOMRIGHT", 2, 3)
+	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "BOTTOMRIGHT", 2, 3)
 	T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
 	Movers:RegisterFrame(P_BUFF_ICON_Anchor)
@@ -61,15 +69,13 @@ do
 end
 
 SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
-local Filger = {}
-local MyUnits = {player = true, vehicle = true, pet = true}
 
 function Filger:TooltipOnEnter()
 	if self.spellID > 20 then
 		local str = "spell:%s"
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 0, 3)
-		GameTooltip:SetHyperlink(format(str, self.spellID))
+		GameTooltip:SetHyperlink(string_format(str, self.spellID))
 		GameTooltip:Show()
 	end
 end
@@ -88,7 +94,7 @@ function Filger:UnitAura(unitID, inSpellID, spell, filter, absID)
 			end
 		end
 	else
-		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = AuraUtil.FindAuraByName(spell, unitID, filter)
+		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = AuraUtil_FindAuraByName(spell, unitID, filter)
 		if name then
 			return name, spellID, icon, count, duration, expirationTime, unitCaster
 		end
@@ -132,7 +138,7 @@ function Filger:DisplayActives()
 		local bar = self.bars[index]
 		if not bar then
 			bar = CreateFrame("Frame", "FilgerAnchor" .. id .. "Frame" .. index, self)
-			bar:SetScale(UIParent:GetEffectiveScale() * 1)
+			bar:SetScale(_G.UIParent:GetEffectiveScale() * 1)
 
 			bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
 			bar.Background:SetAllPoints()
@@ -167,7 +173,6 @@ function Filger:DisplayActives()
 					bar.cooldown = _G[bar.cooldown:GetName()]
 				else
 					bar.cooldown = CreateFrame("Cooldown", "$parentCD", bar, "CooldownFrameTemplate")
-					-- bar.cooldown:SetAllPoints(bar.icon)
 					bar.cooldown:SetPoint("TOPLEFT", 1, -1)
 					bar.cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
 					bar.cooldown:SetReverse(true)
@@ -184,16 +189,9 @@ function Filger:DisplayActives()
 					bar.count:SetJustifyH("RIGHT")
 				end
 			else
-				if C["Filger"].Bars ~= true then
-					return
-				end
 				if bar.statusbar then
 					bar.statusbar = _G[bar.statusbar:GetName()]
 				else
-					if C["Filger"].Bars ~= true then
-						return
-					end
-
 					bar.statusbar = CreateFrame("StatusBar", "$parentStatusBar", bar)
 					bar.statusbar:SetWidth(self.BarWidth)
 					bar.statusbar:SetHeight(self.IconSize - 10)
@@ -303,7 +301,7 @@ function Filger:DisplayActives()
 			activeCount = limit
 		end
 	end
-	table.sort(self.sortedIndex)
+	table_sort(self.sortedIndex)
 
 	index = 1
 
@@ -318,7 +316,7 @@ function Filger:DisplayActives()
 
 		bar.spellName = GetSpellInfo(value.spid)
 
-		if self.Mode == "BAR" then
+		if self.Mode == "BAR" and C["Filger"].Bars then
 			bar.spellname:SetText(bar.spellName)
 		end
 
@@ -380,9 +378,10 @@ function Filger:DisplayActives()
 end
 
 function Filger:OnEvent(event, unit, _, spellID)
-	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED"
-	or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_AURA" and (unit == "target" or unit == "player"
-	or unit == "pet" or unit == "focus") or (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
+	if ((unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or
+		event == "PLAYER_TARGET_CHANGED" or
+		event == "PLAYER_ENTERING_WORLD" or
+		event == "SPELL_UPDATE_COOLDOWN") then
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
@@ -453,11 +452,11 @@ function Filger:OnEvent(event, unit, _, spellID)
 					if spell then
 						name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
 					end
-				elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
-					if spellID == data.spellID then
-						name, _, icon = GetSpellInfo(data.spellID)
-						spid = data.spellID
-					end
+				--elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
+				--	if spellID == data.spellID then
+				--		name, _, icon = GetSpellInfo(data.spellID)
+				--		spid = data.spellID
+				--	end
 				end
 				if name then
 					if data.slotID then
@@ -493,10 +492,7 @@ function Filger:OnEvent(event, unit, _, spellID)
 				end
 			else
 				if data.filter ~= "ICD" and self.actives and self.actives[i] then
-					if event == "UNIT_SPELLCAST_SUCCEEDED" then
-						return
-					end
-					self.actives[i] = nil
+					self.actives[i] = nil -- Watch this
 					needUpdate = true
 				end
 			end
@@ -527,10 +523,10 @@ if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
 			end
 		end
 		if not merge or not spellListClass then
-			table.insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
+			table_insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
 		else
 			for j = 1, #spellListAll, 1 do
-				table.insert(spellListClass, spellListAll[j])
+				table_insert(spellListClass, spellListAll[j])
 			end
 		end
 	end
@@ -542,7 +538,7 @@ if K.CustomFilgerSpell then
 			if class == K.Class then
 				for i = 1, #C["FilgerSpells"][class], 1 do
 					if C["FilgerSpells"][class][i]["Name"] == data[1] then
-						table.insert(C["FilgerSpells"][class][i], data[2])
+						table_insert(C["FilgerSpells"][class][i], data[2])
 					end
 				end
 			end
@@ -574,22 +570,22 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 			end
 			if not spell and not data[j].slotID then
 				print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
-				table.insert(jdx, j)
+				table_insert(jdx, j)
 			end
 		end
 
 		for _, v in ipairs(jdx) do
-			table.remove(data, v)
+			table_remove(data, v)
 		end
 
 		if #data == 0 then
 			print("|cffff0000WARNING: section [" .. data.Name .. "] is empty! Report this to Kkthnx.|r")
-			table.insert(idx, i)
+			table_insert(idx, i)
 		end
 	end
 
 	for _, v in ipairs(idx) do
-		table.remove(C["FilgerSpells"][K.Class], v)
+		table_remove(C["FilgerSpells"][K.Class], v)
 	end
 
 	for i = 1, #C["FilgerSpells"][K.Class], 1 do
@@ -629,14 +625,10 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				if data.filter == "CD" then
 					frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 					break
-				elseif data.trigger == "NONE" then
-					frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-					break
 				end
 			end
 
 			frame:RegisterEvent("UNIT_AURA")
-			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			frame:RegisterEvent("PLAYER_TARGET_CHANGED")
 			frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 			frame:SetScript("OnEvent", Filger.OnEvent)

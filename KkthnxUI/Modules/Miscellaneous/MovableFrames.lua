@@ -15,7 +15,7 @@ local Frames = {
 	"BonusRollFrame",
 	"BonusRollLootWonFrame",
 	"BonusRollMoneyWonFrame",
-	-- "CharacterFrame",
+	"CharacterFrame",
 	"DressUpFrame",
 	"FriendsFrame",
 	"FriendsFriendsFrame",
@@ -134,14 +134,14 @@ function Module:MakeMovable(Name)
 	Frame:HookScript("OnDragStop", OnDragStop)
 	Frame:HookScript("OnHide", OnDragStop)
 
-	Frame.ignoreFramePositionManager = true
-	if UIPanelWindows[Name] then
-		for Key in pairs(UIPanelWindows[Name]) do
-			if Key == "pushable" then
-				UIPanelWindows[Name][Key] = nil
-			end
-		end
-	end
+	--Frame.ignoreFramePositionManager = true
+	--if UIPanelWindows[Name] then
+	--	for Key in pairs(UIPanelWindows[Name]) do
+	--		if Key == "pushable" then
+	--			UIPanelWindows[Name][Key] = nil
+	--		end
+	--	end
+	--end
 end
 
 function Module:ADDON_LOADED(_, addon)

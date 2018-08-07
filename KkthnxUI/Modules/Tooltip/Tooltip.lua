@@ -137,8 +137,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (not GameTooltipStatusBar.anchoredToTop) then
 			GameTooltipStatusBar:ClearAllPoints()
-			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
-			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
+			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 3, 3)
+			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -3, 3)
 			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 			GameTooltipStatusBar.anchoredToTop = true
 		end
@@ -592,13 +592,9 @@ function Module:SetStyle(tt)
 	end
 
 	if (not tt.IsSkinned) then
-		tt:StripTextures(true)
+		tt:StripTextures()
 
-		K.CreateBorder(tt)
-
-		tt.bg = tt:CreateTexture(nil, "BACKGROUND", 0)
-		tt.bg:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-		tt.bg:SetAllPoints()
+		tt:CreateBorder(nil, nil, 7, 3)
 
 		tt.IsSkinned = true
 	end
@@ -727,14 +723,8 @@ function Module:OnEnable()
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
 
-	BNToastFrame:StripTextures(false)
-
-	BNToastFrame.Backgrounds = BNToastFrame:CreateTexture(nil, "BACKGROUND", -1)
-	BNToastFrame.Backgrounds:SetAllPoints()
-	BNToastFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(BNToastFrame)
-
+	BNToastFrame:SetBackdrop(nil)
+	BNToastFrame:CreateBorder()
 	BNToastFrame.CloseButton:SetSize(32, 32)
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 	BNToastFrame.CloseButton:SkinCloseButton()
@@ -757,7 +747,7 @@ function Module:OnEnable()
 	self:SetTooltipFonts()
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 20)
+	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -2, 16)
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)

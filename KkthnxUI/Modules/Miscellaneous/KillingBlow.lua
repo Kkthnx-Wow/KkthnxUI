@@ -15,7 +15,6 @@ local hooksecurefunc = _G.hooksecurefunc
 local BossBanner_BeginAnims = _G.BossBanner_BeginAnims
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
 local PlaySound = _G.PlaySound
-local PlaySoundKitID = _G.PlaySoundKitID
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SOUNDKIT = _G.SOUNDKIT
 local TopBannerManager_Show = _G.TopBannerManager_Show
@@ -57,7 +56,7 @@ function Module:OnEnable()
 				self.SubTitle:Hide()
 				self:Show()
 				BossBanner_BeginAnims(self)
-				PlaySound(PlaySoundKitID and "UI_Raid_Boss_Defeated" or SOUNDKIT.UI_RAID_BOSS_DEFEATED)
+				PlaySound(SOUNDKIT.UI_RAID_BOSS_DEFEATED)
 			end
 		end
 	end)
