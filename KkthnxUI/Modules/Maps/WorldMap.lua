@@ -150,7 +150,7 @@ function Module:PositionCoords()
 end
 
 function Module:OnInitialize()
-	if WorldMapCoordinates then
+	if C["WorldMap"].Coordinates then
 		local CoordsHolder = CreateFrame("Frame", "CoordsHolder", WorldMapFrame)
 		CoordsHolder:SetFrameLevel(WorldMapFrame.BorderFrame:GetFrameLevel() + 1)
 		CoordsHolder:SetFrameStrata(WorldMapFrame.BorderFrame:GetFrameStrata())

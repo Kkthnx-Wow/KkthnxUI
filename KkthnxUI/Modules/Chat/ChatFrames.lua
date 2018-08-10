@@ -131,6 +131,12 @@ function Module:UpdateEditBoxColor()
 	end
 end
 
+function Module:MoveAudioButtons()
+	ChatFrameChannelButton:Kill()
+	ChatFrameToggleVoiceDeafenButton:Kill()
+	ChatFrameToggleVoiceMuteButton:Kill()
+end
+
 function Module:NoMouseAlpha()
 	local Frame = self:GetName()
 	local Tab = _G[Frame .. "Tab"]
@@ -331,9 +337,9 @@ function Module:SetDefaultChatFramesPositions()
 			FCF_SetWindowName(Frame, LOOT .. " / " .. TRADE)
 		end
 
-		--if (not Frame.isLocked) then -- We really do not need this.
-		--	FCF_SetLocked(Frame, 1)
-		--end
+		if (not Frame.isLocked) then
+			FCF_SetLocked(Frame, 1)
+		end
 
 		local Anchor1, _, Anchor2, X, Y = Frame:GetPoint()
 		KkthnxUIData[GetRealmName()][UnitName("player")].Chat["Frame" .. i] = {Anchor1, Anchor2, X, Y, C["Chat"].Width, C["Chat"].Height }
@@ -419,7 +425,7 @@ function Module:Install()
 	ChangeChatColor("CHANNEL2", 232/255, 158/255, 121/255) -- Trade
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 
-	if K.Name == "Kkthnxx" and K.Realm == "Stormreaver" then
+	if K.Name == "Kkthnx" and K.Realm == "Bleeding Hollow" then
 		SetCVar("scriptErrors", 1)
 	end
 
@@ -432,7 +438,7 @@ function Module:OnMouseWheel(delta)
 		if IsShiftKeyDown() then
 			self:ScrollToBottom()
 		else
-			for i = 1, (C["Chat"].ScrollByX or 3) do
+			for _ = 1, (C["Chat"].ScrollByX or 3) do
 				self:ScrollDown()
 			end
 		end
@@ -440,7 +446,7 @@ function Module:OnMouseWheel(delta)
 		if IsShiftKeyDown() then
 			self:ScrollToTop()
 		else
-			for i = 1, (C["Chat"].ScrollByX or 3) do
+			for _ = 1, (C["Chat"].ScrollByX or 3) do
 				self:ScrollUp()
 			end
 		end
@@ -469,7 +475,20 @@ function Module:SetupFrame()
 		self:StyleFrame(Frame)
 
 		if i == 2 then
-			-- CombatLogQuickButtonFrame_Custom:StripTextures()
+			--if CombatLogQuickButtonFrame_Custom then
+			--	CombatLogQuickButtonFrame_Custom:StripTextures()
+			--	CombatLogQuickButtonFrame_Custom:CreateBackdrop("Transparent")
+			--	CombatLogQuickButtonFrame_Custom.Backdrop:SetPoint("TOPLEFT", 1, -4)
+			--	CombatLogQuickButtonFrame_Custom.Backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
+			--	CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SkinCloseButton(CombatLogQuickButtonFrame_Custom.Backdrop, " ", true)
+			--	CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(12, 12)
+			--	CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetHitRectInsets (0, 0, 0, 0)
+			--	CombatLogQuickButtonFrame_CustomProgressBar:ClearAllPoints()
+			--	CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("TOPLEFT", CombatLogQuickButtonFrame_Custom.Backdrop, 2, -2)
+			--	CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("BOTTOMRIGHT", CombatLogQuickButtonFrame_Custom.Backdrop, -2, 2)
+			--	CombatLogQuickButtonFrame_CustomProgressBar:SetStatusBarTexture(C.Media.Texture)
+			--	CombatLogQuickButtonFrameButton1:SetPoint("BOTTOM", 0, 0)
+			--end
 		else
 			if C["Chat"].ShortenChannelNames then
 				local am = Frame.AddMessage
@@ -590,6 +609,7 @@ function Module:OnEnable()
 		return
 	end
 
+	self:MoveAudioButtons()
 	self:SetupFrame()
 	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)

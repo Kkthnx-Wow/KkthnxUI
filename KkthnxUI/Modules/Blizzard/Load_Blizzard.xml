@@ -4,7 +4,6 @@
     <Script file="AlertFrames.lua"/>
     <Script file="AltPowerBar.lua"/>
     <Script file="BlizzBugFixes.lua"/>
-    <Script file="CaptureBar.lua"/>
     <Script file="ColorPicker.lua"/>
     <Script file="CommandBar.lua"/>
     <Script file="DebugTools.lua"/>

@@ -154,11 +154,7 @@ function Module:OnEnable()
 	self.expBar.statusBar:SetStatusBarTexture(ExperienceTexture)
 	self.expBar.statusBar:SetStatusBarColor(C["DataBars"].ExperienceColor[1], C["DataBars"].ExperienceColor[2], C["DataBars"].ExperienceColor[3], C["DataBars"].ExperienceColor[4])
 
-	self.expBar.statusBar.Backgrounds = self.expBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
-	self.expBar.statusBar.Backgrounds:SetAllPoints()
-	self.expBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.expBar.statusBar)
+	self.expBar.statusBar:CreateBorder()
 
 	self.expBar.rested = CreateFrame("StatusBar", nil, self.expBar)
 	self.expBar.rested:SetAllPoints()

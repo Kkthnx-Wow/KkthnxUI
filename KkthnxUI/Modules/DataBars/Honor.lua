@@ -148,11 +148,7 @@ function Module:OnEnable()
 	self.HonorBar.statusBar:SetStatusBarColor(C["DataBars"].HonorColor[1], C["DataBars"].HonorColor[2], C["DataBars"].HonorColor[3])
 	self.HonorBar.statusBar:SetMinMaxValues(0, 325)
 
-	self.HonorBar.statusBar.Backgrounds = self.HonorBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
-	self.HonorBar.statusBar.Backgrounds:SetAllPoints()
-	self.HonorBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.HonorBar.statusBar)
+	self.HonorBar.statusBar:CreateBorder()
 
 	self.HonorBar.text = self.HonorBar.statusBar:CreateFontString(nil, "OVERLAY")
 	self.HonorBar.text:SetFontObject(HonorFont)

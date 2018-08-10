@@ -60,7 +60,7 @@ function K:MapInfo_CoordsStop(event)
 			return
 		end
 
-		if (GetUnitSpeed('player') or 0) > 0 then  -- we are still moving!
+		if (GetUnitSpeed('player') or 0) > 0 then -- we are still moving!
 			return
 		end
 

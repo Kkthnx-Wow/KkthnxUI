@@ -195,14 +195,7 @@ function Module:OnInitialize()
 	Minimap:SetQuestBlobRingAlpha(0)
 	Minimap:SetArchBlobRingAlpha(0)
 
-	Minimap.Background = Minimap:CreateTexture(nil, "BACKGROUND", -1)
-	Minimap.Background:SetAllPoints()
-	Minimap.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	Minimap.Borders = CreateFrame("Frame", nil, Minimap)
-	Minimap.Borders:SetAllPoints(Minimap)
-	K.CreateBorder(Minimap.Borders)
-	Minimap:SetFrameLevel(Minimap:GetFrameLevel() + 2)
+	Minimap:CreateBorder()
 
 	Minimap:HookScript("OnEnter", function(self)
 		self.location:Show()

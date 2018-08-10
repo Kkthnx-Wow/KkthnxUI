@@ -148,11 +148,7 @@ function Module:OnEnable(event)
 	self.azeriteBar.statusBar:SetStatusBarColor(.901, .8, .601)
 	self.azeriteBar.statusBar:SetMinMaxValues(0, 325)
 
-	self.azeriteBar.statusBar.Backgrounds = self.azeriteBar.statusBar:CreateTexture(nil, "BACKGROUND", -1)
-	self.azeriteBar.statusBar.Backgrounds:SetAllPoints()
-	self.azeriteBar.statusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.azeriteBar.statusBar)
+	self.azeriteBar.statusBar:CreateBorder()
 
 	self.azeriteBar.eventFrame = CreateFrame("Frame")
 	self.azeriteBar.eventFrame:Hide()

@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Tooltip", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
+local LibInspect = LibStub("LibInspect")
+local LibItemLevel = LibStub("LibItemLevel-KkthnxUI")
 
 local _G = _G
 local find = string.find
@@ -10,7 +12,6 @@ local select = select
 
 local SetTooltipMoney = _G.SetTooltipMoney
 local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
-local CanInspect = _G.CanInspect
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
@@ -21,22 +22,13 @@ local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FACTION_HORDE = _G.FACTION_HORDE
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
-local GetAverageItemLevel = _G.GetAverageItemLevel
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
-local GetDetailedItemLevelInfo = _G.GetDetailedItemLevelInfo
 local GetGuildInfo = _G.GetGuildInfo
-local GetInspectSpecialization = _G.GetInspectSpecialization
-local GetInventoryItemLink = _G.GetInventoryItemLink
-local GetInventorySlotInfo = _G.GetInventorySlotInfo
 local GetItemCount = _G.GetItemCount
 local GetItemInfo = _G.GetItemInfo
 local GetItemQualityColor = _G.GetItemQualityColor
 local GetMouseFocus = _G.GetMouseFocus
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
-local GetSpecialization = _G.GetSpecialization
-local GetSpecializationInfo = _G.GetSpecializationInfo
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
-local GetSpecializationRoleByID = _G.GetSpecializationRoleByID
 local GetTime = _G.GetTime
 local ID = _G.ID
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
@@ -74,15 +66,12 @@ local UnitPVPName = _G.UnitPVPName
 local UnitRace = _G.UnitRace
 local UnitReaction = _G.UnitReaction
 local UnitRealmRelationship = _G.UnitRealmRelationship
-local NotifyInspect = _G.NotifyInspect
 
 local GameTooltip, GameTooltipStatusBar = _G["GameTooltip"], _G["GameTooltipStatusBar"]
-local inspectCache = {}
+local inspectCache, inspectAge = {}, 900
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
-
-local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 
 local ignoreSubType = {
 	L["Tooltip"].Other == true,
@@ -97,32 +86,15 @@ local classification = {
 }
 
 local SlotName = {
-	"Head",
-	"Neck",
-	"Shoulder",
-	"Back",
-	"Chest",
-	"Wrist",
-	"Hands",
-	"Waist",
-	"Legs",
-	"Feet",
-	"Finger0",
-	"Finger1",
-	"Trinket0",
-	"Trinket1",
-	"MainHand",
-	"SecondaryHand",
+	INVSLOT_HEAD, INVSLOT_NECK, INVSLOT_SHOULDER, INVSLOT_BACK, INVSLOT_CHEST,
+	INVSLOT_WRIST, INVSLOT_HAND, INVSLOT_WAIST, INVSLOT_LEGS, INVSLOT_FEET,
+	INVSLOT_FINGER1, INVSLOT_FINGER2, INVSLOT_TRINKET1, INVSLOT_TRINKET2,
+	INVSLOT_MAINHAND, INVSLOT_OFFHAND
 }
 
 local QualityTooltips = {
-	GameTooltip,
-	ItemRefShoppingTooltip1,
-	ItemRefShoppingTooltip2,
-	ItemRefTooltip,
-	ShoppingTooltip1,
-	ShoppingTooltip2,
-	WorldMapTooltip,
+	GameTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
+	ItemRefTooltip, ShoppingTooltip1, ShoppingTooltip2, WorldMapTooltip,
 }
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
@@ -154,40 +126,12 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	tt:SetPoint("BOTTOMRIGHT", GameTooltipAnchor, "BOTTOMRIGHT", 0, 0)
 end
 
-function Module:GetItemLvL(unit)
-	local total, item = 0, 0
-	local artifactEquipped = false
-	for i = 1, #SlotName do
-		local itemLink = GetInventoryItemLink(unit, GetInventorySlotInfo(("%sSlot"):format(SlotName[i])))
-		if (itemLink ~= nil) then
-			local _, _, rarity, _, _, _, _, _, equipLoc = GetItemInfo(itemLink)
-			-- Check if we have an artifact equipped in main hand
-			if (equipLoc and equipLoc == "INVTYPE_WEAPONMAINHAND" and rarity and rarity == 6) then
-				artifactEquipped = true
-			end
-
-			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
-			if (not artifactEquipped or (artifactEquipped and equipLoc and equipLoc ~= "INVTYPE_WEAPONOFFHAND")) then
-				local itemLevel = GetDetailedItemLevelInfo(itemLink)
-				if (itemLevel and itemLevel > 0) then
-					item = item + 1
-					total = total + itemLevel
-				end
-			end
-		end
-	end
-
-	if (total < 1 or item < 15) then
-		return
-	end
-
-	return math_floor(total / item)
-end
 
 function Module:CleanUpTrashLines(tt)
 	if tt:IsForbidden() then
 		return
 	end
+
 	for i = 3, tt:NumLines() do
 		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
@@ -200,6 +144,10 @@ function Module:CleanUpTrashLines(tt)
 end
 
 function Module:GetLevelLine(tt, offset)
+	if tt:IsForbidden() then
+		return
+	end
+
 	for i = offset, tt:NumLines() do
 		local tipText = _G["GameTooltipTextLeft" .. i]
 		if (tipText:GetText() and tipText:GetText():find(LEVEL)) then
@@ -208,86 +156,89 @@ function Module:GetLevelLine(tt, offset)
 	end
 end
 
-function Module:GetTalentSpec(unit, isPlayer)
-	local spec
-	if (isPlayer) then
-		spec = GetSpecialization()
-	else
-		spec = GetInspectSpecialization(unit)
+function Module:GetItemLvL(items)
+	if not items then
+		return "?"
 	end
-	if (spec ~= nil and spec > 0) then
-		if (not isPlayer) then
-			local role = GetSpecializationRoleByID(spec)
-			if (role ~= nil) then
-				local _, name, _, icon = GetSpecializationInfoByID(spec)
-				icon = icon and "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " or ""
-				return name and icon .. name
+
+	local total = 0
+	local artifactEquipped = false
+	for i = 1, #SlotName do
+		local currentSlot = SlotName[i]
+		local itemLink = items[currentSlot]
+		if (itemLink) then
+			local _, _, rarity, itemLevelOriginal, _, _, _, _, equipSlot = GetItemInfo(itemLink)
+
+			-- Check if we have an artifact equipped in main hand
+			if (currentSlot == INVSLOT_MAINHAND and rarity and rarity == 6) then
+				artifactEquipped = true
 			end
-		else
-			local _, name, _, icon = GetSpecializationInfo(spec)
-			icon = icon and "|T" .. icon .. ":16:16:0:0:64:64:5:59:5:59|t " or ""
-			return name and icon .. name
+
+			-- If we have artifact equipped in main hand, then we should not count the offhand as it displays an incorrect item level
+			if (not artifactEquipped or (artifactEquipped and currentSlot ~= INVSLOT_OFFHAND)) then
+				local _, itemLevelLib = LibItemLevel:GetItemInfo(itemLink)
+				local itemLevelFinal = 0
+
+				if (itemLevelOriginal and itemLevelLib) then
+					itemLevelFinal = (itemLevelOriginal ~= itemLevelLib) and itemLevelLib or itemLevelOriginal
+				else
+					itemLevelFinal = itemLevelLib or itemLevelOriginal
+				end
+
+				if (itemLevelFinal > 0) then
+					if ((equipSlot == "INVTYPE_2HWEAPON")
+					or (currentSlot == INVSLOT_MAINHAND and artifactEquipped)
+					or (currentSlot == INVSLOT_MAINHAND and not items[INVSLOT_OFFHAND])
+					or (currentSlot == INVSLOT_OFFHAND and not items[INVSLOT_MAINHAND])) then
+						itemLevelFinal = itemLevelFinal * 2
+					end
+					total = total + itemLevelFinal
+				end
+			end
 		end
+	end
+
+	if (total > 0) then
+		return math_floor(total / #SlotName)
+	else
+		return "?"
 	end
 end
 
-function Module:INSPECT_READY(_, GUID)
-	if (self.lastGUID ~= GUID) then
+function Module:GetTalentSpec(talents)
+	return (talents and talents.icon and talents.name) and ("|T"..talents.icon..":12:12:0:0:64:64:5:59:5:59|t "..talents.name) or "?"
+end
+
+function Module:InspectReady(guid, data)
+	if (not (guid and data and data.items and data.talents)) then
 		return
 	end
 
-	local unit = "mouseover"
-	if (UnitExists(unit)) then
-		local itemLevel = self:GetItemLvL(unit)
-		local talentName = self:GetTalentSpec(unit)
-		inspectCache[GUID] = {time = GetTime()}
-
-		if (talentName) then
-			inspectCache[GUID].talent = talentName
-		end
-
-		if (itemLevel) then
-			inspectCache[GUID].itemLevel = itemLevel
-		end
-
-		GameTooltip:SetUnit(unit)
+	if (not inspectCache[guid]) then
+		inspectCache[guid] = {}
 	end
-	self:UnregisterEvent("INSPECT_READY")
+
+	inspectCache[guid].age = GetTime()
+	inspectCache[guid].itemLevel = self:GetItemLvL(data.items)
+	inspectCache[guid].talent = self:GetTalentSpec(data.talents)
+
+	if not GameTooltip:IsForbidden() then
+		GameTooltip:SetUnit("mouseover")
+	end
 end
 
-function Module:ShowInspectInfo(tt, unit, level, r, g, b, numTries)
+function Module:ShowInspectInfo(tt, unit, r, g, b)
 	if tt:IsForbidden() then
 		return
 	end
 
-	local canInspect = CanInspect(unit)
-	if (not canInspect or level < 10 or numTries > 1) then
-		return
-	end
+	local unitGUID = UnitGUID(unit)
 
-	local GUID = UnitGUID(unit)
-	if (GUID == K.GUID) then
-		tt:AddDoubleLine(SPECIALIZATION, self:GetTalentSpec(unit, true), nil, nil, nil, r, g, b)
-		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, math_floor(select(2, GetAverageItemLevel())), nil, nil, nil, 1, 1, 1)
-	elseif (inspectCache[GUID]) then
-		local talent = inspectCache[GUID].talent
-		local itemLevel = inspectCache[GUID].itemLevel
-
-		if (((GetTime() - inspectCache[GUID].time) > 900) or not talent or not itemLevel) then
-			inspectCache[GUID] = nil
-
-			return self:ShowInspectInfo(tt, unit, level, r, g, b, numTries + 1)
-		end
-
-		tt:AddDoubleLine(SPECIALIZATION, talent, nil, nil, nil, r, g, b)
-		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, itemLevel, nil, nil, nil, 1, 1, 1)
-	else
-		if (not canInspect) or (InspectFrame and InspectFrame:IsShown()) then
-			return
-		end
-		self.lastGUID = GUID
-		NotifyInspect(unit)
-		self:RegisterEvent("INSPECT_READY")
+	if (inspectCache[unitGUID] and inspectCache[unitGUID].age and (GetTime() - inspectCache[unitGUID].age) < inspectAge) then
+		tt:AddDoubleLine(SPECIALIZATION, inspectCache[unitGUID].talent, nil, nil, nil, r, g, b)
+		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, inspectCache[unitGUID].itemLevel, nil, nil, nil, 1, 1, 1)
+	elseif (InspectFrame and not InspectFrame:IsShown()) then
+		LibInspect:RequestItems(unit, false)
 	end
 end
 
@@ -303,6 +254,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		if (GMF and GMF.GetAttribute and GMF:GetAttribute("unit")) then
 			unit = GMF:GetAttribute("unit")
 		end
+
 		if (not unit or not UnitExists(unit)) then
 			return
 		end
@@ -365,15 +317,17 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			local diffColor = GetCreatureDifficultyColor(level)
 			local race, englishRace = UnitRace(unit)
 			local _, factionGroup = UnitFactionGroup(unit)
+
 			if (factionGroup and englishRace == "Pandaren") then
 				race = factionGroup .. " " .. race
 			end
+
 			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r %s |c%s%s|r", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", race or "", color.colorStr, localeClass)
 		end
 
 		-- High CPU usage, restricting it to shift key down only.
 		if (C["Tooltip"].InspectInfo and isShiftKeyDown) then
-			self:ShowInspectInfo(tt, unit, level, color.r, color.g, color.b, 0)
+			self:ShowInspectInfo(tt, unit, color.r, color.g, color.b)
 		end
 	else
 		if UnitIsTapDenied(unit) then
@@ -564,6 +518,7 @@ function Module:GameTooltip_ShowStatusBar(tt)
 	end
 
 	local statusBar = _G[tt:GetName() .. "StatusBar"]
+	local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 	if statusBar and not statusBar.skinned then
 		statusBar:SetStatusBarTexture(TooltipTexture)
 		statusBar.skinned = true
@@ -593,14 +548,18 @@ function Module:SetStyle(tt)
 
 	if (not tt.IsSkinned) then
 		tt:StripTextures()
-
 		tt:CreateBorder(nil, nil, 7, 3)
-
 		tt.IsSkinned = true
 	end
 
 	local r, g, b = tt:GetBackdropColor()
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
+end
+
+function Module:PLAYER_ENTERING_WORLD()
+	if next(inspectCache) then
+		table.wipe(inspectCache)
+	end
 end
 
 function Module:MODIFIER_STATE_CHANGED(_, key)
@@ -765,4 +724,10 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+	LibInspect:AddHook("KkthnxUI", "items", function(guid, data, _)
+		self:InspectReady(guid, data)
+	end)
+	LibInspect:SetMaxAge(inspectAge)
 end

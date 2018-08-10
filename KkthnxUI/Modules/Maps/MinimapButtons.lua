@@ -135,13 +135,7 @@ function Module:SkinMinimapButton(Button)
 	Button:SetFrameLevel(Minimap:GetFrameLevel() + 5)
 	Button:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
 
-	Button.Background = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Background:SetAllPoints()
-	Button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	Button.Borders = CreateFrame("Frame", nil, Button)
-	Button.Borders:SetAllPoints(Button)
-	K.CreateBorder(Button.Borders)
+	Button:CreateBorder()
 
 	Button:HookScript("OnEnter", function(self)
 		self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
@@ -152,13 +146,7 @@ function Module:SkinMinimapButton(Button)
 
 	Button:HookScript("OnLeave", function(self)
 		if not self.isSkinned then
-			self.Background = self:CreateTexture(nil, "BACKGROUND", -1)
-			self.Background:SetAllPoints()
-			self.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			self.Borders = CreateFrame("Frame", nil, self)
-			self.Borders:SetAllPoints(self)
-			K.CreateBorder(self.Borders)
+			self:CreateBorder()
 			self.isSkinned = true
 		end
 
@@ -219,11 +207,7 @@ function Module:Update()
 
 			Module:UnlockButton(Button)
 
-			Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -2)
-			Button.Backgrounds:SetAllPoints()
-			Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			K.CreateBorder(Button)
+			Button:CreateBorder()
 
 			Button:SetParent(self.Bar)
 			Button:ClearAllPoints()
@@ -261,13 +245,7 @@ function Module:OnInitialize()
 	self.Bar:EnableMouse(true)
 	self.Bar:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
 
-	self.Bar.Background = self.Bar:CreateTexture(nil, "BACKGROUND", -1)
-	self.Bar.Background:SetAllPoints()
-	self.Bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	self.Bar.Borders = CreateFrame("Frame", nil, self.Bar)
-	self.Bar.Borders:SetAllPoints(self.Bar)
-	K.CreateBorder(self.Bar.Borders)
+	self.Bar:CreateBorder()
 
 	self.Bar:SetScript("OnEnter", function(self)
 		UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)

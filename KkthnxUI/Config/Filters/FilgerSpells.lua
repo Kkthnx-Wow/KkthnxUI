@@ -28,6 +28,10 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
+			-- Empower Rune Weapon
+			{spellID = 47568, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Death's Advance
+			{spellID = 48265, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Remorseless Winter
 			{spellID = 196770, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Hungering Rune Weapon
@@ -646,6 +650,10 @@ C["FilgerSpells"] = {
 			Position = {"TOP", P_PROC_ICON_Anchor},
 
 			-- Buffs
+			-- Warrior of Elune
+			{spellID = 202425, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Starlord
+			{spellID = 279709, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Bloodtalons
 			{spellID = 145152, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Clearcasting
@@ -2136,6 +2144,10 @@ C["FilgerSpells"] = {
 			IconSize = C["Filger"].BuffSize,
 			Position = {"TOP", P_BUFF_ICON_Anchor},
 
+			-- Rapture
+			{spellID = 47536, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Desperate Prayer
+			{spellID = 19236, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Voidform
 			{spellID = 194249, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Dispersion

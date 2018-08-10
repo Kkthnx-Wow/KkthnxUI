@@ -63,7 +63,7 @@ function Module:CreateThreatIndicator()
 end
 
 function Module:CreateGroupRoleIndicator()
-	self.GroupRoleIndicator = self:CreateTexture(nil, "OVERLAY")
+	self.GroupRoleIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
 	self.GroupRoleIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPRIGHT", 0, -6)
 	self.GroupRoleIndicator:SetSize(16, 16)
 	self.GroupRoleIndicator.Override = UpdateGroupRole
@@ -88,7 +88,7 @@ function Module:CreateTrinkets()
 	self.Trinket:SetSize(46, 46)
 	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -6, 0)
 
-	if not self.Trinket.isSkinned then
+	if not self.Trinket.Border then
 		self.Trinket.Backgrounds = self.Trinket:CreateTexture(nil, "BACKGROUND", -1)
 		self.Trinket.Backgrounds:SetAllPoints()
 		self.Trinket.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
@@ -96,12 +96,12 @@ function Module:CreateTrinkets()
 		self.Trinket.Borders = CreateFrame("Frame", nil, self.Trinket)
 		self.Trinket.Borders:SetAllPoints()
 		K.CreateBorder(self.Trinket.Borders)
-		self.Trinket.isSkinned = true
+		self.Trinket.Border = true
 	end
 end
 
 function Module:CreateCombatFeedback()
-	self.CombatText = self.Portrait.Borders:CreateFontString(nil, "OVERLAY")
+	self.CombatText = self.Portrait.Borders:CreateFontString(nil, "OVERLAY", 7)
 	self.CombatText:SetFont(C["Media"].Font, 20, "")
 	self.CombatText:SetShadowOffset(1.25, -1.25)
 	self.CombatText:SetPoint("CENTER", self.Portrait.Borders, "CENTER", 0, -1)
@@ -127,9 +127,8 @@ function Module:CreateReadyCheckIndicator()
 end
 
 function Module:CreateRaidTargetIndicator()
-	self.RaidTargetIndicator = self:CreateTexture()
+	self.RaidTargetIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
 	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self.Portrait.Borders, "TOPLEFT", 4, 5)
-	self.RaidTargetIndicator:SetDrawLayer("OVERLAY", 7)
 	self.RaidTargetIndicator:SetSize(16, 16)
 end
 
@@ -157,9 +156,9 @@ function Module:CreateRestingIndicator()
 end
 
 function Module:CreateAssistantIndicator()
-	self.AssistantIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.AssistantIndicator:SetSize(14, 14)
-	self.AssistantIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPLEFT", 4, -5)
+	self.AssistantIndicator:SetPoint("TOPLEFT", 0, 0)
 end
 
 function Module:CreateCombatIndicator()
@@ -170,7 +169,7 @@ function Module:CreateCombatIndicator()
 end
 
 function Module:CreateLeaderIndicator(unit)
-	self.LeaderIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY")
+	self.LeaderIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
 	if unit == "party" then
 		self.LeaderIndicator:SetSize(13, 13)
 	else
@@ -186,7 +185,7 @@ function Module:CreatePhaseIndicator()
 end
 
 function Module:CreateQuestIndicator()
-	self.QuestIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY")
+	self.QuestIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
 	self.QuestIndicator:SetSize(20, 20)
 	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait.Borders, "TOPLEFT", 11, -11)
 end

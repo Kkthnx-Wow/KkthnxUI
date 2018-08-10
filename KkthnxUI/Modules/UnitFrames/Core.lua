@@ -417,7 +417,10 @@ function Module:PostCreateAura(button)
 		button.Backgrounds:SetAllPoints()
 		button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-		K.CreateBorder(button)
+		if not button.Border then
+			button:CreateBorder()
+			button.Border = true
+		end
 
 		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
 		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
@@ -552,8 +555,8 @@ function Module:CreateAuraWatch(frame)
 			local Icon = CreateFrame("Frame", nil, Auras)
 			Icon.spellID = spell[1]
 			Icon.anyUnit = spell[4]
-			Icon:SetWidth(6)
-			Icon:SetHeight(6)
+			Icon:SetWidth(C["Raid"].AuraWatchIconSize)
+			Icon:SetHeight(C["Raid"].AuraWatchIconSize)
 			Icon:SetPoint(spell[2], 0, 0)
 
 			--local Texture = Icon:CreateTexture(nil, "OVERLAY")
@@ -643,7 +646,7 @@ function Module:GetPartyFramesAttributes()
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
+	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide" or "solo, party, raid"
 
 	return "DamageRaid", nil, DamageRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -653,7 +656,7 @@ function Module:GetDamageRaidFramesAttributes()
 	]],
 
 	"initial-width", C["Raid"].Width,
-	"initial-height", K.Scale(C["Raid"].Height),
+	"initial-height", C["Raid"].Height,
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
@@ -681,7 +684,7 @@ function Module:GetHealerRaidFramesAttributes()
 	]],
 
 	"initial-width", C["Raid"].Width - 3.6,
-	"initial-height", C["Raid"].Height - 4,
+	"initial-height", C["Raid"].Height - 6,
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
@@ -692,8 +695,8 @@ function Module:GetHealerRaidFramesAttributes()
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raid"].GroupBy.Value,
-	"maxColumns", 7,
-	"unitsPerColumn", 4,
+	"maxColumns", 8,
+	"unitsPerColumn", 5,
 	"columnSpacing", 6,
 	"columnAnchorPoint", "LEFT"
 end
@@ -824,7 +827,7 @@ function Module:CreateUnits()
 			local HealerRaid = oUF:SpawnHeader(Module:GetHealerRaidFramesAttributes())
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
-				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 11, -12)
+				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 11, 14)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			end
@@ -1012,7 +1015,7 @@ function Module:UNIT_FACTION(_, unit)
 end
 
 function Module:OnEnable()
-	if C["Unitframe"].Enable ~= true and C["Party"].Enable ~= true and C["Raid"].Enable ~= true then
+	if C["Unitframe"].Enable ~= true and C["Party"].Enable ~= true and C["Raid"].Enable ~= true and C["Nameplates"].Enable ~= true then
 		return
 	end
 

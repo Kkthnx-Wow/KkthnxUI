@@ -17,5 +17,7 @@
     <Script file="Unfit-1.0\Unfit-1.0.lua"/>
     <Script file="LibChatAnims\LibChatAnims.lua"/>
     <Script file="LibAnim-2.01\LibAnim-2.01.lua"/>
+    <Script file="LibItemLevel\LibItemLevel.lua"/>
+	<Script file="LibInspect\LibInspect.lua"/>
     <Script file="LibAboutPanel\LibAboutPanel.lua"/>
 </Ui>

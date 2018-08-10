@@ -3,11 +3,11 @@ local Module = K:NewModule("BlockMovies", "AceEvent-3.0")
 
 local _G = _G
 
-local GetItemCooldown = _G.GetItemCooldown
+local C_Map_GetBestMapForUnit = C_Map.GetBestMapForUnit
 local CreateFrame = _G.CreateFrame
-
-local playerName = UnitName("player")
-local playerRealm = GetRealmName()
+local GetItemCooldown = _G.GetItemCooldown
+local playerName = _G.UnitName("player")
+local playerRealm = _G.GetRealmName()
 
 -- Movie blocking
 local knownMovies = {
@@ -83,7 +83,7 @@ end
 
 function Module:CINEMATIC_START()
 	if C["Automation"].BlockMovies then
-		local id = -(GetBestMapForUnit("player") or 0)
+		local id = -(C_Map_GetBestMapForUnit("player") or 0)
 
 		if cinematicZones[id] then
 			if type(cinematicZones[id]) == "table" then -- For zones with more than 1 cinematic per floor

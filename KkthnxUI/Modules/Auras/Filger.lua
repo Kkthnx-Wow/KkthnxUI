@@ -30,31 +30,31 @@ local FilgerTexture = K.GetTexture(C["Filger"].Texture)
 
 --	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
 do
-	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 2, 169)
+	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 169)
 	P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "TOPLEFT", -2, 169)
+	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 169)
 	P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 2, 211)
+	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 211)
 	SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "TOPLEFT", -2, 211)
+	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 211)
 	T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
 
-	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "TOPLEFT", -2, 253)
+	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "TOPLEFT", -2, 253)
 	T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 2, 253)
+	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 2, 253)
 	PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
 
-	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", K.AnchorPlayer, "BOTTOMLEFT", -2, -44)
+	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", AnchorPlayer, "BOTTOMLEFT", -2, -44)
 	PVE_PVP_CC_Anchor:SetSize(221, 25)
 
-	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", K.AnchorPlayer, "TOPRIGHT", 63, 17)
+	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", AnchorPlayer, "TOPRIGHT", 63, 17)
 	COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
 
-	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", K.AnchorTarget, "BOTTOMRIGHT", 2, 3)
+	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", AnchorTarget, "BOTTOMRIGHT", 2, 3)
 	T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
 
 	Movers:RegisterFrame(P_BUFF_ICON_Anchor)
@@ -379,9 +379,9 @@ end
 
 function Filger:OnEvent(event, unit, _, spellID)
 	if ((unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or
-		event == "PLAYER_TARGET_CHANGED" or
-		event == "PLAYER_ENTERING_WORLD" or
-		event == "SPELL_UPDATE_COOLDOWN") then
+	event == "PLAYER_TARGET_CHANGED" or
+	event == "PLAYER_ENTERING_WORLD" or
+	event == "SPELL_UPDATE_COOLDOWN") then
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
@@ -452,11 +452,11 @@ function Filger:OnEvent(event, unit, _, spellID)
 					if spell then
 						name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
 					end
-				--elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
-				--	if spellID == data.spellID then
-				--		name, _, icon = GetSpellInfo(data.spellID)
-				--		spid = data.spellID
-				--	end
+					--elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
+					--	if spellID == data.spellID then
+					--		name, _, icon = GetSpellInfo(data.spellID)
+					--		spid = data.spellID
+					--	end
 				end
 				if name then
 					if data.slotID then

@@ -378,8 +378,10 @@ local function Stuffing_CreateReagentContainer()
 	Reagent.Background:SetAllPoints(Reagent)
 	Reagent.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	-- K.CreateBorder(Reagent)
-	Reagent:CreateBorder()
+	if not Reagent.Border then
+		Reagent:CreateBorder()
+		Reagent.Border = true
+	end
 
 	Reagent:SetFrameStrata(_G["StuffingFrameBank"]:GetFrameStrata())
 	Reagent:SetFrameLevel(_G["StuffingFrameBank"]:GetFrameLevel() + 5)
@@ -400,7 +402,10 @@ local function Stuffing_CreateReagentContainer()
 	SwitchBankButton.Background:SetAllPoints(SwitchBankButton)
 	SwitchBankButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	SwitchBankButton:CreateBorder()
+	if not SwitchBankButton.Border then
+		SwitchBankButton:CreateBorder()
+		SwitchBankButton.Border = true
+	end
 
 	SwitchBankButton:StyleButton(true)
 	SwitchBankButton:SetPoint("TOPRIGHT", -54, -7)
@@ -428,8 +433,10 @@ local function Stuffing_CreateReagentContainer()
 	SortReagentButton.Background:SetAllPoints(SortReagentButton)
 	SortReagentButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	-- K.CreateBorder(SortReagentButton)
-	SortReagentButton:CreateBorder()
+	if not SortReagentButton.Border then
+		SortReagentButton:CreateBorder()
+		SortReagentButton.Border = true
+	end
 
 	SortReagentButton:StyleButton(true)
 	SortReagentButton:SetPoint("TOPRIGHT", SwitchBankButton, -22, 0)
@@ -466,8 +473,10 @@ local function Stuffing_CreateReagentContainer()
 	Deposit.Background:SetAllPoints(Deposit)
 	Deposit.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	-- K.CreateBorder(Deposit)
-	Deposit:CreateBorder()
+	if not Deposit.Border then
+		Deposit:CreateBorder()
+		Deposit.Border = true
+	end
 
 	Deposit:StyleButton(true)
 	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 6, 0)
@@ -503,7 +512,10 @@ local function Stuffing_CreateReagentContainer()
 		ReagentBankFrame:SetAllPoints()
 
 		button:StyleButton()
-		button:CreateBorder()
+		if not button.Border then
+			button:CreateBorder()
+			button.Border = true
+		end
 
 		button:SetNormalTexture(nil)
 		button.IconBorder:SetAlpha(0)
@@ -556,7 +568,10 @@ local function Stuffing_CreateReagentContainer()
 	ReagentBankFrameUnlockInfo.Background:SetAllPoints()
 	ReagentBankFrameUnlockInfo.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
-	ReagentBankFrameUnlockInfo:CreateBorder()
+	if not ReagentBankFrameUnlockInfo.Border then
+		ReagentBankFrameUnlockInfo:CreateBorder()
+		ReagentBankFrameUnlockInfo.Border = true
+	end
 
 	ReagentBankFrameUnlockInfo:SetFrameStrata("FULLSCREEN")
 	ReagentBankFrameUnlockInfoPurchaseButton:SkinButton()
@@ -617,7 +632,10 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		table_insert(self.bagframe_buttons, ret)
 	end
 
-	ret.frame:CreateBorder()
+	if not ret.frame.Border then
+		ret.frame:CreateBorder()
+		ret.frame.Border = true
+	end
 	ret.frame:StyleButton()
 
 	ret.frame:SetNormalTexture("")
@@ -672,7 +690,10 @@ function Stuffing:SlotNew(bag, slot)
 	if not ret.frame then
 		ret.frame = CreateFrame("Button", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
 
-		ret.frame:CreateBorder()
+		if not ret.frame.Border then
+			ret.frame:CreateBorder()
+			ret.frame.Border = true
+		end
 		ret.frame:StyleButton()
 
 		ret.frame:SetNormalTexture(nil)
@@ -865,7 +886,10 @@ function Stuffing:CreateBagFrame(w)
 		f.reagentToggle = CreateFrame("Button", "StuffingReagentButton" .. w, f)
 		f.reagentToggle:SetSize(16, 16)
 
-		f.reagentToggle:CreateBorder()
+		if not f.reagentToggle.Border then
+			f.reagentToggle:CreateBorder()
+			f.reagentToggle.Border = true
+		end
 
 		f.reagentToggle:SetPoint("TOPRIGHT", f, -32, -7)
 		f.reagentToggle:SetNormalTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
@@ -894,7 +918,10 @@ function Stuffing:CreateBagFrame(w)
 		f.bagsButton = CreateFrame("Button", nil, f)
 		f.bagsButton:SetSize(16, 16)
 
-		f.bagsButton:CreateBorder()
+		if not f.bagsButton.Border then
+			f.bagsButton:CreateBorder()
+			f.bagsButton.Border = true
+		end
 
 		f.bagsButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
 		f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
@@ -923,7 +950,10 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton = CreateFrame("Button", nil, f)
 		f.sortButton:SetSize(16, 16)
 
-		f.sortButton:CreateBorder()
+		if not f.sortButton.Border then
+			f.sortButton:CreateBorder()
+			f.sortButton.Border = true
+		end
 		f.sortButton:StyleButton(true)
 
 		f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
@@ -955,7 +985,10 @@ function Stuffing:CreateBagFrame(w)
 		f.purchaseBagButton = CreateFrame("Button", "StuffingPurchaseButton" .. w, f)
 		f.purchaseBagButton:SetSize(16, 16)
 
-		f.purchaseBagButton:CreateBorder()
+		if not f.purchaseBagButton.Border then
+			f.purchaseBagButton:CreateBorder()
+			f.purchaseBagButton.Border = true
+		end
 
 		f.purchaseBagButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
 		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
@@ -1083,9 +1116,12 @@ function Stuffing:InitBags()
 		Token:SetParent(f)
 		Token:SetScale(1)
 
-		Token:CreateBackdrop()
-		Token.Backdrop:SetOutside(Icon)
-		Token.Backdrop:SetFrameLevel(6)
+		if not Token.Backdrop then
+			Token:CreateBackdrop()
+			Token.Backdrop:SetOutside(Icon)
+			Token.Backdrop:SetFrameLevel(6)
+			Token.Backdrop = true
+		end
 
 		Icon:SetSize(12, 12)
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1123,11 +1159,10 @@ function Stuffing:InitBags()
 	f.bagsButton = CreateFrame("Button", nil, f)
 	f.bagsButton:SetSize(16, 16)
 
-	f.bagsButton.Background = f.bagsButton:CreateTexture(nil, "BACKGROUND", -1)
-	f.bagsButton.Background:SetAllPoints(f.bagsButton)
-	f.bagsButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(f.bagsButton)
+	if not f.bagsButton.Border then
+		f.bagsButton:CreateBorder()
+		f.bagsButton.Border = true
+	end
 
 	f.bagsButton:SetPoint("TOPRIGHT", f, -32, -7)
 	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
@@ -1156,11 +1191,10 @@ function Stuffing:InitBags()
 	f.sortButton = CreateFrame("Button", nil, f)
 	f.sortButton:SetSize(16, 16)
 
-	f.sortButton.Background = f.sortButton:CreateTexture(nil, "BACKGROUND", -1)
-	f.sortButton.Background:SetAllPoints()
-	f.sortButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(f.sortButton)
+	if not f.sortButton.Border then
+		f.sortButton:CreateBorder()
+		f.sortButton.Border = true
+	end
 
 	f.sortButton:StyleButton(nil, true)
 	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
@@ -1229,28 +1263,18 @@ function Stuffing:Layout(isBank)
 
 	f:SetClampedToScreen(1)
 
-	if not f.isSkinned then
-		f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
-		f.Background:SetAllPoints(f)
-		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		K.CreateBorder(f)
-
-		f.isSkinned = true
+	if not f.Border then
+		f:CreateBorder()
+		f.Border = true
 	end
 
 	local fb = f.bags_frame
 	if bag_bars == 1 then
 		fb:SetClampedToScreen(1)
 
-		if not fb.isSkinned then
-			fb.Background = fb:CreateTexture(nil, "BACKGROUND", -1)
-			fb.Background:SetAllPoints(fb)
-			fb.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			K.CreateBorder(fb)
-
-			fb.isSkinned = true
+		if not fb.Border then
+			fb:CreateBorder()
+			fb.Border = true
 		end
 
 		local bsize = C["Inventory"].ButtonSize
@@ -1425,7 +1449,7 @@ function Stuffing:ADDON_LOADED(addon)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
 
-	function ManageBackpackTokenFrame() end
+	--function ManageBackpackTokenFrame() end
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()

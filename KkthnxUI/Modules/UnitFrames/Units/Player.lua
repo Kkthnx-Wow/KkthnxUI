@@ -31,7 +31,10 @@ function Module:CreatePlayer()
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
-	self.Health:CreateBorder()
+	if not self.Health.Border then
+		self.Health:CreateBorder()
+		self.Health.Border = true
+	end
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -52,7 +55,10 @@ function Module:CreatePlayer()
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 
-	self.Power:CreateBorder()
+	if not self.Power.Border then
+		self.Power:CreateBorder()
+		self.Power.Border = true
+	end
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -70,21 +76,26 @@ function Module:CreatePlayer()
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Borders:SetSize(46, 46)
-		self.Portrait.Borders:CreateBorder()
+		if not self.Portrait.Border then
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Borders:SetSize(46, 46)
+			self.Portrait.Borders:CreateBorder()
+			self.Portrait.Border = true
+		end
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-		self.Portrait.Borders:SetSize(46, 46)
-		self.Portrait.Borders:CreateBorder()
-
+		if not self.Portrait.Border then
+			self.Portrait.Borders = CreateFrame("Frame", nil, self)
+			self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+			self.Portrait.Borders:SetSize(46, 46)
+			self.Portrait.Borders:CreateBorder()
+			self.Portrait.Border = true
+		end
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
@@ -96,10 +107,18 @@ function Module:CreatePlayer()
 		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
 
-		self.Castbar:CreateBorder()
+		if not self.Castbar.Border then
+			self.Castbar:CreateBorder()
+			self.Castbar.Border = true
+		end
 
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 203)
+
+		if C["Raid"].RaidLayout.Value == "Healer" then
+			self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 230)
+		else
+			self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 203)
+		end
 
 		self.Castbar.PostCastStart = Module.CheckCast
 		self.Castbar.PostChannelStart = Module.CheckChannel
@@ -136,8 +155,11 @@ function Module:CreatePlayer()
 			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 			self.Castbar.Button:SetSize(20, 20)
 
-			self.Castbar.Button:CreateBackdrop()
-			self.Castbar.Button.Backdrop:SetFrameLevel(4)
+			if not self.Castbar.Button.Backdrop then
+				self.Castbar.Button:CreateBackdrop()
+				self.Castbar.Button.Backdrop:SetFrameLevel(4)
+				self.Castbar.Button.Backdrop = true
+			end
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -178,7 +200,7 @@ function Module:CreatePlayer()
 	self.AdditionalPower.frequentUpdates = true
 
 	self.AdditionalPower.Backgrounds = self.AdditionalPower:CreateTexture(nil, "BACKGROUND", -1)
-    self.AdditionalPower.Backgrounds:SetAllPoints()
+	self.AdditionalPower.Backgrounds:SetAllPoints()
 	self.AdditionalPower.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	self.AdditionalPower:CreateBorder()

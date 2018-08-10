@@ -26,7 +26,6 @@ function Module:NameplatesCallback(_, unit)
 			self.Castbar:SetAlpha(0)
 			self.RaidTargetIndicator:SetAlpha(0)
 		else
-			--self.Power:Show()
 			self.Name:Show()
 			self.Castbar:SetAlpha(1)
 			self.RaidTargetIndicator:SetAlpha(1)
@@ -66,7 +65,7 @@ function Module:CreateNameplates()
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self.Health.Value:SetFontObject(Font)
 		self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
-		self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
+		self:Tag(self.Health.Value, C["Nameplates"].HealthFormat.Value)
 	end
 
 	self.Level = self.Health:CreateFontString(nil, "OVERLAY")

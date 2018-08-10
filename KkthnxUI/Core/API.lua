@@ -345,7 +345,7 @@ local function SkinCloseButton(f, point, texture)
 		f.Background:SetPoint("TOPLEFT", 8, -8)
 		f.Background:SetPoint("BOTTOMRIGHT", -8, 8)
 
-	    f.Borders = CreateFrame("Frame", nil, f)
+		f.Borders = CreateFrame("Frame", nil, f)
 		f.Borders:SetPoint("TOPLEFT", 8, -8)
 		f.Borders:SetPoint("BOTTOMRIGHT", -8, 8)
 		K.CreateBorder(f.Borders)

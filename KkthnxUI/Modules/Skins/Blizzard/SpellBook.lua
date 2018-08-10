@@ -11,7 +11,7 @@ local function LoadSpellBookSkin()
 		local slot = _G["SpellButton" .. i .. "SlotFrame"]
 		local icon = _G["SpellButton" .. i .. "IconTexture"]
 
-		K.CreateBorder(button)
+		button:CreateBorder()
 		button.EmptySlot:SetTexture("")
 		button.UnlearnedFrame:SetTexture("")
 		button.SpellHighlightTexture:SetInside(button, -6, -6) -- not on action bar

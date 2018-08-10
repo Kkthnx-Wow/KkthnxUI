@@ -121,7 +121,10 @@ local function createSlot(id)
 	iconFrame:SetWidth(iconsize)
 	iconFrame:SetPoint("RIGHT", frame)
 
-	iconFrame:CreateBorder()
+	if not iconFrame.Border then
+		iconFrame:CreateBorder()
+		iconFrame.Border = true
+	end
 
 	frame.iconFrame = iconFrame
 
@@ -310,7 +313,10 @@ function Module:OnEnable()
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
 
-	lootFrame:CreateBorder()
+	if not lootFrame.Border then
+		lootFrame:CreateBorder()
+		lootFrame.Border = true
+	end
 
 	lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
 	lootFrame:SetToplevel(true)

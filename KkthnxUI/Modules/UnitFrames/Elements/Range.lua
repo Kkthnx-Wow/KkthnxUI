@@ -18,13 +18,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitClass = _G.UnitClass
 
 function Module:CreateRange()
-	local Range
-
-	if C["Party"].Enable then
-		Range = {insideAlpha = 1, outsideAlpha = C["Party"].OORAlpha}
-	else
-		Range = {insideAlpha = 1, outsideAlpha = C["Unitframe"].OORAlpha}
-	end
+	local Range = {insideAlpha = 1, outsideAlpha = 0.40}
 
 	Range.Override = K.UpdateRange
 

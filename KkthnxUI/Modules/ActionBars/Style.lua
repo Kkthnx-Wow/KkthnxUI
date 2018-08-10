@@ -74,13 +74,7 @@ local function StyleNormalButton(self)
 			self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 		end
 
-		Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-		Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-		Button.Backgrounds:SetAllPoints()
-
-		Button.Borders = CreateFrame("Frame", nil, Button)
-		Button.Borders:SetAllPoints(Button)
-		K.CreateBorder(Button.Borders)
+		Button:CreateBorder()
 
 		Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
 		Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
@@ -110,9 +104,9 @@ local function StyleNormalButton(self)
 
 	if (Border and C["ActionBar"].EquipBorder) then
 		if (Border:IsShown()) then
-			Button.Borders:SetBackdropBorderColor(.08, .70, 0)
+			Button:SetBackdropBorderColor(.08, .70, 0)
 		else
-			Button.Borders:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
+			Button:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
 		end
 	end
 
@@ -145,13 +139,7 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 
 	Button:SetSize(PetSize, PetSize)
 
-	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-	Button.Backgrounds:SetAllPoints()
-
-	Button.Borders = CreateFrame("Frame", nil, Button)
-	Button.Borders:SetAllPoints(Button)
-	K.CreateBorder(Button.Borders)
+	Button:CreateBorder()
 
 	if (C["ActionBar"].Hotkey) then
 		HotKey:SetFontObject(Font)
@@ -269,14 +257,13 @@ local function SetupFlyoutButton()
 		local Button = _G["SpellFlyoutButton" .. i]
 
 		if Button and not Button.IsSkinned then
-			Button:StyleButton()
-
 			K.CreateBorder(Button)
 
 			if Button:GetChecked() then
 				Button:SetChecked(nil)
 			end
 
+			Button:StyleButton()
 			Button.IsSkinned = true
 		end
 	end

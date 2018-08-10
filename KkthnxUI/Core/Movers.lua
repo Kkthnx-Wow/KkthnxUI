@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
@@ -179,13 +179,12 @@ function Movers:CreateDragInfo()
 	self.DragInfo = CreateFrame("Button", nil, self)
 	self.DragInfo:SetAllPoints(self)
 
-	self.DragInfo.Backgrounds = self.DragInfo:CreateTexture(nil, "BACKGROUND", -2)
-	self.DragInfo.Backgrounds:SetAllPoints()
-	self.DragInfo.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	if not self.DragInfo.Border then
+		self.DragInfo:CreateBorder()
+		self.DragInfo.Border = true
+	end
 
-	K.CreateBorder(self.DragInfo)
-
-	self.DragInfo:SetBackdropBorderColor(72 / 255, 133 / 255, 237 / 255)
+	self.DragInfo:SetBackdropBorderColor()
 	self.DragInfo:FontString("Text", C["Media"].Font, 12)
 	self.DragInfo.Text:SetText(GenerateName(self:GetName()))
 	self.DragInfo.Text:SetPoint("CENTER")
@@ -198,7 +197,6 @@ function Movers:CreateDragInfo()
 	self.DragInfo:SetScript("OnMouseUp", Movers.RestoreDefaults)
 	self.DragInfo:HookScript("OnEnter", SetModifiedBackdrop)
 	self.DragInfo:HookScript("OnLeave", SetOriginalBackdrop)
-
 	self.DragInfo.Parent = self.DragInfo:GetParent()
 end
 
@@ -287,37 +285,34 @@ function Movers:IsRegisteredFrame(frame)
 	return Match
 end
 
-Movers:SetScript(
-	"OnEvent",
-	function(self, event)
-		if (event == "PLAYER_ENTERING_WORLD") then
-			if not KkthnxUIData[Realm][Name].Movers then
-				KkthnxUIData[Realm][Name].Movers = {}
-			end
+Movers:SetScript("OnEvent", function(self, event)
+	if (event == "PLAYER_ENTERING_WORLD") then
+		if not KkthnxUIData[Realm][Name].Movers then
+			KkthnxUIData[Realm][Name].Movers = {}
+		end
 
-			local Data = KkthnxUIData[Realm][Name].Movers
+		local Data = KkthnxUIData[Realm][Name].Movers
 
-			for Frame, Position in pairs(Data) do
-				local Frame = _G[Frame] -- Was already defined as a loop above.
-				local IsRegistered = self:IsRegisteredFrame(Frame)
+		for Frame, Position in pairs(Data) do
+			local Frame = _G[Frame] -- Was already defined as a loop above.
+			local IsRegistered = self:IsRegisteredFrame(Frame)
 
-				if Frame and IsRegistered then
-					local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
+			if Frame and IsRegistered then
+				local Anchor1, Parent, Anchor2, X, Y = Frame:GetPoint()
 
-					self:SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
+				self:SaveDefaults(Frame, Anchor1, Parent, Anchor2, X, Y)
 
-					Anchor1, Parent, Anchor2, X, Y = unpack(Position)
+				Anchor1, Parent, Anchor2, X, Y = unpack(Position)
 
-					Frame:ClearAllPoints()
-					Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
-				end
-			end
-		elseif (event == "PLAYER_REGEN_DISABLED") then
-			if self.IsEnabled then
-				self:StartOrStopMoving()
+				Frame:ClearAllPoints()
+				Frame:SetPoint(Anchor1, _G[Parent], Anchor2, X, Y)
 			end
 		end
+	elseif (event == "PLAYER_REGEN_DISABLED") then
+		if self.IsEnabled then
+			self:StartOrStopMoving()
+		end
 	end
-)
+end)
 
 K["Movers"] = Movers

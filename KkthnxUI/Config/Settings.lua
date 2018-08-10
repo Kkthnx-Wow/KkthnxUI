@@ -165,6 +165,7 @@ C["Cooldown"] = {
 	["Minutes"] = {1, 1, 1},
 	["Seconds"] = {1, 1, 0},
 	["Threshold"] = 3,
+	["Font"] = "KkthnxUI Outline"
 }
 
 -- DataBars
@@ -292,7 +293,15 @@ C["Nameplates"] = {
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
-	["Width"] = 138
+	["Width"] = 138,
+	["HealthFormat"] = {
+		["Options"] = {
+			["Health Current"] = "[KkthnxUI:HealthCurrent]",
+			["Health Percent"] = "[KkthnxUI:HealthPercent]",
+			["Health Current-Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
+		},
+		["Value"] = "[KkthnxUI:HealthPercent]"
+	}
 }
 
 -- Quests
@@ -350,7 +359,6 @@ C["Unitframe"] = {
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["GlobalCooldown"] = false,
-	["OORAlpha"] = 0.40,
 	["OnlyShowPlayerDebuff"] = false,
 	["PowerPredictionBar"] = true,
 	["PvPText"] = true,
@@ -381,7 +389,6 @@ C["Unitframe"] = {
 
 C["Party"] = {
 	["Font"] = "KkthnxUI",
-	["OORAlpha"] = 0.40,
 	["Enable"] = true,
 	["PartyAsRaid"] = false,
 	["ShowPlayer"] = true,
@@ -416,6 +423,7 @@ C["Arena"] = {
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Castbars"] = true,
+	["CastbarIcon"] = true,
 	["Texture"] = "KkthnxUI",
 	["NumberPrefixStyle"] = {
 		["Options"] = {
@@ -430,12 +438,14 @@ C["Arena"] = {
 }
 
 C["Boss"] = {
-	["Font"] = "KkthnxUI",
-	["OORAlpha"] = 0.40,
+	["CastbarHeight"] = 20,
+	["CastbarIcon"] = true,
+	["Castbars"] = true,
+	["CastbarWidth"] = 214,
 	["Enable"] = true,
+	["Font"] = "KkthnxUI",
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
-	["Castbars"] = true,
 	["Texture"] = "KkthnxUI",
 	["PortraitStyle"] = {
 		["Options"] = {
@@ -462,7 +472,7 @@ C["Boss"] = {
 C["Raid"] = {
 	["AuraDebuffIconSize"] = 22,
 	["AuraWatch"] = true,
-	["AuraWatchIconSize"] = 6,
+	["AuraWatchIconSize"] = 7,
 	["DeficitThreshold"] = .95,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
@@ -471,7 +481,6 @@ C["Raid"] = {
 	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
 	["Outline"] = false,
-	["RaidGroups"] = 14,
 	["RaidUtility"] = true,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,
