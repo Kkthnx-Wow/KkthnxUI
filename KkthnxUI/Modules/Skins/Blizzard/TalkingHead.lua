@@ -4,7 +4,9 @@ local Module = K:GetModule("Skins")
 local function SkinTalkingHead()
 	TalkingHeadFrame:StripTextures(true)
 
-    TalkingHeadFrame:CreateBorder()
+    TalkingHeadFrame:CreateBackdrop()
+    TalkingHeadFrame.Backdrop:SetPoint("TOPLEFT", 13, -13)
+    TalkingHeadFrame.Backdrop:SetPoint("BOTTOMRIGHT", -35, 11)
 
 	TalkingHeadFrame.MainFrame:StripTextures(true)
 	TalkingHeadFrame.PortraitFrame:StripTextures(true)

@@ -126,10 +126,18 @@ function Module:CreateReadyCheckIndicator()
 	self.ReadyCheckIndicator.fadeTime = 3
 end
 
-function Module:CreateRaidTargetIndicator()
-	self.RaidTargetIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	self.RaidTargetIndicator:SetPoint("TOPRIGHT", self.Portrait.Borders, "TOPLEFT", 4, 5)
-	self.RaidTargetIndicator:SetSize(16, 16)
+function Module:CreateRaidTargetIndicator(size)
+	if not size then
+		size = 16
+	end
+
+	self.RaidTargetOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+	self.RaidTargetOverlay:SetAllPoints()
+	self.RaidTargetOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
+
+	self.RaidTargetIndicator = self.RaidTargetOverlay:CreateTexture(nil, "OVERLAY", 7)
+	self.RaidTargetIndicator:SetPoint("TOP", self.RaidTargetOverlay, 0, 10)
+	self.RaidTargetIndicator:SetSize(size, size)
 end
 
 function Module:CreatePvPIndicator(unit)
@@ -155,9 +163,17 @@ function Module:CreateRestingIndicator()
 	self.RestingIndicator:SetAlpha(0.7)
 end
 
-function Module:CreateAssistantIndicator()
-	self.AssistantIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.AssistantIndicator:SetSize(14, 14)
+function Module:CreateAssistantIndicator(size)
+	if not size then
+		size = 14
+	end
+
+	self.AssistantOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+	self.AssistantOverlay:SetAllPoints()
+	self.AssistantOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
+
+	self.AssistantIndicator = self.AssistantOverlay:CreateTexture(nil, "OVERLAY")
+	self.AssistantIndicator:SetSize(size, size)
 	self.AssistantIndicator:SetPoint("TOPLEFT", 0, 0)
 end
 

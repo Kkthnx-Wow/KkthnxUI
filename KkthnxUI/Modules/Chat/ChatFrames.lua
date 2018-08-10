@@ -122,12 +122,12 @@ function Module:UpdateEditBoxColor()
 		local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
 
 		if ID == 0 then
-			EditBox.Border:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			EditBox:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 		else
-			EditBox.Border:SetBackdropBorderColor(ChatTypeInfo[ChatType .. ID].r, ChatTypeInfo[ChatType .. ID].g, ChatTypeInfo[ChatType .. ID].b)
+			EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType .. ID].r, ChatTypeInfo[ChatType .. ID].g, ChatTypeInfo[ChatType .. ID].b)
 		end
 	else
-		EditBox.Border:SetBackdropBorderColor(ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b)
+		EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b)
 	end
 end
 
@@ -208,11 +208,6 @@ function Module:StyleFrame(frame)
 	Frame:SetTimeVisible(C["Chat"].FadingTimeVisible)
 	Frame:SetFadeDuration(C["Chat"].FadingTimeFading)
 
-	-- Move the edit box
-	EditBox:ClearAllPoints()
-	EditBox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 2, 26)
-	EditBox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", -2, 26)
-
 	-- Disable alt key usage
 	EditBox:SetAltArrowKeyMode(false)
 
@@ -227,15 +222,11 @@ function Module:StyleFrame(frame)
 	EditBox:HookScript("OnTextChanged", OnTextChanged)
 
 	-- Create our own texture for edit box
+	EditBox:ClearAllPoints()
+	EditBox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 26)
+	EditBox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 23, 26)
 	EditBox:SetHeight(22)
-
-	EditBox.Background = EditBox:CreateTexture(nil, "BACKGROUND", -1)
-	EditBox.Background:SetAllPoints()
-	EditBox.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	EditBox.Border = CreateFrame("Frame", nil, EditBox)
-	EditBox.Border:SetAllPoints()
-	K.CreateBorder(EditBox.Border)
+	EditBox:CreateBorder()
 
 	-- Hide textures
 	for i = 1, #CHAT_FRAME_TEXTURES do
@@ -475,20 +466,9 @@ function Module:SetupFrame()
 		self:StyleFrame(Frame)
 
 		if i == 2 then
-			--if CombatLogQuickButtonFrame_Custom then
-			--	CombatLogQuickButtonFrame_Custom:StripTextures()
-			--	CombatLogQuickButtonFrame_Custom:CreateBackdrop("Transparent")
-			--	CombatLogQuickButtonFrame_Custom.Backdrop:SetPoint("TOPLEFT", 1, -4)
-			--	CombatLogQuickButtonFrame_Custom.Backdrop:SetPoint("BOTTOMRIGHT", 0, 0)
-			--	CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SkinCloseButton(CombatLogQuickButtonFrame_Custom.Backdrop, " ", true)
-			--	CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetSize(12, 12)
-			--	CombatLogQuickButtonFrame_CustomAdditionalFilterButton:SetHitRectInsets (0, 0, 0, 0)
-			--	CombatLogQuickButtonFrame_CustomProgressBar:ClearAllPoints()
-			--	CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("TOPLEFT", CombatLogQuickButtonFrame_Custom.Backdrop, 2, -2)
-			--	CombatLogQuickButtonFrame_CustomProgressBar:SetPoint("BOTTOMRIGHT", CombatLogQuickButtonFrame_Custom.Backdrop, -2, 2)
-			--	CombatLogQuickButtonFrame_CustomProgressBar:SetStatusBarTexture(C.Media.Texture)
-			--	CombatLogQuickButtonFrameButton1:SetPoint("BOTTOM", 0, 0)
-			--end
+			if CombatLogQuickButtonFrame then
+				CombatLogQuickButtonFrame_Custom:Hide()
+			end
 		else
 			if C["Chat"].ShortenChannelNames then
 				local am = Frame.AddMessage
@@ -609,8 +589,8 @@ function Module:OnEnable()
 		return
 	end
 
-	self:MoveAudioButtons()
 	self:SetupFrame()
+	self:MoveAudioButtons()
 	self:SecureHook("ChatEdit_UpdateHeader", Module.UpdateEditBoxColor)
 	self:SecureHook("FCF_OpenTemporaryWindow", Module.StyleTempFrame)
 	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
@@ -635,5 +615,5 @@ function Module:OnEnable()
 		Module:PlayWhisperSound()
 	end)
 
-	FCF_UpdateButtonSide = function() end
+	-- FCF_UpdateButtonSide = function() end
 end

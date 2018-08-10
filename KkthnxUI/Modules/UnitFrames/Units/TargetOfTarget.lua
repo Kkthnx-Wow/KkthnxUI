@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then
 	return
 end
@@ -97,7 +97,7 @@ function Module:CreateTargetOfTarget()
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 
 	Module.CreateAuras(self, "targettarget")
-	Module.CreateRaidTargetIndicator(self)
+	Module.CreateRaidTargetIndicator(self, 12)
 	Module.CreateThreatIndicator(self)
 
 	self.Threat = {

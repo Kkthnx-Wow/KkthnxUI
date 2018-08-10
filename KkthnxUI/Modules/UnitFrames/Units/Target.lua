@@ -55,10 +55,6 @@ function Module:CreateTarget()
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 
-	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
-	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
 	if not self.Power.Border then
 		self.Power:CreateBorder()
 		self.Power.Border = true

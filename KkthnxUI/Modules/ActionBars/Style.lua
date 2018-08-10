@@ -76,8 +76,8 @@ local function StyleNormalButton(self)
 
 		Button:CreateBorder()
 
-		Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
-		Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
+		--Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
+		--Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 		Icon:SetTexCoord(unpack(K.TexCoords))
 		Icon:SetDrawLayer('BACKGROUND', 7)

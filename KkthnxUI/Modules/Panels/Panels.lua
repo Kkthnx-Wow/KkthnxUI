@@ -120,7 +120,7 @@ if C["Chat"].Background then
 	chatBG:SetBackdrop({bgFile = C["Media"].Blank,	edgeFile = C["Media"].Glow,	edgeSize = 3,	insets = {left = 3, right = 3, top = 3, bottom = 3}})
 	chatBG:SetFrameLevel(1)
 	chatBG:SetFrameStrata("BACKGROUND")
-	chatBG:SetSize(C["Chat"].Width + 7, C["Chat"].Height + 9)
+	chatBG:SetSize(C["Chat"].Width + 29, C["Chat"].Height + 12)
 	chatBG:ClearAllPoints()
 	chatBG:SetPoint("TOPLEFT", ChatFrame1, "TOPLEFT", -4, 5)
 	chatBG:SetBackdropBorderColor(0, 0, 0, C["Chat"].BackgroundAlpha or 0.25)

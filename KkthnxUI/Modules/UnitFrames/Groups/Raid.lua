@@ -84,11 +84,7 @@ function Module:CreateRaid()
 		end
 	end)
 
-	self.Background = self:CreateTexture(nil, "BACKGROUND", -1)
-	self.Background:SetAllPoints()
-	self.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self)
+	self:CreateBorder()
 
 	self.Health = CreateFrame("StatusBar", "$parentHealthBar", self)
 	self.Health:SetFrameStrata("LOW")
@@ -179,7 +175,8 @@ function Module:CreateRaid()
 		self.AFKIndicator = self:CreateFontString(nil, "OVERLAY")
 		self.AFKIndicator:SetPoint("CENTER", self.Overlay, "BOTTOM", 0, 6)
 		self.AFKIndicator:SetFontObject(RaidframeFont)
-		self.AFKIndicator:SetFont(select(1, self.AFKIndicator:GetFont()), 12, select(3, self.AFKIndicator:GetFont()))
+		self.AFKIndicator:SetFont(select(1, self.AFKIndicator:GetFont()), 10, select(3, self.AFKIndicator:GetFont()))
+		self.AFKIndicator:SetTextColor(1, 0, 0)
 		self:Tag(self.AFKIndicator, "[KkthnxUI:AFK]")
 	end
 
