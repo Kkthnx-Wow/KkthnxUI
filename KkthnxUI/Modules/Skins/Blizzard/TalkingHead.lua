@@ -1,18 +1,25 @@
 local K = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
+local _G = _G
+
 local function SkinTalkingHead()
+	local TalkingHeadFrame = _G["TalkingHeadFrame"]
+
 	TalkingHeadFrame:StripTextures(true)
-
-    TalkingHeadFrame:CreateBackdrop()
-    TalkingHeadFrame.Backdrop:SetPoint("TOPLEFT", 13, -13)
-    TalkingHeadFrame.Backdrop:SetPoint("BOTTOMRIGHT", -35, 11)
-
 	TalkingHeadFrame.MainFrame:StripTextures(true)
 	TalkingHeadFrame.PortraitFrame:StripTextures(true)
 	TalkingHeadFrame.BackgroundFrame:StripTextures(true)
+	TalkingHeadFrame.MainFrame.Model.PortraitBg:Hide()
 
-    TalkingHeadFrame.MainFrame.Model:CreateBorder()
+	TalkingHeadFrame:CreateBackdrop()
+	TalkingHeadFrame.Backdrop:SetPoint("TOPLEFT", 13, -13)
+	TalkingHeadFrame.Backdrop:SetPoint("BOTTOMRIGHT", -35, 11)
+
+	TalkingHeadFrame.MainFrame.Model:CreateBorder()
+
+	TalkingHeadFrame.NameFrame.Name:SetTextColor(K.Color.r, K.Color.g, K.Color.b, 1)
+	TalkingHeadFrame.TextFrame.Text:SetTextColor(1, 1, 1, 1)
 
 	TalkingHeadFrame.MainFrame.CloseButton:SkinCloseButton()
 	TalkingHeadFrame.MainFrame.CloseButton:SetPoint("TOPRIGHT", -39, -17)

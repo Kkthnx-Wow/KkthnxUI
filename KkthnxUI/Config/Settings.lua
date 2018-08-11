@@ -268,10 +268,13 @@ C["Misc"] = {
 	["AFKCamera"] = false,
 	["BattlegroundSpam"] = false,
 	["ColorPicker"] = false,
+	["EnhancedFriends"] = false,
 	["ItemLevel"] = false,
 	["KillingBlow"] = false,
+	["PremadeAutoAccept"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
+	["TalkingLessHead"] = false,
 }
 
 -- Nameplates

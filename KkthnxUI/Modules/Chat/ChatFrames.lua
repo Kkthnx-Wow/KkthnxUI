@@ -615,5 +615,5 @@ function Module:OnEnable()
 		Module:PlayWhisperSound()
 	end)
 
-	-- FCF_UpdateButtonSide = function() end
+	FCF_UpdateButtonSide = function() end
 end

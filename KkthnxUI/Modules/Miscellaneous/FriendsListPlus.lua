@@ -1,4 +1,8 @@
 local K, C = unpack(select(2, ...))
+if C["Misc"].EnhancedFriends ~= true then
+	return
+end
+
 local Module = K:NewModule("FriendsListPlus", "AceEvent-3.0", "AceHook-3.0")
 
 -- Sourced: ProjectAzilroka (Azilroka)
@@ -159,5 +163,9 @@ function Module:UpdateFriends(button)
 end
 
 function Module:OnInitialize()
+	if C["Misc"].EnhancedFriends ~= true then
+		return
+	end
+
 	self:SecureHook("FriendsFrame_UpdateFriendButton", "UpdateFriends")
 end
