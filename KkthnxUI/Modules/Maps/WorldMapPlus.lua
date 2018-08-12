@@ -302,6 +302,7 @@ frame:SetScript("OnClick", function(self)
 	if (GameTooltip:IsForbidden()) then
 		return
 	end
+
 	if (GameTooltip:GetOwner() == self) then
 		self:UpdateTooltip()
 	end

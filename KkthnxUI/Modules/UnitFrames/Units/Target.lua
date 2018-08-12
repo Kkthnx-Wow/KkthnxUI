@@ -199,7 +199,7 @@ function Module:CreateTarget()
 		Module.CreateCombatFeedback(self)
 	end
 
-	Module.CreateQuestIndicator(self)
+	Module.CreateQuestIndicator(self, 26, 26)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	-- Module.CreateResurrectIndicator(self)

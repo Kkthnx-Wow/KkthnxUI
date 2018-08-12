@@ -1,7 +1,7 @@
 local K, C = unpack(select(2, ...))
-if C["Party"].Enable ~= true then
-	return
-end
+--if C["Party"].Enable ~= true then
+--	return
+--end
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF

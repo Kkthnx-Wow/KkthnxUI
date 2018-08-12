@@ -78,8 +78,8 @@ local function CreateBorder(f, _, bLayer, bOffset, bPoints)
 	f.Backgrounds:SetDrawLayer("BACKGROUND", bLayer)
 	f.Backgrounds:SetPoint("TOPLEFT", f ,"TOPLEFT", bPoints, -bPoints)
 	f.Backgrounds:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -bPoints, bPoints)
-
 	f.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+
 	f:SetBorderColor()
 end
 

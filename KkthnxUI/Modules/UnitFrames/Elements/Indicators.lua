@@ -74,13 +74,13 @@ function Module:CreateSpecIcons()
 	self.PVPSpecIcon:SetSize(46, 46)
 	self.PVPSpecIcon:SetPoint("LEFT", self, 4, 0)
 
-	self.PVPSpecIcon.Backgrounds = self.PVPSpecIcon:CreateTexture(nil, "BACKGROUND", -1)
-	self.PVPSpecIcon.Backgrounds:SetAllPoints()
-	self.PVPSpecIcon.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	self.PVPSpecIcon.Borders = CreateFrame("Frame", nil, self.PVPSpecIcon)
-	self.PVPSpecIcon.Borders:SetAllPoints()
-	self.PVPSpecIcon.Borders:CreateBorder()
+	if not self.PVPSpecIcon.Border then
+		self.PVPSpecIcon.Borders = CreateFrame("Frame", nil, self)
+		self.PVPSpecIcon.Borders:SetPoint("LEFT", self, 4, 0)
+		self.PVPSpecIcon.Borders:SetSize(46, 46)
+		self.PVPSpecIcon.Borders:CreateBorder()
+		self.PVPSpecIcon.Border = true
+	end
 end
 
 function Module:CreateTrinkets()
@@ -89,13 +89,10 @@ function Module:CreateTrinkets()
 	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -6, 0)
 
 	if not self.Trinket.Border then
-		self.Trinket.Backgrounds = self.Trinket:CreateTexture(nil, "BACKGROUND", -1)
-		self.Trinket.Backgrounds:SetAllPoints()
-		self.Trinket.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		self.Trinket.Borders = CreateFrame("Frame", nil, self.Trinket)
-		self.Trinket.Borders:SetAllPoints()
-		K.CreateBorder(self.Trinket.Borders)
+		self.Trinket.Borders = CreateFrame("Frame", nil, self)
+		self.Trinket.Borders:SetPoint("RIGHT", self, "LEFT", -6, 0)
+		self.Trinket.Borders:SetSize(46, 46)
+		self.Trinket.Borders:CreateBorder()
 		self.Trinket.Border = true
 	end
 end
@@ -200,8 +197,18 @@ function Module:CreatePhaseIndicator()
 	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 1, 0)
 end
 
-function Module:CreateQuestIndicator()
-	self.QuestIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	self.QuestIndicator:SetSize(20, 20)
-	self.QuestIndicator:SetPoint("BOTTOMRIGHT", self.Portrait.Borders, "TOPLEFT", 11, -11)
+function Module:CreateQuestIndicator(size)
+	if not size then
+		size = 20
+	end
+
+	self.QuestOverlay = CreateFrame("Frame", nil, self.Health)
+	self.QuestOverlay:SetAllPoints()
+	self.QuestOverlay:SetFrameLevel(self.Health:GetFrameLevel() + 4)
+
+	self.QuestIndicator = self.QuestOverlay:CreateTexture(nil, "OVERLAY", 7)
+	--self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
+    --self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
+	self.QuestIndicator:SetSize(size, size)
+	self.QuestIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", -4, 0)
 end

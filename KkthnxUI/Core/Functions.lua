@@ -197,6 +197,7 @@ function K.CheckChat(warning)
 	elseif IsInGroup(LE_PARTY_CATEGORY_HOME) then
 		return "PARTY"
 	end
+
 	return "SAY"
 end
 

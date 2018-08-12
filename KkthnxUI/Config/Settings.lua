@@ -224,6 +224,7 @@ C["General"] = {
 	["DisableTutorialButtons"] = false,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
+	["HideTutorial"] = false,
 	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["TaintLog"] = false,
@@ -284,6 +285,7 @@ C["Nameplates"] = {
 	["Clamp"] = false,
 	["Combat"] = false,
 	["Distance"] = 40,
+	["MarkHealers"] = false,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["GoodColor"] = {0.2, 0.8, 0.2},
@@ -391,8 +393,8 @@ C["Unitframe"] = {
 }
 
 C["Party"] = {
-	["Font"] = "KkthnxUI",
 	["Enable"] = true,
+	["Font"] = "KkthnxUI",
 	["PartyAsRaid"] = false,
 	["ShowPlayer"] = true,
 	["Smooth"] = false,

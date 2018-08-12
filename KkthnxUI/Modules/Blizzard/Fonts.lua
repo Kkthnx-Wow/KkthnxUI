@@ -125,53 +125,51 @@ local function UpdateBlizzardFonts()
 	SetFont(ZoneTextString, NORMAL_FONT, 32, "OUTLINE")
 
 	-- Character Info Sheet
-	hooksecurefunc(
-		"PaperDollFrame_SetArmor",
-		function(_, unit)
-			if unit ~= "player" then
-				return
-			end
-
-			local msg
-			PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, unit)
-			CharacterStatsPane.ItemLevelCategory:Show()
-			CharacterStatsPane.ItemLevelFrame:Show()
-			CharacterStatsPane.AttributesCategory:SetPoint("TOP", CharacterStatsPane.ItemLevelFrame, "BOTTOM", 0, -10)
-			msg = CharacterStatsPane.ItemLevelFrame.Value
-
-			local total, equip = GetAverageItemLevel()
-			if total > 0 then
-				if equip == total then
-					msg:SetFormattedText("|cffffeeaa%.1f|r", equip)
-				else
-					msg:SetFormattedText("|cffffeeaa%.1f / %.1f|r", equip, total)
-				end
-			else
-				msg:SetFormattedText("|cffffeeaa%s|r", NONE)
-			end
+	hooksecurefunc("PaperDollFrame_SetArmor", function(_, unit)
+		if unit ~= "player" then
+			return
 		end
-	)
+
+		local msg
+		PaperDollFrame_SetItemLevel(CharacterStatsPane.ItemLevelFrame, unit)
+		CharacterStatsPane.ItemLevelCategory:Show()
+		CharacterStatsPane.ItemLevelFrame:Show()
+		CharacterStatsPane.AttributesCategory:SetPoint("TOP", CharacterStatsPane.ItemLevelFrame, "BOTTOM", 0, -10)
+		msg = CharacterStatsPane.ItemLevelFrame.Value
+
+		local total, equip = GetAverageItemLevel()
+		if total > 0 then
+			if equip == total then
+				msg:SetFormattedText("|cffffeeaa%.1f|r", equip)
+			else
+				msg:SetFormattedText("|cffffeeaa%.1f / %.1f|r", equip, total)
+			end
+		else
+			msg:SetFormattedText("|cffffeeaa%s|r", NONE)
+		end
+	end)
 
 	-- Titles
 	PaperDollTitlesPane:HookScript("OnShow", function()
-			for _, object in pairs(PaperDollTitlesPane.buttons) do
-				object.BgTop:SetTexture(nil)
-				object.BgBottom:SetTexture(nil)
-				object.BgMiddle:SetTexture(nil)
-				object.text:FontTemplate(NORMAL_FONT, 11, "")
-				hooksecurefunc(object.text, "SetFont",
-					function(self, font)
-						if font ~= NORMAL_FONT then
-							self:FontTemplate(NORMAL_FONT, 11, "")
-						end
-					end)
+		for _, object in pairs(PaperDollTitlesPane.buttons) do
+			object.BgTop:SetTexture(nil)
+			object.BgBottom:SetTexture(nil)
+			object.BgMiddle:SetTexture(nil)
+			object.text:FontTemplate(NORMAL_FONT, 11, "")
+			hooksecurefunc(object.text, "SetFont",
+			function(self, font)
+				if font ~= NORMAL_FONT then
+					self:FontTemplate(NORMAL_FONT, 11, "")
 				end
 			end)
+		end
+	end)
 
 	-- Fix some fonts to follow our font.
 	-- WorldMapFrameNavBarHomeButton.text:SetFontObject(SystemFont_Shadow_Med1)
 	-- WorldMapFrame.UIElementsFrame.BountyBoard.BountyName:FontTemplate(nil, 14, "OUTLINE")
 	SplashFrame.Header:FontTemplate(nil, 22)
+	SplashFrame.RightTitle:FontTemplate(nil, 30)
 
 	if IsAddOnLoaded("Blizzard_Collections") then
 		WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame.Name:FontTemplate(nil, 16)
@@ -192,23 +190,35 @@ local function UpdateBlizzardFonts()
 	end
 	_G.hooksecurefunc("LFGListCategorySelection_AddButton", SetLabelFontObject)
 
-	local function Channel()
-		for i = 1, MAX_DISPLAY_CHANNEL_BUTTONS do
-			local button = _G["ChannelButton" .. i]
-			if button then
-				button:StripTextures()
-				button:SetHighlightTexture("Interface\\PaperDollInfoFrame\\UI-Character-Tab-Highlight")
-
-				_G["ChannelButton" .. i .. "Text"]:FontTemplate(NORMAL_FONT, 12)
-			end
-		end
-	end
-	-- hooksecurefunc("ChannelList_Update", Channel)
-
 	-- Fix help frame category buttons, NFI why they need fixing
 	for i = 1, 6 do
 		_G["HelpFrameButton" .. i .. "Text"]:SetFontObject(GameFontNormalMed3)
 	end
+
+	-- Bounty Board
+	local function WorldMapBountyBoard(Frame)
+		Frame.BountyName:FontTemplate()
+	end
+	WorldMapBountyBoard(WorldMapFrame.overlayFrames[3]) -- BountyBoard
+
+	local rewardFrames = {
+		["MoneyFrame"] = true,
+		["XPFrame"] = true,
+		["SkillPointFrame"] = true, -- this may have extra textures.. need to check on it when possible
+		["HonorFrame"] = true,
+		["ArtifactXPFrame"] = true,
+		["TitleFrame"] = true,
+	}
+
+	local function HandleReward(frame)
+		frame.Name:FontTemplate()
+	end
+
+	for frame, _ in pairs(rewardFrames) do
+		HandleReward(MapQuestInfoRewardsFrame[frame])
+	end
+
+	RecruitAFriendFrame.MoreDetails.Text:FontTemplate()
 end
 
 -- New Fonts Need to be set as soon as possible...

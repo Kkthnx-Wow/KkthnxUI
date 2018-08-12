@@ -106,7 +106,7 @@ function Module:CreateRaid()
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
 
-	if (C["Raid"].ManabarShow) then
+	if C["Raid"].ManabarShow then
 		self.Power = CreateFrame("StatusBar", nil, self)
 		self.Power:SetFrameStrata("LOW")
 		self.Power:SetFrameLevel(self:GetFrameLevel())
@@ -171,7 +171,7 @@ function Module:CreateRaid()
 	self.LeaderIndicator:SetSize(12, 12)
 	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)
 
-	if (C["Raid"].ShowNotHereTimer) then
+	if C["Raid"].ShowNotHereTimer then
 		self.AFKIndicator = self:CreateFontString(nil, "OVERLAY")
 		self.AFKIndicator:SetPoint("CENTER", self.Overlay, "BOTTOM", 0, 6)
 		self.AFKIndicator:SetFontObject(RaidframeFont)
@@ -180,7 +180,7 @@ function Module:CreateRaid()
 		self:Tag(self.AFKIndicator, "[KkthnxUI:AFK]")
 	end
 
-	if (C["Raid"].AuraWatch == true) then
+	if C["Raid"].AuraWatch then
 		Module:CreateAuraWatch(self)
 
 		self.RaidDebuffs = CreateFrame("Frame", nil, self.Health)
@@ -224,7 +224,7 @@ function Module:CreateRaid()
 	self.ThreatIndicator.IsObjectType = function() end
 	self.ThreatIndicator.Override = UpdateThreat
 
-	if (C["Raid"].ShowMouseoverHighlight) then
+	if C["Raid"].ShowMouseoverHighlight then
 		self.Mouseover = self.Health:CreateTexture(nil, "OVERLAY")
 		self.Mouseover:SetAllPoints(self.Health)
 		self.Mouseover:SetTexture(C.Media.Texture)
@@ -232,7 +232,7 @@ function Module:CreateRaid()
 		self.Mouseover:SetAlpha(0)
 	end
 
-	if (C["Raid"].TargetHighlight) then
+	if C["Raid"].TargetHighlight then
 		self.TargetHighlight = CreateFrame("Frame", nil, self)
 		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
 		self.TargetHighlight:SetPoint("TOPLEFT", -7, 7)

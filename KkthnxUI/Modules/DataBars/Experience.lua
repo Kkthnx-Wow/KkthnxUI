@@ -95,6 +95,19 @@ function Module:ExperienceBar_OnLeave()
 	end
 end
 
+function Module:ExperienceBar_OnClick()
+	local cur, max = Module:GetXP("player")
+
+	if IsInGroup(LE_PARTY_CATEGORY_HOME) then
+		if IsShiftKeyDown() then
+			SendChatMessage(L["Databars"].XP .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), "PARTY")
+			SendChatMessage(L["Databars"].Remaining .." ".. string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "PARTY")
+		end
+	end
+
+	-- SendChatMessage(L["Databars"].XP .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)) .." | "..  L["Databars"].Remaining .." ".. string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "SAY")
+end
+
 function Module:UpdateExperienceDimensions()
 	local ExperienceFont = K.GetFont(C["DataBars"].Font)
 
@@ -146,6 +159,7 @@ function Module:OnEnable()
 	self.expBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
 	self.expBar:SetScript("OnEnter", Module.ExperienceBar_OnEnter)
 	self.expBar:SetScript("OnLeave", Module.ExperienceBar_OnLeave)
+	self.expBar:SetScript("OnClick", Module.ExperienceBar_OnClick)
 	self.expBar:SetFrameStrata("LOW")
 	self.expBar:Hide()
 

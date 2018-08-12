@@ -145,6 +145,7 @@ function Module:SkinMinimapButton(Button)
 	end)
 
 	Button:HookScript("OnLeave", function(self)
+		self:SetBackdropBorderColor()
 		if not self.isSkinned then
 			self:CreateBorder()
 			self.isSkinned = true
@@ -250,13 +251,14 @@ function Module:OnInitialize()
 	self.Bar:SetScript("OnEnter", function(self)
 		UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
 	end)
+
 	self.Bar:SetScript("OnLeave", function(self)
 		if C["MinimapButtons"].BarMouseOver then
 			UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
 		end
 	end)
 
-	self:ScheduleRepeatingTimer("GrabMinimapButtons", 5)
+	self:ScheduleRepeatingTimer("GrabMinimapButtons", 6)
 
 	K["Movers"]:RegisterFrame(self.Bar)
 end

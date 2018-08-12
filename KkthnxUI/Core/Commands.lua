@@ -2,10 +2,14 @@ local K, C, L = unpack(select(2, ...))
 
 -- Lua API
 local _G = _G
+local string_find = string.find
 local string_format = string.format
+local string_gsub = string.gsub
 local string_lower = string.lower
+local string_split = string.split
 local string_trim = string.trim
 local table_insert = table.insert
+local table_remove = table.remove
 
 -- Wow API
 local AbandonQuest = _G.AbandonQuest
@@ -50,6 +54,22 @@ local UnitInRaid = _G.UnitInRaid
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitName = _G.UnitName
 
+local function parseArguments(msg)
+	-- Remove spaces at the start and end
+	msg = string_gsub(msg, "^%s+", "")
+	msg = string_gsub(msg, "%s+$", "")
+
+	-- Replace all space characters with single spaces
+	msg = string_gsub(msg, "%s+", " ")
+
+	-- If multiple arguments exist, split them into separate return values
+	if string_find(msg, "%s") then
+		return string_split(" ", msg)
+	else
+		return msg
+	end
+end
+
 -- ConfigFrame
 function K.ConfigUI()
 	if (not KkthnxUIConfig) then
@@ -82,8 +102,13 @@ function K.UIProfiles(msg)
 	if not msg or msg == "" then
 		K.Print("/profile list")
 		K.Print("/profile #")
+		K.Print("/profile delete #")
 		print("")
 	else
+		-- Split the msg into multiple arguments.
+		-- This function will return any number of arguments.
+		local command, arg1 = parseArguments(msg)
+
 		if msg == "list" or msg == "l" then
 			KkthnxUI.Profiles = {}
 			KkthnxUI.Profiles.Data = {}
@@ -95,6 +120,88 @@ function K.UIProfiles(msg)
 					table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
 					table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
 					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+				end
+			end
+		elseif command == "delete" or command == "del" then
+
+			-- Only do this if the user previously has done a /profile list,
+			-- and an indexed listing of the profiles is actually available.
+			if KkthnxUI.Profiles and KkthnxUI.Profiles.Data then
+
+				-- Retrieve the profile ID
+				local Profile = tonumber(arg1)
+
+				-- Retrieve the profile table
+				local Data = KkthnxUI.Profiles.Data[Profile]
+
+				-- Return an error if the user entered a non existing profile
+				if not Data then
+					K.Print(L["Commands"].ProfileNotFound)
+					return
+				else
+
+					-- Deleting the current profile requires a reload
+					local CurrentServer = GetRealmName()
+					local CurrentCharacter = UnitName("player")
+
+					if Data == KkthnxUIData[CurrentServer][CurrentCharacter] then
+						return K["Install"]:ResetData()
+					end
+
+					local CharacterName, ServerName
+					local found
+
+					-- Search through the stored data for the matching table
+					for Server, Table in pairs(KkthnxUIData) do
+						for Character, Table in pairs(KkthnxUIData[Server]) do
+							if Table == Data then
+								CharacterName = Character
+								ServerName = Server
+								KkthnxUIData[Server][Character] = nil
+								KkthnxUIConfigShared[Server][Character] = nil
+								found = true
+								break
+							end
+						end
+						if found then
+							break
+						end
+					end
+
+					-- Delete the profile listing entries too.
+					table_remove(KkthnxUI.Profiles.Data, Profile)
+					table_remove(KkthnxUI.Profiles.Options, Profile)
+
+					-- Tell the user about the deletion
+					K.Print("Profile "..#KkthnxUI.Profiles.Data.." Deleted: ["..ServerName.."] - ["..CharacterName.."]")
+
+					-- Do a new listing to show the users the order now,
+					-- in case they wish to delete more profiles.
+
+					-- First iterate through the indexed profile table
+					for Profile = 1, #KkthnxUI.Profiles.Data do
+						local Data = KkthnxUI.Profiles.Data[Profile]
+
+						-- Search through the saved data for the matching table,
+						-- so we can get the character and server names.
+						local found
+						for Server, Table in pairs(KkthnxUIData) do
+							for Character, Table in pairs(KkthnxUIData[Server]) do
+
+								-- We found the matching table so we break and exit this loop,
+								-- to allow the outer iteration loop to continue faster.
+								if Table == Data then
+									print("Profile "..Profile..": ["..Server.."] - ["..Character.."]")
+									found = true
+									break
+								end
+							end
+							if found then
+								break
+							end
+						end
+
+					end
 				end
 			end
 		else

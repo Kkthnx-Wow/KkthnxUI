@@ -1280,7 +1280,7 @@ KkthnxUIConfig["enUS"] = {
 	},
 
 	-- Raidframe Local
-	["Raidframe"] = {
+	["Raid"] = {
 		["AuraWatch"] = {
 			["Name"] = "Aura Watch Timers",
 			["Desc"] = "Display a timer on debuff icons created by Debuff Watch",
@@ -1327,7 +1327,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Raidframes",
+			["Name"] = "Toggle Raid Frames",
 			["Desc"] = ModuleToggle,
 		},
 

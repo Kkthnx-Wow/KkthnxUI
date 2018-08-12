@@ -18,6 +18,64 @@ local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local UnitIsUnit = _G.UnitIsUnit
 
+--Taken from Blizzard_TalentUI.lua
+local healerSpecIDs = {
+	105,	--Druid Restoration
+	270,	--Monk Mistweaver
+	65,		--Paladin Holy
+	256,	--Priest Discipline
+	257,	--Priest Holy
+	264,	--Shaman Restoration
+}
+
+Module.HealerSpecs = {}
+Module.Healers = {}
+
+--Get localized healing spec names
+for _, specID in pairs(healerSpecIDs) do
+	local _, name = GetSpecializationInfoByID(specID)
+	if name and not Module.HealerSpecs[name] then
+		Module.HealerSpecs[name] = true
+	end
+end
+
+function Module:CheckBGHealers()
+	local name, _, talentSpec
+	for i = 1, GetNumBattlefieldScores() do
+		name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
+		if name then
+			name = gsub(name,"%-"..gsub(K.Realm,"[%s%-]",""),"") --[[ name = match(name,"([^%-]+).*") ]]
+			if name and self.HealerSpecs[talentSpec] then
+				self.Healers[name] = talentSpec
+			elseif name and self.Healers[name] then
+				self.Healers[name] = nil
+			end
+		end
+	end
+end
+
+function Module:CheckArenaHealers()
+	local numOpps = GetNumArenaOpponentSpecs()
+	if not (numOpps > 1) then return end
+
+	for i=1, 5 do
+		local name, realm = UnitName(format("arena%d", i))
+		if name and name ~= UNKNOWN then
+			realm = (realm and realm ~= "") and gsub(realm,"[%s%-]","")
+			if realm then name = name.."-"..realm end
+			local s = GetArenaOpponentSpec(i)
+			local _, talentSpec = nil, UNKNOWN
+			if s and s > 0 then
+				_, talentSpec = GetSpecializationInfoByID(s)
+			end
+
+			if talentSpec and talentSpec ~= UNKNOWN and self.HealerSpecs[talentSpec] then
+				self.Healers[name] = talentSpec
+			end
+		end
+	end
+end
+
 function Module:NameplatesCallback(_, unit)
 	if unit then
 		if UnitIsUnit(unit, "player") then
@@ -181,8 +239,19 @@ function Module:CreateNameplates()
 	self.RaidTargetIndicator:SetPoint("BOTTOM", self.Health, "TOP", 0, 38)
 
 	self.QuestIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.QuestIndicator:SetSize(14, 14)
-	self.QuestIndicator:SetPoint("TOPLEFT", self.Health, "TOPLEFT", -7, 7)
+	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
+    self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
+	self.QuestIndicator:SetSize(18, 18)
+	self.QuestIndicator:SetPoint("RIGHT", self.Health, "LEFT", 2, 0)
+
+	-- Create Healer Icon
+	if C["Nameplates"].MarkHealers then
+		local HealerTexture = self:CreateTexture(nil, "OVERLAY")
+		HealerTexture:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
+		HealerTexture:SetSize(40, 40)
+		HealerTexture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]])
+		HealerTexture:Hide()
+	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 

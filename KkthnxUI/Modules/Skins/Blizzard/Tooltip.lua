@@ -21,22 +21,17 @@ local function SkinTooltip()
     -- World Quest Reward Icon
     WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
     hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
-        self:GetParent().Borders:SetBackdropBorderColor(r, g, b)
+        self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
         self:SetTexture("")
     end)
 
     hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "Hide", function(self)
-        self:GetParent().Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+        self:GetParent().Backdrop:SetBackdropBorderColor()
     end)
 
-    WorldMapTooltip.ItemTooltip.Backgrounds = WorldMapTooltip.ItemTooltip:CreateTexture(nil, "BACKGROUND", -1)
-    WorldMapTooltip.ItemTooltip.Backgrounds:SetOutside(WorldMapTooltip.ItemTooltip.Icon)
-	WorldMapTooltip.ItemTooltip.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	WorldMapTooltip.ItemTooltip.Borders = CreateFrame("Frame", nil, WorldMapTooltip.ItemTooltip)
-	WorldMapTooltip.ItemTooltip.Borders:SetOutside(WorldMapTooltip.ItemTooltip.Icon)
-	K.CreateBorder(WorldMapTooltip.ItemTooltip.Borders)
-
+    WorldMapTooltip.ItemTooltip:CreateBackdrop()
+    WorldMapTooltip.ItemTooltip.Backdrop:SetOutside(WorldMapTooltip.ItemTooltip.Icon)
+     WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(WorldMapTooltip.ItemTooltip:GetFrameLevel())
     WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
     WorldMapTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WorldMapTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
 
@@ -85,24 +80,27 @@ local function SkinTooltip()
     local StoryTooltip = QuestScrollFrame.StoryTooltip
 	StoryTooltip:SetFrameLevel(4)
 
+    local WarCampaignTooltip = QuestScrollFrame.WarCampaignTooltip
+
     local tooltips = {
-		EmbeddedItemTooltip,
-        AutoCompleteBox,
-        FriendsTooltip,
-        GameTooltip,
+		GameTooltip,
+        ItemRefTooltip,
         ItemRefShoppingTooltip1,
         ItemRefShoppingTooltip2,
         ItemRefShoppingTooltip3,
-        ItemRefTooltip,
-        ReputationParagonTooltip,
+        AutoCompleteBox,
+        FriendsTooltip,
         ShoppingTooltip1,
         ShoppingTooltip2,
         ShoppingTooltip3,
-        StoryTooltip,
+        WorldMapTooltip,
         WorldMapCompareTooltip1,
         WorldMapCompareTooltip2,
         WorldMapCompareTooltip3,
-        WorldMapTooltip,
+        ReputationParagonTooltip,
+        StoryTooltip,
+        EmbeddedItemTooltip,
+        WarCampaignTooltip,
     }
 
     for _, tt in pairs(tooltips) do
@@ -121,7 +119,7 @@ local function SkinTooltip()
 
     Module:SecureHook("GameTooltip_ShowStatusBar")
     Module:SecureHook("GameTooltip_UpdateStyle", "SetStyle")
-    
+
     -- [Backdrop coloring] There has to be a more elegant way of doing this.
 	Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
 end

@@ -52,11 +52,9 @@ local GetScreenResolutions = _G.GetScreenResolutions
 local GetSpecialization = _G.GetSpecialization
 local HideUIPanel = _G.HideUIPanel
 local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
 local IsAddOnLoaded = _G.IsAddOnLoaded
 local issecurevariable = _G.issecurevariable
 local LibStub = _G.LibStub
-local print = _G.print
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UIDROPDOWNMENU_MAXBUTTONS = _G.UIDROPDOWNMENU_MAXBUTTONS
 local UIDROPDOWNMENU_MAXLEVELS = _G.UIDROPDOWNMENU_MAXLEVELS
@@ -138,6 +136,7 @@ function AddOn:OnInitialize()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 
+	self:Tutorials()
 	collectgarbage("collect")
 end
 

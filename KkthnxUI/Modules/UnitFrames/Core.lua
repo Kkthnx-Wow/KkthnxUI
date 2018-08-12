@@ -280,7 +280,7 @@ function Module:CheckCast(unit, name)
 		elseif baseTicks and Module.ChannelTicksSize[name] then
 			local curHaste = UnitSpellHaste("player") * 0.01
 			local baseTickSize = Module.ChannelTicksSize[name]
-			local hastedTickSize = baseTickSize / (1 +  curHaste)
+			local hastedTickSize = baseTickSize / (1 + curHaste)
 			local extraTick = self.max - hastedTickSize * (baseTicks)
 			local extraTickRatio = extraTick / hastedTickSize
 
@@ -646,7 +646,7 @@ function Module:GetPartyFramesAttributes()
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide" or "solo, party, raid"
+	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show; hide" or "solo, party, raid"
 
 	return "DamageRaid", nil, DamageRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -674,7 +674,7 @@ function Module:GetDamageRaidFramesAttributes()
 end
 
 function Module:GetHealerRaidFramesAttributes()
-	local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [group:raid] show; hide"
+	local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show; hide" or "solo, party, raid"
 
 	return "HealerRaid", nil, HealerRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -683,7 +683,7 @@ function Module:GetHealerRaidFramesAttributes()
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 
-	"initial-width", C["Raid"].Width - 3.6,
+	"initial-width", C["Raid"].Width - 12,
 	"initial-height", C["Raid"].Height - 6,
 	"showParty", true,
 	"showRaid", true,
@@ -816,18 +816,18 @@ function Module:CreateUnits()
 			end
 		end
 
-		if (C["Party"].Enable) then
+		if C["Party"].Enable then
 			local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
 			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
 			Movers:RegisterFrame(Party)
 		end
 
-		if (C["Raid"].Enable) then
+		if C["Raid"].Enable then
 			local DamageRaid = oUF:SpawnHeader(Module:GetDamageRaidFramesAttributes())
 			local HealerRaid = oUF:SpawnHeader(Module:GetHealerRaidFramesAttributes())
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
-				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 11, 14)
+				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
 			end
@@ -860,28 +860,8 @@ function Module:CreateUnits()
 	end
 
 	if C["Nameplates"].Enable then
-		local GetCVarDefault = _G.GetCVarDefault
 		local SetCVar = _G.SetCVar
-
-		function Module:PLAYER_REGEN_ENABLED()
-			SetCVar("nameplateShowEnemies", 0)
-		end
-
-		function Module:PLAYER_REGEN_DISABLED()
-			SetCVar("nameplateShowEnemies", 1)
-		end
-
-		function Module:PLAYER_ENTERING_WORLD()
-			if InCombatLockdown() then
-				SetCVar("nameplateShowEnemies", 1)
-			else
-				SetCVar("nameplateShowEnemies", 0)
-			end
-
-			if C["Nameplates"].Threat == true then
-				SetCVar("threatWarning", 3)
-			end
-		end
+		local GetCVarDefault = _G.GetCVarDefault
 
 		-- Default these unless we end up changing them below.
 		SetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
@@ -915,6 +895,51 @@ function Module:CreateUnits()
 		}
 
 		oUF:SpawnNamePlates(nil, Module.NameplatesCallback, Module.NameplatesVars)
+	end
+end
+
+if C["Nameplates"].Enable then
+	local SetCVar = _G.SetCVar
+
+	if C["Nameplates"].Combat then
+		function Module:PLAYER_REGEN_ENABLED()
+			SetCVar("nameplateShowEnemies", 0)
+		end
+
+		function Module:PLAYER_REGEN_DISABLED()
+			SetCVar("nameplateShowEnemies", 1)
+		end
+	end
+
+	function Module:PLAYER_ENTERING_WORLD()
+		if C["Nameplates"].Combat then
+			SetCVar("nameplateShowEnemies", UnitAffectingCombat("player") and 1 or 0)
+
+			if C["Nameplates"].Threat == true then
+				SetCVar("threatWarning", 3)
+			end
+		end
+
+		if C["Nameplates"].MarkHealers then
+			table.wipe(self.Healers)
+
+			local inInstance, instanceType = IsInInstance()
+			if inInstance and (instanceType == "pvp") and C["Nameplates"].MarkHealers then
+				self.CheckHealerTimer = self:ScheduleRepeatingTimer("CheckBGHealers", 3)
+				self:CheckBGHealers()
+			elseif inInstance and (instanceType == "arena") and C["Nameplates"].MarkHealers then
+				self:RegisterEvent("UNIT_NAME_UPDATE", "CheckArenaHealers")
+				self:RegisterEvent("ARENA_OPPONENT_UPDATE", "CheckArenaHealers")
+				self:CheckArenaHealers()
+			else
+				self:UnregisterEvent("UNIT_NAME_UPDATE")
+				self:UnregisterEvent("ARENA_OPPONENT_UPDATE")
+				if self.CheckHealerTimer then
+					self:CancelTimer(self.CheckHealerTimer)
+					self.CheckHealerTimer = nil
+				end
+			end
+		end
 	end
 end
 
@@ -1049,12 +1074,17 @@ function Module:OnEnable()
 	end
 
 	if C["Nameplates"].Enable and C["Nameplates"].Combat then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
 		self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	end
 
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("PLAYER_FOCUS_CHANGED")
-	self:RegisterEvent("UNIT_FACTION")
+	if C["Nameplates"].Enable and C["Nameplates"].Combat or C["Nameplates"].MarkHealers then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	end
+
+	if C["Unitframe"].Enable then
+		self:RegisterEvent("PLAYER_TARGET_CHANGED")
+		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		self:RegisterEvent("UNIT_FACTION")
+	end
 end

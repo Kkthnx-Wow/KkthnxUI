@@ -280,6 +280,7 @@ function K.StaticPopupSpecial_Show(frame)
 	if (frame.exclusive) then
 		K.StaticPopup_HideExclusive()
 	end
+
 	K.StaticPopup_SetUpPosition(frame)
 	frame:Show()
 end
