@@ -20,6 +20,6 @@
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>
     <Script file="StatusReport.lua"/>
-    <Script file="TalkLess.lua"/>
+    <Script file="TalkingLessHead.lua"/>
     <Script file="UIErrorFilter.lua"/>
 </Ui>

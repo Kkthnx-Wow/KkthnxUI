@@ -3,7 +3,7 @@ if C["Misc"].TalkingLessHead ~= true then
 	return
 end
 
-local Module = K:NewModule("TalkLess", "AceEvent-3.0")
+local Module = K:NewModule("TalkingLessHead", "AceEvent-3.0")
 
 -- Sourced: TalkLess (C) Kruithne <kruithne@gmail.com>
 
@@ -102,21 +102,7 @@ function Module:OnDataLoad()
 		KkthnxUIData[playerRealm][playerName].TalkLess = {}
 	end
 
-	_G.TalkingHeadFrame_PlayCurrent = KkthnxUI_TalkingHeadFrame_PlayCurrent
-
-	Module:UnregisterEvent("ADDON_LOADED")
-end
-
-function Module:ADDON_LOADED(addon)
-	if addon == "KkthnxUI" then
-		if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
-			self.OnDataLoad()
-		end
-	elseif addon == "Blizzard_TalkingHeadUI" then
-		if IsAddOnLoaded("KkthnxUI") then
-			self.OnDataLoad()
-		end
-	end
+	TalkingHeadFrame_PlayCurrent = KkthnxUI_TalkingHeadFrame_PlayCurrent
 end
 
 function Module:OnEnable()
@@ -124,9 +110,15 @@ function Module:OnEnable()
 		return
 	end
 
-	self:RegisterEvent("ADDON_LOADED")
-end
-
-function Module:OnDisable()
-	self:UnregisterEvent("ADDON_LOADED")
+	if IsAddOnLoaded("Blizzard_TalkingHeadUI") then
+		Module:OnDataLoad()
+	else
+		local forceLoad = CreateFrame("Frame")
+		forceLoad:RegisterEvent("PLAYER_ENTERING_WORLD")
+		forceLoad:SetScript("OnEvent", function(self, event)
+			self:UnregisterEvent(event)
+			TalkingHead_LoadUI()
+			Module:OnDataLoad()
+		end)
+	end
 end

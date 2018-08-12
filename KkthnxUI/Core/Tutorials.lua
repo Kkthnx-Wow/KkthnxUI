@@ -81,7 +81,7 @@ function K:SpawnTutorialFrame()
 	f.disableButton:SkinButton()
 
 	f.disableButton:SetScript("OnShow", function(self)
-		if KkthnxUIData[playerRealm][playerName].currentTutorial == true then
+		if KkthnxUIData[playerRealm][playerName].hideTutorial == true then
 			self:SetChecked(true)
 		else
 			self:SetChecked(false)
@@ -90,9 +90,9 @@ function K:SpawnTutorialFrame()
 
 	f.disableButton:SetScript("OnClick", function(self)
 		if self:GetChecked() == true then
-			KkthnxUIData[playerRealm][playerName].currentTutorial = true
+			KkthnxUIData[playerRealm][playerName].hideTutorial = true
 		else
-			KkthnxUIData[playerRealm][playerName].currentTutorial = false
+			KkthnxUIData[playerRealm][playerName].hideTutorial = false
 		end
 	end)
 
@@ -126,8 +126,8 @@ function K:SpawnTutorialFrame()
 	return f
 end
 
-function K:Tutorials()
-	if (KkthnxUIData[playerRealm][playerName].currentTutorial) or (not KkthnxUIData[playerRealm][playerName].InstallComplete) then
+function K:LoadTutorials()
+	if (KkthnxUIData[playerRealm][playerName].hideTutorial) or (not KkthnxUIData[playerRealm][playerName].InstallComplete) then
 		return
 	end
 

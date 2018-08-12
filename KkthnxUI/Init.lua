@@ -136,7 +136,7 @@ function AddOn:OnInitialize()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 
-	self:Tutorials()
+	self:LoadTutorials()
 	collectgarbage("collect")
 end
 
