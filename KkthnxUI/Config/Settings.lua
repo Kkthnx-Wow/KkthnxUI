@@ -224,7 +224,6 @@ C["General"] = {
 	["DisableTutorialButtons"] = false,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
-	["HideTutorial"] = false,
 	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["TaintLog"] = false,

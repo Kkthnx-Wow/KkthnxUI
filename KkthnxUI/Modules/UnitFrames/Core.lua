@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Unitframes", "AceEvent-3.0")
+local Module = K:NewModule("Unitframes", "AceEvent-3.0", "AceTimer-3.0")
 
 local oUF = oUF or K.oUF
 
@@ -922,7 +922,6 @@ if C["Nameplates"].Enable then
 
 		if C["Nameplates"].MarkHealers then
 			table.wipe(self.Healers)
-
 			local inInstance, instanceType = IsInInstance()
 			if inInstance and (instanceType == "pvp") and C["Nameplates"].MarkHealers then
 				self.CheckHealerTimer = self:ScheduleRepeatingTimer("CheckBGHealers", 3)
@@ -939,6 +938,25 @@ if C["Nameplates"].Enable then
 					self.CheckHealerTimer = nil
 				end
 			end
+		end
+	end
+end
+
+function Module:DisplayHealerTexture(unit)
+	local name, realm = UnitName(self.unit)
+	realm = (realm and realm ~= "") and gsub(realm, "[%s%-]","")
+
+	if realm then
+		name = name.."-"..realm
+	end
+
+	local icon = self.HealerTexture
+
+	if C["Nameplates"].MarkHealers then
+		if Module.Healers[name] and UnitIsEnemy("player", unit) then
+			icon:Show()
+		else
+			icon:Hide()
 		end
 	end
 end

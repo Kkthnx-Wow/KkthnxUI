@@ -18,14 +18,14 @@ local CreateFrame = _G.CreateFrame
 local UIParent = _G.UIParent
 local UnitIsUnit = _G.UnitIsUnit
 
---Taken from Blizzard_TalentUI.lua
+-- Taken from Blizzard_TalentUI.lua
 local healerSpecIDs = {
-	105,	--Druid Restoration
-	270,	--Monk Mistweaver
-	65,		--Paladin Holy
-	256,	--Priest Discipline
-	257,	--Priest Holy
-	264,	--Shaman Restoration
+	105, -- Druid Restoration
+	270, -- Monk Mistweaver
+	65,	 -- Paladin Holy
+	256, -- Priest Discipline
+	257, -- Priest Holy
+	264, -- Shaman Restoration
 }
 
 Module.HealerSpecs = {}
@@ -56,9 +56,11 @@ end
 
 function Module:CheckArenaHealers()
 	local numOpps = GetNumArenaOpponentSpecs()
-	if not (numOpps > 1) then return end
+	if not (numOpps > 1) then
+		return
+	end
 
-	for i=1, 5 do
+	for i = 1, 5 do
 		local name, realm = UnitName(format("arena%d", i))
 		if name and name ~= UNKNOWN then
 			realm = (realm and realm ~= "") and gsub(realm,"[%s%-]","")
@@ -139,6 +141,7 @@ function Module:CreateNameplates()
 	self.Name:SetPoint("BOTTOMRIGHT", self.Level, "BOTTOMLEFT")
 	self.Name:SetFontObject(Font)
 	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
+	self.Name:SetWordWrap(false) -- Why is this even a thing? Text wrapping is just fucking ugly.
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
@@ -246,19 +249,12 @@ function Module:CreateNameplates()
 
 	-- Create Healer Icon
 	if C["Nameplates"].MarkHealers then
-		local HealerTexture = self:CreateTexture(nil, "OVERLAY")
-		HealerTexture:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
-		HealerTexture:SetSize(40, 40)
-		HealerTexture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]])
-		HealerTexture:Hide()
+		self.HealerTexture = self:CreateTexture(nil, "OVERLAY")
+		self.HealerTexture:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
+		self.HealerTexture:SetSize(40, 40)
+		self.HealerTexture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]])
+		self.HealerTexture:Hide()
 	end
-
-	self.HealthPrediction = Module.CreateHealthPrediction(self)
-
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
-	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
-	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
-	self:RegisterEvent("UNIT_FACTION", Module.HighlightPlate)
 
 	self:EnableMouse(false)
 	self.Health:EnableMouse(false)
@@ -266,15 +262,29 @@ function Module:CreateNameplates()
 	self.Castbar:EnableMouse(false)
 	self.Debuffs:EnableMouse(false)
 
+	self.HealthPrediction = Module.CreateHealthPrediction(self)
+
+	-- Highlight Plate Events
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
+	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
+	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
+	self:RegisterEvent("UNIT_FACTION", Module.HighlightPlate)
 	Module.HighlightPlate(self)
 
+	-- Healer Icon Events
+	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
+	self:RegisterEvent("UNIT_NAME_UPDATE", Module.DisplayHealerTexture)
+
+	-- Threat Plate Events
 	self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
 	self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
 
+	-- Threat Plate OnEvent Script
 	self.Health:SetScript("OnEvent", function()
 		Module.ThreatPlate(self)
 	end)
 
+	-- Threat Plate PostUpdate Function
 	self.Health.PostUpdate = function()
 		Module.ThreatPlate(self, true)
 	end

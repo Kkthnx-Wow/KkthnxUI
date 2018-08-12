@@ -79,6 +79,7 @@ function Module:CreateSpecIcons()
 		self.PVPSpecIcon.Borders:SetPoint("LEFT", self, 4, 0)
 		self.PVPSpecIcon.Borders:SetSize(46, 46)
 		self.PVPSpecIcon.Borders:CreateBorder()
+		self.PVPSpecIcon.Borders:SetFrameLevel(3)
 		self.PVPSpecIcon.Border = true
 	end
 end
@@ -86,15 +87,15 @@ end
 function Module:CreateTrinkets()
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(46, 46)
-	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -6, 0)
+	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -4, 0)
 
-	if not self.Trinket.Border then
-		self.Trinket.Borders = CreateFrame("Frame", nil, self)
-		self.Trinket.Borders:SetPoint("RIGHT", self, "LEFT", -6, 0)
-		self.Trinket.Borders:SetSize(46, 46)
-		self.Trinket.Borders:CreateBorder()
-		self.Trinket.Border = true
-	end
+	--if not self.Trinket.Border then
+	--	self.Trinket.Borders = CreateFrame("Frame", nil, self)
+	--	self.Trinket.Borders:SetPoint("RIGHT", self, "LEFT", -4, 0)
+	--	self.Trinket.Borders:SetSize(46, 46)
+	--	self.Trinket.Borders:CreateBorder()
+	--	self.Trinket.Border = true
+	--end
 end
 
 function Module:CreateCombatFeedback()
