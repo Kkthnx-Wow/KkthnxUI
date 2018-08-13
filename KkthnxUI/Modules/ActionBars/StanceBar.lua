@@ -1,5 +1,7 @@
-local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true then return end
+local K, C = unpack(select(2, ...))
+if C["ActionBar"].Enable ~= true then
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -120,3 +122,58 @@ StanceBar:SetScript("OnEvent", function(self, event)
 		K.ShiftBarUpdate()
 	end
 end)
+
+-- Mouseover bar
+if C["ActionBar"].RightMouseover == true and C["ActionBar"].StanceBarHorizontal == false then
+	ShapeShiftBarAnchor:SetAlpha(0)
+	ShapeShiftBarAnchor:SetScript("OnEnter", function()
+		RightBarMouseOver(1)
+	end)
+
+	ShapeShiftBarAnchor:SetScript("OnLeave", function()
+		if not HoverBind.enabled then
+			RightBarMouseOver(0)
+		end
+	end)
+
+	for i = 1, NUM_STANCE_SLOTS do
+		local b = _G["StanceButton"..i]
+		b:SetAlpha(0)
+		b:HookScript("OnEnter", function()
+			RightBarMouseOver(1)
+		end)
+
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				RightBarMouseOver(0)
+			end
+		end)
+	end
+end
+
+if C["ActionBar"].StanceMouseover == true and C["ActionBar"].StanceBarHorizontal == true then
+	ShapeShiftBarAnchor:SetAlpha(0)
+	ShapeShiftBarAnchor:SetScript("OnEnter", function()
+		StanceBarMouseOver(1)
+	end)
+
+	ShapeShiftBarAnchor:SetScript("OnLeave", function()
+		if not HoverBind.enabled then
+			StanceBarMouseOver(0)
+		end
+	end)
+
+	for i = 1, NUM_STANCE_SLOTS do
+		local b = _G["StanceButton"..i]
+		b:SetAlpha(0)
+		b:HookScript("OnEnter", function()
+			StanceBarMouseOver(1)
+		end)
+
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				StanceBarMouseOver(0)
+			end
+		end)
+	end
+end

@@ -125,14 +125,15 @@ function Module:EnableDisable_AzeriteBar()
 	end
 end
 
-function Module:OnEnable(event)
+function Module:OnEnable()
+	local IsXPCheck = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
 	local ArtifactFont = K.GetFont(C["DataBars"].Font)
 	local ArtifactTexture = K.GetTexture(C["DataBars"].Texture)
 
-	if K.Level ~= MAX_PLAYER_LEVEL or K.Level <= 110 and event == "PLAYER_LEVEL_UP" then
-		AnchorY = -24
-	else
+	if K.Level == _G.MAX_PLAYER_LEVEL or IsXPCheck then
 		AnchorY = -6
+	else
+		AnchorY = -24
 	end
 
 	self.azeriteBar = CreateFrame("Button", "Azerite", K.PetBattleHider)

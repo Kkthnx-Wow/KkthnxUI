@@ -28,9 +28,8 @@ function Module:UpdateHonor(event, unit)
 
 	local bar = self.HonorBar
 	local showHonor = UnitLevel("player") >= MAX_PLAYER_LEVEL
-	local _, instanceType = IsInInstance()
 
-	if not showHonor or not (instanceType == "pvp") or (instanceType == "arena") then
+	if not showHonor then
 		bar:Hide()
 	else
 		bar:Show()
@@ -88,7 +87,7 @@ function Module:HonorBar_OnLeave()
 end
 
 function Module:HonorBar_OnClick()
-	ToggleTalentFrame(3) --3 is PvP
+	ToggleTalentFrame(2)
 end
 
 function Module:UpdateHonorDimensions()
@@ -129,9 +128,9 @@ function Module:OnEnable()
 	local HonorTexture = K.GetTexture(C["DataBars"].Texture)
 
 	if K.Level <= 99 then
-		AnchorY = -24
+		AnchorY = -24 - 18
 	else
-		AnchorY = -42
+		AnchorY = -42 - 18
 	end
 
 	self.HonorBar = CreateFrame("Button", "Honor", K.PetBattleHider)

@@ -104,8 +104,6 @@ function Module:ExperienceBar_OnClick()
 			SendChatMessage(L["Databars"].Remaining .." ".. string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "PARTY")
 		end
 	end
-
-	-- SendChatMessage(L["Databars"].XP .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)) .." | "..  L["Databars"].Remaining .." ".. string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "SAY")
 end
 
 function Module:UpdateExperienceDimensions()

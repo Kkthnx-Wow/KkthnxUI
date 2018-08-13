@@ -1054,7 +1054,6 @@ function Stuffing:InitBags()
 	editbox:Hide()
 	editbox:SetAutoFocus(true)
 	editbox:SetHeight(32)
-
 	editbox:CreateBackdrop()
 	editbox.Backdrop:SetPoint("TOPLEFT", -2, 2)
 	editbox.Backdrop:SetPoint("BOTTOMRIGHT", 2, -2)
@@ -1077,6 +1076,7 @@ function Stuffing:InitBags()
 	editbox:SetScript("OnEditFocusLost", editbox.Hide)
 	editbox:SetScript("OnEditFocusGained", editbox.HighlightText)
 	editbox:SetScript("OnTextChanged", updateSearch)
+	editbox:SetScript("OnChar", updateSearch)
 
 	local detail = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	detail:SetPoint("TOPLEFT", f, 11, -10)
@@ -1449,7 +1449,7 @@ function Stuffing:ADDON_LOADED(addon)
 	BankFrame:SetAlpha(0)
 	BankFrame:SetPoint("TOPLEFT")
 
-	--function ManageBackpackTokenFrame() end
+	function ManageBackpackTokenFrame() end
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()

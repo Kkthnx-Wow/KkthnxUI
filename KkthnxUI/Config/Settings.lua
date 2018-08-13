@@ -27,11 +27,14 @@ C["ActionBar"] = {
 	["OutOfRange"] = {0.8, 0.1, 0.1},
 	["PetBarHide"] = false,
 	["PetBarHorizontal"] = false,
+	["PetMouseover"] = false,
 	["RightBars"] = 1,
+	["RightMouseover"] = false,
 	["ShowGrid"] = true,
 	["SplitBars"] = false,
 	["StanceBarHide"] = false,
 	["StanceBarHorizontal"] = true,
+	["StanceMouseover"] = false,
 	["ToggleMode"] = true,
 }
 

@@ -264,6 +264,21 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display Green Border on Equipped Items",
 		},
 
+		["RightMouseover"] = {
+			["Name"] = "Right Mouseover",
+			["Desc"] = "Rightbar mouseover",
+		},
+
+		["PetMouseover"] = {
+			["Name"] = "Pet Mouseover",
+			["Desc"] = "Petbar mouseover (Only for horizontal petbar)",
+		},
+
+		["StanceMouseover"] = {
+			["Name"] = "Stance Mouseover",
+			["Desc"] = "Stancebar mouseover (Only for horizontal stancebar)",
+		},
+
 		["HideHighlight"] = {
 			["Name"] = "Proc Highlight",
 			["Desc"] = "Hide proc highlight",
@@ -388,8 +403,8 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		--["ThreatPercent"] = {
-		--	["Name"] = "Threat Percent",
-		--	["Desc"] = "Enable threat percent on the nameplates",
+			--	["Name"] = "Threat Percent",
+			--	["Desc"] = "Enable threat percent on the nameplates",
 		--},
 
 		["GoodColor"] = {
@@ -398,8 +413,8 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		--["HealerIcon"] = {
-		--	["Name"] = "Healer Icon",
-		--	["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
+			--	["Name"] = "Healer Icon",
+			--	["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
 		--},
 
 		["HealthValue"] = {

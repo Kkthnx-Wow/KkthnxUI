@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then
 	return
 end
@@ -53,4 +53,21 @@ end
 
 if C["ActionBar"].RightBars < 3 and C["ActionBar"].BottomBars < 3 then
 	ActionBar5:Hide()
+end
+
+-- Mouseover bar
+if C["ActionBar"].RightMouseover == true and C["ActionBar"].RightBars > 2 then
+	for i = 1, 12 do
+		local b = _G["MultiBarBottomRightButton"..i]
+		b:SetAlpha(0)
+		b:HookScript("OnEnter", function()
+			RightBarMouseOver(1)
+		end)
+
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				RightBarMouseOver(0)
+			end
+		end)
+	end
 end

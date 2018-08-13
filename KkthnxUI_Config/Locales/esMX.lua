@@ -63,11 +63,6 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Allow Blizzard frames to be moved",
 		},
 
-		["SpellTolerance"] = {
-			["Name"] = "Spell Tolerance",
-			["Desc"] = "Periodically adjust the Spell Tolerance variable to match your world latency so that spell queueing always works optimally, regardless of your instance server's location.",
-		},
-
 		["TaintLog"] = {
 			["Name"] = "Log Taints",
 			["Desc"] = "Send ADDON_ACTION_BLOCKED errors to the Lua Error frame. These errors are less important in most cases and will not effect your game performance. Also, a lot of these errors cannot be fixed. Please only report these errors if you notice a Defect in gameplay.",
@@ -164,6 +159,11 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = ModuleToggle,
 		},
 
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont,
+		},
+
 		["ItemLevel"] = {
 			["Name"] = "Item Level",
 			["Desc"] = "Displays item level on equippable items.",
@@ -192,12 +192,6 @@ KkthnxUIConfig["esMX"] = {
 		["AutoSell"] = {
 			["Name"] = "Auto Sell Grays",
 			["Desc"] = "When visiting a vendor, automatically sell gray quality items",
-		},
-
-		["AutoSellMisc"] = {
-			["Name"] = "Sell Misc Items",
-			["Desc"] = "Automatically sells useless items that are not gray quality",
-			["Default"] = "Automatically sells useless items that are not gray quality",
 		},
 
 		["SortInverted"] = {
@@ -255,18 +249,43 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "The spacing between buttons.",
 		},
 
+		["Cooldowns"] = {
+			["Name"] = "Cooldowns",
+			["Desc"] = "Actionbar cooldowns",
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Actionbars",
 			["Desc"] = ModuleToggle
 		},
 
-		["Grid"] = {
-			["Name"] = "Toggle Actionbar Grid",
+		["ShowGrid"] = {
+			["Name"] = "Actionbar Grid",
 			["Desc"] = "Show empty action bar buttons",
 		},
 
+		["EquipBorder"] = {
+			["Name"] = "Equipped Item Border",
+			["Desc"] = "Display Green Border on Equipped Items",
+		},
+
+		["RightMouseover"] = {
+			["Name"] = "Right Mouseover",
+			["Desc"] = "Rightbar mouseover",
+		},
+
+		["PetMouseover"] = {
+			["Name"] = "Pet Mouseover",
+			["Desc"] = "Petbar mouseover (Only for horizontal petbar)",
+		},
+
+		["StanceMouseover"] = {
+			["Name"] = "Stance Mouseover",
+			["Desc"] = "Stancebar mouseover (Only for horizontal stancebar)",
+		},
+
 		["HideHighlight"] = {
-			["Name"] = "Toggle Highlight",
+			["Name"] = "Proc Highlight",
 			["Desc"] = "Hide proc highlight",
 		},
 
@@ -296,7 +315,7 @@ KkthnxUIConfig["esMX"] = {
 		},
 
 		["PetBarHide"] = {
-			["Name"] = "Petbar toggle",
+			["Name"] = "Petbar Hide",
 			["Desc"] = "Hide pet bar",
 		},
 
@@ -326,13 +345,18 @@ KkthnxUIConfig["esMX"] = {
 		},
 
 		["ToggleMode"] = {
-			["Name"] = "Actionbar ToggleMode",
+			["Name"] = "Toggle Mode",
 			["Desc"] = "Lock / Unlock the toggle mode on our Actionbars (This will always be above the top bar!)",
 		},
 
 		["AddNewSpells"] = {
 			["Name"] = "Auto Add New Spells",
 			["Desc"] = "Auto add new learned spells to the actionbar. (This is needed for some quests)",
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont,
 		},
 	},
 
@@ -343,29 +367,29 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Size of the auras",
 		},
 
+		["DecimalLength"] = {
+			["Name"] = "Decimal Length",
+			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
 		["BadColor"] = {
 			["Name"] = "Bad Color",
 			["Desc"] = "Bad threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
-		["CastbarName"] = {
-			["Name"] = "Castbar Name",
-			["Desc"] = "Show castbar name",
+		["CastHeight"] = {
+			["Name"] = "Cast Height",
+			["Desc"] = "Height of castbar",
 		},
 
-		["CastUnitReaction"] = {
-			["Name"] = "Cast Unit Reaction",
-			["Desc"] = "Reaction castbar colors"..RestoreDefault,
+		["Combat"] = {
+			["Name"] = "Combat",
+			["Desc"] = "Show nameplates in combat only",
 		},
 
 		["Clamp"] = {
 			["Name"] = "Clamp",
 			["Desc"] = "Clamp nameplates to the top of the screen when outside of view",
-		},
-
-		["Cutaway"] = {
-			["Name"] = "Cutaway Bars",
-			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
 		},
 
 		["Distance"] = {
@@ -383,25 +407,20 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Enable threat feature, automatically changes by your role",
 		},
 
-		["ThreatPercent"] = {
-			["Name"] = "Threat Percent",
-			["Desc"] = "Enable threat percent on the nameplates",
-		},
-
-		["FontSize"] = {
-			["Name"] = "Font Size",
-			["Desc"] = "Font size on the nameplates",
-		},
+		--["ThreatPercent"] = {
+			--	["Name"] = "Threat Percent",
+			--	["Desc"] = "Enable threat percent on the nameplates",
+		--},
 
 		["GoodColor"] = {
 			["Name"] = "Good Color",
 			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
-		["HealerIcon"] = {
-			["Name"] = "Healer Icon",
-			["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
-		},
+		--["HealerIcon"] = {
+			--	["Name"] = "Healer Icon",
+			--	["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
+		--},
 
 		["HealthValue"] = {
 			["Name"] = "Health Value",
@@ -411,11 +430,6 @@ KkthnxUIConfig["esMX"] = {
 		["Height"] = {
 			["Name"] = "Height",
 			["Desc"] = ModuleHeight,
-		},
-
-		["NameAbbreviate"] = {
-			["Name"] = "Name Abbreviate",
-			["Desc"] = "Display abbreviated names that are over 20 characters long",
 		},
 
 		["NearColor"] = {
@@ -428,16 +442,6 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Offtank threat color"..RestoreDefault,
 		},
 
-		["OORAlpha"] = {
-			["Name"] = "OOR Alpha",
-			["Desc"] = "The alpha to set units that are out of range to.",
-		},
-
-		["Outline"] = {
-			["Name"] = "Outline",
-			["Desc"] = ModuleFontOutline,
-		},
-
 		["Smooth"] = {
 			["Name"] = "Smooth",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
@@ -448,14 +452,24 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "How fast the bars will transition smoothly.",
 		},
 
-		["TotemIcons"] = {
-			["Name"] = "Totem Icons",
-			["Desc"] = "Show icon above enemy totems nameplate",
+		["SelectedScale"] = {
+			["Name"] = "Selected Scale",
+			["Desc"] = "Scale size of the nameplate selected",
 		},
 
-		["TrackAuras"] = {
-			["Name"] = "Track Auras",
-			["Desc"] = "Show auras (from the whitelist)",
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
+		},
+
+		["HealthFormat"] = {
+			["Name"] = "Health Format",
+			["Desc"] = "Health numbers formatting style",
 		},
 
 		["Width"] = {
@@ -540,6 +554,11 @@ KkthnxUIConfig["esMX"] = {
 		["Enable"] = {
 			["Name"] = "Enable Auras",
 			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont,
 		},
 
 		["HorizontalSpacing"] = {
@@ -691,54 +710,6 @@ KkthnxUIConfig["esMX"] = {
 		},
 	},
 
-	-- Cooldown Local
-	["Cooldown"] = {
-		["Days"] = {
-			["Name"] = "Days",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Enable"] = {
-			["Name"] = "Enable Cooldowns",
-			["Desc"] = ModuleToggle,
-		},
-
-		["Expiring"] = {
-			["Name"] = "Expiring",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["ExpiringDuration"] = {
-			["Name"] = "Expiring Duration",
-			["Desc"] = "Description Needed",
-		},
-
-		["FontSize"] = {
-			["Name"] = "Font Size",
-			["Desc"] = "Description Needed",
-		},
-
-		["Hours"] = {
-			["Name"] = "Hours",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Minutes"] = {
-			["Name"] = "Minutes",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Seconds"] = {
-			["Name"] = "Seconds",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Threshold"] = {
-			["Name"] = "Threshold",
-			["Desc"] = "Description Needed",
-		},
-	},
-
 	-- Databars Local
 	["DataBars"] = {
 		["ArtifactColor"] = {
@@ -848,51 +819,6 @@ KkthnxUIConfig["esMX"] = {
 			["Name"] = "Auto Reward",
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
-
-		["Arena"] = {
-			["Name"] = "Arena",
-			["Desc"] = "Auto collapse tracker in arena",
-		},
-
-		["Raid"] = {
-			["Name"] = "Raid",
-			["Desc"] = "Auto collapse tracker in raid",
-		},
-
-		["Orderhall"] = {
-			["Name"] = "Orderhall",
-			["Desc"] = "Auto collapse tracker in orderhall",
-		},
-
-		["Garrison"] = {
-			["Name"] = "Garrison",
-			["Desc"] = "Auto collapse tracker in garrison",
-		},
-
-		["Dungeon"] = {
-			["Name"] = "Dungeon",
-			["Desc"] = "Auto collapse tracker in dungeon",
-		},
-
-		["Combat"] = {
-			["Name"] = "Combat",
-			["Desc"] = "Auto collapse tracker in combat",
-		},
-
-		["Battleground"] = {
-			["Name"] = "Battleground",
-			["Desc"] = "Auto collapse tracker in battleground",
-		},
-
-		["Scenario"] = {
-			["Name"] = "Scenario",
-			["Desc"] = "Auto collapse tracker in scenario",
-		},
-
-		["Rested"] = {
-			["Name"] = "Rested",
-			["Desc"] = "Auto collapse tracker in rested arenas",
-		},
 	},
 
 	-- DataText Local
@@ -983,11 +909,6 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Display a small calendar",
 		},
 
-		["CollectButtons"] = {
-			["Name"] = "Collect Buttons",
-			["Desc"] = "Collect buttons in a row on the left side of the map",
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable Minimap",
 			["Desc"] = ModuleToggle,
@@ -1031,8 +952,23 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Item level on character slot buttons",
 		},
 
+		["EnhancedFriends"] = {
+			["Name"] = "Enhanced Friends List",
+			["Desc"] = "Enhances the friends list to look better",
+		},
+
+		["PremadeAutoAccept"] = {
+			["Name"] = "Premade Auto Accept",
+			["Desc"] = "Adds back in the auto-accept functionality that Blizzard removed from the premade group finder",
+		},
+
+		["TalkingLessHead"] = {
+			["Name"] = "Talking Heads Less",
+			["Desc"] = "Mute/Hide the sound of Talking Heads introduced in Legion once you have already heard them once. The next the NPC would normally say will come up in your chat log instead!",
+		},
+
 		["KillingBlow"] = {
-			["Name"] = "KillingBlow",
+			["Name"] = "Killing Blow",
 			["Desc"] = "Display a message about your killing blow",
 		},
 
@@ -1049,11 +985,6 @@ KkthnxUIConfig["esMX"] = {
 
 	-- Filger Local
 	["Filger"] = {
-		["Bars"] = {
-			["Name"] = "Enable HoTs/Dots bars",
-			["Desc"] = ModuleToggle..PerformanceIncrease,
-		},
-
 		["Enable"] = {
 			["Name"] = "Enable Filger",
 			["Desc"] = ModuleToggle..PerformanceIncrease,
@@ -1107,19 +1038,14 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = ModuleHeight,
 		},
 
+		["DecimalLength"] = {
+			["Name"] = "Decimal Length",
+			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
 		["CastbarIcon"] = {
 			["Name"] = "Castbar Icon",
 			["Desc"] = "Create an icon beside the cast bar",
-		},
-
-		["NameAbbreviate"] = {
-			["Name"] = "Name Abbreviate",
-			["Desc"] = "Display abbreviated names that are over 20 characters long",
-		},
-
-		["CastbarLatency"] = {
-			["Name"] = "Castbar Latency",
-			["Desc"] = "Display your latency on the cast bar",
 		},
 
 		["CombatFade"] = {
@@ -1147,29 +1073,9 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = ModuleWidth,
 		},
 
-		["CastClassColor"] = {
-			["Name"] = "Castbar Classcolor",
-			["Desc"] = "Color cast bars as class color",
-		},
-
-		["CastReactionColor"] = {
-			["Name"] = "Castbar Reaction Color",
-			["Desc"] = "Color cast bars as reaction to the target",
-		},
-
-		["ColorHealthByValue"] = {
-			["Name"] = "Health By Value",
-			["Desc"] = "Color health by amount remaining.",
-		},
-
 		["CombatText"] = {
 			["Name"] = "Portrait Combat Text",
 			["Desc"] = "Enable combat text on player and target frames",
-		},
-
-		["Cutaway"] = {
-			["Name"] = "Cutaway Bars",
-			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
 		},
 
 		["DebuffsOnTop"] = {
@@ -1187,29 +1093,9 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = ModuleFont
 		},
 
-		["FontSize"] = {
-			["Name"] = "Font Size",
-			["Desc"] = "Unitframe font size",
-		},
-
 		["GlobalCooldown"] = {
 			["Name"] = "Global Cooldown",
 			["Desc"] = "Display a global CD on the unit frames healthbar (only shows for player frame)",
-		},
-
-		["OORAlpha"] = {
-			["Name"] = "OOR Alpha",
-			["Desc"] = "The alpha to set units that are out of range to.",
-		},
-
-		["Outline"] = {
-			["Name"] = "Font Outline",
-			["Desc"] = ModuleFontOutline,
-		},
-
-		["Party"] = {
-			["Name"] = "Party Frames",
-			["Desc"] = "Enable those sexy party frames <3",
 		},
 
 		["TargetHighlight"] = {
@@ -1217,34 +1103,9 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Highlight your current selected party target",
 		},
 
-		["PartyAsRaid"] = {
-			["Name"] = "Party as Raid Frames",
-			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
-		},
-
 		["PowerPredictionBar"] = {
 			["Name"] = "Power Prediction Bar",
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
-		},
-
-		["PvPText"] = {
-			["Name"] = "Set PVP Text",
-			["Desc"] = "Toggle the PvP Text",
-		},
-
-		["ShowArena"] = {
-			["Name"] = "Enable Arena",
-			["Desc"] = "Enable arena frames",
-		},
-
-		["ShowBoss"] = {
-			["Name"] = "Enable Boss",
-			["Desc"] = "Enable boss frames",
-		},
-
-		["ShowPlayer"] = {
-			["Name"] = "Show Player In Party",
-			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
 		},
 
 		["Smooth"] = {
@@ -1278,8 +1139,177 @@ KkthnxUIConfig["esMX"] = {
 		},
 	},
 
+	-- Arena Local
+	["Arena"] = {
+		["Castbars"] = {
+			["Name"] = "Toggle Castbars",
+			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["CastbarIcon"] = {
+			["Name"] = "Castbar Icon",
+			["Desc"] = "Create an icon beside the cast bar",
+		},
+
+		["DecimalLength"] = {
+			["Name"] = "Decimal Length",
+			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
+		["Enable"] = {
+			["Name"] = "Toggle Arena Frames",
+			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+	},
+
+	-- Arena Local
+	["Boss"] = {
+		["Castbars"] = {
+			["Name"] = "Toggle Castbars",
+			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["CastbarIcon"] = {
+			["Name"] = "Castbar Icon",
+			["Desc"] = "Create an icon beside the cast bar",
+		},
+
+		["CastbarHeight"] = {
+			["Name"] = "Castbar Height",
+			["Desc"] = ModuleHeight,
+		},
+
+		["CastbarWidth"] = {
+			["Name"] = "Castbar Width",
+			["Desc"] = ModuleWidth,
+		},
+
+		["DecimalLength"] = {
+			["Name"] = "Decimal Length",
+			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
+		["Enable"] = {
+			["Name"] = "Toggle Boss Frames",
+			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+
+		["PortraitStyle"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+		},
+	},
+
+	-- Party Local
+	["Party"] = {
+		["Enable"] = {
+			["Name"] = "Toggle Party Frames",
+			["Desc"] = ModuleToggle,
+		},
+
+		["DecimalLength"] = {
+			["Name"] = "Decimal Length",
+			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
+		["PartyAsRaid"] = {
+			["Name"] = "Party as Raid Frames",
+			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
+		},
+
+		["ShowPlayer"] = {
+			["Name"] = "Show Player In Party",
+			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+			["Desc"] = "Bars will transition smoothly." .. PerformanceIncrease,
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+
+		["TargetHighlight"] = {
+			["Name"] = "Target Highlight",
+			["Desc"] = "Highlight your current selected party target",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
+		},
+
+		["PortraitStyle"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+	},
+
 	-- Raidframe Local
-	["Raidframe"] = {
+	["Raid"] = {
 		["AuraWatch"] = {
 			["Name"] = "Aura Watch Timers",
 			["Desc"] = "Display a timer on debuff icons created by Debuff Watch",
@@ -1292,7 +1322,7 @@ KkthnxUIConfig["esMX"] = {
 
 		["Cutaway"] = {
 			["Name"] = "Cutaway Bars",
-			["Desc"] = "Bars will transition in a cutaway style when health is lost."..PerformanceIncrease,
+			["Desc"] = "Bars will transition in a cutaway style when health is lost." .. PerformanceIncrease,
 		},
 
 		["RaidTools"] = {
@@ -1326,7 +1356,7 @@ KkthnxUIConfig["esMX"] = {
 		},
 
 		["Enable"] = {
-			["Name"] = "Enable Raidframes",
+			["Name"] = "Toggle Raid Frames",
 			["Desc"] = ModuleToggle,
 		},
 
@@ -1504,24 +1534,6 @@ KkthnxUIConfig["esMX"] = {
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
-		},
-	},
-
-	-- Errors Local
-	["Error"] = {
-		["Black"] = {
-			["Name"] = "Black",
-			["Desc"] = "Hide errors from black list",
-		},
-
-		["Combat"] = {
-			["Name"] = "Combat",
-			["Desc"] = "Hide all errors in combat",
-		},
-
-		["White"] = {
-			["Name"] = "White",
-			["Desc"] = "Show errors from white list",
 		},
 	},
 }

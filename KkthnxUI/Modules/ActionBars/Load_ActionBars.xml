@@ -1,8 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_ActionBars -->
-    <Script file="Functions.lua"/>
+    <Script file="Core.lua"/>
+
     <Script file="Bindings.lua"/>
-    <Script file="Hide.lua"/>
     <Script file="Bar1.lua"/>
     <Script file="Bar2.lua"/>
     <Script file="Bar3.lua"/>
@@ -15,6 +15,5 @@
     <Script file="Style.lua"/>
     <Script file="ExtraActionButton.lua"/>
     <Script file="Range.lua"/>
-    <Script file="Others.lua"/>
     <Script file="Cooldowns.lua"/>
 </Ui>

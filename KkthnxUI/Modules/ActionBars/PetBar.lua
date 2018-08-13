@@ -57,6 +57,7 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 					button:SetPoint("TOP", _G["PetActionButton"..i - 1], "BOTTOM", 0, -C["ActionBar"].ButtonSpace)
 				end
 			end
+
 			button:Show()
 			self:SetAttribute("addchild", button)
 		end
@@ -69,3 +70,60 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 		PetActionBar_UpdateCooldowns()
 	end
 end)
+
+-- Mouseover bar
+if C["ActionBar"].RightMouseover == true and C["ActionBar"].PetBarHorizontal == false then
+	PetActionBarAnchor:SetAlpha(0)
+	PetActionBarAnchor:SetScript("OnEnter", function()
+		if PetHolder:IsShown() then
+			RightBarMouseOver(1)
+		end
+	end)
+
+	PetActionBarAnchor:SetScript("OnLeave", function()
+		if not HoverBind.enabled then
+			RightBarMouseOver(0)
+		end
+	end)
+
+	for i = 1, NUM_PET_ACTION_SLOTS do
+		local b = _G["PetActionButton"..i]
+		b:SetAlpha(0)
+		b:HookScript("OnEnter", function()
+			RightBarMouseOver(1)
+		end)
+
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				RightBarMouseOver(0)
+			end
+		end)
+	end
+end
+
+if C["ActionBar"].PetMouseover == true and C["ActionBar"].PetBarHorizontal == true then
+	PetActionBarAnchor:SetAlpha(0)
+	PetActionBarAnchor:SetScript("OnEnter", function()
+		PetBarMouseOver(1)
+	end)
+
+	PetActionBarAnchor:SetScript("OnLeave", function()
+		if not HoverBind.enabled then
+			PetBarMouseOver(0)
+		end
+	end)
+
+	for i = 1, NUM_PET_ACTION_SLOTS do
+		local b = _G["PetActionButton"..i]
+		b:SetAlpha(0)
+		b:HookScript("OnEnter", function()
+			PetBarMouseOver(1)
+		end)
+
+		b:HookScript("OnLeave", function()
+			if not HoverBind.enabled then
+				PetBarMouseOver(0)
+			end
+		end)
+	end
+end

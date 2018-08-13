@@ -158,14 +158,8 @@ function Module:EnableDisable_ReputationBar()
 end
 
 function Module:OnEnable()
-	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
-
 	self.reputationBar = CreateFrame("Button", "Reputation", K.PetBattleHider)
-	if not hideXP then
-		self.reputationBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -24)
-	else
-		self.reputationBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -6)
-	end
+	self.reputationBar:SetPoint("TOP", Minimap, "BOTTOM", 0, -42)
 	self.reputationBar:SetScript("OnEnter", Module.ReputationBar_OnEnter)
 	self.reputationBar:SetScript("OnLeave", Module.ReputationBar_OnLeave)
 	self.reputationBar:SetScript("OnClick", Module.ReputationBar_OnClick)

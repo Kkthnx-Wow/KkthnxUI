@@ -3,30 +3,36 @@ local Module = K:NewModule("AutoCollapse", "AceEvent-3.0")
 
 local _G = _G
 
-local InCombatLockdown = _G.InCombatLockdown
-local IsInInstance = _G.IsInInstance
-local ObjectiveTracker_Collapse = _G.ObjectiveTracker_Collapse
-local ObjectiveTracker_Expand = _G.ObjectiveTracker_Expand
+local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+local UnitExists = _G.UnitExists
+
+local function BossExist()
+	for i = 1, MAX_BOSS_FRAMES or 5 do
+		if UnitExists("boss" .. i) then
+			return true
+		end
+	end
+end
+
+local function ArenaExist()
+	for i = 1, 5 do
+		if UnitExists("arena" .. i) then
+			return true
+		end
+	end
+end
 
 local trackerFrame = _G["ObjectiveTrackerFrame"]
-local minimizeButton = _G["ObjectiveTrackerFrame"].HeaderMenu.MinimizeButton
 function Module:ChangeState(event)
-	if InCombatLockdown() and event ~= "PLAYER_REGEN_DISABLED" then
+	if (not IsInInstance()) then
+		trackerFrame:SetAlpha(1)
 		return
 	end
 
-	if (not IsInInstance() and trackerFrame.collapsed) then
-		ObjectiveTracker_Expand()
-		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
-		return
-	end
-
-	if (IsInInstance() and not trackerFrame.collapsed) then
-		ObjectiveTracker_Collapse()
-		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
-	elseif (trackerFrame.collapsed) then
-		ObjectiveTracker_Expand()
-		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
+	if (event == "ENCOUNTER_START" or (event == "LOADING_SCREEN_DISABLED" and BossExist() or ArenaExist())) then
+		trackerFrame:SetAlpha(0)
+	else
+		trackerFrame:SetAlpha(1)
 	end
 end
 
@@ -35,8 +41,7 @@ function Module:OnEnable()
 		return
 	end
 
+	self:RegisterEvent("ENCOUNTER_START", "ChangeState")
+	self:RegisterEvent("ENCOUNTER_END", "ChangeState")
 	self:RegisterEvent("LOADING_SCREEN_DISABLED", "ChangeState")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ChangeState")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED", "ChangeState")
-	self:RegisterEvent("PLAYER_REGEN_DISABLED", "ChangeState")
 end
