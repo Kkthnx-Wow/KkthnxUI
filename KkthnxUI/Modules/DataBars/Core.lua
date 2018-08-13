@@ -12,7 +12,6 @@ function Module:OnLeave()
 	if (self == KkthnxUI_ExperienceBar and Module.db.MouseOver)
 	or (self == KkthnxUI_ReputationBar and Module.db.MouseOver)
 	or (self == KkthnxUI_ArtifactBar and Module.db.MouseOver)
-	or (self == KkthnxUI_HonorBar and Module.db.MouseOver)
 	or (self == KkthnxUI_AzeriteBar and Module.db.MouseOver) then
 		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
 	end
@@ -49,7 +48,6 @@ end
 function Module:UpdateDataBarDimensions()
 	self:UpdateExperienceDimensions()
 	self:UpdateReputationDimensions()
-	self:UpdateHonorDimensions()
 	self:UpdateAzeriteDimensions()
 end
 
@@ -60,21 +58,14 @@ function Module:PLAYER_LEVEL_UP(level)
 	else
 		self.expBar:Hide()
 	end
-
-	if (self.db.HonorEnable) then
-		self:UpdateHonor("PLAYER_LEVEL_UP", level)
-	else
-		self.honorBar:Hide()
-	end
 end
 
-function Module:OnInitialize()
-	self.db = C["DataBars"]
+--function Module:OnInitialize()
+--	self.db = C["DataBars"]
 
-	self:LoadExperienceBar()
-	self:LoadReputationBar()
-	self:LoadHonorBar()
-	self:LoadAzeriteBar()
+--	self:LoadExperienceBar()
+--	self:LoadReputationBar()
+--	self:LoadAzeriteBar()
 
-	self:RegisterEvent("PLAYER_LEVEL_UP")
-end
+--	self:RegisterEvent("PLAYER_LEVEL_UP")
+--end

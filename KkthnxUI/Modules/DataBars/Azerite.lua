@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Azerite", "AceEvent-3.0")
 
 -- Sourced: ElvUI (Elvz)
@@ -8,13 +8,11 @@ local _G = _G
 local floor = floor
 local format = string.format
 
-local AZERITE_POWER_TOOLTIP_BODY = AZERITE_POWER_TOOLTIP_BODY
-local AZERITE_POWER_TOOLTIP_TITLE = AZERITE_POWER_TOOLTIP_TITLE
-local C_AzeriteItem_FindActiveAzeriteItem = C_AzeriteItem.FindActiveAzeriteItem
-local C_AzeriteItem_GetAzeriteItemXPInfo = C_AzeriteItem.GetAzeriteItemXPInfo
-local C_AzeriteItem_GetPowerLevel = C_AzeriteItem.GetPowerLevel
-local InCombatLockdown = InCombatLockdown
-
+local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
+local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
+local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
+local Item = _G.Item
+local ARTIFACT_POWER = _G.ARTIFACT_POWER
 
 local AnchorY
 function Module:UpdateAzerite(event, unit)
@@ -39,7 +37,6 @@ function Module:UpdateAzerite(event, unit)
 		bar:Show()
 
 		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
-		local xpToNextLevel = totalLevelXP - xp
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
 		bar.statusBar:SetMinMaxValues(0, totalLevelXP)
@@ -68,15 +65,14 @@ function Module:AzeriteBar_OnEnter()
 	self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
 		local azeriteItemName = azeriteItem:GetItemName()
 
-		--[[ From Blizz Code
-			GameTooltip:SetText(AZERITE_POWER_TOOLTIP_TITLE:format(currentLevel, xpToNextLevel), HIGHLIGHT_FONT_COLOR:GetRGB());
-			GameTooltip:AddLine(AZERITE_POWER_TOOLTIP_BODY:format(azeriteItemName));
-		]]
+		-- From Blizz Code
+		-- GameTooltip:SetText(AZERITE_POWER_TOOLTIP_TITLE:format(currentLevel, xpToNextLevel), HIGHLIGHT_FONT_COLOR:GetRGB())
+		-- GameTooltip:AddLine(AZERITE_POWER_TOOLTIP_BODY:format(azeriteItemName))
 
-		GameTooltip:AddDoubleLine("Azerite Power", azeriteItemName.." ("..currentLevel..")", nil,  nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+		GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil,  nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
 		GameTooltip:AddLine(" ")
 
-		GameTooltip:AddDoubleLine("AZP:", format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP  * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine("AP:", format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP  * 100), 1, 1, 1)
 		GameTooltip:AddDoubleLine("Remaining:", format(" %d (%d%% - %d ".."Bars"..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
 
 		GameTooltip:Show()
@@ -91,6 +87,10 @@ function Module:AzeriteBar_OnLeave()
 	if not GameTooltip:IsForbidden() then
 		GameTooltip:Hide()
 	end
+end
+
+function Module:AzeriteBar_OnClick()
+
 end
 
 function Module:UpdateAzeriteDimensions()
@@ -108,17 +108,12 @@ end
 
 function Module:EnableDisable_AzeriteBar()
 	if C["DataBars"].AzeriteEnable then
-		-- Possible Events
 		self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "UpdateAzerite")
 		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateAzerite")
-		self:RegisterEvent("AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED", "UpdateAzerite")
-		self:RegisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED", "UpdateAzerite")
 
 		self:UpdateAzerite()
 	else
 		self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
-		self:UnregisterEvent("AZERITE_EMPOWERED_ITEM_SELECTION_UPDATED")
-		self:UnregisterEvent("RESPEC_AZERITE_EMPOWERED_ITEM_CLOSED")
 		self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
 
 		self.azeriteBar:Hide()
@@ -140,6 +135,7 @@ function Module:OnEnable()
 	self.azeriteBar:SetPoint("TOP", Minimap, "BOTTOM", 0, AnchorY)
 	self.azeriteBar:SetScript("OnEnter", Module.AzeriteBar_OnEnter)
 	self.azeriteBar:SetScript("OnLeave", Module.AzeriteBar_OnLeave)
+	self.azeriteBar:SetScript("OnClick", Module.AzeriteBar_OnClick)
 	self.azeriteBar:SetFrameStrata("LOW")
 	self.azeriteBar:Hide()
 

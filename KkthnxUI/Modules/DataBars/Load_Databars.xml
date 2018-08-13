@@ -3,6 +3,5 @@
     <!-- Load_Databars -->
     <Script file="Azerite.lua"/>
     <Script file="Experience.lua"/>
-    <Script file="Honor.lua"/>
     <Script file="Reputation.lua"/>
 </Ui>
