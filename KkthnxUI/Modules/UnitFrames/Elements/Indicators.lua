@@ -208,8 +208,8 @@ function Module:CreateQuestIndicator(size)
 	self.QuestOverlay:SetFrameLevel(self.Health:GetFrameLevel() + 4)
 
 	self.QuestIndicator = self.QuestOverlay:CreateTexture(nil, "OVERLAY", 7)
-	--self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
-    --self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
+	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
+    self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
 	self.QuestIndicator:SetSize(size, size)
 	self.QuestIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", -4, 0)
 end

@@ -118,6 +118,66 @@ function Module:SkinLibDropDownMenu(prefix)
 	end
 end
 
+function Module:HandleCheckBox(frame, noBackdrop, noReplaceTextures)
+	assert(frame, "does not exist.")
+
+	frame:StripTextures()
+
+	if noBackdrop then
+		frame:CreateBorder()
+		frame:SetSize(16, 16)
+	else
+		frame:CreateBackdrop()
+		frame.Backdrop:SetInside()
+	end
+
+	if not noReplaceTextures then
+		if frame.SetCheckedTexture then
+			frame:SetCheckedTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check")
+			if noBackdrop then
+				frame:GetCheckedTexture():SetInside(nil, -4, -4)
+			end
+		end
+
+		if frame.SetDisabledTexture then
+			frame:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
+			if noBackdrop then
+				frame:GetDisabledTexture():SetInside(nil, -4, -4)
+			end
+		end
+
+		frame:HookScript("OnDisable", function(checkbox)
+			if not checkbox.SetDisabledTexture then
+				return
+			end
+
+			if checkbox:GetChecked() then
+				checkbox:SetDisabledTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\UI-CheckBox-Check-Disabled")
+			else
+				checkbox:SetDisabledTexture("")
+			end
+		end)
+
+		hooksecurefunc(frame, "SetNormalTexture", function(checkbox, texPath)
+			if texPath ~= "" then
+				checkbox:SetNormalTexture("")
+			end
+		end)
+
+		hooksecurefunc(frame, "SetPushedTexture", function(checkbox, texPath)
+			if texPath ~= "" then
+				checkbox:SetPushedTexture("")
+			end
+		end)
+
+		hooksecurefunc(frame, "SetHighlightTexture", function(checkbox, texPath)
+			if texPath ~= "" then
+				checkbox:SetHighlightTexture("")
+			end
+		end)
+	end
+end
+
 function Module:ADDON_LOADED(_, addon)
 	if IsAddOnLoaded("Skinner") or IsAddOnLoaded("Aurora") then
 		self:UnregisterEvent("ADDON_LOADED")

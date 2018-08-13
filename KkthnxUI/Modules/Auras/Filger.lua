@@ -198,14 +198,11 @@ function Filger:DisplayActives()
 					bar.statusbar:SetStatusBarTexture(FilgerTexture)
 					bar.statusbar:SetStatusBarColor(K.Color.r, K.Color.g, K.Color.b, 1)
 
-					bar.statusbar.Background = bar.statusbar:CreateTexture(nil, "BACKGROUND", -2)
-					bar.statusbar.Background:SetAllPoints()
-					bar.statusbar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-					bar.statusbar.Borders = CreateFrame("Frame", nil, bar.statusbar)
-					bar.statusbar.Borders:SetFrameLevel(bar.statusbar:GetFrameLevel() + 2)
-					bar.statusbar.Borders:SetAllPoints()
-					K.CreateBorder(bar.statusbar.Borders)
+					bar.statusbar.spark = bar.statusbar:CreateTexture(nil, "OVERLAY")
+					bar.statusbar.spark:SetTexture(C["Media"].Spark_16)
+					bar.statusbar.spark:SetBlendMode("ADD")
+					bar.statusbar.spark:SetPoint("CENTER", bar.statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
+					bar.statusbar.spark:SetSize(16, bar.statusbar:GetHeight())
 
 					if self.IconSide == "LEFT" then
 						bar.statusbar:SetPoint("BOTTOMLEFT", bar, "BOTTOMRIGHT", 5, 2)
@@ -216,12 +213,6 @@ function Filger:DisplayActives()
 				bar.statusbar:SetMinMaxValues(0, 1)
 				bar.statusbar:SetValue(0)
 
-				bar.statusbar.spark = bar.statusbar:CreateTexture(nil, "OVERLAY")
-				bar.statusbar.spark:SetTexture(C["Media"].Spark_16)
-				bar.statusbar.spark:SetBlendMode("ADD")
-				bar.statusbar.spark:SetPoint("CENTER", bar.statusbar:GetStatusBarTexture(), "RIGHT", 0, 0)
-				bar.statusbar.spark:SetSize(16, bar.statusbar:GetHeight())
-
 				if bar.bg then
 					bar.bg = _G[bar.bg:GetName()]
 				else
@@ -229,14 +220,7 @@ function Filger:DisplayActives()
 					bar.bg:SetFrameLevel(4)
 					bar.bg:SetAllPoints()
 
-					bar.bg.Background = bar.bg:CreateTexture(nil, "BACKGROUND", -2)
-					bar.bg.Background:SetAllPoints()
-					bar.bg.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-					bar.bg.Border = CreateFrame("Frame", nil, bar)
-					bar.bg.Border:SetFrameLevel(bar.bg:GetFrameLevel() + 2)
-					bar.bg.Border:SetAllPoints()
-					K.CreateBorder(bar.bg.Border)
+					K.CreateBorder(bar.bg)
 				end
 
 				if bar.background then
@@ -245,7 +229,7 @@ function Filger:DisplayActives()
 					bar.background = bar.statusbar:CreateTexture(nil, "BACKGROUND")
 					bar.background:SetAllPoints()
 					bar.background:SetTexture(C["Media"].Blank)
-					bar.background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
+					bar.background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 				end
 
 				if bar.time then
@@ -316,7 +300,7 @@ function Filger:DisplayActives()
 
 		bar.spellName = GetSpellInfo(value.spid)
 
-		if self.Mode == "BAR" and C["Filger"].Bars then
+		if self.Mode == "BAR" then
 			bar.spellname:SetText(bar.spellName)
 		end
 
@@ -378,10 +362,15 @@ function Filger:DisplayActives()
 end
 
 function Filger:OnEvent(event, unit, _, spellID)
-	if ((unit == "target" or unit == "player" or unit == "pet" or unit == "focus") or
-	event == "PLAYER_TARGET_CHANGED" or
-	event == "PLAYER_ENTERING_WORLD" or
-	event == "SPELL_UPDATE_COOLDOWN") then
+	if event == "SPELL_UPDATE_COOLDOWN" or
+		event == "PLAYER_TARGET_CHANGED" or
+		event == "PLAYER_FOCUS_CHANGED" or
+		event == "PLAYER_ENTERING_WORLD" or
+		event == "UNIT_AURA" and (unit == "target" or
+			unit == "player" or
+			unit == "pet" or
+			unit == "focus") or
+		(event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
@@ -452,11 +441,11 @@ function Filger:OnEvent(event, unit, _, spellID)
 					if spell then
 						name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
 					end
-					--elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
-					--	if spellID == data.spellID then
-					--		name, _, icon = GetSpellInfo(data.spellID)
-					--		spid = data.spellID
-					--	end
+					elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
+					if spellID == data.spellID then
+						name, _, icon = GetSpellInfo(data.spellID)
+						spid = data.spellID
+					end
 				end
 				if name then
 					if data.slotID then
@@ -625,10 +614,14 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				if data.filter == "CD" then
 					frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 					break
+				elseif data.trigger == "NONE" then
+					frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+					break
 				end
 			end
 
 			frame:RegisterEvent("UNIT_AURA")
+			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			frame:RegisterEvent("PLAYER_TARGET_CHANGED")
 			frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 			frame:SetScript("OnEvent", Filger.OnEvent)
