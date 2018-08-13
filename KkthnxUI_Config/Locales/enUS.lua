@@ -154,6 +154,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = ModuleToggle,
 		},
 
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont,
+		},
+
 		["ItemLevel"] = {
 			["Name"] = "Item Level",
 			["Desc"] = "Displays item level on equippable items.",
@@ -182,12 +187,6 @@ KkthnxUIConfig["enUS"] = {
 		["AutoSell"] = {
 			["Name"] = "Auto Sell Grays",
 			["Desc"] = "When visiting a vendor, automatically sell gray quality items",
-		},
-
-		["AutoSellMisc"] = {
-			["Name"] = "Sell Misc Items",
-			["Desc"] = "Automatically sells useless items that are not gray quality",
-			["Default"] = "Automatically sells useless items that are not gray quality",
 		},
 
 		["SortInverted"] = {
@@ -245,13 +244,18 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "The spacing between buttons.",
 		},
 
+		["Cooldowns"] = {
+			["Name"] = "Cooldowns",
+			["Desc"] = "Actionbar cooldowns",
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Actionbars",
 			["Desc"] = ModuleToggle
 		},
 
 		["ShowGrid"] = {
-			["Name"] = "Toggle Actionbar Grid",
+			["Name"] = "Actionbar Grid",
 			["Desc"] = "Show empty action bar buttons",
 		},
 
@@ -261,7 +265,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["HideHighlight"] = {
-			["Name"] = "Toggle Highlight",
+			["Name"] = "Proc Highlight",
 			["Desc"] = "Hide proc highlight",
 		},
 
@@ -291,7 +295,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["PetBarHide"] = {
-			["Name"] = "Petbar toggle",
+			["Name"] = "Petbar Hide",
 			["Desc"] = "Hide pet bar",
 		},
 
@@ -321,7 +325,7 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["ToggleMode"] = {
-			["Name"] = "Actionbar ToggleMode",
+			["Name"] = "Toggle Mode",
 			["Desc"] = "Lock / Unlock the toggle mode on our Actionbars (This will always be above the top bar!)",
 		},
 
@@ -331,8 +335,8 @@ KkthnxUIConfig["enUS"] = {
 		},
 
 		["Font"] = {
-			["Name"] = "Actionbar font",
-			["Desc"] = "Set a font for the action bars",
+			["Name"] = "Font",
+			["Desc"] = ModuleFont,
 		},
 	},
 
@@ -448,16 +452,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Health numbers formatting style",
 		},
 
-		--["TotemIcons"] = {
-		--	["Name"] = "Totem Icons",
-		--	["Desc"] = "Show icon above enemy totems nameplate",
-		--},
-
-		--["TrackAuras"] = {
-		--	["Name"] = "Track Auras",
-		--	["Desc"] = "Show auras (from the whitelist)",
-		--},
-
 		["Width"] = {
 			["Name"] = "Width",
 			["Desc"] = ModuleWidth,
@@ -540,6 +534,11 @@ KkthnxUIConfig["enUS"] = {
 		["Enable"] = {
 			["Name"] = "Enable Auras",
 			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont,
 		},
 
 		["HorizontalSpacing"] = {
@@ -688,54 +687,6 @@ KkthnxUIConfig["enUS"] = {
 		["BubbleBackdrop"] = {
 			["Name"] = "Bubble Backdrop",
 			["Desc"] = "If you choose to have a backdrop or not!",
-		},
-	},
-
-	-- Cooldown Local
-	["Cooldown"] = {
-		["Days"] = {
-			["Name"] = "Days",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Enable"] = {
-			["Name"] = "Enable Cooldowns",
-			["Desc"] = ModuleToggle,
-		},
-
-		["Expiring"] = {
-			["Name"] = "Expiring",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["ExpiringDuration"] = {
-			["Name"] = "Expiring Duration",
-			["Desc"] = "Description Needed",
-		},
-
-		["FontSize"] = {
-			["Name"] = "Font Size",
-			["Desc"] = "Description Needed",
-		},
-
-		["Hours"] = {
-			["Name"] = "Hours",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Minutes"] = {
-			["Name"] = "Minutes",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Seconds"] = {
-			["Name"] = "Seconds",
-			["Desc"] = "Description Needed"..RestoreDefault,
-		},
-
-		["Threshold"] = {
-			["Name"] = "Threshold",
-			["Desc"] = "Description Needed",
 		},
 	},
 
@@ -1014,11 +965,6 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Filger Local
 	["Filger"] = {
-		--["Bars"] = {
-		--	["Name"] = "Enable HoTs/Dots bars",
-		--	["Desc"] = ModuleToggle..PerformanceIncrease,
-		--},
-
 		["Enable"] = {
 			["Name"] = "Enable Filger",
 			["Desc"] = ModuleToggle..PerformanceIncrease,
@@ -1142,11 +1088,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display a bar at which determines how much a spell will cost of power?",
 		},
 
-		["PvPText"] = {
-			["Name"] = "Set PVP Text",
-			["Desc"] = "Toggle the PvP Text",
-		},
-
 		["Smooth"] = {
 			["Name"] = "Smooth Bars",
 			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
@@ -1183,6 +1124,11 @@ KkthnxUIConfig["enUS"] = {
 		["Castbars"] = {
 			["Name"] = "Toggle Castbars",
 			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["CastbarIcon"] = {
+			["Name"] = "Castbar Icon",
+			["Desc"] = "Create an icon beside the cast bar",
 		},
 
 		["DecimalLength"] = {
@@ -1222,6 +1168,69 @@ KkthnxUIConfig["enUS"] = {
 	},
 
 	-- Arena Local
+	["Boss"] = {
+		["Castbars"] = {
+			["Name"] = "Toggle Castbars",
+			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["CastbarIcon"] = {
+			["Name"] = "Castbar Icon",
+			["Desc"] = "Create an icon beside the cast bar",
+		},
+
+		["CastbarHeight"] = {
+			["Name"] = "Castbar Height",
+			["Desc"] = ModuleHeight,
+		},
+
+		["CastbarWidth"] = {
+			["Name"] = "Castbar Width",
+			["Desc"] = ModuleWidth,
+		},
+
+		["DecimalLength"] = {
+			["Name"] = "Decimal Length",
+			["Desc"] = "Controls the amount of decimals used in values displayed on elements like NamePlates and UnitFrames.",
+		},
+
+		["Enable"] = {
+			["Name"] = "Toggle Boss Frames",
+			["Desc"] = ModuleToggle,
+		},
+
+		["Font"] = {
+			["Name"] = "Font",
+			["Desc"] = ModuleFont
+		},
+
+		["Smooth"] = {
+			["Name"] = "Smooth Bars",
+			["Desc"] = "Bars will transition smoothly."..PerformanceIncrease,
+		},
+
+		["SmoothSpeed"] = {
+			["Name"] = "Smooth Speed",
+			["Desc"] = "How fast the bars will transition smoothly.",
+		},
+
+		["Texture"] = {
+			["Name"] = "Statusbar Texture",
+			["Desc"] = ModuleTexture,
+		},
+
+		["NumberPrefixStyle"] = {
+			["Name"] = "Unit Prefix Style",
+			["Desc"] = "The unit prefixes you want to use when values are shortened in KkthnxUI. This is mostly used on UnitFrames.",
+		},
+
+		["PortraitStyle"] = {
+			["Name"] = "Portrait Style",
+			["Desc"] = "2D, Class Icons, Blizzlike and more |n|n3D Portraits could degrade performance",
+		},
+	},
+
+	-- Party Local
 	["Party"] = {
 		["Enable"] = {
 			["Name"] = "Toggle Party Frames",

@@ -79,7 +79,7 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 			Advanced_UIScaleSlider:Kill()
 		end
 
-		if (C["Cooldown"].Enable) then
+		if (C["ActionBar"].Cooldowns) then
 			SetCVar("countdownForCooldowns", 0)
 			K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
 		end

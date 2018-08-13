@@ -15,6 +15,7 @@ C["ActionBar"] = {
 	["BottomBars"] = 2,
 	["ButtonSize"] = 34,
 	["ButtonSpace"] = 6,
+	["Cooldowns"] = true,
 	["DisableStancePages"] = false,
 	["Enable"] = true,
 	["EquipBorder"] = true,
@@ -151,21 +152,6 @@ C["Chat"] = {
 	["TabsMouseover"] = true,
 	["WhisperSound"] = true,
 	["Width"] = 410
-}
-
--- Cooldown
-C["Cooldown"] = {
-	["Days"] = {0.4, 0.4, 1},
-	["Enable"] = true,
-	["Expiring"] = {1, 0, 0},
-	["ExpiringDuration"] = 3.5,
-	["Font"] = "KkthnxUI",
-	["FontSize"] = 17,
-	["Hours"] = {0.4, 1, 1},
-	["Minutes"] = {1, 1, 1},
-	["Seconds"] = {1, 1, 0},
-	["Threshold"] = 3,
-	["Font"] = "KkthnxUI Outline"
 }
 
 -- DataBars
@@ -422,12 +408,13 @@ C["Party"] = {
 }
 
 C["Arena"] = {
-	["Font"] = "KkthnxUI",
+	["CastbarIcon"] = true,
+	["Castbars"] = true,
+	["DecimalLength"] = 1,
 	["Enable"] = true,
+	["Font"] = "KkthnxUI",
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
-	["Castbars"] = true,
-	["CastbarIcon"] = true,
 	["Texture"] = "KkthnxUI",
 	["NumberPrefixStyle"] = {
 		["Options"] = {
@@ -446,6 +433,7 @@ C["Boss"] = {
 	["CastbarIcon"] = true,
 	["Castbars"] = true,
 	["CastbarWidth"] = 214,
+	["DecimalLength"] = 1,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["Smooth"] = false,
