@@ -65,11 +65,13 @@ C["Announcements"] = {
 
 -- Automation
 C["Automation"] = {
+	["AutoCollapse"] = false,
 	["AutoInvite"] = false,
 	["AutoRelease"] = false,
 	["AutoResurrect"] = false,
 	["AutoResurrectCombat"] = true,
 	["AutoResurrectThank"] = false,
+	["AutoReward"] = false,
 	["BlockMovies"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
@@ -295,12 +297,6 @@ C["Nameplates"] = {
 		},
 		["Value"] = "[KkthnxUI:HealthPercent]"
 	}
-}
-
--- Quests
-C["Quests"] = {
-	["AutoCollapse"] = false,
-	["AutoReward"] = false
 }
 
 -- Skins

@@ -106,13 +106,14 @@ if C["Filger"].Enable then
 	AnchorPlayer:SetPoint("BOTTOMRIGHT", BottomBarAnchor, "TOPLEFT", -10, 200)
 	AnchorPlayer:SetFrameLevel(0)
 	AnchorPlayer:SetFrameStrata("BACKGROUND")
-
+	AnchorPlayer:Hide()
 
 	local AnchorTarget = CreateFrame("Frame", "AnchorTarget", K.PetBattleHider)
 	AnchorTarget:SetSize(190, 52)
 	AnchorTarget:SetPoint("BOTTOMLEFT", BottomBarAnchor, "TOPRIGHT", 10, 200)
 	AnchorTarget:SetFrameLevel(0)
 	AnchorTarget:SetFrameStrata("BACKGROUND")
+	AnchorTarget:Hide()
 end
 
 if C["Chat"].Background then

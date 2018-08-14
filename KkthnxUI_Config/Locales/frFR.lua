@@ -503,6 +503,16 @@ KkthnxUIConfig["frFR"] = {
 			["Desc"] = "Boss encounter movies will only be allowed to play once (so you can watch each one) and will then be blocked."
 		},
 
+		["AutoCollapse"] = {
+			["Name"] = "Auto Collapse",
+			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
+		},
+
+		["AutoReward"] = {
+			["Name"] = "Auto Reward",
+			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
+		},
+
 		["AutoInvite"] = {
 			["Name"] = "Auto Invite",
 			["Desc"] = "Automatically accept invites from guild/friends.",
@@ -805,19 +815,6 @@ KkthnxUIConfig["frFR"] = {
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
-		},
-	},
-
-	-- Quests Local
-	["Quests"] = {
-		["AutoCollapse"] = {
-			["Name"] = "Auto Collapse",
-			["Desc"] = "Auto collapse the objective tracker based on the settings below.",
-		},
-
-		["AutoReward"] = {
-			["Name"] = "Auto Reward",
-			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
 	},
 

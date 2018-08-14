@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("AutoReward", "AceEvent-3.0")
 
 -- Sourced: ElvUI Shadow & Light (Darth_Predator, Repooc)
@@ -19,7 +19,10 @@ function Module:SelectQuestReward(index)
 end
 
 function Module:QUEST_COMPLETE()
-	if not C["Quests"].AutoReward then return end
+	if not C["Automation"].AutoReward then
+		return
+	end
+
 	local choice, highest = 1, 0
 	local num = GetNumQuestChoices()
 
@@ -41,8 +44,4 @@ end
 
 function Module:OnEnable()
 	self:RegisterEvent("QUEST_COMPLETE")
-end
-
-function Module:OnDisble()
-	self:UnregisterEvent("QUEST_COMPLETE")
 end

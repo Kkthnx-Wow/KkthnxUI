@@ -37,7 +37,7 @@ function Module:ChangeState(event)
 end
 
 function Module:OnEnable()
-	if C["Quests"].AutoCollapse ~= true then
+	if C["Automation"].AutoCollapse ~= true then
 		return
 	end
 
