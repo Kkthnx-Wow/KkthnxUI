@@ -264,6 +264,25 @@ local function SetupFlyoutButton()
 			end
 
 			Button:StyleButton()
+
+			if C["ActionBar"].RightMouseover == true then
+				SpellFlyout:HookScript("OnEnter", function(self)
+					RightBarMouseOver(1)
+				end)
+
+				SpellFlyout:HookScript("OnLeave", function(self)
+					RightBarMouseOver(0)
+				end)
+
+				Button:HookScript("OnEnter", function(self)
+					RightBarMouseOver(1)
+				end)
+
+				Button:HookScript("OnLeave", function(self)
+					RightBarMouseOver(0)
+				end)
+			end
+
 			Button.IsSkinned = true
 		end
 	end
@@ -274,22 +293,21 @@ local function StyleFlyoutButton(self)
 		return
 	end
 
-	local SpellFlyoutHB = SpellFlyoutHorizontalBackground
-	local SpellFlyoutVB = SpellFlyoutVerticalBackground
-	local SpellFlyoutBE = SpellFlyoutBackgroundEnd
+	self.FlyoutArrow:SetDrawLayer("OVERLAY", 2)
 
 	if self.FlyoutBorder then
 		self.FlyoutBorder:SetAlpha(0)
 		self.FlyoutBorderShadow:SetAlpha(0)
 	end
 
-	SpellFlyoutHB:SetAlpha(0)
-	SpellFlyoutVB:SetAlpha(0)
-	SpellFlyoutBE:SetAlpha(0)
+	SpellFlyoutHorizontalBackground:SetAlpha(0)
+	SpellFlyoutVerticalBackground:SetAlpha(0)
+	SpellFlyoutBackgroundEnd:SetAlpha(0)
 
 	for i = 1, GetNumFlyouts() do
 		local ID = GetFlyoutID(i)
 		local _, _, NumSlots, IsKnown = GetFlyoutInfo(ID)
+
 		if IsKnown then
 			FlyoutButtons = NumSlots
 			break
