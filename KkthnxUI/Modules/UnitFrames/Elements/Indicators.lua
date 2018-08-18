@@ -138,6 +138,23 @@ function Module:CreateRaidTargetIndicator(size)
 	self.RaidTargetIndicator:SetSize(size, size)
 end
 
+local function PostUpdatePvPIndicator(self, unit, status)
+	local factionGroup = UnitFactionGroup(unit)
+
+	if UnitIsPVPFreeForAll(unit) and status == "ffa" then
+		self:SetTexture("Intewrface\\TargetingFrame\\UI-PVP-FFA")
+		self:SetTexCoord(0, 0.65625, 0, 0.65625)
+	elseif factionGroup and UnitIsPVP(unit) and status ~= nil then
+		self:SetTexture("Interface\\PVPFrame\\PVP-Conquest-Misc")
+
+		if factionGroup == "Alliance"  then
+			self:SetTexCoord(0.69433594, 0.74804688, 0.60351563, 0.72851563)
+		else
+			self:SetTexCoord(0.63867188, 0.69238281, 0.60351563, 0.73242188)
+		end
+	end
+end
+
 function Module:CreatePvPIndicator(unit)
 	self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.PvPIndicator:SetSize(30, 30)
@@ -148,6 +165,8 @@ function Module:CreatePvPIndicator(unit)
 	else
 		self.PvPIndicator:SetPoint("LEFT", self.Portrait.Borders, "RIGHT")
 	end
+
+	self.PvPIndicator.PostUpdate = PostUpdatePvPIndicator
 
 	self.PvPIndicator.Prestige = self:CreateTexture(nil, "OVERLAY")
 	self.PvPIndicator.Prestige:SetSize(50, 52)

@@ -23,6 +23,8 @@ C["ActionBar"] = {
 	["HideHighlight"] = false,
 	["Hotkey"] = true,
 	["Macro"] = true,
+	["MicroBar"] = false,
+	["MicroBarMouseover"] = false,
 	["OutOfMana"] = {0.5, 0.5, 1.0},
 	["OutOfRange"] = {0.8, 0.1, 0.1},
 	["PetBarHide"] = false,
@@ -81,6 +83,8 @@ C["Automation"] = {
 C["Inventory"] = {
 	["AutoRepair"] = true,
 	["AutoSell"] = true,
+	["BagBar"] = false,
+	["BagBarMouseover"] = false,
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
 	["ButtonSize"] = 32,
@@ -92,7 +96,6 @@ C["Inventory"] = {
 	["ItemLevelThreshold"] = 10,
 	["JunkIcon"] = true,
 	["PulseNewItem"] = false,
-	["SortInverted"] = true,
 	["UseGuildRepairFunds"] = false
 }
 
@@ -162,24 +165,16 @@ C["Chat"] = {
 -- DataBars
 C["DataBars"] = {
 	["AzeriteColor"] = {.901, .8, .601},
-	["AzeriteEnable"] = true,
-	["AzeriteHeight"] = 12,
-	["AzeriteWidth"] = 164,
+	["Azerite"] = true,
+	["Height"] = 12,
+	["Width"] = 164,
 	["ExperienceColor"] = {0, 0.4, 1, .8},
-	["ExperienceEnable"] = true,
-	["ExperienceHeight"] = 12,
+	["Experience"] = true,
 	["ExperienceRestedColor"] = {1, 0, 1, 0.2},
-	["ExperienceWidth"] = 164,
 	["Font"] = "KkthnxUI",
-	["HonorColor"] = {240 / 255, 114 / 255, 65 / 255},
-	["HonorEnable"] = true,
-	["HonorHeight"] = 12,
-	["HonorWidth"] = 164,
 	["MouseOver"] = false,
 	["Outline"] = false,
-	["ReputationEnable"] = true,
-	["ReputationHeight"] = 12,
-	["ReputationWidth"] = 164,
+	["Reputation"] = true,
 	["Texture"] = "KkthnxUI",
 }
 
@@ -195,11 +190,10 @@ C["DataText"] = {
 }
 
 C["Filger"] = {
-	["Bars"] = false,
 	["BuffSize"] = 36,
 	["CooldownSize"] = 30,
 	["DisableCD"] = false,
-	["Enable"] = true, -- Something is causing a mass fps drop.
+	["Enable"] = false,
 	["Font"] = "KkthnxUI",
 	["MaxTestIcon"] = 5,
 	["PvPSize"] = 60,
@@ -301,8 +295,10 @@ C["Nameplates"] = {
 
 -- Skins
 C["Skins"] = {
+	["AzerothAutoPilot"] = false,
 	["Bagnon"] = false,
 	["BigWigs"] = false,
+	["BlizzardBags"] = false,
 	["ChatBubbles"] = true,
 	["DBM"] = false,
 	["Font"] = "KkthnxUI",
@@ -310,7 +306,7 @@ C["Skins"] = {
 	["Skada"] = false,
 	["Spy"] = false,
 	["Texture"] = "KkthnxUI",
-	["WeakAuras"] = false
+	["WeakAuras"] = false,
 }
 
 -- Tooltip
@@ -336,21 +332,21 @@ C["Unitframe"] = {
 	["CastbarHeight"] = 20,
 	["CastbarIcon"] = true,
 	["CastbarLatency"] = true,
-	["CastbarWidth"] = 214,
 	["Castbars"] = true,
+	["CastbarTicks"] = false,
+	["CastbarTicksColor"] = {0, 0, 0, 0.8},
+	["CastbarTicksWidth"] = 2,
+	["CastbarWidth"] = 214,
 	["CombatFade"] = false,
 	["CombatText"] = true,
 	["DebuffsOnTop"] = true,
-	["CastbarTicksWidth"] = 2,
-	["CastbarTicksColor"] = {0, 0, 0, 0.8},
 	["DecimalLength"] = 1,
-	["CastbarTicks"] = false,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["GlobalCooldown"] = false,
+	["MouseoverHighlight"] = true,
 	["OnlyShowPlayerDebuff"] = false,
 	["PowerPredictionBar"] = true,
-	["PvPText"] = true,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
 	["Texture"] = "KkthnxUI",
@@ -379,6 +375,7 @@ C["Unitframe"] = {
 C["Party"] = {
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
+	["MouseoverHighlight"] = true,
 	["PartyAsRaid"] = false,
 	["ShowPlayer"] = true,
 	["Smooth"] = false,

@@ -1,5 +1,5 @@
 local K, C = unpack(select(2, ...))
-if C["Misc"].TalkingLessHead ~= true then
+if C["Misc"].TalkingLessHead ~= true or K.CheckAddOnState("Immersion") then
 	return
 end
 

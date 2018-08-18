@@ -1,5 +1,4 @@
 local K, C, L = unpack(select(2, ...))
-local Unfit = LibStub("Unfit-1.0")
 
 if C["Inventory"].Enable ~= true
 	or K.CheckAddOnState("AdiBags")
@@ -13,6 +12,8 @@ if C["Inventory"].Enable ~= true
 then
 	return
 end
+
+local Unfit = LibStub("Unfit-1.0")
 
 -- Sourced (by Hungtar, editor Tukz then Kkthnx)
 
@@ -373,16 +374,7 @@ local function Stuffing_CreateReagentContainer()
 
 	Reagent:SetWidth(((C["Inventory"].ButtonSize + C["Inventory"].ButtonSpace) * C["Inventory"].BankColumns) + 17)
 	Reagent:SetPoint("TOPLEFT", _G["StuffingFrameBank"], "TOPLEFT", 0, 0)
-
-	Reagent.Background = Reagent:CreateTexture(nil, "BACKGROUND", -1)
-	Reagent.Background:SetAllPoints(Reagent)
-	Reagent.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	if not Reagent.Border then
-		Reagent:CreateBorder()
-		Reagent.Border = true
-	end
-
+	Reagent:CreateBorder()
 	Reagent:SetFrameStrata(_G["StuffingFrameBank"]:GetFrameStrata())
 	Reagent:SetFrameLevel(_G["StuffingFrameBank"]:GetFrameLevel() + 5)
 	Reagent:EnableMouse(true)
@@ -397,16 +389,7 @@ local function Stuffing_CreateReagentContainer()
 	Reagent:SetScript("OnMouseUp", Reagent.StopMovingOrSizing)
 
 	SwitchBankButton:SetSize(16, 16)
-
-	SwitchBankButton.Background = SwitchBankButton:CreateTexture(nil, "BACKGROUND", -1)
-	SwitchBankButton.Background:SetAllPoints(SwitchBankButton)
-	SwitchBankButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	if not SwitchBankButton.Border then
-		SwitchBankButton:CreateBorder()
-		SwitchBankButton.Border = true
-	end
-
+	SwitchBankButton:CreateBorder()
 	SwitchBankButton:StyleButton(true)
 	SwitchBankButton:SetPoint("TOPRIGHT", -54, -7)
 	SwitchBankButton:SetNormalTexture("Interface\\ICONS\\achievement_guildperk_mobilebanking")
@@ -428,16 +411,7 @@ local function Stuffing_CreateReagentContainer()
 
 	local SortReagentButton = CreateFrame("Button", nil, Reagent)
 	SortReagentButton:SetSize(16, 16)
-
-	SortReagentButton.Background = SortReagentButton:CreateTexture(nil, "BACKGROUND", -1)
-	SortReagentButton.Background:SetAllPoints(SortReagentButton)
-	SortReagentButton.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	if not SortReagentButton.Border then
-		SortReagentButton:CreateBorder()
-		SortReagentButton.Border = true
-	end
-
+	SortReagentButton:CreateBorder()
 	SortReagentButton:StyleButton(true)
 	SortReagentButton:SetPoint("TOPRIGHT", SwitchBankButton, -22, 0)
 	SortReagentButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -453,31 +427,13 @@ local function Stuffing_CreateReagentContainer()
 	SortReagentButton.ttText = _G.BAG_FILTER_CLEANUP
 	SortReagentButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	SortReagentButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	SortReagentButton:SetScript("OnMouseUp", function()
-		if InCombatLockdown() then
-			print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-			return
-		end
-
-		if StuffingFrameReagent:IsShown() then
-			SortReagentBankBags()
-		end
-	end)
+	SortReagentButton:SetScript("OnMouseUp", SortReagentBankBags)
 
 	Deposit:SetParent(Reagent)
 	Deposit:ClearAllPoints()
 	Deposit:SetText("")
 	Deposit:SetSize(16, 16)
-
-	Deposit.Background = Deposit:CreateTexture(nil, "BACKGROUND", -1)
-	Deposit.Background:SetAllPoints(Deposit)
-	Deposit.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	if not Deposit.Border then
-		Deposit:CreateBorder()
-		Deposit.Border = true
-	end
-
+	Deposit:CreateBorder()
 	Deposit:StyleButton(true)
 	Deposit:SetPoint("TOPLEFT", SwitchBankButton, "TOPRIGHT", 6, 0)
 	Deposit:SetNormalTexture("Interface\\ICONS\\misc_arrowdown")
@@ -510,13 +466,8 @@ local function Stuffing_CreateReagentContainer()
 		ReagentBankFrame:SetParent(Reagent)
 		ReagentBankFrame:ClearAllPoints()
 		ReagentBankFrame:SetAllPoints()
-
+		button:CreateBorder()
 		button:StyleButton()
-		if not button.Border then
-			button:CreateBorder()
-			button.Border = true
-		end
-
 		button:SetNormalTexture(nil)
 		button.IconBorder:SetAlpha(0)
 
@@ -563,16 +514,7 @@ local function Stuffing_CreateReagentContainer()
 	MoneyFrame_Update(ReagentBankFrame.UnlockInfo.CostMoneyFrame, GetReagentBankCost())
 	ReagentBankFrameUnlockInfo:StripTextures()
 	ReagentBankFrameUnlockInfo:SetAllPoints(Reagent)
-
-	ReagentBankFrameUnlockInfo.Background = ReagentBankFrameUnlockInfo:CreateTexture(nil, "BACKGROUND", -1)
-	ReagentBankFrameUnlockInfo.Background:SetAllPoints()
-	ReagentBankFrameUnlockInfo.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	if not ReagentBankFrameUnlockInfo.Border then
-		ReagentBankFrameUnlockInfo:CreateBorder()
-		ReagentBankFrameUnlockInfo.Border = true
-	end
-
+	ReagentBankFrameUnlockInfo:CreateBorder()
 	ReagentBankFrameUnlockInfo:SetFrameStrata("FULLSCREEN")
 	ReagentBankFrameUnlockInfoPurchaseButton:SkinButton()
 end
@@ -632,12 +574,8 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		table_insert(self.bagframe_buttons, ret)
 	end
 
-	if not ret.frame.Border then
-		ret.frame:CreateBorder()
-		ret.frame.Border = true
-	end
+	ret.frame:CreateBorder()
 	ret.frame:StyleButton()
-
 	ret.frame:SetNormalTexture("")
 	ret.frame:SetCheckedTexture("")
 
@@ -690,12 +628,8 @@ function Stuffing:SlotNew(bag, slot)
 	if not ret.frame then
 		ret.frame = CreateFrame("Button", "StuffingBag" .. bag .. "_" .. slot, self.bags[bag], tpl)
 
-		if not ret.frame.Border then
-			ret.frame:CreateBorder()
-			ret.frame.Border = true
-		end
+		ret.frame:CreateBorder()
 		ret.frame:StyleButton()
-
 		ret.frame:SetNormalTexture(nil)
 
 		ret.icon = _G[ret.frame:GetName() .. "IconTexture"]
@@ -885,12 +819,7 @@ function Stuffing:CreateBagFrame(w)
 	if w == "Bank" then
 		f.reagentToggle = CreateFrame("Button", "StuffingReagentButton" .. w, f)
 		f.reagentToggle:SetSize(16, 16)
-
-		if not f.reagentToggle.Border then
-			f.reagentToggle:CreateBorder()
-			f.reagentToggle.Border = true
-		end
-
+		f.reagentToggle:CreateBorder()
 		f.reagentToggle:SetPoint("TOPRIGHT", f, -32, -7)
 		f.reagentToggle:SetNormalTexture("Interface\\ICONS\\INV_Enchant_DustArcane")
 		f.reagentToggle:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -917,12 +846,7 @@ function Stuffing:CreateBagFrame(w)
 
 		f.bagsButton = CreateFrame("Button", nil, f)
 		f.bagsButton:SetSize(16, 16)
-
-		if not f.bagsButton.Border then
-			f.bagsButton:CreateBorder()
-			f.bagsButton.Border = true
-		end
-
+		f.bagsButton:CreateBorder()
 		f.bagsButton:SetPoint("RIGHT", f.reagentToggle, "LEFT", -5, 0)
 		f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
 		f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -949,13 +873,8 @@ function Stuffing:CreateBagFrame(w)
 
 		f.sortButton = CreateFrame("Button", nil, f)
 		f.sortButton:SetSize(16, 16)
-
-		if not f.sortButton.Border then
-			f.sortButton:CreateBorder()
-			f.sortButton.Border = true
-		end
+		f.sortButton:CreateBorder()
 		f.sortButton:StyleButton(true)
-
 		f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 		f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
 		f.sortButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -970,26 +889,11 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton.ttText = BAG_FILTER_CLEANUP
 		f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.sortButton:SetScript("OnMouseUp", function()
-			if InCombatLockdown() then
-				print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-				return
-			end
-
-			if Stuffing.frame:IsShown() then
-				local Module = K:GetModule("InventorySort")
-				Module:CommandDecorator(Module.SortBags, "bank")()
-			end
-		end)
+		f.sortButton:SetScript("OnMouseUp", SortBankBags)
 
 		f.purchaseBagButton = CreateFrame("Button", "StuffingPurchaseButton" .. w, f)
 		f.purchaseBagButton:SetSize(16, 16)
-
-		if not f.purchaseBagButton.Border then
-			f.purchaseBagButton:CreateBorder()
-			f.purchaseBagButton.Border = true
-		end
-
+		f.purchaseBagButton:CreateBorder()
 		f.purchaseBagButton:SetPoint("RIGHT", f.sortButton, "LEFT", -5, 0)
 		f.purchaseBagButton:SetNormalTexture("Interface\\ICONS\\INV_Misc_Coin_01")
 		f.purchaseBagButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1098,6 +1002,7 @@ function Stuffing:InitBags()
 	f:RegisterEvent("PLAYER_MONEY")
 	f:RegisterEvent("PLAYER_TRADE_MONEY")
 	f:RegisterEvent("TRADE_MONEY_CHANGED")
+	f:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 
 	do
 		Token3:ClearAllPoints()
@@ -1158,12 +1063,7 @@ function Stuffing:InitBags()
 
 	f.bagsButton = CreateFrame("Button", nil, f)
 	f.bagsButton:SetSize(16, 16)
-
-	if not f.bagsButton.Border then
-		f.bagsButton:CreateBorder()
-		f.bagsButton.Border = true
-	end
-
+	f.bagsButton:CreateBorder()
 	f.bagsButton:SetPoint("TOPRIGHT", f, -32, -7)
 	f.bagsButton:SetNormalTexture("Interface\\Buttons\\Button-Backpack-Up")
 	f.bagsButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -1190,12 +1090,7 @@ function Stuffing:InitBags()
 
 	f.sortButton = CreateFrame("Button", nil, f)
 	f.sortButton:SetSize(16, 16)
-
-	if not f.sortButton.Border then
-		f.sortButton:CreateBorder()
-		f.sortButton.Border = true
-	end
-
+	f.sortButton:CreateBorder()
 	f.sortButton:StyleButton(nil, true)
 	f.sortButton:SetPoint("TOPRIGHT", f.bagsButton, -22, 0)
 	f.sortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
@@ -1211,15 +1106,7 @@ function Stuffing:InitBags()
 	f.sortButton.ttText = _G.BAG_FILTER_CLEANUP
 	f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	f.sortButton:SetScript("OnMouseUp", function()
-		if InCombatLockdown() then
-			print("|cffffff00" .. ERR_NOT_IN_COMBAT .. "|r")
-			return
-		end
-
-		local Module = K:GetModule("InventorySort")
-		Module:CommandDecorator(Module.SortBags, "bags")()
-	end)
+	f.sortButton:SetScript("OnMouseUp", SortBags)
 
 	gold:SetPoint("RIGHT", f.sortButton, "LEFT", -8, 0)
 
@@ -1262,24 +1149,16 @@ function Stuffing:Layout(isBank)
 	end
 
 	f:SetClampedToScreen(1)
-
-	if not f.Border then
-		f:CreateBorder()
-		f.Border = true
-	end
+	f:CreateBorder()
 
 	local fb = f.bags_frame
 	if bag_bars == 1 then
 		fb:SetClampedToScreen(1)
-
-		if not fb.Border then
-			fb:CreateBorder()
-			fb.Border = true
-		end
+		fb:CreateBorder()
 
 		local bsize = C["Inventory"].ButtonSize
-
 		local w = 2 * 8
+
 		w = w + ((#bs - 1) * bsize)
 		w = w + ((#bs - 2) * 6)
 
@@ -1420,7 +1299,7 @@ function Stuffing:ADDON_LOADED(addon)
 	end
 
 	self:RegisterEvent("BAG_UPDATE")
-	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+	-- self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	self:RegisterEvent("ITEM_LOCK_CHANGED")
 	self:RegisterEvent("BANKFRAME_OPENED")
 	self:RegisterEvent("BANKFRAME_CLOSED")
@@ -1450,6 +1329,10 @@ function Stuffing:ADDON_LOADED(addon)
 	BankFrame:SetPoint("TOPLEFT")
 
 	function ManageBackpackTokenFrame() end
+
+	if ContainerFrame5 then
+		ContainerFrame5:EnableMouse(false)
+	end
 end
 
 function Stuffing:PLAYER_ENTERING_WORLD()
@@ -1497,9 +1380,9 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 	end
 end
 
-function Stuffing:CURRENCY_DISPLAY_UPDATE()
-	BackpackTokenFrame_Update()
-end
+--function Stuffing:CURRENCY_DISPLAY_UPDATE()
+--	BackpackTokenFrame_Update()
+--end
 
 function Stuffing:BAG_UPDATE(id)
 	self:BagSlotUpdate(id)

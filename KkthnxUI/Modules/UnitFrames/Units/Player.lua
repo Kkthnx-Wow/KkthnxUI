@@ -23,8 +23,21 @@ function Module:CreatePlayer()
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetSize(130, 26)
@@ -128,13 +141,15 @@ function Module:CreatePlayer()
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
 		self.Castbar.Spark:SetBlendMode("ADD")
 
-		self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
-		self.Castbar.SafeZone:SetTexture(UnitframeTexture)
-		self.Castbar.SafeZone:SetPoint("RIGHT")
-		self.Castbar.SafeZone:SetPoint("TOP")
-		self.Castbar.SafeZone:SetPoint("BOTTOM")
-		self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
-		self.Castbar.SafeZone:SetWidth(0.0001)
+		if C["Unitframe"].CastbarLatency then
+			self.Castbar.SafeZone = self.Castbar:CreateTexture(nil, "ARTWORK")
+			self.Castbar.SafeZone:SetTexture(UnitframeTexture)
+			self.Castbar.SafeZone:SetPoint("RIGHT")
+			self.Castbar.SafeZone:SetPoint("TOP")
+			self.Castbar.SafeZone:SetPoint("BOTTOM")
+			self.Castbar.SafeZone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+			self.Castbar.SafeZone:SetWidth(0.0001)
+		end
 
 		self.Castbar.Time = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Time:SetPoint("RIGHT", -3.5, 0)
@@ -229,7 +244,6 @@ function Module:CreatePlayer()
 	end
 
 	Module.CreateClassTotems(self, 194, 12, 6)
-
 	Module.CreateAssistantIndicator(self)
 	Module.CreateCombatIndicator(self)
 	Module.CreateLeaderIndicator(self)
@@ -239,6 +253,10 @@ function Module:CreatePlayer()
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "player")
 
+	if C["Unitframe"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "player")
+	end
+
 	if (C["Unitframe"].CombatText) then
 		Module.CreateCombatFeedback(self)
 	end
@@ -247,11 +265,11 @@ function Module:CreatePlayer()
 		Module.CreateGlobalCooldown(self)
 	end
 
-	self.CombatFade = C["Unitframe"].CombatFade
-
 	self.Threat = {
 		Hide = K.Noop,
 		IsObjectType = K.Noop,
 		Override = Module.CreateThreatIndicator
 	}
+
+	self.CombatFade = C["Unitframe"].CombatFade
 end

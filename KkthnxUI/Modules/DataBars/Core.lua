@@ -5,14 +5,15 @@ K.DataBars = Module
 local _G = _G
 local select = select
 
+local CreateFrame = _G.CreateFrame
 local GetExpansionLevel = _G.GetExpansionLevel
 local MAX_PLAYER_LEVEL_TABLE = _G.MAX_PLAYER_LEVEL_TABLE
+local UIParent = _G.UIParent
 
 function Module:OnLeave()
-	if (self == KkthnxUI_ExperienceBar and Module.db.MouseOver)
-	or (self == KkthnxUI_ReputationBar and Module.db.MouseOver)
-	or (self == KkthnxUI_ArtifactBar and Module.db.MouseOver)
-	or (self == KkthnxUI_AzeriteBar and Module.db.MouseOver) then
+	if (self == KkthnxUI_ExperienceBar and C["DataBars"].MouseOver)
+	or (self == KkthnxUI_ReputationBar and C["DataBars"].MouseOver)
+	or (self == KkthnxUI_AzeriteBar and C["DataBars"].MouseOver) then
 		K.UIFrameFadeOut(self, 1, self:GetAlpha(), 0)
 	end
 
@@ -53,16 +54,14 @@ end
 
 function Module:PLAYER_LEVEL_UP(level)
 	local maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-	if (level ~= maxLevel or not self.db.experience.HideAtMaxLevel) and self.db.ExperienceEnable then
+	if (level ~= maxLevel or not C["DataBars"].XPHideAtMaxLevel) and C["DataBars"].ExperienceEnable then
 		self:UpdateExperience("PLAYER_LEVEL_UP", level)
 	else
 		self.expBar:Hide()
 	end
 end
 
---function Module:OnInitialize()
---	self.db = C["DataBars"]
-
+--function Module:OnEnable()
 --	self:LoadExperienceBar()
 --	self:LoadReputationBar()
 --	self:LoadAzeriteBar()

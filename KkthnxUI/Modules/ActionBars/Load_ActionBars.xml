@@ -10,6 +10,7 @@
     <Script file="Bar5.lua"/>
     <Script file="PetBar.lua"/>
     <Script file="StanceBar.lua"/>
+    <Script file="MicroMenu.lua"/>
     <Script file="LeaveVehicle.lua"/>
     <Script file="Toggle.lua"/>
     <Script file="Style.lua"/>

@@ -1,4 +1,8 @@
 local K = unpack(select(2, ...))
+if K.CheckAddOnState("Immersion") then
+	return
+end
+
 local Module = K:GetModule("Skins")
 
 local _G = _G
@@ -6,7 +10,7 @@ local _G = _G
 local function SkinTalkingHead()
 	local TalkingHeadFrame = _G["TalkingHeadFrame"]
 
-	TalkingHeadFrame:StripTextures(true)
+	TalkingHeadFrame:StripTextures()
 	TalkingHeadFrame.MainFrame:StripTextures(true)
 	TalkingHeadFrame.PortraitFrame:StripTextures(true)
 	TalkingHeadFrame.BackgroundFrame:StripTextures(true)
@@ -17,9 +21,6 @@ local function SkinTalkingHead()
 	TalkingHeadFrame.Backdrop:SetPoint("BOTTOMRIGHT", -35, 11)
 
 	TalkingHeadFrame.MainFrame.Model:CreateBorder()
-
-	TalkingHeadFrame.NameFrame.Name:SetTextColor(K.Color.r, K.Color.g, K.Color.b, 1)
-	TalkingHeadFrame.TextFrame.Text:SetTextColor(1, 1, 1, 1)
 
 	TalkingHeadFrame.MainFrame.CloseButton:SkinCloseButton()
 	TalkingHeadFrame.MainFrame.CloseButton:SetPoint("TOPRIGHT", -39, -17)

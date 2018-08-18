@@ -22,8 +22,21 @@ function Module:CreateFocusTarget()
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetSize(74, 12)
@@ -99,6 +112,10 @@ function Module:CreateFocusTarget()
 	self.Name:SetFontObject(UnitframeFont)
 	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+
+	if C["Unitframe"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "focustarget")
+	end
 
 	self.Threat = {
 		Hide = K.Noop,

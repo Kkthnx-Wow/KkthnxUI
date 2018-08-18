@@ -151,9 +151,11 @@ function AddOn:PositionGameMenuButton()
 end
 
 AddOn.AddOns = {}
+AddOn.AddOnVersion = {}
 for i = 1, GetNumAddOns() do
 	local Name = GetAddOnInfo(i)
-	AddOn.AddOns[string_lower(Name)] = GetAddOnEnableState(AddOn.Name, Name) > 0
+	AddOn.AddOns[strlower(Name)] = GetAddOnEnableState(AddOn.Name, Name) == 2 or false
+	AddOn.AddOnVersion[strlower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 
 -- Sourced: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint

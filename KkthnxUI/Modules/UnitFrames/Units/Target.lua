@@ -23,8 +23,21 @@ function Module:CreateTarget()
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetSize(130, 26)
@@ -122,6 +135,10 @@ function Module:CreateTarget()
 		self.ThreatPercent:SetFontObject(UnitframeFont)
 		self.ThreatPercent:SetFont(select(1, self.Name:GetFont()), 14, select(3, self.Name:GetFont()))
 		self:Tag(self.ThreatPercent, "[KkthnxUI:ThreatColor][KkthnxUI:ThreatPercent]")
+	end
+
+	if C["Unitframe"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "target")
 	end
 
 	Module.CreateAuras(self, "target")

@@ -69,12 +69,7 @@ function Module:CreateClassModules(width, height, spacing)
 	for i = 1, maxPower do
 		local bar = CreateFrame("StatusBar", nil, self)
 		bar:SetStatusBarTexture(ClassModuleTexture)
-
-		bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
-		bar.Background:SetAllPoints()
-		bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		K.CreateBorder(bar)
+		bar:CreateBorder()
 
 		-- 6-10 will be stacked on top of 1-5 for rogues with the anticipation talent
 		if (i > 5) then

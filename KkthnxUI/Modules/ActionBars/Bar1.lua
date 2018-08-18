@@ -10,8 +10,7 @@ local CreateFrame = _G.CreateFrame
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UnitClass = _G.UnitClass
-
-local PageDRUID, PageROGUE = "", ""
+local Druid, Rogue = "", ""
 
 local ActionBar1 = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar1:SetAllPoints(ActionBarAnchor)
@@ -31,14 +30,14 @@ for i = 1, 12 do
 end
 
 if (not C["ActionBar"].DisableStancePages) then
-	PageROGUE = "[bonusbar:1] 7;"
-	PageDRUID = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
+	Rogue = "[bonusbar:1] 7;"
+	Druid = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
 end
 
 local Page = {
-	["DRUID"] = PageDRUID,
-	["ROGUE"] = PageROGUE,
-	["DEFAULT"] = "[vehicleui:12] 12; [possessbar] 12; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
+	["DRUID"] = Druid,
+	["ROGUE"] = Rogue,
+	["DEFAULT"] = "[bar:6] 6;[bar:5] 5;[bar:4] 4;[bar:3] 3;[bar:2] 2;[overridebar] 14;[shapeshift] 13;[vehicleui] 12;[possessbar] 12;",
 }
 
 local function GetBar()
@@ -50,14 +49,17 @@ local function GetBar()
 		condition = condition .. " " .. page
 	end
 
-	condition = condition .. " 1"
+	condition = condition .. " [form] 1; 1"
 
 	return condition
 end
 
 ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
-ActionBar1:SetScript("OnEvent", function(self, event)
-	if event == "PLAYER_ENTERING_WORLD" then
+ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
+ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
+ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
+	local login, reload = ...
+	if event == "PLAYER_ENTERING_WORLD" and login == true then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G["ActionButton" .. i]
 			self:SetFrameRef("ActionButton" .. i, button)
@@ -77,5 +79,14 @@ ActionBar1:SetScript("OnEvent", function(self, event)
 		]])
 
 		RegisterStateDriver(self, "page", GetBar())
+	elseif (event == "UPDATE_VEHICLE_ACTIONBAR") or (event == "UPDATE_OVERRIDE_ACTIONBAR") then
+		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
+			for i = 1, NUM_ACTIONBAR_BUTTONS do
+				local button = _G["ActionButton" .. i]
+				ActionButton_Update(button)
+			end
+		end
+	else
+		MainMenuBarMixin:OnEvent(event, ...)
 	end
 end)

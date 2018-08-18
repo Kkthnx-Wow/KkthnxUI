@@ -14,13 +14,12 @@ local InCombatLockdown = _G.InCombatLockdown
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local REPUTATION, STANDING = _G.REPUTATION, _G.STANDING
 
-local ReputationFont = K.GetFont(C["DataBars"].Font)
-local ReputationTexture = K.GetTexture(C["DataBars"].Texture)
-
 local backupColor = FACTION_BAR_COLORS[1]
 local FactionStandingLabelUnknown = UNKNOWN
 function Module:UpdateReputation(event)
-	if not C["DataBars"].ReputationEnable then return end
+	if not C["DataBars"].Reputation then
+		return
+	end
 
 	local bar = self.reputationBar
 
@@ -134,10 +133,11 @@ function Module:ReputationBar_OnClick()
 end
 
 function Module:UpdateReputationDimensions()
-	self.reputationBar:SetSize(Minimap:GetWidth() or C["DataBars"].ReputationWidth, C["DataBars"].ReputationHeight)
-	self.reputationBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.reputationBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
-	self.reputationBar.text:SetSize(self.reputationBar:GetWidth() - 4, C["Media"].FontSize - 1)
+	self.reputationBar:SetSize(Minimap:GetWidth() or C["DataBars"].Width, C["DataBars"].Height)
+	self.reputationBar.text:SetFontObject(ReputationFont)
+	self.reputationBar.text:SetFont(select(1, self.reputationBar.text:GetFont()), 11, select(3, self.reputationBar.text:GetFont()))
+	self.reputationBar.text:SetWidth(self.reputationBar:GetWidth() - 4)
+	self.reputationBar.text:SetWordWrap(false)
 	self.reputationBar.spark:SetSize(16, self.reputationBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
@@ -148,7 +148,7 @@ function Module:UpdateReputationDimensions()
 end
 
 function Module:EnableDisable_ReputationBar()
-	if C["DataBars"].ReputationEnable then
+	if C["DataBars"].Reputation then
 		self:RegisterEvent("UPDATE_FACTION", "UpdateReputation")
 		self:UpdateReputation()
 	else
@@ -157,11 +157,13 @@ function Module:EnableDisable_ReputationBar()
 	end
 end
 
-local AnchorY
 function Module:OnEnable()
+	local AnchorY
 	local IsXPCheck = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
+	local ReputationFont = K.GetFont(C["DataBars"].Font)
+	local ReputationTexture = K.GetTexture(C["DataBars"].Texture)
 
-	if K.Level == _G.MAX_PLAYER_LEVEL or IsXPCheck then
+	if K.Level == _G.MAX_PLAYER_LEVEL or IsXPCheck or K.Level < 110 then
 		AnchorY = -24
 	else
 		AnchorY = -42
@@ -182,9 +184,10 @@ function Module:OnEnable()
 	self.reputationBar.statusBar:CreateBorder()
 
 	self.reputationBar.text = self.reputationBar.statusBar:CreateFontString(nil, "OVERLAY")
-	self.reputationBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.reputationBar.text:SetSize(self.reputationBar:GetWidth() - 4, C["Media"].FontSize - 1)
-	self.reputationBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and -0 or -1.25)
+	self.reputationBar.text:SetFontObject(ReputationFont)
+	self.reputationBar.text:SetFont(select(1, self.reputationBar.text:GetFont()), 11, select(3, self.reputationBar.text:GetFont()))
+	self.reputationBar.text:SetWidth(self.reputationBar:GetWidth() - 4)
+	self.reputationBar.text:SetWordWrap(false)
 	self.reputationBar.text:SetPoint("CENTER")
 
 	self.reputationBar.spark = self.reputationBar.statusBar:CreateTexture(nil, "OVERLAY")
@@ -196,7 +199,9 @@ function Module:OnEnable()
 	self.reputationBar.eventFrame:Hide()
 	self.reputationBar.eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.reputationBar.eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	self.reputationBar.eventFrame:SetScript("OnEvent", function(self, event) Module:UpdateReputation(event) end)
+	self.reputationBar.eventFrame:SetScript("OnEvent", function(self, event)
+		Module:UpdateReputation(event)
+	end)
 
 	self:UpdateReputationDimensions()
 

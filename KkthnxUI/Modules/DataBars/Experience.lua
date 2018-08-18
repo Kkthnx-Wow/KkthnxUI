@@ -22,7 +22,7 @@ function Module:GetXP(unit)
 end
 
 function Module:UpdateExperience()
-	if C["DataBars"].ExperienceEnable ~= true then
+	if C["DataBars"].Experience ~= true then
 		return
 	end
 
@@ -75,7 +75,7 @@ function Module:ExperienceBar_OnEnter()
 	GameTooltip:AddDoubleLine(L["Databars"].Experience)
 	GameTooltip:AddLine(" ")
 
-	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%s%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), 1, 1, 1)
+	GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), 1, 1, 1)
 	GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur),  math.floor((max - cur) / max * 100),  math.floor(20 * (max - cur) / max)), 1, 1, 1)
 
 	if rested then
@@ -107,9 +107,7 @@ function Module:ExperienceBar_OnClick()
 end
 
 function Module:UpdateExperienceDimensions()
-	local ExperienceFont = K.GetFont(C["DataBars"].Font)
-
-	self.expBar:SetSize(Minimap:GetWidth() or C["DataBars"].ExperienceWidth, C["DataBars"].ExperienceHeight)
+	self.expBar:SetSize(Minimap:GetWidth() or C["DataBars"].Width, C["DataBars"].Height)
 	self.expBar.text:SetFontObject(ExperienceFont)
 	self.expBar.text:SetFont(select(1, self.expBar.text:GetFont()), 11, select(3, self.expBar.text:GetFont()))
 	self.expBar.spark:SetSize(16, self.expBar:GetHeight())
@@ -123,7 +121,7 @@ end
 
 function Module:PLAYER_LEVEL_UP(level)
 	local maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-	if (level ~= maxLevel) and C["DataBars"].ExperienceEnable then
+	if (level ~= maxLevel) and C["DataBars"].Experience then
 		self:UpdateExperience("PLAYER_LEVEL_UP", level)
 	else
 		self.expBar:Hide()
@@ -132,7 +130,7 @@ end
 
 function Module:EnableDisable_ExperienceBar()
 	local maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
-	if (UnitLevel("player") ~= maxLevel) and C["DataBars"].ExperienceEnable then
+	if (UnitLevel("player") ~= maxLevel) and C["DataBars"].Experience then
 		self:RegisterEvent("PLAYER_XP_UPDATE", "UpdateExperience")
 		self:RegisterEvent("DISABLE_XP_GAIN", "UpdateExperience")
 		self:RegisterEvent("ENABLE_XP_GAIN", "UpdateExperience")

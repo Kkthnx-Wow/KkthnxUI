@@ -11,6 +11,8 @@ local pairs = _G.pairs
 local type = _G.type
 
 -- Default border values
+local borderLayer = "OVERLAY"
+local borderLevel = 1
 local borderOffset = 4
 local borderSize = 16
 local borderPath = [[Interface\AddOns\]] .. ADDON .. [[\Media\Border\Border.tga]]
@@ -81,11 +83,13 @@ BorderTemplate.GetBackdropBorderColor = BorderTemplate.GetBorderColor
 
 -- Usage:
 -- K.CreateBorder(object, [offset], [size], [path])
--- 	@param object 	<frame> 		- the frame we attach the border too
--- 	@param offset 	<number,nil> 	- (optional) pixels the border is offset into the frame
--- 	@param size 	<number,nil> 	- (optional) pixel thickness of the border
--- 	@param path 	<string,nil> 	- (optional) file path to the border texture
-function K.CreateBorder(object, offset, size, path)
+-- 	@param object 		<frame> 		- the frame we attach the border too
+-- 	@param offset 		<number,nil> 	- (optional) pixels the border is offset into the frame
+-- 	@param size 		<number,nil> 	- (optional) pixel thickness of the border
+-- 	@param drawLayer 	<string,nil> 	- (optional) coarse layer to draw the region in
+-- 	@param drawSubLevel	<string,nil> 	- (optional) controls rendering order within the specified layer
+-- 	@param path 		<string,nil> 	- (optional) file path to the border texture
+function K.CreateBorder(object, offset, size, drawLayer, drawSubLevel, path)
 	-- Silently fail if the wrong object type or if the border already exists.
 	if type(object) ~= "table" or borderCache[object] or not object.CreateTexture then
 		return
@@ -94,34 +98,36 @@ function K.CreateBorder(object, offset, size, path)
 	-- Always replace missing values with our defaults,
 	-- but allow even the texture path to be overridden
 	-- to allow for a more flexible function than the previous one.
+	local drawLayer = drawLayer or borderLayer
+	local drawSubLevel = drawSubLevel or borderLevel
 	local offset = offset or borderOffset
 	local size = size or borderSize
 	local path = path or borderPath
 
 	-- First create the corners
 	local topLeft = object:CreateTexture()
-	topLeft:SetDrawLayer("OVERLAY")
+	topLeft:SetDrawLayer(drawLayer, drawSubLevel)
 	topLeft:SetPoint("TOPLEFT", object, "TOPLEFT", offset - size, -offset + size)
 	topLeft:SetSize(size, size)
 	topLeft:SetTexture(path)
 	topLeft:SetTexCoord(4 / 8, 5 / 8, 0, 1)
 
 	local topRight = object:CreateTexture()
-	topRight:SetDrawLayer("OVERLAY")
+	topRight:SetDrawLayer(drawLayer, drawSubLevel)
 	topRight:SetPoint("TOPRIGHT", object, "TOPRIGHT", -offset + size, -offset + size)
 	topRight:SetSize(size, size)
 	topRight:SetTexture(path)
 	topRight:SetTexCoord(5 / 8, 6 / 8, 0, 1)
 
 	local bottomLeft = object:CreateTexture()
-	bottomLeft:SetDrawLayer("OVERLAY")
+	bottomLeft:SetDrawLayer(drawLayer, drawSubLevel)
 	bottomLeft:SetPoint("BOTTOMLEFT", object, "BOTTOMLEFT", offset - size, offset - size)
 	bottomLeft:SetSize(size, size)
 	bottomLeft:SetTexture(path)
 	bottomLeft:SetTexCoord(6 / 8, 7 / 8, 0, 1)
 
 	local bottomRight = object:CreateTexture()
-	bottomRight:SetDrawLayer("OVERLAY")
+	bottomRight:SetDrawLayer(drawLayer, drawSubLevel)
 	bottomRight:SetPoint("BOTTOMRIGHT", object, "BOTTOMRIGHT", -offset + size, offset - size)
 	bottomRight:SetSize(size, size)
 	bottomRight:SetTexture(path)
@@ -129,14 +135,14 @@ function K.CreateBorder(object, offset, size, path)
 
 	-- Then create the sides, which are connected to the corners
 	local left = object:CreateTexture()
-	left:SetDrawLayer("OVERLAY")
+	left:SetDrawLayer(drawLayer, drawSubLevel)
 	left:SetPoint("TOPLEFT", topLeft, "BOTTOMLEFT")
 	left:SetPoint("BOTTOMRIGHT", bottomLeft, "TOPRIGHT")
 	left:SetTexture(path)
 	left:SetTexCoord(0 / 8, 1 / 8, 0, 1)
 
 	local right = object:CreateTexture()
-	right:SetDrawLayer("OVERLAY")
+	right:SetDrawLayer(drawLayer, drawSubLevel)
 	right:SetPoint("TOPRIGHT", topRight, "BOTTOMRIGHT")
 	right:SetPoint("BOTTOMLEFT", bottomRight, "TOPLEFT")
 	right:SetTexture(path)
@@ -145,14 +151,14 @@ function K.CreateBorder(object, offset, size, path)
 	-- top and bottom needs to be rotated 90 degrees clockwise,
 	-- so we need to use the (ULx, ULy, LLx, LLy, URx, URy, LRx, LRy) version of texcoord here.
 	local top = object:CreateTexture()
-	top:SetDrawLayer("OVERLAY")
+	top:SetDrawLayer(drawLayer, drawSubLevel)
 	top:SetPoint("TOPLEFT", topLeft, "TOPRIGHT")
 	top:SetPoint("BOTTOMRIGHT", topRight, "BOTTOMLEFT")
 	top:SetTexture(path)
 	top:SetTexCoord(2 / 8, 1, 3 / 8, 1, 2 / 8, 0, 3 / 8, 0)
 
 	local bottom = object:CreateTexture()
-	bottom:SetDrawLayer("OVERLAY")
+	bottom:SetDrawLayer(drawLayer, drawSubLevel)
 	bottom:SetPoint("BOTTOMLEFT", bottomLeft, "BOTTOMRIGHT")
 	bottom:SetPoint("TOPRIGHT", bottomRight, "TOPLEFT")
 	bottom:SetTexture(path)

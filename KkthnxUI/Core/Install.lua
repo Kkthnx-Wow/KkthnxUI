@@ -3,7 +3,6 @@ local K, C, L = unpack(select(2, ...))
 -- Lua API
 local _G = _G
 local print = print
-local string_format = string.format
 
 -- Wow API
 local APPLY = _G.APPLY

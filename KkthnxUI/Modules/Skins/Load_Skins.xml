@@ -2,6 +2,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
    <!-- Load_Skins -->
    <Include file="Core.lua" />
+
+   <Include file="Addons\AzerothAutoPilot.lua" />
    <Include file="Addons\Bagnon.lua" />
    <Include file="Addons\BigWigs.lua" />
    <Include file="Addons\DBM.lua" />
@@ -12,6 +14,7 @@
    <Include file="Addons\WeakAuras.lua" />
 
    <Include file="Blizzard\Archaeology.lua" />
+   <Include file="Blizzard\Bags.lua" />
    <Include file="Blizzard\BattlegroundMap.lua" />
    <Include file="Blizzard\Collectables.lua" />
    <Include file="Blizzard\Contribution.lua" />

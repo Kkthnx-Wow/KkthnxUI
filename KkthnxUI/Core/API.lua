@@ -67,20 +67,31 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 	obj:SetPoint("BOTTOMRIGHT", anchor, "BOTTOMRIGHT", -xOffset, yOffset)
 end
 
-local function CreateBorder(f, _, bLayer, bOffset, bPoints)
+local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
+	if f.Borders then
+		return
+	end
+
 	bLayer = bLayer or 0
 	bOffset = bOffset or 4
 	bPoints = bPoints or 0
 
+	if strip then
+		f:StripTextures()
+	end
+
 	K.CreateBorder(f, bOffset)
 
-	f.Backgrounds = f:CreateTexture(nil, "BACKGROUND")
-	f.Backgrounds:SetDrawLayer("BACKGROUND", bLayer)
-	f.Backgrounds:SetPoint("TOPLEFT", f ,"TOPLEFT", bPoints, -bPoints)
-	f.Backgrounds:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -bPoints, bPoints)
-	f.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	local backgrounds = f:CreateTexture(nil, "BACKGROUND")
+	backgrounds:SetDrawLayer("BACKGROUND", bLayer)
+	backgrounds:SetPoint("TOPLEFT", f ,"TOPLEFT", bPoints, -bPoints)
+	backgrounds:SetPoint("BOTTOMRIGHT", f ,"BOTTOMRIGHT", -bPoints, bPoints)
+	backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	f:SetBorderColor()
+
+	f.Borders = K.CreateBorder
+	f.Backgrounds = backgrounds
 end
 
 local function CreateBackdrop(f, t)
@@ -94,7 +105,7 @@ local function CreateBackdrop(f, t)
 
 	local b = CreateFrame("Frame", nil, f)
 	b:SetOutside()
-	b:CreateBorder(t, -7)
+	b:CreateBorder(t)
 
 	if f:GetFrameLevel() - 1 >= 0 then
 		b:SetFrameLevel(f:GetFrameLevel() - 1)
@@ -105,22 +116,40 @@ local function CreateBackdrop(f, t)
 	f.Backdrop = b
 end
 
-
-local function CreateShadow(f)
+local function CreateShadow(f, bd)
 	if f.Shadow then
 		return
 	end
 
+	local shadowLevel = f:GetFrameLevel()
+
+	if shadowLevel < 0 then
+		shadowLevel = 0
+	end
+
 	local shadow = CreateFrame("Frame", nil, f)
-	shadow:SetFrameLevel(1)
+	shadow:SetFrameLevel(shadowLevel)
 	shadow:SetFrameStrata(f:GetFrameStrata())
 	shadow:SetPoint("TOPLEFT", -4, 4)
 	shadow:SetPoint("BOTTOMRIGHT", 4, -4)
 
-	shadow:SetBackdrop({edgeFile = C.Media.Glow, edgeSize = K.Scale(4)})
+	if bd then
+		shadow:SetBackdrop({
+			bgFile = C["Media"].Blank,
+			edgeFile = C.Media.Glow,
+			edgeSize = K.Scale(4),
+			insets = {left = 3, right = 3, top = 3, bottom = 3}
+		})
+	else
+		shadow:SetBackdrop({
+			edgeFile = C.Media.Glow,
+			edgeSize = K.Scale(4)
+		})
+	end
 
 	shadow:SetBackdropColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
 	shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+
 	f.Shadow = shadow
 end
 

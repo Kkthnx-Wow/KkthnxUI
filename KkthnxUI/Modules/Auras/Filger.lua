@@ -3,6 +3,8 @@ if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
 	return
 end
 
+local oUF = oUF or oUF
+
 local _G = _G
 local pairs = pairs
 local string_format = string.format
@@ -25,48 +27,6 @@ local UnitAura = _G.UnitAura
 
 local Filger = {}
 local MyUnits = {player = true, vehicle = true, pet = true}
-local Movers = K["Movers"]
-local FilgerTexture = K.GetTexture(C["Filger"].Texture)
-
---	Lightweight buff/debuff tracking (Filger by Nils Ruesch, editors Affli/SinaC/Ildyria)
-do
-	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "AnchorPlayer", "TOPRIGHT", 2, 169)
-	P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "AnchorTarget", "TOPLEFT", -2, 169)
-	P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "AnchorPlayer", "TOPRIGHT", 2, 211)
-	SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "AnchorTarget", "TOPLEFT", -2, 211)
-	T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
-
-	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "AnchorTarget", "TOPLEFT", -2, 253)
-	T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
-
-	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "AnchorPlayer", "TOPRIGHT", 2, 253)
-	PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
-
-	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "AnchorPlayer", "BOTTOMLEFT", -2, -44)
-	PVE_PVP_CC_Anchor:SetSize(221, 25)
-
-	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "AnchorPlayer", "TOPRIGHT", 63, 17)
-	COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
-
-	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", "AnchorTarget", "BOTTOMRIGHT", 2, 3)
-	T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
-
-	Movers:RegisterFrame(P_BUFF_ICON_Anchor)
-	Movers:RegisterFrame(P_PROC_ICON_Anchor)
-	Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
-	Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
-	Movers:RegisterFrame(T_BUFF_Anchor)
-	Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
-	Movers:RegisterFrame(PVE_PVP_CC_Anchor)
-	Movers:RegisterFrame(COOLDOWN_Anchor)
-	Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
-end
 
 SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
 
@@ -133,18 +93,14 @@ function Filger:DisplayActives()
 	local id = self.Id
 	local index = 1
 	local previous = nil
+	local FilgerTexture = K.GetTexture(C["Filger"].Texture)
 
 	for _, _ in pairs(self.actives) do
 		local bar = self.bars[index]
 		if not bar then
 			bar = CreateFrame("Frame", "FilgerAnchor" .. id .. "Frame" .. index, self)
-			bar:SetScale(_G.UIParent:GetEffectiveScale() * 1)
-
-			bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
-			bar.Background:SetAllPoints()
-			bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			K.CreateBorder(bar)
+			bar:SetScale(1)
+			bar:CreateBorder()
 
 			if index == 1 then
 				bar:SetPoint(self.Position[1], self.Position[2], self.Position[3], self.Position[4])
@@ -362,15 +318,9 @@ function Filger:DisplayActives()
 end
 
 function Filger:OnEvent(event, unit, _, spellID)
-	if event == "SPELL_UPDATE_COOLDOWN" or
-		event == "PLAYER_TARGET_CHANGED" or
-		event == "PLAYER_FOCUS_CHANGED" or
-		event == "PLAYER_ENTERING_WORLD" or
-		event == "UNIT_AURA" and (unit == "target" or
-			unit == "player" or
-			unit == "pet" or
-			unit == "focus") or
-		(event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
+	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED" or
+	event == "PLAYER_FOCUS_CHANGED" or event == "PLAYER_ENTERING_WORLD" or
+	(event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
@@ -441,7 +391,7 @@ function Filger:OnEvent(event, unit, _, spellID)
 					if spell then
 						name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
 					end
-					elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
+				elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
 					if spellID == data.spellID then
 						name, _, icon = GetSpellInfo(data.spellID)
 						spid = data.spellID
@@ -462,16 +412,15 @@ function Filger:OnEvent(event, unit, _, spellID)
 				if not self.actives then
 					self.actives = {}
 				end
+
 				if not self.actives[i] then
-					self.actives[i] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid }
+					self.actives[i] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid}
 					needUpdate = true
 					if K.Class == "DEATHKNIGHT" and self.actives[i].duration == 10 and data.filter == "CD" then
 						self.actives[i] = nil
 					end
 				else
-					if
-					data.filter ~= "ICD" and
-					(self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration)
+					if data.filter ~= "ICD" and (self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration)
 					then
 						self.actives[i].count = count
 						self.actives[i].start = start
@@ -481,7 +430,11 @@ function Filger:OnEvent(event, unit, _, spellID)
 				end
 			else
 				if data.filter ~= "ICD" and self.actives and self.actives[i] then
-					self.actives[i] = nil -- Watch this
+					if event == "UNIT_SPELLCAST_SUCCEEDED" then
+						return
+					end
+
+					self.actives[i] = nil
 					needUpdate = true
 				end
 			end
@@ -579,7 +532,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 
 	for i = 1, #C["FilgerSpells"][K.Class], 1 do
 		local data = C["FilgerSpells"][K.Class][i]
-		local frame = CreateFrame("Frame", "FilgerFrame" .. i .. "_" .. data.Name, oUF_PetBattleFrameHider)
+		local frame = CreateFrame("Frame", "FilgerFrame" .. i .. "_" .. data.Name, K.PetBattleHider)
 		frame.Id = i
 		frame.Name = data.Name
 		frame.Direction = data.Direction or "DOWN"
@@ -620,7 +573,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				end
 			end
 
-			frame:RegisterEvent("UNIT_AURA")
+			-- frame:RegisterEvent("UNIT_AURA")
 			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			frame:RegisterEvent("PLAYER_TARGET_CHANGED")
 			frame:RegisterEvent("PLAYER_ENTERING_WORLD")

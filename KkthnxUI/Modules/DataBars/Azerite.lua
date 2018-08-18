@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Azerite", "AceEvent-3.0")
 
 -- Sourced: ElvUI (Elvz)
@@ -16,7 +16,7 @@ local ARTIFACT_POWER = _G.ARTIFACT_POWER
 
 local AnchorY
 function Module:UpdateAzerite(event, unit)
-	if not C["DataBars"].AzeriteEnable then
+	if not C["DataBars"].Azerite then
 		return
 	end
 
@@ -65,15 +65,11 @@ function Module:AzeriteBar_OnEnter()
 	self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
 		local azeriteItemName = azeriteItem:GetItemName()
 
-		-- From Blizz Code
-		-- GameTooltip:SetText(AZERITE_POWER_TOOLTIP_TITLE:format(currentLevel, xpToNextLevel), HIGHLIGHT_FONT_COLOR:GetRGB())
-		-- GameTooltip:AddLine(AZERITE_POWER_TOOLTIP_BODY:format(azeriteItemName))
-
 		GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil,  nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
 		GameTooltip:AddLine(" ")
 
-		GameTooltip:AddDoubleLine("AP:", format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP  * 100), 1, 1, 1)
-		GameTooltip:AddDoubleLine("Remaining:", format(" %d (%d%% - %d ".."Bars"..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].AP, format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP  * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %d (%d%% - %d ".."Bars"..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
 
 		GameTooltip:Show()
 	end)
@@ -94,9 +90,9 @@ function Module:AzeriteBar_OnClick()
 end
 
 function Module:UpdateAzeriteDimensions()
-	self.azeriteBar:SetSize(Minimap:GetWidth() or C["DataBars"].AzeriteWidth, C["DataBars"].AzeriteHeight)
-	self.azeriteBar.text:SetFont(C["Media"].Font, C["Media"].FontSize - 1, C["DataBars"].Outline and "OUTLINE" or "", "CENTER")
-	self.azeriteBar.text:SetShadowOffset(C["DataBars"].Outline and 0 or 1.25, C["DataBars"].Outline and - 0 or - 1.25)
+	self.azeriteBar:SetSize(Minimap:GetWidth() or C["DataBars"].Width, C["DataBars"].Height)
+	self.azeriteBar.text:SetFontObject(AzeriteFont)
+	self.azeriteBar.text:SetFont(select(1, self.azeriteBar.text:GetFont()), 11, select(3, self.azeriteBar.text:GetFont()))
 	self.azeriteBar.spark:SetSize(16, self.azeriteBar:GetHeight())
 
 	if C["DataBars"].MouseOver then
@@ -107,14 +103,14 @@ function Module:UpdateAzeriteDimensions()
 end
 
 function Module:EnableDisable_AzeriteBar()
-	if C["DataBars"].AzeriteEnable then
+	if C["DataBars"].Azerite then
 		self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "UpdateAzerite")
 		self:RegisterEvent("UNIT_INVENTORY_CHANGED", "UpdateAzerite")
 
 		self:UpdateAzerite()
 	else
-		self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
-		self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
+		self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
+		self:RegisterEvent("UNIT_INVENTORY_CHANGED")
 
 		self.azeriteBar:Hide()
 	end
@@ -122,8 +118,8 @@ end
 
 function Module:OnEnable()
 	local IsXPCheck = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
-	local ArtifactFont = K.GetFont(C["DataBars"].Font)
-	local ArtifactTexture = K.GetTexture(C["DataBars"].Texture)
+	local AzeriteFont = K.GetFont(C["DataBars"].Font)
+	local AzeriteTexture = K.GetTexture(C["DataBars"].Texture)
 
 	if K.Level == _G.MAX_PLAYER_LEVEL or IsXPCheck then
 		AnchorY = -6
@@ -141,8 +137,8 @@ function Module:OnEnable()
 
 	self.azeriteBar.statusBar = CreateFrame("StatusBar", nil, self.azeriteBar)
 	self.azeriteBar.statusBar:SetAllPoints()
-	self.azeriteBar.statusBar:SetStatusBarTexture(ArtifactTexture)
-	self.azeriteBar.statusBar:SetStatusBarColor(.901, .8, .601)
+	self.azeriteBar.statusBar:SetStatusBarTexture(AzeriteTexture)
+	self.azeriteBar.statusBar:SetStatusBarColor(C["DataBars"].AzeriteColor[1], C["DataBars"].AzeriteColor[2], C["DataBars"].AzeriteColor[3], C["DataBars"].AzeriteColor[4])
 	self.azeriteBar.statusBar:SetMinMaxValues(0, 325)
 
 	self.azeriteBar.statusBar:CreateBorder()
@@ -155,7 +151,7 @@ function Module:OnEnable()
 	end)
 
 	self.azeriteBar.text = self.azeriteBar.statusBar:CreateFontString(nil, "OVERLAY")
-	self.azeriteBar.text:SetFontObject(ArtifactFont)
+	self.azeriteBar.text:SetFontObject(AzeriteFont)
 	self.azeriteBar.text:SetFont(select(1, self.azeriteBar.text:GetFont()), 11, select(3, self.azeriteBar.text:GetFont()))
 	self.azeriteBar.text:SetPoint("CENTER")
 

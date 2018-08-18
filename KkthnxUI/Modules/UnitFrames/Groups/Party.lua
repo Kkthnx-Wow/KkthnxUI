@@ -29,21 +29,28 @@ function Module:CreateParty()
 	local UnitframeTexture = K.GetTexture(C["Party"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
-	self.Health:SetSize(98, 16)
-	self.Health:SetPoint("CENTER", self, "CENTER", 18, 8)
+	self.Health:SetSize(114, 18)
+	self.Health:SetPoint("CENTER", self, "CENTER", 19, 7)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 
-	self.Health.Background = self.Health:CreateTexture(nil, "BACKGROUND", -1)
-	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	self.Health.Border = CreateFrame("Frame", nil, self.Health)
-	self.Health.Border:SetAllPoints()
-	K.CreateBorder(self.Health.Border)
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Party"].Smooth
 	self.Health.SmoothSpeed = C["Party"].SmoothSpeed * 10
@@ -60,17 +67,11 @@ function Module:CreateParty()
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
-	self.Power:SetSize(98, 10)
+	self.Power:SetSize(114, 8)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 
-	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
-	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	self.Power.Border = CreateFrame("Frame", nil, self.Power)
-	self.Power.Border:SetAllPoints()
-	K.CreateBorder(self.Power.Border)
+	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Party"].Smooth
 	self.Power.SmoothSpeed = C["Party"].SmoothSpeed * 10
@@ -80,7 +81,7 @@ function Module:CreateParty()
 	if (C["Party"].PortraitStyle.Value == "ThreeDPortraits") then
 		self.Portrait = CreateFrame("PlayerModel", nil, self)
 		self.Portrait:SetSize(32, 32)
-		self.Portrait:SetPoint("LEFT", self, 1, 0)
+		self.Portrait:SetPoint("LEFT", self, 3, 0)
 
 		self.Portrait.Background = self.Portrait:CreateTexture(nil, "BACKGROUND", -1)
 		self.Portrait.Background:SetAllPoints()
@@ -93,7 +94,7 @@ function Module:CreateParty()
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(32, 32)
-		self.Portrait:SetPoint("LEFT", self, 1, 0)
+		self.Portrait:SetPoint("LEFT", self, 3, 0)
 
 		self.Portrait.Background = self:CreateTexture(nil, "BACKGROUND", -1)
 		self.Portrait.Background:SetPoint("LEFT", self, 1, 0)
@@ -101,7 +102,7 @@ function Module:CreateParty()
 		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
-		self.Portrait.Borders:SetPoint("LEFT", self, 1, 0)
+		self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
 		self.Portrait.Borders:SetSize(32, 32)
 		K.CreateBorder(self.Portrait.Borders)
 
@@ -111,8 +112,8 @@ function Module:CreateParty()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -4, 2)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 2)
+	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -4, 1)
+	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 1)
 	self.Name:SetSize(98, 14)
 	self.Name:SetJustifyV("TOP")
 	self.Name:SetJustifyH("CENTER")
@@ -121,18 +122,20 @@ function Module:CreateParty()
 	self:Tag(self.Name, "[KkthnxUI:Role][KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("BOTTOM", self.Portrait, "TOP", 0, 4)
+	self.Level:SetPoint("BOTTOM", self.Portrait, "TOP", 0, 2)
 	self.Level:SetFontObject(UnitframeFont)
 	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
+	if C["Party"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "party")
+	end
+
 	if (C["Party"].TargetHighlight) then
-		self.TargetHighlight = CreateFrame("Frame", nil, self)
-		self.TargetHighlight:SetBackdrop({edgeFile = [[Interface\AddOns\KkthnxUI\Media\Border\BorderTickGlow.tga]], edgeSize = 10})
-		self.TargetHighlight:SetPoint("TOPLEFT", self.Portrait, -7, 7)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Portrait, 7, -7)
-		self.TargetHighlight:SetFrameStrata("BACKGROUND")
-		self.TargetHighlight:SetFrameLevel(0)
+		self.TargetHighlight = self:CreateTexture("$parentHighlight", "ARTWORK", nil, 1)
+		self.TargetHighlight:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]])
+		self.TargetHighlight:SetPoint("TOPLEFT", self.Name, -7, 7)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Name, 7, -7)
 		self.TargetHighlight:Hide()
 
 		local function UpdateTargetGlow()
@@ -148,15 +151,15 @@ function Module:CreateParty()
 					local _, class = UnitClass(unit)
 					if class then
 						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-						self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+						self.TargetHighlight:SetVertexColor(color.r, color.g, color.b)
 					else
-						self.TargetHighlight:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+						self.TargetHighlight:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 					end
 				elseif reaction then
 					local color = FACTION_BAR_COLORS[reaction]
-					self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+					self.TargetHighlight:SetVertexColor(color.r, color.g, color.b)
 				else
-					self.TargetHighlight:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+					self.TargetHighlight:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 				end
 			else
 				self.TargetHighlight:Hide()

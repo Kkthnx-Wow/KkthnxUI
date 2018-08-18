@@ -65,7 +65,7 @@ function K:MapInfo_CoordsStop(event)
 		end
 
 		K.MapInfo.coordsFalling = nil -- we were falling!
-	elseif event == "PLAYER_STOPPED_MOVING" and IsFalling() then
+	elseif (event == "PLAYER_STOPPED_MOVING" or event == "PLAYER_CONTROL_GAINED") and IsFalling() then
 		K.MapInfo.coordsFalling = true
 		return
 	end
@@ -167,8 +167,10 @@ function K:GetZoneText(mapID)
 end
 
 K:RegisterEvent("CRITERIA_UPDATE", "MapInfo_CoordsStop") -- when the player goes into an animation (landing)
-K:RegisterEvent("PLAYER_STOPPED_MOVING", "MapInfo_CoordsStop")
 K:RegisterEvent("PLAYER_STARTED_MOVING", "MapInfo_CoordsStart")
+K:RegisterEvent("PLAYER_STOPPED_MOVING", "MapInfo_CoordsStop")
+K:RegisterEvent("PLAYER_CONTROL_LOST", "MapInfo_CoordsStart")
+K:RegisterEvent("PLAYER_CONTROL_GAINED", "MapInfo_CoordsStop")
 K:RegisterEvent("ZONE_CHANGED_NEW_AREA", "MapInfo_Update")
 K:RegisterEvent("ZONE_CHANGED_INDOORS", "MapInfo_Update")
 K:RegisterEvent("ZONE_CHANGED", "MapInfo_Update")

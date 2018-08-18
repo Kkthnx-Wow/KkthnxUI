@@ -110,9 +110,6 @@ local function OnTextChanged(self)
 	end
 end
 
--- Set default position for Voice Activation Alert
-Module.VoiceAlertPosition = {"TOP", ConfigChatButton1, "BOTTOM", 0, 6}
-
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
 	local EditBox = ChatEdit_ChooseBoxForSend()
@@ -503,13 +500,6 @@ function Module:SetupFrame()
 	QuickJoinToastButton.SetPoint = K.Noop
 	QuickJoinToastButton:SetAlpha(0)
 
-	VoiceChatPromptActivateChannel:CreateBorder()
-	VoiceChatPromptActivateChannel.AcceptButton:SkinButton()
-	VoiceChatPromptActivateChannel.CloseButton:SkinCloseButton()
-	VoiceChatPromptActivateChannel:SetPoint(unpack(Module.VoiceAlertPosition))
-	VoiceChatPromptActivateChannel.ClearAllPoints = K.Noop
-	VoiceChatPromptActivateChannel.SetPoint = K.Noop
-
 	if C["Chat"].ShortenChannelNames then
 		-- Guild
 		_G.CHAT_GUILD_GET = "|Hchannel:GUILD|hG|h %s "
@@ -614,6 +604,4 @@ function Module:OnEnable()
 	Whisper:SetScript("OnEvent", function()
 		Module:PlayWhisperSound()
 	end)
-
-	FCF_UpdateButtonSide = function() end
 end

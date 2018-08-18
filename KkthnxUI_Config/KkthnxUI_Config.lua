@@ -95,10 +95,9 @@ KkthnxUIConfig.ColorDefaults = {
 	},
 	-- DataBars
 	["DataBars"] = {
-		["ArtifactColor"] = {.901, .8, .601},
+		["AzeriteColor"] = {.901, .8, .601},
 		["ExperienceColor"] = {0, 0.4, 1, .8},
 		["ExperienceRestedColor"] = {1, 0, 1, 0.2},
-		["HonorColor"] = {240 / 255, 114 / 255, 65 / 255}
 	},
 	-- Nameplates
 	["Nameplates"] = {
@@ -107,34 +106,25 @@ KkthnxUIConfig.ColorDefaults = {
 		["NearColor"] = {1, 1, 0},
 		["OffTankColor"] = {0, 0.5, 1}
 	},
-	-- Cooldown
-	["Cooldown"] = {
-		["Days"] = {0.4, 0.4, 1},
-		["Expiring"] = {1, 0, 0},
-		["Hours"] = {0.4, 1, 1},
-		["Minutes"] = {1, 1, 1},
-		["Seconds"] = {1, 1, 0}
-	}
+	-- Unitframe
+	["Unitframe"] = {
+		["CastbarTicksColor"] = {0, 0, 0, 0.8}
+	},
 }
 
 function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.ActionBar.OutOfMana = {0.5, 0.5, 1.0}
 	self.ColorDefaults.ActionBar.OutOfRange = {0.8, 0.1, 0.1}
 	self.ColorDefaults.Chat.LinkColor = {0.08, 1, 0.36}
-	self.ColorDefaults.Cooldown.Days = {0.4, 0.4, 1}
-	self.ColorDefaults.Cooldown.Expiring = {1, 0, 0}
-	self.ColorDefaults.Cooldown.Hours = {0.4, 1, 1}
-	self.ColorDefaults.Cooldown.Minutes = {1, 1, 1}
-	self.ColorDefaults.Cooldown.Seconds = {1, 1, 0}
-	self.ColorDefaults.DataBars.ArtifactColor = {.901, .8, .601}
+	self.ColorDefaults.DataBars.AzeriteColor = {.901, .8, .601}
 	self.ColorDefaults.DataBars.ExperienceColor = {0, 0.4, 1, .8}
 	self.ColorDefaults.DataBars.ExperienceRestedColor = {1, 0, 1, 0.2}
-	self.ColorDefaults.DataBars.HonorColor = {240 / 255, 114 / 255, 65 / 255}
 	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
 	self.ColorDefaults.Nameplates.BadColor = {1, 0, 0}
 	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}
 	self.ColorDefaults.Nameplates.NearColor = {1, 1, 0}
 	self.ColorDefaults.Nameplates.OffTankColor = {0, 0.5, 1}
+	self.ColorDefaults.Unitframe.CastbarTicksColor = {0, 0, 0, 0.8}
 end
 
 -- Filter unwanted groups

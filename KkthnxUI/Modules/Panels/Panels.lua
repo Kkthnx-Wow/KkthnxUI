@@ -100,22 +100,6 @@ ShiftAnchor:SetScript("OnEvent", function()
 	end
 end)
 
-if C["Filger"].Enable then
-	local AnchorPlayer = CreateFrame("Frame", "AnchorPlayer", K.PetBattleHider)
-	AnchorPlayer:SetSize(190, 52)
-	AnchorPlayer:SetPoint("BOTTOMRIGHT", BottomBarAnchor, "TOPLEFT", -10, 200)
-	AnchorPlayer:SetFrameLevel(0)
-	AnchorPlayer:SetFrameStrata("BACKGROUND")
-	AnchorPlayer:Hide()
-
-	local AnchorTarget = CreateFrame("Frame", "AnchorTarget", K.PetBattleHider)
-	AnchorTarget:SetSize(190, 52)
-	AnchorTarget:SetPoint("BOTTOMLEFT", BottomBarAnchor, "TOPRIGHT", 10, 200)
-	AnchorTarget:SetFrameLevel(0)
-	AnchorTarget:SetFrameStrata("BACKGROUND")
-	AnchorTarget:Hide()
-end
-
 if C["Chat"].Background then
 	local chatBG = CreateFrame("Frame", "ChatBackground", UIParent)
 	chatBG:SetBackdrop({bgFile = C["Media"].Blank,	edgeFile = C["Media"].Glow,	edgeSize = 3,	insets = {left = 3, right = 3, top = 3, bottom = 3}})

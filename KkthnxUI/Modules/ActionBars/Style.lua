@@ -62,7 +62,7 @@ local function StyleNormalButton(self)
 			HotKey.ClearAllPoints = K.Noop
 			HotKey.SetPoint = K.Noop
 		else
-			--HotKey:SetText("")
+			HotKey:SetText("")
 			HotKey:Kill()
 		end
 
@@ -75,9 +75,6 @@ local function StyleNormalButton(self)
 		end
 
 		Button:CreateBorder()
-
-		--Button:UnregisterEvent("ACTIONBAR_SHOWGRID")
-		--Button:UnregisterEvent("ACTIONBAR_HIDEGRID")
 
 		Icon:SetTexCoord(unpack(K.TexCoords))
 		Icon:SetDrawLayer('BACKGROUND', 7)

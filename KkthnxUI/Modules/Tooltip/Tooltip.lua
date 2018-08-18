@@ -180,18 +180,20 @@ function Module:GetItemLvL(items)
 				local itemLevelFinal = 0
 
 				if (itemLevelOriginal and itemLevelLib) then
+					if itemLevelFinal == 0 then
+						itemLevelFinal = itemLevelOriginal
+					end
+
 					itemLevelFinal = (itemLevelOriginal ~= itemLevelLib) and itemLevelLib or itemLevelOriginal
 				else
 					itemLevelFinal = itemLevelLib or itemLevelOriginal
 				end
 
 				if (itemLevelFinal > 0) then
-					if ((equipSlot == "INVTYPE_2HWEAPON")
-					or (currentSlot == INVSLOT_MAINHAND and artifactEquipped)
-					or (currentSlot == INVSLOT_MAINHAND and not items[INVSLOT_OFFHAND])
-					or (currentSlot == INVSLOT_OFFHAND and not items[INVSLOT_MAINHAND])) then
+					if ((equipSlot == "INVTYPE_2HWEAPON") or (currentSlot == INVSLOT_MAINHAND and artifactEquipped)) then
 						itemLevelFinal = itemLevelFinal * 2
 					end
+
 					total = total + itemLevelFinal
 				end
 			end
@@ -237,7 +239,7 @@ function Module:ShowInspectInfo(tt, unit, r, g, b)
 	if (inspectCache[unitGUID] and inspectCache[unitGUID].age and (GetTime() - inspectCache[unitGUID].age) < inspectAge) then
 		tt:AddDoubleLine(SPECIALIZATION, inspectCache[unitGUID].talent, nil, nil, nil, r, g, b)
 		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, inspectCache[unitGUID].itemLevel, nil, nil, nil, 1, 1, 1)
-	elseif (InspectFrame and not InspectFrame:IsShown()) then
+	elseif (not InspectFrame or (InspectFrame and not InspectFrame:IsShown())) then
 		LibInspect:RequestItems(unit, false)
 	end
 end
@@ -548,7 +550,7 @@ function Module:SetStyle(tt)
 
 	if (not tt.IsSkinned) then
 		tt:StripTextures()
-		tt:CreateBorder(nil, nil, 7, 3)
+		tt:CreateBorder(nil, 7, 3)
 		tt.IsSkinned = true
 	end
 
@@ -706,7 +708,7 @@ function Module:OnEnable()
 	self:SetTooltipFonts()
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -2, 16)
+	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -2, 2)
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)
@@ -719,6 +721,12 @@ function Module:OnEnable()
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	for _, tt in pairs(QualityTooltips) do
+		tt:SetBackdrop(nil)
+		tt.SetBackdrop = K.Noop
+		if tt.BackdropFrame then
+			tt.BackdropFrame:SetBackdrop(nil)
+		end
+
 		self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	end
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")

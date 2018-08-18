@@ -86,6 +86,10 @@ function Module:DisableBlizzard()
 		return true
 	end
 
+	-- Avoid Hiding Buttons on open/close spellbook
+	MultiActionBar_HideAllGrids = function() end
+	MultiActionBar_ShowAllGrids = function() end
+
 	self:IconIntroTracker_Toggle()
 end
 

@@ -1,4 +1,8 @@
 local K, C = unpack(select(2, ...))
+if K.CheckAddOnState("Immersion") then
+	return
+end
+
 local Module = K:NewModule("TalkingHead", "AceEvent-3.0")
 
 -- Lua API

@@ -22,8 +22,21 @@ function Module:CreateTargetOfTarget()
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetSize(74, 12)
@@ -95,6 +108,10 @@ function Module:CreateTargetOfTarget()
 	self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
 	self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -16)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
+
+	if C["Unitframe"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "targettarget")
+	end
 
 	Module.CreateAuras(self, "targettarget")
 	Module.CreateRaidTargetIndicator(self, 12)

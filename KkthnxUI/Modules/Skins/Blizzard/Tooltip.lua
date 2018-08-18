@@ -63,16 +63,16 @@ local function SkinTooltip()
     end
     hooksecurefunc("GameTooltip_AddQuestRewardsToTooltip", QuestRewardsBarColor)
 
-    local function SetBackdropStyle(self)
-        if not self or self:IsForbidden() then
-            return
-        end
+    --local function SetBackdropStyle(self)
+    --    if not self or self:IsForbidden() then
+    --        return
+    --    end
 
-        if self.IsSkinned then
-            self:SetBackdrop(nil)
-        end
-    end
-    hooksecurefunc("GameTooltip_SetBackdropStyle", SetBackdropStyle)
+    --    if self.IsSkinned then
+    --        self:SetBackdrop(nil)
+    --    end
+    --end
+    --hooksecurefunc("GameTooltip_SetBackdropStyle", SetBackdropStyle)
 
     local GameTooltip = _G["GameTooltip"]
     local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
@@ -104,6 +104,12 @@ local function SkinTooltip()
     }
 
     for _, tt in pairs(tooltips) do
+        tt:SetBackdrop(nil)
+        tt.SetBackdrop = K.Noop
+        if tt.BackdropFrame then
+            tt.BackdropFrame:SetBackdrop(nil)
+        end
+
         Module:SecureHookScript(tt, "OnShow", "SetStyle")
     end
 

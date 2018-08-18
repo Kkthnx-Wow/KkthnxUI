@@ -50,7 +50,8 @@ Module.GameIcons = {
 	Pro = MediaIconPath .. "Overwatch",
 	S1 = MediaIconPath .. "SC",
 	S2 = MediaIconPath .. "SC2",
-	WTCG = MediaIconPath .. "Hearthstone"
+	WTCG = MediaIconPath .. "Hearthstone",
+	VIPR = MediaIconPath .. "COD4"
 }
 
 Module.StatusIcons = {
@@ -68,7 +69,8 @@ Module.ClientColor = {
 	Pro = "FFFFFF",
 	S1 = "C495DD",
 	S2 = "C495DD",
-	WTCG = "FFB100"
+	WTCG = "FFB100",
+	VIPR = "FFFFFF",
 }
 
 function Module:UpdateFriends(button)
@@ -102,7 +104,7 @@ function Module:UpdateFriends(button)
 		end
 
 		if characterName then
-			_, _, _, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetGameAccountInfo(toonID)
+			_, _, _, realmName, _, faction, _, class, _, zoneName, level, gameText = BNGetGameAccountInfo(toonID)
 			if client == BNET_CLIENT_WOW then
 				if (level == nil or tonumber(level) == nil) then
 					level = 0
@@ -114,6 +116,9 @@ function Module:UpdateFriends(button)
 				nameText = format("%s |cFFFFFFFF(|r%s%s|r - %s %s%s|r|cFFFFFFFF)|r", nameText, classcolor, characterName, LEVEL, diff, level)
 				Cooperate = CanCooperateWithGameAccount(toonID)
 			else
+				if not Module.ClientColor[client] then
+					client = "App"
+				end
 				nameText = format("|cFF%s%s|r", Module.ClientColor[client] or "FFFFFF", nameText)
 			end
 		end
@@ -127,17 +132,22 @@ function Module:UpdateFriends(button)
 					if realmName == K.Realm then
 						infoText = zoneName
 					else
-						infoText = format("%s - %s", zoneName, realmName)
+						local _, b = strsplit("-", gameText)
+						infoText = format("%s - %s", zoneName, b or "")
 					end
 				end
 
 				button.gameIcon:SetTexture(Module.GameIcons[faction])
 			else
+				if not Module.GameIcons[client] then
+					client = "App"
+				end
 				infoText = gameText
 				button.gameIcon:SetTexture(Module.GameIcons[client])
 			end
 
 			nameColor = FRIENDS_BNET_NAME_COLOR
+			button.gameIcon:SetTexCoord(0, 1, 0, 1)
 		else
 			button.status:SetTexture(Module.StatusIcons.Offline)
 			nameColor = FRIENDS_GRAY_COLOR
@@ -150,6 +160,16 @@ function Module:UpdateFriends(button)
 		button.gameIcon:SetPoint("TOPRIGHT", -50, -2)
 	else
 		button.gameIcon:SetPoint("TOPRIGHT", -21, -2)
+	end
+
+	if not button.isUpdateHooked then
+		button:HookScript("OnUpdate", function(self, elapsed)
+			if button.gameIcon:GetTexture() == MediaIconPath .. "GameIcons\\Bnet" then
+				AnimateTexCoords(self.gameIcon, 512, 256, 64, 64, 25, elapsed, 0.02)
+			end
+		end)
+
+		button.isUpdateHooked = true
 	end
 
 	if nameText then

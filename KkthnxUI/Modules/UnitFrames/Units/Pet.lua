@@ -22,8 +22,21 @@ function Module:CreatePet()
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
@@ -89,6 +102,10 @@ function Module:CreatePet()
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
+	end
+
+	if C["Unitframe"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "pet")
 	end
 
 	Module.CreateAuras(self, "pet")

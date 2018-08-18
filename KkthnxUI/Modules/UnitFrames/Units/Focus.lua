@@ -22,8 +22,21 @@ function Module:CreateFocus()
 	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	self:RegisterForClicks("AnyUp")
-	self:HookScript("OnEnter", UnitFrame_OnEnter)
-	self:HookScript("OnLeave", UnitFrame_OnLeave)
+	self:SetScript("OnEnter", function(self)
+		UnitFrame_OnEnter(self)
+
+		if (self.Highlight) then
+			self.Highlight:Show()
+		end
+	end)
+
+	self:SetScript("OnLeave", function(self)
+		UnitFrame_OnLeave(self)
+
+		if (self.Highlight) then
+			self.Highlight:Hide()
+		end
+	end)
 
 	self.Health = CreateFrame("StatusBar", nil, self)
 	self.Health:SetSize(130, 26)
@@ -172,6 +185,10 @@ function Module:CreateFocus()
 	end
 
 	Module.CreateAuras(self, "focus")
+
+	if C["Unitframe"].MouseoverHighlight then
+		Module.MouseoverHealth(self, "focus")
+	end
 
 	self.Threat = {
 		Hide = K.Noop,

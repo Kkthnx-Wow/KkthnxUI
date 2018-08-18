@@ -1,14 +1,17 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("MovableFrames", "AceEvent-3.0", "AceHook-3.0")
 
--- Sourced: Azilroka, Simpy
--- Desciption: Make Blizzard Frames Movable
+-- Sourced: ElvUI Shadow and Light
 
-local pairs, tinsert, sort = pairs, tinsert, sort
 local _G = _G
-local IsAddOnLoaded = IsAddOnLoaded
+local pairs = pairs
+local type = type
 
-local Frames = {
+local GetRealmName = _G.GetRealmName
+local IsAddOnLoaded = _G.IsAddOnLoaded
+local UnitName = _G.UnitName
+
+Module.Frames = {
 	"AddonList",
 	"AudioOptionsFrame",
 	"BankFrame",
@@ -16,11 +19,11 @@ local Frames = {
 	"BonusRollLootWonFrame",
 	"BonusRollMoneyWonFrame",
 	"CharacterFrame",
+	"ChatConfigFrame",
 	"DressUpFrame",
 	"FriendsFrame",
 	"FriendsFriendsFrame",
 	"GameMenuFrame",
-	"GhostFrame",
 	"GossipFrame",
 	"GuildInviteFrame",
 	"GuildRegistrarFrame",
@@ -34,10 +37,10 @@ local Frames = {
 	"MailFrame",
 	"MerchantFrame",
 	"OpenMailFrame",
-	"PetitionFrame",
-	"PetStableFrame",
 	"PVEFrame",
-	-- "PVPReadyDialog",
+	"PetStableFrame",
+	"PetitionFrame",
+	"PVPReadyDialog",
 	"QuestFrame",
 	"QuestLogPopupDetailFrame",
 	"RaidBrowserFrame",
@@ -56,14 +59,16 @@ local Frames = {
 	"StaticPopup4",
 	"TabardFrame",
 	"TaxiFrame",
+	"TimeManagerFrame",
 	"TradeFrame",
 	"TutorialFrame",
 	"VideoOptionsFrame",
-	"WorldStateScoreFrame",
+	"WorldMapFrame",
 }
 
-local AddOnFrames = {
+Module.AddonsList = {
 	["Blizzard_AchievementUI"] = {"AchievementFrame"},
+	["Blizzard_AlliedRacesUI"] = {"AlliedRacesFrame"},
 	["Blizzard_ArchaeologyUI"] = {"ArchaeologyFrame"},
 	["Blizzard_AuctionUI"] = {"AuctionFrame"},
 	["Blizzard_BarberShopUI"] = {"BarberShopFrame"},
@@ -89,91 +94,106 @@ local AddOnFrames = {
 	["Blizzard_OrderHallUI"] = {"OrderHallTalentFrame"},
 	["Blizzard_QuestChoice"] = {"QuestChoiceFrame"},
 	["Blizzard_TalentUI"] = {"PlayerTalentFrame"},
-	["Blizzard_TalkingHeadUI"] = {"TalkingHeadFrame"},
+	-- ["Blizzard_TalkingHeadUI"] = {"TalkingHeadFrame"},
 	["Blizzard_TradeSkillUI"] = {"TradeSkillFrame"},
 	["Blizzard_TrainerUI"] = {"ClassTrainerFrame"},
 	["Blizzard_VoidStorageUI"] = {"VoidStorageFrame"},
 }
 
-function Module:LoadPosition(frame)
-	if not frame:GetPoint() then
-		frame:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 16, -116)
+local function OnDragStart(self)
+	self.IsMoving = true
+	self:StartMoving()
+end
+
+local function OnDragStop(self)
+	self:StopMovingOrSizing()
+	self.IsMoving = false
+	self:SetUserPlaced(false)
+end
+
+local function LoadPosition(self)
+	if self.IsMoving == true then return end
+	local Name = self:GetName()
+	if not self:GetPoint() then
+		self:SetPoint("TOPLEFT", "UIParent", "TOPLEFT", 16, -116, true)
+		OnDragStop(self)
 	end
-end
 
-function Module:OnDragStart(frame)
-	self:Unhook(frame, "OnUpdate")
-	frame:StartMoving()
-end
-
-function Module:OnDragStop(frame)
-	frame:StopMovingOrSizing()
-	frame:SetUserPlaced(false)
-
-	if (not self:IsHooked(frame, "OnUpdate")) then
-		self:HookScript(frame, "OnUpdate", "LoadPosition")
+	if Name == "QuestFrame" then
+		_G["GossipFrame"]:Hide()
+	elseif Name == "GossipFrame" then
+		_G["QuestFrame"]:Hide()
 	end
 end
 
 function Module:MakeMovable(Name)
-	if not _G[Name] then
-		K.Print("[MovableFrames] " .. "Frame doesn't exist: " .. Name)
+	local frame = _G[Name]
+
+	if not frame then
+		K.Print("Frame to move doesn't exist: "..(frameName or UNKNOWN))
 		return
 	end
-
-	local Frame = _G[Name]
 
 	if Name == "AchievementFrame" then
 		AchievementFrameHeader:EnableMouse(false)
 	end
 
-	Frame:EnableMouse(true)
-	Frame:SetMovable(true)
-	Frame:RegisterForDrag("LeftButton")
-	Frame:SetClampedToScreen(true)
-	self:HookScript(Frame, "OnUpdate", "LoadPosition")
-	self:HookScript(Frame, "OnDragStart", "OnDragStart")
-	self:HookScript(Frame, "OnDragStop", "OnDragStop")
-	self:HookScript(Frame, "OnHide", "OnDragStop")
-
-	Frame.ignoreFramePositionManager = true
-	if UIPanelWindows[Name] then
-		for Key in pairs(UIPanelWindows[Name]) do
-			if Key == "pushable" then
-				UIPanelWindows[Name][Key] = nil
-			end
-		end
-	end
+	frame:EnableMouse(true)
+	frame:SetMovable(true)
+	frame:SetClampedToScreen(true)
+	frame:RegisterForDrag("LeftButton")
+	frame:HookScript("OnShow", LoadPosition)
+	frame:HookScript("OnDragStart", OnDragStart)
+	frame:HookScript("OnDragStop", OnDragStop)
+	frame:HookScript("OnHide", OnDragStop)
 end
 
-function Module:ADDON_LOADED(_, addon)
-	if AddOnFrames[addon] then
-		for _, Frame in pairs(AddOnFrames[addon]) do
-			self:MakeMovable(Frame)
+function Module:Addons(event, addon)
+	addon = Module.AddonsList[addon]
+
+	if not addon then
+		return
+	end
+
+	if type(addon) == "table" then
+		for i = 1, #addon do
+			Module:MakeMovable(addon[i])
 		end
+	else
+		Module:MakeMovable(addon)
+	end
+
+	Module.addonCount = Module.addonCount + 1
+
+	if Module.addonCount == #Module.AddonsList then
+		Module:UnregisterEvent(event)
 	end
 end
 
 function Module:OnEnable()
-	if C["General"].MoveBlizzardFrames ~= true then
-		return
+	Module.addonCount = 0
+
+	KkthnxUIData[GetRealmName()][UnitName("player")].PvPReadyDialogReset = nil
+
+	if not KkthnxUIData[GetRealmName()][UnitName("player")].PvPReadyDialogReset then
+		KkthnxUIData[GetRealmName()][UnitName("player")].PvPReadyDialogReset = true
 	end
 
-	tinsert(Frames, "LossOfControlFrame")
-	sort(Frames)
+	PVPReadyDialog:Hide()
 
-	for i = 1, #Frames do
-		Module:MakeMovable(Frames[i])
-	end
+	if C["General"].MoveBlizzardFrames == true then
+		for i = 1, #Module.Frames do
+			Module:MakeMovable(Module.Frames[i])
+		end
+		self:RegisterEvent("ADDON_LOADED", "Addons")
 
-	-- Check Forced Loaded AddOns
-	for AddOn, Table in pairs(AddOnFrames) do
-		if IsAddOnLoaded(AddOn) then
-			for _, Frame in pairs(Table) do
-				Module:MakeMovable(Frame)
+		-- Check Forced Loaded AddOns
+		for AddOn, Table in pairs(Module.AddonsList) do
+			if IsAddOnLoaded(AddOn) then
+				for _, frame in pairs(Table) do
+					Module:MakeMovable(frame)
+				end
 			end
 		end
 	end
-
-	Module:RegisterEvent("ADDON_LOADED")
 end

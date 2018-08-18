@@ -7,7 +7,6 @@ local hooksecurefunc = _G.hooksecurefunc
 
 local function BelowMinimapContainer()
 	local UIWidgetsHolder = CreateFrame("Frame", "BelowMinimapContainerHolder", UIParent)
-	-- UIWidgetsHolder:SetPoint("TOPRIGHT", _G["MinimapCluster"], "BOTTOMRIGHT", 0, -16)
 	UIWidgetsHolder:ClearAllPoints()
 	UIWidgetsHolder:SetPoint("TOP", UIParent, "TOP", 0, -170)
 	UIWidgetsHolder:SetSize(128, 40)
@@ -25,6 +24,7 @@ local function BelowMinimapContainer()
 			UIWidgetsHolder:SetWidth(widgetContainer:GetWidth())
 		end
 	end)
+
 	-- And this one cause UIParentManageFramePositions() repositions the widget constantly
 	hooksecurefunc(UIWidgetsContainer, "ClearAllPoints", function(self)
 		self:SetPoint("CENTER", UIWidgetsHolder, "CENTER")

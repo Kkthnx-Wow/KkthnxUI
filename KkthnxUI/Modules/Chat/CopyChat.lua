@@ -146,14 +146,7 @@ function CopyChat:OnEnable()
 	CopyFrame = CreateFrame("Frame", "CopyChatFrame", UIParent)
 	table_insert(UISpecialFrames, "CopyChatFrame")
 
-	CopyFrame.Backgrounds = CopyFrame:CreateTexture(nil, "BACKGROUND", -1)
-	CopyFrame.Backgrounds:SetAllPoints()
-	CopyFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	CopyFrame.Borders = CreateFrame("Frame", nil, CopyFrame)
-	CopyFrame.Borders:SetAllPoints()
-	K.CreateBorder(CopyFrame.Borders)
-
+	CopyFrame:CreateBorder()
 	CopyFrame:SetSize(700, 200)
 	CopyFrame:SetPoint("BOTTOM", UIParent, 0, 4)
 	CopyFrame:Hide()
@@ -170,6 +163,7 @@ function CopyChat:OnEnable()
 			self.isSizing = true
 		end
 	end)
+
 	CopyFrame:SetScript("OnMouseUp", function(self, button)
 		if button == "LeftButton" and self.isMoving then
 			self:StopMovingOrSizing()
@@ -179,6 +173,7 @@ function CopyChat:OnEnable()
 			self.isSizing = false
 		end
 	end)
+
 	CopyFrame:SetScript("OnHide", function(self)
 		if (self.isMoving or self.isSizing) then
 			self:StopMovingOrSizing()
@@ -186,16 +181,20 @@ function CopyChat:OnEnable()
 			self.isSizing = false
 		end
 	end)
+
 	CopyFrame:SetFrameStrata("DIALOG")
 	CopyFrame.Minimized = true
 
 	local ScrollArea = CreateFrame("ScrollFrame", "CopyChatScrollFrame", CopyFrame, "UIPanelScrollFrameTemplate")
 	ScrollArea:SetPoint("TOPLEFT", CopyFrame, "TOPLEFT", 8, -30)
 	ScrollArea:SetPoint("BOTTOMRIGHT", CopyFrame, "BOTTOMRIGHT", -30, 8)
+	CopyChatScrollFrameScrollBar:SetAlpha(0) -- We dont skin these nor do we show their ugly asses either.
+
 	ScrollArea:SetScript("OnSizeChanged", function(self)
 		CopyChatFrameEditBox:SetWidth(self:GetWidth())
 		CopyChatFrameEditBox:SetHeight(self:GetHeight())
 	end)
+
 	ScrollArea:HookScript("OnVerticalScroll", function(self, offset)
 		CopyChatFrameEditBox:SetHitRectInsets(0, 0, offset, (CopyChatFrameEditBox:GetHeight() - offset - self:GetHeight()))
 	end)

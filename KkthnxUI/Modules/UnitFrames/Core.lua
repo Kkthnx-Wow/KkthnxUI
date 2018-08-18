@@ -164,6 +164,68 @@ function Module:HighlightPlate()
 	end
 end
 
+function Module:CreateStyle(unit)
+	if (not unit) then
+		return
+	end
+
+	local Parent = self:GetParent():GetName()
+
+	if (unit == "player") then
+		Module.CreatePlayer(self)
+	elseif (unit == "target") then
+		Module.CreateTarget(self)
+	elseif (unit == "targettarget") then
+		Module.CreateTargetOfTarget(self)
+	elseif (unit == "pet") then
+		Module.CreatePet(self)
+	elseif (unit == "focus") then
+		Module.CreateFocus(self)
+	elseif (unit == "focustarget") then
+		Module.CreateFocusTarget(self)
+	elseif unit:find("arena%d") then
+		Module.CreateArena(self)
+	elseif unit:find("boss%d") then
+		Module.CreateBoss(self)
+	elseif (unit:find("party") or unit:find("raid")) then
+		if Parent:match("Party") then
+			Module.CreateParty(self)
+		else
+			Module.CreateRaid(self)
+		end
+	elseif unit:match("nameplate") then
+		Module.CreateNameplates(self)
+	end
+
+	return self
+end
+
+function Module:MouseoverHealth(unit)
+	if (not unit) then
+		return
+	end
+
+	-- Declare "Module_Config" so we can let the user pick per module.
+	local Module_Config
+	local Health = self.Health
+
+	-- We need to make it so each module texture works per unit setting.
+	if (unit:find("party")) then
+		Module_Config = "Party"
+	else
+		Module_Config = "Unitframe"
+	end
+
+	local Texture = K.GetTexture(C[Module_Config].Texture) or C["Media"].Texture
+
+	self.Highlight = Health:CreateTexture(nil, "OVERLAY")
+	self.Highlight:SetAllPoints()
+	self.Highlight:SetTexture(Texture)
+	self.Highlight:SetVertexColor(1, 1, 1, .2)
+	self.Highlight:SetBlendMode("ADD")
+	self.Highlight:Hide()
+end
+
 function Module:CustomCastTimeText(duration)
 	local Value = string_format("%.1f / %.1f", self.channeling and duration or self.max - duration, self.max)
 
@@ -633,7 +695,7 @@ function Module:GetPartyFramesAttributes()
 	self:SetHeight(header:GetAttribute("initial-height"))
 	]],
 
-	"initial-width", 140,
+	"initial-width", 158,
 	"initial-height", 38,
 	"showSolo", false,
 	"showParty", true,
@@ -642,7 +704,7 @@ function Module:GetPartyFramesAttributes()
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
 	"groupBy", "ASSIGNEDROLE",
-	"yOffset", -44
+	"yOffset", -38
 end
 
 function Module:GetDamageRaidFramesAttributes()
@@ -798,6 +860,7 @@ function Module:CreateUnits()
 				end
 				Movers:RegisterFrame(Arena[i])
 			end
+
 			Module.Arena = Arena
 			Module.CreateArenaPreparationFrames()
 		end
@@ -818,7 +881,7 @@ function Module:CreateUnits()
 
 		if C["Party"].Enable then
 			local Party = oUF:SpawnHeader(Module:GetPartyFramesAttributes())
-			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 12, -200)
+			Party:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -180)
 			Movers:RegisterFrame(Party)
 		end
 
@@ -895,6 +958,47 @@ function Module:CreateUnits()
 		}
 
 		oUF:SpawnNamePlates(nil, Module.NameplatesCallback, Module.NameplatesVars)
+	end
+end
+
+function Module:CreateFilgerAnchors()
+	if C["Filger"].Enable then
+	P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)
+	P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	P_PROC_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 169)
+	P_PROC_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	SPECIAL_P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 211)
+	SPECIAL_P_BUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	T_DEBUFF_ICON_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 211)
+	T_DEBUFF_ICON_Anchor:SetSize(C["Filger"].BuffSize, C["Filger"].BuffSize)
+
+	T_BUFF_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "TOPLEFT", -2, 253)
+	T_BUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+
+	PVE_PVP_DEBUFF_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 253)
+	PVE_PVP_DEBUFF_Anchor:SetSize(C["Filger"].PvPSize, C["Filger"].PvPSize)
+
+	PVE_PVP_CC_Anchor:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMLEFT", -2, -44)
+	PVE_PVP_CC_Anchor:SetSize(221, 25)
+
+	COOLDOWN_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 63, 17)
+	COOLDOWN_Anchor:SetSize(C["Filger"].CooldownSize, C["Filger"].CooldownSize)
+
+	T_DE_BUFF_BAR_Anchor:SetPoint("BOTTOMLEFT", "oUF_Target", "BOTTOMRIGHT", 2, 3)
+	T_DE_BUFF_BAR_Anchor:SetSize(218, 25)
+
+	Movers:RegisterFrame(P_BUFF_ICON_Anchor)
+	Movers:RegisterFrame(P_PROC_ICON_Anchor)
+	Movers:RegisterFrame(SPECIAL_P_BUFF_ICON_Anchor)
+	Movers:RegisterFrame(T_DEBUFF_ICON_Anchor)
+	Movers:RegisterFrame(T_BUFF_Anchor)
+	Movers:RegisterFrame(PVE_PVP_DEBUFF_Anchor)
+	Movers:RegisterFrame(PVE_PVP_CC_Anchor)
+	Movers:RegisterFrame(COOLDOWN_Anchor)
+	Movers:RegisterFrame(T_DE_BUFF_BAR_Anchor)
 	end
 end
 
@@ -1071,6 +1175,7 @@ function Module:OnEnable()
 	oUF:SetActiveStyle(" ")
 
 	self:CreateUnits()
+	self:CreateFilgerAnchors()
 
 	if C["Arena"].Enable then
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")

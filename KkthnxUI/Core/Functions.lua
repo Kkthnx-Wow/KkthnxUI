@@ -164,6 +164,10 @@ function K.CheckAddOnState(addon)
 	return K.AddOns[string_lower(addon)] or false
 end
 
+function K.GetAddOnVersion(addon)
+	return K.AddOnVersion[string_lower(addon)] or nil
+end
+
 function K.GetPlayerRole()
 	local assignedRole = UnitGroupRolesAssigned("player")
 	if (assignedRole == "NONE") then

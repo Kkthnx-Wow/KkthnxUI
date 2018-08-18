@@ -32,10 +32,9 @@ function Module:CreateClassRunes(width, height, spacing)
 		return
 	end
 
-	local RunesModuleTexture = K.GetTexture(C["Unitframe"].Texture)
-
 	local runes = {}
 	local maxRunes = 6
+	local runesTexture = K.GetTexture(C["Unitframe"].Texture)
 
 	width = (width - (maxRunes + 1) * spacing) / maxRunes
 	spacing = width + spacing
@@ -43,14 +42,9 @@ function Module:CreateClassRunes(width, height, spacing)
 	for i = 1, maxRunes do
 		local rune = CreateFrame("StatusBar", nil, self)
 		rune:SetSize(width, height)
-		rune:SetPoint("BOTTOMLEFT", (i - 1) * spacing + 4, -14)
-		rune:SetStatusBarTexture(RunesModuleTexture)
-
-		rune.Background = rune:CreateTexture(nil, "BACKGROUND", -1)
-		rune.Background:SetAllPoints()
-		rune.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		K.CreateBorder(rune)
+		rune:SetPoint("BOTTOMLEFT", (i - 1) * spacing, -14)
+		rune:SetStatusBarTexture(runesTexture)
+		rune:CreateBorder()
 
 		runes[i] = rune
 	end

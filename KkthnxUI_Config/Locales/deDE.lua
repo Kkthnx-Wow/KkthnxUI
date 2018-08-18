@@ -14,6 +14,7 @@ local ModuleWidth = "Pick the perfect Width for this module"
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
 local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
+local ModuleToggleSkin = "Enable/Disable this skin."
 
 KkthnxUIConfig["deDE"] = {
 	-- General Local
@@ -159,6 +160,16 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = ModuleToggle,
 		},
 
+		["BagBar"] = {
+			["Name"] = "Bag Bar",
+			["Desc"] = "Enable/Disable the Bag-Bar.",
+		},
+
+		["BagBarMouseover"] = {
+			["Name"] = "Bag Bar Mouseover",
+			["Desc"] = "The Bag Bar is not shown unless you mouse over the Bag Bar.",
+		},
+
 		["Font"] = {
 			["Name"] = "Font",
 			["Desc"] = ModuleFont,
@@ -192,11 +203,6 @@ KkthnxUIConfig["deDE"] = {
 		["AutoSell"] = {
 			["Name"] = "Auto Sell Grays",
 			["Desc"] = "When visiting a vendor, automatically sell gray quality items",
-		},
-
-		["SortInverted"] = {
-			["Name"] = "Sort Inverted",
-			["Desc"] = "Direction the bag sorting will use to allocate the items.",
 		},
 
 		["UseGuildRepairFunds"] = {
@@ -234,6 +240,16 @@ KkthnxUIConfig["deDE"] = {
 
 	-- Actionbar Local
 	["ActionBar"] = {
+		["MicroBar"] = {
+			["Name"] = "Micro Bar",
+			["Desc"] = "Enable",
+		},
+
+		["MicroBarMouseover"] = {
+			["Name"] = "Micro Bar Mouseover",
+			["Desc"] = "The MicroBar is not shown unless you mouse over the MicroBar",
+		},
+
 		["BottomBars"] = {
 			["Name"] = "Bottom Bars",
 			["Desc"] = "The amount of bars to display on the bottom. Note: Value can only be 1-3",
@@ -417,10 +433,10 @@ KkthnxUIConfig["deDE"] = {
 			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
-		--["HealerIcon"] = {
-			--	["Name"] = "Healer Icon",
-			--	["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
-		--},
+		["MarkHealers"] = {
+				["Name"] = "Mark Healers",
+				["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
+		},
 
 		["HealthValue"] = {
 			["Name"] = "Health Value",
@@ -853,39 +869,49 @@ KkthnxUIConfig["deDE"] = {
 
 	-- Skins Local
 	["Skins"] = {
+		["AzerothAutoPilot"] = {
+			["Name"] = "Azeroth Auto Pilot",
+			["Desc"] = ModuleToggleSkin,
+		},
+
+		["BlizzardBags"] = {
+			["Name"] = "Blizzard Bags",
+			["Desc"] = ModuleToggleSkin,
+		},
+
 		["Bagnon"] = {
 			["Name"] = "Bagnon",
-			["Desc"] = "Bagnon skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["BigWigs"] = {
 			["Name"] = "BigWigs",
-			["Desc"] = "BigWigs skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["ChatBubbles"] = {
 			["Name"] = "Chat Bubbles",
-			["Desc"] = "ChatBubbles skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["DBM"] = {
-			["Name"] = "Deadly Boss Mods (DBM)",
-			["Desc"] = "Deadly Boss Mods (DBM) skin",
+			["Name"] = "Deadly Boss Mods",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Recount"] = {
 			["Name"] = "Recount",
-			["Desc"] = "Recount skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Skada"] = {
 			["Name"] = "Skada",
-			["Desc"] = "Skada skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Spy"] = {
 			["Name"] = "Spy",
-			["Desc"] = "Spy skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 
 		["Texture"] = {
@@ -895,7 +921,7 @@ KkthnxUIConfig["deDE"] = {
 
 		["WeakAuras"] = {
 			["Name"] = "WeakAuras",
-			["Desc"] = "WeakAuras skin",
+			["Desc"] = ModuleToggleSkin,
 		},
 	},
 
@@ -1030,6 +1056,16 @@ KkthnxUIConfig["deDE"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["CastbarLatency"] = {
+			["Name"] = "Castbar Latency",
+			["Desc"] = "Castbar Latency",
+		},
+
+		["MouseoverHighlight"] = {
+			["Name"] = "Mouseover Highlight",
+			["Desc"] = "Highlight a units Health Bar when you are moused over them. (Only works for Target and Party right now!)",
+		},
+
 		["CastbarHeight"] = {
 			["Name"] = "Castbar Height",
 			["Desc"] = ModuleHeight,
@@ -1252,6 +1288,11 @@ KkthnxUIConfig["deDE"] = {
 		["Enable"] = {
 			["Name"] = "Toggle Party Frames",
 			["Desc"] = ModuleToggle,
+		},
+
+		["MouseoverHighlight"] = {
+			["Name"] = "Mouseover Highlight",
+			["Desc"] = "Highlight a units Health Bar when you are moused over them. (Only works for Target and Party right now!)",
 		},
 
 		["DecimalLength"] = {

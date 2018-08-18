@@ -131,11 +131,11 @@ function Module:CreateAuras(unit)
 			self.Auras = Auras
 		end
 	elseif (unit == "party") then
-		Buffs:SetHeight(20)
-		Buffs:SetWidth(self:GetWidth())
+		Buffs:SetHeight(18)
+		Buffs:SetWidth(self:GetWidth() + 2)
 		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs.size = 20
-		Buffs.num = 4
+		Buffs.size = 18
+		Buffs.num = 5
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "TOPLEFT"
 		Buffs["growth-y"] = "DOWN"
@@ -144,10 +144,10 @@ function Module:CreateAuras(unit)
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
 		Buffs.CustomFilter = FilterSharedBuffs
 
-		Debuffs:SetHeight(28)
+		Debuffs:SetHeight(34)
 		Debuffs:SetWidth(self.Power:GetWidth())
 		Debuffs:SetPoint("LEFT", self, "RIGHT", 3, 0)
-		Debuffs.size = 28
+		Debuffs.size = 34
 		Debuffs.num = 3
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"
