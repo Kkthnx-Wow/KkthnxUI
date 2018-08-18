@@ -8,19 +8,16 @@ local GameTooltip = _G.GameTooltip
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
-
-local GarbageEventCount, TooltipBagBug = 0, false
+local TooltipBagBug = false
 
 local GarbageCollection = CreateFrame("Frame")
 GarbageCollection:RegisterEvent("PLAYER_FLAGS_CHANGED")
 GarbageCollection:RegisterEvent("PLAYER_ENTERING_WORLD")
-GarbageCollection:SetScript("OnEvent", function(self, event)
-	GarbageEventCount = GarbageEventCount + 1
-
-	if (InCombatLockdown() and GarbageEventCount > 25000) or (not InCombatLockdown() and GarbageEventCount > 10000) or event == "PLAYER_ENTERING_WORLD" then
+GarbageCollection:SetScript("OnEvent", function(self, event, unit)
+	if (event == "PLAYER_ENTERING_WORLD") then
 		collectgarbage("collect")
-		print(K.Name .. " Your Garbage Report for", event, GarbageEventCount)
-		GarbageEventCount = 0
+
+		self:UnregisterEvent(event)
 	else
 		if (unit ~= "player") then
 			return
@@ -28,8 +25,6 @@ GarbageCollection:SetScript("OnEvent", function(self, event)
 
 		if UnitIsAFK(unit) then
 			collectgarbage("collect")
-			print(K.Name .. " Your Garbage Report for", "AFK " .. UnitIsAFK(unit), GarbageEventCount)
-			GarbageEventCount = 0
 		end
 	end
 end)

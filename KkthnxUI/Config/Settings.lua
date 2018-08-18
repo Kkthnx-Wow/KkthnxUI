@@ -184,7 +184,7 @@ C["DataText"] = {
 	["Font"] = "KkthnxUI",
 	["LocalTime"] = true,
 	["Outline"] = false,
-	["System"] = true,
+	-- ["System"] = true, -- Until it rewrite it.
 	["Time"] = true,
 	["Time24Hr"] = false
 }

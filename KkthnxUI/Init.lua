@@ -135,8 +135,6 @@ function AddOn:OnInitialize()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_REGEN_ENABLED")
-
-	collectgarbage("collect")
 end
 
 function AddOn:PositionGameMenuButton()

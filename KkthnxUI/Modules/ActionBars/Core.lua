@@ -1,4 +1,8 @@
 local K, C = unpack(select(2, ...))
+if C["ActionBar"].Enable ~= true then
+	return
+end
+
 local Module = K:NewModule("Actionbars", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G

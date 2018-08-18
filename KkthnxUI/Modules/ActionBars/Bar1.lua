@@ -37,7 +37,7 @@ end
 local Page = {
 	["DRUID"] = Druid,
 	["ROGUE"] = Rogue,
-	["DEFAULT"] = "[bar:6] 6;[bar:5] 5;[bar:4] 4;[bar:3] 3;[bar:2] 2;[overridebar] 14;[shapeshift] 13;[vehicleui] 12;[possessbar] 12;",
+	["DEFAULT"] = "[vehicleui] 12; [possessbar] 11; [overridebar] 14; [shapeshift] 13; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
 }
 
 local function GetBar()
@@ -49,17 +49,17 @@ local function GetBar()
 		condition = condition .. " " .. page
 	end
 
-	condition = condition .. " [form] 1; 1"
+	condition = condition .. " 1"
 
 	return condition
 end
 
-ActionBar1:RegisterEvent("PLAYER_ENTERING_WORLD")
+ActionBar1:RegisterEvent("PLAYER_LOGIN")
 ActionBar1:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
 ActionBar1:RegisterEvent("UPDATE_OVERRIDE_ACTIONBAR")
-ActionBar1:SetScript("OnEvent", function(self, event, unit, ...)
-	local login, reload = ...
-	if event == "PLAYER_ENTERING_WORLD" and login == true then
+ActionBar1:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+ActionBar1:SetScript("OnEvent", function(self, event, ...)
+	if event == "PLAYER_LOGIN" then
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button = _G["ActionButton" .. i]
 			self:SetFrameRef("ActionButton" .. i, button)

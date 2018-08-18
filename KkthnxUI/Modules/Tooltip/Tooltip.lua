@@ -156,8 +156,8 @@ function Module:GetLevelLine(tt, offset)
 	end
 end
 
-function Module:GetItemLvL(items)
-	if not items then
+function Module:GetItemLvL(items, talents)
+	if not items or not talents then
 		return "?"
 	end
 
@@ -190,7 +190,11 @@ function Module:GetItemLvL(items)
 				end
 
 				if (itemLevelFinal > 0) then
-					if ((equipSlot == "INVTYPE_2HWEAPON") or (currentSlot == INVSLOT_MAINHAND and artifactEquipped)) then
+					if ((currentSlot == INVSLOT_MAINHAND and artifactEquipped)
+					or ((equipSlot == "INVTYPE_2HWEAPON"
+					or equipSlot == "INVTYPE_RANGEDRIGHT"
+					or equipSlot == "INVTYPE_RANGED") and talents.id ~= 72)) and (not items[INVSLOT_OFFHAND]
+					or artifactEquipped) then
 						itemLevelFinal = itemLevelFinal * 2
 					end
 
@@ -221,7 +225,7 @@ function Module:InspectReady(guid, data)
 	end
 
 	inspectCache[guid].age = GetTime()
-	inspectCache[guid].itemLevel = self:GetItemLvL(data.items)
+	inspectCache[guid].itemLevel = self:GetItemLvL(data.items, data.talents)
 	inspectCache[guid].talent = self:GetTalentSpec(data.talents)
 
 	if not GameTooltip:IsForbidden() then
@@ -240,7 +244,7 @@ function Module:ShowInspectInfo(tt, unit, r, g, b)
 		tt:AddDoubleLine(SPECIALIZATION, inspectCache[unitGUID].talent, nil, nil, nil, r, g, b)
 		tt:AddDoubleLine(STAT_AVERAGE_ITEM_LEVEL, inspectCache[unitGUID].itemLevel, nil, nil, nil, 1, 1, 1)
 	elseif (not InspectFrame or (InspectFrame and not InspectFrame:IsShown())) then
-		LibInspect:RequestItems(unit, false)
+		LibInspect:RequestItems(unit, true)
 	end
 end
 
