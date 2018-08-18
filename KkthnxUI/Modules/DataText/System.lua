@@ -7,8 +7,8 @@ local _G = _G
 local math_floor = math.floor
 local select = select
 
-local FPS_ABBR = _G.FPS_ABBR
-local MILLISECONDS_ABBR = _G.MILLISECONDS_ABBR
+local FPS_ABBR = FPS_ABBR
+local MILLISECONDS_ABBR = MILLISECONDS_ABBR
 local performance_font = K.GetFont(C["DataText"].Font)
 local performance_hz = 1
 local performance_string = "%d%s - %d%s"

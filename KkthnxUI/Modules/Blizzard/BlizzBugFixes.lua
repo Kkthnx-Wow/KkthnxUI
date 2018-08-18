@@ -4,46 +4,35 @@ local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
-local blizzardCollectgarbage = _G.collectgarbage
-local GameTooltip = _G.GameTooltip
 
-local TooltipBagBug = false
+local GarbageEventCount, TooltipBagBug = 0, false
 
--- Garbage collection is being overused and misused,
--- and it's causing lag and performance drops.
-blizzardCollectgarbage("setpause", 110)
-blizzardCollectgarbage("setstepmul", 200)
+local GarbageCollection = CreateFrame("Frame")
+GarbageCollection:RegisterEvent("PLAYER_FLAGS_CHANGED")
+GarbageCollection:RegisterEvent("PLAYER_ENTERING_WORLD")
+GarbageCollection:SetScript("OnEvent", function(self, event)
+	GarbageEventCount = GarbageEventCount + 1
 
-function _G.collectgarbage(opt, arg)
-	if (opt == "collect") or (opt == nil) then
-	elseif (opt == "count") then
-		return blizzardCollectgarbage(opt, arg)
-	elseif (opt == "setpause") then
-		return blizzardCollectgarbage("setpause", 110)
-	elseif opt == "setstepmul" then
-		return blizzardCollectgarbage("setstepmul", 200)
-	elseif (opt == "stop") then
-	elseif (opt == "restart") then
-	elseif (opt == "step") then
-		if (arg ~= nil) then
-			if (arg <= 10000) then
-				return blizzardCollectgarbage(opt, arg)
-			end
-		else
-			return blizzardCollectgarbage(opt, arg)
-		end
+	if (InCombatLockdown() and GarbageEventCount > 25000) or (not InCombatLockdown() and GarbageEventCount > 10000) or event == "PLAYER_ENTERING_WORLD" then
+		collectgarbage("collect")
+		print(K.Name .. " Your Garbage Report for", event, GarbageEventCount)
+		GarbageEventCount = 0
 	else
-		return blizzardCollectgarbage(opt, arg)
-	end
-end
+		if (unit ~= "player") then
+			return
+		end
 
--- Memory usage is unrelated to performance, and tracking memory usage does not track "bad" addons.
--- Developers can uncomment this line to enable the functionality when looking for memory leaks,
--- but for the average end-user this is a completely pointless thing to track.
-_G.UpdateAddOnMemoryUsage = function() end
+		if UnitIsAFK(unit) then
+			collectgarbage("collect")
+			print(K.Name .. " Your Garbage Report for", "AFK " .. UnitIsAFK(unit), GarbageEventCount)
+			GarbageEventCount = 0
+		end
+	end
+end)
 
 -- Misclicks for some popups
 function Module:MisclickPopups()
