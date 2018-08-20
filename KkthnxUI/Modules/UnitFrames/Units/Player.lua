@@ -185,25 +185,11 @@ function Module:CreatePlayer()
 	self.AdditionalPower:SetPoint("BOTTOM", self, "TOP", 0, 3)
 	self.AdditionalPower:SetStatusBarTexture(UnitframeTexture)
 	self.AdditionalPower:SetStatusBarColor(unpack(K.Colors.power["MANA"]))
+	self.AdditionalPower:CreateBorder()
 
 	self.AdditionalPower.Smooth = C["Unitframe"].Smooth
 	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.AdditionalPower.frequentUpdates = true
-
-	self.AdditionalPower.Backgrounds = self.AdditionalPower:CreateTexture(nil, "BACKGROUND", -1)
-	self.AdditionalPower.Backgrounds:SetAllPoints()
-	self.AdditionalPower.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	self.AdditionalPower:CreateBorder()
-
-	self.AdditionalPower.Prediction = CreateFrame("StatusBar", nil, self.AdditionalPower)
-	self.AdditionalPower.Prediction:SetReverseFill(true)
-	self.AdditionalPower.Prediction:SetPoint("TOP")
-	self.AdditionalPower.Prediction:SetPoint("BOTTOM")
-	self.AdditionalPower.Prediction:SetPoint("RIGHT", self.AdditionalPower:GetStatusBarTexture(), "RIGHT")
-	self.AdditionalPower.Prediction:SetHeight(12)
-	self.AdditionalPower.Prediction:SetStatusBarTexture(UnitframeTexture)
-	self.AdditionalPower.Prediction:SetStatusBarColor(1, 1, 1, .3)
 
 	Module.CreateClassModules(self, 194, 12, 6)
 
