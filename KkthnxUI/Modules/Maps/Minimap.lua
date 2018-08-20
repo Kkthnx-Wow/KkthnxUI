@@ -199,12 +199,18 @@ function Module:OnInitialize()
 	Minimap:CreateBorder()
 
 	Minimap:HookScript("OnEnter", function(self)
-		K.PerformanceFrame:Hide()
+		if K.PerformanceFrame then
+			K.PerformanceFrame:Hide()
+		end
+
 		self.location:Show()
 	end)
 
 	Minimap:HookScript("OnLeave", function(self)
-		K.PerformanceFrame:Show()
+		if K.PerformanceFrame then
+			K.PerformanceFrame:Show()
+		end
+
 		self.location:Hide()
 	end)
 

@@ -28,13 +28,6 @@ PerformanceFrame.Text:SetAllPoints(PerformanceFrame)
 
 PerformanceFrame.Performance = PerformanceFrame.Text
 
-local statusColors = {
-	"|cff0CD809",
-	"|cffE8DA0F",
-	"|cffFF9000",
-	"|cffD80909"
-}
-
 PerformanceFrame:SetScript("OnUpdate", function(self, elapsed)
 	self.elapsed = (self.elapsed or 0) + elapsed
 

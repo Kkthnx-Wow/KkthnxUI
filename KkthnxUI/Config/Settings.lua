@@ -164,18 +164,14 @@ C["Chat"] = {
 
 -- DataBars
 C["DataBars"] = {
-	["AzeriteColor"] = {.901, .8, .601},
-	["Azerite"] = true,
-	["Height"] = 12,
-	["Width"] = 164,
-	["ExperienceColor"] = {0, 0.4, 1, .8},
-	["Experience"] = true,
-	["ExperienceRestedColor"] = {1, 0, 1, 0.2},
-	["Font"] = "KkthnxUI",
+	["AzeriteColor"] = {0.901, 0.8, 0.601},
+	["Enable"] = true,
+	["ExperienceColor"] = {0.6, 0.3, 0.8},
+	["Height"] = 10,
 	["MouseOver"] = false,
-	["Outline"] = false,
-	["Reputation"] = true,
+	["RestedColor"] = {0.3, 0.6, 0.8},
 	["Texture"] = "KkthnxUI",
+	["Width"] = 170,
 }
 
 -- Datatext
@@ -273,7 +269,7 @@ C["Nameplates"] = {
 	["Font"] = "KkthnxUI",
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealthValue"] = true,
-	["Height"] = 18,
+	["Height"] = 23,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
 	["SelectedScale"] = 1,

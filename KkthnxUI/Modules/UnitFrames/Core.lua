@@ -220,23 +220,13 @@ function Module:MouseoverHealth(unit)
 		return
 	end
 
-	-- Declare "Module_Config" so we can let the user pick per module.
-	local Module_Config
 	local Health = self.Health
-
-	-- We need to make it so each module texture works per unit setting.
-	if (unit:find("party")) then
-		Module_Config = "Party"
-	else
-		Module_Config = "Unitframe"
-	end
-
-	local Texture = K.GetTexture(C[Module_Config].Texture) or C["Media"].Texture
+	local Texture = C["Media"].Mouseover
 
 	self.Highlight = Health:CreateTexture(nil, "OVERLAY")
 	self.Highlight:SetAllPoints()
 	self.Highlight:SetTexture(Texture)
-	self.Highlight:SetVertexColor(1, 1, 1, .2)
+	self.Highlight:SetVertexColor(1, 1, 1, .36)
 	self.Highlight:SetBlendMode("ADD")
 	self.Highlight:Hide()
 end
@@ -643,7 +633,7 @@ function Module:CreateAuraWatch(frame)
 	frame.AuraWatch = Auras
 end
 
-function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
+function Module:DisplayNameplatePowerAndCastBar(unit, cur, min, max)
 	if not unit then
 		unit = self:GetParent().unit
 	end
@@ -676,7 +666,7 @@ function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
 		if IsPowerHidden then
 			Health:ClearAllPoints()
 			Health:SetPoint("TOPLEFT")
-			Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight + 4)
+			Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight - 1)
 			Health:SetWidth(Nameplate:GetWidth())
 
 			PowerBar:Show()
@@ -1002,21 +992,19 @@ function Module:CreateFilgerAnchors()
 	end
 end
 
-if C["Nameplates"].Enable then
+if C["Nameplates"].Enable == true then
 	local SetCVar = _G.SetCVar
 
-	if C["Nameplates"].Combat then
-		function Module:PLAYER_REGEN_ENABLED()
-			SetCVar("nameplateShowEnemies", 0)
-		end
+	function Module:PLAYER_REGEN_ENABLED()
+		SetCVar("nameplateShowEnemies", 0)
+	end
 
-		function Module:PLAYER_REGEN_DISABLED()
-			SetCVar("nameplateShowEnemies", 1)
-		end
+	function Module:PLAYER_REGEN_DISABLED()
+		SetCVar("nameplateShowEnemies", 1)
 	end
 
 	function Module:PLAYER_ENTERING_WORLD()
-		if C["Nameplates"].Combat then
+		if C["Nameplates"].Combat == true then
 			SetCVar("nameplateShowEnemies", UnitAffectingCombat("player") and 1 or 0)
 
 			if C["Nameplates"].Threat == true then
@@ -1024,7 +1012,7 @@ if C["Nameplates"].Enable then
 			end
 		end
 
-		if C["Nameplates"].MarkHealers then
+		if C["Nameplates"].MarkHealers == true then
 			table.wipe(self.Healers)
 			local inInstance, instanceType = IsInInstance()
 			if inInstance and (instanceType == "pvp") and C["Nameplates"].MarkHealers then
@@ -1201,11 +1189,13 @@ function Module:OnEnable()
 		self:RegisterEvent("PLAYER_REGEN_DISABLED")
 	end
 
-	if C["Nameplates"].Enable and C["Nameplates"].Combat or C["Nameplates"].MarkHealers then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	if C["Nameplates"].Enable == true then
+		if C["Nameplates"].Combat == true or C["Nameplates"].MarkHealers == true then
+			self:RegisterEvent("PLAYER_ENTERING_WORLD")
+		end
 	end
 
-	if C["Unitframe"].Enable then
+	if C["Unitframe"].Enable == true then
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 		self:RegisterEvent("UNIT_FACTION")

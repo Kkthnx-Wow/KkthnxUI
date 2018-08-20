@@ -95,9 +95,9 @@ KkthnxUIConfig.ColorDefaults = {
 	},
 	-- DataBars
 	["DataBars"] = {
-		["AzeriteColor"] = {.901, .8, .601},
-		["ExperienceColor"] = {0, 0.4, 1, .8},
-		["ExperienceRestedColor"] = {1, 0, 1, 0.2},
+		["AzeriteColor"] = {0.901, 0.8, 0.601},
+		["ExperienceColor"] = {0.6, 0.3, 0.8},
+		["RestedColor"] = {0.3, 0.6, 0.8},
 	},
 	-- Nameplates
 	["Nameplates"] = {
@@ -116,9 +116,9 @@ function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.ActionBar.OutOfMana = {0.5, 0.5, 1.0}
 	self.ColorDefaults.ActionBar.OutOfRange = {0.8, 0.1, 0.1}
 	self.ColorDefaults.Chat.LinkColor = {0.08, 1, 0.36}
-	self.ColorDefaults.DataBars.AzeriteColor = {.901, .8, .601}
-	self.ColorDefaults.DataBars.ExperienceColor = {0, 0.4, 1, .8}
-	self.ColorDefaults.DataBars.ExperienceRestedColor = {1, 0, 1, 0.2}
+	self.ColorDefaults.DataBars.AzeriteColor = {0.901, 0.8, 0.601}
+	self.ColorDefaults.DataBars.ExperienceColor = {0.6, 0.3, 0.8}
+	self.ColorDefaults.DataBars.RestedColor = {0.3, 0.6, 0.8}
 	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
 	self.ColorDefaults.Nameplates.BadColor = {1, 0, 0}
 	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}

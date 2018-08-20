@@ -16,6 +16,7 @@ C["Media"] = {
 	FontStyle = "OUTLINE",
 	Glow = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
 	Logo = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
+	Mouseover = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
 	NewClassPortraits = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
 	Proc_Sound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
 	Shader = [[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]],

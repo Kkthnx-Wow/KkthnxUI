@@ -43,14 +43,11 @@ function Module:CreateTarget()
 	self.Health:SetSize(130, 26)
 	self.Health:SetPoint("CENTER", self, "CENTER", -26, 10)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-
-	if not self.Health.Border then
-		self.Health:CreateBorder()
-		self.Health.Border = true
-	end
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
@@ -66,11 +63,7 @@ function Module:CreateTarget()
 	self.Power:SetSize(130, 14)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-
-	if not self.Power.Border then
-		self.Power:CreateBorder()
-		self.Power.Border = true
-	end
+	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -88,26 +81,20 @@ function Module:CreateTarget()
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("RIGHT", self, -4, 0)
 
-		if not self.Portrait.Border then
-			self.Portrait.Borders = CreateFrame("Frame", nil, self)
-			self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
-			self.Portrait.Borders:SetSize(46, 46)
-			self.Portrait.Borders:CreateBorder()
-			self.Portrait.Border = true
-		end
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		self.Portrait.Borders:CreateBorder()
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("RIGHT", self, -4, 0)
 
-		if not self.Portrait.Border then
-			self.Portrait.Borders = CreateFrame("Frame", nil, self)
-			self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
-			self.Portrait.Borders:SetSize(46, 46)
-			self.Portrait.Borders:CreateBorder()
-			self.Portrait.Border = true
-		end
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		self.Portrait.Borders:CreateBorder()
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
@@ -143,13 +130,7 @@ function Module:CreateTarget()
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
-
-		self.Castbar.Background = self.Castbar:CreateTexture(nil, "BACKGROUND", -1)
-		self.Castbar.Background:SetAllPoints()
-		self.Castbar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		K.CreateBorder(self.Castbar)
-
+		self.Castbar:CreateBorder()
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint("BOTTOM", PlayerCastbar, "TOP", 0, 6)
 
@@ -183,14 +164,7 @@ function Module:CreateTarget()
 		if (C["Unitframe"].CastbarIcon) then
 			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 			self.Castbar.Button:SetSize(20, 20)
-
-			self.Castbar.Button.Backgrounds = self.Castbar.Button:CreateTexture(nil, "BACKGROUND", -1)
-			self.Castbar.Button.Backgrounds:SetAllPoints(self.Castbar.Button)
-			self.Castbar.Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			self.Castbar.Button.Borders = CreateFrame("Frame", nil, self.Castbar.Button)
-			self.Castbar.Button.Borders:SetAllPoints(self.Castbar.Button)
-			K.CreateBorder(self.Castbar.Button.Borders)
+			self.Castbar.Button:CreateBorder()
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -214,7 +188,7 @@ function Module:CreateTarget()
 	Module.CreateQuestIndicator(self, 26, 26)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
-	-- Module.CreateResurrectIndicator(self)
+	Module.CreateResurrectIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "target")
 

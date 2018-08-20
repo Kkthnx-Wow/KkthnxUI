@@ -160,6 +160,17 @@ function K.RGBToHex(r, g, b)
 	return string_format("|cff%02x%02x%02x", r * 255, g * 255, b * 255)
 end
 
+function K.Comma(value)
+	while true do
+		value, k = string.gsub(value, "^(-?%d+)(%d%d%d)", '%1,%2')
+		if (k == 0) then
+			break
+		end
+	end
+
+	return value
+end
+
 function K.CheckAddOnState(addon)
 	return K.AddOns[string_lower(addon)] or false
 end

@@ -98,6 +98,16 @@ function Module:CreateTrinkets()
 	--end
 end
 
+function Module:CreateResurrectIndicator(size)
+	if not size then
+		size = 16
+	end
+
+	self.ResurrectIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ResurrectIndicator:SetSize(size, size)
+	self.ResurrectIndicator:SetPoint("CENTER", self)
+end
+
 function Module:CreateCombatFeedback()
 	self.CombatText = self.Portrait.Borders:CreateFontString(nil, "OVERLAY", 7)
 	self.CombatText:SetFont(C["Media"].Font, 20, "")
@@ -180,35 +190,11 @@ function Module:CreateRestingIndicator()
 	self.RestingIndicator:SetAlpha(0.7)
 end
 
-function Module:CreateAssistantIndicator(size)
-	if not size then
-		size = 14
-	end
-
-	--self.AssistantOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
-	--self.AssistantOverlay:SetAllPoints()
-	--self.AssistantOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
-
-	--self.AssistantIndicator = self.AssistantOverlay:CreateTexture(nil, "OVERLAY")
-	--self.AssistantIndicator:SetSize(size, size)
-	--self.AssistantIndicator:SetPoint("TOPLEFT", 0, 0)
-end
-
 function Module:CreateCombatIndicator()
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.CombatIndicator:SetSize(24, 24)
 	self.CombatIndicator:SetPoint("LEFT", 0, 0)
 	self.CombatIndicator:SetVertexColor(0.84, 0.75, 0.65)
-end
-
-function Module:CreateLeaderIndicator(unit)
-	--self.LeaderIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	--if unit == "party" then
-	--	self.LeaderIndicator:SetSize(13, 13)
-	--else
-	--	self.LeaderIndicator:SetSize(16, 16)
-	--end
-	--self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPLEFT", 5, 1)
 end
 
 function Module:CreatePhaseIndicator()

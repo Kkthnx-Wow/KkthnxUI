@@ -43,14 +43,11 @@ function Module:CreatePlayer()
 	self.Health:SetSize(130, 26)
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-
-	if not self.Health.Border then
-		self.Health:CreateBorder()
-		self.Health.Border = true
-	end
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
@@ -59,7 +56,6 @@ function Module:CreatePlayer()
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent]")
 
@@ -67,11 +63,7 @@ function Module:CreatePlayer()
 	self.Power:SetSize(130, 14)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-
-	if not self.Power.Border then
-		self.Power:CreateBorder()
-		self.Power.Border = true
-	end
+	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -89,26 +81,20 @@ function Module:CreatePlayer()
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		if not self.Portrait.Border then
-			self.Portrait.Borders = CreateFrame("Frame", nil, self)
-			self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-			self.Portrait.Borders:SetSize(46, 46)
-			self.Portrait.Borders:CreateBorder()
-			self.Portrait.Border = true
-		end
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		self.Portrait.Borders:CreateBorder()
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(46, 46)
 		self.Portrait:SetPoint("LEFT", self, 4, 0)
 
-		if not self.Portrait.Border then
-			self.Portrait.Borders = CreateFrame("Frame", nil, self)
-			self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
-			self.Portrait.Borders:SetSize(46, 46)
-			self.Portrait.Borders:CreateBorder()
-			self.Portrait.Border = true
-		end
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
+		self.Portrait.Borders:SetSize(46, 46)
+		self.Portrait.Borders:CreateBorder()
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
@@ -119,12 +105,7 @@ function Module:CreatePlayer()
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Unitframe"].CastbarWidth, C["Unitframe"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
-
-		if not self.Castbar.Border then
-			self.Castbar:CreateBorder()
-			self.Castbar.Border = true
-		end
-
+		self.Castbar:CreateBorder()
 		self.Castbar:ClearAllPoints()
 
 		if C["Raid"].RaidLayout.Value == "Healer" then
@@ -169,12 +150,7 @@ function Module:CreatePlayer()
 		if (C["Unitframe"].CastbarIcon) then
 			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 			self.Castbar.Button:SetSize(20, 20)
-
-			if not self.Castbar.Button.Backdrop then
-				self.Castbar.Button:CreateBackdrop()
-				self.Castbar.Button.Backdrop:SetFrameLevel(4)
-				self.Castbar.Button.Backdrop = true
-			end
+			self.Castbar.Button:CreateBorder()
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -244,9 +220,7 @@ function Module:CreatePlayer()
 	end
 
 	Module.CreateClassTotems(self, 194, 12, 6)
-	Module.CreateAssistantIndicator(self)
 	Module.CreateCombatIndicator(self)
-	Module.CreateLeaderIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateRestingIndicator(self)

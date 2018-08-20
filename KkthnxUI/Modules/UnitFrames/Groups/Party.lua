@@ -49,7 +49,6 @@ function Module:CreateParty()
 	self.Health:SetSize(114, 18)
 	self.Health:SetPoint("CENTER", self, "CENTER", 19, 7)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-
 	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Party"].Smooth
@@ -70,7 +69,6 @@ function Module:CreateParty()
 	self.Power:SetSize(114, 8)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-
 	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Party"].Smooth
@@ -83,28 +81,20 @@ function Module:CreateParty()
 		self.Portrait:SetSize(32, 32)
 		self.Portrait:SetPoint("LEFT", self, 3, 0)
 
-		self.Portrait.Background = self.Portrait:CreateTexture(nil, "BACKGROUND", -1)
-		self.Portrait.Background:SetAllPoints()
-		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		self.Portrait.Borders = CreateFrame("Frame", nil, self.Portrait)
-		self.Portrait.Borders:SetAllPoints(self.Portrait)
-		K.CreateBorder(self.Portrait.Borders)
+		self.Portrait.Borders = CreateFrame("Frame", nil, self)
+		self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
+		self.Portrait.Borders:SetSize(32, 32)
+		self.Portrait.Borders:CreateBorder()
 	elseif (C["Party"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 		self.Portrait:SetSize(32, 32)
 		self.Portrait:SetPoint("LEFT", self, 3, 0)
 
-		self.Portrait.Background = self:CreateTexture(nil, "BACKGROUND", -1)
-		self.Portrait.Background:SetPoint("LEFT", self, 1, 0)
-		self.Portrait.Background:SetSize(32, 32)
-		self.Portrait.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
 		self.Portrait.Borders = CreateFrame("Frame", nil, self)
 		self.Portrait.Borders:SetPoint("LEFT", self, 3, 0)
 		self.Portrait.Borders:SetSize(32, 32)
-		K.CreateBorder(self.Portrait.Borders)
+		self.Portrait.Borders:CreateBorder()
 
 		if (C["Party"].PortraitStyle.Value == "ClassPortraits" or C["Party"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
@@ -166,13 +156,11 @@ function Module:CreateParty()
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED", UpdateTargetGlow)
 	end
 
-	Module.CreateAssistantIndicator(self)
 	Module.CreateAuras(self, "party")
-	Module.CreateLeaderIndicator(self, "party")
 	Module.CreatePhaseIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
-	-- Module.CreateResurrectIndicator(self)
+	Module.CreateResurrectIndicator(self, 14)
 	Module.CreateThreatIndicator(self)
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)

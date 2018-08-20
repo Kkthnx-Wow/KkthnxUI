@@ -29,15 +29,11 @@ function Module:CreateArena()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:SetSize(130, 26)
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
-
-	self.Health.Backgrounds = self.Health:CreateTexture(nil, "BACKGROUND", -1)
-	self.Health.Backgrounds:SetAllPoints()
-	self.Health.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Health)
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Arena"].Smooth
 	self.Health.SmoothSpeed = C["Arena"].SmoothSpeed * 10
+	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
@@ -54,12 +50,7 @@ function Module:CreateArena()
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:SetSize(130, 14)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
-
-	self.Power.Backgrounds = self.Power:CreateTexture(nil, "BACKGROUND", -1)
-	self.Power.Backgrounds:SetAllPoints()
-	self.Power.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Power)
+	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Arena"].Smooth
 	self.Power.SmoothSpeed = C["Arena"].SmoothSpeed * 10

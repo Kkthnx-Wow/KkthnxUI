@@ -114,6 +114,7 @@ function Module:CreateNameplates()
 	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	self.Health.frequentUpdates = true
+	self.Health.colorTapping = true
 	self.Health.colorReaction = true
 	self.Health.colorDisconnected = true
 	self.Health.colorClass = true
@@ -231,7 +232,6 @@ function Module:CreateNameplates()
 
 	self.Castbar:SetScript("OnShow", Module.DisplayNameplatePowerAndCastBar)
 	self.Castbar:SetScript("OnHide", Module.DisplayNameplatePowerAndCastBar)
-	self.Castbar:SetScript("OnUpdate", Module.DisplayNameplatePowerAndCastBar)
 
 	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(self:GetHeight(), self:GetHeight())
@@ -260,16 +260,16 @@ function Module:CreateNameplates()
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
-	-- Highlight Plate Events
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
+	-- Highlight Plate
+	self:RegisterEvent("NAME_PLATE_CREATED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
-	self:RegisterEvent("UNIT_FACTION", Module.HighlightPlate)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
 	Module.HighlightPlate(self)
 
 	-- Healer Icon Events
+	self:RegisterEvent("NAME_PLATE_CREATED", Module.DisplayHealerTexture)
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
-	self:RegisterEvent("UNIT_NAME_UPDATE", Module.DisplayHealerTexture)
 
 	-- Threat Plate Events
 	self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)

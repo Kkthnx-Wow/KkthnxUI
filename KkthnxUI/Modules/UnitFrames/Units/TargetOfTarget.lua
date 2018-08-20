@@ -42,15 +42,11 @@ function Module:CreateTargetOfTarget()
 	self.Health:SetSize(74, 12)
 	self.Health:SetPoint("CENTER", self, "CENTER", -15, 7)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-
-	self.Health.Background = self.Health:CreateTexture(nil, "BACKGROUND", -1)
-	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Health)
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Unitframe"].Smooth
 	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
 	self.Health.colorClass = true
@@ -67,12 +63,7 @@ function Module:CreateTargetOfTarget()
 	self.Power:SetSize(74, 8)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:SetStatusBarTexture(UnitframeTexture)
-
-	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
-	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Power)
+	self.Power:CreateBorder()
 
 	self.Power.Smooth = C["Unitframe"].Smooth
 	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
@@ -98,7 +89,6 @@ function Module:CreateTargetOfTarget()
 		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
 		self.Portrait.Borders:SetSize(26, 26)
 		self.Portrait.Borders:CreateBorder()
-
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end
