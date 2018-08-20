@@ -82,17 +82,20 @@ Module.CLASS_ICON_TCOORDS = {
 }
 
 function Module:UpdateClassPortraits(unit)
+	if not unit then
+		return
+	end
+
 	local _, unitClass = UnitClass(unit)
-	local isPlayer = unitClass and UnitIsPlayer(unit)
 
 	local PValue = C["Party"].PortraitStyle.Value
 	local BValue = C["Boss"].PortraitStyle.Value
 	local UFValue = C["Unitframe"].PortraitStyle.Value
 
-	if isPlayer and PValue == "ClassPortraits" or BValue == "ClassPortraits" or UFValue == "ClassPortraits" then
+	if PValue == "ClassPortraits" or BValue == "ClassPortraits" or UFValue == "ClassPortraits" then
 		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
 		self:SetTexCoord(unpack(Module.CLASS_ICON_TCOORDS[unitClass]))
-	elseif isPlayer and PValue == "NewClassPortraits" or BValue == "NewClassPortraits" or UFValue == "NewClassPortraits" then
+	elseif PValue == "NewClassPortraits" or BValue == "NewClassPortraits" or UFValue == "NewClassPortraits" then
 		self:SetTexture(C["Media"].NewClassPortraits)
 		self:SetTexCoord(unpack(Module.CLASS_ICON_TCOORDS[unitClass]))
 	else

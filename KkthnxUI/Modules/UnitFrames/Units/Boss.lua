@@ -18,8 +18,8 @@ local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
 
 function Module:CreateBoss()
-	local UnitframeFont = K.GetFont(C["Unitframe"].Font)
-	local UnitframeTexture = K.GetTexture(C["Unitframe"].Texture)
+	local UnitframeFont = K.GetFont(C["Boss"].Font)
+	local UnitframeTexture = K.GetTexture(C["Boss"].Texture)
 
 	self:RegisterForClicks("AnyUp")
 	self:HookScript("OnEnter", UnitFrame_OnEnter)
@@ -27,15 +27,12 @@ function Module:CreateBoss()
 
 	self.Health = CreateFrame("StatusBar", "$parent.Healthbar", self)
 	self.Health:SetStatusBarTexture(UnitframeTexture)
-
-	self.Health.Background = self.Health:CreateTexture(nil, "BACKGROUND", -1)
-	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
+	self.Health:SetSize(130, 26)
+	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
 	K.CreateBorder(self.Health)
 
-	self.Health.Smooth = C["Unitframe"].Smooth
-	self.Health.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.Health.Smooth = C["Boss"].Smooth
+	self.Health.SmoothSpeed = C["Boss"].SmoothSpeed * 10
 	self.Health.colorTapping = true
 	self.Health.colorDisconnected = true
 	self.Health.colorSmooth = false
@@ -43,12 +40,8 @@ function Module:CreateBoss()
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = false
 
-	self.Health:SetSize(130, 26)
-	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
-
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 
@@ -56,15 +49,10 @@ function Module:CreateBoss()
 	self.Power:SetStatusBarTexture(UnitframeTexture)
 	self.Power:SetSize(130, 14)
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
+	self.Power:CreateBorder()
 
-	self.Power.Background = self.Power:CreateTexture(nil, "BACKGROUND", -1)
-	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Power)
-
-	self.Power.Smooth = C["Unitframe"].Smooth
-	self.Power.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
+	self.Power.Smooth = C["Boss"].Smooth
+	self.Power.SmoothSpeed = C["Boss"].SmoothSpeed * 10
 	self.Power.colorPower = true
 	self.Power.frequentUpdates = false
 
@@ -105,7 +93,6 @@ function Module:CreateBoss()
 	self.Name:SetJustifyV("TOP")
 	self.Name:SetJustifyH("CENTER")
 	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	if (C["Boss"].Castbars) then
@@ -113,14 +100,7 @@ function Module:CreateBoss()
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
 		self.Castbar:SetSize(C["Boss"].CastbarWidth, C["Boss"].CastbarHeight)
 		self.Castbar:SetClampedToScreen(true)
-
-		self.Castbar.Background = self.Castbar:CreateTexture(nil, "BACKGROUND", -1)
-		self.Castbar.Background:SetAllPoints()
-		self.Castbar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		self.Castbar.Border = CreateFrame("Frame", nil, self.Castbar)
-		self.Castbar.Border:SetAllPoints()
-		K.CreateBorder(self.Castbar.Border)
+		self.Castbar:CreateBorder()
 
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint("LEFT", 4, 0)
@@ -154,15 +134,7 @@ function Module:CreateBoss()
 		if (C["Boss"].CastbarIcon) then
 			self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 			self.Castbar.Button:SetSize(20, 20)
-
-			self.Castbar.Button.Backgrounds = self.Castbar.Button:CreateTexture(nil, "BACKGROUND", -1)
-			self.Castbar.Button.Backgrounds:SetAllPoints(self.Castbar.Button)
-			self.Castbar.Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			self.Castbar.Button.Borders = CreateFrame("Frame", nil, self.Castbar.Button)
-			self.Castbar.Button.Borders:SetAllPoints(self.Castbar.Button)
-			K.CreateBorder(self.Castbar.Button.Borders)
-			self.Castbar.Button.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			self.Castbar.Button:CreateBorder()
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())

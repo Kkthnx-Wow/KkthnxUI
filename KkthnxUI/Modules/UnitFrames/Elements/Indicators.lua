@@ -155,12 +155,12 @@ local function PostUpdatePvPIndicator(self, unit, status)
 		self:SetTexture("Intewrface\\TargetingFrame\\UI-PVP-FFA")
 		self:SetTexCoord(0, 0.65625, 0, 0.65625)
 	elseif factionGroup and UnitIsPVP(unit) and status ~= nil then
-		self:SetTexture("Interface\\PVPFrame\\PVP-Conquest-Misc")
+		self:SetTexture("Interface\\QuestFrame\\objectivewidget")
 
 		if factionGroup == "Alliance"  then
-			self:SetTexCoord(0.69433594, 0.74804688, 0.60351563, 0.72851563)
+			self:SetTexCoord(0.00390625, 0.136719, 0.511719, 0.671875)
 		else
-			self:SetTexCoord(0.63867188, 0.69238281, 0.60351563, 0.73242188)
+			self:SetTexCoord(0.00390625, 0.136719, 0.679688, 0.839844)
 		end
 	end
 end

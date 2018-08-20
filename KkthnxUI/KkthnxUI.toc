@@ -13,6 +13,7 @@
 ## X-Curse-Packaged-Version: 8.14
 ## X-Curse-Project-ID: 95528
 ## X-Curse-Project-Name: KkthnxUI
+## X-WoWI-ID: 24615
 ## X-Discord: https://discord.gg/YUmxqQm
 ## X-BugReport: https://github.com/Kkthnx/KkthnxUI/issues/new
 ## X-License: The MIT License (MIT)
