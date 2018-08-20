@@ -3,7 +3,6 @@
    <!-- Load_Skins -->
    <Include file="Core.lua" />
 
-   <Include file="Addons\AzerothAutoPilot.lua" />
    <Include file="Addons\Bagnon.lua" />
    <Include file="Addons\BigWigs.lua" />
    <Include file="Addons\DBM.lua" />

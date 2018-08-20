@@ -65,35 +65,66 @@ if C["ActionBar"].PetBarHorizontal == true then
 end
 
 -- Auto-overwrite script config is X addon is found. Here we use our own functions to check for addons.
-if K.CheckAddOnState("SexyMap") or K.CheckAddOnState("bdMinimap") or K.CheckAddOnState("BasicMinimap") or K.CheckAddOnState("RicoMiniMap") or K.CheckAddOnState("Chinchilla") then
+if K.CheckAddOnState("SexyMap")
+or K.CheckAddOnState("bdMinimap")
+or K.CheckAddOnState("BasicMinimap")
+or K.CheckAddOnState("RicoMiniMap")
+or K.CheckAddOnState("Chinchilla") then
 	C["Minimap"].Enable = false
 end
 
-if K.CheckAddOnState("XPerl") or K.CheckAddOnState("Stuf") or K.CheckAddOnState("PitBull4") or K.CheckAddOnState("ShadowedUnitFrames") or K.CheckAddOnState("oUF_Abu") then
+if K.CheckAddOnState("XPerl")
+or K.CheckAddOnState("Stuf")
+or K.CheckAddOnState("PitBull4")
+or K.CheckAddOnState("ShadowedUnitFrames") then
 	C["Unitframe"].Enable = false
 end
 
-if (K.CheckAddOnState("Dominos") or K.CheckAddOnState("Bartender4") or K.CheckAddOnState("RazerNaga") or K.CheckAddOnState("daftMainBar")) or (K.CheckAddOnState("ConsolePortBar") and K.CheckAddOnState("ConsolePort")) then -- We have to check for main ConsolePort addon too.
+if K.CheckAddOnState("Dominos")
+or K.CheckAddOnState("Bartender4")
+or K.CheckAddOnState("RazerNaga")
+or K.CheckAddOnState("daftMainBar")
+or (K.CheckAddOnState("ConsolePortBar") and K.CheckAddOnState("ConsolePort")) then -- We have to check for main ConsolePort addon too.
 	C["ActionBar"].Enable = false
 end
 
-if K.CheckAddOnState("WorldQuestTracker") or K.CheckAddOnState("Mapster") or K.CheckAddOnState("WorldQuestsList") then
+if K.CheckAddOnState("WorldQuestTracker")
+or K.CheckAddOnState("Mapster")
+or K.CheckAddOnState("WorldQuestsList") then
 	C["WorldMap"].SmallWorldMap = false
 end
 
-if K.CheckAddOnState("AdiBags") or K.CheckAddOnState("ArkInventory") or K.CheckAddOnState("cargBags_Nivaya") or K.CheckAddOnState("cargBags") or K.CheckAddOnState("Bagnon") or K.CheckAddOnState("Combuctor") or K.CheckAddOnState("TBag") or K.CheckAddOnState("BaudBag") then
+if K.CheckAddOnState("AdiBags")
+or K.CheckAddOnState("ArkInventory")
+or K.CheckAddOnState("cargBags_Nivaya")
+or K.CheckAddOnState("cargBags")
+or K.CheckAddOnState("Bagnon")
+or K.CheckAddOnState("Combuctor")
+or K.CheckAddOnState("TBag")
+or K.CheckAddOnState("BaudBag") then
 	C["Inventory"].Enable = false
 end
 
-if K.CheckAddOnState("Prat-3.0") or K.CheckAddOnState("Chatter") then
+if K.CheckAddOnState("Prat-3.0")
+or K.CheckAddOnState("Chatter") then
 	C["Chat"].Enable = false
 end
 
-if K.CheckAddOnState("TidyPlates") or K.CheckAddOnState("Aloft") or K.CheckAddOnState("Kui_Nameplates") or K.CheckAddOnState("bdNameplates") then
+if K.CheckAddOnState("TidyPlates")
+or K.CheckAddOnState("Aloft")
+or K.CheckAddOnState("Kui_Nameplates")
+or K.CheckAddOnState("bdNameplates")
+or K.CheckAddOnState("NiceNameplates") then
 	C["Nameplates"].Enable = false
 end
 
-if K.CheckAddOnState("TipTop") or K.CheckAddOnState("TipTac") or K.CheckAddOnState("FreebTip") or K.CheckAddOnState("bTooltip") or K.CheckAddOnState("PhoenixTooltip") or K.CheckAddOnState("Icetip") or K.CheckAddOnState("rTooltip") then
+if K.CheckAddOnState("TipTop")
+or K.CheckAddOnState("TipTac")
+or K.CheckAddOnState("FreebTip")
+or K.CheckAddOnState("bTooltip")
+or K.CheckAddOnState("PhoenixTooltip")
+or K.CheckAddOnState("Icetip")
+or K.CheckAddOnState("rTooltip") then
 	C["Tooltip"].Enable = false
 end
 
@@ -102,7 +133,7 @@ if K.CheckAddOnState("TipTacTalents") then
 end
 
 if K.CheckAddOnState("ConsolePortBar") then
-	C["DataBars"].Artifact = false
+	C["DataBars"].Azerite = false
 	C["DataBars"].Experience = false
 end
 
@@ -118,10 +149,13 @@ if K.CheckAddOnState("ChatSounds") then
 	C["Chat"].WhispSound = false
 end
 
-if K.CheckAddOnState("MBB") or K.CheckAddOnState("MinimapButtonFrame") then
+if K.CheckAddOnState("MBB")
+or K.CheckAddOnState("MinimapButtonFrame") then
 	C["Minimap"].CollectButtons = false
 end
 
-if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddOnState("CooldownCount") then
+if K.CheckAddOnState("OmniCC")
+or K.CheckAddOnState("ncCooldown")
+or K.CheckAddOnState("CooldownCount") then
 	C["Cooldown"].Enable = false
 end

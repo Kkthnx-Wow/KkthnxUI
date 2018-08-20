@@ -22,8 +22,9 @@ local function ArenaExist()
 	end
 end
 
-local trackerFrame = _G["ObjectiveTrackerFrame"]
 function Module:ChangeState(event)
+	local trackerFrame = _G["ObjectiveTrackerFrame"]
+
 	if (not IsInInstance()) then
 		trackerFrame:SetAlpha(1)
 		return

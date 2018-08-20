@@ -185,13 +185,13 @@ function Module:CreateAssistantIndicator(size)
 		size = 14
 	end
 
-	self.AssistantOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
-	self.AssistantOverlay:SetAllPoints()
-	self.AssistantOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
+	--self.AssistantOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
+	--self.AssistantOverlay:SetAllPoints()
+	--self.AssistantOverlay:SetFrameLevel(self.Portrait.Borders:GetFrameLevel() + 4)
 
-	self.AssistantIndicator = self.AssistantOverlay:CreateTexture(nil, "OVERLAY")
-	self.AssistantIndicator:SetSize(size, size)
-	self.AssistantIndicator:SetPoint("TOPLEFT", 0, 0)
+	--self.AssistantIndicator = self.AssistantOverlay:CreateTexture(nil, "OVERLAY")
+	--self.AssistantIndicator:SetSize(size, size)
+	--self.AssistantIndicator:SetPoint("TOPLEFT", 0, 0)
 end
 
 function Module:CreateCombatIndicator()
@@ -202,13 +202,13 @@ function Module:CreateCombatIndicator()
 end
 
 function Module:CreateLeaderIndicator(unit)
-	self.LeaderIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	if unit == "party" then
-		self.LeaderIndicator:SetSize(13, 13)
-	else
-		self.LeaderIndicator:SetSize(16, 16)
-	end
-	self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPLEFT", 5, 1)
+	--self.LeaderIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
+	--if unit == "party" then
+	--	self.LeaderIndicator:SetSize(13, 13)
+	--else
+	--	self.LeaderIndicator:SetSize(16, 16)
+	--end
+	--self.LeaderIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPLEFT", 5, 1)
 end
 
 function Module:CreatePhaseIndicator()

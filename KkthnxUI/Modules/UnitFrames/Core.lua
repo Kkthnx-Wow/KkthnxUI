@@ -66,6 +66,21 @@ Module.RaidBuffsTrackingPosition = {
 	BOTTOM = {0, 0}
 }
 
+Module.CLASS_ICON_TCOORDS = {
+	["DEATHKNIGHT"]	= {0.25, .5, 0.5, .75},
+	["DEMONHUNTER"]	= {0.7421875, 0.98828125, 0.5, 0.75},
+	["DRUID"]		= {0.7421875, 0.98828125, 0, 0.25},
+	["HUNTER"]		= {0, 0.25, 0.25, 0.5},
+	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
+	["MONK"]		= {0.5, 0.73828125, 0.5, .75},
+	["PALADIN"]		= {0, 0.25, 0.5, 0.75},
+	["PRIEST"]		= {0.49609375, 0.7421875, 0.25, 0.5},
+	["ROGUE"]		= {0.49609375, 0.7421875, 0, 0.25},
+	["SHAMAN"]	 	= {0.25, 0.49609375, 0.25, 0.5},
+	["WARLOCK"]		= {0.7421875, 0.98828125, 0.25, 0.5},
+	["WARRIOR"]		= {0, 0.25, 0, 0.25},
+}
+
 function Module:UpdateClassPortraits(unit)
 	local _, unitClass = UnitClass(unit)
 	local isPlayer = unitClass and UnitIsPlayer(unit)
@@ -76,10 +91,10 @@ function Module:UpdateClassPortraits(unit)
 
 	if isPlayer and PValue == "ClassPortraits" or BValue == "ClassPortraits" or UFValue == "ClassPortraits" then
 		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
-		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+		self:SetTexCoord(unpack(Module.CLASS_ICON_TCOORDS[unitClass]))
 	elseif isPlayer and PValue == "NewClassPortraits" or BValue == "NewClassPortraits" or UFValue == "NewClassPortraits" then
 		self:SetTexture(C["Media"].NewClassPortraits)
-		self:SetTexCoord(unpack(CLASS_ICON_TCOORDS[unitClass]))
+		self:SetTexCoord(unpack(Module.CLASS_ICON_TCOORDS[unitClass]))
 	else
 		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
 	end
@@ -475,14 +490,7 @@ function Module:PostCreateAura(button)
 		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
 		button.count:SetTextColor(0.84, 0.75, 0.65)
 	else
-		button.Backgrounds = button:CreateTexture(nil, "BACKGROUND", -1)
-		button.Backgrounds:SetAllPoints()
-		button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		if not button.Border then
-			button:CreateBorder()
-			button.Border = true
-		end
+		button:CreateBorder()
 
 		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
 		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
@@ -530,19 +538,11 @@ function Module:PostUpdateAura(unit, button, index)
 		if (button.filter == "HARMFUL") then
 			if (not UnitIsFriend("player", unit) and not button.isPlayer) then
 				button.icon:SetDesaturated(true)
-				if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
-					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-				else
-					button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
-				end
+				button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 			else
 				local color = _G.DebuffTypeColor[DType] or _G.DebuffTypeColor.none
 				button.icon:SetDesaturated(false)
-				if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
-					button.Shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
-				else
-					button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
-				end
+				button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
 			end
 		else
 			if button.Animation then
@@ -676,7 +676,7 @@ function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
 		if IsPowerHidden then
 			Health:ClearAllPoints()
 			Health:SetPoint("TOPLEFT")
-			Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight - 1)
+			Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight + 4)
 			Health:SetWidth(Nameplate:GetWidth())
 
 			PowerBar:Show()

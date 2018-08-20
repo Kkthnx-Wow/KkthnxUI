@@ -98,9 +98,9 @@ function Module:DisableBlizzard()
 end
 
 function Module:GridToggle()
-	Module:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
 	local IsInstalled = KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete
+
+	Module:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
@@ -393,11 +393,18 @@ if (C["ActionBar"].RightMouseover == true and C["ActionBar"].PetBarHorizontal ==
 	end)
 end
 
-function Module:OnEnable()
-	if C["ActionBar"].Enable ~= true then
+--function Module:OnEnable()
+--	if C["ActionBar"].Enable ~= true then
+--		return
+--	end
+
+--	self:RegisterEvent("PLAYER_LOGIN", "DisableBlizzard")
+--	self:RegisterEvent("PLAYER_ENTERING_WORLD", "GridToggle")
+--end
+
+if C["ActionBar"].Enable ~= true then
 		return
 	end
 
-	self:DisableBlizzard()
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "GridToggle")
-end
+Module:RegisterEvent("PLAYER_LOGIN", "DisableBlizzard")
+Module:RegisterEvent("PLAYER_ENTERING_WORLD", "GridToggle")

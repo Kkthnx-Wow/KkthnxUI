@@ -254,13 +254,11 @@ local function SetupFlyoutButton()
 		local Button = _G["SpellFlyoutButton" .. i]
 
 		if Button and not Button.IsSkinned then
-			K.CreateBorder(Button)
+			StyleNormalButton(Button)
 
 			if Button:GetChecked() then
 				Button:SetChecked(nil)
 			end
-
-			Button:StyleButton()
 
 			if C["ActionBar"].RightMouseover == true then
 				SpellFlyout:HookScript("OnEnter", function(self)

@@ -164,13 +164,12 @@ function Module:CreateNameplates()
 	self.Power.PostUpdate = Module.DisplayNameplatePowerAndCastBar
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
-	self.Debuffs:SetHeight(C["Nameplates"].Height)
+	self.Debuffs:SetHeight(18)
 	self.Debuffs:SetWidth(self:GetWidth())
-	self.Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 20)
-	self.Debuffs:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 20)
-	self.Debuffs.size = C["Nameplates"].Height
-	self.Debuffs.num = 36
-	self.Debuffs.numRow = 9
+	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 18)
+	self.Debuffs.size = 18
+	self.Debuffs.num = 7
+	self.Debuffs.numRow = 2
 
 	self.Debuffs.spacing = 2
 	self.Debuffs.initialAnchor = "TOPLEFT"
@@ -179,7 +178,6 @@ function Module:CreateNameplates()
 	self.Debuffs.PostCreateIcon = Module.PostCreateAura
 	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	self.Debuffs.onlyShowPlayer = true
-	self.Debuffs.filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY"
 
 	self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
 	self.Castbar:SetFrameStrata(self:GetFrameStrata())
@@ -202,9 +200,8 @@ function Module:CreateNameplates()
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", 0, -2)
 	self.Castbar.Time:SetJustifyH("RIGHT")
-	self.Castbar.Time:SetJustifyV("TOP")
 	self.Castbar.Time:SetFontObject(Font)
-	self.Castbar.Time:SetFont(select(1, self.Castbar.Time:GetFont()), 12, select(3, self.Castbar.Time:GetFont()))
+	self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 
 	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 	self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
@@ -221,12 +218,11 @@ function Module:CreateNameplates()
 	self.Castbar.Shield:SetPoint("RIGHT", self.Castbar, "LEFT", 26, 12)
 
 	self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY")
+	self.Castbar.Text:SetFontObject(Font)
 	self.Castbar.Text:SetPoint("TOPLEFT", self.Castbar, "BOTTOMLEFT", 0, -2)
 	self.Castbar.Text:SetPoint("TOPRIGHT", self.Castbar.Time, "TOPLEFT")
 	self.Castbar.Text:SetJustifyH("LEFT")
-	self.Castbar.Text:SetJustifyV("TOP")
-	self.Castbar.Text:SetFontObject(Font)
-	self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 12, select(3, self.Castbar.Text:GetFont()))
+	self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
 
 	self.Castbar.PostCastStart = Module.CheckInterrupt
 	self.Castbar.PostCastInterruptible = Module.CheckInterrupt

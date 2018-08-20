@@ -112,19 +112,14 @@ function Module:CreateParty()
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
-	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", -4, 1)
-	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 4, 1)
-	self.Name:SetSize(98, 14)
-	self.Name:SetJustifyV("TOP")
-	self.Name:SetJustifyH("CENTER")
+	self.Name:SetPoint("TOP", self.Health, 0, 16)
+	self.Name:SetWidth(self.Health:GetWidth())
 	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
-	self:Tag(self.Name, "[KkthnxUI:Role][KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
+	self:Tag(self.Name, "[KkthnxUI:Leader][KkthnxUI:Role][KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
-	self.Level:SetPoint("BOTTOM", self.Portrait, "TOP", 0, 2)
+	self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 	self.Level:SetFontObject(UnitframeFont)
-	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
 	if C["Party"].MouseoverHighlight then

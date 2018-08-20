@@ -118,6 +118,11 @@ local function Timer_Create(self)
 end
 
 local function Timer_Start(self, start, duration, charges)
+	if self:IsForbidden() then
+		-- print(self, " is forbidden")
+		return
+	end
+
 	local remainingCharges = charges or 0
 
 	if self:GetName() and string.find(self:GetName(), "ChargeCooldown") then

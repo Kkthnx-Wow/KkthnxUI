@@ -285,11 +285,19 @@ oUF.Tags.Methods["KkthnxUI:ThreatColor"] = function(unit)
 	end
 end
 
+oUF.Tags.Events["KkthnxUI:Leader"] = "UNIT_NAME_UPDATE PARTY_LEADER_CHANGED GROUP_ROSTER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:Leader"] = function(unit)
+	local IsLeader = UnitIsGroupLeader(unit)
+	local IsAssistant = UnitIsGroupAssistant(unit) or UnitIsRaidOfficer(unit)
+	local Assist, Lead = IsAssistant and "|cffffd100[A]|r " or "", IsLeader and "|cffffd100[L]|r " or ""
+
+	return (Lead .. Assist)
+end
+
 oUF.Tags.Events["KkthnxUI:Role"] = "GROUP_ROSTER_UPDATE PLAYER_ROLES_ASSIGNED ROLE_CHANGED_INFORM"
 oUF.Tags.Methods["KkthnxUI:Role"] = function(unit)
 	local role = UnitGroupRolesAssigned(unit)
 	local roleString = ""
-
 	local IsTank = TANK or UNKNOWN
 	local IsHealer = HEALER or UNKNOWN
 	local Tank, Healer = IsTank and "|cff0099CC[T]|r " or "", IsHealer and "|cff00FF00[H]|r " or ""

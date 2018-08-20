@@ -60,7 +60,6 @@ function Module:CreateTarget()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
@@ -116,17 +115,13 @@ function Module:CreateTarget()
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetSize(130, 24)
-	self.Name:SetJustifyV("TOP")
-	self.Name:SetJustifyH("CENTER")
+	self.Name:SetWidth(self.Health:GetWidth())
 	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	self.Level = self:CreateFontString(nil, "OVERLAY")
 	self.Level:SetPoint("TOP", self.Portrait, 0, 15)
 	self.Level:SetFontObject(UnitframeFont)
-	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
 	if (C["Unitframe"].ThreatPercent == true) then

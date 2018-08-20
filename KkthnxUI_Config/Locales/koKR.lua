@@ -857,7 +857,7 @@ KkthnxUIConfig["koKR"] = {
 		},
 
 		["Time"] = {
-			["Name"] = "Enable Time Datatext",
+			["Name"] = "Time",
 			["Desc"] = "Display a clock on the bottom of the minimap",
 		},
 
@@ -869,11 +869,6 @@ KkthnxUIConfig["koKR"] = {
 
 	-- Skins Local
 	["Skins"] = {
-		["AzerothAutoPilot"] = {
-			["Name"] = "Azeroth Auto Pilot",
-			["Desc"] = ModuleToggleSkin,
-		},
-
 		["BlizzardBags"] = {
 			["Name"] = "Blizzard Bags",
 			["Desc"] = ModuleToggleSkin,

@@ -152,6 +152,7 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 			InterfaceOptionsActionBarsPanelBottomRight:Kill()
 			InterfaceOptionsActionBarsPanelRight:Kill()
 			InterfaceOptionsActionBarsPanelRightTwo:Kill()
+			InterfaceOptionsActionBarsPanelStackRightBars:Kill()
 		end
 
 		if (C["Nameplates"].Enable) then

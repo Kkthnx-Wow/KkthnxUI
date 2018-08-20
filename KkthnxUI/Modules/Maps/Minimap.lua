@@ -54,9 +54,10 @@ function Module:Update_ZoneText()
 	if not C["Minimap"].Enable then
 		return
 	end
+
 	Minimap.location:SetText(string_sub(GetMinimapZoneText(), 1, 46))
 	Minimap.location:SetTextColor(Module:GetLocTextColor())
-	Minimap.location:FontTemplate()
+	Minimap.location:FontTemplate(nil, 13)
 end
 
 function Module:PLAYER_REGEN_ENABLED()
@@ -198,16 +199,19 @@ function Module:OnInitialize()
 	Minimap:CreateBorder()
 
 	Minimap:HookScript("OnEnter", function(self)
+		K.PerformanceFrame:Hide()
 		self.location:Show()
 	end)
 
 	Minimap:HookScript("OnLeave", function(self)
+		K.PerformanceFrame:Show()
 		self.location:Hide()
 	end)
 
 	Minimap.location = Minimap:CreateFontString(nil, "OVERLAY")
-	Minimap.location:FontTemplate(nil, 13, "OUTLINE")
-	Minimap.location:SetPoint("TOP", Minimap, "TOP", 0, -4)
+	Minimap.location:SetWidth(C["Minimap"].Size)
+	Minimap.location:FontTemplate(nil, 13)
+	Minimap.location:SetPoint("TOP", 0, -4)
 	Minimap.location:SetJustifyH("CENTER")
 	Minimap.location:SetJustifyV("MIDDLE")
 	Minimap.location:Hide()

@@ -183,8 +183,7 @@ C["DataText"] = {
 	["Battleground"] = true,
 	["Font"] = "KkthnxUI",
 	["LocalTime"] = true,
-	["Outline"] = false,
-	-- ["System"] = true, -- Until it rewrite it.
+	["System"] = true,
 	["Time"] = true,
 	["Time24Hr"] = false
 }
@@ -274,7 +273,7 @@ C["Nameplates"] = {
 	["Font"] = "KkthnxUI",
 	["GoodColor"] = {0.2, 0.8, 0.2},
 	["HealthValue"] = true,
-	["Height"] = 20,
+	["Height"] = 18,
 	["NearColor"] = {1, 1, 0},
 	["OffTankColor"] = {0, 0.5, 1},
 	["SelectedScale"] = 1,
@@ -295,7 +294,6 @@ C["Nameplates"] = {
 
 -- Skins
 C["Skins"] = {
-	["AzerothAutoPilot"] = false,
 	["Bagnon"] = false,
 	["BigWigs"] = false,
 	["BlizzardBags"] = false,
