@@ -14,7 +14,7 @@
 ## X-Curse-Project-ID: 95528
 ## X-Curse-Project-Name: KkthnxUI
 ## X-Discord: https://discord.gg/YUmxqQm
-## X-Donate: https://www.paypal.me/kkthnx
+## X-BugReport: https://github.com/Kkthnx/KkthnxUI/issues/new
 ## X-License: The MIT License (MIT)
 ## X-Localizations: deDE, enUS, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 ## X-oUF: oUFKkthnxUI

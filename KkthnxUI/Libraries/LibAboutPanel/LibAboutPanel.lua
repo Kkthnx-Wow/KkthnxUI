@@ -12,7 +12,7 @@ Author: Tekkub, Ackis
 
 ]] --
 
-local lib, oldminor = LibStub:NewLibrary("LibAboutPanel", 3)
+local lib = LibStub:NewLibrary("LibAboutPanel", 3)
 if not lib then return end
 
 local L = {
@@ -25,6 +25,7 @@ local L = {
 	["Localizations"] = "Languages",
 	["Version"] = "Version",
 	["Website"] = "Website",
+	["Discord"] = "Discord",
 	["Click and press Ctrl-C to copy"] = "Click and press Ctrl-C to copy.",
 	["on"] = "on",
 }
@@ -67,6 +68,19 @@ elseif GAME_LOCALE == "zhCN" then
 elseif GAME_LOCALE == "zhTW" then
 	L["About"] = "關於"
 	L["Click and press Ctrl-C to copy"] = "左鍵點擊並按下 Ctrl-C 以複製字串"
+elseif GAME_LOCALE == "frFR" then
+	L["About"] = "À propos"
+	L["Author"] = "Auteur"
+	L["Category"] = "Catégorie"
+	L["Credits"] = "Crédits"
+	L["Email"] = "Email"
+	L["License"] = "License"
+	L["Localizations"] = "Traduction"
+	L["Version"] = "Version"
+	L["Website"] = "Site"
+	L["Click and press Ctrl-C to copy"] = "Clique puis Ctrl-C pour copier."
+	L["on"] = "sur"
+	L["BugReport"] = "Rapport de bug"
 end
 
 function lib.new(parent, addonname)
@@ -123,8 +137,8 @@ function lib.OpenEditbox(self)
 end
 
 
-local fields = { "Version", "Author", "X-Category", "X-License", "X-Email", "Email", "eMail", "X-Website", "X-Credits", "X-Localizations" }
-local haseditbox = { ["X-Website"] = true, ["X-Email"] = true, ["Email"] = true, ["eMail"] = true }
+local fields = { "Version", "Author", "X-Category", "X-License", "X-Email", "Email", "eMail", "X-Website", "X-Discord", "X-Credits", "X-Localizations" }
+local haseditbox = { ["X-Website"] = true, ["X-Discord"] = true, ["X-Email"] = true, ["Email"] = true, ["eMail"] = true, ["x-BugReport"] = true }
 local fieldLabels = { ["eMail"] = "Email" }
 
 local function HideTooltip() GameTooltip:Hide() end
@@ -222,6 +236,8 @@ function lib.OnShow(frame)
 					detail:SetText(val)
 				end
 			elseif field == "X-Website" then
+				detail:SetText((haseditbox[field] and "|cff77ccff" or "") .. gsub(val, "^https?://", ""))
+			elseif field == "X-BugReport" then
 				detail:SetText((haseditbox[field] and "|cff77ccff" or "") .. gsub(val, "^https?://", ""))
 			else
 				detail:SetText((haseditbox[field] and "|cff77ccff" or "") .. val)
