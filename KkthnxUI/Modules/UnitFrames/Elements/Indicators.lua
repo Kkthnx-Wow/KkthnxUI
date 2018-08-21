@@ -158,8 +158,10 @@ local function PostUpdatePvPIndicator(self, unit, status)
 		self:SetTexture("Interface\\QuestFrame\\objectivewidget")
 
 		if factionGroup == "Alliance"  then
+			self:SetSize(26, 33)
 			self:SetTexCoord(0.00390625, 0.136719, 0.511719, 0.671875)
 		else
+			self:SetSize(30, 33)
 			self:SetTexCoord(0.00390625, 0.136719, 0.679688, 0.839844)
 		end
 	end

@@ -5,11 +5,15 @@ local _G = _G
 local pairs = pairs
 local string_format = string.format
 
+local backupColor = FACTION_BAR_COLORS[1]
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
+local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
+local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
+local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
@@ -18,6 +22,14 @@ local UIParent = _G.UIParent
 local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
+
+function Module:GetXP(unit)
+	if (unit == "pet") then
+		return GetPetExperience()
+	else
+		return UnitXP(unit), UnitXPMax(unit)
+	end
+end
 
 function Module:SetupExperience()
 	local expbar = CreateFrame("StatusBar", "KkthnxUI_ExperienceBar", self.Container)
@@ -79,16 +91,40 @@ function Module:SetupAzerite()
 end
 
 function Module:UpdateReputation()
-	if GetWatchedFactionInfo() then
-		local _, rank, minRep, maxRep, value = GetWatchedFactionInfo()
-		local current = value - minRep
-		local max = maxRep - minRep
+	local ID, isFriend, friendText, standingLabel
+	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
-		self.Bars.Reputation:SetMinMaxValues(minRep, max)
-		self.Bars.Reputation:SetValue(current)
+	if factionID and C_Reputation_IsFactionParagon(factionID) then
+		local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
+		if currentValue and threshold then
+			min, max = 0, threshold
+			value = currentValue % threshold
+			if hasRewardPending then
+				value = value + threshold
+			end
+		end
+	end
 
-		local c = FACTION_BAR_COLORS[rank]
-		self.Bars.Reputation:SetStatusBarColor(c.r, c.g, c.b)
+	local numFactions = GetNumFactions()
+
+	if name then
+		local color = FACTION_BAR_COLORS[reaction] or backupColor
+		self.Bars.Reputation:SetStatusBarColor(color.r, color.g, color.b)
+		self.Bars.Reputation:SetMinMaxValues(min, max)
+		self.Bars.Reputation:SetValue(value)
+
+		for i = 1, numFactions do
+			local factionName, _, standingID,_,_,_,_,_,_,_,_,_,_, factionID = GetFactionInfo(i)
+			local friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+			if factionName == name then
+				if friendID ~= nil then
+					isFriend = true
+					friendText = friendTextLevel
+				else
+					ID = standingID
+				end
+			end
+		end
 
 		self.Bars.Reputation:Show()
 	else
@@ -97,15 +133,28 @@ function Module:UpdateReputation()
 end
 
 function Module:UpdateExperience()
-	if MAX_PLAYER_LEVEL ~= UnitLevel("player") then
-		local current, max = UnitXP("player"), UnitXPMax("player")
-		local rest = GetXPExhaustion()
+	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
+
+	if not hideXP then
+		local cur, max = self:GetXP("player")
+
+		if max <= 0 then
+			max = 1
+		end
 
 		self.Bars.Experience:SetMinMaxValues(0, max)
-		self.Bars.Experience:SetValue(current)
+		self.Bars.Experience:SetValue(cur - 1 >= 0 and cur - 1 or 0)
+		self.Bars.Experience:SetValue(cur)
 
-		self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
-		self.Bars.Experience.RestBar:SetValue(rest and current + rest or 0)
+		local rested = GetXPExhaustion()
+
+		if rested and rested > 0 then
+			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
+			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
+		else
+			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
+			self.Bars.Experience.RestBar:SetValue(0)
+		end
 
 		self.Bars.Experience:Show()
 	else
@@ -117,14 +166,11 @@ function Module:UpdateAzerite()
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
 
 	if azeriteItemLocation then
-		local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
+		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
 
-		local current, max = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
-		local level = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
+		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
+		self.Bars.Azerite:SetValue(xp)
 
-		self.Bars.Azerite:SetMinMaxValues(0, max)
-		self.Bars.Azerite:SetValue(current)
-		self.Bars.Azerite.info = {current, max, level}
 		self.Bars.Azerite:Show()
 	else
 		self.Bars.Azerite:Hide()
@@ -139,36 +185,48 @@ function Module:OnEnter()
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
 	end
 
-	if MAX_PLAYER_LEVEL ~= UnitLevel("player") then
-		local current, max = UnitXP("player"), UnitXPMax("player")
-		local rest = GetXPExhaustion()
+	if not ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled()) then
+		local cur, max = Module:GetXP("player")
+		local rested = GetXPExhaustion()
 
-		GameTooltip:AddDoubleLine("Current:", string_format("%s/%s (%s%%)", K.ShortValue(current, 1), K.ShortValue(max, 1), K.Round(current / max * 100)), nil, nil, nil, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Databars"].Remaining, K.Comma(max - current), nil, nil, nil, 1, 1, 1)
+		GameTooltip:AddLine(L["Databars"].Experience)
+		GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), 1, 1, 1)
 
-		if rest then
-			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("%s (%s%%)", K.Comma(rest), K.Round(rest / max * 100)), nil, nil, nil, 0, 0.6, 1)
+		if rested then
+			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math.floor(rested / max * 100)), 1, 1, 1)
 		end
 	end
 
 	if GetWatchedFactionInfo() then
-		-- Add a space between exp and rep
 		if MAX_PLAYER_LEVEL ~= UnitLevel("player") then
 			GameTooltip:AddLine(" ")
 		end
 
-		local name, rank, minRep, maxRep, value = GetWatchedFactionInfo()
-		local current = value - minRep
-		local max = maxRep - minRep
-
-		local c = FACTION_BAR_COLORS[rank]
-
-		GameTooltip:AddDoubleLine(name, _G["FACTION_STANDING_LABEL" .. rank], nil,nil,nil, c.r, c.g, c.b)
-
-		if max > 0 then
-			GameTooltip:AddDoubleLine("Current:", string_format("%s/%s (%d%%)", K.ShortValue(current, 1), K.ShortValue(max, 1), K.Round(current / max * 100)), nil, nil, nil, 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Databars"].Remaining, K.Comma(max-current), nil, nil, nil, 1, 1, 1)
+		local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
+		if factionID and C_Reputation_IsFactionParagon(factionID) then
+			local currentValue, threshold, _, hasRewardPending = C_Reputation_GetFactionParagonInfo(factionID)
+			if currentValue and threshold then
+				min, max = 0, threshold
+				value = currentValue % threshold
+				if hasRewardPending then
+					value = value + threshold
+				end
+			end
 		end
+
+		if name then
+			GameTooltip:AddLine(name)
+
+			local friendID, friendTextLevel, _
+			if factionID then
+				friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
+			end
+
+			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL" .. reaction], 1, 1, 1)
+			GameTooltip:AddDoubleLine(REPUTATION..":", format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
+		end
+
 	end
 
 	if C_AzeriteItem_FindActiveAzeriteItem() then
@@ -176,10 +234,19 @@ function Module:OnEnter()
 			GameTooltip:AddLine(" ")
 		end
 
-		local current, max, level = unpack(self.Bars.Azerite.info)
-		GameTooltip:AddDoubleLine("Azerite Level:", level)
-		GameTooltip:AddDoubleLine("Current:", string_format("%s/%s (%d%%)", K.ShortValue(current, 1), K.ShortValue(max, 1), K.Round(current / max * 100)), nil, nil, nil, 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Databars"].Remaining, K.Comma(max - current), nil, nil, nil, 1, 1, 1)
+		local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
+		local azeriteItem = Item:CreateFromItemLocation(azeriteItemLocation)
+		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
+		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
+		local xpToNextLevel = totalLevelXP - xp
+
+		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
+			local azeriteItemName = azeriteItem:GetItemName()
+
+			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+			GameTooltip:AddDoubleLine(L["Databars"].AP, format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
+		end)
 	end
 
 	GameTooltip:Show()
@@ -234,7 +301,7 @@ function Module:OnEnable()
 	end
 
 	local container = CreateFrame("frame", "KkthnxUI_Databars", UIParent)
-	container:SetWidth(self.config.Width)
+	container:SetWidth(Minimap:GetWidth() or self.config.Width)
 	container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
 
 	self:HookScript(container, "OnEnter")

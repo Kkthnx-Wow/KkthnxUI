@@ -336,11 +336,7 @@ function Module:OnInitialize()
     K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", Minimap)
-    if C["Minimap"].CollectButtons then
-        AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -28, 3)
-    else
-        AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -3, 3)
-    end
+    AurasHolder:SetPoint("TOPRIGHT", UIParent, "TOPRIGHT", -3, 4)
     AurasHolder:SetWidth((Minimap:GetWidth() + 29))
     AurasHolder:SetHeight(Minimap:GetHeight() + 53)
 

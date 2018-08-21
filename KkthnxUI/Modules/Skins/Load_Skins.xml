@@ -26,6 +26,5 @@
    <Include file="Blizzard\SpellBook.lua" />
    <Include file="Blizzard\TalkingHead.lua" />
    <Include file="Blizzard\Tooltip.lua" />
-   <Include file="Blizzard\UIWidgets.lua" />
    <Include file="Blizzard\Worldmap.lua" />
 </Ui>

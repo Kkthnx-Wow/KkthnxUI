@@ -21,5 +21,4 @@
     <Script file="SlotItemLevel.lua"/>
     <Script file="StatusReport.lua"/>
     <Script file="TalkingLessHead.lua"/>
-    <Script file="UIErrorFilter.lua"/>
 </Ui>

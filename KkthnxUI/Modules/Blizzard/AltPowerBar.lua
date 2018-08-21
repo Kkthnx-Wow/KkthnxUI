@@ -3,130 +3,194 @@ if IsAddOnLoaded("SimplePowerBar") then
 	return
 end
 
-local select = select
-local strupper = string.upper
+local Module = K:NewModule("AltPowerBar", "AceEvent-3.0", "AceHook-3.0")
 
-local UnitAlternatePowerInfo = UnitAlternatePowerInfo
-local UnitAlternatePowerTextureInfo = UnitAlternatePowerTextureInfo
-local UnitPower = UnitPower
-local UnitPowerMax = UnitPowerMax
+local _G = _G
 
-local PowerBarAltTexture = K.GetTexture(C["Unitframe"].Texture)
+local floor = math.floor
+local format = string.format
+local UnitAlternatePowerInfo = _G.UnitAlternatePowerInfo
+local UnitPowerMax = _G.UnitPowerMax
+local UnitPower = _G.UnitPower
 
--- Skin AltPowerBar(by Tukz)
-local blizzColors = {
-	["INTERFACE\\UNITPOWERBARALT\\AMBER_HORIZONTAL_FILL.BLP"] = {r = 0.97, g = 0.81, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\ARCANE_CIRCULAR_FILL.BLP"] = {r = 0.52, g = 0.44, b = 1},
-	["INTERFACE\\UNITPOWERBARALT\\ARSENAL_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0, b = 0.2},
-	["INTERFACE\\UNITPOWERBARALT\\BREWINGSTORM_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0.84, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\BULLETBAR_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\CHOGALL_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.05, b = 0.67},
-	["INTERFACE\\UNITPOWERBARALT\\FELCORRUPTION_HORIZONTAL_FILL.BLP"] = {r = 0.13, g = 0.55, b = 0.13},
-	["INTERFACE\\UNITPOWERBARALT\\FELCORRUPTIONRED_HORIZONTAL_FILL.BLP"] = {r = 0.8, g = 0.05, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\GARROSHENERGY_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.05, b = 0.67},
-	["INTERFACE\\UNITPOWERBARALT\\KARGATHROARCROWD_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\LIGHTNING_HORIZONTAL_FILL.BLP"] = {r = 0.12, g = 0.56, b = 1},
-	["INTERFACE\\UNITPOWERBARALT\\MAP_HORIZONTAL_FILL.BLP"] = {r = 0.97, g = 0.81, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\MOLTENFEATHERS_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\NAARUCHARGE_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\ONYXIA_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.05, b = 0.67},
-	["INTERFACE\\UNITPOWERBARALT\\PRIDE_HORIZONTAL_FILL.BLP"] = {r = 0.2, g = 0.4, b = 1},
-	["INTERFACE\\UNITPOWERBARALT\\RHYOLITH_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\SHADOWPALADINBAR_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.05, b = 0.67},
-	["INTERFACE\\UNITPOWERBARALT\\SHAWATER_HORIZONTAL_FILL.BLP"] = {r = 0.1, g = 0.6, b = 1},
-	["INTERFACE\\UNITPOWERBARALT\\STONEGUARDAMETHYST_HORIZONTAL_FILL.BLP"] = {r = 0.67, g = 0, b = 1},
-	["INTERFACE\\UNITPOWERBARALT\\STONEGUARDCOBALT_HORIZONTAL_FILL.BLP"] = {r = 0.1, g = 0.4, b = 0.95},
-	["INTERFACE\\UNITPOWERBARALT\\STONEGUARDJADE_HORIZONTAL_FILL.BLP"] = {r = 0.13, g = 0.55, b = 0.13},
-	["INTERFACE\\UNITPOWERBARALT\\STONEGUARDJASPER_HORIZONTAL_FILL.BLP"] = {r = 1, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\THUNDERKING_HORIZONTAL_FILL.BLP"] = {r = 0.12, g = 0.56, b = 1},
-	["INTERFACE\\UNITPOWERBARALT\\TWINOGRONDISTANCE_HORIZONTAL_FILL.BLP"] = {r = 0.5, g = 0.4, b = 0},
-	["INTERFACE\\UNITPOWERBARALT\\XAVIUS_HORIZONTAL_FILL.BLP"] = {r = 0.4, g = 0.1, b = 0.6}
-}
+local statusBarColorGradient = true
 
-local Movers = K.Movers
+local function updateTooltip(self)
+	if GameTooltip:IsForbidden() then
+		return
+	end
 
--- Get rid of old AltPowerBar
-PlayerPowerBarAlt:UnregisterAllEvents()
-PlayerPowerBarAlt.ignoreFramePositionManager = true
+	if self.powerName and self.powerTooltip then
+		GameTooltip:SetText(self.powerName, 1, 1, 1)
+		GameTooltip:AddLine(self.powerTooltip, nil, nil, nil, 1)
+		GameTooltip:Show()
+	end
+end
 
-local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
-holder:SetPoint("TOP", UIParent, "TOP", 0, -24)
-holder:SetSize(220, 22)
-Movers:RegisterFrame(holder)
+local function onEnter(self)
+	if not self:IsVisible() then
+		return
+	end
 
--- AltPowerBar
-local bar = CreateFrame("Frame", "UIAltPowerBar", UIParent)
-bar:SetSize(220, 22)
-bar:SetAllPoints(AltPowerBarHolder)
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	updateTooltip(self)
+end
 
-bar.Background = bar:CreateTexture(nil, "BACKGROUND", -1)
-bar.Background:SetAllPoints()
-bar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+local function onLeave()
+	GameTooltip:Hide()
+end
 
-bar.Border = CreateFrame("Frame", nil, bar)
-bar.Border:SetAllPoints()
-K.CreateBorder(bar.Border)
+function Module:SetAltPowerBarText(name, value, max, percent)
+	local textFormat = "PERCENT" -- altPowerBar.textFormat
 
--- Event handling
-bar:RegisterEvent("UNIT_POWER_UPDATE")
-bar:RegisterEvent("UNIT_POWER_BAR_SHOW")
-bar:RegisterEvent("UNIT_POWER_BAR_HIDE")
-bar:RegisterEvent("PLAYER_ENTERING_WORLD")
-bar:SetScript("OnEvent", function(self)
-	if UnitAlternatePowerInfo("player") then
-		self:Show()
+	if textFormat == "NONE" or not textFormat then
+		return ""
+	elseif textFormat == "NAME" then
+		return format("%s", name)
+	elseif textFormat == "NAMEPERC" then
+		return format("%s: %s%%", name, percent)
+	elseif textFormat == "NAMECURMAX" then
+		return format("%s: %s / %s", name, value, max)
+	elseif textFormat == "NAMECURMAXPERC" then
+		return format("%s: %s / %s - %s%%", name, value, max, percent)
+	elseif textFormat == "PERCENT" then
+		return format("%s%%", percent)
+	elseif textFormat == "CURMAX" then
+		return format("%s / %s", value, max)
+	elseif textFormat == "CURMAXPERC" then
+		return format("%s / %s - %s%%", value, max, percent)
+	end
+end
+
+function Module:PositionAltPowerBar()
+	local holder = CreateFrame("Frame", "AltPowerBarHolder", UIParent)
+	holder:SetPoint("TOP", UIParent, "TOP", 0, -18)
+	holder:SetSize(128, 50)
+
+	PlayerPowerBarAlt:ClearAllPoints()
+	PlayerPowerBarAlt:SetPoint("CENTER", holder, "CENTER")
+	PlayerPowerBarAlt:SetParent(holder)
+	PlayerPowerBarAlt.ignoreFramePositionManager = true
+
+	-- The Blizzard function FramePositionDelegate:UIParentManageFramePositions()
+	-- calls :ClearAllPoints on PlayerPowerBarAlt under certain conditions.
+	-- Doing ".ClearAllPoints = E.noop" causes error when you enter combat.
+	local function Position(bar)
+		bar:SetPoint("CENTER", AltPowerBarHolder, "CENTER")
+	end
+	hooksecurefunc(PlayerPowerBarAlt, "ClearAllPoints", Position)
+
+	K.Movers:RegisterFrame(holder)
+end
+
+function Module:UpdateAltPowerBarColors()
+	local bar = KkthnxUI_AltPowerBar
+
+	if statusBarColorGradient then
+		if bar.colorGradientR and bar.colorGradientG and bar.colorGradientB then
+			bar:SetStatusBarColor(bar.colorGradientR, bar.colorGradientG, bar.colorGradientB)
+		elseif bar.powerValue then
+			local power, maxPower = bar.powerValue or 0, bar.powerMaxValue or 0
+			local value = (maxPower > 0 and power / maxPower) or 0
+			bar.colorGradientValue = value
+
+			local r, g, b = K.ColorGradient(value, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
+			bar.colorGradientR, bar.colorGradientG, bar.colorGradientB = r, g, b
+
+			bar:SetStatusBarColor(r, g, b)
+		else
+			bar:SetStatusBarColor(0.6, 0.6, 0.6) -- uh, fallback!
+		end
 	else
-		self:Hide()
+		bar:SetStatusBarColor(0.2, 0.4, 0.8)
 	end
-end)
+end
 
--- Tooltip
-bar:SetScript("OnEnter", function(self)
-	local name = select(11, UnitAlternatePowerInfo("player"))
-	local tooltip = select(12, UnitAlternatePowerInfo("player"))
+function Module:UpdateAltPowerBarSettings()
+	local bar = KkthnxUI_AltPowerBar
+	local width = 250
+	local height = 20
+	local fontOutline = ""
+	local fontSize = 12
+	local statusBar = C.Media.Texture
+	local font = C.Media.Font
 
-	GameTooltip:SetOwner(self, "ANCHOR_BOTTOM", 0, -5)
-	GameTooltip:AddLine(name, 1, 1, 1)
-	GameTooltip:AddLine(tooltip, nil, nil, nil, true)
+	bar:SetSize(width, height)
+	bar:SetStatusBarTexture(statusBar)
+	bar.text:SetFont(font, fontSize, fontOutline)
+	AltPowerBarHolder:SetSize(bar.Backdrop:GetSize())
 
-	GameTooltip:Show()
-end)
-bar:SetScript("OnLeave", GameTooltip_Hide)
-
--- StatusBar
-local status = CreateFrame("StatusBar", "UIAltPowerBarStatus", bar)
-status:SetFrameLevel(bar:GetFrameLevel())
-status:SetStatusBarTexture(PowerBarAltTexture)
-status:SetMinMaxValues(0, 100)
-status:SetAllPoints()
-
-status.text = status:CreateFontString(nil, "OVERLAY")
-status.text:SetFont(C["Media"].Font, C["Media"].FontSize)
-status.text:SetShadowOffset(1.25, -1.25)
-status.text:SetPoint("CENTER", bar, "CENTER", 0, 0)
-
--- Update Function
-local update = 1
-status:SetScript("OnUpdate", function(self, elapsed)
-	if not bar:IsShown() then return end
-	update = update + elapsed
-
-	if update >= 1 then
-		local power = UnitPower("player", ALTERNATE_POWER_INDEX)
-		local mpower = UnitPowerMax("player", ALTERNATE_POWER_INDEX)
-		local texture, r, g, b = UnitAlternatePowerTextureInfo("player", 2, 0)
-		if texture then
-			texture = strupper(texture)
-		end
-		if blizzColors[texture] then
-			r, g, b = blizzColors[texture].r, blizzColors[texture].g, blizzColors[texture].b
-		elseif not texture then
-			r, g, b = 0.3, 0.7, 0.3
-		end
-		self:SetMinMaxValues(0, mpower)
-		self:SetValue(power)
-		self.text:SetText(power.." / "..mpower)
-		self:SetStatusBarColor(r, g, b)
-		update = 0
+	local textFormat = "PERCENT"
+	if textFormat == "NONE" or not textFormat then
+		bar.text:SetText("")
+	else
+		local power, maxPower, perc = bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0
+		local text = Module:SetAltPowerBarText(bar.powerName or "", power, maxPower, perc)
+		bar.text:SetText(text)
 	end
-end)
+end
+
+function Module:SkinAltPowerBar()
+	local powerbar = CreateFrame("StatusBar", "KkthnxUI_AltPowerBar", UIParent)
+	powerbar:CreateBackdrop()
+	powerbar:SetMinMaxValues(0, 200)
+	powerbar:SetPoint("CENTER", AltPowerBarHolder)
+	powerbar:Hide()
+
+	powerbar:SetScript("OnEnter", onEnter)
+	powerbar:SetScript("OnLeave", onLeave)
+
+	powerbar.text = powerbar:CreateFontString(nil, "OVERLAY")
+	powerbar.text:SetPoint("CENTER", powerbar, "CENTER")
+	powerbar.text:SetJustifyH("CENTER")
+
+	Module:UpdateAltPowerBarSettings()
+	Module:UpdateAltPowerBarColors()
+
+	-- Event handling
+	powerbar:RegisterEvent("UNIT_POWER_UPDATE")
+	powerbar:RegisterEvent("UNIT_POWER_BAR_SHOW")
+	powerbar:RegisterEvent("UNIT_POWER_BAR_HIDE")
+	powerbar:RegisterEvent("PLAYER_ENTERING_WORLD")
+	powerbar:SetScript("OnEvent", function(bar)
+		PlayerPowerBarAlt:UnregisterAllEvents()
+		PlayerPowerBarAlt:Hide()
+
+		local barType, min, _, _, _, _, _, _, _, _, powerName, powerTooltip = UnitAlternatePowerInfo("player")
+		if not barType then
+			barType, min, _, _, _, _, _, _, _, _, powerName, powerTooltip = UnitAlternatePowerInfo("target")
+		end
+
+		bar.powerName = powerName
+		bar.powerTooltip = powerTooltip
+
+		if barType then
+			local power = UnitPower("player", ALTERNATE_POWER_INDEX)
+			local maxPower = UnitPowerMax("player", ALTERNATE_POWER_INDEX) or 0
+			local perc = (maxPower > 0 and floor(power / maxPower * 100)) or 0
+
+			bar.powerValue = power
+			bar.powerMaxValue = maxPower
+			bar.powerPercent = perc
+
+			bar:Show()
+			bar:SetMinMaxValues(min, maxPower)
+			bar:SetValue(power)
+
+			if statusBarColorGradient then
+				local value = (maxPower > 0 and power / maxPower) or 0
+				bar.colorGradientValue = value
+
+				local r, g, b = K.ColorGradient(value, 0.8,0,0, 0.8,0.8,0, 0,0.8,0)
+				bar.colorGradientR, bar.colorGradientG, bar.colorGradientB = r, g, b
+
+				bar:SetStatusBarColor(r, g, b)
+			end
+
+			local text = Module:SetAltPowerBarText(powerName or "", power, maxPower, perc)
+			bar.text:SetText(text)
+		else
+			bar:Hide()
+		end
+	end)
+end
