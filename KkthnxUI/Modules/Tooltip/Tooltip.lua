@@ -684,6 +684,8 @@ function Module:OnEnable()
 		return
 	end
 
+	local TooltipFont = K.GetFont(C["Tooltip"].Font)
+
 	local BNETMover = CreateFrame("Frame", "BNETMover", UIParent)
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
@@ -701,8 +703,7 @@ function Module:OnEnable()
 	GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
 	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
 	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
-	GameTooltipStatusBar.text:SetFont(C["Media"].Font, C["Tooltip"].FontSize, C["Tooltip"].FontOutline and "OUTLINE" or "")
-	GameTooltipStatusBar.text:SetShadowOffset(C["Tooltip"].FontOutline and 0 or 1, C["Tooltip"].FontOutline and -0 or -1)
+	GameTooltipStatusBar.text:SetFontObject(TooltipFont)
 
 	if not GameTooltip.hasMoney then
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")

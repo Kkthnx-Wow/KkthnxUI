@@ -167,9 +167,11 @@ C["DataBars"] = {
 	["AzeriteColor"] = {0.901, 0.8, 0.601},
 	["Enable"] = true,
 	["ExperienceColor"] = {0.6, 0.3, 0.8},
+	["Font"] = "KkthnxUI",
 	["Height"] = 10,
 	["MouseOver"] = false,
 	["RestedColor"] = {0.3, 0.6, 0.8},
+	["Text"] = false,
 	["Texture"] = "KkthnxUI",
 	["Width"] = 170,
 }

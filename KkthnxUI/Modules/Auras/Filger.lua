@@ -54,7 +54,7 @@ function Filger:UnitAura(unitID, inSpellID, spell, filter, absID)
 			end
 		end
 	else
-		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = AuraUtil_FindAuraByName(spell, unitID, filter)
+		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = AuraUtil.FindAuraByName(spell, unitID, filter)
 		if name then
 			return name, spellID, icon, count, duration, expirationTime, unitCaster
 		end
@@ -317,17 +317,50 @@ function Filger:DisplayActives()
 	end
 end
 
-local updateTime
-function Filger:OnEvent(event, unit, _, spellID, elapsed)
-	if event == "SPELL_UPDATE_COOLDOWN" or event == "PLAYER_TARGET_CHANGED"
-	or event == "PLAYER_FOCUS_CHANGED" or event == "PLAYER_ENTERING_WORLD"
-	or event == "UNIT_AURA" and (unit == "target" or unit == "player"
-	or unit == "pet" or unit == "focus")
+function Filger:OnEvent(event, unit, _, spellID)
+	if event == "SPELL_UPDATE_COOLDOWN"
+	or event == "PLAYER_TARGET_CHANGED"
+	or event == "PLAYER_FOCUS_CHANGED"
+	or event == "PLAYER_ENTERING_WORLD"
+	or event == "UNIT_AURA" and (unit == "target" or unit == "player" or unit == "pet" or unit == "focus")
 	or (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
-
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
+
+		local buffs = {}
+		local debuffs = {}
+		if event == "UNIT_AURA" then
+			for i = 1, 40 do
+				local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitAura(unit, i, "HELPFUL")
+				if not name then break end
+
+				buffs[name] = {}
+				buffs[name].unit = unit
+				buffs[name].name = name
+				buffs[name].spid = spellID
+				buffs[name].icon = icon
+				buffs[name].count = count
+				buffs[name].duration = duration
+				buffs[name].expirationTime = expirationTime
+				buffs[name].caster = unitCaster
+			end
+
+			for i = 1, 40 do
+				local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitAura(unit, i, "HARMFUL")
+				if not name then break end
+
+				debuffs[name] = {}
+				debuffs[name].unit = unit
+				debuffs[name].name = name
+				debuffs[name].spid = spellID
+				debuffs[name].icon = icon
+				debuffs[name].count = count
+				debuffs[name].duration = duration
+				debuffs[name].expirationTime = expirationTime
+				debuffs[name].caster = unitCaster
+			end
+		end
 
 		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
 			local data = C["FilgerSpells"][K.Class][id][i]
@@ -338,17 +371,21 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 			local name, icon, count, duration, start, spid
 			spid = 0
 
-			if event == "UNIT_AURA" then
-				if updateTime and updateTime == time() then
-					return
-				end
-			end
-
 			if data.filter == "BUFF" and (not data.spec or data.spec == ptt) then
 				local caster, spell, expirationTime
 				spell = GetSpellInfo(data.spellID)
 				if spell then
-					name, spid, icon, count, duration, expirationTime, caster = Filger:UnitAura(data.unitID, data.spellID, spell, "HELPFUL", data.absID)
+					if buffs[spell] then
+						if buffs[spell].unit ~= data.unitID then
+							return
+						end
+						if data.absID and data.spellID ~= buffs[spell].spid then
+							return
+						end
+						name, spid, icon, count, duration, expirationTime, caster = buffs[spell].name, buffs[spell].spid, buffs[spell].icon, buffs[spell].count, buffs[spell].duration, buffs[spell].expirationTime, buffs[spell].caster
+					else
+						name, spid, icon, count, duration, expirationTime, caster = Filger:UnitAura(data.unitID, data.spellID, spell, "HELPFUL", data.absID)
+					end
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						if not data.count or count >= data.count then
 							start = expirationTime - duration
@@ -360,7 +397,17 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 				local caster, spell, expirationTime
 				spell = GetSpellInfo(data.spellID)
 				if spell then
-					name, spid, icon, count, duration, expirationTime, caster = Filger:UnitAura(data.unitID, data.spellID, spell, "HARMFUL", data.absID)
+					if debuffs[spell] then
+						if debuffs[spell].unit ~= data.unitID then
+							return
+						end
+						if data.absID and data.spellID ~= debuffs[spell].spid then
+							return
+						end
+						name, spid, icon, count, duration, expirationTime, caster = debuffs[spell].name, debuffs[spell].spid, debuffs[spell].icon, debuffs[spell].count, debuffs[spell].duration, debuffs[spell].expirationTime, debuffs[spell].caster
+					else
+						name, spid, icon, count, duration, expirationTime, caster = Filger:UnitAura(data.unitID, data.spellID, spell, "HARMFUL", data.absID)
+					end
 					if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
 						start = expirationTime - duration
 						found = true
@@ -393,13 +440,33 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 					local spell
 					spell, _, icon = GetSpellInfo(data.spellID)
 					if spell then
-						name, spid = Filger:UnitAura(data.unitID, data.spellID, spell, "HELPFUL", data.absID)
+						if buffs[spell] then
+							if buffs[spell].unit ~= data.unitID then
+								return
+							end
+							if data.absID and data.spellID ~= buffs[spell].spid then
+								return
+							end
+							name, spid = buffs[spell].name, buffs[spell].spid
+						else
+							name, spid = Filger:UnitAura(data.unitID, data.spellID, spell, "HELPFUL", data.absID)
+						end
 					end
 				elseif data.trigger == "DEBUFF" then
 					local spell
 					spell, _, icon = GetSpellInfo(data.spellID)
 					if spell then
-						name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
+						if debuffs[spell] then
+							if debuffs[spell].unit ~= data.unitID then
+								return
+							end
+							if data.absID and data.spellID ~= debuffs[spell].spid then
+								return
+							end
+							name, spid = debuffs[spell].name, debuffs[spell].spid
+						else
+							name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
+						end
 					end
 				elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
 					if spellID == data.spellID then
@@ -422,7 +489,6 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 				if not self.actives then
 					self.actives = {}
 				end
-
 				if not self.actives[i] then
 					self.actives[i] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid}
 					needUpdate = true
@@ -430,8 +496,7 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 						self.actives[i] = nil
 					end
 				else
-					if data.filter ~= "ICD" and (self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration)
-					then
+					if data.filter ~= "ICD" and (self.actives[i].count ~= count or self.actives[i].start ~= start or self.actives[i].duration ~= duration) then
 						self.actives[i].count = count
 						self.actives[i].start = start
 						self.actives[i].duration = duration
@@ -443,7 +508,6 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 					if event == "UNIT_SPELLCAST_SUCCEEDED" then
 						return
 					end
-
 					self.actives[i] = nil
 					needUpdate = true
 				end
@@ -452,9 +516,6 @@ function Filger:OnEvent(event, unit, _, spellID, elapsed)
 
 		if needUpdate and self.actives then
 			Filger.DisplayActives(self)
-			if event == "UNIT_AURA" then
-				updateTime = time()
-			end
 		end
 	end
 end

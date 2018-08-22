@@ -28,6 +28,7 @@ local GetNumFactions = _G.GetNumFactions
 local GetFactionInfo = _G.GetFactionInfo
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetExpansionLevel = _G.GetExpansionLevel
+local DataBarsFont = K.GetFont(C["DataBars"].Font)
 
 function Module:GetXP(unit)
 	if (unit == "pet") then
@@ -57,9 +58,15 @@ function Module:SetupExperience()
 	espark:SetBlendMode("ADD")
 	espark:SetPoint("CENTER", expbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
+	local etext = expbar:CreateFontString(nil, "OVERLAY")
+	etext:SetFontObject(DataBarsFont)
+	etext:SetFont(select(1, etext:GetFont()), self.config.Height, select(3, etext:GetFont()))
+	etext:SetPoint('CENTER')
+
 	self.Bars.Experience = expbar
 	expbar.RestBar = restbar
 	expbar.Spark = espark
+	expbar.Text = etext
 end
 
 function Module:SetupReputation()
@@ -75,8 +82,16 @@ function Module:SetupReputation()
 	rspark:SetBlendMode("ADD")
 	rspark:SetPoint("CENTER", reputation:GetStatusBarTexture(), "RIGHT", 0, 0)
 
+	local rtext = reputation:CreateFontString(nil, "OVERLAY")
+	rtext:SetFontObject(DataBarsFont)
+	rtext:SetFont(select(1, rtext:GetFont()), self.config.Height, select(3, rtext:GetFont()))
+	rtext:SetWidth(self.config.Width - 6)
+	rtext:SetWordWrap(false)
+	rtext:SetPoint('CENTER')
+
 	self.Bars.Reputation = reputation
 	reputation.Spark = rspark
+	reputation.Text = rtext
 end
 
 function Module:SetupAzerite()
@@ -92,8 +107,14 @@ function Module:SetupAzerite()
 	aspark:SetBlendMode("ADD")
 	aspark:SetPoint("CENTER", azerite:GetStatusBarTexture(), "RIGHT", 0, 0)
 
+	local atext = azerite:CreateFontString(nil, "OVERLAY")
+	atext:SetFontObject(DataBarsFont)
+	atext:SetFont(select(1, atext:GetFont()), self.config.Height, select(3, atext:GetFont()))
+	atext:SetPoint('CENTER')
+
 	self.Bars.Azerite = azerite
 	azerite.Spark = aspark
+	azerite.Text = atext
 end
 
 function Module:UpdateReputation()
@@ -120,7 +141,7 @@ function Module:UpdateReputation()
 		self.Bars.Reputation:SetValue(value)
 
 		for i = 1, numFactions do
-			local factionName, _, standingID,_,_,_,_,_,_,_,_,_,_, factionID = GetFactionInfo(i)
+			local factionName, _, standingID, _, _, _, _, _, _, _, _, _, _, factionID = GetFactionInfo(i)
 			local friendID, _, _, _, _, _, friendTextLevel = GetFriendshipReputation(factionID)
 			if factionName == name then
 				if friendID ~= nil then
@@ -130,6 +151,21 @@ function Module:UpdateReputation()
 					ID = standingID
 				end
 			end
+		end
+
+		if ID then
+			standingLabel = _G['FACTION_STANDING_LABEL'..ID]
+		else
+			standingLabel = FactionStandingLabelUnknown
+		end
+
+		local maxMinDiff = max - min
+		if (maxMinDiff == 0) then
+			maxMinDiff = 1
+		end
+
+		if C["DataBars"].Text then
+			self.Bars.Reputation.Text:SetText(format('%s: %d%% [%s]', name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel))
 		end
 
 		self.Bars.Reputation:Show()
@@ -157,9 +193,17 @@ function Module:UpdateExperience()
 		if rested and rested > 0 then
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
 			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
+
+			if C["DataBars"].Text then
+				self.Bars.Experience.Text:SetText(format('%d%% R:%d%%', cur / max * 100, rested / max * 100))
+			end
 		else
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
 			self.Bars.Experience.RestBar:SetValue(0)
+
+			if C["DataBars"].Text then
+				self.Bars.Experience.Text:SetText(format('%d%%', cur / max * 100))
+			end
 		end
 
 		self.Bars.Experience:Show()
@@ -173,9 +217,15 @@ function Module:UpdateAzerite()
 
 	if azeriteItemLocation then
 		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
+		local xpToNextLevel = totalLevelXP - xp
+		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
 		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
 		self.Bars.Azerite:SetValue(xp)
+
+		if C["DataBars"].Text then
+			self.Bars.Azerite.Text:SetText(format("%s%% [%s]", floor(xp / totalLevelXP * 100), currentLevel))
+		end
 
 		self.Bars.Azerite:Show()
 	else

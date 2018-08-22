@@ -32,45 +32,35 @@ for k, v in pairs(LOCALIZED_CLASS_NAMES_FEMALE) do
 end
 
 local function ClassColorCode(class)
-	local classColors = class and (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[Module.Classes[class]] or RAID_CLASS_COLORS[Module.Classes[class]]) or {r = 1, g = 1, b = 1}
-	return format("|cFF%02x%02x%02x", classColors.r * 255, classColors.g * 255, classColors.b * 255)
+	local color = class and (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[Module.Classes[class]] or RAID_CLASS_COLORS[Module.Classes[class]]) or {r = 1, g = 1, b = 1}
+	return format("|cFF%02x%02x%02x", color.r * 255, color.g * 255, color.b * 255)
 end
 
 local MediaIconPath = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\GameIcons\\"
 
-Module.GameIcons = {
-	Alliance = MediaIconPath .. "Alliance",
-	App = MediaIconPath .. "BattleNet",
-	BSAp = MediaIconPath .. "BattleNet",
-	D3 = MediaIconPath .. "D3",
-	DST2 = MediaIconPath .. "Destiny2",
-	Hero = MediaIconPath .. "Heroes",
-	Horde = MediaIconPath .. "Horde",
-	Neutral = MediaIconPath .. "WoW",
-	Pro = MediaIconPath .. "Overwatch",
-	S1 = MediaIconPath .. "SC",
-	S2 = MediaIconPath .. "SC2",
-	WTCG = MediaIconPath .. "Hearthstone",
-	VIPR = MediaIconPath .. "COD4"
-}
+Module.Icons = {
+	Game = {
+		Alliance = MediaIconPath .. "Alliance",
+		App = MediaIconPath .. "BattleNet",
+		BSAp = MediaIconPath .. "BattleNet",
+		D3 = MediaIconPath .. "D3",
+		DST2 = MediaIconPath .. "Destiny2",
+		Hero = MediaIconPath .. "Heroes",
+		Horde = MediaIconPath .. "Horde",
+		Neutral = MediaIconPath .. "WoW",
+		Pro = MediaIconPath .. "Overwatch",
+		S1 = MediaIconPath .. "SC",
+		S2 = MediaIconPath .. "SC2",
+		WTCG = MediaIconPath .. "Hearthstone",
+		VIPR = MediaIconPath .. "COD4"
+	},
 
-Module.StatusIcons = {
-	AFK = FRIENDS_TEXTURE_AFK,
-	DND = FRIENDS_TEXTURE_DND,
-	Offline = FRIENDS_TEXTURE_OFFLINE,
-	Online = FRIENDS_TEXTURE_ONLINE
-}
-
-Module.ClientColor = {
-	App = "82C5FF",
-	BSAp = "82C5FF",
-	D3 = "C41F3B",
-	Hero = "00CCFF",
-	Pro = "FFFFFF",
-	S1 = "C495DD",
-	S2 = "C495DD",
-	WTCG = "FFB100",
-	VIPR = "FFFFFF",
+	Status = {
+		Online = FRIENDS_TEXTURE_ONLINE,
+		Offline = FRIENDS_TEXTURE_OFFLINE,
+		DND = FRIENDS_TEXTURE_DND,
+		AFK = FRIENDS_TEXTURE_AFK,
+	}
 }
 
 function Module:UpdateFriends(button)
@@ -79,19 +69,19 @@ function Module:UpdateFriends(button)
 		local name, level, class, area, connected, status = GetFriendInfo(button.id)
 		broadcastText = nil
 		if connected then
-			button.status:SetTexture(Module.StatusIcons[(status == CHAT_FLAG_DND and "DND" or status == CHAT_FLAG_AFK and "AFK" or "Online")])
+			button.status:SetTexture(Module.Icons.Status[(status == CHAT_FLAG_DND and "DND" or status == CHAT_FLAG_AFK and "AFK" or "Online")])
 			nameText = format("%s%s - (%s - %s %s)", ClassColorCode(class), name, class, LEVEL, level)
 			nameColor = FRIENDS_WOW_NAME_COLOR
 			Cooperate = true
 		else
-			button.status:SetTexture(Module.StatusIcons.Offline)
+			button.status:SetTexture(Module.Icons.Status.Offline)
 			nameText = name
 			nameColor = FRIENDS_GRAY_COLOR
 		end
 		infoText = area
 	elseif button.buttonType == FRIENDS_BUTTON_TYPE_BNET and BNConnected() then
-		local _, presenceName, battleTag, _, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText = BNGetFriendInfo(button.id)
-		local realmName, _, faction, _, class, zoneName, level, gameText
+		local presenceID, presenceName, battleTag, isBattleTagPresence, toonName, toonID, client, isOnline, lastOnline, isAFK, isDND, messageText, noteText, isRIDFriend, messageTime, canSoR = BNGetFriendInfo(button.id)
+		local realmName, realmID, faction, race, class, zoneName, level, gameText
 		broadcastText = messageText
 		local characterName = toonName
 		if presenceName then
@@ -104,55 +94,47 @@ function Module:UpdateFriends(button)
 		end
 
 		if characterName then
-			_, _, _, realmName, _, faction, _, class, _, zoneName, level, gameText = BNGetGameAccountInfo(toonID)
+			_, _, _, realmName, realmID, faction, race, class, _, zoneName, level, gameText = BNGetGameAccountInfo(toonID)
 			if client == BNET_CLIENT_WOW then
-				if (level == nil or tonumber(level) == nil) then
-					level = 0
-				end
-
+				if (level == nil or tonumber(level) == nil) then level = 0 end
 				local classcolor = ClassColorCode(class)
-				local diff =
-				level ~= 0 and format("|cFF%02x%02x%02x", GetQuestDifficultyColor(level).r * 255, GetQuestDifficultyColor(level).g * 255, GetQuestDifficultyColor(level).b * 255 ) or "|cFFFFFFFF"
+				local diff = level ~= 0 and format("|cFF%02x%02x%02x", GetQuestDifficultyColor(level).r * 255, GetQuestDifficultyColor(level).g * 255, GetQuestDifficultyColor(level).b * 255) or "|cFFFFFFFF"
 				nameText = format("%s |cFFFFFFFF(|r%s%s|r - %s %s%s|r|cFFFFFFFF)|r", nameText, classcolor, characterName, LEVEL, diff, level)
 				Cooperate = CanCooperateWithGameAccount(toonID)
 			else
-				if not Module.ClientColor[client] then
+				if not Module.Icons.Game[client] then
 					client = "App"
 				end
-				nameText = format("|cFF%s%s|r", Module.ClientColor[client] or "FFFFFF", nameText)
+				nameText = format("|cFF%s%s|r", Module.Icons.Game[client].Color or "FFFFFF", nameText)
 			end
 		end
 
 		if isOnline then
-			button.status:SetTexture(Module.StatusIcons[(isDND and "DND" or isAFK and "AFK" or "Online")])
+			button.status:SetTexture(Module.Icons.Status[(status == CHAT_FLAG_DND and "DND" or status == CHAT_FLAG_AFK and "AFK" or "Online")])
 			if client == BNET_CLIENT_WOW then
 				if not zoneName or zoneName == "" then
 					infoText = UNKNOWN
 				else
-					if realmName == K.Realm then
+					if realmName == Module.MyRealm then
 						infoText = zoneName
 					else
-						local _, b = strsplit("-", gameText)
-						infoText = format("%s - %s", zoneName, b or "")
+						infoText = gsub(gameText, "&apos;", "'")
 					end
 				end
-
-				button.gameIcon:SetTexture(Module.GameIcons[faction])
+				button.gameIcon:SetTexture(Module.Icons.Game[faction])
 			else
-				if not Module.GameIcons[client] then
+				if not Module.Icons.Game[client] then
 					client = "App"
 				end
 				infoText = gameText
-				button.gameIcon:SetTexture(Module.GameIcons[client])
+				button.gameIcon:SetTexture(Module.Icons.Game[client])
 			end
-
 			nameColor = FRIENDS_BNET_NAME_COLOR
 			button.gameIcon:SetTexCoord(0, 1, 0, 1)
 		else
-			button.status:SetTexture(Module.StatusIcons.Offline)
+			button.status:SetTexture(Module.Icons.Status.Offline)
 			nameColor = FRIENDS_GRAY_COLOR
-			infoText =
-			lastOnline == 0 and FRIENDS_LIST_OFFLINE or format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline))
+			infoText = lastOnline == 0 and FRIENDS_LIST_OFFLINE or format(BNET_LAST_ONLINE_TIME, FriendsFrame_GetLastOnline(lastOnline))
 		end
 	end
 
@@ -164,11 +146,10 @@ function Module:UpdateFriends(button)
 
 	if not button.isUpdateHooked then
 		button:HookScript("OnUpdate", function(self, elapsed)
-			if button.gameIcon:GetTexture() == MediaIconPath .. "GameIcons\\Bnet" then
+			if button.gameIcon:GetTexture() == MediaIconPath.."GameIcons\\Bnet" then
 				AnimateTexCoords(self.gameIcon, 512, 256, 64, 64, 25, elapsed, 0.02)
 			end
 		end)
-
 		button.isUpdateHooked = true
 	end
 
