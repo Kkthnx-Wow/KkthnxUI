@@ -122,7 +122,7 @@ local function Update(self, event, unit, powertype)
 	* max  - the maximum value of the player's additional power (number)
 	--]]
 	if(element.PostUpdate) then
-		return element:PostUpdate(unit, cur, max, event) -- ElvUI adds event
+		return element:PostUpdate(unit, cur, max)
 	end
 end
 
@@ -144,14 +144,6 @@ local function ElementEnable(self)
 
 	self.AdditionalPower:Show()
 
-	-- ElvUI block
-	if self.AdditionalPower.PostUpdateVisibility then
-		self.AdditionalPower:PostUpdateVisibility(true, not self.AdditionalPower.isEnabled)
-	end
-
-	self.AdditionalPower.isEnabled = true
-	-- end block
-
 	Path(self, 'ElementEnable', 'player', ADDITIONAL_POWER_BAR_NAME)
 end
 
@@ -160,14 +152,6 @@ local function ElementDisable(self)
 	self:UnregisterEvent('UNIT_MAXPOWER', Path)
 
 	self.AdditionalPower:Hide()
-
-	-- ElvUI block
-	if self.AdditionalPower.PostUpdateVisibility then
-		self.AdditionalPower:PostUpdateVisibility(false, self.AdditionalPower.isEnabled)
-	end
-
-	self.AdditionalPower.isEnabled = nil
-	-- end block
 
 	Path(self, 'ElementDisable', 'player', ADDITIONAL_POWER_BAR_NAME)
 end

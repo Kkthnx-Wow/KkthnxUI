@@ -157,8 +157,8 @@ local function PostUpdatePvPIndicator(self, unit, status)
 	elseif factionGroup and UnitIsPVP(unit) and status ~= nil then
 		self:SetTexture("Interface\\QuestFrame\\objectivewidget")
 
-		if factionGroup == "Alliance"  then
-			self:SetSize(26, 33)
+		if factionGroup == "Alliance" then
+			self:SetSize(30, 33)
 			self:SetTexCoord(0.00390625, 0.136719, 0.511719, 0.671875)
 		else
 			self:SetSize(30, 33)
@@ -216,7 +216,7 @@ function Module:CreateQuestIndicator(size)
 
 	self.QuestIndicator = self.QuestOverlay:CreateTexture(nil, "OVERLAY", 7)
 	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
-    self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
+	self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
 	self.QuestIndicator:SetSize(size, size)
 	self.QuestIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", -4, 0)
 end

@@ -29,7 +29,7 @@ function Module:CreateBoss()
 	self.Health:SetStatusBarTexture(UnitframeTexture)
 	self.Health:SetSize(130, 26)
 	self.Health:SetPoint("CENTER", self, "CENTER", 26, 10)
-	K.CreateBorder(self.Health)
+	self.Health:CreateBorder()
 
 	self.Health.Smooth = C["Boss"].Smooth
 	self.Health.SmoothSpeed = C["Boss"].SmoothSpeed * 10

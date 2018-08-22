@@ -1,15 +1,14 @@
 local K, C, L = unpack(select(2, ...))
 
 if C["Inventory"].Enable ~= true
-	or K.CheckAddOnState("AdiBags")
-	or K.CheckAddOnState("ArkInventory")
-	or K.CheckAddOnState("cargBags_Nivaya")
-	or K.CheckAddOnState("cargBags")
-	or K.CheckAddOnState("Bagnon")
-	or K.CheckAddOnState("Combuctor")
-	or K.CheckAddOnState("TBag")
-	or K.CheckAddOnState("BaudBag")
-then
+or K.CheckAddOnState("AdiBags")
+or K.CheckAddOnState("ArkInventory")
+or K.CheckAddOnState("cargBags_Nivaya")
+or K.CheckAddOnState("cargBags")
+or K.CheckAddOnState("Bagnon")
+or K.CheckAddOnState("Combuctor")
+or K.CheckAddOnState("TBag")
+or K.CheckAddOnState("BaudBag") then
 	return
 end
 
@@ -22,7 +21,6 @@ local bit_band = bit.band
 local ipairs = ipairs
 local math_floor = math.floor
 local pairs = pairs
-local print = print
 local select = select
 local string_find = string.find
 local string_lower = string.lower
@@ -31,18 +29,14 @@ local table_insert = table.insert
 local table_remove = table.remove
 local tonumber = tonumber
 
-local MoneyFrame_Update = _G.MoneyFrame_Update
+local BANK = _G.BANK
 local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
-local SortReagentBankBags = _G.SortReagentBankBags
-local CloseBankFrame = _G.CloseBankFrame
-local UIParent = _G.UIParent
-local GameTooltip = _G.GameTooltip
-local SEARCH = _G.SEARCH
-local BANK = _G.BANK
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
+local CloseBankFrame = _G.CloseBankFrame
 local CooldownFrame_Set = _G.CooldownFrame_Set
-local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
+local CreateFrame = _G.CreateFrame
+local GameTooltip = _G.GameTooltip
 local GetContainerItemCooldown = _G.GetContainerItemCooldown
 local GetContainerItemEquipmentSetInfo = _G.GetContainerItemEquipmentSetInfo
 local GetContainerItemInfo = _G.GetContainerItemInfo
@@ -56,18 +50,20 @@ local GetMoney = _G.GetMoney
 local GetNumBankSlots = _G.GetNumBankSlots
 local GetReagentBankCost = _G.GetReagentBankCost
 local hooksecurefunc = _G.hooksecurefunc
-local InCombatLockdown = _G.InCombatLockdown
 local IsBattlePayItem = _G.IsBattlePayItem
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_ITEM_QUALITY_POOR = _G.LE_ITEM_QUALITY_POOR
+local MoneyFrame_Update = _G.MoneyFrame_Update
 local NEW_ITEM_ATLAS_BY_QUALITY = _G.NEW_ITEM_ATLAS_BY_QUALITY
 local PlaySound = _G.PlaySound
+local SEARCH = _G.SEARCH
 local SetItemButtonCount = _G.SetItemButtonCount
 local SetItemButtonDesaturated = _G.SetItemButtonDesaturated
 local SetItemButtonTexture = _G.SetItemButtonTexture
+local SortReagentBankBags = _G.SortReagentBankBags
 local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
-local CreateFrame = _G.CreateFrame
+local UIParent = _G.UIParent
 
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
@@ -79,9 +75,8 @@ local bag_bars = 0
 local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
 Stuffing:RegisterEvent("PLAYER_ENTERING_WORLD")
-Stuffing:SetScript(
-"OnEvent", function(self, event, ...)
-	self[event](self, ...)
+Stuffing:SetScript("OnEvent", function(this, event, ...)
+	Stuffing[event](this, ...)
 end)
 
 local function Stuffing_OnShow()
@@ -94,6 +89,8 @@ local function Stuffing_OnShow()
 	Stuffing:Layout()
 	Stuffing:SearchReset()
 	PlaySound(SOUNDKIT.IG_BACKPACK_OPEN)
+
+	collectgarbage("collect")
 end
 
 local function StuffingBank_OnHide()
@@ -190,26 +187,13 @@ local function IsRealItemLevel(link, owner, bag, slot)
 	return realItemLevel
 end
 
-local function IsItemEligibleForItemLevelDisplay(classID, subClassID, equipLoc, rarity)
-	if ((classID == 3 and subClassID == 11)
-		or (equipLoc ~= nil and equipLoc ~= ""
-		and equipLoc ~= "INVTYPE_BAG"
-		and equipLoc ~= "INVTYPE_QUIVER"
-		and equipLoc ~= "INVTYPE_TABARD"))
-		and (rarity and rarity > 1) then
-		return true
-	end
-
-	return false
-end
-
 function Stuffing:SlotUpdate(b)
-	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
+	local texture, count, locked, quality = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
+	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
 
 	if not b.frame.lock then
-		b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		b.frame:SetBackdropBorderColor()
 	end
 
 	if b.cooldown and StuffingFrameBags and StuffingFrameBags:IsShown() then
@@ -221,7 +205,7 @@ function Stuffing:SlotUpdate(b)
 		b.frame.text:SetText("")
 	end
 
-	if (b.frame.UpgradeIcon) then
+	if b.frame.UpgradeIcon then
 		b.frame.UpgradeIcon:ClearAllPoints()
 		b.frame.UpgradeIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\UpgradeIcon")
 		b.frame.UpgradeIcon:SetPoint("BOTTOMRIGHT", 6, -3)
@@ -271,7 +255,7 @@ function Stuffing:SlotUpdate(b)
 		newItemTexture:SetSize(b.frame:GetSize())
 	end
 
-	if (b.frame.JunkIcon and C["Inventory"].JunkIcon) then
+	if b.frame.JunkIcon and C["Inventory"].JunkIcon then
 		b.frame.JunkIcon:ClearAllPoints()
 		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Inventory"].ButtonSize / 2, C["Inventory"].ButtonSize / 2)
 		b.frame.JunkIcon:SetSize(C["Inventory"].ButtonSize / 1.8, C["Inventory"].ButtonSize / 1.8)
@@ -293,31 +277,25 @@ function Stuffing:SlotUpdate(b)
 	end
 
 	if clink then
-		b.name, _, _, b.itemlevel, b.level, _, _, _, b.itemEquipLoc, _, _, b.itemClassID, b.itemSubClassID =
-		GetItemInfo(clink)
+		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
-		if b.itemlevel and C["Inventory"].ItemLevel and IsItemEligibleForItemLevelDisplay(b.itemClassID, b.itemSubClassID, b.itemEquipLoc, quality) then
-			if (b.itemlevel >= C["Inventory"].ItemLevelThreshold) then
-				b.itemlevel = IsRealItemLevel(clink, self, b.bag, b.slot) or b.itemlevel
-				b.frame.text:SetText(b.itemlevel)
-				b.frame.text:SetTextColor(GetItemQualityColor(quality))
-			end
+		if C["Inventory"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
+			b.itemlevel = IsRealItemLevel(clink, self, b.bag, b.slot) or b.itemlevel
+			b.frame.text:SetText(b.itemlevel)
+			b.frame.text:SetTextColor(GetItemQualityColor(quality))
 		end
 
 		if (Unfit:IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
-			_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
+			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		else
-			_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 1, 1)
+			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
 
-		if questId and not isActiveQuest then
-			b.frame:SetBackdropBorderColor(1, 1, 0)
-		elseif questId or isQuestItem then
-			b.frame:SetBackdropBorderColor(1, 1, 0)
-		elseif not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
+		-- Color slot according to item quality
+		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
-		else
-			b.frame:SetBackdropBorderColor(C["Media"].BorderColor[1],C["Media"].BorderColor[2],C["Media"].BorderColor[3])
+		elseif isQuestItem or questId then
+			b.frame:SetBackdropBorderColor(1, 1, 0)
 		end
 	else
 		b.name, b.level = nil, nil
@@ -1020,19 +998,17 @@ function Stuffing:InitBags()
 
 		Token:SetParent(f)
 		Token:SetScale(1)
+		Token:CreateBackdrop()
+		Token.Backdrop:SetOutside(Icon)
+		Token.Backdrop:SetFrameLevel(6)
+		Token:SetFrameStrata("MEDIUM")
+		Token:SetFrameLevel(51)
 
-		if not Token.Backdrop then
-			Token:CreateBackdrop()
-			Token.Backdrop:SetOutside(Icon)
-			Token.Backdrop:SetFrameLevel(6)
-			Token.Backdrop = true
-		end
-
-		Icon:SetSize(12, 12)
+		Icon:SetSize(16, 16)
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		Icon:SetPoint("LEFT", Token, "RIGHT", -8, 2)
 
-		Count:SetFont(C.Media.Font, 12, "OUTLINE")
+		Count:SetFont(C.Media.Font, 13, "OUTLINE")
 		Count:SetShadowOffset(0, 0)
 	end
 
@@ -1184,7 +1160,7 @@ function Stuffing:Layout(isBank)
 			b.frame:SetSize(bsize, bsize)
 
 			local btns = self.buttons
-			b.frame:HookScript("OnEnter", function()
+			b.frame:HookScript("OnEnter", function(self)
 				local bag
 				if isBank then
 					bag = v
@@ -1201,7 +1177,7 @@ function Stuffing:Layout(isBank)
 				end
 			end)
 
-			b.frame:HookScript("OnLeave", function()
+			b.frame:HookScript("OnLeave", function(self)
 				for _, btn in ipairs(btns) do
 					btn.frame:SetAlpha(1)
 				end
@@ -1468,3 +1444,9 @@ function Stuffing:BAG_UPDATE_COOLDOWN()
 		self:UpdateCooldowns(v)
 	end
 end
+
+-- Kill Blizzard functions
+LootWonAlertFrame_OnClick = K.Noop
+LootUpgradeFrame_OnClick = K.Noop
+StorePurchaseAlertFrame_OnClick = K.Noop
+LegendaryItemAlertFrame_OnClick = K.Noop

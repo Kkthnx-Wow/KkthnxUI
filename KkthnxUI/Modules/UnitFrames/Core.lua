@@ -925,6 +925,8 @@ function Module:CreateUnits()
 		SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
 		SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
 
+		local lockedInstance = instanceType and not (instanceType == "none" or instanceType == "pvp" or instanceType == "arena")
+
 		Module.NameplatesVars = {
 			NamePlateHorizontalScale = 1,
 			nameplateGlobalScale = 1,
@@ -995,8 +997,9 @@ function Module:CreateFilgerAnchors()
 	end
 end
 
-if C["Nameplates"].Enable == true then
-	local SetCVar = _G.SetCVar
+if C["Nameplates"].Enable then
+	local inInstance, instanceType = IsInInstance()
+	local lockedInstance = instanceType and not (instanceType == "none" or instanceType == "pvp" or instanceType == "arena")
 
 	function Module:PLAYER_REGEN_ENABLED()
 		SetCVar("nameplateShowEnemies", 0)
@@ -1007,17 +1010,17 @@ if C["Nameplates"].Enable == true then
 	end
 
 	function Module:PLAYER_ENTERING_WORLD()
-		if C["Nameplates"].Combat == true then
+		if C["Nameplates"].Combat then
 			SetCVar("nameplateShowEnemies", UnitAffectingCombat("player") and 1 or 0)
 
-			if C["Nameplates"].Threat == true then
+			if C["Nameplates"].Threat then
 				SetCVar("threatWarning", 3)
 			end
 		end
 
-		if C["Nameplates"].MarkHealers == true then
+		if C["Nameplates"].MarkHealers then
 			table.wipe(self.Healers)
-			local inInstance, instanceType = IsInInstance()
+
 			if inInstance and (instanceType == "pvp") and C["Nameplates"].MarkHealers then
 				self.CheckHealerTimer = self:ScheduleRepeatingTimer("CheckBGHealers", 3)
 				self:CheckBGHealers()
@@ -1033,6 +1036,13 @@ if C["Nameplates"].Enable == true then
 					self.CheckHealerTimer = nil
 				end
 			end
+		end
+
+		if lockedInstance then
+			K.LockCVar("nameplateShowDebuffsOnFriendly", false)
+		else
+			K.LockedCVars["nameplateShowDebuffsOnFriendly"] = nil
+			SetCVar("nameplateShowDebuffsOnFriendly", true)
 		end
 	end
 end
@@ -1187,18 +1197,20 @@ function Module:OnEnable()
 		end
 	end
 
-	if C["Nameplates"].Enable and C["Nameplates"].Combat then
-		self:RegisterEvent("PLAYER_REGEN_ENABLED")
-		self:RegisterEvent("PLAYER_REGEN_DISABLED")
+	if C["Nameplates"].Enable then
+		if C["Nameplates"].Combat then
+			self:RegisterEvent("PLAYER_REGEN_ENABLED")
+			self:RegisterEvent("PLAYER_REGEN_DISABLED")
+		end
 	end
 
-	if C["Nameplates"].Enable == true then
-		if C["Nameplates"].Combat == true or C["Nameplates"].MarkHealers == true then
+	if C["Nameplates"].Enable then
+		if C["Nameplates"].Combat or C["Nameplates"].MarkHealers then
 			self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		end
 	end
 
-	if C["Unitframe"].Enable == true then
+	if C["Unitframe"].Enable then
 		self:RegisterEvent("PLAYER_TARGET_CHANGED")
 		self:RegisterEvent("PLAYER_FOCUS_CHANGED")
 		self:RegisterEvent("UNIT_FACTION")

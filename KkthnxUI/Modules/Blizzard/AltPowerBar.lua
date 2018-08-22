@@ -1,8 +1,4 @@
 local K, C = unpack(select(2, ...))
-if IsAddOnLoaded("SimplePowerBar") then
-	return
-end
-
 local Module = K:NewModule("AltPowerBar", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
@@ -38,28 +34,6 @@ end
 
 local function onLeave()
 	GameTooltip:Hide()
-end
-
-function Module:SetAltPowerBarText(name, value, max, percent)
-	local textFormat = "PERCENT" -- altPowerBar.textFormat
-
-	if textFormat == "NONE" or not textFormat then
-		return ""
-	elseif textFormat == "NAME" then
-		return format("%s", name)
-	elseif textFormat == "NAMEPERC" then
-		return format("%s: %s%%", name, percent)
-	elseif textFormat == "NAMECURMAX" then
-		return format("%s: %s / %s", name, value, max)
-	elseif textFormat == "NAMECURMAXPERC" then
-		return format("%s: %s / %s - %s%%", name, value, max, percent)
-	elseif textFormat == "PERCENT" then
-		return format("%s%%", percent)
-	elseif textFormat == "CURMAX" then
-		return format("%s / %s", value, max)
-	elseif textFormat == "CURMAXPERC" then
-		return format("%s / %s - %s%%", value, max, percent)
-	end
 end
 
 function Module:PositionAltPowerBar()
@@ -110,29 +84,22 @@ function Module:UpdateAltPowerBarSettings()
 	local bar = KkthnxUI_AltPowerBar
 	local width = 250
 	local height = 20
-	local fontOutline = ""
-	local fontSize = 12
-	local statusBar = C.Media.Texture
-	local font = C.Media.Font
+	local statusBar = K.GetTexture(C["General"].Texture)
+	local font = K.GetFont(C["General"].Font)
 
 	bar:SetSize(width, height)
 	bar:SetStatusBarTexture(statusBar)
-	bar.text:SetFont(font, fontSize, fontOutline)
+	bar.text:SetFontObject(font)
 	AltPowerBarHolder:SetSize(bar.Backdrop:GetSize())
 
-	local textFormat = "PERCENT"
-	if textFormat == "NONE" or not textFormat then
-		bar.text:SetText("")
-	else
-		local power, maxPower, perc = bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0
-		local text = Module:SetAltPowerBarText(bar.powerName or "", power, maxPower, perc)
-		bar.text:SetText(text)
-	end
+	local _, _, perc = bar.powerValue or 0, bar.powerMaxValue or 0, bar.powerPercent or 0
+	bar.text:SetText(format("%s%%", perc))
 end
 
 function Module:SkinAltPowerBar()
 	local powerbar = CreateFrame("StatusBar", "KkthnxUI_AltPowerBar", UIParent)
 	powerbar:CreateBackdrop()
+	powerbar.Backdrop:SetFrameLevel(1)
 	powerbar:SetMinMaxValues(0, 200)
 	powerbar:SetPoint("CENTER", AltPowerBarHolder)
 	powerbar:Hide()
@@ -181,16 +148,22 @@ function Module:SkinAltPowerBar()
 				local value = (maxPower > 0 and power / maxPower) or 0
 				bar.colorGradientValue = value
 
-				local r, g, b = K.ColorGradient(value, 0.8,0,0, 0.8,0.8,0, 0,0.8,0)
+				local r, g, b = K.ColorGradient(value, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
 				bar.colorGradientR, bar.colorGradientG, bar.colorGradientB = r, g, b
 
 				bar:SetStatusBarColor(r, g, b)
 			end
 
-			local text = Module:SetAltPowerBarText(powerName or "", power, maxPower, perc)
-			bar.text:SetText(text)
+			bar.text:SetText(format("%s%%", perc))
 		else
 			bar:Hide()
 		end
 	end)
+end
+
+function Module:OnEnable()
+	if not IsAddOnLoaded("SimplePowerBar") then
+		self:PositionAltPowerBar()
+		self:SkinAltPowerBar()
+	end
 end

@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("DataBars", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G
+local math_floor = math.floor
 local pairs = pairs
 local string_format = string.format
 
@@ -22,6 +23,11 @@ local UIParent = _G.UIParent
 local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
+local IsXPUserDisabled = _G.IsXPUserDisabled
+local GetNumFactions = _G.GetNumFactions
+local GetFactionInfo = _G.GetFactionInfo
+local GetFriendshipReputation = _G.GetFriendshipReputation
+local GetExpansionLevel = _G.GetExpansionLevel
 
 function Module:GetXP(unit)
 	if (unit == "pet") then
@@ -190,11 +196,11 @@ function Module:OnEnter()
 		local rested = GetXPExhaustion()
 
 		GameTooltip:AddLine(L["Databars"].Experience)
-		GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].XP, string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math_floor(cur / max * 100)), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math_floor((max - cur) / max * 100), math_floor(20 * (max - cur) / max)), 1, 1, 1)
 
 		if rested then
-			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math.floor(rested / max * 100)), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 		end
 	end
 
@@ -224,7 +230,7 @@ function Module:OnEnter()
 			end
 
 			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL" .. reaction], 1, 1, 1)
-			GameTooltip:AddDoubleLine(REPUTATION..":", format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 		end
 
 	end
@@ -243,9 +249,9 @@ function Module:OnEnter()
 		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
 			local azeriteItemName = azeriteItem:GetItemName()
 
-			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
-			GameTooltip:AddDoubleLine(L["Databars"].AP, format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
-			GameTooltip:AddDoubleLine(L["Databars"].Remaining, format(" %d (%d%% - %d "..L["Databars"].Bars..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
+			GameTooltip:AddDoubleLine("Azerite Power", azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+			GameTooltip:AddDoubleLine(L["Databars"].AP, string_format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
 		end)
 	end
 
@@ -315,15 +321,14 @@ function Module:OnEnable()
 	self:Update()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update")
-
 	self:RegisterEvent("PLAYER_LEVEL_UP", "Update")
 	self:RegisterEvent("PLAYER_XP_UPDATE", "Update")
 	self:RegisterEvent("UPDATE_EXHAUSTION", "Update")
-
-	self:RegisterEvent("CHAT_MSG_COMBAT_FACTION_CHANGE", "Update")
+	self:RegisterEvent("DISABLE_XP_GAIN", "Update")
+	self:RegisterEvent("ENABLE_XP_GAIN", "Update")
 	self:RegisterEvent("UPDATE_FACTION", "Update")
-
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
+	self:RegisterEvent('UNIT_INVENTORY_CHANGED', "Update")
 
 	K.Movers:RegisterFrame(container)
 end
