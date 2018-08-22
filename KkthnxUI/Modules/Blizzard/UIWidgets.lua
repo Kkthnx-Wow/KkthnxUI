@@ -6,7 +6,7 @@ local _G = _G
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
 
-local function BelowMinimapContainer()
+local function PositionUIWidgets()
 	local topCenterContainer = _G["UIWidgetTopCenterContainerFrame"]
 	local belowMiniMapcontainer = _G["UIWidgetBelowMinimapContainerFrame"]
 
@@ -20,22 +20,11 @@ local function BelowMinimapContainer()
 
 	topCenterContainer:ClearAllPoints()
 	topCenterContainer:SetPoint("CENTER", topCenterHolder, "CENTER")
-	topCenterContainer:SetParent(topCenterHolder)
-	topCenterContainer.ignoreFramePositionManager = true
 
 	belowMiniMapcontainer:ClearAllPoints()
 	belowMiniMapcontainer:SetPoint("CENTER", belowMiniMapHolder, "CENTER")
 	belowMiniMapcontainer:SetParent(belowMiniMapHolder)
 	belowMiniMapcontainer.ignoreFramePositionManager = true
-
-	-- Reposition the TopCenter Widget after layout update
-	hooksecurefunc(_G["UIWidgetManager"].registeredWidgetSetContainers[1], "layoutFunc", function(widgetContainer, sortedWidgets, ...)
-		widgetContainer:ClearAllPoints()
-
-		if widgetContainer:GetWidth() ~= topCenterHolder:GetWidth() then
-			topCenterHolder:SetWidth(widgetContainer:GetWidth())
-		end
-	end)
 
 	-- Reposition capture bar on layout update
 	hooksecurefunc(_G["UIWidgetManager"].registeredWidgetSetContainers[2], "layoutFunc", function(widgetContainer, sortedWidgets, ...)
@@ -44,10 +33,6 @@ local function BelowMinimapContainer()
 		if widgetContainer:GetWidth() ~= belowMiniMapHolder:GetWidth() then
 			belowMiniMapHolder:SetWidth(widgetContainer:GetWidth())
 		end
-	end)
-
-	hooksecurefunc(topCenterContainer, "ClearAllPoints", function(self)
-		self:SetPoint("CENTER", topCenterHolder, "CENTER")
 	end)
 
 	-- And this one cause UIParentManageFramePositions() repositions the widget constantly
@@ -60,5 +45,5 @@ local function BelowMinimapContainer()
 end
 
 function Module:OnEnable()
-	BelowMinimapContainer()
+	PositionUIWidgets()
 end

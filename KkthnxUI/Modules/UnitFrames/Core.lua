@@ -66,21 +66,6 @@ Module.RaidBuffsTrackingPosition = {
 	BOTTOM = {0, 0}
 }
 
-Module.CLASS_ICON_TCOORDS = {
-	["DEATHKNIGHT"]	= {0.25, .5, 0.5, .75},
-	["DEMONHUNTER"]	= {0.7421875, 0.98828125, 0.5, 0.75},
-	["DRUID"]		= {0.7421875, 0.98828125, 0, 0.25},
-	["HUNTER"]		= {0, 0.25, 0.25, 0.5},
-	["MAGE"]		= {0.25, 0.49609375, 0, 0.25},
-	["MONK"]		= {0.5, 0.73828125, 0.5, .75},
-	["PALADIN"]		= {0, 0.25, 0.5, 0.75},
-	["PRIEST"]		= {0.49609375, 0.7421875, 0.25, 0.5},
-	["ROGUE"]		= {0.49609375, 0.7421875, 0, 0.25},
-	["SHAMAN"]	 	= {0.25, 0.49609375, 0.25, 0.5},
-	["WARLOCK"]		= {0.7421875, 0.98828125, 0.25, 0.5},
-	["WARRIOR"]		= {0, 0.25, 0, 0.25},
-}
-
 function Module:UpdateClassPortraits(unit)
 	if not unit then
 		return
@@ -88,18 +73,25 @@ function Module:UpdateClassPortraits(unit)
 
 	local _, unitClass = UnitClass(unit)
 
-	local PValue = C["Party"].PortraitStyle.Value
-	local BValue = C["Boss"].PortraitStyle.Value
-	local UFValue = C["Unitframe"].PortraitStyle.Value
+	if unitClass then
+		local PartyValue = C["Party"].PortraitStyle.Value
+		local BossValue = C["Boss"].PortraitStyle.Value
+		local UnitframeValue = C["Unitframe"].PortraitStyle.Value
+		local ClassTCoords = CLASS_ICON_TCOORDS[unitClass]
 
-	if PValue == "ClassPortraits" or BValue == "ClassPortraits" or UFValue == "ClassPortraits" then
-		self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
-		self:SetTexCoord(unpack(Module.CLASS_ICON_TCOORDS[unitClass]))
-	elseif PValue == "NewClassPortraits" or BValue == "NewClassPortraits" or UFValue == "NewClassPortraits" then
-		self:SetTexture(C["Media"].NewClassPortraits)
-		self:SetTexCoord(unpack(Module.CLASS_ICON_TCOORDS[unitClass]))
-	else
-		self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+		if PartyValue == "ClassPortraits" or BossValue == "ClassPortraits" or UnitframeValue == "ClassPortraits" then
+			self:SetTexture("Interface\\WorldStateFrame\\ICONS-CLASSES")
+			if ClassTCoords then
+				self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
+			end
+		elseif PartyValue == "NewClassPortraits" or BossValue == "NewClassPortraits" or UnitframeValue == "NewClassPortraits" then
+			self:SetTexture(C["Media"].NewClassPortraits)
+			if ClassTCoords then
+				self:SetTexCoord(ClassTCoords[1], ClassTCoords[2], ClassTCoords[3], ClassTCoords[4])
+			end
+		else
+			self:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+		end
 	end
 end
 

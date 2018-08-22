@@ -95,6 +95,7 @@ function Module:CreatePlayer()
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
 		self.Portrait.Borders:SetSize(46, 46)
 		self.Portrait.Borders:CreateBorder()
+
 		if (C["Unitframe"].PortraitStyle.Value == "ClassPortraits" or C["Unitframe"].PortraitStyle.Value == "NewClassPortraits") then
 			self.Portrait.PostUpdate = Module.UpdateClassPortraits
 		end

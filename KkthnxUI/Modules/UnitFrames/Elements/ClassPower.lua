@@ -29,6 +29,7 @@ end
 
 local function UpdateClassPowerColor(classPower)
 	local r, g, b = 1, 1, 2/5
+
 	if (not UnitHasVehicleUI("player")) then
 		if (K.Class == "MONK") then
 			r, g, b = 0, 4/5, 3/5
@@ -43,14 +44,13 @@ local function UpdateClassPowerColor(classPower)
 
 	for index = 1, #classPower do
 		local bar = classPower[index]
-		if (K.Class == "ROGUE" and UnitPowerMax("player", SPELL_POWER_COMBO_POINTS) == 10 and index > 5) then
+		if (K.Class == "ROGUE" and UnitPowerMax("player", Enum.PowerType.ComboPoints) == 10 and index > 5) then
 			r, g, b = 1, 0, 0
 		end
 
 		bar:SetStatusBarColor(r, g, b)
 	end
 end
-
 
 function Module:CreateClassModules(width, height, spacing)
 	local ClassModuleTexture = K.GetTexture(C["Unitframe"].Texture)
