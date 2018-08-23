@@ -195,8 +195,8 @@ function Module:OnInitialize()
 	Minimap:SetMaskTexture(C["Media"].Blank)
 	Minimap:SetQuestBlobRingAlpha(0)
 	Minimap:SetArchBlobRingAlpha(0)
-
 	Minimap:CreateBorder()
+	Minimap:CreateInnerShadow(nil, 0.4)
 
 	Minimap:HookScript("OnEnter", function(self)
 		if K.PerformanceFrame then

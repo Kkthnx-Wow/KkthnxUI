@@ -153,6 +153,25 @@ local function CreateShadow(f, bd)
 	f.Shadow = shadow
 end
 
+local function CreateInnerShadow(f, isLayer, isAlpha, isLPoints, isRPoints)
+	if f.InnerShadow then
+		return
+	end
+
+	isLayer = isLayer or -1
+	isAlpha = isAlpha or C.Media.BackdropColor[4]
+	isLPoints = isLPoints or 0
+	isRPoints = isRPoints or 0
+
+	local innerShadow = f:CreateTexture(nil, "OVERLAY", nil, isLayer)
+	innerShadow:SetAtlas("Artifacts-BG-Shadow")
+	innerShadow:SetPoint("TOPLEFT", isLPoints, isRPoints)
+	innerShadow:SetPoint("BOTTOMRIGHT", isLPoints, isRPoints)
+	innerShadow:SetVertexColor(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], isAlpha)
+
+	f.InnerShadow = innerShadow
+end
+
 local function Kill(Object)
 	if Object.UnregisterAllEvents then
 		Object:UnregisterAllEvents()
@@ -429,6 +448,10 @@ local function AddCustomAPI(object)
 
 	if not object.CreateShadow then
 		MetaTable.CreateShadow = CreateShadow
+	end
+
+	if not object.CreateInnerShadow then
+		MetaTable.CreateInnerShadow = CreateInnerShadow
 	end
 
 	if not object.SetFadeIn then

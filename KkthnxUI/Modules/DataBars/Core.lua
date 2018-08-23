@@ -13,24 +13,24 @@ local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
 local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
+local DataBarsFont = K.GetFont(C["DataBars"].Font)
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
+local GetExpansionLevel = _G.GetExpansionLevel
+local GetFactionInfo = _G.GetFactionInfo
+local GetFriendshipReputation = _G.GetFriendshipReputation
+local GetNumFactions = _G.GetNumFactions
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
+local IsXPUserDisabled = _G.IsXPUserDisabled
 local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local UIParent = _G.UIParent
 local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
-local IsXPUserDisabled = _G.IsXPUserDisabled
-local GetNumFactions = _G.GetNumFactions
-local GetFactionInfo = _G.GetFactionInfo
-local GetFriendshipReputation = _G.GetFriendshipReputation
-local GetExpansionLevel = _G.GetExpansionLevel
-local DataBarsFont = K.GetFont(C["DataBars"].Font)
 
-function Module:GetXP(unit)
+local function GetUnitXP(unit)
 	if (unit == "pet") then
 		return GetPetExperience()
 	else
@@ -175,10 +175,8 @@ function Module:UpdateReputation()
 end
 
 function Module:UpdateExperience()
-	local hideXP = ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled())
-
-	if not hideXP then
-		local cur, max = self:GetXP("player")
+	if MAX_PLAYER_LEVEL ~= K.Level then
+		local cur, max = GetUnitXP("player")
 
 		if max <= 0 then
 			max = 1
@@ -244,8 +242,8 @@ function Module:OnEnter()
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
 	end
 
-	if not ((UnitLevel("player") == MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]) or IsXPUserDisabled()) then
-		local cur, max = Module:GetXP("player")
+	if MAX_PLAYER_LEVEL ~= K.Level then
+		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
 		GameTooltip:AddLine(L["Databars"].Experience)
@@ -258,8 +256,8 @@ function Module:OnEnter()
 	end
 
 	if GetWatchedFactionInfo() then
-		if MAX_PLAYER_LEVEL ~= UnitLevel("player") then
-			GameTooltip:AddLine(" ")
+		if MAX_PLAYER_LEVEL ~= K.Level then
+			GameTooltip:AddLine("  ")
 		end
 
 		local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()

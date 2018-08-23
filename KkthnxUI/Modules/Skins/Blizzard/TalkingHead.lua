@@ -15,10 +15,7 @@ local function SkinTalkingHead()
 	TalkingHeadFrame.PortraitFrame:StripTextures(true)
 	TalkingHeadFrame.BackgroundFrame:StripTextures(true)
 
-	TalkingHeadFrame.MainFrame.Model.ModelShadow = TalkingHeadFrame.MainFrame.Model:CreateTexture(nil, "OVERLAY", nil, -2)
-	TalkingHeadFrame.MainFrame.Model.ModelShadow:SetAtlas("Artifacts-BG-Shadow")
-	TalkingHeadFrame.MainFrame.Model.ModelShadow:SetPoint("TOPLEFT")
-	TalkingHeadFrame.MainFrame.Model.ModelShadow:SetPoint("BOTTOMRIGHT", 0, -2)
+	TalkingHeadFrame.MainFrame.Model:CreateInnerShadow()
 	TalkingHeadFrame.MainFrame.Model.PortraitBg:Hide()
 
 	TalkingHeadFrame:CreateBackdrop()

@@ -554,7 +554,7 @@ function Module:SetStyle(tt)
 
 	if (not tt.IsSkinned) then
 		tt:StripTextures()
-		tt:CreateBorder(nil, 7, 3)
+		tt:CreateBorder(nil, 6, 2)
 		tt.IsSkinned = true
 	end
 
@@ -713,7 +713,7 @@ function Module:OnEnable()
 	self:SetTooltipFonts()
 
 	local GameTooltipAnchor = CreateFrame("Frame", "GameTooltipAnchor", UIParent)
-	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -2, 2)
+	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4)
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
 	K.Movers:RegisterFrame(GameTooltipAnchor)

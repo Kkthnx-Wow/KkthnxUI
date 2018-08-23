@@ -79,6 +79,7 @@ function Module:CreateTargetOfTarget()
 		self.Portrait.Borders:SetPoint("RIGHT", self, -4, 0)
 		self.Portrait.Borders:SetSize(26, 26)
 		self.Portrait.Borders:CreateBorder()
+		self.Portrait.Borders:CreateInnerShadow()
 	elseif (C["Unitframe"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)

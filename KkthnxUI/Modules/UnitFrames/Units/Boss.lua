@@ -71,6 +71,7 @@ function Module:CreateBoss()
 		self.Portrait.Borders:SetPoint("LEFT", self, 4, 0)
 		self.Portrait.Borders:SetSize(46, 46)
 		self.Portrait.Borders:CreateBorder()
+		self.Portrait.Borders:CreateInnerShadow()
 	elseif (C["Boss"].PortraitStyle.Value ~= "ThreeDPortraits") then
 		self.Portrait = self.Health:CreateTexture("$parentPortrait", "BACKGROUND", nil, 1)
 		self.Portrait:SetTexCoord(0.15, 0.85, 0.15, 0.85)
