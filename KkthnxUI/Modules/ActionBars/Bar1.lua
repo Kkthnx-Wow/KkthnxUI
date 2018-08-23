@@ -82,7 +82,22 @@ ActionBar1:SetScript("OnEvent", function(self, event)
 		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
 				local button = _G["ActionButton" .. i]
-				ActionButton_Update(button)
+				local action = button.action
+				local icon = button.icon
+
+				if action >= 120 then
+					local texture = GetActionTexture(action)
+
+					if (texture) then
+						icon:SetTexture(texture)
+						icon:Show()
+					else
+						if icon:IsShown() then
+							icon:Hide()
+						end
+					end
+				end
+
 			end
 		end
 	end

@@ -60,8 +60,8 @@ function Module:SetupExperience()
 
 	local etext = expbar:CreateFontString(nil, "OVERLAY")
 	etext:SetFontObject(DataBarsFont)
-	etext:SetFont(select(1, etext:GetFont()), self.config.Height, select(3, etext:GetFont()))
-	etext:SetPoint('CENTER')
+	etext:SetFont(select(1, etext:GetFont()), 11, select(3, etext:GetFont()))
+	etext:SetPoint("CENTER")
 
 	self.Bars.Experience = expbar
 	expbar.RestBar = restbar
@@ -84,10 +84,10 @@ function Module:SetupReputation()
 
 	local rtext = reputation:CreateFontString(nil, "OVERLAY")
 	rtext:SetFontObject(DataBarsFont)
-	rtext:SetFont(select(1, rtext:GetFont()), self.config.Height, select(3, rtext:GetFont()))
+	rtext:SetFont(select(1, rtext:GetFont()), 11, select(3, rtext:GetFont()))
 	rtext:SetWidth(self.config.Width - 6)
 	rtext:SetWordWrap(false)
-	rtext:SetPoint('CENTER')
+	rtext:SetPoint("CENTER")
 
 	self.Bars.Reputation = reputation
 	reputation.Spark = rspark
@@ -109,8 +109,8 @@ function Module:SetupAzerite()
 
 	local atext = azerite:CreateFontString(nil, "OVERLAY")
 	atext:SetFontObject(DataBarsFont)
-	atext:SetFont(select(1, atext:GetFont()), self.config.Height, select(3, atext:GetFont()))
-	atext:SetPoint('CENTER')
+	atext:SetFont(select(1, atext:GetFont()), 11, select(3, atext:GetFont()))
+	atext:SetPoint("CENTER")
 
 	self.Bars.Azerite = azerite
 	azerite.Spark = aspark
@@ -154,7 +154,7 @@ function Module:UpdateReputation()
 		end
 
 		if ID then
-			standingLabel = _G['FACTION_STANDING_LABEL'..ID]
+			standingLabel = K.ShortenString(_G["FACTION_STANDING_LABEL" .. ID], 1, false) -- F = Friendly, N = Neutral and so on.
 		else
 			standingLabel = FactionStandingLabelUnknown
 		end
@@ -165,7 +165,7 @@ function Module:UpdateReputation()
 		end
 
 		if C["DataBars"].Text then
-			self.Bars.Reputation.Text:SetText(format('%s: %d%% [%s]', name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel))
+			self.Bars.Reputation.Text:SetText(string_format("%s: %d%% [%s]", name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel))
 		end
 
 		self.Bars.Reputation:Show()
@@ -195,14 +195,14 @@ function Module:UpdateExperience()
 			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
 
 			if C["DataBars"].Text then
-				self.Bars.Experience.Text:SetText(format('%d%% R:%d%%', cur / max * 100, rested / max * 100))
+				self.Bars.Experience.Text:SetText(string_format("%d%% R:%d%%", cur / max * 100, rested / max * 100))
 			end
 		else
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
 			self.Bars.Experience.RestBar:SetValue(0)
 
 			if C["DataBars"].Text then
-				self.Bars.Experience.Text:SetText(format('%d%%', cur / max * 100))
+				self.Bars.Experience.Text:SetText(string_format("%d%%", cur / max * 100))
 			end
 		end
 
@@ -212,19 +212,22 @@ function Module:UpdateExperience()
 	end
 end
 
-function Module:UpdateAzerite()
+function Module:UpdateAzerite(event, unit)
+	if (event == "UNIT_INVENTORY_CHANGED" and unit ~= "player") then
+		return
+	end
+
 	local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
 
 	if azeriteItemLocation then
 		local xp, totalLevelXP = C_AzeriteItem_GetAzeriteItemXPInfo(azeriteItemLocation)
-		local xpToNextLevel = totalLevelXP - xp
 		local currentLevel = C_AzeriteItem_GetPowerLevel(azeriteItemLocation)
 
 		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
 		self.Bars.Azerite:SetValue(xp)
 
 		if C["DataBars"].Text then
-			self.Bars.Azerite.Text:SetText(format("%s%% [%s]", floor(xp / totalLevelXP * 100), currentLevel))
+			self.Bars.Azerite.Text:SetText(string_format("%s%% [%s]", math_floor(xp / totalLevelXP * 100), currentLevel))
 		end
 
 		self.Bars.Azerite:Show()
@@ -234,8 +237,8 @@ function Module:UpdateAzerite()
 end
 
 function Module:OnEnter()
-	GameTooltip:ClearLines()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self.Container)
+	GameTooltip:ClearLines()
 
 	if C["DataBars"].MouseOver then
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
@@ -282,7 +285,6 @@ function Module:OnEnter()
 			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL" .. reaction], 1, 1, 1)
 			GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 		end
-
 	end
 
 	if C_AzeriteItem_FindActiveAzeriteItem() then
@@ -299,7 +301,7 @@ function Module:OnEnter()
 		self.itemDataLoadedCancelFunc = azeriteItem:ContinueWithCancelOnItemLoad(function()
 			local azeriteItemName = azeriteItem:GetItemName()
 
-			GameTooltip:AddDoubleLine("Azerite Power", azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
+			GameTooltip:AddDoubleLine(ARTIFACT_POWER, azeriteItemName.." ("..currentLevel..")", nil, nil, nil, 0.90, 0.80, 0.50) -- Temp Locale
 			GameTooltip:AddDoubleLine(L["Databars"].AP, string_format(" %d / %d (%d%%)", xp, totalLevelXP, xp / totalLevelXP * 100), 1, 1, 1)
 			GameTooltip:AddDoubleLine(L["Databars"].Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", xpToNextLevel, xpToNextLevel / totalLevelXP * 100, 10 * xpToNextLevel / totalLevelXP), 1, 1, 1)
 		end)
@@ -378,7 +380,7 @@ function Module:OnEnable()
 	self:RegisterEvent("ENABLE_XP_GAIN", "Update")
 	self:RegisterEvent("UPDATE_FACTION", "Update")
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
-	self:RegisterEvent('UNIT_INVENTORY_CHANGED', "Update")
+	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
 
 	K.Movers:RegisterFrame(container)
 end
