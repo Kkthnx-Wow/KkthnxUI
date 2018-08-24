@@ -69,41 +69,65 @@ local function SkinObjectiveTracker()
 		end
 	end)
 
-	local function AddBlockDash()
-		for i = 1, GetNumQuestWatches() do
-			local questIndex = GetQuestIndexForWatch(i)
+	local function ColorProgressBars(self, value)
+		if not (self.Bar and value) then
+			return
+		end
 
-			if questIndex then
-				local id = GetQuestWatchInfo(i)
-				local block = QUEST_TRACKER_MODULE:GetBlock(id)
-				local _, level, _, _, _, _, frequency = GetQuestLogTitle(questIndex)
+		Module:StatusBarColorGradient(self.Bar, value, 100)
+	end
 
-				if block.lines then
-					for _, line in pairs(block.lines) do
-						if frequency == LE_QUEST_FREQUENCY_DAILY then
-							local red, green, blue = 1 / 4, 6 / 9, 1
+	local function SkinItemButton(self, block)
+		local item = block.itemButton
+		if item and not item.skinned then
+			item:SetSize(25, 25)
+			item:CreateBorder()
+			item:StyleButton()
+			item:SetNormalTexture(nil)
+			item.icon:SetTexCoord(unpack(K.TexCoords))
+			item.icon:SetInside()
+			item.Cooldown:SetInside()
+			item.Count:ClearAllPoints()
+			item.Count:SetPoint("TOPLEFT", 1, -1)
+			item.Count:SetFont(C.Media.Font, 14, "OUTLINE")
+			item.Count:SetShadowOffset(5, -5)
+			item.skinned = true
+		end
+	end
 
-							line.Dash:SetText("- ")
-							line.Dash:SetVertexColor(red, green, blue)
-						elseif frequency == LE_QUEST_FREQUENCY_WEEKLY then
-							local red, green, blue = 0, 252 / 255, 177 / 255
-
-							line.Dash:SetText("- ")
-							line.Dash:SetVertexColor(red, green, blue)
-						else
-							local col = GetQuestDifficultyColor(level)
-
-							line.Dash:SetText("- ")
-							line.Dash:SetVertexColor(col.r, col.g, col.b)
-						end
-					end
-				end
+	local function PositionFindGroupButton(block, button)
+		if button and button.GetPoint then
+			local a, b, c, d, e = button:GetPoint()
+			if block.groupFinderButton and b == block.groupFinderButton and block.itemButton and button == block.itemButton then
+				-- this fires when there is a group button and a item button to the left of it
+				-- we push the item button away from the group button (to the left)
+				button:SetPoint(a, b, c, d - (4 and -1 or 1), e)
+			elseif b == block and block.groupFinderButton and button == block.groupFinderButton then
+				-- this fires when there is a group finder button
+				-- we push the group finder button down slightly
+				button:SetPoint(a, b, c, d, e - (4 and 2 or -1))
 			end
 		end
 	end
 
-	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)
-	hooksecurefunc(QUEST_TRACKER_MODULE, "Update", AddBlockDash)
+	local function SkinFindGroupButton(block)
+		if block.hasGroupFinderButton and block.groupFinderButton then
+			if block.groupFinderButton and not block.groupFinderButton.skinned then
+				block.groupFinderButton:SkinButton()
+				block.groupFinderButton:SetSize(20, 20)
+				block.groupFinderButton.skinned = true
+			end
+		end
+	end
+
+	hooksecurefunc("BonusObjectiveTrackerProgressBar_SetValue", ColorProgressBars)				--[Color]: Bonus Objective Progress Bar
+	hooksecurefunc("ObjectiveTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Quest Progress Bar
+	hooksecurefunc("ScenarioTrackerProgressBar_SetValue", ColorProgressBars)					--[Color]: Scenario Progress Bar
+	hooksecurefunc("QuestObjectiveSetupBlockButton_AddRightButton", PositionFindGroupButton)	--[Move]: The eye & quest item to the left of the eye
+	hooksecurefunc("ObjectiveTracker_Update", SkinOjectiveTrackerHeaders)						--[Skin]: Module Headers
+	hooksecurefunc("QuestObjectiveSetupBlockButton_FindGroup", SkinFindGroupButton)				--[Skin]: The eye
+	hooksecurefunc(QUEST_TRACKER_MODULE, "SetBlockHeader", SkinItemButton)						--[Skin]: Quest Item Buttons
+	hooksecurefunc(WORLD_QUEST_TRACKER_MODULE, "AddObjective", SkinItemButton)					--[Skin]: World Quest Item Buttons
 end
 
 table_insert(Module.SkinFuncs["KkthnxUI"], SkinObjectiveTracker)

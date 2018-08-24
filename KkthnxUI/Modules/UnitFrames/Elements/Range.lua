@@ -1,4 +1,4 @@
-local K, C = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 local SpellRange = LibStub("SpellRange-1.0")
 
 local Module = K:GetModule("Unitframes")
@@ -18,7 +18,7 @@ local UnitIsUnit = _G.UnitIsUnit
 local UnitClass = _G.UnitClass
 
 function Module:CreateRange()
-	local Range = {insideAlpha = 1, outsideAlpha = 0.40}
+	local Range = {insideAlpha = 1, outsideAlpha = 0.35}
 
 	Range.Override = K.UpdateRange
 

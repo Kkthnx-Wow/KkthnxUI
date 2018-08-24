@@ -260,25 +260,24 @@ function Module:CreateNameplates()
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
-	-- Highlight Plate
+	-- Highlight Plate Events
 	self:RegisterEvent("NAME_PLATE_CREATED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
 	Module.HighlightPlate(self)
 
+	-- Target Alpha Events
+	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
+	Module.UpdateNameplateTarget(self)
+
 	-- Healer Icon Events
 	self:RegisterEvent("NAME_PLATE_CREATED", Module.DisplayHealerTexture)
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
 
 	-- Threat Plate Events
-	self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
 	self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
-
-	-- Threat Plate OnEvent Script
-	self.Health:SetScript("OnEvent", function()
-		Module.ThreatPlate(self)
-	end)
 
 	-- Threat Plate PostUpdate Function
 	self.Health.PostUpdate = function()

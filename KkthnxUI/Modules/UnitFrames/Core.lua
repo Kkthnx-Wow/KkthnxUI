@@ -100,41 +100,66 @@ function Module:ThreatPlate(forced)
 		return
 	end
 
+	if (not self.Health:IsShown()) then
+		return
+	end
+
 	if UnitIsPlayer(self.unit) then
 		return
 	end
 
-	local combat = UnitAffectingCombat("player")
-	if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
-		self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
-	elseif combat then
-		local _, threatStatus = UnitDetailedThreatSituation("player", self.unit)
-		if (threatStatus and threatStatus > 0) and (IsInGroup() or UnitExists("pet")) then
-			if (threatStatus == 3) then
-				if (K.GetPlayerRole() == "TANK") then
-					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
-				else
-					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
-				end
-			elseif (threatStatus == 2) then
-				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
-			elseif (threatStatus == 1) then
-				self.Health:SetStatusBarColor(C["Nameplates"].NearColor[1], C["Nameplates"].NearColor[2], C["Nameplates"].NearColor[3])
-			elseif (threatStatus == 0) then
-				if (K.GetPlayerRole() == "TANK") then
-					self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
-					if IsInGroup() or IsInRaid() then
-						for i = 1, GetNumGroupMembers() do
-							if UnitExists("raid" .. i) and not UnitIsUnit("raid" .. i, "player") then
-								local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit)
-								if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
-									self.Health:SetStatusBarColor(C["Nameplates"].OffTankColor[1], C["Nameplates"].OffTankColor[2], C["Nameplates"].OffTankColor[3])
+	if (not UnitIsConnected(self.unit)) then
+		self.Health:SetStatusBarColor(0.3, 0.3, 0.3)
+	else
+		if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
+			-- Use grey if not a player and can't get tap on unit
+			self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
+		else
+			-- Use color based on the type of unit (neutral, etc.)
+			local _, status = UnitDetailedThreatSituation("player", self.unit)
+			if status then
+				if (status == 3) then -- Securely Tanking
+					if (K.GetPlayerRole() == "TANK") then
+						self.Health:SetStatusBarColor(75/255, 175/255, 76/255)
+					else
+						self.Health:SetStatusBarColor(0.78, 0.25, 0.25)
+					end
+				elseif (status == 2) then -- insecurely tanking
+					if (K.GetPlayerRole() == "TANK") then
+						self.Health:SetStatusBarColor(235/255, 163/255, 40/255)
+					else
+						self.Health:SetStatusBarColor(218/255, 197/255, 92/255)
+					end
+				elseif (status == 1) then -- not tanking but threat higher than tank
+					if (K.GetPlayerRole() == "TANK") then
+						self.Health:SetStatusBarColor(218/255, 197/255, 92/255)
+					else
+						self.Health:SetStatusBarColor(235/255, 163/255, 40/255)
+					end
+				else -- not tanking at all
+					if (K.GetPlayerRole() == "TANK") then
+						if IsInRaid() or IsInGroup() then
+							for i = 1, 40 do
+								-- Check if it is being tanked by an offtank.
+								local isTanking = UnitDetailedThreatSituation("raid" .. i, unit)
+								if self.isBeingTanked ~= true and isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
+									self.Health:SetStatusBarColor(.8, 0.1, 1)
+								else
+									self.Health:SetStatusBarColor(0.78, 0.25, 0.25)
+								end
+							end
+						end
+					else
+						if IsInRaid() or IsInGroup() then
+							for i = 1, 40 do
+								if self.isBeingTanked ~= true and isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
+									self.Health:SetStatusBarColor(.8, 0.1, 1)
+								else
+									self.Health:SetStatusBarColor(75/255, 175/255, 76/255)
 								end
 							end
 						end
 					end
-				else
-					self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 				end
 			end
 		end
@@ -628,7 +653,33 @@ function Module:CreateAuraWatch(frame)
 	frame.AuraWatch = Auras
 end
 
-function Module:DisplayNameplatePowerAndCastBar(unit, cur, min, max)
+function Module:UpdateNameplateTarget()
+	local targetExists = UnitExists("target")
+	local unitIsPlayer = UnitIsUnit(self.unit, "player")
+	local unitIsTarget = UnitIsUnit(self.unit, "target")
+
+	if unitIsTarget and not unitIsPlayer then
+		self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
+		self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
+		self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
+		self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
+
+		self:SetAlpha(1)
+	else
+		self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
+		self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
+		self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
+		self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
+
+		if targetExists and not unitIsPlayer then
+			self:SetAlpha(0.35)
+		else
+			self:SetAlpha(1)
+		end
+	end
+end
+
+function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
 	if not unit then
 		unit = self:GetParent().unit
 	end
@@ -917,8 +968,6 @@ function Module:CreateUnits()
 		SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
 		SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
 
-		local lockedInstance = instanceType and not (instanceType == "none" or instanceType == "pvp" or instanceType == "arena")
-
 		Module.NameplatesVars = {
 			NamePlateHorizontalScale = 1,
 			nameplateGlobalScale = 1,
@@ -989,19 +1038,19 @@ function Module:CreateFilgerAnchors()
 	end
 end
 
-if C["Nameplates"].Enable then
+function Module:ToggleCombatNameplates(event)
+	if event == "PLAYER_REGEN_ENABLED" then
+		SetCVar("nameplateShowEnemies", 0)
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		SetCVar("nameplateShowEnemies", 1)
+	end
+end
+
+function Module:PLAYER_ENTERING_WORLD()
 	local inInstance, instanceType = IsInInstance()
 	local lockedInstance = instanceType and not (instanceType == "none" or instanceType == "pvp" or instanceType == "arena")
 
-	function Module:PLAYER_REGEN_ENABLED()
-		SetCVar("nameplateShowEnemies", 0)
-	end
-
-	function Module:PLAYER_REGEN_DISABLED()
-		SetCVar("nameplateShowEnemies", 1)
-	end
-
-	function Module:PLAYER_ENTERING_WORLD()
+	if C["Nameplates"].Enable then
 		if C["Nameplates"].Combat then
 			SetCVar("nameplateShowEnemies", UnitAffectingCombat("player") and 1 or 0)
 
@@ -1009,7 +1058,9 @@ if C["Nameplates"].Enable then
 				SetCVar("threatWarning", 3)
 			end
 		end
+	end
 
+	if C["Nameplates"].Enable then
 		if C["Nameplates"].MarkHealers then
 			table.wipe(self.Healers)
 
@@ -1029,13 +1080,13 @@ if C["Nameplates"].Enable then
 				end
 			end
 		end
+	end
 
-		if lockedInstance then
-			K.LockCVar("nameplateShowDebuffsOnFriendly", false)
-		else
-			K.LockedCVars["nameplateShowDebuffsOnFriendly"] = nil
-			SetCVar("nameplateShowDebuffsOnFriendly", true)
-		end
+	if lockedInstance then
+		K.LockCVar("nameplateShowDebuffsOnFriendly", false)
+	else
+		K.LockedCVars["nameplateShowDebuffsOnFriendly"] = nil
+		SetCVar("nameplateShowDebuffsOnFriendly", true)
 	end
 end
 
@@ -1094,7 +1145,7 @@ function Module:HideArenaPreparation()
 	end
 end
 
-function Module:OnEvent(event)
+function Module:ShowHideArena(event)
 	if (event == "ARENA_OPPONENT_UPDATE") then
 		self:HideArenaPreparation()
 	else
@@ -1171,9 +1222,9 @@ function Module:OnEnable()
 	self:CreateFilgerAnchors()
 
 	if C["Arena"].Enable then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "OnEvent")
-		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "OnEvent")
-		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "OnEvent")
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ShowHideArena")
+		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "ShowHideArena")
+		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "ShowHideArena")
 	end
 
 	if C["Raid"].RaidDebuffs then
@@ -1191,12 +1242,10 @@ function Module:OnEnable()
 
 	if C["Nameplates"].Enable then
 		if C["Nameplates"].Combat then
-			self:RegisterEvent("PLAYER_REGEN_ENABLED")
-			self:RegisterEvent("PLAYER_REGEN_DISABLED")
+			self:RegisterEvent("PLAYER_REGEN_ENABLED", "ToggleCombatNameplates")
+			self:RegisterEvent("PLAYER_REGEN_DISABLED", "ToggleCombatNameplates")
 		end
-	end
 
-	if C["Nameplates"].Enable then
 		if C["Nameplates"].Combat or C["Nameplates"].MarkHealers then
 			self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		end

@@ -1,8 +1,9 @@
-local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("LeaveVehicle", "AceEvent-3.0")
+local K, C = unpack(select(2, ...))
 if C["ActionBar"].Enable ~= true then
 	return
 end
+
+local Module = K:NewModule("LeaveVehicle", "AceEvent-3.0")
 
 local _G = _G
 
@@ -15,8 +16,6 @@ local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
 local UIParent = _G.UIParent
 local UnitOnTaxi = _G.UnitOnTaxi
 local VehicleExit = _G.VehicleExit
-
--- GLOBALS: LeaveVehicleButton, VehicleButtonAnchor
 
 local Vehicle_CallOnEvent -- so we can call the local function inside of itself
 local function Vehicle_OnEvent(self, event)
@@ -56,13 +55,11 @@ function Module:UpdateVehicleLeave()
 	button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	local VehicleButtonAnchor = CreateFrame("Frame", "VehicleButtonAnchor", UIParent)
 	VehicleButtonAnchor:SetPoint("BOTTOMRIGHT", "ActionButton1", "BOTTOMLEFT", -6, 0)
 	VehicleButtonAnchor:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
-	if VehicleButtonAnchor then
-		K.Movers:RegisterFrame(VehicleButtonAnchor)
-	end
+	K.Movers:RegisterFrame(VehicleButtonAnchor)
 
 	local vehicle = CreateFrame("Button", "LeaveVehicleButton", UIParent)
 	vehicle:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
@@ -75,15 +72,8 @@ function Module:OnInitialize()
 	vehicle:SetPushedTexture("Interface\\Vehicles\\UI-Vehicles-Button-Exit-Down")
 	vehicle:GetPushedTexture():SetTexCoord(0.2, 0.8, 0.2, 0.8)
 	vehicle:GetPushedTexture():SetAllPoints()
+	vehicle:CreateBorder()
 	vehicle:RegisterForClicks("AnyUp")
-
-	vehicle.Background = vehicle:CreateTexture(nil, "BACKGROUND", -1)
-	vehicle.Background:SetAllPoints()
-	vehicle.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	vehicle.Border = CreateFrame("Frame", nil, vehicle)
-	vehicle.Border:SetAllPoints(vehicle)
-	K.CreateBorder(vehicle.Border)
 
 	vehicle:SetScript("OnClick", Vehicle_OnClick)
 	vehicle:SetScript("OnEnter", MainMenuBarVehicleLeaveButton_OnEnter)
