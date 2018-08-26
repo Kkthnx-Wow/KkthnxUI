@@ -124,25 +124,7 @@ function Module:UpdateSettings()
 	end
 
 	if GameTimeFrame then
-		if not C["Minimap"].Calendar then
-			GameTimeFrame:Hide()
-		else
-			GameTimeFrame:SetParent(Minimap)
-			GameTimeFrame:SetScale(0.6)
-			GameTimeFrame:ClearAllPoints()
-			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -2, -3)
-			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
-			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
-			GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
-			GameTimeFrame:SetPushedTexture(nil)
-			GameTimeFrame:SetHighlightTexture (nil)
-
-			local GameTimeFont = GameTimeFrame:GetFontString()
-			GameTimeFont:ClearAllPoints()
-			GameTimeFont:SetPoint("CENTER", 0, -7)
-			GameTimeFont:SetFont(C["Media"].Font, 20)
-			GameTimeFont:SetTextColor(0.2, 0.2, 0.1, 1)
-		end
+		GameTimeFrame:Hide()
 	end
 
 	if MiniMapMailFrame then

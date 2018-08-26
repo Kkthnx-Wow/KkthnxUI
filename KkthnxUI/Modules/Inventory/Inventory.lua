@@ -188,7 +188,7 @@ local function IsRealItemLevel(link, owner, bag, slot)
 end
 
 function Stuffing:SlotUpdate(b)
-	local texture, count, locked, quality = GetContainerItemInfo(b.bag, b.slot)
+	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
 	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
 
@@ -203,6 +203,18 @@ function Stuffing:SlotUpdate(b)
 
 	if C["Inventory"].ItemLevel == true then
 		b.frame.text:SetText("")
+	end
+
+	if (b.frame.Azerite) then
+		b.frame.Azerite:Hide()
+	end
+
+	if (b.frame.JunkIcon) then
+		if (quality) and (quality == LE_ITEM_QUALITY_POOR and not noValue) and C["Inventory"].JunkIcon then
+			b.frame.JunkIcon:Show()
+		else
+			b.frame.JunkIcon:Hide()
+		end
 	end
 
 	if b.frame.UpgradeIcon then
@@ -255,13 +267,6 @@ function Stuffing:SlotUpdate(b)
 		newItemTexture:SetSize(b.frame:GetSize())
 	end
 
-	if b.frame.JunkIcon and C["Inventory"].JunkIcon then
-		b.frame.JunkIcon:ClearAllPoints()
-		b.frame.JunkIcon:SetPoint("BOTTOMRIGHT", -C["Inventory"].ButtonSize / 2, C["Inventory"].ButtonSize / 2)
-		b.frame.JunkIcon:SetSize(C["Inventory"].ButtonSize / 1.8, C["Inventory"].ButtonSize / 1.8)
-		b.frame.JunkIcon:SetShown(quality == LE_ITEM_QUALITY_POOR and not noValue)
-	end
-
 	local questTexture = _G[b.frame:GetName() .. "IconQuestTexture"]
 	if questTexture then
 		questTexture:ClearAllPoints()
@@ -294,6 +299,9 @@ function Stuffing:SlotUpdate(b)
 		-- Color slot according to item quality
 		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
 			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
+			if b.frame.Azerite and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(clink) then
+				b.frame.Azerite:Show()
+			end
 		elseif isQuestItem or questId then
 			b.frame:SetBackdropBorderColor(1, 1, 0)
 		end
@@ -623,6 +631,23 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
 			ret.frame.text:SetPoint("TOPLEFT", 1, -1)
 			ret.frame.text:SetShadowOffset(0, 0)
+		end
+
+		-- JunkIcon only exists for items created through ContainerFrameItemButtonTemplate
+		if not ret.frame.JunkIcon then
+			ret.frame.JunkIcon = ret.frame:CreateTexture(nil, "OVERLAY")
+			ret.frame.JunkIcon:SetAtlas("bags-junkcoin")
+			ret.frame.JunkIcon:SetPoint("TOPLEFT", 1, 0)
+			ret.frame.JunkIcon:Hide()
+		end
+
+		if not ret.frame.Azerite then
+			ret.frame.Azerite = ret.frame:CreateTexture(nil, "OVERLAY")
+			ret.frame.Azerite:SetAtlas("AzeriteIconFrame")
+			ret.frame.Azerite:SetTexCoord(0, 1, 0, 1)
+			ret.frame.Azerite:SetPoint("TOPLEFT")
+			ret.frame.Azerite:SetPoint("BOTTOMRIGHT")
+			ret.frame.Azerite:Hide()
 		end
 
 		local Battlepay = _G[ret.frame:GetName()].BattlepayItemTexture

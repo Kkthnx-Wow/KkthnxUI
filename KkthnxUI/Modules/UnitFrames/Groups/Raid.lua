@@ -71,16 +71,16 @@ function Module:CreateRaid()
 	self:SetScript("OnEnter", function(self)
 		UnitFrame_OnEnter(self)
 
-		if (self.Mouseover) then
-			self.Mouseover:SetAlpha(0.2)
+		if (self.Highlight) then
+			self.Highlight:Show()
 		end
 	end)
 
 	self:SetScript("OnLeave", function(self)
 		UnitFrame_OnLeave(self)
 
-		if (self.Mouseover) then
-			self.Mouseover:SetAlpha(0)
+		if (self.Highlight) then
+			self.Highlight:Hide()
 		end
 	end)
 
@@ -225,11 +225,7 @@ function Module:CreateRaid()
 	self.ThreatIndicator.Override = UpdateThreat
 
 	if C["Raid"].ShowMouseoverHighlight then
-		self.Mouseover = self.Health:CreateTexture(nil, "OVERLAY")
-		self.Mouseover:SetAllPoints(self.Health)
-		self.Mouseover:SetTexture(C.Media.Texture)
-		self.Mouseover:SetVertexColor(0, 0, 0)
-		self.Mouseover:SetAlpha(0)
+		Module.MouseoverHealth(self, "raid")
 	end
 
 	if C["Raid"].TargetHighlight then
@@ -241,7 +237,7 @@ function Module:CreateRaid()
 		self.TargetHighlight:SetFrameLevel(0)
 		self.TargetHighlight:Hide()
 
-		local function UpdateRaidTargetGlow(self)
+		local function UpdateRaidTargetGlow()
 			if not self.unit then
 				return
 			end
@@ -270,8 +266,6 @@ function Module:CreateRaid()
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow)
-		self:RegisterEvent("RAID_ROSTER_UPDATE", UpdateRaidTargetGlow)
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED", UpdateRaidTargetGlow)
 	end
 
 	self.Range = Module.CreateRange(self)

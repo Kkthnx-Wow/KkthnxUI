@@ -9,10 +9,12 @@ if not oUF then
 end
 
 local _G = _G
+local pairs = pairs
+local select = _G.select
 local string_format = string.format
 local table_insert = table.insert
+local tonumber = tonumber
 local unpack = unpack
-local select = _G.select
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
@@ -22,6 +24,7 @@ local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
+local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
@@ -31,6 +34,7 @@ local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local PlaySound = _G.PlaySound
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local SetCVar = _G.SetCVar
 local SOUNDKIT = _G.SOUNDKIT
 local UIParent = _G.UIParent
 local UnitAffectingCombat = _G.UnitAffectingCombat
@@ -40,6 +44,7 @@ local UnitClass = _G.UnitClass
 local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitExists = _G.UnitExists
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitIsConnected = _G.UnitIsConnected
 local UnitIsEnemy = _G.UnitIsEnemy
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsPlayer = _G.UnitIsPlayer
@@ -47,10 +52,12 @@ local UnitIsPVP = _G.UnitIsPVP
 local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitIsTapDenied = _G.UnitIsTapDenied
 local UnitIsUnit = _G.UnitIsUnit
+local UnitName = _G.UnitName
 local UnitPlayerControlled = _G.UnitPlayerControlled
 local UnitPower = _G.UnitPower
 local UnitPowerMax = _G.UnitPowerMax
 local UnitReaction = _G.UnitReaction
+local UnitSpellHaste = _G.UnitSpellHaste
 
 local Movers = K["Movers"]
 Module.ticks = {}
@@ -64,6 +71,33 @@ Module.RaidBuffsTrackingPosition = {
 	RIGHT = {-6, 1},
 	TOP = {0, 0},
 	BOTTOM = {0, 0}
+}
+
+Module.PlateTotemData = {
+	[GetSpellInfo(192058)] = "Interface\\Icons\\spell_nature_brilliance", -- Lightning Surge Totem
+	[GetSpellInfo(98008)] = "Interface\\Icons\\spell_shaman_spiritlink", -- Spirit Link Totem
+	[GetSpellInfo(192077)] = "Interface\\Icons\\ability_shaman_windwalktotem", -- Wind Rush Totem
+	[GetSpellInfo(204331)] = "Interface\\Icons\\spell_nature_wrathofair_totem", -- Counterstrike Totem
+	[GetSpellInfo(204332)] = "Interface\\Icons\\spell_nature_windfury", -- Windfury Totem
+	[GetSpellInfo(204336)] = "Interface\\Icons\\spell_nature_groundingtotem", -- Grounding Totem
+	-- Water
+	[GetSpellInfo(157153)] = "Interface\\Icons\\ability_shaman_condensationtotem", -- Cloudburst Totem
+	[GetSpellInfo(5394)] = "Interface\\Icons\\INV_Spear_04", -- Healing Stream Totem
+	[GetSpellInfo(108280)] = "Interface\\Icons\\ability_shaman_healingtide", -- Healing Tide Totem
+	-- Earth
+	[GetSpellInfo(207399)] = "Interface\\Icons\\spell_nature_reincarnation", -- Ancestral Protection Totem
+	[GetSpellInfo(198838)] = "Interface\\Icons\\spell_nature_stoneskintotem", -- Earthen Shield Totem
+	[GetSpellInfo(51485)] = "Interface\\Icons\\spell_nature_stranglevines", -- Earthgrab Totem
+	[GetSpellInfo(61882)] = "Interface\\Icons\\spell_shaman_earthquake", -- Earthquake Totem
+	[GetSpellInfo(196932)] = "Interface\\Icons\\spell_totem_wardofdraining", -- Voodoo Totem
+	-- Fire
+	[GetSpellInfo(192222)] = "Interface\\Icons\\spell_shaman_spewlava", -- Liquid Magma Totem
+	[GetSpellInfo(204330)] = "Interface\\Icons\\spell_fire_totemofwrath", -- Skyfury Totem
+	-- Totem Mastery
+	[GetSpellInfo(202188)] = "Interface\\Icons\\spell_nature_stoneskintotem", -- Resonance Totem
+	[GetSpellInfo(210651)] = "Interface\\Icons\\spell_shaman_stormtotem", -- Storm Totem
+	[GetSpellInfo(210657)] = "Interface\\Icons\\spell_fire_searingtotem", -- Ember Totem
+	[GetSpellInfo(210660)] = "Interface\\Icons\\spell_nature_invisibilitytotem", -- Tailwind Totem
 }
 
 function Module:UpdateClassPortraits(unit)
@@ -120,53 +154,43 @@ function Module:ThreatPlate(forced)
 			if status then
 				if (status == 3) then -- Securely Tanking
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(75/255, 175/255, 76/255)
+						self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 					else
-						self.Health:SetStatusBarColor(0.78, 0.25, 0.25)
+						self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 					end
 				elseif (status == 2) then -- insecurely tanking
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(235/255, 163/255, 40/255)
+						self.Health:SetStatusBarColor(C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3])
 					else
-						self.Health:SetStatusBarColor(218/255, 197/255, 92/255)
+						self.Health:SetStatusBarColor(C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3])
 					end
 				elseif (status == 1) then -- not tanking but threat higher than tank
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(218/255, 197/255, 92/255)
+						self.Health:SetStatusBarColor(C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3])
 					else
-						self.Health:SetStatusBarColor(235/255, 163/255, 40/255)
+						self.Health:SetStatusBarColor(C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3])
 					end
-				else -- not tanking at all
+				elseif (status == 0) then -- not tanking, lower threat than tank
 					if (K.GetPlayerRole() == "TANK") then
-						if IsInRaid() or IsInGroup() then
-							for i = 1, 40 do
-								-- Check if it is being tanked by an offtank.
-								local isTanking = UnitDetailedThreatSituation("raid" .. i, unit)
-								if self.isBeingTanked ~= true and isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
-									self.Health:SetStatusBarColor(.8, 0.1, 1)
-								else
-									self.Health:SetStatusBarColor(0.78, 0.25, 0.25)
+						self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
+						if IsInGroup() or IsInRaid() then
+							for i = 1, GetNumGroupMembers() do
+								if UnitExists("raid" .. i) and not UnitIsUnit("raid" .. i, "player") then
+									local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit)
+									if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
+										self.Health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
+									end
 								end
 							end
 						end
 					else
-						if IsInRaid() or IsInGroup() then
-							for i = 1, 40 do
-								if self.isBeingTanked ~= true and isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
-									self.Health:SetStatusBarColor(.8, 0.1, 1)
-								else
-									self.Health:SetStatusBarColor(75/255, 175/255, 76/255)
-								end
-							end
-						end
+						self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 					end
 				end
+			elseif not forced then
+				self.Health:ForceUpdate()
 			end
 		end
-	end
-
-	if (not forced and self.Health.ForceUpdate) then
-		self.Health:ForceUpdate()
 	end
 end
 
@@ -196,6 +220,20 @@ function Module:HighlightPlate()
 		end
 	else
 		Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+	end
+end
+
+function Module:UpdatePlateTotems()
+	local name = UnitName(self.unit)
+
+	if name then
+		if Module.PlateTotemData[name] then
+			self.Totem.Icon:SetTexture(Module.PlateTotemData[name])
+			self.Totem.Icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
+			self.Totem:Show()
+		else
+			self.Totem:Hide()
+		end
 	end
 end
 
@@ -722,7 +760,7 @@ function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
 end
 
 function Module:GetPartyFramesAttributes()
-	local PartyProperties = C["Party"].PartyAsRaid and "custom [group:party] hide" or "custom [group:party, nogroup:raid] show; hide"
+	local PartyProperties = C["Party"].PartyAsRaid and "custom [group:party] hide" or "custom [@raid6,exists] hide;show"
 
 	return "oUF_Party", nil, PartyProperties,
 	"oUF-initialConfigFunction", [[
@@ -736,15 +774,15 @@ function Module:GetPartyFramesAttributes()
 	"showSolo", false,
 	"showParty", true,
 	"showPlayer", C["Party"].ShowPlayer,
-	"showRaid", false,
+	"showRaid", true,
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
 	"groupBy", "ASSIGNEDROLE",
-	"yOffset", -38
+	"yOffset", C["Party"].ShowBuffs and -38 or -18
 end
 
 function Module:GetDamageRaidFramesAttributes()
-	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show; hide" or "solo, party, raid"
+	local DamageRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide"
 
 	return "DamageRaid", nil, DamageRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -755,10 +793,10 @@ function Module:GetDamageRaidFramesAttributes()
 
 	"initial-width", C["Raid"].Width,
 	"initial-height", C["Raid"].Height,
-	"showParty", true,
+	--"showParty", true,
 	"showRaid", true,
-	"showPlayer", true,
-	"showSolo", false,
+	--"showPlayer", true,
+	--"showSolo", true,
 	"xoffset", 6,
 	"yOffset", -6,
 	"point", "TOP",
@@ -772,7 +810,7 @@ function Module:GetDamageRaidFramesAttributes()
 end
 
 function Module:GetHealerRaidFramesAttributes()
-	local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show; hide" or "solo, party, raid"
+	local HealerRaidProperties = C["Party"].PartyAsRaid and "custom [group:party] show" or "custom [@raid6,exists] show;hide"
 
 	return "HealerRaid", nil, HealerRaidProperties,
 	"oUF-initialConfigFunction", [[
@@ -783,10 +821,10 @@ function Module:GetHealerRaidFramesAttributes()
 
 	"initial-width", C["Raid"].Width - 12,
 	"initial-height", C["Raid"].Height - 6,
-	"showParty", true,
+	--"showParty", true,
 	"showRaid", true,
-	"showPlayer", true,
-	"showSolo", false,
+	--"showPlayer", true,
+	--"showSolo", true,
 	"xoffset", 6,
 	"yOffset", -6,
 	"point", "TOP",
@@ -910,6 +948,7 @@ function Module:CreateUnits()
 				else
 					Boss[i]:SetPoint("TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -48)
 				end
+
 				Boss[i]:SetSize(190, 52)
 				Movers:RegisterFrame(Boss[i])
 			end
@@ -927,8 +966,10 @@ function Module:CreateUnits()
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
 				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14)
+				Movers:RegisterFrame(HealerRaid)
 			elseif C["Raid"].RaidLayout.Value == "Damage" then
 				DamageRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -30)
+				Movers:RegisterFrame(DamageRaid)
 			end
 
 			if C["Raid"].MainTankFrames then
@@ -940,13 +981,8 @@ function Module:CreateUnits()
 				else
 					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
 				end
-				Movers:RegisterFrame(MainTank)
-			end
 
-			if C["Raid"].RaidLayout.Value == "Healer" then
-				Movers:RegisterFrame(HealerRaid)
-			elseif C["Raid"].RaidLayout.Value == "Damage" then
-				Movers:RegisterFrame(DamageRaid)
+				Movers:RegisterFrame(MainTank)
 			end
 		end
 

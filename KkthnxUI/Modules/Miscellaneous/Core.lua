@@ -96,6 +96,24 @@ if C["General"].AutoScale then
 	end)
 end
 
+if C["General"].LagTolerance == true then
+	local LagTolerance = CreateFrame("Frame")
+	local int = 5
+	local _, _, _, lag = GetNetStats()
+	local LatencyUpdate = function(_, elapsed)
+		int = int - elapsed
+		if int < 0 then
+			if lag ~= 0 and lag <= 400 then
+				SetCVar("SpellQueueWindow", tostring(lag))
+			end
+			int = 5
+		end
+	end
+
+	LagTolerance:SetScript("OnUpdate", LatencyUpdate)
+	LatencyUpdate(LagTolerance, 10)
+end
+
 -- Force readycheck warning
 local function ShowReadyCheckHook(_, initiator)
 	if initiator ~= "player" then

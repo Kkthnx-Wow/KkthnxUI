@@ -131,24 +131,28 @@ function Module:CreateAuras(unit)
 			self.Auras = Auras
 		end
 	elseif (unit == "party") then
-		Buffs:SetHeight(18)
-		Buffs:SetWidth(self:GetWidth() + 2)
-		Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-		Buffs.size = 18
-		Buffs.num = 5
-		Buffs.spacing = 6
-		Buffs.initialAnchor = "TOPLEFT"
-		Buffs["growth-y"] = "DOWN"
-		Buffs["growth-x"] = "RIGHT"
-		Buffs.PostCreateIcon = Module.PostCreateAura
-		Buffs.PostUpdateIcon = Module.PostUpdateAura
-		Buffs.CustomFilter = FilterSharedBuffs
+		if C["Party"].ShowBuffs then
+			Buffs:SetHeight(18)
+			Buffs:SetWidth(self:GetWidth() + 2)
+			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+			Buffs.size = 18
+			Buffs.num = 5
+			Buffs.spacing = 6
+			Buffs.initialAnchor = "TOPLEFT"
+			Buffs["growth-y"] = "DOWN"
+			Buffs["growth-x"] = "RIGHT"
+			Buffs.PostCreateIcon = Module.PostCreateAura
+			Buffs.PostUpdateIcon = Module.PostUpdateAura
+			Buffs.CustomFilter = FilterSharedBuffs
 
-		Debuffs:SetHeight(34)
+			self.Buffs = Buffs
+		end
+
+		Debuffs:SetHeight(self:GetHeight() - 2)
 		Debuffs:SetWidth(self.Power:GetWidth())
 		Debuffs:SetPoint("LEFT", self, "RIGHT", 3, 0)
-		Debuffs.size = 34
-		Debuffs.num = 3
+		Debuffs.size = self:GetHeight() - 2
+		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"
 		Debuffs["growth-y"] = "UP"
@@ -157,7 +161,6 @@ function Module:CreateAuras(unit)
 		Debuffs.PostUpdateIcon = Module.PostUpdateAura
 		Debuffs.CustomFilter = FilterGroupDebuffs
 
-		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 	elseif (unit == "targettarget") then
 		Debuffs:SetHeight(self.Portrait:GetHeight() - 4)

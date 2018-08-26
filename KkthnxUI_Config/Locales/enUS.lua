@@ -54,6 +54,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Set the font size for most things in the UI. Note: This doesn't effect somethings that have their own seperate options (UnitFrame Font, Datatext Font, etc.)",
 		},
 
+		["LagTolerance"] = {
+			["Name"] = "Lag Tolerance",
+			["Desc"] = "Automatically update the Blizzard Custom Lag Tolerance option to your latency",
+		},
+
 		["MoveBlizzardFrames"] = {
 			["Name"] = "Move Blizzard Frames",
 			["Desc"] = "Allow Blizzard frames to be moved",
@@ -418,19 +423,14 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Enable threat feature, automatically changes by your role",
 		},
 
-		--["ThreatPercent"] = {
-			--	["Name"] = "Threat Percent",
-			--	["Desc"] = "Enable threat percent on the nameplates",
-		--},
-
 		["GoodColor"] = {
 			["Name"] = "Good Color",
 			["Desc"] = "Good threat color, varies depending if your a tank or dps/heal"..RestoreDefault,
 		},
 
 		["MarkHealers"] = {
-				["Name"] = "Mark Healers",
-				["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
+			["Name"] = "Mark Healers",
+			["Desc"] = "Show healer icon beside enemy healers nameplate in battlegrounds",
 		},
 
 		["HealthValue"] = {
@@ -733,94 +733,44 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Databars Local
 	["DataBars"] = {
-		["ArtifactColor"] = {
-			["Name"] = "Artifact Color",
-			["Desc"] = "Color of the Artifactbar"..RestoreDefault,
+		["Enable"] = {
+			["Name"] = "Enable Databars",
+			["Desc"] = ModuleToggle,
+		},
+
+		["Text"] = {
+			["Name"] = "Text",
+			["Desc"] = "Display text on the databars",
+		},
+
+		["AzeriteColor"] = {
+			["Name"] = "Azerite Color",
+			["Desc"] = "Color of the Azerite"..RestoreDefault,
 		},
 
 		["MouseOver"] = {
 			["Name"] = "Mouseover",
-			["Desc"] = "The bars are not shown unless you mouse over the them."
+			["Desc"] = "The bars are not shown unless you mouse over them."
 		},
 
-		["ArtifactEnable"] = {
-			["Name"] = "Enable Artifact",
-			["Desc"] = "Enable artifactbar",
-		},
-
-		["ArtifactHeight"] = {
-			["Name"] = "Artifact Height",
-			["Desc"] = ModuleHeight,
-		},
-
-		["ArtifactWidth"] = {
-			["Name"] = "Artifact Width",
+		["Width"] = {
+			["Name"] = "Width",
 			["Desc"] = ModuleWidth,
 		},
 
 		["ExperienceColor"] = {
 			["Name"] = "Experience Color",
-			["Desc"] = "Color of the Experiencebar"..RestoreDefault,
-		},
-
-		["ExperienceEnable"] = {
-			["Name"] = "Enable Experience",
-			["Desc"] = "Enable experiencebar",
-		},
-
-		["ExperienceHeight"] = {
-			["Name"] = "Experience Height",
-			["Desc"] = ModuleHeight,
+			["Desc"] = "Color of the Experience"..RestoreDefault,
 		},
 
 		["ExperienceRestedColor"] = {
 			["Name"] = "Experience Rested Color",
-			["Desc"] = "Color of the rested experiencebar"..RestoreDefault,
+			["Desc"] = "Color of the Rested Experience"..RestoreDefault,
 		},
 
-		["ExperienceWidth"] = {
-			["Name"] = "Experience Width",
-			["Desc"] = ModuleWidth,
-		},
-
-		["HonorColor"] = {
-			["Name"] = "Honor Color",
-			["Desc"] = "Color of the honorbar"..RestoreDefault,
-		},
-
-		["HonorEnable"] = {
-			["Name"] = "Enable Honor",
-			["Desc"] = "Enable honorbar",
-		},
-
-		["HonorHeight"] = {
-			["Name"] = "Honor Height",
+		["Height"] = {
+			["Name"] = "Height",
 			["Desc"] = ModuleHeight,
-		},
-
-		["HonorWidth"] = {
-			["Name"] = "Honor Width",
-			["Desc"] = ModuleWidth,
-		},
-
-		["ReputationEnable"] = {
-			["Name"] = "Enable Reputation",
-			["Desc"] = "Enable reputationbar",
-		},
-
-		["ReputationHeight"] = {
-			["Name"] = "Reputation Height",
-			["Desc"] = ModuleHeight,
-		},
-
-		["ReputationWidth"] = {
-			["Name"] = "Reputation Width",
-			["Desc"] = ModuleWidth,
-		},
-
-		["Outline"] = {
-			["Name"] = "Outline",
-			["Desc"] = ModuleFontOutline,
 		},
 
 		["Texture"] = {
@@ -1295,6 +1245,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
 		},
 
+		["ShowBuffs"] = {
+			["Name"] = "Show Buffs",
+			["Desc"] = "Toggle the display of buffs on the party frames.",
+		},
+
 		["ShowPlayer"] = {
 			["Name"] = "Show Player In Party",
 			["Desc"] = "Display your self in the party frames or not. Hell I don't care",
@@ -1346,11 +1301,6 @@ KkthnxUIConfig["enUS"] = {
 		["AuraWatchIconSize"] = {
 			["Name"] = "Aura Watch Icon Size",
 			["Desc"] = "Pick your size",
-		},
-
-		["Cutaway"] = {
-			["Name"] = "Cutaway Bars",
-			["Desc"] = "Bars will transition in a cutaway style when health is lost." .. PerformanceIncrease,
 		},
 
 		["RaidTools"] = {
@@ -1416,11 +1366,6 @@ KkthnxUIConfig["enUS"] = {
 		["MaxUnitPerColumn"] = {
 			["Name"] = "Max Unit Per Column",
 			["Desc"] = "How many frame will display per row/column",
-		},
-
-		["Outline"] = {
-			["Name"] = "Outline",
-			["Desc"] = ModuleFontOutline,
 		},
 
 		["RaidUtility"] = {

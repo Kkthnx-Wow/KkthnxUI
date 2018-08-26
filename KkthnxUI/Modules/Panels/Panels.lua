@@ -66,7 +66,7 @@ PetBarAnchor:SetFrameLevel(0)
 PetBarAnchor:SetFrameStrata("BACKGROUND")
 if C["ActionBar"].PetBarHorizontal then
 	PetBarAnchor:SetSize((C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9),(C["ActionBar"].ButtonSize + C["ActionBar"].ButtonSpace))
-	PetBarAnchor:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOM", -175, 167)
+	PetBarAnchor:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 35)
 elseif (C["ActionBar"].RightBars > 0) then
 	PetBarAnchor:SetSize(C["ActionBar"].ButtonSize + 6,(C["ActionBar"].ButtonSize * 10) + (C["ActionBar"].ButtonSpace * 9))
 	PetBarAnchor:SetPoint("RIGHT", RightBarAnchor, "LEFT", 0, 0)

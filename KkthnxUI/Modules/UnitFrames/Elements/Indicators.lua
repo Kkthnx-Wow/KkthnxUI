@@ -192,9 +192,9 @@ end
 
 function Module:CreateCombatIndicator()
 	self.CombatIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.CombatIndicator:SetSize(24, 24)
+	self.CombatIndicator:SetSize(20, 20)
 	self.CombatIndicator:SetPoint("LEFT", 0, 0)
-	self.CombatIndicator:SetVertexColor(0.84, 0.75, 0.65)
+	self.CombatIndicator:SetVertexColor(1, 0.2, 0.2, 1)
 end
 
 function Module:CreatePhaseIndicator()

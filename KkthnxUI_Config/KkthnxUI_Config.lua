@@ -101,10 +101,11 @@ KkthnxUIConfig.ColorDefaults = {
 	},
 	-- Nameplates
 	["Nameplates"] = {
-		["BadColor"] = {1, 0, 0},
-		["GoodColor"] = {0.2, 0.8, 0.2},
-		["NearColor"] = {1, 1, 0},
-		["OffTankColor"] = {0, 0.5, 1}
+		["BadColor"] = {0.78, 0.25, 0.25},
+		["BadTransition"] = {235/255, 163/255, 40/255},
+		["GoodColor"] = {75/255, 175/255, 76/255},
+		["GoodTransition"] = {218/255, 197/255, 92/255},
+		["TankedByTankColor"] = {0.8, 0.1, 1}
 	},
 	-- Unitframe
 	["Unitframe"] = {
@@ -120,10 +121,11 @@ function KkthnxUIConfig:UpdateColorDefaults()
 	self.ColorDefaults.DataBars.ExperienceColor = {0.6, 0.3, 0.8}
 	self.ColorDefaults.DataBars.RestedColor = {0.3, 0.6, 0.8}
 	self.ColorDefaults.General.TexturesColor = {0.31, 0.31, 0.31}
-	self.ColorDefaults.Nameplates.BadColor = {1, 0, 0}
-	self.ColorDefaults.Nameplates.GoodColor = {0.2, 0.8, 0.2}
-	self.ColorDefaults.Nameplates.NearColor = {1, 1, 0}
-	self.ColorDefaults.Nameplates.OffTankColor = {0, 0.5, 1}
+	self.ColorDefaults.Nameplates.BadColor = {0.78, 0.25, 0.25}
+	self.ColorDefaults.Nameplates.GoodColor = {75/255, 175/255, 76/255}
+	self.ColorDefaults.Nameplates.BadTransition = {235/255, 163/255, 40/255}
+	self.ColorDefaults.Nameplates.GoodTransition = {218/255, 197/255, 92/255}
+	self.ColorDefaults.Nameplates.TankedByTankColor = {0.8, 0.1, 1}
 	self.ColorDefaults.Unitframe.CastbarTicksColor = {0, 0, 0, 0.8}
 end
 

@@ -173,7 +173,7 @@ C["DataBars"] = {
 	["RestedColor"] = {0.3, 0.6, 0.8},
 	["Text"] = false,
 	["Texture"] = "KkthnxUI",
-	["Width"] = 170,
+	["Width"] = 180,
 }
 
 -- Datatext
@@ -206,6 +206,7 @@ C["General"] = {
 	["DisableTutorialButtons"] = false,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
+	["LagTolerance"] = false,
 	["MoveBlizzardFrames"] = false,
 	["ReplaceBlizzardFonts"] = true,
 	["TaintLog"] = false,
@@ -238,11 +239,10 @@ C["Loot"] = {
 
 -- Minimap
 C["Minimap"] = {
-	["Calendar"] = true,
 	["Enable"] = true,
 	["ResetZoom"] = false,
 	["ResetZoomTime"] = 4,
-	["Size"] = 170
+	["Size"] = 180
 }
 
 -- Miscellaneous
@@ -261,30 +261,31 @@ C["Misc"] = {
 
 -- Nameplates
 C["Nameplates"] = {
-	["BadColor"] = {1, 0, 0},
+	["BadColor"] = {0.78, 0.25, 0.25},
+	["BadTransition"] = {235/255, 163/255, 40/255},
 	["CastHeight"] = 6,
 	["Clamp"] = false,
 	["Combat"] = false,
 	["Distance"] = 40,
-	["MarkHealers"] = false,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
-	["GoodColor"] = {0.2, 0.8, 0.2},
+	["GoodColor"] = {75/255, 175/255, 76/255},
+	["GoodTransition"] = {218/255, 197/255, 92/255},
 	["HealthValue"] = true,
 	["Height"] = 23,
-	["NearColor"] = {1, 1, 0},
-	["OffTankColor"] = {0, 0.5, 1},
+	["MarkHealers"] = false,
 	["SelectedScale"] = 1,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
+	["TankedByTankColor"] = {0.8, 0.1, 1},
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
 	["Width"] = 138,
 	["HealthFormat"] = {
 		["Options"] = {
-			["Health Current"] = "[KkthnxUI:HealthCurrent]",
-			["Health Percent"] = "[KkthnxUI:HealthPercent]",
-			["Health Current-Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
+			["Current"] = "[KkthnxUI:HealthCurrent]",
+			["Percent"] = "[KkthnxUI:HealthPercent]",
+			["Current / Percent"] = "[KkthnxUI:HealthCurrent-Percent]",
 		},
 		["Value"] = "[KkthnxUI:HealthPercent]"
 	}
@@ -373,6 +374,7 @@ C["Party"] = {
 	["Font"] = "KkthnxUI",
 	["MouseoverHighlight"] = true,
 	["PartyAsRaid"] = false,
+	["ShowBuffs"] = true,
 	["ShowPlayer"] = true,
 	["Smooth"] = false,
 	["SmoothSpeed"] = 3,
@@ -464,7 +466,6 @@ C["Raid"] = {
 	["MainTankFrames"] = true,
 	["ManabarShow"] = false,
 	["MaxUnitPerColumn"] = 10,
-	["Outline"] = false,
 	["RaidUtility"] = true,
 	["ShowMouseoverHighlight"] = true,
 	["ShowNotHereTimer"] = true,

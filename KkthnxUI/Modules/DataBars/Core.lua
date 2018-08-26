@@ -356,7 +356,7 @@ function Module:OnEnable()
 		return
 	end
 
-	local container = CreateFrame("frame", "KkthnxUI_Databars", UIParent)
+	local container = CreateFrame("frame", "KkthnxUI_Databars", K.PetBattleHider)
 	container:SetWidth(Minimap:GetWidth() or self.config.Width)
 	container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
 

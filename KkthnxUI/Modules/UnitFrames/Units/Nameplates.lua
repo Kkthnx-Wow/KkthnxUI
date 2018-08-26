@@ -12,11 +12,21 @@ if not oUF then
 end
 
 local _G = _G
+local pairs = pairs
 local select = select
+local string_format = string.format
+local string_gsub = string.gsub
 
 local CreateFrame = _G.CreateFrame
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetBattlefieldScore = _G.GetBattlefieldScore
+local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
+local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local UIParent = _G.UIParent
 local UnitIsUnit = _G.UnitIsUnit
+local UnitName = _G.UnitName
+local UNKNOWN = _G.UNKNOWN
 
 -- Taken from Blizzard_TalentUI.lua
 local healerSpecIDs = {
@@ -44,7 +54,7 @@ function Module:CheckBGHealers()
 	for i = 1, GetNumBattlefieldScores() do
 		name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, talentSpec = GetBattlefieldScore(i)
 		if name then
-			name = gsub(name,"%-"..gsub(K.Realm,"[%s%-]",""),"") --[[ name = match(name,"([^%-]+).*") ]]
+			name = string_gsub(name,"%-"..string_gsub(K.Realm,"[%s%-]",""),"")
 			if name and self.HealerSpecs[talentSpec] then
 				self.Healers[name] = talentSpec
 			elseif name and self.Healers[name] then
@@ -61,9 +71,9 @@ function Module:CheckArenaHealers()
 	end
 
 	for i = 1, 5 do
-		local name, realm = UnitName(format("arena%d", i))
+		local name, realm = UnitName(string_format("arena%d", i))
 		if name and name ~= UNKNOWN then
-			realm = (realm and realm ~= "") and gsub(realm,"[%s%-]","")
+			realm = (realm and realm ~= "") and string_gsub(realm,"[%s%-]","")
 			if realm then name = name.."-"..realm end
 			local s = GetArenaOpponentSpec(i)
 			local _, talentSpec = nil, UNKNOWN
@@ -78,7 +88,7 @@ function Module:CheckArenaHealers()
 	end
 end
 
-function Module:NameplatesCallback(_, unit)
+function Module:NameplatesCallback(_, _, unit)
 	if unit then
 		if UnitIsUnit(unit, "player") then
 			self.Power:Show()
@@ -239,9 +249,18 @@ function Module:CreateNameplates()
 
 	self.QuestIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
-    self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
+	self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
 	self.QuestIndicator:SetSize(18, 18)
 	self.QuestIndicator:SetPoint("RIGHT", self.Health, "LEFT", 2, 0)
+
+	-- Create Totem Icon
+	--if C.nameplate.totem_icons == true then
+	self.Totem = CreateFrame("Frame", nil, self)
+	self.Totem.Icon = self.Totem:CreateTexture(nil, "OVERLAY")
+	self.Totem.Icon:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
+	self.Totem.Icon:SetPoint("BOTTOM", self.Health, "TOP", 0, 16)
+	self.Totem:CreateShadow(true)
+	--end
 
 	-- Create Healer Icon
 	if C["Nameplates"].MarkHealers then
@@ -271,6 +290,10 @@ function Module:CreateNameplates()
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
 	Module.UpdateNameplateTarget(self)
+
+	-- Totem Icon Events
+	self:RegisterEvent("NAME_PLATE_CREATED", Module.UpdatePlateTotems)
+	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
 
 	-- Healer Icon Events
 	self:RegisterEvent("NAME_PLATE_CREATED", Module.DisplayHealerTexture)

@@ -124,37 +124,37 @@ function Module:CreateParty()
 		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Name, 7, -7)
 		self.TargetHighlight:Hide()
 
-		local function UpdateTargetGlow()
+		local function UpdatePartyTargetGlow()
 			if not self.unit then
 				return
 			end
 
 			local unit = self.unit
 			if (UnitIsUnit("target", self.unit)) then
-				self.TargetHighlight:Show()
+				if not self.TargetHighlight:IsShown() then
+					self.TargetHighlight:Show()
+				end
+
 				local reaction = UnitReaction(unit, "player")
 				if UnitIsPlayer(unit) then
 					local _, class = UnitClass(unit)
 					if class then
 						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 						self.TargetHighlight:SetVertexColor(color.r, color.g, color.b)
-					else
-						self.TargetHighlight:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 					end
 				elseif reaction then
 					local color = FACTION_BAR_COLORS[reaction]
 					self.TargetHighlight:SetVertexColor(color.r, color.g, color.b)
-				else
-					self.TargetHighlight:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
 				end
 			else
-				self.TargetHighlight:Hide()
+				if self.TargetHighlight:IsShown() then
+					self.TargetHighlight:Hide()
+				end
 			end
 		end
 
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateTargetGlow)
-		self:RegisterEvent("RAID_ROSTER_UPDATE", UpdateTargetGlow)
-		self:RegisterEvent("PLAYER_FOCUS_CHANGED", UpdateTargetGlow)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow)
+		-- UpdatePartyTargetGlow()
 	end
 
 	Module.CreateAuras(self, "party")

@@ -16,7 +16,7 @@ local performance_font = K.GetFont(C["DataText"].Font)
 local performance_hz = 1
 local performance_string = "%d%s - %d%s"
 
-local PerformanceFrame = CreateFrame("Frame", "SystemInfo", UIParent)
+local PerformanceFrame = CreateFrame("Frame", "SystemInfo", Minimap)
 PerformanceFrame:SetPoint("TOP", Minimap, "TOP", 0, -4)
 PerformanceFrame:SetSize(Minimap:GetWidth() - 2, 14)
 PerformanceFrame:Show()

@@ -60,8 +60,12 @@ K.DispelClasses = {
 	["MONK"] = {
 		["Magic"] = false,
 		["Disease"] = true,
-		["Poison"] = true
+		["Poison"] = true,
+	},
+	["MAGE"] = {
+		["Curse"] = true
 	}
+
 }
 
 function K.Print(...)
