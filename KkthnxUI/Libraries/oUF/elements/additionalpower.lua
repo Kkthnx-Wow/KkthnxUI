@@ -22,10 +22,10 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 The following options are listed by priority. The first check that returns true decides the color of the bar.
 
-.colorClass  - Use `self.colors.class[class]` to color the bar based on the player's class. (boolean)
+.colorClass - Use `self.colors.class[class]` to color the bar based on the player's class. (boolean)
 .colorSmooth - Use `self.colors.smooth` to color the bar with a smooth gradient based on the player's current additional
-               power percentage (boolean)
-.colorPower  - Use `self.colors.power[token]` to color the bar based on the player's additional power type. (boolean)
+power percentage (boolean)
+.colorPower - Use `self.colors.power[token]` to color the bar based on the player's additional power type. (boolean)
 
 ## Sub-Widget Options
 
@@ -33,21 +33,21 @@ The following options are listed by priority. The first check that returns true 
 
 ## Examples
 
-    -- Position and size
-    local AdditionalPower = CreateFrame('StatusBar', nil, self)
-    AdditionalPower:SetSize(20, 20)
-    AdditionalPower:SetPoint('TOP')
-    AdditionalPower:SetPoint('LEFT')
-    AdditionalPower:SetPoint('RIGHT')
+-- Position and size
+local AdditionalPower = CreateFrame('StatusBar', nil, self)
+AdditionalPower:SetSize(20, 20)
+AdditionalPower:SetPoint('TOP')
+AdditionalPower:SetPoint('LEFT')
+AdditionalPower:SetPoint('RIGHT')
 
-    -- Add a background
-    local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
-    Background:SetAllPoints(AdditionalPower)
-    Background:SetTexture(1, 1, 1, .5)
+-- Add a background
+local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
+Background:SetAllPoints(AdditionalPower)
+Background:SetTexture(1, 1, 1, .5)
 
-    -- Register it with oUF
-    AdditionalPower.bg = Background
-    self.AdditionalPower = AdditionalPower
+-- Register it with oUF
+AdditionalPower.bg = Background
+self.AdditionalPower = AdditionalPower
 --]]
 
 local _, ns = ...
@@ -107,10 +107,10 @@ local function Update(self, event, unit, powertype)
 	--[[ Override: AdditionalPower:UpdateColor(cur, max)
 	Used to completely override the internal function for updating the widget's colors.
 
-	* self - the AdditionalPower element
-	* cur  - the current value of the player's additional power (number)
-	* max  - the maximum value of the player's additional power (number)
-	--]]
+		* self - the AdditionalPower element
+		* cur - the current value of the player's additional power (number)
+		* max - the maximum value of the player's additional power (number)
+		--]]
 	element:UpdateColor(cur, max)
 
 	--[[ Callback: AdditionalPower:PostUpdate(unit, cur, max)
@@ -118,8 +118,8 @@ local function Update(self, event, unit, powertype)
 
 	* self - the AdditionalPower element
 	* unit - the unit for which the update has been triggered (string)
-	* cur  - the current value of the player's additional power (number)
-	* max  - the maximum value of the player's additional power (number)
+	* cur - the current value of the player's additional power (number)
+	* max - the maximum value of the player's additional power (number)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, cur, max)
@@ -130,10 +130,10 @@ local function Path(self, ...)
 	--[[ Override: AdditionalPower.Override(self, event, unit, ...)
 	Used to completely override the element's update process.
 
-	* self  - the parent object
+	* self - the parent object
 	* event - the event triggering the update (string)
-	* unit  - the unit accompanying the event (string)
-	* ...   - the arguments accompanying the event
+	* unit - the unit accompanying the event (string)
+	* ... - the arguments accompanying the event
 	--]]
 	return (self.AdditionalPower.Override or Update) (self, ...)
 end
@@ -179,9 +179,9 @@ local function VisibilityPath(self, ...)
 	--[[ Override: AdditionalPower.OverrideVisibility(self, event, unit)
 	Used to completely override the element's visibility update process.
 
-	* self  - the parent object
+	* self - the parent object
 	* event - the event triggering the update (string)
-	* unit  - the unit accompanying the event (string)
+	* unit - the unit accompanying the event (string)
 	--]]
 	return (self.AdditionalPower.OverrideVisibility or Visibility) (self, ...)
 end

@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
-    -- Position and size
-    local RaidTargetIndicator = self:CreateTexture(nil, 'OVERLAY')
-    RaidTargetIndicator:SetSize(16, 16)
-    RaidTargetIndicator:SetPoint('TOPRIGHT', self)
+-- Position and size
+local RaidTargetIndicator = self:CreateTexture(nil, 'OVERLAY')
+RaidTargetIndicator:SetSize(16, 16)
+RaidTargetIndicator:SetPoint('TOPRIGHT', self)
 
-    -- Register it with oUF
-    self.RaidTargetIndicator = RaidTargetIndicator
+-- Register it with oUF
+self.RaidTargetIndicator = RaidTargetIndicator
 --]]
 
 local _, ns = ...
@@ -51,7 +51,7 @@ local function Update(self, event)
 	--[[ Callback: RaidTargetIndicator:PostUpdate(index)
 	Called after the element has been updated.
 
-	* self  - the RaidTargetIndicator element
+	* self - the RaidTargetIndicator element
 	* index - the index of the raid target marker (number?)[1-8]
 	--]]
 	if(element.PostUpdate) then
@@ -63,9 +63,9 @@ local function Path(self, ...)
 	--[[ Override: RaidTargetIndicator.Override(self, event)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		--]]
 	return (self.RaidTargetIndicator.Override or Update) (self, ...)
 end
 

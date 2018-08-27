@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
-    -- Position and size
-    local CombatIndicator = self:CreateTexture(nil, 'OVERLAY')
-    CombatIndicator:SetSize(16, 16)
-    CombatIndicator:SetPoint('TOP', self)
+-- Position and size
+local CombatIndicator = self:CreateTexture(nil, 'OVERLAY')
+CombatIndicator:SetSize(16, 16)
+CombatIndicator:SetPoint('TOP', self)
 
-    -- Register it with oUF
-    self.CombatIndicator = CombatIndicator
+-- Register it with oUF
+self.CombatIndicator = CombatIndicator
 --]]
 
 local _, ns = ...
@@ -47,7 +47,7 @@ local function Update(self, event)
 	--[[ Callback: CombatIndicator:PostUpdate(inCombat)
 	Called after the element has been updated.
 
-	* self     - the CombatIndicator element
+	* self - the CombatIndicator element
 	* inCombat - indicates if the player is affecting combat (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -59,9 +59,9 @@ local function Path(self, ...)
 	--[[ Override: CombatIndicator.Override(self, event)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		--]]
 	return (self.CombatIndicator.Override or Update) (self, ...)
 end
 

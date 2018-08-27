@@ -15,17 +15,17 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 ## Options
 
 .feedbackUnit - The unit whose threat situation is being requested. If defined, it'll be passed as the first argument to
-                [GetThreatStatusColor](http://wowprogramming.com/docs/api/UnitThreatSituation.html).
+[GetThreatStatusColor](http://wowprogramming.com/docs/api/UnitThreatSituation.html).
 
 ## Examples
 
-    -- Position and size
-    local ThreatIndicator = self:CreateTexture(nil, 'OVERLAY')
-    ThreatIndicator:SetSize(16, 16)
-    ThreatIndicator:SetPoint('TOPRIGHT', self)
+-- Position and size
+local ThreatIndicator = self:CreateTexture(nil, 'OVERLAY')
+ThreatIndicator:SetSize(16, 16)
+ThreatIndicator:SetPoint('TOPRIGHT', self)
 
-    -- Register it with oUF
-    self.ThreatIndicator = ThreatIndicator
+-- Register it with oUF
+self.ThreatIndicator = ThreatIndicator
 --]]
 
 local _, ns = ...
@@ -72,12 +72,12 @@ local function Update(self, event, unit)
 	--[[ Callback: ThreatIndicator:PostUpdate(unit, status, r, g, b)
 	Called after the element has been updated.
 
-	* self   - the ThreatIndicator element
-	* unit   - the unit for which the update has been triggered (string)
+	* self - the ThreatIndicator element
+	* unit - the unit for which the update has been triggered (string)
 	* status - the unit's threat status (see [UnitThreatSituation](http://wowprogramming.com/docs/api/UnitThreatSituation.html))
-	* r      - the red color component based on the unit's threat status (number?)[0-1]
-	* g      - the green color component based on the unit's threat status (number?)[0-1]
-	* b      - the blue color component based on the unit's threat status (number?)[0-1]
+	* r - the red color component based on the unit's threat status (number?)[0-1]
+	* g - the green color component based on the unit's threat status (number?)[0-1]
+	* b - the blue color component based on the unit's threat status (number?)[0-1]
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, status, r, g, b)
@@ -88,10 +88,10 @@ local function Path(self, ...)
 	--[[ Override: ThreatIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* ... - the arguments accompanying the event
+		--]]
 	return (self.ThreatIndicator.Override or Update) (self, ...)
 end
 

@@ -11,21 +11,21 @@ local L = CombatFeedbackText
 local AMOUNT_MINUS, AMOUNT_PLUS = "-%s", "+%s"
 
 local colors = {
-	DEFAULT   = { 1, 1, 1 },
-	WOUND     = { 1, 1, 0 },		-- no separate colors for CRITICAL, CRUSHING, GLANCING
-	HEAL      = { 0.2, 1, 0.2 },		-- no separate color for CRITICAL
-	ENERGIZE  = { 0.41, 0.8, 0.94 },	-- no separate color for CRITICAL
-	ABSORB    = { 0.8, 0.8, 0.8 },
-	BLOCK     = { 0.8, 0.8, 0.8 },
-	DEFLECT   = { 0.8, 0.8, 0.8 },
-	DODGE     = { 0.8, 0.8, 0.8 },
-	EVADE     = { 1, 1, 1 },
-	IMMUNE    = { 1, 1, 1 },
+	DEFAULT = { 1, 1, 1 },
+	WOUND = { 1, 1, 0 },		-- no separate colors for CRITICAL, CRUSHING, GLANCING
+	HEAL = { 0.2, 1, 0.2 },		-- no separate color for CRITICAL
+	ENERGIZE = { 0.41, 0.8, 0.94 },	-- no separate color for CRITICAL
+	ABSORB = { 0.8, 0.8, 0.8 },
+	BLOCK = { 0.8, 0.8, 0.8 },
+	DEFLECT = { 0.8, 0.8, 0.8 },
+	DODGE = { 0.8, 0.8, 0.8 },
+	EVADE = { 1, 1, 1 },
+	IMMUNE = { 1, 1, 1 },
 	INTERRUPT = { 1, 1, 0 },
-	MISS      = { 0.8, 0.8, 0.8 },
-	PARRY     = { 0.8, 0.8, 0.8 },
-	RELFECT   = { 1, 1, 1 },
-	RESIST    = { 0.8, 0.8, 0.8 },
+	MISS = { 0.8, 0.8, 0.8 },
+	PARRY = { 0.8, 0.8, 0.8 },
+	RELFECT = { 1, 1, 1 },
+	RESIST = { 0.8, 0.8, 0.8 },
 }
 oUF.colors.combatfeedback = colors
 

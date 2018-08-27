@@ -14,22 +14,22 @@ the unit.
 
 ## Examples
 
-    -- 3D Portrait
-    -- Position and size
-    local Portrait = CreateFrame('PlayerModel', nil, self)
-    Portrait:SetSize(32, 32)
-    Portrait:SetPoint('RIGHT', self, 'LEFT')
+-- 3D Portrait
+-- Position and size
+local Portrait = CreateFrame('PlayerModel', nil, self)
+Portrait:SetSize(32, 32)
+Portrait:SetPoint('RIGHT', self, 'LEFT')
 
-    -- Register it with oUF
-    self.Portrait = Portrait
+-- Register it with oUF
+self.Portrait = Portrait
 
-    -- 2D Portrait
-    local Portrait = self:CreateTexture(nil, 'OVERLAY')
-    Portrait:SetSize(32, 32)
-    Portrait:SetPoint('RIGHT', self, 'LEFT')
+-- 2D Portrait
+local Portrait = self:CreateTexture(nil, 'OVERLAY')
+Portrait:SetSize(32, 32)
+Portrait:SetPoint('RIGHT', self, 'LEFT')
 
-    -- Register it with oUF
-    self.Portrait = Portrait
+-- Register it with oUF
+self.Portrait = Portrait
 --]]
 
 local _, ns = ...
@@ -88,10 +88,10 @@ local function Path(self, ...)
 	--[[ Override: Portrait.Override(self, event, unit)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* unit  - the unit accompanying the event (string)
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* unit - the unit accompanying the event (string)
+		--]]
 	return (self.Portrait.Override or Update) (self, ...)
 end
 

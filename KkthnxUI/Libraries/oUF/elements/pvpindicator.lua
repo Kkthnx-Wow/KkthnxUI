@@ -18,18 +18,18 @@ The `Badge` sub-widget has to be on a lower sub-layer than the `PvP` texture.
 
 ## Examples
 
-    -- Position and size
-    local PvPIndicator = self:CreateTexture(nil, 'ARTWORK', nil, 1)
-    PvPIndicator:SetSize(30, 30)
-    PvPIndicator:SetPoint('RIGHT', self, 'LEFT')
+-- Position and size
+local PvPIndicator = self:CreateTexture(nil, 'ARTWORK', nil, 1)
+PvPIndicator:SetSize(30, 30)
+PvPIndicator:SetPoint('RIGHT', self, 'LEFT')
 
-    local Badge = self:CreateTexture(nil, 'ARTWORK')
-    Badge:SetSize(50, 52)
-    Badge:SetPoint('CENTER', PvPIndicator, 'CENTER')
+local Badge = self:CreateTexture(nil, 'ARTWORK')
+Badge:SetSize(50, 52)
+Badge:SetPoint('CENTER', PvPIndicator, 'CENTER')
 
-    -- Register it with oUF
-    PvPIndicator.Badge = Badge
-    self.PvPIndicator = PvPIndicator
+-- Register it with oUF
+PvPIndicator.Badge = Badge
+self.PvPIndicator = PvPIndicator
 --]]
 
 local _, ns = ...
@@ -95,10 +95,10 @@ local function Update(self, event, unit)
 	--[[ Callback: PvPIndicator:PostUpdate(unit, status)
 	Called after the element has been updated.
 
-	* self   - the PvPIndicator element
-	* unit   - the unit for which the update has been triggered (string)
+	* self - the PvPIndicator element
+	* unit - the unit for which the update has been triggered (string)
 	* status - the unit's current PvP status or faction accounting for mercenary mode (string)['FFA', 'Alliance',
-	           'Horde']
+	'Horde']
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, status)
@@ -109,10 +109,10 @@ local function Path(self, ...)
 	--[[Override: PvPIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* ... - the arguments accompanying the event
+		--]]
 	return (self.PvPIndicator.Override or Update) (self, ...)
 end
 

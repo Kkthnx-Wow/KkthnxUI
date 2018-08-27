@@ -21,12 +21,12 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 ## Examples
 
-    local Stagger = CreateFrame('StatusBar', nil, self)
-    Stagger:SetSize(120, 20)
-    Stagger:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, 0)
+local Stagger = CreateFrame('StatusBar', nil, self)
+Stagger:SetSize(120, 20)
+Stagger:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', 0, 0)
 
-    -- Register with oUF
-    self.Stagger = Stagger
+-- Register with oUF
+self.Stagger = Stagger
 --]]
 
 if(select(2, UnitClass('player')) ~= 'MONK') then return end
@@ -41,7 +41,7 @@ local SPEC_MONK_BREWMASTER = SPEC_MONK_BREWMASTER or 1
 local BREWMASTER_POWER_BAR_NAME = BREWMASTER_POWER_BAR_NAME or 'STAGGER'
 
 -- percentages at which bar should change color
-local STAGGER_YELLOW_TRANSITION =  STAGGER_YELLOW_TRANSITION or 0.3
+local STAGGER_YELLOW_TRANSITION = STAGGER_YELLOW_TRANSITION or 0.3
 local STAGGER_RED_TRANSITION = STAGGER_RED_TRANSITION or 0.6
 
 -- table indices of bar colors
@@ -101,18 +101,18 @@ local function Update(self, event, unit)
 	--[[ Override: Stagger:UpdateColor(cur, max)
 	Used to completely override the internal function for updating the widget's colors.
 
-	* self - the Stagger element
-	* cur  - the amount of staggered damage (number)
-	* max  - the player's maximum possible health value (number)
-	--]]
+		* self - the Stagger element
+		* cur - the amount of staggered damage (number)
+		* max - the player's maximum possible health value (number)
+		--]]
 	element:UpdateColor(cur, max)
 
 	--[[ Callback: Stagger:PostUpdate(cur, max)
 	Called after the element has been updated.
 
 	* self - the Stagger element
-	* cur  - the amount of staggered damage (number)
-	* max  - the player's maximum possible health value (number)
+	* cur - the amount of staggered damage (number)
+	* max - the player's maximum possible health value (number)
 	--]]
 	if(element.PostUpdate) then
 		element:PostUpdate(cur, max)
@@ -123,10 +123,10 @@ local function Path(self, ...)
 	--[[ Override: Stagger.Override(self, event, unit)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* unit  - the unit accompanying the event (string)
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* unit - the unit accompanying the event (string)
+		--]]
 	return (self.Stagger.Override or Update)(self, ...)
 end
 
@@ -150,10 +150,10 @@ local function VisibilityPath(self, ...)
 	--[[ Override: Stagger.OverrideVisibility(self, event, unit)
 	Used to completely override the internal visibility toggling function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* unit  - the unit accompanying the event (string)
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* unit - the unit accompanying the event (string)
+		--]]
 	return (self.Stagger.OverrideVisibility or Visibility)(self, ...)
 end
 

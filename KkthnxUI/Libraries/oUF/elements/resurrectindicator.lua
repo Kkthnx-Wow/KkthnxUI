@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
-    -- Position and size
-    local ResurrectIndicator = self:CreateTexture(nil, 'OVERLAY')
-    ResurrectIndicator:SetSize(16, 16)
-    ResurrectIndicator:SetPoint('TOPRIGHT', self)
+-- Position and size
+local ResurrectIndicator = self:CreateTexture(nil, 'OVERLAY')
+ResurrectIndicator:SetSize(16, 16)
+ResurrectIndicator:SetPoint('TOPRIGHT', self)
 
-    -- Register it with oUF
-    self.ResurrectIndicator = ResurrectIndicator
+-- Register it with oUF
+self.ResurrectIndicator = ResurrectIndicator
 --]]
 
 local _, ns = ...
@@ -47,7 +47,7 @@ local function Update(self, event)
 	--[[ Callback: ResurrectIndicator:PostUpdate(incomingResurrect)
 	Called after the element has been updated.
 
-	* self              - the ResurrectIndicator element
+	* self - the ResurrectIndicator element
 	* incomingResurrect - indicates if the unit has an incoming resurrection (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -59,10 +59,10 @@ local function Path(self, ...)
 	--[[ Override: ResurrectIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* ... - the arguments accompanying the event
+		--]]
 	return (self.ResurrectIndicator.Override or Update) (self, ...)
 end
 

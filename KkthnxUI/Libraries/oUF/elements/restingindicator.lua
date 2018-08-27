@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
-    -- Position and size
-    local RestingIndicator = self:CreateTexture(nil, 'OVERLAY')
-    RestingIndicator:SetSize(16, 16)
-    RestingIndicator:SetPoint('TOPLEFT', self)
+-- Position and size
+local RestingIndicator = self:CreateTexture(nil, 'OVERLAY')
+RestingIndicator:SetSize(16, 16)
+RestingIndicator:SetPoint('TOPLEFT', self)
 
-    -- Register it with oUF
-    self.RestingIndicator = RestingIndicator
+-- Register it with oUF
+self.RestingIndicator = RestingIndicator
 --]]
 
 local _, ns = ...
@@ -47,7 +47,7 @@ local function Update(self, event)
 	--[[ Callback: RestingIndicator:PostUpdate(isResting)
 	Called after the element has been updated.
 
-	* self      - the RestingIndicator element
+	* self - the RestingIndicator element
 	* isResting - indicates if the player is resting (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -59,9 +59,9 @@ local function Path(self, ...)
 	--[[ Override: RestingIndicator.Override(self, event)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		--]]
 	return (self.RestingIndicator.Override or Update) (self, ...)
 end
 

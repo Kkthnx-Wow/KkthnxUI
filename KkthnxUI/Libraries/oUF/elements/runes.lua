@@ -18,7 +18,7 @@ A default texture will be applied if the sub-widgets are StatusBars and don't ha
 ## Options
 
 .colorSpec - Use `self.colors.runes[specID]` to color the bar based on player's spec. `specID` is defined by the return
-             value of [GetSpecialization](http://wowprogramming.com/docs/api/GetSpecialization.html) (boolean)
+value of [GetSpecialization](http://wowprogramming.com/docs/api/GetSpecialization.html) (boolean)
 .sortOrder - Sorting order (string?)['asc', 'desc']
 
 ## Sub-Widgets Options
@@ -27,18 +27,18 @@ A default texture will be applied if the sub-widgets are StatusBars and don't ha
 
 ## Examples
 
-    local Runes = {}
-    for index = 1, 6 do
-        -- Position and size of the rune bar indicators
-        local Rune = CreateFrame('StatusBar', nil, self)
-        Rune:SetSize(120 / 6, 20)
-        Rune:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * 120 / 6, 0)
+local Runes = {}
+for index = 1, 6 do
+	-- Position and size of the rune bar indicators
+	local Rune = CreateFrame('StatusBar', nil, self)
+	Rune:SetSize(120 / 6, 20)
+	Rune:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * 120 / 6, 0)
 
-        Runes[index] = Rune
-    end
+	Runes[index] = Rune
+end
 
-    -- Register with oUF
-    self.Runes = Runes
+-- Register with oUF
+self.Runes = Runes
 --]]
 
 if(select(2, UnitClass('player')) ~= 'DEATHKNIGHT') then return end
@@ -141,7 +141,7 @@ local function Update(self, event)
 	--[[ Callback: Runes:PostUpdate(runemap)
 	Called after the element has been updated.
 
-	* self    - the Runes element
+	* self - the Runes element
 	* runemap - the ordered list of runes' indices (table)
 	--]]
 	if(element.PostUpdate) then
@@ -155,9 +155,9 @@ local function Path(self, event, ...)
 		--[[ Override: Runes:UpdateColor(runeID)
 		Used to completely override the internal function for updating the widgets' colors.
 
-		* self   - the Runes element
-		* runeID - the index of the updated rune (number)
-		--]]
+			* self - the Runes element
+			* runeID - the index of the updated rune (number)
+			--]]
 		local UpdateColorMethod = element.UpdateColor or UpdateColor
 		for index = 1, #element do
 			UpdateColorMethod(element, index)
@@ -167,10 +167,10 @@ local function Path(self, event, ...)
 	--[[ Override: Runes.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* ... - the arguments accompanying the event
+		--]]
 	return (element.Override or Update) (self, event, ...)
 end
 

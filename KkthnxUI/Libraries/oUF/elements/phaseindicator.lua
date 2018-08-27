@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
-    -- Position and size
-    local PhaseIndicator = self:CreateTexture(nil, 'OVERLAY')
-    PhaseIndicator:SetSize(16, 16)
-    PhaseIndicator:SetPoint('TOPLEFT', self)
+-- Position and size
+local PhaseIndicator = self:CreateTexture(nil, 'OVERLAY')
+PhaseIndicator:SetSize(16, 16)
+PhaseIndicator:SetPoint('TOPLEFT', self)
 
-    -- Register it with oUF
-    self.PhaseIndicator = PhaseIndicator
+-- Register it with oUF
+self.PhaseIndicator = PhaseIndicator
 --]]
 
 local _, ns = ...
@@ -47,7 +47,7 @@ local function Update(self, event)
 	--[[ Callback: PhaseIndicator:PostUpdate(isInSamePhase)
 	Called after the element has been updated.
 
-	* self          - the PhaseIndicator element
+	* self - the PhaseIndicator element
 	* isInSamePhase - indicates whether the element is hidden (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -59,10 +59,10 @@ local function Path(self, ...)
 	--[[ Override: PhaseIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-	* self  - the parent object
-	* event - the event triggering the update (string)
-	* ...   - the arguments accompanying the event
-	--]]
+		* self - the parent object
+		* event - the event triggering the update (string)
+		* ... - the arguments accompanying the event
+		--]]
 	return (self.PhaseIndicator.Override or Update) (self, ...)
 end
 
