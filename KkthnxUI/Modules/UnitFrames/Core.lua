@@ -793,9 +793,9 @@ function Module:GetDamageRaidFramesAttributes()
 
 	"initial-width", C["Raid"].Width,
 	"initial-height", C["Raid"].Height,
-	--"showParty", true,
+	"showParty", true,
 	"showRaid", true,
-	--"showPlayer", true,
+	"showPlayer", true,
 	--"showSolo", true,
 	"xoffset", 6,
 	"yOffset", -6,
@@ -821,9 +821,9 @@ function Module:GetHealerRaidFramesAttributes()
 
 	"initial-width", C["Raid"].Width - 12,
 	"initial-height", C["Raid"].Height - 6,
-	--"showParty", true,
+	"showParty", true,
 	"showRaid", true,
-	--"showPlayer", true,
+	"showPlayer", true,
 	--"showSolo", true,
 	"xoffset", 6,
 	"yOffset", -6,

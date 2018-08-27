@@ -96,7 +96,7 @@ function Module:CreateRaid()
 	self.Health.Value:SetPoint("CENTER", self.Health, 0, -9)
 	self.Health.Value:SetFontObject(RaidframeFont)
 	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 11, select(3, self.Health.Value:GetFont()))
-	self:Tag(self.Health.Value, "[KkthnxUI:HealthDeficit]")
+	self:Tag(self.Health.Value, C["Raid"].HealthFormat.Value)
 
 	self.Health.Smooth = C["Raid"].Smooth
 	self.Health.SmoothSpeed = C["Raid"].SmoothSpeed * 10

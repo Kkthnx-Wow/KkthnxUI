@@ -489,6 +489,13 @@ C["Raid"] = {
 			["Role"] = "ROLE"
 		},
 		["Value"] = "GROUP"
+	},
+	["HealthFormat"] = {
+		["Options"] = {
+			["Deficit"] = "[KkthnxUI:HealthDeficit]",
+			["Percent"] = "[KkthnxUI:HealthPercent]",
+		},
+		["Value"] = "[KkthnxUI:HealthDeficit]"
 	}
 }
 
