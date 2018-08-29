@@ -73,6 +73,10 @@ Module.RaidBuffsTrackingPosition = {
 	BOTTOM = {0, 0}
 }
 
+Module.DebuffHighlightColors = {
+	[25771] = {enable = false, style = "FILL", color = {r = 0.85, g = 0, b = 0, a = 0.85}},
+}
+
 Module.PlateTotemData = {
 	[GetSpellInfo(192058)] = "Interface\\Icons\\spell_nature_brilliance", -- Lightning Surge Totem
 	[GetSpellInfo(98008)] = "Interface\\Icons\\spell_shaman_spiritlink", -- Spirit Link Totem

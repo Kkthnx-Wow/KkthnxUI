@@ -107,15 +107,14 @@ function Module:CreateResurrectIndicator(size)
 end
 
 function Module:CreateDebuffHighlight()
-	--if not (self:GetAttribute("unitsuffix") == "target" or self:GetAttribute("unitsuffix") == "targettarget") then
-		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
-		self.DebuffHighlight:SetAllPoints(self.Health)
-		self.DebuffHighlight:SetTexture(C["Media"].Mouseover)
-		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
-		self.DebuffHighlight:SetBlendMode("ADD")
-		self.DebuffHighlightAlpha = 0.45
-		self.DebuffHighlightFilter = true
-	--end
+	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+	self.DebuffHighlight:SetAllPoints(self.Health)
+	self.DebuffHighlight:SetTexture(C["Media"].Blank)
+	self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+	self.DebuffHighlight:SetBlendMode("ADD")
+	self.DebuffHighlightAlpha = 0.45
+	self.DebuffHighlightFilter = true
+	self.DebuffHighlightFilterTable = Module.DebuffHighlightColors
 end
 
 function Module:CreateCombatFeedback()
