@@ -98,7 +98,7 @@ local function Update(object, _, unit)
 	local debuffType, texture, wasFiltered, style, color = GetDebuffType(unit, object.DebuffHighlightFilter, object.DebuffHighlightFilterTable)
 	if (wasFiltered) then
 		if object.DebuffHighlightBackdropBorder then
-			object:SetBackdropBorderColor(color.r, color.g, color.b, color.a or object.DebuffHighlightAlpha or .5)
+			object:SetBackdropBorderColor(color.r, color.g, color.b, color.a or 1)
 		else
 			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a or object.DebuffHighlightAlpha or .5)
 		end
@@ -135,6 +135,14 @@ local function Enable(object)
 
 	object:RegisterEvent("UNIT_AURA", Update)
 
+	if object.DebuffHighlightBackdropBorder then
+		local r, g, b, a = object:GetBackdropBorderColor()
+		origBorderColors[object] = {r = r, g = g, b = b, a = a}
+	elseif not object.DebuffHighlightUseTexture then
+		local r, g, b, a = object.DebuffHighlight:GetVertexColor()
+		origColors[object] = {r = r, g = g, b = b, a = a}
+	end
+
 	return true
 end
 
@@ -142,10 +150,11 @@ local function Disable(object)
 	object:UnregisterEvent("UNIT_AURA", Update)
 
 	if object.DebuffHighlightBackdropBorder then
-		object:SetBackdropBorderColor()
-	end
-
-	if object.DebuffHighlight then
+		local color = origColors[object]
+		if color then
+			object:SetBackdropBorderColor(color.r, color.g, color.b, color.a)
+		end
+	elseif not object.DebuffHighlightUseTexture then -- color debuffs
 		local color = origColors[object]
 		if color then
 			object.DebuffHighlight:SetVertexColor(color.r, color.g, color.b, color.a)
