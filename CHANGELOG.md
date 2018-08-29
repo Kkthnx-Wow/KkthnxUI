@@ -5,21 +5,21 @@ All notable changes to this project will be documented in this file.
 
 **Version 8.17 [August nil, 2018]**   
 
-Added `FixGarbageCollect` setting   
-Increaed the delay on Version Checking   
-Removed `function K.Comma(value)`   
-Cleanup `Init.lua`   
 Add `Libraries\oUF_Plugins\oUF_DebuffHighlight.lua`   
+Add `Module:CreateDebuffHighlight()` for Unitframes   
+Added `FixGarbageCollect` setting   
+Adjust debuffs size for partyframes   
 Change how AutoCollapse works   
-Cleanup `Blizzard/BlizzBugFixes.lua`   
 Change how we check for Max Level stuff in Databars   
+Cleanup `Blizzard/BlizzBugFixes.lua`   
+Cleanup `Init.lua`   
 Cleanup `Skin/Blizzard/Tooltip.lua`   
 Cleanup `Skins/Core.lua`   
 Cleanup `Tooltip/Tooltip.lua`   
+Increaed the delay on Version Checking   
 Increaed yOffset for Partyframes if buffs are shown   
-Adjust debuffs size for partyframes   
-Add `Module:CreateDebuffHighlight()` for Unitframes   
-Removed MasterLooter from `Unitframes/Groups/Raid.lua`   
 Nameplates are being tested for `DebuffHighlight` and `PvPIndicator`   
+Removed `function K.Comma(value)`   
+Removed MasterLooter from `Unitframes/Groups/Raid.lua`   
 
 ___
