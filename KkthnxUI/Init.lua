@@ -106,7 +106,6 @@ end
 
 function AddOn:OnInitialize()
 	self.GUID = UnitGUID("player")
-
 	self.CreateStaticPopups()
 
 	-- KkthnxUI GameMenu Button.
@@ -132,9 +131,6 @@ function AddOn:OnInitialize()
 		GameMenuButton:SetPoint("TOPLEFT", GameMenuButtonAddons, "BOTTOMLEFT", 0, -1)
 		hooksecurefunc("GameMenuFrame_UpdateVisibleButtons", self.PositionGameMenuButton)
 	end
-
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_REGEN_ENABLED")
 end
 
 function AddOn:PositionGameMenuButton()
@@ -156,7 +152,8 @@ for i = 1, GetNumAddOns() do
 	AddOn.AddOnVersion[strlower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 
--- Sourced: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
+--HonorFrameLoadTaint workaround
+--credit: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
 if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 	UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
 	hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
@@ -169,7 +166,7 @@ if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 				if not (issecurevariable(b, "value") or b:IsShown()) then
 					b.value = nil
 					repeat
-						j, b["fx" .. j] = j + 1
+						j, b["fx" .. j] = j+1
 					until issecurevariable(b, "value")
 				end
 			end
@@ -177,8 +174,8 @@ if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 	end)
 end
 
--- DisplayModeCommunitiesTaint workaround
--- Sourced: https://www.townlong-yak.com/bugs/Kjq4hm-DisplayModeCommunitiesTaint
+--DisplayModeCommunitiesTaint workaround
+--credit https://www.townlong-yak.com/bugs/Kjq4hm-DisplayModeCommunitiesTaint
 if (UIDROPDOWNMENU_OPEN_PATCH_VERSION or 0) < 1 then
 	UIDROPDOWNMENU_OPEN_PATCH_VERSION = 1
 	hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)

@@ -148,10 +148,10 @@ function Module:CreateAuras(unit)
 			self.Buffs = Buffs
 		end
 
-		Debuffs:SetHeight(self:GetHeight() - 2)
-		Debuffs:SetWidth(self.Power:GetWidth())
+		Debuffs:SetHeight(self:GetHeight() - 6)
+		Debuffs:SetWidth(self.Health:GetWidth())
 		Debuffs:SetPoint("LEFT", self, "RIGHT", 3, 0)
-		Debuffs.size = self:GetHeight() - 2
+		Debuffs.size = self:GetHeight() - 6
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"

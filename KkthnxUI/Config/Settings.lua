@@ -204,6 +204,7 @@ C["General"] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
+	["FixGarbageCollect"] = true,
 	["Font"] = "KkthnxUI",
 	["FontSize"] = 12,
 	["LagTolerance"] = false,

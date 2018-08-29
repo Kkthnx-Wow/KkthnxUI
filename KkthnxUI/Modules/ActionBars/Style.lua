@@ -76,7 +76,7 @@ local function StyleNormalButton(self)
 
 		Button:CreateBorder()
 
-		Icon:SetTexCoord(unpack(K.TexCoords))
+		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		Icon:SetDrawLayer('BACKGROUND', 7)
 
 		if (Normal) then

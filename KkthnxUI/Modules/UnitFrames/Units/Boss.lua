@@ -149,6 +149,7 @@ function Module:CreateBoss()
 	end
 
 	Module.CreateAuras(self, "boss")
+	Module.CreateDebuffHighlight(self)
 
 	self.Range = Module.CreateRange(self)
 end

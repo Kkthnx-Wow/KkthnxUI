@@ -19,7 +19,13 @@ local function SkinTooltip()
     ItemRefCloseButton:SkinCloseButton()
 
     -- World Quest Reward Icon
-    WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(unpack(K.TexCoords))
+    WorldMapTooltip.ItemTooltip:CreateBackdrop()
+    WorldMapTooltip.ItemTooltip.Backdrop:SetOutside(WorldMapTooltip.ItemTooltip.Icon)
+    WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(WorldMapTooltip.ItemTooltip:GetFrameLevel())
+    WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
+    WorldMapTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WorldMapTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
+    WorldMapTooltip.ItemTooltip.Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+
     hooksecurefunc(WorldMapTooltip.ItemTooltip.IconBorder, "SetVertexColor", function(self, r, g, b)
         self:GetParent().Backdrop:SetBackdropBorderColor(r, g, b)
         self:SetTexture("")
@@ -29,88 +35,46 @@ local function SkinTooltip()
         self:GetParent().Backdrop:SetBackdropBorderColor()
     end)
 
-    WorldMapTooltip.ItemTooltip:CreateBackdrop()
-    WorldMapTooltip.ItemTooltip.Backdrop:SetOutside(WorldMapTooltip.ItemTooltip.Icon)
-     WorldMapTooltip.ItemTooltip.Backdrop:SetFrameLevel(WorldMapTooltip.ItemTooltip:GetFrameLevel())
-    WorldMapTooltip.ItemTooltip.Count:ClearAllPoints()
-    WorldMapTooltip.ItemTooltip.Count:SetPoint("BOTTOMRIGHT", WorldMapTooltip.ItemTooltip.Icon, "BOTTOMRIGHT", 1, 0)
-
-    local function QuestRewardsBarColor(tooltip, questID)
-        if not tooltip or not questID then
-            return
-        end
-
-        local name, cur, max, sb, _ = tooltip.GetName and tooltip:GetName()
-        if name and name == "WorldMapTooltip" then
-            name = "WorldMapTaskTooltip"
-        end
-
-        sb = name and _G[name .. "StatusBar"]
-        if not sb then
-            return
-        end
-
-        if sb.Bar and sb.Bar.GetValue then
-            cur = sb.Bar:GetValue()
-            if cur then
-                if sb.Bar.GetMinMaxValues then
-                    _, max = sb.Bar:GetMinMaxValues()
-                end
-
-                ModuleSkins:StatusBarColorGradient(sb.Bar, cur, max)
-            end
-        end
-    end
-    hooksecurefunc("GameTooltip_AddQuestRewardsToTooltip", QuestRewardsBarColor)
-
-    --local function SetBackdropStyle(self)
-    --    if not self or self:IsForbidden() then
-    --        return
-    --    end
-
-    --    if self.IsSkinned then
-    --        self:SetBackdrop(nil)
-    --    end
-    --end
-    --hooksecurefunc("GameTooltip_SetBackdropStyle", SetBackdropStyle)
-
     local GameTooltip = _G["GameTooltip"]
     local GameTooltipStatusBar = _G["GameTooltipStatusBar"]
 
     local StoryTooltip = QuestScrollFrame.StoryTooltip
-	StoryTooltip:SetFrameLevel(4)
+    StoryTooltip:SetFrameLevel(4)
 
     local WarCampaignTooltip = QuestScrollFrame.WarCampaignTooltip
 
     local tooltips = {
-		GameTooltip,
-        ItemRefTooltip,
+        AutoCompleteBox,
+        EmbeddedItemTooltip,
+        FriendsTooltip,
+        GameTooltip,
         ItemRefShoppingTooltip1,
         ItemRefShoppingTooltip2,
         ItemRefShoppingTooltip3,
-        AutoCompleteBox,
-        FriendsTooltip,
+        ItemRefTooltip,
+        ReputationParagonTooltip,
         ShoppingTooltip1,
         ShoppingTooltip2,
         ShoppingTooltip3,
-        WorldMapTooltip,
+        StoryTooltip,
+        WarCampaignTooltip,
         WorldMapCompareTooltip1,
         WorldMapCompareTooltip2,
         WorldMapCompareTooltip3,
-        ReputationParagonTooltip,
-        StoryTooltip,
-        EmbeddedItemTooltip,
-        WarCampaignTooltip,
+        WorldMapTooltip,
     }
 
     for _, tt in pairs(tooltips) do
-        tt:SetBackdrop(nil)
-        tt.SetBackdrop = K.Noop
-        if tt.BackdropFrame then
-            tt.BackdropFrame:SetBackdrop(nil)
-        end
+        if not IsAddOnLoaded("Aurora") then
+            tt:SetBackdrop(nil)
+            tt.SetBackdrop = K.Noop
 
-        Module:SecureHookScript(tt, "OnShow", "SetStyle")
+            if tt.BackdropFrame then
+                tt.BackdropFrame:SetBackdrop(nil)
+            end
+
+            Module:SecureHookScript(tt, "OnShow", "SetStyle")
+        end
     end
 
     GameTooltipStatusBar:SetStatusBarTexture(GameTooltipStatusBarTexture)
@@ -120,14 +84,35 @@ local function SkinTooltip()
     GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
 
     GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", -1)
-	GameTooltipStatusBar.Background:SetAllPoints()
-	GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
+    GameTooltipStatusBar.Background:SetAllPoints()
+    GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
 
     Module:SecureHook("GameTooltip_ShowStatusBar")
+    Module:SecureHook("GameTooltip_ShowProgressBar") -- Skin Progress Bars
+    Module:SecureHook("GameTooltip_AddQuestRewardsToTooltip") -- Color Progress Bars
     Module:SecureHook("GameTooltip_UpdateStyle", "SetStyle")
 
     -- [Backdrop coloring] There has to be a more elegant way of doing this.
-	Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
+    Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
+
+    -- Used for Island Skin
+    local function style(self)
+        if not self.IsSkinned then
+            self:SetBackdrop(nil)
+            self:CreateBorder()
+
+            self.IsSkinned = true
+        end
+    end
+
+    Module:RegisterEvent("ADDON_LOADED", function(_, addon)
+        if addon == "Blizzard_IslandsQueueUI" then
+            local IslandTooltip = _G["IslandsQueueFrameTooltip"]
+            IslandTooltip:GetParent():GetParent():HookScript("OnShow", style)
+            IslandTooltip:GetParent().IconBorder:SetAlpha(0)
+            IslandTooltip:GetParent().Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+        end
+    end)
 end
 
 table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinTooltip)

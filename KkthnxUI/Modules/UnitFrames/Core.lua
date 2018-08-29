@@ -778,7 +778,7 @@ function Module:GetPartyFramesAttributes()
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
 	"groupBy", "ASSIGNEDROLE",
-	"yOffset", C["Party"].ShowBuffs and -38 or -18
+	"yOffset", C["Party"].ShowBuffs and -40 or -18
 end
 
 function Module:GetDamageRaidFramesAttributes()

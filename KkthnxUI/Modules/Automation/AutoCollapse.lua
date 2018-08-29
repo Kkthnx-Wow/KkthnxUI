@@ -4,6 +4,7 @@ local Module = K:NewModule("AutoCollapse", "AceEvent-3.0")
 local _G = _G
 
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES
+local minimizeButton = _G["ObjectiveTrackerFrame"].HeaderMenu.MinimizeButton
 local UnitExists = _G.UnitExists
 
 local function BossExist()
@@ -23,17 +24,17 @@ local function ArenaExist()
 end
 
 function Module:ChangeState(event)
-	local trackerFrame = _G["ObjectiveTrackerFrame"]
-
 	if (not IsInInstance()) then
-		trackerFrame:SetAlpha(1)
+		Module.trackerFrame:Show()
+		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 		return
 	end
 
 	if (event == "ENCOUNTER_START" or (event == "LOADING_SCREEN_DISABLED" and BossExist() or ArenaExist())) then
-		trackerFrame:SetAlpha(0)
+		Module.trackerFrame:Hide()
 	else
-		trackerFrame:SetAlpha(1)
+		Module.trackerFrame:Show()
+		minimizeButton:SetNormalTexture("Interface\\AddOns\\KkthnxUI\\Media\\Textures\\TrackerButton")
 	end
 end
 
@@ -42,7 +43,12 @@ function Module:OnEnable()
 		return
 	end
 
+	Module.trackerFrame = _G["ObjectiveTrackerFrame"]
+
 	self:RegisterEvent("ENCOUNTER_START", "ChangeState")
 	self:RegisterEvent("ENCOUNTER_END", "ChangeState")
 	self:RegisterEvent("LOADING_SCREEN_DISABLED", "ChangeState")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ChangeState")
+
+	Module:ChangeState()
 end

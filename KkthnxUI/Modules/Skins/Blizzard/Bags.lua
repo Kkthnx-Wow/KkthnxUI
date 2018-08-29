@@ -13,7 +13,7 @@ local function SkinBlizzardBags()
 		for j = 1, 36 do
 			local ItemButton = _G["ContainerFrame"..i.."Item"..j]
 			ItemButton:CreateBorder()
-			ItemButton.icon:SetTexCoord(unpack(K.TexCoords))
+			ItemButton.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 			ItemButton:SetNormalTexture("")
 			ItemButton:SetPushedTexture("")
 			ItemButton.icon:SetInside()
@@ -116,7 +116,7 @@ local function SkinBlizzardBags()
 			end
 
 			if Portrait:GetNormalTexture() then
-				Portrait:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+				Portrait:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				Portrait:GetNormalTexture():SetInside()
 			end
 
@@ -145,10 +145,10 @@ local function SkinBlizzardBags()
 	BagItemAutoSortButton:SkinButton()
 	BagItemAutoSortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
 	BagItemAutoSortButton:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
-	BagItemAutoSortButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	BagItemAutoSortButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 
 	BagItemAutoSortButton:GetNormalTexture():SetInside()
-	BagItemAutoSortButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	BagItemAutoSortButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	BagItemAutoSortButton:GetPushedTexture():SetInside()
 	BagItemAutoSortButton:SetSize(22, 22)
 
@@ -161,7 +161,7 @@ local function SkinBlizzardBags()
 
 	for i = 1, 3 do
 		local Token = _G["BackpackTokenFrameToken"..i]
-		Token.icon:SetTexCoord(unpack(K.TexCoords))
+		Token.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		Token:CreateBackdrop()
 		Token.Backdrop:SetFrameLevel(2)
 		Token.Backdrop:SetOutside(Token.icon)
@@ -184,9 +184,9 @@ local function SkinBlizzardBags()
 	BankItemAutoSortButton:SkinButton()
 	BankItemAutoSortButton:SetNormalTexture("Interface\\ICONS\\INV_Pet_Broom")
 	BankItemAutoSortButton:SetPushedTexture("Interface\\ICONS\\INV_Pet_Broom")
-	BankItemAutoSortButton:GetNormalTexture():SetTexCoord(unpack(K.TexCoords))
+	BankItemAutoSortButton:GetNormalTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	BankItemAutoSortButton:GetNormalTexture():SetInside()
-	BankItemAutoSortButton:GetPushedTexture():SetTexCoord(unpack(K.TexCoords))
+	BankItemAutoSortButton:GetPushedTexture():SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 	BankItemAutoSortButton:GetPushedTexture():SetInside()
 	BankItemAutoSortButton:SetSize(20, 20)
 	BankItemAutoSortButton:SetPoint("LEFT", BankItemSearchBox, "RIGHT", 4, 0)
@@ -197,7 +197,7 @@ local function SkinBlizzardBags()
 		BankBag:CreateBorder()
 		BankBag.HighlightFrame.HighlightTexture:SetTexture(1, 1, 1, .2)
 		BankBag:StyleButton()
-		BankBag.icon:SetTexCoord(unpack(K.TexCoords))
+		BankBag.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		BankBag.icon:SetInside()
 
 		hooksecurefunc(BankBag.IconBorder, "SetVertexColor", function(self, r, g, b, a)
@@ -213,7 +213,7 @@ local function SkinBlizzardBags()
 	for i = 1, 28 do
 		local ItemButton = _G["BankFrameItem"..i]
 		ItemButton:CreateBorder()
-		ItemButton.icon:SetTexCoord(unpack(K.TexCoords))
+		ItemButton.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		ItemButton.icon:SetInside()
 
 		ItemButton.searchOverlay:SetAllPoints(ItemButton.icon)
@@ -237,7 +237,7 @@ local function SkinBlizzardBags()
 			for i = 1, 98 do
 				local ItemButton = _G["ReagentBankFrameItem"..i]
 				ItemButton:CreateBorder()
-				ItemButton.icon:SetTexCoord(unpack(K.TexCoords))
+				ItemButton.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 				ItemButton.icon:SetInside()
 
 				ItemButton.searchOverlay:SetAllPoints(ItemButton.icon)

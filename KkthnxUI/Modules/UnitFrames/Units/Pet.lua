@@ -113,6 +113,7 @@ function Module:CreatePet()
 	Module.CreateAuras(self, "pet")
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateThreatIndicator(self)
+	Module.CreateDebuffHighlight(self)
 
 	self.Threat = {
 		Hide = K.Noop,

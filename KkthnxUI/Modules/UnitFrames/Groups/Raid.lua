@@ -136,7 +136,6 @@ function Module:CreateRaid()
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 3, -15)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", -3, -15)
 	self.Name:SetFontObject(RaidframeFont)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self.Name:SetWordWrap(false)
 	if C["Raid"].ShowRolePrefix then
 		self:Tag(self.Name, "[KkthnxUI:Role][KkthnxUI:NameShort]")
@@ -162,11 +161,6 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetSize(30, 30)
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
-	self.MasterLooterIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
-	self.MasterLooterIndicator:SetSize(11, 11)
-	self.MasterLooterIndicator:SetPoint("TOPLEFT", 8, 6)
-	self.MasterLooterIndicator:Show()
-
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
 	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)
@@ -188,12 +182,7 @@ function Module:CreateRaid()
 		self.RaidDebuffs:SetWidth(C["Raid"].AuraDebuffIconSize)
 		self.RaidDebuffs:SetPoint("CENTER", self.Health)
 		self.RaidDebuffs:SetFrameLevel(self.Health:GetFrameLevel() + 20)
-
-		self.RaidDebuffs.Background = self.RaidDebuffs:CreateTexture(nil, "BACKGROUND", -1)
-		self.RaidDebuffs.Background:SetAllPoints()
-		self.RaidDebuffs.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		K.CreateBorder(self.RaidDebuffs)
+		self.RaidDebuffs:CreateBorder()
 
 		self.RaidDebuffs.icon = self.RaidDebuffs:CreateTexture(nil, "ARTWORK")
 		self.RaidDebuffs.icon:SetTexCoord(.1, .9, .1, .9)
@@ -270,4 +259,6 @@ function Module:CreateRaid()
 
 	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
+
+	Module.CreateDebuffHighlight(self)
 end

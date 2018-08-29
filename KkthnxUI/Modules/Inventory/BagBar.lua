@@ -35,7 +35,7 @@ function Module:SkinBag(bag)
 	bag:StyleButton(true)
 	icon:SetTexture(bag.oldTex)
 	icon:SetInside()
-	icon:SetTexCoord(unpack(K.TexCoords))
+	icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 end
 
 function Module:SizeAndPositionBagBar()

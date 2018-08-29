@@ -1,33 +1,48 @@
-local K = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 
 local _G = _G
 
+local blizzardCollectgarbage = _G.collectgarbage
 local CreateFrame = _G.CreateFrame
-local GameTooltip = _G.GameTooltip
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
-local TooltipBagBug = false
 
-local GarbageCollection = CreateFrame("Frame")
-GarbageCollection:RegisterEvent("PLAYER_FLAGS_CHANGED")
-GarbageCollection:RegisterEvent("PLAYER_ENTERING_WORLD")
-GarbageCollection:SetScript("OnEvent", function(self, event, unit)
-	if (event == "PLAYER_ENTERING_WORLD") then
-		collectgarbage("collect")
+-- Garbage collection is being overused and misused,
+-- and it's causing lag and performance drops.
+if C["General"].FixGarbageCollect then
+	blizzardCollectgarbage("setpause", 110)
+	blizzardCollectgarbage("setstepmul", 200)
 
-		self:UnregisterEvent(event)
-	else
-		if (unit ~= "player") then
-			return
-		end
-
-		if UnitIsAFK(unit) then
-			collectgarbage("collect")
+	_G.collectgarbage = function(opt, arg)
+		if (opt == "collect") or (opt == nil) then
+		elseif (opt == "count") then
+			return blizzardCollectgarbage(opt, arg)
+		elseif (opt == "setpause") then
+			return blizzardCollectgarbage("setpause", 110)
+		elseif opt == "setstepmul" then
+			return blizzardCollectgarbage("setstepmul", 200)
+		elseif (opt == "stop") then
+		elseif (opt == "restart") then
+		elseif (opt == "step") then
+			if (arg ~= nil) then
+				if (arg <= 10000) then
+					return blizzardCollectgarbage(opt, arg)
+				end
+			else
+				return blizzardCollectgarbage(opt, arg)
+			end
+		else
+			return blizzardCollectgarbage(opt, arg)
 		end
 	end
-end)
+
+	-- Memory usage is unrelated to performance, and tracking memory usage does not track "bad" addons.
+	-- Developers can uncomment this line to enable the functionality when looking for memory leaks,
+	-- but for the average end-user this is a completely pointless thing to track.
+	_G.UpdateAddOnMemoryUsage = function() end
+end
 
 -- Misclicks for some popups
 function Module:MisclickPopups()
@@ -51,48 +66,8 @@ function Module:MisclickPopups()
 	end
 end
 
--- Fix blank tooltip
-function Module:FixTooltip()
-	if GameTooltip:IsForbidden() then
-		return
-	end
-
-	if GameTooltip:IsShown() then
-		TooltipBagBug = true
-	end
-end
-
-function Module:BAG_UPDATE_DELAYED()
-	if GameTooltip:IsForbidden() then
-		return
-	end
-
-	if StuffingFrameBags and StuffingFrameBags:IsShown() then
-		if GameTooltip:IsShown() then
-			TooltipBagBug = true
-		end
-	end
-end
-
-function Module:BugTooltipCleared(tt)
-	if tt:IsForbidden() then
-		return
-	end
-
-	if TooltipBagBug and tt:NumLines() == 0 then
-		tt:Hide()
-		TooltipBagBug = false
-	end
-end
-
 function Module:OnEnable()
 	self:MisclickPopups()
-
-	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "FixTooltip")
-	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltip")
-	self:RegisterEvent("BAG_UPDATE_DELAYED")
-
-	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "BugTooltipCleared")
 
 	-- Fix spellbook taint
 	ShowUIPanel(SpellBookFrame)
@@ -103,11 +78,4 @@ function Module:OnEnable()
 			LFRBrowseFrame.timeToClear = nil
 		end
 	end)
-end
-
-function Module:OnDisable()
-	self:UnregisterEvent("UPDATE_BONUS_ACTIONBAR")
-	self:UnregisterEvent("ACTIONBAR_PAGE_CHANGED")
-	self:UnregisterEvent("BAG_UPDATE_DELAYED")
-	self:UnregisterEvent("ADDON_LOADED")
 end

@@ -68,63 +68,32 @@ function Module:StatusBarColorGradient(bar, value, max)
 	bar:SetStatusBarColor(r, g, b)
 end
 
-
 -- DropDownMenu library support
 function Module:SkinLibDropDownMenu(prefix)
 	if _G[prefix .. "_UIDropDownMenu_CreateFrames"] and not Module[prefix .. "_UIDropDownMenuSkinned"] then
 		local bd = _G[prefix .. "_DropDownList1Backdrop"]
 		local mbd = _G[prefix .. "_DropDownList1MenuBackdrop"]
-		if bd and not bd.isSkinned then
-			bd:StripTextures()
 
-			bd.Backgrounds = bd:CreateTexture(nil, "BACKGROUND", -2)
-			bd.Backgrounds:SetAllPoints()
-			bd.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			K.CreateBorder(bd)
-
-			bd.isSkinned = true
+		if bd and not bd.border then
+			bd:CreateBorder()
 		end
-		if mbd and not mbd.isSkinned then
-			mbd:StripTextures()
 
-			mbd.Backgrounds = mbd:CreateTexture(nil, "BACKGROUND", -2)
-			mbd.Backgrounds:SetAllPoints()
-			mbd.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-			K.CreateBorder(mbd)
-
-			mbd.isSkinned = true
+		if mbd and not mbd.border then
+			mbd:CreateBorder()
 		end
 
 		Module[prefix .. "_UIDropDownMenuSkinned"] = true
-		hooksecurefunc(
-		prefix .. "_UIDropDownMenu_CreateFrames",
-		function()
+		hooksecurefunc(prefix .. "_UIDropDownMenu_CreateFrames", function()
 			local lvls = _G[(prefix == "Lib" and "LIB" or prefix) .. "_UIDROPDOWNMENU_MAXLEVELS"]
-			local ddbd = lvls and _G[prefix .. "_DropDownList" .. lvls .. "Backdrop"]
-			local ddmbd = lvls and _G[prefix .. "_DropDownList" .. lvls .. "MenuBackdrop"]
-			if ddbd and not ddbd.isSkinned then
-				ddbd:StripTextures()
+			local ddbd = lvls and _G[prefix.."_DropDownList" .. lvls .. "Backdrop"]
+			local ddmbd = lvls and _G[prefix.."_DropDownList" .. lvls .. "MenuBackdrop"]
 
-				ddbd.Backgrounds = ddbd:CreateTexture(nil, "BACKGROUND", -2)
-				ddbd.Backgrounds:SetAllPoints()
-				ddbd.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-				K.CreateBorder(ddbd)
-
-				ddbd.isSkinned = true
+			if ddbd and not ddbd.border then
+				ddbd:CreateBorder()
 			end
-			if ddmbd and not ddmbd.isSkinned then
-				ddmbd:StripTextures()
 
-				ddmbd.Backgrounds = ddmbd:CreateTexture(nil, "BACKGROUND", -2)
-				ddmbd.Backgrounds:SetAllPoints()
-				ddmbd.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-				K.CreateBorder(ddmbd)
-
-				ddmbd.isSkinned = true
+			if ddmbd and not ddmbd.border then
+				ddmbd:CreateBorder()
 			end
 		end)
 	end
@@ -139,6 +108,7 @@ function Module:ADDON_LOADED(_, addon)
 	if not Module.L_UIDropDownMenuSkinned then -- LibUIDropDownMenu
 		Module:SkinLibDropDownMenu("L")
 	end
+
 	if not Module.Lib_UIDropDownMenuSkinned then -- NoTaint_UIDropDownMenu
 		Module:SkinLibDropDownMenu("Lib")
 	end

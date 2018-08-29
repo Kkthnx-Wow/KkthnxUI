@@ -192,6 +192,7 @@ function Module:CreateTarget()
 	Module.CreateResurrectIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "target")
+	Module.CreateDebuffHighlight(self)
 
 	self.Threat = {
 		Hide = K.Noop,

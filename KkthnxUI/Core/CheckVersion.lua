@@ -41,7 +41,7 @@ function Module:CheckIt(event, prefix, message, _, sender)
 		end
 
 		if Channel then -- Putting a small delay on the call just to be certain it goes out.
-			K.Delay(2, C_ChatInfo_SendAddonMessage, "KkthnxUIVersion", Version, Channel)
+			K.Delay(4, C_ChatInfo_SendAddonMessage, "KkthnxUIVersion", Version, Channel)
 		end
 	end
 end

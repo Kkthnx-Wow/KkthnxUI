@@ -161,8 +161,9 @@ function Module:CreateParty()
 	Module.CreatePhaseIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
-	Module.CreateResurrectIndicator(self, 14)
+	Module.CreateResurrectIndicator(self, self.Health:GetHeight() - 2)
 	Module.CreateThreatIndicator(self)
+	Module.CreateDebuffHighlight(self)
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 

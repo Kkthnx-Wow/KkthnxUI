@@ -5,7 +5,9 @@ local _G = _G
 local math_floor = math.floor
 local pairs = pairs
 local string_format = string.format
+local select = select
 
+local ARTIFACT_POWER = _G.ARTIFACT_POWER
 local backupColor = FACTION_BAR_COLORS[1]
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
@@ -17,16 +19,16 @@ local DataBarsFont = K.GetFont(C["DataBars"].Font)
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
-local GetExpansionLevel = _G.GetExpansionLevel
 local GetFactionInfo = _G.GetFactionInfo
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetNumFactions = _G.GetNumFactions
+local GetPetExperience = _G.GetPetExperience
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local IsXPUserDisabled = _G.IsXPUserDisabled
 local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
-local UIParent = _G.UIParent
-local UnitLevel = _G.UnitLevel
+local REPUTATION = _G.REPUTATION
+local STANDING = _G.STANDING
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
 
@@ -175,7 +177,7 @@ function Module:UpdateReputation()
 end
 
 function Module:UpdateExperience()
-	if MAX_PLAYER_LEVEL ~= K.Level then
+	if MAX_PLAYER_LEVEL ~= K.Level and not IsXPUserDisabled() then
 		local cur, max = GetUnitXP("player")
 
 		if max <= 0 then
@@ -242,7 +244,7 @@ function Module:OnEnter()
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
 	end
 
-	if MAX_PLAYER_LEVEL ~= K.Level then
+	if MAX_PLAYER_LEVEL ~= K.Level and not IsXPUserDisabled() then
 		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
@@ -286,8 +288,8 @@ function Module:OnEnter()
 	end
 
 	if C_AzeriteItem_FindActiveAzeriteItem() then
-		if MAX_PLAYER_LEVEL ~= UnitLevel("player") or GetWatchedFactionInfo() then
-			GameTooltip:AddLine(" ")
+		if MAX_PLAYER_LEVEL ~= K.Level and not IsXPUserDisabled() or GetWatchedFactionInfo() then
+			GameTooltip:AddLine("  ")
 		end
 
 		local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()

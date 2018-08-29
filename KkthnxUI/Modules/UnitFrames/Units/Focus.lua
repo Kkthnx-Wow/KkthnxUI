@@ -187,6 +187,7 @@ function Module:CreateFocus()
 	end
 
 	Module.CreateAuras(self, "focus")
+	Module.CreateDebuffHighlight(self)
 
 	if C["Unitframe"].MouseoverHighlight then
 		Module.MouseoverHealth(self, "focus")

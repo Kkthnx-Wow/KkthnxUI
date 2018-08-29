@@ -518,6 +518,47 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 	end
 end
 
+function Module:GameTooltip_AddQuestRewardsToTooltip(tt, questID)
+	if not (tt and questID and tt.pbBar and tt.pbBar.GetValue) or tt:IsForbidden() then
+		return
+	end
+
+	local cur = tt.pbBar:GetValue()
+	if cur then
+		local max, _
+		if tt.pbBar.GetMinMaxValues then
+			_, max = tt.pbBar:GetMinMaxValues()
+		end
+
+		if not ModuleSkins then
+			ModuleSkins = K:GetModule("Skins")
+		end
+
+		ModuleSkins:StatusBarColorGradient(tt.pbBar, cur, max)
+	end
+end
+
+function Module:GameTooltip_ShowProgressBar(tt)
+	if not tt or tt:IsForbidden() then
+		return
+	end
+
+	if not tt.progressBarPool then
+		return
+	end
+
+	local sb = tt.progressBarPool:Acquire()
+	if not sb or not sb.Bar then
+		return
+	end
+
+	sb.Bar:StripTextures()
+	sb.Bar:CreateBorder()
+	sb.Bar:SetStatusBarTexture(TooltipTexture)
+
+	tt.pbBar = sb.Bar
+end
+
 function Module:GameTooltip_ShowStatusBar(tt)
 	if not tt or tt:IsForbidden() then
 		return
@@ -532,7 +573,7 @@ function Module:GameTooltip_ShowStatusBar(tt)
 end
 
 function Module:CheckBackdropColor(tt)
-	if (not tt) or tt:IsForbidden() then
+	if not tt or tt:IsForbidden() then
 		return
 	end
 
@@ -540,7 +581,7 @@ function Module:CheckBackdropColor(tt)
 	if r and g and b then
 		r, g, b = K.Round(r, 1), K.Round(g, 1), K.Round(b, 1)
 
-		local red, green, blue = unpack(C["Media"].BackdropColor)
+		local red, green, blue = C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3]
 		if r ~= red or g ~= green or b ~= blue then
 			tt:SetBackdropColor(red, green, blue, C["Media"].BackdropColor[4])
 		end
@@ -552,11 +593,7 @@ function Module:SetStyle(tt)
 		return
 	end
 
-	if (not tt.IsSkinned) then
-		tt:StripTextures()
-		tt:CreateBorder(nil, 6, 2)
-		tt.IsSkinned = true
-	end
+	tt:CreateBorder(nil, 6, 2)
 
 	local r, g, b = tt:GetBackdropColor()
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])

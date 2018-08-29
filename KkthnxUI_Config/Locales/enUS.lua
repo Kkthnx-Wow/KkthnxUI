@@ -29,6 +29,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Disables the tutorial buttons found on some frames.",
 		},
 
+		["FixGarbageCollect"] = {
+			["Name"] = "Fix Garabage Collection",
+			["Desc"] = "Garbage collection is being overused and misused and it's causing lag and performance drops.|n|nMemory usage is unrelated to performance, and tracking memory usage does not track 'bad' addons.|n|nDevelopers can disable this setting to enable the functionality when looking for memory leaks, but for the average end-user this is a completely pointless thing to track.",
+		},
+
 		["ColorTextures"] = {
 			["Name"] = "Toggle Border Color",
 			["Desc"] = "Change the color of the main border of the UI",

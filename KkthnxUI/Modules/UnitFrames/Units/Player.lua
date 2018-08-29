@@ -214,6 +214,7 @@ function Module:CreatePlayer()
 	Module.CreateRestingIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "player")
+	Module.CreateDebuffHighlight(self)
 
 	if C["Unitframe"].MouseoverHighlight then
 		Module.MouseoverHealth(self, "player")

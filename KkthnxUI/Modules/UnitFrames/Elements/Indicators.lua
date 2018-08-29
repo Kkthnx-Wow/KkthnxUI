@@ -99,13 +99,23 @@ function Module:CreateTrinkets()
 end
 
 function Module:CreateResurrectIndicator(size)
-	if not size then
-		size = 16
-	end
+	size = size or 16
 
 	self.ResurrectIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.ResurrectIndicator:SetSize(size, size)
 	self.ResurrectIndicator:SetPoint("CENTER", self)
+end
+
+function Module:CreateDebuffHighlight()
+	--if not (self:GetAttribute("unitsuffix") == "target" or self:GetAttribute("unitsuffix") == "targettarget") then
+		self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
+		self.DebuffHighlight:SetAllPoints(self.Health)
+		self.DebuffHighlight:SetTexture(C["Media"].Mouseover)
+		self.DebuffHighlight:SetVertexColor(0, 0, 0, 0)
+		self.DebuffHighlight:SetBlendMode("ADD")
+		self.DebuffHighlightAlpha = 0.45
+		self.DebuffHighlightFilter = true
+	--end
 end
 
 function Module:CreateCombatFeedback()
@@ -135,9 +145,7 @@ function Module:CreateReadyCheckIndicator()
 end
 
 function Module:CreateRaidTargetIndicator(size)
-	if not size then
-		size = 16
-	end
+	size = size or 16
 
 	self.RaidTargetOverlay = CreateFrame("Frame", nil, self.Portrait.Borders)
 	self.RaidTargetOverlay:SetAllPoints()
@@ -165,15 +173,19 @@ local function PostUpdatePvPIndicator(self, unit, status)
 	end
 end
 
-function Module:CreatePvPIndicator(unit)
+function Module:CreatePvPIndicator(unit, parent, width, height)
+	parent = parent or self.Portrait.Borders
+	width = width or 30
+	height = height or 33
+
 	self.PvPIndicator = self:CreateTexture(nil, "OVERLAY")
-	self.PvPIndicator:SetSize(30, 33)
+	self.PvPIndicator:SetSize(width, height)
 	self.PvPIndicator:ClearAllPoints()
 
 	if (unit == "player") then
-		self.PvPIndicator:SetPoint("RIGHT", self.Portrait.Borders, "LEFT")
+		self.PvPIndicator:SetPoint("RIGHT", parent, "LEFT")
 	else
-		self.PvPIndicator:SetPoint("LEFT", self.Portrait.Borders, "RIGHT")
+		self.PvPIndicator:SetPoint("LEFT", parent, "RIGHT")
 	end
 
 	self.PvPIndicator.PostUpdate = PostUpdatePvPIndicator
@@ -204,9 +216,7 @@ function Module:CreatePhaseIndicator()
 end
 
 function Module:CreateQuestIndicator(size)
-	if not size then
-		size = 20
-	end
+	size = size or 20
 
 	self.QuestOverlay = CreateFrame("Frame", nil, self.Health)
 	self.QuestOverlay:SetAllPoints()

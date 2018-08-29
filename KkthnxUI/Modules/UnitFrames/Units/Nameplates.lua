@@ -278,6 +278,8 @@ function Module:CreateNameplates()
 	self.Debuffs:EnableMouse(false)
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
+	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
+	Module.CreateDebuffHighlight(self)
 
 	-- Highlight Plate Events
 	self:RegisterEvent("NAME_PLATE_CREATED", Module.HighlightPlate)
