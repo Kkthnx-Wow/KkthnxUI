@@ -940,7 +940,7 @@ function Module:CreateUnits()
 			end
 
 			Module.Arena = Arena
-			Module.CreateArenaPreparationFrames()
+			-- Module.CreateArenaPreparation()
 		end
 
 		if (C["Boss"].Enable) then
@@ -1149,11 +1149,11 @@ function Module:DisplayHealerTexture(unit)
 	end
 end
 
-function Module:ShowArenaPreparation()
+--[[function Module:ShowArenaPreparation()
 	local NumOpps = GetNumArenaOpponentSpecs()
 
 	for i = 1, 5 do
-		local Frame = self.ArenaPreparation[i]
+		local Frame = Module.ArenaPreparation[i]
 
 		if (i <= NumOpps) then
 			local SpecID = GetArenaOpponentSpec(i)
@@ -1180,18 +1180,18 @@ end
 
 function Module:HideArenaPreparation()
 	for i = 1, 5 do
-		local Frame = self.ArenaPreparation[i]
+		local Frame = Module.ArenaPreparation[i]
 		Frame:Hide()
 	end
 end
 
-function Module:ShowHideArena(event)
+function Module:ShowHideArenaPreparation(event)
 	if (event == "ARENA_OPPONENT_UPDATE") then
 		self:HideArenaPreparation()
 	else
 		self:ShowArenaPreparation()
 	end
-end
+end--]]
 
 function Module:UpdateRaidDebuffIndicator()
 	local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
@@ -1261,11 +1261,11 @@ function Module:OnEnable()
 	self:CreateUnits()
 	self:CreateFilgerAnchors()
 
-	if C["Arena"].Enable then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ShowHideArena")
-		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "ShowHideArena")
-		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "ShowHideArena")
-	end
+	--[[if C["Arena"].Enable then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ShowHideArenaPreparation")
+		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "ShowHideArenaPreparation")
+		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "ShowHideArenaPreparation")
+	end--]]
 
 	if C["Raid"].RaidDebuffs then
 		local RaidDebuffs = CreateFrame("Frame")

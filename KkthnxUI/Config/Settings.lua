@@ -240,7 +240,9 @@ C["Loot"] = {
 
 -- Minimap
 C["Minimap"] = {
+	["Calendar"] = true,
 	["Enable"] = true,
+	["GarrisonLandingPage"] = true,
 	["ResetZoom"] = false,
 	["ResetZoomTime"] = 4,
 	["Size"] = 180

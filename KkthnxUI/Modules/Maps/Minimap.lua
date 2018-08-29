@@ -7,6 +7,7 @@ local string_sub = string.sub
 local C_Timer_After = _G.C_Timer.After
 local CreateFrame = _G.CreateFrame
 local GameTimeFrame = _G.GameTimeFrame
+local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
 local GetMinimapZoneText = _G.GetMinimapZoneText
 local GetZonePVPInfo = _G.GetZonePVPInfo
 local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
@@ -115,16 +116,45 @@ function Module:UpdateSettings()
 	end
 
 	if GarrisonLandingPageMinimapButton then
-		-- ugly hack to keep the keybind functioning
-		local GarrisonLandingPageMinimapButton = _G.GarrisonLandingPageMinimapButton
-		GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
-		GarrisonLandingPageMinimapButton:UnregisterAllEvents()
-		GarrisonLandingPageMinimapButton:Show()
-		GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
+		if not C["Minimap"].GarrisonLandingPage then
+			-- ugly hack to keep the keybind functioning
+			GarrisonLandingPageMinimapButton:SetParent(K.UIFrameHider)
+			GarrisonLandingPageMinimapButton:UnregisterAllEvents()
+			GarrisonLandingPageMinimapButton:Show()
+			GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
+		else
+			GarrisonLandingPageMinimapButton:ClearAllPoints()
+			GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+			GarrisonLandingPageMinimapButton:SetScale(0.8)
+			if GarrisonLandingPageTutorialBox then
+				GarrisonLandingPageTutorialBox:SetScale(0.8)
+				GarrisonLandingPageTutorialBox:SetClampedToScreen(true)
+			end
+		end
 	end
 
 	if GameTimeFrame then
-		GameTimeFrame:Hide()
+		if not C["Minimap"].Calendar then
+			GameTimeFrame:Hide()
+		else
+			local GameTimeFrameFont = K.GetFont(C["General"].Font)
+			GameTimeFrame:SetParent(Minimap)
+			GameTimeFrame:SetScale(0.6)
+			GameTimeFrame:ClearAllPoints()
+			GameTimeFrame:SetPoint("TOPRIGHT", Minimap, "TOPRIGHT", -3, -3)
+			GameTimeFrame:SetHitRectInsets(0, 0, 0, 0)
+			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
+			GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
+			GameTimeFrame:SetPushedTexture(nil)
+			GameTimeFrame:SetHighlightTexture (nil)
+
+			local GameTimeFont = GameTimeFrame:GetFontString()
+			GameTimeFont:ClearAllPoints()
+			GameTimeFont:SetPoint("CENTER", 0, -6)
+			GameTimeFont:SetFontObject(GameTimeFrameFont)
+			GameTimeFont:SetFont(select(1, GameTimeFont:GetFont()), 20, select(3, GameTimeFont:GetFont()))
+			GameTimeFont:SetShadowOffset(0, 0)
+		end
 	end
 
 	if MiniMapMailFrame then

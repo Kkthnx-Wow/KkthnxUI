@@ -43,7 +43,6 @@ function Module:CreateArena()
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 	self.Health.Value:SetFontObject(UnitframeFont)
-	self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
 	self:Tag(self.Health.Value, "[KkthnxUI:HealthCurrent-Percent]")
 
 	self.Power = CreateFrame("StatusBar", nil, self)
@@ -126,7 +125,7 @@ function Module:CreateArena()
 			self.Castbar.Button.Borders = CreateFrame("Frame", nil, self.Castbar.Button)
 			self.Castbar.Button.Borders:SetAllPoints(self.Castbar.Button)
 			K.CreateBorder(self.Castbar.Button.Borders)
-			self.Castbar.Button.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			self.Castbar.Button.Borders:SetBackdropBorderColor()
 
 			self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
 			self.Castbar.Icon:SetSize(self.Castbar:GetHeight(), self.Castbar:GetHeight())
@@ -142,11 +141,12 @@ function Module:CreateArena()
 	Module.CreateAuras(self, "arena")
 	Module.CreateSpecIcons(self)
 	Module.CreateTrinkets(self)
+	Module.MouseoverHealth(self, "arena")
 
 	self.Range = Module.CreateRange(self)
 end
 
-function Module:CreateArenaPreparationFrames()
+--[[function Module:CreateArenaPreparation()
 	local HealthTexture = K.GetTexture(C["Arena"].Texture)
 	local Font = K.GetFont(C["Arena"].Font)
 	local ArenaPreparation = {}
@@ -156,19 +156,19 @@ function Module:CreateArenaPreparationFrames()
 
 		ArenaPreparation[i] = CreateFrame("Frame", nil, UIParent)
 		ArenaPreparation[i]:SetAllPoints(ArenaX)
-		ArenaPreparation[i]:SetBackdrop(Module.Backdrop)
-		ArenaPreparation[i]:SetBackdropColor(0,0,0)
 
 		ArenaPreparation[i].Health = CreateFrame("StatusBar", nil, ArenaPreparation[i])
 		ArenaPreparation[i].Health:SetAllPoints()
 		ArenaPreparation[i].Health:SetStatusBarTexture(HealthTexture)
 		ArenaPreparation[i].Health:SetStatusBarColor(0.2, 0.2, 0.2, 1)
+		ArenaPreparation[i].Health:CreateBorder()
 
 		ArenaPreparation[i].SpecClass = ArenaPreparation[i].Health:CreateFontString(nil, "OVERLAY")
 		ArenaPreparation[i].SpecClass:SetFontObject(Font)
 		ArenaPreparation[i].SpecClass:SetPoint("CENTER")
+
 		ArenaPreparation[i]:Hide()
 	end
 
 	Module.ArenaPreparation = ArenaPreparation
-end
+end--]]

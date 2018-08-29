@@ -10,31 +10,6 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local UnitThreatSituation = _G.UnitThreatSituation
-local UnitIsConnected = _G.UnitIsConnected
-
-local roleIconTextures = {
-	TANK = [[Interface\AddOns\KkthnxUI\Media\Unitframes\tank.tga]],
-	HEALER = [[Interface\AddOns\KkthnxUI\Media\Unitframes\healer.tga]]
-}
-
-local function UpdateGroupRole(self)
-	local lfdrole = self.GroupRoleIndicator
-	if (lfdrole.PreUpdate) then
-		lfdrole:PreUpdate()
-	end
-
-	local role = _G.UnitGroupRolesAssigned(self.unit)
-	if (UnitIsConnected(self.unit)) and (role == "HEALER") or (role == "TANK") then
-		lfdrole:SetTexture(roleIconTextures[role])
-		lfdrole:Show()
-	else
-		lfdrole:Hide()
-	end
-
-	if (lfdrole.PostUpdate) then
-		return lfdrole:PostUpdate(role)
-	end
-end
 
 local function UpdateThreat(self, _, unit)
 	if (unit ~= self.unit) then
@@ -62,40 +37,18 @@ function Module:CreateThreatIndicator()
 	self.ThreatIndicator = threat
 end
 
-function Module:CreateGroupRoleIndicator()
-	self.GroupRoleIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
-	self.GroupRoleIndicator:SetPoint("BOTTOM", self.Portrait.Borders, "TOPRIGHT", 0, -6)
-	self.GroupRoleIndicator:SetSize(16, 16)
-	self.GroupRoleIndicator.Override = UpdateGroupRole
-end
-
 function Module:CreateSpecIcons()
 	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
 	self.PVPSpecIcon:SetSize(46, 46)
 	self.PVPSpecIcon:SetPoint("LEFT", self, 4, 0)
-
-	if not self.PVPSpecIcon.Border then
-		self.PVPSpecIcon.Borders = CreateFrame("Frame", nil, self)
-		self.PVPSpecIcon.Borders:SetPoint("LEFT", self, 4, 0)
-		self.PVPSpecIcon.Borders:SetSize(46, 46)
-		self.PVPSpecIcon.Borders:CreateBorder()
-		self.PVPSpecIcon.Borders:SetFrameLevel(3)
-		self.PVPSpecIcon.Border = true
-	end
+	self.PVPSpecIcon:CreateBorder()
 end
 
 function Module:CreateTrinkets()
 	self.Trinket = CreateFrame("Frame", nil, self)
 	self.Trinket:SetSize(46, 46)
-	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -4, 0)
-
-	--if not self.Trinket.Border then
-	--	self.Trinket.Borders = CreateFrame("Frame", nil, self)
-	--	self.Trinket.Borders:SetPoint("RIGHT", self, "LEFT", -4, 0)
-	--	self.Trinket.Borders:SetSize(46, 46)
-	--	self.Trinket.Borders:CreateBorder()
-	--	self.Trinket.Border = true
-	--end
+	self.Trinket:SetPoint("RIGHT", self.PVPSpecIcon, "LEFT", -6, 0)
+	self.Trinket:CreateBorder()
 end
 
 function Module:CreateResurrectIndicator(size)

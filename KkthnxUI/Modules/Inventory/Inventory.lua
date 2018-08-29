@@ -190,7 +190,7 @@ end
 function Stuffing:SlotUpdate(b)
 	local texture, count, locked, quality, _, _, _, _, noValue = GetContainerItemInfo(b.bag, b.slot)
 	local clink = GetContainerItemLink(b.bag, b.slot)
-	local isQuestItem, questId = GetContainerItemQuestInfo(b.bag, b.slot)
+	local isQuestItem, questId, isActiveQuest = GetContainerItemQuestInfo(b.bag, b.slot)
 
 	if not b.frame.lock then
 		b.frame:SetBackdropBorderColor()
@@ -295,6 +295,25 @@ function Stuffing:SlotUpdate(b)
 		else
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
 		end
+
+		-- Color slot according to item quality
+		if not b.frame.lock and questId and not isActiveQuest then
+			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
+			if (b.frame.questIcon) then
+				b.frame.questIcon:Show()
+			end
+		elseif questId or isQuestItem then
+			b.frame:SetBackdropBorderColor(1.0, 0.3, 0.3)
+		elseif quality and quality > 1 then
+			b.frame:SetBackdropBorderColor(GetItemQualityColor(quality))
+			if b.frame.Azerite and C_AzeriteEmpoweredItem.IsAzeriteEmpoweredItemByID(clink) then
+				b.frame.Azerite:Show()
+			end
+		else
+			b.frame:SetBackdropBorderColor()
+			b.name, b.level = nil, nil
+		end
+
 
 		-- Color slot according to item quality
 		if not b.frame.lock and quality and quality > 1 and not (isQuestItem or questId) then
@@ -1264,25 +1283,27 @@ function Stuffing:Layout(isBank)
 				b.frame:SetAlpha(1)
 
 				if bagType == ST_FISHBAG then
-					b.frame:SetBackdropBorderColor(1, 0, 0) -- Tackle
+					b.frame:SetBackdropBorderColor(107/255, 150/255, 255/255) -- Tackle
 					b.frame.lock = true
 				elseif bagType == ST_SPECIAL then
 					if specialType == 0x0008 then -- Leatherworking
-						b.frame:SetBackdropBorderColor(0.8, 0.7, 0.3)
+						b.frame:SetBackdropBorderColor(224/255, 187/255, 74/255)
 					elseif specialType == 0x0010 then -- Inscription
-						b.frame:SetBackdropBorderColor(0.3, 0.3, 0.8)
+						b.frame:SetBackdropBorderColor(74/255, 77/255, 224/255)
 					elseif specialType == 0x0020 then -- Herbs
-						b.frame:SetBackdropBorderColor(0.3, 0.7, 0.3)
+						b.frame:SetBackdropBorderColor(18/255, 181/255, 32/255)
 					elseif specialType == 0x0040 then -- Enchanting
-						b.frame:SetBackdropBorderColor(0.6, 0, 0.6)
+						b.frame:SetBackdropBorderColor(194/255, 4/255, 204/255)
 					elseif specialType == 0x0080 then -- Engineering
-						b.frame:SetBackdropBorderColor(0.9, 0.4, 0.1)
+						b.frame:SetBackdropBorderColor(232/255, 118/255, 46/255)
 					elseif specialType == 0x0200 then -- Gems
-						b.frame:SetBackdropBorderColor(0, 0.7, 0.8)
+						b.frame:SetBackdropBorderColor(8/255, 180/255, 207/255)
 					elseif specialType == 0x0400 then -- Mining
-						b.frame:SetBackdropBorderColor(0.4, 0.3, 0.1)
+						b.frame:SetBackdropBorderColor(138/255, 103/255, 9/255)
+					elseif specialType == 0x8000 then -- Fishing
+						b.frame:SetBackdropBorderColor(107/255, 150/255, 255/255)
 					elseif specialType == 0x10000 then -- Cooking
-						b.frame:SetBackdropBorderColor(0.9, 0, 0.1)
+						b.frame:SetBackdropBorderColor(222/255, 13/255,  65/255)
 					end
 					b.frame.lock = true
 				end

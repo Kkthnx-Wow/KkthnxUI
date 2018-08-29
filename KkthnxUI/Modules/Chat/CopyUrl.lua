@@ -145,8 +145,8 @@ function Module:OnInitialize()
 		end,
 		EditBoxOnTextChanged = function(self, data)
 			if (self:GetText() ~= self:GetParent().data.url) then
-          self:SetText(self:GetParent().data.url)
-      end
+				self:SetText(self:GetParent().data.url)
+			end
 			self:HighlightText()
 			self:ClearFocus()
 			ChatEdit_FocusActiveWindow()
