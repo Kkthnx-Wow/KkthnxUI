@@ -124,9 +124,10 @@ end
 
 local function Enable(object)
 	-- if we're not highlighting this unit return
-	if not object.DebuffHighlightBackdrop and not object.DebuffHighlight then
+	if not object.DebuffHighlightBackdropBorder and not object.DebuffHighlight then
 		return
 	end
+
 	-- if we're filtering highlights and we're not of the dispelling type, return
 	if object.DebuffHighlightFilter and not CanDispel[playerClass] then
 		return
@@ -140,8 +141,8 @@ end
 local function Disable(object)
 	object:UnregisterEvent("UNIT_AURA", Update)
 
-	if object.DBHGlow then
-		object.DBHGlow:Hide()
+	if object.DebuffHighlightBackdropBorder then
+		object:SetBackdropBorderColor()
 	end
 
 	if object.DebuffHighlight then
