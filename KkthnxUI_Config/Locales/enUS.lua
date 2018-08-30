@@ -573,6 +573,42 @@ KkthnxUIConfig["enUS"] = {
 			["Name"] = "Screen Shot",
 			["Desc"] = "Automatically and takes a screenshot every time you get an achivement!",
 		},
+
+		["Rested"] = {
+			["Name"] = "Rested",
+		},
+
+		["Garrison"] = {
+			["Name"] = GARRISON_LOCATION_TOOLTIP,
+		},
+
+		["Orderhall"] = {
+			["Name"] = "Class Hall",
+		},
+
+		["Battleground"] = {
+			["Name"] = BATTLEGROUNDS,
+		},
+
+		["Arena"] = {
+			["Name"] = ARENA,
+		},
+
+		["Dungeon"] = {
+			["Name"] = DUNGEONS,
+		},
+
+		["Scenario"] = {
+			["Name"] = SCENARIOS,
+		},
+
+		["Raid"] = {
+			["Name"] = RAIDS,
+		},
+
+		["Combat"] = {
+			["Name"] = COMBAT,
+		},
 	},
 
 	-- Auras Local

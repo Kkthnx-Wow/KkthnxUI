@@ -3,11 +3,15 @@ local _, C = unpack(select(2, ...))
 local _G = _G
 
 local DAMAGE = _G.DAMAGE
+local DEFAULT = _G.DEFAULT
 local HEALER = _G.HEALER
+local HIDE = _G.HIDE
 local ITEM_QUALITY2_DESC = _G.ITEM_QUALITY2_DESC
 local ITEM_QUALITY3_DESC = _G.ITEM_QUALITY3_DESC
 local ITEM_QUALITY4_DESC = _G.ITEM_QUALITY4_DESC
 local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
+local MINIMIZE = _G.MINIMIZE
+local NONE = _G.NONE
 
 -- Actionbar
 C["ActionBar"] = {
@@ -77,7 +81,89 @@ C["Automation"] = {
 	["BlockMovies"] = false,
 	["DeclinePetDuel"] = false,
 	["DeclinePvPDuel"] = false,
-	["ScreenShot"] = false
+	["ScreenShot"] = false,
+	-- AutoCollapse Features
+	["Rested"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL"
+	},
+
+	["Garrison"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL"
+	},
+
+	["Orderhall"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL"
+	},
+
+	["Battleground"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED"
+	},
+
+	["Arena"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED"
+	},
+
+	["Dungeon"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL"
+	},
+
+	["Scenario"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "FULL"
+	},
+
+	["Raid"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+		},
+		["Value"] = "COLLAPSED"
+	},
+
+	["Combat"] = {
+		["Options"] = {
+			[DEFAULT] = "FULL",
+			[MINIMIZE] = "COLLAPSED",
+			[HIDE] = "HIDE",
+			[NONE] = "NONE",
+		},
+		["Value"] = "NONE"
+	}
 }
 
 C["Inventory"] = {
@@ -266,7 +352,7 @@ C["Misc"] = {
 C["Nameplates"] = {
 	["BadColor"] = {0.78, 0.25, 0.25},
 	["BadTransition"] = {235/255, 163/255, 40/255},
-	["CastHeight"] = 6,
+	["CastHeight"] = 2,
 	["Clamp"] = false,
 	["Combat"] = false,
 	["Distance"] = 40,
@@ -275,7 +361,7 @@ C["Nameplates"] = {
 	["GoodColor"] = {75/255, 175/255, 76/255},
 	["GoodTransition"] = {218/255, 197/255, 92/255},
 	["HealthValue"] = true,
-	["Height"] = 23,
+	["Height"] = 16,
 	["MarkHealers"] = false,
 	["SelectedScale"] = 1,
 	["Smooth"] = false,
@@ -283,7 +369,7 @@ C["Nameplates"] = {
 	["TankedByTankColor"] = {0.8, 0.1, 1},
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
-	["Width"] = 138,
+	["Width"] = 136,
 	["HealthFormat"] = {
 		["Options"] = {
 			["Current"] = "[KkthnxUI:HealthCurrent]",

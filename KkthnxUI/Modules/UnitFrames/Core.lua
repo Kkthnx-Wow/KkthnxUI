@@ -926,10 +926,17 @@ function Module:CreateUnits()
 		FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 		FocusTarget:SetSize(116, 36)
 
+		self.Player = Player
+		self.Target = Target
+		self.TargetOfTarget = TargetOfTarget
+		self.Pet = Pet
+		self.Focus = Focus
+		self.FocusTarget = FocusTarget
+
 		if (C["Arena"].Enable) then
 			local Arena = {}
-			for i = 1, 5 do
-				Arena[i] = oUF:Spawn("arena" .. i)
+			for i = 1, MAX_ARENA_ENEMIES or 5 do
+				Arena[i] = oUF:Spawn("arena"..i, nil)
 				Arena[i]:SetSize(190, 52)
 				if (i == 1) then
 					Arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
@@ -940,7 +947,8 @@ function Module:CreateUnits()
 			end
 
 			Module.Arena = Arena
-			-- Module.CreateArenaPreparation()
+
+			Module.CreateArenaPreparation()
 		end
 
 		if (C["Boss"].Enable) then
@@ -956,6 +964,8 @@ function Module:CreateUnits()
 				Boss[i]:SetSize(190, 52)
 				Movers:RegisterFrame(Boss[i])
 			end
+
+			self.Boss = Boss
 		end
 
 		if C["Party"].Enable then
@@ -999,7 +1009,6 @@ function Module:CreateUnits()
 	end
 
 	if C["Nameplates"].Enable then
-		local SetCVar = _G.SetCVar
 		local GetCVarDefault = _G.GetCVarDefault
 
 		-- Default these unless we end up changing them below.
@@ -1149,49 +1158,38 @@ function Module:DisplayHealerTexture(unit)
 	end
 end
 
---[[function Module:ShowArenaPreparation()
-	local NumOpps = GetNumArenaOpponentSpecs()
+function Module:UpdatePrep(event, unit, status)
+	if (event == "ARENA_OPPONENT_UPDATE") and unit ~= self.unit then
+		return
+	end
 
-	for i = 1, 5 do
-		local Frame = Module.ArenaPreparation[i]
+	for i = 1, MAX_ARENA_ENEMIES or 5 do
+		local _, instanceType = IsInInstance()
+		local prepFrame = Module.ArenaPreparation[i]
 
-		if (i <= NumOpps) then
-			local SpecID = GetArenaOpponentSpec(i)
+		if not C["Arena"].Enable or instanceType ~= "arena" or (UnitExists(self.unit) and status ~= "unseen") then
+			prepFrame:Hide()
+			return
+		end
 
-			if (SpecID and SpecID > 0) then
-				local _, Spec, _, _, _, Class = GetSpecializationInfoByID(SpecID)
+		local s = GetArenaOpponentSpec(i)
+		local _, spec, texture, class
 
-				if (Class) then
-					Frame.SpecClass:SetText(Spec .. " - " .. LOCALIZED_CLASS_NAMES_MALE[Class])
+		if s and s > 0 then
+			_, spec, _, texture, _, class = GetSpecializationInfoByID(s)
+		end
 
-					local Color = self.Arena[i].colors.class[Class]
-					Frame.Health:SetStatusBarColor(unpack(Color))
-				end
-
-				Frame:Show()
-			else
-				Frame:Hide()
-			end
+		if class and spec then
+			local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+			prepFrame.SpecClass:SetText(spec.." - "..LOCALIZED_CLASS_NAMES_MALE[class])
+			prepFrame.Health:SetStatusBarColor(color.r, color.g, color.b)
+			prepFrame.Icon:SetTexture(texture or [[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
+			prepFrame:Show()
 		else
-			Frame:Hide()
+			prepFrame:Hide()
 		end
 	end
 end
-
-function Module:HideArenaPreparation()
-	for i = 1, 5 do
-		local Frame = Module.ArenaPreparation[i]
-		Frame:Hide()
-	end
-end
-
-function Module:ShowHideArenaPreparation(event)
-	if (event == "ARENA_OPPONENT_UPDATE") then
-		self:HideArenaPreparation()
-	else
-		self:ShowArenaPreparation()
-	end
-end--]]
 
 function Module:UpdateRaidDebuffIndicator()
 	local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
@@ -1260,12 +1258,6 @@ function Module:OnEnable()
 
 	self:CreateUnits()
 	self:CreateFilgerAnchors()
-
-	--[[if C["Arena"].Enable then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ShowHideArenaPreparation")
-		self:RegisterEvent("ARENA_PREP_OPPONENT_SPECIALIZATIONS", "ShowHideArenaPreparation")
-		self:RegisterEvent("ARENA_OPPONENT_UPDATE", "ShowHideArenaPreparation")
-	end--]]
 
 	if C["Raid"].RaidDebuffs then
 		local RaidDebuffs = CreateFrame("Frame")
