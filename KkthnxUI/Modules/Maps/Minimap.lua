@@ -124,7 +124,7 @@ function Module:UpdateSettings()
 			GarrisonLandingPageMinimapButton.Hide = GarrisonLandingPageMinimapButton.Show
 		else
 			GarrisonLandingPageMinimapButton:ClearAllPoints()
-			GarrisonLandingPageMinimapButton:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 0, 0)
+			GarrisonLandingPageMinimapButton:SetPoint("BOTTOMLEFT", Minimap, "BOTTOMLEFT", 0, 0)
 			GarrisonLandingPageMinimapButton:SetScale(0.8)
 			if GarrisonLandingPageTutorialBox then
 				GarrisonLandingPageTutorialBox:SetScale(0.8)

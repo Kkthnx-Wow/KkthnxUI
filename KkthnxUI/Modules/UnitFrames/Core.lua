@@ -21,7 +21,6 @@ local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
-local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpellInfo = _G.GetSpellInfo
@@ -176,19 +175,31 @@ function Module:ThreatPlate(forced)
 					end
 				elseif (status == 0) then -- not tanking, lower threat than tank
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
-						if IsInGroup() or IsInRaid() then
+						if (IsInRaid() or IsInGroup()) then
 							for i = 1, GetNumGroupMembers() do
-								if UnitExists("raid" .. i) and not UnitIsUnit("raid" .. i, "player") then
-									local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit)
-									if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" then
+								if UnitExists("raid" .. i) or UnitExists("party" .. i) and not UnitIsUnit("raid" .. i, "player") or not UnitIsUnit("party" .. i, "player") then
+									local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit) or UnitDetailedThreatSituation("party" .. i, self.unit)
+									if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" or UnitGroupRolesAssigned("party" .. i) == "TANK" then
 										self.Health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
+									else
+										self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 									end
 								end
 							end
 						end
 					else
-						self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
+						if (IsInRaid() or IsInGroup()) then
+							for i = 1, GetNumGroupMembers() do
+								if UnitExists("party" .. i) or UnitExists("raid" .. i) and not UnitIsUnit("party" .. i, "player") or not UnitIsUnit("raid" .. i, "player") then
+									local isTanking = UnitDetailedThreatSituation("party" .. i, self.unit) or UnitDetailedThreatSituation("raid" .. i, self.unit)
+									if isTanking and UnitGroupRolesAssigned("party" .. i) == "TANK" or UnitGroupRolesAssigned("raid" .. i) == "TANK" then
+										self.Health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
+									else
+										self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
+									end
+								end
+							end
+						end
 					end
 				end
 			elseif not forced then
@@ -518,29 +529,31 @@ function Module:CreateAuraTimer(elapsed)
 end
 
 function Module:PostCreateAura(button)
-	if button:GetName():match("NamePlate") and C["Nameplates"].Enable then
-		button:CreateShadow()
+	if button:GetName():match("NamePlate") then
+		if C["Nameplates"].Enable then
+			button:CreateShadow()
 
-		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
-		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
-		button.Remaining:SetPoint("CENTER", 1, 0)
+			button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
+			button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+			button.Remaining:SetPoint("CENTER", 1, 0)
 
-		button.cd.noOCC = true
-		button.cd.noCooldownCount = true
-		button.cd:SetReverse(true)
-		button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
-		button.cd:ClearAllPoints()
-		button.cd:SetAllPoints()
-		button.cd:SetHideCountdownNumbers(true)
+			button.cd.noOCC = true
+			button.cd.noCooldownCount = true
+			button.cd:SetReverse(true)
+			button.cd:SetFrameLevel(button:GetFrameLevel() + 1)
+			button.cd:ClearAllPoints()
+			button.cd:SetAllPoints()
+			button.cd:SetHideCountdownNumbers(true)
 
-		button.icon:SetAllPoints()
-		button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
-		button.icon:SetDrawLayer("ARTWORK")
+			button.icon:SetAllPoints()
+			button.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
+			button.icon:SetDrawLayer("ARTWORK")
 
-		button.count:SetPoint("BOTTOMRIGHT", 3, 3)
-		button.count:SetJustifyH("RIGHT")
-		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
-		button.count:SetTextColor(0.84, 0.75, 0.65)
+			button.count:SetPoint("BOTTOMRIGHT", 3, 3)
+			button.count:SetJustifyH("RIGHT")
+			button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+			button.count:SetTextColor(0.84, 0.75, 0.65)
+		end
 	else
 		button:CreateBorder()
 
@@ -584,24 +597,42 @@ function Module:PostCreateAura(button)
 end
 
 function Module:PostUpdateAura(unit, button, index)
-	local _, _, _, DType, Duration, ExpirationTime, _, IsStealable = UnitAura(unit, index, button.filter)
+	local Name, _, _, DType, Duration, ExpirationTime, Caster, IsStealable = UnitAura(unit, index, button.filter)
+
+	local isPlayer = (Caster == "player" or Caster == "vehicle")
+	local isFriend = unit and UnitIsFriend("player", unit) and not UnitCanAttack("player", unit)
 
 	if button then
-		if (button.filter == "HARMFUL") then
-			if (not UnitIsFriend("player", unit) and not button.isPlayer) then
-				button.icon:SetDesaturated(true)
-				button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		if (button.isDebuff) then
+			if (not isFriend and not isPlayer) then
+				button.icon:SetDesaturated((unit and not string.find(unit, "arena%d")) and true or false)
+				button:SetBackdropBorderColor()
+				if button.Shadow then
+					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+				end
 			else
-				local color = _G.DebuffTypeColor[DType] or _G.DebuffTypeColor.none
+				local color = (DType and DebuffTypeColor[DType]) or DebuffTypeColor.none
+				if Name and (Name == "Unstable Affliction" or Name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+					button:SetBackdropBorderColor(0.05, 0.85, 0.94)
+					if button.Shadow then
+						button.Shadow:SetBackdropBorderColor(0.05, 0.85, 0.94, 0.8)
+					end
+				else
+					button:SetBackdropBorderColor(color.r, color.g, color.b)
+					if button.Shadow then
+						button.Shadow:SetBackdropBorderColor(color.r * 0.6, color.g * 0.6, color.b * 0.6, 0.8)
+					end
+				end
 				button.icon:SetDesaturated(false)
-				button:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8)
 			end
 		else
 			if button.Animation then
-				if (IsStealable or DType == "Magic") and not UnitIsFriend("player", unit) and not button.Animation.Playing then
+				if (IsStealable or DType == "Magic") and not isFriend and not button.Animation.Playing then
+					button:SetBackdropBorderColor(237/255, 234/255, 142/255)
 					button.Animation:Play()
 					button.Animation.Playing = true
 				else
+					button:SetBackdropBorderColor()
 					button.Animation:Stop()
 					button.Animation.Playing = false
 				end
@@ -673,16 +704,6 @@ function Module:CreateAuraWatch(frame)
 			Icon:SetHeight(C["Raid"].AuraWatchIconSize)
 			Icon:SetPoint(spell[2], 0, 0)
 
-			--local Texture = Icon:CreateTexture(nil, "OVERLAY")
-			--Texture:SetAllPoints(Icon)
-			--Texture:SetTexture(C["Media"].Blank)
-
-			--if (spell[3]) then
-			--	Texture:SetVertexColor(unpack(spell[3]))
-			--else
-			--	Texture:SetVertexColor(0.8, 0.8, 0.8)
-			--end
-
 			local Count = Icon:CreateFontString(nil, "OVERLAY")
 			Count:SetFont(C["Media"].Font, 8, "THINOUTLINE")
 			Count:SetPoint("CENTER", unpack(Module.RaidBuffsTrackingPosition[spell[2]]))
@@ -696,32 +717,68 @@ function Module:CreateAuraWatch(frame)
 end
 
 function Module:UpdateNameplateTarget()
+	local Nameplate = self
 	local targetExists = UnitExists("target")
-	local unitIsPlayer = UnitIsUnit(self.unit, "player")
-	local unitIsTarget = UnitIsUnit(self.unit, "target")
+	local unitIsPlayer = UnitIsUnit(Nameplate.unit, "player")
+	local unitIsTarget = UnitIsUnit(Nameplate.unit, "target")
+	local plateDatabase = C["Nameplates"]
+
+	if not Nameplate then -- Fuck you nil error.
+		return
+	end
 
 	if unitIsTarget and not unitIsPlayer then
-		self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
-		self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
-		self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
-		self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
+		Nameplate:SetSize(plateDatabase.Width, plateDatabase.Height)
+		Nameplate.Castbar:SetPoint("TOPLEFT", Nameplate.Health, "BOTTOMLEFT", 0, -4)
+		Nameplate.Castbar:SetPoint("TOPRIGHT", Nameplate.Health, "BOTTOMRIGHT", 0, -4)
 
-		self:SetAlpha(1)
+		Nameplate:SetAlpha(1)
 	else
-		self:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
-		self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
-		self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
-		self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
+		Nameplate:SetSize(plateDatabase.Width, plateDatabase.Height)
+		Nameplate.Castbar:SetPoint("TOPLEFT", Nameplate.Health, "BOTTOMLEFT", 0, -4)
+		Nameplate.Castbar:SetPoint("TOPRIGHT", Nameplate.Health, "BOTTOMRIGHT", 0, -4)
 
 		if targetExists and not unitIsPlayer then
-			self:SetAlpha(0.35)
+			Nameplate:SetAlpha(plateDatabase.NonTargetAlpha)
 		else
-			self:SetAlpha(1)
+			Nameplate:SetAlpha(1)
 		end
 	end
 end
 
-function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
+function Module:NameplatesCallback(_, unit)
+	local Nameplate = self
+
+	if not unit then
+		return
+	end
+
+	if not Nameplate then -- Fuck you nil error.
+		return
+	end
+
+	if UnitIsUnit(unit, "player") then
+		Nameplate.Name:Hide()
+		Nameplate.Castbar:SetAlpha(0)
+		Nameplate.RaidTargetIndicator:SetAlpha(0)
+		Nameplate.PvPIndicator:SetAlpha(0)
+
+		if Nameplate.ClassPowerText then
+			Nameplate.ClassPowerText:Show()
+		end
+	else
+		Nameplate.Name:Show()
+		Nameplate.Castbar:SetAlpha(1)
+		Nameplate.RaidTargetIndicator:SetAlpha(1)
+		Nameplate.PvPIndicator:SetAlpha(1)
+
+		if Nameplate.ClassPowerText then
+			Nameplate.ClassPowerText:Hide()
+		end
+	end
+end
+
+function Module:NameplatePowerAndCastBar(unit, cur, _, max)
 	if not unit then
 		unit = self:GetParent().unit
 	end
@@ -760,6 +817,36 @@ function Module:DisplayNameplatePowerAndCastBar(unit, cur, _, max)
 			PowerBar:Show()
 			PowerBar.IsHidden = false
 		end
+	end
+end
+
+function Module:NameplateClassIcons()
+	local Nameplate = self
+	local reaction = UnitReaction(Nameplate.unit, "player")
+
+	if UnitIsPlayer(Nameplate.unit) and (reaction and reaction <= 4) then
+		local _, class = UnitClass(Nameplate.unit)
+		local texcoord = CLASS_ICON_TCOORDS[class]
+
+		Nameplate.Class.Icon:SetTexCoord(texcoord[1] + 0.015, texcoord[2] - 0.02, texcoord[3] + 0.018, texcoord[4] - 0.02)
+		Nameplate.Class:Show()
+	else
+		Nameplate.Class.Icon:SetTexCoord(0, 0, 0, 0)
+		Nameplate.Class:Hide()
+	end
+end
+
+function Module:NameplateEliteIcon()
+	local icon = self.EliteIcon
+	local c = UnitClassification(self.unit)
+	if c == "elite" or c == "worldboss" then
+		icon:SetTexCoord(0, 0.15, 0.25, 0.53)
+		icon:Show()
+	elseif c == "rareelite" or c == "rare" then
+		icon:SetTexCoord(0, 0.15, 0.52, 0.84)
+		icon:Show()
+	else
+		icon:Hide()
 	end
 end
 

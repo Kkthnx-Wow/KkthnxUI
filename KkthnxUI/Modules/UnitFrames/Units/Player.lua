@@ -220,10 +220,6 @@ function Module:CreatePlayer()
 		Module.MouseoverHealth(self, "player")
 	end
 
-	if (C["Unitframe"].CombatText) then
-		Module.CreateCombatFeedback(self)
-	end
-
 	if (C["Unitframe"].GlobalCooldown) then
 		Module.CreateGlobalCooldown(self)
 	end

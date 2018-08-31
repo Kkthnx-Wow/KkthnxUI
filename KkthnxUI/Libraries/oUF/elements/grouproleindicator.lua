@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
--- Position and size
-local GroupRoleIndicator = self:CreateTexture(nil, 'OVERLAY')
-GroupRoleIndicator:SetSize(16, 16)
-GroupRoleIndicator:SetPoint('LEFT', self)
+    -- Position and size
+    local GroupRoleIndicator = self:CreateTexture(nil, 'OVERLAY')
+    GroupRoleIndicator:SetSize(16, 16)
+    GroupRoleIndicator:SetPoint('LEFT', self)
 
--- Register it with oUF
-self.GroupRoleIndicator = GroupRoleIndicator
+    -- Register it with oUF
+    self.GroupRoleIndicator = GroupRoleIndicator
 --]]
 
 local _, ns = ...
@@ -60,10 +60,10 @@ local function Path(self, ...)
 	--[[ Override: GroupRoleIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.GroupRoleIndicator.Override or Update) (self, ...)
 end
 

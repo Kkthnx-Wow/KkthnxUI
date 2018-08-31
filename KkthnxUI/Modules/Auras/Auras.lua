@@ -277,11 +277,11 @@ function Module:UpdateHeader(header)
 
         if (child.time) then
             child.time:ClearAllPoints()
-            child.time:SetPoint("TOP", child, "BOTTOM", 1, -4)
+            child.time:SetPoint("TOP", child, "BOTTOM", 1, -3)
             child.time:FontTemplate(nil, 12, "OUTLINE")
 
             child.count:ClearAllPoints()
-            child.count:SetPoint("BOTTOMRIGHT", -1, 0)
+            child.count:SetPoint("BOTTOMRIGHT", -1, 1)
             child.count:FontTemplate(nil, 12, "OUTLINE")
         end
 
@@ -336,7 +336,7 @@ function Module:OnInitialize()
     K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 
     local AurasHolder = CreateFrame("Frame", "AurasHolder", UIParent)
-    AurasHolder:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 2, 8)
+    AurasHolder:SetPoint("TOPLEFT", Minimap, "TOPLEFT", 4, 8)
     AurasHolder:SetWidth((Minimap:GetWidth() + 29))
     AurasHolder:SetHeight(Minimap:GetHeight() + 53)
 

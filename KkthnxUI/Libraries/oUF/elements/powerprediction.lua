@@ -10,7 +10,7 @@ PowerPrediction - A `table` containing the sub-widgets.
 ## Sub-Widgets
 
 mainBar - A `StatusBar` used to represent power cost of spells on top of the Power element.
-altBar - A `StatusBar` used to represent power cost of spells on top of the AdditionalPower element.
+altBar  - A `StatusBar` used to represent power cost of spells on top of the AdditionalPower element.
 
 ## Notes
 
@@ -18,26 +18,26 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 ## Examples
 
--- Position and size
-local mainBar = CreateFrame('StatusBar', nil, self.Power)
-mainBar:SetReverseFill(true)
-mainBar:SetPoint('TOP')
-mainBar:SetPoint('BOTTOM')
-mainBar:SetPoint('RIGHT', self.Power:GetStatusBarTexture(), 'RIGHT')
-mainBar:SetWidth(200)
+    -- Position and size
+    local mainBar = CreateFrame('StatusBar', nil, self.Power)
+    mainBar:SetReverseFill(true)
+    mainBar:SetPoint('TOP')
+    mainBar:SetPoint('BOTTOM')
+    mainBar:SetPoint('RIGHT', self.Power:GetStatusBarTexture(), 'RIGHT')
+    mainBar:SetWidth(200)
 
-local altBar = CreateFrame('StatusBar', nil, self.AdditionalPower)
-altBar:SetReverseFill(true)
-altBar:SetPoint('TOP')
-altBar:SetPoint('BOTTOM')
-altBar:SetPoint('RIGHT', self.AdditionalPower:GetStatusBarTexture(), 'RIGHT')
-altBar:SetWidth(200)
+    local altBar = CreateFrame('StatusBar', nil, self.AdditionalPower)
+    altBar:SetReverseFill(true)
+    altBar:SetPoint('TOP')
+    altBar:SetPoint('BOTTOM')
+    altBar:SetPoint('RIGHT', self.AdditionalPower:GetStatusBarTexture(), 'RIGHT')
+    altBar:SetWidth(200)
 
--- Register with oUF
-self.PowerPrediction = {
-	mainBar = mainBar,
-	altBar = altBar
-}
+    -- Register with oUF
+    self.PowerPrediction = {
+        mainBar = mainBar,
+        altBar = altBar
+    }
 --]]
 
 local _, ns = ...
@@ -109,10 +109,10 @@ local function Update(self, event, unit)
 	--[[ Callback: PowerPrediction:PostUpdate(unit, mainCost, altCost, hasAltManaBar)
 	Called after the element has been updated.
 
-	* self - the PowerPrediction element
-	* unit - the unit for which the update has been triggered (string)
-	* mainCost - the main power type cost of the cast ability (number)
-	* altCost - the secondary power type cost of the cast ability (number)
+	* self          - the PowerPrediction element
+	* unit          - the unit for which the update has been triggered (string)
+	* mainCost      - the main power type cost of the cast ability (number)
+	* altCost       - the secondary power type cost of the cast ability (number)
 	* hasAltManaBar - indicates if the unit has a secondary power bar (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -124,11 +124,11 @@ local function Path(self, ...)
 	--[[ Override: PowerPrediction.Override(self, event, unit, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* unit - the unit accompanying the event (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.PowerPrediction.Override or Update) (self, ...)
 end
 

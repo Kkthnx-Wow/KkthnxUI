@@ -24,7 +24,6 @@ local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local UIParent = _G.UIParent
-local UnitIsUnit = _G.UnitIsUnit
 local UnitName = _G.UnitName
 local UNKNOWN = _G.UNKNOWN
 
@@ -41,7 +40,7 @@ local healerSpecIDs = {
 Module.HealerSpecs = {}
 Module.Healers = {}
 
---Get localized healing spec names
+-- Get localized healing spec names
 for _, specID in pairs(healerSpecIDs) do
 	local _, name = GetSpecializationInfoByID(specID)
 	if name and not Module.HealerSpecs[name] then
@@ -88,21 +87,6 @@ function Module:CheckArenaHealers()
 	end
 end
 
-function Module:NameplatesCallback(_, _, unit)
-	if unit then
-		if UnitIsUnit(unit, "player") then
-			self.Power:Show()
-			self.Name:Hide()
-			self.Castbar:SetAlpha(0)
-			self.RaidTargetIndicator:SetAlpha(0)
-		else
-			self.Name:Show()
-			self.Castbar:SetAlpha(1)
-			self.RaidTargetIndicator:SetAlpha(1)
-		end
-	end
-end
-
 function Module:CreateNameplates()
 	local NameplateTexture = K.GetTexture(C["Nameplates"].Texture)
 	local Font = K.GetFont(C["Nameplates"].Font)
@@ -135,7 +119,6 @@ function Module:CreateNameplates()
 		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 		self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
 		self.Health.Value:SetFontObject(Font)
-		self.Health.Value:SetFont(select(1, self.Health.Value:GetFont()), 12, select(3, self.Health.Value:GetFont()))
 		self:Tag(self.Health.Value, C["Nameplates"].HealthFormat.Value)
 	end
 
@@ -172,14 +155,14 @@ function Module:CreateNameplates()
 	self.Power.colorPower = true
 	self.Power.Smooth = C["Nameplates"].Smooth
 	self.Power.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
-	self.Power.PostUpdate = Module.DisplayNameplatePowerAndCastBar
+	self.Power.PostUpdate = Module.NameplatePowerAndCastBar
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
-	self.Debuffs:SetHeight(18)
+	self.Debuffs:SetHeight(22)
 	self.Debuffs:SetWidth(self:GetWidth())
 	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 18)
-	self.Debuffs.size = 18
-	self.Debuffs.num = 7
+	self.Debuffs.size = 22
+	self.Debuffs.num = 6
 	self.Debuffs.numRow = 2
 
 	self.Debuffs.spacing = 2
@@ -240,8 +223,8 @@ function Module:CreateNameplates()
 	self.Castbar.PostCastNotInterruptible = Module.CheckInterrupt
 	self.Castbar.PostChannelStart = Module.CheckInterrupt
 
-	self.Castbar:SetScript("OnShow", Module.DisplayNameplatePowerAndCastBar)
-	self.Castbar:SetScript("OnHide", Module.DisplayNameplatePowerAndCastBar)
+	self.Castbar:SetScript("OnShow", Module.NameplatePowerAndCastBar)
+	self.Castbar:SetScript("OnHide", Module.NameplatePowerAndCastBar)
 
 	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.RaidTargetIndicator:SetSize(self:GetHeight(), self:GetHeight())
@@ -253,14 +236,40 @@ function Module:CreateNameplates()
 	self.QuestIndicator:SetSize(18, 18)
 	self.QuestIndicator:SetPoint("RIGHT", self.Health, "LEFT", 2, 0)
 
+	-- Class Power (Combo Points, Insanity, etc...)
+	self.ClassPowerText = self:CreateFontString(nil, "OVERLAY")
+	self.ClassPowerText:SetFontObject(Font)
+	self.ClassPowerText:SetFont(select(1, self.ClassPowerText:GetFont()), 18, select(3, self.ClassPowerText:GetFont()))
+	self.ClassPowerText:SetPoint("LEFT", self.Health, 20, 0)
+	self.ClassPowerText:SetJustifyH("RIGHT")
+	self.ClassPowerText:SetWidth(C["Nameplates"].Width)
+	if K.Class == "DEATHKNIGHT" then
+		self:Tag(self.ClassPowerText, "[runes]", "player")
+	else
+		self:Tag(self.ClassPowerText, "[KkthnxUI:ClassPower]", "player")
+	end
+	self.ClassPowerText:Hide()
+
+	if C["Nameplates"].ClassIcons then
+		self.Class = CreateFrame("Frame", nil, self)
+		self.Class:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
+		self.Class:CreateShadow(true)
+		self.Class:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+
+		self.Class.Icon = self.Class:CreateTexture(nil, "ARTWORK")
+		self.Class.Icon:SetAllPoints()
+		self.Class.Icon:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+		self.Class.Icon:SetTexCoord(0, 0, 0, 0)
+	end
+
 	-- Create Totem Icon
-	--if C.nameplate.totem_icons == true then
-	self.Totem = CreateFrame("Frame", nil, self)
-	self.Totem.Icon = self.Totem:CreateTexture(nil, "OVERLAY")
-	self.Totem.Icon:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
-	self.Totem.Icon:SetPoint("BOTTOM", self.Health, "TOP", 0, 16)
-	self.Totem:CreateShadow(true)
-	--end
+	if C["Nameplates"].Totems then
+		self.Totem = CreateFrame("Frame", nil, self)
+		self.Totem.Icon = self.Totem:CreateTexture(nil, "OVERLAY")
+		self.Totem.Icon:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
+		self.Totem.Icon:SetPoint("BOTTOM", self.Health, "TOP", 0, 16)
+		self.Totem:CreateShadow(true)
+	end
 
 	-- Create Healer Icon
 	if C["Nameplates"].MarkHealers then
@@ -270,6 +279,13 @@ function Module:CreateNameplates()
 		self.HealerTexture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]])
 		self.HealerTexture:Hide()
 	end
+
+	self.EliteIcon = self.Health:CreateTexture(nil, "OVERLAY")
+	self.EliteIcon:SetSize(self.Health:GetHeight() + 6, self.Health:GetHeight() + 6)
+	self.EliteIcon:SetParent(self.Health)
+	self.EliteIcon:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
+	self.EliteIcon:SetTexture("Interface\\TARGETINGFRAME\\Nameplates")
+	self.EliteIcon:Hide()
 
 	self:EnableMouse(false)
 	self.Health:EnableMouse(false)
@@ -281,10 +297,14 @@ function Module:CreateNameplates()
 	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
 	Module.CreateDebuffHighlight(self)
 
+	-- Elite Icon Events
+	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateEliteIcon)
+	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateEliteIcon)
+	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon)
+	Module.NameplateEliteIcon(self)
+
 	-- Highlight Plate Events
-	self:RegisterEvent("NAME_PLATE_CREATED", Module.HighlightPlate)
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
-	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
 	Module.HighlightPlate(self)
 
@@ -293,19 +313,33 @@ function Module:CreateNameplates()
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
 	Module.UpdateNameplateTarget(self)
 
+	if C["Nameplates"].ClassIcons then
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateClassIcons)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateClassIcons)
+		Module.NameplateClassIcons(self)
+	end
+
 	-- Totem Icon Events
-	self:RegisterEvent("NAME_PLATE_CREATED", Module.UpdatePlateTotems)
-	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
+	if C["Nameplates"].Totems then
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems)
+		Module.UpdatePlateTotems(self)
+	end
 
 	-- Healer Icon Events
-	self:RegisterEvent("NAME_PLATE_CREATED", Module.DisplayHealerTexture)
-	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
+	if C["Nameplates"].MarkHealers then
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture)
+		Module.DisplayHealerTexture(self)
+	end
 
 	-- Threat Plate Events
-	self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
+	if C["Nameplates"].Threat then
+		self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
 
-	-- Threat Plate PostUpdate Function
-	self.Health.PostUpdate = function()
-		Module.ThreatPlate(self, true)
+		-- Threat Plate PostUpdate Function
+		self.Health.PostUpdate = function()
+			Module.ThreatPlate(self, true)
+		end
 	end
 end

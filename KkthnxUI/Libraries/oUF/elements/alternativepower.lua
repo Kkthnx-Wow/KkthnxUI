@@ -15,15 +15,15 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 ## Examples
 
--- Position and size
-local AlternativePower = CreateFrame('StatusBar', nil, self)
-AlternativePower:SetHeight(20)
-AlternativePower:SetPoint('BOTTOM')
-AlternativePower:SetPoint('LEFT')
-AlternativePower:SetPoint('RIGHT')
+    -- Position and size
+    local AlternativePower = CreateFrame('StatusBar', nil, self)
+    AlternativePower:SetHeight(20)
+    AlternativePower:SetPoint('BOTTOM')
+    AlternativePower:SetPoint('LEFT')
+    AlternativePower:SetPoint('RIGHT')
 
--- Register with oUF
-self.AlternativePower = AlternativePower
+    -- Register with oUF
+    self.AlternativePower = AlternativePower
 --]]
 
 local _, ns = ...
@@ -80,9 +80,9 @@ local function Update(self, event, unit, powerType)
 
 	* self - the AlternativePower element
 	* unit - the unit for which the update has been triggered (string)
-	* cur - the current value of the unit's alternative power (number)
-	* min - the minimum value of the unit's alternative power (number)
-	* max - the maximum value of the unit's alternative power (number)
+	* cur  - the current value of the unit's alternative power (number)
+	* min  - the minimum value of the unit's alternative power (number)
+	* max  - the maximum value of the unit's alternative power (number)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, cur, min, max)
@@ -93,10 +93,10 @@ local function Path(self, ...)
 	--[[ Override: AlternativePower.Override(self, event, unit, ...)
 	Used to completely override the element's update process.
 
-	* self - the parent object
+	* self  - the parent object
 	* event - the event triggering the update (string)
-	* unit - the unit accompanying the event (string)
-	* ... - the arguments accompanying the event
+	* unit  - the unit accompanying the event (string)
+	* ...   - the arguments accompanying the event
 	--]]
 	return (self.AlternativePower.Override or Update)(self, ...)
 end
@@ -107,7 +107,7 @@ local function Visibility(self, event, unit)
 
 	local barType, _, _, _, _, hideFromOthers, showOnRaid = UnitAlternatePowerInfo(unit)
 	if(barType and (showOnRaid and (UnitInParty(unit) or UnitInRaid(unit)) or not hideFromOthers
-	or UnitIsUnit(unit, 'player') or UnitIsUnit(self.realUnit, 'player'))) then
+		or UnitIsUnit(unit, 'player') or UnitIsUnit(self.realUnit, 'player'))) then
 		self:RegisterEvent('UNIT_POWER_UPDATE', Path)
 		self:RegisterEvent('UNIT_MAXPOWER', Path)
 
@@ -126,9 +126,9 @@ local function VisibilityPath(self, ...)
 	--[[ Override: AlternativePower.OverrideVisibility(self, event, unit)
 	Used to completely override the element's visibility update process.
 
-	* self - the parent object
+	* self  - the parent object
 	* event - the event triggering the update (string)
-	* unit - the unit accompanying the event (string)
+	* unit  - the unit accompanying the event (string)
 	--]]
 	return (self.AlternativePower.OverrideVisibility or Visibility)(self, ...)
 end

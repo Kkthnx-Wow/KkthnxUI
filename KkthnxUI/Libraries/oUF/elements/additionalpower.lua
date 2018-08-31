@@ -22,10 +22,11 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 The following options are listed by priority. The first check that returns true decides the color of the bar.
 
-.colorClass - Use `self.colors.class[class]` to color the bar based on the player's class. (boolean)
-.colorSmooth - Use `self.colors.smooth` to color the bar with a smooth gradient based on the player's current additional
-power percentage (boolean)
-.colorPower - Use `self.colors.power[token]` to color the bar based on the player's additional power type. (boolean)
+.colorClass   - Use `self.colors.class[class]` to color the bar based on the player's class. (boolean)
+.colorSmooth  - Use `self.colors.smooth` to color the bar with a smooth gradient based on the player's current additional
+               power percentage (boolean)
+.colorPower   - Use `self.colors.power[token]` to color the bar based on the player's additional power type. (boolean)
+.displayPairs - Use to override display pairs. (table)
 
 ## Sub-Widget Options
 
@@ -33,21 +34,21 @@ power percentage (boolean)
 
 ## Examples
 
--- Position and size
-local AdditionalPower = CreateFrame('StatusBar', nil, self)
-AdditionalPower:SetSize(20, 20)
-AdditionalPower:SetPoint('TOP')
-AdditionalPower:SetPoint('LEFT')
-AdditionalPower:SetPoint('RIGHT')
+    -- Position and size
+    local AdditionalPower = CreateFrame('StatusBar', nil, self)
+    AdditionalPower:SetSize(20, 20)
+    AdditionalPower:SetPoint('TOP')
+    AdditionalPower:SetPoint('LEFT')
+    AdditionalPower:SetPoint('RIGHT')
 
--- Add a background
-local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
-Background:SetAllPoints(AdditionalPower)
-Background:SetTexture(1, 1, 1, .5)
+    -- Add a background
+    local Background = AdditionalPower:CreateTexture(nil, 'BACKGROUND')
+    Background:SetAllPoints(AdditionalPower)
+    Background:SetTexture(1, 1, 1, .5)
 
--- Register it with oUF
-AdditionalPower.bg = Background
-self.AdditionalPower = AdditionalPower
+    -- Register it with oUF
+    AdditionalPower.bg = Background
+    self.AdditionalPower = AdditionalPower
 --]]
 
 local _, ns = ...
@@ -107,10 +108,10 @@ local function Update(self, event, unit, powertype)
 	--[[ Override: AdditionalPower:UpdateColor(cur, max)
 	Used to completely override the internal function for updating the widget's colors.
 
-		* self - the AdditionalPower element
-		* cur - the current value of the player's additional power (number)
-		* max - the maximum value of the player's additional power (number)
-		--]]
+	* self - the AdditionalPower element
+	* cur  - the current value of the player's additional power (number)
+	* max  - the maximum value of the player's additional power (number)
+	--]]
 	element:UpdateColor(cur, max)
 
 	--[[ Callback: AdditionalPower:PostUpdate(unit, cur, max)
@@ -118,8 +119,8 @@ local function Update(self, event, unit, powertype)
 
 	* self - the AdditionalPower element
 	* unit - the unit for which the update has been triggered (string)
-	* cur - the current value of the player's additional power (number)
-	* max - the maximum value of the player's additional power (number)
+	* cur  - the current value of the player's additional power (number)
+	* max  - the maximum value of the player's additional power (number)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, cur, max)
@@ -130,10 +131,10 @@ local function Path(self, ...)
 	--[[ Override: AdditionalPower.Override(self, event, unit, ...)
 	Used to completely override the element's update process.
 
-	* self - the parent object
+	* self  - the parent object
 	* event - the event triggering the update (string)
-	* unit - the unit accompanying the event (string)
-	* ... - the arguments accompanying the event
+	* unit  - the unit accompanying the event (string)
+	* ...   - the arguments accompanying the event
 	--]]
 	return (self.AdditionalPower.Override or Update) (self, ...)
 end
@@ -157,13 +158,14 @@ local function ElementDisable(self)
 end
 
 local function Visibility(self, event, unit)
+	local element = self.AdditionalPower
 	local shouldEnable
 
 	if(not UnitHasVehicleUI('player')) then
 		if(UnitPowerMax(unit, ADDITIONAL_POWER_BAR_INDEX) ~= 0) then
-			if(ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass]) then
+			if(element.displayPairs[playerClass]) then
 				local powerType = UnitPowerType(unit)
-				shouldEnable = ALT_MANA_BAR_PAIR_DISPLAY_INFO[playerClass][powerType]
+				shouldEnable = element.displayPairs[playerClass][powerType]
 			end
 		end
 	end
@@ -179,9 +181,9 @@ local function VisibilityPath(self, ...)
 	--[[ Override: AdditionalPower.OverrideVisibility(self, event, unit)
 	Used to completely override the element's visibility update process.
 
-	* self - the parent object
+	* self  - the parent object
 	* event - the event triggering the update (string)
-	* unit - the unit accompanying the event (string)
+	* unit  - the unit accompanying the event (string)
 	--]]
 	return (self.AdditionalPower.OverrideVisibility or Visibility) (self, ...)
 end
@@ -197,6 +199,10 @@ local function Enable(self, unit)
 		element.ForceUpdate = ForceUpdate
 
 		self:RegisterEvent('UNIT_DISPLAYPOWER', VisibilityPath)
+
+		if(not element.displayPairs) then
+			element.displayPairs = CopyTable(ALT_MANA_BAR_PAIR_DISPLAY_INFO)
+		end
 
 		if(element:IsObjectType('StatusBar') and not element:GetStatusBarTexture()) then
 			element:SetStatusBarTexture([[Interface\TargetingFrame\UI-StatusBar]])

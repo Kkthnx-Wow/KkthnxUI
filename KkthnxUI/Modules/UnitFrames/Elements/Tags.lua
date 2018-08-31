@@ -19,15 +19,19 @@ local string_format = string.format
 -- Wow API
 local C_PetJournal_GetPetTeamAverageLevel = C_PetJournal.GetPetTeamAverageLevel
 local DEAD = _G.DEAD
+local GetComboPoints = _G.GetComboPoints
 local GetLocale = _G.GetLocale
 local GetQuestGreenRange = _G.GetQuestGreenRange
 local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
+local GetSpecialization = _G.GetSpecialization
 local GetSpellInfo = _G.GetSpellInfo
 local GetThreatStatusColor = _G.GetThreatStatusColor
 local GHOST = GetLocale() == "deDE" and "Geist" or GetSpellInfo(8326)
+local HEALER = _G.HEALER
 local IsInGroup = _G.IsInGroup
 local PLAYER_OFFLINE = _G.PLAYER_OFFLINE
 local QuestDifficultyColors = _G.QuestDifficultyColors
+local TANK = _G.TANK
 local UnitBattlePetLevel = _G.UnitBattlePetLevel
 local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
@@ -35,6 +39,7 @@ local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitEffectiveLevel = _G.UnitEffectiveLevel
 local UnitExists = _G.UnitExists
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local UnitHealth = _G.UnitHealth
 local UnitHealthMax = _G.UnitHealthMax
 local UnitIsAFK = _G.UnitIsAFK
@@ -43,7 +48,10 @@ local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDead = _G.UnitIsDead
 local UnitIsFriend = _G.UnitIsFriend
 local UnitIsGhost = _G.UnitIsGhost
+local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
+local UnitIsGroupLeader = _G.UnitIsGroupLeader
 local UnitIsPlayer = _G.UnitIsPlayer
+local UnitIsRaidOfficer = _G.UnitIsRaidOfficer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitIsWildBattlePet = _G.UnitIsWildBattlePet
 local UnitLevel = _G.UnitLevel
@@ -137,8 +145,8 @@ end
 oUF.Tags.Events["KkthnxUI:HealthCurrent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent"] = function(unit)
 	local status =
-		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
-		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
+	UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+	not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -149,8 +157,8 @@ end
 oUF.Tags.Events["KkthnxUI:HealthPercent"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
 	local status =
-		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
-		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
+	UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+	not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -159,11 +167,11 @@ oUF.Tags.Methods["KkthnxUI:HealthPercent"] = function(unit)
 end
 
 oUF.Tags.Events["KkthnxUI:HealthCurrent-Percent"] =
-	"UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
+"UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthCurrent-Percent"] = function(unit)
 	local status =
-		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
-		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
+	UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+	not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -174,8 +182,8 @@ end
 oUF.Tags.Events["KkthnxUI:HealthDeficit"] = "UNIT_HEALTH_FREQUENT UNIT_MAXHEALTH UNIT_CONNECTION PLAYER_FLAGS_CHANGED"
 oUF.Tags.Methods["KkthnxUI:HealthDeficit"] = function(unit)
 	local status =
-		UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
-		not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
+	UnitIsDead(unit) and "|cffFFFFFF" .. DEAD .. "|r" or UnitIsGhost(unit) and "|cffFFFFFF" .. GHOST .. "|r" or
+	not UnitIsConnected(unit) and "|cffFFFFFF" .. PLAYER_OFFLINE .. "|r"
 	if (status) then
 		return status
 	else
@@ -333,5 +341,67 @@ oUF.Tags.Methods["KkthnxUI:RaidStatus"] = function(unit)
 		return "-" .. K.ShortValue(MaxHealth - CurrentHealth)
 	else
 		return string_format("%.1f", CurrentHealth / MaxHealth * 100) .. "%"
+	end
+end
+
+oUF.Tags.Events["KkthnxUI:ClassPower"] = "UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED UNIT_POWER_UPDATE SPELLS_CHANGED RUNE_POWER_UPDATE"
+oUF.Tags.Methods["KkthnxUI:ClassPower"] = function()
+	local PlayerClass = K.Class
+	local num, max, color
+
+	if (PlayerClass == "MONK") then
+		if (GetSpecialization() == SPEC_MONK_WINDWALKER or 3) then
+			num = UnitPower("player", Enum.PowerType.Chi)
+			max = UnitPowerMax("player", Enum.PowerType.Chi)
+			color = "00CC99"
+
+			if (num == max) then
+				color = "008FF7"
+			end
+		end
+	elseif (PlayerClass == "WARLOCK") then
+		num = UnitPower("player", Enum.PowerType.SoulShards)
+		max = UnitPowerMax("player", Enum.PowerType.SoulShards)
+		color = "A15CFF"
+
+		if (num == max) then
+			color = "FF1A30"
+		end
+	elseif (PlayerClass == "PALADIN") then
+		if (GetSpecialization() == SPEC_PALADIN_RETRIBUTION or 3) then
+			num = UnitPower("player", Enum.PowerType.HolyPower)
+			max = UnitPowerMax("player", Enum.PowerType.HolyPower)
+			color = "FFFF7D"
+
+			if (num == max) then
+				color = "FF1A30"
+			end
+		end
+	elseif (PlayerClass == "MAGE") then
+		if (GetSpecialization() == SPEC_MAGE_ARCANE or 1) then
+			num = UnitPower("player", Enum.PowerType.ArcaneCharges)
+			max = UnitPowerMax("player", Enum.PowerType.ArcaneCharges)
+			color = "A950CA"
+
+			if (num == max) then
+				color = "EE3053"
+			end
+		end
+	else -- Combo Points
+		if (UnitHasVehicleUI("player")) then
+			num = GetComboPoints("vehicle", "target")
+		else
+			num = GetComboPoints("player", "target")
+			max = UnitPowerMax("player", Enum.PowerType.ComboPoints)
+			color = "FFFF66"
+
+			if (num == max) then
+				color = "FF1A30"
+			end
+		end
+	end
+
+	if (num and num > 0) then
+		return string_format("|cff%s%d|r", color, num)
 	end
 end

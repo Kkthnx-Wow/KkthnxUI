@@ -133,3 +133,19 @@ function Module:ADDON_LOADED(_, addon)
 end
 
 Module:RegisterEvent("ADDON_LOADED")
+
+
+-- Reputation
+local function UpdateFactionbarTexture()
+	for i = 1, GetNumFactions() do
+		local statusbar = _G["ReputationBar"..i.."ReputationBar"]
+
+		if statusbar then
+			statusbar:SetStatusBarTexture(C.Media.Texture)
+		end
+	end
+end
+
+ReputationFrame:HookScript("OnShow", UpdateFactionbarTexture)
+hooksecurefunc("ExpandFactionHeader", UpdateFactionbarTexture)
+hooksecurefunc("CollapseFactionHeader", UpdateFactionbarTexture)

@@ -17,25 +17,25 @@ A default texture will be applied if the widget is a StatusBar and doesn't have 
 
 ## Options
 
-.frequentUpdates - Indicates whether to use UNIT_HEALTH_FREQUENT instead of UNIT_HEALTH to update the bar (boolean)
-.smoothGradient - 9 color values to be used with the .colorSmooth option (table)
+.frequentUpdates   - Indicates whether to use UNIT_HEALTH_FREQUENT instead of UNIT_HEALTH to update the bar (boolean)
+.smoothGradient    - 9 color values to be used with the .colorSmooth option (table)
 
 The following options are listed by priority. The first check that returns true decides the color of the bar.
 
-.colorTapping - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
+.colorTapping      - Use `self.colors.tapping` to color the bar if the unit isn't tapped by the player (boolean)
 .colorDisconnected - Use `self.colors.disconnected` to color the bar if the unit is offline (boolean)
-.colorClass - Use `self.colors.class[class]` to color the bar based on unit class. `class` is defined by the
-second return of [UnitClass](http://wowprogramming.com/docs/api/UnitClass.html) (boolean)
-.colorClassNPC - Use `self.colors.class[class]` to color the bar if the unit is a NPC (boolean)
-.colorClassPet - Use `self.colors.class[class]` to color the bar if the unit is player controlled, but not a player
-(boolean)
-.colorReaction - Use `self.colors.reaction[reaction]` to color the bar based on the player's reaction towards the
-unit. `reaction` is defined by the return value of
-[UnitReaction](http://wowprogramming.com/docs/api/UnitReaction.html) (boolean)
-.colorSmooth - Use `smoothGradient` if present or `self.colors.smooth` to color the bar with a smooth gradient
-based on the player's current health percentage (boolean)
-.colorHealth - Use `self.colors.health` to color the bar. This flag is used to reset the bar color back to default
-if none of the above conditions are met (boolean)
+.colorClass        - Use `self.colors.class[class]` to color the bar based on unit class. `class` is defined by the
+                     second return of [UnitClass](http://wowprogramming.com/docs/api/UnitClass.html) (boolean)
+.colorClassNPC     - Use `self.colors.class[class]` to color the bar if the unit is a NPC (boolean)
+.colorClassPet     - Use `self.colors.class[class]` to color the bar if the unit is player controlled, but not a player
+                     (boolean)
+.colorReaction     - Use `self.colors.reaction[reaction]` to color the bar based on the player's reaction towards the
+                     unit. `reaction` is defined by the return value of
+                     [UnitReaction](http://wowprogramming.com/docs/api/UnitReaction.html) (boolean)
+.colorSmooth       - Use `smoothGradient` if present or `self.colors.smooth` to color the bar with a smooth gradient
+                     based on the player's current health percentage (boolean)
+.colorHealth       - Use `self.colors.health` to color the bar. This flag is used to reset the bar color back to default
+                     if none of the above conditions are met (boolean)
 
 ## Sub-Widgets Options
 
@@ -47,32 +47,32 @@ if none of the above conditions are met (boolean)
 
 ## Examples
 
--- Position and size
-local Health = CreateFrame('StatusBar', nil, self)
-Health:SetHeight(20)
-Health:SetPoint('TOP')
-Health:SetPoint('LEFT')
-Health:SetPoint('RIGHT')
+    -- Position and size
+    local Health = CreateFrame('StatusBar', nil, self)
+    Health:SetHeight(20)
+    Health:SetPoint('TOP')
+    Health:SetPoint('LEFT')
+    Health:SetPoint('RIGHT')
 
--- Add a background
-local Background = Health:CreateTexture(nil, 'BACKGROUND')
-Background:SetAllPoints(Health)
-Background:SetTexture(1, 1, 1, .5)
+    -- Add a background
+    local Background = Health:CreateTexture(nil, 'BACKGROUND')
+    Background:SetAllPoints(Health)
+    Background:SetTexture(1, 1, 1, .5)
 
--- Options
-Health.frequentUpdates = true
-Health.colorTapping = true
-Health.colorDisconnected = true
-Health.colorClass = true
-Health.colorReaction = true
-Health.colorHealth = true
+    -- Options
+    Health.frequentUpdates = true
+    Health.colorTapping = true
+    Health.colorDisconnected = true
+    Health.colorClass = true
+    Health.colorReaction = true
+    Health.colorHealth = true
 
--- Make the background darker.
-Background.multiplier = .5
+    -- Make the background darker.
+    Background.multiplier = .5
 
--- Register it with oUF
-Health.bg = Background
-self.Health = Health
+    -- Register it with oUF
+	Health.bg = Background
+    self.Health = Health
 --]]
 
 local _, ns = ...
@@ -87,8 +87,8 @@ local function UpdateColor(element, unit, cur, max)
 	elseif(element.colorDisconnected and element.disconnected) then
 		t = parent.colors.disconnected
 	elseif(element.colorClass and UnitIsPlayer(unit)) or
-	(element.colorClassNPC and not UnitIsPlayer(unit)) or
-	(element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
+		(element.colorClassNPC and not UnitIsPlayer(unit)) or
+		(element.colorClassPet and UnitPlayerControlled(unit) and not UnitIsPlayer(unit)) then
 		local _, class = UnitClass(unit)
 		t = parent.colors.class[class]
 	elseif(element.colorReaction and UnitReaction(unit, 'player')) then
@@ -143,11 +143,11 @@ local function Update(self, event, unit)
 	--[[ Override: Health:UpdateColor(unit, cur, max)
 	Used to completely override the internal function for updating the widgets' colors.
 
-		* self - the Health element
-		* unit - the unit for which the update has been triggered (string)
-		* cur - the unit's current health value (number)
-		* max - the unit's maximum possible health value (number)
-		--]]
+	* self - the Health element
+	* unit - the unit for which the update has been triggered (string)
+	* cur  - the unit's current health value (number)
+	* max  - the unit's maximum possible health value (number)
+	--]]
 	element:UpdateColor(unit, cur, max)
 
 	--[[ Callback: Health:PostUpdate(unit, cur, max)
@@ -155,8 +155,8 @@ local function Update(self, event, unit)
 
 	* self - the Health element
 	* unit - the unit for which the update has been triggered (string)
-	* cur - the unit's current health value (number)
-	* max - the unit's maximum possible health value (number)
+	* cur  - the unit's current health value (number)
+	* max  - the unit's maximum possible health value (number)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(unit, cur, max)
@@ -167,10 +167,10 @@ local function Path(self, ...)
 	--[[ Override: Health.Override(self, event, unit)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* unit - the unit accompanying the event (string)
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* unit  - the unit accompanying the event (string)
+	--]]
 	return (self.Health.Override or Update) (self, ...)
 end
 

@@ -3,7 +3,6 @@
    <!-- Unitframe oUF Plugins -->
    <Script file="oUF_AuraWatch.lua"/>
    <Script file="oUF_CombatFader.lua"/>
-   <Script file="oUF_CombatFeedback.lua"/>
    <Script file="oUF_DebuffHighlight.lua"/>
    <Script file="oUF_GlobalCooldown.lua"/>
    <Script file="oUF_PVPSpecIcons.lua"/>

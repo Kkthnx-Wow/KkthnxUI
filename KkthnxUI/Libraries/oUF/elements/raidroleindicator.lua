@@ -13,13 +13,13 @@ This element updates by changing the texture.
 
 ## Examples
 
--- Position and size
-local RaidRoleIndicator = self:CreateTexture(nil, 'OVERLAY')
-RaidRoleIndicator:SetSize(16, 16)
-RaidRoleIndicator:SetPoint('TOPLEFT')
+    -- Position and size
+    local RaidRoleIndicator = self:CreateTexture(nil, 'OVERLAY')
+    RaidRoleIndicator:SetSize(16, 16)
+    RaidRoleIndicator:SetPoint('TOPLEFT')
 
--- Register it with oUF
-self.RaidRoleIndicator = RaidRoleIndicator
+    -- Register it with oUF
+    self.RaidRoleIndicator = RaidRoleIndicator
 --]]
 
 local _, ns = ...
@@ -72,10 +72,10 @@ local function Path(self, ...)
 	--[[ Override: RaidRoleIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.RaidRoleIndicator.Override or Update)(self, ...)
 end
 

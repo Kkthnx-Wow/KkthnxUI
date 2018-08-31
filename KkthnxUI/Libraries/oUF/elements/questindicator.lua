@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
--- Position and size
-local QuestIndicator = self:CreateTexture(nil, 'OVERLAY')
-QuestIndicator:SetSize(16, 16)
-QuestIndicator:SetPoint('TOPRIGHT', self)
+    -- Position and size
+    local QuestIndicator = self:CreateTexture(nil, 'OVERLAY')
+    QuestIndicator:SetSize(16, 16)
+    QuestIndicator:SetPoint('TOPRIGHT', self)
 
--- Register it with oUF
-self.QuestIndicator = QuestIndicator
+    -- Register it with oUF
+    self.QuestIndicator = QuestIndicator
 --]]
 
 local _, ns = ...
@@ -49,7 +49,7 @@ local function Update(self, event, unit)
 	--[[ Callback: QuestIndicator:PostUpdate(isQuestBoss)
 	Called after the element has been updated.
 
-	* self - the QuestIndicator element
+	* self        - the QuestIndicator element
 	* isQuestBoss - indicates if the element is shown (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -61,10 +61,10 @@ local function Path(self, ...)
 	--[[ Override: QuestIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.QuestIndicator.Override or Update) (self, ...)
 end
 

@@ -13,7 +13,7 @@ Totem - Any UI widget.
 
 ## Sub-Widget Options
 
-.Icon - A `Texture` representing the totem icon.
+.Icon     - A `Texture` representing the totem icon.
 .Cooldown - A `Cooldown` representing the duration of the totem.
 
 ## Notes
@@ -22,27 +22,27 @@ OnEnter and OnLeave script handlers will be set to display a Tooltip if the `Tot
 
 ## Examples
 
-local Totems = {}
-for index = 1, 5 do
-	-- Position and size of the totem indicator
-	local Totem = CreateFrame('Button', nil, self)
-	Totem:SetSize(40, 40)
-	Totem:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * Totem:GetWidth(), 0)
+    local Totems = {}
+    for index = 1, 5 do
+        -- Position and size of the totem indicator
+        local Totem = CreateFrame('Button', nil, self)
+        Totem:SetSize(40, 40)
+        Totem:SetPoint('TOPLEFT', self, 'BOTTOMLEFT', index * Totem:GetWidth(), 0)
 
-	local Icon = Totem:CreateTexture(nil, 'OVERLAY')
-	Icon:SetAllPoints()
+        local Icon = Totem:CreateTexture(nil, 'OVERLAY')
+        Icon:SetAllPoints()
 
-	local Cooldown = CreateFrame('Cooldown', nil, Totem, 'CooldownFrameTemplate')
-	Cooldown:SetAllPoints()
+        local Cooldown = CreateFrame('Cooldown', nil, Totem, 'CooldownFrameTemplate')
+        Cooldown:SetAllPoints()
 
-	Totem.Icon = Icon
-	Totem.Cooldown = Cooldown
+        Totem.Icon = Icon
+        Totem.Cooldown = Cooldown
 
-	Totems[index] = Totem
-end
+        Totems[index] = Totem
+    end
 
--- Register with oUF
-self.Totems = Totems
+    -- Register with oUF
+    self.Totems = Totems
 --]]
 
 local _, ns = ...
@@ -94,13 +94,13 @@ local function UpdateTotem(self, event, slot)
 	--[[ Callback: Totems:PostUpdate(slot, haveTotem, name, start, duration, icon)
 	Called after the element has been updated.
 
-	* self - the Totems element
-	* slot - the slot of the updated totem (number)
+	* self      - the Totems element
+	* slot      - the slot of the updated totem (number)
 	* haveTotem - indicates if a totem is present in the given slot (boolean)
-	* name - the name of the totem (string)
-	* start - the value of `GetTime()` when the totem was created (number)
-	* duration - the total duration for which the totem should last (number)
-	* icon - the totem's icon (Texture)
+	* name      - the name of the totem (string)
+	* start     - the value of `GetTime()` when the totem was created (number)
+	* duration  - the total duration for which the totem should last (number)
+	* icon      - the totem's icon (Texture)
 	--]]
 	if(element.PostUpdate) then
 		return element:PostUpdate(slot, haveTotem, name, start, duration, icon)
@@ -111,10 +111,10 @@ local function Path(self, ...)
 	--[[ Override: Totem.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.Totems.Override or UpdateTotem) (self, ...)
 end
 

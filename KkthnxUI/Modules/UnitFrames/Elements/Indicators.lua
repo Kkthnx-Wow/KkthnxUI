@@ -70,13 +70,6 @@ function Module:CreateDebuffHighlight()
 	self.DebuffHighlightFilterTable = Module.DebuffHighlightColors
 end
 
-function Module:CreateCombatFeedback()
-	self.CombatText = self.Portrait.Borders:CreateFontString(nil, "OVERLAY", 7)
-	self.CombatText:SetFont(C["Media"].Font, 20, "")
-	self.CombatText:SetShadowOffset(1.25, -1.25)
-	self.CombatText:SetPoint("CENTER", self.Portrait.Borders, "CENTER", 0, -1)
-end
-
 function Module:CreateGlobalCooldown()
 	self.GlobalCooldown = CreateFrame("Frame", self:GetName() .. "_GlobalCooldown", self.Health)
 	self.GlobalCooldown:SetWidth(self.Health:GetWidth())

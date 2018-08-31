@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
--- Position and size
-local AssistantIndicator = self:CreateTexture(nil, 'OVERLAY')
-AssistantIndicator:SetSize(16, 16)
-AssistantIndicator:SetPoint('TOP', self)
+    -- Position and size
+    local AssistantIndicator = self:CreateTexture(nil, 'OVERLAY')
+    AssistantIndicator:SetSize(16, 16)
+    AssistantIndicator:SetPoint('TOP', self)
 
--- Register it with oUF
-self.AssistantIndicator = AssistantIndicator
+    -- Register it with oUF
+    self.AssistantIndicator = AssistantIndicator
 --]]
 
 local _, ns = ...
@@ -48,7 +48,7 @@ local function Update(self, event)
 	--[[ Callback: AssistantIndicator:PostUpdate(isAssistant)
 	Called after the element has been updated.
 
-	* self - the AssistantIndicator element
+	* self        - the AssistantIndicator element
 	* isAssistant - indicates whether the unit is a raid assistant (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -60,9 +60,9 @@ local function Path(self, ...)
 	--[[ Override: AssistantIndicator.Override(self, event, ...)
 	Used to completely override the element's update process.
 
-	* self - the parent object
+	* self  - the parent object
 	* event - the event triggering the update (string)
-	* ... - the arguments accompanying the event (string)
+	* ...   - the arguments accompanying the event (string)
 	--]]
 	return (self.AssistantIndicator.Override or Update) (self, ...)
 end

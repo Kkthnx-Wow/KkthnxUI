@@ -15,7 +15,6 @@ local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
 local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
 local CreateFrame = _G.CreateFrame
-local DataBarsFont = K.GetFont(C["DataBars"].Font)
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
@@ -40,28 +39,37 @@ local function GetUnitXP(unit)
 	end
 end
 
+local function IsPlayerMaxLevel()
+	local maxLevel = GetRestrictedAccountData()
+	if (maxLevel == 0) then
+		maxLevel = MAX_PLAYER_LEVEL_TABLE[GetExpansionLevel()]
+	end
+
+	return maxLevel == UnitLevel("player")
+end
+
 function Module:SetupExperience()
 	local expbar = CreateFrame("StatusBar", "KkthnxUI_ExperienceBar", self.Container)
-	expbar:SetStatusBarTexture(self.texture)
-	expbar:SetStatusBarColor(C["DataBars"].ExperienceColor[1], C["DataBars"].ExperienceColor[2], C["DataBars"].ExperienceColor[3])
-	expbar:SetSize(self.config.Width, self.config.Height)
+	expbar:SetStatusBarTexture(self.DatabaseTexture)
+	expbar:SetStatusBarColor(self.Database.ExperienceColor[1], self.Database.ExperienceColor[2], self.Database.ExperienceColor[3])
+	expbar:SetSize(self.Database.Width, self.Database.Height)
 	expbar:CreateBorder()
 
 	local restbar = CreateFrame("StatusBar", "KkthnxUI_RestBar", self.Container)
-	restbar:SetStatusBarTexture(self.texture)
-	restbar:SetStatusBarColor(C["DataBars"].RestedColor[1], C["DataBars"].RestedColor[2], C["DataBars"].RestedColor[3])
+	restbar:SetStatusBarTexture(self.DatabaseTexture)
+	restbar:SetStatusBarColor(self.Database.RestedColor[1], self.Database.RestedColor[2], self.Database.RestedColor[3])
 	restbar:SetFrameLevel(3)
-	restbar:SetSize(self.config.Width, self.config.Height)
+	restbar:SetSize(self.Database.Width, self.Database.Height)
 	restbar:SetAlpha(0.5)
 
 	local espark = expbar:CreateTexture(nil, "OVERLAY")
 	espark:SetTexture(C["Media"].Spark_16)
-	espark:SetHeight(self.config.Height)
+	espark:SetHeight(self.Database.Height)
 	espark:SetBlendMode("ADD")
 	espark:SetPoint("CENTER", expbar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local etext = expbar:CreateFontString(nil, "OVERLAY")
-	etext:SetFontObject(DataBarsFont)
+	etext:SetFontObject(self.DatabaseFont)
 	etext:SetFont(select(1, etext:GetFont()), 11, select(3, etext:GetFont()))
 	etext:SetPoint("CENTER")
 
@@ -73,21 +81,21 @@ end
 
 function Module:SetupReputation()
 	local reputation = CreateFrame("StatusBar", "KkthnxUI_ReputationBar", self.Container)
-	reputation:SetStatusBarTexture(self.texture)
+	reputation:SetStatusBarTexture(self.DatabaseTexture)
 	reputation:SetStatusBarColor(1, 1, 1)
-	reputation:SetSize(self.config.Width, self.config.Height)
+	reputation:SetSize(self.Database.Width, self.Database.Height)
 	reputation:CreateBorder()
 
 	local rspark = reputation:CreateTexture(nil, "OVERLAY")
 	rspark:SetTexture(C["Media"].Spark_16)
-	rspark:SetHeight(self.config.Height)
+	rspark:SetHeight(self.Database.Height)
 	rspark:SetBlendMode("ADD")
 	rspark:SetPoint("CENTER", reputation:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local rtext = reputation:CreateFontString(nil, "OVERLAY")
-	rtext:SetFontObject(DataBarsFont)
+	rtext:SetFontObject(self.DatabaseFont)
 	rtext:SetFont(select(1, rtext:GetFont()), 11, select(3, rtext:GetFont()))
-	rtext:SetWidth(self.config.Width - 6)
+	rtext:SetWidth(self.Database.Width - 6)
 	rtext:SetWordWrap(false)
 	rtext:SetPoint("CENTER")
 
@@ -98,19 +106,19 @@ end
 
 function Module:SetupAzerite()
 	local azerite = CreateFrame("Statusbar", "KkthnxUI_AzeriteBar", self.Container)
-	azerite:SetStatusBarTexture(self.texture)
-	azerite:SetStatusBarColor(C["DataBars"].AzeriteColor[1], C["DataBars"].AzeriteColor[2], C["DataBars"].AzeriteColor[3])
-	azerite:SetSize(self.config.Width, self.config.Height)
+	azerite:SetStatusBarTexture(self.DatabaseTexture)
+	azerite:SetStatusBarColor(self.Database.AzeriteColor[1], self.Database.AzeriteColor[2], self.Database.AzeriteColor[3])
+	azerite:SetSize(self.Database.Width, self.Database.Height)
 	azerite:CreateBorder()
 
 	local aspark = azerite:CreateTexture(nil, "OVERLAY")
 	aspark:SetTexture(C["Media"].Spark_16)
-	aspark:SetHeight(self.config.Height)
+	aspark:SetHeight(self.Database.Height)
 	aspark:SetBlendMode("ADD")
 	aspark:SetPoint("CENTER", azerite:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local atext = azerite:CreateFontString(nil, "OVERLAY")
-	atext:SetFontObject(DataBarsFont)
+	atext:SetFontObject(self.DatabaseFont)
 	atext:SetFont(select(1, atext:GetFont()), 11, select(3, atext:GetFont()))
 	atext:SetPoint("CENTER")
 
@@ -166,7 +174,7 @@ function Module:UpdateReputation()
 			maxMinDiff = 1
 		end
 
-		if C["DataBars"].Text then
+		if self.Database.Text then
 			self.Bars.Reputation.Text:SetText(string_format("%s: %d%% [%s]", name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel))
 		end
 
@@ -177,7 +185,7 @@ function Module:UpdateReputation()
 end
 
 function Module:UpdateExperience()
-	if MAX_PLAYER_LEVEL ~= K.Level and not IsXPUserDisabled() then
+	if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
 		local cur, max = GetUnitXP("player")
 
 		if max <= 0 then
@@ -194,14 +202,14 @@ function Module:UpdateExperience()
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
 			self.Bars.Experience.RestBar:SetValue(min(cur + rested, max))
 
-			if C["DataBars"].Text then
+			if self.Database.Text then
 				self.Bars.Experience.Text:SetText(string_format("%d%% R:%d%%", cur / max * 100, rested / max * 100))
 			end
 		else
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, 1)
 			self.Bars.Experience.RestBar:SetValue(0)
 
-			if C["DataBars"].Text then
+			if self.Database.Text then
 				self.Bars.Experience.Text:SetText(string_format("%d%%", cur / max * 100))
 			end
 		end
@@ -226,7 +234,7 @@ function Module:UpdateAzerite(event, unit)
 		self.Bars.Azerite:SetMinMaxValues(0, totalLevelXP)
 		self.Bars.Azerite:SetValue(xp)
 
-		if C["DataBars"].Text then
+		if self.Database.Text then
 			self.Bars.Azerite.Text:SetText(string_format("%s%% [%s]", math_floor(xp / totalLevelXP * 100), currentLevel))
 		end
 
@@ -240,11 +248,11 @@ function Module:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self.Container)
 	GameTooltip:ClearLines()
 
-	if C["DataBars"].MouseOver then
+	if self.Database.MouseOver then
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
 	end
 
-	if MAX_PLAYER_LEVEL ~= K.Level and not IsXPUserDisabled() then
+	if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
 		local cur, max = GetUnitXP("player")
 		local rested = GetXPExhaustion()
 
@@ -258,8 +266,8 @@ function Module:OnEnter()
 	end
 
 	if GetWatchedFactionInfo() then
-		if MAX_PLAYER_LEVEL ~= K.Level then
-			GameTooltip:AddLine("  ")
+		if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
+			GameTooltip:AddLine(" ")
 		end
 
 		local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
@@ -288,8 +296,8 @@ function Module:OnEnter()
 	end
 
 	if C_AzeriteItem_FindActiveAzeriteItem() then
-		if MAX_PLAYER_LEVEL ~= K.Level and not IsXPUserDisabled() or GetWatchedFactionInfo() then
-			GameTooltip:AddLine("  ")
+		if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) or GetWatchedFactionInfo() then
+			GameTooltip:AddLine(" ")
 		end
 
 		local azeriteItemLocation = C_AzeriteItem_FindActiveAzeriteItem()
@@ -311,13 +319,11 @@ function Module:OnEnter()
 end
 
 function Module:OnLeave()
-	if C["DataBars"].MouseOver then
+	if self.Database.MouseOver then
 		K.UIFrameFadeOut(self.Container, 1, self.Container:GetAlpha(), 0.25)
 	end
 
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
-	end
+	GameTooltip:Hide()
 end
 
 function Module:Update()
@@ -325,7 +331,7 @@ function Module:Update()
 	self:UpdateReputation()
 	self:UpdateAzerite()
 
-	if C["DataBars"].MouseOver then
+	if self.Database.MouseOver then
 		self.Container:SetAlpha(0.25)
 	else
 		self.Container:SetAlpha(1)
@@ -347,19 +353,20 @@ function Module:Update()
 		end
 	end
 
-	self.Container:SetHeight(num_bars * (self.config.Height + 6) - 6)
+	self.Container:SetHeight(num_bars * (self.Database.Height + 6) - 6)
 end
 
 function Module:OnEnable()
-	self.config = C["DataBars"]
-	self.texture = K.GetTexture(C["DataBars"].Texture)
+	self.Database = C["DataBars"]
+	self.DatabaseTexture = K.GetTexture(self.Database.Texture)
+	self.DatabaseFont = K.GetFont(self.Database.Font)
 
-	if self.config.Enable ~= true then
+	if self.Database.Enable ~= true then
 		return
 	end
 
 	local container = CreateFrame("frame", "KkthnxUI_Databars", K.PetBattleHider)
-	container:SetWidth(Minimap:GetWidth() or self.config.Width)
+	container:SetWidth(Minimap:GetWidth() or self.Database.Width)
 	container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
 
 	self:HookScript(container, "OnEnter")
@@ -383,4 +390,16 @@ function Module:OnEnable()
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
 
 	K.Movers:RegisterFrame(container)
+end
+
+function Module:OnDisable()
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "Update")
+	self:UnregisterEvent("PLAYER_LEVEL_UP", "Update")
+	self:UnregisterEvent("PLAYER_XP_UPDATE", "Update")
+	self:UnregisterEvent("UPDATE_EXHAUSTION", "Update")
+	self:UnregisterEvent("DISABLE_XP_GAIN", "Update")
+	self:UnregisterEvent("ENABLE_XP_GAIN", "Update")
+	self:UnregisterEvent("UPDATE_FACTION", "Update")
+	self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
+	self:UnregisterEvent("UNIT_INVENTORY_CHANGED", "Update")
 end

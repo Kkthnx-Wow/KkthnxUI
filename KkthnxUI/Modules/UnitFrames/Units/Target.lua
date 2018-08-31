@@ -179,12 +179,7 @@ function Module:CreateTarget()
 	end
 
 	self.Range = Module.CreateRange(self)
-
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
-
-	if (C["Unitframe"].CombatText) then
-		Module.CreateCombatFeedback(self)
-	end
 
 	Module.CreateQuestIndicator(self, 26, 26)
 	Module.CreateRaidTargetIndicator(self)

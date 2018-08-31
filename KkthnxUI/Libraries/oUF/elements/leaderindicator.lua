@@ -13,13 +13,13 @@ A default texture will be applied if the widget is a Texture and doesn't have a 
 
 ## Examples
 
--- Position and size
-local LeaderIndicator = self:CreateTexture(nil, 'OVERLAY')
-LeaderIndicator:SetSize(16, 16)
-LeaderIndicator:SetPoint('BOTTOM', self, 'TOP')
+    -- Position and size
+    local LeaderIndicator = self:CreateTexture(nil, 'OVERLAY')
+    LeaderIndicator:SetSize(16, 16)
+    LeaderIndicator:SetPoint('BOTTOM', self, 'TOP')
 
--- Register it with oUF
-self.LeaderIndicator = LeaderIndicator
+    -- Register it with oUF
+    self.LeaderIndicator = LeaderIndicator
 --]]
 
 local _, ns = ...
@@ -48,7 +48,7 @@ local function Update(self, event)
 	--[[ Callback: LeaderIndicator:PostUpdate(isLeader)
 	Called after the element has been updated.
 
-	* self - the LeaderIndicator element
+	* self     - the LeaderIndicator element
 	* isLeader - indicates whether the element is shown (boolean)
 	--]]
 	if(element.PostUpdate) then
@@ -60,10 +60,10 @@ local function Path(self, ...)
 	--[[ Override: LeaderIndicator.Override(self, event, ...)
 	Used to completely override the internal update function.
 
-		* self - the parent object
-		* event - the event triggering the update (string)
-		* ... - the arguments accompanying the event
-		--]]
+	* self  - the parent object
+	* event - the event triggering the update (string)
+	* ...   - the arguments accompanying the event
+	--]]
 	return (self.LeaderIndicator.Override or Update) (self, ...)
 end
 

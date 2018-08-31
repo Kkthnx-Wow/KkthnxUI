@@ -20,14 +20,6 @@ local function FilterSharedBuffs(_, _, _, name)
 	end
 end
 
-local function FilterGroupDebuffs(_, unit, button, name, _, _, _, _, _, _, caster, _, _, _, _, isBossDebuff, casterIsPlayer)
-	if (not UnitIsFriend("player", unit)) then
-		return button.isPlayer or caster == "pet" or not casterIsPlayer or isBossDebuff or Module.ImportantDebuffs[name]
-	else
-		return false
-	end
-end
-
 -- We will handle these individually so we can have the up most control of our auras on each unit/frame
 function Module:CreateAuras(unit)
 	unit = unit:match("^(%a-)%d+") or unit
@@ -136,7 +128,7 @@ function Module:CreateAuras(unit)
 			Buffs:SetWidth(self:GetWidth() + 2)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 18
-			Buffs.num = 5
+			Buffs.num = 4
 			Buffs.spacing = 6
 			Buffs.initialAnchor = "TOPLEFT"
 			Buffs["growth-y"] = "DOWN"
@@ -148,18 +140,17 @@ function Module:CreateAuras(unit)
 			self.Buffs = Buffs
 		end
 
-		Debuffs:SetHeight(self:GetHeight() - 6)
-		Debuffs:SetWidth(self.Health:GetWidth())
-		Debuffs:SetPoint("LEFT", self, "RIGHT", 3, 0)
-		Debuffs.size = self:GetHeight() - 6
-		Debuffs.num = 4
+		Debuffs:SetHeight(self:GetHeight() - 8)
+		Debuffs:SetWidth(self:GetWidth() + 8)
+		Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -3)
+		Debuffs.size = self:GetHeight() - 8
+		Debuffs.num = 6
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"
 		Debuffs["growth-y"] = "UP"
 		Debuffs["growth-x"] = "RIGHT"
 		Debuffs.PostCreateIcon = Module.PostCreateAura
 		Debuffs.PostUpdateIcon = Module.PostUpdateAura
-		Debuffs.CustomFilter = FilterGroupDebuffs
 
 		self.Debuffs = Debuffs
 	elseif (unit == "targettarget") then

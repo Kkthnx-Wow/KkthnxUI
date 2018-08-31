@@ -5,6 +5,7 @@ if (Locale ~= "koKR") then
 	return
 end
 
+local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
 local ModuleFont = "Pick a font from the provided fonts for this module."
 local ModuleFontOutline = "Apply a font outline for this module"
 local ModuleHeight = "Pick the perfect Height for this module"
@@ -388,6 +389,36 @@ KkthnxUIConfig["koKR"] = {
 
 	-- Nameplates Local
 	["Nameplates"] = {
+		["NonTargetAlpha"] = {
+			["Name"] = "Non Target Alpha",
+			["Desc"] = "Change the alpha level of the non targeted Nameplates.",
+		},
+
+		["Totems"] = {
+			["Name"] = "Totems Icons",
+			["Desc"] = "Show icon above enemy totems nameplate",
+		},
+
+		["ClassIcons"] = {
+			["Name"] = "Class Icons",
+			["Desc"] = "Icons by class in PvP",
+		},
+
+		["TankedByTankColor"] = {
+			["Name"] = "Tanked Color",
+			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
+		},
+
+		["BadTransition"] = {
+			["Name"] = "Bad Transition",
+			["Desc"] = "Bad Transition Color",
+		},
+
+		["GoodTransition"] = {
+			["Name"] = "Good Transition",
+			["Desc"] = "Good Transition Color",
+		},
+
 		["AurasSize"] = {
 			["Name"] = "Auras Size",
 			["Desc"] = "Size of the auras",
@@ -1090,11 +1121,6 @@ KkthnxUIConfig["koKR"] = {
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
 			["Desc"] = ModuleWidth,
-		},
-
-		["CombatText"] = {
-			["Name"] = "Portrait Combat Text",
-			["Desc"] = "Enable combat text on player and target frames",
 		},
 
 		["DebuffsOnTop"] = {

@@ -12,58 +12,58 @@ A FontString to hold a tag string. Unlike other elements, this widget must not h
 ## Notes
 
 A `Tag` is a Lua string consisting of a function name surrounded by square brackets. The tag will be replaced by the
-	output of the function and displayed as text on the font string widget with that the tag has been registered. Literals
-		can be pre- or appended by separating them with a `>` before or `<` after the function name. The literals will be only
-			displayed when the function returns a non-nil value. I.e. `"[perhp<%]"` will display the current health as a percentage
-				of the maximum health followed by the % sign.
+output of the function and displayed as text on the font string widget with that the tag has been registered. Literals
+can be pre- or appended by separating them with a `>` before or `<` after the function name. The literals will be only
+displayed when the function returns a non-nil value. I.e. `"[perhp<%]"` will display the current health as a percentage
+of the maximum health followed by the % sign.
 
-				A `Tag String` is a Lua string consisting of one or multiple tags with optional literals between them. Each tag will be
-				updated individually and the output will follow the tags order. Literals will be displayed in the output string
-				regardless of whether the surrounding tag functions return a value. I.e. `"[curhp]/[maxhp]"` will resolve to something
-				like `2453/5000`.
+A `Tag String` is a Lua string consisting of one or multiple tags with optional literals between them. Each tag will be
+updated individually and the output will follow the tags order. Literals will be displayed in the output string
+regardless of whether the surrounding tag functions return a value. I.e. `"[curhp]/[maxhp]"` will resolve to something
+like `2453/5000`.
 
-				A `Tag Function` is used to replace a single tag in a tag string by its output. A tag function receives only two
-					arguments - the unit and the realUnit of the unit frame used to register the tag (see Options for further details). The
-					tag function is called when the unit frame is shown or when a specified event has fired. It the tag is registered on an
-						eventless frame (i.e. one holding the unit "targettarget"), then the tag function is called in a set time interval.
+A `Tag Function` is used to replace a single tag in a tag string by its output. A tag function receives only two
+arguments - the unit and the realUnit of the unit frame used to register the tag (see Options for further details). The
+tag function is called when the unit frame is shown or when a specified event has fired. It the tag is registered on an
+eventless frame (i.e. one holding the unit "targettarget"), then the tag function is called in a set time interval.
 
-							A number of built-in tag functions exist. The layout can also define its own tag functions by adding them to the
-							`oUF.Tags.Methods` table. The events upon which the function will be called are specified in a white-space separated
-								list added to the `oUF.Tags.Events` table. Should an event fire without unit information, then it should also be listed
-									in the `oUF.Tags.SharedEvents` table as follows: `oUF.Tags.SharedEvents.EVENT_NAME = true`.
+A number of built-in tag functions exist. The layout can also define its own tag functions by adding them to the
+`oUF.Tags.Methods` table. The events upon which the function will be called are specified in a white-space separated
+list added to the `oUF.Tags.Events` table. Should an event fire without unit information, then it should also be listed
+in the `oUF.Tags.SharedEvents` table as follows: `oUF.Tags.SharedEvents.EVENT_NAME = true`.
 
-									## Options
+## Options
 
-									.overrideUnit - if specified on the font string widget, the frame's realUnit will be passed as the second argument to
-									every tag function whose name is contained in the relevant tag string. Otherwise the second argument
-										is always nil (boolean)
-										.frequentUpdates - defines how often the correspondig tag function(s) should be called. This will override the events for
-											the tag(s), if any. If the value is a number, it is taken as a time interval in seconds. If the value
-											is a boolean, the time interval is set to 0.5 seconds (number or boolean)
+.overrideUnit    - if specified on the font string widget, the frame's realUnit will be passed as the second argument to
+                   every tag function whose name is contained in the relevant tag string. Otherwise the second argument
+                   is always nil (boolean)
+.frequentUpdates - defines how often the correspondig tag function(s) should be called. This will override the events for
+                   the tag(s), if any. If the value is a number, it is taken as a time interval in seconds. If the value
+                   is a boolean, the time interval is set to 0.5 seconds (number or boolean)
 
-											## Attributes
+## Attributes
 
-											.parent - the unit frame on which the tag has been registered
+.parent - the unit frame on which the tag has been registered
 
-											## Examples
+## Examples
 
-											-- define the tag function
-											oUF.Tags.Methods['mylayout:threatname'] = function(unit, realUnit)
-												local color = _TAGS['threatcolor'](unit)
-												local name = _TAGS['name'](unit, realUnit)
-												return string.format('%s%s|r', color, name)
-											end
+    -- define the tag function
+    oUF.Tags.Methods['mylayout:threatname'] = function(unit, realUnit)
+        local color = _TAGS['threatcolor'](unit)
+        local name = _TAGS['name'](unit, realUnit)
+        return string.format('%s%s|r', color, name)
+    end
 
-											-- add the events
-											oUF.Tags.Events['mylayout:threatname'] = 'UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE'
+    -- add the events
+    oUF.Tags.Events['mylayout:threatname'] = 'UNIT_NAME_UPDATE UNIT_THREAT_SITUATION_UPDATE'
 
-											-- create the text widget
-											local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
-											info:SetPoint('LEFT')
+    -- create the text widget
+    local info = self.Health:CreateFontString(nil, 'OVERLAY', 'GameFontNormal')
+    info:SetPoint('LEFT')
 
-											-- register the tag on the text widget with oUF
-											self:Tag(info, '[mylayout:threatname]')
-											--]]
+    -- register the tag on the text widget with oUF
+    self:Tag(info, '[mylayout:threatname]')
+--]]
 
 local _, ns = ...
 local oUF = ns.oUF
@@ -111,7 +111,7 @@ local tagStrings = {
 		end
 	end]],
 
-	['leaderlong'] = [[function(u)
+	['leaderlong']  = [[function(u)
 		if(UnitIsGroupLeader(u)) then
 			return 'Leader'
 		end
@@ -397,88 +397,102 @@ local tagStrings = {
 
 		return Hex(t)
 	end]],
+
+	['runes'] = [[function()
+		local amount = 0
+
+		for i = 1, 6 do
+			local _, _, ready = GetRuneCooldown(i)
+			if(ready) then
+				amount = amount + 1
+			end
+		end
+
+		return amount
+	end]],
 }
 
 local tags = setmetatable(
-{
-	curhp = UnitHealth,
-	curpp = UnitPower,
-	maxhp = UnitHealthMax,
-	maxpp = UnitPowerMax,
-	class = UnitClass,
-	faction = UnitFactionGroup,
-	race = UnitRace,
-},
-{
-	__index = function(self, key)
-		local tagFunc = tagStrings[key]
-		if(tagFunc) then
-			local func, err = loadstring('return ' .. tagFunc)
-			if(func) then
-				func = func()
+	{
+		curhp = UnitHealth,
+		curpp = UnitPower,
+		maxhp = UnitHealthMax,
+		maxpp = UnitPowerMax,
+		class = UnitClass,
+		faction = UnitFactionGroup,
+		race = UnitRace,
+	},
+	{
+		__index = function(self, key)
+			local tagFunc = tagStrings[key]
+			if(tagFunc) then
+				local func, err = loadstring('return ' .. tagFunc)
+				if(func) then
+					func = func()
 
-				-- Want to trigger __newindex, so no rawset.
-				self[key] = func
-				tagStrings[key] = nil
+					-- Want to trigger __newindex, so no rawset.
+					self[key] = func
+					tagStrings[key] = nil
 
-				return func
-			else
-				error(err, 3)
+					return func
+				else
+					error(err, 3)
+				end
 			end
-		end
-	end,
-	__newindex = function(self, key, val)
-		if(type(val) == 'string') then
-			tagStrings[key] = val
-		elseif(type(val) == 'function') then
-			-- So we don't clash with any custom envs.
-			if(getfenv(val) == _G) then
-				setfenv(val, _PROXY)
-			end
+		end,
+		__newindex = function(self, key, val)
+			if(type(val) == 'string') then
+				tagStrings[key] = val
+			elseif(type(val) == 'function') then
+				-- So we don't clash with any custom envs.
+				if(getfenv(val) == _G) then
+					setfenv(val, _PROXY)
+				end
 
-			rawset(self, key, val)
-		end
-	end,
-}
+				rawset(self, key, val)
+			end
+		end,
+	}
 )
 
 _ENV._TAGS = tags
 
 local tagEvents = {
-	['curhp'] = 'UNIT_HEALTH',
-	['dead'] = 'UNIT_HEALTH',
-	['leader'] = 'PARTY_LEADER_CHANGED',
-	['leaderlong'] = 'PARTY_LEADER_CHANGED',
-	['level'] = 'UNIT_LEVEL PLAYER_LEVEL_UP',
-	['maxhp'] = 'UNIT_MAXHEALTH',
-	['missinghp'] = 'UNIT_HEALTH UNIT_MAXHEALTH',
-	['name'] = 'UNIT_NAME_UPDATE',
-	['perhp'] = 'UNIT_HEALTH UNIT_MAXHEALTH',
-	['pvp'] = 'UNIT_FACTION',
-	['resting'] = 'PLAYER_UPDATE_RESTING',
-	['smartlevel'] = 'UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED',
-	['threat'] = 'UNIT_THREAT_SITUATION_UPDATE',
-	['threatcolor'] = 'UNIT_THREAT_SITUATION_UPDATE',
-	['cpoints'] = 'UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED',
-	['affix'] = 'UNIT_CLASSIFICATION_CHANGED',
-	['plus'] = 'UNIT_CLASSIFICATION_CHANGED',
-	['rare'] = 'UNIT_CLASSIFICATION_CHANGED',
-	['classification'] = 'UNIT_CLASSIFICATION_CHANGED',
+	['curhp']               = 'UNIT_HEALTH',
+	['dead']                = 'UNIT_HEALTH',
+	['leader']              = 'PARTY_LEADER_CHANGED',
+	['leaderlong']          = 'PARTY_LEADER_CHANGED',
+	['level']               = 'UNIT_LEVEL PLAYER_LEVEL_UP',
+	['maxhp']               = 'UNIT_MAXHEALTH',
+	['missinghp']           = 'UNIT_HEALTH UNIT_MAXHEALTH',
+	['name']                = 'UNIT_NAME_UPDATE',
+	['perhp']               = 'UNIT_HEALTH UNIT_MAXHEALTH',
+	['pvp']                 = 'UNIT_FACTION',
+	['resting']             = 'PLAYER_UPDATE_RESTING',
+	['smartlevel']          = 'UNIT_LEVEL PLAYER_LEVEL_UP UNIT_CLASSIFICATION_CHANGED',
+	['threat']              = 'UNIT_THREAT_SITUATION_UPDATE',
+	['threatcolor']         = 'UNIT_THREAT_SITUATION_UPDATE',
+	['cpoints']             = 'UNIT_POWER_FREQUENT PLAYER_TARGET_CHANGED',
+	['affix']               = 'UNIT_CLASSIFICATION_CHANGED',
+	['plus']                = 'UNIT_CLASSIFICATION_CHANGED',
+	['rare']                = 'UNIT_CLASSIFICATION_CHANGED',
+	['classification']      = 'UNIT_CLASSIFICATION_CHANGED',
 	['shortclassification'] = 'UNIT_CLASSIFICATION_CHANGED',
-	['group'] = 'GROUP_ROSTER_UPDATE',
-	['curpp'] = 'UNIT_POWER_UPDATE',
-	['maxpp'] = 'UNIT_MAXPOWER',
-	['missingpp'] = 'UNIT_MAXPOWER UNIT_POWER_UPDATE',
-	['perpp'] = 'UNIT_MAXPOWER UNIT_POWER_UPDATE',
-	['offline'] = 'UNIT_HEALTH UNIT_CONNECTION',
-	['status'] = 'UNIT_HEALTH PLAYER_UPDATE_RESTING UNIT_CONNECTION',
-	['curmana'] = 'UNIT_POWER_UPDATE UNIT_MAXPOWER',
-	['maxmana'] = 'UNIT_POWER_UPDATE UNIT_MAXPOWER',
-	['soulshards'] = 'UNIT_POWER_UPDATE',
-	['holypower'] = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
-	['chi'] = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
-	['arcanecharges'] = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
-	['powercolor'] = 'UNIT_DISPLAYPOWER',
+	['group']               = 'GROUP_ROSTER_UPDATE',
+	['curpp']               = 'UNIT_POWER_UPDATE',
+	['maxpp']               = 'UNIT_MAXPOWER',
+	['missingpp']           = 'UNIT_MAXPOWER UNIT_POWER_UPDATE',
+	['perpp']               = 'UNIT_MAXPOWER UNIT_POWER_UPDATE',
+	['offline']             = 'UNIT_HEALTH UNIT_CONNECTION',
+	['status']              = 'UNIT_HEALTH PLAYER_UPDATE_RESTING UNIT_CONNECTION',
+	['curmana']             = 'UNIT_POWER_UPDATE UNIT_MAXPOWER',
+	['maxmana']             = 'UNIT_POWER_UPDATE UNIT_MAXPOWER',
+	['soulshards']          = 'UNIT_POWER_UPDATE',
+	['holypower']           = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
+	['chi']                 = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
+	['arcanecharges']       = 'UNIT_POWER_UPDATE SPELLS_CHANGED',
+	['powercolor']          = 'UNIT_DISPLAYPOWER',
+	['runes']               = 'RUNE_POWER_UPDATE',
 }
 
 local unitlessEvents = {
@@ -487,6 +501,7 @@ local unitlessEvents = {
 	PLAYER_TARGET_CHANGED = true,
 	PARTY_LEADER_CHANGED = true,
 	GROUP_ROSTER_UPDATE = true,
+	RUNE_POWER_UPDATE = true,
 }
 
 local events = {}
@@ -585,10 +600,10 @@ local tmp = {}
 --[[ Tags: frame:Tag(fs, tagstr, ...)
 Used to register a tag on a unit frame.
 
-* self - the unit frame on which to register the tag
-* fs - the font string to display the tag (FontString)
+* self   - the unit frame on which to register the tag
+* fs     - the font string to display the tag (FontString)
 * tagstr - the tag string (string)
-* ... - additional optional unitID(s) the tag should update for
+* ...    - additional optional unitID(s) the tag should update for
 --]]
 local function Tag(self, fs, tagstr, ...)
 	if(not fs or not tagstr) then return end
@@ -676,8 +691,8 @@ local function Tag(self, fs, tagstr, ...)
 
 				_ENV._COLORS = parent.colors
 				return self:SetFormattedText(
-				format,
-				args[1](parent.unit, realUnit) or ''
+					format,
+					args[1](parent.unit, realUnit) or ''
 				)
 			end
 		elseif(numTags == 2) then
@@ -691,9 +706,9 @@ local function Tag(self, fs, tagstr, ...)
 
 				_ENV._COLORS = parent.colors
 				return self:SetFormattedText(
-				format,
-				args[1](unit, realUnit) or '',
-				args[2](unit, realUnit) or ''
+					format,
+					args[1](unit, realUnit) or '',
+					args[2](unit, realUnit) or ''
 				)
 			end
 		elseif(numTags == 3) then
@@ -707,10 +722,10 @@ local function Tag(self, fs, tagstr, ...)
 
 				_ENV._COLORS = parent.colors
 				return self:SetFormattedText(
-				format,
-				args[1](unit, realUnit) or '',
-				args[2](unit, realUnit) or '',
-				args[3](unit, realUnit) or ''
+					format,
+					args[1](unit, realUnit) or '',
+					args[2](unit, realUnit) or '',
+					args[3](unit, realUnit) or ''
 				)
 			end
 		else
@@ -771,7 +786,7 @@ end
 Used to unregister a tag from a unit frame.
 
 * self - the unit frame from which to unregister the tag
-* fs - the font string holding the tag (FontString)
+* fs   - the font string holding the tag (FontString)
 --]]
 local function Untag(self, fs)
 	if(not fs) then return end

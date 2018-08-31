@@ -1,15 +1,16 @@
 -- Localization for enUS & enGB clients
 
+local MissingDesc = "The description for this module/setting is missing. Someone should really remind Kkthnx to do his job!"
 local ModuleFont = "Pick a font from the provided fonts for this module."
 local ModuleFontOutline = "Apply a font outline for this module"
 local ModuleHeight = "Pick the perfect Height for this module"
 local ModuleTexture = "Pick a texture from the provided textures for this module."
 local ModuleToggle = "Enable or disable this module based on your preference."
+local ModuleToggleSkin = "Enable/Disable this skin."
 local ModuleWidth = "Pick the perfect Width for this module"
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
 local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
 local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
-local ModuleToggleSkin = "Enable/Disable this skin."
 
 KkthnxUIConfig["enUS"] = {
 	-- General Local
@@ -383,6 +384,36 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Nameplates Local
 	["Nameplates"] = {
+		["NonTargetAlpha"] = {
+			["Name"] = "Non Target Alpha",
+			["Desc"] = "Change the alpha level of the non targeted Nameplates.",
+		},
+
+		["Totems"] = {
+			["Name"] = "Totems Icons",
+			["Desc"] = "Show icon above enemy totems nameplate",
+		},
+
+		["ClassIcons"] = {
+			["Name"] = "Class Icons",
+			["Desc"] = "Icons by class in PvP",
+		},
+
+		["TankedByTankColor"] = {
+			["Name"] = "Tanked Color",
+			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
+		},
+
+		["BadTransition"] = {
+			["Name"] = "Bad Transition",
+			["Desc"] = "Bad Transition Color",
+		},
+
+		["GoodTransition"] = {
+			["Name"] = "Good Transition",
+			["Desc"] = "Good Transition Color",
+		},
+
 		["AurasSize"] = {
 			["Name"] = "Auras Size",
 			["Desc"] = "Size of the auras",
@@ -660,7 +691,7 @@ KkthnxUIConfig["enUS"] = {
 
 		["GrowthDirection"] = {
 			["Name"] = "Growth Direction",
-			["Desc"] = "Description Needed",
+			["Desc"] = MissingDesc,
 		},
 
 		["SortDir"] = {
@@ -1085,11 +1116,6 @@ KkthnxUIConfig["enUS"] = {
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
 			["Desc"] = ModuleWidth,
-		},
-
-		["CombatText"] = {
-			["Name"] = "Portrait Combat Text",
-			["Desc"] = "Enable combat text on player and target frames",
 		},
 
 		["DebuffsOnTop"] = {
