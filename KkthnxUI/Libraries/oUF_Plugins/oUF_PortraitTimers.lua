@@ -97,6 +97,8 @@ ns.PortraitTimerDB = {
     [47788] = true, -- Guardian Spirit
     [1850] = true, -- Dash
     [121557] = true, -- Feather
+
+    -- [278736] = true, -- Debug DO NOT UNCOMMENT THIS
 }
 
 local Update = function(self, event, unit)

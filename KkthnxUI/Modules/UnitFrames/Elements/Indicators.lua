@@ -38,9 +38,14 @@ function Module:CreateThreatIndicator()
 end
 
 function Module:CreatePortraitTimers()
-	self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
-   	self.PortraitTimer:SetAllPoints(self.Portrait)
-   	self.PortraitTimer:CreateBorder()
+   	self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
+	self.PortraitTimer:SetAllPoints(self.Portrait)
+
+	self.PortraitTimer.Borders = CreateFrame("Frame", nil, self.PortraitTimer)
+	self.PortraitTimer.Borders:SetAllPoints()
+	--self.PortraitTimer.Borders:CreateBorder()
+	K.CreateBorder(self.PortraitTimer.Borders)
+	self.PortraitTimer.Borders:CreateInnerShadow()
 end
 
 function Module:CreateSpecIcons()

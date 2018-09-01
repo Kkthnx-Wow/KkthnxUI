@@ -892,11 +892,6 @@ KkthnxUIConfig["frFR"] = {
 			["Name"] = "24 Hour Time",
 			["Desc"] = "Display 24 time format",
 		},
-
-		["GarrisonLandingPage"] = {
-			["Name"] = GARRISON_LANDING_PAGE_TITLE,
-			["Desc"] = BINDING_NAME_TOGGLEGARRISONLANDINGPAGE,
-		},
 	},
 
 	-- Skins Local
