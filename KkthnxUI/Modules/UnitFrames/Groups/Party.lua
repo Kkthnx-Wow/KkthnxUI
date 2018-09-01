@@ -154,10 +154,10 @@ function Module:CreateParty()
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow)
-		-- UpdatePartyTargetGlow()
 	end
 
 	Module.CreateAuras(self, "party")
+	Module.CreatePortraitTimers(self)
 	Module.CreatePhaseIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)

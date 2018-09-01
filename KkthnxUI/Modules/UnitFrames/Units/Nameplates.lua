@@ -239,9 +239,8 @@ function Module:CreateNameplates()
 	-- Class Power (Combo Points, Insanity, etc...)
 	self.ClassPowerText = self:CreateFontString(nil, "OVERLAY")
 	self.ClassPowerText:SetFontObject(Font)
-	self.ClassPowerText:SetFont(select(1, self.ClassPowerText:GetFont()), 18, select(3, self.ClassPowerText:GetFont()))
-	self.ClassPowerText:SetPoint("LEFT", self.Health, 20, 0)
-	self.ClassPowerText:SetJustifyH("RIGHT")
+	self.ClassPowerText:SetFont(select(1, self.ClassPowerText:GetFont()), 26, select(3, self.ClassPowerText:GetFont()))
+	self.ClassPowerText:SetPoint("TOP", self.Health, "BOTTOM", 0, -10)
 	self.ClassPowerText:SetWidth(C["Nameplates"].Width)
 	if K.Class == "DEATHKNIGHT" then
 		self:Tag(self.ClassPowerText, "[runes]", "player")
@@ -336,6 +335,7 @@ function Module:CreateNameplates()
 	-- Threat Plate Events
 	if C["Nameplates"].Threat then
 		self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
+		self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
 
 		-- Threat Plate PostUpdate Function
 		self.Health.PostUpdate = function()

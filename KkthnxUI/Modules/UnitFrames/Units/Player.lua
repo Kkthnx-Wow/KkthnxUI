@@ -193,21 +193,23 @@ function Module:CreatePlayer()
 	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.AdditionalPower.frequentUpdates = true
 
-	Module.CreateClassModules(self, 194, 12, 6)
-
-	if (K.Class == "DEATHKNIGHT") then
-		Module.CreateClassRunes(self, 194, 12, 6)
-	elseif (K.Class == "MONK") then
-		Module.CreateStagger(self)
+	if C["Unitframe"].ClassResource then
+		Module.CreateClassModules(self, 194, 12, 6)
+		if (K.Class == "DEATHKNIGHT") then
+			Module.CreateClassRunes(self, 194, 12, 6)
+		elseif (K.Class == "MONK") then
+			Module.CreateStagger(self)
+		end
+		Module.CreateClassTotems(self, 194, 12, 6)
 	end
 
+	Module.CreatePortraitTimers(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
 	if (C["Unitframe"].PowerPredictionBar) then
 		Module.CreatePowerPrediction(self)
 	end
 
-	Module.CreateClassTotems(self, 194, 12, 6)
 	Module.CreateCombatIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)

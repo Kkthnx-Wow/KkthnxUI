@@ -37,6 +37,12 @@ function Module:CreateThreatIndicator()
 	self.ThreatIndicator = threat
 end
 
+function Module:CreatePortraitTimers()
+	self.PortraitTimer = CreateFrame("Frame", "$parentPortraitTimer", self.Health)
+   	self.PortraitTimer:SetAllPoints(self.Portrait)
+   	self.PortraitTimer:CreateBorder()
+end
+
 function Module:CreateSpecIcons()
 	self.PVPSpecIcon = CreateFrame("Frame", nil, self)
 	self.PVPSpecIcon:SetSize(46, 46)

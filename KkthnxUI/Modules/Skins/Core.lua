@@ -57,17 +57,6 @@ function Module:AcceptFrame(MainText, Function)
 	AcceptFrame:Show()
 end
 
-function Module:StatusBarColorGradient(bar, value, max)
-	local current = (not max and value) or (value and max and max ~= 0 and value/max)
-
-	if not (bar and current) then
-		return
-	end
-
-	local r, g, b = K.ColorGradient(current, 0.8, 0, 0, 0.8, 0.8, 0, 0, 0.8, 0)
-	bar:SetStatusBarColor(r, g, b)
-end
-
 -- DropDownMenu library support
 function Module:SkinLibDropDownMenu(prefix)
 	if _G[prefix .. "_UIDropDownMenu_CreateFrames"] and not Module[prefix .. "_UIDropDownMenuSkinned"] then
@@ -99,7 +88,7 @@ function Module:SkinLibDropDownMenu(prefix)
 	end
 end
 
-function Module:ADDON_LOADED(_, addon)
+function Module:ADDON_LOADED(event, addon)
 	if IsAddOnLoaded("Skinner") or IsAddOnLoaded("Aurora") then
 		self:UnregisterEvent("ADDON_LOADED")
 		return
@@ -133,19 +122,3 @@ function Module:ADDON_LOADED(_, addon)
 end
 
 Module:RegisterEvent("ADDON_LOADED")
-
-
--- Reputation
-local function UpdateFactionbarTexture()
-	for i = 1, GetNumFactions() do
-		local statusbar = _G["ReputationBar"..i.."ReputationBar"]
-
-		if statusbar then
-			statusbar:SetStatusBarTexture(C.Media.Texture)
-		end
-	end
-end
-
-ReputationFrame:HookScript("OnShow", UpdateFactionbarTexture)
-hooksecurefunc("ExpandFactionHeader", UpdateFactionbarTexture)
-hooksecurefunc("CollapseFactionHeader", UpdateFactionbarTexture)

@@ -9,19 +9,23 @@ if not oUF then
 end
 
 local _G = _G
+local math_ceil = math.ceil
 local pairs = pairs
 local select = _G.select
+local string_find = string.find
 local string_format = string.format
+local string_gsub = string.gsub
 local table_insert = table.insert
+local table_wipe = table.wipe
 local tonumber = tonumber
 local unpack = unpack
 
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local DebuffTypeColor = _G.DebuffTypeColor
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
-local GetNumGroupMembers = _G.GetNumGroupMembers
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
@@ -30,6 +34,7 @@ local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
 local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
+local MAX_ARENA_ENEMIES = _G.MAX_ARENA_ENEMIES or 5
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local PlaySound = _G.PlaySound
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
@@ -40,6 +45,7 @@ local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitAura = _G.UnitAura
 local UnitCanAttack = _G.UnitCanAttack
 local UnitClass = _G.UnitClass
+local UnitClassification = _G.UnitClassification
 local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitExists = _G.UnitExists
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
@@ -132,78 +138,118 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
+-- Sourced: ElvUI
+function Module:UpdateVehicleStatus()
+	if (UnitHasVehicleUI("player")) then
+		self.playerUnitToken = "vehicle"
+	else
+		self.playerUnitToken = "player"
+	end
+end
+
 function Module:ThreatPlate(forced)
 	if C["Nameplates"].Threat ~= true then
 		return
 	end
 
-	if (not self.Health:IsShown()) then
+	local unit = self.unit
+	local health = self.Health
+
+	if UnitIsPlayer(unit) then
 		return
 	end
 
-	if UnitIsPlayer(self.unit) then
+	if (not health:IsShown()) then
 		return
 	end
 
-	if (not UnitIsConnected(self.unit)) then
-		self.Health:SetStatusBarColor(0.3, 0.3, 0.3)
+	do
+		local isTanking, status, percent = UnitDetailedThreatSituation(Module.playerUnitToken, unit)
+		local isInGroup, isInRaid = IsInGroup(), IsInRaid()
+		self.ThreatData = {}
+		self.ThreatData.player = {isTanking, status, percent}
+		self.isBeingTanked = false
+		if (isTanking and K.GetPlayerRole() == "TANK") then
+			self.isBeingTanked = true
+		end
+
+		if (status and (isInRaid or isInGroup)) then
+			if isInRaid then
+				for i = 1, 40 do
+					if UnitExists("raid" .. i) and not UnitIsUnit("raid" .. i, "player") then
+						self.ThreatData["raid" .. i] = self.ThreatData["raid" .. i] or {}
+						isTanking, status, percent = UnitDetailedThreatSituation("raid" .. i, unit)
+						self.ThreatData["raid" .. i] = {isTanking, status, percent}
+
+						if (self.isBeingTanked ~= true and isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK") then
+							self.isBeingTanked = true
+						end
+					end
+				end
+			else
+				self.ThreatData = {}
+				self.ThreatData.player = {UnitDetailedThreatSituation("player", unit)}
+				for i = 1, 4 do
+					if UnitExists("party" .. i) then
+						self.ThreatData["party" .. i] = self.ThreatData["party" .. i] or {}
+						isTanking, status, percent = UnitDetailedThreatSituation("party" .. i, unit)
+						self.ThreatData["party" .. i] = {isTanking, status, percent}
+
+						if (self.isBeingTanked ~= true and isTanking and UnitGroupRolesAssigned("party" .. i) == "TANK") then
+							self.isBeingTanked = true
+						end
+					end
+				end
+			end
+		end
+	end
+
+	if (not UnitIsConnected(unit)) then
+		health:SetStatusBarColor(0.3, 0.3, 0.3)
 	else
-		if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
-			-- Use grey if not a player and can't get tap on unit
-			self.Health:SetStatusBarColor(0.6, 0.6, 0.6)
+		if (not UnitPlayerControlled(unit) and UnitIsTapDenied(unit)) then
+			-- Use grey if not a player and can"t get tap on unit
+			health:SetStatusBarColor(0.6, 0.6, 0.6)
 		else
 			-- Use color based on the type of unit (neutral, etc.)
-			local _, status = UnitDetailedThreatSituation("player", self.unit)
+			local _, status = UnitDetailedThreatSituation("player", unit)
 			if status then
 				if (status == 3) then -- Securely Tanking
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
+						health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 					else
-						self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
+						health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 					end
 				elseif (status == 2) then -- insecurely tanking
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3])
+						health:SetStatusBarColor(C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3])
 					else
-						self.Health:SetStatusBarColor(C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3])
+						health:SetStatusBarColor(C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3])
 					end
 				elseif (status == 1) then -- not tanking but threat higher than tank
 					if (K.GetPlayerRole() == "TANK") then
-						self.Health:SetStatusBarColor(C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3])
+						health:SetStatusBarColor(C["Nameplates"].GoodTransition[1], C["Nameplates"].GoodTransition[2], C["Nameplates"].GoodTransition[3])
 					else
-						self.Health:SetStatusBarColor(C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3])
+						health:SetStatusBarColor(C["Nameplates"].BadTransition[1], C["Nameplates"].BadTransition[2], C["Nameplates"].BadTransition[3])
 					end
-				elseif (status == 0) then -- not tanking, lower threat than tank
+				else
 					if (K.GetPlayerRole() == "TANK") then
-						if (IsInRaid() or IsInGroup()) then
-							for i = 1, GetNumGroupMembers() do
-								if UnitExists("raid" .. i) or UnitExists("party" .. i) and not UnitIsUnit("raid" .. i, "player") or not UnitIsUnit("party" .. i, "player") then
-									local isTanking = UnitDetailedThreatSituation("raid" .. i, self.unit) or UnitDetailedThreatSituation("party" .. i, self.unit)
-									if isTanking and UnitGroupRolesAssigned("raid" .. i) == "TANK" or UnitGroupRolesAssigned("party" .. i) == "TANK" then
-										self.Health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
-									else
-										self.Health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
-									end
-								end
-							end
+						-- Check if it is being tanked by an offtank.
+						if (IsInRaid() or IsInGroup()) and self.isBeingTanked and C["Nameplates"].TankedByTank then
+							health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
+						else
+							health:SetStatusBarColor(C["Nameplates"].BadColor[1], C["Nameplates"].BadColor[2], C["Nameplates"].BadColor[3])
 						end
 					else
-						if (IsInRaid() or IsInGroup()) then
-							for i = 1, GetNumGroupMembers() do
-								if UnitExists("party" .. i) or UnitExists("raid" .. i) and not UnitIsUnit("party" .. i, "player") or not UnitIsUnit("raid" .. i, "player") then
-									local isTanking = UnitDetailedThreatSituation("party" .. i, self.unit) or UnitDetailedThreatSituation("raid" .. i, self.unit)
-									if isTanking and UnitGroupRolesAssigned("party" .. i) == "TANK" or UnitGroupRolesAssigned("raid" .. i) == "TANK" then
-										self.Health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
-									else
-										self.Health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
-									end
-								end
-							end
+						if (IsInRaid() or IsInGroup()) and self.isBeingTanked and C["Nameplates"].TankedByTank then
+							health:SetStatusBarColor(C["Nameplates"].TankedByTankColor[1], C["Nameplates"].TankedByTankColor[2], C["Nameplates"].TankedByTankColor[3])
+						else
+							health:SetStatusBarColor(C["Nameplates"].GoodColor[1], C["Nameplates"].GoodColor[2], C["Nameplates"].GoodColor[3])
 						end
 					end
 				end
 			elseif not forced then
-				self.Health:ForceUpdate()
+				health:ForceUpdate()
 			end
 		end
 	end
@@ -605,7 +651,7 @@ function Module:PostUpdateAura(unit, button, index)
 	if button then
 		if (button.isDebuff) then
 			if (not isFriend and not isPlayer) then
-				button.icon:SetDesaturated((unit and not string.find(unit, "arena%d")) and true or false)
+				button.icon:SetDesaturated((unit and not string_find(unit, "arena%d")) and true or false)
 				button:SetBackdropBorderColor()
 				if button.Shadow then
 					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
@@ -894,7 +940,7 @@ function Module:GetDamageRaidFramesAttributes()
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupBy", C["Raid"].GroupBy.Value,
-	"maxColumns", math.ceil(40 / 5),
+	"maxColumns", math_ceil(40 / 5),
 	"unitsPerColumn", C["Raid"].MaxUnitPerColumn,
 	"columnSpacing", 6,
 	"columnAnchorPoint", "LEFT"
@@ -1023,7 +1069,7 @@ function Module:CreateUnits()
 		if (C["Arena"].Enable) then
 			local Arena = {}
 			for i = 1, MAX_ARENA_ENEMIES or 5 do
-				Arena[i] = oUF:Spawn("arena"..i, nil)
+				Arena[i] = oUF:Spawn("arena" .. i, nil)
 				Arena[i]:SetSize(190, 52)
 				if (i == 1) then
 					Arena[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
@@ -1198,7 +1244,7 @@ function Module:PLAYER_ENTERING_WORLD()
 
 	if C["Nameplates"].Enable then
 		if C["Nameplates"].MarkHealers then
-			table.wipe(self.Healers)
+			table_wipe(self.Healers)
 
 			if inInstance and (instanceType == "pvp") and C["Nameplates"].MarkHealers then
 				self.CheckHealerTimer = self:ScheduleRepeatingTimer("CheckBGHealers", 3)
@@ -1228,7 +1274,7 @@ end
 
 function Module:DisplayHealerTexture(unit)
 	local name, realm = UnitName(self.unit)
-	realm = (realm and realm ~= "") and gsub(realm, "[%s%-]","")
+	realm = (realm and realm ~= "") and string_gsub(realm, "[%s%-]","")
 
 	if realm then
 		name = name.."-"..realm
@@ -1357,6 +1403,14 @@ function Module:OnEnable()
 			ORD.FilterDispellableDebuff = true
 			ORD.MatchBySpellName = false
 		end
+	end
+
+	if C["Nameplates"].Threat then
+		self:UpdateVehicleStatus()
+		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateVehicleStatus")
+		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateVehicleStatus")
+		self:RegisterEvent("UNIT_EXITING_VEHICLE", "UpdateVehicleStatus")
+		self:RegisterEvent("UNIT_PET", "UpdateVehicleStatus")
 	end
 
 	if C["Nameplates"].Enable then

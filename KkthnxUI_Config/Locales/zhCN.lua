@@ -389,6 +389,11 @@ KkthnxUIConfig["zhCN"] = {
 
 	-- Nameplates Local
 	["Nameplates"] = {
+		["TankedByTank"] = {
+			["Name"] = "Color Tanked",
+			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
+		},
+
 		["NonTargetAlpha"] = {
 			["Name"] = "Non Target Alpha",
 			["Desc"] = "Change the alpha level of the non targeted Nameplates.",
@@ -887,6 +892,11 @@ KkthnxUIConfig["zhCN"] = {
 			["Name"] = "24 Hour Time",
 			["Desc"] = "Display 24 time format",
 		},
+
+		["GarrisonLandingPage"] = {
+			["Name"] = GARRISON_LANDING_PAGE_TITLE,
+			["Desc"] = BINDING_NAME_TOGGLEGARRISONLANDINGPAGE,
+		},
 	},
 
 	-- Skins Local
@@ -947,6 +957,11 @@ KkthnxUIConfig["zhCN"] = {
 		["Calendar"] = {
 			["Name"] = "Calendar",
 			["Desc"] = "Display a small calendar",
+		},
+
+		["GarrisonLandingPage"] = {
+			["Name"] = GARRISON_LANDING_PAGE_TITLE,
+			["Desc"] = BINDING_NAME_TOGGLEGARRISONLANDINGPAGE,
 		},
 
 		["Enable"] = {
@@ -1073,6 +1088,11 @@ KkthnxUIConfig["zhCN"] = {
 
 	-- Unitframe Local
 	["Unitframe"] = {
+		["ClassResource"] = {
+			["Name"] = "Class Resource",
+			["Desc"] = "Display class resources on the player frame (Combo, Runes...)",
+		},
+
 		["CastbarLatency"] = {
 			["Name"] = "Castbar Latency",
 			["Desc"] = "Castbar Latency",

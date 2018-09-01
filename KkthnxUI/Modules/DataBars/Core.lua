@@ -61,6 +61,7 @@ function Module:SetupExperience()
 	restbar:SetFrameLevel(3)
 	restbar:SetSize(self.Database.Width, self.Database.Height)
 	restbar:SetAlpha(0.5)
+	restbar:SetAllPoints(expbar)
 
 	local espark = expbar:CreateTexture(nil, "OVERLAY")
 	espark:SetTexture(C["Media"].Spark_16)
@@ -187,6 +188,7 @@ end
 function Module:UpdateExperience()
 	if (not IsPlayerMaxLevel() and not IsXPUserDisabled()) then
 		local cur, max = GetUnitXP("player")
+		local rested = GetXPExhaustion()
 
 		if max <= 0 then
 			max = 1
@@ -195,8 +197,7 @@ function Module:UpdateExperience()
 		self.Bars.Experience:SetMinMaxValues(0, max)
 		self.Bars.Experience:SetValue(cur - 1 >= 0 and cur - 1 or 0)
 		self.Bars.Experience:SetValue(cur)
-
-		local rested = GetXPExhaustion()
+		self.Bars.Experience:SetStatusBarColor(unpack(rested and self.Database.RestedColor or self.Database.ExperienceColor))
 
 		if rested and rested > 0 then
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)

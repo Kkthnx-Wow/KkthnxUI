@@ -181,6 +181,7 @@ function Module:CreateTarget()
 	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
+	Module.CreatePortraitTimers(self)
 	Module.CreateQuestIndicator(self, 26, 26)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)

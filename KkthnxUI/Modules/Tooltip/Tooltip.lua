@@ -552,9 +552,7 @@ function Module:GameTooltip_ShowProgressBar(tt)
 		return
 	end
 
-	sb.Bar:StripTextures()
-	sb.Bar:CreateBorder()
-	sb.Bar:SetStatusBarTexture(TooltipTexture)
+	sb.Bar:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture))
 
 	tt.pbBar = sb.Bar
 end
@@ -565,9 +563,8 @@ function Module:GameTooltip_ShowStatusBar(tt)
 	end
 
 	local statusBar = _G[tt:GetName() .. "StatusBar"]
-	local TooltipTexture = K.GetTexture(C["Tooltip"].Texture)
 	if statusBar and not statusBar.skinned then
-		statusBar:SetStatusBarTexture(TooltipTexture)
+		statusBar:SetStatusBarTexture(K.GetTexture(C["Tooltip"].Texture))
 		statusBar.skinned = true
 	end
 end

@@ -494,11 +494,18 @@ function Module:SetupFrame()
 	ChatFrameMenuButton:Kill()
 
 	QuickJoinToastButton:ClearAllPoints()
-	QuickJoinToastButton:SetPoint("BOTTOMLEFT", UIParent, "TOPLEFT", -1, -18)
+	QuickJoinToastButton:SetPoint("BOTTOMLEFT", Frame, "TOPLEFT", -1, -18)
 	QuickJoinToastButton:EnableMouse(false)
 	QuickJoinToastButton.ClearAllPoints = K.Noop
 	QuickJoinToastButton.SetPoint = K.Noop
 	QuickJoinToastButton:SetAlpha(0)
+
+	VoiceChatPromptActivateChannel:CreateBorder()
+	VoiceChatPromptActivateChannel.AcceptButton:SkinButton()
+	VoiceChatPromptActivateChannel.CloseButton:SkinCloseButton()
+	VoiceChatPromptActivateChannel:SetPoint("BOTTOMLEFT", Frame, "TOPLEFT", 0, 14)
+	VoiceChatPromptActivateChannel.ClearAllPoints = K.Noop
+	VoiceChatPromptActivateChannel.SetPoint = K.Noop
 
 	if C["Chat"].ShortenChannelNames then
 		-- Guild
