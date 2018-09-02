@@ -750,6 +750,16 @@ function Module:CreateAuraWatch(frame)
 			Icon:SetHeight(C["Raid"].AuraWatchIconSize)
 			Icon:SetPoint(spell[2], 0, 0)
 
+			local Texture = Icon:CreateTexture(nil, "OVERLAY")
+			Texture:SetInside(Icon)
+			Texture:SetTexture(C["Media"].Blank)
+
+			if (spell[3]) then
+				Texture:SetVertexColor(unpack(spell[3]))
+			else
+				Texture:SetVertexColor(0.8, 0.8, 0.8)
+			end
+
 			local Count = Icon:CreateFontString(nil, "OVERLAY")
 			Count:SetFont(C["Media"].Font, 8, "THINOUTLINE")
 			Count:SetPoint("CENTER", unpack(Module.RaidBuffsTrackingPosition[spell[2]]))
@@ -1029,11 +1039,11 @@ end
 function Module:CreateUnits()
 	if (C["Unitframe"].Enable) then
 		local Player = oUF:Spawn("player")
-		Player:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "TOPLEFT", -10, 200)
+		Player:SetPoint("BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -10, 200)
 		Player:SetSize(190, 52)
 
 		local Target = oUF:Spawn("target")
-		Target:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPRIGHT", 10, 200)
+		Target:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 10, 200)
 		Target:SetSize(190, 52)
 
 		local TargetOfTarget = oUF:Spawn("targettarget")
@@ -1059,12 +1069,12 @@ function Module:CreateUnits()
 		FocusTarget:SetPoint("TOPRIGHT", Focus, "BOTTOMLEFT", 56, 2)
 		FocusTarget:SetSize(116, 36)
 
-		self.Player = Player
-		self.Target = Target
-		self.TargetOfTarget = TargetOfTarget
-		self.Pet = Pet
-		self.Focus = Focus
-		self.FocusTarget = FocusTarget
+		Module.Player = Player
+		Module.Target = Target
+		Module.TargetOfTarget = TargetOfTarget
+		Module.Pet = Pet
+		Module.Focus = Focus
+		Module.FocusTarget = FocusTarget
 
 		if (C["Arena"].Enable) then
 			local Arena = {}
@@ -1080,8 +1090,7 @@ function Module:CreateUnits()
 			end
 
 			Module.Arena = Arena
-
-			Module.CreateArenaPreparation()
+			Module.CreateArenaPreparation(self)
 		end
 
 		if (C["Boss"].Enable) then
@@ -1098,7 +1107,7 @@ function Module:CreateUnits()
 				Movers:RegisterFrame(Boss[i])
 			end
 
-			self.Boss = Boss
+			Module.Boss = Boss
 		end
 
 		if C["Party"].Enable then
@@ -1272,7 +1281,7 @@ function Module:PLAYER_ENTERING_WORLD()
 	end
 end
 
-function Module:DisplayHealerTexture(unit)
+function Module:DisplayHealerTexture()
 	local name, realm = UnitName(self.unit)
 	realm = (realm and realm ~= "") and string_gsub(realm, "[%s%-]","")
 
@@ -1283,43 +1292,14 @@ function Module:DisplayHealerTexture(unit)
 	local icon = self.HealerTexture
 
 	if C["Nameplates"].MarkHealers then
-		if Module.Healers[name] and UnitIsEnemy("player", unit) then
-			icon:Show()
+		if Module.Healers[name] then
+			if Module.exClass[Module.Healers[name]] then
+				icon:Hide()
+			else
+				icon:Show()
+			end
 		else
 			icon:Hide()
-		end
-	end
-end
-
-function Module:UpdatePrep(event, unit, status)
-	if (event == "ARENA_OPPONENT_UPDATE") and unit ~= self.unit then
-		return
-	end
-
-	for i = 1, MAX_ARENA_ENEMIES or 5 do
-		local _, instanceType = IsInInstance()
-		local prepFrame = Module.ArenaPreparation[i]
-
-		if not C["Arena"].Enable or instanceType ~= "arena" or (UnitExists(self.unit) and status ~= "unseen") then
-			prepFrame:Hide()
-			return
-		end
-
-		local s = GetArenaOpponentSpec(i)
-		local _, spec, texture, class
-
-		if s and s > 0 then
-			_, spec, _, texture, _, class = GetSpecializationInfoByID(s)
-		end
-
-		if class and spec then
-			local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-			prepFrame.SpecClass:SetText(spec.." - "..LOCALIZED_CLASS_NAMES_MALE[class])
-			prepFrame.Health:SetStatusBarColor(color.r, color.g, color.b)
-			prepFrame.Icon:SetTexture(texture or [[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
-			prepFrame:Show()
-		else
-			prepFrame:Hide()
 		end
 	end
 end

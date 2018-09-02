@@ -39,6 +39,13 @@ local healerSpecIDs = {
 
 Module.HealerSpecs = {}
 Module.Healers = {}
+Module.exClass = {}
+
+Module.exClass.DEATHKNIGHT = true
+Module.exClass.MAGE = true
+Module.exClass.ROGUE = true
+Module.exClass.WARLOCK = true
+Module.exClass.WARRIOR = true
 
 -- Get localized healing spec names
 for _, specID in pairs(healerSpecIDs) do
@@ -273,7 +280,7 @@ function Module:CreateNameplates()
 	-- Create Healer Icon
 	if C["Nameplates"].MarkHealers then
 		self.HealerTexture = self:CreateTexture(nil, "OVERLAY")
-		self.HealerTexture:SetPoint("RIGHT", self.Health, "LEFT", -6, 0)
+		self.HealerTexture:SetPoint("BOTTOM", self.Debuffs, "TOP", 0, 16)
 		self.HealerTexture:SetSize(40, 40)
 		self.HealerTexture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]])
 		self.HealerTexture:Hide()

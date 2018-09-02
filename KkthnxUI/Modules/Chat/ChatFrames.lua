@@ -220,7 +220,7 @@ function Module:StyleFrame(frame)
 
 	-- Create our own texture for edit box
 	EditBox:ClearAllPoints()
-	EditBox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 0, 26)
+	EditBox:SetPoint("BOTTOMLEFT", ChatFrame1, "TOPLEFT", 2, 26)
 	EditBox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 23, 26)
 	EditBox:SetHeight(22)
 	EditBox:CreateBorder()

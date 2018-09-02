@@ -33,7 +33,6 @@ local K, C, L = unpack(KkthnxUI)
 local _G = _G
 local select = select
 local string_format = string.format
-local string_lower = string.lower
 local string_match = string.match
 local tonumber = tonumber
 
@@ -73,6 +72,7 @@ local oUF = AddOn.oUF
 Engine[1] = AddOn
 Engine[2] = {}
 Engine[3] = {}
+Engine[4] = _
 
 _G[AddOnName] = Engine
 
