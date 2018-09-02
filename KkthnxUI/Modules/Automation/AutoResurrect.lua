@@ -15,7 +15,7 @@ local DoEmote = _G.DoEmote
 
 local GameLocale = GetLocale()
 
-function Module:RESURRECT_REQUEST(arg1)
+function Module:RESURRECT_REQUEST(_, arg1)
 	-- Exclude pylon and brazier requests
 	local pylonLoc
 
@@ -59,7 +59,12 @@ function Module:RESURRECT_REQUEST(arg1)
 	if not UnitAffectingCombat(arg1) then
 		AcceptResurrect()
 		StaticPopup_Hide("RESURRECT_NO_TIMER")
-		C_Timer_After(1, function()
+
+		if C["Automation"].AutoResurrectThank ~= true then
+			return
+		end
+
+		C_Timer_After(1.2, function() -- Give this more time to say thanks.
 			if not UnitIsDeadOrGhost("player") then
 				DoEmote("thank", arg1)
 			end
@@ -70,4 +75,8 @@ end
 
 function Module:OnEnable()
 	self:RegisterEvent("RESURRECT_REQUEST")
+end
+
+function Module:OnDisable()
+	self:UnregisterEvent("RESURRECT_REQUEST")
 end

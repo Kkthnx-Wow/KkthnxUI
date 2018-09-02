@@ -30,37 +30,68 @@ local function InviteApplicants()
 		-- Using the premade "invite" feature does not work, as Blizzard have broken auto-accept intentionally
 		-- Because of this, we can't invite groups, but we can still send normal invites to singletons.
 		if numMembers == 1 and (pendingStatus or status == "applied") then
-			local name = C_LFGList_GetApplicantMemberInfo(id, 1)
-			InviteUnit(name)
+			local name, _, _, _, _, _, _, _, _, assignedRole  = C_LFGList_GetApplicantMemberInfo(id, 1)
+			if autoAccepting[assignedRole] then
+				InviteUnit(name)
+			end
 		end
 	end
 end
 
-function Module:AutoAccept()
-	-- Force the auto-accept button to show even when the server says no.
-	_G.C_LFGList.CanActiveEntryUseAutoAccept = function()
-		return true
+local function OnCheckBoxClick(self)
+	isAutoAccepting = self:GetChecked()
+	autoAccepting[self.role] = isAutoAccepting
+
+	if isAutoAccepting then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
+		InviteApplicants()
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
 	end
+end
 
-	-- Overwrite the old handler for clicking the auto-accept button.
-	LFGListFrame_ApplicationViewer.AutoAcceptButton:SetScript("OnClick", function(self)
-		if self:GetChecked() then
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON)
-		else
-			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF)
-		end
+local function CreateCheckbox(atlas, role)
+	local button = CreateFrame("CheckButton", nil, LFGListFrame_ApplicationViewer)
+	button:SetWidth(22)
+	button:SetHeight(22)
+	button:Show()
 
-		isAutoAccepting = self:GetChecked()
-		if isAutoAccepting then
-			InviteApplicants()
-		end
-	end)
+	button:SetNormalTexture("Interface\\Buttons\\UI-CheckBox-Up")
+	button:SetPushedTexture("Interface\\Buttons\\UI-CheckBox-Down")
+	button:SetHighlightTexture("Interface\\Buttons\\UI-CheckBox-Highlight")
+	button:SetCheckedTexture("Interface\\Buttons\\UI-CheckBox-Check")
 
-	-- Prevent Blizzard UI from changing the tick-state of the auto-accept button.
-	local old_SetChecked = LFGListFrame_ApplicationViewer.AutoAcceptButton.SetChecked
-	LFGListFrame_ApplicationViewer.AutoAcceptButton.SetChecked = function()
-		old_SetChecked(LFGListFrame_ApplicationViewer.AutoAcceptButton, isAutoAccepting)
-	end
+	button.role = role
+	button:SetScript("OnClick", OnCheckBoxClick)
+
+	local icon = button:CreateTexture(nil, "ARTWORK")
+	icon:SetAtlas(atlas)
+	icon:SetWidth(17)
+	icon:SetHeight(17)
+	icon:SetPoint("LEFT", button, "RIGHT", 2, 0)
+	button.icon = icon
+
+	return button
+end
+
+local function CreateAutoAcceptButtons()
+	local header = LFGListFrame_ApplicationViewer:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	header:SetPoint("BOTTOMLEFT", LFGListFrame_ApplicationViewer.InfoBackground, "BOTTOMLEFT", 12, 30)
+	header:SetText(LFG_LIST_AUTO_ACCEPT)
+	header:SetJustifyH("LEFT")
+
+	local damageButton = CreateCheckbox("groupfinder-icon-role-large-dps", "DAMAGER")
+	damageButton:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -1)
+
+	local healerButton = CreateCheckbox("groupfinder-icon-role-large-heal", "HEALER")
+	healerButton:SetPoint("LEFT", damageButton.icon, "RIGHT", 5, 0)
+
+	local tankButton = CreateCheckbox("groupfinder-icon-role-large-tank", "TANK")
+	tankButton:SetPoint("LEFT", healerButton.icon, "RIGHT", 5, 0)
+end
+
+function Module:AutoAcceptButtons()
+	CreateAutoAcceptButtons()
 end
 
 function Module:UpdateList()
@@ -78,12 +109,10 @@ function Module:UpdateList()
 			InviteApplicants()
 		end
 	end
-
-	LFGListFrame_ApplicationViewer.AutoAcceptButton:SetChecked(isAutoAccepting)
 end
 
 function Module:ADDON_LOADED()
-	Module:AutoAccept()
+	Module:AutoAcceptButtons()
 end
 
 function Module:GROUP_LEFT()

@@ -72,7 +72,7 @@ local oUF = AddOn.oUF
 Engine[1] = AddOn
 Engine[2] = {}
 Engine[3] = {}
-Engine[4] = _
+Engine[4] = {}
 
 _G[AddOnName] = Engine
 

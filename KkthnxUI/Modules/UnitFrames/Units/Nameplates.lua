@@ -141,7 +141,6 @@ function Module:CreateNameplates()
 	self.Name:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 4)
 	self.Name:SetPoint("BOTTOMRIGHT", self.Level, "BOTTOMLEFT")
 	self.Name:SetFontObject(Font)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self.Name:SetWordWrap(false) -- Why is this even a thing? Text wrapping is just fucking ugly.
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
@@ -165,14 +164,13 @@ function Module:CreateNameplates()
 	self.Power.PostUpdate = Module.NameplatePowerAndCastBar
 
 	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
-	self.Debuffs:SetHeight(22)
-	self.Debuffs:SetWidth(self:GetWidth())
-	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 18)
-	self.Debuffs.size = 22
+	self.Debuffs:SetWidth(C["Nameplates"].Width - K.Mult * 2)
+	self.Debuffs:SetHeight(20)
+	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 20)
+	self.Debuffs.size = 20
 	self.Debuffs.num = 6
-	self.Debuffs.numRow = 2
-
-	self.Debuffs.spacing = 2
+	self.Debuffs.numRow = 1
+	self.Debuffs.spacing = 3
 	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-y"] = "UP"
 	self.Debuffs["growth-x"] = "RIGHT"
@@ -280,7 +278,7 @@ function Module:CreateNameplates()
 	-- Create Healer Icon
 	if C["Nameplates"].MarkHealers then
 		self.HealerTexture = self:CreateTexture(nil, "OVERLAY")
-		self.HealerTexture:SetPoint("BOTTOM", self.Debuffs, "TOP", 0, 16)
+		self.HealerTexture:SetPoint("BOTTOM", self.Health, "TOP", 0, 38)
 		self.HealerTexture:SetSize(40, 40)
 		self.HealerTexture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Healer.tga]])
 		self.HealerTexture:Hide()

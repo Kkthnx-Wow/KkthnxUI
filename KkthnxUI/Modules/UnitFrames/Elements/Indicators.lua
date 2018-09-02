@@ -63,11 +63,11 @@ function Module:CreateTrinkets()
 end
 
 function Module:CreateResurrectIndicator(size)
-	size = size or 16
+	size = size or self.Portrait:GetSize()
 
-	self.ResurrectIndicator = self.Health:CreateTexture(nil, "OVERLAY")
+	self.ResurrectIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
 	self.ResurrectIndicator:SetSize(size, size)
-	self.ResurrectIndicator:SetPoint("CENTER", self)
+	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait.Borders)
 end
 
 function Module:CreateDebuffHighlight()

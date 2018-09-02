@@ -197,7 +197,6 @@ function Module:UpdateExperience()
 		self.Bars.Experience:SetMinMaxValues(0, max)
 		self.Bars.Experience:SetValue(cur - 1 >= 0 and cur - 1 or 0)
 		self.Bars.Experience:SetValue(cur)
-		self.Bars.Experience:SetStatusBarColor(unpack(rested and self.Database.RestedColor or self.Database.ExperienceColor))
 
 		if rested and rested > 0 then
 			self.Bars.Experience.RestBar:SetMinMaxValues(0, max)
