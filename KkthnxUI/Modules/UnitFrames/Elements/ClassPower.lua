@@ -16,11 +16,11 @@ local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
 -- Post Update ClassPower
 local function PostUpdateClassPower(element, cur, max, diff, powerType)
 	if (diff) then
-		local maxWidth, gap = element.Power:GetWidth() or 130, 6
+		local maxWidth, gap = 130, 6
 
 		for index = 1, max do
 			local Bar = element[index]
-			Bar:SetWidth(((maxWidth / max) - (((max-1) * gap) / max)))
+			Bar:SetWidth(((maxWidth / max) - (((max - 1) * gap) / max)))
 
 			if (index > 1) then
 				Bar:ClearAllPoints()
@@ -80,8 +80,8 @@ function Module:CreateClassPower()
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", "oUF_KkthnxClassPower", self)
-		Bar:SetWidth(self.Power:GetWidth() or 130)
-		Bar:SetHeight(self.Power:GetHeight() or 14)
+		Bar:SetWidth(130)
+		Bar:SetHeight(14)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateBorder()
 
@@ -121,11 +121,11 @@ end
 function Module:CreateRuneBar()
 	local Runes = {}
 	for index = 1, 6 do
-		local Rune = CreateFrame("StatusBar", nil, self.Health)
-		local numRunes, maxWidth, gap = 6, self.Power:GetWidth() or 130, 6
+		local Rune = CreateFrame("StatusBar", nil, self)
+		local numRunes, maxWidth, gap = 6, 130, 6
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
-		Rune:SetSize(width, self.Power:GetHeight() or 14)
+		Rune:SetSize(width, 14)
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateBorder()
 

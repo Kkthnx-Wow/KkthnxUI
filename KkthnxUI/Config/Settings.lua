@@ -285,7 +285,7 @@ C["Filger"] = {
 }
 
 -- General
-C["General"] = {
+C[GENERAL] = {
 	["AutoScale"] = true,
 	["ColorTextures"] = false,
 	["DisableTutorialButtons"] = false,
@@ -463,7 +463,7 @@ C["Unitframe"] = {
 	}
 }
 
-C["Party"] = {
+C[PARTY] = {
 	["CastbarIcon"] = true,
 	["Castbars"] = false,
 	["Enable"] = true,
@@ -498,7 +498,7 @@ C["Party"] = {
 	}
 }
 
-C["Arena"] = {
+C[ARENA] = {
 	["CastbarIcon"] = true,
 	["Castbars"] = true,
 	["DecimalLength"] = 1,
@@ -519,7 +519,7 @@ C["Arena"] = {
 	}
 }
 
-C["Boss"] = {
+C[BOSS] = {
 	["CastbarHeight"] = 20,
 	["CastbarIcon"] = true,
 	["Castbars"] = true,
@@ -552,7 +552,7 @@ C["Boss"] = {
 }
 
 -- Raidframe
-C["Raid"] = {
+C[RAID] = {
 	["AuraDebuffIconSize"] = 22,
 	["AuraWatch"] = true,
 	["AuraWatchIconSize"] = 7,
