@@ -130,7 +130,7 @@ function Module:CreateRuneBar()
 		Rune:CreateBorder()
 
 		if (index == 1) then
-			Rune:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+			Rune:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -gap)
 		else
 			Rune:SetPoint("LEFT", Runes[index - 1], "RIGHT", gap, 0)
 		end
