@@ -92,7 +92,9 @@ K:RegisterChatCommand("configui", K.ConfigUI)
 
 -- Profiles data/listings
 function K.UIProfiles(msg)
-	if not KkthnxUIData then return end
+	if not KkthnxUIData then
+		return
+	end
 
 	if KkthnxUIConfigPerAccount then
 		K.Print(L["Commands"].ConfigPerAccount)
@@ -105,6 +107,7 @@ function K.UIProfiles(msg)
 		K.Print("/profile delete #")
 		print("")
 	else
+		local IsConfigLoaded = IsAddOnLoaded("KkthnxUI_Config")
 		-- Split the msg into multiple arguments.
 		-- This function will return any number of arguments.
 		local command, arg1 = parseArguments(msg)
@@ -115,15 +118,37 @@ function K.UIProfiles(msg)
 			KkthnxUI.Profiles.Options = {}
 
 			for Server, Table in pairs(KkthnxUIData) do
-				if not Server then return end
+				if not Server then
+					return
+				end
+
 				for Character, Table in pairs(KkthnxUIData[Server]) do
 					table_insert(KkthnxUI.Profiles.Data, KkthnxUIData[Server][Character])
-					table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
-					print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."] - ["..Character.."]")
+
+					if IsConfigLoaded then
+						if KkthnxUIConfigShared and KkthnxUIConfigShared[Server] and KkthnxUIConfigShared[Server][Character] then
+							table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
+						else
+							if not KkthnxUIConfigShared then
+								KkthnxUIConfigShared = {}
+							end
+
+							if not KkthnxUIConfigShared[Server] then
+								KkthnxUIConfigShared[Server] = {}
+							end
+
+							if not KkthnxUIConfigShared[Server][Character] then
+								KkthnxUIConfigShared[Server][Character] = {}
+							end
+
+							table_insert(KkthnxUI.Profiles.Options, KkthnxUIConfigShared[Server][Character])
+						end
+					end
+
+					K.Print("Profile "..#KkthnxUI.Profiles.Data..": ["..Server.."]-["..Character.."]")
 				end
 			end
 		elseif command == "delete" or command == "del" then
-
 			-- Only do this if the user previously has done a /profile list,
 			-- and an indexed listing of the profiles is actually available.
 			if KkthnxUI.Profiles and KkthnxUI.Profiles.Data then
@@ -163,6 +188,7 @@ function K.UIProfiles(msg)
 								break
 							end
 						end
+
 						if found then
 							break
 						end
@@ -191,16 +217,16 @@ function K.UIProfiles(msg)
 								-- We found the matching table so we break and exit this loop,
 								-- to allow the outer iteration loop to continue faster.
 								if Table == Data then
-									print("Profile "..Profile..": ["..Server.."] - ["..Character.."]")
+									K.Print("Profile "..Profile..": ["..Server.."] - ["..Character.."]")
 									found = true
 									break
 								end
 							end
+
 							if found then
 								break
 							end
 						end
-
 					end
 				end
 			end
@@ -215,7 +241,9 @@ function K.UIProfiles(msg)
 			end
 
 			KkthnxUIData[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Data[Profile]
-			KkthnxUIConfigShared[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Options[Profile]
+			if IsConfigLoaded then
+				KkthnxUIConfigShared[CurrentServer][CurrentCharacter] = KkthnxUI.Profiles.Options[Profile]
+			end
 
 			ReloadUI()
 		end

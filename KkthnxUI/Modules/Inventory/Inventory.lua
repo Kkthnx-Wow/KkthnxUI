@@ -65,6 +65,7 @@ local SOUNDKIT = _G.SOUNDKIT
 local Token1, Token2, Token3 = _G.BackpackTokenFrameToken1, _G.BackpackTokenFrameToken2, _G.BackpackTokenFrameToken3
 local UIParent = _G.UIParent
 
+local BAGS_FONT = K.GetFont(C["Inventory"].Font)
 local BAGS_BACKPACK = {0, 1, 2, 3, 4}
 local BAGS_BANK = {-1, 5, 6, 7, 8, 9, 10, 11}
 local ST_NORMAL = 1
@@ -506,8 +507,7 @@ local function Stuffing_CreateReagentContainer()
 		icon:SetTexCoord(0.1, 0.9, 0.1, 0.9)
 		icon:SetAllPoints()
 
-		count:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-		count:SetShadowOffset(0, 0)
+		count:SetFontObject(BAGS_FONT)
 		count:SetPoint("BOTTOMRIGHT", 1, 1)
 
 		if (LastButton ~= button) then
@@ -642,7 +642,7 @@ function Stuffing:SlotNew(bag, slot)
 		ret.icon:SetAllPoints()
 
 		ret.count = _G[ret.frame:GetName() .. "Count"]
-		ret.count:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+		ret.count:SetFontObject(BAGS_FONT)
 		ret.count:SetShadowOffset(0, 0)
 		ret.count:SetPoint("BOTTOMRIGHT", 1, 1)
 
@@ -1052,7 +1052,7 @@ function Stuffing:InitBags()
 		Icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
 		Icon:SetPoint("LEFT", Token, "RIGHT", -8, 2)
 
-		Count:SetFont(C.Media.Font, 13, "OUTLINE")
+		Count:SetFontObject(BAGS_FONT)
 		Count:SetShadowOffset(0, 0)
 	end
 
@@ -1154,14 +1154,12 @@ function Stuffing:Layout(isBank)
 		cols = C["Inventory"].BagColumns
 		f = self.frame
 
-		f.editbox:SetFont(C["Media"].Font, C["Media"].FontSize)
+		f.editbox:SetFontObject(BAGS_FONT)
 
-		f.detail:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-		f.detail:SetShadowOffset(0, 0)
+		f.detail:SetFontObject(BAGS_FONT)
 
 		f.gold:SetText(K.FormatMoney(GetMoney(), 12))
-		f.gold:SetFont(C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
-		f.gold:SetShadowOffset(0, 0)
+		f.gold:SetFontObject(BAGS_FONT)
 
 		f.detail:ClearAllPoints()
 		f.detail:SetPoint("TOPLEFT", f, 12, -8)

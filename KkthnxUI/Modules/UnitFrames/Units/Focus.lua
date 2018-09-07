@@ -5,11 +5,7 @@ end
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
-
-if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Stopping Focus.lua code!")
-	return
-end
+assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 
@@ -111,12 +107,10 @@ function Module:CreateFocus()
 		end
 	end
 
-	self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
-	self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("TOP", self.Health, 0, 16)
-	self.Name:SetSize(130, 24)
-	self.Name:SetJustifyV("TOP")
-	self.Name:SetJustifyH("CENTER")
+	self.Name:SetWidth(self.Health:GetWidth())
+	self.Name:SetFontObject(UnitframeFont)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	if (C["Unitframe"].Castbars) then

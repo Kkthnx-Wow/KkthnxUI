@@ -111,11 +111,12 @@ function Module:CreatePlayer()
 		self.Castbar:ClearAllPoints()
 
 		if C["Raid"].RaidLayout.Value == "Healer" then
-			self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 230)
+			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 230)
 		else
-			self.Castbar:SetPoint("BOTTOM", ActionBarAnchor, "TOP", 0, 203)
+			self.Castbar:SetPoint("BOTTOM", "ActionBarAnchor", "TOP", 0, 203)
 		end
 
+		-- self.Castbar.timeToHold = 0.4
 		self.Castbar.PostCastStart = Module.CheckCast
 		self.Castbar.PostChannelStart = Module.CheckChannel
 
@@ -193,23 +194,27 @@ function Module:CreatePlayer()
 	self.AdditionalPower.SmoothSpeed = C["Unitframe"].SmoothSpeed * 10
 	self.AdditionalPower.frequentUpdates = true
 
+	-- Class Power (Combo Points, etc...)
 	if C["Unitframe"].ClassResource then
-		Module.CreateClassModules(self, 194, 12, 6)
-		if (K.Class == "DEATHKNIGHT") then
-			Module.CreateClassRunes(self, 194, 12, 6)
-		elseif (K.Class == "MONK") then
-			Module.CreateStagger(self)
+		Module.CreateClassPower(self)
+		if (K.Class == "MONK") then
+			Module.CreateStaggerBar(self)
+		elseif (K.Class == "DEATHKNIGHT") then
+			Module.CreateRuneBar(self)
+		elseif (K.Class == "SHAMAN") then
+			Module.CreateTotems(self)
 		end
-		Module.CreateClassTotems(self, 194, 12, 6)
 	end
 
-	Module.CreatePortraitTimers(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
 	if (C["Unitframe"].PowerPredictionBar) then
 		Module.CreatePowerPrediction(self)
 	end
 
+	if C["Unitframe"].PlayerBuffs then
+		Module.CreateAuras(self, "player")
+	end
 	Module.CreateCombatIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
@@ -218,6 +223,10 @@ function Module:CreatePlayer()
 	Module.CreateThreatIndicator(self)
 	Module.CreatePvPIndicator(self, "player")
 	Module.CreateDebuffHighlight(self)
+
+	if C["Unitframe"].PortraitTimers then
+		Module.CreatePortraitTimers(self)
+	end
 
 	if C["Unitframe"].MouseoverHighlight then
 		Module.MouseoverHealth(self, "player")

@@ -2,6 +2,7 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Chat", "AceTimer-3.0", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G
+local ipairs = ipairs
 local pairs = pairs
 local select = select
 local string_format = string.format
@@ -44,6 +45,7 @@ local LE_REALM_RELATION_SAME = _G.LE_REALM_RELATION_SAME
 local LOOT = _G.LOOT
 local NUM_CHAT_WINDOWS = _G.NUM_CHAT_WINDOWS
 local PlaySoundFile = _G.PlaySoundFile
+local SetCVar = _G.SetCVar
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local ToggleFrame = _G.ToggleFrame
 local TRADE = TRADE
@@ -402,7 +404,7 @@ function Module:Install()
 	-- set the chat groups names in class color to enabled for all chat groups which players names appear
 	chatGroup = { "SAY", "EMOTE", "YELL", "WHISPER", "PARTY", "PARTY_LEADER", "RAID", "RAID_LEADER", "RAID_WARNING", "INSTANCE_CHAT", "INSTANCE_CHAT_LEADER", "GUILD", "OFFICER", "ACHIEVEMENT", "GUILD_ACHIEVEMENT", "COMMUNITIES_CHANNEL" }
 	for i = 1, MAX_WOW_CHAT_CHANNELS do
-		tinsert(chatGroup, "CHANNEL"..i)
+		table_insert(chatGroup, "CHANNEL"..i)
 	end
 	for _, v in ipairs(chatGroup) do
 		ToggleChatColorNamesByClassGroup(true, v)

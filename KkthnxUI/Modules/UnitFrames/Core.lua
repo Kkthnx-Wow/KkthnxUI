@@ -2,16 +2,12 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes", "AceEvent-3.0", "AceTimer-3.0")
 
 local oUF = oUF or K.oUF
-
-if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Stopping Core.lua code!")
-	return
-end
+assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 local math_ceil = math.ceil
 local pairs = pairs
-local select = _G.select
+local select = select
 local string_find = string.find
 local string_format = string.format
 local string_gsub = string.gsub
@@ -25,15 +21,12 @@ local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local DebuffTypeColor = _G.DebuffTypeColor
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
-local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
 local IsInGroup = _G.IsInGroup
 local IsInInstance = _G.IsInInstance
 local IsInRaid = _G.IsInRaid
-local LOCALIZED_CLASS_NAMES_MALE = _G.LOCALIZED_CLASS_NAMES_MALE
 local MAX_ARENA_ENEMIES = _G.MAX_ARENA_ENEMIES or 5
 local MAX_BOSS_FRAMES = _G.MAX_BOSS_FRAMES or 5
 local PlaySound = _G.PlaySound
@@ -138,15 +131,6 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
--- Sourced: ElvUI
-function Module:UpdateVehicleStatus()
-	if (UnitHasVehicleUI("player")) then
-		self.playerUnitToken = "vehicle"
-	else
-		self.playerUnitToken = "player"
-	end
-end
-
 function Module:ThreatPlate(forced)
 	if C["Nameplates"].Threat ~= true then
 		return
@@ -164,7 +148,7 @@ function Module:ThreatPlate(forced)
 	end
 
 	do
-		local isTanking, status, percent = UnitDetailedThreatSituation(Module.playerUnitToken, unit)
+		local isTanking, status, percent = UnitDetailedThreatSituation("player", unit)
 		local isInGroup, isInRaid = IsInGroup(), IsInRaid()
 		self.ThreatData = {}
 		self.ThreatData.player = {isTanking, status, percent}
@@ -361,6 +345,21 @@ function Module:CustomCastDelayText(duration)
 	self.Time:SetText(Value)
 end
 
+function Module:PostCastFailedOrInterrupted(unit)
+	self:SetStatusBarColor(1, 0, 0)
+	self:SetValue(self.max)
+
+	local time = self.Time
+	if (time) then
+		time:SetText("")
+	end
+
+	local spark = self.Spark
+	if (spark) then
+		spark:SetPoint("CENTER", self, "RIGHT")
+	end
+end
+
 function Module:CheckInterrupt(unit)
 	if (unit == "vehicle") then
 		unit = "player"
@@ -479,7 +478,6 @@ function Module:CheckCast(unit, name)
 	elseif unit == "player" then
 		Module:HideTicks()
 	end
-
 end
 
 function Module:CheckChannel(unit, name)
@@ -577,7 +575,7 @@ end
 function Module:PostCreateAura(button)
 	if button:GetName():match("NamePlate") then
 		if C["Nameplates"].Enable then
-			button:CreateShadow()
+			button:CreateShadow(true)
 
 			button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
 			button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
@@ -702,9 +700,9 @@ function Module:PostUpdateAura(unit, button, index)
 end
 
 function Module:CreateAuraWatchIcon(icon)
-	icon:CreateShadow()
-	icon.icon:SetPoint("TOPLEFT", 1, -1)
-	icon.icon:SetPoint("BOTTOMRIGHT", -1, 1)
+	icon:CreateShadow(true)
+	icon.icon:SetPoint("TOPLEFT")
+	icon.icon:SetPoint("BOTTOMRIGHT")
 	icon.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
 	icon.icon:SetDrawLayer("ARTWORK")
 
@@ -750,14 +748,16 @@ function Module:CreateAuraWatch(frame)
 			Icon:SetHeight(C["Raid"].AuraWatchIconSize)
 			Icon:SetPoint(spell[2], 0, 0)
 
-			local Texture = Icon:CreateTexture(nil, "OVERLAY")
-			Texture:SetInside(Icon)
-			Texture:SetTexture(C["Media"].Blank)
+			if C["Raid"].AuraWatchTexture then
+				local Texture = Icon:CreateTexture(nil, "OVERLAY")
+				Texture:SetInside(Icon)
+				Texture:SetTexture(C["Media"].Blank)
 
-			if (spell[3]) then
-				Texture:SetVertexColor(unpack(spell[3]))
-			else
-				Texture:SetVertexColor(0.8, 0.8, 0.8)
+				if (spell[3]) then
+					Texture:SetVertexColor(unpack(spell[3]))
+				else
+					Texture:SetVertexColor(0.8, 0.8, 0.8)
+				end
 			end
 
 			local Count = Icon:CreateFontString(nil, "OVERLAY")
@@ -925,7 +925,7 @@ function Module:GetPartyFramesAttributes()
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
 	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
 	"groupBy", "ASSIGNEDROLE",
-	"yOffset", C["Party"].ShowBuffs and -40 or -18
+	"yOffset", C["Party"].ShowBuffs and -44 or -18
 end
 
 function Module:GetDamageRaidFramesAttributes()
@@ -1054,11 +1054,7 @@ function Module:CreateUnits()
 		if C["Unitframe"].CombatFade and Player and not InCombatLockdown() then
 			Pet:SetParent(Player)
 		end
-		if (K.Class == "WARLOCK" or K.Class == "DEATHKNIGHT") then
-			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, -16)
-		else
-			Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, 2)
-		end
+		Pet:SetPoint("TOPRIGHT", Player, "BOTTOMLEFT", 56, 2)
 		Pet:SetSize(116, 36)
 
 		local Focus = oUF:Spawn("focus")
@@ -1131,7 +1127,7 @@ function Module:CreateUnits()
 			if C["Raid"].MainTankFrames then
 				local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
 				if C["Raid"].RaidLayout.Value == "Healer" then
-					MainTank:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", 6, 2)
+					MainTank:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "BOTTOMRIGHT", 6, 2)
 				elseif C["Raid"].RaidLayout.Value == "Damage" then
 					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
 				else
@@ -1151,21 +1147,13 @@ function Module:CreateUnits()
 	end
 
 	if C["Nameplates"].Enable then
-		local GetCVarDefault = _G.GetCVarDefault
-
-		-- Default these unless we end up changing them below.
-		SetCVar("nameplateOverlapV", GetCVarDefault("nameplateOverlapV"))
-		SetCVar("nameplateOverlapH", GetCVarDefault("nameplateOverlapH"))
-		SetCVar("nameplateLargeTopInset", GetCVarDefault("nameplateLargeTopInset"))
-		SetCVar("nameplateLargeBottomInset", GetCVarDefault("nameplateLargeBottomInset"))
-
 		Module.NameplatesVars = {
-			NamePlateHorizontalScale = 1,
 			nameplateGlobalScale = 1,
+			NamePlateHorizontalScale = 1,
 			nameplateLargerScale = 1.2,
 			nameplateMaxAlpha = 1,
 			nameplateMaxAlphaDistance = 0,
-			nameplateMaxDistance = C["Nameplates"].Distance or 46,
+			nameplateMaxDistance = C["Nameplates"].Distance + 6 or 46,
 			nameplateMaxScale = 1,
 			nameplateMaxScaleDistance = 0,
 			nameplateMinAlpha = 1,
@@ -1174,14 +1162,14 @@ function Module:CreateUnits()
 			nameplateMinScaleDistance = 0,
 			nameplateOtherBottomInset = C["Nameplates"].Clamp and 0.1 or -1,
 			nameplateOtherTopInset = C["Nameplates"].Clamp and 0.08 or -1,
+			nameplateOverlapV = 1.8,
 			nameplateSelectedAlpha = 1,
 			nameplateSelectedScale = C["Nameplates"].SelectedScale or 1,
 			nameplateSelfAlpha = 1,
 			nameplateSelfScale = 1,
 			nameplateShowAll = 1,
 			nameplateShowFriendlyNPCs = 0,
-			nameplateVerticalScale = 1,
-			nameplateMotion = 0,
+			NamePlateVerticalScale = 1,
 		}
 
 		oUF:SpawnNamePlates(nil, Module.NameplatesCallback, Module.NameplatesVars)
@@ -1383,14 +1371,6 @@ function Module:OnEnable()
 			ORD.FilterDispellableDebuff = true
 			ORD.MatchBySpellName = false
 		end
-	end
-
-	if C["Nameplates"].Threat then
-		self:UpdateVehicleStatus()
-		self:RegisterEvent("UNIT_ENTERED_VEHICLE", "UpdateVehicleStatus")
-		self:RegisterEvent("UNIT_EXITED_VEHICLE", "UpdateVehicleStatus")
-		self:RegisterEvent("UNIT_EXITING_VEHICLE", "UpdateVehicleStatus")
-		self:RegisterEvent("UNIT_PET", "UpdateVehicleStatus")
 	end
 
 	if C["Nameplates"].Enable then

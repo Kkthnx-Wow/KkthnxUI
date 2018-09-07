@@ -13,15 +13,25 @@ KkthnxUIFontOutline:SetFont(C["Media"].Font, 12, "OUTLINE")
 KkthnxUIFontOutline:SetShadowColor(0, 0, 0, 0)
 KkthnxUIFontOutline:SetShadowOffset(0, -0)
 
-local PTSansNarrowFont = CreateFont("PTSansNarrowFont")
+local PTSansNarrowFont = CreateFont("SansNarrowFont")
 PTSansNarrowFont:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\PT_Sans_Narrow.ttf]], 12)
 PTSansNarrowFont:SetShadowColor(0, 0, 0, 1)
 PTSansNarrowFont:SetShadowOffset(1.25, -1.25)
 
-local PTSansNarrowFontOutline = CreateFont("PTSansNarrowFontOutline")
+local PTSansNarrowFontOutline = CreateFont("SansNarrowFontOutline")
 PTSansNarrowFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\PT_Sans_Narrow.ttf]], 12, "OUTLINE")
 PTSansNarrowFontOutline:SetShadowColor(0, 0, 0, 0)
 PTSansNarrowFontOutline:SetShadowOffset(0, -0)
+
+local ExpresswayFont = CreateFont("ExpresswayFont")
+ExpresswayFont:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Expressway.ttf]], 12)
+ExpresswayFont:SetShadowColor(0, 0, 0, 1)
+ExpresswayFont:SetShadowOffset(1.25, -1.25)
+
+local ExpresswayFontOutline = CreateFont("ExpresswayFontOutline")
+ExpresswayFontOutline:SetFont([[Interface\AddOns\KkthnxUI\Media\Fonts\Expressway.ttf]], 12, "OUTLINE")
+ExpresswayFontOutline:SetShadowColor(0, 0, 0, 0)
+ExpresswayFontOutline:SetShadowOffset(0, -0)
 
 local TextureTable = {
 	["Blank"] = C["Media"].Blank,
@@ -29,6 +39,10 @@ local TextureTable = {
 	["Flat"] = C["Media"].FlatTexture,
 	["KkthnxUI"] = C["Media"].Texture,
 	["Tukui"] = C["Media"].Tukui,
+	["ZorkUI"] = C["Media"].ZorkUI,
+	["AltzUI"] = C["Media"].AltzUI,
+	["GoldpawUI"] = C["Media"].GoldpawUI,
+	["SkullFlowerUI"] = C["Media"].SkullFlowerUI,
 }
 
 local FontTable = {
@@ -38,8 +52,10 @@ local FontTable = {
 	["KkthnxUI Outline"] = "KkthnxUIFontOutline",
 	["KkthnxUI"] = "KkthnxUIFont",
 	-- Extra Fonts
-	["Sans Narrow"] = "PTSansNarrowFont",
-	["Sans Narrow Outline"] = "PTSansNarrowFontOutline",
+	["SansNarrow"] = "SansNarrowFont",
+	["SansNarrow Outline"] = "SansNarrowFontOutline",
+	["Expressway"] = "ExpresswayFont",
+	["Expressway Outline"] = "ExpresswayFontOutline"
 }
 
 function K.GetFont(font)

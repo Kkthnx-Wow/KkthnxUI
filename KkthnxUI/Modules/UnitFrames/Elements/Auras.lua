@@ -28,7 +28,34 @@ function Module:CreateAuras(unit)
 	local Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
 	local Auras = CreateFrame("Frame", self:GetName() .. "Auras", self)
 
-	if (unit == "target") then
+	if (unit == "player") then
+		Buffs:SetHeight(21)
+		Buffs:SetWidth(self.Power:GetWidth())
+
+		if K.Class == "ROGUE"
+		or K.Class == "DRUID"
+		or K.Class == "MAGE"
+		or K.Class == "MONK"
+		or K.Class == "DEATHKNIGHT"
+		or K.Class == "SHAMAN"
+		or K.Class == "PALADIN"
+		or K.Class == "WARLOCK" then
+			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -26)
+		else
+			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
+		end
+		Buffs.size = 21
+		Buffs.num = 15
+		Buffs.spacing = 6
+		Buffs.initialAnchor = "TOPLEFT"
+		Buffs["growth-y"] = "DOWN"
+		Buffs["growth-x"] = "RIGHT"
+		Buffs.PostCreateIcon = Module.PostCreateAura
+		Buffs.PostUpdateIcon = Module.PostUpdateAura
+		Buffs.CustomFilter = FilterSharedBuffs
+
+		self.Buffs = Buffs
+	elseif (unit == "target") then
 		if C["Unitframe"].DebuffsOnTop then
 			Buffs:SetHeight(21)
 			Buffs:SetWidth(self.Power:GetWidth())
@@ -74,6 +101,7 @@ function Module:CreateAuras(unit)
 			Auras.showStealableBuffs = true
 			Auras.PostCreateIcon = Module.PostCreateAura
 			Auras.PostUpdateIcon = Module.PostUpdateAura
+
 			self.Auras = Auras
 		end
 	elseif (unit == "focus") then

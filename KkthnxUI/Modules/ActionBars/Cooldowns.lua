@@ -3,8 +3,12 @@ if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddO
 	return
 end
 
+local _G = _G
 local format = string.format
 local floor = math.floor
+
+local tonumber = tonumber
+local GetTime = _G.GetTime
 
 OmniCC = true
 local ICON_SIZE = 36

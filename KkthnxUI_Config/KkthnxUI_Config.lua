@@ -431,7 +431,7 @@ local function AddListItems(self, info)
 		if (not LastItem) then
 			Button:SetPoint("TOP", self, 0, 0)
 		else
-			Button:SetPoint("TOP", LastItem, "BOTTOM", 0, -1)
+			Button:SetPoint("TOP", LastItem, "BOTTOM", 0, -0.5)
 		end
 
 		DropDown[Name] = Value
@@ -1078,24 +1078,15 @@ function KkthnxUIConfig:CreateConfigWindow()
 	InfoFrame.Text = InfoFrame:CreateFontString(nil, "OVERLAY")
 	InfoFrame.Text:SetFont(C["Media"].Font, 14)
 	InfoFrame.Text:SetShadowOffset(1.25, -1.25)
-	InfoFrame.Text:SetText(
-	"Welcome to |cff4488ffKkthnxUI|r v" ..
-	K.Version ..
-	" " ..
-	K.Client ..
-	", " .. string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name)
-	)
+	InfoFrame.Text:SetText("Welcome to |cff4488ffKkthnxUI|r v" .. K.Version .. " " .. K.Client .. ", " .. string_format("|cff%02x%02x%02x%s|r", K.Color.r * 255, K.Color.g * 255, K.Color.b * 255, K.Name))
 	InfoFrame.Text:SetPoint("CENTER", InfoFrame, 0, 0)
 
 	local CloseButton = CreateFrame("Button", nil, InfoFrame)
 	CloseButton:SkinButton()
 	CloseButton:SetSize(138, 22)
-	CloseButton:SetScript(
-	"OnClick",
-	function()
+	CloseButton:SetScript("OnClick", function()
 		ConfigFrame:Hide()
-	end
-	)
+	end)
 	CloseButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	CloseButton:SetPoint("BOTTOMLEFT", InfoFrame, "BOTTOMLEFT", 0, -27)
 
@@ -1109,12 +1100,9 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local ReloadButton = CreateFrame("Button", nil, InfoFrame)
 	ReloadButton:SkinButton()
 	ReloadButton:SetSize(148, 22)
-	ReloadButton:SetScript(
-	"OnClick",
-	function()
+	ReloadButton:SetScript("OnClick", function()
 		ReloadUI()
-	end
-	)
+	end)
 	ReloadButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	ReloadButton:SetPoint("LEFT", CloseButton, "RIGHT", 5, 0)
 
@@ -1127,9 +1115,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	local GlobalButton = CreateFrame("Button", nil, InfoFrame)
 	GlobalButton:SkinButton()
 	GlobalButton:SetSize(148, 22)
-	GlobalButton:SetScript(
-	"OnClick",
-	function()
+	GlobalButton:SetScript("OnClick", function()
 		if not KkthnxUIConfigPerAccount then
 			KkthnxUIConfigPerAccount = true
 		else
@@ -1137,8 +1123,8 @@ function KkthnxUIConfig:CreateConfigWindow()
 		end
 
 		ReloadUI()
-	end
-	)
+	end)
+
 	GlobalButton:SetFrameLevel(InfoFrame:GetFrameLevel() + 1)
 	GlobalButton:SetPoint("LEFT", ReloadButton, "RIGHT", 5, 0)
 
@@ -1271,7 +1257,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 			if Button.SetHighlightTexture and not Button.Hover then
 				Button.Hover = Button:CreateTexture(nil, "ARTWORK")
-				Button.Hover:SetVertexColor(Colors.r, Colors.g, Colors.b, 0.8)
+				Button.Hover:SetVertexColor(Colors.r, Colors.g, Colors.b, 1)
 				Button.Hover:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
 				Button.Hover:SetBlendMode("ADD")
 				Button.Hover:SetAllPoints()
@@ -1285,24 +1271,19 @@ function KkthnxUIConfig:CreateConfigWindow()
 			Button.Text:SetText(Group)
 
 			Button.Active = Button:CreateTexture(nil, "ARTWORK")
-			Button.Active:SetVertexColor(Colors.r, Colors.g, Colors.b, 0.2)
-			Button.Active:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight2")
+			Button.Active:SetAlpha(0.3)
+			Button.Active:SetTexture("Interface\\Buttons\\UI-Listbox-Highlight")
 			Button.Active:SetBlendMode("ADD")
 			Button.Active:SetAllPoints()
 			Button.Active:Hide()
 
-			GroupPage:HookScript(
-			"OnShow",
-			function()
+			GroupPage:HookScript("OnShow", function()
 				Button.Active:Show()
-			end
-			)
-			GroupPage:HookScript(
-			"OnHide",
-			function()
+			end)
+
+			GroupPage:HookScript("OnHide", function()
 				Button.Active:Hide()
-			end
-			)
+			end)
 
 			if (ButtonCount == 0) then
 				Button:SetPoint("TOP", LeftWindow, 0, -6)
@@ -1317,12 +1298,9 @@ function KkthnxUIConfig:CreateConfigWindow()
 
 	ShowGroup("General") -- Show General options by default
 	ConfigFrame:Hide()
-	GameMenuFrame:HookScript(
-	"OnShow",
-	function()
+	GameMenuFrame:HookScript("OnShow", function()
 		ConfigFrame:Hide()
-	end
-	)
+	end)
 end
 
 do

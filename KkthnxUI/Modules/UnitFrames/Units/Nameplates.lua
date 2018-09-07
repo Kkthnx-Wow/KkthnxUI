@@ -108,11 +108,9 @@ function Module:CreateNameplates()
 	self.Health:SetHeight(C["Nameplates"].Height - C["Nameplates"].CastHeight - 1)
 	self.Health:SetWidth(self:GetWidth())
 	self.Health:SetStatusBarTexture(NameplateTexture)
-	self.Health:CreateShadow()
-
-	self.Health.Background = self.Health:CreateTexture(nil, "BORDER")
-	self.Health.Background:SetAllPoints()
-	self.Health.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	self.Health:CreateShadow(true)
+	self.Health:GetStatusBarTexture():SetHorizTile(false)
+	self.Health:GetStatusBarTexture():SetVertTile(false)
 
 	self.Health.frequentUpdates = true
 	self.Health.colorTapping = true
@@ -150,11 +148,7 @@ function Module:CreateNameplates()
 	self.Power:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
 	self.Power:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
 	self.Power:SetStatusBarTexture(NameplateTexture)
-	self.Power:CreateShadow()
-
-	self.Power.Background = self.Power:CreateTexture(nil, "BORDER")
-	self.Power.Background:SetAllPoints()
-	self.Power.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4] )
+	self.Power:CreateShadow(true)
 
 	self.Power.IsHidden = false
 	self.Power.frequentUpdates = true
@@ -168,8 +162,8 @@ function Module:CreateNameplates()
 	self.Debuffs:SetHeight(20)
 	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 20)
 	self.Debuffs.size = 20
-	self.Debuffs.num = 6
-	self.Debuffs.numRow = 1
+	self.Debuffs.num = 12
+	self.Debuffs.numRow = 2
 	self.Debuffs.spacing = 3
 	self.Debuffs.initialAnchor = "TOPLEFT"
 	self.Debuffs["growth-y"] = "UP"
@@ -186,10 +180,10 @@ function Module:CreateNameplates()
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
 	self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
 
-	self.Castbar.Background = self.Castbar:CreateTexture(nil, "BORDER")
-	self.Castbar.Background:SetAllPoints(self.Castbar)
-	self.Castbar.Background:SetTexture(NameplateTexture)
-	self.Castbar.Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	-- self.Castbar.Background = self.Castbar:CreateTexture(nil, "BORDER")
+	-- self.Castbar.Background:SetAllPoints(self.Castbar)
+	-- self.Castbar.Background:SetTexture(NameplateTexture)
+	-- self.Castbar.Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetSize(32, self:GetHeight())
@@ -204,7 +198,7 @@ function Module:CreateNameplates()
 
 	self.Castbar.Button = CreateFrame("Frame", nil, self.Castbar)
 	self.Castbar.Button:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
-	self.Castbar.Button:CreateShadow()
+	self.Castbar.Button:CreateShadow(true)
 	self.Castbar.Button:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
 
 	self.Castbar.Icon = self.Castbar.Button:CreateTexture(nil, "ARTWORK")
@@ -223,6 +217,7 @@ function Module:CreateNameplates()
 	self.Castbar.Text:SetJustifyH("LEFT")
 	self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
 
+	self.Castbar.timeToHold = 0.4
 	self.Castbar.PostCastStart = Module.CheckInterrupt
 	self.Castbar.PostCastInterruptible = Module.CheckInterrupt
 	self.Castbar.PostCastNotInterruptible = Module.CheckInterrupt
@@ -258,7 +253,7 @@ function Module:CreateNameplates()
 		self.Class = CreateFrame("Frame", nil, self)
 		self.Class:SetSize(self:GetHeight() + 2, self:GetHeight() + 3)
 		self.Class:CreateShadow(true)
-		self.Class:SetPoint("TOPRIGHT", self, "TOPLEFT", -6, 0)
+		self.Class:SetPoint("TOPRIGHT", self, "TOPLEFT", -4, 0)
 
 		self.Class.Icon = self.Class:CreateTexture(nil, "ARTWORK")
 		self.Class.Icon:SetAllPoints()

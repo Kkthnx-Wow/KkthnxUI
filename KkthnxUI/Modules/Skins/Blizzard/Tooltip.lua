@@ -78,14 +78,14 @@ local function SkinTooltip()
     end
 
     GameTooltipStatusBar:SetStatusBarTexture(GameTooltipStatusBarTexture)
-    GameTooltipStatusBar:CreateShadow()
+    GameTooltipStatusBar:CreateShadow(true)
     GameTooltipStatusBar:ClearAllPoints()
     GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 1, 6)
     GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -1, 6)
 
-    GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", -1)
-    GameTooltipStatusBar.Background:SetAllPoints()
-    GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
+    -- GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", -1)
+    -- GameTooltipStatusBar.Background:SetAllPoints()
+    -- GameTooltipStatusBar.Background:SetColorTexture(C["Media"].BackdropColor[1],C["Media"].BackdropColor[2],C["Media"].BackdropColor[3],C["Media"].BackdropColor[4])
 
     Module:SecureHook("GameTooltip_ShowStatusBar")
     Module:SecureHook("GameTooltip_ShowProgressBar") -- Skin Progress Bars

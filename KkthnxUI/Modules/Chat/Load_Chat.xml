@@ -5,7 +5,5 @@
     <Script file="CopyChat.lua"/>
     <Script file="CopyUrl.lua"/>
     <Script file="LinkHover.lua"/>
-    <Script file="MessageFilter.lua"/>
     <Script file="QuickJoin.lua"/>
-    <Script file="SpamFilter.lua"/>
 </Ui>

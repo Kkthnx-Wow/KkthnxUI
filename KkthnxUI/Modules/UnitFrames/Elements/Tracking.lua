@@ -3,6 +3,7 @@ local K = unpack(select(2, ...))
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
+local string_lower = string.lower
 
 local GetSpellInfo = _G.GetSpellInfo
 local IsPlayerSpell = _G.IsPlayerSpell
@@ -343,6 +344,11 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[126819] = Defaults(3), -- Porcupine (Poly)
 		[161354] = Defaults(3), -- Monkey (Poly)
 		[161353] = Defaults(3), -- Polar bear (Poly)
+		[61780] = Defaults(3), -- Turkey (Poly)
+		[161355] = Defaults(3), -- Penguin (Poly)
+		[161372] = Defaults(3), -- Peacock (Poly)
+		[277787] = Defaults(3), -- Direhorn (Poly)
+		[277792] = Defaults(3), -- Bumblebee (Poly)
 		[118] = Defaults(3), -- Polymorph
 		[82691] = Defaults(3), -- Ring of Frost
 		[31661] = Defaults(3), -- Dragon"s Breath
@@ -401,6 +407,9 @@ Module.DebuffsTracking["CCDebuffs"] = {
 		[211004] = Defaults(3), -- Hex (Spider)
 		[210873] = Defaults(3), -- Hex (Compy)
 		[196942] = Defaults(3), -- Hex (Voodoo Totem)
+		[269352] = Defaults(3), -- Hex (Skeletal Hatchling)
+		[277778] = Defaults(3), -- Hex (Zandalari Tendonripper)
+		[277784] = Defaults(3), -- Hex (Wicker Mongrel)
 		[118905] = Defaults(3), -- Static Charge
 		[77505] = Defaults(4), -- Earthquake (Knocking down)
 		[118345] = Defaults(4), -- Pulverize (Pet)
@@ -440,38 +449,65 @@ Module.DebuffsTracking["CCDebuffs"] = {
 -- RAID BUFFS (SQUARED AURA TRACKING LIST)
 Module.RaidBuffsTracking = {
 	PRIEST = {
+		{194384, "TOPRIGHT", {1, 1, 0.66}}, -- Atonement
+		{214206, "TOPRIGHT", {1, 1, 0.66}}, -- Atonement (PvP)
 		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
-		{139, "BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
-		{17, "TOPLEFT", {1, 1, 0}, true}, -- Power Word: Shield
-		{194384, "TOPRIGHT", {0.81, 0.70, 0.23}, true}, -- Atonement
-		{214206, "TOPRIGHT", {0.81, 0.70, 0.23}, true}, -- PVP Atonement
+		{193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}}, -- Masochism
+		{139, 	"BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
+		{17, 	"TOPLEFT", {0.7, 0.7, 0.7}, true}, -- Power Word: Shield
+		{47788, "LEFT", {0.86, 0.45, 0}, true}, -- Guardian Spirit
+		{33206, "LEFT", {0.47, 0.35, 0.74}, true}, -- Pain Suppression
 	},
 
 	DRUID = {
-		{774, "TOPLEFT", {0.8, 0.4, 0.8}}, -- Rejuvenation
-		{155777, "LEFT", {0.8, 0.4, 0.8}}, -- Germination
-		{8936, "TOPRIGHT", {0.2, 0.8, 0.2}}, -- Regrowth
-		{33763, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
-		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}}, -- Wild Growth
+		{774, "TOPRIGHT", {0.8, 0.4, 0.8}}, -- Rejuvenation
+		{155777, "RIGHT", {0.8, 0.4, 0.8}}, -- Germination
+		{8936, "BOTTOMLEFT", {0.2, 0.8, 0.2}}, -- Regrowth
+		{33763, "TOPLEFT", {0.4, 0.8, 0.2}}, -- Lifebloom
+		{48438, "BOTTOMRIGHT", {0.8, 0.4, 0}},-- Wild Growth
+		{207386, "TOP", {0.4, 0.2, 0.8}}, -- Spring Blossoms
+		{102351, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (Initial Buff)
+		{102352, "LEFT", {0.2, 0.8, 0.8}}, -- Cenarion Ward (HoT)
+		{200389, "BOTTOM", {1, 1, 0.4}}, -- Cultivation
 	},
 
 	PALADIN = {
-		{53563, "TOPLEFT", {0.7, 0.3, 0.7}},	 -- Beacon of Light
-		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}},	 -- Beacon of Faith
-		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, 	 -- Hand of Protection
-		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true},	 -- Hand of Freedom
-		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true},	 -- Hand of Sacrifice
+		{53563, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Light
+		{156910, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Faith
+		{200025, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Beacon of Virtue
+		{1022, "BOTTOMRIGHT", {0.2, 0.2, 1}, true}, -- Hand of Protection
+		{1044, "BOTTOMRIGHT", {0.89, 0.45, 0}, true}, -- Hand of Freedom
+		{6940, "BOTTOMRIGHT", {0.89, 0.1, 0.1}, true}, -- Hand of Sacrifice
+		{223306, 'BOTTOMLEFT', {0.7, 0.7, 0.3}}, -- Bestow Faith
 	},
 
 	SHAMAN = {
-		{61295, "TOPLEFT", {0.7, 0.3, 0.7}}, -- Riptide
+		{61295, "TOPRIGHT", {0.7, 0.3, 0.7}}, -- Riptide
+		{974, "BOTTOMRIGHT", {0.2, 0.2, 1}}, -- Earth Shield
 	},
 
 	MONK = {
-		{119611, "TOPLEFT", {0.8, 0.4, 0.8}},	 -- Renewing Mist
-		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}},	 -- Life Cocoon
-		{124682, "BOTTOMLEFT", {0.4, 0.8, 0.2}}, -- Enveloping Mist
-		{124081, "BOTTOMRIGHT", {0.7, 0.4, 0}}, -- Zen Sphere
+		{119611, "TOPLEFT", {0.3, 0.8, 0.6}}, -- Renewing Mist
+		{116849, "TOPRIGHT", {0.2, 0.8, 0.2}, true}, -- Life Cocoon
+		{124682, "BOTTOMLEFT", {0.8, 0.8, 0.25}}, -- Enveloping Mist
+		{191840, "BOTTOMRIGHT", {0.27, 0.62, 0.7}}, -- Essence Font
+	},
+
+	ROGUE = {
+		{57934, "TOPRIGHT", {0.89, 0.09, 0.05}}, -- Tricks of the Trade
+	},
+
+	WARRIOR = {
+		{114030, "TOPLEFT", {0.2, 0.2, 1}}, -- Vigilance
+		{3411, "TOPRIGHT", {0.89, 0.09, 0.05}}, -- Intervene
+	},
+
+	PET = {
+		-- Warlock Pets
+		{193396, 'TOPRIGHT', {0.6, 0.2, 0.8}, true}, -- Demonic Empowerment
+		-- Hunter Pets
+		{19615, 'TOPLEFT', {0.89, 0.09, 0.05}, true}, -- Frenzy
+		{136, 'TOPRIGHT', {0.2, 0.8, 0.2}, true} -- Mend Pet
 	},
 
 	ALL = {
@@ -606,7 +642,7 @@ CastTickCheck:RegisterEvent("PLAYER_ENTERING_WORLD")
 CastTickCheck:RegisterEvent("PLAYER_TALENT_UPDATE")
 CastTickCheck:SetScript("OnEvent", function()
 	local class = select(2, UnitClass("player"))
-	if string.lower(class) ~= "priest" then return; end
+	if string_lower(class) ~= "priest" then return; end
 
 	local penanceTicks = IsPlayerSpell(193134) and 4 or 3
 	Module.ChannelTicks[SpellName(47540)] = penanceTicks -- Penance

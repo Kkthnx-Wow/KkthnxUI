@@ -1,6 +1,7 @@
 local K, C = unpack(select(2, ...))
 
 C["Media"] = {
+	AltzUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AltzUI.tga]],
 	BackdropColor = {.04, .04, .04, 0.9},
 	Blank = [[Interface\BUTTONS\WHITE8X8]],
 	BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
@@ -15,6 +16,7 @@ C["Media"] = {
 	FontSize = 12,
 	FontStyle = "OUTLINE",
 	Glow = [[Interface\AddOns\KkthnxUI\Media\Textures\GlowTex.tga]],
+	GoldpawUI = [[Interface\AddOns\KkthnxUI\Media\Textures\GoldpawUI.tga]],
 	Logo = [[Interface\AddOns\KkthnxUI\Media\Textures\Logo.tga]],
 	Mouseover = [[Interface\AddOns\KkthnxUI\Media\Textures\Mouseover.tga]],
 	NewClassPortraits = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
@@ -27,6 +29,8 @@ C["Media"] = {
 	ValueColor = {68/255, 136/255, 255/255},
 	WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
+	ZorkUI = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],
+	SkullFlowerUI = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],
 }
 
 if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then

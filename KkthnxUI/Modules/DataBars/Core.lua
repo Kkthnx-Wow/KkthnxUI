@@ -25,11 +25,13 @@ local GetPetExperience = _G.GetPetExperience
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
 local IsXPUserDisabled = _G.IsXPUserDisabled
-local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
+local UnitLevel = _G.UnitLevel
+local GetRestrictedAccountData = _G.GetRestrictedAccountData
+local GetExpansionLevel = _G.GetExpansionLevel
 
 local function GetUnitXP(unit)
 	if (unit == "pet") then

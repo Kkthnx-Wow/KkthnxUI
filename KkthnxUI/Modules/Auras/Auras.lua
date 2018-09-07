@@ -19,6 +19,8 @@ local RegisterAttributeDriver = _G.RegisterAttributeDriver
 local RegisterStateDriver = _G.RegisterStateDriver
 local UnitAura = _G.UnitAura
 
+local AurasFont = K.GetFont(C["Auras"].Font)
+
 local DIRECTION_TO_POINT = {
     DOWN_RIGHT = "TOPLEFT",
     DOWN_LEFT = "TOPRIGHT",
@@ -94,11 +96,11 @@ function Module:CreateIcon(button)
 
     button.count = button:CreateFontString(nil, "ARTWORK")
     button.count:SetPoint("BOTTOMRIGHT", -1, 1)
-    button.count:FontTemplate(nil, 12, "OUTLINE")
+    button.count:SetFontObject(AurasFont)
 
     button.time = button:CreateFontString(nil, "ARTWORK")
     button.time:SetPoint("TOP", button, "BOTTOM", 1, -4)
-    button.time:FontTemplate(nil, 12, "OUTLINE")
+    button.time:SetFontObject(AurasFont)
 
     K.SetAnimationGroup(button)
 
@@ -216,6 +218,7 @@ function Module:UpdateHeader(header)
     if (not C["Auras"].Enable) then
         return
     end
+
     if header:GetAttribute("filter") == "HELPFUL" then
         header:SetAttribute("consolidateTo", 0)
         header:SetAttribute("weaponTemplate", ("AuraTemplate%d"):format(C["Auras"].Size))
@@ -278,11 +281,11 @@ function Module:UpdateHeader(header)
         if (child.time) then
             child.time:ClearAllPoints()
             child.time:SetPoint("TOP", child, "BOTTOM", 1, -3)
-            child.time:FontTemplate(nil, 12, "OUTLINE")
+            child.time:SetFontObject(AurasFont)
 
             child.count:ClearAllPoints()
             child.count:SetPoint("BOTTOMRIGHT", -1, 1)
-            child.count:FontTemplate(nil, 12, "OUTLINE")
+            child.count:SetFontObject(AurasFont)
         end
 
         -- Blizzard bug fix, icons arent being hidden when you reduce the amount of maximum buttons

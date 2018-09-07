@@ -137,7 +137,6 @@ function Module:UpdateSettings()
 		if not C["Minimap"].Calendar then
 			GameTimeFrame:Hide()
 		else
-			local GameTimeFrameFont = K.GetFont(C["General"].Font)
 			GameTimeFrame:SetParent(Minimap)
 			GameTimeFrame:SetScale(0.6)
 			GameTimeFrame:ClearAllPoints()
@@ -146,12 +145,12 @@ function Module:UpdateSettings()
 			GameTimeFrame:GetNormalTexture():SetTexCoord(0, 1, 0, 1)
 			GameTimeFrame:SetNormalTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Calendar.blp")
 			GameTimeFrame:SetPushedTexture(nil)
-			GameTimeFrame:SetHighlightTexture (nil)
+			GameTimeFrame:SetHighlightTexture(nil)
 
 			local GameTimeFont = GameTimeFrame:GetFontString()
 			GameTimeFont:ClearAllPoints()
 			GameTimeFont:SetPoint("CENTER", 0, -6)
-			GameTimeFont:SetFontObject(GameTimeFrameFont)
+			GameTimeFont:SetFontObject("KkthnxUIFont")
 			GameTimeFont:SetFont(select(1, GameTimeFont:GetFont()), 20, select(3, GameTimeFont:GetFont()))
 			GameTimeFont:SetShadowOffset(0, 0)
 		end

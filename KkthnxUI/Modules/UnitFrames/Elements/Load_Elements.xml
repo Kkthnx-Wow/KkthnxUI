@@ -5,12 +5,8 @@ xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Auras.lua"/>
     <Script file="Range.lua"/>
     <Script file="ClassPower.lua"/>
-    <Script file="Runes.lua"/>
-    <Script file="Stagger.lua"/>
     <Script file="HealthPrediction.lua"/>
     <Script file="PowerPrediction.lua"/>
     <Script file="Indicators.lua"/>
     <Script file="Tags.lua"/>
-    <Script file="Totems.lua"/>
-    <Script file="Custom\Totems.lua"/>
 </Ui>

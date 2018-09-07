@@ -7,10 +7,14 @@ local _G = _G
 local select = select
 
 local CreateFrame = _G.CreateFrame
+local Druid, Rogue = "", ""
+local GetActionTexture = _G.GetActionTexture
+local HasOverrideActionBar = _G.HasOverrideActionBar
+local HasVehicleActionBar = _G.HasVehicleActionBar
+local InCombatLockdown = _G.InCombatLockdown
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local RegisterStateDriver = _G.RegisterStateDriver
 local UnitClass = _G.UnitClass
-local Druid, Rogue = "", ""
 
 local ActionBar1 = CreateFrame("Frame", "Bar1Holder", ActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar1:SetAllPoints(ActionBarAnchor)

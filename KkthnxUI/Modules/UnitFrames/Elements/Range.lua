@@ -1,6 +1,5 @@
 local K = unpack(select(2, ...))
 local SpellRange = LibStub("SpellRange-1.0")
-
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
@@ -16,6 +15,7 @@ local UnitIsConnected = _G.UnitIsConnected
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
 local UnitIsUnit = _G.UnitIsUnit
 local UnitClass = _G.UnitClass
+local UnitIsWarModePhased = _G.UnitIsWarModePhased
 
 function Module:CreateRange()
 	local Range = {insideAlpha = 1, outsideAlpha = 0.35}
@@ -119,7 +119,16 @@ local function getUnit(unit)
 end
 
 local function friendlyIsInRange(unit)
-	if not UnitInPhase(unit) then -- Different phase
+	if (not UnitIsUnit(unit, "player")) and (UnitInParty(unit) or UnitInRaid(unit)) then
+		unit = getUnit(unit) -- swap the unit with `raid#` or `party#` when its NOT `player`, UnitIsUnit is true, and its not using `raid#` or `party#` already
+	end
+
+	if UnitIsWarModePhased(unit) or not UnitInPhase(unit) then -- Different phase
+		return false
+	end
+
+	local inRange, checkedRange = UnitInRange(unit)
+	if checkedRange and not inRange then
 		return false
 	end
 
@@ -137,10 +146,7 @@ local function friendlyIsInRange(unit)
 		return false
 	end
 
-	if #friendlySpells == 0 and (UnitInRaid(unit) or UnitInParty(unit)) then
-		unit = getUnit(unit)
-		return unit and UnitInRange(unit)
-	else
+	if #friendlySpells > 0 then
 		for _, spellID in ipairs(friendlySpells) do
 			if SpellRange.IsSpellInRange(spellID, unit) == 1 then
 				return true
@@ -213,7 +219,7 @@ function Module:UpdateRange()
 				self:SetAlpha(range.outsideAlpha)
 			end
 		else
-			if friendlyIsInRange(unit) and UnitIsConnected(unit) then
+			if UnitIsConnected(unit) and friendlyIsInRange(unit) then
 				self:SetAlpha(range.insideAlpha)
 			else
 				self:SetAlpha(range.outsideAlpha)

@@ -21,6 +21,7 @@ local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
 local isAutoAccepting = false
 local displayedRaidConvert = false
+local autoAccepting = {}
 
 local function InviteApplicants()
 	local applicants = C_LFGList_GetApplicants()
@@ -30,7 +31,7 @@ local function InviteApplicants()
 		-- Using the premade "invite" feature does not work, as Blizzard have broken auto-accept intentionally
 		-- Because of this, we can't invite groups, but we can still send normal invites to singletons.
 		if numMembers == 1 and (pendingStatus or status == "applied") then
-			local name, _, _, _, _, _, _, _, _, assignedRole  = C_LFGList_GetApplicantMemberInfo(id, 1)
+			local name, _, _, _, _, _, _, _, _, assignedRole = C_LFGList_GetApplicantMemberInfo(id, 1)
 			if autoAccepting[assignedRole] then
 				InviteUnit(name)
 			end
@@ -81,7 +82,7 @@ local function CreateAutoAcceptButtons()
 	header:SetJustifyH("LEFT")
 
 	local damageButton = CreateCheckbox("groupfinder-icon-role-large-dps", "DAMAGER")
-	damageButton:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -1)
+	damageButton:SetPoint("TOPLEFT", header, "BOTTOMLEFT", -3, 2)
 
 	local healerButton = CreateCheckbox("groupfinder-icon-role-large-heal", "HEALER")
 	healerButton:SetPoint("LEFT", damageButton.icon, "RIGHT", 5, 0)
@@ -90,11 +91,7 @@ local function CreateAutoAcceptButtons()
 	tankButton:SetPoint("LEFT", healerButton.icon, "RIGHT", 5, 0)
 end
 
-function Module:AutoAcceptButtons()
-	CreateAutoAcceptButtons()
-end
-
-function Module:UpdateList()
+function Module:ApplicantListUpdate()
 	if UnitIsGroupLeader("player", LE_PARTY_CATEGORY_HOME) then
 		if isAutoAccepting then
 			-- Display conversion to raid notice.
@@ -111,10 +108,6 @@ function Module:UpdateList()
 	end
 end
 
-function Module:ADDON_LOADED()
-	Module:AutoAcceptButtons()
-end
-
 function Module:GROUP_LEFT()
 	isAutoAccepting = false
 	displayedRaidConvert = false
@@ -125,14 +118,13 @@ function Module:OnEnable()
 		return
 	end
 
-	self:RegisterEvent("ADDON_LOADED")
-	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED", "UpdateList")
-	self:RegisterEvent("PARTY_LEADER_CHANGED", "UpdateList")
+	CreateAutoAcceptButtons()
+	self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED", "ApplicantListUpdate")
+	self:RegisterEvent("PARTY_LEADER_CHANGED", "ApplicantListUpdate")
 	self:RegisterEvent("GROUP_LEFT")
 end
 
 function Module:OnDisable()
-	self:UnregisterEvent("ADDON_LOADED")
 	self:UnregisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED")
 	self:UnregisterEvent("PARTY_LEADER_CHANGED")
 	self:UnregisterEvent("GROUP_LEFT")

@@ -95,9 +95,10 @@ function Module:CreateTargetOfTarget()
 		end
 	end
 
-	self.Name = K.SetFontString(self, C["Media"].Font, 12, C["Unitframe"].Outline and "OUTLINE" or "", "CENTER")
-	self.Name:SetShadowOffset(C["Unitframe"].Outline and 0 or 1.25, C["Unitframe"].Outline and -0 or -1.25)
+	self.Name = self:CreateFontString(nil, "OVERLAY")
 	self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -16)
+	self.Name:SetWidth(self.Power:GetWidth())
+	self.Name:SetFontObject(UnitframeFont)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 
 	if C["Unitframe"].MouseoverHighlight then

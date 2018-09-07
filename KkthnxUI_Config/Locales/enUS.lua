@@ -4,6 +4,7 @@ local MissingDesc = "The description for this module/setting is missing. Someone
 local ModuleFont = "Pick a font from the provided fonts for this module."
 local ModuleFontOutline = "Apply a font outline for this module"
 local ModuleHeight = "Pick the perfect Height for this module"
+local ModuleNewFeature = [[|TInterface\OptionsFrame\UI-OptionsFrame-NewFeatureIcon:0:0:0:0|t]]
 local ModuleTexture = "Pick a texture from the provided textures for this module."
 local ModuleToggle = "Enable or disable this module based on your preference."
 local ModuleToggleSkin = "Enable/Disable this skin."
@@ -772,11 +773,6 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Color links in chat"..RestoreDefault,
 		},
 
-		["MessageFilter"] = {
-			["Name"] = "Message Filter",
-			["Desc"] = "Filter messages in chat.",
-		},
-
 		["QuickJoin"] = {
 			["Name"] = "Quick Join",
 			["Desc"] = "Toggle QuickJoin messages in chat.",
@@ -800,11 +796,6 @@ KkthnxUIConfig["enUS"] = {
 		["Width"] = {
 			["Name"] = "Width",
 			["Desc"] = ModuleWidth,
-		},
-
-		["BubbleBackdrop"] = {
-			["Name"] = "Bubble Backdrop",
-			["Desc"] = "If you choose to have a backdrop or not!",
 		},
 	},
 
@@ -1118,6 +1109,16 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Only show your debuffs on frames (This affects your Target and Boss frames)",
 		},
 
+		["PlayerBuffs"] = {
+			["Name"] = "Player Buffs"..ModuleNewFeature,
+			["Desc"] = "Display your buffs under the player frame",
+		},
+
+		["PortraitTimers"] = {
+			["Name"] = "Portrait Timers"..ModuleNewFeature,
+			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
+		},
+
 		["Castbars"] = {
 			["Name"] = "Enable Castbars",
 			["Desc"] = "Enable cast bar for unit frames",
@@ -1307,6 +1308,16 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Party Local
 	["Party"] = {
+		["Castbars"] = {
+			["Name"] = "Toggle Castbars"..ModuleNewFeature,
+			["Desc"] = "Enable cast bar for unit frames",
+		},
+
+		["CastbarIcon"] = {
+			["Name"] = "Castbar Icon"..ModuleNewFeature,
+			["Desc"] = "Create an icon beside the cast bar",
+		},
+
 		["Enable"] = {
 			["Name"] = "Toggle Party Frames",
 			["Desc"] = ModuleToggle,
@@ -1325,6 +1336,11 @@ KkthnxUIConfig["enUS"] = {
 		["PartyAsRaid"] = {
 			["Name"] = "Party as Raid Frames",
 			["Desc"] = "Check this if you want to use the Raidframes instead of the Partyframes.",
+		},
+
+		["PortraitTimers"] = {
+			["Name"] = "Portrait Timers"..ModuleNewFeature,
+			["Desc"] = "Displays important PvP buffs/debuffs with timers on your Portraits",
 		},
 
 		["ShowBuffs"] = {
@@ -1383,6 +1399,11 @@ KkthnxUIConfig["enUS"] = {
 		["AuraWatchIconSize"] = {
 			["Name"] = "Aura Watch Icon Size",
 			["Desc"] = "Pick your size",
+		},
+
+		["AuraWatchTexture"] = {
+			["Name"] = "Aura Watch Texture"..ModuleNewFeature,
+			["Desc"] = "Display a colored texture over your aura watch corner icons. Disable this if you want to see the spell icon instead",
 		},
 
 		["RaidTools"] = {

@@ -8,8 +8,6 @@ local _G = _G
 local ActionBar4 = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar4:SetAllPoints(RightActionBarAnchor)
 MultiBarRight:SetParent(ActionBar4)
-MultiBarRight:SetScale(1)
-MultiBarRight.SetScale = K.Noop
 
 for i = 1, 12 do
 	local b = _G["MultiBarRightButton" .. i]

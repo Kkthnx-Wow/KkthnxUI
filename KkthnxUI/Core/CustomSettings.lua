@@ -1,40 +1,28 @@
-local K, C = unpack(select(2, ...))
+local _, C = unpack(select(2, ...))
 
-if not IsAddOnLoaded("KkthnxUI_Config") then
-	print("I could not detect KkthnxUI_Config. Please make sure it is enabled in your addon list. Stopping process...")
-	return
-end
+local pairs = pairs
 
 local playerName = UnitName("player")
 local playerRealm = GetRealmName()
 
 -- Fuck you nil error. Im about sick of your shit. XD
-if not KkthnxUIConfigShared then
-	KkthnxUIConfigShared = {}
-end
+if IsAddOnLoaded("KkthnxUI_Config") then
+	if not KkthnxUIConfigShared then
+		KkthnxUIConfigShared = {}
+	end
 
-if (not KkthnxUIConfigShared.Account) then
-	KkthnxUIConfigShared.Account = {}
-end
+	if not KkthnxUIConfigShared[playerRealm] then
+		KkthnxUIConfigShared[playerRealm] = {}
+	end
 
-if KkthnxUIConfigShared[playerRealm] == nil then
-	KkthnxUIConfigShared[playerRealm] = {}
-end
-
-if KkthnxUIConfigShared[playerRealm][playerName] == nil then
-	KkthnxUIConfigShared[playerRealm][playerName] = false
-end
-
-if KkthnxUIConfigShared[playerRealm][playerName] == true and not KkthnxUIConfigNotShared then
-	return
-end
-
-if KkthnxUIConfigShared[playerRealm][playerName] == false and not KkthnxUIConfigPerAccount then
+	if not KkthnxUIConfigShared[playerRealm][playerName] then
+		KkthnxUIConfigShared[playerRealm][playerName] = {}
+	end
+else
 	return
 end
 
 local Settings
-
 if (KkthnxUIConfigPerAccount) then
 	Settings = KkthnxUIConfigShared.Account
 else

@@ -5,11 +5,7 @@ end
 local Module = K:GetModule("Unitframes")
 
 local oUF = oUF or K.oUF
-
-if not oUF then
-	K.Print("Could not find a vaild instance of oUF. Stopping Boss.lua code!")
-	return
-end
+assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
 
@@ -109,6 +105,7 @@ function Module:CreateBoss()
 		self.Castbar:SetPoint("TOP", 0, 20)
 		self.Castbar:SetHeight(18)
 
+		self.Castbar.timeToHold = 0.4
 		self.Castbar.PostCastStart = Module.CheckCast
 		self.Castbar.PostChannelStart = Module.CheckChannel
 

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["DataText"].Time ~= true then
 	return
 end
@@ -7,7 +7,6 @@ end
 local _G = _G
 local date = date
 local next = next
-local pairs = pairs
 local string_format = string.format
 local string_join = string.join
 local string_utf8sub = string.utf8sub
@@ -43,10 +42,11 @@ local DataTextTime = CreateFrame("Frame")
 
 local NameColor = K.RGBToHex(K.Color.r, K.Color.g, K.Color.b)
 local ValueColor = K.RGBToHex(1, 1, 1)
+local DataTextTimeFont = K.GetFont(C["DataText"].Font)
 
 DataTextTime.Text = Minimap:CreateFontString(nil, "OVERLAY")
-DataTextTime.Text:SetFont(C["Media"].Font, 13, "")
-DataTextTime.Text:SetShadowOffset(1.25, -1.25)
+DataTextTime.Text:SetFontObject(DataTextTimeFont)
+DataTextTime.Text:SetFont(select(1, DataTextTime.Text:GetFont()), 13, select(3, DataTextTime.Text:GetFont()))
 DataTextTime.Text:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
 DataTextTime:SetAllPoints(DataTextTime.Text)
 
@@ -62,12 +62,8 @@ local formatBattleGroundInfo = "%s: "
 local lockoutColorExtended, lockoutColorNormal = {r = 0.3, g = 1, b = 0.3}, {r = .8,g = .8,b = .8}
 local curHr, curMin, curAmPm
 local enteredFrame = false
-local Update, lastPanel -- UpValue
+local Update
 local localizedName, isActive, startTime, canEnter, _
-
-if lastPanel ~= nil then
-	Update(lastPanel, 20000)
-end
 
 local function ConvertTime(h, m)
 	local AmPm
@@ -94,15 +90,13 @@ local function CalculateTimeValues(tooltip)
 	end
 end
 
-local function Click(self, btn)
+local function OnClick()
 	GameTimeFrame:Click()
 end
 
 local function OnLeave()
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
-		enteredFrame = false
-	end
+	GameTooltip:Hide()
+	enteredFrame = false
 end
 
 -- use these to convert "The Eye" into "Tempest Keep"
@@ -125,7 +119,7 @@ end
 
 local locale = GetLocale()
 local krcntw = locale == "koKR" or locale == "zhCN" or locale == "zhTW"
-local difficultyTag = { -- Raid Finder, Normal, Heroic, Mythic
+local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 	(krcntw and PLAYER_DIFFICULTY1) or string_utf8sub(PLAYER_DIFFICULTY1, 1, 1), -- N
 	(krcntw and PLAYER_DIFFICULTY2) or string_utf8sub(PLAYER_DIFFICULTY2, 1, 1), -- H
 	(krcntw and PLAYER_DIFFICULTY3) or string_utf8sub(PLAYER_DIFFICULTY3, 1, 1), -- R
@@ -162,7 +156,6 @@ local function OnEnter(self)
 	end
 
 	local addedHeader = false
-	local localizedName, isActive, startTime, canEnter, _
 	for i = 1, GetNumWorldPVPAreas() do
 		_, localizedName, isActive, _, startTime, canEnter = GetWorldPVPAreaInfo(i)
 		if canEnter then
@@ -182,25 +175,25 @@ local function OnEnter(self)
 	end
 
 	local lockedInstances = {raids = {}, dungeons = {}}
-	local name, difficulty, locked, extended, isRaid
-	local isLFR, isHeroicOrMythicDungeon, isHeroic, displayHeroic, displayMythic, sortName, difficultyLetter, buttonImg
+	local name, reset, extended, maxPlayers, numEncounters, encounterProgress, difficultyLetter, buttonImg, sortName, difficulty, locked, isRaid, isLFR, isHeroicOrMythic, isHeroic, displayHeroic, displayMythic, lockoutColor
+
 	for i = 1, GetNumSavedInstances() do
 		name, _, _, difficulty, locked, extended, _, isRaid = GetSavedInstanceInfo(i)
 		if (locked or extended) and name then
-			isLFR, isHeroicOrMythicDungeon = (difficulty == 7 or difficulty == 17), (difficulty == 2 or difficulty == 23)
+			isLFR, isHeroicOrMythic = (difficulty == 7 or difficulty == 17), (difficulty == 2 or difficulty == 23)
 			_, _, isHeroic, _, displayHeroic, displayMythic = GetDifficultyInfo(difficulty)
 			sortName = name .. (displayMythic and 4 or (isHeroic or displayHeroic) and 3 or isLFR and 1 or 2)
-			difficultyLetter = (displayMythic and difficultyTag[4] or (isHeroic or displayHeroic) and difficultyTag[3] or isLFR and difficultyTag[1] or difficultyTag[2])
+			difficultyLetter = (displayMythic and nhm[4] or (isHeroic or displayHeroic) and nhm[3] or isLFR and nhm[1] or nhm[2])
 			buttonImg = instanceIconByName[name] and string_format("|T%s:16:16:0:0:96:96:0:64:0:64|t ", instanceIconByName[name]) or ""
+
 			if isRaid then
 				table_insert(lockedInstances["raids"], {sortName, difficultyLetter, buttonImg, {GetSavedInstanceInfo(i)}})
-			elseif isHeroicOrMythicDungeon then
+			elseif not isRaid and isHeroicOrMythic then
 				table_insert(lockedInstances["dungeons"], {sortName, difficultyLetter, buttonImg, {GetSavedInstanceInfo(i)}})
 			end
 		end
 	end
 
-	local reset, maxPlayers, numEncounters, encounterProgress, lockoutColor
 	if next(lockedInstances["raids"]) then
 		if GameTooltip:NumLines() > 0 then
 			GameTooltip:AddLine(" ")
@@ -255,14 +248,18 @@ local function OnEnter(self)
 		name, _, reset = GetSavedWorldBossInfo(i)
 		table_insert(worldbossLockoutList, {name, reset})
 	end
+
 	table_sort(worldbossLockoutList, function(a, b)
 		return a[1] < b[1]
 	end)
+
 	for i = 1,#worldbossLockoutList do
 		name, reset = unpack(worldbossLockoutList[i])
 		if (reset) then
 			if (not addedLine) then
-				GameTooltip:AddLine(" ")
+				if GameTooltip:NumLines() > 0 then
+					GameTooltip:AddLine(" ")
+				end
 				GameTooltip:AddLine(WORLD_BOSSES_TEXT)
 				addedLine = true
 			end
@@ -271,10 +268,10 @@ local function OnEnter(self)
 	end
 
 	local Hr, Min, AmPm = CalculateTimeValues(true)
-
 	if GameTooltip:NumLines() > 0 then
 		GameTooltip:AddLine(" ")
 	end
+
 	if AmPm == -1 then
 		GameTooltip:AddDoubleLine(C["DataText"].LocalTime and TIMEMANAGER_TOOLTIP_REALMTIME or TIMEMANAGER_TOOLTIP_LOCALTIME,
 		string_format(europeDisplayFormat_nocolor, Hr, Min), 1, 1, 1, lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b)
@@ -328,14 +325,13 @@ function Update(self, t)
 		DataTextTime.Text:SetFormattedText(ukDisplayFormat, ValueColor, Hr, ValueColor, Min, NameColor, APM[AmPm])
 	end
 
-	lastPanel = self
 	int = 5
 end
 
 local function DelayDataTextTime()
 	DataTextTime:RegisterEvent("UPDATE_INSTANCE_INFO")
 	DataTextTime:SetScript("OnEvent", OnEvent)
-	DataTextTime:SetScript("OnMouseDown", Click)
+	DataTextTime:SetScript("OnMouseDown", OnClick)
 	DataTextTime:SetScript("OnUpdate", Update)
 	DataTextTime:SetScript("OnEnter", OnEnter)
 	DataTextTime:SetScript("OnLeave", OnLeave)

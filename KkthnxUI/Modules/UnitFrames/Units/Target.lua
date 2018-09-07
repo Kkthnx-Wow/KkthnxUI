@@ -135,8 +135,11 @@ function Module:CreateTarget()
 		self.Castbar:ClearAllPoints()
 		self.Castbar:SetPoint("BOTTOM", PlayerCastbar, "TOP", 0, 6)
 
+		self.Castbar.timeToHold = 0.4
 		self.Castbar.PostCastStart = Module.CheckCast
 		self.Castbar.PostChannelStart = Module.CheckChannel
+		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
@@ -181,7 +184,10 @@ function Module:CreateTarget()
 	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 
-	Module.CreatePortraitTimers(self)
+	if C["Unitframe"].PortraitTimers then
+		Module.CreatePortraitTimers(self)
+	end
+
 	Module.CreateQuestIndicator(self, 26, 26)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
