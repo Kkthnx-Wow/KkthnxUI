@@ -86,6 +86,9 @@ or K.CheckAddOnState("Stuf")
 or K.CheckAddOnState("PitBull4")
 or K.CheckAddOnState("ShadowedUnitFrames") then
 	C["Unitframe"].Enable = false
+	C["Party"].Enable = false
+	C["Arena"].Enable = false
+	C["Boss"].Enable = false
 end
 
 if K.CheckAddOnState("Dominos")
@@ -141,8 +144,7 @@ if K.CheckAddOnState("TipTacTalents") then
 end
 
 if K.CheckAddOnState("ConsolePortBar") then
-	C["DataBars"].Azerite = false
-	C["DataBars"].Experience = false
+	C["DataBars"].Enable = false
 end
 
 if K.CheckAddOnState("cInterrupt") then
@@ -165,5 +167,5 @@ end
 if K.CheckAddOnState("OmniCC")
 or K.CheckAddOnState("ncCooldown")
 or K.CheckAddOnState("CooldownCount") then
-	C["Cooldown"].Enable = false
+	C["ActionBar"].Cooldowns = false
 end

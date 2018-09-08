@@ -24,6 +24,7 @@ local UnitAura = _G.UnitAura
 local AuraUtil_FindAuraByName = _G.AuraUtil.FindAuraByName
 
 local Filger = {}
+local FilgerSpellDataCache = {}
 local MyUnits = {player = true, vehicle = true, pet = true}
 
 SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
@@ -43,18 +44,33 @@ function Filger:TooltipOnLeave()
 end
 
 function Filger:UnitAura(unitID, inSpellID, spell, filter, absID)
-	if absID then
-		for i = 1, 40 do
-			local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitAura(unitID, i, filter)
-			if not name then break end
-			if spellID == inSpellID then
-				return name, spellID, icon, count, duration, expirationTime, unitCaster
+	for i = 1, 40 do
+		if FilgerSpellDataCache[i] then
+			if FilgerSpellDataCache[i].unitID == unitID and FilgerSpellDataCache[i].filter == filter and FilgerSpellDataCache[i].name == spell then
+				return FilgerSpellDataCache[i].name, FilgerSpellDataCache[i].spid, FilgerSpellDataCache[i].icon, FilgerSpellDataCache[i].count, FilgerSpellDataCache[i].duration, FilgerSpellDataCache[i].expirationTime, FilgerSpellDataCache[i].caster
 			end
 		end
-	else
-		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = AuraUtil_FindAuraByName(spell, unitID, filter)
+
+		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitAura(unitID, i, filter)
 		if name then
-			return name, spellID, icon, count, duration, expirationTime, unitCaster
+			if not FilgerSpellDataCache[i] then
+				FilgerSpellDataCache[i] = {}
+			end
+
+			FilgerSpellDataCache[i].unit = unit
+			FilgerSpellDataCache[i].name = name
+			FilgerSpellDataCache[i].spid = spellID
+			FilgerSpellDataCache[i].icon = icon
+			FilgerSpellDataCache[i].count = count
+			FilgerSpellDataCache[i].duration = duration
+			FilgerSpellDataCache[i].expirationTime = expirationTime
+			FilgerSpellDataCache[i].caster = unitCaster
+			FilgerSpellDataCache[i].filter = filter
+			FilgerSpellDataCache[i].unitID = unitID
+
+			if absID and (spellID == inSpellID) or name == spell then
+				return name, spellID, icon, count, duration, expirationTime, unitCaster
+			end
 		end
 	end
 end
@@ -323,6 +339,8 @@ function Filger:OnEvent(event, unit, _, spellID)
 		local ptt = GetSpecialization()
 		local needUpdate = false
 		local id = self.Id
+
+		table.wipe(FilgerSpellDataCache)
 
 		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
 			local data = C["FilgerSpells"][K.Class][id][i]
