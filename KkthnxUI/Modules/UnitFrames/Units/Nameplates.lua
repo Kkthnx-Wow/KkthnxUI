@@ -157,20 +157,22 @@ function Module:CreateNameplates()
 	self.Power.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
 	self.Power.PostUpdate = Module.NameplatePowerAndCastBar
 
-	self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
-	self.Debuffs:SetWidth(C["Nameplates"].Width - K.Mult * 2)
-	self.Debuffs:SetHeight(20)
-	self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 20)
-	self.Debuffs.size = 20
-	self.Debuffs.num = 12
-	self.Debuffs.numRow = 2
-	self.Debuffs.spacing = 3
-	self.Debuffs.initialAnchor = "TOPLEFT"
-	self.Debuffs["growth-y"] = "UP"
-	self.Debuffs["growth-x"] = "RIGHT"
-	self.Debuffs.PostCreateIcon = Module.PostCreateAura
-	self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-	self.Debuffs.onlyShowPlayer = true
+	if C["Nameplates"].TrackAuras == true then
+		self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
+		self.Debuffs:SetWidth(C["Nameplates"].Width - K.Mult * 2)
+		self.Debuffs:SetHeight(20)
+		self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 20)
+		self.Debuffs.size = 20
+		self.Debuffs.num = 12
+		self.Debuffs.numRow = 2
+		self.Debuffs.spacing = 3
+		self.Debuffs.initialAnchor = "TOPLEFT"
+		self.Debuffs["growth-y"] = "UP"
+		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs.PostCreateIcon = Module.PostCreateAura
+		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
+		self.Debuffs.onlyShowPlayer = true
+	end
 
 	self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
 	self.Castbar:SetFrameStrata(self:GetFrameStrata())
@@ -179,11 +181,6 @@ function Module:CreateNameplates()
 	self.Castbar:SetHeight(C["Nameplates"].CastHeight)
 	self.Castbar:SetPoint("TOPLEFT", self.Health, "BOTTOMLEFT", 0, -4)
 	self.Castbar:SetPoint("TOPRIGHT", self.Health, "BOTTOMRIGHT", 0, -4)
-
-	-- self.Castbar.Background = self.Castbar:CreateTexture(nil, "BORDER")
-	-- self.Castbar.Background:SetAllPoints(self.Castbar)
-	-- self.Castbar.Background:SetTexture(NameplateTexture)
-	-- self.Castbar.Background:SetVertexColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 	self.Castbar.Spark:SetSize(32, self:GetHeight())
@@ -290,7 +287,9 @@ function Module:CreateNameplates()
 	self.Health:EnableMouse(false)
 	self.Power:EnableMouse(false)
 	self.Castbar:EnableMouse(false)
-	self.Debuffs:EnableMouse(false)
+	if C["Nameplates"].TrackAuras == true then
+		self.Debuffs:EnableMouse(false)
+	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
 	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)

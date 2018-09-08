@@ -126,10 +126,8 @@ function Module:CreateRaid()
 		self.Power.Background.multiplier = 0.3
 
 		table_insert(self.__elements, UpdatePower)
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", UpdatePower)
 		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
-		self:RegisterEvent("UNIT_POWER_FREQUENT", UpdatePower)
-		self:RegisterEvent("UNIT_MAXPOWER", UpdatePower)
+		UpdatePower(self, _, unit)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -259,6 +257,5 @@ function Module:CreateRaid()
 
 	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
-
 	Module.CreateDebuffHighlight(self)
 end

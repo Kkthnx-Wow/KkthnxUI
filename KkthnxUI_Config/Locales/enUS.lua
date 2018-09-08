@@ -400,6 +400,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Show icon above enemy totems nameplate",
 		},
 
+		["TrackAuras"] = {
+			["Name"] = "Track Auras"..ModuleNewFeature,
+			["Desc"] = "Show auras on nameplates",
+		},
+
 		["ClassIcons"] = {
 			["Name"] = "Class Icons",
 			["Desc"] = "Icons by class in PvP",
@@ -844,6 +849,11 @@ KkthnxUIConfig["enUS"] = {
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
+		},
+
+		["TrackHonor"] = {
+			["Name"] = "Track Honor"..ModuleNewFeature,
+			["Desc"] = "Track your honor experience as a databar",
 		},
 	},
 

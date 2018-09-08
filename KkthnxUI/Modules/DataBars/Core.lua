@@ -130,6 +130,31 @@ function Module:SetupAzerite()
 	azerite.Text = atext
 end
 
+function Module:SetupHonor()
+	local honor = CreateFrame("StatusBar", "KkthnxUI_HonorBar", self.Container)
+	honor:SetStatusBarTexture(self.DatabaseTexture)
+	honor:SetStatusBarColor(240/255, 114/255, 65/255)
+	honor:SetSize(self.Database.Width, self.Database.Height)
+	honor:CreateBorder()
+
+	local hspark = honor:CreateTexture(nil, "OVERLAY")
+	hspark:SetTexture(C["Media"].Spark_16)
+	hspark:SetHeight(self.Database.Height)
+	hspark:SetBlendMode("ADD")
+	hspark:SetPoint("CENTER", honor:GetStatusBarTexture(), "RIGHT", 0, 0)
+
+	local htext = honor:CreateFontString(nil, "OVERLAY")
+	htext:SetFontObject(self.DatabaseFont)
+	htext:SetFont(select(1, htext:GetFont()), 11, select(3, htext:GetFont()))
+	htext:SetWidth(self.Database.Width - 6)
+	htext:SetWordWrap(false)
+	htext:SetPoint("CENTER")
+
+	self.Bars.Honor = honor
+	honor.Spark = hspark
+	honor.Text = htext
+end
+
 function Module:UpdateReputation()
 	local ID, isFriend, friendText, standingLabel
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
@@ -246,6 +271,38 @@ function Module:UpdateAzerite(event, unit)
 	end
 end
 
+function Module:UpdateHonor(event, unit)
+	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then
+		return
+	end
+
+	local showHonor = true
+
+	if not UnitIsPVP("player") then
+		showHonor = false
+	end
+
+	if showHonor then
+		local current = UnitHonor("player")
+		local max = UnitHonorMax("player")
+
+		if max == 0 then
+			max = 1
+		end
+
+		self.Bars.Honor:SetMinMaxValues(0, max)
+		self.Bars.Honor:SetValue(current)
+
+		if self.Database.Text then
+			self.Bars.Honor.Text:SetText(string_format('%d%%', current / max * 100))
+		end
+
+		self.Bars.Honor:Show()
+	else
+		self.Bars.Honor:Hide()
+	end
+end
+
 function Module:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self.Container)
 	GameTooltip:ClearLines()
@@ -317,6 +374,18 @@ function Module:OnEnter()
 		end)
 	end
 
+	if UnitIsPVP("player") and self.Database.TrackHonor then
+		GameTooltip:AddLine(" ")
+
+		local current = UnitHonor("player")
+		local max = UnitHonorMax("player")
+		local level = UnitHonorLevel("player")
+
+		GameTooltip:AddDoubleLine(HONOR, level)
+		GameTooltip:AddDoubleLine("Honor XP:", string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine("Honor Remaining:", string_format(" %d (%d%% - %d ".."Bars"..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+	end
+
 	GameTooltip:Show()
 end
 
@@ -332,6 +401,9 @@ function Module:Update()
 	self:UpdateExperience()
 	self:UpdateReputation()
 	self:UpdateAzerite()
+	if self.Database.TrackHonor then
+		self:UpdateHonor()
+	end
 
 	if self.Database.MouseOver then
 		self.Container:SetAlpha(0.25)
@@ -379,6 +451,9 @@ function Module:OnEnable()
 	self:SetupExperience()
 	self:SetupReputation()
 	self:SetupAzerite()
+	if self.Database.TrackHonor then
+		self:SetupHonor()
+	end
 	self:Update()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update")
@@ -389,7 +464,9 @@ function Module:OnEnable()
 	self:RegisterEvent("ENABLE_XP_GAIN", "Update")
 	self:RegisterEvent("UPDATE_FACTION", "Update")
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
+	self:RegisterEvent("HONOR_XP_UPDATE", "Update")
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
 
 	K.Movers:RegisterFrame(container)
 end
@@ -403,5 +480,7 @@ function Module:OnDisable()
 	self:UnregisterEvent("ENABLE_XP_GAIN", "Update")
 	self:UnregisterEvent("UPDATE_FACTION", "Update")
 	self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
+	self:UnregisterEvent("HONOR_XP_UPDATE", "Update")
+	self:UnregisterEvent("PLAYER_FLAGS_CHANGED", "Update")
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED", "Update")
 end

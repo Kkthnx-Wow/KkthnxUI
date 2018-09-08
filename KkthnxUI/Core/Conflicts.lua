@@ -65,6 +65,14 @@ if C["ActionBar"].PetBarHorizontal == true then
 end
 
 -- Auto-overwrite script config is X addon is found. Here we use our own functions to check for addons.
+if C["DataBars"].Enable == false then
+	C["DataBars"].TrackHonor = false
+end
+
+if K.CheckAddOnState("flyPlateBuffs") then
+	C["Nameplates"].TrackAuras = false
+end
+
 if K.CheckAddOnState("SexyMap")
 or K.CheckAddOnState("bdMinimap")
 or K.CheckAddOnState("BasicMinimap")

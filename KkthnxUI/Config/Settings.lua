@@ -258,6 +258,7 @@ C["DataBars"] = {
 	["RestedColor"] = {0.0, 0.4, 1.0, 0.8},
 	["Text"] = false,
 	["Texture"] = "KkthnxUI",
+	["TrackHonor"] = false,
 	["Width"] = 180,
 }
 
@@ -372,6 +373,7 @@ C["Nameplates"] = {
 	["Texture"] = "KkthnxUI",
 	["Threat"] = false,
 	["Totems"] = false,
+	["TrackAuras"] = true,
 	["Width"] = 136,
 	["HealthFormat"] = {
 		["Options"] = {

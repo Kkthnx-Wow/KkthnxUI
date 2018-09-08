@@ -201,9 +201,8 @@ function Module:CreatePlayer()
 			Module.CreateStaggerBar(self)
 		elseif (K.Class == "DEATHKNIGHT") then
 			Module.CreateRuneBar(self)
-		elseif (K.Class == "SHAMAN") then
-			Module.CreateTotems(self)
 		end
+		Module.CreateTotems(self)
 	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
@@ -215,6 +214,7 @@ function Module:CreatePlayer()
 	if C["Unitframe"].PlayerBuffs then
 		Module.CreateAuras(self, "player")
 	end
+
 	Module.CreateCombatIndicator(self)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)

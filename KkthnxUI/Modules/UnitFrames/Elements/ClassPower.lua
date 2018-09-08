@@ -28,21 +28,6 @@ local function PostUpdateClassPower(element, cur, max, diff, powerType)
 			end
 		end
 	end
-
-	-- Colorize the last bar
-	local LastBarColor = {
-		DRUID = {255/255, 26/255, 48/255},
-		MAGE = {238/255, 48/255, 83/255},
-		MONK = {0/255, 143/255, 247/255},
-		PALADIN = {255/255, 26/255, 48/255},
-		ROGUE = {255/255, 26/255, 48/255},
-		WARLOCK = {255/255, 26/255, 48/255}
-	}
-
-	if max then
-		local LastBar = element[max]
-		LastBar:SetStatusBarColor(LastBarColor[K.Class][1], LastBarColor[K.Class][2], LastBarColor[K.Class][3])
-	end
 end
 
 -- Post Update ClassPower Texture
