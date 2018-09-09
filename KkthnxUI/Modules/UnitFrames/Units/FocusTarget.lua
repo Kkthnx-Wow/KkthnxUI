@@ -102,7 +102,7 @@ function Module:CreateFocusTarget()
 	self.Name:SetJustifyV("BOTTOM")
 	self.Name:SetJustifyH("CENTER")
 	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
+	self.Name:SetWordWrap(false)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 
 	if C["Unitframe"].MouseoverHighlight then

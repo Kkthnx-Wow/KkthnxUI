@@ -1016,42 +1016,21 @@ function KkthnxUIConfig:CreateConfigWindow()
 	ConfigFrame:SetFrameStrata("HIGH")
 
 	local LeftWindow = CreateFrame("Frame", "KkthnxUIConfigFrameLeft", ConfigFrame)
-
-	LeftWindow.Backgrounds = LeftWindow:CreateTexture(nil, "BACKGROUND", -1)
-	LeftWindow.Backgrounds:SetAllPoints()
-	LeftWindow.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	LeftWindow.Borders = CreateFrame("Frame", nil, LeftWindow)
-	LeftWindow.Borders:SetAllPoints()
-	K.CreateBorder(LeftWindow.Borders)
+	LeftWindow:CreateBorder()
 
 	LeftWindow:SetSize(139, Height)
 	LeftWindow:SetPoint("LEFT", ConfigFrame, 4, 0)
 	LeftWindow:EnableMouse(true)
 
 	local RightWindow = CreateFrame("Frame", "KkthnxUIConfigFrameRight", ConfigFrame)
-
-	RightWindow.Backgrounds = RightWindow:CreateTexture(nil, "BACKGROUND", -1)
-	RightWindow.Backgrounds:SetAllPoints()
-	RightWindow.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	RightWindow.Borders = CreateFrame("Frame", nil, RightWindow)
-	RightWindow.Borders:SetAllPoints()
-	K.CreateBorder(RightWindow.Borders)
+	RightWindow:CreateBorder()
 
 	RightWindow:SetSize(300, Height)
 	RightWindow:SetPoint("RIGHT", ConfigFrame, 0, 0)
 	RightWindow:EnableMouse(true)
 
 	local TitleFrame = CreateFrame("Frame", "KkthnxUIConfigFrameTitle", ConfigFrame)
-
-	TitleFrame.Backgrounds = TitleFrame:CreateTexture(nil, "BACKGROUND", -1)
-	TitleFrame.Backgrounds:SetAllPoints()
-	TitleFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	TitleFrame.Borders = CreateFrame("Frame", nil, TitleFrame)
-	TitleFrame.Borders:SetAllPoints()
-	K.CreateBorder(TitleFrame.Borders)
+	TitleFrame:CreateBorder()
 
 	TitleFrame:SetSize(444, 24)
 	TitleFrame:SetPoint("BOTTOM", ConfigFrame, "TOP", 2, 5)
@@ -1063,15 +1042,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 	TitleFrame.Text:SetShadowOffset(1.25, -1.25)
 
 	local InfoFrame = CreateFrame("Frame", "KkthnxUIConfigFrameCredit", ConfigFrame)
-
-	InfoFrame.Backgrounds = InfoFrame:CreateTexture(nil, "BACKGROUND", -1)
-	InfoFrame.Backgrounds:SetAllPoints()
-	InfoFrame.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	InfoFrame.Borders = CreateFrame("Frame", nil, InfoFrame)
-	InfoFrame.Borders:SetAllPoints()
-	K.CreateBorder(InfoFrame.Borders)
-
+	InfoFrame:CreateBorder()
 	InfoFrame:SetSize(444, 24)
 	InfoFrame:SetPoint("TOP", ConfigFrame, "BOTTOM", 2, -5)
 
@@ -1297,7 +1268,9 @@ function KkthnxUIConfig:CreateConfigWindow()
 	end
 
 	ShowGroup("General") -- Show General options by default
+
 	ConfigFrame:Hide()
+
 	GameMenuFrame:HookScript("OnShow", function()
 		ConfigFrame:Hide()
 	end)

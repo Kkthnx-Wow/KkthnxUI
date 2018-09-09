@@ -99,6 +99,7 @@ function Module:CreateTargetOfTarget()
 	self.Name:SetPoint("BOTTOM", self.Power, "BOTTOM", 0, -16)
 	self.Name:SetWidth(self.Power:GetWidth())
 	self.Name:SetFontObject(UnitframeFont)
+	self.Name:SetWordWrap(false)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameShort]")
 
 	if C["Unitframe"].MouseoverHighlight then

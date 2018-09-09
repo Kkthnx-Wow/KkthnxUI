@@ -1008,16 +1008,6 @@ KkthnxUIConfig["esMX"] = {
 			["Desc"] = "Enhances the friends list to look better",
 		},
 
-		["PremadeAutoAccept"] = {
-			["Name"] = "Premade Auto Accept",
-			["Desc"] = "Adds back in the auto-accept functionality that Blizzard removed from the premade group finder",
-		},
-
-		["TalkingLessHead"] = {
-			["Name"] = "Talking Heads Less",
-			["Desc"] = "Mute/Hide the sound of Talking Heads introduced in Legion once you have already heard them once. The next the NPC would normally say will come up in your chat log instead!",
-		},
-
 		["KillingBlow"] = {
 			["Name"] = "Killing Blow",
 			["Desc"] = "Display a message about your killing blow",

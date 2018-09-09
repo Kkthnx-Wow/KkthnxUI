@@ -342,10 +342,8 @@ C["Misc"] = {
 	["EnhancedFriends"] = false,
 	["ItemLevel"] = false,
 	["KillingBlow"] = false,
-	["PremadeAutoAccept"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
-	["TalkingLessHead"] = false,
 }
 
 -- Nameplates

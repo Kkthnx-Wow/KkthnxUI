@@ -78,6 +78,7 @@ _G[AddOnName] = Engine
 
 AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
 AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
+AddOn.Credits = GetAddOnMetadata(AddOnName, "X-Credits")
 AddOn.Noop = function()
 	return
 end
