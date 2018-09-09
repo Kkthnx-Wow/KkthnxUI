@@ -11,8 +11,8 @@ local Movers = K.Movers
 local BottomBarAnchor = CreateFrame("Frame", "ActionBarAnchor", K.PetBattleHider)
 BottomBarAnchor:SetSize(1, 1)
 BottomBarAnchor:SetPoint("BOTTOM", "UIParent", "BOTTOM", 0, 4)
-BottomBarAnchor:SetFrameLevel(0)
-BottomBarAnchor:SetFrameStrata("BACKGROUND")
+BottomBarAnchor:SetFrameLevel(10)
+BottomBarAnchor:SetFrameStrata("LOW")
 BottomBarAnchor:SetWidth((C["ActionBar"].ButtonSize * 12) + (C["ActionBar"].ButtonSpace * 11))
 if (C["ActionBar"].BottomBars == 2) then
 	BottomBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace)
@@ -30,9 +30,9 @@ Movers:RegisterFrame(BottomBarAnchor)
 -- Right bars anchor
 local RightBarAnchor = CreateFrame("Frame", "RightActionBarAnchor", K.PetBattleHider)
 RightBarAnchor:SetSize(1, 1)
-RightBarAnchor:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOMRIGHT", -5, 330)
-RightBarAnchor:SetFrameLevel(0)
-RightBarAnchor:SetFrameStrata("BACKGROUND")
+RightBarAnchor:SetPoint("RIGHT", "UIParent", "RIGHT", -5, 8)
+RightBarAnchor:SetFrameLevel(10)
+RightBarAnchor:SetFrameStrata("LOW")
 RightBarAnchor:SetHeight((C["ActionBar"].ButtonSize * 12) + (C["ActionBar"].ButtonSpace * 11))
 if (C["ActionBar"].RightBars == 1) then
 	RightBarAnchor:SetWidth(C["ActionBar"].ButtonSize)
@@ -50,14 +50,14 @@ if C["ActionBar"].SplitBars then
 	local SplitBarLeft = CreateFrame("Frame", "SplitBarLeft", K.PetBattleHider)
 	SplitBarLeft:SetSize((C["ActionBar"].ButtonSize * 3) + (C["ActionBar"].ButtonSpace * 2),(C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace)
 	SplitBarLeft:SetPoint("BOTTOMRIGHT", ActionBarAnchor, "BOTTOMLEFT", -C["ActionBar"].ButtonSpace, 0)
-	SplitBarLeft:SetFrameLevel(0)
-	SplitBarLeft:SetFrameStrata("BACKGROUND")
+	SplitBarLeft:SetFrameLevel(10)
+	SplitBarLeft:SetFrameStrata("LOW")
 
 	local SplitBarRight = CreateFrame("Frame", "SplitBarRight", K.PetBattleHider)
 	SplitBarRight:SetSize((C["ActionBar"].ButtonSize * 3) + (C["ActionBar"].ButtonSpace * 2),(C["ActionBar"].ButtonSize * 2) + C["ActionBar"].ButtonSpace)
 	SplitBarRight:SetPoint("BOTTOMLEFT", ActionBarAnchor, "BOTTOMRIGHT", C["ActionBar"].ButtonSpace, 0)
-	SplitBarRight:SetFrameLevel(0)
-	SplitBarRight:SetFrameStrata("BACKGROUND")
+	SplitBarRight:SetFrameLevel(10)
+	SplitBarRight:SetFrameStrata("LOW")
 end
 
 -- Pet bar anchor
@@ -83,8 +83,8 @@ ShiftAnchor:RegisterEvent("PLAYER_LOGIN")
 ShiftAnchor:RegisterEvent("PLAYER_ENTERING_WORLD")
 ShiftAnchor:RegisterEvent("UPDATE_SHAPESHIFT_FORMS")
 ShiftAnchor:RegisterEvent("UPDATE_VEHICLE_ACTIONBAR")
-ShiftAnchor:SetFrameLevel(0)
-ShiftAnchor:SetFrameStrata("BACKGROUND")
+ShiftAnchor:SetFrameLevel(10)
+ShiftAnchor:SetFrameStrata("LOW")
 ShiftAnchor:SetScript("OnEvent", function()
 	local NumForms = GetNumShapeshiftForms()
 	if (NumForms > 0) then

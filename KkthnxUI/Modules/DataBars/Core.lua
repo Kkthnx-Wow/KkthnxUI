@@ -18,20 +18,27 @@ local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
+local GetExpansionLevel = _G.GetExpansionLevel
 local GetFactionInfo = _G.GetFactionInfo
 local GetFriendshipReputation = _G.GetFriendshipReputation
 local GetNumFactions = _G.GetNumFactions
 local GetPetExperience = _G.GetPetExperience
+local GetRestrictedAccountData = _G.GetRestrictedAccountData
 local GetWatchedFactionInfo = _G.GetWatchedFactionInfo
 local GetXPExhaustion = _G.GetXPExhaustion
+local HONOR = _G.HONOR
 local IsXPUserDisabled = _G.IsXPUserDisabled
+local LEVEL = _G.LEVEL
+local MAX_PLAYER_LEVEL_TABLE = _G.MAX_PLAYER_LEVEL_TABLE
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
+local UnitHonor = _G.UnitHonor
+local UnitHonorLevel = _G.UnitHonorLevel
+local UnitHonorMax = _G.UnitHonorMax
+local UnitIsPVP = _G.UnitIsPVP
+local UnitLevel = _G.UnitLevel
 local UnitXP = _G.UnitXP
 local UnitXPMax = _G.UnitXPMax
-local UnitLevel = _G.UnitLevel
-local GetRestrictedAccountData = _G.GetRestrictedAccountData
-local GetExpansionLevel = _G.GetExpansionLevel
 
 local function GetUnitXP(unit)
 	if (unit == "pet") then
@@ -288,7 +295,7 @@ function Module:UpdateHonor(event, unit)
 		self.Bars.Honor:SetValue(current)
 
 		if self.Database.Text then
-			self.Bars.Honor.Text:SetText(string_format('%d%%', current / max * 100))
+			self.Bars.Honor.Text:SetText(string_format("%d%%", current / max * 100))
 		end
 
 		self.Bars.Honor:Show()
@@ -375,9 +382,9 @@ function Module:OnEnter()
 		local max = UnitHonorMax("player")
 		local level = UnitHonorLevel("player")
 
-		GameTooltip:AddDoubleLine(HONOR, level)
-		GameTooltip:AddDoubleLine("Honor XP:", string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
-		GameTooltip:AddDoubleLine("Honor Remaining:", string_format(" %d (%d%% - %d ".."Bars"..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+		GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
+		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
+		GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
 	end
 
 	GameTooltip:Show()
@@ -458,23 +465,25 @@ function Module:OnEnable()
 	self:RegisterEvent("ENABLE_XP_GAIN", "Update")
 	self:RegisterEvent("UPDATE_FACTION", "Update")
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
-	self:RegisterEvent("HONOR_XP_UPDATE", "Update")
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
-	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
+	if self.Database.TrackHonor then -- Don't register these unless we toggle the option to track.
+		self:RegisterEvent("HONOR_XP_UPDATE", "Update")
+		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
+	end
 
 	K.Movers:RegisterFrame(container)
 end
 
 function Module:OnDisable()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD", "Update")
-	self:UnregisterEvent("PLAYER_LEVEL_UP", "Update")
-	self:UnregisterEvent("PLAYER_XP_UPDATE", "Update")
-	self:UnregisterEvent("UPDATE_EXHAUSTION", "Update")
-	self:UnregisterEvent("DISABLE_XP_GAIN", "Update")
-	self:UnregisterEvent("ENABLE_XP_GAIN", "Update")
-	self:UnregisterEvent("UPDATE_FACTION", "Update")
-	self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
-	self:UnregisterEvent("HONOR_XP_UPDATE", "Update")
-	self:UnregisterEvent("PLAYER_FLAGS_CHANGED", "Update")
-	self:UnregisterEvent("UNIT_INVENTORY_CHANGED", "Update")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("PLAYER_LEVEL_UP")
+	self:UnregisterEvent("PLAYER_XP_UPDATE")
+	self:UnregisterEvent("UPDATE_EXHAUSTION")
+	self:UnregisterEvent("DISABLE_XP_GAIN")
+	self:UnregisterEvent("ENABLE_XP_GAIN")
+	self:UnregisterEvent("UPDATE_FACTION")
+	self:UnregisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED")
+	self:UnregisterEvent("UNIT_INVENTORY_CHANGED")
+	self:UnregisterEvent("HONOR_XP_UPDATE")
+	self:UnregisterEvent("PLAYER_FLAGS_CHANGED")
 end
