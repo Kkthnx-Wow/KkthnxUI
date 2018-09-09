@@ -57,8 +57,6 @@ function Module:OnInitialize()
 	self.frame = CreateFrame("Frame", "TalkingHeadFrameMover", UIParent)
 	self.frame:SetPoint("TOP", UIParent, "TOP", 0, -18)
 	self.frame:SetSize(570, 155)
-	self.frame:SetScale(0.75)
-	self.frame:SetAlpha(0.75)
 
 	K.Movers:RegisterFrame(self.frame)
 end

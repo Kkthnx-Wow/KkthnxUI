@@ -37,13 +37,25 @@ function Module:CreateThreatIndicator()
 	self.ThreatIndicator = threat
 end
 
+function Module:CreateThreatPercent(tPoint, tRelativePoint, tOfsx, tOfsy)
+	tPoint = tPoint or "RIGHT"
+	tRelativePoint = tRelativePoint or "LEFT"
+	tOfsx = tOfsx or -4
+	tOfsy = tOfsy or 0
+
+	self.ThreatPercent = self:CreateFontString(nil, "OVERLAY")
+	self.ThreatPercent:SetPoint(tPoint, self.Health, tRelativePoint, tOfsx, tOfsy)
+	self.ThreatPercent:SetFontObject(K.GetFont(C["Unitframe"].Font))
+	self.ThreatPercent:SetFont(select(1, self.ThreatPercent:GetFont()), 14, select(3, self.ThreatPercent:GetFont()))
+	self:Tag(self.ThreatPercent, "[KkthnxUI:ThreatColor][KkthnxUI:ThreatPercent]")
+end
+
 function Module:CreatePortraitTimers()
-   	self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
+	self.PortraitTimer = CreateFrame("Frame", nil, self.Health)
 	self.PortraitTimer:SetAllPoints(self.Portrait)
 
 	self.PortraitTimer.Borders = CreateFrame("Frame", nil, self.PortraitTimer)
 	self.PortraitTimer.Borders:SetAllPoints()
-	--self.PortraitTimer.Borders:CreateBorder()
 	K.CreateBorder(self.PortraitTimer.Borders)
 	self.PortraitTimer.Borders:CreateInnerShadow()
 end

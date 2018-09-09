@@ -113,6 +113,10 @@ function Module:CreateFocus()
 	self.Name:SetFontObject(UnitframeFont)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
+	if (C["Unitframe"].ThreatPercent == true) then
+		Module.CreateThreatPercent(self, "LEFT", "RIGHT", 4, 0)
+	end
+
 	if (C["Unitframe"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "FocusCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)

@@ -276,13 +276,7 @@ function Module:UpdateHonor(event, unit)
 		return
 	end
 
-	local showHonor = true
-
-	if not UnitIsPVP("player") then
-		showHonor = false
-	end
-
-	if showHonor then
+	if UnitIsPVP("player") and self.Database.TrackHonor then
 		local current = UnitHonor("player")
 		local max = UnitHonorMax("player")
 

@@ -113,11 +113,7 @@ function Module:CreateTarget()
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
 	if (C["Unitframe"].ThreatPercent == true) then
-		self.ThreatPercent = self:CreateFontString(nil, "OVERLAY")
-		self.ThreatPercent:SetPoint("RIGHT", self.Health, "LEFT", -4, 0)
-		self.ThreatPercent:SetFontObject(UnitframeFont)
-		self.ThreatPercent:SetFont(select(1, self.Name:GetFont()), 14, select(3, self.Name:GetFont()))
-		self:Tag(self.ThreatPercent, "[KkthnxUI:ThreatColor][KkthnxUI:ThreatPercent]")
+		Module.CreateThreatPercent(self)
 	end
 
 	if C["Unitframe"].MouseoverHighlight then
@@ -133,7 +129,7 @@ function Module:CreateTarget()
 		self.Castbar:SetClampedToScreen(true)
 		self.Castbar:CreateBorder()
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("BOTTOM", PlayerCastbar, "TOP", 0, 6)
+		self.Castbar:SetPoint("BOTTOM", "PlayerCastbar", "TOP", 0, 6)
 
 		self.Castbar.timeToHold = 0.4
 		self.Castbar.PostCastStart = Module.CheckCast

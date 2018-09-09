@@ -1186,7 +1186,7 @@ KkthnxUIConfig["zhCN"] = {
 
 		["ThreatPercent"] = {
 			["Name"] = "Threat Percent",
-			["Desc"] = "Enable threat percent on the nameplates",
+			["Desc"] = "Enable threat percent on the target/focus frames",
 		},
 
 		["PortraitStyle"] = {
@@ -1298,6 +1298,11 @@ KkthnxUIConfig["zhCN"] = {
 		["Texture"] = {
 			["Name"] = "Statusbar Texture",
 			["Desc"] = ModuleTexture,
+		},
+
+		["ThreatPercent"] = {
+			["Name"] = "Threat Percent"..ModuleNewFeature,
+			["Desc"] = "Enable threat percent on the boss frame",
 		},
 
 		["NumberPrefixStyle"] = {

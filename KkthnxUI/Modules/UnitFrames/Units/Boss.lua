@@ -92,6 +92,10 @@ function Module:CreateBoss()
 	self.Name:SetFontObject(UnitframeFont)
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
+	if (C["Boss"].ThreatPercent == true) then
+		Module.CreateThreatPercent(self, "LEFT", "RIGHT", 4, 0)
+	end
+
 	if (C["Boss"].Castbars) then
 		self.Castbar = CreateFrame("StatusBar", "$parentCastbar", self)
 		self.Castbar:SetStatusBarTexture(UnitframeTexture)
