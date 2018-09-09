@@ -299,7 +299,7 @@ C["General"] = {
 	["TaintLog"] = false,
 	["Texture"] = "KkthnxUI",
 	["TexturesColor"] = {0.9, 0.9, 0.9},
-	["UIScale"] = 0.69
+	["UIScale"] = 0.7111111111
 }
 
 -- Loot

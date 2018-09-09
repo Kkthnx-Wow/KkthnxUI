@@ -26,7 +26,7 @@ local IsLocked = false
 
 -- Optimize graphic after we enter world
 local PixelPerfect = CreateFrame("Frame")
-PixelPerfect:RegisterEvent("PLAYER_ENTERING_WORLD")
+PixelPerfect:RegisterEvent("PLAYER_LOGIN")
 PixelPerfect:RegisterEvent("CINEMATIC_STOP")
 PixelPerfect:RegisterEvent("UI_SCALE_CHANGED")
 PixelPerfect:RegisterEvent("DISPLAY_SIZE_CHANGED")
@@ -71,9 +71,7 @@ PixelPerfect:SetScript("OnEvent", function(self, event)
 		UIParent:SetScale(C["General"].UIScale)
 	end
 
-	if event == "PLAYER_ENTERING_WORLD" then
-		self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-	elseif event == "PLAYER_REGEN_ENABLED" then
+	if event == "PLAYER_REGEN_ENABLED" then
 		self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 	end
 

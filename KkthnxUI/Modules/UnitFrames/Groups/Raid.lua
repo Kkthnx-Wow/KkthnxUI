@@ -43,20 +43,22 @@ local function UpdateThreat(self, _, unit)
 	end
 end
 
-local function UpdatePower(self, _, unit)
-	if (self.unit ~= unit) then
+local function UpdateRaidPower(self, _, unit)
+	if self.unit ~= unit then
 		return
 	end
 
 	local _, powerToken = UnitPowerType(unit)
-	if (powerToken == "MANA" and UnitHasMana(unit)) then
-		if (not self.Power:IsVisible()) then
+	if powerToken == "MANA" then
+		if not self.Power:IsVisible() then
+			self.Health:ClearAllPoints()
 			self.Health:SetPoint("BOTTOMLEFT", self, 0, 7)
 			self.Health:SetPoint("TOPRIGHT", self)
 			self.Power:Show()
 		end
 	else
-		if (self.Power:IsVisible()) then
+		if self.Power:IsVisible() then
+			self.Health:ClearAllPoints()
 			self.Health:SetAllPoints(self)
 			self.Power:Hide()
 		end
@@ -125,9 +127,9 @@ function Module:CreateRaid()
 		self.Power.Background:SetColorTexture(.2, .2, .2)
 		self.Power.Background.multiplier = 0.3
 
-		table_insert(self.__elements, UpdatePower)
-		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdatePower)
-		UpdatePower(self, _, unit)
+		table_insert(self.__elements, UpdateRaidPower)
+		self:RegisterEvent("UNIT_DISPLAYPOWER", UpdateRaidPower)
+		UpdateRaidPower(self, _, unit)
 	end
 
 	self.Name = self:CreateFontString(nil, "OVERLAY")
@@ -255,7 +257,7 @@ function Module:CreateRaid()
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow)
 	end
 
+	Module.CreateDebuffHighlight(self)
 	self.Range = Module.CreateRange(self)
 	self.HealthPrediction = Module.CreateHealthPrediction(self)
-	Module.CreateDebuffHighlight(self)
 end
