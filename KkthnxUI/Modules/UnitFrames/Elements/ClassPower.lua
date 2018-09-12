@@ -32,22 +32,22 @@ end
 
 -- Post Update ClassPower Texture
 local function UpdateClassPowerColor(element)
-	-- Default color
-	local r, g, b = 102/255, 221/255, 255/255
+	-- Fallback for the rare cases where an unknown type is requested.
+	local r, g, b = 195/255, 202/255, 217/255
 
 	if (not UnitHasVehicleUI("player")) then
 		if (K.Class == "ROGUE") then
-			r, g, b = 175/255, 124/255, 255/255
+			r, g, b = 220/255, 68/255,  25/255
 		elseif (K.Class == "DRUID") then
-			r, g, b = 255/255, 255/255, 102/255
+			r, g, b = 220/255, 68/255,  25/255
 		elseif (K.Class == "MONK") then
-			r, g, b = 0, 204/255, 153/255
+			r, g, b = 181/255 * 0.7, 255/255, 234/255 * 0.7
 		elseif (K.Class == "WARLOCK") then
 			r, g, b = 148/255, 130/255, 201/255
 		elseif (K.Class == "PALADIN") then
-			r, g, b = 228/255, 225/255, 16/255
+			r, g, b = 245/255, 254/255, 145/255
 		elseif (K.Class == "MAGE") then
-			r, g, b = 169/255, 80/255, 202/255
+			r, g, b = 121/255, 152/255, 192/255
 		end
 	end
 

@@ -46,6 +46,46 @@ local Realm = GetRealmName()
 K.PopupDialogs = {}
 K.StaticPopup_DisplayedFrames = {}
 
+K.PopupDialogs["DISCORD_EDITBOX"] = {
+	text = format("|cff4488ff%s |r", "KkthnxUI Discord"),
+	button1 = OKAY,
+	hasEditBox = 1,
+	OnShow = function(self, data)
+		self.editBox:SetAutoFocus(false)
+		self.editBox.width = self.editBox:GetWidth()
+		self.editBox:SetWidth(280)
+		self.editBox:AddHistoryLine("text")
+		self.editBox.temptxt = data
+		self.editBox:SetText(data)
+		self.editBox:HighlightText()
+		self.editBox:SetJustifyH("CENTER")
+	end,
+	OnHide = function(self)
+		self.editBox:SetWidth(self.editBox.width or 50)
+		self.editBox.width = nil
+		self.temptxt = nil
+	end,
+	EditBoxOnEnterPressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = function(self)
+		self:GetParent():Hide()
+	end,
+	EditBoxOnTextChanged = function(self)
+		if(self:GetText() ~= self.temptxt) then
+			self:SetText(self.temptxt)
+		end
+		self:HighlightText()
+		self:ClearFocus()
+	end,
+	OnAccept = K.Noop,
+	timeout = 0,
+	whileDead = 1,
+	preferredIndex = 3,
+	hideOnEscape = 1,
+}
+
+
 K.PopupDialogs["CONFIG_RL"] = {
 	text = L["StaticPopups"].Config_Reload,
 	button1 = ACCEPT,
@@ -518,7 +558,7 @@ function K.StaticPopup_OnEvent(self)
 	K.StaticPopup_Resize(self, self.which)
 end
 
-local tempButtonLocs = {}	-- So we don't make a new table each time.
+local tempButtonLocs = {}	-- So we don"t make a new table each time.
 function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 	local info = K.PopupDialogs[which]
 	if (not info) then
@@ -695,7 +735,7 @@ function K.StaticPopup_Show(which, text_arg1, text_arg2, data)
 		local button3 = _G[dialog:GetName().."Button3"]
 
 		do	-- If there is any recursion in this block, we may get errors (tempButtonLocs is static). If you have to recurse, we"ll have to create a new table each time.
-		assert(#tempButtonLocs == 0)	-- If this fails, we're recursing. (See the table.wipe at the end of the block)
+		assert(#tempButtonLocs == 0)	-- If this fails, we"re recursing. (See the table.wipe at the end of the block)
 
 		table_insert(tempButtonLocs, button1)
 		table_insert(tempButtonLocs, button2)
@@ -808,7 +848,7 @@ function K.CreateStaticPopups()
 		K.StaticPopupFrames[index] = CreateFrame("Frame", "KkthnxUI_StaticPopup"..index, UIParent, "StaticPopupTemplate")
 		K.StaticPopupFrames[index]:SetID(index)
 
-		--Fix Scripts
+		-- Fix Scripts
 		K.StaticPopupFrames[index]:SetScript("OnShow", K.StaticPopup_OnShow)
 		K.StaticPopupFrames[index]:SetScript("OnHide", K.StaticPopup_OnHide)
 		K.StaticPopupFrames[index]:SetScript("OnUpdate", K.StaticPopup_OnUpdate)
@@ -819,6 +859,10 @@ function K.CreateStaticPopups()
 				K.StaticPopup_OnClick(self:GetParent(), self:GetID())
 			end)
 		end
+
+		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnEnterPressed", K.StaticPopup_EditBoxOnEnterPressed)
+		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnEscapePressed", K.StaticPopup_EditBoxOnEscapePressed)
+		_G["KkthnxUI_StaticPopup"..index.."EditBox"]:SetScript("OnTextChanged", K.StaticPopup_EditBoxOnTextChanged)
 	end
 
 	K:SecureHook("StaticPopup_SetUpPosition")

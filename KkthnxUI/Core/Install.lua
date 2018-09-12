@@ -199,10 +199,12 @@ function Install:PrintStep(PageNum)
 			self.RightButton.Text:SetText(COMPLETE)
 			self.CloseButton:Hide()
 			self.MiddleButton:Hide()
+			self.DiscordButton:Show()
 		else
 			self.RightButton.Text:SetText(NEXT)
 			self.CloseButton:Show()
 			self.MiddleButton:Show()
+			self.DiscordButton:Hide()
 		end
 		if (ExecuteScript) then
 			self.MiddleButton:SetScript("OnClick", ExecuteScript)
@@ -230,12 +232,7 @@ function Install:Launch()
 	self.Description = CreateFrame("Frame", nil, self)
 	self.Description:SetSize(self.Width, self.Height)
 	self.Description:SetPoint("CENTER", self, "CENTER")
-
-	self.Description.Backgrounds = self.Description:CreateTexture(nil, "BACKGROUND", -1)
-	self.Description.Backgrounds:SetAllPoints()
-	self.Description.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.Description)
+	self.Description:CreateBorder()
 
 	self.Description:RegisterEvent("PLAYER_REGEN_DISABLED")
 	self.Description:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -257,12 +254,7 @@ function Install:Launch()
 	self.StatusBar:SetStatusBarColor(r, g, b)
 	self.StatusBar:SetMinMaxValues(0, self.MaxStepNumber)
 	self.StatusBar:SetValue(0)
-
-	self.StatusBar.Backgrounds = self.StatusBar:CreateTexture(nil, "BACKGROUND", -1)
-	self.StatusBar.Backgrounds:SetAllPoints()
-	self.StatusBar.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	K.CreateBorder(self.StatusBar)
+	self.StatusBar:CreateBorder()
 
 	self.StatusBar.Anim = CreateAnimationGroup(self.StatusBar):CreateAnimation("Progress")
 	self.StatusBar.Anim:SetDuration(0.3)
@@ -302,6 +294,16 @@ function Install:Launch()
 	self.RightButton.Text:SetPoint("CENTER")
 	self.RightButton.Text:SetText(NEXT)
 	self.RightButton:SetScript("OnClick", function() self.PrintStep(self, self.CurrentStep + 1) end)
+
+	self.DiscordButton = CreateFrame("Button", nil, self)
+	self.DiscordButton:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 6, 0)
+	self.DiscordButton:SetPoint("BOTTOMRIGHT", self.RightButton, "BOTTOMLEFT", -6, 0)
+	self.DiscordButton:SkinButton()
+	self.DiscordButton:FontString("Text", C["Media"].Font, 12)
+	self.DiscordButton.Text:SetPoint("CENTER")
+	self.DiscordButton.Text:SetText("|cff7289daDiscord|r")
+	self.DiscordButton:SetScript("OnClick", function() K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm") end)
+	self.DiscordButton:Hide()
 
 	self.MiddleButton = CreateFrame("Button", nil, self)
 	self.MiddleButton:SetPoint("TOPLEFT", self.LeftButton, "TOPRIGHT", 6, 0)

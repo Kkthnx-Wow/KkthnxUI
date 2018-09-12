@@ -283,7 +283,7 @@ function Module:UpdateHonor(event, unit)
 		return
 	end
 
-	if UnitIsPVP("player") and self.Database.TrackHonor then
+	if self.Database.TrackHonor and IsPlayerMaxLevel() and UnitIsPVP("player") then
 		local current = UnitHonor("player")
 		local max = UnitHonorMax("player")
 
@@ -306,7 +306,7 @@ end
 
 function Module:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self.Container)
-	GameTooltip:ClearLines()
+	-- GameTooltip:ClearLines()
 
 	if self.Database.MouseOver then
 		K.UIFrameFadeIn(self.Container, 0.25, self.Container:GetAlpha(), 1)
@@ -375,7 +375,7 @@ function Module:OnEnter()
 		end)
 	end
 
-	if UnitIsPVP("player") and self.Database.TrackHonor then
+	if self.Database.TrackHonor and IsPlayerMaxLevel() and UnitIsPVP("player") then
 		GameTooltip:AddLine(" ")
 
 		local current = UnitHonor("player")
@@ -402,7 +402,7 @@ function Module:Update()
 	self:UpdateExperience()
 	self:UpdateReputation()
 	self:UpdateAzerite()
-	if self.Database.TrackHonor then
+	if self.Database.TrackHonor and IsPlayerMaxLevel() then
 		self:UpdateHonor()
 	end
 
@@ -452,7 +452,7 @@ function Module:OnEnable()
 	self:SetupExperience()
 	self:SetupReputation()
 	self:SetupAzerite()
-	if self.Database.TrackHonor then
+	if self.Database.TrackHonor and IsPlayerMaxLevel() then
 		self:SetupHonor()
 	end
 	self:Update()
@@ -466,7 +466,7 @@ function Module:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION", "Update")
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
-	if self.Database.TrackHonor then -- Don't register these unless we toggle the option to track.
+	if self.Database.TrackHonor and IsPlayerMaxLevel() then -- Don't register these unless we toggle the option to track.
 		self:RegisterEvent("HONOR_XP_UPDATE", "Update")
 		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
 	end

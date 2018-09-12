@@ -68,7 +68,7 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 end
 
 local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
-	if f.Borders then
+	if f.isCreateBorder and f.Backgrounds then
 		return
 	end
 
@@ -80,7 +80,10 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 		f:StripTextures()
 	end
 
-	K.CreateBorder(f, bOffset)
+	if not f.isCreateBorder then
+		K.CreateBorder(f, bOffset)
+		f.isCreateBorder = true
+	end
 
 	local backgrounds = f:CreateTexture(nil, "BACKGROUND")
 	backgrounds:SetDrawLayer("BACKGROUND", bLayer)
@@ -90,7 +93,6 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 
 	f:SetBorderColor()
 
-	f.Borders = K.CreateBorder
 	f.Backgrounds = backgrounds
 end
 
@@ -277,18 +279,20 @@ end
 
 local function SetModifiedBackdrop(self)
 	if not C["General"].ColorTextures then
-		self.Borders:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
+		self:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
 	end
 
-	self.Background:SetColorTexture(CustomClassColor.r * .15, CustomClassColor.g * .15, CustomClassColor.b * .15, C.Media.BackdropColor[4])
+	self:SetBackdropBorderColor(CustomClassColor.r, CustomClassColor.g, CustomClassColor.b, 1)
+	self.Backgrounds:SetColorTexture(CustomClassColor.r * .15, CustomClassColor.g * .15, CustomClassColor.b * .15, C.Media.BackdropColor[4])
 end
 
 local function SetOriginalBackdrop(self)
 	if not C["General"].ColorTextures then
-		self.Borders:SetBackdropBorderColor(C.Media.BorderColor[1], C.Media.BorderColor[2], C.Media.BorderColor[3], 1)
+		self:SetBackdropBorderColor()
 	end
 
-	self.Background:SetColorTexture(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
+	self:SetBackdropBorderColor()
+	self.Backgrounds:SetColorTexture(C.Media.BackdropColor[1], C.Media.BackdropColor[2], C.Media.BackdropColor[3], C.Media.BackdropColor[4])
 end
 
 local function SkinButton(f, strip)
@@ -370,13 +374,7 @@ local function SkinButton(f, strip)
 		f:StripTextures()
 	end
 
-	f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
-	f.Background:SetAllPoints(f)
-	f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	f.Borders = CreateFrame("Frame", nil, f)
-	f.Borders:SetAllPoints(f)
-	K.CreateBorder(f.Borders)
+	f:CreateBorder()
 
 	f:HookScript("OnEnter", SetModifiedBackdrop)
 	f:HookScript("OnLeave", SetOriginalBackdrop)
@@ -387,20 +385,14 @@ local function SkinCloseButton(f, point, texture)
 
 	f:StripTextures()
 
-	if not f.Background then
-		f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
-		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-		f.Background:SetPoint("TOPLEFT", 8, -8)
-		f.Background:SetPoint("BOTTOMRIGHT", -8, 8)
-
-		f.Borders = CreateFrame("Frame", nil, f)
-		f.Borders:SetPoint("TOPLEFT", 8, -8)
-		f.Borders:SetPoint("BOTTOMRIGHT", -8, 8)
-		K.CreateBorder(f.Borders)
+	if not f.isCreateBorder then
+		f:CreateBorder(nil, 12, 8)
 
 		f:HookScript("OnEnter", SetModifiedBackdrop)
 		f:HookScript("OnLeave", SetOriginalBackdrop)
 		f:SetHitRectInsets(6, 6, 7, 7)
+
+		f.isCreateBorder = true
 	end
 
 	if not texture then

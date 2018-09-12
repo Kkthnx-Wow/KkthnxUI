@@ -85,8 +85,13 @@ function Module:SocialQueueMessage(guid, message)
 end
 
 function Module:SocialQueueEvent(event, guid, numAddedItems)
-	--if not self.db.socialQueueMessages then return end
-	if numAddedItems == 0 or not guid then return end
+	if not C["Chat"].QuickJoin == true then
+		return
+	end
+
+	if numAddedItems == 0 or not guid then
+		return
+	end
 
 	local coloredName, players = UNKNOWN, C_SocialQueue_GetGroupMembers(guid)
 	local members = players and SocialQueueUtil_SortGroupMembers(players)
@@ -119,7 +124,9 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 		end
 
 		-- ignore groups created by the addon World Quest Group Finder/World Quest Tracker/World Quest Assistant/HandyNotes_Argus to reduce spam
-		if comment and (find(comment, "World Quest Group Finder") or find(comment, "World Quest Tracker") or find(comment, "World Quest Assistant") or find(comment, "HandyNotes_Argus")) then return end
+		if comment and (find(comment, "World Quest Group Finder") or find(comment, "World Quest Tracker") or find(comment, "World Quest Assistant") or find(comment, "HandyNotes_Argus")) then
+			return
+		end
 
 		if activityID or firstQueue.queueData.activityID then
 			fullName = C_LFGList_GetActivityInfo(activityID or firstQueue.queueData.activityID)
@@ -154,7 +161,7 @@ function Module:SocialQueueEvent(event, guid, numAddedItems)
 	end
 end
 
-function Module:OnInitialize()
+function Module:OnEnable()
 	self:RegisterEvent("SOCIAL_QUEUE_UPDATE", "SocialQueueEvent")
 end
 

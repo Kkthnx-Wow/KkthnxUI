@@ -346,7 +346,7 @@ function Module:CustomCastDelayText(duration)
 end
 
 function Module:PostCastFailedOrInterrupted(unit)
-	self:SetStatusBarColor(1, 0, 0)
+	self:SetStatusBarColor(1.0, 0.0, 0.0)
 	self:SetValue(self.max)
 
 	local time = self.Time

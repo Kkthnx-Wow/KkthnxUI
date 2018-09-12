@@ -224,8 +224,8 @@ function Module:CreateNameplates()
 	self.Castbar:SetScript("OnHide", Module.NameplatePowerAndCastBar)
 
 	self.RaidTargetIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.RaidTargetIndicator:SetSize(self:GetHeight(), self:GetHeight())
-	self.RaidTargetIndicator:SetPoint("BOTTOM", self.Health, "TOP", 0, 38)
+	self.RaidTargetIndicator:SetSize(32, 32)
+	self.RaidTargetIndicator:SetPoint("BOTTOM", self.Debuffs or self, "TOP", 0, 10)
 
 	self.QuestIndicator = self.Health:CreateTexture(nil, "OVERLAY")
 	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
@@ -277,7 +277,7 @@ function Module:CreateNameplates()
 	end
 
 	self.EliteIcon = self.Health:CreateTexture(nil, "OVERLAY")
-	self.EliteIcon:SetSize(self.Health:GetHeight() + 6, self.Health:GetHeight() + 6)
+	self.EliteIcon:SetSize(self.Health:GetHeight() + 4, self.Health:GetHeight() + 4)
 	self.EliteIcon:SetParent(self.Health)
 	self.EliteIcon:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
 	self.EliteIcon:SetTexture("Interface\\TARGETINGFRAME\\Nameplates")

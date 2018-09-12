@@ -6,6 +6,7 @@
    <Include file="Addons\Bagnon.lua" />
    <Include file="Addons\BigWigs.lua" />
    <Include file="Addons\DBM.lua" />
+   <Include file="Addons\ExtraQuestButton.lua" />
    <Include file="Addons\Hekili.lua" />
    <Include file="Addons\Recount.lua" />
    <Include file="Addons\Skada.lua" />
