@@ -338,8 +338,8 @@ KkthnxUIConfig["esES"] = {
 		},
 
 		["DisableStancePages"] = {
-			["Name"] = "Disable Stance Pages",
-			["Desc"] = "Disables automatic page-switching depending on the players stance. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
+			["Name"] = "Disable Stealth Paging",
+			["Desc"] = "Disables automatic page-switching when stealthed. |n|nOnly affects |cffFFF569Rogues|r and |cffFF7D0ADruids|r, has no effect on other classes",
 		},
 
 		["PetBarHide"] = {
