@@ -13,6 +13,8 @@ local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local MINIMIZE = _G.MINIMIZE
 local NONE = _G.NONE
 
+local _,PlayerClass = UnitClass("player")
+
 -- Actionbar
 C["ActionBar"] = {
 	["AddNewSpells"] = true,
@@ -20,7 +22,7 @@ C["ActionBar"] = {
 	["ButtonSize"] = 34,
 	["ButtonSpace"] = 6,
 	["Cooldowns"] = true,
-	["DisableStancePages"] = false,
+	["DisableStancePages"] = PlayerClass == "DRUID", -- don't need a stealth bar for druids
 	["Enable"] = true,
 	["EquipBorder"] = true,
 	["Font"] = "KkthnxUI Outline",
