@@ -14,9 +14,28 @@ local UnitHasVehicleUI = _G.UnitHasVehicleUI
 local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
 
 -- Post Update ClassPower
-local function PostUpdateClassPower(element, cur, max, diff, powerType)
+local function PostUpdateClassPower(element, _, max, diff)
 	if (diff) then
-		local maxWidth, gap = 130, 6
+		local maxWidth = 130
+		local gap = 6
+
+		for index = 1, max do
+			local Bar = element[index]
+			Bar:SetWidth(((maxWidth / max) - (((max - 1) * gap) / max)))
+
+			if (index > 1) then
+				Bar:ClearAllPoints()
+				Bar:SetPoint("LEFT", element[index - 1], "RIGHT", gap, 0)
+			end
+		end
+	end
+end
+
+-- Post Update ClassPower
+local function PostUpdateNameplateClassPower(element, _, max, diff)
+	if (diff) then
+		local maxWidth = C["Nameplates"].Width
+		local gap = 4
 
 		for index = 1, max do
 			local Bar = element[index]
@@ -36,9 +55,7 @@ local function UpdateClassPowerColor(element)
 	local r, g, b = 195/255, 202/255, 217/255
 
 	if (not UnitHasVehicleUI("player")) then
-		if (K.Class == "ROGUE") then
-			r, g, b = 220/255, 68/255,  25/255
-		elseif (K.Class == "DRUID") then
+		if (K.Class == "ROGUE" or K.Class == "DRUID") then
 			r, g, b = 220/255, 68/255,  25/255
 		elseif (K.Class == "MONK") then
 			r, g, b = 181/255 * 0.7, 255/255, 234/255 * 0.7
@@ -65,8 +82,7 @@ function Module:CreateClassPower()
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", "oUF_KkthnxClassPower", self)
-		Bar:SetWidth(130)
-		Bar:SetHeight(14)
+		Bar:SetSize(130, 14)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateBorder()
 
@@ -167,7 +183,7 @@ function Module:CreateTotems()
 
 	for index = 1, MAX_TOTEMS do
 		local Totem = CreateFrame("Button", nil, self.Power)
-		Totem:SetSize(22, 22)
+		Totem:SetSize(28, 28)
 
 		local Icon = Totem:CreateTexture(nil, "OVERLAY")
 		Icon:SetAllPoints()
@@ -186,4 +202,76 @@ function Module:CreateTotems()
 	end
 
 	self.Totems = Totems
+end
+
+-- Create Class Power Bars for NamePlates (Combo Points...)
+function Module:CreateNamePlateClassPower()
+	local ClassPower = CreateFrame("Frame", nil, self)
+	ClassPower:SetPoint("TOP", self, "BOTTOM", 0, -4)
+	ClassPower:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
+	ClassPower.UpdateColor = UpdateClassPowerColor
+	ClassPower.PostUpdate = PostUpdateNameplateClassPower
+
+	for index = 1, 11 do
+		local Bar = CreateFrame("StatusBar", nil, ClassPower)
+		Bar:SetWidth(C["Nameplates"].Width)
+		Bar:SetHeight(12)
+		Bar:SetStatusBarTexture(ClassPowerTexture)
+		Bar:CreateShadow(true)
+
+		if (index > 1) then
+			Bar:SetPoint("LEFT", ClassPower[index - 1], "RIGHT", 6, 0)
+		else
+			Bar:SetPoint("TOPLEFT", ClassPower, "BOTTOMLEFT", 0, 0)
+		end
+
+		if (index > 5) then
+			Bar:SetFrameLevel(Bar:GetFrameLevel() + 1)
+		end
+
+		ClassPower[index] = Bar
+	end
+
+	self.ClassPower = ClassPower
+end
+
+-- Death Knight Runebar for NamePlates
+function Module:CreateNamePlateRuneBar()
+	local Runes = CreateFrame("Frame", nil, self)
+	Runes:SetPoint("TOP", self, "BOTTOM", 0, -4)
+	Runes:SetSize(C["Nameplates"].Width, C["Nameplates"].Height)
+	for index = 1, 6 do
+		local Rune = CreateFrame("StatusBar", nil, Runes)
+		local numRunes, maxWidth, gap = 6, C["Nameplates"].Width, 4
+		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
+
+		Rune:SetSize(width, 12)
+		Rune:SetStatusBarTexture(ClassPowerTexture)
+		Rune:CreateShadow(true)
+
+		if (index == 1) then
+			Rune:SetPoint("TOPLEFT", Runes, "BOTTOMLEFT", 0, 0)
+		else
+			Rune:SetPoint("LEFT", Runes[index - 1], "RIGHT", gap, 0)
+		end
+
+		Runes[index] = Rune
+	end
+
+	Runes.colorSpec = true -- color runes by spec
+	Runes.sortOrder = "asc"
+	Runes.PostUpdate = PostUpdateRune
+
+	self.Runes = Runes
+end
+
+-- Monk StaggerBar for NamePlates
+function Module:CreateNamePlateStaggerBar()
+	local stagger = CreateFrame("StatusBar", nil, self)
+	stagger:SetSize(C["Nameplates"].Width, 12)
+	stagger:SetPoint("TOP", self, "BOTTOM", 0, 18)
+	stagger:SetStatusBarTexture(ClassPowerTexture)
+	stagger:CreateShadow(true)
+
+	self.Stagger = stagger
 end

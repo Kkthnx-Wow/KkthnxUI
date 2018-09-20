@@ -51,7 +51,7 @@ end
 
 local function ButtonLeave(self)
 	if not C["General"].ColorTextures then -- Fix a rare nil error
-		self.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], 1)
+		self.Borders:SetBackdropBorderColor()
 	end
 
 	self.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])

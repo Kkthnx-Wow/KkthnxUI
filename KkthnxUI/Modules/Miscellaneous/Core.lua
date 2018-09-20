@@ -66,10 +66,10 @@ function Module:MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL()
 end
 
 -- Add movement speed back to the CharacterFrame
-hooksecurefunc("PaperDollFrame_SetMovementSpeed", function(self)
-	self:Show()
-end)
-table.insert(PAPERDOLL_STATCATEGORIES[1].stats, {stat = "MOVESPEED"})
+--hooksecurefunc("PaperDollFrame_SetMovementSpeed", function(self)
+--	self:Show()
+--end)
+--table.insert(PAPERDOLL_STATCATEGORIES[1].stats, {stat = "MOVESPEED"})
 
 if C["General"].AutoScale then
 	local scaleBtn = CreateFrame("Button", "KkthnxUIScaleBtn", Advanced_, "UIPanelButtonTemplate")

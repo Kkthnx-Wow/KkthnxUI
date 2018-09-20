@@ -72,11 +72,7 @@ DBM_Skin:SetScript("OnEvent", function(_, event)
 
 						tbar:SetAllPoints(frame)
 
-						frame:CreateShadow()
-
-						frame.background = frame:CreateTexture(nil, "BORDER")
-						frame.background:SetAllPoints()
-						frame.background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+						frame:CreateShadow(true)
 
 						name:ClearAllPoints()
 						name:SetWidth(165)
@@ -119,8 +115,8 @@ DBM_Skin:SetScript("OnEvent", function(_, event)
 				return
 			end
 			if DBMRangeCheck then
-				DBMRangeCheck:CreateShadow()
-				DBMRangeCheckRadar:CreateShadow()
+				DBMRangeCheck:CreateShadow(true)
+				DBMRangeCheckRadar:CreateShadow(true)
 			end
 		end
 

@@ -390,6 +390,11 @@ KkthnxUIConfig["esMX"] = {
 
 	-- Nameplates Local
 	["Nameplates"] = {
+		["ClassResource"] = {
+			["Name"] = "Class Resource"..ModuleNewFeature,
+			["Desc"] = "Display class resources on the nameplates (Combo, Runes...)|n|nDo not forget to enable this in the blizzard options too (Esc > Interface > Names and check Unit Nameplates options)",
+		},
+
 		["TankedByTank"] = {
 			["Name"] = "Color Tanked",
 			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
@@ -1137,6 +1142,16 @@ KkthnxUIConfig["esMX"] = {
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
 			["Desc"] = ModuleWidth,
+		},
+
+		["CastClassColor"] = {
+			["Name"] = "Class Castbars"..ModuleNewFeature,
+			["Desc"] = "Color castbars by the class of player units.",
+		},
+
+		["CastReactionColor"] = {
+			["Name"] = "Reaction Castbars"..ModuleNewFeature,
+			["Desc"] = "Color castbars by the reaction type of non-player units.",
 		},
 
 		["DebuffsOnTop"] = {

@@ -9,13 +9,13 @@ local math_ceil = math.ceil
 local pairs = pairs
 local select = select
 local string_find = string.find
-local string_format = string.format
 local string_gsub = string.gsub
 local table_insert = table.insert
 local table_wipe = table.wipe
 local tonumber = tonumber
 local unpack = unpack
 
+local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
@@ -131,7 +131,7 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
-function Module:ThreatPlate(forced)
+function Module:ThreatPlate(--[[forced--]])
 	if C["Nameplates"].Threat ~= true then
 		return
 	end
@@ -232,8 +232,8 @@ function Module:ThreatPlate(forced)
 						end
 					end
 				end
-			elseif not forced then
-				health:ForceUpdate()
+			--elseif not forced then
+			--	health:ForceUpdate()
 			end
 		end
 	end
@@ -335,56 +335,19 @@ function Module:MouseoverHealth(unit)
 end
 
 function Module:CustomCastTimeText(duration)
-	local Value = string_format("%.1f / %.1f", self.channeling and duration or self.max - duration, self.max)
-
-	self.Time:SetText(Value)
+	if self.channeling then
+		self.Time:SetText(("%.1f"):format(abs(duration - self.max)))
+	else
+		self.Time:SetText(("%.1f"):format(duration))
+	end
 end
 
 function Module:CustomCastDelayText(duration)
-	local Value = string_format("%.1f |cffaf5050%s %.1f|r", self.channeling and duration or self.max - duration, self.channeling and "- " or "+", self.delay)
-	self.Time:SetText(Value)
-end
-
-function Module:PostCastFailedOrInterrupted(unit)
-	self:SetStatusBarColor(1.0, 0.0, 0.0)
-	self:SetValue(self.max)
-
-	local time = self.Time
-	if (time) then
-		time:SetText("")
+	if self.channeling then
+		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(abs(duration - self.max), self.delay))
+	else
+		self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(duration, "+", self.delay))
 	end
-
-	local spark = self.Spark
-	if (spark) then
-		spark:SetPoint("CENTER", self, "RIGHT")
-	end
-end
-
-function Module:CheckInterrupt(unit)
-	if (unit == "vehicle") then
-		unit = "player"
-	end
-
-	local colors = K.Colors
-	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
-
-	local t
-	if UnitIsPlayer(unit) then
-		local _, class = UnitClass(unit)
-		t = K.Colors.class[class]
-	elseif UnitReaction(unit, "player") then
-		t = K.Colors.reaction[UnitReaction(unit, "player")]
-	end
-
-	if (t) then
-		r, g, b = t[1], t[2], t[3]
-	end
-
-	if self.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
-		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
-	end
-
-	self:SetStatusBarColor(r, g, b)
 end
 
 function Module:HideTicks()
@@ -421,12 +384,35 @@ function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
 	end
 end
 
-function Module:CheckCast(unit, name)
-	Module.CheckInterrupt(self, unit)
-
+function Module:PostCastStart(unit, name)
 	if unit == "vehicle" then
 		unit = "player"
 	end
+
+	if self.Text and name then
+		self.Text:SetText(name)
+	end
+
+	-- Get length of Time, then calculate available length for Text
+	local timeWidth = self.Time:GetStringWidth()
+	local textWidth = self:GetWidth() - timeWidth - 10
+	local textStringWidth = self.Text:GetStringWidth()
+
+	if timeWidth == 0 or textStringWidth == 0 then
+		K.Delay(0.05, function() -- Delay may need tweaking
+			textWidth = self:GetWidth() - self.Time:GetStringWidth() - 10
+			textStringWidth = self.Text:GetStringWidth()
+			if textWidth > 0 then self.Text:SetWidth(min(textWidth, textStringWidth)) end
+		end)
+	else
+		self.Text:SetWidth(min(textWidth, textStringWidth))
+	end
+
+	if self.Spark then
+		self.Spark:SetHeight(self:GetHeight())
+	end
+
+	self.unit = unit
 
 	if C["Unitframe"].CastbarTicks and unit == "player" then
 		local baseTicks = Module.ChannelTicks[name]
@@ -478,11 +464,35 @@ function Module:CheckCast(unit, name)
 	elseif unit == "player" then
 		Module:HideTicks()
 	end
+
+	local colors = K.Colors
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
+
+	local t
+	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		t = K.Colors.class[class]
+	elseif C["Unitframe"].CastReactionColor and UnitReaction(unit, 'player') then
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
+	end
+
+	if (t) then
+		r, g, b = t[1], t[2], t[3]
+	end
+
+	if self.notInterruptible and unit ~= "player" and UnitCanAttack("player", unit) then
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
+	end
+
+	self:SetStatusBarColor(r, g, b)
 end
 
-function Module:CheckChannel(unit, name)
-	Module.CheckInterrupt(self, unit)
+function Module:PostCastStop()
+	self.chainChannel = nil
+	self.prevSpellCast = nil
+end
 
+function Module:PostChannelUpdate(unit, name)
 	if not (unit == "player" or unit == "vehicle") then
 		return
 	end
@@ -538,6 +548,53 @@ function Module:CheckChannel(unit, name)
 		end
 	else
 		Module:HideTicks()
+	end
+end
+
+function Module:PostCastInterruptible(unit)
+	if unit == "vehicle" or unit == "player" then
+		return
+	end
+
+	local colors = K.Colors
+	local r, g, b = colors.status.castColor[1], colors.status.castColor[2], colors.status.castColor[3]
+
+	local t
+	if C["Unitframe"].CastClassColor and UnitIsPlayer(unit) then
+		local _, class = UnitClass(unit)
+		t = K.Colors.class[class]
+	elseif C["Unitframe"].CastReactionColor and UnitReaction(unit, 'player') then
+		t = K.Colors.reaction[UnitReaction(unit, "player")]
+	end
+
+	if (t) then
+		r, g, b = t[1], t[2], t[3]
+	end
+
+	if self.notInterruptible and UnitCanAttack("player", unit) then
+		r, g, b = colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3]
+	end
+
+	self:SetStatusBarColor(r, g, b)
+end
+
+function Module:PostCastNotInterruptible()
+	local colors = K.Colors
+	self:SetStatusBarColor(colors.status.castNoInterrupt[1], colors.status.castNoInterrupt[2], colors.status.castNoInterrupt[3])
+end
+
+function Module:PostCastFailedOrInterrupted()
+	self:SetStatusBarColor(1.0, 0.0, 0.0)
+	self:SetValue(self.max)
+
+	local time = self.Time
+	if (time) then
+		time:SetText("")
+	end
+
+	local spark = self.Spark
+	if (spark) then
+		spark:SetPoint("CENTER", self, "RIGHT")
 	end
 end
 
@@ -802,34 +859,128 @@ function Module:UpdateNameplateTarget()
 	end
 end
 
-function Module:NameplatesCallback(_, unit)
+function Module:NameplatesCallback(event, unit)
 	local Nameplate = self
 
-	if not unit then
+	if not unit or not Nameplate then
 		return
 	end
 
-	if not Nameplate then -- Fuck you nil error.
-		return
-	end
+	-- Position of the resources
+	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -8
 
-	if UnitIsUnit(unit, "player") then
-		Nameplate.Name:Hide()
-		Nameplate.Castbar:SetAlpha(0)
-		Nameplate.RaidTargetIndicator:SetAlpha(0)
-		Nameplate.PvPIndicator:SetAlpha(0)
+	if event == "NAME_PLATE_UNIT_ADDED" then
+		if UnitIsUnit(unit, "player") then
+			Nameplate:DisableElement("Castbar")
+			Nameplate:DisableElement("RaidTargetIndicator")
+			Nameplate:DisableElement("PvPIndicator")
+			Nameplate.Name:Hide()
 
-		if Nameplate.ClassPowerText then
-			Nameplate.ClassPowerText:Show()
+			if Nameplate.ClassPowerText then
+				Nameplate.ClassPowerText:Show()
+			end
+
+			Nameplate.ClassPower:Show()
+			Nameplate:EnableElement("ClassPower")
+			Nameplate.ClassPower:ForceUpdate()
+
+			if (K.Class == "DEATHKNIGHT") then
+				Nameplate.Runes:Show()
+				Nameplate:EnableElement("Runes")
+				Nameplate.Runes:ForceUpdate()
+
+			elseif (K.Class == "MONK") then
+				--Nameplate.Stagger:Show()
+				--Nameplate:EnableElement("Stagger")
+				--Nameplate.Stagger:ForceUpdate()
+			end
+		else
+			Nameplate:EnableElement("Castbar")
+			Nameplate:EnableElement("RaidTargetIndicator")
+			Nameplate:EnableElement("PvPIndicator")
+			Nameplate.Name:Show()
+
+			if Nameplate.ClassPowerText then
+				Nameplate.ClassPowerText:Hide()
+			end
+
+			Nameplate.ClassPower:Hide()
+			Nameplate:DisableElement("ClassPower")
+
+			if (K.Class == "DEATHKNIGHT") then
+				Nameplate.Runes:Hide()
+				Nameplate:DisableElement("Runes")
+
+			elseif (K.Class == "MONK") then
+				-- Nameplate.Stagger:Hide()
+				-- Nameplate:DisableElement("Stagger")
+			end
+
 		end
-	else
+
+	elseif event == "NAME_PLATE_UNIT_REMOVED" then
+		Nameplate:DisableElement("ClassPower")
+		Nameplate:DisableElement("Runes")
+		Nameplate:DisableElement("Stagger")
+
+		Nameplate:EnableElement("Castbar")
+		Nameplate:EnableElement("RaidTargetIndicator")
+		Nameplate:EnableElement("PvPIndicator")
 		Nameplate.Name:Show()
-		Nameplate.Castbar:SetAlpha(1)
-		Nameplate.RaidTargetIndicator:SetAlpha(1)
-		Nameplate.PvPIndicator:SetAlpha(1)
 
 		if Nameplate.ClassPowerText then
 			Nameplate.ClassPowerText:Hide()
+			Nameplate.ClassPowerText:ClearAllPoints()
+			Nameplate.ClassPowerText:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+			Nameplate.ClassPowerText:SetParent(Nameplate)
+		end
+		if Nameplate.ClassPower then
+			Nameplate.ClassPower:Hide()
+			Nameplate.ClassPower:ClearAllPoints()
+			Nameplate.ClassPower:SetParent(Nameplate)
+			Nameplate.ClassPower:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+		end
+		if Nameplate.Runes then
+			Nameplate.Runes:Hide()
+			Nameplate.Runes:ClearAllPoints()
+			Nameplate.Runes:SetParent(Nameplate)
+			Nameplate.Runes:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+		end
+		if Nameplate.Stagger then
+			Nameplate.Stagger:Hide()
+			Nameplate.Stagger:ClearAllPoints()
+			Nameplate.Stagger:SetParent(Nameplate)
+			Nameplate.Stagger:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
+		end
+	end
+
+	if GetCVarBool("nameplateResourceOnTarget") then
+		local Player, Target = C_NamePlate_GetNamePlateForUnit("player"), UnitExists("target") and C_NamePlate_GetNamePlateForUnit("target")
+		if Target and Target:IsForbidden() then
+			Target = nil
+		end
+		if Player then
+			local Anchor = Target and Target.unitFrame or Player.unitFrame
+			if Player.unitFrame.ClassPowerText then
+				Player.unitFrame.ClassPowerText:ClearAllPoints()
+				Player.unitFrame.ClassPowerText:SetParent(Anchor)
+				Player.unitFrame.ClassPowerText:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+			end
+			if Player.unitFrame.ClassPower then
+				Player.unitFrame.ClassPower:ClearAllPoints()
+				Player.unitFrame.ClassPower:SetParent(Anchor)
+				Player.unitFrame.ClassPower:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+			end
+			if Player.unitFrame.Runes then
+				Player.unitFrame.Runes:ClearAllPoints()
+				Player.unitFrame.Runes:SetParent(Anchor)
+				Player.unitFrame.Runes:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+			end
+			if Player.unitFrame.Stagger then
+				Player.unitFrame.Stagger:ClearAllPoints()
+				Player.unitFrame.Stagger:SetParent(Anchor)
+				Player.unitFrame.Stagger:SetPoint(Point, Anchor.Health, Relpoint, xOffset, yOffset)
+			end
 		end
 	end
 end
@@ -1086,7 +1237,6 @@ function Module:CreateUnits()
 			end
 
 			Module.Arena = Arena
-			Module.CreateArenaPreparation(self)
 		end
 
 		if (C["Boss"].Enable) then
@@ -1293,7 +1443,7 @@ function Module:DisplayHealerTexture()
 end
 
 function Module:UpdateRaidDebuffIndicator()
-	local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
+	local ORD = oUF_RaidDebuffs or K.oUF_RaidDebuffs
 
 	if (ORD) then
 		ORD:ResetDebuffData()
@@ -1360,7 +1510,7 @@ function Module:OnEnable()
 	self:CreateUnits()
 	self:CreateFilgerAnchors()
 
-	if C["Raid"].RaidDebuffs then
+	if C["Raid"].AuraWatch then
 		local RaidDebuffs = CreateFrame("Frame")
 		RaidDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
 		RaidDebuffs:SetScript("OnEvent", Module.UpdateRaidDebuffIndicator)

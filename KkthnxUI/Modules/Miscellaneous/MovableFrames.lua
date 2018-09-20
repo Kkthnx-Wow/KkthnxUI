@@ -71,6 +71,7 @@ Module.AddonsList = {
 	["Blizzard_AlliedRacesUI"] = {"AlliedRacesFrame"},
 	["Blizzard_ArchaeologyUI"] = {"ArchaeologyFrame"},
 	["Blizzard_AuctionUI"] = {"AuctionFrame"},
+	["Blizzard_AzeriteUI"] = {"AzeriteEmpoweredItemUI"},
 	["Blizzard_BarberShopUI"] = {"BarberShopFrame"},
 	["Blizzard_BindingUI"] = {"KeyBindingFrame"},
 	["Blizzard_BlackMarketUI"] = {"BlackMarketFrame"},
@@ -93,11 +94,20 @@ Module.AddonsList = {
 	["Blizzard_MacroUI"] = {"MacroFrame"},
 	["Blizzard_OrderHallUI"] = {"OrderHallTalentFrame"},
 	["Blizzard_QuestChoice"] = {"QuestChoiceFrame"},
+	["Blizzard_ScrappingMachineUI"] = {"ScrappingMachineFrame"},
 	["Blizzard_TalentUI"] = {"PlayerTalentFrame"},
-	-- ["Blizzard_TalkingHeadUI"] = {"TalkingHeadFrame"},
 	["Blizzard_TradeSkillUI"] = {"TradeSkillFrame"},
 	["Blizzard_TrainerUI"] = {"ClassTrainerFrame"},
 	["Blizzard_VoidStorageUI"] = {"VoidStorageFrame"},
+}
+
+Module.ExlusiveFrames = {
+	["QuestFrame"] = {"GossipFrame"},
+	["GossipFrame"] = {"QuestFrame"},
+	["GameMenuFrame"] = {"VideoOptionsFrame", "InterfaceOptionsFrame", "HelpFrame"},
+	["VideoOptionsFrame"] = {"GameMenuFrame"},
+	["InterfaceOptionsFrame"] = {"GameMenuFrame"},
+	["HelpFrame"] = {"GameMenuFrame"},
 }
 
 local function OnDragStart(self)
@@ -119,10 +129,10 @@ local function LoadPosition(self)
 		OnDragStop(self)
 	end
 
-	if Name == "QuestFrame" then
-		_G["GossipFrame"]:Hide()
-	elseif Name == "GossipFrame" then
-		_G["QuestFrame"]:Hide()
+	if Module.ExlusiveFrames[Name] then
+		for _, name in pairs(Module.ExlusiveFrames[Name])
+			do _G[name]:Hide()
+		end
 	end
 end
 

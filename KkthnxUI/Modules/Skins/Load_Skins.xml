@@ -14,7 +14,6 @@
    <Include file="Addons\WeakAuras.lua" />
 
    <Include file="Blizzard\Archaeology.lua" />
-   <Include file="Blizzard\Stopwatch.lua" />
    <Include file="Blizzard\Bags.lua" />
    <Include file="Blizzard\BattlegroundMap.lua" />
    <Include file="Blizzard\Collectables.lua" />
@@ -24,9 +23,11 @@
    <Include file="Blizzard\Miscellaneous.lua" />
    <Include file="Blizzard\ObjectiveTracker.lua" />
    <Include file="Blizzard\PetBattle.lua" />
+   <Include file="Blizzard\PvP.lua" />
    <Include file="Blizzard\Reputation.lua" />
    <Include file="Blizzard\ScriptErrors.lua" />
    <Include file="Blizzard\SpellBook.lua" />
+   <Include file="Blizzard\Stopwatch.lua" />
    <Include file="Blizzard\TalkingHead.lua" />
    <Include file="Blizzard\Tooltip.lua" />
    <Include file="Blizzard\Worldmap.lua" />

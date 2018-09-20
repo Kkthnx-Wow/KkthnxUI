@@ -165,11 +165,7 @@ function Module:UpdateAura(button, index)
             local color = _G.DebuffTypeColor[dtype or ""]
             button.Borders:SetBackdropBorderColor(color.r, color.g, color.b)
         else
-            button.Borders:SetBackdropBorderColor(
-                C["Media"].BorderColor[1],
-                C["Media"].BorderColor[2],
-                C["Media"].BorderColor[3]
-            )
+            button.Borders:SetBackdropBorderColor()
         end
 
         button.texture:SetTexture(texture)

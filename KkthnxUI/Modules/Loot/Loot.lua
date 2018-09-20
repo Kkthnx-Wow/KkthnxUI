@@ -265,7 +265,7 @@ function Module:LOOT_OPENED(_, autoloot)
 				slot.name:SetTextColor(1, 1, 0)
 			else
 				questTexture:Hide()
-				slot.iconFrame:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				slot.iconFrame:SetBackdropBorderColor()
 			end
 
 			slot:Enable()

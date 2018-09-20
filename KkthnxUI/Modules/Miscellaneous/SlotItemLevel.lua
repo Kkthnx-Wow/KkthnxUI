@@ -159,12 +159,7 @@ function Module:UpdateEquippeditemLevels(event, ...)
 							iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
 						else
 							iconBorder:Show()
-							iconBorder:SetVertexColor(
-								C["Media"].BorderColor[1],
-								C["Media"].BorderColor[2],
-								C["Media"].BorderColor[3],
-								C["Media"].BorderColor[4]
-							)
+							iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 						end
 					else
 						iconBorder:Hide()
@@ -178,22 +173,12 @@ function Module:UpdateEquippeditemLevels(event, ...)
 								iconBorder:SetVertexColor(GetItemQualityColor(itemRarity))
 							else
 								iconBorder:Show()
-								iconBorder:SetVertexColor(
-									C["Media"].BorderColor[1],
-									C["Media"].BorderColor[2],
-									C["Media"].BorderColor[3],
-									C["Media"].BorderColor[4]
-								)
+								iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 							end
 						else
 							iconBorder:Hide()
 							iconBorder:Show()
-							iconBorder:SetVertexColor(
-								C["Media"].BorderColor[1],
-								C["Media"].BorderColor[2],
-								C["Media"].BorderColor[3],
-								C["Media"].BorderColor[4]
-							)
+							iconBorder:SetVertexColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3], C["Media"].BorderColor[4])
 						end
 					end
 				end

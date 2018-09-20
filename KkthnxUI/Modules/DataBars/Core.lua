@@ -279,11 +279,16 @@ function Module:UpdateAzerite(event, unit)
 end
 
 function Module:UpdateHonor(event, unit)
+	if not self.Database.TrackHonor then
+		self.Bars.Honor:Hide()
+		return
+	end
+
 	if event == "PLAYER_FLAGS_CHANGED" and unit ~= "player" then
 		return
 	end
 
-	if self.Database.TrackHonor and IsPlayerMaxLevel() and UnitIsPVP("player") then
+	if IsPlayerMaxLevel() and UnitIsPVP("player") then
 		local current = UnitHonor("player")
 		local max = UnitHonorMax("player")
 
@@ -375,16 +380,18 @@ function Module:OnEnter()
 		end)
 	end
 
-	if self.Database.TrackHonor and IsPlayerMaxLevel() and UnitIsPVP("player") then
-		GameTooltip:AddLine(" ")
+	if self.Database.TrackHonor then
+		if IsPlayerMaxLevel() and UnitIsPVP("player") then
+			GameTooltip:AddLine(" ")
 
-		local current = UnitHonor("player")
-		local max = UnitHonorMax("player")
-		local level = UnitHonorLevel("player")
+			local current = UnitHonor("player")
+			local max = UnitHonorMax("player")
+			local level = UnitHonorLevel("player")
 
-		GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
-		GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
-		GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+			GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
+			GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
+			GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+		end
 	end
 
 	GameTooltip:Show()
@@ -402,9 +409,7 @@ function Module:Update()
 	self:UpdateExperience()
 	self:UpdateReputation()
 	self:UpdateAzerite()
-	if self.Database.TrackHonor and IsPlayerMaxLevel() then
-		self:UpdateHonor()
-	end
+	self:UpdateHonor()
 
 	if self.Database.MouseOver then
 		self.Container:SetAlpha(0.25)
@@ -452,9 +457,7 @@ function Module:OnEnable()
 	self:SetupExperience()
 	self:SetupReputation()
 	self:SetupAzerite()
-	if self.Database.TrackHonor and IsPlayerMaxLevel() then
-		self:SetupHonor()
-	end
+	self:SetupHonor()
 	self:Update()
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update")
@@ -466,10 +469,8 @@ function Module:OnEnable()
 	self:RegisterEvent("UPDATE_FACTION", "Update")
 	self:RegisterEvent("AZERITE_ITEM_EXPERIENCE_CHANGED", "Update")
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED", "Update")
-	if self.Database.TrackHonor and IsPlayerMaxLevel() then -- Don't register these unless we toggle the option to track.
-		self:RegisterEvent("HONOR_XP_UPDATE", "Update")
-		self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
-	end
+	self:RegisterEvent("HONOR_XP_UPDATE", "Update")
+	self:RegisterEvent("PLAYER_FLAGS_CHANGED", "Update")
 
 	K.Movers:RegisterFrame(container)
 end

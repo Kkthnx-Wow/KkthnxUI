@@ -169,7 +169,7 @@ function Module:CreateAuras(unit)
 		end
 
 		Debuffs:SetHeight(self:GetHeight() - 6)
-		Debuffs:SetWidth(self:GetWidth())
+		Debuffs:SetWidth(self:GetWidth() - 2)
 		Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -3)
 		Debuffs.size = self:GetHeight() - 6
 		Debuffs.num = 5

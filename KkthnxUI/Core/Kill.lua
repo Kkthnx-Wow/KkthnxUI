@@ -158,7 +158,6 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 		if (C["Nameplates"].Enable) then
 			SetCVar("ShowClassColorInNameplate", 1)
 			K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesMakeLarger")
-			K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesPersonalResourceOnEnemy")
 			K.KillMenuOption(true, "InterfaceOptionsNamesPanelUnitNameplatesAggroFlash")
 		end
 

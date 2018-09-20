@@ -25,6 +25,7 @@ local CustomNoop = K.Noop
 -- Preload
 K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
 K.NoScaleMult = K.Mult * C.General.UIScale
+BINDING_HEADER_KKTHNXUI = GetAddOnMetadata(..., "Title")
 
 function K.Scale(x)
 	return K.Mult * math_floor(x / K.Mult + .5)

@@ -121,7 +121,7 @@ function Module:UpdateEditBoxColor()
 		local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
 
 		if ID == 0 then
-			EditBox:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			EditBox:SetBackdropBorderColor()
 		else
 			EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType .. ID].r, ChatTypeInfo[ChatType .. ID].g, ChatTypeInfo[ChatType .. ID].b)
 		end

@@ -2,12 +2,10 @@ local K, C = unpack(select(2, ...))
 local Module = K:NewModule("BagBar", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G
-local unpack = unpack
 local tinsert = table.insert
 
 local CreateFrame = CreateFrame
 local NUM_BAG_FRAMES = NUM_BAG_FRAMES
-local RegisterStateDriver = RegisterStateDriver
 
 local function OnEnter()
 	if not C["Inventory"].BagBarMouseover then
@@ -85,9 +83,9 @@ function Module:OnEnable()
 	MainMenuBarBackpackButton:SetParent(KkthnxUIBags)
 	MainMenuBarBackpackButton.SetParent = K.Noop
 	MainMenuBarBackpackButton:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:FontTemplate(nil, 10)
+	MainMenuBarBackpackButtonCount:FontTemplate(nil, 12, "OUTLINE")
 	MainMenuBarBackpackButtonCount:ClearAllPoints()
-	MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", MainMenuBarBackpackButton, "BOTTOMRIGHT", -1, 4)
+	MainMenuBarBackpackButtonCount:SetPoint("BOTTOMRIGHT", MainMenuBarBackpackButton, "BOTTOMRIGHT", -1, 2)
 	MainMenuBarBackpackButton:HookScript("OnEnter", OnEnter)
 	MainMenuBarBackpackButton:HookScript("OnLeave", OnLeave)
 

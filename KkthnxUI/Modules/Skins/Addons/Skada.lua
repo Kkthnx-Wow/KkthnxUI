@@ -35,6 +35,7 @@ local function SkinSkada()
 		skada:SetSpacing(1)
 		skada:SetFrameLevel(5)
 		skada:SetBackdrop(nil)
+
 		if win.db.enabletitle then
 			if not skada.button.isSkinned then
 				skada.button.Background = skada.button:CreateTexture(nil, "BACKGROUND", -1)
@@ -46,26 +47,19 @@ local function SkinSkada()
 			local color = win.db.title.color
 			skada.button:SetBackdropColor(color.r, color.g, color.b, color.a or 1)
 		end
-		if not skada.Background then
-			skada.Background = skada:CreateTexture(nil, "BACKGROUND", -1)
-			skada.Background:SetAllPoints(skada)
-			skada.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
+		if not skada.Borders then
 			skada.Borders = CreateFrame("Frame", nil, skada)
 			skada.Borders:SetAllPoints(skada)
-			K.CreateBorder(skada.Borders)
+			skada.Borders:CreateBorder()
 		end
-		if skada.Background then
-			skada.Background:ClearAllPoints()
-			if win.db.reversegrowth then
-				skada.Background:SetPoint("TOPLEFT", skada, "TOPLEFT", -1, 1)
-				skada.Background:SetPoint("BOTTOMRIGHT", win.db.enabletitle and skada.button or skada, "BOTTOMRIGHT", 1, -1)
 
+		if skada.Borders then
+			skada.Borders:ClearAllPoints()
+			if win.db.reversegrowth then
 				skada.Borders:SetPoint("TOPLEFT", skada, "TOPLEFT"-1, 1)
 				skada.Borders:SetPoint("BOTTOMRIGHT", win.db.enabletitle and skada.button or skada, "BOTTOMRIGHT", 1, -1)
 			else
-				skada.Background:SetPoint("TOPLEFT", win.db.enabletitle and skada.button or skada, "TOPLEFT", -1, 1)
-				skada.Background:SetPoint("BOTTOMRIGHT", skada, "BOTTOMRIGHT", 1, -1)
 
 				skada.Borders:SetPoint("TOPLEFT", win.db.enabletitle and skada.button or skada, "TOPLEFT", -1, 1)
 				skada.Borders:SetPoint("BOTTOMRIGHT", skada, "BOTTOMRIGHT", 1, -1)
@@ -74,10 +68,8 @@ local function SkinSkada()
 	end)
 end
 
--- table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
-
 if IsAddOnLoaded("Skada") then
 	table_insert(ModuleSkins.SkinFuncs["KkthnxUI"], SkinSkada)
 else
-	Module.SkinFuncs["Skada"] = SkinSkada
+	ModuleSkins.SkinFuncs["Skada"] = SkinSkada
 end

@@ -8,10 +8,13 @@ local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
+local tonumber = tonumber
 
 local CreateFrame = _G.CreateFrame
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 
 function Module:CreateArena()
 	local UnitframeFont = K.GetFont(C["Arena"].Font)
@@ -87,10 +90,6 @@ function Module:CreateArena()
 		self.Castbar:SetPoint("TOP", 0, 20)
 		self.Castbar:SetHeight(18)
 
-		self.Castbar.timeToHold = 0.4
-		self.Castbar.PostCastStart = Module.CheckCast
-		self.Castbar.PostChannelStart = Module.CheckChannel
-
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
 		self.Castbar.Spark:SetSize(128, self.Castbar:GetHeight())
@@ -101,8 +100,16 @@ function Module:CreateArena()
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		self.Castbar.Time:SetJustifyH("RIGHT")
 
-		self.Castbar.CustomTimeText = Module.CustomCastTimeText
+		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
+		self.Castbar.CustomTimeText = Module.CustomTimeText
+		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostChannelStart = Module.PostCastStart
+		self.Castbar.PostCastStop = Module.PostCastStop
+		self.Castbar.PostChannelStop = Module.PostCastStop
+		self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
+		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
+		self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetPoint("LEFT", 3.5, 0)
@@ -141,4 +148,17 @@ function Module:CreateArena()
 	Module.MouseoverHealth(self, "arena")
 
 	self.Range = Module.CreateRange(self)
+	self.PostUpdate = Module.PostUpdateArenaPreparation
+end
+
+function Module:PostUpdateArenaPreparation(event)
+	if self:IsElementEnabled("PVPSpecIcon") then
+		local specID = self.id and GetArenaOpponentSpec(tonumber(self.id))
+		if specID and specID > 0 then
+			local _, _, _, icon = GetSpecializationInfoByID(specID)
+			self.PVPSpecIcon.Icon:SetTexture(icon)
+		else
+			self.PVPSpecIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
+		end
+	end
 end

@@ -167,22 +167,28 @@ C["Automation"] = {
 }
 
 C["Inventory"] = {
-	["AutoRepair"] = true,
 	["AutoSell"] = true,
+	["DetailedReport"] = false,
 	["BagBar"] = false,
 	["BagBarMouseover"] = false,
 	["BagColumns"] = 10,
 	["BankColumns"] = 17,
 	["ButtonSize"] = 32,
 	["ButtonSpace"] = 6,
-	["DetailedReport"] = false,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI Outline",
 	["ItemLevel"] = false,
 	["ItemLevelThreshold"] = 10,
 	["JunkIcon"] = true,
 	["PulseNewItem"] = false,
-	["UseGuildRepairFunds"] = false
+	["AutoRepair"] = {
+		["Options"] = {
+			[NONE] = "NONE",
+			[GUILD] = "GUILD",
+			[PLAYER] = "PLAYER",
+		},
+		["Value"] = "PLAYER"
+	},
 }
 
 -- Buffs & Debuffs
@@ -348,6 +354,7 @@ C["Misc"] = {
 
 -- Nameplates
 C["Nameplates"] = {
+	["ClassResource"] = true,
 	["BadColor"] = {0.78, 0.25, 0.25},
 	["BadTransition"] = {235/255, 163/255, 40/255},
 	["CastHeight"] = 2,
@@ -426,6 +433,8 @@ C["Unitframe"] = {
 	["CastbarTicksColor"] = {0, 0, 0, 0.8},
 	["CastbarTicksWidth"] = 2,
 	["CastbarWidth"] = 214,
+	["CastClassColor"] = true,
+	["CastReactionColor"] = true,
 	["ClassResource"] = true,
 	["CombatFade"] = false,
 	["DebuffsOnTop"] = true,

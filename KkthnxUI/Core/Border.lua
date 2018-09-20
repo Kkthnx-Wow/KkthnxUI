@@ -29,18 +29,16 @@ local borderCache = {}
 local BorderTemplate = {
 	-- Set or update the border color and alpha.
 	SetBorderColor = function(self, r, g, b, a)
-		local borderColor = C["Media"].BorderColor
-
+		local borderColor
 		if C["General"].ColorTextures then
-			local textureColor = C["General"].TexturesColor
-			r = textureColor[1] or r or borderColor[1]
-			g = textureColor[2] or g or borderColor[2]
-			b = textureColor[3] or b or borderColor[3]
+			borderColor = {C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3]}
 		else
-			r = r or borderColor[1]
-			g = g or borderColor[2]
-			b = b or borderColor[3]
+			borderColor = C["Media"].BorderColor
 		end
+
+		r = r or borderColor[1]
+		g = g or borderColor[2]
+		b = b or borderColor[3]
 
 		-- Alpha will always return to fully opaque
 		-- if not included in the function arguments.

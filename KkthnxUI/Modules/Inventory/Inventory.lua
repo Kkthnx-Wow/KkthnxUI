@@ -549,7 +549,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		end)
 
 		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
-			self:GetParent():SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			self:GetParent():SetBackdropBorderColor()
 		end)
 
 		table_insert(self.bagframe_buttons, ret)
@@ -572,7 +572,7 @@ function Stuffing:BagFrameSlotNew(p, slot)
 		end)
 
 		hooksecurefunc(ret.frame.IconBorder, "Hide", function(self)
-			self:GetParent():SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			self:GetParent():SetBackdropBorderColor()
 		end)
 
 		ret.slot = slot
@@ -1390,7 +1390,7 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 
 		local _, _, _, quality = GetContainerItemInfo(-3, i)
 		local clink = GetContainerItemLink(-3, i)
-		button:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		button:SetBackdropBorderColor()
 
 		if clink then
 			if quality and quality > 1 then

@@ -107,7 +107,7 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	end
 
 	if (parent) then
-		if (not GameTooltipStatusBar.anchoredToTop) then
+		if (not GameTooltipStatusBar.anchoredToTop and GameTooltipStatusBar) then
 			GameTooltipStatusBar:ClearAllPoints()
 			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 3, 3)
 			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -3, 3)
@@ -125,7 +125,6 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 
 	tt:SetPoint("BOTTOMRIGHT", GameTooltipAnchor, "BOTTOMRIGHT", 0, 0)
 end
-
 
 function Module:CleanUpTrashLines(tt)
 	if tt:IsForbidden() then
@@ -428,7 +427,7 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	local _, max = tt:GetMinMaxValues()
 	if (value > 0 and max == 1) then
 		tt.text:SetFormattedText("%d%%", math_floor(value * 100))
-		tt:SetStatusBarColor(TAPPED_COLOR.r, TAPPED_COLOR.g, TAPPED_COLOR.b) --most effeciant?
+		tt:SetStatusBarColor(TAPPED_COLOR.r, TAPPED_COLOR.g, TAPPED_COLOR.b) -- most effeciant?
 	elseif (value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
 		tt.text:SetText(DEAD)
 	else
@@ -512,7 +511,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 			end
 		else
 			if tt == ItemRefTooltip then
-				tt:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+				tt:SetBackdropBorderColor()
 			end
 		end
 	end
@@ -733,11 +732,13 @@ function Module:OnEnable()
 	K.Movers:RegisterFrame(BNETMover)
 	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
 
-	GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
-	GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
-	GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
-	GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
-	GameTooltipStatusBar.text:SetFontObject(TooltipFont)
+	if GameTooltipStatusBar then
+		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
+		GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
+		GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
+		GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
+		GameTooltipStatusBar.text:SetFontObject(TooltipFont)
+	end
 
 	if not GameTooltip.hasMoney then
 		SetTooltipMoney(GameTooltip, 1, nil, "", "")

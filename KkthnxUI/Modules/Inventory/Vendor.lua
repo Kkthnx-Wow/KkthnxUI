@@ -1,112 +1,117 @@
 local K, C, L = unpack(select(2, ...))
-local Module = K:NewModule("Vendor", "AceEvent-3.0")
+local Module = K:NewModule("Vendor", "AceEvent-3.0", "AceTimer-3.0")
 
--- Sourced: Tukui
+-- Sourced: ElvUI
 
 local _G = _G
 local select = select
-local math_floor = math.floor
-local string_match = string.match
+local string_format = string.format
 
-local BlizzardMerchantClick = _G.MerchantItemButton_OnModifiedClick -- We NEED this to be a local!
+local C_Timer_After = _G.C_Timer.After
 local CanGuildBankRepair = _G.CanGuildBankRepair
 local CanMerchantRepair = _G.CanMerchantRepair
 local GetContainerItemID = _G.GetContainerItemID
 local GetContainerItemInfo = _G.GetContainerItemInfo
-local GetContainerItemLink = _G.GetContainerItemLink
 local GetContainerNumSlots = _G.GetContainerNumSlots
 local GetGuildBankWithdrawMoney = _G.GetGuildBankWithdrawMoney
 local GetItemInfo = _G.GetItemInfo
-local GetMerchantItemLink = _G.GetMerchantItemLink
-local GetMerchantItemMaxStack = _G.GetMerchantItemMaxStack
 local GetRepairAllCost = _G.GetRepairAllCost
-local IsAltKeyDown = _G.IsAltKeyDown
-local IsInGuild = _G.IsInGuild
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local RepairAllItems = _G.RepairAllItems
 local UseContainerItem = _G.UseContainerItem
 
-function Module:MERCHANT_SHOW()
-	if C["Inventory"].AutoSell then
-		local Cost = 0
-
-		for Bag = 0, 4 do
-			for Slot = 1, GetContainerNumSlots(Bag) do
-				local Link, ID = GetContainerItemLink(Bag, Slot), GetContainerItemID(Bag, Slot)
-
-				if (Link and ID and type(Link) == "string") then
-					if (string_match(Link, "battlepet:") or string_match(Link, "keystone:")) then -- Empty branch
-						-- Do nothing, never sell/destroy pets or keystones
-					else
-						local Price = 0
-						local Mult1, Mult2 = select(11, GetItemInfo(Link)), select(2, GetContainerItemInfo(Bag, Slot))
-
-						if (Mult1 and Mult2) then
-							Price = Mult1 * Mult2
-						end
-
-						if (select(3, GetItemInfo(Link)) == 0 and Price > 0) then
-							UseContainerItem(Bag, Slot)
-							PickupMerchantItem()
-							Cost = Cost + Price
-						end
-					end
-				end
-			end
-		end
-
-		if (Cost > 0) then
-			K.Print((L["Inventory"].SoldTrash.." %s"):format(K.FormatMoney(Cost)))
-		end
+local autoRepairStatus
+local function AttemptAutoRepair(playerOverride)
+	autoRepairStatus = ""
+	local autoRepair = C["Inventory"].AutoRepair.Value
+	local cost, possible = GetRepairAllCost()
+	local withdrawLimit = GetGuildBankWithdrawMoney()
+	-- This check evaluates to true even if the guild bank has 0 gold, so we add an override
+	if autoRepair == "GUILD" and ((not CanGuildBankRepair() or cost > withdrawLimit) or playerOverride) then
+		autoRepair = "PLAYER"
 	end
 
-	if (not IsShiftKeyDown()) then
-		if (CanMerchantRepair() and C["Inventory"].AutoRepair) then
-			local Cost, Possible = GetRepairAllCost()
-
-			if (Cost > 0) then
-				if (IsInGuild() and C["Inventory"].UseGuildRepairFunds) then
-					local CanGuildRepair = (CanGuildBankRepair() and (Cost <= GetGuildBankWithdrawMoney()))
-
-					if CanGuildRepair then
-						RepairAllItems(1)
-
-						return
+	if cost > 0 then
+		if possible then
+			RepairAllItems(autoRepair == "GUILD")
+			-- Delay this a bit so we have time to catch the outcome of first repair attempt
+			C_Timer_After(0.5, function()
+				if autoRepair == "GUILD" then
+					if autoRepairStatus == "GUILD_REPAIR_FAILED" then
+						AttemptAutoRepair(true) -- Try using player money instead
+					else
+						K.Print("Your items have been repaired using guild bank funds for: " .. K.FormatMoney(cost))
+					end
+				elseif autoRepair == "PLAYER" then
+					if autoRepairStatus == "PLAYER_REPAIR_FAILED" then
+						K.Print("You don't have enough money to repair.")
+					else
+						K.Print("Your items have been repaired for: " .. K.FormatMoney(cost))
 					end
 				end
-
-				if Possible then
-					-- if max(GetMoney(), CanGuildRepair) > Cost then
-					RepairAllItems()
-					K.Print((L["Inventory"].RepairCost.." %s"):format(K.FormatMoney(Cost)))
-				else
-					K.Print(L["Inventory"].NotEnoughMoney)
-				end
-			end
+			end)
 		end
 	end
 end
 
-function Module:MerchantClick(...)
-	if (IsAltKeyDown()) then
-		local MaxStack = select(8, GetItemInfo(GetMerchantItemLink(self:GetID())))
+local function VendorGrays()
+	local goldGained, itemID, link, itype, rarity, itemPrice, stackCount, stackPrice, _ = 0
+	for bag = 0, 4, 1 do
+		for slot = 1, GetContainerNumSlots(bag), 1 do
+			itemID = GetContainerItemID(bag, slot)
+			if itemID then
+				_, link, rarity, _, _, itype, _, _, _, _, itemPrice = GetItemInfo(itemID)
+				stackCount = select(2, GetContainerItemInfo(bag, slot)) or 1
 
-		if (MaxStack and MaxStack > 1) then
-			BuyMerchantItem(self:GetID(), GetMerchantItemMaxStack(self:GetID()))
+				if (rarity and rarity == 0) and (itype and itype ~= "Quest") then
+					stackPrice = (itemPrice or 0) * stackCount
+					goldGained = goldGained + stackPrice
+					if C["Inventory"].DetailedReport and link then
+						K.Print(string_format("%s|cFF00DDDDx%d|r %s", link, stackCount, K.FormatMoney(stackPrice)))
+					end
+					UseContainerItem(bag, slot)
+				end
+			end
 		end
 	end
 
-	BlizzardMerchantClick(self, ...)
+	if goldGained > 0 then
+		K.Print(("Vendored gray items for: %s"):format(K.FormatMoney(goldGained)))
+	end
+end
+
+function Module:UI_ERROR_MESSAGE(_, messageType)
+	if messageType == LE_GAME_ERR_GUILD_NOT_ENOUGH_MONEY then
+		autoRepairStatus = "GUILD_REPAIR_FAILED"
+	elseif messageType == LE_GAME_ERR_NOT_ENOUGH_MONEY then
+		autoRepairStatus = "PLAYER_REPAIR_FAILED"
+	end
+end
+
+function Module:MERCHANT_CLOSED()
+	self:UnregisterEvent("UI_ERROR_MESSAGE")
+	self:UnregisterEvent("UPDATE_INVENTORY_DURABILITY")
+	self:UnregisterEvent("MERCHANT_CLOSED")
+end
+
+function Module:MERCHANT_SHOW()
+	if C["Inventory"].AutoSell then
+		C_Timer_After(0.5, VendorGrays)
+	end
+
+	local autoRepair = C["Inventory"].AutoRepair.Value
+	if IsShiftKeyDown() or autoRepair == "NONE" or not CanMerchantRepair() then
+		return
+	end
+
+	-- Prepare to catch "not enough money" messages
+	self:RegisterEvent("UI_ERROR_MESSAGE")
+	-- Use this to unregister events afterwards
+	self:RegisterEvent("MERCHANT_CLOSED")
+
+	AttemptAutoRepair()
 end
 
 function Module:OnEnable()
 	self:RegisterEvent("MERCHANT_SHOW")
-
-	MerchantItemButton_OnModifiedClick = self.MerchantClick
-end
-
-function Module:OnDisable()
-	self:UnregisterEvent("MERCHANT_SHOW")
-
-	MerchantItemButton_OnModifiedClick = BlizzardMerchantClick
 end

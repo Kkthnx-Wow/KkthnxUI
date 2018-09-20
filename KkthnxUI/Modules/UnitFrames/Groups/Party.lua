@@ -129,13 +129,10 @@ function Module:CreateParty()
 		K.CreateBorder(self.Castbar.Border)
 
 		self.Castbar:ClearAllPoints()
-		self.Castbar:SetPoint("LEFT", C["Party"].CastbarIcon and 24 or 4, 0)
+		self.Castbar:SetPoint("LEFT", C["Party"].CastbarIcon and 26 or 4, 0)
 		self.Castbar:SetPoint("RIGHT", -4, 0)
-		self.Castbar:SetPoint("TOP", 0, 16)
-		self.Castbar:SetHeight(14)
-
-		self.Castbar.PostCastStart = Module.CheckCast
-		self.Castbar.PostChannelStart = Module.CheckChannel
+		self.Castbar:SetPoint("TOP", 0, 18)
+		self.Castbar:SetHeight(16)
 
 		self.Castbar.Spark = self.Castbar:CreateTexture(nil, "OVERLAY")
 		self.Castbar.Spark:SetTexture(C["Media"].Spark_128)
@@ -148,8 +145,18 @@ function Module:CreateParty()
 		self.Castbar.Time:SetTextColor(0.84, 0.75, 0.65)
 		self.Castbar.Time:SetJustifyH("RIGHT")
 
-		self.Castbar.CustomTimeText = Module.CustomCastTimeText
+		self.Castbar.timeToHold = 0.4
 		self.Castbar.CustomDelayText = Module.CustomCastDelayText
+		self.Castbar.CustomTimeText = Module.CustomTimeText
+		self.Castbar.PostCastStart = Module.PostCastStart
+		self.Castbar.PostChannelStart = Module.PostCastStart
+		self.Castbar.PostCastStop = Module.PostCastStop
+		self.Castbar.PostChannelStop = Module.PostCastStop
+		self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
+		self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
+		self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
+		self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
+		self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
 
 		self.Castbar.Text = self.Castbar:CreateFontString(nil, "OVERLAY", UnitframeFont)
 		self.Castbar.Text:SetFont(select(1, self.Castbar.Text:GetFont()), 11, select(3, self.Castbar.Text:GetFont()))

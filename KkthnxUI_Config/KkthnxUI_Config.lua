@@ -508,18 +508,10 @@ local function SliderOnMouseWheel(self, delta)
 end
 
 local function CreateConfigButton(parent, group, option, value)
-	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 
 	local Button = CreateFrame("Button", nil, parent)
-
-	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Backgrounds:SetAllPoints()
-	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	Button.Borders = CreateFrame("Frame", nil, Button)
-	Button.Borders:SetAllPoints()
-	K.CreateBorder(Button.Borders)
+	Button:CreateBorder()
 
 	Button:SetSize(18, 18)
 	Button.Toggled = false
@@ -551,19 +543,11 @@ local function CreateConfigButton(parent, group, option, value)
 end
 
 local function CreateConfigEditBox(parent, group, option, value, max)
-	local K = KkthnxUI[1]
 	local C = KkthnxUI[2]
 
 	local EditBox = CreateFrame("Frame", nil, parent)
 	EditBox:SetSize(50, 18)
-
-	EditBox.Backgrounds = EditBox:CreateTexture(nil, "BACKGROUND", -1)
-	EditBox.Backgrounds:SetAllPoints()
-	EditBox.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	EditBox.Borders = CreateFrame("Frame", nil, EditBox)
-	EditBox.Borders:SetAllPoints()
-	K.CreateBorder(EditBox.Borders)
+	EditBox:CreateBorder()
 
 	EditBox.Type = "EditBox"
 
@@ -608,14 +592,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	local ConfigTexture = K.GetTexture(C["General"].Texture)
 
 	local Button = CreateFrame("Button", nil, parent)
-
-	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Backgrounds:SetAllPoints()
-	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	Button.Borders = CreateFrame("Frame", nil, Button)
-	Button.Borders:SetAllPoints()
-	K.CreateBorder(Button.Borders)
+	Button:CreateBorder()
 
 	Button:SetSize(50, 18)
 	Button.Colors = value
@@ -699,14 +676,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local DropDown = CreateFrame("Button", nil, parent)
 	DropDown:SetSize(150, 20)
-
-	DropDown.Backgrounds = DropDown:CreateTexture(nil, "BACKGROUND", -1)
-	DropDown.Backgrounds:SetAllPoints()
-	DropDown.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	DropDown.Borders = CreateFrame("Frame", nil, DropDown)
-	DropDown.Borders:SetAllPoints()
-	K.CreateBorder(DropDown.Borders)
+	DropDown:CreateBorder()
 
 	DropDown.Type = type
 	DropDown._Group = group
@@ -744,14 +714,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local Button = CreateFrame("Button", nil, DropDown)
 	Button:SetSize(16, 16)
-
-	Button.Backgrounds = Button:CreateTexture(nil, "BACKGROUND", -1)
-	Button.Backgrounds:SetAllPoints()
-	Button.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	Button.Borders = CreateFrame("Frame", nil, Button)
-	Button.Borders:SetAllPoints()
-	K.CreateBorder(Button.Borders)
+	Button:CreateBorder()
 
 	Button:SetPoint("RIGHT", DropDown, -2, 0)
 	Button.Owner = DropDown
@@ -770,14 +733,7 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 
 	local List = CreateFrame("Frame", nil, UIParent)
 	List:SetPoint("TOPLEFT", DropDown, "BOTTOMLEFT", 0, -4)
-
-	List.Backgrounds = List:CreateTexture(nil, "BACKGROUND", -1)
-	List.Backgrounds:SetAllPoints()
-	List.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	List.Borders = CreateFrame("Frame", nil, List)
-	List.Borders:SetAllPoints()
-	K.CreateBorder(List.Borders)
+	List:CreateBorder()
 
 	List:Hide()
 	List:SetWidth(150)
@@ -1188,14 +1144,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 				Slider:SetThumbTexture(C["Media"].Texture)
 				Slider:SetOrientation("VERTICAL")
 				Slider:SetValueStep(1)
-
-				Slider.Backgrounds = Slider:CreateTexture(nil, "BACKGROUND", -1)
-				Slider.Backgrounds:SetAllPoints()
-				Slider.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-				Slider.Borders = CreateFrame("Frame", nil, Slider)
-				Slider.Borders:SetAllPoints()
-				K.CreateBorder(Slider.Borders)
+				Slider:CreateBorder()
 
 				Slider:SetMinMaxValues(0, 1)
 				Slider:SetValue(0)

@@ -202,8 +202,14 @@ end
 
 function Module:UpdateRange()
 	local range = self.Range
+	if not range then return end
 	local unit = self.unit
-	if (unit) then
+
+	if self.forceInRange then
+		self:SetAlpha(range.insideAlpha)
+	elseif self.forceNotInRange then
+		self:SetAlpha(range.outsideAlpha)
+	elseif unit then
 		if UnitCanAttack("player", unit) then
 			if enemyIsInRange(unit) then
 				self:SetAlpha(range.insideAlpha)

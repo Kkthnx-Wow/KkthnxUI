@@ -46,6 +46,7 @@
   <Include file="Modules\Maps\Load_Maps.xml"/>
   <!-- Miscellaneous -->
   <Include file="Modules\Miscellaneous\Load_Miscellaneous.xml"/>
+  <Include file="Bindings.xml"/>
   <!-- Tooltip -->
   <Include file="Modules\Tooltip\Load_Tooltip.xml"/>
   <!-- Skins -->

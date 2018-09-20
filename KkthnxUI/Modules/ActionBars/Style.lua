@@ -103,7 +103,7 @@ local function StyleNormalButton(self)
 		if (Border:IsShown()) then
 			Button:SetBackdropBorderColor(.08, .70, 0)
 		else
-			Button:SetBackdropBorderColor(unpack(C["Media"].BorderColor))
+			Button:SetBackdropBorderColor()
 		end
 	end
 

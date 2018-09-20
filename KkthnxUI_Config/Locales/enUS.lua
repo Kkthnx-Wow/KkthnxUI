@@ -11,7 +11,7 @@ local ModuleToggleSkin = "Enable/Disable this skin."
 local ModuleWidth = "Pick the perfect Width for this module"
 local PerformanceIncrease = "|n|nDisabling this may slightly increase performance|r" -- For semi-high CPU options
 local RestoreDefault = "|n|nRight-click to restore to default" -- For color pickers
-local SupportedFrames = "|n|nSuported frames for quest/arena URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
+local SupportedFrames = "|n|nSuported frames for Wowhead URLs are|cff02FF02|n|nAchievements|nWorldMap|nEncounterJournal|r" -- For WorldMapPlus
 
 KkthnxUIConfig["enUS"] = {
 	-- General Local
@@ -385,6 +385,11 @@ KkthnxUIConfig["enUS"] = {
 
 	-- Nameplates Local
 	["Nameplates"] = {
+		["ClassResource"] = {
+			["Name"] = "Class Resource"..ModuleNewFeature,
+			["Desc"] = "Display class resources on the nameplates (Combo, Runes...)|n|nDo not forget to enable this in the blizzard options too (Esc > Interface > Names and check Unit Nameplates options)",
+		},
+
 		["TankedByTank"] = {
 			["Name"] = "Color Tanked",
 			["Desc"] = "Use Tanked Color when a nameplate is being effectively tanked by another tank.",
@@ -1132,6 +1137,16 @@ KkthnxUIConfig["enUS"] = {
 		["CastbarWidth"] = {
 			["Name"] = "Castbar Width",
 			["Desc"] = ModuleWidth,
+		},
+
+		["CastClassColor"] = {
+			["Name"] = "Class Castbars"..ModuleNewFeature,
+			["Desc"] = "Color castbars by the class of player units.",
+		},
+
+		["CastReactionColor"] = {
+			["Name"] = "Reaction Castbars"..ModuleNewFeature,
+			["Desc"] = "Color castbars by the reaction type of non-player units.",
 		},
 
 		["DebuffsOnTop"] = {

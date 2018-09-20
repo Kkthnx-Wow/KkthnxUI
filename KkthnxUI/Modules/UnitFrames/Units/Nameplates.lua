@@ -159,9 +159,8 @@ function Module:CreateNameplates()
 
 	if C["Nameplates"].TrackAuras == true then
 		self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
-		self.Debuffs:SetWidth(C["Nameplates"].Width - K.Mult * 2)
-		self.Debuffs:SetHeight(20)
-		self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 20)
+		self.Debuffs:SetSize(C["Nameplates"].Width, 17)
+		self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 24)
 		self.Debuffs.size = 20
 		self.Debuffs.num = 12
 		self.Debuffs.numRow = 2
@@ -169,9 +168,10 @@ function Module:CreateNameplates()
 		self.Debuffs.initialAnchor = "TOPLEFT"
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs["growth-x"] = "RIGHT"
+		self.Debuffs.onlyShowPlayer = true
+		self.Debuffs.filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY"
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
-		self.Debuffs.onlyShowPlayer = true
 	end
 
 	self.Castbar = CreateFrame("StatusBar", "TargetCastbar", self)
@@ -186,6 +186,19 @@ function Module:CreateNameplates()
 	self.Castbar.Spark:SetSize(32, self:GetHeight())
 	self.Castbar.Spark:SetTexture(C["Media"].Spark_64)
 	self.Castbar.Spark:SetBlendMode("ADD")
+
+	self.Castbar.timeToHold = 0.4
+	self.Castbar.CustomDelayText = Module.CustomCastDelayText
+	self.Castbar.CustomTimeText = Module.CustomTimeText
+	self.Castbar.PostCastStart = Module.PostCastStart
+	self.Castbar.PostChannelStart = Module.PostCastStart
+	self.Castbar.PostCastStop = Module.PostCastStop
+	self.Castbar.PostChannelStop = Module.PostCastStop
+	self.Castbar.PostChannelUpdate = Module.PostChannelUpdate
+	self.Castbar.PostCastInterruptible = Module.PostCastInterruptible
+	self.Castbar.PostCastNotInterruptible = Module.PostCastNotInterruptible
+	self.Castbar.PostCastFailed = Module.PostCastFailedOrInterrupted
+	self.Castbar.PostCastInterrupted = Module.PostCastFailedOrInterrupted
 
 	self.Castbar.Time = self.Castbar:CreateFontString(nil, "ARTWORK")
 	self.Castbar.Time:SetPoint("TOPRIGHT", self.Castbar, "BOTTOMRIGHT", 0, -2)
@@ -214,12 +227,6 @@ function Module:CreateNameplates()
 	self.Castbar.Text:SetJustifyH("LEFT")
 	self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
 
-	self.Castbar.timeToHold = 0.4
-	self.Castbar.PostCastStart = Module.CheckInterrupt
-	self.Castbar.PostCastInterruptible = Module.CheckInterrupt
-	self.Castbar.PostCastNotInterruptible = Module.CheckInterrupt
-	self.Castbar.PostChannelStart = Module.CheckInterrupt
-
 	self.Castbar:SetScript("OnShow", Module.NameplatePowerAndCastBar)
 	self.Castbar:SetScript("OnHide", Module.NameplatePowerAndCastBar)
 
@@ -233,18 +240,44 @@ function Module:CreateNameplates()
 	self.QuestIndicator:SetSize(18, 18)
 	self.QuestIndicator:SetPoint("RIGHT", self.Health, "LEFT", 2, 0)
 
-	-- Class Power (Combo Points, Insanity, etc...)
-	self.ClassPowerText = self:CreateFontString(nil, "OVERLAY")
-	self.ClassPowerText:SetFontObject(Font)
-	self.ClassPowerText:SetFont(select(1, self.ClassPowerText:GetFont()), 26, select(3, self.ClassPowerText:GetFont()))
-	self.ClassPowerText:SetPoint("TOP", self.Health, "BOTTOM", 0, -10)
-	self.ClassPowerText:SetWidth(C["Nameplates"].Width)
-	if K.Class == "DEATHKNIGHT" then
-		self:Tag(self.ClassPowerText, "[runes]", "player")
+	--[[
+	Class Power (Combo Points, Insanity, etc...)
+
+	 The following CVars toggle visibility
+	 of the personal resouce display (classpower):
+	 	nameplateShowSelf
+	 	nameplateResourceOnTarget
+
+	 Note that class resources above will only be visible on
+	 the target as long as the player nameplate is visible too.
+	 This might not always be the case, but it can
+	 to a certain degree be adjusted with the following CVars:
+	 	nameplatePersonalShowAlways
+	 	nameplatePersonalShowInCombat
+	 	nameplatePersonalShowWithTarget
+	 	nameplatePersonalHideDelaySeconds
+	 --]]
+
+	if C["Nameplates"].ClassResource then -- replace with config option
+		Module.CreateNamePlateClassPower(self)
+		if (K.Class == "MONK") then
+			--Module.CreateNamePlateStaggerBar(self)
+		elseif (K.Class == "DEATHKNIGHT") then
+			Module.CreateNamePlateRuneBar(self)
+		end
 	else
-		self:Tag(self.ClassPowerText, "[KkthnxUI:ClassPower]", "player")
+		self.ClassPowerText = self:CreateFontString(nil, "OVERLAY")
+		self.ClassPowerText:SetFontObject(Font)
+		self.ClassPowerText:SetFont(select(1, self.ClassPowerText:GetFont()), 26, select(3, self.ClassPowerText:GetFont()))
+		self.ClassPowerText:SetPoint("TOP", self.Health, "BOTTOM", 0, -10)
+		self.ClassPowerText:SetWidth(C["Nameplates"].Width)
+		if K.Class == "DEATHKNIGHT" then
+			self:Tag(self.ClassPowerText, "[runes]", "player")
+		else
+			self:Tag(self.ClassPowerText, "[KkthnxUI:ClassPower]", "player")
+		end
+		self.ClassPowerText:Hide()
 	end
-	self.ClassPowerText:Hide()
 
 	if C["Nameplates"].ClassIcons then
 		self.Class = CreateFrame("Frame", nil, self)

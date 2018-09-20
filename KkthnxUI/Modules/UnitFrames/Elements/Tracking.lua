@@ -30,11 +30,12 @@ Module.DebuffsTracking["RaidDebuffs"] = {
 	["spells"] = {
 		-- Battle for Azeroth
 		-- Mythic+ Dungeons
+		[196376] = Defaults(), -- Grievous Tear
 		[209858] = Defaults(), -- Necrotic
 		[226512] = Defaults(), -- Sanguine
-		[240559] = Defaults(), -- Grievous
 		[240443] = Defaults(), -- Bursting
-		[196376] = Defaults(), -- Grievous Tear
+		[240559] = Defaults(), -- Grievous
+		[277242] = Defaults(), -- Symbiote of G'huun (Infested)
 
 		-- Dungeons
 		-- Freehold
@@ -642,7 +643,9 @@ CastTickCheck:RegisterEvent("PLAYER_ENTERING_WORLD")
 CastTickCheck:RegisterEvent("PLAYER_TALENT_UPDATE")
 CastTickCheck:SetScript("OnEvent", function()
 	local class = select(2, UnitClass("player"))
-	if string_lower(class) ~= "priest" then return; end
+	if string_lower(class) ~= "priest" then
+		return
+	end
 
 	local penanceTicks = IsPlayerSpell(193134) and 4 or 3
 	Module.ChannelTicks[SpellName(47540)] = penanceTicks -- Penance

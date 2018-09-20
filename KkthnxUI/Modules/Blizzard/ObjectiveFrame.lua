@@ -52,13 +52,7 @@ function Module:MoveObjectiveFrame()
 
 	if Data and Data.Movers and Data.Movers.TrackerFrameHolder then
 		ObjectiveFrameHolder:ClearAllPoints()
-		ObjectiveFrameHolder:SetPoint(
-			Data.Movers.TrackerFrameHolder[1],
-			Data.Movers.TrackerFrameHolder[2],
-			Data.Movers.TrackerFrameHolder[3],
-			Data.Movers.TrackerFrameHolder[4],
-			Data.Movers.TrackerFrameHolder[5]
-		)
+		ObjectiveFrameHolder:SetPoint(Data.Movers.TrackerFrameHolder[1], Data.Movers.TrackerFrameHolder[2], Data.Movers.TrackerFrameHolder[3], Data.Movers.TrackerFrameHolder[4], Data.Movers.TrackerFrameHolder[5])
 	end
 
 	local function RewardsFrame_SetPosition(block)

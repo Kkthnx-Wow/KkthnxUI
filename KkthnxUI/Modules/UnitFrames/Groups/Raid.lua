@@ -39,7 +39,7 @@ local function UpdateThreat(self, _, unit)
 		local r, g, b = GetThreatStatusColor(situation)
 		self:SetBackdropBorderColor(r, g, b)
 	else
-		self:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+		self:SetBackdropBorderColor()
 	end
 end
 
@@ -241,13 +241,13 @@ function Module:CreateRaid()
 						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 						self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
 					else
-						self.TargetHighlight:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+						self.TargetHighlight:SetBackdropBorderColor()
 					end
 				elseif reaction then
 					local color = FACTION_BAR_COLORS[reaction]
 					self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
 				else
-					self.TargetHighlight:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+					self.TargetHighlight:SetBackdropBorderColor()
 				end
 			else
 				self.TargetHighlight:Hide()

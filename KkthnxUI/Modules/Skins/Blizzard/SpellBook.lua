@@ -2,30 +2,38 @@ local K, C = unpack(select(2, ...))
 local Module = K:GetModule("Skins")
 
 local _G = _G
-
+local pairs = pairs
 local table_insert = table.insert
 
+local hooksecurefunc = _G.hooksecurefunc
+local InCombatLockdown = _G.InCombatLockdown
+local SPELLS_PER_PAGE = _G.SPELLS_PER_PAGE
+
 local function LoadSpellBookSkin()
-	for i = 1, _G.SPELLS_PER_PAGE do
-		local button = _G["SpellButton" .. i]
-		local slot = _G["SpellButton" .. i .. "SlotFrame"]
-		local icon = _G["SpellButton" .. i .. "IconTexture"]
+	local professionTexture = K.GetTexture(C["Skins"].Texture)
 
-		button:CreateBorder()
-		button.EmptySlot:SetTexture("")
-		button.UnlearnedFrame:SetTexture("")
-		button.SpellHighlightTexture:SetInside(button, -6, -6) -- not on action bar
-		slot:SetTexture("") -- swirly thing
-		icon:SetTexCoord(0.06, 0.94, 0.06, 0.94)
+	-- Skin SpellButtons
+	local function SpellButtons(self, first)
+		for i = 1, SPELLS_PER_PAGE do
+			local button = _G["SpellButton" .. i]
+			local slot = _G["SpellButton" .. i .. "SlotFrame"]
+			local icon = _G["SpellButton" .. i .. "IconTexture"]
 
-		button:HookScript("OnDisable", function(self)
-			self:SetAlpha(0)
-		end)
+			if not InCombatLockdown() then
+				button:SetFrameLevel(SpellBookFrame:GetFrameLevel() + 5)
+			end
 
-		button:HookScript("OnEnable", function(self)
-			self:SetAlpha(1)
-		end)
+			if first then
+				button:CreateBorder()
+				button.EmptySlot:SetTexture("")
+				button.UnlearnedFrame:SetTexture("")
+				slot:SetTexture("") -- swirly thing
+				icon:SetTexCoord(unpack(K.TexCoords))
+			end
+		end
 	end
+	SpellButtons(nil, true)
+	hooksecurefunc("SpellButton_UpdateButton", SpellButtons)
 
 	-- Profession Tab
 	local professionbuttons = {
@@ -53,7 +61,7 @@ local function LoadSpellBookSkin()
 		_G[header.."Missing"]:SetTextColor(1, 0.8, 0)
 		_G[header.."Missing"]:SetShadowColor(0, 0, 0)
 		_G[header.."Missing"]:SetShadowOffset(1, -1)
-		_G[header].missingText:SetTextColor(0.6, 0.6, 0.6)
+		_G[header].missingText:SetTextColor(.04, .04, .04)
 	end
 
 	for _, button in pairs(professionbuttons) do
@@ -106,7 +114,7 @@ local function LoadSpellBookSkin()
 	for _, statusbar in pairs(professionstatusbars) do
 		local statusbar = _G[statusbar]
 		statusbar:StripTextures()
-		statusbar:SetStatusBarTexture(C.Media.Texture)
+		statusbar:SetStatusBarTexture(professionTexture)
 		statusbar:SetStatusBarColor(0, 0.8, 0)
 		statusbar:CreateBorder()
 

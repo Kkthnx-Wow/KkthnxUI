@@ -23,7 +23,7 @@ local function UpdateThreat(self, _, unit)
 			local r, g, b = GetThreatStatusColor(Status)
 			self.Portrait.Borders:SetBackdropBorderColor(r, g, b)
 		else
-			self.Portrait.Borders:SetBackdropBorderColor(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			self.Portrait.Borders:SetBackdropBorderColor()
 		end
 	end
 end
