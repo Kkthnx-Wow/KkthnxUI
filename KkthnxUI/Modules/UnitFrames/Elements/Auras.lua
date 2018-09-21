@@ -169,10 +169,10 @@ function Module:CreateAuras(unit)
 		end
 
 		Debuffs:SetHeight(self:GetHeight() - 6)
-		Debuffs:SetWidth(self:GetWidth() - 2)
+		Debuffs:SetWidth(self:GetWidth() - 4)
 		Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -3)
 		Debuffs.size = self:GetHeight() - 6
-		Debuffs.num = 5
+		Debuffs.num = 3
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"
 		Debuffs["growth-y"] = "UP"

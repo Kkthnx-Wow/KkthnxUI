@@ -140,12 +140,12 @@ local function UpdateBlizzardFonts()
 		local total, equip = GetAverageItemLevel()
 		if total > 0 then
 			if equip == total then
-				msg:SetFormattedText("|cffffeeaa%.1f|r", equip)
+				msg:SetFormattedText("%s%.2f|r / %s%.2f|r", K.RGBToHex(K.ColorGradient((equip / total), 1, 0, 0, 1, 1, 0, 0, 1, 0)), equip, K.RGBToHex(0, 1, 59), total)
 			else
-				msg:SetFormattedText("|cffffeeaa%.1f / %.1f|r", equip, total)
+				msg:SetFormattedText("%.2f / %.2f", equip, total)
 			end
 		else
-			msg:SetFormattedText("|cffffeeaa%s|r", NONE)
+			msg:SetFormattedText("|cffffeeaa%s|r", _G.NONE)
 		end
 	end)
 

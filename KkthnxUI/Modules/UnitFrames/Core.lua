@@ -880,19 +880,21 @@ function Module:NameplatesCallback(event, unit)
 				Nameplate.ClassPowerText:Show()
 			end
 
-			Nameplate.ClassPower:Show()
-			Nameplate:EnableElement("ClassPower")
-			Nameplate.ClassPower:ForceUpdate()
+			if Nameplate.ClassPower then
+				Nameplate.ClassPower:Show()
+				Nameplate:EnableElement("ClassPower")
+				Nameplate.ClassPower:ForceUpdate()
 
-			if (K.Class == "DEATHKNIGHT") then
-				Nameplate.Runes:Show()
-				Nameplate:EnableElement("Runes")
-				Nameplate.Runes:ForceUpdate()
+				if (K.Class == "DEATHKNIGHT") then
+					Nameplate.Runes:Show()
+					Nameplate:EnableElement("Runes")
+					Nameplate.Runes:ForceUpdate()
 
-			elseif (K.Class == "MONK") then
-				--Nameplate.Stagger:Show()
-				--Nameplate:EnableElement("Stagger")
-				--Nameplate.Stagger:ForceUpdate()
+				elseif (K.Class == "MONK") then
+					--Nameplate.Stagger:Show()
+					--Nameplate:EnableElement("Stagger")
+					--Nameplate.Stagger:ForceUpdate()
+				end
 			end
 		else
 			Nameplate:EnableElement("Castbar")
@@ -904,18 +906,19 @@ function Module:NameplatesCallback(event, unit)
 				Nameplate.ClassPowerText:Hide()
 			end
 
-			Nameplate.ClassPower:Hide()
-			Nameplate:DisableElement("ClassPower")
+			if Nameplate.ClassPower then
+				Nameplate.ClassPower:Hide()
+				Nameplate:DisableElement("ClassPower")
 
-			if (K.Class == "DEATHKNIGHT") then
-				Nameplate.Runes:Hide()
-				Nameplate:DisableElement("Runes")
+				if (K.Class == "DEATHKNIGHT") then
+					Nameplate.Runes:Hide()
+					Nameplate:DisableElement("Runes")
 
-			elseif (K.Class == "MONK") then
-				-- Nameplate.Stagger:Hide()
-				-- Nameplate:DisableElement("Stagger")
+				elseif (K.Class == "MONK") then
+					-- Nameplate.Stagger:Hide()
+					-- Nameplate:DisableElement("Stagger")
+				end
 			end
-
 		end
 
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
