@@ -34,35 +34,28 @@ for i = 1, 12 do
 	end
 end
 
-if (C["ActionBar"].DisableStancePages) then
-	Druid = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
-else
-	Druid = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
-	Rogue = "[bonusbar:1] 7;"
-end
+local function GetPageDriver()
+	local driver = "[vehicleui][overridebar][possessbar][shapeshift]possess; [bar:2]2; [bar:3]3; [bar:4]4; [bar:5]5; [bar:6]6"
 
-local Page = {
-	["DRUID"] = Druid,
-	["ROGUE"] = Rogue,
-	["MONK"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
-	["PRIEST"] = "[bonusbar:1] 7;",
-	["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8;",
-
-	["DEFAULT"] = "[bar:6] 6;[bar:5] 5;[bar:4] 4;[bar:3] 3;[bar:2] 2;[overridebar] 14;[shapeshift] 13;[vehicleui] 12;[possessbar] 12;",
-}
-
-local function GetBar()
-	local condition = Page["DEFAULT"]
-	local class = select(2, UnitClass("player"))
-	local page = Page[class]
-
-	if page then
-		condition = condition .. " " .. page
+	local _, playerClass = UnitClass("player")
+	if (playerClass == "DRUID") then
+		if (C["ActionBar"].DisableStancePages) then
+			driver = driver .. "; [bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10"
+		else 
+			driver = driver .. "; [bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10"
+		end
+	elseif (playerClass == "MONK") then
+		driver = driver .. "; [bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9"
+	elseif (playerClass == "PRIEST") then
+		driver = driver .. "; [bonusbar:1] 7"
+	elseif (playerClass == "ROGUE") and (not C["ActionBar"].DisableStancePages) then
+		driver = driver .. "; [bonusbar:1] 7"
+	elseif (playerClass == "WARRIOR") then
+		driver = driver .. "; [bonusbar:1] 7; [bonusbar:2] 8" 
 	end
+	driver = driver .. "; [form] 1; 1"
 
-	condition = condition .. "; [form] 1; 1"
-
-	return condition
+	return driver
 end
 
 ActionBar1:RegisterEvent("PLAYER_LOGIN")
@@ -85,18 +78,18 @@ ActionBar1:SetScript("OnEvent", function(self, event)
 		self:SetAttribute("_onstate-page", [[
 		if (newstate == "possess") or (newstate == "11") then
 			if HasVehicleActionBar() then
-				newstate = GetVehicleBarIndex()
-			elseif HasOverrideActionBar() then
-				newstate = GetOverrideBarIndex()
+				newstate = GetVehicleBarIndex() 
+			elseif HasOverrideActionBar() then 
+				newstate = GetOverrideBarIndex() 
 			elseif HasTempShapeshiftActionBar() then
-				newstate = GetTempShapeshiftBarIndex()
-			elseif HasBonusActionBar() and (GetActionBarPage() == 1) then
+				newstate = GetTempShapeshiftBarIndex() 
+			elseif HasBonusActionBar() and (GetActionBarPage() == 1) then 
 				newstate = GetBonusBarIndex()
 			else
 				newstate = nil
 			end
-			if (not value) then
-				newstate = 12
+			if (not newstate) then
+				newstate = 12 
 			end
 		end
 		for i, button in ipairs(buttons) do
@@ -104,7 +97,7 @@ ActionBar1:SetScript("OnEvent", function(self, event)
 		end
 		]])
 
-		RegisterStateDriver(self, "page", GetBar())
+		RegisterStateDriver(self, "page", GetPageDriver())
 	elseif (event == "UPDATE_VEHICLE_ACTIONBAR") or (event == "UPDATE_OVERRIDE_ACTIONBAR") then
 		if not InCombatLockdown() and (HasVehicleActionBar() or HasOverrideActionBar()) then
 			for i = 1, NUM_ACTIONBAR_BUTTONS do
