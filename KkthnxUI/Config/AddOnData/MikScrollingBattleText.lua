@@ -1,19 +1,8 @@
-local K, C, L = unpack(select(2, ...))
+local K = unpack(select(2, ...))
 
--- Lua API
 local _G = _G
-local table_wipe = table.wipe
-
--- Wow API
-local MSBTProfiles_SavedVars = _G.MSBTProfiles_SavedVars
-
--- GLOBALS: MikSBT
 
 function K.LoadMSBTProfile()
-	if _G.MSBTProfiles_SavedVars then
-		table_wipe(_G.MSBTProfiles_SavedVars)
-	end
-
 	_G.MSBTProfiles_SavedVars = {
 		["profiles"] = {
 			["KkthnxUI"] = {
@@ -139,7 +128,7 @@ function K.LoadMSBTProfile()
 						["stickyBehavior"] = "MSBT_NORMAL",
 						["stickyDirection"] = "Up",
 						["scrollHeight"] = 150,
-						["offsetX"] = -295,
+						["offsetX"] = -340,
 						["scrollWidth"] = 130,
 						["iconAlign"] = "Right",
 						["offsetY"] = 10,
@@ -156,7 +145,7 @@ function K.LoadMSBTProfile()
 						["scrollWidth"] = 130,
 						["stickyDirection"] = "Up",
 						["scrollHeight"] = 150,
-						["offsetX"] = 165,
+						["offsetX"] = 210,
 						["behavior"] = "MSBT_NORMAL",
 						["iconAlign"] = "Left",
 						["offsetY"] = 10,
@@ -315,4 +304,6 @@ function K.LoadMSBTProfile()
 			},
 		},
 	}
+
+	MikSBT.Profiles.SelectProfile("KkthnxUI")
 end

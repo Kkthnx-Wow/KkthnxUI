@@ -103,7 +103,7 @@ function Module:OnEnable()
 		if i == 8 then
 			button:SetPoint("CENTER")
 		else
-			local angle = 360 / 7 * i
+			local angle = 377 / 7 * i -- Math is lame. Stay in school
 			button:SetPoint("CENTER", math_sin(angle) * 60, math_cos(angle) * 60)
 		end
 	end
