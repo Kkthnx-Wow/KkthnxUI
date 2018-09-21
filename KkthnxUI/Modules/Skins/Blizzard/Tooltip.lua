@@ -64,14 +64,14 @@ local function SkinTooltip()
 		WorldMapTooltip,
 	}
 
-	if (GameTooltip_SetBackdropStyle) then
-		hooksecurefunc("GameTooltip_SetBackdropStyle", function(self)
-			self:SetBackdrop(nil)
-		end)
-	end
-
 	for _, tt in pairs(tooltips) do
 		if not IsAddOnLoaded("Aurora") then
+			if (GameTooltip_SetBackdropStyle) then
+				hooksecurefunc("GameTooltip_SetBackdropStyle", function()
+					tt:SetBackdrop(nil)
+				end)
+			end
+
 			Module:SecureHookScript(tt, "OnShow", "SetStyle")
 		end
 	end
