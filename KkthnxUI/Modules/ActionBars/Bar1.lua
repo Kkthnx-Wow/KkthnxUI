@@ -36,7 +36,7 @@ end
 
 if (C["ActionBar"].DisableStancePages) then
 	Druid = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 7; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
-else 
+else
 	Druid = "[bonusbar:1,nostealth] 7; [bonusbar:1,stealth] 8; [bonusbar:2] 8; [bonusbar:3] 9; [bonusbar:4] 10;"
 	Rogue = "[bonusbar:1] 7;"
 end
@@ -47,8 +47,8 @@ local Page = {
 	["MONK"] = "[bonusbar:1] 7; [bonusbar:2] 8; [bonusbar:3] 9;",
 	["PRIEST"] = "[bonusbar:1] 7;",
 	["WARRIOR"] = "[bonusbar:1] 7; [bonusbar:2] 8;",
-	
-	["DEFAULT"] = "[vehicleui][overridebar][possessbar][shapeshift] possess; [bar:2] 2; [bar:3] 3; [bar:4] 4; [bar:5] 5; [bar:6] 6;",
+
+	["DEFAULT"] = "[bar:6] 6;[bar:5] 5;[bar:4] 4;[bar:3] 3;[bar:2] 2;[overridebar] 14;[shapeshift] 13;[vehicleui] 12;[possessbar] 12;",
 }
 
 local function GetBar()
@@ -85,18 +85,18 @@ ActionBar1:SetScript("OnEvent", function(self, event)
 		self:SetAttribute("_onstate-page", [[
 		if (newstate == "possess") or (newstate == "11") then
 			if HasVehicleActionBar() then
-				newstate = GetVehicleBarIndex() 
-			elseif HasOverrideActionBar() then 
-				newstate = GetOverrideBarIndex() 
+				newstate = GetVehicleBarIndex()
+			elseif HasOverrideActionBar() then
+				newstate = GetOverrideBarIndex()
 			elseif HasTempShapeshiftActionBar() then
-				newstate = GetTempShapeshiftBarIndex() 
-			elseif HasBonusActionBar() and (GetActionBarPage() == 1) then 
+				newstate = GetTempShapeshiftBarIndex()
+			elseif HasBonusActionBar() and (GetActionBarPage() == 1) then
 				newstate = GetBonusBarIndex()
 			else
 				newstate = nil
 			end
 			if (not value) then
-				newstate = 12 
+				newstate = 12
 			end
 		end
 		for i, button in ipairs(buttons) do
