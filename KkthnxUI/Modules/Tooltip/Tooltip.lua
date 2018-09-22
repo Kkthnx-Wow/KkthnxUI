@@ -10,8 +10,7 @@ local format = string.format
 local sub = string.sub
 local select = select
 
-local SetTooltipMoney = _G.SetTooltipMoney
-local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
+local C_PetBattles_IsInBattle = C_PetBattles.IsInBattle
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
@@ -22,6 +21,7 @@ local FACTION_ALLIANCE = _G.FACTION_ALLIANCE
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FACTION_HORDE = _G.FACTION_HORDE
 local FOREIGN_SERVER_LABEL = _G.FOREIGN_SERVER_LABEL
+local GameTooltip_ClearMoney = _G.GameTooltip_ClearMoney
 local GetCreatureDifficultyColor = _G.GetCreatureDifficultyColor
 local GetGuildInfo = _G.GetGuildInfo
 local GetItemCount = _G.GetItemCount
@@ -38,6 +38,7 @@ local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
 local LEVEL = _G.LEVEL
 local PVP = _G.PVP
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local SetTooltipMoney = _G.SetTooltipMoney
 local SPECIALIZATION = _G.SPECIALIZATION
 local STAT_AVERAGE_ITEM_LEVEL = _G.STAT_AVERAGE_ITEM_LEVEL
 local TARGET = _G.TARGET
@@ -110,8 +111,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (not GameTooltipStatusBar.anchoredToTop and GameTooltipStatusBar) then
 			GameTooltipStatusBar:ClearAllPoints()
-			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 3, 3)
-			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -3, 3)
+			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
+			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
 			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 			GameTooltipStatusBar.anchoredToTop = true
 		end
@@ -394,6 +395,19 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		end
 
 		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
+	end
+
+	-- NPC ID's
+	if unit and C["Tooltip"].SpellID then
+		if C_PetBattles_IsInBattle() then
+			return
+		end
+
+		local guid = UnitGUID(unit) or ""
+		local id = tonumber(guid:match("%-(%d-)%-%x-$"), 10)
+		if id and guid:match("%a+") ~= "Player" then
+			GameTooltip:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
+		end
 	end
 
 	if (color) then

@@ -46,7 +46,7 @@ local function SkinPetTooltip()
 		if quality and rarity > 1 then
 			BattlePetTooltip:SetBackdropBorderColor(quality.r, quality.g, quality.b)
 		else
-			BattlePetTooltip:SetColorTexture(C["Media"].BorderColor[1], C["Media"].BorderColor[2], C["Media"].BorderColor[3])
+			BattlePetTooltip:SetColorTexture()
 		end
 	end)
 
