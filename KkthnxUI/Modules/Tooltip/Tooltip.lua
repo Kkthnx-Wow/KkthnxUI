@@ -72,6 +72,7 @@ local inspectCache, inspectAge = {}, 900
 local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
+local TOOLTOP_BUG = nil
 
 local ignoreSubType = {
 	L["Tooltip"].Other == true,
@@ -435,12 +436,31 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 	end
 end
 
+function Module:FixTooltipBug()
+	if GameTooltip:IsShown() then
+		TOOLTOP_BUG = true
+	end
+end
+
+function Module:BAG_UPDATE_DELAYED()
+	if StuffingFrameBags and StuffingFrameBags:IsShown() then
+		if GameTooltip:IsShown() then
+			TOOLTOP_BUG = true
+		end
+	end
+end
+
 function Module:GameTooltip_OnTooltipCleared(tt)
 	if tt:IsForbidden() then
 		return
 	end
 
 	tt.itemCleared = nil
+
+	if TOOLTOP_BUG and tt:NumLines() == 0 then
+		tt:Hide()
+		TOOLTOP_BUG = false
+	end
 end
 
 function Module:GameTooltip_OnTooltipSetItem(tt)
@@ -759,6 +779,9 @@ function Module:OnEnable()
 	self:SecureHook(GameTooltip, "SetUnitBuff", "SetUnitAura")
 	self:SecureHook(GameTooltip, "SetUnitDebuff", "SetUnitAura")
 	self:SecureHookScript(GameTooltip, "OnTooltipSetSpell", "GameTooltip_OnTooltipSetSpell")
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR", "FixTooltipBug")
+	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltipBug")
+	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
 	for _, tt in pairs(QualityTooltips) do
 		tt:SetBackdrop(nil)
