@@ -113,5 +113,10 @@ function Module:MERCHANT_SHOW()
 end
 
 function Module:OnEnable()
+	-- Fix old database settings and force new ones if found as a boolean
+	if C["Inventory"].AutoRepair.Value == true or C["Inventory"].AutoRepair.Value == false then
+		C["Inventory"].AutoRepair.Value = "NONE" -- Just reset it to NONE and the user can set it.
+	end
+
 	self:RegisterEvent("MERCHANT_SHOW")
 end

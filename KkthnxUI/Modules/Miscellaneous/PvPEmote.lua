@@ -32,9 +32,9 @@ function Module:COMBAT_LOG_EVENT_UNFILTERED()
 	if (subEvent == "PARTY_KILL") and (sourceGUID == K.GUID) and (bit_band(destFlags, unitFilter) > 0) then
 		if alreadyHugged or select(4, GetAchievementInfo(247)) then
 			-- Fire off a random emote, to keep it interesting.
-			C_Timer.After(0.1, DoEmote(PVPEmotes[math_random(1, #PVPEmotes)], destName))
+			DoEmote(PVPEmotes[math_random(1, #PVPEmotes)], destName)
 		else
-			C_Timer.After(0.1, DoEmote("HUG", destName))
+			DoEmote("HUG", destName)
 			-- Set a flag indicating we have tried it once,
 			-- in case we're dealing with a bugged achievement.
 			-- No point spamming hug forever when the issue requires

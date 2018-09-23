@@ -39,7 +39,7 @@ Module.BarFrames = {
 	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
 	PossessBarFrame, PetActionBarFrame, EJMicroButtonAlert,
 	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
-	TalentMicroButtonAlert, CollectionsMicroButtonAlert
+	TalentMicroButtonAlert
 }
 
 function Module:IconIntroTracker_Toggle()
