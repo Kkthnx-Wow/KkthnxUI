@@ -11,7 +11,10 @@ KillBlizzy:RegisterEvent("PLAYER_LOGIN")
 KillBlizzy:RegisterEvent("ADDON_LOADED")
 KillBlizzy:SetScript("OnEvent", function(_, event)
 	if (event == "PLAYER_LOGIN") then
+		local UIHider = K.UIFrameHider
+
 		if (C["Raid"].Enable) then
+
 			InterfaceOptionsFrameCategoriesButton10:SetHeight(0.00001)
 			InterfaceOptionsFrameCategoriesButton10:SetAlpha(0)
 
@@ -31,13 +34,19 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 				local PetHealth = _G["PartyMemberFrame" .. i .."PetFrame" .. "HealthBar"]
 
 				PartyMember:UnregisterAllEvents()
-				PartyMember:SetParent(K.UIFrameHider)
+				PartyMember:SetParent(UIHider)
 				PartyMember:Hide()
-				Health:UnregisterAllEvents()
-				Power:UnregisterAllEvents()
+
+				if Health then
+					Health:UnregisterAllEvents()
+				end
+
+				if Power then
+					Power:UnregisterAllEvents()
+				end
 
 				Pet:UnregisterAllEvents()
-				Pet:SetParent(K.UIFrameHider)
+				Pet:SetParent(UIHider)
 				PetHealth:UnregisterAllEvents()
 
 				HidePartyFrame()
@@ -68,7 +77,7 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 			end
 
 			if (PartyMemberBackground) then
-				PartyMemberBackground:SetParent(K.UIFrameHide)
+				PartyMemberBackground:SetParent(UIHider)
 				PartyMemberBackground:Hide()
 				PartyMemberBackground:SetAlpha(0)
 			end
@@ -82,68 +91,6 @@ KillBlizzy:SetScript("OnEvent", function(_, event)
 		if (C["ActionBar"].Cooldowns) then
 			SetCVar("countdownForCooldowns", 0)
 			K.KillMenuOption(true, "InterfaceOptionsActionBarsPanelCountdownCooldowns")
-		end
-
-		if (C["General"].DisableTutorialButtons) then
-			BagHelpBox:UnregisterAllEvents()
-			BagHelpBox:SetParent(K.UIFrameHider)
-			BagHelpBox:Hide()
-
-			HelpOpenTicketButtonTutorial:UnregisterAllEvents()
-			HelpOpenTicketButtonTutorial:SetParent(K.UIFrameHider)
-			HelpOpenTicketButtonTutorial:Hide()
-
-			PremadeGroupsPvETutorialAlert:UnregisterAllEvents()
-			PremadeGroupsPvETutorialAlert:SetParent(K.UIFrameHider)
-			PremadeGroupsPvETutorialAlert:Hide()
-
-			ReagentBankHelpBox:UnregisterAllEvents()
-			ReagentBankHelpBox:SetParent(K.UIFrameHider)
-			ReagentBankHelpBox:Hide()
-
-			TutorialFrameAlertButton:UnregisterAllEvents()
-			TutorialFrameAlertButton:SetParent(K.UIFrameHider)
-			TutorialFrameAlertButton:Hide()
-
-			SpellBookFrameTutorialButton:UnregisterAllEvents()
-			SpellBookFrameTutorialButton:SetParent(K.UIFrameHider)
-			SpellBookFrameTutorialButton:Hide()
-
-			WorldMapFrame.BorderFrame.Tutorial:UnregisterAllEvents()
-			WorldMapFrame.BorderFrame.Tutorial:SetParent(K.UIFrameHider)
-			WorldMapFrame.BorderFrame.Tutorial:Hide()
-
-			if PetJournalTutorialButton then
-				PetJournalTutorialButton:UnregisterAllEvents()
-				PetJournalTutorialButton:SetParent(K.UIFrameHider)
-				PetJournalTutorialButton:Hide()
-			end
-
-			HelpPlate:UnregisterAllEvents()
-			HelpPlate:SetParent(K.UIFrameHider)
-			HelpPlate:Hide()
-
-			HelpPlateTooltip:UnregisterAllEvents()
-			HelpPlateTooltip:SetParent(K.UIFrameHider)
-			HelpPlateTooltip:Hide()
-
-			PaperDollItemsFrame.UnspentAzeriteHelpBox:UnregisterAllEvents()
-			PaperDollItemsFrame.UnspentAzeriteHelpBox:SetParent(K.UIFrameHider)
-			PaperDollItemsFrame.UnspentAzeriteHelpBox:Hide()
-
-			if (PlayerTalentFrame) then
-				PlayerTalentFrameSpecializationTutorialButton:UnregisterAllEvents()
-				PlayerTalentFrameSpecializationTutorialButton:SetParent(K.UIFrameHider)
-				PlayerTalentFrameSpecializationTutorialButton:Hide()
-
-				PlayerTalentFrameTalentsTutorialButton:UnregisterAllEvents()
-				PlayerTalentFrameTalentsTutorialButton:SetParent(K.UIFrameHider)
-				PlayerTalentFrameTalentsTutorialButton:Hide()
-
-				PlayerTalentFramePetSpecializationTutorialButton:UnregisterAllEvents()
-				PlayerTalentFramePetSpecializationTutorialButton:SetParent(K.UIFrameHider)
-				PlayerTalentFramePetSpecializationTutorialButton:Hide()
-			end
 		end
 
 		if (C["ActionBar"].Enable) then

@@ -171,17 +171,5 @@ function Module:OnEnable()
 	self:MainMenuMicroButton_SetNormal()
 	self:UpdateMicroPositionDimensions()
 
-	-- With this method we might don't taint anything. Instead of using :Kill()
-	MainMenuBarPerformanceBar:SetAlpha(0)
-	MainMenuBarPerformanceBar:SetScale(0.00001)
-
-	CollectionsMicroButtonAlert:EnableMouse(false)
-	CollectionsMicroButtonAlert:SetAlpha(0)
-	CollectionsMicroButtonAlert:SetScale(0.00001)
-
-	CharacterMicroButtonAlert:EnableMouse(false)
-	CharacterMicroButtonAlert:SetAlpha(0)
-	CharacterMicroButtonAlert:SetScale(0.00001)
-
 	K.Movers:RegisterFrame(microBar)
 end

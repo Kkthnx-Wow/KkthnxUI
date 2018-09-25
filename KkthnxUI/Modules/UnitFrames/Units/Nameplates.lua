@@ -371,7 +371,7 @@ function Module:CreateNameplates()
 
 		-- Threat Plate PostUpdate Function
 		self.Health.PostUpdate = function()
-			Module.ThreatPlate(self, true)
+			Module.ThreatPlate(self)
 		end
 	end
 end

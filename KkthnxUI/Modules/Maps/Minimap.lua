@@ -14,6 +14,10 @@ local GuildInstanceDifficulty = _G.GuildInstanceDifficulty
 local hooksecurefunc = _G.hooksecurefunc
 local InCombatLockdown = _G.InCombatLockdown
 local Minimap = _G.Minimap
+local MiniMapChallengeMode = _G.MiniMapChallengeMode
+local MiniMapInstanceDifficulty = _G.MiniMapInstanceDifficulty
+local MiniMapMailFrame = _G.MiniMapMailFrame
+local QueueStatusMinimapButton = _G.QueueStatusMinimapButton
 local UIParent = _G.UIParent
 
 function Module:GetLocTextColor()
@@ -37,9 +41,8 @@ end
 
 function Module:ADDON_LOADED(_, addon)
 	if addon == "Blizzard_TimeManager" then
-		TimeManagerClockButton:Kill()
-	elseif addon == "Blizzard_FeedbackUI" then
-		FeedbackUIButton:Kill()
+		TimeManagerClockButton:SetParent(K.UIFrameHider)
+		TimeManagerClockButton:UnregisterAllEvents()
 	end
 end
 
@@ -51,7 +54,7 @@ function Module:Minimap_OnMouseWheel(d)
 	end
 end
 
-function Module:Update_ZoneText()
+function Module:ZoneTextUpdate()
 	if not C["Minimap"].Enable then
 		return
 	end
@@ -186,10 +189,13 @@ end
 
 function Module:OnInitialize()
 	self:UpdateSettings()
+
 	if not C["Minimap"].Enable then
 		Minimap:SetMaskTexture("Textures\\MinimapMask")
 		return
 	end
+
+	local UIHider = K.UIFrameHider
 
 	-- Support for other mods
 	function GetMinimapShape()
@@ -233,38 +239,46 @@ function Module:OnInitialize()
 	Minimap.location:SetJustifyV("MIDDLE")
 	Minimap.location:Hide()
 
-	MinimapBorder:Hide()
-	MinimapBorderTop:Hide()
-	MinimapZoomIn:Hide()
-	MinimapZoomOut:Hide()
-	MinimapNorthTag:Kill()
-	MinimapZoneTextButton:Hide()
-	MiniMapTracking:Hide()
-	MiniMapMailBorder:Hide()
+	-- New dungeon finder eye in MoP
+	QueueStatusMinimapButton:SetHighlightTexture("")
+	if QueueStatusMinimapButton.Highlight then -- bugged out in MoP
+		QueueStatusMinimapButton.Highlight:SetTexture(nil)
+		QueueStatusMinimapButton.Highlight:SetAlpha(0)
+	end
+
+	_G.MinimapBorder:SetParent(UIHider)
+	_G.MinimapBorderTop:SetParent(UIHider)
+	_G.MiniMapMailBorder:SetParent(UIHider)
+	_G.MinimapNorthTag:SetParent(UIHider)
+	_G.MiniMapTracking:SetParent(UIHider)
+	_G.MiniMapTrackingButton:SetParent(UIHider)
+	_G.MinimapZoneTextButton:SetParent(UIHider)
+	_G.MinimapZoomIn:SetParent(UIHider)
+	_G.MinimapZoomOut:SetParent(UIHider)
 	MiniMapMailIcon:SetTexture("Interface\\Addons\\KkthnxUI\\Media\\Textures\\Mail")
 
 	-- Hide the BlopRing on Minimap
 	Minimap:SetArchBlobRingScalar(0)
 	Minimap:SetQuestBlobRingScalar(0)
 
-	QueueStatusMinimapButtonBorder:Hide()
-	QueueStatusFrame:SetClampedToScreen(true)
+	if QueueStatusMinimapButtonBorder then
+		QueueStatusMinimapButtonBorder:SetTexture(nil)
+		QueueStatusMinimapButtonBorder:SetAlpha(0)
+	end
 
-	MiniMapWorldMapButton:Hide()
+	_G.MiniMapWorldMapButton:SetParent(K.UIFrameHider)
 
 	MiniMapInstanceDifficulty:SetParent(Minimap)
 	GuildInstanceDifficulty:SetParent(Minimap)
 	MiniMapChallengeMode:SetParent(Minimap)
 
 	if TimeManagerClockButton then
-		TimeManagerClockButton:Kill()
+		TimeManagerClockButton:SetParent(K.UIFrameHider)
+		TimeManagerClockButton:UnregisterAllEvents()
 	end
 
-	if FeedbackUIButton then
-		FeedbackUIButton:Kill()
-	end
+	K.Movers:RegisterFrame(MMHolder)
 
-	K["Movers"]:RegisterFrame(MMHolder)
 	MinimapBackdrop:SetMovable(true)
 	MinimapBackdrop:SetUserPlaced(true)
 	MinimapBackdrop:SetParent(Minimap)
@@ -280,10 +294,11 @@ function Module:OnInitialize()
 	Minimap:EnableMouseWheel(true)
 	Minimap:SetScript("OnMouseWheel", Module.Minimap_OnMouseWheel)
 
-	self:RegisterEvent("PLAYER_ENTERING_WORLD", "Update_ZoneText")
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "Update_ZoneText")
-	self:RegisterEvent("ZONE_CHANGED", "Update_ZoneText")
-	self:RegisterEvent("ZONE_CHANGED_INDOORS", "Update_ZoneText")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD", "ZoneTextUpdate")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ZoneTextUpdate")
+	self:RegisterEvent("ZONE_CHANGED", "ZoneTextUpdate")
+	self:RegisterEvent("ZONE_CHANGED_INDOORS", "ZoneTextUpdate")
 	self:RegisterEvent("ADDON_LOADED")
+
 	self:UpdateSettings()
 end

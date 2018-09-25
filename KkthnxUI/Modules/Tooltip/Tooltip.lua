@@ -111,8 +111,8 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (not GameTooltipStatusBar.anchoredToTop and GameTooltipStatusBar) then
 			GameTooltipStatusBar:ClearAllPoints()
-			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
-			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
+			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
+			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
 			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
 			GameTooltipStatusBar.anchoredToTop = true
 		end
@@ -623,7 +623,7 @@ function Module:SetStyle(tt)
 		return
 	end
 
-	tt:CreateBorder(nil, 6, 2)
+	tt:CreateBorder()
 
 	local r, g, b = tt:GetBackdropColor()
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])
@@ -785,6 +785,7 @@ function Module:OnEnable()
 	GameTooltipAnchor:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMRIGHT", -4, 4)
 	GameTooltipAnchor:SetSize(130, 20)
 	GameTooltipAnchor:SetFrameLevel(GameTooltipAnchor:GetFrameLevel() + 400)
+
 	K.Movers:RegisterFrame(GameTooltipAnchor)
 
 	self:SecureHook("GameTooltip_SetDefaultAnchor")

@@ -145,7 +145,7 @@ local function UpdateBlizzardFonts()
 				msg:SetFormattedText("%.2f / %.2f", equip, total)
 			end
 		else
-			msg:SetFormattedText("|cffffeeaa%s|r", _G.NONE)
+			msg:SetFormattedText("%s", _G.NONE)
 		end
 	end)
 

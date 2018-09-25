@@ -87,59 +87,60 @@ function K.SetFontString(parent, fontName, fontSize, fontStyle, justify)
 	return fontString
 end
 
-local shortValueDec
+local shortValueDec, value
 function K.ShortValue(v)
 	shortValueDec = string_format("%%.%df", C["Unitframe"].DecimalLength or 1)
+	value = math_abs(v)
 	if C["Unitframe"].NumberPrefixStyle.Value == "METRIC" then
-		if math_abs(v) >= 1e12 then
+		if value >= 1e12 then
 			return string_format(shortValueDec.."T", v / 1e12)
-		elseif math_abs(v) >= 1e9 then
+		elseif value >= 1e9 then
 			return string_format(shortValueDec.."G", v / 1e9)
-		elseif math_abs(v) >= 1e6 then
+		elseif value >= 1e6 then
 			return string_format(shortValueDec.."M", v / 1e6)
-		elseif math_abs(v) >= 1e3 then
+		elseif value >= 1e3 then
 			return string_format(shortValueDec.."k", v / 1e3)
 		else
 			return string_format("%.0f", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "CHINESE" then
-		if math_abs(v) >= 1e8 then
+		if value >= 1e8 then
 			return string_format(shortValueDec.."Y", v / 1e8)
-		elseif math_abs(v) >= 1e4 then
+		elseif value >= 1e4 then
 			return string_format(shortValueDec.."W", v / 1e4)
 		else
 			return string_format("%.0f", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "KOREAN" then
-		if math_abs(v) >= 1e8 then
+		if value >= 1e8 then
 			return string_format(shortValueDec.."억", v / 1e8)
-		elseif math_abs(v) >= 1e4 then
+		elseif value >= 1e4 then
 			return string_format(shortValueDec.."만", v / 1e4)
-		elseif math_abs(v) >= 1e3 then
+		elseif value >= 1e3 then
 			return string_format(shortValueDec.."천", v / 1e3)
 		else
 			return string_format("%.0f", v)
 		end
 	elseif C["Unitframe"].NumberPrefixStyle.Value == "GERMAN" then
-		if math_abs(v) >= 1e12 then
+		if value >= 1e12 then
 			return string_format(shortValueDec.."Bio", v / 1e12)
-		elseif math_abs(v) >= 1e9 then
+		elseif value >= 1e9 then
 			return string_format(shortValueDec.."Mrd", v / 1e9)
-		elseif math_abs(v) >= 1e6 then
+		elseif value >= 1e6 then
 			return string_format(shortValueDec.."Mio", v / 1e6)
-		elseif math_abs(v) >= 1e3 then
+		elseif value >= 1e3 then
 			return string_format(shortValueDec.."Tsd", v / 1e3)
 		else
 			return string_format("%.0f", v)
 		end
 	else
-		if math_abs(v) >= 1e12 then
+		if value >= 1e12 then
 			return string_format(shortValueDec.."T", v / 1e12)
-		elseif math_abs(v) >= 1e9 then
+		elseif value >= 1e9 then
 			return string_format(shortValueDec.."B", v / 1e9)
-		elseif math_abs(v) >= 1e6 then
+		elseif value >= 1e6 then
 			return string_format(shortValueDec.."M", v / 1e6)
-		elseif math_abs(v) >= 1e3 then
+		elseif value >= 1e3 then
 			return string_format(shortValueDec.."K", v / 1e3)
 		else
 			return string_format("%s", v)

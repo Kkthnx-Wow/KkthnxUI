@@ -323,14 +323,22 @@ function Module:OnInitialize()
         return
     end
 
-    BuffFrame:SetScript("OnLoad", nil)
-    BuffFrame:SetScript("OnUpdate", nil)
-    BuffFrame:SetScript("OnEvent", nil)
-    BuffFrame:SetParent(K["UIFrameHider"])
-    BuffFrame:UnregisterAllEvents()
+    local UIHider = K.UIFrameHider
+    local BuffFrame = _G.BuffFrame
+	local TemporaryEnchantFrame = _G.TemporaryEnchantFrame
 
-    TemporaryEnchantFrame:SetScript("OnUpdate", nil)
-    TemporaryEnchantFrame:SetParent(K["UIFrameHider"])
+	BuffFrame:SetScript("OnLoad", nil)
+	BuffFrame:SetScript("OnUpdate", nil)
+	BuffFrame:SetScript("OnEvent", nil)
+	BuffFrame:SetParent(UIHider)
+	BuffFrame:UnregisterAllEvents()
+
+	TemporaryEnchantFrame:SetScript("OnUpdate", nil)
+	TemporaryEnchantFrame:SetParent(UIHider)
+
+	PlayerBuffTimerManager:SetParent(UIHider)
+	PlayerBuffTimerManager:SetScript("OnEvent", nil)
+	PlayerBuffTimerManager:UnregisterAllEvents()
 
     K.KillMenuPanel(12, "InterfaceOptionsFrameCategoriesButton")
 

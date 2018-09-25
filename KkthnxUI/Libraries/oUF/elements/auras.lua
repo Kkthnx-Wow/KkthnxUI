@@ -193,7 +193,7 @@ local function updateIcon(element, unit, index, offset, filter, isDebuff, visibl
 			-- complicated.
 			if(button.cd and not element.disableCooldown) then
 				if(duration and duration > 0) then
-					button.cd:SetCooldown(1, expiration - 1)
+					button.cd:SetCooldown(expiration - duration, duration)
 					button.cd:Show()
 				else
 					button.cd:Hide()

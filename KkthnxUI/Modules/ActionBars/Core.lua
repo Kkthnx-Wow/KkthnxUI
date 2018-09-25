@@ -31,16 +31,6 @@ local PossessBarFrame = _G.PossessBarFrame
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local SetDesaturation = _G.SetDesaturation
-local ShapeshiftBarLeft = _G.ShapeshiftBarLeft
-local ShapeshiftBarMiddle = _G.ShapeshiftBarMiddle
-local ShapeshiftBarRight = _G.ShapeshiftBarRight
-
-Module.BarFrames = {
-	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
-	PossessBarFrame, PetActionBarFrame, EJMicroButtonAlert,
-	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
-	TalentMicroButtonAlert
-}
 
 function Module:IconIntroTracker_Toggle()
 	if C["ActionBar"].AddNewSpells then
@@ -69,25 +59,87 @@ function Module:DisableBlizzard()
 		return 999999999
 	end
 
-	for _, frame in pairs(Module.BarFrames) do
-		frame:UnregisterAllEvents()
-		frame.ignoreFramePositionManager = true
-		frame:SetParent(Hider)
+	MainMenuBar:EnableMouse(false)
+	MainMenuBar:UnregisterEvent("DISPLAY_SIZE_CHANGED")
+	MainMenuBar:UnregisterEvent("UI_SCALE_CHANGED")
+	MainMenuBar.slideOut:GetAnimations():SetOffset(0, 0)
+
+	MainMenuBarArtFrame:UnregisterAllEvents()
+	MainMenuBarArtFrame:Hide()
+	MainMenuBarArtFrame:SetParent(Hider)
+
+	StatusTrackingBarManager:Hide()
+
+	-- If I'm not hiding this, it will become visible (though transparent)
+	-- and cover our own custom vehicle/possess action bar.
+	OverrideActionBar:SetParent(Hider)
+	OverrideActionBar:EnableMouse(false)
+	OverrideActionBar:UnregisterAllEvents()
+	OverrideActionBar:Hide()
+	OverrideActionBar:SetAlpha(0)
+
+	PossessBarFrame:Hide()
+	PossessBarFrame:SetParent(Hider)
+
+	PetActionBarFrame:UnregisterAllEvents()
+	PetActionBarFrame:SetParent(Hider)
+	PetActionBarFrame:Hide()
+
+	PetActionBarFrame:UnregisterAllEvents()
+	PetActionBarFrame:SetParent(Hider)
+	PetActionBarFrame:Hide()
+
+	EJMicroButtonAlert:UnregisterAllEvents()
+	EJMicroButtonAlert:SetParent(Hider)
+	EJMicroButtonAlert:Hide()
+
+	LFDMicroButtonAlert:UnregisterAllEvents()
+	LFDMicroButtonAlert:SetParent(Hider)
+	LFDMicroButtonAlert:Hide()
+
+	TutorialFrameAlertButton:UnregisterAllEvents()
+	TutorialFrameAlertButton:Hide()
+
+	TalentMicroButtonAlert:UnregisterAllEvents()
+	TalentMicroButtonAlert:SetParent(Hider)
+
+	MainMenuBarPerformanceBar:Hide()
+	MainMenuBarPerformanceBar:SetParent(Hider)
+
+	MicroButtonAndBagsBar:Hide()
+	MicroButtonAndBagsBar:SetParent(Hider)
+
+	CollectionsMicroButtonAlert:UnregisterAllEvents()
+	CollectionsMicroButtonAlert:SetParent(Hider)
+	CollectionsMicroButtonAlert:Hide()
+
+	CharacterMicroButtonAlert:UnregisterAllEvents()
+	CharacterMicroButtonAlert:SetParent(Hider)
+	CharacterMicroButtonAlert:Hide()
+
+	FramerateLabel:SetParent(Hider)
+	FramerateText:SetParent(Hider)
+
+	UIPARENT_MANAGED_FRAME_POSITIONS["MainMenuBar"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MULTICASTACTIONBAR_YPOS"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["MultiCastActionBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["PossessBarFrame"] = nil
+	UIPARENT_MANAGED_FRAME_POSITIONS["StanceBarFrame"] = nil
+
+	for i = 1,6 do
+		_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
+		_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
+		_G["OverrideActionBarButton"..i]:EnableMouse(false) -- just in case it's still there
 	end
+	OverrideActionBar.slideOut:GetAnimations():SetOffset(0, 0)
 
-	for i = 1, 6 do
-		local Button = _G["OverrideActionBarButton"..i]
-
-		Button:UnregisterAllEvents()
-		Button:SetAttribute("statehidden", true)
-	end
-
-	hooksecurefunc("TalentFrame_LoadUI", function()
-		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-	end)
-
-	MainMenuBar.slideOut.IsPlaying = function()
-		return true
+	if _G.PlayerTalentFrame then
+		_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	else
+		hooksecurefunc("TalentFrame_LoadUI", function()
+			_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		end)
 	end
 
 	-- Avoid Hiding Buttons on open/close spellbook
@@ -403,8 +455,8 @@ end
 --end
 
 if C["ActionBar"].Enable ~= true then
-		return
-	end
+	return
+end
 
 Module:RegisterEvent("PLAYER_LOGIN", "DisableBlizzard")
 Module:RegisterEvent("PLAYER_ENTERING_WORLD", "GridToggle")
