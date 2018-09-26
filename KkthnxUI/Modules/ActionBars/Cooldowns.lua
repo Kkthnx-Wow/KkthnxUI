@@ -4,11 +4,14 @@ if K.CheckAddOnState("OmniCC") or K.CheckAddOnState("ncCooldown") or K.CheckAddO
 end
 
 local _G = _G
-local format = string.format
 local floor = math.floor
+local select = select
 
 local tonumber = tonumber
 local GetTime = _G.GetTime
+local GetActionCooldown = _G.GetActionCooldown
+local GetActionCharges = _G.GetActionCharges
+local CreateFrame = _G.CreateFrame
 
 OmniCC = true
 local ICON_SIZE = 36
@@ -37,13 +40,13 @@ local function GetFormattedTime(s)
 			return EXPIRING_FORMAT, s, .051
 		end
 	elseif s < HOURISH then
-		local minutes = tonumber(K.Round(s/MINUTE))
+		local minutes = tonumber(K.Round(s / MINUTE))
 		return MINUTES_FORMAT, minutes, minutes > 1 and (s - (minutes*MINUTE - HALFMINUTEISH)) or (s - MINUTEISH)
 	elseif s < DAYISH then
-		local hours = tonumber(K.Round(s/HOUR))
+		local hours = tonumber(K.Round(s / HOUR))
 		return HOURS_FORMAT, hours, hours > 1 and (s - (hours * HOUR - HALFHOURISH)) or (s - HOURISH)
 	else
-		local days = tonumber(K.Round(s/DAY))
+		local days = tonumber(K.Round(s / DAY))
 		return DAYS_FORMAT, days, days > 1 and (s - (days * DAY - HALFDAYISH)) or (s - DAYISH)
 	end
 end

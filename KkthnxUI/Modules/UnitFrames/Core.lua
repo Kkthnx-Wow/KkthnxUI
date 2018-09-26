@@ -232,39 +232,36 @@ function Module:ThreatPlate(--[[forced--]])
 						end
 					end
 				end
-			--elseif not forced then
-			--	health:ForceUpdate()
 			end
 		end
 	end
 end
 
 function Module:HighlightPlate()
-	local Shadow = self.Health.Shadow
-
-	if UnitIsPlayer(self.unit) then
-		return
-	end
-
+	local shadow = self.Health.Shadow
 	local unit = self.unit
-	if (UnitIsUnit("target", self.unit)) then
-		local reaction = UnitReaction(unit, "player")
-		if UnitIsPlayer(unit) then
+	local isPlayer = unit and UnitIsPlayer(unit)
+	local reaction = unit and UnitReaction(unit, "player")
+
+	if UnitIsUnit(unit, "target") then
+		if isPlayer then
 			local _, class = UnitClass(unit)
 			if class then
 				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-				Shadow:SetBackdropBorderColor(color.r, color.g, color.b)
-			else
-				Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+				if color then
+					shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8, 1)
+				end
 			end
 		elseif reaction then
 			local color = FACTION_BAR_COLORS[reaction]
-			Shadow:SetBackdropBorderColor(color.r, color.g, color.b)
+			if color then
+				shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8, 1)
+			end
 		else
-			Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+			shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		end
 	else
-		Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+		shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 	end
 end
 

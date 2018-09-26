@@ -195,8 +195,8 @@ function Module:CreateParty()
 	if (C["Party"].TargetHighlight) then
 		self.TargetHighlight = self:CreateTexture("$parentHighlight", "ARTWORK", nil, 1)
 		self.TargetHighlight:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]])
-		self.TargetHighlight:SetPoint("TOPLEFT", self.Name, -7, 7)
-		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Name, 7, -7)
+		self.TargetHighlight:SetPoint("TOPLEFT", self.Name, -8, 8)
+		self.TargetHighlight:SetPoint("BOTTOMRIGHT", self.Name, 8, -8)
 		self.TargetHighlight:Hide()
 
 		local function UpdatePartyTargetGlow()
@@ -205,21 +205,30 @@ function Module:CreateParty()
 			end
 
 			local unit = self.unit
-			if (UnitIsUnit("target", self.unit)) then
+			local isPlayer = unit and UnitIsPlayer(unit)
+			local reaction = unit and UnitReaction(unit, "player")
+
+			if UnitIsUnit(unit, "target") then
 				if not self.TargetHighlight:IsShown() then
 					self.TargetHighlight:Show()
 				end
-
-				local reaction = UnitReaction(unit, "player")
-				if UnitIsPlayer(unit) then
+				if isPlayer then
 					local _, class = UnitClass(unit)
 					if class then
 						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-						self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+						if color then
+							self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+						end
 					end
 				elseif reaction then
 					local color = FACTION_BAR_COLORS[reaction]
-					self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+					if color then
+						self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+					end
+				else
+					if self.TargetHighlight:IsShown() then
+						self.TargetHighlight:Hide()
+					end
 				end
 			else
 				if self.TargetHighlight:IsShown() then
@@ -229,6 +238,7 @@ function Module:CreateParty()
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow) -- Watch this.
 	end
 
 	Module.CreateAuras(self, "party")

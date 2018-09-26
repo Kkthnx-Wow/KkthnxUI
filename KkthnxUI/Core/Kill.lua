@@ -6,10 +6,10 @@ local SetCVar = _G.SetCVar
 local SetInsertItemsLeftToRight = _G.SetInsertItemsLeftToRight
 local SetSortBagsRightToLeft = _G.SetSortBagsRightToLeft
 
-local KillBlizzy = CreateFrame("Frame")
-KillBlizzy:RegisterEvent("PLAYER_LOGIN")
-KillBlizzy:RegisterEvent("ADDON_LOADED")
-KillBlizzy:SetScript("OnEvent", function(_, event)
+local UnloadBlizzardFrames = CreateFrame("Frame")
+UnloadBlizzardFrames:RegisterEvent("PLAYER_LOGIN")
+UnloadBlizzardFrames:RegisterEvent("ADDON_LOADED")
+UnloadBlizzardFrames:SetScript("OnEvent", function(_, event)
 	if (event == "PLAYER_LOGIN") then
 		local UIHider = K.UIFrameHider
 

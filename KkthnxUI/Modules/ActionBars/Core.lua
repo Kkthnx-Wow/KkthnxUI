@@ -117,15 +117,11 @@ function Module:DisableBlizzard()
 	CharacterMicroButtonAlert:SetParent(Hider)
 	CharacterMicroButtonAlert:Hide()
 
+	MainMenuBarVehicleLeaveButton:UnregisterAllEvents()
+	MainMenuBarVehicleLeaveButton:SetParent(UIHider)
+
 	FramerateLabel:SetParent(Hider)
 	FramerateText:SetParent(Hider)
-
-	UIPARENT_MANAGED_FRAME_POSITIONS["MainMenuBar"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MULTICASTACTIONBAR_YPOS"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["MultiCastActionBarFrame"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["PETACTIONBAR_YPOS"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["PossessBarFrame"] = nil
-	UIPARENT_MANAGED_FRAME_POSITIONS["StanceBarFrame"] = nil
 
 	for i = 1,6 do
 		_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
@@ -444,15 +440,6 @@ if (C["ActionBar"].RightMouseover == true and C["ActionBar"].PetBarHorizontal ==
 		EventPetSpiral:UnregisterEvent("PET_BAR_UPDATE_COOLDOWN")
 	end)
 end
-
---function Module:OnEnable()
---	if C["ActionBar"].Enable ~= true then
---		return
---	end
-
---	self:RegisterEvent("PLAYER_LOGIN", "DisableBlizzard")
---	self:RegisterEvent("PLAYER_ENTERING_WORLD", "GridToggle")
---end
 
 if C["ActionBar"].Enable ~= true then
 	return

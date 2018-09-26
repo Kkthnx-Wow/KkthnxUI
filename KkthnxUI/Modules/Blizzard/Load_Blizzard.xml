@@ -10,6 +10,7 @@
     <Script file="ErrorFilter.lua"/>
     <Script file="Fonts.lua"/>
     <Script file="MirrorBars.lua"/>
+    <Script file="NoTutorials.lua"/>
     <Script file="ObjectiveFrame.lua"/>
     <Script file="RaidUtility.lua"/>
     <Script file="TalkingHeadFrame.lua"/>

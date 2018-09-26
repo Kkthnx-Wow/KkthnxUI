@@ -232,29 +232,40 @@ function Module:CreateRaid()
 			end
 
 			local unit = self.unit
-			if (UnitIsUnit("target", self.unit)) then
-				self.TargetHighlight:Show()
-				local reaction = UnitReaction(unit, "player")
-				if UnitIsPlayer(unit) then
+			local isPlayer = unit and UnitIsPlayer(unit)
+			local reaction = unit and UnitReaction(unit, "player")
+
+			if UnitIsUnit(unit, "target") then
+				if not self.TargetHighlight:IsShown() then
+					self.TargetHighlight:Show()
+				end
+				if isPlayer then
 					local _, class = UnitClass(unit)
 					if class then
 						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-						self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
-					else
-						self.TargetHighlight:SetBackdropBorderColor()
+						if color then
+							self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b, 1)
+						end
 					end
 				elseif reaction then
 					local color = FACTION_BAR_COLORS[reaction]
-					self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b)
+					if color then
+						self.TargetHighlight:SetBackdropBorderColor(color.r, color.g, color.b, 1)
+					end
 				else
-					self.TargetHighlight:SetBackdropBorderColor()
+					if self.TargetHighlight:IsShown() then
+						self.TargetHighlight:Hide()
+					end
 				end
 			else
-				self.TargetHighlight:Hide()
+				if self.TargetHighlight:IsShown() then
+					self.TargetHighlight:Hide()
+				end
 			end
 		end
 
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow) -- Watch this.
 	end
 
 	Module.CreateDebuffHighlight(self)
