@@ -5,14 +5,18 @@ end
 
 local _G = _G
 
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
+
 local ActionBar4 = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar4:SetAllPoints(RightActionBarAnchor)
 MultiBarRight:SetParent(ActionBar4)
 
-for i = 1, 12 do
+for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarRightButton" .. i]
 	local b2 = _G["MultiBarRightButton" .. i - 1]
 	b:ClearAllPoints()
+	b.noGrid = false
+	b:SetAttribute("showgrid", 1)
 	if i == 1 then
 		b:SetPoint("TOPRIGHT", RightActionBarAnchor, "TOPRIGHT", 0, 0)
 	else
@@ -26,7 +30,7 @@ end
 
 -- Mouseover bar
 if C["ActionBar"].RightMouseover == true then
-	for i = 1, 12 do
+	for i = 1, NUM_ACTIONBAR_BUTTONS do
 		local b = _G["MultiBarRightButton"..i]
 		b:SetAlpha(0)
 		b:HookScript("OnEnter", function()

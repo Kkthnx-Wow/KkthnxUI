@@ -6,14 +6,18 @@ end
 -- Lua API
 local _G = _G
 
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
+
 local ActionBar3 = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
 ActionBar3:SetAllPoints(RightActionBarAnchor)
 MultiBarLeft:SetParent(ActionBar3)
 
-for i = 1, 12 do
+for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarLeftButton"..i]
 	local b2 = _G["MultiBarLeftButton"..i-1]
 	b:ClearAllPoints()
+	b.noGrid = false
+	b:SetAttribute("showgrid", 1)
 	if i == 1 then
 		if C["ActionBar"].RightBars == 3 then
 			b:SetPoint("TOP", RightActionBarAnchor, "TOP", 0, 0)
@@ -31,7 +35,7 @@ end
 
 -- Mouseover bar
 if C["ActionBar"].RightMouseover == true then
-	for i = 1, 12 do
+	for i = 1, NUM_ACTIONBAR_BUTTONS do
 		local b = _G["MultiBarLeftButton"..i]
 		b:SetAlpha(0)
 		b:HookScript("OnEnter", function()

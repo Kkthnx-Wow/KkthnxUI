@@ -69,7 +69,7 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 end
 
 local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
-	if f.isCreateBorder and f.Backgrounds then
+	if f.Backgrounds then
 		return
 	end
 

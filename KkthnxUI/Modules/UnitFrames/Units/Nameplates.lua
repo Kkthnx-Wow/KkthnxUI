@@ -109,8 +109,6 @@ function Module:CreateNameplates()
 	self.Health:SetWidth(self:GetWidth())
 	self.Health:SetStatusBarTexture(NameplateTexture)
 	self.Health:CreateShadow(true)
-	self.Health:GetStatusBarTexture():SetHorizTile(false)
-	self.Health:GetStatusBarTexture():SetVertTile(false)
 
 	self.Health.frequentUpdates = true
 	self.Health.colorTapping = true
@@ -131,7 +129,6 @@ function Module:CreateNameplates()
 	self.Level:SetJustifyH("RIGHT")
 	self.Level:SetPoint("BOTTOMRIGHT", self.Health, "TOPRIGHT", 0, 4)
 	self.Level:SetFontObject(Font)
-	self.Level:SetFont(select(1, self.Level:GetFont()), 12, select(3, self.Level:GetFont()))
 	self:Tag(self.Level, "[KkthnxUI:DifficultyColor][KkthnxUI:SmartLevel][KkthnxUI:ClassificationColor][shortclassification]")
 
 	self.Name = self.Health:CreateFontString(nil, "OVERLAY")

@@ -20,6 +20,7 @@ local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
 local IsPetAttackAction = _G.IsPetAttackAction
 local MainMenuBar, MainMenuBarArtFrame = _G.MainMenuBar, _G.MainMenuBarArtFrame
+local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local OverrideActionBar = _G.OverrideActionBar
@@ -31,6 +32,15 @@ local PossessBarFrame = _G.PossessBarFrame
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local SetDesaturation = _G.SetDesaturation
+local PlayerTalentFrame = _G.PlayerTalentFrame
+
+local ActionBarFrames = {
+	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
+	PossessBarFrame, PetActionBarFrame, IconIntroTracker,
+	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
+	TalentMicroButtonAlert, CollectionsMicroButtonAlert, EJMicroButtonAlert,
+	LFDMicroButtonAlert, CharacterMicroButtonAlert
+}
 
 function Module:IconIntroTracker_Toggle()
 	if C["ActionBar"].AddNewSpells then
@@ -59,83 +69,31 @@ function Module:DisableBlizzard()
 		return 999999999
 	end
 
-	MainMenuBar:EnableMouse(false)
-	MainMenuBar:UnregisterEvent("DISPLAY_SIZE_CHANGED")
-	MainMenuBar:UnregisterEvent("UI_SCALE_CHANGED")
-	MainMenuBar.slideOut:GetAnimations():SetOffset(0, 0)
-
-	MainMenuBarArtFrame:UnregisterAllEvents()
-	MainMenuBarArtFrame:Hide()
-	MainMenuBarArtFrame:SetParent(Hider)
-
-	StatusTrackingBarManager:Hide()
-
-	-- If I'm not hiding this, it will become visible (though transparent)
-	-- and cover our own custom vehicle/possess action bar.
-	OverrideActionBar:SetParent(Hider)
-	OverrideActionBar:EnableMouse(false)
-	OverrideActionBar:UnregisterAllEvents()
-	OverrideActionBar:Hide()
-	OverrideActionBar:SetAlpha(0)
-
-	PossessBarFrame:Hide()
-	PossessBarFrame:SetParent(Hider)
-
-	PetActionBarFrame:UnregisterAllEvents()
-	PetActionBarFrame:SetParent(Hider)
-	PetActionBarFrame:Hide()
-
-	PetActionBarFrame:UnregisterAllEvents()
-	PetActionBarFrame:SetParent(Hider)
-	PetActionBarFrame:Hide()
-
-	EJMicroButtonAlert:UnregisterAllEvents()
-	EJMicroButtonAlert:SetParent(Hider)
-	EJMicroButtonAlert:Hide()
-
-	LFDMicroButtonAlert:UnregisterAllEvents()
-	LFDMicroButtonAlert:SetParent(Hider)
-	LFDMicroButtonAlert:Hide()
-
-	TutorialFrameAlertButton:UnregisterAllEvents()
-	TutorialFrameAlertButton:Hide()
-
-	TalentMicroButtonAlert:UnregisterAllEvents()
-	TalentMicroButtonAlert:SetParent(Hider)
-
-	MainMenuBarPerformanceBar:Hide()
-	MainMenuBarPerformanceBar:SetParent(Hider)
-
-	MicroButtonAndBagsBar:Hide()
-	MicroButtonAndBagsBar:SetParent(Hider)
-
-	CollectionsMicroButtonAlert:UnregisterAllEvents()
-	CollectionsMicroButtonAlert:SetParent(Hider)
-	CollectionsMicroButtonAlert:Hide()
-
-	CharacterMicroButtonAlert:UnregisterAllEvents()
-	CharacterMicroButtonAlert:SetParent(Hider)
-	CharacterMicroButtonAlert:Hide()
-
-	MainMenuBarVehicleLeaveButton:UnregisterAllEvents()
-	MainMenuBarVehicleLeaveButton:SetParent(UIHider)
-
-	FramerateLabel:SetParent(Hider)
-	FramerateText:SetParent(Hider)
-
-	for i = 1,6 do
-		_G["OverrideActionBarButton"..i]:UnregisterAllEvents()
-		_G["OverrideActionBarButton"..i]:SetAttribute("statehidden", true)
-		_G["OverrideActionBarButton"..i]:EnableMouse(false) -- just in case it's still there
+	for _, frame in pairs(ActionBarFrames) do
+		frame:UnregisterAllEvents()
+		frame.ignoreFramePositionManager = true
+		frame:SetParent(Hider)
 	end
-	OverrideActionBar.slideOut:GetAnimations():SetOffset(0, 0)
 
-	if _G.PlayerTalentFrame then
-		_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+	for i = 1, 6 do
+		local button = _G["OverrideActionBarButton"..i]
+
+		button:UnregisterAllEvents()
+		button:SetAttribute("statehidden", true)
+		button:SetAttribute("showgrid", 1)
+		button:EnableMouse(false) -- just in case it's still there
+	end
+
+	if PlayerTalentFrame then
+		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	else
 		hooksecurefunc("TalentFrame_LoadUI", function()
-			_G.PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 		end)
+	end
+
+	MainMenuBar.slideOut.IsPlaying = function()
+		return true
 	end
 
 	-- Avoid Hiding Buttons on open/close spellbook
@@ -146,7 +104,7 @@ function Module:DisableBlizzard()
 end
 
 function Module:GridToggle()
-	local IsInstalled = KkthnxUIData[GetRealmName()][UnitName("player")].InstallComplete
+	local IsInstalled = KkthnxUIData[_G.GetRealmName()][_G.UnitName("player")].InstallComplete
 
 	Module:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
@@ -160,30 +118,37 @@ function Module:GridToggle()
 
 	if C["ActionBar"].ShowGrid == true then
 		SetCVar("alwaysShowActionBars", 1)
-		for i = 1, 12 do
-			local button = _G[string_format("ActionButton%d", i)]
-			button.noGrid = nil
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
+			local button
+
+			button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)
+			button:SetAttribute("statehidden", true)
+			button:Show()
 			ActionButton_ShowGrid(button)
 
 			button = _G[string_format("MultiBarRightButton%d", i)]
-			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
+			button:SetAttribute("statehidden", true)
+			button:Show()
 			ActionButton_ShowGrid(button)
 
 			button = _G[string_format("MultiBarBottomRightButton%d", i)]
-			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
+			button:SetAttribute("statehidden", true)
+			button:Show()
 			ActionButton_ShowGrid(button)
 
 			button = _G[string_format("MultiBarLeftButton%d", i)]
-			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
+			button:SetAttribute("statehidden", true)
+			button:Show()
 			ActionButton_ShowGrid(button)
 
 			button = _G[string_format("MultiBarBottomLeftButton%d", i)]
-			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
+			button:SetAttribute("statehidden", true)
+			button:Show()
 			ActionButton_ShowGrid(button)
 		end
 	else
@@ -322,7 +287,7 @@ function RightBarMouseOver(alpha)
 
 	if C["ActionBar"].RightBars > 2 then
 		if MultiBarBottomRight:IsShown() then
-			for i = 1, 12 do
+			for i = 1, NUM_ACTIONBAR_BUTTONS do
 				local pb = _G["MultiBarBottomRightButton"..i]
 				pb:SetAlpha(alpha)
 				local d = _G["MultiBarBottomRightButton"..i.."Cooldown"]
@@ -334,7 +299,7 @@ function RightBarMouseOver(alpha)
 	end
 
 	if MultiBarRight:IsShown() then
-		for i = 1, 12 do
+		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local pb = _G["MultiBarRightButton"..i]
 			pb:SetAlpha(alpha)
 			local g = _G["MultiBarRightButton"..i.."Cooldown"]
