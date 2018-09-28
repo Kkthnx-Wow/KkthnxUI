@@ -171,5 +171,11 @@ function Module:OnEnable()
 	self:MainMenuMicroButton_SetNormal()
 	self:UpdateMicroPositionDimensions()
 
+	if MainMenuBarPerformanceBar then
+		MainMenuBarPerformanceBar:SetTexture(nil)
+		MainMenuBarPerformanceBar:SetVertexColor(0, 0, 0, 0)
+		MainMenuBarPerformanceBar:Hide()
+	end
+
 	K.Movers:RegisterFrame(microBar)
 end
