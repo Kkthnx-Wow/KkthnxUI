@@ -7,7 +7,6 @@ local assert = assert
 local CreateFrame = _G.CreateFrame
 local C_StorePublic_IsEnabled = _G.C_StorePublic.IsEnabled
 local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
-local InCombatLockdown = _G.InCombatLockdown
 
 local function onLeave()
 	if C["ActionBar"].MicroBarMouseover then

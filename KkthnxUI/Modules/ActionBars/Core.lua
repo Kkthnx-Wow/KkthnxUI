@@ -32,7 +32,6 @@ local PossessBarFrame = _G.PossessBarFrame
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local SetDesaturation = _G.SetDesaturation
-local PlayerTalentFrame = _G.PlayerTalentFrame
 
 local ActionBarFrames = {
 	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
