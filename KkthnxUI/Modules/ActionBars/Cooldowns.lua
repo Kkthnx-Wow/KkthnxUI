@@ -5,13 +5,15 @@ end
 
 local _G = _G
 local floor = math.floor
+local pairs = pairs
 local select = select
-
 local tonumber = tonumber
-local GetTime = _G.GetTime
-local GetActionCooldown = _G.GetActionCooldown
-local GetActionCharges = _G.GetActionCharges
+
 local CreateFrame = _G.CreateFrame
+local GetActionCharges = _G.GetActionCharges
+local GetActionCooldown = _G.GetActionCooldown
+local GetTime = _G.GetTime
+local hooksecurefunc = _G.hooksecurefunc
 
 OmniCC = true
 local ICON_SIZE = 36

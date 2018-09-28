@@ -4,7 +4,6 @@ local Module = K:NewModule("MicroBar", "AceHook-3.0", "AceEvent-3.0")
 local _G = _G
 local assert = assert
 
-local CreateFrame = _G.CreateFrame
 local C_StorePublic_IsEnabled = _G.C_StorePublic.IsEnabled
 local UpdateMicroButtonsParent = _G.UpdateMicroButtonsParent
 

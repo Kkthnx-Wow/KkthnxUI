@@ -8,12 +8,10 @@ local Module = K:NewModule("LeaveVehicle", "AceEvent-3.0")
 local _G = _G
 
 local CanExitVehicle = _G.CanExitVehicle
-local CreateFrame = _G.CreateFrame
 local GameTooltip_Hide = _G.GameTooltip_Hide
 local InCombatLockdown = _G.InCombatLockdown
 local MainMenuBarVehicleLeaveButton_OnEnter = _G.MainMenuBarVehicleLeaveButton_OnEnter
 local TaxiRequestEarlyLanding = _G.TaxiRequestEarlyLanding
-local UIParent = _G.UIParent
 local UnitOnTaxi = _G.UnitOnTaxi
 local VehicleExit = _G.VehicleExit
 
@@ -48,7 +46,10 @@ end
 
 function Module:UpdateVehicleLeave()
 	local button = LeaveVehicleButton
-	if not button then return end
+
+	if not button then
+		return
+	end
 
 	button:ClearAllPoints()
 	button:SetPoint("CENTER", VehicleButtonAnchor, "CENTER")

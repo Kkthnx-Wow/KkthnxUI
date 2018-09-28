@@ -11,7 +11,6 @@ local string_format = string.format
 local ActionButton_ShowGrid = _G.ActionButton_ShowGrid
 local AutoCastShine_AutoCastStart = _G.AutoCastShine_AutoCastStart
 local AutoCastShine_AutoCastStop = _G.AutoCastShine_AutoCastStop
-local CooldownFrame_Set = _G.CooldownFrame_Set
 local GetActionBarToggles = _G.GetActionBarToggles
 local GetNumShapeshiftForms = _G.GetNumShapeshiftForms
 local GetPetActionInfo = _G.GetPetActionInfo
@@ -19,16 +18,13 @@ local GetPetActionSlotUsable = _G.GetPetActionSlotUsable
 local GetShapeshiftFormCooldown = _G.GetShapeshiftFormCooldown
 local GetShapeshiftFormInfo = _G.GetShapeshiftFormInfo
 local IsPetAttackAction = _G.IsPetAttackAction
-local MainMenuBar, MainMenuBarArtFrame = _G.MainMenuBar, _G.MainMenuBarArtFrame
 local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local NUM_PET_ACTION_SLOTS = _G.NUM_PET_ACTION_SLOTS
 local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
-local OverrideActionBar = _G.OverrideActionBar
 local PetActionBarFrame = _G.PetActionBarFrame
 local PetActionButton_StartFlash = _G.PetActionButton_StartFlash
 local PetActionButton_StopFlash = _G.PetActionButton_StopFlash
 local PetHasActionBar = _G.PetHasActionBar
-local PossessBarFrame = _G.PossessBarFrame
 local SetActionBarToggles = _G.SetActionBarToggles
 local SetCVar = _G.SetCVar
 local SetDesaturation = _G.SetDesaturation
@@ -86,7 +82,7 @@ function Module:DisableBlizzard()
 	if PlayerTalentFrame then
 		PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 	else
-		hooksecurefunc("TalentFrame_LoadUI", function()
+		_G.hooksecurefunc("TalentFrame_LoadUI", function()
 			PlayerTalentFrame:UnregisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 		end)
 	end

@@ -17,13 +17,11 @@ local select = select
 local string_format = string.format
 local string_gsub = string.gsub
 
-local CreateFrame = _G.CreateFrame
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetBattlefieldScore = _G.GetBattlefieldScore
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
-local UIParent = _G.UIParent
 local UnitName = _G.UnitName
 local UNKNOWN = _G.UNKNOWN
 
@@ -240,20 +238,20 @@ function Module:CreateNameplates()
 	--[[
 	Class Power (Combo Points, Insanity, etc...)
 
-	 The following CVars toggle visibility
-	 of the personal resouce display (classpower):
-	 	nameplateShowSelf
-	 	nameplateResourceOnTarget
+	The following CVars toggle visibility
+	of the personal resouce display (classpower):
+	nameplateShowSelf
+	nameplateResourceOnTarget
 
-	 Note that class resources above will only be visible on
-	 the target as long as the player nameplate is visible too.
-	 This might not always be the case, but it can
-	 to a certain degree be adjusted with the following CVars:
-	 	nameplatePersonalShowAlways
-	 	nameplatePersonalShowInCombat
-	 	nameplatePersonalShowWithTarget
-	 	nameplatePersonalHideDelaySeconds
-	 --]]
+	Note that class resources above will only be visible on
+	the target as long as the player nameplate is visible too.
+	This might not always be the case, but it can
+	to a certain degree be adjusted with the following CVars:
+	nameplatePersonalShowAlways
+	nameplatePersonalShowInCombat
+	nameplatePersonalShowWithTarget
+	nameplatePersonalHideDelaySeconds
+	--]]
 
 	if C["Nameplates"].ClassResource then -- replace with config option
 		Module.CreateNamePlateClassPower(self)

@@ -14,6 +14,8 @@ local table_insert = table.insert
 local table_wipe = table.wipe
 local tonumber = tonumber
 local unpack = unpack
+local math_abs = math.abs
+local math_min = math.min
 
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
@@ -131,7 +133,7 @@ function Module:UpdateClassPortraits(unit)
 	end
 end
 
-function Module:ThreatPlate(--[[forced--]])
+function Module:ThreatPlate()
 	if C["Nameplates"].Threat ~= true then
 		return
 	end
@@ -153,6 +155,7 @@ function Module:ThreatPlate(--[[forced--]])
 		self.ThreatData = {}
 		self.ThreatData.player = {isTanking, status, percent}
 		self.isBeingTanked = false
+
 		if (isTanking and K.GetPlayerRole() == "TANK") then
 			self.isBeingTanked = true
 		end
@@ -333,7 +336,7 @@ end
 
 function Module:CustomCastTimeText(duration)
 	if self.channeling then
-		self.Time:SetText(("%.1f"):format(abs(duration - self.max)))
+		self.Time:SetText(("%.1f"):format(math_abs(duration - self.max)))
 	else
 		self.Time:SetText(("%.1f"):format(duration))
 	end
@@ -341,7 +344,7 @@ end
 
 function Module:CustomCastDelayText(duration)
 	if self.channeling then
-		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(abs(duration - self.max), self.delay))
+		self.Time:SetText(("%.1f |cffaf5050%.1f|r"):format(math_abs(duration - self.max), self.delay))
 	else
 		self.Time:SetText(("%.1f |cffaf5050%s %.1f|r"):format(duration, "+", self.delay))
 	end
@@ -399,10 +402,10 @@ function Module:PostCastStart(unit, name)
 		K.Delay(0.05, function() -- Delay may need tweaking
 			textWidth = self:GetWidth() - self.Time:GetStringWidth() - 10
 			textStringWidth = self.Text:GetStringWidth()
-			if textWidth > 0 then self.Text:SetWidth(min(textWidth, textStringWidth)) end
+			if textWidth > 0 then self.Text:SetWidth(math_min(textWidth, textStringWidth)) end
 		end)
 	else
-		self.Text:SetWidth(min(textWidth, textStringWidth))
+		self.Text:SetWidth(math_min(textWidth, textStringWidth))
 	end
 
 	if self.Spark then
@@ -954,7 +957,7 @@ function Module:NameplatesCallback(event, unit)
 		end
 	end
 
-	if GetCVarBool("nameplateResourceOnTarget") then
+	if _G.GetCVarBool("nameplateResourceOnTarget") then
 		local Player, Target = C_NamePlate_GetNamePlateForUnit("player"), UnitExists("target") and C_NamePlate_GetNamePlateForUnit("target")
 		if Target and Target:IsForbidden() then
 			Target = nil
@@ -1515,7 +1518,7 @@ function Module:OnEnable()
 		RaidDebuffs:RegisterEvent("PLAYER_ENTERING_WORLD")
 		RaidDebuffs:SetScript("OnEvent", Module.UpdateRaidDebuffIndicator)
 
-		local ORD = K.oUF_RaidDebuffs or oUF_RaidDebuffs
+		local ORD = oUF_RaidDebuffs or K.oUF_RaidDebuffs
 		if (ORD) then
 			ORD.ShowDispellableDebuff = true
 			ORD.FilterDispellableDebuff = true
