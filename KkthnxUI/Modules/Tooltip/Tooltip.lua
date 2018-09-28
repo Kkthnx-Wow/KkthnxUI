@@ -5,12 +5,16 @@ local LibItemLevel = LibStub("LibItemLevel-KkthnxUI")
 
 local _G = _G
 local find = string.find
-local math_floor = math.floor
 local format = string.format
-local sub = string.sub
+local math_floor = math.floor
+local next = next
+local pairs = pairs
 local select = select
+local sub = string.sub
+local table_wipe = table.wipe
+local tonumber = tonumber
 
-local C_PetBattles_IsInBattle = C_PetBattles.IsInBattle
+local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
 local C_PetJournalGetPetTeamAverageLevel = _G.C_PetJournal.GetPetTeamAverageLevel
@@ -631,7 +635,7 @@ end
 
 function Module:PLAYER_ENTERING_WORLD()
 	if next(inspectCache) then
-		table.wipe(inspectCache)
+		table_wipe(inspectCache)
 	end
 end
 

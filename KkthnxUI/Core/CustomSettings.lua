@@ -1,22 +1,19 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local pairs = pairs
 
-local playerName = UnitName("player")
-local playerRealm = GetRealmName()
-
--- Fuck you nil error. Im about sick of your shit. XD
+-- Attempt to fix a rare nil error on new char.
 if IsAddOnLoaded("KkthnxUI_Config") then
 	if not KkthnxUIConfigShared then
 		KkthnxUIConfigShared = {}
 	end
 
-	if not KkthnxUIConfigShared[playerRealm] then
-		KkthnxUIConfigShared[playerRealm] = {}
+	if not KkthnxUIConfigShared[K.Realm] then
+		KkthnxUIConfigShared[K.Realm] = {}
 	end
 
-	if not KkthnxUIConfigShared[playerRealm][playerName] then
-		KkthnxUIConfigShared[playerRealm][playerName] = {}
+	if not KkthnxUIConfigShared[K.Realm][K.Name] then
+		KkthnxUIConfigShared[K.Realm][K.Name] = {}
 	end
 else
 	return
@@ -26,7 +23,7 @@ local Settings
 if (KkthnxUIConfigPerAccount) then
 	Settings = KkthnxUIConfigShared.Account
 else
-	Settings = KkthnxUIConfigShared[playerRealm][playerName]
+	Settings = KkthnxUIConfigShared[K.Realm][K.Name]
 end
 
 for group, options in pairs(Settings) do

@@ -64,13 +64,15 @@ local function Timer_ForceUpdate(self)
 end
 
 local function Timer_OnSizeChanged(self, width)
-	local fontScale = K.Round(width) / ICON_SIZE
-	if fontScale == self.fontScale then
+	local fontScale = width and (floor(width + .5) / ICON_SIZE)
+
+	if fontScale and (fontScale == self.fontScale) then
 		return
 	end
 
 	self.fontScale = fontScale
-	if fontScale < CooldownMinScale then
+
+	if fontScale and (fontScale < CooldownMinScale) then
 		self:Hide()
 	else
 		self.text:SetFontObject(CooldownFont)
@@ -86,12 +88,12 @@ local function Timer_OnUpdate(self, elapsed)
 		if self.nextUpdate > 0 then
 			self.nextUpdate = self.nextUpdate - elapsed
 		else
-			if (self:GetEffectiveScale() / UIParent:GetEffectiveScale()) < CooldownMinScale then
+			if self.fontScale and ((self.fontScale * self:GetEffectiveScale() / UIParent:GetScale()) < CooldownMinScale) then
 				self.text:SetText("")
-				self.nextUpdate = 1
+				self.nextUpdate = 500
 			else
 				local remain = self.duration - (GetTime() - self.start)
-				if floor(remain + CooldownMinScale) > 0 then
+				if remain > 0.05 then
 					local formatString, time, nextUpdate = GetFormattedTime(remain)
 					self.text:SetFormattedText(formatString, time)
 					self.nextUpdate = nextUpdate
@@ -105,12 +107,11 @@ end
 
 local function Timer_Create(self)
 	local scaler = CreateFrame("Frame", nil, self)
-	scaler:SetAllPoints(self)
+	scaler:SetAllPoints()
 
 	local timer = CreateFrame("Frame", nil, scaler)
 	timer:Hide()
-	timer:SetAllPoints(scaler)
-	timer:SetScript("OnUpdate", Timer_OnUpdate)
+	timer:SetAllPoints()
 
 	local text = timer:CreateFontString(nil, "OVERLAY")
 	text:SetPoint("CENTER", 1, 0)
@@ -122,13 +123,16 @@ local function Timer_Create(self)
 		Timer_OnSizeChanged(timer, ...)
 	end)
 
+	-- keep this after Timer_OnSizeChanged
+	timer:SetScript("OnUpdate", Timer_OnUpdate)
+
 	self.timer = timer
 	return timer
 end
 
 local function Timer_Start(self, start, duration, charges)
 	if self:IsForbidden() then
-		-- print(self, " is forbidden")
+		print(self, " is forbidden")
 		return
 	end
 
@@ -144,14 +148,13 @@ local function Timer_Start(self, start, duration, charges)
 		timer.duration = duration
 		timer.enabled = true
 		timer.nextUpdate = 0
-		if timer.fontScale >= CooldownMinScale then
+
+		if timer.fontScale and (timer.fontScale >= CooldownMinScale) then
+
 			timer:Show()
 		end
-	else
-		local timer = self.timer
-		if timer then
-			Timer_Stop(timer)
-		end
+	elseif self.timer then
+		Timer_Stop(self.timer)
 	end
 end
 

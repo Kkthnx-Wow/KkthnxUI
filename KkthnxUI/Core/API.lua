@@ -81,10 +81,7 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 		f:StripTextures()
 	end
 
-	if not f.isCreateBorder then
-		K.CreateBorder(f, bOffset)
-		f.isCreateBorder = true
-	end
+	K.CreateBorder(f, bOffset)
 
 	local backgrounds = f:CreateTexture(nil, "BACKGROUND")
 	backgrounds:SetDrawLayer("BACKGROUND", bLayer)
@@ -385,16 +382,10 @@ local function SkinCloseButton(f, point, texture)
 	assert(f, "doesnt exist!")
 
 	f:StripTextures()
-
-	if not f.isCreateBorder then
-		f:CreateBorder(nil, 12, 8)
-
-		f:HookScript("OnEnter", SetModifiedBackdrop)
-		f:HookScript("OnLeave", SetOriginalBackdrop)
-		f:SetHitRectInsets(6, 6, 7, 7)
-
-		f.isCreateBorder = true
-	end
+	f:CreateBorder(nil, 12, 8)
+	f:HookScript("OnEnter", SetModifiedBackdrop)
+	f:HookScript("OnLeave", SetOriginalBackdrop)
+	f:SetHitRectInsets(6, 6, 7, 7)
 
 	if not texture then
 		texture = CustomCloseButton

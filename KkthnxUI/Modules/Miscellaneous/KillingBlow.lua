@@ -10,17 +10,16 @@ local Module = K:NewModule("KillingBlow", "AceEvent-3.0")
 local _G = _G
 local bit_band = bit.band
 local table_wipe = table.wipe
-local hooksecurefunc = _G.hooksecurefunc
 
 local BossBanner_BeginAnims = _G.BossBanner_BeginAnims
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
+local FactionToken = _G.UnitFactionGroup("player")
+local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SOUNDKIT = _G.SOUNDKIT
-local TopBannerManager_Show = _G.TopBannerManager_Show
 
 local BG_Opponents = {}
-local FactionToken = _G.UnitFactionGroup("player")
 
 function Module:UPDATE_BATTLEFIELD_SCORE()
 	table_wipe(BG_Opponents)

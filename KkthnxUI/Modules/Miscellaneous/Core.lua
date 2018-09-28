@@ -4,7 +4,6 @@ local Module = K:NewModule("Miscellaneous", "AceEvent-3.0")
 local _G = _G
 local select = select
 
-local CreateFrame = _G.CreateFrame
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
 local GetCVarBool = _G.GetCVarBool
 local GetLFGDungeonInfo = _G.GetLFGDungeonInfo

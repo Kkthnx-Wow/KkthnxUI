@@ -30,7 +30,7 @@ function Module:CreateAuras(unit)
 
 	if (unit == "player") then
 		Buffs:SetHeight(21)
-		Buffs:SetWidth(self.Power:GetWidth())
+		Buffs:SetWidth(130)
 
 		if K.Class == "ROGUE"
 		or K.Class == "DRUID"
@@ -58,7 +58,7 @@ function Module:CreateAuras(unit)
 	elseif (unit == "target") then
 		if C["Unitframe"].DebuffsOnTop then
 			Buffs:SetHeight(21)
-			Buffs:SetWidth(self.Power:GetWidth())
+			Buffs:SetWidth(130)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 21
 			Buffs.num = 15
@@ -71,7 +71,7 @@ function Module:CreateAuras(unit)
 			Buffs.CustomFilter = FilterSharedBuffs
 
 			Debuffs:SetHeight(28)
-			Debuffs:SetWidth(self.Health:GetWidth())
+			Debuffs:SetWidth(130)
 			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
 			Debuffs.size = 28
 			Debuffs.num = 12
@@ -107,7 +107,7 @@ function Module:CreateAuras(unit)
 	elseif (unit == "focus") then
 		if C["Unitframe"].DebuffsOnTop then
 			Buffs:SetHeight(21)
-			Buffs:SetWidth(self.Power:GetWidth())
+			Buffs:SetWidth(130)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 21
 			Buffs.num = 15
@@ -120,7 +120,7 @@ function Module:CreateAuras(unit)
 			Buffs.CustomFilter = FilterSharedBuffs
 
 			Debuffs:SetHeight(28)
-			Debuffs:SetWidth(self.Health:GetWidth())
+			Debuffs:SetWidth(130)
 			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
 			Debuffs.size = 28
 			Debuffs.num = 12
@@ -153,7 +153,7 @@ function Module:CreateAuras(unit)
 	elseif (unit == "party") then
 		if C["Party"].ShowBuffs then
 			Buffs:SetHeight(18)
-			Buffs:SetWidth(self:GetWidth() + 2)
+			Buffs:SetWidth(114 + 2)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 18
 			Buffs.num = 4
@@ -168,10 +168,10 @@ function Module:CreateAuras(unit)
 			self.Buffs = Buffs
 		end
 
-		Debuffs:SetHeight(self:GetHeight() - 6)
-		Debuffs:SetWidth(self:GetWidth() - 4)
+		Debuffs:SetHeight(18 - 6)
+		Debuffs:SetWidth(114 - 4)
 		Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -3)
-		Debuffs.size = self:GetHeight() - 6
+		Debuffs.size = 18 - 6
 		Debuffs.num = 3
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"
@@ -182,10 +182,10 @@ function Module:CreateAuras(unit)
 
 		self.Debuffs = Debuffs
 	elseif (unit == "targettarget") then
-		Debuffs:SetHeight(self.Portrait:GetHeight() - 4)
-		Debuffs:SetWidth(self.Health:GetWidth())
+		Debuffs:SetHeight(26 - 4)
+		Debuffs:SetWidth(74)
 		Debuffs:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
-		Debuffs.size = self.Portrait:GetHeight() - 4
+		Debuffs.size = 26 - 4
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "LEFT"
@@ -196,10 +196,10 @@ function Module:CreateAuras(unit)
 
 		self.Debuffs = Debuffs
 	elseif (unit == "pet") then
-		Debuffs:SetHeight(self.Portrait:GetHeight() - 4)
-		Debuffs:SetWidth(self.Health:GetWidth())
+		Debuffs:SetHeight(26 - 4)
+		Debuffs:SetWidth(74)
 		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 0)
-		Debuffs.size = self.Portrait:GetHeight() - 4
+		Debuffs.size = 26 - 4
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "RIGHT"

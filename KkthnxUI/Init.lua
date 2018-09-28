@@ -36,7 +36,6 @@ local string_format = string.format
 local string_match = string.match
 local tonumber = tonumber
 
-local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local GetAddOnEnableState = _G.GetAddOnEnableState
 local GetAddOnInfo = _G.GetAddOnInfo
@@ -66,15 +65,15 @@ local UnitRace = _G.UnitRace
 local AddOn = LibStub("AceAddon-3.0"):NewAddon(AddOnName, "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0", "AceHook-3.0")
 local About = LibStub:GetLibrary("LibAboutPanel", true)
 
-AddOn.oUF = Engine.oUF or oUF
-local oUF = AddOn.oUF
-
 Engine[1] = AddOn
 Engine[2] = {}
 Engine[3] = {}
 Engine[4] = {}
 
 _G[AddOnName] = Engine
+
+AddOn.oUF = Engine.oUF or oUF
+local oUF = AddOn.oUF
 
 AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
 AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
@@ -153,8 +152,7 @@ for i = 1, GetNumAddOns() do
 	AddOn.AddOnVersion[strlower(Name)] = GetAddOnMetadata(Name, "Version")
 end
 
---HonorFrameLoadTaint workaround
---credit: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
+-- Sourced: https://www.townlong-yak.com/bugs/afKy4k-HonorFrameLoadTaint
 if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 	UIDROPDOWNMENU_VALUE_PATCH_VERSION = 2
 	hooksecurefunc("UIDropDownMenu_InitializeHelper", function()
@@ -175,8 +173,7 @@ if (UIDROPDOWNMENU_VALUE_PATCH_VERSION or 0) < 2 then
 	end)
 end
 
---DisplayModeCommunitiesTaint workaround
---credit https://www.townlong-yak.com/bugs/Kjq4hm-DisplayModeCommunitiesTaint
+-- Sourced: https://www.townlong-yak.com/bugs/Kjq4hm-DisplayModeCommunitiesTaint
 if (UIDROPDOWNMENU_OPEN_PATCH_VERSION or 0) < 1 then
 	UIDROPDOWNMENU_OPEN_PATCH_VERSION = 1
 	hooksecurefunc("UIDropDownMenu_InitializeHelper", function(frame)
