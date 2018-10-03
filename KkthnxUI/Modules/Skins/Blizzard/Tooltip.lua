@@ -64,16 +64,28 @@ local function SkinTooltip()
 		WorldMapTooltip,
 	}
 
-	for _, tt in pairs(tooltips) do
-		if not IsAddOnLoaded("Aurora") then
-			if (GameTooltip_SetBackdropStyle) then
-				hooksecurefunc("GameTooltip_SetBackdropStyle", function()
-					tt:SetBackdrop(nil)
-				end)
-			end
+	local qualityTooltips = {
+		GameTooltip,
+		ItemRefShoppingTooltip1,
+		ItemRefShoppingTooltip2,
+		ItemRefTooltip,
+		ShoppingTooltip1,
+		ShoppingTooltip2,
+		--WorldMapTooltip,
+	}
 
-			Module:SecureHookScript(tt, "OnShow", "SetStyle")
+	for _, tt in pairs(tooltips) do
+		if (GameTooltip_SetBackdropStyle) then
+			hooksecurefunc("GameTooltip_SetBackdropStyle", function()
+				tt:SetBackdrop(nil)
+			end)
 		end
+
+		Module:SecureHookScript(tt, "OnShow", "SetStyle")
+	end
+
+	for _, tt in pairs(qualityTooltips) do
+		Module:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
 	end
 
 	if GameTooltipStatusBar then

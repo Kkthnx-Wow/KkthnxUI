@@ -8,13 +8,12 @@ local string_format = string.format
 local select = select
 
 local ARTIFACT_POWER = _G.ARTIFACT_POWER
-local backupColor = FACTION_BAR_COLORS[1]
+local backupColor = _G.FACTION_BAR_COLORS[1]
 local C_AzeriteItem_FindActiveAzeriteItem = _G.C_AzeriteItem.FindActiveAzeriteItem
 local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
-local C_Reputation_GetFactionParagonInfo = C_Reputation.GetFactionParagonInfo
-local C_Reputation_IsFactionParagon = C_Reputation.IsFactionParagon
-local CreateFrame = _G.CreateFrame
+local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
+local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip

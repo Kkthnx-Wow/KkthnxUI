@@ -1,11 +1,10 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
+
+-- Sourced: Azilroka (ElvUI)
 
 -- Lua API
 local _G = _G
 local string_format = string.format
-
-local Movers = K.Movers
-local MirrorTimerTexture = K.GetTexture(C["Unitframe"].Texture)
 
 local function MirrorTimer_OnUpdate(frame, elapsed)
 	if (frame.paused) then
@@ -28,28 +27,24 @@ local function MirrorTimer_OnUpdate(frame, elapsed)
 	end
 end
 
--- Mirror Timers (Underwater Breath etc.), credit to Azilroka
 for i = 1, MIRRORTIMER_NUMTIMERS do
-	if C["Unitframe"].Enable ~= true then return end
+	local MirrorTimerTexture = K.GetTexture(C["Unitframe"].Texture)
+
+	if C["Unitframe"].Enable ~= true then
+		return
+	end
 
 	local mirrorTimer = _G["MirrorTimer"..i]
 	local statusBar = _G["MirrorTimer"..i.."StatusBar"]
 	local text = _G["MirrorTimer"..i.."Text"]
 
 	mirrorTimer:StripTextures()
-	mirrorTimer:SetSize(222, 22)
+	mirrorTimer:SetSize(222, 20)
 	mirrorTimer.label = text
 	statusBar:SetStatusBarTexture(MirrorTimerTexture)
-	statusBar:SetSize(222, 22)
+	statusBar:CreateBorder()
+	statusBar:SetSize(222, 20)
 	text:Hide()
-
-	statusBar.Background = statusBar:CreateTexture(nil, "BACKGROUND", -1)
-	statusBar.Background:SetAllPoints()
-	statusBar.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	statusBar.Border = CreateFrame("Frame", nil, statusBar)
-	statusBar.Border:SetAllPoints()
-	K.CreateBorder(statusBar.Border)
 
 	statusBar.spark = statusBar:CreateTexture(nil, "OVERLAY")
 	statusBar.spark:SetWidth(128)
@@ -59,7 +54,7 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	statusBar.spark:SetPoint("CENTER", statusBar:GetStatusBarTexture(), "RIGHT", 0, 0)
 
 	local TimerText = mirrorTimer:CreateFontString(nil, "OVERLAY")
-	TimerText:SetFont(C["Media"].Font, 13)
+	TimerText:SetFont(C["Media"].Font, 12)
 	TimerText:SetShadowOffset(1.25, -1.25)
 	TimerText:SetPoint("CENTER", statusBar, "CENTER", 0, 0)
 	mirrorTimer.TimerText = TimerText
@@ -67,5 +62,5 @@ for i = 1, MIRRORTIMER_NUMTIMERS do
 	mirrorTimer.timeSinceUpdate = 0.3 -- Make sure timer value updates right away on first show
 	mirrorTimer:HookScript("OnUpdate", MirrorTimer_OnUpdate)
 
-	Movers:RegisterFrame(mirrorTimer)
+	K.Movers:RegisterFrame(mirrorTimer)
 end

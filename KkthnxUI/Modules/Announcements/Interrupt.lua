@@ -23,16 +23,16 @@ local InterruptMessage = INTERRUPTED.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%
 function AnnounceInterrupt:COMBAT_LOG_EVENT_UNFILTERED()
 	local _, event, _, sourceGUID, _, _, _, _, destName, _, _, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()
 	if C["Announcements"].Interrupt.Value == "NONE" then	-- No Announcement configured, exit.
-		return 
+		return
 	end
 
 	if not (event == "SPELL_INTERRUPT" and (sourceGUID == UnitGUID("player") or sourceGUID == UnitGUID("pet"))) then -- No announce-able interrupt from player or pet, exit.
-		return 
+		return
 	end
 
 	local inGroup, inRaid, inPartyLFG = IsInGroup(), IsInRaid(), IsPartyLFG()
 	if not inGroup then -- not in group, exit.
-		return 
+		return
 	end
 
 	-- Skirmish/non-rated arenas need to use INSTANCE_CHAT but IsPartyLFG() returns "false"

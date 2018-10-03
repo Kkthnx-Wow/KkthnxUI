@@ -8,7 +8,6 @@ local find = string.find
 local format = string.format
 local math_floor = math.floor
 local next = next
-local pairs = pairs
 local select = select
 local sub = string.sub
 local table_wipe = table.wipe
@@ -96,11 +95,6 @@ local SlotName = {
 	INVSLOT_WRIST, INVSLOT_HAND, INVSLOT_WAIST, INVSLOT_LEGS, INVSLOT_FEET,
 	INVSLOT_FINGER1, INVSLOT_FINGER2, INVSLOT_TRINKET1, INVSLOT_TRINKET2,
 	INVSLOT_MAINHAND, INVSLOT_OFFHAND
-}
-
-local QualityTooltips = {
-	GameTooltip, ItemRefShoppingTooltip1, ItemRefShoppingTooltip2,
-	ItemRefTooltip, ShoppingTooltip1, ShoppingTooltip2, WorldMapTooltip,
 }
 
 function Module:GameTooltip_SetDefaultAnchor(tt, parent)
@@ -802,15 +796,6 @@ function Module:OnEnable()
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED", "FixTooltipBug")
 	self:RegisterEvent("BAG_UPDATE_DELAYED")
 	self:SecureHookScript(GameTooltip, "OnTooltipCleared", "GameTooltip_OnTooltipCleared")
-	for _, tt in pairs(QualityTooltips) do
-		tt:SetBackdrop(nil)
-		tt.SetBackdrop = K.Noop
-		if tt.BackdropFrame then
-			tt.BackdropFrame:SetBackdrop(nil)
-		end
-
-		self:SecureHookScript(tt, "OnTooltipSetItem", "GameTooltip_OnTooltipSetItem")
-	end
 	self:SecureHookScript(GameTooltip, "OnTooltipSetUnit", "GameTooltip_OnTooltipSetUnit")
 	self:SecureHookScript(GameTooltipStatusBar, "OnValueChanged", "GameTooltipStatusBar_OnValueChanged")
 	self:RegisterEvent("MODIFIER_STATE_CHANGED")

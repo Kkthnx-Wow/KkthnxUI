@@ -32,7 +32,7 @@ end
 
 function Module:MoveObjectiveFrame()
 	local Anchor1, Parent, Anchor2, X, Y = "TOPRIGHT", UIParent, "TOPRIGHT", -200, -270
-	local Data = KkthnxUIData[GetRealmName()][UnitName("player")]
+	local Data = KkthnxUIData[K.Realm][K.Name]
 
 	local ObjectiveFrameHolder = CreateFrame("Frame", "TrackerFrameHolder", UIParent)
 	ObjectiveFrameHolder:SetSize(130, 22)

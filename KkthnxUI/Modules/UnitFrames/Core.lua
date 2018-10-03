@@ -831,14 +831,15 @@ end
 
 function Module:UpdateNameplateTarget()
 	local Nameplate = self
+
+	if not Nameplate then
+		return
+	end
+
 	local targetExists = UnitExists("target")
 	local unitIsPlayer = UnitIsUnit(Nameplate.unit, "player")
 	local unitIsTarget = UnitIsUnit(Nameplate.unit, "target")
 	local plateDatabase = C["Nameplates"]
-
-	if not Nameplate then -- Fuck you nil error.
-		return
-	end
 
 	if unitIsTarget and not unitIsPlayer then
 		Nameplate:SetSize(plateDatabase.Width, plateDatabase.Height)
@@ -889,11 +890,6 @@ function Module:NameplatesCallback(event, unit)
 					Nameplate.Runes:Show()
 					Nameplate:EnableElement("Runes")
 					Nameplate.Runes:ForceUpdate()
-
-				elseif (K.Class == "MONK") then
-					--Nameplate.Stagger:Show()
-					--Nameplate:EnableElement("Stagger")
-					--Nameplate.Stagger:ForceUpdate()
 				end
 			end
 		else
@@ -913,10 +909,6 @@ function Module:NameplatesCallback(event, unit)
 				if (K.Class == "DEATHKNIGHT") then
 					Nameplate.Runes:Hide()
 					Nameplate:DisableElement("Runes")
-
-				elseif (K.Class == "MONK") then
-					-- Nameplate.Stagger:Hide()
-					-- Nameplate:DisableElement("Stagger")
 				end
 			end
 		end
@@ -1249,7 +1241,7 @@ function Module:CreateUnits()
 				if (i == 1) then
 					Boss[i]:SetPoint("BOTTOMRIGHT", UIParent, "RIGHT", -140, 140)
 				else
-					Boss[i]:SetPoint("TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -48)
+					Boss[i]:SetPoint("TOPLEFT", Boss[i - 1], "BOTTOMLEFT", 0, -28)
 				end
 
 				Boss[i]:SetSize(190, 52)

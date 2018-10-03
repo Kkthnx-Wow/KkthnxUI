@@ -88,23 +88,23 @@ Module.BitFields = {
 
 function Module:PLAYER_ENTERING_WORLD()
 	if (not GetCVar("lastGarrisonMissionTutorial") or tonumber(GetCVar("lastGarrisonMissionTutorial")) < MAX_BIT_FLAGS_TUTORIAL) then
-		SetCVar("lastGarrisonMissionTutorial", MAX_BIT_FLAGS_TUTORIAL)
+		K.LockCVar("lastGarrisonMissionTutorial", MAX_BIT_FLAGS_TUTORIAL)
 	end
 
 	if (not GetCVar("orderHallMissionTutorial") or tonumber(GetCVar("orderHallMissionTutorial")) < MAX_BIT_FLAGS_TUTORIAL) then
-		SetCVar("orderHallMissionTutorial", MAX_BIT_FLAGS_TUTORIAL)
+		K.LockCVar("orderHallMissionTutorial", MAX_BIT_FLAGS_TUTORIAL)
 	end
 
 	local _, field
 	for _, field in pairs(Module.CVarFields) do
 		if (tonumber(GetCVar(field)) == 0) then
-			SetCVar(field, 1)
+			K.LockCVar(field, 1)
 		end
 	end
 
 	for _, field in pairs(Module.BitFields) do
 		if (not GetCVarBitfield("closedInfoFrames", field)) then
-			SetCVarBitfield("closedInfoFrames", field, true)
+			K.LockCVar("closedInfoFrames", field, true)
 		end
 	end
 

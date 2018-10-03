@@ -4,9 +4,7 @@ local Module = K:NewModule("AlertFrames", "AceEvent-3.0", "AceHook-3.0")
 local _G = _G
 local pairs = pairs
 
-local UIParent = _G.UIParent
 local hooksecurefunc = _G.hooksecurefunc
-local CreateFrame = _G.CreateFrame
 
 local AlertFrameHolder = CreateFrame("Frame", "AlertFrameHolder", UIParent)
 AlertFrameHolder:SetSize(180, 20)
@@ -54,6 +52,7 @@ function Module:PostAlertMove()
 
 		AlertFrame:ClearAllPoints()
 		GroupLootContainer:ClearAllPoints()
+
 		if lastShownFrame then
 			AlertFrame:SetAllPoints(lastShownFrame)
 			GroupLootContainer:SetPoint(POSITION, lastShownFrame, ANCHOR_POINT, 0, YOFFSET)
@@ -61,6 +60,7 @@ function Module:PostAlertMove()
 			AlertFrame:SetAllPoints(AlertFrameHolder)
 			GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, ANCHOR_POINT, 0, YOFFSET)
 		end
+
 		if GroupLootContainer:IsShown() then
 			Module.GroupLootContainer_Update(GroupLootContainer)
 		end
@@ -69,6 +69,7 @@ function Module:PostAlertMove()
 		AlertFrame:SetAllPoints(AlertFrameHolder)
 		GroupLootContainer:ClearAllPoints()
 		GroupLootContainer:SetPoint(POSITION, AlertFrameHolder, ANCHOR_POINT, 0, YOFFSET)
+
 		if GroupLootContainer:IsShown() then
 			Module.GroupLootContainer_Update(GroupLootContainer)
 		end
@@ -90,6 +91,7 @@ function Module:AdjustAnchorsNonAlert(relativeAlert)
 		self.anchorFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 		return self.anchorFrame
 	end
+
 	return relativeAlert
 end
 
@@ -99,6 +101,7 @@ function Module:AdjustQueuedAnchors(relativeAlert)
 		alertFrame:SetPoint(POSITION, relativeAlert, ANCHOR_POINT, 0, YOFFSET)
 		relativeAlert = alertFrame
 	end
+
 	return relativeAlert
 end
 
@@ -152,13 +155,9 @@ function Module:OnEnable()
 	end
 
 	-- This should catch any alert systems that are created by other addons
-	hooksecurefunc(
-		AlertFrame,
-		"AddAlertFrameSubSystem",
-		function(alertFrameSubSystem)
-			AlertSubSystem_AdjustPosition(alertFrameSubSystem)
-		end
-	)
+	hooksecurefunc(AlertFrame, "AddAlertFrameSubSystem", function(alertFrameSubSystem)
+		AlertSubSystem_AdjustPosition(alertFrameSubSystem)
+	end)
 
 	self:SecureHook(AlertFrame, "UpdateAnchors", Module.PostAlertMove)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)

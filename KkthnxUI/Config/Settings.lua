@@ -68,6 +68,28 @@ C["Announcements"] = {
 			["Say Chat"] = "SAY"
 		},
 		["Value"] = "PARTY"
+	},
+	["Steal"] = {
+		["Options"] = {
+			["Disabled"] = "NONE",
+			["Emote Chat"] = "EMOTE",
+			["Party Chat"] = "PARTY",
+			["Raid Chat Only"] = "RAID_ONLY",
+			["Raid Chat"] = "RAID",
+			["Say Chat"] = "SAY"
+		},
+		["Value"] = "PARTY"
+	},
+	["Dispel"] = {
+		["Options"] = {
+			["Disabled"] = "NONE",
+			["Emote Chat"] = "EMOTE",
+			["Party Chat"] = "PARTY",
+			["Raid Chat Only"] = "RAID_ONLY",
+			["Raid Chat"] = "RAID",
+			["Say Chat"] = "SAY"
+		},
+		["Value"] = "PARTY"
 	}
 }
 

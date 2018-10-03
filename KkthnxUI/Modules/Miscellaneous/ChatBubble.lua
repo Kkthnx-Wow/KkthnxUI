@@ -221,17 +221,17 @@ function Module:OnInitialize()
   self:RegisterEvent("PLAYER_ENTERING_WORLD", "UpdateBubbleDisplay")
 
   -- Enforcing this now
-  SetCVar("chatBubbles", 1)
+  -- SetCVar("chatBubbles", 1)
 end
 
 function Module:UpdateBubbleDisplay()
   local _, instanceType = IsInInstance()
   if (instanceType == "none") then
-    SetCVar("chatBubbles", 1)
+    -- SetCVar("chatBubbles", 1)
     self.Updater:SetScript("OnUpdate", self.Updater.OnUpdate)
   else
     self.Updater:SetScript("OnUpdate", nil)
-    SetCVar("chatBubbles", 0)
+    -- SetCVar("chatBubbles", 0)
     for bubble in pairs(bubbles) do
       bubbles[bubble]:Hide()
     end

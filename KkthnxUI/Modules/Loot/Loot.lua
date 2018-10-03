@@ -120,12 +120,7 @@ local function createSlot(id)
 	iconFrame:SetHeight(iconsize)
 	iconFrame:SetWidth(iconsize)
 	iconFrame:SetPoint("RIGHT", frame)
-
-	if not iconFrame.Border then
-		iconFrame:CreateBorder()
-		iconFrame.Border = true
-	end
-
+	iconFrame:CreateBorder()
 	frame.iconFrame = iconFrame
 
 	local icon = iconFrame:CreateTexture(nil, "ARTWORK")
@@ -312,12 +307,7 @@ function Module:OnEnable()
 	lootFrame:SetClampedToScreen(true)
 	lootFrame:SetPoint("TOPLEFT")
 	lootFrame:SetSize(256, 64)
-
-	if not lootFrame.Border then
-		lootFrame:CreateBorder()
-		lootFrame.Border = true
-	end
-
+	lootFrame:CreateBorder()
 	lootFrame:SetFrameStrata(LootFrame:GetFrameStrata())
 	lootFrame:SetToplevel(true)
 	lootFrame.title = lootFrame:CreateFontString(nil, "OVERLAY")

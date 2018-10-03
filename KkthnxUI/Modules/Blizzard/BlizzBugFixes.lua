@@ -4,7 +4,6 @@ local Module = K:NewModule("BlizzBugFixes", "AceEvent-3.0", "AceHook-3.0")
 local _G = _G
 
 local blizzardCollectgarbage = _G.collectgarbage
-local CreateFrame = _G.CreateFrame
 local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs

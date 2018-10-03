@@ -221,6 +221,7 @@ function Module:CreateNameplates()
 	self.Castbar.Text:SetPoint("TOPRIGHT", self.Castbar.Time, "TOPLEFT")
 	self.Castbar.Text:SetJustifyH("LEFT")
 	self.Castbar.Text:SetTextColor(0.84, 0.75, 0.65)
+	self.Castbar.Text:SetWordWrap(false)
 
 	self.Castbar:SetScript("OnShow", Module.NameplatePowerAndCastBar)
 	self.Castbar:SetScript("OnHide", Module.NameplatePowerAndCastBar)

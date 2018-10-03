@@ -17,6 +17,7 @@ local PlaySound = _G.PlaySound
 local PlaySoundFile = _G.PlaySoundFile
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local StaticPopupDialogs = _G.StaticPopupDialogs
+local SOUNDKIT = _G.SOUNDKIT
 
 local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.ogg"
 local BATTLEGROUNDS = {
@@ -103,8 +104,9 @@ if C["General"].LagTolerance == true then
 		int = int - elapsed
 		if int < 0 then
 			if lag ~= 0 and lag <= 400 then
-				SetCVar("SpellQueueWindow", tostring(lag))
+				K.LockCVar("SpellQueueWindow", tostring(lag))
 			end
+
 			int = 5
 		end
 	end

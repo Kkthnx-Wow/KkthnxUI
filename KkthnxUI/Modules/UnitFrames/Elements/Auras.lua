@@ -153,7 +153,7 @@ function Module:CreateAuras(unit)
 	elseif (unit == "party") then
 		if C["Party"].ShowBuffs then
 			Buffs:SetHeight(18)
-			Buffs:SetWidth(114 + 2)
+			Buffs:SetWidth(116)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 			Buffs.size = 18
 			Buffs.num = 4
@@ -168,10 +168,10 @@ function Module:CreateAuras(unit)
 			self.Buffs = Buffs
 		end
 
-		Debuffs:SetHeight(18 - 6)
-		Debuffs:SetWidth(114 - 4)
+		Debuffs:SetHeight(32)
+		Debuffs:SetWidth(110)
 		Debuffs:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -3)
-		Debuffs.size = 18 - 6
+		Debuffs.size = 32
 		Debuffs.num = 3
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "TOPLEFT"
@@ -182,10 +182,10 @@ function Module:CreateAuras(unit)
 
 		self.Debuffs = Debuffs
 	elseif (unit == "targettarget") then
-		Debuffs:SetHeight(26 - 4)
+		Debuffs:SetHeight(22)
 		Debuffs:SetWidth(74)
 		Debuffs:SetPoint("LEFT", self.Portrait, "RIGHT", 6, 0)
-		Debuffs.size = 26 - 4
+		Debuffs.size = 22
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "LEFT"
@@ -196,10 +196,10 @@ function Module:CreateAuras(unit)
 
 		self.Debuffs = Debuffs
 	elseif (unit == "pet") then
-		Debuffs:SetHeight(26 - 4)
+		Debuffs:SetHeight(22)
 		Debuffs:SetWidth(74)
 		Debuffs:SetPoint("RIGHT", self.Portrait, "LEFT", -6, 0)
-		Debuffs.size = 26 - 4
+		Debuffs.size = 22
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "RIGHT"
@@ -210,10 +210,10 @@ function Module:CreateAuras(unit)
 
 		self.Debuffs = Debuffs
 	elseif (unit == "boss") then
-		Buffs:SetHeight(self.Power:GetHeight())
-		Buffs:SetWidth(self.Power:GetWidth())
+		Buffs:SetHeight(14)
+		Buffs:SetWidth(130)
 		Buffs:SetPoint("BOTTOMRIGHT", self.Portrait, "BOTTOMLEFT", -6, 0)
-		Buffs.size = self.Power:GetHeight()
+		Buffs.size = 14
 		Buffs.num = 4
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "RIGHT"
@@ -222,10 +222,10 @@ function Module:CreateAuras(unit)
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
 
-		Debuffs:SetHeight(self.Health:GetHeight())
-		Debuffs:SetWidth(self.Health:GetWidth())
+		Debuffs:SetHeight(26)
+		Debuffs:SetWidth(130)
 		Debuffs:SetPoint("TOPRIGHT", self.Portrait, "TOPLEFT", -6, 0)
-		Debuffs.size = self.Health:GetHeight()
+		Debuffs.size = 26
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "RIGHT"
@@ -238,10 +238,10 @@ function Module:CreateAuras(unit)
 		self.Buffs = Buffs
 		self.Debuffs = Debuffs
 	elseif (unit == "arena") then
-		Buffs:SetHeight(self.Power:GetHeight())
-		Buffs:SetWidth(self.Power:GetWidth())
+		Buffs:SetHeight(14)
+		Buffs:SetWidth(130)
 		Buffs:SetPoint("BOTTOMRIGHT", self.Trinket, "BOTTOMLEFT", -6, 0)
-		Buffs.size = self.Power:GetHeight()
+		Buffs.size = 14
 		Buffs.num = 4
 		Buffs.spacing = 6
 		Buffs.initialAnchor = "RIGHT"
@@ -250,10 +250,10 @@ function Module:CreateAuras(unit)
 		Buffs.PostCreateIcon = Module.PostCreateAura
 		Buffs.PostUpdateIcon = Module.PostUpdateAura
 
-		Debuffs:SetHeight(self.Health:GetHeight())
-		Debuffs:SetWidth(self.Health:GetWidth())
+		Debuffs:SetHeight(26)
+		Debuffs:SetWidth(130)
 		Debuffs:SetPoint("TOPRIGHT", self.Trinket, "TOPLEFT", -6, 0)
-		Debuffs.size = self.Health:GetHeight()
+		Debuffs.size = 26
 		Debuffs.num = 4
 		Debuffs.spacing = 6
 		Debuffs.initialAnchor = "RIGHT"
