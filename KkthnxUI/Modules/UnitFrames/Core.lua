@@ -1069,8 +1069,8 @@ function Module:GetPartyFramesAttributes()
 	"showPlayer", C["Party"].ShowPlayer,
 	"showRaid", true,
 	"groupFilter", "1, 2, 3, 4, 5, 6, 7, 8",
-	"groupingOrder", "TANK, HEALER, DAMAGER, NONE",
-	"groupBy", "ASSIGNEDROLE",
+	"groupingOrder", "1, 2, 3, 4, 5, 6, 7, 8",
+	"groupBy", "GROUP",
 	"yOffset", C["Party"].ShowBuffs and -44 or -18
 end
 
@@ -1089,7 +1089,7 @@ function Module:GetDamageRaidFramesAttributes()
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
-	--"showSolo", true,
+	"showSolo", false,
 	"xoffset", 6,
 	"yOffset", -6,
 	"point", "TOP",
@@ -1117,7 +1117,7 @@ function Module:GetHealerRaidFramesAttributes()
 	"showParty", true,
 	"showRaid", true,
 	"showPlayer", true,
-	--"showSolo", true,
+	"showSolo", false,
 	"xoffset", 6,
 	"yOffset", -6,
 	"point", "TOP",
@@ -1131,18 +1131,20 @@ function Module:GetHealerRaidFramesAttributes()
 end
 
 function Module:GetMainTankAttributes()
-	return "oUF_MainTank", nil, "raid",
+	local MainTankProperties = "solo, party, raid"
+
+	return "oUF_MainTank", nil, MainTankProperties,
 	"oUF-initialConfigFunction", [[
 	self:SetWidth(70)
 	self:SetHeight(32)
 	]],
 
+	"showParty", false,
 	"showRaid", true,
+	"showPlayer", false,
+	"showSolo", false,
 	"yOffset", -8,
-	"groupFilter",
-	"MAINTANK, MAINASSIST",
-	"groupBy", "ROLE",
-	"groupingOrder", "MAINTANK, MAINASSIST",
+	"groupFilter", "MAINTANK",
 	"template", "oUF_MainTank"
 end
 

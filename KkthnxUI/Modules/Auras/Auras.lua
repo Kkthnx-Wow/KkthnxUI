@@ -1,23 +1,16 @@
 local K, C = unpack(select(2, ...))
-local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
 if (not C["Auras"].Enable) then
     return
 end
 
+local Module = K:NewModule("Auras", "AceEvent-3.0", "AceHook-3.0")
+
 -- Sourced: ElvUI (Elvz)
 
 local _G = _G
-local select = select
-local floor = math.floor
+local select = _G.select
 
-local CreateFrame = _G.CreateFrame
-local GetInventoryItemQuality = _G.GetInventoryItemQuality
-local GetInventoryItemTexture = _G.GetInventoryItemTexture
-local GetItemQualityColor = _G.GetItemQualityColor
 local GetWeaponEnchantInfo = _G.GetWeaponEnchantInfo
-local RegisterAttributeDriver = _G.RegisterAttributeDriver
-local RegisterStateDriver = _G.RegisterStateDriver
-local UnitAura = _G.UnitAura
 
 local AurasFont = K.GetFont(C["Auras"].Font)
 
@@ -110,24 +103,10 @@ function Module:CreateIcon(button)
     local auraType = header:GetAttribute("filter")
 
     if auraType == "HELPFUL" then
-        button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
-	    button.Background:SetAllPoints()
-	    button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	    button.Borders = CreateFrame("Frame", nil, button)
-	    button.Borders:SetAllPoints(button)
-        K.CreateBorder(button.Borders)
-
+        button:CreateBorder()
         button:StyleButton()
     elseif auraType == "HARMFUL" then
-        button.Background = button:CreateTexture(nil, "BACKGROUND", -1)
-	    button.Background:SetAllPoints()
-	    button.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	    button.Borders = CreateFrame("Frame", nil, button)
-	    button.Borders:SetAllPoints(button)
-        K.CreateBorder(button.Borders)
-
+        button:CreateBorder()
         button:StyleButton()
     end
 end
@@ -135,7 +114,7 @@ end
 function Module:UpdateAura(button, index)
     local filter = button:GetParent():GetAttribute("filter")
     local unit = button:GetParent():GetAttribute("unit")
-    local name, texture, count, dtype, duration, expirationTime = UnitAura(unit, index, filter)
+    local name, texture, count, dtype, duration, expirationTime = _G.UnitAura(unit, index, filter)
 
     if (name) then
         if (duration > 0 and expirationTime) then
@@ -163,9 +142,9 @@ function Module:UpdateAura(button, index)
 
         if filter == "HARMFUL" then
             local color = _G.DebuffTypeColor[dtype or ""]
-            button.Borders:SetBackdropBorderColor(color.r, color.g, color.b)
+            button:SetBackdropBorderColor(color.r, color.g, color.b)
         else
-            button.Borders:SetBackdropBorderColor()
+            button:SetBackdropBorderColor()
         end
 
         button.texture:SetTexture(texture)
@@ -174,8 +153,8 @@ function Module:UpdateAura(button, index)
 end
 
 function Module:UpdateTempEnchant(button, index)
-    local quality = GetInventoryItemQuality("player", index)
-    button.texture:SetTexture(GetInventoryItemTexture("player", index))
+    local quality = _G.GetInventoryItemQuality("player", index)
+    button.texture:SetTexture(_G.GetInventoryItemTexture("player", index))
 
     -- time left
     local offset = 2
@@ -185,7 +164,7 @@ function Module:UpdateTempEnchant(button, index)
     end
 
     if (quality) then
-        button.Borders:SetBackdropBorderColor(GetItemQualityColor(quality))
+        button:SetBackdropBorderColor(_G.GetItemQualityColor(quality))
     end
 
     local expirationTime = select(offset, GetWeaponEnchantInfo())
@@ -270,7 +249,7 @@ function Module:UpdateHeader(header)
     local index = 1
     local child = select(index, header:GetChildren())
     while (child) do
-        if ((floor(child:GetWidth() * 100 + 0.5) / 100) ~= C["Auras"].Size) then
+        if ((math.floor(child:GetWidth() * 100 + 0.5) / 100) ~= C["Auras"].Size) then
             child:SetSize(C["Auras"].Size, C["Auras"].Size)
         end
 
@@ -304,8 +283,8 @@ function Module:CreateAuraHeader(filter)
     header:SetClampedToScreen(true)
     header:SetAttribute("unit", "player")
     header:SetAttribute("filter", filter)
-    RegisterStateDriver(header, "visibility", "[petbattle] hide; show")
-    RegisterAttributeDriver(header, "unit", "[vehicleui] vehicle; player")
+    _G.RegisterStateDriver(header, "visibility", "[petbattle] hide; show")
+    _G.RegisterAttributeDriver(header, "unit", "[vehicleui] vehicle; player")
 
     if filter == "HELPFUL" then
         header:SetAttribute("consolidateDuration", -1)

@@ -104,7 +104,7 @@ function Module:PLAYER_ENTERING_WORLD()
 
 	for _, field in pairs(Module.BitFields) do
 		if (not GetCVarBitfield("closedInfoFrames", field)) then
-			K.LockCVar("closedInfoFrames", field, true)
+			SetCVarBitfield("closedInfoFrames", field, true)
 		end
 	end
 
