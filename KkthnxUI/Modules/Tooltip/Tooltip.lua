@@ -109,9 +109,9 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (not GameTooltipStatusBar.anchoredToTop and GameTooltipStatusBar) then
 			GameTooltipStatusBar:ClearAllPoints()
-			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
-			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
-			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
+			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
+			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
+			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 5)
 			GameTooltipStatusBar.anchoredToTop = true
 		end
 
@@ -123,7 +123,7 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 		end
 	end
 
-	tt:SetPoint("BOTTOMRIGHT", GameTooltipAnchor, "BOTTOMRIGHT", 0, 0)
+	tt:SetPoint("BOTTOMRIGHT", GameTooltipAnchor, "BOTTOMRIGHT", 2, -2)
 end
 
 function Module:CleanUpTrashLines(tt)
@@ -621,7 +621,19 @@ function Module:SetStyle(tt)
 		return
 	end
 
-	tt:CreateBorder()
+	tt:SetBackdrop({
+		bgFile = C["Media"].Blank,
+		edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+		tile = false, tileSize = 0, edgeSize = 12,
+		insets = {left = 3, right = 3, top = 3, bottom = 3}
+	})
+
+	if C["General"].ColorTextures then
+		tt:SetBackdropBorderColor(C["General"].TexturesColor[1], C["General"].TexturesColor[2], C["General"].TexturesColor[3])
+	else
+		tt:SetBackdropBorderColor(0.7, 0.7, 0.7)
+	end
+	tt:SetBackdropColor(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 
 	local r, g, b = tt:GetBackdropColor()
 	tt:SetBackdropColor(r, g, b, C["Media"].BackdropColor[4])

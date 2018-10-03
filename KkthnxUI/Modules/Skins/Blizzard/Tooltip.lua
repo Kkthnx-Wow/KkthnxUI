@@ -71,16 +71,10 @@ local function SkinTooltip()
 		ItemRefTooltip,
 		ShoppingTooltip1,
 		ShoppingTooltip2,
-		--WorldMapTooltip,
+		WorldMapTooltip,
 	}
 
 	for _, tt in pairs(tooltips) do
-		if (GameTooltip_SetBackdropStyle) then
-			hooksecurefunc("GameTooltip_SetBackdropStyle", function()
-				tt:SetBackdrop(nil)
-			end)
-		end
-
 		Module:SecureHookScript(tt, "OnShow", "SetStyle")
 	end
 
@@ -92,17 +86,15 @@ local function SkinTooltip()
 		GameTooltipStatusBar:SetStatusBarTexture(GameTooltipStatusBarTexture)
 		GameTooltipStatusBar:CreateBorder()
 		GameTooltipStatusBar:ClearAllPoints()
-		GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 0, 6)
-		GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -0, 6)
+		GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
+		GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
 	end
 
 	Module:SecureHook("GameTooltip_ShowStatusBar")
 	Module:SecureHook("GameTooltip_ShowProgressBar") -- Skin Progress Bars
 	Module:SecureHook("GameTooltip_AddQuestRewardsToTooltip") -- Color Progress Bars
 	Module:SecureHook("GameTooltip_UpdateStyle", "SetStyle")
-
-	-- [Backdrop coloring] There has to be a more elegant way of doing this.
-	Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor")
+	Module:SecureHookScript(GameTooltip, "OnUpdate", "CheckBackdropColor") -- There has to be a more elegant way of doing this.
 
 	-- Used for Island Skin
 	local function style(self)
