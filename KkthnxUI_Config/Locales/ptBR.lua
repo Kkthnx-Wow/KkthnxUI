@@ -562,6 +562,16 @@ KkthnxUIConfig["ptBR"] = {
 			["Name"] = "Interrupt",
 			["Desc"] = "Announce in desired channel when you interrupt",
 		},
+
+		["Dispel"] = {
+			["Name"] = "Dispel"..ModuleNewFeature,
+			["Desc"] = "Announce in desired channel when you dispel",
+		},
+
+		["Steal"] = {
+			["Name"] = "Steal"..ModuleNewFeature,
+			["Desc"] = "Announce in desired channel when you steal",
+		},
 	},
 
 	-- Automation Local

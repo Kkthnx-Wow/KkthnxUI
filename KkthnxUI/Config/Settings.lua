@@ -1,9 +1,10 @@
-local _, C = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 
 local _G = _G
 
 local DAMAGE = _G.DAMAGE
 local DEFAULT = _G.DEFAULT
+local GUILD = _G.GUILD
 local HEALER = _G.HEALER
 local HIDE = _G.HIDE
 local ITEM_QUALITY2_DESC = _G.ITEM_QUALITY2_DESC
@@ -12,8 +13,7 @@ local ITEM_QUALITY4_DESC = _G.ITEM_QUALITY4_DESC
 local MAX_PLAYER_LEVEL = _G.MAX_PLAYER_LEVEL
 local MINIMIZE = _G.MINIMIZE
 local NONE = _G.NONE
-
-local _,PlayerClass = UnitClass("player")
+local PLAYER = _G.PLAYER
 
 -- Actionbar
 C["ActionBar"] = {
@@ -22,7 +22,7 @@ C["ActionBar"] = {
 	["ButtonSize"] = 34,
 	["ButtonSpace"] = 6,
 	["Cooldowns"] = true,
-	["DisableStancePages"] = PlayerClass == "DRUID", -- don't need a stealth bar for druids
+	["DisableStancePages"] = K.Class == "DRUID", -- don't need a stealth bar for druids
 	["Enable"] = true,
 	["EquipBorder"] = true,
 	["Font"] = "KkthnxUI Outline",
@@ -78,7 +78,7 @@ C["Announcements"] = {
 			["Raid Chat"] = "RAID",
 			["Say Chat"] = "SAY"
 		},
-		["Value"] = "PARTY"
+		["Value"] = "NONE"
 	},
 	["Dispel"] = {
 		["Options"] = {
@@ -89,7 +89,7 @@ C["Announcements"] = {
 			["Raid Chat"] = "RAID",
 			["Say Chat"] = "SAY"
 		},
-		["Value"] = "PARTY"
+		["Value"] = "NONE"
 	}
 }
 

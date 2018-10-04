@@ -94,13 +94,12 @@ function Module:CreateDebuffHighlight()
 end
 
 function Module:CreateGlobalCooldown()
-	self.GlobalCooldown = CreateFrame("Frame", self:GetName() .. "_GlobalCooldown", self.Health)
-	self.GlobalCooldown:SetWidth(self.Health:GetWidth())
-	self.GlobalCooldown:SetHeight(self.Health:GetHeight() * 1.4)
+	self.GlobalCooldown = CreateFrame("Frame", nil, self.Health)
+	self.GlobalCooldown:SetWidth(130)
+	self.GlobalCooldown:SetHeight(26 * 1.4)
 	self.GlobalCooldown:SetFrameStrata("HIGH")
 	self.GlobalCooldown:SetPoint("LEFT", self.Health, "LEFT", 0, 0)
-	self.GlobalCooldown.Color = {1, 1, 1}
-	self.GlobalCooldown.Height = (self.Health:GetHeight() * 1.4)
+	self.GlobalCooldown.Height = (26 * 1.4)
 	self.GlobalCooldown.Width = (10)
 end
 

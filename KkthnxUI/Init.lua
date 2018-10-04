@@ -72,15 +72,14 @@ Engine[4] = {}
 
 _G[AddOnName] = Engine
 
-AddOn.oUF = Engine.oUF or oUF
-local oUF = AddOn.oUF
-
 AddOn.Title = GetAddOnMetadata(AddOnName, "Title")
 AddOn.Version = GetAddOnMetadata(AddOnName, "Version")
 AddOn.Credits = GetAddOnMetadata(AddOnName, "X-Credits")
+
 AddOn.Noop = function()
 	return
 end
+
 AddOn.Name = UnitName("player")
 AddOn.Class = select(2, UnitClass("player"))
 AddOn.Race = select(2, UnitRace("player"))
@@ -88,6 +87,7 @@ AddOn.Spec = GetSpecialization() or 0
 AddOn.Level = UnitLevel("player")
 AddOn.Client = GetLocale()
 AddOn.Realm = GetRealmName()
+AddOn.oUF = Engine.oUF
 AddOn.Media = "Interface\\AddOns\\KkthnxUI\\Media\\"
 AddOn.LSM = LibStub and LibStub:GetLibrary("LibSharedMedia-3.0", true)
 AddOn.Resolution = ({GetScreenResolutions()})[GetCurrentResolution()] or GetCVar("gxWindowedResolution")
