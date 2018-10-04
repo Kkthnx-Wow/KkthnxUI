@@ -1,10 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local AnnounceInterrupt = K:NewModule("Interrupt", "AceEvent-3.0")
 
--- GLOBALS: unpack, select, _G, string, INTERRUPTED, print
-
--- luacheck: globals unpack select _G string INTERRUPTED print
-
 local _G = _G
 local string_format = string.format
 

@@ -1,9 +1,5 @@
-local K, C = unpack(select(2, ...))
+local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Steal", "AceEvent-3.0")
-
--- GLOBALS: unpack, select, _G, string, INTERRUPTED, print
-
--- luacheck: globals unpack select _G string INTERRUPTED print
 
 local _G = _G
 local string_format = string.format
@@ -18,7 +14,7 @@ local CombatLogGetCurrentEventInfo = _G.CombatLogGetCurrentEventInfo
 local UnitGUID = _G.UnitGUID
 local SendChatMessage = _G.SendChatMessage
 
-local StealMessage = "Stole".." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
+local StealMessage = L["Announcements"].Stole.." %s's \124cff71d5ff\124Hspell:%d:0\124h[%s]\124h\124r!"
 
 function Module:COMBAT_LOG_EVENT_UNFILTERED()
 	local _, event, _, sourceGUID, sourceName, _, _, _, destName, _, _, _, _, _, spellID, spellName = CombatLogGetCurrentEventInfo()

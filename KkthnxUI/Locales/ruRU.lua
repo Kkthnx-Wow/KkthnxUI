@@ -73,10 +73,12 @@ L["Actionbars"] = {
 
 -- Announcements Localization
 L["Announcements"] = {
+	Dispelled = "Dispelled",
 	Pull_Aborted = "Pull ABORTED!",
 	Pulling = "Pulling %s in %s..",
 	Sapped = "Sapped!",
 	Sapped_By = "Sapped by: ",
+	Stole = "Stole",
 }
 
 -- Auras Localization
