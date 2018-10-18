@@ -34,15 +34,16 @@ ExpresswayFontOutline:SetShadowColor(0, 0, 0, 0)
 ExpresswayFontOutline:SetShadowOffset(0, -0)
 
 local TextureTable = {
+	["AltzUI"] = C["Media"].AltzUI,
+	["AsphyxiaUI"] = C["Media"].AsphyxiaUI,
 	["Blank"] = C["Media"].Blank,
 	["DiabolicUI"] = C["Media"].DiabolicUI,
 	["Flat"] = C["Media"].FlatTexture,
+	["GoldpawUI"] = C["Media"].GoldpawUI,
 	["KkthnxUI"] = C["Media"].Texture,
+	["SkullFlowerUI"] = C["Media"].SkullFlowerUI,
 	["Tukui"] = C["Media"].Tukui,
 	["ZorkUI"] = C["Media"].ZorkUI,
-	["AltzUI"] = C["Media"].AltzUI,
-	["GoldpawUI"] = C["Media"].GoldpawUI,
-	["SkullFlowerUI"] = C["Media"].SkullFlowerUI,
 }
 
 local FontTable = {

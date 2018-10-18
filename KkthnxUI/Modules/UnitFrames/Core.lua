@@ -1,5 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes", "AceEvent-3.0", "AceTimer-3.0")
+local LCG = LibStub("LibCustomGlow-1.0", true)
 
 local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
@@ -311,7 +312,7 @@ function Module:CreateStyle(unit)
 		else
 			Module.CreateRaid(self)
 		end
-	elseif unit:match("nameplate") then
+	elseif unit:match("nameplate") and C["Nameplates"].Enable then
 		Module.CreateNameplates(self)
 	end
 
@@ -686,14 +687,14 @@ function Module:PostCreateAura(button)
 		button.count:SetParent(button.OverlayFrame)
 		button.Remaining:SetParent(button.OverlayFrame)
 
-		button.Animation = button:CreateAnimationGroup()
-		button.Animation:SetLooping("BOUNCE")
+		--button.Animation = button:CreateAnimationGroup()
+		--button.Animation:SetLooping("BOUNCE")
 
-		button.Animation.FadeOut = button.Animation:CreateAnimation("Alpha")
-		button.Animation.FadeOut:SetFromAlpha(1)
-		button.Animation.FadeOut:SetToAlpha(0)
-		button.Animation.FadeOut:SetDuration(.6)
-		button.Animation.FadeOut:SetSmoothing("IN_OUT")
+		--button.Animation.FadeOut = button.Animation:CreateAnimation("Alpha")
+		--button.Animation.FadeOut:SetFromAlpha(1)
+		--button.Animation.FadeOut:SetToAlpha(0)
+		--button.Animation.FadeOut:SetDuration(.6)
+		--button.Animation.FadeOut:SetSmoothing("IN_OUT")
 	end
 end
 
@@ -727,17 +728,19 @@ function Module:PostUpdateAura(unit, button, index)
 				button.icon:SetDesaturated(false)
 			end
 		else
-			if button.Animation then
-				if (IsStealable or DType == "Magic") and not isFriend and not button.Animation.Playing then
+			--if button.Animation then
+				if (IsStealable or DType == "Magic") and not isFriend --[[and not button.Animation.Playing--]] then
 					button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-					button.Animation:Play()
-					button.Animation.Playing = true
+					LCG.AutoCastGlow_Start(button, {237/255, 234/255, 142/255})
+					--button.Animation:Play()
+					--button.Animation.Playing = true
 				else
 					button:SetBackdropBorderColor()
-					button.Animation:Stop()
-					button.Animation.Playing = false
+					LCG.AutoCastGlow_Stop(button)
+					--button.Animation:Stop()
+					--button.Animation.Playing = false
 				end
-			end
+			--end
 		end
 
 		if button.Remaining then

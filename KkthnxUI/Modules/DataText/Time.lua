@@ -5,15 +5,17 @@ end
 
 -- Lua API
 local _G = _G
-local date = date
-local next = next
+local date = _G.date
+local next = _G.next
+local select = _G.select
 local string_format = string.format
 local string_join = string.join
 local string_utf8sub = string.utf8sub
 local table_sort, table_insert = table.sort, table.insert
-local unpack = unpack
+local unpack = _G.unpack
 
 -- WoW API
+local DUNGEON_FLOOR_TEMPESTKEEP1 = _G.DUNGEON_FLOOR_TEMPESTKEEP1
 local EJ_GetCurrentTier = _G.EJ_GetCurrentTier
 local EJ_GetInstanceByIndex = _G.EJ_GetInstanceByIndex
 local EJ_GetNumTiers = _G.EJ_GetNumTiers
@@ -31,6 +33,7 @@ local GetWorldPVPAreaInfo = _G.GetWorldPVPAreaInfo
 local QUEUE_TIME_UNAVAILABLE = _G.QUEUE_TIME_UNAVAILABLE
 local RequestRaidInfo = _G.RequestRaidInfo
 local SecondsToTime = _G.SecondsToTime
+local TempestKeep = select(2, GetAchievementInfo(1088)):match("%((.-)%)$")
 local TIMEMANAGER_TOOLTIP_LOCALTIME = _G.TIMEMANAGER_TOOLTIP_LOCALTIME
 local TIMEMANAGER_TOOLTIP_REALMTIME = _G.TIMEMANAGER_TOOLTIP_REALMTIME
 local VOICE_CHAT_BATTLEGROUND = _G.VOICE_CHAT_BATTLEGROUND
@@ -99,10 +102,6 @@ local function OnLeave()
 	enteredFrame = false
 end
 
--- use these to convert "The Eye" into "Tempest Keep"
-local DUNGEON_FLOOR_TEMPESTKEEP1 = DUNGEON_FLOOR_TEMPESTKEEP1
-local TempestKeep = select(2, GetAchievementInfo(1088)):match("%((.-)%)$")
-
 local instanceIconByName = {}
 local function GetInstanceImages(index, raid)
 	local instanceID, name, _, _, buttonImage = EJ_GetInstanceByIndex(index, raid)
@@ -117,7 +116,7 @@ local function GetInstanceImages(index, raid)
 	end
 end
 
-local locale = GetLocale()
+local locale = _G.GetLocale()
 local krcntw = locale == "koKR" or locale == "zhCN" or locale == "zhTW"
 local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 	(krcntw and PLAYER_DIFFICULTY1) or string_utf8sub(PLAYER_DIFFICULTY1, 1, 1), -- N
@@ -338,6 +337,6 @@ local function DelayDataTextTime()
 	Update(DataTextTime, 1)
 end
 
-C_Timer.After(0.4, function()
+C_Timer.After(0.1, function()
 	DelayDataTextTime()
 end)

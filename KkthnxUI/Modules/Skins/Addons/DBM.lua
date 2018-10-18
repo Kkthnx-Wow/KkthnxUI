@@ -3,11 +3,10 @@ if not (C["Skins"].DBM and K.CheckAddOnState("DBM-Core") and K.CheckAddOnState("
 	return
 end
 
-local DBMFont = K.GetFont(C["Skins"].Font)
-local DBMTexture = K.GetTexture(C["Skins"].Texture)
+--local DBMFont = K.GetFont(C["Skins"].Font)
+--local DBMTexture = K.GetTexture(C["Skins"].Texture)
 
 local _G = _G
-local string_gsub = string.gsub
 
 local CreateFrame = _G.CreateFrame
 local hooksecurefunc = _G.hooksecurefunc
@@ -111,35 +110,23 @@ DBM_Skin:SetScript("OnEvent", function(_, event)
 		end
 
 		local function SkinRange(_, _, _, forceshow)
-			if DBM.Options.DontShowRangeFrame and not forceshow then
-				return
-			end
+			if DBM.Options.DontShowRangeFrame and not forceshow then return end
 			if DBMRangeCheck then
 				DBMRangeCheck:CreateShadow(true)
 				DBMRangeCheckRadar:CreateShadow(true)
 			end
 		end
 
-		local function SkinInfo(_, _, event)
-			if DBM.Options.DontShowInfoFrame and (event or 0) ~= "test" then
-				return
-			end
+		local function SkinInfo()
+			if DBM.Options.DontShowInfoFrame and (event or 0) ~= "test" then return end
 			if DBMInfoFrame then
-				DBMInfoFrame:CreateShadow()
-				DBMInfoFrame.Shadow:SetAllPoints()
+				DBMInfoFrame:StripTextures()
+				DBMInfoFrame:CreateShadow(true)
 			end
 		end
 
 		hooksecurefunc(DBT, "CreateBar", SkinBars)
 		hooksecurefunc(DBM.RangeCheck, "Show", SkinRange)
 		hooksecurefunc(DBM.InfoFrame, "Show", SkinInfo)
-
-		local RaidNotice_AddMessage_ = RaidNotice_AddMessage
-		RaidNotice_AddMessage = function(noticeFrame, textString, colorInfo, displayTime)
-			if textString:find("|T") then
-				textString = string_gsub(textString,"(:12:12)",":18:18:0:0:64:64:5:59:5:59")
-			end
-			return RaidNotice_AddMessage_(noticeFrame, textString, colorInfo, displayTime)
-		end
 	end
 end)

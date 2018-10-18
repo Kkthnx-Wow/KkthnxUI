@@ -132,7 +132,7 @@ end
 
 local function Timer_Start(self, start, duration, charges)
 	if self:IsForbidden() then
-		print(self, " is forbidden")
+		-- print(self, " is forbidden")
 		return
 	end
 

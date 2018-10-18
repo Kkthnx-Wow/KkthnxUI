@@ -1,5 +1,7 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true or K.CheckAddOnState("ncHoverBind") == true then return end
+if C["ActionBar"].Enable ~= true or K.CheckAddOnState("ncHoverBind") == true then
+	return
+end
 
 -- Lua API
 local _G = _G
@@ -12,7 +14,6 @@ local tonumber = tonumber
 -- Wow API
 local APPLY = _G.APPLY
 local CANCEL = _G.CANCEL
-local EnumerateFrames = _G.EnumerateFrames
 local ERR_NOT_IN_COMBAT = _G.ERR_NOT_IN_COMBAT
 local GetBindingByKey = _G.GetBindingByKey
 local GetBindingKey = _G.GetBindingKey
@@ -33,13 +34,6 @@ local RunBinding = _G.RunBinding
 local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
-
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: DEFAULT_CHAT_FRAME
--- GLOBALS: MacroFrameTab1, MacroFrameTab2, GameTooltip_ShowCompareItem
--- GLOBALS: ShoppingTooltip1, SpellBookFrame, GameTooltip
--- GLOBALS: StanceButton1, PetActionButton1, ActionButton1
--- GLOBALS: StaticPopupDialogs
 
 -- Binding buttons(ncHoverBind by Nightcracker)
 local bind, oneBind, localmacros = CreateFrame("Frame", "HoverBind", UIParent), true, 0
@@ -80,6 +74,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				for _, frame in pairs(self.shoppingTooltips) do
 					frame:Hide()
 				end
+
 				self.comparing = false
 			end
 		end)
@@ -92,10 +87,22 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end)
 
-		bind:SetScript("OnEvent", function(self) self:Deactivate(false) end)
-		bind:SetScript("OnLeave", function(self) self:HideFrame() end)
-		bind:SetScript("OnKeyDown", function(self, key) self:Listener(key) end)
-		bind:SetScript("OnMouseDown", function(self, key) self:Listener(key) end)
+		bind:SetScript("OnEvent", function(self)
+			self:Deactivate(false)
+		end)
+
+		bind:SetScript("OnLeave", function(self)
+			self:HideFrame()
+		end)
+
+		bind:SetScript("OnKeyDown", function(self, key)
+			self:Listener(key)
+		end)
+
+		bind:SetScript("OnMouseDown", function(self, key)
+			self:Listener(key)
+		end)
+
 		bind:SetScript("OnMouseWheel", function(self, delta)
 			if delta > 0 then
 				self:Listener("MOUSEWHEELUP")
@@ -267,7 +274,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 				end
 			end
 
-			if key == "ESCAPE" or key == "RightButton" then
+			if key == "ESCAPE" then
 				for i = 1, #self.button.bindings do
 					SetBinding(self.button.bindings[i])
 				end
@@ -282,12 +289,23 @@ SlashCmdList.MOUSEOVERBIND = function()
 				return
 			end
 
-			if key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL"
-			or key == "RCTRL" or key == "LALT"
-			or key == "RALT" or key == "UNKNOWN"
-			or key == "LeftButton" then
+			local isFlyout = (self.button.FlyoutArrow and self.button.FlyoutArrow:IsShown())
+
+			if key == "LSHIFT"
+			or key == "RSHIFT"
+			or key == "LCTRL"
+			or key == "RCTRL"
+			or key == "LALT"
+			or key == "RALT"
+			or key == "UNKNOWN" then
 				return
 			end
+
+			-- Redirect LeftButton click to open flyout
+			if key == "LeftButton" and isFlyout then
+				SecureActionButton_OnClick(self.button)
+			end
+
 
 			if key == "MiddleButton" then
 				key = "BUTTON3"
@@ -297,18 +315,30 @@ SlashCmdList.MOUSEOVERBIND = function()
 				key = key:upper()
 			end
 
-			local alt = IsAltKeyDown() and "ALT-" or ""
-			local ctrl = IsControlKeyDown() and "CTRL-" or ""
-			local shift = IsShiftKeyDown() and "SHIFT-" or ""
+			local alt = IsAltKeyDown() and "ALT-" or "";
+			local ctrl = IsControlKeyDown() and "CTRL-" or "";
+			local shift = IsShiftKeyDown() and "SHIFT-" or "";
+			local allowBinding = (not isFlyout or (isFlyout and key ~= "LeftButton")) -- Don't attempt to bind left mouse button for flyout buttons
 
-			if not self.spellmacro or self.spellmacro == "PET" or self.spellmacro == "STANCE" then
-				SetBinding(alt..ctrl..shift..key, self.button.bindstring)
+			if not self.spellmacro or self.spellmacro == "PET" or self.spellmacro == "STANCE" or self.spellmacro == "FLYOUT" then
+				if allowBinding then
+					SetBinding(alt..ctrl..shift..key, self.button.bindstring)
+				end
 			else
-				SetBinding(alt..ctrl..shift..key, self.spellmacro.." "..self.button.name)
+				if allowBinding then
+					SetBinding(alt..ctrl..shift..key, self.spellmacro.." "..self.button.name)
+				end
 			end
-			print(alt..ctrl..shift..key.." |cff00ff00bound to |r"..self.button.name..".")
+
+			if allowBinding then
+				K.Print(alt..ctrl..shift..key.." |cff00ff00bound to |r"..self.button.name..".")
+			end
+
 			self:Update(self.button, self.spellmacro)
-			if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then GameTooltip:Hide() end
+
+			if self.spellmacro ~= "MACRO" and self.spellmacro ~= "FLYOUT" and not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
 		end
 
 		function bind:HideFrame()
@@ -401,21 +431,19 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end
 
-		local val = EnumerateFrames()
-		while val do
-			register(val)
-			val = EnumerateFrames(val)
-		end
-
 		for i = 1, 12 do
 			local b = _G["SpellButton"..i]
-			b:HookScript("OnEnter", function(self) bind:Update(self, "SPELL") end)
+			b:HookScript("OnEnter", function(self)
+				bind:Update(self, "SPELL")
+			end)
 		end
 
 		local function registermacro()
 			for i = 1, MAX_ACCOUNT_MACROS do
 				local b = _G["MacroButton"..i]
-				b:HookScript("OnEnter", function(self) bind:Update(self, "MACRO") end)
+				b:HookScript("OnEnter", function(self)
+					bind:Update(self, "MACRO")
+				end)
 			end
 
 			MacroFrameTab1:HookScript("OnMouseUp", function()

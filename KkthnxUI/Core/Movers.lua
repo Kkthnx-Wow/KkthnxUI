@@ -289,7 +289,7 @@ Movers:SetScript("OnEvent", function(self, event)
 		local Data = KkthnxUIData[Realm][Name].Movers
 
 		for Frame, Position in pairs(Data) do
-			local Frame = _G[Frame] -- Was already defined as a loop above.
+			local Frame = _G[Frame]
 			local IsRegistered = self:IsRegisteredFrame(Frame)
 
 			if Frame and IsRegistered then

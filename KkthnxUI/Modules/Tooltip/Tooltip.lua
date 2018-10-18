@@ -13,6 +13,7 @@ local sub = string.sub
 local table_wipe = table.wipe
 local tonumber = tonumber
 
+
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
@@ -35,6 +36,7 @@ local GetRelativeDifficultyColor = _G.GetRelativeDifficultyColor
 local GetTime = _G.GetTime
 local ID = _G.ID
 local INTERACTIVE_SERVER_LABEL = _G.INTERACTIVE_SERVER_LABEL
+local IsInGroup = _G.IsInGroup
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
@@ -54,8 +56,11 @@ local UnitClassification = _G.UnitClassification
 local UnitCreatureType = _G.UnitCreatureType
 local UnitExists = _G.UnitExists
 local UnitFactionGroup = _G.UnitFactionGroup
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitGUID = _G.UnitGUID
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
+local UnitInParty = _G.UnitInParty
+local UnitInRaid = _G.UnitInRaid
 local UnitIsAFK = _G.UnitIsAFK
 local UnitIsBattlePetCompanion = _G.UnitIsBattlePetCompanion
 local UnitIsDeadOrGhost = _G.UnitIsDeadOrGhost
@@ -77,6 +82,19 @@ local TAPPED_COLOR = {r = .6, g = .6, b = .6}
 local AFK_LABEL = " |cffFFFFFF[|r|cffFF0000" .. "AFK" .. "|r|cffFFFFFF]|r"
 local DND_LABEL = " |cffFFFFFF[|r|cffFFFF00" .. "DND" .. "|r|cffFFFFFF]|r"
 local TOOLTOP_BUG = nil
+
+local LOCALE = {
+	PVP = PVP,
+	FACTION_HORDE = FACTION_HORDE,
+	FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL,
+	ID = ID,
+	INTERACTIVE_SERVER_LABEL = INTERACTIVE_SERVER_LABEL,
+	LEVEL = LEVEL,
+	TARGET = TARGET,
+	DEAD = DEAD,
+	FACTION_ALLIANCE = FACTION_ALLIANCE,
+	NONE = NONE
+}
 
 local ignoreSubType = {
 	L["Tooltip"].Other == true,
@@ -116,7 +134,7 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 		end
 
 		if (C["Tooltip"].CursorAnchor) then
-			tt:SetOwner(parent, "ANCHOR_CURSOR")
+			tt:SetOwner(parent, "ANCHOR_CURSOR_RIGHT", C["Tooltip"].CursorAnchorX, C["Tooltip"].CursorAnchorY)
 			return
 		else
 			tt:SetOwner(parent, "ANCHOR_NONE")
@@ -135,7 +153,7 @@ function Module:CleanUpTrashLines(tt)
 		local tiptext = _G["GameTooltipTextLeft" .. i]
 		local linetext = tiptext:GetText()
 
-		if (linetext == PVP or linetext == FACTION_ALLIANCE or linetext == FACTION_HORDE) then
+		if (linetext == LOCALE.PVP or linetext == LOCALE.FACTION_ALLIANCE or linetext == LOCALE.FACTION_HORDE) then
 			tiptext:SetText(nil)
 			tiptext:Hide()
 		end
@@ -149,7 +167,7 @@ function Module:GetLevelLine(tt, offset)
 
 	for i = offset, tt:NumLines() do
 		local tipText = _G["GameTooltipTextLeft" .. i]
-		if (tipText:GetText() and tipText:GetText():find(LEVEL)) then
+		if (tipText:GetText() and tipText:GetText():find(LOCALE.LEVEL)) then
 			return tipText
 		end
 	end
@@ -289,9 +307,9 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			if (isShiftKeyDown) then
 				name = name .. "-" .. realm
 			elseif (relationship == LE_REALM_RELATION_COALESCED) then
-				name = name .. FOREIGN_SERVER_LABEL
+				name = name .. LOCALE.FOREIGN_SERVER_LABEL
 			elseif (relationship == LE_REALM_RELATION_VIRTUAL) then
-				name = name .. INTERACTIVE_SERVER_LABEL
+				name = name .. LOCALE.INTERACTIVE_SERVER_LABEL
 			end
 		end
 
@@ -328,6 +346,21 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			end
 
 			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r %s |c%s%s|r", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", race or "", color.colorStr, localeClass)
+		end
+
+		if C["Tooltip"].Role then
+			local role, r, g, b = UnitGroupRolesAssigned(unit)
+			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
+				if role == "HEALER" then
+					role, r, g, b = L["Healer"], 0, 1, .59
+				elseif role == "TANK" then
+					role, r, g, b = L["Tank"], .16, .31, .61
+				elseif role == "DAMAGER" then
+					role, r, g, b = L["DPS"], .77, .12, .24
+				end
+
+				GameTooltip:AddDoubleLine(LOCALE.ROLE, role, nil, nil, nil, r, g, b)
+			end
 		end
 
 		-- High CPU usage, restricting it to shift key down only.
@@ -373,7 +406,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			end
 
 			if (UnitIsPVP(unit)) then
-				pvpFlag = format(" (%s)", PVP)
+				pvpFlag = format(" (%s)", LOCALE.PVP)
 			end
 
 			levelLine:SetFormattedText("|cff%02x%02x%02x%s|r%s %s%s", diffColor.r * 255, diffColor.g * 255, diffColor.b * 255, level > 0 and level or "??", classification[creatureClassification] or "", creatureType or "", pvpFlag)
@@ -392,7 +425,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 			FACTION_BAR_COLORS[UnitReaction(unitTarget, "player")]
 		end
 
-		GameTooltip:AddDoubleLine(format("%s:", TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
+		GameTooltip:AddDoubleLine(format("%s:", LOCALE.TARGET), format("|cff%02x%02x%02x%s|r", targetColor.r * 255, targetColor.g * 255, targetColor.b * 255, UnitName(unitTarget, true)))
 	end
 
 	-- NPC ID's
@@ -404,7 +437,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		local guid = UnitGUID(unit) or ""
 		local id = tonumber(guid:match("%-(%d-)%-%x-$"), 10)
 		if id and guid:match("%a+") ~= "Player" then
-			GameTooltip:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
+			GameTooltip:AddLine(("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id))
 		end
 	end
 
@@ -442,7 +475,7 @@ function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
 		tt.text:SetFormattedText("%d%%", math_floor(value * 100))
 		tt:SetStatusBarColor(TAPPED_COLOR.r, TAPPED_COLOR.g, TAPPED_COLOR.b) -- most effeciant?
 	elseif (value == 0 or (unit and UnitIsDeadOrGhost(unit))) then
-		tt.text:SetText(DEAD)
+		tt.text:SetText(LOCALE.DEAD)
 	else
 		tt.text:SetText(K.ShortValue(value) .. " / " .. K.ShortValue(max))
 	end
@@ -489,7 +522,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 		local bankCount = " "
 
 		if link ~= nil and C["Tooltip"].SpellID and IsShiftKeyDown() then
-			left = (("|cFFCA3C3C%s|r %s"):format(ID, link)):match(":(%w+)")
+			left = (("|cFFCA3C3C%s|r %s"):format(LOCALE.ID, link)):match(":(%w+)")
 		end
 
 		right = ("|cFFCA3C3C%s|r %d"):format(L["Tooltip"].Count, num)
@@ -665,9 +698,9 @@ function Module:SetUnitAura(tt, unit, index, filter)
 			if not color then
 				color = RAID_CLASS_COLORS["PRIEST"]
 			end
-			tt:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(ID, id), format("|c%s%s|r", color.colorStr, name))
+			tt:AddDoubleLine(("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id), format("|c%s%s|r", color.colorStr, name))
 		else
-			tt:AddLine(("|cFFCA3C3C%s|r %d"):format(ID, id))
+			tt:AddLine(("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id))
 		end
 
 		tt:Show()
@@ -684,7 +717,7 @@ function Module:GameTooltip_OnTooltipSetSpell(tt)
 		return
 	end
 
-	local displayString = ("|cFFCA3C3C%s|r %d"):format(ID, id)
+	local displayString = ("|cFFCA3C3C%s|r %d"):format(LOCALE.ID, id)
 	local lines = tt:NumLines()
 	local isFound
 	for i = 1, lines do
@@ -712,7 +745,7 @@ end
 function Module:RepositionBNET(frame, _, anchor)
 	if anchor ~= BNETMover then
 		frame:ClearAllPoints()
-		frame:SetPoint("CENTER", BNETMover, "CENTER")
+		frame:SetPoint(BNETMover.anchorPoint or "TOPLEFT", BNETMover, BNETMover.anchorPoint or "TOPLEFT")
 	end
 end
 
@@ -767,14 +800,15 @@ function Module:OnEnable()
 	BNETMover:SetPoint("BOTTOMLEFT", UIParent, "BOTTOMLEFT", 6, 204)
 	BNETMover:SetSize(250, 64)
 
+	BNToastFrame:SetPoint("TOPRIGHT", BNETMover, "BOTTOMRIGHT", 0, -10)
+	K.Movers:RegisterFrame(BNETMover)
+	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
+
 	BNToastFrame:SetBackdrop(nil)
 	BNToastFrame:CreateBorder()
 	BNToastFrame.CloseButton:SetSize(32, 32)
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 	BNToastFrame.CloseButton:SkinCloseButton()
-
-	K.Movers:RegisterFrame(BNETMover)
-	self:SecureHook(BNToastFrame, "SetPoint", "RepositionBNET")
 
 	if GameTooltipStatusBar then
 		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)

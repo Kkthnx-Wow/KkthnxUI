@@ -1,5 +1,4 @@
 local K, C = unpack(select(2, ...))
-
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
@@ -7,74 +6,94 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 
 function Module:CreateHealthPrediction()
-	local PredictionFont = K.GetFont(C["Unitframe"].Font)
-	local PredictionTexture = K.GetTexture(C["Unitframe"].Texture)
+	local Texture = C["Media"].Blank
+	local Health = self.Health
+	local WidthH = Health:GetWidth()
+	local PointT = "TOP"
+	local PointB = "BOTTOM"
+	local PointL = "LEFT"
+	local PointR = "RIGHT"
 
-	local mhpb = CreateFrame("StatusBar", nil, self.Health)
-	mhpb:SetParent(self.Health)
-	mhpb:SetStatusBarTexture(PredictionTexture)
-	mhpb:SetStatusBarColor(0, 1, 0.5, 0.25)
-	mhpb:Hide()
 
-	local ohpb = CreateFrame("StatusBar", nil, self.Health)
-	ohpb:SetParent(self.Health)
-	ohpb:SetStatusBarTexture(PredictionTexture)
-	ohpb:SetStatusBarColor(0, 1, 0, 0.25)
-	ohpb:Hide()
+	local myBar = CreateFrame("StatusBar", nil, Health)
+	myBar:SetParent(Health)
+	myBar:SetStatusBarTexture(Texture)
+	myBar:SetStatusBarColor(0, 0.827, 0.765, 0.8)
+	myBar:SetPoint(PointT, Health, PointT)
+	myBar:SetPoint(PointB, Health, PointB)
+	myBar:SetPoint(PointL, Health:GetStatusBarTexture(), PointR)
+	myBar:SetWidth(WidthH)
+	myBar:Hide()
 
-	local absorbBar = CreateFrame("StatusBar", nil, self.Health)
-	absorbBar:SetParent(self.Health)
-	absorbBar:SetStatusBarTexture(PredictionTexture)
-	absorbBar:SetStatusBarColor(1, 1, 0, 0.25)
+	local otherBar = CreateFrame("StatusBar", nil, Health)
+	otherBar:SetParent(Health)
+	otherBar:SetStatusBarTexture(Texture)
+	otherBar:SetStatusBarColor(0.0, 0.631, 0.557, 0.8)
+	otherBar:SetPoint(PointT, Health, PointT)
+	otherBar:SetPoint(PointB, Health, PointB)
+	otherBar:SetPoint(PointL, myBar:GetStatusBarTexture(), PointR)
+	otherBar:SetWidth(WidthH)
+	otherBar:Hide()
+
+	local absorbBar = CreateFrame("StatusBar", nil, Health)
+	absorbBar:SetParent(Health)
+	absorbBar:SetStatusBarTexture(Texture)
+	absorbBar:SetStatusBarColor(0.85, 0.85, 0.9, 0.8)
+	absorbBar:SetPoint(PointT, Health, PointT)
+	absorbBar:SetPoint(PointB, Health, PointB)
+	absorbBar:SetPoint(PointR, Health, PointR)
+	absorbBar:SetWidth(WidthH)
 	absorbBar:Hide()
 
-	local healAbsorbBar = CreateFrame("StatusBar", nil, self.Health)
-	healAbsorbBar:SetParent(self.Health)
-	healAbsorbBar:SetStatusBarTexture(PredictionTexture)
-	healAbsorbBar:SetStatusBarColor(1, 0, 0, 0.25)
+	if absorbBar then
+		absorbBar.Overlay = absorbBar:CreateTexture(nil, "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
+		absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
+	end
+
+	local healAbsorbBar = CreateFrame("StatusBar", nil, Health)
+	healAbsorbBar:SetParent(Health)
 	healAbsorbBar:SetReverseFill(true)
+	healAbsorbBar:SetStatusBarTexture(Texture)
+	healAbsorbBar:SetStatusBarColor(0.9, 0.1, 0.3, 0.8)
+	healAbsorbBar:SetPoint(PointT, Health, PointT)
+	healAbsorbBar:SetPoint(PointB, Health, PointB)
+	healAbsorbBar:SetPoint(PointR, Health:GetStatusBarTexture(), PointR)
+	healAbsorbBar:SetWidth(WidthH)
 	healAbsorbBar:Hide()
 
-	local HealthPrediction = {
-		myBar = mhpb,
-		otherBar = ohpb,
+	local overAbsorb = Health:CreateTexture(nil, "ARTWORK")
+	if overAbsorb then
+		overAbsorb:SetPoint(PointT, Health, PointT)
+		overAbsorb:SetPoint(PointB, Health, PointB)
+		overAbsorb:SetPoint(PointL, Health, PointR, -4, 0)
+		overAbsorb:SetWidth(8)
+	end
+	overAbsorb:Hide()
+
+	local overHealAbsorb = Health:CreateTexture(nil, "ARTWORK")
+	if overHealAbsorb then
+		overHealAbsorb:SetPoint(PointT, Health, PointT)
+		overHealAbsorb:SetPoint(PointB, Health, PointB)
+		overHealAbsorb:SetPoint(PointR, Health, PointL, -4, 0)
+		overHealAbsorb:SetSize(8, Health:GetHeight())
+	end
+	overHealAbsorb:Hide()
+
+	return {
+		myBar = myBar,
+		otherBar = otherBar,
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
 		maxOverflow = 1,
-		PostUpdate = Module.UpdateHealComm
+		overAbsorb = overAbsorb,
+		overHealAbsorb = overHealAbsorb,
+		parent = self,
+		PostUpdate = Module.UpdateHealPrediction,
 	}
-	HealthPrediction.parent = self
-
-	return HealthPrediction
 end
 
-function Module:UpdateFillBar(previousTexture, bar, amount, inverted)
-	if (amount == 0) then
-		bar:Hide()
-		return previousTexture
+function Module:UpdateHealPrediction(unit, _, _, _, _, hasOverAbsorb)
+	if hasOverAbsorb then
+		self.absorbBar:SetValue(_G.UnitGetTotalAbsorbs(unit))
 	end
-
-	bar:ClearAllPoints()
-	if (inverted) then
-		bar:SetPoint("TOPRIGHT", previousTexture, "TOPRIGHT")
-		bar:SetPoint("BOTTOMRIGHT", previousTexture, "BOTTOMRIGHT")
-	else
-		bar:SetPoint("TOPLEFT", previousTexture, "TOPRIGHT")
-		bar:SetPoint("BOTTOMLEFT", previousTexture, "BOTTOMRIGHT")
-	end
-
-	local totalWidth, totalHeight = self.Health:GetSize()
-	bar:SetWidth(totalWidth)
-
-	return bar:GetStatusBarTexture()
-end
-
-function Module:UpdateHealComm(unit, myIncomingHeal, allIncomingHeal, totalAbsorb, healAbsorb)
-	local frame = self.parent
-	local previousTexture = frame.Health:GetStatusBarTexture()
-
-	Module.UpdateFillBar(frame, previousTexture, self.healAbsorbBar, healAbsorb, true)
-	previousTexture = Module.UpdateFillBar(frame, previousTexture, self.myBar, myIncomingHeal)
-	previousTexture = Module.UpdateFillBar(frame, previousTexture, self.otherBar, allIncomingHeal)
-	Module.UpdateFillBar(frame, previousTexture, self.absorbBar, totalAbsorb)
 end

@@ -150,9 +150,9 @@ function Module:CreatePvPIndicator(unit, parent, width, height)
 	self.PvPIndicator:ClearAllPoints()
 
 	if (unit == "player") then
-		self.PvPIndicator:SetPoint("RIGHT", parent, "LEFT")
+		self.PvPIndicator:SetPoint("RIGHT", parent, "LEFT", -2, 0)
 	else
-		self.PvPIndicator:SetPoint("LEFT", parent, "RIGHT")
+		self.PvPIndicator:SetPoint("LEFT", parent, "RIGHT", 2, 0)
 	end
 
 	self.PvPIndicator.PostUpdate = PostUpdatePvPIndicator

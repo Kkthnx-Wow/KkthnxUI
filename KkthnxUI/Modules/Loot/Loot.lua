@@ -1,5 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
+local LCG = LibStub("LibCustomGlow-1.0", true)
 
 local _G = _G
 local pairs = pairs
@@ -253,14 +254,15 @@ function Module:LOOT_OPENED(_, autoloot)
 			if (questId and not isActive) then
 				questTexture:Show()
 				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
-				slot.name:SetTextColor(1, 1, 0)
+				LCG.AutoCastGlow_Start(slot.iconFrame, {1, 1, 0})
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
 				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
-				slot.name:SetTextColor(1, 1, 0)
+				LCG.AutoCastGlow_Start(slot.iconFrame, {1, 1, 0})
 			else
 				questTexture:Hide()
 				slot.iconFrame:SetBackdropBorderColor()
+				LCG.AutoCastGlow_Stop(slot.iconFrame)
 			end
 
 			slot:Enable()

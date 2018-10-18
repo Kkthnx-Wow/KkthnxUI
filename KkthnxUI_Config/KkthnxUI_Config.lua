@@ -600,9 +600,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 	Button.Group = group
 	Button.Option = option
 	Button:RegisterForClicks("AnyUp")
-	Button:SetScript(
-	"OnClick",
-	function(self, button)
+	Button:SetScript("OnClick", function(self, button)
 		if (button == "RightButton") then
 			ResetColor(self)
 		else
@@ -619,10 +617,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 				ColorPickerFrame.hasOpacity = (a ~= nil and a < 1)
 				ColorPickerFrame.opacity = a
 				ColorPickerFrame.previousValues = {OldR, OldG, OldB, OldA}
-				ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc =
-				changedCallback,
-				changedCallback,
-				sameCallback
+				ColorPickerFrame.func, ColorPickerFrame.opacityFunc, ColorPickerFrame.cancelFunc = changedCallback, changedCallback, sameCallback
 				ShowUIPanel(ColorPickerFrame)
 			end
 
@@ -646,8 +641,7 @@ local function CreateConfigColorPicker(parent, group, option, value)
 
 			ShowColorPicker(OldR, OldG, OldB, OldA, ColorCallback, SameColorCallback)
 		end
-	end
-	)
+	end)
 
 	Button.Name = Button:CreateFontString(nil, "OVERLAY")
 	Button.Name:SetFont(C["Media"].Font, 12)
@@ -754,12 +748,9 @@ local function CreateConfigDropDown(parent, group, option, value, type)
 	DropDown.Button = Button
 	DropDown.Current = Current
 	DropDown.List = List
-	DropDown:HookScript(
-	"OnHide",
-	function()
+	DropDown:HookScript("OnHide", function()
 		List:Hide()
-	end
-	)
+	end)
 
 	Button.Tex = ButtonTex
 	Button:SetScript("OnClick", DropDownButtonOnClick)
@@ -1117,7 +1108,7 @@ function KkthnxUIConfig:CreateConfigWindow()
 		if (not self.Filter[Group]) then
 			local NumOptions = 0
 
-			for Key in pairs(Table) do
+			for _ in pairs(Table) do
 				NumOptions = NumOptions + 1
 			end
 

@@ -44,6 +44,7 @@ local GenericIgnores = {
 	"NauticusMiniIcon",
 	"WestPointer",
 	"Cork",
+	"DugisArrowMinimapPoint",
 }
 
 local PartialIgnores = {
@@ -81,32 +82,41 @@ function Module:UnlockButton(Button)
 end
 
 function Module:SkinMinimapButton(Button)
-	if (not Button) then return end
-	if Button.isSkinned then return end
+	if (not Button) or Button.isSkinned then
+		return
+	end
 
 	local Name = Button:GetName()
-	if not Name then return end
+
+	if not Name then
+		return
+	end
 
 	if Button:IsObjectType("Button") then
-		for i = 1, #ignoreButtons do
-			if Name == ignoreButtons[i] then return end
+		if tContains(ignoreButtons, Name) then
+			return
 		end
 
 		for i = 1, #GenericIgnores do
-			if strsub(Name, 1, strlen(GenericIgnores[i])) == GenericIgnores[i] then return end
+			if strsub(Name, 1, strlen(GenericIgnores[i])) == GenericIgnores[i] then
+				return
+			end
 		end
 
 		for i = 1, #PartialIgnores do
-			if strfind(Name, PartialIgnores[i]) ~= nil then return end
+			if strfind(Name, PartialIgnores[i]) ~= nil then
+				return
+			end
 		end
 	end
 
 	for i = 1, Button:GetNumRegions() do
 		local Region = select(i, Button:GetRegions())
-		if Region:GetObjectType() == "Texture" then
-			local Texture = Region:GetTexture()
+		if Region.IsObjectType and Region:IsObjectType("Texture") then
+			local Texture = strlower(Region:GetTexture())
 
-			if Texture and (strfind(Texture, "Border") or strfind(Texture, "Background") or strfind(Texture, "AlphaMask") or strfind(Texture, "Highlight")) then
+			if (strfind(Texture, "interface\\characterframe") or (strfind(Texture, "interface\\minimap") and not strfind(Texture, "interface\minimap\tracking\\")) or strfind(Texture, "border") or strfind(Texture, "background") or strfind(Texture, "alphamask") or strfind(Texture, "highlight")) then
+				Region:SetTexture(nil)
 				Region:SetAlpha(0)
 			else
 				if Name == "BagSync_MinimapButton" then
@@ -122,6 +132,7 @@ function Module:SkinMinimapButton(Button)
 				elseif Name == "VendomaticButtonFrame" then
 					Region:SetTexture("Interface\\Icons\\INV_Misc_Rabbit_2")
 				end
+
 				Region:ClearAllPoints()
 				Region:SetAllPoints()
 				Region:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])
@@ -134,9 +145,7 @@ function Module:SkinMinimapButton(Button)
 
 	Button:SetFrameLevel(Minimap:GetFrameLevel() + 5)
 	Button:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
-
 	Button:CreateBorder()
-
 	Button:HookScript("OnEnter", function(self)
 		self:SetBackdropBorderColor(K.Color.r, K.Color.g, K.Color.b)
 		if Module.Bar:IsShown() then
@@ -146,11 +155,7 @@ function Module:SkinMinimapButton(Button)
 
 	Button:HookScript("OnLeave", function(self)
 		self:SetBackdropBorderColor()
-		if not self.isSkinned then
-			self:CreateBorder()
-			self.isSkinned = true
-		end
-
+		self:CreateBorder()
 		if Module.Bar:IsShown() and C["MinimapButtons"].BarMouseOver then
 			UIFrameFadeOut(Module.Bar, 0.2, Module.Bar:GetAlpha(), 0)
 		end
@@ -165,16 +170,23 @@ function Module:GrabMinimapButtons()
 		return
 	end
 
-	for _, Frame in pairs({ Minimap, MinimapBackdrop}) do
-		for i = 1, Frame:GetNumChildren() do
+	for _, Frame in pairs({Minimap, MinimapBackdrop}) do
+		local NumChildren = Frame:GetNumChildren()
+		if NumChildren < (Frame.SMBNumChildren or 0) then
+			return
+		end
+
+		for i = 1, NumChildren do
 			local object = select(i, Frame:GetChildren())
 			if object then
 				local name = object:GetName()
-				if name and (object:IsObjectType('Button') or object:IsObjectType('Frame') and tContains(AcceptedFrames, name)) then
+				local width = object:GetWidth()
+				if name and width > 15 and width < 40 and (object:IsObjectType("Button") or object:IsObjectType("Frame") and tContains(AcceptedFrames, name)) then
 					self:SkinMinimapButton(object)
 				end
 			end
 		end
+		Frame.SMBNumChildren = NumChildren
 	end
 
 	self:Update()
@@ -209,7 +221,6 @@ function Module:Update()
 			Module:UnlockButton(Button)
 
 			Button:CreateBorder()
-
 			Button:SetParent(self.Bar)
 			Button:ClearAllPoints()
 			Button:SetPoint("TOPLEFT", self.Bar, "TOPLEFT", (Spacing + ((Size + Spacing) * (AnchorX - 1))), (- Spacing - ((Size + Spacing) * (AnchorY - 1))))
@@ -219,7 +230,9 @@ function Module:Update()
 
 			Module:LockButton(Button)
 
-			if Maxed then ActualButtons = ButtonsPerRow end
+			if Maxed then
+				ActualButtons = ButtonsPerRow
+			end
 		end
 	end
 
@@ -227,7 +240,11 @@ function Module:Update()
 	local BarHeight = (Spacing + ((Size * (AnchorY * Mult)) + ((Spacing * (AnchorY - 1)) * Mult) + (Spacing * Mult)))
 	self.Bar:SetSize(BarWidth, BarHeight)
 
-	self.Bar:Show()
+	if ActualButtons == 0 then
+		self.Bar:Hide()
+	else
+		self.Bar:Show()
+	end
 
 	if C["MinimapButtons"].BarMouseOver then
 		UIFrameFadeOut(self.Bar, 0.2, self.Bar:GetAlpha(), 0)
@@ -237,28 +254,30 @@ function Module:Update()
 end
 
 function Module:OnInitialize()
-	self.Bar = CreateFrame("Frame", "MinimapButtonBar", UIParent)
-	self.Bar:Hide()
-	self.Bar:SetPoint("RIGHT", UIParent, "RIGHT", -126, 184)
-	self.Bar:SetFrameStrata("LOW")
-	self.Bar:SetClampedToScreen(true)
-	self.Bar:SetMovable(true)
-	self.Bar:EnableMouse(true)
-	self.Bar:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
+	Module.Bar = CreateFrame("Frame", "MinimapButtonBar", UIParent)
+	Module.Bar:Hide()
+	Module.Bar:SetPoint("RIGHT", UIParent, "RIGHT", -126, 184)
+	Module.Bar:SetFrameStrata("LOW")
+	Module.Bar:SetClampedToScreen(true)
+	Module.Bar:SetMovable(true)
+	Module.Bar:EnableMouse(true)
+	Module.Bar:SetSize(C["MinimapButtons"].IconSize, C["MinimapButtons"].IconSize)
 
-	self.Bar:CreateBorder()
+	Module.Bar:CreateBorder()
 
-	self.Bar:SetScript("OnEnter", function(self)
+	Module.Bar:SetScript("OnEnter", function(self)
 		UIFrameFadeIn(self, 0.2, self:GetAlpha(), 1)
 	end)
 
-	self.Bar:SetScript("OnLeave", function(self)
+	Module.Bar:SetScript("OnLeave", function(self)
 		if C["MinimapButtons"].BarMouseOver then
 			UIFrameFadeOut(self, 0.2, self:GetAlpha(), 0)
 		end
 	end)
 
-	self:ScheduleRepeatingTimer("GrabMinimapButtons", 6)
+	K["Movers"]:RegisterFrame(Module.Bar)
 
-	K["Movers"]:RegisterFrame(self.Bar)
+	Minimap:SetMaskTexture("Interface\\ChatFrame\\ChatFrameBackground")
+
+	Module:ScheduleRepeatingTimer("GrabMinimapButtons", 6)
 end

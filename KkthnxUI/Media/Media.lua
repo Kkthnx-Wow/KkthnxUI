@@ -2,6 +2,7 @@ local K, C = unpack(select(2, ...))
 
 C["Media"] = {
 	AltzUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AltzUI.tga]],
+	AsphyxiaUI = [[Interface\AddOns\KkthnxUI\Media\Textures\AsphyxiaUI.tga]],
 	BackdropColor = {.04, .04, .04, 0.9},
 	Blank = [[Interface\BUTTONS\WHITE8X8]],
 	BlankFont = [[Interface\AddOns\KkthnxUI\Media\Fonts\Invisible.ttf]],
@@ -22,6 +23,7 @@ C["Media"] = {
 	NewClassPortraits = [[Interface\AddOns\KkthnxUI\Media\Unitframes\NEW-ICONS-CLASSES.blp]],
 	Proc_Sound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Proc.ogg]],
 	Shader = [[Interface\AddOns\KkthnxUI\Media\Textures\Shader.tga]],
+	SkullFlowerUI = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],
 	Spark_128 = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_128]],
 	Spark_16 = [[Interface\AddOns\KkthnxUI\Media\Textures\Spark_16]],
 	Texture = [[Interface\TargetingFrame\UI-StatusBar]],
@@ -30,7 +32,6 @@ C["Media"] = {
 	WarningSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Warning.ogg]],
 	WhisperSound = [[Interface\AddOns\KkthnxUI\Media\Sounds\Whisper.ogg]],
 	ZorkUI = [[Interface\AddOns\KkthnxUI\Media\Textures\ZorkUI.tga]],
-	SkullFlowerUI = [[Interface\AddOns\KkthnxUI\Media\Textures\SkullFlowerUI.tga]],
 }
 
 if (K.Client == "koKR" or K.Client == "zhTW" or K.Client == "zhCN") then

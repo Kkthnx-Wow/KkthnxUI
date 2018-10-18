@@ -4,8 +4,10 @@ local Module = K:NewModule("RaidMarker", "AceEvent-3.0", "AceHook-3.0")
 -- Soured: Baudzilla
 
 local _G = _G
-local math_sin, math_cos = math.sin, math.cos
+local math_sin, math_cos, math_rad = _G.math.sin, _G.math.cos, _G.math.rad
 
+local ButtonAngle = math_rad(360) / 7
+local ButtonIsDown
 local CreateFrame = _G.CreateFrame
 local GetCursorPosition = _G.GetCursorPosition
 local GetNumGroupMembers = _G.GetNumGroupMembers
@@ -18,7 +20,6 @@ local UnitExists, UnitIsDead = _G.UnitExists, _G.UnitIsDead
 local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
 local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
-local ButtonIsDown
 function Module:RaidMarkCanMark()
 	if not self.RaidMarkFrame then
 		return false
@@ -92,7 +93,7 @@ function Module:OnEnable()
 		button:SetSize(40, 40)
 		button:SetID(i)
 		button.Texture = button:CreateTexture(button:GetName() .. "NormalTexture", "ARTWORK")
-		button.Texture:SetTexture([[Interface\TargetingFrame\UI-RaidTargetingIcons]])
+		button.Texture:SetTexture([[Interface\AddOns\KkthnxUI\Media\Textures\UI-RaidTargetingIcons]])
 		button.Texture:SetAllPoints()
 		SetRaidTargetIconTexture(button.Texture, i)
 		button:RegisterForClicks("LeftbuttonUp", "RightbuttonUp")
@@ -103,7 +104,7 @@ function Module:OnEnable()
 		if i == 8 then
 			button:SetPoint("CENTER")
 		else
-			local angle = 377 / 7 * i -- Math is lame. Stay in school
+			local angle = ButtonAngle * (i - 1)
 			button:SetPoint("CENTER", math_sin(angle) * 60, math_cos(angle) * 60)
 		end
 	end

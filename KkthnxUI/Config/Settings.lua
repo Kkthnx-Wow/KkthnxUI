@@ -432,13 +432,15 @@ C["Skins"] = {
 -- Tooltip
 C["Tooltip"] = {
 	["CursorAnchor"] = false,
+	["CursorAnchorX"] = 0,
+	["CursorAnchorY"] = 0,
 	["Enable"] = true,
 	["Font"] = "KkthnxUI",
 	["FontOutline"] = false,
 	["FontSize"] = 12,
 	["GuildRanks"] = false,
-	["HealthBarText"] = true,
 	["HealthbarHeight"] = 10,
+	["HealthBarText"] = true,
 	["Icons"] = false,
 	["InspectInfo"] = true,
 	["ItemQualityBorder"] = true,

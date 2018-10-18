@@ -352,7 +352,7 @@ function Filger:OnEvent(event, unit)
 		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
 			local data = C["FilgerSpells"][K.Class][id][i]
 			local found = false
-			local name, icon, count, duration, start, spid
+			local name, icon, count, duration, start, spid, _
 			spid = 0
 
 			if data.filter == "BUFF" then
@@ -529,7 +529,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 			frame.actives = {}
 			for j = 1, math.min(C["Filger"].MaxTestIcon, #C["FilgerSpells"][K.Class][i]), 1 do
 				local data = C["FilgerSpells"][K.Class][i][j]
-				local name, icon
+				local name, icon, _
 				if data.spellID then
 					name, _, icon = GetSpellInfo(data.spellID)
 				elseif data.slotID then
@@ -550,7 +550,8 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				end
 			end
 
-			frame:RegisterEvent("UNIT_AURA")
+			-- frame:RegisterEvent("UNIT_AURA")
+			frame:RegisterUnitEvent("UNIT_AURA", "player", "target")
 			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			frame:RegisterEvent("PLAYER_TARGET_CHANGED")
 			frame:RegisterEvent("PLAYER_ENTERING_WORLD")
