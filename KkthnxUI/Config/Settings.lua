@@ -445,6 +445,7 @@ C["Tooltip"] = {
 	["InspectInfo"] = true,
 	["ItemQualityBorder"] = true,
 	["PlayerTitles"] = false,
+	["Role"] = false,
 	["SpellID"] = true,
 	["Texture"] = "KkthnxUI"
 }
