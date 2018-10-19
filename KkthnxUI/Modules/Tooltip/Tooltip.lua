@@ -807,7 +807,7 @@ function Module:OnEnable()
 	BNToastFrame.CloseButton:SkinCloseButton()
 
 	if GameTooltipStatusBar then
-		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
+		GameTooltipStatusBar:SetHeight(4)
 		GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
 
 		GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", nil, -8)
