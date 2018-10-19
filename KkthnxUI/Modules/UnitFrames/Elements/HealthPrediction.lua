@@ -73,32 +73,12 @@ function Module:CreateHealthPrediction()
 	healAbsorbBar:SetReverseFill(true)
 	healAbsorbBar:Hide()
 
-	local overAbsorb = Health:CreateTexture(nil, "ARTWORK")
-	overAbsorb:SetTexture(Texture)
-	overAbsorb:SetVertexColor(Database.OverAbsorbs[1], Database.OverAbsorbs[2], Database.OverAbsorbs[3], Database.OverAbsorbs[4])
-	overAbsorb:SetPoint(PointT, Health, PointT)
-	overAbsorb:SetPoint(PointB, Health, PointB)
-	overAbsorb:SetPoint(PointL, Health, PointR)
-	overAbsorb:SetSize(1, 0)
-	overAbsorb:Hide()
-
-	local overHealAbsorb = Health:CreateTexture(nil, "ARTWORK")
-	overHealAbsorb:SetTexture(Texture)
-	overHealAbsorb:SetVertexColor(Database.OverHealAbsorbs[1], Database.OverHealAbsorbs[2], Database.OverHealAbsorbs[3], Database.OverHealAbsorbs[4])
-	overHealAbsorb:SetPoint(PointT, Health, PointT)
-	overHealAbsorb:SetPoint(PointB, Health, PointB)
-	overHealAbsorb:SetPoint(PointR, Health, PointL)
-	overHealAbsorb:SetSize(1, 0)
-	overHealAbsorb:Hide()
-
 	return {
 		myBar = myBar,
 		otherBar = otherBar,
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
 		maxOverflow = 1,
-		overAbsorb = overAbsorb,
-		overHealAbsorb = overHealAbsorb,
 		PostUpdate = Module.UpdateHealthPrediction,
 		parent = self,
 	}

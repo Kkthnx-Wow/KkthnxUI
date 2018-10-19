@@ -68,6 +68,9 @@ local menuList = {
 	{text = RELOADUI, notCheckable = true, func = function()
 			ReloadUI()
 	end},
+	{text = "|cff7289daDiscord|r", notCheckable = true, func = function()
+			K.StaticPopup_Show("DISCORD_EDITBOX", nil, nil, "https://discord.gg/YUmxqQm")
+	end},
 	{text = "Damage Meters", hasArrow = true, notCheckable=true,
 		menuList = {
 			{text = "Skada", notCheckable = true, func = function() if IsAddOnLoaded("Skada") then Skada:ToggleWindow() end end},

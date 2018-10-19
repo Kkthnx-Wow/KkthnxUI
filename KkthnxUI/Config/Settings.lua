@@ -339,7 +339,7 @@ C["HealthPrediction"] = {
 	["OverAbsorbs"] = {1, 1, 0, 0.25},
 	["OverHealAbsorbs"] = {1, 0, 0, 0.25},
 	["Personal"] = {0, 1, 0.5, 0.25},
-	["Texture"] = "Blank"
+	["Texture"] = "Blank",
 }
 
 -- Loot
