@@ -7,10 +7,18 @@ local CreateFrame = _G.CreateFrame
 local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs
 
 function Module:CreateHealthPrediction()
+	if not self:IsElementEnabled("HealthPrediction") then
+		self:EnableElement("HealthPrediction")
+	end
+
 	local Health = self.Health
 	local Width = Health:GetWidth()
 
-	Width = Width > 0 and Width or Health.WIDTH
+	Width = Width > 0 and Width
+	or C["Raid"] and C["Raid"].Width
+	or C["Party"] and 114
+	or C["Nameplates"] and C["Nameplates"].Width
+	or 130
 
 	local Database = C["HealthPrediction"]
 	local Texture = K.GetTexture(Database.Texture)
@@ -18,7 +26,6 @@ function Module:CreateHealthPrediction()
 	local PointR = "RIGHT"
 	local PointB = "BOTTOM"
 	local PointT = "TOP"
-	local ShowAbsorbAmount = Database.ShowAbsorbAmount
 
 	local myBar = CreateFrame("StatusBar", nil, Health)
 	myBar:SetParent(Health)
@@ -46,16 +53,13 @@ function Module:CreateHealthPrediction()
 	absorbBar:SetStatusBarColor(Database.Absorbs[1], Database.Absorbs[2], Database.Absorbs[3], Database.Absorbs[4])
 	absorbBar:SetPoint(PointT, Health, PointT)
 	absorbBar:SetPoint(PointB, Health, PointB)
-	if ShowAbsorbAmount then
-		absorbBar:SetPoint(PointR, Health, PointR)
-	else
-		absorbBar:SetPoint(PointL, otherBar:GetStatusBarTexture(), PointR)
-	end
+	absorbBar:SetPoint(PointR, Health, PointR)
 	absorbBar:SetSize(Width, 0)
-	absorbBar:SetReverseFill(ShowAbsorbAmount)
+	absorbBar:SetReverseFill(true)
 	absorbBar:Hide()
 
 	absorbBar.Overlay = absorbBar:CreateTexture(nil, "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
+	absorbBar.Overlay:SetVertexColor(Database.Absorbs[1], Database.Absorbs[2], Database.Absorbs[3])
 	absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
 
 	local healAbsorbBar = CreateFrame("StatusBar", nil, Health)
@@ -87,26 +91,14 @@ function Module:CreateHealthPrediction()
 	overHealAbsorb:SetSize(1, 0)
 	overHealAbsorb:Hide()
 
-	if not ShowAbsorbAmount then
-		overAbsorb = overAbsorb_
-		overHealAbsorb = overHealAbsorb_
-	else
-		if overAbsorb then
-			overAbsorb:Hide()
-			overAbsorb = nil
-			overHealAbsorb:Hide()
-			overHealAbsorb = nil
-		end
-	end
-
 	return {
 		myBar = myBar,
 		otherBar = otherBar,
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
-		maxOverflow = 1 + (Database.MaxOverflow or 0),
-		overAbsorb_ = overAbsorb,
-		overHealAbsorb_ = overHealAbsorb,
+		maxOverflow = 1,
+		overAbsorb = overAbsorb,
+		overHealAbsorb = overHealAbsorb,
 		PostUpdate = Module.UpdateHealthPrediction,
 		parent = self,
 	}

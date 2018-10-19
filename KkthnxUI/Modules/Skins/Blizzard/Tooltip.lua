@@ -84,10 +84,10 @@ local function SkinTooltip()
 
 	if GameTooltipStatusBar then
 		GameTooltipStatusBar:SetStatusBarTexture(GameTooltipStatusBarTexture)
-		GameTooltipStatusBar:CreateBorder()
 		GameTooltipStatusBar:ClearAllPoints()
-		GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
-		GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
+		GameTooltipStatusBar:SetPoint("LEFT", 4, 0)
+		GameTooltipStatusBar:SetPoint("RIGHT", -4, 0)
+		GameTooltipStatusBar:SetPoint("TOP", 0, -3)
 	end
 
 	Module:SecureHook("GameTooltip_ShowStatusBar")

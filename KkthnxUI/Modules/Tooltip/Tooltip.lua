@@ -128,9 +128,9 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (not GameTooltipStatusBar.anchoredToTop and GameTooltipStatusBar) then
 			GameTooltipStatusBar:ClearAllPoints()
-			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 2, 4)
-			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -2, 4)
-			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 5)
+			GameTooltipStatusBar:SetPoint("LEFT", 4, 0)
+			GameTooltipStatusBar:SetPoint("RIGHT", -4, 0)
+			GameTooltipStatusBar:SetPoint("TOP", 0, -3)
 			GameTooltipStatusBar.anchoredToTop = true
 		end
 
@@ -446,11 +446,6 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		GameTooltipStatusBar:SetStatusBarColor(color.r, color.g, color.b)
 	else
 		GameTooltipStatusBar:SetStatusBarColor(0.6, 0.6, 0.6)
-	end
-
-	local textWidth = GameTooltipStatusBar.text:GetStringWidth()
-	if textWidth then
-		tt:SetMinimumWidth(textWidth)
 	end
 end
 
@@ -814,9 +809,10 @@ function Module:OnEnable()
 	if GameTooltipStatusBar then
 		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 		GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
-		GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
-		GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 3)
-		GameTooltipStatusBar.text:SetFontObject(TooltipFont)
+
+		GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", nil, -8)
+		GameTooltipStatusBar.Background:SetAllPoints()
+		GameTooltipStatusBar.Background:SetVertexColor(192/255, 192/255, 192/255, 0.9)
 	end
 
 	if not GameTooltip.hasMoney then
