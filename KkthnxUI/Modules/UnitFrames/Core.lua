@@ -1326,6 +1326,53 @@ function Module:CreateUnits()
 	end
 end
 
+function Module:PostUpdateArenaPreparationSpec()
+	local specIcon = self.PVPSpecIcon
+	local instanceType = select(2, IsInInstance())
+
+	if (instanceType == "arena") then
+		local specID = self.id and GetArenaOpponentSpec(tonumber(self.id))
+
+		if specID and specID > 0 then
+			local icon = select(4, GetSpecializationInfoByID(specID))
+
+			specIcon.Icon:SetTexture(icon)
+		else
+			specIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
+		end
+	else
+		local faction = UnitFactionGroup(self.unit)
+
+		if faction == "Horde" then
+			specIcon.Icon:SetTexture([[Interface\Icons\INV_BannerPVP_01]])
+		elseif faction == "Alliance" then
+			specIcon.Icon:SetTexture([[Interface\Icons\INV_BannerPVP_02]])
+		else
+			specIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
+		end
+	end
+end
+
+function Module:UpdatePowerColorArenaPreparation(specID)
+	-- oUF is unable to get power color on arena preparation, so we add this feature here.
+	local power = self
+	local frame = power:GetParent()
+	local health = frame.Health
+	local playerClass = select(6, GetSpecializationInfoByID(specID))
+
+	if playerClass then
+		local powerColor = K.Colors.specpowertypes[playerClass][specID]
+
+		if powerColor then
+			local r, g, b = unpack(powerColor)
+
+			power:SetStatusBarColor(r, g, b)
+		else
+			power:SetStatusBarColor(0, 0, 0)
+		end
+	end
+end
+
 function Module:CreateFilgerAnchors()
 	if C["Filger"].Enable and C["Unitframe"].Enable then
 		P_BUFF_ICON_Anchor:SetPoint("BOTTOMRIGHT", "oUF_Player", "TOPRIGHT", 2, 169)

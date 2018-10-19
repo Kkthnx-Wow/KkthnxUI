@@ -1,12 +1,10 @@
 local K = unpack(select(2, ...))
 
-local _G = _G
-
 function K.LoadMSBTProfile()
-	_G.MSBTProfiles_SavedVars = {
+	MSBTProfiles_SavedVars = {
 		["profiles"] = {
 			["KkthnxUI"] = {
-				["creationVersion"] = "5.4.78",
+				["creationVersion"] = MikSBT.VERSION.."."..MikSBT.SVN_REVISION,
 				["animationSpeed"] = 70,
 				["textShadowingDisabled"] = true,
 				["hideFullOverheals"] = true,
@@ -305,5 +303,7 @@ function K.LoadMSBTProfile()
 		},
 	}
 
-	MikSBT.Profiles.SelectProfile("KkthnxUI")
+	MSBTProfiles_SavedVarsPerChar = {
+		["currentProfileName"] = "KkthnxUI",
+	}
 end

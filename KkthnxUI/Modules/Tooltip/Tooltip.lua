@@ -93,7 +93,8 @@ local LOCALE = {
 	TARGET = TARGET,
 	DEAD = DEAD,
 	FACTION_ALLIANCE = FACTION_ALLIANCE,
-	NONE = NONE
+	NONE = NONE,
+	ROLE = ROLE
 }
 
 local ignoreSubType = {

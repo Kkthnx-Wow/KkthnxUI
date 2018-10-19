@@ -51,7 +51,7 @@ local function UpdateBlizzardFonts()
 	-- Base fonts
 	SetFont(AchievementFont_Small, NORMAL_FONT, C["General"].FontSize) -- Achiev dates
 	SetFont(BossEmoteNormalHuge, NORMAL_FONT, 24) -- Talent Title
-	SetFont(ChatBubbleFont, BUBBLE_FONT, C["General"].FontSize)
+	SetFont(ChatBubbleFont, BUBBLE_FONT, 10)
 	SetFont(CoreAbilityFont, NORMAL_FONT, 26) -- Core abilities(title)
 	SetFont(DestinyFontHuge, NORMAL_FONT, 20, nil, SHADOW_COLOR, BIG_OFFSET) -- Garrison Mission Report
 	SetFont(Fancy22Font, NORMAL_FONT, 20) -- Talking frame Title font

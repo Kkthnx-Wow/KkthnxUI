@@ -112,7 +112,9 @@ DBM_Skin:SetScript("OnEvent", function(_, event)
 		local function SkinRange(_, _, _, forceshow)
 			if DBM.Options.DontShowRangeFrame and not forceshow then return end
 			if DBMRangeCheck then
+				DBMRangeCheck:StripTextures()
 				DBMRangeCheck:CreateShadow(true)
+				DBMRangeCheckRadar:StripTextures()
 				DBMRangeCheckRadar:CreateShadow(true)
 			end
 		end

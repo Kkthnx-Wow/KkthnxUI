@@ -197,6 +197,8 @@ function Module:CreateRaid()
 
 		self.RaidDebuffs.showDispellableDebuff = true
 		self.RaidDebuffs.onlyMatchSpellID = true
+		self.RaidDebuffs.FilterDispellableDebuff = true
+
 		-- self.RaidDebuffs.forceShow = true -- TEST
 
 		self.RaidDebuffs.time = self.RaidDebuffs:CreateFontString(nil, "OVERLAY")

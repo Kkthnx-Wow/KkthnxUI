@@ -3,6 +3,10 @@ if C["Unitframe"].Enable ~= true or C["Filger"].Enable ~= true then
 	return
 end
 
+if C["Filger"].Enable == true then -- Keep this from being enabled for the time being.
+	return
+end
+
 local _G = _G
 local pairs = pairs
 local string_format = string.format

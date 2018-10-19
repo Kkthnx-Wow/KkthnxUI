@@ -332,6 +332,18 @@ C["General"] = {
 	["UIScale"] = 0.7111111111
 }
 
+C["HealthPrediction"] = {
+	["Absorbs"] = {1, 1, 0, 0.25},
+	["HealAbsorbs"] = {1, 0, 0, 0.25},
+	["MaxOverflow"] = 0,
+	["Others"] = {0, 1, 0, 0.25},
+	["OverAbsorbs"] = {1, 1, 0, 0.25},
+	["OverHealAbsorbs"] = {1, 0, 0, 0.25},
+	["Personal"] = {0, 1, 0.5, 0.25},
+	["ShowAbsorbAmount"] = false,
+	["Texture"] = "Blank"
+}
+
 -- Loot
 C["Loot"] = {
 	["AutoConfirm"] = false,

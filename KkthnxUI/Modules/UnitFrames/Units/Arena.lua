@@ -50,6 +50,8 @@ function Module:CreateArena()
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:CreateBorder()
 
+	self.Power.PostUpdate = Module.PostUpdatePower
+	self.Power.UpdateColorArenaPreparation = Module.UpdatePowerColorArenaPreparation
 	self.Power.Smooth = C["Arena"].Smooth
 	self.Power.SmoothSpeed = C["Arena"].SmoothSpeed * 10
 	self.Power.colorPower = true
@@ -147,23 +149,8 @@ function Module:CreateArena()
 	Module.CreateTrinkets(self)
 	Module.MouseoverHealth(self, "arena")
 
+	self.HealthPrediction = Module.CreateHealthPrediction(self)
 	self.Range = Module.CreateRange(self)
-	self.PostUpdate = Module.PostUpdateArenaPreparation
-end
-
-function Module:PostUpdateArenaPreparation(event)
-	if self:IsElementEnabled("PVPSpecIcon") then
-		local _, instanceType = IsInInstance()
-
-		if (instanceType == "arena") then
-			local specID = self.id and GetArenaOpponentSpec(tonumber(self.id))
-
-			if specID and specID > 0 then
-				local _, _, _, icon = GetSpecializationInfoByID(specID)
-				self.PVPSpecIcon.Icon:SetTexture(icon)
-			else
-				self.PVPSpecIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
-			end
-		end
-	end
+	-- This post update is for SpecIcon
+	self.PostUpdate = Module.PostUpdateArenaPreparationSpec
 end
