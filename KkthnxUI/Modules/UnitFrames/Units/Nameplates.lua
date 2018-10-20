@@ -290,10 +290,12 @@ function Module:CreateNameplates()
 	-- Create Totem Icon
 	if C["Nameplates"].Totems then
 		self.Totem = CreateFrame("Frame", nil, self)
-		self.Totem.Icon = self.Totem:CreateTexture(nil, "OVERLAY")
-		self.Totem.Icon:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
-		self.Totem.Icon:SetPoint("BOTTOM", self.Health, "TOP", 0, 16)
+		self.Totem:SetSize((C["Nameplates"].Height * 2 * K.NoScaleMult) + 8, (C["Nameplates"].Height * 2 * K.NoScaleMult) + 8)
 		self.Totem:CreateShadow(true)
+		self.Totem:SetPoint("BOTTOM", self.Health, "TOP", 0, 38)
+
+		self.Totem.Icon = self.Totem:CreateTexture(nil, "ARTWORK")
+		self.Totem.Icon:SetAllPoints()
 	end
 
 	-- Create Healer Icon
@@ -320,7 +322,7 @@ function Module:CreateNameplates()
 		self.Debuffs:EnableMouse(false)
 	end
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self)
+	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
 	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
 	Module.CreateDebuffHighlight(self)
 
@@ -364,7 +366,6 @@ function Module:CreateNameplates()
 	if C["Nameplates"].Threat then
 		self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
 		self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
-
 		-- Threat Plate PostUpdate Function
 		self.Health.PostUpdate = function()
 			Module.ThreatPlate(self)

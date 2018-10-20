@@ -22,7 +22,6 @@ local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local UnitClass = _G.UnitClass
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local UnitHasMana = _G.UnitHasMana
 local UnitIsPlayer = _G.UnitIsPlayer
 local UnitIsUnit = _G.UnitIsUnit
 local UnitPowerType = _G.UnitPowerType
@@ -272,5 +271,5 @@ function Module:CreateRaid()
 
 	Module.CreateDebuffHighlight(self)
 	self.Range = Module.CreateRange(self)
-	self.HealthPrediction = Module.CreateHealthPrediction(self)
+	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Raid"].RaidLayout.Value == "Damage" and C["Raid"].Width or C["Raid"].Width - 12)
 end

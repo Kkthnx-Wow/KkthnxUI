@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <!-- Load_Inventory -->
+    <Script file="Sort.lua"/>
     <Script file="Inventory.lua"/>
     <Script file="BagBar.lua"/>
     <Script file="Vendor.lua"/>

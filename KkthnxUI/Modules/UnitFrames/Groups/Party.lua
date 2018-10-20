@@ -252,7 +252,7 @@ function Module:CreateParty()
 	Module.CreateThreatIndicator(self)
 	Module.CreateDebuffHighlight(self)
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self)
+	self.HealthPrediction = Module.CreateHealthPrediction(self, 114)
 
 	self.Threat = {
 		Hide = K.Noop,

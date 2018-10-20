@@ -207,6 +207,16 @@ KkthnxUIConfig["zhTW"] = {
 			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
 		},
 
+		["ReverseLoot"] = {
+			["Name"] = REVERSE_NEW_LOOT_TEXT..ModuleNewFeature,
+			["Desc"] = REVERSE_NEW_LOOT_TEXT,
+		},
+
+		["SortInverted"] = {
+			["Name"] = "Sort Inverted"..ModuleNewFeature,
+			["Desc"] = "Direction the bag sorting will use to allocate the items.",
+		},
+
 		["AutoRepair"] = {
 			["Name"] = "Auto Repair",
 			["Desc"] = "When visiting a repair merchant, automatically repair our gear",

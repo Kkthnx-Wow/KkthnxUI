@@ -128,9 +128,9 @@ function Module:GameTooltip_SetDefaultAnchor(tt, parent)
 	if (parent) then
 		if (not GameTooltipStatusBar.anchoredToTop and GameTooltipStatusBar) then
 			GameTooltipStatusBar:ClearAllPoints()
-			GameTooltipStatusBar:SetPoint("LEFT", 4, 0)
-			GameTooltipStatusBar:SetPoint("RIGHT", -4, 0)
-			GameTooltipStatusBar:SetPoint("TOP", 0, -3)
+			GameTooltipStatusBar:SetPoint("BOTTOMLEFT", GameTooltip, "TOPLEFT", 3, 3)
+			GameTooltipStatusBar:SetPoint("BOTTOMRIGHT", GameTooltip, "TOPRIGHT", -3, 3)
+			GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 6)
 			GameTooltipStatusBar.anchoredToTop = true
 		end
 
@@ -447,6 +447,11 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 	else
 		GameTooltipStatusBar:SetStatusBarColor(0.6, 0.6, 0.6)
 	end
+
+	local textWidth = GameTooltipStatusBar.text:GetStringWidth()
+	if textWidth then
+		tt:SetMinimumWidth(textWidth)
+	end
 end
 
 function Module:GameTooltipStatusBar_OnValueChanged(tt, value)
@@ -500,7 +505,7 @@ function Module:GameTooltip_OnTooltipCleared(tt)
 
 	if TOOLTOP_BUG and tt:NumLines() == 0 then
 		tt:Hide()
-		TOOLTOP_BUG = false
+		TOOLTOP_BUG = nil
 	end
 end
 
@@ -807,12 +812,12 @@ function Module:OnEnable()
 	BNToastFrame.CloseButton:SkinCloseButton()
 
 	if GameTooltipStatusBar then
-		GameTooltipStatusBar:SetHeight(4)
+		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 		GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
 
-		GameTooltipStatusBar.Background = GameTooltipStatusBar:CreateTexture(nil, "BACKGROUND", nil, -8)
-		GameTooltipStatusBar.Background:SetAllPoints()
-		GameTooltipStatusBar.Background:SetVertexColor(192/255, 192/255, 192/255, 0.9)
+		GameTooltipStatusBar.text = GameTooltipStatusBar:CreateFontString(nil, "OVERLAY")
+		GameTooltipStatusBar.text:SetPoint("CENTER", GameTooltipStatusBar, 0, 6)
+		GameTooltipStatusBar.text:SetFontObject(TooltipFont)
 	end
 
 	if not GameTooltip.hasMoney then

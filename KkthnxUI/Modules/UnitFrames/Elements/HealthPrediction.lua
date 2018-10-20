@@ -6,19 +6,14 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs
 
-function Module:CreateHealthPrediction()
+function Module:CreateHealthPrediction(Width)
 	if not self:IsElementEnabled("HealthPrediction") then
 		self:EnableElement("HealthPrediction")
 	end
 
 	local Health = self.Health
-	local Width = Health:GetWidth()
 
-	Width = Width > 0 and Width
-	or C["Raid"] and C["Raid"].Width
-	or C["Party"] and 114
-	or C["Nameplates"] and C["Nameplates"].Width
-	or 130
+	Width = Width > 0 and Width or Health:GetWidth()
 
 	local Database = C["HealthPrediction"]
 	local Texture = K.GetTexture(Database.Texture)

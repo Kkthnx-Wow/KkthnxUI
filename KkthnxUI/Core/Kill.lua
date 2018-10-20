@@ -70,8 +70,7 @@ UnloadBlizzardFrames:SetScript("OnEvent", function(_, event)
 		end
 
 		if (C["Inventory"].Enable) then
-			SetSortBagsRightToLeft(true)
-			SetInsertItemsLeftToRight(false)
+			SetInsertItemsLeftToRight(C["Inventory"].ReverseLoot)
 		end
 
 		if not C["Party"].Enable and not C["Raid"].Enable then

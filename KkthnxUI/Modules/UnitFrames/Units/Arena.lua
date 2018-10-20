@@ -149,7 +149,7 @@ function Module:CreateArena()
 	Module.CreateTrinkets(self)
 	Module.MouseoverHealth(self, "arena")
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self)
+	self.HealthPrediction = Module.CreateHealthPrediction(self, 130)
 	self.Range = Module.CreateRange(self)
 	-- This post update is for SpecIcon
 	self.PostUpdate = Module.PostUpdateArenaPreparationSpec

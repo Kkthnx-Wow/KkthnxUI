@@ -1,4 +1,5 @@
 local K, C, L = unpack(select(2, ...))
+local Module = K:GetModule("InventorySort")
 
 if C["Inventory"].Enable ~= true
 or K.CheckAddOnState("AdiBags")
@@ -911,7 +912,14 @@ function Stuffing:CreateBagFrame(w)
 		f.sortButton.ttText = BAG_FILTER_CLEANUP
 		f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 		f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-		f.sortButton:SetScript("OnMouseUp", SortBankBags)
+		f.sortButton:SetScript("OnMouseUp", function()
+			-- if StuffingFrameBags and StuffingFrameBags:IsShown() then
+			if Stuffing.frame:IsShown() then
+				f:UnregisterAllEvents() -- Unregister to prevent unnecessary updates
+				f.registerUpdate = true -- Set variable that indicates this bag should be updated when sorting is done
+				Module:CommandDecorator(Module.SortBags, "bank")()
+			end
+		end)
 
 		f.purchaseBagButton = CreateFrame("Button", "StuffingPurchaseButton" .. w, f)
 		f.purchaseBagButton:SetSize(16, 16)
@@ -1126,7 +1134,11 @@ function Stuffing:InitBags()
 	f.sortButton.ttText = _G.BAG_FILTER_CLEANUP
 	f.sortButton:SetScript("OnEnter", Stuffing_TooltipShow)
 	f.sortButton:SetScript("OnLeave", Stuffing_TooltipHide)
-	f.sortButton:SetScript("OnMouseUp", SortBags)
+	f.sortButton:SetScript("OnMouseUp", function()
+		f:UnregisterAllEvents() -- Unregister to prevent unnecessary updates
+		f.registerUpdate = true -- Set variable that indicates this bag should be updated when sorting is done
+		Module:CommandDecorator(Module.SortBags, "bags")()
+	end)
 
 	gold:SetPoint("RIGHT", f.sortButton, "LEFT", -8, 0)
 
@@ -1301,7 +1313,7 @@ function Stuffing:Layout(isBank)
 					elseif specialType == 0x8000 then -- Fishing
 						b.frame:SetBackdropBorderColor(107/255, 150/255, 255/255)
 					elseif specialType == 0x10000 then -- Cooking
-						b.frame:SetBackdropBorderColor(222/255, 13/255,  65/255)
+						b.frame:SetBackdropBorderColor(222/255, 13/255, 65/255)
 					end
 					b.frame.lock = true
 				end
