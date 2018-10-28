@@ -2,6 +2,8 @@ local parent, ns = ...
 local oUF = ns.oUF
 local Private = oUF.Private
 
+local print = Private.print
+
 local frame_metatable = Private.frame_metatable
 
 local colors = {
@@ -22,7 +24,32 @@ local colors = {
 	debuff = {},
 	reaction = {},
 	power = {},
+	selection = {
+		-- these colours are sorted by r, then by g, then by b
+		-- very light yellow, used for player's character while in combat
+		{255 / 255, 255 / 255, 139 / 255},
+		-- yellow, used for neutral units
+		{255 / 255, 255 / 255, 0 / 255},
+		-- orange, used for unfriendly units
+		{255 / 255, 129 / 255, 0 / 255},
+		-- red, used for hostile units
+		{255 / 255, 0 / 255, 0 /255},
+		-- grey, used for dead units
+		{128 / 255, 128 / 255, 128 / 255},
+		-- green, used for friendly units
+		{0 / 255, 255 / 255, 0 / 255},
+		-- blue, the default colour, mainly used for players in dungeons, raids, and sanctuaries
+		{0 / 255, 0 / 255, 255 / 255},
+	},
 }
+
+colors.selection[255 * 65536 + 255 * 256 + 139] = colors.selection[1]
+colors.selection[255 * 65536 + 255 * 256 +   0] = colors.selection[2]
+colors.selection[255 * 65536 + 129 * 256 +   0] = colors.selection[3]
+colors.selection[255 * 65536 +   0 * 256 +   0] = colors.selection[4]
+colors.selection[128 * 65536 + 128 * 256 + 128] = colors.selection[5]
+colors.selection[  0 * 65536 + 255 * 256 +   0] = colors.selection[6]
+colors.selection[  0 * 65536 +   0 * 256 + 255] = colors.selection[7]
 
 -- We do this because people edit the vars directly, and changing the default
 -- globals makes SPICE FLOW!
@@ -100,11 +127,33 @@ colors.power[16] = colors.power.ARCANE_CHARGES
 colors.power[17] = colors.power.FURY
 colors.power[18] = colors.power.PAIN
 
+--[[ Colors: oUF:UnitSelectionColor(unit) or frame:UnitSelectionColor(unit)
+
+--]]
+function oUF:UnitSelectionColor(unit)
+	local r, g, b = UnitSelectionColor(unit)
+	r = math.ceil(r * 255) * 65536 + math.ceil(g * 255) * 256 + math.ceil(b * 255)
+
+	-- BUG: When targeting yourself while in combat, UnitSelectionColor for "player" or any other unit that's actually
+	-- player returns either green or blue instead of intended light yellow
+	if(UnitIsUnit(unit, 'player') and UnitAffectingCombat('player')) then
+		r = 16777099 -- 255 * 65536 + 255 * 256 + 139
+	end
+
+	local color = self.colors.selection[r]
+	if(not color) then
+		-- print("|cffffd200Unknown colour:|r", UnitSelectionColor(unit))
+		color = self.colors.selection[7]
+	end
+
+	return color[1], color[2], color[3]
+end
+
 local function colorsAndPercent(a, b, ...)
 	if(a <= 0 or b == 0) then
 		return nil, ...
 	elseif(a >= b) then
-		return nil, select(select('#', ...) - 2, ...)
+		return nil, select(-3, ...)
 	end
 
 	local num = select('#', ...) / 3
@@ -125,7 +174,7 @@ last 3 RGB values are returned.
 * b    - value used as denominator to calculate the percentage (number)
 * ...  - a list of RGB percent values. At least 6 values should be passed (number [0-1])
 --]]
-local function RGBColorGradient(...)
+function oUF:RGBColorGradient(...)
 	local relperc, r1, g1, b1, r2, g2, b2 = colorsAndPercent(...)
 	if(relperc) then
 		return r1 + (r2 - r1) * relperc, g1 + (g2 - g1) * relperc, b1 + (b2 - b1) * relperc
@@ -139,16 +188,8 @@ local function getY(r, g, b)
 	return 0.299 * r + 0.587 * g + 0.114 * b
 end
 
---[[ Colors: oUF:RGBToHCY(r, g, b)
-Used to convert a color from RGB to HCY color space.
-
-* self - the global oUF object
-* r    - red color component (number [0-1])
-* g    - green color component (number [0-1])
-* b    - blue color component (number [0-1])
---]]
-function oUF:RGBToHCY(r, g, b)
-	local min, max = min(r, g, b), max(r, g, b)
+local function rgbToHCY(r, g, b)
+	local min, max = math.min(r, g, b), math.max(r, g, b)
 	local chroma = max - min
 	local hue
 	if(chroma > 0) then
@@ -164,20 +205,11 @@ function oUF:RGBToHCY(r, g, b)
 	return hue, chroma, getY(r, g, b)
 end
 
-local math_abs = math.abs
---[[ Colors: oUF:HCYtoRGB(hue, chroma, luma)
-Used to convert a color from HCY to RGB color space.
-
-* self   - the global oUF object
-* hue    - hue color component (number [0-1])
-* chroma - chroma color component (number [0-1])
-* luma   - luminance color component (number [0-1])
---]]
-function oUF:HCYtoRGB(hue, chroma, luma)
+local function hcyToRGB(hue, chroma, luma)
 	local r, g, b = 0, 0, 0
 	if(hue and luma > 0) then
 		local h2 = hue * 6
-		local x = chroma * (1 - math_abs(h2 % 2 - 1))
+		local x = chroma * (1 - math.abs(h2 % 2 - 1))
 		if(h2 < 1) then
 			r, g, b = chroma, x, 0
 		elseif(h2 < 2) then
@@ -218,14 +250,14 @@ last 3 HCY values are returned.
 * b    - value used as denominator to calculate the percentage (number)
 * ...  - a list of HCY color values. At least 6 values should be passed (number [0-1])
 --]]
-local function HCYColorGradient(...)
+function oUF:HCYColorGradient(...)
 	local relperc, r1, g1, b1, r2, g2, b2 = colorsAndPercent(...)
 	if(not relperc) then
 		return r1, g1, b1
 	end
 
-	local h1, c1, y1 = self:RGBToHCY(r1, g1, b1)
-	local h2, c2, y2 = self:RGBToHCY(r2, g2, b2)
+	local h1, c1, y1 = rgbToHCY(r1, g1, b1)
+	local h2, c2, y2 = rgbToHCY(r2, g2, b2)
 	local c = c1 + (c2 - c1) * relperc
 	local y = y1 + (y2 - y1) * relperc
 
@@ -237,9 +269,9 @@ local function HCYColorGradient(...)
 			dh = dh - 1
 		end
 
-		return self:HCYtoRGB((h1 + dh * relperc) % 1, c, y)
+		return hcyToRGB((h1 + dh * relperc) % 1, c, y)
 	else
-		return self:HCYtoRGB(h1 or h2, c, y)
+		return hcyToRGB(h1 or h2, c, y)
 	end
 
 end
@@ -253,17 +285,13 @@ set to true, `:HCYColorGradient` will be called, else `:RGBColorGradient`.
 * b    - value used as denominator to calculate the percentage (number)
 * ...  - a list of color values. At least 6 values should be passed (number [0-1])
 --]]
-local function ColorGradient(...)
-	return (oUF.useHCYColorGradient and HCYColorGradient or RGBColorGradient)(...)
+function oUF:ColorGradient(...)
+	return (oUF.useHCYColorGradient and oUF.HCYColorGradient or oUF.RGBColorGradient)(self, ...)
 end
 
-Private.colors = colors
-
 oUF.colors = colors
-oUF.ColorGradient = ColorGradient
-oUF.RGBColorGradient = RGBColorGradient
-oUF.HCYColorGradient = HCYColorGradient
 oUF.useHCYColorGradient = false
 
 frame_metatable.__index.colors = colors
-frame_metatable.__index.ColorGradient = ColorGradient
+frame_metatable.__index.ColorGradient = oUF.ColorGradient
+frame_metatable.__index.UnitSelectionColor = oUF.UnitSelectionColor

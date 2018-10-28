@@ -13,6 +13,7 @@
     <Script file="FriendsListPlus.lua"/>
     <Script file="KillingBlow.lua"/>
     <Script file="MovableFrames.lua"/>
+    <Script file="NoTalkingHead.lua"/>
     <Script file="ProfessionTabs.lua"/>
     <Script file="PvPEmote.lua"/>
     <Script file="QueueTimer.lua"/>

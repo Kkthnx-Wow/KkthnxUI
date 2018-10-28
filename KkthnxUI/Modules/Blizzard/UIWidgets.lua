@@ -5,6 +5,7 @@ local _G = _G
 
 local CreateFrame = CreateFrame
 local hooksecurefunc = hooksecurefunc
+local UIParent = _G.UIParent
 
 local function PositionUIWidgets()
 	local topCenterContainer = _G["UIWidgetTopCenterContainerFrame"]

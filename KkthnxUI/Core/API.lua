@@ -6,8 +6,10 @@ local _G = _G
 local assert = _G.assert
 local getmetatable = _G.getmetatable
 local math_floor = _G.math.floor
+local pairs = _G.pairs
 local select = _G.select
 local string_match = _G.string.match
+local type = _G.type
 
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
@@ -20,7 +22,6 @@ local UnitClass = _G.UnitClass
 local CustomClass = select(2, UnitClass("player"))
 local CustomClassColor = K.Class == "PRIEST" and K.PriestColors or (CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[CustomClass] or RAID_CLASS_COLORS[CustomClass])
 local CustomCloseButton = "Interface\\AddOns\\KkthnxUI\\Media\\Textures\\CloseButton_32"
-local CustomNoop = K.Noop
 
 -- Preload
 K.Mult = 768 / string_match(K.Resolution, "%d+x(%d+)") / C.General.UIScale
@@ -103,12 +104,14 @@ local function CreateBackdrop(f, t)
 		t = "Default"
 	end
 
-	local b = CreateFrame("Frame", nil, f)
+	local parent = f.IsObjectType and f:IsObjectType('Texture') and f:GetParent() or f
+
+	local b = CreateFrame("Frame", nil, parent)
 	b:SetOutside()
 	b:CreateBorder(t)
 
-	if f:GetFrameLevel() - 1 >= 0 then
-		b:SetFrameLevel(f:GetFrameLevel() - 1)
+	if (parent:GetFrameLevel() - 1) >= 0 then
+		b:SetFrameLevel(parent:GetFrameLevel() - 1)
 	else
 		b:SetFrameLevel(0)
 	end
@@ -172,23 +175,55 @@ local function CreateInnerShadow(f, isLayer, isAlpha, isLPoints, isRPoints)
 	f.InnerShadow = innerShadow
 end
 
-local function Kill(Object)
-	if Object.UnregisterAllEvents then
-		Object:UnregisterAllEvents()
+local function Kill(object)
+	if object.UnregisterAllEvents then
+		object:UnregisterAllEvents()
+		object:SetParent(K.UIFrameHider)
+	else
+		object.Show = object.Hide
 	end
 
-	Object.Show = CustomNoop
-	Object:Hide()
+	object:Hide()
 end
 
-local function StripTextures(Object, Remove)
-	for i = 1, Object:GetNumRegions() do
-		local Region = select(i, Object:GetRegions())
-		if Region:GetObjectType() == "Texture" then
-			if Remove then
-				Region:Kill()
-			else
-				Region:SetTexture(nil)
+
+local blizzFrames = {
+	"Inset",
+	"inset",
+	"InsetFrame",
+	"LeftInset",
+	"RightInset",
+	"NineSlice",
+	"BorderFrame",
+	"bottomInset",
+	"BottomInset",
+	"bgLeft",
+	"bgRight",
+	"FilligreeOverlay",
+}
+
+local function StripTextures(object, kill)
+	local objectName = object.GetName and object:GetName()
+	for _, Blizzard in pairs(blizzFrames) do
+		local BlizzFrame = object[Blizzard] or objectName and _G[objectName..Blizzard]
+		if BlizzFrame then
+			BlizzFrame:StripTextures()
+		end
+	end
+
+	if object.GetNumRegions then
+		for i = 1, object:GetNumRegions() do
+			local region = select(i, object:GetRegions())
+			if region and region:IsObjectType("Texture") then
+				if kill and type(kill) == "boolean" then
+					region:Kill()
+				elseif region:GetDrawLayer() == kill then
+					region:SetTexture(nil)
+				elseif kill and type(kill) == "string" and region:GetTexture() ~= kill then
+					region:SetTexture(nil)
+				else
+					region:SetTexture(nil)
+				end
 			end
 		end
 	end

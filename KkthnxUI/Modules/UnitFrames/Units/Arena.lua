@@ -8,13 +8,10 @@ local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
-local tonumber = tonumber
 
 local CreateFrame = _G.CreateFrame
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter
 local UnitFrame_OnLeave = _G.UnitFrame_OnLeave
-local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
-local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 
 function Module:CreateArena()
 	local UnitframeFont = K.GetFont(C["Arena"].Font)
@@ -50,7 +47,6 @@ function Module:CreateArena()
 	self.Power:SetPoint("TOP", self.Health, "BOTTOM", 0, -6)
 	self.Power:CreateBorder()
 
-	self.Power.PostUpdate = Module.PostUpdatePower
 	self.Power.UpdateColorArenaPreparation = Module.UpdatePowerColorArenaPreparation
 	self.Power.Smooth = C["Arena"].Smooth
 	self.Power.SmoothSpeed = C["Arena"].SmoothSpeed * 10
@@ -69,7 +65,6 @@ function Module:CreateArena()
 	self.Name:SetJustifyV("TOP")
 	self.Name:SetJustifyH("CENTER")
 	self.Name:SetFontObject(UnitframeFont)
-	self.Name:SetFont(select(1, self.Name:GetFont()), 12, select(3, self.Name:GetFont()))
 	self:Tag(self.Name, "[KkthnxUI:GetNameColor][KkthnxUI:NameMedium]")
 
 	if (C["Unitframe"].Castbars) then
@@ -151,6 +146,5 @@ function Module:CreateArena()
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, 130)
 	self.Range = Module.CreateRange(self)
-	-- This post update is for SpecIcon
 	self.PostUpdate = Module.PostUpdateArenaPreparationSpec
 end

@@ -214,7 +214,7 @@ function Module:CreatePlayer()
 	self.HealthPrediction = Module.CreateHealthPrediction(self, 130)
 
 	if (C["Unitframe"].PowerPredictionBar) then
-		Module.CreatePowerPrediction(self)
+		self.PowerPrediction = Module.CreatePowerPrediction(self)
 	end
 
 	if C["Unitframe"].PlayerBuffs then

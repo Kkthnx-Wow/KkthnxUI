@@ -2,27 +2,28 @@ local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("RaidUtility", "AceEvent-3.0")
 
 local _G = _G
-local unpack, ipairs, pairs, next = unpack, ipairs, pairs, next
-local tinsert, twipe, tsort = table.insert, table.wipe, table.sort
 local find = string.find
+local ipairs, pairs, next = ipairs, pairs, next
+local tinsert, twipe, tsort = table.insert, table.wipe, table.sort
 
-local CreateFrame = CreateFrame
-local IsInInstance = IsInInstance
-local IsInGroup = IsInGroup
-local IsInRaid = IsInRaid
-local InCombatLockdown = InCombatLockdown
-local UnitIsGroupLeader = UnitIsGroupLeader
-local UnitIsGroupAssistant = UnitIsGroupAssistant
-local InitiateRolePoll = InitiateRolePoll
-local DoReadyCheck = DoReadyCheck
-local ToggleFriendsFrame = ToggleFriendsFrame
-local GetNumGroupMembers = GetNumGroupMembers
-local GetTexCoordsForRole = GetTexCoordsForRole
-local GetRaidRosterInfo = GetRaidRosterInfo
-local UnitGroupRolesAssigned = UnitGroupRolesAssigned
-local RAID_CLASS_COLORS = RAID_CLASS_COLORS
-local GameTooltip = GameTooltip
-local GameTooltip_Hide = GameTooltip_Hide
+local CreateFrame = _G.CreateFrame
+local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
+local DoReadyCheck = _G.DoReadyCheck
+local GameTooltip = _G.GameTooltip
+local GameTooltip_Hide = _G.GameTooltip_Hide
+local GetNumGroupMembers = _G.GetNumGroupMembers
+local GetRaidRosterInfo = _G.GetRaidRosterInfo
+local GetTexCoordsForRole = _G.GetTexCoordsForRole
+local InCombatLockdown = _G.InCombatLockdown
+local InitiateRolePoll = _G.InitiateRolePoll
+local IsInGroup = _G.IsInGroup
+local IsInInstance = _G.IsInInstance
+local IsInRaid = _G.IsInRaid
+local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
+local ToggleFriendsFrame = _G.ToggleFriendsFrame
+local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
+local UnitIsGroupAssistant = _G.UnitIsGroupAssistant
+local UnitIsGroupLeader = _G.UnitIsGroupLeader
 
 K["RaidUtility"] = Module
 
@@ -368,7 +369,7 @@ function Module:OnInitialize()
 	-- Raid Control Panel
 	self:CreateUtilButton("RaidControlButton", RaidUtilityPanel, "UIMenuButtonStretchTemplate", RoleCheckButton:GetWidth(), 18, "TOPLEFT", ReadyCheckButton, "BOTTOMLEFT", 0, -6, L["Blizzard"].Raid_Menu, nil )
 	RaidControlButton:SetScript("OnMouseUp", function()
-		ToggleFriendsFrame(4)
+		ToggleFriendsFrame(3)
 	end)
 
 	local buttons = {

@@ -188,7 +188,6 @@ function Module:CreateTarget()
 		Module.CreatePortraitTimers(self)
 	end
 
-	Module.CreateQuestIndicator(self, 26, 26)
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)

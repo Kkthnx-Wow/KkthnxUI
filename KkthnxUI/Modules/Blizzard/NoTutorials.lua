@@ -10,7 +10,6 @@ local pairs = pairs
 local tonumber = tonumber
 
 local GetCVar = _G.GetCVar
-local SetCVar = _G.SetCVar
 local GetCVarBitfield = _G.GetCVarBitfield
 local SetCVarBitfield = _G.SetCVarBitfield
 

@@ -7,10 +7,13 @@ local Module = K:NewModule("Actionbars", "AceHook-3.0", "AceEvent-3.0")
 
 local _G = _G
 local string_format = string.format
+local pairs = pairs
 
 local ActionButton_ShowGrid = _G.ActionButton_ShowGrid
 local AutoCastShine_AutoCastStart = _G.AutoCastShine_AutoCastStart
 local AutoCastShine_AutoCastStop = _G.AutoCastShine_AutoCastStop
+local CooldownFrame_Set = _G.CooldownFrame_Set
+local CreateFrame = _G.CreateFrame
 local GetActionBarToggles = _G.GetActionBarToggles
 local GetNumShapeshiftForms = _G.GetNumShapeshiftForms
 local GetPetActionInfo = _G.GetPetActionInfo
@@ -112,7 +115,7 @@ function Module:GridToggle()
 	end
 
 	if C["ActionBar"].ShowGrid == true then
-		SetCVar("alwaysShowActionBars", 1)
+		K.LockCVar("alwaysShowActionBars", 1)
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button
 
@@ -147,7 +150,7 @@ function Module:GridToggle()
 			ActionButton_ShowGrid(button)
 		end
 	else
-		SetCVar("alwaysShowActionBars", 0)
+		K.LockCVar("alwaysShowActionBars", 0)
 	end
 end
 

@@ -1,4 +1,4 @@
-local K, C, L = unpack(select(2, ...))
+local K, C = unpack(select(2, ...))
 if C["Unitframe"].Enable ~= true then
 	return
 end
@@ -8,6 +8,7 @@ local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
 
 local _G = _G
+local select = select
 
 local CreateFrame = _G.CreateFrame
 local UnitFrame_OnEnter = _G.UnitFrame_OnEnter

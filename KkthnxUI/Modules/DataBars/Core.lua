@@ -14,6 +14,7 @@ local C_AzeriteItem_GetAzeriteItemXPInfo = _G.C_AzeriteItem.GetAzeriteItemXPInfo
 local C_AzeriteItem_GetPowerLevel = _G.C_AzeriteItem.GetPowerLevel
 local C_Reputation_GetFactionParagonInfo = _G.C_Reputation.GetFactionParagonInfo
 local C_Reputation_IsFactionParagon = _G.C_Reputation.IsFactionParagon
+local CreateFrame = _G.CreateFrame
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
 local FactionStandingLabelUnknown = _G.UNKNOWN
 local GameTooltip = _G.GameTooltip
@@ -29,6 +30,7 @@ local HONOR = _G.HONOR
 local IsXPUserDisabled = _G.IsXPUserDisabled
 local LEVEL = _G.LEVEL
 local MAX_PLAYER_LEVEL_TABLE = _G.MAX_PLAYER_LEVEL_TABLE
+local MAX_REPUTATION_REACTION = _G.MAX_REPUTATION_REACTION
 local REPUTATION = _G.REPUTATION
 local STANDING = _G.STANDING
 local UnitHonor = _G.UnitHonor
@@ -163,6 +165,7 @@ end
 
 function Module:UpdateReputation()
 	local ID, isFriend, friendText, standingLabel
+	local isCapped
 	local name, reaction, min, max, value, factionID = GetWatchedFactionInfo()
 
 	if factionID and C_Reputation_IsFactionParagon(factionID) then
@@ -174,6 +177,13 @@ function Module:UpdateReputation()
 				value = value + threshold
 			end
 		end
+	else
+		if reaction == MAX_REPUTATION_REACTION then
+			-- max rank, make it look like a full bar
+			min, max, value = 0, 1, 1
+			isCapped = true
+		end
+
 	end
 
 	local numFactions = GetNumFactions()
@@ -208,8 +218,16 @@ function Module:UpdateReputation()
 			maxMinDiff = 1
 		end
 
+		local text = ""
+
 		if self.Database.Text then
-			self.Bars.Reputation.Text:SetText(string_format("%s: %d%% [%s]", name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel))
+			if isCapped then
+				text = string_format("%s: [%s]", name, isFriend and friendText or standingLabel)
+			else
+				text = string_format("%s: %d%% [%s]", name, ((value - min) / (maxMinDiff) * 100), isFriend and friendText or standingLabel)
+			end
+
+			self.Bars.Reputation.Text:SetText(text)
 		end
 
 		self.Bars.Reputation:Show()
@@ -355,7 +373,9 @@ function Module:OnEnter()
 			end
 
 			GameTooltip:AddDoubleLine(STANDING..":", (friendID and friendTextLevel) or _G["FACTION_STANDING_LABEL" .. reaction], 1, 1, 1)
-			GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
+			if reaction ~= MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
+				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
+			end
 		end
 	end
 

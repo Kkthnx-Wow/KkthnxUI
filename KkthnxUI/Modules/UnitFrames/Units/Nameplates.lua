@@ -16,13 +16,18 @@ local pairs = pairs
 local select = select
 local string_format = string.format
 local string_gsub = string.gsub
+local string_match = string.match
 
+local CreateFrame = _G.CreateFrame
 local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
 local GetBattlefieldScore = _G.GetBattlefieldScore
+local GetInstanceInfo = _G.GetInstanceInfo
 local GetNumArenaOpponentSpecs = _G.GetNumArenaOpponentSpecs
 local GetNumBattlefieldScores = _G.GetNumBattlefieldScores
 local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
+local UnitIsPlayer = _G.UnitIsPlayer
 local UnitName = _G.UnitName
+local UnitReaction = _G.UnitReaction
 local UNKNOWN = _G.UNKNOWN
 
 -- Taken from Blizzard_TalentUI.lua
@@ -230,34 +235,36 @@ function Module:CreateNameplates()
 	self.RaidTargetIndicator:SetSize(32, 32)
 	self.RaidTargetIndicator:SetPoint("BOTTOM", self.Debuffs or self, "TOP", 0, 10)
 
-	self.QuestIndicator = self.Health:CreateTexture(nil, "OVERLAY")
-	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
-	self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
-	self.QuestIndicator:SetSize(18, 18)
-	self.QuestIndicator:SetPoint("RIGHT", self.Health, "LEFT", 2, 0)
+	self.QuestIcon = self.Health:CreateTexture(nil, "OVERLAY")
+	self.QuestIcon:SetPoint("RIGHT", self.Health, "LEFT", 2, 0)
+	self.QuestIcon:SetSize(self.Health:GetHeight() + 14, self.Health:GetHeight() + 14)
+	self.QuestIcon:SetTexture("Interface\\BUTTONS\\AdventureGuideMicrobuttonAlert") -- "Interface\\MINIMAP\\ObjectIcons"
+	self.QuestIcon:Hide()
 
 	--[[
 	Class Power (Combo Points, Insanity, etc...)
 
 	The following CVars toggle visibility
 	of the personal resouce display (classpower):
-	nameplateShowSelf
-	nameplateResourceOnTarget
+
+		nameplateShowSelf
+		nameplateResourceOnTarget
 
 	Note that class resources above will only be visible on
 	the target as long as the player nameplate is visible too.
 	This might not always be the case, but it can
 	to a certain degree be adjusted with the following CVars:
-	nameplatePersonalShowAlways
-	nameplatePersonalShowInCombat
-	nameplatePersonalShowWithTarget
-	nameplatePersonalHideDelaySeconds
+
+		nameplatePersonalShowAlways
+		nameplatePersonalShowInCombat
+		nameplatePersonalShowWithTarget
+		nameplatePersonalHideDelaySeconds
 	--]]
 
 	if C["Nameplates"].ClassResource then -- replace with config option
 		Module.CreateNamePlateClassPower(self)
 		if (K.Class == "MONK") then
-			--Module.CreateNamePlateStaggerBar(self)
+			-- Module.CreateNamePlateStaggerBar(self)
 		elseif (K.Class == "DEATHKNIGHT") then
 			Module.CreateNamePlateRuneBar(self)
 		end
@@ -273,6 +280,49 @@ function Module:CreateNameplates()
 			self:Tag(self.ClassPowerText, "[KkthnxUI:ClassPower]", "player")
 		end
 		self.ClassPowerText:Hide()
+	end
+
+	-- use Tooltip scanning to obtain the quest icon to show isObjectiveQuest or isProgressQuest.
+	local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestUnitTip", nil, "GameTooltipTemplate")
+	function Module:UpdateQuestUnit(unit)
+		if unit == "player" then
+			return
+		end
+
+		local name, instType, instID = GetInstanceInfo()
+		if name and (instType == "raid" or instID == 8) then
+			self.QuestIcon:Hide()
+			return
+		end
+
+		local isObjectiveQuest, isProgressQuest
+		unitTip:SetOwner(WorldFrame, "ANCHOR_NONE")
+		unitTip:SetUnit(unit)
+
+		for i = 2, unitTip:NumLines() do
+			local textLine = _G[unitTip:GetName() .. "TextLeft" .. i]
+			local text = textLine:GetText()
+			if textLine and text then
+				local r, g, b = textLine:GetTextColor()
+				if r > 0.99 and g > 0.82 and b == 0.0 then
+					isProgressQuest = true
+				else
+					local unitName, progress = string_match(text, "^ ([^ ]-) ?%-(.+)$")
+					if unitName and (unitName == "" or unitName == UnitName("player")) and progress then
+						local current, goal = string_match(progress, "(%d+)/(%d+)")
+						if current and goal and current ~= goal then
+							isObjectiveQuest = true
+						end
+					end
+				end
+			end
+		end
+
+		if isObjectiveQuest or isProgressQuest then
+			self.QuestIcon:Show()
+		else
+			self.QuestIcon:Hide()
+		end
 	end
 
 	if C["Nameplates"].ClassIcons then
@@ -307,6 +357,13 @@ function Module:CreateNameplates()
 		self.HealerTexture:Hide()
 	end
 
+	self.TopArrow = self:CreateTexture(nil, "OVERLAY")
+	self.TopArrow:SetPoint("BOTTOM", self.Health, "TOP", 0, 50)
+	self.TopArrow:SetSize(35, 35)
+	self.TopArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Top.tga]])
+	self.TopArrow:SetBlendMode("ADD")
+	self.TopArrow:Hide()
+
 	self.EliteIcon = self.Health:CreateTexture(nil, "OVERLAY")
 	self.EliteIcon:SetSize(self.Health:GetHeight() + 4, self.Health:GetHeight() + 4)
 	self.EliteIcon:SetParent(self.Health)
@@ -323,27 +380,35 @@ function Module:CreateNameplates()
 	end
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
-	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
 	Module.CreateDebuffHighlight(self)
+
+	-- Do not show this on friendly nameplates, pointless.
+	if UnitIsPlayer(self.unit) and (UnitReaction(self.unit, "player") and UnitReaction(self.unit, "player") <= 4) then
+		Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
+	end
 
 	-- Elite Icon Events
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateEliteIcon)
+	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateEliteIcon)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateEliteIcon)
 	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon)
 	Module.NameplateEliteIcon(self)
 
 	-- Highlight Plate Events
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
+	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
 	Module.HighlightPlate(self)
 
 	-- Target Alpha Events
 	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget)
+	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdateNameplateTarget)
 	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
 	Module.UpdateNameplateTarget(self)
 
 	if C["Nameplates"].ClassIcons then
 		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateClassIcons)
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateClassIcons)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateClassIcons)
 		Module.NameplateClassIcons(self)
 	end
@@ -351,6 +416,7 @@ function Module:CreateNameplates()
 	-- Totem Icon Events
 	if C["Nameplates"].Totems then
 		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdatePlateTotems)
 		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems)
 		Module.UpdatePlateTotems(self)
 	end

@@ -13,7 +13,6 @@ local sub = string.sub
 local table_wipe = table.wipe
 local tonumber = tonumber
 
-
 local C_PetBattles_IsInBattle = _G.C_PetBattles.IsInBattle
 local C_PetJournal_FindPetIDByName = _G.C_PetJournal.FindPetIDByName
 local C_PetJournal_GetPetStats = _G.C_PetJournal.GetPetStats
@@ -89,12 +88,15 @@ local LOCALE = {
 	FOREIGN_SERVER_LABEL = FOREIGN_SERVER_LABEL,
 	ID = ID,
 	INTERACTIVE_SERVER_LABEL = INTERACTIVE_SERVER_LABEL,
-	LEVEL = LEVEL,
 	TARGET = TARGET,
 	DEAD = DEAD,
 	FACTION_ALLIANCE = FACTION_ALLIANCE,
 	NONE = NONE,
-	ROLE = ROLE
+	ROLE = ROLE,
+
+	-- Custom to find LEVEL string on tooltip
+	LEVEL1 = TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", ""),
+	LEVEL2 = TOOLTIP_UNIT_LEVEL_CLASS:gsub("^%%2$s%s?(.-)%s?%%1$s", "%1"):gsub("^%-?г?о?%s?", ""):gsub("%s?%%s%s?%-?", "")
 }
 
 local ignoreSubType = {
@@ -167,9 +169,10 @@ function Module:GetLevelLine(tt, offset)
 	end
 
 	for i = offset, tt:NumLines() do
-		local tipText = _G["GameTooltipTextLeft" .. i]
-		if (tipText:GetText() and tipText:GetText():find(LOCALE.LEVEL)) then
-			return tipText
+		local tipLine = _G["GameTooltipTextLeft" .. i]
+		local tipText = tipLine and tipLine.GetText and tipLine:GetText()
+		if tipText and (tipText:find(LOCALE.LEVEL1) or tipText:find(LOCALE.LEVEL2)) then
+			return tipLine
 		end
 	end
 end
@@ -350,7 +353,7 @@ function Module:GameTooltip_OnTooltipSetUnit(tt)
 		end
 
 		if C["Tooltip"].Role then
-			local role, r, g, b = UnitGroupRolesAssigned(unit)
+			local r, g, b, role = 1, 1, 1, UnitGroupRolesAssigned(unit)
 			if IsInGroup() and (UnitInParty(unit) or UnitInRaid(unit)) and (role ~= "NONE") then
 				if role == "HEALER" then
 					role, r, g, b = "Healer", 0, 1, .59
@@ -577,7 +580,7 @@ function Module:GameTooltip_OnTooltipSetItem(tt)
 			end
 		else
 			if tt == ItemRefTooltip then
-				tt:SetBackdropBorderColor()
+				tt:SetBackdropBorderColor(0.7, 0.7, 0.7)
 			end
 		end
 	end

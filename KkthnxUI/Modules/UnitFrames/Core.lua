@@ -24,6 +24,8 @@ local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS
 local DebuffTypeColor = _G.DebuffTypeColor
 local FACTION_BAR_COLORS = _G.FACTION_BAR_COLORS
+local GetArenaOpponentSpec = _G.GetArenaOpponentSpec
+local GetSpecializationInfoByID = _G.GetSpecializationInfoByID
 local GetSpellInfo = _G.GetSpellInfo
 local GetTime = _G.GetTime
 local InCombatLockdown = _G.InCombatLockdown
@@ -44,6 +46,7 @@ local UnitClass = _G.UnitClass
 local UnitClassification = _G.UnitClassification
 local UnitDetailedThreatSituation = _G.UnitDetailedThreatSituation
 local UnitExists = _G.UnitExists
+local UnitFactionGroup = _G.UnitFactionGroup
 local UnitGroupRolesAssigned = _G.UnitGroupRolesAssigned
 local UnitIsConnected = _G.UnitIsConnected
 local UnitIsEnemy = _G.UnitIsEnemy
@@ -242,8 +245,11 @@ function Module:ThreatPlate()
 end
 
 function Module:HighlightPlate()
-	local shadow = self.Health.Shadow
 	local unit = self.unit
+
+	local shadow = self.Health.Shadow
+	local arrowT = self.TopArrow
+
 	local isPlayer = unit and UnitIsPlayer(unit)
 	local reaction = unit and UnitReaction(unit, "player")
 
@@ -251,20 +257,18 @@ function Module:HighlightPlate()
 		if isPlayer then
 			local _, class = UnitClass(unit)
 			if class then
-				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
-				if color then
-					shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8, 1)
-				end
+				arrowT:Show()
+				shadow:SetBackdropBorderColor(0 / 255, 179 / 255, 255 / 255)
 			end
 		elseif reaction then
-			local color = FACTION_BAR_COLORS[reaction]
-			if color then
-				shadow:SetBackdropBorderColor(color.r * 0.8, color.g * 0.8, color.b * 0.8, 1)
-			end
+			arrowT:Show()
+			shadow:SetBackdropBorderColor(0 / 255, 179 / 255, 255 / 255)
 		else
+			arrowT:Hide()
 			shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 		end
 	else
+		arrowT:Hide()
 		shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
 	end
 end
@@ -873,6 +877,8 @@ function Module:NameplatesCallback(event, unit)
 	-- Position of the resources
 	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -8
 
+	Module.UpdateQuestUnit(Nameplate, unit)
+
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		if UnitIsUnit(unit, "player") then
 			Nameplate:DisableElement("Castbar")
@@ -932,18 +938,21 @@ function Module:NameplatesCallback(event, unit)
 			Nameplate.ClassPowerText:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
 			Nameplate.ClassPowerText:SetParent(Nameplate)
 		end
+
 		if Nameplate.ClassPower then
 			Nameplate.ClassPower:Hide()
 			Nameplate.ClassPower:ClearAllPoints()
 			Nameplate.ClassPower:SetParent(Nameplate)
 			Nameplate.ClassPower:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
 		end
+
 		if Nameplate.Runes then
 			Nameplate.Runes:Hide()
 			Nameplate.Runes:ClearAllPoints()
 			Nameplate.Runes:SetParent(Nameplate)
 			Nameplate.Runes:SetPoint(Point, Nameplate.Health, Relpoint, xOffset, yOffset)
 		end
+
 		if Nameplate.Stagger then
 			Nameplate.Stagger:Hide()
 			Nameplate.Stagger:ClearAllPoints()
@@ -1351,13 +1360,13 @@ function Module:PostUpdateArenaPreparationSpec()
 			specIcon.Icon:SetTexture([[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]])
 		end
 	end
+
+	self.forceInRange = true
 end
 
 function Module:UpdatePowerColorArenaPreparation(specID)
 	-- oUF is unable to get power color on arena preparation, so we add this feature here.
 	local power = self
-	local frame = power:GetParent()
-	local health = frame.Health
 	local playerClass = select(6, GetSpecializationInfoByID(specID))
 
 	if playerClass then

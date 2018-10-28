@@ -6,9 +6,13 @@ end
 local Module = K:GetModule("Unitframes")
 
 local _G = _G
+local select = select
 
 local CreateFrame = _G.CreateFrame
 local GetThreatStatusColor = _G.GetThreatStatusColor
+local UnitFactionGroup = _G.UnitFactionGroup
+local UnitIsPVP = _G.UnitIsPVP
+local UnitIsPVPFreeForAll = _G.UnitIsPVPFreeForAll
 local UnitThreatSituation = _G.UnitThreatSituation
 
 local function UpdateThreat(self, _, unit)
@@ -180,18 +184,4 @@ function Module:CreatePhaseIndicator()
 	self.PhaseIndicator = self:CreateTexture(nil, "OVERLAY")
 	self.PhaseIndicator:SetSize(22, 22)
 	self.PhaseIndicator:SetPoint("LEFT", self.Health, "RIGHT", 1, 0)
-end
-
-function Module:CreateQuestIndicator(size)
-	size = size or 20
-
-	self.QuestOverlay = CreateFrame("Frame", nil, self.Health)
-	self.QuestOverlay:SetAllPoints()
-	self.QuestOverlay:SetFrameLevel(self.Health:GetFrameLevel() + 4)
-
-	self.QuestIndicator = self.QuestOverlay:CreateTexture(nil, "OVERLAY", 7)
-	self.QuestIndicator:SetTexture("Interface\\MINIMAP\\ObjectIcons")
-	self.QuestIndicator:SetTexCoord(0.125, 0.250, 0.125, 0.250)
-	self.QuestIndicator:SetSize(size, size)
-	self.QuestIndicator:SetPoint("LEFT", self.Portrait, "RIGHT", -4, 0)
 end

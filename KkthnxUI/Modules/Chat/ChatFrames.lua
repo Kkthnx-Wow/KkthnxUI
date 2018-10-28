@@ -416,7 +416,7 @@ function Module:Install()
 	ChangeChatColor("CHANNEL3", 232/255, 228/255, 121/255) -- Local Defense
 
 	if K.Name == "Kkthnx" and K.Realm == "Bleeding Hollow" then
-		SetCVar("scriptErrors", 1)
+		K.LockCVar("scriptErrors", 1)
 	end
 
 	DEFAULT_CHAT_FRAME:SetUserPlaced(true)

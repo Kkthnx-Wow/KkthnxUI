@@ -13,6 +13,7 @@ end
 
 local _G = _G
 local table_insert = table.insert
+local select = select
 
 local CreateFrame = _G.CreateFrame
 local CUSTOM_CLASS_COLORS = _G.CUSTOM_CLASS_COLORS

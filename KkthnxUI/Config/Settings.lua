@@ -4,6 +4,7 @@ local _G = _G
 
 local DAMAGE = _G.DAMAGE
 local DEFAULT = _G.DEFAULT
+local GetCurrentRegion = _G.GetCurrentRegion
 local GUILD = _G.GUILD
 local HEALER = _G.HEALER
 local HIDE = _G.HIDE
@@ -301,7 +302,7 @@ C["DataText"] = {
 	["LocalTime"] = true,
 	["System"] = true,
 	["Time"] = true,
-	["Time24Hr"] = false
+	["Time24Hr"] = GetCurrentRegion() ~= 1
 }
 
 C["Filger"] = {
@@ -371,7 +372,8 @@ C["Minimap"] = {
 	["GarrisonLandingPage"] = true,
 	["ResetZoom"] = false,
 	["ResetZoomTime"] = 4,
-	["Size"] = 180
+	["Size"] = 180,
+	["VignetteAlert"] = false,
 }
 
 -- Miscellaneous
@@ -382,6 +384,7 @@ C["Misc"] = {
 	["EnhancedFriends"] = false,
 	["ItemLevel"] = false,
 	["KillingBlow"] = false,
+	["NoTalkingHead"] = false,
 	["PvPEmote"] = false,
 	["SlotDurability"] = false,
 }

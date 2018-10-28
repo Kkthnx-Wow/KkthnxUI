@@ -46,15 +46,6 @@ if C["General"].FixGarbageCollect then
 	_G.UpdateAddOnMemoryUsage = function() end
 end
 
-Module.WarnMessages = {GetFramesRegisteredForEvent("LUA_WARNING")}
-function Module:DisableWarnMessages(f, ev, warnType, warnMessage)
-	if (warnMessage:match("^Couldn't open")) or (warnMessage:match("^Error loading")) or (warnMessage:match("^%(null%)")) or (warnMessage:match("^Deferred XML")) then
-		return
-	end
-
-	geterrorhandler()(warnMessage, true)
-end
-
 -- Misclicks for some popups
 function Module:MisclickPopups()
 	StaticPopupDialogs.RESURRECT.hideOnEscape = false
@@ -158,11 +149,6 @@ end
 function Module:OnEnable()
 	self:MisclickPopups()
 
-	for _, WarnMessages in ipairs(Module.WarnMessages) do
-		self.UnregisterEvent(WarnMessages, "LUA_WARNING")
-	end
-
-	self:RegisterEvent("LUA_WARNING", "DisableWarnMessages")
 	if not K.CheckAddOnState("WorldQuestsList") or not K.CheckAddOnState("PremadeAutoAccept") then
 		self:RegisterEvent("LFG_LIST_APPLICANT_LIST_UPDATED", "OnApplicantListUpdated")
 		self:RegisterEvent("GROUP_LEFT", "UpdateAutoAccept")
