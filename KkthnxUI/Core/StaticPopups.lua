@@ -85,7 +85,6 @@ K.PopupDialogs["DISCORD_EDITBOX"] = {
 	hideOnEscape = 1,
 }
 
-
 K.PopupDialogs["CONFIG_RL"] = {
 	text = L["StaticPopups"].Config_Reload,
 	button1 = ACCEPT,

@@ -385,11 +385,7 @@ function Module:CreateNameplates()
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
 	Module.CreateDebuffHighlight(self)
-
-	-- Do not show this on friendly nameplates, pointless.
-	if UnitIsPlayer(self.unit) and (UnitReaction(self.unit, "player") and UnitReaction(self.unit, "player") <= 4) then
-		Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
-	end
+	Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
 
 	do
 		-- Elite Icon Events
