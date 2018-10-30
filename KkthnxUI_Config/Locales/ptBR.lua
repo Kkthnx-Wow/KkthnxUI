@@ -480,6 +480,16 @@ KkthnxUIConfig["ptBR"] = {
 			["Desc"] = "Show nameplates for units within this range",
 		},
 
+		["TargetArrow"] = {
+			["Name"] = "Target Arrow"..ModuleNewFeature,
+			["Desc"] = "Display an arrow at the top of the NamePlates to help determine who or what you are targeting",
+		},
+
+		["EliteIcon"] = {
+			["Name"] = "Elite Icon"..ModuleNewFeature,
+			["Desc"] = "Display an Elite Icon on the right side of the NamePlates.",
+		},
+
 		["Enable"] = {
 			["Name"] = "Enable Nameplates",
 			["Desc"] = ModuleToggle..PerformanceIncrease,
@@ -1031,6 +1041,11 @@ KkthnxUIConfig["ptBR"] = {
 		["EnhancedFriends"] = {
 			["Name"] = "Enhanced Friends List",
 			["Desc"] = "Enhances the friends list to look better",
+		},
+
+		["ImprovedStats"] = {
+			["Name"] = "Improved Stats"..ModuleNewFeature,
+			["Desc"] = "Provides an updated and logical display of the character stats",
 		},
 
 		["KillingBlow"] = {

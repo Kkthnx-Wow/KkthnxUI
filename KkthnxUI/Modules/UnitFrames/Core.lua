@@ -247,29 +247,62 @@ end
 function Module:HighlightPlate()
 	local unit = self.unit
 
-	local shadow = self.Health.Shadow
-	local arrowT = self.TopArrow
+	local health = self.Health
+	local shadowH = health.Shadow
+	local arrowT = C["Nameplates"].TargetArrow and self.TopArrow
 
 	local isPlayer = unit and UnitIsPlayer(unit)
 	local reaction = unit and UnitReaction(unit, "player")
+
+	if (not health:IsShown()) then
+		return
+	end
 
 	if UnitIsUnit(unit, "target") then
 		if isPlayer then
 			local _, class = UnitClass(unit)
 			if class then
-				arrowT:Show()
-				shadow:SetBackdropBorderColor(0 / 255, 179 / 255, 255 / 255)
+				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+				if color then
+					if arrowT and not arrowT:IsShown() then
+						arrowT:Show()
+						arrowT:SetVertexColor(color.r, color.g, color.b)
+					end
+
+					if shadowH then
+						shadowH:SetBackdropBorderColor(color.r, color.g, color.b)
+					end
+				end
 			end
 		elseif reaction then
-			arrowT:Show()
-			shadow:SetBackdropBorderColor(0 / 255, 179 / 255, 255 / 255)
+			local color = FACTION_BAR_COLORS[reaction]
+			if color then
+				if arrowT and not arrowT:IsShown() then
+					arrowT:Show()
+					arrowT:SetVertexColor(color.r, color.g, color.b)
+				end
+
+				if shadowH then
+					shadowH:SetBackdropBorderColor(color.r, color.g, color.b)
+				end
+			end
 		else
-			arrowT:Hide()
-			shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+			if arrowT and arrowT:IsShown() then
+				arrowT:Hide()
+			end
+
+			if shadowH then
+				shadowH:SetBackdropBorderColor(0, 0, 0, 0.8)
+			end
 		end
 	else
-		arrowT:Hide()
-		shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+		if arrowT and arrowT:IsShown() then
+			arrowT:Hide()
+		end
+
+		if shadowH then
+			shadowH:SetBackdropBorderColor(0, 0, 0, 0.8)
+		end
 	end
 end
 
@@ -690,15 +723,6 @@ function Module:PostCreateAura(button)
 		button.overlay:SetParent(button.OverlayFrame)
 		button.count:SetParent(button.OverlayFrame)
 		button.Remaining:SetParent(button.OverlayFrame)
-
-		--button.Animation = button:CreateAnimationGroup()
-		--button.Animation:SetLooping("BOUNCE")
-
-		--button.Animation.FadeOut = button.Animation:CreateAnimation("Alpha")
-		--button.Animation.FadeOut:SetFromAlpha(1)
-		--button.Animation.FadeOut:SetToAlpha(0)
-		--button.Animation.FadeOut:SetDuration(.6)
-		--button.Animation.FadeOut:SetSmoothing("IN_OUT")
 	end
 end
 
@@ -732,19 +756,13 @@ function Module:PostUpdateAura(unit, button, index)
 				button.icon:SetDesaturated(false)
 			end
 		else
-			--if button.Animation then
-				if (IsStealable or DType == "Magic") and not isFriend --[[and not button.Animation.Playing--]] then
-					button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-					LCG.AutoCastGlow_Start(button, {237/255, 234/255, 142/255})
-					--button.Animation:Play()
-					--button.Animation.Playing = true
-				else
-					button:SetBackdropBorderColor()
-					LCG.AutoCastGlow_Stop(button)
-					--button.Animation:Stop()
-					--button.Animation.Playing = false
-				end
-			--end
+			if (IsStealable or DType == "Magic") and not isFriend then
+				button:SetBackdropBorderColor(237/255, 234/255, 142/255)
+				LCG.AutoCastGlow_Start(button, {237/255, 234/255, 142/255})
+			else
+				button:SetBackdropBorderColor()
+				LCG.AutoCastGlow_Stop(button)
+			end
 		end
 
 		if button.Remaining then
@@ -877,7 +895,28 @@ function Module:NameplatesCallback(event, unit)
 	-- Position of the resources
 	local Point, Relpoint, xOffset, yOffset = "TOP", "BOTTOM", 0, -8
 
-	Module.UpdateQuestUnit(Nameplate, unit)
+	if Nameplate.QuestIcon then
+		Module.UpdateQuestUnit(Nameplate, unit)
+	end
+
+	if C["Nameplates"].EliteIcon and Nameplate.EliteIcon then
+		Module.NameplateEliteIcon(Nameplate)
+	end
+
+	Module.HighlightPlate(Nameplate)
+	Module.UpdateNameplateTarget(Nameplate)
+
+	if C["Nameplates"].ClassIcons and Nameplate.Class then
+		Module.NameplateClassIcons(Nameplate)
+	end
+
+	if C["Nameplates"].Totems and Nameplate.Totem then
+		Module.UpdatePlateTotems(Nameplate)
+	end
+
+	if C["Nameplates"].MarkHealers and Nameplate.HealerTexture then
+		Module.DisplayHealerTexture(Nameplate)
+	end
 
 	if event == "NAME_PLATE_UNIT_ADDED" then
 		if UnitIsUnit(unit, "player") then
@@ -1051,6 +1090,10 @@ function Module:NameplateClassIcons()
 end
 
 function Module:NameplateEliteIcon()
+	if C["Nameplates"].EliteIcon ~= true then
+		return
+	end
+
 	local icon = self.EliteIcon
 	local c = UnitClassification(self.unit)
 	if c == "elite" or c == "worldboss" then
@@ -1477,10 +1520,10 @@ end
 
 function Module:DisplayHealerTexture()
 	local name, realm = UnitName(self.unit)
-	realm = (realm and realm ~= "") and string_gsub(realm, "[%s%-]","")
+	realm = (realm and realm ~= "") and string_gsub(realm, "[%s%-]", "")
 
 	if realm then
-		name = name.."-"..realm
+		name = name .. "-" .. realm
 	end
 
 	local icon = self.HealerTexture

@@ -247,18 +247,18 @@ function Module:CreateNameplates()
 	The following CVars toggle visibility
 	of the personal resouce display (classpower):
 
-		nameplateShowSelf
-		nameplateResourceOnTarget
+	nameplateShowSelf
+	nameplateResourceOnTarget
 
 	Note that class resources above will only be visible on
 	the target as long as the player nameplate is visible too.
 	This might not always be the case, but it can
 	to a certain degree be adjusted with the following CVars:
 
-		nameplatePersonalShowAlways
-		nameplatePersonalShowInCombat
-		nameplatePersonalShowWithTarget
-		nameplatePersonalHideDelaySeconds
+	nameplatePersonalShowAlways
+	nameplatePersonalShowInCombat
+	nameplatePersonalShowWithTarget
+	nameplatePersonalHideDelaySeconds
 	--]]
 
 	if C["Nameplates"].ClassResource then -- replace with config option
@@ -283,7 +283,7 @@ function Module:CreateNameplates()
 	end
 
 	-- use Tooltip scanning to obtain the quest icon to show isObjectiveQuest or isProgressQuest.
-	local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestUnitTip", nil, "GameTooltipTemplate")
+	local unitTip = CreateFrame("GameTooltip", "NameplateQuestUnitTip", nil, "GameTooltipTemplate")
 	function Module:UpdateQuestUnit(unit)
 		if unit == "player" then
 			return
@@ -357,25 +357,29 @@ function Module:CreateNameplates()
 		self.HealerTexture:Hide()
 	end
 
-	self.TopArrow = self:CreateTexture(nil, "OVERLAY")
-	self.TopArrow:SetPoint("BOTTOM", self.Health, "TOP", 0, 50)
-	self.TopArrow:SetSize(35, 35)
-	self.TopArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Top.tga]])
-	self.TopArrow:SetBlendMode("ADD")
-	self.TopArrow:Hide()
+	if C["Nameplates"].TargetArrow then
+		self.TopArrow = self:CreateTexture(nil, "OVERLAY")
+		self.TopArrow:SetPoint("BOTTOM", self.Health, "TOP", 0, 50)
+		self.TopArrow:SetSize(36, 36)
+		self.TopArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Top.tga]])
+		self.TopArrow:Hide()
+	end
 
-	self.EliteIcon = self.Health:CreateTexture(nil, "OVERLAY")
-	self.EliteIcon:SetSize(self.Health:GetHeight() + 4, self.Health:GetHeight() + 4)
-	self.EliteIcon:SetParent(self.Health)
-	self.EliteIcon:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
-	self.EliteIcon:SetTexture("Interface\\TARGETINGFRAME\\Nameplates")
-	self.EliteIcon:Hide()
+	if C["Nameplates"].EliteIcon then
+		self.EliteIcon = self.Health:CreateTexture(nil, "OVERLAY")
+		self.EliteIcon:SetSize(self.Health:GetHeight() + 4, self.Health:GetHeight() + 4)
+		self.EliteIcon:SetParent(self.Health)
+		self.EliteIcon:SetPoint("LEFT", self.Health, "RIGHT", 4, 0)
+		self.EliteIcon:SetTexture("Interface\\TARGETINGFRAME\\Nameplates")
+		self.EliteIcon:Hide()
+	end
 
 	self:EnableMouse(false)
 	self.Health:EnableMouse(false)
 	self.Power:EnableMouse(false)
 	self.Castbar:EnableMouse(false)
-	if C["Nameplates"].TrackAuras == true then
+
+	if C["Nameplates"].TrackAuras then
 		self.Debuffs:EnableMouse(false)
 	end
 
@@ -387,54 +391,53 @@ function Module:CreateNameplates()
 		Module.CreatePvPIndicator(self, "nameplate", self, self:GetHeight(), self:GetHeight() + 3)
 	end
 
-	-- Elite Icon Events
-	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateEliteIcon)
-	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateEliteIcon)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateEliteIcon)
-	self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon)
-	Module.NameplateEliteIcon(self)
+	do
+		-- Elite Icon Events
+		if C["Nameplates"].EliteIcon then
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateEliteIcon)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateEliteIcon)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateEliteIcon)
+			self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon)
+		end
 
-	-- Highlight Plate Events
-	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
-	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
-	Module.HighlightPlate(self)
+		-- Highlight Plate Events
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
 
-	-- Target Alpha Events
-	self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget)
-	self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdateNameplateTarget)
-	self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
-	Module.UpdateNameplateTarget(self)
+		-- Target Alpha Events
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget)
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdateNameplateTarget)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
 
-	if C["Nameplates"].ClassIcons then
-		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateClassIcons)
-		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateClassIcons)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateClassIcons)
-		Module.NameplateClassIcons(self)
-	end
+		if C["Nameplates"].ClassIcons then
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateClassIcons)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateClassIcons)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateClassIcons)
+		end
 
-	-- Totem Icon Events
-	if C["Nameplates"].Totems then
-		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
-		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdatePlateTotems)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems)
-		Module.UpdatePlateTotems(self)
-	end
+		-- Totem Icon Events
+		if C["Nameplates"].Totems then
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdatePlateTotems)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems)
+		end
 
-	-- Healer Icon Events
-	if C["Nameplates"].MarkHealers then
-		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture)
-		Module.DisplayHealerTexture(self)
-	end
+		-- Healer Icon Events
+		if C["Nameplates"].MarkHealers then
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.DisplayHealerTexture)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture)
+		end
 
-	-- Threat Plate Events
-	if C["Nameplates"].Threat then
-		self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
-		self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
-		-- Threat Plate PostUpdate Function
-		self.Health.PostUpdate = function()
-			Module.ThreatPlate(self)
+		-- Threat Plate Events
+		if C["Nameplates"].Threat then
+			self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
+			self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
+			-- Threat Plate PostUpdate Function
+			self.Health.PostUpdate = function()
+				Module.ThreatPlate(self)
+			end
 		end
 	end
 end
