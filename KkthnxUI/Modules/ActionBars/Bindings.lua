@@ -1,7 +1,11 @@
 local K, C, L = unpack(select(2, ...))
-if C["ActionBar"].Enable ~= true or K.CheckAddOnState("ncHoverBind") == true then return end
+if C["ActionBar"].Enable ~= true or K.CheckAddOnState("ncHoverBind") == true then
+	return
+end
 
--- Lua API
+-- Sourced: Nightcracker (ncHoverBind)
+-- Updated: Kkthnx (KkthnxUI)
+
 local _G = _G
 local math_floor = math.floor
 local pairs = pairs
@@ -9,7 +13,6 @@ local print = print
 local select = select
 local tonumber = tonumber
 
--- Wow API
 local APPLY = _G.APPLY
 local CANCEL = _G.CANCEL
 local EnumerateFrames = _G.EnumerateFrames
@@ -34,14 +37,6 @@ local SaveBindings = _G.SaveBindings
 local SetBinding = _G.SetBinding
 local SpellBook_GetSpellBookSlot = _G.SpellBook_GetSpellBookSlot
 
--- Global variables that we don't cache, list them here for mikk's FindGlobals script
--- GLOBALS: DEFAULT_CHAT_FRAME
--- GLOBALS: MacroFrameTab1, MacroFrameTab2, GameTooltip_ShowCompareItem
--- GLOBALS: ShoppingTooltip1, SpellBookFrame, GameTooltip
--- GLOBALS: StanceButton1, PetActionButton1, ActionButton1
--- GLOBALS: StaticPopupDialogs
-
--- Binding buttons(ncHoverBind by Nightcracker)
 local bind, oneBind, localmacros = CreateFrame("Frame", "HoverBind", UIParent), true, 0
 SlashCmdList.MOUSEOVERBIND = function()
 	if InCombatLockdown() then
@@ -73,15 +68,18 @@ SlashCmdList.MOUSEOVERBIND = function()
 				elapsed = 0
 			end
 
-			if not self.comparing and IsModifiedClick("COMPAREITEMS") then
+			local compareItems = IsModifiedClick("COMPAREITEMS")
+			if not self.comparing and compareItems and self:GetItem() then
 				GameTooltip_ShowCompareItem(self)
 				self.comparing = true
-			elseif self.comparing and not IsModifiedClick("COMPAREITEMS") then
+			elseif self.comparing and not compareItems then
 				for _, frame in pairs(self.shoppingTooltips) do
 					frame:Hide()
 				end
+
 				self.comparing = false
 			end
+
 		end)
 
 		hooksecurefunc(GameTooltip, "Hide", function(self)
@@ -92,10 +90,22 @@ SlashCmdList.MOUSEOVERBIND = function()
 			end
 		end)
 
-		bind:SetScript("OnEvent", function(self) self:Deactivate(false) end)
-		bind:SetScript("OnLeave", function(self) self:HideFrame() end)
-		bind:SetScript("OnKeyDown", function(self, key) self:Listener(key) end)
-		bind:SetScript("OnMouseDown", function(self, key) self:Listener(key) end)
+		bind:SetScript("OnEvent", function(self)
+			self:Deactivate(false)
+		end)
+
+		bind:SetScript("OnLeave", function(self)
+			self:HideFrame()
+		end)
+
+		bind:SetScript("OnKeyDown", function(self, key)
+			self:Listener(key)
+		end)
+
+		bind:SetScript("OnMouseDown", function(self, key)
+			self:Listener(key)
+		end)
+
 		bind:SetScript("OnMouseWheel", function(self, delta)
 			if delta > 0 then
 				self:Listener("MOUSEWHEELUP")
@@ -267,48 +277,67 @@ SlashCmdList.MOUSEOVERBIND = function()
 				end
 			end
 
-			if key == "ESCAPE" or key == "RightButton" then
-				for i = 1, #self.button.bindings do
-					SetBinding(self.button.bindings[i])
+			if key == "ESCAPE" then
+				if self.button.bindings then
+					for i = 1, #self.button.bindings do
+						SetBinding(self.button.bindings[i])
+					end
 				end
 
-				print("|cffffff00"..L["Actionbars"].All_Binds_Cleared.."|r".." |cff00ff00"..self.button.name.."|r|cffffff00.|r")
+				K.Print(format("|cffffff00"..L["Actionbars"].All_Binds_Cleared.."|r".." |cff00ff00", self.button.name))
 				self:Update(self.button, self.spellmacro)
 
 				if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then
 					GameTooltip:Hide()
 				end
-
 				return
 			end
 
-			if key == "LSHIFT" or key == "RSHIFT" or key == "LCTRL"
-			or key == "RCTRL" or key == "LALT"
-			or key == "RALT" or key == "UNKNOWN"
-			or key == "LeftButton" then
+			local isFlyout = (self.button.FlyoutArrow and self.button.FlyoutArrow:IsShown())
+
+			if key == "LSHIFT"
+			or key == "RSHIFT"
+			or key == "LCTRL"
+			or key == "RCTRL"
+			or key == "LALT"
+			or key == "RALT"
+			or key == "UNKNOWN" then
 				return
 			end
 
-			if key == "MiddleButton" then
-				key = "BUTTON3"
+			-- Redirect LeftButton click to open flyout
+			if key == "LeftButton" and isFlyout then
+				SecureActionButton_OnClick(bind.button)
 			end
 
-			if key:find("Button%d") then
+			if key == "MiddleButton" then key = "BUTTON3" end
+			if key:find('Button%d') then
 				key = key:upper()
 			end
 
 			local alt = IsAltKeyDown() and "ALT-" or ""
 			local ctrl = IsControlKeyDown() and "CTRL-" or ""
 			local shift = IsShiftKeyDown() and "SHIFT-" or ""
+			local allowBinding = (not isFlyout or (isFlyout and key ~= "LeftButton")) -- Don't attempt to bind left mouse button for flyout buttons
 
-			if not self.spellmacro or self.spellmacro == "PET" or self.spellmacro == "STANCE" then
-				SetBinding(alt..ctrl..shift..key, self.button.bindstring)
+			if not self.spellmacro or self.spellmacro == "PET" or self.spellmacro == "STANCE" or self.spellmacro == "FLYOUT" then
+				if allowBinding then
+					SetBinding(alt..ctrl..shift..key, self.button.bindstring)
+				end
 			else
-				SetBinding(alt..ctrl..shift..key, self.spellmacro.." "..self.button.name)
+				if allowBinding then
+					SetBinding(alt..ctrl..shift..key, self.spellmacro.." "..self.button.name)
+				end
 			end
-			print(alt..ctrl..shift..key.." |cff00ff00bound to |r"..self.button.name..".")
+
+			if allowBinding then
+				K.Print(alt..ctrl..shift..key.." |cff00ff00bound to |r"..self.button.name..".")
+			end
+
 			self:Update(self.button, self.spellmacro)
-			if self.spellmacro ~= "MACRO" and not GameTooltip:IsForbidden() then GameTooltip:Hide() end
+			if self.spellmacro ~= "MACRO" and self.spellmacro ~= "FLYOUT" and not GameTooltip:IsForbidden() then
+				GameTooltip:Hide()
+			end
 		end
 
 		function bind:HideFrame()
@@ -388,15 +417,17 @@ SlashCmdList.MOUSEOVERBIND = function()
 		local pet = PetActionButton1:GetScript("OnClick")
 		local button = ActionButton1:GetScript("OnClick")
 
-		local function register(val)
+		local function register(val, override)
 			if val.IsProtected and val.GetObjectType and val.GetScript and val:GetObjectType() == "CheckButton" and val:IsProtected() then
 				local script = val:GetScript("OnClick")
-				if script == button then
+				if override then
 					val:HookScript("OnEnter", function(self) bind:Update(self) end)
-				elseif script == stance then
-					val:HookScript("OnEnter", function(self) bind:Update(self, "STANCE") end)
 				elseif script == pet then
 					val:HookScript("OnEnter", function(self) bind:Update(self, "PET") end)
+				elseif script == stance then
+					val:HookScript("OnEnter", function(self) bind:Update(self, "STANCE") end)
+				elseif (script == button) then
+					val:HookScript("OnEnter", function(self) bind:Update(self) end)
 				end
 			end
 		end
