@@ -3,9 +3,7 @@ local Module = K:GetModule("Skins")
 
 local _G = _G
 
-local hooksecurefunc = hooksecurefunc
-local UIDropDownMenu_Initialize = UIDropDownMenu_Initialize
-local ToggleDropDownMenu = ToggleDropDownMenu
+local hooksecurefunc = _G.hooksecurefunc
 
 local function SkinBattlefieldMinimap()
 	local function GetOpacity()
