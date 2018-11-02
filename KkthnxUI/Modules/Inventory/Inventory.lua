@@ -1023,16 +1023,17 @@ function Stuffing:InitBags()
 
 	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
 	gold:SetJustifyH("RIGHT")
+	gold:SetPoint("TOPRIGHT", f, -80, -9)
+	gold:Show()
 
-	f:SetScript("OnEvent", function(self)
+	local function UpdateGoldText(self)
 		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
-	end)
+	end
 
 	f:RegisterEvent("PLAYER_ENTERING_WORLD")
-	f:RegisterEvent("PLAYER_MONEY")
-	f:RegisterEvent("PLAYER_TRADE_MONEY")
-	f:RegisterEvent("TRADE_MONEY_CHANGED")
-	f:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+	f:RegisterEvent("PLAYER_MONEY", UpdateGoldText)
+	f:RegisterEvent("PLAYER_TRADE_MONEY", UpdateGoldText)
+	f:RegisterEvent("TRADE_MONEY_CHANGED", UpdateGoldText)
 
 	do
 		Token3:ClearAllPoints()
@@ -1140,13 +1141,13 @@ function Stuffing:InitBags()
 		Module:CommandDecorator(Module.SortBags, "bags")()
 	end)
 
-	gold:SetPoint("RIGHT", f.sortButton, "LEFT", -8, 0)
-
 	f.editbox = editbox
 	f.detail = detail
 	f.button = button
 	f.gold = gold
+
 	self.frame = f
+
 	f:Hide()
 end
 
@@ -1331,7 +1332,7 @@ function Stuffing:ADDON_LOADED(addon)
 	end
 
 	self:RegisterEvent("BAG_UPDATE")
-	-- self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+	self:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
 	self:RegisterEvent("ITEM_LOCK_CHANGED")
 	self:RegisterEvent("BANKFRAME_OPENED")
 	self:RegisterEvent("BANKFRAME_CLOSED")
@@ -1412,9 +1413,9 @@ function Stuffing:PLAYERREAGENTBANKSLOTS_CHANGED()
 	end
 end
 
---function Stuffing:CURRENCY_DISPLAY_UPDATE()
---	BackpackTokenFrame_Update()
---end
+function Stuffing:CURRENCY_DISPLAY_UPDATE()
+	BackpackTokenFrame_Update()
+end
 
 function Stuffing:BAG_UPDATE(id)
 	self:BagSlotUpdate(id)

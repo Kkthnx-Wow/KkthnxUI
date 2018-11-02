@@ -5,10 +5,10 @@ local Module = K:NewModule("Vendor", "AceEvent-3.0", "AceTimer-3.0")
 
 local _G = _G
 local select = _G.select
-local string_format = string.format
-local table_remove = table.remove
-local table_insert = table.insert
-local table_maxn = table.maxn
+local string_format = _G.string.format
+local table_remove = _G.table.remove
+local table_insert = _G.table.insert
+local table_maxn = _G.table.maxn
 local unpack = _G.unpack
 
 local C_Timer_After = _G.C_Timer.After
@@ -70,7 +70,7 @@ local function VendorGrays()
 			if itemID then
 				_, link, rarity, _, _, itype, _, _, _, _, itemPrice = GetItemInfo(itemID)
 
-				if (rarity and rarity == 0) and (itype and itype ~= "Quest") then
+				if (rarity and rarity == 0) and (itype and itype ~= "Quest") and (itemPrice and itemPrice > 0) then
 					table_insert(Module.SellFrame.Info.itemList, {bag, slot, itemPrice, link})
 				end
 			end
@@ -85,7 +85,7 @@ local function VendorGrays()
 		return
 	end
 
-	--Resetting stuff
+	-- Resetting stuff
 	Module.SellFrame.Info.ProgressTimer = 0
 	Module.SellFrame.Info.SellInterval = 0.2
 	Module.SellFrame.Info.ProgressMax = table_maxn(Module.SellFrame.Info.itemList)
