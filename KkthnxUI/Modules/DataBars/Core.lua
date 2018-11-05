@@ -345,6 +345,7 @@ function Module:OnEnter()
 		if rested then
 			GameTooltip:AddDoubleLine(L["Databars"].Rested, string_format("+%s (%s%%)", K.ShortValue(rested), math_floor(rested / max * 100)), 1, 1, 1)
 		end
+		GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:118:218|t "..L["ConfigButton"].MiddleClick, "Share Your Experience", 1, 1, 1)
 	end
 
 	if GetWatchedFactionInfo() then
@@ -376,6 +377,7 @@ function Module:OnEnter()
 			if reaction ~= MAX_REPUTATION_REACTION or C_Reputation_IsFactionParagon(factionID) then
 				GameTooltip:AddDoubleLine(REPUTATION..":", string_format("%d / %d (%d%%)", value - min, max - min, (value - min) / ((max - min == 0) and max or (max - min)) * 100), 1, 1, 1)
 			end
+			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:218:318|t "..L["ConfigButton"].LeftClick, "Toggle Reputation UI", 1, 1, 1)
 		end
 	end
 
@@ -410,6 +412,7 @@ function Module:OnEnter()
 			GameTooltip:AddDoubleLine(HONOR.." "..LEVEL, level)
 			GameTooltip:AddDoubleLine(L["Databars"].Honor_XP, string_format(" %d / %d (%d%%)", current, max, current/max * 100), 1, 1, 1)
 			GameTooltip:AddDoubleLine(L["Databars"].Honor_Remaining, string_format(" %d (%d%% - %d "..L["Databars"].Bars..")", max - current, (max - current) / max * 100, 20 * (max - current) / max), 1, 1, 1)
+			GameTooltip:AddDoubleLine("|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0:0:512:512:1:76:321:421|t "..L["ConfigButton"].Right_Click, "Toggle PvP UI", 1, 1, 1)
 		end
 	end
 
@@ -422,6 +425,33 @@ function Module:OnLeave()
 	end
 
 	GameTooltip:Hide()
+end
+
+function Module:OnClick(_, clicked)
+	if K.CodeDebug then
+		K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 430 - KkthnxUI|Modules|DataBars|Core -|r |cFFFFFF00" .. clicked .. " Clicked|r")
+	end
+
+	if clicked == "LeftButton" then
+		if GetWatchedFactionInfo() then
+			ToggleCharacter("ReputationFrame")
+		end
+	elseif clicked == "RightButton" then
+		if self.Database.TrackHonor then
+			if IsPlayerMaxLevel() and UnitIsPVP("player") then
+				TogglePVPUI()
+			end
+		end
+	elseif clicked == "MiddleButton" then
+		if not IsPlayerMaxLevel() and not IsXPUserDisabled() then
+			local cur, max = GetUnitXP("player")
+
+			if IsInGroup(LE_PARTY_CATEGORY_HOME) then
+				SendChatMessage(L["Databars"].XP .." ".. string_format("%s / %s (%d%%)", K.ShortValue(cur), K.ShortValue(max), math.floor(cur / max * 100)), "PARTY")
+				SendChatMessage(L["Databars"].Remaining .." ".. string_format("%s (%s%% - %s "..L["Databars"].Bars..")", K.ShortValue(max - cur), math.floor((max - cur) / max * 100), math.floor(20 * (max - cur) / max)), "PARTY")
+			end
+		end
+	end
 end
 
 function Module:Update()
@@ -464,12 +494,14 @@ function Module:OnEnable()
 		return
 	end
 
-	local container = CreateFrame("frame", "KkthnxUI_Databars", K.PetBattleHider)
+	local container = CreateFrame("button", "KkthnxUI_Databars", K.PetBattleHider)
 	container:SetWidth(Minimap:GetWidth() or self.Database.Width)
 	container:SetPoint("TOP", "Minimap", "BOTTOM", 0, -6)
+	container:RegisterForClicks("RightButtonUp", "LeftButtonUp", "MiddleButtonUp")
 
 	self:HookScript(container, "OnEnter")
 	self:HookScript(container, "OnLeave")
+	self:HookScript(container, "OnClick")
 	self.Container = container
 
 	self.Bars = {}
