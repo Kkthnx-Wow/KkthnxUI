@@ -12,6 +12,8 @@ local UnitIsFriend = _G.UnitIsFriend
 
 -- GLOBALS: DebuffTypeColor
 
+local sizeOverride = 16
+
 local function FilterSharedBuffs(_, _, _, name)
 	if (Module.UnImportantBuffs[name]) then
 		return false
@@ -29,9 +31,6 @@ function Module:CreateAuras(unit)
 	local Auras = CreateFrame("Frame", self:GetName() .. "Auras", self)
 
 	if (unit == "player") then
-		Buffs:SetHeight(21)
-		Buffs:SetWidth(130)
-
 		if K.Class == "ROGUE"
 		or K.Class == "DRUID"
 		or K.Class == "MAGE"
@@ -44,9 +43,11 @@ function Module:CreateAuras(unit)
 		else
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
 		end
-		Buffs.size = 21
-		Buffs.num = 15
+		Buffs:SetWidth(140)
+		Buffs.num = 5 * 4
 		Buffs.spacing = 6
+		Buffs.size = ((((Buffs:GetWidth() - (Buffs.spacing * (Buffs.num / 4 - 1))) / Buffs.num)) * 4)
+		Buffs:SetHeight(Buffs.size * 4)
 		Buffs.initialAnchor = "TOPLEFT"
 		Buffs["growth-y"] = "DOWN"
 		Buffs["growth-x"] = "RIGHT"
@@ -57,12 +58,12 @@ function Module:CreateAuras(unit)
 		self.Buffs = Buffs
 	elseif (unit == "target") then
 		if C["Unitframe"].DebuffsOnTop then
-			Buffs:SetHeight(21)
-			Buffs:SetWidth(130)
+			Buffs:SetWidth(140)
 			Buffs:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-			Buffs.size = 21
-			Buffs.num = 15
+			Buffs.num = 5 * 4
 			Buffs.spacing = 6
+			Buffs.size = ((((Buffs:GetWidth() - (Buffs.spacing * (Buffs.num / 4 - 1))) / Buffs.num)) * 4)
+			Buffs:SetHeight(Buffs.size * 4)
 			Buffs.initialAnchor = "TOPLEFT"
 			Buffs["growth-y"] = "DOWN"
 			Buffs["growth-x"] = "RIGHT"
@@ -70,12 +71,12 @@ function Module:CreateAuras(unit)
 			Buffs.PostUpdateIcon = Module.PostUpdateAura
 			Buffs.CustomFilter = FilterSharedBuffs
 
-			Debuffs:SetHeight(28)
-			Debuffs:SetWidth(130)
-			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, 26)
-			Debuffs.size = 28
-			Debuffs.num = 12
+			Debuffs:SetWidth(140)
+			Debuffs:SetPoint("BOTTOMLEFT", self.Health, "TOPLEFT", 0, -70)
+			Debuffs.num = 4 * 4
 			Debuffs.spacing = 6
+			Debuffs.size = ((((Debuffs:GetWidth() - (Debuffs.spacing * (Debuffs.num / 4 - 1))) / Debuffs.num)) * 4)
+			Debuffs:SetHeight(Debuffs.size * 4)
 			Debuffs.initialAnchor = "TOPLEFT"
 			Debuffs["growth-y"] = "UP"
 			Debuffs["growth-x"] = "RIGHT"
@@ -87,17 +88,15 @@ function Module:CreateAuras(unit)
 			self.Debuffs = Debuffs
 		else
 			Auras.gap = false
-			Auras.size = 21
-			Auras:SetHeight(21)
-			Auras:SetWidth(130)
+			Auras:SetWidth(140)
 			Auras:SetPoint("TOPLEFT", self.Power, "BOTTOMLEFT", 0, -6)
-			Auras.initialAnchor = "TOPLEFT"
-			Auras["growth-x"] = "RIGHT"
-			Auras["growth-y"] = "DOWN"
-			Auras.onlyShowPlayer = C["Unitframe"].OnlyShowPlayerDebuff
-			Auras.numBuffs = 15
-			Auras.numDebuffs = 12
+			Auras.num = 5 * 4
 			Auras.spacing = 6
+			Auras.size = ((((Auras:GetWidth() - (Auras.spacing * (Auras.num / 4 - 1))) / Auras.num)) * 4)
+			Auras:SetHeight(Auras.size * 4)
+			Auras.initialAnchor = "TOPLEFT"
+			Auras["growth-y"] = "DOWN"
+			Auras["growth-x"] = "RIGHT"
 			Auras.showStealableBuffs = true
 			Auras.PostCreateIcon = Module.PostCreateAura
 			Auras.PostUpdateIcon = Module.PostUpdateAura
