@@ -29,28 +29,14 @@ local PetActionButton_StartFlash = _G.PetActionButton_StartFlash
 local PetActionButton_StopFlash = _G.PetActionButton_StopFlash
 local PetHasActionBar = _G.PetHasActionBar
 local SetActionBarToggles = _G.SetActionBarToggles
-local SetCVar = _G.SetCVar
 local SetDesaturation = _G.SetDesaturation
 
 local ActionBarFrames = {
 	MainMenuBar, MainMenuBarArtFrame, OverrideActionBar,
-	PossessBarFrame, PetActionBarFrame, IconIntroTracker,
-	ShapeshiftBarLeft, ShapeshiftBarMiddle, ShapeshiftBarRight,
-	TalentMicroButtonAlert, CollectionsMicroButtonAlert, EJMicroButtonAlert,
-	LFDMicroButtonAlert, CharacterMicroButtonAlert
+	PossessBarFrame, PetActionBarFrame, ShapeshiftBarLeft,
+	ShapeshiftBarMiddle, ShapeshiftBarRight, TalentMicroButtonAlert,
+	CollectionsMicroButtonAlert, EJMicroButtonAlert, CharacterMicroButtonAlert
 }
-
-function Module:IconIntroTracker_Toggle()
-	if C["ActionBar"].AddNewSpells then
-		IconIntroTracker:RegisterEvent("SPELL_PUSHED_TO_ACTIONBAR")
-		IconIntroTracker:Show()
-		IconIntroTracker:SetParent(UIParent)
-	else
-		IconIntroTracker:UnregisterAllEvents()
-		IconIntroTracker:Hide()
-		IconIntroTracker:SetParent(K.UIFrameHider)
-	end
-end
 
 function Module:DisableBlizzard()
 	local Hider = K.UIFrameHider
@@ -65,6 +51,10 @@ function Module:DisableBlizzard()
 
 	MinimapCluster.GetBottom = function()
 		return 999999999
+	end
+
+	if (not C["ActionBar"].AddNewSpells) then
+		tinsert(ActionBarFrames, IconIntroTracker)
 	end
 
 	for _, frame in pairs(ActionBarFrames) do
@@ -97,8 +87,6 @@ function Module:DisableBlizzard()
 	-- Avoid Hiding Buttons on open/close spellbook
 	MultiActionBar_HideAllGrids = function() end
 	MultiActionBar_ShowAllGrids = function() end
-
-	self:IconIntroTracker_Toggle()
 end
 
 function Module:GridToggle()
