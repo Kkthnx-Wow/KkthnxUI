@@ -1242,12 +1242,12 @@ end
 function Module:CreateUnits()
 	if (C["Unitframe"].Enable) then
 		local Player = oUF:Spawn("player")
-		Player:SetPoint("BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", -10, 200)
-		Player:SetSize(190, 52)
+		Player:SetPoint("BOTTOMRIGHT", "ActionBarAnchor", "TOPLEFT", 44, 200)
+		Player:SetSize(200, 52)
 
 		local Target = oUF:Spawn("target")
-		Target:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", 10, 200)
-		Target:SetSize(190, 52)
+		Target:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "TOPRIGHT", -44, 200)
+		Target:SetSize(200, 52)
 
 		local TargetOfTarget = oUF:Spawn("targettarget")
 		TargetOfTarget:SetPoint("TOPLEFT", Target, "BOTTOMRIGHT", -56, 2)
