@@ -65,7 +65,6 @@ K.DispelClasses = {
 	["MAGE"] = {
 		["Curse"] = true
 	}
-
 }
 
 function K.Print(...)
