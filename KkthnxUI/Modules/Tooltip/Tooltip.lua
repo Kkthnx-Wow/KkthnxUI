@@ -39,7 +39,6 @@ local IsInGroup = _G.IsInGroup
 local IsShiftKeyDown = _G.IsShiftKeyDown
 local LE_REALM_RELATION_COALESCED = _G.LE_REALM_RELATION_COALESCED
 local LE_REALM_RELATION_VIRTUAL = _G.LE_REALM_RELATION_VIRTUAL
-local LEVEL = _G.LEVEL
 local PVP = _G.PVP
 local RAID_CLASS_COLORS = _G.RAID_CLASS_COLORS
 local SetTooltipMoney = _G.SetTooltipMoney
@@ -91,12 +90,12 @@ local LOCALE = {
 	TARGET = TARGET,
 	DEAD = DEAD,
 	FACTION_ALLIANCE = FACTION_ALLIANCE,
-	NONE = NONE,
-	ROLE = ROLE,
+	NONE = _G.NONE,
+	ROLE = _G.ROLE,
 
 	-- Custom to find LEVEL string on tooltip
-	LEVEL1 = TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", ""),
-	LEVEL2 = TOOLTIP_UNIT_LEVEL_CLASS:gsub("^%%2$s%s?(.-)%s?%%1$s", "%1"):gsub("^%-?г?о?%s?", ""):gsub("%s?%%s%s?%-?", "")
+	LEVEL1 = _G.TOOLTIP_UNIT_LEVEL:gsub("%s?%%s%s?%-?", ""),
+	LEVEL2 = _G.TOOLTIP_UNIT_LEVEL_CLASS:gsub("^%%2$s%s?(.-)%s?%%1$s", "%1"):gsub("^%-?г?о?%s?", ""):gsub("%s?%%s%s?%-?", "")
 }
 
 local ignoreSubType = {
@@ -105,10 +104,10 @@ local ignoreSubType = {
 }
 
 local classification = {
-	worldboss = format("|cffAF5050 %s|r", BOSS),
-	rareelite = format("|cffAF5050+ %s|r", ITEM_QUALITY3_DESC),
+	worldboss = format("|cffAF5050 %s|r", _G.BOSS),
+	rareelite = format("|cffAF5050+ %s|r", _G.ITEM_QUALITY3_DESC),
 	elite = "|cffAF5050+|r",
-	rare = format("|cffAF5050 %s|r", ITEM_QUALITY3_DESC)
+	rare = format("|cffAF5050 %s|r", _G.ITEM_QUALITY3_DESC)
 }
 
 local SlotName = {
