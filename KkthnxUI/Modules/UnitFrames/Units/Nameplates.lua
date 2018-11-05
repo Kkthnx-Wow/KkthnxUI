@@ -159,12 +159,12 @@ function Module:CreateNameplates()
 
 	if C["Nameplates"].TrackAuras == true then
 		self.Debuffs = CreateFrame("Frame", self:GetName() .. "Debuffs", self)
-		self.Debuffs:SetSize(C["Nameplates"].Width, 17)
-		self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 24)
-		self.Debuffs.size = 20
-		self.Debuffs.num = 12
-		self.Debuffs.numRow = 2
+		self.Debuffs:SetWidth(C["Nameplates"].Width)
+		self.Debuffs:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, -4)
+		self.Debuffs.num = 5 * 2
 		self.Debuffs.spacing = 3
+		self.Debuffs.size = ((((self.Debuffs:GetWidth() - (self.Debuffs.spacing * (self.Debuffs.num / 2 - 1))) / self.Debuffs.num)) * 2)
+		self.Debuffs:SetHeight(self.Debuffs.size * 2)
 		self.Debuffs.initialAnchor = "TOPLEFT"
 		self.Debuffs["growth-y"] = "UP"
 		self.Debuffs["growth-x"] = "RIGHT"
@@ -283,7 +283,7 @@ function Module:CreateNameplates()
 	end
 
 	-- use Tooltip scanning to obtain the quest icon to show isObjectiveQuest or isProgressQuest.
-	local unitTip = CreateFrame("GameTooltip", "NameplateQuestUnitTip", nil, "GameTooltipTemplate")
+	local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestTooltip", nil, "GameTooltipTemplate")
 	function Module:UpdateQuestUnit(unit)
 		if unit == "player" then
 			return
@@ -307,8 +307,8 @@ function Module:CreateNameplates()
 				if r > 0.99 and g > 0.82 and b == 0.0 then
 					isProgressQuest = true
 				else
-					local unitName, progress = string_match(text, "^ ([^ ]-) ?%-(.+)$")
-					if unitName and (unitName == "" or unitName == UnitName("player")) and progress then
+					local unitName, progress = string_match(text, "^ ([^ ]-) ?%- (.+)$") -- nil or '' if 1 is missing but 2 is there
+						if (not unitName or unitName == "" or unitName == K.Name) and progress then
 						local current, goal = string_match(progress, "(%d+)/(%d+)")
 						if current and goal and current ~= goal then
 							isObjectiveQuest = true
@@ -359,7 +359,7 @@ function Module:CreateNameplates()
 
 	if C["Nameplates"].TargetArrow then
 		self.TopArrow = self:CreateTexture(nil, "OVERLAY")
-		self.TopArrow:SetPoint("BOTTOM", self.Health, "TOP", 0, 50)
+		self.TopArrow:SetPoint("BOTTOM", self.Debuffs, "TOP", 0, 30)
 		self.TopArrow:SetSize(36, 36)
 		self.TopArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Top.tga]])
 		self.TopArrow:Hide()
