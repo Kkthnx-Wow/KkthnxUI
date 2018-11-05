@@ -184,6 +184,20 @@ function Module:ToggleBossEmotes()
 	end
 end
 
+function Module:PLAYER_ENTERING_WORLD()
+	if not SetView == 3 then
+		SetView(3)
+		ResetView(3)
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 187 - KkthnxUI|Modules|Miscellaneous|Core -|r |cFFFFFF00SetView was not 3|r")
+		end
+	else
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 187 - KkthnxUI|Modules|Miscellaneous|Core -|r |cFFFFFF00SetView is 3|r")
+		end
+	end
+end
+
 function Module:OnEnable()
 	self:RegisterEvent("REPLACE_ENCHANT")
 	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL")
@@ -192,4 +206,6 @@ function Module:OnEnable()
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
 	end
+
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
