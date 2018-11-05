@@ -8,7 +8,6 @@ local Module = K:GetModule("Unitframes")
 local _G = _G
 
 local CreateFrame = _G.CreateFrame
-local UnitPowerMax = _G.UnitPowerMax
 local UnitHasVehicleUI = _G.UnitHasVehicleUI
 
 local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
@@ -16,7 +15,7 @@ local ClassPowerTexture = K.GetTexture(C["Unitframe"].Texture)
 -- Post Update ClassPower
 local function PostUpdateClassPower(element, _, max, diff)
 	if (diff) then
-		local maxWidth = 130
+		local maxWidth = element.Health and element.Health:GetWidth() or 140
 		local gap = 6
 
 		for index = 1, max do
@@ -82,7 +81,7 @@ function Module:CreateClassPower()
 
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", "oUF_KkthnxClassPower", self)
-		Bar:SetSize(130, 14)
+		Bar:SetSize(self.Health and self.Health:GetWidth() or 140, 16)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateBorder()
 
@@ -123,10 +122,10 @@ function Module:CreateRuneBar()
 	local Runes = {}
 	for index = 1, 6 do
 		local Rune = CreateFrame("StatusBar", nil, self)
-		local numRunes, maxWidth, gap = 6, 130, 6
+		local numRunes, maxWidth, gap = 6, 140, 6
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
-		Rune:SetSize(width, 14)
+		Rune:SetSize(width, 16)
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateBorder()
 
@@ -151,7 +150,7 @@ function Module:CreateStaggerBar()
 	stagger:SetPoint("LEFT", 4, 0)
 	stagger:SetPoint("RIGHT", -4, 0)
 	stagger:SetPoint("BOTTOM", self.Health, "TOP", 0, 6)
-	stagger:SetHeight(14)
+	stagger:SetHeight(16)
 	stagger:SetStatusBarTexture(ClassPowerTexture)
 	stagger:CreateBorder()
 
@@ -215,7 +214,7 @@ function Module:CreateNamePlateClassPower()
 	for index = 1, 11 do
 		local Bar = CreateFrame("StatusBar", nil, ClassPower)
 		Bar:SetWidth(C["Nameplates"].Width)
-		Bar:SetHeight(12)
+		Bar:SetHeight(14)
 		Bar:SetStatusBarTexture(ClassPowerTexture)
 		Bar:CreateShadow(true)
 
@@ -245,7 +244,7 @@ function Module:CreateNamePlateRuneBar()
 		local numRunes, maxWidth, gap = 6, C["Nameplates"].Width, 4
 		local width = ((maxWidth / numRunes) - (((numRunes-1) * gap) / numRunes))
 
-		Rune:SetSize(width, 12)
+		Rune:SetSize(width, 14)
 		Rune:SetStatusBarTexture(ClassPowerTexture)
 		Rune:CreateShadow(true)
 
@@ -268,7 +267,7 @@ end
 -- Monk StaggerBar for NamePlates
 function Module:CreateNamePlateStaggerBar()
 	local stagger = CreateFrame("StatusBar", nil, self)
-	stagger:SetSize(C["Nameplates"].Width, 12)
+	stagger:SetSize(C["Nameplates"].Width, 14)
 	stagger:SetPoint("TOP", self, "BOTTOM", 0, 18)
 	stagger:SetStatusBarTexture(ClassPowerTexture)
 	stagger:CreateShadow(true)
