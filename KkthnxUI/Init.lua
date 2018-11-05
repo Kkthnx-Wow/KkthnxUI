@@ -99,6 +99,7 @@ AddOn.TexCoords = {0.08, 0.92, 0.08, 0.92}
 AddOn.Welcome = "|cff4488ffKkthnxUI "..AddOn.Version.." "..AddOn.Client.."|r - /helpui"
 AddOn.WowPatch, AddOn.WowBuild, AddOn.WowRelease, AddOn.TocVersion = GetBuildInfo()
 AddOn.WowBuild = tonumber(AddOn.WowBuild)
+AddOn.CodeDebug = false
 
 if (About) then
 	AddOn.optionsFrame = About.new(nil, AddOnName)
