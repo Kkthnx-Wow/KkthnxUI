@@ -208,40 +208,18 @@ function Module:UpdateHeader(header)
     header:SetAttribute("point", DIRECTION_TO_POINT[C["Auras"].GrowthDirection.Value])
 
     if (IS_HORIZONTAL_GROWTH[C["Auras"].GrowthDirection.Value]) then
-        header:SetAttribute(
-            "minWidth",
-            ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].HorizontalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter
-        )
+        header:SetAttribute("minWidth", ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].HorizontalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter)
         header:SetAttribute("minHeight", (C["Auras"].VerticalSpacing + C["Auras"].Size) * C["Auras"].MaxWraps)
-        header:SetAttribute(
-            "xOffset",
-            DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
-                (C["Auras"].HorizontalSpacing + C["Auras"].Size)
-        )
+        header:SetAttribute("xOffset", DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].HorizontalSpacing + C["Auras"].Size))
         header:SetAttribute("yOffset", 0)
         header:SetAttribute("wrapXOffset", 0)
-        header:SetAttribute(
-            "wrapYOffset",
-            DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
-                (C["Auras"].VerticalSpacing + C["Auras"].Size)
-        )
+        header:SetAttribute("wrapYOffset", DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].VerticalSpacing + C["Auras"].Size))
     else
         header:SetAttribute("minWidth", (C["Auras"].HorizontalSpacing + C["Auras"].Size) * C["Auras"].MaxWraps)
-        header:SetAttribute(
-            "minHeight",
-            ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].VerticalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter
-        )
+        header:SetAttribute("minHeight", ((C["Auras"].WrapAfter == 1 and 0 or C["Auras"].VerticalSpacing) + C["Auras"].Size) * C["Auras"].WrapAfter)
         header:SetAttribute("xOffset", 0)
-        header:SetAttribute(
-            "yOffset",
-            DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
-                (C["Auras"].VerticalSpacing + C["Auras"].Size)
-        )
-        header:SetAttribute(
-            "wrapXOffset",
-            DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] *
-                (C["Auras"].HorizontalSpacing + C["Auras"].Size)
-        )
+        header:SetAttribute("yOffset", DIRECTION_TO_VERTICAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].VerticalSpacing + C["Auras"].Size))
+        header:SetAttribute("wrapXOffset", DIRECTION_TO_HORIZONTAL_SPACING_MULTIPLIER[C["Auras"].GrowthDirection.Value] * (C["Auras"].HorizontalSpacing + C["Auras"].Size))
         header:SetAttribute("wrapYOffset", 0)
     end
 
