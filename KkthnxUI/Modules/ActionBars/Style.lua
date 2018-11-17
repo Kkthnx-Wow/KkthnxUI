@@ -6,6 +6,7 @@ end
 local _G = _G
 local string_gsub = string.gsub
 local string_sub = string.sub
+local string_byte = string.byte
 
 local GetFlyoutID = _G.GetFlyoutID
 local GetFlyoutInfo = _G.GetFlyoutInfo
@@ -17,7 +18,6 @@ local NUM_STANCE_SLOTS = _G.NUM_STANCE_SLOTS
 local GetActionText = _G.GetActionText
 
 local FlyoutButtons = 0
-
 local function StyleNormalButton(self)
 	local Name = self:GetName()
 	local Action = self.action
