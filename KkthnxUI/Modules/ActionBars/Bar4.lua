@@ -29,7 +29,7 @@ if C["ActionBar"].RightBars < 1 then
 end
 
 -- Mouseover bar
-if C["ActionBar"].RightMouseover == true then
+--[[if C["ActionBar"].RightMouseover == true then
 	for i = 1, NUM_ACTIONBAR_BUTTONS do
 		local b = _G["MultiBarRightButton"..i]
 		b:SetAlpha(0)
@@ -43,4 +43,4 @@ if C["ActionBar"].RightMouseover == true then
 			end
 		end)
 	end
-end
+end--]]

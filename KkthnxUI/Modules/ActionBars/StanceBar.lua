@@ -125,7 +125,7 @@ StanceBar:SetScript("OnEvent", function(self, event)
 end)
 
 -- Mouseover bar
-if C["ActionBar"].RightMouseover == true and C["ActionBar"].StanceBarHorizontal == false then
+--[[if C["ActionBar"].RightMouseover == true and C["ActionBar"].StanceBarHorizontal == false then
 	ShapeShiftBarAnchor:SetAlpha(0)
 	ShapeShiftBarAnchor:SetScript("OnEnter", function()
 		RightBarMouseOver(1)
@@ -177,4 +177,4 @@ if C["ActionBar"].StanceMouseover == true and C["ActionBar"].StanceBarHorizontal
 			end
 		end)
 	end
-end
+end--]]

@@ -283,7 +283,7 @@ function Module:CreateNameplates()
 	end
 
 	-- use Tooltip scanning to obtain the quest icon to show isObjectiveQuest or isProgressQuest.
-	local unitTip = CreateFrame("GameTooltip", "KkthnxUIQuestTooltip", nil, "GameTooltipTemplate")
+	local unitTip = CreateFrame('GameTooltip', "ElvUIQuestTooltip", nil, 'GameTooltipTemplate')
 	function Module:UpdateQuestUnit(unit)
 		if unit == "player" then
 			return

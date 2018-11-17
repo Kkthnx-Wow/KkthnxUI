@@ -60,7 +60,7 @@ if C["ActionBar"].RightBars < 3 and C["ActionBar"].BottomBars < 3 then
 end
 
 -- Mouseover bar
-if C["ActionBar"].RightMouseover == true and C["ActionBar"].RightBars > 2 then
+--[[if C["ActionBar"].RightMouseover == true and C["ActionBar"].RightBars > 2 then
 	for i = 1, NUM_ACTIONBAR_BUTTONS do
 		local b = _G["MultiBarBottomRightButton"..i]
 		b:SetAlpha(0)
@@ -74,4 +74,4 @@ if C["ActionBar"].RightMouseover == true and C["ActionBar"].RightBars > 2 then
 			end
 		end)
 	end
-end
+end--]]

@@ -48,6 +48,7 @@ local function SetOutside(obj, anchor, xOffset, yOffset)
 	yOffset = yOffset or 0
 	anchor = anchor or obj:GetParent()
 
+	assert(anchor)
 	if obj:GetPoint() then
 		obj:ClearAllPoints()
 	end
@@ -61,6 +62,7 @@ local function SetInside(obj, anchor, xOffset, yOffset)
 	yOffset = yOffset or 0
 	anchor = anchor or obj:GetParent()
 
+	assert(anchor)
 	if obj:GetPoint() then
 		obj:ClearAllPoints()
 	end
@@ -96,22 +98,23 @@ local function CreateBorder(f, bLayer, bOffset, bPoints, strip)
 end
 
 local function CreateBackdrop(f, t)
+	if not t then 
+		t = "Default" 
+	end
+
 	if f.Backdrop then
 		return
 	end
 
-	if not t then
-		t = "Default"
-	end
-
-	local parent = f.IsObjectType and f:IsObjectType('Texture') and f:GetParent() or f
-
+	local parent = f.IsObjectType and f:IsObjectType("Texture") and f:GetParent() or f
 	local b = CreateFrame("Frame", nil, parent)
 	b:SetOutside()
 	b:CreateBorder(t)
 
-	if (parent:GetFrameLevel() - 1) >= 0 then
-		b:SetFrameLevel(parent:GetFrameLevel() - 1)
+	local frameLevel = parent.GetFrameLevel and parent:GetFrameLevel()
+	local frameLevelMinusOne = frameLevel and (frameLevel - 1)
+	if frameLevelMinusOne and (frameLevelMinusOne >= 0) then
+		b:SetFrameLevel(frameLevelMinusOne)
 	else
 		b:SetFrameLevel(0)
 	end
@@ -186,8 +189,7 @@ local function Kill(object)
 	object:Hide()
 end
 
-
-local blizzFrames = {
+local StripTexturesBlizzFrames = {
 	"Inset",
 	"inset",
 	"InsetFrame",
@@ -204,23 +206,20 @@ local blizzFrames = {
 
 local function StripTextures(object, kill)
 	local objectName = object.GetName and object:GetName()
-	for _, Blizzard in pairs(blizzFrames) do
-		local BlizzFrame = object[Blizzard] or objectName and _G[objectName..Blizzard]
+	for _, Blizzard in pairs(StripTexturesBlizzFrames) do
+		local BlizzFrame = object[Blizzard] or (objectName and _G[objectName..Blizzard])
 		if BlizzFrame then
 			BlizzFrame:StripTextures()
 		end
 	end
 
 	if object.GetNumRegions then
+		local region
 		for i = 1, object:GetNumRegions() do
-			local region = select(i, object:GetRegions())
-			if region and region:IsObjectType("Texture") then
+			region = select(i, object:GetRegions())
+			if region and region.IsObjectType and region:IsObjectType("Texture") then
 				if kill and type(kill) == "boolean" then
 					region:Kill()
-				elseif region:GetDrawLayer() == kill then
-					region:SetTexture(nil)
-				elseif kill and type(kill) == "string" and region:GetTexture() ~= kill then
-					region:SetTexture(nil)
 				else
 					region:SetTexture(nil)
 				end

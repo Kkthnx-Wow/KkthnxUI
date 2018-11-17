@@ -21,7 +21,7 @@ function Module:CreateFocus()
 	self:SetScript("OnEnter", function(self)
 		UnitFrame_OnEnter(self)
 
-		if (self.Highlight) then
+		if (self.Highlight and not self.Highlight:IsShown()) then
 			self.Highlight:Show()
 		end
 	end)
@@ -29,7 +29,7 @@ function Module:CreateFocus()
 	self:SetScript("OnLeave", function(self)
 		UnitFrame_OnLeave(self)
 
-		if (self.Highlight) then
+		if (self.Highlight and self.Highlight:IsShown()) then
 			self.Highlight:Hide()
 		end
 	end)

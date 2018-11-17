@@ -1,5 +1,10 @@
 local K, C, L = unpack(select(2, ...))
 
+-- Info needs to be added about the actionbar toggle feature.
+-- A lot of people are having issues with understanding how to work the feature.
+-- Ideas to improve this is to add in a highlight feature to work with it on first install
+-- Maybe we can lock it by default and write it off to save vars and let the player know.
+
 -- Lua API
 local _G = _G
 local print = print
@@ -159,6 +164,17 @@ function Install:Step2()
 
 	Chat:Install()
 	Chat:SetDefaultChatFramesPositions()
+end
+
+function Install:Step3() -- Work in info a player can read with details on main features of KkthnxUI
+	
+
+	InstallStepComplete.message = L["Install"].Info_Read
+	InstallComplete:Show()
+
+	Info:Applied()
+	-- Info
+	-- Debug(Info)
 end
 
 function Install:PrintStep(PageNum)

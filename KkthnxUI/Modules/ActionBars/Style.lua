@@ -4,6 +4,8 @@ if C["ActionBar"].Enable ~= true then
 end
 
 local _G = _G
+local string_gsub = string.gsub
+local string_sub = string.sub
 
 local GetFlyoutID = _G.GetFlyoutID
 local GetFlyoutInfo = _G.GetFlyoutInfo
@@ -70,8 +72,13 @@ local function StyleNormalButton(self)
 			Button.Pushed = true
 		end
 
-		if self:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() and not Name:match("Extra") then
-			self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+		if not InCombatLockdown() then
+			if not self.SetButtonSize then
+				if self:GetHeight() ~= C["ActionBar"].ButtonSize and not Name:match("Extra") then
+					self:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+					self.SetButtonSize = true
+				end
+			end
 		end
 
 		Button:CreateBorder()
@@ -113,10 +120,10 @@ local function StyleNormalButton(self)
 		if String then
 			local Text
 
-			if string.byte(String, 1) > 223 then
-				Text = string.sub(String, 1, 9)
+			if string_byte(String, 1) > 223 then
+				Text = string_sub(String, 1, 9)
 			else
-				Text = string.sub(String, 1, 4)
+				Text = string_sub(String, 1, 4)
 			end
 
 			Btname:SetText(Text)
@@ -211,36 +218,36 @@ function K.UpdateHotkey(self)
 		return
 	end
 
-	Text = string.gsub(Text, "(s%-)", "S")
-	Text = string.gsub(Text, "(a%-)", "A")
-	Text = string.gsub(Text, "(c%-)", "C")
-	Text = string.gsub(Text, KEY_BUTTON3, "M3")
-	Text = string.gsub(Text, KEY_BUTTON4, "M4")
-	Text = string.gsub(Text, KEY_BUTTON5, "M5")
-	Text = string.gsub(Text, KEY_MOUSEWHEELUP, "MU")
-	Text = string.gsub(Text, KEY_MOUSEWHEELDOWN, "MD")
-	Text = string.gsub(Text, KEY_NUMPAD0, "N0")
-	Text = string.gsub(Text, KEY_NUMPAD1, "N1")
-	Text = string.gsub(Text, KEY_NUMPAD2, "N2")
-	Text = string.gsub(Text, KEY_NUMPAD3, "N3")
-	Text = string.gsub(Text, KEY_NUMPAD4, "N4")
-	Text = string.gsub(Text, KEY_NUMPAD5, "N5")
-	Text = string.gsub(Text, KEY_NUMPAD6, "N6")
-	Text = string.gsub(Text, KEY_NUMPAD7, "N7")
-	Text = string.gsub(Text, KEY_NUMPAD8, "N8")
-	Text = string.gsub(Text, KEY_NUMPAD9, "N9")
-	Text = string.gsub(Text, KEY_NUMPADDECIMAL, "N.")
-	Text = string.gsub(Text, KEY_NUMPADDIVIDE, "N/")
-	Text = string.gsub(Text, KEY_NUMPADMINUS, "N-")
-	Text = string.gsub(Text, KEY_NUMPADMULTIPLY, "N*")
-	Text = string.gsub(Text, KEY_NUMPADPLUS, "N+")
-	Text = string.gsub(Text, KEY_PAGEUP, "PU")
-	Text = string.gsub(Text, KEY_PAGEDOWN, "PD")
-	Text = string.gsub(Text, KEY_SPACE, "SpB")
-	Text = string.gsub(Text, KEY_INSERT, "Ins")
-	Text = string.gsub(Text, KEY_HOME, "Hm")
-	Text = string.gsub(Text, KEY_DELETE, "Del")
-	Text = string.gsub(Text, KEY_INSERT_MAC, "Hlp") -- mac
+	Text = string_gsub(Text, "(s%-)", "S")
+	Text = string_gsub(Text, "(a%-)", "A")
+	Text = string_gsub(Text, "(c%-)", "C")
+	Text = string_gsub(Text, KEY_BUTTON3, "M3")
+	Text = string_gsub(Text, KEY_BUTTON4, "M4")
+	Text = string_gsub(Text, KEY_BUTTON5, "M5")
+	Text = string_gsub(Text, KEY_MOUSEWHEELUP, "MU")
+	Text = string_gsub(Text, KEY_MOUSEWHEELDOWN, "MD")
+	Text = string_gsub(Text, KEY_NUMPAD0, "N0")
+	Text = string_gsub(Text, KEY_NUMPAD1, "N1")
+	Text = string_gsub(Text, KEY_NUMPAD2, "N2")
+	Text = string_gsub(Text, KEY_NUMPAD3, "N3")
+	Text = string_gsub(Text, KEY_NUMPAD4, "N4")
+	Text = string_gsub(Text, KEY_NUMPAD5, "N5")
+	Text = string_gsub(Text, KEY_NUMPAD6, "N6")
+	Text = string_gsub(Text, KEY_NUMPAD7, "N7")
+	Text = string_gsub(Text, KEY_NUMPAD8, "N8")
+	Text = string_gsub(Text, KEY_NUMPAD9, "N9")
+	Text = string_gsub(Text, KEY_NUMPADDECIMAL, "N.")
+	Text = string_gsub(Text, KEY_NUMPADDIVIDE, "N/")
+	Text = string_gsub(Text, KEY_NUMPADMINUS, "N-")
+	Text = string_gsub(Text, KEY_NUMPADMULTIPLY, "N*")
+	Text = string_gsub(Text, KEY_NUMPADPLUS, "N+")
+	Text = string_gsub(Text, KEY_PAGEUP, "PU")
+	Text = string_gsub(Text, KEY_PAGEDOWN, "PD")
+	Text = string_gsub(Text, KEY_SPACE, "SpB")
+	Text = string_gsub(Text, KEY_INSERT, "Ins")
+	Text = string_gsub(Text, KEY_HOME, "Hm")
+	Text = string_gsub(Text, KEY_DELETE, "Del")
+	Text = string_gsub(Text, KEY_INSERT_MAC, "Hlp") -- mac
 
 	if HotKey:GetText() == Indicator then
 		HotKey:SetText("")
@@ -260,7 +267,7 @@ local function SetupFlyoutButton()
 				Button:SetChecked(nil)
 			end
 
-			if C["ActionBar"].RightMouseover == true then
+			--[[if C["ActionBar"].RightMouseover == true then
 				SpellFlyout:HookScript("OnEnter", function(self)
 					RightBarMouseOver(1)
 				end)
@@ -276,7 +283,7 @@ local function SetupFlyoutButton()
 				Button:HookScript("OnLeave", function(self)
 					RightBarMouseOver(0)
 				end)
-			end
+			end--]]
 
 			Button.IsSkinned = true
 		end

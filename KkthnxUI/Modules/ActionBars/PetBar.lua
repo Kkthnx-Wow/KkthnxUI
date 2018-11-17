@@ -6,8 +6,6 @@ local _G = _G
 
 -- Wow API
 local hooksecurefunc = _G.hooksecurefunc
-local PetActionBar_HideGrid = _G.PetActionBar_HideGrid
-local PetActionBar_ShowGrid = _G.PetActionBar_ShowGrid
 local PetActionBar_UpdateCooldowns = _G.PetActionBar_UpdateCooldowns
 local RegisterStateDriver = _G.RegisterStateDriver
 
@@ -72,7 +70,7 @@ PetBar:SetScript("OnEvent", function(self, event, arg1)
 end)
 
 -- Mouseover bar
-if C["ActionBar"].RightMouseover == true and C["ActionBar"].PetBarHorizontal == false then
+--[[if C["ActionBar"].RightMouseover == true and C["ActionBar"].PetBarHorizontal == false then
 	PetActionBarAnchor:SetAlpha(0)
 	PetActionBarAnchor:SetScript("OnEnter", function()
 		if PetHolder:IsShown() then
@@ -126,4 +124,4 @@ if C["ActionBar"].PetMouseover == true and C["ActionBar"].PetBarHorizontal == tr
 			end
 		end)
 	end
-end
+end--]]
