@@ -166,16 +166,14 @@ function Install:Step2()
 	Chat:SetDefaultChatFramesPositions()
 end
 
-function Install:Step3() -- Work in info a player can read with details on main features of KkthnxUI
-	
-
+--[[function Install:Step3() -- Work in info a player can read with details on main features of KkthnxUI
 	InstallStepComplete.message = L["Install"].Info_Read
 	InstallComplete:Show()
 
-	Info:Applied()
-	-- Info
-	-- Debug(Info)
-end
+	if K.CodeDebug then
+		K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 169 - KkthnxUI|Core|Install -|r |cFFFFFF00" .. BLAH .. " Clicked|r")
+	end
+end--]]
 
 function Install:PrintStep(PageNum)
 	self.CurrentStep = PageNum

@@ -34,6 +34,13 @@ local HOURS_FORMAT = K.RGBToHex(0.4, 1, 1) .. "%dh|r"
 local DAYS_FORMAT = K.RGBToHex(0.4, 0.4, 1) .. "%dh|r"
 
 local function GetFormattedTime(s)
+	if not s then
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 36 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. s .. " doesn't exsit|r")
+		end
+		return
+	end
+
 	if s < MINUTEISH then
 		local seconds = tonumber(K.Round(s))
 		if seconds > EXPIRING_DURATION then
@@ -54,16 +61,37 @@ local function GetFormattedTime(s)
 end
 
 local function Timer_Stop(self)
+	if self:IsForbidden() then
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 63 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+		end
+		return
+	end
+
 	self.enabled = nil
 	self:Hide()
 end
 
 local function Timer_ForceUpdate(self)
+	if self:IsForbidden() then
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 75 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+		end
+		return
+	end
+
 	self.nextUpdate = 0
 	self:Show()
 end
 
 local function Timer_OnSizeChanged(self, width)
+	if self:IsForbidden() then
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 87 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+		end
+		return
+	end
+
 	local fontScale = width and (floor(width + .5) / ICON_SIZE)
 
 	if fontScale and (fontScale == self.fontScale) then
@@ -84,6 +112,13 @@ local function Timer_OnSizeChanged(self, width)
 end
 
 local function Timer_OnUpdate(self, elapsed)
+	if self:IsForbidden() then
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 114 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+		end
+		return
+	end
+
 	if self.text:IsShown() then
 		if self.nextUpdate > 0 then
 			self.nextUpdate = self.nextUpdate - elapsed
@@ -106,6 +141,13 @@ local function Timer_OnUpdate(self, elapsed)
 end
 
 local function Timer_Create(self)
+	if self:IsForbidden() then
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 143 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+		end
+		return
+	end
+
 	local scaler = CreateFrame("Frame", nil, self)
 	scaler:SetAllPoints()
 
@@ -132,7 +174,9 @@ end
 
 local function Timer_Start(self, start, duration, charges)
 	if self:IsForbidden() then
-		-- print(self, " is forbidden")
+		if K.CodeDebug then
+			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 175 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
+		end
 		return
 	end
 

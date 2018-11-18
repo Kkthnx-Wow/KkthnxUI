@@ -170,6 +170,7 @@ function Module:CreateNameplates()
 		self.Debuffs["growth-x"] = "RIGHT"
 		self.Debuffs.onlyShowPlayer = true
 		self.Debuffs.filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY"
+		self.Debuffs.disableMouse = true
 		self.Debuffs.PostCreateIcon = Module.PostCreateAura
 		self.Debuffs.PostUpdateIcon = Module.PostUpdateAura
 	end
@@ -360,7 +361,7 @@ function Module:CreateNameplates()
 	if C["Nameplates"].TargetArrow then
 		self.TopArrow = self:CreateTexture(nil, "OVERLAY")
 		self.TopArrow:SetPoint("BOTTOM", self.Debuffs, "TOP", 0, 30)
-		self.TopArrow:SetSize(36, 36)
+		self.TopArrow:SetSize(50, 50)
 		self.TopArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Top.tga]])
 		self.TopArrow:Hide()
 	end
@@ -374,14 +375,10 @@ function Module:CreateNameplates()
 		self.EliteIcon:Hide()
 	end
 
-	self:EnableMouse(false)
+	--[[self:EnableMouse(false)
 	self.Health:EnableMouse(false)
 	self.Power:EnableMouse(false)
-	self.Castbar:EnableMouse(false)
-
-	if C["Nameplates"].TrackAuras then
-		self.Debuffs:EnableMouse(false)
-	end
+	self.Castbar:EnableMouse(false)--]]
 
 	self.HealthPrediction = Module.CreateHealthPrediction(self, C["Nameplates"].Width)
 	Module.CreateDebuffHighlight(self)

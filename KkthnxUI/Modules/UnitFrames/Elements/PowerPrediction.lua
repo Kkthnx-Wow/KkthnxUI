@@ -18,6 +18,7 @@ function Module:CreatePowerPrediction()
   local texture = K.GetTexture(C["Unitframe"].Texture)
 
   local mainBar = CreateFrame("StatusBar", nil, power)
+  mainBar:SetReverseFill(true)
   mainBar:SetPoint("TOP", power, "TOP")
   mainBar:SetPoint("BOTTOM", power, "BOTTOM")
   mainBar:SetPoint(pointR, power:GetStatusBarTexture(), pointR)
