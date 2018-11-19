@@ -364,6 +364,16 @@ function Module:CreateNameplates()
 		self.TopArrow:SetSize(50, 50)
 		self.TopArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Top.tga]])
 		self.TopArrow:Hide()
+
+		--self.LeftArrow = self:CreateTexture(nil, "BACKGROUND", nil, -5)
+		--self.LeftArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Left.tga]])
+		--self.LeftArrow:Size(45)
+		--self.LeftArrow:Hide()
+
+		--self.RightArrow = self:CreateTexture(nil, "BACKGROUND", nil, -5)
+		--self.RightArrow:SetTexture([[Interface\AddOns\KkthnxUI\Media\Nameplates\UI-Plate-Arrow-Right.tga]])
+		--self.RightArrow:Size(45)
+		--self.RightArrow:Hide()
 	end
 
 	if C["Nameplates"].EliteIcon then

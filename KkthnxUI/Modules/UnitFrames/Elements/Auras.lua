@@ -12,8 +12,6 @@ local UnitIsFriend = _G.UnitIsFriend
 
 -- GLOBALS: DebuffTypeColor
 
-local sizeOverride = 16
-
 local function FilterSharedBuffs(_, _, _, name)
 	if (Module.UnImportantBuffs[name]) then
 		return false

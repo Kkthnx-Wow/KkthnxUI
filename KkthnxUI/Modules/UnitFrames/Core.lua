@@ -17,6 +17,7 @@ local tonumber = tonumber
 local unpack = unpack
 local math_abs = math.abs
 local math_min = math.min
+local string_match = string.match
 
 local C_NamePlate_GetNamePlateForUnit = _G.C_NamePlate.GetNamePlateForUnit
 local CLASS_ICON_TCOORDS = _G.CLASS_ICON_TCOORDS
@@ -318,42 +319,6 @@ function Module:UpdatePlateTotems()
 			self.Totem:Hide()
 		end
 	end
-end
-
-function Module:CreateStyle(unit)
-	if (not unit) then
-		return
-	end
-
-	local Parent = self:GetParent():GetName()
-
-	if (unit == "player") then
-		Module.CreatePlayer(self)
-	elseif (unit == "target") then
-		Module.CreateTarget(self)
-	elseif (unit == "targettarget") then
-		Module.CreateTargetOfTarget(self)
-	elseif (unit == "pet") then
-		Module.CreatePet(self)
-	elseif (unit == "focus") then
-		Module.CreateFocus(self)
-	elseif (unit == "focustarget") then
-		Module.CreateFocusTarget(self)
-	elseif unit:find("arena%d") then
-		Module.CreateArena(self)
-	elseif unit:find("boss%d") then
-		Module.CreateBoss(self)
-	elseif (unit:find("party") or unit:find("raid")) then
-		if Parent:match("Party") then
-			Module.CreateParty(self)
-		else
-			Module.CreateRaid(self)
-		end
-	elseif unit:match("nameplate") and C["Nameplates"].Enable then
-		Module.CreateNameplates(self)
-	end
-
-	return self
 end
 
 function Module:MouseoverHealth(unit)
@@ -668,12 +633,15 @@ function Module:CreateAuraTimer(elapsed)
 end
 
 function Module:PostCreateAura(button)
-	if button:GetName():match("NamePlate") then
+	local buttonFont = C["Media"].Font
+	local buttonFontSize = self.size * 0.46
+
+	if string_match(button:GetName(), "NamePlate") then
 		if C["Nameplates"].Enable then
 			button:CreateShadow(true)
 
 			button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
-			button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+			button.Remaining:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 			button.Remaining:SetPoint("CENTER", 1, 0)
 
 			button.cd.noOCC = true
@@ -690,14 +658,14 @@ function Module:PostCreateAura(button)
 
 			button.count:SetPoint("BOTTOMRIGHT", 1, 1)
 			button.count:SetJustifyH("RIGHT")
-			button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+			button.count:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 			button.count:SetTextColor(0.84, 0.75, 0.65)
 		end
 	else
 		button:CreateBorder()
 
 		button.Remaining = button.cd:CreateFontString(nil, "OVERLAY")
-		button.Remaining:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.Remaining:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 		button.Remaining:SetPoint("CENTER", 1, 0)
 
 		button.cd.noOCC = true
@@ -715,7 +683,7 @@ function Module:PostCreateAura(button)
 
 		button.count:SetPoint("BOTTOMRIGHT", 1, 1)
 		button.count:SetJustifyH("RIGHT")
-		button.count:SetFont(C["Media"].Font, self.size * 0.46, "THINOUTLINE")
+		button.count:SetFont(buttonFont, buttonFontSize, "THINOUTLINE")
 		button.count:SetTextColor(0.84, 0.75, 0.65)
 
 		button.OverlayFrame = CreateFrame("Frame", nil, button, nil)
@@ -1224,17 +1192,17 @@ function Module:CreateStyle(unit)
 		Module.CreateFocus(self)
 	elseif (unit == "focustarget") then
 		Module.CreateFocusTarget(self)
-	elseif unit:find("arena%d") then
+	elseif string_find(unit, "arena%d") then
 		Module.CreateArena(self)
-	elseif unit:find("boss%d") then
+	elseif string_find(unit, "boss%d") then
 		Module.CreateBoss(self)
-	elseif (unit:find("party") or unit:find("raid")) then
-		if Parent:match("Party") then
+	elseif (string_find(unit, "party") or string_find(unit, "raid")) then
+		if string_match(Parent, "Party") then
 			Module.CreateParty(self)
 		else
 			Module.CreateRaid(self)
 		end
-	elseif unit:match("nameplate") then
+	elseif string_match(unit, "nameplate") and C["Nameplates"].Enable then
 		Module.CreateNameplates(self)
 	end
 
