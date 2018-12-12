@@ -438,11 +438,7 @@ Install:SetScript("OnEvent", function(self)
 	end
 
 	self:UnregisterEvent("ADDON_LOADED")
-
-	if not self.isCollected then
-		collectgarbage("collect")
-		self.isCollected = true
-	end
+	collectgarbage("collect")
 end)
 
 _G.SLASH_INSTALLUI1 = "/install"

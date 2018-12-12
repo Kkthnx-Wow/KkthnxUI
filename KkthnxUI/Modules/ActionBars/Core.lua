@@ -41,18 +41,6 @@ local ActionBarFrames = {
 function Module:DisableBlizzard()
 	local Hider = K.UIFrameHider
 
-	MainMenuBarArtFrame.RightEndCap.GetRight = function()
-		return 0
-	end
-
-	MainMenuBarMixin.ChangeMenuBarSizeAndPosition = function()
-		return
-	end
-
-	MinimapCluster.GetBottom = function()
-		return 999999999
-	end
-
 	if (not C["ActionBar"].AddNewSpells) then
 		tinsert(ActionBarFrames, IconIntroTracker)
 	end
@@ -80,13 +68,12 @@ function Module:DisableBlizzard()
 		end)
 	end
 
-	MainMenuBar.slideOut.IsPlaying = function()
-		return true
-	end
-
 	-- Avoid Hiding Buttons on open/close spellbook
-	MultiActionBar_HideAllGrids = function() end
-	MultiActionBar_ShowAllGrids = function() end
+	if K.WowBuild < 28724 then
+		-- Avoid Hiding Buttons on open/close spellbook
+		MultiActionBar_HideAllGrids = function() end
+		MultiActionBar_ShowAllGrids = function() end
+	end
 end
 
 function Module:GridToggle()
@@ -106,36 +93,41 @@ function Module:GridToggle()
 		K.LockCVar("alwaysShowActionBars", 1)
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button
+			local reason = nil
+
+			if K.WowBuild >= 28724 then
+				reason = ACTION_BUTTON_SHOW_GRID_REASON_EVENT
+			end
 
 			button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			button:SetAttribute("statehidden", true)
 			button:Show()
-			ActionButton_ShowGrid(button)
+			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarRightButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			button:SetAttribute("statehidden", true)
 			button:Show()
-			ActionButton_ShowGrid(button)
+			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarBottomRightButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			button:SetAttribute("statehidden", true)
 			button:Show()
-			ActionButton_ShowGrid(button)
+			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarLeftButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			button:SetAttribute("statehidden", true)
 			button:Show()
-			ActionButton_ShowGrid(button)
+			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarBottomLeftButton%d", i)]
 			button:SetAttribute("showgrid", 1)
 			button:SetAttribute("statehidden", true)
 			button:Show()
-			ActionButton_ShowGrid(button)
+			ActionButton_ShowGrid(button, reason)
 		end
 	else
 		K.LockCVar("alwaysShowActionBars", 0)
@@ -150,6 +142,9 @@ function K.ShiftBarUpdate()
 	for i = 1, NUM_STANCE_SLOTS do
 		button = _G["StanceButton"..i]
 		icon = _G["StanceButton"..i.."Icon"]
+
+		button:SetNormalTexture("")
+
 		if i <= numForms then
 			texture, isActive, isCastable = GetShapeshiftFormInfo(i)
 			icon:SetTexture(texture)
@@ -190,6 +185,8 @@ function K.PetBarUpdate()
 		petAutoCastShine = _G[buttonName.."Shine"]
 
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
+
+		petActionButton:SetNormalTexture("")
 
 		if not isToken then
 			petActionIcon:SetTexture(texture)

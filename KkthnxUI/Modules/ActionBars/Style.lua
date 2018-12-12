@@ -65,7 +65,7 @@ local function StyleNormalButton(self)
 			HotKey.SetPoint = K.Noop
 		else
 			HotKey:SetText("")
-			HotKey:Kill()
+			HotKey:SetAlpha(0)
 		end
 
 		if (Name:match("Extra")) then
@@ -171,9 +171,6 @@ local function StyleSmallButton(Normal, Button, Icon, Name, Pet)
 
 		K.UpdateHotkey(Button)
 	end
-
-	Button:SetNormalTexture("")
-	Button.SetNormalTexture = K.Noop
 
 	Flash:SetTexture("")
 
