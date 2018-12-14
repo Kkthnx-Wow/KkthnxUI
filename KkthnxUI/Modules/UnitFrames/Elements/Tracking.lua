@@ -453,6 +453,7 @@ Module.RaidBuffsTracking = {
 		{41635, "BOTTOMRIGHT", {0.2, 0.7, 0.2}}, -- Prayer of Mending
 		{193065, "BOTTOMRIGHT", {0.54, 0.21, 0.78}}, -- Masochism
 		{139, 	"BOTTOMLEFT", {0.4, 0.7, 0.2}}, -- Renew
+		{6788, 	"BOTTOMLEFT", {0.89, 0.1, 0.1}}, -- Weakend Soul
 		{17, 	"TOPLEFT", {0.7, 0.7, 0.7}, true}, -- Power Word: Shield
 		{47788, "LEFT", {0.86, 0.45, 0}, true}, -- Guardian Spirit
 		{33206, "LEFT", {0.47, 0.35, 0.74}, true}, -- Pain Suppression
