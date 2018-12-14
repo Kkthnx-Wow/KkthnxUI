@@ -207,6 +207,7 @@ C["Inventory"] = {
 	["JunkIcon"] = true,
 	["PulseNewItem"] = false,
 	["ReverseLoot"] = false,
+	["ScrapIcon"] = true,
 	["SortInverted"] = false,
 	["AutoRepair"] = {
 		["Options"] = {

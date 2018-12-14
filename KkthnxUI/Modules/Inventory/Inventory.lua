@@ -33,6 +33,8 @@ local tonumber = tonumber
 local BANK = _G.BANK
 local BankFrameItemButton_Update = _G.BankFrameItemButton_Update
 local BankFrameItemButton_UpdateLocked = _G.BankFrameItemButton_UpdateLocked
+local C_Item_CanScrapItem = C_Item.CanScrapItem
+local C_Item_DoesItemExist = C_Item.DoesItemExist
 local C_NewItems_IsNewItem = _G.C_NewItems.IsNewItem
 local CloseBankFrame = _G.CloseBankFrame
 local CooldownFrame_Set = _G.CooldownFrame_Set
@@ -218,7 +220,20 @@ function Stuffing:SlotUpdate(b)
 			b.frame.JunkIcon:Hide()
 		end
 	end
+	
+	if (b.frame.ScrapIcon) and C["Inventory"].ScrapIcon then
+		local itemLocation = ItemLocation:CreateFromBagAndSlot(b.frame:GetParent():GetID(), b.frame:GetID())
+		if not itemLocation then return end
 
+		if itemLocation and itemLocation ~= "" then
+			if (C_Item_DoesItemExist(itemLocation) and C_Item_CanScrapItem(itemLocation)) then
+				b.frame.ScrapIcon:SetShown(itemLocation)
+			else
+				b.frame.ScrapIcon:SetShown(false)
+			end
+		end
+	end
+	
 	if b.frame.UpgradeIcon then
 		b.frame.UpgradeIcon:ClearAllPoints()
 		b.frame.UpgradeIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\UpgradeIcon")
@@ -660,7 +675,16 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.JunkIcon:SetPoint("TOPLEFT", 1, 0)
 			ret.frame.JunkIcon:Hide()
 		end
-
+		
+		-- ScrapIcon thx to Mera
+		if not ret.frame.ScrapIcon then
+			ret.frame.ScrapIcon = ret.frame:CreateTexture(nil, "OVERLAY")
+			ret.frame.ScrapIcon:SetAtlas("bags-icon-scrappable")
+			ret.frame.ScrapIcon:SetSize(14, 12)
+			ret.frame.ScrapIcon:SetPoint("BOTTOMLEFT", -1, 0)
+			ret.frame.ScrapIcon:Hide()
+		end
+		
 		if not ret.frame.Azerite then
 			ret.frame.Azerite = ret.frame:CreateTexture(nil, "OVERLAY")
 			ret.frame.Azerite:SetAtlas("AzeriteIconFrame")
