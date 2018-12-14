@@ -337,7 +337,7 @@ C["FilgerSpells"] = {
 			-- Demon Spikes
 			{spellID = 203720, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Soul Barrier
-			{spellID = 227225, unitID = "player", caster = "player", filter = "BUFF"},
+			{spellID = 263648, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Blur
 			{spellID = 212800, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Chaos Blades
@@ -516,7 +516,7 @@ C["FilgerSpells"] = {
 			-- Throw Glaive
 			{spellID = 185123, filter = "CD"},
 			-- Soul Barrier
-			{spellID = 227225, filter = "CD"},
+			{spellID = 263648, filter = "CD"},
 			-- Blade Dance
 			{spellID = 188499, filter = "CD"},
 			-- Fel Barrage
@@ -3660,7 +3660,7 @@ C["FilgerSpells"] = {
 			-- Grounding Totem
 			{spellID = 8178, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Mass Spell Reflection
-			-- {spellID = 114028, unitID = "player", caster = "all", filter = "BUFF"},
+			{spellID = 213915, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Tiger's Lust
 			{spellID = 116841, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Body and Soul
@@ -3695,6 +3695,16 @@ C["FilgerSpells"] = {
 			{spellID = 91797, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Gnaw (Ghoul)
 			{spellID = 91800, unitID = "player", caster = "all", filter = "DEBUFF"},
+			
+			-- Demon Hunter
+			-- Imprison
+			{spellID = 217832, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Fel Eruption
+			{spellID = 211881, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Chaos Nova
+			{spellID = 179057, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Illidan's Grasp
+			{spellID = 205630, unitID = "player", caster = "all", filter = "DEBUFF"},
 
 			-- Druid
 			-- Cyclone
@@ -3773,6 +3783,12 @@ C["FilgerSpells"] = {
 			{spellID = 118905, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Pulverize (Earth Elemental)
 			{spellID = 118345, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Sundering
+			{spellID = 197214, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Lightning Lasso
+			{spellID = 204437, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Earthfury
+			{spellID = 204399, unitID = "player", caster = "all", filter = "DEBUFF"},
 
 			-- Warlock
 			-- Fear
@@ -3869,6 +3885,8 @@ C["FilgerSpells"] = {
 			{spellID = 162546, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Caltrops
 			{spellID = 194279, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Pistol Shot
+			{spellID = 185763, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Warp Time (Warp Stalker)
 			{spellID = 35346, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Ankle Crack (Crocolisk)
@@ -4198,7 +4216,16 @@ C["FilgerSpells"] = {
 			-- Nether Bond
 			{spellID = 207810, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Soul Barrier
-			{spellID = 227225, unitID = "target", caster = "all", filter = "BUFF"},
+			{spellID = 263648, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Debuffs
+			-- Imprison
+			{spellID = 217832, unitID = "target", caster = "all", filter = "DEBUFF"},
+			-- Fel Eruption
+			{spellID = 211881, unitID = "target", caster = "all", filter = "DEBUFF"},
+			-- Chaos Nova
+			{spellID = 179057, unitID = "target", caster = "all", filter = "DEBUFF"},
+			-- Illidan's Grasp
+			{spellID = 205630, unitID = "target", caster = "all", filter = "DEBUFF"},
 
 			-- Druid
 			-- Survival Instincts
@@ -4309,6 +4336,8 @@ C["FilgerSpells"] = {
 			{spellID = 6940, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Blessing of Freedom
 			{spellID = 1044, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Blessing of Sanctuary
+			{spellID = 210256, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Repentance
 			{spellID = 20066, unitID = "target", caster = "all", filter = "DEBUFF"},
@@ -4330,6 +4359,10 @@ C["FilgerSpells"] = {
 			{spellID = 119030, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Phantasm
 			{spellID = 114239, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Greater Fade
+			{spellID = 213602, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Holy Ward
+			{spellID = 213610, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Dominate Mind
 			{spellID = 605, unitID = "target", caster = "all", filter = "DEBUFF"},
@@ -4372,6 +4405,14 @@ C["FilgerSpells"] = {
 			{spellID = 8178, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Spiritwalker's Grace
 			{spellID = 79206, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Astral Shift
+			{spellID = 108271, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Ascendance
+			{spellID = 114052, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Ethereal Form
+			{spellID = 210918, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Spirit Link
+			{spellID = 204293, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Hex
 			{spellID = 51514, unitID = "target", caster = "all", filter = "DEBUFF"},
@@ -4379,6 +4420,12 @@ C["FilgerSpells"] = {
 			{spellID = 118905, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Pulverize (Earth Elemental)
 			{spellID = 118345, unitID = "target", caster = "all", filter = "DEBUFF"},
+						-- Sundering
+			{spellID = 197214, unitID = "target", caster = "all", filter = "DEBUFF"},
+			-- Lightning Lasso
+			{spellID = 204437, unitID = "target", caster = "all", filter = "DEBUFF"},
+			-- Earthfury
+			{spellID = 204399, unitID = "target", caster = "all", filter = "DEBUFF"},
 
 			-- Warlock
 			-- Soulstone
@@ -4415,7 +4462,7 @@ C["FilgerSpells"] = {
 			-- Spell Reflection
 			{spellID = 23920, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Mass Spell Reflection
-			-- {spellID = 114028, unitID = "target", caster = "all", filter = "BUFF"},
+			{spellID = 213915, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Shield Wall
 			{spellID = 871, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Die by the Sword
@@ -4424,6 +4471,10 @@ C["FilgerSpells"] = {
 			{spellID = 12975, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Berserker Rage
 			{spellID = 18499, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Enraged Regeneration
+			{spellID = 184364, unitID = "target", caster = "all", filter = "BUFF"},
+			-- War Banner
+			{spellID = 236321, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Intimidating Shout
 			{spellID = 5246, unitID = "target", caster = "all", filter = "DEBUFF"},

@@ -202,6 +202,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Display the junk icon on all grey items that can be vendored.",
 		},
 
+		["ScrapIcon"] = {
+			["Name"] = "Scrap Icon"..ModuleNewFeature,
+			["Desc"] = "Display the scrap icon on all items that you can scrap.",
+		},
+
 		["ReverseLoot"] = {
 			["Name"] = REVERSE_NEW_LOOT_TEXT..ModuleNewFeature,
 			["Desc"] = REVERSE_NEW_LOOT_TEXT,
