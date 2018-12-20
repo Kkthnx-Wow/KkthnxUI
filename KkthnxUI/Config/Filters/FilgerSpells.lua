@@ -47,7 +47,7 @@ C["FilgerSpells"] = {
 			-- Dancing Rune Weapon
 			{spellID = 81256, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Lichborne
-			-- {spellID = 49039, unitID = "player", caster = "player", filter = "BUFF"},
+			{spellID = 287081, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Rune Tap
 			{spellID = 194679, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Pillar of Frost
@@ -255,7 +255,7 @@ C["FilgerSpells"] = {
 			-- Breath of Sindragosa
 			{spellID = 152279, filter = "CD"},
 			-- Lichborne
-			-- {spellID = 49039, filter = "CD"},
+			{spellID = 287081, filter = "CD"},
 			-- Desecrated Ground
 			{spellID = 108201, filter = "CD"},
 			-- Death Pact
@@ -1019,8 +1019,6 @@ C["FilgerSpells"] = {
 			{spellID = 190931, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Beast Cleave
 			{spellID = 118455, unitID = "pet", caster = "player", filter = "BUFF"},
-			-- Marking Targets
-			-- {spellID = 223138, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Frenzy
 			{spellID = 19615, unitID = "player", caster = "player", filter = "BUFF", absID = true},
 			-- Mend Pet
@@ -1101,10 +1099,6 @@ C["FilgerSpells"] = {
 			{spellID = 131894, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Hunter's Mark
 			{spellID = 257284, unitID = "target", caster = "player", filter = "DEBUFF"},
-			-- Vulnerable
-			-- {spellID = 187131, unitID = "target", caster = "player", filter = "DEBUFF"},
-			-- Hunter's Mark
-			-- {spellID = 185365, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Narrow Escape
 			{spellID = 136634, unitID = "target", caster = "player", filter = "DEBUFF"},
 			-- Entrapment
@@ -2079,7 +2073,7 @@ C["FilgerSpells"] = {
 			-- Divine Protection
 			{spellID = 498, filter = "CD", absID = true},
 			-- Execution Sentence
-			-- {spellID = 213757, filter = "CD"},
+			{spellID = 267798, filter = "CD"},
 			-- Light's Hammer
 			{spellID = 114158, filter = "CD"},
 			-- Blinding Light
@@ -3045,6 +3039,8 @@ C["FilgerSpells"] = {
 			{spellID = 108416, unitID = "player", caster = "player", filter = "BUFF"},
 			-- Healthstone
 			{spellID = 6262, unitID = "player", caster = "player", filter = "BUFF"},
+			-- Nether Ward
+ 			{spellID = 212295, unitID = "player", caster = "player", filter = "BUFF"},
 		},
 		{
 			Name = "P_PROC_ICON",
@@ -3573,10 +3569,8 @@ C["FilgerSpells"] = {
 			{spellID = 176109, unitID = "player", caster = "player", filter = "BUFF", absID = true},
 
 			-- Raid Amplifiers
-			-- Ancient Hysteria
-			{spellID = 90355, unitID = "player", caster = "all", filter = "BUFF"},
-			-- Netherwinds
-			{spellID = 160452, unitID = "player", caster = "all", filter = "BUFF"},
+			-- Primal Rage [Hunter's pet]
+			{spellID = 264667, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Drums of Fury
 			{spellID = 178207, unitID = "player", caster = "all", filter = "BUFF"},
 			-- Drums of Rage
@@ -3695,7 +3689,7 @@ C["FilgerSpells"] = {
 			{spellID = 91797, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Gnaw (Ghoul)
 			{spellID = 91800, unitID = "player", caster = "all", filter = "DEBUFF"},
-			
+
 			-- Demon Hunter
 			-- Imprison
 			{spellID = 217832, unitID = "player", caster = "all", filter = "DEBUFF"},
@@ -3867,8 +3861,8 @@ C["FilgerSpells"] = {
 			{spellID = 64695, unitID = "player", caster = "all", filter = "DEBUFF"},
 			-- Debilitate (Terrorguard)
 			{spellID = 170996, unitID = "player", caster = "all", filter = "DEBUFF"},
-			-- Staggering Shout
-			-- {spellID = 107566, unitID = "player", caster = "all", filter = "DEBUFF"},
+			-- Entrenched in Flame
+ 			{spellID = 233582, unitID = "player", caster = "all", filter = "DEBUFF"},
 
 			-- Slows
 			-- Infected Wounds
@@ -4191,7 +4185,7 @@ C["FilgerSpells"] = {
 			-- Desecrated Ground
 			{spellID = 115018, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Lichborne
-			-- {spellID = 49039, unitID = "target", caster = "all", filter = "BUFF"},
+			{spellID = 287081, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Icebound Fortitude
 			{spellID = 48792, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Pillar of Frost
@@ -4420,7 +4414,7 @@ C["FilgerSpells"] = {
 			{spellID = 118905, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Pulverize (Earth Elemental)
 			{spellID = 118345, unitID = "target", caster = "all", filter = "DEBUFF"},
-						-- Sundering
+			-- Sundering
 			{spellID = 197214, unitID = "target", caster = "all", filter = "DEBUFF"},
 			-- Lightning Lasso
 			{spellID = 204437, unitID = "target", caster = "all", filter = "DEBUFF"},
@@ -4432,6 +4426,8 @@ C["FilgerSpells"] = {
 			{spellID = 20707, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Unending Resolve
 			{spellID = 104773, unitID = "target", caster = "all", filter = "BUFF"},
+			-- Nether Ward
+ 			{spellID = 212295, unitID = "target", caster = "all", filter = "BUFF"},
 			-- Debuffs
 			-- Banish
 			{spellID = 710, unitID = "target", caster = "all", filter = "DEBUFF"},

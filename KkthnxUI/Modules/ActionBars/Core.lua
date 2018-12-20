@@ -79,7 +79,7 @@ end
 function Module:GridToggle()
 	local IsInstalled = KkthnxUIData[_G.GetRealmName()][_G.UnitName("player")].InstallComplete
 
-	Module:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 
 	if IsInstalled then
 		local b1, b2, b3, b4 = GetActionBarToggles()
@@ -93,11 +93,7 @@ function Module:GridToggle()
 		K.LockCVar("alwaysShowActionBars", 1)
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button
-			local reason = nil
-
-			if K.WowBuild >= 28724 then
-				reason = ACTION_BUTTON_SHOW_GRID_REASON_EVENT
-			end
+			local reason = ACTION_BUTTON_SHOW_GRID_REASON_EVENT
 
 			button = _G[string_format("ActionButton%d", i)]
 			button:SetAttribute("showgrid", 1)

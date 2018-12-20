@@ -1601,6 +1601,20 @@ function Module:OnEnable()
 		if C["Nameplates"].Combat or C["Nameplates"].MarkHealers then
 			self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		end
+
+		-- disable the default class resource bars
+     	if NamePlateDriverFrame then
+     	    DeathKnightResourceOverlayFrame:UnregisterAllEvents()
+     	    ClassNameplateBarMageFrame:UnregisterAllEvents()
+     	    ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
+     	    ClassNameplateBarPaladinFrame:UnregisterAllEvents()
+     	    ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
+     	    ClassNameplateBarWarlockFrame:UnregisterAllEvents()
+     	    ClassNameplateManaBarFrame:UnregisterAllEvents()
+
+ 	    	NamePlateDriverFrame:SetClassNameplateManaBar(nil)
+ 	    	NamePlateDriverFrame:SetClassNameplateBar(nil)
+     	end
 	end
 
 	if C["Unitframe"].Enable then
