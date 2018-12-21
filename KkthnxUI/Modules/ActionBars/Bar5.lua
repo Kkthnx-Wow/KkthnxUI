@@ -23,9 +23,9 @@ ActionBar5:SetFrameStrata("LOW")
 for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarBottomRightButton" .. i]
 	local b2 = _G["MultiBarBottomRightButton" .. i - 1]
+
 	b:ClearAllPoints()
-	b.noGrid = false
-	b:SetAttribute("showgrid", 1)
+
 	if C["ActionBar"].SplitBars == true and C["ActionBar"].RightBars < 3 then
 		if i == 1 then
 			b:SetPoint("TOPLEFT", SplitBarLeft, "TOPLEFT", 0, 0)

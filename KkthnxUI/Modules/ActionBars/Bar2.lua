@@ -12,9 +12,9 @@ MultiBarBottomLeft:SetParent(ActionBar2)
 for i = 1, _G.NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarBottomLeftButton" .. i]
 	local b2 = _G["MultiBarBottomLeftButton" .. i - 1]
+
 	b:ClearAllPoints()
-	b.noGrid = false
-	b:SetAttribute("showgrid", 1)
+
 	if i == 1 then
 		b:SetPoint("BOTTOM", ActionButton1, "TOP", 0, C["ActionBar"].ButtonSpace)
 	else

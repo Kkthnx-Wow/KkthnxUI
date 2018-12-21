@@ -20,10 +20,10 @@ hooksecurefunc(MultiBarLeft, "SetScale", function(self, scale)
 
 for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarLeftButton"..i]
-	local b2 = _G["MultiBarLeftButton"..i-1]
+	local b2 = _G["MultiBarLeftButton"..i - 1]
+
 	b:ClearAllPoints()
-	b.noGrid = false
-	b:SetAttribute("showgrid", 1)
+
 	if i == 1 then
 		if C["ActionBar"].RightBars == 3 then
 			b:SetPoint("TOP", RightActionBarAnchor, "TOP", 0, 0)

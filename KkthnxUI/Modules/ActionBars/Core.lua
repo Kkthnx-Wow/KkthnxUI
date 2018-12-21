@@ -69,11 +69,8 @@ function Module:DisableBlizzard()
 	end
 
 	-- Avoid Hiding Buttons on open/close spellbook
-	if K.WowBuild < 28724 then
-		-- Avoid Hiding Buttons on open/close spellbook
-		MultiActionBar_HideAllGrids = function() end
-		MultiActionBar_ShowAllGrids = function() end
-	end
+	MultiActionBar_HideAllGrids = function() end
+	MultiActionBar_ShowAllGrids = function() end
 end
 
 function Module:GridToggle()
@@ -90,43 +87,38 @@ function Module:GridToggle()
 	end
 
 	if C["ActionBar"].ShowGrid == true then
-		K.LockCVar("alwaysShowActionBars", 1)
+		SetCVar("alwaysShowActionBars", 1)
 		for i = 1, NUM_ACTIONBAR_BUTTONS do
 			local button
 			local reason = ACTION_BUTTON_SHOW_GRID_REASON_EVENT
 
 			button = _G[string_format("ActionButton%d", i)]
+			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
-			button:SetAttribute("statehidden", true)
-			button:Show()
 			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarRightButton%d", i)]
+			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
-			button:SetAttribute("statehidden", true)
-			button:Show()
 			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarBottomRightButton%d", i)]
+			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
-			button:SetAttribute("statehidden", true)
-			button:Show()
 			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarLeftButton%d", i)]
+			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
-			button:SetAttribute("statehidden", true)
-			button:Show()
 			ActionButton_ShowGrid(button, reason)
 
 			button = _G[string_format("MultiBarBottomLeftButton%d", i)]
+			button.noGrid = nil
 			button:SetAttribute("showgrid", 1)
-			button:SetAttribute("statehidden", true)
-			button:Show()
 			ActionButton_ShowGrid(button, reason)
 		end
 	else
-		K.LockCVar("alwaysShowActionBars", 0)
+		SetCVar("alwaysShowActionBars", 0)
 	end
 end
 
@@ -135,6 +127,7 @@ function K.ShiftBarUpdate()
 	local texture, isActive, isCastable
 	local button, icon, cooldown
 	local start, duration, enable
+
 	for i = 1, NUM_STANCE_SLOTS do
 		button = _G["StanceButton"..i]
 		icon = _G["StanceButton"..i.."Icon"]
@@ -173,6 +166,7 @@ end
 
 function K.PetBarUpdate()
 	local petActionButton, petActionIcon, petAutoCastableTexture, petAutoCastShine
+
 	for i = 1, NUM_PET_ACTION_SLOTS, 1 do
 		local buttonName = "PetActionButton"..i
 		petActionButton = _G[buttonName]
@@ -181,7 +175,6 @@ function K.PetBarUpdate()
 		petAutoCastShine = _G[buttonName.."Shine"]
 
 		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled = GetPetActionInfo(i)
-
 		petActionButton:SetNormalTexture("")
 
 		if not isToken then

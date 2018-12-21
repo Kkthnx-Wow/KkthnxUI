@@ -38,6 +38,11 @@ PetBar:SetScript("OnEvent", function(self, event, unit)
 	end
 
 	if event == "PLAYER_LOGIN" then
+		K.StylePet()
+		PetActionBar_ShowGrid = K.Noop
+		PetActionBar_HideGrid = K.Noop
+		PetActionBarFrame.showgrid = nil
+
 		for i = 1, 10 do
 			local button = _G["PetActionButton"..i]
 			button:ClearAllPoints()
