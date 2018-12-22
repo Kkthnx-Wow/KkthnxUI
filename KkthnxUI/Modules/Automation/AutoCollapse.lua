@@ -65,23 +65,6 @@ function Module:ChangeState(event)
 			TrackerStateDriver["FULL"](Module.TrackerFrame)
 		end
 	end
-
-	if K.CheckAddOnState("WorldQuestTracker") then -- and WorldQuestTrackerAddon then
-		local y = 0
-		for i = 1, #ObjectiveTrackerFrame.MODULES do
-			local module = ObjectiveTrackerFrame.MODULES[i]
-			if (module.Header:IsShown()) then
-				y = y + module.contentsHeight
-			end
-		end
-		if (ObjectiveTrackerFrame.collapsed) then
-			WorldQuestTrackerAddon.TrackerHeight = 20
-		else
-			WorldQuestTrackerAddon.TrackerHeight = y
-		end
-
-		WorldQuestTrackerAddon.RefreshTrackerAnchor()
-	end
 end
 
 function Module:OnEnable()
