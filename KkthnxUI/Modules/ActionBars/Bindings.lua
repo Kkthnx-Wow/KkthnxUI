@@ -353,7 +353,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			self.enabled = true
 			self:RegisterEvent("PLAYER_REGEN_DISABLED")
 
-			--[[if C["ActionBar"].RightMouseover == true then
+			if C["ActionBar"].RightMouseover == true then
 				RightBarMouseOver(1)
 			end
 
@@ -363,7 +363,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 
 			if C["ActionBar"].PetMouseover == true and C["ActionBar"].PetBarHorizontal == true then
 				PetBarMouseOver(1)
-			end--]]
+			end
 		end
 
 		function bind:Deactivate(save)
@@ -381,7 +381,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 			self:UnregisterEvent("PLAYER_REGEN_DISABLED")
 			K.StaticPopup_Hide("KEYBIND_MODE")
 
-			--[[if C["ActionBar"].RightMouseover == true then
+			if C["ActionBar"].RightMouseover == true then
 				RightBarMouseOver(0)
 			end
 
@@ -391,7 +391,7 @@ SlashCmdList.MOUSEOVERBIND = function()
 
 			if C["ActionBar"].PetMouseover == true and C["ActionBar"].PetBarHorizontal == true then
 				PetBarMouseOver(0)
-			end--]]
+			end
 		end
 
 		K.PopupDialogs["KEYBIND_MODE"] = {

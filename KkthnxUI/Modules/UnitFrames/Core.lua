@@ -1593,6 +1593,17 @@ function Module:OnEnable()
 	end
 
 	if C["Nameplates"].Enable then
+		local UIHider = K.UIFrameHider
+		local CNMBFrames = {
+			ClassNameplateManaBarFrame,
+			ClassNameplateManaBarFrame.Border,
+			ClassNameplateManaBarFrame.FeedbackFrame,
+			ClassNameplateManaBarFrame.FullPowerFrame,
+			ClassNameplateManaBarFrame.ManaCostPredictionBar,
+			ClassNameplateManaBarFrame.background,
+			ClassNameplateManaBarFrame.Texture
+		}
+
 		if C["Nameplates"].Combat then
 			self:RegisterEvent("PLAYER_REGEN_ENABLED", "ToggleCombatNameplates")
 			self:RegisterEvent("PLAYER_REGEN_DISABLED", "ToggleCombatNameplates")
@@ -1603,18 +1614,21 @@ function Module:OnEnable()
 		end
 
 		-- disable the default class resource bars
-     	if NamePlateDriverFrame then
-     	    DeathKnightResourceOverlayFrame:UnregisterAllEvents()
-     	    ClassNameplateBarMageFrame:UnregisterAllEvents()
-     	    ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
-     	    ClassNameplateBarPaladinFrame:UnregisterAllEvents()
-     	    ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
-     	    ClassNameplateBarWarlockFrame:UnregisterAllEvents()
-     	    ClassNameplateManaBarFrame:UnregisterAllEvents()
+    	DeathKnightResourceOverlayFrame:UnregisterAllEvents()
+    	ClassNameplateBarMageFrame:UnregisterAllEvents()
+    	ClassNameplateBarWindwalkerMonkFrame:UnregisterAllEvents()
+    	ClassNameplateBarPaladinFrame:UnregisterAllEvents()
+    	ClassNameplateBarRogueDruidFrame:UnregisterAllEvents()
+    	ClassNameplateBarWarlockFrame:UnregisterAllEvents()
+    	ClassNameplateManaBarFrame:UnregisterAllEvents()
 
- 	    	NamePlateDriverFrame:SetClassNameplateManaBar(nil)
- 	    	NamePlateDriverFrame:SetClassNameplateBar(nil)
-     	end
+ 	    NamePlateDriverFrame:SetClassNameplateManaBar(nil)
+ 	    NamePlateDriverFrame:SetClassNameplateBar(nil)
+
+		for _, CNMBFrames in pairs(CNMBFrames) do
+			CNMBFrames:ClearAllPoints()
+			CNMBFrames:SetParent(UIHider)
+		end
 	end
 
 	if C["Unitframe"].Enable then

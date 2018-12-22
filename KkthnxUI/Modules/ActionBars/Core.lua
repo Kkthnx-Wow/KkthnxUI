@@ -240,7 +240,7 @@ function K.PetBarUpdate()
 	end
 end
 
---[[-- Mouseover actionbars
+-- Mouseover actionbars
 function RightBarMouseOver(alpha)
 	RightActionBarAnchor:SetAlpha(alpha)
 	PetActionBarAnchor:SetAlpha(alpha)
@@ -376,7 +376,7 @@ if (C["ActionBar"].RightMouseover == true and C["ActionBar"].PetBarHorizontal ==
 
 		EventPetSpiral:UnregisterEvent("PET_BAR_UPDATE_COOLDOWN")
 	end)
-end--]]
+end
 
 if C["ActionBar"].Enable ~= true then
 	return

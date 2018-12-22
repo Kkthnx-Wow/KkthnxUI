@@ -264,7 +264,7 @@ local function SetupFlyoutButton()
 				Button:SetChecked(nil)
 			end
 
-			--[[if C["ActionBar"].RightMouseover == true then
+			if C["ActionBar"].RightMouseover == true then
 				SpellFlyout:HookScript("OnEnter", function(self)
 					RightBarMouseOver(1)
 				end)
@@ -280,8 +280,7 @@ local function SetupFlyoutButton()
 				Button:HookScript("OnLeave", function(self)
 					RightBarMouseOver(0)
 				end)
-			end--]]
-
+			end
 			Button.IsSkinned = true
 		end
 	end

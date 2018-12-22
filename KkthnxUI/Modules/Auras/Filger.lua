@@ -22,22 +22,22 @@ local GameTooltip = _G.GameTooltip
 local GetInventoryItemCooldown = _G.GetInventoryItemCooldown
 local GetInventoryItemLink = _G.GetInventoryItemLink
 local GetItemInfo = _G.GetItemInfo
+local GetSpecialization = _G.GetSpecialization
 local GetSpellCooldown = _G.GetSpellCooldown
 local GetSpellInfo = _G.GetSpellInfo
+local GetTalentInfoByID = _G.GetTalentInfoByID
 local GetTime = _G.GetTime
 local UnitAura = _G.UnitAura
 local UnitGUID = _G.UnitGUID
 
-if SpellActivationOverlayFrame then
-	SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
-end
+SpellActivationOverlayFrame:SetFrameStrata("BACKGROUND")
 
 local Filger = {}
 local MyUnits = {player = true, vehicle = true, pet = true}
 local SpellGroups = {}
 
 function Filger:TooltipOnEnter()
-	if self.spellID > 20 and not GameTooltip:IsForbidden() then
+	if self.spellID > 20 then
 		local str = "spell:%s"
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 0, 3)
@@ -47,9 +47,7 @@ function Filger:TooltipOnEnter()
 end
 
 function Filger:TooltipOnLeave()
-	if not GameTooltip:IsForbidden() then
-		GameTooltip:Hide()
-	end
+	GameTooltip:Hide()
 end
 
 function Filger:UnitAura(unitID, inSpellID, spell, filter, absID)
@@ -58,16 +56,15 @@ function Filger:UnitAura(unitID, inSpellID, spell, filter, absID)
 			local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = UnitAura(unitID, i, filter)
 			if not name then break end
 			if spellID == inSpellID then
-				return name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID
+				return name, spellID, icon, count, duration, expirationTime, unitCaster
 			end
 		end
 	else
 		local name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID = AuraUtil_FindAuraByName(spell, unitID, filter)
 		if name then
-			return name, icon, count, _, duration, expirationTime, unitCaster, _, _, spellID
+			return name, spellID, icon, count, duration, expirationTime, unitCaster
 		end
 	end
-	return nil
 end
 
 function Filger:UpdateCD()
@@ -91,8 +88,14 @@ function Filger:UpdateCD()
 end
 
 function Filger:DisplayActives()
-	if not self.actives then return end
-	if not self.bars then self.bars = {} end
+	if not self.actives then
+		return
+	end
+
+	if not self.bars then
+		self.bars = {}
+	end
+
 	local id = self.Id
 	local index = 1
 	local previous = nil
@@ -132,8 +135,7 @@ function Filger:DisplayActives()
 					bar.cooldown = _G[bar.cooldown:GetName()]
 				else
 					bar.cooldown = CreateFrame("Cooldown", "$parentCD", bar, "CooldownFrameTemplate")
-					bar.cooldown:SetPoint("TOPLEFT", 1, -1)
-					bar.cooldown:SetPoint("BOTTOMRIGHT", -1, 1)
+					bar.cooldown:SetAllPoints(bar.icon)
 					bar.cooldown:SetReverse(true)
 					bar.cooldown:SetFrameLevel(3)
 				end
@@ -221,6 +223,7 @@ function Filger:DisplayActives()
 			bar.spellID = 0
 			self.bars[index] = bar
 		end
+
 		previous = bar
 		index = index + 1
 	end
@@ -235,7 +238,9 @@ function Filger:DisplayActives()
 	end
 	table_sort(temp, comp)
 
-	if not self.sortedIndex then self.sortedIndex = {} end
+	if not self.sortedIndex then
+		self.sortedIndex = {}
+	end
 
 	for n in pairs(self.sortedIndex) do
 		self.sortedIndex[n] = 999
@@ -246,9 +251,7 @@ function Filger:DisplayActives()
 	for n in pairs(self.actives) do
 		self.sortedIndex[activeCount] = n
 		activeCount = activeCount + 1
-		if activeCount > limit then
-			activeCount = limit
-		end
+		if activeCount > limit then activeCount = limit end
 	end
 	table_sort(self.sortedIndex)
 
@@ -264,8 +267,8 @@ function Filger:DisplayActives()
 		if self.Mode == "BAR" then
 			bar.spellname:SetText(bar.spellName)
 		end
-
 		bar.icon:SetTexture(value.icon)
+
 		if value.count and value.count > 1 then
 			bar.count:SetText(value.count)
 			bar.count:Show()
@@ -299,11 +302,13 @@ function Filger:DisplayActives()
 			bar:SetScript("OnUpdate", nil)
 		end
 		bar.spellID = value.spid
+
 		if C["Filger"].ShowTooltip then
 			bar:EnableMouse(true)
 			bar:SetScript("OnEnter", Filger.TooltipOnEnter)
 			bar:SetScript("OnLeave", Filger.TooltipOnLeave)
 		end
+
 		bar:SetWidth(self.IconSize or C["Filger"].BuffSize)
 		bar:SetHeight(self.IconSize or C["Filger"].BuffSize)
 		bar:SetAlpha(value.data.opacity or 1)
@@ -317,90 +322,14 @@ function Filger:DisplayActives()
 	end
 end
 
-function Filger:ResetGroup(spells)
-	local needUpdate = false
-	for _, data in pairs(spells) do
-		local found = false
-		local name, icon, count, duration, start, spid
-		spid = 0
-
-		if data.filter == "BUFF" then
-			local caster, spn, expirationTime
-			spn, _, _ = GetSpellInfo(data.spellID)
-			if spn then
-				name, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitAura(data.unitID, data.spellID, spn, "HELPFUL", data.absID)
-				if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
-					start = expirationTime - duration
-					found = true
-				end
-			end
-		elseif data.filter == "DEBUFF" then
-			local caster, spn, expirationTime
-			spn, _, _ = GetSpellInfo(data.spellID)
-			if spn then
-				name, icon, count, _, duration, expirationTime, caster, _, _, spid = Filger:UnitAura(data.unitID, data.spellID, spn, "HARMFUL", data.absID)
-				if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
-					start = expirationTime - duration
-					found = true
-				end
-			end
-		elseif data.filter == "CD" then
-			if data.spellID then
-				name, _, icon = GetSpellInfo(data.spellID)
-				if name then
-					if data.absID then
-						start, duration = GetSpellCooldown(data.spellID)
-					else
-						start, duration = GetSpellCooldown(name)
-					end
-					spid = data.spellID
-				end
-			elseif data.slotID then
-				spid = data.slotID
-				local slotLink = GetInventoryItemLink("player", data.slotID)
-				if slotLink then
-					name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
-					start, duration = GetInventoryItemCooldown("player", data.slotID)
-				end
-			end
-			if name and (duration or 0) > 1.5 then
-				found = true
-			end
-		end
-
-		if found then
-			if not self.actives[spid] then
-				self.actives[spid] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid, sort = data.sort}
-				needUpdate = true
-			else
-				if (self.actives[spid].count ~= count or self.actives[spid].start ~= start or self.actives[spid].duration ~= duration) then
-					self.actives[spid].count = count
-					self.actives[spid].start = start
-					self.actives[spid].duration = duration
-					needUpdate = true
-				end
-			end
-		else
-			if self.actives and self.actives[spid] then
-				self.actives[spid] = nil
-				needUpdate = true
-			end
-		end
-	end
-
-	if self.actives then
-		Filger.DisplayActives(self)
-	end
-end
-
 local LogEvents = {
+	["SPELL_AURA_REMOVED"] = true,
+	["SPELL_AURA_REMOVED_DOSE"] = true,
 	["SPELL_AURA_APPLIED"] = true,
 	["SPELL_AURA_APPLIED_DOSE"] = true,
 	["SPELL_AURA_REFRESH"] = true,
-	["SPELL_AURA_REMOVED"] = true,
-	["SPELL_AURA_REMOVED_DOSE"] = true,
-	["SPELL_DAMAGE"] = true,
-	["SPELL_PERIODIC_DAMAGE"] = true
+	["SPELL_PERIODIC_DAMAGE"] = true,
+	["SPELL_DAMAGE"] = true
 }
 
 local function GUIDRoles(uid)
@@ -411,23 +340,23 @@ local function GUIDRoles(uid)
 	local contians = false
 	local result = {}
 
-	if UnitGUID("target") == uid then
-		result["target"] = true
-		contians = true
-	end
-
-	if UnitGUID("focus") == uid then
-		result["focus"] = true
-		contians = true
-	end
-
 	if UnitGUID("player") == uid then
 		result["player"] = true
 		contians = true
 	end
 
+	if UnitGUID("target") == uid then
+		result["target"] = true
+		contians = true
+	end
+
 	if UnitGUID("pet") == uid then
 		result["pet"] = true
+		contians = true
+	end
+
+	if UnitGUID("focus") == uid then
+		result["focus"] = true
 		contians = true
 	end
 
@@ -438,44 +367,15 @@ local function GUIDRoles(uid)
 	return nil
 end
 
-function Filger:OnEvent(event, unit)
-	if event == "SPELL_UPDATE_COOLDOWN" then
-		for _, data in pairs(SpellGroups[self.Id].spells) do
-			if data.filter == "CD" then
-				local name, icon, _, duration, _, start, spid
-				if data.spellID then
-					name, _, icon = GetSpellInfo(data.spellID)
-					if name then
-						if data.absID then
-							start, duration = GetSpellCooldown(data.spellID)
-						else
-							start, duration = GetSpellCooldown(name)
-						end
-						spid = data.spellID
-					end
-				elseif data.slotID then
-					spid = data.slotID
-					local slotLink = GetInventoryItemLink("player", data.slotID)
-					if slotLink then
-						name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
-						start, duration = GetInventoryItemCooldown("player", data.slotID)
-					end
-				end
-				if spid then
-					if (duration or 0) > 1.5 then
-						self.actives[spid] = {data = data, name = name, icon = icon, start = start, duration = duration, spid = spid, sort = data.sort}
-						Filger.DisplayActives(self)
-					end
-				end
-			end
-		end
-	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+function Filger:OnEvent(event, unit, _, spellID)
+	if event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local _, eventType, _, srcGUID, _, _, _, dstGUID = CombatLogGetCurrentEventInfo()
 		if LogEvents[eventType] then
 			local targets = GUIDRoles(dstGUID)
 			local casters = GUIDRoles(srcGUID)
+
 			if targets then
-				local spellId, spellName, spellSchool, auraType = select(12, CombatLogGetCurrentEventInfo())
+				local spellId, spellName = select(12, CombatLogGetCurrentEventInfo())
 				local data = SpellGroups[self.Id].spells[spellName] or SpellGroups[self.Id].spells[spellId]
 
 				if data and (data.caster == nil or (casters and casters[data.caster]) or data.caster == "all") and (targets[data.unitID] or data.unitID == nil) then
@@ -483,8 +383,11 @@ function Filger:OnEvent(event, unit)
 						data = SpellGroups[self.Id].spells[spellId]
 					end
 
-					local name, icon, count, duration, expirationTime, _, spid
-					if data.filter == "BUFF" or data.filter == "DEBUFF" then
+					local name, icon, count, duration, expirationTime, start, spid
+					local ptt = GetSpecialization()
+					local isTalent = data.talentID and select(10, GetTalentInfoByID(data.talentID))
+
+					if (data.filter == "BUFF" or data.filter == "DEBUFF") and (not data.spec or data.spec == ptt) and (not data.talentID or isTalent) then
 						if eventType ~= "SPELL_AURA_REMOVED" then
 							local filter
 							if data.filter == "BUFF" then
@@ -492,28 +395,148 @@ function Filger:OnEvent(event, unit)
 							else
 								filter = "HARMFUL"
 							end
-							name, icon, count, _, duration, expirationTime, _, _, _, spid = Filger:UnitAura(data.unitID, data.spellID, spellName, filter, data.absID)
+
+							name, spid, icon, count, duration, expirationTime --[[, caster--]] = Filger:UnitAura(data.unitID, data.spellID, spellName, filter, data.absID)
 							if spid then
-								self.actives[spid] = {data = data, name = name, icon = icon, count = count, start = expirationTime - duration, duration = duration, spid = spid, sort = data.sort}
+								if not data.count or count >= data.count then
+									self.actives[spid] = {data = data, name = name, icon = icon, count = count, start = expirationTime - duration, duration = duration, spid = spid, sort = data.sort}
+									self:RegisterEvent("UNIT_AURA")
+								end
 							end
 						else
 							self.actives[spellId] = nil
-							if event == "UNIT_AURA" then
-								self:UnregisterEvent("UNIT_AURA")
-							end
+							self:UnregisterEvent("UNIT_AURA")
 						end
-
 						Filger.DisplayActives(self)
 					end
 				end
 			end
 		end
-	elseif event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED" or (event == "UNIT_AURA" and (unit == "player" or unit == "target" or unit == "pet" or unit == "focus")) then
-		for spid, _ in pairs(self.actives) do
-			self.actives[spid] = nil
+	elseif event == "PLAYER_ENTERING_WORLD" or event == "SPELL_UPDATE_COOLDOWN"
+	or event == "PLAYER_TARGET_CHANGED" or event == "PLAYER_FOCUS_CHANGED"
+	or event == "UNIT_AURA" and (unit == "player" or unit == "target" or unit == "pet" or unit == "focus")
+	or (event == "UNIT_SPELLCAST_SUCCEEDED" and unit == "player") then
+		local ptt = GetSpecialization()
+		local needUpdate = false
+		local id = self.Id
+
+		for i = 1, #C["FilgerSpells"][K.Class][id], 1 do
+			local data = C["FilgerSpells"][K.Class][id][i]
+			if (event == "UNIT_AURA" and data.unitID == unit) or event ~= "UNIT_AURA" then
+				if C["Filger"].DisableCooldown == true and (data.filter == "CD" or (data.filter == "ICD" and data.trigger ~= "NONE")) then
+					return
+				end
+
+				local found = false
+				local name, icon, count, duration, start, spid
+				local isTalent = data.talentID and select(10, GetTalentInfoByID(data.talentID))
+				spid = 0
+
+				if data.filter == "BUFF" and (not data.spec or data.spec == ptt) and (not data.talentID or isTalent) then
+					local caster, spell, expirationTime
+					spell = GetSpellInfo(data.spellID)
+					if spell then
+						name, spid, icon, count, duration, expirationTime, caster = Filger:UnitAura(data.unitID, data.spellID, spell, "HELPFUL", data.absID)
+						if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
+							if not data.count or count >= data.count then
+								start = expirationTime - duration
+								found = true
+							end
+						end
+					end
+				elseif data.filter == "DEBUFF" and (not data.spec or data.spec == ptt) and (not data.talentID or isTalent) then
+					local caster, spell, expirationTime
+					spell = GetSpellInfo(data.spellID)
+					if spell then
+						name, spid, icon, count, duration, expirationTime, caster = Filger:UnitAura(data.unitID, data.spellID, spell, "HARMFUL", data.absID)
+						if name and (data.caster ~= 1 and (caster == data.caster or data.caster == "all") or MyUnits[caster]) then
+							start = expirationTime - duration
+							found = true
+						end
+					end
+				elseif data.filter == "CD" and (not data.spec or data.spec == ptt) then
+					if data.spellID then
+						name, _, icon = GetSpellInfo(data.spellID)
+						if name then
+							if data.absID then
+								start, duration = GetSpellCooldown(data.spellID)
+							else
+								start, duration = GetSpellCooldown(name)
+							end
+							spid = data.spellID
+						end
+					elseif data.slotID then
+						spid = data.slotID
+						local slotLink = GetInventoryItemLink("player", data.slotID)
+						if slotLink then
+							name, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
+							start, duration = GetInventoryItemCooldown("player", data.slotID)
+						end
+					end
+
+					if name and (duration or 0) > 1.5 then
+						found = true
+					end
+				elseif data.filter == "ICD" and (not data.spec or data.spec == ptt) then
+					if data.trigger == "BUFF" then
+						local spell
+						spell, _, icon = GetSpellInfo(data.spellID)
+						if spell then
+							name, spid = Filger:UnitAura(data.unitID, data.spellID, spell, "HELPFUL", data.absID)
+						end
+					elseif data.trigger == "DEBUFF" then
+						local spell
+						spell, _, icon = GetSpellInfo(data.spellID)
+						if spell then
+							name, spid = Filger:UnitAura("player", data.spellID, spell, "HARMFUL", data.absID)
+						end
+					elseif data.trigger == "NONE" and event == "UNIT_SPELLCAST_SUCCEEDED" then
+						if spellID == data.spellID then
+							name, _, icon = GetSpellInfo(data.spellID)
+							spid = data.spellID
+						end
+					end
+
+					if name then
+						if data.slotID then
+							local slotLink = GetInventoryItemLink("player", data.slotID)
+							_, _, _, _, _, _, _, _, _, icon = GetItemInfo(slotLink)
+						end
+
+						duration = data.duration
+						start = GetTime()
+						found = true
+					end
+				end
+
+				if found then
+					if not self.actives[spid] then
+						self.actives[spid] = {data = data, name = name, icon = icon, count = count, start = start, duration = duration, spid = spid, sort = data.sort}
+						needUpdate = true
+						if K.Class == "DEATHKNIGHT" and self.actives[spid].duration == 10 and data.filter == "CD" then
+							self.actives[spid] = nil
+						end
+					else
+						if data.filter ~= "ICD" and (self.actives[spid].count ~= count or self.actives[spid].start ~= start or self.actives[spid].duration ~= duration) then
+							self.actives[spid].count = count
+							self.actives[spid].start = start
+							self.actives[spid].duration = duration
+							needUpdate = true
+						end
+					end
+				else
+					if data.filter ~= "ICD" and self.actives and self.actives[spid] then
+						if event == "UNIT_SPELLCAST_SUCCEEDED" then return end
+						self.actives[spid] = nil
+						needUpdate = true
+					end
+				end
+			end
 		end
 
-		Filger.ResetGroup(self, SpellGroups[self.Id].spells)
+		if needUpdate and self.actives then
+			Filger.DisplayActives(self)
+		end
 	end
 end
 
@@ -526,6 +549,7 @@ if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
 		local merge = false
 		local spellListAll = C["FilgerSpells"]["ALL"][i]
 		local spellListClass = nil
+
 		for j = 1, #C["FilgerSpells"][K.Class], 1 do
 			spellListClass = C["FilgerSpells"][K.Class][j]
 			local mergeAll = spellListAll.Merge or false
@@ -535,6 +559,7 @@ if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
 				break
 			end
 		end
+
 		if not merge or not spellListClass then
 			table_insert(C["FilgerSpells"][K.Class], C["FilgerSpells"]["ALL"][i])
 		else
@@ -545,7 +570,7 @@ if C["FilgerSpells"] and C["FilgerSpells"]["ALL"] then
 	end
 end
 
-if K.CustomFilgerSpell then
+if K.CustomFilgerSpell then -- Going to work on letting the player manually add these in-game.
 	for _, data in pairs(K.CustomFilgerSpell) do
 		for class, _ in pairs(C["FilgerSpells"]) do
 			if class == K.Class then
@@ -568,9 +593,9 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 
 	local idx = {}
 	for i = 1, #C["FilgerSpells"][K.Class], 1 do
-		local group = { spells = {}}
 		local jdx = {}
 		local data = C["FilgerSpells"][K.Class][i]
+		local group = {spells = {}}
 
 		for j = 1, #data, 1 do
 			local spell
@@ -589,15 +614,14 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				if data[j].absID then
 					id = data[j].spellID or data[j].slotID
 				else
-					id = spell
+					id = GetSpellInfo(data[j].spellID) or data[j].slotID
 				end
-
 				data[j].sort = j
 				group.spells[id] = data[j]
 			end
 
 			if not spell and not data[j].slotID then
-				K.Print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx.|r")
+				K.Print("|cffff0000WARNING: spell/slot ID ["..(data[j].spellID or data[j].slotID or "UNKNOWN").."] no longer exists! Report this to Kkthnx on Discord or GitHub.|r")
 				table_insert(jdx, j)
 			end
 		end
@@ -610,7 +634,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 		table_insert(SpellGroups, i, group)
 
 		if #data == 0 then
-			K.Print("|cffff0000WARNING: section ["..data.Name.."] is empty! Report this to Kkthnx.|r")
+			K.Print("|cffff0000WARNING: section ["..data.Name.."] is empty! Report this to Kkthnx on Discord or GitHub.|r")
 			table_insert(idx, i)
 		end
 	end
@@ -652,7 +676,8 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 			end
 			Filger.DisplayActives(frame)
 		else
-			for _, data in pairs(SpellGroups[i].spells) do
+			for j = 1, #C["FilgerSpells"][K.Class][i], 1 do
+				local data = C["FilgerSpells"][K.Class][i][j]
 				if data.filter == "CD" then
 					frame:RegisterEvent("SPELL_UPDATE_COOLDOWN")
 					break
@@ -661,7 +686,6 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 					break
 				end
 			end
-
 			frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 			frame:RegisterEvent("PLAYER_FOCUS_CHANGED")
 			frame:RegisterEvent("PLAYER_TARGET_CHANGED")

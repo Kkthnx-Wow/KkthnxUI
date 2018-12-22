@@ -21,7 +21,6 @@ local Movers = K.Movers
 
 local ShiftHolder = CreateFrame("Frame", "ShiftHolder", K.PetBattleHider)
 if C["ActionBar"].StanceBarHorizontal == true then
-	--ShiftHolder:SetPoint("BOTTOMRIGHT", "UIParent", "BOTTOM", -202, 167)
 	ShiftHolder:SetPoint("BOTTOMLEFT", ActionBarAnchor, "TOPLEFT", 0, 35)
 	ShiftHolder:SetWidth((C["ActionBar"].ButtonSize * 7) + (C["ActionBar"].ButtonSpace * 6))
 	ShiftHolder:SetHeight(C["ActionBar"].ButtonSize)
@@ -109,7 +108,6 @@ StanceBar:SetScript("OnEvent", function(self, event)
 				end
 			end
 		end
-
 		hooksecurefunc("StanceBar_Update", movestance)
 	elseif event == "UPDATE_SHAPESHIFT_FORMS" then
 		if InCombatLockdown() then
@@ -119,13 +117,13 @@ StanceBar:SetScript("OnEvent", function(self, event)
 		for i = 1, NUM_STANCE_SLOTS do
 			local button = _G["StanceButton"..i]
 			local _, name = GetShapeshiftFormInfo(i)
+
 			if name then
 				button:Show()
 			else
 				button:Hide()
 			end
 		end
-
 		K.ShiftBarUpdate()
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		K.StyleShift()
@@ -135,7 +133,7 @@ StanceBar:SetScript("OnEvent", function(self, event)
 end)
 
 -- Mouseover bar
---[[if C["ActionBar"].RightMouseover == true and C["ActionBar"].StanceBarHorizontal == false then
+if C["ActionBar"].RightMouseover == true and C["ActionBar"].StanceBarHorizontal == false then
 	ShapeShiftBarAnchor:SetAlpha(0)
 	ShapeShiftBarAnchor:SetScript("OnEnter", function()
 		RightBarMouseOver(1)
@@ -187,4 +185,4 @@ if C["ActionBar"].StanceMouseover == true and C["ActionBar"].StanceBarHorizontal
 			end
 		end)
 	end
-end--]]
+end
