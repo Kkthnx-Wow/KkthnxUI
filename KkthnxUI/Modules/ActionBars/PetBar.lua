@@ -22,6 +22,7 @@ end
 -- Create bar
 local PetBar = CreateFrame("Frame", "PetHolder", UIParent, "SecureHandlerStateTemplate")
 PetBar:SetAllPoints(PetActionBarAnchor)
+
 PetBar:RegisterEvent("PLAYER_LOGIN")
 PetBar:RegisterEvent("SPELLS_CHANGED")
 PetBar:RegisterEvent("PLAYER_CONTROL_GAINED")
@@ -67,10 +68,8 @@ PetBar:SetScript("OnEvent", function(self, event, unit)
 
 			self:SetAttribute("addchild", button)
 		end
-
+		RegisterStateDriver(self, "visibility", "[pet,novehicleui,nopossessbar,nopetbattle] show; hide")
 		hooksecurefunc("PetActionBar_Update", K.PetBarUpdate)
-		RegisterStateDriver(self, "visibility", "[pet,nopetbattle,novehicleui,nooverridebar,nopossessbar,nobonusbar:5] show; hide")
-
 	elseif event == "PET_BAR_UPDATE" or event == "PLAYER_CONTROL_LOST" or event == "PLAYER_CONTROL_GAINED" or event == "PLAYER_FARSIGHT_FOCUS_CHANGED"
 	or event == "UNIT_FLAGS" or (event == "UNIT_PET" and unit == "player") or (unit == "pet" and event == "UNIT_AURA") then
 		K.PetBarUpdate()
