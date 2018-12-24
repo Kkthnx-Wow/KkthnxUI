@@ -145,6 +145,7 @@ function Module:OnEnable()
 		return
 	end
 
+	GroupLootContainer:EnableMouse(false)
 	_G.UIPARENT_MANAGED_FRAME_POSITIONS["GroupLootContainer"] = nil
 	K.Movers:RegisterFrame(AlertFrameHolder)
 
@@ -162,3 +163,5 @@ function Module:OnEnable()
 	self:SecureHook(AlertFrame, "UpdateAnchors", Module.PostAlertMove)
 	hooksecurefunc("GroupLootContainer_Update", Module.GroupLootContainer_Update)
 end
+
+-- /run BonusRollFrame_StartBonusRoll(242969,'test',10,515,1273,14) -- 515 is darkmoon token, change to another currency id you have
