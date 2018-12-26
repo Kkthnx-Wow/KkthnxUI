@@ -161,6 +161,10 @@ function Module:CreateRaid()
 	self.ResurrectIndicator:SetSize(30, 30)
 	self.ResurrectIndicator:SetPoint("CENTER", 0, -3)
 
+	self.SummonIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
+ 	self.SummonIndicator:SetSize(30, 30)
+ 	self.SummonIndicator:SetPoint("CENTER", 0, -3)
+
 	self.LeaderIndicator = self.Overlay:CreateTexture(nil, "OVERLAY")
 	self.LeaderIndicator:SetSize(12, 12)
 	self.LeaderIndicator:SetPoint("TOPLEFT", -2, 7)

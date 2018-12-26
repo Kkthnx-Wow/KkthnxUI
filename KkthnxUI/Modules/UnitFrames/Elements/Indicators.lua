@@ -86,6 +86,14 @@ function Module:CreateResurrectIndicator(size)
 	self.ResurrectIndicator:SetPoint("CENTER", self.Portrait.Borders)
 end
 
+function Module:CreateSummonIndicator(size)
+	size = size or self.Portrait:GetSize()
+
+	self.SummonIndicator = self.Portrait.Borders:CreateTexture(nil, "OVERLAY", 7)
+	self.SummonIndicator:SetSize(size, size)
+	self.SummonIndicator:SetPoint("CENTER", self.Portrait.Borders)
+end
+
 function Module:CreateDebuffHighlight()
 	self.DebuffHighlight = self.Health:CreateTexture(nil, "OVERLAY")
 	self.DebuffHighlight:SetAllPoints(self.Health)

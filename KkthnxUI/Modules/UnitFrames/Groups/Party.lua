@@ -249,6 +249,7 @@ function Module:CreateParty()
 	Module.CreateRaidTargetIndicator(self)
 	Module.CreateReadyCheckIndicator(self)
 	Module.CreateResurrectIndicator(self)
+	Module.CreateSummonIndicator(self)
 	Module.CreateThreatIndicator(self)
 	Module.CreateDebuffHighlight(self)
 
