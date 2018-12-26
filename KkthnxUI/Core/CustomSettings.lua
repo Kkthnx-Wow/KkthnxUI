@@ -1,23 +1,26 @@
 local K, C = unpack(select(2, ...))
+if not IsAddOnLoaded("KkthnxUI_Config") then
+	return
+end
 
 local pairs = pairs
 
 -- Attempt to fix a rare nil error on new char.
-if IsAddOnLoaded("KkthnxUI_Config") then
-	if not KkthnxUIConfigShared then
-		KkthnxUIConfigShared = {}
-	end
+--if IsAddOnLoaded("KkthnxUI_Config") then
+--	if not KkthnxUIConfigShared then
+--		KkthnxUIConfigShared = {}
+--	end
 
-	if not KkthnxUIConfigShared[K.Realm] then
-		KkthnxUIConfigShared[K.Realm] = {}
-	end
+--	if not KkthnxUIConfigShared[K.Realm] then
+--		KkthnxUIConfigShared[K.Realm] = {}
+--	end
 
-	if not KkthnxUIConfigShared[K.Realm][K.Name] then
-		KkthnxUIConfigShared[K.Realm][K.Name] = {}
-	end
-else
-	return
-end
+--	if not KkthnxUIConfigShared[K.Realm][K.Name] then
+--		KkthnxUIConfigShared[K.Realm][K.Name] = {}
+--	end
+--else
+--	return
+--end
 
 local Settings
 if (KkthnxUIConfigPerAccount) then

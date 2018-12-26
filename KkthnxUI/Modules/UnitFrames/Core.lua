@@ -248,6 +248,10 @@ end
 function Module:HighlightPlate()
 	local unit = self.unit
 
+	if UnitIsUnit(unit, "player") then
+		return
+	end
+
 	local health = self.Health
 	local shadowH = health.Shadow
 	local arrowT = C["Nameplates"].TargetArrow and self.TopArrow
@@ -930,7 +934,6 @@ function Module:NameplatesCallback(event, unit)
 				end
 			end
 		end
-
 	elseif event == "NAME_PLATE_UNIT_REMOVED" then
 		Nameplate:DisableElement("ClassPower")
 		Nameplate:DisableElement("Runes")

@@ -234,7 +234,7 @@ function Filger:DisplayActives()
 	end
 
 	local function comp(element1, elemnet2)
-		return element1.sort <= elemnet2.sort
+		return element1.sort < elemnet2.sort
 	end
 	table_sort(temp, comp)
 
@@ -609,7 +609,7 @@ if C["FilgerSpells"] and C["FilgerSpells"][K.Class] then
 				end
 			end
 
-			if spell then
+			if spell or data[j].slotID then
 				local id
 				if data[j].absID then
 					id = data[j].spellID or data[j].slotID

@@ -8,6 +8,8 @@ local PVPReadyDialog = _G.PVPReadyDialog
 local ShowUIPanel, HideUIPanel = _G.ShowUIPanel, _G.HideUIPanel
 local StaticPopupDialogs = _G.StaticPopupDialogs
 
+ERR_NOT_IN_RAID = "" -- How the hell is this still an issue?
+
 local isAutoAccepting = false
 local displayedRaidConvert = false
 
