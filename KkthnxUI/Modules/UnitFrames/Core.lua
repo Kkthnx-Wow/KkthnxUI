@@ -1159,18 +1159,15 @@ function Module:GetHealerRaidFramesAttributes()
 end
 
 function Module:GetMainTankAttributes()
-	local MainTankProperties = "solo, party, raid"
+	local MainTankProperties = "raid"
 
 	return "oUF_MainTank", nil, MainTankProperties,
 	"oUF-initialConfigFunction", [[
-	self:SetWidth(70)
-	self:SetHeight(32)
+	self:SetWidth(76)
+	self:SetHeight(40)
 	]],
 
-	"showParty", false,
 	"showRaid", true,
-	"showPlayer", false,
-	"showSolo", false,
 	"yOffset", -8,
 	"groupFilter", "MAINTANK",
 	"template", "oUF_MainTank"
@@ -1199,7 +1196,7 @@ function Module:CreateStyle(unit)
 		Module.CreateArena(self)
 	elseif string_find(unit, "boss%d") then
 		Module.CreateBoss(self)
-	elseif (string_find(unit, "party") or string_find(unit, "raid")) then
+	elseif (string_find(unit, "party") or string_find(unit, "raid") or string_find(unit, "maintank")) then
 		if string_match(Parent, "Party") then
 			Module.CreateParty(self)
 		else
@@ -1290,6 +1287,7 @@ function Module:CreateUnits()
 		if C["Raid"].Enable then
 			local DamageRaid = oUF:SpawnHeader(Module:GetDamageRaidFramesAttributes())
 			local HealerRaid = oUF:SpawnHeader(Module:GetHealerRaidFramesAttributes())
+			local MainTankRaid = oUF:SpawnHeader(Module:GetMainTankAttributes())
 
 			if C["Raid"].RaidLayout.Value == "Healer" then
 				HealerRaid:SetPoint("TOPLEFT", "oUF_Player", "BOTTOMRIGHT", 10, 14)
@@ -1300,16 +1298,13 @@ function Module:CreateUnits()
 			end
 
 			if C["Raid"].MainTankFrames then
-				local MainTank = oUF:SpawnHeader(Module:GetMainTankAttributes())
 				if C["Raid"].RaidLayout.Value == "Healer" then
-					MainTank:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "BOTTOMRIGHT", 6, 2)
+					MainTankRaid:SetPoint("BOTTOMLEFT", "ActionBarAnchor", "BOTTOMRIGHT", 6, 2)
 				elseif C["Raid"].RaidLayout.Value == "Damage" then
-					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
-				else
-					MainTank:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
+					MainTankRaid:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 6, -6)
 				end
 
-				Movers:RegisterFrame(MainTank)
+				Movers:RegisterFrame(MainTankRaid)
 			end
 		end
 

@@ -44,18 +44,18 @@ end
 
 local function ButtonEnter(self)
 	if not C["General"].ColorTextures then -- Fix a rare nil error
-		self.Borders:SetBackdropBorderColor(CLASS_COLOR.r, CLASS_COLOR.g, CLASS_COLOR.b, 1)
+		self:SetBackdropBorderColor(CLASS_COLOR.r, CLASS_COLOR.g, CLASS_COLOR.b, 1)
 	end
 
-	self.Background:SetColorTexture(CLASS_COLOR.r * .15, CLASS_COLOR.g * .15, CLASS_COLOR.b * .15, C["Media"].BackdropColor[4])
+	self.Backgrounds:SetColorTexture(CLASS_COLOR.r * .15, CLASS_COLOR.g * .15, CLASS_COLOR.b * .15, C["Media"].BackdropColor[4])
 end
 
 local function ButtonLeave(self)
 	if not C["General"].ColorTextures then -- Fix a rare nil error
-		self.Borders:SetBackdropBorderColor()
+		self:SetBackdropBorderColor()
 	end
 
-	self.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
+	self.Backgrounds:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
 end
 
 -- Function to create buttons in this module
@@ -204,7 +204,7 @@ function Module:OnInitialize()
 		return
 	end
 
-	--Create main frame
+	-- Create main frame
 	local RaidUtilityPanel = CreateFrame("Frame", "RaidUtilityPanel", UIParent, "SecureHandlerBaseTemplate")
 	RaidUtilityPanel:SetWidth(230)
 	RaidUtilityPanel:SetHeight(PANEL_HEIGHT)
@@ -213,13 +213,7 @@ function Module:OnInitialize()
 	RaidUtilityPanel.toggled = false
 	RaidUtilityPanel:SetFrameStrata("HIGH")
 
-	RaidUtilityPanel.Background = RaidUtilityPanel:CreateTexture(nil, "BACKGROUND", -1)
-	RaidUtilityPanel.Background:SetAllPoints()
-	RaidUtilityPanel.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	RaidUtilityPanel.Borders = CreateFrame("Frame", nil, RaidUtilityPanel)
-	RaidUtilityPanel.Borders:SetAllPoints(RaidUtilityPanel)
-	K.CreateBorder(RaidUtilityPanel.Borders)
+	RaidUtilityPanel:CreateBorder()
 
 	--Show Button
 	self:CreateUtilButton("RaidUtility_ShowButton", UIParent, "UIMenuButtonStretchTemplate, SecureHandlerClickTemplate", 136, 18, "TOP", UIParent, "TOP", -400, 4, RAID_CONTROL, nil )
@@ -294,13 +288,7 @@ function Module:OnInitialize()
 	RoleIcons:SetPoint("LEFT", RaidUtilityPanel, "RIGHT", 6, 0)
 	RoleIcons:SetSize(36, PANEL_HEIGHT)
 
-	RoleIcons.Background = RoleIcons:CreateTexture(nil, "BACKGROUND", -1)
-	RoleIcons.Background:SetAllPoints()
-	RoleIcons.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-	RoleIcons.Borders = CreateFrame("Frame", nil, RoleIcons)
-	RoleIcons.Borders:SetAllPoints(RoleIconsb)
-	K.CreateBorder(RoleIcons.Borders)
+	RoleIcons:CreateBorder()
 
 	RoleIcons:RegisterEvent("PLAYER_ENTERING_WORLD")
 	RoleIcons:RegisterEvent("GROUP_ROSTER_UPDATE")
@@ -420,13 +408,7 @@ function Module:OnInitialize()
 		f:HookScript("OnEnter", ButtonEnter)
 		f:HookScript("OnLeave", ButtonLeave)
 
-		f.Background = f:CreateTexture(nil, "BACKGROUND", -1)
-		f.Background:SetAllPoints()
-		f.Background:SetColorTexture(C["Media"].BackdropColor[1], C["Media"].BackdropColor[2], C["Media"].BackdropColor[3], C["Media"].BackdropColor[4])
-
-		f.Borders = CreateFrame("Frame", nil, f)
-		f.Borders:SetAllPoints(f)
-		K.CreateBorder(f.Borders)
+		f:CreateBorder()
 	end
 
 	-- Automatically show/hide the frame if we have RaidLeader or RaidOfficer
