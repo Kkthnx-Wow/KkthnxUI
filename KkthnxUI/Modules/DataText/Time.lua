@@ -6,6 +6,9 @@ end
 -- Lua API
 local _G = _G
 local date = _G.date
+local ipairs = ipairs
+local math_floor = math.floor
+local mod = mod
 local next = _G.next
 local select = _G.select
 local string_format = string.format
@@ -174,7 +177,7 @@ local function GetNextLocation(nextTime, index)
 	local inv = invIndex[index]
 	local count = #inv.timeTable
 	local elapsed = nextTime - inv.baseTime
-	local round = mod(floor(elapsed / inv.duration) + 1, count)
+	local round = mod(math_floor(elapsed / inv.duration) + 1, count)
 
 	if round == 0 then
 		round = count

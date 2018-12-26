@@ -220,7 +220,7 @@ function Stuffing:SlotUpdate(b)
 			b.frame.JunkIcon:Hide()
 		end
 	end
-	
+
 	if (b.frame.ScrapIcon) and C["Inventory"].ScrapIcon then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(b.frame:GetParent():GetID(), b.frame:GetID())
 		if not itemLocation then return end
@@ -233,7 +233,7 @@ function Stuffing:SlotUpdate(b)
 			end
 		end
 	end
-	
+
 	if b.frame.UpgradeIcon then
 		b.frame.UpgradeIcon:ClearAllPoints()
 		b.frame.UpgradeIcon:SetTexture("Interface\\AddOns\\KkthnxUI\\Media\\Inventory\\UpgradeIcon")
@@ -675,7 +675,7 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.JunkIcon:SetPoint("TOPLEFT", 1, 0)
 			ret.frame.JunkIcon:Hide()
 		end
-		
+
 		-- ScrapIcon thx to Mera
 		if not ret.frame.ScrapIcon then
 			ret.frame.ScrapIcon = ret.frame:CreateTexture(nil, "OVERLAY")
@@ -684,7 +684,7 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.ScrapIcon:SetPoint("BOTTOMLEFT", -1, 0)
 			ret.frame.ScrapIcon:Hide()
 		end
-		
+
 		if not ret.frame.Azerite then
 			ret.frame.Azerite = ret.frame:CreateTexture(nil, "OVERLAY")
 			ret.frame.Azerite:SetAtlas("AzeriteIconFrame")
@@ -1045,19 +1045,19 @@ function Stuffing:InitBags()
 	detail:SetText(SEARCH)
 	editbox:SetAllPoints(detail)
 
-	local gold = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+	local gold = f:CreateFontString(nil, "OVERLAY")
+	gold:FontTemplate(nil, nil, "OUTLINE")
 	gold:SetJustifyH("RIGHT")
 	gold:SetPoint("TOPRIGHT", f, -80, -9)
-	gold:Show()
 
-	local function UpdateGoldText(self)
-		self.gold:SetText(K.FormatMoney(GetMoney(), 12))
-	end
+	f:SetScript("OnEvent", function (self, e)
+		self.gold:SetText (K.FormatMoney(GetMoney(), 12))
+	end)
 
-	f:RegisterEvent("PLAYER_ENTERING_WORLD")
-	f:RegisterEvent("PLAYER_MONEY", UpdateGoldText)
-	f:RegisterEvent("PLAYER_TRADE_MONEY", UpdateGoldText)
-	f:RegisterEvent("TRADE_MONEY_CHANGED", UpdateGoldText)
+	f:RegisterEvent("PLAYER_MONEY")
+	f:RegisterEvent("PLAYER_LOGIN")
+	f:RegisterEvent("PLAYER_TRADE_MONEY")
+	f:RegisterEvent("TRADE_MONEY_CHANGED")
 
 	do
 		Token3:ClearAllPoints()
