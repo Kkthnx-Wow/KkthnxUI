@@ -286,7 +286,7 @@ function Module:UpdateAzerite(event, unit)
 		self.Bars.Azerite:SetValue(xp)
 
 		if self.Database.Text then
-			self.Bars.Azerite.Text:SetText(string_format("%s%% [%s]", math_floor(xp / totalLevelXP * 100), currentLevel))
+			self.Bars.Azerite.Text:SetText(string_format("%s - %s%% [%s]", K.ShortValue(xp), math_floor(xp / totalLevelXP * 100), currentLevel))
 		end
 
 		self.Bars.Azerite:Show()
@@ -317,7 +317,7 @@ function Module:UpdateHonor(event, unit)
 		self.Bars.Honor:SetValue(current)
 
 		if self.Database.Text then
-			self.Bars.Honor.Text:SetText(string_format("%d%%", current / max * 100))
+			self.Bars.Honor.Text:SetText(string_format("%s - %d%%", K.ShortValue(current), current / max * 100))
 		end
 
 		self.Bars.Honor:Show()

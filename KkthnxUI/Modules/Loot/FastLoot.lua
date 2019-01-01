@@ -24,11 +24,20 @@ function Module:LOOT_READY()
 		return
 	end
 
+	if self.isLooting then
+		return
+	end
+
 	if (GetCVar("autoLootDefault") == "1" and not IsModifiedClick("AUTOLOOTTOGGLE")) or (GetCVar("autoLootDefault") ~= "1" and IsModifiedClick("AUTOLOOTTOGGLE")) then
 		for i = NumLootItems, 1, -1 do
 			LootSlot(i)
 		end
-		CloseLoot()
+
+		Module.isLooting = true
+
+		C_Timer.After(.3, function()
+			Module.isLooting = false
+		end)
 	end
 end
 

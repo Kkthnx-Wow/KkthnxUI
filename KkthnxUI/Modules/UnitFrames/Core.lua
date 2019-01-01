@@ -1,6 +1,6 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes", "AceEvent-3.0", "AceTimer-3.0")
-local LCG = LibStub("LibCustomGlow-1.0", true)
+local LBG = LibStub("LibButtonGlow-1.0", true)
 
 local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
@@ -248,10 +248,6 @@ end
 function Module:HighlightPlate()
 	local unit = self.unit
 
-	if UnitIsUnit(unit, "player") then
-		return
-	end
-
 	local health = self.Health
 	local shadowH = health.Shadow
 	local arrowT = C["Nameplates"].TargetArrow and self.TopArrow
@@ -263,13 +259,13 @@ function Module:HighlightPlate()
 		return
 	end
 
-	if UnitIsUnit(unit, "target") then
+	if UnitIsUnit(unit, "target") and not UnitIsUnit(unit, "player") then
 		if isPlayer then
 			local _, class = UnitClass(unit)
 			if class then
 				local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 				if color then
-					if arrowT and not arrowT:IsShown() then
+					if arrowT then
 						arrowT:Show()
 						arrowT:SetVertexColor(color.r, color.g, color.b)
 					end
@@ -282,7 +278,7 @@ function Module:HighlightPlate()
 		elseif reaction then
 			local color = FACTION_BAR_COLORS[reaction]
 			if color then
-				if arrowT and not arrowT:IsShown() then
+				if arrowT then
 					arrowT:Show()
 					arrowT:SetVertexColor(color.r, color.g, color.b)
 				end
@@ -291,17 +287,9 @@ function Module:HighlightPlate()
 					shadowH:SetBackdropBorderColor(color.r, color.g, color.b)
 				end
 			end
-		else
-			if arrowT and arrowT:IsShown() then
-				arrowT:Hide()
-			end
-
-			if shadowH then
-				shadowH:SetBackdropBorderColor(0, 0, 0, 0.8)
-			end
 		end
 	else
-		if arrowT and arrowT:IsShown() then
+		if arrowT then
 			arrowT:Hide()
 		end
 
@@ -733,10 +721,10 @@ function Module:PostUpdateAura(unit, button, index)
 	else
 		if IsStealable and not isFriend then
 			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-			LCG.AutoCastGlow_Start(button, {237/255, 234/255, 142/255})
+			LBG.ShowOverlayGlow(button)
 		else
 			button:SetBackdropBorderColor()
-			LCG.AutoCastGlow_Stop(button)
+			LBG.HideOverlayGlow(button)
 		end
 	end
 

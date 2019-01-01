@@ -264,6 +264,10 @@ local function SetupFlyoutButton()
 				Button:SetChecked(nil)
 			end
 
+			if Button:GetHeight() ~= C["ActionBar"].ButtonSize and not InCombatLockdown() then
+				Button:SetSize(C["ActionBar"].ButtonSize, C["ActionBar"].ButtonSize)
+			end
+
 			if C["ActionBar"].RightMouseover == true then
 				SpellFlyout:HookScript("OnEnter", function(self)
 					RightBarMouseOver(1)
@@ -281,6 +285,7 @@ local function SetupFlyoutButton()
 					RightBarMouseOver(0)
 				end)
 			end
+
 			Button.IsSkinned = true
 		end
 	end

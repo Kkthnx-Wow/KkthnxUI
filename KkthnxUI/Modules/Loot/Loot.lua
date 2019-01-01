@@ -1,6 +1,6 @@
 local K, C, L = unpack(select(2, ...))
 local Module = K:NewModule("Loot", "AceEvent-3.0", "AceTimer-3.0")
-local LCG = LibStub("LibCustomGlow-1.0", true)
+local LBG = LibStub("LibButtonGlow-1.0", true)
 
 local _G = _G
 local pairs = pairs
@@ -254,19 +254,23 @@ function Module:LOOT_OPENED(_, autoloot)
 			if (questId and not isActive) then
 				questTexture:Show()
 				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
-				LCG.AutoCastGlow_Start(slot.iconFrame, {1, 1, 0})
+				LBG.ShowOverlayGlow(slot.iconFrame)
 			elseif (questId or isQuestItem) then
 				questTexture:Hide()
 				slot.iconFrame:SetBackdropBorderColor(1, 1, 0)
-				LCG.AutoCastGlow_Start(slot.iconFrame, {1, 1, 0})
+				LBG.ShowOverlayGlow(slot.iconFrame)
 			else
 				questTexture:Hide()
 				slot.iconFrame:SetBackdropBorderColor()
-				LCG.AutoCastGlow_Stop(slot.iconFrame)
+				LBG.HideOverlayGlow(slot.iconFrame)
 			end
 
-			slot:Enable()
-			slot:Show()
+			-- Check for FasterLooting scripts or w/e (if bag is full)
+			-- Simpy, Merathilis <3
+			if textureID then
+				slot:Enable()
+				slot:Show()
+			end
 		end
 	else
 		local slot = lootFrame.slots[1] or createSlot(1)
