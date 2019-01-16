@@ -1,4 +1,8 @@
 local K, C = unpack(select(2, ...))
+if K.CheckAddOnState("QuickQuest") or K.CheckAddOnState("AutoTurnIn") then
+	return
+end
+
 if C["Automation"].AutoQuest ~= true then
 	return
 end

@@ -69,6 +69,11 @@ if C["DataBars"].Enable == false then
 	C["DataBars"].TrackHonor = false
 end
 
+if K.CheckAddOnState("QuickQuest")
+or K.CheckAddOnState("AutoTurnIn") then
+	C["Automation"].AutoQuest = false
+end
+
 if K.CheckAddOnState("flyPlateBuffs") then
 	C["Nameplates"].TrackAuras = false
 end
