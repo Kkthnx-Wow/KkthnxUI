@@ -21,7 +21,6 @@
     <Script file="RaidMarker.lua"/>
     <Script file="SlotDurability.lua"/>
     <Script file="SlotItemLevel.lua"/>
-    <Script file="QuickQuest.lua"/>
 
     <Script file="StatusReport.lua"/>
 </Ui>
