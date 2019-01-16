@@ -404,28 +404,6 @@ Install:SetScript("OnEvent", function(self)
 		KkthnxUIData[playerRealm][playerName].SplitBars = true
 	end
 
-	-- Blizzard has too many issues with per character saved variables.
-	if (not KkthnxUIConfigShared) then
-		KkthnxUIConfigShared = {}
-	end
-
-	if (not KkthnxUIConfigShared.Account) then
-		KkthnxUIConfigShared.Account = {}
-	end
-
-	if (not KkthnxUIConfigShared[playerRealm]) then
-		KkthnxUIConfigShared[playerRealm] = {}
-	end
-
-	if (not KkthnxUIConfigShared[playerRealm][playerName]) then
-		KkthnxUIConfigShared[playerRealm][playerName] = {}
-	end
-
-	if (KkthnxUIConfigNotShared) then
-		KkthnxUIConfigShared[playerRealm][playerName] = KkthnxUIConfigNotShared
-		KkthnxUIConfigNotShared = nil
-	end
-
 	-- Install default if we never ran KkthnxUI on this character.
 	local IsInstalled = KkthnxUIData[playerRealm][playerName].InstallComplete
 	if (not IsInstalled) then

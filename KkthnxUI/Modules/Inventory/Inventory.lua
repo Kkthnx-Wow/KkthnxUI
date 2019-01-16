@@ -13,8 +13,6 @@ or K.CheckAddOnState("BaudBag") then
 	return
 end
 
-local Unfit = LibStub("Unfit-1.0")
-
 -- Sourced (by Hungtar, editor Tukz then Kkthnx)
 
 local _G = _G
@@ -75,6 +73,67 @@ local ST_NORMAL = 1
 local ST_FISHBAG = 2
 local ST_SPECIAL = 3
 local bag_bars = 0
+local unusable
+
+if K.Class == "DEATHKNIGHT" then
+	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_SHIELD}} -- weapons, armor, dual wield
+elseif K.Class == "DEMONHUNTER" then
+	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "DRUID" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+elseif K.Class == "HUNTER" then
+	unusable = {{LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "MAGE" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD,}, true}
+elseif K.Class == "MONK" then
+	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "PALADIN" then
+	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_DAGGER, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {}, true}
+elseif K.Class == "PRIEST" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+elseif K.Class == "ROGUE" then
+	unusable = {{LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_STAFF, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}}
+elseif K.Class == "SHAMAN" then
+	unusable = {{LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD1H, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW, LE_ITEM_WEAPON_WAND}, {LE_ITEM_ARMOR_PLATEM}}
+elseif K.Class == "WARLOCK" then
+	unusable = {{LE_ITEM_WEAPON_AXE1H, LE_ITEM_WEAPON_AXE2H, LE_ITEM_WEAPON_BOWS, LE_ITEM_WEAPON_GUNS, LE_ITEM_WEAPON_MACE1H, LE_ITEM_WEAPON_MACE2H, LE_ITEM_WEAPON_POLEARM, LE_ITEM_WEAPON_SWORD2H, LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_UNARMED, LE_ITEM_WEAPON_THROWN, LE_ITEM_WEAPON_CROSSBOW}, {LE_ITEM_ARMOR_LEATHER, LE_ITEM_ARMOR_MAIL, LE_ITEM_ARMOR_PLATE, LE_ITEM_ARMOR_SHIELD}, true}
+elseif K.Class == "WARRIOR" then
+	unusable = {{LE_ITEM_WEAPON_WARGLAIVE, LE_ITEM_WEAPON_WAND}, {}}
+else
+	unusable = {{}, {}}
+end
+
+local subs = {}
+for k = 0, 20 do
+	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_WEAPON, k)
+end
+
+for i, subclass in ipairs(unusable[1]) do
+	unusable[subs[subclass+1]] = true
+end
+
+subs = {}
+for k = 0, 11 do
+	subs[k + 1] = GetItemSubClassInfo(LE_ITEM_CLASS_ARMOR, k)
+end
+
+for i, subclass in ipairs(unusable[2]) do
+	unusable[subs[subclass + 1]] = true
+end
+
+
+local function IsClassUnusable(subclass, slot)
+	if subclass then
+		return slot ~= "" and unusable[subclass] or slot == "INVTYPE_WEAPONOFFHAND" and unusable[3]
+	end
+end
+
+local function IsItemUnusable(...)
+	if ... then
+		local subclass, _, slot = select(7, GetItemInfo(...))
+		return IsClassUnusable(subclass, slot)
+	end
+end
 
 local Stuffing = CreateFrame("Frame", nil, UIParent)
 Stuffing:RegisterEvent("ADDON_LOADED")
@@ -232,6 +291,8 @@ function Stuffing:SlotUpdate(b)
 				b.frame.ScrapIcon:SetShown(false)
 			end
 		end
+
+		b.frame:UpdateItemContextMatching() -- Update Scrap items
 	end
 
 	if b.frame.UpgradeIcon then
@@ -301,13 +362,17 @@ function Stuffing:SlotUpdate(b)
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 
+		if not b.name then -- Keystone bug
+			b.name = clink:match("%[(.-)%]") or ""
+		end
+
 		if C["Inventory"].ItemLevel == true and b.itemlevel and quality > 1 and (b.itemClassID == 2 or b.itemClassID == 4 or (b.itemClassID == 3 and b.itemSubClassID == 11)) then
 			b.itemlevel = IsRealItemLevel(clink, self, b.bag, b.slot) or b.itemlevel
 			b.frame.text:SetText(b.itemlevel)
 			b.frame.text:SetTextColor(GetItemQualityColor(quality))
 		end
 
-		if (Unfit:IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
+		if (IsItemUnusable(clink) or b.level and b.level > K.Level) and not locked then
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		else
 			_G[b.frame:GetName().."IconTexture"]:SetVertexColor(1, 1, 1)
@@ -681,7 +746,7 @@ function Stuffing:SlotNew(bag, slot)
 			ret.frame.ScrapIcon = ret.frame:CreateTexture(nil, "OVERLAY")
 			ret.frame.ScrapIcon:SetAtlas("bags-icon-scrappable")
 			ret.frame.ScrapIcon:SetSize(14, 12)
-			ret.frame.ScrapIcon:SetPoint("BOTTOMLEFT", -1, 0)
+			ret.frame.ScrapIcon:SetPoint("BOTTOMLEFT", 2, 2)
 			ret.frame.ScrapIcon:Hide()
 		end
 
@@ -775,16 +840,19 @@ function Stuffing:SearchUpdate(str)
 			local ilink = GetContainerItemLink(b.bag, b.slot)
 			local class, subclass, _, equipSlot = select(6, GetItemInfo(ilink))
 			local minLevel = select(5, GetItemInfo(ilink))
+			class = _G[class] or ""
+			subclass = _G[subclass] or ""
 			equipSlot = _G[equipSlot] or ""
+			minLevel = minLevel or 1
 			if not string_find(string_lower(b.name), str) and not string_find(string_lower(setName), str) and not string_find(string_lower(class), str) and not string_find(string_lower(subclass), str) and not string_find(string_lower(equipSlot), str) then
-				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
+				if IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(0.5, 0.5, 0.5)
 				end
 
 				SetItemButtonDesaturated(b.frame, true)
 				b.frame:SetAlpha(0.2)
 			else
-				if Unfit:IsItemUnusable(b.name) or minLevel > K.Level then
+				if IsItemUnusable(b.name) or minLevel > K.Level then
 					_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 				end
 
@@ -797,7 +865,7 @@ end
 
 function Stuffing:SearchReset()
 	for _, b in ipairs(self.buttons) do
-		if Unfit:IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
+		if IsItemUnusable(b.name) or (b.level and b.level > K.Level) then
 			_G[b.frame:GetName() .. "IconTexture"]:SetVertexColor(1, 0.1, 0.1)
 		end
 
@@ -1366,6 +1434,7 @@ function Stuffing:ADDON_LOADED(addon)
 	self:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 	self:RegisterEvent("BAG_CLOSED")
 	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
+	self:RegisterEvent("SCRAPPING_MACHINE_SHOW")
 
 	self:InitBags()
 
@@ -1523,6 +1592,12 @@ end
 function Stuffing:BAG_UPDATE_COOLDOWN()
 	for _, v in pairs(self.buttons) do
 		self:UpdateCooldowns(v)
+	end
+end
+
+function Stuffing:SCRAPPING_MACHINE_SHOW()
+	for i = 0, #BAGS_BACKPACK - 1 do
+		Stuffing:BAG_UPDATE(i)
 	end
 end
 

@@ -208,4 +208,8 @@ function Module:OnEnable()
 	end
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+	if C["Misc"].ImprovedStats == true then
+		self:MissingStats()
+	end
 end

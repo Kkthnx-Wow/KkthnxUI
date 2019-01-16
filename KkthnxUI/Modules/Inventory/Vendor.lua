@@ -247,4 +247,6 @@ function Module:OnEnable()
 
 	-- Creating vendor grays frame
 	Module:CreateSellFrame()
+
+	self:RegisterEvent("MERCHANT_CLOSED")
 end

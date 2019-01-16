@@ -7,7 +7,6 @@ local Module = K:GetModule("Miscellaneous")
 
 -- Add extra data to the role stats panel while enabling scrolling to prevent stats overflow.
 function Module:MissingStats()
-	--if not NDuiDB["Misc"]["MissingStats"] then return end
 	if IsAddOnLoaded("DejaCharacterStats") then
 		return
 	end
@@ -113,12 +112,4 @@ function Module:MissingStats()
 			statFrame:Show()
 		end
 	end
-end
-
-function Module:OnEnable()
-	if C["Misc"].ImprovedStats ~= true then
-		return
-	end
-
-	self:MissingStats()
 end

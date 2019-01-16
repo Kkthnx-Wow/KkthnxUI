@@ -209,29 +209,28 @@ function Module:CreateParty()
 			local reaction = unit and UnitReaction(unit, "player")
 
 			if UnitIsUnit(unit, "target") then
-				if not self.TargetHighlight:IsShown() then
-					self.TargetHighlight:Show()
-				end
 				if isPlayer then
 					local _, class = UnitClass(unit)
 					if class then
 						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
 						if color then
-							self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+							if self.TargetHighlight then
+								self.TargetHighlight:Show()
+								self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+							end
 						end
 					end
 				elseif reaction then
 					local color = FACTION_BAR_COLORS[reaction]
 					if color then
-						self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
-					end
-				else
-					if self.TargetHighlight:IsShown() then
-						self.TargetHighlight:Hide()
+						if self.TargetHighlight then
+							self.TargetHighlight:Show()
+							self.TargetHighlight:SetVertexColor(color.r, color.g, color.b, 1)
+						end
 					end
 				end
 			else
-				if self.TargetHighlight:IsShown() then
+				if self.TargetHighlight then
 					self.TargetHighlight:Hide()
 				end
 			end

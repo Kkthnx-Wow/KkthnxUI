@@ -80,8 +80,8 @@ local function SkinObjectiveTracker()
 	local function SkinItemButton(self, block)
 		local item = block.itemButton
 		if item and not item.skinned then
-			item:SetSize(25, 25)
-			item:CreateBorder()
+			item:SetSize(24, 24)
+			item:CreateShadow()
 			item:StyleButton()
 			item:SetNormalTexture(nil)
 			item.icon:SetTexCoord(K.TexCoords[1], K.TexCoords[2], K.TexCoords[3], K.TexCoords[4])

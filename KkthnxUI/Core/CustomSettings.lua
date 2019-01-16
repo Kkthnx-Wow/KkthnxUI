@@ -5,22 +5,27 @@ end
 
 local pairs = pairs
 
--- Attempt to fix a rare nil error on new char.
---if IsAddOnLoaded("KkthnxUI_Config") then
---	if not KkthnxUIConfigShared then
---		KkthnxUIConfigShared = {}
---	end
+-- Blizzard has too many issues with per character saved variables.
+if (not KkthnxUIConfigShared) then
+	KkthnxUIConfigShared = {}
+end
 
---	if not KkthnxUIConfigShared[K.Realm] then
---		KkthnxUIConfigShared[K.Realm] = {}
---	end
+if (not KkthnxUIConfigShared.Account) then
+	KkthnxUIConfigShared.Account = {}
+end
 
---	if not KkthnxUIConfigShared[K.Realm][K.Name] then
---		KkthnxUIConfigShared[K.Realm][K.Name] = {}
---	end
---else
---	return
---end
+if (not KkthnxUIConfigShared[K.Realm]) then
+	KkthnxUIConfigShared[K.Realm] = {}
+end
+
+if (not KkthnxUIConfigShared[K.Realm][K.Name]) then
+	KkthnxUIConfigShared[K.Realm][K.Name] = {}
+end
+
+if (KkthnxUIConfigNotShared) then
+	KkthnxUIConfigShared[K.Realm][K.Name] = KkthnxUIConfigNotShared
+	KkthnxUIConfigNotShared = nil
+end
 
 local Settings
 if (KkthnxUIConfigPerAccount) then
@@ -39,12 +44,13 @@ for group, options in pairs(Settings) do
 					Settings[group][option] = nil
 				else
 					Count = Count + 1
+
 					C[group][option] = value
 				end
 			end
 		end
 
-		-- Keeps KkthnxUIConfig clean and small
+		-- Keeps KkthnxUI_Config clean and small
 		if (Count == 0) then
 			Settings[group] = nil
 		end

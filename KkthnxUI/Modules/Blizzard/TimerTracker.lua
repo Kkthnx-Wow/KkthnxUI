@@ -37,7 +37,7 @@ local function SkinIt(bar)
 	bar.spark:SetPoint("CENTER", bar:GetStatusBarTexture(), "RIGHT", 0, 0)
 end
 
-local function SkinBlizzTimer()
+function Module:START_TIMER()
 	if C["Unitframe"].Enable ~= true then
 		return
 	end
@@ -51,5 +51,6 @@ local function SkinBlizzTimer()
 end
 
 function Module:OnEnable()
-	self:RegisterEvent("START_TIMER", SkinBlizzTimer)
+	self:RegisterEvent('START_TIMER')
+	self:START_TIMER()
 end

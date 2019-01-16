@@ -11,12 +11,6 @@ local ActionBar4 = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "Sec
 ActionBar4:SetAllPoints(RightActionBarAnchor)
 MultiBarRight:SetParent(ActionBar4)
 
-hooksecurefunc(MultiBarRight, "SetScale", function(self, scale)
- 	if scale ~= 1 then
- 		self:SetScale(1)
- 	end
- end)
-
 for i = 1, NUM_ACTIONBAR_BUTTONS do
 	local b = _G["MultiBarRightButton" .. i]
 	local b2 = _G["MultiBarRightButton" .. i - 1]

@@ -16,12 +16,16 @@ local unpack = unpack
 local ChangeChatColor = _G.ChangeChatColor
 local ChatEdit_ChooseBoxForSend = _G.ChatEdit_ChooseBoxForSend
 local ChatEdit_ParseText = _G.ChatEdit_ParseText
+local ChatFrame1 = _G.ChatFrame1
+local ChatFrame2 = _G.ChatFrame2
+local ChatFrame3 = _G.ChatFrame3
 local ChatFrame_AddChannel = _G.ChatFrame_AddChannel
 local ChatFrame_AddMessageGroup = _G.ChatFrame_AddMessageGroup
 local ChatFrame_RemoveAllMessageGroups = _G.ChatFrame_RemoveAllMessageGroups
 local ChatFrame_RemoveChannel = _G.ChatFrame_RemoveChannel
 local ChatFrame_SendTell = _G.ChatFrame_SendTell
 local ChatFrame_SystemEventHandler = _G.ChatFrame_SystemEventHandler
+local ChatTypeGroup = _G.ChatTypeGroup
 local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
 local FCF_Close = _G.FCF_Close
@@ -48,7 +52,7 @@ local PlaySoundFile = _G.PlaySoundFile
 local SetCVar = _G.SetCVar
 local ToggleChatColorNamesByClassGroup = _G.ToggleChatColorNamesByClassGroup
 local ToggleFrame = _G.ToggleFrame
-local TRADE = TRADE
+local TRADE = _G.TRADE
 local UIParent = _G.UIParent
 local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitName = _G.UnitName
@@ -68,8 +72,8 @@ local function GetGroupDistribution()
 	return "/s "
 end
 
-local function OnTextChanged(self)
-	local text = self:GetText()
+local function OnTextChanged(editbox)
+	local text = editbox:GetText()
 
 	local maxRepeats = UnitAffectingCombat("player") and 5 or 10
 	if (string_len(text) > maxRepeats) then
@@ -81,8 +85,8 @@ local function OnTextChanged(self)
 			end
 		end
 		if stuck then
-			self:SetText("")
-			self:Hide()
+			editbox:SetText("")
+			editbox:Hide()
 			return
 		end
 	end
@@ -90,43 +94,60 @@ local function OnTextChanged(self)
 	if text:len() < 5 then
 		if text:sub(1, 4) == "/tt " then
 			local unitname, realm = UnitName("target")
+
 			if unitname then
 				unitname = string_gsub(unitname, " ", "")
 			end
+
 			if unitname and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME then
 				unitname = string_format("%s-%s", unitname, string_gsub(realm, " ", ""))
 			end
+
 			ChatFrame_SendTell((unitname or L["Chat"].Invaild_Target), ChatFrame1)
 		end
 
 		if text:sub(1, 4) == "/gr " then
-			self:SetText(GetGroupDistribution() .. text:sub(5))
-			ChatEdit_ParseText(self, 0)
+			editbox:SetText(GetGroupDistribution() .. text:sub(5))
+			ChatEdit_ParseText(editbox, 0)
 		end
 	end
+
+	editbox.CharacterCount:SetText((255 - string_len(text)))
 
 	local new, found = string_gsub(text, "|Kf(%S+)|k(%S+)%s(%S+)|k", "%2 %3")
 	if found > 0 then
 		new = new:gsub("|", "")
-		self:SetText(new)
+		editbox:SetText(new)
 	end
 end
 
 -- Update editbox border color
 function Module:UpdateEditBoxColor()
-	local EditBox = ChatEdit_ChooseBoxForSend()
-	local ChatType = EditBox:GetAttribute("chatType")
+	local editbox = ChatEdit_ChooseBoxForSend()
+	local chatType = editbox:GetAttribute("chatType")
 
-	if (ChatType == "CHANNEL") then
-		local ID = GetChannelName(EditBox:GetAttribute("channelTarget"))
+	if not chatType then
+		return
+	end
 
-		if ID == 0 then
-			EditBox:SetBackdropBorderColor()
+	local ChatTypeInfo = _G.ChatTypeInfo
+	local info = ChatTypeInfo[chatType]
+	local chanTarget = editbox:GetAttribute("channelTarget")
+	local chanName = chanTarget and GetChannelName(chanTarget)
+
+	-- Increase inset on right side to make room for character count text
+	local insetLeft, insetRight, insetTop, insetBottom = editbox:GetTextInsets()
+	editbox:SetTextInsets(insetLeft, insetRight + 26, insetTop, insetBottom)
+
+	if chanName and (chatType == "CHANNEL") then
+		if chanName == 0 then
+			editbox:SetBackdropBorderColor()
 		else
-			EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType .. ID].r, ChatTypeInfo[ChatType .. ID].g, ChatTypeInfo[ChatType .. ID].b)
+			info = ChatTypeInfo[chatType..chanName]
+			editbox:SetBackdropBorderColor(info.r, info.g, info.b)
 		end
 	else
-		EditBox:SetBackdropBorderColor(ChatTypeInfo[ChatType].r, ChatTypeInfo[ChatType].g, ChatTypeInfo[ChatType].b)
+		editbox:SetBackdropBorderColor(info.r, info.g, info.b)
 	end
 end
 
@@ -226,6 +247,15 @@ function Module:StyleFrame(frame)
 	EditBox:SetPoint("BOTTOMRIGHT", ChatFrame1, "TOPRIGHT", 23, 26)
 	EditBox:SetHeight(22)
 	EditBox:CreateBorder()
+
+	--Character count
+	EditBox.CharacterCount = EditBox:CreateFontString()
+	EditBox.CharacterCount:FontTemplate()
+	EditBox.CharacterCount:SetTextColor(190, 190, 190, 0.4)
+	EditBox.CharacterCount:SetPoint("TOPRIGHT", EditBox, "TOPRIGHT", -5, 0)
+	EditBox.CharacterCount:SetPoint("BOTTOMRIGHT", EditBox, "BOTTOMRIGHT", -5, 0)
+	EditBox.CharacterCount:SetJustifyH("CENTER")
+	EditBox.CharacterCount:SetWidth(30)
 
 	-- Hide textures
 	for i = 1, #CHAT_FRAME_TEXTURES do

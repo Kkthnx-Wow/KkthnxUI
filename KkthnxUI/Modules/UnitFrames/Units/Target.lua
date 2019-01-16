@@ -182,7 +182,7 @@ function Module:CreateTarget()
 	end
 
 	self.Range = Module.CreateRange(self)
-	self.HealthPrediction = Module.CreateHealthPrediction(self, 130)
+	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)
 
 	if C["Unitframe"].PortraitTimers then
 		Module.CreatePortraitTimers(self)

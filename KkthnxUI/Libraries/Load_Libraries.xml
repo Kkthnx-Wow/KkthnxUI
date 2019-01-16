@@ -15,7 +15,6 @@
     <Include file="oUF_Plugins\Load_oUF_Plugins.xml"/>
     <Script file="LibButtonGlow-1.0\LibButtonGlow-1.0.lua"/>
     <Include file="UTF8\UTF8.xml"/>
-    <Script file="Unfit-1.0\Unfit-1.0.lua"/>
     <Script file="LibChatAnims\LibChatAnims.lua"/>
     <Script file="LibAnim-2.01\LibAnim-2.01.lua"/>
     <Script file="LibItemLevel\LibItemLevel.lua"/>

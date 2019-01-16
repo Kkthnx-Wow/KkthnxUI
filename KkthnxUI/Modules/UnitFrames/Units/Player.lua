@@ -211,7 +211,7 @@ function Module:CreatePlayer()
 		Module.CreateTotems(self)
 	end
 
-	self.HealthPrediction = Module.CreateHealthPrediction(self, 130)
+	self.HealthPrediction = Module.CreateHealthPrediction(self, 140)
 
 	if (C["Unitframe"].PowerPredictionBar) then
 		self.PowerPrediction = Module.CreatePowerPrediction(self)

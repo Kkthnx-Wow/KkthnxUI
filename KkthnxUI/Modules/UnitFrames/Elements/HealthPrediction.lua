@@ -6,6 +6,9 @@ local _G = _G
 local CreateFrame = _G.CreateFrame
 local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs
 
+local CreateFrame = _G.CreateFrame
+local UnitGetTotalAbsorbs = _G.UnitGetTotalAbsorbs
+
 function Module:CreateHealthPrediction(Width)
 	if not self:IsElementEnabled("HealthPrediction") then
 		self:EnableElement("HealthPrediction")
@@ -56,9 +59,9 @@ function Module:CreateHealthPrediction(Width)
 	absorbBar:SetReverseFill(true)
 	absorbBar:Hide()
 
-	absorbBar.Overlay = absorbBar:CreateTexture(nil, "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
-	absorbBar.Overlay:SetVertexColor(Database.Absorbs[1], Database.Absorbs[2], Database.Absorbs[3])
-	absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
+	absorbBar.Overlay = Health:CreateTexture("$parentOverlay", "ARTWORK", "TotalAbsorbBarOverlayTemplate", 1)
+	absorbBar.Overlay:SetVertexColor(Database.Absorbs[1], Database.Absorbs[2], Database.Absorbs[3], Database.Absorbs[4])
+    absorbBar.Overlay:SetAllPoints(absorbBar:GetStatusBarTexture())
 
 	local healAbsorbBar = CreateFrame("StatusBar", nil, Health)
 	healAbsorbBar:SetFrameLevel(11)
@@ -72,11 +75,31 @@ function Module:CreateHealthPrediction(Width)
 	healAbsorbBar:SetReverseFill(true)
 	healAbsorbBar:Hide()
 
+    local overAbsorb = Health:CreateTexture(nil, "ARTWORK")
+	overAbsorb:SetTexture(Texture)
+	overAbsorb:SetVertexColor(1, 1, 0, 0.25)
+	overAbsorb:SetPoint(PointT, Health, PointT)
+	overAbsorb:SetPoint(PointB, Health, PointB)
+	overAbsorb:SetPoint(PointL, Health, PointR)
+	overAbsorb:SetSize(1, 0)
+	overAbsorb:Hide()
+
+    local overHealAbsorb = Health:CreateTexture(nil, "ARTWORK")
+	overHealAbsorb:SetTexture(Texture)
+	overHealAbsorb:SetVertexColor(1, 0, 0, 0.25)
+	overHealAbsorb:SetPoint(PointT, Health, PointT)
+	overHealAbsorb:SetPoint(PointB, Health, PointB)
+	overHealAbsorb:SetPoint(PointR, Health, PointL)
+	overHealAbsorb:SetSize(1, 0)
+	overHealAbsorb:Hide()
+
 	return {
 		myBar = myBar,
 		otherBar = otherBar,
 		absorbBar = absorbBar,
 		healAbsorbBar = healAbsorbBar,
+		overAbsorb = overAbsorb,
+        overHealAbsorb = overHealAbsorb,
 		maxOverflow = 1,
 		PostUpdate = Module.UpdateHealthPrediction,
 		parent = self,

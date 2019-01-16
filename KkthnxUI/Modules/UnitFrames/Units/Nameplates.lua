@@ -397,40 +397,40 @@ function Module:CreateNameplates()
 	do
 		-- Elite Icon Events
 		if C["Nameplates"].EliteIcon then
-			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateEliteIcon)
-			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateEliteIcon)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateEliteIcon)
-			self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon)
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateEliteIcon, true)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateEliteIcon, true)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateEliteIcon, true)
+			self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon, true)
 		end
 
 		-- Highlight Plate Events
-		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate)
-		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.HighlightPlate, true)
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.HighlightPlate, true)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate, true)
 
 		-- Target Alpha Events
-		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget)
-		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdateNameplateTarget)
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
+		self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdateNameplateTarget, true)
+		self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdateNameplateTarget, true)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget, true)
 
 		if C["Nameplates"].ClassIcons then
-			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateClassIcons)
-			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateClassIcons)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateClassIcons)
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.NameplateClassIcons, true)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.NameplateClassIcons, true)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.NameplateClassIcons, true)
 		end
 
 		-- Totem Icon Events
 		if C["Nameplates"].Totems then
-			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems)
-			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdatePlateTotems)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems)
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.UpdatePlateTotems, true)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.UpdatePlateTotems, true)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems, true)
 		end
 
 		-- Healer Icon Events
 		if C["Nameplates"].MarkHealers then
-			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture)
-			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.DisplayHealerTexture)
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture)
+			self:RegisterEvent("NAME_PLATE_UNIT_ADDED", Module.DisplayHealerTexture, true)
+			self:RegisterEvent("NAME_PLATE_UNIT_REMOVED", Module.DisplayHealerTexture, true)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture, true)
 		end
 
 		-- Threat Plate Events

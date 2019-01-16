@@ -611,6 +611,11 @@ KkthnxUIConfig["enUS"] = {
 			["Desc"] = "Automatically selects a reward with highest selling price when quest is completed. Does not really finish the quest.",
 		},
 
+		["AutoQuest"] = {
+			["Name"] = "Auto Quest",
+			["Desc"] = "Automatically allows the player to quickly accept and deliver quests, among other features, to speed up the questing experience.|n|n|cffFF0000Hold the " .. SHIFT_KEY .. " to temporarily disable automation|r",
+		},
+
 		["AutoInvite"] = {
 			["Name"] = "Auto Invite",
 			["Desc"] = "Automatically accept invites from guild/friends.",
