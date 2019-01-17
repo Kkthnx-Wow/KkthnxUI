@@ -40,6 +40,28 @@ local BATTLEGROUNDS = {
 -- Fix UIErrorsFrame framelevel
 UIErrorsFrame:SetFrameLevel(0)
 
+-- Defaults
+local LagToleranceDefaults = {
+    Version = 0.6,
+    Offset = 0,
+    Interval = 30,
+    Threshold = 5,
+    Min = nil,
+    Max = nil,
+}
+
+-- Vars
+local MinLatency, MaxLatency
+local LatencyInterval
+local OldLatency = -9999
+local UpdatedCount = 0
+
+local LagToleranceTimer = CreateFrame("Frame")
+LagToleranceTimer:Hide()
+
+local LagToleranceEvents = CreateFrame("Frame")
+LagToleranceEvents:RegisterEvent("VARIABLES_LOADED")
+
 -- Auto-accept replacing enchants
 function Module:REPLACE_ENCHANT()
 	if (TradeSkillFrame and TradeSkillFrame:IsShown()) then
@@ -64,12 +86,6 @@ function Module:MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL()
 	StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL")
 	SellCursorItem()
 end
-
--- Add movement speed back to the CharacterFrame
-hooksecurefunc("PaperDollFrame_SetMovementSpeed", function(self)
-	self:Show()
-end)
-table.insert(PAPERDOLL_STATCATEGORIES[1].stats, {stat = "MOVESPEED"})
 
 if C["General"].AutoScale then
 	local scaleBtn = CreateFrame("Button", "KkthnxUIScaleBtn", Advanced_, "UIPanelButtonTemplate")
@@ -96,29 +112,83 @@ if C["General"].AutoScale then
 	end)
 end
 
-if C["General"].LagTolerance == true then
-	local LagTolerance = CreateFrame("Frame")
-	local int = 5
-	local _, _, _, lag = GetNetStats()
-	local LatencyUpdate = function(_, elapsed)
-		int = int - elapsed
-		if int < 0 then
-			if lag ~= 0 and lag <= 400 then
-				K.LockCVar("SpellQueueWindow", tostring(lag))
-			end
-
-			int = 5
-		end
+LagToleranceEvents:SetScript("OnEvent", function(self)
+	if C["General"].LagTolerance ~= true then
+		return
 	end
 
-	LagTolerance:SetScript("OnUpdate", LatencyUpdate)
-	LatencyUpdate(LagTolerance, 10)
-end
+    -- Get Min/Max latency values
+    MinLatency = 0
+    MaxLatency = 400
+
+    -- Start timer
+    LatencyInterval = 1
+    LagToleranceTimer:Show()
+end)
+
+LagToleranceTimer:SetScript("OnUpdate", function(self, elapsed)
+	if C["General"].LagTolerance ~= true then
+		return
+	end
+
+    LatencyInterval = LatencyInterval - elapsed
+    if LatencyInterval <= 0 then
+        -- Get Latency
+        local _, _, _, Latency = GetNetStats()
+        if Latency ~= OldLatency then
+
+            if not Latency then Latency = 0 end
+            Latency = Latency + LagToleranceDefaults.Offset
+
+            -- Set Latency to be within Min/Max boundaries
+            if LagToleranceDefaults.Min then
+            	Latency = max(Latency, LagToleranceDefaults.Min)
+            end
+
+            if LagToleranceDefaults.Max then
+            	Latency = min(Latency, LagToleranceDefaults.Max)
+            end
+
+            if Latency < MinLatency then
+            	Latency = MinLatency
+            end
+
+            if Latency > MaxLatency then
+            	Latency = MaxLatency
+            end
+
+            -- If Latency changed and greater than the change threshold, then update
+            if ((Latency < OldLatency) and ((Latency + LagToleranceDefaults.Threshold) <= OldLatency)) or ((Latency > OldLatency) and ((Latency - LagToleranceDefaults.Threshold) >= OldLatency)) then
+                K.LockCVar("SpellQueueWindow", Latency)
+
+                OldLatency = Latency
+            end
+
+            -- Search for first real Latency update, so we can find the beginning of GetNetStats()'s 30sec update cycle
+            if UpdatedCount < 2 then
+                UpdatedCount = UpdatedCount + 1
+            end
+        end
+
+        -- Reset timer
+        if UpdatedCount < 2 then
+            -- Still looking for first real Latency update
+            LatencyInterval = 1
+        elseif UpdatedCount < 5 then
+            -- Run 3 more passes at 1sec each, so we can get 3sec ahead of the GetNetStats() update cycle
+            LatencyInterval = 1
+            UpdatedCount = UpdatedCount + 1
+        else
+            -- Update cycle determined, set to normal updates from now on
+            LatencyInterval = LagToleranceDefaults.Interval
+        end
+    end
+end)
 
 -- Force readycheck warning
 local function ShowReadyCheckHook(_, initiator)
 	if initiator ~= "player" then
-		PlaySound(SOUNDKIT.READY_CHECK, "Master")
+		PlaySound(PlaySoundKitID and "readycheck", "Master" or SOUNDKIT.READY_CHECK, "Master")
 	end
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
@@ -144,16 +214,16 @@ ForceWarning:SetScript("OnEvent", function(_, event)
 		for i = 1, GetMaxBattlefieldID() do
 			local status = GetBattlefieldStatus(i)
 			if status == "confirm" then
-				PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
+				PlaySound(PlaySoundKitID and "ui_petbattles_pvp_throughqueue" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
 				break
 			end
 		end
 	elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
+		PlaySound(PlaySoundKitID and "ui_petbattles_pvp_throughqueue" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
 	elseif event == "LFG_PROPOSAL_SHOW" then
-		PlaySound(SOUNDKIT.READY_CHECK)
+		PlaySound(PlaySoundKitID and "readycheck" or SOUNDKIT.READY_CHECK, "Master")
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
+		PlaySound(PlaySoundKitID and RESURRECTION_REQUEST_SOUND or RESURRECTION_REQUEST_SOUND)
 	end
 end)
 
@@ -184,7 +254,15 @@ function Module:ToggleBossEmotes()
 	end
 end
 
-function Module:PLAYER_ENTERING_WORLD()
+function Module:OnEnable()
+	self:RegisterEvent("REPLACE_ENCHANT")
+	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL")
+
+	if C["Misc"].BattlegroundSpam == true then
+		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
+		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
+	end
+
 	if not SetView == 3 then
 		SetView(3)
 		ResetView(3)
@@ -195,21 +273,5 @@ function Module:PLAYER_ENTERING_WORLD()
 		if K.CodeDebug then
 			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 187 - KkthnxUI|Modules|Miscellaneous|Core -|r |cFFFFFF00SetView is 3|r")
 		end
-	end
-end
-
-function Module:OnEnable()
-	self:RegisterEvent("REPLACE_ENCHANT")
-	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL")
-
-	if C["Misc"].BattlegroundSpam == true then
-		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
-		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
-	end
-
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-
-	if C["Misc"].ImprovedStats == true then
-		self:MissingStats()
 	end
 end
