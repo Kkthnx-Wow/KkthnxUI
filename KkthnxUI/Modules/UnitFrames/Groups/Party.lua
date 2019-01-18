@@ -236,8 +236,8 @@ function Module:CreateParty()
 			end
 		end
 
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow) -- Watch this.
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdatePartyTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdatePartyTargetGlow, true) -- Watch this.
 	end
 
 	Module.CreateAuras(self, "party")

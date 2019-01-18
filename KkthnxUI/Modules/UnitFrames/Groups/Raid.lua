@@ -269,8 +269,8 @@ function Module:CreateRaid()
 			end
 		end
 
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow)
-		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", UpdateRaidTargetGlow, true)
+		self:RegisterEvent("GROUP_ROSTER_UPDATE", UpdateRaidTargetGlow, true)
 	end
 
 	Module.CreateDebuffHighlight(self)
