@@ -397,26 +397,26 @@ function Module:CreateNameplates()
 	do
 		-- Elite Icon Events
 		if C["Nameplates"].EliteIcon then
-			self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon)
+			self:RegisterEvent("UNIT_CLASSIFICATION_CHANGED", Module.NameplateEliteIcon, true)
 		end
 
 		-- Highlight Plate Events
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate)
-		self:RegisterEvent("UNIT_HEALTH", Module.HighlightPlate)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.HighlightPlate, true)
+		self:RegisterEvent("UNIT_HEALTH", Module.HighlightPlate, true)
 
 		-- Target Alpha Events
-		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget)
+		self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdateNameplateTarget, true)
 
 		-- Totem Icon Events
 		if C["Nameplates"].Totems then
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems)
-			self:RegisterEvent("UNIT_TARGET", Module.UpdatePlateTotems)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.UpdatePlateTotems, true)
+			self:RegisterEvent("UNIT_TARGET", Module.UpdatePlateTotems, true)
 		end
 
 		-- Healer Icon Events
 		if C["Nameplates"].MarkHealers then
-			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture)
-			self:RegisterEvent("UNIT_TARGET", Module.DisplayHealerTexture)
+			self:RegisterEvent("PLAYER_TARGET_CHANGED", Module.DisplayHealerTexture, true)
+			self:RegisterEvent("UNIT_TARGET", Module.DisplayHealerTexture, true)
 		end
 
 		-- Threat Plate Events
