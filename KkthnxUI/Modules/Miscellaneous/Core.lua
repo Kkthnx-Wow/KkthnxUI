@@ -4,22 +4,37 @@ local Module = K:NewModule("Miscellaneous", "AceEvent-3.0")
 local _G = _G
 local select = select
 
+local CreateFrame = _G.CreateFrame
 local GetBattlefieldStatus = _G.GetBattlefieldStatus
 local GetCVarBool = _G.GetCVarBool
 local GetLFGDungeonInfo = _G.GetLFGDungeonInfo
 local GetLFGDungeonRewards = _G.GetLFGDungeonRewards
 local GetLFGRandomDungeonInfo = _G.GetLFGRandomDungeonInfo
 local GetMaxBattlefieldID = _G.GetMaxBattlefieldID
+local GetNetStats = _G.GetNetStats
 local GetNumRandomDungeons = _G.GetNumRandomDungeons
 local GetZoneText = _G.GetZoneText
 local hooksecurefunc = _G.hooksecurefunc
 local PlaySound = _G.PlaySound
 local PlaySoundFile = _G.PlaySoundFile
+local SOUNDKIT = _G.SOUNDKIT
 local StaticPopup_Hide = _G.StaticPopup_Hide
 local StaticPopupDialogs = _G.StaticPopupDialogs
-local SOUNDKIT = _G.SOUNDKIT
 
 local RESURRECTION_REQUEST_SOUND = "Sound\\Spells\\Resurrection.ogg"
+local LatencyInterval
+local MinLatency, MaxLatency
+local OldLatency = -9999
+local UpdatedCount = 0
+
+local LagToleranceDefaults = {
+    Offset = 0,
+    Interval = 30,
+    Threshold = 5,
+    Min = nil,
+    Max = nil,
+}
+
 local BATTLEGROUNDS = {
 	["Wintergrasp"] = true,
 	["Tol Barad"] = true,
@@ -37,55 +52,11 @@ local BATTLEGROUNDS = {
 	["Temple of Kotmogu"] = true
 }
 
--- Fix UIErrorsFrame framelevel
-UIErrorsFrame:SetFrameLevel(0)
-
--- Defaults
-local LagToleranceDefaults = {
-    Version = 0.6,
-    Offset = 0,
-    Interval = 30,
-    Threshold = 5,
-    Min = nil,
-    Max = nil,
-}
-
--- Vars
-local MinLatency, MaxLatency
-local LatencyInterval
-local OldLatency = -9999
-local UpdatedCount = 0
-
 local LagToleranceTimer = CreateFrame("Frame")
 LagToleranceTimer:Hide()
 
 local LagToleranceEvents = CreateFrame("Frame")
 LagToleranceEvents:RegisterEvent("VARIABLES_LOADED")
-
--- Auto-accept replacing enchants
-function Module:REPLACE_ENCHANT()
-	if (TradeSkillFrame and TradeSkillFrame:IsShown()) then
-		ReplaceEnchant()
-		StaticPopup_Hide("REPLACE_ENCHANT")
-	end
-end
-
-hooksecurefunc("StaticPopup_Show", function(popup, _, _, data)
-	if (popup == "CONFIRM_LEARN_SPEC" and (not data.previewSpecCost or data.previewSpecCost <= 0)) then
-		-- Auto-confirm changing specs
-		StaticPopup_Hide(popup)
-		SetSpecialization(data.previewSpec, data.isPet)
-	elseif (popup == "ABANDON_QUEST") then
-		-- Avoid having to click abandon twice
-		StaticPopup_Hide(popup)
-		StaticPopupDialogs[popup].OnAccept()
-	end
-end)
-
-function Module:MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL()
-	StaticPopup_Hide("CONFIRM_MERCHANT_TRADE_TIMER_REMOVAL")
-	SellCursorItem()
-end
 
 if C["General"].AutoScale then
 	local scaleBtn = CreateFrame("Button", "KkthnxUIScaleBtn", Advanced_, "UIPanelButtonTemplate")
@@ -255,9 +226,6 @@ function Module:ToggleBossEmotes()
 end
 
 function Module:OnEnable()
-	self:RegisterEvent("REPLACE_ENCHANT")
-	self:RegisterEvent("MERCHANT_CONFIRM_TRADE_TIMER_REMOVAL")
-
 	if C["Misc"].BattlegroundSpam == true then
 		self:RegisterEvent("PLAYER_ENTERING_WORLD", "ToggleBossEmotes")
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA", "ToggleBossEmotes")
