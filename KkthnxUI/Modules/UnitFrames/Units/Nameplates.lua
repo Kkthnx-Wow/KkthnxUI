@@ -422,6 +422,7 @@ function Module:CreateNameplates()
 		-- Threat Plate Events
 		if C["Nameplates"].Threat then
 			self.Health:RegisterEvent("UNIT_THREAT_LIST_UPDATE", Module.ThreatPlate)
+			self.Health:RegisterEvent("UNIT_THREAT_SITUATION_UPDATE", Module.ThreatPlate)
 			-- Threat Plate PostUpdate Function
 			self.Health.PostUpdate = function()
 				Module.ThreatPlate(self)

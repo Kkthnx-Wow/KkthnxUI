@@ -364,6 +364,11 @@ function Stuffing:SlotUpdate(b)
 		ContainerFrameItemButton_CIMIUpdateIcon(b.frame.CanIMogItOverlay)
 	end
 
+	if b.frame.CanIMogItOverlay then
+		b.frame.CanIMogItOverlay:ClearAllPoints()
+		b.frame.CanIMogItOverlay:SetPoint("BOTTOMRIGHT", 1, 1)
+	end
+
 	if clink then
 		b.name, _, _, b.itemlevel, b.level, _, _, _, _, _, _, b.itemClassID, b.itemSubClassID = GetItemInfo(clink)
 

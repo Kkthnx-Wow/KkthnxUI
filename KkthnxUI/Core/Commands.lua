@@ -292,6 +292,24 @@ function K.ReadyCheck()
 end
 K:RegisterChatCommand("rc", K.ReadyCheck)
 
+local QuestCheckComplete = [[|TInterface\RaidFrame\ReadyCheck-Ready:14:14:-1:-1|t]]
+local QuestCheckIncomplete = [[|TInterface\RaidFrame\ReadyCheck-NotReady:14:14:-1:-1|t]]
+function K.CheckQuestStatus(questid)
+	questid = tonumber(questid)
+    if not questid then
+        print("You did not enter a vaild QuestID number")
+        return
+    end
+
+	if (IsQuestFlaggedCompleted(questid) == true) then
+		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .." has been completed!")
+	else
+		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .." has not been completed!")
+	end
+end
+K:RegisterChatCommand("checkquest", K.CheckQuestStatus)
+K:RegisterChatCommand("questcheck", K.CheckQuestStatus)
+
 -- Help frame.
 function K.GMTicket()
 	ToggleHelpFrame()

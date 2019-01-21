@@ -1,12 +1,12 @@
 local K, C, L = unpack(select(2, ...))
-if C["Misc"].ImprovedStats ~= true then
-	return
-end
-
 local Module = K:GetModule("Miscellaneous")
 
 -- Add extra data to the role stats panel while enabling scrolling to prevent stats overflow.
 function Module:MissingStats()
+	if C["Misc"].ImprovedStats ~= true then
+		return
+	end
+
 	if IsAddOnLoaded("DejaCharacterStats") then
 		return
 	end
@@ -103,7 +103,7 @@ function Module:MissingStats()
 			end
 
 			if offhandSpeed then
-				displaySpeed = K.ShortValue(displaySpeed).." / "..offhandSpeed
+				displaySpeed = K.ShortValue(displaySpeed) .. " / " .. offhandSpeed
 			else
 				displaySpeed = K.ShortValue(displaySpeed)
 			end
