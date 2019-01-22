@@ -292,23 +292,40 @@ function K.ReadyCheck()
 end
 K:RegisterChatCommand("rc", K.ReadyCheck)
 
+local QuestCheckSubDomain = (setmetatable({
+	ruRU = "ru",
+	frFR = "fr", deDE = "de",
+	esES = "es", esMX = "es",
+	ptBR = "pt", ptPT = "pt", itIT = "it",
+	koKR = "ko", zhTW = "cn", zhCN = "cn"
+}, { __index = function() return "www" end }))[GetLocale()]
+
+local WoWHeadLoc = QuestCheckSubDomain..".wowhead.com/quest="
 local QuestCheckComplete = [[|TInterface\RaidFrame\ReadyCheck-Ready:14:14:-1:-1|t]]
 local QuestCheckIncomplete = [[|TInterface\RaidFrame\ReadyCheck-NotReady:14:14:-1:-1|t]]
 function K.CheckQuestStatus(questid)
 	questid = tonumber(questid)
-    if not questid then
-        print("You did not enter a vaild QuestID number")
-        return
-    end
+	if not questid then
+		print("Enter questID found in Wowhead URL")
+		print("http://wowhead.com/quest=ID")
+		print("Example: /checkquest 1234")
+		return
+	end
 
 	if (IsQuestFlaggedCompleted(questid) == true) then
 		UIErrorsFrame:AddMessage(QuestCheckComplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .." has been completed!")
+		PlaySoundFile("sound\\interface\\iquestcomplete.ogg")
+		K.Print(WoWHeadLoc .. questid)
 	else
 		UIErrorsFrame:AddMessage(QuestCheckIncomplete.."Quest ".. "|CFFFFFF00[" .. questid .. "]|r" .." has not been completed!")
+		PlaySoundFile("sound\\interface\\igquestfailed.ogg")
+		K.Print(WoWHeadLoc .. questid)
 	end
 end
 K:RegisterChatCommand("checkquest", K.CheckQuestStatus)
 K:RegisterChatCommand("questcheck", K.CheckQuestStatus)
+K:RegisterChatCommand("cq", K.CheckQuestStatus)
+K:RegisterChatCommand("qc", K.CheckQuestStatus)
 
 -- Help frame.
 function K.GMTicket()

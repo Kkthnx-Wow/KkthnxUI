@@ -372,7 +372,7 @@ function Module:SetCastTicks(castbar, numTicks, extraTickRatio)
 			Module.ticks[i]:SetWidth(castbar.tickWidth)
 		end
 
-		Module.ticks[i]:SetHeight(castbar.tickHeight)
+		Module.ticks[i]:SetHeight(castbar.tickHeight or castbar:GetHeight())
 		Module.ticks[i]:ClearAllPoints()
 		Module.ticks[i]:SetPoint("RIGHT", castbar, "LEFT", d * i, 0)
 		Module.ticks[i]:Show()
