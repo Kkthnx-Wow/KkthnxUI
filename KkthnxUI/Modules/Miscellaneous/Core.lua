@@ -159,7 +159,7 @@ end)
 -- Force readycheck warning
 local function ShowReadyCheckHook(_, initiator)
 	if initiator ~= "player" then
-		PlaySound(PlaySoundKitID and "readycheck", "Master" or SOUNDKIT.READY_CHECK, "Master")
+		PlaySound(SOUNDKIT.READY_CHECK, "Master")
 	end
 end
 hooksecurefunc("ShowReadyCheck", ShowReadyCheckHook)
@@ -185,16 +185,16 @@ ForceWarning:SetScript("OnEvent", function(_, event)
 		for i = 1, GetMaxBattlefieldID() do
 			local status = GetBattlefieldStatus(i)
 			if status == "confirm" then
-				PlaySound(PlaySoundKitID and "ui_petbattles_pvp_throughqueue" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
+				PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
 				break
 			end
 		end
 	elseif event == "PET_BATTLE_QUEUE_PROPOSE_MATCH" then
-		PlaySound(PlaySoundKitID and "ui_petbattles_pvp_throughqueue" or SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE)
+		PlaySound(SOUNDKIT.UI_PET_BATTLES_PVP_THROUGH_QUEUE, "Master")
 	elseif event == "LFG_PROPOSAL_SHOW" then
-		PlaySound(PlaySoundKitID and "readycheck" or SOUNDKIT.READY_CHECK, "Master")
+		PlaySound(SOUNDKIT.READY_CHECK, "Master")
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySound(PlaySoundKitID and RESURRECTION_REQUEST_SOUND or RESURRECTION_REQUEST_SOUND)
+		PlaySound(RESURRECTION_REQUEST_SOUND, "Master")
 	end
 end)
 
