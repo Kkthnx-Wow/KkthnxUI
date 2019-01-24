@@ -194,7 +194,7 @@ ForceWarning:SetScript("OnEvent", function(_, event)
 	elseif event == "LFG_PROPOSAL_SHOW" then
 		PlaySound(SOUNDKIT.READY_CHECK, "Master")
 	elseif event == "RESURRECT_REQUEST" then
-		PlaySound(RESURRECTION_REQUEST_SOUND, "Master")
+		PlaySoundFile(RESURRECTION_REQUEST_SOUND, "Master")
 	end
 end)
 
