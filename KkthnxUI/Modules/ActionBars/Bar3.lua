@@ -11,9 +11,10 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local ActionBar3 = CreateFrame("Frame", "Bar3Holder", RightActionBarAnchor)
 ActionBar3:SetAllPoints(RightActionBarAnchor)
 MultiBarLeft:SetParent(ActionBar3)
+MultiBarLeft:EnableMouse(false)
 
 hooksecurefunc(MultiBarLeft, "SetScale", function(self, scale)
-	if scale < 1 then
+	if scale ~= 1 then
 		self:SetScale(1)
 	end
 end)

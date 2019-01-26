@@ -10,9 +10,10 @@ local NUM_ACTIONBAR_BUTTONS = _G.NUM_ACTIONBAR_BUTTONS
 local ActionBar4 = CreateFrame("Frame", "Bar4Holder", RightActionBarAnchor, "SecureHandlerStateTemplate")
 ActionBar4:SetAllPoints(RightActionBarAnchor)
 MultiBarRight:SetParent(ActionBar4)
+MultiBarRight:EnableMouse(false)
 
 hooksecurefunc(MultiBarRight, "SetScale", function(self, scale)
-	if scale < 1 then
+	if scale ~= 1 then
 		self:SetScale(1)
 	end
 end)
