@@ -120,6 +120,7 @@ function Module:CreateNameplates()
 	self.Health.colorClass = true
 	self.Health.Smooth = C["Nameplates"].Smooth
 	self.Health.SmoothSpeed = C["Nameplates"].SmoothSpeed * 10
+	self.Health.Cutaway = C["Nameplates"].CutAwayHealth
 
 	if C["Nameplates"].HealthValue == true then
 		self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")

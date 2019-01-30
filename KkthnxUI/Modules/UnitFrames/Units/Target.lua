@@ -53,6 +53,7 @@ function Module:CreateTarget()
 	self.Health.colorClass = true
 	self.Health.colorReaction = true
 	self.Health.frequentUpdates = true
+	self.Health.Cutaway = C["Unitframe"].CutAwayHealth
 
 	self.Health.Value = self.Health:CreateFontString(nil, "OVERLAY")
 	self.Health.Value:SetPoint("CENTER", self.Health, "CENTER", 0, 0)
