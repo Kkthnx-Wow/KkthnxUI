@@ -1,6 +1,5 @@
 local K, C = unpack(select(2, ...))
 local Module = K:NewModule("Unitframes", "AceEvent-3.0", "AceTimer-3.0")
-local LBG = LibStub("LibButtonGlow-1.0", true)
 
 local oUF = oUF or K.oUF
 assert(oUF, "KkthnxUI was unable to locate oUF.")
@@ -683,6 +682,15 @@ function Module:PostCreateAura(button)
 		button.overlay:SetParent(button.OverlayFrame)
 		button.count:SetParent(button.OverlayFrame)
 		button.Remaining:SetParent(button.OverlayFrame)
+
+		button.Animation = button:CreateAnimationGroup()
+		button.Animation:SetLooping("BOUNCE")
+
+		button.Animation.FadeOut = button.Animation:CreateAnimation("Alpha")
+		button.Animation.FadeOut:SetFromAlpha(1)
+		button.Animation.FadeOut:SetToAlpha(0)
+		button.Animation.FadeOut:SetDuration(.6)
+		button.Animation.FadeOut:SetSmoothing("IN_OUT")
 	end
 end
 
@@ -725,10 +733,12 @@ function Module:PostUpdateAura(unit, button, index)
 	else
 		if IsStealable and not isFriend then
 			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-			LBG.ShowOverlayGlow(button)
+			button.Animation:Play()
+			button.Animation.Playing = true
 		else
 			button:SetBackdropBorderColor()
-			LBG.HideOverlayGlow(button)
+			button.Animation:Stop()
+			button.Animation.Playing = false
 		end
 	end
 

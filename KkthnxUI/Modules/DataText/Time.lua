@@ -133,8 +133,8 @@ local nhm = { -- Raid Finder, Normal, Heroic, Mythic
 
 -- Check Invasion Status
 local invIndex = {
-	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = 1517274000}, -- 1/30 9:00 [1]
-	[2] = {title = "Battle for Azeroth Assault", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = 1544691600}, -- 12/13 17:00 [1]
+	[1] = {title = "Legion Invasion", duration = 66600, maps = {630, 641, 650, 634}, timeTable = {4, 3, 2, 1, 4, 2, 3, 1, 2, 4, 1, 3}, baseTime = 1546844400}, -- 1/30 9:00 [1]
+	[2] = {title = "Battle for Azeroth Assault", duration = 68400, maps = {862, 863, 864, 896, 942, 895}, timeTable = {4, 1, 6, 2, 5, 3}, baseTime = 1546743600}, -- 12/13 17:00 [1]
 }
 
 local mapAreaPoiIDs = {
@@ -190,7 +190,7 @@ local title
 local function addTitle(text)
 	if not title then
 		GameTooltip:AddLine(" ")
-		GameTooltip:AddLine(text..":", .6,.8,1)
+		GameTooltip:AddLine(text..":")
 		title = true
 	end
 end
@@ -360,13 +360,17 @@ local function OnEnter(self)
 		if timeLeft then
 			timeLeft = timeLeft / 60
 			if timeLeft < 60 then
-				r,g,b = 1, 0, 0
+				r, g, b = 1, 0, 0
 			else
-				r,g,b = 0, 1, 0
+				r, g, b = 0, 1, 0
 			end
-			GameTooltip:AddDoubleLine("Current Invasion "..zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), 1, 1, 1, r, g, b)
+			GameTooltip:AddDoubleLine("|CFFFFFFFFCurrent|r ".. zoneName, string_format("%.2d:%.2d", timeLeft / 60, timeLeft % 60), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, r, g, b)
 		end
-		GameTooltip:AddDoubleLine("Next Invasion "..GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), 1, 1, 1, 1, 1, 1)
+		if C["DataText"].Time24Hr == true then
+			GameTooltip:AddDoubleLine("|CFFFFFFFFNext|r ".. GetNextLocation(nextTime, index), date("%m/%d %H:%M", nextTime), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, 1, 1, 1)
+		elseif C["DataText"].LocalTime == true then
+			GameTooltip:AddDoubleLine("|CFFFFFFFFNext|r ".. GetNextLocation(nextTime, index), date("%m/%d %I:%M", nextTime), lockoutColorNormal.r, lockoutColorNormal.g, lockoutColorNormal.b, 1, 1, 1, 1, 1, 1)
+		end
 	end
 
 	GameTooltip:Show()
