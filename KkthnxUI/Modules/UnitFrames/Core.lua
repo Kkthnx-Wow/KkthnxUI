@@ -698,10 +698,14 @@ function Module:PostUpdateAura(unit, button, index)
 
 	if button.isDebuff then
 		if (not isFriend and not isPlayer) then
-			button.icon:SetDesaturated((unit and not string_find(unit, "arena%d")) and true or false)
-			button:SetBackdropBorderColor()
-			if button.Shadow then
-				button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+			if C["Unitframe"].OnlyShowPlayerDebuff then
+				button:Hide()
+			else
+				button.icon:SetDesaturated((unit and not string_find(unit, "arena%d")) and true or false)
+				button:SetBackdropBorderColor()
+				if button.Shadow then
+					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+				end
 			end
 		else
 			local color = (DType and DebuffTypeColor[DType]) or DebuffTypeColor.none

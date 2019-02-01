@@ -282,7 +282,9 @@ function Stuffing:SlotUpdate(b)
 
 	if (b.frame.ScrapIcon) and C["Inventory"].ScrapIcon then
 		local itemLocation = ItemLocation:CreateFromBagAndSlot(b.frame:GetParent():GetID(), b.frame:GetID())
-		if not itemLocation then return end
+		if not itemLocation then
+			return
+		end
 
 		if itemLocation and itemLocation ~= "" then
 			if (C_Item_DoesItemExist(itemLocation) and C_Item_CanScrapItem(itemLocation)) then
@@ -292,7 +294,7 @@ function Stuffing:SlotUpdate(b)
 			end
 		end
 
-		b.frame:UpdateItemContextMatching() -- Update Scrap items
+		b.frame:UpdateItemContextMatching() -- Blizzards way to highlight scrapable items if the Scrapping Machine Frame is open.
 	end
 
 	if b.frame.UpgradeIcon then
@@ -362,11 +364,6 @@ function Stuffing:SlotUpdate(b)
 	if IsAddOnLoaded("CanIMogIt") then
 		CIMI_AddToFrame(b.frame, ContainerFrameItemButton_CIMIUpdateIcon)
 		ContainerFrameItemButton_CIMIUpdateIcon(b.frame.CanIMogItOverlay)
-	end
-
-	if b.frame.CanIMogItOverlay then
-		b.frame.CanIMogItOverlay:ClearAllPoints()
-		b.frame.CanIMogItOverlay:SetPoint("BOTTOMRIGHT", 1, 1)
 	end
 
 	if clink then

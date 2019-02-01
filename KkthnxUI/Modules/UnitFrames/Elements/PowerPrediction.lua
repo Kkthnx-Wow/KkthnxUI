@@ -24,8 +24,7 @@ function Module:CreatePowerPrediction()
   mainBar:SetPoint(pointR, power:GetStatusBarTexture(), pointR)
   mainBar:SetStatusBarTexture(texture)
   mainBar:SetStatusBarColor(1, 1, 1, 0.6)
-  mainBar:SetSize(width, 0)
-  mainBar:Hide()
+  mainBar:SetWidth(width)
 
   local PowerPrediction = {
     mainBar = mainBar,
@@ -40,8 +39,7 @@ function Module:CreatePowerPrediction()
     altBar:SetPoint(pointR, addPower:GetStatusBarTexture(), pointR)
     altBar:SetStatusBarTexture(texture)
     altBar:SetStatusBarColor(1, 1, 1, 0.6)
-    altBar:SetSize(width, 0)
-    altBar:Hide()
+    altBar:SetWidth(width)
 
     PowerPrediction.altBar = altBar
   end

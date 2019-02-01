@@ -57,7 +57,7 @@ local function SkinSkada()
 		if skada.Borders then
 			skada.Borders:ClearAllPoints()
 			if win.db.reversegrowth then
-				skada.Borders:SetPoint("TOPLEFT", skada, "TOPLEFT"-1, 1)
+				skada.Borders:SetPoint("TOPLEFT", skada, "TOPLEFT", -1, 1)
 				skada.Borders:SetPoint("BOTTOMRIGHT", win.db.enabletitle and skada.button or skada, "BOTTOMRIGHT", 1, -1)
 			else
 

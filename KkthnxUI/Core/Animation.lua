@@ -119,14 +119,6 @@ end
 local frameFadeManager = CreateFrame("FRAME")
 local FADEFRAMES = {}
 
-function K.FrameIsFading(frame)
-	for index, value in pairs(FADEFRAMES) do
-		if value == frame then
-			return true
-		end
-	end
-end
-
 function K.UIFrameFade_OnUpdate(_, elapsed)
 	local index = 1
 	local frame, fadeInfo
@@ -172,13 +164,6 @@ function K.UIFrameFade(frame, fadeInfo)
 	if (not frame) then
 		return
 	end
-
-	if K.FrameIsFading(frame) then
-    	-- cancel the current operation
-    	-- the code calling this should make sure not to interrupt a
-    	-- necessary finishedFunc. This will entirely skip it.
-		K.UIFrameFadeRemoveFrame(frame)
-    end
 
 	if (not fadeInfo.mode) then
 		fadeInfo.mode = "IN"
