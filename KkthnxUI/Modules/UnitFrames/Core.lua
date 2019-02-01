@@ -704,57 +704,61 @@ function Module:PostUpdateAura(unit, button, index)
 	local isPlayer = (Caster == "player" or Caster == "vehicle")
 	local isFriend = unit and UnitIsFriend("player", unit) and not UnitCanAttack("player", unit)
 
-	if button.isDebuff then
-		if (not isFriend and not isPlayer) then
-			if C["Unitframe"].OnlyShowPlayerDebuff then
-				button:Hide()
-			else
-				button.icon:SetDesaturated((unit and not string_find(unit, "arena%d")) and true or false)
-				button:SetBackdropBorderColor()
-				if button.Shadow then
-					button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
-				end
-			end
-		else
-			local color = (DType and DebuffTypeColor[DType]) or DebuffTypeColor.none
-			if Name and (Name == "Unstable Affliction" or Name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
-				button:SetBackdropBorderColor(0.05, 0.85, 0.94)
-				if button.Shadow then
-					button.Shadow:SetBackdropBorderColor(0.05, 0.85, 0.94, 0.8)
+	if button then
+		if button.isDebuff then
+			if (not isFriend and not isPlayer) then
+				if C["Unitframe"].OnlyShowPlayerDebuff then
+					button:Hide()
+				else
+					button.icon:SetDesaturated((unit and not string_find(unit, "arena%d")) and true or false)
+					button:SetBackdropBorderColor()
+					if button.Shadow then
+						button.Shadow:SetBackdropBorderColor(0, 0, 0, 0.8)
+					end
 				end
 			else
-				button:SetBackdropBorderColor(color.r, color.g, color.b)
-				if button.Shadow then
-					button.Shadow:SetBackdropBorderColor(color.r * 0.6, color.g * 0.6, color.b * 0.6, 0.8)
+				local color = (DType and DebuffTypeColor[DType]) or DebuffTypeColor.none
+				if Name and (Name == "Unstable Affliction" or Name == "Vampiric Touch") and K.Class ~= "WARLOCK" then
+					button:SetBackdropBorderColor(0.05, 0.85, 0.94)
+					if button.Shadow then
+						button.Shadow:SetBackdropBorderColor(0.05, 0.85, 0.94, 0.8)
+					end
+				else
+					button:SetBackdropBorderColor(color.r, color.g, color.b)
+					if button.Shadow then
+						button.Shadow:SetBackdropBorderColor(color.r * 0.6, color.g * 0.6, color.b * 0.6, 0.8)
+					end
+				end
+				button.icon:SetDesaturated(false)
+			end
+		else
+			if button.Animation then
+				if IsStealable and not isFriend and not button.Animation.Playing then
+					button:SetBackdropBorderColor(237/255, 234/255, 142/255)
+					button.Animation:Play()
+					button.Animation.Playing = true
+				else
+					button:SetBackdropBorderColor()
+					button.Animation:Stop()
+					button.Animation.Playing = false
 				end
 			end
-			button.icon:SetDesaturated(false)
 		end
-	else
-		if IsStealable and not isFriend then
-			button:SetBackdropBorderColor(237/255, 234/255, 142/255)
-			button.Animation:Play()
-			button.Animation.Playing = true
-		else
-			button:SetBackdropBorderColor()
-			button.Animation:Stop()
-			button.Animation.Playing = false
+
+		if button.Remaining then
+			if Duration and Duration > 0 then
+				button.Remaining:Show()
+			else
+				button.Remaining:Hide()
+			end
+
+			button:SetScript("OnUpdate", Module.CreateAuraTimer)
 		end
+
+		button.Duration = Duration
+		button.TimeLeft = ExpirationTime
+		button.First = true
 	end
-
-	if button.Remaining then
-		if Duration and Duration > 0 then
-			button.Remaining:Show()
-		else
-			button.Remaining:Hide()
-		end
-
-		button:SetScript("OnUpdate", Module.CreateAuraTimer)
-	end
-
-	button.Duration = Duration
-	button.TimeLeft = ExpirationTime
-	button.First = true
 end
 
 function Module:CreateAuraWatchIcon(icon)
