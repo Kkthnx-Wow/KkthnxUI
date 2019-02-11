@@ -19,27 +19,12 @@ local function SkinMiscStuff()
 		"QueueStatusFrame",
 		"DropDownList1Backdrop",
 		"DropDownList1MenuBackdrop",
-		"TicketStatusFrameButton",
+		"TicketStatusFrameButton"
 	}
 
-	QueueStatusFrame:StripTextures()
-
 	for i = 1, #Skins do
-		_G[Skins[i]]:StripTextures()
-		_G[Skins[i]]:CreateBorder()
+		_G[Skins[i]]:CreateBorder(nil, nil, nil, true)
 	end
-
-	hooksecurefunc("UIDropDownMenu_CreateFrames", function()
-		if not _G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].isSkinned then
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:StripTextures()
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"]:CreateBorder()
-
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:StripTextures()
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."MenuBackdrop"]:CreateBorder()
-
-			_G["DropDownList"..UIDROPDOWNMENU_MAXLEVELS.."Backdrop"].isSkinned = true
-		end
-	end)
 
 	local ChatMenus = {
 		"ChatMenu",
@@ -82,6 +67,23 @@ local function SkinMiscStuff()
 		GhostFrameContentsFrameIcon:SetParent(b)
 		b:CreateBorder()
 	end
+
+	hooksecurefunc("UIDropDownMenu_CreateFrames", function(level, index)
+		local listFrame = _G["DropDownList"..level]
+		local listFrameName = listFrame:GetName()
+
+		-- Skin the backdrop
+		for i = 1, _G.UIDROPDOWNMENU_MAXLEVELS do
+			local menu = _G["DropDownList"..i.."MenuBackdrop"]
+			local backdrop = _G["DropDownList"..i.."Backdrop"]
+			if not backdrop.IsSkinned then
+				backdrop:CreateBorder(nil, nil, nil, true)
+				menu:CreateBorder(nil, nil, nil, true)
+
+				backdrop.IsSkinned = true
+			end
+		end
+	end)
 end
 
 table_insert(Module.SkinFuncs["KkthnxUI"], SkinMiscStuff)
