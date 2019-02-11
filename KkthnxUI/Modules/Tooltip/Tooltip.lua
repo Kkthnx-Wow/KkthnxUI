@@ -813,6 +813,11 @@ function Module:OnEnable()
 	BNToastFrame.CloseButton:SetPoint("TOPRIGHT", 4, 4)
 	BNToastFrame.CloseButton:SkinCloseButton()
 
+	K.ScanTooltip = CreateFrame("GameTooltip", "KkthnxUI_ScanTooltip", UIParent, "GameTooltipTemplate")
+	K.ScanTooltip:SetPoint("CENTER")
+	K.ScanTooltip:SetSize(200, 200)
+	GameTooltip_SetDefaultAnchor(K.ScanTooltip, UIParent)
+
 	if GameTooltipStatusBar then
 		GameTooltipStatusBar:SetHeight(C["Tooltip"].HealthbarHeight)
 		GameTooltipStatusBar:SetScript("OnValueChanged", nil) -- Do we need to unset this?
