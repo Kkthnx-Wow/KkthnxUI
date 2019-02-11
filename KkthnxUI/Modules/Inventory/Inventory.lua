@@ -204,10 +204,6 @@ end
 local trashButton = {}
 local trashBag = {}
 
--- Tooltip used for scanning
-local scanner = CreateFrame("GameTooltip", "iLvlScanningTooltip", nil, "GameTooltipTemplate")
-local scannerName = scanner:GetName()
-
 -- Tooltip and scanning by Phanx @ http://www.wowinterface.com/forums/showthread.php?p=271406
 local S_ITEM_LEVEL = "^" .. gsub(_G.ITEM_LEVEL, "%%d", "(%%d+)")
 
@@ -219,11 +215,11 @@ local function IsRealItemLevel(link, owner, bag, slot)
 
 	local realItemLevel
 
-	scanner.owner = owner
-	scanner:SetOwner(owner, "ANCHOR_NONE")
-	scanner:SetBagItem(bag, slot)
+	K.ScanTooltip.owner = owner
+	K.ScanTooltip:SetOwner(owner, "ANCHOR_NONE")
+	K.ScanTooltip:SetBagItem(bag, slot)
 
-	local line = _G[scannerName .. "TextLeft2"]
+	local line = _G[K.ScanTooltip:GetName() .. "TextLeft2"]
 	if line then
 		local msg = line:GetText()
 		if msg and string_find(msg, S_ITEM_LEVEL) then
@@ -233,7 +229,7 @@ local function IsRealItemLevel(link, owner, bag, slot)
 			end
 		else
 			-- Check line 3, some artifacts have the ilevel there
-			line = _G[scannerName .. "TextLeft3"]
+			line = _G[K.ScanTooltip:GetName() .. "TextLeft3"]
 			if line then
 				local msg = line:GetText()
 				if msg and string_find(msg, S_ITEM_LEVEL) then
@@ -310,6 +306,31 @@ function Stuffing:SlotUpdate(b)
 		else
 			b.frame.UpgradeIcon:SetShown(itemIsUpgrade or true)
 		end
+	end
+
+	if C["Inventory"].BindText and quality and quality > LE_ITEM_QUALITY_COMMON then
+		K.ScanTooltip:SetOwner(self, "ANCHOR_NONE")
+		K.ScanTooltip:SetBagItem(b.frame:GetParent():GetID(), b.frame:GetID())
+		K.ScanTooltip:Show()
+
+		for i = 2, 6 do -- trying line 2 to 6 for the bind texts, don't think they are further down
+			local line = _G[K.ScanTooltip:GetName().."TextLeft"..i]:GetText()
+			if (not line) or (line == _G.ITEM_SOULBOUND or line == _G.ITEM_ACCOUNTBOUND or line == _G.ITEM_BNETACCOUNTBOUND) then
+				break
+			end
+			if line == _G.ITEM_BIND_ON_EQUIP then
+				b.frame.bindType:SetText('BoE')
+				b.frame.bindType:SetVertexColor(GetItemQualityColor(quality))
+				break
+			end
+			if line == _G.ITEM_BIND_ON_USE then
+				b.frame.bindType:SetText('BoU')
+				b.frame.bindType:SetVertexColor(GetItemQualityColor(quality))
+				break
+			end
+		end
+
+		K.ScanTooltip:Hide()
 	end
 
 	local newItemTexture = b.frame.NewItemTexture
@@ -735,9 +756,15 @@ function Stuffing:SlotNew(bag, slot)
 		ret.count:SetPoint("BOTTOMRIGHT", 1, 1)
 
 		if C["Inventory"].ItemLevel == true then
-			ret.frame:FontString("text", C["Media"].Font, C["Media"].FontSize, C["Media"].FontStyle)
+			ret.frame.text = ret.frame:CreateFontString(nil, 'OVERLAY')
 			ret.frame.text:SetPoint("TOPLEFT", 1, -1)
-			ret.frame.text:SetShadowOffset(0, 0)
+			ret.frame.text:FontTemplate(nil, 11, "OUTLINE")
+		end
+
+		if C["Inventory"].BindText == true then
+			ret.frame.bindType = ret.frame:CreateFontString(nil, 'OVERLAY')
+			ret.frame.bindType:SetPoint("BOTTOM", 2, 0)
+			ret.frame.bindType:FontTemplate(nil, 10, "OUTLINE")
 		end
 
 		-- JunkIcon only exists for items created through ContainerFrameItemButtonTemplate
@@ -752,7 +779,7 @@ function Stuffing:SlotNew(bag, slot)
 		if not ret.frame.ScrapIcon then
 			ret.frame.ScrapIcon = ret.frame:CreateTexture(nil, "OVERLAY")
 			ret.frame.ScrapIcon:SetAtlas("bags-icon-scrappable")
-			ret.frame.ScrapIcon:SetSize(14, 12)
+			ret.frame.ScrapIcon:SetSize(12, 10)
 			ret.frame.ScrapIcon:SetPoint("BOTTOMLEFT", 2, 2)
 			ret.frame.ScrapIcon:Hide()
 		end

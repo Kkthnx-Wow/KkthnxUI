@@ -172,7 +172,7 @@ local function Timer_Create(self)
 	return timer
 end
 
-local function Timer_Start(self, start, duration, charges)
+function K.Timer_Start(self, start, duration, charges)
 	if self:IsForbidden() then
 		if K.CodeDebug then
 			K.Print("|cFFFF0000DEBUG:|r |cFF808080Line 175 - KkthnxUI|Modules|ActionBars|Cooldowns -|r |cFFFFFF00" .. self .. " is forbidden|r")
@@ -202,7 +202,7 @@ local function Timer_Start(self, start, duration, charges)
 	end
 end
 
-hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", Timer_Start)
+hooksecurefunc(getmetatable(_G["ActionButton1Cooldown"]).__index, "SetCooldown", K.Timer_Start)
 
 if not _G["ActionBarButtonEventsFrame"] then
 	return
@@ -231,7 +231,7 @@ local function cooldown_Update(self)
 	local charges, maxCharges = GetActionCharges(action)
 
 	if cooldown_ShouldUpdateTimer(self, start, duration, charges, maxCharges) then
-		Timer_Start(self, start, duration, charges, maxCharges)
+		K.Timer_Start(self, start, duration, charges, maxCharges)
 	end
 end
 
@@ -258,12 +258,3 @@ if _G["ActionBarButtonEventsFrame"].frames then
 		actionButton_Register(frame)
 	end
 end
-
-hooksecurefunc("ActionBarButtonEventsFrame_RegisterFrame", actionButton_Register)
-
-hooksecurefunc("CooldownFrame_SetDisplayAsPercentage", function(self)
-	local timer = self.timer
-	if timer then
-		Timer_Stop(timer)
-	end
-end)
