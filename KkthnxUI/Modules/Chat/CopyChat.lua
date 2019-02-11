@@ -30,7 +30,7 @@ local rightButtonString = "|TInterface\\TutorialFrame\\UI-TUTORIAL-FRAME:16:12:0
 
 local Lines = {}
 local CopyFrame
-local menuFrame = CreateFrame("Frame", "QuickClickMenu", UIParent, "UIDropDownMenuTemplate")
+local menuFrame = L_Create_UIDropDownMenu("QuickClickMenu", UIParent)
 local menuList = {
 	{text = _G.OPTIONS_MENU, isTitle = true, notCheckable = true},
 	{text = "", notClickable = true, notCheckable = true},
@@ -286,7 +286,7 @@ function CopyChat:OnEnable()
 
 		ConfigButton:SetScript("OnMouseUp", function(self, btn)
 			if btn == "LeftButton" or btn == "RightButton" then
-				EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
+				L_EasyMenu(menuList, menuFrame, "cursor", 0, 0, "MENU", 2)
 			end
 		end)
 

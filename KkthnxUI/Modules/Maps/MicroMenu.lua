@@ -26,11 +26,11 @@ local SOCIAL_BUTTON = _G.SOCIAL_BUTTON
 local SPELLBOOK_ABILITIES_BUTTON = _G.SPELLBOOK_ABILITIES_BUTTON
 local UIParent = _G.UIParent
 
-local UIMiniMapTrackingMenu = CreateFrame("Frame", "UIMiniMapTrackingMenu", UIParent, "UIDropDownMenuTemplate")
+local UIMiniMapTrackingMenu = L_Create_UIDropDownMenu("UIMiniMapTrackingMenu", UIParent)
 UIMiniMapTrackingMenu:SetID(1)
 UIMiniMapTrackingMenu:SetClampedToScreen(true)
 UIMiniMapTrackingMenu:Hide()
-UIDropDownMenu_Initialize(UIMiniMapTrackingMenu, MiniMapTrackingDropDown_Initialize, "MENU")
+L_UIDropDownMenu_Initialize(UIMiniMapTrackingMenu, MiniMapTrackingDropDown_Initialize, "MENU")
 UIMiniMapTrackingMenu.noResize = true
 
 local menuFrame = CreateFrame("Frame", "MinimapRightClickMenu", UIParent)
@@ -244,9 +244,9 @@ Minimap:SetScript("OnMouseUp", function(self, button)
 
 	if (button == "MiddleButton") or (button == "RightButton" and IsShiftKeyDown()) then
 		if (position:match("LEFT")) then
-			EasyMenu(menuList, menuFrame, "cursor")
+			L_EasyMenu(menuList, menuFrame, "cursor")
 		else
-			EasyMenu(menuList, menuFrame, "cursor", -160, 0)
+			L_EasyMenu(menuList, menuFrame, "cursor", -160, 0)
 		end
 	elseif (button == "RightButton") then
 		ToggleDropDownMenu(1, nil, UIMiniMapTrackingMenu, "cursor")

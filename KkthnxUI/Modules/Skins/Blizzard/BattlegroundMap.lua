@@ -49,7 +49,7 @@ local function SkinBattlefieldMinimap()
 			BattlefieldMapTab:StopMovingOrSizing()
 			BattlefieldMapTab:SetUserPlaced(true)
 		elseif btn == "RightButton" then
-			UIDropDownMenu_Initialize(BattlefieldMapTab.OptionsDropDown, InitializeOptionsDropDown, "MENU")
+			L_UIDropDownMenu_Initialize(BattlefieldMapTab.OptionsDropDown, InitializeOptionsDropDown, "MENU")
 			ToggleDropDownMenu(1, nil, BattlefieldMapTab.OptionsDropDown, BattlefieldMapFrame:GetName(), 0, -4)
 		end
 
