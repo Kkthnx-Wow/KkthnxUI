@@ -278,6 +278,7 @@ C["Chat"] = {
 	["ScrollByX"] = 3,
 	["ShortenChannelNames"] = true,
 	["TabsMouseover"] = true,
+	["VoiceOverlay"] = true,
 	["WhisperSound"] = true,
 	["Width"] = 410
 }
