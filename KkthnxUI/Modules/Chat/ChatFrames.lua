@@ -61,6 +61,8 @@ local UnitAffectingCombat = _G.UnitAffectingCombat
 local UnitName = _G.UnitName
 local UnitRealmRelationship = _G.UnitRealmRelationship
 
+local Movers = K.Movers
+
 local function GetGroupDistribution()
 	local inInstance, kind = IsInInstance()
 	if inInstance and (kind == "pvp") then
