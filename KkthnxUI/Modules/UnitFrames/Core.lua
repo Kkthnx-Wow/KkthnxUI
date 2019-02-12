@@ -1339,7 +1339,7 @@ function Module:CreateUnits()
 			nameplateOtherBottomInset = C["Nameplates"].Clamp and 0.1 or -1,
 			nameplateOtherTopInset = C["Nameplates"].Clamp and 0.08 or -1,
 			nameplateOverlapV = C["Nameplates"].OverlapV or 1.2,
-			nameplateOverlapW = C["Nameplates"].OverlapW or 1.2,
+			nameplateOverlapW = C["Nameplates"].OverlapH or 1.2,
 			nameplateSelectedAlpha = 1,
 			nameplateSelectedScale = C["Nameplates"].SelectedScale or 1,
 			nameplateSelfAlpha = 1,
