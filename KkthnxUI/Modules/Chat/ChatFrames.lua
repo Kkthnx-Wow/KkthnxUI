@@ -28,6 +28,9 @@ local ChatFrame_SystemEventHandler = _G.ChatFrame_SystemEventHandler
 local ChatTypeGroup = _G.ChatTypeGroup
 local ChatTypeInfo = _G.ChatTypeInfo
 local CreateFrame = _G.CreateFrame
+local C_VoiceChat_SetPortraitTexture = C_VoiceChat.SetPortraitTexture
+local C_VoiceChat_GetMemberName = C_VoiceChat.GetMemberName
+local Voice_GetVoiceChannelNotificationColor = Voice_GetVoiceChannelNotificationColor
 local FCF_Close = _G.FCF_Close
 local FCF_DockFrame = _G.FCF_DockFrame
 local FCF_GetCurrentChatFrame = _G.FCF_GetCurrentChatFrame
@@ -611,6 +614,95 @@ function Module:DelayGuildMOTD()
 	end)
 end
 
+-- IngameChat - Sourced: ElvUI
+Module.TalkingList = {}
+function Module:GetAvailableHead()
+	for i = 1, self.maxHeads do
+		if not self.ChatHeadFrame[i]:IsShown() then
+			return self.ChatHeadFrame[i]
+		end
+	end
+end
+
+function Module:GetHeadByID(memberID)
+	for i = 1, self.maxHeads do
+		if self.ChatHeadFrame[i].memberID == memberID then
+			return self.ChatHeadFrame[i]
+		end
+	end
+end
+
+function Module:ConfigureHead(memberID, channelID)
+	local frame = self:GetAvailableHead()
+	if not frame then return end
+
+	frame.memberID = memberID
+	frame.channelID = channelID
+
+	C_VoiceChat_SetPortraitTexture(frame.Portrait.texture, memberID, channelID);
+
+	local memberName = C_VoiceChat_GetMemberName(memberID, channelID);
+	local r, g, b = Voice_GetVoiceChannelNotificationColor(channelID);
+	frame.Name:SetText(memberName or "")
+	frame.Name:SetVertexColor(r, g, b, 1);
+	frame:Show()
+end
+
+function Module:DeconfigureHead(memberID) -- memberID, channelID
+	local frame = self:GetHeadByID(memberID)
+	if not frame then return end
+
+	frame.memberID = nil
+	frame.channelID = nil
+	frame:Hide()
+end
+
+function Module:VoiceOverlay(event, ...)
+	if event == "VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED" then
+		local memberID, channelID, isTalking = ...
+
+		if isTalking then
+			Module.TalkingList[memberID] = channelID
+			self:ConfigureHead(memberID, channelID)
+		else
+			Module.TalkingList[memberID] = nil
+			self:DeconfigureHead(memberID, channelID)
+		end
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED" then
+		local memberID, channelID, volume = ...
+		local frame = Module:GetHeadByID(memberID)
+		if frame and channelID == frame.channelID then
+			frame.StatusBar.anim.progress:SetChange(volume)
+			frame.StatusBar.anim.progress:Play()
+
+			frame.StatusBar:SetStatusBarColor(K.ColorGradient(volume, 1, 0, 0, 1, 1, 0, 0, 1, 0))
+		end
+	end
+end
+
+function Module:SetChatHeadOrientation(position)
+
+	if position == "TOP" then
+		for i=1, self.maxHeads do
+			self.ChatHeadFrame[i]:ClearAllPoints()
+			if i == 1 then
+				self.ChatHeadFrame[i]:SetPoint("TOP", self.ChatHeadFrame, "BOTTOM", 0)
+			else
+				self.ChatHeadFrame[i]:SetPoint("TOP", self.ChatHeadFrame[i - 1], "BOTTOM", 0)
+			end
+		end
+	else
+		for i=1, self.maxHeads do
+			self.ChatHeadFrame[i]:ClearAllPoints()
+			if i == 1 then
+				self.ChatHeadFrame[i]:SetPoint("BOTTOM", self.ChatHeadFrame, "TOP", 0)
+			else
+				self.ChatHeadFrame[i]:SetPoint("BOTTOM", self.ChatHeadFrame[i - 1], "TOP", 0)
+			end
+		end
+	end
+end
+
 function Module:OnEnable()
 	self:DelayGuildMOTD() -- Keep this before `C["Chat"].Enable` check
 
@@ -625,7 +717,65 @@ function Module:OnEnable()
 	self:SecureHook("FCF_RestorePositionAndDimensions", Module.SetChatFramePosition)
 	self:SecureHook("FCF_SavePositionAndDimensions", Module.SaveChatFramePositionAndDimensions)
 	self:SecureHook("FCFTab_UpdateAlpha", Module.NoMouseAlpha)
+	
+	-- Chat Heads Frame: Sourced ElvUI
+	self.ChatHeadFrame = CreateFrame("Frame", "KkthnxUIChatHeadFrame", UIParent)
+	self.ChatHeadFrame:SetPoint("TOPLEFT", UIParent, "TOPLEFT", 4, -80)
+	self.ChatHeadFrame:SetHeight(20)
+	self.ChatHeadFrame:SetWidth(200)
+	Movers:RegisterFrame(self.ChatHeadFrame)
+	
+	self.maxHeads = 5
+	self.volumeBarHeight = 3
 
+	local CHAT_HEAD_HEIGHT = 40
+	for i=1, self.maxHeads do
+		self.ChatHeadFrame[i] = CreateFrame("Frame", "KkthnxUIChatHeadFrame"..i, self.ChatHeadFrame)
+		self.ChatHeadFrame[i]:SetWidth(self.ChatHeadFrame:GetWidth())
+		self.ChatHeadFrame[i]:SetHeight(CHAT_HEAD_HEIGHT)
+
+		self.ChatHeadFrame[i].Portrait = CreateFrame("Frame", nil, self.ChatHeadFrame[i])
+		self.ChatHeadFrame[i].Portrait:SetWidth(CHAT_HEAD_HEIGHT - self.volumeBarHeight)
+		self.ChatHeadFrame[i].Portrait:SetHeight(CHAT_HEAD_HEIGHT - self.volumeBarHeight)
+		self.ChatHeadFrame[i].Portrait:SetPoint("TOPLEFT", self.ChatHeadFrame[i], "TOPLEFT")
+		self.ChatHeadFrame[i].Portrait:CreateBorder()
+		self.ChatHeadFrame[i].Portrait.texture = self.ChatHeadFrame[i].Portrait:CreateTexture(nil, "OVERLAY")
+		self.ChatHeadFrame[i].Portrait.texture:SetTexCoord(0.15, 0.85, 0.15, 0.85)
+		self.ChatHeadFrame[i].Portrait.texture:SetInside(self.ChatHeadFrame[i].Portrait)
+
+		self.ChatHeadFrame[i].Name = self.ChatHeadFrame[i]:CreateFontString(nil, "OVERLAY")
+		self.ChatHeadFrame[i].Name:FontTemplate(nil, 20)
+		self.ChatHeadFrame[i].Name:SetPoint("LEFT", self.ChatHeadFrame[i].Portrait, "RIGHT", 2, 0)
+
+		self.ChatHeadFrame[i].StatusBar = CreateFrame("StatusBar", nil, self.ChatHeadFrame[i])
+		self.ChatHeadFrame[i].StatusBar:SetPoint("TOPLEFT", self.ChatHeadFrame[i].Portrait, "BOTTOMLEFT")
+		self.ChatHeadFrame[i].StatusBar:SetWidth(CHAT_HEAD_HEIGHT - self.volumeBarHeight)
+		self.ChatHeadFrame[i].StatusBar:SetHeight(self.volumeBarHeight)
+		self.ChatHeadFrame[i].StatusBar:CreateBackdrop()
+		self.ChatHeadFrame[i].StatusBar:SetStatusBarTexture(C["Media"].Texture)
+		self.ChatHeadFrame[i].StatusBar:SetMinMaxValues(0, 1)
+
+		self.ChatHeadFrame[i].StatusBar.anim = CreateAnimationGroup(self.ChatHeadFrame[i].StatusBar)
+		self.ChatHeadFrame[i].StatusBar.anim.progress = self.ChatHeadFrame[i].StatusBar.anim:CreateAnimation("Progress")
+		self.ChatHeadFrame[i].StatusBar.anim.progress:SetSmoothing("Out")
+		self.ChatHeadFrame[i].StatusBar.anim.progress:SetDuration(.3)
+
+		self.ChatHeadFrame[i]:Hide()
+	end
+
+	self:SetChatHeadOrientation("TOP")
+
+	if C["Chat"].VoiceOverlay then
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_SPEAKING_STATE_CHANGED", "VoiceOverlay");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ENERGY_CHANGED", "VoiceOverlay");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED", "VoiceOverlay");
+		self:RegisterEvent("VOICE_CHAT_COMMUNICATION_MODE_CHANGED", "VoiceOverlay");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_REMOVED", "VoiceOverlay");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED", "VoiceOverlay");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED", "VoiceOverlay");
+		_G.VoiceActivityManager:UnregisterAllEvents();
+	end
+	
 	for i = 1, 10 do
 		local ChatFrame = _G["ChatFrame" .. i]
 
